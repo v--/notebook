@@ -1,7 +1,10 @@
-.PHONY: all
+COMPILER := latexmk -cd -interaction=nonstopmode -bibtex
+
+.PHONY: clean
 
 src/index.pdf: src/index.tex src/references.bib src/*/*/*.tex
-	cd src && arara --verbose index.tex
+	${COMPILER} src/index.tex -pdf
 
 clean:
-	rm --force src/{index,*/*/*}.{aux,log,out,pdf,bbl,bcf,blg,nav,run.xml,snm,toc,vrb}
+	${COMPILER} src/index.tex -C
+	rm -fv src/*.run.xml # biber
