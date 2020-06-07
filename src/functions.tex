@@ -1,0 +1,150 @@
+It is not straightforward to formalize the notion of correspondence between two values. We will reserve the term~\uline{mapping} for this informal notion and use~\uline{function} in the sense of~\cref{def:functions}. There are several drawbacks of using set theory for defining functions:
+\begin{enumerate}
+  \item Mappings are often more general than what can be formalized, i.e. there exist correspondences between logical formulas and between proper classes that cannot be defined in set theory without reaching contradictions.
+  \item The ambient space often has an additional structure, e.g. algebraic or topological, that is not carried by functions. This leads to definitions such as homomorphism and isometry. This is a motivating example for the benefits category theory, where the notion of morphism is able to capture this additional structure.
+  \item Several generalizations of set-theoretic functions are often used, e.g. multi-valued or partial functions, however most formalisms of set theory often only concern functions.
+  \item Set-theoretic functions are often used in contexts where they do not refer to the intuitive notion of a mapping, e.g. for Cartesian products or for indexing.
+\end{enumerate}
+
+Although definitions in terms of set-valued mappings appear simpler and more general, they are also more cumbersome to work with, so we will start with the standard notion of a function. Assume that we have defined a notion of equality in our formal language.
+
+\begin{definition}[Functions]\label{def:functions}
+  Let $X$ and $Y$ be (potentially empty) sets.
+
+  Let $f \subseteq X \times Y$ be a relation on the nonempty sets $X$ and $Y$. We call the triple $(f, X, Y)$ a \uline{function from $X$ to $Y$} if for every $x \in X$, there exists exactly one $y \in Y$ such that $(x, y) \in f$.
+
+  We call $X$ the~\uline{domain of $f$} and denote it by $\Dom f = X$ and we call $Y$ the~\uline{range or codomain of $f$} and denote it by $\Range f = Y$. It is customary to define a function solely in terms of the relation $f$, however in practice the domain and range are important and the range is impossible to recover given only the relation $f$.
+
+  We usually write $f(x) = y$ instead of $(x, y) \in f$ and
+  \begin{align*}
+    &f: X \to Y, \\
+    &f(x) = \ldots,
+  \end{align*}
+  where the ellipsis is called the~\uline{definition of $f$} and is part of a formula that is true whenever $(x, f(x)) \in f$. $f(x)$ is called the~\uline{value of $f$ at $x$} or the~\uline{action of $f$ on $x$} or the~\uline{image of $x$ under $f$}. For a set $A \subseteq X$, we define
+  \begin{align*}
+    f(A) \coloneqq \cup_{a \in A} \{ f(a) \}
+  \end{align*}
+  and call $f(A)$ the~\uline{image of $A$ under $f$} or the~\uline{action of $f$ on $A$}. We call $f(X) \subset Y$ simply the \uline{image of $f$} and denote it by $\Img f$.
+
+  In analogy to programming languages, we can call $f: X \to Y$ the~\uline{type or type signature of $f$} (although formally we use sets rather than types) or the~\uline{declaration of $f$} (see, for example,~\cite[section 2.4]{Kernighan1988}). It is often enough to only declare $f$ (i.e. specify its type) without defining it in order to use it in practice.
+
+  Functions are often called maps, mapping or operators, however:
+  \begin{itemize}
+    \item \uline{Mapping} is often used as a more general informal notion of a correspondence between values
+    \item \uline{Operator} is usually used to refer to functions, especially linear functions, that act on sets (rather than points) of a certain ambient space
+  \end{itemize}
+
+  The following deviations from the classical notion of a function are commonly used:
+  \begin{itemize}
+    \item The function $f: X \to Y$ is called a~\uline{partial function} if there may exist points $x \in X$ without a value $f(x)$. In this context,
+    \begin{itemize}
+      \item the \uline{domain of $f$} refers only to the points of $X$ that have values.
+      \item standard functions are called~\uline{total functions}.
+    \end{itemize}
+
+    These notions are rarely used outside of logic.
+
+    \item Functions of the type $f: X \to \PS Y$, usually denoted as $f: X \MultTo Y$, are called ~\uline{multi-valued or set-valued mappings} between $X$ and $Y$ (these are usually referred to as mappings rather than functions). In this context,
+    \begin{itemize}
+      \item the \uline{domain of $f$} is defined as
+      \begin{align*}
+        \Dom f \coloneqq \{ x \in X \colon f(x) \neq \varnothing \}
+      \end{align*}
+      and if $\Dom f = X$, we call $f$ a \uline{total multi-valued function}.
+
+      \item the \uline{image of a set $A$ under $f$} is defined as
+      \begin{align*}
+        f(A) = \cup_{a \in A} f(a).
+      \end{align*}
+
+      \item partial functions are called~\uline{single-valued functions} and if a partial function $g: X \to Y$ agrees with a multi-valued function $f: X \MultTo Y$, i.e.
+      \begin{align*}
+        \forall x \in \Dom f, g(x) \in f(x),
+      \end{align*}
+      then $g$ is called a \uline{selection of $f$}.
+
+      \item if $f$ is total then the selections of $f$ are total functions
+
+      \item if the value $f(x)$ of each point $x \in X$ is a singleton set, we call $f$~\uline{single-valued} and generally do not distinguish between $f$ or its selection.
+    \end{itemize}
+  \end{itemize}
+\end{definition}
+
+\begin{definition}[Invertability]\label{def:function_invertability}
+  Let $f: X \to Y$ be a function. We define the \uline{inverse multi-valued function} as
+  \begin{align*}
+    &f^{-1} : Y \MultTo X \\
+    &f^{-1}(y) \coloneqq \{ x \in X \colon f(x) = y \}.
+  \end{align*}
+
+  The set $f^{-1}(y)$ is called the \uline{preimage} of $y$.
+
+  We list equivalent conditions for three types of invertability:
+  \begin{itemize}
+    \item $f$ is called \uline{injective}, \uline{left-invertible} or \uline{one-to-one} if either
+    \begin{defenum}
+      \item different points in $X$ have different images under $f$
+      \item the preimage of any point in $Y$ is either empty or a singleton
+      \item there exists a function $g: Y \to X$ such that $g \circ f = \Id_Y$
+      \item the inverse is a single-valued partial function
+    \end{defenum}
+
+    Special notations include $f: X \rightarrowtail Y$ and $f: X \hookrightarrow Y$.
+
+    \item $f$ is called \uline{surjective}, \uline{right-invertible} or \uline{onto} if either
+    \begin{defenum}
+      \item each point in $Y$ is the image of at least one point in $X$
+      \item the image of $f$ equals the range of $f$
+      \item there exists a function $g: Y \to X$ such that $f \circ g = \Id_X$
+      \item the inverse is total
+    \end{defenum}
+
+    Special notations include $f: X \twoheadrightarrow Y$.
+
+    \item $f$ is called \uline{bijective} or simple \uline{invertible} if either
+    \begin{defenum}
+      \item it is both injective and surjective
+      \item each point in $Y$ is the image of exactly one point in $X$
+      \item the preimage of any point in $Y$ is a singleton
+      \item there exists a function $g: Y \to X$ such that both $f \circ g = \Id_X$ and $g \circ f = \Id_Y$
+      \item the inverse is a single-valued total function
+    \end{defenum}
+
+    Special notations include $f: X \longleftrightarrow Y$.
+  \end{itemize}
+
+  If $f : X \MultTo Y$ is a multi-valued mapping, we can define two types of preimages for a set $B \subseteq Y$:
+  \begin{defenum}
+    \item The \uline{small preimage},
+    \begin{align*}
+      f_{-1}(B) \coloneqq \{ x \in X \colon f(x) \subseteq B \}.
+    \end{align*}
+
+    \item The \uline{large preimage},
+    \begin{align*}
+      f^{-1}(B) \coloneqq \{ x \in X \colon f(x) \cap B \neq \varnothing \}.
+    \end{align*}
+  \end{defenum}
+
+  Obviously $f_{-1}(B) \subseteq f^{-1}(B)$. The two types of preimages coincide for single-valued mappings.
+\end{definition}
+
+\begin{definition}[Function graphs]\label{def:function_graphs}
+  Let $f: X \to Y$ be a function. We define the \uline{graph of $f$} to be the set
+  \begin{align*}
+    \Gr f \coloneqq \{ (x, y) \in X \times Y \colon f(x) = y \},
+  \end{align*}
+  i.e. the underlying relation itself.
+
+  Function graphs allows to study functions geometrically, i.e. as subsets of a space with a certain geometric structure. In low-dimensional spaces, function graphs can be plotted graphically to ease this study.
+
+  In the case that $Y$ is an ordered set, usually $\R$, we also define the \uline{epigraph of f}
+  \begin{align*}
+    \Epi f \coloneqq \{ (x, y) \in X \times Y \colon y \geq f(x) \},
+  \end{align*}
+
+  and the \uline{hypograph of f}
+  \begin{align*}
+    \Hyp f \coloneqq \{ (x, y) \in X \times Y \colon y \leq f(x) \},
+  \end{align*}
+\end{definition}
