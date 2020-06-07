@@ -2,7 +2,7 @@ COMPILER := latexmk -cd -interaction=nonstopmode -bibtex
 
 .PHONY: clean
 
-src/index.pdf: src/index.tex src/references.bib src/common/*.sty src/*/*/*.tex
+src/index.pdf: src/*.tex src/references.bib src/common/*.sty
 	${COMPILER} src/index.tex -pdf
 
 clean:

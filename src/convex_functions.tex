@@ -1,0 +1,121 @@
+\begin{definition}\label{def:convex_functions}
+  Let $D$ be a convex subset of the real Banach space $X$. A function $f: D \to \R$ is called \uline{convex} if any of the following equivalent conditions hold:
+
+  \begin{defenum}
+    \item\label{def:convex_functions/ineq} For any two points $x, y \in D$ and any $t \in [0, 1]$ we have
+    \begin{align*}
+      f(tx + (1-t)y) \leq tf(x) + (1-t)f(y).
+    \end{align*}
+
+    \item\label{def:convex_functions/epi} The epigraph (see~\cref{def:logic:sets:functions:graphs})
+    \begin{align*}
+      \Epi f \coloneqq \{ (x, a) \in X \times \R \colon f(x) \leq a \}
+    \end{align*}
+    is convex.
+  \end{defenum}
+\end{definition}
+\begin{proof}
+  Let $x, y \in D$ and let $t \in [0, 1]$.
+
+  ($\ref{def:convex_functions/ineq} \implies \ref{def:convex_functions/epi}$) Let $\Epi f$ be a convex set. Obviously $(x, f(x)) \in D$ and $(y, f(y)) \in D$. By the convexity of $\Epi f$, we have
+  \begin{align*}
+    f(tx + (1-t)y) \leq tf(x) + (1-t)f(y).
+  \end{align*}
+
+  Thus $f$ is a convex function.
+
+  ($\ref{def:convex_functions/epi} \implies \ref{def:convex_functions/ineq}$) Let $f$ be convex. Let $a \geq f(x)$ and $b \geq f(y)$ so that $(x, a) \in \Epi f$ and $(y, b) \in \Epi f$. Hence
+  \begin{align*}
+    f(tx + (1-t)y) \leq tf(x) + (1-t)f(y) \leq ta + (1-t)b,
+  \end{align*}
+  which implies that
+  \begin{align*}
+    (tx + (1-t)y, ta + (1-t)b) \in \Epi f.
+  \end{align*}
+
+  Thus $\Epi f$ is a convex set.
+\end{proof}
+
+\begin{lemma}
+  \label{thm:convex_difference_quotient_grows}
+  For every point $x \in X$ and every direction $h \in X$ the difference quotient is a monotone function of $t > 0$, i.e. for $0 < s < t$
+  \begin{align*}
+    \frac {f(x + sh) - f(x)} s
+    \leq
+    \frac {f(x + th) - f(x)} t
+  \end{align*}
+\end{lemma}
+\begin{proof}
+  \begin{align*}
+    \frac {f(x + sh) - f(x)} s
+    =
+    \frac t s \frac {f(x + \frac s t t h) - f(x)} t
+    =
+    \frac t s \frac {f\left(\frac s t (x + th) + (1 - \frac s t) x \right) - f(x)} t
+    \leq \\ \leq
+    \frac t s \frac {\frac s t f(x + t h) + (1 - \frac s t) f(x) - f(x)} t
+    =
+    \frac t s \frac s t \frac {f(x + th) - f(x)} t
+    =
+    \frac {f(x + th) - f(x)} t
+  \end{align*}
+\end{proof}
+
+\begin{proposition}
+  \label{thm:convex_one_sided_derivatives_exist}
+  For every point $x \in X$ and every direction $h \in X$ the one-sided derivative $f_+'(x)(h)$ exists.
+\end{proposition}
+\begin{proof}
+  We use the convexity of $f$ to obtain
+  \begin{align*}
+    f(x) = f \left(x + \frac {th} 2 - \frac {th} 2 \right) \leq \frac {f(x + th) + f(x - th)} 2,
+    \\
+    0 \leq [f(x - th) - f(x)] + [f(x + th) - f(x)],
+    \\
+    -[f(x - th) - f(x)] \leq [f(x + th) - f(x)],
+    \\
+    -\frac {f(x + t(-h)) - f(x)} t \leq \frac {f(x + th) - f(x)} t,
+  \end{align*}
+  thus the difference quotient in $f_+'(x)(h)$ is bounded below by the difference quotient for $-f_+'(x)(-h)$.
+
+  \Cref{thm:convex_difference_quotient_grows} implies that the right difference quotient is non-increasing, thus both limits exist and
+  \begin{align*}
+    -f_+'(x)(-h) \leq f_+'(x)(h).
+  \end{align*}
+\end{proof}
+
+\begin{proposition}
+  \label{thm:convex_one_sided_derivative_is_max}
+  For every direction $h \in X$, we have that
+  \begin{align*}
+    f_+'(x)(h) = \max\{ \Prod {x^*} h \colon x^* \in \partial f(x) \}.
+  \end{align*}
+\end{proposition}
+% TODO: prove
+
+\begin{theorem}
+  \label{thm:singleton_subdifferential_implies_gateaux}
+  If the subdifferential $\partial f(x)$ at $x \in X$ is a singleton with element $x^*$, then $f$ is Gateaux differentiable at $x$ and $f_G'(x) = x^*$.
+\end{theorem}
+\begin{proof}
+  Let $h \in X$ be arbitrary.~\Cref{thm:convex_one_sided_derivatives_exist} implies that the one-sided derivatives $f_+'(x)(-h)$ and $f_+'(x)(h)$ exist and
+  \begin{align*}
+    -f_+'(x)(-h) \leq f_+'(x)(h).
+  \end{align*}
+
+  Assume that $f$ is not Gateaux differentiable at $x$, i.e. for some $h_0 \in X$, we have a strict inequality. Then by~\cref{thm:convex_one_sided_derivative_is_max}
+  \begin{align*}
+    \min\{ \Prod {x^*} {h_0} \colon x^* \in \partial f(x) \}
+    =
+    -\max\{ \Prod {x^*} {-h_0} \colon x^* \in \partial f(x) \}
+    =
+    -f_+'(x)(-h_0)
+    < \\ <
+    f_+'(x)(h_0)
+    =
+    \max\{ \Prod {x^*} {h_0} \colon x^* \in \partial f(x) \},
+  \end{align*}
+  which implies that there is more that one functional $x^* \in \partial_C f(x)$. This contradicts the assumption of the theorem.
+
+  Thus $f$ is Gateaux differentiable at $x$.
+\end{proof}
