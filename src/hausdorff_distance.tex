@@ -1,1 +1,97 @@
-Let $(X, \rho)$ be a metric space. Let $\B$ be the family of bounded sets in $X$.
+Let $(X, \rho)$ be a metric space.
+
+\begin{definition}\label{def:hausdorff_distance}(\cite[27]{Dontchev2020})
+  Fix two sets $E \subseteq X$ and $F \subseteq X$.
+
+  The~\uline{ordinary distance from a point $x \in X$ to $E$} is defined as
+  \begin{align*}
+    &d: X \times \PS X \to \R \cup \{ \infty \}
+    \\
+    &d(x, E) \coloneqq \begin{cases}
+      +\infty, &E = \varnothing, \\
+      \inf_{y \in F} \rho(x, y), &E \neq \varnothing.
+    \end{cases}
+  \end{align*}
+
+  The~\uline{excess of $E$ beyond $F$} is defined as
+  \begin{align}\label{equ:hausdorff_excess_def}
+    &e: \PS X \times \PS X \to \R \cup \{ \infty \} \\ \nonumber
+    &e(E, F) \coloneqq \begin{cases}
+      +\infty, &E = \varnothing, D = \varnothing \\
+      0, &E = \varnothing, D \neq \varnothing \\
+      \sup_{x \in E} d(x, F) \stackrel{(\ref{equ:hausdorff_excess_def})}{=} \inf \{\delta > 0 \colon E \subseteq F_\delta \}, &E \neq \varnothing \nonumber\refstepcounter{equation}
+    \end{cases}
+  \end{align}
+  where $F_\delta \coloneqq \{ y \in X \colon d(y, F) \leq \delta \}$.
+
+  The~\uline{Pompeiu-Hausdorff distance} or simply~\uline{Hausdorff} distance between them is then defined as
+  \begin{align*}
+    h(E, F) \coloneqq \max\{ e(E, F), e(F, E) \} = \inf \{\delta > 0 \colon E \subseteq F_\delta, F \subseteq E_\delta \}.
+  \end{align*}
+\end{definition}
+\begin{proof}(of \ref{equ:hausdorff_excess_def})
+  Note that the set
+  \begin{align*}
+    F_{e(E, F)} = \{ x \in X \colon d(x, F) \leq \sup_{x \in E} d(x, F) \}
+  \end{align*}
+  obviously includes $E$.
+
+  Now let $\delta > 0$ be any real number that satisfies $E \subseteq F_\delta$, i.e.
+  \begin{align*}
+    E \subseteq F_\delta = \{ x \in X \colon d(x, F) \leq \delta \},
+  \end{align*}
+  which implies that
+  \begin{align*}
+    e(E, F) = \sup_{x \in E} d(x, F) \leq \delta.
+  \end{align*}
+\end{proof}
+
+\begin{proposition}
+  The Hausdorff distance is a metric on the nonempty compact subsets of $X$.
+\end{proposition}
+\begin{proof}
+  Let $E$, $F$ and $G$ be nonempty compact subsets of $X$.
+
+  The function $h$ is nonnegative. Since we exclude empty and unbounded sets, We do not care about infinite values.
+
+  \begin{description}
+    \item[Identity] Obviously $h(E, E) = 0$. If $h(E, F) = 0$, then there exists no point of $E$ outside of $F$ and vice versa, hence $E = F$.
+    \item[Symmetry] This follows from the symmetry of the $\max$ function.
+    \item[Subadditivity] For any point $y \in X$, we have
+    \begin{align*}
+      d(x, G)
+      =
+      \inf_{z \in G} \rho(x, z)
+      \leq
+      \rho(x, y) + \inf_{y \in G} \rho(y, z)
+      =
+      \rho(x, y) + d(y, G).
+    \end{align*}
+
+    Select $y \in F$ that minimizes the distance $\rho(x, y)$ over $F$ (compactness allows us), so that % TODO: Prove Weierstrass' theorem
+    \begin{align*}
+      d(x, G)
+      \leq
+      \rho(x, y) + d(y, G)
+      =
+      d(x, F) + d(y, G)
+      \leq
+      d(x, F) + e(F, G).
+    \end{align*}
+
+    It now follows that
+    \begin{align*}
+      e(E, G)
+      &=
+      \inf \{\delta > 0 \colon E \subseteq G_\delta \}
+      = \\ &=
+      \inf \{\delta > 0 \colon E \subseteq \{ x \in X \colon d(x, G) \leq \delta \}
+      \leq \\ &\leq
+      \inf \{\delta > 0 \colon E \subseteq \{ x \in X \colon d(x, F) + e(F, G) \leq \delta, y \in X \}
+      = \\ &=
+      e(F, G) + \inf \{\delta > 0 \colon E \subseteq F_\delta \}
+      = \\ &=
+      e(F, G) + e(E, F).
+    \end{align*}
+  \end{description}
+\end{proof}
