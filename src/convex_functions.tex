@@ -40,6 +40,51 @@ Let $X$ be a Hausdorff topological vector space (see~\cref{def:topological_vecto
   Thus $\Epi f$ is a convex set.
 \end{proof}
 
+\begin{proposition}\label{thm:convex_subdifferential_is_convex_and_weak*_closed}(\cite[exercise 1.10]{Phelps1993})
+  For any convex function $f$ and any $x \in D$, the set $\partial f(x)$ is convex and weak* closed.
+\end{proposition}
+\begin{proof}
+  Fix $x \in D$. If $\partial f(x)$ is empty, then the theorem is trivially true.
+
+  Suppose it is nonempty and $y^*, z^* \in \partial f(x)$. For any $x \in D$ we then have
+  \begin{align*}
+    \begin{cases}
+      &\Prod{y^*} {x - x} \leq f(x) - f(x), \\
+      &\Prod{z^*} {x - x} \leq f(x) - f(x).
+    \end{cases}
+  \end{align*}
+
+  Fix $t \in [0, 1]$ and $x \in D$. It follows that
+  \begin{align*}
+    \Prod{t y^* + (1-t) z^*} {x - x}
+    &=
+    t \Prod{y^*} {x - x} + (1-t) \Prod{z^*} {x - x}
+    \leq \\ &\leq
+    t [f(x) - f(x)] + (1-t) [f(x) - f(x)]
+    = \\ &=
+    f(x) - f(x),
+  \end{align*}
+  thus $t y^* + (1-t)z^* \in \partial f(x)$ and hence $\partial f(x)$ is convex.
+
+  To prove weak*-closedness, we consider the decomposition
+  \begin{align*}
+    \partial f(x)
+    &=
+    \{ x^* \in E^* \colon \forall x \in D, \Prod {x^*} {x - x} \leq f(x) - f(x) \}
+    = \\ &=
+    \bigcap_{x \in D} \{ x^* \in E^* \colon \Prod {x^*} {x - x} \leq f(x) - f(x) \}
+    = \\ &=
+    \bigcap_{x \in D} L(x)^{-1} (-\infty, f(x) - f(x)],
+  \end{align*}
+  where
+  \begin{align*}
+    L: E \to E^{**}
+    L(x)(x^*) = \Prod {x^*} {x - x}.
+  \end{align*}
+
+  For each $x \in E$, the functionals $L(x)$ are weak*-to-weak continuous because the image $L(E) \subseteq E^{**}$ is isometrically isomorphic to a translation of $E$. Hence the preimage $L(x)^{-1} (-\infty, f(x) - f(x)]$ is closed and $\partial f(x)$ is weak*-closed as the intersection of weak*-closed sets.
+\end{proof}
+
 \begin{lemma}
   \label{thm:convex_difference_quotient_grows}
   For every point $x \in X$ and every direction $h \in S_X$ the difference quotient is a monotone function of $t > 0$, i.e. for $0 < s < t$
@@ -65,8 +110,7 @@ Let $X$ be a Hausdorff topological vector space (see~\cref{def:topological_vecto
   \end{align*}
 \end{proof}
 
-\begin{proposition}
-  \label{thm:convex_one_sided_derivatives_exist}
+\begin{proposition}\label{thm:convex_one_sided_derivatives_exist}
   For every point $x \in X$ and every direction $h \in S_X$ the one-sided derivative $f_+'(x)(h)$ exists.
 \end{proposition}
 \begin{proof}
@@ -88,6 +132,42 @@ Let $X$ be a Hausdorff topological vector space (see~\cref{def:topological_vecto
   \end{align*}
 \end{proof}
 
+\begin{proposition}\label{thm:convex_one_sided_derivatives_sublinear}
+  For every point $x \in X$ and every direction $h \in S_X$ the one-sided derivative $f_+'(x)(h)$ is a sublinear functional.
+\end{proposition}
+\begin{proof}\mbox{} % TODO: Define sublinear functionals
+  \begin{description}
+    \item[Positive homogeneity] For $\lambda > 0$ the equality $f_+'(x)(\lambda h) = \lambda f_+'(x)(h)$ follows from
+    \begin{align*}
+      \frac {f(x + t \lambda h) - f(x)} t
+      =
+      \lambda \frac {f(x + t \lambda h) - f(x)} {t \lambda}
+    \end{align*}
+
+    \item[Subadditivity] It follows directly from
+    \begin{align*}
+      \frac {f(x + t(a + b)) - f(x)} t
+      &=
+      \frac {f(\tfrac 1 2 (x + 2ta) + \tfrac 1 2 (x + 2tb)) - f(x)} t
+      \leq \\ &\leq
+      \frac {\tfrac 1 2 f(x + 2ta) + \tfrac 1 2 f(x + 2tb) - f(x)} t
+      = \\ &=
+      \frac {f(x + 2ta) - f(x)} {2t} + \frac {f(x + 2tb) - f(x)} {2t}.
+    \end{align*}
+  \end{description}
+\end{proof}
+
+\begin{corollary}\label{thm:convex_one_sided_derivative_negative_inequality}
+  \begin{align*}
+    -f_+'(x)(-h) \leq f_+'(x)(h)
+  \end{align*}
+\end{corollary}
+\begin{proof}
+  \begin{align*}
+      0 = f_+'(x)(h + (-h)) \leq f_+'(x)(h) + f_+'(x)(-h)
+  \end{align*}
+\end{proof}
+
 \begin{proposition}\label{thm:convex_iff_subdifferential_nonempty}
   The continuous function $f: D \to X$ is convex if and only if its subdifferential $\partial f(x)$ (see \cref{def:subdifferentials/convex}) is nonempty for every $x$ in $D$.
 \end{proposition}
@@ -95,7 +175,7 @@ Let $X$ be a Hausdorff topological vector space (see~\cref{def:topological_vecto
 
 \begin{proposition}
   \label{thm:convex_one_sided_derivative_is_max}
-  For every direction $h \in X$, we have that
+  For every direction $h \in S_X$, we have that
   \begin{align*}
     f_+'(x)(h) = \max\{ \Prod {x^*} h \colon x^* \in \partial f(x) \}.
   \end{align*}
@@ -105,7 +185,7 @@ Let $X$ be a Hausdorff topological vector space (see~\cref{def:topological_vecto
   If $f$ is continuous and if the subdifferential $\partial f(x)$ at $x \in X$ is a singleton with element $x^*$, then $f$ is Gateaux differentiable at $x$ and $f_G'(x) = x^*$.
 \end{theorem}
 \begin{proof}
-  Let $h \in X$ be arbitrary.~\Cref{thm:convex_one_sided_derivatives_exist} implies that the one-sided derivatives $f_+'(x)(-h)$ and $f_+'(x)(h)$ exist and
+  Let $h \in S_X$ be arbitrary.~\Cref{thm:convex_one_sided_derivatives_exist} implies that the one-sided derivatives $f_+'(x)(-h)$ and $f_+'(x)(h)$ exist and
   \begin{align*}
     -f_+'(x)(-h) \leq f_+'(x)(h).
   \end{align*}
@@ -125,4 +205,197 @@ Let $X$ be a Hausdorff topological vector space (see~\cref{def:topological_vecto
   which implies that there is more that one functional $x^* \in \partial_C f(x)$. This contradicts the assumption of the theorem.
 
   Thus $f$ is Gateaux differentiable at $x$.
+\end{proof}
+
+\begin{theorem}\label{thm:rn_continuous_convex_partial_derivatives_imply_gateaux}(\cite[exercise 1.15(b)]{Phelps1993})
+  In $\R^n$, the existence of the partial derivatives at $x$ for a continuous convex function $f: D \to \R$ at a point $x \in D$ implies Gateaux differentiability.
+\end{theorem}
+\begin{proof}
+  Let $D \subseteq \R^n$ be an open and convex set and let $f: D \to \R$ be continuous and convex. Then $f_+'(x)$ exists everywhere by~\cref{thm:convex_one_sided_derivatives_exist} and is a subdifferential functional by~\cref{thm:convex_one_sided_derivatives_sublinear}.
+
+  Let $e_1, \ldots, e_n$ be the canonical basis for $\R^n$.
+
+  The partial derivatives
+  \begin{align*}
+    \frac {\partial f} {\partial x_i} (x)
+    \coloneqq
+    \lim_{t \to 0} \frac {f(x + t e_i) - f(x)} t
+    =
+    f_+'(x)(e_i)
+  \end{align*}
+  exist, hence the projections of $f_+'(x)$ along the coordinate exes are linear.
+
+  Define line linear functional
+  \begin{align*}
+    l(h) \coloneqq \sum_{i=1}^n h_i \Prod{\frac {\partial f} {\partial x_i} (x)} h,
+  \end{align*}
+  where $h_1, \ldots, h_n$ are the coordinates of $h$ along $e_1, \ldots, e_n$.
+
+  We will show that $l \equiv f_+'$. Fix $h \in S_X$. We have
+  \begin{align}\label{thm:rn_continuous_convex_partial_derivatives_imply_gateaux/diff_dominated}
+    f_+'(x)(h)
+    &=
+    f_+'(x)\left(\sum_{i=1}^n h_i e_i \right)
+    \overset {\text{sublinearity}} \leq \nonumber \\ &\leq
+    \sum_{i=1}^n f_+'(x)(h_i e_i)
+    \overset {\text{linearity along } e_i} = \nonumber \\ &=
+    \sum_{i=1}^n h_i f_+'(x)(e_i)
+    =
+    \sum_{i=1}^n h_i \Prod{\frac {\partial f} {\partial x_i} (x)} h.
+  \end{align}
+
+  Thus
+  \begin{align*}
+    \Prod l h
+    =
+    -\Prod l {-h}
+    \overset {\cref{thm:rn_continuous_convex_partial_derivatives_imply_gateaux/diff_dominated}} \leq
+    -f_+'(x)(-h)
+    \overset {\text{\cref{thm:convex_one_sided_derivative_negative_inequality}}} \leq
+    f_+'(x)(h)
+    \overset {\cref{thm:rn_continuous_convex_partial_derivatives_imply_gateaux/diff_dominated}} \leq
+    \Prod l h,
+  \end{align*}
+  i.e. $f_+'(x)(h) = \Prod l h$ for all $h \in S_X$, hence $f_+'(x)$ is a linear functional and $f$ is Gateaux differentiable at $x$.
+\end{proof}
+
+\begin{theorem}\label{thm:rn_continuous_convex_gateaux_implies_frechet}(\cite[exercise 1.15(a)]{Phelps1993})
+  In $\R^n$, Gateaux differentiability of a continuous convex function $f: D \to \R$ at a point $x \in D$ implies Frechet differentiability.
+\end{theorem}
+\begin{proof}
+  Since $f$ is Gateaux differentiable (\cref{def:differentiability/gateaux}) at $x$, the derivative $f'(x) = f_+'(x)$ is linear.
+
+  Because $f$ is continuous and convex, it is locally Lipschitz with constant $L$ in some $\delta$-ball with center $x$.
+
+  Suppose\LEM\ that $f$ is not Frechet differentiable at $x$. Inverting the condition in~\cref{def:differentiability/frechet}, we obtain that there exist $\varepsilon > 0$ and a sequence $\{ h_n \}_n \subseteq B(x, \delta) \setminus \{ 0 \}$ such that $\Norm{h_n} \to 0$ and yet for all $n \in \ZPos$,
+  \begin{align}\label{thm:rn_continuous_convex_gateaux_implies_frechet/frechet_assumption}
+    \Abs{f(x + h_n) - f(x) - \Prod{f'(x)} {h_n}} > \varepsilon \Norm{h_n}.
+  \end{align}
+
+  Define
+  \begin{align*}
+    t_n \coloneqq \Norm{h_n}
+    &&
+    u_n \coloneqq \frac{h_n} {\Norm {h_n}}.
+  \end{align*}
+
+  Obviously $t_{n_k} \downarrow 0$. The vectors $h_n$ are linearly independent since otherwise $f$ would not be Gateaux differentiable at $x$, hence $u_n$ are not all equal.
+
+  Since $S_{\R^n}$ is compact\USC, by the Bolzano-Weierstrass theorem, there exists a convergent subsequence $\{ u_{n_k} \}_k \underset {k \to \infty} \to u_0$ of $\{ u_n \}_n$. We have
+
+  \begin{align}\label{thm:rn_continuous_convex_gateaux_implies_frechet/frechet_estimate}
+    &\phantom= \Abs{\frac {f(x + t_{n_k} u_{n_k}) - f(x)} {t_{n_k}} - \Prod{f'(x)} {u_{n_k}}}
+    \leq \nonumber
+    \Abs{\frac {f(x + t_{n_k} u_{n_k}) - f(x + t_{n_k} u_0)} {t_{n_k}}} + \\ &+ \Abs{\frac {f(x + t_{n_k} u_0) - f(x)} {t_{n_k}} - \Prod{f'(x)} {u_0}} + \Abs{\Prod{f'(x)} {u_0 - u_{n_k}}}
+    \leq \nonumber \\ &\leq
+    L \Norm{u_{n_k} - u_0} + \Abs{\frac {f(x + t_{n_k} u_0) - f(x)} {t_{n_k}} - \Prod{f'(x)} {u_0}} + \Norm{f'(x)} \Norm{u_0 - u_{n_k}}.
+  \end{align}
+
+  Fix $\delta > 0$. Because of the Gateaux differentiable of $f$ at $x$, we can pick $k_0$ such that
+  \begin{align*}
+    \Abs{\frac {f(x + t_{n_{k_0}} u_0) - f(x)} {t_{n_{k_0}}} - \Prod{f'(x)} {u_0}} < \delta.
+  \end{align*}
+
+  Because $\{ u_{n_k} \}_k$ converges to $u_0$, we can choose $k_1$ such that
+  \begin{align*}
+    \Norm{u_0 - u_{n_{k_1}}} < \delta.
+  \end{align*}
+
+  Thus for $k > \max \{ k_0, k_1 \}$,~\cref{thm:rn_continuous_convex_gateaux_implies_frechet/frechet_estimate} is bounded by
+  \begin{align*}
+    \Abs{\frac {f(x + t_{n_k} u_{n_k}) - f(x)} {t_{n_k}} - \Prod{f'(x)} {u_{n_k}}}
+    \leq
+    (L + 1 + \Norm{f'(x)}) \delta.
+  \end{align*}
+
+  It suffices to choose $\delta > 0$ so that
+  \begin{align*}
+    \delta < \frac 1 {L + 1 + \Norm{f'(x)}}
+  \end{align*}
+  in order to have, for $k > \max \{ k_0, k_1 \}$,
+  \begin{align*}
+    \Abs{\frac {f(x + t_{n_k} u_{n_k}) - f(x)} {t_{n_k}} - \Prod{f'(x)} {u_{n_k}}} < \varepsilon.
+  \end{align*}
+
+  But this contradicts~\cref{thm:rn_continuous_convex_gateaux_implies_frechet/frechet_assumption}, hence $f$ is Frechet differentiable at $x$.
+\end{proof}
+
+\begin{corollary}\label{thm:rn_continuous_convex_partial_derivatives_imply_frechet}
+  In $\R^n$, the existence of the partial derivatives at $x$ for a continuous convex function $f: D \to \R$ at a point $x \in D$ is equivalent to Frechet differentiability.
+\end{corollary}
+\begin{proof}
+  A direct consequence of and \cref{thm:rn_continuous_convex_partial_derivatives_imply_gateaux} and~\cref{thm:rn_continuous_convex_gateaux_implies_frechet}.
+\end{proof}
+
+\begin{theorem}\label{thm:rn_continuous_convex_frechet_almost_everywhere}(\cite[exercise 1.17]{Phelps1993})
+  In $\R^n$, continuous convex functions $f: D \to \R$ are differentiable almost everywhere.
+\end{theorem}
+\begin{proof}
+  For all $h \in S_X$ and small enough $t > 0$ we define
+  \begin{align*}
+    &\varphi_h^t: D \to \R
+    &\varphi_h^t(x) \coloneqq \frac {f(x + th) - f(x)} t
+  \end{align*}
+  and $\varphi_h(x) \coloneqq f_+'(x)(h) = \lim_{t \downarrow 0} \varphi_h^t(x)$.
+
+  Considered as functions of $x$, $\varphi_h^t$ are obviously continuous hence Borel measurable and so $\varphi_h$ is also Borel measurable.
+
+  Denote by
+  \begin{align*}
+    B_h
+    \coloneqq
+    \{ x \in D \colon -f_+'(x)(-h) < f_+'(x)(h) \}
+    =
+    \{ x \in D \colon -\varphi_{-h}(x) - \varphi_h(x) < 0 \}
+  \end{align*}
+  the set of points $x \in D$ where the one-sided derivative $f_+'(x)(h)$ is not linear, given a fixed direction $h \in S_X$. If $B_h$ is nonempty, $f$ is not differentiable at $x$.
+
+  The sets $B_h$ are Borel sets since they are the preimages of $(-\infty, 0)$ under a Borel function. We will show that it is a null set for every direction $h$.
+
+  Fix $h \in S_X$. Denote by $\delta_x \coloneqq \sup \{ t > 0 \colon x + th \in D \}$.
+
+  The function $t \mapsto f(x + th)$ is a convex function of one variable. By \cite[theorem 1.16]{Phelps1993}, it is differentiable $\mu_1$-almost everywhere in $[0, \delta_x)$, where $\mu_m$ is the Lebesgue $m$-measure.
+
+  Denote
+  \begin{align*}
+    &H \coloneqq \Span\{ h \} \equiv \R^1,
+    \\
+    &H^\perp \equiv \R^{n-1} \text{ - the orthogonal complement of $H$ in $\R^n$},
+    \\
+    &L_x \coloneqq \{ x + th, 0 \leq t < \delta_x \} - half-open segments in D.
+  \end{align*}
+
+  THe whole domain $D$ can be represented as $D = \cup \{ L_x \colon x \in H^\perp \}$.
+
+  We can now use Fubini's theorem to show that $B_h$ is a null set:
+  \begin{align*}
+    \mu_n(B_h)
+    =
+    \int_{B_h} dz
+    =
+    \int_{\R^n = H^\perp \oplus H} \Ind_{B_h} (z) dz
+    =
+    \int_{H^\perp} \int_{L_x} \Ind_{B_h} (y) dy dx
+    = \\ =
+    \int_{H^\perp} \mu_1(B_h \cap L_x) dx
+    =
+    \int_{H^\perp} 0 dx
+    =
+    0.
+  \end{align*}
+
+  Hence for all $h \in S_X$, $-f_+'(x)(-h) = f_+'(x)(h)$ for almost all $x \in D$.
+
+  In particular, if $e_1, \ldots, e_n$ is the canonical basis of $\R^n$, the $i$-th partial derivative $\frac{\partial f} {\partial x_i} (x)$ exists only in $D \ B_{e_i}$.
+
+  The gradient
+  \begin{align*}
+    \nabla f(x) = \left( \frac{\partial f} {\partial x_1} (x), \ldots, \frac{\partial f} {\partial x_n} (x) \right)
+  \end{align*}
+  then exists in
+  \begin{align*}
+    \hat D \coloneqq (D \ B_{e_1}) \cap \ldots \cap (D \ B_{e_n}) = D \setminus \left( \bigcup_{i=1}^n B_{e_i} \right).
+  \end{align*}
+
+  \Cref{thm:rn_continuous_convex_partial_derivatives_imply_frechet} then implies that $f$ is Frechet differentiable in $\hat D$, i.e. almost everywhere in $D$.
 \end{proof}
