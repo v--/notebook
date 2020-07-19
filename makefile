@@ -8,3 +8,4 @@ index.pdf: index.tex references.bib packages/*.sty src/*.tex
 clean:
 	$(COMPILER) index.tex -C
 	rm -fv *.run.xml # biber
+	rm -fv *.{aoc,lem,usc} # tocloft
