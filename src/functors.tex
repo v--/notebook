@@ -21,15 +21,68 @@
   we call $F$ a \uline{contravariant functor}. Equivalently, $F: \Bold A \to \Bold B$ is contravariant if and only if $F: \Bold{A}^{\Op} \to \Bold B$ is covariant.
 
   The \uline{identity functor} $\Id_A: \Bold A \to \Bold A$ simply maps a category to itself.
-
-  We also say that $F: \Bold A \to \Bold B$ is a \uline{diagram of shape $\Bold A$}.
 \end{definition}
+
+\begin{note}\label{note:image_of_functor_maybe_not_subcategory}
+  The \uline{image} $F(\Bold A)$ of a category $\Bold A$ under a functor $F: \Bold A \to \Bold B$ may not be a subcategory of $\Bold B$. A simple example is can be constructed as follows:
+
+  Let $\Bold A$ be a category with four objects $A, B, C, D$ and two morphisms $f: A \to B$ and $g: C \to D$. If $F(B) = F(C)$, then $F(f): F(A) \to F(B)$ and $F(g): F(B) \to F(D)$, however there is no morphism from $F(A)$ to $F(D)$. Thus the image $F(\Bold A)$ is not itself category.
+\end{note}
+
+\begin{definition}\label{def:categorical_diagram}
+  A generalization of set-indexed families (see \cref{def:indexed_family}) is given by diagrams. We fix a category $\Bold I$, called an \uline{index category}, which is often assumed to be small. A \uline{diagram of shape $\Bold I$} is then any functor $D: \Bold I \to \Bold A$, where $\Bold A$ is any other category.
+
+  It is often convenient to think of diagrams in terms of their images $D(\Bold I)$, which are selections of objects and morphisms in $\Bold A$. Note the image $D(\Bold I)$ may not be a subcategory of $\Bold A$ (see \cref{note:image_of_functor_maybe_not_subcategory}).
+\end{definition}
+
+\begin{example}\label{def:categorical_diagrams}
+  \mbox{}
+  \begin{defenum}
+    \item In the case when $\Bold I$ is a small discrete category, a diagram $D: \Bold I \to \Bold A$ is simply a mapping of each element $i$ of $\Bold I$ into an element of $\Bold A$, i.e. we can interpret any diagram of shape $\Bold I$ as a set-indexed family $\{ A_i \}_{i \in I}$, where all $A_i$ are objects in $\Bold A$.
+
+    \item If $\Bold I$ is not discrete, a diagram $D: \Bold I \to \Bold A$ also involves morphisms. For example, if $\Bold I$ is a three-object category with two morphisms as in the following picture
+    \begin{center}
+      \begin{tikzcd}
+        \bullet \arrow[r] & \bullet \arrow[r] & \bullet,
+      \end{tikzcd}
+    \end{center}
+    we can interpret a diagram $D$ of shape $\Bold I$ as a selection of objects and morphisms in $\Bold A$ that satisfy the same relations as in $\Bold I$:
+    \begin{center}
+      \begin{tikzcd}
+        A \arrow[r, "f"] & B \arrow[r, "g"] & C.
+      \end{tikzcd}
+    \end{center}
+  \end{defenum}
+\end{example}
+
+\begin{definition}\label{def:commutative_diagram}
+  A diagram $D$ is said to be \uline{commutative} if, whenever we have two chains of morphisms $X \overset {f_1} \to A_1 \overset {f_2} \to \ldots \overset {f_{n-1}} \to A_{n-1} \overset {f_n} \to Y$ and $X \overset {g_1} \to B_1 \overset {g_2} \to \ldots \overset {g_{m-1}} \to B_{m-1} \overset {f_m} \to Y$ in the diagram, where $n > 0$ and $m > 0$, then necessarily
+  \begin{align*}
+    f_n \circ \ldots \circ f_1 = g_m \circ \ldots \circ g_1.
+  \end{align*}
+
+  We also say that the diagram $D$ \uline{commutes}.
+\end{definition}
+
+\begin{example}\label{ex:commutative_diagrams}
+  Consider the diagram
+  \begin{center}
+    \begin{tikzcd}
+                         & A \arrow[ld, "f"'] \arrow[rd, "g"] & \\
+      B \arrow[rr, "h"'] &                                    & C
+    \end{tikzcd}
+  \end{center}
+
+  It is commutative if and only if $h \circ f = g$.
+
+  For a more convoluted example, see \cref{def:categorical_pullback}.
+\end{example}
 
 \begin{definition}\label{def:opposite_functor}\cite[definition 5.2.1]{Leinster2014}
   Given a functor $F: \Bold A \to \Bold B$, we define \uline{opposite or dual functor} $F^{\Op}: \Bold{A}^{\Op} \to \Bold{B}^{\Op}$ as
   \begin{itemize}
     \item $F^{\Op}(A) = F(A)$
-    \item $F^{\Op}(f^{\Op}: B \to A) = F(f: A \to B)$
+    \item $F^{\Op}(f^{\Op}: A' \to A) = F(f: A \to A')$
   \end{itemize}
 \end{definition}
 
@@ -51,13 +104,11 @@
   Analogously, $F(f) \circ F(f^{-1}) = \Id_{F(A')}$. Thus $F(f): F(A) \to F(A')$ is an isomorphism with inverse $F(f^{-1})$.
 \end{proof}
 
-\begin{definition}\label{def:forgetful_functor}\cite[example 1.2.3]{Leinster2014}
+\begin{note}\label{note:forgetful_free_functor}\cite[examples 1.2.3, 1.2.4]{Leinster2014}
   An informal notion is that of the \uline{forgetful functor}. A functor $F: \Bold A \to \Bold B$ is called forgetful if the images $F(A)$ of objects $A \in \Bold A$ have \enquote{less structure} than $A$. For example, a functor which maps topological spaces to their underlying sets is forgetful since it \enquote{forgets} about the topological structure.
-\end{definition}
 
-\begin{definition}\label{def:free_functor}\cite[example 1.2.4]{Leinster2014}
-  Another informal notion, which is dual to \cref{def:forgetful_functor}, is that of a \uline{free functor}. In contrast to forgetful functors which \enquote{remove structure}, free functors \enquote{add structure}. For example, a functor which maps a set to its corresponding discrete topological space is a free functor.
-\end{definition}
+  A dual informal notion is that of a \uline{free functor}. In contrast to forgetful functors which \enquote{remove structure}, free functors \enquote{add structure}. For example, a functor which maps a set to its corresponding discrete topological space is a free functor.
+\end{note}
 
 \begin{definition}\label{def:presheaf}\cite[definition 1.2.15]{Leinster2014}
   A \uline{presheaf} on the category $\Bold A$ is a contravariant functor
