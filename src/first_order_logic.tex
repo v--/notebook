@@ -1,0 +1,220 @@
+Many notions here must remain informal to avoid circular definitions. Most notably, the terms \uline{collection} and \uline{tuple} are informal. The idea of first-order logic (FOL) is to create a formal language whose semantics (given by structures) support boolean operations and can quantify over all elements of an ambient universe.
+
+We denote truth values by $T$ and false values by $F$.
+
+\begin{definition}\label{def:first_order_language}\cite[19]{Lectures:logic_programming}
+  A \uline{first-order language} or \uline{predicate logic language} $L$ consists of:
+  \begin{description}
+    \item[Logical symbols]
+    \mbox{}
+    \begin{enumerate}
+      \item A countable alphabet of variables $\Bold{Var}_L$, usually denoted by $x_0, x_1, \ldots$ or $x, y, z$
+
+      \item Boolean operations
+      \begin{itemize}
+        \item $\neg$ (negation)
+        \item $\land$ (conjunction)
+        \item $\lor$ (disjunction)
+        \item $\implies$ (implication)
+        \item $\iff$ (equivalence)
+      \end{itemize}
+
+      \item Quantifiers
+      \begin{itemize}
+        \item $\forall$ (universal quantifier)
+        \item $\exists$ (existential quantifier)
+      \end{itemize}
+
+      \item Parentheses for highlighting the order of operations
+
+      \item Optionally, an equality symbol $=$
+    \end{enumerate}
+
+    \item[Non-logical symbols]
+    \mbox{}
+    \begin{enumerate}
+      \item A collection of functional symbols, $\Bold{Func}_L$, whose elements are usually denoted by $f_0, f_1, \ldots$ or $f, g, h$. Each functional symbol has an associated natural number called its \uline{arity}, denoted by $\#_L f$. Functional symbols with a zero arity are called \uline{constants}.
+
+      \item A collection of predicate symbols, $\Bold{Pred}_L$, whose elements are usually denoted by $p_0, p_1, \ldots$ or by symbols like $\oplus$ or $\circ$. Predicate symbols also have an associated arity. Predicate symbols with zero arity are called \uline{propositional variables}.
+    \end{enumerate}
+  \end{description}
+\end{definition}
+
+\begin{example}\label{ex:algebraic_theory_language}\cite[remark 2.1.4]{Leinster2014},\cite[21]{Lectures:logic_programming}
+  Most algebraic structures (with the notable exception of fields) can be defined as first-order languages with equality, no predicates and a collection of functional symbols called \uline{algebraic operations}.
+  \begin{itemize}
+    \item Group theory has
+    \begin{itemize}
+      \item one zero-arity operation called its identity element $e$
+      \item one unitary operation $(\cdot)^{-1}$ called the inverse element
+      \item one binary operation $\oplus$ called the group operation
+    \end{itemize}
+
+    \item Linear algebra has
+    \begin{itemize}
+      \item one zero-arity operation called its zero element $0$
+      \item one binary operation $+$ called vector sum
+      \item for every scalar $\lambda$ in the underlying field, a unitary operation $\lambda \cdot$ called scalar multiplication by $\lambda$
+    \end{itemize}
+  \end{itemize}
+\end{example}
+
+\begin{definition}\label{def:first_order_terms}\cite[20]{Lectures:logic_programming}
+  Given a formal language $L$, the collection $\Cal{T}_L$ of terms is defined by structural induction as
+  \begin{itemize}
+    \item Each variable is a term
+    \item If $\tau_1, \ldots, \tau_n$ are terms and $f$ is a functional symbol with arity $n$, then the following word is also a term:
+    \begin{align*}
+      f(\tau_1, \ldots, \tau_n)
+    \end{align*}
+  \end{itemize}
+
+  In particular, constants are also terms.
+
+  Furthermore, to every term the corresponds either exactly one variable, or exactly one functional symbol with $n$ other uniquely determined terms.
+
+  For each term $\tau$, we define its variables as
+  \begin{align*}
+    \Bold{Free}(\tau) \coloneqq \begin{cases}
+      x,                                                        &\tau = x \in \Bold{Var}_L, \\
+      \Bold{Free}(\tau_1) \cup \ldots \cup \Bold{Free}(\tau_n), &\tau = f(\tau_1, \ldots, \tau_n).
+    \end{cases}
+  \end{align*}
+\end{definition}
+
+\begin{definition}\label{def:first_order_formulas}\cite[20]{Lectures:logic_programming}
+  Given a formal language $L$, we define the collection of atomic formulas as
+  \begin{itemize}
+    \item If $p$ is an n-ary predicate symbol and if $\tau_1, \ldots, \tau_n$ are terms, then $p(\tau_1, \ldots, \tau_n)$ is an atomic formula.
+    \item If $L$ has an equality symbol and if $\tau_1, \tau_2$ are terms, then $(\tau_1 = \tau_2)$ is an atomic formula.
+  \end{itemize}
+
+  The collection $\Cal{F}_L$ of predicate formulas is then defined as
+  \begin{itemize}
+    \item All atomic formulas are formulas
+    \item If $\varphi$ is a formula, its negation $\neg \varphi$ is also a formula
+    \item If $\varphi$ and $\psi$ are formulas, then the following are also formulas:
+    \begin{itemize}
+      \item $(\varphi \land \psi)$
+      \item $(\varphi \lor \psi)$
+      \item $(\varphi \implies \psi)$
+      \item $(\varphi \iff \psi)$
+    \end{itemize}
+    \item If $\varphi$ is a formula and $x$ is a variable, then the following are also formulas:
+    \begin{itemize}
+      \item $\forall x \varphi$
+      \item $\exists x \varphi$
+    \end{itemize}
+  \end{itemize}
+
+  Furthermore, every formula determines its constituent parts uniquely.
+
+  Collections of formulas are often called \uline{first-order theories}.
+
+  For each formula $\varphi$, we define its free and bound variables as
+  \begin{align*}
+    \Bold{Free}(\varphi) \coloneqq \begin{cases}
+      \Bold{Free}(\tau_1) \cup \ldots \cup \Bold{Free}(\tau_n), &\varphi = p(\tau_1, \ldots, \tau_n) \\
+      \Bold{Free}(\tau_1) \cup \Bold{Free}(\tau_2),             &\varphi = (\tau_1 = \tau_2), \\
+      \Bold{Free}(\psi),                                        &\varphi = \neg \psi, \\
+      \Bold{Free}(\psi_1) \cup \Bold{Free}(\psi_2),             &\varphi = \psi_1 \circ \psi_2, \circ \in \{ \land, \lor, \implies, \iff \}, \\
+      \Bold{Free}(\psi) \setminus \{ x \},                      &\varphi = Q x \psi, Q \in \{ \forall, \exists \}
+    \end{cases}
+  \end{align*}
+  and
+  \begin{align*}
+    \Bold{Bound}(\varphi) \coloneqq \begin{cases}
+      \Bold{Free}(\tau_1) \cup \ldots \cup \Bold{Free}(\tau_n), &\varphi = p(\tau_1, \ldots, \tau_n) \\
+      \Bold{Free}(\tau_1) \cup \Bold{Free}(\tau_2),             &\varphi = (\tau_1 = \tau_2), \\
+      \Bold{Bound}(\psi),                                       &\varphi = \neg \psi, \\
+      \Bold{Bound}(\psi_1) \cup \Bold{Bound}(\psi_2),           &\varphi = \psi_1 \circ \psi_2, \circ \in \{ \land, \lor, \implies, \iff \}, \\
+      \Bold{Bound}(\psi) \cup \{ x \},                          &\varphi = Q x \psi, Q \in \{ \forall, \exists \}.
+    \end{cases}
+  \end{align*}
+
+  A formula is called \uline{closed} if it has no bound variables.
+
+  If a formula $\varphi$ has free variables $\Bold{Free} = \{ x_1, \ldots, x_n \}$, a common convention is to write it as
+  \begin{align*}
+    \varphi(x_1, \ldots, x_n).
+  \end{align*}
+
+  This highlights that formulas with free variables can act as predicates, however their semantics are completely determined, unlike the semantics of predicates.
+\end{definition}
+
+\begin{definition}\label{def:first_order_substition}
+  Let $\varphi$ be a first-order formula with a free variable $y$ and $\rho$ be a term. We define the \uline{substitions}
+  \begin{align*}
+    \tau[y \to \rho] &\coloneqq \begin{cases}
+      \rho,                                              &\tau = y, \\
+      x,                                                 &\tau = x \in \Bold{Var}_L \setminus \{ y \}, \\
+      f(\tau_1[y \to \rho], \ldots, \tau_n[y \to \rho]), &\tau = f(\tau_1, \ldots, \tau_n).
+    \end{cases}
+    \\
+    \varphi[y \to \rho] &\coloneqq \begin{cases}
+      p(\tau_1[y \to \rho], \ldots, \tau_n[y \to \rho]), &\varphi = p(\tau_1, \ldots, \tau_n) \\
+      (\tau_1[y \to \rho] = \tau_2[y \to \rho]),         &\varphi = (\tau_1 = \tau_2), \\
+      \neg \psi[y \to \rho],                             &\varphi = \neg \psi, \\
+      \psi_1[y \to \rho] \circ \psi_2[x \to \rho],       &\varphi = \psi_1 \circ \psi_2, \circ \in \{ \land, \lor, \implies, \iff \}, \\
+      Q x \psi[y \to \rho] = T,                          &\varphi = Q x \psi, Q \in \{ \forall, \exists \}, x \not\in \Bold{Free}(\rho), \\
+      Q x \psi[y \to \rho[x \to z]] = T,                 &\varphi = Q x \psi, Q \in \{ \forall, \exists \}, x \in \Bold{Free}(\rho)
+    \end{cases}
+  \end{align*}
+  where in the last step $z \in \Bold{Var} \setminus \Bold{Free}(\rho)$.
+
+  In order to be able to substitute more that one variable simultaneously, we preliminarily rename colliding free variables and then rename them back after substitution.
+\end{definition}
+
+\begin{definition}\label{def:first_order_structure}\cite[25]{Lectures:logic_programming}
+  Fix a FOL language $L$. A \uline{structure} for $L$ consists of:
+  \begin{enumerate}
+    \item A nonempty set $A$.
+    \item For every $n$-ary function $f$, a function (see \cref{def:function}) $I(f): A^n \to A$ called the \uline{interpretation or evaluation of $f$}.
+    \item For every $n$-ary predicate $p$, a family of tuples $I(p) \subseteq A^n$ called the \uline{interpretation of $p$}, i.e. all tuples of values that satisfy the predicate within the structure.
+  \end{enumerate}
+\end{definition}
+
+\begin{definition}\label{def:first_order_variable_evaluation}\cite[25]{Lectures:logic_programming}
+  Fix a structure $\Cal{A} = (A, I)$ for a FOL language $L$. An \uline{evaluation for the variables of $L$} is any function $v: \Bold{Var}_L \to A$.
+
+  For every variable $x$ and every universe element $a \in A$ we also define the \uline{modified at $x$ with $a$ evaluation}
+  \begin{align*}
+    v_a^x(y) \coloneqq \begin{cases}
+      a,    &y = x, \\
+      v(y), &y \neq x.
+    \end{cases}
+  \end{align*}
+
+  This allows us to define semantics for all terms:
+  \begin{align*}
+    \tau[v] \coloneqq \begin{cases}
+      v(x),                               &\tau = x \in \Bold{Var}_L, \\
+      I(f)(\tau_1[v], \ldots, \tau_n[v]), &\tau = f(\tau_1, \ldots, \tau_n).
+    \end{cases}
+  \end{align*}
+  and all formulas:
+  \begin{align*}
+    \varphi[v] \coloneqq \begin{cases}
+      (\tau_1[v], \ldots, \tau_n[v]) \in I(p), &\varphi = p(\tau_1, \ldots, \tau_n) \\
+      \tau_1[v] = \tau_2[v],                   &\varphi = (\tau_1 = \tau_2), \\
+      \neg \psi[v],                            &\varphi = \neg \psi, \\
+      \psi_1[v] \circ \psi_2[v],               &\varphi = \psi_1 \circ \psi_2, \circ \in \{ \land, \lor, \implies, \iff \}, \\
+      Q a \in A, \psi[v_a^x] = T,              &\varphi = Q x \psi, Q \in \{ \forall, \exists \}.
+    \end{cases}
+  \end{align*}
+
+  If $\varphi[v] = T$, we say that \uline{$\varphi$ is true in $\Cal{A}$ under the evaluation $v$} and we write $\Cal{A} \models_v \varphi$. If $\varphi$ is true in $\Cal{A}$ under every evaluation, we say that \uline{$\varphi$ is true or valid in $\Cal{A}$} and we write $\Cal{A} \models \varphi$.
+
+  Given a formula $\varphi(x_1, \ldots, x_n)$, a common convention is to write
+  \begin{align*}
+    \varphi(a_1, \ldots, a_n) \coloneqq \varphi(x_1, \ldots, x_n)[v_{a_1, \ldots, a_n}^{x_1, \ldots, x_n}].
+  \end{align*}
+\end{definition}
+
+\begin{definition}\label{def:first_order_model}\cite[28]{Lectures:logic_programming}
+  A \uline{model} for a first-order theory $\Gamma$ in the FOL language $L$ is a structure $\Cal{A}$ such that there exists a single evaluation $v$ so that for every formula $\gamma \in \Gamma$, we have $\Cal{A} \models_v \gamma$. We write $\Cal{A} \models_v \Gamma$ or simply $\Cal{A} \models \Gamma$.
+\end{definition}
+
+\begin{definition}\label{def:first_order_consistent}
+  A first-order theory is \uline{consistent} if, under any evaluation in any structure, every formula is either true or false.
+\end{definition}
