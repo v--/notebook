@@ -1,0 +1,165 @@
+Propositional logic is a simple framework for describing relationships between statements. It is sometimes called boolean logic because of~\cref{thm:propositional_logic_boolean_algebra}.
+
+\begin{definition}\label{def:propositional_logic_language}\cite[3]{Lectures:logic_programming}
+  The language\Tinyref{def:language} of propositional logic consists of \uline{propositional formulas}, which are certain well-formed words over the alphabet consisting of
+  \begin{defenum}
+    \item\label{def:propositional_logic_language/prop} A nonempty set $\Bold{Prop}$ of \uline{propositional variables}.
+    \item\label{def:propositional_logic_language/negation} The \uline{negation} symbol $\neg$.
+    \item\label{def:propositional_logic_language/connectives} The \uline{propositional connectives} \uline{conjunction} $\land$ and \uline{disjunction} $\lor$ (we may additionally define other connectives like $\implies$ and $\iff$, however this will only clutter our formal language and make proofs more difficult).
+    \item\label{def:propositional_logic_language/parentheses} Parentheses $($ and $)$ for defining the order of operations unambiguously.
+  \end{defenum}
+
+  The propositional formulas $\Cal{F}_B$ are defined inductively as
+  \begin{itemize}
+    \item the variables in $\Bold{Prop}$ are formulas.
+    \item if $\varphi$ is a formula, then $\neg \varphi$ is a formula.
+    \item if $\varphi$ and $\psi$ are formulas, so are $(\varphi \land \psi)$ and $(\varphi \lor \psi)$.
+  \end{itemize}
+
+  Furthermore, we are able to determine every formula's constituent parts uniquely.
+
+  If $\varphi$ and $\psi$ are formulas and $\psi$ is a subword of $\varphi$, we say that $\psi$ is a \uline{subformula} of $\varphi$.
+\end{definition}
+
+\begin{definition}\label{def:conjunctive_normal_form}
+  We define \uline{literals} to either be propositional variables $L = P$ or negations $L = \neg P$ of propositional variables.
+
+  We define \uline{disjuncts} (resp. \uline{conjuncts}) to be finite disjunctions (resp. conjunctions) of literals, i.e.
+  \begin{align*}
+    (L_1 \lor (L_2 \lor (\ldots \lor L_n) \ldots ).
+  \end{align*}
+
+  We say that a propositional formula $\varphi$ is in \uline{conjunctive (resp. disjunctive) normal form (CNF)} if $\varphi$ is a finite conjunction of disjunctions (resp. finite disjunction of conjunctions).
+\end{definition}
+
+\begin{proposition}\label{thm:conjunctive_normal_form_reduction}
+  Every propositional formula $\varphi$ is Boolean equivalent\Tinyref{def:propositional_interpretation} to a formula in conjunctive normal form\Tinyref{def:conjunctive_normal_form}.
+\end{proposition}
+\begin{proof}
+  We define the negation function
+  \begin{align*}
+    n(\varphi) \coloneqq \begin{cases}
+      \neg P,                                                   &\varphi = P \in \Bold{Prop} \\
+      \psi,                                                     &\varphi = \neg \psi \\
+      n(\psi) \land n(\theta),                                  &\varphi = \psi \lor \theta \\
+      n(\psi) \lor n(\theta),                                   &\varphi = \psi \land \theta \\
+    \end{cases}
+  \end{align*}
+
+  and the reduction function
+  \begin{align*}
+    r(\varphi) \coloneqq \begin{cases}
+      \varphi,                                                  &\varphi \in \Bold{Prop} \\
+      n(r(\psi)),                                               &\varphi = \neg \psi \\
+      r(\psi) \lor r(\theta),                                   &\varphi = \psi \lor \theta \\
+      r(\psi) \land r(\theta),                                  &\varphi = \psi \land \theta \\
+      (r(\psi) \lor r(\theta)) \land (r(\psi) \lor r(\kappa)),  &\varphi = \psi \lor (\theta \land \kappa) \\
+    \end{cases}
+  \end{align*}
+
+  Given a formula $\varphi$, the function $r(\varphi)$ gives a formula in CNF.
+\end{proof}
+
+\begin{definition}\label{def:truth_functions}\cite[1]{Lectures:logic_programming}
+  We define the following auxiliary functions using truth tables
+  \begin{center}
+    \begin{tabular}{c | c || c c | c c}
+      $x$    & $H_\neg$ & $x$    & $y$    & $H_\lor$ & $H_\land$ \\
+      \hline
+      $\top$ & $\bot$   & $\top$ & $\top$ & $\top$   & $\top$    \\
+      $\bot$ & $\top$   & $\top$ & $\bot$ & $\bot$   & $\top$    \\
+             &          & $\bot$   & $\top$ & $\bot$ & $\top$    \\
+             &          & $\bot$   & $\bot$ & $\bot$ & $\bot$
+    \end{tabular}
+  \end{center}
+
+  Note that, as operations over the set $\{ \top, \bot \}$, $H_\lor$ and $H_\land$ are both associative and commutative.
+\end{definition}
+
+\begin{definition}\label{def:propositional_interpretation}
+  A \uline{propositional interpretation} is a function $I: \Bold{Prop} \to \{ \top, \bot \}$.
+
+  We define interpretation for formulas inductively as
+  \begin{align*}
+    \varphi[I] \coloneqq \begin{cases}
+      I(P),                        &\varphi = P \in \Bold{Prop} \\
+      H_\neg(\psi[I]),             &\varphi = \neg \psi         \\
+      H_\land(\psi[I], \theta[I]), &\varphi = \psi \land \theta \\
+      H_\lor(\psi[I], \theta[I]),  &\varphi = \psi \lor \theta.
+    \end{cases}
+  \end{align*}
+
+  We say that
+  \begin{defenum}
+    \item\label{def:propositional_interpretation/model} $I$ is a Boolean model of $\varphi$ and write $I \models_B \varphi$ if $\varphi[I] = \top$.
+    \item\label{def:propositional_interpretation/tautology} If all interpretations are models for $\varphi$, we say that $\varphi$ is a \uline{tautology}.
+    \item\label{def:propositional_interpretation/contradiction} If no interpretation is a model for $\varphi$, we say that $\varphi$ is a \uline{contradiction}.
+    \item\label{def:propositional_interpretation/equivalence} $\varphi$ and $\psi$ are \uline{Boolean equivalent} and write $\varphi \equiv_B \psi$ if $\varphi[I] = \psi[I]$ for any interpretation $I$.
+  \end{defenum}
+\end{definition}
+
+\begin{proposition}\label{thm:boolean_equivalence_relation}
+  The Boolean equivalence\Tinyref{def:propositional_interpretation} $\equiv_B$ is an equivalence relation on the set $\Cal{F}_B$ of propositional formulas.
+\end{proposition}
+
+\begin{theorem}\label{thm:propositional_logic_boolean_algebra}
+  The quotient set\Tinyref{def:order/equivalence} of propositional formulas $\Cal{F}_B / \cong$ forms a boolean algebra\Tinyref{def:boolean_algebra} with
+  \begin{itemize}
+    \item top being the equivalence class of tautologies
+    \item bottom being the equivalence class of contradictions
+    \item joins given by disjunctions $\lor$ of any representatives of the equivalence classes
+    \item meets given by conjunctions $\land$
+    \item complements given by negation $\neg$
+  \end{itemize}
+\end{theorem}
+\begin{proof}
+  See \cref{note:infinite_join_meet} about handling infinitary joins and meets. Once we prove \ref{def:binary_join_meet/associativity}, \ref{def:binary_join_meet/commutativity} and \ref{def:binary_join_meet/absorption}, we can define a partial order on $\Cal{F}_B / \cong$ that allows us to extend $\lor$ and $\land$ to handle infinite arguments.
+
+  \begin{description}
+    \item[\ref{def:binary_join_meet/associativity}] The functions\Tinyref{def:truth_functions} $H_\lor$ and $H_\land$ are associative, hence the lattice operations are associative.
+    \item[\ref{def:binary_join_meet/commutativity}] The proof is analogous to \ref{def:binary_join_meet/associativity}.
+    \item[\ref{def:binary_join_meet/absorption}] Let $\varphi$ and $\psi$ be propositional formulas and $I$ be a propositional interpretation. Then
+    \begin{center}
+      \begin{tabular}{c c | c | c}
+        $\varphi[I]$ & $\psi[I]$ & $H_\land(\psi[I], \varphi[I])$ & $H_\lor(\varphi[I], H_\land(\psi[I], \varphi[I]))$ \\
+        \hline
+        $\top$       & $\top$    & $\top$                         & $\top$ \\
+        $\top$       & $\bot$    & $\bot$                         & $\top$ \\
+        $\bot$       & $\top$    & $\bot$                         & $\bot$ \\
+        $\bot$       & $\bot$    & $\bot$                         & $\bot$
+      \end{tabular}
+    \end{center}
+    hence $\varphi[I] = H_\lor(\varphi[I], H_\land(\psi[I], \varphi[I]))$.
+
+    The proof of the dual law is analogous.
+
+    \item[\ref{def:distributive_lattice/distributivity}] Let $\varphi$, $\psi$ and $\theta$ be propositional formulas and $I$ be a propositional interpretation. Then
+    \begin{center}
+      \begin{tabular}{c c c | c | c}
+        $\varphi[I]$ & $\psi[I]$ & $\theta[I]$ & $H_\land(\varphi[I], H_\lor(\psi[I], \theta[I]))$ & $H_\lor(H_\land(\varphi[I], \psi[I]), H_\land(\varphi[I], \theta[I]))$ \\
+        \hline
+        $\top$       & $\top$    & $\top$      & $\top$                                            & $\top$ \\
+        $\top$       & $\top$    & $\bot$      & $\top$                                            & $\top$ \\
+        $\top$       & $\bot$    & $\top$      & $\top$                                            & $\top$ \\
+        $\top$       & $\bot$    & $\bot$      & $\bot$                                            & $\bot$ \\
+        $\bot$       & $\top$    & $\top$      & $\bot$                                            & $\bot$ \\
+        $\bot$       & $\top$    & $\bot$      & $\bot$                                            & $\bot$ \\
+        $\bot$       & $\bot$    & $\top$      & $\bot$                                            & $\bot$ \\
+        $\bot$       & $\bot$    & $\bot$      & $\bot$                                            & $\bot$
+      \end{tabular}
+    \end{center}
+  \end{description}
+
+  The join and meet induce the partial order $\varphi \leq \psi \iff \varphi \lor \psi \equiv \psi$.
+
+  \begin{description}
+    \item[\ref{def:lattice/top}] Fix an interpretation $I$. A formula $\omega$ should belong to the supremum $\sup \Cal{F}_B$ if and only if $\varphi \lor \omega \equiv \omega$ for any formula $\varphi \in \Cal{F}_B$. If $\varphi$ is a tautology, $\varphi[I] = \top$ and thus
+    \begin{align*}
+      (\varphi \lor \omega)[I] \coloneqq H_\lor(\varphi[I], \omega[I]) = \top.
+    \end{align*}
+
+    It follows that $\omega[I] = \top$. Since the interpretation $I$ was arbitrary, $\omega$ is also a tautology. Hence the top element is the equivalence class of all tautologies.
+
+    \item[\ref{def:lattice/bottom}] The proof is analogous to \ref{def:lattice/top}.
+  \end{description}
+\end{proof}
