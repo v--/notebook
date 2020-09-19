@@ -185,8 +185,6 @@ There are certain technical subtleties when defining sets and many mathematician
   \end{itemize}
 
   Thus $A \times B$ is a set since $A \times B \subseteq \Power(\Power(A \cup B))$.
-
-  See \cref{ex:categorical_product/set}.
 \end{proof}
 
 \begin{definition}\label{def:cartesian_product}\cite[11]{Lectures:general_topology}
@@ -194,7 +192,7 @@ There are certain technical subtleties when defining sets and many mathematician
 
   We define their \uline{Cartesian product} as
   \begin{align*}
-    \prod_{i \in I} X_j \coloneqq \left\{ f: I \to \bigcup_{i \in I} X_i \colon \forall i \in I, f(i) \in X_i \right\}.
+    \prod_{i \in I} X_i \coloneqq \left\{ f: I \to \bigcup_{j \in I} X_j \colon \forall j \in I, f(j) \in X_j \right\}.
   \end{align*}
 
   Any element of the Cartesian product is called a \uline{tuple}.
@@ -207,8 +205,6 @@ There are certain technical subtleties when defining sets and many mathematician
   \begin{align*}
     \coprod_{i \in I} X_i \coloneqq \{ (i, x) \colon i \in I, x \in X_i \}.
   \end{align*}
-
-  See \cref{ex:categorical_coproduct/set}.
 \end{definition}
 
 \begin{definition}\label{def:successor_operator}\cite[11]{Lectures:general_topology}
@@ -254,10 +250,93 @@ There are certain technical subtleties when defining sets and many mathematician
   \end{defenum}
 \end{proposition}
 
-\begin{definition}\cite[22]{Lectures:general_topology}
+\begin{definition}\label{def:transitive_set}\cite[22]{Lectures:general_topology}
   A set $A$ is called \uline{transitive} if $a \in A$ implies $a \subseteq A$.
 \end{definition}
 
-\begin{definition}\cite[23]{Lectures:general_topology}
+\begin{definition}\label{def:ordinal}\cite[23]{Lectures:general_topology}
   A set $A$ is called an \uline{ordinal} if it is well-ordered\Tinyref{def:poset/well_order} under set membership.
 \end{definition}
+
+\begin{definition}\label{def:category_of_sets}
+  The class\Tinyref{def:set_zfc} of all sets forms the category\Tinyref{def:category} $\Bold{Set}$, where for every two sets $X, Y \in \Bold{Set}$, the morphisms $\Bold{Set}(X, Y)$ are the functions\Tinyref{def:function} from $X$ to $Y$ and composition is the usual function composition\Tinyref{def:function_composition}.
+
+  Furthermore, $\Bold{Set}$ is locally small\Tinyref{def:category} and concrete\Tinyref{def:concrete_category}.
+\end{definition}
+\begin{proof}
+  \begin{description}
+    \item [\ref{def:category/identity}] For any set $X \in \Bold{Set}$, we have the identity function
+    \begin{align*}
+      &\Id_X: X \to X \\
+      &\Id_X(x) \coloneqq x.
+    \end{align*}
+
+    If $f: X \to Y$ is any function, for all $x \in X$ we have
+    \begin{align*}
+      [\Id_Y \circ f](x) = \Id_Y(f(x)) = f(x),
+      &&
+      [f \circ \Id_X](x) = f(\Id_X(x)) = f(x),
+    \end{align*}
+    thus $\Id_x$ and $\Id_Y$ are indeed identity morphisms.
+
+    \item [\ref{def:category/associativity}] Let $f: A \to B$, $g: B \to C$ and $h: C \to D$ be arbitrary functions. For any $x \in A$, we have
+    \begin{align*}
+      [[h \circ g] \circ f](x)
+      =
+      [h \circ g](f(x))
+      =
+      h(g(f(x)))
+      =
+      h([g \circ f](x))
+      =
+      [h \circ [g \circ f]](x).
+    \end{align*}
+  \end{description}
+
+  Since a function $f: X \to Y$ is formally\Tinyref{def:function} a subset of the product, $X \times X$\Tinyref{def:cartesian_product}, which is a set, it is itself a set.
+
+  The class of all functions $\Bold{Set}(X, Y)$ from $X$ to $Y$ is then a subset of $\Power(X \times Y)$, which is also a set. Thus $\Bold{Set}$ is a locally small category.
+
+  It is concrete since it is equipped with the identity functor $\Id_{\Bold{Set}}$.
+\end{proof}
+
+\begin{theorem}\label{thm:set_categorical_limits}
+  We are interested in categorical limits\Tinyref{def:categorical_limit} and colimits\Tinyref{def:categorical_colimit} in $\Bold{Set}$. If $\{ X_i \}_{i \in I}$ is an indexed family\Tinyref{def:indexed_family} of sets, then
+  \begin{defenum}
+    \item\label{thm:set_categorical_limits/product} their categorical product\Tinyref{def:categorical_product} is their Cartesian product\Tinyref{def:cartesian_product} $\prod_{i \in I} X_i$, the projection morphisms being
+    \begin{align*}
+      &\pi_j: \prod_{i \in I} X_i \to X_j \\
+      &\pi_j(\{ x_i \}_{i \in I}) \coloneqq x_j.
+    \end{align*}
+
+    \item\label{thm:set_categorical_limits/coproduct} their categorical coproduct\Tinyref{def:categorical_coproduct} is their disjoint union\Tinyref{def:disjoint_union} $\coprod_{i \in I} X_i$, the injection morphisms being
+    \begin{align*}
+      &\iota_j: X_j \to \coprod_{i \in I} X_i \\
+      &\iota_j(x_j) \coloneqq (j, x_j).
+    \end{align*}
+
+    \item\label{thm:set_categorical_limits/equalizer} An equalizer of two functions $f, g: X \to Y$ in $\Bold{Set}$ is the set
+    \begin{align*}
+      \{ x \in X \colon f(x) = g(x) \}.
+    \end{align*}
+
+    Compare this with pullbacks in $\Bold{Set}$\Tinyref{thm:set_categorical_limits/pullback}.
+
+    \item\label{thm:set_categorical_limits/pullback} The pullback of two functions $f: X \to Z$ and $g: Y \to Z$ in $\Bold{Set}$ is the set
+    \begin{align*}
+      \{ (x, y) \in X \times Y \colon f(x) = g(y) \}.
+    \end{align*}
+
+    Compare this with equalizers in $\Bold{Set}$\Tinyref{thm:set_categorical_limits/equalizer}.
+
+    \item\label{thm:set_categorical_limits/coequalizer} A coequalizer of two functions $f, g: X \to Y$ in $\Bold{Set}$ is the quotient space formed by the reflexive, symmetric and transitive closure of the relation $x \sim y \iff f(x) = g(x)$.
+
+    In particular, if $\sim \subseteq X^2$ is an equivalence relation\Tinyref{def:order/equivalence}) on $X$, then the coequalizer of the two projection maps of the product $X^2$ is the pair $(X / ~, \pi)$, where $\pi$ is the quotient map
+    \begin{align*}
+      &\pi: X \to X / ~ \\
+      &\pi(x) = [x].
+    \end{align*}
+
+    \item\label{thm:set_categorical_limits/pushout} Let $X$ and $Y$ be two sets, let $Z$ be a subset of $X$ and let $i: Z \to X$ be the inclusion map. For any function $f: Z \to Y$, we define a pushout of $i$ and $f$ in $\Bold{Set}$ to be the set obtained as the quotient of the coproduct $X \coprod Y$ and the relation $x \sim y \iff i^{-1}(x) = f^{-1}(y)$.
+  \end{defenum}
+\end{theorem}
