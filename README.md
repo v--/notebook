@@ -2,7 +2,7 @@
 
 [![CI](https://github.com/v--/notebook/workflows/Build/badge.svg)](https://github.com/v--/notebook/actions?query=workflow%3ABuild)
 
-This is an ever-expanding document containing some of the mathematics notes and proofs that I write while studying. Having all these notes in one place is quite helpful for later reference.
+This ever-expanding document started as a set of study notes and exercises and gradually outgrew itself to become slightly encyclopedic. Having all these notes in one place is quite helpful for both expressing my own thoughts clearly and for later reference.
 
 If you happen to find any mistakes or room for improvements, feel free to create an issue or a pull request.
 
