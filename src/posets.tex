@@ -1,9 +1,13 @@
+\begin{note}\label{note:preodered_sets_as_posets}
+  The definitions in \cref{def:poset} mostly make sense for preorders. The study of partial orders\Tinyref{def:order/partial}, however, appears to be much broader than the study of preorders\Tinyref{def:order/preorder}. Especially considering \cref{thm:preorder_to_partial_order}, which gives us a \enquote{normal form} for preorders.
+\end{note}
+
 \begin{definition}\label{def:poset}\cite[10]{Lectures:general_topology}
   Let $(X, \leq)$ be a partially ordered set (poset) as defined in~\cref{def:order/partial}. We say that
   \begin{defenum}
     \item\label{def:poset/strict_order} the order $<$ defined by $x < y \iff (x \leq y \land x \neq y)$ is the corresponding \uline{strict order}\Tinyref{def:order/strict_partial}.
 
-    \item\label{def:poset/dual} the partially ordered set $(X, \geq)$ where $\geq$ is defined as $a \geq b \iff b \leq a$ is the called the \uline{dual poset}. See~\cref{def:thin_category} for a discussion of the duality.
+    \item\label{def:poset/dual} the partially ordered set $(X, \geq)$ where $\geq$ is the converse relation\Tinyref{def:derived_relations/converse}, is the called the \uline{dual poset}. See~\cref{def:thin_category} for a discussion of the duality.
 
     \item\label{def:poset/subset_order} for every subset $A \subseteq X$ the pair $(A, \leq_A)$ is a partially ordered set and the restriction
     \begin{align*}
@@ -29,29 +33,47 @@
   If $\Bold{P}$ is locally small, this is equivalent to saying that any set of morphisms $\Bold{P}(A, B)$ is at most a singleton.
 \end{definition}
 
-\begin{proposition}\label{thm:small_thin_category_equivalent_to_poset}
-  Any small thin category\Tinyref{def:thin_category} is equivalent to a category induced by a poset (that is, the objects are the underlying set and $f: x \to y$ is a morphism if and only if $x \leq y$).
+\begin{definition}\label{def:poset_category}
+  We say that $\Bold{P}$ is a \uline{poset category} if it is a small\Tinyref{def:category_cardinality} thin\Tinyref{def:thin_category} skeletal\Tinyref{def:skeletal_category} category.
+
+  See \cref{thm:poset_iff_poset_category}.
+\end{definition}
+
+\begin{proposition}\label{thm:poset_iff_poset_category}
+  Let $(P, \leq)$ be a poset\Tinyref{def:poset}. Then $P$ is also a poset category\Tinyref{def:poset_category} with objects $P$ and morphisms ordered pairs from $\leq$ (viewed as a relation\Tinyref{def:relation}).
+
+  Conversely, if $\Bold{P}$ is poset category, the pair $\left(\Bold{P}, \bigcup_{x, y \in \Bold{P}} \Bold{P}(x, y) \right)$ is a preordered set.
 
   Furthermore, infima\Tinyref{def:poset/supremum_infimum} correspond to categorical products\Tinyref{def:categorical_product}, while suprema to coproducts\Tinyref{def:categorical_coproduct}.
 \end{proposition}
+\begin{proof}
+  We will only prove the equivalence of products and infima since the argument for suprema and coproducts is completely dual.
 
-\begin{definition}
-  Let $\Bold{P}$ be a thin category and let $\Bold{S}$ be a skeletal subcategory of $\Bold{P}$.
-
-  Define $X$ to be the set of objects in $\Bold{S}$ and define the relation $\leq$ by $x \leq y \iff \exists f \in \Bold{S}(x, y)$. Then $\leq$ is indeed a partial order\Tinyref{def:order/partial}, since
   \begin{description}
-    \item[\ref{def:order/partial/reflexivity}] $x \leq x$ because of the existence of identity morphisms.
-    \item[\ref{def:order/partial/antisymmetry}] If $x \leq y$ and $y \leq x$ implies that there exist morphisms $f: x \to y$ and $g: y \to x$ and, furthermore, these morphisms are unique because $\Bold{S}$ is thin. So we necessarily have that $f \circ g = \Id_x$ and $g \circ f = \Id_y$ so $x$ and $y$ are isomorphic and, since $\Bold{S}$ is skeletal, $x = y$.
-    \item[\ref{def:order/partial/transitivity}] If $x \leq y$ and $y \leq z$, then, by composition of morphisms, $x \leq z$.
-  \end{description}
+    \Implies The relation $\leq$ satisfies
+    \begin{description}
+      \item[\ref{def:order/partial/transitivity}] hence composition of morphisms is well defined and is associative and $P$ is a thin category\Tinyref{def:thin_category}.
+      \item[\ref{def:order/partial/reflexivity}] hence there exist identity morphisms.
+      \item[\ref{def:order/partial/antisymmetry}] hence the category is skeletal\Tinyref{def:skeletal_category}.
+    \end{description}
 
-  Since $\Bold{S}$ is thin, the category constructed in from $X$ is equivalent to $\Bold{S}$ and, by~\cref{thm:skeletal_subcategory_equivalence}, $\Bold{S}$ is equivalent to $\Bold{P}$.
-\end{definition}
+    Let $p$ be the product of the set $A \subseteq X$. Then $p \leq x$ for all $x \in A$, hence it is a lower bound. If $q$ is another lower bound, then by definition of product\Tinyref{def:categorical_product}, there exists a unique morphism $q \leq p$. Hence $p$ is the infimum.
+
+    \ImpliedBy\mbox{}
+    \begin{description}
+      \item[\ref{def:order/partial/reflexivity}] $x \leq x$ because of the existence of identity morphisms.
+      \item[\ref{def:order/partial/antisymmetry}] If $x \leq y$ and $y \leq x$ implies that there exist morphisms $f: x \to y$ and $g: y \to x$ and, furthermore, these morphisms are unique because $\Bold{P}$ is thin. So we necessarily have that $f \circ g = \Id_x$ and $g \circ f = \Id_y$ so $x$ and $y$ are isomorphic and, since $\Bold{P}$ is skeletal, $x = y$.
+      \item[\ref{def:order/partial/transitivity}] If $x \leq y$ and $y \leq z$, then, by composition of morphisms, $x \leq z$.
+    \end{description}
+
+    Now since the category is thin, the infimum of $A$ (if it exists) has a unique morphism $\inf A \leq x$ for any $x \in A$. If $b \leq x$ for all $x \in A$ if another cone\Tinyref{def:categorical_cone}, then necessarily $b \leq \inf A$. Thus the infimum is the categorical product.
+  \end{description}
+\end{proof}
 
 \begin{note}\label{note:small_thin_category_isomorphic_to_preorder}
-  A more general result than \cref{thm:small_thin_category_equivalent_to_poset} states that any small thin category is isomorphic to a preordered set. The proof is the same except we do not consider the skeletal subcategories necessary for proving antisymmetry.
+  A more general result than \cref{thm:poset_iff_poset_category} states that any small thin category is a preordered set. The proof is the same except we only have isomorphisms in the antisymmetry, not equality.
 \end{note}
 
-\begin{proposition}\label{thm:dual_poset_dual_thin_category}
-  Dual posets correspond to dual thin categories.
+\begin{proposition}\label{thm:dual_poset_dual_poset_category}
+  Dual posets correspond to dual poset categories.
 \end{proposition}
