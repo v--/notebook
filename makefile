@@ -3,7 +3,11 @@ COMPILER := latexmk -cd -interaction=nonstopmode -bibtex -time -e '$$biber="bibe
 .PHONY: clean
 
 notebook.pdf: notebook.tex bib/*.bib packages/*.sty src/*.tex
+ifdef only
+	$(COMPILER) notebook.tex -pdf -usepretex="\includeonly{$(only)}"
+else
 	$(COMPILER) notebook.tex -pdf
+endif
 
 clean:
 	$(COMPILER) notebook.tex -C
