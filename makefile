@@ -1,4 +1,4 @@
-COMPILER := latexmk -cd -interaction=nonstopmode -bibtex
+COMPILER := latexmk -cd -interaction=nonstopmode -bibtex -time
 
 .PHONY: clean
 
