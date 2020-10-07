@@ -39,15 +39,17 @@
 
     \item\label{def:metric_space/bounded_set} A set $A \subseteq X$ is called \ul{bounded} if it is contained in some ball $B(x, r)$.
 
+    \item\label{def:metric_space/bounded_sequence} A sequence\Tinyref{def:sequence} $\{ x_i \}_{i=1}^\infty \subseteq X$ is called \ul{bounded} if the corresponding set $\{ x_i \colon i = 1, 2, \ldots \}$ is bounded\Tinyref{def:metric_space/bounded_set}.
+
     \item\label{def:metric_space/bounded_metric} If every set is bounded, we say that the metric itself is bounded.
 
-    \item\label{def:metric_space/diameter} Define the function
+    \item\label{def:metric_space/diameter} Define the partial\Tinyref{def:function/partial} function
     \begin{align*}
       &\Diam: \Power(X) \to \BB{R}^{\geq 0}, \\
       &\Diam(A) \coloneqq \sup \{ \mu(x, y) \colon x, y \in A \}.
     \end{align*}
 
-    We call the number $\Diam(A)$ the \ul{diameter of $A$}.
+    If it exists, we call the number $\Diam(A)$ the \ul{diameter of $A$}.
 
     \item\label{def:metric_space/distance} Define the function
     \begin{align*}
@@ -320,4 +322,105 @@
   \end{itemize}
 
   Thus $U_i$ is the union of an at most countable amount of balls. The countable union of countable sets is again countable, hence by \cref{def:topological_base/union}, $\Cal{B}$ is a base for $\Cal{T}_O$.
+\end{proof}
+
+\begin{definition}\label{def:fundamental_sequence}
+  Let $(X, \mu)$ be a metric space. We say that the sequence $\{ x_i \}_{i=1}^n \subseteq X$ is a \ul{fundamental sequence} or \ul{Cauchy sequence} if, for any $\varepsilon > 0$, there exists an index $i_0$ such that
+  \begin{align*}
+    i, j \geq i_0 \implies \mu(x_i, x_j) < \varepsilon.
+  \end{align*}
+\end{definition}
+
+\begin{proposition}\label{thm:fundamental_sequence_is_bounded}
+  Any fundamental sequence $\{ x_i \}_{i=1}^n$ is bounded\Tinyref{def:metric_space/bounded_sequence}.
+\end{proposition}
+\begin{proof}
+  Fix $\varepsilon > 0$. There exists an index $i_0$ such that
+  \begin{align*}
+    i, j \geq i_0 \implies \mu(x_i, x_j) < \varepsilon.
+  \end{align*}
+
+  Since the set
+  \begin{align*}
+    I \coloneqq \{ x_i \colon i \leq i_0 \}
+  \end{align*}
+  is finite, it has a finite diameter\Tinyref{def:metric_space/diameter}.
+
+  Let $i < i_0$ and $j \geq i_0$. Then
+  \begin{align*}
+    \mu(x_i, x_j) \leq \mu(x_i, x_{i_0}) + \mu(x_{i_0}, x_j) < \Diam(I) + \varepsilon,
+  \end{align*}
+  which is a finite number.
+
+  Thus the distance between any two elements of the sequence is finite and the sequence is bounded.
+\end{proof}
+
+\begin{proposition}\label{thm:fundamental_subsequence_convergence}
+  In any metric space\Tinyref{def:complete_metric_space}, a fundamental sequence\Tinyref{def:fundamental_sequence} converges to a value if and only if it has a subsequence that converges to the same value.
+\end{proposition}
+\begin{proof}
+  Let $(X, \mu)$ be a metric space and let $\{ x_i \}_{i=1}^\infty$ be a fundamental sequence.
+
+  \begin{description}
+    \Implies Obvious
+    \ImpliedBy Assume that the subsequence $\{ x_{i_k} \}_{k=1}^\infty$ converges to $x$. Fix $\varepsilon > 0$. There exist $i_0$ and $k_0$ such that
+    \begin{align*}
+      &i, j \geq i_0 \implies \mu(x_i, x_j) < \tfrac \varepsilon 2 \\
+      &k \geq k_0 \implies \mu(x, x_{i_k}) < \tfrac \varepsilon 2
+    \end{align*}
+
+    Fix $i \geq i_0$ and let $k \geq k_0$ be such that $i_k \geq i_0$. Then
+    \begin{align*}
+      \mu(x, x_i) \leq \mu(x, x_{i_k}) + \mu(x_{i_k}, x_i) < \varepsilon.
+    \end{align*}
+
+    Since $\varepsilon$ was arbitrary, we conclude that $\lim_{i \to \infty} x_i = \lim_{k \to \infty} x_{i_k} = x$.
+  \end{description}
+\end{proof}
+
+\begin{definition}\label{def:complete_metric_space}
+  We say that a metric space is \ul{complete} if every fundamental sequence\Tinyref{def:fundamental_sequence} has a limit\Tinyref{thm:metric_convergence_iff_metric_topology_convergence/limit_point}.
+\end{definition}
+
+\begin{proposition}\label{thm:convergent_sequence_is_fundamental}
+  In a complete metric space\Tinyref{def:complete_metric_space}, every convergent\Tinyref{def:net_limit_point}\Tinyref{thm:metric_convergence_iff_metric_topology_convergence/limit_point} sequence is fundamental\Tinyref{def:fundamental_sequence}.
+\end{proposition}
+\begin{proof}
+  Let $(X, \mu)$ be a complete metric space and $\{ x_i \}_{i=1}^\infty$ be a sequence that converges to $x$. Fix $\varepsilon > 0$. Then there exists an index $i_0$ such that
+  \begin{align*}
+    i \geq i_0 \implies \mu(x, x_i) < \tfrac \varepsilon 2.
+  \end{align*}
+
+  Then
+  \begin{align*}
+    i, j \geq i_0 \implies \mu(x_i, x_j) \leq \mu(x_i, x) + \mu(x, x_j) < \tfrac \varepsilon 2 + \tfrac \varepsilon 2 = \varepsilon.
+  \end{align*}
+
+  Since $\varepsilon > 0$ was arbitrary, we conclude that the sequence is fundamental.
+\end{proof}
+
+\begin{corollary}[Cauchy convergence criterion]\label{thm:cauchy_convergence_criterion}
+  A sequence in a complete metric space is convergent\Tinyref{def:net_limit_point}\Tinyref{thm:metric_convergence_iff_metric_topology_convergence/limit_point} if and only if it is a fundamental sequence\Tinyref{def:fundamental_sequence}.
+\end{corollary}
+\begin{proof}
+  \Implies Given by \cref{thm:convergent_sequence_is_fundamental}
+  \ImpliedBy Given by \cref{def:complete_metric_space}
+\end{proof}
+
+\begin{theorem}[Cantor]\label{thm:cantor_nested_compacts}
+  A descending sequence of nonempty compact sets $F_1 \supseteq F_2 \supseteq \ldots$ in a complete metric space such that $\Diam(F_i) \to 0$ intersects at exactly one point (compare with \cref{thm:noncompact_kuratowski_lemma}).
+\end{theorem}
+\begin{proof}
+  Choose\AOC an element $x_i \in F_i$ for any $i = 1, 2, \ldots$. Then the sequence $\{ x_i \}_{i=1}^\infty$ is fundamental. To see this, let $\varepsilon > 0$ and let $i_0$ be an index such that $\Diam(F_{i_0}) < \varepsilon$. Then if $j \geq i \geq i_0$, $x_j$ is contained in $F_i$ and $\mu(x_i, x_j) < \varepsilon$. Thus the sequence is indeed fundamental and, since the space is complete, it has a limit point $x$.
+
+  The point $x$ is contained in every set $F_i, i = 1, 2, \ldots$ since all of the sets $F_i$ are closed (by \cref{thm:complete_metric_space_compact_conditions}) and contain their limit points\Tinyref{thm:limit_point_iff_in_closure}. Thus
+  \begin{align*}
+    x \in \bigcap_{i=1}^\infty F_i.
+  \end{align*}
+
+  Furthermore,
+  \begin{align*}
+    \Diam\left( \bigcap_{i=1}^\infty F_i \right) = 0,
+  \end{align*}
+  hence $x$ is the only point in the intersection.
 \end{proof}
