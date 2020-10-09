@@ -1,16 +1,17 @@
-COMPILER := latexmk -cd -interaction=nonstopmode -bibtex -time -e '$$biber="biber --isbn-normalise %O %S"'
+COMPILER := latexmk -cd -interaction=batchmode -bibtex -time -e '$$biber="biber --isbn-normalise %O %S"'
 
 .PHONY: clean
 
 notebook.pdf: notebook.tex bib/*.bib packages/*.sty src/*.tex
 ifdef only
-	$(COMPILER) notebook.tex -pdf -usepretex="\includeonly{$(only)}"
+	$(COMPILER) notebook.tex -pdflua -usepretex="\includeonly{$(only)}"
 else
-	$(COMPILER) notebook.tex -pdf
+	$(COMPILER) notebook.tex -pdflua
 endif
 
 clean:
-	$(COMPILER) notebook.tex -C
-	rm -fv src/*.aux
-	rm -fv *.run.xml *.tex.bbl *.tex.blg # biber
+	rm -fv notebook.pdf
+	rm -fv {,src/}*.{aux,log,out,fls,toc} # luatex
+	rm -fv {,src/}*.fdb_latexmk # latexmk
+	rm -fv {,src/}*.{run.xml,bbl,bcf,blg} # biber
 	rm -fv *.{aoc,lem,usc} # tocloft
