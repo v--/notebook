@@ -1,4 +1,4 @@
-COMPILER := latexmk -cd -interaction=batchmode -bibtex -time -e '$$biber="biber --isbn-normalise %O %S"'
+COMPILER := latexmk -cd -interaction=batchmode -time -bibtex -e '$$biber="biber --isbn-normalise %O %S"'
 
 .PHONY: clean
 
