@@ -1,20 +1,37 @@
-\usepackage{xspace}
 \usepackage{tocbasic}
 \usepackage{titleref}
+\usepackage{xspace}
 
 \newcommand{\CustomTOC}[3]{
-  \addtotoclist{#1}
-  \newcounter{counter#2}
-  \setuptoc{#1}{chapteratlist,leveldown}
-  \expandafter\newcommand \csname listof#1name\endcsname {#3}
-  \expandafter\newcommand \csname listof#1\endcsname {\hypertarget{list:#1}{\listoftoc{#1}}}
-  \expandafter\newcommand \csname l@#1\endcsname {\l@figure}
-
-  \expandafter\newcommand \csname #2\endcsname {%
-\refstepcounter{counter#2}%
-\addcontentsline{#1}{#1}{\protect\numberline{\csname thecounter#2\endcsname}\TR@currentTitle}%
-\textsuperscript{\hyperlink{list:#1}{#2}}%
-\xspace}
+  \addtotoclist{#1} % Register the file name extension with tocbasic
+  \setuptoc{#1}{} % Set a TOC file extension
+  \newcounter{counter#2} % Create a counter for the TOC
+  %
+  \expandafter \newcommand
+    \csname listof#1name\endcsname
+    {#3} % Define the name
+  %
+  \expandafter \newcommand
+    \csname listof#1\endcsname
+    {\hypertarget{list:#1}{\listoftoc{#1}}} % Define a command for printing the TOC that is also a hyperref target
+  %
+  \expandafter \newcommand
+    \csname l@#1\endcsname
+    {\l@figure} % Entries in the TOC should look like the entries in the list of figures
+  %
+  \expandafter \newcommand
+  \csname #2\endcsname
+  {%
+    \refstepcounter{counter#2}% Increment the counter
+    \addcontentsline{#1}
+                    {#1}
+                    {\protect \numberline
+                              {\csname thecounter#2\endcsname}
+                              \TR@currentTitle
+                    }% Add a line to the TOC file
+    \textsuperscript{\hyperlink{list:#1}{#2}}% Add a superscript with a link to the TOC
+    \xspace% Add a space but only if one is necessary
+  }
 }
 
 \CustomTOC{aoc}{AOC}{References to the axiom of choice or equivalent statements}

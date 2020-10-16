@@ -1,4 +1,5 @@
 \usepackage{xargs} % newcommandx
+\usepackage{crossreftools} % \crtcrossreflabel
 
 % Shorthands
 \newcommand           \Cal          [1] {\symcal #1}
@@ -42,9 +43,23 @@
 \newcommand           \URL          [1] {\href{#1}{#1}}
 \newcommand           \Tinyref      [1] {\textsuperscript{\ref{#1}}}
 
-\newcommandx          \DItem        [2] {\item[{\crtcrossreflabel{#1}[#2]}]}
 \newcommand           \RItem        [1] {\item[{\ref{#1}}]}
-\newcommand           \ImpItem      [3] {\item[(\ifthenelse{\equal{}{#1}}{}{\ref{#1}} $\symbf{#3}$ \ifthenelse{\equal{}{#2}}{}{\ref{#2}})]}
-\newcommandx          \Implies      [2][1=,2=] {\ImpItem{#1}{#2}{\implies}}
-\newcommandx          \ImpliedBy    [2][1=,2=] {\ImpItem{#1}{#2}{\impliedby}}
-\newcommandx          \Iff          [2][1=,2=] {\ImpItem{#1}{#2}{\iff}}
+\newcommandx          \DItem        [2][2=] {%
+  \ifthenelse{\equal{#2}{}}%
+    {\item\label{#1}}%
+    {\item[{\crtcrossreflabel{#2}[#1]}]}%
+}
+
+\newcommand           \ImpItem      [3] {\item[(%
+  \ifthenelse{\equal{#1}{}}%
+    {}%
+    {\ref{#1}}%
+  #3%
+  \ifthenelse{\equal{#2}{}}
+    {}%
+    {\ref{#2}}%
+)]}%
+
+\newcommandx          \Implies      [2][1=,2=] {\ImpItem{#1}{#2}{\( \symbf\implies \)}}
+\newcommandx          \ImpliedBy    [2][1=,2=] {\ImpItem{#1}{#2}{\( \symbf\impliedby \)}}
+\newcommandx          \Iff          [2][1=,2=] {\ImpItem{#1}{#2}{\( \symbf\iff \)}}
