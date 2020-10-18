@@ -11,7 +11,8 @@ endif
 
 clean:
 	rm -fv notebook.pdf
-	rm -fv {,src/}*.{aux,log,out,fls,toc} # luatex
+	rm -fv {,src/}*.log # luatex
+	rm -fv {,src/}*.{aux,log,out,fls,toc} # latex
 	rm -fv {,src/}*.fdb_latexmk # latexmk
 	rm -fv {,src/}*.{run.xml,bbl,bcf,blg} # biber
 	rm -fv *.{aoc,lem,usc} # tocloft

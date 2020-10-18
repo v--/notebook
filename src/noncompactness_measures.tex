@@ -20,31 +20,31 @@ Let \( (X, \mu) \) be a metric space\Tinyref{def:metric_space}. Let \( \Cal{B} \
 \end{definition}
 
 \begin{example}\label{ex:noncompactness_measures}\cite[exercise 7.3]{Deimling1985}
-  Consider the subsets \( A_2 \subseteq A_3 \subseteq A_1 \subseteq C([0, 1]) \), defined by
+  Consider the subsets \( B_2 \subseteq B_3 \subseteq B_1 \subseteq C([0, 1]) \), defined by
   \begin{align*}
-    A_1 \coloneqq \left\{
+    B_1 &\coloneqq \left\{
       x \in C([0, 1]) \colon \begin{aligned}
         0 \leq t \leq 1 \implies 0 \leq x(t) \leq 1 \\
         x(0) = 0, x(1) = 1 \\
       \end{aligned}
     \right\}
     \\
-    A_2 \coloneqq \left\{
-      x \in A_1 \colon \begin{aligned}
+    B_2 &\coloneqq \left\{
+      x \in B_1 \colon \begin{aligned}
         0 \leq t \leq \frac 1 2 \implies 0 \leq x(t) \leq \frac 1 2 \\
         \frac 1 2 \leq t \leq 1 \implies \frac 1 2 \leq x(t) \leq 1
       \end{aligned}
     \right\}
     \\
-    A_3 \coloneqq \left\{
-      x \in A_1 \colon \begin{aligned}
+    B_3 &\coloneqq \left\{
+      x \in B_1 \colon \begin{aligned}
         0 \leq t \leq \frac 1 2 \implies 0 \leq x(t) \leq \frac 2 3 \\
         \frac 1 2 \leq t \leq 1 \implies \frac 1 3 \leq x(t) \leq 1
       \end{aligned}
     \right\}
   \end{align*}
 
-  Then \( \alpha(A_1) = 1, \alpha(A_2) = \frac 1 2, \alpha(A_3) = \frac 1 3 \) and \( \beta(A_1) = \beta(A_2) = \beta(A_3) = \frac 1 2 \).
+  Then \( \alpha(B_1) = 1, \alpha(B_2) = \frac 1 2, \alpha(B_3) = \frac 1 3 \) and \( \beta(B_1) = \beta(B_2) = \beta(B_3) = \frac 1 2 \).
 \end{example}
 \begin{proof}
   Since the distance between any two functions from \( B_1 \) is at most 1, we have that \( \Diam B_1 = 1 \) and \( \alpha(B_1) \leq 1 \).
@@ -54,26 +54,56 @@ Let \( (X, \mu) \) be a metric space\Tinyref{def:metric_space}. Let \( \Cal{B} \
     x < 2 \delta_f \implies f(x) < \varepsilon.
   \end{equation*}
 
-  \begin{figure}[ht]
-    \begin{equation*}
-      \begin{tikzpicture}[scale=3]
-        \draw[->] (0, 0) -- (1, 0);
-        \draw[->] (0, 0) -- (0, 1);
+  \begin{figure}\label{ex:noncompactness_measures/spike_plot}
+    \centering
+    \begin{mplibcode}
+      input plotting;
+      u := 4cm;
+      e := 0.16; % epsilon
+      d := sqrt(e); % delta
 
-        \draw[domain=0:1, variable=\x] plot ({\x}, {\x^2}) node[right] {\( f \)};
+      vardef f(expr x) =
+        x ** 2
+      enddef;
 
-        \draw (1/2, 1) node[left] {\( T_\varepsilon(f) \)};
-        \draw[domain=0:0.1, variable=\x] plot ({\x}, {10 * \x});
-        \draw[domain=0.1:0.2, variable=\x] plot ({\x}, {0.04 + (1 - 0.04) * (2 - 10 * \x)});
-        \draw[domain=0.2:1, variable=\x] plot ({\x}, {\x^2});
-      \end{tikzpicture}
-    \end{equation*}
+      vardef tf(expr x) =
+        if x < d / 2:
+          (2 / d) * x
+        elseif x < d:
+          f(d) + (1 - f(d)) * ((2 / d) * (d - x))
+        else:
+          f(x)
+        fi
+      enddef;
+
+      beginfig(1)
+        draw (0, 0) -- (u,  0);
+        draw (0, 0) -- (0, u);
+
+        drawoptions(dashed withdots scaled 0.3);
+        draw (0, e) * u -- (1, e) * u;
+        label.lft("$\varepsilon$", (0, e) * u);
+
+        draw (d, 0) * u -- (d, e) * u;
+        label.bot("$\delta$", (d, 0) * u);
+        drawoptions();
+
+        draw path_of_plot(f, 0, 1, 0.01, u);
+        label.rt("$f$", (0.75, 0.5) * u);
+
+        drawoptions(dashed evenly);
+        draw path_of_plot(tf, 0, d, 0.01, u);
+        drawoptions();
+        label.rt("$T_\varepsilon(f)$", (0.3, 0.7) * u);
+      endfig;
+    \end{mplibcode}
+    \caption{The operator $T_\varepsilon$ adds \enquote{spikes} to functions.}
   \end{figure}
 
   Define
   \begin{align*}
     T_\varepsilon(f)(x) \coloneqq \begin{cases}
-      \frac x \delta_f, &0 \leq x < \delta_f \\
+      \frac x {\delta_f}, &0 \leq x < \delta_f \\
       f(\delta_f) + [1 - f(\delta_f)] (2 - \frac x {\delta_f}), &\delta_f \leq x < 2 \delta_f \\
       f(x), &x \geq 2 \delta_f,
     \end{cases}
@@ -157,28 +187,65 @@ Let \( (X, \mu) \) be a metric space\Tinyref{def:metric_space}. Let \( \Cal{B} \
     \end{cases}
   \end{align*}
 
-  \begin{figure}[ht]
-    \begin{equation*}
-      \begin{tikzpicture}[scale=5]
-        \draw[->] (0, 0) -- (1, 0);
-        \draw[->] (0, 0) -- (0, 1);
-        \draw[domain=0:4/10, thick, variable=\x] plot ({\x}, {0});
-        \draw[domain=4/10:6/10, thick, variable=\x] plot ({\x}, {5 * \x - 2}) node[left] {\( g \)};
-        \draw[domain=6/10:1, thick, variable=\x] plot ({\x}, {1});
+  \begin{figure}\label{ex:noncompactness_measures/sigmoid_plot}
+    \centering
+    \begin{mplibcode}
+      input plotting;
 
-        \draw[densely dotted] (0, 6/10) node[left] {\( f_k(\frac 1 2) - \varepsilon \)} -- (1, 6/10);
-        \draw[densely dotted] (0, 8/10) node[left] {\( f_k(\frac 1 2) + \varepsilon \)} -- (1, 8/10);
+      u := 6cm;
+      e := 0.1; % epsilon
 
-        \draw[densely dotted] (4/10, 0) -- (4/10, 1);
-        \draw (3/10, -1/10) node {\( \frac {1 - \delta} 2 \)};
-        \draw[densely dotted] (1/2, 0) -- (1/2, 1);
-        \draw (1/2, -1/10) node {\( \frac 1 2 \)};
-        \draw[densely dotted] (6/10, 0) -- (6/10, 1);
-        \draw (7/10, -1/10) node {\( \frac {1 + \delta} 2 \)};
+      vardef f_k(expr x) =
+        1 - 1 / (1 + exp(2 - 3 * x))
+      enddef;
 
-        \draw[domain=-1/10:1, dash dot, variable=\x] plot ({\x}, {2/10 + 1 / (1 + e^(5/3*(1-2*\x)))}) node[right] {\( f_k \)};
-      \end{tikzpicture}
-    \end{equation*}
+      vardef g(expr x) =
+        if x < (1 - d) / 2:
+          0
+        elseif x < (1 + d) / 2:
+          (2x + d - 1) / 2d
+        else:
+          1
+        fi
+      enddef;
+
+      f_minus := f_k(0.5) - e;
+      f_plus := f_k(0.5) + e;
+      d := (ln(1 / (1 - f_plus) - 1) - ln(1 / (1 - f_minus) - 1)) / 3; % delta
+      d_minus := (1 - d) / 2;
+      d_plus := (1 + d) / 2;
+
+      beginfig(1)
+        draw (-0.1, 0) -- (u,  0);
+        draw (0, 0) -- (0, u);
+
+        drawoptions(dashed withdots scaled 0.3);
+        draw (0, f_minus) * u -- (1, f_minus) * u;
+        label.lft("$f_k(\frac 1 2) - \varepsilon$", (0, f_minus) * u);
+
+        draw (0, f_plus) * u -- (1, f_plus) * u;
+        label.lft("$f_k(\frac 1 2) + \varepsilon$", (0, f_plus) * u);
+
+        draw (0.5, 0) * u -- (0.5, 1) * u;
+        label.bot("$\frac 1 2$", (0.5, 0) * u);
+
+        draw (d_minus, 0) * u -- (d_minus, 1) * u;
+        label.bot("$\frac {1 - \delta} 2$", (d_minus, 0) * u);
+
+        draw (d_plus, 0) * u -- (d_plus, 1) * u;
+        label.bot("$\frac {1 + \delta} 2$", (d_plus, 0) * u);
+        drawoptions();
+
+        drawoptions(dashed evenly);
+        draw path_of_plot(f_k, -0.1, 1, 0.01, u);
+        label.rt("$f_k$", (1, f_k(1)) * u);
+        drawoptions();
+
+        draw path_of_plot(g, 0, 1, 0.005, u);
+        label.lft("$g$", (d_minus, 0.1) * u);
+      endfig;
+    \end{mplibcode}
+    \caption{The function $g$ always has points that are far enough from all $f_k, k = 1, \ldots, n$.}
   \end{figure}
 
   If \( f_k(\tfrac 1 2) \geq \frac 1 2 \), then \( f_k(\tfrac {1 - \delta} 2) > \tfrac 1 2 - \varepsilon \) and
