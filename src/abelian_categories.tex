@@ -28,20 +28,58 @@
 
     \item the following diagram commutes for all objects \( A, B, C, D \in \Bold M \)
     \begin{equation*}
-      \begin{tikzcd}
-                                                                                                                                   & (A \otimes B) \otimes (C \otimes D) \arrow[rd, "{\alpha_{(A \otimes B), C, D}}"] &                                                                                 \\
-        A \otimes (B \otimes (C \otimes D)) \arrow[ru, "{\alpha_{A,B,(C \otimes D)}}"] \arrow[dd, "{\Id \otimes \alpha_{B,C,D}}"'] &                                                                                  & ((A \otimes B) \otimes C) \otimes D                                             \\
-                                                                                                                                   &                                                                                  &                                                                                 \\
-        A \otimes ((B \otimes C) \otimes D) \arrow[rr, "{\alpha_{A,(B \otimes C), D}}"]                                            &                                                                                  & (A \otimes (B \otimes C)) \otimes D \arrow[uu, "{\alpha_{A,B,C} \otimes \Id}"']
-      \end{tikzcd}
+      \begin{mplibcode}
+        u := 2cm;
+
+        beginfig(1);
+          input metapost/diagrams;
+
+          n1 := thelabel("$(A \otimes B) \otimes (C \otimes D)$", origin);
+          n2 := thelabel("$A \otimes (B \otimes (C \otimes D))$", (-2, -1) * u);
+          n3 := thelabel("$A \otimes ((B \otimes C) \otimes D)$", (-2, -2) * u);
+          n4 := thelabel("$((A \otimes B) \otimes C) \otimes D$", (2, -1) * u);
+          n5 := thelabel("$(A \otimes (B \otimes C)) \otimes D$", (2, -2) * u);
+
+          a1 := straight_arrow(n2, n1);
+          a2 := straight_arrow(n1, n4);
+          a3 := straight_arrow(n2, n3);
+          a4 := straight_arrow(n5, n4);
+          a5 := straight_arrow(n3, n5);
+
+          draw_nodes(n);
+          draw_arrows(a);
+
+          label.ulft("$\alpha_{A, B, (C \otimes D)}$", midpoint of a1);
+          label.urt("$\alpha_{(A \otimes B), C, D}$", midpoint of a2);
+          label.lft("$\Id \otimes \alpha_{B, C, D}$", midpoint of a3);
+          label.rt("$\alpha_{A, B, C} \otimes \Id$", midpoint of a4);
+          label.bot("$\alpha_{A, (B \otimes C), D}$", midpoint of a5);
+        endfig;
+      \end{mplibcode}
     \end{equation*}
 
     \item the following diagram commutes for all objects \( A, B \in \Bold M \)
     \begin{equation*}
-      \begin{tikzcd}
-        A \otimes (1 \otimes B) \arrow[rd, "\Id \otimes \lambda_b"'] \arrow[rr, "{\alpha_{A,1,B}}"] &             & (A \otimes 1) \otimes B \arrow[ld, "\rho_a \otimes \Id"] \\
-                                                                                                    & A \otimes B &
-      \end{tikzcd}
+      \begin{mplibcode}
+      	beginfig(1);
+          input metapost/diagrams;
+
+          n1 := thelabel("$A \otimes B$", origin);
+          n2 := thelabel("$A \otimes (1 \otimes B)$", (-2, 1) * u);
+          n3 := thelabel("$(A \otimes 1) \otimes B$", (2, 1) * u);
+
+          a1 := straight_arrow(n2, n1);
+          a2 := straight_arrow(n3, n1);
+          a3 := straight_arrow(n2, n3);
+
+          draw_nodes(n);
+          draw_arrows(a);
+
+          label.llft("$\Id \otimes \lambda_b$", midpoint of a1);
+          label.lrt("$\rho_a \otimes \Id$", midpoint of a2);
+          label.top("$\alpha_{A, 1, B}$", midpoint of a3);
+        endfig;
+      \end{mplibcode}
     \end{equation*}
   \end{defenum}
 
@@ -49,36 +87,82 @@
 \end{definition}
 
 \begin{definition}\label{def:enriched_category}\cite{MacLane1994}[180],\cite{nLab:enriched_category}
-  Enriched categories provide additional structure to the morphism sets of locally small categories. The definition can be compared with\cref{def:category}. We say that \( \Bold C \) is an \textbf{enriched category over the small monoidal category \( \Bold M \)} if
+  Enriched categories provide additional structure to the morphism sets of locally small categories. The definition can be compared with \cref{def:category}. We say that \( \Bold C \) is an \textbf{enriched category over the small monoidal category \( \Bold M \)} if
   \begin{itemize}
-    \item there exists a class of objects, where the membership is denoted as \( A \in \Bold C \)
-    \item for each object \( A \in \Bold C \), there exists an \textbf{identity morphism} \( j_A: 1 \to \Bold{C}(A, A) \)
-    \item for each pair of objects \( A, B \in \Bold C \), there exists an object \( \Bold{C}(A, B) \) in \( \Bold M \)
+    \item there exists a class of objects, where the membership is denoted by \( A \in \Bold C \).
+    \item for each object \( A \in \Bold C \), there exists an \textbf{identity morphism} \( j_A: 1 \to \Bold{C}(A, A) \).
+    \item for each pair of objects \( A, B \in \Bold C \), there exists an object \( \Bold{C}(A, B) \) in \( \Bold M \).
     \item for each triple of objects \( A, B, C \in \Bold C \), there exists a \textbf{composition morphism} in \( \Bold M \):
     \begin{equation*}
-      \circ_{A,B,C}: {\Bold C}(B, C) \times {\Bold C}(A, B) \to {\Bold C}(A, C).
+      \circ_{A,B,C}: {\Bold C}(B, C) \times {\Bold C}(A, B) \to {\Bold C}(A, C)
     \end{equation*}
   \end{itemize}
   such that
   \begin{defenum}
     \item the following diagram commutes for all objects \( A, B, C, D \in \Bold C \)
     \begin{equation*}
-      \begin{tikzcd}
-         \Bold{C}(A, D)                                                                                                               &                                                                                                           \\
-         \Bold{C}(C, D) \otimes \Bold{C}(A, C) \arrow[u, "\circ_{A,C,D}"]                                                             & \Bold{C}(B, D) \otimes \Bold{C}(A, B) \arrow[lu, "\circ_{A,B,D}"']                                        \\
-                                                                                                                                      &                                                                                                           \\
-         \Bold{C}(C, D) \otimes (\Bold{C}(B, C) \otimes \Bold{C}(A, B)) \arrow[r, "\alpha"] \arrow[uu, "{\Id \otimes \circ_{A,B,C}}"] & (\Bold{C}(C, D) \otimes \Bold{C}(B, C)) \otimes \Bold{C}(A, B) \arrow[uu, "{\circ_{B,C,D} \otimes \Id}"']
-      \end{tikzcd}
+      \begin{mplibcode}
+        u := 2cm;
+
+        beginfig(1);
+          input metapost/diagrams;
+
+          n1 := thelabel("$C(A, D)$", origin);
+          n2 := thelabel("$C(C, D) \otimes C(A, C)$", (-2, -1) * u);
+          n3 := thelabel("$C(C, D) \otimes (C(B, C) \otimes C(A, B))$", (-2, -2) * u);
+          n4 := thelabel("$C(B, D) \otimes C(A, B)$", (2, -1) * u);
+          n5 := thelabel("$(C(C, D) \otimes C(B, C)) \otimes C(A, B)$", (2, -2) * u);
+
+          a1 := straight_arrow(n2, n1);
+          a2 := straight_arrow(n4, n1);
+          a3 := straight_arrow(n2, n3);
+          a4 := straight_arrow(n5, n4);
+          a5 := straight_arrow(n3, n5);
+
+          draw_nodes(n);
+          draw_arrows(a);
+
+          label.ulft("$\circ_{A, C, D}$", midpoint of a1);
+          label.urt("$\circ_{A, B, D}$", midpoint of a2);
+          label.lft("$\Id \otimes \circ_{A, B, C}$", midpoint of a3);
+          label.rt("$\circ_{B, C, D} \otimes \Id$", midpoint of a4);
+          label.bot("$\alpha$", midpoint of a5);
+        endfig;
+      \end{mplibcode}
     \end{equation*}
 
     \item the following diagram commutes for all objects \( A, B \in \Bold M \)
-
     \begin{equation*}
-      \begin{tikzcd}
-         \Bold{C}(B, B) \otimes \Bold{C}(A, B) \arrow[rd, "\circ_{A,B,B}"] &                & \Bold{C}(A, B) \otimes \Bold{C}(A, A) \arrow[ld, "\circ_{A,A,B}"'] \\
-                                                                           & \Bold{C}(A, B) &                                                                    \\
-         1 \otimes \Bold{C}(A, B) \arrow[ru, "\lambda"] \arrow[uu, "j"]    &                & \Bold{C}(A, B) \times 1 \arrow[uu, "j"'] \arrow[lu, "\rho"]
-      \end{tikzcd}
+      \begin{mplibcode}
+        u := 2cm;
+
+        beginfig(1);
+          input metapost/diagrams;
+
+          n1 := thelabel("$C(A, B)$", origin);
+          n2 := thelabel("$C(B, B) \otimes C(A, B)$", (-2, 1) * u);
+          n3 := thelabel("$1 \otimes C(A, B)$", (-2, -1) * u);
+          n4 := thelabel("$C(A, B) \otimes C(A, A)$", (2, 1) * u);
+          n5 := thelabel("$C(A, B) \otimes 1$", (2, -1) * u);
+
+          a1 := straight_arrow(n2, n1);
+          a2 := straight_arrow(n4, n1);
+          a3 := straight_arrow(n3, n1);
+          a4 := straight_arrow(n5, n1);
+          a5 := straight_arrow(n3, n2);
+          a6 := straight_arrow(n5, n4);
+
+          draw_nodes(n);
+          draw_arrows(a);
+
+          label.urt("$\circ_{A, B, B}$", midpoint of a1);
+          label.ulft("$\circ_{A, A, B}$", midpoint of a2);
+          label.lrt("$\lambda$", midpoint of a3);
+          label.llft("$\rho$", midpoint of a4);
+          label.lft("$j_B \otimes \Id_{C(A, B)}$", midpoint of a5);
+          label.rt("$\Id_{C(A, B)} \otimes j_A$", midpoint of a6);
+        endfig;
+      \end{mplibcode}
     \end{equation*}
   \end{defenum}
 
@@ -153,16 +237,55 @@
     \end{dcases}_{j \in \Bold I}
   \end{align*}
 
-  By the definition of product\Tinyref{def:categorical_product}, there exists a unique map \( \iota_i \) such that the following diagram commutes
+  By the definition of product\Tinyref{def:categorical_product}, there exists a unique family of morphisms \( \{ \iota_i \}_{i \in \Bold{I}} \) such that the following diagram commutes
   \begin{equation*}
-    \begin{tikzcd}
-      X_i \arrow[rd, "\Id_{X_i}"'] \arrow[rr, "\iota_i", dotted] & & X \arrow[ld, "\pi_i"] \\
-      & X_i &
-    \end{tikzcd}
-    \begin{tikzcd}
-      X_i \arrow[rd, "0_{X_i,X_j}"'] \arrow[rr, "\iota_i", dotted] & & X \arrow[ld, "\pi_i"] \\
-      & X_j &
-    \end{tikzcd}
+    \begin{mplibcode}
+    	beginfig(1);
+        input metapost/diagrams;
+
+        n1 := thelabel("$X_i$", origin);
+        n2 := thelabel("$X_i$", (-1, 1) * u);
+        n3 := thelabel("$P$", (1, 1) * u);
+
+        a1 := straight_arrow(n2, n1);
+        a2 := straight_arrow(n3, n1);
+
+        d1 := straight_arrow(n2, n3);
+
+        draw_nodes(n);
+        draw_arrows(a);
+
+        drawarrow d1 dotted;
+
+        label.llft("$\Id_{X_i}$", midpoint of a1);
+        label.lrt("$\pi_i$", midpoint of a2);
+        label.top("$\iota_i$", midpoint of d1);
+      endfig;
+    \end{mplibcode}
+    \hspace{1cm}
+    \begin{mplibcode}
+    	beginfig(1);
+        input metapost/diagrams;
+
+        n1 := thelabel("$X_i$", origin);
+        n2 := thelabel("$X_j$", (-1, 1) * u);
+        n3 := thelabel("$P$", (1, 1) * u);
+
+        a1 := straight_arrow(n2, n1);
+        a2 := straight_arrow(n3, n1);
+
+        d1 := straight_arrow(n2, n3);
+
+        draw_nodes(n);
+        draw_arrows(a);
+
+        drawarrow d1 dotted;
+
+        label.llft("$0_{X_i, X_j}$", midpoint of a1);
+        label.lrt("$\pi_i$", midpoint of a2);
+        label.top("$\iota_j$", midpoint of d1);
+      endfig;
+    \end{mplibcode}
   \end{equation*}
 
   Define \( \iota \coloneqq \{ \iota_i \}_{i \in \Bold I} \). We will prove that \( (X, \iota) \) is a coproduct\Tinyref{def:categorical_coproduct}.
@@ -177,12 +300,31 @@
     f \coloneqq \sum_{i \in I} (\gamma_i \circ \pi_i): X \to \Gamma.
   \end{equation*}
 
-  Fix \( i \in \Bold{i} \). Now we show that the following diagrams commute:
+  Fix \( i \in \Bold{I} \). Now we show that the following diagrams commute:
   \begin{equation*}
-    \begin{tikzcd}
-      \Gamma &                                                   & X \arrow[ll, "f"'] \\
-             & X_i \arrow[lu, "\gamma_i"] \arrow[ru, "\iota_i"'] &
-    \end{tikzcd}
+    \begin{mplibcode}
+    	beginfig(1);
+        input metapost/diagrams;
+
+        n1 := thelabel("$X_i$", origin);
+        n2 := thelabel("$\Gamma$", (-1, 1) * u);
+        n3 := thelabel("$X$", (1, 1) * u);
+
+        a1 := straight_arrow(n1, n2);
+        a2 := straight_arrow(n1, n3);
+
+        d1 := straight_arrow(n3, n2);
+
+        draw_nodes(n);
+        draw_arrows(a);
+
+        drawarrow d1 dotted;
+
+        label.llft("$\gamma_i$", midpoint of a1);
+        label.lrt("$\iota_i$", midpoint of a2);
+        label.top("$f$", midpoint of d1);
+      endfig;
+    \end{mplibcode}
   \end{equation*}
 
   Indeed,
@@ -221,12 +363,29 @@
   \end{align*}
 
   We claim that \( g = \Id_X \). Since \( X \) is a product, there exists a unique morphism such that the following diagram commutes for each \( i \in \Bold{I} \):
-  \begin{equation}\label{thm:preadditive_biproducts/product_identity}
-    \begin{tikzcd}
-      X \arrow[rd, "\pi_i \circ g"'] \arrow[rr, "", dotted] & & X \arrow[ld, "\pi_i"] \\
-      & X_i &
-    \end{tikzcd}
-  \end{equation}
+  \begin{AlignedEquation}\label{thm:preadditive_biproducts/product_identity}
+    \begin{mplibcode}
+    	beginfig(1);
+        input metapost/diagrams;
+
+        n1 := thelabel("$X_i$", origin);
+        n2 := thelabel("$X$", (-1, 1) * u);
+        n3 := thelabel("$X$", (1, 1) * u);
+
+        a1 := straight_arrow(n2, n1);
+        a2 := straight_arrow(n3, n1);
+        d1 := straight_arrow(n2, n3);
+
+        draw_nodes(n);
+        draw_arrows(a);
+
+        drawarrow d1 dotted;
+
+        label.llft("$g \circ \pi_i$", midpoint of a1);
+        label.lrt("$\pi_i$", midpoint of a2);
+      endfig;
+    \end{mplibcode}
+  \end{AlignedEquation}
 
   Both \( g \) and \( \Id_X \) satisfy the universal property in \cref{thm:preadditive_biproducts/product_identity}, hence they are equal.
 
@@ -238,13 +397,13 @@
   But
   \begin{align*}
     f - f'
-    =
+    &=
     (f - f') \circ \Id_X
-    =
+    = \\ &=
     (f - f') \circ \left( \sum_{i \in \Bold{I}} \iota_i \circ \pi_i \right)
-    =
+    = \\ &=
     \sum_{i \in \Bold{I}} ((f \circ \iota_i) \circ \pi_i - (f' \circ \iota_i) \circ \pi_i)
-    = \\ =
+    = \\ &=
     \sum_{i \in \Bold{I}} (\gamma_i \circ \pi_i - \gamma_i \circ \pi_i)
     =
     0_{\Gamma,X},
@@ -299,15 +458,21 @@
 \end{proposition}
 
 \begin{definition}\label{def:exact_morphism_pair}\cite{MacLane1994}[196]
-  In an abelian category \( \Bold C \), a composable pair of morphisms \( f: A \to B \) and \( g: B \to C \) is said to be \textbf{exact at \( B \)} if \( \Img f \equiv \ker g \) as subobjects of \( B \) (or, equivalently, \( \Coker f \equiv \Coimg g \); see \cref{def:categorical_subobject}).
+  In an abelian category \( \Bold C \), a composable pair of morphisms \( f: A \to B \) and \( g: B \to C \) is said to be \textbf{exact} at \( B \) if \( \Img f \equiv \ker g \) as subobjects of \( B \) (or, equivalently, \( \Coker f \equiv \Coimg g \); see \cref{def:categorical_subobject}).
 \end{definition}
 
 \begin{definition}\label{def:short_exact_sequence}\cite{MacLane1994}[196]
   In an abelian category \( \Bold C \), the tower diagram\Tinyref{def:tower_diagram}
   \begin{equation}\label{def:short_exact_sequence/diagram}
-    \begin{tikzcd}
-      0 \arrow[r, "\iota"] & A \arrow[r, "i"] & B \arrow[r, "p"] & C \arrow[r, "\pi"] & 0
-    \end{tikzcd}
+    0
+    \overset \iota \longrightarrow
+    A
+    \overset i \longrightarrow
+    B
+    \overset p \longrightarrow
+    C
+    \overset \pi \longrightarrow
+    0
   \end{equation}
   is called a \textbf{short exact sequence (SES)} if it is exact at \( A \), \( B \) and \( C \) (in the sense of~\cref{def:exact_morphism_pair}).
 
@@ -325,28 +490,109 @@
 \begin{definition}\label{def:exact_sequence_morphisms}\cite{MacLane1994}[198]
   Consider the two short exact sequences over the same category \( \Bold C \):
   \begin{equation*}
-    \begin{tikzcd}
-      0 \arrow[r] & A \arrow[r, "i"]   & B \arrow[r, "p"]   & C \arrow[r]  & 0 \\
-      0 \arrow[r] & A' \arrow[r, "i'"] & B' \arrow[r, "p'"] & C' \arrow[r] & 0
-    \end{tikzcd}
-  \end{equation*}
-  We say that the triple \( f = (f_A: A \to A', f_B: B \to B', f_C: C \to C') \) is a \textbf{morphism of the short exact sequences} if the following diagram commutes:
-  \begin{equation*}
-    \begin{tikzcd}
-      0 \arrow[r] & A \arrow[r, "i"] \arrow[d, "f_A"] & B \arrow[r, "p"] \arrow[d, "f_B"] & C \arrow[r] \arrow[d, "f_C"] & 0 \\
-      0 \arrow[r] & A' \arrow[r, "i'"]                & B' \arrow[r, "p'"]                & C' \arrow[r]                 & 0
-    \end{tikzcd}
-  \end{equation*}
+    \begin{mplibcode}
+      beginfig(1);
+        input metapost/diagrams;
 
+        n1 := thelabel("$0$", origin);
+        n2 := thelabel("$A$", (1, 0) * u);
+        n3 := thelabel("$B$", (2, 0) * u);
+        n4 := thelabel("$C$", (3, 0) * u);
+        n5 := thelabel("$0$", (4, 0) * u);
+
+        n6 := thelabel("$0$", (0, -1) * u);
+        n7 := thelabel("$A'$", (1, -1) * u);
+        n8 := thelabel("$B'$", (2, -1) * u);
+        n9 := thelabel("$C'$", (3, -1) * u);
+        n10 := thelabel("$0$", (4, -1) * u);
+
+        a1 := straight_arrow(n1, n2);
+        a2 := straight_arrow(n2, n3);
+        a3 := straight_arrow(n3, n4);
+        a4 := straight_arrow(n4, n5);
+
+        a5 := straight_arrow(n6, n7);
+        a6 := straight_arrow(n7, n8);
+        a7 := straight_arrow(n8, n9);
+        a8 := straight_arrow(n9, n10);
+
+        draw_nodes(n);
+        draw_arrows(a);
+
+        label.top("$i$", midpoint of a2);
+        label.top("$p$", midpoint of a3);
+
+        label.top("$i'$", midpoint of a6);
+        label.top("$p'$", midpoint of a7);
+      endfig;
+    \end{mplibcode}
+  \end{equation*}
+  We say that the triple
+  \begin{equation*}
+    f = (f_A: A \to A', f_B: B \to B', f_C: C \to C')
+  \end{equation*}
+  is a \textbf{homomorphism of short exact sequences} if the following diagram commutes:
+  \begin{equation*}
+    \begin{mplibcode}
+    	beginfig(1);
+        input metapost/diagrams;
+
+        n1 := thelabel("$0$", origin);
+        n2 := thelabel("$A$", (1, 0) * u);
+        n3 := thelabel("$B$", (2, 0) * u);
+        n4 := thelabel("$C$", (3, 0) * u);
+        n5 := thelabel("$0$", (4, 0) * u);
+
+        n6 := thelabel("$0$", (0, -1) * u);
+        n7 := thelabel("$A'$", (1, -1) * u);
+        n8 := thelabel("$B'$", (2, -1) * u);
+        n9 := thelabel("$C'$", (3, -1) * u);
+        n10 := thelabel("$0$", (4, -1) * u);
+
+        a1 := straight_arrow(n1, n2);
+        a2 := straight_arrow(n2, n3);
+        a3 := straight_arrow(n3, n4);
+        a4 := straight_arrow(n4, n5);
+
+        a5 := straight_arrow(n6, n7);
+        a6 := straight_arrow(n7, n8);
+        a7 := straight_arrow(n8, n9);
+        a8 := straight_arrow(n9, n10);
+
+        a9 := straight_arrow(n2, n7);
+        a10 := straight_arrow(n3, n8);
+        a11 := straight_arrow(n4, n9);
+
+        draw_nodes(n);
+        draw_arrows(a);
+
+        label.top("$i$", midpoint of a2);
+        label.top("$p$", midpoint of a3);
+
+        label.bot("$i'$", midpoint of a6);
+        label.bot("$p'$", midpoint of a7);
+
+        label.rt("$f_A$", midpoint of a9);
+        label.rt("$f_B$", midpoint of a10);
+        label.rt("$f_C$", midpoint of a11);
+      endfig;
+    \end{mplibcode}
+  \end{equation*}
   If each component of \( f \) is an isomorphism, we say that the short exact sequences are \textbf{isomorphic}.
 \end{definition}
 
 \begin{definition}\label{def:split_exact_sequence}\cite{nLab:split_exact_sequence}
   A short exact sequence
   \begin{equation}\label{def:split_exact_sequence/short_diagram}
-    \begin{tikzcd}
-      0 \arrow[r] & A \arrow[r, "i"] & B \arrow[r, "p"] & C \arrow[r] & 0
-    \end{tikzcd}
+    0
+    \longrightarrow
+    A
+    \overset i \longrightarrow
+    B
+    \overset p \longrightarrow
+    C
+    \longrightarrow
+    0
   \end{equation}
   is said to be \textbf{splitting} or \textbf{split exact} if any of the following equivalent conditions hold:
   \begin{defenum}
@@ -354,9 +600,15 @@
     \item \( p \) has a right inverse
     \item the sequence~\cref{def:split_exact_sequence/short_diagram} is isomorphic to the SES
     \begin{equation}\label{def:short_exact_sequence/split_diagram}
-      \begin{tikzcd}
-        0 \arrow[r] & A \arrow[r] & A \otimes C \arrow[r] & C \arrow[r] & 0
-      \end{tikzcd}
+      0
+      \longrightarrow
+      A
+      \longrightarrow
+      A \otimes C
+      \longrightarrow
+      C
+      \longrightarrow
+      0
     \end{equation}
     with the canonical injection and projection morphisms
   \end{defenum}
@@ -369,9 +621,15 @@
   \begin{defenum}
     \DItem{ex:short_exact_sequences/cyclic_groups} Fix a natural number \( n > 0 \) and consider the category of \( \Bold{Ab} \) of abelian groups and the following short exact sequence:
     \begin{equation*}
-      \begin{tikzcd}
-        0 \arrow[r] & \BB{Z} \arrow[r, "n \cdot"] & \BB{Z} \arrow[r, "\lbrack \cdot \rbrack_n"] & \BB{Z} / n \BB{Z} \arrow[r] & 0
-      \end{tikzcd}
+      0
+      \longrightarrow
+      \BB{Z}
+      \overset {n \cdot} \longrightarrow
+      \BB{Z}
+      \overset {\lbrack \cdot \rbrack_n} \longrightarrow
+      \BB{Z} / n \BB{Z}
+      \longrightarrow
+      0
     \end{equation*}
     where
     \begin{itemize}
@@ -383,9 +641,15 @@
 
     \DItem{ex:short_exact_sequences/real_number_splitting} Consider the additive groups \( \BB{Z} \), \( \BB{R} \) and the unit circle group \( S_{\BB{R}^2} \) with the group operation given by addition of polar angles and with the vector \( (1, 0)^T \) as a unit.
     \begin{equation*}
-      \begin{tikzcd}
-        0 \arrow[r] & \BB{Z} \arrow[r, "i"] & \BB{R} \arrow[r, "p"] & S_{\BB{R}^2} \arrow[r] & 0
-      \end{tikzcd}
+      0
+      \longrightarrow
+      \BB{Z}
+      \overset i \longrightarrow
+      \BB{R}
+      \overset p \longrightarrow
+      S_{\BB{R}^2}
+      \longrightarrow
+      0
     \end{equation*}
     where
     \begin{itemize}
@@ -399,22 +663,34 @@
 
     \DItem{ex:short_exact_sequences/vector_space_sum} The following SES of real vector spaces splits
     \begin{equation*}
-      \begin{tikzcd}[ampersand replacement=\&]
-        0 \arrow[r] \& \BB{R} \arrow[r, "{\begin{pmatrix}1 \\ 0\end{pmatrix}}"] \& \BB{R}^2 \arrow[r, "{\begin{pmatrix}0 & 1\end{pmatrix}}"] \& \BB{R} \arrow[r] \& 0
-      \end{tikzcd}
+      0
+      \longrightarrow
+      A
+      \overset {\left(\begin{smallmatrix}1 \\ 0\end{smallmatrix}\right)} \longrightarrow
+      B
+      \overset {\left(\begin{smallmatrix}0 & 1\end{smallmatrix}\right)} \longrightarrow
+      C
+      \longrightarrow
+      0
     \end{equation*}
     since all of the following equivalent conditions hold
     \begin{itemize}
-      \item \( \begin{pmatrix}1 & 0\end{pmatrix} \) is a left inverse to \( \begin{pmatrix}1 \\ 0\end{pmatrix} \)
-      \item \( \begin{pmatrix}0 \\ 1\end{pmatrix} \) is a right inverse to \( \begin{pmatrix}0 & 1\end{pmatrix} \)
+      \item \( \left(\begin{smallmatrix}1 & 0\end{smallmatrix}\right) \) is a left inverse to \( \left(\begin{smallmatrix}1 \\ 0\end{smallmatrix}\right) \)
+      \item \( \left(\begin{smallmatrix}0 \\ 1\end{smallmatrix}\right) \) is a right inverse to \( \left(\begin{smallmatrix}0 & 1\end{smallmatrix}\right) \)
       \item \( \BB{R}^2 \) is a direct product and a biproduct of two copies of \( \BB{R} \)
     \end{itemize}
 
     \DItem{ex:short_exact_sequences/fundamental_theorem_of_calculus} The fundamental theorem of calculus is a splitting of the SES of vector spaces
     \begin{equation*}
-      \begin{tikzcd}
-        0 \arrow[r] & \BB{R} \arrow[r] & C^n(\BB{R}, \BB{R}) \arrow[r, "\frac d {dx}"] & C^{n-1}(\BB{R}, \BB{R}) \arrow[r] & 0.
-      \end{tikzcd}
+      0
+      \longrightarrow
+      \BB{R}
+      \longrightarrow
+      C^n(\BB{R}, \BB{R})
+      \overset {\frac d {dx}} \longrightarrow
+      C^{n-1}(\BB{R}, \BB{R})
+      \longrightarrow
+      0
     \end{equation*}
   \end{defenum}
 \end{example}
@@ -422,9 +698,15 @@
 \begin{definition}\label{def:chain_complex}\cite{nLab:chain_complex}
   In an abelian category \( \Bold{C} \), the tower diagram\Tinyref{def:tower_diagram} with objects \( \{ C_n \}_{n \in \BB{Z}} \) and morphisms \( \partial_n: C_n \to C_{n-1} \)
   \begin{equation}\label{def:chain_complex/chain_diagram}
-    \begin{tikzcd}
-      \ldots \arrow[r, "\partial_2"] & C_1 \arrow[r, "\partial_1"] & C_0 \arrow[r, "\partial_0"] & C_{-1} \arrow[r, "\partial_{-1}"] & \ldots
-    \end{tikzcd}
+    \cdots
+    \overset {\partial_2} \longrightarrow
+    C_1
+    \overset {\partial_1} \longrightarrow
+    C_0
+    \overset {\partial_0} \longrightarrow
+    C_{-1}
+    \overset {\partial_{-1}} \longrightarrow
+    \cdots
   \end{equation}
   is called a \textbf{chain complex} if for every \( n \),
   \begin{equation*}
@@ -435,9 +717,15 @@
 
   A \textbf{cochain complex} is a chain complex on \( \Bold{C}^{\Op} \), i.e.
   \begin{equation}\label{def:chain_complex/cochain_diagram}
-    \begin{tikzcd}
-      \ldots & C_1 \arrow[l, "\partial_1"'] & C_0 \arrow[l, "\partial_0"'] & C_{-1} \arrow[l, "\partial_{-1}"'] & \ldots \arrow[l, "\partial_{-2}"']
-    \end{tikzcd}
+    \cdots
+    \overset {\partial_1} \longleftarrow
+    C_1
+    \overset {\partial_0} \longleftarrow
+    C_0
+    \overset {\partial_{-1}} \longleftarrow
+    C_{-1}
+    \overset {\partial_{-2}} \longleftarrow
+    \cdots
   \end{equation}
   such that for any \( n \),
   \begin{equation*}
