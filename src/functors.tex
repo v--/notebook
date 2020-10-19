@@ -46,30 +46,36 @@
 
     \item If \( \Bold I \) is not discrete, a diagram \( D: \Bold I \to \Bold A \) also involves morphisms. For example, if \( \Bold I \) is a three-object category with two morphisms as in the following picture
     \begin{equation*}
-      \begin{tikzcd}
-        \bullet \arrow[r] & \bullet \arrow[r] & \bullet,
-      \end{tikzcd}
+      \bullet \longrightarrow \bullet \longrightarrow \bullet,
     \end{equation*}
     we can interpret a diagram \( D \) of shape \( \Bold I \) as a selection of objects and morphisms in \( \Bold A \) that satisfy the same relations as in \( \Bold I \):
     \begin{equation*}
-      \begin{tikzcd}
-        A \arrow[r, "f"] & B \arrow[r, "g"] & C.
-      \end{tikzcd}
+      A
+      \overset f \longrightarrow
+      B
+      \overset g \longrightarrow
+      C.
     \end{equation*}
   \end{defenum}
 \end{example}
 
 \begin{definition}\label{def:tower_diagram}
-  Let \( N \) be a subset of \( \BB{Z} \) and let \( \Bold{C} \) be any category. A \textbf{tower diagram in \( \Bold{C} \)} is an injective on objects (as a function) diagram \( D: N \to \Bold{C} \) over the poset category\Tinyref{def:poset_category}, i.e.
+  Let \( N \) be a subset of \( \BB{Z} \) and let \( \Bold{C} \) be any category. A \textbf{tower diagram} in \( \Bold{C} \) is an injective on objects (as a function) diagram \( D: N \to \Bold{C} \) over the poset category\Tinyref{def:poset_category}, i.e.
   \begin{equation}\label{def:tower_diagram/diagram}
-    \begin{tikzcd}
-      \ldots \arrow[r] & \bullet \arrow[r] & \bullet \arrow[r] & \bullet \arrow[r] & \ldots
-    \end{tikzcd}
+    \cdots \longrightarrow \bullet \longrightarrow \bullet \longrightarrow \bullet \longrightarrow \cdots
   \end{equation}
 \end{definition}
 
 \begin{definition}\label{def:commutative_diagram}
-  A diagram \( D \) is said to be \textbf{commutative} if, whenever we have two chains of morphisms \( X \overset {f_1} \to A_1 \overset {f_2} \to \ldots \overset {f_{n-1}} \to A_{n-1} \overset {f_n} \to Y \) and \( X \overset {g_1} \to B_1 \overset {g_2} \to \ldots \overset {g_{m-1}} \to B_{m-1} \overset {f_m} \to Y \) in the diagram, where \( n > 0 \) and \( m > 0 \), then necessarily
+  A diagram \( D \) is said to be \textbf{commutative} if, whenever we have two chains of morphisms
+  \begin{align*}
+    X \overset {f_1} \longrightarrow A_1 \overset {f_2} \longrightarrow \ldots \overset {f_{n-1}} \longrightarrow A_{n-1} \overset {f_n} \longrightarrow Y
+  \end{align*}
+  and
+  \begin{align*}
+    X \overset {g_1} \longrightarrow B_1 \overset {g_2} \longrightarrow \ldots \overset {g_{m-1}} \longrightarrow B_{m-1} \overset {f_m} \longrightarrow Y
+  \end{align*}
+  in the diagram, where \( n > 0 \) and \( m > 0 \), then necessarily
   \begin{equation*}
     f_n \circ \ldots \circ f_1 = g_m \circ \ldots \circ g_1.
   \end{equation*}
@@ -80,10 +86,26 @@
 \begin{example}\label{ex:commutative_diagrams}
   Consider the diagram
   \begin{equation*}
-    \begin{tikzcd}
-                         & A \arrow[ld, "f"'] \arrow[rd, "g"] & \\
-      B \arrow[rr, "h"'] &                                    & C
-    \end{tikzcd}
+    \begin{mplibcode}
+      beginfig(1);
+        input metapost/diagrams;
+
+        n1 := thelabel("$A$", origin);
+        n2 := thelabel("$B$", (-1, -1) * u);
+        n3 := thelabel("$C$", (1, -1) * u);
+
+        a1 := straight_arrow(n1, n2);
+        a2 := straight_arrow(n1, n3);
+        a3 := straight_arrow(n2, n3);
+
+        draw_nodes(n);
+        draw_arrows(a);
+
+        label.ulft("$f$", line_midpoint of a1);
+        label.urt("$g$", line_midpoint of a2);
+        label.bot("$h$", line_midpoint of a3);
+      endfig;
+    \end{mplibcode}
   \end{equation*}
 
   It is commutative if and only if \( h \circ f = g \).
@@ -161,22 +183,56 @@
 
   A \textbf{natural transformation} \( \alpha: F \to G \) is a family \( \{ \alpha_A: F(A) \to G(A) \}_{A \in \Bold A} \) of morphisms in \( \Bold B \) such that for every morphism \( f: A \to A' \) in \( \Bold A \), the diagram
   \begin{equation*}
-    \begin{tikzcd}
-      F(A) \arrow[r, "F(f)"] \arrow[d, "\alpha_A"] & F(A') \arrow[d, "\alpha_{A'}"] \\
-      G(A) \arrow[r, "G(f)"]                       & G(A')
-    \end{tikzcd}
+    \begin{mplibcode}
+      beginfig(1);
+        input metapost/diagrams;
+
+        n1 := thelabel("$F(A)$", origin);
+        n2 := thelabel("$G(A)$", (0, -1) * u);
+        n3 := thelabel("$F(A')$", (2, 0) * u);
+        n4 := thelabel("$G(A')$", (2, -1) * u);
+
+        a1 := straight_arrow(n1, n2);
+        a2 := straight_arrow(n1, n3);
+        a3 := straight_arrow(n2, n4);
+        a4 := straight_arrow(n3, n4);
+
+        draw_nodes(n);
+        draw_arrows(a);
+
+        label.lft("$\alpha_A$", line_midpoint of a1);
+        label.top("$F(f)$", line_midpoint of a2);
+        label.bot("$G(f)$", line_midpoint of a3);
+        label.rt("$\alpha_{A'}$", line_midpoint of a4);
+      endfig;
+    \end{mplibcode}
   \end{equation*}
   commutes.
 
   The morphisms \( \alpha_A \) are called the components of \( \alpha \). We denote natural transformations using
   \begin{equation*}
-    \begin{tikzcd}[column sep=huge]
-      \Bold A
-        \arrow[r, bend left, "F"]{}[name=F]{}
-        \arrow[r, bend right, "G"']{}[name=G]{} &
-      \Bold B
-        \arrow[shorten <= 0.5em, Rightarrow,to path={(F) -- node[label=right:\( \alpha \)] {} (G)}]{}
-    \end{tikzcd}
+    \begin{mplibcode}
+      u := 1cm;
+
+      beginfig(1);
+        input metapost/diagrams;
+
+        n1 := thelabel("$\mathbf{A}$", origin);
+        n2 := thelabel("$\mathbf{B}$", (2, 0) * u);
+
+        a1 := curved_arrow(n1, n2, (0, safe_arrow_curvature));
+        a2 := curved_arrow(n1, n2, (0, -safe_arrow_curvature));
+
+        draw_nodes(n);
+        draw_arrows(a);
+
+        label.top("$F$", curve_midpoint of a1);
+        label.bot("$G$", curve_midpoint of a2);
+
+        draw_vertical_double_arrow((1, 0) * u);
+        label.rt("$\alpha$", (1, 0) * u);
+      endfig;
+    \end{mplibcode}
   \end{equation*}
 
   The natural transformation from \( F \) to \( F \) composed of identity morphisms is called the \textbf{identity natural transformation}.
@@ -226,17 +282,36 @@
 \begin{definition}\label{def:natural_transformation_horizontal_composition}\cite[remarks 1.3.24]{Leinster2014}
   Let \( \Bold A \), \( \Bold B \) and \( \Bold C \) be categories, \( F, G: \Bold A \to \Bold B \) and \( F', G': \Bold B \to \Bold C \) be functors and \( \alpha: F \to G \) and \( \alpha': F' \to G' \) be natural transformations.
   \begin{equation*}
-    \begin{tikzcd}[column sep=huge]
-      \Bold A
-        \arrow[r, bend left, "F"]{}[name=F]{}
-        \arrow[r, bend right, "G"']{}[name=G]{} &
-      \Bold B
-        \arrow[shorten <= 0.5em, Rightarrow,to path={(F) -- node[label=right:\( \alpha \)] {} (G)}]{}
-        \arrow[r, bend left, "F'"]{}[name=F']{}
-        \arrow[r, bend right, "G'"']{}[name=G']{} &
-      \Bold C
-        \arrow[shorten <= 0.5em, Rightarrow,to path={(F') -- node[label=right:\( \alpha' \)] {} (G')}]{}
-    \end{tikzcd}
+    \begin{mplibcode}
+      u := 1cm;
+
+      beginfig(1);
+        input metapost/diagrams;
+
+        n1 := thelabel("$\mathbf{A}$", origin);
+        n2 := thelabel("$\mathbf{B}$", (2, 0) * u);
+        n3 := thelabel("$\mathbf{C}$", (4, 0) * u);
+
+        a1 := curved_arrow(n1, n2, (0, safe_arrow_curvature));
+        a2 := curved_arrow(n1, n2, (0, -safe_arrow_curvature));
+        a3 := curved_arrow(n2, n3, (0, safe_arrow_curvature));
+        a4 := curved_arrow(n2, n3, (0, -safe_arrow_curvature));
+
+        draw_nodes(n);
+        draw_arrows(a);
+
+        label.top("$F$", curve_midpoint of a1);
+        label.bot("$G$", curve_midpoint of a2);
+        label.top("$F'$", curve_midpoint of a3);
+        label.bot("$G'$", curve_midpoint of a4);
+
+        draw_vertical_double_arrow((1, 0) * u);
+        label.rt("$\alpha$", (1, 0) * u);
+
+        draw_vertical_double_arrow((3, 0) * u);
+        label.rt("$\alpha'$", (3, 0) * u);
+      endfig;
+    \end{mplibcode}
   \end{equation*}
 
   We define the natural transformation
@@ -316,19 +391,54 @@
     \item The objects in \( (F \downarrow G) \) are triples \( (A, h, B) \) where \( A \in \Bold A \), \( B \in \Bold B \) and \( F(A) \overset h \to G(B) \).
     \item The morphisms from \( (A, h, B) \) to \( (A', h', B') \) are pairs \( (f, g) \in \Bold{A}(A, A') \times \Bold{B}(B, B') \) such that the following diagram commutes:
     \begin{equation}\label{def:comma_category/universal_property}
-      \begin{tikzcd}
-        F(A) \arrow[r, "F(f)"] \arrow[d, "h"'] & F(A') \arrow[d, "h'"] \\
-        G(B) \arrow[r, "G(g)"']                & G(B')
-      \end{tikzcd}
+      \begin{mplibcode}
+        beginfig(1);
+          input metapost/diagrams;
+
+          n1 := thelabel("$F(A)$", origin);
+          n2 := thelabel("$G(B)$", (0, -1) * u);
+          n3 := thelabel("$F(A')$", (2, 0) * u);
+          n4 := thelabel("$G(B')$", (2, -1) * u);
+
+          a1 := straight_arrow(n1, n2);
+          a2 := straight_arrow(n1, n3);
+          a3 := straight_arrow(n2, n4);
+          a4 := straight_arrow(n3, n4);
+
+          draw_nodes(n);
+          draw_arrows(a);
+
+          label.lft("$h$", line_midpoint of a1);
+          label.top("$F(f)$", line_midpoint of a2);
+          label.bot("$G(g)$", line_midpoint of a3);
+          label.rt("$h'$", line_midpoint of a4);
+        endfig;
+      \end{mplibcode}
     \end{equation}
   \end{itemize}
 
   As a special case, if \( \Bold A \) is the one-object category, then \( F \) necessarily \enquote{selects} an object \( C \in \Bold C \). Thus, we can define the comma category \( (C \downarrow G) \), in which objects may be regarded as pairs \( (h, B) \) rather than triples and the diagram for morphisms looks like
   \begin{equation*}
-    \begin{tikzcd}
-                               & C \arrow[ld, "h"'] \arrow[rd, "h'"] & \\
-      G(B) \arrow[rr, "G(g)"'] &                                     & G(B')
-    \end{tikzcd}
+    \begin{mplibcode}
+      beginfig(1);
+        input metapost/diagrams;
+
+        n1 := thelabel("$C$", origin);
+        n2 := thelabel("$G(B)$", (-1, -1) * u);
+        n3 := thelabel("$G(B')$", (1, -1) * u);
+
+        a1 := straight_arrow(n1, n2);
+        a2 := straight_arrow(n1, n3);
+        a3 := straight_arrow(n2, n3);
+
+        draw_nodes(n);
+        draw_arrows(a);
+
+        label.ulft("$h$", line_midpoint of a1);
+        label.urt("$h'$", line_midpoint of a2);
+        label.bot("$G(g)$", line_midpoint of a3);
+      endfig;
+    \end{mplibcode}
   \end{equation*}
 
   Analogously, we can also define the category \( (F \downarrow C) \) by regarding \( G \) and not \( F \) as a functor from the one-object category.
@@ -402,10 +512,29 @@
 
   We need to show that \( g \) is inverse to \( f \). We will use the commutativity of the following diagram:
   \begin{equation*}
-    \begin{tikzcd}
-      H_A(A) \arrow[d, "\alpha_A"'] & H_A(A') \arrow[d, "\alpha_{A'}"] \arrow[l, "H_A(f)"'] \\
-      H_{A'}(A)                     & H_{A'}(A') \arrow[l, "H_{A'}(f)"],
-    \end{tikzcd}
+    \begin{mplibcode}
+      beginfig(1);
+        input metapost/diagrams;
+
+        n1 := thelabel("$H_A(A)$", origin);
+        n2 := thelabel("$H_{A'}(A)$", (0, -1) * u);
+        n3 := thelabel("$H_A(A')$", (2, 0) * u);
+        n4 := thelabel("$H_{A'}(A')$", (2, -1) * u);
+
+        a1 := straight_arrow(n1, n2);
+        a2 := straight_arrow(n3, n1);
+        a3 := straight_arrow(n4, n2);
+        a4 := straight_arrow(n3, n4);
+
+        draw_nodes(n);
+        draw_arrows(a);
+
+        label.lft("$\alpha_A$", line_midpoint of a1);
+        label.top("$H_A(f)$", line_midpoint of a2);
+        label.bot("$H_{A'}(f)$", line_midpoint of a3);
+        label.rt("$\alpha_{A'}$", line_midpoint of a4);
+      endfig;
+    \end{mplibcode}
   \end{equation*}
   where
   \begin{align*}
@@ -415,12 +544,31 @@
 
   In particular,
   \begin{equation*}
-    \begin{tikzcd}
-      g \circ f \arrow[d, "\alpha_A"']              & g \arrow[d, "\alpha_{A'}"] \arrow[l, "H_A(f)"'] \\
-      \alpha_A(g \circ f) = H_{A'}(f)(\Id_{A'}) = f & \alpha_{A'}(\alpha_{A'}^{-1}(\Id_{A'})) = \Id_{A'} \arrow[l, "H_{A'}(f)"],
-    \end{tikzcd}
+    \begin{mplibcode}
+      beginfig(1);
+        input metapost/diagrams;
+
+        n1 := thelabel("$g \circ f$", origin);
+        n2 := thelabel("$\alpha_A(g \circ f) = H_{A'}(f)(\Id_{A'}) = f$", (-1, -1) * u);
+        n3 := thelabel("$g$", (3, 0) * u);
+        n4 := thelabel("$\alpha_{A'}(\alpha_{A'}^{-1}(\Id_{A'})) = \Id_{A'}$", (4, -1) * u);
+
+        a1 := straight_arrow(n1, n2);
+        a2 := straight_arrow(n3, n1);
+        a3 := straight_arrow(n4, n2);
+        a4 := straight_arrow(n3, n4);
+
+        draw_nodes(n);
+        draw_arrows(a);
+
+        label.ulft("$\alpha_A$", line_midpoint of a1);
+        label.top("$H_A(f)$", line_midpoint of a2);
+        label.bot("$H_{A'}(f)$", line_midpoint of a3);
+        label.urt("$\alpha_{A'}$", line_midpoint of a4);
+      endfig;
+    \end{mplibcode},
   \end{equation*}
-  i.e.
+  that is,
   \begin{equation*}
     \alpha_A(g \circ f) = f = \alpha_A(\Id_A).
   \end{equation*}
