@@ -4,9 +4,9 @@ COMPILER := latexmk -cd -interaction=batchmode -time -bibtex -e '$$biber="biber 
 
 notebook.pdf: notebook.tex bib/*.bib packages/*.sty src/*.tex
 ifdef only
-	$(COMPILER) notebook.tex -pdflua -usepretex="\includeonly{$(only)}"
+	$(COMPILER) notebook.tex -pdflua -usepretex="\includeonly{$(only)}" $(args)
 else
-	$(COMPILER) notebook.tex -pdflua
+	$(COMPILER) notebook.tex -pdflua $(args)
 endif
 
 clean:
