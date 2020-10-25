@@ -8,4 +8,4 @@ This ever-expanding document started as a set of study notes and exercises and g
 
 Since these are study notes, they will naturally have a lot of errors, so read them with caution. Feel free to contact me if something in this document happens to distress you.
 
-I tried putting citations on everything. If there is no citation on a definition or theorem, that means that I have probably recalled it from memory. The simple proofs are mostly original and the difficult ones are, often loosely, based on proofs from the places cited. The omitted proofs are either too trivial or too involved for me to spend time on them.
+I tried putting citations on everything. If there is no citation on a definition or theorem, that means that I have either recalled it from memory or discovered it on my own. Many of the unoriginal definitions and theorems are restated. The simple proofs are mostly original and the difficult ones are, often loosely, based on proofs from the places cited. The omitted proofs are either too trivial or too involved for me to spend time on them.
