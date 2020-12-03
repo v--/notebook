@@ -42,13 +42,40 @@
 \begin{remark}\label{remark:additive_group}
   Groups are often used to describe sets of invertible functions\Tinyref{def:function_invertibility} where the group operation is composition (see~\cref{remark:groupoids} for a categorical viewpoint). As such, the group operation is usually denoted by juxtaposition as in~\cref{def:magma}.
 
-  Since composition of functions is not commutative in general, abelian groups are usually not sets of invertible functions. Since abelian groups are \( \BB{Z} \)-modules~\Tinyref{thm:abelian_group_iff_z_module}, we usually denote the group operation in abelian groups by \( a + b \) instead of \( ab \), the inverse by \( -a \) instead of \( a^{-1} \), and the unit by \( 0 \).
+  Since composition of functions is not commutative in general, abelian groups are usually not sets of invertible functions. Since abelian groups are \( \Z \)-modules~\Tinyref{thm:abelian_group_iff_z_module}, we usually denote the group operation in abelian groups by \( a + b \) instead of \( ab \), the inverse by \( -a \) instead of \( a^{-1} \), and the unit by \( 0 \).
 
   To make a further distinction, if the operation is denoted by juxtaposition, we say that the group is a \textbf{multiplicative group}, and if the operation is denoted by \( + \), we say that the group is an \textbf{additive group}. This terminology usually, but not necessarily, coincides with the group being abelian.
 \end{remark}
 
+\begin{example}\label{ex:magmas}
+  We give examples and counterexamples of magmas.
+
+  \begin{itemize}
+    \item Consider the set \( \R \) of real numbers. Define the \enquote{midpoint} operation
+    \begin{equation*}
+      \cdot: \R \times \R \to \R \\
+      x \cdot y = \frac {x + y} 2.
+    \end{equation*}
+
+    Then the tuple \( (\R, \cdot) \) is a magma, however it is not a semigroup since it is not associative:
+    \begin{equation*}
+      (x \cdot y) \cdot z = \frac {{\frac {x + y} 2} + z} 2 = \frac {x + y + 2z} 4
+      \neq
+      \frac {2x + y + z} 4 = x \cdot (y \cdot z).
+    \end{equation*}
+
+    \item The positive real numbers \( \R^{>0} \) with standard addition form a semigroup, but not a monoid, since the set excludes the zero.
+
+    \item \Cref{thm:functions_over_set_form_monoid} says that the functions from any set to itself form a monoid under composition. This is obviously not a group if at least one of the functions is not invertible.
+
+    \item We can restrict our attention only to invertible functions. The automorphism groups\Tinyref{def:symmetric_group} are groups.
+  \end{itemize}
+\end{example}
+
 \begin{definition}\label{def:symmetric_group}
   Let \( A \) be an arbitrary set. We associate with \( A \) the \textbf{symmetric group} \( S(A) \) whose elements are bijections\Tinyref{def:function_invertibility/bijection} from \( A \) to itself and whose group operation is function composition. We also call elements of \( S(A) \) \textbf{permutations} of \( A \), especially if \( A \) is a finite set.
+
+  This generalizes to other contexts where we consider special types of functions. Given a locally small category\Tinyref{def:category} \( \Bold{C} \), we call \( \Bold{C}(A) \) the \textbf{automorphism group} and denote it by \( \Aut(A) \).
 \end{definition}
 
 \begin{proposition}\label{def:group_properties}
@@ -110,7 +137,7 @@
   \end{itemize}
 \end{proof}
 
-\begin{definition}\label{def:magmaoid}
+\begin{definition}\label{def:groupoid}
   A \textbf{groupoid} is a category\Tinyref{def:category} in which all morphisms are isomorphisms\Tinyref{def:morphism_invertibility}.
 \end{definition}
 
@@ -138,10 +165,17 @@
 \end{proof}
 
 \begin{definition}\label{def:magma_homomorphism}
-  Let \( M \) and \( N \) be magmas. We say that the function \( f: M \to N \) is a \textbf{magma homomorphism} (resp. \textbf{semigroup}, \textbf{monoid} or \textbf{group homomorphism}) if it is \textbf{compatible} with the magma structure on \( M \) and \( N \), that is,
+  Let \( M \) and \( N \) be magmas. We say that the function \( f: M \to N \) is a \textbf{magma homomorphism} (resp. \textbf{semigroup}, or \textbf{group homomorphism}) if it is \textbf{compatible} with the magma structure on \( M \) and \( N \), that is,
   \begin{description}
     \DItem{def:magma_homomorphism/compatibility}[compatibility] \( f(ab) = f(a) f(b) \) for all \( a, b \in M \).
   \end{description}
+
+  For monoids, we require the additional axiom
+  \begin{description}
+    \DItem{def:magma_homomorphism/monoid_identity}[identity] \( f(e_M) = e_N \).
+  \end{description}
+
+  This property automatically holds for groups (see \cref{thm:group_homomorphism_properties/preserves_identity}), however it must be explicitly required for monoids.
 
   If \( M \) and \( N \) are monoids, the \textbf{kernel} of \( f \) is defined as the preimage\Tinyref{def:function_preimage} \( f^{-1}(e) \) of the identity \( e_N \).
 
@@ -151,15 +185,16 @@
 \begin{proposition}\label{thm:group_homomorphism_properties}
   Any group homomorphism \( f: G \to K \) has the following basic properties:
   \begin{defenum}
-    \DItem{def:group_homomorphism_properties/preserves_identity} \( f \) preserves the identity, that is, \( f(e_G) = e_K \) (also holds for monoids).
-    \DItem{def:group_homomorphism_properties/preserves_inverses} \( f \) preserves inverses, that is, \( f(a^{-1}) = f(a)^{-1} \) for any \( a \in G \).
-    \DItem{def:group_homomorphism_properties/preserves_subgroup} If \( H \) is a subgroup of \( G \), its image \( f(H) \) is a subgroup of \( K \) (holds for any submagma).
-    \DItem{def:group_homomorphism_properties/kernel_is_subgroup} The kernel \( \ker(f) \) is a subgroup of \( G \).
+    \DItem{thm:group_homomorphism_properties/preserves_identity} \( f \) preserves the identity, that is, \( f(e_G) = e_K \).
+    \DItem{thm:group_homomorphism_properties/preserves_inverses} \( f \) preserves inverses, that is, \( f(a^{-1}) = f(a)^{-1} \) for any \( a \in G \).
+    \DItem{thm:group_homomorphism_properties/preserves_subgroup} If \( H \) is a subgroup of \( G \), its image \( f(H) \) is a subgroup of \( K \) (also holds for submagmas, subsemigroups and submonoids).
+    \DItem{thm:group_homomorphism_properties/kernel_is_subgroup} The kernel \( \ker(f) \) is a subgroup of \( G \).
+    \DItem{thm:group_homomorphism_properties/composition} The composition\Tinyref{def:function_composition} of two group homomorphisms is again a group homomorphism (also holds for magmas, semigroups and monoids).
   \end{defenum}
 \end{proposition}
 \begin{proof}\mbox{}
   \begin{itemize}
-    \RItem{def:group_homomorphism_properties/preserves_identity} We have
+    \RItem{thm:group_homomorphism_properties/preserves_identity} We have
     \begin{equation*}
       e_K f(e_G) = f(e_G e_G) = f(e_G) f(e_G).
     \end{equation*}
@@ -169,7 +204,7 @@
       e_K = f(e_G).
     \end{equation*}
 
-    \RItem{def:group_homomorphism_properties/preserves_inverses}
+    \RItem{thm:group_homomorphism_properties/preserves_inverses}
     \begin{align*}
       f(a^{-1})
       =
@@ -182,18 +217,30 @@
       f(a)^{-1}.
     \end{align*}
 
-    \RItem{def:group_homomorphism_properties/preserves_subgroup} If \( a, b \in G \), then
+    \RItem{thm:group_homomorphism_properties/preserves_subgroup} If \( a, b \in G \), then
     \begin{equation*}
       f(a) f(b) = f(ab) \in f(G),
     \end{equation*}
     thus \( f(G) \) is closed under the group operation in \( K \).
 
-    \RItem{def:group_homomorphism_properties/kernel_is_subgroup} If \( a, b \in \ker(f) \), then
+    \RItem{thm:group_homomorphism_properties/kernel_is_subgroup} If \( a, b \in \ker(f) \), then
     \begin{equation*}
-      f(ab) = f(a) f(b) = e_K e_k = e_k.
+      f(ab) = f(a) f(b) = e_K e_K = e_K.
     \end{equation*}
 
     Thus \( ab \in \ker(f) \) and \( \ker(f) \) is closed under the group operation.
+
+    \RItem{thm:group_homomorphism_properties/composition} We will only prove the monoid case since it includes an additional step compared to the others. Let \( f: M \to N \) and \( g: N \to K \) be two monoid homomorphisms. Then
+    \begin{equation*}
+      (g \circ f)(ab) = g(f(ab)) = g(f(a)f(b)) = g(f(a))g(f(b)) = (g \circ f)(a) (g \circ f)(b).
+    \end{equation*}
+
+    We also have
+    \begin{equation*}
+      (g \circ f)(e_M) = g(f(e_M)) = g(e_N) = e_K.
+    \end{equation*}
+
+    We conclude that \( g \circ f \) is indeed a monoid homomorphism.
   \end{itemize}
 \end{proof}
 
@@ -409,7 +456,7 @@
 \end{remark}
 
 \begin{definition}\label{def:free_abelian_group}
-  As a special case of \cref{def:free_module}, since abelian groups are \( \BB{Z} \)-modules by \cref{def:abelian_group_z_module}, we define \textbf{free abelian groups} to be free \( \BB{Z} \)-modules.
+  As a special case of \cref{def:free_module}, since abelian groups are \( \Z \)-modules by \cref{def:abelian_group_z_module}, we define \textbf{free abelian groups} to be free \( \Z \)-modules.
 
   This definition is different from free groups\Tinyref{def:free_group}.
 \end{definition}
