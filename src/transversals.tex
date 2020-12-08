@@ -1,0 +1,91 @@
+\section{Combinatorics}\label{sec:combinatorics}
+\subsection{Transversals}\label{subsec:transversals}
+
+\begin{definition}\label{def:set_transversal}\cite[89]{Lectures:logic_programming}
+  Let \( \Cal{F} \) be a family of sets. We say that the set
+  \begin{equation*}
+    T \subseteq \bigcup \Cal{F}
+  \end{equation*}
+  is a \Def{transversal} of \( \Cal{F} \) if \( T \) intersects\Tinyref{def:set_intersection} every set in \( \Cal{F} \).
+\end{definition}
+
+\begin{proposition}\label{thm:set_transversal_exists}
+  The nonempty family \( \Cal{F} \) has a transversal if and only if no set in \( \Cal{F} \) is empty.
+\end{proposition}
+\begin{proof}
+  \Implies Let \( M \) be a transversal. Since every set in \( \Cal{F} \) has a nonempty intersection with \( M \), it follows that the sets themselves are nonempty.
+
+  \ImpliedBy Let \( \Cal{F} \) be a family of nonempty sets. Then
+  \begin{equation*}
+    T \coloneqq \bigcup \Cal{F}
+  \end{equation*}
+  is a transversal since every set in \( \Cal{F} \) contains all its members in \( T \). In particular, if \( \Cal{F} \) is empty, then \( \varnothing \) is trivially a transversal.
+\end{proof}
+
+\begin{definition}\label{def:minimal_set_transversal}\cite[89]{Lectures:logic_programming}
+  A transversal \( T \) of the family \( \Cal{F} \) is said to be \Def{minimal} if any of the following equivalent conditions hold:
+  \begin{defenum}
+    \DItem{def:minimal_set_transversal/order} \( T \) is a minimal element\Tinyref{def:poset/maximal_minimal_element} under set inclusion\Tinyref{remark:subset_and_membership_relations} in the set of all transversals of \( \Cal{F} \).
+    \DItem{def:minimal_set_transversal/singleton} for every point \( x \) in \( T \) there exists a set \( F_x \in \Cal{F} \) such that
+    \begin{equation*}
+      T \cap F_x = \{ x \}.
+    \end{equation*}
+  \end{defenum}
+\end{definition}
+\begin{proof}
+  \begin{description}
+    \Implies[def:minimal_set_transversal/order][def:minimal_set_transversal/singleton] Let \( T \) be minimal under inclusion among all transversals. Fix \( x \in T \). Since \( T \) is minimal, the set \( T \setminus \{ x \} \) is not transversal. So there exists a set \( F_x \in \Cal{F} \) such that
+    \begin{equation*}
+      \varnothing = (T \setminus \{ x \}) \cap F_x = (T \cap F_x) \setminus \{ x \}.
+    \end{equation*}
+
+    Now since \( T \) is a transversal for \( \Cal{F} \), \( T \cap F_x \) is nonempty and thus
+    \begin{equation*}
+      T \cap F_x = \{ x \}.
+    \end{equation*}
+
+    Assume that all sets \( F \in \Cal{F} \) intersect \( T \) in more than one point.
+
+    \Implies[def:minimal_set_transversal/singleton][def:minimal_set_transversal/order] Now suppose that for every \( x \in T \) there exists a set \( F_x \in \Cal{F} \) such that \( T \cap F_x = \{ x \} \).
+
+    Assume\LEM that \( T \) is not minimal and let \( y \in T \) be such that \( T \setminus \{ y \} \) is a transversal. But our assertion gives us a set \( F_y \in \Cal{F} \) such that \( T \cap F_y = \{ y \} \). Clearly the set \( T \setminus \{ y \} \) cannot be a transversal of \( \Cal{F} \) since
+    \begin{equation*}
+      (T \setminus \{ y \}) \cap F_y = \varnothing.
+    \end{equation*}
+
+    This contradiction proves that \( T \) is minimal under set inclusion.
+  \end{description}
+\end{proof}
+
+\begin{example}\label{ex:no_minimal_set_transversal}\cite[90]{Lectures:logic_programming}
+  Let
+  \begin{equation*}
+    X_n \coloneqq n, n + 1, n + 2, \ldots, n \in \Z^{>0}
+  \end{equation*}
+  and \( \Cal{F} \coloneqq \{ X_n \colon n \in \Z^{>0} \} \).
+
+  The family \( \Cal{F} \) obviously has a transversal, e.g. \( \Z^{>0} \), but it does not have a minimal transversal.
+
+  To see this, assume that \( T \) is a minimal transversal. Since the natural numbers are well-ordered\Tinyref{thm:natural_numbers_are_well_ordered}, \( T \) has a minimum. Let \( n_0 \coloneqq \min T \).
+
+  But \( T \setminus \{ n_0 \} \) is also a transversal because each \( X_n \) intersects \( T \) at infinitely many points besides \( n_0 \).
+\end{example}
+
+\begin{proposition}\label{thm:finite_minimal_set_transversal}\cite[91]{Lectures:logic_programming}
+  Every family of nonempty finite sets has a minimal transversal.
+\end{proposition}
+\begin{proof}
+  A minimal transversal must exist\LEM because the union is a transversal\Tinyref{thm:set_transversal_exists} and we can only remove finitely many elements from it.
+\end{proof}
+
+\begin{proposition}\label{thm:disjoint_minimal_set_transversal}
+  If \( \Cal{F} \) is a disjoint family of nonempty sets, every minimal transversal \( T \) has the property that
+  \begin{equation*}
+    x \in T \iff \exists F_x \in \Cal{F}: T \cap F_x = \{ x \}.
+  \end{equation*}
+\end{proposition}
+\begin{proof}
+  \Implies Let \( x \in T \) and let \( F_x \in \Cal{F} \) be the unique set in \( \Cal{F} \) that contains \( x \). Assume\LEM that \( F_x \) contains another element \( y \). Then both \( T \setminus \{ x \} \) and \( T \setminus \{ y \} \) are transversals and both are strictly included in \( T \). The obtained contradiction shows that \( T \) is minimal.
+
+  \ImpliedBy Follows from \cref{def:minimal_set_transversal/singleton}.
+\end{proof}
