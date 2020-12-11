@@ -42,7 +42,7 @@
 \begin{remark}\label{remark:additive_group}
   Groups are often used to describe sets of invertible functions\Tinyref{def:function_invertibility} where the group operation is composition (see~\cref{remark:groupoids} for a categorical viewpoint). As such, the group operation is usually denoted by juxtaposition as in~\cref{def:magma}.
 
-  Since composition of functions is not commutative in general, abelian groups are usually not sets of invertible functions. Since abelian groups are \( \Z \)-modules~\Tinyref{thm:abelian_group_iff_z_module}, we usually denote the group operation in abelian groups by \( a + b \) instead of \( ab \), the inverse by \( -a \) instead of \( a^{-1} \), and the unit by \( 0 \).
+  Since composition of functions is not commutative in general, abelian groups are usually not sets of invertible functions. Since abelian groups are \( \Z \)-modules by \cref{thm:abelian_group_iff_z_module}, we usually denote the group operation in abelian groups by \( a + b \) instead of \( ab \), the inverse by \( -a \) instead of \( a^{-1} \), and the unit by \( 0 \).
 
   To make a further distinction, if the operation is denoted by juxtaposition, we say that the group is a \Def{multiplicative group}, and if the operation is denoted by \( + \), we say that the group is an \Def{additive group}. This terminology usually, but not necessarily, coincides with the group being abelian.
 \end{remark}
@@ -463,3 +463,107 @@
 
   This definition is different from free groups\Tinyref{def:free_group}.
 \end{definition}
+
+\begin{definition}\label{def:monoid_completion}
+  A completion of a monoid is a minimal\Tinyref{def:poset/maximal_minimal_element} (under homomorphic embedding) group.
+\end{definition}
+
+\begin{proposition}\label{thm:monoid_completion_to_abelian_group}\cite{nLab:grothendieck_group_of_a_commutative_monoid}
+  Every commutative monoid\Tinyref{def:magma} can be completed\Tinyref{def:monoid_completion} using the \Def{Grothendieck} completion to form an abelian group.
+\end{proposition}
+\begin{proof}
+  Let \( M \) be a commutative monoid. Define the relation \( \cong \) on tuples of members of \( M \) as
+  \begin{equation*}
+    (x_1, x_2) \cong (y_1, y_2) \iff \exists a: x_1 + y_2 + a = y_1 + x_2 + a.
+  \end{equation*}
+
+  This is an equivalence relation because
+  \begin{description}
+    \RItem{def:order/equivalence/reflexivity}
+    \begin{equation*}
+      (x_1, x_2) \cong (x_1, x_2) \iff \exists a: x_1 + x_2 = x_1 + x_2
+    \end{equation*}
+
+    \RItem{def:order/equivalence/symmetry} By \cref{def:magma/commutativity},
+    \begin{align*}
+      (x_1, x_2) \cong (y_1, y_2)
+      &\iff \\ &\iff
+      \exists a: x_1 + y_2 + a = y_1 + x_2 + a
+      \\ &\iff
+      \exists a: y_1 + x_2 + a = x_1 + y_2 + a
+      \\ &\iff
+      (y_1, y_2) \cong (x_1, x_2)
+    \end{align*}
+
+    \RItem{def:order/equivalence/transitivity} Let \( (x_1, x_2) \cong (y_1, y_2) \) and \( (y_1, y_2) \cong (z_1, z_2) \). Thus there exist \( a, b \in \BB{N} \) such that
+    \begin{equation*}
+      [x_1 + y_2 + a = y_1 + x_2 + a] \land [y_1 + z_2 + b = z_1 + y_2 + b]
+    \end{equation*}
+
+    Summing both sides, we have
+    \begin{equation*}
+      x_1 + y_2 + a + y_1 + z_2 + b = y_1 + x_2 + a + z_1 + y_2 + b
+    \end{equation*}
+
+    We reorder both sides to obtain
+    \begin{equation*}
+      (x_1 + z_2) + (y_1 + y_2 + a + b) = (x_2 + z_1) + (y_1 + y_2 + a + b),
+    \end{equation*}
+    which implies \( (x_1, x_2) \cong (z_1, z_2) \).
+  \end{description}
+
+  Define \( G \coloneqq M^2 / \cong \) to be the equivalence partition\cref{thm:equivalence_partition} of \( M \times M \). Define addition in \( G \) on members of \( M \times M \) by
+  \begin{equation*}
+    (x_1, x_2) + (y_1, y_2)
+    \coloneqq
+    (x_1 + y_1, x_2 + y_2).
+  \end{equation*}
+
+  This addition does not depend on the representative of the equivalence class since \( (x_1, x_2) \cong (x_1', x_2') \) and \( (y_1, y_2) \cong (y_1', y_2') \) implies the existence of \( k, m \in \BB{N} \), such that
+  \begin{align*}
+    x_1 + x_2' + a &= x_2 + x_1' + a,
+    y_1 + y_2' + b &= y_2 + y_1' + b,
+  \end{align*}
+  which, when combined, give
+  \begin{align*}
+    (x_1 + x_2' + a) + (y_1 + y_2' + b)
+    &=
+    (x_2 + x_1' + a) + (y_2 + y_1' + b)
+    \\
+    (x_1 + y_1) + (x_2' + y_2') + (a + b)
+    &=
+    (x_2 + y_2) + (y_1 + x_1) + (a + b).
+  \end{align*}
+
+  This implies
+  \begin{align*}
+    (x_1 + y_1, x_2 + y_2)
+    \cong
+    (x_1' + y_1', x_2' + y_2').
+  \end{align*}
+
+  The equivalence class \( [(0, 0)] \) is obviously an identity in \( G \) and contains exactly the pairs \( (x, x) \) of identical elements.
+
+  For each member \( (x_1, x_2) \in M \times M \) we define its inverse as \( (x_2, x_1) \). It is indeed an inverse since
+  \begin{equation*}
+    (x_1, x_2) + (x_2, x_1) = (x_1 + x_2, x_2 + x_1),
+  \end{equation*}
+  which, by \cref{def:magma/commutativity}, belongs to \( [(0, 0)] \).
+
+  If \( (x_1, x_2) \cong (x_1', x_2') \), then
+  \begin{equation*}
+    (x_1, x_2) + (x_2', x_1')
+    =
+    (x_1 + x_2', x_2 + x_1'),
+  \end{equation*}
+  where the two representatives of a pair of inverses are equal because of the equivalence \( \cong \).
+
+  Thus \( + \) is a well-defined commutative operation on \( G \) with identity, making it an abelian group.
+
+  Furthermore, the function
+  \begin{align*}
+    &\varphi: M \to G \\
+    &\varphi(x) \coloneqq [(x, 0)]
+  \end{align*}
+  is a monoid homomorphism, hence \( M \) is indeed embedded in the group. Furthermore, any group that embeds \( G \) must also embed \( M \) since \( G \setminus \varphi(M) \) consists only of the \enquote{inverse} elements of \( \varphi(M) \).
+\end{proof}
