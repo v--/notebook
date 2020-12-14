@@ -1,178 +1,9 @@
 \subsection{Abelian categories}\label{subsec:abelian_categories}
 
-\begin{definition}\label{def:monoidal_category}\cite{MacLane1994}[158]
-  A \Def{monoidal category} is a generalization of A monoid\Tinyref{def:magma} from sets to categories. Formally, it is a category \( \Bold M \) along with
-  \begin{itemize}
-    \item a functor \( \otimes: C \times C \to C \)
-    \item an identity object \( 1 \in \Bold M \)
-    \item natural transformations
-    \begin{itemize}
-      \item[] \( \alpha: ((-) \otimes (-)) \otimes (-) \cong (-) \otimes ((-) \otimes (-)) \)
-      \item[] \( \lambda: 1 \times (-) \cong (-) \)
-      \item[] \( \rho: (-) \times 1 \cong (-) \)
-    \end{itemize}
-  \end{itemize}
-  such that
-  \begin{defenum}
-    \item for every object \( A \in \Bold M \),
-    \begin{align*}
-      1 \otimes A \overset {\lambda_a} \cong A
-      \\
-      A \otimes 1 \overset {\rho_a} \cong A
-    \end{align*}
-
-    \item for all objects \( A, B, C \in \Bold M \),
-    \begin{equation*}
-      A \otimes (B \otimes C) \overset {\alpha_{A,B,C}} \cong (A \otimes B) \otimes C
-    \end{equation*}
-
-    \item the following diagram commutes for all objects \( A, B, C, D \in \Bold M \)
-    \begin{equation*}
-      \begin{mplibcode}
-        u := 2cm;
-
-        beginfig(1);
-          input metapost/graphs;
-
-          v1 := thelabel("$(A \otimes B) \otimes (C \otimes D)$", origin);
-          v2 := thelabel("$A \otimes (B \otimes (C \otimes D))$", (-2, -1) scaled u);
-          v3 := thelabel("$A \otimes ((B \otimes C) \otimes D)$", (-2, -2) scaled u);
-          v4 := thelabel("$((A \otimes B) \otimes C) \otimes D$", (2, -1) scaled u);
-          v5 := thelabel("$(A \otimes (B \otimes C)) \otimes D$", (2, -2) scaled u);
-
-          a1 := straight_arc(v2, v1);
-          a2 := straight_arc(v1, v4);
-          a3 := straight_arc(v2, v3);
-          a4 := straight_arc(v5, v4);
-          a5 := straight_arc(v3, v5);
-
-          draw_vertices(v);
-          draw_arcs(a);
-
-          label.ulft("$\alpha_{A, B, (C \otimes D)}$", straight_arc_midpoint of a1);
-          label.urt("$\alpha_{(A \otimes B), C, D}$", straight_arc_midpoint of a2);
-          label.lft("$\Id \otimes \alpha_{B, C, D}$", straight_arc_midpoint of a3);
-          label.rt("$\alpha_{A, B, C} \otimes \Id$", straight_arc_midpoint of a4);
-          label.bot("$\alpha_{A, (B \otimes C), D}$", straight_arc_midpoint of a5);
-        endfig;
-      \end{mplibcode}
-    \end{equation*}
-
-    \item the following diagram commutes for all objects \( A, B \in \Bold M \)
-    \begin{equation*}
-      \begin{mplibcode}
-      	beginfig(1);
-          input metapost/graphs;
-
-          v1 := thelabel("$A \otimes B$", origin);
-          v2 := thelabel("$A \otimes (1 \otimes B)$", (-2, 1) scaled u);
-          v3 := thelabel("$(A \otimes 1) \otimes B$", (2, 1) scaled u);
-
-          a1 := straight_arc(v2, v1);
-          a2 := straight_arc(v3, v1);
-          a3 := straight_arc(v2, v3);
-
-          draw_vertices(v);
-          draw_arcs(a);
-
-          label.llft("$\Id \otimes \lambda_b$", straight_arc_midpoint of a1);
-          label.lrt("$\rho_a \otimes \Id$", straight_arc_midpoint of a2);
-          label.top("$\alpha_{A, 1, B}$", straight_arc_midpoint of a3);
-        endfig;
-      \end{mplibcode}
-    \end{equation*}
-  \end{defenum}
-
-  If the natural isomorphisms \( \alpha \), \( \lambda \) and \( \rho \) are identities, we say that \( \Bold M \) is a \Def{strict monoidal category}.
-\end{definition}
-
-\begin{definition}\label{def:enriched_category}\cite{MacLane1994}[180],\cite{nLab:enriched_category}
-  Enriched categories provide additional structure to the morphism sets of locally small categories. The definition can be compared with \cref{def:category}. We say that \( \Bold C \) is an \Def{enriched category over the small monoidal category \( \Bold M \)} if
-  \begin{itemize}
-    \item there exists a class of objects, where the membership is denoted by \( A \in \Bold C \).
-    \item for each object \( A \in \Bold C \), there exists an \Def{identity morphism} \( j_A: 1 \to \Bold{C}(A, A) \).
-    \item for each pair of objects \( A, B \in \Bold C \), there exists an object \( \Bold{C}(A, B) \) in \( \Bold M \).
-    \item for each triple of objects \( A, B, C \in \Bold C \), there exists a \Def{composition morphism} in \( \Bold M \):
-    \begin{equation*}
-      \circ_{A,B,C}: {\Bold C}(B, C) \times {\Bold C}(A, B) \to {\Bold C}(A, C)
-    \end{equation*}
-  \end{itemize}
-  such that
-  \begin{defenum}
-    \item the following diagram commutes for all objects \( A, B, C, D \in \Bold C \)
-    \begin{equation*}
-      \begin{mplibcode}
-        u := 2cm;
-
-        beginfig(1);
-          input metapost/graphs;
-
-          v1 := thelabel("$C(A, D)$", origin);
-          v2 := thelabel("$C(C, D) \otimes C(A, C)$", (-2, -1) scaled u);
-          v3 := thelabel("$C(C, D) \otimes (C(B, C) \otimes C(A, B))$", (-2, -2) scaled u);
-          v4 := thelabel("$C(B, D) \otimes C(A, B)$", (2, -1) scaled u);
-          v5 := thelabel("$(C(C, D) \otimes C(B, C)) \otimes C(A, B)$", (2, -2) scaled u);
-
-          a1 := straight_arc(v2, v1);
-          a2 := straight_arc(v4, v1);
-          a3 := straight_arc(v2, v3);
-          a4 := straight_arc(v5, v4);
-          a5 := straight_arc(v3, v5);
-
-          draw_vertices(v);
-          draw_arcs(a);
-
-          label.ulft("$\circ_{A, C, D}$", straight_arc_midpoint of a1);
-          label.urt("$\circ_{A, B, D}$", straight_arc_midpoint of a2);
-          label.lft("$\Id \otimes \circ_{A, B, C}$", straight_arc_midpoint of a3);
-          label.rt("$\circ_{B, C, D} \otimes \Id$", straight_arc_midpoint of a4);
-          label.bot("$\alpha$", straight_arc_midpoint of a5);
-        endfig;
-      \end{mplibcode}
-    \end{equation*}
-
-    \item the following diagram commutes for all objects \( A, B \in \Bold M \)
-    \begin{equation*}
-      \begin{mplibcode}
-        u := 2cm;
-
-        beginfig(1);
-          input metapost/graphs;
-
-          v1 := thelabel("$C(A, B)$", origin);
-          v2 := thelabel("$C(B, B) \otimes C(A, B)$", (-2, 1) scaled u);
-          v3 := thelabel("$1 \otimes C(A, B)$", (-2, -1) scaled u);
-          v4 := thelabel("$C(A, B) \otimes C(A, A)$", (2, 1) scaled u);
-          v5 := thelabel("$C(A, B) \otimes 1$", (2, -1) scaled u);
-
-          a1 := straight_arc(v2, v1);
-          a2 := straight_arc(v4, v1);
-          a3 := straight_arc(v3, v1);
-          a4 := straight_arc(v5, v1);
-          a5 := straight_arc(v3, v2);
-          a6 := straight_arc(v5, v4);
-
-          draw_vertices(v);
-          draw_arcs(a);
-
-          label.urt("$\circ_{A, B, B}$", straight_arc_midpoint of a1);
-          label.ulft("$\circ_{A, A, B}$", straight_arc_midpoint of a2);
-          label.lrt("$\lambda$", straight_arc_midpoint of a3);
-          label.llft("$\rho$", straight_arc_midpoint of a4);
-          label.lft("$j_B \otimes \Id_{C(A, B)}$", straight_arc_midpoint of a5);
-          label.rt("$\Id_{C(A, B)} \otimes j_A$", straight_arc_midpoint of a6);
-        endfig;
-      \end{mplibcode}
-    \end{equation*}
-  \end{defenum}
-
-  In order for monoidal categories to actually be categories (more specifically, locally small categories), formally we need a functor \( U: \Bold{M} \to \Bold{Set} \) so that morphism objects \( \Bold C(A, B) \) become sets \( U(\Bold C(A, B)) \). This is usually defined implicitly, for example \( U(\Bold C(A, B)) \coloneqq \Bold{M}(1, C(A, B)) \).
-\end{definition}
-
 \begin{definition}\label{def:preadditive_category}\cite{MacLane1994}[28]
-  A \Def{preadditive category \( \Bold C \)} is any category enriched over the category \( \Bold{Ab} \) of abelian groups\Tinyref{def:category_of_groups}, such that composition
+  A \Def{preadditive category \( \Bold C \)} is any category enriched over the category \( \Cat{Ab} \) of abelian groups\Tinyref{thm:ab_is_abelian}, such that composition
   \begin{equation*}
-    \circ_{A,B,C}: \Bold{Ab}(B, C) \times \Bold{Ab}(A, B) \to \Bold{Ab}(A, C)
+    \circ_{A,B,C}: \Cat{Ab}(B, C) \times \Bold{Ab}(A, B) \to \Bold{Ab}(A, C)
   \end{equation*}
   is bilinear, e.g. given group homomorphisms \( f, f': A \to B \) and \( g, g': B \to C \), we have
   \begin{equation*}
@@ -190,12 +21,12 @@
 \end{definition}
 
 \begin{proposition}\label{def:preadditive_zero_morphisms}
-  If \( \Bold C \) is a preadditive category\Tinyref{def:preadditive_category} and \( A, B \in \Bold{C} \), the identity of \( \Bold{C}(A, B) \) is the unique zero morphism\Tinyref{def:zero_morphism} from \( A \) to \( B \).
+  If \( \Bold C \) is a preadditive category\Tinyref{def:preadditive_category} and \( A, B \in \Cat{C} \), the identity of \( \Bold{C}(A, B) \) is the unique zero morphism\Tinyref{def:zero_morphism} from \( A \) to \( B \).
 \end{proposition}
 \begin{proof}
-  Denote the identity of \( \Bold{C}(A, B) \) by \( 0_{A,B} \). We will show that it is a zero morphism in the sense of \cref{def:zero_morphism}.
+  Denote the identity of \( \Cat{C}(A, B) \) by \( 0_{A,B} \). We will show that it is a zero morphism in the sense of \cref{def:zero_morphism}.
 
-  Let \( C \in \Bold{C} \) and fix a morphism \( f: B \to C \). Then, by linearity,
+  Let \( C \in \Cat{C} \) and fix a morphism \( f: B \to C \). Then, by linearity,
   \begin{align*}
     f \circ 0_{A,B} + f \circ 0_{A,B}
     =
@@ -204,9 +35,9 @@
     f \circ 0_{A,B}.
   \end{align*}
 
-  Thus \( f \circ 0_{A,B} = 0_{A,C} \). Since this holds for any function, we conclude that \( g \circ 0_{A,B} = h \circ 0_{A,B} = 0_{A,C} \) for any two morphisms in \( g, h \in \Bold{C}(B,C) \) and hence \( 0_{A,B} \) is a left zero morphism. The proof that \( 0_{A,B} \) is a right zero morphism is identical. Hence \( 0_{A,B} \) is a zero morphism.
+  Thus \( f \circ 0_{A,B} = 0_{A,C} \). Since this holds for any function, we conclude that \( g \circ 0_{A,B} = h \circ 0_{A,B} = 0_{A,C} \) for any two morphisms in \( g, h \in \Cat{C}(B,C) \) and hence \( 0_{A,B} \) is a left zero morphism. The proof that \( 0_{A,B} \) is a right zero morphism is identical. Hence \( 0_{A,B} \) is a zero morphism.
 
-  Now we will show that these are the only zero morphisms in \( \Bold{C} \). Assume that \( z: A \to B \) is a zero morphism. Then
+  Now we will show that these are the only zero morphisms in \( \Cat{C} \). Assume that \( z: A \to B \) is a zero morphism. Then
   \begin{equation*}
     z = 0_{B,B} \circ z = (0_{B,B} + 0_{B,B}) \circ z = z + z,
   \end{equation*}
@@ -217,7 +48,7 @@
   If \( \Bold C \) is a preadditive category, the vertices of nonempty finite products and coproducts coincide.
 \end{proposition}
 \begin{proof}
-  Let \( X: \Bold{I} \to \Bold{C} \) be a finite discrete diagram. Denote the objects \( X(i) \) by \( X_i \) and their product by
+  Let \( X: \Cat{I} \to \Bold{C} \) be a finite discrete diagram. Denote the objects \( X(i) \) by \( X_i \) and their product by
   \begin{equation*}
     (X, \pi) \coloneqq \varprojlim D
   \end{equation*}
@@ -227,7 +58,7 @@
   \end{equation*}
   is the family of projections.
 
-  Consider the object \( X_i \in \Bold{C} \) with the family of morphisms
+  Consider the object \( X_i \in \Cat{C} \) with the family of morphisms
   \begin{align*}
     \begin{dcases}
       \begin{drcases}
@@ -237,7 +68,7 @@
     \end{dcases}_{j \in \Bold I}
   \end{align*}
 
-  By the definition of product\Tinyref{def:categorical_product}, there exists a unique family of morphisms \( \{ \iota_i \}_{i \in \Bold{I}} \) such that the following diagram commutes
+  By the definition of product\Tinyref{def:categorical_product}, there exists a unique family of morphisms \( \{ \iota_i \}_{i \in \Cat{I}} \) such that the following diagram commutes
   \begin{equation*}
     \begin{mplibcode}
     	beginfig(1);
@@ -290,7 +121,7 @@
 
   Define \( \iota \coloneqq \{ \iota_i \}_{i \in \Bold I} \). We will prove that \( (X, \iota) \) is a coproduct\Tinyref{def:categorical_coproduct}.
 
-  Let \( \Gamma \in \Bold{C} \) be an arbitrary object such that there exists a family of morphisms
+  Let \( \Gamma \in \Cat{C} \) be an arbitrary object such that there exists a family of morphisms
   \begin{equation*}
     \{ \gamma_i: X_i \to \Gamma \}_{i \in \Bold I}.
   \end{equation*}
@@ -300,7 +131,7 @@
     f \coloneqq \sum_{i \in I} (\gamma_i \circ \pi_i): X \to \Gamma.
   \end{equation*}
 
-  Fix \( i \in \Bold{I} \). Now we show that the following diagrams commute:
+  Fix \( i \in \Cat{I} \). Now we show that the following diagrams commute:
   \begin{equation*}
     \begin{mplibcode}
     	beginfig(1);
@@ -331,38 +162,38 @@
   \begin{align*}
     f \circ \iota_i
     =
-    \left(\sum_{j \in \Bold{I}} \gamma_j \circ \pi_j \right) \circ \iota_i
+    \left(\sum_{j \in \Cat{I}} \gamma_j \circ \pi_j \right) \circ \iota_i
     =
-    \sum_{i \in \Bold{I}} (\gamma_j \circ (\pi_j \circ \iota_i))
+    \sum_{i \in \Cat{I}} (\gamma_j \circ (\pi_j \circ \iota_i))
     =
-    \gamma_i \circ \Id_{X_i} + \sum_{\substack{j \in \Bold{I} \\ {j \neq i}}} \gamma_j \circ 0_{X_i,X_j}
+    \gamma_i \circ \Id_{X_i} + \sum_{\substack{j \in \Cat{I} \\ {j \neq i}}} \gamma_j \circ 0_{X_i,X_j}
     =
     \gamma_i.
   \end{align*}
 
-  Note that the sum is well-defined since the indexing category \( \Bold{I} \) is finite.
+  Note that the sum is well-defined since the indexing category \( \Cat{I} \) is finite.
 
   Now we will show that the morphism \( f \) is unique.
 
   First define
   \begin{equation*}
-    g \coloneqq \sum_{j \in \Bold{I}} \iota_j \circ \pi_j: X \to X.
+    g \coloneqq \sum_{j \in \Cat{I}} \iota_j \circ \pi_j: X \to X.
   \end{equation*}
 
-  Note that for each \( i \in \Bold{I} \),
+  Note that for each \( i \in \Cat{I} \),
   \begin{align*}
     \pi_i \circ g
     =
-    \pi_i \circ \left( \sum_{j \in \Bold{I}} \iota_j \circ \pi_j \right)
+    \pi_i \circ \left( \sum_{j \in \Cat{I}} \iota_j \circ \pi_j \right)
     =
-    \sum_{j \in \Bold{I}} ((\pi_i \circ \iota_j) \circ \pi_j)
+    \sum_{j \in \Cat{I}} ((\pi_i \circ \iota_j) \circ \pi_j)
     =
-    \Id_i \circ \pi_i + \sum_{\substack{j \in \Bold{I} \\ {j \neq i}}} 0_{X,X_j}
+    \Id_i \circ \pi_i + \sum_{\substack{j \in \Cat{I} \\ {j \neq i}}} 0_{X,X_j}
     =
     \pi_i.
   \end{align*}
 
-  We claim that \( g = \Id_X \). Since \( X \) is a product, there exists a unique morphism such that the following diagram commutes for each \( i \in \Bold{I} \):
+  We claim that \( g = \Id_X \). Since \( X \) is a product, there exists a unique morphism such that the following diagram commutes for each \( i \in \Cat{I} \):
   \begin{AlignedEquation}\label{thm:preadditive_biproducts/product_identity}
     \begin{mplibcode}
     	beginfig(1);
@@ -389,7 +220,7 @@
 
   Both \( g \) and \( \Id_X \) satisfy the universal property in \cref{thm:preadditive_biproducts/product_identity}, hence they are equal.
 
-  To show that the morphism \( f \) is unique, assume that there exists \( f': \Gamma \to X \) such that for each \( i \in \Bold{I} \),
+  To show that the morphism \( f \) is unique, assume that there exists \( f': \Gamma \to X \) such that for each \( i \in \Cat{I} \),
   \begin{equation*}
     f' \circ \iota_i = \gamma_i.
   \end{equation*}
@@ -400,11 +231,11 @@
     &=
     (f - f') \circ \Id_X
     = \\ &=
-    (f - f') \circ \left( \sum_{i \in \Bold{I}} \iota_i \circ \pi_i \right)
+    (f - f') \circ \left( \sum_{i \in \Cat{I}} \iota_i \circ \pi_i \right)
     = \\ &=
-    \sum_{i \in \Bold{I}} ((f \circ \iota_i) \circ \pi_i - (f' \circ \iota_i) \circ \pi_i)
+    \sum_{i \in \Cat{I}} ((f \circ \iota_i) \circ \pi_i - (f' \circ \iota_i) \circ \pi_i)
     = \\ &=
-    \sum_{i \in \Bold{I}} (\gamma_i \circ \pi_i - \gamma_i \circ \pi_i)
+    \sum_{i \in \Cat{I}} (\gamma_i \circ \pi_i - \gamma_i \circ \pi_i)
     =
     0_{\Gamma,X},
   \end{align*}
@@ -414,7 +245,7 @@
 \end{proof}
 
 \begin{definition}\label{def:categorical_biproduct}
-  Let \( \Bold C \) be a preadditive category. A \Def{biproduct} of the finite family \( \{ X_i \}_{i \in I} \) of objects in \( \Bold{C} \) is a triple \( (X, \pi, \iota) \), such that \( (X, \pi) \) is a product, \( (X, \iota) \) is a coproduct.
+  Let \( \Bold C \) be a preadditive category. A \Def{biproduct} of the finite family \( \{ X_i \}_{i \in I} \) of objects in \( \Cat{C} \) is a triple \( (X, \pi, \iota) \), such that \( (X, \pi) \) is a product, \( (X, \iota) \) is a coproduct.
 \end{definition}
 
 \begin{remark}\label{remark:preadditive_category_biproducts}
@@ -619,7 +450,7 @@
 \begin{example}\label{ex:short_exact_sequences}
   \mbox{}
   \begin{defenum}
-    \DItem{ex:short_exact_sequences/cyclic_groups} Fix a natural number \( n > 0 \) and consider the category of \( \Bold{Ab} \) of abelian groups and the following short exact sequence:
+    \DItem{ex:short_exact_sequences/cyclic_groups} Fix a natural number \( n > 0 \) and consider the category of \( \Cat{Ab} \) of abelian groups and the following short exact sequence:
     \begin{equation*}
       0
       \longrightarrow
@@ -696,7 +527,7 @@
 \end{example}
 
 \begin{definition}\label{def:chain_complex}\cite{nLab:chain_complex}
-  In an abelian category \( \Bold{C} \), the tower diagram\Tinyref{def:tower_diagram} with objects \( \{ C_n \}_{n \in \Z} \) and morphisms \( \partial_n: C_n \to C_{n-1} \)
+  In an abelian category \( \Cat{C} \), the tower diagram\Tinyref{def:tower_diagram} with objects \( \{ C_n \}_{n \in \Z} \) and morphisms \( \partial_n: C_n \to C_{n-1} \)
   \begin{equation}\label{def:chain_complex/chain_diagram}
     \cdots
     \overset {\partial_2} \longrightarrow
@@ -715,7 +546,7 @@
 
   Chain complexes may be finite or infinite in one or both directions. The morphisms \( \partial_n \) are called \Def{boundary maps}.
 
-  A \Def{cochain complex} is a chain complex on \( \Bold{C}^{\Op} \), i.e.
+  A \Def{cochain complex} is a chain complex on \( \Cat{C}^{-1} \), i.e.
   \begin{equation}\label{def:chain_complex/cochain_diagram}
     \cdots
     \overset {\partial_1} \longleftarrow

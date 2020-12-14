@@ -1,0 +1,247 @@
+\subsection{Monoidal categories}\label{subsec:monoidal_categories}
+
+\begin{definition}\label{def:monoidal_category}\cite[158]{MacLane1994}
+  A \Def{monoidal category} is a generalization of a monoid\Tinyref{def:magma} from sets to categories. Formally, it is a category \( \Cat M \) along with
+  \begin{itemize}
+    \item a \Def{monoidal product} functor \( \otimes: C \times C \to C \)
+    \item an identity object \( 1 \in \Bold M \)
+    \item natural transformations
+    \begin{align*}
+      \alpha&: ((-) \otimes (-)) \otimes (-) \cong (-) \otimes ((-) \otimes (-)) \\
+      \lambda&: 1 \times (-) \cong (-) \\
+      \rho&: (-) \times 1 \cong (-)
+    \end{align*}
+  \end{itemize}
+  such that
+  \begin{defenum}
+    \item for every object \( A \in \Bold M \),
+    \begin{align*}
+      1 \otimes A \overset {\lambda_a} \cong A
+      \\
+      A \otimes 1 \overset {\rho_a} \cong A
+    \end{align*}
+
+    \item for all objects \( A, B, C \in \Bold M \),
+    \begin{equation*}
+      A \otimes (B \otimes C) \overset {\alpha_{A,B,C}} \cong (A \otimes B) \otimes C
+    \end{equation*}
+
+    \item the following diagram commutes for all objects \( A, B, C, D \in \Bold M \)
+    \begin{equation*}
+      \begin{mplibcode}
+        u := 2cm;
+
+        beginfig(1);
+          input metapost/graphs;
+
+          v1 := thelabel("$(A \otimes B) \otimes (C \otimes D)$", origin);
+          v2 := thelabel("$A \otimes (B \otimes (C \otimes D))$", (-2, -1) scaled u);
+          v3 := thelabel("$A \otimes ((B \otimes C) \otimes D)$", (-2, -2) scaled u);
+          v4 := thelabel("$((A \otimes B) \otimes C) \otimes D$", (2, -1) scaled u);
+          v5 := thelabel("$(A \otimes (B \otimes C)) \otimes D$", (2, -2) scaled u);
+
+          a1 := straight_arc(v2, v1);
+          a2 := straight_arc(v1, v4);
+          a3 := straight_arc(v2, v3);
+          a4 := straight_arc(v5, v4);
+          a5 := straight_arc(v3, v5);
+
+          draw_vertices(v);
+          draw_arcs(a);
+
+          label.ulft("$\alpha_{A, B, (C \otimes D)}$", straight_arc_midpoint of a1);
+          label.urt("$\alpha_{(A \otimes B), C, D}$", straight_arc_midpoint of a2);
+          label.lft("$\Id \otimes \alpha_{B, C, D}$", straight_arc_midpoint of a3);
+          label.rt("$\alpha_{A, B, C} \otimes \Id$", straight_arc_midpoint of a4);
+          label.bot("$\alpha_{A, (B \otimes C), D}$", straight_arc_midpoint of a5);
+        endfig;
+      \end{mplibcode}
+    \end{equation*}
+
+    \item the following diagram commutes for all objects \( A, B \in \Bold M \)
+    \begin{equation*}
+      \begin{mplibcode}
+      	beginfig(1);
+          input metapost/graphs;
+
+          v1 := thelabel("$A \otimes B$", origin);
+          v2 := thelabel("$A \otimes (1 \otimes B)$", (-2, 1) scaled u);
+          v3 := thelabel("$(A \otimes 1) \otimes B$", (2, 1) scaled u);
+
+          a1 := straight_arc(v2, v1);
+          a2 := straight_arc(v3, v1);
+          a3 := straight_arc(v2, v3);
+
+          draw_vertices(v);
+          draw_arcs(a);
+
+          label.llft("$\Id \otimes \lambda_b$", straight_arc_midpoint of a1);
+          label.lrt("$\rho_a \otimes \Id$", straight_arc_midpoint of a2);
+          label.top("$\alpha_{A, 1, B}$", straight_arc_midpoint of a3);
+        endfig;
+      \end{mplibcode}
+    \end{equation*}
+  \end{defenum}
+
+  If the natural isomorphisms \( \alpha \), \( \lambda \) and \( \rho \) are identities, we say that \( \Bold M \) is a \Def{strict monoidal category}.
+\end{definition}
+
+\begin{definition}\label{def:categorical_monoid}\cite{MacLane1994}[167]
+  Let \( (\Cat{M}, \otimes, 1) \) be a monoidal category\Tinyref{def:monoidal_category}. A monoid in \( \Cat{M} \) consists of
+  \begin{itemize}
+    \item the monoid itself, an object \( M \in \Cat{M} \)
+    \item the monoid operation, a morphism \( \mu: M \otimes M \to M \)
+    \item the identity element\Tinyref{def:generalized_element}, a morphism \( \eta: 1 \to M \)
+  \end{itemize}
+  such that the following diagrams commute:
+  \begin{equation*}
+    \begin{mplibcode}
+      beginfig(1);
+        input metapost/graphs;
+
+        v1 := thelabel("$M \otimes (M \otimes M)$", (-2, 0) scaled u);
+        v2 := thelabel("$(M \otimes M) \otimes M$", (0, 1) scaled u);
+        v3 := thelabel("$M \otimes M$", (2, 0) scaled u);
+        v4 := thelabel("$M \otimes M$", (-2, -1) scaled u);
+        v5 := thelabel("$M$", (2, -1) scaled u);
+
+        a1 := straight_arc(v1, v2);
+        a2 := straight_arc(v1, v4);
+        a3 := straight_arc(v2, v3);
+        a4 := straight_arc(v3, v5);
+        a5 := straight_arc(v4, v5);
+
+        draw_vertices(v);
+        draw_arcs(a);
+
+        label.ulft("$\alpha_{M,M,M}$", straight_arc_midpoint of a1);
+        label.lft("$\Id \otimes \mu$", straight_arc_midpoint of a2);
+        label.urt("$\mu \otimes \Id$", straight_arc_midpoint of a3);
+        label.rt("$\mu$", straight_arc_midpoint of a4);
+        label.top("$\mu$", straight_arc_midpoint of a5);
+      endfig;
+    \end{mplibcode}
+  \end{equation*}
+  and
+  \begin{equation*}
+    \begin{mplibcode}
+      beginfig(1);
+        input metapost/graphs;
+
+        v1 := thelabel("$M \otimes M$", (0, 1) scaled u);
+        v2 := thelabel("$M$", (0, -1) scaled u);
+        v3 := thelabel("$\Id \otimes M$", (-2, 0) scaled u);
+        v4 := thelabel("$M \otimes \Id$", (2, 0) scaled u);
+
+        a1 := straight_arc(v1, v2);
+        a2 := straight_arc(v3, v1);
+        a3 := straight_arc(v3, v2);
+        a4 := straight_arc(v4, v1);
+        a5 := straight_arc(v4, v2);
+
+        draw_vertices(v);
+        draw_arcs(a);
+
+        label.rt("$\mu$", straight_arc_midpoint of a1);
+        label.ulft("$\eta \otimes \Id$", straight_arc_midpoint of a2);
+        label.llft("$\lambda_M$", straight_arc_midpoint of a3);
+        label.urt("$\Id \otimes \eta$", straight_arc_midpoint of a4);
+        label.lrt("$\rho_M$", straight_arc_midpoint of a5);
+      endfig;
+    \end{mplibcode}
+  \end{equation*}
+
+  A morphism \( f: (M, \mu, \eta) \to (M', \mu', \eta') \) between two monoids is an arrow \( f: M \to M' \) such that
+  \begin{equation*}
+    f \circ \mu = \mu' \circ (f \otimes f): M \times M \to M'
+  \end{equation*}
+  and
+  \begin{equation*}
+    f \circ \eta = \eta': 1 \to M'.
+  \end{equation*}
+
+  The category of all monoids over \( \Cat{M} \) is denoted by \( \Cat{Mon}(\Cat{M}) \).
+\end{definition}
+
+\begin{definition}\label{def:enriched_category}\cite[180]{MacLane1994},\cite{nLab:enriched_category}
+  Enriched categories provide additional structure to the morphism sets of locally small categories. The definition can be compared with \cref{def:category}. We say that \( \Bold C \) is an \Def{enriched category over the small monoidal category \( \Bold M \)} if
+  \begin{itemize}
+    \item there exists a class of objects, where the membership is denoted by \( A \in \Bold C \).
+    \item for each object \( A \in \Bold C \), there exists an \Def{identity morphism} \( j_A: 1 \to \Cat{C}(A, A) \).
+    \item for each pair of objects \( A, B \in \Bold C \), there exists an object \( \Cat{C}(A, B) \) in \( \Bold M \).
+    \item for each triple of objects \( A, B, C \in \Bold C \), there exists a \Def{composition morphism} in \( \Bold M \):
+    \begin{equation*}
+      \circ_{A,B,C}: {\Bold C}(B, C) \times {\Bold C}(A, B) \to {\Bold C}(A, C)
+    \end{equation*}
+  \end{itemize}
+  such that
+  \begin{defenum}
+    \item the following diagram commutes for all objects \( A, B, C, D \in \Bold C \)
+    \begin{equation*}
+      \begin{mplibcode}
+        u := 2cm;
+
+        beginfig(1);
+          input metapost/graphs;
+
+          v1 := thelabel("$C(A, D)$", origin);
+          v2 := thelabel("$C(C, D) \otimes C(A, C)$", (-2, -1) scaled u);
+          v3 := thelabel("$C(C, D) \otimes (C(B, C) \otimes C(A, B))$", (-2, -2) scaled u);
+          v4 := thelabel("$C(B, D) \otimes C(A, B)$", (2, -1) scaled u);
+          v5 := thelabel("$(C(C, D) \otimes C(B, C)) \otimes C(A, B)$", (2, -2) scaled u);
+
+          a1 := straight_arc(v2, v1);
+          a2 := straight_arc(v4, v1);
+          a3 := straight_arc(v2, v3);
+          a4 := straight_arc(v5, v4);
+          a5 := straight_arc(v3, v5);
+
+          draw_vertices(v);
+          draw_arcs(a);
+
+          label.ulft("$\circ_{A, C, D}$", straight_arc_midpoint of a1);
+          label.urt("$\circ_{A, B, D}$", straight_arc_midpoint of a2);
+          label.lft("$\Id \otimes \circ_{A, B, C}$", straight_arc_midpoint of a3);
+          label.rt("$\circ_{B, C, D} \otimes \Id$", straight_arc_midpoint of a4);
+          label.bot("$\alpha$", straight_arc_midpoint of a5);
+        endfig;
+      \end{mplibcode}
+    \end{equation*}
+
+    \item the following diagram commutes for all objects \( A, B \in \Bold M \)
+    \begin{equation*}
+      \begin{mplibcode}
+        u := 2cm;
+
+        beginfig(1);
+          input metapost/graphs;
+
+          v1 := thelabel("$C(A, B)$", origin);
+          v2 := thelabel("$C(B, B) \otimes C(A, B)$", (-2, 1) scaled u);
+          v3 := thelabel("$1 \otimes C(A, B)$", (-2, -1) scaled u);
+          v4 := thelabel("$C(A, B) \otimes C(A, A)$", (2, 1) scaled u);
+          v5 := thelabel("$C(A, B) \otimes 1$", (2, -1) scaled u);
+
+          a1 := straight_arc(v2, v1);
+          a2 := straight_arc(v4, v1);
+          a3 := straight_arc(v3, v1);
+          a4 := straight_arc(v5, v1);
+          a5 := straight_arc(v3, v2);
+          a6 := straight_arc(v5, v4);
+
+          draw_vertices(v);
+          draw_arcs(a);
+
+          label.urt("$\circ_{A, B, B}$", straight_arc_midpoint of a1);
+          label.ulft("$\circ_{A, A, B}$", straight_arc_midpoint of a2);
+          label.lrt("$\lambda$", straight_arc_midpoint of a3);
+          label.llft("$\rho$", straight_arc_midpoint of a4);
+          label.lft("$j_B \otimes \Id_{C(A, B)}$", straight_arc_midpoint of a5);
+          label.rt("$\Id_{C(A, B)} \otimes j_A$", straight_arc_midpoint of a6);
+        endfig;
+      \end{mplibcode}
+    \end{equation*}
+  \end{defenum}
+
+  In order for monoidal categories to actually be categories (more specifically, locally small categories), formally we need a functor \( U: \Cat{M} \to \Bold{Set} \) so that morphism objects \( \Bold C(A, B) \) become sets \( U(\Bold C(A, B)) \). This is usually defined implicitly, for example \( U(\Bold C(A, B)) \coloneqq \Bold{M}(1, C(A, B)) \).
+\end{definition}
