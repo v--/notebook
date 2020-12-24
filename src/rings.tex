@@ -8,7 +8,7 @@
     \item[multiplication] \( \cdot \) (usually written using juxtaposition) is associative\Tinyref{def:algebraic_theory/associativity}, i.e. \( (R, \cdot) \) a semigroup\Tinyref{def:magma/semigroup}.
   \end{description}
 
-  We require that \( \cdot \) distributes over \( + \) \cref{def:algebraic_theory/distributivity}.
+  We require that \( \cdot \) distributes\Tinyref{def:algebraic_theory/distributivity} over \( + \).
 
   The following are special kinds of elements in \( R \):
   \begin{defenum}
@@ -17,17 +17,28 @@
     \DItem{def:semiring/nilpotent_element} \( x \) is \Def{nilpotent} if \( x^n = 0 \) for some nonnegative integer \( n \).
   \end{defenum}
 
-  The following are special kinds of semiring:
+  The following are special kinds of semirings:
   \begin{defenum}
     \DItem{def:semiring/ring} \Def{Rings} are semirings with invertible addition, i.e. \( R, + \) forms an abelian group\Tinyref{def:magma/abelian_group}. The category of rings is denoted by \( \Cat{Ring} \).
 
     \DItem{def:semiring/unital_ring} \Def{Unital rings} are rings\Tinyref{def:semiring/ring} in which multiplication is unital, i.e. \( R, \cdot \) is a monoid\Tinyref{def:magma/monoid}. Some authors define all rings to be unital. Units are denoted by \( 1 \). Invertible elements\Tinyref{def:algebraic_theory/invertibile_element} under multiplication are called \Def{units} and the operation itself is called \Def{division}.
 
+
     \DItem{def:semiring/commutative_ring} \Def{Commutative rings} are rings\Tinyref{def:semiring/ring} in which multiplication is commutative\Tinyref{def:algebraic_theory/commutativity}, i.e. \( R, \cdot \) is a commutative semigroup.
 
     \DItem{def:semiring/integral_domains} \Def{Integral domains} are commutative rings\Tinyref{def:semiring/commutative_ring} with no zero divisors\Tinyref{def:semiring/zero_divisor}.
 
-    \DItem{def:semiring/division_ring} \Def{Division rings} are nontrivial\Tinyref{def:first_order_structure/minimal} unital rings\Tinyref{def:semiring/unital_ring} in which all nonzero elements are units, i.e. i.e. \( (F \setminus \{ 0 \}, \cdot) \) is a group\Tinyref{def:magma/group}.
+    \DItem{def:semiring/division_ring} \Def{Division rings} are nontrivial\Tinyref{def:first_order_structure/minimal} unital rings\Tinyref{def:semiring/unital_ring} in which all nonzero elements are units, i.e. \( (F \setminus \{ 0 \}, \cdot) \) is a group\Tinyref{def:magma/group}.
+
+    In order to fit multiplicative invertibility as an axiom for \cref{def:algebraic_theory}, we can use the following formula:
+    \begin{equation*}
+      \forall \xi ((\xi \doteq 0) \lor \exists \eta (\xi \cdot \eta \doteq 1))
+    \end{equation*}
+    or add an additional operation \( (\cdot)^{-1} \) that inverts all nonzero elements and fixes zero, that is,
+    \begin{equation*}
+      \forall \xi (\xi \cdot \xi^{-1} \doteq 1),
+    \end{equation*}
+    where we define \( 0^{-1} = 0 \). This is only a formalism since \( 0 \) is not actually \enquote{invertible}, but it is required if we wish to avoid existential quantifiers.
 
     \DItem{def:semiring/field} \Def{Fields} are commutative\Tinyref{def:algebraic_theory/commutativity} division rings\Tinyref{def:semiring/division_ring}, i.e. \( (F \setminus \{ 0 \}, \cdot) \) is an abelian group\Tinyref{def:magma/abelian_group}. The category of fields is denoted by \( \Cat{Field} \).
   \end{defenum}
@@ -72,37 +83,6 @@
   The proof of \( f(x^{-1}) = f(x)^{-1} \) is analogous to \cref{thm:group_homomorphism_single_condition}.
 \end{proof}
 
-\begin{definition}\label{def:semiring_ideal}
-  Let \( R \) be a ring and \( I \) be a subset of \( R \) (not necessarily a subring). We say that \( I \) is a (two-sided) \Def{ideal} of \( R \) and write \( I \unlhd R \) if any of the following equivalent conditions hold:
-  \begin{defenum}
-    \DItem{def:semiring_ideal/direct} \( (I, +) \) is a subgroup of \( (R, +) \) and the inclusions \( RI \subseteq I \) and \( IR \subseteq I \) hold.
-    \DItem{def:semiring_ideal/kernel} \( I \) is the kernel\Tinyref{def:semiring_kernel} of some ring homomorphism.
-  \end{defenum}
-
-  We can weaken the condition in \ref{def:semiring_ideal/direct} to define \Def{left ideals} (resp \Def{right ideals}) if only \( RI \subseteq I \) (resp. \( IR \subseteq I \)) holds. If \( I \) is a subring, being either a left or right ideal is equivalent to \( I \) being a two-sided ideal. If \( R \) is a commutative ring, left and right ideals coincide with two-sided ideals.
-
-  If \( R \) is a ring without identity, all two-sided ideals are subrings. If \( R \) has an identity element, however, ideals are not necessarily subrings (see~\cref{thm:proper_ideals_containing_identity}).
-
-  As with subrings, the \Def{trivial ideal} of \( R \) is the trivial subring and all ideals except for \( R \) itself are called \Def{proper ideals}.
-\end{definition}
-\begin{proof}
-  (\ref{def:semiring_ideal/direct} \( \iff \) \ref{def:semiring_ideal/kernel}) \Cref{def:normal_subgroup} implies that \( (I, +) \) is a normal subgroup if and only if there exists a group homomorphism \( f: (R, +) \to (T, +) \), where \( (T, +, \cdot) \) is some ring, such that \( I = \ker(f) \). Note that since the additive group is abelian, by~\cref{thm:abelian_normal_subgroups}, all subgroups are normal.
-
-  Additionally, we have \( f(RI) = f(R)f(I) \), thus \( RI \subseteq I \) if and only if \( I \) is the kernel of the homomorphism \( f \).
-\end{proof}
-
-\begin{proposition}\label{thm:proper_ideals_containing_identity}
-  If \( R \) is a unital ring, the ideal \( I \) is proper if and only if \( 1 \not\in I \).
-\end{proposition}
-\begin{proof}
-  We will prove that \( 1 \in I \iff I = R \).
-
-  \begin{description}
-    \Implies Let \( 1 \in I \). Then \( r1 = r \) for any \( r \in R \), thus \( RI = R \). Since \( I \) is an ideal, we have that \( I = R \).
-    \ImpliedBy If \( I = R \), then obviously \( 1 \in I = R \).
-  \end{description}
-\end{proof}
-
 \begin{definition}\label{def:semiring_direct_product}
   Let \( \{ X_i \}_{i \in I} \) be a nonempty family of rings.
 
@@ -130,22 +110,13 @@
   The opposite ring \( R^{-1} \) of \( R \) is defined as the same abelian group with the order of multiplication reversed. They are obviously isomorphic for commutative rings.
 \end{definition}
 
-\begin{definition}\label{def:ideal_generators}\cite[176]{Knapp2016BAlg}
-  A set \( S \subseteq I \) is said to \Def{generate} the ideal \( I \) of a unital ring\Tinyref{def:semiring/unital_ring} \( R \) if
-  \begin{equation*}
-    I = \Gen{ S } = \{ x_1 s_1 + \cdots + x_n s_n \colon s_1, \cdots, s_n \in S; x_1, \ldots, x_n \in R \}.
-  \end{equation*}
-
-  If \( S \) is finite, then \( I \) is called \Def{finitely generated}.
-\end{definition}
-
 \begin{definition}\label{def:ring_commutator}
   Let \( R \) be a ring. The commutator of \( x, y \in R \) is defined as
   \begin{equation*}
     [x, y] \coloneqq xy - yx.
   \end{equation*}
 
-  The commutator ideal of \( R \) is the ideal generated\Tinyref{def:group_generators} by all the commutators in \( G \).
+  The commutator ideal of \( R \) is the ideal generated\Tinyref{def:ring_ideal_generators} by all the commutators in \( G \).
 \end{definition}
 
 \begin{proposition}\label{thm:quotient_by_commutator_ideal}
