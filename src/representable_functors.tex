@@ -1,0 +1,148 @@
+\subsection{Representable functors}\label{subsec:representable_functors}
+
+\begin{definition}\label{def:representable_functor}\cite[definitions 4.1.3, 4.1.16]{Leinster2014}
+  Let \( \Bold A \) be a locally small category and \( A \in \Bold A \). Define
+  \begin{align*}
+    &H^A: \Cat{A} \to \Bold{Set}, \\
+    &H^A(B) \coloneqq \Cat{A}(A, B), \\
+    &H^A(f: B \to C) \coloneqq (p: A \to B) \mapsto (f \circ p: A \to C).
+  \end{align*}
+
+  We say that the functor \( F: \Cat{A} \to \Bold{Set} \) is \Def{representable} with \Def{representation} \( H^A \) if \( F \cong H^A \).
+
+  Analogously, the presheaf \( G: \Cat{A}^{-1} \to \Bold{Set} \) is representable if for some \( A \in \Bold{A}^{-1} \) we have \( G \cong H_A \), where
+  \begin{align*}
+    &H_A: \Cat{A}^{-1} \to \Bold{Set}, \\
+    &H_A(B) \coloneqq \Cat{A}(B, A), \\
+    &H_A(f: C \to B) \coloneqq (p: B \to A) \mapsto (p \circ f: C \to A).
+  \end{align*}
+\end{definition}
+
+\begin{example}\label{def:top_representable_functor}\cite[example 4.1.4]{Leinster2014}
+  Let \( U: \Cat{Top} \to \Bold{Set} \) be the forgetful functor which maps a topological space to its underlying set.
+
+  Let \( 1 \) be the one-element topological space. There is a correspondence between points \( x \) in \( T \) and continuous functions \( p_x: 1 \to T \). Thus the functor \( H^1 \) maps
+  \begin{itemize}
+    \item any topological space \( T \) into the set of morphisms
+    \begin{equation*}
+      H^1(T) = \Cat{Top}(1, T) = \{ p_x: 1 \to T \} \cong U(T).
+    \end{equation*}
+    \item any continuous function \( f: T \to S \) to
+    \begin{equation*}
+      H^1(f) = p_x \mapsto f \circ p_x \cong x \mapsto f(x) = f.
+    \end{equation*}
+  \end{itemize}
+
+  Thus \( U \) is representable with representation \( H^1 \).
+\end{example}
+
+\begin{definition}\label{def:yoneda_embedding}\cite[definitions 4.1.15, 4.1.21]{Leinster2014}
+  Let \( \Bold A \) be a locally small category. For each pair \( A, B \in \Bold A \) and morphism \( f: A \to B \) we define the natural transformation \( H^f: H^A \to H^B \) with \( C \)-components (note the reversal)
+  \begin{align*}
+    &H^f(C): H^A(C) \to H^B(C), \\
+    &H^f(C) \coloneqq H_C(f) = p \mapsto p \circ f.
+  \end{align*}
+
+  Thus allows us to define the functor \( H^\bullet: \Cat{A}^{-1} \to [\Bold{A}, \Bold{Set}] \) by
+  \begin{align*}
+    H^\bullet(A) \coloneqq H^A && H^\bullet(f) \coloneqq H^f.
+  \end{align*}
+
+  Analogously, we define \( H_f \) by \( H_f(C) = H^C(f), C \in \Bold A \) and the \Def{Yoneda embedding} \( H_\bullet: \Cat{A} \to [\Bold{A}^{-1}, \Bold{Set}] \) by
+  \begin{align*}
+    H_\bullet(A) \coloneqq H_A && H_\bullet(f) \coloneqq H_f.
+  \end{align*}
+\end{definition}
+
+\begin{proposition}\label{def:yoneda_embedding_is_injective}\cite[exercise 4.1.27]{Leinster2014}
+  Let \( \Bold A \) be a locally small category and let \( A, A' \in \Bold A \) be such that \( H_A \cong H_{A'} \). Then \( A \cong A' \).
+\end{proposition}
+\begin{proof}
+  First, let \( A \) and \( A' \) be arbitrary. Given a natural isomorphism \( \eta: H_A \to H_{A'} \), its components are \( \alpha_B: H_A(B) \to H_{A'}(B) \).
+
+  We are interested in the morphisms
+  \begin{align*}
+    &f \coloneqq \alpha_A(\Id_A): A \to A', \\
+    &g \coloneqq \alpha_{A'}^{-1}(\Id_A'): A' \to A.
+  \end{align*}
+
+  We need to show that \( g \) is inverse to \( f \). We will use the commutativity of the following diagram:
+  \begin{equation*}
+    \begin{mplibcode}
+      beginfig(1);
+        input metapost/graphs;
+
+        v1 := thelabel("$H_A(A)$", origin);
+        v2 := thelabel("$H_{A'}(A)$", (0, -1) scaled u);
+        v3 := thelabel("$H_A(A')$", (2, 0) scaled u);
+        v4 := thelabel("$H_{A'}(A')$", (2, -1) scaled u);
+
+        a1 := straight_arc(v1, v2);
+        a2 := straight_arc(v3, v1);
+        a3 := straight_arc(v4, v2);
+        a4 := straight_arc(v3, v4);
+
+        draw_vertices(v);
+        draw_arcs(a);
+
+        label.lft("$\alpha_A$", straight_arc_midpoint of a1);
+        label.top("$H_A(f)$", straight_arc_midpoint of a2);
+        label.bot("$H_{A'}(f)$", straight_arc_midpoint of a3);
+        label.rt("$\alpha_{A'}$", straight_arc_midpoint of a4);
+      endfig;
+    \end{mplibcode}
+  \end{equation*}
+  where
+  \begin{align*}
+    &H_A(f: A \to A') = (p: A' \to A) \mapsto (p \circ f: A \to A), \\
+    &H_{A'}(f: A \to A') = (p: A' \to A') \mapsto (p \circ f: A \to A').
+  \end{align*}
+
+  In particular,
+  \begin{equation*}
+    \begin{mplibcode}
+      beginfig(1);
+        input metapost/graphs;
+
+        v1 := thelabel("$g \circ f$", origin);
+        v2 := thelabel("$\alpha_A(g \circ f) = H_{A'}(f)(\Id_{A'}) = f$", (-1, -1) scaled u);
+        v3 := thelabel("$g$", (3, 0) scaled u);
+        v4 := thelabel("$\alpha_{A'}(\alpha_{A'}^{-1}(\Id_{A'})) = \Id_{A'}$", (4, -1) scaled u);
+
+        a1 := straight_arc(v1, v2);
+        a2 := straight_arc(v3, v1);
+        a3 := straight_arc(v4, v2);
+        a4 := straight_arc(v3, v4);
+
+        draw_vertices(v);
+        draw_arcs(a);
+
+        label.ulft("$\alpha_A$", straight_arc_midpoint of a1);
+        label.top("$H_A(f)$", straight_arc_midpoint of a2);
+        label.bot("$H_{A'}(f)$", straight_arc_midpoint of a3);
+        label.urt("$\alpha_{A'}$", straight_arc_midpoint of a4);
+      endfig;
+    \end{mplibcode},
+  \end{equation*}
+  that is,
+  \begin{equation*}
+    \alpha_A(g \circ f) = f = \alpha_A(\Id_A).
+  \end{equation*}
+
+  Since \( \alpha_A \) is a bijection, we conclude that \( g \circ f = \Id_A \).
+
+  Analogously, we obtain that \( f \circ g = \Id_{A'} \). Thus \( f: A \to A' \) is an isomorphism, the inverse being \( g: A' \to A \).
+\end{proof}
+
+\begin{theorem}(Yoneda's lemma)\label{def:yoneda_lemma}\cite[theorem 4.2.1]{Leinster2014}
+  Let \( \Bold A \) be a locally small category. Then there is a natural isomorphism between the functors
+  \begin{align*}
+    &\Cat{A}^{-1} \times [\Bold{A}^{-1}, \Bold{Set}] \to \Bold{Set} \\
+    &(A, X) \mapsto X(A)
+  \end{align*}
+  and
+  \begin{align*}
+    &\Cat{A}^{-1} \times [\Bold{A}^{-1}, \Bold{Set}] \to \Bold{Set} \\
+    &(A, X) \mapsto [\Cat{A}^{-1}, \Bold{Set}](H_A, X).
+  \end{align*}
+\end{theorem}
