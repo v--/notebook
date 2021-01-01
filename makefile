@@ -14,5 +14,5 @@ clean:
 	rm -fv {,src/}*.log # luatex
 	rm -fv {,src/}*.{aux,log,out,fls,toc} # latex
 	rm -fv {,src/}*.fdb_latexmk # latexmk
-	rm -fv {,src/}*.{bbl,bcf,blg, run.xml} # biber
+	rm -fv {,src/}*.{bbl,bcf,blg,run.xml} # biber
 	rm -fv {,src/}*.{idx,ilg,ind} # makeindex
