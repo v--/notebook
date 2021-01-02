@@ -8,15 +8,85 @@
     \begin{equation*}
       \tau_{xy} = \tau_x \circ \tau_y.
     \end{equation*}
-    \DItem{def:group_action/left_multiplication} an operation\Tinyref{def:algebraic_theory} \( \circ: G \times A \to A \), written using juxtaposition, such that
+    \DItem{def:group_action/left_multiplication} an operation\Tinyref{def:algebraic_theory} (see \cref{remark:group_actions_as_algebraic_structures} for justification) \( \cdot: G \times A \to A \), written using juxtaposition, such that
     \begin{itemize}
-      \item \( (g_1 g_2) \circ a = g_1 \circ (g_2 \circ a) \) whenever \( g_1, g_2 \in G \) and \( a \in A \)
-      \item \( e \circ a = a \) for any \( a \in A \)
+      \item \( (g h) \cdot a = g \cdot (h \cdot a) \) whenever \( g, h \in G \) and \( a \in A \)
+      \item \( e \cdot a = a \) for any \( a \in A \)
     \end{itemize}
   \end{defenum}
 
-  We also refer to \ref{def:group_action/left_multiplication} as \Def{left group actions} to distinguish them from \Def{right group actions} (which are defined in the obvious way).
+  When necessary, we also refer to \ref{def:group_action/left_multiplication} as \Def{left group actions} to distinguish them from \Def{right group actions} (which are defined in the obvious way).
 \end{definition}
+\begin{proof}
+  \begin{description}
+    \Implies[def:group_action/homomorphism][def:group_action/indirect_homomorphism] Let \( \tau: G \to S(A) \) be a homomorphism. Thus we assign a bijection \( \tau(x) \) for each member \( x \in G \). Furthermore, since the group operation on \( S(A) \) is function composition and since \( \tau \) is a homomorphism, we have
+    \begin{equation*}
+      \tau(xy) = \tau(x) \circ \tau(y).
+    \end{equation*}
+
+    \Implies[def:group_action/indirect_homomorphism][def:group_action/left_multiplication] Assume that we have a bijection \( \tau_x: A \to A \) for each \( x \in G \) that satisfies \( \tau_{xy} = \tau_x \circ \tau_y \). Define the operation
+    \begin{align*}
+      &\cdot: G \times A \to A \\
+      &\cdot(g, a) \coloneqq \tau_x(a).
+    \end{align*}
+
+    It satisfies the necessary axioms:
+    \begin{itemize}
+      \item If \( g, h \in G \) and \( a \in A \), we have
+      \begin{equation*}
+        (g h) \cdot a
+        =
+        \tau_{g h}(a)
+        =
+        \tau_{g}(\tau{h}(a))
+        =
+        g \cdot (h \cdot a).
+      \end{equation*}
+
+      \item If \( a \in A \), we have
+      \begin{equation*}
+        e \cdot a
+        =
+        \tau_e(a)
+        =
+        \Id(a)
+        =
+        a.
+      \end{equation*}
+    \end{itemize}
+
+    \Implies[def:group_action/left_multiplication][def:group_action/homomorphism] Assume that we have an operation \( \cdot: G \times A \to A \) that satisfies the axioms for left action. Define the function
+    \begin{align*}
+      &\tau: G \to S(A) \\
+      &\tau(g) \coloneqq (a \mapsto g \cdot a).
+    \end{align*}
+
+    The function is well defined because for every \( g \in G \), the function \( \tau(g) \) is a indeed a bijection:
+    \begin{equation*}
+      \tau(g^{-1}) \circ \tau(g)
+      =
+      \tau(g^{-1} g)
+      =
+      \tau(e)
+      =
+      \Id
+    \end{equation*}
+    and similarly in the other direction.
+
+    \( \tau \) is a group homomorphism because
+    \begin{equation*}
+      \tau(g h)
+      =
+      (a \mapsto gh \cdot a)
+      =
+      (a \mapsto g \cdot (h \cdot a))
+      =
+      (a \mapsto \tau(g)(\tau(h)(a))
+      =
+      \tau(g) \circ \tau(h).
+    \end{equation*}
+  \end{description}
+\end{proof}
 
 \begin{example}\label{ex:group_actions}
   \begin{itemize}\mbox{}
@@ -25,11 +95,11 @@
       \RItem{def:group_action/homomorphism} The identity function \( \Id: G \to G \) is the identity of the symmetric group \( S(G) \) (where \( G \) is considered as a set here). Thus the following function
       \begin{align*}
         &\varphi: G \to S(G) \\
-        &\varphi(x) \coloneqq (y \to xy)
+        &\varphi(x) \coloneqq (y \mapsto xy)
       \end{align*}
       is a group homomorphism from \( G \) to \( S(G) \). Indeed, \( \varphi(e) = \Id \) and
       \begin{equation*}
-        (z \to xyz) = \varphi(xy) = \varphi(x) \circ \varphi(y) = (y \to xy) \circ (z \to yz) = (z \to xyz)
+        (z \mapsto xyz) = \varphi(xy) = \varphi(x) \circ \varphi(y) = (y \mapsto xy) \circ (z \mapsto yz) = (z \mapsto xyz)
       \end{equation*}
 
       \RItem{def:group_action/indirect_homomorphism} The proof is the same as above.
@@ -50,3 +120,13 @@
     \item The group of integers \( \Z \) acts on any group \( G \) by sending \( g \) to its power \( g^n \).
   \end{itemize}
 \end{example}
+
+\begin{remark}\label{remark:group_actions_as_algebraic_structures}
+  We may also define group actions as algebraic structures. Let \( \varphi: G \to S(A) \) be a group action of \( G \) on \( A \).
+
+  We define the group action as the set \( A \) with a unary operation \( \varphi(g): A \to A \) for every element of the group \( g \in G \). We must also add the additional axioms
+  \begin{equation*}
+    \varphi(gh) = \varphi(g) \circ \varphi(h)
+  \end{equation*}
+  for every pair \( g, h \in A \).
+\end{remark}
