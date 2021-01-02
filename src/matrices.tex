@@ -22,6 +22,8 @@
       \end{pmatrix}.
     \end{equation*}
 
+    \DItem{def:array/square_matrix} If \( n = m \), we call the matrix a \Def{square matrix}. The elements \( a_{1,1}, \ldots, a_{n,n} \) of a square matrix are called its \Def{main diagonal}.
+
     \DItem{def:array/column_vector} matrices with only one column are called \Def{column matrices}:
     \begin{equation*}
       \begin{pmatrix}
@@ -47,6 +49,62 @@
 
   A single tensor can be represented by different arrays and the same array can represent multiple tensors.
 \end{remark}
+
+\begin{definition}\label{def:block_matrix}
+  A \Def{block matrix} is a \enquote{matrix of matrices}, that is, a matrix of the form
+  \begin{equation*}
+    \begin{pmatrix}
+      A_{1,1} & A_{1,2} & \cdots & A_{1,m} \\
+      A_{2,1} & A_{2,2} & \cdots & A_{2,m} \\
+      \vdots  & \vdots  & \ddots & \vdots \\
+      A_{n,1} & A_{n,2} & \cdots & A_{n,m}
+    \end{pmatrix},
+  \end{equation*}
+  where all \( A_{i,j} \) are matrices of compatible dimensions.
+
+  We usually write the block matrix
+  \begin{equation*}
+    \begin{pmatrix}
+      A      & \cdots & B \\
+      \vdots & \ddots & \vdots \\
+      C      & \cdots & D
+    \end{pmatrix}
+  \end{equation*}
+  as
+  \begin{equation*}
+    \begin{BlockMatrix}{ccc|c|ccc}
+      a_{1,1}   & \cdots & a_{1,m_A}   & \cdots & b_{1,1}   & \cdots & b_{1,m_B} \\
+      \vdots    & \ddots & \vdots      & \cdots & \vdots    & \ddots & \vdots \\
+      a_{n_A,1} & \cdots & a_{n_A,m_A} & \cdots & b_{n_B,1} & \cdots & b_{n_B,m_B} \\
+      \hline
+      \vdots    & \vdots & \vdots      & \ddots & \vdots    & \vdots & \vdots \\
+      \hline
+      c_{1,1}   & \cdots & c_{1,m_C}   & \cdots & d_{1,1}   & \cdots & d_{1,m_D} \\
+      \vdots    & \ddots & \vdots      & \cdots & \vdots    & \ddots & \vdots \\
+      c_{n_C,1} & \cdots & c_{n_C,m_C} & \cdots & d_{n_D,1} & \cdots & d_{n_D,m_D} \\
+    \end{BlockMatrix}.
+  \end{equation*}
+
+  Given any matrix \( A = \{ a_{i,j} \}_{i,j=1}^{n,m} \), we sometimes consider its block matrix of \Def{rows}
+  \begin{equation*}
+    \begin{BlockMatrix}{c}
+      a_{1,-} \\
+      \hline
+      a_{2,-} \\
+      \hline
+      \vdots \\
+      \hline
+      a_{n,-}
+    \end{BlockMatrix},
+  \end{equation*}
+  consisting of row vectors, and its block matrix of of \Def{columns}
+  \begin{equation*}
+    \begin{BlockMatrix}{c|c|c|c}
+      a_{-,1} & a_{-,2} & \cdots & a_{-,m},
+    \end{BlockMatrix}
+  \end{equation*}
+  consisting of column vectors.
+\end{definition}
 
 \begin{definition}\label{def:module_of_tuples}
   Let \( R \) be a semiring\Tinyref{def:semiring}. Let \( R^n \) be the set of all \( n \)-tuples\Tinyref{def:array/vector} over \( R \), that is,
@@ -85,10 +143,6 @@
   With these operations defined, \( R^n \) becomes a semiring module\Tinyref{def:left_module}.
 
   In particular, if \( R \) is a field\Tinyref{def:semiring/field}, \( R^n \) is a vector space\Tinyref{def:vector_space} and we refer to it as a \Def{tuple space}. We are usually only concerned with the vector spaces \( \R^n \) and \( \BB{C}^n \).
-\end{definition}
-
-\begin{definition}\label{def:module_of_matrices}
-  We denote analogous to \cref{def:module_of_tuples} operations on the set \( R^{n \times m} \) of \( n, m \)-matrices over \( R \) to obtain the semiring module of matrices over \( R \). If \( R \) is a vector space, we refer to \( R^{n \times m} \) as \Def{matrix spaces}.
 \end{definition}
 
 \begin{proposition}\label{def:matrix_spaces_are_tuple_spaces}
@@ -133,6 +187,118 @@
   \end{equation*}
 \end{proof}
 
-\begin{proposition}\label{thm:finite_dimensional_operators_are_isomorphic}
-  The vector space of all linear maps \( \hom(\R^n, \R^m) \) is isomorphic to the matrix space \( \R^{n \times m} \)
+\begin{definition}\label{def:algebra_of_matrices}
+  Denote by \( R^{n \times m} \) the set of \( n, m \)-matrices over the semiring \( R \). We define three operations on matrices:
+
+  \begin{description}
+    \DItem{def:algebra_of_matrices/addition} We define \Def{matrix addition} as
+    \begin{align*}
+      &+: R^{n,m} \times R^{n,m} \to R^{n,m} \\
+      &\begin{pmatrix}
+        a_{1,1} & \cdots & a_{1,m} \\
+        \vdots  & \ddots & \vdots \\
+        a_{n,1} & \cdots & a_{n,m}
+      \end{pmatrix}
+      +
+      \begin{pmatrix}
+        b_{1,1} & \cdots & b_{1,m} \\
+        \vdots  & \ddots & \vdots \\
+        b_{n,1} & \cdots & b_{n,m}
+      \end{pmatrix}
+      \coloneqq
+      \begin{pmatrix}
+        a_{1,1} + b_{1,1} & \cdots & a_{1,m} + b_{1,m} \\
+        \vdots            & \ddots & \vdots \\
+        a_{n,1} + b_{n,1} & \cdots & a_{n,m} + b_{n,m}
+      \end{pmatrix}
+    \end{align*}
+    \DItem{def:algebra_of_matrices/scalar_multiplication} We define \Def{scalar multiplication} as
+    \begin{align*}
+      &\cdot: R \times R^{n,m} \to R^{n,m} \\
+      &\lambda \cdot \begin{pmatrix}
+        a_{1,1} & \cdots & a_{1,m} \\
+        \vdots  & \ddots & \vdots \\
+        a_{n,1} & \cdots & a_{n,m}
+      \end{pmatrix}
+      \coloneqq
+      \begin{pmatrix}
+        \lambda a_{1,1} & \cdots & \lambda a_{1,m} \\
+        \vdots          & \ddots & \vdots \\
+        \lambda a_{n,1} & \cdots & \lambda a_{n,m}
+      \end{pmatrix}
+    \end{align*}
+
+    \DItem{def:algebra_of_matrices/matrix_multiplication} We define \Def{matrix multiplication} in two steps. First, if \( a \in R^{1,n} \) is a row vector\Tinyref{def:array/row_vector} and \( b \in R^{n,1} \) is a column vector\Tinyref{def:array/column_vector}, we define their \Def{inner product} to be
+    \begin{equation}
+      a \cdot b \coloneqq \sum_{i=1}^n a_i b_i.
+    \end{equation}
+
+    We can now define matrix multiplication as
+    \begin{align*}
+      &\circ: R^{n,m} \times R^{m,k} \to R^{n,k} \\
+      &\begin{BlockMatrix}{c}
+        a_{1,-} \\
+        \hline
+        a_{2,-} \\
+        \hline
+        \vdots \\
+        \hline
+        a_{n,-}
+      \end{BlockMatrix}
+      \circ
+      \begin{BlockMatrix}{c|c|c|c}
+        \scriptstyle{b_{-,1}} & \scriptstyle{b_{-,2}} & \cdots & \scriptstyle{b_{-,m}}
+      \end{BlockMatrix}
+      \coloneqq
+      \begin{pmatrix}
+        a_{1,-} \cdot b_{-,1} & a_{1,-} \cdot b_{-,2} & \vdots & a_{1,-} \cdot b_{-,m} \\
+        a_{2,-} \cdot b_{-,1} & a_{2,-} \cdot b_{-,2} & \vdots & a_{2,-} \cdot b_{-,m} \\
+        \vdots                & \vdots                & \ddots & \vdots \\
+        a_{n,-} \cdot b_{-,1} & a_{n,-} \cdot b_{-,2} & \cdots & a_{n,-} \cdot b_{-,m}
+      \end{pmatrix}.
+    \end{align*}
+  \end{description}
+
+  With addition\Tinyref{def:algebra_of_matrices/addition} and scalar multiplication\Tinyref{def:algebra_of_matrices/scalar_multiplication}, \( R^{n \times m} \) becomes a semiring module\Tinyref{def:left_module}.
+
+  If \( n = m \), we can add matrix multiplication\Tinyref{def:algebra_of_matrices/matrix_multiplication} to the module \( R^{n \times n} \) so that it becomes an algebra\Tinyref{def:algebra_over_a_ring}. The identity matrix of order \( n \) is the identity with respect to matrix multiplication.
+\end{definition}
+
+\begin{example}\label{ex:matrix_multiplication_is_noncommutative}
+  The matrix algebra \( R^{n \times n} \) is a noncommutative ring. Consider the following example:
+  \begin{align*}
+    \begin{pmatrix}
+      0 & 0 \\
+      0 & 1
+    \end{pmatrix}
+    \begin{pmatrix}
+      1 & 0 \\
+      1 & 0
+    \end{pmatrix}
+    &=
+    \begin{pmatrix}
+      0 & 0 \\
+      1 & 0
+    \end{pmatrix}
+    \\
+    \begin{pmatrix}
+      1 & 0 \\
+      1 & 0
+    \end{pmatrix}
+    \begin{pmatrix}
+      0 & 0 \\
+      0 & 1
+    \end{pmatrix}
+    &=
+    \begin{pmatrix}
+      0 & 0 \\
+      0 & 0
+    \end{pmatrix}
+  \end{align*}
+\end{example}
+
+\begin{proposition}\label{thm:finite_dimensional_operators_are_isomorphic_to_matrices}
+  The vector space of all linear maps \( \hom(\R^n, \R^m) \) is isomorphic to the matrix vector space\Tinyref{def:algebra_of_matrices} \( \R^{n \times m} \).
+
+  If \( n = m \), the algebra \( \End(\R^n) \) with function composition as vector multiplication is isomorphic to \( \R^{n \times n} \) with matrix multiplication as vector multiplication.
 \end{proposition}
