@@ -1,24 +1,55 @@
 \subsection{Bilinear forms}\label{subsec:bilinear_forms}
 
 \begin{definition}\label{def:bilinear_form}\cite[249]{Knapp2016BAlg}
-  Let \( M \) and \( N \) be left \( R \)-modules. A \Def{bilinear form} is a multilinear\Tinyref{def:multilinear_function} function of type \( M \times N \to R \). Usually \( M = N \), in which case we say that the function is a bilinear form over \( M \).
+  Let \( M \) and \( N \) be left \( R \)-modules and \( L: M \times N \to R \) be a multilinear\Tinyref{def:multilinear_function} function. We say that \( L \) is a \Def{bilinear form}.
 
-  If instead of being linear in its second argument the function is semilinear\Tinyref{def:linear_operator}, we say that it is a \Def{sesquilinear form}.
+  If \( M = N \), we have the following additional types of bilinear forms:
+  \begin{defenum}
+    \DItem{def:bilinear_form/symmetric} If \( L \) is a symmetric function\Tinyref{def:symmetric_function}, we say that is is a \Def{symmetric bilinear form}
+
+    \DItem{def:bilinear_form/skew_symmetric} If for all \( x, y \in M \) instead of \( L(x, y) = L(y, x) \) we have \( L(x, y) = -L(y, x) \), we say that \( L \) is \Def{skew-symmetric}.
+
+    \DItem{def:bilinear_form/alternating} If for all \( x \in M \) we have \( L(x, x) = 0 \), we say that \( L \) is \Def{alternating}.
+  \end{defenum}
 \end{definition}
 
-\begin{definition}\label{def:duality_pairing}
-  Let \( M \) and \( N \) be left \( R \)-modules. A \Def{duality pairing} \( \Prod - -: M \times N \to R \) is a bilinear form such that both families of functions
-  \begin{itemize}
-    \item \( \{ m \to \Prod n m \colon n \in N \} \)
-    \item \( \{ n \to \Prod n m \colon m \in M \} \)
-  \end{itemize}
-  vanish nowhere\Tinyref{def:functions_vanish_nowhere}.
+\begin{proposition}\label{thm:skew_symmetric_iff_alternating}
+  Let \( 1 + 1 = 2 \) be a unit in the ring \( R \). Let \( M \) be a left module over \( R \). Then the bilinear form \( L: M \times M \to R \) is alternating\Tinyref{def:bilinear_form/alternating} if and only if it is skew-symmetric\Tinyref{def:bilinear_form/skew_symmetric}.
 
-  The \Def{canonical duality pairing} of a vector space \( V \) over \( F \) is
-  \begin{align*}
-    &\Prod - -: V^* \times V \to F \\
-    &\Prod {x^*} x \to x^*(x).
-  \end{align*}
+  Alternating implies skew-symmetric even if \( 2 \) is not invertible.
+\end{proposition}
+\begin{proof}
+  \begin{description}
+    \Implies Let \( L \) be alternating. Then
+    \begin{align*}
+      L(x + y, x + y) &= L(x, x) + L(x, y) + L(y, x) + L(y, y) \\
+      0 &= L(x, y) + L(y, x) \\
+      L(x, y) = -L(y, x).
+    \end{align*}
+  \end{description}
+
+  \ImpliedBy Let \( L \) be skew-symmetric. Then
+  \begin{equation*}
+    L(x, x) = -L(x, x),
+  \end{equation*}
+  which implies that \( 2L(x, y) = 0 \). Hence \( L \) is alternating if we are able to divide by \( 2 \).
+\end{proof}
+
+\begin{definition}\label{def:bilinear_form_radicals}\cite[250]{Knapp2016BAlg}
+  Let \( L: M \times N \to R \) be a bilinear form. We define its \Def{left radical}
+  \begin{equation*}
+    \LRad L \coloneqq \{ x \in M \colon \forall y \in N, \Prod x y = 0 \}
+  \end{equation*}
+  and \Def{right radical}
+  \begin{equation*}
+    \RRad L \coloneqq \{ x \in M \colon \forall y \in N, \Prod x y = 0 \}.
+  \end{equation*}
+
+  Note that if \( L \) is symmetric or skew-symmetric (which also implies \( M = N \)), the two are identical and we speak simply of the \Def{radical} \( \Rad L \).
+\end{definition}
+
+\begin{definition}\label{def:nondegenerate_bilinear_form}\cite[249]{Knapp2016BAlg}
+  We say that a bilinear form \( L: M \times N \to R \) is \Def{nondegenerate} if \( \LRad \neq 0 \) and \( \RRad \neq 0 \).
 \end{definition}
 
 \begin{theorem}\label{thm:bilinear_form_matrix_presentation}
@@ -28,6 +59,8 @@
   \end{equation*}
 
   This matrix is called the generalized \Def{Gram matrix}.
+
+  In particular, if \( L \) is symmetric\Tinyref{def:symmetric_function}, so it \( A \).
 \end{theorem}
 \begin{proof}
   Denote by \( e_1, \ldots, e_n \) the basis of \( R^n \) and by \( f_1, \ldots, f_m \) the basis of \( R^m \).
@@ -36,6 +69,8 @@
   \begin{equation*}
     a_{i,j} \coloneqq L(e_i, f_j).
   \end{equation*}
+
+  Note that if \( n = m \) and if \( L \) is symmetric, then the matrix \( A \) is obviously symmetric too.
 
   For any fixed basis vector \( e_i, i = 1, \ldots, n \) of \( R^n \), we have
   \begin{equation*}
@@ -64,3 +99,112 @@
 \begin{corollary}\label{thm:bilinear_forms_isomorphic_to_matrices}
   Fix a commutative unital ring \( R \). The vector space of bilinear forms of type \( R^n \times R^m \to R \) is isomorphic to the matrix space \( A \in R^{n \times m} \).
 \end{corollary}
+
+\begin{definition}\label{def:sesquilinear_form}\cite[258]{Knapp2016BAlg}
+  Let \( V \) be a complex vector space and let \( \Ol V \) be its conjugate transpose\Tinyref{def:complex_conjucate_vector_space}. We call the bilinear form \( L: V \times \Ol V \to R \) a \Def{sesquilinear form} (we say that \( L \) is \enquote{semilinear} in its second argument and \enquote{sesqui} means \enquote{one and a half} is Latin).
+
+  Similar to \cref{def:bilinear_form}, we have
+  \begin{defenum}
+    \DItem{def:sesquilinear_form/hermitian} If for all \( x, y \in V \) we have \( L(x, y) = \Ol{L(y, x)} \), we say that \( L \) is \Def{Hermitian}.
+
+    \DItem{def:sesquilinear_form/skew_hermitian} If for all \( x, y \in V \) we have \( L(x, y) = -\Ol{L(y, x)} \), we say that \( L \) is \Def{skew-Hermitian}.
+  \end{defenum}
+\end{definition}
+
+\begin{definition}\label{def:duality_pairing}
+  Let \( M \) and \( N \) be left \( R \)-modules. A \Def{duality pairing} \( \Prod - -: M \times N \to R \) is a nondegenerate\Tinyref{def:nondegenerate_bilinear_form} bilinear form.
+
+  The \Def{canonical duality pairing} of a vector space \( V \) over \( F \) is
+  \begin{align*}
+    &\Prod - -: V^* \times V \to F \\
+    &\Prod {x^*} x \to x^*(x).
+  \end{align*}
+\end{definition}
+
+\begin{definition}\label{def:quadratic_form}
+  If \( L: M \times M \to R \) be a bilinear form\Tinyref{def:bilinear_form}, we call the function
+  \begin{equation*}
+    Q(x) \coloneqq L(x, x)
+  \end{equation*}
+  a \Def{quadratic form} over \( M \).
+\end{definition}
+
+\begin{definition}\label{def:quadratic_form_definiteness}
+  We say that a bilinear form is positive or negative definite or semidefinite if the corresponding quadratic form has the same definiteness\Tinyref{def:function_definiteness} (as a function).
+\end{definition}
+
+\begin{proposition}\label{thm:bilinear_forms_vs_to_quadratic_forms}
+  A \Def{quadratic form} \( Q: M \to R \) is a homogeneous function\Tinyref{def:homogenous_function} of degree \( 2 \). In particular, \( Q(x) = Q(-x) \).
+\end{proposition}
+\begin{proof}
+  Let \( L: M \times M \to R \) be the corresponding bilinear form. Then, by \ref{def:linear_operator/homogeneity},
+  \begin{equation*}
+    Q(tx) = L(tx, tx) = t^2 L(x, x) = t^2 Q(x).
+  \end{equation*}
+\end{proof}
+
+\begin{proposition}\label{thm:polarization_identity}\cite{nLab:polarization_identity}
+  Let \( L: M \times M \to R \) be a bilinear form\Tinyref{def:bilinear_form} and \( Q: M \to R \) be its associated quadratic form\Tinyref{def:quadratic_form}. Then the \Def{polarization identity} holds:
+  \begin{equation}\label{thm:polarization_identity/polarization_identity}
+    2 L(x, y) + 2 L(y, x) = Q(x + y) - Q(x - y)
+  \end{equation}
+
+  The similar looking but slightly less useful parallelogram law also holds:
+  \begin{equation}\label{thm:polarization_identity/parallelogram_law}
+    2 Q(x) + 2 Q(y) = Q(x + y) + Q(x - y)
+  \end{equation}
+
+  If \( 2 = 1 + 1 \) is a unit in \( R \), we can \enquote{recover} from \( Q \) the bilinear form:
+  \begin{equation}\label{thm:polarization_identity/symmetrization_definition}
+    \hat L(x, y) \coloneqq \frac 1 2 \left[ Q(x + y) - Q(x) - Q(y) \right]
+  \end{equation}
+
+  The function \( \hat L \) is symmetric\Tinyref{def:symmetric_function} and is called the \Def{symmetrization} of \( L \). If \( L \) itself is symmetric, \( L = \hat L \).
+\end{proposition}
+\begin{proof}
+  Identities \cref{thm:polarization_identity/polarization_identity,thm:polarization_identity/parallelogram_law,thm:polarization_identity/symmetrization_definition} all follow from the bilinearity of \( L \), that is,
+  \begin{equation*}
+    Q(x \pm y)
+    =
+    L(x, x) \pm L(x, y) \pm L(y, x) + L(y, y)
+    =
+    [Q(x) + Q(y)] \pm [L(x, y) + L(y, x)].
+  \end{equation*}
+\end{proof}
+
+\begin{definition}\label{def:orthogonality}
+  Let \( R \) be a division ring\Tinyref{def:semiring/division_ring}, let \( M \) be a left \( R \)-module and let \( L: M \times N \to R \) be a nondegenerate bilinear form. We say that the vectors \( x \in M \) and \( y \in N \) are \Def{orthogonal} with respect to \( L \) if
+  \begin{equation*}
+    L(x, y) = 0.
+  \end{equation*}
+
+  For every submodule \( K \subseteq M \) we define its \Def{orthogonal complement} with respect to \( L \) as
+  \begin{equation*}
+    K^\perp \coloneqq \{ x \in M \colon \forall y, L(x, y) = 0 \}
+  \end{equation*}
+  and analogously for submodules of \( N \).
+
+  Let \( I \) be an index set and \( \{ x_i \}_{i \in I} \subseteq M \), \( \{ y_i \}_{i \in I} \subseteq N \) be two families of vectors indexed by \( I \). We say that these families form a \Def{biorthogonal system} with respect to \( L \) if
+  \begin{equation*}
+    L(x_i, y_j) = \begin{cases}
+      1, &i = j \\
+      0, &i \neq j
+    \end{cases}
+  \end{equation*}
+
+  If \( M = N \), we usually consider \Def{orthogonal systems} \( \{ x_i \}_{i \in I} \subseteq M \) where
+  \begin{equation*}
+    L(x_i, x_j) = \begin{cases}
+      1, &i = j \\
+      0, &i \neq j
+    \end{cases}
+  \end{equation*}
+\end{definition}
+
+\begin{definition}\label{def:inner_product_space}
+  An \Def{inner product space} is a vector space \( V \) over \( F \) equipped with a positive definite\Tinyref{def:quadratic_form_definiteness} symmetric\Tinyref{def:bilinear_form/symmetric} bilinear form \( \Prod - -: V \times V \to F \).
+\end{definition}
+
+\begin{definition}\label{def:symplectic_vector_space}
+  A \Def{symplectic vector space} is a vector space \( V \) over \( F \) equipped with a nondegenerate\Tinyref{def:bilinear_form/symmetric}  alternating\Tinyref{def:bilinear_form/alternating} bilinear form \( \Prod - -: V \times V \to F \).
+\end{definition}
