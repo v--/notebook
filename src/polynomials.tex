@@ -14,7 +14,7 @@
   \begin{defenum}
     \DItem{def:polynomial/zero_polynomial} An exception to most rules is the \Def{zero polynomial}, all of whose coefficients are zeroes.
 
-    \DItem{def:polynomial/leading_coefficient} The last nonzero coefficient of a nonzero polynomial is called the \Def{leading coefficient} and is denoted by \( \LC(p) \).
+    \DItem{def:polynomial/leading_coefficient} The last nonzero coefficient of a nonzero polynomial is called the \Def{leading coefficient} and is denoted by \( \LC(p) \). If \( \LC(p) = 1 \), we call the polynomial \Def{monic}.
 
     \DItem{def:polynomial/degree} The zero-based index of the leading coefficient is called the \Def{degree} of the polynomial as is denoted by \( \deg(p) \). That is, if only \( a_0 \) is nonzero, then \( \deg(p) = a_0 \). The degree of the zero polynomial is left undefined.
 
@@ -67,6 +67,50 @@
 
   We usually refer to \( R[X] \) as the \Def{polynomial ring}. We will implicitly use the canonical embedding \( \iota: R \to R[X] \), which sends an element \( r \) of \( R \) into the constant polynomial \( p(X) \coloneqq r \).
 \end{definition}
+
+\begin{proposition}\label{thm:polynomial_degree_properties}
+  The polynomial degree has the following basic properties:
+  \begin{thmenum}
+    \DItem{thm:polynomial_degree_properties/sum} For nonzero polynomials \( p, q \in R[X] \) with \( p \neq -q \), we have
+    \begin{equation*}
+      \deg (p + q) \leq \max \{ \deg p, \deg q \}.
+    \end{equation*}
+
+    \DItem{thm:polynomial_degree_properties/product} For nonzero polynomials \( p, q \in R[X] \) with \( pq \neq 0 \), we have
+    \begin{equation*}
+      \deg (pq) \leq \deg p + \deg q,
+    \end{equation*}
+    with equality holding if \( R \) is an integral domain.
+
+    The requirement that \( pq \neq 0 \) may also be dropped if \( R \) is an integral domain as per \cref{thm:polynomials_over_integral_domain_are_integral_domain}.
+  \end{thmenum}
+\end{proposition}
+\begin{proof}
+  Fix nonzero polynomials
+  \begin{align*}
+    p(X) &\coloneqq \sum_{i=0}^n a_i X^i, \\
+    q(X) &\coloneqq \sum_{i=0}^m b_i X^i.
+  \end{align*}
+
+  \begin{description}
+    \RItem{thm:polynomial_degree_properties/sum} Additionally assume that \( p \neq -q \) since otherwise \( p + q = 0 \) and \( \deg(p + q) \) is undefined. Thus there exists at least one index \( i = 1, 2, \ldots \) so that \( a_i \neq b_i \). Denote by \( k \) the largest such index (only finitely many are nonzero). Then
+    \begin{equation*}
+      a_i = b_i = 0 \text{ for } i > k.
+    \end{equation*}
+
+    Therefore \( \deg(p + q) = k \). Note that \( k \) cannot exceed both \( \deg p \) and \( \deg q \) because it corresponds to a nonzero coefficient. Thus \( k \leq \max\{ \deg p, \deg q \} \).
+
+    \RItem{thm:polynomial_degree_properties/product} By assumption \( pq \neq 0 \) so there exists at least one nonzero coefficient, say \( c_k \). Obviously \( k \leq \deg p + \deg q \) since the highest possible degree of \( pq \) is \( \deg p + \deg q \). Thus
+    \begin{equation*}
+      k = \deg (pq) \leq \deg p + \deg q.
+    \end{equation*}
+
+    If \( R \) is an integral domain, the product of nonzero elements is nonzero. Thus the leading coefficient \( \LC(pq) = \LC(p)\LC(q) \) is nonzero and
+    \begin{equation*}
+      \deg(pq) = \deg p + \deg q.
+    \end{equation*}
+  \end{description}
+\end{proof}
 
 \begin{proposition}\label{thm:polynomial_ring_universal_property}\cite[150]{Knapp2016BAlg}
   For any nontrivial commutative unital ring \( T \), any unital ring homomorphism \( \varphi: R \to T \) and any \( t \in T \), there exists a unique homomorphism \( \Phi_t: R[X] \to T \) such that \( \iota(1) = t \) and the following diagram commutes:
@@ -126,6 +170,19 @@
   By additivity, \( \Phi_t: R[X] \to T \) is obviously a homomorphism and \( \Phi_t((0, 1, 0, \ldots)) = t \). Therefore we have proven existence.
 \end{proof}
 
+\begin{proposition}\label{thm:polynomials_over_integral_domain_are_integral_domain}
+  If \( R \) is an integral domain, the polynomial ring \( R[X] \) is also an integral domain.
+\end{proposition}
+\begin{proof}
+  Polynomial multiplication inherits its commutativity from multiplication in \( R \). It remains only to show that \( R[X] \) has no zero divisors.
+
+  Fix two polynomials \( p, q \in R[X] \). If either of them is zero, their product \( pq \) is zero.
+
+  Assume that both are nonzero polynomials. The leading coefficient of their product is, by definition of multiplication, \( \LC(pq) = \LC(p) \LC(q) \). Since \( R \) has no zero divisors, then \( \LC(pq) \neq 0 \) and thus \( pq \) is a nonzero polynomial.
+
+  Therefore \( R[X] \) is an integral domain.
+\end{proof}
+
 \begin{proposition}\label{thm:polynomials_over_field_are_euclidean_domain}\cite[10]{Knapp2016BAlg}
   The polynomial domain\Tinyref{def:semiring/integral_domain} \( F[X] \) over a field \( F \) is Euclidean\Tinyref{def:euclidean_domain} with \( \delta(p) \coloneqq \deg p \). Furthermore, the remainder and quotient are unique.
 \end{proposition}
@@ -136,11 +193,15 @@
     r &\coloneqq a.
   \end{align*}
 
+  In this case, \( \deg r = \deg a < \deg b \).
+
   Suppose that \( \deg b \leq \deg a \). We will use proof by induction on \( \deg a \). If \( \deg a = 0 \), obviously \( \deg b = 0 \) and we define
   \begin{align*}
     q &\coloneqq a / b, \\
     r &\coloneqq 0.
   \end{align*}
+
+  In this case, \( r \) is the zero polynomial.
 
   Assume the result holds for \( \deg a < n \) and let \( \deg a = n, \deg b = m \). Then there exists a polynomial \( \hat a(X) \) that is either zero or \( \deg \hat a = n - 1 \) such that
   \begin{equation*}
@@ -152,23 +213,38 @@
     b(X) = b_m X^m + \hat b(X).
   \end{equation*}
 
-  Define
-  \begin{equation*}
-    \hat q(X) \coloneqq \frac {a_n} {b_m} X^{n-m},
-  \end{equation*}
-  so that
+  Thus
   \begin{align*}
-    r(X) \coloneqq
-    a(X) - b(X) q(X)
+    \hat r(X)
+    &\coloneqq
+    a(X) - b(X) \frac {a_n} {b_m} X^{n-m}
     = \\ &=
     a_n X^n + \hat a(X) - (b_m X^m + \hat b(X)) \frac {a_n} {b_m} X^{n-m}
     = \\ &=
-    a_n X^n + \hat a(X) - a_n X^n - \frac {a_n} {b_m} X^{n-m} \hat b(X)
+    a_n X^n + \hat a(X) - a_n X^n - \hat b(X) \frac {a_n} {b_m} X^{n-m}
     = \\ &=
-    \hat a(X) - \frac {a_n} {b_m} X^{n-m} \hat b(X).
+    \hat a(X) - \hat b(X) \frac {a_n} {b_m} X^{n-m}.
   \end{align*}
 
-  Therefore \( r(X) \) is either the zero polynomial or \( \deg r \leq n - 1 \).
+  Therefore \( \hat r(X) \) is either the zero polynomial (in which case we define \( r(X) \coloneqq \hat r(X) \)) or \( \deg \hat r \leq n - 1 \). In the latter case, we can divide \( \hat r \) by \( b \) to obtain \( \hat q(X) \) and \( r(X) \) such that
+  \begin{equation*}
+    \hat r(X) \coloneqq b(X) \hat q(X) + r(X),
+  \end{equation*}
+  where \( r = 0 \) or \( \deg r < \deg b \).
+
+  Substitute into the definition of \( \hat r(X) \):
+  \begin{align*}
+    \hat r(X) &= a(X) - b(X) \frac {a_n} {b_m} X^{n-m} \\
+    b(X) \hat q(X) + r(X) &= a(X) - b(X) \frac {a_n} {b_m} X^{n-m} \\
+    b(X) \left(\hat q(X) - \frac {a_n} {b_m} X^{n-m} \right) + r(X) &= a(X).
+  \end{align*}
+
+  Define
+  \begin{equation*}
+    q(X) \coloneqq \hat q(X) - \frac {a_n} {b_m} X^{n-m}.
+  \end{equation*}
+
+  We have obtained polynomials \( r(X) \) and \( q(X) \) where \( r(X) \) is either zero or \( \deg r < \deg b \).
 
   It remains only to show uniqueness. Suppose that
   \begin{equation*}
@@ -179,7 +255,7 @@
 
   If \( r - r' \) is not zero, then neither is \( q - q' \). Then \( b(q - q') = -(r - r') \) and
   \begin{equation*}
-    \deg[b (q - q')] = \deg b + \deg(q - q') = \deg(r - r') \leq \max(\deg r, \deg r') < \deg b,
+    \deg b + \deg(q - q') = \deg[b (q - q')] = \deg(r - r') \leq \max(\deg r, \deg r') < \deg b,
   \end{equation*}
   which is a contradiction.
 
@@ -229,5 +305,5 @@
 
   The \Def{degree} \( \deg p \) of a multivariate polynomial \( p \) is defined as the maximal degree among all of its nonzero monomials. If all monomials are zero, the degree is left undefined.
 
-  If all nonzero monomials have the same degree, the polynomial is said to be \Def{homogeneous}. A homogeneous multivariate polynomial of degree \( 1 \) is called \Def{linear}.
+  If all nonzero monomials have the same degree, the polynomial is said to be \Def{homogeneous}.
 \end{definition}
