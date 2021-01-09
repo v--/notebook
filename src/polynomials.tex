@@ -99,19 +99,19 @@
   We will call the map \( \Phi_t \) a \Def{substitution homomorphism}. If \( T = R \), we simply call \( \Phi_r \) it an \Def{evaluation} at \( r \in R \).
 \end{proposition}
 \begin{proof}
-  We will first prove uniqueness. Let \( \Phi: R[X] \to T \) and \( \Psi: R[X] \to T \) are two such homomorphisms and take their difference \( \Theta \coloneqq \Phi - \Psi \).
+  We will first prove uniqueness. Let \( \Phi_t: R[X] \to T \) and \( \Psi_t: R[X] \to T \) are two such homomorphisms and take their difference \( \Theta_t \coloneqq \Phi_t - \Psi_t \).
 
   Then for \( r \in R \) we have
   \begin{equation*}
-    \Theta(\iota(r)) = \Psi(\iota(r)) - \Psi(\iota(r)) = \varphi(r) - \varphi(r) = 0.
+    \Theta_t(\iota(r)) = \Psi_t(\iota(r)) - \Psi_t(\iota(r)) = \varphi(r) - \varphi(r) = 0.
   \end{equation*}
 
-  Now since for any polynomial we have \( p = \iota(1) p \) and since \( \Theta \) is a homomorphism of rings, we have
+  Now since for any polynomial we have \( p = \iota(1) p \) and since \( \Theta_t \) is a homomorphism of rings, we have
   \begin{equation*}
-    \Theta(p) = \Theta(\iota(1) p) = 0 \Theta(p) = 0.
+    \Theta_t(p) = \Theta_t(\iota(1) p) = 0 \Theta_t(p) = 0.
   \end{equation*}
 
-  Thus \( \Theta = 0 \) and \( \Phi = \Psi \).
+  Thus \( \Theta_t = 0 \) and \( \Phi_t = \Psi_t \).
 
   Now we will show existence. Take a polynomial
   \begin{equation*}
@@ -120,10 +120,70 @@
 
   Define
   \begin{equation*}
-    \Phi(p) \coloneqq \sum_{i=1}^n \phi(a_0) t^i.
+    \Phi_t(p) \coloneqq \sum_{i=1}^n \phi(a_0) t^i.
   \end{equation*}
 
-  By additivity, \( \Phi: R[X] \to T \) is obviously a homomorphism and \( \Phi((0, 1, 0, \ldots)) = t \). Therefore we have proven existence.
+  By additivity, \( \Phi_t: R[X] \to T \) is obviously a homomorphism and \( \Phi_t((0, 1, 0, \ldots)) = t \). Therefore we have proven existence.
+\end{proof}
+
+\begin{proposition}\label{thm:polynomials_over_field_are_euclidean_domain}\cite[10]{Knapp2016BAlg}
+  The polynomial domain\Tinyref{def:semiring/integral_domain} \( F[X] \) over a field \( F \) is Euclidean\Tinyref{def:euclidean_domain} with \( \delta(p) \coloneqq \deg p \). Furthermore, the remainder and quotient are unique.
+\end{proposition}
+\begin{proof}
+  Let \( a, b \in F[X] \) and \( b \neq 0 \). If \( a = 0 \) or \( \deg a < \deg b \), define
+  \begin{align*}
+    q &\coloneqq 0, \\
+    r &\coloneqq a.
+  \end{align*}
+
+  Suppose that \( \deg b \leq \deg a \). We will use proof by induction on \( \deg a \). If \( \deg a = 0 \), obviously \( \deg b = 0 \) and we define
+  \begin{align*}
+    q &\coloneqq a / b, \\
+    r &\coloneqq 0.
+  \end{align*}
+
+  Assume the result holds for \( \deg a < n \) and let \( \deg a = n, \deg b = m \). Then there exists a polynomial \( \hat a(X) \) that is either zero or \( \deg \hat a = n - 1 \) such that
+  \begin{equation*}
+    a(X) = a_n a^n + \hat a(X).
+  \end{equation*}
+
+  Analogously, we find \( \hat b(X) \) that is either zero or \( \deg \hat b = m - 1 \) such that
+  \begin{equation*}
+    b(X) = b_m X^m + \hat b(X).
+  \end{equation*}
+
+  Define
+  \begin{equation*}
+    \hat q(X) \coloneqq \frac {a_n} {b_m} X^{n-m},
+  \end{equation*}
+  so that
+  \begin{align*}
+    r(X) \coloneqq
+    a(X) - b(X) q(X)
+    = \\ &=
+    a_n X^n + \hat a(X) - (b_m X^m + \hat b(X)) \frac {a_n} {b_m} X^{n-m}
+    = \\ &=
+    a_n X^n + \hat a(X) - a_n X^n - \frac {a_n} {b_m} X^{n-m} \hat b(X)
+    = \\ &=
+    \hat a(X) - \frac {a_n} {b_m} X^{n-m} \hat b(X).
+  \end{align*}
+
+  Therefore \( r(X) \) is either the zero polynomial or \( \deg r \leq n - 1 \).
+
+  It remains only to show uniqueness. Suppose that
+  \begin{equation*}
+    a = bq + r = bq' + r'.
+  \end{equation*}
+
+  If \( r - r' \) is the zero polynomial, so is \( q - q' \) and uniqueness follows.
+
+  If \( r - r' \) is not zero, then neither is \( q - q' \). Then \( b(q - q') = -(r - r') \) and
+  \begin{equation*}
+    \deg[b (q - q')] = \deg b + \deg(q - q') = \deg(r - r') \leq \max(\deg r, \deg r') < \deg b,
+  \end{equation*}
+  which is a contradiction.
+
+  This proves uniqueness.
 \end{proof}
 
 \begin{definition}\label{def:polynomial_function}
@@ -134,10 +194,6 @@
   \end{align*}
   which constructs a \Def{polynomial function} from a polynomial. This map is not injective in general and multiple polynomials may be equivalent as functions\Tinyref{def:function}.
 \end{definition}
-
-\begin{remark}\label{remark:polynomial_vs_polynomial_function}
-  Since we mostly care about polynomials over \( \R \) and \( \Co \), \cref{thm:polynomial_monomorphism_into_polynomial_functions} allows us to identify polynomial functions with their sequences of coefficients.
-\end{remark}
 
 \begin{definition}\label{def:multivariate_polynomial}
   We define the \Def{multivariate polynomial ring} in \( k \) indeterminates as the \enquote{iterated} single-variable polynomial ring
