@@ -14,7 +14,7 @@
   \begin{defenum}
     \DItem{def:polynomial/zero_polynomial} An exception to most rules is the \Def{zero polynomial}, all of whose coefficients are zeroes.
 
-    \DItem{def:polynomial/leading_coefficient} The last nonzero coefficient of a nonzero polynomial is called the \Def{leading coefficient} and is denoted by \( \LC(p) \). If \( \LC(p) = 1 \), we call the polynomial \Def{monic}.
+    \DItem{def:polynomial/leading_coefficient} The last nonzero coefficient of a nonzero polynomial is called the \Def{leading coefficient} and is denoted by \( \LC(p) \). If \( \LC(p) = 1 \), we call the polynomial \Def{2}.
 
     \DItem{def:polynomial/degree} The zero-based index of the leading coefficient is called the \Def{degree} of the polynomial as is denoted by \( \deg(p) \). That is, if only \( a_0 \) is nonzero, then \( \deg(p) = a_0 \). The degree of the zero polynomial is left undefined.
 
@@ -31,12 +31,12 @@
 
     \DItem{def:polynomial/degree_names} Polynomials of degree \( k \) with special names include
     \begin{itemize}
-      \item \Def{constant} for the zero polynomial or if \( n = 0 \).
-      \item \Def{linear} if \( n = 1 \).
-      \item \Def{quadratic} if \( n = 2 \).
-      \item \Def{cubic} if \( n = 3 \).
-      \item \Def{quartic} if \( n = 4 \).
-      \item \Def{quintic} if \( n = 5 \).
+      \item \Def{constant} for the zero polynomial or if \( k = 0 \).
+      \item \Def{linear} if \( k = 1 \).
+      \item \Def{quadratic} if \( k = 2 \).
+      \item \Def{cubic} if \( k = 3 \).
+      \item \Def{quartic} if \( k = 4 \).
+      \item \Def{quintic} if \( k = 5 \).
     \end{itemize}
   \end{defenum}
 \end{definition}
@@ -89,7 +89,7 @@
   Fix nonzero polynomials
   \begin{align*}
     p(X) &\coloneqq \sum_{i=0}^n a_i X^i, \\
-    q(X) &\coloneqq \sum_{i=0}^m b_i X^i.
+    q(X) &\coloneqq \sum_{j=0}^m b_j X^j.
   \end{align*}
 
   \begin{description}
@@ -170,6 +170,19 @@
   By additivity, \( \Phi_t: R[X] \to T \) is obviously a homomorphism and \( \Phi_t((0, 1, 0, \ldots)) = t \). Therefore we have proven existence.
 \end{proof}
 
+\begin{proposition}\label{thm:polynomial_ring_units}
+  The units of the polynomial ring \( R[X] \) are precisely the units of \( R \).
+\end{proposition}
+\begin{proof}
+  Any unit of \( R \) is obviously a unit of \( R[X] \).
+
+  For the converse, fix a nonzero constant polynomial \( p(X) = r \). In order for it to have an inverse \( q(X) \), we should have
+  \begin{equation*}
+    1 = p(X) q(X) = r q(X),
+  \end{equation*}
+  which can only happen if \( q(X) \) is a constant and a multiplicative inverse of \( r \).
+\end{proof}
+
 \begin{proposition}\label{thm:polynomials_over_integral_domain_are_integral_domain}
   If \( R \) is an integral domain, the polynomial ring \( R[X] \) is also an integral domain.
 \end{proposition}
@@ -183,9 +196,12 @@
   Therefore \( R[X] \) is an integral domain.
 \end{proof}
 
-\begin{proposition}\label{thm:polynomials_over_field_are_euclidean_domain}\cite[10]{Knapp2016BAlg}
-  The polynomial domain\Tinyref{def:semiring/integral_domain} \( F[X] \) over a field \( F \) is Euclidean\Tinyref{def:euclidean_domain} with \( \delta(p) \coloneqq \deg p \). Furthermore, the remainder and quotient are unique.
-\end{proposition}
+\begin{theorem}[Euclidean division of polynomials]\label{thm:euclidean_division_of_polynomials}\cite[10]{Knapp2016BAlg}
+  Let \( a, b \in R[X] \) and \( b \) be monic\Tinyref{def:polynomial/leading_coefficient} (in particular, \( b \neq 0 \)). Then there exist unique polynomials \( q, r \in R[X] \), where \( r \) is either zero or \( \deg r < \deg b \), such that
+  \begin{equation*}
+    a = bq + r.
+  \end{equation*}
+\end{theorem}
 \begin{proof}
   Let \( a, b \in F[X] \) and \( b \neq 0 \). If \( a = 0 \) or \( \deg a < \deg b \), define
   \begin{align*}
@@ -195,9 +211,9 @@
 
   In this case, \( \deg r = \deg a < \deg b \).
 
-  Suppose that \( \deg b \leq \deg a \). We will use proof by induction on \( \deg a \). If \( \deg a = 0 \), obviously \( \deg b = 0 \) and we define
+  Suppose that \( \deg b \leq \deg a \). We will use proof by induction on \( \deg a \). If \( \deg a = 0 \), obviously \( \deg b = 0 \) (thus \( b = 1 \)) and we define
   \begin{align*}
-    q &\coloneqq a / b, \\
+    q &\coloneqq a, \\
     r &\coloneqq 0.
   \end{align*}
 
@@ -210,20 +226,20 @@
 
   Analogously, we find \( \hat b(X) \) that is either zero or \( \deg \hat b = m - 1 \) such that
   \begin{equation*}
-    b(X) = b_m X^m + \hat b(X).
+    b(X) = X^m + \hat b(X).
   \end{equation*}
 
   Thus
   \begin{align*}
     \hat r(X)
     &\coloneqq
-    a(X) - b(X) \frac {a_n} {b_m} X^{n-m}
+    a(X) - b(X) a_n X^{n-m}
     = \\ &=
-    a_n X^n + \hat a(X) - (b_m X^m + \hat b(X)) \frac {a_n} {b_m} X^{n-m}
+    a_n X^n + \hat a(X) - (b_m X^m + \hat b(X)) a_n X^{n-m}
     = \\ &=
-    a_n X^n + \hat a(X) - a_n X^n - \hat b(X) \frac {a_n} {b_m} X^{n-m}
+    a_n X^n + \hat a(X) - a_n X^n - \hat b(X) a_n X^{n-m}
     = \\ &=
-    \hat a(X) - \hat b(X) \frac {a_n} {b_m} X^{n-m}.
+    \hat a(X) - \hat b(X) a_n X^{n-m}.
   \end{align*}
 
   Therefore \( \hat r(X) \) is either the zero polynomial (in which case we define \( r(X) \coloneqq \hat r(X) \)) or \( \deg \hat r \leq n - 1 \). In the latter case, we can divide \( \hat r \) by \( b \) to obtain \( \hat q(X) \) and \( r(X) \) such that
@@ -234,14 +250,14 @@
 
   Substitute into the definition of \( \hat r(X) \):
   \begin{align*}
-    \hat r(X) &= a(X) - b(X) \frac {a_n} {b_m} X^{n-m} \\
-    b(X) \hat q(X) + r(X) &= a(X) - b(X) \frac {a_n} {b_m} X^{n-m} \\
-    b(X) \left(\hat q(X) - \frac {a_n} {b_m} X^{n-m} \right) + r(X) &= a(X).
+    \hat r(X) &= a(X) - b(X) a_n X^{n-m} \\
+    b(X) \hat q(X) + r(X) &= a(X) - b(X) a_n X^{n-m} \\
+    b(X) \left(\hat q(X) - a_n X^{n-m} \right) + r(X) &= a(X).
   \end{align*}
 
   Define
   \begin{equation*}
-    q(X) \coloneqq \hat q(X) - \frac {a_n} {b_m} X^{n-m}.
+    q(X) \coloneqq \hat q(X) - a_n X^{n-m}.
   \end{equation*}
 
   We have obtained polynomials \( r(X) \) and \( q(X) \) where \( r(X) \) is either zero or \( \deg r < \deg b \).
@@ -262,14 +278,139 @@
   This proves uniqueness.
 \end{proof}
 
+\begin{corollary}\label{thm:polynomials_over_field_are_euclidean_domain}\cite[10]{Knapp2016BAlg}
+  The polynomial ring\Tinyref{def:semiring/integral_domain} \( F[X] \) over a field \( F \) is an Euclidean\Tinyref{def:euclidean_domain} domain with \( \delta(p) \coloneqq \deg p \). Furthermore, the remainder and quotient are unique.
+\end{corollary}
+\begin{proof}
+  By \cref{thm:polynomials_over_integral_domain_are_integral_domain}, \( F[X] \) is an integral domain.
+
+  To show that it is Euclidean, fix two polynomials \( a, b \in F[X] \) with \( b \neq 0 \). We use \cref{thm:euclidean_division_of_polynomials} to perform Euclidean division of \( a \) by the monic polynomial \( \frac {b} {\LC(b)} \) and obtain polynomials \( q, r \), where either \( r = 0 \) or \( \deg r < \deg b \), such that
+  \begin{equation*}
+    a = \frac {b} {\LC(b)} q + r.
+  \end{equation*}
+
+  Instead of dividing \( b \) by its leading coefficient \( \LC(b) \), we can divide \( q \) and thus obtain the required factorization.
+\end{proof}
+
 \begin{definition}\label{def:polynomial_function}
-  Let \( \Cat{Set}(R, R) \) be the unital ring of all functions\Tinyref{thm:functions_over_ring_form_algebra} from \( R \) to itself. Define the unital ring homomorphism
+  Let \( \End(R) \) be the endomorphism ring\Tinyref{def:endomorphism_ring} over \( R \). Define the unital ring homomorphism
   \begin{align*}
-    &\Phi: R[X] \to \Cat{Set}(R, R) \\
+    &\Phi: R[X] \to \End(R) \\
     &\Phi((a_0, a_1, \ldots, a_n, 0, 0, \ldots)) \coloneqq \left( x \to \sum_{i=0}^n a_i x^n \right),
   \end{align*}
   which constructs a \Def{polynomial function} from a polynomial. This map is not injective in general and multiple polynomials may be equivalent as functions\Tinyref{def:function}.
+
+  If we want to highlight that we are referring to a polynomial function rather than a polynomial \( p(X) \), we use a lowercase letter for the variable, i.e.
+  \begin{equation*}
+    p(x) = \sum_{i=0}^n a_i x^i.
+  \end{equation*}
 \end{definition}
+\begin{proof}
+  This is indeed a homomorphism. We will only prove that multiplication of polynomials corresponds to multiplication of polynomial functions because the rest is obvious.
+  \begin{align*}
+    p(X) &\coloneqq \sum_{i=0}^n a_i X^i, \\
+    q(X) &\coloneqq \sum_{j=0}^m b_j X^j.
+  \end{align*}
+
+  For their product \( s(X) = \sum_{i=0}^{n + m} c_i X^i \) by definition we have
+  \begin{equation*}
+    c_l = \sum_{i+j=l} a_i b_j, l = 0, 1, \ldots, n + m.
+  \end{equation*}
+
+  We need to show that for any \( r \in R \)
+  \begin{equation*}
+    p(r) q(r) = s(r).
+  \end{equation*}
+
+  Using associativity and commutativity of multiplication and distributivity of multiplication over addition, we obtain
+  \begin{align*}
+    p(r) q(r)
+    &=
+    \left( \sum_{i=0}^n a_i r^i \right) \left( \sum_{j=0}^m b_j r^j \right)
+    = \\ &=
+    \sum_{i=0}^n a_i r^i \left( \sum_{j=0}^m b_j r^j \right)
+    = \\ &=
+    \sum_{i=0}^n a_i r^i \left( \sum_{j=0}^m b_j r^j \right)
+    = \\ &=
+    \sum_{i=0}^n \sum_{j=0}^m a_i r^i b_j r^j
+    = \\ &=
+    \sum_{i=0}^n \sum_{j=0}^m a_i b_j r^{i + j}
+    = \\ &=
+    \sum_{l=0}^{n + m} \sum_{i+j=l} a_i b_j r^l
+    = \\ &=
+    \sum_{l=0}^{n + m} c_l r^l
+    =
+    s(r),
+  \end{align*}
+  where we have used that \( a_i = 0, i > n \) and \( b_j = 0, j > m \).
+\end{proof}
+
+\begin{proposition}\label{thm:polynomial_root_iff_divisible}
+  The value \( u \in R \) is a root\Tinyref{def:semiring_kernel} of the polynomial function \( p(x) \) if any only if the polynomial \( (X - u) \) divides \( p(X) \).
+\end{proposition}
+\begin{proof}
+  \begin{description}
+    \Implies Suppose that \( u \in R \) is a root of \( p(x) \). By \cref{thm:euclidean_division_of_polynomials}, we can divide \( p(X) \) by the monic polynomial \( (X - u) \):
+    \begin{equation*}
+      p(X) = (X - u) q(X) + r(X).
+    \end{equation*}
+
+    Assume\LEM that \( r(X) \) is nonzero. Evaluating \( p(X) \) at \( u \) gives us
+    \begin{equation*}
+      0 = p(u) = (u - u) q(r) + r(u),
+    \end{equation*}
+    hence \( u \) is a root of \( r(X) \). But \( \deg r < \deg (X - u) = 1 \), that is, \( r \) is a nonzero constant and cannot have roots. The obtained contradiction proves the statement.
+
+    \ImpliedBy Suppose that \( (X - u) \) divides \( p(X) \) with quotient \( q(X) \). Then
+    \begin{equation*}
+      p(X) = (X - u) q(X).
+    \end{equation*}
+
+    Evaluation at \( u \) gives us
+    \begin{equation*}
+      p(u) = (u - u) q(u) = 0.
+    \end{equation*}
+
+    Therefore \( u \) is a root of \( p(X) \).
+  \end{description}
+\end{proof}
+
+\begin{definition}\label{def:polynomial_root_multiplicity}
+  We say that the polynomial \( p \in R[X] \) has the root \( r \in R \) with multiplicity \( m \in \Z^{>0} \) if there exists a polynomial \( q \in R[X] \) of degree \( \deg q = \deg p - m \) such that
+  \begin{equation*}
+    p(X) = (X - r)^m q(X).
+  \end{equation*}
+\end{definition}
+
+\begin{proposition}\label{thm:integral_domain_polynomial_root_limit}
+  If \( R \) is an integral domain, a nonzero polynomial of degree \( n \) has at most \( n \) (not necessarily distinct\Tinyref{def:polynomial_root_multiplicity}) roots.
+\end{proposition}
+\begin{proof}
+  We will use induction on \( n \).
+
+  In the case \( n = 0 \), we have that \( p \) is a nonzero constant polynomial. Such a polynomial cannot\LEM have roots, hence the statement holds.
+
+  Now assume that the statement holds for polynomials of degrees \( 1, \ldots, n - 1 \). Let \( p \in R[X] \) be a polynomial of degree \( n \) and let \( r \in R \) be a root of \( p \). \Cref{thm:polynomial_root_iff_divisible} implies that there exists a polynomial \( q(X) \) of degree \( n - 1 \) such that
+  \begin{equation*}
+    p(X) = (X - r) q(X).
+  \end{equation*}
+
+  Fix \( t \neq r \) that is a not a root of \( q(X) \). Evaluation at \( t \) gives us
+  \begin{equation*}
+    p(t) = (t - r) q(t).
+  \end{equation*}
+
+  Both \( (t - r) \neq 0 \) and \( q(t) \neq 0 \). Since \( R \) has no zero divisors, the product \( p(t) \) of \( (t - r) \) and \( q(t) \) is also nonzero. Thus the only roots of \( p(X) \) are \( r \) and the roots of \( q(X) \).
+
+  By the induction hypothesis, \( q(X) \) has at most \( n - 1 \) roots (counting multiplicities). Thus \( p(X) \) has at most \( (n - 1) + 1 = n \) roots.
+\end{proof}
+
+\begin{proposition}\label{thm:polynomials_have_identical_roots}
+  If \( R \) is an integral domain, two polynomials \( p, q \in R[X] \) of the same degree \( n \) are equal if and only if their functions match at \( n + 1 \) points.
+\end{proposition}
+\begin{proof}
+  Define \( r \coloneqq p - q \). This is a polynomial of degree at most \( n \) that has \( n + 1 \) roots. By \cref{thm:integral_domain_polynomial_root_limit}, \( r \) is the zero polynomial. Hence \( p = q \).
+\end{proof}
 
 \begin{definition}\label{def:multivariate_polynomial}
   We define the \Def{multivariate polynomial ring} in \( k \) indeterminates as the \enquote{iterated} single-variable polynomial ring
