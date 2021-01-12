@@ -1,3 +1,11 @@
+\section{Commutative algebra}\label{sec:commutative_algebra}
+
+\begin{remark}\label{remark:polynomial_commutative_ring}
+  In this whole section, \( R \) will refer to a nontrivial commutative unital ring\Tinyref{def:semiring/commutative_unital_ring}.
+
+  Since \( R \) is commutative, left and right modules over \( R \) are equivalent. We will only refer to either of them as simply \enquote{modules}.
+\end{remark}
+
 \subsection{Polynomials}\label{subsec:polynomials}
 
 \begin{definition}\label{def:polynomial}\cite[149]{Knapp2016BAlg}
@@ -25,7 +33,7 @@
 
     This is consistent with addition as defined in \cref{def:algebra_of_polynomials/addition}.
 
-    We use capital letters to highlight that this is not a function - see \Tinyref{def:polynomial_function}.
+    We use capital letters to highlight that this is not a function - see \Tinyref{def:polynomial_function}. It is customary to call \( X \) the \Def{indeterminate} of \( p(X) \) and to say that \( p(X) \) is a polynomial in one indeterminate (compare to \cref{def:multivariate_polynomial}).
 
     \DItem{def:polynomial/monomial} A \Def{monomial} is a polynomial with only one nonzero element. Symbolically, monomials can be represented as
     \begin{equation*}
@@ -279,7 +287,7 @@
   \end{equation*}
 \end{theorem}
 \begin{proof}
-  Let \( a, b \in F[X] \) and \( b \neq 0 \). If \( a = 0 \) or \( \deg a < \deg b \), define
+  Let \( a, b \in R[X] \) and \( b \neq 0 \). If \( a = 0 \) or \( \deg a < \deg b \), define
   \begin{align*}
     q &\coloneqq 0, \\
     r &\coloneqq a.
@@ -355,12 +363,12 @@
 \end{proof}
 
 \begin{corollary}\label{thm:polynomials_over_field_are_euclidean_domain}\cite[10]{Knapp2016BAlg}
-  The polynomial ring\Tinyref{def:semiring/integral_domain} \( F[X] \) over a field \( F \) is an Euclidean\Tinyref{def:semiring/euclidean_domain} domain with \( \delta(p) \coloneqq \deg p \). Furthermore, the remainder and quotient are unique.
+  The polynomial ring\Tinyref{def:semiring/integral_domain} \( \K[X] \) over a field \( \K \) is an Euclidean\Tinyref{def:semiring/euclidean_domain} domain with \( \delta(p) \coloneqq \deg p \). Furthermore, the remainder and quotient are unique.
 \end{corollary}
 \begin{proof}
-  By \cref{thm:polynomials_over_integral_domain_are_integral_domain}, \( F[X] \) is an integral domain.
+  By \cref{thm:polynomials_over_integral_domain_are_integral_domain}, \( \K[X] \) is an integral domain.
 
-  To show that it is Euclidean, fix two polynomials \( a, b \in F[X] \) with \( b \neq 0 \). We use \cref{thm:euclidean_division_of_polynomials} to perform Euclidean division of \( a \) by the monic polynomial \( \frac {b} {\LC(b)} \) and obtain polynomials \( q, r \), where either \( r = 0 \) or \( \deg r < \deg b \), such that
+  To show that it is Euclidean, fix two polynomials \( a, b \in \K[X] \) with \( b \neq 0 \). We use \cref{thm:euclidean_division_of_polynomials} to perform Euclidean division of \( a \) by the monic polynomial \( \frac {b} {\LC(b)} \) and obtain polynomials \( q, r \), where either \( r = 0 \) or \( \deg r < \deg b \), such that
   \begin{equation*}
     a = \frac {b} {\LC(b)} q + r.
   \end{equation*}
@@ -419,6 +427,36 @@
     s(r),
   \end{align*}
   where we have used that \( a_i = 0, i > n \) and \( b_j = 0, j > m \).
+\end{proof}
+
+\begin{definition}\label{def:formal_power_series}
+  If we extend \cref{def:polynomial} to allow for polynomial with infinite terms (that is, allow for the sequence to have infinitely many nonzero items), we obtain a set \( R[[X]] \) which we call the \Def{formal power series} over \( R \).
+
+  Note that the operations in \cref{def:algebra_of_polynomials} are well defined and still make \( R[[X]] \) into an algebra. Evaluation (see \cref{thm:polynomial_ring_universal_property} and \cref{def:polynomial_function}) is problematic, however, since algebraic operations are finitary by nature. In practice, we use a topology over \( R \) and speak of convergent and divergent power series.
+\end{definition}
+
+\begin{theorem}[Newton's binomial theorem]\label{thm:binomial_theorem}
+  \begin{equation*}
+    (X + Y)^n = \sum_{k=0}^n \binom n k X^k Y^{n-k}
+  \end{equation*}
+\end{theorem}
+\begin{proof}
+  We use induction on \( n \). For \( n = 0 \), the theorem trivially holds. Assume that the theorem holds for \( 1, \ldots, n \). Then
+  \begin{align*}
+    (X + Y)^{n+1}
+    &=
+    X (X + Y)^n + Y (X + Y)^n
+    = \\ &=
+    \sum_{k=0}^n \binom n k X^{k+1} Y^{n-k} + Y \sum_{k=0}^n \binom n k X^k Y^{n-k}
+    = \\ &=
+    X^{n+1} + Y \sum_{k=0}^{n-1} \binom n k X^{k+1} Y^{n-(k+1)} + Y \sum_{k=0}^n \binom n k X^k Y^{n-k}
+    = \\ &=
+    X^{n+1} + Y \left[ \sum_{k=1}^n \binom n {k-1} X^k Y^{n-k} + Y^n \sum_{k=1}^n \binom n k X^k Y^{n-k} \right] + Y^{n+1}
+    = \\ &\overset {\ref{thm:pascals_identity}} =
+    X^{n+1} + Y \sum_{k=1}^n \binom {n+1} k X^k Y^{n-k} + Y^{n+1}
+    = \\ &=
+    \sum_{k=0}^n \binom {n+1} k X^k Y^{(n+1)-k}.
+  \end{align*}
 \end{proof}
 
 \begin{proposition}\label{thm:polynomial_root_iff_divisible}
@@ -509,7 +547,7 @@
     r(X) + \Gen{p(X)}.
   \end{equation*}
 
-  See \cref{ex:polynomial_quotient_rings_gaussian_integers} and \cref{ex:polynomial_quotient_rings_q2} for differing ring structures in \( \pi_n(R[X]) \).
+  See \cref{ex:polynomial_quotient_rings_gaussian_integers} and \cref{ex:polynomial_quotient_rings_z2} for differing ring structures in \( \pi_n(R[X]) \).
 \end{proof}
 
 \begin{example}\label{ex:polynomial_quotient_rings_gaussian_integers}
@@ -543,7 +581,7 @@
   Like in \cref{ex:polynomial_evaluation_gaussian_integers}, we arrive at the Gaussian integers\Tinyref{def:gaussian_integers}, but using a different approach.
 \end{example}
 
-\begin{example}\label{ex:polynomial_quotient_rings_q2}
+\begin{example}\label{ex:polynomial_quotient_rings_z2}
   Similarly to how the Gaussian integers were identified using \cref{ex:polynomial_quotient_rings_gaussian_integers}, we will provide a different ring structure on \( \Z[X] / \Gen{p(X)} \) for a polynomial \( p(X) \) of degree \( 2 \).
 
   Consider the polynomial \( p(X) \coloneqq X^2 - 2 \) over the integers\Tinyref{def:integers} \( \Z \). We know that \( \sqrt 2 \) is a root of \( X^2 - 2 \) in \( \R \) so we can identify
@@ -697,4 +735,8 @@
   The \Def{degree} \( \deg p \) of a multivariate polynomial \( p \) is defined as the maximal degree among all of its nonzero monomials. If all monomials are zero, the degree is left undefined.
 
   If all nonzero monomials have the same degree, the polynomial is said to be \Def{homogeneous}.
+\end{definition}
+
+\begin{definition}\label{def:rational_algebraic_function}
+  We denote the field of fractions\Tinyref{def:field_of_fractions} of \( R[X_1, \ldots, X_k] \) by \( R(X_1, \ldots, X_k) \) and call it the field of \Def{rational algebraic functions}.
 \end{definition}
