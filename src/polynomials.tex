@@ -68,20 +68,23 @@
   \end{equation*}
   (the assignment should be understood as \enquote{defining the interpretation of \( X \) in a certain first-order language}).
 
-  Using the definition of multiplication, we see that
-  \begin{equation*}
-    X \cdot X = (0 \cdot 0, 0 \cdot 1 + 1 \cdot 0, 0 \cdot 2 + 1 \cdot 1 + 2 \cdot 0, 0, 0, \ldots).
-  \end{equation*}
-
-  Thus \( X \cdot X = X^2 \) corresponds to
-  \begin{equation*}
-    (0, 0, 1, 0, 0, \ldots).
-  \end{equation*}
+  Using the definition of multiplication, we see that the coefficients \( c_0, c_1, \ldots \) of \( X^2 = X \cdot X \) can be expressed in terms of the coefficients \( a_0, a_1, \ldots \) of \( X \) as
+  \begin{align*}
+    c_0 &= a_0 \cdot a_0 = 0 \\
+    c_1 &= a_0 \cdot a_1 + a_1 \cdot a_0 = 0 + 0 = 0 \\
+    c_2 &= a_0 \cdot a_2 + a_1 \cdot a_1 + a_2 \cdot a_0 = 0 + 1 + 0 = 1 \\
+    c_3 &= a_0 \cdot a_3 + a_1 \cdot a_2 + a_2 \cdot a_1 + a_0 \cdot a_3 = 0 + 0 + 0 + 0 = 0 \\
+    c_4 &= \cdots = 0 \\
+    c_5 &= \cdots = 0 \\
+    \vdots
+  \end{align*}
 
   Proceeding by induction, we see that \( X^k \) corresponds to the sequence
   \begin{equation*}
     (\underbrace{0, 0, \ldots, 0, 0}_{k \text{times}}, 1, 0, 0, \ldots).
   \end{equation*}
+
+  We define \( X^0 \coloneqq 1 \).
 
   It is conventional to then write a polynomial of degree \( n \) as the expression\Tinyref{def:language}
   \begin{equation*}
@@ -381,9 +384,9 @@
 \end{proof}
 
 \begin{definition}\label{def:polynomial_function}
-  Denote by \( \Cat{Set}(R, R) \) the ring of all functions over \( R \) (see \cref{thm:functions_over_ring_form_algebra}). Define the unital ring homomorphism
+  Denote by \( \Cat{Set}(R) \) the ring of all functions over \( R \) (see \cref{thm:functions_over_ring_form_algebra}). Define the unital ring homomorphism
   \begin{align*}
-    &\Phi: R[X] \to \Cat{Set}(R, R) \\
+    &\Phi: R[X] \to \Cat{Set}(R) \\
     &\Phi((a_0, a_1, \ldots, a_n, 0, 0, \ldots)) \coloneqq \left( x \to \sum_{i=0}^n a_i x^n \right),
   \end{align*}
   which constructs a \Def{polynomial function} from a polynomial. This map is not injective in general and multiple polynomials may be equivalent as functions\Tinyref{def:function}.
@@ -396,7 +399,7 @@
   The homomorphism \( \Phi \) is injective if and only if \( R \) is an infinite\Tinyref{def:finite_set} set.
 \end{definition}
 \begin{proof}
-  It is obvious that \( \Phi \) is a homomorphism of the additive groups of \( R \) and \( \Cat{Set}(R, R) \).
+  It is obvious that \( \Phi \) is a homomorphism of the additive groups of \( R \) and \( \Cat{Set}(R) \).
 
   We will prove that multiplication of polynomials corresponds to multiplication of polynomial functions. Take
   \begin{align*}
@@ -436,11 +439,18 @@
   \end{align*}
   where we have used that \( a_i = 0, i > n \) and \( b_j = 0, j > m \).
 
-  Thus \( \Phi: R[X] \to \Cat{Set}(R, R) \) is indeed a homomorphism of rings.
+  Thus \( \Phi: R[X] \to \Cat{Set}(R) \) is indeed a homomorphism of rings.
+\end{proof}
 
-  To see that \( \Phi \) is injective if and only if \( R \) is an infinite ring, note that \( R \) is finite if and only if the functions on \( R \) are finitely many. But \( R[X] \) is always an infinite set (the monomial basis\Tinyref{thm:polynomial_algebra_basis} is infinite), hence \( \Phi \) can be injective if and only if \( \Cat{Set}(R, R) \) is infinite.
+\begin{proposition}\label{thm:polynomial_embedding_behavior}
+  In the special case that \( R \) is an integral domain, \( R \) is a finite ring if and only if the homomorphism \( \Phi: R[X] \to \Cat{Set}(R) \) is not injective.
+\end{proposition}
+\begin{proof}
+  \begin{description}
+    \Implies Suppose that \( R \) is finite. A finite set can only have finitely many functions over it. Hence \( \Cat{Set}(R) \) is finite and the image \( \Img \Phi \) is also finite. But there are infinitely many polynomials over \( R \). Hence \( \Phi \) is not injective.
 
-  Hence \( \Phi \) is injective if and only if \( R \) is infinite.
+    \ImpliedBy Suppose that \( \Phi \) is not injective. Then there exist two distinct polynomials \( p(X), q(X) \) such that for all \( r \in R \) we have \( p(r) = q(r) \). Define \( r(X) \coloneqq p(X) - q(X) \) and denote by \( n \) the degree of \( r(X) \). By \cref{thm:integral_domain_polynomial_root_limit}, \( r(X) \) has at most \( n \) roots. Then \( R \) has at most \( n \) elements because all elements of \( R \) are roots of \( r(X) \).
+  \end{description}
 \end{proof}
 
 \begin{definition}\label{def:formal_power_series}
@@ -471,6 +481,15 @@
     = \\ &=
     \sum_{k=0}^n \binom {n+1} k X^k Y^{(n+1)-k}.
   \end{align*}
+\end{proof}
+
+\begin{proposition}\label{thm:xn_minus_one_factorization}
+  \begin{equation*}
+    X^n - 1 = (X - 1)(X^{n-1} + X^{n-2} + \cdots + 1).
+  \end{equation*}
+\end{proposition}
+\begin{proof}
+  Trivial application of induction.
 \end{proof}
 
 \begin{proposition}\label{thm:polynomial_root_iff_divisible}
