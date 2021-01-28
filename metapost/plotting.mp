@@ -1,3 +1,9 @@
+def midpoint = point 0.5 enddef;
+def startpoint = point 0 enddef;
+def endpoint = point 1 enddef;
+
+def dot = fullcircle scaled 3 enddef;
+
 def path_of_plot(suffix f)(expr from, to, stp, u) =
   (from, f(from)) scaled u
   for x = (from + stp) step stp until to:
