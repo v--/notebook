@@ -47,7 +47,7 @@
 \end{example}
 
 \begin{definition}\label{def:first_order_term}\cite[189]{OpenLogic20201202}
-  Given a first-order logic language \( \Cal{L} \), the set \( \Cal{T}_{\Cal{L}} \) of terms is defined by structural induction as
+  Given a first-order logic language \( \Cal{L} \), the set \( \Cal{T}_{\Cal{L}} \) of terms is defined inductively as
   \begin{itemize}
     \item Each variable is a term
     \item If \( \tau_1, \ldots, \tau_n \) are terms and \( f \) is a functional symbol with arity \( n \), then the following word is also a term:
@@ -437,3 +437,71 @@
 \begin{proof}
   \Cref{thm:first_order_homomorphism_properties/composition} shows that the composition of two homomorphisms is indeed a homomorphism and \cref{thm:first_order_homomorphism_preserves_models} shows that the image under a homomorphism of a model for \( \Gamma \) is again a model for \( \Gamma \).
 \end{proof}
+
+\begin{remark}\label{remark:induction}
+  Assume that we need to prove a statement about natural numbers\Tinyref{def:natural_numbers} or, more generally, a statement of the form \( \forall x \varphi(x) \) in a structure \( \Cal{A} = (A, I) \).
+
+  We can infer \( \varphi(x) \) for every \( x \in A \) directly by using some property of \( A \). For example, when proving the equivalences in \cref{def:totally_bounded_set}, we assume that every \( x \in A \) has certain properties and without further assumptions we proceed to prove that each \( x \in A \) has property \( \varphi(x) \). This inference is called \Def{deduction} because we deduce \( \varphi(x) \) from some properties that hold for the entirety of \( A \).
+
+  Another type of inference is called \Def{induction}, where we prove the statement \( \varphi(x) \) by inspecting every \( x \in A \) and proving the statement separately. This becomes cumbersome when \( A \) is a large enough finite set and impossible when \( A \) is an infinite set.
+
+  There are, however, special cases where \( A \) can be \enquote{exhausted} using a simple procedure. This method of exhausting is called an \Def{inductive definition}.
+
+  For example, \cref{def:peano_arithmetic} shows us how the set of natural numbers can be exhausted by starting from some element \( 0 \in \N \) and then defining \( 1 \coloneqq s(0), 2 \coloneqq s(1) \) etc. We cannot prove a statement about the natural numbers by inspecting every natural number, however we can exhaust the entire set \( \N \) as follows:
+  \begin{itemize}
+    \item We prove that the formula \( \varphi(0) \) holds in \( \Cal{A} \).
+    \item We assume that \( \varphi(n) \) holds for some \( n \in \N \) and prove \( \varphi(n + 1) \). Equivalently, we prove that the formula
+    \begin{equation*}
+      \forall n (\varphi(n) \implies \varphi(n + 1))
+    \end{equation*}
+    holds in \( \N \).
+  \end{itemize}
+
+  The axiom schema of induction, \cref{def:peano_arithmetic/PA3}, guarantees that we have now proved \( \varphi(n) \) for all \( n \in \N \). Thus \cref{def:peano_arithmetic} gives us an inductive definition for \( \N \) and we can use induction to prove properties of \( \N \).
+
+  Another form of induction on \( \N \) is
+  \begin{equation*}
+    \forall n (\forall k (k < n \implies \varphi(k)) \implies \varphi(n)).
+  \end{equation*}
+
+  This is called \Def{strong induction}. Here we only have a single clause that says \enquote{for each natural number \( n \), if \( \varphi \) holds for all \( k < n \), then it holds for \( \varphi \)}.
+
+  We can \enquote{exhaust} more complicated sets. An inductive definition usually concern expressions in formal languages (strings of symbols in the sense of \cref{def:language}). Every clause in an inductive definition for the set \( X \) is either
+  \begin{itemize}
+    \item A subset clause that says \( Y \subseteq X \) for some fixed subset \( Y \subseteq A \) of the universum. This is the \Def{base} of the induction.
+    \item An implication\Tinyref{def:material_implication} clause which says \enquote{if \( x_1, \ldots, x_n \in X \), then \( f(x_1, \ldots, x_n) \in X \)}, where \( f \) is some function of type \( f: A^n \to A \).
+  \end{itemize}
+
+  It is conventional to add a clause \enquote{there are no other members of \( X \)} to an inductive definition of the set \( X \). We assume, however, that an inductive definition of \( X \) exhausts all of \( X \) so we avoid this practice.
+
+  To prove a property \( \varphi(x) \) for \( X \),
+  \begin{itemize}
+    \item For every subset clause \( Y \subseteq X \), we prove that \( \varphi(y) \) for all \( y \in Y \).
+    \item We then prove every implication clause directly, that is, we prove the formula
+    \begin{equation*}
+      \forall x_1 \ldots \forall x_n (\varphi(x_1) \land \ldots \land \varphi(x_n) \implies \varphi(f(x_1, \ldots, x_n))).
+    \end{equation*}
+  \end{itemize}
+
+  For example, consider the following definition for the set \( E \) of arithmetic expressions over \( \N \):
+  \begin{itemize}
+    \item If \( n \in \N \), then \( n \in E \).
+    \item If \( \xi, \eta \in E \), then \( (\xi + \eta) \in E \)
+    \item If \( \xi, \eta \in E \), then \( (\xi \cdot \eta) \in E \)
+  \end{itemize}
+
+  If we want to prove that every arithmetic expression has an odd number of symbols, we proceed as follows:
+  \begin{itemize}
+    \item If \( n \in \N \), the expression has length \( 1 \).
+    \item Assume that \( \zeta = (\xi + \eta) \) and also that \( \xi \) and \( \eta \) have odd length. Since \( \Len(\zeta) = \Len(\xi) + \Len(\eta) + 3 \), we conclude that \( \zeta \) also has an odd number of symbols.
+    \item Analogous.
+  \end{itemize}
+
+  We say that the proof uses \Def{mathematical induction on \( X \)} and that it is an \Def{inductive proof}. In the case where \( X \neq \N \) we also call it a \Def{proof by structural induction}.
+
+  We can also inductively define relations\Tinyref{def:relation} and functions\Tinyref{def:function}, for example \cref{def:propositional_interpretation}. We can define operations in \( E \) based on \cref{def:natural_number_operations}.
+
+  Note that in order for an inductively defined function to be well-defined, in analogy to unambiguous grammars\Tinyref{def:ambiguous_grammar}, we usually want to be able to generate every element of \( A \) in only one way. This is the reason for theorems like \cref{thm:propositional_formulas_are_unambiguous} and \cref{thm:first_order_formulas_are_unambiguous}. \Cref{ex:context_free_grammar/real_arithmetic} demonstrates how removing parenthesis in arithmetic expressions can introduce ambiguity.
+
+  An infamous example of the consequences of ambiguity is the expression \( 6 / 2 \cdot 3 \) that can be interpreted as either \( \tfrac 6 2 \cdot 3 = 9 \) or \( \tfrac 6 {2 \cdot 3} = 1 \).
+\end{remark}
