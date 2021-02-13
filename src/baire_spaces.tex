@@ -1,33 +1,65 @@
 \subsection{Baire spaces}\label{subsec:baire_spaces}
 
-\begin{definition}\label{def:baire_space}
-  A topological space is called a \Def{Baire space} if every nonempty set is not meager.
+\begin{remark}\label{remark:baire_categories}
+  René-Louis Baire introduced the concept of \Def{Baire categories} in 1899, almost 50 years before Samuel Eilenberg and Saunders MacLane introduced \Def{categories} in \cite{MacLane1945} (see \fullref{sec:category_theory} for the latter).
+
+  Unfortunately, topology utilizes both concepts so the word \enquote{category} should be used with caution. To circumvent this, we use alternative terminology for Baire categories.
+\end{remark}
+
+\begin{definition}\label{def:meager_set}\cite[definition 2.1]{Rudin1991}
+  Any countable union of nowhere dense sets\Tinyref{def:topologically_dense_set/nowhere_dense} is called \Def{meager} or a \Def{first category set} (see \cref{remark:baire_categories} for terminology). If a set is not meager, we call it \Def{nonmeager} or a \Def{second category set}.
 \end{definition}
 
-\begin{proposition}\label{thm:open_subspace_of_baire_space_is_baire}
-  Every open subspace of a Baire space is a Baire space.
+\begin{proposition}\label{thm:meager_set_properties}\cite[43]{Rudin1991}
+  Meager sets\Tinyref{def:meager_set} have the following basic properties (compare to \cref{thm:nowhere_dense_properties}):
+  \begin{propenum}
+    \DItem{thm:meager_set_properties/union} A countable union of meager sets is meager.
+    \DItem{thm:meager_set_properties/subset} A subset of a meager set is meager.
+    \DItem{thm:meager_set_properties/homeomorphism} The homeomorphic\Tinyref{def:homeomorphism} image of a set \( A \) is meager if and only if \( A \) itself is meager.
+  \end{propenum}
 \end{proposition}
 \begin{proof}
-  Let \( (X, \Cal{T}) \) be a Baire space.
+  \begin{description}
+    \RItem{thm:meager_set_properties/union} Follows from \cref{thm:countable_union_of_countable_sets}.
+    \RItem{thm:meager_set_properties/subset} Fix a meager set \( A \) and let \( B \subseteq A \). Then \( A = \bigcup_{k=1}^\infty A_k \) for some nowhere dense sets \( A_1, A_2, \ldots \). By \cref{thm:nowhere_dense_properties/subset}, the sets \( A_1 \cap B, A_2 \cap B, \ldots \) are also nowhere dense. But
+    \begin{equation*}
+      B
+      =
+      A \cap B
+      =
+      \left(\bigcup_{k=1}^\infty A_k \right) \cap B
+      \overset {\ref{thm:subsets_form_boolean_algebra}} =
+      \bigcup_{k=1}^\infty (A_k \cap B).
+    \end{equation*}
 
-  Let \( A \subseteq X \) be a nonempty open set and \( \Cal{T}_A \) be the induced topology.
+    Therefore \( B \) is also nowhere dense.
 
-  Let \( B \in \Cal{T}_A \) be nonempty. Then there exists a set \( B' \in \Cal{T} \) such that \( B = A \cap B' \). The sets \( A \) and \( B' \) are open and so \( B = B' \cap A \) is open.
+    \RItem{thm:meager_set_properties/homeomorphism}\mbox{}
+    \begin{description}
+      \ImpliedBy If \( A \) is meager, any homeomorphic image of \( A \) is meager by \cref{thm:function_image_properties/union} and \cref{thm:nowhere_dense_properties/homeomorphism}.
+      \Implies If \( f: X \to Y \) is a homeomorphism and \( f(A) \) is meager for some \( A \subseteq X \), then \( A \) is the homeomorphic image of the meager set \( f(A) \) under \( f^{-1} \) and is thus meager.
+    \end{description}
+  \end{description}
+\end{proof}
 
-  Then \( A \), \( B \) and \( B' \) are nonempty open sets, hence they are not meager in \( \Cal{T} \).
+\begin{definition}\label{def:baire_space}
+  A topological space is called a \Def{Baire space} if any of the following equivalent conditions hold:
+  \begin{defenum}
+    \DItem{def:baire_space/meager} Every nonempty open set is nonmeager.
+    \DItem{def:baire_space/dense} A countable intersection of dense sets is dense.
+  \end{defenum}
+\end{definition}
+\begin{proof}
+  \Iff[def:baire_space/meager][def:baire_space/dense] Follows from \cref{thm:nowhere_dense_properties/complement_dense} and \cref{thm:subsets_form_boolean_algebra}.
+\end{proof}
 
-  Suppose that \( B \) in meager in \( \Cal{T}_A \). Then there exists a sequence \( B_1, B_2, \ldots \) of nowhere dense in \( \Cal{T}_A \) sets such that
-  \begin{equation*}
-    B = \bigcup_{k=1}^\infty B_k.
-  \end{equation*}
+\begin{proposition}\label{thm:open_subspace_of_baire_space_is_baire}
+  Every open subspace of a Baire space\Tinyref{def:baire_space} is a Baire space.
+\end{proposition}
+\begin{proof}
+  Let \( (X, \CT) \) be a Baire space and let \( (X', \CT_{X'}) \) be an open subspace\Tinyref{def:topological_subspace} with the canonical embedding \( \iota: X' \to X \). The proposition holds vacuously if \( X' = \varnothing \) so we assume that \( X' \neq \varnothing \).
 
-  We will now show that all \( B_k \) are nowhere dense in \( \Cal{T} \).
+  Note that \( \iota \) is continuous by definition, however it is also an open map because if \( U \in \CT_{X'} \), then \( \iota(U) = U \cap X' \) is open in \( X \) as the intersection of two open sets. Therefore it is a homeomorphic embedding and by \cref{thm:meager_set_properties/homeomorphism}, \( U \) is meager if and only if \( \iota(U) \) is meager. Since \( X \) is a Baire space, \( \iota(U) \) is not meager and hence \( U \) is also not meager.
 
-  Fix any \( B_k \) and \( U \in \Cal{T} \). Since \( B_k \) is nowhere dense and \( A \cap U \) is open, there exists a \( V \in \Cal{T}_A \) such that \( V \subseteq A \cap U \) and \( V \cap B_k = \varnothing \).
-
-  Let \( V' \in \Cal{T} \) be such that \( V = V' \cap A \). Since \( V' \) and \( A \) are open in \( \Cal{T} \) and \( V' \cap B_k = \varnothing \), we have that \( B_k \) is nowhere dense in \( \Cal{T} \).
-
-  This implies that \( B \) is meager as the union of countable nowhere dense subsets. But we have already proved that \( B \) is nonmeager in \( \Cal{T} \).
-
-  The obtained contradiction proves that \( B \) is nonmeager in \( \Cal{T}_A \) also. Hence \( (A, \Cal{T}_A) \) is a Baire space.
+  We showed that every nonempty open set \( U \in \CT_{X'} \) is nonmeager, therefore \( X' \) is a Baire space.
 \end{proof}
