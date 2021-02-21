@@ -1,12 +1,11 @@
 % I start my own macros with capital letters so that it is known that they are custom.
 % The only exception is fullref
 
-\usepackage{xargs} % \newcommandx
 \usepackage{xspace} % \xspace
 \usepackage{crossreftools} % \crtcrossreflabel
 \usepackage{nameref} % \nameref
 \usepackage{refcount} % \getrefbykeydefault
-\usepackage{eqparbox} % \eqmakebox
+\usepackage{xstring} % \IfInteger
 
 % Shorthands
 \newcommand           \Cal       [1] {\symcal #1}
@@ -98,7 +97,7 @@
 \DeclareMathOperator  \Supp          {supp}
 
 % Index
-\newcommand \IndexEntry [2]          {\index{#2}\textsuperscript{\hyperref[sec:index]{#1}}\xspace}
+\newcommand \IndexEntry          [2] {\index{#2}\textsuperscript{\hyperref[sec:index]{#1}}\xspace}
 \newcommand \AOC                     {\IndexEntry{AOC}{Axiom of choice}}
 \newcommand \LEM                     {\IndexEntry{LEM}{Law of the excluded middle}}
 \newcommand \USC                     {\IndexEntry{USC}{Compactness of the unit sphere}}
@@ -109,6 +108,21 @@
 \newcommand \URL                 [1] {\href{#1}{#1}}
 \newcommand \Def                 [1] {\textbf{#1}}
 \newcommand \Caption             [2] {\caption{#2}\crtcrossreflabel{}[#1]}
+
+\newcommand \MarginCite          [2][] {%
+  \leavevmode\marginpar{%
+    \raggedleft\footnotesize{%
+      \cite{#2} \\ \mbox{\vbox{%
+        % https://tex.stackexchange.com/a/50131
+        \ifnum0<0#1\relax
+          p. #1
+        \else
+          #1
+        \fi
+      }}%
+    }%
+  }%
+}
 
 % https://tex.stackexchange.com/a/66096
 \newcommand \fullref [1] {%
@@ -127,20 +141,9 @@
   \fi
 }
 
-% https://tex.stackexchange.com/a/156061
-\newcommand \ListStructure [2] {
-  \newlist{#1}{enumerate}{2}
-  \setlist[#1]{format=\small}
-  \setlist[#1, 1]{
-    label=\alph*),
-    ref=\expandafter\csname the#2\endcsname~\alph*)
-  }
-  \setlist[#1, 2]{
-    label=\roman*),
-    ref=\expandafter\csname the#2\endcsname~\alph{#1i} \roman*)
-  }
+\newlist{RefList}{itemize}{2}
 
-  \crefalias{#1}{#2}
-  \crefalias{#1i}{#2}
-  \crefalias{#1ii}{#2}
-}
+% Items
+\newcommand  \ILabel        [1] {\item\label{#1}}
+\newcommand  \IAxiom        [2] {\item[{\crtcrossreflabel{#2}[#1]}]}
+\newcommand  \IRef          [1] {\item[\ref{#1}]}
