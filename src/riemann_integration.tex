@@ -1,31 +1,57 @@
 \subsection{Riemann integration}\label{subsec:riemann_integration}
 
-\begin{definition}\label{def:partition}\MarginCite[def. 6.1]{Rudin1976}
-  A \Def{partition} of a nonempty \hyperref[def:total_order_interval/closed]{closed interval} \( [a, b] \) is a set \( \{ x_0, \ldots, x_n \} \subseteq [a, b] \) that satisfies
-  \begin{equation}\label{eq:def:partition}
-    a = x_0 < x_1 < \ldots < x_{n-1} < x_n = b.
-  \end{equation}
+\begin{definition}\label{def:riemann_partition}
+  The concept of a partition of a nonempty \hyperref[def:real_numbers]{real} \hyperref[def:total_order_interval/closed]{closed interval} \( [a, b] \) is the base for defining Riemann-style integrals.
+
+  \begin{DefEnum}
+    \ILabel{def:riemann_partition/partition}\MarginCite[def. 6.1]{Rudin1976}A \Def{Riemann partition} of \( [a, b] \) is a set \( \{ x_0, \ldots, x_n \} \subseteq [a, b] \) that satisfies
+    \begin{equation}\label{eq:def:riemann_partition/partition}
+      a = x_0 < x_1 < \ldots < x_{n-1} < x_n = b.
+    \end{equation}
+
+    \ILabel{def:diameter}\MarginCite[def. 2]{Chernysh2018}The \Def{diameter} of the partition \eqref{eq:def:riemann_partition/partition} is defined as
+    \begin{equation}\label{eq:def:riemann_partition/diameter}
+      \Diam(\{ x_k \}_{k=0}^n) \coloneqq \max_{1 \leq k \leq n} (x_k - x_{k-1}).
+    \end{equation}
+
+    \ILabel{def:riemann_partition/refinement} The\MarginCite[def. 6.3]{Rudin1976} partition
+    \begin{equation*}
+      a = y_0 < y_1 < \ldots < y_{m-1} < y_m = b
+    \end{equation*}
+    is called a \Def{refinement} of the partition \eqref{eq:def:riemann_partition/partition} if we have the \hyperref[def:subset]{set inclusion}
+    \begin{equation}\label{eq:def:riemann_partition/refinement/inclusion}
+      \{ x_0, x_1, \ldots, x_n \} \subseteq \{ y_0, y_1, \ldots, y_m \}.
+    \end{equation}
+
+    \ILabel{def:riemann_partition/tagged}\MarginCite[def. 2]{Chernysh2018}A \Def{tagged partition} of \( [a, b] \) is a partition \eqref{eq:def:riemann_partition/partition} of \( [a, b] \) along with a choice of \( \xi_k \) for each closed interval \( [x_{k-1}, x_k], k = 1, \ldots, n \). That is, a tagged partition is a tuple
+    \begin{equation}\label{eq:def:riemann_partition/tagged}
+      \Delta \coloneqq \Big( \{ x_k \}_{k=0}^n, \{ \xi_k \}_{k=1}^n \Big).
+    \end{equation}
+
+    We define the diameter \( \Diam(\Delta) \) of \( \Delta \) to be the diameter \eqref{eq:def:riemann_partition/diameter} and say that the tagged partition \( \Gamma = ( \{ y_k \}_{k=0}^m, \{ \eta_k \}_{k=1}^m ) \) is a refinement of \( \Delta \) if \eqref{eq:def:riemann_partition/refinement/inclusion} holds.
+
+    \ILabel{def:riemann_partition/order} The set \( \Op{Part}([a, b]) \) of all tagged partitions of the interval \( [a, b] \) can be \hyperref[def:preordered_set]{preordered} by setting \( \Gamma \preceq \Delta \) if \( \Diam(\Gamma) \geq \Diam(\Delta) \). This makes \( \Op{Part}([a, b]) \) a \hyperref[def:directed_set]{directed set}.
+  \end{DefEnum}
 \end{definition}
 
-\begin{remark}\label{remark:set_and_interval_partitions}
-  Note that \eqref{eq:def:partition} is not a partition in the sense of \fullref{def:set_partition}, however the set of intervals
+\begin{remark}\label{remark:set_and_riemann_partitions}
+  Note that \eqref{eq:def:riemann_partition/partition} is not a partition in the sense of \fullref{def:set_partition}, however the set of intervals
   \begin{equation*}
-    \left\{ [x_0, x_1), [x_1, x_2), \ldots, [x_{n-2}, x_{n-1}), [x_{n-1}, x_n] \right\}
+    \Big\{ [x_0, x_1), [x_1, x_2), \ldots, [x_{n-2}, x_{n-1}), [x_{n-1}, x_n] \Big\}
   \end{equation*}
-  is a set-theoretic partition of \( [a, b] \). Conversely, every finite set-theoretic partition of \( [a, b] \) gives rise to a partition in the sense of \fullref{def:partition}.
+  is a set-theoretic partition of \( [a, b] \). Conversely, every finite set-theoretic partition of \( [a, b] \) gives rise to a Riemann partition in the sense of \fullref{def:riemann_partition/partition}.
 \end{remark}
 
-\begin{definition}\label{def:partition_refinement}\MarginCite[def. 6.1]{Rudin1976}
-  The \hyperref[def:partition]{partition}
-  \begin{equation*}
-    a = y_0 < y_1 < \ldots < y_{m-1} < y_m = b
-  \end{equation*}
-  is called a \Def{refinement} of the partition \eqref{eq:def:partition} if we have the \hyperref[def:subset]{set inclusion}
-  \begin{equation*}
-    \{ x_0, x_1, \ldots, x_n \} \subseteq \{ y_0, y_1, \ldots, y_m \}.
-  \end{equation*}
-\end{definition}
+\begin{definition}\label{def:riemann_sum}\MarginCite[def. 3 \\ def. 4]{Chernysh2018}
+  Let \( \CX \) be a real \hyperref[def:banach_space]{Banach space}. Fix a \hyperref[def:function/single_valued]{function} \( f: \BR \to \CX \) and a \hyperref[def:riemann_partition/tagged]{tagged partition} \( \Delta = ( \{ x_k \}_{k=0}^n, \{ \xi_k \}_{k=1}^n ) \).
 
-\begin{definition}\label{def:tagged_partition}\MarginCite[def. 2]{Chernysh2018}
-  A \Def{tagged partition} of \( [a, b] \) is a \hyperref[def:partition]{partition} \eqref{eq:def:partition} of \( [a, b] \) along with a choice of \( \xi_k \) for each closed interval \( [x_{k-1}, x_k], k = 1, \ldots, n \). That is, a tagged partition is a tuple \( (\{ x_k \}_{k=0}^n, \{ \xi_k \}_{k=1}^n) \).
+  The \Def{Riemann sum} of \( f \) in \( [a, b] \) corresponding to the partition \( \Delta \) is defined as
+  \begin{equation*}
+    S(f, \Delta) \coloneqq \sum_{k=1}^n f(\xi_k) (x_k - x_{k-1}).
+  \end{equation*}
+
+  The \Def{Riemann integral} of \( f \) in \( [a, b] \) is defined as the \hyperref[def:net_convergence/limit]{limit of the net}
+  \begin{equation*}
+    \{ S(f, \Delta) \}_{\Delta \in \Op{Part}([a, b])}.
+  \end{equation*}
 \end{definition}
