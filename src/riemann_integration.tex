@@ -1,36 +1,65 @@
 \subsection{Riemann integration}\label{subsec:riemann_integration}
 
-\begin{definition}\label{def:riemann_partition}\cite[def. 1]{Gordon1991}
+\begin{definition}\label{def:riemann_partition}\MarginCite[def. 1]{Gordon1991}
   The concept of a partition of a nonempty \hyperref[def:real_numbers]{real} \hyperref[def:total_order_interval/closed]{closed interval} \( [a, b] \) is the base for defining Riemann-style integrals.
 
   \begin{DefEnum}
-    \ILabel{def:riemann_partition/partition} A \Def{Riemann partition} of \( [a, b] \) is a set \( \{ x_0, \ldots, x_n \} \subseteq [a, b] \) that satisfies
+    \ILabel{def:riemann_partition/partition} A \Def{Riemann partition} of \( [a, b] \) is a set
+    \begin{equation*}
+      \Delta \coloneqq \{ x_0, \ldots, x_n \} \subseteq [a, b]
+    \end{equation*}
+    that satisfies
+    \begin{equation*}
+      a = x_0 < x_1 < \ldots < x_n = b.
+    \end{equation*}
+
+    For brevity, we write
     \begin{equation}\label{eq:def:riemann_partition/partition}
-      a = x_0 < x_1 < \ldots < x_{n-1} < x_n = b.
+      \Delta: a = x_0 < x_1 < \ldots < x_n = b.
     \end{equation}
 
-    \ILabel{def:diameter} The \Def{diameter} of the partition \eqref{eq:def:riemann_partition/partition} is defined as
-    \begin{equation}\label{eq:def:riemann_partition/diameter}
-      \Diam(\{ x_k \}_{k=0}^n) \coloneqq \max_{1 \leq k \leq n} (x_k - x_{k-1}).
-    \end{equation}
+    We denote the set of all partitions of \( [a, b] \) by \( \Op{part}([a, b]) \).
 
     \ILabel{def:riemann_partition/refinement} The partition
     \begin{equation*}
-      a = y_0 < y_1 < \ldots < y_{m-1} < y_m = b
+      \Gamma: a = y_0 < y_1 < \ldots < y_m = b
     \end{equation*}
     is called a \Def{refinement} of the partition \eqref{eq:def:riemann_partition/partition} if we have the \hyperref[def:subset]{set inclusion}
     \begin{equation}\label{eq:def:riemann_partition/refinement/inclusion}
       \{ x_0, x_1, \ldots, x_n \} \subseteq \{ y_0, y_1, \ldots, y_m \}.
     \end{equation}
 
-    \ILabel{def:riemann_partition/tagged} A \Def{tagged partition} of \( [a, b] \) is a partition \eqref{eq:def:riemann_partition/partition} of \( [a, b] \) along with a choice of \( \xi_k \) for each closed interval \( [x_{k-1}, x_k], k = 1, \ldots, n \). That is, a tagged partition is a tuple
-    \begin{equation}\label{eq:def:riemann_partition/tagged}
-      \Delta \coloneqq \Big( \{ x_k \}_{k=0}^n, \{ \xi_k \}_{k=1}^n \Big).
+    In this case, we \enquote{split} \( \Gamma \) into chains such that, for each \( k = 1, 2, \ldots, n \),
+    \begin{equation}\label{def:riemann_partition/refinement/splitting}
+      y_{k,j} \coloneqq \begin{cases}
+        x_{k-1},                                                                          &j = 0, \\
+        x_k,                                                                              &j = p_k, \\
+        j\text{-th point of } \{ y_0, \ldots, y_m \} \cap [x_{k-1}, x_k], &0 < j < p_k.
+      \end{cases}
     \end{equation}
 
-    We call \( x_0, \ldots, x_n \) the \Def{points} of the partition and \( \xi_1, \ldots, \xi_n \) the \Def{tags} of the partition.
+    \ILabel{def:riemann_partition/diameter} Finally, the \Def{diameter} of the partition \eqref{eq:def:riemann_partition/partition} is defined as
+    \begin{equation}\label{eq:def:riemann_partition/diameter}
+      \Diam(\Delta) \coloneqq \max_{1 \leq k \leq n} (x_k - x_{k-1}).
+    \end{equation}
 
-    We define the diameter \( \Diam(\Delta) \) of \( \Delta \) to be the diameter \eqref{eq:def:riemann_partition/diameter} and say that the tagged partition \( \Gamma = ( \{ y_k \}_{k=0}^m, \{ \eta_k \}_{k=1}^m ) \) is a refinement of \( \Delta \) if \eqref{eq:def:riemann_partition/refinement/inclusion} holds. Note that we do not require tags to be preserved by refinements.
+    \ILabel{def:riemann_partition/order} We can make the set \( \Op{part}([a, b]) \) of all \hyperref[def:riemann_partition/partition]{Riemann partitions} of \( [a, b] \) into a \hyperref[def:directed_set]{directed set} using two common approaches:
+    \begin{DefEnum}
+      \ILabel{def:riemann_partition/order/refinement} Put \( \Delta \preceq_R \Gamma \) if and only if \( \Gamma \) is a \hyperref[def:riemann_partition/refinement]{refinement} of \( \Delta \). This actually makes \( (\Op{part}([a, b]), \preceq_R) \) a \hyperref[def:poset]{poset}.
+      \ILabel{def:riemann_partition/order/diameter} Put \( \Delta \preceq_D \Gamma \) if and only if \( \Diam(\Gamma) \leq \Diam(\Delta) \).
+    \end{DefEnum}
+
+    \ILabel{def:riemann_partition/tagged} A \Def{tagged partition} of \( [a, b] \) is a partition \eqref{eq:def:riemann_partition/partition} of \( [a, b] \) along with a choice of a \Def{tag} \( \xi_k \) for each closed interval \( [x_{k-1}, x_k], k = 1, \ldots, n \). By putting \( \Xi \coloneqq \{ \xi_k \}_{k=1}^n \), we can define a tagged partition as the tuple \( (\Delta, \Xi) \). For brevity, we write
+    \begin{AlignedEquation}\label{eq:def:riemann_partition/tagged}
+      &\Delta: a = x_0 < x_1 < \ldots < x_n = b \\
+      &\Xi: \xi_k \in [x_{k-1}, x_k], k = 1, \ldots, n.
+    \end{AlignedEquation}
+
+    We denote the set of all tagged partitions of \( [a, b] \) by \( \Op{tpart}([a, b]) \). We introduce an order on \( \Op{tpart}([a, b]) \) by putting
+    \begin{equation*}
+      (\Delta, \Xi) \preceq_R (\Gamma, \Eta) \Tiff \Delta \preceq_R \Eta
+    \end{equation*}
+    and analogously for \( \preceq_D \). Note that \( \preceq_R \) is not a partial order in \( \Op{tpart}([a, b]) \) unlike in \( \Op{part}([a, b]) \).
   \end{DefEnum}
 \end{definition}
 
@@ -42,69 +71,48 @@
   is a set-theoretic partition of \( [a, b] \). Conversely, every finite set-theoretic partition of \( [a, b] \) gives rise to a Riemann partition in the sense of \fullref{def:riemann_partition/partition}.
 \end{remark}
 
-\begin{definition}\label{def:riemann_sum}\MarginCite[def. 2]{Gordon1991}
-  Let \( \CX \) be a real \hyperref[def:vector_space]{vector space}. Fix a \hyperref[def:function/single_valued]{function} \( f: [a, b] \to \CX \) and a \hyperref[def:riemann_partition/tagged]{tagged partition} \( \Delta = ( \{ x_k \}_{k=0}^n, \{ \xi_k \}_{k=1}^n ) \).
-
-  The \Def{Riemann sum} of \( f \) corresponding to the partition \( \Delta \) is defined as
-  \begin{equation*}
-    S(f, \Delta) \coloneqq \sum_{k=1}^n f(\xi_k) (x_k - x_{k-1}).
-  \end{equation*}
-\end{definition}
-
 \begin{definition}\label{def:riemann_integral}\MarginCite[def. 2]{Gordon1991}
-  We can make the set \( \Op{Part}([a, b]) \) of all \hyperref[def:riemann_partition/tagged]{tagged partitions} of \( [a, b] \) into a \hyperref[def:directed_set]{directed set} using two common approaches:
-  \begin{DefEnum}
-    \ILabel{def:riemann_integral/refinement} Put \( \Delta \preceq_R \Gamma \) if and only if \( \Gamma \) is a \hyperref[def:riemann_partition/refinement]{refinement} of \( \Delta \). This actually makes \( (\Op{Part}([a, b]), \preceq_R) \) a \hyperref[def:poset]{poset}.
-    \ILabel{def:riemann_integral/diameter} Put \( \Delta \preceq_D \Gamma \) if and only if \( \Diam(\Gamma) \leq \Diam(\Delta) \).
-  \end{DefEnum}
+  Let \( \CX \) be a real \hyperref[def:separation_axioms/T2]{Hausdorff} \hyperref[def:topological_vector_space]{topological vector space}. Fix a \hyperref[def:function/single_valued]{function} \( f: [a, b] \to \CX \) and a \hyperref[def:riemann_partition/tagged]{tagged partition} \eqref{eq:def:riemann_partition/tagged}.
 
-  Let \( \CX \) be a real \hyperref[def:separation_axioms/T2]{Hausdorff} \hyperref[def:topological_vector_space]{topological vector space}. Consider the net
+  The \Def{Riemann sum} of \( f \) corresponding to the partition \( \Delta \) and the tags \( \Xi \) is defined as
+  \begin{equation*}
+    S(f, \Delta, \Xi) \coloneqq \sum_{k=1}^n f(\xi_k) (x_k - x_{k-1}).
+  \end{equation*}
+
+  Consider the net
   \begin{equation}\label{eq:def:riemann_integral/net}
-    \{ S(f, \Delta) \}_{\Delta \in \Op{Part}([a, b])}
+    \{ S(f, \Delta, \Xi) \}_{(\Delta, \Xi) \in \Op{tpart}([a, b])}
   \end{equation}
-  of \hyperref[def:riemann_sum]{Riemann sums}. The order on \( \Op{Part}([a, b]) \) does not matter because both give equivalent convergence. If the limit exists, \( f \) is said to be \Def{Riemann integrable} in \( [a, b] \).
 
-  If this net has a \hyperref[def:net_convergence/limit]{limit}, we call it the \Def{Riemann integral} of \( f \) and denote it by
+  Both orders \fullref{def:riemann_partition/order/refinement} and \fullref{def:riemann_partition/order/diameter} on \( \Op{tpart}([a, b]) \) provide equivalent convergence for Riemann sums. If the limit exists, \( f \) is said to be \Def{Riemann integrable} in \( [a, b] \). We call the limit the \Def{Riemann integral} of \( f \) and denote it by
   \begin{equation}\label{eq:def:riemann_integral}
     \int_a^b f(x) dx.
   \end{equation}
 \end{definition}
 \begin{proof}
-  \SubProofImplication{def:riemann_integral/refinement}{def:riemann_integral/diameter} Let \( I \) be the limit \eqref{eq:def:riemann_integral} with respect to \( \preceq_R \). Fix a neighborhood \( U \) of \( 0 \). Since \eqref{eq:def:riemann_integral/net} is eventually in \( I + U \), there exists a tagged partition \( \Delta_0 \) such that \( S(f, \Gamma) \in I + U \) if \( \Gamma \) is a refinement of \( \Delta_0 \).
+  \SubProofImplication{def:riemann_partition/order/refinement}{def:riemann_partition/order/diameter} Let \( I \) be the limit \eqref{eq:def:riemann_integral} with respect to \( \preceq_R \). Fix a neighborhood \( U \) of \( 0 \). Since \eqref{eq:def:riemann_integral/net} is eventually in \( I + U \), there exists a tagged partition
+  \begin{AlignedEquation}\label{eq:def:riemann_integral/tagged_zero}
+    &\Delta_0: a = x_0^{(0)} < x_1^{(0)} < \ldots < x_n^{(0)} = b \\
+    &\Xi_0: \xi_k^{(0)} \in [x_{k-1}^{(0)}, x_k^{(0)}], k = 1, \ldots, n.
+  \end{AlignedEquation}
+  such that \( S(f, \Gamma, \Eta) \in I + U \) if \( \Gamma \) is a refinement of \( \Delta_0 \).
 
   Note that \( f \) is \hyperref[def:bounded_function/bounded]{bounded}. Indeed, if\LEM it is unbounded, then there exist points \( x, y \in [a, b] \) such that \( f(x) - f(y) \not\in U \). Therefore any refinement of \( \Delta_0 \) that contains \( x \) and \( y \) as tags will not belong to \( I + U \). This contradicts our choice of \( \Delta_0 \).
 
   Since \( f \) is bounded, there exists a neighborhood \( V_0 \) of \( 0 \) such that \( f([a, b]) \subseteq V_0 \) and hence \( f(x) - f(y) \in V \coloneqq V_0 - V_0 \) for all \( x, y \in [a, b] \).
 
-  Let \( \Delta \) be a tagger partition such that \( \Diam(\Delta) \leq \Diam(\Delta_0) \). Let \eqref{eq:def:riemann_partition/tagged} be the points and tags of \( \Delta \) and let
+  Let \eqref{eq:def:riemann_partition/tagged} be a tagged partition such that \( \Diam(\Delta) \leq \Diam(\Delta_0) \).
+
+  We introduce another partition \( \Gamma \coloneqq \Delta \cup \Delta_0 \). Since \( \Gamma \) is a refinement of \( \Delta \), we can use the splitting \eqref{def:riemann_partition/refinement/splitting}. For every \( k = 1, \ldots, n \) and every \( j = 0, \ldots, p_k \), choose\LEM an arbitrary tag
   \begin{equation*}
-    \Delta_0 = \Big( \{ x_j^{(0)} \}_{j=0}^m, \{ \xi_j^{(0)} \}_{j=1}^m \Big).
+    \Eta: \eta_{k,j} \in [y_{k,j-1}, y_{k,j}].
   \end{equation*}
-
-  We introduce another partition \( \Gamma \) as follows:
-  \begin{enumerate}
-    \item Let the points of \( \Gamma \) be the union of the points \( \{ x_k \}_{k=0}^n \) of \( \Delta \) and the points \( \{ x_j^{(0)} \}_{j=0}^m \) of \( \Delta_0 \).
-
-    \item For every \( k = 1, \ldots, n \), denote by \( p_k \) the number of points of \( \Delta_0 \) in the half-open interval \( [x_{k-1}, x_k) \) and put
-    \begin{equation*}
-      y_{k,j} \coloneqq \begin{cases}
-        x_{k-1},                                                                          &j = 0, \\
-        x_k,                                                                              &j = p_k, \\
-        j\text{-th point of } \{ x_0^{(0)}, \ldots, x_m^{(0)} \} \cap [x_{k-1}, x_k], &0 < j < p_k.
-      \end{cases}
-    \end{equation*}
-
-    \item For every \( k = 1, \ldots, n \) and every \( j = 0, \ldots, p_k \), choose\LEM an arbitrary tag
-    \begin{equation*}
-      \eta_{k,j} \in [y_{k,j-1}, y_{k,j}].
-    \end{equation*}
-  \end{enumerate}
 
   Then we have
   \begin{BreakableAlign*}
-    S(f, \Delta) - I
+    S(f, \Delta, \Xi) - I
     &=
-    S(f, \Delta) - S(f, \Gamma) + \underbrace{S(f, \Gamma) - I}_{\in U}
+    S(f, \Delta, \Xi) - S(f, \Gamma, \Eta) + \underbrace{S(f, \Gamma, \Eta) - I}_{\in U}
     \in \\ &\in
     \sum_{k=1}^n \sum_{j=1}^{p_k} [ \underbrace{f(\xi_k) - f(\eta_{k,j})}_{\in V} ] (y_{k,j} - y_{k,j-1}) + U
     \subseteq \\ &\subseteq
@@ -113,11 +121,11 @@
     (b - a) V + U.
   \end{BreakableAlign*}
 
-  In this result, \( V \) only depends on \( f \) and \( U \) only depends on \( \Delta_0 \). Therefore, given any neighborhood \( W \) of \( 0 \), we can choose \( \Delta_0 \) such that \( U + (b - a) \cdot V \subseteq W \) and hence \( S(f, \Delta) - I \in W \) holds whenever \( \Diam(\Delta) \leq \Diam(\Delta_0) \).
+  In this result, \( V \) only depends on \( f \) and \( U \) only depends on \( (\Delta_0, \Xi_0) \). Therefore, given any neighborhood \( W \) of \( 0 \), we have a tagged partition \( (\Delta_0, \Xi_0) \) such that, whenever \( \Diam(\Delta) \leq \Diam(\Delta_0) \), we have \( U + (b - a) \cdot V \subseteq W \) and hence \( S(f, \Delta, \Xi) - I \in W \) holds.
 
   This finishes the proof.
 
-  \SubProofImplication{def:riemann_integral/diameter}{def:riemann_integral/refinement} Note that if \( \Gamma \) is a refinement of \( \Delta \), clearly \( \Diam(\Gamma) \leq \Diam(\Delta) \). Therefore if the net \eqref{eq:def:riemann_integral/net} with respect to \( \preceq_D \) is eventually in some open set \( U \), the corresponding net with respect to \( \preceq_R \) is also eventually in \( U \). This finishes the proof.
+  \SubProofImplication{def:riemann_partition/order/diameter}{def:riemann_partition/order/refinement} Note that if \( \Gamma \) is a refinement of \( \Delta \), clearly \( \Diam(\Gamma) \leq \Diam(\Delta) \). Therefore if the net \eqref{eq:def:riemann_integral/net} with respect to \( \preceq_D \) is eventually in some open set \( U \), the corresponding net with respect to \( \preceq_R \) is also eventually in \( U \). This finishes the proof.
 \end{proof}
 
 \begin{corollary}\label{thm:riemann_integrable_implies_bounded}
@@ -126,3 +134,99 @@
 \begin{proof}
   Proven in \fullref{def:riemann_integral}.
 \end{proof}
+
+\begin{definition}\label{def:darboux_integrability}\MarginCite[def. 17]{Gordon1991}
+  Let \( (\CX, \rho) \) be a \hyperref[def:frechet_space]{Frechet space}. Fix a function \( f: [a, b] \to \CX \). Similarly to \fullref{def:riemann_integral}, choose any of the orderings \fullref{def:riemann_partition/order/refinement} and \fullref{def:riemann_partition/order/diameter} on the set of all untagged \hyperref[def:riemann_partition/partition]{Riemann partitions} \( \Op{part}([a, b]) \).
+
+  For each partition \eqref{eq:def:riemann_partition/partition}, we define its \Def{oscillation} via the \hyperref[def:function_oscillation]{function oscillation} of \( f \)
+  \begin{equation}\label{eq:def:darboux_integrability/oscillation}
+    \omega(f, \Delta) \coloneqq \sum_{k=1}^n \omega(f, [x_{k-1}, x_k]) (x_k - x_{k-1}).
+  \end{equation}
+
+  Consider the net
+  \begin{equation}\label{eq:def:darboux_integrability/net}
+    \{ \omega(f, \Delta) \}_{\Delta \in \Op{part}([a, b])}
+  \end{equation}
+
+  If this net converges to zero, we say that \( f \) is \Def{Darboux integrable}.
+\end{definition}
+
+\begin{proposition}\label{thm:darboux_integrable_implies_riemann_integrable}
+  In a \hyperref[def:banach_space]{Banach space}, \hyperref[def:darboux_integrability]{Darboux integrability} implies \hyperref[def:riemann_integral]{Riemann integrability}.
+\end{proposition}
+\begin{proof}
+  We will show that the net \eqref{eq:def:riemann_integral/net} is fundamental. Fix \( \varepsilon > 0 \). Since \( f \) is Darboux integrable, there exists an untagged partition \( \Delta_0 \) such that, if \( \Delta \) is a refinement of \( \Delta_0 \), we have
+  \begin{equation*}
+    \omega(f, \Delta) < \varepsilon.
+  \end{equation*}
+
+  Let \( \Delta \) be a refinement of \( \Delta_0 \) and \( \Gamma \) be a refinement of \( \Delta \). Assume that the points of \( \Gamma \) are split as in \eqref{def:riemann_partition/refinement/splitting}. Choose arbitrary tags \( \Xi = \{ \xi_k \}_{k=1}^n \) for \( \Delta \) and \( \Eta = \{ \eta_{k,j} \}_{k=1,j=1}^{n,p_k} \) for \( \Gamma \). For the corresponding Riemann sums, we have
+  \begin{BreakableAlign*}
+    \Norm{S(f, \Delta, \Xi) - S(f, \Gamma, \Eta)}
+    &=
+    \Norm{\sum_{k=1}^n f(\xi_k) (x_k - x_{k-1}) - \sum_{k=1}^n \sum_{j=1}^{p_k} f(\eta_{k,j}) (y_{k,j} - y_{k,j-1}) }
+    \leq \\ &\leq
+    \sum_{k=1}^n \sum_{j=1}^{p_k} \Norm{f(\xi_k) - f(\eta_{k,j})} (y_{k,j} - y_{k,j-1})
+    \leq \\ &\leq
+    \sum_{k=1}^n \sum_{j=1}^{p_k} (y_{k,j} - y_{k,j-1}) \sup \{ \Norm{f(\xi) - f(\eta)} \colon \xi, \eta \in [y_{k,j-1}, y_{k,j}] \}
+    \leq \\ &\leq
+    \sum_{k=1}^n \sup \{ f(\xi) - f(\eta) \colon \xi, \eta \in [x_{k-1}, x_k] \} \underbrace{\sum_{j=1}^{p_k} (y_{k,j} - y_{k,j-1})}_{x_{k-1} - x_k}
+    = \\ &=
+    \omega(f, \Delta)
+    <
+    \varepsilon.
+  \end{BreakableAlign*}
+
+  Therefore the net \eqref{eq:def:riemann_integral/net} is fundamental and, since \( \CX \) is complete, the net converges to a limit.
+\end{proof}
+
+\begin{definition}\label{def:darboux_integral}
+  Fix a real-valued function \( f: [a, b] \to \BR \). The \Def{upper Darboux sum} corresponding to the partition \eqref{eq:def:riemann_partition/partition} is defined as
+  \begin{equation*}
+    \Ol{S}(f, \Delta) \coloneqq \sum_{k=1}^n (x_{k-1} - x_k) \sup_{\xi \in [x_{k-1}, x_k]} f(\xi).
+  \end{equation*}
+
+  The \Def{lower Darboux sum} is defined as
+  \begin{equation*}
+    \Ul{S}(f, \Delta) \coloneqq \sum_{k=1}^n (x_{k-1} - x_k) \inf_{\xi \in [x_{k-1}, x_k]} f(\xi).
+  \end{equation*}
+
+  If the nets
+  \begin{align}\label{eq:def:darboux_integral/nets}
+    \{ \Ol{S}(f, \Delta) \}_{\Delta \in \Op{part}([a, b])}
+    &&
+    \{ \Ul{S}(f, \Delta) \}_{\Delta \in \Op{part}([a, b])}
+  \end{align}
+  have a common limit, we call this limit the \Def{Darboux integral} of \( f \) and, analogously to \fullref{def:riemann_integral}, we denote it by
+  \begin{equation*}
+    \int_a^b f(x) dx.
+  \end{equation*}
+
+  This notation is justified by \fullref{thm:darboux_integral_iff_riemann_integral}.
+\end{definition}
+
+\begin{proposition}\label{thm:darboux_integral_iff_riemann_integral}
+  A real-valued function \( f: [a, b] \to \BR \) is \hyperref[def:darboux_integrability]{Darboux integrable} if and only if it has a \hyperref[def:darboux_integral]{Darboux integral}.
+\end{proposition}
+\begin{proof}
+  Note that, given the partition \eqref{eq:def:riemann_partition/partition}, we have
+  \begin{align*}
+    \Ol{S}(f, \Delta) - \Ul{S}(f, \Delta)
+    &=
+    \sum_{k=1}^n (x_k - x_{k-1}) \left[ \sup_{\xi \in [x_{k-1}, x_k]} f(\xi) - \inf_{\eta \in [x_{k-1}, x_k]} f(\eta) \right]
+    = \\ &=
+    \sum_{k=1}^n (x_k - x_{k-1}) \left[ \sup_{\xi \in [x_{k-1}, x_k]} f(\xi) + \sup_{\eta \in [x_{k-1}, x_k]} -f(\eta) \right]
+    = \\ &=
+    \sum_{k=1}^n (x_k - x_{k-1}) \sup \{ f(\xi) - f(\eta) \colon \xi, \eta \in [x_{k-1}, x_k] \}
+    = \\ &=
+    \sum_{k=1}^n (x_k - x_{k-1}) \sup \{ \Abs{f(\xi) - f(\eta)} \colon \xi, \eta \in [x_{k-1}, x_k] \}
+    = \\ &=
+    \omega(f, \Delta).
+  \end{align*}
+
+  Therefore the nets \eqref{eq:def:darboux_integral/nets} converge to a common limit if and only if \( \omega(f, \Delta) \xrightarrow[\Delta]{} 0 \). This finishes the proof.
+\end{proof}
+
+\begin{proposition}\label{thm:darboux_integral_iff_riemann_integral}
+  A real-valued function \( f: [a, b] \to \BR \) has a \hyperref[def:darboux_itegral]{Darboux integral} if and only if it has a \hyperref[def:riemann_integral]{Riemann integral}.
+\end{proposition}
