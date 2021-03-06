@@ -107,9 +107,14 @@
 \newcommand \USC                     {\IndexEntry{USC}{Compactness of the unit sphere}}
 \newcommand \IND                     {\IndexEntry{IND}{Induction}}
 
+% Items
+\newlist{RefList}{itemize}{2}
+\newcommand  \ILabel        [1] {\item\label{#1}}
+\newcommand  \IAxiom        [2] {\item[{\crtcrossreflabel{#2}[#1]}]}
+\newcommand  \IRef          [1] {\item[\ref{#1}]}
+
 % Misc
 \newcommand \URL                 [1] {\href{#1}{\texttt{#1}}}
-\newcommand \Def                 [1] {\textbf{#1}}
 \newcommand \Caption             [2] {\caption{#2}\crtcrossreflabel{}[#1]}
 
 \newcommand \MarginCite [2][] {%
@@ -144,8 +149,11 @@
   \fi
 }
 
-% Items
-\newlist{RefList}{itemize}{2}
-\newcommand  \ILabel        [1] {\item\label{#1}}
-\newcommand  \IAxiom        [2] {\item[{\crtcrossreflabel{#2}[#1]}]}
-\newcommand  \IRef          [1] {\item[\ref{#1}]}
+% https://tex.stackexchange.com/questions/34312/how-to-create-a-command-with-key-values
+\directlua{require "lua/footnote_translations.lua"}
+\newcommand \Def [2][] {%
+  \textbf{#2}%
+  \directlua{
+    footnote_translations("\luaescapestring{\unexpanded{#1}}")
+  }%
+}
