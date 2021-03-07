@@ -1,29 +1,44 @@
 \subsection{Grammars}\label{subsec:grammars}
 
 \begin{definition}\label{def:grammar}\MarginCite[def. 2.2]{Sipser2013}
-  Let \( \Cal{A} \) be some \hyperref[def:language]{alphabet} and \( V, \Sigma \subseteq \Cal{A} \) be nonempty disjoint subsets of \( \Cal{A} \). We call elements of \( V \) \Def{variables} and the elements of \( \Sigma \) \Def{terminals}. Fix special \Def{start symbol} \( S \in V \).
+  Let \( \Cal{A} \) be some \hyperref[def:language/alphabet]{alphabet} and \( V, \Sigma \subseteq \Cal{A} \) be nonempty disjoint subsets of \( \Cal{A} \).
 
-  We define a binary \hyperref[def:relation]{relation} \( \to \) of \Def{production rules} over \( (V \cup \Sigma)^* \), that is, rules are \enquote{transformations} that define how a language is \enquote{generated} starting from \( S \in V \) (see \fullref{def:grammar_derivation} and \fullref{ex:context_free_grammar/real_arithmetic}). As a shortcut, instead of listing individual rules with the same source as
-  \begin{BreakableAlign*}
-     & u \to v, \\
-     & u \to w,
-  \end{BreakableAlign*}
+  \begin{DefEnum}
+    \ILabel{def:grammar/variables} We call elements of \( V \) \Def{variables} or \Def{non-terminals}.
+
+    \ILabel{def:grammar/terminals} We call elements of elements of \( \Sigma \) \Def{terminals}.
+
+    \ILabel{def:grammar/start} We assume that a special \Def{start symbol} \( S \in V \) is fixed.
+
+    \ILabel{def:grammar/production_rules} We define a binary \hyperref[def:relation]{relation} \( \to \) of \Def{production rules} over \( (V \cup \Sigma)^* \), that is, rules are \enquote{transformations} that define how a language is \enquote{generated} starting from \( S \in V \) (see \fullref{def:grammar_derivation} and \fullref{ex:context_free_grammar/real_arithmetic}).
+
+    \ILabel{def:grammar/terminal_rules} Rules of the form \( u \to \sigma \), where \( \sigma \in \Sigma \), are called \Def{terminal rules}.
+
+    \ILabel{def:grammar/grammar} The tuple \( G \coloneqq (V, \Sigma, R, S) \) is called a \Def{formal grammar}.
+
+    \ILabel{def:grammar/context_free} If every production rule has only a single variable for a source, we say that the grammar is \Def{context-free}.
+  \end{DefEnum}
+
+  As a shortcut, instead of listing individual rules with the same source as
+  \begin{align*}
+    &u \to v, \\
+    &u \to w,
+  \end{align*}
   we write
   \begin{equation*}
     u \to v | w.
   \end{equation*}
-
-  Rules of the form \( u \to \sigma \), where \( \sigma \in \Sigma \), are called \Def{terminal rules}.
-
-  We call the tuple \( G \coloneqq (V, \Sigma, R, S) \) a \Def{formal grammar}. If every production rule has only a single variable for a source, we say that the grammar is a \Def{context-free grammar}.
 \end{definition}
 
 \begin{remark}\label{remark:grammar_symbol_case}
   It is a common convention to denote variables with uppercase letters and terminals with lowercase letters. Lowercase letters are also used, however, for words in \( (V \cup \Sigma)^* \).
 \end{remark}
 
-\begin{definition}\label{def:grammar_derivation}\MarginCite[104,108]{Sipser2013}
-  Fix a word \( pvs \) (all \( p \), \( v \) and \( s \) are subwords of \( pvs \); \enquote{\( p \)} stands for \enquote{prefix} and \enquote{\( s \)} stands for \enquote{suffix}). If \( u \to v \) is a production rule, we say that \( pvs \) \Def{yields} the word \( pws \) and write \( pvs \implies pws \).
+\begin{definition}\label{def:grammar_derivation}\MarginCite[page 104 \\ page 108]{Sipser2013}
+  Fix a \hyperref[def:language/word]{word} \( pvs \). If \( u \to v \) is a production rule, we say that \( pvs \) \Def{yields} the word \( pws \) and write
+  \begin{equation*}
+    pvs \implies pws.
+  \end{equation*}
 
   We say that \( u \) \Def{derives} \( v \) and write \( u \Derives v \) if there exists a finite sequence of words \( u_1, \ldots, u_n \) such that
   \begin{equation*}
@@ -48,11 +63,11 @@
 \begin{example}\label{ex:context_free_grammar/real_arithmetic}
   We will define a grammar for addition on \hyperref[def:natural_numbers]{natural numbers}. Note that we only consider the number in \( \BN \) only as symbols, not as the numbers themselves.
 
-  Let \( V \coloneqq \{ A \} \) and \( \Sigma \coloneqq \BN \cup \{ +, (, ) \} \). Define the rules:
-  \begin{itemize}
-    \item for each natural number \( n \), define the rule \( A \to n \).
-    \item \( A \to (A + A) \)
-  \end{itemize}
+  Let \( V \coloneqq \{ A \} \) and \( \Sigma \coloneqq \BN \cup \{ +, (, ) \} \). Define the grammar
+  \begin{AlignedEquation}\label{eq:ex:context_free_grammar/real_arithmetic/grammar}
+    &A \to n,                 && n \in \BN \\
+    &A \to (A + A)            &&
+  \end{AlignedEquation}
 
   Choose the starting symbol to be the only symbol \( A \) in \( V \). Then the grammar can produce the arithmetic expression \( ((1 + 2) + 3) \) by applying the rules
   \begin{equation*}
@@ -151,11 +166,10 @@
   \end{equation*}
 \end{example}
 \begin{proof}
-  We will show that \( G \) is unambiguous. Let \( w \) be a word in \( \Cal{L}(G) \). We explicitly build the derivation of \( w \):
+  We will show that \( G \) is unambiguous. Let \( w \) be a word in \( \Cal{L}(G) \). We explicitly build the derivation of \( w \) by induction\IND on \( \Len(w) \):
   \begin{itemize}
     \item If \( \Len(w) = 1 \), then \( w = n \in \BN \) and the word has been generated by the single rule \( A \to n \).
-    \item If \( \Len(w) > 1 \), then \( w \) is necessarily enclosed in parentheses. Let \( w = ( \sigma_0 \ldots \sigma_m ) \) be the symbols of \( w \). Because of the parentheses, the only possibility for \( \sigma_0 \ldots \sigma_m \) is that it consists of two words in \( \Cal{L}(G) \) with an addition symbol \( + \) between them. Let \( k \) be the index of the operator, that is, the index such that \( \sigma_1 \ldots \sigma_{k-1} \) and \( \sigma_{k+1} \ldots \sigma_m \) both belong to \( \Cal{L}(G) \).
 
-          The derivation of \( w \) is then given by \( A \to (A \sigma_k A) \), followed by applying the same algorithm to the word \( \sigma_1 \ldots \sigma_{k-1} \), followed by applying the same algorithm to the word \( \sigma_1 \ldots \sigma_{k+1} \).
+    \item Assume that \( w \) is unambiguously derived for \( \Len(w) < m + 2 \) and let \( \Len(w) = m + 2 \), then \( w \) is necessarily enclosed in parentheses. Let \( w = ( \sigma_0 \ldots \sigma_m ) \) be the symbols of \( w \). Because of the parentheses, the only possibility for \( \sigma_0 \ldots \sigma_m \) is that it consists of two words in \( \Cal{L}(G) \) with an addition symbol \( + \) between them. Let \( k \) be the index of the operator, that is, the index such that \( \sigma_1 \ldots \sigma_{k-1} \) and \( \sigma_{k+1} \ldots \sigma_m \) both belong to \( \Cal{L}(G) \). Furthermore, by inductive hypothesis, both \( \sigma_1 \ldots \sigma_{k-1} \) and \( \sigma_{k+1} \ldots \sigma_m \) are unambiguously derived. Therefore \( w \) is also unambiguously derived.
   \end{itemize}
 \end{proof}
