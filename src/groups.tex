@@ -1,103 +1,65 @@
-\section{Group theory}\label{sec:group_theory}
-
-\begin{remark}\label{remark:numbers_vs_endomorphisms_generalizations}
-  Modern algebra takes its roots in abstracting \hyperref[def:integers]{integers} and \hyperref[def:real_numbers]{real numbers} and their addition and multiplication. Both of these operations are commutative and, if we want to generalize their properties, it is sensible to study commutative operations.
-
-  Another type of objects that usually fit in the same algebraic framework are \hyperref[def:function]{functions} and their \hyperref[def:function/composition]{composition}. Functions from a set to itself can be composed into another function of the same type, similarly to how two integers can be added to obtain another integer. The specificity is in the non-commutativity of function composition.
-
-  Thus we use the same algebraic structures to study both generalizations of numbers and generalizations of functions over a set. The first case is commutative, the second is not. This is why commutative and non-commutative algebraic structures, even though they are similarly defined, can have very different properties and applications.
-
-  General groups are described in \fullref{subsec:groups} while abelian groups are described in \fullref{subsec:abelian_groups}
-\end{remark}
-
 \subsection{Groups}\label{subsec:groups}
 
-\begin{definition}\label{def:magma}
-  We study here algebraic \hyperref[def:algebraic_theory]{structures} with a single binary operation. \Fullref{def:first_order_model_category} ensures the existence and well-definedness of \hyperref[def:category]{categories} of all the structures.
+\begin{definition}\label{def:unital_magma_inverse_element}
+  Let \( \CM \) be a \hyperref[def:unital_magma]{unital magma}. We say that \( y \) is the \Def{left inverse} (resp. \Def{right inverse}) of \( x \) if
+  \begin{align}\label{eq:def:unital_magma_inverse_element}
+    yx = e
+    &&
+    (\text{resp. } xy = e).
+  \end{align}
 
-  \begin{DefEnum}
-    \ILabel{def:magma/magma} \Def{Magmas} have a single binary operation and no axioms. The operation is denoted by juxtaposition, by \( \cdot \) or by \( + \) (see \fullref{remark:additive_group}). The \Def{order} of a magma is the number of elements in its set. The trivial \hyperref[def:first_order_substructure]{magma} is the empty set.
-
-    \ILabel{def:magma/semigroup} \Def{Semigroups} are magmas where the operation is \hyperref[def:algebraic_theory/associativity]{associative}.
-
-    \ILabel{def:magma/monoid} \Def{Monoids} are \hyperref[def:magma/semigroup]{semigroups} where the operation has an \hyperref[def:algebraic_theory/identity]{identity} that is denoted by \( e \), \( 1 \) or \( 0 \), depending on the context. The category of monoids is denoted by \( \Cat{Mon}(\Cat{Set}) \) because of \fullref{thm:monoids_are_monoids_in_set}. The trivial \hyperref[def:first_order_substructure]{monoid} is defined to be \( \{ e \} \).
-
-    \ILabel{def:magma/group} \Def{Groups} are \hyperref[def:magma/monoid]{monoids} where the operation is \hyperref[def:algebraic_theory/invertibile_element]{invertible}. The inverse is unique by \fullref{thm:group_properties/unique_inverse} and is denoted by \( x^{-1} \) for the element \( x \). The category of groups is denoted by \( \Cat{Grp} \).
-
-    In order to fit invertibility into \fullref{def:algebraic_theory}, we can use the following formula:
-    \begin{equation*}
-      \forall \xi ((\xi \doteq 0) \lor \exists \eta (\xi \cdot \eta \doteq 1))
-    \end{equation*}
-
-    or add an additional operation \( (\cdot)^{-1} \) that inverts all nonzero elements and fixes
-  \end{DefEnum}
-
-  An element \( x \) of a monoid has \Def{order} \( \Ord(x) = n \) if \( n \) is the smallest positive integer such that \( x^n = e \). If no such integer exists, we say that \( x \) has infinite order.
+  If \( y \) is simultaneously a left and right inverse of \( x \), we call a \Def{two-sided inverse}, a \Def{neutral element} or simply \Def{inverse} of \( x \) and denote it by \( x^{-1} \) since it is unique by \fullref{thm:magma_identity_unique}. This notation is consistent with \fullref{def:unital_magma/exponentiation}
 \end{definition}
 
-\begin{definition}\label{def:magma_exponentiation}
-  For every magma \( G \), we define an operation \( G \times \BZ \to G \) as inductively\IND as
-  \begin{equation*}
-    x^n \coloneqq \begin{cases}
-      e,               & n = 0  \\
-      x \cdot x^{n-1}, & n > 0  \\
-      (x^{-n})^{-1},   & n < 0.
-    \end{cases}
-  \end{equation*}
-\end{definition}
-
-\begin{example}\label{ex:magmas}
-  We give examples and counterexamples of magmas.
-
-  \begin{itemize}
-    \item Consider the set \( \BR \) of real numbers. Define the \enquote{midpoint} operation
-          \begin{BreakableAlign*}
-             & \cdot: \BR \times \BR \to \BR \\
-             & x \cdot y = \frac {x + y} 2.
-          \end{BreakableAlign*}
-
-          Then the tuple \( (\BR, \cdot) \) is a magma, however it is not a semigroup since it is not associative:
-          \begin{equation*}
-            (x \cdot y) \cdot z = \frac {{\frac {x + y} 2} + z} 2 = \frac {x + y + 2z} 4
-            \neq
-            \frac {2x + y + z} 4 = x \cdot (y \cdot z).
-          \end{equation*}
-
-    \item The positive real numbers \( \BR_{>0} \) with standard addition form a semigroup, but not a monoid, since the set excludes the zero.
-
-    \item \Fullref{thm:functions_over_set_form_monoid} says that the functions from any set to itself form a monoid under composition. This is obviously not a group if at least one of the functions is not invertible.
-
-    \item We can restrict our attention only to invertible functions. The automorphism \hyperref[def:automorphism_group]{groups} are groups.
-  \end{itemize}
-\end{example}
-
-\begin{definition}\label{def:unital_magma_kernel}
-  The \Def{kernel} \( \ker(f) \) of a unital magma homomorphism \( f: M \to N \) is the zero \hyperref[def:zero_locus]{locus} of \( f \), that is, \hyperref[def:function/preimage]{preimage} \( f^{-1}(e_N) \).
-
-  It is an instance of \fullref{def:categorical_kernel}.
-\end{definition}
-
-\begin{proposition}\label{thm:unital_magma_kernel_is_submagma}
-  The \hyperref[def:unital_magma_kernel]{kernel} of a unital magma homomorphism \( f: M \to N \) is a \hyperref[def:first_order_substructure]{submagma} \( M \).
+\begin{proposition}\label{def:unital_magma_inverse_element_unique}
+  The two-sided \hyperref[def:unital_magma_inverse_element]{inverse} \( x^{-1} \) of \( x \) is unique.
 \end{proposition}
 \begin{proof}
-  If \( x, y \in \ker(f) \), then
-  \begin{equation*}
-    f(xy) = f(x) f(y) = e_N e_N = e_N.
-  \end{equation*}
-
-  Thus \( xy \in \ker(f) \) and \( \ker(f) \) is closed under the magma operation.
+  If \( y \) and \( z \) are both inverses of \( x \), then \( y = ey = zxy = ze = z \).
 \end{proof}
 
+\begin{definition}\label{def:group}
+  A \Def{group} is a \hyperref[def:unital_magma/associative]{monoid} in which every element has an \hyperref[def:unital_magma_inverse_element]{inverse}. Groups are the most well-studied and most well-behaved magmas. Many nice properties like \hyperref[thm:group_properties/cancellative]{cancellation} follow from associativity so we do not consider non-associative groups.
+
+  \begin{DefEnum}
+    \ILabel{def:group/theory} We can construct the \hyperref[def:first_order_theory]{theory} of groups by adding a unary \hyperref[def:first_order_logic_language/func]{functional symbol} \( (-)^{-1} \) and the axiom
+    \begin{equation}\label{eq:def:group/theory/inverse_axiom}
+      \forall x (xx^{-1} = e \wedge x^{-1}x = e)
+    \end{equation}
+    to the language of \hyperref[def:unital_magma/associative]{monoids}.
+
+    \ILabel{def:group/function_parity} A \hyperref[def:function/single_valued]{function} \( f: \CG \to \CH \) between two groups is called \Def{even} if
+    \begin{equation}\label{eq:def:group/function_parity/even}
+      f(x^{-1}) = f(x) \quad\forall x \in \CG
+    \end{equation}
+    and \Def{odd} if
+    \begin{equation}\label{eq:def:group/function_parity/odd}
+      f(x^{-1}) = f(x)^{-1} \quad\forall x \in \CG.
+    \end{equation}
+
+    \ILabel{def:group/homomorphism} A \hyperref[def:first_order_homomorphism]{homomorphism} between the groups \( \CG \) and \( \CH \) is an odd \hyperref[def:unital_magma/homomorphism]{unital magma homomorphism}.
+
+    As shown in \fullref{thm:group_homomorphism_single_condition}, however, the conditions \eqref{eq:def:pointed_set/homomorphism} and \eqref{eq:def:group/function_parity/odd} are redundant.
+
+    \ILabel{def:group/category} The \hyperref[def:first_order_model_category]{model category} \( \Cat{Grp} \) of groups has an obviously defined \hyperref[def:faithful_full_functor]{faithful} \hyperref[def:forgetful_functor]{forgetful functors} into \hyperref[def:unital_magma/associative]{\( \Cat{Mon} \)}.
+
+    \ILabel{def:group/exponentiation} We extend \hyperref[def:unital_magma/exponentiation]{unital magma exponentiation} to all integers by setting
+    \begin{equation*}
+      x^{-n} \coloneqq (x^n)^{-1}.
+    \end{equation*}
+
+    See \fullref{thm:group_properties/negative_power}.
+  \end{DefEnum}
+\end{definition}
+
 \begin{proposition}\label{thm:group_properties}
-  Any group \( G \) has the following basic properties:
+  Any \hyperref[def:group]{group} \( \CG \) has the following basic properties:
   \begin{PropEnum}
-    \ILabel{thm:group_properties/cancellative} The operation is \hyperref[def:algebraic_theory/cancellative]{cancellative}.
-    \ILabel{thm:group_properties/unique_inverse} The inverse \( x^{-1} \) of every element \( x \) is unique.
+    \ILabel{thm:group_properties/cancellative} The operation is \hyperref[def:magma/cancellative]{cancellative}.
     \ILabel{thm:group_properties/identity_inverse} The identity \( e \) is its own inverse.
     \ILabel{thm:group_properties/inverse_composition} \( (xy)^{-1} = y^{-1} x^{-1} \).
-    \ILabel{thm:group_properties/double_inverse} For any \( x \in G \), \( x = (x^{-1})^{-1} \)
-    \ILabel{thm:group_properties/negative_power} For any \( x \in G \) and positive integer \( n \), \( x^{-n} = (x^n)^{-1} = (x^{-1})^n \)
+    \ILabel{thm:group_properties/double_inverse} For any \( x \in \CG \), \( x = (x^{-1})^{-1} \)
+    \ILabel{thm:group_properties/negative_power} For any \( x \in \CG \) and positive integer \( n \), \( (x^n)^{-1} = (x^{-1})^n \)
   \end{PropEnum}
 \end{proposition}
 \begin{proof}
@@ -108,10 +70,9 @@
 
   The case \( zx = zy \) is analogous.
 
-  \SubProofOf{thm:group_properties/unique_inverse} If \( y \) and \( z \) are both inverses of \( x \), then \( y = ey = zxy = ze = z \).
   \SubProofOf{thm:group_properties/identity_inverse} \( ee = e \).
   \SubProofOf{thm:group_properties/inverse_composition}
-  \begin{BreakableAlign*}
+  \begin{equation*}
     (xy) (y^{-1} x^{-1})
     =
     x (y y^{-1}) x^{-1}
@@ -121,19 +82,19 @@
     y^{-1} (x^{-1} x) y
     =
     (y^{-1} x^{-1}) (xy).
-  \end{BreakableAlign*}
+  \end{equation*}
 
   \SubProofOf{thm:group_properties/double_inverse}
-  \begin{BreakableAlign*}
+  \begin{equation*}
     (x^{-1})^{-1}
     =
     x x^{-1} (x^{-1})^{-1}
     =
     x.
-  \end{BreakableAlign*}
+  \end{equation*}
 
   \SubProofOf{thm:group_properties/negative_power} Using \fullref{thm:group_properties/double_inverse},
-  \begin{BreakableAlign*}
+  \begin{equation*}
     x^{-n}
     =
     (x^n)^{-1}
@@ -141,335 +102,204 @@
     x^{-1} \cdots x^{-1}
     =
     (x^{-1})^n.
-  \end{BreakableAlign*}
-\end{proof}
-
-\begin{proposition}\label{thm:monoids_are_monoids_in_set}
-  A monoid in the sense of \fullref{def:magma/monoid} is a monoid in \( \Cat{Set} \) in the sense of \fullref{def:categorical_monoid}.
-\end{proposition}
-\begin{proof}
-  By \fullref{thm:set_is_monoidal}, \( \Cat{Set} \) is monoidal with the Cartesian product as a monoidal product. Let \( M \) be a monoid in the sense of \fullref{def:magma/monoid}. We define the morphism \( \mu: M \times M \to M \) to be the monoid operation and the morphism \( \eta: \{ \varnothing \} \to M \) to be the identity operation. Then the diagrams in \fullref{def:categorical_monoid} are trivially verified to commute.
-
-  The categorical definition of morphism between monoids in \( \Cat{Set} \) is then a restatement of the definition of homomorphism of a monoid: if \( (M, \mu, \eta) \) and \( (M', \mu', \eta') \) are monoids, then
-  \begin{equation*}
-    (f \circ \mu)(x, y)
-    =
-    f(xy)
-    =
-    f(x) f(y)
-    =
-    (\mu' \circ (f \otimes f))(x, y)
   \end{equation*}
-  and
-  \begin{equation*}
-    (f \circ \eta)(\{ \varnothing \})
-    =
-    f(e_M)
-    =
-    e_{M'}
-    =
-    \eta'(\{ \varnothing \})
-  \end{equation*}
-\end{proof}
-
-\begin{definition}\label{def:automorphism_group}
-  Given a locally small \hyperref[def:category]{category} \( \Cat{C} \), we call \( \Cat{C}(A) \) the \Def{automorphism group} over \( A \) and denote it by \( \Aut(A) \).
-\end{definition}
-
-\begin{definition}\label{def:symmetric_group}
-  We define the \Def{symmetric group} of order \( n \) as the group
-  \begin{equation*}
-    S_n \coloneqq \Aut(\{ 1, 2, \ldots, n \})
-  \end{equation*}
-  of all bijections from the set \( \{ 1, 2, \ldots, n \} \) to itself.
-
-  Members of \( S_n \) are called \Def{permutations}.
-
-  We say that the pair \( (p(i), p(j)) \) is an \Def{inversion} of the permutation \( p \) if \( i < j \) and \( p(i) > p(j) \).
-
-  A permutation is said to be \Def{even} or \Def{odd} depending on whether it has an even or odd number of inversions. We define
-  \begin{BreakableAlign*}
-     & \Sign: S_n \to \{ -1, 1 \},                   \\
-     & \Sign(p) \coloneqq \begin{cases}
-      1,  & p \text{ is even} \\
-      -1, & p \text{ is odd}
-    \end{cases}
-  \end{BreakableAlign*}
-
-  The subgroup of all even permutations is denoted by \( A_n \) and is called the \Def{alternating group} of order \( n \).
-\end{definition}
-
-\begin{definition}\label{def:cyclic_group}
-  We define the \Def{infinite cyclic group}
-  \begin{equation*}
-    C \coloneqq \Gen{a}
-  \end{equation*}
-  and, for positive integers \( n \), the \Def{finite cyclic group}
-  \begin{equation*}
-    C_n \coloneqq \Gen{a \mid a^n}.
-  \end{equation*}
-\end{definition}
-
-\begin{proposition}\label{thm:cyclic_group_isomorphic_to_integers_modulo_n}
-  Let \( C \) be a cyclic \hyperref[def:cyclic_group]{group}. If \( C \) is finite of order \( n \), it is isomorphic to the group \( \BZ_n \) of integers modulo \( n \) (see \fullref{def:group_of_integers_modulo}).
-\end{proposition}
-\begin{proof}
-  The homomorphism
-  \begin{BreakableAlign*}
-     & \varphi: \BZ_n \to C_n   \\
-     & \varphi(k) \coloneqq a^k
-  \end{BreakableAlign*}
-  and the analogous homomorphism for the infinite group, is an isomorphism.
 \end{proof}
 
 \begin{proposition}\label{thm:group_homomorphism_single_condition}
-  A function \( f: G \to H \) between the groups \( G \) and \( H \) is a homomorphism in the sense of \fullref{def:first_order_homomorphism} if and only if for any \( x, y \in G \) it satisfies
-  \begin{equation}\label{thm:group_homomorphism_single_condition/condition}
-    f(xy) = f(x) f(y).
-  \end{equation}
-
-  In other words, if a function satisfies \fullref{thm:group_homomorphism_single_condition/condition}, it preserves identities and inverses.
+  A function \( \varphi: \CG \to \CH \) between the groups \( \CG \) and \( \CH \) is a \hyperref[def:group/homomorphism]{homomorphism} if and only if it satisfies \eqref{eq:def:magma/homomorphism}.
 \end{proposition}
 \begin{proof}
-  \Sufficiency This is a special case of the more general definition.
-  \Necessity Let the function \( f \) satisfy \fullref{thm:group_homomorphism_single_condition/condition}. Then it preserves identities since
+  \Sufficiency \eqref{eq:def:magma/homomorphism} is required to hold by definition.
+
+  \Necessity Let the function \( \varphi \) satisfy \eqref{eq:def:magma/homomorphism}. Then it preserves identities (i.e. is a \hyperref[def:pointed_set/homomorphism]{pointed set homomorphism}) since
   \begin{equation*}
-    e_H f(e_G) = f(e_G) = f(e_G e_G) = f(e_G) f(e_G)
+    e_{\CH} \varphi(e_{\CG}) = \varphi(e_{\CG}) = \varphi(e_{\CG} e_{\CG}) = \varphi(e_{\CG}) \varphi(e_{\CG})
   \end{equation*}
   and by \fullref{thm:group_properties/cancellative}, the operation is cancellative.
 
-  Inverses are preserved because
+  Inverses are preserved (i.e. \eqref{eq:def:group/function_parity/odd} holds) because
   \begin{equation*}
-    f(x^{-1})
+    \varphi(x^{-1})
     =
-    f(x^{-1}) e_H
+    \varphi(x^{-1}) e_{\CH}
     =
-    f(x^{-1}) f(x) f(x)^{-1}
+    \varphi(x^{-1}) \varphi(x) \varphi(x)^{-1}
     =
-    f(x^{-1} x) f(x)^{-1}
+    \varphi(x^{-1} x) \varphi(x)^{-1}
     =
-    e_H f(x)^{-1}
+    e_{\CH} \varphi(x)^{-1}
     =
-    f(x)^{-1}.
+    \varphi(x)^{-1}.
   \end{equation*}
+
+  Therefore \( \varphi \) is indeed a group homomorphism.
 \end{proof}
 
-\begin{definition}\label{def:groupoid}
-  A \Def{groupoid} is a \hyperref[def:category]{category} in which all morphisms are \hyperref[def:morphism_invertibility]{isomorphisms}.
-\end{definition}
-
-\begin{definition}\label{remark:groupoids}
-  Let \( \Bold G \) be a locally small with a single object \( g \). Then the endomorphisms of \( g \) form a \hyperref[def:magma]{monoid} under composition and the subcategory of \( \Bold G \) in which all morphisms are isomorphisms forms a \hyperref[def:magma]{group}. Thus, if \( \Bold G \) is a locally small groupoid with a single object \( g \), then the endomorphisms of \( g \) are automorphisms and, thus, they form a group under composition.
-\end{definition}
-
 \begin{definition}\label{def:group_cosets}
-  Let \( H \subseteq G \) be a subgroup of \( G \) and let \( x \in G \). Consider the sets
-  \begin{BreakableAlign*}
-    xH \coloneqq \{ xh \colon h \in H \}
-     &  &
-    Hx \coloneqq \{ hx \colon h \in H \}
-  \end{BreakableAlign*}
-  called the \Def{left and right cosets of \( H \) with respect to \( x \)}.
+  Let \( \CH \subseteq \CG \) be a subgroup of \( \CG \) and let \( x \in \CG \). The sets
+  \begin{align*}
+    x \CH \coloneqq \{ xh \colon h \in \CH \}
+    &&
+    \CH x \coloneqq \{ hx \colon h \in \CH \}
+  \end{align*}
+  are called the left and right \Def{cosets} of \( x \) with respect to \( \CH \). The name is justified by \fullref{thm:coset_partition}.
 \end{definition}
 
 \begin{proposition}\label{thm:coset_partition}
-  The left (resp. right) cosets of a subgroup \( H \) of \( G \) \hyperref[def:set_partition]{partition} \( G \).
+  The left (resp. right) \hyperref[def:group_cosets]{cosets} of a subgroup of \( \CG \) \hyperref[def:set_partition]{partition} \( \CG \).
 \end{proposition}
 \begin{proof}
-  To each element \( x \in G \) there corresponds a coset \( x \in xH \) (since \( H \) contains the identity as a subgroup).
+  To each element \( x \in \CG \) there corresponds a coset \( x \in x\CH \) (since \( \CH \) contains the identity as a subgroup).
 
-  Two cosets \( xH \) and \( yH \) are either disjoint or equal. Indeed, if they are not disjoint, then there exists \( g \in xH \cap yH \) and thus \( g = xa = yb \) for some \( a, b \in H \). Thus \( x = x a a^{-1} = y b a^{-1} \) and since \( b a^{-1} \in H \), we have that \( x \in yH \). Furthermore, for any \( c \in H \), we have \( xc = y(b a^{-1} c) \in yH \), hence \( xH \subseteq yH \). After obtaining the converse inclusion, we conclude \( xH = yH \).
+  Two cosets \( x\CH \) and \( y\CH \) are either disjoint or equal. Indeed, if they are not disjoint, then there exists \( g \in x\CH \cap y\CH \) and thus \( g = xa = yb \) for some \( a, b \in \CH \). Thus \( x = x a a^{-1} = y b a^{-1} \) and since \( b a^{-1} \in \CH \), we have that \( x \in y\CH \). Furthermore, for any \( c \in \CH \), we have \( xc = y(b a^{-1} c) \in y\CH \), hence \( x\CH \subseteq y\CH \). After obtaining the converse inclusion, we conclude \( x\CH = y\CH \).
 \end{proof}
 
 \begin{definition}\label{def:normal_subgroup}
-  Let \( N \) be a subgroup of \( G \). We say that \( N \) is a normal subgroup if any of the following equivalent conditions hold:
+  Let \( \CN \) be a subgroup of \( \CG \). We say that \( \CN \) is a normal subgroup if any of the following equivalent conditions hold:
   \begin{DefEnum}
-    \ILabel{def:normal_subgroup/direct} For any \( x \in G \), we have the set equality \( x N x^{-1} = N \).
-    \ILabel{def:normal_subgroup/cosets} The partitions induced by the left and rights cosets of \( N \) coincide (\( xN = Nx \)).
-    \ILabel{def:normal_subgroup/kernel} \( N \) is the \hyperref[def:unital_magma_kernel]{kernel} of some group homomorphism (in particular, kernels are always normal subgroups).
+    \ILabel{def:normal_subgroup/direct} For any \( x \in \CG \), we have the set equality \( x \CN x^{-1} = \CN \).
+    \ILabel{def:normal_subgroup/cosets} The partitions induced by the left and rights cosets of \( \CN \) coincide.
+    \ILabel{def:normal_subgroup/kernel} \( \CN \) is the \hyperref[def:unital_magma_kernel]{kernel} of some group homomorphism.
   \end{DefEnum}
+
+  In particular, kernels are always normal subgroups.
 \end{definition}
 \begin{proof}
   This is the group-theoretic analog to \fullref{thm:equivalence_partition}.
 
-  \SubProofImplication{def:normal_subgroup/direct}{def:normal_subgroup/cosets} For any \( x \in G \)
+  \SubProofImplication{def:normal_subgroup/direct}{def:normal_subgroup/cosets} For any \( x \in \CG \)
   \begin{equation*}
-    Nx = (xNx^{-1})x = xN(x^{-1}x) = xN,
+    \CN x = (x \CN x^{-1})x = x \CN(x^{-1}x) = x \CN,
   \end{equation*}
   thus every left coset is a right coset and vice versa.
 
-  \SubProofImplication{def:normal_subgroup/cosets}{def:normal_subgroup/kernel} The proof of correctness in \fullref{def:quotient_group} only uses \fullref{def:normal_subgroup/cosets}. Therefore we can take the canonical projection \( \pi(x) \coloneqq xN \) as the homomorphism without causing circular references.
+  \SubProofImplication{def:normal_subgroup/cosets}{def:normal_subgroup/kernel} We can take the \hyperref[def:quotient_group]{canonical projection} \( \pi(x) \coloneqq x \CN \) as the homomorphism. The proof of correctness in \fullref{def:quotient_group} only uses \fullref{def:normal_subgroup/cosets} and therefore does not cause circular references.
 
-  \SubProofImplication{def:normal_subgroup/kernel}{def:normal_subgroup/direct} Let \( f: G \to K \) be a group homomorphism and fix any \( x \in G \). Denote \( N \coloneqq \ker(f) \). Then \( xN = Nx \) since
+  \SubProofImplication{def:normal_subgroup/kernel}{def:normal_subgroup/direct} Let \( \varphi: \CG \to \CH \) be a group homomorphism and fix any \( x \in \CG \). Denote \( \CN \coloneqq \ker(f) \). Then \( x \CN = \CN x \) since
   \begin{equation*}
-    f(xN)
+    \varphi(x \CN)
     =
-    f(x) f(N)
+    \varphi(x) \varphi(\CN)
     =
-    f(x) f(e_G)
+    \varphi(x) \varphi(e_{\CG})
     =
-    f(x)
+    \varphi(x)
     =
-    f(N) f(x)
+    \varphi(\CN) \varphi(x)
     =
-    f(Nx).
+    \varphi(\CN x)
+    =
+    e_{\CK}.
   \end{equation*}
 
   Thus
   \begin{equation*}
-    N = xx^{-1}N = xNx^{-1}.
+    \varphi^{-1}(e_{\CK}) = \CN = xx^{-1}\CN = x \CN x^{-1}.
   \end{equation*}
 \end{proof}
 
 \begin{definition}\label{def:quotient_group}
-  Let \( G \) be a group and \( N \) be a normal subgroup of \( G \). Define the \Def{quotient group}
+  Let \( \CG \) be a group and \( \CN \) be a normal subgroup of \( \CG \). Define the \Def{quotient group}
   \begin{equation*}
-    G / N \coloneqq \{ xN \colon x \in G \}
+    \CG / \CN \coloneqq \{ x \CN \colon x \in \CG \}
   \end{equation*}
   with the group operation
   \begin{equation*}
-    xN \odot yN \coloneqq xyN.
+    x \CN \odot y \CN \coloneqq xy \CN.
   \end{equation*}
 
   Define the canonical projection homomorphism
-  \begin{BreakableAlign*}
-     & \pi: G \to G / N     \\
-     & \pi(x) \coloneqq xN.
-  \end{BreakableAlign*}
+  \begin{align*}
+     &\pi: \CG \to \CG / \CN \\
+     &\pi(x) \coloneqq x \CN.
+  \end{align*}
 
-  The kernel of \( \pi \) is precisely \( N \).
+  The kernel of \( \pi \) is precisely \( \CN \).
 \end{definition}
 \begin{proof}
   This definition is used in the proof of equivalence in \fullref{def:normal_subgroup}. This is why it is important to only use \fullref{def:normal_subgroup/cosets} as the definition for a normal subgroup.
 
-  We first check that the group operations is well defined, that is, does not depend on the choice of coset representatives. Fix \( x, x' \in G \) and \( y, y' \in G \) so that
+  We first check that the group operations is well defined, that is, does not depend on the choice of coset representatives. Fix \( x_1, x_2 \in \CG \) and \( y_1, y_2 \in \CG \) so that
   \begin{equation*}
-    xN = x'N
+    x_1 \CN = y_2 \CN
   \end{equation*}
   and
   \begin{equation*}
-    yN = y'N.
+    x_2 \CN = y_2 \CN.
   \end{equation*}
 
   Since the left and right cosets coincide, we have
   \begin{equation*}
-    xyN = xNy = x'Ny = x'Ny' = x'y'N.
+    x_1 x_2 \CN = x_1 \CN x_2 = x_1 \CN y_2 = y_1 \CN y_2 = y_1 y_2 \CN.
   \end{equation*}
 
   Thus the operation is well defined.
 
-  It follows from the definition of the operation that the identity is \( eN = N \) and the inverse of \( xN \) is \( x^{-1} N \). Therefore \( G / N \) is indeed a group. The fact that \( \pi \) is a homomorphism is also part of the definition of \( \odot \).
+  It follows from the definition that the identity is \( e \CN = \CN \) and the inverse of \( x \CN \) is \( x^{-1} \CN \). Therefore \( \CG / \CN \) is indeed a group. The fact that \( \pi \) is a homomorphism is also part of the definition of \( \odot \).
 
-  Obviously \( \pi(N) = N \) so \( N \subseteq \ker \pi \). For the converse, assume\LEM that there exists \( x \in \ker \pi \setminus N \). Then there exists \( y \in N \) such that \( xy \in N \). But \( N \) is closed under multiplication and inverses, hence \( x = xyy^{-1} \in N \). This contradicts our assumption that \( x \not\in N \). The obtained contradiction proves that \( N = \ker \pi \).
+  It remains to prove that \( \CN = \ker(\pi) \). Obviously \( \pi(\CN) = \CN \) so \( \CN \subseteq \ker(\pi) \). To see that the converse holds, assume\LEM that there exists \( x \in \ker(\pi) \setminus \CN \), that is, \( \pi(x) = x\CN = \CN \) but \( x \not\in \CN \). Then there exists \( y \in \CN \) such that \( xy \in \CN \). But \( \CN \) is closed under multiplication and inverses, hence \( x = xyy^{-1} \in \CN \). This contradicts our assumption that \( x \not\in \CN \). Therefore \( \CN = \ker \pi \).
 \end{proof}
 
-\begin{theorem}\label{thm:homomorphism_theorem_for_groups}
-  Let \( \varphi: G \to H \) be a homomorphism of groups. We have the isomorphism
+\begin{theorem}[Homomorphism theorem for groups]\label{thm:homomorphism_theorem_for_groups}
+  For any \hyperref[def:group/homomorphism]{group homomorphism} \( \varphi: \CG \to \CH \), we have the isomorphism
   \begin{equation*}
-    G / \ker \varphi \cong \Img \varphi.
+    \CG / \ker \varphi \cong \Img \varphi.
   \end{equation*}
 \end{theorem}
 \begin{proof}
-  Denote \( N \coloneqq \ker \varphi \). Define the function
-  \begin{BreakableAlign*}
-     & \psi: G / N \to \Img \varphi   \\
-     & \psi(xN) \coloneqq \varphi(x).
-  \end{BreakableAlign*}
+  Denote \( \CN \coloneqq \ker \varphi \). Define the function
+  \begin{align*}
+    &\psi: \Img \varphi \to \Pow(\CG) \\
+    &\psi(y) \coloneqq \varphi^{-1}(y) \CN.
+  \end{align*}
 
-  This definition does not depend on the representative of \( xN \). Indeed, let \( x'N = xN \). Then there exists \( n \in N \) such that \( x = x' n \). Hence
+  We will show that \( \psi \) is the desired isomorphism.
+
+  Fix any \( y \in \Img \varphi \) and \( x_1, x_2 \in \varphi^{-1}(y) \). We will first show that \( x_1 \CN = x_2 \CN \). Note that
   \begin{equation*}
-    \psi(xN) = \varphi(x) = \varphi(x' n) = \varphi(x') \varphi(n) = \varphi(x') = \psi(x'N).
+    \varphi(x_1^{-1} x_2)
+    =
+    \varphi(x_1)^{-1} \varphi(x_2)
+    =
+    \varphi(x_2)^{-1} \varphi(x_2)
+    =
+    e_{\CH},
+  \end{equation*}
+  therefore \( x_1^{-1} x_2 \in \CN \). Thus
+  \begin{equation*}
+    x_2 \CN = x_1 x_1^{-1} x_2 \CN = x_1 \cdot \CN \cdot \CN = x_1 \CN.
   \end{equation*}
 
-  The function \( \psi \) is a homomorphism because
+  Hence \( \varphi^{-1}(y) \CN \) is a coset in \( \CG / \CN \) formed by any of the elements of \( \varphi^{-1}(y) \).
+
+  Furthermore, if \( x_1 \in x_2 \CN \), then there exists \( n \in \CN \) such that
   \begin{equation*}
-    \psi(xN yN) = \psi(xyN) = \varphi(xy) = \varphi(x) \varphi(y) = \psi(xN) \psi(yN).
+    x_1 = x_2 n.
   \end{equation*}
 
-  This also shows that \( \psi \) is bijective. Thus \( \psi \) is the desired isomorphism.
+  But \( \CN \) is closed under taking inverses, hence
+  \begin{equation*}
+    x_2 = x_1 n^{-1} \in x_1 \CN,
+  \end{equation*}
+  that is,
+  \begin{equation}
+    x_1 \CN = x_2 \CN.
+  \end{equation}
+
+  This shows that \( \psi \) is injective. It is obviously surjective because if \( x \CN \) is a coset, then \( \varphi(x) \in \Img \varphi \). Therefore \( \varphi \) is bijective.
+
+  It remains to show that \( \psi \) is a homomorphism. Indeed, if \( y_1, y_2 \in \Img \varphi \) and \( x_1 \in \varphi^{-1}(y_1), x_2 \in \varphi^{-1}(y_2) \), we have
+  \begin{equation*}
+    \psi(y_1) \psi(y_2)
+    =
+    \varphi^{-1}(y_1) \CN \varphi^{-1}(y_2) \CN
+    =
+    x_1 \CN x_2 \CN
+    =
+    (x_1 x_2) \CN
+    =
+    \varphi^{-1}(y_1 y_2) \CN
+    =
+    \psi(y_1 y_2).
+  \end{equation*}
 \end{proof}
-
-\begin{definition}\label{def:group_direct_product}
-  Let \( \{ X_k \}_{k \in \CK} \) be a nonempty family of groups.
-
-  We define their \Def{direct product} as the group \( \prod_{k \in \CK} X_k \), the group operation defined componentwise as
-  \begin{BreakableAlign*}
-    \{ x_k \}_{k \in \CK} \cdot \{ y_k \}_{k \in \CK}
-    \coloneqq
-    \{ x_k \cdot y_k \}_{k \in \CK}.
-  \end{BreakableAlign*}
-
-  We define their \Def{direct sum} as the subgroup of \( \prod_{k \in \CK} X_k \) (see \fullref{def:group_direct_product}) where only finitely many components of any group element are different from zero.
-\end{definition}
-
-\begin{remark}\label{def:group_direct_sum_external_internal}\MarginCite[126]{Knapp2016BAlg}
-  If we are given a family of groups as in \fullref{def:group_direct_product}, their sum \( \oplus_{k \in \CK} X_k \) is sometimes called an \Def{external direct sum}.
-
-  If instead we are given a group \( X \) and a family of subgroups \( \{ X_k \}_{k \in \CK} \), we say that \( X \) is their \Def{internal direct sum} if the homomorphism
-  \begin{BreakableAlign*}
-     & \varphi: \prod_{k \in \CK} X_k \to X                           \\
-     & \varphi(\{ x_k \}_{k \in \CK}) \coloneqq \cdot_{k \in \CK} x_k
-  \end{BreakableAlign*}
-  is an isomorphisms.
-
-  The sum is well-defined since by definition there are only finitely many non-identity summands.
-
-  This terminology also applies to finite direct \hyperref[def:group_direct_product]{products} of groups, as well as similar constructions for other algebraic structures.
-\end{remark}
-
-\begin{proposition}\label{thm:group_categorical_limits}
-  We are interested in \hyperref[def:categorical_limit]{categorical limits} and \hyperref[def:categorical_colimit]{colimits} in \( \Cat{Grp} \). Fix an indexed family  \( \{ X_k \}_{k \in \CK} \) of groups.
-  \begin{DefEnum}
-    \ILabel{thm:group_categorical_limits/product} Their \hyperref[def:categorical_product]{categorical product} is their \hyperref[def:group_direct_product]{direct product} \( \prod_{k \in \CK} X_k \), the projection morphisms being inherited from \fullref{thm:set_categorical_limits/product}.
-
-    \ILabel{thm:group_categorical_limits/coproduct} Their \hyperref[def:categorical_coproduct]{categorical coproduct} is their \hyperref[def:group_free_product]{free product} \( \Ast_{k \in \CK} X_k \), the injection morphisms being
-    \begin{BreakableAlign*}
-       & \iota_\beta: X_\beta \to \Ast_{k \in \CK} X_k \\
-       & \iota_\beta(x_\beta) \coloneqq x_\beta.
-    \end{BreakableAlign*}
-  \end{DefEnum}
-\end{proposition}
-
-\begin{definition}\label{def:monoid_completion}
-  A completion of a monoid is a \hyperref[def:preordered_set/maximal_minimal_element]{minimal} (under homomorphic embedding) group of that monoid.
-\end{definition}
-
-\begin{definition}\label{def:opposite_group}
-  Let \( (G, \cdot) \) be a group. We define its \Def{opposite group} as the group \( (G, \odot) \) with multiplication reversed:
-  \begin{equation*}
-    x \odot y \coloneqq y \cdot x.
-  \end{equation*}
-
-  We denote the opposite group of \( G \) by \( G^{-1} \).
-\end{definition}
-
-\begin{definition}\label{def:generated_subgroup}
-  Let \( S \subseteq G \) be any nonempty subset of a group \( G \). We define the subgroup generated by \( S \) equivalently as either
-  \begin{DefEnum}
-    \ILabel{def:generated_subgroup/minimal} the smallest subgroup of \( G \) that contains \( S \).
-    \ILabel{def:generated_subgroup/presentation} the subgroup of \( G \) that is isomorphic to the free group \( F(S) \).
-    \ILabel{def:generated_subgroup/direct} the subgroup
-    \begin{equation*}
-      \Gen S \coloneqq \left\{ \prod S' \mid S' \text{ is a finite subset of } S \cup S^{-1} \right\},
-    \end{equation*}
-    where \( S^{-1} \coloneqq \{ s^{-1} \mid s \in S \} \).
-  \end{DefEnum}
-
-  If \( S \) is finite, then \( \Gen S \) is called \Def{finitely generated}.
-\end{definition}
-
-\begin{definition}\label{def:periodic_function}
-  A function \( f: M \to N \) between magmas is called \Def{periodic} with \Def{period} \( r \in R \) if, for all \( x \in R \), \( f(x) = f(x + r) \).
-
-  We are usually interested in periodic functions over rings, where they are defined as periodic functions over the additive group.
-
-  The \Def{base period} of a function is the \hyperref[def:preordered_set/largest_smallest_element]{least} of all periods, if a minimum it exists. When referring to \enquote{the period}, the base period is meant.
-\end{definition}
-
-\begin{definition}\label{def:function_pairity}
-  A function \( f: G \to H \) between groups is called \Def{even} if \( f(x) = f(-x) \) and \Def{odd} if \( f(x) = -f(x) \).
-
-  We are usually interested in function parity over rings, where it is defined as function parity over the additive group.
-
-  See \fullref{thm:power_series_parity}.
-\end{definition}

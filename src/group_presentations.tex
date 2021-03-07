@@ -1,71 +1,72 @@
 \subsection{Group presentations}\label{subsec:group_presentations}
 
-\begin{definition}\label{def:free_monoid}\MarginCite[306]{Knapp2016BAlg}
-  Let \( S \) be an arbitrary set. We associate with \( S \) its \Def{free monoid} \( F(S) \coloneqq (S^{*}, \cdot) \), where \( S^{*} \) is the Kleene star and \( \cdot \) is \hyperref[def:language]{concatenation}. It is a monoid due to \fullref{thm:set_of_all_words_is_monoid}.
+\begin{definition}\label{def:free_monoid}
+  Let \( \CS \) be an arbitrary set. We associate with \( \CS \) its \Def{free monoid} \( F(\CS) \coloneqq (\CS^{\ast}, \cdot) \), where \( \CS^{\ast} \) is the \hyperref[def:language/kleene_star]{Kleene star} and \( \cdot \) is \hyperref[def:language/concatenation]{concatenation}. It is a monoid due to \fullref{thm:kleene_star_is_monoid}.
 \end{definition}
 
 \begin{proposition}\label{thm:free_monoid_is_free_functor}
   The functor \( F: \Cat{Set} \to \Cat{Mon} \), defined pointwise in \fullref{def:free_monoid}, is \hyperref[def:free_functor]{free}.
 \end{proposition}
 \begin{proof}
-  Let \( U: \Cat{Mon} \to \Cat{Set} \) be the corresponding forgetful functor and let \( M \in \Cat{Mon} \), \( S \in \Cat{Set} \). We will first show that
+  Let \( U: \Cat{Mon} \to \Cat{Set} \) be the corresponding forgetful functor and let \( \CM \in \Cat{Mon} \), \( \CS \in \Cat{Set} \). We will first show that
   \begin{equation*}
-    \Cat{Mon}(M, F(S)) = \Cat{Set}(U(M), S),
+    \Cat{Mon}(F(\CS), \CM) = \Cat{Set}(\CS, U(\CM)),
   \end{equation*}
   where equality means that all the underlying functions are equal.
 
   Every monoid homomorphism is a function so obviously
   \begin{equation*}
-    \Cat{Mon}(M, F(S)) \subseteq \Cat{Set}(U(M), S).
+    \Cat{Mon}(F(\CS), \CM) \subseteq \Cat{Set}(\CS, U(\CM)).
   \end{equation*}
 
-  Now consider a function \( f: U(M) \to S \). Denote by \( \iota: S \to F(S) \) the canonical embedding which sends an element of \( S \) to its corresponding singleton word in \( F(S) \). Define the function
+  Now consider a function \( f: \CS \to U(\CM) \). Define the function
   \begin{BreakableAlign*}
-     & \varphi: M \to F(S)               \\
-     & \varphi(x) \coloneqq \iota(f(x)).
+     &\varphi: F(\CS) \to \CM \\
+     &\varphi\left( \{ x_k \}_{k \in \CK} \right) \coloneqq \prod_{k \in \CK} x_k.
   \end{BreakableAlign*}
 
-  The image \( \varphi(M) \) contains the singleton words of all elements of the image \( f(M) \). In order for \( \varphi \) to be a monoid homomorphism, we only need to define
-  \begin{itemize}
-    \item multiplication in \( \varphi(M) \) by concatenation, that is,
-          \begin{equation*}
-            \varphi(x) \varphi(y) \coloneqq \varphi(xy).
-          \end{equation*}
-
-    \item identity in \( \varphi(M) \) as the empty word.
-  \end{itemize}
-
-  Thus \( \varphi \) is a homomorphism from \( M \) to \( F(S) \). Hence
+  Obviously \( \varphi \) is a homomorphism from \( F(\CS) \) to \( \CM \). Hence
   \begin{equation*}
-    \Cat{Set}(U(M), S) \subseteq \Cat{Mon}(M, F(S)).
+    \Cat{Set}(\CS, U(\CM)) \subseteq \Cat{Mon}(F(\CS), \CM).
   \end{equation*}
 \end{proof}
 
 \begin{definition}\label{def:free_group}\MarginCite[306]{Knapp2016BAlg}
-  Let \( A \) be an arbitrary set. We associate with \( A \) a \Def{free group} \( F(A) \).
+  Let \( \CS \) be an arbitrary set. We will now construct the \Def{free group} \( F(\CS) \) of \( \CS \). We shall extend \fullref{def:free_monoid} by emulating \Def{inverse elements}.
 
-  First, regard \( A \) as an \hyperref[def:language]{alphabet} and define the set \( A^{-1} \) of words of the type \( a^{-1} \), where \( a \in A \) and \( \mbox{}^{-1} \) is a symbol not in \( A \). Consider the language \( W \coloneqq (A \cup A^{-1})^{*} \). If \( w = a_1 \ldots a_n \) is a word, its inverse word is
-  \begin{equation*}
-    w^{-1} \coloneqq a_n^{-1} \ldots a_1^{-1}.
-  \end{equation*}
-
-  By \fullref{thm:set_of_all_words_is_monoid}, \( W \) is a monoid. It is not a group, however, since \( w w^{-1} \neq \varepsilon \). This is why we define a different group operation on a subset of \( W \).
+  First, regard \( \CS \) as an \hyperref[def:language/alphabet]{alphabet}. Let \( {\star} \) be a \hyperref[def:language/symbol]{symbol} not in \( \CS \). Consider the language \( W \coloneqq (\CS \cup \{ {\star} \})^{\ast} \). Our goal is, for each \( a \in \CS \), to make the word \( a{\star} \) behave like the inverse of \( a \) in a group.
 
   We define the \Def{reduction function}
-  \begin{BreakableAlign*}
-     & r: W \to W                               \\
-     & r(w) \coloneqq \begin{cases}
-      r(ps), & w = pvs, \text{ where } v = aa^{-1} \text{ or } v = a^{-1}a \text{ for some } a \in A, \\
-      w,     & \text{otherwise}.
+  \begin{align*}
+    &r: W \to W \\
+    &r(w) \coloneqq \begin{cases}
+      r(s),           &w = {\star}s, \\
+      r(ps),          &w = p{\star}{\star}s, \\
+      r(ps),          &w = p a{\star}a s \text{ for some } a \in \CS \Tand s \neq {\star}t, \\
+      r(ps),          &w = p aa{\star} s \text{ for some } a \in \CS, \\
+      w,              &\text{otherwise}.
     \end{cases}
-  \end{BreakableAlign*}
+  \end{align*}
 
-  The set of \Def{reduced words} is the image \( F(A) \coloneqq \Img r(W) \). It forms a group under the operation
+  Correctness of \( r \) is empirically verified in \cite{code:free_group_reduction}.
+
+  The set of \Def{reduced words} is the image \( F(\CS) \coloneqq \Img r(W) \). It forms a group under the operation
   \begin{equation*}
-    u \cdot_{F(A)} w \coloneqq r(u \cdot_{W} w).
+    u \odot w \coloneqq r(uw).
   \end{equation*}
 
-  The group \( (F(A), \cdot_{F(A)}) \) is called the \Def{free group} generated by \( A \).
+  The inverse of a reduced word \( w = a_1 \ldots a_n \) is \( w^{-1} \coloneqq b_1 \ldots b_n \), where
+   \begin{equation*}
+     b_{n-k+1} \coloneqq \begin{cases}
+       \varnothing, &a_k = {\star} \\
+       a_k{\star},   &a_k \neq {\star} \Tand k = n \\
+       a_k{\star},   &a_k \neq {\star} \Tand a_{k+1} \neq {\star} \\
+       a_k,         &a_k \neq {\star} \Tand k \neq n \Tand a_{k+1} = {\star} \\
+     \end{cases}.
+   \end{equation*}
+   for \( k = 1, \ldots, n \).
+
+  The group \( (F(\CS), \odot) \) is called the \Def{free group} generated by \( \CS \).
 \end{definition}
 
 \begin{proposition}\label{thm:free_group_is_free_functor}
@@ -76,61 +77,59 @@
 \end{proof}
 
 \begin{definition}\label{def:group_free_product}\MarginCite[323]{Knapp2016BAlg}
-  Let \( \{ X_k \}_{k \in \CK} \) be a nonempty family of groups.
+  Let \( \{ \CX_k \}_{k \in \CK} \) be a nonempty family of groups.
 
-  Similarly to \fullref{def:free_group}, consider the \hyperref[def:language]{language}
+  Consider the \hyperref[def:language/kleene_star]{Kleene star}
   \begin{equation*}
-    W \coloneqq \left( \bigcup_{k \in \CK} X_k \right)^{*}.
+    W \coloneqq \left( \bigcup_{k \in \CK} X_k \right)^{\ast}.
   \end{equation*}
 
   We define the \Def{reduction function}
-  \begin{BreakableAlign*}
-     & r: W \to W                                \\
-     & r(w) \coloneqq \begin{cases}
+  \begin{align*}
+    &r: W \to W \\
+    &r(w) \coloneqq \begin{cases}
       r(ps),  & w = p e_k s \text{ for some } k \in \CK,                                                                              \\
-      r(pts), & w = puvs, \text{ where } u \neq e_k \text{ and } v \neq e_k \text{ and } t = u \cdot_i v \text{ for some } k \in \CK, \\
+      r(pts), & w = puvs, \text{ where } u \neq e_k \text{ and } v \neq e_k \text{ and } t = u \cdot_k v \text{ for some } k \in \CK, \\
       w,      & \text{otherwise}.
     \end{cases}
-  \end{BreakableAlign*}
+  \end{align*}
 
-  The set of \Def{reduced words} is the image \( \Ast_{k \in \CK} X_k \coloneqq \Img r(W) \). It forms a group under the operation
+  The set of \Def{reduced words} is the image \( \star_{k \in \CK} \CX_k \coloneqq \Img r(W) \). It forms a group under the operation
   \begin{equation*}
-    u \cdot_{\Ast} w \coloneqq r(u \cdot_{W} w).
+    u \odot w \coloneqq r(uw).
   \end{equation*}
 
-  The group \( (\Ast_{k \in \CK} X_k, \cdot_{\Ast}) \) is called the \Def{free product} of the family \( \{ X_k \}_{k \in \CK} \).
+  The group \( (\star_{k \in \CK} X_k, \odot) \) is called the \Def{free product} of the family \( \{ \CX_k \}_{k \in \CK} \).
 \end{definition}
 
 \begin{definition}\label{def:free_abelian_group}
-  As a special case of \fullref{def:free_left_module}, since abelian groups are \( \BZ \)-modules by \fullref{thm:abelian_group_iff_z_module}, we define \Def{free abelian groups} to be free \( \BZ \)-modules.
-
-  This definition is different from free \hyperref[def:free_group]{groups}.
+  A \Def{free abelian group} is a \hyperref[def:free_left_module]{free} \hyperref[thm:abelian_group_iff_z_module]{\( \BZ \)-module}. This definition of a free abelian group is different from the definition of a \hyperref[def:free_group]{free group}.
 \end{definition}
 
 \begin{definition}\label{def:group_presentation}\MarginCite[314]{Knapp2016BAlg}
-  Let \( S \) be a set, \( F(S) \) be the \hyperref[def:free_group]{free group} and \( R \subseteq F(S) \) be a subset. Denote by \( N(R) \) the smallest normal subgroup of \( F(S) \) that includes \( R \) as a subset.
+  Let \( \CS \) be a set, \( F(\CS) \) be the \hyperref[def:free_group]{free group} and \( R \subseteq F(\CS) \) be a subset. Denote by \( \CN(R) \) the smallest normal subgroup of \( F(\CS) \) that includes \( R \) as a subset.
 
   We define the group
   \begin{equation}\label{def:group_presentation/presentation}
-    G = \Gen{s \in S : r \in R} \coloneqq F(S) / N(R)
+    \CG = \Gen{s \in \CS : r \in R} \coloneqq F(\CS) / \CN(R)
   \end{equation}
-  called the group with \Def{generators} \( S \) and \Def{relations} \( R \). The expression \fullref{def:group_presentation/presentation} is called a \Def{presentation} of \( G \).
+  called the group with \Def{generators} \( \CS \) and \Def{relations} \( R \). The expression \fullref{def:group_presentation/presentation} is called a \Def{presentation} of \( \CG \).
 
-  If there exists a presentation for \( G \) such that \( S \) is finite, it is called a \Def{finitely generated} group. If there exists a presentation such that both \( G \) and \( R \) are finite, it is called \Def{finitely presented}.
+  If there exists a presentation for \( \CG \) such that \( \CS \) is finite, it is called a \Def{finitely generated} group. If there exists a presentation such that both \( \CS \) and \( R \) are finite, it is called \Def{finitely presented}.
 \end{definition}
 
 \begin{theorem}\label{thm:every_group_is_representable}\MarginCite[prop. 7.7]{Knapp2016BAlg}
-  Every group \( G \) has at least one \hyperref[def:group_presentation]{presentation}.
+  Every group \( \CG \) has at least one \hyperref[def:group_presentation]{presentation}.
 \end{theorem}
 \begin{proof}
-  Let \( G \) be an arbitrary group and let \( S \coloneqq U(G) \) be the underlying set. Let \( F(S) \) be the corresponding free group with \( \iota: S \to F(S) \) sending elements of \( S \) to singleton words in \( F(S) \). By \fullref{thm:free_group_is_free_functor}, there exists a unique homomorphism \( \varphi: F(S) \to G \) such that
+  Let \( \CG \) be an arbitrary group and let \( \CS \coloneqq U(\CG) \) be the underlying set. Let \( F(\CS) \) be the corresponding free group with \( \iota: \CS \to F(\CS) \) sending elements of \( \CS \) to singleton words in \( F(\CS) \). By \fullref{thm:free_group_is_free_functor}, there exists a unique homomorphism \( \varphi: F(\CS) \to \CG \) such that
   \begin{equation*}
     \begin{mplibcode}
       beginfig(1);
       input metapost/graphs;
 
-      v1 := thelabel("$S$", origin);
-      v2 := thelabel("$U(F(S))$", (-1, -1) scaled u);
+      v1 := thelabel("$\CS$", origin);
+      v2 := thelabel("$U(F(\CS))$", (-1, -1) scaled u);
       v3 := thelabel("$U(G)$", (1, -1) scaled u);
 
       a1 := straight_arc(v1, v2);
@@ -149,8 +148,34 @@
       endfig;
     \end{mplibcode}
   \end{equation*}
-  that is, \( U(\varphi) \circ \iota = \Id \). Thus \( G = S \subseteq \ker \varphi \). Define \( R \coloneqq \ker \varphi \). By \fullref{def:normal_subgroup}, \( R \) is a normal subgroup of \( F(S) \), thus
+  that is, \( U(\varphi) \circ \iota = \Id \). Thus \( G = \CS \subseteq \ker \varphi \). Define \( R \coloneqq \ker \varphi \). By \fullref{def:normal_subgroup}, \( R \) is a normal subgroup of \( F(\CS) \), thus
   \begin{equation*}
-    G = \varphi(F(S)) \cong F(S) / \ker \varphi = \Gen{ S \colon R }.
+    G = \varphi(F(\CS)) \cong F(\CS) / \ker \varphi = \Gen{ \CS \colon R }.
   \end{equation*}
 \end{proof}
+
+\begin{definition}\label{def:cyclic_group}
+  For a singleton alphabet \( \{ a \} \), we define the \Def{infinite cyclic group}
+  \begin{equation*}
+    C \coloneqq \Gen{a}
+  \end{equation*}
+  and, for positive integers \( n \), the \Def{finite cyclic group}
+  \begin{equation*}
+    C_n \coloneqq \Gen{a \mid a^n}.
+  \end{equation*}
+\end{definition}
+
+\begin{definition}\label{def:generated_subgroup}
+  Let \( \CS \subseteq \CG \) be any nonempty subset of a group \( \CG \). We define the subgroup \( \Gen{\CS} \) generated by \( \CS \) using any of the equivalent definitions:
+  \begin{DefEnum}
+    \ILabel{def:generated_subgroup/minimal} \( \Gen{\CS} \) is the smallest subgroup of \( \CG \) that contains \( \CS \).
+    \ILabel{def:generated_subgroup/presentation} \( \Gen{\CS} \) is the subgroup of \( \CG \) that is isomorphic to the free group \( F(\CS) \).
+    \ILabel{def:generated_subgroup/direct} \( \Gen{\CS} \) is the subgroup
+    \begin{equation*}
+      \Gen{\CS} \coloneqq \Bigg\{ \prod \CS' \mid \CS' \text{ is a finite subset of } \CS \cup \CS^{-1} \Bigg\},
+    \end{equation*}
+    where \( \CS^{-1} \coloneqq \{ s^{-1} \mid s \in \CS \} \).
+  \end{DefEnum}
+
+  If \( \CS \) is finite, then \( \Gen \CS \) is called \Def{finitely generated}.
+\end{definition}
