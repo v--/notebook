@@ -61,7 +61,7 @@
 \end{proof}
 
 \begin{proposition}\label{thm:binary_lattice_operations_properties}
-  If \( (\CX, \vee, \wedge) \) is a set with a binary join and a \hyperref[def:binary_lattice_operations]{meet}, the following properties hold:
+  If \( (\CX, \vee, \wedge) \) is a set with a \hyperref[def:binary_lattice_operations/join]{binary join} and a \hyperref[def:binary_lattice_operations/meet]{binary meet}, the following properties hold:
   \begin{DefEnum}
     \ILabel{thm:binary_lattice_operations_properties/idempotence} Both operations are \hyperref[def:algebraic_theory/idempotent_element]{idempotent}, i.e. \( x \vee x = x = x \wedge x \).
   \end{DefEnum}
@@ -76,13 +76,13 @@
 
 \begin{definition}\label{def:lattice_operations}
   Let \( (\CX, \leq) \) be a \hyperref[def:poset]{poset}. We define \Def{joins} \( \vee \) and \Def{meets} \( \wedge \) as the \hyperref[def:function/partial]{partial} functions
-  \begin{BreakableAlign*}
-     & \vee: \Pow(\CX) \to \CX
-     &                          & \wedge: \Pow(\CX) \to \CX
+  \begin{align*}
+    &{}\vee{}: \Pow(\CX) \to \CX
+    &&{}\wedge{}: \Pow(\CX) \to \CX
     \\
-     & \vee(A) \coloneqq \sup A
-     &                          & \wedge(A) \coloneqq \inf A.
-  \end{BreakableAlign*}
+    & \vee(A) \coloneqq \sup A
+    && \wedge(A) \coloneqq \inf A.
+  \end{align*}
 
   For finite sets, we usually use the infix notation \( x_1 \vee \ldots \vee x_n \) instead of \( \vee \{ x_1, \ldots, x_n \} \).
 \end{definition}
@@ -150,8 +150,52 @@
 
   If the join and meet are defined axiomatically, all finite joins and meets necessarily exist.
 
-  If the last two properties hold for all joins and meets, not necessarily finite, we say that the lattice is a \Def{full lattice}.
+  If the last two properties hold for all joins and meets, not necessarily finite, we say that the lattice is a \Def{complete lattice}.
 \end{definition}
+
+\begin{proposition}[Knaster-Tarski]\label{thm:knaster_tarski}
+  The \hyperref[def:fixed_point]{fixed points} of a \hyperref[def:monotone_map]{monotone} \hyperref[def:endofunction]{endofunction} in a \hyperref[def:lattice]{complete lattice} form a complete sublattice. In particular, the function has at least one fixed point.
+\end{proposition}
+\begin{proof}
+  Let \( \CX \) be a complete lattice and let \( \varphi: \CX \to \CX \) be monotone. Define
+  \begin{equation*}
+    L \coloneqq \{ x \in \CX \colon f(x) \leq x \}.
+  \end{equation*}
+
+  We know that \( L \) is nonempty because \( \top \in L \).
+
+  Since the lattice is complete, we can take \( l \coloneqq \inf L \). Note that \( f(l) \) is a lower bound of \( L \) because, for any \( y \in L \),
+  \begin{equation*}
+    \varphi(l) \leq \varphi(y) \leq y.
+  \end{equation*}
+
+  But \( l \) is the largest lower bound of \( L \), hence
+  \begin{equation}\label{eq:thm:knaster_tarski/f_lower}
+    f(l) \leq l.
+  \end{equation}
+
+  Therefore \( f(f(l)) \leq f(l) \) and \( f(l) \in L \). Hence \( l \) is a lower bound for \( \{ f(l) \} \) and
+  \begin{equation}\label{eq:thm:knaster_tarski/f_upper}
+    l \leq f(l).
+  \end{equation}
+
+  From \eqref{eq:thm:knaster_tarski/f_lower} and \eqref{eq:thm:knaster_tarski/f_upper} it follows that \( l = f(l) \), that is, \( l \) is a fixed point of \( f \).
+
+  Denote by \( F \) the set of all fixed points of \( \CX \). We just showed that \( F \) is nonempty. Let \( G \subseteq F \). We will show that \( G \) has an infimum and supremum in \( F \).
+
+  Denote
+  \begin{equation*}
+    l_G \coloneqq \inf G.
+  \end{equation*}
+
+  For any \( g \in G \) we have \( l_G \leq g \). By monotonicity of \( f \),
+  \begin{equation*}
+    f(l_G) \leq f(g) = g,
+  \end{equation*}
+  therefore \( f(l_G) \leq l_G \) because \( l_G \) is the greatest lower bound of \( G \). But, by monotonicity of \( f \), we have \( l_G \leq f(l_G) \). Therefore \( f(l_G) = l_G \) and \( l_G \in F \).
+
+  We can analogously show that \( \sup G \in F \). We conclude that \( F \) is itself a complete lattice.
+\end{proof}
 
 \begin{proposition}\label{thm:lattice_homomorphism}
   A \hyperref[def:first_order_homomorphism]{homomorphism} of the lattices
@@ -181,11 +225,11 @@
 
 \begin{definition}\label{def:distributive_lattice}\MarginCite{nLab:distributive_lattice}
   A lattice \( (\CX, \vee, \wedge, \top, \bot) \) is called a \Def{distributive lattice} if any of the following two equivalent infinitary \hyperref[def:algebraic_theory/distributivity]{distributive} axioms hold for any \hyperref[def:indexed_family]{family} \( \{ x_k \}_{k \in \CK} \subseteq \CX \) and any \( y \in \CX \):
-  \begin{BreakableAlign*}
+  \begin{align}\label{eq:def:distributive_lattice/distributivity}
     y \wedge \left( \bigvee_{k \in \CK} x_k \right) = \bigwedge_{k \in \CK} (y \vee x_k)
      &  &
     y \vee \left( \bigwedge_{k \in \CK} x_k \right) = \bigvee_{k \in \CK} (y \wedge x_k).
-  \end{BreakableAlign*}
+  \end{align}
 \end{definition}
 
 \begin{definition}\label{def:boolean_algebra}\MarginCite{nLab:boolean_algebra}

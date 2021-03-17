@@ -7,11 +7,18 @@ function footnote_translations(translations)
 
   for token in string.gmatch(translations, '([^,]+)%s*') do
     key, value = string.match(token, '(%w+)=(.*)')
+    translated_value = value
+
+    if key == 'bg' then
+      translated_value = '\\textbulgarian{' .. value .. '}'
+    elseif key == 'ru' then
+      translated_value = '\\textrussian{' .. value .. '}'
+    end
 
     if footnote == '' then
-      footnote = key .. ': ' .. value
+      footnote = key .. ': ' .. translated_value
     else
-      footnote = footnote .. '; ' .. key .. ': ' .. value
+      footnote = footnote .. '; ' .. key .. ': ' .. translated_value
     end
   end
 
