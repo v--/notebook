@@ -291,3 +291,107 @@
 \begin{proof}
   We simply use \fullref{thm:lagrange_interpolation} on all points of the field.
 \end{proof}
+
+\begin{algorithm}\label{thm:finite_field_polynomial_reduction}
+  Let \( \BF_p \) be the \hyperref[def:galois_field]{Galois field} for some prime number \( p \). Consider the nonzero polynomial
+  \begin{equation*}
+    f(X_1, \ldots, X_n) \coloneqq \sum_{k_1=0}^{m_1} \cdots \sum_{k_n=0}^{m_n} a_{k_1,\ldots,k_n} X_1^{k_1} \cdots X_n^{k_n}.
+  \end{equation*}
+
+  We will build a polynomial \( \hat f(X_1, \ldots, X_n) \) of degree at most \( n - 1 \) that corresponds to the same function. In terms of the \hyperref[thm:polynomial_ring_universal_property]{evaluation homomorphism}
+  \begin{equation*}
+    \Phi: \BF_p[X_1, \ldots, X_n] \to \Fun(\BF_p^n, \BF_p),
+  \end{equation*}
+  this means that
+  \begin{equation*}
+    \Phi(f) = \Phi(\hat f).
+  \end{equation*}
+
+  This can be achieved by grouping some of the coefficients. The univariate case is more understandable so we will instead initially consider the polynomial
+  \begin{equation*}
+    g(X) \coloneqq \sum_{k=0}^m a_k X^k.
+  \end{equation*}
+
+  We will now use (and later prove) that the following two univariate polynomials evaluate to the same function:
+  \begin{equation}\label{eq:thm:finite_field_polynomial_reduction/reduction}
+    \Phi(X^s) = \Phi(X^{\rho(s)}),
+  \end{equation}
+  where
+  \begin{align*}
+    &\rho: \{ 1, 2, 3, \ldots \} \to \{ 1, 2, \ldots, p - 1 \} \\
+    &\rho(s) \coloneqq \begin{cases}
+      p - 1,          &(p - 1) \mid s \\
+      \Rem(s, p - 1), &\Totherwise.
+    \end{cases}
+  \end{align*}
+
+  Obviously \( \rho(s) = s \) for \( s < p \). It follows from the linearity of \( \Phi \) that
+  \begin{equation*}
+    \hat g(X)
+    \coloneqq
+    \sum_{k=0}^m a_k X^{r(k)}
+    =
+    \sum_{j=0}^{p-1} \left( \sum_{k \in r^{-1}(j)} a_k \right) X^j
+  \end{equation*}
+  is the desired polynomial.
+
+  In the multivariate case, the reduced polynomial is
+  \begin{equation*}
+    \hat f(X_1, \ldots, X_n) \coloneqq \sum_{j_1=0}^{p-1} \cdots \sum_{j_n=0}^{p-1} \left( \sum_{k_1 \in r^{-1}(j_1)} \cdots \sum_{k_n \in r^{-1}(j_n)} a_{k_1,\ldots,k_n} \right) X_1^{k_1} \cdots X_n^{k_n}.
+  \end{equation*}
+
+  Correctness follows, again, from the linearity of \( \Phi \).
+\end{algorithm}
+\begin{proof}[Proof of \eqref{eq:thm:finite_field_polynomial_reduction/reduction}]
+  By \fullref{thm:fermats_little_theorem},
+  \begin{equation}\label{eq:thm:finite_field_polynomial_reduction/fermat}
+    \Phi(X^p) = \Phi(X).
+  \end{equation}
+
+  We now use induction on \( q \coloneqq \Quot(s, p) \).
+  \begin{itemize}
+    \item If \( q = 0 \), then \( s < p \) and no reduction is necessary.
+    \item If \( q > 0 \), let \( s = (p - 1) q + r \). We have two cases
+    \begin{itemize}
+      \item If \( (p - 1) \mid s \), i.e. if \( r = 0 \), then
+      \begin{BreakableAlign*}
+        \Phi(X^s)
+        &=
+        \Phi(X^{(p-1)q})
+        = \\ &=
+        \Phi(X^{(p-1)(q-1) + (p-1)})
+        = \\ &=
+        \Phi(X^{(p-1)(q-1)}) \Phi(X^{p-1})
+        \overset {\TIndHyp} = \\ &=
+        \Phi(X^{p-1}) \Phi(X^{p-1})
+        = \\ &=
+        \Phi(X^{2(p-1)})
+        = \\ &=
+        \Phi(X^{p+(p-2)})
+        = \\ &=
+        \Phi(X^p) \Phi(X^{p-2})
+        \overset {\eqref{eq:thm:finite_field_polynomial_reduction/fermat}} = \\ &=
+        \Phi(X^{p-1}).
+      \end{BreakableAlign*}
+
+      \item If \( r > 0 \), we have
+      \begin{BreakableAlign*}
+        \Phi(X^s)
+        &=
+        \Phi(X^{(p-1)q+r})
+        = \\ &=
+        \Phi(X^{[(p-1)(q-1) + r] + (p-1)})
+        = \\ &=
+        \Phi(X^{(p-1)(q-1)+r}) \Phi(X^{p-1})
+        \overset {\TIndHyp} = \\ &=
+        \Phi(X^r) \Phi(X^{p-1})
+        = \\ &=
+        \Phi(X^{r-1}) \Phi(X^p)
+        \overset {\eqref{eq:thm:finite_field_polynomial_reduction/fermat}} = \\ &=
+        \Phi(X^{r-1}) \Phi(X)
+        = \\ &=
+        \Phi(X^r).
+      \end{BreakableAlign*}
+    \end{itemize}
+  \end{itemize}
+\end{proof}
