@@ -1,7 +1,7 @@
 \subsection{Propositional logic}\label{subsec:propositional_logic}
 
 \begin{definition}\label{def:propositional_alphabet}\MarginCite[102]{OpenLogic20201202}
-  The \hyperref[def:language]{language} of propositional logic consists of \Def{propositional formulas}, defined in \fullref{def:propositional_formula}. These formulas are formed over a set of symbols, called the \Def{propositional alphabet}, whose constituents are described below.
+  The \hyperref[def:language]{language} of propositional logic consists of \Def{propositional formulas}, defined in \fullref{def:propositional_language}. These formulas are formed over a set of symbols, called the \Def{propositional alphabet}, whose constituents are described below.
 
   \begin{DefEnum}
     \ILabel{def:propositional_alphabet/prop} A nonempty set \( \Bold{Prop} \) of \Def{propositional variables}.
@@ -15,8 +15,8 @@
     \ILabel{def:propositional_alphabet/negation} \Def{Negation} \( \neg \)
     \ILabel{def:propositional_alphabet/connectives} The set \( \Sigma \) of \Def{propositional connectives}, namely
     \begin{DefEnum}
-      \ILabel{def:propositional_alphabet/connectives/conjunction} \Def{conjunction} \( \wedge \) (also known as \hyperref[def:boolean_operators]{\Def{and}} or \hyperref[def:lattice_operations]{\Def{meet}})
-      \ILabel{def:propositional_alphabet/connectives/disjunction} \Def{disjunction} \( \vee \) (also known as \hyperref[def:boolean_operators]{\Def{or}} or \hyperref[def:lattice_operations]{\Def{join}})
+      \ILabel{def:propositional_alphabet/connectives/conjunction} \Def{conjunction} \( \wedge \) (also known as \hyperref[def:standard_boolean_operators]{\Def{and}} or \hyperref[def:lattice_operations]{\Def{meet}})
+      \ILabel{def:propositional_alphabet/connectives/disjunction} \Def{disjunction} \( \vee \) (also known as \hyperref[def:standard_boolean_operators]{\Def{or}} or \hyperref[def:lattice_operations]{\Def{join}})
       \ILabel{def:propositional_alphabet/connectives/implication} \Def{implication} \( \rightarrow \) (see \fullref{def:material_implication})
       \ILabel{def:propositional_alphabet/connectives/equivalence} \Def{equivalence} \( \leftrightarrow \) (see \fullref{def:equivalence})
     \end{DefEnum}
@@ -24,42 +24,44 @@
     \ILabel{def:propositional_alphabet/parentheses} Parentheses \( ( \) and \( ) \) for defining the order of operations unambiguously (see \fullref{remark:propositional_formula_parentheses}).
   \end{DefEnum}
 
-  \Fullref{remark:minimal_propositional_language} shows we can actually utilize a smaller propositional language without losing any of its semantics.
+  \Fullref{remark:smaller_propositional_language} shows we can actually utilize a smaller propositional language without losing any of its semantics.
 \end{definition}
 
-\begin{definition}\label{def:propositional_formula}
-  We now define the propositional formulas themselves.
-
+\begin{definition}\label{def:propositional_language}\mbox{}
   \begin{DefEnum}
-    \ILabel{def:propositional_formula/language} The set of \Def{propositional formulas} \( \CF_B \) is the language \hyperref[def:grammar_derivation/generated_language]{generated} by the grammar
-    \begin{AlignedEquation}\label{eq:def:propositional_formula/grammar}
-      &\Phi \to p,                 && p \in \Bold{Prop} \\
-      &\Phi \to \top \mid \bot     &&                   \\
-      &\Phi \to \neg \Phi          &&                   \\
-      &\Phi \to (\Phi \circ \Phi), && \circ \in \Sigma.
-    \end{AlignedEquation}
+    \ILabel{def:propositional_language/grammar} Consider the following \hyperref[def:grammar]{grammar}:
+    \begin{bnf*}
+      \bnfprod{variable}   {P \in \Bold{Prop}} \\
+      \bnfprod{connective} {\circ \in \Sigma} \\
+      \bnfprod{formula}    {\bnfpn{variable} \bnfor} \\
+      \bnfmore             {\bnfts{\( \top \)} \bnfor \bnfts{\( \bot \)} \bnfor} \\
+      \bnfmore             {\bnfts{\neg} \bnfpn{formula} \bnfor} \\
+      \bnfmore             {\bnfts{(} \bnfpn{formula} \bnfsp \bnfpn{connective} \bnfsp \bnfpn{formula} \bnfts{)}}
+    \end{bnf*}
 
     This grammar is unambiguous by \fullref{thm:propositional_formulas_are_unambiguous}.
 
-    \ILabel{def:propositional_formula/subformula} If \( \varphi \) and \( \psi \) are formulas and \( \psi \) is a \hyperref[def:language/subword]{subword} of \( \varphi \), we say that \( \psi \) is a \Def{subformula} of \( \varphi \).
+    \ILabel{def:propositional_language/formula} The set of \Def{propositional formulas} \( \CF_B \) is the language \hyperref[def:grammar_derivation/grammar_language]{generated} by this grammar.
 
-    \ILabel{def:propositional_formula/variables} For each formula \( \varphi \), we inductively\IND define its \Def{variables} to be elements of the set
-    \begin{equation}\label{def:propositional_formula/var}
+    \ILabel{def:propositional_language/subformula} If \( \varphi \) and \( \psi \) are formulas and \( \psi \) is a \hyperref[def:language/subword]{subword} of \( \varphi \), we say that \( \psi \) is a \Def{subformula} of \( \varphi \).
+
+    \ILabel{def:propositional_language/variables} For each formula \( \varphi \), we inductively\IND define its \Def{variables} to be elements of the set
+    \begin{equation}\label{def:propositional_language/var}
       \Bold{Var}(\varphi) \coloneqq \begin{cases}
-        \varnothing,                              & \varphi \in \{ \top, \bot \}                     \\
-        \{ P \},                                  & \varphi = P \in \Bold{Prop}                      \\
-        \Bold{Var}(\psi),                         & \varphi = \neg \psi                              \\
-        \Bold{Var}(\psi) \cup \Bold{Var}(\theta), & \varphi = (\psi \circ \theta), \circ \in \Sigma.
+        \varnothing,                              &\varphi \in \{ \top, \bot \}                     \\
+        \{ P \},                                  &\varphi = P \in \Bold{Prop}                      \\
+        \Bold{Var}(\psi),                         &\varphi = \neg \psi                              \\
+        \Bold{Var}(\psi) \cup \Bold{Var}(\theta), &\varphi = (\psi \circ \theta), \circ \in \Sigma.
       \end{cases}
     \end{equation}
   \end{DefEnum}
 \end{definition}
 
 \begin{proposition}\label{thm:propositional_formulas_are_unambiguous}
-  The \hyperref[def:grammar]{grammar} \eqref{eq:def:propositional_formula/grammar} is \hyperref[def:grammar_derivation/ambiguity]{unambiguous}.
+  The \hyperref[def:grammar]{grammar} in \fullref{def:propositional_language/grammar} is \hyperref[def:grammar_derivation/ambiguity]{unambiguous}.
 \end{proposition}
 \begin{proof}
-  The proof is analogous to \fullref{ex:def:formal_grammar/natural_arithmetic}.
+  The proof is analogous to \fullref{ex:def:grammar/arithmetic}.
 \end{proof}
 
 \begin{definition}\label{def:material_implication}
@@ -74,7 +76,7 @@
 
     \ILabel{def:material_implication/converse} The formula \( Q \rightarrow P \) is the \Def{converse} of \( \varphi \).
 
-    \ILabel{def:material_implication/contrapositive} The formula \( \neg Q \rightarrow \neg P \) is the \Def{contrapositive} of \( \varphi \). It is \hyperref[def:propositional_interpretation/equivalence]{equivalent} to the original formula by \fullref{def:boolean_equivalences/contrapositive}.
+    \ILabel{def:material_implication/contrapositive} The formula \( \neg Q \rightarrow \neg P \) is the \Def{contrapositive} of \( \varphi \). It is \hyperref[def:propositional_interpretation/equivalence]{equivalent} to the original formula by \fullref{thm:boolean_equivalences/contrapositive}.
   \end{DefEnum}
 \end{definition}
 
@@ -83,7 +85,7 @@
   \begin{RemEnum}
     \ILabel{remark:propositional_formula_parentheses/outermost} We may skip the outermost parentheses in formulas with top-level \hyperref[def:propositional_alphabet/connectives]{connectives}, e.g. we may write \( P \wedge Q \) rather than \( (P \wedge Q) \).
 
-    \ILabel{remark:propositional_formula_parentheses/associative} Because of the associativity of \( \wedge \) and \( \vee \) (proven in \fullref{def:boolean_equivalences/associativity}), we may skip the parentheses in chains like
+    \ILabel{remark:propositional_formula_parentheses/associative} Because of the associativity of \( \wedge \) and \( \vee \) (see \fullref{def:standard_boolean_operators}), we may skip the parentheses in chains like
     \begin{equation*}
       ( \ldots ((P_1 \wedge P_2) \wedge P_3) \wedge \ldots \wedge P_{n-1} ) \wedge P_n.
     \end{equation*}
@@ -93,11 +95,11 @@
     \end{equation*}
   \end{RemEnum}
 
-  These are only notations shortcuts in the \hyperref[remark:metalanguage]{metalanguage} and the formulas themselves (as abstract mathematical objects) are still assumed to contain parentheses to avoid syntactic ambiguity (see \fullref{thm:propositional_formulas_are_unambiguous}).
+  These are only notations shortcuts in the \hyperref[remark:metalanguage_syntax_and_semantics]{metalanguage} and the formulas themselves (as abstract mathematical objects) are still assumed to contain parentheses to avoid syntactic ambiguity (see \fullref{thm:propositional_formulas_are_unambiguous}).
 \end{remark}
 
 \begin{definition}\label{def:equivalence}
-  Fix the formula \( \varphi \coloneqq P \leftrightarrow Q \). We call formulas of this form \Def{logical equivalence}. Note that \eqref{eq:def:boolean_equivalences/equivalence_via_implication} holds. Despite the symmetry of \( \wedge \) in \eqref{eq:def:boolean_equivalences/equivalence_via_implication}, there is an ordering in the set \( \{ P, Q \} \) of propositions and we use this ordering. Instead of \( Q \rightarrow P \), we usually write \( P \ImpliedBy Q \). We also establish the following terminology:
+  Fix the formula \( \varphi \coloneqq P \leftrightarrow Q \). We call formulas of this form \Def{logical equivalence}. Note that \eqref{eq:thm:boolean_equivalences/equivalence_via_implication} holds. Despite the symmetry of \( \wedge \) in \eqref{eq:thm:boolean_equivalences/equivalence_via_implication}, there is an ordering in the set \( \{ P, Q \} \) of propositions and we use this ordering. Instead of \( Q \rightarrow P \), we usually write \( P \leftarrow Q \). We also establish the following terminology:
   \begin{DefEnum}
     \ILabel{def:equivalence/necessary} \( P \) is a \Def{necessary condition} for \( Q \).
     \ILabel{def:equivalence/sufficient} \( Q \) is a \Def{sufficient condition} for \( P \).
@@ -105,116 +107,162 @@
 \end{definition}
 
 \begin{remark}\label{remark:statements_as_implications}
-  Theorems in mathematics usually take the form of a material \hyperref[def:material_implication]{implication} \( P \rightarrow Q \) or \hyperref[def:equivalence]{equivalence} \( P \leftrightarrow Q \). Therefore the terminology of \fullref{def:material_implication} and \fullref{def:equivalence} usually applies to statements about mathematics.
+  Theorems in mathematics usually take the form of a material \hyperref[def:material_implication]{implication} \( P \rightarrow Q \) or \hyperref[def:equivalence]{equivalence} \( P \leftrightarrow Q \). Therefore the terminology of \fullref{def:material_implication} and \fullref{def:equivalence} usually applies to statements about mathematics. We do, however, prefer the notation \( P \implies Q \) and \( P \iff Q \) when dealing with actual statements.
 \end{remark}
 
 \begin{definition}\label{def:propositional_interpretation}
-  A \Def{propositional interpretation} is a function \( I: \Bold{Prop} \to \{ T, F \} \).
+  A \Def{propositional interpretation} is a function \( I: \Bold{Prop} \to \{ T, F \} \). See \fullref{def:boolean_function} and \fullref{thm:propositional_connectives_ambiguity} for remarks regarding the \hyperref[def:boolean_algebra]{Boolean algebra} \( \{ T, F \} \) and the \hyperref[def:standard_boolean_operators]{standard Boolean operators}.
 
   We define interpretation for formulas inductively\IND as
   \begin{BreakableAlign*}
-    \varphi[I] \coloneqq \begin{cases}
-      T,                           & \varphi = \top                                 \\
-      F,                           & \varphi = \bot                                 \\
-      I(P),                        & \varphi = P \in \Bold{Prop}                    \\
-      H_\neg(\psi[I]),             & \varphi = \neg \psi                            \\
-      H_\circ(\psi[I], \theta[I]), & \varphi = \psi \circ \theta, \circ \in \Sigma.
+    \varphi\Val{I} \coloneqq \begin{cases}
+      T,                               &\varphi = \top                                 \\
+      F,                               &\varphi = \bot                                 \\
+      I(P),                            &\varphi = P \in \Bold{Prop}                    \\
+      \Ol{\psi\Val{I}},                &\varphi = \neg \psi                         \\
+      \psi\Val{I} \circ \theta\Val{I}, &\varphi = \psi \circ \theta, \circ \in \Sigma.
     \end{cases}
   \end{BreakableAlign*}
 
   We introduce some directly related notions:
   \begin{DefEnum}
-    \ILabel{def:propositional_interpretation/satisfiability} If \( \varphi[I] = T \), we say that \( I \) is \Def{satisfies} \( \varphi \) and write \( I \models_B \varphi \).
+    \ILabel{def:propositional_interpretation/satisfiability} If \( \varphi\Val{I} = T \), we say that \( I \) is \Def{satisfies} \( \varphi \) and write \( I \models \varphi \).
 
-    \ILabel{def:propositional_interpretation/entailment} If every interpretation that satisfies the set \( \Gamma \) of formulas also satisfies the formula \( \varphi \), we say that \( \Gamma \) \Def{entails} \( \varphi \) and write \( \Gamma \models_B \varphi \).
+    \ILabel{def:propositional_interpretation/entailment} If every interpretation that satisfies all formulas in the set \( \Gamma \) also satisfies the formula \( \varphi \), we say that \( \Gamma \) \Def{entails} \( \varphi \) and write \( \Gamma \models \varphi \).
 
     \ILabel{def:propositional_interpretation/tautology} If all interpretations satisfy \( \varphi \), we call \( \varphi \) a \Def{tautology}.
 
     \ILabel{def:propositional_interpretation/contradiction} Dually, if no interpretations satisfy \( \varphi \), \( \varphi \) is a \Def{contradiction}.
 
-    \ILabel{def:propositional_interpretation/equivalence} If \( \varphi[I] = \psi[I] \) for any interpretation \( I \), we say that \( \varphi \) and \( \psi \) are \Def{propositional semantic equivalence} and write \( \varphi \equiv_B \psi \).
+    \ILabel{def:propositional_interpretation/equivalence} If \( \varphi\Val{I} = \psi\Val{I} \) for every interpretation \( I \), we say that \( \varphi \) and \( \psi \) are \Def{semantically equivalent} and write \( \varphi \equiv \psi \).
   \end{DefEnum}
 \end{definition}
 
+\begin{definition}\label{def:propositional_formula_induced_function}
+  Let \( \varphi \) be a propositional formula and let \( \Bold{Var}(\varphi) = \{ P_1, \ldots, P_n \} \). We define the \hyperref[def:boolean_function]{Boolean function}
+  \begin{AlignedEquation}\label{eq:def:propositional_formula_induced_function}
+    &\Fun_\varphi: \{ T, F \}^n \to \{ T, F \} \\
+    &\Fun_\varphi(x_1, \ldots, x_n) \coloneqq \varphi\Val{I} \Twhere I(P_k) \coloneqq x_k, k = 1, \ldots, n.
+  \end{AlignedEquation}
+\end{definition}
+
+\begin{proposition}\label{thm:propositional_formulas_equivalent_iff_same_boolean_functions}
+  Two propositional formulas \( \varphi \) and \( \psi \) are semantically equivalent if and only if \( \Fun_\varphi = \Fun_\psi \).
+\end{proposition}
+\begin{proof}
+  This is simply a restatement of \fullref{def:propositional_interpretation/equivalence}.
+\end{proof}
+
 \begin{proposition}\label{thm:boolean_equivalence_relation}
-  The \hyperref[def:propositional_interpretation/equivalence]{propositional semantic equivalence} \( \equiv_B \) is an equivalence relation on the set \( \CF_B \) of propositional formulas.
+  The \hyperref[def:propositional_interpretation/equivalence]{semantic equivalence} \( \equiv \) is an equivalence relation on the set \( \CF_B \) of propositional formulas.
 \end{proposition}
 \begin{proof}
   Follows from the equivalences in \fullref{def:equivalence_relation}.
 \end{proof}
 
-\begin{theorem}\label{thm:propositional_logic_boolean_algebra}
-  The \hyperref[def:equivalence_relation]{quotient set} of propositional formulas \( \CF_B / \equiv_B \) is bijective with the set of all \hyperref[def:boolean_function]{Boolean functions} of arbitrary arity.
+\begin{theorem}\label{thm:propositional_formula_cosets_are_boolean_functions}
+  The \hyperref[def:equivalence_relation]{quotient set} of propositional formulas \( \CF_B / \equiv \) is bijective with the set of all \hyperref[def:boolean_function]{Boolean functions} of arbitrary arity.
 \end{theorem}
 \begin{proof}
-  Trivial.
+  Follows from \fullref{thm:propositional_formulas_equivalent_iff_same_boolean_functions}.
+\end{proof}
+
+\begin{corollary}\label{thm:propositional_logic_boolean_algebra}
+  The \hyperref[def:equivalence_relation]{quotient set} of propositional formulas \( \CF_B / \equiv_B \) forms a boolean \hyperref[def:boolean_algebra]{algebra} with the following:
+  \begin{RefList}
+    \IRef{def:binary_lattice_operations/join} Finite joins are given by \hyperref[def:propositional_alphabet/connectives/disjunction]{disjunctions \( \vee \)}.
+    \IRef{def:binary_lattice_operations/meet} Finite meets are given by \hyperref[def:propositional_alphabet/connectives/conjunction]{conjunctions \( \wedge \)}.
+    \IRef{def:lattice/top} The top is the equivalence class \( [\top] \) of \hyperref[def:propositional_interpretation/tautology]{tautologies}.
+    \IRef{def:lattice/bottom} The bottom is the equivalence class \( [\bot] \) of \hyperref[def:propositional_interpretation/contradiction]{contradictions}.
+    \IRef{def:boolean_algebra} The complement of the coset \( [\varphi] \) is the \hyperref[def:propositional_alphabet/negation]{negation} coset \( [\neg \varphi] \).
+  \end{RefList}
+\end{corollary}
+\begin{proof}
+  Follows from \fullref{thm:propositional_formula_cosets_are_boolean_functions} and \fullref{thm:boolean_functions_form_boolean_algebra}.
 \end{proof}
 
 \begin{definition}\label{def:propositional_substition}
-  If \( \varphi \) and \( \rho \) are formulas and \( \psi \) is a subformula of \( \varphi \), we define the \Def{substition} of \( \psi \) with \( \rho \) in \( \varphi \) as
-  \begin{equation*}
-    \varphi[\psi \to \rho] \coloneqq \begin{cases}
-      \rho,                                                    &\varphi = \psi                                                                        \\
-      \varphi,                                                 &\varphi \neq \psi \text{ and } \varphi \in \{ \top, \bot \} \cup \Bold{Prop}          \\
-      \neg \theta[\psi \to \rho],                              &\varphi \neq \psi \text{ and } \varphi = \neg \theta                                  \\
-      (\theta_1[\psi \to \rho] \circ \theta_2[\psi \to \rho]), &\varphi \neq \psi \text{ and } \varphi = (\theta_1 \circ \theta_2), \circ \in \Sigma.
-    \end{cases}
-  \end{equation*}
+  Fix a propositional formula \( \varphi \).
+
+  \begin{DefEnum}
+    \ILabel{def:propositional_substition/single} If \( \psi \) is a subformula of \( \varphi \) and \( \rho \) is an arbitrary propositional formula, we define the \Def{substition} of \( \psi \) with \( \rho \) in \( \varphi \) as
+    \begin{equation*}
+      \varphi[\psi \mapsto \rho] \coloneqq \begin{cases}
+        \rho,                                                            &\varphi = \psi                                                                        \\
+        \varphi,                                                         &\varphi \neq \psi \text{ and } \varphi \in \{ \top, \bot \} \cup \Bold{Prop}          \\
+        \neg \theta[\psi \mapsto \rho],                                  &\varphi \neq \psi \text{ and } \varphi = \neg \theta                                  \\
+        (\theta_1[\psi \mapsto \rho] \circ \theta_2[\psi \mapsto \rho]), &\varphi \neq \psi \text{ and } \varphi = (\theta_1 \circ \theta_2), \circ \in \Sigma.
+      \end{cases}
+    \end{equation*}
+
+    \ILabel{def:propositional_substition/simultaneous} We will now define \Def{simultaneous substition} of \( \psi_1, \ldots, \psi_n \) with \( \rho_1, \ldots, \rho_n \). We wish to avoid the case where \( \psi_k \) is a subformula of \( \rho_{k-1} \) and it accidentally gets replaced during \( \varphi[\psi_{k-1} \mapsto \rho_{k-1}][\psi_k \mapsto \rho_k] \).
+
+    Define
+    \begin{equation*}
+      \Cat{Bound} \coloneqq \Bold{Var}(\rho_1) \cup \ldots \cup \Bold{Var}(\rho_n).
+    \end{equation*}
+    and, for each variable \( P_k \) in \( \Cat{Bound} \), choose\AOC a variable \( Q_k \) from \( \Bold{Prop} \setminus \Bold{Bound} \). Let \( m \) be the \hyperref[def:cardinal]{cardinality} of \( \Bold{Bound} \). The simultaneous substitution can now be defined as
+    \begin{align*}
+      \varphi[\psi_1 \mapsto \rho_1, \ldots, \psi_n \mapsto \rho_n] \coloneqq \varphi
+      [\psi_1 \mapsto \rho_1[P_1 \mapsto Q_1, \ldots, P_m \mapsto Q_m]] \\
+      \vdots \hspace{3cm} \\
+      [\psi_n \mapsto \rho_n[P_1 \mapsto Q_1, \ldots, P_m \mapsto Q_m]] \\
+      [Q_1 \mapsto P_1, \ldots, Q_m \mapsto P_m].
+    \end{align*}
+  \end{DefEnum}
 \end{definition}
 
 \begin{proposition}\label{thm:propositional_substition_equivalence}
-  If \( \psi \) is a subformula of \( \varphi \) and if \( \psi \equiv_B \rho \), then
+  If \( \psi \) is a subformula of \( \varphi \) and if \( \psi \equiv \rho \), then
   \begin{equation}\label{eq:thm:propositional_substition_equivalence}
-    \varphi[\psi \to \rho] \equiv_B \varphi.
+    \varphi[\psi \mapsto \rho] \equiv \varphi.
   \end{equation}
 \end{proposition}
 \begin{proof}
   We use structural induction\IND on \( \varphi \):
 
   \begin{itemize}
-    \item If \( \varphi = \psi \), then \( \varphi[\psi \to \rho] = \rho \) and, by definition,
+    \item If \( \varphi = \psi \), then \( \varphi[\psi \mapsto \rho] = \rho \) and, by definition,
     \begin{equation*}
-      \varphi = \psi \equiv_B \rho = \varphi[\psi \to \rho].
+      \varphi = \psi \equiv \rho = \varphi[\psi \mapsto \rho].
     \end{equation*}
 
-    \item If \( \varphi \in \{ \top, \bot \} \cup \Bold{Prop} \), then \( \varphi[\psi \to \rho] = \varphi \) and \eqref{eq:thm:propositional_substition_equivalence} again holds trivially.
+    \item If \( \varphi \in \{ \top, \bot \} \cup \Bold{Prop} \), then \( \varphi[\psi \mapsto \rho] = \varphi \) and \eqref{eq:thm:propositional_substition_equivalence} again holds trivially.
 
-    \item If \( \varphi = \neg \theta \), then \( \varphi[\psi \to \rho] = \neg \theta[\psi \to \rho] \). For any interpretation \( I \),
+    \item If \( \varphi = \neg \theta \), then \( \varphi[\psi \mapsto \rho] = \neg \theta[\psi \mapsto \rho] \). For any interpretation \( I \),
     \begin{equation*}
-      \varphi[\psi \to \rho][I]
+      \varphi[\psi \mapsto \rho]\Val{I}
       =
-      H_{\neg} (\theta[\psi \to \rho][I])
+      \Ol{\theta[\psi \mapsto \rho]\Val{I}}
       \overset {\TIndHyp} =
-      H_{\neg} (\theta[I])
+      \Ol{\theta\Val{I}}
       =
-      \varphi[I].
+      \varphi\Val{I}.
     \end{equation*}
 
-    Therefore \eqref{eq:thm:propositional_substition_equivalence} holds.
+    Therefore \eqref{eq:thm:propositional_substition_equivalence} holds in this case.
 
     \item If \( \varphi = (\theta_1 \circ \theta_2), \circ \in \Sigma \), then for any interpretation \( I \),
     \begin{equation*}
-      \varphi[\psi \to \rho][I]
+      \varphi[\psi \mapsto \rho]\Val{I}
       =
-      H_{\circ} (\theta_1[\psi \to \rho][I], \theta_2[\psi \to \rho][I])
+      \theta_1[\psi \mapsto \rho]\Val{I} \circ \theta_2[\psi \mapsto \rho]\Val{I}
       \overset {\TIndHyp} =
-      H_{\circ} (\theta_1[I], \theta_2[I])
+      \theta_1\Val{I} \circ \theta_2\Val{I}
       =
-      \varphi[I].
+      \varphi\Val{I}.
     \end{equation*}
 
-    Therefore \eqref{eq:thm:propositional_substition_equivalence} also holds.
+    Therefore \eqref{eq:thm:propositional_substition_equivalence} holds in this case also.
   \end{itemize}
 
-  We have verified that in all cases, \eqref{eq:thm:propositional_substition_equivalence} holds.
+  We have verified that \eqref{eq:thm:propositional_substition_equivalence} holds in all cases.
 \end{proof}
 
-\begin{remark}\label{remark:minimal_propositional_language}
-  \Fullref{thm:propositional_logic_boolean_algebra} partitions the set \( \CF_B \) of propositional formulas into equivalence classes. For \hyperref[remark:syntax_vs_semantics]{semantical} concepts, it is immaterial which element of an equivalence class we consider. The concept of a \hyperref[def:boolean_closure]{complete set of Boolean operations} allows us to represent each formula using a subset of the \hyperref[def:propositional_alphabet/constants]{propositional constants}, \hyperref[def:propositional_alphabet/negation] and \hyperref[def:propositional_alphabet/connectives]{connectives}. \Fullref{ex:thm:posts_completeness_theorem} shows some concrete commonly used complete sets of Boolean operations.
+\begin{remark}\label{remark:smaller_propositional_language}
+  For \hyperref[remark:metalanguage_syntax_and_semantics]{semantical} concepts, it is immaterial which element of an equivalence class we consider. The concept of a \hyperref[def:boolean_closure]{complete set of Boolean operations} allows us to represent each formula using a strict subset of the \hyperref[def:propositional_alphabet/constants]{propositional constants}, \hyperref[def:propositional_alphabet/negation]{negation} and \hyperref[def:propositional_alphabet/connectives]{connectives}. \Fullref{ex:thm:posts_completeness_theorem} shows some concrete commonly used complete sets of Boolean operations. This is useful in certain syntactic manipulations, however it is also useful in \hyperref[def:propositional_interpretation/satisfiability]{satisfiability} proofs that rely on \hyperref[remark:induction]{structural induction} because it allows us to consider less cases in the induction.
 
-  For example, \fullref{def:boolean_equivalences/connectives_via_and_or} shows how to express the rest of the connectives via \( \neg \), \( \wedge \) and \( \vee \) and \fullref{def:boolean_equivalences/constants} shows how to express the constants via \( \wedge \) and \( \vee \). This gives rise to the \hyperref[def:conjunctive_disjunctive_normal_form]{conjunctive normal form}.
-
-  This is useful in \hyperref[def:propositional_interpretation/satisfiability]{satisfiability} proofs that rely on \hyperref[remark:induction]{structural induction} because it allows us to consider less cases in the induction.
+  See the \hyperref[def:conjunctive_disjunctive_normal_form]{conjunctive normal form} for a concrete example.
 \end{remark}
 
 \begin{definition}\label{def:conjunctive_disjunctive_normal_form}\mbox{}
@@ -230,9 +278,51 @@
   \end{DefEnum}
 \end{definition}
 
-\begin{proposition}\label{thm:conjunctive_normal_form_reduction}
-  Every propositional formula is \hyperref[def:propositional_interpretation/equivalence]{semantically equivalent} to at least one formula in \hyperref[def:conjunctive_disjunctive_normal_form/normal_form]{conjunctive normal form}.
-\end{proposition}
-\begin{proof}
-  We simply need to utilize substitutions based on \fullref{def:boolean_equivalences/constants} and \fullref{def:boolean_equivalences/connectives_via_and_or}. \Fullref{thm:propositional_substition_equivalence} shows that the resulting formula will be equivalent to the original one.
-\end{proof}
+\begin{algorithm}\label{alg:conjunctive_normal_form_reduction}
+  Let \( \varphi \) be any formula. We explicitly derive a formula in conjunctive normal form that is \hyperref[def:propositional_interpretation/equivalence]{semantically equivalent} to \( \varphi \).
+
+  \begin{AlgEnum}
+    \ILabel{alg:conjunctive_normal_form_reduction/constants} Choose\AOC any variable \( P \) and substitute
+    \begin{align*}
+      \top \mapsto P \vee \neg P && \bot \mapsto P \wedge \neg P
+    \end{align*}
+    to get rid of the \hyperref[def:propositional_alphabet/constants]{propositional constants}.
+
+    \ILabel{alg:conjunctive_normal_form_reduction/iff} For any subformulas \( \psi \) and \( \rho \) of \( \varphi \), perform the substitution
+    \begin{equation*}
+      \psi \leftrightarrow \rho \mapsto (\psi \rightarrow \rho) \wedge (\rho \rightarrow \psi)
+    \end{equation*}
+    to get rid of \hyperref[def:propositional_alphabet/connectives/equivalence]{equivalences}. Equivalence with \( \varphi \) is justified by \fullref{thm:boolean_equivalences/equivalence_via_implication}.
+
+    \ILabel{alg:conjunctive_normal_form_reduction/implies} For any subformulas \( \psi \) and \( \rho \) of \( \varphi \), perform the substitution
+    \begin{equation*}
+      \psi \rightarrow \rho \mapsto \neg \psi \vee \rho.
+    \end{equation*}
+    to get rid of \hyperref[def:propositional_alphabet/connectives/implication]{implications}. Equivalence with \( \varphi \) is justified by \fullref{thm:boolean_equivalences/implication_cnf}.
+
+    \ILabel{alg:conjunctive_normal_form_reduction/double_negation} For any subformula \( \psi \) of \( \varphi \), eliminate double negation:
+    \begin{align*}
+      \neg \neg \psi \mapsto \psi.
+    \end{align*}
+
+    In order to ensure that there is no more double negation, repeat \ref{alg:conjunctive_normal_form_reduction/double_negation} until nothing is substituted anymore.
+
+    \ILabel{alg:conjunctive_normal_form_reduction/de_morgan} For any subformulas \( \psi \) and \( \rho \) of \( \varphi \), use \fullref{thm:de_morgans_laws}:
+    \begin{align*}
+      \neg(\psi \vee \rho) \mapsto \neg \psi \wedge \neg \rho
+      &&
+      \neg(\psi \wedge \rho) \mapsto \neg \psi \vee \neg \rho.
+    \end{align*}
+
+    In order to ensure that \hyperref[def:propositional_alphabet/negation]{negation} is only present before propositional variables, repeat \ref{alg:conjunctive_normal_form_reduction/de_morgan} until nothing is substituted anymore.
+
+    \ILabel{alg:conjunctive_normal_form_reduction/distributivity} Finally, for any subformulas \( \psi \), \( \rho \) and \( \theta \) of \( \varphi \), use \hyperref[eq:def:distributive_lattice/distributivity]{distributivity} of \( \wedge \) over \( \vee \):
+    \begin{equation*}
+      \psi \vee (\rho \wedge \theta) \mapsto (\psi \vee \theta) \wedge (\rho \vee \theta).
+    \end{equation*}
+
+    In order to ensure that conjunction is always one level higher than disjunction, repeat \ref{alg:conjunctive_normal_form_reduction/distributivity} until nothing is substituted anymore.
+  \end{AlgEnum}
+
+  The resulting formula is in conjunctive normal form. By \fullref{thm:propositional_substition_equivalence}, it is equivalent to \( \varphi \).
+\end{algorithm}

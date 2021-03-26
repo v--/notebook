@@ -10,53 +10,70 @@
 
     \ILabel{def:grammar/start} We assume that a special \Def{start symbol} \( S \in V \) is fixed.
 
-    \ILabel{def:grammar/production_rules} We define a binary \hyperref[def:relation]{relation} \( \to \) of \Def{production rules} over \( (V \cup \Sigma)^* \), that is, rules are \enquote{transformations} that define how a language is \enquote{generated} starting from \( S \in V \) (see \fullref{def:grammar_derivation} and \fullref{ex:context_free_grammar/real_arithmetic}).
+    \ILabel{def:grammar/production_rules} We define a binary \hyperref[def:relation]{relation} \( \to \) of \Def{production rules} over \( (V \cup \Sigma)^* \), that is, rules are \enquote{transformations} that define how a language is \enquote{generated} starting from \( S \in V \) (see \fullref{def:grammar_derivation} and \fullref{ex:def:grammar/arithmetic}). By convention, we treat uppercase symbols as variables and lowercase symbols as terminals. See, for example, \fullref{remark:backus_naur_form}. When speaking about general grammars, however, we usually use the letters \( u \), \( v \) and \( w \) to denote words (that may contain variables) rather than terminals.
 
-    \ILabel{def:grammar/terminal_rules} Rules of the form \( u \to \sigma \), where \( \sigma \in \Sigma \), are called \Def{terminal rules}.
+    \ILabel{def:grammar/terminal_rules} Rules of the form \( u \to \sigma \), where \( \sigma \in \Sigma \), are called \Def{terminal rules}. Note that \( u \) here is a word and not a terminal.
 
     \ILabel{def:grammar/grammar} The tuple \( G \coloneqq (V, \Sigma, \to, S) \) is called a \Def{formal grammar}.
 
-    \ILabel{def:grammar/context_free} If every production rule has only a single variable for a source, we say that the grammar is \Def{context-free}.
+    \ILabel{def:grammar/context_free} If every production rule has only a single variable for a source, i.e. if for every rule \( u \to v \) we have \( u = A \) for some \( A \in V \), we say that the grammar is \Def{context-free}.
   \end{DefEnum}
 \end{definition}
 
-\begin{remark}\label{remark:grammar_production_rule_shorthand}
-  As a shortcut, instead of listing individual rules with the same source as
-  \begin{align*}
-    &u \to v, \\
-    &u \to w,
-  \end{align*}
-  we write
-  \begin{equation*}
-    u \to v | w.
-  \end{equation*}
-\end{remark}
+\begin{remark}\label{remark:backus_naur_form}
+  In practice, specifying a \hyperref[def:grammar/context_free]{context-free grammar} as
+  \begin{AlignedEquation}\label{eq:remark:backus_naur_form/long_rule_list}
+    &A \to a, \\
+    &A \to b, \\
+    &A \to AC, \\
+    &C \to c,
+  \end{AlignedEquation}
+  or even via the shorthand notation
+  \begin{AlignedEquation}\label{eq:remark:backus_naur_form/short_rule_list}
+    &A \to a \mid b \mid AC, \\
+    &C \to c, \\
+  \end{AlignedEquation}
+  quickly becomes cumbersome.
 
-\begin{remark}\label{remark:grammar_symbol_case}
-  It is a common convention to denote variables with uppercase letters and terminals with lowercase letters. Lowercase letters are also used, however, for words in \( (V \cup \Sigma)^* \).
+  When dealing with more complicated languages like \hyperref[def:first_order_language/grammar]{first-order formulas}, and especially when dealing with programming languages (e.g. the Python grammar that can be found in \cite{Python:39_grammar}), it is more convenient to use alternative notation like the \Def{Backus-Naur form (BNF)}. It is a metasyntax, i.e. a syntax for describing language syntax.
+
+  Compared to \eqref{eq:remark:backus_naur_form/long_rule_list}, the main differences are:
+  \begin{enumerate}
+    \item Variables are denoted by \( \langle \) words enclosed in angle brackets \( \rangle \) so that we can name variables using more than one symbol.
+    \item Terminals are denoted using \enquote{quotes}. In human-readable rich text documents like this one, it is sometimes possible to use different fonts and so instead of \enquote{quotes} we specify terminals using an \texttt{upright monospaced font}.
+    \item Free-text rules can be specified using a normal font. This is also only used in human-readable rich text documents, however this usage is justified because such rules are only beneficial for human understanding and not for machine parsing.
+    \item The symbol \( :\coloneqq \) is used instead of \( \to \) for specifying transition rules.
+    \item Different rules with the same source are concatenated as in \eqref{eq:remark:backus_naur_form/short_rule_list}.
+  \end{enumerate}
+
+  For example, \eqref{eq:remark:backus_naur_form/long_rule_list} becomes
+  \begin{bnf*}
+    \bnfprod{A} {\bnfts{a} \bnfor \bnfts{b} \bnfor \bnfpn{A} \bnfpn{C}} \\
+    \bnfprod{C} {\bnfts{c}}
+  \end{bnf*}
 \end{remark}
 
 \begin{definition}\label{def:grammar_derivation}\MarginCite[page 104 \\ page 108]{Sipser2013}
-  Fix a \hyperref[def:formal_grammar]{formal grammar} \( G = (V, \Sigma, \to, S) \).
+  Fix a \hyperref[def:grammar]{formal grammar} \( G = (V, \Sigma, \to, S) \). Note that all lowercase symbols in this definitions are words rather than terminals.
 
   \begin{DefEnum}
     \ILabel{def:grammar_derivation/yields} Fix a \hyperref[def:language/word]{word} \( pvs \). If \( u \to v \) is a production rule, we say that \( pvs \) \Def{yields} the word \( pws \) and write
     \begin{equation*}
-      pvs \implies pws.
+      pvs \Rightarrow pws.
     \end{equation*}
 
-    \ILabel{def:grammar_derivation/derivation} We say that \( u \) \Def{derives} \( v \) and write \( u \Derives v \) if there exists a finite sequence of words \( u_1, \ldots, u_n \) such that
+    \ILabel{def:grammar_derivation/derivation} We say that \( u \) \Def{derives} \( v \) and write \( u \Rightarrow v \) if there exists a finite sequence of words \( u_1, \ldots, u_n \) such that
     \begin{equation*}
-      u \implies u_1 \implies \ldots \implies u_n \implies v.
+      u \Rightarrow u_1 \Rightarrow \ldots \Rightarrow u_n \Rightarrow v.
     \end{equation*}
 
     The sequence \( u, u_1, \ldots, u_n, v \) is called a \Def{derivation} of \( v \) from \( u \).
 
     \ILabel{def:grammar_derivation/leftmost_rightmost_derivation} If on every step of the derivation the leftmost (resp. rightmost) variable is replaced, we say that it is a \Def{leftmost} (resp. \Def{rightmost}) derivation.
 
-    \ILabel{def:grammar_derivation/grammar_language} Define the \Def{language of the grammar} to be
+    \ILabel{def:grammar_derivation/grammar_language} Define the \Def{language} of the grammar to be
     \begin{equation*}
-      \Cal{L}(G) \coloneqq \{ w \in \Sigma^* \colon S \Derives w \},
+      \Cal{L}(G) \coloneqq \{ w \in \Sigma^* \colon S \Rightarrow w \},
     \end{equation*}
     that is, all words that can be derived from \( S \) and contains only terminals.
 
@@ -66,7 +83,7 @@
   \end{DefEnum}
 \end{definition}
 
-\begin{example}\label{ex:def:formal_grammar/natural_arithmetic}
+\begin{example}\label{ex:def:grammar/arithmetic}
   We will define a grammar for addition on \hyperref[def:natural_numbers]{natural numbers}. Note that we only consider the number in \( \BN \) only as symbols, not as the numbers themselves.
 
   Let \( V \coloneqq \{ A \} \) and \( \Sigma \coloneqq \BN \cup \{ +, (, ) \} \). Define the grammar
