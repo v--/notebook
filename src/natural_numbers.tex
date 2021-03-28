@@ -2,176 +2,308 @@
 \subsection{Natural numbers}\label{subsec:natural_numbers}
 
 \begin{definition}\label{def:peano_arithmetic}\MarginCite[1]{Peano1889}
-  The Peano arithmetic is a \hyperref[def:first_order_logic_alphabet]{first-order logic language} for describing \hyperref[def:natural_numbers]{natural numbers} and their operations. It consists of:
+  The Peano arithmetic is a \hyperref[def:first_order_logic_alphabet]{first-order logic language} for describing \hyperref[def:natural_numbers]{natural numbers} and their operations. Peano's original axioms referred to sets rather than first-order logic languages, however this more general framework is more suitable nowadays. It consists of:
   \begin{DefEnum}
     \ILabel{def:peano_arithmetic/eq} A formal equality \( \doteq \) symbol.
-    \ILabel{def:peano_arithmetic/zero} A \enquote{zero} constant \( 0 \) (see \fullref{remark:peano_arithmetic_zero}).
-    \ILabel{def:peano_arithmetic/succ} A unary \enquote{successor} functional symbol \( s \).
+    \ILabel{def:peano_arithmetic/zero} A \Def{zero} constant \( 0 \) (see \fullref{remark:peano_arithmetic_zero}).
+    \ILabel{def:peano_arithmetic/succ} A unary functional symbol \( s \), called the \Def{successor operation}.
   \end{DefEnum}
 
-  We impose the following axioms:
+  We impose the following base \hyperref[def:first_order_theory/axioms]{axioms}:
   \begin{DefEnum}
-    \IAxiom{def:peano_arithmetic/PA1}{PA1} \( \forall \xi \forall \eta (\xi \doteq \eta \iff s(\xi) \doteq s(\eta)) \)
-    \IAxiom{def:peano_arithmetic/PA2}{PA2} \( \forall \xi \neg (s(\xi) \doteq 0) \)
-    \IAxiom{def:peano_arithmetic/PA3}{PA3} The following, called the \Def{axiom schema of induction}, holds: for all formulas \( \varphi(\xi) \), we have:
+    \IAxiom{def:peano_arithmetic/PA1}{PA1} \( \xi \doteq \eta \leftrightarrow s(\xi) \doteq s(\eta) \)
+    \IAxiom{def:peano_arithmetic/PA2}{PA2} \( \not\exists \xi (s(\xi) \doteq 0) \)
+    \IAxiom{def:peano_arithmetic/PA3}{PA3} The following, called the \Def{axiom schema of induction}, holds: for all formulas \( \varphi \) and all variables \( \xi \), we have:
     \begin{equation*}
-      \varphi(0) \wedge \forall \xi (\varphi(\xi) \implies \varphi(s(\xi))).
+      (\varphi[\xi \mapsto 0] \wedge \forall \eta (\varphi[\xi \mapsto \eta] \rightarrow \varphi[\xi \mapsto s(\eta)])) \rightarrow \forall \eta (\varphi[\xi \mapsto \eta]).
     \end{equation*}
 
-    We allow \( \varphi \) to have other free variables, however we avoid writing them to avoid cluttering our notation.
+    See \fullref{remark:induction} for a discussion of induction.
   \end{DefEnum}
 
-  A \hyperref[def:first_order_model]{model} of this theory that only contains \( 0 \) and the \hyperref[remark:induction]{inductively defined} members \( s(0), s(s(0)), \ldots \) is said to be a \Def{standard model of arithmetic}. Non-standard models are know to exist but are mostly of theoretical interest to logicians.
+  A \hyperref[def:first_order_model]{model} of this theory that has no proper submodels, i.e. one that only consists of \( 0 \) and the \hyperref[remark:induction]{inductively defined} members \( s(0), s(s(0)), \ldots \), is said to be a \Def{standard model of arithmetic}. Non-standard models are know to exist but are mostly of theoretical interest to logicians.
+
+  For convenience, we use the familiar decimal notation
+  \begin{align*}
+    1  &\coloneqq s(0) \\
+    2  &\coloneqq s(1) \\
+       &\vdots \\
+    9  &\coloneqq s(8) \\
+    10 &\coloneqq s(9) \\
+       &\vdots
+  \end{align*}
+
+  See \fullref{ex:natural_arithmetic_grammar/backus_naur_form} for a \hyperref[def:language]{language} that describes standard arithmetic in decimal notation.
 \end{definition}
 
 \begin{definition}\label{def:natural_numbers}
-  We define the set of \Def[bg=естествени числа,ru=натуральные числа]{natural numbers} \( \BN \) as any \hyperref[sec:set_theory]{set-theoretic} standard \hyperref[def:first_order_model]{model} of the \hyperref[def:peano_arithmetic]{Peano arithmetic}. Unless mentioned otherwise, it is safe to assume that the model is the \hyperref[ex:natural_numbers_models/omega]{smallest inductive set} \( \omega \).
+  We define the set of \Def[bg=естествени числа,ru=натуральные числа]{natural numbers} \( \BN \) as any \hyperref[sec:set_theory]{set-theoretic} \hyperref[def:peano_arithmetic]{standard model of Peano arithmetic}. Unless noted otherwise, it is safe to assume that the model is the \hyperref[def:smallest_inductive_set]{smallest inductive set} \( \omega \), in which case the natural numbers are encoded as the \hyperref[ex:natural_numbers_models/omega]{von Nemann ordinals}
+  \begin{align*}
+    0 &\coloneqq \varnothing \\
+    1 &\coloneqq \{ \varnothing \} \\
+    2 &\coloneqq \{ \varnothing, \{ \varnothing \} \} \\
+      &\vdots
+  \end{align*}
 
-  See \fullref{ex:natural_numbers_models} for concrete examples of models.
+  \Fullref{ex:natural_numbers_models} lists a few examples of standard models of arithmetic.
 \end{definition}
 
 \begin{remark}\label{remark:peano_arithmetic_zero}
   It is common to consider the first natural numbers to be zero (e.g. \cite[67]{Enderton1977}). Peano himself, however, considered one to be the first - see \cite[1]{Peano1889}.
 
-  Whether \( 0 \) is a natural number or not, i.e. whether \( \varnothing \) encodes \( 0 \) or \( 1 \), is a matter of convention and notation like \( \BZ_{\geq 0} \) and \( \BZ_{>0} \) or \( \BN_0 \) and \( \BN_+ \) is sometimes used.
+  Whether \( 0 \) is a natural number or not, i.e. whether \( \varnothing \) encodes \( 0 \) or \( 1 \), is a matter of convention. This does not matter much for \fullref{def:natural_numbers}, however it is of crucial importance when defining operations like \hyperref[def:natural_number_addition]{addition}.
 
-  Peano's original axioms referred to sets rather than first-order logic languages, however this more general framework is more suitable nowadays.
+  We choose \( \BN \) to start with zero, however we usually avoid referring to the set \( \BN \) of natural numbers directly and instead use the notations
+  \begin{RemEnum}
+    \ILabel{remark:peano_arithmetic_zero/nonnegative} \( 0, 1, 2, \ldots \) or \( \BZ_{\geq 0} \) for the nonnegative \hyperref[def:integers]{integers}.
+    \ILabel{remark:peano_arithmetic_zero/positive} \( 1, 2, \ldots \) or \( \BZ_{> 0} \) for the positive integers.
+  \end{RemEnum}
 
-  It is easier to construct models of natural numbers that semantically include zero (see \fullref{thm:natural_numbers_structure}), so we will construct the natural numbers along with zero and later on mostly use the set \( \BZ_{>0} \).
+  The concepts \enquote{nonnegative} and \enquote{positive} come from the \hyperref[def:integers/order]{order of the integers}.
 \end{remark}
 
 \begin{example}\label{ex:natural_numbers_models}
-  A model of the \hyperref[def:natural_numbers]{natural numbers} is based on a nonempty set \( N \) and additionally satisfies:
+  A \hyperref[sec:set_theory]{set-theoretic} \hyperref[def:peano_arithmetic]{standard model of Peano arithmetic} consists of a nonempty set \( N \) and relates to the axioms of Peano arithmetic as follows:
   \begin{RefList}
     \IRef{def:peano_arithmetic/eq} The equality is the usual \hyperref[def:set_zfc]{set-theoretic equality}.
-
-    \IRef{def:peano_arithmetic/zero} There exists a constant \( e \in N \) acting as zero.
-
-    \IRef{def:peano_arithmetic/succ} There exists a unary \enquote{successor} function \( S: N \to N \) such that \( S(x) \neq e \) for any \( x \in N \).
+    \IRef{def:peano_arithmetic/zero} There exists a constant \( 0 \in N \) acting as zero.
+    \IRef{def:peano_arithmetic/succ} There exists a unary \enquote{successor} function \( s: N \to N \) such that \( s(x) \neq 0 \) for every \( x \in N \).
   \end{RefList}
 
-  Any of the following (and many more) can be taken as a definition for the natural numbers:
+  Any of the following (and many more) can be taken as a definition for the set \( \BN \) of \hyperref[def:natural_numbers]{natural numbers}:
   \begin{DefEnum}
-    \ILabel{ex:natural_numbers_models/omega} A good fit for the set of natural numbers is \hyperref[def:smallest_inductive_set]{the smallest inductive set \( \omega \)}. In this case,
+    \ILabel{ex:natural_numbers_models/omega} A good fit for the set of natural numbers is \hyperref[def:smallest_inductive_set]{the smallest inductive set} \( \omega \). In this case,
     \begin{RefList}
-      \IRef{def:peano_arithmetic/zero} \( e = \varnothing \).
-      \IRef{def:peano_arithmetic/succ} \( S \) is the set-theoretic \hyperref[def:successor_operator]{successor function}.
+      \IRef{def:peano_arithmetic/zero} \( 0 \coloneqq \varnothing \).
+      \IRef{def:peano_arithmetic/succ} \( s \) is the set-theoretic \hyperref[def:successor_operator]{successor function}.
     \end{RefList}
 
     \ILabel{ex:natural_numbers_models/language} Let \( N = \{ a \}^{*} \) be the \hyperref[def:language/kleene_star]{Kleene star} of the singleton alphabet \( \{ a \} \). In this case,
     \begin{RefList}
-      \IRef{def:peano_arithmetic/zero} \( e = \varepsilon \) is the empty word.
-      \IRef{def:peano_arithmetic/succ} \( S(w) \coloneqq w \cdot a \) concatenates the letter at the end of a word.
+      \IRef{def:peano_arithmetic/zero} \( 0 \coloneqq \varepsilon \) is the empty word.
+      \IRef{def:peano_arithmetic/succ} \( s(w) \coloneqq w \cdot a \) concatenates the letter at the end of a word.
     \end{RefList}
 
-    \ILabel{ex:natural_numbers_models/vector_spaces} The \hyperref[def:first_order_model_category]{model category} \( \Cat{FinVect}_{\BK} \) of all \hyperref[def:vector_space_dimension]{finite-dimensional} \hyperref[def:vector_space]{vector spaces} over the field \( \BK \) can also be used as a model for the natural numbers. In this case,
+    \ILabel{ex:natural_numbers_models/vector_spaces} The \hyperref[def:first_order_model_category]{model category} \( \Cat{FinVect}_{\BK} \) of all \hyperref[def:vector_space_dimension]{finite-dimensional} \hyperref[def:vector_space]{vector spaces} over the \hyperref[def:field]{field} \( \BK \) can also be used as a model for the natural numbers. In this case,
     \begin{RefList}
-      \IRef{def:peano_arithmetic/zero} \( e = 0_{\BK} \) is the trivial (zero-dimensional) vector space.
-      \IRef{def:peano_arithmetic/succ} \( S(V) \coloneqq V \times \BK \) is the \hyperref[def:left_module_direct_product]{module direct sum} of \( V \) and \( \BK \).
+      \IRef{def:peano_arithmetic/zero} \( 0 \coloneqq 0_{\BK} = \{ 0_{\BF} \} \) is the trivial (zero-dimensional) vector space.
+      \IRef{def:peano_arithmetic/succ} \( s(V) \coloneqq V \oplus \BK \) is the \hyperref[def:left_module_direct_product]{direct sum} of the vector space \( V \) and the field \( \BK \) as a one-dimensional vector space.
     \end{RefList}
   \end{DefEnum}
 \end{example}
 
-\begin{definition}\label{def:natural_numbers_structure}
-  We define the usual arithmetic operations and \hyperref[remark:order_infix_notation]{ordering} on the \hyperref[def:natural_numbers]{natural numbers} \( \BN \):
-  \begin{DefEnum}
-    \ILabel{def:natural_numbers_structure/addition} We define addition of \( x \) and \( y \) using \hyperref[remark:induction]{structural induction}\IND on \( y \):
-    \begin{equation*}
-      x + y \coloneqq \begin{cases}
-        x,         & y = 0,     \\
-        S(x + y'), & y = S(y').
-      \end{cases}
-    \end{equation*}
-
-    \ILabel{def:natural_numbers_structure/multiplication} We define multiplication inductively\IND on \( y \):
-    \begin{equation*}
-      x \cdot y \coloneqq \begin{cases}
-        0,              & y = 0,     \\
-        x \cdot y' + x, & y = s(y').
-      \end{cases}
-    \end{equation*}
-
-    \ILabel{def:natural_numbers_structure/order} We define the ordering of natural numbers via the \hyperref[def:first_order_formula]{formula}:
-    \begin{equation*}
-      x \leq y \iff \exists z \in \BN: y = x + z.
-    \end{equation*}
-  \end{DefEnum}
+\begin{definition}\label{def:natural_number_addition}
+  We inductively\IND define a binary \Def{addition} operation \( +: \BN^2 \to \BN \) as
+  \begin{equation}\label{eq:def:natural_number_addition}
+    x + y \coloneqq \begin{cases}
+      x,         &y = 0,     \\
+      s(x + y'), &y = s(y').
+    \end{cases}
+  \end{equation}
 \end{definition}
 
-\begin{proposition}\label{thm:natural_numbers_structure}\mbox{}
-  \begin{PropEnum}
-    \ILabel{thm:natural_numbers_structure/addition} The set \( \BN \) is a commutative \hyperref[def:magma]{monoid} under addition with \( 0 \) as identity.
+\begin{proposition}\label{thm:natural_numbers_form_monoid_under_addition}
+  The \hyperref[def:natural_numbers]{natural numbers} \( \BN \) with \hyperref[def:natural_number_addition]{addition} form a \hyperref[def:magma/cancellative]{cancellative} \hyperref[def:magma/commutative]{commutative} \hyperref[def:unital_magma/associative]{monoid} with \( 0 \) as the identity.
 
-    \ILabel{thm:natural_numbers_structure/multiplication} The set \( \BN \setminus \{ 0 \} \) is a commutative monoid under multiplication with \( 1 \coloneqq S(0) \) as identity.
-
-    \ILabel{thm:natural_numbers_structure/order} The set \( \BN \) is \hyperref[def:well_ordered_set]{well-ordered} by \( \leq \).
-  \end{PropEnum}
+  Furthermore, the sum of two natural numbers is nonzero if and only if both numbers are nonzero, that is,
+  \begin{equation}\label{eq:thm:natural_numbers_form_monoid_under_addition/nonzero_sum}
+    x + y \neq 0 \Tiff x \neq 0 \Tand y \neq 0.
+  \end{equation}
 \end{proposition}
 \begin{proof}
-  \SubProofOf{thm:natural_numbers_structure/addition} Fix \( x + y \). We use nested induction\IND. We start with induction on \( y \):
+  \SubProofOf{def:magma/commutative} Consider the sum \( x + y \). We use induction\IND on \( y \) to prove its commutativity.
   \begin{itemize}
-    \item If \( y = 0 \), induction\IND by \( x \) yields:
+    \item If \( y = 0 \), nested induction\IND by \( x \) yields:
     \begin{itemize}
-      \item If \( x = y = 0 \),
-      \begin{equation*}
-        x + y = 0 + 0 = 0 = 0 + 0 = y + x
-      \end{equation*}
-
-      \item If \( y \) and \( x' \) commute with each other and if \( x = S(x') \), we have
+      \item If \( x = y = 0 \), clearly \( x + y = 0 + 0 = y + x \).
+      \item If \( x = s(x') \) and if the inductive hypothesis holds for \( x' \),
       \begin{BreakableAlign*}
         x + y
-         & =
-        S(x') + 0
-        =    \\ &=
-        S(x')
-        =    \\ &=
-        S(x' + 0)
-        =    \\ &=
-        S(x' + y)
-        =    \\ &=
-        S(y + x')
-        =    \\ &=
-        y + S(x')
+        &=
+        s(x') + 0
+        \overset {\eqref{eq:def:natural_number_addition}} = \\ &=
+        s(x')
+        \overset {\eqref{eq:def:natural_number_addition}} = \\ &=
+        s(x' + 0)
+        = \\ &=
+        s(x' + y)
+        \overset {\TIndHyp} = \\ &=
+        s(y + x')
+        \overset {\eqref{eq:def:natural_number_addition}} = \\ &=
+        y + s(x')
         =
         y + x.
       \end{BreakableAlign*}
     \end{itemize}
+
+    \item If \( y = s(y') \) and if the inductive hypothesis holds for \( y' \), \ref{def:peano_arithmetic/PA1} yields that \( x + y = y + x \) if and only if \( x + y' = y' + x \). But the last equality is satisfied because of the inductive hypothesis, hence commutativity of \( x \) and \( y \) follows.
   \end{itemize}
 
-  \item If \( y = S(y') \) and \( y' \) commutes with \( x \), we use induction\IND on \( x \):
-  \begin{itemize}
-    \item If \( x = 0 \),
-    \begin{equation*}
-      x + y = 0 + S(y') = S(0 + y') = S(y' + 0) = S(y') = y = y + x.
-    \end{equation*}
+  \SubProofOf{def:magma/associative} Fix natural numbers \( x \), \( y \), \( z \). We will prove associativity by induction\IND on \( z \). If \( z = 0 \), we have
+  \begin{equation*}
+    (x + y) + 0
+    \overset {\eqref{eq:def:natural_number_addition}} =
+    (x + y)
+  \end{equation*}
+  and
+  \begin{equation*}
+    x + (y + 0)
+    \overset {\eqref{eq:def:natural_number_addition}} =
+    x + y.
+  \end{equation*}
 
-    \item If \( y \) and \( x' \) commute with each other and if \( x = S(x') \), we have
-    \begin{BreakableAlign*}
-      x + y
-       & =
-      x + S(y')
-      =    \\ &=
-      S(x + y')
-      =    \\ &=
-      S(y' + x)
-      =    \\ &=
-      S(y' + S(x'))
-      =    \\ &=
-      S(S(y' + x'))
-      =    \\ &=
-      S(S(x' + y'))
-      =    \\ &=
-      S(x' + S(y'))
-      =    \\ &=
-      S(S(y') + x')
-      =    \\ &=
-      S(y') + S(x')
-      =
-      y + x.
-    \end{BreakableAlign*}
-  \end{itemize}
+  If \( z \neq 0 \), the proof follows directly from \ref{def:peano_arithmetic/PA1} as in the proof of commutativity.
 
-  \SubProofOf{thm:natural_numbers_structure/multiplication} Analogous.
+  \SubProofOf{def:magma_identity} We have \( x + 0 = x \) by definition and \( 0 + x = x \) by commutativity.
 
-  \SubProofOf{thm:natural_numbers_structure/order} See \fullref{thm:natural_numbers_are_well_ordered}.
+  \SubProofOf{def:magma/cancellative} Let \( x + z = y + z \). We will prove that \( x = y \) by induction\IND. For \( z = 0 \), this is obvious. For \( z = s(z') \), we have \( x + s(z') = y + s(z') \), which by \eqref{eq:def:natural_number_addition} is equivalent to \( s(x + z') = s(y + z') \).
+
+  By \ref{def:peano_arithmetic/PA1}, we have \( x + z' = y + z' \). The inductive hypothesis implies that \( x = y \).
+
+  \SubProofOf{eq:thm:natural_numbers_form_monoid_under_addition/nonzero_sum} Let \( x \) and \( y = s(y') \) be nonzero numbers. By \ref{def:peano_arithmetic/PA2}, \( x + y = s(x + y') \) and, by \ref{def:peano_arithmetic/PA2}, \( x + y \neq 0 \).
+\end{proof}
+
+\begin{definition}\label{def:natural_number_multiplication}
+  \hyperref[remark:additive_magma/multiplication]{Multiplication in commutative monoids} (i.e. monoid exponentiation) is defined in \fullref{def:unital_magma/exponentiation} for a natural number and a monoid member. It just to happens that, by \fullref{thm:natural_numbers_form_monoid_under_addition}, the natural numbers are themselves a monoid. Therefore we automatically have a second \Def{multiplication} operation defined for any two natural numbers.
+
+  We will use an explicit definition to avoid the possibility of circular proofs in \fullref{thm:magma_exponentiation_properties}. Explicitly, multiplication is defined as
+  \begin{equation}\label{eq:def:natural_number_multiplication}
+    x \cdot y \coloneqq \begin{cases}
+      0,              &y = 0,     \\
+      x,              &y = 1,     \\
+      x + x \cdot y', &y = s(y').
+    \end{cases}
+  \end{equation}
+
+  As with all \hyperref[def:semiring]{semirings}, multiplication has higher priority than addition. In the unambiguous language defined in \fullref{ex:natural_arithmetic_grammar/backus_naur_form}, this means that we can use the shorthand \( x + y \cdot z \) for \( ((x \cdot y) + z) \). We usually use juxtaposition for denoting multiplication.
+\end{definition}
+
+\begin{proposition}\label{thm:natural_numbers_form_dioid}
+  The \hyperref[def:natural_numbers]{natural numbers} \( \BN \) with \hyperref[def:natural_number_multiplication]{multiplication} form a \hyperref[def:magma/commutative]{commutative} \hyperref[def:unital_magma/associative]{monoid} with \( 1 \) as the identity.
+
+  When combined with addition, the natural numbers become a \hyperref[def:semiring]{dioid} \hyperref[def:semiring/no_zero_divisor]{without zero divisors}.
+\end{proposition}
+\begin{proof}
+  \SubProofOf{def:semiring/distributivity} We use induction\IND on \( n \) to prove distributivity, i.e. \eqref{eq:def:semiring/distributivity}. If \( z = 0 \),
+  \begin{equation*}
+    (x + y)0
+    \overset{\eqref{eq:def:natural_number_multiplication}} =
+    0
+    \overset{\eqref{eq:def:natural_number_addition}} =
+    0 + 0
+    \overset{\eqref{eq:def:natural_number_multiplication}} =
+    x0 + y0.
+  \end{equation*}
+
+  If \( z = 1 \),
+  \begin{equation*}
+    (x + y) \cdot 1
+    \overset{\eqref{eq:def:natural_number_multiplication}} =
+    x + y
+    \overset{\eqref{eq:def:natural_number_multiplication}} =
+    x \cdot 1 + y \cdot 1.
+  \end{equation*}
+
+  If \( z = s(z') \) and if the inductive hypothesis holds for \( z' \),
+  \begin{equation*}
+    (x + y)z
+    \overset{\eqref{eq:def:natural_number_multiplication}} =
+    (x + y) + (x + y) z'
+    \overset {\TIndHyp} =
+    x + y + xz' + yz'
+    =
+    (x + xz') + (y + yz')
+    \overset{\eqref{eq:def:natural_number_multiplication}} =
+    xz + yz.
+  \end{equation*}
+
+  \SubProofOf{def:magma/associative} With distributivity proven, associativity of multiplication follows by induction\IND. Indeed, \eqref{eq:def:magma/associative} is trivially satisfied for \( z = 0 \) and \( z = 1 \) and, when \( z = s(z') \) and \( (xy)z' = x(yz') \) for all \( x, y \in \BN \), we have
+  \begin{equation*}
+    (xy)z
+    \overset{\eqref{eq:def:natural_number_multiplication}} =
+    xy + (xy) z'
+    \overset {\TIndHyp} =
+    xy + x(y z')
+    \overset{\eqref{def:semiring/distributivity}} =
+    x(y + y z')
+    \overset{\eqref{eq:def:natural_number_multiplication}} =
+    x(yz).
+  \end{equation*}
+
+  \SubProofOf{def:magma/commutative} Commutativity follows analogously: the base cases are trivial and if \( y = s(y') \) and \( xy' = y'x \) for all \( x \in \BN \), then
+  \begin{equation*}
+    xy
+    \overset{\eqref{eq:def:natural_number_multiplication}} =
+    x + xy'
+    \overset {\TIndHyp} =
+    x + y'x
+    \overset{\eqref{def:semiring/distributivity}} =
+    (1 + y') x
+    \overset{\eqref{eq:def:natural_number_addition}} =
+    yx
+  \end{equation*}
+
+  \SubProofOf{def:semiring/dioid} It is obvious that \( 1 \) is the multiplicative identity. With associativity and commutativity of multiplication proven, we see that \( (\BN, \cdot) \) is a monoid. Because of distributivity, \( (\BN, \cdot) \) is actually a \hyperref[def:semiring/dioid]{dioid}.
+
+  \SubProofOf{def:semiring/no_zero_divisor}
+  We will now show that \( \BN \) has no zero divisors. Let \( x \) and \( y \) be nonzero natural numbers. We want to show that \( xy \neq 0 \). We use induction\IND on \( y \). If \( y = 1 \), by definition \( xy = x \neq 0 \). Let \( y = s(y') \) be different from \( 1 \) and assume that the inductive hypothesis holds for \( y' \), that is, \( xy' \neq 0 \). Because addition is cancellative, if \( xy' \neq 0 \). By \eqref{eq:thm:natural_numbers_form_monoid_under_addition/nonzero_sum}, \( xy = x + xy' \neq 0 \).
+\end{proof}
+
+\begin{definition}\label{def:natural_number_ordering}
+  We define an \hyperref[def:preordered_set]{order relation} \( \leq \) on \( \BN \) by
+  \begin{equation*}
+    x \leq y \Tiff \exists a: x + a = y.
+  \end{equation*}
+\end{definition}
+
+\begin{proposition}\label{thm:natural_numbers_are_well_ordered}
+  The \hyperref[def:natural_numbers]{natural numbers} are \hyperref[def:well_ordered_set]{well-ordered} by \hyperref[def:natural_number_ordering]{\( \leq \)} with \( 0 \) being the global minimum.
+\end{proposition}
+\begin{proof}
+  For von Neumann ordinals, this follows from the more general \fullref{thm:ordinals_are_well_ordered}.
+
+  We will give a direct proof the \hyperref[thm:natural_numbers_form_dioid]{dioid structure} and the order defined in \fullref{def:natural_number_ordering}.
+
+  Zero is obviously a global minimum because \( 0 + x = x \) and hence \( 0 \leq x \) for any \( x \in \BN \).
+
+  \SubProofOf{def:binary_relation/reflexive} Reflexivity is trivial because for every \( x \in \BN \), \( x + 0 = x \) and hence \( x \leq x \).
+
+  \SubProofOf{def:binary_relation/transitive} Transitivity follows from the associativity of addition. If \( x \leq y \leq z \), then there exist numbers \( a, b \) such that \( x + a = y \) and \( y + b = z \). But
+  \begin{equation*}
+    (x + a) + b = x + (a + b) = z,
+  \end{equation*}
+  therefore \( x \leq z \).
+
+  \SubProofOf{def:binary_relation/antisymmetric} Antisymmetry also follows from the associativity of addition. Let \( x \leq y \) and \( y \leq x \). Then there exist numbers \( a, b \) such that \( x + a = y \) and \( y + b = x \). Therefore
+  \begin{equation*}
+    x = y + b = (x + a) + b = x + (a + b).
+  \end{equation*}
+
+  Since addition is cancellative, we obtain \( a + b = 0 \).
+
+  \SubProofOf{def:binary_relation/total} Let \( x, y \in \BN \). We prove totality by induction on \( y \). If \( y = 0 \), then \( x = y \) and both \( x \leq y \) and \( y \neq x \) hold. If \( y = s(y') \), then by the inductive hypothesis, either \( x \leq y' \) or \( x \geq y' \).
+
+  If \( x \leq y' \), there exists a number \( a \) such that \( x + a = y' \) and therefore \( x + s(a) = y \) and \( x \leq y \).
+
+  If \( x \geq y' \), there exists a number \( b \) such that \( x = y' + b \). If \( b = 0 \), then \( x + 1 = y \) and \( x \leq y \). Otherwise, if \( b = s(b') \), we have \( x = y' + b = y + b' \) and \( x \geq y \).
+
+  \SubProofOf{def:well_ordered_set} Let \( A \subseteq \BN \) be a nonempty set. Aiming at a contradiction, suppose\LEM that \( A \) has no \hyperref[def:preordered_set/largest_smallest_element]{minimum}. In particular, \( 0 \not\in A \).
+
+  We will show that \( A \) is empty by induction\IND on \( x \). Since \( 0 \not\in A \), the case \( x = 0 \) is obvious. Let \( x = s(x') \) and \( x' \not\in A \). Again, aiming at a contradiction, suppose that \( x \in A \). Then we can prove that \( x \) is the minimum of \( A \). We use induction\LEM on \( y \in A \). Clearly \( y \) is not zero. If \( y = s(y') \) and \( x \leq y' \), then \( x \leq y \) by transitivity. Therefore \( x \) is indeed the minimum of \( A \). But this contradicts our assumption that \( A \) has no minimum, therefore we conclude that \( x \not\in A \).
+
+  We just showed that \( A \) does not contain any member of a standard model of the Peano arithmetic. Therefore \( A \) is empty, which contradicts our choice of \( A \) as an arbitrary nonempty set.
+
+  The obtained contradiction proves that every nonempty set in \( \BN \) has a minimum with respect to \( \leq \).
+
+  \SubProofOf{def:preordered_magma} We will show that the order is compatible with addition in \( \BN \). Let \( x, y, z \in \BN \) and let \( x \leq y \). Since \( x \leq y \), there exists a constant \( a \) such that \( x + a = y \). Then
+  \begin{equation*}
+    (x + a) + z = (x + z) + a = y + z.
+  \end{equation*}
+
+  Therefore
+  \begin{equation*}
+    x + z \leq y + z.
+  \end{equation*}
+
+  \SubProofOf{def:ordered_semiring} \eqref{eq:def:ordered_semiring/nonnegativity} follows trivially from \fullref{thm:natural_numbers_form_dioid}, which shows that \( \BN \) has \hyperref[def:semiring/no_zero_divisor]{no zero divisors}.
 \end{proof}

@@ -1,7 +1,7 @@
 \subsection{Magmas}\label{subsec:magmas}
 
 \begin{definition}\label{def:magma}
-  A \Def{magma} is a set \( \CM \) equipped with a \hyperref[def:function/arity]{binary function} \( \cdot: \CM \times \CM \to \CM \), called the \Def{magma operation}. Unless specified otherwise, we denote this operation by juxtaposition as \( xy \) instead of \( x \cdot y \).
+  A \Def{magma} is a set \( \CM \) equipped with a \hyperref[def:function/arity]{binary function} \( \cdot: \CM \times \CM \to \CM \), called the \Def{magma operation}. Unless specified otherwise, we denote this operation by juxtaposition as \( xy \) instead of \( x \cdot y \). We often call the operation \Def{multiplication} or \Def{composition} (especially in \hyperref[def:endomorphism_monoid]{endomorphism monoids}), which contrasts which \hyperref[remark:additive_magma]{additive magmas}.
 
   \begin{DefEnum}
     \ILabel{def:magma/theory} In analogy to the \hyperref[def:pointed_set/theory]{theory of pointed sets}, we can define the \Def{theory of magmas} as an empty theory over a language with a single binary function.
@@ -26,14 +26,14 @@
 
     \ILabel{def:magma/associative} We can add the following axiom to the theory:
     \begin{equation}\label{eq:def:magma/associative}
-      (x \cdot y) \cdot z = x \cdot (y \cdot z) \Tforall x, y, z \in \CM.
+      (x \cdot y) \cdot z = x \cdot (y \cdot z).
     \end{equation}
 
     If \eqref{eq:def:magma/associative} is satisfied, we say that the operation \( \cdot \) and, by extension, the magma itself, are \Def{associative}. Associative magmas are usually called \Def{semigroups}. Associativity imposes no additional restrictions on the homomorphisms, hence semigroups are a \hyperref[def:subcategory]{full subcategory} of \( \Cat{Mag} \).
 
     \ILabel{def:magma/commutative} Another common axiom is \Def{commutativity}:
     \begin{equation}\label{eq:def:magma/commutative}
-      x \cdot y = y \cdot x \Tforall x, y \in \CM.
+      x \cdot y = y \cdot x.
     \end{equation}
 
     Commutative magmas also form a full subcategory. Obviously \( \CM = \CM^{-1} \) in a commutative magma.
@@ -46,14 +46,121 @@
     \end{align}
 
     The operation is \Def{cancellative} if it is both left and right cancellative. Cancellative magmas also form a full subcategory.
+
+    \ILabel{def:magma/exponentiation} We define an additional \Def{exponentiation} operation for positive integers \( n \) inductively\IND as
+    \begin{equation}\label{eq:def:magma/exponentiation}
+      x^n \coloneqq \begin{cases}
+        x,               & n = 1 \\
+        x \cdot x^{n-1}, & n > 1
+      \end{cases}
+    \end{equation}
+
+    \ILabel{def:magma/power_set} It is customary to perform magma operations with sets. That is, if \( A \) and \( B \) are sets in the magma \( \CM \), it is customary to write
+    \begin{equation*}
+      A \cdot B \coloneqq \{ a \cdot b \colon a \in A, b \in B \}.
+    \end{equation*}
+
+    This actually turns the power set \( \Pow(\CM) \) into a magma, which we will call the \Def{power set magma} of \( \CM \). This is especially useful with the convention \fullref{remark:singleton_sets} since it allows us to write \( aB \) for \( a \in \CM \) and \( B \subseteq \CM \).
+
+    See \fullref{thm:power_set_magma_preservation}.
   \end{DefEnum}
 \end{definition}
 
-\begin{remark}\label{remark:magma_set_operations}
-  It is customary to perform magma operations with sets. That is, if \( A \) and \( B \) are sets in the magma \( \CM \), it is customary to write
-  \begin{BreakableAlign*}
-    A \cdot B \coloneqq \{ a \cdot b \colon a \in A, b \in B \}.
-  \end{BreakableAlign*}
+\begin{remark}\label{remark:additive_magma}
+  General groups often arise as \hyperref[def:automorphism_group]{automorphism groups}, which are, for the most part, non-commutative, while abelian groups are usually used as the main building block for \hyperref[def:semiring/ring]{rings} and \hyperref[def:left_module]{modules}.
 
-  If we use the convention in \fullref{remark:singleton_sets}, this turns sets over a magma into a magma.
+  To make a further distinction, if the operation is denoted by \( \cdot \) or juxtaposition, we say that the group is a \Def{multiplicative group}, and if the operation is denoted by \( + \), we say that the group is an \Def{additive group}. This terminology usually, but not necessarily, coincides with the group (or, more generally, any \hyperref[def:magma]{magma}) being \hyperref[def:magma/commutative]{commutative}.
+
+  To make things explicit, a \Def{multiplicative magma} is any magma as defined in \fullref{def:magma}. Compare this to \Def{additive magmas}, where
+  \begin{RemEnum}
+    \ILabel{remark:additive_magma/addition} The magma operation is denoted by \( + \) and called \Def{addition}.
+    \ILabel{remark:additive_magma/multiplication} The magma \hyperref[def:magma/exponentiation]{exponentiation operation} is denoted by \( \cdot \) or juxtaposition called \Def{multiplication}. Thus multiplication is not defined for two elements of the magma but defined for a positive integer and an element of the magma. In the case of a \hyperref[def:magma/commutative]{commutative} \hyperref[def:unital_magma/associative]{monoid}, if multiplication is extended to two elements of the monoid, we instead talk about \hyperref[def:semiring]{semirings}.
+
+    \ILabel{remark:additive_magma/identity} The \hyperref[def:magma_identity]{identity} is usually denoted by \( 0 \).
+    \ILabel{remark:additive_magma/inverse} If an \hyperref[def:unital_magma_inverse_element]{inverse} of \( x \) exists, it is denoted by \( -x \) rather than \( x^{-1} \).
+  \end{RemEnum}
 \end{remark}
+
+\begin{proposition}\label{thm:power_set_magma_preservation}
+  \hyperref[def:magma/associative]{Associativity} and \hyperref[def:magma/commutative]{commutativity} from a magma \( \CM \) are preserved in \( \Pow(\CM) \), unlike \hyperref[def:magma/cancellative]{cancellation}.
+\end{proposition}
+\begin{proof}
+  Associativity and commutativity are obviously preserved.
+
+  To show that cancellation is not, consider the group \hyperref[def:group_of_integers_modulo]{\( \BZ_2 \)}. It is a cancellative magma by \fullref{thm:group_properties/cancellative}. Define the sets \( A \coloneqq \{ 0, 1 \} \) and \( B \coloneqq \{ 0 \} \). Then
+  \begin{equation*}
+    A + A = A = A + B,
+  \end{equation*}
+  however we cannot\LEM cancel \( A \) from the left because \( A \neq B \).
+\end{proof}
+
+\begin{proposition}\label{thm:magma_exponentiation_properties}
+  Fix a magma \( \CM \). \hyperref[def:magma/exponentiation]{Magma exponentiation} in \( \CM \) has the following basic properties:
+
+  \begin{PropEnum}
+    \ILabel{thm:magma_exponentiation_properties/commutativity} We have the following \hyperref[def:magma/commutative]{commutativity}-like property: for \( x \in \CM \) and \( n = 1, 2, \ldots \),
+    \begin{equation}\label{eq:thm:magma_exponentiation_properties/commutativity}
+      x^n = x x^{n-1} = x^{n-1} x.
+    \end{equation}
+
+    \ILabel{thm:magma_exponentiation_properties/distributivity} Exponentiation distributes over multiplication: for any member \( x \in \CM \) and any two positive integers \( n \) and \( m \),
+    \begin{equation}\label{eq:thm:magma_exponentiation_properties/multiplication}
+      x^{n + m} = x^n x^m.
+    \end{equation}
+
+    \ILabel{thm:magma_exponentiation_properties/repeated} For any member \( x \in \CM \) and any two positive integers \( n \) and \( m \),
+    \begin{equation}\label{eq:thm:magma_exponentiation_properties/repeated}
+      (x^n)^m = x^{nm}.
+    \end{equation}
+  \end{PropEnum}
+\end{proposition}
+\begin{proof}
+  \SubProofOf{thm:magma_exponentiation_properties/commutativity} We use induction\IND on \( n \). The cases \( n = 1 \) and \( n = 2 \) are obvious. For \( n > 2 \), we have
+  \begin{equation*}
+    x^n
+    \overset {\eqref{eq:def:magma/exponentiation}} =
+    x x^{n-1}
+    \overset {\TIndHyp} =
+    x x^{n-2} x
+    \overset {\eqref{eq:def:magma/exponentiation}} =
+    x^{n-1} x.
+  \end{equation*}
+
+  \SubProofOf{thm:magma_exponentiation_properties/distributivity} We use induction\LEM on \( n \). The case \( n = 1 \) follows directly from \eqref{eq:def:magma/exponentiation}. The case \( n > 1 \) follows from
+  \begin{equation*}
+    x^{n + m}
+    \overset {\eqref{eq:def:magma/exponentiation}} =
+    x x^{n + (m - 1)}
+    \overset {\TIndHyp} =
+    x x^{n-1} x^m
+    \overset {\eqref{eq:def:magma/exponentiation}} =
+    x^n x^m.
+  \end{equation*}
+
+  \SubProofOf{thm:magma_exponentiation_properties/repeated} We use induction\LEM on \( n \). The case \( n = 1 \) is obvious and the rest follows from
+  \begin{equation*}
+    (x^n)^m
+    \overset {\eqref{eq:def:magma/exponentiation}} =
+    x^n (x^n)^{m-1}
+    \overset {\TIndHyp} =
+    x^n x^{n (m - 1)}
+    \overset {\eqref{eq:thm:magma_exponentiation_properties/multiplication}} =
+    =
+    x^{nm}.
+  \end{equation*}
+\end{proof}
+
+\begin{definition}\label{def:preordered_magma}
+  A \Def{preordered magma} is a magma \( \BM \) equipped with a \hyperref[def:preordered_set]{preorder} \( \leq \) such that
+  \begin{equation}\label{eq:def:preordered_magma/compatibility}
+    x \leq y \Timplies xz \leq yz \Tand zx \leq zy \Tforall z \in \BM.
+  \end{equation}
+
+  The category of preordered magmas is \hyperref[def:concrete_category]{concrete} with respect to both \( \Cat{Mag} \) and the \hyperref[def:magma/preordered]{category of preordered sets}.
+\end{definition}
+
+\begin{definition}\label{def:topological_magma}
+  A \Def{topological magma} is a magma equipped with a \hyperref[def:topological_space]{topology} such that the magma operation is continuous.
+
+  The category of topological magmas is \hyperref[def:concrete_category]{concrete} with respect to both \( \Cat{Mag} \) and \hyperref[def:category_of_topological_spaces]{\( \Cat{Top} \)}.
+\end{definition}
