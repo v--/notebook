@@ -1,7 +1,7 @@
 \subsection{Grammars}\label{subsec:grammars}
 
 \begin{definition}\label{def:grammar}\MarginCite[def. 2.2]{Sipser2013}
-  Let \( \Cal{A} \) be some \hyperref[def:language/alphabet]{alphabet} and \( V, \Sigma \subseteq \Cal{A} \) be nonempty disjoint subsets of \( \Cal{A} \).
+  Let \( \CA \) be some \hyperref[def:language/alphabet]{alphabet} and \( V, \Sigma \subseteq \CA \) be nonempty disjoint subsets of \( \CA \).
 
   \begin{DefEnum}
     \ILabel{def:grammar/variables} We call elements of \( V \) \Def{variables} or \Def{non-terminals}.
@@ -24,23 +24,26 @@
   We will define a grammar for addition and multiplication of \hyperref[def:natural_numbers]{natural numbers}. Note that we only consider the number in \( \BN \) only as symbols, not as the numbers themselves.
 
   Let \( V \coloneqq \{ E \} \) and \( \Sigma \coloneqq \BN \cup \{ +, (, ) \} \). Define the grammar
-  \begin{AlignedEquation}\label{eq:ex:natural_arithmetic_grammar/simple}
-    &E \to 0, \\
-    &E \to 1, \\
-    &\phantom{E \to} \vdots, \\
-    &E \to n, \\
-    &\phantom{E \to} \vdots, \\
-    &E \to (E + E)
+  \begin{AlignedEquation}\label{ex:natural_arithmetic_grammar/backus_naur_form/simple}
+    &E \to 0 \\
+    &E \to 1 \\
+    &\phantom{E \to} \vdots \\
+    &E \to n \\
+    &\phantom{E \to} \vdots \\
+    &E \to (E + E) \\
+    &E \to (E \cdot E)
   \end{AlignedEquation}
 
   We can use the following shorthand:
-  \begin{equation}\label{eq:ex:natural_arithmetic_grammar/shorthand}
+  \begin{equation}\label{ex:natural_arithmetic_grammar/backus_naur_form/shorthand}
     E \to 0 \mid 1 \mid \ldots \mid (E + E) \mid (E \cdot E).
   \end{equation}
 
-  The infinitude of possible rules may not bother us formally, however there are many disadvantages of not having a proper metasyntax, i.e. a syntax for describing language syntax.
+  The infinitude of possible rules may not bother us formally, but when dealing with software implementations (e.g. the Python grammar that can be found in \cite{Python:39_grammar}), we must have a finite numbers of rules.
 
-  When dealing with more complicated languages like \hyperref[def:first_order_language/grammar]{first-order formulas}, and especially when dealing with programming languages (e.g. the Python grammar that can be found in \cite{Python:39_grammar}), it is more convenient to use alternative notation like the \Def{Backus-Naur form (BNF)}.
+  There are also other advantages of introducing a more convenient metasyntax, i.e. a syntax for describing language syntax.
+
+  For \hyperref[def:grammar/context_free]{context-free grammars}, is often convenient to use the \Def{Backus-Naur form (BNF)}. In our example, this becomes
   \begin{bnf*}
     \bnfprod{nonzero digit} {\bnfts{1} \bnfor \bnfts{2} \bnfor \bnfts{3} \bnfor \bnfts{4} \bnfor \bnfts{5} \bnfor \bnfts{6} \bnfor \bnfts{7} \bnfor \bnfts{8} \bnfor \bnfts{9}} \\
     \bnfprod{digit}         {\bnfts{0} \bnfor \bnfpn{nonzero digit}} \\
@@ -48,16 +51,26 @@
     \bnfprod{operation}     {\bnfts{+} \bnfor \bnfts{\( \cdot \)}} \\
     \bnfprod{expression}    {\bnfpn{number} \bnfor \bnfts{(} \bnfsp \bnfpn{number} \bnfsp \bnfpn{operation} \bnfsp \bnfpn{number} \bnfsp \bnfts{)}}.
   \end{bnf*}
+  with \( \bnfpn{expression} \) as the starting variable.
 
-  Compared to \eqref{eq:ex:natural_arithmetic_grammar/simple}, differences are:
+  The obvious difference is that we explicitly define numbers via their decimal representation, which only requires a finite amount of rules. Compared to \eqref{eq:ex:natural_arithmetic_grammar/backus_naur_form/simple}, some other differences are:
   \begin{enumerate}
     \item Variables are denoted by \( \langle \)words enclosed in angle brackets\( \rangle \) so that we can name variables using more than one symbol.
     \item Terminals are denoted using \enquote{quotes}. In human-readable rich text documents like this one, it is sometimes possible to use different fonts and so instead of \enquote{quotes} we specify terminals using an \texttt{upright monospaced font}.
     \item Free-text rules can be specified using a normal font. This is also only used in human-readable rich text documents, however this usage is justified because such rules are only beneficial for human understanding and not for machine parsing.
     \item The symbol \( :\coloneqq \) is used instead of \( \to \) for specifying transition rules.
     \item Different rules with the same source are concatenated as in \eqref{eq:remark:backus_naur_form/short_rule_list}.
+    \item In order to fully describe a context-free grammar, we must only specify its Backus-Naur form and its starting variable.
   \end{enumerate}
 \end{example}
+
+\begin{definition}\label{def:backus_naur_form}
+  We defined the \Def{Backus-Naur form} of a \hyperref[def:grammar/context_free]{context-free grammar} in \fullref{ex:natural_arithmetic_grammar/backus_naur_form}.
+
+  Although formally necessary for \fullref{def:grammar}, it is of slight inconvenience to explicitly specify the starting variable for a nontrivial grammar in Backus-Naur form because the same Backus-Naur form can be used with different starting variables.
+
+  For this reason, we will say that the Backus-Naur form specifies \Def{grammar schemas} and not grammars. Given a grammar schema, we can select any of its variables to obtain a grammar.
+\end{definition}
 
 \begin{definition}\label{def:grammar_derivation}\MarginCite[page 104 \\ page 108]{Sipser2013}
   Fix a \hyperref[def:grammar]{formal grammar} \( G = (V, \Sigma, \to, S) \). Note that all lowercase symbols in this definitions are words rather than terminals.
@@ -85,6 +98,8 @@
 
     We also say that strings in \( \CL(G) \) are \Def{generated} by the grammar \( G \).
 
+    If a language can be generated by a \hyperref[def:grammar/context_free]{context-free grammar}, we say that it is a \Def{context-free language}.
+
     \ILabel{def:grammar_derivation/ambiguity}\MarginCite[def. 2.7]{Sipser2013}We say that the word \( w \) can be derived \Def{unambiguously} if there exists a unique leftmost derivation from \( S \). Otherwise we say that \( w \) is generated \Def{ambiguously} and that the grammar itself is \Def{ambiguous}.
   \end{DefEnum}
 \end{definition}
@@ -92,7 +107,7 @@
 \begin{example}\label{ex:natural_arithmetic_grammar/derivation}
   We continue \fullref{ex:natural_arithmetic_grammar/backus_naur_form}. Depending on our choice of starting symbol, we can derive different sets of words. We do not consider the language as a big single set but instead as a family of smaller sets whose union is \( \CL(G) \). In this example, this family consists of sets of words representing nonzero digits, arbitrary digits, numbers, operations and arithmetic expressions.
 
-  For the sake of simplifying our exposition and proof, however, we will assume the simpler grammar described in \eqref{eq:ex:natural_arithmetic_grammar/simple}.
+  For the sake of simplifying our exposition and proof, however, we will assume the simpler grammar described in \eqref{eq:ex:natural_arithmetic_grammar/backus_naur_form/simple}.
 
   Choose the starting symbol to be \( E \). Then the grammar can produce the arithmetic expression \( ((1 + 2) + 3) \) by applying the
   \begin{equation*}
