@@ -12,10 +12,11 @@
 
       \ILabel{def:first_order_logic_alphabet/var} A countable alphabet of variables \( \Bold{Var} \), usually denoted by \( \xi_1, \xi_2, \ldots \) or \( \xi, \eta, \zeta \).
 
-      \ILabel{def:first_order_logic_alphabet/quantifiers} Two quantifiers \( Q = \{ \forall, \exists \} \):
+      \ILabel{def:first_order_logic_alphabet/quantifiers} The quantifiers \( Q = \{ \forall, \exists \} \):
       \begin{DefEnum}
         \ILabel{def:first_order_logic_alphabet/quantifiers/universal} The \Def{universal quantifier} \( \forall \).
-        \ILabel{def:first_order_logic_alphabet/quantifiers/existential} Then \Def{existential quantifier} \( \exists \).
+        \ILabel{def:first_order_logic_alphabet/quantifiers/existential} The \Def{existential quantifier} \( \exists \).
+        \ILabel{def:first_order_logic_alphabet/quantifiers/dot} The dot \( \centerdot \) for separating a quantifier from its formula. The dot itself is not itself a quantifier. This is not formally necessary and we use it only for readability.
       \end{DefEnum}
 
       \ILabel{def:first_order_logic_alphabet/equality} Optionally, an equality symbol \( \doteq \). See \fullref{remark:first_order_equality}.
@@ -59,12 +60,14 @@
       \bnfprod{formula}         {\bnfpn{atomic formula} \bnfor} \\
       \bnfmore                  {\bnfts{\neg} \bnfpn{formula} \bnfor} \\
       \bnfmore                  {\bnfts{(} \bnfsp \bnfpn{formula} \bnfsp \bnfpn{connective} \bnfsp \bnfpn{formula} \bnfsp \bnfts{)} \bnfor} \\
-      \bnfmore                  {\bnfpn{quantifier} \bnfsp \bnfpn{variable} \bnfsp \bnfpn{formula}}
+      \bnfmore                  {\bnfpn{quantifier} \bnfsp \bnfpn{variable} \bnfsp \bnfts{\( \centerdot \)} \bnfsp \bnfpn{formula}}
     \end{bnf*}
 
     In practice, we usually only have functions or predicates of specific arities. Note that we can have infinitely many functions but only finitely many different arities. The \hyperref[remark:theory_of_left_monoid_actions]{theory of monoid actions} is an example of a first-order language with infinitely many unary functional symbols, one constant and one binary functional symbol.
 
     If we need the grammars to have a finite set of rules, except for having only finitely many different arities, we need to introduce appropriate naming conventions for variables, functions and predicates, analogously to \fullref{ex:natural_arithmetic_grammar/backus_naur_form}.
+
+    We will be using the conventions in \fullref{remark:propositional_formula_parentheses}.
 
     \ILabel{def:first_order_language/term}\MarginCite[189]{OpenLogic20201202}The set \( \CT \) of \Def{terms} is the language \hyperref[def:grammar_derivation/grammar_language]{generated} by this grammar schema with \( \bnfpn{term} \) as a starting rule.
 
@@ -86,14 +89,14 @@
 
     The grammar of first-order formulas is unambiguous by \fullref{thm:first_order_terms_and_formulas_are_unambiguous}.
 
-    We use the convention from \fullref{remark:propositional_formula_parentheses}.
+    See \fullref{ex:first_order_substition} for examples of formulas.
 
     \ILabel{def:first_order_language/subformula} If \( \varphi \) and \( \psi \) are formulas and \( \psi \) is a \hyperref[def:language/subword]{subword} of \( \varphi \), we say that \( \psi \) is a \Def{subformula} of \( \varphi \).
 
     \ILabel{def:first_order_language/formula_free_variables} The \Def{free variables} of a formula are defined inductively as
     \begin{equation}\label{eq:def:first_order_language/formula_free_variables}
       \Bold{Free}(\varphi) \coloneqq \begin{cases}
-        \varnothing,                                            &\varphi \in \{ \top, \bot \} \\
+        \varnothing,                                            &\varphi \in \Set{ \top, \bot } \\
         \Bold{Var}(\tau_1) \cup \ldots \cup \Bold{Var}(\tau_n), &\varphi = p(\tau_1, \ldots, \tau_n) \\
         \Bold{Var}(\tau_1) \cup \Bold{Var}(\tau_2),             &\varphi = (\tau_1 \doteq \tau_2), \\
         \Bold{Free}(\psi),                                      &\varphi = \neg \psi, \\
@@ -105,7 +108,7 @@
     \ILabel{def:first_order_language/formula_bound_variables} Dually, the \Def{bound variables} of a formula are defined inductively as
     \begin{equation}\label{eq:def:first_order_language/formula_bound_variables}
       \Cat{Bound}(\varphi) \coloneqq \begin{cases}
-        \varnothing,                                   &\varphi \in \{ \top, \bot \} \\
+        \varnothing,                                   &\varphi \in \Set{ \top, \bot } \\
         \varnothing,                                   &\varphi = p(\tau_1, \ldots, \tau_n) \\
         \varnothing,                                   &\varphi = (\tau_1 \doteq \tau_2), \\
         \Cat{Bound}(\psi),                             &\varphi = \neg \psi, \\
@@ -116,7 +119,7 @@
   \end{DefEnum}
 \end{definition}
 
-\begin{proposition}\label{thm:propositional_formulas_are_unambiguous}
+\begin{proposition}\label{thm:first_order_terms_and_formulas_are_unambiguous}
   The grammars of \hyperref[def:first_order_language/term]{first-order terms} and of \hyperref[def:first_order_language/formula]{first-order formulas} are \hyperref[def:grammar_derivation/ambiguity]{unambiguous}.
 \end{proposition}
 \begin{proof}
@@ -141,34 +144,28 @@
     \ILabel{def:first_order_substition/term_in_formula} The substition of the term \( \kappa \) with the term \( \nu \) in the first order formula \( \varphi \) is
     \begin{equation}\label{eq:def:first_order_substition/term_in_formula}
       \varphi[\kappa \mapsto \nu] \coloneqq \begin{cases}
-        \varphi,                                                                       &\varphi \in \{ \top, \bot \}, \\
+        \varphi,                                                                       &\varphi \in \Set{ \top, \bot }, \\
         p(\tau_1[\kappa \mapsto \nu], \ldots, \tau_n[\kappa \mapsto \nu]),             &\varphi = p(\tau_1, \ldots, \tau_n), \\
         (\tau_1[\kappa \mapsto \nu] \doteq \tau_2[\kappa \mapsto \nu]),                &\varphi = (\tau_1 \doteq \tau_2), \\
         \neg \psi[\kappa \mapsto \nu],                                                 &\varphi = \neg \psi, \\
         \psi_1[\kappa \mapsto \nu] \circ \psi_2[\xi \mapsto \nu],                      &\varphi = \psi_1 \circ \psi_2, \circ \in \Sigma, \\
-        \text{\fullref{eq:def:first_order_substition/term_in_formula/quantifiers}},    &\varphi = Q \xi \psi, Q \in \{ \forall, \exists \},
+        (\Ast),                                                                        &\varphi = Q \xi \centerdot \psi, Q \in \{ \forall, \exists \},
       \end{cases}
     \end{equation}
     where
     \begin{equation}\label{eq:def:first_order_substition/term_in_formula/quantifiers}
-      \begin{cases}
-        Q \xi \psi[\kappa \mapsto \nu],                                                &\xi \not\in \Bold{Var}(\kappa) \cup \Bold{Var}(\nu), \\
-        Q \eta \psi[\xi \mapsto \eta][\kappa \mapsto \nu],                             &\xi \in \Bold{Var}(\kappa) \cup \Bold{Var}(\nu) \T{and} \\
-                                                                                       &\eta \not\in \Bold{Var}(\kappa) \cup \Bold{Var}(\nu) \cup \Bold{Free}(\psi).
+      (\Ast) = \begin{cases}
+        Q \xi \centerdot \Parens[\Big]{\psi[\kappa \mapsto \nu]},                      &\xi \not\in \Bold{Free}(\theta) \cup \Bold{Free}(\rho), \\
+        Q \eta \centerdot \Parens[\Big]{\psi[\xi \mapsto \eta][\kappa \mapsto \nu]},   &\xi \in \Bold{Free}(\theta) \cup \Bold{Free}(\rho) \T{and} \\
+                                                                                       &\eta \not\in \Bold{Free}(\theta) \cup \Bold{Free}(\rho) \cup \Bold{Free}(\psi).
       \end{cases}
     \end{equation}
 
-    The second rule is called \Def{renaming} \( \xi \) to \( \eta \) and is done in order to avoid \enquote{capturing} free variables as in
-    \begin{equation}\label{eq:def:first_order_substition/term_in_formula/capturing}
-      (\forall y \; p(x, y))[x \mapsto y] = \forall y \; p(y, y).
-    \end{equation}
-
-    We also wish to avoid \enquote{colliding} multiple bound variables as in
-    \begin{equation}\label{eq:def:first_order_substition/term_in_formula/renaming_bound}
-      (\forall x \forall y \; p(x, y))[x \mapsto y] = \forall y \; p(y, y).
-    \end{equation}
-
     We implicitly assume that there exist enough variables in the language so that we can find \( \eta \) that satisfies the condition. See \fullref{ex:first_order_substition} for examples of applying the different quantifier rules.
+
+    The third rule is called \Def{renaming of the bound variables} \( \xi \) to \( \eta \) and is done to mitigate the problems described in \fullref{rem:first_order_substitution_renaming_justification}.
+
+    See \fullref{rem:first_order_substition_parentheses} regarding the additional parentheses in \eqref{eq:def:first_order_substition/term_in_formula/quantifiers}.
 
     \ILabel{def:first_order_substition/formula_in_formula} The substition of the \hyperref[def:first_order_language/formula]{first order formula} \( \theta \) with the first order formula \( \rho \) in the first order formula \( \varphi \) is
     \begin{equation}\label{eq:def:first_order_substition/formula_in_formula}
@@ -177,14 +174,14 @@
         \varphi,                                                                       &\varphi \neq \theta \T{and} \varphi \text{ is atomic}, \\
         \neg \psi[\theta \mapsto \rho],                                                &\varphi \neq \theta \T{and} \varphi = \neg \psi, \\
         \psi_1[\theta \mapsto \rho] \circ \psi_2[\xi \mapsto \rho],                    &\varphi \neq \theta \T{and} \varphi = \psi_1 \circ \psi_2, \circ \in \Sigma, \\
-        \text{\fullref{eq:def:first_order_substition/formula_in_formula/quantifiers}}, &\varphi \neq \theta \T{and} \varphi = Q \xi \psi, Q \in \{ \forall, \exists \},
+        (\Ast),                                                                        &\varphi \neq \theta \T{and} \varphi = Q \xi \centerdot \psi, Q \in \{ \forall, \exists \},
       \end{cases}
     \end{equation}
     where
     \begin{equation}\label{eq:def:first_order_substition/formula_in_formula/quantifiers}
-      \begin{cases}
-        Q \xi \psi[\theta \mapsto \rho],                                               &\xi \not\in \Bold{Free}(\theta) \cup \Bold{Free}(\rho), \\
-        Q \eta \psi[\xi \mapsto \eta][\theta \mapsto \rho],                            &\xi \in \Bold{Free}(\theta) \cup \Bold{Free}(\rho) \T{and} \\
+      (\Ast) = \begin{cases}
+        Q \xi \centerdot \Parens[\Big]{\psi[\theta \mapsto \rho]},                     &\xi \not\in \Bold{Free}(\theta) \cup \Bold{Free}(\rho), \\
+        Q \eta \centerdot \Parens[\Big]{\psi[\xi \mapsto \eta][\theta \mapsto \rho]},  &\xi \in \Bold{Free}(\theta) \cup \Bold{Free}(\rho) \T{and} \\
                                                                                        &\eta \not\in \Bold{Free}(\theta) \cup \Bold{Free}(\rho) \cup \Bold{Free}(\psi).
       \end{cases}
     \end{equation}
@@ -193,27 +190,100 @@
   \end{DefEnum}
 \end{definition}
 
+\begin{definition}\label{def:first_order_formula_congruence}
+  We define \hyperref[def:equivalence_relation]{\Def{congruence}} of \hyperref[def:first_order_language/formula]{first order formulas} inductively\IND if any of the following (non-equivalent) conditions hold:
+  \begin{DefEnum}
+    \ILabel{def:first_order_formula_congruence/equality} If \( \varphi_1 = \varphi_2 \). In particular, this always covers the cases where \( \varphi_1 \) and \( \varphi_2 \) are atomic formulas.
+
+    \ILabel{def:first_order_formula_congruence/negation} If \( \varphi_1 = \neg \psi_1 \) and \( \varphi_2 = \neg \psi_2 \) and \( \psi_1 \cong \psi_2 \).
+
+    \ILabel{def:first_order_formula_congruence/connectives} If \( \varphi_1 = \neg \psi_1 \) and \( \varphi_2 = \neg \psi_2 \) and \( \psi_1 \cong \psi_2 \).
+
+    \ILabel{def:first_order_formula_congruence/connectives} If \( \varphi_1 = \psi_{1,1} \circ \psi_{1,2} \) and \( \varphi_2 = \psi_{2,1} \circ \psi_{2,2} \) for the same \( \circ \in \Sigma \) and if
+    \begin{equation*}
+      \psi_{1,1} \cong \psi_{1,2} \T{and} \psi_{2,1} \cong \psi_{2,2}.
+    \end{equation*}
+
+    \ILabel{def:first_order_formula_congruence/quantifiers} If \( \varphi_1 = Q \xi_1 \centerdot \psi_1 \) and \( \varphi_2 = Q \xi_2 \centerdot \psi_2 \) for the same quantifier \( Q \in \{ \forall, \exists \} \) and if the following conditions hold:
+    \begin{itemize}
+      \item \( \xi_1 \not\in \Bold{Free}(\psi_2) \)
+      \item \( \xi_2 \not\in \Bold{Free}(\psi_1) \)
+      \item \( \psi_1[\xi_1 \mapsto \xi_2] \cong \psi_2 \)
+    \end{itemize}
+  \end{DefEnum}
+
+  If none of these conditions are satisfied, then \( \varphi_1 \) and \( \varphi_2 \) are not congruent.
+
+  If \( \varphi_1 \cong \varphi_2 \), we say that \( \varphi_1 \) is a \Def{variant} of \( \varphi_2 \) (and vice versa).
+\end{definition}
+
+\begin{lemma}\label{def:first_order_formula_congruence_substitution}
+  For any formula \( \varphi \) and variables \( \eta, \zeta \not\in \Bold{Free}(\varphi) \) the formula \( \varphi \) is \hyperref[def:first_order_formula_congruence]{congruent} with the renaming \( \varphi[\eta \to \zeta] \).
+\end{lemma}
+
+\begin{remark}\label{rem:first_order_substitution_renaming_justification}
+  The renaming in \eqref{eq:def:first_order_substition/term_in_formula/quantifiers} and \eqref{eq:def:first_order_substition/formula_in_formula/quantifiers} exists to mitigate the following two problems:
+
+  \begin{RemEnum}
+    \ILabel{rem:first_order_substitution_renaming_justification/capturing} Renaming mitigates \enquote{capturing} free variables as in
+    \begin{equation*}
+      \Parens[\Big]{ \forall y \centerdot p(x, y) }[x \mapsto y] = \forall y \centerdot p(y, y)
+    \end{equation*}
+    by instead giving, up to the choice of the symbol \( z \), the formula
+    \begin{equation*}
+      \Parens[\Big]{ \forall y \centerdot p(x, y) }[x \mapsto y] = \forall z \centerdot p(y, z).
+    \end{equation*}
+
+    \ILabel{rem:first_order_substitution_renaming_justification/colliding} Renaming mitigates \enquote{colliding} multiple bound variables as in
+    \begin{equation*}
+      \Parens[\Big]{ \forall x \centerdot \forall y \centerdot p(x, y) }[x \mapsto y] = \forall x \centerdot \forall y \centerdot p(y, y)
+    \end{equation*}
+    by instead giving
+    \begin{equation*}
+      \Parens[\Big]{ \forall x \centerdot \forall y \centerdot p(x, y) }[x \mapsto y] = \forall z \centerdot \forall t \centerdot p(z, t).
+    \end{equation*}
+  \end{RemEnum}
+\end{remark}
+
+\begin{remark}\label{rem:first_order_substition_parentheses}
+  When performing \hyperref[def:propositional_substitution]{substition}, it is sometimes convenient to add additional parentheses to avoid ambiguity. For example, while parentheses around quantifier expressions are not necessary by the syntax of first-order logic, adding such parentheses helps avoid the ambiguity in
+  \begin{equation*}
+    \forall x \centerdot p(x, y) [y \mapsto z].
+  \end{equation*}
+
+  Instead, we either write
+  \begin{equation*}
+    \Parens[\Big]{ \forall x \centerdot p(x, y) } [y \mapsto z]
+  \end{equation*}
+  or
+  \begin{equation*}
+    \forall x \centerdot \Parens[\Big]{ p(x, y)[y \mapsto z] }.
+  \end{equation*}
+
+  This convention is only part of the metasyntax and does not interfere with the syntax of the formulas themselves.
+\end{remark}
+
 \begin{example}\label{ex:first_order_substition}
   The following term substitutions should justify the distinct cases in \eqref{eq:def:first_order_substition/term_in_formula/quantifiers}:
   \begin{ExEnum}
     \ILabel{ex:first_order_substition/1} A simple substitution without renaming:
     \begin{align*}
       &{}\phantom{=}{}
-      (\forall x\; p(x, y))[y \mapsto z]
+      \Parens[\Big]{\forall x \centerdot p(x, y)}[y \mapsto z]
       = \\ &=
-      \forall x\; p(x, y)[y \mapsto z]
+      \forall x \centerdot \Parens[\Big]{p(x, y)[y \mapsto z]}
       = \\ &=
-      \forall x\; p(y, z).
+      \forall x \centerdot p(y, z).
     \end{align*}
 
     \ILabel{ex:first_order_substition/2} A simple renaming without actual substitution:
     \begin{align*}
       &{}\phantom{=}{}
-      (\forall x\; p(x, y))[x \mapsto y]
+      \Parens[\Big]{\forall x \centerdot p(x, y)}[x \mapsto y]
       = \\ &=
-      \forall z\; p(x, y)[x \mapsto z][x \mapsto y]
+      \forall z \centerdot \Parens[\Big]{p(x, y)[x \mapsto z][x \mapsto y]}
       = \\ &=
-      \forall z\; p(z, y).
+      \forall z \centerdot p(z, y).
     \end{align*}
 
     We might have defined \( \varphi[\kappa \mapsto \nu] \) in \eqref{eq:def:first_order_substition/term_in_formula} to be \( \varphi \) if \( \xi \in \Bold{Var}(\kappa) \) and this would have leaved this exact formula unchanged. \Fullref{ex:first_order_substition/4}, however, demonstates that this definition would not have worked for nested substitution. Since the substituted formula is equivalent to the original one, we leave the definition as it is.
@@ -221,47 +291,47 @@
     \ILabel{ex:first_order_substition/3} \Fullref{ex:first_order_substition/2} but with both \( \kappa \) and \( \nu \) containing \( x \):
     \begin{align*}
       &{}\phantom{=}{}
-      (\forall x\; p(x, y))[x \mapsto f(x)]
+      \Parens[\Big]{\forall x \centerdot p(x, y)}[x \mapsto f(x)]
       = \\ &=
-      \forall z\; p(x, y)[x \mapsto z][x \mapsto f(x)]
+      \forall z \centerdot \Parens[\Big]{p(x, y)[x \mapsto z][x \mapsto f(x)]}
       = \\ &=
-      \forall z\; p(z, y).
+      \forall z \centerdot p(z, y).
     \end{align*}
 
     \ILabel{ex:first_order_substition/4} Only renaming with multiple quantifiers (analogous to \fullref{ex:first_order_substition/2}):
     \begin{align*}
       &{}\phantom{=}{}
-      (\forall y\; \forall x\; p(x, y)))[x \mapsto y]
+      \Parens[\Big]{\forall y \centerdot \forall x \centerdot p(x, y))}[x \mapsto y]
       = \\ &=
-      \forall z (\forall x\; p(x, y))[y \mapsto z][x \mapsto y]
+      \forall z \Parens[\Big]{(\forall x \centerdot p(x, y))[y \mapsto z][x \mapsto y]}
       = \\ &=
-      \forall z \forall t\; p(x, z)[x \mapsto t][x \mapsto y]
+      \forall z \forall t \centerdot p(x, z)[x \mapsto t][x \mapsto y]
       = \\ &=
-      \forall z \forall t\; p(t, z).
+      \forall z \forall t \centerdot p(t, z).
     \end{align*}
 
     \ILabel{ex:first_order_substition/5} Both renaming and substitution with multiple quantifiers:
     \begin{align*}
       &{}\phantom{=}{}
-      (\forall y\; (p(x, y) \vee \forall x\; p(x, y)))[x \mapsto y]
+      \Parens[\Big]{ \forall y \centerdot (p(x, y) \vee \forall x \centerdot p(x, y)) }[x \mapsto y]
       = \\ &=
-      \forall z (p(x, y) \vee \forall x\; p(x, y))[y \mapsto z][x \mapsto y]
+      \forall z \centerdot \Parens[\Big]{ p(x, y) \vee \forall x \centerdot p(x, y) }[y \mapsto z][x \mapsto y]
       = \\ &=
-      \forall z (p(y, z) \vee (\forall x\; p(x, y))[y \mapsto z][x \mapsto y])
+      \forall z \centerdot \Parens{ p(y, z) \vee \Parens[\Big]{ \forall x \centerdot p(x, y) }[y \mapsto z][x \mapsto y] }
       = \\ &=
-      \forall z (p(y, z) \vee (\forall t\; p(x, z)[x \mapsto t][x \mapsto y]))
+      \forall z \centerdot \Parens{ p(y, z) \vee \Parens[\Big]{ \forall t \centerdot p(x, z) }[x \mapsto t][x \mapsto y] }
       = \\ &=
-      \forall z (p(y, z) \vee (\forall t\; p(t, z))).
+      \forall z \centerdot \Parens[\Big]{ p(y, z) \vee \forall t \centerdot p(t, z) }.
     \end{align*}
 
     \ILabel{ex:first_order_substition/6} Substitution of arbitrary terms rather than only variables:
     \begin{align*}
       &{}\phantom{=}{}
-      (\forall x\; p(x, y, f(y)))[f(y) \mapsto g(y, x)]
+      \Parens[\Big]{\forall x \centerdot p(x, y, f(y))}[f(y) \mapsto g(y, x)]
       = \\ &=
-      \forall z\; p(x, y, f(y))[x \mapsto z][f(y) \mapsto g(y, x)]
+      \forall z \centerdot \Parens[\Big]{p(x, y, f(y))[x \mapsto z][f(y) \mapsto g(y, x)]}
       = \\ &=
-      \forall z\; p(z, y, g(y, x)).
+      \forall z \centerdot p(z, y, g(y, x)).
     \end{align*}
   \end{ExEnum}
 \end{example}
