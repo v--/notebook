@@ -1,6 +1,6 @@
 COMPILER := latexmk -cd -interaction=batchmode -time -bibtex
 
-.PHONY: clean
+.PHONY: clean output-revision
 
 notebook.pdf: notebook.tex bib/*.bib packages/*.sty src/*.tex revision
 ifdef only
