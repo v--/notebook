@@ -1,8 +1,6 @@
 # Notebook
 
-[![CI](https://github.com/v--/notebook/workflows/Build/badge.svg)](https://github.com/v--/notebook/actions?query=workflow%3ABuild)
-
-__Note__: The corresponding PDF, kept up-to-date using GitHub Actions, can be found [here](https://ivasilev.net/files/Notebook.pdf).
+__Note__: The corresponding PDF, automatically kept up-to-date, can be found [here](https://ivasilev.net/files/Notebook.pdf).
 
 This ever-expanding document started as a set of study notes and exercises and gradually outgrew itself to become a slightly more encyclopedic set of study notes. Having all these notes in one place is quite helpful for both expressing my own thoughts clearly and for later reference. It is also helpful for tracking connections between seemingly unrelated concepts - the entire document is inter-hyperlinked. Even though I aim at understanding every concept in the way it is meant to be used, most concepts are presented insomuch as they are relevant to probability and optimization.
 
