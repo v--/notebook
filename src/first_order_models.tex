@@ -1,332 +1,248 @@
-\subsection{First-order models}\label{subsec:first_order_logic}
+\subsection{First-order models}\label{subsec:first_order_models}
 
-\begin{remark}\label{rem:first_order_model_notation}
-  In first-order logic, \hyperref[def:first_order_semantics/satisfiability]{models} are defined as tuples \( \CX = (X, I) \). Outside of logic, models are usually denoted less explicitly.
+\begin{remark}\label{rem:first_order_formula_valuation_without_variable_assignment}
+  If we know that \( \Bold{Free}(\varphi) \subseteq \{ \xi_1, \ldots, \xi_n \} \), we know that the \hyperref[def:first_order_valuation/formula_valuation]{valuation} \( \varphi\DBracket{v} \) only depends on the values \( v(\xi_1), \ldots, v(\xi_n) \). This allows us to introduce the shorthand
+  \begin{equation}\label{eq:rem:first_order_formula_valuation_without_variable_assignment/long}
+    \varphi\DBracket{\xi_1 \mapsto x_1, \ldots, \xi_n \mapsto x_n}
+  \end{equation}
+  or even
+  \begin{equation}\label{eq:rem:first_order_formula_valuation_without_variable_assignment/short}
+    \varphi\DBracket{x_1, \ldots, x_n}
+  \end{equation}
+  for
+  \begin{equation*}
+    \varphi\DBracket{v_{\xi_1 \mapsto x_1, \ldots, \xi_n \mapsto x_n}}
+  \end{equation*}
+  because the variable assignment \( v \) plays no role here.
 
-  For example, in the sense of first-order structures, the language of the \hyperref[def:group/theory]{theory of groups} has a signature consisting of three functional symbols and no predicate symbols. An interpretation in a model of this theory is thus given by providing three functions on a set of arity \( 0 \), \( 1 \) and \( 2 \).
+  When using either of these shorthand notations, we implicitly assume that \( \Bold{Free}(\varphi) \subseteq \Set{ \xi_1, \ldots, \xi_n } \).
 
-  Nevertheless, we usually say that \enquote{let \( \CG \) be a group} and proceed to regard \( \CG \) as a set. If we want to be explicit about the group operation or identity, we can abbreviate this as \( (\CG, e, \cdot) \) or write \enquote{denote by \( e \) the identity of \( \CG \) and by \( x \cdot y \) the group operation}.
+  The shorter notation \eqref{eq:rem:first_order_formula_valuation_without_variable_assignment/short} is useful when \( \varphi \) is a predicate because this translates to
+  \begin{equation*}
+    p\DBracket{x_1, \ldots, x_n} = T \T{if and only if} (x_1, \ldots, x_n) \in I(p).
+  \end{equation*}
+
+  Of course, we avoid this notation for formulas like \( p(f(\xi)) \) because \( p\DBracket{x} \) would mean \( I(p)(I(f)(x)) \) rather than \( I(p)(x) \), which would be confusing.
+
+  We also apply this notation for terms and, in particular, functions.
 \end{remark}
 
-\begin{definition}\label{def:first_order_definability}
-  Fix a \hyperref[def:first_order_language]{first-order language} \( \CL \) and a \hyperref[def:first_order_structure]{structure} \( \CX = (X, I) \) on \( \CL \).
+\begin{theorem}[Semantic deduction theorem]\label{thm:semantic_deduction_theorem}\MarginCite[thm. 14.53]{OpenLogic20201202}
+  \( \Gamma \cup \{ \psi \} \vDash \varphi \) if and only if \( \Gamma \vDash \psi \rightarrow \varphi \). Compare this result to \fullref{thm:deduction_theorem}.
+\end{theorem}
 
-  We say that the set \( A \subseteq X^n \) is \Def{definable} using the \hyperref[def:first_order_language]{formula} \( \varphi \) if, assuming \( {\Bold{Free}(\varphi) \subseteq \Set{ \xi_1, \ldots, \xi_n }} \),
+\begin{definition}\label{def:first_order_definability}
+  Fix a \hyperref[def:first_order_syntax]{first-order language} \( \CL \) and a \hyperref[def:first_order_structure]{structure} \( (\CX, I) \) on \( \CL \).
+
+  We say that the set \( A \subseteq \CX^n \) is \Def{definable} using the \hyperref[def:first_order_syntax]{formula} \( \varphi \) if, assuming \( {\Bold{Free}(\varphi) \subseteq \Set{ \xi_1, \ldots, \xi_n }} \), we have
   \begin{equation*}
-    \varphi\Val{\phantom{.}_{\xi_1,\ldots,\xi_n}^{x_1,\ldots,x_n}} = T \quad\T{if and only if}\quad (x_1, \ldots, x_n) \in A.
+    \varphi\DBracket{\xi_1 \mapsto x_1, \ldots, \xi_n \mapsto x_n} = T \quad\T{if and only if}\quad (x_1, \ldots, x_n) \in A.
   \end{equation*}
 \end{definition}
 
 \begin{definition}\label{def:first_order_equation}
-  A first-order \Def{equation} is an equality proposition, i.e. a proposition of the form
-  \begin{equation*}
-    \tau(\xi_1, \ldots, \xi_n) \doteq \rho(\xi_1, \ldots, \xi_n),
-  \end{equation*}
-  where both \( \tau(\xi_1, \ldots, \xi_n) \) and \( \rho(\xi_1, \ldots, \xi_n) \) are terms with the same free variables.
+  A \Def{first-order equation} is a formula of the form
+  \begin{equation}\label{eq:def:first_order_equation}
+    f(\xi_1, \ldots, \xi_n) \doteq g(\xi_1, \ldots, \xi_n),
+  \end{equation}
+  where both \( f(\xi_1, \ldots, \xi_n) \) and \( g(\xi_1, \ldots, \xi_n) \) are functional symbols with the same free variables.
 
-  Given a structure \( \CA = (A, I) \), we call the elements of the set defined by this formula \Def{solutions}. That is, we say that the tuple \( (x_1, \ldots, x_n) \) is a solution to the equation if
+  Given a structure \( (\CX, I) \), we call the elements of the set defined by this formula \Def{solutions}. That is, we say that the tuple \( (x_1, \ldots, x_n) \) is a solution to the equation \eqref{eq:def:first_order_equation} if
   \begin{equation*}
-    \tau[x_1, \ldots, x_n] = \rho[x_1, \ldots, x_n]
+    f\DBracket{x_1, \ldots, x_n} = g\DBracket{x_1, \ldots, x_n}.
   \end{equation*}
 \end{definition}
 
-\begin{remark}\label{rem:equations}
-  A remarkable portion of mathematics concerns the study of different types of equations (even though they are not usually restricted to equations in first-order logic):
+\begin{example}\label{ex:equations}
+  A remarkable portion of mathematics concerns the study of different types of equations (even though they are not generally restricted to \hyperref[def:first_order_equation]{equations in first-order logic}). The reason for this is that equations provide a simple way to specify rich semantic structure using simple syntactic objects.
 
   \begin{itemize}
-    \item Matrix theory (see \fullref{subsec:matrices}) can be regarded as the study of linear equations.
-    \item Differential equations (see \fullref{sec:diffeq}) is aptly named since it studies equations in functional spaces concerning functions and their derivatives.
-    \item Roots of generalized derivatives (see \fullref{sec:nonsmooth_analysis}) are studied in optimization.
-    \item Diophantine equations are studied in number theory (see \fullref{subsec:integers}).
-    \item Fixed points of functions are studied in different branches of mathematics.
-    \item Affine varieties (see \fullref{subsec:affine_varieties}) are studied in algebraic geometry.
+    \item Matrix theory can be regarded as the study of linear equations. See \fullref{subsec:matrices}.
+    \item Differential equations is aptly named since it studies equations in functional spaces concerning functions and their derivatives. See \fullref{sec:diffeq}.
+    \item Roots of generalized derivatives are studied in optimization. See \fullref{sec:nonsmooth_analysis}.
+    \item Diophantine equations are studied in number theory. See \fullref{subsec:integers}.
+    \item Fixed points of functions are studied in different branches of mathematics. See \fullref{thm:banach_fixed_point_theorem} or \fullref{thm:knaster_tarski_theorem}.
+    \item Affine varieties are studied in algebraic geometry. See \fullref{subsec:affine_varieties}.
   \end{itemize}
-\end{remark}
+\end{example}
 
 \begin{definition}\label{def:first_order_substructure}
-  Let \( \CA = (A, I) \) be a structure for the language \( \CL \) and let \( B \subseteq A \). We say that \( \CB = (B, I) \) is a \Def{substructure} of \( \CA \) if it satisfies any of the following equivalent conditions:
+  Let \( (\CX, I) \) be a structure for the language \( \CL \) and let \( \CY \subseteq \CX \). We say that \( (\CY, I) \) is a \Def{substructure} of \( (\CX, I) \) if it satisfies any of the following equivalent conditions:
 
   \begin{DefEnum}
-    \ILabel{def:first_order_substructure/deductive} If \( B \) is closed under function application, that is, for any functional symbol \( f \) in \( \CL \) with arity \( n \), we have \( I(f)(B^n) \subseteq B \).
+    \ILabel{def:first_order_substructure/deductive} If \( \CY \) is closed under function application, that is, for any functional symbol \( f \) in \( \CL \) with arity \( n \), we have \( I(f)(\CY^n) \subseteq \CY \).
 
-    \ILabel{def:first_order_substructure/inductive} \( B \) is a \hyperref[def:fixed_point]{fixed point} of the operator
+    \ILabel{def:first_order_substructure/inductive} \( \CY \) is a \hyperref[def:fixed_point]{fixed point} of the operator
     \begin{AlignedEquation}\label{eq:def:first_order_substructure/inductive/operator}
-      &T: \Pow(A) \to \Pow(A) \\
-      &T(C) \coloneqq C \cup \{ a \in A \mid \exists f \in \Fun_{\CL}, \exists x_1, \ldots, x_{\#f} \in C \colon I(f)(x_1, \ldots, x_{\#f}) = a \},
+      &T: \Pow(\CX) \to \Pow(\CX) \\
+      &T(A) \coloneqq A \cup \Set{ x \in \CX \mid \exists f \in \Bold{Fun} \centerdot \exists x_1, \ldots, x_{\#f} \in A \centerdot f\DBracket{x_1, \ldots, x_{\#f}} = x },
     \end{AlignedEquation}
-    which enlarges \( C \) with the image of \( C \) under functions of the language \( \CL \).
+    which enlarges \( A \) with the union of all image of \( A \) under functions of the language \( \CL \).
+
+    Note that the formula inside \eqref{eq:def:first_order_substructure/inductive/operator} is in the metalanguage despite using syntax similar to first-order logic formulas.
   \end{DefEnum}
 \end{definition}
 \begin{proof}
-  By definition of \( T \), \( B \) if a fixed point if and only if
+  By definition of \( T \), \( \CY \) if a fixed point if and only if
   \begin{equation*}
-    \{ a \in A \mid \exists f \in \Fun_{\CL}, \exists x_1, \ldots, x_{\#f} \in B \colon I(f)(x_1, \ldots, x_{\#f}) = a \} \subseteq B.
+    \Set{ x \in \CX \mid \exists f \in \Bold{Fun} \centerdot \exists x_1, \ldots, x_{\#f} \in A \centerdot f\DBracket{x_1, \ldots, x_{\#f}} = x } \subseteq \CY.
   \end{equation*}
 
   This condition is clearly satisfied if \( B \) satisfies \fullref{def:first_order_substructure/deductive}.
 
-  If, instead \( B \) is a fixed point of \( T \), for the \( n \)-ary functional symbol \( f \in \Fun_{\CL} \) and for any tuple \( x_1, \ldots, x_n \), the value \( I(f)(x_1, \ldots, x_n) \) belongs to \( B \). Therefore \fullref{def:first_order_substructure/deductive} is satisfied.
+  If, instead \( \CY \) is a fixed point of \( T \), for the \( n \)-ary functional symbol \( f \in \Bold{Fun} \) and for any tuple \( x_1, \ldots, x_n \), the value \( I(f)(x_1, \ldots, x_n) \) belongs to \( \CY \). Therefore \fullref{def:first_order_substructure/deductive} is satisfied.
 \end{proof}
 
 \begin{proposition}\label{thm:first_order_substructure_properties}
-  \hyperref[def:first_order_substructure]{First order substructures} of \( \CA = (A, I) \) over \( \CL \) have the following basic properties:
+  \hyperref[def:first_order_substructure]{First order substructures} of \( (\CX, I) \) over \( \CL \) have the following basic properties:
   \begin{PropEnum}
-    \ILabel{thm:first_order_substructure_properties/intersection} Let \( \{ \CB_k \}_{k \in \CK} \) be a family of substructures of \( \CA \). Then their \enquote{intersection} structure \( \CB = (B, I) \) is again a substructure of \( \CA \), where \( B_k \) be the universum of \( \CB_k, k \in \CK \) and \( B \coloneqq \bigcap_{k \in \CK} B_k \).
+    \ILabel{thm:first_order_substructure_properties/intersection} Let \( \{ \CY_k \}_{k \in \CK} \) be a family of substructures of \( \CX \). Then their \enquote{intersection} structure \( \Paren*{\bigcap_{k \in \CK} \CY_k, I} \) is again a substructure of \( \CX \).
   \end{PropEnum}
 \end{proposition}
 \begin{proof}
-  \SubProofOf{thm:first_order_substructure_properties/intersection} For any \( f \) functional symbol in \( \CA \) with arity \( n \), we have
+  \SubProofOf{thm:first_order_substructure_properties/intersection} For any \( f \) functional symbol in \( \CL \) with arity \( n \), we have
   \begin{equation*}
-    I(f)(B^n) = I(f)\left(\left( \bigcap_{k \in \CK} B_k \right)^n \right) \overset {\ref{thm:function_image_properties/intersection}} \subseteq \bigcap_{k \in \CK} I(f)(B_k^n) \subseteq \bigcap_{k \in \CK} B_k = B.
+    I(f)\Paren*{\Paren*{\bigcap_{k \in \CK} \CY_k}^n}
+    \overset {\ref{thm:function_image_properties/intersection}} \subseteq
+    \bigcap_{k \in \CK} I(f)(\CY_k^n) \subseteq \bigcap_{k \in \CK} \CY_k.
   \end{equation*}
 
-  Therefore \( \CB \coloneqq (B, I) \) is indeed a substructure of \( \CA \).
+  Therefore \( \Paren*{\bigcap_{k \in \CK} \CY_k, I} \) is indeed a substructure of \( (\CX, I) \).
 \end{proof}
 
 \begin{definition}\label{def:first_order_generated_substructure}
-  Let \( \CA = (A, I) \) be a structure over \( \CL \) and let \( S \subseteq B \) be any set. We say that the set \( S \) is said to \Def[bg=поражда,ru=порождает]{generates} the substructure \( \CB = (B, I) \) if it satisfies any of the equivalent statements:
+  Let \( (\CX, I) \) be a structure over \( \CL \) and let \( A \subseteq \CX \) be any set. The set \( A \) is said to \Def[bg=поражда,ru=порождает]{generate} the substructure \( \CY = (\CY, I) \) if it satisfies any of the equivalent statements:
   \begin{ThmEnum}
-    \ILabel{def:first_order_generated_substructure/smallest} Out of all substructures of \( \CA \) whose universum contains \( S \), the universum \( B \) is the smallest with respect to \hyperref[def:subset]{set inclusion}.
+    \ILabel{def:first_order_generated_substructure/smallest} Out of all substructures of \( \CX \) whose universum contains \( A \), the universum \( \CY \) is the smallest with respect to \hyperref[def:subset]{set inclusion}.
 
-    \ILabel{def:first_order_generated_substructure/intersection} \( B \) is the intersection of the universums of all substructures of \( \CA \) that contain \( S \).
+    \ILabel{def:first_order_generated_substructure/intersection} \( \CY \) is the intersection of the universums of all substructures of \( \CX \) that contain \( A \).
   \end{ThmEnum}
 \end{definition}
 \begin{proof}
-  Let \( \{ \CB_k \}_{k \in \CK} \) be the family of all substructures of \( \CA \) whose universums \( B_k, k \in \CK \) contain \( S \). Fix \( B_{k_0} \).
+  Let \( \{ (\CY_k, I) \}_{k \in \CK} \) be the family of all substructures of \( (\CX, I) \) whose universums contain \( A \). Fix one of these substructures, say \( (\CY_{k_0}, I) \).
 
   We have the obvious inclusion
   \begin{equation*}
-    \bigcap_{k \in \CK} B_k \subseteq B_{k_0}.
+    \bigcap_{k \in \CK} \CY_k \subseteq \CY_{k_0}.
   \end{equation*}
 
-  The reverse inclusion holds if and only if \( B_{k_0} \) is contained in each one of universums \( B_k, k \in \CK \). In other words, \( B_{k_0} \) is the smallest of the universums \( B_k, k \in \CK \) with respect to set inclusion if and only if \( B_{k_0} \) equals their intersection.
+  The reverse inclusion holds if and only if \( \CY_{k_0} \) is contained in each one of universums \( \CY_k, k \in \CK \). In other words, \( \CY_{k_0} \) is the smallest of the universums \( \CY_k, k \in \CK \) with respect to set inclusion if and only if \( \CY_{k_0} \) equals their intersection.
 \end{proof}
 
 \begin{definition}\label{def:first_order_homomorphism}\MarginCite[def. 23.8]{OpenLogic20201202}
-  Let \( \CA = (A, I_{\CA}) \) and \( \Cal{B} = (B, I_{\Cal{B}}) \) be structures over a common language. We say that the \hyperref[def:function]{function} \( \varphi: A \to B \) is a \Def{homomorphism} between \( \CA \) and \( \Cal{B} \) if it preserves all functions and relations, that is, for any \( f \in \Bold{Fun} \) and any \( x_1, \ldots, x_{\#f} \in A \),
-  \begin{equation*}
-    \varphi(I_{\CA}(f)[x_1, \ldots, x_{\#f}]) = I_{\Cal{B}}(f)[\varphi(x_1), \ldots, \varphi(x_{\#f})]
-  \end{equation*}
-  and for any \( p \in \Bold{Pred} \) and any \( x_1, \ldots, x_{\#p} \in A \),
-  \begin{equation*}
-    (x_1, \ldots, x_{\#p}) \in p_{\CA} \text{ if and only if } (\varphi(x_1), \ldots, \varphi(x_{\#p})) \in p_{\Cal{B}}.
-  \end{equation*}
-
-  We say that the homomorphism \( \varphi: A \to B \) is
+  Let \( (\CX, I_{\CX}) \) and \( (\CY, I_{\CY}) \) be structures over a common language. We say that the \hyperref[def:function]{function} \( h: \CX \to \CY \) is a \Def{strong homomorphism} or simply \Def{homomorphism} between \( \CX \) and \( \CY \) if it preserves all functions and relations. Explicitly:
   \begin{DefEnum}
-    \ILabel{def:first_order_homomorphism/embedding} an \Def{embedding} or \Def{monomorphism} if \( \varphi \) is an \hyperref[def:function_invertibility/injection]{injective function}.
+    \ILabel{def:first_order_homomorphism/functions} For any functional symbol \( f \in \Bold{Fun} \) of arity \( n \) and any tuple \( x_1, \ldots, x_n \in \CX \) we have
+    \begin{equation}\label{eq:def:first_order_homomorphism/functions}
+      h(I_{\CX}(f)(x_1, \ldots, x_n)) = I_{\CY}(f)(h(x_1), \ldots, h(x_n))
+    \end{equation}
 
-    \ILabel{def:first_order_homomorphism/projection} a \Def{projection} or \Def{epimorphism} if \( \varphi \) is a \hyperref[def:function_invertibility/surjection]{surjective function}.
+    \ILabel{def:first_order_homomorphism/predicates} For any predicate symbol \( p \in \Bold{Pred} \) of arity \( n \) and any \( x_1, \ldots, x_n \in \CX \),
+    \begin{equation}\label{eq:def:first_order_homomorphism/predicates}
+      (x_1, \ldots, x_n) \in I_{\CX}(p) \quad\T{if and only if}\quad (f(x_1), \ldots, f(x_n)) \in I_{\CY}(p).
+    \end{equation}
 
-    \ILabel{def:first_order_homomorphism/isomorphism} an \Def{isomorphism} if \( \varphi \) is a \hyperref[def:function_invertibility/bijection]{bijective function}.
-
-    \ILabel{def:first_order_homomorphism/endomorphism} an \Def{endomorphism} if \( A = B \) and an \Def{automorphism} if \( \varphi \) is a bijective endomorphism.
+    \ILabel{def:first_order_homomorphism/predicates_weak} We can weaken \ref{def:first_order_homomorphism/predicates} to
+    \begin{equation}\label{eq:def:first_order_homomorphism/predicates_weak}
+      (x_1, \ldots, x_n) \in I_{\CX}(p) \quad\T{implies}\quad (f(x_1), \ldots, f(x_n)) \in I_{\CY}(p),
+    \end{equation}
+    in which case we obtain the notion of a \Def{weak homomorphism}. Weak homomorphisms are used in e.g. \fullref{def:graph_homomorphism}.
   \end{DefEnum}
-
-  Homomorphism between first-order structures are a direct generalization of homomorphisms in algebra (see \fullref{def:algebraic_theory}) and the terminology in \fullref{def:morphism_invertibility} is inspired by homomorphisms.
 \end{definition}
 
 \begin{proposition}\label{thm:first_order_homomorphism_properties}
-  The following are some basic properties of \hyperref[def:first_order_homomorphism]{homomorphisms}:
-  \begin{DefEnum}
-    \ILabel{thm:first_order_homomorphism_properties/substructure} If \( \CA = (A, I) \) is a structure and \( \Cal{B} = (B, I) \) is a \hyperref[def:first_order_substructure]{substructure} of \( \CA \), then the function \( \iota: B \to A \) is a \hyperref[def:first_order_homomorphism/projection]{homomorphism}.
+  \hyperref[def:first_order_homomorphism]{First-order structure homomorphisms} are the following basic properties:
+  \begin{PropEnum}
+    \ILabel{thm:first_order_homomorphism_properties/substructure} If \( (\CX, I) \) is a structure and \( \CY = (\CY, I) \) is a \hyperref[def:first_order_substructure]{substructure} of \( \CX \), then the \Def{canonical embedding} function
+    \begin{AlignedEquation}\label{thm:first_order_homomorphism_properties/substructure/canonical_embedding}
+      &\iota: \CY \to \CX \\
+      &\iota(y) \coloneqq y
+    \end{AlignedEquation}
+    is indeed a \hyperref[def:first_order_homomorphism/projection]{homomorphism} (and thus an embedding in the sense of \fullref{def:first_order_homomorphism_inveritibility}).
 
-    \ILabel{thm:first_order_homomorphism_properties/preserves_substructures} If \( \CA = (A, I_{\CA}) \) and \( \Cal{B} = (B, I_{\Cal{B}}) \) are structures and \( \varphi: A \to B \) is a homomorphism, then the \hyperref[def:function]{image} \( \varphi(\CA) = (\varphi(A), I_{\Cal{B}}) \) is a substructure of \( \Cal{B} \).
+    \ILabel{thm:first_order_homomorphism_properties/preserves_substructures} If \( \CX = (\CX, I_{\CX}) \) and \( \CY = (\CY, I_{\CY}) \) are structures and \( h: \CX \to \CY \) is a (weak or strong) homomorphism, then the \hyperref[def:function/image]{image} \( (f(\CX), I_{\CY}) \) is a substructure of \( (\CY, I_{\CY}) \).
 
-    \ILabel{thm:first_order_homomorphism_properties/composition} The \hyperref[def:function/composition]{composition} of two homomorphisms is again a homomorphism.
-  \end{DefEnum}
+    \ILabel{thm:first_order_homomorphism_properties/composition} The \hyperref[def:function/composition]{composition} of two homomorphisms (resp. weak homomorphisms) is again a homomorphism (resp. weak homomorphism).
+  \end{PropEnum}
 \end{proposition}
+\begin{proof}
+  \SubProofOf{thm:first_order_homomorphism_properties/substructure} The interpretation in the substructure \( \CY \) is the \hyperref[def:function/extension]{restriction} \( I\restriction_{\CY} \) of \( I \) to \( \CY \) which simply restricts the domain of any predicate and function is indeed an interpretation in \( \CY \). Thus \( (\CY, I\restriction_{\CY} \) is a structure.
+
+  Conditions \fullref{def:first_order_homomorphism/functions} and \fullref{def:first_order_homomorphism/predicates} are both satisfied since the interpretation of any function and predicate is restricted to \( \CY \). Thus \( \iota \) is a homomorphism.
+
+  \SubProofOf{thm:first_order_homomorphism_properties/preserves_substructures} To see that \( (f(\CX), I_{\CY}) \) is a substructure of \( (\CY, I_{\CY}) \), we will show that \fullref{def:first_order_substructure/deductive} holds.
+
+  Indeed, by \fullref{def:first_order_homomorphism/functions}, for any \( n \)-ary functional symbol and any tuple \( {x_1, \ldots, x_n \in \CX} \), we have that
+  \begin{equation*}
+    I_{\CY}(f)(h(x_1), \ldots, f(x_n))
+    \overset {\eqref{eq:def:first_order_homomorphism/functions}} =
+    h(I_{\CX}(f)(x_1, \ldots, x_n))
+    \overset {\ref{def:first_order_substructure/deductive}} \in
+    h(\CX).
+  \end{equation*}
+
+  Since no predicates are involved in the condition of \( (h(\CX), I_{\CY}) \) to be a substructure of \( (\CY, I_{\CY}) \), this proof holds for both weak and strong homomorphisms.
+
+  \SubProofOf{thm:first_order_homomorphism_properties/composition} If \( h: \CX \mapsto \CY \) and \( l: \CY \mapsto \CZ \) are both homomorphisms, then
+  \begin{RefList}
+    \IRef{def:first_order_homomorphism/functions} for any \( n \)-ary functional symbol \( f \) and any tuple \( x_1, \ldots, x_n \in \CX \),
+    \begin{align*}
+      &{}\phantom{=}{}
+      (l \circ h)(I_{\CX}(f)(x_1, \ldots, x_n))
+      \overset {\eqref{eq:def:first_order_homomorphism/functions}} = \\ &=
+      l(I_{\CY}(f)(h(x_1), \ldots, h(x_n))
+      \overset {\eqref{eq:def:first_order_homomorphism/functions}} = \\ &=
+      I_{\CZ}(f)((l \circ h)(x_1), \ldots, (l \circ h)(x_n)).
+    \end{align*}
+
+    \IRef{def:first_order_homomorphism/predicates} for any \( n \)-ary predicate symbol \( p \) and any tuple \( x_1, \ldots, x_n \in \CX \),
+    \begin{align*}
+      &{}\phantom{=}{}
+      (x_1, \ldots, x_n) \in I_{\CX}(p)
+      \overset {\eqref{eq:def:first_order_homomorphism/predicates}} \iff \\ &\iff
+      (h(x_1)), \ldots, h(x_n)) \in I_{\CY}(p)
+      \overset {\eqref{eq:def:first_order_homomorphism/predicates}} \iff \\ &\iff
+      ((l \circ h)(x_1), \ldots, (l \circ h)(x_n)) \in I_{\CZ}(p).
+    \end{align*}
+  \end{RefList}
+\end{proof}
+
+\begin{definition}\label{def:first_order_homomorphism_inveritibility}
+  We introduce the following terminology (compare to \fullref{def:function_invertibility} and \fullref{def:morphism_invertibility}):
+  \begin{DefEnum}
+    \ILabel{def:first_order_homomorphism_inveritibility/embedding} An \Def{embedding}, also called a \Def{monomorphism}, is an \hyperref[def:function_invertibility/injection]{injective} homomorphism.
+
+    \ILabel{def:first_order_homomorphism_inveritibility/projection} Dually, a \Def{projection}, also called an \Def{epimorphism}, is an \hyperref[def:function_invertibility/surjection]{surjective} homomorphism.
+
+    \ILabel{def:first_order_homomorphism_inveritibility/isomorphism} An \Def{isomorphism} is a \hyperref[def:function_invertibility/bijection]{bijective} homomorphism.
+
+    \ILabel{def:first_order_homomorphism_inveritibility/endomorphism} An \Def{endomorphism} is a homomorphism that is also an \hyperref[def:endofunction]{endofunction}.
+
+    \ILabel{def:first_order_homomorphism_inveritibility/automorphism} A homomorphism that is both an endomorphism and an isomorphism is called an \Def{automorphism}.
+  \end{DefEnum}
+\end{definition}
 
 \begin{proposition}\label{thm:first_order_homomorphism_preserves_models}\MarginCite[def. 23.8]{OpenLogic20201202}
-  Let \( \CA = (A, I_{\CA}) \) and \( \Cal{B} = (B, I_{\Cal{B}}) \) be structures over a common language. Let \( \varphi: A \to B \) be a homomorphism between them. Let \( \Gamma \) be a set of formulas.
+  Let \( (\CX, I_{\CX}) \) and \( (\CY, I_{\CY}) \) be structures over a common language \( \CL \). Let \( h: \CX \to \CY \) be a homomorphism between them. Let \( \Gamma \) be a set of formulas.
 
-  If \( \CA \models \Gamma \), then its image \( \varphi(\CA) \models \Gamma \).
+  If \( (\CX, I_{\CX}) \models \Gamma \), then \( (h(\CX), I_{\CY}) \models \Gamma \).
 \end{proposition}
+\begin{proof}
+  Let \( (\CX, I) \) be a model of \( \varphi \). Let \( \varphi \) be a formula in \( \CL \) such that
+  \begin{equation*}
+    \Bold{Free}(\varphi) \subseteq \Set{x_1, \ldots, x_n}.
+  \end{equation*}
+
+  Using induction\IND on the structure of \( \varphi \), it is straightforward to show that \( \varphi\DBracket{x_1, \ldots, x_n} = \varphi\DBracket{h(x_1), \ldots, h(x_n)} \).
+
+  We conclude that, if \( (\CX, I_{\CX}) \models \varphi \), we have \( (h(\CX), I_{\CY}) \models \varphi \).
+
+  Since the formula \( \varphi \) was an arbitrary member of \( \Gamma \), the statement of the proposition follows.
+\end{proof}
 
 \begin{corollary}\label{thm:substructure_is_model}
   Any \hyperref[def:first_order_substructure]{substructure} of a model of \( \Gamma \) is again a model of \( \Gamma \).
 \end{corollary}
-
-\begin{definition}\label{def:first_order_theory}
-  We define closure of sets of formulas and axiomatic theories analogously to \fullref{def:propositional_theory}.
-\end{definition}
-
-\begin{remark}\label{rem:minimal_first_order_language}
-  As in \fullref{rem:smaller_propositional_language}, to avoid redundancy in definitions and proofs, we can use the Pierce arrow \( \downarrow \) to define the constants, negation and binary connectives by adding additional predicates as axioms.
-\end{remark}
-
-\begin{remark}\label{rem:first_order_equality}
-  Equality is a concept that implies that two objects are completely indistinguishable. It is usually assumed to be part of the language. Examples of languages without formal equality are obscure. The usual example is \fullref{def:set_zfc}, where instead of having equality as part of the language, we can define equality as a formula schema based on the membership predicate and \fullref{def:set_zfc/A1}.
-
-  Let \( \CL \) be a first-order logic language with an equality symbol. In order to make equality behave as expected, we want the following formulas to be added implicitly to every axiomatic theory (see \fullref{def:first_order_theory}):
-
-  \begin{DefEnum}
-    \ILabel{rem:first_order_equality/reflexive} for any \( \xi \in \Bold{Var} \), add the formula \( (\xi \doteq \xi) \).
-    \ILabel{rem:first_order_equality/equality} for any four variables \( \xi_1, \xi_2, \eta_1, \eta_2 \), add
-    \begin{equation*}
-      ((\xi_1 \doteq \eta_1) \wedge (\xi_2 \doteq \eta_2)) \implies ((\xi_1 \doteq \xi_2) \iff (\eta_1 \doteq \eta_2)).
-    \end{equation*}
-
-    \ILabel{rem:first_order_equality/functions} for any \( n \)-ary function \( f \) and any set \( \{ \xi_1, \ldots, \xi_n, \eta_1, \ldots, \eta_n \} \subseteq \Bold{Var} \), add
-    \begin{equation*}
-      ((\xi_1 \doteq \eta_1) \wedge \ldots \wedge (\xi_n \doteq \eta_n)) \implies (f(\xi_1, \ldots, \xi_n) \doteq f(\eta_1, \ldots, \eta_n)).
-    \end{equation*}
-
-    \ILabel{rem:first_order_equality/predicates} analogously, for any \( n \)-ary predicate \( p \), add
-    \begin{equation*}
-      ((\xi_1 \doteq \eta_1) \wedge \ldots \wedge (\xi_n \doteq \eta_n)) \implies (p(\xi_1, \ldots, \xi_n) \iff p(\eta_1, \ldots, \eta_n)).
-    \end{equation*}
-  \end{DefEnum}
-
-  In particular, this ensures that equality is an equivalence relation (see \fullref{thm:first_order_equality_is_equivalence_relation}).
-\end{remark}
-
-\begin{proposition}\label{thm:first_order_equality_is_equivalence_relation}
-  In a first-order logic language with equality, the equality is an \hyperref[def:equivalence_relation]{equivalence relation}, that is, for any \hyperref[def:first_order_structure]{structure} \( \CA \), we have
-  \begin{PropEnum}
-    \ILabel{thm:first_order_equality_is_equivalence_relation/reflexive}(reflexivity) \( \CA \models \forall \xi (\xi \doteq \xi) \)
-    \ILabel{thm:first_order_equality_is_equivalence_relation/symmetric}(symmetry) \( \CA \models \forall \xi \forall \eta ((\xi \doteq \eta) \iff (\eta \doteq \xi)) \)
-    \ILabel{thm:first_order_equality_is_equivalence_relation/transitive}(transitivity) \( \CA \models \forall \xi \forall \eta \forall \zeta (((\xi \doteq \eta) \wedge (\eta \doteq \xi)) \implies (\xi \doteq \zeta)) \)
-  \end{PropEnum}
-\end{proposition}
 \begin{proof}
-  Let \( \CA = (A, I) \) be a structure and let \( v: A \to \Set{ T, F } \) be an variable assignment \hyperref[def:first_order_variable_assignment]{function}. Then
-
-  \SubProofOf{thm:first_order_equality_is_equivalence_relation/reflexive} The variable assignment \( (\forall \xi (\xi \doteq \xi))[v] \) is true if and only if for every \( a \in A \), we have
-  \begin{equation*}
-    (\xi \doteq \xi)[v_x^a] = T.
-  \end{equation*}
-
-  By \fullref{rem:first_order_equality/reflexive}, \( (\eta \doteq \eta) \) is an axiom for every \( \eta \in \Bold{Var} \), hence \mbox{\( (\xi \doteq \xi)[v_x^a] = T \)} for all \( a \in A \).We conclude that
-  \begin{equation*}
-    \CA \models_v \forall \xi (\xi \doteq \xi).
-  \end{equation*}
-
-  \SubProofOf{thm:first_order_equality_is_equivalence_relation/symmetric} Let \( a, b \in A \) be arbitrary. Since \( (\xi \doteq \xi) \) is an axiom for every \( \xi \in \Bold{Var} \), from \fullref{rem:first_order_equality/equality} we obtain
-  \begin{BreakableAlign*}
-    T & =
-    (((\xi \doteq \xi) \wedge (\xi \doteq \eta)) \implies ((\xi \doteq \xi) \iff (\eta \doteq \xi)))[v_{\xi,\eta}^{a,b}]
-    =     \\ &=
-    H_\Rightarrow(H_\wedge((\xi \doteq \xi)[v_{\xi,\eta}^{a,b}], (\xi \doteq \eta)[v_{\xi,\eta}^{a,b}]), H_\Leftrightarrow((\xi \doteq \xi)[v_{\xi,\eta}^{a,b}], (\eta \doteq \xi)[v_{\xi,\eta}^{a,b}]))
-    =     \\ &=
-    H_\Rightarrow(H_\wedge(T, (\xi \doteq \eta)[v_{\xi,\eta}^{a,b}]), H_\Leftrightarrow(T, (\eta \doteq \xi)[v_{\xi,\eta}^{a,b}]))
-    =     \\ &=
-    H_\Leftrightarrow((\xi \doteq \eta)[v_{\xi,\eta}^{a,b}], (\eta \doteq \xi)[v_{\xi,\eta}^{a,b}])
-    =     \\ &=
-    ((\xi \doteq \eta) \iff (\eta \doteq \xi))[v_{\xi,\eta}^{a,b}].
-  \end{BreakableAlign*}
-
-  Both \( a \) and \( b \) were arbitrary, hence
-  \begin{equation*}
-    \CA \models_v \forall \xi \forall \eta ((\xi \doteq \eta) \iff (\eta \doteq \xi)).
-  \end{equation*}
-
-  \SubProofOf{thm:first_order_equality_is_equivalence_relation/transitive} Analogously to \fullref{def:binary_relation/symmetric}, let \( a, b, c \in A \). From \fullref{rem:first_order_equality/equality} we obtain
-  \begin{BreakableAlign*}
-    T & =
-    (((\xi \doteq \eta) \wedge (\zeta \doteq \eta)) \implies ((\xi \doteq \zeta) \iff (\eta \doteq \eta)))[v_{\xi,\eta,\zeta}^{a,b,c}]
-    =     \\ &=
-    H_\Rightarrow(H_\wedge((\xi \doteq \eta)[v_{\xi,\eta,\zeta}^{a,b,c}], (\zeta \doteq \eta)[v_{\xi,\eta,\zeta}^{a,b,c}]), H_\Leftrightarrow((\xi \doteq \zeta)[v_{\xi,\eta,\zeta}^{a,b,c}], (\eta \doteq \eta)[v_{\xi,\eta,\zeta}^{a,b,c}]))
-    =     \\ &=
-    H_\Rightarrow(H_\wedge((\xi \doteq \eta)[v_{\xi,\eta,\zeta}^{a,b,c}], (\zeta \doteq \eta)[v_{\xi,\eta,\zeta}^{a,b,c}]), H_\Leftrightarrow((\xi \doteq \zeta)[v_{\xi,\eta,\zeta}^{a,b,c}], T))
-    =     \\ &=
-    H_\Rightarrow(H_\wedge((\xi \doteq \eta)[v_{\xi,\eta,\zeta}^{a,b,c}], (\zeta \doteq \eta)[v_{\xi,\eta,\zeta}^{a,b,c}]), (\xi \doteq \zeta)[v_{\xi,\eta,\zeta}^{a,b,c}]))
-    =     \\ &=
-    (((\xi \doteq \eta) \wedge (\zeta \doteq \eta)) \implies (\xi \doteq \zeta))[v_{\xi,\eta,\zeta}^{a,b,c}].
-  \end{BreakableAlign*}
-
-  The values \( a \), \( b \) and \( c \) were arbitrary, hence
-  \begin{equation*}
-    \CA \models_v \forall \xi \forall \eta \forall \zeta (((\xi \doteq \eta) \wedge (\zeta \doteq \eta)) \implies (\xi \doteq \zeta)).
-  \end{equation*}
+  Follows from \fullref{thm:first_order_homomorphism_properties/substructure} and \fullref{thm:first_order_homomorphism_preserves_models}.
 \end{proof}
-
-\begin{definition}\label{def:first_order_model_category}
-  Let \( \CL \) be a \hyperref[def:first_order_logic_alphabet]{first-order logic language} and let \( \Gamma \) be a closed set of \hyperref[def:first_order_theory]{formulas}. We denote by \( \Cat{Model}_\Gamma \) the \hyperref[def:category]{category} where
-  \begin{itemize}
-    \item the \hyperref[def:set_zfc]{class} of objects is the class of all models for \( \Gamma \) (see \fullref{def:first_order_model}).
-    \item the morphisms between two models are the homomorphisms between them.
-  \end{itemize}
-
-  We define the forgetful functor
-  \begin{BreakableAlign*}
-     & U: \Cat{Model}_\Gamma \to \Cat{Set} \\
-     & U((A, I)) \coloneqq A               \\
-     & U(f: A \to B) \coloneqq f.
-  \end{BreakableAlign*}
-
-  The image \( U(\Cat{Model}_\Gamma) \) is a subcategory of \( \Cat{Set} \), which implies that \( \Cat{Model}_\Gamma \) is \hyperref[def:category_cardinality]{locally small}.
-\end{definition}
-\begin{proof}
-  \Fullref{thm:first_order_homomorphism_properties/composition} shows that the composition of two homomorphisms is indeed a homomorphism and \fullref{thm:first_order_homomorphism_preserves_models} shows that the image under a homomorphism of a model for \( \Gamma \) is again a model for \( \Gamma \).
-\end{proof}
-
-\begin{remark}\label{rem:induction}
-  Assume that we need to prove a statement about \hyperref[def:natural_numbers]{natural numbers} or, more generally, a statement of the form \( \forall x \varphi(x) \) in a structure \( \CA = (A, I) \).
-
-  We can infer \( \varphi(x) \) for every \( x \in A \) directly by using some property of \( A \). For example, when proving the equivalences in \fullref{def:totally_bounded_set}, we assume that every \( x \in A \) has certain properties and without further assumptions we proceed to prove that each \( x \in A \) has property \( \varphi(x) \). This inference is called \Def{deduction} because we deduce \( \varphi(x) \) from some properties that hold for the entirety of \( A \).
-
-  Another type of inference is called \Def{induction}, where we prove the statement \( \varphi(x) \) by inspecting every \( x \in A \) and proving the statement separately. This becomes cumbersome when \( A \) is a large enough finite set and impossible when \( A \) is an infinite set.
-
-  There are, however, special cases where \( A \) can be \enquote{exhausted} using a simple procedure. This method of exhausting is called an \Def{inductive definition}.
-
-  For example, \fullref{def:peano_arithmetic} shows us how the set of natural numbers can be exhausted by starting from some element \( 0 \in \BN \) and then defining \( 1 \coloneqq s(0), 2 \coloneqq s(1) \) etc. We cannot prove a statement about the natural numbers by inspecting every natural number, however we can exhaust the entire set \( \BN \) as follows:
-  \begin{RemEnum}
-    \ILabel{rem:induction/natural_number_base} We prove that the formula \( \varphi(0) \) holds in \( \CA \).
-    \ILabel{rem:induction/natural_number_step} We assume that \( \varphi(n) \) holds for some \( n \in \BN \) and prove \( \varphi(n + 1) \). Equivalently, we prove that the formula
-          \begin{equation*}
-            \forall n (\varphi(n) \implies \varphi(n + 1))
-          \end{equation*}
-          holds in \( \BN \).
-  \end{RemEnum}
-
-  The axiom schema of induction, \fullref{def:peano_arithmetic/PA3}, guarantees that we have now proved \( \varphi(n) \) for all \( n \in \BN \). Thus \fullref{def:peano_arithmetic} gives us an inductive definition for \( \BN \) and we can use induction to prove properties of \( \BN \).
-
-  Another form of induction on \( \BN \) is
-  \begin{equation*}
-    \forall n (\forall k (k < n \implies \varphi(k)) \implies \varphi(n)).
-  \end{equation*}
-
-  This is called \Def{strong induction}. Here we only have a single clause that says \enquote{for each natural number \( n \), if \( \varphi \) holds for all \( k < n \), then it holds for \( \varphi \)}.
-
-  We can \enquote{exhaust} more complicated sets. An inductive definition usually concern expressions in formal languages (strings of symbols in the sense of \fullref{def:language}). Every clause in an inductive definition for the set \( X \) is either
-  \begin{itemize}
-    \item A subset clause that says \( Y \subseteq X \) for some fixed subset \( Y \subseteq A \) of the universum. This is the \Def{base} of the induction.
-    \item An \hyperref[def:material_implication]{implication} clause which says \enquote{if \( x_1, \ldots, x_n \in X \), then \( f(x_1, \ldots, x_n) \in X \)}, where \( f \) is some function of type \( f: A^n \to A \).
-  \end{itemize}
-
-  It is conventional to add a clause \enquote{there are no other members of \( X \)} to an inductive definition of the set \( X \). We assume, however, that an inductive definition of \( X \) exhausts all of \( X \) so we avoid this practice.
-
-  To prove a property \( \varphi(x) \) for \( X \),
-  \begin{itemize}
-    \item For every subset clause \( Y \subseteq X \), we prove that \( \varphi(y) \) for all \( y \in Y \).
-    \item We then prove every implication clause directly, that is, we prove the formula
-          \begin{equation*}
-            \forall x_1 \ldots \forall x_n (\varphi(x_1) \wedge \ldots \wedge \varphi(x_n) \implies \varphi(f(x_1, \ldots, x_n))).
-          \end{equation*}
-  \end{itemize}
-
-  For example, consider the following definition for the set \( E \) of arithmetic expressions over \( \BN \):
-  \begin{itemize}
-    \item If \( n \in \BN \), then \( n \in E \).
-    \item If \( \xi, \eta \in E \), then \( (\xi + \eta) \in E \)
-    \item If \( \xi, \eta \in E \), then \( (\xi \cdot \eta) \in E \)
-  \end{itemize}
-
-  If we want to prove that every arithmetic expression has an odd number of symbols, we proceed as follows:
-  \begin{itemize}
-    \item If \( n \in \BN \), the expression has length \( 1 \).
-    \item Assume that \( \zeta = (\xi + \eta) \) and also that \( \xi \) and \( \eta \) have odd length. Since \( \Len(\zeta) = \Len(\xi) + \Len(\eta) + 3 \), we conclude that \( \zeta \) also has an odd number of symbols.
-    \item Analogous.
-  \end{itemize}
-
-  We say that the proof uses \Def{mathematical induction on \( X \)} and that it is an \Def{inductive proof}. In the case where \( X \neq \BN \) we also call it a \Def{proof by structural induction}.
-
-  We can also inductively define \hyperref[def:relation]{relations} and \hyperref[def:function]{functions}, for example \fullref{def:propositional_interpretation}. We can define operations in \( E \) based on \fullref{def:natural_numbers_structure}.
-
-  Note that in order for an inductively defined function to be well-defined, in analogy to unambiguous \hyperref[def:grammar_derivation/ambiguity]{grammars}, we usually want to be able to generate every element of \( A \) in only one way. This is the reason for theorems like \fullref{thm:propositional_formulas_are_unambiguous} and \fullref{thm:first_order_formulas_are_unambiguous}. \Fullref{ex:context_free_grammar/real_arithmetic} demonstrates how removing parenthesis in arithmetic expressions can introduce ambiguity.
-
-  An infamous example of the consequences of ambiguity is the expression \( 6 / 2 \cdot 3 \) that can be interpreted as either \( \tfrac 6 2 \cdot 3 = 9 \) or \( \tfrac 6 {2 \cdot 3} = 1 \).
-
-  See \fullref{sec:index} for a list of inductive definitions and proofs.
-\end{remark}
