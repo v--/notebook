@@ -10,9 +10,9 @@ function footnote_translations(translations)
     translated_value = value
 
     if key == 'bg' then
-      translated_value = '\\textbulgarian{' .. value .. '}'
+      translated_value = '\\foreignlanguage{bulgarian}{' .. value .. '}'
     elseif key == 'ru' then
-      translated_value = '\\textrussian{' .. value .. '}'
+      translated_value = '\\foreignlanguage{russian}{' .. value .. '}'
     end
 
     if footnote == '' then
