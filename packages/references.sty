@@ -1,0 +1,61 @@
+\usepackage{xspace} % \xspace
+\usepackage{crossreftools} % \crtcrossreflabel
+\usepackage{nameref} % \nameref
+\usepackage{refcount} % \getrefbykeydefault
+
+% Misc
+\NewDocumentCommand \Caption      {mm} {\caption{#2}\crtcrossreflabel{}[#1]}
+
+% Index
+\NewDocumentCommand \IndexEntry   {mm} {\index{#2}\textsuperscript{\hyperref[sec:index]{#1}}\xspace}
+\NewDocumentCommand \AOC            {} {\IndexEntry{AOC}{Axiom of choice}}
+\NewDocumentCommand \LEM            {} {\IndexEntry{LEM}{Law of the excluded middle}}
+\NewDocumentCommand \USC            {} {\IndexEntry{USC}{Compactness of the unit sphere}}
+\NewDocumentCommand \IND            {} {\IndexEntry{IND}{Induction}}
+
+% Items
+\newlist{RefList}{itemize}{2}
+\NewDocumentCommand \ILabel        {m} {\item\label{#1}}
+\NewDocumentCommand \IAxiom       {mm} {\item[{\crtcrossreflabel{#2}[#1]}]}
+\NewDocumentCommand \IRef          {m} {\item[\ref{#1}]}
+
+\NewDocumentCommand \MarginCite {O{}m} {%
+  \leavevmode\marginpar{%
+    \raggedleft\footnotesize{%
+      \cite{#2} \\ \mbox{\vbox{%
+        % https://tex.stackexchange.com/a/50131
+        \ifnum0<0#1\relax
+          page #1
+        \else
+          #1
+        \fi
+      }}%
+    }%
+  }%
+}
+
+% https://tex.stackexchange.com/a/66096
+\NewDocumentCommand \fullref {m} {%
+  \cref{#1}%
+  \if\vcenter\getrefbykeydefault{#1}{name}{}\vcenter
+  \else
+    \ (\nameref{#1})%
+  \fi
+}
+
+\NewDocumentCommand \Fullref {m} {%
+  \Cref{#1}%
+  \if\vcenter\getrefbykeydefault{#1}{name}{}\vcenter
+  \else
+    \ (\nameref{#1})%
+  \fi
+}
+
+% https://tex.stackexchange.com/questions/34312/how-to-create-a-command-with-key-values
+\directlua{require('lua/footnote_translations.lua')}
+\NewDocumentCommand \Def {O{} m} {%
+  \textbf{#2}%
+  \directlua{%
+    footnote_translations('\luaescapestring{\unexpanded{#1}}')
+  }%
+}
