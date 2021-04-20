@@ -1,50 +1,50 @@
 \subsection{Group presentations}\label{subsec:group_presentations}
 
 \begin{definition}\label{def:free_monoid}
-  Let \( \mscrS \) be an arbitrary set. We associate with \( \mscrS \) its \Def{free monoid} \( F(\mscrS) \coloneqq (\mscrS^{\ast}, \cdot) \), where \( \mscrS^{\ast} \) is the \hyperref[def:language/kleene_star]{Kleene star} and \( \cdot \) is \hyperref[def:language/concatenation]{concatenation}. It is a monoid due to \fullref{thm:kleene_star_is_monoid}.
+  Let \( \mscrS \) be an arbitrary set. We associate with \( \mscrS \) its \term{free monoid} \( F(\mscrS) \coloneqq (\mscrS^{\ast}, \cdot) \), where \( \mscrS^{\ast} \) is the \hyperref[def:language/kleene_star]{Kleene star} and \( \cdot \) is \hyperref[def:language/concatenation]{concatenation}. It is a monoid due to \fullref{thm:kleene_star_is_monoid}.
 \end{definition}
 
 \begin{proposition}\label{thm:free_monoid_is_free_functor}
-  The functor \( F: \Cat{Set} \to \Cat{Mon} \), defined pointwise in \fullref{def:free_monoid}, is \hyperref[def:free_functor]{free}.
+  The functor \( F: \cat{Set} \to \cat{Mon} \), defined pointwise in \fullref{def:free_monoid}, is \hyperref[def:free_functor]{free}.
 \end{proposition}
 \begin{proof}
-  Let \( U: \Cat{Mon} \to \Cat{Set} \) be the corresponding forgetful functor and let \( \mscrM \in \Cat{Mon} \), \( \mscrS \in \Cat{Set} \). We will first show that
+  Let \( U: \cat{Mon} \to \cat{Set} \) be the corresponding forgetful functor and let \( \mscrM \in \cat{Mon} \), \( \mscrS \in \cat{Set} \). We will first show that
   \begin{equation*}
-    \Cat{Mon}(F(\mscrS), \mscrM) = \Cat{Set}(\mscrS, U(\mscrM)),
+    \cat{Mon}(F(\mscrS), \mscrM) = \cat{Set}(\mscrS, U(\mscrM)),
   \end{equation*}
   where equality means that all the underlying functions are equal.
 
   Every monoid homomorphism is a function so obviously
   \begin{equation*}
-    \Cat{Mon}(F(\mscrS), \mscrM) \subseteq \Cat{Set}(\mscrS, U(\mscrM)).
+    \cat{Mon}(F(\mscrS), \mscrM) \subseteq \cat{Set}(\mscrS, U(\mscrM)).
   \end{equation*}
 
   Now consider a function \( f: \mscrS \to U(\mscrM) \). Define the function
-  \begin{BreakableAlign*}
+  \begin{balign*}
      &\varphi: F(\mscrS) \to \mscrM \\
      &\varphi\left( \{ x_k \}_{k \in \mscrK} \right) \coloneqq \prod_{k \in \mscrK} x_k.
-  \end{BreakableAlign*}
+  \end{balign*}
 
   Obviously \( \varphi \) is a homomorphism from \( F(\mscrS) \) to \( \mscrM \). Hence
   \begin{equation*}
-    \Cat{Set}(\mscrS, U(\mscrM)) \subseteq \Cat{Mon}(F(\mscrS), \mscrM).
+    \cat{Set}(\mscrS, U(\mscrM)) \subseteq \cat{Mon}(F(\mscrS), \mscrM).
   \end{equation*}
 \end{proof}
 
 \begin{definition}\label{def:free_group}
-  Let \( \mscrS \) be an arbitrary set. We will now construct the \Def{free group} \( F(\mscrS) \) of \( \mscrS \). The construction is similar to that of \hyperref[def:free_monoid]{free monoids} but it is much more complicated because of special reduction rules for \hyperref[def:unital_magma_inverse_element]{inverse elements}. Refer to \cite{code:free_group_grammar_verification} for a software implementation of the construction.
+  Let \( \mscrS \) be an arbitrary set. We will now construct the \term{free group} \( F(\mscrS) \) of \( \mscrS \). The construction is similar to that of \hyperref[def:free_monoid]{free monoids} but it is much more complicated because of special reduction rules for \hyperref[def:unital_magma_inverse_element]{inverse elements}. Refer to \cite{code:free_group_grammar_verification} for a software implementation of the construction.
 
-  Let \( \star \) be a \hyperref[def:language/symbol]{symbol} not in \( \mscrS \). Our goal is, for each \( a \in \mscrS \), to make the word \( a{\star} \) behave like the inverse of \( a \) in a group. Rather than considering the \hyperref[def:language/kleene_star]{Kleene star} \( (S \cup \{ \star \})^* \) and removing elements via \enquote{reductions} as in \cite{code:free_group_reduction_verification} and \cite[306]{Knapp2016BAlg}, we directly build a language of \Def{reduced words} using the mutually recursive \hyperref[def:grammar]{grammar}
-  \begin{AlignedEquation}\label{eq:def:free_group/grammar}
+  Let \( \star \) be a \hyperref[def:language/symbol]{symbol} not in \( \mscrS \). Our goal is, for each \( a \in \mscrS \), to make the word \( a{\star} \) behave like the inverse of \( a \) in a group. Rather than considering the \hyperref[def:language/kleene_star]{Kleene star} \( (S \cup \{ \star \})^* \) and removing elements via \enquote{reductions} as in \cite{code:free_group_reduction_verification} and \cite[306]{Knapp2016BAlg}, we directly build a language of \term{reduced words} using the mutually recursive \hyperref[def:grammar]{grammar}
+  \begin{alignedeq}\label{eq:def:free_group/grammar}
     &I \to \varepsilon,           &&                        && \text{\( I \) is the initial state} \\
     &I \to S_a \mid D_a,             && a \in \mscrS              && \\
     &S_a \to a \mid a S_a,           && a \in \mscrS              && S_a \text{ does not produce words beginning with } a\star \\
     &S_a \to a D_b,               && a, b \in \mscrS, a \neq b && \\
     &D_a \to a\star S_b,          && a, b \in \mscrS, a \neq b && D_a \text{ does not produce words beginning with } a \\
     &D_a \to a\star \mid a\star D_a, && a \in \mscrS              && \\
-  \end{AlignedEquation}
+  \end{alignedeq}
 
-  The \Def{free group} \( F(\mscrS) \) is defined to be the language of \eqref{eq:def:free_group/grammar} equipped with the inductively\IND defined operation
+  The \term{free group} \( F(\mscrS) \) is defined to be the language of \eqref{eq:def:free_group/grammar} equipped with the inductively\IND defined operation
   \begin{equation}\label{eq:def:free_group/operation}
     w_1 \odot w_2 \coloneqq \begin{cases}
      p \odot s, &w_1 = p a \T{and} w_2 = a\star s \text{ for some } a \in \mscrS, \\
@@ -64,38 +64,38 @@
    \end{equation}
    for \( k = 1, \ldots, n \).
 
-  The group \( (F(\mscrS), \odot) \) is called the \Def{free group} generated by \( \mscrS \).
+  The group \( (F(\mscrS), \odot) \) is called the \term{free group} generated by \( \mscrS \).
 \end{definition}
 \begin{proof}
   The proof of the well-definedness of the group structure of \( F(\mscrS) \) is a straightforward (but tedious) application of induction\IND.
 \end{proof}
 
 \begin{proposition}\label{thm:free_group_is_free_functor}
-  The functor \( F: \Cat{Set} \to \Cat{Grp} \), defined pointwise in \fullref{def:free_group}, is \hyperref[def:free_functor]{free}.
+  The functor \( F: \cat{Set} \to \cat{Grp} \), defined pointwise in \fullref{def:free_group}, is \hyperref[def:free_functor]{free}.
 \end{proposition}
 \begin{proof}
   The outline of the proof is similar to the proof of \fullref{thm:free_monoid_is_free_functor}.
 \end{proof}
 
-\begin{definition}\label{def:group_presentation}\MarginCite[314]{Knapp2016BAlg}
+\begin{definition}\label{def:group_presentation}\mcite[314]{Knapp2016BAlg}
   Let \( \mscrS \) be a set, \( F(\mscrS) \) be the \hyperref[def:free_group]{free group} and \( \mscrR \subseteq F(\mscrS) \) be a subset. Denote by \( \mscrN(\mscrR) \) the smallest normal subgroup of \( F(\mscrS) \) that includes \( \mscrR \) as a subset.
 
   We define the group
   \begin{equation}\label{eq:def:group_presentation/presentation}
-    \mscrG = \Bracket{ \mscrS \mid \mscrR} \coloneqq F(\mscrS) / \mscrN(\mscrR)
+    \mscrG = \braket{ \mscrS \mid \mscrR} \coloneqq F(\mscrS) / \mscrN(\mscrR)
   \end{equation}
-  called the group with \Def{generators} \( \mscrS \) and \Def{relators} \( \mscrR \). The expression \eqref{eq:def:group_presentation/presentation} is called a \Def{presentation} of \( \mscrG \).
+  called the group with \term{generators} \( \mscrS \) and \term{relators} \( \mscrR \). The expression \eqref{eq:def:group_presentation/presentation} is called a \term{presentation} of \( \mscrG \).
 
-  If there exists a presentation for \( \mscrG \) such that \( \mscrS \) is finite, it is called a \Def{finitely generated} group. If there exists a presentation such that both \( \mscrS \) and \( \mscrR \) are finite, it is called \Def{finitely presented}.
+  If there exists a presentation for \( \mscrG \) such that \( \mscrS \) is finite, it is called a \term{finitely generated} group. If there exists a presentation such that both \( \mscrS \) and \( \mscrR \) are finite, it is called \term{finitely presented}.
 
   If \( \mscrR = \varnothing \), there are no restrictions and we use the notation
   \begin{equation}\label{eq:def:group_presentation/free}
-    \mscrG = \Bracket{ \mscrS } \coloneqq F(\mscrS)
+    \mscrG = \braket{ \mscrS } \coloneqq F(\mscrS)
   \end{equation}
   for the free group.
 \end{definition}
 
-\begin{theorem}\label{thm:every_group_is_representable}\MarginCite[prop. 7.7]{Knapp2016BAlg}
+\begin{theorem}\label{thm:every_group_is_representable}\mcite[prop. 7.7]{Knapp2016BAlg}
   Every group \( \mscrG \) has at least one \hyperref[def:group_presentation]{presentation}.
 \end{theorem}
 \begin{proof}
@@ -120,25 +120,25 @@
       drawarrow d1 dotted;
 
       label.ulft("$\iota$", straight_arc_midpoint of a1);
-      label.urt("$\Id$", straight_arc_midpoint of a2);
+      label.urt("$\id$", straight_arc_midpoint of a2);
       label.top("$U(\varphi)$", straight_arc_midpoint of d1);
       endfig;
     \end{mplibcode}
   \end{equation*}
-  that is, \( U(\varphi) \circ \iota = \Id \). Thus \( G = \mscrS \subseteq \ker \varphi \). Define \( \mscrR \coloneqq \ker \varphi \). By \fullref{def:normal_subgroup}, \( \mscrR \) is a normal subgroup of \( F(\mscrS) \), thus
+  that is, \( U(\varphi) \circ \iota = \id \). Thus \( G = \mscrS \subseteq \ker \varphi \). Define \( \mscrR \coloneqq \ker \varphi \). By \fullref{def:normal_subgroup}, \( \mscrR \) is a normal subgroup of \( F(\mscrS) \), thus
   \begin{equation*}
-    G = \varphi(F(\mscrS)) \cong F(\mscrS) / \ker \varphi = \Bracket{ \mscrS \mid \mscrR }.
+    G = \varphi(F(\mscrS)) \cong F(\mscrS) / \ker \varphi = \braket{ \mscrS \mid \mscrR }.
   \end{equation*}
 \end{proof}
 
 \begin{definition}\label{def:cyclic_group}
-  For a singleton alphabet \( \Set{ a } \), we define the \Def{infinite cyclic group}
+  For a singleton alphabet \( \set{ a } \), we define the \term{infinite cyclic group}
   \begin{equation*}
-    C \coloneqq \Bracket{a}
+    C \coloneqq \braket{a}
   \end{equation*}
-  and, for positive integers \( n \), the \Def{finite cyclic group} of \Def{order} \( n \) as
+  and, for positive integers \( n \), the \term{finite cyclic group} of \term{order} \( n \) as
   \begin{equation*}
-    C_n \coloneqq \Bracket{a \mid a^n}.
+    C_n \coloneqq \braket{a \mid a^n}.
   \end{equation*}
 
   We use the same notation independent of \( a \) because all cyclic groups of the same order are obviously \hyperref[def:group/homomorphism]{isomorphic}.
@@ -146,14 +146,14 @@
   See \fullref{thm:cyclic_group_isomorphic_to_integers_modulo_n}.
 \end{definition}
 
-\begin{definition}\label{def:group_free_product}\MarginCite[323]{Knapp2016BAlg}
-  The \Def{free product} of a nonempty family of groups \( \Set{ \mscrX_k }_{k \in \mscrK} \) with presentations \( \Bracket{\mscrS_k \mid \mscrR_k}, k \in \mscrK \) is the group
+\begin{definition}\label{def:group_free_product}\mcite[323]{Knapp2016BAlg}
+  The \term{free product} of a nonempty family of groups \( \set{ \mscrX_k }_{k \in \mscrK} \) with presentations \( \braket{\mscrS_k \mid \mscrR_k}, k \in \mscrK \) is the group
   \begin{equation*}
-    \Ast_{k \in \mscrK} \mscrX_k \coloneqq \Bracket*{ \coprod_{k \in \mscrK} \mscrS_k \Given \coprod_{k \in \mscrK} \mscrR_k },
+    \Ast_{k \in \mscrK} \mscrX_k \coloneqq \braket*{ \coprod_{k \in \mscrK} \mscrS_k \given \coprod_{k \in \mscrK} \mscrR_k },
   \end{equation*}
   where \( \coprod \) is the \hyperref[def:disjoint_union]{disjoint union}.
 \end{definition}
 
 \begin{definition}\label{def:free_abelian_group}
-  A \Def{free abelian group} is a \hyperref[def:free_left_module]{free} \hyperref[thm:abelian_group_iff_z_module]{\( \BbbZ \)-module}. This definition of a free abelian group is different from the definition of a \hyperref[def:free_group]{free group}.
+  A \term{free abelian group} is a \hyperref[def:free_left_module]{free} \hyperref[thm:abelian_group_iff_z_module]{\( \BbbZ \)-module}. This definition of a free abelian group is different from the definition of a \hyperref[def:free_group]{free group}.
 \end{definition}
