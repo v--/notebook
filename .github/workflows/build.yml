@@ -1,0 +1,38 @@
+name: Build
+
+on:
+  push:
+    branches: [master]
+
+jobs:
+  build:
+    runs-on:  ubuntu-18.04
+
+    steps:
+    - uses: actions/checkout@v2
+
+    - uses: xu-cheng/texlive-action/full@v1
+      with:
+        run: |
+          apk add make git
+          make output-revision
+          make notebook.pdf
+
+    - name: Deploy
+      if: ${{ success() }}
+      run: |
+        echo '${{ secrets.SFTP_KEY }}' > ssh_id
+        chmod 600 ssh_id
+        echo 'cd ${{ secrets.SFTP_ROOT }}
+              put notebook.log
+              put notebook.pdf
+        ' | sftp -i ssh_id -o StrictHostKeyChecking=no -o Port=${{ secrets.SFTP_PORT }} ${{ secrets.SFTP_USERNAME }}@${{ secrets.SFTP_SERVER }}
+
+    - name: Upload only log
+      if: ${{ failure() }}
+      run: |
+        echo '${{ secrets.SFTP_KEY }}' > ssh_id
+        chmod 600 ssh_id
+        echo 'cd ${{ secrets.SFTP_ROOT }}
+              put notebook.log
+        ' | sftp -i ssh_id -o StrictHostKeyChecking=no -o Port=${{ secrets.SFTP_PORT }} ${{ secrets.SFTP_USERNAME }}@${{ secrets.SFTP_SERVER }}
