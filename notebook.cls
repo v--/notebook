@@ -13,22 +13,20 @@
 
 % Reference packages
 \RequirePackage[colorlinks]{hyperref}
-% https://tex.stackexchange.com/a/525984
-\RequirePackage[dvipsnames]{xcolor}
-\hypersetup{
-  linkcolor=BrickRed,
-  citecolor=Green,
-  filecolor=Mulberry,
-  urlcolor=NavyBlue,
-  menucolor=BrickRed,
-  runcolor=Mulberry,
-  linkbordercolor=BrickRed,
-  citebordercolor=Green,
-  filebordercolor=Mulberry,
-  urlbordercolor=NavyBlue,
-  menubordercolor=BrickRed,
-  runbordercolor=Mulberry
+% https://tex.stackexchange.com/a/525297
+\RequirePackage{xcolor}
+
+\NewDocumentCommand \setcolor {mmm} {%
+  \definecolor{Hy#1color}{#2}{#3}%
+  \hypersetup{#1color=Hy#1color}%
 }
+
+\setcolor{link}{HTML}{800006}
+\setcolor{cite}{HTML}{2E7E2A}
+\setcolor{file}{HTML}{131877}
+\setcolor{url} {HTML}{8A0087}
+\setcolor{menu}{HTML}{727500}
+\setcolor{run} {HTML}{137776}
 
 \RequirePackage{cleveref}
 
