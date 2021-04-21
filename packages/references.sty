@@ -19,17 +19,16 @@
 \NewDocumentCommand \iaxiom       {mm} {\item[{\crtcrossreflabel{#2}[#1]}]}
 \NewDocumentCommand \iref          {m} {\item[\ref{#1}]}
 
-\NewDocumentCommand \mcite {O{}m} {%
+% This could have been called a "decorator" in another language.
+% I "modify" citation commands by prefixing them and then wrapping them.
+\directlua{require('lua/citation_target.lua')}
+\NewDocumentCommand \mcite {m O{}m} {%
   \leavevmode\marginpar{%
     \raggedleft\footnotesize{%
-      \cite{#2} \\ \mbox{\vbox{%
-        % https://tex.stackexchange.com/a/50131
-        \ifnum0<0#1\relax
-          page #1
-        \else
-          #1
-        \fi
-      }}%
+      #1{#3}%
+      \directlua{%
+        citation_target('\luaescapestring{#2}')
+      }%
     }%
   }%
 }
@@ -56,6 +55,6 @@
 \NewDocumentCommand \term {O{} m} {%
   \textbf{#2}%
   \directlua{%
-    footnote_translations('\luaescapestring{\unexpanded{#1}}')
+    footnote_translations('\luaescapestring{#1}')
   }%
 }

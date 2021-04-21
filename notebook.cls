@@ -15,20 +15,19 @@
 \RequirePackage[colorlinks]{hyperref}
 % https://tex.stackexchange.com/a/525984
 \RequirePackage[dvipsnames]{xcolor}
-
 \hypersetup{
-  linkcolor=NavyBlue,
-  citecolor=NavyBlue,
-  filecolor=Red,
+  linkcolor=BrickRed,
+  citecolor=Green,
+  filecolor=Mulberry,
   urlcolor=NavyBlue,
-  menucolor=Red,
-  runcolor=Red,
-  linkbordercolor=NavyBlue,
-  citebordercolor=NavyBlue,
-  filebordercolor=Red,
+  menucolor=BrickRed,
+  runcolor=Mulberry,
+  linkbordercolor=BrickRed,
+  citebordercolor=Green,
+  filebordercolor=Mulberry,
   urlbordercolor=NavyBlue,
-  menubordercolor=Red,
-  runbordercolor=Red
+  menubordercolor=BrickRed,
+  runbordercolor=Mulberry
 }
 
 \RequirePackage{cleveref}
