@@ -7,9 +7,9 @@
 
 % Parameterized shorthand macros
 \NewDocumentCommand   \op        {m} {\operatorname{#1}}
-\NewDocumentCommand   \bop       {m} {\operatorname{\symbf{#1}}}
-\NewDocumentCommand   \cat       {m} {\bop{#1}}
-\NewDocumentCommand   \distr     {m} {\bop{#1}}
+\NewDocumentCommand   \bfop      {m} {\operatorname{\symbf{#1}}}
+\NewDocumentCommand   \cat       {m} {\bfop{#1}}
+\NewDocumentCommand   \distr     {m} {\bfop{#1}}
 \NewDocumentCommand   \T         {m} {\mathop{\text{#1}}} % Math mode text with automatic spacing
 
 % Properly spaced quantifiers
@@ -23,24 +23,33 @@
 \NewDocumentCommand   \ess         {m} {\operatorname*{ess#1}}
 
 % Delimiters
-\DeclarePairedDelimiter  \p          \lparen \rparen
 \DeclarePairedDelimiter  \eval       \lBrack \rBrack
 \DeclarePairedDelimiter  \abs        \vert   \vert
 \DeclarePairedDelimiter  \norm       \Vert   \Vert
 
+\DeclarePairedDelimiterX \inprod [2] \langle \rangle {%
+  \, #1, #2 \, %
+}
+
+\NewDocumentCommand \given@impl  {m} {\ #1\vert\allowbreak \ }
+\NewDocumentCommand \given {} {}
+
+\DeclarePairedDelimiterX \paren  [1] \lparen \rparen {%
+  \RenewDocumentCommand \given {} {\given@impl\delimsize}%
+  #1%
+}
+
 \DeclarePairedDelimiterX \braket [1] \langle \rangle {%
-  \NewDocumentCommand \given {} {\ \delimsize\vert\allowbreak \ }%
+  \RenewDocumentCommand \given {} {\given@impl\delimsize}%
   \, #1 \, %
 }
 
 \DeclarePairedDelimiterX \set    [1] \lbrace \rbrace {%
-  \NewDocumentCommand \given {} {\ \delimsize\vert\allowbreak \ }%
+  \RenewDocumentCommand \given {} {\given@impl\delimsize}%
   \, #1 \, %
 }
 
-\NewDocumentCommand \inner {mm} {\braket{#1, #2}}
-
-% Operators
+% More operators
 \DeclareMathOperator* \Ast           {\dingasterisk}
 \DeclareMathOperator  \aut           {aut}
 \DeclareMathOperator  \card          {card}
