@@ -51,3 +51,25 @@
 \setmathfont{Stix Two Math}
 
 \RequirePackage{microtype}
+
+% Misc nonmath packages
+\usepackage{enumitem}
+\usepackage{imakeidx}
+
+% Misc math packages
+\usepackage[altpo, epsilon]{backnaur}
+\usepackage[ISO]{diffcoeff}
+\usepackage{ebproof}
+\usepackage{bigints}
+
+% Custom code
+\RequirePackage{packages/math_macros}
+\RequirePackage{packages/paired_delimiters}
+\RequirePackage{packages/references}
+\RequirePackage{packages/subproofs}
+\RequirePackage{packages/theorem_styles}
+\RequirePackage{packages/environments}
+\RequirePackage{packages/metapost}
+
+% Use the left margins rather than the right margins
+\reversemarginpar
