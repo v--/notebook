@@ -4,9 +4,7 @@
   A \term{first-order derivation system} for the \hyperref[def:first_order_syntax]{language} \( \mscrL \) consists of:
 
   \begin{defenum}
-    \ilabel{def:first_order_derivation_system/axioms} A set of \hyperref[def:first_order_syntax]{formulas} in \( \mscrL \), which we call \term{logical axioms} (to distinguish them with \hyperref[def:first_order_proofs/axioms_and_theorems]{nonlogical axioms}).
-
-    \ilabel{def:first_order_derivation_system/rules} A set of \hyperref[def:relation]{relations} of potentially different arity on the set of formulas of \( \mscrL \), which we call \term{inference rules}. If \( r \) is an inference rule of arity \( n \) and if \( \psi_1, \ldots, \psi_n \) and \( \varphi \) are formulas, we say that the rule allows us to \term{infer} \( \varphi \) from \( \psi_1, \ldots, \psi_n \) if \( (\psi_1, \ldots, \psi_n, \varphi) \in r \). We write this symbolically as
+    \ilabel{def:first_order_derivation_system/rules} A set of \hyperref[def:relation]{relations} of potentially different arity on the set of formulas of \( \mscrL \), which we call \term{inference rules}. If \( r \) is an inference rule of arity \( n + 1 \), we say that the rule allows us to \term{infer} \( \varphi \) from \( \psi_1, \ldots, \psi_n \) if \( (\psi_1, \ldots, \psi_n, \varphi) \in r \) for any \( n+1 \)-tuple of formulas \( (\psi_1, \ldots, \psi_n, \varphi) \). We write this symbolically as
     \begin{equation*}
       \begin{prooftree}
         \hypo{\psi_1}
@@ -15,6 +13,8 @@
         \infer3[r]{\varphi}
       \end{prooftree}
     \end{equation*}
+
+    \ilabel{def:first_order_derivation_system/axioms} A set of \hyperref[def:first_order_syntax]{formulas} in \( \mscrL \), which we call \term{logical axioms} (to distinguish them with \hyperref[def:first_order_proofs/axioms_and_theorems]{nonlogical axioms}).
   \end{defenum}
 \end{definition}
 
@@ -53,125 +53,91 @@
   \end{defenum}
 \end{definition}
 
-\begin{definition}\label{def:hilberts_derivation_system}\mcite\cite[def. 20.5 \\ def. 20.7]{OpenLogic20201202}
-  \term{Hilbert's} \hyperref[def:first_order_derivation_system]{derivation system} for the language \( \mscrL \) consists of: a single inference rule called \term{modus ponens}
+\begin{definition}\label{def:propositional_implicational_logic}
+  A very simple \hyperref[def:first_order_derivation_system]{derivation system} is that of \term{implicational propositional logic}. It is based on the propositional alphabet consisting only of \( \to \) and \( \bot \) (which is sufficient to express all propositional formulas by \fullref{ex:posts_completeness_theorem/implies_bot}).
 
   \begin{reflist}
-    \iref{def:first_order_derivation_system/axioms} The following list of logical axioms (we can remove most of them - see \fullref{rem:hilberts_derivation_system_axioms}):
-    \begin{balign}
-                                          \text{base}   & \text{ axioms}                                                                              \nonumber \\
-      \varphi                                           &\to (\psi \to \varphi)                                                       \label{def:hilberts_derivation_system/axioms/implies_intro} \\
-      (\varphi \to (\psi \to \theta))   &\to ((\varphi \to \psi) \to (\psi \to \theta))               \label{def:hilberts_derivation_system/axioms/implies_distributivity} \\
-                                      \text{quantifier} & \text{ axioms}                                                                              \nonumber \\
-      \qforall{\xi} \varphi                    &\to \varphi[\xi \mapsto \tau],     \hspace{0.95cm} \tau \text{ is a closed term}     \label{def:hilberts_derivation_system/axioms/forall_elim} \\
-      \varphi[\xi \mapsto \tau]                         &\to \qexists{\xi} \varphi, \hspace{1.5cm} \tau \text{ is a closed term}     \label{def:hilberts_derivation_system/axioms/exists_intro} \\
-                                        \text{equality} & \text{ axioms}                                                                              \nonumber \\
-                                                        &\phantom{{}\to{}} (\xi \doteq \xi)                                                   \label{def:hilberts_derivation_system/axioms/eq_reflexivity} \\
-      (\xi \doteq \eta)                                 &\to (\tau[\zeta \mapsto \xi] \doteq \tau[\zeta \mapsto \eta])                        \label{def:hilberts_derivation_system/axioms/eq_term_subst} \\
-      (\xi \doteq \eta)                                 &\to (\varphi[\zeta \mapsto \xi] \to \varphi[\zeta \mapsto \eta])             \label{def:hilberts_derivation_system/axioms/eq_formula_subst} \\
-                                            \text{top } & \text{definition axioms}                                                                    \nonumber \\
-                                                        &\phantom{{}\to{}} \top                                                               \label{def:hilberts_derivation_system/axioms/top} \\
-                                    \text{equivalence } & \text{definition axioms}                                                                    \nonumber \\
-      (\varphi \leftrightarrow \psi)                    &\to (\varphi \to \psi)                                                       \label{def:hilberts_derivation_system/axioms/equiv_elim_left} \\
-      (\varphi \leftrightarrow \psi)                    &\to (\psi \to \varphi)                                                       \label{def:hilberts_derivation_system/axioms/equiv_elim_right} \\
-      (\varphi \to \psi)                        &\to ((\psi \to \varphi) \to (\varphi \leftrightarrow \psi))          \label{def:hilberts_derivation_system/axioms/equiv_intro} \\
-                                    \text{conjunction } & \text{definition axioms}                                                                    \nonumber \\
-      (\varphi \wedge \psi)                             &\to \varphi                                                                          \label{def:hilberts_derivation_system/axioms/and_elim_left} \\
-      (\varphi \wedge \psi)                             &\to \psi                                                                             \label{def:hilberts_derivation_system/axioms/and_elim_right} \\
-      \varphi                                           &\to (\psi \to (\varphi \wedge \psi))                                         \label{def:hilberts_derivation_system/axioms/and_intro} \\
-                                    \text{disjunction } & \text{definition axioms}                                                                    \nonumber \\
-      \varphi                                           &\to (\varphi \vee \psi)                                                              \label{def:hilberts_derivation_system/axioms/or_elim_left} \\
-      \varphi                                           &\to (\psi \vee \varphi)                                                              \label{def:hilberts_derivation_system/axioms/or_elim_right} \\
-      (\varphi \to \psi)                        &\to ((\theta \to \psi) \to ((\varphi \vee \theta) \to \psi)) \label{def:hilberts_derivation_system/axioms/or_intro} \\
-                                       \text{negation } & \text{definition axioms}                                                                    \nonumber \\
-      (\varphi \to \bot)                                &\to \neg \varphi                                                                     \label{def:hilberts_derivation_system/axioms/neg_falsum} \\
-      (\varphi \to \psi)                        &\to ((\varphi \to \neg \psi) \to \neg \varphi)                       \label{def:hilberts_derivation_system/axioms/neg_intro} \\
-                         \text{principles of explosion} & \text{ (ex falso quodlibet)}                                                                \nonumber \\
-      \bot                                              &\to \varphi                                                                          \label{def:hilberts_derivation_system/axioms/explosion} \\
-      \neg \varphi                                      &\to (\varphi \to \psi)                                                       \label{def:hilberts_derivation_system/axioms/explosion_neg} \\
-                     \text{double negation elimination} & \text{ (stability)}                                                                         \nonumber \\
-      \neg \neg \varphi                                 &\to \varphi                                                                          \label{def:hilberts_derivation_system/axioms/stab} \\
-      ((\varphi \to \bot) \to \bot)     &\to \varphi                                                                          \label{def:hilberts_derivation_system/axioms/stab_bot}
-    \end{balign}
+    \iref{def:first_order_derivation_system/rules} The system has a single rule, \term{modus ponens}:
+    \begin{equation}\label{eq:def:implicational_logic/rules/modus_ponens}
+      \begin{prooftree}
+        \hypo{\varphi}
+        \hypo{\varphi \to \psi}
+        \infer2[mp]{\psi}
+      \end{prooftree}
+    \end{equation}
 
-    Note that rules \eqref{def:hilberts_derivation_system/axioms/eq_reflexivity}-\eqref{def:hilberts_derivation_system/axioms/eq_formula_subst} only make sense if the language has a formal equality symbol.
+    \iref{def:first_order_derivation_system/axioms} The system has three axioms:
+    \begin{align}
+      \varphi                         &\to (\psi \to \varphi)                         \label{def:implicational_logic/axioms/imp_int} \\
+      (\varphi \to (\psi \to \theta)) &\to ((\varphi \to \psi) \to (\psi \to \theta)) \label{def:implicational_logic/axioms/imp_dist} \\
+      (\varphi \to \psi) \to \varphi) &\to \varphi                                    \label{def:implicational_logic/axioms/pierce}
+    \end{align}
 
-    \iref{def:first_order_derivation_system/rules} The following three rules of inference:
-    \begin{defenum}
-      \ilabel{def:hilberts_derivation_system/rules/modus_ponens} \term{Modus ponens}:
-      \begin{equation}\label{eq:def:hilberts_derivation_system/rules/modus_ponens}
-        \begin{prooftree}
-          \hypo{\varphi}
-          \hypo{\varphi \to \psi}
-          \infer2[mp]{\psi}
-        \end{prooftree}
+    \begin{itemize}
+      \item Axiom \eqref{def:implicational_logic/axioms/imp_int} is called \term{implication introduction} because it \enquote{introduces} an implication on the right.
+      \item Axiom \eqref{def:implicational_logic/axioms/imp_dist} is called \term{implication distributivity} because it resembles \hyperref[def:distributive_lattice]{distributivity} of \( \to \) over itself.
+      \item Axiom \eqref{def:implicational_logic/axioms/pierce} is called \term{Pierce's law}. \term{Minimal implicational logic} is the derivation system obtained by removing this rule. If, instead, we replace Pierce's law with \term{the principle of explosion}
+      \begin{equation}\label{def:implicational_logic/axioms/explosion}
+        \bot \to \varphi,
       \end{equation}
+      the resulting derivation system is called \term{intuitionistic implicational logic}. The principle of explosion is also called \term{ex falso quodlibet} (\enquote{from falsity, everything follows}).
 
-      \ilabel{def:hilberts_derivation_system/rules/forall_intro} For \( \xi \not\in \bfop{Free}(\varphi) \), \term{universal quantifier introduction}:
-      \begin{equation}\label{eq:def:hilberts_derivation_system/rules/forall_intro}
-        \begin{prooftree}
-          \hypo{\varphi \to \psi}
-          \infer1[\( \forall \) \text{int}]{\varphi \to \qforall{\xi} \psi}
-        \end{prooftree}
-      \end{equation}
+      To distinguish the system with \eqref{def:implicational_logic/axioms/pierce} from minimal and intuitionistic logic, we call it \term{classical implicational logic}.
+    \end{itemize}
+  \end{reflist}
 
-      \ilabel{def:hilberts_derivation_system/rules/exists_intro} For \( \xi \not\in \bfop{Free}(\psi) \), \term{existential quantifier introduction}:
-      \begin{equation}\label{eq:def:hilberts_derivation_system/rules/exists_intro}
-        \begin{prooftree}
-          \hypo{\varphi \to \psi}
-          \infer1[\( \exists \) \text{int}]{(\qforall{\xi} \varphi) \to \psi}
-        \end{prooftree}
-      \end{equation}
-    \end{defenum}
+  The rules and axioms (except for \eqref{def:implicational_logic/axioms/explosion}) consist entirely of implications, hence the name of the derivation system itself.
+\end{definition}
+
+\begin{definition}\label{def:first_order_implicational_logic}
+  If we wish to work with first-order logic rather than merely propositional logic, we must extend \eqref{def:propositional_implicational_logic} as follows:
+
+  \begin{reflist}
+    \iref{def:first_order_derivation_system/rules}\mcite\cite[def. 20.8]{OpenLogic20201202} We add two rules. Both assume that \( \varphi \) and \( \psi \) are formulas such that \( \xi \not\in \bfop{Free}(\varphi) \):
+    \begin{align}
+      &\begin{prooftree}
+        \hypo{\varphi \to \psi}
+        \infer1[\( \forall \) \text{int}]{\varphi \to (\qforall{\xi} \psi)}
+      \end{prooftree} \label{eq:def:first_order_implicational_logic/rules/forall_int}
+      \\
+      &\begin{prooftree}
+        \hypo{\varphi \to \psi}
+        \infer1[\( \exists \) \text{int}]{(\qforall{\xi} \varphi) \to \psi}
+      \end{prooftree} \label{eq:def:first_order_implicational_logic/rules/exists_int}
+    \end{align}
+
+    \iref{def:first_order_derivation_system/axioms} We add a few axioms. First, for any closed term \( \tau \),
+    \begin{align}
+      \qforall{\xi} \varphi     &\to \varphi[\xi \mapsto \tau], \label{eq:def:first_order_implicational_logic/axioms/forall_elim} \\
+      \varphi[\xi \mapsto \tau] &\to \qexists{\xi} \varphi,     \label{eq:def:first_order_implicational_logic/axioms/exists_int}
+    \end{align}
+
+    If the language contains formal equality, we also add the following:
+    \begin{alignedeq}\label{eq:def:first_order_derivation_system/axioms/forall_elim}
+                          &\phantom{{}\to{}} (\xi \doteq \xi) \\
+        (\xi \doteq \eta) &\to (\tau[\zeta \mapsto \xi] \doteq \tau[\zeta \mapsto \eta]) \\
+        (\xi \doteq \eta) &\to (\varphi[\zeta \mapsto \xi] \to \varphi[\zeta \mapsto \eta])
+    \end{alignedeq}
   \end{reflist}
 \end{definition}
 
-\begin{proposition}\label{thm:hilberts_derivation_system_properties}
-  \hyperref[def:hilberts_derivation_system]{Hilbert's derivation system} has the following basic properties:
-
-  \begin{propenum}
-    \ilabel{thm:hilberts_derivation_system_properties/one_explosion} Any of the two explosion principles axioms is derivable from the rest of the axioms without the stability axioms. In particular, we can speak of a single explosion principle in different variants (e.g. \eqref{def:hilberts_derivation_system/axioms/explosion} is more conventional).
-
-    \ilabel{thm:hilberts_derivation_system_properties/one_stab} Any of the two stability axioms is derivable from the rest of the axioms without the explosion axioms. Removing any of the two does not affect the derivation capabilities of Hilbert's system. In particular, we can speak of a single stability axiom in different variants (e.g. \eqref{def:hilberts_derivation_system/axioms/stab} is more conventional).
-
-    \ilabel{thm:hilberts_derivation_system_properties/stab_derives_explosion} Any of the two explosion axioms is derivable from the rest of the axioms without the other explosion axiom. In particular, removing both of the explosion principles does not affect the derivation capabilities of Hilbert's system.
-
-    \ilabel{thm:hilberts_derivation_system_properties/explosion_does_not_derive_stab} Neither of the stability axioms is provable from the rest of the system without the other stability axiom.
-  \end{propenum}
-\end{proposition}
-
-\begin{theorem}[Completeness of Hilbert's derivation system]\label{thm:completeness_of_hilberts_derivation_system}\mcite\cite[thm. 21.8]{OpenLogic20201202}
-  Hilbert's derivation system is \hyperref[def:derivability_and_satisfiability/completeness]{complete}.
+\begin{theorem}[Completeness of implicational logic]\label{thm:completeness_of_hilberts_derivation_system}\mcite\cite[thm. 21.8]{OpenLogic20201202}
+  \hyperref[def:first_order_implicational_logic]{First-order implication logic} is \hyperref[def:derivability_and_satisfiability/completeness]{complete}.
 \end{theorem}
 
-\begin{remark}\label{rem:hilberts_derivation_system_axioms}
-  Because we only need a subset of the propositional constants and connectives (see \fullref{rem:smaller_propositional_language}), we can eliminate some of the axioms in \fullref{def:first_order_derivation_system/axioms} by considering a smaller \hyperref[def:first_order_language]{first-order logic language}. As we shall see, however, by eliminating some of the rules we change the relationship between syntax and semantics.
+\smallskip
 
-  We will present several subsystems of \hyperref[def:hilberts_derivation_system]{Hilbert's derivation system}. We will simplify our exposition by only considering propositional proofs. This means ignoring rules \eqref{def:hilberts_derivation_system/axioms/forall_elim}-\eqref{def:hilberts_derivation_system/axioms/eq_formula_subst} for quantifiers and formal equality and leaving only \hyperref[def:hilberts_derivation_system/rules/modus_ponens]{modus ponens} as a rule of inference. Since \hyperref[subsec:language_of_propositional_logic]{propositional logic} is a special case of \hyperref[subsec:language_of_first_order_logic]{first-order logic} (see \fullref{rem:propositional_logic_as_first_order_logic}), this completely reduces our discussion to propositional logic.
-
-  \begin{remenum}
-    \ilabel{rem:hilberts_derivation_system_axioms/classical_logic} The full set of axioms are called the axioms of \term{classical logic}. Without changing the underlying language, we can remove the explosion axioms \eqref{def:hilberts_derivation_system/axioms/explosion} and \eqref{def:hilberts_derivation_system/axioms/explosion_neg} and one of the two stability axioms \eqref{def:hilberts_derivation_system/axioms/stab} or \eqref{def:hilberts_derivation_system/axioms/stab_bot} since they are provable from the rest.
-
-    We can actually use any of the subsets of constants, negation and connectives corresponding to the complete sets of Boolean functions in \fullref{ex:posts_completeness_theorem}. If we remove some of the constants or connectives of the language, we can also remove the corresponding axioms from \fullref{def:first_order_derivation_system/axioms}. For the rest of the remark, it would be most beneficial for us to remove everything except for the falsum \( \bot \) and material implication \( \to \). The minimal subset of axioms that still correspond to classical logic is then consists of only three rules: the two base rules \eqref{def:hilberts_derivation_system/axioms/implies_intro}, \eqref{def:hilberts_derivation_system/axioms/implies_distributivity} and stability \eqref{def:hilberts_derivation_system/axioms/stab_bot}.
-
-    \ilabel{rem:hilberts_derivation_system_axioms/intuitionistic_logic}\mcite\cite[def 53.10]{OpenLogic20201202}If we instead consider the base rules \eqref{def:hilberts_derivation_system/axioms/implies_intro}, \eqref{def:hilberts_derivation_system/axioms/implies_distributivity} and the principle of explosion \eqref{def:hilberts_derivation_system/axioms/explosion}, we obtain \term{intuitionistic logic}. By \fullref{thm:hilberts_derivation_system_properties}, we can prove the principle of explosion from stability but not vice versa, therefore we can prove less theorems in intuitionistic logic. It is said to be a \enquote{weaker} derivation system. In particular, \fullref{thm:completeness_of_hilberts_derivation_system} does not hold. As a consequence, the set \( \set{ \to, \bot } \) is no longer sufficient to derive statements analogous to \fullref{thm:boolean_function_equivalences} involving negation \( \neg \), top \( \top \) and the rest of the connectives. The \enquote{definition} axioms in \fullref{def:hilberts_derivation_system} are designed to emulate the behavior of conjunctions and disjunctions in classical logic. Thus, if we wish to use negation or connectives other than \( \to \) in intuitionistic logic, we must include the corresponding \enquote{definition} axioms.
-
-    The advantage of intuitionistic logic is that we cannot perform proofs by contradiction and instead must explicitly construct objects in proofs unless we are using \fullref{thm:aoc}. For this reason, intuitionistic logic is also called constructive logic.
-
-    \ilabel{rem:hilberts_derivation_system_axioms/minimal_logic} We can go further and remove the explosion principle from intuitionistic logic. The obtained system is called \term{minimal logic}. In the simplest case, we only have the two base axioms \eqref{def:hilberts_derivation_system/axioms/implies_intro} and \eqref{def:hilberts_derivation_system/axioms/implies_distributivity}. In particular, the falsum \( \bot \) does not affect derivation and we can remove it from the language, in which case we are left with a single propositional connective \( \to \), no negation and no constants. Even after adding the propositional constants, connectives and negation to the language and after adding the \enquote{definition} axioms to the derivation system, we obtain a derivation system that is very restricted compared to Hilbert's system for classical logic.
-
-    Since we are working with a simpler system, however, any derivation is minimal logic is also a derivation in intuitionistic and classical logic.
-  \end{remenum}
-\end{remark}
-
-\begin{theorem}[Soundness of Hilbert's derivation system]\label{thm:soundness_of_hilberts_derivation_system}\mcite\cite[thm. 1.1]{Wasilewska2010}
-  \hyperref[def:hilberts_derivation_system]{Hilbert's derivation system} for \hyperref[rem:hilberts_derivation_system_axioms/minimal_logic]{minimal logic} is \hyperref[def:derivability_and_satisfiability/soundness]{sound}.
+\begin{theorem}[Soundness of minimal implicational logic]\label{thm:soundness_of_hilberts_derivation_system}\mcite\cite[thm. 1.1]{Wasilewska2010}
+  \hyperref[def:first_order_implicational_logic]{Minimal (first-order) implication logic} is \hyperref[def:derivability_and_satisfiability/soundness]{sound}.
 \end{theorem}
 
 \begin{theorem}[Deduction theorem]\label{thm:deduction_theorem}\mcite\cite[thm. 2.2]{Wasilewska2010}
-  In Hilbert's derivation system for \hyperref[rem:hilberts_derivation_system_axioms/minimal_logic]{minimal logic}, derivability of \( \Gamma, \psi \vdash \varphi \) holds if and only if \( \Gamma \vdash \psi \to \varphi \) holds. Compare this result to \fullref{thm:semantic_deduction_theorem}.
+  In \hyperref[def:first_order_implicational_logic]{minimal (first-order) implication logic}, \( \Gamma, \psi \vdash \varphi \) holds if and only if \( \Gamma \vdash \psi \to \varphi \) holds. Compare this result to \fullref{thm:semantic_deduction_theorem}.
 \end{theorem}
 
-\begin{definition}\label{def:first_order_theory}
-  A \term{theory} for a derivation system is a set of formulas.
-\end{definition}
+\begin{theorem}[Glivenko's double negation theorem]\label{thm:glivenkos_double_negation_theorem}\mcite\cite{Franks2018}
+  A formula \( \varphi \) is derivable in \hyperref[def:first_order_implicational_logic]{classical (first-order) implication logic} if and only if \( \neg \neg \varphi \) is derivable in minimal logic, where
+  \begin{equation*}
+    \neg \neg \varphi \T{is a shorthand for } (\varphi \to \bot) \to \bot.
+  \end{equation*}
+\end{theorem}
