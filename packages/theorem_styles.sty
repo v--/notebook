@@ -1,51 +1,46 @@
-\newcounter{thm}
+% Define a custom enum that can be used for obtaining "theorem 13 b)" instead of "item 13 b)" via cleveref
+% Inspired by https://tex.stackexchange.com/a/162905
+\newcounter{counters@theorem}
 
-% These list's main purpose is obtaining "theorem 13 b)" instead of "item 13 b)"
-% See https://tex.stackexchange.com/a/156061
-\NewDocumentCommand \NewListStructure {mm} {
-  \newlist{#1}{enumerate}{2}
-  \setlist[#1]{format=\small}
-  \setlist[#1, 1]{
-    label=(\alph*),
-    ref=\expandafter\csname the#2\endcsname~(\alph*)
-  }
-  \setlist[#1, 2]{
-    label=(\alph{#1i} \roman*),
-    ref=\expandafter\csname the#2\endcsname~(\alph{#1i} \roman*)
-  }
-
-  \crefalias{#1i}{#2}
-  \crefalias{#1ii}{#2}
+\newlist{thmenum}{enumerate}{2}
+\setlist[thmenum]{
+  format=\small
+}
+\setlist[thmenum, 1]{
+  label=(\alph*),
+  ref=\thecounters@theorem~(\alph*)
+}
+\setlist[thmenum, 2]{
+  label=(\alph{thmenumi} \roman*),
+  ref=\thecounters@theorem~(\alph{thmenumi} \roman*)
 }
 
+\declaretheorem[numberlike=counters@theorem]{theorem}
+\declaretheorem[numberlike=counters@theorem]{proposition}
+\declaretheorem[numberlike=counters@theorem]{lemma}
+\declaretheorem[numberlike=counters@theorem]{corollary}
+\declaretheorem[numberlike=counters@theorem]{conjecture}
 
-\theoremstyle  {plain}
+\declaretheorem[numberlike=counters@theorem]{definition}
+\declaretheorem[numberlike=counters@theorem]{example}
+\declaretheorem[numberlike=counters@theorem]{remark}
+\declaretheorem[numberlike=counters@theorem]{algorithm}
 
-\newtheorem       {proposition} [thm] {Proposition}
-\NewListStructure {propenum}    {proposition}
-
-\newtheorem       {corollary}   [thm] {Corollary}
-\NewListStructure {corenum}     {corollary}
-
-\newtheorem       {lemma}       [thm] {Lemma}
-\NewListStructure {lemenum}     {lemma}
-
-\newtheorem       {theorem}     [thm] {Theorem}
-\NewListStructure {thmenum}     {theorem}
-
-\newtheorem       {hypothesis}  [thm] {Hypothesis}
-\NewListStructure {hypenum}     {hypothesis}
-
-\theoremstyle  {definition}
-
-\newtheorem       {definition}  [thm] {Definition}
-\NewListStructure {defenum}     {definition}
-
-\newtheorem       {example}     [thm] {Example}
-\NewListStructure {exenum}      {example}
-
-\newtheorem       {remark}      [thm] {Remark}
-\NewListStructure {remenum}     {remark}
-
-\newtheorem       {algorithm}   [thm] {Algorithm}
-\NewListStructure {algenum}     {algorithm}
+\directlua{
+  for i, name in pairs({
+    'theorem',
+    'proposition',
+    'lemma',
+    'corollary',
+    'conjecture',
+    'definition',
+    'example',
+    'remark',
+    'algorithm'
+  }) do
+    tex.print('\\addtotheorempostheadhook[' .. name .. ']{')
+    tex.print('\\crefalias{thmenumi}{' .. name .. '}')
+    tex.print('\\crefalias{thmenumii}{' .. name .. '}')
+    tex.print('}')
+  end
+}

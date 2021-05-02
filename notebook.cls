@@ -9,6 +9,7 @@
 % Generic math packages
 \RequirePackage{mathtools} % Loads amsmath
 \RequirePackage{amsthm}
+\RequirePackage{thmtools}
 \RequirePackage{lualatex-math}
 
 % Reference packages
@@ -53,14 +54,14 @@
 \RequirePackage{microtype}
 
 % Misc nonmath packages
-\usepackage{enumitem}
-\usepackage{imakeidx}
+\RequirePackage{enumitem}
+\RequirePackage{imakeidx}
 
 % Misc math packages
-\usepackage[altpo, epsilon]{backnaur}
-\usepackage[ISO]{diffcoeff}
-\usepackage{ebproof}
-\usepackage{bigints}
+\RequirePackage[altpo, epsilon]{backnaur}
+\RequirePackage[ISO]{diffcoeff}
+\RequirePackage{ebproof}
+\RequirePackage{bigints}
 
 % Custom code
 \RequirePackage{packages/math_macros}
