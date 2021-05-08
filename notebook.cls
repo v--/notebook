@@ -83,6 +83,7 @@
 % Misc nonmath packages
 \RequirePackage{enumitem}
 \RequirePackage{imakeidx}
+\RequirePackage{todonotes}
 
 % Misc math packages
 \RequirePackage[altpo, epsilon]{backnaur}
