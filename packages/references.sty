@@ -20,42 +20,78 @@
 \NewDocumentCommand \iref          {m} {\item[\ref{#1}]}
 \NewDocumentCommand \todo          {m} {\textcolor{red}{\textbf{TODO}}: #1}
 
+\ExplSyntaxOn
+
+\prop_new:N \g_term_language_prop
+\prop_set_from_keyval:Nn \g_term_language_prop
+{
+  bg=bulgarian,
+  ru=russian,
+  en=english
+}
+
+\seq_new:N \l_term_group_prop
+\seq_new:N \l_term_group_seq
+
+\NewDocumentCommand \term {om}
+{
+  \textbf{ #2 }
+
+  \IfValueT{ #1 }
+  {
+    \prop_set_from_keyval:Nn \l_term_group_prop { #1 }
+
+    \prop_map_inline:Nn \l_term_group_prop
+    {
+      \seq_push:Nn \l_term_group_seq
+      {
+        ##1:~\foreignlanguage{\prop_item:Nn \g_term_language_prop { ##1 }}{##2}
+      }
+    }
+
+    % \prop_set_from_keyval:Nn seems to create the sequence in reverse
+    \seq_reverse:N \l_term_group_seq
+
+    \footnote{ \seq_use:Nnnn \l_term_group_seq { ,~ } { ,~ } { ,~ } }
+  }
+}
+
+% https://tex.stackexchange.com/a/427559
+\prg_new_protected_conditional:Npnn \if_is_int:n #1 { T, F, TF }
+  {
+    \regex_match:nnTF { ^[\+\-]?[\d]+$ } {#1} % $
+      { \prg_return_true: }
+      { \prg_return_false: }
+  }
+
 % This could have been called a "decorator" in another language.
 % I "modify" citation commands by prefixing them and then wrapping them.
-% \directlua{require('lua/citation_target.lua')}
-\NewDocumentCommand \mcite {m O{}m} {%
-  \leavevmode\marginpar{%
-    \raggedleft\footnotesize{%
-      #1{#3}%
-      % \directlua{%
-        % citation_target('\luaescapestring{#2}')
-      % }%
-    }%
-  }%
+\NewDocumentCommand \mcite {m O{}m}
+{
+  \leavevmode\marginpar{
+    \raggedleft\footnotesize{
+      #1 { #3 }
+      \par
+      \if_is_int:nTF { #2 } { page~#2 } { #2 }
+    }
+  }
 }
 
-% https://tex.stackexchange.com/questions/34312/how-to-create-a-command-with-key-values
-% \directlua{require('lua/footnote_translations.lua')}
-\NewDocumentCommand \term {O{} m} {%
-  \textbf{#2}%
-  % \directlua{%
-    % footnote_translations('\luaescapestring{#1}')
-  % }%
+%
+\tl_new:N \l_fullref_name_tl
+
+\NewDocumentCommand \fullref {m}
+{
+  \cref{#1}
+  \tl_set:Nx \l_fullref_name_tl { \getrefbykeydefault{#1}{name}{} }
+  \str_if_empty:NF \l_fullref_name_tl { \ (\tl_use:N \l_fullref_name_tl) }
 }
 
-% https://tex.stackexchange.com/a/66096
-\NewDocumentCommand \fullref {m} {%
-  \cref{#1}%
-  \if\vcenter\getrefbykeydefault{#1}{name}{}\vcenter
-  \else
-    \ (\nameref{#1})%
-  \fi
+\NewDocumentCommand \Fullref {m}
+{
+  \Cref{#1}
+  \tl_set:Nx \l_fullref_name_tl { \getrefbykeydefault{#1}{name}{} }
+  \str_if_empty:NF \l_fullref_name_tl { \ (\tl_use:N \l_fullref_name_tl) }
 }
 
-\NewDocumentCommand \Fullref {m} {%
-  \Cref{#1}%
-  \if\vcenter\getrefbykeydefault{#1}{name}{}\vcenter
-  \else
-    \ (\nameref{#1})%
-  \fi
-}
+\ExplSyntaxOff

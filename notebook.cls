@@ -16,10 +16,10 @@
 \RequirePackage{thmtools}
 
 %% Consolation for unicode-math; See symbols.sty
-\RequirePackage{mathabx} % \lsemantic \rsemantic \Asterisk
+\RequirePackage{mathabx} % \lsemantic \rsemantic \bigast \Dashv
 
 % Reference packages
-\RequirePackage[colorlinks]{hyperref}
+\RequirePackage[colorlinks,unicode]{hyperref}
 %% https://tex.stackexchange.com/a/525297
 \RequirePackage{xcolor}
 
@@ -83,6 +83,7 @@
 \RequirePackage[ISO]{diffcoeff}
 \RequirePackage{ebproof}
 \RequirePackage{bigints}
+
 
 % Custom code
 \RequirePackage{packages/math_macros}

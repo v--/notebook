@@ -26,21 +26,29 @@
 \declaretheorem[numberlike=counters@theorem]{remark}
 \declaretheorem[numberlike=counters@theorem]{algorithm}
 
-% \directlua{
-%   for i, name in pairs({
-%     'theorem',
-%     'proposition',
-%     'lemma',
-%     'corollary',
-%     'conjecture',
-%     'definition',
-%     'example',
-%     'remark',
-%     'algorithm'
-%   }) do
-%     tex.print('\\addtotheorempostheadhook[' .. name .. ']{')
-%     tex.print('\\crefalias{thmenumi}{' .. name .. '}')
-%     tex.print('\\crefalias{thmenumii}{' .. name .. '}')
-%     tex.print('}')
-%   end
-% }
+\ExplSyntaxOn
+
+\seq_new:N \l_crefalias_seq
+\seq_set_from_clist:Nn \l_crefalias_seq
+{
+  theorem,
+  proposition,
+  lemma,
+  corollary,
+  conjecture,
+  definition,
+  example,
+  remark,
+  algorithm
+}
+
+\seq_map_inline:Nn \l_crefalias_seq
+{
+  \addtotheorempostheadhook[ #1 ]
+  {
+    \crefalias{thmenumi}{ #1 }
+    \crefalias{thmenumii}{ #1 }
+  }
+}
+
+\ExplSyntaxOff
