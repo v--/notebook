@@ -6,11 +6,17 @@
   bibliography=totocnumbered
 ]{scrartcl}
 
+\RequirePackage[T2A]{fontenc}
+\RequirePackage{microtype}
+
 % Generic math packages
 \RequirePackage{mathtools} % Loads amsmath
 \RequirePackage{amsthm}
+\RequirePackage{amssymb}
 \RequirePackage{thmtools}
-\RequirePackage{lualatex-math}
+
+%% Consolation for unicode-math; See symbols.sty
+\RequirePackage{mathabx} % \lsemantic \rsemantic \Asterisk
 
 % Reference packages
 \RequirePackage[colorlinks]{hyperref}
@@ -68,22 +74,9 @@
   citestyle=alphabetic
 ]{biblatex}
 
-% Fonts
-\RequirePackage{fontspec}
-\setmainfont{Stix Two Text}
-\setsansfont{CMU Sans Serif}
-\setmonofont{CMU Typewriter Text}
-
-%% Disable generic warnings about compatibility with mathtools.
-\RequirePackage[warnings-off={mathtools-colon,mathtools-overbracket}]{unicode-math}
-\setmathfont{Stix Two Math}
-
-\RequirePackage{microtype}
-
 % Misc nonmath packages
 \RequirePackage{enumitem}
 \RequirePackage{imakeidx}
-\RequirePackage{todonotes}
 
 % Misc math packages
 \RequirePackage[altpo, epsilon]{backnaur}
@@ -93,6 +86,7 @@
 
 % Custom code
 \RequirePackage{packages/math_macros}
+\RequirePackage{packages/symbols}
 \RequirePackage{packages/paired_delimiters}
 \RequirePackage{packages/references}
 \RequirePackage{packages/subproofs}
