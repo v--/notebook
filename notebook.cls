@@ -6,6 +6,9 @@
   bibliography=totocnumbered
 ]{scrartcl}
 
+\ExplSyntaxOn
+
+% Fonts
 \RequirePackage[T2A]{fontenc}
 \RequirePackage{microtype}
 
@@ -23,9 +26,10 @@
 %% https://tex.stackexchange.com/a/525297
 \RequirePackage{xcolor}
 
-\NewDocumentCommand \setcolor {mmm} {%
-  \definecolor{Hy#1color}{#2}{#3}%
-  \hypersetup{#1color=Hy#1color}%
+\NewDocumentCommand \setcolor {mmm}
+{
+  \definecolor{Hy#1color}{#2}{#3}
+  \hypersetup{#1color=Hy#1color}
 }
 
 \setcolor{link}{HTML}{800006}
@@ -34,6 +38,7 @@
 \setcolor{url} {HTML}{8A0087}
 \setcolor{menu}{HTML}{727500}
 \setcolor{run} {HTML}{137776}
+\let\setcolor\relax
 
 \RequirePackage{cleveref}
 
@@ -41,9 +46,9 @@
 \RequirePackage[base]{babel}
 
 %% Relax some conflicting macros in the Russian and Bulgarian babel files
-\ExplSyntaxOn
 
-\AfterBabelLanguage{bulgarian}{
+\AfterBabelLanguage{bulgarian}
+{
   \let\sh\relax
   \let\ch\relax
   \let\tg\relax
@@ -54,11 +59,10 @@
   \let\cosec\relax
 }
 
-\AfterBabelLanguage{russian}{
+\AfterBabelLanguage{russian}
+{
   \let\Prob\relax
 }
-
-\ExplSyntaxOff
 
 %% This definition came up after a lot of attempts to make the Russian and Bulgarian babel files work together
 \def\bulgarianhyphenmins{\tw@ \tw@}
@@ -98,3 +102,5 @@
 
 % Use the left margins rather than the right margins
 \reversemarginpar
+
+\ExplSyntaxOff
