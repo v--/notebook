@@ -6,12 +6,13 @@ on:
 
 jobs:
   build:
-    runs-on:  ubuntu-18.04
+    runs-on:  ubuntu-20.04
 
     steps:
     - uses: actions/checkout@v2
 
-    - uses: xu-cheng/texlive-action/full@v1
+    - name: Build
+      uses: xu-cheng/texlive-action/full@v1
       with:
         run: |
           apk add make git
@@ -19,7 +20,7 @@ jobs:
           make notebook.pdf
 
     - name: Deploy
-      if: ${{ success() }}
+      if: success()
       run: |
         echo '${{ secrets.SFTP_KEY }}' > ssh_id
         chmod 600 ssh_id
@@ -29,7 +30,7 @@ jobs:
         ' | sftp -i ssh_id -o StrictHostKeyChecking=no -o Port=${{ secrets.SFTP_PORT }} ${{ secrets.SFTP_USERNAME }}@${{ secrets.SFTP_SERVER }}
 
     - name: Upload only log
-      if: ${{ failure() }}
+      if: failure()
       run: |
         echo '${{ secrets.SFTP_KEY }}' > ssh_id
         chmod 600 ssh_id
