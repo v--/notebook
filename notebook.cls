@@ -74,6 +74,9 @@
   citestyle=alphabetic
 ]{biblatex}
 
+% Diagrams
+\RequirePackage[all]{xy}
+
 % Misc nonmath packages
 \RequirePackage{enumitem}
 \RequirePackage{imakeidx}
@@ -83,7 +86,6 @@
 \RequirePackage[ISO]{diffcoeff}
 \RequirePackage{ebproof}
 \RequirePackage{bigints}
-
 
 % Custom code
 \RequirePackage{packages/math_macros}

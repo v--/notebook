@@ -4,9 +4,9 @@ COMPILER := latexmk -cd -interaction=batchmode -time -bibtex
 
 notebook.pdf: notebook.tex bib/*.bib packages/*.sty src/*.tex revision
 ifdef only
-	$(COMPILER) notebook.tex -pdf -usepretex="\includeonly{$(only)}" $(args)
+	$(COMPILER) notebook.tex -pdflua -usepretex="\includeonly{$(only)}" $(args)
 else
-	$(COMPILER) notebook.tex -pdf $(args)
+	$(COMPILER) notebook.tex -pdflua $(args)
 endif
 
 clean:
