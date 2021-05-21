@@ -95,7 +95,6 @@
 \RequirePackage{packages/subproofs}
 \RequirePackage{packages/theorem_styles}
 \RequirePackage{packages/environments}
-\RequirePackage{packages/metapost}
 
 % Use the left margins rather than the right margins
 \reversemarginpar
