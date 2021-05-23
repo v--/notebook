@@ -16,6 +16,7 @@
 \RequirePackage{mathtools} % Loads amsmath
 \RequirePackage{amsthm}
 \RequirePackage{amssymb}
+\RequirePackage{xfrac}
 \RequirePackage{thmtools}
 
 %% Consolation for unicode-math; See symbols.sty
@@ -78,12 +79,10 @@
   citestyle=alphabetic
 ]{biblatex}
 
-% Diagrams
-\RequirePackage[all]{xy}
-
 % Misc nonmath packages
 \RequirePackage{enumitem}
 \RequirePackage{imakeidx}
+\RequirePackage{graphicx}
 
 % Misc math packages
 \RequirePackage[altpo, epsilon]{backnaur}
