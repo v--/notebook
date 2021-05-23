@@ -2,7 +2,7 @@ import graph;
 
 settings.outformat = 'pdf';
 
-size(15cm, 10cm, keepAspect=false);
+size(15cm, 7cm, keepAspect=false);
 defaultpen(fontsize(10pt));
 
 real a = 0.9;
@@ -21,7 +21,7 @@ real f(real x) {
 
 draw(graph(f, -pi/8, pi/8, n=2500));
 
-pen thin=linewidth(0.3 * linewidth());
+pen thin=linewidth(0.1 * linewidth());
 
 xaxis(
   axis=BottomTop,
