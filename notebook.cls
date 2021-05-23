@@ -23,7 +23,7 @@
 \RequirePackage{mathabx} % \lsemantic \rsemantic \bigast \Dashv
 
 % Reference packages
-\RequirePackage[colorlinks,unicode]{hyperref}
+\RequirePackage[colorlinks, unicode]{hyperref}
 %% https://tex.stackexchange.com/a/525297
 \RequirePackage{xcolor}
 
@@ -68,7 +68,7 @@
 %% This definition came up after a lot of attempts to make the Russian and Bulgarian babel files work together
 \def\bulgarianhyphenmins{\tw@ \tw@}
 
-\RequirePackage[main=english,russian,bulgarian]{babel}
+\RequirePackage[main=english, russian, bulgarian, italian]{babel}
 \RequirePackage[autostyle]{csquotes}
 
 % Citations
