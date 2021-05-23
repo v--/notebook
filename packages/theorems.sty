@@ -1,0 +1,64 @@
+% Define a custom enum that can be used for obtaining "theorem 13 b)" instead of "item 13 b)" via cleveref
+% Inspired by https://tex.stackexchange.com/a/162905
+\newcounter{counters@theorem}
+
+\newlist{thmenum}{enumerate}{2}
+\setlist[thmenum]{
+  format=\small
+}
+\setlist[thmenum, 1]{
+  label=(\alph*),
+  ref=\thecounters@theorem~(\alph*)
+}
+\setlist[thmenum, 2]{
+  label=(\alph{thmenumi} \roman*),
+  ref=\thecounters@theorem~(\alph{thmenumi} \roman*)
+}
+
+\declaretheorem[numberlike=counters@theorem, style=plain]
+{
+  theorem,
+  proposition,
+  lemma,
+  corollary,
+  conjecture
+}
+
+\declaretheorem[numberlike=counters@theorem, style=definition]
+{
+  definition,
+  example,
+  algorithm
+}
+
+\declaretheorem[numberlike=counters@theorem, style=remark]
+{
+  remark
+}
+
+\ExplSyntaxOn
+
+\seq_new:N \l_crefalias_seq
+\seq_set_from_clist:Nn \l_crefalias_seq
+{
+  theorem,
+  proposition,
+  lemma,
+  corollary,
+  conjecture,
+  definition,
+  example,
+  remark,
+  algorithm
+}
+
+\seq_map_inline:Nn \l_crefalias_seq
+{
+  \addtotheorempostheadhook[ #1 ]
+  {
+    \crefalias{thmenumi}{ #1 }
+    \crefalias{thmenumii}{ #1 }
+  }
+}
+
+\ExplSyntaxOff

@@ -39,7 +39,6 @@
 \setcolor{url} {HTML}{8A0087}
 \setcolor{menu}{HTML}{727500}
 \setcolor{run} {HTML}{137776}
-\let\setcolor\relax
 
 \RequirePackage{cleveref}
 
@@ -71,7 +70,7 @@
 \RequirePackage{packages/paired_delimiters}
 \RequirePackage{packages/references}
 \RequirePackage{packages/subproofs}
-\RequirePackage{packages/theorem_styles}
+\RequirePackage{packages/theorems}
 \RequirePackage{packages/environments}
 
 % Use the left margins rather than the right margins
