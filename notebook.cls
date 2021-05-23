@@ -44,37 +44,12 @@
 \RequirePackage{cleveref}
 
 % Internationalization
-\RequirePackage[base]{babel}
-
-%% Relax some conflicting macros in the Russian and Bulgarian babel files
-
-\AfterBabelLanguage{bulgarian}
-{
-  \let\sh\relax
-  \let\ch\relax
-  \let\tg\relax
-  \let\ctg\relax
-  \let\arctg\relax
-  \let\arcctg\relax
-  \let\cth\relax
-  \let\cosec\relax
-}
-
-\AfterBabelLanguage{russian}
-{
-  \let\Prob\relax
-}
-
-%% This definition came up after a lot of attempts to make the Russian and Bulgarian babel files work together
-\def\bulgarianhyphenmins{\tw@ \tw@}
-
-\RequirePackage[main=english, russian, bulgarian, italian]{babel}
+\RequirePackage[english]{babel}
 \RequirePackage[autostyle]{csquotes}
 
 % Citations
 \RequirePackage[
   backend=biber,
-  autolang=other,
   style=alphabetic,
   citestyle=alphabetic
 ]{biblatex}
