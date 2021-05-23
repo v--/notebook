@@ -3,7 +3,7 @@ FIGURES_TEX := $(patsubst figures/%.tex,figures/%.pdf,$(wildcard figures/*.tex))
 FIGURES_ASY := $(patsubst figures/%.asy,figures/%.pdf,$(wildcard figures/*.asy))
 SOURCE := notebook.cls notebook.tex bib/*.bib packages/*.sty src/*.tex revision $(FIGURES_TEX) $(FIGURES_ASY)
 
-.PHONY: watch clean output-revision
+.PHONY: figures watch clean output-revision
 
 notebook.pdf: $(SOURCE)
 	$(COMPILER) -draftmode notebook.tex
@@ -18,8 +18,10 @@ figures/%.pdf: figures/%.tex
 figures/%.pdf: figures/%.asy
 	cd figures && asy $*.asy
 
+figures: $(FIGURES_TEX) $(FIGURES_ASY)
+
 watch:
-	@$(COMPILER) notebook.tex; \
+	@$(COMPILER) notebook.tex || true; \
 
 	@while inotifywait --event modify $(SOURCE); do \
 		echo; \
