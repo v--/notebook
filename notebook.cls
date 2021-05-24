@@ -9,21 +9,19 @@
 \ExplSyntaxOn
 
 % Fonts
-\RequirePackage[T2A]{fontenc}
-\RequirePackage{microtype}
+% I avoid fontspec and unicode-math (and hence XeTeX/LuaTeX) because they drastically slow down the compilation
+\RequirePackage{stix2} % Math and T1/OT2 serif fonts
+\RequirePackage{libertineRoman} % T2A serif fonts that are close to STIX Two
+\RequirePackage{biolinum} % Sans-serif fonts
 
 % Generic math packages
 \RequirePackage{mathtools} % Loads amsmath
 \RequirePackage{amsthm}
-\RequirePackage{amssymb}
 \RequirePackage{xfrac}
 \RequirePackage{thmtools}
 
-%% Consolation for unicode-math; See symbols.sty
-\RequirePackage{mathabx} % \lsemantic \rsemantic \bigast \Dashv
-
 % Reference packages
-\RequirePackage[colorlinks, unicode]{hyperref}
+\RequirePackage[colorlinks,unicode]{hyperref}
 %% https://tex.stackexchange.com/a/525297
 \RequirePackage{xcolor}
 
@@ -43,7 +41,32 @@
 \RequirePackage{cleveref}
 
 % Internationalization
-\RequirePackage[english]{babel}
+%% I don't really need internationalization but this switches between T1 and T2A fonts where appropriate.
+%% I could also perform the switch manually but the babel code was already in place.
+\RequirePackage[base]{babel}
+
+%% Relax some conflicting macros in the Russian and Bulgarian babel files
+\AfterBabelLanguage{bulgarian}
+{
+  \let\sh\relax
+  \let\ch\relax
+  \let\tg\relax
+  \let\ctg\relax
+  \let\arctg\relax
+  \let\arcctg\relax
+  \let\cth\relax
+  \let\cosec\relax
+}
+
+\AfterBabelLanguage{russian}
+{
+  \let\Prob\relax
+}
+
+%% This definition came up after a lot of attempts to make the Russian and Bulgarian babel files work together
+\def\bulgarianhyphenmins{\tw@ \tw@}
+
+\RequirePackage[main=english,russian,bulgarian]{babel}
 \RequirePackage[autostyle]{csquotes}
 
 % Citations
@@ -53,13 +76,19 @@
   citestyle=alphabetic
 ]{biblatex}
 
+\AtBeginBibliography
+{
+  \fontencoding{T2A}
+  \selectfont
+}
+
 % Misc nonmath packages
 \RequirePackage{enumitem}
 \RequirePackage{imakeidx}
 \RequirePackage{graphicx}
 
 % Misc math packages
-\RequirePackage[altpo, epsilon]{backnaur}
+\RequirePackage[altpo,epsilon]{backnaur}
 \RequirePackage[ISO]{diffcoeff}
 \RequirePackage{ebproof}
 \RequirePackage{bigints}
