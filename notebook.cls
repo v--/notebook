@@ -10,13 +10,15 @@
 
 % Fonts
 % I avoid fontspec and unicode-math (and hence XeTeX/LuaTeX) because they drastically slow down the compilation
-\RequirePackage{stix2} % Math and T1/OT2 serif fonts
-\RequirePackage{libertineRoman} % T2A serif fonts that are close to STIX Two
-\RequirePackage{biolinum} % Sans-serif fonts
+\RequirePackage[T2A]{fontenc}
+\RequirePackage[tt=false]{libertinus}
+\RequirePackage{libertinust1math}
+\RequirePackage{microtype}
 
 % Generic math packages
 \RequirePackage{mathtools} % Loads amsmath
 \RequirePackage{amsthm}
+\RequirePackage{amssymb}
 \RequirePackage{xfrac}
 \RequirePackage{thmtools}
 
@@ -25,48 +27,25 @@
 %% https://tex.stackexchange.com/a/525297
 \RequirePackage{xcolor}
 
-\NewDocumentCommand \setcolor {mmm}
+\NewDocumentCommand \SetHRColor {mmm}
 {
   \definecolor{Hy#1color}{#2}{#3}
   \hypersetup{#1color=Hy#1color}
 }
 
-\setcolor{link}{HTML}{800006}
-\setcolor{cite}{HTML}{2E7E2A}
-\setcolor{file}{HTML}{131877}
-\setcolor{url} {HTML}{8A0087}
-\setcolor{menu}{HTML}{727500}
-\setcolor{run} {HTML}{137776}
+\SetHRColor{link}{HTML}{800006}
+\SetHRColor{cite}{HTML}{2E7E2A}
+\SetHRColor{file}{HTML}{131877}
+\SetHRColor{url} {HTML}{8A0087}
+\SetHRColor{menu}{HTML}{727500}
+\SetHRColor{run} {HTML}{137776}
+
+\let\SetHRColor\relax
 
 \RequirePackage{cleveref}
 
 % Internationalization
-%% I don't really need internationalization but this switches between T1 and T2A fonts where appropriate.
-%% I could also perform the switch manually but the babel code was already in place.
-\RequirePackage[base]{babel}
-
-%% Relax some conflicting macros in the Russian and Bulgarian babel files
-\AfterBabelLanguage{bulgarian}
-{
-  \let\sh\relax
-  \let\ch\relax
-  \let\tg\relax
-  \let\ctg\relax
-  \let\arctg\relax
-  \let\arcctg\relax
-  \let\cth\relax
-  \let\cosec\relax
-}
-
-\AfterBabelLanguage{russian}
-{
-  \let\Prob\relax
-}
-
-%% This definition came up after a lot of attempts to make the Russian and Bulgarian babel files work together
-\def\bulgarianhyphenmins{\tw@ \tw@}
-
-\RequirePackage[main=english,russian,bulgarian]{babel}
+\RequirePackage[english]{babel}
 \RequirePackage[autostyle]{csquotes}
 
 % Citations
@@ -75,12 +54,6 @@
   style=alphabetic,
   citestyle=alphabetic
 ]{biblatex}
-
-\AtBeginBibliography
-{
-  \fontencoding{T2A}
-  \selectfont
-}
 
 % Misc nonmath packages
 \RequirePackage{enumitem}

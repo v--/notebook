@@ -3,7 +3,7 @@ import graph;
 settings.outformat = 'pdf';
 
 size(15cm, 7cm, keepAspect=false);
-usepackage("stix2");
+usepackage("libertinust1math");
 defaultpen(fontsize(10pt));
 
 real a = 0.9;
