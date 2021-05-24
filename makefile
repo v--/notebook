@@ -20,7 +20,7 @@ figures/%.pdf: figures/%.asy
 
 figures: $(FIGURES_TEX) $(FIGURES_ASY)
 
-watch:
+watch: figures
 	@$(COMPILER) notebook.tex || true; \
 
 	@while inotifywait --event modify $(SOURCE); do \
