@@ -1,15 +1,17 @@
 \NeedsTeXFormat{LaTeX2e}
 \ProvidesClass{notebook}
 
-\LoadClass[
+\LoadClass
+[
   headings=standardclasses,
   bibliography=totocnumbered
-]{scrartcl}
+]
+{scrartcl}
 
 \ExplSyntaxOn
 
 % Fonts
-% I avoid fontspec and unicode-math (and hence XeTeX/LuaTeX) because they drastically slow down the compilation
+%% I avoid fontspec and unicode-math (and hence XeTeX/LuaTeX) because they drastically slow down the compilation
 \RequirePackage[T2A]{fontenc}
 \RequirePackage[tt=false]{libertinus}
 \RequirePackage{libertinust1math}
@@ -49,11 +51,13 @@
 \RequirePackage[autostyle]{csquotes}
 
 % Citations
-\RequirePackage[
+\RequirePackage
+[
   backend=biber,
   style=alphabetic,
   citestyle=alphabetic
-]{biblatex}
+]
+{biblatex}
 
 % Misc nonmath packages
 \RequirePackage{enumitem}
