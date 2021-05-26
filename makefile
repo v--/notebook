@@ -1,7 +1,7 @@
 COMPILER := pdflatex -interaction=batchmode
 FIGURES_TEX := $(patsubst figures/%.tex,figures/%.pdf,$(wildcard figures/*.tex))
 FIGURES_ASY := $(patsubst figures/%.asy,figures/%.pdf,$(wildcard figures/*.asy))
-SOURCE := notebook.cls notebook.tex bib/*.bib packages/*.sty src/*.tex revision $(FIGURES_TEX) $(FIGURES_ASY)
+SOURCE := notebook.cls notebook.tex bib/*.bib packages/*.sty src/*.tex $(FIGURES_TEX) $(FIGURES_ASY)
 
 .PHONY: figures watch clean output-revision
 
@@ -35,6 +35,10 @@ clean:
 	rm -fv {,src/,figures/}*.{aux,out,fls,toc} # latex
 	rm -fv {,src/}*.{bbl,bcf,blg,run.xml} # biber
 	rm -fv {,src/}*.{idx,ilg,ind} # makeindex
+	rm -fv commit-{id,date}
 
-output-revision:
-	git --no-pager log -1 --date=short --decorate=short --pretty=format:'%h (%cd)' HEAD > revision
+commit-id:
+	git --no-pager log -1 --date='format:%d %B %Y' --pretty=format:'%h' HEAD > commit-id
+
+commit-date:
+	git --no-pager log -1 --date='format:%d %B %Y' --pretty=format:'%cd' HEAD > commit-date

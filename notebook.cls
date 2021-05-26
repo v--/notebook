@@ -3,37 +3,52 @@
 
 \LoadClass
 [
-  headings=standardclasses,
+  numbers=endperiod,
   bibliography=totocnumbered
 ]
 {scrartcl}
 
 \ExplSyntaxOn
 
-% Fonts
-%% I avoid fontspec and unicode-math (and hence XeTeX/LuaTeX) because they drastically slow down the compilation
-\RequirePackage[T2A]{fontenc}
-\RequirePackage[tt=false]{libertinus}
-\RequirePackage{libertinust1math}
-\RequirePackage{microtype}
+\date
+  {
+    \normalsize
+      {
+        \textbf{Date:}~\IfFileExists{ commit-date } { \input{commit-date} }{ \today }
+        \\
+        \textbf{Commit:}~\texttt{\IfFileExists{ commit-id } { \input{commit-id} } {unspecified} }
+      }
+  }
 
 % Generic math packages
 \RequirePackage{mathtools} % Loads amsmath
 \RequirePackage{amsthm}
-\RequirePackage{amssymb}
-\RequirePackage{xfrac}
 \RequirePackage{thmtools}
+
+% Fonts
+%% I avoid fontspec and unicode-math (and hence XeTeX/LuaTeX) because they drastically slow down the compilation
+\RequirePackage[T2A,T1]{fontenc}
+\RequirePackage[not1]{stix2}
+\RequirePackage[sans,tt=false,ScaleRM=1.075]{libertinus} % Sans-serif
+\DeclareFontFamilySubstitution{T2A}{stix2}{LibertinusSerif-TLF} % Fallback font that looks similar to STIX Two Text
+\RequirePackage{microtype}
 
 % Reference packages
 \RequirePackage[colorlinks,unicode]{hyperref}
 %% https://tex.stackexchange.com/a/525297
 \RequirePackage{xcolor}
 
+\NewDocumentCommand \boldtt {m}
+  {
+    \DeclareFontFamilySubstitution{T1}{cmtt}{lmtt} % Use the slightly heavier latin modern typewriter font
+    #1
+  }
+
 \NewDocumentCommand \SetHRColor {mmm}
-{
-  \definecolor{Hy#1color}{#2}{#3}
-  \hypersetup{#1color=Hy#1color}
-}
+  {
+    \definecolor{Hy#1color}{#2}{#3}
+    \hypersetup{#1color=Hy#1color}
+  }
 
 \SetHRColor{link}{HTML}{800006}
 \SetHRColor{cite}{HTML}{2E7E2A}
@@ -51,13 +66,20 @@
 \RequirePackage[autostyle]{csquotes}
 
 % Citations
+\selectfont
 \RequirePackage
-[
-  backend=biber,
-  style=alphabetic,
-  citestyle=alphabetic
-]
-{biblatex}
+  [
+    backend=biber,
+    style=alphabetic,
+    citestyle=alphabetic
+  ]
+  {biblatex}
+
+\AtBeginBibliography
+  {
+    \fontencoding{T2A}
+    \selectfont
+  }
 
 % Misc nonmath packages
 \RequirePackage{enumitem}
@@ -69,6 +91,7 @@
 \RequirePackage[ISO]{diffcoeff}
 \RequirePackage{ebproof}
 \RequirePackage{bigints}
+\RequirePackage{xfrac}
 
 % Custom code
 \RequirePackage{packages/math_macros}

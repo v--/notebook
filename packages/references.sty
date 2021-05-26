@@ -21,81 +21,73 @@
 
 \ExplSyntaxOn
 
-\prop_new:N \l_term_language_prop
-\prop_set_from_keyval:Nn \l_term_language_prop
-{
-  bg=bulgarian,
-  ru=russian,
-  en=english
-}
-
 \seq_new:N \l_term_group_prop
 \seq_new:N \l_term_group_seq
 
 \NewDocumentCommand \term {om}
-{
-  \textbf{ #2 }
-
-  \IfValueT{ #1 }
   {
-    \prop_set_from_keyval:Nn \l_term_group_prop { #1 }
+    \textbf{ #2 }
 
-    \prop_map_inline:Nn \l_term_group_prop
+    \IfValueT{ #1 }
     {
-      \seq_push:Nn \l_term_group_seq
+      \prop_set_from_keyval:Nn \l_term_group_prop { #1 }
+
+      \prop_map_inline:Nn \l_term_group_prop
       {
-        ##1:~\foreignlanguage{\prop_item:Nn \l_term_language_prop { ##1 }}{##2}
+        \seq_push:Nn \l_term_group_seq
+        {
+          ##1:~{ \fontencoding{T2A} \selectfont ##2 }
+        }
       }
+
+      % \prop_set_from_keyval:Nn seems to create the sequence in reverse
+      \seq_reverse:N \l_term_group_seq
+
+      \footnote{ \seq_use:Nnnn \l_term_group_seq { ,~ } { ,~ } { ,~ } }
     }
-
-    % \prop_set_from_keyval:Nn seems to create the sequence in reverse
-    \seq_reverse:N \l_term_group_seq
-
-    \footnote{ \seq_use:Nnnn \l_term_group_seq { ,~ } { ,~ } { ,~ } }
   }
-}
 
 % https://tex.stackexchange.com/a/427559
 \prg_new_protected_conditional:Npnn \if_is_int:n #1 { T, F, TF }
-{
-  \regex_match:nnTF { ^[\+\-]?[\d]+$ } {#1} % $
-    { \prg_return_true: }
-    { \prg_return_false: }
-}
+  {
+    \regex_match:nnTF { ^[\+\-]?[\d]+$ } {#1} % $
+      { \prg_return_true: }
+      { \prg_return_false: }
+  }
 
 % This could have been called a "decorator" in another language.
 % I "modify" citation commands by prefixing them and then wrapping them.
 \NewDocumentCommand \mcite {mom}
-{
-  \leavevmode\marginpar
   {
-    \raggedleft\footnotesize
+    \leavevmode\marginpar
     {
-      #1 { #3 }
-      \par
-      \IfValueT{ #2 }
+      \raggedleft\footnotesize
       {
-        \if_is_int:nTF { #2 } { page~#2 } { #2 }
+        #1 { #3 }
+        \par
+        \IfValueT{ #2 }
+        {
+          \if_is_int:nTF { #2 } { page~#2 } { #2 }
+        }
       }
     }
   }
-}
 
 %
 \tl_new:N \l_fullref_name_tl
 
 \NewDocumentCommand \fullref {m}
-{
-  \cref { #1 }
-  \tl_set:Nx \l_fullref_name_tl { \getrefbykeydefault{#1}{name}{} }
-  \str_if_empty:NF \l_fullref_name_tl { \ (\tl_use:N \l_fullref_name_tl) }
-}
+  {
+    \cref { #1 }
+    \tl_set:Nx \l_fullref_name_tl { \getrefbykeydefault{#1}{name}{} }
+    \str_if_empty:NF \l_fullref_name_tl { \ (\tl_use:N \l_fullref_name_tl) }
+  }
 
 \NewDocumentCommand \Fullref {m}
-{
-  \Cref { #1 }
-  \tl_set:Nx \l_fullref_name_tl { \getrefbykeydefault{#1}{name}{} }
-  \str_if_empty:NF \l_fullref_name_tl { \ (\tl_use:N \l_fullref_name_tl) }
-}
+  {
+    \Cref { #1 }
+    \tl_set:Nx \l_fullref_name_tl { \getrefbykeydefault{#1}{name}{} }
+    \str_if_empty:NF \l_fullref_name_tl { \ (\tl_use:N \l_fullref_name_tl) }
+  }
 
 \ExplSyntaxOff
