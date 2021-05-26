@@ -10,7 +10,7 @@
 
 \ExplSyntaxOn % Ignore whitespace
 
-% Generic math packages
+% Generic math packages (load first to avoid misbehaving macros later)
 \RequirePackage{mathtools} % Loads amsmath
 \RequirePackage{amsthm}
 \RequirePackage{thmtools}
@@ -18,7 +18,7 @@
 % Fonts
 %% I avoid fontspec and unicode-math (and hence XeTeX/LuaTeX) because they drastically slow down the compilation
 \RequirePackage[T2A,T1]{fontenc}
-\RequirePackage[not1]{stix2}
+\RequirePackage[not1]{stix2} % Math font family; load after amsmath despite documentation, it breaks otherwise
 \RequirePackage[sans,tt=false,ScaleRM=1.075]{libertinus} % Sans-serif
 \DeclareFontFamilySubstitution{T2A}{stix2}{LibertinusSerif-TLF} % Fallback font that looks similar to STIX Two Text
 \RequirePackage{microtype}
