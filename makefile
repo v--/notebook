@@ -35,10 +35,7 @@ clean:
 	rm -fv {,src/,figures/}*.{aux,out,fls,toc} # latex
 	rm -fv {,src/}*.{bbl,bcf,blg,run.xml} # biber
 	rm -fv {,src/}*.{idx,ilg,ind} # makeindex
-	rm -fv commit-{id,date}
+	rm -fv git-commit-info
 
-commit-id:
-	git --no-pager log -1 --date='format:%d %B %Y' --pretty=format:'%h' HEAD > commit-id
-
-commit-date:
-	git --no-pager log -1 --date='format:%d %B %Y' --pretty=format:'%cd' HEAD > commit-date
+git-commit-info: .git/refs/heads/master
+	LC_ALL=en_BG.UTF-8 git log --max-count 1 --format=format:'hash={%h},date={%cd}' --date='format:%d %B %Y' HEAD > git-commit-info
