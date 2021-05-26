@@ -8,36 +8,7 @@
   ]
   {scrartcl}
 
-\ExplSyntaxOn
-
-\keys_define:nn {git_commit_info}
-  {
-    hash .tl_set:N = \l_git_commit_info_hash_tl,
-    date .tl_set:N = \l_git_commit_info_date_tl
-  }
-
-\ior_new:N \l_git_commit_info_file_stream
-
-\NewDocumentCommand \GitCommitInfoRead {mm}
-  {
-    \IfFileExists { #1 }
-    {
-      \ior_open:Nn \l_git_commit_info_file_stream { #1 }
-      \ior_get:NN  \l_git_commit_info_file_stream \l_tmpa_tl
-      \ior_close:N \l_git_commit_info_file_stream
-
-      \keys_set:nV {git_commit_info} \l_tmpa_tl
-    }
-    {
-      \tl_set:Nn \l_git_commit_info_hash_tl {unspecified}
-      \tl_set:Nn \l_git_commit_info_date_tl {\today}
-    }
-
-    \NewDocumentCommand \GitCommitInfoHash {} { \tl_use:N \l_git_commit_info_hash_tl }
-    \NewDocumentCommand \GitCommitInfoDate {} { \tl_use:N \l_git_commit_info_date_tl }
-
-    #2
-  }
+\ExplSyntaxOn % Ignore whitespace
 
 % Generic math packages
 \RequirePackage{mathtools} % Loads amsmath
@@ -114,12 +85,13 @@
 
 % Custom code
 \RequirePackage{packages/math_macros}
-\RequirePackage{packages/symbols}
+\RequirePackage{packages/math_environments}
+\RequirePackage{packages/unicode_math_symbols}
 \RequirePackage{packages/paired_delimiters}
 \RequirePackage{packages/references}
 \RequirePackage{packages/subproofs}
 \RequirePackage{packages/theorems}
-\RequirePackage{packages/environments}
+\RequirePackage{packages/git_commit_info}
 
 % Use the left margins rather than the right margins
 \reversemarginpar
