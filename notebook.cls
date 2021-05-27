@@ -1,6 +1,9 @@
+\ExplSyntaxOn % Ignore whitespace
+
 \NeedsTeXFormat{LaTeX2e}
 \ProvidesClass{notebook}
 
+\ExplSyntaxOn % Ignore whitespace
 \LoadClass
   [
     numbers=endperiod,
@@ -8,7 +11,8 @@
   ]
   {scrartcl}
 
-\ExplSyntaxOn % Ignore whitespace
+\RedeclareSectionCommand[tocnumwidth=2.2em]{section}
+\RedeclareSectionCommand[tocnumwidth=2.9em]{subsection}
 
 % Generic math packages (load first to avoid misbehaving macros later)
 \RequirePackage{mathtools} % Loads amsmath
