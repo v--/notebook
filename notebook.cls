@@ -73,9 +73,11 @@
   }
 
 % Misc nonmath packages
+\RequirePackage{xspace}
 \RequirePackage{enumitem}
 \RequirePackage{imakeidx}
 \RequirePackage{graphicx}
+\RequirePackage{crossreftools}
 
 % Misc math packages
 \RequirePackage[altpo,epsilon]{backnaur}

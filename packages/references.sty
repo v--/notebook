@@ -1,47 +1,28 @@
-\RequirePackage{xspace} % \xspace
-\RequirePackage{crossreftools} % \crtcrossreflabel
-
-% Index
-\NewDocumentCommand \IndexEntry {mm}
-  {
-    \index{#2}
-    \textsuperscript{\hyperref[sec:index]{#1}}
-    \xspace
-  }
-
-\NewDocumentCommand \AOC {} {\IndexEntry{AOC}{Axiom of choice}}
-\NewDocumentCommand \LEM {} {\IndexEntry{LEM}{Law of the excluded middle}}
-\NewDocumentCommand \USC {} {\IndexEntry{USC}{Compactness of the unit sphere}}
-\NewDocumentCommand \IND {} {\IndexEntry{IND}{Induction}}
+\ExplSyntaxOn
 
 % Items
 \NewDocumentCommand \labitem {om}
-{
-  \IfValueTF{#1}
-    {
-      \item[{\crtcrossreflabel{#2}[#1]}]
-    }
-    {
-      \item\label{#2}
-    }
-}
-
-\newlist { reflist } { itemize } {2}
-\NewDocumentCommand \refitem {m}
   {
-    \item[\ref{#1}]
-  }
-
-\NewDocumentCommand \todo {m}
-  {
-    \index{TODO}
-    \hyperref[sec:index]
+    \IfValueTF{#1}
       {
-        \textcolor{red}{\textbf{TODO}}: #1
+        \item[{\crtcrossreflabel{#2}[#1]}]
+      }
+      {
+        \item\label{#2}
       }
   }
 
-\ExplSyntaxOn
+\newlist {reflist} {itemize} {2}
+\NewDocumentCommand \refitem {om}
+  {
+    \IfValueTF{#1}
+      {
+        \item[\hyperref[#1]{#2}]
+      }
+      {
+        \item[\ref{#1}]
+      }
+  }
 
 \seq_new:N \l_term_group_prop
 \seq_new:N \l_term_group_seq
@@ -65,7 +46,7 @@
       % \prop_set_from_keyval:Nn seems to create the sequence in reverse
       \seq_reverse:N \l_term_group_seq
 
-      \footnote{ \seq_use:Nnnn \l_term_group_seq { ,~ } { ,~ } { ,~ } }
+      \footnote { \seq_use:Nnnn \l_term_group_seq { ,~ } { ,~ } { ,~ } }
     }
   }
 
@@ -114,4 +95,23 @@
     \str_if_empty:NF \l_fullref_name_tl { \ (\tl_use:N \l_fullref_name_tl) }
   }
 
+% Index
+\NewDocumentCommand \todo {m}
+  {
+    \index{To~do}
+    \hyperref[sec:index] { \textbf{TODO} }:~#1
+  }
+
+\NewDocumentCommand \IndexEntry {mm}
+  {
+    \index{#2}
+    \textsuperscript { \hyperref[sec:index]{#1} }
+    \xspace
+  }
+
 \ExplSyntaxOff
+
+\NewDocumentCommand \AOC {} {\IndexEntry{AOC}{Axiom of choice}}
+\NewDocumentCommand \LEM {} {\IndexEntry{LEM}{Law of the excluded middle}}
+\NewDocumentCommand \USC {} {\IndexEntry{USC}{Compactness of the unit sphere}}
+\NewDocumentCommand \IND {} {\IndexEntry{IND}{Induction}}
