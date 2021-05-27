@@ -1,9 +1,6 @@
-\ExplSyntaxOn % Ignore whitespace
-
 \NeedsTeXFormat{LaTeX2e}
 \ProvidesClass{notebook}
 
-\ExplSyntaxOn % Ignore whitespace
 \LoadClass
   [
     numbers=endperiod,
@@ -99,5 +96,3 @@
 
 % Use the left margins rather than the right margins
 \reversemarginpar
-
-\ExplSyntaxOff
