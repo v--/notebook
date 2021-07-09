@@ -21,13 +21,7 @@ figures/%.pdf: figures/%.asy
 figures: $(FIGURES_TEX) $(FIGURES_ASY)
 
 watch: figures
-	@$(COMPILER) notebook.tex || true; \
-
-	@while inotifywait --event modify $(SOURCE); do \
-		echo; \
-		$(COMPILER) notebook.tex; \
-		echo; \
-	done
+	@find $(SOURCE) | entr $(COMPILER) notebook.tex;
 
 clean:
 	rm -fv {,figures/}*.pdf

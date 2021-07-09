@@ -1,160 +1,145 @@
 \subsection{Lattices}\label{subsec:lattices}
 
-\begin{remark}\label{rem:infinite_lattice_operations}
-  Suprema and infima in posets can be used to define operations named \hyperref[def:binary_lattice_operations/join]{\term{join}} and \hyperref[def:binary_lattice_operations/meet]{\term{meet}}, however there are also axioms for binary joins and \hyperref[def:binary_lattice_operations]{meets}. If we are interested in infinitary joins and meets, however, we need to use the poset definition. This can be accomplished indirectly by
-  \begin{enumerate}
-    \item Defining joins and meets axiomatically,
-    \item Using them to define a partial order,
-    \item Using the partial order to define infinitary joins and meets
-  \end{enumerate}
-\end{remark}
+\begin{definition}\label{def:semilattice}\mcite{nLab:lattice}
+  Lattices are \hyperref[def:poset]{posets} in which \hyperref[def:preordered_set/supremum_and_infimum]{suprema and infima} are taken as basic operations called \enquote{joins} and \enquote{meets}. This shifts the focus and makes lattices feel more \enquote{algebraic} compared to arbitrary ordered sets. See \fullref{rem:lattice_operation_etymology} for a discussion of the operation names.
 
-\begin{remark}\label{rem:lattice_operation_etymology}
-  The terms \hyperref[def:binary_lattice_operations/join]{\enquote{join}} for \( \vee \) and \hyperref[def:binary_lattice_operations/meet]{\enquote{meet} for \( \wedge \)} are notoriously difficult to remember. A helpful accident is the ability to write \enquote{meet} as \enquote{\( \wedge \wedge \)eet}.
-\end{remark}
+  Joins and meets may also be defined axiomatically as binary operations (see \fullref{thm:binary_lattice_operations}) rather than via some partial order, however this restricts us to taking suprema of finite sets and prevents us from taking the supremum of an arbitrary set. See \fullref{thm:binary_lattice_operations/new_lattice} for a discussion. Unless explicitly noted otherwise, we assume that lattices have their partial order defined.
 
-\begin{definition}\label{def:binary_lattice_operations}
-  Fix an arbitrary set \( \mscrX \) and let \( x, y \in \mscrX \). Define two \hyperref[def:magma/associative]{associative} and \hyperref[def:magma/commutative]{commutative} binary operations:
-  \begin{thmenum}
-    \thmitem{def:binary_lattice_operations/join} The \term{join} of \( x \) and \( y \), denoted as \( x \vee y \).
-    \thmitem{def:binary_lattice_operations/meet} The \term{meet} of \( x \) and \( y \), denoted as \( x \wedge y \).
-    \thmitem{def:binary_lattice_operations/absorption} The following \term{absorption laws} hold:
-    \begin{balign*}
-      x \vee (y \wedge x) = x
-       &  &
-      x \wedge (y \vee x) = x.
-    \end{balign*}
+  \begin{thmenum}[series=def:semilattice]
+    \thmitem{def:semilattice/join} A \term{join-semilattice} is a \hyperref[def:preordered_set/bounded_set]{bounded from above} poset in which every finite supremum exists. The operation itself is denoted by \( \vee \) and referred to as \term{join} and rather than supremum. In contrast to suprema, joins are usually written in \hyperref[rem:order_infix_notation]{infix} notation, e.g. \( x \vee y \vee z \) rather than \( \sup\set{ x, y, z } \).
+
+    The boundedness from above is equivalent to the existence of a global maximum which we will denote by \( \top \coloneqq \bigvee \mscrX \) and call the \term{top} element.
+
+    \thmitem{def:semilattice/meet} Analogously, a \term{meet-semilattice} is a bounded from below poset in which every finite infimum exists. The infimum is denoted by \( \wedge \) and called \term{meet} and the global minimum is denoted by \( \bot \coloneqq \bigwedge \mscrX \).
+
+    \thmitem{def:semilattice/complete} A semilattice is said to be \term{complete} if the corresponding operation is defined for all infinite sets rather than only finite ones.
+
+    \thmitem{def:semilattice/lattice} A \term{lattice} is a poset which is both a join-semilattice and a meet-semilattice. It is complete if both semilattices are complete. If finite joins and meets exist but the poset is unbounded, we sometimes call it a \term{pseudolattice}.
+
+    \thmitem{def:semilattice/distributive_lattice}\mcite{nLab:distributive_lattice} A lattice is said to be \term{distributive} if the following two distributive conditions hold:
+    \begin{align}
+      x \vee (y_1 \wedge y_2) &= (x \vee y_1) \wedge (y \vee y_2) \label{eq:def:semilattice/distributive_lattice/finite/meet_of_joins} \\
+      x \wedge (y_1 \vee y_2) &= (x \wedge y_1) \vee (y \wedge y_2) \label{eq:def:semilattice/distributive_lattice/finite/join_of_meets}.
+    \end{align}
+
+    If the lattice is \hyperref[def:semilattice/complete]{complete}, the above conditions are not enough. A complete lattice \( \mscrX \) it is said to be \term{distributive} if any of the following more general distributive axioms hold for any \( x \in \mscrX \) and \hyperref[def:indexed_family]{family} \( \set{ y_k }_{k \in \mscrK} \subseteq \mscrX \):
+    \begin{align}
+      x \vee \parens*{ \bigwedge_{k \in \mscrK} y_k } &= \bigwedge_{k \in \mscrK} \parens{ x \vee y_k } \label{eq:def:semilattice/distributive_lattice/arbitrary/meet_of_joins} \\
+      x \wedge \parens*{ \bigvee_{k \in \mscrK} y_k } &= \bigvee_{k \in \mscrK} \parens{ x \wedge y_k } \label{eq:def:semilattice/distributive_lattice/arbitrary/join_of_meets}
+    \end{align}
+  \end{thmenum}
+
+  Lattices have the following metamathematical structure:
+  \begin{thmenum}[resume=def:semilattice]
+    \thmitem{def:semilattice/theory} We extend the \hyperref[def:poset/theory]{theory of posets} with a single \hyperref[rem:order_infix_notation]{infix} binary functional symbol to obtain the \term{theories of semilattices} and with both symbols to obtain the \term{theory of lattices}.
+
+    For meet-semilattices, we add the following axiom schema to ensure compatibility between infima and meets (we use \( \wedgeonwedge \) to denote \hyperref[def:propositional_language/connectives/conjunction]{logical conjunction} to avoid symbol collision with meets):
+    \begin{equation}\label{eq:def:semilattice/theory/meet_compat}
+      (\xi \wedge \eta \doteq \alpha) \leftrightarrow (\alpha \leq \xi \wedgeonwedge \alpha \leq \eta \wedgeonwedge \qforall \alpha ((\alpha \leq \xi \wedgeonwedge \alpha \leq \eta) \rightarrow \alpha \leq \alpha))
+    \end{equation}
+    and the following axiom to ensure that \( \bot \) is indeed the minimum:
+    \begin{equation}\label{eq:def:semilattice/theory/bottom_compat}
+      \qforall \xi (\bot \leq \xi).
+    \end{equation}
+
+    Analogous axioms need to be added for meet-semilattices.
+
+    First-order logic cannot properly express the \term{theory of complete (semi)lattices} since we must define join and meet as unary operations on subsets of \( \mscrX \) rather than binary operations on members of \( \mscrX \).
+
+    \thmitem{def:semilattice/homomorphism} \hyperref[def:first_order_homomorphism]{Homomorphisms} between (semi)lattices are simply the monotone maps.
+
+    Alternatively, without referring to the order, we can characterize homomorphisms as functions preserving joins, meets and constants. No axioms follow automatically as in \fullref{thm:group_homomorphism_single_condition}.
+
+    \thmitem{def:semilattice/category} The \hyperref[def:first_order_model_category]{model categories} for (semi)lattices are full subcategories of \hyperref[def:poset/category]{\( \cat{Pos} \)}.
   \end{thmenum}
 \end{definition}
 
-\begin{proposition}\label{thm:binary_lattice_operations_poset}
-  Given a set \( \mscrX \) with \hyperref[def:binary_lattice_operations/join]{joins} and \hyperref[def:binary_lattice_operations/meet]{meets}, we can define the \hyperref[def:poset]{partial order relation} \( \leq \) as either
-  \begin{equation*}
-    x \leq y \iff x \vee y = y
-  \end{equation*}
-  or
-  \begin{equation*}
-    x \leq y \iff x \wedge y = x.
-  \end{equation*}
+\begin{remark}\label{rem:lattice_operation_etymology}
+  The terms \hyperref[thm:binary_lattice_operations/join]{\enquote{join}} for \( \vee \) and \hyperref[thm:binary_lattice_operations/meet]{\enquote{meet}} for \( \wedge \) are notoriously difficult to remember. A helpful accident is the ability to write \enquote{meet} as \enquote{\( \wedge \wedge \)eet}.
+\end{remark}
 
-  Both definitions of \( \leq \) are equivalent and induce on \( \mscrX \) a poset structure that is compatible with \fullref{def:lattice_operations}.
-\end{proposition}
-\begin{proof}
-  We will first show that the two definitions of \( \leq \) are equivalent. If \( x = x \wedge y \), then
-  \begin{equation*}
-    y
-    \overset {\ref{def:binary_lattice_operations/absorption}} =
-    y \vee (x \wedge y)
-    =
-    y \vee x
-    \overset {\ref{def:magma/commutative}} =
-    x \vee y.
-  \end{equation*}
+\begin{proposition}\label{thm:binary_lattice_operations}
+  Let \( (\mscrX, \leq) \) be a poset.
 
-  Now we will prove that \( \leq \), defined as \( x \leq y \iff x \vee y = y \), is indeed a partial order.
-  \SubProofOf{def:binary_relation/reflexive} Direct consequence of \fullref{thm:binary_lattice_operations_properties/idempotence}.
-  \SubProofOf{def:binary_relation/antisymmetric} Let \( x \leq y \) and \( y \leq x \), that is, \( x \vee y = y \) and \( y \vee x = x \). By \fullref{def:magma/commutative}, \( x = y \vee x = x \vee y = y \).
-  \SubProofOf{def:binary_relation/transitive} Let \( x \leq y \) and \( y \leq z \), that is, \( x \vee y = y \) and \( y \vee z = z \). Then, by \fullref{def:magma/associative},
-  \begin{equation*}
-    z = y \vee z = (x \vee y) \vee z = x \vee (y \vee z) = x \vee z.
-  \end{equation*}
-\end{proof}
-
-\begin{proposition}\label{thm:binary_lattice_operations_properties}
-  If \( (\mscrX, \vee, \wedge) \) is a set with a \hyperref[def:binary_lattice_operations/join]{binary join} and a \hyperref[def:binary_lattice_operations/meet]{binary meet}, the following properties hold:
   \begin{thmenum}
-    \thmitem{thm:binary_lattice_operations_properties/idempotence} Both operations are \term{idempotent}, i.e. \( x \vee x = x = x \wedge x \).
+    \thmitem{thm:binary_lattice_operations/semilattices} If it is a \hyperref[def:semilattice/join]{join-semilattice} (resp. \hyperref[def:semilattice/meet]{meet-semilattice}), then \( \vee \) (resp. \( \wedge \)) is \hyperref[def:magma/associative]{associative}, \hyperref[def:magma/commutative]{commutative} and \hyperref[def:magma/idempotent]{idempotent} when considered as a binary operation.
+
+    \thmitem{thm:binary_lattice_operations/identity} The constants act as \hyperref[def:magma_identity]{magma identities}. That is, for each \( x \in \mscrX \),
+    \begin{align}
+      x \vee \bot = x \label{eq:thm:binary_lattice_operations/identity/join} \\
+      x \wedge \top = x \label{eq:thm:binary_lattice_operations/identity/meet}
+    \end{align}
+
+    \thmitem{thm:binary_lattice_operations/absorption} If \( (\mscrX, \vee, \wedge) \) is a lattice, then the following absorption laws hold:
+    \begin{align}
+      x \vee (x \wedge y) &= x \label{eq:thm:binary_lattice_operations/absorption/join} \\
+      x \wedge (x \vee y) &= x \label{eq:thm:binary_lattice_operations/absorption/meet}.
+    \end{align}
+
+    \thmitem{thm:binary_lattice_operations/compatibility} The following conditions for compatibility with \( \leq \) hold:
+    \begin{align}
+      x \leq y &\iff x \vee y = y \label{eq:thm:binary_lattice_operations/compatibility/join} \\
+      x \leq y &\iff x \wedge y = x \label{eq:thm:binary_lattice_operations/compatibility/meet}.
+    \end{align}
+
+    \thmitem{thm:binary_lattice_operations/new_lattice} If \( \mscrS \) is an arbitrary \hyperref[def:set_zfc]{set}, if \( \vee \) is a binary operation that is associative, commutative and idempotent (the conclusion of \fullref{thm:binary_lattice_operations/semilattices}) and if there exists a distinguished element \( \top \) such that \eqref{eq:thm:binary_lattice_operations/identity/join} holds, then \( (\mscrS, \vee) \) is a join-semilattice with an ordering defined by \eqref{eq:thm:binary_lattice_operations/compatibility/join}. A completely analogous statement holds for meet-semilattices.
+
+    If \( \mscrS \) is both a join-semilattice and meet-semilattice and if \( \vee \) and \( \wedge \) satisfy the absorption conditions \eqref{eq:thm:binary_lattice_operations/absorption/join} and \eqref{eq:thm:binary_lattice_operations/absorption/meet}, then \( \mscrS \) is a lattice. Furthermore, proving idempotence for \( \vee \) or \( \wedge \) is unnecessary because both follow from the absorption conditions.
+
+    It may turn out that \( \mscrS \) is a complete lattice under this definition. This can allow us, for example, to transparently extend the binary operations join and meet into infinitary operations.
   \end{thmenum}
 \end{proposition}
 \begin{proof}
-  \SubProofOf{thm:binary_lattice_operations_properties/idempotence} \fullref{def:binary_lattice_operations/absorption} implies that
+  \SubProofOf{thm:binary_lattice_operations/semilattices} Suprema and infima are obviously associative and commutative as binary operations because ordering is immaterial for pure sets and \( x \vee y \) is defined as \( \sup\set{ x, y } \).
+
+  Idempotence is also obvious because \( x \vee x = \sup\set{ x } = x \).
+
+  \SubProofOf{thm:binary_lattice_operations/identity} Obvious since \( \bot \leq x \leq \top \) for all \( x \in \mscrX \).
+
+  \SubProofOf{thm:binary_lattice_operations/absorption} If we rewrite \eqref{eq:thm:binary_lattice_operations/absorption/join} using suprema and infima, we obtain
+  \begin{equation*}
+    \sup\set{ x, \inf\set{ y, x } } = x.
+  \end{equation*}
+
+  If \( x \leq y \), then \( \inf\set{ y, x } = x \) and \( \sup\set{ x, \inf\set{ y, x } } = \sup\set{ x, x } = x \).
+
+  If \( x \geq y \), then \( \inf\set{ y, x } = y \) and \( \sup\set{ x, \inf\set{ y, x } } = \sup\set{ x, y } = x \).
+
+  This proves \eqref{eq:thm:binary_lattice_operations/absorption/join}. Since \( \wedge \) is \( \vee \) in the \hyperref[def:preordered_set/dual]{dual poset}, \eqref{eq:thm:binary_lattice_operations/absorption/meet} follows automatically.
+
+  \SubProofOf{thm:binary_lattice_operations/compatibility} We have
+  \begin{equation*}
+    x \vee y
+    =
+    \sup\set{ x, y }
+    =
+    \begin{cases}
+      y, &x \leq y \\
+      x, &x > y
+    \end{cases}
+  \end{equation*}
+  and dually for \( \wedge \).
+
+  \SubProofOf{thm:binary_lattice_operations/new_lattice} Since the binary join and/or meet are defined for all members of the set \( \mscrS \), it is indeed a join-semilattice because all finite joins and meets exist by definition.
+
+  Idempotence of \( \vee \) follows from \eqref{eq:thm:binary_lattice_operations/absorption/meet}:
   \begin{equation*}
     x \vee x = x \vee (x \wedge (x \vee x)) = x
   \end{equation*}
-  and analogously \( x \wedge x = x \).
+  and dually for \( \wedge \).
 \end{proof}
 
-\begin{definition}\label{def:lattice_operations}
-  Let \( (\mscrX, \leq) \) be a \hyperref[def:poset]{poset}. We define \term{joins} \( \vee \) and \term{meets} \( \wedge \) as the \hyperref[def:function/partial]{partial} functions
-  \begin{align*}
-    &{}\vee{}: \pow(\mscrX) \to \mscrX
-    &&{}\wedge{}: \pow(\mscrX) \to \mscrX
-    \\
-    & \vee(A) \coloneqq \sup A
-    && \wedge(A) \coloneqq \inf A.
-  \end{align*}
-
-  For finite sets, we usually use the infix notation \( x_1 \vee \ldots \vee x_n \) instead of \( \vee \{ x_1, \ldots, x_n \} \).
-\end{definition}
+\begin{proposition}\label{thm:binary_lattices_are_isomorphic}
+  All two-element \hyperref[def:semilattice/lattice]{lattices} are isomorphic.
+\end{proposition}
 \begin{proof}
-  We first show that \( \vee \) and \( \wedge \) satisfy \fullref{def:binary_lattice_operations}. Since suprema and infima are obviously associative and commutative, it remains only to show \fullref{def:binary_lattice_operations/absorption}, that is, for any comparable \( x, y \in \mscrX \),
-  \begin{balign*}
-    x = \sup \{x, \inf \{ x, y \} \}
-     &  &
-    x = \inf \{x, \sup \{ x, y \} \}.
-  \end{balign*}
+  Since the lattices are complete, they include at least two elements - the \hyperref[def:semilattice/top]{top} and the \hyperref[def:semilattice/bottom]{bottom}. Since by the statement of the proposition they have exactly two elements, their top and the bottom are their only elements.
 
-  If \( x \leq y \), then
-  \begin{balign*}
-    \sup \{ x, \inf \{ x, y \} \} = \sup \{ x, x \} = x
-     &  &
-    \inf \{ x, \sup \{ x, y \} \} = \inf \{ x, y \} = x.
-  \end{balign*}
-
-  If \( y \leq x \), then
-  \begin{balign*}
-    \sup \{ x, \inf \{ x, y \} \} = \sup \{ x, y \} = x
-     &  &
-    \inf \{ x, \sup \{ x, y \} \} = \inf \{ x, x \} = x.
-  \end{balign*}
-
-  We now show that if the partial order \( \leq \) was defined using binary joins and meets as in \fullref{def:binary_lattice_operations}, then the original join \( \vee \) and meet \( \wedge \) are compatible with the binary \( \sup \) and \( \inf \).
-
-  Fix \( x, y \in \mscrX \). Since the functions \( \vee \) and \( \wedge \) are total, all binary suprema and infima exist. If \( \sup \{ x, y \} = z \), then \( z \) is the least element such that both \( x \leq z \) and \( y \leq z \). Thus
-  \begin{equation*}
-    x \vee z = z = y \vee z.
-  \end{equation*}
-
-  Hence
-  \begin{equation*}
-    x \vee y = (x \vee (z \wedge x)) \vee y = x \vee z \vee y = x \vee (z \vee z) \vee y = \\ = (x \vee z) \vee (z \vee y) = z \vee z = z.
-  \end{equation*}
-
-  Conversely, if \( x \vee y = z \), by \fullref{def:binary_lattice_operations/absorption},
-  \begin{equation*}
-    x \vee z = (x \wedge (y \vee x)) \vee z = (x \wedge z) \vee z = z,
-  \end{equation*}
-  thus \( x \leq z \). Analogously, \( y \leq z \).
-
-  If we assume that there exists \( t \in \mscrX \) such that \( x \leq t \leq z \) and \( y \leq t \leq z \), then
-  \begin{equation*}
-    t = t \vee x = t \vee x \vee y = t \vee z = z.
-  \end{equation*}
-
-  Thus \( z = \sup \{ x, y \} \).
-
-  The equivalence between binary \( \inf \) and \( \wedge \) can be obtained analogously.
+  Obviously \( \bot \leq \top \) in any lattice, hence the obvious bijection between the lattices is in fact an \hyperref[def:preordered_set/homomorphism]{order isomorphism}.
 \end{proof}
-
-\begin{definition}\label{def:lattice}
-  A poset \( (\mscrX, \leq) \) is called a \term{lattice} if the following are satisfied:
-
-  \begin{thmenum}
-    \thmitem{def:lattice/top} The \hyperref[def:preordered_set/largest_smallest_element]{global maximum} \( \vee \mscrX \) exists. We call it the \term{top element} \( \top \).
-
-    \thmitem{def:lattice/bottom} The \hyperref[def:preordered_set/largest_smallest_element]{global minimum} \( \wedge \mscrX \) exists. We call it the \term{bottom element} \( \bot \).
-
-    \thmitem{def:lattice/finite_join} All finite \hyperref[def:binary_lattice_operations]{joins} exist.
-    \thmitem{def:lattice/finite_meet} All finite \hyperref[def:binary_lattice_operations]{meets} exist.
-  \end{thmenum}
-
-  If the join and meet are defined axiomatically, all finite joins and meets necessarily exist.
-
-  If the last two properties hold for all joins and meets, not necessarily finite, we say that the lattice is a \term{complete lattice}.
-\end{definition}
 
 \begin{proposition}[Knaster-Tarski]\label{thm:knaster_tarski_theorem}
-  The \hyperref[def:fixed_point]{fixed points} of a \hyperref[def:monotone_map]{monotone} \hyperref[def:endofunction]{endofunction} in a \hyperref[def:lattice]{complete lattice} form a complete sublattice. In particular, the function has at least one fixed point.
+  The \hyperref[def:fixed_point]{fixed points} of a \hyperref[def:preordered_set/homomorphism]{monotone} \hyperref[def:endofunction]{endofunction} in a \hyperref[def:lattice]{complete lattice} form a complete sublattice. In particular, the function has at least one fixed point.
 \end{proposition}
 \begin{proof}
   Let \( \mscrX \) be a complete lattice and let \( \varphi: \mscrX \to \mscrX \) be monotone. Define
@@ -164,9 +149,9 @@
 
   We know that \( L \) is nonempty because \( \top \in L \).
 
-  Since the lattice is complete, we can take \( l \coloneqq \inf L \). Note that \( f(l) \) is a lower bound of \( L \) because, for any \( y \in L \),
+  Since the lattice is complete, we can take \( l \coloneqq \inf L \). Note that \( f(l) \) is a lower bound of \( L \) because for any \( y \in L \) we have
   \begin{equation*}
-    \varphi(l) \leq \varphi(y) \leq y.
+    f(l) \leq f(y) \leq y.
   \end{equation*}
 
   But \( l \) is the largest lower bound of \( L \), hence
@@ -181,7 +166,7 @@
 
   From \eqref{eq:thm:knaster_tarski/f_lower} and \eqref{eq:thm:knaster_tarski/f_upper} it follows that \( l = f(l) \), that is, \( l \) is a fixed point of \( f \).
 
-  Denote by \( F \) the set of all fixed points of \( \mscrX \). We just showed that \( F \) is nonempty. Let \( G \subseteq F \). We will show that \( G \) has an infimum and supremum in \( F \).
+  Denote by \( F \) the set of all fixed points of \( \mscrX \). We just showed that \( F \) is nonempty. Let \( G \subseteq F \). We will show that the infimum and supremum of \( G \) is in \( F \).
 
   Denote
   \begin{equation*}
@@ -197,215 +182,6 @@
   We can analogously show that \( \sup G \in F \). We conclude that \( F \) is itself a complete lattice.
 \end{proof}
 
-\begin{proposition}\label{thm:lattice_homomorphism}
-  A \hyperref[def:first_order_homomorphism]{homomorphism} of the lattices
-  \begin{equation*}
-    (\mscrX, \vee_{\mscrX}, \wedge_{\mscrX}, \top_{\mscrX}, \bot_{\mscrX})
-  \end{equation*}
-  and
-  \begin{equation*}
-    (\mscrY, \vee_{\mscrY}, \wedge_{\mscrY}, \top_{\mscrY}, \bot_{\mscrY})
-  \end{equation*}
-  is a function \( \varphi: \mscrX \to \mscrY \) such that
-  \begin{thmenum}
-    \thmitem{thm:lattice_homomorphism/respects_joins} \( f(x \vee_{\mscrX} y) = f(x) \vee_{\mscrY} f(y) \)
-    \thmitem{thm:lattice_homomorphism/respects_meets} \( f(x \wedge_{\mscrX} y) = f(x) \wedge_{\mscrY} f(y) \)
-    \thmitem{thm:lattice_homomorphism/respects_top} \( f(\top_{\mscrX}) = \top_{\mscrY} \)
-    \thmitem{thm:lattice_homomorphism/respects_bot} \( f(\bot_{\mscrX}) = \bot_{\mscrY} \)
-  \end{thmenum}
-
-  That is, no axioms follow automatically as in \fullref{thm:group_homomorphism_single_condition}.
-
-  For Boolean \hyperref[def:boolean_algebra]{algebras}, however, complements are automatically preserved.
-\end{proposition}
-
 \begin{remark}\label{def:lattice_categorical_product}
-  The existence of finite joins and meets is equivalent to the existence of finite products and coproducts in the corresponding category by \fullref{thm:partial_order_category_correspondence}.
+  The existence of finite joins and meets is equivalent to the existence of finite products and coproducts in the respective poset category defined in \fullref{thm:partial_order_category_correspondence}.
 \end{remark}
-
-\begin{definition}\label{def:distributive_lattice}\mcite{nLab:distributive_lattice}
-  A lattice \( (\mscrX, \vee, \wedge, \top, \bot) \) is called a \term{distributive lattice} if any of the following two equivalent infinitary distributive axioms hold for any \hyperref[def:indexed_family]{family} \( \{ x_k \}_{k \in \mscrK} \subseteq \mscrX \) and any \( y \in \mscrX \):
-  \begin{align}\label{eq:def:distributive_lattice/distributivity}
-    y \wedge \left( \bigvee_{k \in \mscrK} x_k \right) = \bigwedge_{k \in \mscrK} (y \vee x_k)
-     &  &
-    y \vee \left( \bigwedge_{k \in \mscrK} x_k \right) = \bigvee_{k \in \mscrK} (y \wedge x_k).
-  \end{align}
-\end{definition}
-
-\begin{definition}\label{def:boolean_algebra}\mcite{nLab:boolean_algebra}
-  Let \( \mscrX \) be a distributive lattice. A \term{complement} of \( x \) is an element \( y \) of \( \mscrX \) such that
-  \begin{align}\label{eq:def:boolean_algebra/complement}
-    x \vee y = \top, && x \wedge y = \bot.
-  \end{align}
-
-  Since in a distributive lattice complements are unique (see \fullref{thm:boolean_algebra_properties/unique_complement}), the complement of \( x \) is denoted by \( \overline x \). If all elements of \( \mscrX \) have complements, then \( (\mscrX, \vee, \wedge, \top, \bot, \overline \cdot) \) is called a \term{Boolean algebra}.
-\end{definition}
-
-\begin{example}\label{ex:boolean_algebras}
-  Examples of \hyperref[def:boolean_algebra]{Boolean algebras} include:
-
-  \begin{itemize}
-    \item The cosets of propositional formulas under semantic equivalence (see \fullref{thm:propositional_formula_cosets_are_boolean_functions/boolean_algebra}).
-    \item The Galois field \( \BbbF_2 \) with suitably defined operations (see \fullref{thm:f2_is_boolean_algebra}).
-    \item The power set of any set, usually taken to be a space with additional structure (see \fullref{thm:subsets_form_boolean_algebra}).
-  \end{itemize}
-\end{example}
-
-\begin{proposition}\label{thm:boolean_algebra_properties}
-  A Boolean algebra \( \mscrX \) has the following basic properties:
-  \begin{thmenum}
-    \thmitem{thm:boolean_algebra_properties/unique_complement} For each \( x \in \mscrX \), there exists a unique complement \( \overline x \).
-    \thmitem{thm:boolean_algebra_properties/double_complement} For each \( x \in \mscrX \), we have \( x = \overline{\overline x} \).
-  \end{thmenum}
-\end{proposition}
-\begin{proof}
-  \SubProofOf{thm:boolean_algebra_properties/unique_complement} If \( y \) and \( z \) are both complements of \( x \), then
-  \begin{balign*}
-    y
-    =
-    y \wedge \top
-    =
-    y \wedge (z \vee x)
-    =
-    (y \wedge z) \vee (y \wedge x)
-    = \\ =
-    y \wedge z
-    =
-    (x \wedge z) \vee (y \wedge z)
-    =
-    (x \vee y) \wedge z
-    =
-    z.
-  \end{balign*}
-
-  \SubProofOf{thm:boolean_algebra_properties/double_complement} Fix \( x \in \mscrX \). We have
-  \begin{balign*}
-    \overline{\overline x}
-    =
-    \overline{\overline x} \wedge \top
-    =
-    \overline{\overline x} \wedge (\overline x \vee x)
-    =
-    (\overline{\overline x} \wedge \overline x) \vee (\overline{\overline x} \wedge x)
-    = \\ =
-    \overline{\overline x} \wedge x
-    =
-    (\overline{\overline x} \wedge x) \vee (\overline x \wedge x)
-    =
-    (\overline{\overline x} \vee \overline x) \wedge x
-    =
-    x.
-  \end{balign*}
-\end{proof}
-
-\begin{theorem}[De Morgan's laws]\label{thm:de_morgans_laws}
-  If \( \mscrX \) is a \hyperref[def:boolean_algebra]{Boolean algebra}, the following hold for any \hyperref[def:indexed_family]{family} \( \{ x_k \}_{k \in \mscrK} \subseteq \mscrX \):
-  \begin{align*}
-    \overline{\bigvee_{k \in \mscrK} x_k} = \bigwedge_{k \in \mscrK} \overline{x_k}
-    &&
-    \overline{\bigwedge_{k \in \mscrK} x_k} = \bigvee_{k \in \mscrK} \overline{x_k}
-  \end{align*}
-\end{theorem}
-\begin{proof}
-  We will first show
-  \begin{equation}\label{thm:de_morgans_laws/equation}
-    \overline{\bigvee_{k \in \mscrK} x_k} = \bigwedge_{k \in \mscrK} \overline{x_k}
-  \end{equation}
-
-  In order for \( \wedge_{k \in \mscrK} \overline{x_k} \) to be the complement of \( \vee_{k \in \mscrK} x_k \), the equations in \fullref{def:boolean_algebra} need to be satisfied.
-
-  By distributivity,
-  \begin{balign*}
-    \left( \bigwedge_{k \in \mscrK} \overline{x_k} \right) \vee \left( \bigvee_{\beta \in \mscrK} x_\beta \right)
-     & =
-    \bigvee_{k \in \mscrK} \left( \overline{x_k} \wedge \bigvee_{\beta \in \mscrK} x_\beta \right)
-    =                                                                                                          \\ &=
-    \bigvee_{k \in \mscrK} \bigwedge_{\beta \in \mscrK} (\overline{x_k} \vee x_\beta)
-    =                                                                                                          \\ &=
-    \bigvee_{k \in \mscrK} \left( (\overline{x_k} \vee x_k) \wedge \bigwedge_{\substack{\beta \in \mscrK                   \\ \beta \neq k}} (\overline{x_k} \vee x_\beta) \right)
-    =                                                                                                          \\ &=
-    \bigvee_{k \in \mscrK} \left( \top \wedge \bigwedge_{\substack{\beta \in \mscrK                                  \\ \beta \neq k}} (\overline{x_k} \vee x_\beta) \right)
-    =                                                                                                          \\ &=
-    \left( \bigwedge_{k \in \mscrK} \top \right) \vee \bigvee_{k \in \mscrK} \left( \bigvee_{\substack{\beta \in \mscrK \\ \beta \neq k}} (\overline{x_k} \vee x_\beta) \right)
-    =                                                                                                          \\ &=
-    \top.
-  \end{balign*}
-
-  Analogously,
-  \begin{equation*}
-    \left( \bigwedge_{k \in \mscrK} \overline{x_k} \right) \wedge \left( \bigvee_{\beta \in \mscrK} x_\beta \right) = \bot.
-  \end{equation*}
-
-  This proves \fullref{thm:de_morgans_laws/equation}.
-
-  The other law follows from this one by double \hyperref[thm:boolean_algebra_properties]{negation}:
-  \begin{equation*}
-    \overline{\bigwedge_{k \in \mscrK} x_k}
-    =
-    \overline{\bigwedge_{k \in \mscrK} \overline{\overline{x_k}}}
-    =
-    \overline{\overline{\bigvee_{k \in \mscrK} \overline{x_k}}}
-    =
-    \bigvee_{k \in \mscrK} \overline{x_k}.
-  \end{equation*}
-\end{proof}
-
-\begin{proposition}\label{thm:binary_boolean_algebras_are_isomorphic}
-  All two-element Boolean \hyperref[def:boolean_algebra]{algebras} are isomorphic.
-\end{proposition}
-\begin{proof}
-  We will show that the two-element Boolean algebra
-  \begin{balign*}
-     & \left( \set{ \top, \bot }, \vee, \wedge, \top, \bot, \overline \cdot \right)
-  \end{balign*}
-  is isomorphic to the \hyperref[thm:galois_field_existence]{Galois field} \( \BbbF_2 \) with the Boolean algebra structure defined in \fullref{thm:f2_is_boolean_algebra}.
-
-  There is an obvious bijection
-  \begin{equation*}
-    \varphi(x) \coloneqq \begin{cases}
-      1, & x = \top \\
-      0, & x = \bot
-    \end{cases}.
-  \end{equation*}
-
-  We only need to verify that \( \varphi \) preserves meets and joints. But this is trivial:
-  \begin{balign*}
-    \varphi(x \vee y)
-     & =
-    \begin{rcases}
-      \begin{cases}
-        0, & x = y = 0        \\
-        1, & \text{otherwise}
-      \end{cases}
-    \end{rcases}
-    =
-    x \oplus y \oplus xy.
-    \\
-    \varphi(x \wedge y)
-     & =
-    \begin{rcases}
-      \begin{cases}
-        1, & x = y = 1        \\
-        0, & \text{otherwise}
-      \end{cases}
-    \end{rcases}
-    =
-    xy.
-  \end{balign*}
-\end{proof}
-
-\begin{proposition}\label{thm:functions_into_boolean_algebra_form_boolean_algebra}
-  The set \( \mscrF \coloneqq \fun(\mscrS, \mscrX) \) of all functions from any set \( \mscrS \) into a Boolean algebra also form a Boolean algebra with the operations defined pointwise as
-  \begin{refenum}
-    \refitem{def:binary_lattice_operations/join} \( f \vee_{\mscrF} g \coloneqq (x \mapsto f(x) \vee_{\mscrX} g(x)) \)
-    \refitem{def:binary_lattice_operations/meet} \( f \wedge_{\mscrF} g \coloneqq (x \mapsto f(x) \wedge_{\mscrX} g(x)) \)
-    \refitem{def:lattice/top} \( \top_{\mscrF} \coloneqq (x \mapsto \top_{\mscrX}) \)
-    \refitem{def:lattice/bottom} \( \bot_{\mscrF} \coloneqq (x \mapsto \bot_{\mscrX}) \)
-    \refitem{eq:def:boolean_algebra/complement} \( \overline{f \ }^{\mscrF} \coloneqq (x \mapsto \overline{f(x)}^{\mscrX}) \)
-  \end{refenum}
-
-  Because of the canonical embedding \( \iota: \mscrX \to \fun(\mscrS, \mscrX) \) that sends each member of \( \mscrX \) to the corresponding constant function, we can regard \( \mscrX \) is a subset of \( \fun(\mscrS, \mscrX) \) and further ignore the distinction between the two Boolean algebra structures.
-\end{proposition}
-\begin{proof}
-  Verifying that \( \mscrF \) is a Boolean algebra is trivial.
-\end{proof}

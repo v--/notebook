@@ -13,15 +13,17 @@
 
 % Generic math packages (load first to avoid misbehaving macros later)
 \RequirePackage{mathtools} % Loads amsmath
+\RequirePackage{empheq}
 \RequirePackage{amsthm}
 \RequirePackage{thmtools}
 
 % Fonts
 %% I avoid fontspec and unicode-math (and hence XeTeX/LuaTeX) because they drastically slow down the compilation
 \RequirePackage[T2A,T1]{fontenc}
-\RequirePackage[not1]{stix2} % Math font family; load after amsmath despite documentation, it breaks otherwise
+\RequirePackage[not1]{stix2} % Serf and math font families; load after amsmath despite documentation, it breaks otherwise
 \RequirePackage[sans,tt=false,ScaleRM=1.075]{libertinus} % Sans-serif
 \DeclareFontFamilySubstitution{T2A}{stix2}{LibertinusSerif-TLF} % Fallback font that looks similar to STIX Two Text
+\UseLegacyTextSymbols % https://github.com/latex3/latex2e/issues/502
 \RequirePackage{microtype}
 
 % Reference packages
@@ -82,6 +84,7 @@
 % Misc math packages
 \RequirePackage[altpo,epsilon]{backnaur}
 \RequirePackage[ISO]{diffcoeff}
+\RequirePackage{synttree}
 \RequirePackage{ebproof}
 \RequirePackage{bigints}
 \RequirePackage{xfrac}

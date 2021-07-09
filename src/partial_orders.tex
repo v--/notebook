@@ -1,57 +1,86 @@
 \subsection{Partial orders}\label{subsec:partial_orders}
 
 \begin{definition}\label{def:poset}
-  Fix a set \( X \). A \term{partially ordered set} structure or \term{poset} structure can be defined equivalently as
-  \begin{thmenum}
-    \thmitem{def:preordered_set/nonstrict} A \hyperref[def:preordered_set]{preorder} \( \leq \) on \( X \) such that \( \leq \) is \hyperref[def:binary_relation/antisymmetric]{antisymmetric} in addition to being \hyperref[def:binary_relation/reflexive]{reflexive} and \hyperref[def:binary_relation/transitive]{transitive}. This relation is called a \term{nonstrict partial order} or simply a \term{partial order}.
+  Fix a set \( \mscrP \). A \term{partially ordered set} structure, also called a \term{poset} structure, can be defined in the following equivalent ways:
+  \begin{thmenum}[series=def:poset]
+    \thmitem{def:poset/nonstrict} A \hyperref[def:preordered_set]{preorder} \( \leq \) on \( \mscrP \) such that \( \leq \) is \hyperref[def:binary_relation/antisymmetric]{antisymmetric} in addition to being \hyperref[def:binary_relation/reflexive]{reflexive} and \hyperref[def:binary_relation/transitive]{transitive}. This definition is the more common one. If we wish to distinguish it from the other definition, we call such a relation a \term{nonstrict partial order}.
 
-    \thmitem{def:preordered_set/strict} An \hyperref[def:binary_relation/irreflexive]{irreflexive} and \hyperref[def:binary_relation/transitive]{transitive} binary relation \( < \) on \( X \). This relation is called a \term{strict partial order}.
+    \thmitem{def:poset/strict} An \hyperref[def:binary_relation/irreflexive]{irreflexive} and \hyperref[def:binary_relation/transitive]{transitive} binary relation \( < \) on \( \mscrP \). This relation is called a \term{strict partial order}.
   \end{thmenum}
 
-  In order for the equivalence to hold, the following condition needs to be satisfied:
-  \begin{equation*}
-    x \leq y \iff x < y \T{or} x = y.
-  \end{equation*}
+  If both relations are present, in order for the them to be equivalent, \( \leq \) must be the union of \( < \) and the \hyperref[def:binary_relation/diagonal]{diagonal} \( \Delta \). This condition corresponds to the following axiom:
+  \begin{equation}\label{def:poset/compatibility_nonstrict}
+    (x \leq y) \leftrightarrow \parens[\Big]{(x < y) \vee (x = y)}.
+  \end{equation}
+
+  By adding \( \placeholder \wedge \neg (x = y) \) to both sides of \eqref{def:poset/compatibility_nonstrict}, using \fullref{thm:de_morgans_laws} and taking irreflexivity of \( < \) into account, we obtain
+  \begin{equation}\label{def:poset/compatibility_strict}
+    (x < y) \leftrightarrow \parens[\Big]{(x \leq y) \wedge \neg (x = y)}.
+  \end{equation}
+
+  \begin{thmenum}[resume=def:poset]
+    \thmitem{def:poset/theory} Since we can interdefine nonstrict and strict orders, it makes little sense to study separately theories for the two. Thus to obtain the \term{theory of posets}, we add to the \hyperref[def:preordered_set/theory]{theory of preordered sets}:
+    \begin{itemize}
+      \item \hyperref[def:binary_relation/antisymmetric]{Antisymmetry} for \( \leq \).
+      \item A single binary predicate symbol \( < \).
+      \item Either of the compatibility condition \eqref{def:poset/compatibility_nonstrict} or \eqref{def:poset/compatibility_strict} (it is unnecessary to add both).
+    \end{itemize}
+
+    We can also add \hyperref[def:binary_relation/irreflexive]{irreflexivity} and \hyperref[def:binary_relation/transitive]{transitivity} for \( < \) but that would also be redundant.
+
+    \thmitem{def:poset/homomorphism} The \hyperref[def:first_order_homomorphism]{homomorphisms} in the theory are again \hyperref[def:poset/homomorphism]{monotone maps}. If we instead build a theory of strict partial orders without \( \leq \), homomorphisms are instead the more restrictive strict monotone maps.
+
+    \thmitem{def:poset/substructure} As for preorders, any subset of a poset is itself a poset.
+
+    \thmitem{def:poset/category} We denote the \hyperref[def:first_order_model_category]{model category} by \( \cat{Pos} \). It is a full subcategory of the \hyperref[def:preordered_set/category]{category of preordered sets}.
+  \end{thmenum}
 \end{definition}
 \begin{proof}
-  \ImplicationSubProof{def:preordered_set/nonstrict}{def:preordered_set/strict} Let \( \leq \) be a nonstrict partial order. We will show that \( < \) is a strict partial order.
-  \SubProofOf{def:binary_relation/transitive} Let \( x < y \) and \( y < z \). Thus \( x \leq y \) and \( y \leq z \). By transitivity, \( x \leq z \).
+  \ImplicationSubProof{def:poset/nonstrict}{def:poset/strict} Let \( \leq \) be a nonstrict partial order. We will show that \( < \) is a strict partial order.
 
-  Additionally, \( x \neq y \) and \( y \neq z \). Assume\LEM that \( x = z \). By reflexivity of \( \leq \), we have \( z \leq x \) and, since \( y \leq z \), by transitivity we obtain \( y \leq x \). But since \( x \leq y \), by the antisymmetry of \( \leq \), we have \( x = y \), which contradicts the assumption that \( x < y \).
+  \begin{itemize}
+    \item The relation \( < \) is \hyperref[def:binary_relation/transitive]{transitive}. To see this, let \( x < y \) and \( y < z \). In particular, \( x \leq y \) and \( y \leq z \). By transitivity, \( x \leq z \).
 
-  Therefore \( x < z \).
+    Additionally, \( x \neq y \) and \( y \neq z \). Assume\DNE that \( x = z \). By reflexivity of \( \leq \), we have \( z \leq x \) and, since \( y \leq z \), by transitivity we obtain \( y \leq x \). But since \( x \leq y \), by the antisymmetry of \( \leq \), we have \( x = y \), which contradicts the assumption that \( x < y \).
 
-  \SubProofOf{def:binary_relation/irreflexive} Fix \( x \in X \). By reflexivity of \( \leq \), \( x \leq x \) and by definition,
-  \begin{equation*}
-    x < x \iff x \leq x \T{and} x \neq x,
-  \end{equation*}
-  thus
-  \begin{equation*}
-    x < x \iff x \neq x.
-  \end{equation*}
+    Therefore \( x < z \).
+
+    \item \hyperref[def:binary_relation/irreflexive]{Irreflexivity} of \( < \) follows directly from reflexivity of \( \leq \) and the compatibility condition.
+  \end{itemize}
 
   Since the right side is false, the left side \( x < x \) is also false.
 
-  \ImplicationSubProof{def:preordered_set/strict}{def:preordered_set/nonstrict} Let \( < \) be a strict partial order. We will show that \( \leq \) is a nonstrict partial order.
-  \SubProofOf{def:binary_relation/reflexive} Fix \( x \in X \) and assume\LEM that \( x \not\leq x \). Then \( x \neq x \) which contradicts the reflexivity of equality. Hence \( x \leq x \).
+  \ImplicationSubProof{def:poset/strict}{def:poset/nonstrict} Let \( < \) be a strict partial order. We will show that \( \leq \) is a nonstrict partial order.
 
-  \SubProofOf{def:binary_relation/antisymmetric} Let \( x \leq y \) and \( y \leq x \), that is, either \( x = y \) or both \( x < y \) and \( y < x \) hold. Assume\LEM the latter. By the transitivity of \( \leq \), we have \( x < x \), which contradicts the irreflexivity of \( < \). Hence \( x = y \).
+  \begin{itemize}
+    \item To see \hyperref[def:binary_relation/reflexive]{reflexivity}, fix \( x \in \mscrP \) and assume\DNE that \( x \not\leq x \). Then \( x \neq x \) which contradicts the reflexivity of equality. Hence \( x \leq x \).
 
-  \SubProofOf{def:binary_relation/transitive} Let \( x \leq y \) and \( y \leq z \). Then we have four cases depending on which of \( x \), \( y \) and \( z \) are equal. Since both relations \( < \) and \( = \) are transitive, it follows that in all four cases \( x \leq z \).
+    \item To see \hyperref[def:binary_relation/antisymmetric]{antisymmetry}, let \( x \leq y \) and \( y \leq x \), that is, either \( x = y \) or both \( x < y \) and \( y < x \) hold. Assume\DNE the latter. By the transitivity of \( \leq \), we have \( x < x \), which contradicts the irreflexivity of \( < \). Hence \( x = y \).
+
+    \item To see \hyperref[def:binary_relation/transitive]{transitivity}, let \( x \leq y \) and \( y \leq z \). Then we have four cases depending on which of \( x \), \( y \) and \( z \) are equal. Since both relations \( < \) and \( = \) are transitive, it follows that in all four cases \( x \leq z \).
+  \end{itemize}
 \end{proof}
 
 \begin{proposition}\label{thm:preorder_to_partial_order}
-  Let \( (X, \sim) \) be a preordered set. Use the \hyperref[def:derived_relations/symmetric]{symmetric closure} to define the equivalence relation
+  Let \( (\mscrP, \leq) \) be a preordered set. Define the relation \( \cong \) by
   \begin{equation*}
-    \cong \coloneqq \cl_S(\sim).
+    x \cong y \iff x \leq y \T{and} y \leq x.
   \end{equation*}
 
-  The quotient set \( X / \sim \) along with the induced relation
+  That is, \( \cong \) is the intersection of the relation \( \leq \) with its \hyperref[def:binary_relation/converse]{converse}.
+
+  Since \( \cong \) is an \hyperref[def:equivalence_relation]{equivalence relation} we can for the the quotient set \( \mscrP / \cong \). Define the relation \( \preceq \) on this quotient set by
   \begin{equation*}
-    [x] \leq [y] \iff x \sim y
+    [x] \preceq [y] \iff x \leq y.
   \end{equation*}
-  is then a \hyperref[def:poset]{partially ordered set}.
+
+  The pair \( (\mscrP / \cong, \preceq) \) is then a \hyperref[def:poset]{partially ordered set}.
 \end{proposition}
+\begin{proof}
+  The relation \( \preceq \) is well-defined. Indeed, let \( x \cong x' \) and \( y \cong y' \), that is, both \( x \leq x' \) and \( x' \leq x \) and similarly for \( y \). If \( x \leq y \), by transitivity \( x \leq y \leq y' \). But \( x' \leq x \), hence \( x' \leq y' \).
+
+  It is then clear that \( \preceq \) is a partial order because it inherits reflexivity and transitivity from \( \leq \) and antisymmetry is imposed by taking quotient sets --- equality in \( \mscrP / \cong \) holds precisely when \( \cong \) holds in \( \mscrP \).
+\end{proof}
 
 \begin{proposition}\label{thm:partial_order_category_correspondence}
   To every \hyperref[def:poset]{poset} there corresponds exactly one \hyperref[def:category_cardinality]{small} \hyperref[def:thin_category]{thin} \hyperref[def:skeletal_category]{skeletal} category.
@@ -59,9 +88,5 @@
   Compare this result to \fullref{thm:preorder_category_correspondence}.
 \end{proposition}
 \begin{proof}
-  The statement follows from \fullref{thm:preorder_category_correspondence} by noting that the procedure \fullref{thm:preorder_to_partial_order} on the poset makes the corresponding category skeletal.
+  The statement follows from \fullref{thm:preorder_category_correspondence} by noting that the factorization in \fullref{thm:preorder_to_partial_order} makes the corresponding category skeletal.
 \end{proof}
-
-\begin{definition}\label{def:category_of_posets}
-  Partially ordered sets and monotone maps form a subcategory of \fullref{def:category_of_preordered_sets}. We denote the category of posets by \( \cat{Pos} \).
-\end{definition}

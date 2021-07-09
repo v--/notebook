@@ -1,0 +1,191 @@
+\subsection{Boolean algebras}\label{subsec:boolean_algebras}
+
+\begin{definition}\label{def:heyting_algebra}\mcite[10]{BezhanishviliHolliday2019}
+  A \term{Heyting algebra} is a \hyperref[def:semilattice/distributive_lattice]{distributive lattice} \( \mscrX \) with a binary operation \( \rightarrow \) defined as
+  \begin{equation}\label{eq:def:heyting_algebra/implication}
+    (x \rightarrow y) \coloneqq \bigvee\set{ a \in \mscrX \given a \wedge x \leq y }.
+  \end{equation}
+
+  In order for the operation to be well-defined, we require that the corresponding join exists for all \( y \) and \( z \). This operation is sometimes called \enquote{implication} because of \hyperref[def:material_implication]{material implication}.
+
+  Heyting algebras are useful for defining semantics for intuitionistic logic -- see \fullref{def:propositional_heyting_semantics}.
+
+  \begin{thmenum}
+    \thmitem{def:heyting_algebra/pseudocomplement} For any element \( x \), we define its \term{pseudocomplement} as
+    \begin{equation}\label{eq:def:heyting_algebra/pseudocomplement}
+      \widetilde x
+      \coloneqq
+      (x \rightarrow \bot)
+      =
+      \bigvee\set{ a \in \mscrX \given a \wedge x = \bot }.
+    \end{equation}
+
+    \thmitem{def:heyting_algebra/theory} We extend the \hyperref[def:semilattice/theory]{theory of lattices} with the binary infix functional symbol \( \rightarrow \), a unary functional symbol \( \widetilde{\placeholder} \) and the axiom \eqref{eq:def:heyting_algebra/implication} to obtain the \term{theory of Heyting algebras}.
+
+    \thmitem{def:heyting_algebra/homomorphism} \hyperref[def:first_order_homomorphism]{Homomorphisms} between Heyting algebras are lattice homomorphisms with the additional requirement that homomorphisms preserve implication.
+
+    \thmitem{def:heyting_algebra/category} The \hyperref[def:first_order_model_category]{model category} for Heyting algebras is denoted by \( \cat{Heyt} \).
+  \end{thmenum}
+\end{definition}
+
+\begin{example}\label{ex:topological_space_is_heyting_algebra}
+  Somewhat similar to how the power set of a nonempty set is a Boolean algebra (see \fullref{thm:subsets_form_boolean_algebra}), the topology \( \mscrT \) of a \hyperref[def:topological_space]{topological space} \( (\mscrX, \mscrT) \) is a Heyting algebra. This is actually used in topological semantics (see \fullref{def:topological_semantics}).
+
+  Indeed,
+  \begin{itemize}
+    \item \hyperref[def:semilattice/join]{Arbitrary joins} are given by \hyperref[def:set_union]{unions \( \bigcap \)}.
+    \item \hyperref[def:semilattice/meet]{Finite meets} are given by \hyperref[def:set_intersection]{intersections \( \bigcup \)}.
+    \item The \hyperref[def:semilattice/join]{top} is the space \( \mscrX \) itself.
+    \item The \hyperref[def:semilattice/meet]{bottom} is the empty set.
+    \item The \hyperref[eq:def:heyting_algebra/implication]{implication \( U \leadsto V \)} is then
+    \begin{equation*}
+      \bigcup\set[\Big]{ A \in \mscrT \given \underbrace{A \cap U}_{A \setminus (X \setminus U)} \subseteq V }
+      =
+      \bigcup\set[\Big]{ A \in \mscrT \given A \subseteq V \cup (X \setminus U) }
+      =
+      \inter((X \setminus U) \cup V),
+    \end{equation*}
+    which is actually similar to \cref{thm:boolean_equivalences/conditional_cnf} despite the fact that arbitrary topologies are not Boolean algebras.
+
+    \item As a result, the \hyperref[def:heyting_algebra/pseudocomplement]{pseudocomplement} is
+    \begin{equation*}
+      \widetilde U = \inter(X \setminus U).
+    \end{equation*}
+  \end{itemize}
+\end{example}
+
+\begin{definition}\label{def:boolean_algebra}\mcite{nLab:boolean_algebra}
+  A \term{Boolean algebra} is a \hyperref[def:semilattice/distributive_lattice]{distributive lattice} with an \hyperref[def:set_with_involution]{involution} \( \overline \placeholder \) satisfying
+  \begin{align}
+    x \vee \overline x = \top \label{eq:def:boolean_algebra/complement/join}, \\
+    x \wedge \overline x = \bot \label{eq:def:boolean_algebra/complement/meet}.
+  \end{align}
+
+  The member \( \overline x \) is called the \term{complement} of \( x \). By \fullref{thm:boolean_algebra_properties/unique_complement}, the complement is unique.
+
+  We also define the binary operation \( \rightarrow \) via
+  \begin{equation}\label{eq:def:boolean_algebra/implication}
+    (x \rightarrow y) \coloneqq (\overline x \vee y)
+  \end{equation}
+  in analogy with \cref{thm:boolean_equivalences/conditional_cnf}. This makes Boolean algebras a special case of \hyperref[thm:boolean_algebra_properties/heyting_algebra]{Heyting algebras}.
+
+  \begin{thmenum}
+    \thmitem{def:boolean_algebra/theory} To obtain the \term{theory of Boolean algebras}, we replace the unary functional symbol \( \widetilde{\placeholder} \) with \( \overline \placeholder \) in the \hyperref[def:heyting_algebra/theory]{theory of Heyting algebras} with a unary functional symbol and the axioms \eqref{eq:def:boolean_algebra/complement/join}, \eqref{eq:def:boolean_algebra/complement/meet} and \eqref{eq:def:boolean_algebra/implication}.
+
+    \thmitem{def:boolean_algebra/homomorphism} \hyperref[def:first_order_homomorphism]{Homomorphisms} between Boolean algebras are simply lattice homomorphisms.
+
+    Complements are automatically preserved because for any lattice homomorphism \( \varphi \) between the Boolean algebras \( \mscrX \) and \( \mscrY \),
+    \begin{equation*}
+      \varphi(x) \vee_\mscrY \varphi(\overline x) = \varphi(x \vee_\mscrX \overline x) = \varphi(\top_\mscrX) = \top_\mscrY,
+    \end{equation*}
+    and similarly for \( \wedge \), hence, by \fullref{thm:boolean_algebra_properties/unique_complement},
+    \begin{equation*}
+      \varphi(\overline x) = \overline {\varphi(x)}.
+    \end{equation*}
+
+    Implications are also automatically preserved because of \eqref{eq:def:boolean_algebra/implication}.
+
+    \thmitem{def:boolean_algebra/category} The \hyperref[def:first_order_model_category]{model category} \( \cat{Bool} \) for Boolean algebras is a full subcategories of the \hyperref[def:semilattice/category]{category \( \cat{Lat} \) of lattices} (if formulated in terms of \( \leq \) rather than operations) and a subcategory of the \hyperref[def:heyting_algebra/category]{category \( \cat{Heyt} \) of Heyting algebras}.
+  \end{thmenum}
+\end{definition}
+
+\begin{example}\label{ex:boolean_algebras}
+  Examples of \hyperref[def:boolean_algebra]{Boolean algebras} include:
+
+  \begin{itemize}
+    \item The cosets of propositional formulas under semantic equivalence (see \fullref{thm:propositional_formula_cosets_are_boolean_functions/boolean_algebra}).
+    \item The Galois field \( \BbbF_2 \) with suitably defined operations (see \fullref{thm:f2_is_boolean_algebra}).
+    \item The power set of any set, usually taken to be a space with additional structure (see \fullref{thm:subsets_form_boolean_algebra}).
+  \end{itemize}
+\end{example}
+
+\begin{proposition}\label{thm:boolean_algebra_properties}
+  A Boolean algebra \( \mscrX \) has the following basic properties:
+  \begin{thmenum}
+    \thmitem{thm:boolean_algebra_properties/unique_complement} For each \( x \in \mscrX \), the complement \( \overline x \) is unique, i.e. it is the only member of \( \mscrX \) that satisfies \eqref{eq:def:boolean_algebra/complement/join} and \eqref{eq:def:boolean_algebra/complement/meet}.
+
+    \thmitem{thm:boolean_algebra_properties/heyting_algebra} Every Boolean algebra is a Heyting algebra with an identification given by \eqref{eq:def:boolean_algebra/implication}.
+  \end{thmenum}
+\end{proposition}
+\begin{proof}
+  \SubProofOf{thm:boolean_algebra_properties/unique_complement} If \( y \) and \( z \) both satisfy \eqref{eq:def:boolean_algebra/complement/join}, then
+  \begin{balign*}
+    y
+    &\overset {\eqref{eq:thm:binary_lattice_operations/identity/meet}} =
+    y \wedge \top
+    = \\ &\overset {\eqref{eq:def:boolean_algebra/complement/join}} =
+    y \wedge (z \vee x)
+    = \\ &\overset {\eqref{eq:def:semilattice/distributive_lattice/finite/join_of_meets}} =
+    (y \wedge z) \vee (y \wedge x)
+    = \\ &\overset {\eqref{eq:def:boolean_algebra/complement/meet}} =
+    y \wedge z
+    = \\ &\overset {\eqref{eq:def:boolean_algebra/complement/meet}} =
+    (x \wedge z) \vee (y \wedge z)
+    = \\ &\overset {\eqref{eq:def:semilattice/distributive_lattice/finite/join_of_meets}} =
+    (x \vee y) \wedge z
+    = \\ &\overset {\eqref{eq:thm:binary_lattice_operations/identity/meet}} =
+    z.
+  \end{balign*}
+
+  \SubProofOf{thm:boolean_algebra_properties/heyting_algebra} Fix any \( x, y \in \mscrX \) in a Boolean algebra \( \mscrX \). We will show that \( x \rightarrow y \) as defined in \eqref{eq:def:boolean_algebra/implication} satisfies \eqref{eq:def:heyting_algebra/implication}.
+
+  Let
+  \begin{equation*}
+    A \coloneqq \set{ a \in \mscrX \given a \wedge x \leq y }
+  \end{equation*}
+  be the set from \eqref{eq:def:heyting_algebra/implication}.
+
+  We will show that \( \overline x \vee y \) is an \hyperref[def:preordered_set/upper_and_lower_bound]{upper bound} of \( A \).
+
+  Fix some \( a_0 \in A \). By definition of \( A \), we have
+  \begin{equation*}
+    a_0 \wedge x \leq y.
+  \end{equation*}
+
+  But this means that
+  \begin{equation*}
+    \underbrace{(a_0 \wedge x) \vee \overline x}_{a_0 \vee \overline x} \leq y \vee \overline x.
+  \end{equation*}
+
+  Since \( a_0 \leq a_0 \vee b \) for any \( b \in \mscrX \), it follows that \( a_0 \leq y \vee \overline x \). Therefore \( \overline x \vee y \) is indeed an upper bound of \( A \).
+
+  Also note that
+  \begin{equation*}
+    (\overline x \vee y) \wedge x = \underbrace{(\overline x \vee x)}_{\top} \wedge (y \wedge x) = y \wedge x \leq y,
+  \end{equation*}
+  hence \( \overline x \vee y \in A \).
+
+  Thus \( \overline x \vee y \) is both an upper bound of \( A \) and an element of \( A \), i.e. it is the least upper bound of \( A \). Therefore
+  \begin{equation*}
+    \overline x \vee y = \sup A.
+  \end{equation*}
+\end{proof}
+
+\begin{theorem}[De Morgan's laws]\label{thm:de_morgans_laws}
+  If \( \mscrX \) is a \hyperref[def:boolean_algebra]{Boolean algebra}, the following hold for any finite \hyperref[def:indexed_family]{family} \( \{ x_k \}_{k \in \mscrK} \subseteq \mscrX \):
+  \begin{align}
+    \overline{\bigvee_{k \in \mscrK} x_k} = \bigwedge_{k \in \mscrK} \overline{x_k} \label{eq:thm:de_morgans_laws/complement_of_join} \\
+    \overline{\bigwedge_{k \in \mscrK} x_k} = \bigvee_{k \in \mscrK} \overline{x_k} \label{eq:thm:de_morgans_laws/complement_of_meet}
+  \end{align}
+
+  If \( \mscrX \) is a complete lattice, \( \mscrK \) may be taken to be any family, not necessarily finite.
+\end{theorem}
+\begin{proof}
+  We will only show \eqref{eq:thm:de_morgans_laws/complement_of_join} since \eqref{eq:thm:de_morgans_laws/complement_of_meet} is dual.
+
+  In order for \( \wedge_{k \in \mscrK} \overline{x_k} \) to be the complement of \( \vee_{k \in \mscrK} x_k \), the conditions \eqref{eq:def:boolean_algebra/complement/join} and \eqref{eq:def:boolean_algebra/complement/meet} need to be satisfied.
+
+  By distributivity,
+  \begin{equation*}
+    \parens*{ \bigwedge_{k \in \mscrK} \overline{x_k} } \vee \parens*{ \bigvee_{m \in \mscrK} x_m }
+    \overset {\eqref{eq:def:semilattice/distributive_lattice/arbitrary/meet_of_joins}} =
+    \bigwedge_{k \in \mscrK} \parens*{ \overline{x_k} \vee \bigvee_{m \in \mscrK} x_m }
+    =
+    \bigwedge_{k \in \mscrK} \parens*{ \underbrace{\overline{x_k} \vee x_k}_{\top} \vee \bigvee_{\mathclap{m \in \mscrK \setminus \set{k}}} x_m }
+    \overset {\eqref{eq:thm:binary_lattice_operations/constant_absorption/join}} =
+    \bigwedge_{k \in \mscrK} \top
+    =
+    \top,
+  \end{equation*}
+  which proves \eqref{eq:def:boolean_algebra/complement/join}. The proof of \eqref{eq:def:boolean_algebra/complement/meet} is analogous.
+\end{proof}

@@ -4,144 +4,423 @@
   A \term{first-order derivation system} for the \hyperref[def:first_order_syntax]{language} \( \mscrL \) consists of:
 
   \begin{thmenum}
-    \thmitem{def:first_order_derivation_system/rules} A set of \hyperref[def:relation]{relations} of potentially different arity on the set of formulas of \( \mscrL \), which we call \term{inference rules}. If \( r \) is an inference rule of arity \( n + 1 \), we say that the rule allows us to \term{infer} \( \varphi \) from \( \psi_1, \ldots, \psi_n \) if \( (\psi_1, \ldots, \psi_n, \varphi) \in r \) for any \( n+1 \)-tuple of formulas \( (\psi_1, \ldots, \psi_n, \varphi) \). We write this symbolically as
+    \thmitem{def:first_order_derivation_system/rules} A set of \hyperref[def:relation]{relations} of potentially different arity on the set of formulas of \( \mscrL \), which we call \term{inference rules}. If \( r \) is an inference rule of arity \( n + 1 \), we say that the rule allows us to \term{infer} \( \varphi \) from \( \varphi_1, \ldots, \varphi_n \) if \( (\varphi_1, \ldots, \varphi_n, \psi) \in r \). We write this symbolically as
     \begin{equation*}
       \begin{prooftree}
-        \hypo{\psi_1}
+        \hypo{\varphi_1}
         \hypo{\cdots}
-        \hypo{\psi_n}
-        \infer3[r]{\varphi}
+        \hypo{\varphi_n}
+        \infer3[r]{\psi}
       \end{prooftree}
     \end{equation*}
 
-    \thmitem{def:first_order_derivation_system/axioms} A set of \hyperref[def:first_order_syntax]{formulas} in \( \mscrL \), which we call \term{logical axioms} (to distinguish them with \hyperref[def:first_order_proofs/axioms_and_theorems]{nonlogical axioms}).
+    A single rule is usually formulated via placeholder formulas, e.g. \hyperref[eq:def:implicational_logic/rules/modus_ponens]{modus ponens}, in which we replace \( \varphi \) and \( \psi \) with whatever formula has the necessary form.
+
+    \thmitem{def:first_order_derivation_system/axioms} A set of \hyperref[def:first_order_syntax]{formulas} in \( \mscrL \), which we call \term{logical axioms} (to distinguish them from \hyperref[def:first_order_derivability/axioms_and_theorems]{nonlogical axioms}).
   \end{thmenum}
+
+  Because of \fullref{rem:propositional_logic_as_first_order_logic}, we may consider (more restricted) derivation systems for propositional logic.
 \end{definition}
 
-\begin{definition}\label{def:first_order_proofs}
-  We introduce \enquote{syntactic} counterparts to the concepts from \fullref{def:first_order_semantics}.
+\begin{definition}\label{def:first_order_derivability}\mcite[def. 12.1]{OpenLogic20201202}
+  We now introduce the syntactic analog to \hyperref[def:first_order_semantics/entailment]{entailment}. We assume that we are working with a fixed \hyperref[def:first_order_derivation_system]{derivation system} for some language \( \mscrL \).
 
-  Given a \hyperref[def:first_order_derivation_system]{derivation system} for the language \( \mscrL \), we introduce the following notions:
+ A sequence \( \varphi_1, \ldots, \varphi_n \) of formulas is called a \term{derivation} from the set \( \Gamma \) of formulas if, for any \( k = 1, \ldots, n \), either of the following hold:
   \begin{thmenum}
-    \thmitem{def:first_order_proofs/derivation}\mcite[def. 12.1]{OpenLogic20201202}A sequence \( \varphi_1, \ldots, \varphi_n \) of formulas is called a \term{derivation} from the set \( \Gamma \) of formulas if, for any \( k = 1, \ldots, n \), either of the following hold:
-    \begin{thmenum}
-      \thmitem{def:first_order_proofs/derivation/logical_axiom} \( \varphi_k \) is a \hyperref[def:first_order_derivation_system/axioms]{logical axiom} in the derivation system.
-      \thmitem{def:first_order_proofs/derivation/nonlogical_axiom} \( \varphi_k \in \Gamma \)
-      \thmitem{def:first_order_proofs/derivation/inference} There exist indices \( i_1, \ldots, i_n < k \) such that \( \varphi_k \) can be inferred from \( \varphi_{i_1}, \ldots, \varphi_{i_n} \) using any of the \hyperref[def:first_order_derivation_system/rules]{inference rules}.
-    \end{thmenum}
+    \thmitem{def:first_order_derivability/logical_axiom} \( \varphi_k \) is a \hyperref[def:first_order_derivation_system/axioms]{logical axiom} in the derivation system.
 
-    Derivations are also called \term{proofs}. We use the notation shortcuts from \fullref{def:propositional_semantics/satisfiability}.
+    \thmitem{def:first_order_derivability/nonlogical_axiom} \( \varphi_k \) is a \term{nonlogical axiom}, meaning that \( \varphi_k \in \Gamma \).
 
-    \thmitem{def:first_order_proofs/derivability} If there exists a derivation from \( \Gamma \) such that \( \varphi \) is the last element, we say that \( \varphi \) is \term{derivable} from \( \Gamma \).
-
-    \thmitem{def:first_order_proofs/derivation_closure} The \term{derivation closure} \( \cl^{\vdash}(\Gamma) \) of the set \( \Gamma \) is the set of all formulas that can be derived from \( \Gamma \).
-
-    \thmitem{def:first_order_proofs/completeness}\mcite[def. 13.1]{OpenLogic20201202}If, for every formula \( \varphi \), either \( \varphi \in \Gamma \) or \( \neg \varphi \in \Gamma \), we say that \( \Gamma \) is a \term{complete set of formulas}. Note that we do not eliminate double negation.
-
-    \thmitem{def:first_order_proofs/consistency}\mcite[def. 20.16]{OpenLogic20201202}If \( \bot \) cannot be derived from \( \Gamma \), we say that \( \Gamma \) is \term{consistent}.
-
-    \thmitem{def:first_order_proofs/axioms_and_theorems} If we have fixed a set \( A \) of formulas, we say that formulas in \( A \) are \term{(nonlogical) axioms} and formulas in the closure \( \cl^{\vdash}(A) \) are \term{theorems}. If \( A = \varnothing \), we obtain \term{logical theorems} that are derived solely from the \hyperref[def:first_order_derivation_system/axioms]{logical axioms} using the inference rules.
+    \thmitem{def:first_order_derivability/inference} There exist indices \( i_1, \ldots, i_m < k \) such that \( \varphi_k \) can be inferred from \( \varphi_{i_1}, \ldots, \varphi_{i_m} \) using any of the \hyperref[def:first_order_derivation_system/rules]{inference rules}.
   \end{thmenum}
+
+  A derivation from \( \Gamma \) ending with the formula \( \varphi \) is also called a \term{proof} of \( \varphi \) from the nonlogical axioms \( \Gamma \). In this case, we write \( \Gamma \vdash \varphi \) and say that \( \varphi \) is a \term{theorem} of \( \Gamma \) and that \( \varphi \) is \term{derivable} from \( \Gamma \). If \( \psi \) is derivable from \( \varphi \) and vice versa, we say that \( \varphi \) and \( \psi \) are \term{interderivable}.
+
+  If \( \Gamma = \varnothing \), we obtain \term{logical theorems} that are derived solely from the \hyperref[def:first_order_derivation_system/axioms]{logical axioms} using the inference rules.
 \end{definition}
 
-\begin{definition}\label{def:derivability_and_satisfiability}
-  We introduce two notions connecting \hyperref[def:first_order_proofs/derivability]{derivability} and \hyperref[def:first_order_semantics/satisfiability]{satisfiability}:
-  \begin{thmenum}
-    \thmitem{def:derivability_and_satisfiability/soundness} If, for any formula \( \varphi \), \( \vdash \varphi \) implies \( \vDash \varphi \), we say that the derivation system is \term{sound}.
+\begin{definition}\mcite[sec. 1]{Wasilewska2010}\label{def:positive_implicational_propositional_derivation_system}
+  The \term{positive implicational propositional derivation system} is extraordinarily simple. It is based on the \hyperref[def:propositional_language]{propositional language} but limited to only the \hyperref[def:propositional_language/connectives/conditional]{conditional connective} \( \rightarrow \), without any \hyperref[def:propositional_language/constants]{propositional constants} or \hyperref[def:propositional_language/negation]{negation}.
 
-    \thmitem{def:derivability_and_satisfiability/completeness} Dually, if \( \vDash \varphi \) implies \( \vdash \varphi \) for formulas \( \varphi \), we say that the derivation system is \term{complete}.
-  \end{thmenum}
-\end{definition}
-
-\begin{definition}\label{def:propositional_implicational_logic}
-  A very simple \hyperref[def:first_order_derivation_system]{derivation system} is that of \term{implicational propositional logic}. It is based on the propositional alphabet consisting only of \( \to \) and \( \bot \) (which is sufficient to express all propositional formulas by \fullref{ex:posts_completeness_theorem/implies_bot}).
-
-  \begin{refenum}
-    \refitem{def:first_order_derivation_system/rules} The system has a single rule, \term{modus ponens}:
-    \begin{equation}\label{eq:def:implicational_logic/rules/modus_ponens}
+  \begin{itemize}
+    \item The system has a single \hyperref[def:first_order_derivation_system/rules]{derivation rule} called \term{modus ponens} (Latin for \enquote{mode that by affirming affirms}):
+    \begin{equation}\label{eq:def:implicational_logic/rules/modus_ponens}\tag{mp}
       \begin{prooftree}
         \hypo{\varphi}
-        \hypo{\varphi \to \psi}
+        \hypo{\varphi \rightarrow \psi}
         \infer2[mp]{\psi}
       \end{prooftree}
     \end{equation}
 
-    \refitem{def:first_order_derivation_system/axioms} The system has three axioms:
-    \begin{align}
-      \varphi                         &\to (\psi \to \varphi)                         \label{def:implicational_logic/axioms/imp_int} \\
-      (\varphi \to (\psi \to \theta)) &\to ((\varphi \to \psi) \to (\psi \to \theta)) \label{def:implicational_logic/axioms/imp_dist} \\
-      (\varphi \to \psi) \to \varphi) &\to \varphi                                    \label{def:implicational_logic/axioms/pierce}
-    \end{align}
-
-    \begin{itemize}
-      \item Axiom \eqref{def:implicational_logic/axioms/imp_int} is called \term{implication introduction} because it \enquote{introduces} an implication on the right.
-      \item Axiom \eqref{def:implicational_logic/axioms/imp_dist} is called \term{implication distributivity} because it resembles \hyperref[def:distributive_lattice]{distributivity} of \( \to \) over itself.
-      \item Axiom \eqref{def:implicational_logic/axioms/pierce} is called \term{Pierce's law}. \term{Minimal implicational logic} is the derivation system obtained by removing this rule. If, instead, we replace Pierce's law with \term{the principle of explosion}
-      \begin{equation}\label{def:implicational_logic/axioms/explosion}
-        \bot \to \varphi,
+    \item The system has infinitely many \hyperref[def:first_order_derivation_system/logical]{logical axioms} but only two axiom schemas:
+    \begin{thmenum}
+      \thmitem{def:positive_implicational_propositional_derivation_system/axioms/imp_intro} We can \enquote{introduce} an \hyperref[def:material_implication]{implication} whose consequent is \( \varphi \) and whose antecedent is any other formula \( \psi \):
+      \begin{equation}\label{eq:def:positive_implicational_propositional_derivation_system/axioms/imp_intro}
+        \varphi \rightarrow (\psi \rightarrow \varphi).
       \end{equation}
-      the resulting derivation system is called \term{intuitionistic implicational logic}. The principle of explosion is also called \term{ex falso quodlibet} (\enquote{from falsity, everything follows}).
 
-      To distinguish the system with \eqref{def:implicational_logic/axioms/pierce} from minimal and intuitionistic logic, we call it \term{classical implicational logic}.
-    \end{itemize}
-  \end{refenum}
+      \thmitem{def:positive_implicational_propositional_derivation_system/axioms/imp_distr} We can \hyperref[def:semiring/distributivity]{distribute} implications over other implications:
+      \begin{equation}\label{eq:def:positive_implicational_propositional_derivation_system/axioms/imp_distr}
+        (\varphi \rightarrow (\psi \rightarrow \theta)) \rightarrow ((\varphi \rightarrow \psi) \rightarrow (\varphi \rightarrow \theta)).
+      \end{equation}
+    \end{thmenum}
+  \end{itemize}
 
-  The rules and axioms (except for \eqref{def:implicational_logic/axioms/explosion}) consist entirely of implications, hence the name of the derivation system itself.
+  The adjective \enquote{positive} in the name of the system refers to the impossibility to negate a formula. \enquote{Implicational} refers to the fact that all formulas are \hyperref[def:material_implication]{material implications} and the \hyperref[eq:def:implicational_logic/rules/modus_ponens]{sole derivation rule} is based on eliminating the connective.
 \end{definition}
 
-\begin{definition}\label{def:first_order_implicational_logic}
-  If we wish to work with first-order logic rather than merely propositional logic, we must extend \eqref{def:propositional_implicational_logic} as follows:
+\begin{example}\mcite[ex. 1.1]{Wasilewska2010}\label{ex:propositional_positive_implicational_logic/identity}
+  Fix any \hyperref[def:positive_implicational_propositional_derivation_system]{positive implicational formula} \( \varphi \). We will construct a derivation of the implication
+  \begin{equation}\label{eq:ex:propositional_positive_implicational_logic/identity}
+    \varphi \rightarrow \varphi.
+  \end{equation}
 
-  \begin{refenum}
-    \refitem{def:first_order_derivation_system/rules}\mcite[def. 20.8]{OpenLogic20201202} We add two rules. Both assume that \( \varphi \) and \( \psi \) are formulas such that \( \xi \not\in \boldop{Free}(\varphi) \):
-    \begin{align}
-      &\begin{prooftree}
-        \hypo{\varphi \to \psi}
-        \infer1[\( \forall \) \text{int}]{\varphi \to (\qforall{\xi} \psi)}
-      \end{prooftree} \label{eq:def:first_order_implicational_logic/rules/forall_int}
-      \\
-      &\begin{prooftree}
-        \hypo{\varphi \to \psi}
-        \infer1[\( \exists \) \text{int}]{(\qforall{\xi} \varphi) \to \psi}
-      \end{prooftree} \label{eq:def:first_order_implicational_logic/rules/exists_int}
-    \end{align}
+  We derive the proof from the two logical axioms:
+  \begin{equation*}
+    \begin{prooftree}[separation=3em]
+      \hypo
+        {
+          \eqref{eq:def:positive_implicational_propositional_derivation_system/axioms/imp_intro}
+        }
 
-    \refitem{def:first_order_derivation_system/axioms} We add a few axioms. First, for any closed term \( \tau \),
-    \begin{align}
-      \qforall{\xi} \varphi     &\to \varphi[\xi \mapsto \tau], \label{eq:def:first_order_implicational_logic/axioms/forall_elim} \\
-      \varphi[\xi \mapsto \tau] &\to \qexists{\xi} \varphi,     \label{eq:def:first_order_implicational_logic/axioms/exists_int}
-    \end{align}
+      \ellipsis
+        {
+          \( \begin{array}{l}
+            \psi \mapsto (\varphi \rightarrow \varphi)
+            \\
+            \mbox{}
+          \end{array} \)
+        }
+        {
+          \eqref{eq:ex:propositional_positive_implicational_logic/dagger}
+        }
 
-    If the language contains formal equality, we also add the following:
-    \begin{alignedeq}\label{eq:def:first_order_derivation_system/axioms/forall_elim}
-                          &\phantom{{}\to{}} (\xi \doteq \xi) \\
-        (\xi \doteq \eta) &\to (\tau[\zeta \mapsto \xi] \doteq \tau[\zeta \mapsto \eta]) \\
-        (\xi \doteq \eta) &\to (\varphi[\zeta \mapsto \xi] \to \varphi[\zeta \mapsto \eta])
-    \end{alignedeq}
-  \end{refenum}
+      \hypo
+        {
+          \eqref{eq:def:positive_implicational_propositional_derivation_system/axioms/imp_distr}
+        }
+
+      \ellipsis
+        {
+          \( \begin{array}{l}
+            \psi \mapsto (\varphi \rightarrow \varphi)
+            \\
+            \theta \mapsto \varphi
+          \end{array} \)
+        }
+        {
+          \eqref{eq:ex:propositional_positive_implicational_logic/dagger}
+          \rightarrow ((\varphi \rightarrow (\varphi \rightarrow \varphi)) \rightarrow (\varphi \rightarrow \varphi))
+        }
+
+      \infer2[mp]{(\varphi \rightarrow (\varphi \rightarrow \varphi)) \rightarrow (\varphi \rightarrow \varphi)}
+
+      \hypo
+        {
+          \eqref{eq:def:positive_implicational_propositional_derivation_system/axioms/imp_intro}
+        }
+
+      \ellipsis
+        {
+          \( \psi \mapsto \varphi \)
+        }
+        {
+          \varphi \rightarrow (\varphi \rightarrow \varphi)
+        }
+
+      \infer2[mp]{\varphi \rightarrow \varphi}
+    \end{prooftree}
+  \end{equation*}
+  where
+  \begin{equation}\label{eq:ex:propositional_positive_implicational_logic/dagger}
+    \varphi \rightarrow ((\varphi \rightarrow \varphi) \rightarrow \varphi)
+  \end{equation}
+\end{example}
+
+\begin{definition}\label{def:derivability_and_satisfiability}
+  We introduce two notions connecting \hyperref[def:first_order_derivability/derivability]{derivability} and \hyperref[def:first_order_semantics/satisfiability]{satisfiability}:
+  \begin{thmenum}
+    \thmitem{def:derivability_and_satisfiability/soundness} If, for any formula \( \varphi \), derivability \( \vdash \varphi \) implies satisfiability \( \vDash \varphi \), we say that the derivation system is \term{sound}.
+
+    \thmitem{def:derivability_and_satisfiability/completeness} Dually, if satisfiability \( \vDash \varphi \) implies derivability \( \vdash \varphi \) for any formula \( \varphi \), we say that the derivation system is \term{complete}.
+  \end{thmenum}
 \end{definition}
 
-\begin{theorem}[Completeness of implicational logic]\label{thm:completeness_of_hilberts_derivation_system}\mcite[thm. 21.8]{OpenLogic20201202}
-  \hyperref[def:first_order_implicational_logic]{First-order implication logic} is \hyperref[def:derivability_and_satisfiability/completeness]{complete}.
+\begin{proposition}\label{thm:soundness_of_hilberts_derivation_system}\mcite[thm. 1.1]{Wasilewska2010}
+  The \hyperref[def:positive_implicational_propositional_derivation_system]{positive implicational propositional derivation system} is \hyperref[def:derivability_and_satisfiability/soundness]{sound} with respect to \hyperref[def:propositional_semantics]{classical semantics}.
+\end{proposition}
+
+\begin{definition}\label{def:minimal_propositional_derivation_system}\mcite[def. 53.10]{OpenLogic20201202}
+  While the \hyperref[def:positive_implicational_propositional_derivation_system]{positive implicational propositional derivation system} is simple, it is of more practical use to have all propositional connectives available. As it turns out, we cannot utilize \hyperref[ex:posts_completeness_theorem]{complete families of Boolean functions} unless we are dealing with \hyperref[def:propositional_semantics]{classical semantics} --- see for example \fullref{ex:heyting_semantics_lem_counterexample} and \fullref{ex:topological_semantics_lem_counterexample} for how \cref{eq:thm:boolean_equivalences/conditional_cnf} fails to hold.
+
+  Our goal is to define the \term{minimal propositional derivation system}. We do not need new rules to express the rest of the propositional syntax. Instead, we need several axiom schemas for each connective. The only exception is \hyperref[def:propositional_language/constants/top]{\( \bot \)}, the axioms for which tend to change semantics by a lot.
+
+  The following axioms are essential in the sense that they cannot be defined in terms of others:
+  \begin{thmenum}[series=def:minimal_propositional_derivation_system]
+    \thmitem{def:minimal_propositional_derivation_system/top} The simplest axiom states that the constant \hyperref[def:propositional_language/constants/top]{\( \top \)} is itself an axiom:
+    \begin{equation}\label{def:minimal_propositional_derivation_system/top_intro}
+      \top
+    \end{equation}
+
+    \thmitem{def:minimal_propositional_derivation_system/conjunction} Axioms for \hyperref[def:propositional_language/connectives/conjunction]{conjunction}:
+    \begin{align}
+      (\varphi \wedge \psi) &\rightarrow \varphi \label{def:minimal_propositional_derivation_system/and_elim_left} \\
+      (\varphi \wedge \psi) &\rightarrow \psi \label{def:minimal_propositional_derivation_system/and_elim_right} \\
+      \varphi               &\rightarrow (\psi \rightarrow (\varphi \wedge \psi)) \label{def:minimal_propositional_derivation_system/and_intro}
+    \end{align}
+
+    \thmitem{def:minimal_propositional_derivation_system/disjunction} Axioms for \hyperref[def:propositional_language/connectives/disjunction]{disjunction}:
+    \begin{align}
+      \varphi                    &\rightarrow (\varphi \vee \psi) \label{def:minimal_propositional_derivation_system/or_elim_left} \\
+      \varphi                    &\rightarrow (\psi \vee \varphi) \label{def:minimal_propositional_derivation_system/or_elim_right} \\
+      (\varphi \rightarrow \psi) &\rightarrow ((\theta \rightarrow \psi) \rightarrow ((\varphi \vee \theta) \rightarrow \psi)) \label{def:minimal_propositional_derivation_system/or_intro}
+    \end{align}
+  \end{thmenum}
+
+  The following axioms and are usually said to be \enquote{abbreviations} and do not affect semantics:
+  \begin{thmenum}[resume=def:minimal_propositional_derivation_system]
+    \thmitem{def:minimal_propositional_derivation_system/negation} The axioms for negation is motivated via \fullref{thm:boolean_equivalences/negation_bottom}:
+    \begin{align}
+      \neg \varphi &\rightarrow (\varphi \rightarrow \bot) \label{def:minimal_propositional_derivation_system/neg_elim} \\
+      (\varphi \rightarrow \bot) &\rightarrow \neg \varphi \label{def:minimal_propositional_derivation_system/neg_intro}
+    \end{align}
+
+    \thmitem{def:minimal_propositional_derivation_system/equivalence} The axioms for the biconditional is motivated via \fullref{thm:boolean_equivalences/biconditional_via_conditionals}:
+    \begin{align}
+      (\varphi \leftrightarrow \psi) &\rightarrow (\varphi \rightarrow \psi) \label{def:minimal_propositional_derivation_system/equiv_elim_left} \\
+      (\varphi \leftrightarrow \psi) &\rightarrow (\psi \rightarrow \varphi) \label{def:minimal_propositional_derivation_system/equiv_elim_right} \\
+      (\varphi \rightarrow \psi)     &\rightarrow ((\psi \rightarrow \varphi) \rightarrow (\varphi \leftrightarrow \psi)) \label{def:minimal_propositional_derivation_system/equiv_intro}
+    \end{align}
+  \end{thmenum}
+\end{definition}
+
+\begin{theorem}\label{thm:minimal_propositional_negation_laws}
+  Consider the following propositional formula schemas:
+  \begin{thmenum}
+    \thmitem{thm:minimal_propositional_negation_laws/dne} Double negation elimination (see \cref{thm:boolean_equivalences/double_negation}):
+    \begin{equation}\label{eq:thm:minimal_propositional_negation_laws/dne}
+      \neg \neg \varphi \rightarrow \varphi \tag{DNE}.
+    \end{equation}
+
+    \thmitem{thm:minimal_propositional_negation_laws/efq} Ex falso quodlibet (see \cref{thm:boolean_equivalences/ex_falso_quodlibet}):
+    \begin{equation}\label{eq:thm:minimal_propositional_negation_laws/efq}
+      \bot \rightarrow \varphi \tag{EFQ}
+    \end{equation}
+
+    \thmitem{thm:minimal_propositional_negation_laws/pierce} Pierce's law:
+    \begin{equation}\label{eq:thm:minimal_propositional_negation_laws/pierce}
+      ((\varphi \rightarrow \psi) \rightarrow \varphi) \rightarrow \varphi \tag{Pierce}
+    \end{equation}
+
+    \thmitem{thm:minimal_propositional_negation_laws/lem} Law of the exluded middle:
+    \begin{equation}\label{eq:thm:minimal_propositional_negation_laws/lem}
+      \varphi \vee \neg \varphi \tag{LEM}
+    \end{equation}
+  \end{thmenum}
+
+  \mcite[prop. 3]{DienerMcKubreJordens2016} Assuming the \hyperref[def:minimal_propositional_derivation_system]{minimal propositional derivation system}, we have the following derivations:
+  \begin{center}
+    \synttree
+      [
+        {\eqref{eq:thm:minimal_propositional_negation_laws/dne}}
+          [
+            {\eqref{eq:thm:minimal_propositional_negation_laws/pierce}}
+              [{\eqref{eq:thm:minimal_propositional_negation_laws/lem}}]
+          ]
+          [{\eqref{eq:thm:minimal_propositional_negation_laws/efq}}]
+      ]
+  \end{center}
+
+  \mcite[prop. 13]{DienerMcKubreJordens2016} Conversely, \eqref{eq:thm:minimal_propositional_negation_laws/efq} and \eqref{eq:thm:minimal_propositional_negation_laws/lem} together can be used to derive \eqref{eq:thm:minimal_propositional_negation_laws/dne}.
 \end{theorem}
 
 \smallskip
 
-\begin{theorem}[Soundness of minimal implicational logic]\label{thm:soundness_of_hilberts_derivation_system}\mcite[thm. 1.1]{Wasilewska2010}
-  \hyperref[def:first_order_implicational_logic]{Minimal (first-order) implication logic} is \hyperref[def:derivability_and_satisfiability/soundness]{sound}.
+\begin{definition}\label{def:intuitionistic_propositional_derivation_system}\mcite[def. 53.10]{OpenLogic20201202}
+  Semantics for the \hyperref[def:minimal_propositional_derivation_system]{minimal propositional derivation system} are not very well studied. If we extend it with the axiom \eqref{eq:thm:minimal_propositional_negation_laws/efq}, we obtain the \term{intuitionistic propositional derivation system}.
+
+  The corresponding semantics are defined in \fullref{def:propositional_heyting_semantics} and their link with the derivation system is given in \fullref{thm:intuitionistic_propositional_logic_is_sound_and_complete}.
+\end{definition}
+
+\begin{definition}\label{def:propositional_heyting_semantics}\mcite[14]{BezhanishviliHolliday2019}
+  We define \term{Heyting semantics} for propositional formulas similarly to how it is done with classical semantics in \fullref{def:propositional_semantics}, except that instead of using a \hyperref[def:boolean_algebra]{Boolean algebra} we use a more general \hyperref[def:heyting_algebra]{Heyting algebra}.
+
+  Logical negations depend on complements in Boolean algebras. Since Heyting algebras do not have complements, we instead use \hyperref[def:heyting_algebra/pseudocomplement]{pseudocomplements}.
+
+  Fix a Heyting algebra \( (\mscrH, \sup, \inf, T, F, \leadsto) \). \hyperref[def:propositional_valuation/interpretation]{Propositional interpretations} in Heyting semantics may take any value in \( \mscrH \), as can \hyperref[def:propositional_valuation/formula_semantics]{formula valuations}.
+
+  Given an interpretation \( I \) and a formula \( \varphi \), we define \( \varphi\Bracks{I} \) via \eqref{eq:def:propositional_semantics/formula_interpretation}, the sole difference being that negation valuation is defined via the pseudocomplement:
+  \begin{equation*}
+    (\neg \psi)\Bracks{I} \coloneqq \widetilde{\varphi\Bracks{I}}.
+  \end{equation*}
+
+  We say that \( I \) satisfies \( \varphi \) if \( \varphi\Bracks{I} = T \). Thus if the valuation of \( \varphi \) takes any value in \( \mscrH \setminus \set{ T } \), then \( I \) does not satisfy \( \varphi \), but that does not necessarily mean that \( I \) satisfies \( \neg \varphi \).
+
+  It is important that different Heyting algebras can provide different semantics --- compare \fullref{ex:heyting_semantics_lem_counterexample} with the same result in a Boolean algebra.
+\end{definition}
+
+\begin{example}\label{ex:heyting_semantics_lem_counterexample}
+  Let \( \mscrH \coloneqq \set{ F, N, T } \) be the two-element Boolean algebra extended with the \enquote{indeterminate} symbol \( N \). Let \( F \leq N \leq T \) so that we have an order structure.
+
+  The pseudocomplement of \( N \) is
+  \begin{equation*}
+    \widetilde{N}
+    \overset {\eqref{eq:def:heyting_algebra/pseudocomplement}} =
+    \sup\set{ a \in \mscrX \given a \wedge N = \bot }
+    =
+    F.
+  \end{equation*}
+
+  Consider any \hyperref[def:propositional_semantics/interpretation]{propositional interpretation} \( I \) such that \( I(P) = N \).
+
+  Then the valuation of \eqref{eq:thm:minimal_propositional_negation_laws/lem} is
+  \begin{equation*}
+    (P \vee \neg P)\Bracks{I}
+    =
+    \sup\set{ P\Bracks{I}, \widetilde{P\Bracks{I}} }
+    =
+    \sup\set{ N, \widetilde{N} }
+    =
+    \sup\set{ N, F }
+    =
+    N.
+  \end{equation*}
+
+  Therefore \eqref{eq:thm:minimal_propositional_negation_laws/lem} does not hold.
+\end{example}
+
+\begin{theorem}\label{thm:intuitionistic_propositional_logic_is_sound_and_complete}\mcite[11]{BezhanishviliHolliday2019}
+  The \hyperref[def:intuitionistic_propositional_derivation_system]{intuitionistic propositional derivation system} is \hyperref[def:derivability_and_satisfiability/soundness]{sound} and \hyperref[def:derivability_and_satisfiability/completeness]{complete} with respect to \hyperref[def:propositional_heyting_semantics]{Heyting semantics}. To elaborate,
+  \begin{itemize}
+    \item if \( \vdash \varphi \), then \( \vDash \varphi \) for every Heyting algebra.
+    \item if \( \vDash \varphi \) in every Heyting algebra, then \( \vdash \varphi \).
+  \end{itemize}
 \end{theorem}
 
-\begin{theorem}[Deduction theorem]\label{thm:deduction_theorem}\mcite[thm. 2.2]{Wasilewska2010}
-  In \hyperref[def:first_order_implicational_logic]{minimal (first-order) implication logic}, \( \Gamma, \psi \vdash \varphi \) holds if and only if \( \Gamma \vdash \psi \to \varphi \) holds. Compare this result to \fullref{thm:semantic_deduction_theorem}.
+\begin{definition}\label{def:propositional_topological_semantics}\mcite[15]{BezhanishviliHolliday2019}
+  Since arbitrary \hyperref[def:heyting_algebra]{Heyting algebras} can be cumbersome to come up with when used for \hyperref[def:propositional_heyting_semantics]{propositional Heyting semantics}, we can instead utilize \fullref{ex:topological_space_is_heyting_algebra} and define \term{topological semantics} for some nonempty \hyperref[def:topological_space]{topological space}.
+
+  The truth values of interpretations and valuations are then open sets in some topological space and a formula is said to be valid if its valuation is the whole space.
+\end{definition}
+
+\begin{example}\label{ex:topological_semantics_lem_counterexample}
+  Let \( U \) be an open set in the standard topology in \( \BbbR \). We will examine \eqref{eq:thm:minimal_propositional_negation_laws/lem} with respect to \hyperref[def:propositional_topological_semantics]{topological semantics} for \( \BbbR \). Due to \fullref{ex:topological_space_is_heyting_algebra}, given any \hyperref[def:propositional_semantics/interpretation]{propositional interpretation} \( I \) such that \( I(P) = U \), we have
+  \begin{equation*}
+    (P \vee \neg P)\Bracks{I}
+    =
+    P\Bracks{I} \cup \widetilde{P\Bracks{I}}
+    =
+    U \cup \widetilde{U}
+    =
+    U \cup \inter(\BbbR \setminus U).
+  \end{equation*}
+
+  If \( U = \varnothing \), then \( (P \vee \neg P)\Bracks{I} = \BbbR \) and \eqref{eq:thm:minimal_propositional_negation_laws/lem} holds. If \( U = (0, 1) \), then \( (P \vee \neg P)\Bracks{I} = \BbbR \setminus \set{ 0, 1 } \) and \eqref{eq:thm:minimal_propositional_negation_laws/lem} does not hold.
+
+  Compare this result with \fullref{ex:heyting_semantics_lem_counterexample}.
+\end{example}
+
+\begin{definition}\label{def:propositional_derivation_system}
+  In order to obtain a derivation system that matches \hyperref[def:propositional_semantics]{classical propositional semantics}, we may extend the \hyperref[def:minimal_propositional_derivation_system]{minimal propositional derivation system} with \eqref{eq:thm:minimal_propositional_negation_laws/dne} or the \hyperref[def:intuitionistic_propositional_derivation_system]{intuitionistic propositional derivation system} with any statement that in conjunction with \eqref{eq:thm:minimal_propositional_negation_laws/efq} imply \eqref{eq:thm:minimal_propositional_negation_laws/dne}.
+
+  Such an example is provided in \fullref{thm:minimal_propositional_negation_laws} --- \eqref{eq:thm:minimal_propositional_negation_laws/efq} and \eqref{eq:thm:minimal_propositional_negation_laws/lem} together imply \eqref{eq:thm:minimal_propositional_negation_laws/dne}.
+
+  We call this, very simply, the (classical) \term{propositional derivation system}.
+\end{definition}
+
+\begin{theorem}\label{thm:classic_propositional_logic_is_sound_and_complete}\mcite[1.1.3]{Buss1998Proofs}
+  The \hyperref[def:propositional_derivation_system]{classical propositional derivation system} is \hyperref[def:derivability_and_satisfiability/soundness]{sound} and \hyperref[def:derivability_and_satisfiability/completeness]{complete} with respect to \hyperref[def:propositional_semantics]{classical semantics}.
+\end{theorem}
+
+\begin{definition}\mcite[2.2.1]{Buss1998Proofs}\label{def:first_order_derivation_system}
+  If we wish to work with first-order logic rather than merely propositional logic, we must extend the \hyperref[def:propositional_derivation_system]{classical propositional derivation system}. We call this, very simply, the (classical) \term{first-order derivation system}.
+
+  \begin{itemize}
+    \item We add two \hyperref[def:first_order_derivation_system/rules]{derivation rules}. Both assume that \( \varphi \) and \( \psi \) are formulas such that \( \xi \not\in \boldop{Free}(\varphi) \).
+
+    \begin{thmenum}[series=def:first_order_derivation_system]
+      \thmitem{def:first_order_derivation_system/rules/forall_intro} The \hyperref[def:first_order_language/quantifiers/universal]{universal quantifier} can be introduced:
+      \begin{equation}\label{eq:def:first_order_derivation_system/rules/forall_intro}
+        \tag{\( \forall \) intro}
+        \begin{prooftree}
+          \hypo{\varphi \rightarrow \psi}
+          \infer1[\( \forall \) intro]{\varphi \rightarrow (\qforall \xi \psi)}
+        \end{prooftree}
+      \end{equation}
+
+      \thmitem{def:first_order_derivation_system/rules/exists_intro} The \hyperref[def:first_order_language/quantifiers/existential]{existential quantifier} can be introduced:
+      \begin{equation}\label{eq:def:first_order_derivation_system/rules/exists_intro}
+        \tag{\( \exists \) intro}
+        \begin{prooftree}
+          \hypo{\varphi \rightarrow \psi}
+          \infer1[\( \exists \) intro]{(\qexists \xi \varphi) \rightarrow \psi}
+        \end{prooftree}
+      \end{equation}
+    \end{thmenum}
+
+    \item We also add a few \hyperref[def:first_order_derivation_system/axioms]{logical axiom} schemas.
+
+    \begin{thmenum}[resume=def:first_order_derivation_system]
+      \thmitem{def:first_order_derivation_system/axioms/terms} First, for any formula \( \varphi \), any variable \( \xi \) and any term \( \tau \), we add the axioms
+      \begin{align}
+        \qforall \xi \varphi      &\rightarrow \varphi[\xi \mapsto \tau], \label{eq:def:first_order_derivation_system/axioms/terms/forall_elim} \\
+        \varphi[\xi \mapsto \tau] &\rightarrow \qexists \xi \varphi.      \label{eq:def:first_order_derivation_system/axioms/terms/exists_intro}
+      \end{align}
+
+      Compare these axioms with \fullref{thm:quantifier_satisfiability}.
+
+      \thmitem{def:first_order_derivation_system/axioms/equality}
+      If the language contains formal equality, for any variables \( \xi, \eta, \zeta \), any term \( \tau \) and any formula \( \varphi \), we also add the following axioms:
+      \begin{equation}\label{eq:def:first_order_derivation_system/axioms/equality}
+        \begin{aligned}
+                            &\phantom{{}\rightarrow{}} (\xi \doteq \xi) \\
+          (\xi \doteq \eta) &\rightarrow (\tau[\zeta \mapsto \xi] \doteq \tau[\zeta \mapsto \eta]) \\
+          (\xi \doteq \eta) &\rightarrow (\varphi[\zeta \mapsto \xi] \rightarrow \varphi[\zeta \mapsto \eta])
+        \end{aligned}
+      \end{equation}
+    \end{thmenum}
+  \end{itemize}
+\end{definition}
+
+\begin{proposition}\label{thm:syntactic_implicit_quantification}
+  Fix a formula \( \varphi \) a variable \( \xi \) over any first-order language \( \mscrL \). The formulas \( \varphi \) and \( \qforall \xi \varphi \) are \hyperref[def:first_order_semantics/interderivable]{interderivable} in the \hyperref[def:first_order_derivation_system]{classical first-order derivation system}.
+
+  Compare this result with \fullref{thm:semantic_implicit_quantification}.
+\end{proposition}
+\begin{proof}
+  Start with \( \varphi \). Obviously \( \xi \) is not free in \( \top \), hence we can apply \eqref{eq:def:positive_implicational_propositional_derivation_system/axioms/imp_intro} with \( \psi = \top \). Then
+  \begin{equation*}
+    \begin{prooftree}
+      \hypo{\top \rightarrow \varphi}
+      \infer1[\( \forall \) intro]{\top \rightarrow \qforall \xi \varphi}
+    \end{prooftree}
+  \end{equation*}
+
+  Now we can use the axiom \eqref{def:minimal_propositional_derivation_system/top_intro} and \eqref{eq:def:implicational_logic/rules/modus_ponens} to infer \( \qforall \xi \varphi \). Thus
+  \begin{equation*}
+    \varphi \vdash \qforall \xi \varphi.
+  \end{equation*}
+
+  Conversely, starting with \( \qforall \xi \varphi \), we can apply \eqref{eq:def:first_order_derivation_system/axioms/terms/forall_elim} with \( \tau = \xi \) to conclude that
+  \begin{equation*}
+    \qforall \xi \varphi \vdash \varphi.
+  \end{equation*}
+\end{proof}
+
+\begin{theorem}\label{thm:classic_first_order_logic_is_sound_and_complete}\mcite[2.2.2 \\ 2.2.3]{Buss1998Proofs}
+  The \hyperref[def:first_order_derivation_system]{classical first-order derivation system} is \hyperref[def:derivability_and_satisfiability/soundness]{sound} and \hyperref[def:derivability_and_satisfiability/completeness]{complete} with respect to \hyperref[def:first_order_semantics]{classical semantics}.
+\end{theorem}
+
+\smallskip
+
+\begin{theorem}[Minimal syntactic deduction theorem]\label{thm:minimal_syntactic_deduction_theorem}\mcite[thm. 2.2]{Wasilewska2010}
+  In the \hyperref[def:minimal_propositional_derivation_system]{minimal propositional derivation system}, \( \Gamma, \psi \vdash \varphi \) holds if and only if \( \Gamma \vdash \psi \rightarrow \varphi \) holds.
+\end{theorem}
+
+\begin{theorem}[Syntactic deduction theorem]\label{thm:syntactic_deduction_theorem}\mcite[thm. 20.25]{OpenLogic20201202}
+  In the \hyperref[def:first_order_derivation_system]{classical first-order derivation system}, \( \Gamma, \psi \vdash \varphi \) holds if and only if \( \Gamma \vdash \psi \rightarrow \varphi \) holds. Compare this result to \fullref{thm:semantic_deduction_theorem}.
 \end{theorem}
 
 \begin{theorem}[Glivenko's double negation theorem]\label{thm:glivenkos_double_negation_theorem}\mcite{Franks2018}
-  A formula \( \varphi \) is derivable in \hyperref[def:first_order_implicational_logic]{classical (first-order) implication logic} if and only if \( \neg \neg \varphi \) is derivable in minimal logic, where
-  \begin{equation*}
-    \neg \neg \varphi \T{is a shorthand for } (\varphi \to \bot) \to \bot.
-  \end{equation*}
+  A formula \( \varphi \) is derivable in the \hyperref[def:propositional_derivation_system]{classical propositional derivation system} if and only if it's double negation \( \neg \neg \varphi \) is derivable in the \hyperref[def:intuitionistic_propositional_derivation_system]{intuitionistic derivation system}.
 \end{theorem}
-
-\begin{definition}\label{def:first_order_theory}
-  \todo{Add a definition for first order logic theories}
-\end{definition}
