@@ -1,5 +1,17 @@
 \subsection{First-order models}\label{subsec:first_order_models}
 
+Much of \fullref{subsec:first_order_logic} is dedicated to semantic equivalences between logical formulas, which are formulated and proved using \hyperref[def:first_order_structure]{structures}. This section is dedicated to the study of structures themselves and relations between them. While model theory is a wide topic, for the purposes of this document we are only interested in the following questions:
+
+\begin{itemize}
+  \item Which subsets of a structure form a \hyperref[def:first_order_substructure]{substructure}?
+
+  This is answered by \fullref{def:first_order_substructure} and by \fullref{def:first_order_generated_substructure}. Vacuously, if the language contains no functional symbols, every subset of a structure is a substructure. Such is the case with \hyperref[def:set_zfc]{sets} themselves, with \hyperref[def:poset]{partially ordered sets} or with \hyperref[def:metric_space]{metric} and \hyperref[def:topological_space]{topological spaces}.
+
+  \item Given a model of some set \( \Gamma \) of formulas, which substructures and \hyperref[def:first_order_homomorphism]{homomorphic} images of the model are again models of \( \Gamma \)?
+
+  This is answered by \fullref{thm:positive_formulas_preserved_under_homomorphism}, \fullref{thm:arbitrary_formulas_preserved_under_isomorphisms} and \fullref{thm:functions_over_model_form_model}.
+\end{itemize}
+
 \begin{definition}\label{def:first_order_substructure}
   Let \( (\mscrX, I) \) be a structure for the language \( \mscrL \) and let \( \mscrY \subseteq \mscrX \). We say that \( (\mscrY, I) \) is a \term{substructure} of \( (\mscrX, I) \) if it satisfies any of the following equivalent conditions:
 
@@ -7,10 +19,12 @@
     \thmitem{def:first_order_substructure/deductive} If \( \mscrY \) is closed under function application, that is, for any functional symbol \( f \) in \( \mscrL \) with arity \( n \), we have \( I(f)(\mscrY^n) \subseteq \mscrY \).
 
     \thmitem{def:first_order_substructure/inductive} \( \mscrY \) is a \hyperref[def:fixed_point]{fixed point} of the operator
-    \begin{alignedeq}\label{eq:def:first_order_substructure/inductive/operator}
-      &T: \pow(\mscrX) \to \pow(\mscrX) \\
-      &T(A) \coloneqq A \cup \set*{ x \in \mscrX \given \qexists{f \in \boldop{Fun}} \qexists{x_1, \ldots, x_{\#f} \in A} f\Bracks{x_1, \ldots, x_{\#f}} = x },
-    \end{alignedeq}
+    \begin{equation}\label{eq:def:first_order_substructure/inductive/operator}
+      \begin{aligned}
+        &T: \pow(\mscrX) \to \pow(\mscrX) \\
+        &T(A) \coloneqq A \cup \set*{ x \in \mscrX \given \qexists{f \in \boldop{Fun}} \qexists{x_1, \ldots, x_{\#f} \in A} f\Bracks{x_1, \ldots, x_{\#f}} = x },
+      \end{aligned}
+    \end{equation}
     which enlarges \( A \) with the union of all image of \( A \) under functions of the language \( \mscrL \).
 
     Note that the formula inside \eqref{eq:def:first_order_substructure/inductive/operator} is in the metalanguage despite using syntax similar to first-order logic formulas.
@@ -27,13 +41,21 @@
   If, instead \( \mscrY \) is a fixed point of \( T \), for the \( n \)-ary functional symbol \( f \in \boldop{Fun} \) and for any tuple \( x_1, \ldots, x_n \), the value \( I(f)(x_1, \ldots, x_n) \) belongs to \( \mscrY \). Therefore \fullref{def:first_order_substructure/deductive} is satisfied.
 \end{proof}
 
+\begin{example}\label{ex:def:first_order_substructure/vector_space}
+  The classic definition for a subset \( U \subseteq \mscrV \) of a \hyperref[def:vector_space]{vector space} \( \mscrV \) being a vector subspace is that \( U \) is closed under \hyperref[def:linear_combination]{linear combinations}. Linear combinations are simply finite \hyperref[def:function/superposition]{superpositions} of addition and scalar multiplication in \( \mscrV \). So this condition ensures that \( U \) is closed under application of the functional symbols corresponding to addition and scalar multiplication.
+\end{example}
+
 \begin{proposition}\label{thm:first_order_substructure_properties}
   \hyperref[def:first_order_substructure]{First order substructures} of \( (\mscrX, I) \) over \( \mscrL \) have the following basic properties:
   \begin{thmenum}
+    \thmitem{thm:first_order_substructure_properties/no_functions} If \( \mscrL \) has no functional symbols, then \( (\mscrY, I) \) is a substructure where \( \mscrY \) is any subset of \( \mscrX \).
+
     \thmitem{thm:first_order_substructure_properties/intersection} Let \( \{ \mscrY_k \}_{k \in \mscrK} \) be a family of substructures of \( \mscrX \). Then their \enquote{intersection} structure \( \parens*{\bigcap_{k \in \mscrK} \mscrY_k, I} \) is again a substructure of \( \mscrX \).
   \end{thmenum}
 \end{proposition}
 \begin{proof}
+  \SubProofOf{thm:first_order_substructure_properties/no_functions} Both conditions in \fullref{def:first_order_substructure} are vacuously satisfied if there are no functional symbols in \( \mscrL \).
+
   \SubProofOf{thm:first_order_substructure_properties/intersection} For any functional symbol \( f \) in \( \mscrL \) with arity \( n \), we have
   \begin{equation*}
     I(f)\parens*{\parens*{\bigcap_{\smash{k \in \mscrK}} \mscrY_k}^n}
@@ -63,6 +85,10 @@
   The reverse inclusion holds if and only if \( \mscrY_{k_0} \) is contained in each one of universums \( \mscrY_k \) for \( k \in \mscrK \). In other words, \( \mscrY_{k_0} \) is the smallest of the universums \( \set{ \mscrY_k }_{k \in \mscrK} \) with respect to set inclusion if and only if \( \mscrY_{k_0} \) equals their intersection.
 \end{proof}
 
+\begin{example}\label{ex:def:first_order_generated_substructure}
+  Common examples of generated substructures are the \hyperref[def:linear_span]{linear span} and the \hyperref[def:generated_ring_ideal]{generated ring ideals}.
+\end{example}
+
 \begin{definition}\label{def:first_order_homomorphism}\mcite[def. 23.8]{OpenLogic20201202}
   Let \( (\mscrX, I_\mscrX) \) and \( (\mscrY, I_\mscrY) \) be structures over a common language. We say that the \hyperref[def:function]{function} \( h: \mscrX \to \mscrY \) is a \term{strong homomorphism} or simply \term{homomorphism} between \( \mscrX \) and \( \mscrY \) if it preserves all functions and relations. Explicitly:
   \begin{thmenum}
@@ -73,12 +99,12 @@
 
     \thmitem{def:first_order_homomorphism/predicates} For any predicate symbol \( p \in \boldop{Pred} \) of arity \( n \) and any \( x_1, \ldots, x_n \in \mscrX \),
     \begin{equation*}
-      (x_1, \ldots, x_n) \in I_\mscrX(p) \T{if and only if} \parens[\Big]{ f(x_1), \ldots, f(x_n) } \in I_\mscrY(p).
+      (x_1, \ldots, x_n) \in I_\mscrX(p) \T{if and only if} \parens[\Big]{ h(x_1), \ldots, h(x_n) } \in I_\mscrY(p).
     \end{equation*}
 
     \thmitem{def:first_order_homomorphism/predicates_weak} We can weaken \ref{def:first_order_homomorphism/predicates} to
     \begin{equation*}
-      (x_1, \ldots, x_n) \in I_\mscrX(p) \T{implies} \parens[\Big]{ f(x_1), \ldots, f(x_n) } \in I_\mscrY(p),
+      (x_1, \ldots, x_n) \in I_\mscrX(p) \T{implies} \parens[\Big]{ h(x_1), \ldots, h(x_n) } \in I_\mscrY(p),
     \end{equation*}
     in which case we obtain the notion of a \term{weak homomorphism}. Weak homomorphisms are used in e.g. \fullref{def:graph_homomorphism}.
   \end{thmenum}
@@ -96,9 +122,14 @@
     \end{equation}
     is indeed a \hyperref[def:first_order_homomorphism_invertibility/projection]{homomorphism} (and thus an embedding in the sense of \fullref{def:first_order_homomorphism_invertibility}).
 
-    \thmitem{thm:first_order_homomorphism_properties/preserves_substructures} If \( \mscrX = (\mscrX, I_\mscrX) \) and \( \mscrY = (\mscrY, I_\mscrY) \) are structures and \( h: \mscrX \to \mscrY \) is a (weak or strong) homomorphism, then the \hyperref[def:function/image]{image} \( (f(\mscrX), I_\mscrY) \) is a substructure of \( (\mscrY, I_\mscrY) \).
+    \thmitem{thm:first_order_homomorphism_properties/preserves_substructures} If \( \mscrX = (\mscrX, I_\mscrX) \) and \( \mscrY = (\mscrY, I_\mscrY) \) are structures and \( h: \mscrX \to \mscrY \) is a weak homomorphism, then the \hyperref[def:function/image]{image} \( (f(\mscrX), I_\mscrY) \) is a substructure of \( (\mscrY, I_\mscrY) \).
 
     \thmitem{thm:first_order_homomorphism_properties/composition} The \hyperref[def:function/composition]{composition} of two homomorphisms (resp. weak homomorphisms) is again a homomorphism (resp. weak homomorphism).
+
+    \thmitem{thm:first_order_homomorphism_properties/term_valuation} Fix a weak homomorphism \( h \) from \( (\mscrX, I_\mscrX) \) to \( (\mscrY, I_\mscrY) \). Fix a term \( \tau \). For any variable assignments \( v_\mscrX \) and \( v_\mscrY \) such that \( v_\mscrY(\xi) = h(v_\mscrX(\xi)) \) for all \( \xi \in \boldop{Var}(\tau) \), we have
+    \begin{equation*}
+      h(\tau\Bracks{v_\mscrX}) = \tau\Bracks{v_\mscrY}.
+    \end{equation*}
   \end{thmenum}
 \end{proposition}
 \begin{proof}
@@ -142,6 +173,19 @@
       \parens[\Big]{ (l \bincirc h)(x_1), \ldots, (l \bincirc h)(x_n) } \in I_{\mscrZ}(p).
     \end{align*}
   \end{itemize}
+
+  \SubProofOf{thm:first_order_homomorphism_properties/term_valuation} We use induction\IND on the structure of \( \tau \). If \( \tau \) is a variable, the statement is obvious from the compatibility condition for \( v_\mscrX \) and \( v_\mscrY \). If \( \tau = f(\kappa_1, \ldots, \kappa_m) \), then
+  \begin{balign*}
+    \tau\Bracks{v_\mscrY}
+    &=
+    I(f) \parens[\Big]{ \kappa_1\Bracks{v_\mscrY}, \ldots, \kappa_m\Bracks{v_\mscrY} }
+    = \\ &=
+    I(f) \parens[\Big]{ h(\kappa_1\Bracks{v_\mscrX}), \ldots, h(\kappa_m\Bracks{v_\mscrX}) }
+    = \\ &\ClapOverset {\ref{def:first_order_homomorphism/functions}} =
+    h\parens[\Big]{ I(f) \parens[\Big]{ \kappa_1\Bracks{v_\mscrX}, \ldots, \kappa_m\Bracks{v_\mscrX} } }
+    = \\ &=
+    h(\tau\Bracks{v_\mscrX}).
+  \end{balign*}
 \end{proof}
 
 \begin{definition}\label{def:first_order_homomorphism_invertibility}
@@ -159,53 +203,181 @@
   \end{thmenum}
 \end{definition}
 
-\begin{proposition}\label{thm:first_order_homomorphism_preserves_models}\mcite[def. 23.8]{OpenLogic20201202}
-  Let \( (\mscrX, I_\mscrX) \) and \( (\mscrY, I_\mscrY) \) be structures over a common language \( \mscrL \) and let \( h: \mscrX \to \mscrY \) be a homomorphism between them. Let \( \Gamma \) be a set of formulas.
+\begin{definition}\label{def:positive_formula}
+  We say that a \hyperref[def:propositional_syntax/formula]{propositional formula} \( \varphi \) is \term{positive} if it contains only \hyperref[def:conjunctive_disjunctive_normal_form/literal]{positive literals} and the propositional constants \hyperref[def:propositional_language/constants/top]{top \( \top \)} and \hyperref[def:propositional_language/constants/bottom]{bottom \( \bot \)} connected using \hyperref[def:propositional_language/connectives/conjunction]{conjunction \( \wedge \)} and \hyperref[def:propositional_language/connectives/disjunction]{disjunction \( \vee \)}.
 
-  If \( (\mscrX, I_\mscrX) \models \Gamma \), then \( (h(\mscrX), I_\mscrY) \models \Gamma \).
+  The point of positive formulas is to avoid \hyperref[def:propositional_language/negation]{negation \( \neg \)}. This definition is not equivalent to \hyperref[def:positive_implicational_propositional_derivation_system]{positive implicational formulas} where \( \rightarrow \) is the only connective. We avoid adding \( \rightarrow \) because that would allow us, assuming classical logic, to derive negation using \fullref{thm:boolean_equivalences/negation_bottom}.
+
+  Positive formulas are used in \fullref{thm:positive_formulas_preserved_under_homomorphism}, which fails to hold for some non-positive formulas (see \fullref{ex:monoid_cancellation_not_preserved_by_homomorphism}).
+
+  When dealing with first-order logic, we simply use \hyperref[thm:first_order_substitution_equivalence/propositional]{substitution} to replace propositional variables with atomic formulas. This way we obtain positive first-order formulas with \hyperref[thm:semantic_implicit_universal_quantification]{implicit universal quantification}. Of course, we can always add explicit universal quantifiers but we avoid existential quantifiers because of \fullref{thm:first_order_quantifiers_are_dual}.
+\end{definition}
+
+\begin{proposition}\label{thm:positive_formulas_preserved_under_homomorphism}
+  Let \( (\mscrX, I_\mscrX) \) and \( (\mscrY, I_\mscrY) \) be structures over a common language \( \mscrL \) and let \( h: \mscrX \to \mscrY \) be a \hyperref[def:first_order_homomorphism]{weak homomorphism} between them. Take \( \Gamma \) to be a nonempty set of \hyperref[def:positive_formula]{positive formulas}.
+
+  Then \( h \) preserves models of \( \Gamma \). That is, \( (\mscrX, I_\mscrX) \vDash \Gamma \) if and only if \( (h(\mscrX), I_\mscrY) \vDash \Gamma \).
 \end{proposition}
 \begin{proof}
-  Let \( (\mscrX, I) \) be a model of \( \varphi \). Let \( \varphi \) be a formula in \( \mscrL \) such that
+  Let \( v \) a variable assignment in \( (\mscrY, I_\mscrY) \). Let \( v_\mscrX: \boldop{Var} \to \mscrX \) be an assignment such that for any variable \( \xi \) we have
   \begin{equation*}
-    \boldop{Free}(\varphi) \subseteq \set{x_1, \ldots, x_n}.
+    v_\mscrX(\xi) \in h^{-1}(v_\mscrY(\xi)).
   \end{equation*}
 
-  Using induction\IND on the structure of \( \varphi \), it is straightforward to show that \( \varphi\Bracks{x_1, \ldots, x_n} = \varphi\Bracks{h(x_1), \ldots, h(x_n)} \).
+  At least one such assignment exists by \fullref{thm:aoc/choice}\AOC. If \( h \) is injective, this assignment is unique.
 
-  We conclude that, if \( (\mscrX, I_\mscrX) \models \varphi \), we have \( (h(\mscrX), I_\mscrY) \models \varphi \).
+  We will show that
+  \begin{equation}\label{thm:positive_formulas_preserved_under_homomorphism/ind_hyp_x}
+    (\mscrX, I_\mscrX) \vDash_{v_\mscrX} \varphi
+  \end{equation}
+  implies
+  \begin{equation}\label{thm:positive_formulas_preserved_under_homomorphism/ind_hyp_y}
+    (h(\mscrX), I_\mscrY) \vDash_{v_\mscrY} \varphi.
+  \end{equation}
 
-  Since the formula \( \varphi \) was an arbitrary member of \( \Gamma \), the statement of the proposition follows.
+  We assume \eqref{thm:positive_formulas_preserved_under_homomorphism/ind_hyp_x} for \( \varphi \) and we use induction\IND on the structure of \( \varphi \) to prove \eqref{thm:positive_formulas_preserved_under_homomorphism/ind_hyp_y}, starting with different \hyperref[def:first_order_syntax/atomic_formula]{atomic formulas}:
+  \begin{itemize}
+    \item The constant \( \top \) is vacuously preserved by homomorphisms because it does not depend on the interpretation or variable assignment.
+
+    \item Suppose that \( \varphi = (\tau_1 \doteq \tau_2) \). We have \( \tau_1\Bracks{v_\mscrX} = \tau_2\Bracks{v_\mscrX} \) and hence \( h(\tau_1\Bracks{v_\mscrX}) = h(\tau_2\Bracks{v_\mscrX}) \) and
+    \begin{equation*}
+      \tau_1\Bracks{v_\mscrY}
+      \overset {\ref{thm:first_order_homomorphism_properties/term_valuation}} =
+      h(\tau_1\Bracks{v_\mscrX})
+      =
+      h(\tau_2\Bracks{v_\mscrX})
+      \overset {\ref{thm:first_order_homomorphism_properties/term_valuation}} =
+      \tau_2\Bracks{v_\mscrY}.
+    \end{equation*}
+
+    \item Suppose that \( \varphi \) is the predicate formula \( p(\tau_1, \ldots, \tau_n) \). By assumption for every variable assignment in \( \mscrX \) and, in particular, for any \( v_\mscrX \),
+    \begin{equation*}
+      (\mscrX, I_\mscrX) \vDash_{v_\mscrX} p(\tau_1, \ldots, \tau_n),
+    \end{equation*}
+    then
+    \begin{equation}\label{eq:thm:positive_formulas_preserved_under_homomorphism/predicates/x}
+      \parens[\Big]{ \tau_1\Bracks{v_\mscrX}, \ldots, \tau_n\Bracks{v_\mscrX} } \in I_\mscrX(p).
+    \end{equation}
+
+    By definition of homomorphism, we have
+    \begin{equation}\label{eq:thm:positive_formulas_preserved_under_homomorphism/predicates/y}
+      \parens[\Big]{ h(\tau_1\Bracks{v_\mscrX}), \ldots, h(\tau_n\Bracks{v_\mscrX}) } \in I_\mscrY(p).
+    \end{equation}
+
+    Now
+    \begin{equation*}
+      (h(\mscrX), I_\mscrY) \vDash_{v_\mscrY} p(\tau_1, \ldots, \tau_n),
+    \end{equation*}
+    follows from \fullref{thm:first_order_homomorphism_properties/term_valuation}.
+
+    If \( h \) is a strong homomorphism, then the converse also holds, i.e. \eqref{eq:thm:positive_formulas_preserved_under_homomorphism/predicates/x} follows from \eqref{eq:thm:positive_formulas_preserved_under_homomorphism/predicates/y}. See \fullref{thm:arbitrary_formulas_preserved_under_isomorphisms} for an application of this converse.
+
+    \item Suppose that \( \varphi = \psi_1 \wedge \psi_2 \) and that the inductive hypothesis holds for \( \psi_1 \) and \( \psi_2 \).
+
+    Since \( \varphi\Bracks{v_\mscrX} = T \) by assumption, by definition of valuation of conjunction we have
+    \begin{equation*}
+      \psi_1\Bracks{v_\mscrX}
+      =
+      \psi_2\Bracks{v_\mscrX}
+      =
+      T.
+    \end{equation*}
+
+    This allows us to apply the inductive hypothesis to obtain
+    \begin{equation*}
+      \psi_1\Bracks{v_\mscrY}
+      =
+      \psi_2\Bracks{v_\mscrY}
+      =
+      T.
+    \end{equation*}
+    and conclude that
+    \begin{equation*}
+      \varphi\Bracks{v_\mscrY}
+      =
+      \psi_1\Bracks{v_\mscrY} \wedge \psi_2\Bracks{v_\mscrY}
+      =
+      T \wedge T
+      =
+      T.
+    \end{equation*}
+
+    \item Suppose that \( \varphi = \psi_1 \vee \psi_2 \) and that the inductive hypothesis holds for \( \psi_1 \) and \( \psi_2 \).
+
+    Since the formula \( \varphi \) is valid in \( (\mscrX, I_\mscrX) \), at least one of \( \psi_1 \) or \( \psi_2 \) is valid under \( v_\mscrX \). For different \( v_\mscrX \) the valuation pair \( (\psi_1\Bracks{v_\mscrX}, \psi_2\Bracks{v_\mscrX}) \) may be different but will always have at least one \( T \) value.
+
+    The inductive hypothesis holds for both \( \psi_1 \) and \( \psi_2 \) and therefore \( (\psi_1\Bracks{v_\mscrY}, \psi_2\Bracks{v_\mscrY}) \) also contains at least one \( T \) value.
+
+    This allows us to conclude that
+    \begin{equation*}
+      \varphi\Bracks{v_\mscrY}
+      =
+      \psi_1\Bracks{v_\mscrY} \vee \psi_2\Bracks{v_\mscrY}
+      =
+      T.
+    \end{equation*}
+
+    \item To see how this proof fails for conditionals, consider \( \varphi = (\psi_1 \rightarrow \psi_2) \). Then \( \varphi\Bracks{v_\mscrX} = T \) implies either \( \psi_1\Bracks{v_\mscrX} = F \) or \( \psi_1\Bracks{v_\mscrX} = \psi_2\Bracks{v_\mscrX} = T \).
+
+    If \( \psi_1\Bracks{v_\mscrX} = \psi_2\Bracks{v_\mscrX} = F \), we have \( \varphi\Bracks{v_\mscrX} = T \) but we cannot conclude that \( \varphi\Bracks{v_\mscrY} = T \) because that would require the \hyperref[def:material_implication/opposite]{opposite} of the inductive hypothesis to hold for \( \psi_1 \) and \( \psi_2 \).
+
+    See \fullref{ex:monoid_cancellation_not_preserved_by_homomorphism} for an example where a conditional is not preserved by a homomorphism.
+  \end{itemize}
+
+  Since \( v \) has been chosen arbitrarily, we conclude that
+  \begin{equation*}
+    (h(\mscrX), I_\mscrY) \vDash \varphi.
+  \end{equation*}
 \end{proof}
 
 \begin{corollary}\label{thm:substructure_is_model}
-  Any \hyperref[def:first_order_substructure]{substructure} of a model of \( \Gamma \) is again a model of \( \Gamma \).
+  If \( \Gamma \) is a set of positive formulas, any \hyperref[def:first_order_substructure]{substructure} of a model of \( \Gamma \) is again a model of \( \Gamma \).
 \end{corollary}
 \begin{proof}
-  Follows from \fullref{thm:first_order_homomorphism_properties/substructure} and \fullref{thm:first_order_homomorphism_preserves_models}.
+  Follows from \fullref{thm:first_order_homomorphism_properties/substructure} and \fullref{thm:positive_formulas_preserved_under_homomorphism}.
+\end{proof}
+
+\begin{proposition}\label{thm:arbitrary_formulas_preserved_under_isomorphisms}\mcite[thm. 23.8]{OpenLogic20201202}
+  If \( (\mscrX, I_\mscrX) \) is a model of \( \Gamma \) and if \( h: \mscrX \to \mscrY \) is a weak embedding from \( (\mscrX, I_\mscrX) \) to \( (\mscrY, I_\mscrY) \), then \( (h(\mscrX), I_\mscrY) \) is also a model of \( \Gamma \).
+
+  We say that embeddings preserve arbitrary formulas.
+
+  If \( h \) is a strong homomorphism, then the converse is true, e.g. if \( (h(\mscrX), I_\mscrY) \) is a model of \( \Gamma \), then so is \( (\mscrX, I_\mscrX) \).
+
+  We say that strong embeddings reflect arbitrary formulas.
+\end{proposition}
+\begin{proof}
+  The proof simply extends the induction in the proof of \fullref{thm:arbitrary_formulas_preserved_under_isomorphisms} to
+  \begin{equation*}
+    \varphi\Bracks{v_\mscrY} = \varphi\Bracks{v_\mscrY}
+  \end{equation*}
+  which allows us to use the usual induction on the negation and all connectives and quantifiers.
+
+  The result regarding strong homomorphisms is shown in the note about \eqref{eq:thm:positive_formulas_preserved_under_homomorphism/predicates/x} following from \eqref{eq:thm:positive_formulas_preserved_under_homomorphism/predicates/y} under strong homomorphisms.
 \end{proof}
 
 \begin{theorem}\label{thm:functions_over_model_form_model}
-  Let \( \Gamma \) be a set of \hyperref[thm:semantic_implicit_quantification]{universal formulas} over \( \mscrL \). Let \( (\mscrX, I) \) be a model of \( \Gamma \) and let \( \mscrS \) be any nonempty set. Consider the set \( \fun(\mscrS, \mscrX) \) of \hyperref[def:function/single_valued]{all set-theoretic functions} from \( \mscrS \) to \( \mscrX \).
+  Let \( \Gamma \) to be a nonempty set of \hyperref[def:positive_formula]{positive formulas}. Let \( (\mscrX, I_\mscrX) \) be a model of \( \Gamma \) and let \( \mscrS \) be any nonempty set. Consider the set \( \mscrY \coloneqq \fun(\mscrS, \mscrX) \) of \hyperref[def:function/single_valued]{all set-theoretic functions} from \( \mscrS \) to \( \mscrX \).
 
-  Define \( \iota: \mscrX \mapsto \fun(\mscrS, \mscrX) \) by sending each \( x \in \mscrX \) to the corresponding constant function in \( \fun(\mscrS, \mscrX) \).
+  Define \( \iota: \mscrX \mapsto \mscrY \) by sending each \( x \in \mscrX \) to the corresponding constant function in \( \mscrY \).
 
-  Define the interpretation \( \widetilde I \) on \( \fun(\mscrS, \mscrX) \) as follows:
+  Define the interpretation \( I_\mscrY \) as follows:
   \begin{itemize}
     \item For each \( n \)-ary functional symbol \( f \) in \( \mscrL \), define the interpretation of the functions \( k_1, \ldots, k_n \) componentwise as
     \begin{equation*}
       \begin{aligned}
-        &\widetilde I(f): \fun(\mscrS, \mscrX)^n \to \fun(\mscrS, \mscrX) \\
-        &\widetilde I(f) \parens[\Big]{ k_1, \ldots, k_n } \coloneqq \parens[\Big]{ s \mapsto I(f) \parens[\Big]{ k_1(s), \ldots, k_n(s) } }.
+        &I_\mscrY(f): \mscrY^n \to \mscrY \\
+        &I_\mscrY(f) \parens[\Big]{ k_1, \ldots, k_n } \coloneqq \parens[\Big]{ s \mapsto I(f) \parens[\Big]{ k_1(s), \ldots, k_n(s) } }.
       \end{aligned}
     \end{equation*}
 
-    \item For each \( n \)-ary predicate symbol \( p \) in \( \mscrL \), define \( \widetilde I(p) \subseteq \fun(\mscrS, \mscrX)^n \) via
+    \item For each \( n \)-ary predicate symbol \( p \) in \( \mscrL \), define \( I_\mscrY(p) \subseteq \mscrY^n \) via
     \begin{equation*}
       \parens[\Big]{ k_1, \ldots, k_n } \in \widetilde I(p) \T{if and only if for each} s \in \mscrS \T{we have} \parens[\Big]{ k_1(s), \ldots, k_n(s) } \in I(p).
     \end{equation*}
   \end{itemize}
 
-  Then the structure \( (\fun(\mscrS, \mscrX), \widetilde I) \) is also a model of \( \Gamma \) and \( \iota: \mscrX \to \fun(\mscrS, \mscrX) \) is a strong embedding.
+  Then the structure \( (\mscrY, I_\mscrY) \) is also a model of \( \Gamma \) and \( \iota: \mscrX \to \mscrY \) is a strong embedding.
 \end{theorem}
 
 \begin{definition}\label{def:first_order_model_category}

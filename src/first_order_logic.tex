@@ -22,7 +22,7 @@
 
       The dot is not itself a quantifier and is not formally necessary --- we use it only for readability.
 
-      \thmitem{def:first_order_language/equality} Optionally, an symbol for \term{formal equality} \( \doteq \).
+      \thmitem{def:first_order_language/equality} A symbol for \term{formal equality} \( \doteq \). Equality is sometimes omitted by logicians but examples of first-order languages without formal equality are obscure.
     \end{thmenum}
 
     \item[Non-logical symbols]
@@ -34,7 +34,7 @@
     \end{thmenum}
   \end{description}
 
-  The logical symbols, with the exception of formal equality, are common for all first-order languages. Thus first-order languages differ by their non-logical symbols. The collection of functional and predicate symbols of a language are sometimes called its \term{signature}. Whether the formal equality symbol is present is also considered a part of the signature.
+  The logical symbols are common for all first-order languages. Thus first-order languages differ by their non-logical symbols. The collection of functional and predicate symbols of a language are sometimes called its \term{signature}.
 \end{definition}
 
 \begin{definition}\label{def:first_order_syntax}
@@ -94,6 +94,8 @@
     As in \fullref{def:propositional_syntax/variables}, \( \boldop{Var} \) is ordered by the position of the first occurrence of a variable.
 
     \thmitem{def:first_order_syntax/ground_term} A term \( \tau \) is called a \term{ground term} if \( \boldop{Var}(\tau) = \varnothing \).
+
+    \thmitem{def:first_order_syntax/atomic_formula} The set \( \boldop{Atom} \) of \term{atomic formulas} in \( \mscrL \) is the language \hyperref[def:grammar_derivation/grammar_language]{generated} by this grammar schema with \( \bnfpn{atomic formula} \) as a starting rule.
 
     \thmitem{def:first_order_syntax/formula} The set \( \boldop{Form} \) of \term{formulas} in \( \mscrL \) is the language \hyperref[def:grammar_derivation/grammar_language]{generated} by this grammar schema with \( \bnfpn{formula} \) as a starting rule.
 
@@ -203,21 +205,23 @@
       \end{cases}
     \end{equation}
 
-    \thmitem{def:first_order_valuation/formula_valuation} We extend the classical propositional valuations from \fullref{def:propositional_valuation}. The (classical) \term{valuation} of a formula \( \varphi \) is a Boolean value (see \fullref{def:propositional_valuation}) given by
+    \thmitem{def:first_order_valuation/formula_valuation} We extend the classical propositional valuations from \fullref{def:propositional_valuation}. The (classical) \term{valuation} of a formula \( \varphi \) is a \hyperref[def:boolean_value]{Boolean value} given by
     \begin{equation}\label{eq:def:first_order_valuation/formula_valuation}
       \varphi\Bracks{v} \coloneqq \begin{cases}
-        T,                                                                               &\varphi = \top, \\
-        F,                                                                               &\varphi = \bot, \\
-        \tau_1\Bracks{v} = \tau_2\Bracks{v},                                             &\varphi = \tau_1 \doteq \tau_2, \\
-        (\tau_1\Bracks{v}, \ldots, \tau_n\Bracks{v}) \in I(p),                           &\varphi = p(\tau_1, \ldots, \tau_n), \\
-        \overline{\psi\Bracks{v}},                                                       &\varphi = \neg \psi, \\
-        \psi_1\Bracks{v} \bincirc \psi_2\Bracks{v},                                  &\varphi = \psi_1 \bincirc \psi_2, \bincirc \in \Sigma, \\
-        T \T{iff} \psi\Bracks{v_{\xi \mapsto x}} = T \T{for every} x \in \mscrX,         &\varphi = \qforall \xi \psi, \\
-        T \T{iff there exists} x \in \mscrX \T{s.t.} \psi\Bracks{v_{\xi \mapsto x}} = T, &\varphi = \qexists \xi \psi.
+        T,                                                                   &\varphi = \top, \\
+        F,                                                                   &\varphi = \bot, \\
+        \tau_1\Bracks{v} = \tau_2\Bracks{v},                                 &\varphi = \tau_1 \doteq \tau_2, \\
+        (\tau_1\Bracks{v}, \ldots, \tau_n\Bracks{v}) \in I(p),               &\varphi = p(\tau_1, \ldots, \tau_n), \\
+        \overline{\psi\Bracks{v}},                                           &\varphi = \neg \psi, \\
+        \psi_1\Bracks{v} \bincirc \psi_2\Bracks{v},                          &\varphi = \psi_1 \bincirc \psi_2, \bincirc \in \Sigma, \\
+        \bigvee\set{ \psi\Bracks{v_{\xi \mapsto x}} \given x \in \mscrX },   &\varphi = \qforall \xi \psi, \\
+        \bigwedge\set{ \psi\Bracks{v_{\xi \mapsto x}} \given x \in \mscrX }, &\varphi = \qexists \xi \psi.
       \end{cases}
     \end{equation}
 
     The rules for evaluating constants, negations and connectives are a direct extension of the \hyperref[def:propositional_valuation/formula_valuation]{rules for propositional logic}.
+
+    It is important that the universum is nonempty because \( \bigwedge\varnothing = T \), which directly contradicts our intent of defining \( \exists \) as a quantifier for existence.
   \end{thmenum}
 \end{definition}
 
@@ -317,7 +321,7 @@
 \end{definition}
 
 \begin{remark}\label{rem:propositional_logic_as_first_order_logic}
-  It is now clear that \hyperref[subsec:propositional_logic]{propositional logic} can be regarded as first-order logic with no equality, no functional symbols and at most countably many nullary predicates. Thus first-order logic is indeed an extension of propositional logic.
+  It is now clear that \hyperref[subsec:propositional_logic]{propositional logic} can be regarded as first-order logic with no at most countably many predicates, all of arity 0, and no functional symbols. Thus first-order logic is indeed an extension of propositional logic.
 \end{remark}
 
 \begin{remark}\label{rem:empty_models}
@@ -336,10 +340,10 @@
   As in \fullref{def:propositional_substitution}, we define different kinds of (single) \term{substitution} in more generality that in e.g. \cite[def. 14.25]{OpenLogic20201202}. Where applicable, \term{simultaneous substitution} is defined via the same trick as in \fullref{def:propositional_substitution}.
 
   \begin{thmenum}
-    \thmitem{def:first_order_substitution/predicate} Let \( \varphi \) be a \hyperref[def:propositional_syntax/formula]{propositional formula} with variables \( \boldop{Var}(\varphi) = \set{ P_1, \ldots, P_n } \). For brevity, denote \( V \coloneqq \boldop{Var}(\varphi) \). Let \( \Theta = \set{ \theta_1, \ldots, \theta_n } \) be a set of \hyperref[def:first_order_syntax/formula]{first-order formulas}.
+    \thmitem{def:first_order_substitution/propositional} Let \( \varphi \) be a \hyperref[def:propositional_syntax/formula]{propositional formula} with variables \( \boldop{Var}(\varphi) = \set{ P_1, \ldots, P_n } \). For brevity, denote \( V \coloneqq \boldop{Var}(\varphi) \). Let \( \Theta = \set{ \theta_1, \ldots, \theta_n } \) be a set of \hyperref[def:first_order_syntax/formula]{first-order formulas}.
 
     It does not make sense to replace a single propositional variable by a single formula. Furthermore, a first-order formula \( \theta_k \) cannot possibly contain any of the propositional variables \( P_1, \ldots, P_n \). This allows us to introduce a simplification of the simultaneous substitution based on \eqref{eq:def:propositional_substitution/single} as
-    \begin{equation}\label{eq:def:first_order_substitution/predicate}
+    \begin{equation}\label{eq:def:first_order_substitution/propositional}
       \varphi[V \mapsto \Theta] \coloneqq \begin{cases}
         \varphi,                                                    &\varphi \in \set{ \top, \bot } \\
         \theta_k,                                                   &\varphi = \theta_k \T{for some} k = 1, \ldots, n \\
@@ -680,7 +684,7 @@
   Fix a \hyperref[def:first_order_structure]{structure} \( (\mscrX, I) \) and a \hyperref[def:first_order_valuation/variable_assignment]{variable assignment} \( v \).
 
   \begin{thmenum}
-    \thmitem{thm:first_order_substitution_equivalence/predicate} As in \fullref{def:first_order_substitution/predicate}, let \( \varphi \) be a \hyperref[def:propositional_syntax/formula]{propositional formula} with variables \( {V = \set{ P_1, \ldots, P_n }} \) and let \( \Theta = \set{ \theta_1, \ldots, \theta_n } \) be a set of \hyperref[def:first_order_syntax/formula]{first-order formulas}.
+    \thmitem{thm:first_order_substitution_equivalence/propositional} As in \fullref{def:first_order_substitution/propositional}, let \( \varphi \) be a \hyperref[def:propositional_syntax/formula]{propositional formula} with variables \( {V = \set{ P_1, \ldots, P_n }} \) and let \( \Theta = \set{ \theta_1, \ldots, \theta_n } \) be a set of \hyperref[def:first_order_syntax/formula]{first-order formulas}.
 
     Furthermore, let \( J \) be a \hyperref[def:propositional_valuation/interpretation]{propositional interpretation} such that, for all \( k = 1, \ldots, n \),
     \begin{equation}\label{eq:thm:first_order_substitution_equivalence/propositional/compatibility}
@@ -718,7 +722,7 @@
 \begin{proof}
   In all cases, we use structural induction by the definition of the substitution\IND. The inductive hypothesis for a formula is that the proposition holds for arbitrary substitutions and valuations.
 
-  \SubProofOf{thm:first_order_substitution_equivalence/predicate} Let \( \varphi \) be a propositional formula.
+  \SubProofOf{thm:first_order_substitution_equivalence/propositional} Let \( \varphi \) be a propositional formula.
   \begin{itemize}
     \item If \( \varphi \in \set{ \top, \bot } \), no substitution is performed and thus \eqref{eq:thm:first_order_substitution_equivalence/propositional} holds trivially.
 
@@ -808,8 +812,34 @@
   This proves \eqref{eq:thm:first_order_substitution_equivalence/term_in_formula}.
 \end{proof}
 
-\begin{proposition}\label{thm:semantic_implicit_quantification}
-  For any formula \( \varphi \) and any variable \( \xi \) over any first-order language \( \mscrL \), the formulas \( \varphi \) and \( \qforall \xi \varphi \) are \hyperref[def:first_order_semantics/equivalent]{semantically equivalent}.
+\begin{proposition}\label{thm:first_order_quantifiers_are_dual}
+  For any formula \( \varphi \) and any variable \( \xi \) over \( \mscrL \), we have the following equivalence:
+  \begin{align}
+    \neg \qforall \xi \varphi &\gleichstark \qexists \xi \neg \varphi \label{thm:first_order_quantifiers_are_dual/negation_of_universal} \\
+    \neg \qexists \xi \varphi &\gleichstark \qforall \xi \neg \varphi \label{thm:first_order_quantifiers_are_dual/negation_of_existential}
+  \end{align}
+\end{proposition}
+\begin{proof}
+  The two equivalences are connected using \hyperref[thm:boolean_equivalences/double_negation]{double negation}. We will only prove \eqref{thm:first_order_quantifiers_are_dual/negation_of_universal}.
+
+  Let \( (\mscrX, I) \) be a structure over \( \mscrL \) and let \( v \) be a variable assignment. Then
+  \begin{align*}
+    (\neg \qforall \xi \varphi)\Bracks{v}
+    &=
+    \overline{(\qforall \xi \varphi)\Bracks{v}}
+    = \\ &=
+    \overline{\bigwedge\set{ \varphi\Bracks{v_{\xi \mapsto x}} \given x \in \mscrX }}
+    \overset {\eqref{eq:thm:de_morgans_laws/complement_of_meet}} = \\ &=
+    \bigvee\set{ \overline{\varphi\Bracks{v_{\xi \mapsto x}}} \given x \in \mscrX }
+    = \\ &=
+    \bigvee\set{ (\neg \varphi)\Bracks{v_{\xi \mapsto x}} \given x \in \mscrX }
+    = \\ &=
+    (\qexists \xi \neg \varphi)\Bracks{v}.
+  \end{align*}
+\end{proof}
+
+\begin{proposition}\label{thm:semantic_implicit_universal_quantification}
+  For any formula \( \varphi \) and any variable \( \xi \) over \( \mscrL \), the formulas \( \varphi \) and \( \qforall \xi \varphi \) are \hyperref[def:first_order_semantics/equivalent]{semantically equivalent}.
 
   This allows us to skip quantifiers when writing formulas without changing their validity. Given a formula \( \varphi \) with free variables \( \xi_1, \ldots, \xi_n \), we call
   \begin{equation*}
@@ -817,7 +847,7 @@
   \end{equation*}
   its \term{universal closure} and say that \( \varphi \) itself is \term{implicitly universally quantified}. Universal closures of quantifierless formulas are called \term{universal formulas}.
 
-  Compare this result with \fullref{thm:syntactic_implicit_quantification}.
+  Compare this result with \fullref{thm:syntactic_implicit_universal_quantification}.
 \end{proposition}
 \begin{proof}
   Let \( (\mscrX, I) \) be a structure that satisfies \( \varphi \). Let \( v \) be a variable assignment in \( (\mscrX, I) \). Then for any \( x \in \mscrX \), the modified variable assignment \( v_{\xi \mapsto x} \) also satisfies \( \varphi \), i.e.
@@ -919,8 +949,4 @@
 
 \begin{theorem}[Semantic deduction theorem]\label{thm:semantic_deduction_theorem}\mcite[thm. 14.53]{OpenLogic20201202}
   The entailment \( \Gamma, \psi \vDash \varphi \) holds if and only if \( \Gamma \vDash \psi \to \varphi \) holds. Compare this result to \fullref{thm:syntactic_deduction_theorem}.
-\end{theorem}
-
-\begin{theorem}[First-order compactness theorem]\label{thm:first_order_compactness_theorem}\mcite[thm. 21.21]{OpenLogic20201202}
-  A set \( \Gamma \) of first-order formulas is \hyperref[def:propositional_semantics/satisfiability]{satisfiable} if and only if every finite subset of \( \Gamma \) is satisfiable.
 \end{theorem}
