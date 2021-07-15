@@ -356,7 +356,7 @@ Much of \fullref{subsec:first_order_logic} is dedicated to semantic equivalences
   The result regarding strong homomorphisms is shown in the note about \eqref{eq:thm:positive_formulas_preserved_under_homomorphism/predicates/x} following from \eqref{eq:thm:positive_formulas_preserved_under_homomorphism/predicates/y} under strong homomorphisms.
 \end{proof}
 
-\begin{theorem}\label{thm:functions_over_model_form_model}
+\begin{proposition}\label{thm:functions_over_model_form_model}
   Let \( \Gamma \) to be a nonempty set of \hyperref[def:positive_formula]{positive formulas}. Let \( (\mscrX, I_\mscrX) \) be a model of \( \Gamma \) and let \( \mscrS \) be any nonempty set. Consider the set \( \mscrY \coloneqq \fun(\mscrS, \mscrX) \) of \hyperref[def:function/single_valued]{all set-theoretic functions} from \( \mscrS \) to \( \mscrX \).
 
   Define \( \iota: \mscrX \mapsto \mscrY \) by sending each \( x \in \mscrX \) to the corresponding constant function in \( \mscrY \).
@@ -378,10 +378,58 @@ Much of \fullref{subsec:first_order_logic} is dedicated to semantic equivalences
   \end{itemize}
 
   Then the structure \( (\mscrY, I_\mscrY) \) is also a model of \( \Gamma \) and \( \iota: \mscrX \to \mscrY \) is a strong embedding.
-\end{theorem}
+\end{proposition}
+\begin{proof}
+  It is obvious that \( (\mscrY, I_\mscrY) \) is a structure and that \( \iota \) is a strong embedding. We will prove using induction on \( \varphi \) that for any positive formula \( \varphi \) the formula
+  \begin{equation*}
+    (\mscrX, I_\mscrX) \vDash \varphi
+  \end{equation*}
+  implies
+  \begin{equation*}
+    (\mscrY, I_\mscrY) \vDash \varphi.
+  \end{equation*}
+
+  Let \( v_\mscrY \) be a variable assignment in \( \mscrY \).
+
+  Suppose that \( (\mscrX, I_\mscrX) \vDash \varphi \). We use induction\IND on the structure of \( \varphi \) to show that \( \varphi\Bracks{v_\mscrY} = T \).
+  \begin{itemize}
+    \item If \( \varphi \) is a propositional constant, its value does not depend on \( v_\mscrY \) and thus \( \varphi\Bracks{v_\mscrY} = \varphi\Bracks{v_\mscrX} \).
+
+    \item If \( \varphi = (\tau_1 \doteq \tau_2) \), then \( \tau_1\Bracks{v_\mscrX} = \tau_2\Bracks{v_\mscrX} \) for all assignments \( v_\mscrX \) in \( \mscrX \), hence for any \( s \in \mscrS \) we have \( \parens[\Big]{\tau_1\Bracks{v_\mscrY}}(s) = \parens[\Big]{\tau_2\Bracks{v_\mscrY}}(s) \) since both sides of the equality here are elements of \( \mscrX \).
+
+    \item The proof is completely analogous if \( \varphi \) is a predicate formula.
+
+    \item Analogous to the proof of \fullref{thm:positive_formulas_preserved_under_homomorphism}, conjunction and disjunction formulas that are valid in \( (\mscrX, I_\mscrX) \) are valid in \( (\mscrY, I_\mscrY) \) while conditional formulas may fail to be valid. See \fullref{ex:thm:functions_over_model_of_positive_formulas_form_model} for examples where this proposition fails.
+  \end{itemize}
+\end{proof}
+
+\begin{example}\label{ex:thm:functions_over_model_of_positive_formulas_form_model}
+  While the statement of \fullref{thm:functions_over_model_form_model} may be a little cryptic, a few examples show that it is actually obvious.
+  \begin{itemize}
+    \item \hyperref[def:boolean_function]{Boolean functions} have their values in the Boolean algebra \( \set{ T, F } \). Let \( \mscrS \) be the set of all tuples of values in \( \set{ T, F }^n \) for arbitrary \( n \). That is,
+    \begin{equation*}
+      \mscrS \coloneqq \bigcup_{n \geq 1} \set{ T, F }^n.
+    \end{equation*}
+
+    Then by \fullref{thm:functions_over_model_form_model}, the set \( \mscrB = \fun(\mscrS, \set{ T, F }) \) of all Boolean functions of arbitrary arities is again a Boolean algebra. See \fullref{thm:propositional_formula_cosets_are_boolean_functions/boolean_algebra} for further discussion.
+
+    \item If \( \mscrR \) is a ring and \( \mscrS \) is any set, then \( \fun(\mscrS, \mscrR) \) is again a ring with componentwise operations --- see \fullref{thm:functions_over_ring_form_algebra}.
+
+    This is useful in functional analysis where we study real-valued and complex-valued functions over arbitrary sets.
+
+    \item If \( \BbbK \) is a field, then in general \( \fun(\mscrS, \BbbK) \) is not a field. The simplest example are the real-valued real functions --- \( \sin(x) \) has no multiplicative inverse since \( \sfrac 1 {\sin(x)} \) is not defined for \( x = 2k\pi, k = 1, 2, \ldots \). We can form a \hyperref[def:field_of_fractions]{field of fractions} but in general fields of fractions over function rings no longer correspond to functions --- they are purely algebraic constructions, just like \hyperref[def:formal_power_series]{formal power series}.
+
+    This happens because the definition of a field and, more generally, of a division ring (see \fullref{def:semiring/division_ring}), has a non-positive axiom --- it requires every nonzero element to have a multiplicative inverse, which can be described formally as
+    \begin{equation*}
+      \qforall \xi \parens[\Big]{ (\xi \doteq 0) \vee \qexists \eta (\xi \cdot \eta \doteq 1) }.
+    \end{equation*}
+
+    As discussed in \fullref{def:positive_formula}, a formula with an existential quantifier may fail to be positive.
+  \end{itemize}
+\end{example}
 
 \begin{definition}\label{def:first_order_model_category}
-  Let \( \mscrL \) be a first-order language and let \( \Gamma \) be a set of formulas. We describe a \hyperref[def:concrete_category]{concrete category} which we will call the \term{model category} for \( \Gamma \).
+  Let \( \mscrL \) be a first-order language and let \( \Gamma \) be a nonempty set of arbitrary formulas. We describe a \hyperref[def:concrete_category]{concrete category} which we will call the \term{model category} for \( \Gamma \).
 
   \begin{refenum}
     \refitem{def:category/C1} The \hyperref[def:set_zfc]{class} of objects is the class of all models of \( \Gamma \).
@@ -389,3 +437,18 @@ Much of \fullref{subsec:first_order_logic} is dedicated to semantic equivalences
     \refitem{def:category/C3} Composition of morphisms is the usual \hyperref[def:function/composition]{function composition}.
   \end{refenum}
 \end{definition}
+
+\begin{example}\label{ex:def:first_order_model_category}
+  Most categories in this document outside of \fullref{sec:category_theory} are model categories. For example,
+  \begin{itemize}
+    \item The categories \hyperref[def:pointed_set/category]{\( \cat{Set}_* \)}, \hyperref[def:set_with_involution/category]{\( \cat{Inv} \)}, \hyperref[def:magma/category]{\( \cat{Mag} \)}, \hyperref[def:unital_magma/category]{\( \cat{Mag}_* \)}, \hyperref[def:unital_magma/associative]{\( \cat{Mon} \)}, \hyperref[def:group/category]{\( \cat{Grp} \)} and \hyperref[def:abelian_group]{\( \cat{Ab} \)}, whose relations are crucial for the definition and properties of groups.
+
+    \item The categories \hyperref[def:semiring/ring]{\( \cat{Ring} \)} of rings, \hyperref[def:semiring/ring]{\( \cat{Mod}_\mscrR \)} of modules and \hyperref[def:vector_space]{\( \cat{Vect}_\BbbK \)} of vector spaces, which are both based on abelian groups.
+
+    \item The categories \hyperref[def:category_of_topological_groups]{\( \cat{TopGrp} \)} and \hyperref[def:category_of_topological_groups]{\( \cat{TopVect}_\BbbK \)} of topological groups and vector spaces, respectively.
+
+    \item The categories \hyperref[def:poset/category]{\( \cat{Pos} \)} in order theory and the related \hyperref[def:semilattice/category]{\( \cat{Lat} \)}, \hyperref[def:heyting_algebra/category]{\( \cat{Heyt} \)} and \hyperref[def:boolean_algebra/category]{\( \cat{Bool} \)} in lattice theory.
+
+    \item The categories \hyperref[def:category_of_graphs]{\( \cat{DGraph} \)} and \hyperref[def:category_of_graphs]{\( \cat{UGraph} \)} of directed and undirected graphs.
+  \end{itemize}
+\end{example}
