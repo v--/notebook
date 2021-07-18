@@ -1,7 +1,7 @@
 \subsection{First-order logic}\label{subsec:first_order_logic}
 
 \begin{definition}\label{def:first_order_language}\mcite[sec. 15.2]{OpenLogicFull}
-  The idea of first-order predicate logic is to create a formal language whose semantics (given by structures) support boolean operations and can quantify over all elements of an ambient universum. Unlike in \hyperref[subsec:propositional_logic]{propositional logic}, there are different first-order logic languages.
+  The idea of first-order predicate logic is to create a formal language whose semantics (given by structures) support boolean operations and can quantify over all elements of an ambient universe. Unlike in \hyperref[subsec:propositional_logic]{propositional logic}, there are different first-order logic languages.
 
   The alphabet for a \term{first-order predicate logic \hyperref[def:language]{language}} \( \mscrL \) extends that of \hyperref[subsec:propositional_logic]{propositional logic} and consists of two types of symbols (note that \fullref{rem:propositional_language_is_alphabet} holds here also).
 
@@ -123,6 +123,8 @@
 
     \thmitem{def:first_order_syntax/ground_formula} A formula \( \varphi \) is called a \term{ground formula} if \( \boldop{Free}(\varphi) = \varnothing \). Ground formulas are also called \term{closed formulas} or \term{sentences} (unlike in propositional logic where all formulas are called sentences --- see \fullref{def:propositional_syntax/ground_formula}).
 
+    Some authors restrict their interest to only closed formulas but this does not benefit us in any way due to \fullref{thm:quantifier_satisfiability}.
+
     \thmitem{def:first_order_syntax/formula_bound_variables} Dually, the \term{bound variables} of a formula are defined as
     \begin{equation}\label{eq:def:first_order_syntax/formula_bound_variables}
       \boldop{Bound}(\varphi) \coloneqq \begin{cases}
@@ -149,9 +151,8 @@
 
 \begin{definition}\label{def:first_order_structure}\mcite[def. 16.1]{OpenLogicFull}
   Fix a first-order logic language \( \mscrL \). A \term{structure} for \( \mscrL \) is a pair \( (\mscrX, I) \), where
-
   \begin{thmenum}
-    \thmitem{def:first_order_structure/set} \( \mscrX \) is a nonempty set called the \term{universum} of the structure \( (\mscrX, I) \). See \fullref{rem:empty_models}.
+    \thmitem{def:first_order_structure/set} \( \mscrX \) is a nonempty set called the \term{domain} or \term{universe} of the structure \( (\mscrX, I) \). See \fullref{rem:empty_models}.
 
     \thmitem{def:first_order_structure/interpretation} The \term{interpretation} \( I \) of the structure \( (\mscrX, I) \) is a \hyperref[def:function/single_valued]{function} that is defined on the signature of \( \mscrL \) and satisfies the following conditions:
     \begin{thmenum}
@@ -163,7 +164,7 @@
 \end{definition}
 
 \begin{remark}\label{rem:first_order_model_notation}
-  In first-order logic, \hyperref[def:first_order_semantics/satisfiability]{models} are defined as tuples \( (\mscrX, I) \). Outside of logic, models are usually denoted more handwavily since either a part of the interpretation or the whole interpretation is clear from the context. We say that the set \( \mscrX \) is \term{endowed} with the structure \( I \) (see \hyperref[def:first_order_model_category]{model categories}).
+  In first-order logic, \hyperref[def:first_order_semantics/satisfiability]{models} are defined as tuples \( (\mscrX, I) \). Outside of logic, models are usually denoted more handwavily since either a part of the interpretation or the whole interpretation is clear from the context. We say that the set \( \mscrX \) is \term{endowed} with the structure \( I \) (see \hyperref[def:category_of_first_order_models]{model categories}).
 
   For example, in the sense of first-order structures, the language of the \hyperref[def:group/theory]{theory of groups} has a signature consisting of three functional symbols and no predicate symbols. A structure for this language is thus the same as a quadruple \( (\mscrG, e, (\placeholder)^{-1}, \cdot) \). Since group operations are named using a convention, we go as far as to say that \( \mscrG \) itself is a group and then simply use subscripts like \( e_{\mscrG} \) to avoid ambiguity.
 \end{remark}
@@ -174,7 +175,7 @@
   \begin{thmenum}
     \thmitem{def:first_order_valuation/variable_assignment}\mcite[def. 16.7]{OpenLogicFull} A \term{variable assignment} for the variables of \( \mscrL \) is any function \( v: \boldop{Var} \to \mscrX \) (loosely similar to \hyperref[def:propositional_valuation/interpretation]{propositional interpretations}).
 
-    \thmitem{def:first_order_valuation/modified_assignment} For every variable \( \xi \) and every universum element \( x \in \mscrX \) we also define the \term{modified assignment} at \( \xi \) with \( x \):
+    \thmitem{def:first_order_valuation/modified_assignment} For every variable \( \xi \) and every domain element \( x \in \mscrX \) we also define the \term{modified assignment} at \( \xi \) with \( x \):
     \begin{equation*}
       v_{\xi \mapsto x}(\zeta) \coloneqq \begin{cases}
         x,        &\zeta = \xi, \\
@@ -197,7 +198,7 @@
 
     Except for semantics of quantification, these are also used in other places like \fullref{thm:renaming_assignment_compatibility} and \fullref{rem:first_order_formula_valuation_without_variable_assignment}.
 
-    \thmitem{def:first_order_valuation/term_valuation}\mcite[def. 16.8]{OpenLogicFull} The \term{valuation} of a term \( \tau \) is a value in the universum \( \mscrX \) given by
+    \thmitem{def:first_order_valuation/term_valuation}\mcite[def. 16.8]{OpenLogicFull} The \term{valuation} of a term \( \tau \) is a value in the domain \( \mscrX \) given by
     \begin{equation}\label{eq:def:first_order_valuation/term_valuation}
       \tau\Bracks{v} \coloneqq \begin{cases}
         v(\xi),                                           &\tau = \xi \in \boldop{Var}, \\
@@ -221,7 +222,7 @@
 
     The rules for evaluating constants, negations and connectives are a direct extension of the \hyperref[def:propositional_valuation/formula_valuation]{rules for propositional logic}.
 
-    It is important that the universum is nonempty because \( \bigwedge\varnothing = T \), which directly contradicts our intent of defining \( \exists \) as a quantifier for existence.
+    It is important that the domain is nonempty because \( \bigwedge\varnothing = T \), which directly contradicts our intent of defining \( \exists \) as a quantifier for existence.
   \end{thmenum}
 \end{definition}
 
@@ -296,14 +297,7 @@
 
     Analogously to \fullref{def:propositional_semantics/satisfiability}, we say that \( \Gamma \) is satisfiable if there exists a model for \( \Gamma \).
 
-    \thmitem{def:first_order_semantics/theory_of_model}\mcite[def. 25.11]{OpenLogicFull} Similarly to \fullref{def:propositional_semantics/theory_of_model}, we define the \term{theory of the model} \( (\mscrX, I) \) to be the set
-    \begin{equation*}
-      \op{th}(\mscrX, I) \coloneqq \set{ \varphi \in \boldop{Form} \given (\mscrX, I) \vDash \varphi }.
-    \end{equation*}
-
     \thmitem{def:first_order_semantics/entailment} We say that the set of formulas \( \Gamma \) \term{entails} the set of formulas \( \Delta \) and write \( \Gamma \vDash \Delta \) if every model of \( \Gamma \) is also a model of \( \Delta \).
-
-    \thmitem{def:first_order_semantics/theory} Closures and theories are defined as in \fullref{def:propositional_semantics/theory}.
 
     \thmitem{def:first_order_semantics/tautology} The formula \( \varphi \) is a \term{tautology} if every structure is a model of \( \varphi \).
 
@@ -318,11 +312,11 @@
 \end{definition}
 
 \begin{remark}\label{rem:propositional_logic_as_first_order_logic}
-  It is now clear that \hyperref[subsec:propositional_logic]{propositional logic} can be regarded as first-order logic with no at most countably many predicates, all of arity 0, and no functional symbols. Thus first-order logic is indeed an extension of propositional logic.
+  It is now clear that the \hyperref[subsec:propositional_logic]{propositional logic language} can be regarded as a degenerate first-order logic language with no at most countably many predicates, all of arity 0, and no functional symbols. Thus first-order logic is indeed an extension of propositional logic.
 \end{remark}
 
 \begin{remark}\label{rem:empty_models}
-   If we allow for the universum \( \mscrX \) of a structure \( (\mscrX, I) \) to be empty, we would have to reformulate a lot of important theorems (e.g. see the proof of \fullref{thm:renaming_assignment_compatibility/formulas}), which would complicate compatibility between semantics and \hyperref[def:first_order_derivation_system]{derivation systems}.
+   If we allow for the domain \( \mscrX \) of a structure \( (\mscrX, I) \) to be empty, we would have to reformulate a lot of important theorems (e.g. see the proof of \fullref{thm:renaming_assignment_compatibility/formulas}), which would complicate compatibility between semantics and \hyperref[def:first_order_axiomatic_derivation_system]{derivation systems}.
 
    We sometimes allow empty models. For example, the \hyperref[def:set_zfc/A2]{empty set} is a \hyperref[def:topological_space]{topological space}) and the initial object in the \hyperref[def:category_of_topological_spaces]{category \( \cat{Top} \) of topological spaces}. We must be careful, however, not to rely too much on metalogical theorems unless we explicitly refer to nonempty topological spaces.
 
@@ -877,7 +871,7 @@
     Furthermore, the formulas \( \varphi[\xi \mapsto \tau] \) and \( \qexists \xi \varphi \) are actually equisatisfiable.
   \end{thmenum}
 
-  See also \fullref{def:first_order_derivation_system/axioms/terms} for the syntactic counterpart to this proposition.
+  See also \fullref{def:first_order_axiomatic_derivation_system/axioms/terms} for the syntactic counterpart to this proposition.
 \end{proposition}
 \begin{proof}
   The proof is very straightforward but the technical details make it look a bit more complicated.
@@ -920,7 +914,7 @@
 
   Define the interpretation \( \widetilde I \) as \( I \) modified at all constants in \( \tau \) so that \( \tau\Bracks{v} = x \). It remains to show that the structure \( (\mscrX, \widetilde I) \) is a model of \( \varphi[\xi \mapsto \tau] \).
 
-  Since the new structure has the same universum, \( v \) is a variable assignment in this new structure. Nevertheless, we will denote it by \( \widetilde v \) in order to distinguish between valuations in the two structures. As in the proof of the other direction, we have
+  Since the new structure has the same domain, \( v \) is a variable assignment in this new structure. Nevertheless, we will denote it by \( \widetilde v \) in order to distinguish between valuations in the two structures. As in the proof of the other direction, we have
   \begin{equation*}
     \xi\Bracks{\widetilde v_{\xi \mapsto x}}
     =
