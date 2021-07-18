@@ -52,7 +52,7 @@
 
 \let\SetHRColor\relax
 
-\RequirePackage{cleveref}
+\RequirePackage[nameinlink]{cleveref}
 
 % Internationalization
 \RequirePackage[english]{babel}
