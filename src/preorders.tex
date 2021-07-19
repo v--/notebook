@@ -3,10 +3,15 @@
 \begin{definition}\label{def:preordered_set}\mcite{nLab:preorder}
   A \hyperref[def:binary_relation]{binary relation} \( \leq \) on a set \( \mscrP \) is called a \term{preorder} if it is \hyperref[def:binary_relation/reflexive]{reflexive} and \hyperref[def:binary_relation/transitive]{transitive}.
 
-  A \term{preordered set} is a set \( \mscrP \) equipped with a preorder \( \leq \). It is conventional to use the same symbol as for \hyperref[def:poset]{partial orders}, however the lack of \hyperref[def:binary_relation/antisymmetric]{antisymmetry} may be confusing --- see \fullref{ex:preorder_nonuniqueness}.
+  A \term{preordered set} is a set \( \mscrP \) equipped with a preorder \( \leq \). It is conventional to use the same symbol as for \hyperref[def:poset]{partial orders}, however the lack of \hyperref[def:binary_relation/antisymmetric]{antisymmetry} may be confusing --- see \fullref{ex:preorder_nonuniqueness}. We also define \( \geq \) as the \hyperref[def:binary_relation/converse]{converse relation} of \( \leq \).
 
   \begin{thmenum}[series=def:preordered_set]
-    \thmitem{def:preordered_set/theory} Consider a \hyperref[def:first_order_language]{first-order language} \( \mscrL \) with a single \hyperref[rem:order_infix_notation]{infix} binary predicate symbol \( \leq \). The \hyperref[def:first_order_semantics/theory]{theory} in \( \mscrL \) axiomatized by \hyperref[def:binary_relation/reflexive]{reflexivity} and \hyperref[def:binary_relation/transitive]{transitivity} for \( \leq \) is called the \term{theory of preordered sets}.
+    \thmitem{def:preordered_set/theory} Consider a \hyperref[def:first_order_language]{first-order language} \( \mscrL \) with two \hyperref[rem:order_infix_notation]{infix} binary predicate symbol --- \( \leq \) and \( \geq \).
+
+    The \term{theory of preordered sets} is a \hyperref[def:first_order_theory]{first-order theory} in \( \mscrL \) axiomatized by \hyperref[def:binary_relation/reflexive]{reflexivity} and \hyperref[def:binary_relation/transitive]{transitivity} for \( \leq \) and the compatibility axiom
+    \begin{equation}\label{eq:def:preordered_set/theory}
+      (\xi \leq \eta) \leftrightarrow (\eta \geq \xi).
+    \end{equation}
 
     \thmitem{def:preordered_set/homomorphism} A \hyperref[def:first_order_homomorphism]{homomorphism} between the preordered sets \( (\mscrP, \leq_\mscrP) \) and \( (\mscrQ, \leq_\mscrQ) \) is, explicitly, a function \( \varphi: \mscrP \to \mscrQ \) such that
     \begin{equation}\label{eq:def:preordered_set/homomorphism}
@@ -31,16 +36,31 @@
 
     \thmitem{def:preordered_set/category} We give no special name for the \hyperref[def:category_of_first_order_models]{category of models} for the theory of preordered sets.
 
-    \thmitem{def:preordered_set/dual} The partially ordered set \( (\mscrP, \geq) \) where \( \geq \) is the \hyperref[def:binary_relation/converse]{converse relation}, is the called the \term{dual preordered set}. See \fullref{def:thin_category} for a discussion of the duality.
+    \thmitem{def:preordered_set/duality} The partially ordered set \( (\mscrP, \geq) \) is the called the \term{dual preordered set}.
+
+    The \term{principle of duality} states that a \( \varphi \) belongs to the \hyperref[def:preordered_set/theory]{theory of preordered sets} if and only if the dual formula \( \varphi^{-1} \), in which we swap all instances of \( \leq \) and \( \geq \), also belongs to the theory.
+
+    There is a actually a very simple proof. If \( \varphi \) belongs to the theory, it is valid for every preordered set. Let \( (\mscrP, \leq) \) be a preordered set. Then \( \varphi \) is valid in both \( (\mscrP, \leq) \) and its dual \( (\mscrP, \geq) \). But if \( \varphi \) is valid for the dual preordered set \( (\mscrP, \geq) \), its dual formula \( \varphi^{-1} \) is valid for the the double dual preordered set, which is \( (\mscrP, \leq) \). Since \( (\mscrP, \leq) \) was chosen arbitrarily, the dual formula \( \varphi^{-1} \) is valid for every preordered set and so it belongs to the theory of preordered sets.
+
+    The dual of the dual formula of \( \varphi \) is obviously \( \varphi \). The actual replacement can be formalized by performing the \hyperref[def:first_order_substitution/term_in_formula]{simultaneous substitution}
+    \begin{equation*}
+      \begin{aligned}
+        \varphi^{-1} \coloneqq \varphi[
+          &\xi_1 \leq \eta_1 \mapsto \xi_1 \geq \eta_1, &&\xi_1 \geq \eta_1 \mapsto \xi_1 \leq \eta_1, \\
+          &\vdots                                       &&\vdots \\
+          &\xi_n \leq \eta_n \mapsto \xi_n \geq \eta_n, &&\xi_n \geq \eta_n \mapsto \xi_n \leq \eta_n]
+      \end{aligned}
+    \end{equation*}
+    for all pairs \( (\xi_k, \eta_k) \) of free variables in \( \varphi \).
+
+    Another form of this duality is formalized in \fullref{thm:preorder_category_correspondence}.
   \end{thmenum}
 \end{definition}
 
 \begin{definition}\label{def:directed_set}\mcite[8]{Engelking1989}
-  A \hyperref[def:preordered_set]{preordered set} \( (\mscrP, \leq) \) is called a \term{directed set} if every finite subset of \( \mscrP \) has an upper \hyperref[def:preordered_set/upper_and_lower_bounds]{bound}, i.e. for all \( x, y \in \mscrP \) there exists \( z \in \mscrP \) such that \( x \leq z \) and \( y \leq z \).
+  A \hyperref[def:preordered_set]{preordered set} \( (\mscrP, \leq) \) is called a \term{directed set} if every finite subset of \( \mscrP \) has an \hyperref[def:poset_extremal_points/upper_and_lower_bounds]{upper bound}, i.e. for all \( x, y \in \mscrP \) there must exist \( z \in \mscrP \) such that \( x \leq z \) and \( y \leq z \). We do not care how many upper bounds exist and how they are related, we simply need one upper bound to exist for every pair of elements of \( \mscrP \).
 
   There is no established name for the relation itself.
-
-  Note that \( \{ x, y \} \) may not have a supremum, i.e. the set of its upper bounds may not have a \hyperref[def:preordered_set/maximum_and_minimum]{smallest element}. Thus the upper bound condition is strictly weaker than every two-element set having a supremum.
 
   Directed sets are used to define nets in topological spaces, see \fullref{def:topological_net}.
 \end{definition}
@@ -54,7 +74,7 @@
 \begin{proposition}\label{thm:preorder_category_correspondence}
   To every \hyperref[def:preordered_set]{preordered set} there corresponds exactly one \hyperref[def:category_cardinality]{small} \hyperref[def:thin_category]{thin} category.
 
-  Furthermore, \hyperref[def:preordered_set/supremum_and_infimum]{infima} correspond to categorical \hyperref[def:categorical_product]{products}, suprema to \hyperref[def:categorical_coproduct]{coproducts} and dual \hyperref[def:preordered_set/dual]{preordered sets} correspond to dual \hyperref[def:opposite_category]{categories}.
+  Furthermore, \hyperref[def:preordered_set/supremum_and_infimum]{infima} correspond to categorical \hyperref[def:categorical_product]{products}, suprema to \hyperref[def:categorical_coproduct]{coproducts} and dual \hyperref[def:preordered_set/duality]{preordered sets} correspond to dual \hyperref[def:opposite_category]{categories}.
 
   Compare this result to \fullref{thm:partial_order_category_correspondence}.
 \end{proposition}
