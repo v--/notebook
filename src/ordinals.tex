@@ -1,0 +1,174 @@
+\subsection{Ordinals}\label{subsec:ordinals}
+
+\begin{remark}\label{rem:ordinal_is_equivalence_class}
+  Ordinal numbers are generalizations of \hyperref[def:natural_numbers]{natural numbers} that are used for indices of potentially infinite ordered sets. They are themselves defined as ordered sets, which may be confusing at first.
+
+  More precisely, every ordinal is defined as a concrete representative of an isomorphism class of well-ordered sets (this is not really factorization because there is no set of all ordinals by \fullref{thm:burali_forti_paradox}). This does not seem very important but it will be in \fullref{subsec:cardinals}.
+\end{remark}
+
+\begin{definition}\label{def:well_ordered_set}\mcite[def. 63.1]{OpenLogicFull}
+  A \hyperref[def:totally_ordered_set]{totally ordered set} \( (\mscrP, \leq) \) is said to be \term{well-ordered} if every nonempty set has a \hyperref[def:preordered_set/maximum_and_minimum]{minimum}.
+
+  This is not a first-order axiom and hence we cannot easily formulate the theory of well-ordered sets as an extension of the \hyperref[def:totally_ordered_set]{theory of totally ordered sets}. This is why we only study well-ordered sets in the context of ZFC.
+\end{definition}
+
+\begin{theorem}[Well-ordered induction]\label{def:well_ordered_induction}\mcite[prop. 63.3]{OpenLogicFull}
+  Denote by \( \mscrP \) a (free or bound) variable that ranges over well-ordered sets in ZFC (not in the metatheory) and by \( < \) the respective string order. Then for any formula \( \varphi \) in ZFC and for every \( \xi \in \boldop{Free}(\varphi) \) the following holds:
+  \begin{equation}\label{eq:def:well_ordered_induction}
+    \parens[\Big]
+      {
+        \qforall {\eta \in \mscrP}
+          \underbrace
+            {
+              \parens[\Big] { \qforall {\zeta < \eta} \varphi[\xi \mapsto \zeta] }
+            }_{\T{inductive hypothesis}}
+        \rightarrow
+        \overbrace{ \varphi[\xi \mapsto \eta] }^{\mathclap{\T{inductive step conclusion}}}
+      }
+    \rightarrow
+    \underbrace
+      {
+        \parens[\Big]{ \qforall {\eta \in \mscrP} \varphi[\xi \mapsto \eta] }.
+      }_{\T{conclusion}}
+  \end{equation}
+\end{theorem}
+\begin{proof}
+  Fix a formula \( \varphi \) in ZFC and \( \xi \in \boldop{Free}(\varphi) \). Assume that we are working in a model of ZFC and fix a variable assignment \( v \) in this model. We will show that the \hyperref[def:material_implication/contrapositive]{contraposition} of \eqref{eq:def:well_ordered_induction} holds in this model.
+
+  Suppose that there exists a value \( x \in v(\mscrP) \) such that \( \varphi\Bracks{v_{\xi \mapsto x}} = F \). That is,
+  \begin{flalign*}
+    && \qexists {\eta \in \mscrP} \neg \varphi[\xi \mapsto \eta]. && \mathllap{\exists \T{added due to \ref{thm:quantifier_satisfiability/existential}}}
+  \end{flalign*}
+  holds.
+
+  Let \( x_0 \) be the smallest such value (which is guaranteed to exist because \( v(\mscrP) \) is well-ordered). Thus the inductive hypothesis \( \qforall {\zeta < x_0} \varphi[\xi \mapsto \zeta] \) holds but the inductive step conclusion \( \varphi[\xi \mapsto x_0] \) does not.
+
+  Since \( v \) was chosen arbitrarily, this is true for all variable assignments and actually for all models of ZFC. That is, we have the entailment
+  \begin{equation}\label{eq:def:well_ordered_induction/contraposition}
+    \parens[\Big]{ \qexists {\eta \in \mscrP} \neg \varphi[\xi \mapsto \eta] }
+    \vDash
+    \parens[\Big]
+      {
+        \qexists {\eta \in \mscrP} \parens[\Big] { \qforall {\zeta < \eta} \varphi[\xi \mapsto \zeta] }
+        \wedge
+        \neg \varphi[\xi \mapsto \eta]
+      }.
+  \end{equation}
+
+  \Fullref{thm:semantic_deduction_theorem}, \fullref{thm:boolean_equivalences/contrapositive}, \fullref{thm:boolean_equivalences/conditional_cnf} and \fullref{thm:first_order_quantifiers_are_dual} show that \eqref{eq:def:well_ordered_induction/contraposition} is equivalent to \eqref{eq:def:well_ordered_induction}. Since we have show the former, we can conclude the later. The formula \( \varphi \) was chosen arbitrarily so we can conclude that \eqref{eq:def:well_ordered_induction} holds for all formulas.
+\end{proof}
+
+\begin{definition}\label{def:transitive_set}\mcite[71]{Enderton1977Sets}
+  A set \( A \) is called \term{transitive} if \( a \in A \) implies \( a \subseteq A \).
+\end{definition}
+
+\medskip
+
+\begin{definition}\label{def:ordinal}\mcite[thm. 7L]{Enderton1977Sets}
+  A set is called an \term{ordinal} or an \term{ordinal numbers} if it is \hyperref[def:well_ordered_set]{well-ordered} under set membership.
+
+  By tradition, ordinals are denoted by initial small Greek letters --- \( \alpha \), \( \beta \), \( \gamma \), \ldots.
+
+  We use \( \alpha < \beta \) to mean \( \alpha \in \beta \).
+\end{definition}
+
+\begin{proposition}\label{thm:element_of_ordinal_is_ordinal}\mcite[lemma 63.13]{OpenLogicFull}
+   Every element of an ordinal is an ordinal.
+\end{proposition}
+\begin{proof}
+  Let \( \beta \in \alpha \) where \( \alpha \) is an ordinal. We will show that \( \beta \) is an ordinal.
+
+  Since \( \alpha \) is well-ordered by \( \in \), then any subset of \( \alpha \) has a minimal element. Because of the transitivity of \( \alpha \), \( \beta \) and any subset of \( \beta \) is also a subset of \( \alpha \) and hence has a minimum with respect to \( \in \). Hence \( \beta \) is well-ordered by \( \in \).
+
+  To see that \( \beta \) is a transitive set, let \( A \in \beta \) and let \( x \in A \). Since \( \in \) is a well-order on \( \beta \), it is a transitive relation and hence if \( x \in A \in \beta \), we have \( x \in \beta \). Since \( x \) was chosen arbitrarily, we conclude that \( A \subseteq \beta \) and hence \( \beta \) is a transitive set.
+\end{proof}
+
+\begin{theorem}[Transfinite induction]\label{thm:transfinite_induction}\mcite[thm. 63.15]{OpenLogicFull}
+  Denote by \( \op{isord} \) a formula in ZFC with a single free variable \( \xi \) which is valid whenever \( \xi \) is an ordinal.
+
+  Then for any formula \( \varphi \) in ZFC and for every \( \xi \in \boldop{Free}(\varphi) \) the following holds:
+  \begin{multline}\label{eq:def:transfinite_induction}
+    \qforall \eta \parens[\Big]
+      {
+        \op{isord}[\xi \mapsto \eta] \rightarrow
+          \underbrace
+            {
+              \parens[\Big] { \qforall {\zeta \in \eta} \varphi[\xi \mapsto \zeta] }
+            }_{\T{inductive hypothesis}}
+        \rightarrow
+        \overbrace{ \varphi[\xi \mapsto \eta] }^{\mathclap{\T{inductive step conclusion}}}
+      }
+    \rightarrow \\ \rightarrow
+    \underbrace
+      {
+        \qforall \eta \parens[\Big] { \op{isord}[\xi \mapsto \eta] \rightarrow \varphi[\xi \mapsto \eta] }.
+      }_{\T{conclusion}}
+  \end{multline}
+
+  In words, if we can prove that \( \varphi \) holds for any ordinal by assuming that it holds for all smaller ordinals, then we can conclude that \( \varphi \) holds simultaneously for all ordinals.
+
+  Note that this is not a special case of \fullref{def:well_ordered_induction} because there is no set of all ordinals by \fullref{thm:burali_forti_paradox}.
+\end{theorem}
+\begin{proof}
+  The proof is analogous to the proof of \fullref{def:well_ordered_induction} except that rather than taking elements of a fixed well-ordered set, we take ordinals.
+\end{proof}
+
+\begin{proposition}\label{thm:ordinal_properties}
+  \hyperref[def:ordinal]{Ordinals} have the following basic properties:
+  \begin{thmenum}
+    \thmitem{thm:ordinal_properties/empty_set} The empty set \( \varnothing \) is an ordinal.
+
+    \thmitem{thm:ordinal_properties/trichotomy}\mcite[thm. 63.16]{OpenLogicFull} The order of ordinals is \hyperref[def:binary_relation/trichotomic]{trichotomic}. That is, if \( \alpha \) and \( \beta \) are ordinals, either \( \alpha < \beta \), \( \beta > \alpha \) or \( \alpha = \beta \).
+
+    \thmitem{thm:ordinal_properties/uniqueness} If two ordinal numbers are \hyperref[def:poset/homomorphism]{order-isomorphic}, they are equal.
+
+    \thmitem{thm:ordinal_properties/set_of_smaller_ordinals} Any ordinal \( \alpha \) is equal to the set
+    \begin{equation}\label{eq:thm:ordinal_properties/set_of_smaller_ordinals}
+      \set{ \beta \given \op{isord}\Bracks{\beta} \T{and} \beta < \alpha }
+    \end{equation}
+    of smaller than \( \alpha \) ordinals. As a consequence, this set is well-defined in ZFC.
+
+    \thmitem{thm:ordinal_properties/transitive_set_of_ordinals} The set \( A \) is an ordinal if and only if \( A \) is a transitive set of ordinals.
+  \end{thmenum}
+\end{proposition}
+\begin{proof}
+  \SubProofOf{thm:ordinal_properties/empty_set} This statement is vacuous since there are not elements nor subsets of \( \varnothing \).
+
+  \SubProofOf{thm:ordinal_properties/trichotomy} Let \( \alpha_0 \) be an ordinal. We will first show that for any other ordinal \( \beta \), either \( \alpha_0 \in \beta \) or \( \beta \subseteq \alpha_0 \). We will use \fullref{thm:transfinite_induction} on \( \beta \).
+
+  Fix an ordinal \( \beta_0 \). Since the inductive hypothesis holds for all \( \beta \in \beta_0 \), we have several possibilities:
+  \begin{itemize}
+    \item If there exists a \( \beta \in \beta_0 \) such that \( \alpha_0 \in \beta \), then by the transitivity of the \( \in \) relation, we have \( \alpha_0 \in \beta_0 \).
+    \item Otherwise, if \( \beta \subseteq \alpha_0 \) for \( \beta \in \beta_0 \), we have that \( \beta_0 \subseteq \alpha_0 \).
+  \end{itemize}
+
+  \Fullref{thm:transfinite_induction} allows us to conclude that either \( \alpha_0 \in \beta \) or \( \beta \subseteq \alpha_0 \) independent on the choice of the ordinal \( \beta \). Furthermore, since \( \alpha_0 \) was chosen arbitrarily, this conclusion does not depend on \( \alpha_0 \) and holds for any two ordinals.
+
+  Thus if \( \alpha \) and \( \beta \) are two ordinals, we have the following mutually exclusive possibilities:
+  \begin{itemize}
+    \item \( \alpha \in \beta \)
+    \item \( \beta \in \alpha \)
+    \item Neither \( \alpha \in \beta \) nor \( \beta \in \alpha \), in which case by what we have just proved, both \( \alpha \subseteq \beta \) and \( \beta \subseteq \alpha \) hold. Therefore \( \alpha = \beta \).
+  \end{itemize}
+
+  This is the desired trichotomy.
+
+  \SubProofOf{thm:ordinal_properties/uniqueness} Let \( \alpha \cong \beta \) be order-isomorphic ordinals. By \fullref{thm:ordinal_properties/trichotomy}, either \( \alpha \in \beta \) or \( \beta \in \alpha \) or \( \alpha = \beta \). To show that the first two cases are impossible, without loss of generality assume that \( \alpha \in \beta \). Let \( h: \alpha \to \beta \) be an embedding. We have that \( h(\alpha) = \beta \) and \( h(\alpha) \in \beta \), hence \( \beta \in \beta \). But this contradicts trichotomy because \( \beta = \beta \).
+
+  Thus we conclude that \( \alpha = \beta \).
+
+  \SubProofOf{thm:ordinal_properties/set_of_smaller_ordinals} Fix an ordinal \( \alpha \). By \fullref{thm:element_of_ordinal_is_ordinal}, every element of \( \alpha \) is again an ordinal and by \fullref{thm:ordinal_properties/trichotomy} all ordinals smaller than \( \alpha \) are elements of \( \alpha \). Therefore \eqref{eq:thm:ordinal_properties/set_of_smaller_ordinals} can be reduced to the set \( \set{ \beta \given \beta \in \alpha } \), which obviously equals \( \alpha \).
+
+  \SubProofOf{thm:ordinal_properties/transitive_set_of_ordinals} If \( A \) is an ordinal, by \fullref{thm:ordinal_properties/set_of_smaller_ordinals}, it is the set of all smaller ordinals. Since \( A \) is transitive by definition, it is a transitive set of ordinals.
+
+  Conversely, suppose that \( A \) is a transitive set of ordinals. We must only show that it is well-ordered by \( \in \). Let \( B \subseteq A \) be a nonempty set. Then \( B \) is a set of ordinals, each of which is well-ordered by \( \in \). By \fullref{thm:ordinal_properties/trichotomy}, \( \varnothing \) is the minimum of any ordinal with respect to \( \in \) and is hence also the minimum of \( B \). Since the choice of \( B \) has arbitrary, we conclude that \( A \) is well-ordered by \( \in \), which proves that it is an ordinal.
+\end{proof}
+
+\begin{theorem}[Burali-Forti paradox]\label{thm:burali_forti_paradox}\mcite[thm. 63.19]{OpenLogicFull}
+  Assuming ZFC, there is no set of all ordinals.
+\end{theorem}
+\begin{proof}
+  Aiming at a contradiction, suppose that \( A \) is a containing all ordinals. If \( \alpha \in A \) and \( \beta \in \alpha \), transitivity of \( \in \) implies that \( \beta \in A \) since \( \beta \) is again an ordinal by \fullref{thm:element_of_ordinal_is_ordinal}. Thus \( A \) is a transitive set of ordinals, which \fullref{thm:ordinal_properties/transitive_set_of_ordinals} is itself an ordinal. Hence \( A \in A \).
+
+  But this contradicts \fullref{thm:zfc_no_set_is_member_of_itself}. Hence\DNE there is no set of all ordinals.
+\end{proof}
