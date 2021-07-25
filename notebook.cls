@@ -20,10 +20,9 @@
 % Fonts
 %% I avoid fontspec and unicode-math (and hence XeTeX/LuaTeX) because they drastically slow down the compilation
 \RequirePackage[T2A,T1]{fontenc}
-\RequirePackage[not1]{stix2} % Serf and math font families; load after amsmath despite documentation, it breaks otherwise
+\RequirePackage[not1,notextcomp]{stix2} % Serf and math font families; load after amsmath despite documentation, it breaks otherwise
 \RequirePackage[sans,tt=false,ScaleRM=1.075]{libertinus} % Sans-serif
 \DeclareFontFamilySubstitution{T2A}{stix2}{LibertinusSerif-TLF} % Fallback font that looks similar to STIX Two Text
-\UseLegacyTextSymbols % https://github.com/latex3/latex2e/issues/502
 \RequirePackage{microtype}
 
 % Reference packages
@@ -80,6 +79,10 @@
 \RequirePackage{imakeidx}
 \RequirePackage{graphicx}
 \RequirePackage{crossreftools}
+
+% stix2 doesn't behave well with text symbols so I use math symbols instead
+\setlist[itemize,1]{label=\( \bullet \)}
+\setlist[itemize,3]{label=\( \ast \)}
 
 % Misc math packages
 \RequirePackage[altpo,epsilon]{backnaur}
