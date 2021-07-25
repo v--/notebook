@@ -8,7 +8,6 @@ SOURCE := notebook.cls notebook.tex bib/*.bib packages/*.sty src/*.tex $(FIGURES
 notebook.pdf: $(SOURCE)
 	$(COMPILER) -draftmode notebook.tex
 	biber notebook.bcf
-	makeindex notebook.idx -o notebook.ind
 	$(COMPILER) -draftmode notebook.tex
 	$(COMPILER) notebook.tex
 
