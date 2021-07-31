@@ -89,19 +89,31 @@
 
 %
 \tl_new:N \l_fullref_name_tl
+\int_new:N \l_nameref_symbol_count
+\regex_new:N \l_nameref_symbol_regex
+\regex_set:Nn \l_nameref_symbol_regex { (,|/) }
+
+\NewDocumentCommand \FullNameRef {m}
+  {
+    \regex_count:NnN \l_nameref_symbol_regex { #1 } \l_nameref_symbol_count
+    \int_compare:nNnT
+      { \int_use:N \l_nameref_symbol_count } = { 0 }
+      {
+        \tl_set:Nx \l_fullref_name_tl { \crtrefname {#1} }
+        \str_if_empty:NF \l_fullref_name_tl { \ (\tl_use:N \l_fullref_name_tl) }
+      }
+  }
 
 \NewDocumentCommand \fullref {m}
   {
     \cref {#1}
-    \tl_set:Nx \l_fullref_name_tl { \crtrefname {#1} }
-    \str_if_empty:NF \l_fullref_name_tl { \ (\tl_use:N \l_fullref_name_tl) }
+    \FullNameRef {#1}
   }
 
 \NewDocumentCommand \Fullref {m}
   {
     \Cref {#1}
-    \tl_set:Nx \l_fullref_name_tl { \crtrefname {#1} }
-    \str_if_empty:NF \l_fullref_name_tl { \ (\tl_use:N \l_fullref_name_tl) }
+    \FullNameRef {#1}
   }
 
 % Index
