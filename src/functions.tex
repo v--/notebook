@@ -1,288 +1,340 @@
 \subsection{Functions}\label{subsec:functions}
 
 \begin{remark}\label{rem:function_definition}
-  It is not straightforward to formalize the notion of correspondence between two values. We will reserve the term \term{mapping} for this informal notion and use \term{function} in the sense of \fullref{def:function}. There are several drawbacks of using material (that is, membership-based) set theory for defining functions:
+  It is not straightforward to formalize the notion of correspondence between two values. We will use the terms \term{mapping}, \term{function}, \term{transformation} and \term{operator}. We will define functions as special binary relations in \fullref{def:function}. Despite this being a standard practice, this has several drawbacks:
 
   \begin{itemize}
-    \item Mappings are often more general than what can be formalized, i.e. there exist correspondences between logical \hyperref[def:first_order_syntax/formula]{formulas} and between proper \hyperref[def:set]{classes} that cannot be defined in set theory without reaching contradictions.
+    \item There are some more mappings than the functions defined in \fullref{def:function}. For example, assigning to a set \( A \) its \hyperref[def:basic_set_operations]{power set} \( \mscrP(A) \) can be cannot be regarded as a function because its domain and range should both be the set of all sets whose existence is inconsistent with \hyperref[def:zfc]{ZFC} by \fullref{thm:zfc_no_set_is_member_of_itself}.
 
-    \item The ambient space often has an additional structure, e.g. algebraic or topological, that is not carried by functions. This leads to definitions such as \hyperref[def:first_order_homomorphism]{homomorphism} and \hyperref[def:isometry]{isometry}. This is a motivating example for the benefits of \hyperref[sec:category_theory]{category theory}, where the notion of \hyperref[def:category/C2]{morphism} is able to capture this additional structure (see \fullref{def:category_of_sets}).
+    \item We often work with spaces that have some additional structure in addition to being sets. In this case, we are often only interested in maps that preserve this structure. This is the case with \hyperref[def:group/homomorphism]{group homomorphisms}, for example.
 
-    \item Several generalizations of set-theoretic functions are often used, e.g. \hyperref[def:function]{multivalued} or \hyperref[def:function/partial]{partial functions}, however most formalisms of set theory often only concern functions.
+    In terms of \hyperref[def:first_order_structure]{first-order structures}, not every function is a \hyperref[def:first_order_homomorphism]{homomorphism}.
 
-    \item Set-theoretic functions are often used in contexts where they do not refer to the intuitive notion of a mapping, e.g. for Cartesian \hyperref[def:cartesian_product]{products} or for indexed \hyperref[def:indexed_family]{families}.
+    This is a motivating example for the benefits of \hyperref[sec:category_theory]{category theory}, where the notion of \hyperref[def:category/C2]{morphism} is able to capture this additional structure.
+
+    It is often important to consider functions that are not homomorphisms, however. For example, function spaces over \( \BbbR \) contain some very complicated functions that are not field homomorphisms, order homomorphisms nor continuous functions and thus preserve no structure of \( \BbbR \).
+
+    \item Several generalizations of the standard notion of a function are often used. These include \hyperref[def:multi_valued_function]{multi-valued} or \hyperref[def:partial_function]{partial functions}. Both are not function, strictly speaking.
+
+    For simplicity of exposition, we take multi-valued functions as primitive notions and define single-valued functions as special cases. This is actually done in \cite[def. 2.31]{OpenLogicFull} and \cite[8]{Kelley1955} except that the corresponding authors conflate multi-valued functions and relations.
+
+    \item Set-theoretic functions are often used in contexts where they do not refer to the intuitive notion of a mapping. Examples include \hyperref[def:cartesian_product]{Cartesian products} and \hyperref[def:indexed_family]{indexed families}.
   \end{itemize}
 \end{remark}
 
-\begin{definition}\label{def:function}
-  A \term{multivalued function} from \( X \) to \( Y \) is simply a \hyperref[def:binary_relation]{binary relation} \( (F, X, Y) \), the difference being in how we treat multivalued functions and relations. We use the notation \( F: X \rightrightarrows Y \).
+\begin{definition}\label{def:multi_valued_function}
+  A \term{multi-valued function} from \( A \) to \( B \) is simply a \hyperref[def:binary_relation]{binary relation} \( (F, A, B) \). For us the difference between a multi-valued function and a relation is merely in how we treat them.
 
-  \begin{thmenum}[series=def:function]
-    \thmitem{def:function/single_valued} The \hyperref[def:function/multivalued]{multivalued function} \( F: X \rightrightarrows Y \) is called a \term{single-valued function} or simply a \term{function} if \( F(x) \) is a \hyperref[rem:singleton_sets]{singleton set} for each \( x \in X \). In this case, we write \( F: X \to Y \) rather than \( F: X \rightrightarrows Y \).
+  As discussed in \fullref{def:relation/graph}, the common practive of identifying a multi-valued function \( (F, A, B) \) with its \hyperref[def:relation/graph]{graph} \( F \) with no regard to its \hyperref[def:binary_relation/signature]{signature} \( (A, B) \) has serious drawbacks that we wish to avoid.
 
-    Formally, the value of a single-valued function is an element of \( Y \) rather than a subset of \( Y \). \Fullref{rem:singleton_sets} allows us to ignore this distinction unless is would cause confusion.
+  We use the more established notation \( F: A \rightrightarrows B \) rather than \( (F, A, B) \) and call the string of symbols \( A \rightrightarrows B \) the signature of \( F \) rather than the tuple \( (A, B) \).
 
-    Note that single-valued functions are total by definition, which explains why there is no established terminology for the set \( X \).
-
-    We denote the set of all functions from \( X \) to \( Y \) by \( \fun(X, Y) \). We may also use either \( \cat{Set}(X, Y) \) (which is consistent with \fullref{def:category_of_sets}) or by \( Y^X \) (which is consistent with \hyperref[def:cardinal_arithmetic]{cardinal arithmetic}). We abbreviate \( \fun(X, X) \) as \( \fun(X) \)
-
-    \thmitem{def:function/multivalued} We only considered multivalued functions until now. In practice, \enquote{function} usually refers to single-valued functions and we call a function multivalued if it is not single-valued.
-
-    \thmitem{def:function/partial} A \term{partial function} is a generalization of a single-valued function which we allow to not be total, i.e. we allow \( F(x) \) to be an empty set for some \( x \in X \).
-
-    \thmitem{def:function/selection} A \term{selection} of a multivalued function \( F: X \rightrightarrows Y \) is a single-valued function \( f: X \to Y \) such that \( \gph(f) \subseteq \gph(F) \) (see \fullref{def:function/graph}).
-
-    \thmitem{def:function/value} We call the set \( B \) the \term{value} of \( F \) at \( x \) if \( y \in B \iff (x, y) \in f \) and use the notation \( F(x) = B \).
-
-    \thmitem{def:function/set_value} If \( A \subseteq X \), we define the value of \( F \) at \( A \), also called the \term{action} of \( F \) on \( A \) or the \term{image} of \( A \) under \( F \), as
+  \begin{thmenum}[series=def:multi_valued_function]
+    \thmitem{def:multi_valued_function/value} The \term{value} of \( F \) at \( x \) is
     \begin{equation*}
-      F(A) \coloneqq \cup_{a \in A} \{ F(a) \}.
+      F(x) \coloneqq \set{ y \in B \given (x, y) \in F }.
     \end{equation*}
 
-    Even if \( Y \) is a proper class, \( f(X) \) is a set by \fullref{def:zfc/A9}.
-
-    \thmitem{def:function/argument} The notion \term{function arguments} is somewhat informal. If \( X = X_1 \times \cdots \times X_n \) is a finite Cartesian product, we denote the function \( F: X_1 \times \cdots \times X_n \rightrightarrows Y \) by \( F(x_1, \ldots, x_n) \). The variables \( x_1, \ldots, x_n \) in this \hyperref[def:first_order_syntax/term]{term} are called the function's \term{parameters} or \term{arguments} or even \term{independent variables}. In the latter terminology, we say that \( F \) itself is a \term{dependent variable}, depending on the independent variables \( x_1, \ldots, x_n \).
-
-    Note that \( X \) may to be uniquely representable as a Cartesian product, however this does not cause confusion in practice.
-
-    Even for single-argument functions, it is conventional to write \( F(x) \) rather than simply \( F \). This does not cause confusion in practice because it is usually clear from the context whether \( x \) is a \enquote{free} or \enquote{bound} variable. See \fullref{def:first_order_syntax/formula} for a formal justification.
-  \end{thmenum}
-
-  The following terminology is consistent with \fullref{def:binary_relation}:
-  \begin{thmenum}[resume=def:function]
-    \thmitem{def:function/graph} The \term{graph} \( \gph(F) \) of \( F \) is the relation \( F \) itself independent from \( X \) and \( Y \) as defined in \fullref{def:relation/graph}.
-
-    \thmitem{def:function/domain} The \term{domain} \( \dom(F) \) of \( F \) is the set of all values for which \( \dom(F) \neq \varnothing \). This is consistent with \fullref{def:binary_relation/domain}.
-
-    \thmitem{def:function/image} The \term{image} \( \img(F) \) is the set of all \( y \in Y \) that belong to the set \( F(x) \) for at least one \( x \in X \). This is consistent with \fullref{def:binary_relation/image}.
-
-    \thmitem{def:function/range} The \term{range} \( \range(F) \) is the set \( Y \) as defined in \fullref{def:binary_relation/range}.
-
-    \thmitem{def:function/composition} The \term{composition} \( G \circ F \) of two functions \( F: X \rightrightarrows Y \) and \( Y \rightrightarrows Z \) is the function
+    \thmitem{def:multi_valued_function/set_value} We also define the value of \( F \) at a subset \( A' \) of \( A \).
     \begin{equation*}
-      [G \circ F](x) \coloneqq G(F(x)).
+      F(A') \coloneqq \set{ F(x) \given x \in A' }.
     \end{equation*}
 
-    This is consistent with \fullref{def:binary_relation/composition}.
+    This is also called the \term{action} of \( F \) on the set \( A' \) or the \term{image} of \( A' \) under \( F \). We also refer to \( F(x) \) as the image of \( x \) under \( F \) because \( F(x) = F(\set{x}) \).
 
-    Note that the composition of single-valued functions is single-valued (see \fullref{def:category_of_sets}).
+    \thmitem{def:multi_valued_function/argument} If \( A = A_1 \times \cdots \times A_n \) is a \hyperref[def:binary_cartesian_product]{finite Cartesian product}, we denote the function \( F: X_1 \times \cdots \times X_n \rightrightarrows B \) by \( F(x_1, \ldots, x_n) \) and regard \( x_1, \ldots, x_n \) as free variables that have no assigned value. These variables are called \term{parameters} or \term{arguments}. This notion is somewhat informal and depends on the context since \( A \) can usually be represented as a Cartesian product in different ways and with different arities. For example, if \( A = B \times C \), we can write both \( F(a) \) and \( F(b, c) \) and the function has a different number of parameters in each case. In practice the number of arguments is usually clear.
+
+    We sometimes refer to \( F \) as a \term{dependent variable} since it depends on its parameters. In this later case, we call the parameters \term{independent variables}.
   \end{thmenum}
 
-  The following terminology is not consistent with \fullref{def:binary_relation}:
-  \begin{thmenum}[resume=def:function]
-    \thmitem{def:function/total} The term \term{total multivalued function} means that \( \dom(F) = X \), that is, that \( F(x) \neq \varnothing \) for all \( x \in X \). This is not to be confused with \fullref{def:binary_relation/total}.
+  The following terminology is consistent with relations:
+  \begin{thmenum}[resume=def:multi_valued_function]
+    \thmitem{def:multi_valued_function/graph} The \term{graph} \( \gph(F) \) of \( F \) is the graph of the relation \( F \). This is consistent with \fullref{def:relation/graph}.
 
-    \thmitem{def:function/arity} The \term{arity} of a function is its number of \hyperref[def:function/arity]{arguments}. This should not to be confused with \fullref{def:relation/arity}.
+    \thmitem{def:multi_valued_function/domain} The \term{domain} \( \dom(F) \) of \( F \) is the set of all values for which \( \dom(F) \neq \varnothing \). This is consistent with \fullref{def:binary_relation/domain}.
 
-    \thmitem{def:function/inverse} The \term{inverse} \( F^{-1}: Y \rightrightarrows X \) of a multivalued function \( F: X \rightrightarrows Y \) is its \hyperref[def:binary_relation/converse]{converse} (rather than \hyperref[def:binary_relation/inverse]{inverse}) relation.
+    \thmitem{def:multi_valued_function/image} The \term{image} \( \img(F) \) is the set of all \( y \in B \) that belong to the set \( F(x) \) for at least one \( x \in A \). This is consistent with \fullref{def:binary_relation/image}.
 
-    \thmitem{def:function/diagonal} The function corresponding to the \hyperref[def:binary_relation/diagonal]{diagonal relation} is called the \term{identity}. Instead, the (single-valued) \term{diagonal function} \( f: \mscrX \to X^2 \) is defined as \( f(x) \coloneqq (x, x) \).
+    \thmitem{def:multi_valued_function/range} The \term{range} \( \range(F) \) is simply the set \( B \). This is consistent with \fullref{def:binary_relation/range}.
+
+    \thmitem{def:multi_valued_function/restriction} The \term{restriction} of \( F: A \rightrightarrows B \) to \( A' \subseteq A \) is the multi-valued function \( F\restr_{A'}: A' \rightarrow B \) such that \( F \). We say that \( F \) is an \term{extension} of \( \restr_{A'} \). This is consistent with \fullref{def:binary_relation/restriction}.
+
+    \thmitem{def:multi_valued_function/inverse} The \term{inverse} \( F^{-1}: B \rightrightarrows A \) of a multi-valued function \( F: A \rightrightarrows B \) is the multi-valued function in which assigns to every element \( y \) of the image \( \img(F) \) the set of all \( x \in A \) such that \( y \in F(x) \). This is consistent with \fullref{def:binary_relation/inverse}.
+
+    \thmitem{def:multi_valued_function/composition} The \term{composition} \( G \bincirc F \) of two multi-valued functions \( F: A \rightrightarrows B \) and \( G: B \rightrightarrows C \) is the function
+    \begin{equation*}
+      [G \bincirc F](x) \coloneqq G(F(x)).
+    \end{equation*}
+
+    The square brackets in \( [G \bincirc F] \) are not a special notation but rather another pair of delimiters that looks different from parentheses for the sake of reducing visual clutter.
+
+    This definition is consistent with \fullref{def:binary_relation/composition}.
+  \end{thmenum}
+
+  The following terminology is inconsistent with relations:
+  \begin{thmenum}[resume=def:multi_valued_function]
+    \thmitem{def:multi_valued_function/total} The term \term{total multi-valued function} means that \( \dom(F) = A \), that is, that \( F(x) \neq \varnothing \) for all \( x \in A \). This is very different from total binary relations as defined in \fullref{def:binary_relation/total}.
+
+    \thmitem{def:multi_valued_function/arity} The \term{arity} of a multi-valued function is its number of \hyperref[def:multi_valued_function/arity]{arguments}, in case it is clear how many arguments we consider the function to have. This should not to be confused with the arity of a relation as defined in \fullref{def:relation/arity} --- multi-valued functions are always binary relations.
+
+    \thmitem{def:multi_valued_function/symmetric} A function \( f: A \times A \to B \) is called \term{symmetric} if, for all \( x, y \in A \), we have \( f(x, y) = f(y, x) \).
+
+    Symmetric functions should not be confused with symmetric relations as defined in \fullref{def:derived_relations/symmetric}.
+
+    \thmitem{def:multi_valued_function/diagonal}\mcite[exer. 3.1.1]{Leinster2016Basic} The function corresponding to the diagonal relation \( \increment A \) as defined in \fullref{def:binary_relation/diagonal} is called the \term{identity function} on \( A \) and denoted by \( \id_A \). The \term{diagonal function} is instead defined as \( f: A \to A^2 \) is defined as \( f(x) \coloneqq (x, x) \). This is mostly used in category theory.
   \end{thmenum}
 
   We define some additional terminology:
-  \begin{thmenum}[resume=def:function]
-    \thmitem{def:function/involution} If \( F = F^{-1} \), we say that \( F \) is an \term{involution}. See \fullref{def:set_with_involution}.
+  \begin{thmenum}[resume=def:multi_valued_function]
+    \thmitem{def:multi_valued_function/endofunction} Functions from a set to itself (e.g. \( F: A \rightrightarrows A \)) are called \term{endofunctions}.
 
-    \thmitem{def:function/preimage} For a concrete set \( B \subseteq Y \), its \term{large preimage} or simply \term{preimage} under \( F: X \to Y \) is the value of \( B \) under the inverse function \( F^{-1}: Y \rightrightarrows X \). For a single value \( y \in Y \), we call \( F^{-1}(y) \) the \term{fiber} of \( y \) under \( F \).
+    \thmitem{def:multi_valued_function/involution} If \( F = F^{-1} \), we say that \( F \) is an \term{involution}. See \fullref{def:set_with_involution}.
 
-    We define its \term{small preimage} as \( F_{-1}(B) \coloneqq \{ x \in X \colon F(x) \subseteq B \} \)
+    \thmitem{def:multi_valued_function/large_preimage} For a fixed set \( B' \subseteq B \), its \term{large preimage} or simply \term{preimage} under \( F: A \to B \) is the image of \( B' \) under the inverse function \( F^{-1}: B \rightrightarrows A \). For a single value \( y \in B \), we call \( F^{-1}(y) \) the \term{fiber} of \( y \) under \( F \).
 
-    \thmitem{def:function/extension} Let \( X \) and \( Y \) be sets and let \( A \subseteq X \). For the multivalued functions \( F: A \rightrightarrows Y \) and \( G: X \rightrightarrows Y \), we say that \( G \) is an \term{extension} of \( F \) to \( X \) and that \( F \) is a \term{restriction} of \( G \) to \( A \).
+    \thmitem{def:multi_valued_function/small_preimage} Analogously, we define its \term{small preimage} as
+    \begin{equation*}
+      F_{-1}(B') \coloneqq \set{ x \in A \colon F(x) \subseteq B' }.
+    \end{equation*}
 
-    \thmitem{def:function/superposition} Although the terms \enquote{composition} and \enquote{superposition} are used interchangeably (see \cite[44]{Enderton1977Sets} and \cite[\textnumero 25]{Фихтенгольц1968Том1}), \enquote{superposition} usually refers to the following special case of composition:
+    Obviously \( F_{-1}(B') \subseteq F^{-1}(B') \).
 
-    If we are given the functions \( F_k: X \rightrightarrows Y_k, k = 1, \ldots, n \) and \( G: Y_1 \times \cdots \times Y_n \rightrightarrows Z \), their \term{superposition} \( H: X \rightrightarrows Z \) is
+    \thmitem{def:multi_valued_function/superposition} Although the terms \enquote{composition} and \enquote{superposition} are used interchangeably (for example in \cite[\textnumero 25]{Фихтенгольц1968Том1}), \enquote{superposition} often refers to the following special case of composition:
+
+    If we are given the functions \( F_k: A \rightrightarrows B_k, k = 1, \ldots, n \) and \( G: B_1 \times \cdots \times B_n \rightrightarrows C \), their \term{superposition} \( H: A \rightrightarrows C \) is
     \begin{equation*}
       H(x) \coloneqq G(F_1(x), \ldots, F_n(x)).
     \end{equation*}
   \end{thmenum}
 \end{definition}
 
-\begin{definition}\label{def:function_invertibility}(Compare with \fullref{def:morphism_invertibility})
-  We list equivalent conditions for three types of invertibility:
+\begin{proposition}\label{thm:multivalued_function_properties}
+  \hyperref[def:multi_valued_function]{Multi-valued functions} have the following basic properties:
+
   \begin{thmenum}
-    \thmitem{def:function_invertibility/injection} \( f \) is called \term{injective}, \term{left-invertible}, \term{one-to-one} if any of the following equivalent conditions hold:
-    \begin{thmenum}
-      \thmitem{def:function_invertibility/injection/points} Different points in \( X \) have different images under \( f \).
-      \thmitem{def:function_invertibility/injection/preimage} The preimage of any point in \( Y \) is either empty or a singleton.
-      \thmitem{def:function_invertibility/injection/monomorphism} There exists a function \( g: Y \to X \) such that \( g \circ f = \id_X \).
-      \thmitem{def:function_invertibility/injection/inverse} The inverse is a single-valued partial function.
-    \end{thmenum}
+    \thmitem{thm:multivalued_function_properties/associative} \hyperref[def:multi_valued_function/composition]{Composition} is associative. That is, for any three functions \( F: A \to B \), \( G: B \to C \) and \( H: C \to D \) we have
+    \begin{equation*}
+      H \bincirc [G \bincirc F] = [H \bincirc G] \bincirc F.
+    \end{equation*}
 
-    We sometimes use the \hyperref[def:morphism_invertibility/monomorphism]{monomorphism} notation \( f: X \hookrightarrow Y \).
+    We will henceforth simply write \( H \bincirc G \bincirc F \).
 
-    \thmitem{def:function_invertibility/surjection} \( f \) is called \term{surjective}, \term{right-invertible} or \term{onto} if any of the equivalent conditions hold:
-    \begin{thmenum}
-      \thmitem{def:function_invertibility/surjection/points} Each point in \( Y \) is the image of at least one point in \( X \).
-      \thmitem{def:function_invertibility/surjection/image} The image of \( f \) equals the range of \( f \).
-      \thmitem{def:function_invertibility/surjection/epimorphism} There exists a function \( g: Y \to X \) such that \( f \circ g = \id_Y \).
-      \thmitem{def:function_invertibility/surjection/inverse} The inverse is a total multivalued function.
-    \end{thmenum}
-
-    We sometimes use the \hyperref[def:morphism_invertibility/epimorphism]{epimorphism} notation \( f: X \twoheadrightarrow Y \).
-
-    \thmitem{def:function_invertibility/bijection} \( f \) is called \term{bijective} or simply \term{invertible} if any of the equivalent conditions hold:
-    \begin{thmenum}
-      \thmitem{def:function_invertibility/bijection/direct} it is both injective and surjective.
-      \thmitem{def:function_invertibility/bijection/points} each point in \( Y \) is the image of exactly one point in \( X \).
-      \thmitem{def:function_invertibility/bijection/preimage} the preimage of any point in \( Y \) is a singleton.
-      \thmitem{def:function_invertibility/bijection/isomorphism} there exists a function \( g: Y \to X \) such that both \( g \circ f = \id_X \) and \( f \circ g = \id_Y \).
-      \thmitem{def:function_invertibility/bijection/inverse} the inverse is a single-valued total function.
-    \end{thmenum}
-
-    We sometimes use the \hyperref[def:morphism_invertibility/isomorphism]{isomorphism} notation \( f: X \cong Y \). See also \fullref{def:equinumerous_sets}.
-  \end{thmenum}
-\end{definition}
-
-\begin{definition}\label{def:endofunction}
-  A function from a set to itself is called an \term{endofunction}.
-\end{definition}
-
-\begin{definition}\label{def:currying}
-  This notation is abused in practice as long as it does not cause confusion.
-
-  Given the two-argument function \( f: A \times B \to C \), we may define
-  \begin{equation*}
-    g(y)(x) \coloneqq f(x, y).
-  \end{equation*}
-
-  Here \( g \) is itself an operator from \( A \) to \( \cat{Set}(B, C) \). This is called \term{currying}, although the latter term is more specific and refers to lambda calculus.
-
-  We often wish to \enquote{fix} some value \( x \), i.e. bind it using modified variable \hyperref[def:first_order_valuation/variable_assignment]{assignment}, so that \( g(y): B \to C \) is well-defined.
-\end{definition}
-
-\begin{proposition}\label{thm:function_image_properties}
-  Functions images have the following basic properties (compare to \fullref{thm:function_preimage_properties}):
-  \begin{thmenum}
-    \thmitem{thm:function_image_properties/monotonicity} If \( A \subseteq B \), then \( f(A) \subseteq f(B) \).
-
-    \thmitem{thm:function_image_properties/union} \( f(\bigcup_{k \in \mscrK} X_k) = \bigcup_{k \in \mscrK} f(X_k) \).
-
-    \thmitem{thm:function_image_properties/intersection} \( f(\bigcap_{k \in \mscrK} X_k) \subseteq \bigcap_{k \in \mscrK} f(X_k) \) with equality holding if \( f \) is injective.
-
-    \thmitem{thm:function_image_properties/difference} \( f(A \setminus B) \subseteq f(A) \setminus f(B) \) with equality holding if \( f \) is surjective.
+    \thmitem{thm:multivalued_function_properties/composition_inverse} If \( F: A \to B \) and \( G: B \to C \) are \hyperref[def:multi_valued_function]{multi-valued functions}, then
+    \begin{equation*}
+      [G \bincirc F]^{-1} = F^{-1} \bincirc G^{-1}.
+    \end{equation*}
   \end{thmenum}
 \end{proposition}
 \begin{proof}
-  \SubProofOf{thm:function_image_properties/monotonicity} If \( x_0 \in A \), then \( x_0 \in B \) and hence \( f(x_0) \in f(B) \). Therefore \( f(A) \subseteq f(B) \).
+  \SubProofOf{thm:multivalued_function_properties/associative} Let \( a \in A \). Then in order for \( d \in D \) to belong to \( [[H \bincirc G] \bincirc F](a) \), there must exist values \( b \in B \) and \( c \in C \) such that \( b \in F(a) \) and \( c \in G(b) \) and \( d \in H(c) \). Clearly this is also the condition for \( d \) to belong to \( [H \bincirc [G \bincirc F]](a) \).
 
-  \SubProofOf{thm:function_image_properties/union} If \( x_0 \in X_{k_0} \) for some \( k_0 \in \mscrK \), clearly \( f(x_0) \in f(X_{k_0}) \subseteq \bigcup_{k \in \mscrK} f(X_k) \). Therefore \( f(\bigcup_{k \in \mscrK} X_k) \subseteq \bigcup_{k \in \mscrK} f(X_k) \).
+  \SubProofOf{thm:multivalued_function_properties/composition_inverse} Since \( G \bincirc F \) has signature \( A \to C \), clearly \( [G \bincirc F]^{-1} \) has signature \( C \to A \). Let \( c \in C \).
 
-  Conversely, if \( y_0 \in f(X_{k_0}) \) for some \( k_0 \in \mscrK \), by \fullref{thm:function_image_properties/monotonicity} obviously \( y_0 \in f\left( \bigcup_{k \in \mscrK} X_k \right) \). Therefore \( f(\bigcup_{k \in \mscrK} X_k) \supseteq \bigcup_{k \in \mscrK} f(X_k) \).
-
-  \SubProofOf{thm:function_image_properties/intersection} If \( x_0 \in \bigcap_{k \in \mscrK} X_{k} \), then \( x_0 \in X_k \) for all \( k \in \mscrK \). We have \( f(x_0) \in f(X_k) \) for all \( k \in \mscrK \), therefore \( f(\bigcap_{k \in \mscrK} X_k) \subseteq \bigcap_{k \in \mscrK} f(X_k) \).
-
-  Conversely, if \( f \) is injective and \( y_0 \in f(X_k) \) for all \( k \in \mscrK \), then there exists a unique \( x_0 \in \bigcap_{k \in X_k} \) such that \( f(x_0) = y_0 \). Therefore \( f(\bigcap_{k \in \mscrK} X_k) \supseteq \bigcap_{k \in \mscrK} f(X_k) \).
-
-  \SubProofOf{thm:function_image_properties/difference} If \( x_0 \in A \) and \( x_0 \not\in B \), then \( f(x_0) \in f(A) \setminus f(B) \). Therefore \( f(A \setminus B) \subseteq f(A) \setminus f(B) \).
-
-  Conversely, suppose that \( f \) is surjective. For \( y_0 \in f(A) \setminus f(B) \) there exists a \( x_0 \in A \) such that \( f(x_0) = y_0 \in f(A) \setminus B \). Since \( y_0 \not\in f(B) \), and, by surjectivity, \( y_0 \) has the preimage of \( y_0 \) has only one member \( x_0 \), we conclude that \( x_0 = \not\in f(B) \). Therefore \( f(A \setminus B) \supseteq f(A) \setminus f(B) \).
-\end{proof}
-
-\begin{proposition}\label{thm:function_preimage_properties}
-  Functions \hyperref[def:function/preimage]{preimages} have the following basic properties (compare to \fullref{thm:function_image_properties}):
-  \begin{thmenum}
-    \thmitem{thm:function_preimage_properties/monotonicity} If \( A \subseteq B \), then \( f^{-1}(A) \subseteq f^{-1}(B) \).
-
-    \thmitem{thm:function_preimage_properties/union} \( f^{-1}(\bigcup_{k \in \mscrK} Y_k) = \bigcup_{k \in \mscrK} f^{-1}(Y_k) \).
-
-    \thmitem{thm:function_preimage_properties/intersection} \( f^{-1}(\bigcap_{k \in \mscrK} Y_k) = \bigcap_{k \in \mscrK} f^{-1}(Y_k) \).
-
-    \thmitem{thm:function_preimage_properties/difference} \( f^{-1}(A \setminus B) = f^{-1}(A) \setminus f^{-1}(B) \).
-  \end{thmenum}
-\end{proposition}
-\begin{proof}
-  \SubProofOf{thm:function_image_properties/monotonicity} Analogous to \fullref{thm:function_image_properties/monotonicity}.
-
-  \SubProofOf{thm:function_image_properties/union} Analogous to \fullref{thm:function_image_properties/union}.
-
-  \SubProofOf{thm:function_image_properties/intersection} If \( y_0 \in \bigcap_{k \in \mscrK} Y_{k} \), then \( y_0 \in Y_k \) for all \( k \in \mscrK \). We have \( f^{-1}(y_0) \in f^{-1}(Y_k) \) for all \( k \in \mscrK \), therefore \( f^{-1}(\bigcap_{k \in \mscrK} Y_k) \subseteq \bigcap_{k \in \mscrK} f^{-1}(Y_k) \).
-
-  Conversely, if \( x_0 \in f^{-1}(Y_k) \) for all \( k \in \mscrK \), then, since \( f \) is a function, there exists a unique \( y_0 \in \bigcap_{k \in Y_k}Y_k \) such that \( f^{-1}(y_0) = x_0 \). Therefore \( f^{-1}(\bigcap_{k \in \mscrK} X_k) \supseteq \bigcap_{k \in \mscrK} f^{-1}(X_k) \).
-
-  \SubProofOf{thm:function_image_properties/difference} If \( y_0 \in A \) and \( y_0 \not\in B \), then \( f^{-1}(y_0) \in f^{-1}(A) \setminus f^{-1}(B) \). Therefore \( f^{-1}(A \setminus B) \subseteq f^{-1}(A) \setminus f^{-1}(B) \).
-
-  Conversely, for \( x_0 \in f^{-1}(A) \setminus f^{-1}(B) \), since \( f \) is a function, there exists a \( y_0 \in A \) such that \( f^{-1}(y_0) = x_0 \in f^{-1}(A) \setminus f^{-1}(B) \). Since \( x_0 \not\in f^{-1}(B) \), we conclude that \( x_0 = \not\in B \). Therefore \( f^{-1}(A \setminus B) \supseteq f^{-1}(A) \setminus f^{-1}(B) \).
-\end{proof}
-
-\begin{proposition}\label{thm:function_image_preimage_composition}
-  \hfill
-  \begin{thmenum}
-    \thmitem{thm:function_image_preimage_composition/image_first} \( A \subseteq f^{-1}(f(A)) \) with equality holding if \( f \) is injective.
-    \thmitem{thm:function_image_preimage_composition/preimage_first} \( f(f^{-1}(A)) \subseteq A \) with equality holding if \( f \) is surjective
-  \end{thmenum}
-\end{proposition}
-\begin{proof}
-  \SubProofOf{thm:function_image_preimage_composition/image_first} Equality obviously holds unless the image \( f(A) \) of \( A \) contains other points except those in \( A \). In this case, \( f^{-1}(f(A)) \) may contain those points in addition to the points of \( A \). If \( f \) is injective, however, no such additional points are possible and equality indeed holds.
-
-  \SubProofOf{thm:function_image_preimage_composition/preimage_first} Equality obviously holds unless \( A \) contains points that do not belong to the image \( \imag f \). If \( f \) is surjective, however, all point in \( A \) have preimages and equality indeed holds.
-\end{proof}
-
-\begin{definition}\label{def:indexed_family}
-  When considering finite families of sets, it is enough to consider n-tuples. For example, given sets \( X_1, \ldots, X_n \), we can think of the family \( \{ X_k \}_k \) as the ordered tuple
-  \begin{equation*}
-    (X_1, \ldots, X_n)
-  \end{equation*}
-  where the \( k \)-th coordinate of the tuple gives us the \( k \)-th set of the family.
-
-  This approach has two flaws:
   \begin{itemize}
-    \item The family \term{must} be ordered since the natural numbers are ordered. Families of sets often have no obvious ordering.
-    \item The family \term{must} be at most countable.
+    \item If \( [G \bincirc F]^{-1}(c) \) is empty, \( c \not\in \img(G \bincirc F) \), hence either \( G^{-1}(c) \) is empty or is nonempty but disjoint from \( \img(F) \). Hence \( [F^{-1} \bincirc G^{-1}](c) \) is also empty.
+
+    \item Suppose that \( [G \bincirc F]^{-1}(c) \) is not empty and let \( a \in [G \bincirc F]^{-1}(c) \).
+
+    By definition, there exists \( b \in B \) and such that \( b \in F(a) \) and \( c \in G(b) \). Hence \( b \in G^{-1}(c) \) and \( a \in F^{-1}(b) \), which implies that the image of \( c \) under the composition \( F^{-1} \bincirc G^{-1} \) also contains \( a \).
   \end{itemize}
 
-  A more natural approach to indexed families is given by functions. We choose an arbitrary set \( \mscrK \), called the \term{index set}. Every function \( f: \mscrK \to \mathcal C \) from \( \mscrK \) into some class \( \mathcal C \) of sets is then called an \term{indexed family}. The function \( f \) maps every element \( k \) of \( \mscrK \) into a set \( X_k \coloneqq f(k) \). For convenience, this family is denoted as
+  In both cases, for every \( c \in C \) we have
   \begin{equation*}
-    \{ X_k \}_{k \in \mscrK}.
+    [G \bincirc F]^{-1}(c) = [F^{-1} \bincirc G^{-1}](c).
   \end{equation*}
 
-  We will write \( \{ X_k \}_{k \in \mscrK} \subseteq \mathcal{C} \), despite the net actually being an \( \mscrK \)-shaped generalized \hyperref[def:generalized_element]{element} of \( \mathcal{C} \) rather than a subset. See \fullref{rem:indexed_family_notation} for further discussion of the notation.
+  Hence the two multi-valued functions are equal.
+\end{proof}
 
-  A more general framework than indexed families that also considers relations between the family's elements is given by diagrams in category \hyperref[def:categorical_diagram]{theory}.
+\begin{definition}\label{def:function}
+  Although \hyperref[def:multi_valued_function]{multi-valued functions} are very general, they are not studied nearly as extensively as single-valued functions and are not nearly as useful.
+
+  The \hyperref[def:multi_valued_function]{multi-valued function} \( F: A \rightrightarrows B \) is called a \term{single-valued function} if \( F(x) \) is a \hyperref[rem:singleton_sets]{singleton set} for each \( x \in A \). In this case, we write \( F: A \to B \) rather than \( F: A \rightrightarrows B \).
+
+  All terminology from \fullref{def:multi_valued_function} holds for single-valued functions.
+
+  By convention, when both single-valued and multi-valued functions are involved, the former are denoted using lowercase letters and the latter using uppercase letters. For this reason, we will prefer lowercase letters.
+
+  \mcite[52]{DontchevRockafellar2014} If \( f: A \to B \) is a single-valued function, \( F: A \to B \) is a multi-valued function and \( \gph(f) \subseteq \gph(F) \), we say that \( f \) is a \term{selection} of \( F \).
+
+  Strictly speaking, the value \( f(x) \) of a single-valued function \( f: A \to B \) is a singleton set. It is common practice (e.g. in \cite[def. 3.1]{OpenLogicFull} and \cite[10]{Kelley1955}) to define the value of a single-valued function to be an element of \( B \) rather than a subset of \( B \). Unless this would be confusing, we identify \( f(x) \) with its only element due to the convention established in \fullref{rem:singleton_sets}.
+
+  We denote the set of all single-valued functions from \( A \) to \( B \) by \( \fun(A, B) \). We may also use either \( \cat{Set}(A, B) \) (which is consistent with \hyperref[def:category_of_sets]{morphisms in the category of sets}) or by \( B^A \) (which is consistent with \hyperref[def:cardinal_arithmetic]{cardinal arithmetic}). We abbreviate \( \fun(A, A) \) as \( \fun(A) \)
+
+  Unless otherwise noted, we will now conflate the terms \enquote{function} and \term{single-valued function}.
 \end{definition}
 
-\begin{example}\label{ex:indexed_families}
-  \hfill
+\begin{proposition}\label{thm:function_properties}
+  \hyperref[def:function]{Single-valued functions} have the following properties when regarded as \hyperref[def:multi_valued_function]{multi-valued functions}:
   \begin{thmenum}
-    \item Every n-tuple \( (x_1, \ldots, x_n) \) is an indexed family with domain \( \mscrK = \{ 1, \ldots, n \} \).
+    \thmitem{thm:function_properties/total} Single-valued functions are \hyperref[def:multi_valued_function/total]{total} as multi-valued functions.
+
+    This explains why there is no established terminology for the set \( A \) analogous to \enquote{range} for \( B \) --- we rarely even need to differentiate between \( A \) and \( \dom(f) \).
+
+    \thmitem{thm:function_properties/composition} The \hyperref[def:multi_valued_function/composition]{composition} and \hyperref[def:multi_valued_function/superposition]{superposition} of single-valued functions is a single-valued function.
+
+    \thmitem{thm:function_properties/preimage} The \hyperref[def:multi_valued_function/large_preimage]{large preimages} and \hyperref[def:multi_valued_function/small_preimage]{small preimages} of single-valued functions are identical. We restrict ourselves to large preimages with the notation \( f^{-1}(x) \) and refer to them simply as preimages.
+
+    Note that preimages are multi-valued in general.
+  \end{thmenum}
+\end{proposition}
+\begin{proof}
+  All of the statements are obvious.
+\end{proof}
+
+\begin{proposition}\label{thm:existence_of_multi_valued_function_selection}
+  Every multi-valued function has a selection.
+
+  This theorem is equivalent to \fullref{def:zfc/A8} --- see \fullref{thm:axiom_of_choice_equivalences/selection}.
+\end{proposition}
+
+\begin{definition}\label{def:partial_function}
+  A \hyperref[def:multi_valued_function]{Multi-valued function} that is otherwise single-valued but not necessarily \hyperref[def:multi_valued_function/total]{total} is called a \term{partial function}. That is, \( f: A \to B \) is a partial function if \( f(x) \) has at most one element for every \( x \in A \).
+\end{definition}
+
+\begin{definition}\label{def:function_invertibility}
+  In connection with \fullref{def:first_order_homomorphism_invertibility} and \fullref{def:morphism_invertibility}, we introduce the following terminology:
+  \begin{thmenum}
+    \thmitem{def:function_invertibility/injection} The (single-valued) function \( f \) is called \term{injective}, \term{left-invertible} or \term{one-to-one} if any of the following equivalent conditions hold:
+    \begin{thmenum}
+      \thmitem{def:function_invertibility/injection/points} Different points in \( A \) have different images under \( f \).
+      \thmitem{def:function_invertibility/injection/preimage} The preimage of any point in \( B \) is either empty or a singleton.
+      \thmitem{def:function_invertibility/injection/inverse} The inverse is a (single-valued) \hyperref[def:partial_function]{partial function}.
+      \thmitem{def:function_invertibility/injection/categorical} There exists a function \( g: B \to A \) such that \( g \bincirc f = \id_A \).
+    \end{thmenum}
+
+    We sometimes use the categorical notation \( f: A \hookrightarrow B \).
+
+    \thmitem{def:function_invertibility/surjection} The function \( f \) is called \term{surjective}, \term{right-invertible} or \term{onto} if any of the equivalent conditions hold:
+    \begin{thmenum}
+      \thmitem{def:function_invertibility/surjection/points} Each point in \( B \) is the image of at least one point in \( A \).
+      \thmitem{def:function_invertibility/surjection/image} The image of \( f \) equals the range of \( f \).
+      \thmitem{def:function_invertibility/surjection/inverse} The inverse is a total multi-valued function.
+      \thmitem{def:function_invertibility/surjection/categorical} There exists a function \( g: B \to A \) such that \( f \bincirc g = \id_B \).
+    \end{thmenum}
+
+    We sometimes use the categorical notation \( f: A \twoheadrightarrow B \).
+
+    \thmitem{def:function_invertibility/bijection} Finally, \( f \) is called \term{bijective} or simply \term{invertible} if any of the equivalent conditions hold:
+    \begin{thmenum}
+      \thmitem{def:function_invertibility/bijection/direct} It is both injective and surjective.
+      \thmitem{def:function_invertibility/bijection/points} Each point in \( B \) is the image of exactly one point in \( A \).
+      \thmitem{def:function_invertibility/bijection/preimage} The preimage of any point in \( B \) is a singleton.
+      \thmitem{def:function_invertibility/bijection/inverse} The inverse is a single-valued total function.
+      \thmitem{def:function_invertibility/bijection/categorical} There exists a function \( g: B \to A \) such that both \( g \bincirc f = \id_A \) and \( f \bincirc g = \id_B \).
+    \end{thmenum}
+  \end{thmenum}
+\end{definition}
+\begin{proof}
+  \SubProofOf{def:function_invertibility/injection} First, assume that \ref{def:function_invertibility/injection/points} holds. Let \( f: A \to B \) be a function such that \( x_1 \neq x_2 \) implies \( f(x_1) \neq f(x_2) \) for all \( x_1, x_2 \in A \). The preimage of any point \( y \in B \setminus \img(f) \) is then \( \varnothing \). The contraposition to \ref{def:function_invertibility/injection/points}, states that if the points \( x_1, x_2 \in A \) are such that \( f(x_1) = f(x_2) \), then \( x_1 = x_2 \). Hence the preimage of any point in the image \( \img(f) \) is a singleton set (this part demonstrates \ref{def:function_invertibility/injection/preimage} and \ref{def:function_invertibility/injection/preimage}).
+
+  \begin{itemize}
+    \item If \( A \) is empty, then \( f \) is an empty relation and hence its inverse is also the empty function and \( f^{-1} \bincirc f = \id_A \).
+
+    \item If \( A \) is not empty, pick any value \( x_0 \in A \). Define the single-valued total function \( g: B \to A \) as follows:
+    \begin{equation*}
+      g(y) \coloneqq \begin{cases}
+        f^{-1}(y), &y \in \img(f) \\
+        x_0,       &\T{otherwise}.
+      \end{cases}
+    \end{equation*}
+
+    Then \( g \bincirc f = \id_A \) because we only care about the values in the image of \( f \). The rest of the definition of \( g \) simply ensures that it is a single-valued total function.
+  \end{itemize}
+
+  For the converse, let \( f: A \to B \) and \( g: B \to A \) be two single-valued functions such that \( g \bincirc f = \id_A \).
+
+  \begin{itemize}
+    \item If either \( A \) or \( B \) is empty, obviously \( f = g = \varnothing \) and \( g \bincirc f = \varnothing \). If we suppose that \( B \) is empty but \( A \) is not, then \( g \bincirc f = \varnothing \neq \id_A \), which contradicts our assumption. Thus if either \( A \) or \( B \) is empty, then \( A \) is necessarily empty.
+
+    Then it holds vacuously that different points correspond to different values under \( f \) because there are no points in the domain \( A \) of \( f \).
+
+    \item Suppose that both \( A \) and \( B \) are nonempty and fix two points \( x_1, x_2 \in A \). Since \( g \bincirc f = \id_A \), by definition of composition there exist points \( y_1, y_2 \in B \) such that \( f(x_k) = y_k \) and \( g(y_k) = x_k \) for \( k \in \set{ 1, 2 } \). But these are precisely the values \( f(x_1) \) and \( f(x_2) \) since the function \( f \) is single-valued.
+
+    If we have \( f(x_1) = f(x_2) \), it follows that \( x_1 = g(f(x_1)) = g(f(x_2)) = x_2 \), hence \( x_1 = x_2 \). This is exactly the contraposition to \ref{def:function_invertibility/injection/points}.
+  \end{itemize}
+
+  In both cases, \ref{def:function_invertibility/injection/categorical} implies \ref{def:function_invertibility/injection/points}.
+
+  \SubProofOf{def:function_invertibility/surjection} Let \( f: A \to B \) be a function. First suppose that \ref{def:function_invertibility/surjection/points} holds. That is, for each point \( y \in B \) there exists \( x \in A \) such that \( f(x) = y \). It is clear that \ref{def:function_invertibility/surjection/image} and \ref{def:function_invertibility/surjection/inverse} are reformulations of this condition.
+
+  Since \( f^{-1} \) is a total multi-valued function, by \fullref{thm:existence_of_multi_valued_function_selection}, there exists a selection \( g \) of the multi-valued function \( f^{-1} \). For every \( y \in B \) we then have \( f(g(y)) = y \), hence \( f \bincirc g = \id_B \).
+
+  \SubProofOf{def:function_invertibility/bijection} It is clear that the conditions \fullref{def:function_invertibility/bijection/direct,def:function_invertibility/bijection/points,def:function_invertibility/bijection/preimage,def:function_invertibility/bijection/inverse,def:function_invertibility/bijection/categorical} are simply conjunctions of the corresponding conditions from \fullref{def:function_invertibility/injection} and \fullref{def:function_invertibility/surjection}.
+
+  It is worth noting however, that unlike in the proof that \fullref{def:function_invertibility/surjection/inverse} implies \fullref{def:function_invertibility/surjection/categorical}, we do not need the axiom of choice here because the inverse is single-valued.
+\end{proof}
+
+\begin{definition}\label{def:currying}
+  Given the \hyperref[def:multi_valued_function/arity]{two-argument} function \( f: A \times B \to C \), we can define the function \( g: A \to \fun(B, C) \) as
+  \begin{equation*}
+    g(x) \coloneqq (y \mapsto f(x, y)).
+  \end{equation*}
+
+  This process is called \term{currying} after Haskell Curry.
+
+  Currying is useful if we have somehow fixed a value \( x_0 \in A \), in which case we can \enquote{get rid} of one argument by introducing some shortcut for the function \( g(x_0): B \to C \) for the sake of reducing notational clutter. See \fullref{def:differentiability/first_variation} for an example of how this can be used in the wild.
+\end{definition}
+
+\begin{definition}\label{def:indexed_family}
+  When considering finite \hyperref[rem:family_of_sets]{families of sets}, it is enough to consider \hyperref[def:binary_cartesian_product]{n-tuples}. For example, given the sets \( A_1, \ldots, A_n \), we can think of the family \( \set{ A_k }_k \) as the ordered tuple \( (A_1, \ldots, A_n) \), where the \( k \)-th coordinate of the tuple gives us the \( k \)-th set of the family.
+
+  As explained in \fullref{def:binary_cartesian_product}, this formally requires us to have a notion of natural numbers and finiteness that we have not introduced in set theory at this point, however the intention of the discussion is clear.
+
+  This approach requires the family to be ordered and finite. Both of these assumptions can easily be circumvented.
+
+  A more natural approach to indexed families is given by functions. We choose a set \( \mscrK \), called the \term{index set}. An \term{indexed family} is simply a function from \( \mscrK \) into some family of sets \( \mscrA \)
+
+  This function maps every element \( k \) of \( \mscrK \) into a set \( A_k \in \mscrA \). For convenience, this family is denoted as
+  \begin{equation*}
+    \set{ A_k }_{k \in \mscrK}
+  \end{equation*}
+  without any reference to the underlying function.
+
+  See \fullref{rem:indexed_family_notation} for a discussion of this notation.
+
+  For convenience we will write \( \set{ A_k }_{k \in \mscrK} \subseteq \mscrA \) despite the indexed family actually being encoded as a very different set.
+
+  Indexed families allow us to write \( \bigcup_{k \in \mscrK} A_k \) rather than \( \bigcup \mscrA \), for example (we assume here that the underlying function is \hyperref[def:function_invertibility/surjection]{surjective}).
+
+  A more general framework than indexed families that also considers relations between the family's elements is given by diagrams in category theory defined in \fullref{def:categorical_diagram}.
+\end{definition}
+
+\begin{example}\label{ex:def:indexed_family}
+  The following are commonly encountered \hyperref[def:indexed_family]{indexed families}:
+
+  \begin{itemize}
+    \item Every n-tuple \( (x_1, \ldots, x_n) \) is an indexed family with domain \( \mscrK = \set{ 1, \ldots, n } \). Here the ordering of \( \mscrK \) plays an important role.
 
     \item An important corner case is when \( \mscrK \) is the empty set. Since the only possible indexing function is then the empty function, we simply say that the resulting family is empty.
 
-    \item In continuous stochastic processes, it is convenient to consider families of random variables \( \{ X_t \}_{t \geq 0} \) indexed by \( \mscrK = \BbbR^+ \). The indexing parameter is often denoted by \( t \geq 0 \) is often interpreted as time.
+    \item In continuous stochastic processes, it is convenient to consider families of random variables \( \{ X_t \}_{t \geq 0} \) indexed by the nonnegative real numbers \( \mscrK = \BbbR_{\geq 0} \). The indexing parameter is often denoted by \( t \geq 0 \) and interpreted as time.
 
-    \item An \( n \times m \) \hyperref[def:array/matrix]{matrix} \( A = \{ a_{i,j} \} \) is a family of scalars indexed by the unordered set \( \mscrK = \{ 1, \ldots, n \} \times \{ 1, \ldots, m \} \).
+    \item An \( n \times m \) \hyperref[def:array/matrix]{matrix} \( A = \set{ a_{i,j} } \) is a family of scalars indexed by the unordered set \( \mscrK = \set{ 1, \ldots, n } \times \set{ 1, \ldots, m } \). More general \hyperref[def:array]{arrays} are also indexed families.
 
-    \item \hyperref[def:topological_net]{Nets} is topology are indexed families where the domain is a directed \hyperref[def:directed_set]{set}.
-  \end{thmenum}
+    \item \hyperref[def:topological_net]{Topological nets} are indexed families where the domain is a \hyperref[def:directed_set]{directed set}.
+  \end{itemize}
 \end{example}
 
-\begin{definition}\label{def:sequence}
-  A \term{sequence} \( \{ X_k \}_{k=1}^\infty \) is an indexed family with domain \( \mscrK = \BbbN \). Sometimes finite \( n \)-tuples are referred to as \term{finite sequences}, in which case the usual sequences are referred to as \term{infinite sequences}. See \fullref{def:topological_net}.
-
-  We say that \( \{ X_{k_m} \}_{k=1}^\infty \) is a \term{subsequence} of \( \{ X_k \}_{k=1}^\infty \) if the sequence \( \{ k_m \}_{k=1}^\infty \) of positive integers is strictly monotone.
-
-  Subsequences of \( \{ X_k \}_{k=1}^\infty \) are usually denoted by adding another index as a subscript, i.e. \( \{ x_{k_m} \}_{k=1}^\infty \).
-\end{definition}
-
 \begin{remark}\label{rem:indexed_family_notation}
-  Since we denote \hyperref[def:cartesian_product]{tuples} as \( (x_1, \ldots, x_n) \), it is consistent to denote indexed \hyperref[def:indexed_family]{families} by
+  Since we denote \hyperref[def:cartesian_product]{tuples} by \( (A_1, \ldots, A_n) \), it is consistent to denote \hyperref[def:indexed_family]{indexed families} by
   \begin{equation*}
-    ( X_k )_{k \in \mscrK}
+    ( A_k )_{k \in \mscrK}
   \end{equation*}
-  instead of
+  rather than
   \begin{equation*}
-    \{ X_k \}_{k \in \mscrK}.
+    \set{ A_k }_{k \in \mscrK}.
   \end{equation*}
 
   This is actually done when we want to enumerate elements of a sequence, e.g. see \fullref{def:polynomial}.
 
   In general, however, we prefer the latter notation because
   \begin{equation*}
-    \left\{ \log \left( f^{(n)}(x_k) \right) \right\}_{k=1}^\infty.
+    \set[\Big]{ \log \parens[\Big]{ f^{(n)}(x_k) } }_{k=1}^\infty.
   \end{equation*}
   is both more conventional (in analysis) and more aesthetically pleasing than
   \begin{equation*}
-    \left( \log \left( f^{(n)}(x_k) \right) \right)_{k=1}^\infty
+    \parens[\Big]{ \log \parens[\Big]{ f^{(n)}(x_k) } }_{k=1}^\infty.
   \end{equation*}
 
   The difference may be more visible in simpler cases like
@@ -293,39 +345,190 @@
   \end{balign*}
 \end{remark}
 
-\begin{definition}\label{def:family_of_functions_separates_points}
-  Let \( \mathcal{F} \) be a family of functions between the sets \( A \) and \( B \). We say that \( \mathcal{F} \) \term{separates points} if for every two points \( x, y \in A \) there exists a function \( f \in \mathcal{F} \) such that \( f(x) \neq f(y) \).
-\end{definition}
+\begin{proposition}\label{thm:function_image_preimage_composition}
+  For any function \( f: A \to B \) we have
+  \begin{thmenum}
+    \thmitem{thm:function_image_preimage_composition/preimage_of_image} If \( A' \subseteq A \), then \( A' \subseteq f^{-1}(f(A')) \) with equality holding if \( f \) is injective.
+    \thmitem{thm:function_image_preimage_composition/image_of_preimage} If \( B' \subseteq B \), then \( f(f^{-1}(B')) \subseteq B' \) with equality holding if \( f \) is surjective.
+  \end{thmenum}
+\end{proposition}
+\begin{proof}
+  \SubProofOf{thm:function_image_preimage_composition/preimage_of_image} If \( f \) is injective, then the inclusion follows directly from \fullref{def:function_invertibility/injection/categorical}. If \( f \) is not injective, then it is possible for \( f^{-1}(f(A')) \) to contain points from \( A \) which are not in \( A' \) but have the same values under \( f \), hence a strict inclusion may hold.
 
-\begin{definition}\label{def:symmetric_function}
-  Fix arbitrary sets \( X \) and \( Y \). A function \( f: X \times X \to Y \) is called \term{symmetric} if, for all \( x, y \in X \), we have
+  \SubProofOf{thm:function_image_preimage_composition/image_of_preimage} If \( f \) is surjective, then the inclusion follows directly from \fullref{def:function_invertibility/surjection/categorical}. If \( f \) is not surjective, however, \( f(f^{-1}(B')) \) will not include points from \( B' \setminus \img(f) \) and a strict inclusion may hold.
+\end{proof}
+
+\begin{proposition}\label{thm:function_image_properties}
+  \hyperref[def:multi_valued_function/set_value]{Images of sets} under \( f: A \to B \) have the following basic properties:
+  \begin{thmenum}
+    \thmitem{thm:function_image_properties/monotonicity} If \( A_1 \subseteq A_2 \), then \( f(A_1) \subseteq f(A_2) \).
+
+    \thmitem{thm:function_image_properties/union} For any \hyperref[def:indexed_family]{indexed family} \( \set{ A_k }_{k \in \mscrK} \subseteq A \) of subsets of \( A \) we have the equality
+    \begin{equation}\label{eq:thm:function_image_properties/union}
+      f\parens*{ \bigcup_{k \in \mscrK} A_k } = \bigcup_{k \in \mscrK} f(A_k).
+    \end{equation}
+
+    \thmitem{thm:function_image_properties/intersection} For any indexed family \( \set{ A_k }_{k \in \mscrK} \) of subsets of \( A \) we have the inclusion
+    \begin{equation}\label{eq:thm:function_image_properties/intersection}
+      f\parens*{ \bigcap_{k \in \mscrK} A_k } \subseteq \bigcap_{k \in \mscrK} f(A_k).
+    \end{equation}
+
+    Equality in \eqref{eq:thm:function_image_properties/intersection} holds if \( f \) is \hyperref[def:function_invertibility/injective]{injective}. If \( f \) is not injective, for example if both \( A \) and \( B \) are nonempty, \( A_1 \) and \( A_2 \) are disjoint subsets of \( A \) and \( f(A_1) = f(A_2) = B \), then
+    \begin{equation*}
+      f(A_1 \cap A_2) = f(\varnothing) = \varnothing \subsetneq f(A_1) \cap f(A_2) = B.
+    \end{equation*}
+
+    \thmitem{thm:function_image_properties/difference} For any two subsets \( A_1 \) and \( A_2 \) of \( A \) we have the inclusion
+    \begin{equation}\label{eq:thm:function_image_properties/difference}
+      f(A_1) \setminus f(A_2) \subseteq f(A_1 \setminus A_2).
+    \end{equation}
+
+    Equality in \eqref{eq:thm:function_image_properties/difference} holds if \( f \) is injective. If \( f \) is not injective, for example if \( A_1 \subsetneq A_2 \) but \( f(A_1) = f(A_2) \), then
+    \begin{equation*}
+      f(A_1) \setminus f(A_2) = \varnothing \subsetneq f(A_1 \setminus A_2).
+    \end{equation*}
+  \end{thmenum}
+
+  Compare this result to the more well-behaved properties of \hyperref[thm:function_properties/preimage]{preimages} described in \fullref{thm:function_preimage_properties}.
+\end{proposition}
+\begin{proof}
+  \SubProofOf{thm:function_image_properties/monotonicity} If \( x \in A_1 \), then \( x \in A_2 \) and hence \( f(x) \in f(A_2) \). Therefore \( f(A_1) \subseteq f(A_2) \).
+
+  \SubProofOf{thm:function_image_properties/union} If \( x_0 \in A_{k_0} \) for some \( k_0 \in \mscrK \), clearly
   \begin{equation*}
-    f(x, y) = f(y, x).
+    f(x_0) \in f(A_{k_0}) \subseteq \bigcup_{k \in \mscrK} f(A_k).
   \end{equation*}
 
-  Symmetric functions should not be confused with \hyperref[def:derived_relations/symmetric]{symmetric relations}.
-\end{definition}
+  Therefore
+  \begin{equation*}
+    f\parens*{ \bigcup_{k \in \mscrK} A_k } \subseteq \bigcup_{k \in \mscrK} f(A_k).
+  \end{equation*}
 
-\begin{definition}\label{def:fixed_point}
-  Given a function \( f: A \to B \), we call \( x \in A \) a \term{fixed point} of \( f \) if \( x = f(x) \).
-\end{definition}
+  Conversely, if \( y_0 \in f(A_{k_0}) \) for some \( k_0 \in \mscrK \), by \fullref{thm:function_image_properties/monotonicity} obviously
+  \begin{equation*}
+    y_0 \in f\parens*{ \bigcup_{k \in \mscrK} A_k }.
+  \end{equation*}
+
+  Therefore
+  \begin{equation*}
+    f\parens*{ \bigcup_{k \in \mscrK} A_k } \supseteq \bigcup_{k \in \mscrK} f(A_k).
+  \end{equation*}
+
+  Hence \eqref{eq:thm:function_image_properties/union} holds.
+
+  \SubProofOf{thm:function_image_properties/intersection} If \( x_0 \) belongs to \( \bigcap_{k \in \mscrK} A_k \), then \( x_0 \) belongs to \( A_k \) for all \( k \in \mscrK \). It follows that \( f(x_0) \) belongs to \( f(A_k) \) for all \( k \in \mscrK \) and hence to their intersection. Therefore the inclusion \eqref{eq:thm:function_image_properties/intersection} holds.
+
+  Now suppose that \( f \) is injective. Let \( y_0 \) be a point in the intersection \( \bigcap_{k \in \mscrK} f(A_k) \). We thus have \( y_0 \in f(A_k) \) for all \( k \in \mscrK \). Since \( f \) is injective, for each \( k \in \mscrK \) there exists a unique \( x_k \in A_k \) such that \( f(x_k) = y_0 \). Again because of injectivity of \( f \), all these elements are equal because \( f(x_k) = f(x_m) = y_0 \) for \( k, m \in \mscrK \). Hence \( y_0 \in f(\bigcap_{k \in \mscrK} A_k) \).
+
+  Therefore the reverse inclusion in \eqref{eq:thm:function_image_properties/intersection} holds if \( f \) is injective.
+
+  \SubProofOf{thm:function_image_properties/difference} If \( f(A_1) \setminus f(A_2) \) is empty, \eqref{eq:thm:function_image_properties/difference} obviously holds. Suppose that it is nonempty and let \( y_0 \in f(A_1) \setminus f(A_2) \).
+
+  Then there exists a point \( x_0 \in A_1 \) such that \( f(x_0) = y_0 \). It cannot be that \( x_0 \in A_2 \) because otherwise \( y_0 = f(x_0) \in f(A_2) \), which would contradict our choice of \( y_0 \). Hence \( x_0 \in A_1 \setminus A_2 \) and \( y_0 \in f(A_1 \setminus A_2) \).
+
+  Since \( y_0 \) was chosen arbitrarily, we conclude that the inclusion \eqref{eq:thm:function_image_properties/difference} holds.
+
+  Conversely, suppose that \( f \) is injective. If \( f(A_1 \setminus A_2) \) is empty, by \eqref{eq:thm:function_image_properties/difference} the set \( f(A_1) \setminus f(A_2) \) is also empty and the converse holds.
+
+  Now suppose that it is nonempty and let \( y_0 \in f(A_1 \setminus A_2) \). Then there exists a point \( x_0 \in A_1 \setminus A_2 \) such that \( f(x_0) = y_0 \). Furthermore, since \( f \) is injective, \( x_0 \) is the only preimage of \( y_0 \) and hence \( f(x_0) \in f(A_1) \setminus f(A_2) \), which proves the reverse inclusion in \eqref{eq:thm:function_image_properties/difference}.
+\end{proof}
+
+\begin{proposition}\label{thm:function_preimage_properties}
+  Function \hyperref[thm:function_properties/preimage]{preimages} have the following basic properties:
+  \begin{thmenum}
+    \thmitem{thm:function_preimage_properties/monotonicity} If \( B_1 \subseteq B_2 \), then \( f^{-1}(B_1) \subseteq f^{-1}(B_2) \).
+
+    \thmitem{thm:function_preimage_properties/union} For any \hyperref[def:indexed_family]{indexed family} \( \set{ B_k }_{k \in \mscrK} \subseteq B \) of subsets of \( B \) we have the equality
+    \begin{equation}\label{eq:thm:function_preimage_properties/union}
+      f^{-1}\parens*{ \bigcup_{k \in \mscrK} B_k } = \bigcup_{k \in \mscrK} f^{-1}(B_k).
+    \end{equation}
+
+    \thmitem{thm:function_preimage_properties/intersection} For any indexed family \( \set{ B_k }_{k \in \mscrK} \) of subsets of \( B \) we have the equality
+    \begin{equation}\label{eq:thm:function_preimage_properties/intersection}
+      f^{-1}\parens*{ \bigcap_{k \in \mscrK} B_k } = \bigcap_{k \in \mscrK} f^{-1}(B_k).
+    \end{equation}
+
+    \thmitem{thm:function_preimage_properties/difference} For any two subsets \( B_1 \) and \( B_2 \) of \( B \) we have the equality
+    \begin{equation}\label{eq:thm:function_preimage_properties/difference}
+      f^{-1}(B_1) \setminus f^{-1}(B_2) = f^{-1}(B_1 \setminus B_2).
+    \end{equation}
+  \end{thmenum}
+
+  Compare this result to the less well-behaved properties of images described in \fullref{thm:function_image_properties}.
+\end{proposition}
+\begin{proof}
+  \SubProofOf{thm:function_image_properties/monotonicity} Analogous to \fullref{thm:function_image_properties/monotonicity}.
+
+  \SubProofOf{thm:function_image_properties/union} Analogous to \fullref{thm:function_image_properties/union}.
+
+  \SubProofOf{thm:function_image_properties/intersection} If \( y_0 \) belongs to \( \bigcap_{k \in \mscrK} B_k \), then \( y_0 \) belongs to \( B_k \) for all \( k \in \mscrK \). It follows that \( f(y_0) \subseteq f^{-1}(B_k) \) for all \( k \in \mscrK \) and hence it is also a subset of their intersection. Therefore
+  \begin{equation*}
+    f^{-1} \parens*{ \bigcap_{k \in \mscrK} B_k } \subseteq \bigcap_{k \in \mscrK} f^{-1}(B_k).
+  \end{equation*}
+
+  Conversely, if \( x_0 \in \bigcap_{k \in \mscrK} f^{-1}(B_k) \), it belongs to \( f^{-1}(B_k) \) for all \( k \in \mscrK \). Clearly then \( f(x_0) \in B_k \) for all \( k \in \mscrK \) and thus \( f(x_0) \in \bigcap_{k \in \mscrK} B_k \). Hence by \fullref{thm:function_preimage_properties/monotonicity} we have
+  \begin{equation*}
+    f^{-1}(f(x_0))
+    \subseteq
+    f^{-1}\parens*{ \bigcap_{k \in \mscrK} B_k }.
+  \end{equation*}
+
+  Since \( x_0 \in f^{-1}(f(x_0)) \),
+  \begin{equation*}
+    x_0 \in f^{-1}\parens*{ \bigcap_{k \in \mscrK} B_k }.
+  \end{equation*}
+
+  Since \( x_0 \) was chosen arbitrarily from \( \bigcap_{k \in \mscrK} f^{-1}(B_k) \), we can conclude that
+  \begin{equation*}
+    \bigcap_{k \in \mscrK} f^{-1}(B_k) \in f^{-1}\parens*{ \bigcap_{k \in \mscrK} B_k }.
+  \end{equation*}
+
+  Hence \eqref{eq:thm:function_preimage_properties/intersection} holds.
+
+  \SubProofOf{thm:function_preimage_properties/difference} If \( y_0 \in B_1 \setminus B_2 \), there exists a point \( x_1 \in B_1 \) such that \( f(x_1) = y_0 \). Aiming at a contradiction, suppose that there exists a point \( x_2 \in f^{-1}(B_2) \) such that \( f(x_2) = y_0 \). Then \( y_0 = f(x_1) = f(x_2) \) implies that \( f^{-1}(y_0) \subseteq f^{-1}(B_1) \cap f^{-1}(B_2) \). \Fullref{thm:function_preimage_properties/intersection} then in turn implies that \( f^{-1}(y_0) \subseteq f^{-1}(B_1 \cap B_2) \) and hence by \fullref{thm:function_image_properties/monotonicity}
+  \begin{equation*}
+    y_0 = f(f^{-1}(y_0)) \in f(f^{-1}(B_1 \cap B_2)) = B_1 \cap B_2,
+  \end{equation*}
+  which contradicts our choice of \( y_0 \). Since the choice of \( y_0 \in B_1 \setminus B_2 \), \( x_1 \in f^{-1}(y_0) \cap B_1 \) and \( x_2 \in f^{-1}(y_0) \cap B_2 \) was arbitrary, the obtained contradiction shows that
+  \begin{equation*}
+    f^{-1}(B_1 \setminus B_2) \subseteq f^{-1}(B_1) \setminus f^{-1}(B_2).
+  \end{equation*}
+
+  Conversely, we have
+  \begin{equation*}
+    f(f^{-1}(B_1) \setminus f^{-1}(B_2))
+    \reloset {\eqref{eq:thm:function_image_properties/difference}} \subseteq
+    f(f^{-1}(B_1 \setminus B_2))
+    \reloset {\ref{thm:function_image_preimage_composition/image_of_preimage}} \subseteq
+    B_1 \setminus B_2.
+  \end{equation*}
+
+  Hence
+  \begin{equation*}
+    f^{-1}(B_1) \setminus f^{-1}(B_2)
+    \reloset {\ref{thm:function_image_preimage_composition/preimage_of_image}} \subseteq
+    f^{-1}\parens[\Big]{ f\parens[\Big]{ f^{-1}(B_1) \setminus f^{-1}(B_2) } }
+    \reloset {\eqref{thm:function_preimage_properties/monotonicity}} \subseteq
+    f^{-1}(B_1 \setminus B_2).
+  \end{equation*}
+\end{proof}
 
 \begin{definition}\label{def:cartesian_product}
-  Let \( \set{ A_k }_{k \in \mscrK} \) be a nonempty \hyperref[def:indexed_family]{family} of arbitrary sets.
+  As promised in \fullref{rem:binary_vs_arbitrary_tuples}, we will define the Cartesian products for an arbitrary indexed family of sets.
 
-  Their \term{Cartesian product} is
+  Let \( \set{ A_k }_{k \in \mscrK} \) be a nonempty \hyperref[def:indexed_family]{indexed family} of sets. Their \term{Cartesian product} is
   \begin{equation*}
-    \prod_{k \in \mscrK} A_k \coloneqq \set*{ f: \mscrK \to \bigcup_{k \in \mscrK} X_k \given* \qforall{m \in \mscrK} f(m) \in A_m }.
+    \bigtimes_{k \in \mscrK} A_k \coloneqq \set*{ f: \mscrK \to \bigcup_{k \in \mscrK} A_k \given* \qforall{m \in \mscrK} f(m) \in A_m }.
   \end{equation*}
 
-  The definition makes sense when any of the sets is empty because the product itself is then empty.
+  The definition also makes sense when any of the sets is empty because the product itself is then empty.
 
-  Any element of the Cartesian product is called a \term{tuple}. In particular, tuples of length two are bijective with the \hyperref[def:binary_cartesian_product]{Kuratowski pairs}.
+  Any element of the Cartesian product is called a \term{tuple}. In particular, finite tuples are bijective with the n-tuples defined via \hyperref[def:binary_cartesian_product]{Kuratowski pairs}.
 \end{definition}
 
 \begin{definition}\label{def:disjoint_union}
-  The \term{disjoint union} of the \hyperref[def:indexed_family]{family} \( \set{ A_k }_{k \in \mscrK} \) of nonempty sets is
+  The \term{disjoint union} of the \hyperref[def:indexed_family]{indexed family} \( \set{ A_k }_{k \in \mscrK} \) of nonempty sets is
   \begin{equation*}
-    \coprod_{k \in \mscrK} A_k \coloneqq \set{ (k, x) \given k \in \mscrK \T{and} x \in X_k }.
+    \bigsqcup_{k \in \mscrK} A_k \coloneqq \set{ (k, x) \given k \in \mscrK \T{and} x \in A_k }.
   \end{equation*}
 \end{definition}

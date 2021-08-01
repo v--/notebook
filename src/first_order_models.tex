@@ -96,7 +96,7 @@ Much of \fullref{subsec:first_order_logic} is dedicated to semantic equivalences
   \begin{itemize}
     \item \Fullref{def:first_order_substructure/deductive} defines a substructure of \( \mscrX = (X, I) \) to be \( \mscrY = (Y, I) \), where \( Y \) is any subset of \( X \) that satisfies certain conditions. Given a subset \( Y \) of \( X \), we this definition allows us to deduce if \( (Y, I) \) is a substructure or not.
 
-    We say that this definition is \term{deductive}. \Fullref{thm:semantic_deduction_theorem} and \fullref{thm:syntactic_deduction_theorem} allow us to connect deduction in the object language with deduction in the metalanguage so we can mechanize this substructure validation by introducing it as a unary predicate in the object language.
+    We say that this definition is \term{deductive}. \Fullref{thm:semantic_deduction_theorem} and \fullref{thm:syntactic_deduction_theorem} allow us to connect deduction in the object language with deduction in the metalanguage so we can mechanize this substructure validation by introducing it as a unary predicate symbol in the object language.
 
     \item \Fullref{def:first_order_substructure/inductive} instead provides a procedure for building a substructure given a subset of the domain \( X \) of \( \mscrX \) by having explicit rules for which additional related elements from \( X \) we need to add in order to obtain the corresponding generated substructure --- see \fullref{def:first_order_generated_substructure} and \fullref{ex:def:first_order_generated_substructure}.
 
@@ -147,7 +147,7 @@ Much of \fullref{subsec:first_order_logic} is dedicated to semantic equivalences
 \end{proof}
 
 \begin{definition}\label{def:first_order_homomorphism}
-  Let \( \mscrX = (X, I) \) and \( \mscrY = (Y, I) \) be structures over a common language. We say that the \hyperref[def:function/single_valued]{function} \( h: X \to Y \) is a \term{homomorphism} between \( \mscrX \) and \( \mscrY \) if it preserves all functions and relations. Explicitly:
+  Let \( \mscrX = (X, I) \) and \( \mscrY = (Y, I) \) be structures over a common language. We say that the \hyperref[def:function]{function} \( h: X \to Y \) is a \term{homomorphism} between \( \mscrX \) and \( \mscrY \) if it preserves all functions and relations. Explicitly:
   \begin{thmenum}
     \thmitem{def:first_order_homomorphism/functions} For any functional symbol \( f \in \boldop{Fun} \) of arity \( n \) and any tuple \( x_1, \ldots, x_n \in X \) we have
     \begin{equation*}
@@ -156,18 +156,20 @@ Much of \fullref{subsec:first_order_logic} is dedicated to semantic equivalences
 
     \thmitem{def:first_order_homomorphism/predicates} For any predicate symbol \( p \in \boldop{Pred} \) of arity \( n \) and any \( x_1, \ldots, x_n \in X \),
     \begin{equation*}
-      (x_1, \ldots, x_n) \in I_\mscrX(p) \T{implies} \parens[\Big]{ h(x_1), \ldots, h(x_n) } \in I_\mscrY(p).
+      I_\mscrX(p) (x_1, \ldots, x_n) = T \T{implies} I_\mscrY(p) \parens[\Big]{ h(x_1), \ldots, h(x_n) } = T.
     \end{equation*}
   \end{thmenum}
 \end{definition}
 
 \begin{remark}\label{rem:first_order_strong_homomorphism}
-  Homomorphisms as they are defined in \fullref{def:first_order_homomorphism} are sometimes called \term{weak homomorphisms}. Logicians sometimes define \term{strong homomorphisms} where \fullref{def:first_order_homomorphism/predicates} is replaced by the stronger condition
+  Homomorphisms as they are defined in \fullref{def:first_order_homomorphism} are sometimes called \term{weak homomorphisms}. Under weak homomorphisms, it is possible that \( I_\mscrX(p) (x_1, \ldots, x_n) = F \) and yet \( I_\mscrY(p) \parens[\Big]{ h(x_1), \ldots, h(x_n) } = T \).
+
+  Logicians sometimes define \term{strong homomorphisms} where they replace \fullref{def:first_order_homomorphism/predicates} with the stronger condition
   \begin{equation*}
-    (x_1, \ldots, x_n) \in I_\mscrX(p) \T{if and only if} \parens[\Big]{ h(x_1), \ldots, h(x_n) } \in I_\mscrY(p).
+    I_\mscrX(p) (x_1, \ldots, x_n) = I_\mscrY(p) \parens[\Big]{ h(x_1), \ldots, h(x_n) }.
   \end{equation*}
 
-  Examples of strong homomorphisms are nearly non-existent so we avoid studying them except for a few remarks.
+  This condition seems much more natural at first but it is less useful in practice. For example, \hyperref[def:preordered_set/homomorphism]{order homomorphisms} and \hyperref[def:graph_homomorphism]{graph homomorphisms} are both weak homomorphisms and these are the most used definitions of homomorphisms in languages with predicate symbols. For this reason, we avoid studying strong homomorphisms and only mention them in a few remarks.
 \end{remark}
 
 \begin{proposition}\label{thm:first_order_homomorphism_properties}
@@ -184,7 +186,7 @@ Much of \fullref{subsec:first_order_logic} is dedicated to semantic equivalences
 
     \thmitem{thm:first_order_homomorphism_properties/preserves_substructures} If \( \mscrX = (X, I_\mscrX) \) and \( \mscrY = (Y, I_\mscrY) \) are structures and \( h: X \to Y \) is a (weak) homomorphism, then the \hyperref[def:function/image]{image} \( h(\mscrX) \coloneqq (h(X), I_\mscrY) \) is a substructure of \( \mscrY \).
 
-    \thmitem{thm:first_order_homomorphism_properties/composition} The \hyperref[def:function/composition]{composition} of two homomorphisms is again a homomorphism.
+    \thmitem{thm:first_order_homomorphism_properties/composition} The \hyperref[def:multi_valued_function/composition]{composition} of two homomorphisms is again a homomorphism.
 
     \thmitem{thm:first_order_homomorphism_properties/term_valuation} Fix a homomorphism \( h: X \to Y \) and a term \( \tau \). For any variable assignments \( v_\mscrX \) and \( v_\mscrY \) such that \( v_\mscrY(\xi) = h(v_\mscrX(\xi)) \) for all \( \xi \in \boldop{Var}(\tau) \), we have
     \begin{equation*}
@@ -193,7 +195,7 @@ Much of \fullref{subsec:first_order_logic} is dedicated to semantic equivalences
   \end{thmenum}
 \end{proposition}
 \begin{proof}
-  \SubProofOf{thm:first_order_homomorphism_properties/substructure} The interpretation in the substructure \( \mscrY \) is the \hyperref[def:function/extension]{restriction} \( I\restr_\mscrY \) of \( I \) to \( \mscrY \) which simply restricts the domain of any predicate and function is indeed an interpretation in \( \mscrY \). Thus \( (Y, I\restr_\mscrY) \) is a structure.
+  \SubProofOf{thm:first_order_homomorphism_properties/substructure} The interpretation in the substructure \( \mscrY \) is the \hyperref[def:multi_valued_function/restriction]{restriction} \( I\restr_\mscrY \) of \( I \) to \( \mscrY \) which simply restricts the domain of any predicate and function is indeed an interpretation in \( \mscrY \). Thus \( (Y, I\restr_\mscrY) \) is a structure.
 
   Conditions \fullref{def:first_order_homomorphism/functions} and \fullref{def:first_order_homomorphism/predicates} are both satisfied since the interpretation of any function and predicate is restricted to \( \mscrY \). Thus \( \iota \) is a homomorphism.
 
@@ -223,17 +225,17 @@ Much of \fullref{subsec:first_order_logic} is dedicated to semantic equivalences
 
     \item \Fullref{def:first_order_homomorphism/predicates} is satisfied because for any \( n \)-ary predicate symbol \( p \) and any tuple \( x_1, \ldots, x_n \in X \),
     \begin{align*}
-      &\phantom{{}\iff{}}
-      (x_1, \ldots, x_n) \in I_\mscrX(p)
-      \reloset {\ref{def:first_order_homomorphism/predicates}} \iff \\ &\iff
-      \parens[\Big]{ h(x_1), \ldots, h(x_n) } \in I_\mscrY(p)
-      \reloset {\ref{def:first_order_homomorphism/predicates}} \iff \\ &\iff
-      \parens[\Big]{ (l \bincirc h)(x_1), \ldots, (l \bincirc h)(x_n) } \in I_{\mscrZ}(p).
+      &\phantom{{}={}}
+      I_\mscrX(p) (x_1, \ldots, x_n)
+      \reloset {\ref{def:first_order_homomorphism/predicates}} = \\ &=
+      I_\mscrY(p) \parens[\Big]{ h(x_1), \ldots, h(x_n) }
+      \reloset {\ref{def:first_order_homomorphism/predicates}} = \\ &=
+      I_{\mscrZ}(p) \parens[\Big]{ (l \bincirc h)(x_1), \ldots, (l \bincirc h)(x_n) }.
     \end{align*}
   \end{itemize}
 
   \SubProofOf{thm:first_order_homomorphism_properties/term_valuation} We use induction on the structure of \( \tau \). If \( \tau \) is a variable, the statement is obvious from the compatibility condition for \( v_\mscrX \) and \( v_\mscrY \). If \( \tau = f(\kappa_1, \ldots, \kappa_m) \), then
-  \begin{balign*}
+  \begin{align*}
     \tau\Bracks{v_\mscrY}
     &=
     I(f) \parens[\Big]{ \kappa_1\Bracks{v_\mscrY}, \ldots, \kappa_m\Bracks{v_\mscrY} }
@@ -243,19 +245,19 @@ Much of \fullref{subsec:first_order_logic} is dedicated to semantic equivalences
     h\parens[\Big]{ I(f) \parens[\Big]{ \kappa_1\Bracks{v_\mscrX}, \ldots, \kappa_m\Bracks{v_\mscrX} } }
     = \\ &=
     h(\tau\Bracks{v_\mscrX}).
-  \end{balign*}
+  \end{align*}
 \end{proof}
 
 \begin{definition}\label{def:first_order_homomorphism_invertibility}
-  We introduce the following terminology (compare to \fullref{def:function_invertibility} and \fullref{def:morphism_invertibility}):
+  In connection with \fullref{def:function_invertibility} and \fullref{def:morphism_invertibility}, we introduce the following terminology for homomorphisms:
   \begin{thmenum}
-    \thmitem{def:first_order_homomorphism_invertibility/embedding} An \term{embedding}, also called a \term{monomorphism}, is an \hyperref[def:function_invertibility/injection]{injective} homomorphism.
+    \thmitem{def:first_order_homomorphism_invertibility/embedding} An \term{embedding}, also called a \term{monomorphism}, is an \hyperref[def:function_invertibility/injection]{injective} homomorphism. We sometimes use the categorical notation \( f: A \hookrightarrow B \).
 
-    \thmitem{def:first_order_homomorphism_invertibility/projection} Dually, a \term{projection}, also called an \term{epimorphism}, is an \hyperref[def:function_invertibility/surjection]{surjective} homomorphism.
+    \thmitem{def:first_order_homomorphism_invertibility/projection} Dually, a \term{projection}, also called an \term{epimorphism}, is an \hyperref[def:function_invertibility/surjection]{surjective} homomorphism. We sometimes use the categorical notation \( f: A \twoheadrightarrow B \).
 
     \thmitem{def:first_order_homomorphism_invertibility/isomorphism} An \term{isomorphism} is a \hyperref[def:function_invertibility/bijection]{bijective} homomorphism.
 
-    \thmitem{def:first_order_homomorphism_invertibility/endomorphism} An \term{endomorphism} is a homomorphism that is also an \hyperref[def:endofunction]{endofunction}.
+    \thmitem{def:first_order_homomorphism_invertibility/endomorphism} An \term{endomorphism} is a homomorphism that is also an \hyperref[def:multi_valued_function/endofunction]{endofunction}.
 
     \thmitem{def:first_order_homomorphism_invertibility/automorphism} A homomorphism that is both an endomorphism and an isomorphism is called an \term{automorphism}.
   \end{thmenum}
@@ -282,7 +284,7 @@ Much of \fullref{subsec:first_order_logic} is dedicated to semantic equivalences
     v_\mscrX(\xi) \in h^{-1}(v_\mscrY(\xi)).
   \end{equation*}
 
-  At least one such assignment exists by \fullref{thm:axiom_of_choice_equivalences/choice}. If \( h \) is injective, this assignment is unique.
+  At least one such assignment exists by \fullref{def:zfc/A8}. If \( h \) is injective, this assignment is unique.
 
   We will show that
   \begin{equation}\label{thm:positive_formulas_preserved_under_homomorphism/ind_hyp_x}
@@ -314,12 +316,12 @@ Much of \fullref{subsec:first_order_logic} is dedicated to semantic equivalences
     \end{equation*}
     then
     \begin{equation}\label{eq:thm:positive_formulas_preserved_under_homomorphism/predicates/x}
-      \parens[\Big]{ \tau_1\Bracks{v_\mscrX}, \ldots, \tau_n\Bracks{v_\mscrX} } \in I_\mscrX(p).
+      I_\mscrX(p) \parens[\Big]{ \tau_1\Bracks{v_\mscrX}, \ldots, \tau_n\Bracks{v_\mscrX} } = T.
     \end{equation}
 
     By definition of homomorphism, we have
     \begin{equation}\label{eq:thm:positive_formulas_preserved_under_homomorphism/predicates/y}
-      \parens[\Big]{ h(\tau_1\Bracks{v_\mscrX}), \ldots, h(\tau_n\Bracks{v_\mscrX}) } \in I_\mscrY(p).
+      I_\mscrY(p) \parens[\Big]{ h(\tau_1\Bracks{v_\mscrX}), \ldots, h(\tau_n\Bracks{v_\mscrX}) } = T.
     \end{equation}
 
     Now
@@ -415,7 +417,7 @@ Much of \fullref{subsec:first_order_logic} is dedicated to semantic equivalences
 \end{proof}
 
 \begin{proposition}\label{thm:functions_over_model_form_model}
-  Let \( \Gamma \) to be a nonempty set of \hyperref[def:positive_formula]{positive formulas}. Let \( \mscrX \) be a model of \( \Gamma \) and let \( S \) be any nonempty set. Consider the set \( Y \coloneqq \fun(S, \mscrX) \) of \hyperref[def:function/single_valued]{all set functions} from \( S \) to \( X \).
+  Let \( \Gamma \) to be a nonempty set of \hyperref[def:positive_formula]{positive formulas}. Let \( \mscrX \) be a model of \( \Gamma \) and let \( S \) be any nonempty set. Consider the set \( Y \coloneqq \fun(S, \mscrX) \) of \hyperref[def:function]{all set functions} from \( S \) to \( X \).
 
   Define the function \( \iota: X \mapsto Y \) by sending each \( x \in X \) to the corresponding constant function in \( Y \).
 
@@ -431,8 +433,13 @@ Much of \fullref{subsec:first_order_logic} is dedicated to semantic equivalences
 
     \item For each \( n \)-ary predicate symbol \( p \) in \( \mscrL \), define \( I_\mscrY(p) \subseteq Y^n \) via
     \begin{equation*}
-      \parens[\Big]{ k_1, \ldots, k_n } \in \widetilde I(p) \T{if and only if for each} s \in S \T{we have} \parens[\Big]{ k_1(s), \ldots, k_n(s) } \in I(p).
+      \begin{aligned}
+        &I_\mscrY(p): Y^n \to \set{ T, F } \\
+        &I_\mscrY(p) \parens[\Big]{ k_1, \ldots, k_n } \coloneqq \bigwedge \set[\Big]{ I(p) \parens[\Big]{ k_1(s), \ldots, k_n(s) } \given* s \in S }.
+      \end{aligned}
     \end{equation*}
+
+    That is, \( I_\mscrY(p) (k_1, \ldots, k_n) = T \) if and only if \( I(p) (k_1(s), \ldots, k_n(s)) = T \) simultaneously for all \( s \in S \).
   \end{itemize}
 
   Then the structure \( \mscrY = (Y, I_\mscrY) \) is also a model of \( \Gamma \) and \( \iota: \mscrX \to \mscrY \) is an embedding.
@@ -448,7 +455,16 @@ Much of \fullref{subsec:first_order_logic} is dedicated to semantic equivalences
 
     \item If \( \varphi = (\tau_1 \doteq \tau_2) \), then \( \tau_1\Bracks{v_\mscrX} = \tau_2\Bracks{v_\mscrX} \) for all assignments \( v_\mscrX \) in \( \mscrX \), hence for any \( s \in S \) we have \( \parens[\Big]{\tau_1\Bracks{v_\mscrY}}(s) = \parens[\Big]{\tau_2\Bracks{v_\mscrY}}(s) \) since both sides of the equality here are elements of \( \mscrX \).
 
-    \item The proof is completely analogous if \( \varphi \) is a predicate formula.
+    \item Analogously, if \( \varphi = p(\tau_1, \ldots, \tau_n) \), then
+    \begin{equation*}
+      I_\mscrY(p) \parens[\Big]{ k_1, \ldots, k_n }
+      =
+      \bigwedge \set[\Big]{ I(p) \parens[\Big]{ k_1(s), \ldots, k_n(s) } \given* s \in S }
+      =
+      \bigwedge \set{ T \given s \in S }
+      =
+      T.
+    \end{equation*}
 
     \item Analogous to the proof of \fullref{thm:positive_formulas_preserved_under_homomorphism}, conjunction and disjunction formulas that are valid in \( \mscrX \) are valid in \( \mscrY \) while conditional formulas may fail to be valid. See \fullref{ex:thm:functions_over_model_of_positive_formulas_form_model} for examples where this proposition fails.
   \end{itemize}
