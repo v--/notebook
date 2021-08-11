@@ -1,22 +1,24 @@
 \subsection{Proof derivation systems}\label{subsec:proof_derivation_systems}
 
-\begin{definition}\label{def:proof_derivation_system}\mcite[sec. 18.1]{OpenLogicFull}
+\begin{definition}\label{def:proof_derivation_system}
   A \term{proof derivation system} is based on a set of formulas. These may be all the formulas of the propositional language or of a \hyperref[def:first_order_syntax]{first-order language} \( \mscrL \) or a strict subset of all the formulas (as in \fullref{def:positive_implicational_propositional_derivation_system}).
 
   \begin{thmenum}
-    \thmitem{def:proof_derivation_system/rules} A set of \hyperref[def:relation]{relations} of potentially different arity on the set of formulas of \( \mscrL \), which we call \term{inference rules}. If \( r \) is an inference rule of arity \( n + 1 \), we say that the rule allows us to \term{infer} \( \psi \) from \( \varphi_1, \ldots, \varphi_n \) if \( (\varphi_1, \ldots, \varphi_n, \psi) \in r \). We write this symbolically as
+    \thmitem{def:proof_derivation_system/rules} A family of \hyperref[def:relation]{relations} of potentially different arity on the set of formulas of \( \mscrL \), which we call \term{inference rules}. If \( r \) is an inference rule of arity \( n + 1 \), we say that the rule allows us to \term{infer} \( \psi \) from \( \varphi_1, \ldots, \varphi_n \) if \( (\varphi_1, \ldots, \varphi_n, \psi) \in r \). We write this symbolically as
     \begin{equation*}
       \begin{prooftree}
         \hypo{\varphi_1}
         \hypo{\cdots}
         \hypo{\varphi_n}
-        \infer3[r]{\psi}
+        \infer3[\( r_\Gamma \)]{\psi}
       \end{prooftree}
     \end{equation*}
 
     The formulas \( \varphi_1, \ldots, \varphi_n \) are called \term{premises} and \( \psi \) is called the \term{conclusion}.
 
-    A single rule is usually formulated as schemas, e.g. \hyperref[eq:def:positive_implicational_propositional_derivation_system/rules/modus_ponens]{modus ponens}, in which we replace \( \varphi \) and \( \psi \) with whatever formula has the necessary form.
+    We usually formulate rule schemas, e.g. \hyperref[eq:def:positive_implicational_propositional_derivation_system/rules/modus_ponens]{modus ponens}, in which we replace \( \varphi \) and \( \psi \) with whatever formula has the necessary form.
+
+    Some rules like \eqref{eq:def:first_order_derivation_system/exists/elim} are restrictive and depend on the \hyperref[def:derivation_system_derivability]{current derivation}. This is why we allow rules to be parameterized by some set \( \Gamma \) of formulas.
 
     \thmitem{def:proof_derivation_system/axioms} A set of \hyperref[def:first_order_syntax]{formulas} in \( \mscrL \), which we call \term{logical axioms} (to distinguish them from \hyperref[def:derivation_system_derivability]{nonlogical axioms}).
   \end{thmenum}
@@ -161,15 +163,39 @@
 \begin{definition}\label{def:derivability_and_satisfiability}
   We introduce two notions connecting \hyperref[def:derivation_system_derivability]{derivability} and \hyperref[def:first_order_semantics/satisfiability]{satisfiability}:
   \begin{thmenum}
-    \thmitem{def:derivability_and_satisfiability/soundness} If, for any formula \( \varphi \), derivability \( \vdash \varphi \) implies satisfiability \( \vDash \varphi \), we say that the derivation system is \term{sound} with respect to the semantical framework.
+    \thmitem{def:derivability_and_satisfiability/soundness} If, for any closed formula \( \varphi \), derivability \( \vdash \varphi \) implies satisfiability \( \vDash \varphi \), we say that the derivation system is \term{sound} with respect to the semantical framework.
 
-    \thmitem{def:derivability_and_satisfiability/completeness} Dually, if satisfiability \( \vDash \varphi \) implies derivability \( \vdash \varphi \) for any formula \( \varphi \), we say that the derivation system is \term{complete} with respect to the semantical framework.
+    \thmitem{def:derivability_and_satisfiability/completeness} Dually, if satisfiability \( \vDash \varphi \) implies derivability \( \vdash \varphi \) for any closed formula \( \varphi \), we say that the derivation system is \term{complete} with respect to the semantical framework.
   \end{thmenum}
+
+  We restrict our attention to closed formulas because we wish to avoid the problems described in \fullref{rem:deduction_with_free_variables}. If we have a formula with free variables, we may simply take its \hyperref[thm:semantic_implicit_universal_quantification]{universal closure}.
 \end{definition}
 
 \begin{proposition}\label{thm:soundness_of_positive_implicational_propositional_derivation_system}\mcite[thm. 1.1]{Wasilewska2010}
   The \hyperref[def:positive_implicational_propositional_derivation_system]{positive implicational propositional derivation system} is \hyperref[def:derivability_and_satisfiability/soundness]{sound} with respect to \hyperref[def:propositional_semantics]{classical semantics}.
 \end{proposition}
+
+\begin{theorem}[Propositional syntactic deduction theorem]\label{thm:propositional_syntactic_deduction_theorem}\mcite[thm. 12.20]{OpenLogicFull}
+  In the \hyperref[def:positive_implicational_propositional_derivation_system]{positive implicational derivation system}, \( \Gamma, \psi \vdash \varphi \) holds if and only if \( \Gamma \vdash \psi \rightarrow \varphi \) holds.
+
+  This theorem also holds for propositional derivation systems which extend the positive implication system but either do not add new rules or, as in the case of \fullref{thm:minimal_natural_deduction}, add rules that reduce to axioms.
+\end{theorem}
+\begin{proof}
+  \SufficiencySubProof Suppose that \( \Gamma, \psi \vdash \varphi \). We will use induction on the length of the derivation of \( \varphi \) from \( \Gamma \cup \set{ \psi } \).
+
+  If the derivation consists of a single formula, then the unary finite sequence \( (\varphi) \) is this derivation. Then \( \varphi \) is either a nonlogical axiom (that is, \( \varphi \in \Gamma \) or \( \varphi = \psi \)) or a logical axiom. In all cases, the logical axiom \eqref{eq:def:positive_implicational_propositional_derivation_system/axioms/imp/intro} allows us to derive \( \psi \rightarrow \varphi \) from \( \Gamma \) using \eqref{eq:def:positive_implicational_propositional_derivation_system/rules/modus_ponens}.
+
+  Now suppose that the theorem holds for derivations of length strictly smaller than \( n \) and suppose that there exists a derivation of \( \varphi \) from \( \Gamma \cup \set{ \psi } \) of length \( n \). It is still possible for \( \varphi \) to be a nonlogical or logical axiom, in which case the proof will be the same as in the base case. Since the only rule is \eqref{eq:def:positive_implicational_propositional_derivation_system/rules/modus_ponens}, the other possibility is that the derivation to contain the formulas \( \theta \) and \( \theta \rightarrow \varphi \) for some formula \( \theta \) that is itself derivable from \( \Gamma \cup \set{ \psi } \). But the derivation of \( \theta \) must be shorter than \( n \) and hence the inductive hypothesis holds --- that is, we have \( \Gamma \vdash \psi \rightarrow \theta \) and \( \Gamma \vdash \psi \rightarrow (\theta \rightarrow \varphi) \).
+
+  So we now instantiate other logical axiom --- \eqref{eq:def:positive_implicational_propositional_derivation_system/axioms/imp/trans} --- to obtain
+  \begin{equation*}
+    \parens[\Big]{ \psi \rightarrow (\theta \rightarrow \varphi) } \rightarrow \parens[\Big]{ (\psi \rightarrow \theta) \rightarrow (\psi \rightarrow \varphi)}.
+  \end{equation*}
+
+  Finally, add this new formula to the concatenation of the derivations of \( \psi \rightarrow \theta \) and \( \psi \rightarrow (\theta \rightarrow \varphi) \) from \( \Gamma \). After applying \eqref{eq:def:positive_implicational_propositional_derivation_system/rules/modus_ponens} twice and also adding the intermediate result, we now have a derivation of \( \psi \rightarrow \varphi \) from \( \Gamma \).
+
+  \NecessitySubProof Now suppose that \( \Gamma \vdash \psi \rightarrow \varphi \). Then we can apply \eqref{eq:def:positive_implicational_propositional_derivation_system/rules/modus_ponens} to obtain \( \varphi \) from \( \Gamma \cup \set{ \psi } \).
+\end{proof}
 
 \begin{definition}\label{def:minimal_propositional_derivation_system}\mcite[def. 55.10]{OpenLogicFull}
   While the \hyperref[def:positive_implicational_propositional_derivation_system]{positive implicational propositional derivation system} is simple, it is of more practical use to have all propositional connectives available. As it turns out, we cannot utilize \hyperref[ex:posts_completeness_theorem]{complete families of Boolean functions} unless we are dealing with \hyperref[def:propositional_semantics]{classical semantics} --- see for example \fullref{ex:heyting_semantics_lem_counterexample} and \fullref{ex:topological_semantics_lem_counterexample} for how \cref{eq:thm:boolean_equivalences/conditional_cnf} fails to hold.
@@ -194,8 +220,8 @@
 
     \thmitem{def:minimal_propositional_derivation_system/or} Axioms for \hyperref[def:propositional_language/connectives/disjunction]{disjunction}:
     \begin{align}
-      \mathllap{ \varphi }                    &\rightarrow \mathrlap{ (\varphi \vee \psi) } \tag{\textrm{A} \( \vee_L^+ \)} \label{eq:def:minimal_propositional_derivation_system/or/intro_left} \\
-      \mathllap{ \varphi }                    &\rightarrow \mathrlap{ (\psi \vee \varphi) } \tag{\textrm{A} \( \vee_R^+ \)} \label{eq:def:minimal_propositional_derivation_system/or/intro_right} \\
+      \mathllap{ \varphi }                      &\rightarrow \mathrlap{ (\varphi \vee \psi) } \tag{\textrm{A} \( \vee_L^+ \)} \label{eq:def:minimal_propositional_derivation_system/or/intro_left} \\
+      \mathllap{ \varphi }                      &\rightarrow \mathrlap{ (\psi \vee \varphi) } \tag{\textrm{A} \( \vee_R^+ \)} \label{eq:def:minimal_propositional_derivation_system/or/intro_right} \\
       \mathllap{ (\varphi \rightarrow \theta) } &\rightarrow \mathrlap{ \parens[\Big]{ (\psi \rightarrow \theta) \rightarrow ((\varphi \vee \psi) \rightarrow \theta) } } \tag{\textrm{A} \( \vee^- \)} \label{eq:def:minimal_propositional_derivation_system/or/elim}
     \end{align}
   \end{thmenum}
@@ -217,162 +243,162 @@
   \end{thmenum}
 \end{definition}
 
-\begin{proposition}\label{thm:natural_deduction}\mcite[sec. 10.2]{OpenLogicFull}
+\begin{proposition}\label{thm:minimal_natural_deduction}\mcite[sec. 10.2]{OpenLogicFull}
   Formulating a derivation system only in terms of axioms and the single rule \eqref{eq:def:positive_implicational_propositional_derivation_system/rules/modus_ponens} as in \fullref{def:minimal_propositional_derivation_system} allows us to easily study the relationships between the axioms themselves. For example, in \fullref{thm:minimal_propositional_negation_laws} we study the relationships between axioms that differentiate \hyperref[def:classical_logic]{classical logic} from \hyperref[def:intuitionistic_logic]{intuitionistic} and \hyperref[def:minimal_logic]{minimal}. Such systems are called \term{axiomaic} or \term{Hilbert-style}.
 
   When writing actual proofs like in \fullref{ex:def:positive_implicational_propositional_derivation_system/identity}, however, it is usually more convenient to use rules collectively called \term{natural deduction}. Although natural deduction is commonly presented as an alternative to axiomatic derivations, in fact every axiom gives rise to a natural deduction rule and vice versa.
 
-  Note that some rules have assumptions with indices, e.g. \( [\varphi]^n \) in \eqref{eq:thm:natural_deduction/imp/intro}. They are called \term{labeled assumptions} and are used in places where the premises of the rule would otherwise have conditional connectives. We say that \( [\varphi]^n \) is \term{discharged} if it is referenced by label in a rule. If an assumption is discharged, it becomes the \hyperref[def:material_implication/antecedent]{antecedent} of some conditional formula and is thus no longer an actual assumption in the sense of \fullref{def:derivation_system_derivability}. Thus if all discharged assumptions appear in the derivation, the conclusion of the derivation is a logical theorem.
+  Note that some rules have assumptions with indices, e.g. \( [\varphi]^n \) in \eqref{eq:thm:minimal_natural_deduction/imp/intro}. They are called \term{labeled assumptions} and are used in places where the premises of the rule would otherwise have conditional connectives. We say that \( [\varphi]^n \) is \term{discharged} if it is referenced by label in a rule. \enquote{Undischarged assumptions} are a collective name for both regular assumptions in the sense of \fullref{def:derivation_system_derivability} and labeled assumptions that have not been discharged. If an assumption is discharged, it becomes the \hyperref[def:material_implication/antecedent]{antecedent} of some conditional formula and is no longer an actual assumption in the sense of \fullref{def:derivation_system_derivability} but rather an application of \fullref{thm:propositional_syntactic_deduction_theorem} to bring the assumption into the object language. Thus if there are not undischarged assumptions in the derivation, the conclusion of the derivation is a logical theorem.
 
   \begin{thmenum}
-    \thmitem{thm:natural_deduction/imp} The following rule schemas corresponds to the conditional axiom schemas in \fullref{def:positive_implicational_propositional_derivation_system}:
+    \thmitem{thm:minimal_natural_deduction/imp} The following rule schemas corresponds to the conditional axiom schemas in \fullref{def:positive_implicational_propositional_derivation_system}:
 
     \begin{minipage}[t]{0.45\textwidth}
       This rule is inspired by \eqref{eq:def:positive_implicational_propositional_derivation_system/axioms/imp/intro}:
-      \begin{equation*}\taglabel[\textrm{R} \( \rightarrow^+ \)]{eq:thm:natural_deduction/imp/intro}
+      \begin{equation*}\taglabel[\textrm{R} \( \rightarrow^+ \)]{eq:thm:minimal_natural_deduction/imp/intro}
         \begin{prooftree}
           \hypo{ [\psi]^n }
           \ellipsis {} { \varphi }
-          \infer[left label=\( n \)]1[\ref{eq:thm:natural_deduction/imp/intro}]{ \psi \rightarrow \varphi }
+          \infer[left label=\( n \)]1[\ref{eq:thm:minimal_natural_deduction/imp/intro}]{ \psi \rightarrow \varphi }
         \end{prooftree}
       \end{equation*}
     \end{minipage}
     \hfill
     \begin{minipage}[t]{0.45\textwidth}
       This rule is merely a renaming of \eqref{eq:def:positive_implicational_propositional_derivation_system/rules/modus_ponens}:
-      \begin{equation*}\taglabel[\textrm{R} \( \rightarrow^- \)]{eq:thm:natural_deduction/imp/elim}
+      \begin{equation*}\taglabel[\textrm{R} \( \rightarrow^- \)]{eq:thm:minimal_natural_deduction/imp/elim}
         \begin{prooftree}
           \hypo{ \varphi \rightarrow \psi }
           \hypo{ \varphi }
-          \infer2[\ref{eq:thm:natural_deduction/imp/elim}]{ \psi }
+          \infer2[\ref{eq:thm:minimal_natural_deduction/imp/elim}]{ \psi }
         \end{prooftree}
       \end{equation*}
     \end{minipage}
 
-    Note that there is no rule corresponding to \eqref{eq:def:positive_implicational_propositional_derivation_system/axioms/imp/trans} because this axiom schema follows from \eqref{eq:thm:natural_deduction/imp/intro} and \eqref{eq:thm:natural_deduction/imp/elim}. Unlike in the axiomatic derivation system where \eqref{eq:def:positive_implicational_propositional_derivation_system/axioms/imp/trans} is used to prove \fullref{thm:syntactic_deduction_theorem}, here we have a stronger connection between \( \rightarrow \) in the object language and \( \vdash \) in the metalanguage given by \eqref{eq:thm:natural_deduction/imp/intro}.
+    Note that there is no rule corresponding to \eqref{eq:def:positive_implicational_propositional_derivation_system/axioms/imp/trans} because this axiom schema follows from \eqref{eq:thm:minimal_natural_deduction/imp/intro} and \eqref{eq:thm:minimal_natural_deduction/imp/elim}. Unlike in the axiomatic derivation system where \eqref{eq:def:positive_implicational_propositional_derivation_system/axioms/imp/trans} is used to prove \fullref{thm:propositional_syntactic_deduction_theorem}, here we have a stronger connection between \( \rightarrow \) in the object language and \( \vdash \) in the metalanguage given by \eqref{eq:thm:minimal_natural_deduction/imp/intro}.
 
-    \thmitem{thm:natural_deduction/top} The following rule corresponds to the axiom \eqref{eq:def:minimal_propositional_derivation_system/top/intro}:
-    \begin{equation*}\taglabel[\textrm{R} \( \top^+ \)]{eq:thm:natural_deduction/top/intro}
+    \thmitem{thm:minimal_natural_deduction/top} The following rule corresponds to the axiom \eqref{eq:def:minimal_propositional_derivation_system/top/intro}:
+    \begin{equation*}\taglabel[\textrm{R} \( \top^+ \)]{eq:thm:minimal_natural_deduction/top/intro}
       \begin{prooftree}
-        \infer0[\ref{eq:thm:natural_deduction/top/intro}]{ \top }
+        \infer0[\ref{eq:thm:minimal_natural_deduction/top/intro}]{ \top }
       \end{prooftree}
     \end{equation*}
 
-    \thmitem{thm:natural_deduction/and} The following rule schemas corresponds to the conjunction axiom schemas in \fullref{def:minimal_propositional_derivation_system/and}:
+    \thmitem{thm:minimal_natural_deduction/and} The following rule schemas corresponds to the conjunction axiom schemas in \fullref{def:minimal_propositional_derivation_system/and}:
 
     \begin{minipage}{0.3\textwidth}
-      \begin{equation*}\taglabel[\textrm{R} \( \wedge^+ \)]{eq:thm:natural_deduction/and/intro}
+      \begin{equation*}\taglabel[\textrm{R} \( \wedge^+ \)]{eq:thm:minimal_natural_deduction/and/intro}
         \begin{prooftree}
           \hypo{ \varphi }
           \hypo{ \psi }
-          \infer2[\ref{eq:thm:natural_deduction/and/intro}]{ \varphi \wedge \psi }
+          \infer2[\ref{eq:thm:minimal_natural_deduction/and/intro}]{ \varphi \wedge \psi }
         \end{prooftree}
       \end{equation*}
     \end{minipage}
     \hfill
     \begin{minipage}{0.3\textwidth}
-      \begin{equation*}\taglabel[\textrm{R} \( \wedge_L^- \)]{eq:thm:natural_deduction/and/elim_left}
+      \begin{equation*}\taglabel[\textrm{R} \( \wedge_L^- \)]{eq:thm:minimal_natural_deduction/and/elim_left}
         \begin{prooftree}
           \hypo{ \varphi \wedge \psi }
-          \infer1[\ref{eq:thm:natural_deduction/and/elim_left}]{ \varphi }
+          \infer1[\ref{eq:thm:minimal_natural_deduction/and/elim_left}]{ \varphi }
         \end{prooftree}
       \end{equation*}
     \end{minipage}
     \hfill
     \begin{minipage}{0.3\textwidth}
-      \begin{equation*}\taglabel[\textrm{R} \( \wedge_R^- \)]{eq:thm:natural_deduction/and/elim_right}
+      \begin{equation*}\taglabel[\textrm{R} \( \wedge_R^- \)]{eq:thm:minimal_natural_deduction/and/elim_right}
         \begin{prooftree}
           \hypo{ \varphi \wedge \psi }
-          \infer1[\ref{eq:thm:natural_deduction/and/elim_left}]{ \psi }
+          \infer1[\ref{eq:thm:minimal_natural_deduction/and/elim_left}]{ \psi }
         \end{prooftree}
       \end{equation*}
     \end{minipage}
 
-    \thmitem{thm:natural_deduction/or} The following rule schemas corresponds to the disjunction axiom schemas in \fullref{def:minimal_propositional_derivation_system/or}:
+    \thmitem{thm:minimal_natural_deduction/or} The following rule schemas corresponds to the disjunction axiom schemas in \fullref{def:minimal_propositional_derivation_system/or}:
 
     \begin{minipage}{0.3\textwidth}
-      \begin{equation*}\taglabel[\textrm{R} \( \vee_L^+ \)]{eq:thm:natural_deduction/or/intro_left}
+      \begin{equation*}\taglabel[\textrm{R} \( \vee_L^+ \)]{eq:thm:minimal_natural_deduction/or/intro_left}
         \begin{prooftree}
           \hypo{ \varphi \vee \psi }
-          \infer1[\ref{eq:thm:natural_deduction/or/intro_left}]{ \varphi }
+          \infer1[\ref{eq:thm:minimal_natural_deduction/or/intro_left}]{ \varphi }
         \end{prooftree}
       \end{equation*}
     \end{minipage}
     \hfill
     \begin{minipage}{0.3\textwidth}
-      \begin{equation*}\taglabel[\textrm{R} \( \vee_R^+ \)]{eq:thm:natural_deduction/or/intro_right}
+      \begin{equation*}\taglabel[\textrm{R} \( \vee_R^+ \)]{eq:thm:minimal_natural_deduction/or/intro_right}
         \begin{prooftree}
           \hypo{ \varphi \vee \psi }
-          \infer1[\ref{eq:thm:natural_deduction/or/intro_right}]{ \psi }
+          \infer1[\ref{eq:thm:minimal_natural_deduction/or/intro_right}]{ \psi }
         \end{prooftree}
       \end{equation*}
     \end{minipage}
     \hfill
     \begin{minipage}{0.3\textwidth}
-      \begin{equation*}\taglabel[\textrm{R} \( \vee^- \)]{eq:thm:natural_deduction/or/elim}
+      \begin{equation*}\taglabel[\textrm{R} \( \vee^- \)]{eq:thm:minimal_natural_deduction/or/elim}
         \begin{prooftree}
           \hypo{ \varphi \vee \psi }
           \hypo{ [\varphi]^n }
           \ellipsis {} { \theta }
           \hypo{ [\psi]^n }
           \ellipsis {} { \theta }
-          \infer[left label=\( n \)]3[\ref{eq:thm:natural_deduction/or/elim}]{ \theta }
+          \infer[left label=\( n \)]3[\ref{eq:thm:minimal_natural_deduction/or/elim}]{ \theta }
         \end{prooftree}
       \end{equation*}
     \end{minipage}
 
-    \thmitem{thm:natural_deduction/iff} The following rule schemas corresponds to the biconditional axiom schemas in \fullref{def:minimal_propositional_derivation_system/iff}:
+    \thmitem{thm:minimal_natural_deduction/iff} The following rule schemas corresponds to the biconditional axiom schemas in \fullref{def:minimal_propositional_derivation_system/iff}:
 
     \begin{minipage}{0.3\textwidth}
-      \begin{equation*}\taglabel[\textrm{R} \( \leftrightarrow^+ \)]{eq:thm:natural_deduction/iff/intro}
+      \begin{equation*}\taglabel[\textrm{R} \( \leftrightarrow^+ \)]{eq:thm:minimal_natural_deduction/iff/intro}
         \begin{prooftree}
           \hypo{ [\varphi]^n }
           \ellipsis {} { \psi }
           \hypo{ [\psi]^n }
           \ellipsis {} { \varphi }
-          \infer[left label=\( n \)]2[\ref{eq:thm:natural_deduction/iff/intro}]{ \varphi \leftrightarrow \psi }
+          \infer[left label=\( n \)]2[\ref{eq:thm:minimal_natural_deduction/iff/intro}]{ \varphi \leftrightarrow \psi }
         \end{prooftree}
       \end{equation*}
     \end{minipage}
     \hfill
     \begin{minipage}{0.3\textwidth}
-      \begin{equation*}\taglabel[\textrm{R} \( \leftrightarrow_L^- \)]{eq:thm:natural_deduction/iff/elim_left}
+      \begin{equation*}\taglabel[\textrm{R} \( \leftrightarrow_L^- \)]{eq:thm:minimal_natural_deduction/iff/elim_left}
         \begin{prooftree}
           \hypo{ \varphi \leftrightarrow \psi }
           \hypo{ \psi }
-          \infer2[\ref{eq:thm:natural_deduction/iff/elim_left}]{ \varphi }
+          \infer2[\ref{eq:thm:minimal_natural_deduction/iff/elim_left}]{ \varphi }
         \end{prooftree}
       \end{equation*}
     \end{minipage}
     \hfill
     \begin{minipage}{0.3\textwidth}
-      \begin{equation*}\taglabel[\textrm{R} \( \leftrightarrow_R^- \)]{eq:thm:natural_deduction/iff/elim_right}
+      \begin{equation*}\taglabel[\textrm{R} \( \leftrightarrow_R^- \)]{eq:thm:minimal_natural_deduction/iff/elim_right}
         \begin{prooftree}
           \hypo{ \varphi \leftrightarrow \psi }
           \hypo{ \varphi }
-          \infer2[\ref{eq:thm:natural_deduction/iff/elim_right}]{ \psi }
+          \infer2[\ref{eq:thm:minimal_natural_deduction/iff/elim_right}]{ \psi }
         \end{prooftree}
       \end{equation*}
     \end{minipage}
 
-    \thmitem{thm:natural_deduction/negation} The following rule schemas corresponds to the negation axiom schemas in \fullref{def:minimal_propositional_derivation_system/negation}:
+    \thmitem{thm:minimal_natural_deduction/negation} The following rule schemas corresponds to the negation axiom schemas in \fullref{def:minimal_propositional_derivation_system/negation}:
 
     \begin{minipage}{0.45\textwidth}
-      \begin{equation*}\taglabel[\textrm{R} \( \neg^+ \)]{eq:thm:natural_deduction/neg/intro}
+      \begin{equation*}\taglabel[\textrm{R} \( \neg^+ \)]{eq:thm:minimal_natural_deduction/neg/intro}
         \begin{prooftree}
           \hypo{ [\varphi]^n }
           \ellipsis {} { \bot }
-          \infer[left label=\( n \)]1[\ref{eq:thm:natural_deduction/neg/intro}]{ \neg \varphi }
+          \infer[left label=\( n \)]1[\ref{eq:thm:minimal_natural_deduction/neg/intro}]{ \neg \varphi }
         \end{prooftree}
       \end{equation*}
     \end{minipage}
     \hfill
     \begin{minipage}{0.45\textwidth}
-      \begin{equation*}\taglabel[\textrm{R} \( \neg^- \)]{eq:thm:natural_deduction/neg/elim}
+      \begin{equation*}\taglabel[\textrm{R} \( \neg^- \)]{eq:thm:minimal_natural_deduction/neg/elim}
         \begin{prooftree}
           \hypo{ \varphi }
           \hypo{ \neg \varphi }
-          \infer2[\ref{eq:thm:natural_deduction/neg/elim}]{ \bot }
+          \infer2[\ref{eq:thm:minimal_natural_deduction/neg/elim}]{ \bot }
         \end{prooftree}
       \end{equation*}
     \end{minipage}
@@ -381,9 +407,9 @@
 \begin{proof}
   We will prove that the axiomatic \hyperref[def:minimal_propositional_derivation_system]{minimal propositional derivation system} is equivalent to the rules of natural deduction described in this proposition.
 
-  \SubProofOf{thm:natural_deduction/imp} Consider first the axiom \eqref{eq:def:positive_implicational_propositional_derivation_system/axioms/imp/intro}. Fix two formulas \( \varphi \) and \( \psi \). Then \( \varphi \rightarrow (\psi \rightarrow \varphi) \) is an instance of \eqref{eq:def:positive_implicational_propositional_derivation_system/axioms/imp/intro}. Thus we obtain \( \varphi \vdash \psi \rightarrow \varphi \) by applying \eqref{eq:def:positive_implicational_propositional_derivation_system/rules/modus_ponens}, which in turn shows the validity of the rule \eqref{eq:thm:natural_deduction/imp/intro}.
+  \SubProofOf{thm:minimal_natural_deduction/imp} Consider first the axiom \eqref{eq:def:positive_implicational_propositional_derivation_system/axioms/imp/intro}. Fix two formulas \( \varphi \) and \( \psi \). Then \( \varphi \rightarrow (\psi \rightarrow \varphi) \) is an instance of \eqref{eq:def:positive_implicational_propositional_derivation_system/axioms/imp/intro}. Thus we obtain \( \varphi \vdash \psi \rightarrow \varphi \) by applying \eqref{eq:def:positive_implicational_propositional_derivation_system/rules/modus_ponens}, which in turn shows the validity of the rule \eqref{eq:thm:minimal_natural_deduction/imp/intro}.
 
-  The labeled assumption here is essential for showing that \eqref{eq:thm:natural_deduction/imp/intro} implies \eqref{eq:def:positive_implicational_propositional_derivation_system/axioms/imp/intro}. Without it we would have the rule
+  The labeled assumption here is essential for showing that \eqref{eq:thm:minimal_natural_deduction/imp/intro} implies \eqref{eq:def:positive_implicational_propositional_derivation_system/axioms/imp/intro}. Without it we would have the rule
   \begin{equation*}
     \begin{prooftree}
       \hypo{ \psi }
@@ -392,28 +418,28 @@
   \end{equation*}
   which would not allow us to discharge the assumption \( \varphi \) when it is in fact immaterial for the validity of \( \psi \).
 
-  Now we will show that \eqref{eq:def:positive_implicational_propositional_derivation_system/axioms/imp/trans} can be derived using only the rules \eqref{eq:thm:natural_deduction/imp/intro} and \eqref{eq:thm:natural_deduction/imp/elim}:
-  \begin{equation}\label{eq:thm:natural_deduction/imp/trans_derivation}
+  Now we will show that \eqref{eq:def:positive_implicational_propositional_derivation_system/axioms/imp/trans} can be derived using only the rules \eqref{eq:thm:minimal_natural_deduction/imp/intro} and \eqref{eq:thm:minimal_natural_deduction/imp/elim}:
+  \begin{equation}\label{eq:thm:minimal_natural_deduction/imp/trans_derivation}
     \begin{prooftree}
       \hypo{ [\varphi \rightarrow (\psi \rightarrow \theta)]^1 }
       \hypo{ [\varphi]^2 }
-      \infer2[\ref{eq:thm:natural_deduction/imp/elim}]{ \psi \rightarrow \theta }
+      \infer2[\ref{eq:thm:minimal_natural_deduction/imp/elim}]{ \psi \rightarrow \theta }
 
       \hypo{ [\varphi \rightarrow \psi]^3 }
       \hypo{ [\varphi]^2 }
-      \infer2[\ref{eq:thm:natural_deduction/imp/elim}]{ \psi }
+      \infer2[\ref{eq:thm:minimal_natural_deduction/imp/elim}]{ \psi }
 
-      \infer2[\ref{eq:thm:natural_deduction/imp/elim}]{ \theta }
+      \infer2[\ref{eq:thm:minimal_natural_deduction/imp/elim}]{ \theta }
 
-      \infer[left label=\( 2 \)]1[\ref{eq:thm:natural_deduction/imp/intro}]{ \varphi \rightarrow \theta }
-      \infer[left label=\( 3 \)]1[\ref{eq:thm:natural_deduction/imp/intro}]{ (\varphi \rightarrow \psi) \rightarrow (\varphi \rightarrow \theta) }
-      \infer[left label=\( 1 \)]1[\ref{eq:thm:natural_deduction/imp/intro}]{ \eqref{eq:def:positive_implicational_propositional_derivation_system/axioms/imp/trans} }
+      \infer[left label=\( 2 \)]1[\ref{eq:thm:minimal_natural_deduction/imp/intro}]{ \varphi \rightarrow \theta }
+      \infer[left label=\( 3 \)]1[\ref{eq:thm:minimal_natural_deduction/imp/intro}]{ (\varphi \rightarrow \psi) \rightarrow (\varphi \rightarrow \theta) }
+      \infer[left label=\( 1 \)]1[\ref{eq:thm:minimal_natural_deduction/imp/intro}]{ \eqref{eq:def:positive_implicational_propositional_derivation_system/axioms/imp/trans} }
     \end{prooftree}
   \end{equation}
 
-  \SubProofOf{thm:natural_deduction/top} Obvious.
+  \SubProofOf{thm:minimal_natural_deduction/top} Obvious.
 
-  \SubProofOf{thm:natural_deduction/and} The rule \eqref{eq:def:minimal_propositional_derivation_system/and/intro} is equivalent by more readable than proving \( \set{ \varphi, \psi } \vdash \varphi \wedge \psi \) directly. Indeed, compare it to
+  \SubProofOf{thm:minimal_natural_deduction/and} The rule \eqref{eq:def:minimal_propositional_derivation_system/and/intro} is equivalent by more readable than proving \( \set{ \varphi, \psi } \vdash \varphi \wedge \psi \) directly. Indeed, compare it to
   \begin{equation*}
     \begin{prooftree}
       \hypo{ \varphi }
@@ -425,19 +451,19 @@
     \end{prooftree}
   \end{equation*}
   which is a derivation of \( \varphi \wedge \psi \) from \( \set{ \varphi, \psi } \) using the axiomatic system. The other direction is also simple:
-  \begin{equation}\label{eq:thm:natural_deduction/and_intro_axiom_derivation}
+  \begin{equation}\label{eq:thm:minimal_natural_deduction/and_intro_axiom_derivation}
     \begin{prooftree}
       \hypo{ [\varphi]^1 }
       \hypo{ [\psi]^2 }
-      \infer2[\ref{eq:thm:natural_deduction/and/intro}]{ \varphi \wedge \psi }
-      \infer[left label=\( 2 \)]1[\ref{eq:thm:natural_deduction/imp/intro}]{ \psi \rightarrow (\varphi \wedge \psi) },
-      \infer[left label=\( 1 \)]1[\ref{eq:thm:natural_deduction/imp/intro}]{ \eqref{eq:def:minimal_propositional_derivation_system/and/intro} },
+      \infer2[\ref{eq:thm:minimal_natural_deduction/and/intro}]{ \varphi \wedge \psi }
+      \infer[left label=\( 2 \)]1[\ref{eq:thm:minimal_natural_deduction/imp/intro}]{ \psi \rightarrow (\varphi \wedge \psi) },
+      \infer[left label=\( 1 \)]1[\ref{eq:thm:minimal_natural_deduction/imp/intro}]{ \eqref{eq:def:minimal_propositional_derivation_system/and/intro} },
     \end{prooftree}
   \end{equation}
 
   The other two rules are trivially connected to the corresponding axioms using a single application of \eqref{eq:def:positive_implicational_propositional_derivation_system/rules/modus_ponens}.
 
-  \SubProofOf{thm:natural_deduction/or} For a more complicated example, consider \eqref{eq:def:minimal_propositional_derivation_system/or/elim}. We have
+  \SubProofOf{thm:minimal_natural_deduction/or} For a more complicated example, consider \eqref{eq:def:minimal_propositional_derivation_system/or/elim}. We have
   \begin{equation*}
     \begin{prooftree}
       \hypo{ \eqref{eq:def:minimal_propositional_derivation_system/or/elim} }
@@ -452,15 +478,63 @@
     \end{prooftree}
   \end{equation*}
 
-  The assumptions of this derivations are \( \varphi \rightarrow \theta \), \( \psi \rightarrow \theta \) and \( \varphi \vee \psi \). Instead of adding them directly as premises of the inference rule \eqref{eq:thm:natural_deduction/or/elim}, we replace the conditional \( \rightarrow \) with labeled assumptions that correspond to \( \varphi \vdash \theta \) and \( \psi \vdash \theta \).
+  The assumptions of this derivations are \( \varphi \rightarrow \theta \), \( \psi \rightarrow \theta \) and \( \varphi \vee \psi \). Instead of adding them directly as premises of the inference rule \eqref{eq:thm:minimal_natural_deduction/or/elim}, we replace the conditional \( \rightarrow \) with labeled assumptions that correspond to \( \varphi \vdash \theta \) and \( \psi \vdash \theta \).
 
-  We can prove that \eqref{eq:thm:natural_deduction/or/elim} implies \eqref{eq:def:minimal_propositional_derivation_system/or/elim} analogously to \eqref{eq:thm:natural_deduction/and_intro_axiom_derivation}.
+  We can prove that \eqref{eq:thm:minimal_natural_deduction/or/elim} implies \eqref{eq:def:minimal_propositional_derivation_system/or/elim} analogously to \eqref{eq:thm:minimal_natural_deduction/and_intro_axiom_derivation}.
 
   The other two rules are again trivial to obtain from the corresponding axioms and vice versa.
 
-  \SubProofOf{thm:natural_deduction/iff} Analogous to what we have already shown.
+  \SubProofOf{thm:minimal_natural_deduction/iff} Analogous to what we have already shown.
 
-  \SubProofOf{thm:natural_deduction/negation} \eqref{eq:thm:natural_deduction/neg/intro} is obtained from \eqref{eq:def:minimal_propositional_derivation_system/neg/intro} by applying \eqref{eq:def:positive_implicational_propositional_derivation_system/rules/modus_ponens} once and \eqref{eq:thm:natural_deduction/neg/elim} is obtained from \eqref{eq:def:minimal_propositional_derivation_system/neg/intro} by applying \eqref{eq:def:positive_implicational_propositional_derivation_system/rules/modus_ponens} twice. Using the rules to derive the axioms is similar to \eqref{eq:thm:natural_deduction/and_intro_axiom_derivation}.
+  \SubProofOf{thm:minimal_natural_deduction/negation} \eqref{eq:thm:minimal_natural_deduction/neg/intro} is obtained from \eqref{eq:def:minimal_propositional_derivation_system/neg/intro} by applying \eqref{eq:def:positive_implicational_propositional_derivation_system/rules/modus_ponens} once and \eqref{eq:thm:minimal_natural_deduction/neg/elim} is obtained from \eqref{eq:def:minimal_propositional_derivation_system/neg/intro} by applying \eqref{eq:def:positive_implicational_propositional_derivation_system/rules/modus_ponens} twice. Using the rules to derive the axioms is similar to \eqref{eq:thm:minimal_natural_deduction/and_intro_axiom_derivation}.
+\end{proof}
+
+\begin{proposition}\label{thm:formulas_are_derivable_iff_conjunction_is_derivable}
+  In derivation systems that extend the \term{minimal propositional derivation system} we have \( \psi_1, \psi_1 \vdash \varphi \) if and only if \( (\psi_1 \wedge \psi_2) \vdash \varphi \).
+\end{proposition}
+\begin{proof}
+  \SufficiencySubProof Let \( \psi_1, \psi_2 \vdash \varphi \). From \eqref{eq:thm:minimal_natural_deduction/and/intro} it follows that \( \psi_1, \psi_2 \vdash \psi_1 \wedge \psi_2 \).
+
+  \Fullref{thm:derivation_system_transitivity} implies that \( \psi_1, \psi_2, (\psi_1 \wedge \psi_2) \vdash \varphi \). Applying the other direction of the same theorem, we remove \( \psi_1 \) and \( \psi_2 \) from the from the left and conclude that
+  \begin{equation*}
+    (\psi_1 \wedge \psi_2) \vdash \varphi.
+  \end{equation*}
+
+  \NecessitySubProof Let \( (\psi_1 \wedge \psi_2) \vdash \varphi \). From \eqref{eq:thm:minimal_natural_deduction/and/elim_left} we obtain \( (\psi_1 \wedge \psi_2) \vdash \psi_1 \) and from \eqref{eq:thm:minimal_natural_deduction/and/elim_right} we obtain \( (\psi_1 \wedge \psi_2) \vdash \psi_2 \).
+
+  As in the other direction, by applying \fullref{thm:derivation_system_transitivity}, we get
+  \begin{equation*}
+    (\psi_1 \wedge \psi_2), \psi_1, \psi_2 \vdash \varphi,
+  \end{equation*}
+  which can be reduced to
+  \begin{equation*}
+    \psi_1, \psi_2 \vdash \varphi.
+  \end{equation*}
+\end{proof}
+
+\begin{proposition}\label{thm:syntactic_contraposition}
+  In the \term{minimal propositional derivation system} we have
+  \begin{align}
+    \varphi \rightarrow \psi &\vdash \neg \psi \rightarrow \neg \varphi \label{eq:thm:syntactic_contraposition/straight} \\
+    \eqref{eq:thm:minimal_propositional_negation_laws/dne}, \neg \varphi \rightarrow \neg \psi &\vdash \psi \rightarrow \varphi \label{eq:thm:syntactic_contraposition/reverse}
+  \end{align}
+\end{proposition}
+\begin{proof}
+  We will only prove \eqref{eq:thm:syntactic_contraposition/straight}. The derivability \eqref{eq:thm:syntactic_contraposition/reverse} can be proved in the same way except that we would use \eqref{eq:thm:minimal_natural_deduction/neg/intro} rather than \eqref{eq:def:propositional_derivation_system/rules/dne}.
+
+  \begin{equation*}
+    \begin{prooftree}
+      \hypo{ \varphi \rightarrow \psi }
+      \hypo{ [\varphi]^1 }
+      \infer2[\eqref{eq:thm:minimal_natural_deduction/imp/elim}]{ \psi }
+
+      \hypo{ [\neg \psi]^2 }
+      \infer2[\eqref{eq:thm:minimal_natural_deduction/neg/elim}]{ \bot }
+
+      \infer[left label=\( 1 \)]1[\eqref{eq:thm:minimal_natural_deduction/neg/intro}]{ \neg \varphi }
+      \infer[left label=\( 2 \)]1[\eqref{eq:thm:minimal_natural_deduction/imp/intro}]{ \neg \psi \rightarrow \neg \varphi }
+    \end{prooftree}
+  \end{equation*}
 \end{proof}
 
 \begin{theorem}\label{thm:minimal_propositional_negation_laws}
@@ -515,18 +589,18 @@
 \begin{proof}
   Most proofs are given in \cite[prop. 3]{DienerMcKubreJordens2016} and \cite[prop. 13]{DienerMcKubreJordens2016}. We will only show that \eqref{eq:thm:minimal_propositional_negation_laws/lnc} is strictly weaker than \eqref{eq:thm:minimal_propositional_negation_laws/efq}.
 
-  For any formula \( \varphi \), we have the \hyperref[thm:natural_deduction]{natural deduction} proof that \( \eqref{eq:thm:minimal_propositional_negation_laws/lnc} \) is a tautology:
+  For any formula \( \varphi \), we have the \hyperref[thm:minimal_natural_deduction]{natural deduction} proof that \( \eqref{eq:thm:minimal_propositional_negation_laws/lnc} \) is a tautology:
   \begin{equation*}
     \begin{prooftree}[separation=3em]
       \hypo{ [\varphi \wedge \neg \varphi]^1 }
-      \infer1[\ref{eq:thm:natural_deduction/and/elim_left}]{ \varphi }
+      \infer1[\ref{eq:thm:minimal_natural_deduction/and/elim_left}]{ \varphi }
 
       \hypo{ [\varphi \wedge \neg \varphi]^1 }
-      \infer1[\ref{eq:thm:natural_deduction/and/elim_right}]{ \neg \varphi }
+      \infer1[\ref{eq:thm:minimal_natural_deduction/and/elim_right}]{ \neg \varphi }
 
-      \infer2[\ref{eq:thm:natural_deduction/neg/elim}]{ \bot }
+      \infer2[\ref{eq:thm:minimal_natural_deduction/neg/elim}]{ \bot }
 
-      \infer[left label=\( 1 \)]1[\ref{eq:thm:natural_deduction/neg/intro}]{ \neg (\varphi \wedge \neg \varphi) }
+      \infer[left label=\( 1 \)]1[\ref{eq:thm:minimal_natural_deduction/neg/intro}]{ \neg (\varphi \wedge \neg \varphi) }
     \end{prooftree}
   \end{equation*}
 
@@ -538,8 +612,8 @@
 \begin{definition}\label{def:intuitionistic_propositional_derivation_system}\mcite[def. 55.10]{OpenLogicFull}
   Semantics matching the \hyperref[def:minimal_propositional_derivation_system]{minimal propositional derivation system} are not very well studied. If we extend it with the axiom \eqref{eq:thm:minimal_propositional_negation_laws/efq}, we obtain the \term{intuitionistic propositional derivation system}.
 
-  \mcite[sec. 10.2]{OpenLogicFull} The following \hyperref[thm:natural_deduction]{natural deduction}-style rule schema can be used interchangeably with \eqref{eq:thm:minimal_propositional_negation_laws/efq}:
-  \begin{equation*}\taglabel[\textrm{EFQ}]{eq:def:intuitionistic_propositional_derivation_system/rules/efq}
+  \mcite[sec. 10.2]{OpenLogicFull} The following \hyperref[thm:minimal_natural_deduction]{natural deduction}-style rule schema can be used interchangeably with \eqref{eq:thm:minimal_propositional_negation_laws/efq}:
+  \begin{equation*}\taglabel[\textrm{R} \textrm{EFQ}]{eq:def:intuitionistic_propositional_derivation_system/rules/efq}
     \begin{prooftree}
       \hypo{ \bot }
       \infer1[\ref{eq:def:intuitionistic_propositional_derivation_system/rules/efq}]{ \varphi }
@@ -666,12 +740,12 @@
 
   We call this, very simply, the (classical) \term{propositional derivation system}.
 
-  \mcite[sec. 10.2]{OpenLogicFull} The following \hyperref[thm:natural_deduction]{natural deduction}-style rule schema can be used interchangeably with \eqref{eq:thm:minimal_propositional_negation_laws/dne}:
-  \begin{equation*}\taglabel[\textrm{DNE}]{eq:def:propositional_derivation_system/rules/dne}
+  \mcite[sec. 10.2]{OpenLogicFull} The following \hyperref[thm:minimal_natural_deduction]{natural deduction}-style rule schema can be used interchangeably with \eqref{eq:thm:minimal_propositional_negation_laws/dne}:
+  \begin{equation*}\taglabel[\textrm{R} \textrm{DNE}]{eq:def:propositional_derivation_system/rules/dne}
     \begin{prooftree}
       \hypo{ [\neg \varphi]^n }
       \ellipsis {} { \bot }
-      \infer1[\ref{eq:def:propositional_derivation_system/rules/dne}]{ \varphi }
+      \infer[left label=\( n \)]1[\ref{eq:def:propositional_derivation_system/rules/dne}]{ \varphi }
     \end{prooftree}
   \end{equation*}
 \end{definition}
@@ -684,60 +758,94 @@
   The \hyperref[def:propositional_derivation_system]{classical propositional derivation system} is \hyperref[def:derivability_and_satisfiability/soundness]{sound} and \hyperref[def:derivability_and_satisfiability/completeness]{complete} with respect to \hyperref[def:propositional_semantics]{classical semantics}.
 \end{theorem}
 
-\begin{definition}\label{def:first_order_derivation_system}\mcite[def 20.3]{OpenLogicFull}
-  If we wish to work with first-order logic rather than merely propositional logic, we must extend the \hyperref[def:propositional_derivation_system]{classical propositional derivation system}. We call this, very simply, the (classical) \term{first-order derivation system}. We choose to add \hyperref[thm:natural_deduction]{natural deduction}-style rules but we might just as well add axioms instead.
+\medskip
+
+\begin{definition}\label{def:first_order_derivation_system}\mcite{LeanNaturalDeduction}
+  If we wish to work with first-order logic rather than merely propositional logic, we must extend the \hyperref[def:propositional_derivation_system]{classical propositional derivation system}. We call this, very simply, the (classical) \term{first-order derivation system}.
+
+  Note that due to the eigenvariable condition in \eqref{eq:def:first_order_derivation_system/forall/intro} and \eqref{eq:def:first_order_derivation_system/exists/elim}, these rules cannot be reformulated as axioms because they impose conditions on the entire derivation. The other rules can easily be reduced to axioms, however.
 
   \begin{thmenum}
-    \thmitem{def:first_order_derivation_system/constants} We first add two \hyperref[def:proof_derivation_system/rules]{derivation rules} for quantification regarding constant. Let \( \varphi \) be a formula such that \( \xi \in \boldop{Free}(\varphi) \). Let \( c \) be a constant symbol that does not occur in \( \varphi \) nor in any undischarged assumption in the derivation of \( \varphi[\xi \mapsto c] \). Let \( \psi \) be another formula that does not contain \( c \). We add the following two rules:
+    \thmitem{def:first_order_derivation_system/eigenvariables} We first add two \hyperref[def:proof_derivation_system/rules]{derivation rules} for quantification regarding constant. Let \( \varphi \) be a formula. Let \( \xi \) be a variable that is not free in any undischarged assumption in the entire derivation (it may be free in \( \varphi \) as long as \( \varphi \) is not itself an undischarged assumption).
+
+    We add the following two rules:
 
     \begin{minipage}{0.45\textwidth}
-      \begin{equation*}\taglabel[\textrm{R} \( \forall^+ \)]{eq:def:first_order_derivation_system/forall_intro}
+      \begin{equation*}\taglabel[\textrm{R} \( \forall^+ \)]{eq:def:first_order_derivation_system/forall/intro}
         \begin{prooftree}
-          \hypo{\varphi[\xi \mapsto c]}
-          \infer1[\ref{eq:def:first_order_derivation_system/forall_intro}]{\qforall \xi \varphi}
+          \hypo{ \varphi }
+          \infer1[\ref{eq:def:first_order_derivation_system/forall/intro}]{ \qforall \xi \varphi }
         \end{prooftree}
       \end{equation*}
     \end{minipage}
     \hfill
     \begin{minipage}{0.45\textwidth}
-      \begin{equation*}\taglabel[\textrm{R} \( \exists^- \)]{eq:def:first_order_derivation_system/exists_elim}
+      \begin{equation*}\taglabel[\textrm{R} \( \exists^- \)]{eq:def:first_order_derivation_system/exists/elim}
         \begin{prooftree}
-          \hypo{\qexists \xi \varphi}
-          \hypo{[\varphi[\xi \mapsto c]]^n}
-          \ellipsis {} {\psi}
-          \infer[left label=\( n \)]2[\ref{eq:def:first_order_derivation_system/exists_elim}]{\psi}
+          \hypo{ \qexists \xi \varphi }
+          \hypo{ [\varphi]^n }
+          \ellipsis {} { \psi }
+          \infer[left label=\( n \)]2[\ref{eq:def:first_order_derivation_system/exists/elim}]{ \psi }
         \end{prooftree}
       \end{equation*}
     \end{minipage}
 
-    \thmitem{def:first_order_derivation_system/ground_terms} We also add two \hyperref[def:proof_derivation_system/rules]{derivation rules} for any \hyperref[def:first_order_syntax/ground_term]{ground term} \( \tau \):
+    where \( \psi \) is a formula that does not contain \( \xi \) freely.
+
+    A variable \( \xi \) satisfying these conditions is called an \term{eigenvariable} of the rule. See \fullref{ex:def:first_order_derivation_system/eigenvariables} for further discussion of the necessity of these rules. The rules depend not only on their premises but on the entire derivation so they do not precisely fit \fullref{def:proof_derivation_system}. The trick is to add undischarged assumptions in the derivation (up until this point) to some set \( \Delta \) and then work with \( \Gamma \cup \Delta \) as the set of axioms. This is done to avoid polluting \( \Gamma \) with assumptions that may later be discharged.
+
+    \mcite[def. 22.8]{OpenLogicFull} Note that we only impose this eigenvariable condition on undischarged assumptions. In order to emulate this without natural deduction, we can reformulate these rule schemas as:
 
     \begin{minipage}{0.45\textwidth}
-      \begin{equation*}\taglabel[\textrm{R} \( \forall^- \)]{eq:def:first_order_derivation_system/forall_elim}
+      \begin{equation*}\taglabel[\textrm{R} \( \widetilde \forall^+ \)]{eq:def:first_order_derivation_system/forall/intro_simplified}
         \begin{prooftree}
-          \hypo{\qforall \xi \varphi}
-          \infer1[\ref{eq:def:first_order_derivation_system/forall_elim}]{\varphi[\xi \mapsto \tau]}
+          \hypo{ \psi \rightarrow \varphi }
+          \infer1[\ref{eq:def:first_order_derivation_system/forall/intro_simplified}]{ \psi \rightarrow (\qforall \xi \varphi) }
         \end{prooftree}
       \end{equation*}
     \end{minipage}
     \hfill
     \begin{minipage}{0.45\textwidth}
-      \begin{equation*}\taglabel[\textrm{R} \( \exists^+ \)]{eq:def:first_order_derivation_system/exists_intro}
+      \begin{equation*}\taglabel[\textrm{R} \( \widetilde \exists^- \)]{eq:def:first_order_derivation_system/exists/elim_simplified}
         \begin{prooftree}
-          \hypo{\varphi[\xi \mapsto \tau]}
-          \infer1[\ref{eq:def:first_order_derivation_system/exists_intro}]{\qexists \xi \varphi}
+          \hypo{ (\qforall \xi \varphi) \rightarrow \psi }
+          \infer1[\ref{eq:def:first_order_derivation_system/exists/elim_simplified}]{ \varphi \rightarrow \psi }
+        \end{prooftree}
+      \end{equation*}
+    \end{minipage}
+
+    where \( \xi \) must not be free in the set \( \Gamma \) of assumptions (in the sense of \fullref{def:proof_derivation_system}).
+
+    The implication in \eqref{eq:def:first_order_derivation_system/forall/intro_simplified} guarantees that \( \varphi \vdash \qforall \xi \varphi \) is an invalid derivation from \( \Gamma = \varnothing \), which matches the behavior of \ref{eq:def:first_order_derivation_system/forall/intro} in \fullref{ex:def:first_order_derivation_system/eigenvariables}.
+
+    \thmitem{def:first_order_derivation_system/terms} We also add two \hyperref[def:proof_derivation_system/rules]{derivation rules} for any term \( \tau \):
+
+    \begin{minipage}{0.45\textwidth}
+      \begin{equation*}\taglabel[\textrm{R} \( \forall^- \)]{eq:def:first_order_derivation_system/forall/elim}
+        \begin{prooftree}
+          \hypo{ \qforall \xi \varphi }
+          \infer1[\ref{eq:def:first_order_derivation_system/forall/elim}]{ \varphi[\xi \mapsto \tau] }
+        \end{prooftree}
+      \end{equation*}
+    \end{minipage}
+    \hfill
+    \begin{minipage}{0.45\textwidth}
+      \begin{equation*}\taglabel[\textrm{R} \( \exists^+ \)]{eq:def:first_order_derivation_system/exists/intro}
+        \begin{prooftree}
+          \hypo{ \varphi[\xi \mapsto \tau] }
+          \infer1[\ref{eq:def:first_order_derivation_system/exists/intro}]{ \qexists \xi \varphi }
         \end{prooftree}
       \end{equation*}
     \end{minipage}
 
     Compare this to \fullref{thm:quantifier_satisfiability}.
 
-    \thmitem{def:first_order_derivation_system/equality} Finally, we also add three rules for formal equality. For any \hyperref[def:first_order_syntax/ground_term]{ground terms} \( \tau \) and \( \sigma \) any formula \( \varphi \) with \( \xi \in \boldop{Free}(\varphi) \), we also add the following rules:
+    \thmitem{def:first_order_derivation_system/equality} Finally, we also add three rules for formal equality. For any terms \( \tau \) and \( \sigma \) any formula \( \varphi \) with \( \xi \in \boldop{Free}(\varphi) \), we also add the following rules:
 
     \begin{minipage}{0.3\textwidth}
       \begin{equation*}\taglabel[\textrm{R} \( \doteq^+ \)]{eq:def:first_order_derivation_system/equality/intro}
         \begin{prooftree}
-          \infer0[\ref{eq:def:first_order_derivation_system/equality/intro}]{\tau \doteq \tau}
+          \infer0[\ref{eq:def:first_order_derivation_system/equality/intro}]{ \tau \doteq \tau }
         \end{prooftree}
       \end{equation*}
     \end{minipage}
@@ -745,9 +853,9 @@
     \begin{minipage}{0.3\textwidth}
       \begin{equation*}\taglabel[\textrm{R} \( \doteq_L^- \)]{eq:def:first_order_derivation_system/equality/elim_left}
         \begin{prooftree}
-          \hypo{\tau \doteq \sigma}
-          \hypo{\varphi[\xi \mapsto \tau]}
-          \infer2[\ref{eq:def:first_order_derivation_system/equality/elim_left}]{\varphi[\xi \mapsto \sigma]}
+          \hypo{ \tau \doteq \sigma }
+          \hypo{ \varphi[\xi \mapsto \tau] }
+          \infer2[\ref{eq:def:first_order_derivation_system/equality/elim_left}]{ \varphi[\xi \mapsto \sigma] }
         \end{prooftree}
       \end{equation*}
     \end{minipage}
@@ -755,75 +863,186 @@
     \begin{minipage}{0.3\textwidth}
       \begin{equation*}\taglabel[\textrm{R} \( \doteq_L^+ \)]{eq:def:first_order_derivation_system/equality/elim_right}
         \begin{prooftree}
-          \hypo{\tau \doteq \sigma}
-          \hypo{\varphi[\xi \mapsto \sigma]}
-          \infer2[\ref{eq:def:first_order_derivation_system/equality/elim_right}]{\varphi[\xi \mapsto \tau]}
+          \hypo{ \tau \doteq \sigma }
+          \hypo{ \varphi[\xi \mapsto \sigma] }
+          \infer2[\ref{eq:def:first_order_derivation_system/equality/elim_right}]{ \varphi[\xi \mapsto \tau] }
         \end{prooftree}
       \end{equation*}
     \end{minipage}
   \end{thmenum}
 \end{definition}
 
-\begin{proposition}\label{thm:syntactic_implicit_universal_quantification}
-  Fix a formula \( \varphi \) a variable \( \xi \) over any first-order language \( \mscrL \). The formulas \( \varphi \) and \( \qforall \xi \varphi \) are \hyperref[def:derivation_system_derivability]{interderivable} in the \hyperref[def:first_order_derivation_system]{classical first-order derivation system}.
+\begin{example}\label{ex:def:first_order_derivation_system/eigenvariables}
+  \hfill
+  \begin{thmenum}
+    \thmitem{ex:def:first_order_derivation_system/eigenvariables/invalid_universal_closure} We explicitly forbid the syntactic equivalent of \fullref{thm:implicit_universal_quantification} in order to avoid derivations like \fullref{ex:def:first_order_derivation_system/eigenvariables/invalid_universal}. Consider the derivation
+    \begin{equation*}
+      \begin{prooftree}
+        \hypo{ [\varphi]^1 }
+        \infer1[\ref{eq:def:first_order_derivation_system/forall/intro}]{ \qforall \xi \varphi }
+      \end{prooftree}
+    \end{equation*}
 
-  Compare this result with \fullref{thm:semantic_implicit_universal_quantification}.
+    The problem here is that \( \varphi \) is itself an undischarged assumption, hence \eqref{eq:def:first_order_derivation_system/forall/intro} is actually inapplicable here and the derivation is invalid.
+
+    \thmitem{ex:def:first_order_derivation_system/eigenvariables/invalid_universal}\mcite[sec. 20.3]{OpenLogicFull} To see why the eigenvariable conditions in \fullref{def:first_order_derivation_system/eigenvariables} are essential, consider the following derivation of \( \qforall \xi \varphi \) from \( \qexists \xi \varphi \):
+    \begin{equation*}
+      \begin{prooftree}
+        \hypo{ \qexists \xi \varphi }
+
+        \hypo{ [\varphi]^1 }
+        \infer1[\ref{eq:def:first_order_derivation_system/forall/intro}]{ \qforall \xi \varphi }
+
+        \infer[left label=\( 1 \)]2[\ref{eq:def:first_order_derivation_system/exists/elim}]{ \qforall \xi \varphi }
+      \end{prooftree}
+    \end{equation*}
+
+    This proof relies on \fullref{ex:def:first_order_derivation_system/eigenvariables/invalid_universal_closure}, which we have already demonstrated to be invalid.
+
+    \thmitem{ex:def:first_order_derivation_system/eigenvariables/invalid_existence} Another invalid derivation, in case \( \xi \in \boldop{Free}(\varphi) \), is
+    \begin{equation*}
+      \begin{prooftree}
+        \hypo{ \qexists \xi \varphi }
+
+        \hypo{ [\varphi]^1 }
+        \infer1{ \varphi }
+
+        \infer[left label=\( 1 \)]2[\ref{eq:def:first_order_derivation_system/exists/elim}]{ \varphi }
+      \end{prooftree}
+    \end{equation*}
+    \thmitem{ex:def:first_order_derivation_system/eigenvariables/universal_implies_existence} On the other hand, \( \qexists \xi \varphi \) can easily be derived from \( \qforall \xi \varphi \):
+    \begin{equation*}
+      \begin{prooftree}
+        \hypo{ \qforall \xi \varphi }
+        \infer1[\ref{eq:def:first_order_derivation_system/forall/elim}]{ \varphi = \varphi[\xi \mapsto \xi] }
+        \infer1[\ref{eq:def:first_order_derivation_system/exists/intro}]{ \qexists \xi \varphi }
+      \end{prooftree}
+    \end{equation*}
+
+    \thmitem{ex:def:first_order_derivation_system/eigenvariables/universal_implies_universal} It is also valid to perform the completely meaningless derivation:
+    \begin{equation*}
+      \begin{prooftree}
+        \hypo{ \qforall \xi \varphi }
+        \infer1[\ref{eq:def:first_order_derivation_system/forall/elim}]{ \varphi = \varphi[\xi \mapsto \xi] }
+        \infer1[\ref{eq:def:first_order_derivation_system/forall/intro}]{ \qforall \xi \varphi }
+      \end{prooftree}
+    \end{equation*}
+  \end{thmenum}
+\end{example}
+
+\begin{proposition}\label{thm:syntactic_first_order_quantifiers_are_dual}
+  For any formula \( \varphi \) and any variable \( \xi \) over \( \mscrL \), we have the following interderivable pairs:
+  \begin{align}
+    \neg \qforall \xi \varphi &\T{and} \qexists \xi \neg \varphi \label{thm:syntactic_first_order_quantifiers_are_dual/negation_of_universal} \\
+    \neg \qexists \xi \varphi &\T{and} \qforall \xi \neg \varphi \label{thm:syntactic_first_order_quantifiers_are_dual/negation_of_existential}
+  \end{align}
 \end{proposition}
+\begin{proof}
+  We will only show \eqref{thm:syntactic_first_order_quantifiers_are_dual/negation_of_universal}. First,
+
+  \begin{equation*}
+    \begin{prooftree}
+      \hypo{ \neg \qforall \xi \varphi }
+      \hypo{ [\qforall \xi \varphi]^1 }
+      \infer2[\eqref{eq:thm:minimal_natural_deduction/neg/elim}]{ \bot }
+      \infer[left label=\( 1 \)]1[\eqref{eq:def:propositional_derivation_system/rules/dne}]{ \qforall \xi \varphi }
+      \infer1[\eqref{eq:def:first_order_derivation_system/forall/elim}]{ \varphi }
+
+      \hypo{ [\neg \varphi]^2 }
+      \infer2[\eqref{eq:thm:minimal_natural_deduction/neg/elim}]{ \bot }
+
+      \infer[left label=\( 2 \)]1[\eqref{eq:thm:minimal_natural_deduction/neg/intro}]{ \neg \varphi }
+      \infer1[\eqref{eq:def:first_order_derivation_system/exists/intro}]{ \qexists \xi \neg \varphi }
+    \end{prooftree}
+  \end{equation*}
+
+  Conversely,
+  \begin{equation*}
+    \begin{prooftree}
+      \hypo{ \qexists \xi \neg \varphi }
+
+      \hypo{ [\qforall \xi \varphi]^1 }
+      \infer1[\eqref{eq:def:first_order_derivation_system/forall/elim}]{ \varphi }
+
+      \hypo{ [\neg \varphi]^2 }
+      \infer2[\eqref{eq:thm:minimal_natural_deduction/neg/elim}]{ \bot }
+      \infer[left label=\( 1 \)]1[\eqref{eq:thm:minimal_natural_deduction/neg/intro}]{ \neg \qforall \xi \varphi }
+
+      \infer[left label=\( 2 \)]2[\eqref{eq:def:first_order_derivation_system/exists/elim}]{ \neg \qforall \xi \varphi }
+    \end{prooftree}
+  \end{equation*}
+\end{proof}
 
 \begin{theorem}\label{thm:classical_first_order_logic_is_sound_and_complete}\mcite[thm. 20.32 \\ corr. 23.19]{OpenLogicFull}
   The \hyperref[def:first_order_derivation_system]{classical first-order derivation system} is \hyperref[def:derivability_and_satisfiability/soundness]{sound} and \hyperref[def:derivability_and_satisfiability/completeness]{complete} with respect to \hyperref[def:first_order_semantics]{classical semantics}.
+
+  The completeness part is known as \enquote{G\"odel's completeness theorem} and requires an elaborate proof.
 \end{theorem}
 
 \smallskip
 
 \begin{corollary}[First-order compactness theorem]\label{thm:first_order_compactness_theorem}\mcite[thm. 23.21]{OpenLogicFull}
-  A set \( \Gamma \) of first-order formulas is \hyperref[def:propositional_semantics/satisfiability]{satisfiable} if and only if every finite subset of \( \Gamma \) is satisfiable.
+  A set \( \Gamma \) of closed first-order formulas is \hyperref[def:propositional_semantics/satisfiability]{satisfiable} if and only if every finite subset of \( \Gamma \) is satisfiable.
 \end{corollary}
 
-\begin{theorem}[Syntactic deduction theorem]\label{thm:syntactic_deduction_theorem}\mcite[thm. 22.25]{OpenLogicFull}
+\begin{theorem}[First-order syntactic deduction theorem]\label{thm:first_order_syntactic_deduction_theorem}\mcite[thm. 22.25]{OpenLogicFull}
+  Let \( \Gamma \) be a set of closed formulas over some first-order language, and let \( \varphi \) and \( \psi \) be a arbitrary closed formulas.
+
   In the \hyperref[def:minimal_propositional_derivation_system]{first-order derivation system}, \( \Gamma, \psi \vdash \varphi \) holds if and only if \( \Gamma \vdash \psi \rightarrow \varphi \) holds.
 
-  The theorem also holds in the \hyperref[def:propositional_derivation_system]{classical propositional derivation system} due to \fullref{rem:propositional_logic_as_first_order_logic} but also in the \hyperref[def:intuitionistic_propositional_derivation_system]{intuitionistic}, \hyperref[def:intuitionistic_propositional_derivation_system]{minimal} and \hyperref[def:positive_implicational_propositional_derivation_system]{positive implicational} derivation systems (see \mcite[thm. 2.2]{Wasilewska2010}).
-
-  This result allows us to connect deduction in the object language and deduction in the metalanguage (see \fullref{rem:induction}). Compare with \fullref{thm:semantic_deduction_theorem}.
+  Compare this result with \fullref{thm:propositional_syntactic_deduction_theorem} and \fullref{thm:first_order_semantic_deduction_theorem}.
 \end{theorem}
-
-\begin{proposition}\label{thm:formulas_are_derivable_iff_conjunction_is_derivable}
-  In derivation systems where \fullref{thm:syntactic_deduction_theorem} holds, we have \( \psi_1, \psi_1 \vdash \varphi \) if and only if \( (\psi_1 \wedge \psi_2) \vdash \varphi \).
-\end{proposition}
 \begin{proof}
-  \SufficiencySubProof Let \( \psi_1, \psi_2 \vdash \varphi \).
+  The proof is analogous to \fullref{thm:propositional_syntactic_deduction_theorem} except that in the deduction step we can have the two additional rules \eqref{eq:def:first_order_derivation_system/forall/intro_simplified} and \eqref{eq:def:first_order_derivation_system/exists/elim_simplified} (as discussed in \fullref{def:first_order_derivation_system}, all other rules can easily be reinterpreted as axioms).
 
-  By applying the \hyperref[thm:syntactic_deduction_theorem]{deduction theorem} to \eqref{eq:def:minimal_propositional_derivation_system/and/intro}, we obtain
-  \begin{equation*}
-    \psi_1 \vdash \parens[\Big]{ \psi_2 \rightarrow (\psi_1 \wedge \psi_2) }
-  \end{equation*}
-  and by applying it again,
-  \begin{equation}\label{eq:thm:formulas_are_derivable_iff_conjunction_is_derivable/conjunction_derivation}
-    \psi_1, \psi_2 \vdash (\psi_1 \wedge \psi_2).
-  \end{equation}
+  \begin{itemize}
+    \item If \eqref{eq:def:first_order_derivation_system/forall/intro_simplified} is the last rule to have been applied in the derivation of \( \varphi \) from \( \Gamma \cup \set{ \psi } \), then \( \varphi = \theta \rightarrow \qforall \xi \rho \) for some formulas \( \theta \) and \( \rho \) where \( \xi \not\in \boldop{Free}(\theta) \). Furthermore, the eigenvariable condition know that \( \xi \) is not free in \( \theta \).
 
-  \Fullref{thm:derivation_system_transitivity} implies that \( \psi_1, \psi_2, (\psi_1 \wedge \psi_2) \vdash \varphi \). Applying the same theorem again but this time removing \( \psi_1 \) and \( \psi_2 \) from the from the left due to \eqref{eq:thm:formulas_are_derivable_iff_conjunction_is_derivable/conjunction_derivation}, we conclude that
-  \begin{equation*}
-    (\psi_1 \wedge \psi_2) \vdash \varphi.
-  \end{equation*}
+    In order to apply \eqref{eq:def:first_order_derivation_system/forall/intro_simplified}, \( \theta \rightarrow \rho \) must already be part of the derivation. By the inductive hypothesis, we have \( \Gamma \vdash \psi \rightarrow (\theta \rightarrow \rho) \).
 
-  \NecessitySubProof Let \( (\psi_1 \wedge \psi_2) \vdash \varphi \). By applying the deduction theorem to \eqref{eq:def:minimal_propositional_derivation_system/and/elim_left} and \eqref{eq:def:minimal_propositional_derivation_system/and/elim_right}, we obtain that
-  \begin{equation*}
-    (\psi_1 \wedge \psi_2) \vdash \psi_1
-  \end{equation*}
-  and
-  \begin{equation*}
-    (\psi_1 \wedge \psi_2) \vdash \psi_2.
-  \end{equation*}
+    We will use natural deduction to derive \( (\psi \wedge \theta) \rightarrow \rho \) from \( \psi \rightarrow (\theta \rightarrow \rho) \):
+    \begin{equation*}
+      \begin{prooftree}
+        \hypo{ [\psi \wedge \theta]^1 }
+        \infer1[\eqref{eq:thm:minimal_natural_deduction/and/elim_left}]{ \psi }
+        \hypo{ \psi \rightarrow (\theta \rightarrow \rho) }
+        \infer2[\eqref{eq:thm:minimal_natural_deduction/imp/elim}]{ \theta \rightarrow \rho }
 
-  As in the other direction, by applying \fullref{thm:derivation_system_transitivity}, we obtain
-  \begin{equation*}
-    (\psi_1 \wedge \psi_2), \psi_1, \psi_2 \vdash \varphi,
-  \end{equation*}
-  which can be reduced to
-  \begin{equation*}
-    \psi_1, \psi_2 \vdash \varphi
-  \end{equation*}
-  by applying the same theorem again.
+        \hypo{ [\psi \wedge \theta]^1 }
+        \infer1[\eqref{eq:thm:minimal_natural_deduction/and/elim_right}]{ \theta }
+        \infer2[\eqref{eq:thm:minimal_natural_deduction/imp/elim}]{ \rho }
+
+        \infer[left label=\( 1 \)]1[\eqref{eq:thm:minimal_natural_deduction/imp/intro}]{ (\psi \wedge \theta) \rightarrow \rho }
+      \end{prooftree}
+    \end{equation*}
+
+    We can now apply \eqref{eq:def:first_order_derivation_system/forall/intro_simplified} to the formula \( (\psi \wedge \theta) \rightarrow \rho \) to obtain
+    \begin{equation*}
+      (\psi \wedge \theta) \rightarrow \qforall \xi \rho.
+    \end{equation*}
+
+    This application is correct because \( \xi \) is not free in neither \( \psi \) nor \( \theta \). We now go backwards:
+    \begin{equation*}
+      \begin{prooftree}
+        \hypo{ (\psi \wedge \theta) \rightarrow \qforall \xi \rho }
+
+        \hypo{ [\psi]^1 }
+        \hypo{ [\theta]^2 }
+        \infer2[\eqref{eq:thm:minimal_natural_deduction/and/intro}]{ (\psi \wedge \theta) }
+        \infer2[\eqref{eq:thm:minimal_natural_deduction/imp/elim}]{ \qforall \xi \rho }
+        \infer[left label=\( 2 \)]1[\eqref{eq:thm:minimal_natural_deduction/imp/intro}]{ \theta \rightarrow (\qforall \xi \rho) }
+        \infer[left label=\( 1 \)]1[\eqref{eq:thm:minimal_natural_deduction/imp/intro}]{ \psi \rightarrow (\theta \rightarrow \qforall \xi \rho) }
+      \end{prooftree}
+    \end{equation*}
+
+    Hence we have shown that
+    \begin{equation*}
+      \Gamma \vdash \psi \rightarrow \underbrace{(\theta \rightarrow \qforall \xi \rho)}_{\varphi},
+    \end{equation*}
+    which was our goal.
+
+    \item If, instead, \eqref{eq:def:first_order_derivation_system/exists/elim_simplified} is the last rule to have been applied, then \( \varphi = (\qexists \xi \theta) \rightarrow \rho \), where \( \xi \not\in \boldop{Free}(\rho) \) and \( \theta \rightarrow \rho \) is part of the derivation.
+
+    The rest follows by applying \fullref{thm:syntactic_contraposition} \( \theta \rightarrow \rho \) and then using \fullref{thm:syntactic_first_order_quantifiers_are_dual}.
+  \end{itemize}
 \end{proof}

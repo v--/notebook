@@ -484,7 +484,7 @@
 \end{proof}
 
 \begin{proposition}\label{thm:first_order_quantifiers_are_dual}
-  For any formula \( \varphi \) and any variable \( \xi \) over \( \mscrL \), we have the following equivalence:
+  For any formula \( \varphi \) and any variable \( \xi \) over \( \mscrL \), we have the following equivalences:
   \begin{align}
     \neg \qforall \xi \varphi &\gleichstark \qexists \xi \neg \varphi \label{thm:first_order_quantifiers_are_dual/negation_of_universal} \\
     \neg \qexists \xi \varphi &\gleichstark \qforall \xi \neg \varphi \label{thm:first_order_quantifiers_are_dual/negation_of_existential}
@@ -509,7 +509,7 @@
   \end{align*}
 \end{proof}
 
-\begin{proposition}\label{thm:semantic_implicit_universal_quantification}
+\begin{proposition}\label{thm:implicit_universal_quantification}
   For any formula \( \varphi \) and any variable \( \xi \) over \( \mscrL \), the formulas \( \varphi \) and \( \qforall \xi \varphi \) are \hyperref[def:first_order_semantics/equivalence]{semantically equivalent}.
 
   This allows us to skip quantifiers when writing formulas without changing their validity. Given a formula \( \varphi \) with free variables \( \xi_1, \ldots, \xi_n \), we call
@@ -518,7 +518,7 @@
   \end{equation*}
   its \term{universal closure} and say that \( \varphi \) itself is \term{implicitly universally quantified}. Universal closures of quantifierless formulas are called \term{universal formulas}.
 
-  Compare this result with \fullref{thm:syntactic_implicit_universal_quantification}.
+  See \fullref{ex:def:first_order_derivation_system/eigenvariables/invalid_universal_closure} for how this fails for derivability.
 \end{proposition}
 \begin{proof}
   Let \( \mscrX = (X, I) \) be a structure that satisfies \( \varphi \). Let \( v \) be a variable assignment in \( \mscrX \). Then for any \( x \in X \), the modified variable assignment \( v_{\xi \mapsto x} \) also satisfies \( \varphi \), i.e.
@@ -624,8 +624,54 @@
   This general procedure of creating a new extension language in order to obtain an equisatisfiable formula without the outer quantifier is called \term{existential quantifier elimination}.
 \end{remark}
 
-\begin{theorem}[Semantic deduction theorem]\label{thm:semantic_deduction_theorem}\mcite[thm. 16.29]{OpenLogicFull}
-  The entailment \( \Gamma, \psi \vDash \varphi \) holds if and only if \( \Gamma \vDash \psi \to \varphi \) holds.
+\begin{theorem}[First-order semantic deduction theorem]\label{thm:first_order_semantic_deduction_theorem}\mcite[thm. 16.29]{OpenLogicFull}
+  Let \( \Gamma \) be a set of formulas over some first-order language, let \( \psi \) be an arbitrary formula and let \( \varphi \) be a \hyperref[def:first_order_syntax/ground_formula]{closed formula}.
 
-  This result allows us to connect deduction in the object language and deduction in the metalanguage (see \fullref{rem:induction}). Compare with \fullref{thm:syntactic_deduction_theorem}.
+  Then the entailment \( \Gamma, \varphi \vDash \psi \) holds if and only if \( \Gamma \vDash \varphi \to \psi \) holds.
+
+  See \fullref{rem:deduction_with_free_variables} for the importance of the condition that \( \varphi \) is a closed formula.
+
+  Compare this result with \fullref{thm:propositional_semantic_deduction_theorem} and \fullref{thm:first_order_syntactic_deduction_theorem}.
 \end{theorem}
+\begin{proof}
+  \SufficiencySubProof Let \( \Gamma, \varphi \vDash \psi \) and let \( \mscrX = (X, I) \) be a model for \( \Gamma \).
+
+  \begin{itemize}
+    \item If \( \mscrX \vDash \varphi \), then \( \mscrX \vDash \Gamma \cup \set{ \varphi } \) and from our assumption we conclude \( \mscrX \vDash \psi \). Hence for any variable assignment \( v \) we have
+    \begin{equation*}
+      (\varphi \rightarrow \psi)\Bracks{v}
+      =
+      (\varphi\Bracks{v} \rightarrow \psi\Bracks{v})
+      =
+      (T \rightarrow T)
+      =
+      T.
+    \end{equation*}
+
+    \item If \( \mscrX \not\vDash \varphi \), then, since \( \varphi \) is closed and the valuation \( \varphi\Bracks{v} \) does not depend on the variable assignment \( v \), for any \( v \) we have
+    \begin{equation}\label{eq:thm:first_order_semantic_deduction_theorem/closedness_condition}
+      (\varphi \rightarrow \psi)\Bracks{v}
+      =
+      (\varphi\Bracks{v} \rightarrow \psi\Bracks{v})
+      =
+      (F \rightarrow \psi\Bracks{v})
+      =
+      T.
+    \end{equation}
+
+  \end{itemize}
+
+  In both cases we conclude that \( \mscrX \vDash \varphi \rightarrow \psi \). Therefore \( \Gamma \vDash \varphi \rightarrow \psi \).
+
+  \NecessitySubProof Let \( \Gamma \vDash \varphi \rightarrow \psi \) and let \( \mscrX = (X, I) \) be a model for \( \Gamma \cup \set{ \varphi } \). Let \( v \) be an arbitrary assignment in \( \mscrX \).
+
+  Obviously \( \mscrX \vDash \Gamma \) and \( \mscrX \vDash \varphi \). We thus have \( (\varphi \rightarrow \psi)\Bracks{v} = T \) and \( \varphi\Bracks{v} = T \), which only leaves \( \psi\Bracks{v} = T \) as a possible option.
+
+  Hence \( \mscrX \vDash \psi \) and, consequently, \( \Gamma \cup \set{ \varphi } \vDash \psi \).
+\end{proof}
+
+\begin{remark}\label{rem:deduction_with_free_variables}
+  In order to highlight the importance of closed formulas in certain theorems, we will take a closed look at the proof of \fullref{thm:first_order_semantic_deduction_theorem}.
+
+  Note that \eqref{eq:thm:first_order_semantic_deduction_theorem/closedness_condition} only holds because the formula \( \varphi \) is closed. If it were not closed, we could only conclude that there exists a variable assignment \( v_0 \) such that \( \varphi\Bracks{v_0} = F \). Clearly then \( (\varphi \rightarrow \psi)\Bracks{v_0} = T \). But there may exist another assignment \( v \) such that \( \varphi\Bracks{v} = T \) and \( \psi\Bracks{v} = F \), which would imply that \( \mscrX \not\vDash \varphi \rightarrow \psi \).
+\end{remark}
