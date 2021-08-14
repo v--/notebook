@@ -1,79 +1,137 @@
 \subsection{Zermelo-Fraenkel set theory}\label{subsec:zermelo_fraenkel_set_theory}
 
 \begin{definition}\label{def:inductive_set}
-  \todo{Define inductive sets}
+  A set is called \term{inductive} if contains the empty set and is closed under the \hyperref[def:basic_set_operations/successor]{successor operator}. The existence of (at least one) inductive set is an axiom of \logic{ZFC} --- see \fullref{def:zfc/infinity}.
 \end{definition}
 
-\begin{definition}\label{def:zfc}\mcite[271]{Enderton1977Sets}
-  We introduce \term{Z}ermelo – \term{F}raenkel set theory with the axiom of choice (ZF\term{C}). Consider the \hyperref[def:first_order_language]{first-order logic language} with equality \( = \), no functional symbols and a single binary predicate \( \in \). Note that we can take the language not to have formal equality and then use \fullref{def:zfc/A1} as an axiom schema to define equality in terms of \( \in \).
+\begin{definition}\label{def:choice_function}
+  Let \( \mscrA \) be a family of nonempty sets. A \term{choice function} on \( \mscrA \) is a (total) \hyperref[def:function]{function} \( f: \mscrA \to \bigcup \mscrA \) such that \( f(A) \in A \) for all \( A \in \mscrA \).
 
-  Given a unary formula \( \varphi(x) \), we can construct a (syntactic) object
-  \begin{equation*}
-    A = \{ a \colon \varphi(a) \}
-  \end{equation*}
-  that we call a \term{class}. Not all classes can be defined to have meaningful semantics (e.g. the class of all classes easily leads to paradoxes like \fullref{thm:russels_paradox}). We define sets in ZFC as classes with semantics given by a model for the following axioms (exclude \fullref{def:zfc/A8} to obtain ZF). Classes that do not satisfy these axioms are called \term{proper classes} and are often said to be \term{too big} to be sets, e.g. the class of all sets or the class of all vector spaces). In this document, our main limitation when working with classes rather than sets is not being able to talk about a class not being a member of another class, however this is also not necessary for us.
+  A choice function on \( A \) \enquote{chooses} an element out of each member of \( \mscrA \). We sometimes have a natural choice function, for example in \fullref{thm:polynomial_quotient_rings_equinumerous_with_module_of_polynomials}, however for general \hyperref[def:equivalence_relation/quotient]{quotient sets} the existence of a choice function is not obvious.
 
+  The existence of a choice function for family of nonempty sets is an axiom of \logic{ZFC} --- see \fullref{def:zfc/choice}.
+\end{definition}
+
+\begin{definition}\label{def:zfc}
+  The \hyperref[def:first_order_theory]{first-order theory} commonly abbreviated as \term{\logic{ZFC}} is based on the same language as \hyperref[def:naive_set_theory]{na\"ive set theory} but with different axioms. The three letters refer to:
+  \begin{itemize}
+    \item \boldrm{\logic{Z}}ermelo, who formulated the entire theory minus the \hyperref[def:zfc/replacement]{axiom schema of replacement} and the \hyperref[def:zfc/foundation]{axiom of foundation}.
+    \item\mcite[sec. 63.8]{OpenLogicFull} \boldrm{\logic{F}}raenkel, who simultaneously with Skolem reformulated the theory within first-order logic and then added the axiom schema of replacement.
+    \item The \hyperref[def:zfc/choice]{axiom of \boldrm{\logic{c}}hoice}, which is part of Zermelo's original theory but is controversial enough to attract special attention --- see \fullref{subsec:axiom_of_choice}.
+  \end{itemize}
+
+  We are usually only interested in either \logic{ZFC}, which include all axioms listed in this definition. If we wish to avoid the axiom of choice --- for example when proving the equivalences in \fullref{thm:axiom_of_choice_equivalences} --- we instead use \logic{ZF}, which excludes the axiom of choice. The abbreviation of the latter theory is inaccurate historically but is nevertheless established.
+
+  The full list of axioms is:
   \begin{thmenum}
-    \thmitem[def:zfc/A1]{A1}(extensionality) Two sets are equal if they have the same elements (given by set membership)
+    \thmitem{def:zfc/extensionality} The \term{axiom of extensionality}, as defined in \fullref{def:naive_set_theory/extensionality}. This is also the only axiom of the theory that does not deal with existence.
 
-    \thmitem[def:zfc/A2]{A2}(empty set) The following class is a set
+    \thmitem{def:zfc/specification}\mcite[sec. 62.2]{OpenLogicFull} The \term{axiom schema of specification}, also known as the axiom schema of \term{separation} or of \term{restricted comprehension}, states that given a set \( A \), any formula \( \varphi \) with a single free variable defines a subset of \( A \). For each such formula \( \varphi \), the following is an axiom:
+    \begin{equation}\label{eq:def:zfc/specification}
+      \qforall \beta \qexists \alpha \qforall \eta \parens[\Big]{ \eta \in \alpha \leftrightarrow (\varphi[\xi \mapsto \eta] \wedge \eta \in \beta) }.
+    \end{equation}
+
+    Compare this axiom to \hyperref[def:naive_set_theory/unrestricted_comprehension]{unrestricted comprehension}. Informally, this axiom can be obtained by taking the result of unrestricted comprehension
     \begin{equation*}
-      \varnothing \coloneqq \{ x \colon x \neq x \}.
+      \set{ x \given \varphi[\xi \mapsto x] }
+    \end{equation*}
+    and intersecting it with some set \( A \). As mentioned in \fullref{def:set_builder_notation}, in set-builder notation such a set is usually denoted by
+    \begin{equation*}
+      \set{ x \in A \given \varphi[\xi \mapsto x] }.
     \end{equation*}
 
-    \thmitem[def:zfc/A3]{A3}(pairing) If \( A \) and \( B \) are sets, then
-    \begin{equation*}
-      \{ A, B \}
-    \end{equation*}
-    is also a set. In particular, \( \{ A \} = \{ A, A \} \) is a set.
+    Unlike unrestricted comprehension, however we can only take subsets from an object that we know is a set and not from the universe itself.
 
-    \thmitem[def:zfc/A4]{A4}(union) If \( A \) is a set, then \( \bigcup A \) (see \fullref{def:basic_set_operations/union}) is also a set.
+    \thmitem{def:zfc/power_set}\mcite[sec. 62.5]{OpenLogicFull} The \term{axiom of power sets} states that \hyperref[def:basic_set_operations/power_set]{power set} of any set exists. Symbolically,
+    \begin{equation}\label{eq:def:zfc/power_set}
+      \qforall \alpha \qexists \beta \qforall \xi \parens[\Big]{ \xi \in \beta \leftrightarrow ( \qforall {\eta \in \xi} \eta \in \alpha ) }.
+    \end{equation}
 
-    \thmitem[def:zfc/A5]{A5}(power set) If \( A \) is a set, \( \pow(A) \) (see \fullref{def:basic_set_operations/power_set}) is also a set.
+    \thmitem{def:zfc/union}\mcite[sec. 62.3]{OpenLogicFull} The \term{axiom of union} states that the \hyperref[def:basic_set_operations/union]{union} of any set exists. Symbolically,
+    \begin{equation}\label{eq:def:zfc/union}
+      \qforall \alpha \qexists \beta \qforall \xi \parens[\Big]{ \xi \in \beta \leftrightarrow ( \qexists {\eta \in \alpha} \xi \in \eta ) }.
+    \end{equation}
 
-    \thmitem[def:zfc/A6]{A6}(specification) If \( A \) is a set and \( \varphi \) is a formula, then
-    \begin{equation*}
-      \{ x \in A \colon \varphi(x) \}
-    \end{equation*}
-    is a set.
+    \thmitem{def:zfc/pairing}\mcite[sec. 62.4]{OpenLogicFull} The \term{axiom of pairing} states that for any sets \( A \) and \( B \), the set \( \set{ A, B } \) exists. Symbolically,
+    \begin{equation}\label{eq:def:zfc/pairing}
+      \qforall \alpha \qforall \beta \qexists \gamma \qforall \xi \parens[\Big]{ \xi \in \gamma \leftrightarrow ( \xi \doteq \alpha \vee \xi \doteq \beta) }.
+    \end{equation}
 
-    \thmitem[def:zfc/A7]{A7}(infinity) There exists an \hyperref[def:inductive_set]{inductive set}.
+    \thmitem{def:zfc/infinity}\mcite[sec. 62.6]{OpenLogicFull} The \term{axiom of infinity} states that an \hyperref[def:inductive_set]{inductive set} exists. Symbolically,
+    \begin{equation}\label{eq:def:zfc/infinity}
+      \qexists \alpha \qforall \xi \parens[\Big]
+        {
+          \xi \in \alpha \leftrightarrow \parens[\Big]
+            {
+              \hyperref[eq:def:empty_set/predicate]{\op{IsEmpty}[\xi]} \vee \parens{ \qexists \eta \hyperref[eq:def:basic_set_operations/power_set/predicate]{\op{IsSucc}[\eta, \xi]} }
+            }
+        }
+    \end{equation}
 
-    \thmitem[def:zfc/A8]{A8}(choice; see \fullref{thm:axiom_of_choice_equivalences}) Let \( \mscrM \neq 0 \) and for all \( m \in M \), let \( X_m \) be a nonempty set and \( X_k \cap X_m = \varnothing \) whenever \( m \neq k \). Then there exists a set \( M \) such that for every \( m \in M \), the intersection \( M \cap X_m \) (see \fullref{def:basic_set_operations/intersection}) has exactly one member.
+    This axiom is a simple and convenient way to state that infinite sets exist. Without it, we can only deal with finite sets unless we include some other axiom to replace it.
 
-    \thmitem[def:zfc/A9]{A9}(replacement) Given a set \( X \) and a formula \( \varphi(x, y) \), if for every set \( x \in X \) there exists a unique set \( y \) such that \( \varphi(x, y) \) holds, then
-    \begin{equation*}
-      Y \coloneqq \{ y \colon \exists x \in X, \varphi(x, y) \}
-    \end{equation*}
-    is a set.
+    \thmitem{def:zfc/choice}\mcite[sec. 69.4]{OpenLogicFull} The \term{axiom of choice} states that a \hyperref[def:choice_function]{choice function} exists for any family of nonempty sets. To state the axiom via a formula, we will avoid functions and only state it in terms of the image of the choice function. That is, we will formulate that for each family \( \mscrA \) of nonempty sets there exists a set \( B \) such that \( A \cap B \) is a singleton set for each \( A \in \mscrA \). Symbolically,
+    \begin{equation}\label{eq:def:zfc/choice}
+      \qforall \alpha \parens[\Big]
+        {
+          \qforall {\xi \in \alpha} \neg \hyperref[eq:def:empty_set/predicate]{\op{IsEmpty}[\xi]}
+          \rightarrow
+          \qexists \beta \qforall {\xi \in \alpha} \qExists {\eta \in \beta} \eta \in \xi
+        }
+    \end{equation}
+    where we have used the convention regarding existence and uniqueness described in \fullref{rem:first_order_formula_conventions/exists_unique}.
 
-    \thmitem[def:zfc/A10]{A10}(regularity) For every nonempty set \( A \), there exists a member \( a \in A \) such that
-    \begin{equation*}
-      a \cap A \neq \varnothing.
-    \end{equation*}
+    See \fullref{subsec:axiom_of_choice} for further discussion of this axiom.
+
+    \thmitem{def:zfc/replacement}\mcite[sec. 63.7]{OpenLogicFull} The \term{axiom schema of replacement} roughly states that every \hyperref[rem:function_definition]{mapping} that is definable via a formula of \logic{ZFC} is a function. As for the \hyperref[def:zfc/choice]{axiom of choice}, we only formulate the axiom via the image of the function. More concretely, given a formula \( \varphi \) with two free variables, the following is an axiom:
+    \begin{equation}\label{eq:def:zfc/replacement}
+      \qforall \alpha \parens[\Big]
+        {
+          \qforall {\xi \in \alpha} \qExists \eta \varphi[\xi, \eta]
+          \rightarrow
+          \qexists \beta \qforall \eta \parens[\Big]{ \eta \in \beta \leftrightarrow \qexists {\xi \in \alpha} \varphi[\xi, \eta] }
+        }
+    \end{equation}
+
+    This is used, for example, in \fullref{thm:transfinite_recursion}, where \fullref{thm:zfc_existence_theorems} is not sufficient.
+
+    \thmitem{def:zfc/foundation}\mcite[sec. 64.4]{OpenLogicFull} The \term{axiom of foundation} states that every nonempty set contains a member disjoint from the set itself. Symbolically,
+    \begin{equation}\label{eq:def:zfc/foundation}
+      \qforall \alpha \parens[\Big]
+        {
+          \neg \hyperref[eq:def:empty_set/predicate]{\op{IsEmpty}[\alpha]}
+          \rightarrow
+          \qexists {\beta \in \alpha} \neg \qexists \xi \parens{ \xi \in \alpha \wedge \xi \in \beta } }.
+        }
+    \end{equation}
   \end{thmenum}
 \end{definition}
 
+\begin{proposition}\label{thm:zfc_existence_theorems}
+  \todo{Prove that the introduced up until now sets are sets in ZFC}.
+\end{proposition}
+
 \begin{proposition}\label{thm:zfc_no_set_is_member_of_itself}
-  \todo{Prove that in ZFC no set is a member of itself}.
+  \todo{Prove that in \logic{ZFC} no set is a member of itself}.
 
   In particular, there is no set of all sets.
 \end{proposition}
 
-\begin{definition}\label{def:smallest_inductive_set}
-  The smallest \hyperref[def:inductive_set]{inductive set} is
-  \begin{equation*}
-    \omega \coloneqq \bigcap \{ A \colon A \text{ is an inductive set} \}.
-  \end{equation*}
+\begin{proposition}\label{thm:intersection_of_inductive_sets}
+  If \( \mscrA \) is a \hyperref[rem:family_of_sets]{family} of \hyperref[def:inductive_set]{inductive sets}, then the intersection \( \bigcup \mscrA \) is also an inductive set.
+\end{proposition}
+\begin{proof}
+  Clearly \( \varnothing \) belongs to the intersection. Now let \( x \in \bigcup \mscrA \). Then \( \op{succ}(x) \in A \) for every \( A \in \mscrA \) and hence \( \op{succ}(x) \in \bigcup \mscrA \). Therefore \( \bigcup \mscrA \) is itself an inductive set.
+\end{proof}
 
-  The elements of \( \omega \) are
-  \begin{equation*}
-    \varnothing, S(\varnothing), S(S(\varnothing)),
-  \end{equation*}
-  where \( S \) is the set-theoretic successor operator (see \fullref{def:basic_set_operations/successor}).
+\begin{proposition}\label{thm:smallest_inductive_set_existence}\mcite{MathSE:smallest_inductive_set_existence}
+  There exists a \hyperref[def:poset_extremal_points/maximum_and_minimum]{smallest} inductive set \( \mscrA \). We denote this set by \( \omega \).
+\end{proposition}
+\begin{proof}
+  We cannot prove this theorem by taking the intersection of all inductive sets since the later is not a set in the set of \logic{ZFC} and we want all of our theorems to be valid in \logic{ZFC}. Hence we will use another approach.
 
-  These numbers are called \term{von Neumann ordinals}.
-\end{definition}
+  Let \( A \) be an inductive set. Define \( \omega \) to be the intersection of all inductive subsets of \( A \). Then \( \omega \) is contained in any other inductive set \( B \). Indeed, \( A \cap B \) is inductive and \( \omega \subseteq A \cap B \subseteq A \). Thus \( \omega \) is indeed the smallest inductive set (with respect to set inclusion).
+\end{proof}
 
 \begin{proposition}\label{thm:binary_cartesian_product_is_set}
   If \( A \) and \( B \) are sets, their product \( A \times B \) is also a set.
@@ -89,11 +147,3 @@
 
   Thus \( A \times B \) is a set since \( A \times B \subseteq \pow(\pow(A \cup B)) \).
 \end{proof}
-
-\begin{definition}\label{def:sequence}
-  A \term{sequence} \( \set{ A_k }_{k=1}^\infty \) is an indexed family whose domain \( \mscrK \) consists of the positive integers. Sometimes finite \( n \)-tuples are referred to as \term{finite sequences}, in which case the usual sequences are referred to as \term{infinite sequences}. Both are special cases of \hyperref[def:topological_net]{topological nets}.
-
-  We say that \( \{ X_{k_m} \}_{k=1}^\infty \) is a \term{subsequence} of \( \{ X_k \}_{k=1}^\infty \) if the sequence \( \{ k_m \}_{k=1}^\infty \) of positive integers is strictly monotone.
-
-  Subsequences of \( \{ X_k \}_{k=1}^\infty \) are usually denoted by adding another index as a subscript, i.e. \( \{ x_{k_m} \}_{k=1}^\infty \).
-\end{definition}

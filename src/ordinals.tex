@@ -6,14 +6,65 @@
   More precisely, every ordinal is defined as a concrete representative of an isomorphism class of well-ordered sets (this is not really factorization because there is no set of all ordinals by \fullref{thm:burali_forti_paradox}). This does not seem very important but it will be in \fullref{subsec:cardinals}.
 \end{remark}
 
-\begin{definition}\label{def:well_ordered_set}\mcite[def. 63.1]{OpenLogicFull}
-  A \hyperref[def:totally_ordered_set]{totally ordered set} \( (\mscrP, \leq) \) is said to be \term{well-ordered} if every nonempty set has a \hyperref[def:poset_extremal_points/maximum_and_minimum]{minimum}.
+\begin{definition}\label{def:sequence}
+  A \term{sequence} \( \set{ A_k }_{k=1}^\infty \) is an indexed family whose domain \( \mscrK \) consists of the positive integers. Sometimes finite \( n \)-tuples are referred to as \term{finite sequences}, in which case the usual sequences are referred to as \term{infinite sequences}. Both are special cases of \hyperref[def:topological_net]{topological nets}.
 
-  We cannot easily formulate the theory of well-ordered sets as an extension of the first-order \hyperref[def:totally_ordered_set]{theory of totally ordered sets}. This is why we only study well-ordered sets in the context of ZFC.
+  We say that \( \{ X_{k_m} \}_{k=1}^\infty \) is a \term{subsequence} of \( \{ X_k \}_{k=1}^\infty \) if the sequence \( \{ k_m \}_{k=1}^\infty \) of positive integers is strictly monotone.
+
+  Subsequences of \( \{ X_k \}_{k=1}^\infty \) are usually denoted by adding another index as a subscript, i.e. \( \{ x_{k_m} \}_{k=1}^\infty \).
 \end{definition}
 
+\begin{definition}\label{def:well_founded_relation}
+  Let \hyperref[def:binary_relation]{binary relation} \( \prec \) on a set \( A \) (not necessarily satisfying any axioms).
+
+  An \term{infinitely descending sequence} is a \hyperref[def:sequence]{sequence} \( \set{ x_k }_{k=1}^\infty \) such that \( x_{k+1} \prec x_k \) for all \( k \in \set{ 1, 2, \ldots } \). That is,
+  \begin{equation*}
+    \cdots \prec x_3 \prec x_2 \prec x_1.
+  \end{equation*}
+
+  The relation \( \prec \) is called \term{well-founded} if there exists no infinitely descending sequence.
+
+  We cannot easily formulate the theory of well-founded relations as an extension of the first-order \hyperref[def:totally_ordered_set]{theory of totally ordered sets}. This is why we only study well-relations sets in the context of \logic{ZFC}.
+\end{definition}
+
+\begin{proposition}\label{thm:infinite_descent_partial_order}
+  In a \hyperref[def:poset]{poset} \( (\mscrP, \leq) \), the strict relation \( < \) is \hyperref[def:well_founded_relation]{well-founded} if and only if every nonempty subset \( A \subseteq \mscrP \) has a \hyperref[def:poset_extremal_points/maximal_and_minimal_element]{minimal element}.
+\end{proposition}
+\begin{proof}
+  \SufficiencySubProof Suppose that \( \leq \) is well-founded and let \( A \subseteq \mscrP \). Suppose that \( A \) has no minimal element.
+
+  If \( A \) is finite, we cannot construct an infinitely descending sequence because of irreflexivity of \( < \). If \( A \) is infinite, then we can construct an infinitely descending sequence using well-founded recursion as follows:
+  \begin{itemize}
+    \item Let \( x_1 \) be any element of \( A \).
+    \item Given \( x_k \), let \( x_{k+1} \) be any element of \( A \) such that \( x_{k+1} < x_k \). We know that such an element exists because \( x_k \) is not minimal in \( A \).
+  \end{itemize}
+
+  This construction contradicts the well-foundedness of  \( \leq \), hence \( A \) must have a minimal element.
+
+  \NecessitySubProof Suppose that every subset of \( \mscrP \) has a minimal element. Suppose that there exists an infinitely descending sequence \( \set{ x_k }_{k=1}^\infty \). Then the set \( \set{ x_k \given x \in \set{ 1, 2, \ldots } } \) has no minimal element, which contradicts our assumption. Hence no sequence in \( \mscrP \) is infinitely descending and \( < \) is well-founded.
+\end{proof}
+
+\begin{definition}\label{def:transitive_set}
+  A set \( A \) is \term{transitive} if any of the following equivalent conditions are satisfied:
+  \begin{thmenum}
+    \thmitem{def:transitive_set/membership} If \( x \in A \) and \( y \in x \), then \( y \in A \).
+    \thmitem{def:transitive_set/inclusion} If \( x \in A \), then \( x \subseteq A \).
+  \end{thmenum}
+\end{definition}
+
+\begin{definition}\label{def:well_ordered_set}\mcite[def. 63.1]{OpenLogicFull}
+  A \hyperref[def:totally_ordered_set]{totally ordered set} \( (\mscrP, \leq) \) is said to be \term{well-ordered} if either of the following conditions hold:
+  \begin{thmenum}
+    \thmitem{def:well_ordered_set/direct} Every nonempty subset of \( \mscrP \) has a \hyperref[def:poset_extremal_points/maximum_and_minimum]{minimum}.
+    \thmitem{def:well_ordered_set/well_founded} The order \( \leq \) is \hyperref[def:well_founded_relation]{well-founded}.
+  \end{thmenum}
+\end{definition}
+\begin{proof}
+  The equivalence follows from \fullref{thm:infinite_descent_partial_order} and \fullref{thm:totally_ordered_minimal_element_is_minimum}.
+\end{proof}
+
 \begin{theorem}[Well-ordered induction]\label{thm:well_ordered_induction}\mcite[prop. 63.3]{OpenLogicFull}
-  Denote by \( \mscrP \) a (free or bound) variable that ranges over well-ordered sets in ZFC (not in the metatheory) and by \( < \) the respective string order. Then for any formula \( \varphi \) in ZFC and for every \( \xi \in \boldop{Free}(\varphi) \) the following formula is valid:
+  Denote by \( \mscrP \) a (free or bound) variable that ranges over well-ordered sets in \logic{ZFC} (not in the metatheory) and by \( < \) the respective string order. Then for any formula \( \varphi \) in \logic{ZFC} and for every \( \xi \in \boldop{Free}(\varphi) \) the following formula is valid:
   \begin{equation}\label{eq:thm:well_ordered_induction}
     \parens[\Big]
       {
@@ -33,7 +84,7 @@
   \end{equation}
 \end{theorem}
 \begin{proof}
-  Fix a formula \( \varphi \) in ZFC and \( \xi \in \boldop{Free}(\varphi) \). Assume that we are working in a model of ZFC and fix a variable assignment \( v \) in this model. We will show that the \hyperref[def:material_implication/contrapositive]{contraposition} of \eqref{eq:thm:well_ordered_induction} holds in this model.
+  Fix a formula \( \varphi \) in \logic{ZFC} and \( \xi \in \boldop{Free}(\varphi) \). Assume that we are working in a model of \logic{ZFC} and fix a variable assignment \( v \) in this model. We will show that the \hyperref[def:material_implication/contrapositive]{contraposition} of \eqref{eq:thm:well_ordered_induction} holds in this model.
 
   Suppose that there exists a value \( x \in v(\mscrP) \) such that \( \varphi\Bracks{v_{\xi \mapsto x}} = F \). That is,
   \begin{align*}
@@ -43,7 +94,7 @@
 
   Let \( x_0 \) be the smallest such value (which is guaranteed to exist because \( v(\mscrP) \) is well-ordered). Thus the inductive hypothesis \( \qforall {\zeta < x_0} \varphi[\xi \mapsto \zeta] \) holds but the inductive step conclusion \( \varphi[\xi \mapsto x_0] \) does not.
 
-  Since \( v \) was chosen arbitrarily, this is true for all variable assignments and actually for all models of ZFC. That is, we have the entailment
+  Since \( v \) was chosen arbitrarily, this is true for all variable assignments and actually for all models of \logic{ZFC}. That is, we have the entailment
   \begin{equation}\label{eq:thm:well_ordered_induction/contraposition}
     \parens[\Big]{ \qexists {\eta \in P} \neg \varphi[\xi \mapsto \eta] }
     \vDash
@@ -57,12 +108,6 @@
 
   \Fullref{thm:first_order_semantic_deduction_theorem}, \fullref{thm:boolean_equivalences/contrapositive}, \fullref{thm:boolean_equivalences/conditional_cnf} and \fullref{thm:first_order_quantifiers_are_dual} show that \eqref{eq:thm:well_ordered_induction/contraposition} is equivalent to \eqref{eq:thm:well_ordered_induction}. Since we have show the former, we can conclude the later. The formula \( \varphi \) was chosen arbitrarily so we can conclude that \eqref{eq:thm:well_ordered_induction} holds for all formulas.
 \end{proof}
-
-\begin{definition}\label{def:transitive_set}\mcite[71]{Enderton1977Sets}
-  A set \( A \) is called \term{transitive} if \( a \in A \) implies \( a \subseteq A \).
-\end{definition}
-
-\medskip
 
 \begin{definition}\label{def:ordinal}\mcite[thm. 7L]{Enderton1977Sets}
   A set is called an \term{ordinal} or an \term{ordinal number} if it is \hyperref[def:well_ordered_set]{well-ordered} under set membership.
@@ -84,9 +129,9 @@
 \end{proof}
 
 \begin{theorem}[Transfinite induction]\label{thm:transfinite_induction}\mcite[thm. 63.15]{OpenLogicFull}
-  Denote by \( \op{isord} \) a formula in \hyperref[def:zfc]{ZFC} with a single free variable \( \xi \) which is valid whenever \( \xi \) is an ordinal. Note that we cannot use the test \( \xi \in \cat{Ord} \) within the object language because it is not a member of the universe --- the domain of the category is a proper class by \fullref{thm:burali_forti_paradox}.
+  Denote by \( \op{isord} \) a formula in \hyperref[def:zfc]{\logic{ZFC}} with a single free variable \( \xi \) which is valid whenever \( \xi \) is an ordinal. Note that we cannot use the test \( \xi \in \cat{Ord} \) within the object language because it is not a member of the universe --- the domain of the category is a proper class by \fullref{thm:burali_forti_paradox}.
 
-  For any formula \( \varphi \) in ZFC and for every \( \xi \in \boldop{Free}(\varphi) \) the following formula is valid:
+  For any formula \( \varphi \) in \logic{ZFC} and for every \( \xi \in \boldop{Free}(\varphi) \) the following formula is valid:
   \begin{multline}\label{eq:def:transfinite_induction}
     \qforall \eta \parens[\Big]
       {
@@ -113,6 +158,10 @@
   The proof is analogous to the proof of \fullref{thm:well_ordered_induction} except that rather than taking elements of a fixed well-ordered set, we take ordinals.
 \end{proof}
 
+\begin{theorem}\label{thm:transfinite_recursion}
+  \todo{Transfinite recursion}
+\end{theorem}
+
 \begin{proposition}\label{thm:ordinal_properties}
   \hyperref[def:ordinal]{Ordinals} have the following basic properties:
   \begin{thmenum}
@@ -130,7 +179,7 @@
     \begin{equation}\label{eq:thm:ordinal_properties/set_of_smaller_ordinals}
       \set{ \beta \in \cat{Ord} \given \beta < \alpha }
     \end{equation}
-    of smaller than \( \alpha \) ordinals. As a consequence, this set is well-defined in ZFC.
+    of smaller than \( \alpha \) ordinals. As a consequence, this set is well-defined in \logic{ZFC}.
 
     \thmitem{thm:ordinal_properties/transitive_set_of_ordinals} The set \( A \) is an ordinal if and only if \( A \) is a transitive set of ordinals.
   \end{thmenum}
@@ -179,7 +228,7 @@
 \end{proof}
 
 \begin{theorem}[Burali-Forti paradox]\label{thm:burali_forti_paradox}\mcite[thm. 63.19]{OpenLogicFull}
-  Assuming ZFC, there is no set of all ordinals.
+  Assuming \logic{ZFC}, there is no set of all ordinals.
 \end{theorem}
 \begin{proof}
   Aiming at a contradiction, suppose that \( A \) is a containing all ordinals. If \( \alpha \in A \) and \( \beta \in \alpha \), transitivity of \( \in \) implies that \( \beta \in A \) since \( \beta \) is again an ordinal by \fullref{thm:element_of_ordinal_is_ordinal}. Thus \( A \) is a transitive set of ordinals, which \fullref{thm:ordinal_properties/transitive_set_of_ordinals} is itself an ordinal. Hence \( A \in A \).
@@ -199,7 +248,7 @@
 
   Then any initial segment \( \mscrP_{<x} \) of \( \mscrQ \) is isomorphic to some ordinal \( \alpha_x \), which by \fullref{thm:ordinal_properties/uniqueness} is unique.
 
-  By \hyperref[def:zfc/A8], the following set exists and is a function:
+  By \hyperref[def:zfc/choice], the following set exists and is a function:
   \begin{equation*}
     f \coloneqq \set{ (\alpha_x, x) \given x \in Q }.
   \end{equation*}

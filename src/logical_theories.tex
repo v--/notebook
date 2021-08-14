@@ -8,37 +8,50 @@
 
   Due to \fullref{rem:propositional_logic_as_first_order_logic}, this definition also holds for formulas in propositional logic.
 
-  The set \( \Gamma \) is called \term{closed} if it equals its own closure. A closed sets of formulas is also sometimes called a \term{theory} in e.g. \cite[def. 33.1]{OpenLogicFull} but we will not put this restriction because it is not clear what are the axioms of an arbitrary closed set of formulas. Instead, we will refer to the set of axioms itself as a theory.
+  The set \( \Gamma \) is called \term{closed} if it equals its own closure. A closed set of closed formulas is also sometimes called a \term{theory} in e.g. \cite[def. 33.1]{OpenLogicFull} but we will not put this restriction because it is not clear what are the axioms of an arbitrary closed set of formulas. Instead, we will use the term \enquote{theory} to mean the set of axioms itself.
+
+  As discussed in \fullref{rem:deduction_with_free_variables}, we are only interested in closed formulas. If a formula is not closed, we instead consider its \hyperref[thm:semantic_implicit_universal_quantification]{universal closure}.
 
   If it is necessary to distinguish between derivability and entailment, we can use the syntactic closure \( \cl^\vdash \) and semantic closure \( \cl^\vDash \).
 
   \begin{thmenum}
-    \thmitem{def:first_order_theory/axiomatized}\mcite[def. 17.1]{OpenLogicFull} We say that the set \( \Gamma \) is \term{axiomatized} by \( \Delta \) if
-    \begin{equation*}
-      \Gamma = \set{ \varphi \in \boldop{Form} \given \Delta \vDash \varphi }.
-    \end{equation*}
+    \thmitem{def:first_order_theory/axiomatized}\mcite[def. 17.1]{OpenLogicFull} We say that the set \( \Gamma \) is \term{axiomatized} by \( \Delta \) if \( \Gamma = \cl(\Delta) \).
 
     \thmitem{def:first_order_theory/complete}\mcite[def. 33.7]{OpenLogicFull} The set \( \Gamma \) of formulas is said to be \term{complete} if every for every formula in \( \varphi \), either \( \Gamma \vDash \varphi \) or \( \Gamma \vDash \neg \varphi \).
 
     This is not to be confused with \fullref{def:derivability_and_satisfiability/completeness}, which defines completeness of derivation systems via how it relates to semantics.
-
-    \thmitem{def:first_order_theory/consistent}\mcite[def. 22.6]{OpenLogicFull} The set \( \Gamma \) of formulas is said to be \term[bg=противоречива,ru=противоречивая]{inconsistent} if \( \Gamma \vDash \bot \) and \term{consistent} otherwise.
-
-    In \hyperref[def:intuitionistic_logic]{intuitionistic logic}, every inconsistent theory obviously matches the set \( \boldop{Form} \) of all formulas because of \eqref{eq:thm:minimal_propositional_negation_laws/efq}.
   \end{thmenum}
 \end{definition}
 
-\begin{proposition}\label{thm:formulas_satisfiable_iff_consistent}
-  Assuming classical logic, a set \( \Gamma \) of formulas is \hyperref[def:propositional_semantics/satisfiability]{satisfiable} if and only if it is \hyperref[def:first_order_theory/consistent]{consistent}.
+\begin{proposition}\label{thm:formulas_unsatisfiable_iff_inconsistent}
+   Assuming \hyperref[def:classical_logic]{classical logic}, a set \( \Gamma \) of closed formulas is \hyperref[def:propositional_semantics/satisfiability]{unsatisfiable} if and only if it is semantically \hyperref[def:proof_derivation_system_consistency]{inconsistent}.
 \end{proposition}
 \begin{proof}
-  We will prove that \( \Gamma \) is unsatisfiable if and only if it is inconsistent.
+  \SufficiencySubProof Assume first that \( \Gamma \) is unsatisfiable. Then for all zero models of \( \Gamma \) any formula is satisfied vacuously, in particular that any model of \( \Gamma \) satisfies \( \bot \). Thus \( \Gamma \vDash \bot \) and, by \fullref{thm:classical_first_order_logic_is_sound_and_complete}, \( \Gamma \vdash \bot \). Therefore \( \Gamma \) is inconsistent.
 
-  \SufficiencySubProof Assume first that \( \Gamma \) is unsatisfiable. Then for all zero models of \( \Gamma \) we can derive any universal statement, in particular that any model of \( \Gamma \) satisfies \( \bot \). Thus \( \Gamma \) is inconsistent.
+  \NecessitySubProof Let \( \Gamma \) be inconsistent and suppose that \( \mscrX = (X, I) \) is a model of \( \Gamma \). Fix any valuation \( v \) in \( \mscrX \). Since \( \Gamma \vdash \bot \), \fullref{thm:classical_first_order_logic_is_sound_and_complete} implies that \( \bot\Bracks{v} = T \).
 
-  \NecessitySubProof Let \( \Gamma \) be inconsistent and suppose that \( \mscrX = (X, I) \) is a model of \( \Gamma \). Fix any valuation \( v \) in \( \mscrX \). Since \( \Gamma \vDash \bot \), obviously \( \bot\Bracks{v} = T \).
+  By the \hyperref[def:first_order_valuation/formula_valuation]{definition of formula valuation}, however, we have \( \bot\Bracks{v} = F \). The obtained contradiction shows that \( \mscrX \) cannot be a model of \( \Gamma \) and since this structure was chosen arbitrarily, we conclude that \( \Gamma \) is unsatisfiable.
+\end{proof}
 
-  But from \fullref{def:first_order_valuation/formula_valuation} it follows that \( \bot\Bracks{v} = F \). The obtained contradiction shows that \( \mscrX \) cannot be a model of \( \Gamma \) and since this structure was chosen arbitrarily, we conclude that \( \Gamma \) is unsatisfiable.
+\begin{theorem}[First-order compactness theorem]\label{thm:first_order_compactness_theorem}\mcite[thm. 23.21]{OpenLogicFull}
+  Assuming \hyperref[def:classical_logic]{classical logic}, for a set \( \Gamma \) of closed first-order formulas we have \( \Gamma \vDash \varphi \) for the closed formula \( \varphi \) if and only if there exists a finite subset of \( \Delta \subseteq \Gamma \) such that \( \Delta \vDash \varphi \).
+\end{theorem}
+\begin{proof}
+  \SufficiencySubProof Suppose that \( \Gamma \vDash \varphi \).  By \fullref{thm:classical_first_order_logic_is_sound_and_complete}, \( \Gamma \vdash \varphi \). Every \hyperref[def:derivation_system_derivability]{derivation} is finite, hence \( \varphi \) has a derivation from only finitely many formulas of \( \Gamma \). Denote these formulas by \( \Delta \). Then \( \Delta \vdash \varphi \) and, by the other direction of \fullref{thm:classical_first_order_logic_is_sound_and_complete}, we have \( \Delta \vDash \varphi \).
+
+  \NecessitySubProof If \( \Delta \vDash \varphi \) for some finite \( \Delta \subseteq \Gamma \), then necessarily \( \Gamma \vDash \varphi \).
+\end{proof}
+
+\begin{corollary}\label{thm:first_order_compactness_theorem}\mcite[thm. 23.21]{OpenLogicFull}
+  If every finite subset of \( \Gamma \) is satisfiable, then \( \Gamma \) itself is satisfiable.
+
+  This is also called \enquote{the compactness theorem}.
+\end{corollary}
+\begin{proof}
+  We can restate the theorem using its contraposition: If \( \Gamma \) is unsatisfiable, then there exists a finite subset \( \Delta \subseteq \Gamma \) that is also unsatisfiable. Due to \fullref{thm:formulas_unsatisfiable_iff_inconsistent}, this can be also restated as: If \( \Gamma \) is inconsistent, then there exists a finite subset \( \Delta \subseteq \Gamma \) that is also inconsistent.
+
+  But the last formulation is a special case of \fullref{thm:first_order_compactness_theorem} with \( \varphi = \bot \).
 \end{proof}
 
 \begin{definition}\label{def:category_of_first_order_models}
@@ -73,7 +86,7 @@
   \begin{itemize}
     \item We define the category \hyperref[def:category_of_topological_spaces]{\( \cat{Top} \)}  of topological spaces and all of its related categories within set theory without a corresponding first-order theory.
 
-    \item The category \hyperref[def:category_of_sets]{\( \cat{Set} \)} of sets with respect to either ZFC or na\"ive set theory is not the same as the category of models of set theory. Instead, it is a category within a fixed set theory. Within the metalogic of this document, we work within a fixed model of ZFC with respect to \hyperref[def:classical_logic]{classical logic}.
+    \item The category \hyperref[def:category_of_sets]{\( \cat{Set} \)} of sets with respect to either \logic{ZFC} or na\"ive set theory is not the same as the category of models of set theory. Instead, it is a category within a fixed set theory. Within the metalogic of this document, we work within a fixed model of \logic{ZFC} with respect to \hyperref[def:classical_logic]{classical logic}.
 
     \item Similarly, we do not care about models of \hyperref[def:peano_arithmetic]{Peano arithmetic} enough to study its category of models. Instead, we only use a single model and denote it by \( \BbbN \).
   \end{itemize}
@@ -98,7 +111,7 @@
 \end{proof}
 
 \begin{proposition}\label{thm:intuitionistic_lindenbaum_tarski_algebra}
-  Assume that we are working in the \hyperref[def:intuitionistic_propositional_derivation_system]{intuitionistic propositional derivation system}. The \hyperref[def:lindenbaum_tarski_algebra]{Lindenbaum-Tarski algebra} of a closed set of formulas \( \Gamma \) then is a \hyperref[def:heyting_algebra]{Heyting algebra}.
+  Assume that we are working in the \hyperref[def:intuitionistic_propositional_derivation_system]{intuitionistic propositional derivation system}. The \hyperref[def:lindenbaum_tarski_algebra]{Lindenbaum-Tarski algebra} of a closed set of closed formulas \( \Gamma \) then is a \hyperref[def:heyting_algebra]{Heyting algebra}.
 
   In the \hyperref[def:propositional_derivation_system]{classical derivation system}, the algebra is instead a \hyperref[def:boolean_algebra]{Boolean algebra}.
 
