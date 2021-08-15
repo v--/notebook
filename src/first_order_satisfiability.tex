@@ -485,11 +485,11 @@
 
 \begin{remark}\label{rem:first_order_formula_valuation_without_variable_assignment}
   Somewhat similar to \fullref{rem:propositional_formula_valuation_without_variable_assignment}, if we know that \( \boldop{Free}(\varphi) \subseteq \{ \xi_1, \ldots, \xi_n \} \), we know that the \hyperref[def:first_order_valuation/formula_valuation]{valuation} \( \varphi\Bracks{v} \) only depends on the values \( v(\xi_1), \ldots, v(\xi_n) \). This allows us to introduce the shorthand
-  \begin{equation}\label{eq:rem:first_order_formula_valuation_without_variable_assignment/long}
+  \begin{equation}\label{eq:rem:first_order_formula_valuation_without_variable_assignment/long_semantic}
     \varphi\Bracks{\xi_1 \mapsto x_1, \ldots, \xi_n \mapsto x_n}
   \end{equation}
   or even
-  \begin{equation}\label{eq:rem:first_order_formula_valuation_without_variable_assignment/short}
+  \begin{equation}\label{eq:rem:first_order_formula_valuation_without_variable_assignment/short_semantic}
     \varphi\Bracks{x_1, \ldots, x_n}
   \end{equation}
   for
@@ -500,7 +500,7 @@
 
   When using either of these shorthand notations, we implicitly assume that \( \boldop{Free}(\varphi) \subseteq \set{ \xi_1, \ldots, \xi_n } \).
 
-  When \( \varphi = p(\xi_1, \ldots, \xi_n) \) is a predicate formula, the shorter notation \eqref{eq:rem:first_order_formula_valuation_without_variable_assignment/short} translates to
+  When \( \varphi = p(\xi_1, \ldots, \xi_n) \) is a predicate formula, the shorter notation \eqref{eq:rem:first_order_formula_valuation_without_variable_assignment/short_semantic} translates to
   \begin{equation*}
     p\Bracks{x_1, \ldots, x_n} = I(p)(x_1, \ldots, x_n) \in \set{ T, F }
   \end{equation*}
@@ -511,7 +511,13 @@
 
   Of course, we avoid this notation for formulas like \( p(f(\xi)) \) because \( p\Bracks{x} \) would mean \( I(p)(I(f)(x)) \) rather than \( I(p)(x) \), which would be confusing.
 
-  We also apply this notation for terms and, in particular, functions.
+  We apply this notation for terms and, in particular, functions.
+
+  We also use the notation
+  \begin{equation}\label{eq:rem:first_order_formula_valuation_without_variable_assignment/short_syntactic}
+    \varphi[\tau_1, \ldots, \tau_n]
+  \end{equation}
+  for \hyperref[def:first_order_substitution/term_in_formula]{substituting terms in formulas}.
 \end{remark}
 
 \begin{remark}\label{rem:predicate_formula}
@@ -581,14 +587,12 @@
 \end{proof}
 
 \begin{proposition}\label{thm:quantifier_satisfiability}
-  Let \( \mscrL \) be a first-order language, \( \varphi \) be a formula, \( \xi \) be a variable and \( \tau \) be a \hyperref[def:first_order_syntax/ground_term]{ground term} in \( \mscrL \). The following hold:
+  Let \( \mscrL \) be a first-order language, \( \varphi \) be a formula, \( \xi \) be any variable and \( \tau \) be a \hyperref[def:first_order_syntax/ground_term]{ground term} in \( \mscrL \). The following hold:
 
   \begin{thmenum}
     \thmitem{thm:quantifier_satisfiability/universal} \( \qforall \xi \varphi \vDash \varphi[\xi \mapsto \tau] \),
 
     \thmitem{thm:quantifier_satisfiability/existential} \( \varphi[\xi \mapsto \tau] \vDash \qexists \xi \varphi \).
-
-    Furthermore, the formulas \( \varphi[\xi \mapsto \tau] \) and \( \qexists \xi \varphi \) are actually equisatisfiable.
   \end{thmenum}
 
   See also \fullref{def:first_order_derivation_system/terms} for derivation rules corresponding to this proposition.
@@ -596,73 +600,67 @@
 \begin{proof}
   The proof is very straightforward but the technical details make it look a bit more complicated.
 
-  Let \( \mscrX = (X, I) \) be any structure and let \( v \) be a variable assignment in that structure. Let \( t \coloneqq \tau\Bracks{v} \). Since \( \tau \) is a ground term, we have
-  \begin{equation*}
-    \xi\Bracks{v_{\xi \mapsto t}} = \tau\Bracks{v_{\xi \mapsto t}},
-  \end{equation*}
-  hence from \fullref{thm:first_order_substitution_equivalence/term_in_formula} we have
-  \begin{equation*}
-    \varphi\Bracks{v_{\xi \mapsto t}}
-    =
-    \varphi[\xi \mapsto \tau]\Bracks{v_{\xi \mapsto t}}.
-  \end{equation*}
+  First note that if the formulas on the left are unsatisfiable, the proof is trivial. Hence we will assume that they are satisfiable.
 
-  But \( \xi \) does not occur freely in \( \varphi[\xi \mapsto \tau] \), hence
-  \begin{equation*}
-    \varphi[\xi \mapsto \tau]\Bracks{v_{\xi \mapsto t}}
-    =
-    \varphi[\xi \mapsto \tau]\Bracks{v}.
-  \end{equation*}
+  \SubProofOf{thm:quantifier_satisfiability/universal} From \fullref{thm:implicit_universal_quantification} it follows that \( \qforall \xi \varphi \vDash \varphi \). If \( \xi \) is not free in \( \varphi \), then \( \varphi[\xi \mapsto \tau] = \varphi \) and the proof is finished. Suppose that \( \xi \) is free in \( \varphi \).
 
-  \SubProofOf{thm:quantifier_satisfiability/universal} If \( v \) satisfies \( \qforall \xi \varphi \), then for any variable \( x \), the valuation \( v_{\xi \mapsto x} \) satisfies \( \varphi \). Since \( t \) is a variable, we have
-  \begin{equation}\label{eq:thm:quantifier_satisfiability/universal/valuation}
-    \varphi\Bracks{v_{\xi \mapsto t}}
-    =
+  Let \( \mscrX = (X, I) \) be a model of \( \qforall \xi \varphi \). Let \( v \) be a variable assignment in \( \mscrX \) and let \( t \coloneqq \tau\Bracks{v} \). To avoid the case where \( \xi \in \boldop{Var}(\tau) \), we replace it with \( \eta \) that is not a variable in neither \( \tau \) nor \( \varphi \). Then
+  \begin{align*}
     \varphi[\xi \mapsto \tau]\Bracks{v}
-    =
-    T.
-  \end{equation}
+    &=
+    \varphi[\xi \mapsto \eta][\eta \mapsto \tau]\Bracks{v}
+    = \\ &=
+    \varphi[\xi \mapsto \eta][\eta \mapsto \tau]\Bracks{v_{\eta \mapsto t}}
+    \reloset {\ref{thm:first_order_substitution_equivalence/term_in_formula}} = \\ &=
+    \varphi[\xi \mapsto \eta]\Bracks{v_{\eta \mapsto t}}
+    \reloset {\ref{thm:renaming_assignment_compatibility/formulas}} = \\ &=
+    \varphi\Bracks{v_{\xi \mapsto \eta, \eta \mapsto t}}
+    = \\ &=
+    \varphi\Bracks{v_{\xi \mapsto t}}.
+  \end{align*}
 
-  Hence \( v \) satisfies \( \varphi[\xi \mapsto \tau] \). Since \( v \) was arbitrary, we conclude that \( \mscrX \) is a model of \( \varphi[\xi \mapsto \tau] \) also.
+  Since \( (\qforall \xi \varphi)\Bracks{v} = T \), by definition of valuation of \( \forall \) we have
+  \begin{equation*}
+    \varphi\Bracks{v_{\xi \mapsto t}} = T.
+  \end{equation*}
 
-  \SubProofOf{thm:quantifier_satisfiability/existential} If \( v \) satisfies \( \varphi[\xi \mapsto \tau] \), then \eqref{eq:thm:quantifier_satisfiability/universal/valuation} holds and hence \( v \) satisfies \( \qexists \xi \varphi \).
+  Therefore \( \varphi[\xi \mapsto \tau]\Bracks{v} = T \) and, since \( v \) was chosen arbitrarily, we have \( \mscrX \vDash \varphi[\xi \mapsto \tau] \).
 
-  To prove equisatisfiability, suppose that \( v \) satisfies \( \qexists \xi \varphi \). Then there exists a value \( x \) such that
+  \SubProofOf{thm:quantifier_satisfiability/existential} For any model \( \mscrX = (X, I) \) of \( \varphi \), any assignment \( v \) satisfies \( \varphi[\xi \mapsto \tau] \). Thus \( \varphi\Bracks{v_{\xi \mapsto t}} = T \) for \( t \coloneqq \tau\Bracks{v} \) and hence \( v \) satisfies \( \qexists \xi \varphi \). Therefore \( \mscrX \) is also a model of \( \qexists \xi \varphi \).
+\end{proof}
+
+\begin{proposition}\label{thm:existential_quantifier_removal}
+  Let \( \varphi \) be a formula in the language \( \mscrL \). If \( \tau = c \) for some constant \( c \) that does not occur in \( \varphi \), the formulas \( \varphi[\xi \mapsto c] \) and \( \qexists \xi \varphi \) are equisatisfiable.
+
+  If there is no such constant in \( \mscrL \), we can instead define the extension \( \widetilde \mscrL \) of \( \mscrL \) by adjoining a new constant \( c \).
+
+  This general procedure of creating a new extension language in order to obtain an equisatisfiable formula without the outer quantifier is called \term{existential quantifier elimination}.
+\end{proposition}
+\begin{proof}
+  \Fullref{thm:quantifier_satisfiability/existential} implies that \( \qexists \xi \varphi \vDash \varphi[\xi \mapsto c] \), which is even stronger than the statement that if \( \qexists \xi \varphi \) is satisfiable, so it \( \varphi[\xi \mapsto c] \).
+
+  For the other direction, suppose that \( \mscrX = (X, I) \) satisfies \( \qexists \xi \varphi \). Fix a variable assignment \( v \). Then there exists a value \( x \) such that
   \begin{equation}\label{eq:thm:quantifier_satisfiability/existential/existence_modified_assignment}
     \varphi\Bracks{v_{\xi \mapsto x}} = T.
   \end{equation}
 
-  Define the interpretation \( \widetilde I \) as \( I \) modified at all constants in \( \tau \) so that \( \tau\Bracks{v} = x \). It remains to show that the structure \( (X, \widetilde I) \) is a model of \( \varphi[\xi \mapsto \tau] \).
-
-  Since the new structure has the same domain, \( v \) is a variable assignment in this new structure. Nevertheless, we will denote it by \( \widetilde v \) in order to distinguish between valuations in the two structures. As in the proof of the other direction, we have
+  Define the interpretation
   \begin{equation*}
-    \xi\Bracks{\widetilde v_{\xi \mapsto x}}
-    =
-    \tau\Bracks{\widetilde v_{\xi \mapsto x}}
+    \widetilde I (a) \coloneqq \begin{cases}
+      x, &a = c, \\
+      a, &a \in \boldop{Func}, \\
+      a, &a \in \boldop{Pred}
+    \end{cases}
+  \end{equation*}
+  as \( I \) modified at \( c \) so that \( c\Bracks{v} = x \). It remains to show that the structure \( (X, \widetilde I) \) is a model of \( \varphi[\xi \mapsto \tau] \). Since the new structure has the same domain, \( v \) is a variable assignment in this new structure. Nevertheless, we will denote it by \( \widetilde v \) in order to distinguish between valuations in the two structures.
+
+  Since \( \xi\Bracks{v} = c\Bracks{v} = x \), from \fullref{thm:first_order_substitution_equivalence/term_in_formula} it follows that
+  \begin{equation*}
+    \varphi[\xi \mapsto c]\Bracks{v} = \varphi\Bracks{v_{\xi \mapsto x}} \reloset{\eqref{eq:thm:quantifier_satisfiability/existential/existence_modified_assignment}} = T.
   \end{equation*}
 
-  Hence
-  \begin{equation*}
-    \varphi[\xi \mapsto \tau]\Bracks{\widetilde v_{\xi \mapsto x}}
-    \reloset {\ref{thm:first_order_substitution_equivalence/term_in_formula}} =
-    \varphi\Bracks{\widetilde v_{\xi \mapsto x}}
-    \reloset {\eqref{eq:thm:quantifier_satisfiability/existential/existence_modified_assignment}} =
-    T
-  \end{equation*}
-
-  Since \( \xi \) does not occur freely in \( \varphi[\xi \mapsto \tau] \), it follows that
-  \begin{equation*}
-    \varphi[\xi \mapsto \tau]\Bracks{\widetilde v} = \varphi[\xi \mapsto \tau]\Bracks{\widetilde v_{\xi \mapsto x}} = T.
-  \end{equation*}
-
-  Since \( \widetilde v \) was chosen arbitrarily, it follows that \( (X, \widetilde I) \) is a model of \( \varphi[\xi \mapsto c] \).
+  Since the above holds for any assignment \( v \), the structure \( (X, \widetilde I) \) is a model of \( \varphi[\xi \mapsto c] \).
 \end{proof}
-
-\begin{remark}\label{rem:existential_quantifier_removal}
-  Suppose that the formula \( \qexists \xi \varphi \) is satisfiable in the language \( \mscrL \). Define the extension \( \widetilde \mscrL \)  of \( \mscrL \) by adjoining a new constant \( c \). Then \fullref{thm:quantifier_satisfiability/existential} states that \( \qexists \xi \varphi \) and \( \varphi[\xi \mapsto c] \) are equisatisfiable as formulas in the language \( \widetilde \mscrL \).
-
-  This general procedure of creating a new extension language in order to obtain an equisatisfiable formula without the outer quantifier is called \term{existential quantifier elimination}.
-\end{remark}
 
 \begin{theorem}[First-order semantic deduction theorem]\label{thm:first_order_semantic_deduction_theorem}\mcite[thm. 16.29]{OpenLogicFull}
   Let \( \Gamma \) be a set of formulas over some first-order language, let \( \psi \) be an arbitrary formula and let \( \varphi \) be a \hyperref[def:first_order_syntax/ground_formula]{closed formula}.
@@ -711,7 +709,7 @@
 \end{proof}
 
 \begin{remark}\label{rem:deduction_with_free_variables}
-  In order to highlight the importance of closed formulas in certain theorems, we will take a closed look at the proof of \fullref{thm:first_order_semantic_deduction_theorem}.
+  In order to highlight the importance of closed formulas in certain theorems, we will take a close look at the proof of \fullref{thm:first_order_semantic_deduction_theorem}.
 
   Note that \eqref{eq:thm:first_order_semantic_deduction_theorem/closedness_condition} only holds because the formula \( \varphi \) is closed. If it were not closed, we could only conclude that there exists a variable assignment \( v_0 \) such that \( \varphi\Bracks{v_0} = F \). Clearly then \( (\varphi \rightarrow \psi)\Bracks{v_0} = T \). But there may exist another assignment \( v \) such that \( \varphi\Bracks{v} = T \) and \( \psi\Bracks{v} = F \), which would imply that \( \mscrX \not\vDash \varphi \rightarrow \psi \).
 \end{remark}
