@@ -1,13 +1,9 @@
 \subsection{Zermelo-Fraenkel set theory}\label{subsec:zermelo_fraenkel_set_theory}
 
-\begin{definition}\label{def:inductive_set}
-  A set is called \term{inductive} if contains the empty set and is closed under the \hyperref[def:basic_set_operations/successor]{successor operator}. The existence of (at least one) inductive set is an important axiom of \logic{ZFC} that guarantees the existence of infinite sets --- see \fullref{def:zfc/infinity}.
-\end{definition}
-
 \begin{definition}\label{def:choice_function}
-  Let \( \mscrA \) be a family of nonempty sets. A \term{choice function} on \( \mscrA \) is a (total) \hyperref[def:function]{function} \( f: \mscrA \to \bigcup \mscrA \) such that \( f(A) \in A \) for all \( A \in \mscrA \).
+  Let \( \mscrA \) be a (potentially empty) family of nonempty sets. A \term{choice function} on \( \mscrA \) is a (total) \hyperref[def:function]{function} \( f: \mscrA \to \bigcup \mscrA \) such that \( f(A) \in A \) for all \( A \in \mscrA \).
 
-  A choice function on \( A \) \enquote{chooses} an element out of each member of \( \mscrA \). We sometimes have a canonical choice function, for example in \fullref{thm:polynomial_quotient_rings_equinumerous_with_module_of_polynomials}, however for general \hyperref[def:equivalence_relation/quotient]{quotient sets} the existence of a choice function is not by any means obvious.
+  A choice function on \( \mscrA \) \enquote{chooses} an element out of each member of \( \mscrA \). We sometimes have a canonical choice function, for example in \fullref{thm:polynomial_quotient_rings_equinumerous_with_module_of_polynomials}, however for general \hyperref[def:equivalence_relation/quotient]{quotient sets} the existence of a choice function is not by any means obvious.
 
   The existence of a choice function for family of nonempty sets is an important axiom of \logic{ZFC} --- see \fullref{def:zfc/choice}.
 \end{definition}
@@ -15,9 +11,9 @@
 \begin{definition}\label{def:zfc}
   The \hyperref[def:first_order_theory]{first-order theory} commonly abbreviated as \term{\logic{ZFC}} is based on the same language as \hyperref[def:naive_set_theory]{na\"ive set theory} but with different axioms. The three letters refer to:
   \begin{itemize}
-    \item \textbf{\logic{Z}}ermelo, who formulated the entire theory except for the \hyperref[def:zfc/replacement]{axiom schema of replacement} and the \hyperref[def:zfc/foundation]{axiom of foundation}.
-    \item\mcite[sec. 63.8]{OpenLogicFull} \textbf{\logic{F}}raenkel, who simultaneously with Skolem reformulated the theory within first-order logic while also introducing the axiom schema of replacement.
-    \item The \hyperref[def:zfc/choice]{axiom of \textbf{\logic{c}}hoice}, which is part of Zermelo's original theory but is controversial enough to attract special attention --- see \fullref{subsec:axiom_of_choice}.
+    \item \hi{Z}ermelo, who formulated the entire theory except for the \hyperref[def:zfc/replacement]{axiom schema of replacement} and the \hyperref[def:zfc/foundation]{axiom of foundation}.
+    \item\mcite[sec. 63.8]{OpenLogicFull} \hi{F}raenkel, who simultaneously with Skolem reformulated the theory within first-order logic while also introducing the axiom schema of replacement.
+    \item The \hyperref[def:zfc/choice]{axiom of \hi{c}hoice}, which is part of Zermelo's original theory but is controversial enough to attract special attention --- see \fullref{subsec:axiom_of_choice}.
   \end{itemize}
 
   We are usually only interested in either \logic{ZFC}, which include all axioms listed in this definition. If we wish to avoid the axiom of choice --- for example when proving the equivalences in \fullref{thm:axiom_of_choice_equivalences} --- we instead use \logic{ZF}, which excludes the axiom of choice. The abbreviation of the latter theory is inaccurate historically but is nevertheless established.
@@ -28,30 +24,28 @@
   \begin{thmenum}
     \thmitem{def:zfc/extensionality} The \term{axiom of extensionality}, as defined in \fullref{def:naive_set_theory/extensionality}. This is also the only axiom of the theory that does not deal with existence.
 
-    \thmitem{def:zfc/specification}\mcite[sec. 62.2]{OpenLogicFull} The \term{axiom schema of specification}, also known as the axiom schema of \term{separation} or of \term{restricted comprehension}, states that given a set \( A \), any formula \( \varphi \) with a single free variable defines a subset of \( A \). For each such formula \( \varphi \), the following is an axiom:
-    \begin{equation}\label{eq:def:zfc/specification}
-      \qforall \beta \qexists \alpha \qforall \eta \parens[\Big]{ \eta \in \alpha \leftrightarrow (\varphi[\xi \mapsto \eta] \wedge \eta \in \beta) }.
+    \thmitem{def:zfc/specification}\mcite[sec. 62.2]{OpenLogicFull} The \term{axiom schema of specification}, also known as the axiom schema of \term{separation} or of \term{restricted comprehension}, states that given a set \( A \), any formula defines a subset of \( A \). For each formula \( \varphi \), the following is an axiom:
+    \begin{equation}\label{eq:def:naive_set_theory/unrestricted_comprehension}
+      \qforall \beta \qexists \alpha \qforall \xi (\xi \in \alpha \leftrightarrow \varphi[\xi] \wedge \xi \in \beta).
     \end{equation}
 
-    Compare this axiom to \hyperref[def:naive_set_theory/unrestricted_comprehension]{unrestricted comprehension}. Informally, this axiom can be obtained by taking the result of unrestricted comprehension
+    As explained in \fullref{def:naive_set_theory/unrestricted_comprehension} and \fullref{def:set_builder_notation}, this set may depend on parameters, which are other sets. We must formally take the \hyperref[thm:implicit_universal_quantification]{universal closure} of this set to quantify over all possible values for the parameters.
+
+    Compare this axiom to \hyperref[def:naive_set_theory/unrestricted_comprehension]{unrestricted comprehension}. Informally, this axiom can be obtained by taking the result of unrestricted comprehension and intersecting it with some set \( A \). As mentioned in \fullref{def:set_builder_notation}, in set-builder notation such a set is usually denoted by
     \begin{equation*}
-      \set{ x \given \varphi[\xi \mapsto x] }
-    \end{equation*}
-    and intersecting it with some set \( A \). As mentioned in \fullref{def:set_builder_notation}, in set-builder notation such a set is usually denoted by
-    \begin{equation*}
-      \set{ x \in A \given \varphi[\xi \mapsto x] }.
+      \set{ x \in B \given \varphi\Bracks{x, u_1, \ldots, u_n} }.
     \end{equation*}
 
-    Unlike unrestricted comprehension, however we can only take subsets from an object that we know is a set and not from the universe itself.
+    Unlike unrestricted comprehension, some definable subset of the universe in the metalogic no longer have a corresponding set within the object logic.
 
     \thmitem{def:zfc/power_set}\mcite[sec. 62.5]{OpenLogicFull} The \term{axiom of power sets} states that \hyperref[def:basic_set_operations/power_set]{power set} of any set exists. Symbolically,
     \begin{equation}\label{eq:def:zfc/power_set}
-      \qforall \alpha \qexists \beta \qforall \xi \parens[\Big]{ \xi \in \beta \leftrightarrow ( \qforall {\eta \in \xi} \eta \in \alpha ) }.
+      \qforall \alpha \qexists \beta \ref{eq:def:basic_set_operations/power_set/predicate}[\beta, \alpha].
     \end{equation}
 
-    \thmitem{def:zfc/union}\mcite[sec. 62.3]{OpenLogicFull} The \term{axiom of union} states that the \hyperref[def:basic_set_operations/union]{union} of any set exists. Symbolically,
+    \thmitem{def:zfc/union}\mcite[sec. 62.3]{OpenLogicFull} The \term{axiom of unions} states that the \hyperref[def:basic_set_operations/union]{union} of any set exists. Symbolically,
     \begin{equation}\label{eq:def:zfc/union}
-      \qforall \alpha \qexists \beta \qforall \xi \parens[\Big]{ \xi \in \beta \leftrightarrow ( \qexists {\eta \in \alpha} \xi \in \eta ) }.
+      \qforall \alpha \qexists \beta \ref{eq:def:basic_set_operations/union/predicate}[\beta, \alpha].
     \end{equation}
 
     \thmitem{def:zfc/pairing}\mcite[sec. 62.4]{OpenLogicFull} The \term{axiom of pairing} states that for any sets \( A \) and \( B \), the set \( \set{ A, B } \) exists. Symbolically,
@@ -61,47 +55,43 @@
 
     \thmitem{def:zfc/infinity}\mcite[sec. 62.6]{OpenLogicFull} The \term{axiom of infinity} states that an \hyperref[def:inductive_set]{inductive set} exists. Symbolically,
     \begin{equation}\label{eq:def:zfc/infinity}
-      \qexists \alpha \qforall \xi \parens[\Big]
-        {
-          \xi \in \alpha \leftrightarrow \parens[\Big]
-            {
-              \hyperref[eq:def:empty_set/predicate]{\op{IsEmpty}[\xi]} \vee \parens{ \qexists \eta \hyperref[eq:def:basic_set_operations/successor/predicate]{\op{IsSucc}[\eta, \xi]} }
-            }
-        }.
+      \qexists \alpha \ref{eq:def:inductive_set/predicate}[\alpha].
     \end{equation}
 
     This axiom is a simple and convenient way to state that infinite sets exist. Without it, we can only deal with finite sets unless we include some other axiom to replace it.
 
     \thmitem{def:zfc/choice}\mcite[sec. 69.4]{OpenLogicFull} The \term{axiom of choice} states that a \hyperref[def:choice_function]{choice function} exists for any family of nonempty sets. To state the axiom via a formula, we will avoid functions and only state it in terms of the image of the choice function. That is, we will formulate that for each family \( \mscrA \) of nonempty sets there exists a set \( B \) such that \( A \cap B \) is a singleton set for each \( A \in \mscrA \). Symbolically,
     \begin{equation}\label{eq:def:zfc/choice}
-      \qforall \alpha \parens[\Big]
+      \qforall \alpha \parens[\Bigg]
         {
-          \qforall {\xi \in \alpha} \neg \hyperref[eq:def:empty_set/predicate]{\op{IsEmpty}[\xi]}
+          \parens[\Big]{ \qforall {\xi \in \alpha} \neg \ref{eq:def:empty_set/predicate}[\xi] }
           \rightarrow
-          \qexists \beta \qforall {\xi \in \alpha} \qExists {\eta \in \beta} \eta \in \xi
+          \parens[\Big]{ \qexists \beta \qforall {\xi \in \alpha} \qExists {\eta \in \beta} \eta \in \xi }
         }
     \end{equation}
     where we have used the convention regarding existence and uniqueness described in \fullref{rem:first_order_formula_conventions/exists_unique}.
 
     See \fullref{subsec:axiom_of_choice} for further discussion of this axiom.
 
-    \thmitem{def:zfc/replacement}\mcite[sec. 63.7]{OpenLogicFull} The \term{axiom schema of replacement} roughly states that every \hyperref[rem:function_definition]{mapping} that is definable via a formula of \logic{ZFC} is a function. As for the \hyperref[def:zfc/choice]{axiom of choice}, we only formulate the axiom via the image of the function. More concretely, given a formula \( \varphi \) with two free variables, the following is an axiom:
+    \thmitem{def:zfc/replacement}\mcite[sec. 63.7]{OpenLogicFull} The \term{axiom schema of replacement} roughly states that every \hyperref[rem:function_definition]{mapping} that is definable via a formula of \logic{ZFC} is a function. As we have done for the \hyperref[def:zfc/choice]{axiom of choice}, we only formulate the axiom via the image of the function. More concretely, given a formula \( \varphi \), the following is an axiom:
     \begin{equation}\label{eq:def:zfc/replacement}
-      \qforall \alpha \parens[\Big]
+      \qforall \alpha \parens[\Bigg]
         {
-          \qforall {\xi \in \alpha} \qExists \eta \varphi[\xi, \eta]
+          \parens[\Big]{ \qforall {\xi \in \alpha} \qExists \eta \varphi[\xi, \eta] }
           \rightarrow
-          \qexists \beta \qforall \eta \parens[\Big]{ \eta \in \beta \leftrightarrow \qexists {\xi \in \alpha} \varphi[\xi, \eta] }
+          \parens[\Big]{ \qexists \beta \qforall \eta \parens[\Big]{ \eta \in \beta \leftrightarrow \qexists {\xi \in \alpha} \varphi[\xi, \eta] } }
         }.
     \end{equation}
 
-    This is used, for example, in \fullref{thm:transfinite_recursion}, where \fullref{thm:zfc_existence_theorems} is not sufficient.
+    As is the case with the \hyperref[def:zfc/specification]{axiom schema of specification}, the formula \( \varphi \) may depend on parameters, in which case we use its \hyperref[thm:implicit_universal_quantification]{universal closure}.
+
+    This axiom is used, for example, in \fullref{thm:transfinite_recursion}, where \fullref{thm:zfc_existence_theorems} is not sufficient.
 
     \thmitem{def:zfc/foundation}\mcite[sec. 64.4]{OpenLogicFull} The \term{axiom of foundation} states that every nonempty set contains a member disjoint from the set itself. Symbolically,
     \begin{equation}\label{eq:def:zfc/foundation}
       \qforall \alpha \parens[\Big]
         {
-          \neg \hyperref[eq:def:empty_set/predicate]{\op{IsEmpty}[\alpha]}
+          \neg \ref{eq:def:empty_set/predicate}[\alpha]
           \rightarrow
           \qexists {\beta \in \alpha} \neg \qexists \xi \parens{ \xi \in \alpha \wedge \xi \in \beta }
         }.
@@ -110,14 +100,14 @@
 \end{definition}
 
 \begin{proposition}\label{thm:zfc_existence_theorems}
-  We will now prove that all sets we have considered up until now in \fullref{sec:set_theory} are sets in \hyperref[def:zfc]{\logic{ZFC}}.
+  We will now prove that all sets we have considered up until now in \fullref{sec:set_theory} are sets in \hyperref[def:zfc]{\logic{ZFC}}. The uniqueness in all cases follows from the \hyperref[def:zfc/extensionality]{axiom of extensionality}.
 
   \begin{thmenum}
-    \thmitem{thm:zfc_existence_theorems/subset} If \( A \) is a set, then for any formula \( \varphi \), the set \( \set{ x \in A \given \varphi[x] } \) exists and, furthermore, it is a \hyperref[def:subset]{subset} of \( A \).
+    \thmitem{thm:zfc_existence_theorems/subset} If \( A \) is a set, then for any formula \( \varphi \), the set \( \set{ x \in A \given \varphi[x] } \) exists and, furthermore, it is a \hyperref[def:subset]{subset} of \( A \). Only \hyperref[def:first_order_definability]{definable subsets} of \( A \) cannot be described in this way, however. See \fullref{thm:zfc_existence_theorems/power_set}.
 
     \thmitem{thm:zfc_existence_theorems/empty_set} There exists a unique \hyperref[def:empty_set]{empty set}, which we denote by \( \varnothing \).
 
-    \thmitem{thm:zfc_existence_theorems/universe} No set of all sets exists. This special set is important enough to have its own name --- the \term{universal set}.
+    \thmitem{thm:zfc_existence_theorems/universe} No \hyperref[def:set]{universal set} (set of all sets) exists.
 
     \thmitem{thm:zfc_existence_theorems/singleton} For every set \( A \), there exists a \hyperref[rem:singleton_sets]{singleton set} \( \set{ A } \) that contains only \( A \).
 
@@ -133,40 +123,214 @@
 
     \thmitem{thm:zfc_existence_theorems/power_set} For any set \( A \), its \hyperref[def:basic_set_operations/power_set]{power set} \( \pow(A) \) exists.
 
-    \thmitem{thm:zfc_existence_theorems/successor} For any set \( A \), its \hyperref[def:basic_set_operations/successor]{successor} \( \op{succ}(A) \) exists.
+    As a consequence, even subsets of \( A \) which are not \hyperref[def:first_order_definability]{definable} exist.
 
-    \thmitem{thm:zfc_existence_theorems/kuratowski_pair} For any two sets \( A \) and \( B \), their \hyperref[def:binary_cartesian_product]{Kuratowski pair} \( (A, B) \) exists. Hence triples and general \( n \)-tuples also exist.
+    \thmitem{thm:zfc_existence_theorems/successor} For any set \( A \), its \hyperref[def:ordinal_successor]{successor} \( \op{succ}(A) \) exists.
 
-    \thmitem{thm:zfc_existence_theorems/binary_cartesian_product} For any two sets \( A \) and \( B \), their \hyperref[def:binary_cartesian_product]{binary Cartesian product} \( A \times B \) exists. Hence Cartesian products also exist for any tuple \( (A_1, \ldots, A_n) \) of sets.
+    \thmitem{thm:zfc_existence_theorems/kuratowski_pair} For any two sets \( A \) and \( B \), their \hyperref[def:binary_cartesian_product]{Kuratowski pair} \( (A, B) \) exists.
 
-    \thmitem{thm:zfc_existence_theorems/relation} Any \hyperref[def:binary_relation]{binary relation} between two sets exists. This also extends to ternary and general \( n \)-ary \hyperref[def:relation]{relations}.
+    \thmitem{thm:zfc_existence_theorems/binary_cartesian_product} For any two sets \( A \) and \( B \), their \hyperref[def:binary_cartesian_product]{binary Cartesian product} \( A \times B \) exists.
 
-    \thmitem{thm:zfc_existence_theorems/function} Any \hyperref[def:function]{function} between two sets exists, as well as \hyperref[def:multi_valued_function]{multi-valued} and \hyperref[def:partial_function]{partial functions}.
+    \thmitem{thm:zfc_existence_theorems/set_of_relations} For any two sets \( A \) and \( B \), the set of all relations between \( A \) and \( B \) exists.
 
-    \thmitem{thm:zfc_existence_theorems/cartesian_product} For any nonempty \hyperref[def:indexed_family]{indexed family} \( \set{ A_k }_{k \in \mscrK} \) of nonempty sets, their \hyperref[def:cartesian_product]{Cartesian product} \( \bigtimes_{k \in \mscrK} A_k \) exists.
+    \thmitem{thm:zfc_existence_theorems/set_of_functions} For any two sets \( A \) and \( B \), the set \hyperref[def:function/set_of_functions]{\( \fun(A, B) \)} exists.
 
-    \thmitem{thm:zfc_existence_theorems/quotient_set} For any set \( A \) and any binary relation \( \cong \), the \hyperref[def:equivalence_relation/quotient]{quotient set} \( A / {\cong} \) exists.
-
-    \thmitem{thm:zfc_existence_theorems/smallest_inductive_set} There exists a \hyperref[def:poset_extremal_points/maximum_and_minimum]{smallest} inductive set. We denote this set by \( \omega \).
+    \thmitem{thm:zfc_existence_theorems/quotient_set} For any set \( A \) and any \hyperref[def:equivalence_relation]{equivalence relation} \( \cong \), the \hyperref[def:equivalence_relation/quotient]{quotient set} \( A / {\cong} \) exists.
   \end{thmenum}
 \end{proposition}
 \begin{proof}
-  \SubProofOf{thm:zfc_existence_theorems/smallest_inductive_set}
+  \SubProofOf{thm:zfc_existence_theorems/subset} This is a trivial consequence of the \hyperref[def:zfc/specification]{axiom schema of specification}.
 
-  \begin{lemma}\label{thm:intersection_of_inductive_sets}
-    If \( \mscrA \) is a \hyperref[rem:family_of_sets]{family} of \hyperref[def:inductive_set]{inductive sets}, then the intersection \( \bigcap \mscrA \) is also an inductive set.
-  \end{lemma}
-  \begin{proof}
-    Clearly \( \varnothing \) belongs to the intersection. Now let \( x \in \bigcap \mscrA \). Then \( \op{succ}(x) \in A \) for every \( A \in \mscrA \) and hence \( \op{succ}(x) \in \bigcap \mscrA \). Therefore \( \bigcap \mscrA \) is itself an inductive set.
-  \end{proof}
+  \SubProofOf{thm:zfc_existence_theorems/empty_set} As a consequence of the \hyperref[def:zfc/infinity]{axiom of infinity}, there exists at least one inductive set. Let \( A \) be an inductive set. Then from the \hyperref[def:zfc/specification]{axiom schema of specification} it follows that
+  \begin{equation*}
+    \set{ x \in A \given \bot }
+  \end{equation*}
+  is a set. Furthermore, \( x \) belongs to this set if and only if \( x \) satisfies \( \bot \), which is impossible, hence the set is empty.
 
-  Let \( A \) be an inductive set. Define \( \omega \) to be the intersection of all inductive subsets of \( A \). Then \( \omega \) is inductive by \fullref{thm:intersection_of_inductive_sets} and, furthermore, it is contained in any other inductive set \( B \). Indeed, \( A \cap B \) is inductive and \( \omega \subseteq A \cap B \subseteq A \). Thus \( \omega \) is indeed the smallest inductive set (with respect to set inclusion).
+  As a consequence of the \term{axiom of extensionality}, this empty set is unique. As discussed in \fullref{def:empty_set}, we denote this unique empty set by \( \varnothing \).
+
+  \SubProofOf{thm:zfc_existence_theorems/universe} Aiming at a contradiction, suppose that there was a universal set \( U \). Then we can easily reproduce \fullref{thm:russels_paradox} by using restricted (to \( U \)) rather than unrestricted comprehension.
+
+  Unlike in na\"ive set theory, however, the existence of \( U \) is not an axiom of the theory. Therefore rather than demonstrating that \logic{ZFC} is inconsistent, Russel's paradox shows that certain sets like the universal set do not exist in \logic{ZFC}.
+
+  \SubProofOf{thm:zfc_existence_theorems/singleton} Fix a set \( A \). The set \( \set{A} \), if it exists, is equal to \( \set{A} = \set{A, A} \), by the \hyperref[def:zfc/extensionality]{axiom of extensionality}.
+
+  Thus by the \hyperref[def:zfc/pairing]{axiom of pairing}, the singleton set \( \set{A} = \set{A, A} \) actually exists.
+
+  \SubProofOf{thm:zfc_existence_theorems/arbitrary_intersection} Let \( \mscrA \) be a nonempty family of sets. Their intersection \( \bigcap \mscrA \), if it exists, is a subset of every set \( A \in \mscrA \).
+
+  Therefore, since the family \( \mscrA \) is nonempty, the \hyperref[def:zfc/specification]{axiom schema of specification} applied to any set in \( A \in \mscrA \) guarantees the existence of the intersection \( \bigcap \mscrA \). More precisely, for any \( A_0 \in \mscrA \), we can define the intersection of \( A \) as
+  \begin{equation*}
+    \bigcap \mscrA = \set{ x \in A_0 \given \qexists {A \in \mscrA} x \in A }.
+  \end{equation*}
+
+  \SubProofOf{thm:zfc_existence_theorems/binary_intersection} For sets \( A \) and \( B \), by the \hyperref[def:zfc/pairing]{axiom of pairing} the set \( \set{ A, B } \) exists. Then by \fullref{thm:zfc_existence_theorems/arbitrary_intersection}, the binary intersection
+  \begin{equation*}
+    A \cap B = \bigcap \set{ A, B }
+  \end{equation*}
+  also exists.
+
+  \SubProofOf{thm:zfc_existence_theorems/arbitrary_union} The existence of arbitrary unions is merely a restatement of the \hyperref[def:zfc/union]{axiom of unions}.
+
+  \SubProofOf{thm:zfc_existence_theorems/binary_union} Similarly to \fullref{thm:zfc_existence_theorems/binary_intersection}, for sets \( A \) and \( B \), by the \hyperref[def:zfc/pairing]{axiom of pairing} the set \( \set{ A, B } \) exists and by the \hyperref[def:zfc/union]{axiom of unions}, the binary union
+  \begin{equation*}
+    A \cup B = \bigcup \set{ A, B }
+  \end{equation*}
+  exists.
+
+  \SubProofOf{thm:zfc_existence_theorems/difference} The difference \( A \setminus B \) is guaranteed to exist by \hyperref[def:zfc/specification]{restricted comprehension}:
+  \begin{equation*}
+    A \setminus B = \set{ x \in A \given x \not\in B }.
+  \end{equation*}
+
+  \SubProofOf{thm:zfc_existence_theorems/power_set} The existence of power sets is a restatement of the \hyperref[def:zfc/power_set]{axiom of power sets}.
+
+  \SubProofOf{thm:zfc_existence_theorems/successor} The successor of \( A \) is
+  \begin{equation*}
+    \op{succ}(A) = \set{ A } \cup A.
+  \end{equation*}
+
+  Its existence follows from \fullref{thm:zfc_existence_theorems/singleton} and \fullref{thm:zfc_existence_theorems/binary_union}.
+
+  \SubProofOf{thm:zfc_existence_theorems/kuratowski_pair} The existence of the Kuratowski pair
+  \begin{equation*}
+    (A, B) = \set{ \set{ A }, \set{ A, B } }
+  \end{equation*}
+  can be proven by the \hyperref[def:zfc/pairing]{axiom of pairing} applied first to \( \set{ A, B } \) and then to the pair itself.
+
+  \SubProofOf{thm:zfc_existence_theorems/binary_cartesian_product} Let \( A \) and \( B \) be two sets. Any members \( x \in A \) and \( y \in B \) both belong to the union \( A \cup B \), which exists by \fullref{thm:zfc_existence_theorems/binary_union}. The unordered pair \( \set{ x, y } \) is a member of \( \pow(A \cup B) \), which exists by the \hyperref[def:zfc/power_set]{axiom of power sets}. Finally, the ordered pair \( (x, y) \) is a member of \( \pow(\pow(A \cup B)) \), which also exists by the same axiom.
+
+  The binary Cartesian product \( A \times B \) is a subset of \( \pow(\pow(A \cup B)) \) obtained using \hyperref[def:zfc/specification]{restricted comprehension}:
+  \begin{equation*}
+    A \times B = \set[\Big]{ z \in \pow(\pow(A \cup B)) \given* \qexists {x \in A} \qexists {y \in B} z = (x, y) }.
+  \end{equation*}
+
+  \SubProofOf{thm:zfc_existence_theorems/set_of_relations} All relations between \( A \) and \( B \) are subsets of \( A \times B \), hence elements of \( \pow(A \times B) \). The latter exists by \fullref{thm:zfc_existence_theorems/binary_cartesian_product} and \fullref{thm:zfc_existence_theorems/power_set}.
+
+  \SubProofOf{thm:zfc_existence_theorems/set_of_functions} The set of single-valued functions from \( A \) to \( B \) is a subset of \( \pow(A \times B) \), hence it exists by \fullref{thm:zfc_existence_theorems/set_of_relations} and \fullref{thm:zfc_existence_theorems/power_set}.
+
+  \SubProofOf{thm:zfc_existence_theorems/quotient_set} Let \( A \) be an arbitrary set and \( \cong \) be a binary relation over \( A \). Then \( A / {\cong} \) is a subset of \( \pow(A) \) and hence it exists as a consequence of the \hyperref[def:zfc/power_set]{axiom of power sets} and the \hyperref[def:zfc/specification]{axiom schema of specification} --- see \fullref{thm:equivalence_partition/partition}.
 \end{proof}
 
-\begin{remark}\label{rem:proper_class}
-  Within the context of \hyperref[def:zfc]{\logic{ZFC}}, must less sets exist compared to \hyperref[def:naive_set_theory]{na\"ive set theory}. We use the term \term{class} to refer to sets within na\"ive set theory and the term \term{set} to refer to sets within \logic{ZFC}. A \term{proper class} is then a class that is not a set. Since using classes effectively pushes us back to the inconsistent na\"ive set theory, we avoid using classes. For the purposes of \hyperref[sec:category_theory]{category theory}, we introduce multiple universes --- see \fullref{def:grothendieck_universe}.
+\begin{proposition}\label{thm:existence_of_multi_valued_function_selection}
+  Every \hyperref[def:multi_valued_function/total]{total multi-valued function} has a \hyperref[def:function/selection]{selection}.
 
-  Here is another outlook on classes. The domain \( U \) of the model in \fullref{def:set} is also a set but it is a set within the metalogic --- see \fullref{rem:set_definition_recursion}. Thus both \( U \) and \( x \in U \) are sets, however \( x \) is a set within the object logic and \( U \) is a set within the metalogic. It may happen that \( x \) is not a set within the metalogic if \( \mscrU \) is not a set-theoretic model, i.e. a set consisting only of sets. Within the object logic, we have no knowledge of the domain \( U \), much less of any properties on \( U \). We only have access to its elements. Hence \( U \) is never a set within the object logic.
+  Within \hyperref[def:zfc]{\logic{ZF}}, this proposition is equivalent to the \hyperref[def:zfc/choice]{axiom of choice} --- see \fullref{thm:axiom_of_choice_equivalences/selection}.
+\end{proposition}
+\begin{proof}
+  Let \( F: A \multto B \) be a total multi-valued function. As described in \fullref{rem:multi_valued_functions}, we can instead take the \hyperref[def:indexed_family]{indexed family} \( \set{ F(a) }_{a \in A} \). Denote by \( f \) the \hyperref[def:function]{single-valued function} from \( A \) to the image \( \set{ F(a) \given a \in A } \subseteq \pow(B) \) of this indexed family (see \fullref{rem:multi_valued_functions}).
 
-  This leads us to the following alternative to the definition of a class in \fullref{def:set}: A \term{class} is a subset of \( U \) available within the object logic. This definition is tricky to formalize entirely within the object language as any such formalization must modify or enrich the carefully chosen axioms of the theory. As the definition currently stands, it captures the idea that classes are sets constructed using unrestricted comprehension on the universe.
-\end{remark}
+  Since \( F \) is \hyperref[def:multi_valued_function/total]{total}, the family \( \img(f) = \set{ F(a) }_{a \in A} \) is a (potentially empty) family of nonempty sets. Thus we can apply the axiom of choice to obtain a \hyperref[def:choice_function]{choice function} \( c: \img(f) \to B \).
+
+  The composition \( c \bincirc f \) is then a single-valued function. Furthermore, we have
+  \begin{equation*}
+    (c \bincirc f)(a) \in f(a) = F(a)
+  \end{equation*}
+  so \( c \bincirc f \) is a selection of \( F \).
+
+  This finishes the proof of the proposition. To see how it implies the axiom of choice, consider an indexed family \( \mscrA \) of nonempty sets. The identity \( \id_\mscrA \) is a single-valued function from \( \mscrA \) to itself, however we can also regard it as a multi-valued function from \( \mscrA \) to \( \bigcup \mscrA \). Any selection of this multi-valued function is then a choice function for \( \mscrA \).
+\end{proof}
+
+\begin{definition}\label{def:function_invertibility_categorical}
+  As a bridge between \fullref{def:function_invertibility} and \fullref{def:morphism_invertibility}, we introduce the following concepts for a function \( f: A \to B \):
+  \begin{thmenum}
+    \thmitem{def:function_invertibility_categorical/left} A \term{left inverse} of \( f \) is a function \( g: B \to A \) such that \( g \bincirc f = \id_A \). If \( f \) has at least one left inverse, we say that it is \term{left-invertible}.
+
+    \thmitem{def:function_invertibility_categorical/right} Similarly, a \term{right inverse} of \( f \) is a function \( g: B \to A \) such that \( f \bincirc g = \id_B \). If \( f \) has at least one right inverse, we say that it is \term{right-invertible}.
+
+    \thmitem{def:function_invertibility_categorical/two_sided} If \( f \) is both left-invertible and right-invertible, \( f \) is \term{invertible} or, if clarification is needed, \term{fully invertible}. Its inverse function, which is unique by \fullref{thm:left_and_right_inverse_is_two_sided}, is then called the \term{two-sided inverse}.
+  \end{thmenum}
+\end{definition}
+
+\begin{proposition}\label{thm:function_invertibility_categorical}
+  We state this result here because it requires the \hyperref[def:zfc/choice]{axiom of choice} via \fullref{thm:existence_of_multi_valued_function_selection}.
+
+  \begin{thmenum}
+    \thmitem{thm:function_invertibility_categorical/empty} An \hyperref[def:multi_valued_function/empty]{empty function} is \hyperref[def:function_invertibility_categorical/left]{left-invertible} if and only if it is \hyperref[def:function_invertibility_categorical/left]{right-invertible}.
+
+    For comparison, an empty function is always \hyperref[def:function_invertibility/injective]{injective} but it may not be \hyperref[def:function_invertibility/surjective]{surjective}.
+
+    \thmitem{thm:function_invertibility_categorical/nonempty_injective} A nonempty function is \hyperref[def:function_invertibility/injective]{injective} if and only if it is \hyperref[def:function_invertibility_categorical/left]{left-invertible}.
+
+    \thmitem{thm:function_invertibility_categorical/surjective} A function is \hyperref[def:function_invertibility/surjective]{surjective} if and only if it is \hyperref[def:function_invertibility_categorical/right]{right-invertible}.
+
+    \thmitem{thm:function_invertibility_categorical/bijective} A function is \hyperref[def:function_invertibility/bijective]{bijective} if and only if it is \hyperref[def:function_invertibility_categorical/two_sided]{fully invertible}.
+  \end{thmenum}
+\end{proposition}
+\begin{proof}
+  \SubProofOf{thm:function_invertibility_categorical/empty} Let \( \varnothing: A \to B \) be the empty function from \( A \) to \( B \). The domain \( A \) is empty because otherwise the function itself would be nonempty. It follows that the empty function is always injective.
+
+  It is possible for the range \( B \) to be nonempty, however any function from \( B \) to \( A \) is necessarily empty because the range \( A \) is empty. Thus there exists a function from \( B \) to \( A \) if and only if \( B = \varnothing \).
+
+  If there does exist a function \( g \) from \( B \) to \( A \), then \( \id_A = g \bincirc f = f \bincirc g = \id_B \) with each of the four functions being empty.
+
+  Therefore \( f \) is left-invertible if and only it is right-invertible.
+
+  \SubProofOf{thm:function_invertibility_categorical/nonempty_injective} Let \( f: A \to B \) be a nonempty injective function. \Fullref{def:function_invertibility/injective/inverse} states that the \hyperref[def:multi_valued_function/inverse]{inverse} \( f^{-1}: B \to A \) is a partial single-valued function.
+
+  Fix some value \( a \in A \) and define
+  \begin{equation*}
+    \begin{aligned}
+      &g: B \to A \\
+      &g(y) \coloneqq \begin{cases}
+        f^{-1}(y), &y \in f(A) \\
+        a, &\T{otherwise}
+      \end{cases}.
+    \end{aligned}
+  \end{equation*}
+
+  This function \( g \) is a left inverse of \( f \) because, for any \( x \in A \),
+  \begin{equation*}
+    (g \bincirc f)(x)
+    =
+    g(f(x))
+    =
+    f^{-1}(f(x))
+    =
+    x.
+  \end{equation*}
+
+  We can see that \( g \) would be unique except for our choice of \( a \). We may even define \( g \) to take different values in \( A \) outside of \( f(A) \). Thus \( g \) is non-unique in general.
+
+  Conversely, suppose that \( f: A \to B \) is not necessarily injective and let \( g: B \to A \) be a left inverse of \( f \). Let \( x_1, x_2 \) be two different points in \( A \). Since \( g \bincirc f = \id_A \), clearly \( g(f(x_1)) \neq g(f(x_2)) \). If we suppose that \( f(x_1) = f(x_2) \), we would obtain a contradiction since then \( g(f(x_1)) \) would equal \( g(f(x_2)) \). Hence \( f(x_1) \neq f(x_2) \). Thus shows that \( f \) is injective.
+
+  \SubProofOf{thm:function_invertibility_categorical/surjective} Let \( f: A \to B \) be a (potentially empty) surjective function. \Fullref{def:function_invertibility/injective/inverse} states that the \hyperref[def:multi_valued_function/inverse]{inverse} \( F^{-1}: B \to A \) is a total multi-valued function. We can apply \fullref{thm:existence_of_multi_valued_function_selection} to obtain a \hyperref[def:function/selection]{selection} \( g: B \to A \) of \( F^{-1} \). This selection is a right-inverse because, for any \( y \in B \),
+  \begin{equation*}
+    (f \bincirc g)(y)
+    =
+    f(g(y))
+    =
+    f(F^{-1}(y))
+    =
+    y.
+  \end{equation*}
+
+  Conversely, suppose that \( g: B \to A \) is a right inverse of \( f: A \to B \). Let \( y \in B \). We have that \( g(y) \) is in the preimage of \( y \) under \( f \) because \( f(g(y)) = y \). Thus the preimage is not empty for an arbitrary point in \( B \). We conclude that \( f \) is surjective.
+
+  \SubProofOf{thm:function_invertibility_categorical/bijective} If \( f: A \to B \) is a bijective empty function, then it is surjective and, by \fullref{thm:function_invertibility_categorical/surjective}, it is right-invertible. By \fullref{thm:function_invertibility_categorical/empty}, it is also left-invertible. Thus it is fully invertible.
+
+  Conversely, if an empty function \( f: A \to B \) is fully invertible, by \fullref{thm:function_invertibility_categorical/empty} we have \( A = B = \varnothing \) and hence it is bijective.
+
+  Finally, if \( f: A \to B \) is \hi{nonempty} function, then by \fullref{thm:function_invertibility_categorical/nonempty_injective} and \fullref{thm:function_invertibility_categorical/surjective} it is bijective if and only if it is fully invertible.
+\end{proof}
+
+\begin{proposition}\label{thm:simple_foundation_theorems}
+  We are not yet able to even state \fullref{thm:set_membership_is_well_founded}, however we will list several special cases which are also consequences of the \hyperref[def:zfc/foundation]{axiom of foundation}:
+
+  \begin{thmenum}
+    \thmitem{thm:simple_foundation_theorems/no_set_contains_itself} No set contains itself.
+
+    \thmitem{thm:simple_foundation_theorems/no_mutual_containment} For any two sets \( A \) and \( B \), it is not possible for both \( A \in B \) and \( B \in A \) to hold.
+  \end{thmenum}
+\end{proposition}
+\begin{proof}
+  \SubProofOf{thm:simple_foundation_theorems/no_set_contains_itself} Let \( A \) be a set. By the \hyperref[def:zfc/foundation]{axiom of foundation}, the set \( \set{ A } \) contains a member that is disjoint from \( \set{ A } \) itself. But \( A \) is the only member, hence \( A \cap \set{ A } = \varnothing \).
+
+  If we suppose that \( A \) contains itself, then \( A \in A \cap \set{ A } \), which contradicts what we just proved.
+
+  \SubProofOf{thm:simple_foundation_theorems/no_mutual_containment} Let \( A \) and \( B \) be two sets.
+
+  Aiming at a contradiction, suppose that \( A \in B \) and \( B \in A \). Then \( A \in \set{ A, B } \cap B \) and \( B \in \set{ A, B } \cap A \). But by the \hyperref[def:zfc/foundation]{axiom of foundation}, the set \( \set{ A, B } \) contains a member that is disjoint from \( \set{ A, B } \) itself and we just proved that both \( A \) and \( B \) are not disjoint.
+
+  Therefore we cannot have both memberships \( A \in B \) and \( B \in A \).
+\end{proof}

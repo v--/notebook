@@ -1,106 +1,205 @@
 \section{Numbers}\label{sec:numbers}
 \subsection{Natural numbers}\label{subsec:natural_numbers}
 
-\begin{definition}\label{def:peano_arithmetic}\mcite[1]{Peano1889}
-  The Peano arithmetic is a \hyperref[def:first_order_language]{first-order logic language} for describing \hyperref[def:set_of_natural_numbers]{natural numbers} and their operations. Peano's original axioms referred to sets rather than first-order logic languages, however this more general framework is more suitable nowadays. It consists of:
-  \begin{thmenum}
-    \thmitem{def:peano_arithmetic/eq} A formal equality symbol \( \doteq \).
-    \thmitem{def:peano_arithmetic/zero} A \term{zero} constant \( 0 \) (see \fullref{rem:peano_arithmetic_zero}).
-    \thmitem{def:peano_arithmetic/succ} A unary functional symbol \( s \), called the \term{successor operation}.
+\begin{definition}\label{def:peano_arithmetic}\mcite[exmpl. 17.6]{OpenLogicFull}
+  Peano arithmetic (commonly abbreviated as \logic{PA}) is a \hyperref[def:first_order_theory]{theory} in \hyperref[subsec:first_order_logic]{first-order predicate logic} for describing \hyperref[def:set_of_natural_numbers]{natural numbers} and their operations. It can also be formulated in \hyperref[rem:higher_order_logic]{second-order logic} or entirely within \hyperref[sec:set_theory]{set theory} (especially considering that we are working inside an ambient model of \hyperref[def:axiom_of_universes]{\logic{ZFC+U}}), however in this document we usually give preference to the first-order logic formulation of a theory.
+
+  Peano's original axioms referred to sets rather than first-order logic, and we actually work  \ in this document, however we prefer to use a modern formulation of Peano arithmetic.
+
+  The \hyperref[def:first_order_language]{language} of the theory consists of
+  \begin{thmenum}[series=def:peano_arithmetic]
+    \thmitem{def:peano_arithmetic/zero} A constant \( 0 \) for representing \term{zero} (see \fullref{rem:peano_arithmetic_zero}).
+    \thmitem{def:peano_arithmetic/succ} A unary \hyperref[def:first_order_language/func]{functional symbol} \( s \), called the \term{successor operation}.
+    \thmitem{def:peano_arithmetic/plus} An \hyperref[rem:first_order_formula_conventions/infix]{infix} binary functional symbol \( + \) for denoting \term{addition}.
+    \thmitem{def:peano_arithmetic/mult} Another infix binary functional symbol \( \cdot \) for denoting \term{multiplication}. Outside of the object language we usually use juxtaposition instead.
   \end{thmenum}
+
+  As usual, in order to avoid parentheses, we assume that multiplication has a higher precedence and thus the right-hand side of axiom \eqref{eq:def:peano_arithmetic/PA7} should be parenthesized as \( ((\eta \cdot \xi) + \xi) \). We avoid excessive parentheses in formulas as per our convention \fullref{rem:propositional_formula_parentheses}.
 
   We impose the following base \hyperref[def:first_order_theory]{axioms}:
-  \begin{thmenum}
-    \thmitem[def:peano_arithmetic/PA1]{PA1} \( \xi \doteq \eta \leftrightarrow s(\xi) \doteq s(\eta) \)
-    \thmitem[def:peano_arithmetic/PA2]{PA2} \( \neg \qexists \xi (s(\xi) \doteq 0) \)
-    \thmitem[def:peano_arithmetic/PA3]{PA3} The following, called the \term{axiom schema of induction}, holds: for all formulas \( \varphi \) and all free variables \( \xi \) of \( \varphi \), we have:
-    \begin{equation*}
-      \parens[\Big]{ \varphi[\xi \mapsto 0] \wedge \qforall \eta (\varphi[\xi \mapsto \eta] \to \varphi[\xi \mapsto s(\eta)]) } \to \qforall \eta (\varphi[\xi \mapsto \eta]).
-    \end{equation*}
+  \begin{thmenum}[resume=def:peano_arithmetic]
+    \thmitem{def:peano_arithmetic/PA1} The successor function is \hyperref[thm:function_invertibility_categorical/injective]{injective}. This can be stated as follows:
+    \begin{equation}\label{eq:def:peano_arithmetic/PA1}\tag{\logic{PA1}}
+      s(\xi) \doteq s(\eta) \rightarrow \xi \doteq \eta.
+    \end{equation}
 
-    See \fullref{rem:induction} for a discussion of induction.
+    We use here the convention for implicit universal quantification described in \fullref{rem:mathematical_logic_conventions/quantification}.
+
+    \thmitem{def:peano_arithmetic/PA2} Zero is not the successor of any natural number. Symbolically,
+    \begin{equation}\label{eq:def:peano_arithmetic/PA2}\tag{\logic{PA2}}
+      \neg \qexists \xi (s(\xi) \doteq 0).
+    \end{equation}
+
+    \thmitem{def:peano_arithmetic/PA3} The \term{axiom schema of induction} roughly states that for a property to hold for all natural numbers it is sufficient for the following two conditions to be met:
+    \begin{itemize}
+      \item The property holds for \( 0 \).
+      \item We can prove that is holds for any number by assuming that it holds for all smaller numbers.
+    \end{itemize}
+
+    See the proof of \fullref{thm:nonzero_natural_numbers_have_predecessors} for a detailed discussion.
+
+    To describe this formally, we state that for any \hyperref[def:first_order_language/var]{variables} \( \xi \) and \( \eta \) and any formula \( \varphi \) not containing \underline{\( \eta \)} as a \hyperref[def:first_order_syntax/formula_free_variables]{free variable}, the following is an axiom:
+    \begin{equation}\label{eq:def:peano_arithmetic/PA3}\tag{\logic{PA3}}
+      \parens[\Big]
+        {
+          \underbrace{\varphi[\xi \mapsto 0]}_{\T{base case}}
+          \wedge
+          \qforall \eta \parens[\Big]
+            {
+              \overbrace
+                {
+                  \underbrace{ \varphi[\xi \mapsto \eta] }_{\mathclap{\substack{\T{inductive} \\ \T{hypothesis}}}}
+                  \rightarrow
+                  \underbrace{ \varphi[\xi \mapsto s(\eta)] }_{\mathclap{\substack{\T{inductive step} \\ \T{conclusion}}}}
+                }^{\T{inductive step}}
+            }
+        }
+      \rightarrow
+      \underbrace{ \qforall \eta \varphi[\xi \mapsto \eta] }_{\T{conclusion}}.
+    \end{equation}
+
+    It is important to highlight that \( \varphi \) may have any set of free variables, as long as \( \eta \) is not among them. As explained in \fullref{rem:mathematical_logic_conventions/quantification}, we avoid excessive universal quantification. Of course, the axiom is only interesting if \( \xi \in \boldop{Free}(\varphi) \). If \( \zeta_1, \ldots, \zeta_n \) are all the other free variables of \( \varphi \), then the \hyperref[thm:implicit_universal_quantification]{universal closure} of the corresponding axiom is
+    \begin{equation}\label{eq:def:peano_arithmetic/PA3_quantified}\tag{PA3'}
+      \qforall {\zeta_1} \cdots \qforall {\zeta_n}
+      \parens[\Bigg]
+      {
+        \parens[\Big]
+          {
+            \underbrace{\varphi[\xi \mapsto 0]}_{\T{base case}}
+            \wedge
+            \qforall \eta \parens[\Big]
+              {
+                \overbrace
+                  {
+                    \underbrace{ \varphi[\xi \mapsto \eta] }_{\mathclap{\substack{\T{inductive} \\ \T{hypothesis}}}}
+                    \rightarrow
+                    \underbrace{ \varphi[\xi \mapsto s(\eta)] }_{\mathclap{\substack{\T{inductive step} \\ \T{conclusion}}}}
+                  }^{\T{inductive step}}
+              }
+          }
+        \rightarrow
+        \underbrace{ \qforall \eta \varphi[\xi \mapsto \eta] }_{\T{conclusion}}
+      }.
+    \end{equation}
+
+    Thus the axiom holds for any assignment for the variables \( \zeta_1, \ldots, \zeta_n \). For this reason, we call these variables \term{parameters}. Parameters in axiom schemas are further discussed in \fullref{def:set_builder_notation} in relation to comprehension in set theory.
+
+    See \fullref{rem:induction} for a more detailed discussion of induction in general.
   \end{thmenum}
 
-  A \hyperref[def:first_order_semantics/satisfiability]{model} of this theory that has no proper submodels, i.e. one that only consists of \( 0 \) and the \hyperref[rem:induction]{inductively defined} members \( s(0), s(s(0)), \ldots \), is said to be a \term{standard model of arithmetic}. Non-standard models are know to exist but are mostly of theoretical interest to logicians.
+  The theory we obtain without the binary operations and with only the axioms \eqref{eq:def:peano_arithmetic/PA1}-\eqref{eq:def:peano_arithmetic/PA3} is itself sometimes called Peano arithmetic. The operations are defined inductively, however, and there is no way for us to formalize them within the object logic without adding them to the language and theory itself.
 
-  For convenience, we use the familiar decimal notation
-  \begin{align*}
-    1  &\coloneqq s(0) \\
-    2  &\coloneqq s(1) \\
-       &\vdots \\
-    9  &\coloneqq s(8) \\
-    10 &\coloneqq s(9) \\
-       &\vdots
-  \end{align*}
+  \begin{thmenum}[resume=def:peano_arithmetic]
+    \thmitem{def:peano_arithmetic/PA4+5} The next two axioms inductively define how addition is supposed to work:
+    \begin{align}
+      \xi + 0       &\doteq \xi           \label{eq:def:peano_arithmetic/PA4}\tag{\logic{PA4}} \\
+      \xi + s(\eta) &\doteq s(\xi + \eta) \label{eq:def:peano_arithmetic/PA5}\tag{\logic{PA5}}
+    \end{align}
 
-  See \fullref{ex:natural_arithmetic_grammar/backus_naur_form} for a \hyperref[def:language]{language} that describes standard arithmetic in decimal notation.
-\end{definition}
-
-\begin{definition}\label{def:set_of_natural_numbers}
-  We define the set of \term[bg=естествени числа,ru=натуральные числа]{natural numbers} \( \BbbN \) as any \hyperref[sec:set_theory]{set-theoretic} \hyperref[def:peano_arithmetic]{standard model of Peano arithmetic}. Unless noted otherwise, it is safe to assume that the model is the \hyperref[def:inductive_set]{smallest inductive set} \( \omega \), in which case the natural numbers are encoded as the \hyperref[ex:natural_numbers_models/omega]{von Nemann ordinals}
-  \begin{align*}
-    0 &\coloneqq \varnothing \\
-    1 &\coloneqq \{ \varnothing \} \\
-    2 &\coloneqq \{ \varnothing, \{ \varnothing \} \} \\
-      &\vdots
-  \end{align*}
-
-  \Fullref{ex:natural_numbers_models} lists a few examples of standard models of arithmetic.
+    \thmitem{def:peano_arithmetic/PA6+7} The final two axioms are for multiplication:
+    \begin{align}
+      \xi \cdot 0       &\doteq 0                    \label{eq:def:peano_arithmetic/PA6}\tag{\logic{PA6}} \\
+      \xi \cdot s(\eta) &\doteq \xi \cdot \eta + \xi \label{eq:def:peano_arithmetic/PA7}\tag{\logic{PA7}}
+    \end{align}
+  \end{thmenum}
 \end{definition}
 
 \begin{remark}\label{rem:peano_arithmetic_zero}
-  It is common to consider the first natural numbers to be zero (e.g. \cite[67]{Enderton1977Sets}). Peano himself, however, considered one to be the first - see \cite[1]{Peano1889}.
+  It is common to consider the first natural numbers to be \( 0 \) (e.g. \cite[exmpl. 17.6]{OpenLogicFull}). Peano himself, however, considered \( 1 \) to be the first natural number - see \cite[1]{Peano1889}.
 
-  Whether \( 0 \) is a natural number or not, i.e. whether \( \varnothing \) encodes \( 0 \) or \( 1 \), is a matter of convention. This does not matter much for \fullref{def:set_of_natural_numbers}, however it is of crucial importance when defining operations like \hyperref[def:natural_number_addition]{addition}.
+  Whether \( 0 \) is considered to be a natural number is a matter of convention. The operations defined via \eqref{eq:def:peano_arithmetic/PA4}-\eqref{eq:def:peano_arithmetic/PA7} can be modified to work if \( 1 \) was instead the first natural number.
 
-  We choose \( \BbbN \) to start with zero, however we usually avoid referring to the set \( \BbbN \) of natural numbers directly and instead use the notations
+  We make the choose for \( \BbbN \) to start with \( 0 \), however we usually avoid referring to the set \( \BbbN \) of natural numbers directly and instead use the notations
   \begin{thmenum}
     \thmitem{rem:peano_arithmetic_zero/nonnegative} \( 0, 1, 2, \ldots \) or \( \BbbZ_{\geq 0} \) for the nonnegative \hyperref[def:integers]{integers}.
     \thmitem{rem:peano_arithmetic_zero/positive} \( 1, 2, \ldots \) or \( \BbbZ_{> 0} \) for the positive integers.
   \end{thmenum}
 
-  The concepts \enquote{nonnegative} and \enquote{positive} come from the \hyperref[def:integers/order]{order of the integers}.
+  The concepts \enquote{nonnegative} and \enquote{positive} are formally defined in \hyperref[def:integers/order]{order of the integers}.
 \end{remark}
 
-\begin{example}\label{ex:natural_numbers_models}
-  A \hyperref[sec:set_theory]{set-theoretic} \hyperref[def:peano_arithmetic]{standard model of Peano arithmetic} consists of a nonempty set \( N \) and relates to the axioms of Peano arithmetic as follows:
-  \begin{refenum}
-    \refitem{def:peano_arithmetic/eq} The equality is the usual \hyperref[def:set]{set-theoretic equality}.
-    \refitem{def:peano_arithmetic/zero} There exists a constant \( 0 \in N \) acting as zero.
-    \refitem{def:peano_arithmetic/succ} There exists a unary \enquote{successor} function \( s: N \to N \) such that \( s(x) \neq 0 \) for every \( x \in N \).
-  \end{refenum}
+\begin{definition}\label{def:set_of_natural_numbers}
+  We define the set of \term[bg=естествени числа,ru=натуральные числа]{natural numbers} \( \BbbN \) as the \hyperref[thm:smallest_inductive_set_existence_existence]{smallest inductive set \( \omega \)} with the \hyperref[def:first_order_structure/interpretation]{interpretation} described in \fullref{thm:smallest_inductive_set_is_model_of_peano_arithmetic}.
 
-  Any of the following (and many more) can be taken as a definition for the set \( \BbbN \) of \hyperref[def:set_of_natural_numbers]{natural numbers}:
-  \begin{thmenum}
-    \thmitem{ex:natural_numbers_models/omega} A good fit for the set of natural numbers is \hyperref[def:inductive_set]{the smallest inductive set} \( \omega \). In this case,
-    \begin{refenum}
-      \refitem{def:peano_arithmetic/zero} \( 0 \coloneqq \varnothing \).
-      \refitem{def:peano_arithmetic/succ} \( s \) is the set-theoretic \hyperref[def:basic_set_operations/successor]{successor function}.
-    \end{refenum}
+  We do not depend on any particular properties of \( \omega \) but we use it because our construction of it is careful and purposely does not use natural numbers to avoid circularity. We are working in an ambient model of \hyperref[def:axiom_of_universes]{\logic{ZFC+U}} and hence we will conflate \( \BbbN \) with \( \omega \) as sets, however the first is also a \hyperref[def:first_order_structure]{structure of first-order logic}.
 
-    \thmitem{ex:natural_numbers_models/language} Let \( N = \{ a \}^{*} \) be the \hyperref[def:language/kleene_star]{Kleene star} of the singleton alphabet \( \{ a \} \). In this case,
-    \begin{refenum}
-      \refitem{def:peano_arithmetic/zero} \( 0 \coloneqq \varepsilon \) is the empty word.
-      \refitem{def:peano_arithmetic/succ} \( s(w) \coloneqq w \cdot a \) concatenates the letter at the end of a word.
-    \end{refenum}
+  We use the usual notation
+  \begin{align*}
+    0 &\coloneqq \varnothing \\
+    1 &\coloneqq \op{succ}(\varnothing) = \set{ \varnothing } \\
+    2 &\coloneqq \op{succ}(\op{succ}(\varnothing)) = \set{ \varnothing, \set{ \varnothing } } \\
+      &\vdots
+  \end{align*}
+  and continue to use the notation functional symbols from \fullref{def:peano_arithmetic}, however we now denote the corresponding interpretations in the structure \( \BbbN \).
 
-    \thmitem{ex:natural_numbers_models/vector_spaces} The \hyperref[def:category_of_first_order_models]{category of models} \( \cat{FinVect}_{\BbbK} \) of all \hyperref[def:vector_space_dimension]{finite-dimensional} \hyperref[def:vector_space]{vector spaces} over the \hyperref[def:field]{field} \( \BbbK \) can also be used as a model for the natural numbers. In this case,
-    \begin{refenum}
-      \refitem{def:peano_arithmetic/zero} \( 0 \coloneqq 0_{\BbbK} = \{ 0_{\BbbF} \} \) is the trivial (zero-dimensional) vector space.
-      \refitem{def:peano_arithmetic/succ} \( s(V) \coloneqq V \oplus \BbbK \) is the \hyperref[def:left_module_direct_product]{direct sum} of the vector space \( V \) and the field \( \BbbK \) as a one-dimensional vector space.
-    \end{refenum}
-  \end{thmenum}
-\end{example}
-
-\begin{definition}\label{def:natural_number_addition}
-  We inductively define a binary \term{addition} operation \( +: \BbbN^2 \to \BbbN \) as
-  \begin{equation}\label{eq:def:natural_number_addition}
-    x + y \coloneqq \begin{cases}
-      x,         &y = 0,     \\
-      s(x + y'), &y = s(y').
-    \end{cases}
-  \end{equation}
+  See \fullref{ex:natural_arithmetic_grammar/backus_naur_form} for a simple \hyperref[def:formal_grammar]{grammar} that produces numeric symbols in their decimal notation.
 \end{definition}
+
+\begin{remark}\label{rem:standard_models_of_arithmetic}
+  At this point, we have two kinds of natural numbers:
+  \begin{itemize}
+    \item We have natural numbers within the metalogic. These is our mental model of the natural numbers and it is used for distinguishing between \enquote{unary} functional symbols like \( s \) and \enquote{binary} functional symbols like \( + \). This is mostly used within logic itself.
+
+    \item We have the set of natural numbers \( \BbbN \) defined in \fullref{def:set_of_natural_numbers}. These are the numbers which we have defined formally, whose properties we study and the numbers which we use in the entire document. The properties of \( \BbbN \) help us develop a better mental model, which in turn changes our perception of the natural numbers within the metalogic.
+  \end{itemize}
+
+  We want the two sets of natural numbers to coincide. This is important when talking about, for example, \hyperref[def:sequence]{sequences}. If a number in \( \BbbN \) is not a natural number within the metalogic, we say that it is \term{nonstandard}. There is no established terminology for numbers in the metalogic that are not in \( \BbbN \).
+
+  A model of \logic{PA} which contains precisely the numbers in the metalogic is called a \term{standard model}. More precise definitions for standard and nonstandard models are possible in \hyperref[rem:higher_order_logic]{higher-order logical frameworks}. For the purpose of this document, it is sufficient to accept the convention that \( \BbbN \) is a standard model of \logic{PA}.
+\end{remark}
+
+\begin{proposition}\label{thm:nonzero_natural_numbers_have_predecessors}
+  Every nonzero natural number has a unique predecessor. More precisely, zero has no predecessor and for any nonzero number \( n \) there exists a unique number \( m \) such that \( n = s(m) \). We will denote this predecessor by \( p(n) \).
+\end{proposition}
+\begin{proof}
+  This proof is exemplar because it clearly demonstrates both the distinction between inductive and deductive reasoning and the role of the main three axioms.
+
+  \begin{itemize}
+    \item The axiom \eqref{eq:def:peano_arithmetic/PA1} states that the function \( s \) is injective. By the equivalences in \fullref{def:function_invertibility/injective} its \hyperref[def:multi_valued_function/inverse]{inverse multi-valued function} is actually a single-valued \hyperref[def:partial_function]{partial function}. Denote this inverse by \( p \).
+
+    \item The axiom \eqref{eq:def:peano_arithmetic/PA2} states that the function \( s \) is not surjective. By the equivalences in \fullref{def:function_invertibility/surjective}, the inverse \( p \) is not a \hyperref[def:multi_valued_function/total]{total function}.
+  \end{itemize}
+
+  What we have shown up until this point in the proof is deductive --- we have restated the first two axioms of \logic{PA} and used some equivalent conditions that allowed us to deduce properties of the inverse function \( p \) of \( s \). We did all of this by following the precise rules of \hyperref[def:classical_logic]{classical logic} described formally in \fullref{subsec:proof_derivation_systems}.
+
+  Now we will show that every nonzero natural number has a predecessor. That is, that the function \( p \) is not defined only at \( 0 \). To highlight the logical structure of this proof, we will use \hyperref[def:first_order_derivation_system]{first-order natural deduction} rather than work with the model \( \BbbN \) of \logic{PA}.
+
+  Denote by \( \theta \) the formula
+  \begin{equation*}
+    \xi \doteq 0 \vee \qexists \zeta (\xi \doteq s(\zeta)).
+  \end{equation*}
+
+  Clearly \( \xi \) is the only free variable in \( \theta \). We want to derive the formula \( \qforall \eta \theta[\xi \mapsto \eta] \) from the axioms of \logic{PA}.
+
+  In this part of the proof we will use inductive reasoning. This will highlight that \eqref{eq:def:peano_arithmetic/PA3} is not an axiom schema about specifying properties but rather about introducing a proof technique that does not hold for general \hyperref[def:first_order_theory]{logical theories}. We will not attempt to prove \( \qforall \eta \theta[\xi \mapsto \eta] \) directly. Instead, we will prove a more complicated formula that is easier to prove and then by one of the many induction principles, it will follow that our desired result holds.
+
+  We can deduce the following \hyperref[def:derivation_system_derivability]{logical theorem}:
+  \begin{equation*}
+    \begin{prooftree}
+      \infer0[\eqref{eq:def:first_order_derivation_system/equality/intro}]{ (\xi \doteq s(\zeta))[\zeta \mapsto \eta, \xi \mapsto s(\eta)] }
+      \infer1[\eqref{eq:def:first_order_derivation_system/exists/intro}]{ \parens[\Big]{ \qexists \zeta (\xi \doteq s(\zeta) }[\xi \mapsto s(\eta)] }
+      \infer1[\eqref{eq:thm:minimal_natural_deduction/or/intro_right}]{ \theta[\xi \mapsto s(\eta)] }
+      \infer1[\eqref{eq:thm:minimal_natural_deduction/imp/intro}]{ \theta[\xi \mapsto \eta] \rightarrow \theta[\xi \mapsto s(\eta)] }
+      \infer1[\eqref{eq:def:first_order_derivation_system/forall/intro}]{ \qforall \eta (\theta[\xi \mapsto \eta] \rightarrow \theta[\xi \mapsto s(\eta)]) }
+
+      \infer0[\eqref{eq:def:first_order_derivation_system/equality/intro}]{ (\xi \doteq 0)[\xi \mapsto 0] }
+      \infer1[\eqref{eq:thm:minimal_natural_deduction/or/intro_left}]{ \theta[\xi \mapsto s(\eta)] }
+
+      \infer2[\eqref{eq:thm:minimal_natural_deduction/and/intro}]{ \theta[\xi \mapsto 0] \wedge \qforall \eta \parens[\Big] { \theta[\xi \mapsto \eta] \rightarrow \theta[\xi \mapsto s(\eta)] } }
+    \end{prooftree}
+  \end{equation*}
+
+  This is precisely the antecedent of the instance of \eqref{eq:def:peano_arithmetic/PA3} with \( \varphi = \theta \). By \fullref{thm:first_order_syntactic_deduction_theorem} we have
+  \begin{equation*}
+    \eqref{eq:def:peano_arithmetic/PA3} \vdash \qforall \eta \theta[\xi \mapsto \eta].
+  \end{equation*}
+
+  When interpreted in \( \BbbN \), this formula \( \qforall \eta \theta[\xi \mapsto \eta] \) simply states that every natural number is either zero or has a predecessor. The statement does not concert itself with uniqueness nor with whether \( 0 \) has a predecessor.
+
+  But we have already shown uniqueness --- the predecessor function \( p \) is a partial single-valued function. And we have shown that \( p \) is not defined at zero. The last part of the proof shows \( p \) is defined for all nonzero values.
+
+  We may choose to define \( p \) at zero by giving it a sentinel value. This is precisely the technique we use in \fullref{thm:function_invertibility_categorical/nonempty_injective} to show that \( s \) has a left inverse if it is injective. We can use only \eqref{eq:def:peano_arithmetic/PA1} to show that \( s \) is injective and then pick \( p \) to be any of its left inverses. We also want \( p \) to be as close as possible to a right inverse, however. The latter, as we have seen, is more tricky to prove.
+\end{proof}
 
 \begin{proposition}\label{thm:natural_numbers_form_monoid_under_addition}
   The \hyperref[def:set_of_natural_numbers]{natural numbers} \( \BbbN \) with \hyperref[def:natural_number_addition]{addition} form a \hyperref[def:magma/cancellative]{cancellative} \hyperref[def:magma/commutative]{commutative} \hyperref[def:unital_magma/associative]{monoid} with \( 0 \) as the identity.
@@ -111,7 +210,7 @@
   \end{equation}
 \end{proposition}
 \begin{proof}
-  \SubProofOf[commutativity]{def:magma/commutative} Consider the sum \( x + y \). We use induction on \( y \) to prove its commutativity.
+  \SubProofOf[def:magma/commutative]{commutativity} Consider the sum \( x + y \). We use induction on \( y \) to prove its commutativity.
   \begin{itemize}
     \item If \( y = 0 \), nested induction by \( x \) yields:
     \begin{itemize}
@@ -139,7 +238,7 @@
     \item If \( y = s(y') \) and if the inductive hypothesis holds for \( y' \), \ref{def:peano_arithmetic/PA1} yields that \( x + y = y + x \) if and only if \( x + y' = y' + x \). But the last equality is satisfied because of the inductive hypothesis, hence commutativity of \( x \) and \( y \) follows.
   \end{itemize}
 
-  \SubProofOf[associativity]{def:magma/associative} Fix natural numbers \( x \), \( y \), \( z \). We will prove associativity by induction on \( z \). If \( z = 0 \), we have
+  \SubProofOf[def:magma/associative]{associativity} Fix natural numbers \( x \), \( y \), \( z \). We will prove associativity by induction on \( z \). If \( z = 0 \), we have
   \begin{equation*}
     (x + y) + 0
     \reloset {\eqref{eq:def:natural_number_addition}} =
@@ -154,13 +253,13 @@
 
   If \( z \neq 0 \), the proof follows directly from \ref{def:peano_arithmetic/PA1} as in the proof of commutativity.
 
-  \SubProofOf[identity]{def:magma_identity} We have \( x + 0 = x \) by definition and \( 0 + x = x \) by commutativity.
+  \SubProofOf[def:magma_identity]{identity} We have \( x + 0 = x \) by definition and \( 0 + x = x \) by commutativity.
 
-  \SubProofOf[cancellativity]{def:magma/cancellative} Let \( x + z = y + z \). We will prove that \( x = y \) by induction. For \( z = 0 \), this is obvious. For \( z = s(z') \), we have \( x + s(z') = y + s(z') \), which by \eqref{eq:def:natural_number_addition} is equivalent to \( s(x + z') = s(y + z') \).
+  \SubProofOf[def:magma/cancellative]{cancellativity} Let \( x + z = y + z \). We will prove that \( x = y \) by induction. For \( z = 0 \), this is obvious. For \( z = s(z') \), we have \( x + s(z') = y + s(z') \), which by \eqref{eq:def:natural_number_addition} is equivalent to \( s(x + z') = s(y + z') \).
 
   By \ref{def:peano_arithmetic/PA1}, we have \( x + z' = y + z' \). The inductive hypothesis implies that \( x = y \).
 
-  \SubProofOf[no zero divisors]{eq:thm:natural_numbers_form_monoid_under_addition/nonzero_sum} Let \( x \) and \( y = s(y') \) be nonzero numbers. By \ref{def:peano_arithmetic/PA2}, \( x + y = s(x + y') \) and, by \ref{def:peano_arithmetic/PA2}, \( x + y \neq 0 \).
+  \SubProofOf[eq:thm:natural_numbers_form_monoid_under_addition/nonzero_sum]{no zero divisors} Let \( x \) and \( y = s(y') \) be nonzero numbers. By \ref{def:peano_arithmetic/PA2}, \( x + y = s(x + y') \) and, by \ref{def:peano_arithmetic/PA2}, \( x + y \neq 0 \).
 \end{proof}
 
 \begin{definition}\label{def:natural_number_multiplication}
