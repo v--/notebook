@@ -63,7 +63,7 @@
 \end{definition}
 
 \begin{definition}\label{def:well_ordered_set}\mcite[def. 63.1]{OpenLogicFull}
-  A \hyperref[def:totally_ordered_set]{totally ordered set} \( (\mscrP, \leq) \) is said to be \term{well-ordered} if either of the following conditions hold:
+  A \hyperref[def:totally_ordered_set]{totally ordered set} \( (\mscrP, \leq) \) is said to be \term{well-ordered} if either of the following equivalent conditions hold:
   \begin{thmenum}
     \thmitem{def:well_ordered_set/direct} Every nonempty subset of \( \mscrP \) has a \hyperref[def:poset_extremal_points/maximum_and_minimum]{minimum}.
     \thmitem{def:well_ordered_set/well_founded} The order \( \leq \) is \hyperref[def:well_founded_relation]{well-founded}.
@@ -73,69 +73,91 @@
   The equivalence follows from \fullref{thm:infinite_descent_partial_order} and \fullref{thm:totally_ordered_minimal_element_is_minimum}.
 \end{proof}
 
-\begin{theorem}[Well-ordered induction]\label{thm:well_ordered_induction}\mcite[prop. 63.3]{OpenLogicFull}
-  Denote by \( \mscrP \) a (free or bound) variable that ranges over well-ordered sets in \logic{ZFC} (not in the metatheory) and by \( < \) the respective string order. Then for any formula \( \varphi \) in \logic{ZFC} and for every \( \xi \in \boldop{Free}(\varphi) \) the following formula is valid:
-  \begin{equation}\label{eq:thm:well_ordered_induction}
-    \parens[\Big]
+\begin{theorem}[Well-founded induction]\label{thm:well_founded_induction}\mcite[prop. 63.3]{OpenLogicFull}
+  Let \( \mscrL \) be the \hyperref[def:first_order_syntax]{first-order language} with no functional symbols and a single predicate symbol \( \prec \). We have already mentioned that we cannot formalize the concept of well-foundedness in first-order logic alone so we will work with \hyperref[def:first_order_structure]{structures} directly.
+
+  Every \hyperref[def:well_founded]{well-founded} structure \( \mscrX = (X, I) \) over \( \mscrL \) satisfies an inductive axiom schema. For every formula \( \varphi \) over \( \mscrL \) not containing \( \eta \) nor \( \zeta \) as free variables, \( \mscrX \) satisfies
+  \begin{equation}\label{eq:thm:well_founded_induction}
+    \qforall \eta \parens[\Big]
       {
-        \qforall {\eta \in P}
-          \underbrace
-            {
-              \parens[\Big] { \qforall {\zeta < \eta} \varphi[\xi \mapsto \zeta] }
-            }_{\T{inductive hypothesis}}
-        \rightarrow
-        \overbrace{ \varphi[\xi \mapsto \eta] }^{\mathclap{\T{inductive step conclusion}}}
+        \overbrace
+          {
+            \underbrace{ \qforall {\zeta \prec \eta} \varphi[\xi \mapsto \zeta] }_{\mathclap{\substack{\T{inductive} \\ \T{hypothesis}}}}
+            \rightarrow
+            \underbrace{ \varphi[\xi \mapsto \eta] }_{\mathclap{\substack{\T{inductive step} \\ \T{conclusion}}}}
+          }^{\T{inductive step}}
       }
     \rightarrow
-    \underbrace
-      {
-        \parens[\Big]{ \qforall {\eta \in P} \varphi[\xi \mapsto \eta] }.
-      }_{\T{conclusion}}
+    \underbrace{ \qforall \eta \varphi[\xi \mapsto \eta] }_{\T{conclusion}}.
   \end{equation}
+
+  See the comments in \fullref{def:peano_arithmetic/PA3} regarding variables and quantification in axiom schemas.
 \end{theorem}
 \begin{proof}
-  Fix a formula \( \varphi \) in \logic{ZFC} and \( \xi \in \boldop{Free}(\varphi) \). Assume that we are working in a model of \logic{ZFC} and fix a variable assignment \( v \) in this model. We will show that the \hyperref[def:material_implication/contrapositive]{contraposition} of \eqref{eq:thm:well_ordered_induction} holds in this model.
+  Fix a formula \( \varphi \) in \( \mscrL \). Fix a variable assignment \( v \) in \( \mscrX \). We will show that the \hyperref[def:material_implication/contrapositive]{contraposition} of \eqref{eq:thm:well_founded_induction} holds in this model.
 
-  Suppose that there exists a value \( x \in v(\mscrP) \) such that \( \varphi\Bracks{v_{\xi \mapsto x}} = F \). That is,
-  \begin{align*}
-    && \qexists {\eta \in P} \neg \varphi[\xi \mapsto \eta]. && \mathllap{\exists \T{added due to \ref{thm:quantifier_satisfiability/existential}}}
-  \end{align*}
+  Suppose that there exists a value \( x \in X \) such that \( \varphi\Bracks{v_{\xi \mapsto x}} = F \). That is,
+  \begin{equation*}
+    \qexists \eta \neg \varphi[\xi \mapsto \eta].
+  \end{equation*}
   holds.
 
-  Let \( x_0 \) be the smallest such value (which is guaranteed to exist because \( v(\mscrP) \) is well-ordered). Thus the inductive hypothesis \( \qforall {\zeta < x_0} \varphi[\xi \mapsto \zeta] \) holds but the inductive step conclusion \( \varphi[\xi \mapsto x_0] \) does not.
+  Let \( x_0 \) be the smallest such value (which is guaranteed to exist because \( X \) is well-founded by \( \prec \)). Thus the inductive hypothesis \( \qforall {\zeta < x_0} \varphi[\xi \mapsto \zeta] \) holds but the inductive step conclusion \( \varphi[\xi \mapsto x_0] \) does not.
 
-  Since \( v \) was chosen arbitrarily, this is true for all variable assignments and actually for all models of \logic{ZFC}. That is, we have the entailment
-  \begin{equation}\label{eq:thm:well_ordered_induction/contraposition}
-    \parens[\Big]{ \qexists {\eta \in P} \neg \varphi[\xi \mapsto \eta] }
+  Since \( v \) was chosen arbitrarily, this is true for all variable assignments in \( \mscrX \). Formally,
+  \begin{equation}\label{eq:thm:well_founded_induction/contraposition}
+    \mscrX
     \vDash
-    \parens[\Big]
+    \qexists \eta \neg \varphi[\xi \mapsto \eta]
+    \rightarrow
+    \qexists \eta \parens[\Big]
       {
-        \qexists {\eta \in P} \parens[\Big] { \qforall {\zeta < \eta} \varphi[\xi \mapsto \zeta] }
-        \wedge
-        \neg \varphi[\xi \mapsto \eta]
-      }.
+        \qforall {\zeta \prec \eta} \varphi[\xi \mapsto \zeta] \wedge \neg \varphi[\xi \mapsto \eta]
+      }
   \end{equation}
 
-  \Fullref{thm:first_order_semantic_deduction_theorem}, \fullref{thm:boolean_equivalences/contrapositive}, \fullref{thm:boolean_equivalences/conditional_as_disjunction} and \fullref{thm:first_order_quantifiers_are_dual} show that \eqref{eq:thm:well_ordered_induction/contraposition} is equivalent to \eqref{eq:thm:well_ordered_induction}. Since we have show the former, we can conclude the later. The formula \( \varphi \) was chosen arbitrarily so we can conclude that \eqref{eq:thm:well_ordered_induction} holds for all formulas.
+  This is precisely the contrapositive of \eqref{eq:thm:well_founded_induction}. Since we are working in classical logic, the contrapositive is semantically equivalent to its original implication, hence \( \mscrX \vDash \eqref{eq:thm:well_founded_induction} \).
 \end{proof}
 
-\begin{definition}\label{def:ordinal}\mcite[thm. 7L]{Enderton1977Sets}
+\begin{corollary}[\( \varepsilon \)-induction]\label{thm:epsilon_induction}
+  For every formula \( \varphi \) over \( \mscrL \) not containing \( \eta \) nor \( \zeta \) as free variables, the following is a theorem of \logic{ZFC}:
+  \begin{equation}\label{thm:epsilon_induction}
+    \qforall \eta \parens[\Big]
+      {
+        \overbrace
+          {
+            \underbrace{ \qforall {\zeta \in \eta} \varphi[\xi \mapsto \zeta] }_{\mathclap{\substack{\T{inductive} \\ \T{hypothesis}}}}
+            \rightarrow
+            \underbrace{ \varphi[\xi \mapsto \eta] }_{\mathclap{\substack{\T{inductive step} \\ \T{conclusion}}}}
+          }^{\T{inductive step}}
+      }
+    \rightarrow
+    \underbrace{ \qforall \eta \varphi[\xi \mapsto \eta] }_{\T{conclusion}}.
+  \end{equation}
+
+  This induction schema is called \enquote{\( \varepsilon \)-induction} because the set membership symbol \( \in \) is derived from \( \varepsilon \) as explained in \fullref{rem:epsilon_and_set_membership}.
+\end{corollary}
+\begin{proof}
+  Every model of \logic{ZFC} is well-founded by \( \in \) as shown in \fullref{thm:set_membership_is_well_founded}. The corollary then follows from \fullref{thm:well_founded_induction}.
+\end{proof}
+
+\begin{definition}\label{def:ordinal}\mcite[def. 63.12]{OpenLogicFull}
   A set is called an \term{ordinal} or an \term{ordinal number} if it is \hyperref[def:well_ordered_set]{well-ordered} under set membership.
 
-  By tradition, ordinals are denoted by initial small Greek letters --- \( \alpha \), \( \beta \), \( \gamma \), \ldots.
+  By tradition, ordinals are denoted by initial small Greek letters --- \( \alpha \), \( \beta \), \( \gamma \), \ldots --- however we often use \( \alpha \) and \( \beta \) in logical formulas and so we prefer \( \gamma \) and \( \delta \).
 
-  We use \( \alpha < \beta \) to mean \( \alpha \in \beta \). We denote by \( \cat{Ord} \) the \hyperref[thm:partial_order_category_correspondence]{poset category} induced by this relation.
+  We use \( \gamma < \delta \) to mean \( \gamma \in \delta \). We denote by \( \cat{Ord} \) the \hyperref[thm:partial_order_category_correspondence]{poset category} induced by this relation.
 \end{definition}
 
 \begin{proposition}\label{thm:element_of_ordinal_is_ordinal}\mcite[lemma 63.13]{OpenLogicFull}
    Every element of an ordinal is an ordinal.
 \end{proposition}
 \begin{proof}
-  Let \( \beta \in \alpha \) where \( \alpha \) is an ordinal. We will show that \( \beta \) is an ordinal.
+  Let \( \delta \in \gamma \) where \( \gamma \) is an ordinal. We will show that \( \delta \) is an ordinal.
 
-  Since \( \alpha \) is well-ordered by \( \in \), then any subset of \( \alpha \) has a minimal element. Because of the transitivity of \( \alpha \), \( \beta \) and any subset of \( \beta \) is also a subset of \( \alpha \) and hence has a minimum with respect to \( \in \). Hence \( \beta \) is well-ordered by \( \in \).
+  Since \( \gamma \) is well-ordered by \( \in \), then any subset of \( \gamma \) has a minimal element. Because of the transitivity of \( \gamma \), \( \delta \) and any subset of \( \delta \) is also a subset of \( \gamma \) and hence has a minimum with respect to \( \in \). Hence \( \delta \) is well-ordered by \( \in \).
 
-  To see that \( \beta \) is a transitive set, let \( A \in \beta \) and let \( x \in A \). Since \( \in \) is a well-order on \( \beta \), it is a transitive relation and hence if \( x \in A \in \beta \), we have \( x \in \beta \). Since \( x \) was chosen arbitrarily, we conclude that \( A \subseteq \beta \) and hence \( \beta \) is a transitive set.
+  To see that \( \delta \) is a transitive set, let \( A \in \delta \) and let \( x \in A \). Since \( \in \) is a well-order on \( \delta \), it is a transitive relation and hence if \( x \in A \in \delta \), we have \( x \in \delta \). Since \( x \) was chosen arbitrarily, we conclude that \( A \subseteq \delta \) and hence \( \delta \) is a transitive set.
 \end{proof}
 
 \begin{theorem}[Transfinite induction]\label{thm:transfinite_induction}\mcite[thm. 63.15]{OpenLogicFull}
@@ -162,10 +184,10 @@
 
   In words, if we can prove that \( \varphi \) holds for any ordinal by assuming that it holds for all smaller ordinals, then we can conclude that \( \varphi \) holds simultaneously for all ordinals.
 
-  Also note that this is not a special case of \fullref{thm:well_ordered_induction} because there is no set of all ordinals due to \fullref{thm:burali_forti_paradox}.
+  Also note that this is not a special case of \fullref{thm:well_founded_induction} because there is no set of all ordinals due to \fullref{thm:burali_forti_paradox}.
 \end{theorem}
 \begin{proof}
-  The proof is analogous to the proof of \fullref{thm:well_ordered_induction} except that rather than taking elements of a fixed well-ordered set, we take ordinals.
+  The proof is analogous to the proof of \fullref{thm:well_founded_induction} except that rather than taking elements of a fixed well-ordered set, we take ordinals.
 \end{proof}
 
 \begin{theorem}\label{thm:transfinite_recursion}
@@ -246,7 +268,7 @@
   But this contradicts \fullref{thm:zfc_existence_theorems/member_of_itself}. Hence there is no set of all ordinals.
 \end{proof}
 
-\begin{proposition}\label{thm:order_type_existence}\cite[thm. 63.25]{OpenLogicFull}
+\begin{proposition}\label{thm:order_type_existence}\mcite[thm. 63.25]{OpenLogicFull}
   Any \hyperref[def:well_ordered_set]{well-ordered set} \( (\mscrP, \leq) \) is \hyperref[def:poset/homomorphism]{order-isomorphic} to a unique ordinal. This ordinal is called the \term{order type} of \( (\mscrP, \leq) \) and is denoted by \( \ord(\mscrP) \).
 \end{proposition}
 \begin{proof}

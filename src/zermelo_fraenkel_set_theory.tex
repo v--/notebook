@@ -24,9 +24,9 @@
   \begin{thmenum}
     \thmitem{def:zfc/extensionality} The \term{axiom of extensionality}, as defined in \fullref{def:naive_set_theory/extensionality}. This is also the only axiom of the theory that does not deal with existence.
 
-    \thmitem{def:zfc/specification}\mcite[sec. 62.2]{OpenLogicFull} The \term{axiom schema of specification}, also known as the axiom schema of \term{separation} or of \term{restricted comprehension}, states that given a set \( A \), any formula defines a subset of \( A \). For each formula \( \varphi \), the following is an axiom:
+    \thmitem{def:zfc/specification}\mcite[sec. 62.2]{OpenLogicFull} The \term{axiom schema of specification}, also known as the axiom schema of \term{separation} or of \term{restricted comprehension}, states that given a set \( A \), any formula defines a subset of \( A \). For each formula \( \varphi \) not containing either \( \alpha \) nor \( \beta \) as free variables, the following is an axiom:
     \begin{equation}\label{eq:def:naive_set_theory/unrestricted_comprehension}
-      \qforall \beta \qexists \alpha \qforall \xi (\xi \in \alpha \leftrightarrow \varphi[\xi] \wedge \xi \in \beta).
+      \qforall \beta \qexists \alpha \qforall \xi (\xi \in \alpha \leftrightarrow \varphi \wedge \xi \in \beta).
     \end{equation}
 
     As explained in \fullref{def:naive_set_theory/unrestricted_comprehension} and \fullref{def:set_builder_notation}, this set may depend on parameters, which are other sets. We must formally take the \hyperref[thm:implicit_universal_quantification]{universal closure} of this set to quantify over all possible values for the parameters.
@@ -73,13 +73,13 @@
 
     See \fullref{subsec:axiom_of_choice} for further discussion of this axiom.
 
-    \thmitem{def:zfc/replacement}\mcite[sec. 63.7]{OpenLogicFull} The \term{axiom schema of replacement} roughly states that every \hyperref[rem:function_definition]{mapping} that is definable via a formula of \logic{ZFC} is a function. As we have done for the \hyperref[def:zfc/choice]{axiom of choice}, we only formulate the axiom via the image of the function. More concretely, given a formula \( \varphi \), the following is an axiom:
+    \thmitem{def:zfc/replacement}\mcite[sec. 63.7]{OpenLogicFull} The \term{axiom schema of replacement} roughly states that every \hyperref[rem:function_definition]{mapping} that is definable via a formula of \logic{ZFC} is a function. As we have done for the \hyperref[def:zfc/choice]{axiom of choice}, we only formulate the axiom via the image of the function. More concretely, given a formula \( \varphi \) not containing \( \alpha \) nor \( \beta \) as free variables, the following is an axiom:
     \begin{equation}\label{eq:def:zfc/replacement}
       \qforall \alpha \parens[\Bigg]
         {
-          \parens[\Big]{ \qforall {\xi \in \alpha} \qExists \eta \varphi[\xi, \eta] }
+          \parens[\Big]{ \qforall {\xi \in \alpha} \qExists \eta \varphi }
           \rightarrow
-          \parens[\Big]{ \qexists \beta \qforall \eta \parens[\Big]{ \eta \in \beta \leftrightarrow \qexists {\xi \in \alpha} \varphi[\xi, \eta] } }
+          \parens[\Big]{ \qexists \beta \qforall \eta \parens[\Big]{ \eta \in \beta \leftrightarrow \qexists {\xi \in \alpha} \varphi } }
         }.
     \end{equation}
 
@@ -334,3 +334,141 @@
 
   Therefore we cannot have both memberships \( A \in B \) and \( B \in A \).
 \end{proof}
+
+\begin{theorem}[Recursion theorem]\label{thm:omega_recursion}\mcite[73]{Enderton1977Sets}
+  Let \( A \) be a nonempty set. Suppose that we are given some member \( a_0 \) of \( A \) and some function \( F: A \to A \). Then there exists a unique function \( f: \omega \to A \) such that
+  \begin{itemize}
+    \item \( f(\varnothing) = a_0 \).
+    \item For every \( n \in \omega \) we have \( f(\op{succ}(n)) = F(f(n)) \).
+  \end{itemize}
+
+  Note that \( f \) is actually a \hyperref[def:sequence]{sequence}. We have not yet defined natural numbers within \logic{ZFC}, however, and this theorem is important for being able to do so. So we avoid talking about sequences to avoid circularity.
+\end{theorem}
+\begin{proof}
+  Let \( G \subseteq \pow(\omega \times A) \) be the set of all \hyperref[def:partial_function]{partial single-valued functions} \( g: \omega \to A \) such that
+  \begin{itemize}
+    \item If \( g \) is defined at \( \varnothing \), then \( g(\varnothing) = a_0 \).
+    \item For every \( n \in \omega \), if \( g \) is defined at \( \op{succ}(n) \), then \( g \) is also defined at \( n \) and
+    \begin{equation*}
+      g(\op{succ}(n)) = F(f(n)).
+    \end{equation*}
+  \end{itemize}
+
+  Clearly \( G \) is nonempty because the function \( \set{ (\varnothing, a_0) } \) belongs to \( G \).
+
+  The conditions imposed on the functions in \( G \) ensure that every function is defined in some \hyperref[def:poset_interval/ray]{initial segment} of the natural numbers. A more obvious approach is to require \( g \) to be defined at \( \op{succ}(n) \) if it is defined at \( n \), however we are trying to prove that such a function exists in the first place.
+
+  Define \( f \coloneqq \bigcup G \). At this point \( f \) is a \hyperref[def:multi_valued_function]{multi-valued function}. We must now show that \( f \) has all the properties that we want.
+
+  \SubProofOf[def:multi_valued_function/total]{totality} First, we will show that \( f \) is total. Clearly \( \varnothing \in \dom f \).
+
+  Now fix \( n \in \dom f \) and let \( g \) be a function defined at \( n \).
+
+  \begin{itemize}
+    \item If \( g \) is defined at \( \op{succ}(n) \) also, this directly proves that \( \op{succ}(n) \in \dom f \).
+    \item If \( g \) is not defined at \( \op{succ}(n) \), consider
+    \begin{equation*}
+      \widehat g \coloneqq g \cup \set{ (\op{succ}(n), F(g(n)) }.
+    \end{equation*}
+
+    The function \( \widehat g \) is again single-valued and it belongs to \( G \), hence \( \op{succ}(n) \in \dom f \).
+  \end{itemize}
+
+  We have now shown that \( \dom f \) is an inductive set and since it is contained in the smallest inductive set, it must coincide with it. On other words, \( f: \omega \multto A \) is total.
+
+  \SubProofOf[def:function]{single-valuedness} Now that we know that \( f \) is total, we will prove that it is single-valued and thus is a function in the usual sense of the term.
+
+  Denote by \( S \subseteq \omega \) the set for which \( f \) is single-valued. Clearly \( \varnothing \in S \).
+
+  Now suppose that \( n \in S \) for some \( S \). Since \( f \) is total, there exist at least one partial function in \( G \) that is defined at \( \op{succ}(n) \), from which it follows that it is also defined at \( n \). Let \( g \) and \( h \) be such functions.
+
+  Then
+  \begin{equation*}
+    g(\op{succ}(n)) = F(g(n)) = F(f(n)) = F(h(n)) = h(\op{succ}(n)),
+  \end{equation*}
+  hence \( g \) and \( h \) coincide at \( \op{succ}(n) \), which in turn implies that \( \op{succ}(n) \in S \).
+
+  Thus \( S \) is inductive and since \( S \subseteq \omega \), it follows that \( S = \omega \) and that \( f \) is single-valued.
+
+  \SubProofOf[def:function]{uniqueness} Now that it is clear that \( f \) satisfies the theorem, we must verify that it is unique.
+
+  Suppose that \( f_1 \) and \( f_2 \) both satisfy the theorem and let
+  \begin{equation*}
+    H \coloneqq \set{ n \in \omega \given f_1(n) = f_2(n) }.
+  \end{equation*}
+
+  Clearly \( \varnothing \in H \). Fix some \( n \neq \varnothing \) and suppose that \( n \in H \). Then
+  \begin{equation*}
+    f_2(\op{succ}(n)) = F(f_1(n)) = F(f_2(n)) = f_2(\op{succ}(n)),
+  \end{equation*}
+  hence \( \op{succ}(n) \in H \).
+
+  Therefore \( H \) is inductive and \( H = \omega \), which in turn implies that \( f_1 = f_2 \). So there is at most one function that satisfies the theorem and we have already shown that \( f \) is such a function.
+\end{proof}
+
+\begin{example}\label{ex:thm:omega_recursion}
+  \Fullref{thm:omega_recursion} may not seem very powerful at first glance but we should note that we have put no restrictions on \( A \) except for it being nonempty. Let \( A = \pow(\omega \times \omega) \), i.e. the set of all relations over \( \omega \).
+
+  \begin{thmenum}
+    \thmitem{ex:thm:omega_recursion/omega_addition} Define
+    \begin{equation*}
+      \begin{aligned}
+        &F: A \to A \\
+        &F(R) \coloneqq R \cup \set{ (n, \op{succ}(m), \op{succ}(k)) \given (n, m, k) \in R }
+      \end{aligned}
+    \end{equation*}
+
+    Now we use the initial point \( a_0 = (\omega, \varnothing, \omega) \) to construct a binary function \( \oplus \) that is used in \fullref{thm:omega_is_model_of_pa} to define natural number addition.
+
+    \thmitem{ex:thm:omega_recursion/omega_multiplication} Similarly, we define natural number multiplication \( \odot \) using
+    \begin{equation*}
+      \begin{aligned}
+        &F: A \to A \\
+        &F(R) \coloneqq R \cup \set{ (n, \op{succ}(m), k \oplus n) \given (n, m, k) \in R }
+      \end{aligned}
+    \end{equation*}
+    and \( a_0 = (\omega, \varnothing, \varnothing) \).
+  \end{thmenum}
+\end{example}
+
+\begin{theorem}\label{thm:omega_is_model_of_pa}
+  The \hyperref[thm:smallest_inductive_set_existence]{smallest inductive set \( \omega \)} is a model of \hyperref[def:peano_arithmetic]{Peano arithmetic} with the following interpretation:
+  \begin{thmenum}
+    \thmitem{thm:omega_is_model_of_pa/zero} \hyperref[def:peano_arithmetic/zero]{Zero} is interpreted as \( \varnothing \).
+
+    \thmitem{thm:omega_is_model_of_pa/succ} The \hyperref[def:peano_arithmetic/succ]{successor} operation \( s \) is interpreted as \( \op{succ} \).
+
+    \thmitem{thm:omega_is_model_of_pa/plus} \hyperref[def:peano_arithmetic/plus]{Addition} is interpreted by the \( \oplus \) function given in \fullref{ex:thm:omega_recursion/omega_addition}.
+
+    \thmitem{thm:omega_is_model_of_pa/mult} Similarly, \hyperref[def:peano_arithmetic/mult]{multiplication} is interpreted by \( \odot \) from \fullref{ex:thm:omega_recursion/omega_multiplication}.
+  \end{thmenum}
+\end{theorem}
+\begin{proof}
+  \SubProofOf{eq:def:peano_arithmetic/PA1} Let \( n, m \in \omega \) and suppose that \( \op{succ}(n) = \op{succ}(m) \).
+
+  Aiming at a contradiction, suppose that \( n \neq m \). Then \( n \in \op{succ}(m) = m \cup \set{ m } \) and since \( n \neq m \) it is only possible that \( n \in m \). We can analogously prove, however, that \( m \in n \). This mutual containment contradicts \fullref{thm:simple_foundation_theorems/no_mutual_containment}.
+
+  Therefore \( n = m \).
+
+  \SubProofOf{eq:def:peano_arithmetic/PA2} Suppose that \( \varnothing \) has a predecessor \( n \in \omega \). Then
+  \begin{equation*}
+    \varnothing = \op{succ}(n) = n \cup \set{ n },
+  \end{equation*}
+  which implies that \( n \in \varnothing \). But this is contradicts the \hyperref[def:empty_set]{definition of \( \varnothing \)}.
+
+  Therefore \( \varnothing \) has no predecessor.
+
+  \SubProofOf{eq:def:peano_arithmetic/PA3} We have already shown in \fullref{thm:omega_induction} that the induction schema \eqref{eq:def:peano_arithmetic/PA3} is satisfied by \( \omega \).
+
+  \SubProofOf{eq:def:peano_arithmetic/PA4} The starting condition, i.e. \( a_0 \), in \fullref{thm:omega_is_model_of_pa/plus} implies that \( n \oplus 0 = n \) for all \( n \in \omega \).
+
+  \SubProofOf{eq:def:peano_arithmetic/PA5} The iteration function \( F \) in \fullref{thm:omega_is_model_of_pa/plus} implies that \( n \oplus \op{succ}(m) = \op{succ}(n \oplus m) \) for all \( n, m \in \omega \).
+
+  \SubProofOf{eq:def:peano_arithmetic/PA6} Handled analogously to \( \oplus \).
+
+  \SubProofOf{eq:def:peano_arithmetic/PA7} Handled analogously to \( \oplus \).
+\end{proof}
+
+\begin{remark}\label{rem:natural_number_availability_zfc}
+  Thanks to \fullref{thm:omega_is_model_of_pa}, we now have at our disposal the toolkit of the \hyperref[def:natural_numbers]{natural numbers} described in \fullref{subsec:natural_numbers}.
+\end{remark}
