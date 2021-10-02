@@ -16,7 +16,7 @@
 
   The relation \( \prec \) is called \term{well-founded} if there exists no infinitely descending sequence.
 
-  We cannot easily formulate the theory of well-founded relations as an extension of the first-order \hyperref[def:totally_ordered_set]{theory of totally ordered sets}. This is why we only study well-relations sets in the context of \logic{ZFC}.
+  We cannot easily formulate the theory of well-founded relations as a \hyperref[def:first_order_theory]{first-order theory}. This is why we only study well-relations sets in the context of \logic{ZFC}.
 \end{definition}
 
 \begin{proposition}\label{thm:set_membership_is_well_founded}
@@ -41,7 +41,7 @@
   In a \hyperref[def:poset]{poset} \( (\mscrP, \leq) \), the strict relation \( < \) is \hyperref[def:well_founded_relation]{well-founded} if and only if every nonempty subset \( A \subseteq \mscrP \) has a \hyperref[def:poset_extremal_points/maximal_and_minimal_element]{minimal element}.
 \end{proposition}
 \begin{proof}
-  \SufficiencySubProof Suppose that \( \leq \) is well-founded and let \( A \subseteq \mscrP \). Suppose that \( A \) has no minimal element.
+  \SufficiencySubProof Suppose that \( < \) is well-founded and let \( A \subseteq \mscrP \). Suppose that \( A \) has no minimal element.
 
   If \( A \) is finite, we cannot construct an infinitely descending sequence because of irreflexivity of \( < \). If \( A \) is infinite, then we can construct an infinitely descending sequence using well-founded recursion as follows:
   \begin{itemize}
@@ -57,20 +57,29 @@
 \begin{definition}\label{def:transitive_set}
   A set \( A \) is \term{transitive} if any of the following equivalent conditions are satisfied:
   \begin{thmenum}
-    \thmitem{def:transitive_set/membership} If \( x \in A \) and \( y \in x \), then \( y \in A \).
-    \thmitem{def:transitive_set/inclusion} If \( x \in A \), then \( x \subseteq A \).
+    \thmitem{def:transitive_set/relation} The relation \( {}\in{} \) is \hyperref[def:binary_relation/transitive]{transitive} on \( A \).
+    \thmitem{def:transitive_set/inclusion} If \( B \in A \), then \( B \subseteq A \).
   \end{thmenum}
 \end{definition}
+\begin{proof}
+  \ImplicationSubProof{def:transitive_set/relation}{def:transitive_set/inclusion} Let \( B \in A \) and \( C \in B \). Then by the transitivity of \( {}\in{} \), \( C \in A \) and since \( C \) was arbitrary, we can conclude that \( B \subseteq A \).
+
+  \ImplicationSubProof{def:transitive_set/inclusion}{def:transitive_set/relation} Let \( D \in C \in B \) for some members \( B, C, D \) of \( A \). We will show that \( D \in B \), i.e. that \( {}\in{} \) is a transitive relation on \( A \).
+
+  Suppose that \( D \not\in B \)
+\end{proof}
 
 \begin{definition}\label{def:well_ordered_set}\mcite[def. 63.1]{OpenLogicFull}
   A \hyperref[def:totally_ordered_set]{totally ordered set} \( (\mscrP, \leq) \) is said to be \term{well-ordered} if either of the following equivalent conditions hold:
   \begin{thmenum}
     \thmitem{def:well_ordered_set/direct} Every nonempty subset of \( \mscrP \) has a \hyperref[def:poset_extremal_points/maximum_and_minimum]{minimum}.
-    \thmitem{def:well_ordered_set/well_founded} The order \( \leq \) is \hyperref[def:well_founded_relation]{well-founded}.
+    \thmitem{def:well_ordered_set/well_founded} The strict order \( < \) is \hyperref[def:well_founded_relation]{well-founded}.
   \end{thmenum}
+
+  The \hyperref[def:binary_relation/irreflexive]{irreflexivity} of \( < \) is redundant because it follows from the well-foundedness --- if the strict relation is not irreflexive, then there exists some element \( x \in \mscrP \) such that \( x < x \) and thus \( \seq{ x }_{k=1}^\infty \) is an infinitely descending sequence.
 \end{definition}
 \begin{proof}
-  The equivalence follows from \fullref{thm:infinite_descent_partial_order} and \fullref{thm:totally_ordered_minimal_element_is_minimum}.
+  The equivalence of the conditions follows from \fullref{thm:infinite_descent_partial_order} and \fullref{thm:totally_ordered_minimal_element_is_minimum}.
 \end{proof}
 
 \begin{theorem}[Well-founded induction]\label{thm:well_founded_induction}\mcite[prop. 63.3]{OpenLogicFull}
@@ -141,21 +150,53 @@
   Every model of \logic{ZFC} is well-founded by \( \in \) as shown in \fullref{thm:set_membership_is_well_founded}. The corollary then follows from \fullref{thm:well_founded_induction}.
 \end{proof}
 
+\begin{remark}\label{rem:ordinal_definition}
+  Let us consider some properties of the natural numbers (defined as members the smallest inductive set) so that it is clear what we want to generalize.
+
+  Every natural number is a set of other natural numbers:
+  \begin{align*}
+    &0 = \varnothing \\
+    &1 = \set{ \varnothing } = \set{ 0 } \\
+    &2 = \set{ \varnothing, \set{ \varnothing } } = \set{ 0, 1 } \\
+    &3 = \set{ \varnothing, \set{ \varnothing }, \set{ \varnothing, \set{ \varnothing } } } = \set{ 0, 1, 2 }
+  \end{align*}
+
+  It just so happens that each natural number \( n \) is the set of natural numbers that are smaller with respect to the strict order relation defined in \eqref{eq:def:natural_number_ordering/strict_predicate}.
+
+  Therefore \( \in \) and \( < \) are equivalent on the set \( \omega \). It follows from \fullref{thm:natural_numbers_are_well_ordered} that \( \in \) is a well-order on \( \omega \).
+
+  What is common between any natural number \( n \) and the entire set \( \omega \) of natural numbers?
+\end{remark}
+
 \begin{definition}\label{def:ordinal}\mcite[def. 63.12]{OpenLogicFull}
-  A set is called an \term{ordinal} or an \term{ordinal number} if it is \hyperref[def:well_ordered_set]{well-ordered} under set membership.
+  A set is called an \term{ordinal} or an \term{ordinal number} if it is \hyperref[def:totally_ordered_set]{totally ordered} by set membership.
 
-  By tradition, ordinals are denoted by initial small Greek letters --- \( \alpha \), \( \beta \), \( \gamma \), \ldots --- however we often use \( \alpha \) and \( \beta \) in logical formulas and so we prefer \( \gamma \) and \( \delta \).
+  By tradition, ordinals are denoted by initial small Greek letters like \( \alpha \) and \( \beta \), however we often use \( \alpha \) and \( \beta \) in logical formulas and so we prefer \( \gamma \) and \( \delta \).
 
-  We use \( \gamma < \delta \) to mean \( \gamma \in \delta \). We denote by \( \cat{Ord} \) the \hyperref[thm:partial_order_category_correspondence]{poset category} induced by this relation.
+  We use \( \gamma < \delta \) to mean \( \gamma \in \delta \).
 \end{definition}
+
+\begin{example}\label{ex:def:ordinal}
+  We list several small ordinals:
+  \begin{align*}
+    &0 = \varnothing \\
+    &1 = \set{ \varnothing } \\
+    &2 = \set{ \varnothing, \set{ \varnothing } } \\
+    &3 = \set{ \varnothing, \set{ \varnothing }, \set{ \varnothing, \set{ \varnothing } } }
+  \end{align*}
+
+  We will later show that the natural numbers (defined as members the smallest inductive set) are precisely the finite ordinals.
+\end{example}
 
 \begin{proposition}\label{thm:element_of_ordinal_is_ordinal}\mcite[lemma 63.13]{OpenLogicFull}
    Every element of an ordinal is an ordinal.
 \end{proposition}
 \begin{proof}
-  Let \( \delta \in \gamma \) where \( \gamma \) is an ordinal. We will show that \( \delta \) is an ordinal.
+  Let \( \gamma \) be an ordinal and let \( \delta \in \gamma \). We will show that \( \delta \) is an ordinal.
 
-  Since \( \gamma \) is well-ordered by \( \in \), then any subset of \( \gamma \) has a minimal element. Because of the transitivity of \( \gamma \), \( \delta \) and any subset of \( \delta \) is also a subset of \( \gamma \) and hence has a minimum with respect to \( \in \). Hence \( \delta \) is well-ordered by \( \in \).
+  We will first show that \( \delta \) is transitive. Let \( A \in \delta \) and \( x \in A \). Then \( A \subseteq \gamma \) since \( \gamma \) is transitive, hence \( x \in \gamma \). Suppose that \( x \not\in \delta \).
+
+  Since \( \gamma \) is well-ordered by \( \in \), then any subset of \( \gamma \) has a minimal element. Because of the transitivity of \( \gamma \), \( \delta \) and also any subset of \( \delta \) is also a subset of \( \gamma \) and hence has a minimum with respect to \( \in \). Hence \( \delta \) is well-ordered by \( \in \).
 
   To see that \( \delta \) is a transitive set, let \( A \in \delta \) and let \( x \in A \). Since \( \in \) is a well-order on \( \delta \), it is a transitive relation and hence if \( x \in A \in \delta \), we have \( x \in \delta \). Since \( x \) was chosen arbitrarily, we conclude that \( A \subseteq \delta \) and hence \( \delta \) is a transitive set.
 \end{proof}
