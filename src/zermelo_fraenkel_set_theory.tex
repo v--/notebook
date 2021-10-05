@@ -336,25 +336,27 @@
 \end{proof}
 
 \begin{theorem}[Recursion theorem]\label{thm:omega_recursion}\mcite[73]{Enderton1977Sets}
-  Let \( A \) be a nonempty set. Suppose that we are given some member \( a_0 \) of \( A \) and some function \( F: A \to A \). Then there exists a unique function \( f: \omega \to A \) such that
+  Let \( A \) be a nonempty set. Suppose that we are given some member \( a_1 \) of \( A \) and some operator \( T: A \to A \). Then there exists a unique function \( f: \omega \to A \) such that
   \begin{itemize}
-    \item \( f(\varnothing) = a_0 \).
-    \item For every \( n \in \omega \) we have \( f(\op{succ}(n)) = F(f(n)) \).
+    \item \( f(\varnothing) = a_1 \).
+    \item For every \( n \in \omega \) we have \( f(\op{succ}(n)) = T(f(n)) \).
   \end{itemize}
 
   Note that \( f \) is actually a \hyperref[def:sequence]{sequence}. We have not yet defined natural numbers within \logic{ZFC}, however, and this theorem is important for being able to do so. So we avoid talking about sequences to avoid circularity.
+
+  See \fullref{rem:natural_number_recursion} for a simpler and more conventional notation for recursion on \( \omega \).
 \end{theorem}
 \begin{proof}
   Let \( G \subseteq \pow(\omega \times A) \) be the set of all \hyperref[def:partial_function]{partial single-valued functions} \( g: \omega \to A \) such that
   \begin{itemize}
-    \item If \( g \) is defined at \( \varnothing \), then \( g(\varnothing) = a_0 \).
+    \item If \( g \) is defined at \( \varnothing \), then \( g(\varnothing) = a_1 \).
     \item For every \( n \in \omega \), if \( g \) is defined at \( \op{succ}(n) \), then \( g \) is also defined at \( n \) and
     \begin{equation*}
-      g(\op{succ}(n)) = F(f(n)).
+      g(\op{succ}(n)) = T(f(n)).
     \end{equation*}
   \end{itemize}
 
-  Clearly \( G \) is nonempty because the function \( \set{ (\varnothing, a_0) } \) belongs to \( G \).
+  Clearly \( G \) is nonempty because the function \( \set{ (\varnothing, a_1) } \) belongs to \( G \).
 
   The conditions imposed on the functions in \( G \) ensure that every function is defined in some \hyperref[def:poset_interval/ray]{initial segment} of the natural numbers. A more obvious approach is to require \( g \) to be defined at \( \op{succ}(n) \) if it is defined at \( n \), however we are trying to prove that such a function exists in the first place.
 
@@ -368,7 +370,7 @@
     \item If \( g \) is defined at \( \op{succ}(n) \) also, this directly proves that \( \op{succ}(n) \in \dom f \).
     \item If \( g \) is not defined at \( \op{succ}(n) \), consider
     \begin{equation*}
-      \widehat g \coloneqq g \cup \set{ (\op{succ}(n), F(g(n)) }.
+      \widehat g \coloneqq g \cup \set{ (\op{succ}(n), T(g(n)) }.
     \end{equation*}
 
     The function \( \widehat g \) is again single-valued and it belongs to \( G \), hence \( \op{succ}(n) \in \dom f \).
@@ -384,7 +386,7 @@
 
   Then
   \begin{equation*}
-    g(\op{succ}(n)) = F(g(n)) = F(f(n)) = F(h(n)) = h(\op{succ}(n)),
+    g(\op{succ}(n)) = T(g(n)) = T(f(n)) = T(h(n)) = h(\op{succ}(n)),
   \end{equation*}
   hence \( g \) and \( h \) coincide at \( \op{succ}(n) \), which in turn implies that \( \op{succ}(n) \in S \).
 
@@ -399,37 +401,47 @@
 
   Clearly \( \varnothing \in H \). Fix some \( n \neq \varnothing \) and suppose that \( n \in H \). Then
   \begin{equation*}
-    f_2(\op{succ}(n)) = F(f_1(n)) = F(f_2(n)) = f_2(\op{succ}(n)),
+    f_2(\op{succ}(n)) = T(f_1(n)) = T(f_2(n)) = f_2(\op{succ}(n)),
   \end{equation*}
   hence \( \op{succ}(n) \in H \).
 
   Therefore \( H \) is inductive and \( H = \omega \), which in turn implies that \( f_1 = f_2 \). So there is at most one function that satisfies the theorem and we have already shown that \( f \) is such a function.
 \end{proof}
 
-\begin{example}\label{ex:thm:omega_recursion}
-  \Fullref{thm:omega_recursion} may not seem very powerful at first glance but we should note that we have put no restrictions on \( A \) except for it being nonempty. Let \( A = \pow(\omega \times \omega) \), i.e. the set of all relations over \( \omega \).
+\begin{definition}\label{def:omega_operations}
+  We will use \fullref{thm:omega_recursion} for defining arithmetic operations for natural numbers. There constructions will be more elaborate than the basic recursive sequences defined in e.g. \fullref{thm:banach_fixed_point_theorem}.
 
   \begin{thmenum}
-    \thmitem{ex:thm:omega_recursion/omega_addition} Define
+    \thmitem{def:omega_operations/addition} We will represent the addition operation \( \oplus \) as follows: fix the first summand \( n \) and then define a function \( \oplus_n: \omega \to \omega \) such that \( k = \oplus_n(m) \) gives us \( n \oplus m = k \). This is a particular instance of \hyperref[def:currying]{currying}.
+
+    Fix \( n \in \omega \), let \( A = \omega \) and define
     \begin{equation*}
       \begin{aligned}
-        &F: A \to A \\
-        &F(R) \coloneqq R \cup \set{ (n, \op{succ}(m), \op{succ}(k)) \given (n, m, k) \in R }
+        &T_n: \omega \to \omega \\
+        &T_n(k) \coloneqq \op{succ}(k).
       \end{aligned}
     \end{equation*}
 
-    Now we use the initial point \( a_0 = (\omega, \varnothing, \omega) \) to construct a binary function \( \oplus \) that is used in \fullref{thm:omega_is_model_of_pa} to define natural number addition.
+    Now we use the initial point \( a_n = n \) to construct the function \( \oplus_n \).
 
-    \thmitem{ex:thm:omega_recursion/omega_multiplication} Similarly, we define natural number multiplication \( \odot \) using
+    Define the addition function \( \oplus: \omega \times \omega \to \omega \) via its graph
+    \begin{equation*}
+      \set{ ((n, m), \oplus_n(m)) \given n, m \in \omega }.
+    \end{equation*}
+
+    \thmitem{def:omega_operations/multiplication} We define natural number multiplication analogously. For each \( n \in \omega \), define \( \odot_n \) via
     \begin{equation*}
       \begin{aligned}
-        &F: A \to A \\
-        &F(R) \coloneqq R \cup \set{ (n, \op{succ}(m), k \oplus n) \given (n, m, k) \in R }
+        &T_n: \omega \to \omega \\
+        &T_n(k) \coloneqq k \oplus n.
       \end{aligned}
     \end{equation*}
-    and \( a_0 = (\omega, \varnothing, \varnothing) \).
+    and \( a_n = 0 \) and then define \( \odot: \omega \times \omega \to \omega \) via its graph
+    \begin{equation*}
+      \set{ ((n, m), \odot_n(m)) \given n, m \in \omega }.
+    \end{equation*}
   \end{thmenum}
-\end{example}
+\end{definition}
 
 \begin{theorem}\label{thm:omega_is_model_of_pa}
   The \hyperref[thm:smallest_inductive_set_existence]{smallest inductive set \( \omega \)} is a model of \hyperref[def:peano_arithmetic]{Peano arithmetic} with the following interpretation:
@@ -438,9 +450,9 @@
 
     \thmitem{thm:omega_is_model_of_pa/succ} The \hyperref[def:peano_arithmetic/succ]{successor} operation \( s \) is interpreted as \( \op{succ} \).
 
-    \thmitem{thm:omega_is_model_of_pa/plus} \hyperref[def:peano_arithmetic/plus]{Addition} is interpreted by the \( \oplus \) function given in \fullref{ex:thm:omega_recursion/omega_addition}.
+    \thmitem{thm:omega_is_model_of_pa/plus} \hyperref[def:peano_arithmetic/plus]{Addition} is interpreted by the \( \oplus \) function given in \fullref{def:omega_operations/addition}.
 
-    \thmitem{thm:omega_is_model_of_pa/mult} Similarly, \hyperref[def:peano_arithmetic/mult]{multiplication} is interpreted by \( \odot \) from \fullref{ex:thm:omega_recursion/omega_multiplication}.
+    \thmitem{thm:omega_is_model_of_pa/mult} Similarly, \hyperref[def:peano_arithmetic/mult]{multiplication} is interpreted by \( \odot \) from \fullref{def:omega_operations/multiplication}.
   \end{thmenum}
 \end{theorem}
 \begin{proof}
@@ -460,15 +472,68 @@
 
   \SubProofOf{eq:def:peano_arithmetic/PA3} We have already shown in \fullref{thm:omega_induction} that the induction schema \eqref{eq:def:peano_arithmetic/PA3} is satisfied by \( \omega \).
 
-  \SubProofOf{eq:def:peano_arithmetic/PA4} The starting condition, i.e. \( a_0 \), in \fullref{thm:omega_is_model_of_pa/plus} implies that \( n \oplus 0 = n \) for all \( n \in \omega \).
+  \SubProofOf{eq:def:peano_arithmetic/PA4} For each \( n \in \omega \) the starting condition (i.e. \( m = \varnothing \)) in \fullref{def:omega_operations/addition} implies that \( n \oplus \varnothing = n \).
 
-  \SubProofOf{eq:def:peano_arithmetic/PA5} The iteration function \( F \) in \fullref{thm:omega_is_model_of_pa/plus} implies that \( n \oplus \op{succ}(m) = \op{succ}(n \oplus m) \) for all \( n, m \in \omega \).
+  \SubProofOf{eq:def:peano_arithmetic/PA5} For each \( n \in \omega \) the operator \( T_n \) in \fullref{def:omega_operations/addition} is defined so that if \( \oplus_n(m) = k \), then \( \oplus_n(\op{succ}(m)) = \op{succ}(k) \).
 
-  \SubProofOf{eq:def:peano_arithmetic/PA6} Handled analogously to \( \oplus \).
+  It follows that that \( n \oplus \op{succ}(m) = \op{succ}(n \oplus m) \) for all \( n, m \in \omega \).
 
-  \SubProofOf{eq:def:peano_arithmetic/PA7} Handled analogously to \( \oplus \).
+  \SubProofOf{eq:def:peano_arithmetic/PA6} Analogously to \( \oplus \), the starting condition in \fullref{def:omega_operations/multiplication} implies that \( n \odot \varnothing = \varnothing \) for every \( n \in \omega \).
+
+  \SubProofOf{eq:def:peano_arithmetic/PA7} Analogously to \( \oplus \), for each \( n \in \omega \) the operator \( T_n \) in \fullref{def:omega_operations/multiplication} is defined so that if \( \odot_n(m) = k \), then \( \odot_n(\op{succ}(m)) = k \oplus n \).
+
+  It follows that that \( n \odot \op{succ}(m) = n \odot m + n \) for all \( n, m \in \omega \).
 \end{proof}
 
 \begin{remark}\label{rem:natural_number_availability_zfc}
-  Thanks to \fullref{thm:omega_is_model_of_pa}, we now have at our disposal the toolkit of the \hyperref[def:natural_numbers]{natural numbers} described in \fullref{subsec:natural_numbers}.
+  Thanks to \fullref{thm:omega_is_model_of_pa}, we now have at our disposal the toolkit of the \hyperref[def:natural_numbers]{natural numbers} described in \fullref{subsec:natural_numbers} and in the end of \fullref{subsec:relations_and_functions}. We will assume, however, that the specific model we have chosen for \( \BbbN \) is \( (\omega, \varnothing, \op{succ}, \oplus, \odot) \).
+
+  Another important note is that we take sequences to usually start with \( 1 \) rather than \( 0 \).
+\end{remark}
+
+\begin{remark}\label{rem:natural_number_recursion}
+  With the availability of natural numbers, instead of the tedious constructions in \fullref{def:omega_operations/addition}, we can use a more conventional notation when applying \fullref{thm:omega_recursion}.
+
+  As an example, we can define the Fibonacci sequence in the notation of \fullref{thm:omega_recursion} as follows:
+  \begin{equation*}
+    \begin{aligned}
+      &T: \BbbN \times \BbbN \to \BbbN \times \BbbN \\
+      &T(a, b) \coloneqq (b, a + b)
+    \end{aligned}
+  \end{equation*}
+  and
+  \begin{equation*}
+    a_1 \coloneqq (0, 1).
+  \end{equation*}
+
+  The recursion theorem gives us a sequence of pairs
+  \begin{equation*}
+    \underbrace{(0, 1)}_{a_1}, \underbrace{(1, 1)}_{a_2}, \underbrace{(1, 2)}_{a_3}, \underbrace{(2, 3)}_{a_4}, \underbrace{(3, 5)}_{a_5}, \underbrace{(5, 8)}_{a_6}, \underbrace{(8, 13)}_{a_7}, \ldots
+  \end{equation*}
+
+  The pairs are only a technicality because otherwise we would not be able to define the sequence \( \seq{ a_k }_{k=1}^\infty \).
+
+  By taking the second element of each pair, we obtain the sequence
+  \begin{equation*}
+    \underbrace{1}_{b_1}, \underbrace{1}_{b_2}, \underbrace{2}_{b_3}, \underbrace{3}_{b_4}, \underbrace{5}_{b_5}, \underbrace{8}_{b_6}, \underbrace{13}_{b_7}, \ldots.
+  \end{equation*}
+
+  In order to obtain the Fibonacci sequence, we must prefix the sequence \( \seq{ b_k }_{k=1}^\infty \) with \( b_0 = 0 \).
+
+  This is undoubtedly much more complicated than writing
+  \begin{equation*}
+    b_k \coloneqq \begin{cases}
+      0,                &k = 0, \\
+      1,                &k = 1, \\
+      b_{k-1} + b_{k-2} &k > 1.
+    \end{cases}
+  \end{equation*}
+
+  To see that the latter notation is merely syntax sugar, note that the other sequence can be written as
+  \begin{equation*}
+    a_k \coloneqq \begin{cases}
+      a_1,        &k = 1 \\
+      T(a_{k-1}), &k > 1.
+    \end{cases}
+  \end{equation*}
 \end{remark}
