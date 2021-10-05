@@ -138,7 +138,7 @@
 \end{proof}
 
 \begin{corollary}[\( \varepsilon \)-induction]\label{thm:epsilon_induction}
-  For every formula \( \varphi \) over \( \mscrL \) not containing \( \eta \) nor \( \zeta \) as free variables, the following is a theorem of \logic{ZFC}:
+  For every formula \( \varphi \) over the language of set theory not containing \( \eta \) nor \( \zeta \) as free variables, the following is a theorem of \logic{ZFC}:
   \begin{equation}\label{eq:thm:epsilon_induction}
     \qforall \eta \parens[\Big]
       {
@@ -160,13 +160,42 @@
 \end{proof}
 
 \begin{definition}\label{def:ordinal}\mcite[def. 63.12]{OpenLogicFull}
-  An \term{ordinal}, also known as an \term{ordinal number}, is a \hyperref[def:transitive_set]{transitive set} \( A \) such that set membership (as a binary relation on \( A \)) is a \hyperref[def:totally_ordered_set]{strict total order}. In the absence of the \hyperref[def:zfc/foundation]{axiom of foundation}, we require set membership to be a \hyperref[def:well_ordered_set]{well-order} on \( A \).
+  An \term{ordinal}, also known as an \term{ordinal number}, is a \hyperref[def:transitive_set]{transitive set} \( A \) such that set membership (as a binary relation on \( A \)) is a \hyperref[def:totally_ordered_set]{strict total order}. In the absence of the \hyperref[def:zfc/foundation]{axiom of foundation}, we additionally require set membership to be a \hyperref[def:well_founded_relation]{well-founded relation} on \( A \) so that \( A \) is well-ordered.
 
   See \fullref{rem:ordinal_definition} for a further discussion of the definition, especially the different notions of transitivity.
 
   By tradition, ordinals are denoted by initial small Greek letters like \( \alpha \) and \( \beta \), however we often use \( \alpha \) and \( \beta \) in logical formulas and so we prefer \( \gamma \) and \( \delta \).
 
   We introduce the notation \( \gamma < \delta \) for \( \gamma \in \delta \) in analogy with natural numbers. This is not a binary relation since there is not set of all ordinals by \fullref{thm:burali_forti_paradox}, however it does satisfy the properties of a well-order as shown in \fullref{thm:ordinal_properties/trichotomy}.
+
+  Finally, we introduce the following \hyperref[rem:predicate_formula]{predicate formula}
+  \begin{equation*}\taglabel[\op{IsOrdinal}]{eq:def:ordinal/predicate}
+    \begin{aligned}
+      \ref{eq:def:ordinal/predicate}[\alpha] \coloneqq
+        &\ref{eq:def:transitive_set/predicate}[\alpha]
+        \wedge \\ \wedge&
+        \parens[\Big]
+        {
+          \qforall {\xi \in \alpha}
+          \qforall {\eta \in \alpha}
+          \parens[\Big]
+            {
+              \eta \in \xi \vee \eta \doteq \xi \vee \xi \in \eta
+            }
+        }
+        \wedge \\ \wedge&
+        \parens[\Big]
+        {
+          \qforall {\xi \in \alpha}
+          \qforall {\eta \in \alpha}
+          \qforall {\zeta \in \alpha}
+          \parens[\Big]
+          {
+            (\xi \in \eta \wedge \eta \in \zeta) \rightarrow \xi \in \zeta
+          }
+        }.
+    \end{aligned}
+  \end{equation*}
 \end{definition}
 
 \begin{proposition}\label{thm:omega_is_an_ordinal}
@@ -203,33 +232,37 @@
 \end{proof}
 
 \begin{theorem}[Transfinite induction]\label{thm:transfinite_induction}\mcite[thm. 63.15]{OpenLogicFull}
-  Denote by \( \op{isord} \) a formula in \hyperref[def:zfc]{\logic{ZFC}} with a single free variable \( \xi \) which is valid whenever \( \xi \) is an ordinal. Note that we cannot use the test \( \xi \in \cat{Ord} \) within the object language because it is not a member of the universe --- the domain of the category is a proper class by \fullref{thm:burali_forti_paradox}.
+  This theorem would be a special case of \fullref{thm:well_founded_induction} but there exists no set of all ordinals as shown in \fullref{thm:burali_forti_paradox}.
 
-  For any formula \( \varphi \) in \logic{ZFC} and for every \( \xi \in \boldop{Free}(\varphi) \) the following formula is valid:
-  \begin{multline}\label{eq:def:transfinite_induction}
-    \qforall \eta \parens[\Big]
+  For every formula \( \varphi \) over the language of set theory not containing \( \eta \) nor \( \zeta \) as free variables, the following is a theorem of \logic{ZFC}:
+  \small
+  \begin{equation}\label{eq:def:transfinite_induction}
+    \qforall \eta \parens[\Bigg]
       {
-        \op{isord}[\xi \mapsto \eta] \rightarrow
-          \underbrace
-            {
-              \parens[\Big] { \qforall {\zeta \in \eta} \varphi[\xi \mapsto \zeta] }
-            }_{\T{inductive hypothesis}}
+        \ref{eq:def:ordinal/predicate}[\eta]
         \rightarrow
-        \overbrace{ \varphi[\xi \mapsto \eta] }^{\mathclap{\T{inductive step conclusion}}}
+        \parens[\Big]
+        {
+          \overbrace
+            {
+              \underbrace{ \qforall {\zeta \in \eta} \varphi[\xi \mapsto \zeta] }_{\mathclap{\substack{\T{inductive} \\ \T{hypothesis}}}}
+              \rightarrow
+              \underbrace{ \varphi[\xi \mapsto \eta] }_{\mathclap{\substack{\T{inductive step} \\ \T{conclusion}}}}
+            }^{\T{inductive step}}
+        }
       }
-    \rightarrow \\ \rightarrow
-    \underbrace
-      {
-        \qforall \eta \parens[\Big] { \op{isord}[\xi \mapsto \eta] \rightarrow \varphi[\xi \mapsto \eta] }.
-      }_{\T{conclusion}}
-  \end{multline}
-
-  In words, if we can prove that \( \varphi \) holds for any ordinal by assuming that it holds for all smaller ordinals, then we can conclude that \( \varphi \) holds simultaneously for all ordinals.
-
-  Also note that this is not a special case of \fullref{thm:well_founded_induction} because there is no set of all ordinals due to \fullref{thm:burali_forti_paradox}.
+    \rightarrow
+    \qforall \eta \parens[\Bigg]
+    {
+      \ref{eq:def:ordinal/predicate}[\eta]
+      \rightarrow
+      \underbrace{ \varphi[\xi \mapsto \eta] }_{\T{conclusion}}
+    }.
+  \end{equation}
+  \normalsize
 \end{theorem}
 \begin{proof}
-  The proof is analogous to the proof of \fullref{thm:well_founded_induction} except that rather than taking elements of a fixed well-ordered set, we take ordinals.
+  The proof is similar to the proof of \cref{thm:epsilon_induction}.
 \end{proof}
 
 \begin{theorem}\label{thm:transfinite_recursion}
