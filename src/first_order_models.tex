@@ -20,7 +20,7 @@ Much of \fullref{subsec:first_order_logic} is dedicated to semantic equivalences
   \begin{thmenum}
     \thmitem{def:first_order_substructure/deductive} If \( Y \) is closed under function application, that is, for any functional symbol \( f \) in \( \mscrL \) with arity \( n \), we have \( I(f)(Y^n) \subseteq Y \).
 
-    \thmitem{def:first_order_substructure/inductive} \( \mscrY \) is a \hyperref[def:fixed_point]{fixed point} of the operator
+    \thmitem{def:first_order_substructure/inductive} The universe \( Y \) is a \hyperref[def:fixed_point]{fixed point} of the operator
     \begin{equation}\label{eq:def:first_order_substructure/inductive/operator}
       \begin{aligned}
         &T: \pow(X) \to \pow(X) \\
@@ -77,7 +77,7 @@ Much of \fullref{subsec:first_order_logic} is dedicated to semantic equivalences
   \end{thmenum}
 \end{definition}
 \begin{proof}
-  Let \( \{ (Y_k, I) \}_{k \in \mscrK} \) be the family of all substructures of \( \mscrX \) whose domains contain \( A \). Fix one of these substructures, say \( (Y_{k_0}, I) \).
+  Let \( \seq{ (Y_k, I) }_{k \in \mscrK} \) be the family of all substructures of \( \mscrX \) whose domains contain \( A \). Fix one of these substructures, say \( (Y_{k_0}, I) \).
 
   We have the obvious inclusion
   \begin{equation*}
@@ -91,30 +91,25 @@ Much of \fullref{subsec:first_order_logic} is dedicated to semantic equivalences
   Common examples of generated substructures are the \hyperref[def:linear_span]{linear span} and the \hyperref[def:generated_ring_ideal]{generated ring ideals}.
 \end{example}
 
-\begin{remark}\label{rem:structural_induction}
-  \Fullref{def:first_order_substructure} highlights an important aspect of logic. It actually provides two definitions (that are not equivalent in general):
-  \begin{itemize}
-    \item \Fullref{def:first_order_substructure/deductive} defines a substructure of \( \mscrX = (X, I) \) to be \( \mscrY = (Y, I) \), where \( Y \) is any subset of \( X \) that satisfies certain conditions. Given a subset \( Y \) of \( X \), we this definition allows us to deduce if \( (Y, I) \) is a substructure or not.
+\begin{proposition}\label{thm:first_order_generated_substructures_exist}
+  Let \( \mscrX = (X, I) \) be a structure for the language \( \mscrL \).
 
-    We say that this definition is \term{deductive}. \Fullref{thm:first_order_semantic_deduction_theorem} and \fullref{thm:propositional_syntactic_deduction_theorem} allow us to connect deduction in the object language with deduction in the metalanguage so we can mechanize this substructure validation by introducing it as a unary predicate symbol in the object language.
-
-    \item \Fullref{def:first_order_substructure/inductive} instead provides a procedure for building a substructure given a subset of the domain \( X \) of \( \mscrX \) by having explicit rules for which additional related elements from \( X \) we need to add in order to obtain the corresponding generated substructure --- see \fullref{def:first_order_generated_substructure} and \fullref{ex:def:first_order_generated_substructure}.
-
-    We say that this definition is \term{inductive}. Rather than using it for verifying whether a subset forms a substructure or not, we can instead use it for generating substructures. In \hyperref[def:zfc]{\logic{ZFC}}, we can even add a unary function to the object language for obtaining the generated substructure of a set (which set in this case will be an individual member of a model of \logic{ZFC} rather than a subset of the model).
-  \end{itemize}
-
-  The ambient domain \( X \) used for the inductive definition only guarantees that the result is well-defined but the operator \eqref{eq:def:first_order_substitution/term_in_formula/quantifiers/trivial} is not the only one that is useful for definitions. In fact, any monotone operator on the \hyperref[thm:boolean_algebra_of_subsets]{Boolean algebra of subsets} of \( X \) has a least fixed point due to \fullref{thm:knaster_tarski_theorem}.
-
-  For example, provided that \( X \) is a large enough to be a superset of the \hyperref[thm:smallest_inductive_set_existence]{smallest inductive set \( \omega \)}, the set \( \omega \) itself can be defined as the smallest fixed point of the operator
+  Every subset of \( X \) has a unique \hyperref[def:first_order_generated_substructure]{generated substructure}.
+\end{proposition}
+\begin{proof}
+  Given a set \( Y \subseteq X \), we apply \fullref{thm:knaster_tarski_theorem} to the \hyperref[thm:boolean_algebra_of_subsets]{Boolean algebra of all subsets} \( \pow(X) \) with the operator
   \begin{equation*}
-    T(A) \coloneqq \set{ \varnothing } \cup \set{ S(x) \given x \in A },
+    \begin{aligned}
+      &R: \pow(X) \to \pow(X) \\
+      &R(A) \coloneqq Y \cup T(A),
+    \end{aligned}
   \end{equation*}
-  where \( S \) is the \hyperref[def:ordinal_successor]{set successor operator}.
+  where \( T \) is defined in \eqref{eq:def:first_order_substructure/inductive/operator}.
 
-  This general procedure for constructing in stages an object that satisfies certain conditions is called \term{structural induction} or simply \term{induction}. The number of steps required by the procedure may not be finite (as in the example with \( \omega \)) or may not even be countable, which further encourages us to think of induction as a general procedure rather than an algorithm that works in discrete steps.
+  We thus obtain the smallest fixed point \( Z \) of \( T \), which contains \( Y \) and satisfies \fullref{eq:def:first_order_substructure/inductive}. The structure \( \mscrZ = (Z, I) \) is thus a substructure of \( \mscrX \).
 
-  Rather than constructing objects, we can also use inductive reasoning for proofs. In this context, the procedure for constructing objects is sometimes called recursion. We introduce specific axiom schemas representing induction --- \ref{def:peano_arithmetic/PA3} on \hyperref[def:set_of_natural_numbers]{natural numbers}, \fullref{thm:well_founded_induction} on \hyperref[def:well_ordered_set]{well-ordered sets} and \fullref{thm:transfinite_induction} on \hyperref[def:ordinal]{ordinals}. These are formulated entirely within the object language and are, within the \hyperref[def:first_order_derivation_system]{first-order derivation system}, a useful way to introduce universal quantification where deductive derivations are more difficult or even nonexistent.
-\end{remark}
+  Furthermore, \( \mscrZ \) is unique because its domain is the smallest set invariant under \( R \).
+\end{proof}
 
 \begin{proposition}\label{thm:substructures_form_complete_lattice}
   Fix a structure \( \mscrX = (X, I) \) for the language \( \mscrL \).
