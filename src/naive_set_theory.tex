@@ -429,6 +429,56 @@ Na\"ive set theory is traditionally defined informally by only specifying that a
   To see that \( \omega \) is itself inductive, note that \( \varnothing \in \omega \) and that if \( x \in \omega \), then it also belongs to all inductive sets and hence \( \op{succ}(x) \) also belongs to all inductive sets, proving \( \op{succ}(x) \in \omega \).
 \end{proof}
 
+\begin{theorem}[Induction for inductive sets]\label{thm:omega_induction}
+  We can perform induction on the \hyperref[thm:smallest_inductive_set_existence]{smallest inductive set \( \omega \)}. That is, we can prove that some property holds for every element of \( \omega \) by proving the following:
+  \begin{itemize}
+    \item The property holds for \( \varnothing \)
+    \item We can prove that is holds for \( \op{succ}(n) \) by assuming that it holds for some set \( n \in \omega \).
+  \end{itemize}
+
+  This is an analog of \eqref{eq:def:peano_arithmetic/PA3} and is actually used in \fullref{thm:omega_is_model_of_pa} to prove that \( \omega \) is a model of \hyperref[def:peano_arithmetic]{\logic{PA}}. Instead of an entire theorem schema, however, for this theorem it is sufficient to use one single formula.
+
+  More formally, the following is a theorem of both na\"ive set theory and \hyperref[def:zfc]{\logic{ZF}}:
+  \footnotesize
+  \begin{equation}\label{eq:thm:omega_induction}
+    \qexists \beta
+    \qforall \alpha
+    \parens[\Bigg]
+      {
+        \parens[\Bigg]
+          {
+            \parens[\Big]
+            {
+              \underbrace{ \qexists {\xi \in \alpha} \ref{eq:def:empty_set/predicate}[\xi] }_{\mathclap{\T{base case}}}
+            }
+            \wedge
+            \qforall \xi \parens[\Big]
+              {
+                \overbrace
+                  {
+                    \underbrace{ \xi \in \alpha }_{\mathclap{\substack{\T{inductive} \\ \T{hypothesis}}}}
+                    \rightarrow
+                    \underbrace
+                      {
+                        \qexists {\eta \in \alpha} \ref{eq:def:ordinal_successor/predicate}[\eta, \xi]
+                      }_{\mathclap{\substack{\T{inductive step} \\ \T{conclusion}}}}
+                  }^{\T{inductive step}}
+              }
+          }
+        \rightarrow
+        \underbrace{ \ref{eq:def:subset/predicate}[\beta, \alpha] }_{\T{conclusion}}
+      }
+  \end{equation}
+  \normalsize
+\end{theorem}
+\begin{proof}
+  The antecedent of (the inner formula in) \eqref{eq:thm:omega_induction} is a restatement of the predicate formula \( \ref{eq:def:inductive_set/predicate}[\alpha] \). The situation resembles the \hyperref[eq:def:zfc/infinity]{axiom of infinity} but, instead of existence of an inductive set \( \alpha \), it states the existence of a set \( \beta \) such that if \( \alpha \) is an inductive set, then \( \beta \) is a subset of \( \alpha \) (if we restrict \( \xi \) to range only over members of \( \beta \), then we would obtain equality of \( \alpha \) and \( \beta \) instead). In other words, we have reduced the verification of \eqref{eq:thm:omega_induction} to showing that there exists a minimal inductive set in both na\"ive set theory and \logic{ZF}.
+
+  We have already proved in \fullref{thm:smallest_inductive_set_existence} that our fixed model \( \mscrV = (V, I) \) of set theory has a minimal inductive set \( \omega \). Thus for any variable assignment \( v: \boldop{Var} \to V \), the modified assignment \( v_{\beta \mapsto \omega} \) satisfies \eqref{eq:thm:omega_induction} with the outer existential quantifier removed. Hence by \fullref{def:first_order_valuation/formula_valuation}, it follows that the entire formula \eqref{eq:thm:omega_induction} is satisfied by the assignment \( v \).
+
+  Both the assignment \( v \) and the model \( \mscrV \) were arbitrary, therefore we can conclude that \eqref{eq:thm:omega_induction} is a theorem of both na\"ive set theory and \logic{ZF}.
+\end{proof}
+
 \begin{definition}\label{def:transitive_set}
   A set \( A \) is \term{transitive} if from \( B \in A \) it follows that \( B \subseteq A \).
 
@@ -444,81 +494,20 @@ Na\"ive set theory is traditionally defined informally by only specifying that a
 \begin{proposition}\label{thm:omega_is_transitive}
   The set \( \omega \) is transitive and every member of \( \omega \) is transitive.
 
-  This proof demonstrates how induction on \( \omega \) can be performed.
+  This proof demonstrates usage of \fullref{thm:omega_induction}.
 \end{proposition}
 \begin{proof}
-  \SubProof{Proof that all members of \( \omega \) are transitive} Let \( T \) be the set of all members of \( \omega \) that are transitive.
+  \SubProof{Proof that all members of \( \omega \) are transitive} Clearly \( \varnothing \) is transitive because every member of \( \varnothing \) vacuously is a subset of \( \varnothing \).
 
-  Clearly \( \varnothing \in T \) because every member of \( \varnothing \) vacuously is a subset of \( \varnothing \).
+  Now suppose that \( n \) is transitive and let \( m \in \op{succ}(n) = n \cup \set{ n } \). If \( m = n \), then \( m \in \op{succ}(n) \) by definition of the successor operation. If \( m \in n \), then \( m \subseteq n \) by the inductive hypothesis and hence also \( m \subseteq n \cup \set{ n } = \op{succ}(n) \). Thus \( \op{succ}(n) \) is also transitive.
 
-  Now suppose that \( n \in T \) and let \( m \in \op{succ}(n) = n \cup \set{ n } \). If \( m = n \), then \( m \in \op{succ}(n) \) by definition of the successor operation. If \( m \in n \), then \( m \subseteq n \) by the inductive hypothesis and hence also \( m \subseteq n \cup \set{ n } = \op{succ}(n) \). Therefore \( \op{succ}(n) \in T \).
+  Therefore every member of \( \omega \) is transitive.
 
-  We have shown that \( T \) is inductive, hence \( \omega \subseteq T \) since \( \omega \) is a subset of every inductive set. But \( T \subseteq \omega \) by definition, therefore \( T = \omega \).
+  \SubProof{Proof that \( \omega \) is transitive} We will show that for all members \( n \) of \( \omega \) such that \( n \subseteq \omega \).
 
-  We have shown that all members of \( \omega \) are transitive. Now we will show that \( \omega \) itself is transitive.
+  The case \( n = \varnothing \) is again trivial.
 
-  \SubProof{Proof that \( \omega \) is transitive} Let \( T \) be the set of all members of \( \omega \) such that \( n \in \omega \) implies \( n \subseteq \omega \).
+  Now suppose that \( n \subseteq \omega \) and let \( m \in \op{succ}(n) \). If \( m = n \), clearly \( m \subseteq \omega \). If \( m \in n \), then \( m \subseteq n \) and, since \( n \subseteq \omega \), we have \( m \subseteq \omega \) by transitivity of \( \subseteq \).
 
-  Clearly \( \varnothing \) vacuously belongs to \( T \).
-
-  Now suppose that \( n \in T \) and let \( m \in \op{succ}(n) \). If \( m = n \), clearly \( m \in T \) because \( n \in T \). If \( m \in n \), then \( m \subseteq n \) and, since \( n \in T \), \( n \subseteq \omega \). Thus \( m \subseteq \omega \) by transitivity of \( \subseteq \).
-
-  Thus \( T \) is inductive, hence \( T = \omega \). Therefore \( \omega \) itself is a transitive set.
-\end{proof}
-
-\begin{theorem}\label{thm:omega_induction}
-  The \hyperref[thm:smallest_inductive_set_existence]{smallest inductive set \( \omega \)} is a \hyperref[def:first_order_semantics/satisfiability]{model} for the induction schema \eqref{eq:def:peano_arithmetic/PA3} with the obvious interpretation \( I(0) = \varnothing \) and \( I(s) = \op{succ} \).
-
-  This result also shows that natural number induction can be performed within set theory without even yet having the concept of natural numbers, only by verifying that a subset of \( \omega \) is inductive.
-\end{theorem}
-\begin{proof}
-  This proof is a little tricky because here we simultaneously study two theories in the object logic --- \hyperref[def:peano_arithmetic]{Peano arithmetic} and set theory. We regard the members of the universe of set theory as some unknown objects in the metalogic and use them to construct a model of \logic{PA} within the metalogic.
-
-  We will show that the entire axiom schema \eqref{eq:def:peano_arithmetic/PA3} corresponds to a single formula in set theory:
-  \small
-  \begin{equation*}
-    \qexists \beta \qforall \alpha \parens[\Bigg]
-    {
-      \parens[\Big]
-        {
-          \parens[\Big]
-          {
-            \underbrace{ \qexists {\xi \in \alpha} \ref{eq:def:empty_set/predicate}[\xi] }_{\mathclap{\T{base case}}}
-          }
-          \wedge
-          \qforall \xi \parens[\Big]
-            {
-              \overbrace
-                {
-                  \underbrace{ \xi \in \alpha }_{\mathclap{\substack{\T{inductive} \\ \T{hypothesis}}}}
-                  \rightarrow
-                  \underbrace
-                    {
-                      \qexists {\eta \in \alpha} \ref{eq:def:ordinal_successor/predicate}[\eta, \xi]
-                    }_{\mathclap{\substack{\T{inductive step} \\ \T{conclusion}}}}
-                }^{\T{inductive step}}
-            }
-        }
-      \rightarrow
-      \underbrace{ \ref{eq:def:subset/predicate}[\beta, \alpha] }_{\T{conclusion}}
-    }
-  \end{equation*}
-  \normalsize
-
-  Denote this formula by \( \Omega \). The antecedent of (the inner formula in) \( \Omega \) is a restatement of the predicate formula \( \ref{eq:def:inductive_set/predicate}[\alpha] \). The situation resembles the \hyperref[eq:def:zfc/infinity]{axiom of infinity} but, instead of existence of an inductive set \( \alpha \), it states the existence of a set \( \beta \) such that if \( \alpha \) is an inductive set, then \( \beta \) belongs to \( \alpha \). In other words, we have reduced the induction schema to showing that there exists a minimal inductive set.
-
-  We have also acknowledged that there may be members of \( \alpha \) that do not belong to \( \beta \), however this premise is false in \eqref{eq:def:peano_arithmetic/PA3} and hence the validity of \( \Omega \) is an even stronger result.
-
-  We have already proved in \fullref{thm:smallest_inductive_set_existence} that our fixed model \( \mscrU = (U, I) \) of set theory has a minimal inductive set. We will now show in detail that the instance of \eqref{eq:def:peano_arithmetic/PA3} with an arbitrary formula in \logic{PA} reduces to a special case of \( \Omega \).
-
-  Fix any variable assignment \( v: \boldop{Var} \to U \). Since \( \mscrU \) is a model of set theory and since \( \Omega \) holds in an arbitrary model of set theory, we that \( \Omega\Bracks{v} = T \). We can eliminate the outer existential quantification by \( \beta \) in \( \Omega \) by using the modified assignment \( v_{\beta \mapsto \omega} \).
-
-  To show that \( \Omega \) really corresponds to \eqref{eq:def:peano_arithmetic/PA3} (and hence that \( \omega \) satisfies \eqref{eq:def:peano_arithmetic/PA3}), fix some formula \( \varphi \) of \hyperref[def:peano_arithmetic]{Peano arithmetic} and suppose that \( \xi, \zeta_1, \ldots, \zeta_n \) are all of its free variables. Fix also some parameter values \( u_1, \ldots, u_n \in \omega \) and, as in \fullref{def:set_builder_notation}, define the set
-  \begin{equation*}
-    A \coloneqq \set{ x \in \omega \given \varphi\Bracks{x, u_1, \ldots, x_n} }.
-  \end{equation*}
-
-  We can now also eliminate the outer universal quantification by \( \alpha \) in \( \Omega \) by using the assignment \( v_{\beta \mapsto \omega, \alpha \mapsto A} \). Since \( \Omega \) is satisfied by \( v \), the inner formula in \( \Omega \) is satisfied by \( v_{\beta \mapsto \omega, \alpha \mapsto A} \).
-
-  Since our choice of parameters \( u_1, \ldots, u_n \) was arbitrary, we can conclude that the universal closure \eqref{eq:def:peano_arithmetic/PA3_quantified} of \eqref{eq:def:peano_arithmetic/PA3} is satisfied by \( \omega \) for every formula \( \varphi \) of \logic{PA}.
+  Therefore \( \omega \) is transitive.
 \end{proof}
