@@ -110,7 +110,7 @@
     \underbrace{ \qforall \eta \varphi[\xi \mapsto \eta] }_{\T{conclusion}}.
   \end{equation}
 
-  See the comments in \fullref{def:peano_arithmetic/PA3} regarding variables and quantification in axiom schemas.
+  See the comments in \fullref{def:peano_arithmetic/PA3} regarding variables and quantification in axiom schemas and \fullref{rem:induction} for a general discussion of induction.
 
   In the special case where \( \mscrX = \BbbN \), this is called \term{strong induction} compared to the usual natural number induction \eqref{eq:def:peano_arithmetic/PA3}. This is discussed in \fullref{rem:induction/well_founded}.
 \end{theorem}
@@ -160,20 +160,24 @@
 
   This induction schema is called \enquote{\( \varepsilon \)-induction} because the set membership symbol \( \in \) is derived from \( \varepsilon \) as explained in \fullref{rem:epsilon_and_set_membership}.
 
-  See the comments in \fullref{def:peano_arithmetic/PA3} regarding variables and quantification in axiom schemas.
+  See the comments in \fullref{def:peano_arithmetic/PA3} regarding variables and quantification in axiom schemas and \fullref{rem:induction} for a general discussion of induction.
 \end{theorem}
 \begin{proof}
-  Every model of \logic{ZFC} is well-founded by \( \in \) as shown in \fullref{thm:set_membership_is_well_founded}. The corollary then follows from \fullref{thm:well_founded_induction}.
+  Every model of \logic{ZFC} is well-founded by \( \in \) due to \fullref{thm:set_membership_is_well_founded}. The corollary then follows from \fullref{thm:well_founded_induction}.
 \end{proof}
 
 \begin{definition}\label{def:ordinal}\mcite[def. 63.12]{OpenLogicFull}
-  An \term{ordinal}, also known as an \term{ordinal number}, is a \hyperref[def:transitive_set]{transitive set} \( A \) such that set membership (as a binary relation on \( A \)) is a \hyperref[def:totally_ordered_set]{strict total order}. In the absence of the \hyperref[def:zfc/foundation]{axiom of foundation}, we additionally require set membership to be a \hyperref[def:well_founded_relation]{well-founded relation} on \( A \) so that \( A \) is well-ordered.
+  An \term{ordinal}, also known as an \term{ordinal number}, is a \hyperref[def:transitive_set]{transitive set} \( A \) such that set membership (as a binary relation on \( A \)) \hyperref[def:well_ordered_set]{well-orders} \( A \).
+
+  Because of \fullref{thm:set_membership_is_well_founded}, it is sufficient for set membership to be a \hyperref[def:totally_ordered_set]{strict total order} on \( A \). Since well-foundedness also implies \hyperref[def:binary_relation/irreflexive]{irreflexivity}, it follows that set membership must only be \hyperref[def:binary_relation/transitive]{transitive} and \hyperref[def:binary_relation/trichotomic]{trichotomic} on \( A \).
+
+  In the absence of the \hyperref[def:zfc/foundation]{axiom of foundation}, we additionally require set membership to be a \hyperref[def:well_founded_relation]{well-founded relation} on \( A \) so that \( A \) is well-ordered.
 
   See \fullref{rem:ordinal_definition} for a further discussion of the definition, especially the different notions of transitivity.
 
   By tradition, ordinals are denoted by initial small Greek letters like \( \alpha \) and \( \beta \), however we often use \( \alpha \) and \( \beta \) in logical formulas and so we prefer \( \gamma \) and \( \delta \).
 
-  We introduce the notation \( \gamma < \delta \) for \( \gamma \in \delta \) in analogy with natural numbers. This is not a binary relation since there is not set of all ordinals by \fullref{thm:burali_forti_paradox}, however it does satisfy the properties of a well-order as shown in \fullref{thm:ordinal_properties/trichotomy}.
+  We introduce the notation \( \gamma < \delta \) for \( \gamma \in \delta \) in analogy with natural numbers. This is not a binary relation since there is not set of all ordinals by \fullref{thm:burali_forti_paradox}, however it does satisfy the properties of a well-order due to \fullref{thm:ordinal_properties/trichotomy}.
 
   Finally, we introduce the following \hyperref[rem:predicate_formula]{predicate formula}
   \begin{equation*}\taglabel[\op{IsOrdinal}]{eq:def:ordinal/predicate}
@@ -216,8 +220,8 @@
   Therefore both \( \omega \) is an \hyperref[def:ordinal]{ordinal}.
 \end{proof}
 
-\begin{proposition}\label{thm:element_of_ordinal_is_ordinal}\mcite[lemma 63.13]{OpenLogicFull}
-  Every element of an ordinal is an ordinal.
+\begin{proposition}\label{thm:member_of_ordinal_is_ordinal}\mcite[lemma 63.13]{OpenLogicFull}
+  Every member of an ordinal is an ordinal.
 \end{proposition}
 \begin{proof}
   Let \( \gamma \) be an ordinal and let \( \delta \in \gamma \). We will show that \( \delta \) is an ordinal.
@@ -231,11 +235,27 @@
   Since \( y \in x \) was chosen arbitrarily, it follows that \( x \subseteq \delta \). Since \( x \) was chosen arbitrarily, it follows that \( \delta \) is transitive.
 \end{proof}
 
+\begin{proposition}\label{thm:initial_segment_of_ordinal}
+  Let \( \gamma \) be an ordinal. For any \( \delta \in \gamma \), the \hyperref[def:poset_interval/ray]{open initial segment} \( \gamma_\delta \) equals \( \delta \).
+
+  This is the bounded version of \fullref{thm:ordinal_is_set_of_smaller_ordinals}.
+\end{proposition}
+\begin{proof}
+  Let \( \delta \in \gamma \). Consider the initial segment
+  \begin{equation*}
+    \gamma_{<\delta} = \set{ \varepsilon \in \gamma \given \varepsilon \in \delta }.
+  \end{equation*}
+
+  Clearly \( \gamma_{<\delta} = \gamma \cap \delta \). Given that \( \gamma \) is a transitive set, however, we have \( \delta \subseteq \gamma \) and thus \( \gamma \cap \delta = \delta \).
+
+  Therefore \( \gamma_{<\delta} = \delta \).
+\end{proof}
+
 \begin{corollary}\label{thm:natural_numbers_are_ordinals}
   The natural numbers (defined as members of \hyperref[thm:smallest_inductive_set_existence]{\( \omega \)}) are ordinals.
 \end{corollary}
 \begin{proof}
-  Follows from \fullref{thm:omega_is_an_ordinal} and \fullref{thm:element_of_ordinal_is_ordinal}.
+  Follows from \fullref{thm:omega_is_an_ordinal} and \fullref{thm:member_of_ordinal_is_ordinal}.
 \end{proof}
 
 \begin{theorem}[Transfinite induction]\label{thm:transfinite_induction}\mcite[thm. 63.15]{OpenLogicFull}
@@ -267,16 +287,16 @@
   \end{equation*}
   \normalsize
 
-  This theorem could be a special case of \fullref{thm:well_founded_induction} but there exists no set of all ordinals as shown in \fullref{thm:burali_forti_paradox}.
+  This theorem could be a special case of \fullref{thm:well_founded_induction} but there exists no set of all ordinals due to \fullref{thm:burali_forti_paradox}.
 
-  See the comments in \fullref{def:peano_arithmetic/PA3} regarding variables and quantification in axiom schemas.
+  See the comments in \fullref{def:peano_arithmetic/PA3} regarding variables and quantification in axiom schemas and \fullref{rem:induction} for a general discussion of induction.
 \end{theorem}
 \begin{proof}
   The proof is similar to the proof of \fullref{thm:well_founded_induction}.
 \end{proof}
 
 \begin{theorem}[Bounded transfinite induction]\label{thm:bounded_transfinite_induction}
-  For every formula \( \varphi \) in the language of set theory not containing \( \eta \) nor \( \zeta \) as free variables, the following is a theorem of \logic{ZFC}:
+  For every formula \( \varphi \) in the language of set theory not containing \( \alpha \), \( \eta \) nor \( \zeta \) as free variables, the following is a theorem of \logic{ZFC}:
   \small
   \begin{equation*}
     \qforall \alpha
@@ -300,12 +320,12 @@
   \end{equation*}
   \normalsize
 
-  See the comments in \fullref{def:peano_arithmetic/PA3} regarding variables and quantification in axiom schemas.
+  See the comments in \fullref{def:peano_arithmetic/PA3} regarding variables and quantification in axiom schemas and \fullref{rem:induction} for a general discussion of induction.
 \end{theorem}
 \begin{proof}
   This theorem is a special case of \fullref{thm:transfinite_induction} with the formula \( \xi \in \alpha \rightarrow \varphi \) that is explicitly universally quantified by the parameter \( \alpha \) which ranges over all ordinals.
 
-  Note that it is unnecessary to verify that \( \eta \) is an ordinal because \fullref{thm:element_of_ordinal_is_ordinal} ensures that \( \eta \) is only quantified over ordinals.
+  Note that it is unnecessary to verify that \( \eta \) is an ordinal because \fullref{thm:member_of_ordinal_is_ordinal} ensures that \( \eta \) is only quantified over ordinals.
 \end{proof}
 
 \begin{theorem}[Bounded transfinite recursion]\label{thm:bounded_transfinite_recursion}\mcite[177]{Enderton1977Sets}
@@ -428,7 +448,7 @@
 
     It its set-theoretic form \fullref{thm:omega_induction} it is important as a tool for introducing a model of Peano arithmetic. It is used directly for proving \fullref{thm:omega_is_transitive} and \fullref{thm:omega_recursion}.
 
-    \Fullref{thm:omega_recursion} is an important standalone tool that allows us to perform recursive definitions for natural numbers. The latter is used, often implicitly, in a great variety of places, from the ability to define natural number operations in \fullref{def:omega_operations} to the definition of magma exponentiation in \fullref{def:magma/exponentiation}. \Fullref{rem:natural_number_recursion} contains notes regarding its usage.
+    \Fullref{thm:omega_recursion} is an important standalone tool that allows us to perform recursive definitions for natural numbers. The latter is used, often implicitly, in a great variety of places, from the ability to define natural number operations in \fullref{def:omega_operations} to the definition of magma exponentiation in \fullref{def:magma/exponentiation}. \Fullref{rem:natural_number_recursion} contains notes regarding its practical usage.
 
     \thmitem{rem:induction/well_founded} A vast generalization of natural number induction is \fullref{thm:well_founded_induction}. It is stated in a very general setting but is not frequently used. It can be used to prove \fullref{thm:epsilon_induction}, which however is even less frequently used. We do not use neither in practice, however the special case where \( \mscrX = \BbbN \) is called strong induction on natural numbers.
 
@@ -446,104 +466,130 @@
 
     \thmitem{rem:induction/structural} A very general recursion principle is \fullref{thm:structural_recursion}. It is explained in \fullref{rem:structural_recursion_and_induction} how structural recursion is used and how in certain cases it leads to an induction principle.
 
-    Within this document structural induction and recursion are mostly used for defining \hyperref[def:propositional_syntax/formula]{propositional} and \hyperref[def:first_order_syntax/formula]{first-order formulas} and proving their properties in \fullref{sec:logic}.
+    Within this document structural induction and recursion are mostly used for defining \hyperref[def:propositional_syntax/formula]{propositional} and \hyperref[def:first_order_syntax/formula]{first-order formulas} and proving their properties in \fullref{sec:mathematical_logic}.
   \end{thmenum}
 \end{remark}
 
-\begin{proposition}\label{thm:ordinal_properties}
-  \hyperref[def:ordinal]{Ordinals} have the following basic properties:
+\begin{proposition}\label{thm:ordinals_are_well_ordered}
+  The ordinals are \hyperref[def:well_ordered_set]{well-ordered}. Since there exists no set of all ordinals due to \fullref{thm:burali_forti_paradox}, we will instead state a more concrete result.
+
   \begin{thmenum}
-    \thmitem{thm:ordinal_properties/empty_set} The empty set \( \varnothing \) is an ordinal.
+    \thmitem{thm:ordinals_are_well_ordered/transitivity} If \( \gamma \), \( \delta \) and \( \varepsilon \) are ordinals and \( \gamma < \delta < \varepsilon \) holds, then \( \gamma < \varepsilon \) holds.
 
-    \thmitem{thm:ordinal_properties/trichotomy}\mcite[thm. 63.16]{OpenLogicFull} The order of ordinals is \hyperref[def:binary_relation/trichotomic]{trichotomic}. That is, if \( \alpha \) and \( \beta \) are ordinals, either \( \alpha < \beta \), \( \beta > \alpha \) or \( \alpha = \beta \).
-
-    \thmitem{thm:ordinal_properties/uniqueness} If two ordinal numbers are \hyperref[def:poset/homomorphism]{order-isomorphic}, they are equal.
-
-    \thmitem{thm:ordinal_properties/descending_sequence_of_ordinals_is_finite}\mcite[prop. 63.20]{OpenLogicFull} Every strictly decreasing sequence of ordinals is finite.
-
-    \thmitem{thm:ordinal_properties/set_of_ordinals_has_minimum} Every nonempty set of ordinals has a minimum.
-
-    \thmitem{thm:ordinal_properties/set_of_smaller_ordinals} Any ordinal \( \alpha \) is equal to the set
-    \begin{equation}\label{eq:thm:ordinal_properties/set_of_smaller_ordinals}
-      \set{ \beta \in \cat{Ord} \given \beta < \alpha }
-    \end{equation}
-    of smaller than \( \alpha \) ordinals. As a consequence, this set is well-defined in \logic{ZFC}.
-
-    \thmitem{thm:ordinal_properties/transitive_set_of_ordinals} The set \( A \) is an ordinal if and only if \( A \) is a transitive set of ordinals.
+    \thmitem{thm:ordinals_are_well_ordered/trichotomy} For any two ordinals \( \gamma \) and \( \delta \), exactly one of \( \gamma = \delta \), \( \gamma < \delta \) or \( \gamma > \delta \) holds.
   \end{thmenum}
+
+  As discussed in \fullref{def:ordinal}, irreflexivity and well-foundedness hold by \fullref{thm:set_membership_is_well_founded}.
 \end{proposition}
 \begin{proof}
-  \SubProofOf{thm:ordinal_properties/empty_set} This statement is vacuous since there are not elements nor subsets of \( \varnothing \).
+  \SubProofOf{thm:ordinals_are_well_ordered/transitivity} Let \( \gamma \), \( \delta \) and \( \varepsilon \) be ordinals and let \( \gamma \in \delta \in \varepsilon \). Since \( \varepsilon \) is a transitive set, it follows that \( \delta \subseteq \varepsilon \) and \( \gamma \in \varepsilon \).
 
-  \SubProofOf{thm:ordinal_properties/trichotomy} Let \( \alpha_0 \) be an ordinal. We will first show that for any other ordinal \( \beta \), either \( \alpha_0 \in \beta \) or \( \beta \subseteq \alpha_0 \). We will use \fullref{thm:transfinite_induction} on \( \beta \).
+  Therefore we have used the fact that \( \delta \) is a transitive set to prove that set membership is a transitive relation, thus obtaining a connection between two distinct concepts both named \enquote{transitivity}.
 
-  Fix an ordinal \( \beta_0 \). Since the inductive hypothesis holds for all \( \beta \in \beta_0 \), we have several possibilities:
+  \SubProofOf{thm:ordinals_are_well_ordered/trichotomy} Let \( \gamma \) and \( \delta \) be ordinals.
+
+  Due to \fullref{thm:simple_foundation_theorems/member_of_itself}, it is not possible for both \( \gamma \in \delta \) and \( \gamma = \delta \) to hold simultaneously. Due to \fullref{thm:simple_foundation_theorems/mutual_membership}, it is not possible for both \( \gamma \in \delta \) and \( \delta \in \gamma \) to hold simultaneously.
+
+  Thus at most one of \( \gamma = \delta \), \( \gamma \in \delta \) or \( \delta \in \gamma \) holds.
+
+  We will use \fullref{thm:transfinite_induction} on \( \delta \) to show that at least one of them holds. Fix an ordinal \( \delta_0 \). Our inductive hypothesis is that for every ordinal \( \gamma \) and for every \( \varepsilon \in \delta_0 \) at least one of \( \gamma = \varepsilon \), \( \gamma \in \varepsilon \) or \( \varepsilon \in \gamma \) holds.
+
+  Fix some ordinal \( \gamma_0 \). We will show that at least one of \( \gamma_0 = \delta_0 \), \( \gamma_0 \in \delta_0 \) or \( \delta_0 \in \gamma_0 \) holds. Since the case \( \delta_0 = \gamma_0 \) is trivial, we exclude it from consideration.
+
   \begin{itemize}
-    \item If there exists a \( \beta \in \beta_0 \) such that \( \alpha_0 \in \beta \), then by the transitivity of the \( \in \) relation, we have \( \alpha_0 \in \beta_0 \).
-    \item Otherwise, if \( \beta \subseteq \alpha_0 \) for \( \beta \in \beta_0 \), we have that \( \beta_0 \subseteq \alpha_0 \).
+    \item If there exists \( \varepsilon \in \delta_0 \) such that \( \varepsilon = \gamma_0 \), clearly \( \gamma_0 \in \delta_0 \).
+    \item If there exists \( \varepsilon \in \delta_0 \) such that \( \gamma_0 \in \varepsilon \), then by transitivity \( \gamma_0 \in \delta_0 \).
+    \item If for every \( \varepsilon \in \delta_0 \) we have \( \varepsilon \in \gamma_0 \), then \( \delta_0 \subsetneq \gamma_0 \). Let \( \varepsilon_0 \) be the smallest member of \( \gamma_0 \setminus \delta_0 \). We will show that \( \varepsilon_0 = \delta_0 \).
+
+    Our first goal is to show that \( \varepsilon_0 \subseteq \delta_0 \). Aiming at a contradiction, suppose that there exists some \( \lambda \in \varepsilon_0 \setminus \delta \). Since \( \varepsilon_0 \) is a transitive set, we have \( \lambda \in \gamma \). Thus \( \lambda \in \gamma \setminus \delta \) and \( \lambda \in \varepsilon_0 \), contradicting the minimality of \( \varepsilon_0 \). Therefore \( \varepsilon_0 \subseteq \delta \).
+
+    Now we will use the existing inductive hypothesis for \( \gamma = \varepsilon_0 \) to show that \( \delta_0 \subseteq \varepsilon_0 \).
+
+    \begin{itemize}
+      \item If there exists \( \lambda \in \delta_0 \) such that \( \lambda = \varepsilon_0 \), clearly \( \varepsilon_0 \in \delta_0 \). But that contradicts our choice of \( \varepsilon_0 \) as a member of \( \gamma_0 \setminus \delta_0 \).
+
+      \item If there exists \( \lambda \in \delta_0 \) such that \( \varepsilon_0 \in \lambda \), then by transitivity \( \varepsilon_0 \in \delta_0 \), which again contradicts our choice of \( \varepsilon_0 \).
+
+      \item Finally, if for every \( \varepsilon \in \delta_0 \) we have \( \varepsilon \in \varepsilon_0 \), then \( \delta_0 \subseteq \varepsilon_0 \).
+    \end{itemize}
+
+    Thus both \( \varepsilon_0 \subseteq \delta_0 \) and \( \delta_0 \subseteq \varepsilon_0 \), giving us the equality \( \delta_0 = \varepsilon_0 \). This allows us to conclude that \( \delta_0 \in \gamma_0 \).
   \end{itemize}
 
-  \Fullref{thm:transfinite_induction} allows us to conclude that either \( \alpha_0 \in \beta \) or \( \beta \subseteq \alpha_0 \) independent on the choice of the ordinal \( \beta \). Furthermore, since \( \alpha_0 \) was chosen arbitrarily, this conclusion does not depend on \( \alpha_0 \) and holds for any two ordinals.
+  We have shown by transfinite induction that for a fixed ordinal \( \delta_0 \), for every other ordinal \( \gamma \) at least one of \( \delta_0 = \gamma \), \( \delta_0 \in \gamma \) or \( \gamma \in \delta_0 \) holds. We have already shown that at most one of the three holds, hence exactly one of the three holds.
 
-  Thus if \( \alpha \) and \( \beta \) are two ordinals, we have the following mutually exclusive possibilities:
+  Since \( \delta_0 \) is itself arbitrary, we can conclude that trichotomy holds for any two ordinals \( \gamma \) and \( \delta \).
+\end{proof}
+
+\begin{proposition}\label{thm:transitive_set_of_transitive_sets}\mcite{MathSE:transitive_set_of_transitive_sets}
+  A \hyperref[def:transitive_set]{transitive set} whose members are transitive sets is an ordinal. In particular, a transitive set of ordinals is an ordinal.
+\end{proposition}
+\begin{proof}
+  Let \( A \) be a set whose members are themselves transitive sets.
+
+  We will first show that set membership is transitive on \( A \). If \( x \), \( y \) and \( z \) are members of \( A \) such that \( x \in y \in z \), then since \( z \) is transitive we have \( y \subseteq z \) and thus \( x \in z \).
+
+  Therefore we can conclude that set membership is a \hyperref[def:poset/strict]{strict partial order} on \( A \). Now define the set
+  \begin{equation*}
+    B \coloneqq \set{ x \in A \given \qexists {y \in A} x \not\in y \wedge y \not\in x }
+  \end{equation*}
+  of all members of \( A \) which are not related to at least one other member. If \( B \) is empty, then set membership is trichotomous on \( A \).
+
+  If \( B \) is nonempty, let \( b \) be a minimal element of \( B \). A minimal element must exist by \fullref{thm:infinite_descent_partial_order} because set membership is a well-founded partial order on \( A \). We have chosen \( b \) so that every member of \( b \) is related to every other member of \( A \).
+
+  Define the set
+  \begin{equation*}
+    C \coloneqq \set{ x \in A \given x \neq b \wedge x \not\in b \wedge b \not\in x }
+  \end{equation*}
+  of all members of \( A \) which are not related to \( b \) and let \( c \) be a minimal element of \( C \). We will now show that \( b = c \), which is a contradictions with our choice of \( c \).
+
+  Let \( x \in b \). As we have already mentioned, \( x \) is related to every other member of \( A \), including \( c \).
   \begin{itemize}
-    \item \( \alpha \in \beta \)
-    \item \( \beta \in \alpha \)
-    \item Neither \( \alpha \in \beta \) nor \( \beta \in \alpha \), in which case by what we have just proved, both \( \alpha \subseteq \beta \) and \( \beta \subseteq \alpha \) hold. Therefore \( \alpha = \beta \).
+    \item If \( c = x \), then \( c \in b \), which contradicts our choice of \( c \).
+
+    \item Suppose that \( c \in x \). We have chosen \( x \) to be a member of \( b \) and we thus have \( c \in x \in b \). The set \( b \) is transitive as a member of \( A \), hence \( x \) is also a member of \( A \). Since set membership is a transitive relation on \( A \), it follows that \( c \in b \), which contradicts our choice of \( c \).
+
+    \item It remains for \( x \in c \) to hold.
   \end{itemize}
 
-  This is the desired trichotomy.
+  Therefore \( b \subseteq c \). The converse inclusion \( c \subseteq b \) can be obtained analogously by noting that \( c \) is a minimal element of \( C \) and hence every \( x \in c \) is related to \( b \). Thus we obtain \( b = c \), which contradicts our choice of \( c \) as a member of \( C \).
 
-  \SubProofOf{thm:ordinal_properties/uniqueness} Let \( \alpha \cong \beta \) be order-isomorphic ordinals. By \fullref{thm:ordinal_properties/trichotomy}, either \( \alpha \in \beta \) or \( \beta \in \alpha \) or \( \alpha = \beta \). To show that the first two cases are impossible, without loss of generality assume that \( \alpha \in \beta \). Let \( h: \alpha \to \beta \) be an embedding. We have that \( h(\alpha) = \beta \) and \( h(\alpha) \in \beta \), hence \( \beta \in \beta \). But this contradicts trichotomy because \( \beta = \beta \).
+  The obtained contradiction shows that the set \( B \) is empty and thus every member of \( A \) is related to every other member, proving trichotomy of set membership on \( A \). This allows us to conclude that \( A \) is an ordinal because it is a transitive set and we have already shown in the beginning of the proof that set membership is a transitive relation on \( A \).
+\end{proof}
 
-  Thus we conclude that \( \alpha = \beta \).
+\begin{proposition}\label{thm:ordinal_is_set_of_smaller_ordinals}
+  Every ordinal equals the set of all smaller ordinals.
 
-  \SubProofOf{thm:ordinal_properties/descending_sequence_of_ordinals_is_finite} Suppose that there exists an infinite sequence of ordinals \( \seq{ \alpha_k }_{k=1}^\infty \) such that \( \alpha_{k+1} \in \alpha_k \) for all \( k \in 1, 2, \ldots \). Thus \( \alpha_1 \) itself as a set has no minimal element with respect to \( \in \), which contradicts the definition of an ordinal.
+  This is the unbounded version of \fullref{thm:initial_segment_of_ordinal}.
+\end{proposition}
+\begin{proof}
+  Let \( \gamma \) be an ordinals and let \( A \) be the set of all ordinals smaller than \( \gamma \). We will show that \( A = \gamma \). We will first show that \( A \) is a transitive set. Let \( \delta \in A \) and \( \varepsilon \in \delta \). Since \( \gamma \) is a transitive set that contains \( \delta \), we have \( \varepsilon \in \gamma \). Thus \( \varepsilon \) is smaller than \( \gamma \) and hence it belongs to \( A \). Therefore \( A \) is a transitive set of ordinals and by \fullref{thm:transitive_set_of_transitive_sets}, it is itself an ordinal.
 
-  The obtained contradiction proves the result.
+  \Fullref{thm:ordinals_are_well_ordered} implies that \( \gamma \) and \( A \) are either equal or related by set membership.
+  \begin{itemize}
+    \item If \( \gamma \in A \), then \( \gamma \) is smaller than itself, which contradicts \fullref{thm:simple_foundation_theorems/member_of_itself}.
 
-  \SubProofOf{thm:ordinal_properties/set_of_ordinals_has_minimum} Let \( A \) be a set of ordinals. By \fullref{thm:ordinal_properties/trichotomy}, this set is totally ordered by \( \in \).
+    \item If \( A \in \gamma \), then \( A \) is smaller than itself, which again contradicts \fullref{thm:simple_foundation_theorems/member_of_itself}.
 
-  Suppose that a minimum does not exist. Let \( \alpha_1 \in A \). Since \( \alpha_1 \) is not a minimum, there exists \( \alpha_2 \in A \) such that \( \alpha_2 \in \alpha_1 \). We thus build a sequence \( \seq{ \alpha_k }_{k=1}^\infty \subseteq A \) such that \( \alpha_{k+1} \in \alpha_k \) for all \( k \in 1, 2, \ldots \). But this contradicts \fullref{thm:ordinal_properties/descending_sequence_of_ordinals_is_finite}.
-
-  The obtained contradiction shows that \( A \) has a minimum.
-
-  \SubProofOf{thm:ordinal_properties/set_of_smaller_ordinals} Fix an ordinal \( \alpha \). By \fullref{thm:element_of_ordinal_is_ordinal}, every element of \( \alpha \) is again an ordinal and by \fullref{thm:ordinal_properties/trichotomy} all ordinals smaller than \( \alpha \) are elements of \( \alpha \). Therefore \eqref{eq:thm:ordinal_properties/set_of_smaller_ordinals} can be reduced to the set \( \set{ \beta \given \beta \in \alpha } \), which obviously equals \( \alpha \).
-
-  \SubProofOf{thm:ordinal_properties/transitive_set_of_ordinals} If \( A \) is an ordinal, by \fullref{thm:ordinal_properties/set_of_smaller_ordinals}, it is the set of all smaller ordinals. Since \( A \) is transitive by definition, it is a transitive set of ordinals.
-
-  Conversely, suppose that \( A \) is a transitive set of ordinals. We must only show that it is well-ordered by \( \in \). Let \( B \subseteq A \) be a nonempty set. By \fullref{thm:ordinal_properties/set_of_ordinals_has_minimum}, \( B \) has a minimum with respect to \( \in \), hence \( A \) is well-ordered by \( \in \). Since \( A \) is a transitive set, it follows that \( A \) is an ordinal.
+    \item It remains for \( A \) to be equal to \( \gamma \).
+  \end{itemize}
 \end{proof}
 
 \begin{theorem}[Burali-Forti paradox]\label{thm:burali_forti_paradox}\mcite[thm. 63.19]{OpenLogicFull}
   Assuming \logic{ZFC}, there is no set of all ordinals.
 \end{theorem}
 \begin{proof}
-  Aiming at a contradiction, suppose that \( A \) is a containing all ordinals. If \( \alpha \in A \) and \( \beta \in \alpha \), transitivity of \( \in \) implies that \( \beta \in A \) since \( \beta \) is again an ordinal by \fullref{thm:element_of_ordinal_is_ordinal}. Thus \( A \) is a transitive set of ordinals, which \fullref{thm:ordinal_properties/transitive_set_of_ordinals} is itself an ordinal. Hence \( A \in A \).
+  Aiming at a contradiction, suppose that \( A \) is a containing all ordinals. If \( \gamma \in A \) and \( \delta \in \gamma \), transitivity \( \delta \) implies \( \delta \in A \). Thus \( A \) is a transitive set of ordinals, which \fullref{thm:transitive_set_of_transitive_sets} is itself an ordinal. Hence \( A \in A \).
 
-  But this contradicts \fullref{thm:zfc_existence_theorems/member_of_itself}. Hence there is no set of all ordinals.
+  But this contradicts \fullref{thm:simple_foundation_theorems/member_of_itself}. Hence there is no set of all ordinals.
 \end{proof}
 
 \begin{proposition}\label{thm:order_type_existence}\mcite[thm. 63.25]{OpenLogicFull}
-  Any \hyperref[def:well_ordered_set]{well-ordered set} \( (\mscrP, \leq) \) is \hyperref[def:poset/homomorphism]{order-isomorphic} to a unique ordinal. This ordinal is called the \term{order type} of \( (\mscrP, \leq) \) and is denoted by \( \ord(\mscrP) \).
+  Any \hyperref[def:well_ordered_set]{well-ordered set} \( (\mscrP, \leq) \) is \hyperref[def:poset/homomorphism]{order-isomorphic} to a unique ordinal. This ordinal is called the \term{order type} of \( (\mscrP, \leq) \) and is denoted by \( \ord(\mscrP, \leq) \) or simply \( \ord(\mscrP) \).
 \end{proposition}
-\begin{proof}
-  Suppose that \( (\mscrP, \leq) \) is not isomorphic to any ordinal.
 
-  If for at least one element \( x \in P \) the \hyperref[def:poset_interval/ray]{initial segment} \( \mscrP_{<x} \) of \( \mscrP \) is not isomorphic to any ordinal, denote the smallest such element by \( x_0 \) and denote \( \mscrQ \coloneqq \mscrP_{<x_0} \) end endow it with the induced by \( \leq \) order.
+\begin{theorem}[Well-Ordering Principle]\label{thm:well_ordering_principle}\mcite[196]{Enderton1977Sets}
+  Any \hyperref[def:set]{set} can be \hyperref[def:well_ordered_set]{well-ordered}.
 
-  Otherwise, let \( \mscrQ \coloneqq \mscrP \).
-
-  Then any initial segment \( \mscrP_{<x} \) of \( \mscrQ \) is isomorphic to some ordinal \( \alpha_x \), which by \fullref{thm:ordinal_properties/uniqueness} is unique.
-
-  By \hyperref[def:zfc/choice], the following set exists and is a function:
-  \begin{equation*}
-    f \coloneqq \set{ (\alpha_x, x) \given x \in Q }.
-  \end{equation*}
-
-  This is obviously an order isomorphism from \( \alpha \coloneqq \dom(f) \) to \( \mscrQ \).
-
-  In order to show that the set \( \alpha \) is an ordinal, by \fullref{thm:ordinal_properties/transitive_set_of_ordinals} we must only show that it is transitive. Let \( \beta \in \alpha \) and \( \gamma \in \beta \). Then \( \gamma \in \alpha \) since it is the preimage under \( f \) of some element of \( \mscrQ \) smaller than \( f(\beta) \). Thus \( \alpha \) is a transitive set of ordinals and hence is itself an ordinal with \( f \) as the explicit isomorphism.
-
-  Furthermore, if \( \alpha' \) is another ordinal that is isomorphic to \( \mscrQ \) with an explicit isomorphism \( g \), then \( g \bincirc f^{-1} \) is an isomorphism from \( \alpha' \) to \( \alpha \). But by \fullref{thm:ordinal_properties/uniqueness}, isomorphic ordinals are unique and hence \( \alpha = \alpha' \).
-\end{proof}
+  This theorem is equivalent to \fullref{thm:axiom_of_choice_equivalences}.
+\end{theorem}
