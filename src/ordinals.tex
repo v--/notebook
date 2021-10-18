@@ -573,7 +573,7 @@
 
   We must note that \fullref{rem:transfinite_induction/limit_case} is essentially the same as the single inductive step \fullref{rem:transfinite_induction/single_inductive_step} except that it is restricted to limit ordinals. The reasoning for this is that the proofs for zero and every successor ordinal can be different from those for limit ordinals.
 
-  See \fullref{thm:order_type_existence} and \fullref{def:cumulative_hierarchy} for concrete examples.
+  See \fullref{thm:ordinal_bijection_and_choice} and \fullref{def:cumulative_hierarchy} for concrete examples.
 \end{remark}
 
 \begin{theorem}[Structural recursion]\label{thm:structural_recursion}
@@ -704,7 +704,7 @@
   There is no set of all ordinals by \fullref{thm:burali_forti_paradox}, hence there must exist an ordinal not in \( B \). But every ordinal that has an injective function into \( A \) belongs to \( B \). Hence there exists some ordinal \( \gamma \) such that no function from \( \gamma \) to \( A \) is injective.
 \end{proof}
 
-\begin{lemma}\label{thm:ordinal_bijection_and_choice}
+\begin{lemma}\label{thm:ordinal_bijection_and_choice}\mcite{MathSE:order_type_existence}
   Let \( A \) be a nonempty set and let \( c \) be a \hyperref[def:choice_function]{choice function} on \( A \). Then there exists an ordinal \( \gamma \) and a bijection between \( A \) and \( \gamma \).
 \end{lemma}
 \begin{proof}
@@ -768,7 +768,7 @@
   Therefore \( \iota_\delta \) is a surjective function.
 \end{proof}
 
-\begin{proposition}\label{thm:order_type_existence}\mcite{MathSE:order_type_existence}
+\begin{proposition}\label{thm:well_ordered_order_type_existence}
   Any \hyperref[def:well_ordered_set]{well-ordered set} \( (\mscrP, \leq) \) is \hyperref[def:partially_ordered_set/homomorphism]{order-isomorphic} to a unique ordinal. This ordinal is called the \term{order type} of \( (\mscrP, \leq) \) and is denoted by \( \ord(\mscrP, \leq) \) or simply \( \ord(\mscrP) \).
 \end{proposition}
 \begin{proof}
@@ -814,3 +814,77 @@
 
   It is clear that \( c(B) \in B \) for every subset \( B \) of \( A \). Therefore \( c \) is a choice function for \( A \).
 \end{proof}
+
+\begin{definition}\label{def:cumulative_hierarchy}\mcite[def. 61.1]{OpenLogicFull}
+  For every ordinal \( \gamma \) we recursively define
+  \begin{equation*}
+    V_\gamma \coloneqq \begin{cases}
+      \varnothing,                                    &\gamma = 0 \\
+      \pow(V_\delta),                                 &\gamma = \op{succ}(\delta) \\
+      \bigcup\set{ V_\delta \given \delta < \gamma }, &\gamma \T{is a limit ordinal.}
+    \end{cases}
+  \end{equation*}
+
+  Formally, for every ordinal \( \gamma \) we define a \( \gamma \)-indexed transfinite sequence \( V_0, V_1, \ldots, V_\omega, \ldots \) and then use the sequence to define \( V_\gamma \). The definition does not depend on any particular ordinal \( \gamma \), however, and thus all ways to obtain \( V_\gamma \) are equivalent. This is done to circumvent the non-existence of unbounded transfinite recursion.
+
+  Each \( V_\gamma \) is called a \term{stage} and the index \( \gamma \) of a stage is called its \term{rank}. The entire proper class of stages is called the \term{cumulative hierarchy}.
+
+  If some set \( A \) belongs to \( V_\gamma \) but not to \( V_\delta \) for any \( \delta < \gamma \), we say that \( \gamma \) is the \term{rank} of the set \( A \) and denote it by \( \rank(A) \).
+\end{definition}
+
+\begin{theorem}[Axiom of regularity]\label{thm:axiom_of_regularity}\mcite[thm. 64.11]{OpenLogicFull}
+  Every set belongs to a stage in \hyperref[def:cumulative_hierarchy]{von Neumann's cumulative hierarchy}.
+
+  This statement is called the \term{axiom of regularity} and in the presence of the other axioms of \logic{ZF}, it is equivalent to the \hyperref[def:zfc/foundation]{axiom of foundation}. It is much more difficult to state in the language of set theory, however.
+\end{theorem}
+
+\begin{definition}\label{def:disjoint_union}
+  The \term{disjoint union} of the \hyperref[def:indexed_family]{indexed family} \( \seq{ A_k }_{k \in \mscrK} \) of nonempty sets is
+  \begin{equation*}
+    \bigsqcup_{k \in \mscrK} A_k \coloneqq \set[\Big]{ (k, x) \given k \in \mscrK \T{and} x \in A_k }.
+  \end{equation*}
+\end{definition}
+
+\begin{definition}\label{def:ordinal_arithmetic}
+  Fix two ordinals \( \gamma \) and \( \delta \). We will define arithmetic operations for them.
+
+  \begin{thmenum}
+    \thmitem{def:ordinal_arithmetic/sum} We define their \term{sum} as
+    \begin{equation*}
+      \gamma + \delta \coloneqq \ord(\gamma \sqcup \delta, \prec),
+    \end{equation*}
+    where \( (\varepsilon_1, k_1) \prec (\varepsilon_2, k_2) \) if either \( k_1 < k_2 \) or both \( k_1 = k_2 \) and \( \varepsilon_1 < \varepsilon_2 \).
+
+    \thmitem{def:ordinal_arithmetic/product} We define their \term{product} as
+    \begin{equation*}
+      \gamma \cdot \delta \coloneqq \ord(\gamma \times \delta),
+    \end{equation*}
+    where \( (\varepsilon_1, \mu_1) \prec (\varepsilon_2, \mu_2) \) if either \( \varepsilon_1 < \varepsilon_2 \) or both \( \varepsilon_1 = \varepsilon_2 \) and \( \mu_1 < \mu_2 \).
+
+    \thmitem{def:ordinal_arithmetic/exponentiation} We define \term{exponentiation} as
+    \begin{equation*}
+      \gamma^\delta \coloneqq \ord\parens[\Big]{ \set[\Big]{ f: \delta \to \gamma \given \qexists {n \in \omega} \rank(f^{-1}(0)) = n } },
+    \end{equation*}
+    where \( f \prec g \) if \( f(\varepsilon_0) < g(\varepsilon_0) \) for \( \varepsilon_0 \coloneqq \max\set{ \varepsilon \in \delta \given f(\varepsilon) \neq g(\varepsilon) } \).
+  \end{thmenum}
+\end{definition}
+
+\begin{proposition}\label{thm:ordinal_arithmetic_properties}
+  Ordinal arithmetic has the following basic properties.
+
+  \begin{thmenum}
+    \thmitem{thm:ordinal_arithmetic_properties/addition}\mcite[lemma 66.7]{OpenLogicFull} Ordinal addition is associative and cancellative.
+
+    \medskip
+
+    \thmitem{thm:ordinal_arithmetic_properties/addition_commutativity}\mcite[prop. 66.8]{OpenLogicFull} Ordinal addition is not commutative.
+
+    \medskip
+
+    \thmitem{thm:ordinal_arithmetic_properties/multiplication}\mcite[lemma 66.14]{OpenLogicFull} Ordinal multiplication is associative and cancellative and distributes over addition.
+
+    \medskip
+
+    \thmitem{thm:ordinal_arithmetic_properties/multiplication_commutativity}\mcite[prop. 66.15]{OpenLogicFull} Ordinal multiplication is not commutative.
+  \end{thmenum}
+\end{proposition}
