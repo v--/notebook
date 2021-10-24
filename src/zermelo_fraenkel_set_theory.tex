@@ -13,7 +13,7 @@
   \begin{itemize}
     \item \hi{Z}ermelo, who formulated the entire theory except for the \hyperref[def:zfc/replacement]{axiom schema of replacement} and the \hyperref[def:zfc/foundation]{axiom of foundation}.
     \item\mcite[sec. 63.8]{OpenLogicFull} \hi{F}raenkel, who simultaneously with Skolem reformulated the theory within first-order logic while also introducing the axiom schema of replacement.
-    \item The \hyperref[def:zfc/choice]{axiom of \hi{c}hoice}, which is part of Zermelo's original theory but is controversial enough to attract special attention --- see \fullref{subsec:axiom_of_choice}.
+    \item The \hyperref[def:zfc/choice]{axiom of \hi{c}hoice}, which is part of Zermelo's original theory but is controversial enough to attract special attention --- see \fullref{thm:axiom_of_choice_equivalences}.
   \end{itemize}
 
   We are usually only interested in either \logic{ZFC}, which include all axioms listed in this definition. If we wish to avoid the axiom of choice --- for example when proving the equivalences in \fullref{thm:axiom_of_choice_equivalences} --- we instead use \logic{ZF}, which excludes the axiom of choice. The abbreviation of the latter theory is inaccurate historically but is nevertheless established.
@@ -71,7 +71,7 @@
     \end{equation}
     where we have used the convention regarding existence and uniqueness described in \fullref{rem:first_order_formula_conventions/exists_unique}.
 
-    See \fullref{subsec:axiom_of_choice} for further discussion of this axiom.
+    See \fullref{thm:axiom_of_choice_equivalences} for more statements equivalent to this axiom.
 
     \thmitem{def:zfc/replacement}\mcite[sec. 63.7]{OpenLogicFull} The \term{axiom schema of replacement} roughly states that every \hyperref[rem:function_definition]{mapping} that is definable via a formula of \logic{ZFC} is a function. As we have done for the \hyperref[def:zfc/choice]{axiom of choice}, we only formulate the axiom via the image of the function. More concretely, given a formula \( \varphi \) not containing \( \alpha \) nor \( \beta \) as free variables, the following is an axiom:
     \begin{equation}\label{eq:def:zfc/replacement}
@@ -86,6 +86,8 @@
     As is the case with the \hyperref[def:zfc/specification]{axiom schema of specification}, the formula \( \varphi \) may depend on parameters, in which case we use its \hyperref[thm:implicit_universal_quantification]{universal closure}.
 
     This axiom is useful in cases where it is impossible or at least difficult to construct a function, for example in \fullref{thm:hartogs_lemma}.
+
+    This is the axiom that makes \logic{ZFC} require large models --- see \fullref{thm:cumulative_hierarchy_model_of_zfc}.
 
     \thmitem{def:zfc/foundation}\mcite[sec. 64.4]{OpenLogicFull} The \term{axiom of foundation} states that every nonempty set contains a member disjoint from the set itself. Symbolically,
     \begin{equation}\label{eq:def:zfc/foundation}
@@ -238,13 +240,13 @@
    \end{equation*}
 \end{proof}
 
-\begin{proposition}\label{thm:existence_of_multi_valued_function_selection}
+\begin{theorem}[Multi-valued selection existence]\label{thm:existence_of_multi_valued_function_selection}
   Every \hyperref[def:multi_valued_function/total]{total multi-valued function} has a \hyperref[def:function/selection]{selection}.
 
-  Within \hyperref[def:zfc]{\logic{ZF}}, this proposition is equivalent to the \hyperref[def:zfc/choice]{axiom of choice} --- see \fullref{thm:axiom_of_choice_equivalences/selection}.
-\end{proposition}
+  In \hyperref[def:zfc]{\logic{ZF}} this theorem is equivalent to the \hyperref[def:zfc/choice]{axiom of choice} --- see \fullref{thm:axiom_of_choice_equivalences/selection}.
+\end{theorem}
 \begin{proof}
-  Let \( F: A \multto B \) be a total multi-valued function. As described in \fullref{rem:multi_valued_functions}, we can instead take the \hyperref[def:indexed_family]{indexed family} \( \set{ F(a) }_{a \in A} \). Denote by \( f \) the \hyperref[def:function]{single-valued function} from \( A \) to the image \( \set{ F(a) \given a \in A } \subseteq \pow(B) \) of this indexed family (see \fullref{rem:multi_valued_functions}).
+  \ImplicationSubProof[def:zfc/choice]{axiom of choice}[thm:existence_of_multi_valued_function_selection]{selection existence} Let \( F: A \multto B \) be a total multi-valued function. As described in \fullref{rem:multi_valued_functions}, we can instead take the \hyperref[def:indexed_family]{indexed family} \( \set{ F(a) }_{a \in A} \). Denote by \( f \) the \hyperref[def:function]{single-valued function} from \( A \) to the image \( \set{ F(a) \given a \in A } \subseteq \pow(B) \) of this indexed family (see \fullref{rem:multi_valued_functions}).
 
   Since \( F \) is \hyperref[def:multi_valued_function/total]{total}, the family \( \img(f) = \set{ F(a) }_{a \in A} \) is a (potentially empty) family of nonempty sets. Thus we can apply the axiom of choice to obtain a \hyperref[def:choice_function]{choice function} \( c: \img(f) \to B \).
 
@@ -255,6 +257,17 @@
   so \( c \bincirc f \) is a selection of \( F \).
 
   This finishes the proof of the proposition. To see how it implies the axiom of choice, consider an indexed family \( \mscrA \) of nonempty sets. The identity \( \id_\mscrA \) is a single-valued function from \( \mscrA \) to itself, however we can also regard it as a multi-valued function from \( \mscrA \) to \( \bigcup \mscrA \). Any selection of this multi-valued function is then a choice function for \( \mscrA \).
+
+  \ImplicationSubProof[thm:existence_of_multi_valued_function_selection]{selection existence}[def:zfc/choice]{axiom of choice} Fix a family \( \mscrA \) of nonempty sets. Define the function
+  \begin{equation*}
+    \begin{aligned}
+      &F: \mscrA \to \bigcup \mscrA \\
+      &F(A) \coloneqq A
+    \end{aligned}
+  \end{equation*}
+  that sends each set in \( \mscrA \) to the corresponding subset of \( \mscrA \). In terms of relations, we have \( (A, x) \in F \) if and only if \( x \in A \). This is a total multi-valued function because every set in \( \mscrA \) is nonempty.
+
+  Then every selection of \( F \) is a choice function for \( \mscrA \).
 \end{proof}
 
 \begin{definition}\label{def:function_invertibility_categorical}
@@ -339,6 +352,37 @@
 
   Finally, if \( f: A \to B \) is \hi{nonempty} function, then by \fullref{thm:function_invertibility_categorical/nonempty_injective} and \fullref{thm:function_invertibility_categorical/surjective} it is bijective if and only if it is fully invertible.
 \end{proof}
+
+\begin{theorem}[Axiom of choice equivalences]\label{thm:axiom_of_choice_equivalences}
+  The following statements are commonly referred to as \enquote{the} \hyperref[def:zfc/choice]{axiom of choice}:
+  \begin{thmenum}[series=thm:axiom_of_choice_equivalences]
+    \thmitem{thm:axiom_of_choice_equivalences/choice_sets} For every family of nonempty sets \( \mscrA \) there exists a set \( B \) such that \( A \cap B \) is a singleton set for every \( A \in \mscrA \).
+
+    \thmitem{thm:axiom_of_choice_equivalences/choice_function} Every family of nonempty sets has a corresponding \hyperref[def:choice_function]{choice function}.
+
+    \thmitem{thm:axiom_of_choice_equivalences/choice_product} The \hyperref[def:cartesian_product]{Cartesian product} of a family of nonempty sets is nonempty.
+  \end{thmenum}
+
+  The following statements are equivalent to the axiom of choice but are not conflated with it:
+  \begin{thmenum}[resume=thm:axiom_of_choice_equivalences]
+    \thmitem{thm:axiom_of_choice_equivalences/selection} \Fullref{thm:existence_of_multi_valued_function_selection}: Every \hyperref[def:multi_valued_function/total]{total multi-valued function} has a \hyperref[def:function/selection]{selection}.
+
+    \thmitem{thm:axiom_of_choice_equivalences/hypergraph} \Fullref{thm:hypergraphs_have_minimal_transversal}: Every \hyperref[def:hypergraph]{hypergraph} has a \hyperref[def:minimal_hypergraph_transversal]{minimal transversal}.
+
+    \thmitem{thm:axiom_of_choice_equivalences/well_ordering} \Fullref{thm:well_ordering_theorem}: Any \hyperref[def:set]{set} can be \hyperref[def:well_ordered_set]{well-ordered}.
+
+    \thmitem{thm:axiom_of_choice_equivalences/zorns_lemma} \Fullref{thm:zorns_lemma}: If every \hyperref[def:partially_ordered_set_chain_and_antichain]{chain} in a \hyperref[def:partially_ordered_set]{partially ordered set} has an \hyperref[def:partially_ordered_set_extremal_points/upper_and_lower_bounds]{upper bound}, then the entire set has a \hyperref[def:partially_ordered_set_extremal_points/maximal_and_minimal_element]{maximal element}.
+
+    \thmitem{thm:axiom_of_choice_equivalences/vector_space_bases} \Fullref{thm:every_vector_space_has_a_basis}: Every vector space has a \hyperref[def:left_module_hamel_basis]{basis}.
+
+    \thmitem{thm:axiom_of_choice_equivalences/tychonoff} \Fullref{thm:tychonoffs_product_theorem}: The \hyperref[def:topological_product]{topological product} of \hyperref[def:compact_space]{compact} is compact.
+
+    \thmitem{thm:axiom_of_choice_equivalences/krull} \Fullref{thm:krulls_theorem}: Every nontrivial \hyperref[def:semiring/commutative_unital_ring]{commutative unital ring} has a \hyperref[def:maximal_ring_ideal]{maximal ideal}.
+\end{theorem}
+
+\begin{theorem}[Diaconescu-Goodman-Myhill theorem]\label{thm:diaconescu_goodman_myhill_theorem}\mcite[corr. 2]{Diaconescu1975}
+  In \hyperref[def:zfc]{\logic{ZF}} the \hyperref[def:zfc/choice]{axiom of choice} entails the law of the excluded middle \eqref{eq:thm:minimal_propositional_negation_laws/lem}.
+\end{theorem}
 
 \begin{proposition}\label{thm:simple_foundation_theorems}
   We are not yet able to even state \fullref{thm:set_membership_is_well_founded}, however we will list several special cases which are also consequences of the \hyperref[def:zfc/foundation]{axiom of foundation}:
@@ -568,37 +612,3 @@
     \end{cases}
   \end{equation*}
 \end{remark}
-
-\begin{theorem}[Equivalent to AOC theorems]\label{thm:axiom_of_choice_equivalences}
-  The following are equivalent:
-
-  \begin{thmenum}
-    \thmitem{thm:axiom_of_choice_equivalences/transversal}\mcite[thm. 6M(4)]{Enderton1977Sets}Every hypergraph has a minimal transversal (compare to \fullref{thm:finite_hypergraphs_have_minimal_transversal} that only mentions finite sets).
-
-    \thmitem{thm:axiom_of_choice_equivalences/product}\mcite[thm. 6M(2)]{Enderton1977Sets}The \hyperref[def:cartesian_product]{Cartesian product} of a family of nonempty sets is nonempty.
-
-    \medskip
-
-    \thmitem{thm:axiom_of_choice_equivalences/choice}\mcite[thm. 6M(3)]{Enderton1977Sets}For any nonempty set \( X \) there exists a \hyperref[def:choice_function]{choice function}.
-
-    \medskip
-
-    \thmitem{thm:axiom_of_choice_equivalences/selection} Every \hyperref[def:multi_valued_function/total]{total multi-valued function} has a \hyperref[def:function/selection]{selection}.
-
-    \thmitem{thm:axiom_of_choice_equivalences/cardinals} \Fullref{thm:cardinal_trichotomy}.
-
-    \thmitem{thm:axiom_of_choice_equivalences/zorn} \Fullref{thm:zorns_lemma}.
-
-    \thmitem{thm:axiom_of_choice_equivalences/well_ordering_principle} \Fullref{thm:well_ordering_principle}.
-
-    \thmitem{thm:axiom_of_choice_equivalences/vector_space_bases} \Fullref{thm:all_vector_spaces_are_free_left_modules}. Compare this to finite-dimensional vector spaces of order \( n \) over \( \BbbK \), which are all isomorphic to \( \BbbK^n \).
-
-    \thmitem{thm:axiom_of_choice_equivalences/tychonoff} \Fullref{thm:tychonoffs_product_theorem}.
-
-    \thmitem{thm:axiom_of_choice_equivalences/krull} \Fullref{thm:krulls_theorem}.
-  \end{thmenum}
-\end{theorem}
-
-\begin{theorem}[Diaconescu-Goodman-Myhill theorem]\label{thm:diaconescu_goodman_myhill_theorem}\mcite[corr. 2]{Diaconescu1975}
-  In \hyperref[def:zfc]{\logic{ZF}}, the \hyperref[def:zfc/choice]{axiom of choice} entails the law of the excluded middle \eqref{eq:thm:minimal_propositional_negation_laws/lem}.
-\end{theorem}

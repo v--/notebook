@@ -156,7 +156,7 @@
   \begin{thmenum}
     \thmitem{def:partially_ordered_set_extremal_points/upper_and_lower_bounds}\mcite[2]{Gratzer1978}
     \begin{minipage}[t]{0.45\textwidth}
-      An \term{upper bound} for the set \( A \subseteq \mscrP \) is an element \( x_0 \in \mscrP \) such that \( x \leq x_0 \) for every \( x \in A \). Note that \( x_0 \) does not in general belong to \( A \).
+      An \term{upper bound} for the set \( A \subseteq \mscrP \) is an element \( x_0 \in \mscrP \) such that \( x \leq x_0 \) for every \( x \in A \). Note that \( x_0 \) does not in general belong to \( A \). An upper bound is called \term{strict} if it does not belong to \( A \).
 
       If \( A \) has at least one upper bound, it is called \term{bounded from above}.
 
@@ -166,7 +166,7 @@
     \end{minipage}
     \hspace{0.02\textwidth}
     \begin{minipage}[t]{0.45\textwidth}
-      Dually, \( x_0 \in \mscrP \) is a \term{lower bound} of \( A \) if \( x_0 \leq x \) for every \( x \in A \). If \( A \) has a lower bound, it is called \term{bounded from below}.
+      Dually, \( x_0 \in \mscrP \) is a \term{lower bound} of \( A \) if \( x_0 \leq x \) for every \( x \in A \). A lower bound is called \term{strict} if it does not belong to \( A \). If \( A \) has a lower bound, it is called \term{bounded from below}.
 
       If \( A \) is bounded both from below and from above, we say that \( A \) is \term{bounded}.
 
@@ -398,10 +398,35 @@
   \end{equation*}
 \end{definition}
 
-\begin{lemma}[Zorn's lemma]\label{thm:zorns_lemma}\mcite[63]{Gratzer1978}
-  If any \hyperref[def:partially_ordered_set_chain_and_antichain]{chain} in a \hyperref[def:partially_ordered_set]{partially ordered set} has an upper \hyperref[def:partially_ordered_set_extremal_points/upper_and_lower_bounds]{bound}, there exists a \hyperref[def:partially_ordered_set_extremal_points/maximal_and_minimal_element]{maximal} set in \( X \).
+\begin{theorem}[Zorn's lemma]\label{thm:zorns_lemma}\mcite[63]{Gratzer1978}
+  If every \hyperref[def:partially_ordered_set_chain_and_antichain]{chain} in a \hyperref[def:partially_ordered_set]{partially ordered set} has an \hyperref[def:partially_ordered_set_extremal_points/upper_and_lower_bounds]{upper bound}, then the entire set has a \hyperref[def:partially_ordered_set_extremal_points/maximal_and_minimal_element]{maximal element}.
 
-  Zorn's lemma is usually stated and used only in a \hyperref[thm:boolean_algebra_of_subsets]{lattice of sets}.
+  Zorn's lemma is usually stated and used only in a \hyperref[thm:boolean_algebra_of_subsets]{lattice of sets}, however it is a more general statement in order theory.
 
-  It is equivalent to the axiom of choice --- see \fullref{thm:axiom_of_choice_equivalences/zorn}.
-\end{lemma}
+  In \hyperref[def:zfc]{\logic{ZF}} this theorem is equivalent to the \hyperref[def:zfc/choice]{axiom of choice} --- see \fullref{thm:axiom_of_choice_equivalences/zorns_lemma}.
+\end{theorem}
+\begin{proof}
+  \ImplicationSubProof[def:zfc/choice]{axiom of choice}[thm:zorns_lemma]{Zorn's lemma} Let \( (\mscrP, \leq) \) be a partially ordered set in which every chain has an upper bound. Aiming at a contradiction, suppose that \( \mscrP \) has no maximal element.
+
+  Denote by \( \mscrC \) the set of all chains of \( \mscrP \) and define the multi-valued map \( F: \mscrC \to \mscrP \) that assigns to each chain the set of all strict upper bounds.
+
+  Since \( \mscrP \) has no maximal element, every chain has a strict upper bound. That is, the function \( F \) is a total multi-valued map. By \fullref{thm:existence_of_multi_valued_function_selection}, there exists a single-valued selection \( f: \mscrC \to \mscrP \) of \( F \). We have indirectly used the axiom of choice via \fullref{thm:existence_of_multi_valued_function_selection}.
+
+  By \fullref{thm:hartogs_lemma}, there exists an \hyperref[def:ordinal]{ordinal} \( \gamma \) such that no function from \( \gamma \) to \( \mscrP \) is injective. Using \fullref{thm:bounded_transfinite_recursion}, we can define
+  \begin{equation*}
+    \begin{aligned}
+      &g: \gamma \to A \\
+      &g(\delta) \coloneqq f(\set{ g(\varepsilon) \given \varepsilon < \delta }).
+    \end{aligned}
+  \end{equation*}
+
+  By construction, for every \( \delta < \gamma \) the value \( g(\delta) \) is a strict upper bound of the set \( \set{ g(\varepsilon) \given \varepsilon < \delta } \). Hence the function \( f \) is injective, which directly contradicts our choice of \( \gamma \).
+
+  The obtained contradiction shows that \( \mscrP \) has a maximal element.
+
+  \ImplicationSubProof[thm:zorns_lemma]{Zorn's lemma}[def:zfc/choice]{axiom of choice} Let \( \mscrA \) be a family of nonempty sets. Let \( \mscrF \) be the set of all \hyperref[def:partial_function]{partial single-valued functions} from \( \mscrA \) to \( \bigcup \mscrA \) with the subset ordering. That is, \( f \leq g \) if \( \dom(f) \subseteq \dom(g) \) for \( f, g \in \mscrF \).
+
+  Clearly every chain has a maximum - a total single-valued function. Then \( \mscrF \) itself has a maximal element by Zorn's lemma. This maximal element is necessarily a total function because otherwise it would not be maximal.
+
+  Then this is the desired choice function for the family \( \mscrA \).
+\end{proof}
