@@ -1,141 +1,287 @@
 \subsection{Cardinals}\label{subsec:cardinals}
 
-\begin{definition}\label{def:set_domination}\mcite[145]{Enderton1977Sets}
-  We say that the set \( A \) is \term{dominated} by \( B \) and that \( B \) \term{dominates} \( A \) if there exists an \hyperref[def:function_invertibility/injective]{injection} from \( A \) to \( B \).
+\begin{definition}\label{def:equinumerosity}\mcite[129 \\ 145]{Enderton1977Sets}
+  We say that two sets are \term{equinumerous} if there exists a \hyperref[def:function_invertibility/bijective]{bijective function} between them.
+
+  If there exists an \hyperref[def:function_invertibility/injective]{injective} function from \( A \) to \( B \) that is not necessarily \hyperref[def:function_invertibility/surjective]{surjective}, we say that \( A \) is \term{dominated by} \( B \) or that \( B \) \term{dominates} \( A \). If \( B \) dominates \( A \) and they are not equinumerous, we say that \( B \) \term{strictly dominates} \( A \).
+
+  Equinumerosity arises naturally outside of the theory of cardinal numbers, unlike set dominance. We are usually instead interested only in injective functions that preserve some structure, i.e. \hyperref[def:first_order_homomorphism_invertibility/embedding]{embeddings}.
 \end{definition}
 
-\begin{definition}\label{def:equinumerous_sets}\mcite[129]{Enderton1977Sets}
-  We say that the sets \( A \) and \( B \) are \term{equinumerous} if there exists a \hyperref[def:function_invertibility/bijective]{bijection} between \( A \) and \( B \).
-\end{definition}
-
-\begin{proposition}\label{thm:finite_ordinals_are_different_carinals}
-  Let \( n \) and \( m \) be members of \( \omega \). The sets \( n \) and \( m \) are equinumerous if and only if \( n = m \).
-\end{proposition}
-
-\begin{definition}\label{def:infinite_set}
-  In order to distinguish between finite and infinite sets, we introduce the following equivalent dual pairs definitions:
-  \begin{thmenum}
-    \thmitem{def:infinite_set/ordinals} We call a set \term{finite} if it is \hyperref[def:equinumerous_sets]{equinumerous} with a natural number (member of \hyperref[thm:smallest_inductive_set_existence]{\( \omega \)}) and \term{infinite} otherwise.
-
-    \thmitem{def:infinite_set/omega} We call a set \term{infinite} if it \hyperref[def:set_domination]{dominates} the set \( \BbbN \) (encoded as \( \omega \)) and \term{finite} otherwise.
-
-    \thmitem{def:infinite_set/dedekind} We call a set \term{Dedekind infinite} if it is equinumerous with a proper subset of itself and \term{Dedekind finite} otherwise.
-  \end{thmenum}
-\end{definition}
+\begin{lemma}\label{thm:three_equinumerous_sets_lemma}\mcite[prop. 6.9]{OpenLogicFull}
+  If \( A \subseteq B \subseteq C \) and \( A \) is \hyperref[def:equinumerosity]{equinumerous} with \( C \), then \( B \) is equinumerous with \( C \).
+\end{lemma}
 \begin{proof}
-  Fix some set \( A \).
+  If \( B = C \), the lemma is trivial since the \hyperref[def:multi_valued_function/diagonal]{identity function} \( \id_B: B \to B \) is bijective. If \( B \subsetneq C \), however, the identity \( \id_B \) must be extended in order to be a bijective function between \( B \) and \( C \). It will actually be simpler for us to define a function from \( C \) to \( B \).
 
-  \ImplicationSubProof{def:infinite_set/ordinals}{def:infinite_set/omega} Suppose that there exists a bijective function \( f: n \to A \) for some number \( n \in \omega \).
-
-  Let \( g: \omega \to A \) be an arbitrary function. Suppose that it is injective. Let \( k < n \) and \( m > n \). If \( g(m) = g(k) \), then \( m = k \), which contradicts our choice of \( k \) and \( n \). Hence \( g \) cannot be injective.
-
-  We conclude that there does not exist an injective function from \( \omega \) to \( A \).
-
-  \ImplicationSubProof{def:infinite_set/omega}{def:infinite_set/ordinals} Let
-\end{proof}
-
-\begin{theorem}[Cantor-Schröder-Bernstein]\label{thm:cantor_schroder_bernstein}\mcite[147]{Enderton1977Sets}
-  If \( \abs{X} \leq \abs{Y} \) and \( \abs{Y} \leq \abs{X} \), then \( X \cong Y \).
-\end{theorem}
-
-\medskip
-
-\begin{proposition}\label{thm:equinumerousity_equivalence}\mcite[thm. 6A]{Enderton1977Sets}
-  \hyperref[def:equinumerous_sets]{Equinumerosity} satisfies the equivalence relation \hyperref[def:equivalence_relation]{axioms} (however it is formally not an equivalence relation since we cannot define relations on the class of all sets; see \fullref{def:set}).
-\end{proposition}
-
-\begin{theorem}[Cantor]\label{thm:cantor_power_set_theorem}\mcite[thm. 6B]{Enderton1977Sets}
-  No set \( X \) is equinumerous with its power set \( \pow(X) \).
-\end{theorem}
-\begin{proof}
-  Fix some function \( f: X \to \pow(X) \). Define the set
+  Let \( f: C \to A \) be a bijective function (such a function exists by the statement of the lemma). Define the set
   \begin{equation*}
-    Y \coloneqq \{ x \in X \colon x \not\in f(x) \}.
+    I \coloneqq \bigcap\set{ X \subseteq C \given (C \setminus B) \subseteq X \T{and} f(X) \subseteq X }
+  \end{equation*}
+  of all intermediate sets between \( C \setminus B \) and \( C \) that are invariant under \( f \).
+
+  Use \hyperref[rem:natural_number_recursion]{natural number recursion} to build the function
+  \begin{equation*}
+    \begin{aligned}
+      &g: C \to B \\
+      &g(x) \coloneqq \begin{cases}
+        x,    &x \in C \setminus I \\
+        f(x), &x \in I
+      \end{cases}
+    \end{aligned}
   \end{equation*}
 
-  Note that \( Y \subseteq X \) and thus \( Y \in \pow(X) \), however \( Y \) is not in the \hyperref[def:function]{image} \( \img f \) and thus \( f \) is not a \hyperref[def:function_invertibility/surjective]{surjection}.
+  By construction, \( C \setminus B \subseteq I \) and thus \( C \setminus I \subseteq C \setminus (C \setminus B) = B \). Therefore the range of \( g \) really is \( B \). We must show that \( g \) is injective and surjective.
 
-  Since \( f \) was arbitrary, we conclude that no function \( f: X \to \pow(X) \) is a surjection and, hence, \( X \not\cong \pow(X) \).
+  Let \( g(x_1) = g(x_2) \) for some members \( x_1 \) and \( x_2 \) of \( C \). If \( x_1 \) and \( x_2 \) both belong to either \( I \) or \( C \setminus I \), it is trivial to see that \( x_1 = x_2 \). It turns out that these are two only possible scenarios. Indeed, without loss of generality, suppose that \( x_1 \in I \) and \( x_2 \in C \setminus I \). Then \( f(x_2) = g(x_2) = g(x_1) = x_1 \). Since \( I \) is invariant under \( f \) and \( x_1 \in I \), we have \( x_2 = f(x_1) \in I \), which contradicts our choice of \( x_2 \). Therefore \( g \) is an injective function.
+
+  To see that \( g \) is also surjective, suppose that there exists some \( y \in B \setminus g[B] \). If \( y \in I \), then by the invariance of \( f \) we have \( g(y) = f(y) \in I \) and thus \( g(y) \not\in B \), which contradicts our definition of \( g \). If instead \( y \in C \setminus I \), then \( g(y) = y \) and thus \( y \in g[B] \), which contradicts our choice of \( y \). The obtained contradictions show that \( g \) is surjective.
 \end{proof}
 
-\begin{definition}\label{def:finite_set}\mcite[133]{Enderton1977Sets}
-  A set \( A \) is \term{finite} if it is equinumerous to a natural number as defined in \fullref{def:set_of_natural_numbers} (using the convention that \( \varnothing \) corresponds to zero).
-
-  If \( A \) is not finite, we say that it is \term{infinite}.
-\end{definition}
-
-\begin{proposition}\label{thm:infinite_set_iff_equinumerous_to_proper_subset}\mcite[cor. 6D]{Enderton1977Sets}
-  A set is \hyperref[def:finite_set]{infinite} if and only if it is equinumerous to a proper subset of itself.
-\end{proposition}
-
-\medskip
-
-\begin{theorem}\label{thm:equinumerous_ordinal_existence}\mcite[197]{Enderton1977Sets}
-  For every set, there exists at least one \hyperref[def:ordinal]{ordinal} equinumerous to it.
+\begin{theorem}[Cantor-Schr\"oder-Bernstein theorem]\label{thm:cantor_schroder_bernstein_theorem}\mcite[sec. 6.5]{OpenLogicFull}
+  If two sets \hyperref[def:equinumerosity]{dominate} each other, they are \hyperref[def:equinumerosity]{equinumerous}.
 \end{theorem}
+\begin{proof}
+  Let \( f: A \to B \) and \( g: B \to A \) be injective functions. From \fullref{thm:function_composition_invertibility} it follows that \( g \bincirc f: A \to A \) is also an injective function. If we restrict its range to its image \( g[f[A]] \), it becomes bijective. Hence \( A \) is equinumerous with \( g[f[A]] \). Since \( g[f[A]] \subseteq g[B] \subseteq A \), from \fullref{thm:three_equinumerous_sets_lemma} it follows that \( A \) is equinumerous with \( g[B] \), which is the desired result.
+\end{proof}
 
-\medskip
+\begin{remark}\label{rem:cardinal_definition}
+  \hyperref[def:equinumerosity]{Set domination} generalizes the \hyperref[def:subset]{subset relation} between sets.
 
-\begin{definition}\label{def:cardinal}\mcite[197]{Enderton1977Sets}
-  For each set \( A \), define its \term{cardinal} or \term{cardinal number} \( \card A \) as the smallest ordinal that is equinumerous to \( A \) (a smallest ordinal always exists by \fullref{def:ordinal}).
-
-  If \( \xi \) and \( \eta \) are cardinal numbers, we define \( \xi \leq \eta \) to mean that \( \eta \) \hyperref[def:set_domination]{dominates} \( \xi \), i.e.
-  \begin{equation*}
-    \xi \leq \eta \iff \abs{\xi} \leq \abs{\eta}.
-  \end{equation*}
-\end{definition}
-
-\begin{theorem}\label{thm:cardinal_trichotomy}\mcite[thm. 6M(5)]{Enderton1977Sets}
-  If \( \xi \) and \( \eta \) are cardinals, then either
+  If we take a family \( \mscrA \) of sets, then domination is a \hyperref[def:preordered_set]{preorder} rather than a true \hyperref[def:partial_order]{partial order}.
   \begin{itemize}
-    \item \( \xi \leq \eta \)
-    \item \( \xi = \eta \)
-    \item \( \xi \geq \eta \)
+    \item Reflexivity follows because the \hyperref[def:multi_valued_function/diagonal]{identity function} for any set is injective.
+    \item Transitivity is a consequence of \fullref{thm:function_composition_invertibility}.
+    \item Antisymmetry fails if \( A \) dominates \( B \) and \( B \) dominates \( A \) but \( A \neq B \). For example, the map \( n \mapsto 2n \) from all natural numbers \( \BbbN \) to the even natural numbers \( 2\BbbN \) is injective and the identity map on \( 2\BbbN \) is an injective function from \( 2\BbbN \) to \( \BbbN \), however \( \BbbN \neq 2\BbbN \)
   \end{itemize}
-\end{theorem}
+
+  As a matter of fact, \hyperref[def:equinumerosity]{equinumerosity} is also a preorder and the proof for that is identical.
+
+  If we partition \( \mscrA \) using the \hyperref[def:equinumerosity]{equinumerosity relation} if follows from \fullref{thm:preorder_to_partial_order} that the result will be a partial ordered set. The equivalence classes of this partition are then subfamilies of \( \mscrA \) such that every two sets in a single subfamily are equinumerous. For example, if \( \mscrA = \set{ \set{ A, B }, \set{ C, I }, \set{ A }, \set{ C } } \), then the corresponding equivalence classes are \( \set{ \set{ A, B }, \set{ C, I } } \) and \( \set{ \set{ A }, \set{ C } } \).
+
+  Each of these equivalence classes consists of sets that are identical in \enquote{size} (not to be confused with \enquote{large} and \enquote{small} sets as defined in \fullref{def:large_and_small_sets}). In the above example, the corresponding equivalence classes correspond to sets of sizes \( 1 \) and \( 2 \). If we want to extend this notion of \enquote{size} to infinite sets, we must introduce a hierarchy of \enquote{sizes}. A natural candidate for such a hierarchy are the equivalence classes themselves. Unfortunately, this would mean that every family of sets has a different hierarchy. Since the entire universe is only available within the metatheory, we cannot partition the universe itself and must instead resort to finding a concrete representative of each possible equivalence class. We will call these representatives \term{cardinal numbers}.
+
+  As explained in the proof of \fullref{thm:cardinality_existence}, it will be convenient for us to define cardinal numbers as certain \hyperref[def:ordinal]{ordinal numbers} --- see \fullref{def:cardinal}.
+\end{remark}
+
+\begin{definition}\label{def:cardinal}
+  A \term{cardinal number} or simply \term{cardinal} is an \hyperref[def:ordinal]{ordinal} that is not \hyperref[def:equinumerosity]{equinumerous} with any smaller ordinal. We usually denote them using the small Greek letters \( \kappa \), \( \mu \) and \( \nu \).
+
+  A cardinal is by definition an ordinal and this is useful. For example, the cardinals are well-ordered in the sense of \fullref{thm:ordinals_are_well_ordered}.
+
+  We often regard cardinal numbers as abstract entities, however. It is thus accepted to call the ordinal itself the \term{initial ordinal} of the cardinal.
+\end{definition}
+
+\begin{lemma}\label{thm:natural_number_is_not_equinumerous_to_proper_subset}
+  No natural number (as a member of \hyperref[thm:smallest_inductive_set_existence]{\( \omega \)}) is equinumerous to a proper subset of itself.
+\end{lemma}
+\begin{proof}
+  We will use \fullref{thm:omega_induction} on \( n \in \omega \). The lemma holds vacuously for \( n = 0 \).
+
+  Now suppose that \( n \) is not equinumerous to a proper subset of itself and, aiming at a contradiction, suppose that there exists a subset \( E \subseteq \op{succ}(n) \) and a bijective function \( {f: \op{succ}(n) \to E} \).
+  \begin{itemize}
+    \item If \( n \in E \), then \( E \setminus \set{ n } \) is a subset of \( n \) and thus the restriction \( f\restr_n: n \to (E \setminus \set{ n }) \) is a bijective function.
+    \item If \( n \not\in E \), then \( E \) is a subset of \( n \) and thus \( f\restr_n: n \to E \) is a bijective function.
+  \end{itemize}
+
+  In both cases we obtain that \( n \) is equinumerous with a proper subset of itself, which is a contradiction. Hence this also holds for \( \op{succ}(n) \).
+
+  The induction principle allows us to conclude that the lemma holds for all natural numbers.
+\end{proof}
+
+\begin{proposition}\label{thm:natural_numbers_are_cardinals}
+  The natural numbers (as members of \hyperref[thm:smallest_inductive_set_existence]{\( \omega \)}) are \hyperref[def:cardinal]{cardinals}.
+\end{proposition}
+\begin{proof}
+  Fix a natural number \( n \in \omega \). Note that for every \( m < n \), \( m \) is a proper subset of \( n \) by \fullref{thm:ordinal_ordering_via_subsets}. From \fullref{thm:natural_number_is_not_equinumerous_to_proper_subset} it follows that no ordinal strictly smaller than \( n \) is equinumerous with \( n \) and hence \( n \) is an initial ordinal.
+\end{proof}
+
+\begin{proposition}\label{thm:omega_is_a_cardinal}
+  The \hyperref[thm:smallest_inductive_set_existence]{smallest inductive set \( \omega \)} is a \hyperref[def:cardinal]{cardinal}. When regarded as a cardinal, we denote it by \( \aleph_0 \).
+\end{proposition}
+\begin{proof}
+  We will use induction on \( n < \omega \) to show that no function \( f: \omega \to n \) is surjective. This is trivial for \( 0 \). Suppose that it holds for some fixed \( n \). Let \( f: \omega \to \op{succ}(n) \) be any function. Define
+  \begin{equation*}
+    \begin{aligned}
+      &g: \omega \to n \\
+      &g(m) \coloneqq \begin{cases}
+        f(m), &f(m) < n \\
+        0,    &f(m) = n
+      \end{cases}
+    \end{aligned}
+  \end{equation*}
+
+  Our inductive hypothesis states that \( g \) cannot be surjective. Hence \( f \) also cannot be surjective.
+
+  Therefore \( \omega \) is an initial ordinal.
+\end{proof}
+
+\begin{proposition}\label{thm:cardinality_existence}
+  Every set \( A \) is equinumerous with a unique \hyperref[def:cardinal]{cardinal}. We denote this cardinal by \( \card(A) \) and call it the \term{cardinality} of \( A \).
+\end{proposition}
+\begin{proof}
+  By \fullref{thm:well_ordering_theorem} there exists a relation \( \prec \) that well-orders \( A \). The \hyperref[thm:well_ordered_order_type_existence]{order type} \( \ord(A, \prec) \) is an ordinal that is equinumerous with \( A \), however it may not be the smallest one. Fortunately, we can define
+  \begin{equation*}
+    \card(A) \coloneqq \min\set{ \beta \leq \ord(A, \prec) \given \beta \T{is equinumerous with} A }.
+  \end{equation*}
+\end{definition}
+
+\begin{proposition}\label{thm:cardinality_order_compatibility}
+  The set \( A \) is dominated by \( B \) if and only if \( \card(A) \leq \card(B) \).
+\end{proposition}
+\begin{proof}
+  \SufficiencySubProof First suppose that \( \card(A) \leq \card(B) \). By \fullref{thm:ordinal_ordering_via_subsets}, we have \( \card(A) \subseteq \card(B) \) and thus the identity function \( \id_{\card(A)} \) is an injective function from \( \card(A) \) to \( \card(B) \). Since \( A \) is equinumerous with \( \card(A) \) and \( B \) is equinumerous with \( \card(B) \), by \fullref{thm:function_composition_invertibility} we obtain that there is an injective function from \( A \) to \( B \) and hence \( B \) dominates \( A \).
+
+  \NecessitySubProof Conversely, let \( f: A \to B \) be an injective function. We again use \fullref{thm:function_composition_invertibility} to conclude that \( \card(B) \) dominates \( \card(A) \).
+
+  We will show that \( \card(A) > \card(B) \) leads to a contradiction, which by the trichotomy of cardinals will entail that \( \card(A) \leq \card(B) \). If we suppose that \( \card(A) > \card(B) \), then \( \card(B) \subseteq \card(A) \) and hence the identity on \( \card(B) \) is an injective function. Thus \( \card(A) \) dominates \( \card(B) \) and vice versa, which by \fullref{thm:cantor_schroder_bernstein_theorem} implies that \( \card(A) \) is equinumerous with \( \card(B) \). It follows that \( \card(A) = \card(B) \), which contradicts our assumption that \( \card(A) > \card(B) \).
+
+  Therefore \( \card(A) \leq \card(B) \).
+\end{proof}
+
+\begin{corollary}\label{thm:set_domination_relation_trichotomy}
+  Any two sets are either equinumerous or one strictly dominates the other.
+\end{corollary}
+\begin{proof}
+  Follows from cardinal trichotomy and \fullref{thm:set_domination_relation_trichotomy}.
+\end{proof}
 
 \begin{corollary}[Pigeonhole principle]\label{def:pigeonhole_principle}
-  If the cardinality of \( X \) is greater than the cardinality of \( Y \), then there exists no injective function from \( X \) to \( Y \).
+  If we have more pigeons than pigeonholes, then at least one pigeonhole must contain multiple pigeons in it.
+
+  More formally, if \( \card(A) > \card(B) \), then there exists no injective function from \( A \) to \( B \).
 \end{corollary}
-
-\begin{remark}\label{rem:cardinals}
-  We can think of cardinal numbers as \enquote{choosing} a special set out of the equivalence classes obtained from \fullref{thm:equinumerousity_equivalence}.
-
-  Since the natural numbers as defined in \fullref{def:set_of_natural_numbers} are ordinals and no two different natural numbers are equinumerous, we identify the cardinal numbers for \hyperref[def:finite_set]{finite sets} with natural numbers.
-
-  We give special names to
-  \begin{thmenum}
-    \thmitem{rem:cardinals/countably_infinite} \( \aleph_0 \coloneqq \card(\omega) \), the \term{cardinality of the natural numbers}.
-    \thmitem{rem:cardinals/continuum} \( c \coloneqq \card(\BbbR) = \card(\pow(\omega)) \), the \term{cardinality of the continuum}.
-  \end{thmenum}
-\end{remark}
-
-\begin{proposition}\label{thm:cardinals_well_ordered}
-  The class of all \hyperref[def:cardinal]{cardinals} is \hyperref[def:well_ordered_set]{well-ordered}, that is, every set of cardinals has a least element.
-\end{proposition}
 \begin{proof}
-  Direct consequence of \fullref{thm:ordinal_properties/set_of_ordinals_has_minimum} and \fullref{def:cardinal}.
+  This is a corollary of \fullref{thm:set_domination_relation_trichotomy}.
 \end{proof}
 
-\begin{conjecture}[Continuum hypothesis]\label{hyp:continuum_hypothesis}\mcite[165]{Enderton1977Sets}
-  There exists no cardinal \( \xi \) such that \( \aleph_0 < \xi < c \).
-\end{conjecture}
+\begin{theorem}[Cantor's power set theorem]\label{thm:cantor_power_set_theorem}\mcite[thm. 6B]{Enderton1977Sets}
+  The power set of any set \( A \) \hyperref[def:equinumerosity]{strictly dominates} \( A \). That is,
+  \begin{equation*}
+    \card(A) < \card(\pow(A)).
+  \end{equation*}
+\end{theorem}
+\begin{proof}
+  The function \( x \mapsto \set{ x } \) is clearly an injective function from \( A \) to \( \pow(A) \), therefore \( \pow(A) \) dominates \( A \). The converse is not true, however.
 
-\medskip
+  Indeed, fix some function \( f: A \to \pow(A) \) and define the set
+  \begin{equation*}
+    B \coloneqq \set{ x \in A \colon x \not\in f(x) }.
+  \end{equation*}
 
-\begin{remark}\label{rem:continuum_hypothesis}\mcite[165]{Enderton1977Sets}
-  \Fullref{hyp:continuum_hypothesis} has been shown by G\"odel to not be disprovable in \hyperref[def:set]{\logic{ZFC}} and by Cohen to not be provable in \logic{ZFC}.
+  Note that \( B \subseteq A \) and thus \( B \in \pow(A) \), however \( B \) is not in the \hyperref[def:multi_valued_function/image]{image} of \( f \) and thus \( f \) is not \hyperref[def:function_invertibility/surjective]{surjective}.
+
+  Since \( f \) was arbitrary, we conclude that no function from \( A \) to \( \pow(A) \) is surjective.
+\end{proof}
+
+\begin{definition}\label{def:finite_set}
+  We say that the set \( A \) is \term{finite} if any of the following equivalent conditions hold:
+  \begin{thmenum}
+    \thmitem{def:finite_set/cardinality} The \hyperref[thm:cardinality_existence]{cardinality} of \( A \) is a natural number. That is, we have \( \card(A) < \aleph_0 \).
+
+    \thmitem{def:finite_set/dedekind} The set \( A \) is not \hyperref[def:equinumerosity]{equinumerous} all of its proper subsets. That is, if \( B \) is a proper subset of \( A \), then no function from \( A \) to \( B \) is injective.
+  \end{thmenum}
+
+  If a set is not finite, we say that it is \term{infinite}. If a set does not satisfy \fullref{def:finite_set/dedekind}, we say that it is \term{Dedekind infinite}.
+\end{definition}
+\begin{proof}
+  \ImplicationSubProof{def:finite_set/cardinality}{def:finite_set/dedekind} We will use \fullref{thm:omega_induction} on \( n < \aleph_0 \) to prove that all sets of cardinality \( n \) are not Dedekind infinite. The case \( n = 0 \) is vacuous. Suppose that all sets of cardinality \( n \) are not Dedekind infinite and suppose that \( A \) of cardinality \( \op{succ}(n) \) is Dedekind infinite.
+
+  Then there exists a proper subset \( B \) of \( A \) that is equinumerous with \( \op{succ}(n) \). Since \( \op{succ}(n) \) is the cardinality of \( A \), there exists a bijective function \( f: A \to \op{succ}(n) \). Then \( f[B] \subseteq \op{succ}(n) \). Furthermore, the inequality is strict because otherwise any member of \( A \setminus B \) would contradict \fullref{def:pigeonhole_principle}. Therefore \( f[B] \) is a proper subset of \( \op{succ}(n) \) that is equinumerous with it. But this contradicts \fullref{thm:natural_number_is_not_equinumerous_to_proper_subset}.
+
+  The obtained contradiction shows that \( A \) is also not Dedekind infinite.
+
+  \ImplicationSubProof{def:finite_set/dedekind}{def:finite_set/cardinality} Let \( A \) be a Dedekind infinite set and let \( f: A \to B \) be a bijective function into some proper subset \( B \) of \( A \). We will construct an injective function from \( \omega \) to \( A \). Fix some member \( x_0 \in A \setminus B \) and recursively define
+  \begin{equation*}
+    \begin{aligned}
+      &g: \omega \to A \\
+      &g(n) \coloneqq \begin{cases}
+        x_0,         &n = 0 \\
+        f(g(n - 1)), &n > 0
+      \end{cases}
+    \end{aligned}
+  \end{equation*}
+
+  We now use induction on \( m \) to prove that \( g(n) = g(m) \) implies \( n = m \). Since \( g(0) \not\in B \) and \( g(n) \in B \) for any \( n > 0 \), the base case holds. Suppose that the inductive hypothesis holds for \( m \) and that for some \( n \) we have \( g(n) = g(m + 1) \). It is clear that \( g(0) \neq g(m + 1) \) so necessarily \( n > 0 \). We have
+  \begin{equation*}
+    f(g(n - 1))
+    =
+    g(n)
+    =
+    g(m + 1)
+    =
+    f(g(m)),
+  \end{equation*}
+  which by the inductive hypothesis implies that \( m = n - 1 \). Thus \( g(m + 1) = g(n) \) and the inductive step is proved.
+
+  Therefore \( g \) is injective and thus \( A \) dominates \( \omega \). From \fullref{thm:cardinality_order_compatibility} it follows that \( \card(A) \geq \aleph_0 \) and thus \( \card(A) \) is not a natural number.
+\end{proof}
+
+\begin{definition}\label{def:countability}
+  We will introduce the notion of \term{countability}, which generalizes \hyperref[def:finite_set]{finiteness}.
+
+  \begin{thmenum}
+    \thmitem{def:countability/countably_infinite}\mcite[159]{Enderton1977Sets} The smallest infinite cardinal is \hyperref[thm:omega_is_a_cardinal]{\( \aleph_0 \)}. Every set with cardinality \( \aleph_0 \) is called \term{countably infinite}. These are precisely the sets which can be ordered into a \hyperref[def:sequence]{sequence}.
+
+    \thmitem{def:countability/at_most_countable} A set that is either finite or countably infinite is called \term{at most countable}.
+
+    \thmitem{def:countability/uncountable} Any set that \hyperref[def:equinumerosity]{strictly dominates} \( \aleph_0 \) is called \term{uncountable}. The smallest uncountable cardinal is denoted by \( \aleph_1 \).
+
+    \thmitem{def:countability/continuum} The cardinality of \( \pow(\omega) \) has a special name --- the \term{cardinality of the continuum}. It is sometimes denoted by \( c \). See \fullref{hyp:continuum_hypothesis} for its relation to \( \aleph_1 \).
+  \end{thmenum}
+
+  See \fullref{rem:countability_etymology} for additional terminology that is potentially more ambiguous.
+\end{definition}
+
+\begin{remark}\label{rem:countability_etymology}
+  Some authors, for example \cite[159]{Enderton1977Sets}, use the shorted term \term{countable}, however other authors use \enquote{countable} to mean \enquote{countably infinite}. The terms \term{denumerable} and \term{enumerable} are also used for \enquote{countably infinite} and \enquote{at most countable}, respectfully. This is done in \cite[def. 4.4]{OpenLogicFull}, for example. These terms are also ambiguous unfortunately.
 \end{remark}
 
-\begin{definition}\label{def:cardinal_arithmetic}
-  Let \( \xi \) and \( \eta \) be cardinal numbers. We define
-  \begin{thmenum}
-    \thmitem{def:cardinal_arithmetic/addition}(addition) \( \xi + \eta \coloneqq \card(\xi \coprod \eta) \), where \( \coprod \) denotes disjoint \hyperref[def:disjoint_union]{unions}.
-    \thmitem{def:cardinal_arithmetic/multiplication}(multiplication) \( \xi \cdot \eta \coloneqq \card(\xi \times \eta) \)
-    \thmitem{def:cardinal_arithmetic/exponentiation}(exponentiation) \( \xi^\eta \coloneqq \card(\cat{Set}(\eta, \xi)) \) (see \fullref{def:category_of_sets})
-  \end{thmenum}
-\end{definition}
+\begin{conjecture}[Continuum hypothesis]\label{hyp:continuum_hypothesis}\mcite[165]{Enderton1977Sets}
+  The \hyperref[def:countability/continuum]{cardinality of the continuum} \( c \) is the \hyperref[def:countability/uncountable]{smallest uncountable cardinal} \( \aleph_1 \).
+\end{conjecture}
+
+\begin{remark}\label{rem:continuum_hypothesis}\mcite[165]{Enderton1977Sets}
+  \Fullref{hyp:continuum_hypothesis} has been shown by G\"odel not to be disprovable in \hyperref[def:set]{\logic{ZFC}} and by Cohen not to be provable in \logic{ZFC}.
+\end{remark}
 
 \begin{proposition}\label{thm:countable_union_of_countable_sets}\mcite[thm. 6Q]{Enderton1977Sets}
   A countable union of countable sets is countable.
+\end{proposition}
+
+\begin{definition}\label{def:cardinal_arithmetic}
+  Fix two ordinals \( \kappa \) and \( \mu \). We will define arithmetic operations for them.
+
+  \begin{thmenum}
+    \thmitem{def:cardinal_arithmetic/sum} We define their \term{sum} as
+    \begin{equation*}
+      \kappa + \mu \coloneqq \card(\kappa \sqcup \mu),
+    \end{equation*}
+    where \( \kappa \sqcup \mu \) is their \hyperref[def:disjoint_union]{disjoint union}.
+
+    \thmitem{def:cardinal_arithmetic/product} We define their \term{product} as
+    \begin{equation*}
+      \kappa \cdot \mu \coloneqq \card(\kappa \times \mu).
+    \end{equation*}
+
+    \thmitem{def:cardinal_arithmetic/exponentiation} We define \term{exponentiation} as
+    \begin{equation*}
+      \kappa^\mu \coloneqq \card(\fun(\kappa, \mu)).
+    \end{equation*}
+  \end{thmenum}
+\end{definition}
+
+\begin{proposition}\label{thm:cardinal_arithmetic_properties}
+  \hyperref[def:cardinal_arithmetic]{Cardinal arithmetic} has the following basic properties:
+
+  \begin{thmenum}
+    \thmitem{thm:cardinal_arithmetic_properties/addition} Cardinal addition is associative and commutative.
+
+    \thmitem{thm:cardinal_arithmetic_properties/multiplication} Cardinal multiplication is associative and commutative.
+
+    \thmitem{thm:cardinal_arithmetic_properties/power_set} For every set \( A \)
+    \begin{equation*}
+      \card(\pow(A)) = 2^{\card(A)}.
+    \end{equation*}
+  \end{thmenum}
 \end{proposition}
