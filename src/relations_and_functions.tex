@@ -40,12 +40,12 @@ We first define \hyperref[def:binary_relation]{binary relations}, then use them 
       R^{-1} \coloneqq \set{ (y, x) \given (x, y) \in R }.
     \end{equation*}
 
-    \thmitem{def:binary_relation/restriction} The \term{restriction} of \( R \) to \( A' \subseteq A \) is the binary relation \( (R\restr_{A'}, A', A') \) is
+    \thmitem{def:binary_relation/restriction} The \term{restriction} of \( R \) to \( X \subseteq A \) is the binary relation \( (R\restr_{X}, X, X) \) is
     \begin{equation*}
-      R\restr_{A'} \coloneqq R \cap (A' \times A') = \set{ (x, y) \in R \given x \in A' \T{and} y \in A' }.
+      R\restr_{X} \coloneqq R \cap (X \times X) = \set{ (x, y) \in R \given x \in X \T{and} y \in X }.
     \end{equation*}
 
-    We say that \( R \) is an \term{extension} of \( R\restr_{A'} \).
+    We say that \( R \) is an \term{extension} of \( R\restr_{X} \).
 
     \thmitem{def:binary_relation/diagonal} A very special relation is the \term{diagonal relation} on a set \( A \):
     \begin{equation*}
@@ -159,9 +159,8 @@ We first define \hyperref[def:binary_relation]{binary relations}, then use them 
   Every other reflexive (resp. symmetric or transitive) relation contains the closure.
 \end{proof}
 
-
 \begin{remark}\label{rem:function_definition}
-  It is not straightforward to formalize the notion of correspondence between two values. We will use the terms \term{mapping}, \term{function}, \term{transformation} and \term{operator}. We will define functions as special binary relations in \fullref{def:function}. Despite this being a standard practice, this has several drawbacks:
+  It is not straightforward to formalize the notion of correspondence between two values. We will synonymously use the terms \term{mapping}, \term{function}, \term{transformation} and \term{operator}. We will define functions as special binary relations in \fullref{def:function}. Despite this being a standard practice, this has several drawbacks:
 
   \begin{itemize}
     \item There are some more mappings than the functions defined in \fullref{def:function}. For example, assigning to a set \( A \) its \hyperref[def:basic_set_operations/power_set]{power set} \( \mscrP(A) \) can be cannot be regarded as a function because its domain and range should both be the set of all sets whose existence is inconsistent with \hyperref[def:zfc]{\logic{ZFC}} by \fullref{thm:simple_foundation_theorems/member_of_itself}.
@@ -197,14 +196,24 @@ We first define \hyperref[def:binary_relation]{binary relations}, then use them 
 
     In case \( x \) is not a concrete value, then \( F(x) \) stands for the function \( F \) itself. In other words, \( F(x) \) refers to a member of \( B \) if \( x \) is a \hyperref[def:first_order_syntax/formula_bound_variables]{bound variable} and \( F(x) \) refers to the function \( F \) if \( x \) is a \hyperref[def:first_order_syntax/formula_free_variables]{free variable}.
 
-    \thmitem{def:multi_valued_function/set_value} We also define the value of \( F \) at a subset \( A' \) of \( A \) as
+    \thmitem{def:multi_valued_function/set_value} We also define the value of \( F \) at a subset \( X \) of \( A \) as
     \begin{equation*}
-      F(A') \coloneqq \cup \set{ F(x) \given x \in A' }.
+      F[X] \coloneqq \bigcup \set{ F(x) \given x \in X }.
     \end{equation*}
 
-    This is also called the \term{action} of \( F \) on the set \( A' \) or the \term{image} of \( A' \) under \( F \). We also refer to \( F(x) \) as the image of \( x \) under \( F \) because \( F(x) = F(\set{x}) \).
+    This is also called the \term{action} of \( F \) on the set \( X \) or the \term{image} of \( X \) under \( F \). We also refer to \( F(x) \) as the image of \( x \) under \( F \) because \( F(x) = F[\set{x}] \).
 
-    The notation \( f[A'] \) is sometimes used instead, for example in \cite[def. 2.31]{OpenLogicFull}. This has the benefit of avoiding the nasty ambiguity described in \fullref{rem:function_on_ordinal}. Outside of set theory, however, this notation is not commonly accepted. Our disambiguation strategy is, in case \( A' \) is both a member and a subset of \( A \), to always regard \( A' \) as a member of \( A \).
+    The notation \( f[X] \) is mostly used withing set theory, for example in \cite[def. 2.31]{OpenLogicFull} and \cite[44]{Enderton1977Sets}, however the following notation is usually used preferred of set theory:
+    \begin{equation*}
+      f(X) = \bigcup \set{ F(x) \given x \in X }
+    \end{equation*}
+
+    We use \( f[X] \) almost exclusively for \fullref{sec:set_theory} because of the following nasty ambiguity: If \( A \) is a \hyperref[def:transitive_set]{transitive set}, then \( x \in A \) implies that \( x \subseteq A \) yet \( f(x) \neq f[x] \). For example, if \( A = \set{ \varnothing, \set{ \varnothing } } \), then
+    \begin{equation*}
+      f[\set{ \varnothing }] = \set{ f(\varnothing) } \neq f(\set{ \varnothing }).
+    \end{equation*}
+
+    This may be very confusing when dealing with \hyperref[def:ordinal]{ordinals}.
   \end{thmenum}
 
   The following terminology is consistent with relations:
@@ -217,7 +226,7 @@ We first define \hyperref[def:binary_relation]{binary relations}, then use them 
 
     \thmitem{def:multi_valued_function/range} The \term{range} \( \range(F) \) is simply the set \( B \). This is consistent with \fullref{def:binary_relation/range}.
 
-    \thmitem{def:multi_valued_function/restriction} The \term{restriction} of \( F: A \multto B \) to \( A' \subseteq A \) is the multi-valued function \( F\restr_{A'}: A' \rightarrow B \). We say that \( F \) is an \term{extension} of \( F\restr_{A'} \). This is consistent with \fullref{def:binary_relation/restriction}.
+    \thmitem{def:multi_valued_function/restriction} The \term{restriction} of \( F: A \multto B \) to \( X \subseteq A \) is the multi-valued function \( F\restr_{X}: X \rightarrow B \). We say that \( F \) is an \term{extension} of \( F\restr_{X} \). This is consistent with \fullref{def:binary_relation/restriction}.
 
     \thmitem{def:multi_valued_function/composition} The \term{composition} \( G \bincirc F \) of two multi-valued functions \( F: A \multto B \) and \( G: B \multto C \) is the function
     \begin{equation*}
@@ -233,15 +242,18 @@ We first define \hyperref[def:binary_relation]{binary relations}, then use them 
 
   The following terminology is inconsistent with relations:
   \begin{thmenum}[resume=def:multi_valued_function]
-    \thmitem{def:multi_valued_function/total} The term \term{total multi-valued function} means that \( \dom(F) = A \), that is, that \( F(x) \neq \varnothing \) for all \( x \in A \). This is very different from total binary relations as defined in \fullref{def:binary_relation/total}.
+    \thmitem{def:multi_valued_function/total} The term \term{total multi-valued function} means that \( \dom(F) = A \), i.e. that \( F(x) \neq \varnothing \) for all \( x \in A \). This is very different from total binary relations as defined in \fullref{def:binary_relation/total}.
 
     \thmitem{def:multi_valued_function/inverse} The \term{inverse} \( F^{-1}: B \multto A \) of a multi-valued function \( F: A \multto B \) is the multi-valued function in which assigns to every element \( y \) of the image \( \img(F) \) the set of all \( x \in A \) such that \( y \in F(x) \). It is therefore the \hyperref[def:binary_relation/converse]{converse binary relation} of \( F \).
 
-    \thmitem{def:multi_valued_function/symmetric} A function \( f: A \times A \to B \) is called \term{symmetric} if, for all \( x, y \in A \), we have \( f(x, y) = f(y, x) \).
+    \thmitem{def:multi_valued_function/symmetric} A function \( F: A \times A \to B \) is called \term{symmetric} if, for all \( x, y \in A \), we have
+    \begin{equation*}
+      F(x, y) = F(y, x).
+    \end{equation*}
 
     Symmetric functions should not be confused with symmetric relations as defined in \fullref{def:derived_relations/symmetric}.
 
-    \thmitem{def:multi_valued_function/diagonal}\mcite[exer. 3.1.1]{Leinster2016Basic} The function corresponding to the diagonal relation \( \increment A \) as defined in \fullref{def:binary_relation/diagonal} is called the \term{identity function} on \( A \) and denoted by \( \id_A \). The \term{diagonal function} is instead defined as \( f: A \to A^2 \) is defined as \( f(x) \coloneqq (x, x) \). This is mostly used in category theory.
+    \thmitem{def:multi_valued_function/identity}\mcite[exer. 3.1.1]{Leinster2016Basic} The function corresponding to the diagonal relation \( \increment A \) as defined in \fullref{def:binary_relation/diagonal} is called the \term{identity function} on \( A \) and denoted by \( \id_A \). The \term{diagonal function} is instead defined as \( f: A \to A^2 \) is defined as \( f(x) \coloneqq (x, x) \). This is mostly used in category theory.
   \end{thmenum}
 
   We define some additional terminology:
@@ -250,14 +262,14 @@ We first define \hyperref[def:binary_relation]{binary relations}, then use them 
 
     \thmitem{def:multi_valued_function/involution} If \( F = F^{-1} \), we say that \( F \) is an \term{involution}. See \fullref{def:set_with_involution}.
 
-    \thmitem{def:multi_valued_function/large_preimage} For a fixed set \( B' \subseteq B \), its \term{large preimage} or simply \term{preimage} under \( F: A \to B \) is the image of \( B' \) under the inverse function \( F^{-1}: B \multto A \). For a single value \( y \in B \), we call \( F^{-1}(y) \) the \term{fiber} of \( y \) under \( F \).
+    \thmitem{def:multi_valued_function/large_preimage} For a fixed set \( Y \subseteq B \), its \term{large preimage} or simply \term{preimage} under \( F: A \to B \) is the image of \( Y \) under the inverse function \( F^{-1}: B \multto A \). For a single value \( y \in B \), we call \( F^{-1}(y) \) the \term{fiber} of \( y \) under \( F \).
 
     \thmitem{def:multi_valued_function/small_preimage} Analogously, we define its \term{small preimage} as
     \begin{equation*}
-      F_{-1}(B') \coloneqq \set{ x \in A \colon F(x) \subseteq B' }.
+      F_{-1}[Y] \coloneqq \set{ x \in A \colon F(x) \subseteq Y }.
     \end{equation*}
 
-    Obviously \( F_{-1}(B') \subseteq F^{-1}(B') \).
+    Obviously \( F_{-1}[Y] \subseteq F^{-1}[Y] \).
   \end{thmenum}
 \end{definition}
 
@@ -320,18 +332,18 @@ We first define \hyperref[def:binary_relation]{binary relations}, then use them 
   \begin{thmenum}
     \thmitem{def:function/set_value} We can simplify \fullref{def:multi_valued_function/set_value} drastically:
     \begin{equation*}
-      f(A)
+      f[A]
       =
-      \bigcup \set{ \set{ f(x) } \given x \in A }
+      \bigcup \set[\Big]{ \set{ f(x) } \given x \in A }
       =
       \set{ f(x) \given x \in A }.
     \end{equation*}
 
-    See the notes in \fullref{def:multi_valued_function/set_value} regarding notational ambiguity.
+    As mentioned in \fullref{def:multi_valued_function/set_value}, we usually prefer the notation \( f[A] \) outside of \fullref{sec:set_theory} where we are less prone to ambiguity.
 
     \thmitem{def:function/selection}\mcite[52]{DontchevRockafellar2014} If \( f: A \to B \) is a single-valued function, \( F: A \multto B \) is a multi-valued function and \( \gph(f) \subseteq \gph(F) \), we say that \( f \) is a \term{selection} of \( F \).
 
-    \thmitem{def:function/set_of_functions} We denote the set of all single-valued functions from \( A \) to \( B \) by \( \fun(A, B) \). We may also use either \( \cat{Set}(A, B) \) (which is consistent with \hyperref[def:category_of_sets]{morphisms in the category of sets}) or by \( B^A \) (which is consistent with \hyperref[def:cardinal_arithmetic]{cardinal arithmetic}). We abbreviate \( \fun(A, A) \) as \( \fun(A) \)
+    \thmitem{def:function/set_of_functions} We denote the set of all single-valued functions from \( A \) to \( B \) by \( \fun(A, B) \). Other accepted notation is either \( \cat{Set}(A, B) \) (which is consistent with \hyperref[def:category_of_sets]{morphisms in the category of sets}) or by \( B^A \) (which is consistent with \hyperref[def:cardinal_arithmetic]{cardinal arithmetic}). We abbreviate \( \fun(A, A) \) as \( \fun(A) \)
   \end{thmenum}
 \end{definition}
 
@@ -349,6 +361,9 @@ We first define \hyperref[def:binary_relation]{binary relations}, then use them 
     Note that preimages are multi-valued in general.
   \end{thmenum}
 \end{proposition}
+\begin{proof}
+  Trivial.
+\end{proof}
 
 \begin{definition}\label{def:partial_function}
   A \hyperref[def:multi_valued_function]{Multi-valued function} that is otherwise single-valued but not necessarily \hyperref[def:multi_valued_function/total]{total} is called a \term{partial function}. That is, \( f: A \to B \) is a partial function if \( f(x) \) has at most one element for every \( x \in A \).
@@ -440,10 +455,10 @@ We first define \hyperref[def:binary_relation]{binary relations}, then use them 
 \end{definition}
 
 \begin{example}\label{ex:def:indexed_family}
-  The following are commonly encountered \hyperref[def:indexed_family]{indexed families}:
+  The following are commonly encountered \hyperref[def:indexed_family]{indexed families} (all of which we are not yet in a state to formally define):
 
   \begin{itemize}
-    \item Every n-tuple \( (x_1, \ldots, x_n) \) is an indexed family with domain \( \mscrK = \set{ 1, \ldots, n } \). Here the ordering of \( \mscrK \) plays an important role.
+    \item Every \( n \)-tuple \( (x_1, \ldots, x_n) \) is an indexed family with domain \( \mscrK = \set{ 1, \ldots, n } \). Here the ordering of \( \mscrK \) plays an important role.
 
     \item An important corner case is when \( \mscrK \) is the empty set. Since the only possible indexing function is then the empty function, we simply say that the resulting family is empty.
 
@@ -476,7 +491,7 @@ We first define \hyperref[def:binary_relation]{binary relations}, then use them 
     \parens[\Big]{ \log \parens[\Big]{ f^{(n)}(x_k) } }_{k=1}^\infty.
   \end{equation*}
 
-  The difference may be more noticeable in simpler cases like
+  The difference is also noticeable in simpler cases like
   \begin{balign*}
     (\sin(k))_{k \in \mscrK}
      &  &
@@ -484,119 +499,137 @@ We first define \hyperref[def:binary_relation]{binary relations}, then use them 
   \end{balign*}
 \end{remark}
 
-\begin{proposition}\label{thm:diagonal_product_injectivity}
-  Let \( \seq{ f_k }_{k \in \mscrK} \) be an indexed family of functions where \( f_k: A \to B_k \) in \( k \in \mscrK \). Then if at least one of the functions is injective, the \hyperref[def:topological_product]{diagonal product}
-  \begin{equation*}
-    \begin{aligned}
-      f: A \to \bigtimes B_k \\
-      f(x) \coloneqq \seq{ f_k(x) }_{k \in \mscrK}
-    \end{aligned}
-  \end{equation*}
-  is also injective.
+\begin{remark}\label{rem:multi_valued_functions}
+  We can represent a \hyperref[def:multi_valued_function]{multi-valued functions} \( F: A \multto B \) as the \hyperref[def:indexed_family]{indexed family} \( \set{ F(a) }_{a \in A} \). This indexed family is itself a \hyperref[def:function]{single-valued function} \( G \) from \( A \) to \( \pow(B) \). This is an alternative to our approach to define \hyperref[def:multi_valued_function]{multi-valued functions} as a basic notion. This latter approach is used, for example, in \cite[def. 2.3]{Phelps1993}. The pair \( (x, y) \in A \times B \) belongs to the relation \( F \) if and only if there exists a subset \( Y \subseteq B \) such that \( y \in Y \) and the pair \( (x, Y) \) belongs to the relation \( G \).
+
+  The downside of the latter approach is that notions such as the \hyperref[def:multi_valued_function/image]{image}, \hyperref[def:multi_valued_function/range]{range} and \hyperref[def:multi_valued_function/inverse]{inverse} of the multi-valued function have a very different and much less useful meaning and notions such as \hyperref[def:multi_valued_function/endofunction]{endofunctions} cannot even be defined.
+\end{remark}
+
+\begin{proposition}\label{thm:function_image_preimage_composition}
+  For any function \( f: A \to B \) we have
+  \begin{thmenum}
+    \thmitem{thm:function_image_preimage_composition/preimage_of_image} If \( X \subseteq A \), then \( X \subseteq f^{-1}[f[X]] \) with equality holding if \( f \) is injective.
+    \thmitem{thm:function_image_preimage_composition/image_of_preimage} If \( Y \subseteq B \), then \( f[f^{-1}[Y]] \subseteq Y \) with equality holding if \( f \) is surjective.
+  \end{thmenum}
 \end{proposition}
 \begin{proof}
-  Suppose that \( f_{k_0} \) is injective. Let \( f(x_1) = f(x_2) \). Then \( \seq{ f_k(x_1) }_{k \in \mscrK} = \seq{ f_k(x_2) }_{k \in \mscrK} \) and thus \( f_{k_0}(x) = f_{k_0}(y) \). Since \( f_{k_0} \) is injective, we conclude that \( x_1 = x_2 \). Since \( x_1 \) and \( x_2 \) were arbitrary, we conclude that \( f \) is also injective.
+  \SubProofOf{thm:function_image_preimage_composition/preimage_of_image} If \( x \in X \), clearly \( x \in f^{-1}(f(x)) \). Thus
+  \begin{equation*}
+    X \subseteq f^{-1}[f[X]].
+  \end{equation*}
+
+  Now suppose that \( f \) is injective and let \( x \in f^{-1}[f[X]] \). There exists some \( y \in f[X] \) such that \( x \in f^{-1}(y) \) and some \( z \in X \) such that \( y = f(z) \). Since \( f \) is injective and \( f(x) = y = f(z) \), it follows that \( x = z \) and thus \( x \in X \). Since \( x \) was chosen arbitrarily from \( f^{-1}[f[X]] \), we conclude that
+  \begin{equation*}
+    f^{-1}[f[X]] \subseteq X.
+  \end{equation*}
+
+  \SubProofOf{thm:function_image_preimage_composition/image_of_preimage} If \( y \in f[f^{-1}[Y]] \), there exists some \( x \in f^{-1}[Y] \) such that \( f(x) = y \). Furthermore, there also exists some \( t \in Y \) such that \( x \in f^{-1}(t) \). Hence \( y = f(x) = t \) and \( y \in Y \). Therefore
+  \begin{equation*}
+    f[f^{-1}[Y]] \subseteq Y.
+  \end{equation*}
+
+  Now suppose that \( f \) is surjective and let \( y \in Y \). Then from surjectivity if follows that there exists some \( x \in X \) such that \( f(x) = y \). Hence \( x \in f^{-1}(y) \) and \( y = f(x) \in f[f^{-1}(y)] \). Since \( y \) was chosen arbitrarily from \( Y \), we conclude that
+  \begin{equation*}
+    Y \subseteq f[f^{-1}[Y]].
+  \end{equation*}
 \end{proof}
-
-\begin{remark}\label{rem:multi_valued_functions}
-  We can represent a \hyperref[def:multi_valued_function]{multi-valued functions} \( F: A \multto B \) as the \hyperref[def:indexed_family]{indexed family} \( \set{ F(a) }_{a \in A} \). This indexed family is itself a \hyperref[def:function]{single-valued function} \( G \) from \( A \) to \( \pow(B) \). This is an alternative to our approach to define \hyperref[def:multi_valued_function]{multi-valued functions} as a basic notion. This latter approach is used, for example, in \cite[def. 2.3]{Phelps1993}. The pair \( (x, y) \in A \times B \) belongs to the relation \( F \) if and only if there exists a subset \( B' \subseteq B \) such that \( y \in B' \) and the pair \( (x, B') \) belongs to the relation \( G \).
-
-  The downside of the latter approach is that notions such as the \hyperref[def:multi_valued_function/image]{image}, \hyperref[def:multi_valued_function/range]{range} and \hyperref[def:multi_valued_function/inverse] of the multi-valued function have a very different and much less useful meaning and notions such as \hyperref[def:multi_valued_function/endofunction]{endofunctions} cannot be defined.
-\end{remark}
 
 \begin{proposition}\label{thm:function_image_properties}
   \hyperref[def:multi_valued_function/set_value]{Images of sets} under \( f: A \to B \) have the following basic properties:
   \begin{thmenum}
-    \thmitem{thm:function_image_properties/monotonicity} If \( A_1 \subseteq A_2 \), then \( f(A_1) \subseteq f(A_2) \).
+    \thmitem{thm:function_image_properties/monotonicity} If \( A_1 \subseteq A_2 \), then \( f[A_1] \subseteq f[A_2] \).
 
     \thmitem{thm:function_image_properties/union} For any \hyperref[def:indexed_family]{indexed family} \( \seq{ A_k }_{k \in \mscrK} \subseteq A \) of subsets of \( A \) we have the equality
     \begin{equation}\label{eq:thm:function_image_properties/union}
-      f\parens*{ \bigcup_{k \in \mscrK} A_k } = \bigcup_{k \in \mscrK} f(A_k).
+      f\bracks*{ \bigcup_{k \in \mscrK} A_k } = \bigcup_{k \in \mscrK} f[A_k].
     \end{equation}
 
     \thmitem{thm:function_image_properties/intersection} For any indexed family \( \seq{ A_k }_{k \in \mscrK} \) of subsets of \( A \) we have the inclusion
     \begin{equation}\label{eq:thm:function_image_properties/intersection}
-      f\parens*{ \bigcap_{k \in \mscrK} A_k } \subseteq \bigcap_{k \in \mscrK} f(A_k).
+      f\bracks*{ \bigcap_{k \in \mscrK} A_k } \subseteq \bigcap_{k \in \mscrK} f[A_k].
     \end{equation}
 
-    Equality in \eqref{eq:thm:function_image_properties/intersection} holds if \( f \) is \hyperref[def:function_invertibility/injective]{injective}. If \( f \) is not injective, for example if both \( A \) and \( B \) are nonempty, \( A_1 \) and \( A_2 \) are disjoint subsets of \( A \) and \( f(A_1) = f(A_2) = B \), then
+    Equality in \eqref{eq:thm:function_image_properties/intersection} holds if \( f \) is \hyperref[def:function_invertibility/injective]{injective}. If \( f \) is not injective, for example if both \( A \) and \( B \) are nonempty, \( A_1 \) and \( A_2 \) are disjoint subsets of \( A \) and \( f[A_1] = f[A_2] = B \), then
     \begin{equation*}
-      f(A_1 \cap A_2) = f(\varnothing) = \varnothing \subsetneq f(A_1) \cap f(A_2) = B.
+      f[A_1 \cap A_2] = f[\varnothing] = \varnothing \subsetneq f[A_1] \cap f[A_2] = B.
     \end{equation*}
 
     \thmitem{thm:function_image_properties/difference} For any two subsets \( A_1 \) and \( A_2 \) of \( A \) we have the inclusion
     \begin{equation}\label{eq:thm:function_image_properties/difference}
-      f(A_1) \setminus f(A_2) \subseteq f(A_1 \setminus A_2).
+      f[A_1] \setminus f[A_2] \subseteq f[A_1 \setminus A_2].
     \end{equation}
 
-    Equality in \eqref{eq:thm:function_image_properties/difference} holds if \( f \) is injective. If \( f \) is not injective, for example if \( A_1 \subsetneq A_2 \) but \( f(A_1) = f(A_2) \), then
+    Equality in \eqref{eq:thm:function_image_properties/difference} holds if \( f \) is injective. If \( f \) is not injective, for example if \( A_1 \subsetneq A_2 \) but \( f[A_1] = f[A_2] \), then
     \begin{equation*}
-      f(A_1) \setminus f(A_2) = \varnothing \subsetneq f(A_1 \setminus A_2).
+      f[A_1] \setminus f[A_2] = \varnothing \subsetneq f[A_1 \setminus A_2].
     \end{equation*}
   \end{thmenum}
 
   Compare this result to the more well-behaved properties of \hyperref[thm:function_properties/preimage]{preimages} described in \fullref{thm:function_preimage_properties}.
 \end{proposition}
 \begin{proof}
-  \SubProofOf{thm:function_image_properties/monotonicity} If \( x \in A_1 \), then \( x \in A_2 \) and hence \( f(x) \in f(A_2) \). Therefore \( f(A_1) \subseteq f(A_2) \).
+  \SubProofOf{thm:function_image_properties/monotonicity} If \( x \in A_1 \), then \( x \in A_2 \) and hence \( f(x) \in f[A_2] \). Therefore \( f[A_1] \subseteq f[A_2] \).
 
   \SubProofOf{thm:function_image_properties/union} If \( x_0 \in A_{k_0} \) for some \( k_0 \in \mscrK \), clearly
   \begin{equation*}
-    f(x_0) \in f(A_{k_0}) \subseteq \bigcup_{k \in \mscrK} f(A_k).
+    f(x_0) \in f[A_{k_0}] \subseteq \bigcup_{k \in \mscrK} f[A_k].
   \end{equation*}
 
   Therefore
   \begin{equation*}
-    f\parens*{ \bigcup_{k \in \mscrK} A_k } \subseteq \bigcup_{k \in \mscrK} f(A_k).
+    f\bracks*{ \bigcup_{k \in \mscrK} A_k } \subseteq \bigcup_{k \in \mscrK} f[A_k].
   \end{equation*}
 
-  Conversely, if \( y_0 \in f(A_{k_0}) \) for some \( k_0 \in \mscrK \), by \fullref{thm:function_image_properties/monotonicity} obviously
+  Conversely, if \( y_0 \in f[A_{k_0}] \) for some \( k_0 \in \mscrK \), by \fullref{thm:function_image_properties/monotonicity} obviously
   \begin{equation*}
-    y_0 \in f\parens*{ \bigcup_{k \in \mscrK} A_k }.
+    y_0 \in f\bracks*{ \bigcup_{k \in \mscrK} A_k }.
   \end{equation*}
 
   Therefore
   \begin{equation*}
-    f\parens*{ \bigcup_{k \in \mscrK} A_k } \supseteq \bigcup_{k \in \mscrK} f(A_k).
+    f\bracks*{ \bigcup_{k \in \mscrK} A_k } \supseteq \bigcup_{k \in \mscrK} f[A_k].
   \end{equation*}
 
   Hence \eqref{eq:thm:function_image_properties/union} holds.
 
-  \SubProofOf{thm:function_image_properties/intersection} If \( x_0 \) belongs to \( \bigcap_{k \in \mscrK} A_k \), then \( x_0 \) belongs to \( A_k \) for all \( k \in \mscrK \). It follows that \( f(x_0) \) belongs to \( f(A_k) \) for all \( k \in \mscrK \) and hence to their intersection. Therefore the inclusion \eqref{eq:thm:function_image_properties/intersection} holds.
+  \SubProofOf{thm:function_image_properties/intersection} If \( x_0 \) belongs to \( \bigcap_{k \in \mscrK} A_k \), then \( x_0 \) belongs to \( A_k \) for all \( k \in \mscrK \). It follows that \( f(x_0) \) belongs to \( f[A_k] \) for all \( k \in \mscrK \) and hence to their intersection. Therefore the inclusion \eqref{eq:thm:function_image_properties/intersection} holds.
 
-  Now suppose that \( f \) is injective. Let \( y_0 \) be a point in the intersection \( \bigcap_{k \in \mscrK} f(A_k) \). We thus have \( y_0 \in f(A_k) \) for all \( k \in \mscrK \). Since \( f \) is injective, for each \( k \in \mscrK \) there exists a unique \( x_k \in A_k \) such that \( f(x_k) = y_0 \). Again because of injectivity of \( f \), all these elements are equal because \( f(x_k) = f(x_m) = y_0 \) for \( k, m \in \mscrK \). Hence \( y_0 \in f(\bigcap_{k \in \mscrK} A_k) \).
+  Now suppose that \( f \) is injective. Let \( y_0 \) be a point in the intersection \( \bigcap_{k \in \mscrK} f[A_k] \). We thus have \( y_0 \in f[A_k] \) for all \( k \in \mscrK \). Since \( f \) is injective, for each \( k \in \mscrK \) there exists a unique \( x_k \in A_k \) such that \( f(x_k) = y_0 \). Again because of injectivity of \( f \), all these elements are equal because \( f(x_k) = f(x_m) = y_0 \) for \( k, m \in \mscrK \). Hence
+  \begin{equation*}
+    y_0 \in f[\bigcap_{k \in \mscrK} A_k].
+  \end{equation*}
 
   Therefore the reverse inclusion in \eqref{eq:thm:function_image_properties/intersection} holds if \( f \) is injective.
 
-  \SubProofOf{thm:function_image_properties/difference} If \( f(A_1) \setminus f(A_2) \) is empty, \eqref{eq:thm:function_image_properties/difference} obviously holds. Suppose that it is nonempty and let \( y_0 \in f(A_1) \setminus f(A_2) \).
+  \SubProofOf{thm:function_image_properties/difference} If \( f[A_1] \setminus f[A_2] \) is empty, \eqref{eq:thm:function_image_properties/difference} obviously holds. Suppose that it is nonempty and let \( y_0 \in f[A_1] \setminus f[A_2] \).
 
-  Then there exists a point \( x_0 \in A_1 \) such that \( f(x_0) = y_0 \). It cannot be that \( x_0 \in A_2 \) because otherwise \( y_0 = f(x_0) \in f(A_2) \), which would contradict our choice of \( y_0 \). Hence \( x_0 \in A_1 \setminus A_2 \) and \( y_0 \in f(A_1 \setminus A_2) \).
+  Then there exists a point \( x_0 \in A_1 \) such that \( f(x_0) = y_0 \). It cannot be that \( x_0 \in A_2 \) because otherwise \( y_0 = f(x_0) \in f[A_2] \), which would contradict our choice of \( y_0 \). Hence \( x_0 \in A_1 \setminus A_2 \) and \( y_0 \in f(A_1 \setminus A_2) \).
 
   Since \( y_0 \) was chosen arbitrarily, we conclude that the inclusion \eqref{eq:thm:function_image_properties/difference} holds.
 
-  Conversely, suppose that \( f \) is injective. If \( f(A_1 \setminus A_2) \) is empty, by \eqref{eq:thm:function_image_properties/difference} the set \( f(A_1) \setminus f(A_2) \) is also empty and the converse holds.
+  Conversely, suppose that \( f \) is injective. If \( f(A_1 \setminus A_2) \) is empty, by \eqref{eq:thm:function_image_properties/difference} the set \( f[A_1] \setminus f[A_2] \) is also empty and the converse holds.
 
-  Now suppose that it is nonempty and let \( y_0 \in f(A_1 \setminus A_2) \). Then there exists a point \( x_0 \in A_1 \setminus A_2 \) such that \( f(x_0) = y_0 \). Furthermore, since \( f \) is injective, \( x_0 \) is the only preimage of \( y_0 \) and hence \( f(x_0) \in f(A_1) \setminus f(A_2) \), which proves the reverse inclusion in \eqref{eq:thm:function_image_properties/difference}.
+  Now suppose that it is nonempty and let \( y_0 \in f(A_1 \setminus A_2) \). Then there exists a point \( x_0 \in A_1 \setminus A_2 \) such that \( f(x_0) = y_0 \). Furthermore, since \( f \) is injective, \( x_0 \) is the only preimage of \( y_0 \) and hence \( f(x_0) \in f[A_1] \setminus f[A_2] \), which proves the reverse inclusion in \eqref{eq:thm:function_image_properties/difference}.
 \end{proof}
 
 \begin{proposition}\label{thm:function_preimage_properties}
   Function \hyperref[thm:function_properties/preimage]{preimages} have the following basic properties:
   \begin{thmenum}
-    \thmitem{thm:function_preimage_properties/monotonicity} If \( B_1 \subseteq B_2 \), then \( f^{-1}(B_1) \subseteq f^{-1}(B_2) \).
+    \thmitem{thm:function_preimage_properties/monotonicity} If \( B_1 \subseteq B_2 \), then \( f^{-1}[B_1] \subseteq f^{-1}[B_2] \).
 
     \thmitem{thm:function_preimage_properties/union} For any \hyperref[def:indexed_family]{indexed family} \( \seq{ B_k }_{k \in \mscrK} \subseteq B \) of subsets of \( B \) we have the equality
     \begin{equation}\label{eq:thm:function_preimage_properties/union}
-      f^{-1}\parens*{ \bigcup_{k \in \mscrK} B_k } = \bigcup_{k \in \mscrK} f^{-1}(B_k).
+      f^{-1}\bracks*{ \bigcup_{k \in \mscrK} B_k } = \bigcup_{k \in \mscrK} f^{-1}[B_k].
     \end{equation}
 
     \thmitem{thm:function_preimage_properties/intersection} For any indexed family \( \seq{ B_k }_{k \in \mscrK} \) of subsets of \( B \) we have the equality
     \begin{equation}\label{eq:thm:function_preimage_properties/intersection}
-      f^{-1}\parens*{ \bigcap_{k \in \mscrK} B_k } = \bigcap_{k \in \mscrK} f^{-1}(B_k).
+      f^{-1}\bracks*{ \bigcap_{k \in \mscrK} B_k } = \bigcap_{k \in \mscrK} f^{-1}[B_k].
     \end{equation}
 
     \thmitem{thm:function_preimage_properties/difference} For any two subsets \( B_1 \) and \( B_2 \) of \( B \) we have the equality
     \begin{equation}\label{eq:thm:function_preimage_properties/difference}
-      f^{-1}(B_1) \setminus f^{-1}(B_2) = f^{-1}(B_1 \setminus B_2).
+      f^{-1}[B_1] \setminus f^{-1}[B_2] = f^{-1}[B_1 \setminus B_2].
     \end{equation}
   \end{thmenum}
 
@@ -607,42 +640,42 @@ We first define \hyperref[def:binary_relation]{binary relations}, then use them 
 
   \SubProofOf{thm:function_image_properties/union} Analogous to \fullref{thm:function_image_properties/union}.
 
-  \SubProofOf{thm:function_image_properties/intersection} If \( y_0 \) belongs to \( \bigcap_{k \in \mscrK} B_k \), then \( y_0 \) belongs to \( B_k \) for all \( k \in \mscrK \). It follows that \( f(y_0) \subseteq f^{-1}(B_k) \) for all \( k \in \mscrK \) and hence it is also a subset of their intersection. Therefore
+  \SubProofOf{thm:function_image_properties/intersection} If \( y_0 \) belongs to \( \bigcap_{k \in \mscrK} B_k \), then \( y_0 \) belongs to \( B_k \) for all \( k \in \mscrK \). It follows that \( f(y_0) \subseteq f^{-1}[B_k] \) for all \( k \in \mscrK \) and hence it is also a subset of their intersection. Therefore
   \begin{equation*}
-    f^{-1} \parens*{ \bigcap_{k \in \mscrK} B_k } \subseteq \bigcap_{k \in \mscrK} f^{-1}(B_k).
+    f^{-1} \bracks*{ \bigcap_{k \in \mscrK} B_k } \subseteq \bigcap_{k \in \mscrK} f^{-1}[B_k].
   \end{equation*}
 
-  Conversely, if \( x_0 \in \bigcap_{k \in \mscrK} f^{-1}(B_k) \), it belongs to \( f^{-1}(B_k) \) for all \( k \in \mscrK \). Clearly then \( f(x_0) \in B_k \) for all \( k \in \mscrK \) and thus \( f(x_0) \in \bigcap_{k \in \mscrK} B_k \). Hence by \fullref{thm:function_preimage_properties/monotonicity} we have
+  Conversely, if \( x_0 \in \bigcap_{k \in \mscrK} f^{-1}[B_k] \), it belongs to \( f^{-1}[B_k] \) for all \( k \in \mscrK \). Clearly then \( f(x_0) \in B_k \) for all \( k \in \mscrK \) and thus \( f(x_0) \in \bigcap_{k \in \mscrK} B_k \). Hence by \fullref{thm:function_preimage_properties/monotonicity} we have
   \begin{equation*}
     f^{-1}(f(x_0))
     \subseteq
-    f^{-1}\parens*{ \bigcap_{k \in \mscrK} B_k }.
+    f^{-1}\bracks*{ \bigcap_{k \in \mscrK} B_k }.
   \end{equation*}
 
   Since \( x_0 \in f^{-1}(f(x_0)) \),
   \begin{equation*}
-    x_0 \in f^{-1}\parens*{ \bigcap_{k \in \mscrK} B_k }.
+    x_0 \in f^{-1}\bracks*{ \bigcap_{k \in \mscrK} B_k }.
   \end{equation*}
 
-  Since \( x_0 \) was chosen arbitrarily from \( \bigcap_{k \in \mscrK} f^{-1}(B_k) \), we can conclude that
+  Since \( x_0 \) was chosen arbitrarily from \( \bigcap_{k \in \mscrK} f^{-1}[B_k] \), we can conclude that
   \begin{equation*}
-    \bigcap_{k \in \mscrK} f^{-1}(B_k) \in f^{-1}\parens*{ \bigcap_{k \in \mscrK} B_k }.
+    \bigcap_{k \in \mscrK} f^{-1}[B_k] \in f^{-1}\bracks*{ \bigcap_{k \in \mscrK} B_k }.
   \end{equation*}
 
   Hence \eqref{eq:thm:function_preimage_properties/intersection} holds.
 
-  \SubProofOf{thm:function_preimage_properties/difference} If \( y_0 \in B_1 \setminus B_2 \), there exists a point \( x_1 \in B_1 \) such that \( f(x_1) = y_0 \). Aiming at a contradiction, suppose that there exists a point \( x_2 \in f^{-1}(B_2) \) such that \( f(x_2) = y_0 \). Then \( y_0 = f(x_1) = f(x_2) \) implies that \( f^{-1}(y_0) \subseteq f^{-1}(B_1) \cap f^{-1}(B_2) \). \Fullref{thm:function_preimage_properties/intersection} then in turn implies that \( f^{-1}(y_0) \subseteq f^{-1}(B_1 \cap B_2) \) and hence by \fullref{thm:function_image_properties/monotonicity}
+  \SubProofOf{thm:function_preimage_properties/difference} If \( y_0 \in B_1 \setminus B_2 \), there exists a point \( x_1 \in B_1 \) such that \( f(x_1) = y_0 \). Aiming at a contradiction, suppose that there exists a point \( x_2 \in f^{-1}[B_2] \) such that \( f(x_2) = y_0 \). Then \( y_0 = f(x_1) = f(x_2) \) implies that \( f^{-1}(y_0) \subseteq f^{-1}[B_1] \cap f^{-1}[B_2] \). \Fullref{thm:function_preimage_properties/intersection} then in turn implies that \( f^{-1}(y_0) \subseteq f^{-1}[B_1 \cap B_2] \) and hence by \fullref{thm:function_image_properties/monotonicity}
   \begin{equation*}
-    y_0 = f(f^{-1}(y_0)) \in f(f^{-1}(B_1 \cap B_2)) = B_1 \cap B_2,
+    y_0 = f(f^{-1}(y_0)) \in f[f^{-1}[B_1 \cap B_2]] = B_1 \cap B_2,
   \end{equation*}
   which contradicts our choice of \( y_0 \). Since the choice of \( y_0 \in B_1 \setminus B_2 \), \( x_1 \in f^{-1}(y_0) \cap B_1 \) and \( x_2 \in f^{-1}(y_0) \cap B_2 \) was arbitrary, the obtained contradiction shows that
   \begin{equation*}
-    f^{-1}(B_1 \setminus B_2) \subseteq f^{-1}(B_1) \setminus f^{-1}(B_2).
+    f^{-1}(B_1 \setminus B_2) \subseteq f^{-1}[B_1] \setminus f^{-1}[B_2].
   \end{equation*}
 
   Conversely, we have
   \begin{equation*}
-    f(f^{-1}(B_1) \setminus f^{-1}(B_2))
+    f(f^{-1}[B_1] \setminus f^{-1}[B_2])
     \reloset {\eqref{eq:thm:function_image_properties/difference}} \subseteq
     f(f^{-1}(B_1 \setminus B_2))
     \reloset {\ref{thm:function_image_preimage_composition/image_of_preimage}} \subseteq
@@ -651,9 +684,9 @@ We first define \hyperref[def:binary_relation]{binary relations}, then use them 
 
   Hence
   \begin{equation*}
-    f^{-1}(B_1) \setminus f^{-1}(B_2)
+    f^{-1}[B_1] \setminus f^{-1}[B_2]
     \reloset {\ref{thm:function_image_preimage_composition/preimage_of_image}} \subseteq
-    f^{-1}\parens[\Big]{ f\parens[\Big]{ f^{-1}(B_1) \setminus f^{-1}(B_2) } }
+    f^{-1}\parens[\Big]{ f\parens[\Big]{ f^{-1}[B_1] \setminus f^{-1}[B_2] } }
     \reloset {\eqref{thm:function_preimage_properties/monotonicity}} \subseteq
     f^{-1}(B_1 \setminus B_2).
   \end{equation*}
@@ -845,7 +878,7 @@ We first define \hyperref[def:binary_relation]{binary relations}, then use them 
 \end{definition}
 
 \begin{definition}\label{def:currying}
-  Given the \hyperref[def:multi_valued_function/arity]{two-argument} function \( f: A \times B \to C \), we can define another function \( g: A \to \fun(B, C) \) as
+  Given the \hyperref[def:function_arguments]{two-argument} function \( f: A \times B \to C \), we can define another function \( g: A \to \fun(B, C) \) as
   \begin{equation*}
     g(x) \coloneqq (y \mapsto f(x, y)).
   \end{equation*}
