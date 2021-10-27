@@ -217,6 +217,38 @@
   Therefore \( g \) is injective and thus \( A \) dominates \( \omega \). From \fullref{thm:cardinality_order_compatibility} it follows that \( \card(A) \geq \aleph_0 \) and thus \( \card(A) \) is not a natural number.
 \end{proof}
 
+\begin{proposition}\label{thm:cardinal_is_finite_iff_successor_ordinal}
+  A nonzero cardinal is \hyperref[def:finite_set]{finite} if and only if it is a \hyperref[def:successor_ordinal]{successor ordinal}.
+\end{proposition}
+\begin{proof}
+  Finite cardinals are natural numbers by definition and all nonzero natural numbers are successor ordinals.
+
+  Conversely, suppose that \( \kappa = \op{succ}(\alpha) \) is a successor ordinal that is a cardinal. That is, \( \kappa \) is not equinumerous with any smaller ordinal and in particular with \( \alpha \). From \fullref{thm:cardinality_order_compatibility} it follows that \( \card(\alpha) < \kappa \).
+
+  Let \( A \subseteq \kappa \) be a proper subset of \( \kappa \). We want to show that \( \card(A) < \kappa \).
+
+  If \( \alpha \not\in A \), define \( B \coloneqq A \). Otherwise pick some member \( x_0 \in \kappa \setminus A \) and define
+  \begin{equation*}
+    B \coloneqq (A \cup \set{ x_0 }) \setminus \set{ \alpha }.
+  \end{equation*}
+
+  In both cases we have \( \card(A) = \card(B) \) but unlike \( A \), \( B \) is always a subset of \( \alpha \) since \( \kappa = \alpha \cup \set{ \alpha } \).
+
+  Therefore
+  \begin{equation*}
+    \card(A) = \card(B) \leq \card(\alpha) < \kappa.
+  \end{equation*}
+
+  Hence \( \kappa \) dominates every proper subset, which by \fullref{def:finite_set/dedekind} means that \( \kappa \) is a finite cardinal.
+\end{proof}
+
+\begin{corollary}\label{thm:cardinal_is_infinite_iff_limit_ordinal}
+  A cardinal is \hyperref[def:finite_set]{infinite} if and only if it is a \hyperref[def:successor_ordinal]{limit ordinal}.
+\end{corollary}
+\begin{proof}
+  This is the contraposition to \fullref{thm:cardinal_is_finite_iff_successor_ordinal} excluding the zero cardinal.
+\end{proof}
+
 \begin{definition}\label{def:countability}
   We will introduce the notion of \term{countability}, which generalizes \hyperref[def:finite_set]{finiteness}.
 
@@ -245,43 +277,32 @@
   \Fullref{hyp:continuum_hypothesis} has been shown by G\"odel not to be disprovable in \hyperref[def:set]{\logic{ZFC}} and by Cohen not to be provable in \logic{ZFC}.
 \end{remark}
 
+\begin{proposition}\label{thm:omega_equinumerous_with_omega_squared}
+  The smallest inductive set \( \omega \) is equinumerous with \( \omega \times \omega \).
+\end{proposition}
+
 \begin{proposition}\label{thm:countable_union_of_countable_sets}\mcite[thm. 6Q]{Enderton1977Sets}
-  A countable union of countable sets is countable.
+  A \hyperref[def:countability]{countably infinite} union of countably infinite sets is countably infinite.
 \end{proposition}
+\begin{proof}
+  Let \( \seq{ A_k }_{k \in \omega} \) be a countable family of countable sets. Denote their union by \( A \). Define the multi-valued mapping
+  \begin{equation*}
+    \begin{aligned}
+      &F: \omega \to \fun(\omega, A) \\
+      &F(k) \coloneqq \set{ f: \omega \to A_k \given f \T{is injective} }.
+    \end{aligned}
+  \end{equation*}
 
-\begin{definition}\label{def:cardinal_arithmetic}
-  Fix two ordinals \( \kappa \) and \( \mu \). We will define arithmetic operations for them.
+  This is a total multi-valued function because we have assumed that \( A_k \) is countable for every \( k \in \mscrK \). \Fullref{thm:existence_of_multi_valued_function_selection} gives us a single-valued function \( f: \omega \to \fun(\omega, A) \).
 
-  \begin{thmenum}
-    \thmitem{def:cardinal_arithmetic/sum} We define their \term{sum} as
-    \begin{equation*}
-      \kappa + \mu \coloneqq \card(\kappa \sqcup \mu),
-    \end{equation*}
-    where \( \kappa \sqcup \mu \) is their \hyperref[def:disjoint_union]{disjoint union}.
+  We can now \hyperref[rem:currying]{uncurry} \( f \) to obtain a function \( g \) from \( \omega \times \omega \) to \( A \). The latter function is injective. Indeed, suppose that \( g(a, b) = g(c, d) \). Then
+  \begin{equation*}
+    f(a)(b) = g(a, b) = g(c, d) = f(c)(d).
+  \end{equation*}
 
-    \thmitem{def:cardinal_arithmetic/product} We define their \term{product} as
-    \begin{equation*}
-      \kappa \cdot \mu \coloneqq \card(\kappa \times \mu).
-    \end{equation*}
+  If \( a = c \) we obtain \( b = d \) since the function \( f(a): \omega \to A \) is injective.
 
-    \thmitem{def:cardinal_arithmetic/exponentiation} We define \term{exponentiation} as
-    \begin{equation*}
-      \kappa^\mu \coloneqq \card(\fun(\kappa, \mu)).
-    \end{equation*}
-  \end{thmenum}
-\end{definition}
+  Denote by \( h \) the bijective function from \( \omega \) to \( \omega \times \omega \) obtained in \fullref{thm:omega_equinumerous_with_omega_squared}. The function \( h \bincirc g: \omega \to A \) is injective by \fullref{thm:function_composition_invertibility}.
 
-\begin{proposition}\label{thm:cardinal_arithmetic_properties}
-  \hyperref[def:cardinal_arithmetic]{Cardinal arithmetic} has the following basic properties:
-
-  \begin{thmenum}
-    \thmitem{thm:cardinal_arithmetic_properties/addition} Cardinal addition is associative and commutative.
-
-    \thmitem{thm:cardinal_arithmetic_properties/multiplication} Cardinal multiplication is associative and commutative.
-
-    \thmitem{thm:cardinal_arithmetic_properties/power_set} For every set \( A \)
-    \begin{equation*}
-      \card(\pow(A)) = 2^{\card(A)}.
-    \end{equation*}
-  \end{thmenum}
-\end{proposition}
+  Therefore the union \( A \) is countably infinite.
+\end{proof}
