@@ -249,6 +249,14 @@
   This is the contraposition to \fullref{thm:cardinal_is_finite_iff_successor_ordinal} excluding the zero cardinal.
 \end{proof}
 
+\begin{proposition}\label{thm:power_set_finiteness}
+  A set is finite if and only if its \hyperref[def:basic_set_operations/power_set]{power set} is finite.
+\end{proposition}
+
+\begin{proposition}\label{thm:finite_unions_and_products_are_finite}
+  All finite \hyperref[def:basic_set_operations/union]{unions} and \hyperref[def:cartesian_product]{Cartesian products} of finite sets are finite.
+\end{proposition}
+
 \begin{definition}\label{def:countability}
   We will introduce the notion of \term{countability}, which generalizes \hyperref[def:finite_set]{finiteness}.
 
@@ -280,29 +288,189 @@
 \begin{proposition}\label{thm:omega_equinumerous_with_omega_squared}
   The smallest inductive set \( \omega \) is equinumerous with \( \omega \times \omega \).
 \end{proposition}
-
-\begin{proposition}\label{thm:countable_union_of_countable_sets}\mcite[thm. 6Q]{Enderton1977Sets}
-  A \hyperref[def:countability]{countably infinite} union of countably infinite sets is countably infinite.
-\end{proposition}
 \begin{proof}
-  Let \( \seq{ A_k }_{k \in \omega} \) be a countable family of countable sets. Denote their union by \( A \). Define the multi-valued mapping
+  We can give a short proof using \fullref{thm:cantor_schroder_bernstein_theorem} using the injective functions \( (n, m) \mapsto 2^n 3^m \) in one direction and \( n \mapsto (n, 0) \) in the other direction. Proving the injectivity of \( f \), however, requires \fullref{thm:fundamental_theorem_of_arithmetic} and we prove the latter using machinery from \fullref{sec:commutative_algebra}. We will instead give a direct proof with an explicit construction. We will construct a bijective function from \( \omega \times \omega \) to \( \omega \) --- the function visualized in \cref{fig:thm:omega_equinumerous_with_omega_squared}.
+
+  We begin by defining the diagonal in \cref{fig:thm:omega_equinumerous_with_omega_squared}. For each natural number \( k \), define the set of pairs that sum to \( k \):
+  \begin{equation*}
+    A_k \coloneqq \set{ (n, m) \in \omega \times \omega \given n + m = k }.
+  \end{equation*}
+
+  We can use induction to show that \( \card(A_k) = k + 1 \). That is, \( A_k \) can \enquote{fit} \( k + 1 \) numbers. We can now define the function
   \begin{equation*}
     \begin{aligned}
-      &F: \omega \to \fun(\omega, A) \\
-      &F(k) \coloneqq \set{ f: \omega \to A_k \given f \T{is injective} }.
+      &d: \omega \to \omega \\
+      &d(n) \coloneqq \sum_{k=0}^n \card(A_n)
+    \end{aligned}
+  \end{equation*}
+  that gives us how many numbers we have already \enquote{fit} in the first \( n \) diagonals.
+
+  It is clear that that the point \( (n, m) \) lies in \( A_{n + m} \). We want to know how many numbers we have \enquote{fit} in the diagonal prior to that, for which we can use \( d(n + m - 1) \). This leads us to the definition
+  \begin{equation*}
+    \begin{aligned}
+      &f: \omega \times \omega \to \omega \\
+      &f(n, m) \coloneqq \begin{cases}
+        0,                &n + m = 0 \\
+        d(n + m - 1) + n, &n + m > 0. \\
+      \end{cases}
     \end{aligned}
   \end{equation*}
 
-  This is a total multi-valued function because we have assumed that \( A_k \) is countable for every \( k \in \mscrK \). \Fullref{thm:existence_of_multi_valued_function_selection} gives us a single-valued function \( f: \omega \to \fun(\omega, A) \).
-
-  We can now \hyperref[rem:currying]{uncurry} \( f \) to obtain a function \( g \) from \( \omega \times \omega \) to \( A \). The latter function is injective. Indeed, suppose that \( g(a, b) = g(c, d) \). Then
+  We will first show that \( f \) is injective using induction on \( n + m \) (that is, on the diagonals). Suppose that \( f(n_1, m_1) = f(n_2, m_2) \) implies \( n_1 = n_2 \) and \( m_1 = m_2 \) for all pairs with a sum less than \( l \). Let \( (n_1, m_1) \) and \( (n_2, m_2) \) be two points in \( A_l \) such that \( f(n_1, m_1) = f(n_2, m_2) \). The cases \( l <= 1 \) are trivial so suppose that \( l > 1 \). Then
   \begin{equation*}
-    f(a)(b) = g(a, b) = g(c, d) = f(c)(d).
+    f(n_1, m_1)
+    =
+    d(n_1 + m_1 - 1) + n_1
+    =
+    l - 1 + d(n_1 + m_1 - 2) + n_1
+    =
+    l + f(n_1 - 1, m_1).
   \end{equation*}
 
-  If \( a = c \) we obtain \( b = d \) since the function \( f(a): \omega \to A \) is injective.
+  We can now apply the inductive hypothesis and obtain that \( n_1 = n_2 \) and \( m_1 = m_2 \). This proves injectivity.
 
-  Denote by \( h \) the bijective function from \( \omega \) to \( \omega \times \omega \) obtained in \fullref{thm:omega_equinumerous_with_omega_squared}. The function \( h \bincirc g: \omega \to A \) is injective by \fullref{thm:function_composition_invertibility}.
+  To see that \( f \) is surjective, we will use induction on \( k \in \omega \). The base case is again trivial. Now suppose that \( n + m > 0 \) and
+  \begin{equation*}
+    f(n, m) = d(n + m - 1) + n = k.
+  \end{equation*}
 
-  Therefore the union \( A \) is countably infinite.
+  We have two cases:
+  \begin{itemize}
+    \item If \( m = 0 \), then
+    \begin{equation*}
+      f(0, n + m + 1) = d(n + m) + 0 = d(n + m - 1) + n + m = f(n, m) + 1.
+    \end{equation*}
+
+    \item If \( m > 0 \), then
+    \begin{equation*}
+      f(n + 1, m - 1) = d(n + m - 1) + n + 1 = f(n, m) + 1.
+    \end{equation*}
+  \end{itemize}
+
+  In both cases we have shown that \( k + 1 = f(n, m) + 1 \) is in the image of \( f \), which concludes the proof of surjectivity (and hence bijectivity).
+
+  Lastly, although it is not necessary for the proof, we can expand the definition of \( d \) to see that \( f \) is actually a \hyperref[def:polynomial]{polynomial}:
+  \begin{equation*}
+    f(n, m)
+    =
+    \sum_{k=0}^{n + m - 1} (k + 1) + n
+    =
+    \sum_{k=1}^{n + m} k + n
+    \reloset {\eqref{eq:def:arithmetic_progression/finite_sum}} =
+    \frac {(n + m) (n + m + 1)} 2 + n.
+  \end{equation*}
+
+  As an added benefit, this polynomial also handles the case \( n = m = 0 \).
+
+  \begin{figure}
+    \hfill
+    \includegraphics{figures/thm__omega_equinumerous_with_omega_squared__diagonals.pdf}
+    \hfill
+    \includegraphics{figures/thm__omega_equinumerous_with_omega_squared__function.pdf}
+    \hfill\hfill
+    \caption{Visualization on an integer coordinate grid of the diagonal sets \( A_k \) and of the bijective function defined in \fullref{thm:omega_equinumerous_with_omega_squared}.}\label{fig:thm:omega_equinumerous_with_omega_squared}
+  \end{figure}
+\end{proof}
+
+\begin{corollary}\label{thm:countable_product_of_countable_sets}
+  A finite \hyperref[def:cartesian_product]{Cartesian product} of at most countable sets is at most countable.
+\end{corollary}
+\begin{proof}
+  Let \( A_1, \ldots, A_n \) be a finite family of at most countable sets.
+
+  Suppose that the inductive hypothesis holds for \( n \). Countability ensures that there exist injective functions \( g: A_1 \times \cdots \times A_n \times \omega \) and \( h: A_{n+1} \to \omega \). Denote by \( f \) the bijective function from \( \omega \) to \( \omega \times \omega \) obtained in \fullref{thm:omega_equinumerous_with_omega_squared} and define
+  \begin{equation*}
+    \begin{aligned}
+      &F: A_1 \times \cdots \times A_n \times A_{n+1} \to \omega \\
+      &F(a_1, \ldots, a_n, a_{n+1}) \coloneqq f(g(a_1, \ldots, a_n), h(a_{n+1}))
+    \end{aligned}
+  \end{equation*}
+
+  By \fullref{thm:function_superposition_invertibility}, the function \( F \) is injective as a \hyperref[def:multi_valued_function/superposition]{superposition} of injective functions.
+
+  Therefore \( \omega \) dominates the product \( A_1 \times \cdots \times A_n \), i.e. the product is countable.
+\end{proof}
+
+\begin{proposition}\label{thm:countably_infinite_union_of_countably_infinite_sets}\mcite[thm. 6Q]{Enderton1977Sets}
+  A \hyperref[def:countability/countably_infinite]{countably infinite} union of countably infinite sets is countably infinite.
+\end{proposition}
+\begin{proof}
+  Let \( \seq{ A_k }_{k \in \omega} \) be a countably infinite family of countably infinite sets. Define instead the disjoint family
+  \begin{equation*}
+    B_k \coloneqq \set{ (k, a) \given a \in A_k }.
+  \end{equation*}
+
+  Denote the union of the former family by \( A \) and of the latter family by \( B \). Since each \( A_k \) is countably infinite, so is \( A \). Furthermore, there exists an obvious injective function from \( B \) to \( A \), thus
+  \begin{equation}\label{thm:countable_union_of_countable_sets/union_card_inequality}
+    \aleph_0 \leq \card(A) \leq \card(B).
+  \end{equation}
+
+  Define the multi-valued mapping
+  \begin{equation*}
+    \begin{aligned}
+      &\mscrG: \omega \to \fun(\omega, B) \\
+      &\mscrG(k) \coloneqq \set{ g: \omega \to B_k \given g \T{is bijective} }.
+    \end{aligned}
+  \end{equation*}
+
+  This is a total multi-valued function because we have assumed that \( B_k \) is countable for every \( k \in \mscrK \). \Fullref{thm:existence_of_multi_valued_function_selection} gives us a single-valued function \( G: \omega \to \fun(\omega, B) \). Since the family \( \seq{ B_k }_{k \in \omega} \) is disjoint, \( G \) is injective. We can thus \hyperref[rem:currying]{uncurry} \( G \) to obtain a function \( g \) from \( \omega \times \omega \) to \( B \).
+
+  To prove that \( g \) is injective, suppose that \( g(n_1, m_1) = g(n_2, m_2) \). Then
+  \begin{equation*}
+    G(n_1)(m_1) = g(n_1, m_1) = g(n_2, m_2) = G(n_2)(m_2).
+  \end{equation*}
+
+  Note that \( n_1 \neq n_2 \) would lead to a contradiction because  \( \seq{ B_k }_{k \in \omega} \) is a disjoint family. So \( n_1 = n_2 \) and we obtain \( m_1 = m_2 \) since the function \( G(n_1): \omega \to B_k \) is injective. Therefore \( g \) itself is also injective.
+
+  It is also surjective because for every \( a \in B \) there exists some \( k \in \omega \) such that
+  \begin{equation*}
+    a \in B_k = \img(G(k)).
+  \end{equation*}
+
+  Denote by \( f \) the bijective function from \( \omega \) to \( \omega \times \omega \) obtained in \fullref{thm:omega_equinumerous_with_omega_squared}. Then the function \( f \bincirc g: \omega \to B \) is bijective by \fullref{thm:function_composition_invertibility}. Therefore the union \( B \) is countably infinite. From \eqref{thm:countable_union_of_countable_sets/union_card_inequality} it follows that \( A \) is also countably infinite.
+\end{proof}
+
+\begin{definition}\label{def:disjoint_union}
+  The \term{disjoint union} of the \hyperref[def:indexed_family]{indexed family} \( \seq{ A_k }_{k \in \mscrK} \) of nonempty sets is
+  \begin{equation*}
+    \bigsqcup_{k \in \mscrK} A_k \coloneqq \set[\Big]{ (k, x) \given k \in \mscrK \T{and} x \in A_k }.
+  \end{equation*}
+\end{definition}
+
+\begin{corollary}\label{thm:at_most_countable_union_of_at_most_countable_sets}
+  An \hyperref[def:countability/at_most_countable]{at most countable} union of at most countable sets is at most countable.
+\end{corollary}
+\begin{proof}
+  Let \( \seq{ A_k }_{k \in \mscrK} \) be an at most countable family of at most countable sets. Denote their union by \( A \). For every \( A_k \) let \( g_k: A_k \to \omega \) be an injective function and define the \hyperref[def:disjoint_union]{disjoint union}
+  \begin{equation*}
+    B_k \coloneqq A_k \sqcup \set{ n \in \omega \given n \not\in \img(g_k) }
+  \end{equation*}
+  and the bijective function
+  \begin{equation*}
+    \begin{aligned}
+      &h_k: B_k \to \omega \\
+      &h_k(x) \coloneqq \begin{cases}
+        (0, g_k(x)), &x \in A_k \\
+        (1, x),      &\T{otherwise.}
+      \end{cases}
+    \end{aligned}
+  \end{equation*}
+
+  For every \( k \in \omega \setminus \mscrK \) instead define
+  \begin{equation*}
+    B_k \coloneqq \set{ (k, n) \given n \in \omega }
+  \end{equation*}
+  and let \( h_k: B_k \to \omega \) be the obvious bijective function.
+
+  Then
+  \begin{equation*}
+    A
+    =
+    \bigcup_{k \in \mscrK} A_k
+    \subseteq
+    \bigcup_{k \in \mscrK} B_k
+    \subseteq
+    \bigcup_{k \in \omega} B_k
+  \end{equation*}
+  and the latter is countably infinite by \fullref{thm:countably_infinite_union_of_countably_infinite_sets}. Therefore \( A \) is at most countable.
 \end{proof}
