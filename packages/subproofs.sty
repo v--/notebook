@@ -1,8 +1,77 @@
-\NewDocumentCommand \SubProof              {sm} {\item \IfBooleanTF {#1} {\textit{\textbf{#2}.}} {\textbf{#2.}}\ }
-\NewDocumentCommand \SubProofOf            {om} {\SubProof{Proof of \IfValueTF{#1}{\hyperref[#1]{#2}}{\ref{#2}}}}
-\NewDocumentCommand \EquivalenceSubProof {omom} {\SubProof{Proof that \IfValueTF{#1}{\hyperref[#1]{#2}}{\ref{#2}} and \IfValueTF{#3}{\hyperref[#3]{#4}}{\ref{#4}} are equivalent}}
-\NewDocumentCommand \ImplicationSubProof {omom} {\SubProof{Proof that \IfValueTF{#1}{\hyperref[#1]{#2}}{\ref{#2}} implies \IfValueTF{#3}{\hyperref[#3]{#4}}{\ref{#4}}}}
-\NewDocumentCommand \SufficiencySubProof     {} {\SubProof{Proof of sufficiency}}
-\NewDocumentCommand \SufficiencySubProofOf {om} {\SubProof{Proof of sufficiency of \ref{#1}}}
-\NewDocumentCommand \NecessitySubProof       {} {\SubProof{Proof of necessity}}
-\NewDocumentCommand \NecessitySubProofOf   {om} {\SubProof{Proof of necessity of \ref{#1}}}
+\ExplSyntaxOn
+
+\NewDocumentCommand \SubProof {sm}
+  {
+    \item
+    \IfBooleanTF {#1}
+      { \textit{\textbf{#2}.} }
+      { \textbf{#2.} }
+    \space
+  }
+
+\NewDocumentCommand \SubProofOf {som}
+  {
+    \tl_set:Nn \l_tmpa_tl
+    {
+      Proof~of~
+      \IfValueTF {#2} { \hyperref[#2]{#3} }{ \ref{#3} }
+    }
+
+    \IfBooleanTF {#1}
+      { \SubProof*{ \tl_use:N \l_tmpa_tl } }
+      { \SubProof{ \tl_use:N \l_tmpa_tl } }
+  }
+
+\NewDocumentCommand \EquivalenceSubProof {somom}
+  {
+    \tl_set:Nn \l_tmpa_tl
+    {
+      Proof~of~equivalence~of~
+      \IfValueTF {#2} { \hyperref[#2]{#3} }{ \ref{#3} }
+      ~and~
+      \IfValueTF {#4} { \hyperref[#4]{#5} }{ \ref{#5} }
+    }
+
+    \IfBooleanTF {#1}
+      { \SubProof*{ \tl_use:N \l_tmpa_tl } }
+      { \SubProof{ \tl_use:N \l_tmpa_tl } }
+  }
+
+\NewDocumentCommand \ImplicationSubProof {somom}
+  {
+    \tl_set:Nn \l_tmpa_tl
+    {
+      Proof~that~
+      \IfValueTF {#2} { \hyperref[#2]{#3} }{ \ref{#3} }
+      ~implies~
+      \IfValueTF {#4} { \hyperref[#4]{#5} }{ \ref{#5} }
+    }
+
+    \IfBooleanTF {#1}
+      { \SubProof*{ \tl_use:N \l_tmpa_tl } }
+      { \SubProof{ \tl_use:N \l_tmpa_tl } }
+  }
+
+\NewDocumentCommand \SufficiencySubProof {s}
+  {
+    \tl_set:Nn \l_tmpa_tl { Proof~of~sufficiency }
+
+    \IfBooleanTF {#1}
+      { \SubProof*{ \tl_use:N \l_tmpa_tl } }
+      { \SubProof{ \tl_use:N \l_tmpa_tl } }
+  }
+
+\NewDocumentCommand \NecessitySubProof {s}
+  {
+    \tl_set:Nn \l_tmpa_tl { Proof~of~necessity }
+
+    \IfBooleanTF {#1}
+      { \SubProof*{ \tl_use:N \l_tmpa_tl } }
+      { \SubProof{ \tl_use:N \l_tmpa_tl } }
+  }
+
+% TODO: Remove these
+\NewDocumentCommand \SufficiencySubProofOf {om} {\SubProof{Proof~of~sufficiency~of~\ref{#1}}}
+\NewDocumentCommand \NecessitySubProofOf   {om} {\SubProof{Proof~of~necessity~of~\ref{#1}}}
+
+\ExplSyntaxOff
