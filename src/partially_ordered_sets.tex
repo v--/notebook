@@ -29,9 +29,29 @@
 
     In order to define the theory of partially ordered sets, we extend the language of the \hyperref[def:preordered_set/theory]{theory of preordered sets} with two binary infix predicate symbol --- \( < \) and \( > \). We then add to the axioms of the theory \eqref{def:binary_relation/antisymmetric} for \( \leq \) and either of the compatibility conditions \eqref{def:partially_ordered_set/compatibility_nonstrict} or \eqref{def:partially_ordered_set/compatibility_strict} (it is unnecessary to add both).
 
-    We can also add \eqref{def:binary_relation/irreflexive} and \eqref{def:binary_relation/transitive} for \( < \) but that would also be redundant.
+    We can also add \eqref{def:binary_relation/irreflexive} and \eqref{def:binary_relation/transitive} for \( < \) but that would be redundant.
 
-    \thmitem{def:partially_ordered_set/homomorphism} We have discussed in detail in \fullref{def:preordered_set/theory} the distinction between strict and nonstrict order homomorphisms.
+    \thmitem{def:partially_ordered_set/homomorphism} We have two types of \hyperref[def:first_order_homomorphism]{first-order homomorphisms} between partially ordered sets. The homomorphisms are often called \term{order homomorphisms} or \term{monotone maps}.
+
+    A \term{nonstrict monotone map} from \( (\mscrP, \leq_\mscrP) \) to \( (\mscrQ, \leq_\mscrQ) \) is a homomorphism for the theory containing only \( \leq \) and \( \geq \):
+    \begin{equation}\label{eq:def:partially_ordered_set/homomorphism/nonstrict}
+      x \leq_\mscrP y \T{implies} f(x) \leq_\mscrQ f(y).
+    \end{equation}
+
+    Nonstrict homomorphisms are used extensively in the theory of \hyperref[subsec:partially_ordered_sets]{partially ordered sets}, in particular in \hyperref[subsec:lattices]{lattice theory}.
+
+    A \term{strict monotone map} is instead a homomorphism for the full theory:
+    \begin{equation}\label{eq:def:partially_ordered_set/homomorphism/strict}
+      x <_\mscrP y \T{implies} f(x) <_\mscrQ f(y).
+    \end{equation}
+
+    Strict homomorphisms are used in the theory of \hyperref[subsec:partially_ordered_sets]{totally ordered sets}, in particular for \hyperref[subsec:well_ordered_sets]{well-ordered sets} and \hyperref[subsec:ordinals]{ordinals}.
+
+    In particular, if \( \mscrP \) is the preordered set of \hyperref[rem:peano_arithmetic_zero/nonnegative]{positive integers}, then we speak of \term{monotone sequences}
+    \begin{equation}\label{eq:def:partially_ordered_set/homomorphism/sequence}
+      \seq{ x_k }_{k=1}^\infty,
+    \end{equation}
+    where \( x_{k-1} \leq_Q x_k \) for all \( k \in 1, 2, 3, \ldots \).
 
     To elaborate, order homomorphisms can either be strict or nonstrict depending on whether we include \( < \) and \( > \) as predicate symbols in the language of the theory. We will use the convention that even when the language does include \( < \) and \( > \), by \enquote{order homomorphism} we will understand nonstrict monotone.
 
@@ -145,6 +165,19 @@
 \end{proposition}
 \begin{proof}
   The statement follows from \fullref{thm:preorder_category_correspondence} by noting that the factorization in \fullref{thm:preorder_to_partial_order} makes the corresponding category skeletal.
+\end{proof}
+
+\begin{proposition}\label{thm:order_embedding_is_strict}
+  For any two \hyperref[def:preordered_set]{preordered sets} \( (\mscrP, \leq_\mscrP) \) and \( (\mscrQ, \leq_\mscrQ) \), every \hyperref[def:partially_ordered_set/homomorphism]{order embedding} of \( \mscrP \) into \( \mscrQ \) is a \hyperref[def:partially_ordered_set/homomorphism]{strict order embedding}.
+
+  Compare this to \fullref{thm:total_order_embedding_iff_strict}
+\end{proposition}
+\begin{proof}
+  Let \( f: \mscrP \to \mscrQ \) be an order embedding.
+
+  Let \( x <_\mscrP y \) for some members \( x \) and \( y \) of \( \mscrP \). Since \( f \) is an order homomorphism, we have \( f(x) \leq_\mscrQ f(y) \). Since it is also injective, \( f(x) = f(y) \) implies \( x = y \), which contradicts our previous assumption.
+
+  Therefore \( f(x) <_\mscrQ f(y) \) and \( f \) is a strict order homomorphism.
 \end{proof}
 
 \begin{definition}\label{def:partially_ordered_set_extremal_points}
@@ -273,7 +306,7 @@
 
     The notation on the left assumes that the sentinel symbols \( \infty \) and \( -\infty \) are adjoined to \( \mscrP \) as in the case of the \hyperref[def:extended_real_numbers]{extended real numbers}. This convention is widespread for unbounded ordered rings representing numbers --- for example \hyperref[def:integers]{\( \BbbZ \)}, \hyperref[def:rational_numbers]{\( \BbbQ \)} and \hyperref[def:real_numbers]{\( \BbbR \)}. The term \enquote{ray} is used in this context due to the connection with \hyperref[def:geometric_ray]{geometric rays}.
 
-    The notation on the right is more general and is widespread for abstract partial orders, most notably \hyperref[def:well_ordered_set]{well-ordered sets}. These are usually referred to as \enquote{initial/final segments}.
+    The notation on the right is more general and is widespread for abstract partial orders, most notably \hyperref[def:well_ordered_set]{well-ordered sets}. In the latter context, they are usually referred to as \enquote{initial/final segments}.
 
     The \term{closed rays} and \term{closed initial/final segments} are defined analogously as
     \begin{equation*}
@@ -308,6 +341,52 @@
     \end{equation*}
   \end{thmenum}
 \end{definition}
+
+\begin{definition}\label{def:lexicographic_order}
+  Let \( (\mscrP, \leq_\mscrP) \) and \( (\mscrQ, \leq_\mscrQ) \) be partially ordered sets.
+
+  The \term{lexicographic order} on \( \mscrP \times \mscrQ \), also know as the \term{dictionary order}, is defined as
+  \begin{equation}\label{eq:def:lexicographic_order}
+    (a, b) \prec (c, d) \thickspace \T{if and only if} \thickspace \parens[\Big]{ a <_\mscrP c \T{or} \parens[\Big]{ a = c \T{and} b <_\mscrQ d } }.
+  \end{equation}
+
+  The \term{reverse lexicographic order} is
+  \begin{equation}\label{eq:def:lexicographic_order/reverse}
+    (a, b) \prec (c, d) \thickspace \T{if and only if} \thickspace \parens[\Big]{ b <_\mscrQ d \T{or} \parens[\Big]{ b = d \T{and} a <_\mscrP c } }.
+  \end{equation}
+
+  The lexicographic order on \( \mscrP \times \mscrQ \) inherits some important properties from \( (\mscrP, \mscrP) \) and \( (\mscrQ, \leq_\mscrQ) \) as can be seen in \fullref{thm:lexicographic_order_is_partial_order,thm:total_lexicographic_order_is_total_order,thm:well_ordered_lexicographic_order_is_well_ordered}.
+
+  We can use natural number recursion to extend this to arbitrary \( n \)-tuples --- see \fullref{ex:def:lexicographic_order} for an example.
+\end{definition}
+
+\begin{example}\label{ex:def:lexicographic_order}
+  A key example for \hyperref[def:lexicographic_order]{lexicographic ordering} is real-world dictionary like a thesaurus. It is obvious that \enquote{homomorphism} should come after \enquote{axiom} and the lexicographic order on a Cartesian power of Latin alphabets suggests that \enquote{homeomorphism} should also come after \enquote{homeomorphic}.
+
+  A slightly more relevant example for mathematics is the ordering \( AB < AC < BC \) of the names of the sides of a \hyperref[def:triangle]{triangle}. The reverse lexicographic ordering would be \( AB < BC < AC \).
+
+  \Fullref{thm:ordinal_addition_disjoin_union} and \fullref{thm:ordinal_multiplication_disjoin_union} contain more interesting applications of lexicographic orders.
+\end{example}
+
+\begin{proposition}\label{thm:lexicographic_order_is_partial_order}
+  The \hyperref[eq:def:lexicographic_order]{lexicographic} and \hyperref[eq:def:lexicographic_order/reverse]{reverse lexicographic} orders are \hyperref[def:partially_ordered_set/strict]{strict partial order} relations.
+
+  Compare this result to \fullref{thm:total_lexicographic_order_is_total_order} and \fullref{thm:well_ordered_lexicographic_order_is_well_ordered}.
+\end{proposition}
+\begin{proof}
+  \SubProofOf[def:binary_relation/irreflexive]{irreflexivity} Trivial.
+
+  \SubProofOf[def:binary_relation/transitive]{transitivity} Let \( \prec \) be a lexicographic order on \( \mscrP \times \mscrQ \).
+
+  If \( (a, b) \prec (c, d) \) and \( (c, d) \prec (e, f) \), then:
+  \begin{itemize}
+    \item If \( a < c \), then \( a < c \leq e \) and thus \( (a, b) \prec (e, f) \).
+
+    \item If \( a = c \) and \( b < d \), then \( a \leq e \) and \( b < d \leq f \) and thus \( (a, b) \prec (e, f) \).
+  \end{itemize}
+
+   The proof for the reverse lexicographic order is analogous.
+\end{proof}
 
 \begin{theorem}[Zorn's lemma]\label{thm:zorns_lemma}\mcite[63]{Gratzer1978}
   If every \hyperref[def:partially_ordered_set_chain_and_antichain]{chain} in a \hyperref[def:partially_ordered_set]{partially ordered set} has an \hyperref[def:partially_ordered_set_extremal_points/upper_and_lower_bounds]{upper bound}, then the entire set has a \hyperref[def:partially_ordered_set_extremal_points/maximal_and_minimal_element]{maximal element}.
