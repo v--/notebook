@@ -15,29 +15,238 @@ Our purpose is to extend natural number arithmetic to ordinals and cardinals. It
       \alpha + \beta \coloneqq \begin{cases}
         \alpha,                                            &\beta = 0 \\
         \op{succ}(\alpha + \gamma),                        &\beta = \op{succ}(\gamma)\\
-        \sup\set{ \alpha + \gamma \given \gamma < \beta }, &\beta \T{is a limit ordinal}\\
+        \bigcup\set{ \alpha + \gamma \given \gamma < \beta }, &\beta \T{is a limit ordinal}\\
       \end{cases}
     \end{equation}
+
+    Due to \fullref{thm:union_of_set_of_ordinals}, the in limit case \( \alpha + \beta \) is the smallest ordinal strictly larger than \( \alpha + \gamma \) for any \( \gamma < \beta \).
 
     \thmitem{def:ordinal_arithmetic/product}\mcite[lemma 66.13]{OpenLogicFull} Analogously, the \term{product} of \( \alpha \) and \( \beta \) extends \eqref{eq:def:peano_arithmetic/PA6} and \eqref{eq:def:peano_arithmetic/PA7}:
     \begin{equation}\label{eq:def:ordinal_arithmetic/product}
       \alpha \cdot \beta \coloneqq \begin{cases}
         0,                                                     &\beta = 0 \\
         \alpha \cdot \gamma + \alpha,                          &\beta = \op{succ}(\gamma)\\
-        \sup\set{ \alpha \cdot \gamma \given \gamma < \beta }, &\beta \T{is a limit ordinal}\\
+        \bigcup\set{ \alpha \cdot \gamma \given \gamma < \beta }, &\beta \T{is a limit ordinal}\\
       \end{cases}
     \end{equation}
 
     \thmitem{def:ordinal_arithmetic/exponentiation}\mcite[lemma 66.16]{OpenLogicFull} Exponentiation extends \fullref{def:unital_magma/exponentiation}:
     \begin{equation}\label{eq:def:ordinal_arithmetic/exponentiation}
       \alpha^\beta \coloneqq \begin{cases}
-        1,                                               &\beta = 0 \\
-        \alpha^\gamma \cdot \alpha,                      &\beta = \op{succ}(\gamma)\\
-        \sup\set{ \alpha^\gamma \given \gamma < \beta }, &\beta \T{is a limit ordinal}\\
+        1,                                                  &\beta = 0 \\
+        \alpha^\gamma \cdot \alpha,                         &\beta = \op{succ}(\gamma)\\
+        \bigcup\set{ \alpha^\gamma \given \gamma < \beta }, &\beta \T{is a limit ordinal}\\
       \end{cases}
     \end{equation}
   \end{thmenum}
 \end{definition}
+
+\begin{remark}\label{rem:ordinal_successor_via_addition}
+  For any ordinal \( \alpha \) we have
+  \begin{equation*}
+    \op{succ}(\alpha)
+    \reloset {\ref{eq:def:ordinal_arithmetic/sum}} =
+    \op{succ}(\alpha + 0)
+    \reloset {\ref{eq:def:ordinal_arithmetic/sum}} =
+    \alpha + \op{succ}(0)
+    =
+    \alpha + 1.
+  \end{equation*}
+
+  We will occasionally use the later notation.
+
+  Note that for infinite ordinals \( \op{succ}(\alpha) = 1 + \alpha \) as discussed in \fullref{ex:ordinal_addition_commutativity}.
+
+  This is an extension of \fullref{rem:natural_number_successor_via_addition}.
+\end{remark}
+
+\begin{proposition}\label{thm:ordinal_addition_is_monotone}
+  \hyperref[def:ordinal_arithmetic/sum]{Ordinal addition} has the following monotonicity properties:
+  \begin{thmenum}
+    \thmitem{thm:ordinal_addition_is_monotone/left} Left addition is \hyperref[eq:def:partially_ordered_set/homomorphism/strict]{strictly monotone}:
+    \begin{equation}\label{eq:thm:ordinal_addition_is_monotone/left}
+      \alpha < \beta \T{implies} \gamma + \alpha < \gamma + \beta.
+    \end{equation}
+
+    \thmitem{thm:ordinal_addition_is_monotone/right} Right addition is \hyperref[eq:def:partially_ordered_set/homomorphism/nonstrict]{nonstrictly monotone}:
+    \begin{equation}\label{eq:thm:ordinal_addition_is_monotone/right}
+      \alpha < \beta \T{implies} \alpha + \gamma \leq \beta + \gamma.
+    \end{equation}
+
+    See \fullref{ex:ordinal_addition_commutativity} for examples where the strict inequality fails.
+  \end{thmenum}
+\end{proposition}
+\begin{proof}
+  \SubProofOf{thm:ordinal_addition_is_monotone/left} We proceed by induction on \( \beta \).
+  \begin{itemize}
+    \item The condition \( \alpha < \beta \) is vacuously false for the base case \( \beta = 0 \), hence by \eqref{eq:def:intuitionistic_propositional_derivation_system/rules/efq} the statement vacuously holds.
+
+    \item Fix some nonzero \( \beta \) and some \( \alpha < \beta \). If \( \gamma + \alpha < \gamma + \beta \), then
+    \begin{equation*}
+      \gamma + \alpha < \gamma + \beta < \op{succ}(\gamma + \beta) = \gamma + \op{succ}(\beta).
+    \end{equation*}
+
+    Since \( \beta < \op{succ}(\beta) \), we have used the inductive hypothesis to conclude that
+    \begin{equation*}
+      \alpha < \op{succ}(\beta) \T{implies} \gamma + \alpha < \gamma + \op{succ}(\beta).
+    \end{equation*}
+
+    \item Let \( \lambda \) be a limit ordinal and suppose that \eqref{eq:thm:ordinal_addition_is_monotone/left} holds for all \( \beta < \lambda \). Let \( \alpha < \lambda \). Then \( \op{succ}(\alpha) < \lambda \) since \( \lambda \) is a limit ordinal and thus
+    \begin{equation*}
+      \gamma + \alpha
+      <
+      \gamma + \op{succ}(\alpha)
+      \leq
+      \bigcup\set{ \gamma + \beta \given \beta < \lambda }
+      =
+      \gamma + \lambda.
+    \end{equation*}
+  \end{itemize}
+
+  \SubProofOf{thm:ordinal_addition_is_monotone/right} We proceed by induction on \( \gamma \).
+  \begin{itemize}
+    \item The base case \( \gamma = 0 \) is vacuous.
+    \item If \( \alpha + \gamma < \beta + \gamma \), then
+    \begin{equation*}
+      \alpha + \op{succ}(\gamma)
+      \reloset {\eqref{eq:def:ordinal_arithmetic/sum}} =
+      \op{succ}(\alpha + \gamma)
+      \reloset {\ref{thm:ordinal_successor_strictly_monotone_on_ordinals}} <
+      \op{succ}(\beta + \gamma)
+      \reloset {\eqref{eq:def:ordinal_arithmetic/sum}} =
+      \beta + \op{succ}(\gamma).
+    \end{equation*}
+
+    \item Let \( \lambda \) be a limit ordinal and suppose that the lemma holds for every \( \gamma < \lambda \). That is, for every \( \gamma < \lambda \) we have
+    \begin{equation*}
+      \alpha + \gamma < \beta + \gamma.
+    \end{equation*}
+
+    Thus
+    \begin{equation*}
+      \alpha + \lambda
+      =
+      \sup\set{ \alpha + \gamma \given \gamma < \lambda }
+      \leq
+      \sup\set{ \beta + \gamma \given \gamma < \lambda }
+      =
+      \beta + \lambda.
+    \end{equation*}
+
+    We cannot make a stronger conclusion here --- see \fullref{ex:ordinal_addition_commutativity} for a counterexample.
+  \end{itemize}
+\end{proof}
+
+\begin{proposition}\label{thm:ordinal_ordering_via_addition}
+  For any two ordinals \( \alpha \) and \( \beta \) it holds that \( \alpha \leq \beta \) if and only if there exists an ordinal \( \gamma \) such that \( \alpha + \gamma = \beta \). This ordinal is unique and satisfies \( \gamma \leq \beta \).
+
+  The strict inequality \( \alpha < \beta \) holds if and only if \( \gamma \neq 0 \).
+\end{proposition}
+\begin{proof}
+  \SufficiencySubProof By definition \( \beta + 0 = \beta \), hence we are not interested in the case \( \alpha = \beta \). That is, we will only consider the case \( \alpha < \beta \).
+
+  We will first show uniqueness of \( \gamma \). Suppose that \( \alpha + \gamma_1 = \beta = \alpha + \gamma_2 \). From \eqref{thm:ordinal_addition_is_monotone/left} it follows that if either \( \gamma_1 < \gamma_2 \) or \( \gamma_1 > \gamma_2 \), we would have a strict inequality. Hence it only remains for \( \gamma_1 = \gamma_2 \) to hold.
+
+  We now use induction on \( \beta \) on prove the existence of \( \gamma \).
+  \begin{itemize}
+    \item The condition \( \alpha < \beta \) is vacuously false for the base case \( \beta = 0 \), hence by \eqref{eq:def:intuitionistic_propositional_derivation_system/rules/efq} the statement vacuously holds.
+
+    \item Suppose that \( \alpha < \beta \) and that there exists a unique \( \gamma \leq \beta \) such that \( \alpha + \gamma = \beta \). Then
+    \begin{equation*}
+      \alpha + \op{succ}(\gamma)
+      \reloset {\eqref{eq:def:ordinal_arithmetic/sum}} =
+      \op{succ}(\alpha + \gamma)
+      =
+      \op{succ}(\beta).
+    \end{equation*}
+
+    Since \( \alpha < \beta \) and \( \beta < \op{succ}(\beta) \), we have used the inductive hypothesis to conclude that
+    \begin{equation*}
+      \alpha < \op{succ}(\beta) \T{implies} \qexists {\underbrace{\delta}_{\mathclap{\op{succ}(\gamma)}}} \alpha + \delta = \op{succ}(\beta).
+    \end{equation*}
+
+    Furthermore, since \( \gamma \leq \beta \), then also \( \op{succ}(\gamma) \leq \op{succ}(\beta) \).
+
+    \item Suppose that \( \lambda \) is a limit ordinal, \( \alpha < \lambda \) and for each \( \beta < \lambda \) there exists some \( \gamma_\beta \leq \beta \) such that \( \alpha + \gamma_\beta = \beta \). Define
+    \begin{equation*}
+      \gamma \coloneqq \bigcup\set{ \gamma_\beta \given \beta < \lambda }.
+    \end{equation*}
+
+    By \fullref{thm:union_of_set_of_ordinals} we have that \( \gamma \) is an ordinal and that \( \gamma_\beta \leq \gamma \) for every \( \beta < \lambda \). Thus
+    \begin{equation*}
+      \lambda
+      \reloset {\ref{thm:ordinal_is_set_of_smaller_ordinals}} =
+      \sup\set{ \beta \given \beta < \lambda }
+      \reloset {\T{ind.}} =
+      \sup\set{ \alpha + \gamma_\beta \given \beta < \lambda }
+      \reloset {\eqref{eq:thm:ordinal_addition_is_monotone/right}} \leq
+      \sup\set{ \alpha + \delta \given \delta < \gamma }
+      \reloset {\eqref{eq:def:ordinal_arithmetic/sum}} =
+      \alpha + \gamma.
+    \end{equation*}
+
+    Aiming at a contradiction, suppose that the strict inequality holds. That is, suppose that \( \lambda < \alpha + \gamma \). Then there exists some \( \delta_0 < \gamma \) such that \( \alpha + \delta_0 > \alpha + \gamma_\beta \) for any \( \beta < \lambda \). It follows from \fullref{thm:monotone_map_converse} that \( \gamma_\beta < \delta_0 \) for any \( \beta < \lambda \) and thus
+    \begin{equation*}
+      \underbrace{\sup\set{ \gamma_\beta \given \beta < \lambda }}_{\gamma} \leq \delta_0 < \gamma.
+    \end{equation*}
+
+    The obtained contradiction shows that such an ordinal \( \delta_0 \) cannot exist and hence \( \lambda = \alpha + \gamma \).
+
+    Furthermore, since \( \gamma_\beta \leq \beta \) for each \( \beta < \lambda \), we have
+    \begin{equation*}
+      \gamma
+      =
+      \sup\set{ \gamma_\beta \given \beta < \lambda }
+      \leq
+      \sup\set{ \beta \given \beta < \lambda }
+      =
+      \lambda.
+    \end{equation*}
+  \end{itemize}
+
+  \NecessitySubProof Suppose that \( \alpha \), \( \beta \) and \( \gamma \leq \beta \) are ordinals and that \( \alpha + \gamma = \beta \). Obviously \( \gamma = 0 \) implies that \( \alpha = \beta \). If \( \gamma > 0 \), then from \eqref{eq:thm:ordinal_addition_is_monotone/left} it follows that
+  \begin{equation*}
+     \beta = \alpha + \gamma > \alpha + 0 = 0.
+  \end{equation*}
+\end{proof}
+
+\begin{proposition}\label{thm:ordinal_addition_algebraic_properties}
+  Ordinal number addition is \hyperref[def:magma/associative]{associative} and \hyperref[def:magma/cancellative]{left cancellative}.
+
+  As in \fullref{thm:ordinals_are_well_ordered}, we adapt the corresponding axioms due to \fullref{thm:burali_forti_paradox}. The more concrete result is:
+  \begin{thmenum}
+    \thmitem{thm:ordinal_addition_algebraic_properties/associative} For any three ordinals \( \alpha \), \( \beta \) and \( \gamma \) we have
+    \begin{equation*}
+      (\alpha + \beta) + \gamma = \alpha + (\beta + \gamma).
+    \end{equation*}
+
+    \thmitem{thm:ordinal_addition_algebraic_properties/left_cancellative} For any three ordinals \( \alpha \), \( \beta \) and \( \gamma \) such that \( \gamma + \alpha = \gamma + \beta \), we have \( \alpha = \beta \).
+  \end{thmenum}
+
+   See \fullref{ex:ordinal_addition} for counterexamples to \hyperref[def:magma/commutativity]{commutativity}.
+\end{proposition}
+\begin{proof}
+  \SubProofOf{thm:ordinal_addition_algebraic_properties/associative} We will use induction on \( \gamma \). \Fullref{thm:natural_number_addition_properties} already proves the base and successor cases.
+
+  Fix some ordinals \( \alpha \) and \( \beta \). Let \( \lambda \) be a limit ordinal and suppose that
+  \begin{equation*}
+    (\alpha + \beta) + \gamma = \alpha + (\beta + \gamma)
+  \end{equation*}
+  holds for all \( \gamma < \lambda \). Then
+  \begin{align*}
+    (\alpha + \beta) + \lambda
+    &\reloset {\eqref{eq:def:ordinal_arithmetic/sum}} =
+    \sup\set{ (\alpha + \beta) + \gamma \given \gamma < \lambda }
+    \reloset {\T{ind.}} = \\ &=
+    \sup\set{ \alpha + (\beta + \gamma) \given \gamma < \lambda }
+    \reloset {\eqref{eq:def:partially_ordered_set/homomorphism/strict}} = \\ &=
+    \sup\set{ \alpha + \delta \given \delta < \beta + \lambda }
+    =
+    \alpha + (\beta + \lambda).
+  \end{align*}
+
+  \SubProofOf{thm:ordinal_addition_algebraic_properties/left_cancellative} Follows from \fullref{thm:monotone_map_converse} and \eqref{eq:thm:ordinal_addition_is_monotone/left}.
+\end{proof}
 
 \begin{proposition}\label{thm:ordinal_addition_disjoin_union}
   For any two ordinals \( \alpha \) and \( \beta \), their \hyperref[def:ordinal_arithmetic/addition]{sum} satisfies
@@ -46,99 +255,83 @@ Our purpose is to extend natural number arithmetic to ordinals and cardinals. It
   \end{equation*}
   where \( \prec \) is the \hyperref[def:lexicographic_order]{lexicographic order} on the \hyperref[def:disjoin_union]{disjoint union} \( \alpha \sqcup \beta \).
 \end{proposition}
-% \begin{proof}
-%   We will construct an explicit \hyperref[def:partially_ordered_set/homomorphism]{order isomorphism} between \( (\alpha + \beta, \in) \) and \( (\alpha \sqcup \beta, \prec) \).
+\begin{proof}
+  We will explicitly build an \hyperref[def:partially_ordered_set/homomorphism]{order isomorphism} between \( (\alpha + \beta, \in) \) and \( (\alpha \sqcup \beta, \prec) \). Define
+  \begin{equation*}
+    \begin{aligned}
+      &f: (\alpha + \beta) \to (\alpha \sqcup \beta) \\
+      &f(\gamma) \coloneqq \begin{cases}
+        (\gamma, 0), &\gamma < \alpha \\
+        (\delta, 1), &\qexists \delta (\gamma = \alpha + \delta).
+      \end{cases}
+    \end{aligned}
+  \end{equation*}
 
-%   Define
-%   \begin{equation*}
-%     \begin{aligned}
-%       &f: (\alpha \sqcup \beta) \to (\alpha + \beta) \\
-%       &f(i, \gamma) \coloneqq \begin{cases}
-%         \gamma,          &i = 0 \\
-%         \alpha + \gamma, &i = 1.
-%       \end{cases}
-%     \end{aligned}
-%   \end{equation*}
+  From \fullref{thm:ordinal_ordering_via_addition} it follows that the existence of \( \delta \) such that \( \gamma = \alpha + \delta \) is equivalent to the condition \( \gamma \geq \alpha \). Since \( \gamma < \alpha + \beta \), we have \( \alpha + \delta < \alpha + \beta \) and from \fullref{thm:ordinal_addition_algebraic_properties/left_cancellative} we have \( \delta < \beta \). Therefore \( f \) is a total function. Furthermore, it is single-valued because of the uniqueness of \( \delta \).
 
-%   By \fullref{thm:totally_ordered_strict_isomorphisms} it is sufficient to show that \( f \) is a bijective strict monotone map.
+  We will first show that \( f \) is a strict order homomorphism. Let \( \gamma_1 < \gamma_2 \). We have the following possibilities:
+  \begin{itemize}
+    \item If \( \gamma_2 < \alpha \), then \( f(\gamma_1) = (\gamma_1, 0) < (\gamma_2, 0) = f(\gamma_2) \).
+    \item If \( \gamma_1 \geq \alpha \), then \( f(\gamma_1) = (\gamma_1, 1) < (\gamma_2, 1) = f(\gamma_2) \).
+    \item If \( \gamma_1 < \alpha \leq \gamma_2 \), then \( f(\gamma_1) = (\gamma_1, 0) < (\gamma_2, 1) = f(\gamma_2) \).
+  \end{itemize}
 
-%   \SubProofOf[eq:def:partially_ordered_set/homomorphism/strict]{strict monotonicity} Let \( (i, \gamma) < (j, \delta) \) be some members of \( \alpha \sqcup \beta \).
-%   \begin{itemize}
-%     \item If \( i = j = 0 \), then \( f(i, \gamma) = \gamma < \delta = f(j, \delta) \).
-%     \item If \( i = j = 1 \), then \( f(i, \gamma) = \alpha + \gamma < \alpha + \delta = f(j, \delta) \).
-%     \item If \( i = 0 \) and \( j = 1 \), then \( f(0, \gamma) = \gamma < \alpha + \delta = f(1, \delta) \).
-%   \end{itemize}
+  Therefore \( f \) is a strict order homomorphism and from \fullref{thm:total_order_embedding_iff_strict} it follows that \( f \) is an order embedding. Due to \fullref{thm:totally_ordered_strict_isomorphisms}, in order to show that \( f \) is an order isomorphism it only remains to show that it is a surjective function.
 
-%   \SubProofOf[def:function_invertibility/injective]{injectivity} If \( f(\gamma) = f(\delta) \), then
-%   \begin{equation*}
+  Let \( (\gamma, k) \in \alpha \sqcup \beta \).
+  \begin{itemize}
+    \item If \( k = 0 \), then \( f(\gamma) = (\gamma, k) \) since \( \gamma \in \alpha \).
+    \item If \( k = 1 \), then \( \gamma \in \beta \) and by \eqref{eq:thm:ordinal_addition_is_monotone/left} we have \( \alpha + \gamma < \alpha + \beta \) so \( \alpha + \gamma \) is within the domain of \( f \). Furthermore, as shown in \fullref{thm:ordinal_ordering_via_addition}, if \( \alpha + \delta = \alpha + \gamma \), then \( \delta = \gamma \), Thus \( f(\alpha + \gamma) = (\gamma, 1) \) .
+  \end{itemize}
 
-%   \end{equation*}
+  Therefore \( f \) is an order isomorphism between \( (\alpha + \beta, \in) \) and \( (\alpha \sqcup \beta, \prec) \) and hence
+  \begin{equation*}
+    \alpha + \beta = \ord(\alpha \sqcup \beta, \prec).
+  \end{equation*}
+\end{proof}
 
-%   \SubProofOf[def:function_invertibility/bijective]{bijectivity}
-% \end{proof}
+\begin{example}\label{ex:ordinal_addition_commutativity}
+  The distinction between \eqref{eq:thm:monotone_map_converse/strict} and \eqref{eq:thm:monotone_map_converse/nonstrict} is important. A simple example is provided by the smallest limit ordinal \( \omega \). The example are inconvenient to demonstrate with the recursive definition, however \fullref{thm:ordinal_addition_disjoin_union} eases us.
 
-\begin{proposition}\label{thm:ordinal_addition_properties}
-  Ordinal number addition is \hyperref[def:magma/associative]{associative}, \hyperref[def:magma/cancellative]{left cancellative} and \hyperref[def:preordered_magma]{compatible} with ordinal ordering.
+  In particular \fullref{thm:ordinal_addition_disjoin_union} highlights that adding one ordinal to another, in fact, \enquote{appending} a copy of the second to a copy the first.
 
-  As in \fullref{thm:ordinals_are_well_ordered}, we adapt the corresponding axioms due to \fullref{thm:burali_forti_paradox}. The more concrete result is:
-  \begin{thmenum}
-    \thmitem{thm:ordinal_addition_properties/associative} For any three ordinals \( \alpha \), \( \beta \) and \( \gamma \) we have
-    \begin{equation*}
-      (\alpha + \beta) + \gamma = \alpha + (\beta + \gamma).
-    \end{equation*}
+  It is clear that
+  \begin{equation*}
+    0 + \omega = \ord(0 \sqcap \omega) = \ord(\omega) = \omega.
+  \end{equation*}
 
-    \thmitem{thm:ordinal_addition_properties/cancellative} For any three ordinals \( \alpha \), \( \beta \) and \( \gamma \) such that \( \gamma + \alpha = \gamma + \beta \), we have \( \alpha = \beta \).
+  That is, we \enquote{append} \( \omega \) to an empty well-ordered set only to obtain \( \omega \) again.
 
-    \thmitem{thm:ordinal_addition_properties/ordering} For any three ordinals \( \alpha \), \( \beta \) and \( \gamma \) such that \( \alpha < \beta \) we have \( \alpha + \gamma < \beta + \gamma \).
-  \end{thmenum}
+  This operation seems different from \( 1 + \omega \), which \enquote{appends} \( \omega \) to a well-ordered singleton set. But this operation only \enquote{shifts} \( \omega \) --- the function
+  \begin{equation*}
+    \begin{aligned}
+      &f: \ord(1 \sqcap \omega) \to \ord(0 \sqcap \omega) \\
+      &f(k, \gamma) \coloneqq \begin{cases}
+        (0, 0),          &k = 0 \\
+        (0, \gamma + 1), &k \neq 0.
+      \end{cases}
+    \end{aligned}
+  \end{equation*}
+  is an order isomorphism and thus
+  \begin{equation*}
+    1 + \omega = \ord(1 \sqcap \omega) = \ord(\omega) = \omega.
+  \end{equation*}
 
-   See \fullref{ex:ordinal_addition} for counterexamples to \hyperref[def:magma/cancellative]{right cancellation} and \hyperref[def:magma/commutativity]{commutativity}.
-\end{proposition}
-% \begin{proof}
-%   \SubProofOf[thm:ordinal_addition_properties/cancellative]{cancellation} We will use induction on \( \gamma \). Note that the base and successor cases are handles in the same way as \fullref{thm:natural_number_addition_properties}. Hence only the limit case remains.
+  It can thus be proved by induction on the natural numbers that \( n + \omega = \omega \). What the inequality \eqref{eq:thm:monotone_map_converse/nonstrict} gives us is that
+  \begin{equation*}
+    n < m \T{implies} \underbrace{n + \omega}_{\omega} \leq \underbrace{m + \omega}_{\omega}.
+  \end{equation*}
 
-%   Let \( \lambda \) be a limit ordinal and suppose that cancellation holds for \( \gamma < \lambda \) and arbitrary \( \alpha \) and \( \beta \). Let \( \lambda + \alpha = \lambda + \beta \). Then
+  This inequality is, of course, strict when dealing with finite ordinals exclusively but for limit ordinals its results may be counterintuitive.
 
+  What is more interesting is that, as a consequence of \eqref{eq:thm:monotone_map_converse/strict},
+  \begin{equation*}
+    n < m \T{implies} \omega + n < \omega + m.
+  \end{equation*}
 
-% Denote this common value by \( \sigma \). Thus for any \( \delta < \lambda \) we have
-% \begin{equation*}
-%   \alpha + \delta
-%   \leq
-%   \sup\set{ \alpha + \gamma \given \gamma < \lambda }
-%   \alpha + \lambda
-%   \reloset {\eqref{eq:def:ordinal_arithmetic/sum}} =
-%   \sigma
-% \end{equation*}
-% and analogously for \( \beta + \lambda \). Therefore
-% \begin{equation*}
-%   \alpha + \delta \leq \sigma \T{if and only if} \beta + \delta \leq \sigma.
-% \end{equation*}
+  This can be explained as follows. Instead of \enquote{appending} an infinite set to a finite one, we append a finite set to an infinite one. This way \( \omega \) cannot \enquote{absorb} \( n \) like it does in \( n + \omega \).
 
-% Because the ordinals are trichotomic, it follows that \( \alpha + \delta = \beta + \delta \). By the inductive hypothesis, \( \alpha + \delta = \beta + \delta \) implies that \( \alpha = \beta \).
-
-%   % Hence cancellation holds.
-
-%   \SubProofOf[thm:ordinal_addition_properties/associative]{associativity}
-
-%   Let \( \lambda \) be a limit ordinal and suppose that \eqref{eq:thm:ordinal_addition_properties/associative} holds for \( \gamma < \lambda \) and for arbitrary \( \alpha \) and \( \beta \). Then
-%   \begin{align*}
-%     (\alpha + \beta) + \lambda
-%     &=
-%     \sup\set{ (\alpha + \beta) + \gamma \given \gamma < \lambda }
-%     = \\ &=
-%     \sup\set{ \alpha + (\beta + \gamma) \given \gamma < \lambda }
-%     \reloset {\ref{thm:ordinal_addition_supremum}} = \\ &=
-%     \alpha + \sup\set{ \beta + \gamma \given \gamma < \lambda }
-%     = \\ &=
-%     \alpha + (\beta + \lambda).
-%   \end{align*}
-% \end{proof}
-
-\begin{example}\label{ex:ordinal_addition}
-  \begin{thmenum}
-    \thmitem{ex:ordinal_addition/right_cancellative} \( 0 + \omega = 1 + \omega = \omega \), however \( 0 \neq 1 \).
-    \thmitem{ex:ordinal_addition/commutative} \( \omega + 1 \neq 1 + \omega = \omega \).
-  \end{thmenum}
+  As a consequence of this example, addition of ordinals is not commutative and also not right-cancellative.
 \end{example}
 
 \begin{proposition}\label{thm:ordinal_multiplication_disjoin_union}
