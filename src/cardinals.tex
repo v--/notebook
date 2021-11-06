@@ -99,7 +99,7 @@
 \begin{proposition}\label{thm:omega_is_a_cardinal}
   The \hyperref[thm:smallest_inductive_set_existence]{smallest inductive set \( \omega \)} is a \hyperref[def:cardinal]{cardinal}.
 
-  When regarded as a cardinal, we denote it by \( \aleph_0 \). This is consistent with \fullref{thm:aleph_hierarchy}.
+  When regarded as a cardinal, we denote it by \( \aleph_0 \). This is consistent with \fullref{def:aleph_hierarchy}.
 \end{proposition}
 \begin{proof}
   We will use induction on \( n < \omega \) to show that no function \( f: \omega \to n \) is surjective. This is trivial for \( 0 \). Suppose that it holds for some fixed \( n \). Let \( f: \omega \to \op{succ}(n) \) be any function. Define
@@ -162,6 +162,8 @@
   \begin{equation*}
     \card(A) < \card(\pow(A)).
   \end{equation*}
+
+  See also \fullref{thm:cantor_power_set_theorem_exponentiation}.
 \end{theorem}
 \begin{proof}
   The function \( x \mapsto \set{ x } \) is clearly an injective function from \( A \) to \( \pow(A) \), therefore \( \pow(A) \) dominates \( A \). The converse is not true, however.
@@ -263,6 +265,8 @@
   \begin{thmenum}
     \thmitem{def:successor_and_limit_cardinal/successor} If \( \kappa \) is the smallest cardinal such that \( \mu < \kappa \) for some other cardinal \( \mu \), we say that \( \kappa \) is the \term{successor} of \( \mu \) and that \( \kappa \) is itself a \term{successor cardinal}.
 
+    The existence of \( \kappa \) is guaranteed by \fullref{thm:successor_cardinal_existence} but it is natural to ask whether \( \kappa \) can be constructed from \( \mu \) similarly to how the \hyperref[def:ordinal_successor]{ordinal successor operator} gives us a successor ordinal. This turns out to be a deep question --- see \fullref{thm:generalized_continuum_hypothesis}.
+
     \thmitem{def:successor_and_limit_cardinal/weak_limit} If \( \kappa > 0 \) is not the successor cardinal of any other cardinal, we say that it is a \term{weak limit cardinal}.
 
     \thmitem{def:successor_and_limit_cardinal/strong_limit} We say that the weak limit ordinal \( \kappa \) is a \term{strong limit ordinal} if \( \mu < \kappa \) implies that \( \card(\pow(\mu)) < \kappa \).
@@ -278,7 +282,7 @@
 
 \begin{proposition}\label{thm:successor_cardinal_existence}
   For any cardinal there exists a successor cardinal.
-\end{definition}
+\end{proposition}
 \begin{proof}
   Fix a cardinal \( \kappa \). By \fullref{thm:hartogs_lemma}, there exists a smallest ordinal \( \alpha \) such that \( \kappa \) does not dominate \( \alpha \). Thus \( \alpha \) is the initial ordinal of a cardinal \( \mu \) because it is not equinumerous with any smaller ordinal.
 
@@ -289,24 +293,114 @@
   Therefore \( \mu \) is the successor cardinal of \( \kappa \).
 \end{proof}
 
-\begin{definition}\label{thm:aleph_hierarchy}\mcite[def. 68.17]{OpenLogicFull}
+\begin{proposition}\label{thm:union_of_set_of_cardinals}\mcite[prop. 67.13]{OpenLogicFull}
+  If \( A \) is a set of cardinals, then \( \bigcup A \) is a cardinal. Furthermore, \( \bigcup A \) is the supremum of \( A \) with respect to cardinal ordering.
+
+  See a more thorough discussion of a similar issue in \fullref{thm:union_of_set_of_ordinals}.
+\end{proposition}
+\begin{proof}
+  From \fullref{thm:union_of_set_of_ordinals} it follows that \( \bigcup A \) is an ordinal. Then there exists some cardinal \( \kappa \in A \) such that \( \alpha \in \kappa \).
+
+  We have \( \kappa \subseteq \bigcup A \). Thus, with regards to ordinal ordering, \( \alpha < \kappa \leq \bigcup A \). But since \( \kappa \) is a cardinal, it is not equinumerous with \( \alpha \) and hence \( \bigcup A \) is also not equinumerous with \( \alpha \).
+
+  Therefore \( \bigcup A \) is a cardinal. It follows from \fullref{thm:ordinal_ordering_via_subsets} that it is also the supremum of \( A \).
+\end{proof}
+
+\begin{definition}\label{def:aleph_hierarchy}\mcite[def. 68.17]{OpenLogicFull}
   We use transfinite recursion to define, for each ordinal \( \alpha \), the cardinal
-  \begin{equation*}
+  \begin{equation}\label{eq:def:aleph_hierarchy}
     \aleph_\alpha \coloneqq \begin{cases}
-      \omega,                                           &\alpha = 0 \\
-      \T{successor cardinal of} \beta,                  &\alpha = \op{succ}(\beta) \\
-      \bigcup\set{ \aleph_\beta \given \beta < \alpha } &\alpha \T{is a limit ordinal}.
+      \omega,                                        &\alpha = 0 \\
+      \T{successor cardinal of} \beta,               &\alpha = \op{succ}(\beta) \\
+      \sup\set{ \aleph_\beta \given \beta < \alpha } &\alpha \T{is a limit ordinal}.
     \end{cases}
-  \end{equation*}
+  \end{equation}
+
+  We denote the initial ordinal of \( \aleph_\alpha \) by \( \omega_\alpha \). In particular, \( \omega_0 = \omega \) and \( \omega_1 \) is the first \hyperref[def:set_countability]{uncountable ordinal}.
+
+  Note that \( \aleph_\lambda \) exists and is a cardinal for every limit ordinal \( \lambda \) as a consequence of \fullref{thm:union_of_set_of_cardinals}.
 
   See \fullref{rem:unbounded_transfinite_recursion} for some technical details.
+
+  This hierarchy is important because it describes all infinite cardinals as shown in \fullref{thm:infinite_cardinal_is_aleph}.
 \end{definition}
 
 \begin{remark}[Unbounded transfinite recursion]\label{rem:unbounded_transfinite_recursion}
   Although we cannot formally do unbounded transfinite recursion, there is an easy way to circumvent this.
 
-  Formally, in \fullref{thm:aleph_hierarchy}, for every ordinal \( \alpha \) we use \fullref{thm:bounded_transfinite_recursion} define a \( \alpha \)-indexed transfinite sequence \( \aleph_0, \aleph_1, \ldots, \aleph_\omega, \ldots \) and then use the sequence to define \( \aleph_\alpha \). The definition does not depend on any particular ordinal \( \alpha \), however, and thus all ways to obtain \( \aleph_\alpha \) are equivalent.
+  Formally, in \fullref{def:aleph_hierarchy}, for every ordinal \( \alpha \) we use \fullref{thm:bounded_transfinite_recursion} define a \( \alpha \)-indexed transfinite sequence \( \aleph_0, \aleph_1, \ldots, \aleph_\omega, \ldots \) and then use the sequence to define \( \aleph_\alpha \). The definition does not depend on any particular ordinal \( \alpha \), however, and thus all ways to obtain \( \aleph_\alpha \) are equivalent.
 \end{remark}
+
+\begin{proposition}\label{thm:aleph_hierarchy_is_strictly_monotone}
+  If \( \alpha < \beta \), then \( \aleph_\alpha < \aleph_\beta \).
+\end{proposition}
+\begin{proof}
+  We will use \fullref{rem:transfinite_induction} on \( \beta \).
+  \begin{itemize}
+    \item The condition \( \alpha < \beta \) is vacuously false for the base case \( \beta = 0 \), hence by \eqref{eq:def:intuitionistic_propositional_derivation_system/rules/efq} the statement vacuously holds.
+
+    \item Suppose that \( \alpha < \beta \) and \( \aleph_\alpha < \aleph_\beta \). We then have \( \alpha < \op{succ}(\beta) \) and, since, \( \aleph_{\op{succ}(\beta)} > \aleph_\beta \), also \( \aleph_\alpha < \aleph_{\op{succ}(\beta)} \).
+
+    \item Let \( \lambda \) be a limit ordinal and suppose that the proposition holds for all \( \beta < \lambda \) and for arbitrary \( \alpha \). Then \( \aleph_\beta \subseteq \aleph_\lambda \) for every \( \beta < \lambda \), hence \( \aleph_\beta \leq \aleph_\lambda \) by \fullref{thm:ordinal_ordering_via_subsets}.
+
+    Suppose that \( \alpha < \lambda \).
+    \begin{itemize}
+      \item If there exists some \( \beta_0 < \lambda \) such that \( \alpha < \beta_0 \), clearly \( \aleph_\alpha < \aleph_{\beta_0} \leq \aleph_\lambda \).
+      \item If \( \alpha > \beta \) for all \( \beta < \lambda \), then \( \alpha \) is an upper bound of the set \( \lambda = \set{ \beta \given \beta < \lambda } \). Hence \( \alpha \geq \lambda \), which contradicts our choice of \( \alpha \).
+    \end{itemize}
+
+    Therefore \( \aleph_\alpha < \aleph_\lambda \).
+  \end{itemize}
+\end{proof}
+
+\begin{remark}[Cardinal recursion and induction]\label{rem:cardinal_transfinite_recursion_and_induction}
+  Just like we have (bounded and unbounded) transfinite recursion and induction on ordinals, we also have transfinite recursion and induction on cardinals.
+  \begin{itemize}
+    \item We only consider cardinals rather than arbitrary ordinals.
+    \item In its structured form presented in \fullref{rem:transfinite_induction}, rather than considering successor ordinals and limit ordinals, we consider successor cardinals and weak limit cardinals.
+  \end{itemize}
+
+  Thus recursion and induction on cardinals is formally quite different from the equivalent statements for ordinals. The usage of the two is analogous, however.
+
+  See \fullref{thm:infinite_cardinal_is_aleph} for how this principles is used.
+\end{remark}
+
+\begin{proposition}\label{thm:infinite_cardinal_is_aleph}\mcite[prop. 68.19]{OpenLogicFull}
+  For every \hyperref[def:set_finiteness]{infinite cardinal} \( \kappa \) there exists an infinite ordinal \( \alpha \) such that \( \kappa = \aleph_\alpha \).
+\end{proposition}
+\begin{proof}
+  We will use \fullref{rem:cardinal_transfinite_recursion_and_induction} on \( \kappa \).
+
+  \begin{itemize}
+    \item The base case \( \kappa = 0 \) vacuously holds because \( 0 \) is not an infinite cardinal. The actual base case is \( \kappa = \omega = \aleph_0 \). This case may not seem formally necessary, however we need to consider it separately from the limit case and calling it the \enquote{base case} seems most appropriate.
+
+    \item If \( \kappa = \aleph_\alpha \) and \( \mu \) is the successor cardinal of \( \kappa \), then by definition \( \kappa = \aleph_{\op{succ}(\alpha)} \).
+
+    \item Finally, let \( \kappa \) be a limit cardinal and let \( \mu = \aleph_{\alpha_\mu} \) for every cardinal \( \mu < \kappa \). Define
+    \begin{equation*}
+      \alpha \coloneqq \bigcup\set{ \alpha_\mu \given \mu < \kappa }.
+    \end{equation*}
+
+    We have
+    \begin{align*}
+      \kappa
+      &\reloset {\eqref{eq:def:aleph_hierarchy}} =
+      \bigcup\set{ \aleph_{\alpha_\mu} \given \mu < \kappa }
+      \reloset {\eqref{eq:thm:ordinal_addition_is_monotone/right}} \leq \\ &\leq
+      \bigcup\set[\Big]{ \aleph_\beta \given \beta < \sup\set{ \alpha_\mu \given \mu < \kappa } }
+      = \\ &=
+      \bigcup\set{ \aleph_\beta \given \beta < \alpha }
+      \reloset {\ref{thm:ordinal_is_set_of_smaller_ordinals}} = \\ &=
+      \aleph_\alpha.
+    \end{align*}
+
+    If we suppose that \( \kappa < \aleph_\alpha \), then similarly to \fullref{thm:ordinal_ordering_via_addition} there exists some ordinal \( \beta_0 < \alpha \) such that \( \aleph_{\beta_0} > \aleph_{\alpha_\mu} \) for every \( \mu < \kappa \). In particular, \fullref{thm:aleph_hierarchy_is_strictly_monotone} implies that \( \beta_0 > \alpha_\mu \) for every \( \mu < \kappa \). Thus
+    \begin{equation*}
+      \underbrace{\bigcup\set{ \alpha_\mu \given \mu < \kappa }}_{\alpha} \leq \beta_0 < \alpha,
+    \end{equation*}
+    which is a contradiction. Therefore \( \kappa = \aleph_\alpha \).
+  \end{itemize}
+\end{proof}
 
 \begin{definition}\label{def:set_countability}
   We will introduce the notion of \term{countability}, which generalizes \hyperref[def:set_finiteness]{finiteness}.
@@ -316,7 +410,7 @@
 
     \thmitem{def:set_countability/at_most_countable} A set that is either finite or countably infinite is called \term{at most countable}.
 
-    \thmitem{def:set_countability/uncountable} Any set that \hyperref[def:equinumerosity]{strictly dominates} \( \aleph_0 \) is called \term{uncountable}. The smallest uncountable cardinal is the successor \( \aleph_1 \) of \( \aleph_0 \).
+    \thmitem{def:set_countability/uncountable} Any set that \hyperref[def:equinumerosity]{strictly dominates} \( \aleph_0 \) is called \term{uncountable}. The smallest uncountable cardinal is the successor cardinal \( \aleph_1 \) of \( \aleph_0 \).
 
     \thmitem{def:set_countability/continuum} The cardinality of \( \pow(\aleph_0) \) has a special name --- the \term{cardinality of the continuum}. It is sometimes denoted by \( c \). See \fullref{hyp:continuum_hypothesis} for its relation to \( \aleph_1 \).
   \end{thmenum}
@@ -328,8 +422,10 @@
   Some authors, for example \cite[159]{Enderton1977Sets}, use the shorted term \term{countable}, however other authors use \enquote{countable} to mean \enquote{countably infinite}. The terms \term{denumerable} and \term{enumerable} are also used for \enquote{countably infinite} and \enquote{at most countable} respectively. This is done in \cite[def. 4.4]{OpenLogicFull}, for example. These terms are also ambiguous unfortunately.
 \end{remark}
 
-\begin{conjecture}[Continuum hypothesis]\label{hyp:continuum_hypothesis}\mcite[165]{Enderton1977Sets}
-  The \hyperref[def:set_countability/continuum]{cardinality of the continuum} \( c \) is the \hyperref[def:set_countability/uncountable]{smallest uncountable cardinal} \( \aleph_1 \).
+\begin{conjecture}[Continuum hypothesis]\label{hyp:continuum_hypothesis}
+  The \hyperref[def:set_countability/continuum]{cardinality of the continuum} \( c \) is the \hyperref[def:set_countability/uncountable]{first uncountable cardinal} \( \aleph_1 \).
+
+  Compare this to \fullref{hyp:generalized_continuum_hypothesis}.
 \end{conjecture}
 
 \begin{remark}\label{rem:continuum_hypothesis}\mcite[165]{Enderton1977Sets}
