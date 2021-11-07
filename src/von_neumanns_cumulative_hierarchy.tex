@@ -1,0 +1,362 @@
+\subsection{Von Neumann's cumulative hierarchy}\label{subsec:von_neumanns_cumulative_hierarchy}
+
+We will now investigate how we can use set theory itself to build models of set theory. \Fullref{thm:cumulative_hierarchy_model_of_zfc} contains the important results.
+
+\begin{definition}\label{def:cumulative_hierarchy}\mcite[def. 61.1]{OpenLogicFull}
+  For every ordinal \( \alpha \) we use \fullref{rem:unbounded_transfinite_recursion} to define
+  \begin{equation}\label{eq:def:cumulative_hierarchy}
+    V_\alpha \coloneqq \begin{cases}
+      \varnothing,                                  &\alpha = 0 \\
+      \pow(V_\beta),                                &\alpha = \beta + 1 \\
+      \bigcup\set{ V_\beta \given \beta < \alpha }, &\alpha \T{is a limit ordinal.}
+    \end{cases}
+  \end{equation}
+
+  Each \( V_\alpha \) is called a \term{stage} and the index \( \alpha \) of a stage is called its \term{rank}. The entire proper class of stages is called the \term{cumulative hierarchy}.
+
+  If some set \( A \) is a subset of \( V_\alpha \) but not of \( V_\beta \) for any \( \beta < \alpha \), we say that \( \alpha \) is the \term{rank} of the set \( A \) and denote it by \( \rank(A) \). We will see in \fullref{thm:axiom_of_regularity} that every set has a rank.
+\end{definition}
+
+\begin{proposition}\label{thm:cumulative_hierarchy_properties}
+  Without relying on the \hyperref[def:zfc/foundation]{axiom of foundation} and by assuming that ordinals are well-founded by definition, we can prove the following basic properties for \hyperref[def:cumulative_hierarchy]{Von Neumann's cumulative hierarchy}:
+  \begin{thmenum}
+    \thmitem{thm:cumulative_hierarchy_properties/transitive} Each stage \( V_\alpha \) is a transitive set.
+    \thmitem{thm:cumulative_hierarchy_properties/membership} For any two ordinals \( \alpha < \beta \) we have \( V_\alpha \in V_\beta \).
+    \thmitem{thm:cumulative_hierarchy_properties/rank_inequality} If \( A \in B \) and both sets have ranks, then \( \rank(A) \in \rank(B) \).
+    \thmitem{thm:cumulative_hierarchy_properties/well_founded} Each stage \( V_\alpha \) is well-founded by set membership.
+    \thmitem{thm:cumulative_hierarchy_properties/subsets} We have \( \alpha < \beta \) if and only if \( V_\alpha \subsetneq V_\beta \).
+    \thmitem{thm:cumulative_hierarchy_properties/ordinals} For every ordinal \( \alpha \) we have \( \rank(\alpha) = \alpha \).
+    \thmitem{thm:cumulative_hierarchy_properties/stage_rank} For every stage \( V_\alpha \) we have \( \rank(V_\alpha) = \alpha \).
+  \end{thmenum}
+\end{proposition}
+\begin{proof}
+  \SubProofOf{thm:cumulative_hierarchy_properties/transitive} The statement is vacuous for \( \alpha = 0 \). Suppose that \( \alpha > 0 \), let \( A \in V_\alpha \) and \( B \in A \). We will show that \( B \in V_\alpha \).
+  \begin{itemize}
+    \item Suppose that \( \alpha = \beta + 1 \) and that \( V_\beta \) is a transitive set. Then \( A \in V_\alpha \) implies that \( A \subseteq V_\beta \). Thus \( B \in V_\beta \) and, since \( V_\beta \) is a transitive set, \( B \subseteq V_\beta \).
+
+    Therefore \( B \in V_\alpha = \pow(V_\beta) \).
+
+    \item Suppose that \( \alpha \) is a limit ordinal and that \( V_\beta \) are transitive sets for every \( \beta < \alpha \). Then \( A \in V_\alpha \) implies that \( A \) belongs to \( V_{\beta_0} \) for some \( \beta_0 < \alpha \). The inductive hypothesis implies that \( A \subseteq V_{\beta_0} \). Therefore \( A \subseteq V_\alpha \).
+  \end{itemize}
+
+  \SubProofOf{thm:cumulative_hierarchy_properties/membership} Let \( \alpha < \beta \) be some ordinals. We will show that \( V_\alpha \in V_\beta \) using induction on \( \beta \).
+  \begin{itemize}
+    \item Suppose that \( \beta \) is a successor ordinal, i.e. \( \beta = \mu + 1 \) for some \( \mu \), and suppose that for every \( \alpha < \mu \) we have \( V_\alpha \in V_\mu \). Clearly \( V_\mu \in V_\beta \) because \( V_\mu \) is a subset of itself.
+
+    If \( \alpha < \mu \), then \( V_\alpha \in V_\mu \) by the inductive hypothesis and, since \( V_\beta \) is a transitive set by \fullref{thm:cumulative_hierarchy_properties/transitive}, \( V_\alpha \in V_\beta \).
+
+    \item Suppose that \( \beta \) is a limit ordinal. For some fixed \( \alpha_0 \in \beta \) we have \( V_{\alpha_0} \in V_{\alpha_0 + 1} \) by what we have already proved. We also have
+    \begin{equation*}
+      V_\beta
+      =
+      \bigcup_{\alpha < \beta} V_\alpha,
+    \end{equation*}
+    hence \( V_{\alpha_0} \in V_\beta \).
+  \end{itemize}
+
+  \SubProofOf{thm:cumulative_hierarchy_properties/rank_inequality} Let \( A \in B \) be arbitrary sets for which ranks are defined. Trichotomy holds for ordinals so we have to show that \( \rank(A) \geq \rank(B) \) leads to a contradiction. Denote the ranks by \( \alpha \) and \( \beta \) for brevity.
+
+  We have \( A \subseteq V_\alpha \) by definition and \( A \subseteq V_\beta \) since \( V_\alpha \in V_\beta \) and \( V_\beta \) is transitive. If we suppose that \( \rank(B) < \rank(A) \), this would mean that \( A \) belongs to a stage below \( V_\alpha \), which contradicts the minimality of \( \alpha = \rank(A) \).
+
+  Now suppose that \( \beta = \rank(B) = \rank(A) = \alpha \).
+  \begin{itemize}
+    \item If \( \beta = 0 \), then \( A \in B \) is impossible.
+
+    \item If \( \beta \) is a successor ordinal of \( \alpha \), then \( V_\beta = \pow(V_\alpha) \). Since \( B \subseteq V_\beta \) is a set of subsets of \( V_\alpha \), \( A \in B \) is a subset of \( V_\alpha \). Thus we have \( \rank(A) \leq \alpha < \rank(A) \), which contradicts the well-foundedness of the ordinal ordering.
+
+    \item If \( \beta \) is a limit ordinal, then \( V_\beta = \bigcup\set{ V_\alpha \given \alpha < \beta } \). As a member of \( B \), the set \( A \) belongs to some lower stage \( V_{\alpha_0} \), which again leads to \( \rank(A) < \rank(A) \).
+  \end{itemize}
+
+  Thus it remains for \( \rank(A) < \rank(B) \).
+
+  \SubProofOf{thm:cumulative_hierarchy_properties/well_founded} We will use induction on \( \alpha \). Suppose that \( V_\beta \) is well-founded for every \( \beta < \alpha \). Aiming at a contradiction, suppose that there exists an infinitely descending sequence \( \seq{ x_k }_{k=1}^\infty \subseteq V_\alpha \). Then the sequence \( \seq{ \rank(x_k) }_{k=0}^\infty \) of ranks is an infinitely descending set of ordinals. The \hyperref[def:transitive_closure_of_a_set]{transitive closure} of the underlying set is then an ordinal by \fullref{thm:transitive_set_of_transitive_sets_is_ordinal}. But this contradicts the well-foundedness of ordinals.
+
+  Therefore \( V_\alpha \) must be well-founded.
+
+  \SubProofOf{thm:cumulative_hierarchy_properties/subsets} If \( \alpha < \beta \), then from \fullref{thm:cumulative_hierarchy_properties/members} and \fullref{thm:cumulative_hierarchy_properties/transitivity} it follows that \( V_\alpha \subseteq V_\beta \). We will show that \( V_\alpha \neq V_\beta \). Fix some \( \mu < \beta \) and suppose that \( V_\alpha \subsetneq V_\mu \) holds for all \( \alpha < \mu \). If \( V_\alpha = V_\beta \), this would mean that \( V_\alpha \subsetneq V_\mu \subseteq V_\beta = V_\alpha \), which is a contradiction. Therefore \( V_\alpha \subsetneq V_\beta \).
+
+  Conversely, suppose that \( V_\alpha \subsetneq V_\beta \). Since trichotomy holds for ordinals and since \( V_\alpha \neq V_\beta \), it is sufficient to show that \( \alpha > \beta \) leads to a contradiction. If \( \alpha > \beta \), from \fullref{thm:cumulative_hierarchy_properties/membership} it follows that \( V_\beta \in V_\alpha \), which implies that \( V_\beta \subsetneq V_\beta \). The obtained contradiction shows that \( \alpha < \beta \).
+
+  \SubProofOf{thm:cumulative_hierarchy_properties/ordinals} We will use transfinite induction to show that \( \rank(\alpha) = \alpha \) for every ordinal.
+  \begin{itemize}
+    \item The case \( \alpha = 0 \) is trivial because \( \alpha = \varnothing \subseteq \varnothing = V_0 \).
+
+    \item Suppose that \( \alpha = \beta + 1 \) is a successor ordinal and \( \rank(\beta) = \beta \). Clearly \( \beta \in \pow(V_\beta) = V_\alpha \) and \( \set{ \beta } \in V_\alpha \). Since \( V_\alpha \) is a transitive set, we also have \( \beta \subseteq V_\alpha \). Thus
+    \begin{equation*}
+      \alpha = \beta + 1 = \beta \cup \set{ \beta } \subseteq V_\alpha.
+    \end{equation*}
+
+    \item Suppose that \( \alpha \) is a limit ordinal and that for \( \rank(\beta) = \beta \) for all \( \beta < \alpha \). Since \( \beta \in V_{\beta + 1} \) for any \( \beta < \alpha \), we have
+    \begin{equation*}
+      \alpha
+      =
+      \set{ \beta \T{is an ordinal} \given \beta < \alpha }
+      \subseteq
+      \bigcup\set{ V_{\beta + 1} \given \beta < \alpha }
+      =
+      V_\alpha.
+    \end{equation*}
+  \end{itemize}
+
+  \SubProofOf{thm:cumulative_hierarchy_properties/stage_rank} Clearly \( V_\alpha \) is a subset of itself, hence \( \rank(V_\alpha) \leq \alpha \). In particular, the rank of \( V_\alpha \) exists.
+
+  We will use induction on \( \alpha \) to show that \( \rank(V_\alpha) \geq \alpha \).
+  \begin{itemize}
+    \item For \( \alpha = 0 \) this is obvious.
+    \item If \( \rank(V_\alpha) = \alpha \), then
+    \begin{equation*}
+      \rank(V_{\alpha + 1})
+      =
+      \rank(\pow(V_\alpha))
+      \reloset {\ref{thm:cumulative_hierarchy_properties/rank_inequality}} >
+      \rank(V_\alpha)
+      =
+      \alpha.
+    \end{equation*}
+
+    \item Let \( \lambda \) be a limit ordinal and suppose that \( \rank(V_\alpha) = \alpha \) for any \( \alpha < \lambda \). Then
+    \begin{equation*}
+      \rank(V_\lambda)
+      \reloset {\ref{thm:cumulative_hierarchy_properties/rank_inequality}} \geq
+      \sup\set{ \rank(V_\alpha) \given \alpha < \lambda }
+      =
+      \sup\set{ \alpha \given \alpha < \lambda }
+      =
+      \lambda.
+    \end{equation*}
+  \end{itemize}
+
+  Therefore \( \rank(V_\alpha) = \alpha \).
+\end{proof}
+
+\begin{theorem}[Axiom of regularity]\label{thm:axiom_of_regularity}\mcite[thm. 64.11]{OpenLogicFull}
+  Every set belongs to a stage in \hyperref[def:cumulative_hierarchy]{von Neumann's cumulative hierarchy}.
+
+  This statement is called the \term{axiom of regularity} and in the presence of the other axioms of \logic{ZF}, it is equivalent to the \hyperref[def:zfc/foundation]{axiom of foundation}. It is much more difficult to state in the language of set theory, however.
+\end{theorem}
+\begin{proof}
+  \ImplicationSubProof[def:zfc/foundation]{axiom of foundation}[thm:axiom_of_regularity]{axiom of regularity} Let \( A \) be a set. By \fullref{thm:transitive_closure_of_a_set}, its \hyperref[def:transitive_closure_of_a_set]{transitive closure} \( \cl^T(A) \) is a transitive set. Define
+  \begin{equation*}
+    D \coloneqq \set{ B \in \cl^T(A) \given B \T{does not belong to the cumulative hierarchy} }.
+  \end{equation*}
+
+  We will show that \( D \) is empty. Assume the contrary. Then by the \hyperref[def:zfc/foundation]{axiom of foundation} there exists \( B_0 \in D \) such that \( B_0 \cap D = \varnothing \). Since \( \cl^T(A) \) is a transitive set, \( B_0 \subseteq \cl^T(A) \). Thus \( B_0 \) consists of members \( x \) of \( \cl^T(A) \) that themselves have ranks, i.e. a minimal ordinal \( \beta \) such that \( x \subseteq V_\beta \). It follows from the \hyperref[def:zfc/replacement]{axiom schema of replacement} that these ordinals form a set. Denote this set by \( C \).
+
+  If \( x \in B_0 \), then \( x \subseteq V_\beta \) for some \( \beta \in C \) and \( x \in V_{\beta + 1} \). Thus
+  \begin{equation*}
+    B_0 \subseteq \bigcup\set{ V_{\beta + 1} \given \beta \in C }.
+  \end{equation*}
+
+  Denote the union on the right by \( \alpha \). From \fullref{thm:union_of_set_of_ordinals} it follows that \( \alpha \) is an ordinal strictly larger than the ordinals in \( C \). By \fullref{thm:cumulative_hierarchy_properties/membership} we have that \( V_{\beta + 1} \in V_\alpha \) for every \( \beta \in C \). Thus
+  \begin{equation*}
+    B_0 \subseteq \bigcup\set{ V_{\beta + 1} \given \beta \in C } \subseteq V_\alpha.
+  \end{equation*}
+
+  This contradicts our assumption that \( B_0 \) does not belongs to the cumulative hierarchy. Therefore \( D = \varnothing \) and every member of \( \cl^T(A) \) also belongs to the cumulative hierarchy. In particular, every member of \( A \) belongs to the cumulative hierarchy.
+
+  Define
+  \begin{equation*}
+    \mu \coloneqq \bigcup\set{ \rank(B) + 1 \given B \in A }.
+  \end{equation*}
+
+  Since \( B \) is a member of the stage with rank \( \rank(B) + 1 \) for every \( B \in A \), with the same reasoning as above it follows that \( A \subseteq V_\mu \).
+
+  \ImplicationSubProof[thm:axiom_of_regularity]{axiom of regularity}[def:zfc/foundation]{axiom of foundation} Let \( A \) be any nonempty set. We will show that there exists a subset of \( A \) that is disjoint from \( A \).
+
+  The \hyperref[def:axiom_of_regularity]{axiom of regularity} ensures that \( A \) belongs to the von Neumann cumulative hierarchy. Let \( B \in A \) be a set with minimal rank.
+
+  Suppose that \( B \cap A \) is not empty. Then there exists some set \( C \in A \setminus B \). From \fullref{thm:cumulative_hierarchy_properties/rank_inequality} it follows that \( \rank(C) < \rank(B) < \rank(A) \). But \( C \) belongs to \( A \) and has a rank strictly smaller than \( \rank(B) \), which contradicts the minimality of \( \rank(B) \).
+
+  The obtained contradiction shows that \( B \cap A = \varnothing \).
+\end{proof}
+
+\begin{theorem}\label{thm:cumulative_hierarchy_model_of_z}\mcite{MathSE:cumulative_hierarchy_model_of_zfc}
+  The stage \( V_{\omega + \omega} \) of the \hyperref[def:cumulative_hierarchy]{von Neumann's cumulative hierarchy} is a standard model of \logic{Z}, i.e. \logic{ZFC} without the \hyperref[def:zfc/replacement]{axiom schema of replacement}.
+
+  More generally, a necessary and sufficient condition for \( V_\alpha \) to be a model of \logic{Z} is for \( \alpha \) to be a limit ordinal larger than \( \omega \).
+\end{theorem}
+\begin{proof}
+  The following axioms are automatically satisfied for any stage \( V_\alpha \):
+  \begin{itemize}
+    \item The validity of the \hyperref[def:zfc/extensionality]{axiom of extensionality} is inherited from the metatheory.
+
+    \item The \hyperref[def:zfc/specification]{axiom schema of specification} is satisfied because because each axiom in the schema \hyperref[def:first_order_definability]{defines} a subset of \( V_\alpha \) and because \( V_\alpha \) is a transitive set. This does not necessarily require the axiom schema of specification in the metatheory --- we only need the subsets of \( V_\alpha \) defined in \fullref{def:first_order_definability}.
+
+    \item The \hyperref[def:zfc/union]{axiom of unions} is satisfied because if \( A \in V_\alpha \) and \( C \in \bigcup A \), then there exists some \( B \in A \) such that \( C \in B \in A \). Since \( V_\alpha \) is a transitive set, it follows that \( C \in V_\alpha \).
+
+    \item The \hyperref[def:zfc/foundation]{axiom of foundation} is satisfied for any \( V_\alpha \) due to \fullref{thm:cumulative_hierarchy_properties/well_founded}. Its validity is also inherited from the metatheory but we do not actually need the \hyperref[def:zfc/foundation]{axiom of foundation} in the metatheory.
+
+    \item The validity of the \hyperref[def:zfc/choice]{axiom of choice} is inherited from the metatheory.
+
+    Indeed, for any family of sets \( \mscrA \in V_\alpha \) there exists a \hyperref[def:choice_function]{choice function} \( c: \mscrA \to \bigcup \mscrA \). The set \( \set{ c(A) \given A \in \mscrA } \) then has a lower rank by \fullref{thm:cumulative_hierarchy_properties/rank_inequality} and thus by \fullref{thm:cumulative_hierarchy_properties/subsets} it belongs to \( V_\alpha \).
+  \end{itemize}
+
+  The rest of the axioms are satisfied whenever some easy restrictions are imposed on \( \alpha \):
+  \begin{itemize}
+    \item The \hyperref[def:zfc/power_set]{axiom of power sets} is satisfied by \( V_\lambda \) for a limit ordinal \( \lambda \) if the axiom of power sets holds in the metatheory.
+
+    Indeed, if \( A \in V_\lambda \) and \( A \) has rank \( \beta \), then necessarily \( \beta < \lambda \). Since \( A \subseteq V_\beta \), it follows that \( \pow(A) \subseteq \pow(V_\beta) = V_{\beta + 1} \). But \( \beta + 1 < \lambda \) since \( \lambda \) is a limit ordinal. Therefore \( \rank(\pow(A)) = \beta + 1 < \lambda \). From \fullref{thm:cumulative_hierarchy_properties/subsets} it follows that \( V_{\beta + 1} \subsetneq V_\lambda \) and thus \( \pow(A) \subsetneq V_\lambda \).
+
+    \item The \hyperref[def:zfc/pairing]{axiom of pairing} is also satisfied by \( V_\lambda \) for a limit ordinal \( \lambda \) if the axiom of pairing holds in the theory.
+
+    Let \( A \) and \( B \) be members of \( V_\lambda \). Let \( \beta \) be the larger of their ranks. Then \( A \) and \( B \) are subsets of \( V_\beta \), hence members of \( \pow(V_\beta) = V_{\beta + 1} \) and thus the set \( \set{ A, B } \) has rank \( \beta + 2 \).
+
+    Since \( \lambda \) is a limit ordinal, we have \( \beta + 2 < \lambda \) and hence \( \set{ A, B } \in V_\lambda \) by \fullref{thm:cumulative_hierarchy_properties/subsets}.
+
+    \item The \hyperref[def:zfc/infinity]{axiom of infinity} is satisfied by any ordinal \( \alpha > \omega \).
+
+    Indeed, by \fullref{thm:cumulative_hierarchy_properties/ordinals} we have \( \omega \subseteq V_\omega \) and by \fullref{thm:cumulative_hierarchy_properties/subsets} we have \( \omega \in V_\alpha \) for \( \alpha \geq \omega + 1 \).
+  \end{itemize}
+
+  As discussed in \fullref{ex:countable_limit_ordinals}, \( \omega + \omega \) is the smallest ordinal that is both strictly larger than \( \omega \) and is a limit ordinal. Therefore \( \omega + \omega \) or any larger limit ordinal is a model of \( \logic{ZFC} \) without the axiom of replacement.
+\end{proof}
+
+\begin{definition}\label{def:cofinality}
+  The \term{cofinality} of a \hyperref[def:preordered_set]{preordered set} \( (\mscrP, \leq) \) is defined as
+  \begin{equation*}
+    \op{cf}(\mscrP, \leq) \coloneqq \min\set{ \card(A) \given A \T{is a cofinal subset of} \mscrP }.
+  \end{equation*}
+\end{definition}
+
+\begin{proposition}\label{thm:cardinal_cofinality}
+  The \hyperref[def:cofinality]{cofinality} of an infinite cardinal \( \kappa \) is
+  \begin{equation*}
+    \op{cf}(\kappa) = \min\set{ \card(A) \given A \T{is an unbounded subset of} \kappa }.
+  \end{equation*}
+\end{proposition}
+\begin{proof}
+  Well-foundedness of \( \kappa \) ensures that it is bounded from below, hence a subset \( A \) of \( \kappa \) is bounded from above if and only if it is bounded.
+
+  Since \( \kappa \) itself as a limit ordinal by \fullref{thm:cardinal_is_infinite_iff_limit_ordinal}, it has no maximum. Hence it is unbounded.
+
+  The above reflections along with \fullref{thm:totally_ordered_cofinal_equivalences} imply that a subset \( A \) of \( \kappa \) is cofinal if and only if it is unbounded.
+\end{proof}
+
+\begin{definition}\label{def:regular_cardinal}
+  We say that the infinite cardinal \( \kappa \) is \term{regular} if any of the following equivalent conditions hold:
+  \begin{thmenum}
+    \thmitem{def:regular_cardinal/cofinality} \( \kappa \) it is equal to its own \hyperref[def:cofinality]{cofinality}.
+    \thmitem{def:regular_cardinal/unbounded_subsets} Every unbounded subset of \( \kappa \) has cardinality \( \kappa \).
+  \end{thmenum}
+
+  Note that the term \enquote{regular cardinal} is unrelated to \fullref{thm:axiom_of_regularity}.
+
+  If \( \kappa \) is not regular, we say that it is \term{singular}. Finite ordinals are neither regular nor singular.
+
+  If \( \kappa \) is an \hi{uncountable} regular (weak or strong) \hyperref[def:successor_and_limit_cardinal]{limit cardinal}, we say that it is a (weakly or strongly) \term{inaccessible cardinal}.
+\end{definition}
+\begin{proof}
+  \ImplicationSubProof{def:regular_cardinal/cofinality}{def:regular_cardinal/unbounded_subsets} Note that \( \card(A) \leq \kappa \) for \( A \subseteq \kappa \). \Fullref{thm:cardinal_cofinality} implies that if \( A \) is unbounded, we have \( \card(A) \geq \op{cf}(\kappa) \). But \( \op{cf}(\kappa) = \kappa \), hence the result follows.
+
+  \ImplicationSubProof{def:regular_cardinal/unbounded_subsets}{def:regular_cardinal/cofinality} If every unbounded subset of \( \kappa \) has cardinality \( \kappa \), the minimum of all such cardinalities is \( \kappa \) and hence \( \op{cf}(\kappa) = \kappa \).
+\end{proof}
+
+\begin{proposition}\label{thm:aleph_zero_is_regular}
+  The first infinite cardinal \( \aleph_0 \) is a \hyperref[def:regular_cardinal]{regular}.
+\end{proposition}
+\begin{proof}
+  The only strict subsets of \( \aleph_0 \) are either countable or finite and the finite sets are bounded. The only unbounded subsets of \( \aleph_0 \) have cardinality \( \aleph_0 \). Hence \( \aleph_0 \) equals its own cofinality and is thus regular.
+\end{proof}
+
+\begin{remark}\label{rem:uncountable_strongly_inaccessible_cardinals}
+  It is not straightforward to even establish the existence of strongly inaccessible cardinals.
+\end{remark}
+
+\begin{proposition}\label{thm:strongly_inaccessible_cardinal_stages}
+  If \( \kappa \) is a \hyperref[def:regular_cardinal]{strongly inaccessible cardinal}, then \( \card(V_\alpha) < \kappa \) for every \( \alpha < \kappa \).
+\end{proposition}
+\begin{proof}
+  We use \fullref{thm:bounded_transfinite_induction} on \( \alpha \).
+  \begin{itemize}
+    \item If \( \alpha = 0 \), then \( V_\alpha = \varnothing \) and hence \( \card(V_\alpha) = 0 < \kappa \).
+    \item If \( \alpha < \kappa \) and \( \card(V_\alpha) < \kappa \), then
+    \begin{equation*}
+      \card(V_{\alpha + 1})
+      \reloset {\eqref{eq:def:cumulative_hierarchy}} =
+      \card(\pow(V_\alpha))
+      \reloset {\ref{thm:cardinal_exponentiation_power_set}} =
+      2^{\card(V_\alpha)}.
+    \end{equation*}
+
+    Since \( \kappa \) is a strong limit, we have \( \card(V_{\alpha + 1}) < \kappa \).
+
+    \item Suppose that \( \lambda < \kappa \) is a limit ordinal and that \( \card(V_\alpha) < \kappa \) for every \( \alpha < \lambda \).
+
+    From \fullref{thm:cumulative_hierarchy_properties/subsets} we have \( V_\alpha \subsetneq V_{\alpha + 1} \) for any \( \alpha < \lambda \), hence
+    \begin{equation}\label{eq:thm:cumulative_hierarchy_properties/subsets/limit_inclusion}
+      \card(V_\alpha) \leq \card(V_{\alpha + 1}).
+    \end{equation}
+
+    Define the set
+    \begin{equation*}
+      C \coloneqq \set{ \card(V_\alpha) \given \alpha < \lambda }.
+    \end{equation*}
+
+    Then
+    \begin{equation*}
+      \card(V_\lambda)
+      \reloset {\eqref{eq:def:cumulative_hierarchy}} =
+      \card\parens*{ \bigcup \set{ V_\alpha \given \alpha < \lambda } }
+      \reloset {\eqref{eq:thm:cumulative_hierarchy_properties/subsets/limit_inclusion}} =
+      \sup\set{ \card(V_\alpha) \given \alpha < \lambda }
+      =
+      \sup C.
+    \end{equation*}
+
+    We shall now prove that the set \( C \) is bounded from above with respect to the membership ordering of members of \( \kappa \). Indeed, suppose that it is unbounded. Then \( \card(C) = \kappa \) since \( \kappa \) is regular. But by definition \( \card(C) = \lambda \), which is strictly smaller than \( \kappa \). The obtained contradiction shows that \( C \) is bounded from above (with respect to membership in \( \kappa \)). Hence the supremum of \( C \) belongs to \( \kappa \).
+
+    Therefore \( \card(V_\lambda) < \kappa \).
+  \end{itemize}
+\end{proof}
+
+\begin{corollary}\label{thm:strongly_inaccessible_cardinal_cardinality}
+  If \( \kappa \) is a \hyperref[def:regular_cardinal]{strongly inaccessible cardinal}, then \( \card(A) < \kappa \) for every \( A \in V_\kappa \).
+\end{corollary}
+\begin{proof}
+  Denote by \( \alpha \) the rank of \( A \). Then
+  \begin{equation*}
+    \card(A) \leq \card(V_\alpha) < \kappa,
+  \end{equation*}
+  where the last inequality follows from \fullref{thm:strongly_inaccessible_cardinal_stages}.
+\end{proof}
+
+\begin{theorem}\label{rem:cumulative_hierarchy_model_of_zfc}
+  The stage \( V_\kappa \) of the \hyperref[def:cumulative_hierarchy]{von Neumann's cumulative hierarchy} is a standard model of \logic{ZFC} for every \hyperref[def:regular_cardinal]{strongly inaccessible cardinal} \( \kappa \).
+
+  This theorem is an extension of \fullref{thm:cumulative_hierarchy_model_of_z}.
+
+  Thus, assuming that at least one strongly inaccessible cardinal exists, \logic{ZFC} is consistent since it has a model.
+\end{theorem}
+\begin{proof}
+  First note that \( \kappa \) is necessarily a limit ordinal by \fullref{thm:cardinal_is_infinite_iff_limit_ordinal}. It is also larger than \( \omega \) since it is uncountable. Hence \fullref{thm:cumulative_hierarchy_model_of_z} is satisfied. We must only show that the \hyperref[def:zfc/replacement]{axiom schema of replacement} holds in \( V_\kappa \).
+
+  Let \( A \in V_\kappa \). The \hyperref[def:zfc/replacement]{axiom schema of replacement} requires the image of every function from \( A \) to \( V_\kappa \) to be a member of \( V_\kappa \). This only needs to hold for definable functions, however we will show it for arbitrary functions.
+
+  Let \( f: A \to V_\kappa \) be an arbitrary function. Clearly \( f[A] \) is a subset of \( V_\kappa \) and hence \( \rank(f[A]) \leq \kappa \). It is sufficient to show that \( \rank(f[A]) < \kappa \).
+
+  Define the set
+  \begin{equation*}
+    R \coloneqq \set{ \rank(f(x)) \given x \in A }
+  \end{equation*}
+  of the ranks of all members of \( \img(f) \). Clearly \( R \subseteq A \).
+
+  Furthermore, \fullref{thm:strongly_inaccessible_cardinal_cardinality} implies that \( \card(A) < \kappa \). Therefore
+  \begin{equation*}
+    \card(R) \leq \card(A) < \kappa.
+  \end{equation*}
+
+  This allows us to prove that the set \( R \) is bounded from above with respect to the membership ordering of members of \( \kappa \). Indeed, analogously to the proof of \fullref{thm:strongly_inaccessible_cardinal_cardinality} suppose that it is unbounded. Then \( \card(R) = \kappa \) since \( \kappa \) is regular. But we have just shown that \( \card(R) < \kappa \). The obtained contradiction shows that \( R \) is bounded from above by some member \( \rho \) of \( \kappa \).
+
+  Thus \( f(x) \subseteq V_\rho \) for every \( x \in A \). It follows that \( f[A] \subseteq V_{\rho + 1} \) and hence
+  \begin{equation*}
+    \rank(f[A]) \leq \rho + 1 < \kappa.
+  \end{equation*}
+\end{proof}
+
+\begin{remark}\label{rem:universe_of_hereditary_finite_sets}
+  Every member of \( V_\omega \) is finite by construction. Because it is a transitive set, every member of every member of \( V_\omega \) is also finite. So is every member of every member of every member.
+
+  For this reason, \( V_\omega \) is known as the \term{universe of hereditary finite sets}.
+
+  Actually \( V_\omega \) is a standard model of \logic{ZFC} without the \hyperref[def:zfc/infinity]{axiom of infinity}. Indeed, from the proof of \fullref{thm:cumulative_hierarchy_model_of_z} is follows that \( V_\omega \) is a model of \logic{ZFC} without the axiom of infinity and the axiom schema of replacement. From \fullref{thm:aleph_zero_is_strong_limit} and \fullref{thm:aleph_zero_is_regular} is follows that \( \omega \) is a regular strong limit cardinal, which \fullref{rem:cumulative_hierarchy_model_of_zfc} shows to be sufficient for \( V_\omega \) to satisfy the axiom of replacement.
+\end{remark}
