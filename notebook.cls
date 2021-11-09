@@ -80,6 +80,7 @@
 \RequirePackage{enumitem}
 \RequirePackage{graphicx}
 \RequirePackage{crossreftools}
+\RequirePackage{csquotes}
 
 % stix2 doesn't behave well with text symbols so I use math symbols instead
 \setlist[itemize,1]{label=\( \bullet \)}
