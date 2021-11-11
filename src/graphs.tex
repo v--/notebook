@@ -1,40 +1,74 @@
 \subsection{Graphs}\label{subsec:graphs}
 
 \begin{remark}\label{rem:directed_and_undirected_graphs}
-  Unfortunately, the word \enquote{graph} has at least three popular meanings withing mathematics:
+  Unfortunately, the word \enquote{graph} has at least three popular meanings within mathematics:
   \begin{itemize}
-    \item Graphs of functions (see \fullref{def:multi_valued_function/graph})
-    \item Directed graphs (see \fullref{def:directed_graph})
-    \item Undirected graphs (see \fullref{def:undirected_graph})
+    \item The graph of a function --- \fullref{def:multi_valued_function/graph}.
+    \item A directed graph --- \fullref{def:directed_graph}.
+    \item An undirected graph --- \fullref{def:undirected_graph}.
   \end{itemize}
 
-  Graphs of functions are different enough from the other two notions to not cause any confusion, however it is often not clear from the context whether \enquote{graph} refers to directed or undirected graphs. Both are formalisms corresponding to dots in the plane connected with (directed or undirected) lines (see \fullref{ex:directed_graph}).
+  Graphs of functions are different enough from the other two notions to not cause any confusion, however it is often not clear from the context whether \enquote{graph} refers to directed or undirected graphs. Both are formalisms corresponding to dots in the plane connected with (directed or undirected) lines, as illustrated in \fullref{ex:def:directed_graph}. Furthermore, even if it is clear whether the graph is directed or undirected, it is often unclear whether it is \hyperref[def:directed_graph/order]{finite}, whether it is \hyperref[def:directed_graph/simple]{simple} and whether it is a \hyperref[def:multigraph]{multigraph} or not. We try to be as precise as possible to avoid confusion.
 
-  We define undirected graphs as a special case of directed graphs. This approach makes some definitions more awkward. In programming, however, implementing undirected graphs as a special case of directed graphs is often more versatile (see \cite[sec. 5.4]{Erickson2019} and \cite[ch. 1, sec. 2.4]{GondranMinoux1984Graphs}).
+  We define undirected graphs as a special case of directed graphs. This approach does make some definitions more awkward, however we prefer it over defining the two differently. Furthermore, software implementations of undirected graphs as a special case of directed graphs are often more versatile --- see \cite[sec. 5.4]{Erickson2019} and \cite[ch. 1, sec. 2.4]{GondranMinoux1984Graphs}.
 \end{remark}
 
 \begin{definition}\label{def:directed_graph}\mcite[ch. 1, sec. 1.1]{GondranMinoux1984Graphs}
-  A \term{directed graph} \( G = (V, E) \) is a pair where
-  \begin{itemize}
-    \item \( V \) is a set, whose elements are called \term{vertices} or \term{nodes}.
-    \item \( E \subseteq V^2 \) is a \hyperref[def:relation]{relation} over \( V \), whose elements are called \term{arcs}. If \( u, v \in V \) are vertices and \( e = (u, v) \) is an arc, we say that \( u \) is the \term{head} or \term{initial endpoint} and \( v \) is the \term{tail} or \term{terminal endpoint} of the arc. We denote \( u = h(e) \) and \( v = t(e) \).
-  \end{itemize}
+  A \term{directed graph} is, at least formally, a \hyperref[def:binary_relation]{binary relation} without any restrictions. It is conventional to define a graph as the pair \( G = (V, E) \), where \( V \) is an arbitrary set and \( E \subseteq V^2 \) is the relation.
 
-  For readability, we use the infix notation \( u \to v \) rather than \( (u, v) \) for arcs.
+  \begin{thmenum}[series=def:directed_graph]
+    \thmitem{def:directed_graph/vertices} The elements of \( V \) are called \term{vertices} or \term{nodes}.
 
-  We say that
-  \begin{thmenum}
-    \thmitem{def:directed_graph/order} the number
+    \thmitem{def:directed_graph/order} The \term{order} \( \ord(G) \) of the graph is the \hyperref[thm:cardinality_existence]{cardinality} of \( V \). Without context, we usually assume that the set \( V \) of vertices is \hyperref[def:set_finiteness]{finite}, however it is sometimes beneficial to consider infinite graphs and hence we define \( \ord(G) \) to be a general \hyperref[def:cardinal]{cardinal number} rather than a \hyperref[rem:peano_arithmetic_zero/nonnegative]{nonnegative integer}.
+
+    \thmitem{def:directed_graph/arcs} The elements of \( E \) are called \term{arcs}. For every arc \( e = (a, b) \), the vertex \( a \) is called its \term{head} and \( b \) is called its \term{tail}. We sometimes use the notation \( \head(e) \) and \( \tail(e) \), which notation is also fundamental for multigraphs --- see \fullref{def:multigraph}.
+
+    For readability, we use the notation \( u \to v \) rather than \( (u, v) \) for arcs.
+
+    \thmitem{def:directed_graph/loop} An arc whose head and tail are equal is called a \term{loop}.
+
+    \thmitem{def:directed_graph/simple} A graph without loops is called \term{simple}.
+  \end{thmenum}
+
+  Directed graphs have the following metamathematical properties:
+  \begin{thmenum}[resume=def:directed_graph]
+    \thmitem{def:directed_graph/theory} The theory of directed graphs is an empty \hyperref[def:first_order_theory]{first-order theory} over the language consisting of a single infix binary relation \( \to \).
+
+    See \fullref{rem:directed_graphs_model_theory} for some nontrivial consequences.
+
+    \thmitem{def:directed_graph/homomorphism} A \hyperref[def:first_order_homomorphism]{first-order homomorphisms} between two graphs \( G_1 = (V_1, E_1) \) and \( G_2 = (V_2, E_2) \) is a function \( f: V_1 \to V_2 \) between their universes such that for every edge \( a \to b \) of \( G_1 \), \( f(a) \to f(b) \) is an edge of \( G_2 \).
+
+    It is a weak homomorphism in the sense of \fullref{def:first_order_homomorphism}.
+
+    \thmitem{def:directed_graph/submodel} As for preordered sets, any subset \( V' \subseteq V \) of vertices induces a directed graph with the \( E \) relation restricted to \( V' \). That is, \( G' = (V', E') \) is a \term{subgraph} of \( G \) if \( V' \subseteq V \) and
     \begin{equation*}
-      \ord G \coloneqq \card V
+      E' = \set{ e \in E \given \head(e) \in U \T{and} \tail(e) \in U }.
     \end{equation*}
-    is the \term{order} of the graph \( G = (V, E) \).
-    \thmitem{def:directed_graph/empty} a graph \( G = (V, E) \) is \term{empty} if \( E = \varnothing \).
-    \thmitem{def:directed_graph/subgraph} the graph \( G' = (V', E') \) is a \term{subgraph} of \( G = (V, E) \) if we have both \( V' \subseteq V \) and \( E' \subseteq E \).
-    \thmitem{def:directed_graph/loop} the arc \( u \to v \) is a \term{loop} if \( u = v \).
-    \thmitem{def:directed_graph/simple}\mcite[ch. 1, sec. 1.3]{GondranMinoux1984Graphs}the graph \( G \) is \term{simple} if it has no loops.
+
+    \thmitem{def:directed_graph/trivial} Unlike the \hyperref[def:group/trivial]{trivial group} \( \set{ e } \) or \hyperref[def:partially_ordered_set/trivial]{empty ordered set}, which are unique up to an isomorphism, there is no single agreed upon graph called the \enquote{trivial graph}.
+
+    An unambiguous concept is that of an \term{edgeless graph}, in which the set of edges is empty, but the set of vertices may or may not be empty. Every graph \( G = (V, E) \) has exactly \( 2^{\ord(G)} \) edgeless subgraphs (one for each subset of \( V \)).
+
+    The bottom of the \hyperref[thm:substructures_form_complete_lattice]{lattice of submodels} of \( G \) is the \term{order-zero graph} \( (\varnothing, \varnothing) \). The order-zero graph is obviously unique.
+
+    The terms \term{empty graph}, \term{null graph} and \term{trivial graph} may refer to either edgeless graphs or the order-zero graph depending on the author and the situation.
+
+    \thmitem{def:directed_graph/category} We denote the \hyperref[def:category_of_first_order_models]{category of models} of directed graphs by \( \cat{DGraph} \).
   \end{thmenum}
 \end{definition}
+
+\begin{example}\label{ex:def:directed_graph/basics}
+  Consider the directed graph
+  \begin{equation}\label{eq:ex:def:directed_graph}
+    \begin{aligned}
+      \includegraphics{figures/eq__ex__def__directed_graph.pdf}
+    \end{aligned}
+  \end{equation}
+
+  It has no remarkable properties, however it is simple enough to easily describe in detail. The few basic properties we can list now is that \eqref{eq:ex:def:directed_graph} has order \( 6 \) and is simple since it contains no loops. Note also that the edges are numbered in \hyperref[eq:def:lexicographic_order]{lexicographic order}. We will come back to this example later with more insightful comments.
+
+  It should be noted that when defining a concrete graph, it is impractical to enumerate the vertices and edges. It is instead more understandable to work with an \hyperref[def:graph_embedding]{embedding} of the graph into \( \BbbR^2 \) like it is done in \eqref{eq:ex:def:directed_graph}.
+\end{example}
 
 \medskip
 
@@ -60,48 +94,8 @@
   \end{thmenum}
 \end{definition}
 
-\begin{example}\label{ex:directed_graph}
-  Consider the directed graph \( G = (V, E) \), corresponding to the following drawing
-  \begin{alignedeq}\label{ex:directed_graph/embedding}
-    \text{\todo{Add diagram}}\iffalse\begin{mplibcode}
-      u := 0.6cm;
-
-      beginfig(1);
-      input metapost/graphs;
-      lax_bboxmargin := 2pt;
-
-      v1 := thelabel("$a$", origin);
-      v2 := thelabel("$b$", (2, 2) scaled u);
-      v3 := thelabel("$c$", (5, 2) scaled u);
-      v4 := thelabel("$d$", (2, -2) scaled u);
-      v5 := thelabel("$e$", (5, -2) scaled u);
-      v6 := thelabel("$f$", (7, 0) scaled u);
-
-      a1 := straight_arc(v1, v2);
-      a2 := straight_arc(v1, v4);
-      a3 := straight_arc(v2, v3);
-      a5 := straight_arc(v4, v3);
-      a4 := straight_arc(v4, v5);
-      a6 := straight_arc(v3, v6);
-      a7 := straight_arc(v5, v6);
-
-      draw_vertices(v);
-      draw_arcs(a);
-
-      label.ulft("$1$", straight_arc_midpoint of a1);
-      label.llft("$2$", straight_arc_midpoint of a2);
-      label.top("$3$", straight_arc_midpoint of a3);
-      label.bot("$5$", straight_arc_midpoint of a4);
-      label.ulft("$4$", straight_arc_midpoint of a5);
-      label.urt("$6$", straight_arc_midpoint of a6);
-      label.lrt("$7$", straight_arc_midpoint of a7);
-      endfig;
-    \end{mplibcode}\fi
-  \end{alignedeq}
-
-  The vertices are labeled \( a \) through \( f \) and the arcs are labeled 1 through 7.
-
-  The corresponding incidence matrix is
+\begin{example}\label{ex:def:directed_graph/matrices}
+  The incidence matrix corresponding to \eqref{eq:ex:def:directed_graph} is
   \begin{balign*}
     \bordermatrix{
       & 1  & 2  & 3  & 4  & 5  & 6  & 7  \cr
@@ -147,7 +141,7 @@
     \end{equation*}
     such that any two consecutive arcs are adjacent, that is, the arcs \( e_i \) and \( e_{i+1} \) are adjacent for \( i = 1, \ldots, n - 1 \). We say that \( u \) is the \term{head} of \( p \) if it is an endpoint of \( e_1 \), but not \( e_2 \) and that \( v \) is the \term{tail} of \( p \) if it is an endpoint of \( e_n \), but not \( e_{n-1} \). The number \( n \) is called the \term{length} of the path and is denoted by \( \len p \).
 
-    In the graph \fullref{ex:directed_graph/embedding}, \( (1, 2, 3) \) is a path with head \( a \), tail \( f \) and length 3, while \( (3, 4) \) is a path with head \( b \), tail \( d \) and length 2.
+    In the graph \fullref{ex:def:directed_graph/embedding}, \( (1, 2, 3) \) is a path with head \( a \), tail \( f \) and length 3, while \( (3, 4) \) is a path with head \( b \), tail \( d \) and length 2.
 
     If all vertices in a path are distinct, that is, if there are exactly \( n + 1 \) distinct vertices, we say that the path is \term{simple}.
 
@@ -159,7 +153,7 @@
 
     \thmitem{def:graph_paths/directed_path}\mcite[ch. 1, sec. 3.2]{GondranMinoux1984Graphs}If the tail of each non-endpoint arc in a path coincides with the head of the next arc, we say that the path is a \term{directed path}.
 
-    In the graph \fullref{ex:directed_graph/embedding}, \( (1, 2, 3) \) is a directed path, while \( (3, 4) \) is not.
+    In the graph \fullref{ex:def:directed_graph/embedding}, \( (1, 2, 3) \) is a directed path, while \( (3, 4) \) is not.
 
     A directed cycle is also called a \term{circuit}.
 
@@ -271,60 +265,25 @@
   \end{itemize}
 \end{definition}
 
-\begin{example}\label{ex:petersen_graph}\mcite[347]{GondranMinoux1984Graphs}
-  The Petersen graph
-  \begin{alignedeq}\label{ex:petersen_graph/embedding}
-    \text{\todo{Add diagram}}\iffalse\begin{mplibcode}
-      u := 1cm;
+\begin{remark}\label{rem:directed_graphs_model_theory}
+  A \hyperref[def:directed_graph]{directed graph} \( G = (V, E) \) is defined as a set \( V \) with a binary relation \( E \). The following properties of graphs and relations are equivalent:
+  \begin{center}
+    \begin{tabular}{l | l}
+      \hyperref[def:directed_graph]{Directed graphs}           & \hyperref[def:binary_relation]{Binary relations} \\
+      \hline
+      \hyperref[def:directed_graph/simple]{Simple}             & \hyperref[def:binary_relation/irreflexive]{Irreflexive} \\
+      \hyperref[def:undirected_graph]{Undirected}              & \hyperref[def:binary_relation/symmetric]{Symmetric} \\
+      \hyperref[def:graph_paths/undirected_path]{Acyclic}      & \hyperref[def:well_founded_relation]{Well-founded} \\
+    \end{tabular}
+  \end{center}
 
-      beginfig(1);
-      input metapost/graphs;
-      lax_bboxmargin := 2pt;
+  Some properties are more subtle. For example, the edges of every \hyperref[def:graph_adjacency/complete_graph]{complete graph} are a \hyperref[def:binary_relation/transitive]{transitive relation} but not vice versa.
 
-      for i = 1 upto 5:
-      v[i] := thelabel("$\bullet$", dir(18 + i * 72) scaled u);
-      v[5 + i] := thelabel("$\bullet$", dir(18 + i * 72) scaled 2u);
-      endfor;
+  From the point of view of \hyperref[subsec:first_order_models]{model theory}, over a \hyperref[def:first_order_language]{first-order language} with only a single predicate symbol every \hyperref[def:first_order_structure]{structure} is a graph and the \hyperref[def:first_order_homomorphism]{homomorphisms} are precisely the homomorphisms of these graphs. Such theories are the theory of \hyperref[def:preordered_set]{preordered sets} and \hyperref[def:zfc]{\logic{ZFC}}.
 
-      for i = 1 upto 4:
-      a[i] := straight_arc(v[5 + i], v[5 + i + 1]);
-      a[5 + i] := straight_arc(v[i], v[5 + i]);
-      endfor;
+  For example, every \hyperref[def:partially_ordered_set/strict]{strictly partially ordered set} \( (\mscrP, <) \) is a simple directed graph but not vice versa.
 
-      a5 := straight_arc(v10, v6);
-      a10 := straight_arc(v5, v10);
+  More interestingly, if \( \mscrV = (V, I) \) is a model of \hyperref[def:zfc]{\logic{ZFC}}, then \( \mscrV \) is \hyperref[def:graph_paths/undirected_path]{acyclic} as a consequence of the \hyperref[def:zfc/foundation]{axiom of foundation} (via \fullref{thm:set_membership_is_well_founded}). In particular, all \hyperref[def:grothendieck_universe]{Grothendieck universes} and \( V_\kappa \) for any \hyperref[def:regular_cardinal]{strongly inaccessible cardinal} \( \kappa \) are graphs (as consequences of \fullref{thm:grothendieck_universe_is_model_of_zfc} and \fullref{thm:cumulative_hierarchy_model_of_zfc}, respectfully).
 
-      a11 := straight_arc(v1, v3);
-      a12 := straight_arc(v1, v4);
-      a13 := straight_arc(v2, v4);
-      a14 := straight_arc(v2, v5);
-      a15 := straight_arc(v3, v5);
-
-      draw_vertices(v);
-      draw_edges(a);
-      endfig;
-    \end{mplibcode}\fi
-  \end{alignedeq}
-  is connected, but not acyclic nor \hyperref[def:graph_paths/hamiltonian_path]{Hamiltonian}.
-\end{example}
-
-\begin{definition}\label{def:graph_homomorphism}
-  Let \( G = (V, E) \) and \( G' = (V', E') \) be directed graphs. We say that the function \( f: V \to V' \) is a \term{graph homomorphism} if for every two vertices \( u, v \in V \),
-  \begin{equation*}
-    (u, v) \in E \text{ implies } (f(u), f(v)) \in E'.
-  \end{equation*}
-
-  The terminology from \fullref{def:morphism_invertibility} applies to graph homomorphisms because of the category \( \cat{Graph} \) of \hyperref[def:category_of_graphs]{graphs}.
-\end{definition}
-
-\begin{definition}\label{def:category_of_graphs}
-  We denote by \( \cat{DGraph} \) the \hyperref[def:category]{category} where
-  \begin{itemize}
-    \item the \hyperref[def:set]{class} of objects is the class of all directed \hyperref[def:directed_graph]{graphs}.
-    \item the morphisms between two graphs the homomorphisms between them, with morphism composition being the usual \hyperref[def:multi_valued_function/composition]{function composition}.
-  \end{itemize}
-
-  We denote by \( \cat{UGraph} \) the category of undirected graphs. Given the convention established in \fullref{rem:directed_and_undirected_graphs} about undirected graphs being a special case of directed graphs, we can regard \( \boldop{UGraph} \) as a subcategory of \( \boldop{DGraph} \).
-
-  Both categories is \hyperref[def:small_and_large_categories]{locally small}.
-\end{definition}
+  More generally, \( (A, \in) \) is a graph for every set \( A \). The edge relation is simply the membership relation restricted to \( A \). From the equivalences in the table above it follows that any \hyperref[def:ordinal]{ordinal} is an acyclic graph since it is well-founded by definition even without the axiom of foundation.
+\end{remark}
