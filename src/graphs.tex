@@ -90,6 +90,10 @@
   It should be noted that when defining a concrete graph, it is impractical to enumerate the vertices and edges. It is instead more understandable to work with an \hyperref[def:graph_embedding]{embedding} of the graph into \( \BbbR^2 \) like it is done here.
 \end{example}
 
+\begin{remark}\label{rem:graphs_linear_algebra_and_topology}
+  As we shall see, the \hyperref[def:graph]{adjacency} and \hyperref[def:graph_incidence]{incidence} of a graph can be easily studied using linear algebra via \hyperref[def:graph_matrices/adjacency]{adjacency} and \hyperref[def:graph_matrices/incidence]{incidence matrices}, while the \hyperref[def:graph_connectedness]{connectedness} of a graph can be studied using \hyperref[def:graph_connectedness]{topology} via \hyperref[def:graph_embedding]{graph embeddings}.
+\end{remark}
+
 \begin{definition}\label{def:graph_incidence}
   Let \( G = (V, E) \) be a directed graph. We define several \hyperref[def:multi_valued_function]{multi-valued functions} from \( \pow(V) \) to \( E \):
   \begin{align*}
@@ -217,36 +221,34 @@
 
 \begin{example}\label{ex:def:graph_matrices}
   The \hyperref[def:graph_matrices/incidence]{incidence matrix} corresponding to the directed graph \eqref{eq:ex:def:graph/directed} is
-  \begin{equation*}
-    \bordermatrix
-    {
-        & 1         & 2         & 3         & 4         & 5         & 6         & 7         \cr
-      a & 1         & 1         &           &           &           &           &           \cr
-      b & \fbox{-1} &           & 1         & 1         &           &           &           \cr
-      c &           &           & \fbox{-1} &           & 1         &           &           \cr
-      d &           & \fbox{-1} &           &           &           & 1         &           \cr
-      e &           &           &           & \fbox{-1} &           & \fbox{-1} & 1         \cr
+  \begin{equation}\label{ex:def:graph_matrices/incidence}
+    \begin{pNiceMatrix}[first-row,first-col]
+        & 1         & 2         & 3         & 4         & 5         & 6         & 7         \\
+      a & 1         & 1         &           &           &           &           &           \\
+      b & \fbox{-1} &           & 1         & 1         &           &           &           \\
+      c &           &           & \fbox{-1} &           & 1         &           &           \\
+      d &           & \fbox{-1} &           &           &           & 1         &           \\
+      e &           &           &           & \fbox{-1} &           & \fbox{-1} & 1         \\
       f &           &           &           &           & \fbox{-1} &           & \fbox{-1}
-    },
-  \end{equation*}
+    \end{pNiceMatrix}
+  \end{equation}
 
   It can be read column-by-column. Every column contains exactly two nonzero elements whose rows correspond to the head (positive) and tail (negative).
 
   To obtain the incidence matrix for the \hyperref[def:graph/symmetrization]{symmetrization} \eqref{eq:ex:def:graph/undirected} of \eqref{eq:ex:def:graph/directed}, we need to simply flip the sign of the boxed elements above.
 
   The \hyperref[def:graph_matrices/adjacency]{adjacency matrix} is
-  \begin{equation*}
-    \bordermatrix
-    {
-        & a        & b        & c        & d        & e        & f \cr
-      a &          & 1        &          & 1        &          &   \cr
-      b & \fbox{1} &          & 1        &          & 1        &   \cr
-      c &          & \fbox{1} &          &          &          & 1 \cr
-      d & \fbox{1} &          &          &          & 1        &   \cr
-      e &          & \fbox{1} &          & \fbox{1} &          & 1 \cr
+  \begin{equation}\label{ex:def:graph_matrices/adjacency}
+    \begin{pNiceMatrix}[first-row,first-col]
+        & a        & b        & c        & d        & e        & f \\
+      a &          & 1        &          & 1        &          &   \\
+      b & \fbox{1} &          & 1        &          & 1        &   \\
+      c &          & \fbox{1} &          &          &          & 1 \\
+      d & \fbox{1} &          &          &          & 1        &   \\
+      e &          & \fbox{1} &          & \fbox{1} &          & 1 \\
       f &          &          & \fbox{1} &          & \fbox{1} &
-    },
-  \end{equation*}
+    \end{pNiceMatrix}
+  \end{equation}
   where the boxed elements are nonzero only in the adjacency matrix for the undirected graph.
 
   The matrix can be read either column-by-column or row-by-row.
@@ -264,34 +266,74 @@
 \end{proof}
 
 \begin{definition}\label{def:graph_spaces}
-  Let \( G = (V, E) \) be a graph. Let \( \mscrR \) be the \hyperref[def:field]{field} \hyperref[thm:f2_is_boolean_algebra]{\BbbF_2} if the graph is undirected and \hyperref[def:semiring/ring]{ring} \( \BbbZ \) of \hyperref[def:set_of_integers]{integers} otherwise. We introduce two \hyperref[def:free_left_module]{free} \( \mscrR \)-\hyperref[def:left_module]{modules} (or, in the undirected case, two vector spaces over \( \BbbF_2 \)).
+  Let \( G = (V, E) \) be a finite graph. We introduce several \hyperref[def:vector_space]{vector spaces} over \( G \) that allow us to study graphs using linear algebra.
 
   \begin{thmenum}
-    \thmitem{def:graph_spaces/vertex} The \term{vertex space} \( \mscrR^V \) is the free \( \mscrR \)-module of dimension \( \card(V) = \ord(G) \).
+    \thmitem{def:graph_spaces/vertex} The \term{vertex space} \( \BbbF_2^V \) is the \hyperref[def:left_module_of_tuples]{tuple vector space} of dimension \( \card(V) = \ord(G) \) over the finite \hyperref[def:field]{field} \hyperref[thm:f2_is_boolean_algebra]{\( \BbbF_2 \)}.
 
-    Every subset \( A \subseteq V \) of vertices induces a unique vector \( x = \seq{ x_v }_{v \in V} \) in the \hyperref[def:graph_spaces/vertex]{vertex space} \( \mscrR^V \) such that
+    Every subset \( A \subseteq V \) of vertices induces a unique vector \( \vect{A} = \seq{ \vect{A}_v }_{v \in V} \) in the \hyperref[def:graph_spaces/vertex]{vertex space} \( \BbbF_2^V \) such that
     \begin{equation*}
-      x_v = \begin{cases}
+      \vect{A}_v \coloneqq \begin{cases}
         1, &v \in A \\
         0, &v \not\in A
       \end{cases}
     \end{equation*}
 
-    This vector is called the \term{characteristic vector} of \( A \).
+    This vector is called the \term{characteristic vector} of \( A \). Conversely, every vector in \( \BbbF_2^V \) induces a set of vertices. If \( A \) consists of a single vertex \( u \), we write \( \vect{u} \) rather than \( \vect{\set{u}} \).
 
-    \thmitem{def:graph_spaces/edge} Analogously, the \term{edge space} \( \mscrR^E \) is the free \( \mscrR \)-module of dimension \( \card(E) \). Every subset \( B \subseteq E \) of arcs induces a unique characteristic vector \( x = \seq{ x_e }_{e \in E} \) in the \hyperref[def:graph_spaces/edge]{edge space} \( \mscrR^E \).
+    It is important to note that, in accordance with \fullref{def:function/set_of_functions}, \( \BbbF_2^V \) is the set of all functions from \( V \) to \( \BbbF_2 \). Since we have assumed that the graph is finite, this space is isomorphic to the tuple space \( \BbbF_2^{\ord(G)} \). Unfortunately, this isomorphism is not unique since it does not give us a choice of ordering of \( V \). Thus, we cannot regard the vectors of \( \BbbF_2^V \) as ordered tuples unless \( V \) is \hyperref[def:well_ordered_set]{well-ordered}.
+
+    \thmitem{def:graph_spaces/edge} Analogously, the \term{edge space} \( \BbbF_2^E \) is the \hyperref[def:left_module_of_tuples]{tuple vector space} of dimension \( \card(E) \). Every subset of \( E \) induces a unique characteristic vector in the \hyperref[def:graph_spaces/edge]{edge space} \( \BbbF_2^E \) and vice versa.
+
+    Despite its name, this vector space encodes directed arcs just as well as undirected edges.
+
+    \thmitem{def:graph_spaces/arc} Finally, we introduce the more complicated \term{arc space} \( \BbbF_3^E \). It is sometimes not sufficient to consider only a subset \( A \subseteq E \) but rather a pair of subsets \( A, B \subseteq E \) such that the arcs in \( A \) are \enquote{positively oriented} and \( B \) are \enquote{negatively oriented}. The terms \enquote{positively oriented} and \enquote{negatively oriented} are informal only have meaning in certain applications. This is the case with \hyperref[def:graph_paths/directed_path]{simple directed paths}, for example.
+
+    The characteristic vector \( x \) of a pair \( (A, B) \) of subsets has components
+    \begin{equation*}
+      \vect{(A, B)}_e \coloneqq \begin{cases}
+        1,  &e \in A \\
+        -1, &e \in B \\
+        0,  &\T{otherwise.}
+      \end{cases}
+    \end{equation*}
+
+    As for the other vector spaces, every pair \( (A, B) \) has a characteristic vector in \( \BbbF_3^E \) and every vector in \( \BbbF_3^E \) corresponds to a pair of subsets of \( E \).
   \end{thmenum}
 \end{definition}
 
-\begin{proposition}\label{thm:undirected_graph_spaces}
-  For an undirected graph \( G = (V, E) \), every vector in the \hyperref[def:graph_spaces/vertex]{vertex space}  \( \BbbF_2^V \) induces a set of vertices and every vector in the \hyperref[def:graph_spaces/edge]{edge space}  \( \BbbF_2^E \) induces a set of edges.
+\begin{proposition}\label{thm:graphs_as_linear_transformations}
+  Let \( V \coloneqq \set{ 1, \ldots, n } \) for some positive integer \( n \). Then there is a bijection between the \hyperref[def:graph/directed]{directed graphs} over \( V \) and the \hyperref[def:linear_operator]{linear} \hyperref[def:endomorphism]{endomorphisms} over \( \BbbF_2 \).
 \end{proposition}
 \begin{proof}
-  Trivial.
+  Let \( G = (V, E) \) be a directed graph and let \( I \) be its \hyperref[def:graph_matrices/adjacency]{adjacency matrix}. Then \( I \) induces a linear endomorphism in \( \BbbF_2^n \).
+
+  Conversely, let \( T: \BbbF_2^n \to \BbbF_2^n \) be a linear endomorphism. Define the set
+  \begin{equation*}
+    E \coloneqq \set{ (u, v) \in V^2 \given T(\vect{\set{v}})_u = 1 }.
+  \end{equation*}
+
+  Then the adjacency matrix of \( G = (V, E) \) induces \( T \).
 \end{proof}
 
+\begin{example}\label{ex:thm:graphs_as_linear_transformations}
+  We will empirically verify the proof of \fullref{thm:graphs_as_linear_transformations}.
+
+  Denote by \( A \) the adjacency matrix \eqref{ex:def:graph_matrices/adjacency} of \eqref{eq:ex:def:graph/directed} discussed in \fullref{ex:def:graph_matrices}. Consider the vertex \( b \). The characteristic vector of \( b \) is \( \vect{b} = (0, 1, 0, 0, 0, 0) \). Thus, the matrix product \( A \vect{b} \) simply \enquote{selects} the \( b \)-th column of \( I \), which is
+  \begin{equation*}
+    A \vect{b}
+    =
+    \begin{pNiceMatrix}[last-row]
+      1        & 0        & 0        & 0        & 0        & 0 \\
+      a        & b        & c        & d        & e        & f
+    \end{pNiceMatrix}^T
+  \end{equation*}
+
+  The only nonzero member of \( A \vect{b} \) is the one corresponding to the vertex \( a \). This is consistent with \( a \) being the only predecessor of \( b \) in \eqref{eq:ex:def:graph/directed}.
+\end{example}
+
 \begin{definition}\label{def:graph_paths}
-  Let \( G = (V, E) \) be a directed graph. We will introduce \term{paths}.
+  Let \( G = (V, E) \) be a directed or undirected graph. We will define \term{paths}.
 
   \begin{thmenum}
     \thmitem{def:graph_paths/adjacent_vertices}\mcite[ch. 1, sec. 1.4]{GondranMinoux1984Graphs} Two vertices \( u \) and \( v \)  are called \term{adjacent} if there exists an arc from \( u \)  to \( v \).
@@ -300,15 +342,25 @@
 
     Note that we have not specified how the endpoints are related --- \( u \to v \) is adjacent to \( v \to w \) as well as to \( u \to w \).
 
-    \thmitem{def:graph_paths/undirected_path}\mcite[ch. 1, sec. 3.1]{GondranMinoux1984Graphs} An \term{undirected path} or \term{chain} is a sequence of distinct arcs
+    \thmitem{def:graph_paths/undirected_path}\mcite[ch. 1, sec. 1.3]{GondranMinoux1984Graphs} An \term{undirected path} is a finite or infinite \hyperref[def:sequence]{sequence} of arcs
     \begin{equation*}
-      p \coloneqq ( e_1, \ldots, e_n ),
+      p \coloneqq (e_1, e_2, \ldots),
     \end{equation*}
-    such that any two consecutive arcs are adjacent, that is, the arcs \( e_i \) and \( e_{i+1} \) are adjacent for \( i = 1, \ldots, n - 1 \). We say that \( u \) is the \term{head} of \( p \) if it is an endpoint of \( e_1 \), but not \( e_2 \) and that \( v \) is the \term{tail} of \( p \) if it is an endpoint of \( e_n \), but not \( e_{n-1} \). The number \( n \) is called the \term{length} of the path and is denoted by \( \len p \).
+    such that any two consecutive arcs are adjacent. That is, the arcs \( e_k \) and \( e_{k+1} \) are adjacent for every \( k = 1, 2, \ldots \).
 
-    In the graph \fullref{ex:def:graph/directed/embedding}, \( (1, 2, 3) \) is a path with head \( a \), tail \( f \) and length 3, while \( (3, 4) \) is a path with head \( b \), tail \( d \) and length 2.
+    If the graph is undirected, we regard these as unordered edges rather than ordered arcs, which brings some nuances. We will further comment on this where necessary.
 
-    If all vertices in a path are distinct, that is, if there are exactly \( n + 1 \) distinct vertices, we say that the path is \term{simple}.
+    The \term{length} of \( p \) is defined in an obvious way for finite paths and as \( p = \infty \) for infinite paths (here \( \infty \) is merely a more conventional symbol for denoting \hyperref[thm:omega_is_a_cardinal]{\( \aleph_0 \)}).
+
+    \thmitem{def:graph_paths/endpoints} We say that \( u \) is the \term{head} of \( p \) if it is an endpoint of \( e_1 \), but not \( e_2 \).
+
+    If \( p \) has length \( n < \infty \), we say that \( v \) is the \term{tail} of \( p \) if it is an endpoint of \( e_n \), but not \( e_{n-1} \).
+
+    Both the head and the tail of a path may not exist. For example, the path \( \set{ u \to v, v \to u } \) has neither despite being finite. In an undirected graph, an undirected path always has an edge
+
+    \thmitem{def:graph_paths/directed_path}\mcite[ch. 1, sec. 3.2]{GondranMinoux1984Graphs} If the tail of each non-endpoint arc in a path coincides with the head of the next arc, we say that the path is \term{directed}.
+
+    A directed path always has a head and, if it is finite, a tail.
 
     Some authors (e.g. \cite[sec. 5.2]{Erickson2019}) call undirected paths \term{walks} and reserve the term \enquote{path} for simple undirected paths.
 
@@ -316,7 +368,7 @@
 
     A \term{simple cycle} is a cycle where all non-endpoint vertices are distinct.
 
-    \thmitem{def:graph_paths/directed_path}\mcite[ch. 1, sec. 3.2]{GondranMinoux1984Graphs}If the tail of each non-endpoint arc in a path coincides with the head of the next arc, we say that the path is a \term{directed path}.
+    \thmitem{def:graph_paths/directed_path}
 
     In the graph \fullref{ex:def:graph/directed/embedding}, \( (1, 2, 3) \) is a directed path, while \( (3, 4) \) is not.
 
@@ -326,19 +378,19 @@
   \end{thmenum}
 \end{definition}
 
-\begin{definition}\label{def:graph_connectivity}
+\begin{definition}\label{def:graph_connectedness}
   Let \( G = (V, E) \) be a directed graph.
 
   \begin{thmenum}
-    \thmitem{def:graph_connectivity/reachable_vertices}The vertex \( v \) is \term{reachable} from the vertex \( u \) if there exists a directed \hyperref[def:graph_paths/directed_path]{path} from \( u \) to \( v \).
+    \thmitem{def:graph_connectedness/reachable_vertices}The vertex \( v \) is \term{reachable} from the vertex \( u \) if there exists a directed \hyperref[def:graph_paths/directed_path]{path} from \( u \) to \( v \).
 
-    \thmitem{def:graph_connectivity/strongly_connected_graph}\mcite[ch. 1, sec. 3.5]{GondranMinoux1984Graphs}The graph \( G \) is \term{strongly connected} if every pair of distinct vertices are reachable, that is, if there exists a directed path between every pair of distinct vertices.
+    \thmitem{def:graph_connectedness/strongly_connected_graph}\mcite[ch. 1, sec. 3.5]{GondranMinoux1984Graphs}The graph \( G \) is \term{strongly connected} if every pair of distinct vertices are reachable, that is, if there exists a directed path between every pair of distinct vertices.
 
-    \thmitem{def:graph_connectivity/weakly_connected_graph}\mcite[ch. 1, sec. 3.3]{GondranMinoux1984Graphs}The graph \( G \) is \term{weakly connected} if there exists an undirected path between every pair of distinct vertices.
+    \thmitem{def:graph_connectedness/weakly_connected_graph}\mcite[ch. 1, sec. 3.3]{GondranMinoux1984Graphs}The graph \( G \) is \term{weakly connected} if there exists an undirected path between every pair of distinct vertices.
 
-    \thmitem{def:graph_connectivity/connected_component}\mcite[ch. 1, sec. 3.3 \\ ch. 1, sec. 3.5]{GondranMinoux1984Graphs}The subgraph \( G' \) of \( G \) is a \term{connected component} (resp. \term{strongly connected component}) if it is connected (resp. strongly connected) and there exists no connected (resp. strongly connected) subgraph of \( G \) that properly contains \( G' \).
+    \thmitem{def:graph_connectedness/connected_component}\mcite[ch. 1, sec. 3.3 \\ ch. 1, sec. 3.5]{GondranMinoux1984Graphs}The subgraph \( G' \) of \( G \) is a \term{connected component} (resp. \term{strongly connected component}) if it is connected (resp. strongly connected) and there exists no connected (resp. strongly connected) subgraph of \( G \) that properly contains \( G' \).
 
-    \thmitem{def:graph_connectivity/connectivity_number}\mcite[ch. 1, sec. 3.3 \\ ch. 1, sec. 3.5]{GondranMinoux1984Graphs}\( G \) has \term{connectivity number} (resp. \term{strong connectivity number}) \( n \) if it has \( n \) connected (resp. strongly connected) components.
+    \thmitem{def:graph_connectedness/connectivity_number}\mcite[ch. 1, sec. 3.3 \\ ch. 1, sec. 3.5]{GondranMinoux1984Graphs}\( G \) has \term{connectivity number} (resp. \term{strong connectivity number}) \( n \) if it has \( n \) connected (resp. strongly connected) components.
   \end{thmenum}
 \end{definition}
 
