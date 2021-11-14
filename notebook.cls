@@ -89,7 +89,7 @@
 % Misc math packages
 \RequirePackage[altpo,epsilon]{backnaur}
 \RequirePackage[ISO]{diffcoeff}
-\RequirePackage{nicematrix}
+\RequirePackage{blkarray}
 \RequirePackage{synttree}
 \RequirePackage{ebproof}
 \RequirePackage{bigints}
