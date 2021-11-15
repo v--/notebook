@@ -87,13 +87,13 @@
   Consider the directed graph
   \begin{equation}\label{eq:ex:def:graph/directed}
     \begin{aligned}
-      \includegraphics{figures/eq__ex__def__directed_graph.pdf}
+      \includegraphics{figures/eq__ex__def__graph__directed.pdf}
     \end{aligned}
   \end{equation}
   and its \hyperref[def:graph/symmetrization]{symmetrization}, the undirected graph.
   \begin{equation}\label{eq:ex:def:graph/undirected}
     \begin{aligned}
-      \includegraphics{figures/eq__ex__def__undirected_graph.pdf}
+      \includegraphics{figures/eq__ex__def__graph__undirected.pdf}
     \end{aligned}
   \end{equation}
 
@@ -299,9 +299,22 @@
 
     It is important to note that, in accordance with \fullref{def:function/set_of_functions}, \( \BbbF_2^V \) is the set of all functions from \( V \) to \( \BbbF_2 \). Since we have assumed that the graph is finite, this space is isomorphic to the tuple space \( \BbbF_2^{\ord(G)} \). Unfortunately, this isomorphism is not unique since it does not give us a choice of ordering of \( V \). Thus, we cannot regard the vectors of \( \BbbF_2^V \) as ordered tuples unless \( V \) is \hyperref[def:well_ordered_set]{well-ordered}.
 
-    \thmitem{def:graph_spaces/edge} Analogously, the \term{edge space} \( \BbbF_2^E \) is the \hyperref[def:left_module_of_tuples]{tuple vector space} of dimension \( \card(E) \). Every subset of \( E \) induces a unique characteristic vector in the \hyperref[def:graph_spaces/edge]{edge space} \( \BbbF_2^E \) and vice versa.
+    \thmitem{def:graph_spaces/arc} Analogously, the \term{arc space} \( \BbbF_2^E \) is the \hyperref[def:left_module_of_tuples]{tuple vector space} of dimension \( \card(E) \). Every subset of \( E \) induces a unique characteristic vector in the \hyperref[def:graph_spaces/arc]{arc space} \( \BbbF_2^E \) and vice versa. The space is motivated by \hyperref[def:graph_directed_path]{directed paths} and their \hyperref[def:graph_directed_path/characteristic_vector]{characteristic vectors}.
 
-    Despite its name, this vector space encodes directed arcs just as well as undirected edges.
+    When dealing with undirected graphs, we call \( \BbbF_2^E \) the \term{edge space}.
+
+    \thmitem{def:graph_spaces/oriented_arc} Finally, we introduce the more complicated \term{oriented arc space} \( \BbbF_3^E \). It is sometimes not sufficient to consider only a subset \( A \subseteq E \) but rather a pair of subsets \( A, B \subseteq E \) such that the arcs in \( A \) are \enquote{positively oriented} and \( B \) are \enquote{negatively oriented}. The terms \enquote{positively oriented} and \enquote{negatively oriented} are informal only have meaning in certain applications. The space is motivated by \hyperref[def:graph_adjacency_chain]{adjacency chains} and their \hyperref[def:graph_adjacency_chain/characteristic_vector]{characteristic vectors}.
+
+    The characteristic vector \( x \) of a pair \( (A, B) \) of subsets has components
+    \begin{equation*}
+      \vect{(A, B)}_e \coloneqq \begin{cases}
+        1,  &e \in A \\
+        -1, &e \in B \\
+        0,  &\T{otherwise.}
+      \end{cases}
+    \end{equation*}
+
+    As for the other vector spaces, every pair \( (A, B) \) has a characteristic vector in \( \BbbF_3^E \) and every vector in \( \BbbF_3^E \) corresponds to a pair of subsets of \( E \).
   \end{thmenum}
 \end{definition}
 
@@ -338,119 +351,261 @@
   The only nonzero member of \( A \vect{b} \) is the one corresponding to the vertex \( a \). This is consistent with \( a \) being the only predecessor of \( b \) in \eqref{eq:ex:def:graph/directed}.
 \end{example}
 
-\begin{definition}\label{def:graph_directed_path}
-  A \term{directed path} or simply \term{path} in a directed graph \( G = (V, E) \) is a nonempty finite or infinite \hyperref[def:sequence]{sequence} of arcs
-  \begin{equation*}
-    p \coloneqq (e_1, e_2, \ldots),
-  \end{equation*}
-  such that each arc is a \hyperref[def:graph/adjacency]{successor} of the preceding one. That is, the arcs \( e_{k+1} \) is a successor of \( e_k \) for every \( k = 1, 2, \ldots \).
+\begin{definition}\label{def:graph_adjacency_chain}
+  An \term{adjacency chain} in a directed graph \( G = (V, E) \) is a finite or infinite sequence of arcs
+  \begin{equation}\label{eq:def:graph_adjacency_chain}
+    p \coloneqq (e_1, e_2, \ldots)
+  \end{equation}
+  such that every two consecutive arcs are adjacent. That is, \( e_{k+1} \) is adjacent to \( e_k \) for every \( k = 1, 2, \ldots \).
 
-  This terminology is used in \mcite[ch. 1, sec. 3.2]{GondranMinoux1984Graphs}, however in \cite[sec. 5.2]{Erickson2019} this is instead called a \term{walk} and a path is defined as a simple walk (in the sense of \fullref{def:graph_directed_path/simple}). The terms \term{trail} and \term{tour} also have related meaning, but it is unfortunately ambiguous, depending on the context. \enquote{Chain} is also ambiguous, however we use it in a strict sense --- see \fullref{def:graph_adjacency_chain}. We sometimes use \enquote{directed path} in order to reduce ambiguity.
+  Note that every two arcs of \( p \) should only be adjacent, hence \( (u \to v, u \to w) \) is an adjacency chain. See \fullref{def:graph_directed_path} for the more intuitive notion of a path.
 
-  This is one of the definitions where no adaptations are needed for undirected graphs --- we simply use that we have defined undirected graphs as a special case of directed graphs.
+  The term \enquote{chain} is used in this sense in \cite[ch. 1, sec. 3.1]{GondranMinoux1984Graphs}, for example, but in general it may refer to a path or simple path. We add the adverb \enquote{adjacency} in order to reduce ambiguity.
 
   \begin{thmenum}
-    \thmitem{def:graph_directed_path/subpath} The path \( q \) is a \term{subpath} of \( p \) if \( q \) is a \hyperref[def:subsequence]{subsequence} of \( p \).
+    \thmitem{def:graph_adjacency_chain/domain} The \term{domain} \( \dom(p) \) of \( p \) is the set of all vertices that belong to at least one arc in \( p \). We say that the path \term{visits} each member of \( \dom(p) \).
 
-    \thmitem{def:graph_directed_path/domain} The \term{domain} \( \dom(p) \) of \( p \) is the set of all vertices that belong to at least one arc in \( p \). We say that the path \term{visits} each member of \( \dom(p) \).
-
-    \thmitem{def:graph_directed_path/length} The \term{length} of \( p \) is defined in an obvious way for finite paths and as \( p = \infty \) for infinite paths (here \( \infty \) is merely a more conventional symbol for denoting \hyperref[thm:omega_is_a_cardinal]{\( \aleph_0 \)}).
+    \thmitem{def:graph_adjacency_chain/length} The \term{length} of \( p \) is defined in an obvious way for finite paths and as \( p = \infty \) for infinite paths (here \( \infty \) is merely a more conventional symbol for denoting \hyperref[thm:omega_is_a_cardinal]{\( \aleph_0 \)}).
 
     Note that
-    \begin{equation}\label{eq:def:graph_directed_path/length_and_domain}
+    \begin{equation}\label{eq:def:graph_adjacency_chain/length_and_domain}
       \card(\dom(p)) + 1 \leq \len(p)
     \end{equation}
     in general since a vertex can be an endpoint of many arcs.
 
-    \thmitem{def:graph_directed_path/endpoints} The \term{head} of the path is the head of the first arc \( e_1 \). If \( p \) has length \( n < \infty \), the \term{tail} of \( p \) is the tail of the last arc \( e_n \).
+    \thmitem{def:graph_adjacency_chain/subchain} We say that the \hyperref[def:subsequence]{subsequence} \( q \) of \( p \) is a \term{subchain} of \( p \) if the elements of \( q \) are consecutive in \( p \), i.e. there exists some index \( n \geq 0 \) such that \( q_k = p_{n + k} \) for \( 0 < k < \len(q) \).
+
+    \thmitem{def:graph_adjacency_chain/endpoints} Similarly to arcs, chains have a \term{head} and \term{tail}, although both may not exist. Roughly, the head of \( p = (e_1, e_2, \ldots) \) is the endpoint of \( e_1 \) that is not an endpoint of \( e_2 \). After considering some edge cases, this definition becomes
+    \begin{equation}\label{eq:def:graph_adjacency_chain/endpoints/head}
+      \head(p) \coloneqq \begin{cases}
+        \T{undefined}, &p = \varnothing, \\
+        u,             &p = (u \to v), \\
+        u,             &p = (u \to v, v \to u, \cdots), \\
+        v,             &v \T{is an endpoint of} e_1 \T{but not of} e_2.
+      \end{cases}
+    \end{equation}
+
+    Compare this to the much simpler \eqref{eq:def:graph_directed_path/endpoints/head}.
+
+    The \term{tail} is defined similarly but with the caveat that an infinite chain cannot have a tail.
 
     The head and the tail are collectively called the \term{endpoints} of a path.
 
+    \thmitem{def:graph_adjacency_chain/simple} The chain \( p \) is \term{simple} if every vertex in \( \dom(p) \) is visited only once. That is, within the subgraph whose arcs are those in \( p \), the \hyperref[def:graph_incidence/degree]{degree} of every vertex is at most \( 2 \).
+
+    An alternative characterization is that equality holds in \eqref{eq:def:graph_adjacency_chain/length_and_domain}.
+
+    \thmitem{def:graph_adjacency_chain/converse} If the chain \eqref{eq:def:graph_adjacency_chain} is finite of length \( n \), we define its \term{converse} as
+    \begin{equation*}
+      p^{-1} \coloneqq (e_n, e_{n-1}, \cdots, e_2, e_1).
+    \end{equation*}
+
+    \thmitem{def:graph_adjacency_chain/orientation} We say that an arc is \term{positively oriented} if it is either the first arc \( e_1 \) if \( \head(e_1) = \head(p) \) or the \hyperref[def:graph/adjacency]{successor} of a positively oriented arc.
+
+    More precisely, we can recursively define the \hyperref[def:boolean_function]{predicate} \( \op{IsPos} \) determining whether the arc at position \( k \) is \term{positively oriented}:
+    \begin{equation*}
+      \begin{aligned}
+        \op{IsPos}(k) \coloneqq \begin{cases}
+          T,                            &k = 1 \T{and} \head(e_1) = \head(p) \\
+          F,                            &k = 1 \T{and} \head(e_1) \neq \head(p) \\
+          \op{IsPos}(k - 1),            &k > 1 \T{and} \head(e_k) = \tail(e_k) \\
+          \overline{\op{IsPos}(k - 1)}, &k > 1 \T{and} \head(e_k) \neq \tail(e_k)
+        \end{cases}
+      \end{aligned}
+    \end{equation*}
+
+    All arcs that are not positively oriented are said to be \term{negatively oriented}.
+
+    \thmitem{def:graph_adjacency_chain/characteristic_vector} The \term{characteristic vector} \( \vect{p} \) of a chain \( p \) is defined as the characteristic vector \( \vect{(P, N)} \) in the \hyperref[def:graph_spaces/oriented_arc]{oriented arc space} \( \BbbF_3^E \), where \( P \) is the set of positively oriented arcs and \( N \) is the set of negatively oriented arcs.
+
+    Conversely, every vector in \( \BbbF_3^E \) identifies a path.
+  \end{thmenum}
+\end{definition}
+
+\begin{definition}\label{def:graph_directed_path}
+  A \term{directed path} or simply \term{path} in a directed graph \( G = (V, E) \) is an \hyperref[def:graph_adjacency_chain]{adjacency chain} without negatively oriented arcs. In other words, a directed path is a finite or infinite sequence \eqref{eq:def:graph_adjacency_chain} such that each arc is a \hyperref[def:graph/adjacency]{successor} of the preceding one. That is, the head \( e_{k+1} \) is the tail of \( e_k \) for every \( k = 1, 2, \ldots \).
+
+  The definitions of \hyperref[def:graph_adjacency_chain/domain]{domain} \( \dom(p) \), \hyperref[def:graph_adjacency_chain/length]{length} and \( \len(p) \) are inherited from chains. \hyperref[def:graph_adjacency_chain/subchain]{Subchains} of a path are called \term{subpaths} and a path is called \term{simple} if it is a \hyperref[def:graph_adjacency_chain/simple]{simple chain}.
+
+  This is one of the definitions where no adaptations are needed for undirected graphs --- we simply use that we have defined undirected graphs as a special case of directed graphs.
+
+  This terminology is used in \mcite[ch. 1, sec. 3.2]{GondranMinoux1984Graphs}, however in \cite[sec. 5.2]{Erickson2019} this is instead called a \term{walk} and a path is defined as a simple walk (\enquote{simple} in the sense of \fullref{def:graph_adjacency_chain/simple}). The terms \term{trail} and \term{tour} also have related meaning, but it is unfortunately ambiguous, depending on the context. We sometimes use \enquote{directed path} in order to reduce ambiguity.
+
+  \begin{thmenum}
+    \thmitem{def:graph_directed_path/endpoints} The definition of head and tail of a directed path inherits those of adjacency chains, however they are so much simpler that we give them explicitly. Instead of \eqref{eq:def:graph_adjacency_chain/endpoints/head} we have
+    \begin{equation}\label{eq:def:graph_directed_path/endpoints/head}
+      \head(p) \coloneqq \begin{cases}
+        \T{undefined}, &p = \varnothing, \\
+        u,             &p = (u \to v, \cdots).
+      \end{cases}
+    \end{equation}
+
+    Tails are defined analogously.
+
+    \thmitem{def:graph_directed_path/characteristic_vector} The \term{characteristic vector} \( \vect{p} \) of a path \( p \) is defined as the characteristic vector of the domain \( \dom(p) \) in the \hyperref[def:graph_spaces/arc]{arc space} \( \BbbF_2^E \). Conversely, every vector in \( \BbbF_2^E \) identifies a path.
+
+    The vector \( \vect{p} \) is equal to the \hyperref[def:graph_adjacency_chain/characteristic_vector]{characteristic vector} of \( p \) when regarding \( p \) as a chain. It should be noted, however, that we regard \( \vect{p} \) as a member of the arc space \( \BbbF_2^E \) and rather than the oriented arc space \( \BbbF_3^E \).
+
     \thmitem{def:graph_directed_path/reachability} We say that \( p \) \term{connects} or \term{passes through} the vertices \( u \) and \( v \) if there exists a subpath \( q \) such that \( \head(q) = u \) and \( \tail(p) = v \).
 
-    We say that the vertex \( u \) is \term{reachable} from \( v \) if there exists a path that connects them.
+    We say that the vertex \( u \) is \term{reachable} from \( v \) if there exists a path that connects them. Clearly reachability is the \hyperref[def:derived_relations/transitive]{transitive closure} of \( \to \).
 
-    \thmitem{def:graph_directed_path/simple} The path \( p \) is \term{simple} if every vertex in \( \dom(p) \) is visited only once. That is, if every vertex is either the \hi{tail} of the entire path \( p \) or of the \hi{head} a unique arc in \( p \).
-
-    An alternative characterization is that within the subgraph whose arcs are those of \( p \), the \hyperref[def:graph_incidence/degree]{degree} of every vertex is at most \( 2 \).
-
-    Another alternative characterization is that equality holds in \eqref{eq:def:graph_directed_path/length_and_domain}.
+    This definition is generalizable to arbitrary chains, however we prefer not to do it.
   \end{thmenum}
 \end{definition}
 
 \begin{example}\label{ex:def:graph_directed_path}
-  Consider again the graph \eqref{eq:ex:def:graph/directed}. The solid lines in \eqref{eq:ex:def:graph_directed_path} describe a path.
+  An example of an infinite graph path is the forward tower \eqref{eq:ex:tower_diagram_graph/forward} regarded as a path of the two-sided tower \eqref{eq:ex:tower_diagram_graph/two_sided}. It is also simple since the degree of the forward tower is \( 2 \).
+
+  Now consider again the graph \eqref{eq:ex:def:graph/directed}. The solid lines in \eqref{eq:ex:def:graph_directed_path} describe a path.
   \begin{equation}\label{eq:ex:def:graph_directed_path}
     \begin{aligned}
       \includegraphics{figures/eq__ex__def__graph_path.pdf}
     \end{aligned}
   \end{equation}
 
-  Some elementary observations:
   \begin{itemize}
     \item This path corresponds to the sequence
     \begin{equation*}
       p = \parens{ \underbrace{a \to b}_{e_1}, \underbrace{b \to e}_{e_4}, \underbrace{e \to f}_{e_7} }.
     \end{equation*}
 
-    \item The endpoints are \( \head(p) = \head(e_1) = a \) and \( \tail(p) = \tail(e_7) = f \).
+    \item Its \hyperref[def:graph_directed_path/characteristic_vector]{characteristic vector} is
+    \begin{equation*}
+      \vect{p}
+      =
+      \begin{blockarray}{cccccrl}
+        e_1 & e_2 & e_3 & e_4 & e_5 & e_6 & e_7 \\
+      \begin{block}{(cccccr)l}
+        1   & 0   & 0   & 1   & 0   & 0   & 1 \\
+      \end{block}
+      \end{blockarray}
+      {}^T.
+    \end{equation*}
 
-    \item It is a simple path because \( \deg(a) = \deg(f) = 1 \) and \( \deg(b) = \deg(e) = 2 \).
+    Furthermore, \( p \) can be identified from the characteristic vector.
 
-    \item Every vertex (ordered alphabetically) is reachable from the previous except for \( a \) (which has no previous) and \( d \) (which is unreachable from \( c \)).
+    \item The \hyperref[def:graph_directed_path/endpoints]{endpoints} are \( \head(p) = \head(e_1) = a \) and \( \tail(p) = \tail(e_7) = f \).
+
+    \item It is a \hyperref[def:graph_adjacency_chain/simple]{simple path} because \( \deg(a) = \deg(f) = 1 \) and \( \deg(b) = \deg(e) = 2 \).
+
+    \item Every vertex (ordered alphabetically) is \hyperref[def:graph_directed_path/reachability]{reachable} from the previous except for \( a \) (which has no previous) and \( d \) (which is unreachable from \( c \)).
+
+    \item The \hyperref[def:graph_adjacency_chain/converse]{converse chain}
+    \begin{equation*}
+      p^{-1} = (e \to f, b \to e, a \to b),
+    \end{equation*}
+    is not a path since every arc is \hyperref[def:graph_adjacency_chain/orientation]{negatively oriented}.
+
+    \item We can conclude from \eqref{eq:def:graph_adjacency_chain/endpoints/head} that \( \head(p^{-1}) = f \) and \( \tail(p^{-1}) = a \).
+
+    \item Its \hyperref[def:graph_directed_path/characteristic_vector]{characteristic vector} is
+    \begin{equation*}
+      \vect{p^{-1}}
+      =
+      \begin{blockarray}{ccccccrl}
+        e_1 & e_2 & e_3 & e_4 & e_5 & e_6 & e_7 \\
+      \begin{block}{(ccccccr)l}
+        -1  & 0   & 0   & -1  & 0   & 0   & -1 \\
+      \end{block}
+      \end{blockarray}
+      {}^T.
+    \end{equation*}
+
+    Furthermore, \( p^{-1} \) can be identified from the characteristic vector.
   \end{itemize}
-
-  An example of an infinite graph path is the forward tower \eqref{eq:ex:tower_diagram_graph/forward} regarded as a path of the two-sided tower \eqref{eq:ex:tower_diagram_graph/two_sided}. It is also simple since the degree of the forward tower is \( 2 \).
 \end{example}
 
-\begin{definition}\label{def:graph_adjacency_chain}
-  Rather using paths, which extend \hyperref[def:graph/adjacency]{successorship}, we can extend \hyperref[def:graph/adjacency]{adjacency}.
-
-  An \term{adjacency chain} in a directed graph \( G = (V, E) \) is a finite or infinite sequence of arcs
-  \begin{equation*}
-    p \coloneqq (e_1, e_2, \ldots)
-  \end{equation*}
-  such that every two consecutive arcs are adjacent. That is, \( e_{k+1} \) is adjacent to \( e_k \) for every \( k = 1, 2, \ldots \).
-
-  The term \enquote{chain} is used in this sense in \cite[ch. 1, sec. 3.1]{GondranMinoux1984Graphs}, for example, but in general it may refer to a path or simple path. We add the adverb \enquote{adjacency} in order to reduce ambiguity.
-
-  We generalize some properties of paths, however we avoid working with chains as much as possible.
-
-  The domain \( \dom(p) \), length \( \len(p) \) and the subchains and are defined as in \fullref{def:graph_directed_path}.
-
-  The head of \( p \), if it exists, is the vertex that is contained in \( e_1 \) but not in \( e_2 \). The tail is defined analogously. Note that both may not exist even for finite chains --- consider the chain \( (u \to v, v \to u) \).
-\end{definition}
-
-\begin{proposition}\label{thm:graph_chains}
+\begin{proposition}\label{thm:graph_chain_symmetrization}
   A sequence of arcs in a directed graph \( G \) is an \hyperref[def:graph_adjacency_chain]{adjacency chain} if and only if it is a path in the \hyperref[def:graph/symmetrization]{symmetrization} \( \sym(G) \).
 \end{proposition}
 \begin{proof}
   Two arcs are adjacent if and only if one of they have a common endpoint. The endpoints of every arc in \( G \) are the same as in the corresponding edge \( \sym(G) \) --- the only different is in their order, which becomes irrelevant with adjacency.
 \end{proof}
 
+\begin{definition}\label{def:graph_cycle}
+  A \term{directed cycle}, also called a \term{circuit} in \cite[ch. 1, sec. 1.4]{GondranMinoux1984Graphs}, is a \hyperref[def:graph_directed_path]{path} whose head and tail coincide. It is also called a \term{closed path}.
+
+  The concept of a path transfers transparently from directed to undirected graphs, however an adaptation of the concept of a cycle should be made. An \term{undirected cycle} is a cycle that does not contain opposing arcs, i.e. if \( u \to v \) is in the cycle, \( v \to u \) is not.
+
+  This additional restriction is necessary because in an undirected graph, if \( (u, v) \in E \), then \( (u \to v, v \to u) \) is a directed cycle.
+
+  If a directed (resp. undirected) graph does not contain a directed (resp. undirected) cycle, we say that it is \term{acyclic}. Directed acyclic graphs are commonly abbreviated as \term{DAG}.
+\end{definition}
+
+\begin{definition}\label{def:graph_condensation}
+  Let \( G = (V, E) \) be a directed graph. Define the binary relation
+  \begin{equation*}
+    u \sim v \iff u \T{is reachable from} v \T{and} v \T{is reachable from} u.
+  \end{equation*}
+
+  It is the \hyperref[def:derived_relations/transitive]{transitive} and \hyperref[def:derived_relations/symmetric]{symmetric} closure of \( E \). Thus, \( \sim \) is an equivalence relation.
+
+  Define the binary relation \( \widetilde{E} \) on the \hyperref[def:equivalence_relation/quotient]{quotient set} \( \widetilde{V} \coloneqq V / {\sim} \) as
+  \begin{equation*}
+    ([u], [v]) \in \widetilde{E} \iff u \T{is reachable from} v \T{but not vice versa}.
+  \end{equation*}
+
+  It is well-defined because if \( ([u_1], [v_1]) \in \widetilde{E} \), \( u_2 \in [u_1] \) and \( v_2 \in [v_1] \), then by the transitivity of reachability we have that \( v_2 \) is reachable from \( u_2 \) and thus \( ([u_2], [v_2]) \in \widetilde{E} \).
+
+  The directed graph \( \widetilde{G} \coloneqq (\widetilde{V}, \widetilde{E}) \) is called the \term{condensation} of \( G \).
+\end{definition}
+
+\begin{example}\label{ex:def:graph_condensation}
+  The \hyperref[def:graph_condensation] of the graph \eqref{eq:ex:def:graph/directed} is (isomorphic to) the graph itself. If we add the arc \( f \to a \) to \eqref{eq:ex:def:graph/directed}, the condensation would be an edgeless graph with a single vertex.
+
+  We can add new arcs \( e_8 \) and \( e_9 \) to \eqref{eq:ex:def:graph/directed} to make the example more interesting:
+  \begin{equation}\label{eq:ex:def:graph_condensation/uncondensed}
+    \begin{aligned}
+      \includegraphics{figures/eq__ex__def__graph_condensation__uncondensed.pdf}
+    \end{aligned*}
+  \end{equation}
+
+  Its condensation is
+  \begin{equation}\label{eq:ex:def:graph_condensation/condensed}
+    \begin{aligned}
+      \includegraphics{figures/eq__ex__def__graph_condensation__condensed.pdf}
+    \end{aligned*}
+  \end{equation}
+
+  These are the \hyperref[def:graph_connectedness/strong]{strongly connected components} of \eqref{eq:ex:def:graph_condensation/uncondensed}.
+\end{example}
+
+\begin{proposition}\label{thm:undirected_graph_condensation}
+  The \hyperref[def:graph_condensation]{condensation} of an undirected graph is an edgeless graph with one vertex.
+\end{proposition}
+\begin{proof}
+  Reachability is a symmetric relation in an undirected graph. Therefore, the relation \( {\sim} \) in \fullref{def:graph_condensation} is only the transitive closure of \( E \), hence the relation \( {\sim} \) is the reachability relation. Thus, the quotient \( \widetilde{V} \) is a singleton set.
+
+  There cannot be a loop by definition of \( \widetilde{E} \), hence \( \widetilde{E} \) is empty.
+\end{proof}
+
+\begin{proposition}\label{thm:graph_condensation_is_acyclic_dag}
+  The \hyperref[def:graph_condensation]{condensation} of a directed graph is \hyperref[def:graph_cycle]{acyclic}.
+\end{proposition}
+\begin{proof}
+  Let \( \widetilde{G} = (\widetilde{V}, \widetilde{E}) \) be the condensation of \( G = (V, E) \). Aiming at a contradiction, suppose that there exist cosets \( [u] \) and \( [v] \) and a path
+  \begin{equation*}
+    \parens[\Big]{ [u] \to [w_1], \cdots, [w_n] \to [v] }
+  \end{equation*}
+  in \( \widetilde{G} \) that connects them. We can easily prove by induction that \( v \) is reachable from \( u \), thus contradicting the definition of \( \widetilde{E} \).
+
+  Therefore, \( \widetilde{G} \) is acyclic.
+\end{proof}
+
 \begin{definition}\label{def:graph_connectedness}
-  Let \( G = (V, E) \) be a directed graph. Define the binary relation \( \Rightarrow \) on \( V \) as
-  \begin{equation*}
-    u \Rightarrow v \T{if and only if} v \T{is reachable from} u.
-  \end{equation*}
-
-  It is clearly transitive. Let \( {\sim} \) be the \hyperref[def:derived_relations/reflexive]{reflexive} and \hyperref[def:derived_relations/symmetric]{symmetric} closure of \( \Rightarrow \). We have
-  \begin{equation*}
-    u \sim v \T{if and only if} (u = v \T{or} u \Rightarrow v \T{or} v \Rightarrow u).
-  \end{equation*}
-
-  Thus, \( \sim \) is an equivalence relation. Consider the \hyperref[def:equivalence_relation/quotient]{quotient set} \( V / {\sim} \).
+  Let \( G = (V, E) \) be a directed graph and \( \widetilde{G} = (\widetilde{V}, \widetilde{E}) \) be its condensed graph.
 
   \begin{thmenum}
-    \thmitem{def:graph_connectedness/strong}\mcite[ch. 1, sec. 3.5]{GondranMinoux1984Graphs} For every equivalence class \( U \) in \( V / {\sim} \), the subgraph \( (U, E\restr_U) \) is called a \term{strongly connected component} of the graph \( G \).
+    \thmitem{def:graph_connectedness/strong}\mcite[ch. 1, sec. 3.5]{GondranMinoux1984Graphs} For every coset \( [v] \) in \( \widetilde{V} \), the subgraph \( ([v], E\restr_[v]) \) of \( G \) is called a \term{strongly connected component} of \( G \).
 
-    The \term{strong connectivity number} of \( G \) is the cardinality \( \card(V / {\sim}) \).
+    The \term{strong connectivity number} of \( G \) is the cardinality \( \card(\widetilde{V}) \).
 
     If \( G \) has only one strongly connected component, we say that it itself is \term{strongly connected}.
 
-    \thmitem{def:graph_connectedness/weak}\mcite[ch. 1, sec. 3.3]{GondranMinoux1984Graphs} The subgraph \( G' = (V', E') \) of \( G \) is called a \term{weakly connected component} if the \hyperref[def:graph/symmetrization]{symmetrization} \( \sym(G') \) is a strongly connected component of \( \sym(G) \).
+    \thmitem{def:graph_connectedness/weak}\mcite[ch. 1, sec. 3.3]{GondranMinoux1984Graphs} Similarly, the subgraph \( G' = (V', E') \) of \( G \) is called a \term{weakly connected component} if the \hyperref[def:graph/symmetrization]{symmetrization} \( \sym(G') \) is a strongly connected component of \( \sym(G) \).
 
-    The \term{weak connectivity number} of \( G \) is the strong connectivity number of \( (V, \cl^S(E)) \).
+    The \term{weak connectivity number} of \( G \) is the strong connectivity number of \( \sym(G) \).
 
     If \( G \) has only one weakly connected component, we say that it itself is \term{weakly connected}.
   \end{thmenum}
@@ -462,24 +617,14 @@
   Let \( G = (V, E) \) be a directed graph.
 
   \begin{thmenum}
-    \thmitem{thm:graph_connectedness_via_chains/strong} \( G \) is \hyperref[def:graph_connectedness/strong]{strongly connected} if and only if there exists a \hyperref[def:graph_directed_path]{path} connecting every pair of vertices.
+    \thmitem{thm:graph_connectedness_via_chains/strong} \( G \) is \hyperref[def:graph_connectedness/strong]{strongly connected} if and only if there exists a \hyperref[def:graph_directed_path]{directed path} connecting every pair of vertices.
 
     \thmitem{thm:graph_connectedness_via_chains/weak} \( G \) is \hyperref[def:graph_connectedness/weak]{weakly connected} if and only if there exists an \hyperref[def:graph_adjacency_chain]{adjacency chain} connecting every pair of vertices.
   \end{thmenum}
 \end{proposition}
 \begin{proof}
-  Follows from \fullref{thm:graph_chains}.
+  Follows from \fullref{thm:graph_chain_symmetrization}.
 \end{proof}
-
-\begin{definition}\label{def:graph_cycle}
-  A \term{directed cycle}, also called a \term{circuit} in \cite[ch. 1, sec. 1.4]{GondranMinoux1984Graphs}, is a \hyperref[def:graph_directed_path]{path} whose head and tail coincide. It is also called a \term{closed path}.
-
-  The concept of a path transfers transparently from directed to undirected graphs, however an adaptation of the concept of a cycle should be made. An \term{undirected cycle} is a cycle that does not contain opposing arcs, i.e. if \( u \to v \) is in the cycle, \( v \to u \) is not.
-
-  This additional restriction is necessary because every path in an undirected graph is a directed cycle.
-
-  If a directed (resp. undirected) graph does not contain a directed (resp. undirected) cycle, we say that it is \term{acyclic}. Directed acyclic graphs are commonly abbreviated as \term{DAG}.
-\end{definition}
 
 \begin{remark}\label{rem:well_founded_graphs}
   We can regard any set \( A \) in the sense of \hyperref[def:zfc]{\logic{ZFC}} as the graph \( (A, \in) \).
@@ -490,3 +635,32 @@
 
   This implies that the graph is \hyperref[def:graph_cycle]{acyclic}. For the finite graphs the converse holds, but an infinite graph this is not so. For example, the backward tower \eqref{eq:ex:tower_diagram_graph/backward} is acyclic but not well-founded.
 \end{remark}
+
+\begin{definition}\label{def:path_category}
+  Let \( G = (V, E) \) be a \hyperref[def:graph/simple]{simple directed graph}. Then the \hyperref[def:derived_relations/transitive]{transitive closure} \( \cl^T(E) \) is a \hyperref[def:partially_ordered_set/strict]{strict partial order} on \( E \). By \fullref{thm:partial_order_category_correspondence}, there exists a unique \hyperref[def:thin_category]{thin} \hyperref[def:skeletal_category]{skeletal} category whose morphisms are the paths in \( G \).
+
+  We will call this category the \term{path category} of \( G \).
+\end{definition}
+
+\begin{definition}\label{def:graph_embedding}\mcite{nLab:topological_map}
+  Let \( G = (V, E) \) be a \hyperref[def:graph/directed]{directed graph} and \( (\mscrX, \mscrT) \) be a \hyperref[def:topological_space]{topological space}.
+
+  Denote by \( \cat{G} \) the \hyperref[def:path_category]{path category} of \( G \). Let \( \cat{X} \) be the category whose objects are the points of \( \mscrX \) and whose morphisms are the \hyperref[def:parametric_curve]{continuous paths} between them.
+
+  We will say that a functor \( F: \cat{G} \to \cat{X} \) is a \term{graph embedding} if it satisfies the following conditions:
+  \begin{thmenum}
+    \thmitem{def:graph_embedding/injective} \( F \) is injective on objects. That is, \( F(u) = F(v) \) implies \( u = v \).
+
+    \thmitem{def:graph_embedding/intersection} For every two arcs \( e_1 \) and \( e_2 \), the intersection \( \img(F(e_1)) \cap \img(F(e_2)) \) of their curves contains only the images of the common endpoint of \( e_1 \) and \( e_2 \).
+
+    \thmitem{def:graph_embedding/complement} The complement
+    \begin{equation*}
+      \mscrX \setminus \set{ \img(F(e)) \given e \in E }
+    \end{equation*}
+    is a \hyperref[def:disjoint_union]{disjoint union} of \hyperref[def:connected_space]{connected sets}. We call these connected sets \term{faces}.
+  \end{thmenum}
+\end{definition}
+
+\begin{definition}\label{def:planar_graph}
+  A directed graph \( G = (V, E) \) is \term{planar} if there exists a \hyperref[def:graph_embedding]{graph embedding} into the plane \( \BbbR^2 \).
+\end{definition}
