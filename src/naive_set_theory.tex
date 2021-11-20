@@ -220,7 +220,7 @@ Na\"ive set theory is traditionally defined informally by only specifying that a
 
   In order to reduce repetitiveness, sets whose elements we consider to be other sets, are often called \term{families of sets}. In particular, if all (different) sets are \hyperref[def:subset]{disjoint}, we say that the family is a \term{disjoint family}. It is usually assumed that the sets are nonempty.
 
-  We often consider \hyperref[def:indexed_family]{indexed families}, i.e. sets which depend on a parameter, which further highlight our intention to distinguish between a point in a set, the set itself and some family of sets to which the latter belongs.
+  We often consider \hyperref[def:tuple_and_cartesian_product/indexed_family]{indexed families}, i.e. sets which depend on a parameter, which further highlight our intention to distinguish between a point in a set, the set itself and some family of sets to which the latter belongs.
 \end{remark}
 
 \begin{definition}\label{def:basic_set_operations}
@@ -372,29 +372,6 @@ Na\"ive set theory is traditionally defined informally by only specifying that a
   Therefore, \( \pow(X) \) is a Boolean algebra.
 \end{proof}
 
-\begin{remark}\label{rem:binary_vs_arbitrary_tuples}
-  We give two pairs of definitions for tuples and Cartesian products. The first pair, \fullref{def:binary_cartesian_product}, is quite restricted and is mostly necessary for defining \hyperref[def:function]{functions} and ensuring that everything along the way is indeed a set. The second pair of definitions, given in \fullref{def:cartesian_product}, can then be used for arbitrary (binary and nonbinary) products.
-\end{remark}
-
-\begin{definition}\label{def:binary_cartesian_product}\mcite[def. 1.23]{OpenLogicFull}
-  The \term{Kuratowski pair} or simply \term{ordered pair} \( (x, y) \) of the sets \( x \) and \( y \) is defined as
-  \begin{equation*}
-    (x, y) \coloneqq \set{ \set{ x }, \set{ x, y } }.
-  \end{equation*}
-
-  This is a simple and widespread definition that encodes the order of \( x \) and \( y \), unlike the set \( \set{ x, y } \) for example.
-
-  We will use the following \hyperref[rem:predicate_formula]{predicate formula} in \( \ref{eq:def:function/predicate}[\rho, \tau, \sigma] \):
-  \begin{equation*}\taglabel[\op{IsPair}]{eq:def:binary_cartesian_product/pair_predicate}
-    \ref{eq:def:binary_cartesian_product/pair_predicate}[\rho, \tau, \sigma] \coloneqq \qforall \xi \parens[\Bigg]{ \xi \in \rho \leftrightarrow \parens[\Big]{ \parens[\Big]{ \qforall {\eta \in \xi} \eta \doteq \tau } \vee \parens[\Big]{ \qforall {\eta \in \xi} (\eta \doteq \tau \vee \eta \doteq \sigma) } } }
-  \end{equation*}
-
-  The \term{binary Cartesian product} of the sets \( A \) and \( B \) is
-  \begin{equation*}
-    A \times B \coloneqq \set{ (x, y) \given x \in A \T{and} y \in B }.
-  \end{equation*}
-\end{definition}
-
 \begin{remark}\label{rem:inductive_sets}
   Induction is an important proof technique that is discussed in detail in the proof of \fullref{thm:nonzero_natural_numbers_have_predecessors}. There are more general forms of induction than \eqref{eq:def:peano_arithmetic/PA3} like \fullref{thm:well_founded_induction} and \fullref{thm:well_founded_induction}. They do, however, require concepts which in turn depend on the existence of natural numbers within set theory. As a consequence, we cannot prove \eqref{eq:def:peano_arithmetic/PA3} via \fullref{thm:well_founded_induction}.
 
@@ -511,13 +488,17 @@ Na\"ive set theory is traditionally defined informally by only specifying that a
   This proof demonstrates usage of \fullref{thm:omega_induction}.
 \end{proposition}
 \begin{proof}
-  \SubProof{Proof that all members of \( \omega \) are transitive} Clearly \( \varnothing \) is transitive because every member of \( \varnothing \) vacuously is a subset of \( \varnothing \).
+  \SubProof{Proof that all members of \( \omega \) are transitive} In order to demonstrate how \fullref{thm:omega_induction} works in practice, we will use inductive sets directly. Let \( T \subseteq \omega \) be the subset of all transitive members of \( \omega \). We will show that \( T \) is inductive. Since \( T \subseteq \omega \) and \( \omega \) is the smallest inductive set, we can conclude that \( T = \omega \).
 
-  Now suppose that \( n \) is transitive and let \( m \in \op{succ}(n) = n \cup \set{ n } \). If \( m = n \), then \( m \in \op{succ}(n) \) by definition of the successor operation. If \( m \in n \), then \( m \subseteq n \) by the inductive hypothesis and hence also \( m \subseteq n \cup \set{ n } = \op{succ}(n) \). Thus, \( \op{succ}(n) \) is also transitive.
+  Clearly \( \varnothing \in T \)  because every member of \( \varnothing \) vacuously is a subset of \( \varnothing \).
 
-  Therefore, every member of \( \omega \) is transitive.
+  Now suppose that \( n \in T \) and let \( m \in \op{succ}(n) = n \cup \set{ n } \). If \( m = n \), then \( m \in \op{succ}(n) \) by definition of the successor operation. If \( m \in n \), then \( m \subseteq n \) by the inductive hypothesis and hence also \( m \subseteq n \cup \set{ n } = \op{succ}(n) \). Thus, \( \op{succ}(n) \) is also transitive.
 
-  \SubProof{Proof that \( \omega \) is transitive} We will show that for all members \( n \) of \( \omega \) such that \( n \subseteq \omega \).
+  We have shown that \( T \) is inductive. Therefore, \( \omega = T \) and every member of \( \omega \) is transitive.
+
+  From now on, we will not be as explicit about the use of induction on \( \omega \).
+
+  \SubProof{Proof that \( \omega \) is transitive} We will show that for all members \( n \) of \( \omega \) we have \( n \subseteq \omega \).
 
   The case \( n = \varnothing \) is again trivial.
 
@@ -534,4 +515,72 @@ Na\"ive set theory is traditionally defined informally by only specifying that a
   If \( V \) is a transitive set, however, we would not have such a problem. That is, if we construct a set \( A \) in the metatheory and show that it belongs to some set \( B \) in the object logic, then \( A \) itself would also be a set in the object logic.
 
   For this reason, it is very important to consider only transitive models of set theory.
+\end{remark}
+
+\begin{lemma}\label{thm:members_of_omega_do_not_contain_themselves}
+  No element of \( \omega \) is a member of itself.
+\end{lemma}
+\begin{proof}
+  We will again use \fullref{thm:omega_induction}. By definition, \( \omega \not\in \omega \). Now suppose that \( n \not\in n \) for some \( n \in \omega \).
+
+  Aiming at a contradiction, suppose that \( \op{succ}(n) \in \op{succ}(n) \). The assumption that \( n = \op{succ}(n) = n \cup \set{ n } \) implies that \( n = \set{ n } \). The assumption that \( \op{succ}(n) \in n \) implies that \( n \in n \) since \( \op{succ}(n) \) is transitive by \fullref{thm:omega_is_transitive}. In both cases we have \( n \in n \), which contradicts our inductive hypothesis. This contradiction shows that \( \op{succ}(n) \not\in \op{succ}(n) \).
+
+  \Fullref{thm:omega_induction} allows us to conclude that no member of \( \omega \) contains itself.
+\end{proof}
+
+\begin{theorem}\label{thm:omega_is_model_of_pa_without_operations}
+  The \hyperref[thm:smallest_inductive_set_existence]{smallest inductive set \( \omega \)} satisfies the axioms \eqref{eq:def:peano_arithmetic/PA1}-\eqref{eq:def:peano_arithmetic/PA3} from \hyperref[def:peano_arithmetic]{Peano arithmetic} with the following interpretation:
+  \begin{thmenum}
+    \thmitem{thm:omega_is_model_of_pa_without_operations/zero} \hyperref[def:peano_arithmetic/zero]{Zero} is interpreted as \( \varnothing \).
+
+    \thmitem{thm:omega_is_model_of_pa_without_operations/succ} The \hyperref[def:peano_arithmetic/succ]{successor} operation \( s \) is interpreted as \( \op{succ} \).
+  \end{thmenum}
+
+  We will generalize this theorem to \fullref{thm:omega_is_model_of_pa} after we are able to define the arithmetic operations in \( \omega \).
+\end{theorem}
+\begin{proof}
+  \SubProofOf{eq:def:peano_arithmetic/PA1} Let \( n, m \in \omega \) and suppose that \( \op{succ}(n) = \op{succ}(m) \). If \( n = m \), there is nothing to prove.
+
+  Suppose that \( n \neq m \). Thus, since
+  \begin{equation*}
+    n \cup \set{ n } = \op{succ}(n) = \op{succ}(m) = m \cup \set{ m },
+  \end{equation*}
+  we have both \( n \in m \) and \( m \in n \).
+
+  \Fullref{thm:omega_is_transitive} implies that \( n \) is transitive and hence \( n \in n \), which contradicts \fullref{thm:members_of_omega_do_not_contain_themselves}.
+
+  The obtained contradiction shows that \( n = m \).
+
+  \SubProofOf{eq:def:peano_arithmetic/PA2} Suppose that \( \varnothing \) has a predecessor \( n \in \omega \). Then
+  \begin{equation*}
+    \varnothing = \op{succ}(n) = n \cup \set{ n },
+  \end{equation*}
+  which implies that \( n \in \varnothing \). But this contradicts the \hyperref[def:empty_set]{definition of \( \varnothing \)}.
+
+  Therefore, \( \varnothing \) has no predecessor.
+
+  \SubProofOf{eq:def:peano_arithmetic/PA3} It follows from \fullref{thm:omega_induction} that \eqref{eq:thm:omega_induction} is a theorem of \logic{ZF}. Let \( \mscrV = (V, I) \) be our ambient \hyperref[rem:standard_model_of_set_theory]{standard} \hyperref[rem:transitive_model_of_set_theory]{transitive} model of \logic{ZFC}.
+
+  Fix any variable assignment \( v: \boldop{Var} \to V \). As in the proof of \fullref{thm:omega_induction}, we consider the modified assignment \( v_{\sigma \mapsto \omega} \) that \enquote{eliminates} the outer existential quantifier in \eqref{eq:thm:omega_induction}.
+
+  To show that \eqref{eq:thm:omega_induction} really corresponds to \eqref{eq:def:peano_arithmetic/PA3} (and hence that \( \omega \) satisfies \eqref{eq:def:peano_arithmetic/PA3}), fix some formula \( \varphi \) of \hyperref[def:peano_arithmetic]{Peano arithmetic} (\hi{not \logic{ZFC}!}) and suppose that \( \xi, \zeta_1, \ldots, \zeta_n \) are all of its free variables. Fix also some parameter values \( u_1, \ldots, u_n \in \omega \) and, as in \fullref{def:set_builder_notation}, define the set
+  \begin{equation*}
+    A \coloneqq \set{ x \in \omega \given \varphi\Bracks{x, u_1, \ldots, x_n} }.
+  \end{equation*}
+
+  Since \eqref{eq:thm:omega_induction} is satisfied by \( v \), the inner formula in \eqref{eq:thm:omega_induction} (without the quantifiers over \( \sigma \) and \( \tau \)) is satisfied by \( v_{\sigma \mapsto \omega, \tau \mapsto A} \).
+
+  Since our choice of parameters \( u_1, \ldots, u_n \) was arbitrary, we can conclude that the universal closure \eqref{eq:def:peano_arithmetic/PA3_quantified} of \eqref{eq:def:peano_arithmetic/PA3} is satisfied by \( \omega \) for every formula \( \varphi \) of \logic{PA}.
+\end{proof}
+
+\begin{remark}\label{rem:set_theory_natural_numbers_without_operations}
+  Due to \fullref{thm:omega_is_model_of_pa_without_operations}, we will henceforth identify the \hyperref[thm:smallest_inductive_set_existence]{smallest inductive set \( \omega \)} with the set \( \BbbN \) of \hyperref[def:set_of_natural_numbers]{natural numbers}.
+
+  We are not yet able to add or multiply natural numbers, nor rely on their well-foundedness, however for all other purposes we are able to utilize them.
+
+  Since the ordering in \fullref{def:natural_number_ordering} is defined via addition, we must define some other ordering. Luckily, as we shall see in \fullref{subsec:ordinals}, \( n < m \) corresponds to \( n \in m \). In particular, the members of \( m \) are ordered.
+
+  As a consequence, every natural number \( n \) equals the set of all smaller natural numbers by the \hyperref[def:naive_set_theory/extensionality]{axiom of extensionality}. It is conventional to write \( \set{ 0, 1, \ldots, n } \) rather than \( \set{ m \given m \in n } \). The former notation will be fully justified in \fullref{subsec:ordinals}.
+
+  This is useful, for example, in \fullref{def:sequence}.
 \end{remark}
