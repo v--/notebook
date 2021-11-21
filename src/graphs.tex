@@ -1,62 +1,115 @@
 \subsection{Graphs}\label{subsec:graphs}
 
-\begin{remark}\label{rem:directed_and_undirected_graphs}
-  Unfortunately, the word \enquote{graph} has at least three popular meanings within mathematics:
-  \begin{itemize}
-    \item The graph of a function --- \fullref{def:multi_valued_function/graph}.
-    \item A directed graph --- \fullref{def:graph/directed}.
-    \item An undirected graph --- \fullref{def:graph/undirected}.
-  \end{itemize}
+\begin{definition}\label{def:graph}
+  Fix a \hyperref[def:set]{set} \( V \), whose members we will call \term{vertices} or \term{nodes}, and a set \( E \), whose members we will call \term{arcs} or \term{edges}.
 
-  Graphs of functions are different enough from the other two notions to not cause any confusion, however it is often not clear from the context whether \enquote{graph} refers to directed or undirected graphs. Both are formalisms corresponding to dots in the plane connected with (directed or undirected) lines, as illustrated in \fullref{ex:def:graph/directed}. Furthermore, even if it is clear whether the graph is directed or undirected, it is often unclear whether it is \hyperref[def:graph/order]{finite}, whether it is \hyperref[def:graph/simple]{simple} and whether it is a \hyperref[def:multigraph]{multigraph} or not. We try to be as precise as possible to avoid confusion. It doesn't help that the terminology itself is inconsistent as can be seen discussed through the definitions.
+  A \term{graph} is a way to associate to every edge its \term{endpoints} in \( V \).
 
-  We define undirected graphs as a special case of directed graphs. This approach does make some definitions more awkward, however we prefer it over defining the two differently. Furthermore, software implementations of undirected graphs as a special case of directed graphs are often more versatile --- see \cite[sec. 5.4]{Erickson2019} and \cite[ch. 1, sec. 2.4]{GondranMinoux1984Graphs}.
-\end{remark}
+  We have different types of graphs depending on how exactly this association happens. Unfortunately, in the wild, the term \enquote{graph} may refer to any of them, except perhaps a hypergraph or some of the mixed graphs.
 
-\begin{definition}\label{def:graph}\mcite[ch. 1, sec. 1.1]{GondranMinoux1984Graphs}
-  We will define, in parallel, directed and undirected graphs. Fix an arbitrary set \( V \).
+  All of these concepts are unrelated to the \hyperref[def:multi_valued_function/graph]{graph of a function}, except perhaps by accident.
 
   \begin{thmenum}[series=def:graph]
-    \thmitem{def:graph/vertices} We will call the elements of \( V \) \term{vertices} or \term{nodes}.
+    \thmitem{def:graph/hypergraph} Suppose that we have a \hyperref[def:multi_valued_function/total]{total multi-valued function} \( \mscrE: E \multto V \) that gives us a nonempty set of endpoints for each arc. We call the triple \( H \coloneqq (V, E, \mscrE) \) a \term{hypergraph}.
 
-    \thmitem{def:graph/directed} A \term{directed graph} or \term{digraph} is a pair \( G = (V, E) \), where \( E \subseteq V^2 \) is a \hyperref[def:binary_relation]{binary relation} on \( V \).
+    It is common to define a hypergraph as a family of nonempty sets \( E \), in which case \( V \coloneqq \bigcup E \) and \( \mscrE \) is the \hyperref[def:multi_valued_function/identity]{identity function} on \( E \).
 
-    The elements of \( E \) are called \term{arcs} or \term{arrows}. For every arc \( e = (u, v) \), the vertex \( u = \head(e) \) is called its \term{head} and \( v = \tail(e) \) is called its \term{tail}.
+    \thmitem{def:graph/undirected_multigraph} We say that the hypergraph \( M = (V, E, \mscrE) \) is an \term{undirected multigraph} if, for every edge \( e \in E \), the set \( \mscrE(e) \) of endpoints has either one or two vertices.
 
-    For readability, we sometimes use the notation \( u \to v \) rather than \( (u, v) \).
+    \thmitem{def:graph/undirected} We say that the undirected multigraph \( G = (V, E, \mscrE) \) is an \term{undirected graph} if \( \mscrE \) is an injective function. That is, if two edges are equal if and only if they have the same endpoints.
 
-    \thmitem{def:graph/adjacency} If \( (u, v) \in E \), we say that \( u \) and \( v \) are \term{neighbors}, that they are \term{adjacent}, that \( v \) is a \term{successor} of \( u \) and that \( u \) is a \term{predecessor} of \( v \). These terms are used in, among other places, \cite[sec. 5.2]{Erickson2019}. Both \( u \) and \( v \) are called \term{endpoints} of \( e \), and the head and tail are also called the \term{starting}/\term{initial} endpoint and \term{final}/\term{terminal} endpoint. The latter terms are introduced in \cite[ch. 1, sec. 1.1]{GondranMinoux1984Graphs}.
+    It is common to define an undirected graph as a pair \( (V, E) \), where \( E \) is a set of unordered pairs \( \set{ u, v } \) of (not necessarily distinct) vertices.
 
-    We say that two \hi{arcs} are \term{adjacent} if they have a common endpoint. Note that by this definition, two initial endpoints may be adjacent: \( u \to v \) is adjacent to \( v \to w \) as well as to \( u \to w \).
+    \thmitem{def:graph/quiver} Suppose that we have a pair of \hyperref[def:function]{total single-valued functions} \( h: E \to V \), which gives the \term{head} of an edge, and \( t: E \to V \), which gives the \term{tail} of an edge. The head and tail of an edge are its endpoints.
 
-    If every pair of vertices are adjacent, we say that \( G \) is a \term{complete graph}.
+    We call the quadruple \( M \coloneqq (V, E, h, t) \) a \term{directed multigraph} or \term{quiver}.
 
-    \thmitem{def:graph/undirected} An \term{undirected graph} is a family of unordered pairs \( \set{ u, v } \) for some \( u, v \in V \) (or unary sets in the case \( u = v \)). Each unordered pair is called an \term{edge} and its members are called \term{endpoints}. Unlike arcs in directed graphs, edges have no head or tail.
+    We say that the edges are directed because there is a distinction between the two endpoints. It is common to call directed edges \term{arcs} and denote them as \( u \to v \). We say that \( u \) is a \term{predecessor} of \( v \) and that \( v \) is a \term{successor} of \( u \).
 
-    Edges are different from arcs, however it will be convenient for us to define an undirected graph as a directed graph \( G = (V, E) \), in which the relation \( E \) is \hyperref[def:binary_relation/symmetric]{symmetric}. We will thus regard each edge as either an ordered or unordered pair depending on the context. It may be confusing, but this is the adopted convention.
+    See \fullref{rem:endpoint_etymology} for a discussion of these terms.
 
-    We should note that some authors use the terms \term{arc} and \term{edge} as per our definitions. For example, arcs are introduced in \cite[ch. 1, sec. 1.1]{GondranMinoux1984Graphs} and edges a bit later in \cite[ch. 1, sec. 1.3]{GondranMinoux1984Graphs}. Other authors, e.g. \cite[sec. 5.2]{Erickson2019}, use the term \enquote{edge} to mean both an arc and an edge depending on whether the graph is directed or not.
+    \thmitem{def:graph/directed} We say that the quiver \( G = (V, E, h, t) \) is a \term{directed graph} or \term{digraph} if, for every pair of arcs \( e_1 \) and \( e_2 \), from \( h(e_1) = h(e_2) \) and \( t(e_1) = t(e_2) \) it follows that \( e_1 = e_2 \).
 
-    \thmitem{def:graph/symmetrization} Let \( G = (V, E) \) be a directed graph. The undirected graph \( \sym(G) \coloneqq (V, \cl^S(E)) \), whose set of edges is the \hyperref[def:relation_closures/symmetric]{symmetric closure} of \( E \), is called the \term{symmetrization} of \( G \).
+    It is common to define a directed graph as a pair \( (V, E) \), where \( E \) is an \hyperref[def:binary_relation/antisymmetric]{antisymmetric} \hyperref[def:binary_relation]{binary relation} on \( V \).
 
-    \thmitem{def:graph/order} The \term{order} \( \ord(G) \) of a (directed or undirected) graph is the \hyperref[thm:cardinality_existence]{cardinality} of \( V \). Without context, we usually assume that the set \( V \) of vertices is nonempty and \hyperref[def:set_finiteness]{finite}, however it is sometimes beneficial to consider empty or infinite graphs and hence we define \( \ord(G) \) to be a general \hyperref[def:cardinal]{cardinal number} rather than a \hyperref[rem:peano_arithmetic_zero/nonnegative]{nonnegative integer}.
+    \thmitem{def:graph/simple} A \term{loop} is an edge whose endpoints coincide. A very common assumption for directed and undirected graphs is that they have no loops. We call such graphs \term{simple}.
 
-    If the order \( \ord(G) \) is finite (resp. infinite), we say that \( G \) is a finite (resp. infinite) graph. See also local finiteness defined in \fullref{def:graph_incidence/degree}.
+    \thmitem{def:graph/mixed} A \term{mixed multigraph} is a tuple \( M = (V, E, \mscrE, A, h, t) \), where \( (V, E, \mscrE) \) is an undirected multigraph and \( (V, A, h, t) \) is a directed multigraph
 
-    \thmitem{def:graph/simple} An arc whose head and tail are equal is called a \term{loop}. An assumption that is often implicitly made is that a graph does not have loops.
-
-    To make things more explicit, we call such graphs \term{simple}. This terminology is used in \mcite[ch. 1, sec. 1.3]{GondranMinoux1984Graphs}, for example.
-
-    This condition corresponds to the \hyperref[def:binary_relation/irreflexive]{irreflexivity} of the relation \( E \).
+    Mixed graphs are defined in an obvious way.
   \end{thmenum}
 
-  Graphs have the following metamathematical properties:
+  The following concepts are common for all graphs:
   \begin{thmenum}[resume=def:graph]
-    \thmitem{def:graph/theory} The theory of directed graphs is an empty \hyperref[def:first_order_theory]{first-order theory} over the language consisting of a single infix binary relation \( \to \). For undirected graphs we must add \hyperref[def:binary_relation/symmetric]{symmetry} as the only axiom.
+    \thmitem{def:graph/incidence} We say that the vertex \( v \) and the edge \( e \) are \term{incident} if the vertex \( v \) is an endpoint \( e \).
+
+    \thmitem{def:graph/adjacent_vertices} We say that \( u \) and \( v \) are \term{adjacent vertices} if there exists an edge \( e \) such that both \( u \) and \( v \) are endpoints of \( e \).
+
+    \thmitem{def:graph/adjacent_edges} We say that \( e_1 \) and \( e_2 \) are \term{adjacent edges} if they have a common endpoint.
+
+    \thmitem{def:graph/order} The \term{order} \( \ord(G) \) of the graph \( G \) is the \hyperref[thm:cardinality_existence]{cardinality} of \( V \).
+
+    We say that the graph is finite or infinite depending on whether \( \ord(G) \) is finite or not.
+
+    \thmitem{def:graph/degree} The \term{degree} \( \deg(v) \) of a vertex \( v \in V \) is the cardinality of set
+    \begin{equation*}
+      \set{ e \in E \given v \T{is an endpoint of} e }.
+    \end{equation*}
+
+    The degree \( \deg(G) \) of the graph itself is the maximum of the degrees of all vertices. It is possible that the maximum in \( \deg(G) \) is not attained if \( G \) is infinite.
+  \end{thmenum}
+\end{definition}
+
+\begin{remark}\label{rem:endpoint_etymology}
+  Arcs are introduced as ordered pairs, for example, in \cite[ch. 1, sec. 1.1]{GondranMinoux1984Graphs} and edges as unordered pairs a bit later in \cite[ch. 1, sec. 1.3]{GondranMinoux1984Graphs}. Other authors, e.g. \cite[sec. 5.2]{Erickson2019}, use the term \enquote{edge} to mean both an arc and an edge depending on whether the graph is directed or not.
+
+  The terms \enquote{head} and \enquote{tail} are used, among other places, \cite[sec. 5.2]{Erickson2019}. The head and tail are also called the \term{starting}/\term{initial} endpoint and \term{final}/\term{terminal} endpoint in \cite[ch. 1, sec. 1.1]{GondranMinoux1984Graphs}.
+\end{remark}
+
+\begin{remark}\label{rem:undirected_graphs_as_directed}
+  It is often convenient to define \hyperref[def:graph/directed]{undirected graphs} as special cases of \hyperref[def:graph/directed]{directed graphs}. We have discussed that the edge set \( E \) in a directed graph \( G = (V, E) \) is a binary relation. If this relation is \hyperref[def:binary_relation/symmetric]{symmetric}, then to every arc \( u \to v \) there corresponds an arc \( v \to u \). For this reason, we often consider undirected graphs to be directed graphs whose edge relation is symmetric.
+
+  The \term{symmetrization} of the directed graph \( G = (V, E) \) is the undirected graph \( \sym(G) \coloneqq (V, \cl^S(E)) \), whose edges relation is the \hyperref[def:relation_closures/symmetric]{symmetric closure} of \( E \).
+\end{remark}
+
+\begin{example}\label{ex:def:graph}
+  Consider the \hyperref[def:graph/directed]{directed graph}
+  \begin{equation}\label{eq:ex:def:graph/directed}
+    \begin{aligned}
+      \includegraphics{figures/eq__ex__def__graph__directed.pdf}
+    \end{aligned}
+  \end{equation}
+  and its \hyperref[rem:undirected_graphs_as_directed]{symmetrization}, the \hyperref[def:graph/undirected]{undirected graph}
+  \begin{equation}\label{eq:ex:def:graph/undirected}
+    \begin{aligned}
+      \includegraphics{figures/eq__ex__def__graph__undirected.pdf}
+    \end{aligned}
+  \end{equation}
+
+  We can add some arcs to \eqref{eq:ex:def:graph/quiver/directed} so that it becomes the \hyperref[def:graph/quiver]{quiver}
+  \begin{equation}\label{eq:ex:def:graph/quiver}
+    \begin{aligned}
+      \includegraphics{figures/eq__ex__def__quiver.pdf}
+    \end{aligned}
+  \end{equation}
+
+  Without the dashed arcs, \eqref{eq:ex:def:graph/quiver/directed} reduces to \eqref{eq:ex:def:graph/directed}.
+
+  The few basic properties we can list now is that the graphs have finite order \( 6 \) and that they are simple graphs since they contain no loops. Note also that the edges in \eqref{eq:ex:def:graph/directed} are numbered in \hyperref[eq:def:lexicographic_order]{lexicographic order}. We will come back to this example later with more insightful comments.
+
+  It should be noted that when defining a concrete graph, it is impractical to enumerate the vertices and edges. It is instead more understandable to work with a \hyperref[def:graph_geometric_realization/drawing]{graph drawing} like it is done here.
+\end{example}
+
+\begin{definition}\label{def:graph_metamath}
+  We have already defined directed graphs in \fullref{def:graph/directed} and undirected graphs in \fullref{def:graph/undirected}. We discussed in \fullref{rem:undirected_graphs_as_directed} that it is convenient to regard undirected graphs as special directed graphs.
+
+  Directed and undirected graphs have the following metamathematical properties:
+  \begin{thmenum}[resume=def:graph]
+    \thmitem{def:graph_metamath/theory} The theory of directed graphs is an empty \hyperref[def:first_order_theory]{first-order theory} over the language consisting of a single infix binary relation \( \to \). For undirected graphs, we must add \hyperref[def:binary_relation/symmetric]{symmetry} as the only axiom. For simple graphs, we must add \hyperref[def:binary_relation/irreflexive]{irreflexivity} as an axiom.
 
     See \fullref{rem:well_founded_graphs} for how graphs are related to \hyperref[def:zfc]{Zermelo-Fraenkel set theory}.
 
-    \thmitem{def:graph/directed/homomorphism} A \hyperref[def:first_order_homomorphism]{first-order homomorphism} between two graphs \( G_1 = (V_1, E_1) \) and \( G_2 = (V_2, E_2) \) is a function \( f: V_1 \to V_2 \) between their universes such that for every arc \( a \to b \) of \( G_1 \), \( f(a) \to f(b) \) is an arc of \( G_2 \).
+    \thmitem{def:graph_metamath/homomorphism} A \hyperref[def:first_order_homomorphism]{first-order homomorphism} between two graphs \( G_1 = (V_1, E_1) \) and \( G_2 = (V_2, E_2) \) is a function \( f: V_1 \to V_2 \) between their universes such that for every arc \( a \to b \) of \( G_1 \), \( f(a) \to f(b) \) is an arc of \( G_2 \).
 
     It is a weak homomorphism in the sense of \fullref{def:first_order_homomorphism}.
 
@@ -64,14 +117,14 @@
 
     The term \enquote{graph embedding} usually refers to (topological) embeddings of the \hyperref[def:graph_geometric_realization]{geometric realization} of a graph rather than (combinatorial) embeddings the graph.
 
-    \thmitem{def:graph/submodel} As for preordered sets, any subset \( V' \subseteq V \) of vertices induces a directed graph with the \( E \) relation restricted to \( V' \). That is, \( G' = (V', E') \) is a \term{subgraph} of \( G \) if \( V' \subseteq V \) and
+    \thmitem{def:graph_metamath/submodel} As for preordered sets, any subset \( V' \subseteq V \) of vertices induces a directed graph with the \( E \) relation restricted to \( V' \). That is, \( G' = (V', E') \) is a \term{subgraph} of \( G \) if \( V' \subseteq V \) and
     \begin{equation*}
-      E' = \set{ e \in E \given \head(e) \in U \T{and} \tail(e) \in U }.
+      E' = \set{ e \in E \given h(e) \in U \T{and} t(e) \in U }.
     \end{equation*}
 
     Note that any subgraph of an undirected graph is again an undirected graph.
 
-    \thmitem{def:graph/trivial} Unlike the \hyperref[def:group/trivial]{trivial group} \( \set{ e } \) or \hyperref[def:partially_ordered_set/trivial]{empty ordered set}, which are unique up to an isomorphism, there is no single agreed upon graph called the \enquote{trivial graph}.
+    \thmitem{def:graph_metamath/trivial} Unlike the \hyperref[def:group/trivial]{trivial group} \( \set{ e } \) or \hyperref[def:partially_ordered_set/trivial]{empty ordered set}, which are unique up to an isomorphism, there is no single agreed upon graph called the \enquote{trivial graph}.
 
     An unambiguous concept is that of an \term{edgeless graph}, in which the set of arcs/edges is empty, but the set of vertices may or may not be empty. Every graph \( G = (V, E) \) has exactly \( 2^{\ord(G)} \) edgeless subgraphs (one for each subset of \( V \)).
 
@@ -79,28 +132,9 @@
 
     The terms \term{empty graph}, \term{null graph} and \term{trivial graph} may refer to either edgeless graphs or the order-zero graph depending on the author and the situation.
 
-    \thmitem{def:graph/category} We denote the \hyperref[def:category_of_first_order_models]{categories of models} by \( \cat{DGraph} \) for directed graphs and by \( \cat{UGraph} \) for undirected graphs.
+    \thmitem{def:graph_metamath/category} We denote the \hyperref[def:category_of_first_order_models]{categories of models} by \( \cat{DGraph} \) for directed graphs and by \( \cat{UGraph} \) for undirected graphs.
   \end{thmenum}
 \end{definition}
-
-\begin{example}\label{ex:def:graph}
-  Consider the directed graph
-  \begin{equation}\label{eq:ex:def:graph/directed}
-    \begin{aligned}
-      \includegraphics{figures/eq__ex__def__graph__directed.pdf}
-    \end{aligned}
-  \end{equation}
-  and its \hyperref[def:graph/symmetrization]{symmetrization}, the undirected graph.
-  \begin{equation}\label{eq:ex:def:graph/undirected}
-    \begin{aligned}
-      \includegraphics{figures/eq__ex__def__graph__undirected.pdf}
-    \end{aligned}
-  \end{equation}
-
-  We will use both graphs as generic examples. The few basic properties we can list now is that the graphs have finite order \( 6 \) and that they are simple graphs since they contain no loops. Note also that the edges are numbered in \hyperref[eq:def:lexicographic_order]{lexicographic order}. We will come back to this example later with more insightful comments.
-
-  It should be noted that when defining a concrete graph, it is impractical to enumerate the vertices and edges. It is instead more understandable to work with a \hyperref[def:graph_geometric_realization/drawing]{graph drawing} like it is done here.
-\end{example}
 
 \begin{remark}\label{rem:graphs_linear_algebra_and_topology}
   As we shall see, the \hyperref[def:graph]{adjacency} and \hyperref[def:graph_incidence]{incidence} of a graph can be easily studied using linear algebra via \hyperref[def:graph_matrices/adjacency]{adjacency} and \hyperref[def:graph_matrices/incidence]{incidence matrices}, while the \hyperref[def:graph_connectedness]{connectedness} of a graph can be studied using \hyperref[def:graph_connectedness]{topology} via \hyperref[def:graph_geometric_relization/embedding]{graph embeddings}.
@@ -109,8 +143,8 @@
 \begin{definition}\label{def:graph_incidence}
   Let \( G = (V, E) \) be a directed graph. We define several \hyperref[def:multi_valued_function]{multi-valued functions} from \( \pow(V) \) to \( E \):
   \begin{align*}
-     w^+(A) &\coloneqq \set{ e \in E \given \head(e) \in A } \\
-     w^-(A) &\coloneqq \set{ e \in E \given \tail(e) \in A } \\
+     w^+(A) &\coloneqq \set{ e \in E \given h(e) \in A } \\
+     w^-(A) &\coloneqq \set{ e \in E \given t(e) \in A } \\
      w(A)   &\coloneqq w^+(A) \cup w^-(A).
   \end{align*}
 
@@ -139,7 +173,7 @@
 
     \thmitem{def:graph_incidence/locally_finite} We say that the graph \( G \) is \term{locally finite} if the degree of every vertex is finite.
 
-    Compare this definition to \fullref{def:multigraph/locally_finite}.
+    Compare this definition to \fullref{def:graph/quiver/locally_finite}.
   \end{thmenum}
 \end{definition}
 
@@ -151,7 +185,7 @@
     w(b)   &= \set{ a, c, e }
   \end{align*}
 
-  The sets \( w^+(b) \) and \( w^-(b) \) are disjoint since the graph is simple. In the \hyperref[def:graph/symmetrization]{symmetrization} \eqref{eq:ex:def:graph/undirected} of \eqref{eq:ex:def:graph/directed}, all three sets are equal to \( w(b) = \set{ a, c, e } \).
+  The sets \( w^+(b) \) and \( w^-(b) \) are disjoint since the graph is simple. In the \hyperref[rem:undirected_graphs_as_directed]{symmetrization} \eqref{eq:ex:def:graph/undirected} of \eqref{eq:ex:def:graph/directed}, all three sets are equal to \( w(b) = \set{ a, c, e } \).
 
   For both graphs
   \begin{equation*}
@@ -204,8 +238,8 @@
       For a directed graph, \( I \) has elements
       \begin{equation*}
         a_{ve} \coloneqq \begin{cases}
-          1,  & v = \head(e) \\
-          -1, & v = \tail(e) \\
+          1,  & v = h(e) \\
+          -1, & v = t(e) \\
           0,  & \T{otherwise.}
         \end{cases}
       \end{equation*}
@@ -253,7 +287,7 @@
 
   It can be read column-by-column. Every column contains exactly two nonzero elements whose rows correspond to the head (positive) and tail (negative).
 
-  To obtain the incidence matrix for the \hyperref[def:graph/symmetrization]{symmetrization} \eqref{eq:ex:def:graph/undirected} of \eqref{eq:ex:def:graph/directed}, we need to simply flip the sign of the boxed elements above.
+  To obtain the incidence matrix for the \hyperref[rem:undirected_graphs_as_directed]{symmetrization} \eqref{eq:ex:def:graph/undirected} of \eqref{eq:ex:def:graph/directed}, we need to simply flip the sign of the boxed elements above.
 
   The \hyperref[def:graph_matrices/adjacency]{adjacency matrix} is
   \begin{equation}\label{ex:def:graph_matrices/adjacency}
@@ -381,7 +415,7 @@
 
     \thmitem{def:graph_adjacency_chain/endpoints} Similarly to arcs, chains have a \term{head} and \term{tail}, although both may not exist. Roughly, the head of \( p = (e_1, e_2, \ldots) \) is the endpoint of \( e_1 \) that is not an endpoint of \( e_2 \). After considering some edge cases, this definition becomes
     \begin{equation}\label{eq:def:graph_adjacency_chain/endpoints/head}
-      \head(p) \coloneqq \begin{cases}
+      h(p) \coloneqq \begin{cases}
         \T{undefined}, &p = \varnothing, \\
         u,             &p = (u \to v), \\
         u,             &p = (u \to v, v \to u, \cdots), \\
@@ -404,16 +438,16 @@
       p^{-1} \coloneqq (e_n, e_{n-1}, \cdots, e_2, e_1).
     \end{equation*}
 
-    \thmitem{def:graph_adjacency_chain/orientation} We say that an arc is \term{positively oriented} if it is either the first arc \( e_1 \) if \( \head(e_1) = \head(p) \) or the \hyperref[def:graph/adjacency]{successor} of a positively oriented arc.
+    \thmitem{def:graph_adjacency_chain/orientation} We say that an arc is \term{positively oriented} if it is either the first arc \( e_1 \) if \( h(e_1) = h(p) \) or the \hyperref[def:graph/adjacency]{successor} of a positively oriented arc.
 
     More precisely, we can recursively define the \hyperref[def:boolean_function]{predicate} \( \op{IsPos} \) determining whether the arc at position \( k \) is \term{positively oriented}:
     \begin{equation*}
       \begin{aligned}
         \op{IsPos}(k) \coloneqq \begin{cases}
-          T,                            &k = 1 \T{and} \head(e_1) = \head(p) \\
-          F,                            &k = 1 \T{and} \head(e_1) \neq \head(p) \\
-          \op{IsPos}(k - 1),            &k > 1 \T{and} \head(e_k) = \tail(e_k) \\
-          \overline{\op{IsPos}(k - 1)}, &k > 1 \T{and} \head(e_k) \neq \tail(e_k)
+          T,                            &k = 1 \T{and} h(e_1) = h(p) \\
+          F,                            &k = 1 \T{and} h(e_1) \neq h(p) \\
+          \op{IsPos}(k - 1),            &k > 1 \T{and} h(e_k) = t(e_k) \\
+          \overline{\op{IsPos}(k - 1)}, &k > 1 \T{and} h(e_k) \neq t(e_k)
         \end{cases}
       \end{aligned}
     \end{equation*}
@@ -438,7 +472,7 @@
   \begin{thmenum}
     \thmitem{def:graph_directed_path/endpoints} The definition of head and tail of a directed path inherits those of adjacency chains, however they are so much simpler that we give them explicitly. Instead of \eqref{eq:def:graph_adjacency_chain/endpoints/head} we have
     \begin{equation}\label{eq:def:graph_directed_path/endpoints/head}
-      \head(p) \coloneqq \begin{cases}
+      h(p) \coloneqq \begin{cases}
         \T{undefined}, &p = \varnothing, \\
         u,             &p = (u \to v, \cdots).
       \end{cases}
@@ -450,7 +484,7 @@
 
     The vector \( \vect{p} \) is equal to the \hyperref[def:graph_adjacency_chain/characteristic_vector]{characteristic vector} of \( p \) when regarding \( p \) as a chain. It should be noted, however, that we regard \( \vect{p} \) as a member of the arc space \( \BbbF_2^E \) and rather than the oriented arc space \( \BbbF_3^E \).
 
-    \thmitem{def:graph_directed_path/reachability} We say that \( p \) \term{connects} or \term{passes through} the vertices \( u \) and \( v \) if there exists a subpath \( q \) such that \( \head(q) = u \) and \( \tail(p) = v \).
+    \thmitem{def:graph_directed_path/reachability} We say that \( p \) \term{connects} or \term{passes through} the vertices \( u \) and \( v \) if there exists a subpath \( q \) such that \( h(q) = u \) and \( t(p) = v \).
 
     We say that the vertex \( u \) is \term{reachable} from \( v \) if there exists a path that connects them. Clearly reachability is the \hyperref[def:relation_closures/reflexive]{reflexive} and \hyperref[def:relation_closures/transitive]{transitive} closure of the relation \( E \).
 
@@ -491,7 +525,7 @@
 
     Furthermore, \( p \) can be identified from the characteristic vector.
 
-    \item The \hyperref[def:graph_directed_path/endpoints]{endpoints} are \( \head(p) = \head(e_1) = a \) and \( \tail(p) = \tail(e_7) = f \).
+    \item The \hyperref[def:graph_directed_path/endpoints]{endpoints} are \( h(p) = h(e_1) = a \) and \( t(p) = t(e_7) = f \).
 
     \item It is a \hyperref[def:graph_adjacency_chain/simple]{simple path} because \( \deg(a) = \deg(f) = 1 \) and \( \deg(b) = \deg(e) = 2 \).
 
@@ -503,7 +537,7 @@
     \end{equation*}
     is not a path since every arc is \hyperref[def:graph_adjacency_chain/orientation]{negatively oriented}.
 
-    \item We can conclude from \eqref{eq:def:graph_adjacency_chain/endpoints/head} that \( \head(p^{-1}) = f \) and \( \tail(p^{-1}) = a \).
+    \item We can conclude from \eqref{eq:def:graph_adjacency_chain/endpoints/head} that \( h(p^{-1}) = f \) and \( t(p^{-1}) = a \).
 
     \item Its \hyperref[def:graph_directed_path/characteristic_vector]{characteristic vector} is
     \begin{equation*}
@@ -523,7 +557,7 @@
 \end{example}
 
 \begin{proposition}\label{thm:graph_chain_symmetrization}
-  A sequence of arcs in a directed graph \( G \) is an \hyperref[def:graph_adjacency_chain]{adjacency chain} if and only if it is a path in the \hyperref[def:graph/symmetrization]{symmetrization} \( \sym(G) \).
+  A sequence of arcs in a directed graph \( G \) is an \hyperref[def:graph_adjacency_chain]{adjacency chain} if and only if it is a path in the \hyperref[rem:undirected_graphs_as_directed]{symmetrization} \( \sym(G) \).
 \end{proposition}
 \begin{proof}
   Two arcs are adjacent if and only if one of they have a common endpoint. The endpoints of every arc in \( G \) are the same as in the corresponding edge \( \sym(G) \) --- the only different is in their order, which becomes irrelevant with adjacency.
@@ -578,7 +612,7 @@
 \end{example}
 
 \begin{proposition}\label{thm:undirected_graph_condensation}
-  The \hyperref[def:graph_condensation]{condensation} of an undirected graph is \hyperref[def:graph/trivial]{edgeless}.
+  The \hyperref[def:graph_condensation]{condensation} of an undirected graph is \hyperref[def:graph_metamath/trivial]{edgeless}.
 \end{proposition}
 \begin{proof}
   The edge relation \( E \) is symmetric in an undirected graph. By \fullref{thm:relation_closures_properties/symmetric_relation}, \hyperref[def:graph_directed_path/reachability]{reachability} is symmetric and thus is actually equal to the relation \( {\sim} \) in \fullref{def:graph_condensation}.
@@ -609,7 +643,7 @@
 
     If \( G \) has only one strongly connected component, we say that it itself is \term{strongly connected}.
 
-    \thmitem{def:graph_connectedness/weak}\mcite[ch. 1, sec. 3.3]{GondranMinoux1984Graphs} Similarly, the subgraph \( G' = (V', E') \) of \( G \) is called a \term{weakly connected component} if the \hyperref[def:graph/symmetrization]{symmetrization} \( \sym(G') \) is a strongly connected component of \( \sym(G) \).
+    \thmitem{def:graph_connectedness/weak}\mcite[ch. 1, sec. 3.3]{GondranMinoux1984Graphs} Similarly, the subgraph \( G' = (V', E') \) of \( G \) is called a \term{weakly connected component} if the \hyperref[rem:undirected_graphs_as_directed]{symmetrization} \( \sym(G') \) is a strongly connected component of \( \sym(G) \).
 
     The \term{weak connectivity number} of \( G \) is the strong connectivity number of \( \sym(G) \).
 
