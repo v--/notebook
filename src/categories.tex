@@ -1,81 +1,86 @@
-\section{Category theory}\label{sec:category_theory}
 \subsection{Categories}\label{subsec:categories}
 
-\begin{definition}\label{def:category}\mcite[def. 1.1.1]{Leinster2016Basic}
-  A category is a generalization of the class of a \hyperref[def:preordered_set]{preordered set} (see \fullref{thm:preorder_category_correspondence}). In particular, the \hyperref[def:subset]{subset} relation in the \hyperref[def:set]{class of all sets} is a preorder (see \fullref{def:category_of_sets}).
+Categories are sometimes defined \enquote{from the ground up} so that they may be used without an underlying set theory or logic. For our purposes, it will be more appropriate to define categories via \hyperref[def:graph/quiver]{quivers}, a.k.a. directed multigraphs. This latter approach is appropriate in \hyperref[def:axiom_of_universes]{\logic{ZFC+U}}.
 
-  Note that a completely formal definition is difficult to give because it relies on intricacies of set theory (see the notes in \fullref{def:set}). Instead, we say that a \term{category} \( \cat{C} \) consists of \term{objects} and \term{morphisms}. See \fullref{rem:category_obj_hom} for further comments on the notation.
+\begin{definition}\label{def:category}\mcite[def. 1.1.1]{Leinster2016Basic}
+  A \term{category} is a \hyperref[def:graph/quiver]{quiver} \( \cat{C} \) equipped with a \hyperref[def:partial_function]{partial operation} \( \bincirc \) on the arrows of \( \cat{C} \) and another operation \( \id \) that selects a distinguished arrow for each vertex.
 
   \begin{thmenum}[series=def:category]
-    \thmitem[def:category/C1]{C1} The objects in \( \cat{C} \) are a \hyperref[def:set]{set-theoretic class}. We use the notation \( A \in \cat{C} \) to mean \enquote{\( A \) is an object in \( \cat{C} \)}.
+    \thmitem{def:category/objects} We call the vertices of the quiver \term{objects} and denote the set of all objects by \( \obj(\cat{C}) \). We will often write \( A \in \cat{C} \) as a shorthand for \( A \in \obj(\cat{C}) \).
 
-    \thmitem[def:category/C2]{C2} To each pair of objects \( A, B \in \cat{C} \), there corresponds a class \( \cat{C}(A, B) \) of morphisms, also called \term{arrows}. For a morphism \( f: A \to B \), we say that \( A \) is the \term{domain} of \( f \) and that \( B \) is the \term{codomain} of \( f \).
+    \thmitem{def:category/morphisms} We call the arrows of the quiver \term{morphisms}. If \( f \) is a morphism, we call its head its \term{domain} \( \dom(f) \) and its tail its \term{codomain} \( \co\dom(f) \). We denote a morphism from \( A \) to \( B \) by \( f: A \to B \) or \( A \reloset f \to B \).
 
-    We use the shorthand \( \cat{C}(A) \) for \( \cat{C}(A, A) \).
+    We call the \hyperref[eq:def:graph/quiver/arc_set]{arc set} \( \cat{C}(A, B) \) of all morphisms from \( A \) to \( B \) a \term{morphism set} or \term{\( \boldop{hom} \)-set}. We use the shorthand \( \cat{C}(A) \) for \( \cat{C}(A, A) \).
 
-    \thmitem[def:category/C3]{C3} For each triple of objects \( A, B, C \in \cat{C} \), there exists a \term{composition} \hyperref[def:function]{operation}
-    \begin{equation*}
-      \circ: \cat{C}(B, C) \times \cat{C}(A, B) \to \cat{C}(A, C).
-    \end{equation*}
+    Another established notation is \( \op{hom}(A, B) \) instead of \( \cat{C}(A, B) \).
 
-    The composition of \( f \in \cat{C}(A, B) \) and \( g \in \cat{C}(B, C) \) is denoted by \( g \circ f \). The order reversal notation comes from composition of functions.
+    \thmitem{def:category/composition} We require the \term{composition} \( \bincirc \) of the arrows \( f \) and \( g \) to be defined only if \( \co\dom(f) = \dom(g) \). In this case, we require \( g \bincirc f \) to be a morphism from \( \dom(f) \) to \( \co\dom(g) \).
+
+    Note how the order of \( f \) and \( g \) may seem confusing: we write the composition of \( f: A \to B \) and \( g: B \to C \) as \( g \bincirc f: A \to C \). This is set up so that it matches \hyperref[def:multi_valued_function/composition]{function composition}.
+
+    This order of composition is used in \cite[7]{MacLane1994}, \cite[def. 1.1.1]{Leinster2016Basic} and \cite[def 3.1.]{Aluffi2009}.
+
+    \thmitem{def:category/identity} We denote the \term{identity morphism} of an object \( A \) by \( \id_A \).
   \end{thmenum}
 
-  The definition of a category requires the following axioms to hold:
+  The definition of a category requires the following conditions to hold:
   \begin{thmenum}[resume=def:category]
-    \thmitem{def:category/identity}(identity) For each object \( A \in \cat{C} \), there exists a special morphism \( \id_A \in \cat{C}(A, A) \), called the \term{identity morphism}, such that whenever \( B \in \cat{C} \) and \( f: A \to B \), we have
-    \begin{equation*}
-      f \circ \id_A = \id_B \circ f = f.
-    \end{equation*}
+    \thmitem[def:category/C1]{C1} For any morphism \( f: A \to B \), the identities \( \id_A \) and \( \id_B \) must satisfy
+    \begin{equation}\label{eq:def:category/C1}\tag{\logic{C1}}
+      f \bincirc \id_A = \id_B \bincirc f = f.
+    \end{equation}
 
-    \thmitem{def:category/associativity}(associativity) Composition is associative, i.e. for each \( f \in \cat{C}(A, B) \), \( g \in \cat{C}(B, C) \) and \( h \in \cat{C}(C, D) \), we have
-    \begin{equation*}
-      (h \circ g) \circ f = h \circ (g \circ f).
-    \end{equation*}
+    \thmitem[def:category/C2]{C2} Composition must be associative. That is, for each triple of morphism \( f \in \cat{C}(A, B) \), \( g \in \cat{C}(B, C) \) and \( h \in \cat{C}(C, D) \), the following must hold:
+    \begin{equation}\label{eq:def:category/C2}\tag{\logic{C2}}
+      (h \bincirc g) \bincirc f = h \bincirc (g \bincirc f).
+    \end{equation}
   \end{thmenum}
 \end{definition}
 
-\begin{remark}\label{rem:category_obj_hom}
-  Some authors, e.g. \cite{Leinster2016Basic} or \cite{Aluffi2009}, use notations such as \( \op{obj}(C) \) to denote the class of objects. This notation does not benefit us in any way, so we do not use it.
-
-  Some authors, e.g. \cite{MacLane1994}, use notations such as \( \op{hom}_{\cat{C}(A, B)} \) to denote the class of morphisms between the objects \( A, B \in \cat{C} \). We use this notation when dealing with algebraic structures. See, for example, \fullref{thm:linear_map_iff_function_on_basis}.
-
-  The notation \( \cat{C}(A) \) is used as a shorthand for \( \cat{C}(A, A) \) and \( \hom_{\cat{C}(A)} \) is used as a shorthand for \( \hom_{\cat{C}(A, A)} \).
-\end{remark}
-
-\begin{example}\label{ex:categories}
+\begin{example}\label{ex:def:category}
   Examples of categories include:
 
   \begin{itemize}
-    \item The category \( \cat{Set} \) of sets with functions (see \fullref{def:category_of_sets}).
-    \item The category \( \cat{Top} \) of topological spaces with homomorphisms (see \fullref{def:category_of_topological_spaces}).
-    \item The category \( \cat{Grp} \) of groups with homeomorphisms (see \fullref{def:category_of_sets}).
-    \item Thin categories (see \fullref{def:thin_category}).
+    \item The category \( \cat{Set} \) of \hyperref[def:large_and_small_sets]{small} \hyperref[def:set]{sets} and \hyperref[def:function]{functions} defined in \fullref{def:category_of_sets}.
+
+    \item The category \( \cat{Cat} \) of small categories defined in \fullref{def:category_of_small_categories}.
+
+    \item All the \hyperref[def:category_of_first_order_models]{categories of small first-order models} listed in \fullref{ex:def:category_of_first_order_models}
+
+    \item The category \( \cat{Top} \) of small \hyperref[def:topological_space]{topological spaces} and \hyperref[def:global_continuity]{continuous functions} defined in \fullref{def:category_of_topological_spaces}.
+
+    \item For every topological space, the fundamental groupoid defined in \fullref{def:fundamental_groupoid}.
+
+    \item The category \( \cat{Quiv} \) of small \hyperref[def:quiver]{quivers} defined in \fullref{def:theory_of_graphs/category}.
+
+    \item For every quiver, the path category defined in \fullref{def:quiver_path_category}.
+
+    \item For every \hyperref[def:preordered_set]{preordered set}, the induced category defined in \fullref{thm:preorder_category_correspondence}.
   \end{itemize}
 \end{example}
 
-\begin{definition}\label{def:small_and_large_categories}
-  Let \( \cat{C} \) be a category. If for each pair \( A, B \in \cat{C} \) the class \( \cat{C}(A, B) \) is a set, we say that \( \cat{C} \) is \term{locally small}. If, in addition to this, the class of objects is a set, we say that \( \cat{C} \) is \term{small}.
-\end{definition}
+\begin{definition}\label{def:category_size}
+  As can be seen from \fullref{ex:def:category}, some of the categories we are working with, like \( \cat{Set} \), contain as objects all \hyperref[def:large_and_small_sets]{small sets}. As mentioned in \fullref{def:large_and_small_sets}, the concepts of a small set is defined relative to the smallest Grothendieck universe that suits our needs.
 
-\begin{definition}\label{def:discrete_category}\mcite[exmpl. 1.1.18(b]{Leinster2016Basic})
-  If there are no morphisms in \( \cat{C} \) besides identity morphisms, we say that \( \cat{C} \) is a \term{discrete category}.
-\end{definition}
+  \Fullref{thm:russels_paradox} demonstrates that the set of all sets easily leads to a paradox, which is the reason we restrict our attention only to sets within some Grothendieck universe. This universe is implicit by default, however we will occasionally need to make it explicit, for example in \fullref{def:presheaf}.
 
-\begin{definition}\label{def:generalized_element}\mcite[def. 4.1.25]{Leinster2016Basic}
-  Let \( \cat{C} \) be a category and \( A, B \in \cat{C} \). We say that the morphism \( f: A \to B \) is \term{a generalized element of \( B \) of shape \( A \)}. In the category \( \cat{Set} \), the morphism \( \in : 1 \to B \) is the standard element of the set \( B \) since there is a bijection between maps \( 1 \to B \) and elements of \( B \).
+  We will say that the category \( \cat{C} \) is \term{locally \( \mscrU \)-small} if the morphism set \( \cat{C}(A, B) \) is \( \mscrU \)-small for every pair of objects \( A \) and \( B \). If, in addition, the set \( \obj(\cat{C}) \) of objects is also \( \mscrU \)-small, we will say that the category \( \cat{C} \) is \term{\( \mscrU \)-small}. If a category is not \( \mscrU \)-small, we say that it is \term{\( \mscrU \)-large}.
+
+  Note that, in a locally small category, it is possible for the set of all morphisms to be \( \mscrU \)-large. This is impossible for small categories due to \ref{def:grothendieck_universe/union}.
+
+  As usual, we skip the prefix \enquote{\( \mscrU \)-} unless it is important and simply speak of \enquote{large categories} or \enquote{locally small categories}.
 \end{definition}
 
 \begin{definition}\label{def:morphism_invertibility}
   In connection with \fullref{def:function_invertibility} and \fullref{def:first_order_homomorphism_invertibility}, we introduce the following terminology:
   \begin{thmenum}
-    \thmitem{def:morphism_invertibility/left_invertible} \( f: A \to B \) is called \term{left-invertible} if there exists a morphism \( g: B \to A \) such that \( g \circ f = \id_A \). In this case we call \( g \) a \term{left inverse of \( f \)}.
+    \thmitem{def:morphism_invertibility/left_invertible} \( f: A \to B \) is called \term{left-invertible} if there exists a morphism \( g: B \to A \) such that \( g \bincirc f = \id_A \). In this case we call \( g \) a \term{left inverse of \( f \)}.
 
-    \thmitem{def:morphism_invertibility/monomorphism} \( f: C \to B \) is called a \term{monomorphism} or \term{monic morphism} or \term{left-cancellative morphism} or \term{embedding} if for any \( g, h: B \to A \) the equality \( f \circ g = f \circ h \) implies \( g = h \). We sometimes denote monomorphisms by \( f: C \hookrightarrow B \).
+    \thmitem{def:morphism_invertibility/monomorphism} \( f: C \to B \) is called a \term{monomorphism} or \term{monic morphism} or \term{left-cancellative morphism} or \term{embedding} if for any \( g, h: B \to A \) the equality \( f \bincirc g = f \bincirc h \) implies \( g = h \). We sometimes denote monomorphisms by \( f: C \hookrightarrow B \).
 
-    \thmitem{def:morphism_invertibility/right_invertible} \( f: A \to B \) is called \term{right-invertible} if there exists a morphism \( g: B \to A \) such that \( f \circ g = \id_B \). In this case we call \( g \) a \term{right inverse of \( f \)}.
+    \thmitem{def:morphism_invertibility/right_invertible} \( f: A \to B \) is called \term{right-invertible} if there exists a morphism \( g: B \to A \) such that \( f \bincirc g = \id_B \). In this case we call \( g \) a \term{right inverse of \( f \)}.
 
-    \thmitem{def:morphism_invertibility/epimorphism} \( f: A \to B \) is called an \term{epimorphism} or \term{epic morphism} or \term{right-cancellative morphism} or \term{projection} if for any \( g, h: B \to C \) the equality \( g \circ f = h \circ f \) implies \( g = h \). We sometimes denote epimorphisms by \( f: C \twoheadrightarrow B \).
+    \thmitem{def:morphism_invertibility/epimorphism} \( f: A \to B \) is called an \term{epimorphism} or \term{epic morphism} or \term{right-cancellative morphism} or \term{projection} if for any \( g, h: B \to C \) the equality \( g \bincirc f = h \bincirc f \) implies \( g = h \). We sometimes denote epimorphisms by \( f: C \twoheadrightarrow B \).
 
     \thmitem{def:morphism_invertibility/isomorphism} \( f: A \to B \) is called \term{invertible} or an \term{isomorphism} if there exists a morphism \( g: B \to A \) that is both a left and a right inverse of \( f \). In this case we call \( g \) a (two-sided) \term{inverse of \( f \)} and we say that the objects \( A \) and \( B \) are isomorphic. We sometimes denote isomorphisms by \( f: A \cong B \) or \( A \reloset f \cong B \).
 
@@ -90,15 +95,15 @@
   \begin{equation*}
     r
     =
-    \id_B \circ r
+    \id_B \bincirc r
     =
-    (l \circ f) \circ r
+    (l \bincirc f) \bincirc r
     =
-    l \circ f \circ r
+    l \bincirc f \bincirc r
     =
-    l \circ (f \circ r)
+    l \bincirc (f \bincirc r)
     =
-    l \circ \id_A
+    l \bincirc \id_A
     =
     l
   \end{equation*}
@@ -112,29 +117,29 @@
 
   Now assume that \( f \) has two inverses \( g \) and \( h \), i.e.
   \begin{balign*}
-    g \circ f = \id_A &  &  & f \circ g = \id_B,
+    g \bincirc f = \id_A &  &  & f \bincirc g = \id_B,
     \\
-    h \circ f = \id_A &  &  & f \circ h = \id_B.
+    h \bincirc f = \id_A &  &  & f \bincirc h = \id_B.
   \end{balign*}
 
   It follows that \( g = h \) since
   \begin{balign*}
     g
     =
-    g \circ \id_B
+    g \bincirc \id_B
     =
-    g \circ (f \circ h)
+    g \bincirc (f \bincirc h)
     =
-    (g \circ f) \circ h
+    (g \bincirc f) \bincirc h
     =
-    \id_A \circ h
+    \id_A \bincirc h
     =
     h.
   \end{balign*}
 \end{proof}
 
 \begin{example}\label{ex:indiscrete_topology_universal_property}\mcite[exer. 0.10]{Leinster2016Basic}
-  Let \( S \) be a set. The indiscrete topological space \( I(S) \) and the canonical projection \( \pi: I(S) \to S \) are characterized by the following universal property: for any topological space \( X \) and any function \( f: X \to S \), there exists a unique continuous function \( \tilde f \) such that \( p \circ \tilde f = f \), that is, the following diagram commutes:
+  Let \( S \) be a set. The indiscrete topological space \( I(S) \) and the canonical projection \( \pi: I(S) \to S \) are characterized by the following universal property: for any topological space \( X \) and any function \( f: X \to S \), there exists a unique continuous function \( \tilde f \) such that \( p \bincirc \tilde f = f \), that is, the following diagram commutes:
   \begin{equation*}
     \text{\todo{Add diagram}}\iffalse\begin{mplibcode}
       beginfig(1);
@@ -166,14 +171,14 @@
 
   Then by the universal property, there exist unique continuous functions \( \tilde p: I(S) \to Y \) and \( \tilde r: Y \to I(S) \) such that
   \begin{balign*}
-    r \circ \tilde p = p
+    r \bincirc \tilde p = p
      &  &
-    p \circ \tilde r = r.
+    p \bincirc \tilde r = r.
   \end{balign*}
 
-  Hence, \( p = r \circ \tilde p = p \circ \tilde r \circ \tilde p \) and \( \tilde r \circ \tilde p = \id_{I(S)} \).
+  Hence, \( p = r \bincirc \tilde p = p \bincirc \tilde r \bincirc \tilde p \) and \( \tilde r \bincirc \tilde p = \id_{I(S)} \).
 
-  Analogously, \( r = p \circ \tilde r = r \circ \tilde p \circ \tilde r \), so \( \tilde p \circ \tilde r = \id_Y \).
+  Analogously, \( r = p \bincirc \tilde r = r \bincirc \tilde p \bincirc \tilde r \), so \( \tilde p \bincirc \tilde r = \id_Y \).
 
   Thus, \( \tilde r \) and \( \tilde p \) are mutually inverse and \( I(S) \) is isomorphic to \( Y \).
 \end{proof}
@@ -238,7 +243,7 @@
 \begin{definition}\label{def:categorical_subobject}\mcite[122]{MacLane1994}
   Let \( \cat{C} \) be a category and \( X \in \cat{C} \) be any object.
 
-  Let \( u: Y \to X \) and \( v: Z \to X \) be \hyperref[def:morphism_invertibility]{monomorphisms}. If \( u = v \circ u' \) for some monomorphism \( u': Y \to Z \), we say that \term{\( u \) factors through \( v \)} and write \( u \leq v \). If both \( u \leq v \) and \( v \leq u \), we say that \( u \) and \( v \) are equivalent and write \( u \cong v \).
+  Let \( u: Y \to X \) and \( v: Z \to X \) be \hyperref[def:morphism_invertibility]{monomorphisms}. If \( u = v \bincirc u' \) for some monomorphism \( u': Y \to Z \), we say that \term{\( u \) factors through \( v \)} and write \( u \leq v \). If both \( u \leq v \) and \( v \leq u \), we say that \( u \) and \( v \) are equivalent and write \( u \cong v \).
 
   The equivalence classes among the monomorphisms with a common codomain \( X \) are called \term{subobjects} of \( X \).
 \end{definition}
