@@ -1,367 +1,119 @@
 \subsection{Functors}\label{subsec:functors}
 
 \begin{definition}\label{def:functor}\mcite[def. 1.2.1 \\ def. 1.2.10]{Leinster2016Basic}
-  Let \( \cat{A} \) and \( \cat{B} \) be categories. A (covariant) \term{functor} \( F: \cat{A} \to \cat{B} \) consists of:
-  \begin{itemize}
-    \item a function \( \cat{A} \to \cat{B} \), written as \( A \mapsto F(A) \).
-    \item for each \( A, A' \in \cat{A} \), a function
-          \begin{equation*}
-            \cat{A}(A, A') \to \boldop{B}(F(A), F(A')),
-          \end{equation*}
-          written as \( f \mapsto F(f) \).
-  \end{itemize}
-  such that
-  \begin{thmenum}
-    \thmitem{def:functor/composition_axiom} \( A \reloset f \mapsto B \reloset g \mapsto C \) implies \( F(g \circ f) = F(g) \circ F(f) \).
-    \thmitem{def:functor/identity_axiom} \( A \in \cat{A} \) implies \( F(\id_A) = \id_{F(A)} \).
-  \end{thmenum}
+  Fix some \hyperref[def:category]{categories} \( \cat{C} \) and \( \cat{D} \). A \term{functor} \( F: \cat{C} \to \cat{D} \) is a \hyperref[def:theory_of_graphs/quiver_homomorphism]{quiver homomorphism} between the underlying quivers that is compatible with composition and identities.
 
-  If we replace the axiom \fullref{def:functor/composition_axiom} with
-  \begin{thmenum}
-    \item[b')]\label{def:functor/contravariant_composition_axiom} \( A \reloset f \mapsto B \reloset g \mapsto C \) implies \( F(g \circ f) = F(f) \circ F(g) \),
-  \end{thmenum}
-  we call \( F \) a \term{contravariant functor}. Equivalently, \( F: \cat{A} \to \cat{B} \) is contravariant if and only if \( F: \cat{A}^{-1} \to \cat{B} \) is covariant.
+  Explicitly, a functor is a family of functions
+  \begin{equation}\label{eq:def:functor_as_family_of_function}
+    \begin{aligned}
+      F_{\obj}:       &\obj(\cat{C}) \to \obj(\cat{D}) \\
+      F_{\hom(A, B)}: &\cat{C}(A, B) \to \cat{D}(F_{\obj}(A), F_{\obj}(B)),
+    \end{aligned}
+  \end{equation}
+  where \( F_{\hom(A, B)} \) is a distinct function for every pair of objects \( A \) and \( B \).
 
-  The \term{identity functor} \( \id_A: \cat{A} \to \cat{A} \) simply maps a category to itself.
+  In practice, we usually define the functor as the set
+  \begin{equation}\label{eq:def:functor_as_single_function}
+    F \coloneqq F_{\obj} \cup \bigcup\set{ F_{\hom(A, B)} \given A, B \in \obj(\cat{C}) }
+  \end{equation}
+
+  Since the domains of all constituent functions are disjoint, \( F \) is again a total single-valued function. This allows us to justify the notation \( F(A) \) for objects and \( F(f) \) for morphisms.
+
+  The definition of a functor additionally requires the following compatibility conditions to hold:
+  \begin{thmenum}[series=def:category]
+    \thmitem[def:functor/CF1]{CF1} Functors must preserve composition, meaning that for any pair of morphism \( f: A \to B \) and \( g: B \to C \) in \( \cat{C} \), we have
+    \begin{equation}\label{eq:def:category/CF1}\tag{\logic{CF1}}
+      F(g \bincirc f) = F(g) \bincirc F(f).
+    \end{equation}
+
+    \thmitem[def:functor/CF2]{CF2} Functors must preserve identities, meaning that for any object \( A \in \cat{C} \) we must have
+    \begin{equation}\label{eq:def:category/CF2}\tag{\logic{CF2}}
+      F(\id_A) = \id_{F(A)}.
+    \end{equation}
+  \end{thmenum}
 \end{definition}
+\begin{defproof}
+  The definition \eqref{eq:def:functor_as_family_of_function} ensures that the quiver homomorphism conditions \eqref{eq:def:theory_of_graphs/quiver_homomorphism/head} and \eqref{eq:def:theory_of_graphs/quiver_homomorphism/tail} hold.
 
-\begin{remark}\label{rem:image_of_functor_maybe_not_subcategory}
-  The \term{image} \( F(\cat{A}) \) of a category \( \cat{A} \) under a functor \( F: \cat{A} \to \cat{B} \) may not be a subcategory of \( \cat{B} \). A simple example is can be constructed as follows:
+  Indeed, for any morphism \( f: A \to B \) in \( \cat{C} \) we have
+  \begin{equation*}
+    F(\dom(f)) = F(A) = \dom(F(f)),
+  \end{equation*}
+  which implies \eqref{eq:def:theory_of_graphs/quiver_homomorphism/head}. We also have
+  \begin{equation*}
+    F(\co\dom(f)) = F(B) = \co\dom(F(f)),
+  \end{equation*}
+  which implies \eqref{eq:def:theory_of_graphs/quiver_homomorphism/tail}.
+\end{defproof}
 
-  Let \( \cat{A} \) be a category with four objects \( A, B, C, D \) and two morphisms \( f: A \to B \) and \( g: C \to D \). If \( F(B) = F(C) \), then \( F(f): F(A) \to F(B) \) and \( F(g): F(B) \to F(D) \), however there is no morphism from \( F(A) \) to \( F(D) \). Thus, the image \( F(\cat{A}) \) is not itself category.
+\begin{remark}\label{rem:functor_size}
+  It is possible that \( \cat{C} \) is \( \mscrU \)-small in the sense of \fullref{def:category_size}, but the \hyperref[def:functor]{functor} \( F \), as the set \eqref{eq:def:functor_as_single_function}, is not \( \mscrU \)-small in the sense of \fullref{def:large_and_small_sets}. Without using universes, we cannot prove the existence of any functor from the category of smalls sets to itself, for example.
 \end{remark}
 
-\begin{definition}\label{def:concrete_category}
-  A \term{concrete category} is a category \( \cat{A} \) equipped with a faithful functor \( F: \cat{A} \to \cat{B} \). We say that \( \cat{A} \) is concrete with respect to \( \cat{B} \).
+\begin{definition}\label{def:category_of_small_categories}
+  Suppose that we are given a \hyperref[def:grothendieck_universe]{Grothendieck universe} \( \mscrU \), which is safe to assume to be the smallest suitable one as explained in \fullref{def:large_and_small_sets}.
 
-  Unless noted otherwise, we assume that the codomain of \( F \) is \( \cat{Set} \).
-\end{definition}
+  We denote the \hyperref[def:category]{category} of \( \mscrU \)-small \hyperref[def:category]{categories} by \( \cat{\mscrU-Cat} \) or, if the universe is clear from the context, simply by \( \cat{Cat} \).
 
-\begin{definition}\label{def:categorical_diagram}
-  A generalization of set-indexed \hyperref[def:tuple_and_cartesian_product/indexed_family]{families} is given by diagrams. We fix a category \( \cat{I} \), called an \term{index category}, which is often assumed to be small. A \term{diagram} of shape \( \cat{I} \) is then any functor \( D: \cat{I} \to \cat{A} \), where \( \cat{A} \) is any other category.
-
-  It is often convenient to think of diagrams in terms of their images \( D(\cat{I}) \), which are selections of objects and morphisms in \( \cat{A} \). Note the image \( D(\cat{I}) \) may not be a subcategory of \( \cat{A} \) (see \fullref{rem:image_of_functor_maybe_not_subcategory}).
-
-  If the category \( \cat{I} \) is small, we say that the diagram is a \term{small diagram}.
-\end{definition}
-
-\begin{example}\label{ex:categorical_diagrams}
-  \hfill
-  \begin{thmenum}
-    \item In the case when \( \cat{I} \) is a small discrete category, a diagram \( D: \cat{I} \to \cat{A} \) is simply a mapping of each element \( i \) of \( \cat{I} \) into an element of \( \cat{A} \), i.e. we can interpret any diagram of shape \( \cat{I} \) as a set-indexed family \( \{ A_k \}_{k \in \cat{I}} \), where all \( A_k \) are objects in \( \cat{A} \).
-
-    \item If \( \cat{I} \) is not discrete, a diagram \( D: \cat{I} \to \cat{A} \) also involves morphisms. For example, if \( \cat{I} \) is a three-object category with two morphisms as in the following picture
-    \begin{equation*}
-      \bullet \longrightarrow \bullet \longrightarrow \bullet,
-    \end{equation*}
-    we can interpret a diagram \( D \) of shape \( \cat{I} \) as a selection of objects and morphisms in \( \cat{A} \) that satisfy the same relations as in \( \cat{I} \):
-    \begin{equation*}
-      A
-      \reloset f \longrightarrow
-      B
-      \reloset g \longrightarrow
-      C.
-    \end{equation*}
-  \end{thmenum}
-\end{example}
-
-\begin{definition}\label{def:tower_diagram}
-  Let \( N \) be a subset of \( \BbbZ \) and let \( \cat{C} \) be any category. A \term{tower diagram} in \( \boldop{C} \) is an injective on objects (as a function) diagram \( D: N \to \boldop{C} \) over the \hyperref[def:partially_ordered_set/category]{\( \cat{Pos} \) category}, i.e.
-  \begin{equation}\label{def:tower_diagram/diagram}
-    \cdots \longrightarrow \bullet \longrightarrow \bullet \longrightarrow \bullet \longrightarrow \cdots
-  \end{equation}
-\end{definition}
-
-\begin{example}\label{ex:commutative_diagrams}
-  Consider the diagram
-  \begin{equation*}
-    \text{\todo{Add diagram}}\iffalse\begin{mplibcode}
-      beginfig(1);
-      input metapost/graphs;
-
-      v1 := thelabel("$A$", origin);
-      v2 := thelabel("$B$", (-1, -1) scaled u);
-      v3 := thelabel("$C$", (1, -1) scaled u);
-
-      a1 := straight_arc(v1, v2);
-      a2 := straight_arc(v1, v3);
-      a3 := straight_arc(v2, v3);
-
-      draw_vertices(v);
-      draw_arcs(a);
-
-      label.ulft("$f$", straight_arc_midpoint of a1);
-      label.urt("$g$", straight_arc_midpoint of a2);
-      label.bot("$h$", straight_arc_midpoint of a3);
-      endfig;
-    \end{mplibcode}\fi
-  \end{equation*}
-
-  It is commutative if and only if \( h \circ f = g \).
-
-  For a more convoluted example, see \fullref{def:categorical_pullback}.
-\end{example}
-
-\begin{definition}\label{def:opposite_functor}\mcite[def. 5.2.1]{Leinster2016Basic}
-  Given a functor \( F: \cat{A} \to \cat{B} \), we define \term{opposite or dual functor} \( F^{-1}: \cat{A}^{-1} \to \boldop{B}^{-1} \) as
   \begin{itemize}
-    \item \( F^{-1}(A) = F(A) \)
-    \item \( F^{-1}(f^{-1}: A' \to A) = F(f: A \to A') \)
+    \item The \hyperref[def:category/objects]{set of objects} \( \obj(\cat{Cat}) \) is the set of all \( \mscrU \)-small categories.
+
+    \item The \hyperref[def:category/morphisms]{set of morphisms} \( \cat{Cat}(A, B) \) from \( A \) to \( B \) is the set of all \hyperref[def:functor]{functors} from \( A \) to \( B \).
+
+    \item The \hyperref[def:category/composition]{composition of morphisms} is the \hyperref[def:multi_valued_function/composition]{function composition} of the functors regarded as the functions \eqref{eq:def:functor_as_single_function}. That is, the composition of \( F: \cat{C} \to \cat{D} \) and \( G: \cat{D} \to \cat{E} \) is the functor
+    \begin{equation}\label{eq:def:category_of_small_categories/composition}
+      \begin{aligned}
+        &G \bincirc F: \cat{C} \to \cat{E}, \\
+        &[G \bincirc F](A) \coloneqq G(F(A)), \\
+        &[G \bincirc F](f) \coloneqq G(F(f)).
+      \end{aligned}
+    \end{equation}
+
+    \item The \hyperref[def:category/identity]{identity morphism} of the category \( \cat{C} \) is the \term{identity functor}
+    \begin{equation}\label{eq:def:category_of_small_categories/identity}
+      \begin{aligned}
+        &\id_{\cat{C}}: \cat{C} \to \cat{C}, \\
+        &\id_{\cat{C}}(A) \coloneqq A, \\
+        &\id_{\cat{C}}(f) \coloneqq f.
+      \end{aligned}
+    \end{equation}
   \end{itemize}
 \end{definition}
+\begin{defproof}
+  To see that \( \cat{\mscrU-Cat} \) is indeed a category, we verify the conditions \ref{def:category/C1} and \ref{def:category/C2}.
 
-\begin{proposition}\label{thm:functors_preserve_isomorphisms}\mcite[exer. 1.2.21]{Leinster2016Basic}
-  Functors preserve isomorphisms, i.e. if \( F: \cat{A} \to \cat{B} \) is a (covariant) functor and \( A \cong A' \), then \( F(A) \cong F(A') \).
-\end{proposition}
-\begin{proof}
-  Let \( f: A \to A' \) be an isomorphism with inverse \( f^{-1} \). From \fullref{def:functor}, we have
-  \begin{balign*}
-    F(f^{-1}) \circ F(f)
-    \reloset{\ref{def:functor/composition_axiom}} =
-    F(f^{-1} \circ f)
+  \SubProofOf{def:category/C1} For every two \( \mscrU \)-small categories \( \cat{C} \) and \( \cat{D} \) and every functor \( F: \cat{C} \to \cat{D} \), for every object \( A \in \cat{C} \) we have
+  \begin{equation*}
+    [\id_{\cat{D}} \bincirc F](A)
     =
-    F(\id_A)
-    \reloset{\ref{def:functor/identity_axiom}} =
-    \id_{F(A)}.
-  \end{balign*}
-
-  Analogously, \( F(f) \circ F(f^{-1}) = \id_{F(A')} \). Thus, \( F(f): F(A) \to F(A') \) is an isomorphism with inverse \( F(f^{-1}) \).
-\end{proof}
-
-\begin{definition}\label{def:presheaf}\mcite[def. 1.2.15]{Leinster2016Basic}
-  A \term{presheaf} on the category \( \cat{C} \) is a contravariant functor
-  \begin{equation*}
-    F: \cat{C} \to \cat{Set}.
+    \id_{\cat{D}}(F(A))
+    =
+    F(A)
+    =
+    F(\id_{\cat{C}}(A))
+    =
+    [F \bincirc \id_{\cat{C}}](A)
   \end{equation*}
-\end{definition}
+  and analogously for morphisms.
 
-\begin{example}\label{ex:topological_space_presheaf}\mcite[24]{Leinster2016Basic}
-  Let \( (X, \tau) \) be a topological space. Form the category \( \cat{C} \) from the partially ordered set \( (\tau, \subseteq) \) as in \fullref{thm:partial_order_category_correspondence}. Presheaves on \( \cat{C} \) are also called presheaves on the topological space \( (X, \tau) \).
+  Therefore, \( \id_{\cat{C}} \) and \( \id_{\cat{D}} \) satisfy \eqref{eq:def:category/C1}.
 
-  Let \( (Y, \rho) \) be another topological space. Then the map
-  \begin{balign*}
-     & F: \tau \multto C(\tau, Y)                                     \\
-     & F(U) = C(U, Y) = \{ f: U \mapsto Y, f \text{ is continuous} \}
-  \end{balign*}
-  is a presheaf.
-\end{example}
+  \SubProofOf{def:category/C2} Associativity of functor composition is inherited from the associativity of function composition.
+\end{defproof}
 
-\begin{definition}\label{def:faithful_full_functor}\mcite[def. 1.2.16]{Leinster2016Basic}
-  A functor \( F: \cat{A} \to \cat{B} \) between locally small categories is called \term{faithful} (resp. \term{full}) if the map
-  \begin{balign*}
-    \cat{A}(A, A') & \to \boldop{B}(F(A), F(A')) \\
-    f              & \mapsto F(f)
-  \end{balign*}
-  is \hyperref[def:function_invertibility/injective]{injective} (resp. \hyperref[def:function_invertibility/surjective]{surjective}).
-\end{definition}
-
-\begin{example}\label{def:subcategory_functors}\mcite[25]{Leinster2016Basic}
-  Let \( \cat{B} \) be a subcategory of \( \cat{A} \). We define the inclusion functor \( I: \cat{B} \to \cat{A} \) by sending each object and each morphism of \( \cat{B} \) to itself within \( \cat{A} \).
-
-  Then \( I \) is faithful and, if the subcategory \( \cat{B} \) is \hyperref[def:subcategory]{full}, then \( I \) is also full.
-\end{example}
-
-\begin{definition}\label{def:natural_transformation}\mcite[def. 1.3.1]{Leinster2016Basic}
-  Let \( \cat{A} \) and \( \cat{B} \) be categories and let \( F \) and \( G \) be functors from \( \cat{A} \) to \( \cat{B} \).
-
-  A \term{natural transformation} \( \gamma: F \to G \) is a family \( \{ \gamma_A: F(A) \to G(A) \}_{A \in \cat{A}} \) of morphisms in \( \cat{B} \) such that for every morphism \( f: A \to A' \) in \( \cat{A} \), the diagram
-  \begin{equation*}
-    \text{\todo{Add diagram}}\iffalse\begin{mplibcode}
-      beginfig(1);
-      input metapost/graphs;
-
-      v1 := thelabel("$F(A)$", origin);
-      v2 := thelabel("$G(A)$", (0, -1) scaled u);
-      v3 := thelabel("$F(A')$", (2, 0) scaled u);
-      v4 := thelabel("$G(A')$", (2, -1) scaled u);
-
-      a1 := straight_arc(v1, v2);
-      a2 := straight_arc(v1, v3);
-      a3 := straight_arc(v2, v4);
-      a4 := straight_arc(v3, v4);
-
-      draw_vertices(v);
-      draw_arcs(a);
-
-      label.lft("$\gamma_A$", straight_arc_midpoint of a1);
-      label.top("$F(f)$", straight_arc_midpoint of a2);
-      label.bot("$G(f)$", straight_arc_midpoint of a3);
-      label.rt("$\gamma_{A'}$", straight_arc_midpoint of a4);
-      endfig;
-    \end{mplibcode}\fi
-  \end{equation*}
-  commutes.
-
-  The morphisms \( \gamma_A \) are called the components of \( \gamma \). We denote natural transformations using
-  \begin{equation*}
-    \text{\todo{Add diagram}}\iffalse\begin{mplibcode}
-      u := 1cm;
-
-      beginfig(1);
-      input metapost/graphs;
-
-      v1 := thelabel("$\mathbf{A}$", origin);
-      v2 := thelabel("$\mathbf{B}$", (2, 0) scaled u);
-
-      a1 := curved_arc(v1, v2, (0, safe_arc_curvature));
-      a2 := curved_arc(v1, v2, (0, -safe_arc_curvature));
-
-      draw_vertices(v);
-      draw_arcs(a);
-
-      label.top("$F$", curved_arc_midpoint of a1);
-      label.bot("$G$", curved_arc_midpoint of a2);
-
-      draw_vertical_double_arc((1, 0) scaled u);
-      label.rt("$\gamma$", (1, 0) scaled u);
-      endfig;
-    \end{mplibcode}\fi
-  \end{equation*}
-
-  The natural transformation from \( F \) to \( F \) composed of identity morphisms is called the \term{identity natural transformation}.
-\end{definition}
-
-\begin{definition}\label{def:natural_transformation_composition}
-  Let \( F: \cat{A} \to \cat{B} \), \( G: \cat{A} \to \cat{B} \) and \( H: \cat{A} \to \cat{B} \) be functors and let \( \gamma: F \to G \) and \( \beta: G \to H \) be natural transformations.
-
-  We define the \term{composition} (sometimes called \term{vertical composition}) of the natural transformations \( \beta \) and \( \gamma \) component-wise for \( A \in \cat{A} \) as
-  \begin{equation*}
-    (\beta \circ \gamma)_A \coloneqq \beta_{A} \circ \gamma_A.
-  \end{equation*}
-\end{definition}
-
-\begin{definition}\label{def:functor_category}
-  Given categories \( \cat{A} \) and \( \cat{B} \), we define their \term{functor category} \( [\cat{A}, \cat{B}] \) by
-  \begin{itemize}
-    \item the objects in \( [\cat{A}, \cat{B}] \) are functors \( F: \cat{A} \to \cat{B} \).
-    \item the morphisms in \( [\cat{A}, \cat{B}](F, G) \) are the natural transformations from \( F \) to \( G \).
-  \end{itemize}
-
-  The functor category \( [\cat{A}, \cat{B}] \) is often denoted by \( {\cat{B}}^{\cat{A}} \) since, if \( \cat{A} \) is a finite discrete category of cardinality \( n \), it is \hyperref[def:category_equivalence]{equivalent}) to the product \hyperref[def:product_category]{category} \( \cat{B} \times \cat{B} \)
-  \begin{equation*}
-    {\cat{B}}^{\cat{A}} = {\cat{B}}^n = \cat{B} \times \ldots \times \cat{B}.
-  \end{equation*}
-\end{definition}
-
-\begin{definition}\label{def:natural_isomorpism}
-  A \term{natural isomorphism} between the functors \( F: \cat{A} \to \cat{B} \) and \( G: \cat{B} \to \cat{A} \) is an invertible natural transformation between them, that is, an isomorphism in \( [\cat{A}, \cat{B}](F, G) \). If there exists a natural isomorphism between \( F \) and \( G \), we simply say that they are naturally isomorphic without mentioning the isomorphism itself.
-\end{definition}
-
-\begin{definition}\label{def:category_equivalence}
-  An \term{equivalence} between the categories \( \cat{A} \) and \( \cat{B} \) consists of a pair of functors \( F, G: \cat{A} \to \cat{B} \) and a pair of natural \hyperref[def:natural_isomorpism]{isomorphisms}
-  \begin{balign*}
-    \xi: \id_{\cat{A}} \to G \circ F,
-     &  &
-    \eta: F \circ G \to \id_{\cat{B}}.
-  \end{balign*}
-
-  If an equivalence between \( \cat{A} \) and \( \cat{B} \) exists, we say that the categories \( \cat{A} \) and \( \cat{B} \) are \term{equivalent} and write \( \cat{A} \simeq \cat{B} \).
-\end{definition}
-
-\begin{proposition}\label{thm:skeletal_subcategory_equivalence}\mcite[91]{MacLane1994}
-  Every category \( \cat{A} \) is equivalent to a skeletal subcategory (if one exists; see \fullref{thm:skeletal_subcategory_existence}).
+\begin{proposition}\label{thm:category_of_small_categories_properites}
+  We collect here important properties of the category \hyperref[def:category_of_small_categories]{\( \cat{\mscrU-Cat} \)} of \( \mscrU \)-small categories. Most of them require forward references.
 \end{proposition}
 
-\begin{definition}\label{def:natural_transformation_horizontal_composition}\mcite[rem. 1.3.24]{Leinster2016Basic}
-  Let \( \cat{A} \), \( \cat{B} \) and \( \cat{C} \) be categories, \( F, G: \cat{A} \to \cat{B} \) and \( F', G': \cat{B} \to \cat{C} \) be functors and \( \gamma: F \to G \) and \( \gamma': F' \to G' \) be natural transformations.
+\begin{definition}\label{def:functor_image}
+  The \term{image} of a functor \( F: \cat{C} \to \cat{D} \) is the \hyperref[def:graph/quiver]{quiver} whose vertex set is
   \begin{equation*}
-    \text{\todo{Add diagram}}\iffalse\begin{mplibcode}
-      u := 1cm;
-
-      beginfig(1);
-      input metapost/graphs;
-
-      v1 := thelabel("$\mathbf{A}$", origin);
-      v2 := thelabel("$\mathbf{B}$", (2, 0) scaled u);
-      v3 := thelabel("$\mathbf{C}$", (4, 0) scaled u);
-
-      a1 := curved_arc(v1, v2, (0, safe_arc_curvature));
-      a2 := curved_arc(v1, v2, (0, -safe_arc_curvature));
-      a3 := curved_arc(v2, v3, (0, safe_arc_curvature));
-      a4 := curved_arc(v2, v3, (0, -safe_arc_curvature));
-
-      draw_vertices(v);
-      draw_arcs(a);
-
-      label.top("$F$", curved_arc_midpoint of a1);
-      label.bot("$G$", curved_arc_midpoint of a2);
-      label.top("$F'$", curved_arc_midpoint of a3);
-      label.bot("$G'$", curved_arc_midpoint of a4);
-
-      draw_vertical_double_arc((1, 0) scaled u);
-      label.rt("$\gamma$", (1, 0) scaled u);
-
-      draw_vertical_double_arc((3, 0) scaled u);
-      label.rt("$\gamma'$", (3, 0) scaled u);
-      endfig;
-    \end{mplibcode}\fi
+    V \coloneqq \set{ F(A) \given A \in \cat{C} }
+  \end{equation*}
+  and whose arc set is
+  \begin{equation*}
+    E \coloneqq \set{ F(f) \given A, B \in \cat{C} \T{and} f \in \cat{C}(A, B) }.
   \end{equation*}
 
-  We define the natural transformation
-  \begin{equation*}
-    \gamma' * \gamma: F' \circ F \to G' \circ G,
-  \end{equation*}
-  called \term{horizontal composition of \( \gamma \) and \( \gamma' \)}, defined by
-  \begin{equation*}
-    (\gamma' * \gamma)_A \coloneqq \gamma'_{G(A)} \circ F'(\gamma_A) = G'(\gamma_A) \circ \gamma'_{F(A)}.
-  \end{equation*}
-\end{definition}
-
-\begin{definition}\label{def:comma_category}\mcite[def. 2.3.1]{Leinster2016Basic}
-  Let \( \cat{A} \), \( \cat{B} \) and \( \cat{C} \) be categories and \( \cat{A} \reloset F \to \cat{C} \reloset G \leftarrow \cat{B} \). We define the \term{comma category} \( (F \downarrow G) \) by
-  \begin{itemize}
-    \item The objects in \( (F \downarrow G) \) are triples \( (A, h, B) \) where \( A \in \cat{A} \), \( B \in \cat{B} \) and \( F(A) \reloset h \to G(B) \).
-    \item The morphisms from \( (A, h, B) \) to \( (A', h', B') \) are pairs \( (f, g) \in \cat{A}(A, A') \times \boldop{B}(B, B') \) such that the following diagram commutes:
-          \begin{equation}\label{def:comma_category/universal_property}
-            \text{\todo{Add diagram}}\iffalse\begin{mplibcode}
-              beginfig(1);
-              input metapost/graphs;
-
-              v1 := thelabel("$F(A)$", origin);
-              v2 := thelabel("$G(B)$", (0, -1) scaled u);
-              v3 := thelabel("$F(A')$", (2, 0) scaled u);
-              v4 := thelabel("$G(B')$", (2, -1) scaled u);
-
-              a1 := straight_arc(v1, v2);
-              a2 := straight_arc(v1, v3);
-              a3 := straight_arc(v2, v4);
-              a4 := straight_arc(v3, v4);
-
-              draw_vertices(v);
-              draw_arcs(a);
-
-              label.lft("$h$", straight_arc_midpoint of a1);
-              label.top("$F(f)$", straight_arc_midpoint of a2);
-              label.bot("$G(g)$", straight_arc_midpoint of a3);
-              label.rt("$h'$", straight_arc_midpoint of a4);
-              endfig;
-            \end{mplibcode}\fi
-          \end{equation}
-  \end{itemize}
-
-  As a special case, if \( \cat{A} \) is the one-object category, then \( F \) necessarily \enquote{selects} an object \( C \in \cat{C} \). Thus, we can define the comma category \( (C \downarrow G) \), in which objects may be regarded as pairs \( (h, B) \) rather than triples and the diagram for morphisms looks like
-  \begin{equation*}
-    \text{\todo{Add diagram}}\iffalse\begin{mplibcode}
-      beginfig(1);
-      input metapost/graphs;
-
-      v1 := thelabel("$C$", origin);
-      v2 := thelabel("$G(B)$", (-1, -1) scaled u);
-      v3 := thelabel("$G(B')$", (1, -1) scaled u);
-
-      a1 := straight_arc(v1, v2);
-      a2 := straight_arc(v1, v3);
-      a3 := straight_arc(v2, v3);
-
-      draw_vertices(v);
-      draw_arcs(a);
-
-      label.ulft("$h$", straight_arc_midpoint of a1);
-      label.urt("$h'$", straight_arc_midpoint of a2);
-      label.bot("$G(g)$", straight_arc_midpoint of a3);
-      endfig;
-    \end{mplibcode}\fi
-  \end{equation*}
-
-  Analogously, we can also define the category \( (F \downarrow C) \) by regarding \( G \) and not \( F \) as a functor from the one-object category.
+  This quiver has no categorical structure --- it is merely a directed multigraph. As shown in \fullref{ex:functor_image_not_a_category}, imposing a categorical structure na\"ively may fail.
 \end{definition}
