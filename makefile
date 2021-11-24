@@ -2,9 +2,8 @@ COMPILER := pdflatex -interaction=batchmode
 FIGURES_TEX_PDF := $(patsubst figures/%.tex,figures/%.pdf,$(wildcard figures/*.tex))
 FIGURES_ASY_PDF := $(patsubst figures/%.asy,figures/%.pdf,$(wildcard figures/*.asy))
 DOC_SOURCE := notebook.cls notebook.tex bib/*.bib packages/*.sty src/*.tex $(FIGURES_TEX_PDF) $(FIGURES_ASY_PDF)
-FIG_SOURCE := figures/*.tex figures/*.asy
 
-.PHONY: figures watch_figures watch clean
+.PHONY: figures watch clean
 
 notebook.pdf: $(DOC_SOURCE)
 	$(COMPILER) -draftmode notebook.tex
@@ -12,7 +11,7 @@ notebook.pdf: $(DOC_SOURCE)
 	$(COMPILER) -draftmode notebook.tex
 	$(COMPILER) notebook.tex
 
-figures/%.pdf: figures/%.tex
+figures/%.pdf: tikzcd.cls packages/*.sty figures/%.tex
 	cd figures && $(COMPILER) $*.tex
 
 figures/%.pdf: figures/%.asy
@@ -20,18 +19,15 @@ figures/%.pdf: figures/%.asy
 
 figures: $(FIGURES_TEX_PDF) $(FIGURES_ASY_PDF)
 
-watch_figures: figures
-	@find $(FIG_SOURCE) | entr -r make figures
-
-watch: figures
-	@find $(DOC_SOURCE) | entr -r $(COMPILER) notebook.tex;
+# I have implemented a very useful build system for LaTeX with log processing and debouncing
+watch:
+	@poetry run python watcher.py
 
 clean:
 	rm -fv {,figures/}*.pdf
 	rm -fv {,src/,figures/}*.log # tex
 	rm -fv {,src/,figures/}*.{aux,out,fls,toc} # latex
 	rm -fv {,src/}*.{bbl,bcf,blg,run.xml} # biber
-	rm -fv {,src/}*.{idx,ilg,ind} # makeindex
 	rm -fv git-commit-info
 
 git-commit-info: .git/refs/heads/master
