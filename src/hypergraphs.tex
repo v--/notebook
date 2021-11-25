@@ -1,0 +1,144 @@
+\subsection{Hypergraphs}\label{subsec:hypergraphs}
+
+\begin{definition}\label{def:hypergraph}
+  Fix a \hyperref[def:set]{set} \( V \), whose members we will call \term{vertices} or \term{nodes}, and a set \( E \), whose members we will call \term{edges}.
+
+  A \term{hypergraph} is a \hyperref[def:multi_valued_function/total]{total multi-valued function} \( H: E \multto V \) whose role is to give us a nonempty set of endpoints for each edge.
+
+  \begin{figure}[h]
+    \begin{equation}\label{eq:fig:def:hypergraph}
+      \begin{aligned}
+        \includegraphics{figures/eq__fig__def__hypergraph.pdf}
+      \end{aligned}
+    \end{equation}
+    \caption{A hypergraph containing four edges with two endpoints and one edge with four.}\label{fig:def:hypergraph}
+  \end{figure}
+
+  It is common to define a hypergraph as a family of nonempty sets \( E \), in which case \( V \coloneqq \bigcup E \) and \( H \) is the \hyperref[def:multi_valued_function/identity]{identity function} on \( E \).
+
+  \begin{thmenum}
+    \thmitem{def:hypergraph/incidence} We say that the vertex \( v \) and the edge \( e \) are \term{incident} if the vertex \( v \) is an endpoint \( e \).
+
+    \thmitem{def:hypergraph/adjacent_vertices} We say that \( u \) and \( v \) are \term{adjacent vertices} if there exists an edge \( e \) such that both \( u \) and \( v \) are endpoints of \( e \).
+
+    \thmitem{def:hypergraph/adjacent_edges} We say that \( e_1 \) and \( e_2 \) are \term{adjacent edges} if they have a common endpoint.
+
+    \thmitem{def:hypergraph/parallel_edges} We say that the edges \( e_1 \) and \( e_2 \) are parallel if they have the same endpoints.
+
+    \thmitem{def:hypergraph/order} The \term{order} \( \ord(H) \) of the hypergraph \( H \) is the \hyperref[thm:cardinality_existence]{cardinality} of \( V \).
+
+    We say that the hypergraph is finite if both \( V \) and \( E \) are finite and infinite otherwise. If no parallel edges are allowed, the graph is finite if \( \ord(H) \) is finite.
+
+    \thmitem{def:hypergraph/degree} The \term{degree} \( \deg(v) \) of a vertex \( v \in V \) is the cardinality of set
+    \begin{equation*}
+      \set{ e \in E \given v \T{is an endpoint of} e }.
+    \end{equation*}
+
+    The degree \( \deg(H) \) of the hypergraph itself is the maximum of the degrees of all vertices. It is possible that the maximum in \( \deg(H) \) is not attained if \( H \) is infinite.
+
+    We say that the graph is \term{locally finite} if the degree of every vertex is finite.
+
+    This is not to be confused with \hyperref[def:category_size]{locally finite categories}.
+  \end{thmenum}
+\end{definition}
+
+\begin{proposition}\label{thm:family_of_sets_induces_hypergraph}
+  Every \hyperref[rem:family_of_sets]{family} of nonempty sets \( \mscrA \) induces a \hyperref[def:hypergraph]{hypergraph} as follows:
+  \begin{itemize}
+    \item The set of vertices is \( \bigcup \mscrA \).
+    \item The set of edges is \( \mscrA \) itself.
+  \end{itemize}
+\end{proposition}
+\begin{proof}
+  The hypergraph is given by the function
+  \begin{equation*}
+    \begin{aligned}
+      &H: \mscrA \multto \bigcup \mscrA \\
+      &H(A) \coloneqq A,
+    \end{aligned}
+  \end{equation*}
+  which is better represented as the binary relation
+  \begin{equation*}
+    \set{ (A, x) \given A \in \mscrA \T{and} x \in A }.
+  \end{equation*}
+\end{proof}
+
+\begin{example}\label{ex:hypergraphs_not_induced_by_family}
+  The hypergraph \eqref{eq:fig:def:hypergraph} is a counterexample to the converse of \fullref{thm:family_of_sets_induces_hypergraph}. It cannot be represented as a family of sets because the edges \( e_2 \) and \( \widehat{e_2} \) are \hyperref[def:hypergraph/parallel_edges]{parallel} and would be represented by the same set.
+
+  Another counterexample is a hypergraph with a nonempty vertex set and no edges. The union of all edges is empty and is a strict subset of the vertices.
+\end{example}
+
+\begin{definition}\label{def:hypergraph_transversal}\mcite[32]{GondranMinoux1984Graphs}
+  Let \( H: V \multto E \) be a \hyperref[def:hypergraph]{hypergraph}. We say that a set \( T \subseteq V \) of vertices is a \term{transversal} of \( H \) if it is incident to every edge of \( H \).
+\end{definition}
+
+\begin{example}\label{ex:hypergraph_vertex_set_is_transversal}
+  Every hypergraph has at least one transversal since the vertex set it itself a transversal.
+\end{example}
+
+\begin{definition}\label{def:hypergraph_minimal_transversal}
+  A transversal \( T \) of the hypergraph \( H: V \multto E \) is said to be \term{minimal} if any of the following equivalent conditions hold:
+  \begin{thmenum}
+    \thmitem{def:hypergraph_minimal_transversal/order} \( T \) is a minimal \hyperref[def:partially_ordered_set_extremal_points/maximal_and_minimal_element]{element} under \hyperref[def:subset]{set inclusion} in the set of all transversals of \( H \).
+    \thmitem{def:hypergraph_minimal_transversal/singleton} For every vertex \( v \) in \( T \) there exists an edge \( e_v \in E \) such that
+    \begin{equation*}
+      T \cap e_v = \set{ v }.
+    \end{equation*}
+  \end{thmenum}
+\end{definition}
+\begin{proof}
+  \ImplicationSubProof{def:hypergraph_minimal_transversal/order}{def:hypergraph_minimal_transversal/singleton} Let \( T \) be minimal under inclusion among all transversals.
+
+  Fix a vertex \( v \in T \). Since \( T \) is minimal, the set \( T \setminus \set{ v } \) is not a transversal. So there exists an edge \( e_v \in E \) such that \( (T \setminus \set{ v }) \cap e_v = \varnothing \).
+
+  Now since \( T \) is a transversal for \( H \), the set \( T \cap e_v \) is nonempty and thus
+  \begin{equation*}
+    T \cap e_x
+    =
+    \parens[\Big]{ (T \setminus \set{ v }) \cup \set{ v } } \cap e_v
+    \reloset {\eqref{eq:thm:de_morgans_laws/complement_of_meet}} =
+    \underbrace{\parens[\Big]{ (T \setminus \set{ v }) \cap e_v }}_{\varnothing} \cup \parens[\Big]{ \set{ v } \cap e_v }
+    =
+    \set{ v }.
+  \end{equation*}
+
+  \ImplicationSubProof{def:hypergraph_minimal_transversal/singleton}{def:hypergraph_minimal_transversal/order} Now suppose that for every vertex \( v \in T \) there exists an edge \( e_v \in E \) such that \( T \cap e_v = \set{ v } \).
+
+  Suppose that \( T \) is not minimal. Then there exists some vertex \( u \in T \) be such that \( T \setminus \set{ u } \) is a transversal. But our assertion gives us an edge \( e_u \in E \) such that \( T \cap e_u = \set{ u } \). Clearly the set \( T \setminus \set{ u } \) cannot be a transversal of \( H \) since
+  \begin{equation*}
+    (T \setminus \set{ u }) \cap e_u = \varnothing.
+  \end{equation*}
+
+  This contradiction proves that \( T \) is minimal under set inclusion.
+\end{proof}
+
+\begin{example}\label{ex:hypergraph_with_no_minimal_transversal}
+  We will give an example of a hypergraph without a minimal transversal.
+
+  For every nonnegative integer \( n \) define the set
+  \begin{equation*}
+    e_n \coloneqq \set{ n, n + 1, n + 2, \ldots }.
+  \end{equation*}
+
+  Let \( H \) be the hypergraph whose edges are \( e_1, e_2, \cdots \). The set of vertices is \( e_1 \), hence \( e_1 \) is also a transversal.
+
+  Now assume that \( T \) is a minimal transversal for \( H \). Since, by \fullref{thm:natural_numbers_are_well_ordered}, the natural numbers are well-ordered, \( T \) has a minimum. Let \( n_0 \coloneqq \min T \).
+
+  But \( T \setminus \set{ n_0 } \) is also a transversal because each edge \( e_n \) intersects \( T \) at infinitely many points besides \( n_0 \).
+
+  The obtained contradiction shows that \( H \) has no minimal transversal.
+\end{example}
+
+\begin{theorem}[Hypergraph minimal transversal existence]\label{thm:hypergraphs_have_minimal_transversal}
+  Every \hyperref[def:hypergraph]{hypergraph} has a \hyperref[def:hypergraph_minimal_transversal]{minimal transversal}.
+
+  In \hyperref[def:zfc]{\logic{ZF}} this theorem is equivalent to the \hyperref[def:zfc/choice]{axiom of choice} --- see \fullref{thm:axiom_of_choice_equivalences/hypergraph}.
+\end{theorem}
+\begin{proof}
+  The proof is merely a translation of the axiom of choice into the language of hypergraphs.
+
+  \ImplicationSubProof[def:zfc/choice]{the axiom of choice}[thm:hypergraphs_have_minimal_transversal]{minimal transversal existence} Let \( H: V \multto E \) be a hypergraph. Then \( E \) is a family of nonempty sets and thus there exists a set \( B \) such that \( e \cap B \) for every edge \( e \in E \). This is a minimal transversal by \fullref{def:hypergraph_minimal_transversal/singleton}.
+
+  \ImplicationSubProof[thm:hypergraphs_have_minimal_transversal]{minimal transversal existence}[def:zfc/choice]{axiom of choice} Let \( \mscrA \) be an arbitrary family of nonempty sets. Then \( H \coloneqq \parens*{ \bigcup \mscrA, \mscrA } \) is a hypergraph. Let \( T \) be a minimal transversal of \( H \). Then, by definition, for every edge \( e \in \mscrA \), the intersection \( T \cap e \) is a singleton set. Hence, \( T \) is the image of a \hyperref[def:choice_function]{choice function} for \( \mscrA \).
+\end{proof}
