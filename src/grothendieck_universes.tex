@@ -1,11 +1,11 @@
 \subsection{Grothendieck universes}\label{subsec:grothendieck_universes}
 
-Instead of having one single universe, we can have multiple universes where each is contained in another one. The upside of this is that we can do category theory formally within set theory --- see the discussions in \fullref{def:category_size}. The downside of this is that, unlike models of \hyperref[def:zfc]{\logic{ZFC}}, models of \hyperref[def:axiom_of_universes]{\logic{ZFC+U}} (\logic{ZFC} with the axiom that every set is contained in some \hyperref[def:grothendieck_universe]{Grothendieck universe}) are much less studied. In particular, this axiom requires the existence of an unbounded hierarchy of \hyperref[def:regular_cardinal]{strongly inaccessible cardinal}, unlike \( \logic{ZFC} \) for which only one such cardinal is sufficient.
+Instead of having one single universe, we can have multiple universes where each is contained in another one. The upside of this is that we can do category theory formally within set theory --- see the discussions in \fullref{def:category_size}. The downside of this is that, unlike models of \hyperref[def:zfc]{\logic{ZFC}}, models of \hyperref[def:axiom_of_universes]{\logic{ZFC+U}} (\logic{ZFC} with the axiom that every set is contained in some \hyperref[def:grothendieck_universe]{Grothendieck universe}) are much less studied. In particular, this axiom requires the existence of an unbounded hierarchy of \hyperref[rem:strongly_inaccessible_cardinal]{regular strong limit cardinal}, unlike \( \logic{ZFC} \) for which only one such cardinal is sufficient.
 
 \begin{definition}\label{def:grothendieck_universe}\mcite{nLab:grothendieck_universe}
   We say that the set \( \mscrU \) is a \term{Grothendieck universe} if it satisfied the following conditions:
   \begin{thmenum}
-    \thmitem[def:grothendieck_universe/inductive]{GU1} It contains an \hyperref[def:inductive_set]{inductive set}. We specifically mean the \hyperref[thm:smallest_inductive_set_existence]{smallest inductive set \( \omega \)}, however is sufficient only to state the existence of one inductive set.
+    \thmitem[def:grothendieck_universe/nonempty]{GU1} It is \hyperref[def:empty_set]{nonempty}.
 
     \thmitem[def:grothendieck_universe/transitive]{GU2} It is a \hyperref[def:transitive_set]{transitive set}.
 
@@ -19,36 +19,23 @@ Instead of having one single universe, we can have multiple universes where each
   \end{thmenum}
 
   We formalize the entire concept via the following monstrous formula:
-  \begin{equation*}\taglabel[\op{IsUniverse}]{eq:def:grothendieck_universe/predicate}
-    \begin{aligned}
-      \mathrlap
-      {
-        \ref{eq:def:grothendieck_universe/predicate}[\upsilon] \coloneqq \parens[\Big]
-          {
-            \qexists {\tau \in \upsilon}
-            \ref{eq:def:inductive_set/predicate}[\tau]
-          }
-        \wedge
-      }
-      \hspace{1cm}&
-      \\ &\wedge
-      \parens[\Big]
-      {
-        \qforall {\tau \in \upsilon}
+  \small
+  \begin{multline*}\taglabel[\op{IsUniverse}]{eq:def:grothendieck_universe/predicate}
+    \ref{eq:def:grothendieck_universe/predicate}[\upsilon] \coloneqq
+      \neg \ref{eq:def:empty_set/predicate}[\upsilon]
+      \wedge
+      \qforall {\tau \in \upsilon}
+      \vast(
         \ref{eq:def:subset/predicate}[\tau, \upsilon]
-      }
-      \thinspace \wedge \\ &\wedge
-      \parens[\Big]
-      {
-        \qforall {\tau \in \upsilon}
-        \qexists {\xi \in \upsilon}
-        \ref{eq:def:basic_set_operations/power_set/predicate}[\xi, \tau]
-      }
-      \thinspace \wedge \\ &\wedge
-      \parens[\Bigg]
-      {
-        \qforall {\tau \in \upsilon}
-        \qforall \xi \qforall \eta
+        \wedge
+        \parens[\Big]
+          {
+            \qexists {\xi \in \upsilon}
+            \ref{eq:def:basic_set_operations/power_set/predicate}[\xi, \tau]
+          }
+        \wedge \\ \wedge
+        \qforall \xi
+        \qforall \eta
         \parens[\Bigg]
         {
           \parens[\Big]
@@ -63,16 +50,15 @@ Instead of having one single universe, we can have multiple universes where each
                   \ref{eq:def:grothendieck_universe/predicate_isimage}[\eta, \xi]
                 }_{ \mathclap{\eta \T*{is the image of} \xi} }
             }
-            \rightarrow
-            \underbrace
-              {
-                \qexists {\zeta \in \upsilon} \ref{eq:def:basic_set_operations/union/predicate}[\zeta, \xi]
-              }_{ \bigcup \img(\xi) \in \tau
-            }
-        }
-      },
-    \end{aligned}
-  \end{equation*}
+          \rightarrow
+          \underbrace
+            {
+              \qexists {\zeta \in \upsilon} \ref{eq:def:basic_set_operations/union/predicate}[\zeta, \xi]
+            }_{ \bigcup \img(\xi) \in \upsilon}
+      }
+    \vast),
+  \end{multline*}
+  \normalsize
   where
   \begin{equation*}\taglabel[\op{IsImage}]{eq:def:grothendieck_universe/predicate_isimage}
     \ref{eq:def:grothendieck_universe/predicate_isimage}[\chi, \tau]
@@ -92,6 +78,19 @@ Instead of having one single universe, we can have multiple universes where each
   \end{equation*}
 \end{definition}
 
+\begin{lemma}\label{thm:grothendieck_universe_contains_finite_sets}
+  Every Grothendieck universe is a superset of universe of hereditary finite sets \hyperref[def:universe_of_hereditary_finite_sets]{\( V_\omega \)}.
+\end{lemma}
+\begin{proof}
+  Let \( \mscrU \) be a Grothendieck universe.
+
+  \ref{def:grothendieck_universe/nonempty} ensures that it is nonempty. Then there exists some set \( A \in \mscrU \). By \ref{def:grothendieck_universe/power_set}, \( \pow(A) \in \mscrU \). By \ref{def:grothendieck_universe/transitive}, \( \varnothing \in \pow(A) \in \mscrU \) implies \( \varnothing \in \mscrU \).
+
+  Finally, from \ref{def:grothendieck_universe/power_set} by \fullref{thm:bounded_transfinite_induction} if follows that \( V_{n+1} = \pow(V_n) \) is a member of \( \mscrU \) for every \( n \in \omega \).
+
+  Therefore, \( V_\omega = \bigcup \set{ V_n \given n \in \omega } \) is a subset of \( \mscrU \).
+\end{proof}
+
 \begin{definition}\label{def:axiom_of_universes}\mcite{nLab:grothendieck_universe}
   The \term{axiom of universes} states that any set is contained in a \hyperref[def:grothendieck_universe]{Grothendieck universe}. Symbolically,
   \begin{equation}\label{eq:def:axiom_of_universes}
@@ -103,8 +102,14 @@ Instead of having one single universe, we can have multiple universes where each
   We usually add this theorem to \hyperref[def:zfc]{ZFC} and call the resulting \hyperref[def:first_order_theory]{logical theory} \logic{ZFC+U}.
 \end{definition}
 
+\begin{example}\label{ex:def:axiom_of_universes}
+  From \fullref{thm:grothendieck_universe_iff_regular_strong_limit} it follows that the universe of hereditary finite sets \hyperref[def:universe_of_hereditary_finite_sets]{\( V_\omega \)} is a Grothendieck universe.
+
+  The existence of other universes cannot be proven in \logic{ZFC}. For this reason, we use the \hyperref[def:axiom_of_universes]{axiom of universes}.
+\end{example}
+
 \begin{proposition}\label{thm:smallest_grothendieck_universe_existence}
-  Suppose that we are working in \logic{ZFC+U}. Then there exists a smallest Grothendieck universe.
+  Suppose that we are working in \logic{ZFC+U}. Then for any set \( A \), there exists a smallest Grothendieck universe containing \( A \).
 
   More generally, fix a set \( A \). Then there exists a smallest Grothendieck universe containing \( A \).
 \end{proposition}
@@ -118,7 +123,9 @@ Instead of having one single universe, we can have multiple universes where each
     \widehat \mscrU \coloneqq \set{ x \in \mscrU \given x \T{belongs to every Grothendieck universe} }.
   \end{equation*}
 
-  Now that we have defined \( \widehat \mscrU \), it remains to verify that it is itself a universe. Note that every universe contains an inductive set, hence the \hyperref[thm:smallest_inductive_set_existence]{smallest inductive set \( \omega \)} belongs to all universes and thus also to their \enquote{intersection} \( \widehat \mscrU \). This rest of the verification is trivial.
+  Now that we have defined \( \widehat \mscrU \), it remains to verify that it is itself a universe. To show \ref{def:grothendieck_universe/nonempty}, note that \( V_\omega \in \mscrU \) by \fullref{thm:grothendieck_universe_contains_finite_sets} and hence, by \ref{def:grothendieck_universe/transitive}, \( \omega \in \mscrU \).
+
+  The rest of the verification is trivial.
 \end{proof}
 
 \begin{definition}\label{def:large_and_small_sets}\mcite{nLab:grothendieck_universe}
@@ -128,25 +135,29 @@ Instead of having one single universe, we can have multiple universes where each
 
   A set that is not \( \mscrU \)-\term{small} is called \( \mscrU \)-\term{large}. Note that any strict superset of \( \mscrU \) is \( \mscrU \)-large, but not \( \mscrU \)-moderate.
 
-  Without further context (i.e. in \enquote{ordinary mathematics}), we assume that \( \mscrU \) refers to the \hyperref[thm:smallest_grothendieck_universe_existence]{smallest Grothendieck universe} and instead of the terms \( \mscrU \)-large and \( \mscrU \)-small, we simply use the terms \term{large} and \term{small}.
+  Without further context (i.e. in \enquote{ordinary mathematics}), we assume that \( \mscrU \) refers to the \hyperref[thm:smallest_grothendieck_universe_existence]{smallest Grothendieck universe} that contains all sets of interest and instead of the terms \( \mscrU \)-large and \( \mscrU \)-small, we simply use the terms \term{large} and \term{small}.
 \end{definition}
 
-\begin{theorem}\label{thm:grothendieck_universe_iff_strongly_inaccessible}\mcite{Williams1969}
-  The stage \( V_\kappa \) of the \hyperref[def:cumulative_hierarchy]{von Neumann's cumulative hierarchy} is a \hyperref[def:grothendieck_universe]{Grothendieck universe} for every \hyperref[def:regular_cardinal]{strongly inaccessible cardinal} \( \kappa \).
+\begin{example}\label{ex:large_and_small_sets}
+  \hfill
+  \begin{itemize}
+    \item A set is finite if and only if it is \( V_\omega \)-small. A set is \( V_\omega \)-moderate if and only if it is an infinite family of finite sets.
 
-  Conversely, for every Grothendieck universe \( \mscrU \), there exists a strongly inaccessible cardinal \( \kappa \) such that \( \mscrU = V_\kappa \).
+    For finite mathematics such as most of combinatorics, we rarely need to work outside of \( V_\omega \).
+
+    \item If \( \kappa < \mu \) are regular strong limit cardinals, the stage \( V_\kappa \) of von Neumann's hierarchy is \( V_\mu \)-small by \fullref{thm:cumulative_hierarchy_properties/membership}.
+  \end{itemize}
+\end{example}
+
+\begin{theorem}\label{thm:grothendieck_universe_iff_regular_strong_limit}\mcite{Williams1969}
+  The stage \( V_\kappa \) of the \hyperref[def:cumulative_hierarchy]{von Neumann's cumulative hierarchy} is a \hyperref[def:grothendieck_universe]{Grothendieck universe} for every \hyperref[rem:strongly_inaccessible_cardinal]{regular strong limit cardinal} \( \kappa \).
+
+  Conversely, for every Grothendieck universe \( \mscrU \), there exists a regular strong limit cardinal \( \kappa \) such that \( \mscrU = V_\kappa \).
 \end{theorem}
 \begin{proof}
-  \SufficiencySubProof Let \( \kappa \) be strongly inaccessible.
+  \SufficiencySubProof Let \( \kappa \) be a regular strong limit cardinal.
 
-  \SubProofOf*{def:grothendieck_universe/inductive} Clearly \( V_\kappa \) contains an inductive set because \( \kappa \) is uncountable and thus
-  \begin{equation*}
-    \omega
-    \in
-    \kappa
-    \reloset {\ref{thm:cumulative_hierarchy_properties/ordinals}} \subseteq
-    V_\kappa.
-  \end{equation*}
+  \SubProofOf*{def:grothendieck_universe/nonempty} Since \( \kappa \) is infinite and thus \( 0 < \kappa \), from \fullref{thm:cumulative_hierarchy_properties/membership} it follows that \( V_0 \in V_\kappa \).
 
   \SubProofOf*{def:grothendieck_universe/transitive} The set \( V_\kappa \) is transitive as shown in \fullref{thm:cumulative_hierarchy_properties/transitive}.
 
@@ -169,13 +180,13 @@ Instead of having one single universe, we can have multiple universes where each
 
   \NecessitySubProof Let \( \mscrU \) be a Grothendieck universe and let \( \alpha \) be the smallest \hi{ordinal} not in \( \mscrU \). We will first show that \( \mscrU = V_\alpha \) and gradually prove that \( \alpha \) is actually an inaccessible cardinal.
 
-  \SubProof*{Proof that \( V_\beta \in \mscrU \) for \( \beta \in \mscrU \)} We will use \fullref{thm:bounded_transfinite_induction} on \( \beta < \alpha \).
+  \SubProof*{Proof that \( V_\beta \in \mscrU \) for ordinals \( \beta \in \mscrU \)} We will use \fullref{thm:bounded_transfinite_induction} on \( \beta < \alpha \).
   \begin{itemize}
-    \item \ref{def:grothendieck_universe/inductive} ensures that \( \mscrU \) contains an inductive set \( A \). \ref{def:grothendieck_universe/transitive} ensures that \( A \subseteq \mscrU \) and since \( \varnothing \) is a member of every inductive set, we have \( \varnothing \in \mscrU \). Therefore, \( V_0 = \varnothing \in \mscrU \).
+    \item From \fullref{thm:grothendieck_universe_contains_finite_sets} it follows that \( \varnothing \in \mscrU \).
 
     \item If \( \beta < \alpha \) and \( V_\beta \in \mscrU \), then by \ref{def:grothendieck_universe/power_set} we have \( V_{\beta + 1} = \pow(V_\beta) \in \mscrU \).
 
-    We will come back to this step a bit later, but for now note that \( V_{\beta + 1} \in \mscrU \) irregardless of whether \( \beta + 1 \in \mscrU \).
+    We will come back to this step a bit later, but for now note that \( V_{\beta + 1} \in \mscrU \) regardless of whether \( \beta + 1 \in \mscrU \).
 
     \item If \( \lambda < \alpha \) is a limit ordinal and \( V_\beta \in \mscrU \) for every \( \beta < \lambda \), we have
     \begin{equation*}
@@ -186,7 +197,7 @@ Instead of having one single universe, we can have multiple universes where each
     which is a \( \lambda \)-indexed union of members of \( \mscrU \). Since \( \lambda \in \mscrU \), by \ref{def:grothendieck_universe/power_set} we have \( V_\lambda \in \mscrU \).
   \end{itemize}
 
-  \SubProof*{Proof that \( \alpha \) is a limit ordinal} In the successor case we noted that \( V_{\beta + 1} \in \mscrU \) for every \( \beta < \alpha \) irregardless of whether \( \beta + 1 < \alpha \). Since \( \rank(\beta + 1) = \beta + 1 \), it follows that \( \beta + 1 \in V_{\beta + 2} \in \mscrU \) and thus by \ref{def:grothendieck_universe/transitive}, \( \beta + 1 \in \mscrU \). Therefore, \( \alpha \) cannot be a successor ordinal --- if \( \alpha = \beta + 1 \), then \( \beta \in \mscrU \) by definition of \( \alpha \) and thus \( \beta + 1 = \alpha \in \mscrU \), which is a contradiction.
+  \SubProof*{Proof that \( \alpha \) is a limit ordinal} In the successor case we noted that \( V_{\beta + 1} \in \mscrU \) for every \( \beta < \alpha \) regardless of whether \( \beta + 1 < \alpha \). Since \( \rank(\beta + 1) = \beta + 1 \), it follows that \( \beta + 1 \in V_{\beta + 2} \in \mscrU \) and thus by \ref{def:grothendieck_universe/transitive}, \( \beta + 1 \in \mscrU \). Therefore, \( \alpha \) cannot be a successor ordinal --- if \( \alpha = \beta + 1 \), then \( \beta \in \mscrU \) by definition of \( \alpha \) and thus \( \beta + 1 = \alpha \in \mscrU \), which is a contradiction.
 
   Since \( \alpha > 0 \), it remains for \( \alpha \) to be a limit ordinal.
 
@@ -223,7 +234,7 @@ Instead of having one single universe, we can have multiple universes where each
   \end{equation*}
    is a \( B \)-indexed union of members of \( \mscrU \) and, by \ref{def:grothendieck_universe/union}, \( \card(B) \in \mscrU \).
 
-  \SubProof*{Proof that \( \kappa \) is a strong limit} For every \( \beta < \kappa \) by \ref{def:grothendieck_universe/power_set} we have \( \pow(\beta) \in \mscrU \). We have already show that \( \card(\pow(\beta)) \in \mscrU \) and, by \fullref{thm:cardinal_exponentiation_power_set}, we have
+  \SubProof*{Proof that \( \kappa \) is a strong limit} For every \( \beta < \kappa \) by \ref{def:grothendieck_universe/power_set} we have \( \pow(\beta) \in \mscrU \). We have already shown that \( \card(\pow(\beta)) \in \mscrU \) and, by \fullref{thm:cardinal_exponentiation_power_set}, we have
   \begin{equation*}
     \card(\pow(\beta)) = 2^{\card(\beta)} = 2^\beta.
   \end{equation*}
@@ -242,13 +253,6 @@ Instead of having one single universe, we can have multiple universes where each
 
   The obtained contradiction shows that \( \card(C) = \kappa \). Since \( C \) was an arbitrary unbounded set, it follows that \( \kappa \) satisfies \fullref{def:regular_cardinal/unbounded_subsets} and is thus regular.
 
-  \SubProof*{Proof that \( \kappa \) is uncountable} In the beginning of the proof we noted that \( \omega \subseteq \mscrU \) since \( \mscrU \) contains some inductive set \( A \). Thus,
-  \begin{equation*}
-    \omega = \bigcup\set[\Big]{ \set{ n } \given* n \in \omega } \cup \bigcup\set[\Big]{ \varnothing \given* A \setminus \omega }.
-  \end{equation*}
-
-  By \ref{def:grothendieck_universe/union}, \( \omega \in \mscrU \). Therefore, \( \omega < \kappa \) and since \( \kappa \) is a cardinal, we conclude that \( \kappa \) is necessary uncountable.
-
   \SubProof*{Proof that \( V_\kappa = U \)} Finally, now that we know that \( \kappa \) is a strongly inaccessible cardinal, we can show that equality holds in \( V_\kappa \subseteq \mscrU \).
 
   Aiming at a contradiction, suppose that \( U \setminus V_\kappa \) is nonempty. By the \hyperref[def:zfc/foundation]{axiom of foundation}, there exists a set \( C \in \mscrU \setminus V_\kappa \) such that
@@ -261,8 +265,8 @@ Instead of having one single universe, we can have multiple universes where each
 \end{proof}
 
 \begin{corollary}\label{thm:grothendieck_universe_is_model_of_zfc}
-  Every Grothendieck universe is a standard model of \hyperref[def:zfc]{\logic{ZFC}}.
+  Every uncountable Grothendieck universe is a standard model of \hyperref[def:zfc]{\logic{ZFC}}.
 \end{corollary}
 \begin{proof}
-  Follows from \fullref{thm:grothendieck_universe_iff_strongly_inaccessible} and \fullref{thm:cumulative_hierarchy_model_of_zfc}.
+  Follows from \fullref{thm:grothendieck_universe_iff_regular_strong_limit} and \fullref{thm:cumulative_hierarchy_model_of_zfc}.
 \end{proof}

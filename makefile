@@ -3,12 +3,15 @@ FIGURES_TEX_PDF := $(patsubst figures/%.tex,figures/%.pdf,$(wildcard figures/*.t
 FIGURES_ASY_PDF := $(patsubst figures/%.asy,figures/%.pdf,$(wildcard figures/*.asy))
 DOC_SOURCE := notebook.cls notebook.tex bib/*.bib packages/*.sty src/*.tex $(FIGURES_TEX_PDF) $(FIGURES_ASY_PDF)
 
-.PHONY: figures watch clean
+.PHONY: full figures watch clean
 
-notebook.pdf: $(DOC_SOURCE)
+full:
 	$(COMPILER) -draftmode notebook.tex
 	biber notebook.bcf
 	$(COMPILER) -draftmode notebook.tex
+	$(COMPILER) notebook.tex
+
+notebook.pdf: $(DOC_SOURCE)
 	$(COMPILER) notebook.tex
 
 figures/%.pdf: tikzcd.cls packages/*.sty figures/%.tex
