@@ -12,7 +12,7 @@
 \end{remark}
 
 \begin{definition}\label{def:undirected_graph}
-  An \term{undirected multigraph} is a \hyperref[def:hypergraph]{hypergraph} \( G: E \multto V \) in which all hyperedges are either edges or loops, i.e. every hyperedge \( e \) has either one or two endpoints. We will use the term \enquote{edge} to include loops, although this in general varies with the author.
+  An \term{undirected multigraph} is a \hyperref[def:hypergraph]{hypergraph} \( G = (V, E, \mscrE) \) in which all hyperedges are either edges or loops, i.e. every hyperedge \( e \) has either one or two endpoints. We will use the term \enquote{edge} to include loops, although this in general varies with the author.
 
   A common assumption is that an undirected multigraph has no loops and no parallel edges. In this case, an established terminology is \term{simple undirected graph}.
 
@@ -46,7 +46,7 @@
 \end{example}
 
 \begin{definition}\label{def:graph_adjacency_matrix}\mcite[ch. 1, sec. 2.3]{GondranMinoux1984Graphs}
-  Let \( G: E \multto V \) be a \hyperref[def:undirected_graph]{simple undirected graph}. Its \term{adjacency matrix}
+  Let \( G = (V, E, \mscrE) \) be a \hyperref[def:undirected_graph]{simple undirected graph}. Its \term{adjacency matrix}
   \begin{equation*}
     M = \seq{ a_{uv} }_{u, v \in V}
   \end{equation*}
@@ -75,7 +75,9 @@
 \end{example}
 
 \begin{definition}\label{def:undirected_multigraph_path}
-  A \term{path} is an \hyperref[def:undirected_graph]{undirected multigraph} \( G: E \multto V \) is a finite or infinite sequence of edges satisfying certain conditions. Different authors use similar terms like \term{walk} and \term{trail} and put different restrictions on them. A proper definition is tricky, and we will use recursion to avoid common pitfalls.
+  Let \( G = (V, E, \mscrE) \) be an \hyperref[def:undirected_graph]{undirected multigraph}. We will adapt the definition of a \term{directed path} from \fullref{def:quiver_path}.
+
+  A \term{path} in \( G \) is a finite or infinite sequence of directed edges satisfying certain conditions. Different authors use similar terms like \term{walk} and \term{trail} and put different restrictions on them. We will not put as few restrictions as possible.
 
   \begin{figure}
     \begin{equation}\label{eq:fig:def:undirected_path}
@@ -86,43 +88,22 @@
     \caption{The dashed solid lines indicate the path \( (e_2, e_4, e_6) \) in the graph \eqref{eq:fig:def:undirected_graph}.}\label{fig:def:undirected_path}
   \end{figure}
 
-  This definition is closely related to the simpler \fullref{def:quiver_path}.
-
-  Consider the finite or infinite sequence of edges
-  \begin{equation}\label{eq:def:undirected_multigraph_path}
-    p = (e_1, e_2, \ldots).
-  \end{equation}
-
-  We will define the \hyperref[def:partial_function]{partial functions} \term{head} \( h(p) \) and \term{tail} \( t(p) \) on the set of all such sequences. The head and the tail are both vertices and are collectively know as \term{endpoints} of a path. We will then define a \term{path} as a sequence of edges for which the head is defined.
-
-  We use \fullref{rem:unbounded_transfinite_recursion} on the \term{length} \( \len(p) \) of the path. Since we allow paths to be infinite sequences, we must bound the induction on \( \omega + 1 \):
-  \begin{itemize}
-    \item An \term{empty path} at the vertex \( v \) is an empty sequence with \( h(p) = t(p) = v \).
-
-    \item If \eqref{eq:def:undirected_multigraph_path} is a path of finite length \( n \) and if \( e \neq e_n \) is an edge incident to \( t(p) \), then
-    \begin{equation*}
-      \widehat{p} \coloneqq (e_1, e_2, \ldots, e_n, e)
-    \end{equation*}
-    is a path with length \( n + 1 \) and
-    \begin{align*}
-      h(\widehat{p}) &\coloneqq h(p) \\
-      t(\widehat{p}) &\coloneqq \begin{cases}
-        t(p), &e \T{is a loop} \\
-        v,    &v \T{is an endpoint of} e \T{but not} e_n
-      \end{cases}
-    \end{align*}
-
-    \item Finally, if \( p_1, p_2, \ldots \) is a sequence of paths such that, for each index \( k \), \( p_k \) is an initial segment of \( p_{k + 1} \), then
-    \begin{equation*}
-      p \coloneqq \bigcup_{k < \infty} p_k
-    \end{equation*}
-    is a path with head \( h(p_1) \) and no tail. This union is again a sequence of edges since we have defined sequences as functions.
-
-    We define the length of this union as \( \aleph_0 = \omega \), although we will prefer the symbol \( \infty \).
-  \end{itemize}
-
   \begin{thmenum}
-    \thmitem{def:undirected_multigraph_path/domain} The \term{domain} \( \dom(p) \) of \( p \) is the set of all vertices that belong to at least one arc in \( p \). We say that the path \term{visits} each member of \( \dom(p) \).
+    \thmitem{def:undirected_multigraph_path/directed_edge} A \term{directed edge} in \( G \) is a pair \( (e, h) \), where \( e \in E \) is an edge and \( h \in \mscrE(e) \) is an endpoint of \( e \) called the \term{head} of \( e \).
+
+    The \term{tail} of \( (e, h) \) is \( h \) if \( e \) is a \hyperref[def:hypergraph/cardinality]{loop} and the endpoint of \( h \) that is not \( h \) otherwise.
+
+    \thmitem{def:undirected_multigraph_path/path} The sequence of directed edges
+    \begin{equation}\label{eq:def:undirected_multigraph_path}
+      p = \parens[\Big]{ (e_1, h_1), (e_2, h_2), \ldots }
+    \end{equation}
+    is a \term{path} if, for every index \( k \), the edges \( e_k \) and \( e_{k+1} \) are distinct and the head of \( e_{k+1} \) is the tail of \( e_k \).
+
+    \thmitem{def:undirected_multigraph_path/endpoints} If \( p \) is a nonempty path, then the \term{head} of \( p \) is the head of the first edge. If \( p \) is nonempty and finite, then the \term{tail} of \( p \) is the tail of the last edge of \( p \).
+
+    The head and tail of a path are collectively called the \term{endpoints} of \( p \).
+
+    \thmitem{def:undirected_multigraph_path/domain} The \term{domain} \( \dom(p) \) of \( p \) is the set of all vertices that belong to at least one edge in \( p \). We say that the path \term{visits} each member of \( \dom(p) \).
 
     The domain of the path \eqref{eq:fig:def:undirected_path} is \( \set{ e_2, e_4, e_6 } \).
 
@@ -134,11 +115,11 @@
 
     \thmitem{def:undirected_multigraph_path/subpath} We say that the \hyperref[def:subsequence]{subsequence} \( q \) of \( p \) is a \term{subpath} of \( p \) if the elements of \( q \) are consecutive in \( p \), i.e. there exists some index \( n \geq 0 \) such that \( q_k = e_{n + k} \) for \( 0 < k < \len(q) \).
 
-    In \eqref{eq:fig:def:undirected_path}, the subsequence \( (e_2, e_4) \) is a subpath and \( (e_2, e_6) \) is not.
+    In \eqref{eq:fig:def:undirected_path}, the subsequence \( ((e_2, a), (e_4, c)) \) is a subpath and \( ((e_2, a), (e_6, d)) \) is not.
 
     \thmitem{def:undirected_multigraph_path/cycle} A nonempty path \( p \) is a \term{cycle} if \( h(p) = t(p) \). Cycles are also called \term{closed paths}.
 
-    Consider the graph \eqref{eq:fig:def:undirected_path}. The path \( (e_2, e_4, e_3, e_1) \) is a cycle and so is and so is\( (e_2, {\widehat{e_2}}) \). We have forbidden for the same edge to appear twice consecutively, which means that \( (e_2, e_2) \) is not a cycle because it is not a valid path.
+    Consider the graph \eqref{eq:fig:def:undirected_path}. The path \( ((e_2, a), (e_4, c), (e_3, d), (e_1, b)) \) is a cycle and so is and so is \( ((e_2, a), (\widehat{e_2}, c)) \). We have forbidden for the same edge to appear twice consecutively, which means that \( ((e_2, a), (e_2, c)) \) is not a cycle because it is not a valid path.
 
     A graph without cycles is called \term{acyclic}.
 
@@ -150,15 +131,16 @@
 
     \thmitem{def:undirected_multigraph_path/converse} If the chain \eqref{eq:def:undirected_multigraph_path} is finite of length \( n \), we define its \term{converse} as
     \begin{equation*}
-      p^{-1} \coloneqq (e_n, e_{n-1}, \cdots, e_2, e_1).
+      p^{-1} \coloneqq \parens[\Big]{ (e_n, t_n), (e_{n-1}, t_{n-1}), \cdots, (e_2, t_2), (e_1, t_1)) },
     \end{equation*}
+    where \( t_k \) is the tail of the directed edge \( (e_k, h_k) \) of \( p \).
 
     \thmitem{def:undirected_multigraph_path/characteristic_vector} The \term{characteristic vector} \( \vect{p} \) of a path \( p \) is defined as the characteristic vector of \( \dom(p) \) in the \hyperref[def:hypergraph_vector_spaces/edge]{edge space} \( \BbbF_2^E \).
   \end{thmenum}
 \end{definition}
 
 \begin{definition}\label{def:undirected_multigraph_connectedness}
-  Let \( G: E \multto V \) be an undirected multigraph.
+  Let \( G = (V, E, \mscrE) \) be an undirected multigraph.
 
   \begin{thmenum}
     \thmitem{def:undirected_multigraph_connectedness/reachability} We say that the vertices \( u \) and \( v \) are \term{connected} if there exists a path from \( u \) to \( v \).
