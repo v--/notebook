@@ -1,0 +1,180 @@
+\subsection{Undirected graphs}\label{subsec:undirected_graphs}
+
+\begin{remark}\label{rem:graph_etymology}
+  Unfortunately, the term \enquote{graph} has at least several distinct established meanings:
+  \begin{itemize}
+    \item The \hyperref[def:multi_valued_function/graph]{graph of a valued function} (or relation).
+    \item An \hyperref[def:undirected_graph]{undirected graph}, with or without loops or parallel edges.
+    \item A \hyperref[def:quiver]{directed graph}, which may be a simple directed graph or a quiver.
+  \end{itemize}
+
+  The graph of a function is fundamentally different from the others, which we call \enquote{combinatorial graphs}. Although in \fullref{def:undirected_graph} we define undirected graphs as functions, the concepts are distinct and the formalisms are related by accident.
+\end{remark}
+
+\begin{definition}\label{def:undirected_graph}
+  An \term{undirected multigraph} is a \hyperref[def:hypergraph]{hypergraph} \( G: E \multto V \) in which all hyperedges are either edges or loops, i.e. every hyperedge \( e \) has either one or two endpoints. We will use the term \enquote{edge} to include loops, although this in general varies with the author.
+
+  A common assumption is that an undirected multigraph has no loops and no parallel edges. In this case, an established terminology is \term{simple undirected graph}.
+
+  \Cref{fig:def:undirected_graph} illustrates these concepts. The figure is not merely illustrative --- it is a \hyperref[def:graph_geometric_realization/embedding]{graph embedding}.
+
+  \begin{figure}[h]
+    \begin{equation}\label{eq:fig:def:undirected_graph}
+      \begin{aligned}
+        \includegraphics{figures/eq__fig__def__undirected_graph.pdf}
+      \end{aligned}
+    \end{equation}
+    \caption{An undirected multigraph, which becomes simple after removing the dashed edges.}\label{fig:def:undirected_graph}
+  \end{figure}
+
+  For a Grothendieck universe \( \mscrU \), we denote the \hyperref[def:category]{category} of undirected (multi)graphs by \( \cat{\mscrU-MultGph} \) and \( \cat{\mscrU-SimpGph} \), respectively. Both are strict \hyperref[def:subcategory]{subcategories} of the category \hyperref[def:category_of_small_hypergraphs]{\( \cat{HypGph} \)} of hypergraphs.
+\end{definition}
+
+\begin{example}\label{ex:complete_graph}
+  For every set \( V \), the \term{complete graph} \( K_V \) is the \hyperref[def:undirected_graph]{simple undirected graph} with an edge between any pair of distinct vertices.
+
+  \begin{figure}
+    \begin{equation}\label{eq:fig:ex:complete_graph}
+      \begin{aligned}
+        \includegraphics{figures/eq__fig__ex__complete_graph.pdf}
+      \end{aligned}
+    \end{equation}
+    \caption{The complete graph \( K_4 \).}\label{fig:ex:complete_graph}
+  \end{figure}
+
+  \Fullref{thm:ordinal_is_set_of_smaller_ordinals} justifies using the notation \( K_n \) for complete graphs of \hyperref[def:hypergraph/order]{finite order}.
+\end{example}
+
+\begin{definition}\label{def:graph_adjacency_matrix}\mcite[ch. 1, sec. 2.3]{GondranMinoux1984Graphs}
+  Let \( G: E \multto V \) be a \hyperref[def:undirected_graph]{simple undirected graph}. Its \term{adjacency matrix}
+  \begin{equation*}
+    M = \seq{ a_{uv} }_{u, v \in V}
+  \end{equation*}
+  has elements
+  \begin{equation*}
+    M_{uv} \coloneqq \begin{cases}
+      1, &u \T{is adjacent to} v \\
+      0, &\T{otherwise.}
+    \end{cases}
+  \end{equation*}
+\end{definition}
+
+\begin{example}\label{ex:def:graph_adjacency_matrix}
+  The \hyperref[def:graph_adjacency_matrix]{adjacency matrix} of the complete graph \( K_4 \) (\cref{fig:ex:complete_graph}) is
+  \begin{equation}\label{eq:ex:def:graph_adjacency_matrix}
+    \begin{blockarray}{ccccc}
+        & a & b & c & d \\
+    \begin{block}{c(cccc)}
+      a & 0 & 1 & 1 & 1 \\
+      b & 1 & 0 & 1 & 1 \\
+      c & 1 & 1 & 0 & 1 \\
+      d & 1 & 1 & 1 & 0 \\
+    \end{block}
+    \end{blockarray}
+  \end{equation}
+\end{example}
+
+\begin{definition}\label{def:undirected_multigraph_path}
+  A \term{path} is an \hyperref[def:undirected_graph]{undirected multigraph} \( G: E \multto V \) is a finite or infinite sequence of edges satisfying certain conditions. Different authors use similar terms like \term{walk} and \term{trail} and put different restrictions on them. A proper definition is tricky, and we will use recursion to avoid common pitfalls.
+
+  \begin{figure}
+    \begin{equation}\label{eq:fig:def:undirected_path}
+      \begin{aligned}
+        \includegraphics{figures/fig__def__undirected_path.pdf}
+      \end{aligned}
+    \end{equation}
+    \caption{The dashed solid lines indicate the path \( (e_2, e_4, e_6) \) in the graph \eqref{eq:fig:def:undirected_graph}.}\label{fig:def:undirected_path}
+  \end{figure}
+
+  This definition is closely related to the simpler \fullref{def:quiver_path}.
+
+  Consider the finite or infinite sequence of edges
+  \begin{equation}\label{eq:def:undirected_multigraph_path}
+    p = (e_1, e_2, \ldots).
+  \end{equation}
+
+  We will define the \hyperref[def:partial_function]{partial functions} \term{head} \( h(p) \) and \term{tail} \( t(p) \) on the set of all such sequences. The head and the tail are both vertices and are collectively know as \term{endpoints} of a path. We will then define a \term{path} as a sequence of edges for which the head is defined.
+
+  We use \fullref{rem:unbounded_transfinite_recursion} on the \term{length} \( \len(p) \) of the path. Since we allow paths to be infinite sequences, we must bound the induction on \( \omega + 1 \):
+  \begin{itemize}
+    \item An \term{empty path} at the vertex \( v \) is an empty sequence with \( h(p) = t(p) = v \).
+
+    \item If \eqref{eq:def:undirected_multigraph_path} is a path of finite length \( n \) and if \( e \neq e_n \) is an edge incident to \( t(p) \), then
+    \begin{equation*}
+      \widehat{p} \coloneqq (e_1, e_2, \ldots, e_n, e)
+    \end{equation*}
+    is a path with length \( n + 1 \) and
+    \begin{align*}
+      h(\widehat{p}) &\coloneqq h(p) \\
+      t(\widehat{p}) &\coloneqq \begin{cases}
+        t(p), &e \T{is a loop} \\
+        v,    &v \T{is an endpoint of} e \T{but not} e_n
+      \end{cases}
+    \end{align*}
+
+    \item Finally, if \( p_1, p_2, \ldots \) is a sequence of paths such that, for each index \( k \), \( p_k \) is an initial segment of \( p_{k + 1} \), then
+    \begin{equation*}
+      p \coloneqq \bigcup_{k < \infty} p_k
+    \end{equation*}
+    is a path with head \( h(p_1) \) and no tail. This union is again a sequence of edges since we have defined sequences as functions.
+
+    We define the length of this union as \( \aleph_0 = \omega \), although we will prefer the symbol \( \infty \).
+  \end{itemize}
+
+  \begin{thmenum}
+    \thmitem{def:undirected_multigraph_path/domain} The \term{domain} \( \dom(p) \) of \( p \) is the set of all vertices that belong to at least one arc in \( p \). We say that the path \term{visits} each member of \( \dom(p) \).
+
+    The domain of the path \eqref{eq:fig:def:undirected_path} is \( \set{ e_2, e_4, e_6 } \).
+
+    Note that
+    \begin{equation}\label{eq:def:undirected_multigraph_path/length_and_domain}
+      \card(\dom(p)) + 1 \leq \len(p)
+    \end{equation}
+    in general since a vertex can be an endpoint of many edges.
+
+    \thmitem{def:undirected_multigraph_path/subpath} We say that the \hyperref[def:subsequence]{subsequence} \( q \) of \( p \) is a \term{subpath} of \( p \) if the elements of \( q \) are consecutive in \( p \), i.e. there exists some index \( n \geq 0 \) such that \( q_k = e_{n + k} \) for \( 0 < k < \len(q) \).
+
+    In \eqref{eq:fig:def:undirected_path}, the subsequence \( (e_2, e_4) \) is a subpath and \( (e_2, e_6) \) is not.
+
+    \thmitem{def:undirected_multigraph_path/cycle} A nonempty path \( p \) is a \term{cycle} if \( h(p) = t(p) \). Cycles are also called \term{closed paths}.
+
+    Consider the graph \eqref{eq:fig:def:undirected_path}. The path \( (e_2, e_4, e_3, e_1) \) is a cycle and so is and so is\( (e_2, {\widehat{e_2}}) \). We have forbidden for the same edge to appear twice consecutively, which means that \( (e_2, e_2) \) is not a cycle because it is not a valid path.
+
+    A graph without cycles is called \term{acyclic}.
+
+    \thmitem{def:undirected_multigraph_path/simple} The path \( p \) is \term{simple} if no subpath is a cycle.
+
+    An alternative characterization is that every vertex in \( \dom(p) \) is visited only once, i.e. for every vertex in \( \dom(p) \), there exist at most two edges of the path which are incident to it.
+
+    Another characterization is that equality holds in \eqref{eq:def:undirected_multigraph_path/length_and_domain}.
+
+    \thmitem{def:undirected_multigraph_path/converse} If the chain \eqref{eq:def:undirected_multigraph_path} is finite of length \( n \), we define its \term{converse} as
+    \begin{equation*}
+      p^{-1} \coloneqq (e_n, e_{n-1}, \cdots, e_2, e_1).
+    \end{equation*}
+
+    \thmitem{def:undirected_multigraph_path/characteristic_vector} The \term{characteristic vector} \( \vect{p} \) of a path \( p \) is defined as the characteristic vector of \( \dom(p) \) in the \hyperref[def:hypergraph_vector_spaces/edge]{edge space} \( \BbbF_2^E \).
+  \end{thmenum}
+\end{definition}
+
+\begin{definition}\label{def:undirected_multigraph_connectedness}
+  Let \( G: E \multto V \) be an undirected multigraph.
+
+  \begin{thmenum}
+    \thmitem{def:undirected_multigraph_connectedness/reachability} We say that the vertices \( u \) and \( v \) are \term{connected} if there exists a path from \( u \) to \( v \).
+
+    In relation to \fullref{def:quiver_condensation}, we also say that \( v \) is \term{reachable} from \( v \) and vice versa.
+
+    \thmitem{def:undirected_multigraph_connectedness/components} Connectedness is obviously an equivalence relation in \( E \). Denote it by \( {\sim} \). For each vertex \( v \), the equivalence class \( [v] \) of all vertices reachable from \( v \) is called a \term{connected component}.
+
+    The \term{connectivity number} of \( G \) is the cardinality \( \card(V / {\sim}) \) of the quotient set.
+
+    If \( G \) has only one connected component, we say that it itself is \term{connected}. Equivalently, \( G \) is connected if every vertex is reachable from every other vertex.
+
+    \thmitem{def:undirected_multigraph_connectedness/condensation} The \term{condensation} of \( G \) is the edgeless graph with vertices \( V / {\sim} \).
+
+    This concept is useless for undirected graphs but important for \hyperref[def:quiver]{quivers} --- see \fullref{def:quiver_condensation}.
+  \end{thmenum}
+
+  Compare this definition to \fullref{def:quiver_connectedness}.
+\end{definition}
