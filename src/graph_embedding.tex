@@ -1,0 +1,237 @@
+\subsection{Graph embedding}\label{subsec:graph_embedding}
+
+\begin{definition}\label{def:quiver_geometric_realization}
+  Let \( Q = (V, A, h, t) \) be a \hyperref[def:quiver]{quiver}. Our goal is to construct a \hyperref[def:topological_space]{topological space} that translates the connectivity properties of \( Q \) into their topological equivalents.
+
+  Consider the \hyperref[def:topological_sum]{topological sum}
+  \begin{equation*}
+    \mscrS \coloneqq \parens[\Bigg]{ \coprod_{a \in A} [0, 1] } \amalg \parens[\Bigg]{ \coprod_{\deg(v) = 0} \set{ v } }.
+  \end{equation*}
+
+  The space \( \mscrS \) consists of disjoint unit intervals, one for each arc, and of disjoint points, one for each \hyperref[def:hypergraph/degree]{isolated vertex}.
+
+  We now want to glue common endpoints of arcs in \( \Sigma \). We define the following function:
+  \begin{equation}\label{eq:def:quiver_geometric_realization}
+    \begin{aligned}
+      &R: V \cup A \to \pow(\mscrS), \\
+      &R(v) \coloneqq \begin{cases}
+        \set[\Big]{ (v, v) },                                                           &\deg(v) = 0 \\
+        \set[\Big]{ (0, a) \given h(a) = v } \cup \set[\Big]{ (1, a) \given t(a) = v }, &\deg(v) > 0,
+      \end{cases} \\
+      &R(a) \coloneqq \set[\Big]{ \set{ (x, a) } \given 0 \leq x \leq 1 }.
+    \end{aligned}
+  \end{equation}
+
+  The family
+  \begin{equation*}
+    \mscrX \coloneqq \set[\Big]{ R(v) \given* v \in V } \cup \set[\Big]{ \Int(R(a)) \given* a \in A }.
+  \end{equation*}
+  is a \hyperref[def:set_partition]{partition} of \( \mscrS \). For each vertex, there is a single point in \( \mscrX \) (which is a set in \( \mscrS \)) and for each arc, the interior of the arc is a subset of \( \mscrX \).
+
+  We can endow the partition \( \mscrX \) it with a \hyperref[def:topological_quotient]{quotient topology} \( \mscrT \). We will call the topological space \( (\mscrX, \mscrT, R) \) endowed with \( R \) the \term{geometric realization} of \( G \).
+
+  \begin{thmenum}
+    \thmitem{def:quiver_geometric_realization/undirected} For an \hyperref[def:undirected_multigraph]{undirected multigraph} \( G = (V, E, \mscrE) \), the geometric realization is obtained by using the adjoint to \( U \) functor \( D \) described in \fullref{def:multigraph_adjunction}. This construction is dependent on a choice function, however all the geometric realizations are homeomorphic as shown in \fullref{thm:undirected_multigraph_geometric_realizations_homeomorphic}. Hence, for a lot of purposes, we can speak of \enquote{the} geometric realization of an undirected multigraph.
+
+    \thmitem{def:quiver_geometric_realization/drawing} We will call any \hyperref[def:global_continuity]{continuous function} with domain \( (\mscrX, \mscrT) \) a \term{graph drawing}. The term \enquote{graph drawing} is not standard terminology, but unfortunately non-injective continuous images of the realization have no established name.
+
+    \thmitem{def:quiver_geometric_realization/embedding} An injective graph drawing is called a \term{graph embedding}.
+
+    \thmitem{def:quiver_geometric_realization/linear} If a graph can be embedded into \( \BbbR \), we say that it is \term{linear}.
+
+    \thmitem{def:quiver_geometric_realization/planar} If a graph can be embedded into \( \BbbR^2 \), we say that it is \term{planar}.
+  \end{thmenum}
+\end{definition}
+
+\begin{example}\label{ex:def:quiver_geometric_realization}
+  We will give a few examples of \hyperref[def:quiver_geometric_realization/undirected]{quiver geometric realizations}.
+
+  \begin{thmenum}
+    \thmitem{ex:def:quiver_geometric_realization/edgeless} The \hyperref[def:quiver_geometric_realization/undirected]{geometric realization} of an edgeless quiver is the empty topological space.
+
+    \thmitem{ex:def:quiver_geometric_realization/tower} Consider the tower \eqref{eq:ex:tower_diagram_graph/forward}. We start with \( \aleph_0 \) copies of \( [0, 1] \) and glue both ends of each of them except for the first. Thus, we obtain (a space homeomorphic to)
+    \begin{equation*}
+      \bigcup_{k \geq 0} [k, k + 1] = [0, \infty).
+    \end{equation*}
+
+    Therefore, \eqref{eq:ex:tower_diagram_graph/forward} is a \hyperref[def:quiver_geometric_realization/linear]{linear graph}.
+
+    \thmitem{ex:def:quiver_geometric_realization/k3} The graph with vertices \( V = \set{ a, b, c } \) and arcs \( \set{ \overbrace{a \to b}^{e_1}, \overbrace{b \to c}^{e_2}, \overbrace{c \to a}^{e_3} } \) is more subtle.
+
+    We start with three copies of the interval \( [0, 1] \), depicted in \eqref{eq:ex:def:quiver_geometric_realization/k3/relization} as upward-pointing arrows, and use dashed lines to connect the endpoints that we want to glue together.
+    \begin{equation}\label{eq:ex:def:quiver_geometric_realization/k3/relization}
+      \begin{aligned}
+        \includegraphics{figures/eq__ex__def__graph_geometric_realization__k3__realization.pdf}
+      \end{aligned}
+    \end{equation}
+
+    After contracting the dashed lines, we obtain a topological space that can easily be \hyperref[def:quiver_geometric_realization/embedding]{embedded} into \( \BbbR^2 \). An obvious embedding corresponds to \enquote{pulling up} \( e_2 \) and \( e_3 \):
+    \begin{equation}\label{eq:ex:def:quiver_geometric_realization/k3/embedding}
+      \begin{aligned}
+        \includegraphics{figures/eq__ex__def__graph_geometric_realization__k3__embedding.pdf}
+      \end{aligned}
+    \end{equation}
+
+    This is only one possible embedding of the geometric realization. It is sufficient, however, for proving that the graph is \hyperref[def:quiver_geometric_realization/planar]{planar}. The underlying undirected graph is the \hyperref[ex:complete_graph]{complete graph} \( K_3 \), hence we have shown that \( K_3 \) is also planar.
+
+    \thmitem{ex:def:quiver_geometric_realization/k4} \Cref{fig:ex:complete_graph} shows that the complete graph \( K_4 \) is planar.
+
+    This is not-at-all obvious from its geometric realization, however.
+    \begin{equation}\label{eq:ex:def:quiver_geometric_realization/k4/realization}
+      \begin{aligned}
+        \includegraphics{figures/eq__ex__def__graph_geometric_realization__k4__realization.pdf}
+      \end{aligned}
+    \end{equation}
+
+    This example shows that constructing embeddings can be a tedious task.
+  \end{thmenum}
+\end{example}
+
+\begin{proposition}\label{thm:quiver_geometric_realization_properties}
+  Let \( Q = (V, A, h, t) \) be a \hyperref[def:quiver]{quiver} and let \( (\mscrX, \mscrT, R) \) be its \hyperref[def:quiver_geometric_realization]{geometric realization}.
+
+  \begin{thmenum}
+    \thmitem{thm:quiver_geometric_realization_properties/isolated} A vertex \( v \in V \) is isolated in \( Q \), i.e. has degree zero, if and only if \( R(v) \) is an isolated point of \( \mscrX \).
+
+    \thmitem{thm:quiver_geometric_realization_properties/t1} If \( Q \) is \hyperref[def:hypergraph/degree]{locally finite}, then the space \( (\mscrX, \mscrT) \) satisfies the \ref{def:separation_axioms/T1} separation axiom.
+  \end{thmenum}
+\end{proposition}
+\begin{proof}
+  \SubProofOf{thm:quiver_geometric_realization_properties/isolated} For every isolated vertex \( v \), the point \( R(v) = \set{ (v, v) } \) is isolated by definition.
+
+  Now suppose that \( v \) is not an isolated vertex. Then \( R(v) \) is defined differently in \eqref{eq:def:quiver_geometric_realization}. If there exists an arc \( a \) such that \( v = h(a) \), then \( (a, 0) \in R(v) \) and hence there exists no neighborhood of \( R(v) \) disjoin from \( R(a) \), hence \( R(v) \) is not a disjoint point of \( \mscrX \). The case \( v = t(a) \) is handled analogously.
+
+  \SubProofOf{thm:quiver_geometric_realization_properties/t1} Let \( x \in \mscrX \).
+
+  If \( x = \set{ (t, a) } \) for some arc \( a \) and \( 0 < t < 1 \), then \( \set{ x } \) is closed because \( [0, 1] \) satisfies \hyperref[def:separation_axioms/T1]{T1} and hence \( \set{ t } \) is closed in \( [0, 1] \).
+
+  If \( x = R(v) = \set{ (v, v) } \) for some isolated vertex \( v \), then \( R(v) \) is clopen by definition.
+
+  If \( x = R(v) \) for some vertex \( v \) of positive degree, then
+  \begin{equation*}
+    R(v) = \set[\Big]{ (0, a) \given h(a) = v } \cup \set[\Big]{ (1, a) \given t(a) = v }.
+  \end{equation*}
+
+  Both \( \set{ 0 } \) and \( \set{ 1 } \) are closed in \( [0, 1] \), hence \( \set{ 0, 1 } \) is also closed in \( [0, 1] \). Since \( Q \) is locally finite, \( R(v) \) is the union of finitely many closed sets and it itself closed.
+\end{proof}
+
+\begin{proposition}\label{thm:undirected_multigraph_geometric_realizations_homeomorphic}
+  Let \( G = (V, E, \mscrE) \) be an \hyperref[def:undirected_multigraph]{undirected multigraph}.
+
+  Let \( (\mscrX_c, \mscrT_c, R_c) \) and \( (\mscrX_d, \mscrT_d, R_d) \) be geometric realizations corresponding to the left adjoint to \( U \) functors \( D_c \) and \( D_d \) from \fullref{def:multigraph_adjunction}.
+
+  Then \( (\mscrX_c, \mscrT_c) \) and \( (\mscrX_c, \mscrT_d) \) are homeomorphic.
+\end{proposition}
+\begin{proof}
+  Let \( h_c \) and \( h_d \) be the head functions from the \hyperref[def:quiver]{quivers} \( D_c(G) \) and \( D_d(G) \).
+
+  Define the function
+  \begin{equation*}
+    \begin{aligned}
+      &f: \mscrX_c \to \mscrX_d \\
+      &f(x) \coloneqq \begin{cases}
+        \set[\Big]{ (0, a) \given h_d(a) = v } \cup \set[\Big]{ (1, a) \given t_d(a) = v }, &\qexists {v \in V} \deg(v) > 0 \T{and} x = R_c(v) \\
+        \set[\Big]{ (e, 1 - t) },                                                           &\qexists {e \in E} x = \set{ (e, t) } \T{and} h_c(e) \neq h_d(e) \\
+        x,                                                                                  &\T{otherwise.}
+      \end{cases}
+    \end{aligned}
+  \end{equation*}
+
+  This function \enquote{reverses} the direction of some of the intervals in the construction of the realizations and fixes everything else in place. It is clearly bijective. It is also continuous because it satisfies \fullref{def:global_continuity/closure}. Finally, it is a homeomorphism because the inverse function is defined in the same way by interchanging \( c \) and \( d \).
+\end{proof}
+
+\begin{proposition}\label{thm:quiver_geometric_realization_paths}
+  Let \( Q = (V, A, h, t) \) be a \hyperref[def:quiver]{quiver} and let \( (\mscrX, \mscrT, R) \) be its \hyperref[def:quiver_geometric_realization]{geometric realization}.
+
+  \begin{thmenum}
+    \thmitem{thm:quiver_geometric_realization_paths/quiver_to_realization} If there exists an \hyperref[def:quiver_path/undirected]{undirected path} \( p = (e_1, \ldots, e_n) \) from \( s \) to \( f \), then there exists a \hyperref[def:parametric_curve]{continuous path} \( \gamma: [0, 1] \to \mscrX \) from \( R(s)  \) to \( R(f) \).
+
+    \thmitem{thm:quiver_geometric_realization_paths/realization_to_quiver} If \( Q \) is finite and if there exists a simple continuous path \( \gamma: [0, 1] \to \mscrX \) from \( R(s)  \) to \( R(f) \), then there exists a simple undirected path from \( s \) to \( f \).
+  \end{thmenum}
+\end{proposition}
+\begin{proof}
+  The case \( s = f \) is trivial, hence we assume that \( s \neq f \).
+
+  \SubProofOf{thm:quiver_geometric_realization_paths/quiver_to_realization} Suppose that \( p = (e_1, \ldots, e_n) \) is an undirected path from \( s \) to \( f \). We will use \hyperref[rem:induction/well_founded]{strong induction} on the length of \( p \) to show that there exists a continuous path between the points \( R(s)  \) and \( R(f)  \) of \( \mscrX \).
+
+  Suppose that the statement holds for paths of length smaller than \( n \) and let
+  \begin{equation*}
+    p = (e_1, \ldots, e_{n-1}, e_n)
+  \end{equation*}
+  be a path of length \( n \) from some vertex \( s \) to \( f \). The inductive hypothesis holds for the initial segment \( (e_1, \ldots, e_{n-1}) \) of \( p \), hence there exists a continuous path \( \gamma: [0, 1] \to \mscrX \) from \( s \) to an endpoint of \( e_{n-1} \).
+  \begin{itemize}
+    \item If both \( e_{n-1} \) and \( e_n \) are positively oriented, then \( t(e_{n-1}) = h(e_n) \) and thus \( \gamma \) is a continuous path from \( R(s)  \) to \( R(h(e_n)) \). We can then append to \( \gamma \) the continuous path from \( R(h(e_n)) \) to \( R(t(e_n)) = R(f)  \) to obtain a path from \( R(s)  \) to \( R(f)  \).
+
+    \item If \( e_{n-1} \) is positively oriented but \( e_n \) is not, then \( \gamma \) is a continuous path from \( R(s)  \) to \( R(h(e_{n-1})) \). We can then append to \( \gamma \) the paths from \( R(h(e_{n-1})) \) to \( R(t(e_{n-1})) = R(t(e_n)) \) and from \( R(t(e_n)) \) to \( R(h(e_n)) = R(f)  \).
+
+    \item Similarly, if \( e_{n-1} \) is negatively oriented but \( e_n \) is not, then \( \gamma \) is a continuous path from \( R(s)  \) to \( R(t(e_{n-1})) \), and we can append to it the paths from \( R(t(e_{n-1})) \) to \( R(h(e_{n-1})) = R(h(e_n)) \) and from \( R(h(e_n)) \) to \( R(t(e_n)) \).
+
+    \item Finally, if both \( e_{n-1} \) and \( e_n \) are negatively oriented, then \( \gamma \) is a continuous path from \( R(s)  \) to \( R(t(e_{n-1})) \), and we can append to it the paths from \( R(t(e_{n-1})) \) to \( R(h(e_{n-1})) = R(t(e_n)) \) and from \( R(t(e_n)) \) to \( R(h(e_n)) = R(f)  \).
+  \end{itemize}
+
+  We have shown that there exists a continuous path from \( R(s)  \) to \( R(f)  \).
+
+  \SubProofOf{thm:quiver_geometric_realization_paths/realization_to_quiver} Suppose that \( Q \) is finite and let \( \gamma: [0, 1] \to \mscrX \) be a continuous path from \( R(s) \) to \( R(f) \). We will show that there is an undirected path from \( s \) to \( f \).
+
+  \SubProof*{\( \gamma \) contains no isolated vertices} We have
+  \begin{equation}\label{eq:thm:quiver_geometric_realization_paths/full_preimage}
+    \gamma^{-1}(\mscrX) = \bigcup_{a \in A} \gamma^{-1}(R(a)) \cup \bigcup_{\mathclap{\deg(v) = 0}} \gamma^{-1}(R(v)).
+  \end{equation}
+
+  For each arc \( a \), the set \( R(a) \) is closed as a homeomorphic image of the unit interval \( [0, 1] \). From \fullref{thm:quiver_geometric_realization_properties/t1} it follows that \( \set{ R(v) } \) is a closed set for every vertex \( v \in V \). Therefore, \( \gamma^{-1}(\mscrX) \) is a union of disjoint closed sets.
+
+  If we assume that \( \gamma \) passes through an isolated vertex \( v \), then \( \gamma^{-1}(v) \) would be a nonempty closed set. Then \( \img(\gamma) = \set{ v } \) because otherwise \( [0, 1] \) would be the union of finitely many nonempty disjoint closed sets, which would contradict \fullref{def:connected_space/closed_union} because \( [0, 1] \) is \hyperref[def:connected_space]{connected}.
+
+  But \( \gamma \) passes through at least two vertices because \( s \neq t \), and hence it doesn't pass through any isolated vertex.
+
+  \SubProof*{\( \gamma \) contains the entirety of each arc it intersects} Suppose that \( R(a) \cap \img(\gamma) = \varnothing \) for some arc \( a \).
+
+  Let \( l \coloneqq \inf\set{ 0 < t < 1 \given \gamma(t) \in R(a) } \) and \( r \coloneqq \sup\set{ 0 < t < 1 \given \gamma(t) \in R(a) } \). The closed interval \( [l, r] \) is compact, hence \( \gamma([l, r]) \) is a continuous image of a compact set and hence is itself compact.
+
+  Since \( \Int(R(a)) \) is a subset of \( \gamma([l, r]) \) and since \( \gamma([l, r]) \) is closed, its closure \( R(a) \) is also a subset of \( \gamma([l, r]) \).
+
+  Therefore, if an internal point of an arc belongs to \( \img(\gamma) \), so does the entire arc.
+
+  \SubProof*{\( \gamma \) contains an arc} From \eqref{eq:thm:quiver_geometric_realization_paths/full_preimage} if follows that
+  \begin{equation*}
+    \gamma^{-1}(\mscrX)
+    =
+    \bigcup_{a \in A} \gamma^{-1}(R(a))
+    \reloset{\ref{thm:topological_closure_operator_axioms/CO3}} =
+    \cl\parens*{ \bigcup_{a \in A} \gamma^{-1}(\Int(R(a))) }.
+  \end{equation*}
+
+  Hence, \( \img(\gamma) \) contains at least one internal point of some arc and thus the entire arc.
+
+  \SubProof*{\( \gamma \) induces an undirected path from \( s \) to \( f \)} We have that \( \gamma(0) = R(s) \). By what we have already shown, \( \img(\gamma) \) contains no isolated points, hence \( \gamma \) contains the set \( R(a) \), where \( a \) is some arc incident to \( s \).
+
+  Suppose that \( h(a) = s \). Then \( p = (a) \) is an undirected path from \( s \) to \( t(a) \). If \( t(a) = f \), the proof is finished. Otherwise, define
+  \begin{equation*}
+    x_0 \coloneqq \sup\set{ x \in [0, 1] \given \gamma(x) = R(t(a)) }
+  \end{equation*}
+  and
+  \begin{equation*}
+    \begin{aligned}
+      &\delta: [0, 1] \to \mscrX, \\
+      &\delta(x) \coloneqq \gamma(x_0 + (1 - x_0) x).
+    \end{aligned}
+  \end{equation*}
+
+  Then \( \delta \) is a continuous path from \( R(t(a)) \) to \( R(f) \).
+
+  We now proceed by \fullref{thm:bounded_transfinite_induction} bounded by the number of arcs to define an undirected path \( p \) from \( s \) to \( f \). Since the path \( \gamma \) is simple, it does not intersect itself and hence the image of the arc \( a \) at each step will not be in \( \delta \).
+\end{proof}
+
+\begin{corollary}\label{thm:quiver_geometric_realization_connectedness}
+  A finite \hyperref[def:quiver]{quiver} is \hyperref[def:quiver_connectedness/weak]{weakly connected} if and only if its \hyperref[def:quiver_geometric_realization/undirected]{geometric realization} is \hyperref[def:path_connected]{path connected}.
+\end{corollary}
+\begin{proof}
+  Follows from \fullref{thm:quiver_geometric_realization_paths}.
+\end{proof}
+
+\begin{corollary}\label{thm:undirected_multigraph_geometric_realization_connectedness}
+  A finite \hyperref[def:undirected_multigraph]{undirected multigraph} is \hyperref[def:undirected_multigraph_connectedness]{connected} if and only if its \hyperref[def:quiver_geometric_realization/undirected]{geometric realization} is a \hyperref[def:path_connected]{path connected}.
+\end{corollary}
+\begin{proof}
+  Follows from \fullref{thm:quiver_geometric_realization_connectedness}.
+\end{proof}
