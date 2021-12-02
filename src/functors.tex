@@ -20,16 +20,22 @@
   Since the domains of all constituent functions are disjoint, \( F \) is again a total single-valued function. This allows us to justify the notation \( F(X) \) for objects and \( F(f) \) for morphisms.
 
   The definition of a functor additionally requires the following compatibility conditions to hold:
-  \begin{thmenum}[series=def:category]
-    \thmitem[def:functor/CF1]{CF1} Functors must preserve composition, meaning that for any pair of morphism \( f: X \to Y \) and \( g: Y \to C \) in \( \cat{C} \), we have
-    \begin{equation}\label{eq:def:category/CF1}\tag{\logic{CF1}}
-      F(g \bincirc f) = F(g) \bincirc F(f).
-    \end{equation}
-
-    \thmitem[def:functor/CF2]{CF2} Functors must preserve identities, meaning that for any object \( X \in \cat{C} \) we must have
+  \begin{thmenum}[series=def:functor]
+    \thmitem[def:functor/CF1]{CF1} Functors must preserve identities, meaning that for any object \( X \in \cat{C} \) we must have
     \begin{equation}\label{eq:def:category/CF2}\tag{\logic{CF2}}
       F(\id_X) = \id_{F(X)}.
     \end{equation}
+
+    \thmitem[def:functor/CF2]{CF2} Functors must preserve composition, meaning that for any pair of morphism \( f: X \to Y \) and \( g: Y \to C \) in \( \cat{C} \), we have
+    \begin{equation}\label{eq:def:category/CF1}\tag{\logic{CF1}}
+      F(g \bincirc f) = F(g) \bincirc F(f).
+    \end{equation}
+  \end{thmenum}
+
+  \begin{thmenum}[resume=def:functor]
+    \thmitem{def:functor/domain_and_codomain} We say that the category \( \cat{C} \) is the \term{domain} and \( \cat{D} \) --- the \term{codomain} of the functor \( F \). These are technically not the domain and codomain of \( F \) when regarded as a function, however it is consistent with \fullref{def:category_of_small_categories}.
+
+    \thmitem{def:functor/endofunctor} Similarly to \fullref{def:multi_valued_function/endofunction} for functions, if the domain \( \cat{C} \) and codomain \( \cat{D} \) of a functor coincide, we say that it is an \term{endofunctor}.
   \end{thmenum}
 \end{definition}
 \begin{defproof}
@@ -49,6 +55,144 @@
 \begin{remark}\label{rem:functor_size}
   It is possible that \( \cat{C} \) is \( \mscrU \)-small in the sense of \fullref{def:category_size}, but the \hyperref[def:functor]{functor} \( F \), as the set \eqref{eq:def:functor_as_single_function}, is not \( \mscrU \)-small in the sense of \fullref{def:large_and_small_sets}. Without using universes, we cannot prove the existence of any functor from the category of smalls sets to itself, for example.
 \end{remark}
+
+\begin{example}\label{ex:inclusion_functor}
+  If \( \cat{D} \) is a \hyperref[def:subcategory]{subcategory} of \( \cat{C} \), then there is an \term{inclusion functor} \( \Iota: \cat{D} \to \cat{C} \), which every object and morphism of \( \cat{D} \) to itself in \( \cat{C} \).
+\end{example}
+
+\begin{example}\label{ex:constant_functor}
+  Given a category \( \cat{C} \), for any object \( A \) in the nonempty category \( \cat{D} \), we can define the constant functor
+  \begin{equation*}
+    \begin{aligned}
+      &F: \cat{C} \to \cat{D}, \\
+      &F(X) \coloneqq A, \\
+      &F(f: X \to Y) \coloneqq \id_A.
+    \end{aligned}
+  \end{equation*}
+\end{example}
+
+\begin{example}\label{ex:functors_in_set/unary}
+  In \fullref{def:basic_set_operations}, we defined some operations on the category \hyperref[def:category_of_small_sets]{\( \cat{Set} \)} of small sets.
+
+  \begin{itemize}
+    \item The \hyperref[def:basic_set_operations/power_set]{power set} \( \pow: \cat{Set} \to \cat{Set} \) is a canonical example of an \hyperref[def:functor/endofunctor]{endofunctor}. Explicitly:
+    \begin{equation*}
+      \begin{aligned}
+        &\pow: \cat{Set} \to \cat{Set}, \\
+        &\pow(A) \coloneqq \set{ S \given S \subseteq A }, \\
+        &\pow(f: A \to B) \coloneqq (S \mapsto f[S]). \\
+      \end{aligned}
+    \end{equation*}
+
+    We must verify that it is indeed a functor. \ref{def:functor/CF2} is satisfied because
+    \begin{equation*}
+      \pow(g) \bincirc \pow(f) = (S \mapsto g[f[S]]) = \pow(g \bincirc f).
+    \end{equation*}
+
+    The condition \ref{df:functor/CF2} is also obviously satisfied.
+
+    The nuance here is that we send every function \( f: A \to B \) to its \hyperref[def:multi_valued_function/set_value]{set value} \( f[S] \) of some subset \( S \) of \( A \).
+
+    \item The \hyperref[def:basic_set_operations/union]{union} \( \bigcup \) and \hyperref[def:basic_set_operations/intersection]{intersection} \( \bigcap \) may seem to be good examples of endofunctors in \( \cat{Set} \). Unfortunately, there is no natural way to extend a morphism (function) \( f: A \to B \) to a morphism from \( \bigcup A \) to \( \bigcup B \) or \( \bigcap A \) to \( \bigcap B \).
+  \end{itemize}
+
+  Binary functors require an auxiliary definition --- \fullref{def:product_category}. We list these additional examples in \fullref{ex:functors_in_set/binary}.
+\end{example}
+
+\begin{definition}\label{def:product_category}\mcite[const. 1.1.11]{Leinster2016Basic}
+  We define the \term{product category} \( \cat{C} \times \cat{D} \) of \( \cat{C} \) and \( \cat{D} \) as follows:
+
+  \begin{itemize}
+    \item The \hyperref[def:category/objects]{set of objects} is the \hyperref[def:cartesian_product]{Cartesian product}
+    \begin{equation}\label{eq:def:product_category/objects}
+      \obj(\cat{C} \times \cat{D}) \coloneqq \obj(\cat{C}) \times \obj(\cat{D}).
+    \end{equation}
+
+    \item The \hyperref[def:category/morphisms]{set of morphisms} from the pair of objects \( (A, X) \) to \( (B, Y) \) is the product
+    \begin{equation}\label{eq:def:product_category/morphisms}
+      (\cat{C} \times \cat{D})\parens[\Big]{ (A, X), (B, Y) } \coloneqq \cat{C}(A, B) \times \cat{C}(X, Y).
+    \end{equation}
+
+    \item The \hyperref[def:category/composition]{composition of the morphisms} \( (f, g) \) and \( (p, q) \) is the pairwise composition
+    \begin{equation}\label{eq:def:product_category/composition}
+      (f, g) \bincirc (p, q) \coloneqq (p \bincirc f, q \bincirc g).
+    \end{equation}
+
+    \item The \hyperref[def:category/identity]{identity morphism} of the pair \( (A, X) \) is simply the pair of identity morphisms \( (\id_A, \id_X) \).
+  \end{itemize}
+\end{definition}
+
+\begin{example}\label{ex:functors_in_set/binary}
+  We have discussed in \fullref{ex:functors_in_set/unary} endofunctors over the category \( \cat{Set} \) of small sets.
+
+  \Fullref{def:product_category} allows us to consider some other set operations as functors from \( \cat{Set} \times \cat{Set} \) to \( \cat{Set} \):
+  \begin{itemize}
+    \item There is a canonical embedding given by
+    \begin{equation*}
+      \begin{aligned}
+        &\iota: \cat{Set} \times \cat{Set} \to \cat{Set}, \\
+        &\iota(A, B) \coloneqq (A, B), \\
+        &\iota(f: A \to X, g: B \to Y) \coloneqq \parens[\Big]{ (x, y) \mapsto (f(x), g(y)) }.
+      \end{aligned}
+    \end{equation*}
+
+    \item The family of all \hyperref[def:function_invertibility/bijective]{bijective functions} from one set to another is also a functor:
+    \begin{equation*}
+      \begin{aligned}
+        &\op{iso}: \cat{Set} \times \cat{Set} \to \cat{Set}, \\
+        &\op{iso}(A, B) \coloneqq \set{ \varphi: A \to B \given \varphi \T{is bijective} }, \\
+        &\op{iso}(f: A \to X, g: B \to Y) \coloneqq (\varphi \mapsto g \bincirc \varphi \bincirc f^{-1}).
+      \end{aligned}
+    \end{equation*}
+
+    The action of \( \op{iso} \) on functions can be expressed graphically as
+    \begin{equation}\label{eq:ex:functors_in_set/binary/iso}
+      \begin{aligned}
+        \includegraphics[page=1]{figures/ex__functors_in_set__binary.pdf}
+      \end{aligned}
+    \end{equation}
+
+    Then \ref{def:functor/CF2} can be seen to hold by inspecting the diagram:
+    \begin{equation}\label{eq:ex:functors_in_set/binary/iso_composition}
+      \begin{aligned}
+        \includegraphics[page=2]{figures/ex__functors_in_set__binary.pdf}
+      \end{aligned}
+    \end{equation}
+
+    This example also highlights that diagrams can be more understandable than writing out the morphisms explicitly.
+
+    The other functor axiom \ref{def:functor/CF1} is obvious.
+
+    \item Like the arbitrary union and intersection discussed in \fullref{ex:functors_in_set/unary}, the \hyperref[def:basic_set_operations/union]{binary union} \( A \cup B = \bigcup\set{ A, B } \) and \hyperref[def:basic_set_operations/intersection]{binary intersection} \( A \cap B = \bigcap\set{ A, B } \) of the sets \( A \) and \( B \) may seem like functors, however there is again to natural notion for how this would act on morphisms.
+
+    We can, of course, regard them as functors, and one such definition for the binary union is
+    \begin{equation*}
+      \begin{aligned}
+        &{\cup}: \cat{Set} \times \cat{Set} \to \cat{Set}, \\
+        &{\cup} \thinspace (A, B) \coloneqq \set{ x \given x \in A \T{and} x \in B }, \\
+        &{\cup} \thinspace (f: A \to X, g: B \to Y) \coloneqq (x, y) \mapsto f(x).
+      \end{aligned}
+    \end{equation*}
+
+    This is not, however, a very useful definition, because it completely disregards the function \( g \).
+  \end{itemize}
+\end{example}
+
+\begin{example}\label{ex:discrete_category}
+  A \term{discrete category} is a category with no morphisms except for the identities. Clearly to any set there corresponds exactly one discrete category and vice versa.
+
+  This can be expressed via functors. Denote by
+  \begin{equation*}
+    U: \ucat{Cat} \to \ucat{Set}
+  \end{equation*}
+  the forgetful functor that for any \( \mscrU \)-small category \( \cat{C} \) gives us its set of vertices \( \obj(\cat{C}) \). There is also a functor
+  \begin{equation*}
+    D: \ucat{Set} \to \ucat{Cat}
+  \end{equation*}
+  that for any \( \mscrU \)-small set \( A \) gives us the discrete category whose set of objects is \( A \).
+
+  Furthermore, this is an adjunction of functors.
+\end{example}
 
 \begin{proposition}\label{thm:def:functor/properties}
   \hyperref[def:functor]{Functors} have the following basic properties:
@@ -74,7 +218,7 @@
 \begin{definition}\label{def:category_of_small_categories}
   Suppose that we are given a \hyperref[def:grothendieck_universe]{Grothendieck universe} \( \mscrU \), which is safe to assume to be the smallest suitable one as explained in \fullref{def:large_and_small_sets}.
 
-  We denote the \hyperref[def:category]{category} of \( \mscrU \)-small \hyperref[def:category]{categories} by \( \cat{\mscrU-Cat} \) or, if the universe is clear from the context, simply by \( \cat{Cat} \). See \fullref{def:category_size} for a further discussion of universes and categories.
+  We denote the \hyperref[def:category]{category} of \( \mscrU \)-small \hyperref[def:category]{categories} by \( \ucat{Cat} \) or, if the universe is clear from the context, simply by \( \cat{Cat} \). See \fullref{def:category_size} for a further discussion of universes and categories.
 
   \begin{itemize}
     \item The \hyperref[def:category/objects]{set of objects} \( \obj(\cat{Cat}) \) is the set of all \( \mscrU \)-small categories.
@@ -101,7 +245,7 @@
   \end{itemize}
 \end{definition}
 \begin{defproof}
-  To see that \( \cat{\mscrU-Cat} \) is indeed a category, we verify the conditions \ref{def:category/C1} and \ref{def:category/C2}.
+  To see that \( \ucat{Cat} \) is indeed a category, we verify the conditions \ref{def:category/C1} and \ref{def:category/C2}.
 
   \SubProofOf{def:category/C1} For every two \( \mscrU \)-small categories \( \cat{C} \) and \( \cat{D} \) and every functor \( F: \cat{C} \to \cat{D} \), for every object \( X \in \cat{C} \) we have
   \begin{equation*}
@@ -123,7 +267,7 @@
 \end{defproof}
 
 \begin{proposition}\label{thm:category_of_small_categories_properites}
-  We collect here important properties of the category \hyperref[def:category_of_small_categories]{\( \cat{\mscrU-Cat} \)} of \( \mscrU \)-small categories. Most of them require forward references.
+  We collect here important properties of the category \hyperref[def:category_of_small_categories]{\( \ucat{Cat} \)} of \( \mscrU \)-small categories. Most of them require forward references.
 \end{proposition}
 
 \begin{definition}\label{def:functor_image}
@@ -133,7 +277,7 @@
   \end{equation*}
   and whose arc set is
   \begin{equation*}
-    X \coloneqq \set{ F(f) \given A, Y \in \cat{C} \T{and} f \in \cat{C}(X, Y) }.
+    A \coloneqq \set{ F(f) \given A, Y \in \cat{C} \T{and} f \in \cat{C}(X, Y) }.
   \end{equation*}
 
   This quiver has no categorical structure --- it is merely a directed multigraph. As shown in \fullref{ex:functor_image_not_a_category}, imposing a categorical structure na\"ively may fail.
@@ -160,7 +304,7 @@
 \begin{remark}\label{rem:categorical_diagram_as_functor}
   Compared to \fullref{def:categorical_diagram}, a more \enquote{categorical} approach to defining diagrams is by using functors.
 
-  Fix a category \( \cat{I} \), called an \term{index category}. A \term{diagram} of shape \( \cat{I} \) is simply a functor \( D: \cat{I} \to \cat{C} \), whose domain is \( \cat{I} \).
+  Fix a category \( \cat{I} \), called an \term{index category}. A \term{diagram} in \( \cat{C} \) of shape \( \cat{I} \) is simply a functor \( D: \cat{I} \to \cat{C} \), whose domain is \( \cat{I} \).
 
   We do not really care about how the objects and morphisms in \( \cat{I} \) are labeled, hence we often use placeholder dots like in \eqref{eq:ex:quivers_as_functors/index/dots}.
 \end{remark}
@@ -221,6 +365,8 @@
     \thmitem{thm:def:functor_invertibility/properties/injective} A functor is \hyperref[def:functor_invertibility/injective_on_morphisms]{injective on morphisms} if and only if it is both \hyperref[def:functor_invertibility/injective_on_objects]{injective on objects} and \hyperref[def:functor_invertibility/faithful]{faithful}.
 
     \thmitem{thm:def:functor_invertibility/properties/surjective} A functor is \hyperref[def:functor_invertibility/surjective_on_morphisms]{surjective on morphisms} if and only if it is both \hyperref[def:functor_invertibility/surjective_on_objects]{surjective on objects} and \hyperref[def:functor_invertibility/full]{full}.
+
+    \thmitem{thm:def:functor_invertibility/properties/full_subcategory} A \hyperref[def:subcategory]{subcategory} \( \cat{D} \) of \( \cat{C} \) is full in the sense of \fullref{def:subcategory} if and only if the \hyperref[ex:inclusion_functor]{inclusion functor} \( \Iota: \cat{D} \to \cat{C} \) is full in the sense of \fullref{def:functor_invertibility/full}.
   \end{thmenum}
 \end{proposition}
 \begin{proof}
@@ -260,19 +406,36 @@
   Since \( F \) is also full, there exists some morphism \( f: X \to Y \) such that \( F(f) = g \).
 
   Therefore, \( F \) is surjective on morphisms.
+
+  \SubProofOf{thm:def:functor_invertibility/properties/full_subcategory} Trivial.
 \end{proof}
+
+\begin{example}\label{ex:def:functor_invertibility}
+  \hfill
+  \begin{itemize}
+    \item The power set functor described in \fullref{ex:functors_in_set/unary} is clearly \hyperref[def:functor_invertibility/injective_on_morphisms]{injective on morphisms}, hence by \fullref{thm:def:functor_invertibility/properties/injective}, it is also \hyperref[def:functor_invertibility/injective_on_objects]{injective on objects} and \hyperref[def:functor_invertibility/faithful]{faithful}.
+
+    It is not full, nor surjective on objects.
+
+    \item The functor \( \op{iso} \) described in \fullref{ex:functors_in_set/binary} is also injective on morphisms but neither full nor surjective on objects.
+
+    \item The forgetful functor \( U: \ucat{Cat} \to \ucat{Set} \) discussed in \fullref{ex:discrete_category} is \hyperref[def:functor_invertibility/surjective_on_morphisms]{surjective on morphisms}, hence by \fullref{thm:def:functor_invertibility/properties/surjective}, it is also \hyperref[def:functor_invertibility/surjective_on_objects]{surjective on objects} and \hyperref[def:functor_invertibility/full]{full}.
+
+    It is not faithful, nor injective on objects.
+  \end{itemize}
+\end{example}
 
 \begin{definition}\label{def:natural_transformation}\mcite[def. 1.3.1]{Leinster2016Basic}
   Let \( F \) and \( G \) be parallel \hyperref[def:functor]{functors} from the category \( \cat{C} \) to \( \cat{D} \).
 
-  A \term{natural transformation} \( \alpha \) from \( \cat{C} \) to \( \cat{D} \) is an \hyperref[def:tuple_and_cartesian_product/indexed_family]{indexed family} of
+  A \term{natural transformation} \( \alpha \) from \( F \) to \( G \) is an \hyperref[def:tuple_and_cartesian_product/indexed_family]{indexed family} of
   \begin{equation}\label{eq:def:natural_transformation/family}
     \seq{ \alpha_X: F(X) \to G(X) }_{X \in \cat{C}}
   \end{equation}
   of morphisms in \( \cat{D} \) such that, for every morphism \( f: X \to Y \) in \( \cat{C} \), the following \hyperref[def:categorical_diagram]{diagram commutes}:
   \begin{equation}\label{eq:def:natural_transformation/diagram}
     \begin{aligned}
-      \includegraphics[page=1]{figures/def__natural_transformation.pdf}.
+      \includegraphics[page=1]{figures/def__natural_transformation.pdf}
     \end{aligned}
   \end{equation}
 
@@ -284,7 +447,20 @@
   \end{equation}
 \end{definition}
 
-\begin{example}\label{ex:quivers_as_functors}
+\begin{example}\label{ex:constant_functor_natural_transformation}\mcite{math3ma:natural_transformations}
+  Let \( X \) and \( Y \) be objects in some category \( \cat{C} \). A \hyperref[def:natural_transformation]{natural transformation} between two \hyperref[ex:constant_functor]{constant functors} \( F_X \) and \( F_Y \) with a common domain \( \cat{I} \) is simply a morphism from \( X \) to \( Y \).
+
+  Indeed, for every object \( A \in \cat{I} \), we have \( F_X(A) = X \) and \( F_Y(A) = Y \). Then, if \( \alpha: F_X \Rightarrow F_Y \) is any natural transformation, for every function \( f: A \to B \), the diagram \eqref{eq:def:natural_transformation/diagram} becomes
+  \begin{equation}\label{eq:ex:constant_functor_natural_transformation}
+    \begin{aligned}
+      \includegraphics[page=1]{figures/ex__constant_functor_natural_transformation.pdf}
+    \end{aligned}
+  \end{equation}
+
+  This diagram implies that \( \alpha_A = \alpha_B \) for any two objects \( A \) and \( B \) in \( \cat{I} \). Therefore, all components of \( \alpha \) are equal to some morphism in \( \cat{D}(X, Y) \).
+\end{example}
+
+\begin{example}\label{ex:quivers_as_functors}\mcite[exmpl. 1.3.46]{Perrone2019}
   In \fullref{def:quiver}, we have defined a quiver as a set \( V \) of vertices, a set \( A \) of arcs and two functions --- the head \( h: A \to V \)and tail \( t: A \to V \) of an arc.
 
   Now consider the following \hyperref[rem:categorical_diagram_as_functor]{index category} \( \cat{I}: \)
@@ -301,9 +477,9 @@
     \end{aligned}
   \end{equation}
 
-  A quiver can then be defined as a functor \( Q: \cat{I} \to \cat{Set} \) to the category \hyperref[def:category_of_small_sets]{\( \cat{Set} \)} of small sets.
+  A quiver can then be defined as a functor \( Q: \cat{I} \to \ucat{Set} \) to the category \hyperref[def:category_of_small_sets]{\( \ucat{Set} \)} of \( \mscrU \)-small sets (for a fixed \hyperref[def:grothendieck_universe]{Grothendieck universe} \( \mscrU \)).
 
-  A \hyperref[def:natural_transformation]{natural transformation} from the quiver \( Q: \cat{I} \to \cat{Set} \) to \( R: \cat{I} \to \cat{Set} \) is then a pair of functions \( f_V: Q(V) \to R(V) \) and \( f_A: Q(A) \to R(A) \) such that the following \hyperref[def:categorical_diagram]{diagrams commute}:
+  A \hyperref[def:natural_transformation]{natural transformation} from the quiver \( Q: \cat{I} \to \ucat{Set} \) to \( R: \cat{I} \to \ucat{Set} \) is then a pair of functions \( f_V: Q(V) \to R(V) \) and \( f_A: Q(A) \to R(A) \) such that the following \hyperref[def:categorical_diagram]{diagrams commute}:
   \begin{equation}\label{eq:ex:quivers_as_functors/index/diagram}
     \begin{aligned}
       \includegraphics[page=3]{figures/ex__quivers_as_functors.pdf}
@@ -312,8 +488,58 @@
     \end{aligned}
   \end{equation}
 
-  This is a categorification of the conditions \eqref{eq:def:category_of_small_quivers/homomorphism/head} and \eqref{eq:def:category_of_small_quivers/homomorphism/tail} for a quiver homomorphism as defined in \fullref{def:category_of_small_quivers}.
+  See \fullref{ex:isomorphism_of_categories} for how these functors related to quivers as defined in \fullref{def:quiver}.
 \end{example}
+
+\begin{proposition}\label{thm:natural_isomorphism}\mcite{math3ma:natural_transformations}
+  Let \( F \) and \( G \) be parallel \hyperref[def:functor]{functors} from the category \( \cat{C} \) to \( \cat{D} \). Then any family of isomorphisms of the form \eqref{eq:def:natural_transformation/family} is a natural transformation.
+
+  We call such transformations \term{natural isomorphisms}.
+
+  These are precisely the isomorphisms in the corresponding \hyperref[def:functor_category]{functor category} \( [\cat{C}, \cat{D}] \) --- see \fullref{thm:def:functor_category/properties/natural_isomorphism}.
+\end{proposition}
+\begin{proof}
+  Fix a morphism \( f: X \to Y \) in \( \cat{C} \). Then
+  \begin{equation}\label{eq:thm:natural_isomorphism/diagram}
+    \begin{aligned}
+      \includegraphics[page=1]{figures/thm__natural_isomorphism.pdf}
+    \end{aligned}
+  \end{equation}
+
+  Therefore, the diagram \eqref{eq:def:natural_transformation/diagram} commutes.
+\end{proof}
+
+\begin{remark}\label{rem:natural_transformations_into_set}
+  Let \( \cat{C} \) be an arbitrary \( \mscrU \)-small category. A \hyperref[def:natural_transformation]{natural transformation} \( \alpha \) from \( F: \cat{C} \to \ucat{Set} \) to \( G: \cat{C} \to \ucat{Set} \) is then a family of functions
+  \begin{equation*}
+    \seq{ \alpha_X: F(X) \to G(X) }_{X \in \cat{C}}.
+  \end{equation*}
+
+  Suppose that for every two objects \( X \) and \( Y \) in \( \cat{C} \), the functions \( \alpha_X \) and \( \alpha_Y \) agree on \( F(X) \cap F(Y) \). This is automatically satisfied in \( F(X) \) and \( F(Y) \) are disjoint whenever \( X \neq Y \).
+
+  We can then take the set-theoretic union of \( \alpha \) to obtain the function
+  \begin{equation*}
+    \bigcup_{X \in \cat{C}} \alpha_X: \bigcup\set{ F(X) \given X \in \cat{C} } \to \bigcup\set{ G(X) \given X \in \cat{C} }.
+  \end{equation*}
+
+  Both the domain and codomain are sets as a consequence of \ref{def:grothendieck_universe/union}, therefore the function is well-defined in the universe \( \mscrU \). Denote it on \( \Alpha \) for brevity.
+
+  An advantage of this is that we can define a natural transformation to be a function on a general enough set and then prove that its restrictions satisfy \eqref{eq:def:natural_transformation/diagram}.
+
+  For example, consider the power set functor \( \pow: \ucat{Set} \to \ucat{Set} \) discussed in \fullref{ex:functors_in_set/unary}. The \hyperref[def:multi_valued_function/identity]{identity function} \( \id_\mscrU \) is then a natural transformation from the identity functor \( \id_{\ucat{Set}} \) to \( \pow \).
+
+  Another natural transformation between the same functors is the singleton set operation \( \Sigma \) on sets defined as \( A \mapsto \set{ A } \). Note that, in this context, \( \Sigma \) operates not on the sets \( \id_{\ucat{Set}}(X) \) and \( \pow(X) \), but on their members. The diagram \eqref{eq:def:natural_transformation/diagram} becomes
+  \begin{equation}\label{eq:rem:natural_transformations_into_set}
+    \begin{aligned}
+      \includegraphics[page=1]{figures/rem__natural_transformations_into_set.pdf}
+    \end{aligned}
+  \end{equation}
+
+  This diagram commutes because, for every function \( f: X \to Y \) and every \( x \in X \), we have
+  \begin{equation*}
+    f[\set{ x }] = \set{ f(x) }.
+  \end{equation*}
+\end{remark}
 
 \begin{definition}\label{def:functor_category}
   Let \( \cat{C} \) and \( \cat{D} \) be arbitrary \hyperref[def:category]{categories}. The \term{functor category} \( [\cat{C}, \cat{D}] \), also denoted as \( \cat{D}^{\cat{C}} \), is defined as follows:
@@ -330,7 +556,7 @@
 
     \item The \hyperref[def:category/identity]{identity morphism} on the functor \( F: \cat{C} \to \cat{D} \) is the \term{identity natural transformation} \( \id_F: F \Rightarrow F \) with components
     \begin{equation}\label{eq:def:functor_category/identity}
-      (\id_F)_X \coloneqq \id_{F(X)}
+      (\id_F)_X \coloneqq \underbrace{\id_{F(X)}}_{F(\id_X)}
     \end{equation}
   \end{itemize}
 \end{definition}
@@ -372,3 +598,50 @@
 \begin{remark}\label{rem:functor_category_size}
   If \( \cat{C} \) and \( \cat{D} \) are \( \mscrU \)-large categories in the sense of \fullref{def:category_size}, it is impossible to even construct the \hyperref[def:functor_category]{functor category} \( [\cat{C}, \cat{D}] \). This is the main motivation for the \hyperref[def:axiom_of_universes]{axiom of universes}, which is discussed in \fullref{def:large_and_small_sets} and, in relation to category theory, in \fullref{def:category_size}.
 \end{remark}
+
+\begin{example}\label{ex:isomorphism_of_categories}
+  In \fullref{ex:quivers_as_functors}, we defined \hyperref[def:quiver]{quivers} as functors from a certain index category \( \cat{I} \) to \( \ucat{Set} \) (for a fixed \hyperref[def:grothendieck_universe]{Grothendieck universe} \( \mscrU \)).
+
+  There is then an obvious correspondence between quivers as objects of \hyperref[def:category_of_small_quivers]{\( \ucat{Quiv} \)}, defined in \fullref{def:quiver}, and quivers as objects in the \hyperref[def:functor_category]{functor category} \( [\cat{I}, \ucat{Set}] \), defined in \fullref{ex:quivers_as_functors}. Indeed, given any functor \( Q: \cat{I} \to \ucat{Set} \), the quadruple
+  \begin{equation*}
+    \parens[\Big]{ Q(V), Q(A), Q(h), Q(t) }
+  \end{equation*}
+  is a quiver in the sense of \fullref{def:quiver}.
+
+  No object in \( \ucat{Quiv} \) is formally equal to any object in \( [\cat{I}, \ucat{Set}] \) in the sense of \hyperref[def:zfc]{\logic{ZFC}}. They are, however, equivalent, as shown above, and this can be formalized by stating that the two categories are isomorphic, in the sense of \fullref{def:morphism_invertibility/isomorphism}, as objects of the category \( \ucat[\mscrV]{Cat} \), where \( \mscrV \) is a Grothendieck universe that strictly contains \( \mscrU \). We have already defined this isomorphism explicitly.
+
+  This is an example of \term{isomorphism of categories}. In practice, if two categories are not so obviously identical, we are usually better served by \term{equivalences of categories} defined in \fullref{def:equivalence_of_categories}.
+\end{example}
+
+\begin{proposition}\label{thm:def:functor_category/properties}
+  \hyperref[def:functor_category]{Functor categories} have the following basic properties:
+  \begin{thmenum}
+    \thmitem{thm:def:functor_category/properties/natural_isomorphism} A \hyperref[def:natural_transformation]{natural transformation} \( \alpha: F \Rightarrow G \) in the category \( [\cat{C}, \cat{D}] \) is an isomorphism if and only if every component of \( \alpha \) is an isomorphism in \( \cat{D} \).
+
+    Note that, by \fullref{thm:natural_isomorphism}, it is sufficient for \( \alpha \) to be a family of morphisms of the form \eqref{eq:def:natural_transformation/family}.
+  \end{thmenum}
+\end{proposition}
+\begin{proof}
+  \SubProofOf{thm:def:functor_category/properties/natural_isomorphism}
+  \SufficiencySubProof* Let \( \alpha: F \Rightarrow G \) be an isomorphism in \( [\cat{C}, \cat{D}] \). Then there exists some natural transformation \( \beta: G \Rightarrow F \) such that
+  \begin{equation*}
+    \beta \bincirc \alpha = \id_F \quad\T{and}\quad \alpha \bincirc \beta = \id_G.
+  \end{equation*}
+
+  For every object \( X \) in \( \cat{C} \), the morphism \( \alpha_X: F(X) \to G(X) \) composed with \( \beta_X: G(X) \to F(X) \) is
+  \begin{equation*}
+    \beta_X \bincirc \alpha_X = \id_{F(X)}.
+  \end{equation*}
+
+  Therefore, \( \alpha_X \) is left-invertible. Analogously,
+  \begin{equation*}
+    \alpha_X \bincirc \beta_X = \id_{F(X)}
+  \end{equation*}
+  and hence \( \alpha_X \) is right-invertible.
+
+  Therefore, for every object \( X \) in \( \cat{C} \), the morphism \( \alpha_X \) is fully invertible, i.e. an isomorphism.
+
+  \NecessitySubProof* Let \( \alpha: F \Rightarrow G \) be a natural transformation, all of which components are isomorphisms. Define the transformation \( \beta: G \Rightarrow F \) by choosing, for each object \( X \) in \( \cat{C} \), an inverse \( \beta_X \) for \( \alpha_X \).
+
+  These components are unique by \fullref{thm:def:morphism_invertibility/properties/left_and_right}, hence we do not even need any choice.
+\end{proof}
