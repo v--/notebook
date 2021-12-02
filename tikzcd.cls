@@ -10,10 +10,17 @@
 \RequirePackage{../packages/unicode_math_symbols}
 \RequirePackage{../packages/paired_delimiters}
 
-\usetikzlibrary{cd,shapes.geometric,fit}
+\usetikzlibrary{cd,shapes.geometric,decorations.pathmorphing,fit}
 \tikzcdset{arrow style=math font}
 \tikzset
   {
+    NatTrans/.style=
+      {
+        commutative diagrams/.cd,
+        shorten <= 2pt,
+        shorten >= 2pt,
+        Rightarrow
+      },
     HeavyDraw/.style=
       {
         draw,
