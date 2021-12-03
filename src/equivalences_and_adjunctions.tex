@@ -23,21 +23,46 @@
   As discussed in \fullref{ex:isomorphism_of_categories}, isomorphisms of categories as objects in \( \cat{Cat} \) are often too restrictive for our needs. Every isomorphism is an equivalence with \( G \) simply being the inverse of \( F \) and \( \eta \) and \( \varepsilon \) being the corresponding \hyperref[eq:def:functor_category/identity]{identity natural transformations}.
 \end{remark}
 
+\begin{remark}\label{ex:discrete_category_equivalence}
+  We will now examine \hyperref[def:category_equivalence]{category equivalences} of \hyperref[ex:discrete_category]{discrete categories}.
+
+  Let \( \cat{C} \) and \( \cat{D} \) be discrete categories and \( (F, G, \eta, \varepsilon) \) be a category equivalence between them. A necessary and sufficient condition for this is for \( F \) to be a surjective function from \( \obj(\cat{C}) \) to \( \obj(\cat{D}) \).
+
+  The unit natural transformation \( \eta: \id_{\cat{C}} \Rightarrow G \bincirc F \) consists of a morphism
+  \begin{equation*}
+    \eta_A: A \to [G \bincirc F](A)
+  \end{equation*}
+  for every object \( A \) of \( \cat{C} \). Since the only morphisms in \( \cat{C} \) are the identities, it follows that \( \eta_A = \id_A \) and hence \( [G \bincirc F](A) = A \). In particular, this implies that \( G \) is a left inverse of \( F \).
+
+  The counit \( \varepsilon: F \bincirc G \Rightarrow \id_{\cat{D}} \) is more nuanced. For every object \( Y \) in the image of the function \( F \bincirc G \),
+  \begin{equation*}
+    F[G[\obj(\cat{D})]] \subseteq \obj(\cat{D}),
+  \end{equation*}
+  we have that \( \varepsilon_Y = \id_Y \) and hence \( [F \bincirc G](Y) = Y \). Note that \( \obj(\cat{D}) \) may contain objects that are not in the image of \( F \bincirc G \). Thus, \( G \) may or may not be a right inverse of \( F \).
+\end{remark}
+
+\begin{proposition}\label{thm:inverse_of_category_equivalence}
+  If \( (F, G, \eta, \varepsilon) \) is an \hyperref[def:category_equivalence]{equivalence of categories}, so is \( (G, F, \varepsilon^{-1}, \eta^{-1}) \).
+\end{proposition}
+\begin{proof}
+  Trivial.
+\end{proof}
+
 \begin{proposition}\label{thm:category_equivalence_is_fully_faithful_and_essentially_surjective}
   In any \hyperref[def:category_equivalence]{category equivalence} \( (F, G, \eta, \varepsilon) \), the functor \( F \) is \hyperref[def:functor_invertibility/fully_faithful]{fully faithful} and \hyperref[def:functor_invertibility/surjective_on_objects]{essentially surjective on objects}.
 
   The converse of this statement is \fullref{thm:fully_faithful_and_essentially_surjective_functor_induces_equivalence}.
 \end{proposition}
 \begin{proof}
-  \SubProofOf[def:functor_invertibility/surjective_on_objects]{essential surjectivity} For any object \( Y \) in \( \cat{D} \), \( X \coloneqq G(Y) \) is an object in \( \cat{C} \).
+  \SubProofOf[def:functor_invertibility/surjective_on_objects]{essential surjectivity} For any object \( Y \) in \( \cat{D} \), \( A \coloneqq G(Y) \) is an object in \( \cat{C} \).
 
   By definition of category equivalence, the morphism
   \begin{equation*}
-    \varepsilon_Y: \underbrace{[F \bincirc G](Y)}_{F(X)} \to Y
+    \varepsilon_Y: \underbrace{[F \bincirc G](Y)}_{F(A)} \to Y
   \end{equation*}
   is an isomorphism.
 
-  Therefore, for every object \( Y \) in \( \cat{D} \), there exists some object \( X \) in \( \cat{C} \) such that \( F(X) \cong Y \). Thus, \( F \) is essentially surjective.
+  Therefore, for every object \( Y \) in \( \cat{D} \), there exists some object \( A \) in \( \cat{C} \) such that \( F(A) \cong Y \). Thus, \( F \) is essentially surjective.
 
   \SubProofOf[def:functor_invertibility/faithful]{faithfulness} Fix some objects \( A \) and \( B \) in \( \cat{C} \). Let \( p: A \to B \) and \( q: A \to B \) be morphisms such that \( F(p) = F(q) \).
 
@@ -106,23 +131,95 @@
 \begin{proof}
   \ImplicationSubProof[def:zfc/choice]{the axiom of choice}[thm:fully_faithful_and_essentially_surjective_functor_induces_equivalence]{functors induce equivalences} Suppose that the axiom of choice holds and let \( F \) be a fully faithful and surjective on objects functor.
 
-  From essential surjectivity of \( F \), it follows that for every object \( Y \) in \( \cat{D} \), the preimage of \( Y \) under \( F \) is nonempty. The preimage of \( Y \) is the set \( S_Y \) of objects in \( \cat{C} \) such that \( X \in S_Y \) if and only if \( F(X) \cong Y \). We use the axiom of choice on the family \( \set{ S_Y }_{Y \in \cat{D}} \) to select a single preimage for every \( Y \), which we denote by \( G(Y) \).
+  From essential surjectivity of \( F \), it follows that for every object \( Y \) in \( \cat{D} \), the preimage of \( Y \) under \( F \) is nonempty. The preimage of \( Y \) is the set \( \mscrA_Y \) of objects in \( \cat{C} \) such that \( A \in \mscrA_Y \) if and only if \( F(A) \cong Y \). We use the axiom of choice on the family \( \set{ \mscrS_Y }_{Y \in \cat{D}} \) to select a single preimage for every \( Y \), which we denote by \( G(Y) \).
 
   Again using the axiom of choice, we pick an isomorphism \( \varepsilon_Y: F(G(Y)) \to Y \) for every \( Y \).
 
-  We have defined a function \( G \) from \( \obj(\cat{D}) \) to \( \obj(\cat{C}) \). In order to \( G \) to become a functor, we must extend it to morphisms. Fortunately, \( F \) is fully faithful and hence, given objects \( A \) and \( B \) in \( \cat{D} \), the set \( \cat{C}(G(A), G(B)) \) is \hyperref[def:equinumerosity]{equinumerous} with \( \cat{D}(A, B) \). Hence, for a morphism \( q: A \to B \) in \( \cat{D} \), there exists a unique morphism \( p: G(A) \to G(B) \) such that \( F(p) = q \). We define \( G(q) \coloneqq p \).
+  We have defined a function \( G \) from \( \obj(\cat{D}) \) to \( \obj(\cat{C}) \). In order to \( G \) to become a functor, we must extend it to morphisms. Let \( Y \) and \( Z \) be objects in \( \cat{D} \) and \( q: Y \to Z \) be any morphism.
 
-  We have defined a functor \( G: \cat{D} \to \cat{C} \) and a natural transformation \( \varepsilon: F \bincirc G \mapsto \id_{\cat{D}} \). It remains to define a natural transformation \( \eta: \id_{\cat{C}} \to G \bincirc F \).
+  Consider the morphism
+  \begin{equation*}
+    \varepsilon_Z^{-1} \bincirc q \bincirc \varepsilon_Y: [F \bincirc G](Y) \to [F \bincirc G](Z).
+  \end{equation*}
 
-  % Let \( X \) be an object in \( \cat{C} \).
+  Since \( F \) is fully faithful, there exists a unique morphism \( p \) in \( \cat{D}(G(Y), G(Z)) \) such that the following diagram commutes:
+  \begin{equation}\label{eq:thm__fully_faithful_and_essentially_surjective_functor_induces_equivalence/inverse_morphism_definition}
+    \begin{aligned}
+      \includegraphics[page=1]{figures/thm__fully_faithful_and_essentially_surjective_functor_induces_equivalence.pdf}
+    \end{aligned}
+  \end{equation}
 
-  % \begin{equation}\label{eq:thm__fully_faithful_and_essentially_surjective_functor_induces_equivalence/inverse_morphism_definition}
-  %   \begin{aligned}
-  %     \includegraphics[page=1]{figures/thm__fully_faithful_and_essentially_surjective_functor_induces_equivalence.pdf}
-  %   \end{aligned}
-  % \end{equation}
+  We define \( G(q) \coloneqq p \).
 
-  % \ImplicationSubProof[thm:fully_faithful_and_essentially_surjective_functor_induces_equivalence]{functors induce equivalences}[def:zfc/choice]{the axiom of choice}
+  In order to prove that \( G \) is a functor, we need to show that \ref{def:functor/CF1} and \ref{def:functor/CF2} hold.
+
+  For \ref{def:functor/CF1}, note that the following diagram commutes for any object \( Y \) in \( \cat{D} \):
+  \begin{equation}\label{eq:thm__fully_faithful_and_essentially_surjective_functor_induces_equivalence/identity}
+    \begin{aligned}
+      \includegraphics[page=2]{figures/thm__fully_faithful_and_essentially_surjective_functor_induces_equivalence.pdf}
+    \end{aligned}
+  \end{equation}
+
+  Note that \eqref{eq:thm__fully_faithful_and_essentially_surjective_functor_induces_equivalence/inverse_morphism_definition} also commutes if we replace \( [F \bincirc G](\id_Y) \) with \( F(\id_{G(Y)}) \). Since \( F \) is fully faithful, it follows that
+  \begin{equation*}
+    [F \bincirc G](\id_Y) = F(\id_{G(Y)}).
+  \end{equation*}
+
+  For \ref{def:functor/CF2}, analogously, given morphisms \( q: Y \to Z \) and \( r: Z \to U \), the following diagram commutes:
+  \begin{equation}\label{eq:thm__fully_faithful_and_essentially_surjective_functor_induces_equivalence/composition}
+    \begin{aligned}
+      \includegraphics[page=3]{figures/thm__fully_faithful_and_essentially_surjective_functor_induces_equivalence.pdf}
+    \end{aligned}
+  \end{equation}
+
+  By the same uniqueness argument used for \ref{def:functor/CF1}, we conclude that
+  \begin{equation*}
+    G(r \bincirc q) = G(r) \bincirc G(q).
+  \end{equation*}
+
+  We have shown that \( G \) is a functor. Furthermore, \( \eta \) is a natural transformation since, for any morphism \( q: Y \to Z \) in \( \cat{D} \), the following diagram commutes:
+  \begin{equation}\label{eq:thm__fully_faithful_and_essentially_surjective_functor_induces_equivalence/varepsilon}
+    \begin{aligned}
+      \includegraphics[page=4]{figures/thm__fully_faithful_and_essentially_surjective_functor_induces_equivalence.pdf}
+    \end{aligned}
+  \end{equation}
+
+  To show that \( F \) induces an equivalence, it now only remains to define a unit natural transformation \( \eta: \id_{\cat{C}} \to G \bincirc F \). For every object \( A \) in \( \cat{C} \) we have an isomorphism
+  \begin{equation*}
+    \varepsilon_{F(A)}^{-1}: F(A) \to [F \bincirc G \bincirc F](A).
+  \end{equation*}
+
+  Using \( G(\varepsilon_{F(A)}^{-1}) \) will get us nowhere, however we do not need to. Since \( F \) is fully faithful, there is a bijective function
+  \begin{equation*}
+    \varphi: \cat{D}\parens[\Big]{ F(A), [F \bincirc G \bincirc F](A) } \to \cat{C}\parens[\Big]{ A, [F \bincirc G](A) }.
+  \end{equation*}
+
+  Hence, we can define
+  \begin{equation*}
+    \eta_A \coloneqq \varphi(\varepsilon_{F(A)}^{-1})
+  \end{equation*}
+  so that \( F(\eta_A) = \varepsilon_{F(A)}^{-1} \).
+
+  By \fullref{thm:def:functor_invertibility/properties/fully_faithful_reflects_isomorphisms}, since \( \varepsilon_{F(A)}^{-1} \) is an isomorphism, so is \( \eta_A \). By \fullref{thm:natural_isomorphism}, the family \( \eta = \seq{ \eta_A }_{A \in \cat{C}} \) is a natural isomorphism from \( \id_{\cat{C}} \) to \( G \bincirc F \).
+
+  Therefore, the quadruple \( (F, G, \eta, \varepsilon) \) is an equivalence of categories.
+
+  \ImplicationSubProof[thm:fully_faithful_and_essentially_surjective_functor_induces_equivalence]{functors induce equivalences}[def:zfc/choice]{the axiom of choice} Let \( \mscrA \) be a family of nonempty sets. Let \( \cat{C} \) be the \hyperref[ex:discrete_category]{discrete category} induced by the \hyperref[def:disjoint_union]{disjoint union} \( \bigsqcup_{A \in \mscrA} A \) and \( \cat{D} \) be the discrete category induced by \( \mscrA \).
+
+  Define the functor
+  \begin{equation*}
+    \begin{aligned}
+      &F: \cat{C} \to \cat{D} \\
+      &F(A, x) \coloneqq A
+    \end{aligned}
+  \end{equation*}
+  that maps each point \( x \in A \in \mscrA \) into the set \( A \) it belongs to. We have taken the disjoint union of \( \mscrA \) since otherwise there may not be a canonical choice of set \( A \) for \( F \) to send \( x \) to. Thus, the functor is surjective on objects (not essentially surjective but actually surjective).
+
+  We have not defined how \( F \) acts on morphisms since there are only identity morphisms in both \( \cat{C} \) and \( \cat{D} \). From this it automatically follows that \( F \) is fully faithful.
+
+  Therefore, \( F \) induces a \hyperref[def:category_equivalence]{category equivalence} \( (F, G, \eta, \varepsilon) \). The functor \( G \) chooses an object \( (A, x) \) of \( \cat{C} \) for each object \( A \) of \( \cat{D} \). This induces a \hyperref[def:choice_function]{choice function} on \( \mscrA \).
+
+  We have shown that the axiom of choice holds.
 \end{proof}
 
 \begin{definition}\label{def:category_adjunction}\mcite[sec. 2.2]{Leinster2016Basic}
