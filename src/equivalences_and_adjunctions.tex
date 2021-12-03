@@ -1,0 +1,147 @@
+\subsection{Equivalences and adjunctions}\label{subsec:equivalences_and_adjunctions}
+
+\begin{definition}\label{def:category_equivalence}\mcite[def. 1.3.15]{Leinster2016Basic}
+  An \term{equivalence} between the \hyperref[def:category]{categories} \( \cat{C} \) and \( \cat{D} \) is a quadruple
+  \begin{equation}\label{eq:def:category_equivalence/signature}
+    \begin{aligned}
+                F &: \cat{C} \to \cat{D}, \\
+                G &: \cat{D} \to \cat{C}, \\
+             \eta &: \id_{\cat{C}} \Rightarrow G \bincirc F, \\
+      \varepsilon &: F \bincirc G \Rightarrow \id_{\cat{D}},
+    \end{aligned}
+  \end{equation}
+  where \( \eta \) and \( \varepsilon \) are \hyperref[thm:natural_isomorphism]{natural isomorphisms}.
+
+  We call \( \eta \) the \term{unit} of the equivalence and \( \varepsilon \) the \term{counit}.
+
+  If \( (F, G, \eta, \varepsilon) \) is an equivalence, we say that \( \cat{C} \) and \( \cat{D} \) are equivalent categories.
+
+  Note that an equivalence is not an \hyperref[def:category_adjunction]{adjunction}, they simply have a common setup.
+\end{definition}
+
+\begin{remark}\label{rem:category_equivalence}
+  As discussed in \fullref{ex:isomorphism_of_categories}, isomorphisms of categories as objects in \( \cat{Cat} \) are often too restrictive for our needs. Every isomorphism is an equivalence with \( G \) simply being the inverse of \( F \) and \( \eta \) and \( \varepsilon \) being the corresponding \hyperref[eq:def:functor_category/identity]{identity natural transformations}.
+\end{remark}
+
+\begin{proposition}\label{thm:category_equivalence_is_fully_faithful_and_essentially_surjective}
+  In any \hyperref[def:category_equivalence]{category equivalence} \( (F, G, \eta, \varepsilon) \), the functor \( F \) is \hyperref[def:functor_invertibility/fully_faithful]{fully faithful} and \hyperref[def:functor_invertibility/surjective_on_objects]{essentially surjective on objects}.
+
+  The converse of this statement is \fullref{thm:fully_faithful_and_essentially_surjective_functor_induces_equivalence}.
+\end{proposition}
+\begin{proof}
+  \SubProofOf[def:functor_invertibility/surjective_on_objects]{essential surjectivity} For any object \( Y \) in \( \cat{D} \), \( X \coloneqq G(Y) \) is an object in \( \cat{C} \).
+
+  By definition of category equivalence, the morphism
+  \begin{equation*}
+    \varepsilon_Y: \underbrace{[F \bincirc G](Y)}_{F(X)} \to Y
+  \end{equation*}
+  is an isomorphism.
+
+  Therefore, for every object \( Y \) in \( \cat{D} \), there exists some object \( X \) in \( \cat{C} \) such that \( F(X) \cong Y \). Thus, \( F \) is essentially surjective.
+
+  \SubProofOf[def:functor_invertibility/faithful]{faithfulness} Fix some objects \( A \) and \( B \) in \( \cat{C} \). Let \( p: A \to B \) and \( q: A \to B \) be morphisms such that \( F(p) = F(q) \).
+
+  From the naturality of \( \eta \) it follows that the following diagram commutes:
+  \begin{equation}\label{eq:thm:category_equivalence_is_fully_faithful_and_essentially_surjective/faithfullness}
+    \begin{aligned}
+      \includegraphics[page=1]{figures/thm__category_equivalence_is_fully_faithful_and_essentially_surjective.pdf}
+    \end{aligned}
+  \end{equation}
+
+  Therefore, \( \eta_B \bincirc q = \eta_B \bincirc p \) and, since \( \eta_B \) is left-cancellative, \( q = p \).
+
+  \SubProofOf[def:functor_invertibility/full]{fullness} Fix some objects \( A \) and \( B \) in \( \cat{C} \). Let \( q: F(A) \to F(B) \) be an arbitrary morphism.
+
+  We can now define a function \( p: A \to B \) via the composition
+  \begin{equation}\label{eq:thm:category_equivalence_is_fully_faithful_and_essentially_surjective/fullness/def}
+    \begin{aligned}
+      \includegraphics[page=2]{figures/thm__category_equivalence_is_fully_faithful_and_essentially_surjective.pdf}
+    \end{aligned}
+  \end{equation}
+
+  Again from the naturality of \( \eta \), it follows that the following diagram commutes:
+  \begin{equation}\label{eq:thm:category_equivalence_is_fully_faithful_and_essentially_surjective/fullness/nat_eta}
+    \begin{aligned}
+      \includegraphics[page=3]{figures/thm__category_equivalence_is_fully_faithful_and_essentially_surjective.pdf}
+    \end{aligned}
+  \end{equation}
+
+  Therefore,
+  \begin{equation*}
+    (\eta_B^{-1} \bincirc G(q) \bincirc \eta_A) = p = (\eta_B^{-1} \bincirc [G \bincirc F](p) \bincirc \eta_A).
+  \end{equation*}
+
+  After performing the necessary composition to annihilate \( \eta_A \) and \( \eta_B^{-1} \), we obtain
+  \begin{equation*}
+     G(q) = (\eta_B \bincirc p \bincirc \eta_A^{-1}) = [G \bincirc F](p).
+  \end{equation*}
+
+  From the naturality of \( \varepsilon \), it follows that the following diagram commutes:
+  \begin{equation}\label{eq:thm:category_equivalence_is_fully_faithful_and_essentially_surjective/fullness/nat_varepsilon}
+    \begin{aligned}
+      \includegraphics[page=4]{figures/thm__category_equivalence_is_fully_faithful_and_essentially_surjective.pdf}
+    \end{aligned}
+  \end{equation}
+
+  Therefore,
+  \begin{equation*}
+   q = (\varepsilon_B \bincirc \underbrace{[F \bincirc G](q)}_{[F \bincirc G \bincirc F](p)} \bincirc \varepsilon_A^{-1}) = F(p).
+  \end{equation*}
+\end{proof}
+
+\begin{theorem}\label{thm:fully_faithful_and_essentially_surjective_functor_induces_equivalence}
+  Every \hyperref[def:functor_invertibility/fully_faithful]{fully faithful} and \hyperref[def:functor_invertibility/surjective_on_objects]{essentially surjective on objects} functor \( F: \cat{C} \to \cat{D} \) induces a \hyperref[def:category_equivalence]{category equivalence}.
+
+  More precisely, there exists a functor \( G: \cat{D} \to \cat{C} \) and \hyperref[def:natural_transformation]{natural transformations}
+  \begin{align*}
+    \eta        &: \id_{\cat{C}} \Rightarrow G \bincirc F, \\
+    \varepsilon &: F \bincirc G \Rightarrow \id_{\cat{D}},
+  \end{align*}
+  such that the quadruple \( (F, G, \eta, \varepsilon) \) is a \hyperref[def:category_equivalence]{category equivalence}.
+
+  In \hyperref[def:zfc]{\logic{ZF}}, this theorem is equivalent to the \hyperref[def:zfc/choice]{axiom of choice} --- see \fullref{thm:axiom_of_choice_equivalences/selection}.
+
+  We prove the converse of this statement separately in \fullref{thm:category_equivalence_is_fully_faithful_and_essentially_surjective} because it does not rely on the axiom of choice.
+\end{theorem}
+\begin{proof}
+  \ImplicationSubProof[def:zfc/choice]{the axiom of choice}[thm:fully_faithful_and_essentially_surjective_functor_induces_equivalence]{functors induce equivalences} Suppose that the axiom of choice holds and let \( F \) be a fully faithful and surjective on objects functor.
+
+  From essential surjectivity of \( F \), it follows that for every object \( Y \) in \( \cat{D} \), the preimage of \( Y \) under \( F \) is nonempty. The preimage of \( Y \) is the set \( S_Y \) of objects in \( \cat{C} \) such that \( X \in S_Y \) if and only if \( F(X) \cong Y \). We use the axiom of choice on the family \( \set{ S_Y }_{Y \in \cat{D}} \) to select a single preimage for every \( Y \), which we denote by \( G(Y) \).
+
+  Again using the axiom of choice, we pick an isomorphism \( \varepsilon_Y: F(G(Y)) \to Y \) for every \( Y \).
+
+  We have defined a function \( G \) from \( \obj(\cat{D}) \) to \( \obj(\cat{C}) \). In order to \( G \) to become a functor, we must extend it to morphisms. Fortunately, \( F \) is fully faithful and hence, given objects \( A \) and \( B \) in \( \cat{D} \), the set \( \cat{C}(G(A), G(B)) \) is \hyperref[def:equinumerosity]{equinumerous} with \( \cat{D}(A, B) \). Hence, for a morphism \( q: A \to B \) in \( \cat{D} \), there exists a unique morphism \( p: G(A) \to G(B) \) such that \( F(p) = q \). We define \( G(q) \coloneqq p \).
+
+  We have defined a functor \( G: \cat{D} \to \cat{C} \) and a natural transformation \( \varepsilon: F \bincirc G \mapsto \id_{\cat{D}} \). It remains to define a natural transformation \( \eta: \id_{\cat{C}} \to G \bincirc F \).
+
+  % Let \( X \) be an object in \( \cat{C} \).
+
+  % \begin{equation}\label{eq:thm__fully_faithful_and_essentially_surjective_functor_induces_equivalence/inverse_morphism_definition}
+  %   \begin{aligned}
+  %     \includegraphics[page=1]{figures/thm__fully_faithful_and_essentially_surjective_functor_induces_equivalence.pdf}
+  %   \end{aligned}
+  % \end{equation}
+
+  % \ImplicationSubProof[thm:fully_faithful_and_essentially_surjective_functor_induces_equivalence]{functors induce equivalences}[def:zfc/choice]{the axiom of choice}
+\end{proof}
+
+\begin{definition}\label{def:category_adjunction}\mcite[sec. 2.2]{Leinster2016Basic}
+  When the functor \( G: \cat{D} \to \cat{C} \) is left adjoint to \( F: \cat{C} \to \cat{D} \) and \( F \) is not invertible, then \( G \) finds a \enquote{generalized inverse} under \( F \) for every object in \( \cat{C} \) that try to \enquote{act the same} with respect to morphisms. Jean-Pierre Marquis in \cite{StanfordPlato:category_theory} refers to adjoint functors as \enquote{conceptual inverses} that may not actually be inverses but have the same arrows.
+
+  An \term{adjunction} between the \hyperref[def:category]{categories} \( \cat{C} \) and \( \cat{D} \) is a quadruple \eqref{eq:def:category_equivalence/signature}, where \( \eta \) and \( \varepsilon \) are not necessarily isomorphisms, satisfying the condition that the following diagrams commute:
+  \begin{equation}\label{eq:def:category_adjunction/diagrams}
+    \begin{aligned}
+      \includegraphics[page=1]{figures/def__category_adjunction.pdf}
+      \quad\quad\quad\quad
+      \includegraphics[page=2]{figures/def__category_adjunction.pdf}
+    \end{aligned}
+  \end{equation}
+
+  The cross-composition of natural transformation and functors used above is defined in \fullref{def:composition_of_natural_transformation_and_functor}.
+
+  We call the \hyperref[def:natural_transformation]{natural transformation} \( \eta \) the \term{unit} of the adjunction and \( \varepsilon \) the \term{counit}. If \( (F, G, \eta, \varepsilon) \) is an adjunction, we say that \( F \) is \term{left adjoint} to \( G \) and, correspondingly, that \( G \) is \term{right adjoint} to \( F \).
+
+  A conventional notation for adjoint functors is \( F \dashv G \).
+
+  Note that an adjunction is not an \hyperref[def:category_equivalence]{equivalence}, they simply have a common setup.
+\end{definition}
