@@ -10,7 +10,7 @@
 \RequirePackage{../packages/unicode_math_symbols}
 \RequirePackage{../packages/paired_delimiters}
 
-\usetikzlibrary{cd,shapes.geometric,decorations.pathmorphing,fit}
+\usetikzlibrary{cd,shapes.geometric,fit}
 \tikzcdset{arrow style=math font}
 \tikzset
   {
