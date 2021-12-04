@@ -1,5 +1,21 @@
 \subsection{Category equivalences}\label{subsec:category_equivalences}
 
+\begin{remark}\label{rem:category_similarity}
+  We have the following notions for expressing that two categories \( \cat{C} \) and \( \cat{D} \) are similar:
+
+  \begin{thmenum}
+    \thmitem{rem:category_similarity/equality} Obviously, if \( \cat{C} = \cat{D} \) are equal, they are similar.
+
+    \thmitem{rem:category_similarity/isomorphism} A slightly less obvious notion is \term{isomorphism of categories}. This is an isomorphism, in the sense of \fullref{def:morphism_invertibility/isomorphism}, in the category \hyperref[def:category_of_small_categories]{\( \ucat{Cat} \)} of \( \mscrU \)-small categories for a suitable \hyperref[def:grothendieck_universe]{Grothendieck universe} \( \mscrU \). That is, \( \cat{C} \) and \( \cat{D} \) are isomorphic if there exists an invertible functor between them.
+
+    We rarely distinguish between objects and arrows of isomorphic categories, even if we do not have strict equality in the sense of the \hyperref[def:zfc/extensionality]{axiom of extensionality} in \hyperref[def:zfc]{\logic{ZFC}}.
+
+    Examples of isomorphic categories include \fullref{thm:preorder_category_isomorphism} and \fullref{ex:isomorphism_of_categories}.
+
+    \thmitem{rem:category_similarity/equivalence} A weaker but very useful notion is \term{category equivalence} defined in \fullref{def:category_equivalence}.
+  \end{thmenum}
+\end{remark}
+
 \begin{definition}\label{def:category_equivalence}\mcite[def. 1.3.15]{Leinster2016Basic}
   An \term{equivalence} between the \hyperref[def:category]{categories} \( \cat{C} \) and \( \cat{D} \) is a quadruple
   \begin{equation}\label{eq:def:category_equivalence/signature}
@@ -235,6 +251,74 @@
   We have shown that the axiom of choice holds.
 \end{proof}
 
+\begin{definition}\label{def:groupoid}
+  A \term{groupoid} is a category whose only morphisms are \hyperref[def:morphism_invertibility/isomorphism]{isomorphisms}.
+\end{definition}
+
+\begin{definition}\label{def:monoid_delooping}\mcite[def. 1.1.7]{Perrone2019}
+  Let \( (\mscrM, \cdot, e) \) be a \hyperref[def:monoid]{monoid}. The \term{delooping} \( \cat{B}_\mscrM \) of \( \mscrM \) is the following category:
+  \begin{itemize}
+    \item The \hyperref[def:category/objects]{set of objects} \( \obj(\cat{B}_\mscrM) \) is the singleton set \( \set{ \Bullet } \), where \( \Bullet \) is any set not in the set of all morphisms \( \mscrM \).
+
+    \item The only \hyperref[def:category/morphisms]{set of morphisms} \( \cat{B}_\mscrM(\mscrM) \) is the underlying set \( \mscrM \) of the monoid.
+
+    \item The \hyperref[def:category/composition]{composition of the morphisms} \( x \) and \( y \) is the multiplication:
+    \begin{equation*}
+      y \bincirc x \coloneqq y \cdot x.
+    \end{equation*}
+
+    \item The \hyperref[def:category/identity]{identity morphism} is \( e \).
+  \end{itemize}
+\end{definition}
+
+\begin{proposition}\label{thm:delooping_of_group}
+  The \hyperref[def:delooping]{delooping} of a \hyperref[def:group]{group} \( \mscrG \) is a \hyperref[def:groupoid]{groupoid}.
+
+  There is a restricted form of a converse --- see \fullref{thm:connected_delooping}.
+\end{proposition}
+\begin{proof}
+  Trivial.
+\end{proof}
+
+\begin{definition}\label{def:connected_category}\mcite[exer. 1.5.20]{Perrone2019}
+  A \hyperref[def:category]{category} is \term{connected} if there exists a morphism between any two objects. That is, for a connected category \( \cat{C} \), given two objects \( X \) and \( Y \), either \( \cat{C}(X, Y) \) or \( \cat{C}(Y, X) \) is nonempty.
+
+  Connected categories are used in \fullref{thm:connected_delooping} and \fullref{thm:order_category_isomorphism/totally_ordered}.
+\end{definition}
+
+\begin{proposition}\label{thm:connected_delooping}
+  For every \hyperref[def:connected_category]{connected} \hyperref[def:groupoid]{groupoid} \( \cat{G} \) there exists a \hyperref[def:group]{group} \( \mscrG \) such that \( \cat{G} \) is \hyperref[def:category_equivalence]{equivalent} to the \hyperref[def:monoid_delooping]{delooping} \( \cat{B}_\mscrG \). Furthermore, if \( \cat{G} \) has only one object, then this equivalence is an \hyperref[rem:category_similarity/isomorphism]{isomorphism}.
+
+  See \fullref{thm:delooping_of_group} for a much simpler converse.
+\end{proposition}
+\begin{proof}
+  Define the group \( \mscrG \) as follows:
+  \begin{itemize}
+    \item Let the underlying set of \( \mscrG \) be the set of all morphisms of \( \cat{G} \).
+    \item Define \( x \cdot y = z \) to hold whenever the following diagram commutes:
+    \begin{equation}\label{eq:thm:connected_delooping/mult}
+      \begin{aligned}
+        \includegraphics[page=1]{figures/thm__connected_delooping.pdf}
+      \end{aligned}
+    \end{equation}
+    \item Pick the identity of \( \mscrG \) out of the identity morphisms in \( \mscrG \).
+    \item Let the inverse of \( x \) be the inverse morphism \( x^{-1} \).
+  \end{itemize}
+
+  Finally, define the \hyperref[ex:constant_functor]{constant functor} \( F: \cat{G} \to \cat{B}_\mscrG \). It is obviously surjective on objects.
+
+  For every morphism \( x: \Bullet \to \Bullet \) in the delooping, there exists a unique \( f: X \to Y \) in \( \cat{G} \) such that \( F(f) = x \). Hence, \( f \) is surjective on morphisms, and by \fullref{thm:def:functor_invertibility/properties/surjective}, full and surjective on objects.
+
+  Furthermore, for any objects \( X \) and \( Y \) in \( \cat{G} \), we have
+  \begin{equation*}
+    \cat{G}(X, Y) \subseteq \cat{B}_\mscrG(F(X), F(Y)).
+  \end{equation*}
+
+  Hence, \( G \) is faithful. Therefore, by \fullref{thm:fully_faithful_and_essentially_surjective_functor_induces_equivalence}, the groupoid \( \cat{G} \) is equivalent to the delooping \( \cat{B}_\mscrG \).
+
+  Furthermore, if \( \cat{G} \) has only one object, it is also injective on objects and, by \fullref{thm:def:functor_invertibility/properties/injective}, injective on morphisms. In this case, we have an isomorphism.
+\end{proof}
+
 \begin{definition}\label{def:skeletal_category}\mcite[91]{MacLane1994}
   The category \( \cat{S} \) is called \term{skeletal} if the only isomorphisms in \( \cat{S} \) are the identity morphisms.
 
@@ -298,12 +382,6 @@
   As shown in \fullref{ex:preorder_nonuniqueness} and discussed in \fullref{thm:order_category_isomorphism}, a thin category may not be \hyperref[def:skeletal_category]{skeletal}.
 
   Thin categories are often conflated with preordered sets due to \fullref{thm:order_category_isomorphism/preordered}.
-\end{definition}
-
-\begin{definition}\label{def:connected_category}\mcite[exer. 1.5.20]{Perrone2019}
-  A \hyperref[def:category]{category} is \term{connected} if there exists a morphism between any two objects. That is, for a connected category \( \cat{C} \), given two objects \( X \) and \( Y \), either \( \cat{C}(X, Y) \) or \( \cat{C}(Y, X) \) is nonempty.
-
-  Connected categories are used in \fullref{thm:order_category_isomorphism/totally_ordered}.
 \end{definition}
 
 \begin{theorem}[Ordered sets as categories]\label{thm:order_category_isomorphism}
