@@ -1,33 +1,279 @@
 \subsection{Category adjunctions}\label{subsec:category_adjunctions}
 
+\begin{definition}\label{def:product_category}\mcite[const. 1.1.11]{Leinster2016Basic}
+  We define the \term{product category} \( \cat{C} \times \cat{D} \) of \( \cat{C} \) and \( \cat{D} \) as follows:
+
+  \begin{itemize}
+    \item The \hyperref[def:category/objects]{set of objects} is the \hyperref[def:cartesian_product]{Cartesian product}
+    \begin{equation}\label{eq:def:product_category/objects}
+      \obj(\cat{C} \times \cat{D}) \coloneqq \obj(\cat{C}) \times \obj(\cat{D}).
+    \end{equation}
+
+    \item The \hyperref[def:category/morphisms]{set of morphisms} from the pair of objects \( (A, X) \) to \( (B, Y) \) is the product
+    \begin{equation}\label{eq:def:product_category/morphisms}
+      (\cat{C} \times \cat{D})\parens[\Big]{ (A, X), (B, Y) } \coloneqq \cat{C}(A, B) \times \cat{D}(X, Y).
+    \end{equation}
+
+    \item The \hyperref[def:category/composition]{composition of the morphisms}
+    \begin{align*}
+      (f, g)&: (A, X) \to (B, Y) \\
+      (r, s)&: (B, Y) \to (C, Z)
+    \end{align*}
+    is the pairwise composition
+    \begin{equation}\label{eq:def:product_category/composition}
+      (r, s) \bincirc (f, g) \coloneqq \underbrace{(r \bincirc f, s \bincirc g)}_{(A, X) \to (C, Z)}.
+    \end{equation}
+
+    \item The \hyperref[def:category/identity]{identity morphism} of the pair \( (A, X) \) is simply the pair of identity morphisms \( (\id_A, \id_X) \).
+  \end{itemize}
+\end{definition}
+
+\begin{definition}\label{def:hom_functor}
+  Let \( \cat{C} \) be a \hyperref[def:category_size]{locally \( \mscrU \)-small} category. We can regard the morphism sets \( \cat{C}(A, B) \) as a functor parameterized by objects of \( \cat{C} \).
+
+  \begin{thmenum}
+    \thmitem{def:hom_functor/binary} For any pair of morphisms \( r: B \to A \) and \( s: X \to Y \) in \( \cat{C} \), define the operator
+    \begin{equation}\label{eq:def:hom_functor/t}
+      \begin{aligned}
+        &T_{r,s}: \cat{C}(A, X) \to \cat{C}(B, Y) \\
+        &T_{r,s}(f) \mapsto s \bincirc f \bincirc r.
+      \end{aligned}
+    \end{equation}
+
+    The action of \( T_{r,s} \) can be expressed graphically as
+    \begin{equation}\label{eq:def:hom_functor/t_diagram}
+      \begin{aligned}
+        \includegraphics[page=1]{figures/def__hom_functor.pdf}
+      \end{aligned}
+    \end{equation}
+
+    We can now define the following \term{binary hom-functor}:
+    \begin{equation}\label{eq:def:hom_functor/binary}
+      \begin{aligned}
+        &\cat{C}(\anon*, \anon*): \cat{C}^{\opcat} \times \cat{C} \to \ucat{Set} \\
+        &\cat{C}(A, X) \coloneqq \set{ f: A \to X } \\
+        &\cat{C}(r, s) \coloneqq T_{r,s}
+      \end{aligned}
+    \end{equation}
+
+    \thmitem{def:hom_functor/unary} Fixing the first argument \( A \) in \eqref{eq:def:hom_functor/binary}, we instead obtain a covariant unary hom-functor:
+    \begin{equation}\label{eq:def:hom_functor/unary/covariant}
+      \cat{C}(A, \anon*): \cat{C} \to \ucat{Set}
+    \end{equation}
+
+    Analogously, fixing the second argument \( X \), we obtain a \hyperref[def:hom_functor/contravariant]{contravariant} unary hom-functor:
+    \begin{equation}\label{eq:def:hom_functor/unary/contravariant}
+      \cat{C}(\anon*, Y): \cat{C}^{\opcat} \to \ucat{Set}
+    \end{equation}
+  \end{thmenum}
+\end{definition}
+\begin{defproof}
+  It is sufficient to verify that \eqref{eq:def:hom_functor/binary} defines a functor. \ref{def:functor/CF2} can be seen to hold by inspecting the diagram:
+  \begin{equation}\label{eq:def:hom_functor/inv_composition}
+    \begin{aligned}
+      \includegraphics[page=2]{figures/def__hom_functor.pdf}
+    \end{aligned}
+  \end{equation}
+
+  The other functor condition \ref{def:functor/CF1} is obvious.
+\end{defproof}
+
 \begin{remark}\label{rem:adjoint_functors}\cite{StanfordPlato:category_theory}
   When the functor \( G: \cat{D} \to \cat{C} \) is left adjoint to \( F: \cat{C} \to \cat{D} \) and \( F \) is not invertible, then \( G \) finds a \enquote{generalized inverse} under \( F \) for every object in \( \cat{C} \) that try to \enquote{act the same} with respect to morphisms.
 \end{remark}
 
 \begin{definition}\label{def:category_adjunction}\mcite[sec. 2.2]{Leinster2016Basic}
-  An \term{adjunction} between the \hyperref[def:category]{categories} \( \cat{C} \) and \( \cat{D} \) is a quadruple \eqref{eq:def:category_equivalence/signature}, where \( \eta \) and \( \varepsilon \) are not necessarily isomorphisms, satisfying the condition that, for any pair of objects \( A \) in \( \cat{C} \) and \( Y \) in \( \cat{D} \), the following diagrams commute:
+  An \term{adjunction} between the \hyperref[def:category]{categories} \( \cat{C} \) and \( \cat{D} \) can be defined in several equivalent ways. Let \( F: \cat{C} \to \cat{D} \) and \( G: \cat{D} \to \cat{C} \) be arbitrary functors.
 
-  \begin{minipage}{0.43\textwidth}
-    \begin{equation}\label{eq:def:category_adjunction/diagrams/f}
+  In all the cases below, if there exists an adjunction between \( F \) and \( G \), we say that \( F \) is \term{left adjoint} to \( G \) and, correspondingly, that \( G \) is \term{right adjoint} to \( F \). A conventional notation for adjoint functors is \( F \dashv G \).
+
+  \begin{thmenum}
+    \thmitem{def:category_adjunction/hom} A \term{hom-adjunction} is a triple \( (F, G, \varphi) \), where \( \varphi \) is \hyperref[thm:natural_isomorphism]{natural isomorphism}
+    \begin{equation}\label{eq:def:category_adjunction/hom}
+      \varphi: \cat{D}(F(\anon*), \anon*) \Rightarrow \cat{C}(\anon*, G(\anon*)).
+    \end{equation}
+
+    The functors
+    \begin{align*}
+      &\cat{D}(F(\anon*), \anon*): \cat{C}^{\opcat} \times \cat{D} \to \cat{Set}, \\
+      &\cat{C}(\anon*, G(\anon*)): \cat{C}^{\opcat} \times \cat{D} \to \cat{Set}
+    \end{align*}
+    are straightforward modifications of the \hyperref[eq:def:hom_functor/binary]{binary hom-functor} on \( \cat{C} \).
+
+    Naturality of \( \varphi \) in this case means that, for every two morphisms \( r: B \to A \) in \( \cat{C} \) and \( s: X \to Y \) in \( \cat{D} \), the following diagram commutes:
+    \begin{equation}\label{eq:def:category_adjunction/varphi_nat}
       \begin{aligned}
         \includegraphics[page=1]{figures/def__category_adjunction.pdf}
       \end{aligned}
     \end{equation}
-  \end{minipage}
-  \hfill
-  \begin{minipage}{0.44\textwidth}
-    \raggedright
-    \begin{equation}\label{eq:def:category_adjunction/diagrams/g}
+
+    \thmitem{def:category_adjunction/unit_counit} A \term{unit-counit adjunction} is a quadruple \( (F, G, \eta, \varepsilon) \), where
+    \begin{equation}\label{eq:def:category_adjunction/unit_counit/signature}
       \begin{aligned}
-        \includegraphics[page=2]{figures/def__category_adjunction.pdf}
+               \eta &: \id_{\cat{C}} \Rightarrow G \bincirc F, \\
+        \varepsilon &: F \bincirc G \Rightarrow \id_{\cat{D}}
       \end{aligned}
     \end{equation}
-  \end{minipage}
-  \smallskip
+    are natural transformations satisfying the condition that, for any pair of objects \( A \) in \( \cat{C} \) and \( Y \) in \( \cat{D} \), the following triangle diagrams commute:
 
-  Similarly to \hyperref[def:category_equivalence]{equivalence}, we call the \hyperref[def:natural_transformation]{natural transformation} \( \eta \) the \term{unit} of the adjunction and \( \varepsilon \) the \term{counit}. If \( (F, G, \eta, \varepsilon) \) is an adjunction, we say that \( F \) is \term{left adjoint} to \( G \) and, correspondingly, that \( G \) is \term{right adjoint} to \( F \).
+    \begin{minipage}{0.43\textwidth}
+      \begin{equation}\label{eq:def:category_adjunction/f}
+        \begin{aligned}
+          \includegraphics[page=2]{figures/def__category_adjunction.pdf}
+        \end{aligned}
+      \end{equation}
+    \end{minipage}
+    \hfill
+    \begin{minipage}{0.44\textwidth}
+      \raggedright
+      \begin{equation}\label{eq:def:category_adjunction/g}
+        \begin{aligned}
+          \includegraphics[page=3]{figures/def__category_adjunction.pdf}
+        \end{aligned}
+      \end{equation}
+    \end{minipage}
+    \smallskip
 
-  A conventional notation for adjoint functors is \( F \dashv G \).
-
-  Note that an adjunction is not an \hyperref[def:category_equivalence]{equivalence}, they simply have a common setup.
+    Note that an adjunction is not an \hyperref[def:category_equivalence]{equivalence}, they simply have a common setup. Similarly to \hyperref[def:category_equivalence]{equivalence}, we call the \hyperref[def:natural_transformation]{natural transformation} \( \eta \) the \term{unit} of the adjunction and \( \varepsilon \) the \term{counit}.
+  \end{thmenum}
 \end{definition}
+\begin{defproof}
+  \ImplicationSubProof{def:category_adjunction/hom}{def:category_adjunction/unit_counit} Let \( (F, G, \varphi) \) be a hom-adjunction.
+
+  For every morphism \( r: B \to A \) in \( \cat{C} \), from the naturality of \( \varphi \) we have
+  \begin{equation}\label{eq:def:category_adjunction/varphi_eta}
+    \begin{aligned}
+      \includegraphics[page=4]{figures/def__category_adjunction.pdf}
+    \end{aligned}
+  \end{equation}
+
+  Since \( \varphi_{A,F(B)} \) is a morphism in \( \cat{Set} \), it is a function, and we can apply it in order to define
+  \begin{equation*}
+    \eta_A \coloneqq \varphi_{A,F(A)}(\id_{F(A)}).
+  \end{equation*}
+
+  We must show that \( \eta = \seq{ \eta_A }_{A \in \cat{A}} \) is a natural transformation from \( \id_{\cat{C}} \) to \( G \bincirc F \).
+
+  On the diagram \eqref{eq:def:category_adjunction/varphi_eta}, we can start in the top left corner with \( F(\id_A) \) and top right corner with \( F(\id_B) \) and reach the middle.
+
+  We obtain that,
+  \begin{equation*}
+    \cat{C}(r, [G \bincirc F](\id_A))\parens[\Big]{ \underbrace{\varphi_{A, F(A)}(\id_A)}_{\eta_A} }
+    =
+    \eta_A \bincirc r
+  \end{equation*}
+  and
+  \begin{equation*}
+    \cat{C}(\id_B, [G \bincirc F](r))\parens[\Big]{ \underbrace{\varphi_{B, F(B)}(\id_B)}_{\eta_B} }
+    =
+    [G \bincirc F](r) \bincirc \eta_B
+  \end{equation*}
+  are equal. That is, the following diagram commutes:
+  \begin{equation}\label{eq:def:category_adjunction/eta_nat}
+    \begin{aligned}
+      \includegraphics[page=5]{figures/def__category_adjunction.pdf}
+    \end{aligned}
+  \end{equation}
+
+  In order to define the natural transformation \( \varepsilon: F \bincirc G \to \id_{\cat{D}} \), we use the inverse transformation \( \varphi^{-1} \). For every morphism \( s: X \to Y \) in \( \cat{D} \), we have
+  \begin{equation}\label{eq:def:category_adjunction/varphi_varepsilon}
+    \begin{aligned}
+      \includegraphics[page=6]{figures/def__category_adjunction.pdf}
+    \end{aligned}
+  \end{equation}
+
+  Thus, we define
+  \begin{equation*}
+    \varepsilon_X \coloneqq \varphi_{G(X),X}^{-1}(\id_{G(X)}).
+  \end{equation*}
+
+  We can prove that \( \varepsilon = \seq{ \varepsilon_X }_{X \in \cat{D}} \) is a natural transformation analogously to how we proved it for \( \eta \), hence we will skip the details.
+
+  We will now show that the triangle diagram \eqref{eq:def:category_adjunction/f} commutes. Consider the morphism \( (\eta_A, F(\id_A)) \) in \( \cat{C}^{\opcat} \times \cat{D} \). Applying the functors \( \cat{D}(F(\anon*), \anon*) \) and \( \cat{D}(\anon*, G(\anon*)) \) to this morphism and using the naturality of \( \varphi \), we obtain
+  \begin{equation}\label{eq:def:category_adjunction/f_proof}
+    \begin{aligned}
+      \includegraphics[page=7]{figures/def__category_adjunction.pdf}
+    \end{aligned}
+  \end{equation}
+
+  Note that \( \varepsilon_{F(A)} \) is a member of \( \cat{D}([F \bincirc G \bincirc F](A), F(A)) \).
+
+  Composing the functions in \eqref{eq:def:category_adjunction/f_proof} in one direction, we obtain
+  \begin{balign*}
+    &\phantom{{}={}}
+    \varphi_{A,F(A)}^{-1} \parens[\Bigg]{ \cat{C}\parens[\Big]{ \eta_A, [G \bincirc F](\id_A) } \parens[\Big]{ \varphi_{[G \bincirc F](A),F(A)} (\varepsilon_{F(A)}) } }
+    = \\ &=
+    \varphi_{A,F(A)}^{-1} \parens[\Bigg]{ \parens[\Big]{ \varphi_{[G \bincirc F](A),F(A)} (\varepsilon_{F(A)}) } \bincirc \eta_A }
+    = \\ &=
+    \varphi_{A,F(A)}^{-1} \parens[\Big]{ \id_{[G \bincirc F](A)} \bincirc \eta_A }
+    = \\ &=
+    \id_{F(A)}.
+  \end{balign*}
+
+  Composing the functions in \eqref{eq:def:category_adjunction/f_proof} in the other direction, we obtain
+  \begin{equation*}
+    \cat{D}\parens[\Big]{ F(\eta_A), F(\id_A) } (\varepsilon_{F(A)})
+    =
+    \varepsilon_{F(A)} \bincirc F(\eta_A).
+  \end{equation*}
+
+  Therefore,
+  \begin{equation*}
+    \id_{F(A)} = \varepsilon_{F(A)} \bincirc F(\eta_A).
+  \end{equation*}
+  and thus \eqref{eq:def:category_adjunction/f} commutes.
+
+  We can similarly prove that \eqref{eq:def:category_adjunction/g} commutes.
+
+  Therefore, \( (F, G, \eta, \varepsilon) \) is a unit-counit adjunction.
+
+  \ImplicationSubProof{def:category_adjunction/unit_counit}{def:category_adjunction/hom} Let \( (F, G, \eta, \varepsilon) \) be a unit-counit adjunction.
+
+  For every pair of objects \( A \in \cat{C} \) and \( X \in \cat{D} \), define the function
+  \begin{equation*}
+    \begin{aligned}
+      &\varphi_{A,X}: \cat{D}(F(A), X) \to \cat{C}(A, G(X)) \\
+      &\varphi_{A,X}(f) \coloneqq G(f) \bincirc \eta_A.
+    \end{aligned}
+  \end{equation*}
+
+  We will first show that \( \varphi_{A,X} \) is invertible. From the naturality of \( \varepsilon \) and from \eqref{eq:def:category_adjunction/f} it follows that the following diagram commutes:
+  \begin{equation}\label{eq:def:category_adjunction/varphi_inverse_def}
+    \begin{aligned}
+      \includegraphics[page=8]{figures/def__category_adjunction.pdf}
+    \end{aligned}
+  \end{equation}
+
+  Therefore, the morphism \( \varphi_{A,X}(f) \) is left invertible with inverse \( \varepsilon_X \bincirc F(\varphi_{A,X}(f)) \). We can similarly show that it is also right invertible and hence an isomorphism.
+
+  It remains to verify the naturality of \( \varphi \). Let \( r: B \to A \) be a morphism in \( \cat{C} \) and \( s: X \to Y \) be a morphism in \( \cat{D} \). Let \( f: F(A) \to X \).
+
+  Composing the functions of \eqref{eq:def:category_adjunction/varphi_nat} in one direction, we obtain
+  \begin{equation}\label{eq:def:category_adjunction/varphi_nat_chase_right}
+    \varphi_{B, Y}\parens[\Big]{ \cat{D}(F(r), s)(f) }
+    =
+    \varphi_{B, Y}\parens[\Big]{ s \bincirc f \bincirc F(r) }
+    =
+    G(s) \bincirc G(f) \bincirc [G \bincirc F](r) \bincirc \eta_B.
+  \end{equation}
+
+  In the other direction, we have
+  \begin{equation}\label{eq:def:category_adjunction/varphi_nat_chase_down}
+    \cat{C}(r, G(s))\parens[\Big]{ \varphi_{A, X}(f) }
+    =
+    \cat{C}(r, G(s))\parens[\Big]{ G(f) \bincirc \eta_A }
+    =
+    G(s) \bincirc G(f) \bincirc \eta_A \bincirc r.
+  \end{equation}
+
+  From the naturality of \( \eta \), we have that \eqref{eq:def:category_adjunction/eta_nat} commutes and hence
+  \begin{equation*}
+    \eta_A \bincirc r
+    =
+    [G \bincirc F](r) \bincirc \eta_B.
+  \end{equation*}
+
+  Therefore, \eqref{eq:def:category_adjunction/varphi_nat_chase_right} and \eqref{eq:def:category_adjunction/varphi_nat_chase_down} are equal and, thus, \eqref{eq:def:category_adjunction/varphi_nat} also commutes.
+
+  This proves the naturality of \( \varphi \).
+\end{defproof}
