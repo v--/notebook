@@ -1,14 +1,14 @@
 \NeedsTeXFormat{LaTeX2e}
-\ProvidesClass{../tikzcd}
+\ProvidesClass{tikzcd}
 \LoadClass[tikz]{standalone}
 
 \RequirePackage{stix2}
 \RequirePackage{mathtools}
 
-\RequirePackage{../packages/math_macros}
-\RequirePackage{../packages/math_environments}
-\RequirePackage{../packages/unicode_math_symbols}
-\RequirePackage{../packages/paired_delimiters}
+\RequirePackage{packages/math_macros}
+\RequirePackage{packages/math_environments}
+\RequirePackage{packages/unicode_math_symbols}
+\RequirePackage{packages/paired_delimiters}
 
 \usetikzlibrary{cd,shapes.geometric,fit}
 \tikzcdset{arrow style=math font}
