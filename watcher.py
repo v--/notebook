@@ -240,13 +240,18 @@ async def setup_watchers():
             for figure_path in figures_dir.glob('*.asy'):
                 runner.schedule(AsymptoteTask(figure_path.resolve()), trigger=str(path))
 
-        if fnmatch(path, 'figures/*[!_].tex'):
+        if fnmatch(path, 'figures/*.tex'):
             runner.schedule(TeXTask(path), trigger=str(path))
 
         if fnmatch(path, 'figures/*.asy'):
             runner.schedule(AsymptoteTask(path), trigger=str(path))
 
-        if fnmatch(path, 'notebook.cls') or fnmatch(path, 'src/*.tex') or fnmatch(path, 'output/*.pdf') or fnmatch(path, 'packages/*.sty'):
+        if not fnmatch(path, 'output/notebook.pdf') and (
+            fnmatch(path, 'notebook.cls') or
+            fnmatch(path, 'src/*.tex') or
+            fnmatch(path, 'output/*.pdf') or
+            fnmatch(path, 'packages/*.sty')
+        ):
             runner.schedule(TeXTask(pathlib.Path('notebook.tex')), trigger=str(path))
 
 
@@ -258,5 +263,5 @@ if __name__ == '__main__':
     with logger.contextualize(name='<system>'):
         try:
             asyncio.run(setup_watchers())
-        except KeyboardInterupt:
-            base_logger.info('Gracefully shutting down')
+        except KeyboardInterrupt:
+            logger.info('Gracefully shutting down')

@@ -5,7 +5,7 @@ DOC_SOURCE := notebook.cls notebook.tex bib/*.bib packages/*.sty src/*.tex $(FIG
 
 .PHONY: full format-figures figures watch clean
 
-notebook.pdf: $(DOC_SOURCE)
+output/notebook.pdf: $(DOC_SOURCE)
 	$(COMPILER) -draftmode notebook.tex
 	biber notebook.bcf
 	$(COMPILER) -draftmode notebook.tex
