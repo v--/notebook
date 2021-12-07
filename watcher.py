@@ -123,7 +123,7 @@ class TeXTask(Task):
         if len(parser.errors) != 0:
             return
 
-        if self._bcf_file_hash != None and self.get_bcf_hash() != self._bcf_file_hash:
+        if self.get_bcf_hash() != self._bcf_file_hash:
             runner.schedule(BiberTask(self.get_aux_path('.bcf'), self.tex_path), str(self.tex_path))
 
         if requires_rerun:
