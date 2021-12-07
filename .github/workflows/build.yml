@@ -22,7 +22,7 @@ jobs:
         run: |
           echo http://dl-cdn.alpinelinux.org/alpine/edge/testing >> /etc/apk/repositories
           apk add make asymptote
-          make full
+          make output/notebook.pdf
 
     - name: Deploy
       if: success()
@@ -30,8 +30,8 @@ jobs:
         echo '${{ secrets.SFTP_KEY }}' > ssh_id
         chmod 600 ssh_id
         echo 'cd ${{ secrets.SFTP_ROOT }}
-              put notebook.log
-              put notebook.pdf
+              put aux/notebook.log
+              put output/notebook.pdf
         ' | sftp -i ssh_id -o StrictHostKeyChecking=no -o Port=${{ secrets.SFTP_PORT }} ${{ secrets.SFTP_USERNAME }}@${{ secrets.SFTP_SERVER }}
 
     - name: Upload only log
@@ -40,5 +40,5 @@ jobs:
         echo '${{ secrets.SFTP_KEY }}' > ssh_id
         chmod 600 ssh_id
         echo 'cd ${{ secrets.SFTP_ROOT }}
-              put notebook.log
+              put aux/notebook.log
         ' | sftp -i ssh_id -o StrictHostKeyChecking=no -o Port=${{ secrets.SFTP_PORT }} ${{ secrets.SFTP_USERNAME }}@${{ secrets.SFTP_SERVER }}
