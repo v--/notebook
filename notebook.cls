@@ -10,8 +10,8 @@
 
 \RedeclareSectionCommand[tocnumwidth=2.2em]{section}
 \RedeclareSectionCommand[tocnumwidth=2.9em]{subsection}
-
-\RequirePackage{import}
+\addtokomafont{section}{\clearpage}
+\addtokomafont{subsection}{\clearpage}
 
 % Generic math packages (load first to avoid misbehaving macros later)
 \RequirePackage{mathtools} % Loads amsmath
