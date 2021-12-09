@@ -311,7 +311,7 @@
 \begin{definition}\label{def:concrete_category}\mcite[26]{MacLane1994}
   A \term{concrete category} is a pair \( (\cat{C}, U) \), where \( \cat{C} \) is a category and \( U: \cat{C} \to \cat{Set} \) is a \hyperref[def:functor_invertibility/faithful]{faithful functor} that gives us a set for any object of \( \cat{C} \). More generally, a \( \cat{D} \)-concrete category is a pair \( (\cat{C}, U) \), where \( U: \cat{C} \to \cat{D} \).
 
-  In the context of a concrete category, we call \( U \) a \term{forgetful functor} and any \hyperref[def:category_adjunction]{left adjoint} to \( U \) functor a \term{free functor}.
+  In the context of a concrete category, we call \( U \) a \term{forgetful functor} and any \hyperref[def:category_adjunction]{left adjoint} to \( U \) functor a \term{free functor}. According to Jean-Pierre Marquis in \cite{StanfordPlato:category_theory}, the motivation for this terminology is that free functors build objects that are free from additional restrictions.
 
   We list several examples in \fullref{ex:def:category_adjunction}. The forgetful functor is usually clear from the context, and we identify a concrete category \( (\cat{C}, U) \) with its underlying set \( \cat{C} \). The corresponding free functor, however, often requires a nontrivial but straightforward construction.
 \end{definition}
@@ -320,20 +320,106 @@
   We list some examples of \hyperref[def:category_adjunction]{category adjunctions}.
 
   \begin{thmenum}
-    \thmitem{ex:def:category_adjunction/set_cat} We discussed in \fullref{ex:discrete_category_adjunction} the \hyperref[def:discrete_category]{discrete category} functor \( D: \cat{Cat} \to \cat{Set} \). It is left adjoint to the forgetful functor \( U: \cat{Cat} \to \cat{Set} \).
+    \thmitem{ex:def:category_adjunction/set_cat} We discussed in \fullref{ex:discrete_category_adjunction} the \hyperref[def:discrete_category]{discrete category} functor \( D: \cat{Set} \to \cat{Cat} \). We showed in \fullref{ex:set_discr_cat_isomorphism} that, when restricted to the subcategory \( \cat{DiscrCat} \) rather than \( \cat{Cat} \), \( D \) it is an inverse to the forgetful functor \( U \). In the general case, however, this is an adjunction rather than an isomorphism. More precisely, \( D \) is left adjoint to \( U \).
 
-    Indeed, for any category \( \cat{C} \) and set \( A \), we have the isomorphism
+    Note that for any functor \( F: \cat{C} \to \cat{D} \), we have \( U(F) \coloneqq F\restr_{\obj(C)} \). Thus, \( U \) is not only a functor in \( [\cat{Cat}, \cat{Set}] \); it also induces a natural isomorphism between the functors \( \cat{Cat}(D(\anon*), \cat{\anon*}) \) and \( \cat{Set}(\anon*, U(\anon*)) \).
+
+    Indeed, fix a small category \( \cat{C} \) and a set \( A \). From our discussion in \fullref{ex:set_discr_cat_isomorphism} it is obvious that the restriction
     \begin{equation*}
-      \cat{Cat}(D(A), \cat{C}) \cong \cat{Set}(A, U(\cat{C})).
+      U: \cat{Cat}(D(A), \cat{C}) \to \cat{Set}(A, U(\cat{C}))
+    \end{equation*}
+    is a bijective function.
+
+    In order to verify the naturality of the transformation induced by \( U \), we must show that for any function \( f: B \to A \) and functor \( F: \cat{C} \to \cat{D} \), the following diagram commutes
+    \begin{equation}\label{eq:ex:def:category_adjunction/set_cat/u_nat}
+      \begin{aligned}
+        \includegraphics[page=1]{output/ex__def__category_adjunction.pdf}
+      \end{aligned}
+    \end{equation}
+
+    The commutativity of \eqref{eq:ex:def:category_adjunction/set_cat/u_nat} follows from the following: for every functor \( S: D(A) \to \cat{C} \) we have
+    \begin{equation*}
+      U(F \bincirc S \bincirc D(f))
+      =
+      U(F) \bincirc U(S) \bincirc U(D(f))
+      =
+      U(F) \bincirc U(S) \bincirc f.
     \end{equation*}
 
-    The only difference between functors from \( D(A) \) to \( \cat{C} \) and functions from \( A \) to \( U(\cat{C}) \) is that functors must also act on identity morphisms.
+    Therefore, \( (D, U, U) \) is a \hyperref[def:category_adjunction/hom]{hom-adjunction}.
 
-    The unit of this adjunction is the identity: we get back any set \( A \) after applying \( U \bincirc D \).
+    We can also explicitly define a unit-counit adjunction. The unit \( \eta: \id_{\cat{Set}} \Rightarrow U \bincirc D \) is simply the identity.
 
-    The counit is more interesting. Given a category \( \cat{C} \), applying \( D \bincirc U \) gives us the subcategory consisting only of the objects and identity morphisms of \( \cat{C} \). The counit \( \varepsilon: D \bincirc U \Rightarrow \id_{\cat{Cat}} \) is then the inclusion functor of this subcategory.
+    The counit is slightly more interesting. Given a small category \( \cat{C} \), applying \( D \bincirc U \) gives us the subcategory consisting only of the objects and identity morphisms of \( \cat{C} \). Then the counit \( \varepsilon: D \bincirc U \Rightarrow \id_{\cat{Cat}} \) is simply the inclusion functor \( \Iota \) from this subcategory to \( \cat{C} \).
 
-    \thmitem{ex:def:category_adjunction/quiv_cat} The left adjoint of the forgetful functor \( U: \cat{Cat} \to \cat{Quiv} \) is the quiver free category defined in \fullref{def:quiver_free_category}.
+    The triangle
+    \begin{equation}\label{eq:ex:def:category_adjunction/set_cat/triangles}
+      \begin{aligned}
+        \includegraphics[page=2]{output/ex__def__category_adjunction.pdf}
+        \quad\quad
+        \includegraphics[page=3]{output/ex__def__category_adjunction.pdf}
+      \end{aligned}
+    \end{equation}
+    corresponding to \eqref{eq:def:category_adjunction/d_triangle} and \eqref{eq:def:category_adjunction/c_triangle}, obviously commute.
+
+    The quadruple \( (D, U, \eta, \varepsilon) \) is a \hyperref[def:category_adjunction/unit_counit]{unit-counit adjunction}.
+
+    \thmitem{ex:def:category_adjunction/quiv_cat} The left adjoint of the forgetful functor \( U: \cat{Cat} \to \cat{Quiv} \) is the free category functor defined in \fullref{def:quiver_free_category}. We denote this functor by \( F: \cat{Quiv} \to \cat{Cat} \).
+
+    We can define the family of functions
+    \begin{equation}\label{eq:ex:def:category_adjunction/quiv_cat/varphi_family}
+      \begin{aligned}
+        &\varphi: \cat{Cat}(F(\anon*), \cat{\anon*}) \Rightarrow \cat{Quiv}(\anon*, U(\cat{\anon*})), \\
+        &\varphi_{Q, \cat{C}}(S) \coloneqq \parens[\Big]{ v \mapsto S(v), a \mapsto S(\iota(a)) }.
+      \end{aligned}
+    \end{equation}
+
+    For every functor \( S: F(Q) \to \cat{C} \), \( \varphi_{Q, \cat{C}} \) defines a quiver homomorphism that restricts \( S \) to \hyperref[def:quiver_path]{quiver paths} of containing only one arc. Formally, \( \iota \) is the canonical embedding
+    \begin{equation*}
+      \begin{aligned}
+        &\iota: Q \to [U \bincirc F](Q) \\
+        &\iota_V(v) \coloneqq v,
+        &\iota_A(a) \coloneqq (h(a), a).
+      \end{aligned}
+    \end{equation*}
+
+    We will later see that \( \iota \) is the unit of a unit-counit adjunction.
+
+    Now, from \eqref{eq:def:quiver_free_category/functor_from_homomorphism}, it is clear that the free category functor \( F \), when restricted to the set of quiver homomorphisms \( \cat{Quiv}(Q, U(\cat{C})) \), is the two-sided inverse of \( \varphi_{Q, \cat{C}} \).
+
+    We will show that \( \varphi \) is a natural transformation. Fix a functor \( G: \cat{C} \to \cat{D} \) and a homomorphism \( (g_V, g_A): Q \to R \). We must show that the following diagram commutes:
+    \begin{equation}\label{eq:ex:def:category_adjunction/quiv_cat/varphi_nat}
+      \begin{aligned}
+        \includegraphics[page=4]{output/ex__def__category_adjunction.pdf}
+      \end{aligned}
+    \end{equation}
+
+    That is, for every functor \( S: F(A) \to \cat{C} \), we must show
+    \begin{equation*}
+      \varphi_{R, \cat{D}}(G \bincirc S \bincirc F(g_V, g_A))
+      =
+      U(G) \bincirc \varphi_{R, \cat{D}}(S) \bincirc (g_V, g_A).
+    \end{equation*}
+
+    This is also clear from \eqref{eq:def:quiver_free_category/functor_from_homomorphism}.
+
+    Therefore, \( (F, U, \varphi) \) is a \hyperref[def:category_adjunction/hom]{hom-adjunction}.
+
+    Furthermore, the canonical embedding \( \iota \) defined above, when parameterized by \( Q \), is a unit of adjunction.
+
+    The counit  \( \varepsilon: F \bincirc U \Rightarrow \id_{\cat{Cat}} \) is more involved. As discussed in \fullref{def:quiver_free_category}, for every finite path \( p \) in the quiver \( U(\cat{C}) \) with arcs \( a_1, \ldots, a_n \), the functor \( F \bincirc U \) simply \enquote{evaluates} \( p \) as
+    \begin{equation*}
+      a_n \bincirc a_{n-1} \bincirc \cdots \bincirc a_1.
+    \end{equation*}
+
+    Since the embedding only produces paths with a single arc, the adjunction triangles commute:
+    \begin{equation}\label{eq:ex:def:category_adjunction/quiv_cat/triangles}
+      \begin{aligned}
+        \includegraphics[page=5]{output/ex__def__category_adjunction.pdf}
+        \quad\quad
+        \includegraphics[page=6]{output/ex__def__category_adjunction.pdf}
+      \end{aligned}
+    \end{equation}
   \end{thmenum}
 \end{example}
 
