@@ -6,9 +6,9 @@ DOC_SOURCE := notebook.cls notebook.tex bib/*.bib packages/*.sty src/*.tex $(FIG
 .PHONY: full format-figures figures watch clean
 
 output/notebook.pdf: $(DOC_SOURCE)
-	$(COMPILER) -draftmode notebook.tex
-	biber notebook.bcf
-	$(COMPILER) -draftmode notebook.tex
+	$(COMPILER) -output-directory=aux -draftmode notebook.tex
+	biber aux/notebook.bcf
+	$(COMPILER) -output-directory=aux -draftmode notebook.tex
 	$(COMPILER) -output-directory=aux notebook.tex
 	cat aux/notebook.pdf > output/notebook.pdf
 

@@ -123,13 +123,17 @@ class TeXTask(Task):
         if len(parser.errors) != 0:
             return
 
+        if not self.get_aux_path('.pdf').exists():
+            self.sublogger.error(f'No output file')
+            return
+
         if self.get_bcf_hash() != self._bcf_file_hash:
             runner.schedule(BiberTask(self.get_aux_path('.bcf'), self.tex_path), str(self.tex_path))
 
         if requires_rerun:
             runner.schedule(self, 'last build')
         else:
-            self.sublogger.debug(f'No more passes required. Copying {self.get_aux_path(".pdf")} to {self.build_pdf_path}')
+            self.sublogger.debug(f'No more passes required. Copying {self.get_aux_path('.pdf')} to {self.build_pdf_path}')
             shutil.copyfile(self.get_aux_path('.pdf'), self.build_pdf_path)
 
     on_failure = post_process
@@ -247,6 +251,7 @@ async def setup_watchers():
             runner.schedule(AsymptoteTask(path), trigger=str(path))
 
         if not fnmatch(path, 'output/notebook.pdf') and (
+            fnmatch(path, 'notebook.tex') or
             fnmatch(path, 'notebook.cls') or
             fnmatch(path, 'src/*.tex') or
             fnmatch(path, 'output/*.pdf') or
