@@ -740,3 +740,133 @@
 
   Therefore, for every object \( A \) in \( \cat{C} \), the morphism \( \alpha_A \) is fully invertible, i.e. an isomorphism.
 \end{proof}
+
+\begin{definition}\label{def:product_category}\mcite[const. 1.1.11]{Leinster2016Basic}
+  We define the \term{product category} \( \cat{C} \times \cat{D} \) of \( \cat{C} \) and \( \cat{D} \) as follows:
+
+  \begin{itemize}
+    \item The \hyperref[def:category/objects]{set of objects} is the \hyperref[def:cartesian_product]{Cartesian product}
+    \begin{equation}\label{eq:def:product_category/objects}
+      \obj(\cat{C} \times \cat{D}) \coloneqq \obj(\cat{C}) \times \obj(\cat{D}).
+    \end{equation}
+
+    \item The \hyperref[def:category/morphisms]{set of morphisms} from the pair of objects \( (A, X) \) to \( (B, Y) \) is the product
+    \begin{equation}\label{eq:def:product_category/morphisms}
+      (\cat{C} \times \cat{D})\parens[\Big]{ (A, X), (B, Y) } \coloneqq \cat{C}(A, B) \times \cat{D}(X, Y).
+    \end{equation}
+
+    \item The \hyperref[def:category/composition]{composition of the morphisms}
+    \begin{align*}
+      (f, r)&: (A, X) \to (B, Y) \\
+      (g, s)&: (B, Y) \to (C, Z)
+    \end{align*}
+    is the pairwise composition
+    \begin{equation}\label{eq:def:product_category/composition}
+      (g, s) \bincirc (f, r) \coloneqq \underbrace{(g \bincirc f, s \bincirc r)}_{(A, X) \to (C, Z)}.
+    \end{equation}
+
+    \item The \hyperref[def:category/identity]{identity morphism} of the pair \( (A, X) \) is simply the pair of identity morphisms \( (\id_A, \id_X) \).
+  \end{itemize}
+\end{definition}
+
+\begin{definition}\label{def:hom_functor}
+  Let \( \cat{C} \) be a \hyperref[def:category_size]{locally \( \mscrU \)-small} category. We can regard the morphism sets \( \cat{C}(A, B) \) as a functor parameterized by objects of \( \cat{C} \).
+
+  \begin{thmenum}
+    \thmitem{def:hom_functor/binary} For any pair of morphisms \( f: B \to A \) and \( g: X \to Y \) in \( \cat{C} \), define the operator
+    \begin{equation}\label{eq:def:hom_functor/t}
+      \begin{aligned}
+        &T_{f,g}: \cat{C}(A, X) \to \cat{C}(B, Y) \\
+        &T_{f,g}(s) \mapsto g \bincirc s \bincirc f.
+      \end{aligned}
+    \end{equation}
+
+    The action of \( T_{f,g} \) can be expressed graphically as
+    \begin{equation}\label{eq:def:hom_functor/t_diagram}
+      \begin{aligned}
+        \includegraphics[page=1]{output/def__hom_functor.pdf}
+      \end{aligned}
+    \end{equation}
+
+    We can now define the following \term{binary hom-functor}:
+    \begin{equation}\label{eq:def:hom_functor/binary}
+      \begin{aligned}
+        &\cat{C}(\anon*, \anon*): \cat{C}^{\opcat} \times \cat{C} \to \ucat{Set} \\
+        &\cat{C}(A, X) \coloneqq \set{ s: A \to X } \\
+        &\cat{C}(f, g) \coloneqq T_{f,g}
+      \end{aligned}
+    \end{equation}
+
+    \thmitem{def:hom_functor/unary} Fixing the first argument \( A \) in \eqref{eq:def:hom_functor/binary}, we instead obtain a covariant unary hom-functor:
+    \begin{equation}\label{eq:def:hom_functor/unary/covariant}
+      \cat{C}(A, \anon*): \cat{C} \to \ucat{Set}
+    \end{equation}
+
+    Analogously, fixing the second argument \( X \), we obtain a \hyperref[def:hom_functor/contravariant]{contravariant} unary hom-functor:
+    \begin{equation}\label{eq:def:hom_functor/unary/contravariant}
+      \cat{C}(\anon*, X): \cat{C}^{\opcat} \to \ucat{Set}
+    \end{equation}
+  \end{thmenum}
+\end{definition}
+\begin{defproof}
+  It is sufficient to verify that \eqref{eq:def:hom_functor/binary} defines a functor. \ref{def:functor/CF2} can be seen to hold by inspecting the diagram:
+  \begin{equation}\label{eq:def:hom_functor/inv_composition}
+    \begin{aligned}
+      \includegraphics[page=2]{output/def__hom_functor.pdf}
+    \end{aligned}
+  \end{equation}
+
+  The other functor condition \ref{def:functor/CF1} is straightforward to prove.
+\end{defproof}
+
+\begin{proposition}\label{thm:currying_is_natural_isomorphism}
+  \hyperref[def:function/currying]{Function currying} is a natural isomorphism between the functors
+  \begin{align*}
+    &\cat{Set}(A \times B, C)
+    &\cat{Set}(A, \cat{Set}(B, C))
+  \end{align*}
+
+  More concretely, consider the following functors, which are loosely based in \fullref{def:hom_functor}:
+  \begin{equation*}
+    \begin{aligned}
+      &V: \cat{Set}^3 \to \cat{Set} \\
+      &V(A, B, C) \coloneqq \cat{Set}(A \times B, C) \\
+      \Big[& V(f: X \to A, g: Y \to B, h: C \to Z) \Big](s: A \times B \to C) \coloneqq \smash{ \overbrace{ (x, y) \mapsto h\parens[\Bigg]{ s\parens[\Big]{ \underbrace{ f(x), g(y) }_{A \times B} } } }^{X \times Y \to Z} } \\
+    \end{aligned}
+  \end{equation*}
+  and
+  \begin{equation*}
+    \begin{aligned}
+      &W: \cat{Set}^3 \to \cat{Set} \\
+      &W(A, B, C) \coloneqq \cat{Set}(A, \cat{Set}(B, C)) \\
+      \Big[& W(f: X \to A, g: Y \to B, h: C \to Z) \Big](t: A \to \cat{Set}(B, C)) \coloneqq \smash{ \underbrace{ x \mapsto \overbrace{y \mapsto h\parens[\Bigg]{ \overbrace{t(f(x))}^{B \to C}\parens[\Big]{ g(y) } } }^{Y \to Z} }_{X \to \cat{Set}(Y, Z)} } \\
+    \end{aligned}
+  \end{equation*}
+
+  Then the family of functions
+  \begin{equation*}
+    \begin{aligned}
+      &\alpha: V \Rightarrow W \\
+      &\alpha_{A,B,C}(s: A \times B \to C) \coloneqq a \mapsto b \mapsto s(a, b)
+    \end{aligned}
+  \end{equation*}
+  is a \hyperref[thm:natural_isomorphism]{natural isomorphism}.
+\end{proposition}
+\begin{proof}
+  The function \( \varphi \) is clearly invertible. Fix a triple of functions \( f: X \to A \), \( g: Y \to B \) and \( h: C \to Z \). For every \( s: A \times B \to C \) we have
+  \begin{align*}
+    [W(f, g, h)](\alpha_{A,B,C}(s))
+    &=
+    x \mapsto y \mapsto \parens[\Big]{ h\parens[\Big]{ [a \mapsto b \mapsto s(a, b)](f(x))(g(y)) } }
+    = \\ &=
+    x \mapsto y \mapsto h\parens[\Big]{ s(f(x), g(y)) }
+    = \\ &=
+    \alpha_{X,Y,Z}(V(f, g, h)),
+  \end{align*}
+  which proves that the following diagram commutes:
+  \begin{equation}\label{eq:thm:currying_is_natural_isomorphism/diagram}
+    \begin{aligned}
+      \includegraphics[page=1]{output/thm__currying_is_natural_isomorphism.pdf}
+    \end{aligned}
+  \end{equation}
+\end{proof}
