@@ -133,7 +133,7 @@ class TeXTask(Task):
         if requires_rerun:
             runner.schedule(self, 'last build')
         else:
-            self.sublogger.debug(f'No more passes required. Copying {self.get_aux_path('.pdf')} to {self.build_pdf_path}')
+            self.sublogger.debug(f'No more passes required. Copying {self.get_aux_path(".pdf")} to {self.build_pdf_path}')
             shutil.copyfile(self.get_aux_path('.pdf'), self.build_pdf_path)
 
     on_failure = post_process
