@@ -2,6 +2,8 @@
 
 \begin{remark}\label{rem:adjoint_functors}\cite{StanfordPlato:category_theory}
   When the functor \( G: \cat{D} \to \cat{C} \) is left adjoint to \( F: \cat{C} \to \cat{D} \) and \( F \) is not invertible, then \( G \) finds a \enquote{generalized inverse} under \( F \) for every object in \( \cat{C} \) that try to \enquote{act the same} with respect to morphisms.
+
+  \Fullref{def:category_adjunction} contains two equivalent definition of an adjunction, and \fullref{rem:universal_mapping_property} describes how they can be characterized via universal mapping properties.
 \end{remark}
 
 \begin{definition}\label{def:category_adjunction}\mcite[sec. 2.2]{Leinster2016Basic}
@@ -155,24 +157,37 @@
 
   \ImplicationSubProof{def:category_adjunction/unit_counit}{def:category_adjunction/hom} Let \( (F, G, \eta, \varepsilon) \) be a unit-counit adjunction.
 
-  For every pair of objects \( A \in \cat{C} \) and \( X \in \cat{D} \), define the function
+  For every pair of objects \( A \in \cat{C} \) and \( X \in \cat{D} \), define the functions
   \begin{equation*}
     \begin{aligned}
       &\varphi_{A,X}: \cat{D}(F(A), X) \to \cat{C}(A, G(X)) \\
-      &\varphi_{A,X}(f) \coloneqq G(f) \bincirc \eta_A.
+      &\varphi_{A,X}(g) \coloneqq G(g) \bincirc \eta_A.
+    \end{aligned}
+  \end{equation*}
+  and
+  \begin{equation*}
+    \begin{aligned}
+      &\psi_{A,X}^{-1}: \cat{C}(A, G(X)) \to \cat{D}(F(A), X) \\
+      &\psi_{A,X}^{-1}(f) \coloneqq \varepsilon_X \bincirc F(f),
     \end{aligned}
   \end{equation*}
 
-  We will first show that \( \varphi_{A,X} \) is invertible. From the naturality of \( \varepsilon \) and from \eqref{eq:def:category_adjunction/d_triangle} it follows that the following diagram commutes:
+  From the naturality of \( \varepsilon \) and from \eqref{eq:def:category_adjunction/d_triangle} it follows that the following diagram commutes:
   \begin{equation}\label{eq:def:category_adjunction/varphi_inverse_def}
     \begin{aligned}
       \includegraphics[page=8]{output/def__category_adjunction.pdf}
     \end{aligned}
   \end{equation}
 
-  Therefore, the morphism \( \varphi_{A,X}(f) \) is left invertible with inverse \( \varepsilon_X \bincirc F(\varphi_{A,X}(f)) \). We can similarly show that it is also right invertible and hence an isomorphism.
+  Therefore,
+  \begin{equation*}
+    g = \varepsilon_X \bincirc \underbrace{[F \bincirc G](f) \bincirc F(\eta_A)}_{F(\varphi_{A,X}(g))} = [\phi_{A,X} \bincirc \varphi_{A,X}](g)
+  \end{equation*}
+  and thus \( \psi_{A,X} \) is a left inverse of \( \varphi_{A,X} \).
 
-  It remains to verify the naturality of \( \varphi \). Let \( f: B \to A \) be a morphism in \( \cat{C} \) and \( g: X \to Y \) be a morphism in \( \cat{D} \). Fix some morphism \( s: F(A) \to X \).
+  We can analogously show that \( \psi_{A,X} \) is a right inverse, and hence that \( \varphi_{A,X} \) is invertible.
+
+  Since we have already shown that \( \varphi \) is a bijective function, it remains to verify the naturality of \( \varphi \) in order to show that it is a natural isomorphism. Let \( f: B \to A \) be a morphism in \( \cat{C} \) and \( g: X \to Y \) be a morphism in \( \cat{D} \). Fix some morphism \( s: F(A) \to X \).
 
   Composing the functions of \eqref{eq:def:category_adjunction/varphi_nat} in one direction, we obtain
   \begin{equation}\label{eq:def:category_adjunction/varphi_nat_chase_right}
@@ -333,7 +348,7 @@
       \end{aligned}
     \end{equation}
 
-    \thmitem{ex:def:category_adjunction/multgph_quiv} In \fullref{def:quiver/forgetful}, we have defined the \hyperref[rem:forgetful_functor]{forgetful functor} \( U: \hyperref[def:category_of_small_quivers]{\cat{Quiv}} \to \hyperref[def:undirected_multigraph]{\cat{MultGph}} \). Given a \hyperref[def:grothendieck_universe]{Grothendieck universe} \( \mscrU \) and a choice function \( c \) for the family of two-element sets in \( \mscrU \), we have an orientation functor \( O_c: \cat{MultGph} \to \cat{Quiv} \) defined in \fullref{def:multigraph_orientation}.
+    \thmitem{ex:def:category_adjunction/multgph_quiv} In \fullref{def:quiver/forgetful}, we have defined the \hyperref[def:concrete_category]{forgetful functor} \( U: \hyperref[def:category_of_small_quivers]{\cat{Quiv}} \to \hyperref[def:undirected_multigraph]{\cat{MultGph}} \). Given a \hyperref[def:grothendieck_universe]{Grothendieck universe} \( \mscrU \) and a choice function \( c \) for the family of two-element sets in \( \mscrU \), we have an orientation functor \( O_c: \cat{MultGph} \to \cat{Quiv} \) defined in \fullref{def:multigraph_orientation}.
 
     It may seem that, for a fixed choice function, \( O_c \) is \hyperref[def:category_adjunction]{left adjoint} to \( U \). This is not true, however, as shown in \cref{fig:ex:def:category_adjunction/multgph_quiv}.
 
@@ -427,14 +442,14 @@
 \begin{proposition}\label{thm:universal_objects_as_adjunctions}
   Fix a category \( \cat{C} \). We can characterize the universal objects in \( \cat{C} \) from \fullref{def:universal_objects} via adjunctions with the \hyperref[def:universal_categories]{terminal category} \( \cat{1} \).
 
-  Let \( \Delta_I: \cat{C} \to \cat{1} \) be the \hyperref[def:diagonal_functor]{constant functor} into \( \cat{1} \).
+  Let \( \Delta^{\cat{1}}: \cat{C} \to \cat{1} \) be the \hyperref[def:diagonal_functor]{constant functor} into \( \cat{1} \).
 
   \begin{thmenum}
-    \thmitem{thm:universal_objects_as_adjunctions/initial} The object \( I \) of \( \cat{C} \) is \hyperref[def:universal_objects]{initial} if and only if it is (the unique value of) a left adjoint to \( \Delta_I \) functor.
+    \thmitem{thm:universal_objects_as_adjunctions/initial} The object \( I \) of \( \cat{C} \) is \hyperref[def:universal_objects]{initial} if and only if it is (the unique value of) a left adjoint to \( \Delta^{\cat{1}} \) functor.
 
     In particular, the uniqueness proved in \fullref{thm:def:universal_objects/properties/initial} follows from \fullref{thm:left_adjoint_uniqueness}.
 
-    \thmitem{thm:universal_objects_as_adjunctions/terminal} Similarly, the \hyperref[def:universal_objects]{terminal objects} are exactly the right adjoint to \( \Delta_I \) functors.
+    \thmitem{thm:universal_objects_as_adjunctions/terminal} Similarly, the \hyperref[def:universal_objects]{terminal objects} are exactly the right adjoint to \( \Delta_I^{\cat{1}} \) functors.
   \end{thmenum}
 \end{proposition}
 \begin{proof}
@@ -445,14 +460,14 @@
   We define the natural transformations
   \begin{equation*}
     \begin{aligned}
-      &\eta: \id_{\cat{1}} \Rightarrow \Delta_I \bincirc F \\
+      &\eta: \id_{\cat{1}} \Rightarrow \Delta_I^{\cat{1}} \bincirc F \\
       &\eta_{\cat{0}} \coloneqq \id_{\cat{0}}
     \end{aligned}
   \end{equation*}
   and
   \begin{equation*}
     \begin{aligned}
-      &\varepsilon: F \bincirc \Delta_I \Rightarrow \id_{\cat{C}} \\
+      &\varepsilon: F \bincirc \Delta_I^{\cat{1}} \Rightarrow \id_{\cat{C}} \\
       &\varepsilon_A \T{is the unique morphism} I \to A
     \end{aligned}
   \end{equation*}
@@ -466,9 +481,9 @@
 
   It follows that both \( \eta \) and \( \varepsilon \) are natural transformations. Furthermore, they trivially satisfy the triangle diagrams triangle \eqref{eq:def:category_adjunction/d_triangle} and \eqref{eq:def:category_adjunction/c_triangle}.
 
-  Hence, \( (F, \Delta_I, \eta, \varepsilon) \) is a \hyperref[def:category_adjunction/unit_counit]{unit-counit adjunction}.
+  Hence, \( (F, \Delta_I^{\cat{1}}, \eta, \varepsilon) \) is a \hyperref[def:category_adjunction/unit_counit]{unit-counit adjunction}.
 
-  \NecessitySubProof Conversely, suppose that \( (F, \Delta_I, \eta, \varepsilon) \) is a unit-counit adjunction.
+  \NecessitySubProof Conversely, suppose that \( (F, \Delta_I^{\cat{1}}, \eta, \varepsilon) \) is a unit-counit adjunction.
 
   Let \( I \coloneqq F(\cat{0}) \). Then \( \varepsilon_A \) is a morphism from \( I \) to \( A \). By \eqref{eq:def:category_adjunction/d_triangle}, \( \varepsilon_I = \id_I \) since the following diagram commutes:
   \begin{equation}\label{eq:thm:universal_objects_as_adjunctions/d_triangle}
@@ -490,5 +505,97 @@
 \end{proof}
 
 \begin{remark}\label{rem:left_and_right_adjoint_not_equivalence}
-  We discussed in \fullref{ex:def:universal_objects/grp} that \enquote{the} trivial group \( \set{ e } \) is a \hyperref[def:universal_objects/zero]{zero object} of \( \cat{Grp} \). By \fullref{thm:universal_objects_as_adjunctions}, this object induces a functor that is both left adjoint and right adjoint of \( \Delta_I \). Nevertheless, the categories \( \cat{Grp} \) and \( \cat{1} \) are not \hyperref[def:equivalence_of_categories]{equivalent}.
+  We discussed in \fullref{ex:def:universal_objects/grp} that \enquote{the} trivial group \( \set{ e } \) is a \hyperref[def:universal_objects/zero]{zero object} of \( \cat{Grp} \). By \fullref{thm:universal_objects_as_adjunctions}, this object induces a functor that is both left adjoint and right adjoint of \( \Delta_I^{\cat{1}} \). Nevertheless, the categories \( \cat{Grp} \) and \( \cat{1} \) are not \hyperref[def:equivalence_of_categories]{equivalent}.
+\end{remark}
+
+\begin{remark}\label{rem:universal_mapping_property}
+  We will now regard adjoint functors as a way to \enquote{construct} new objects.
+
+  Let \( (F, G, \iota, \pi) \) be a \hyperref[def:category_adjunction/unit_counit]{unit-counit adjunction} between the categories \( \cat{C} \) and \( \cat{D} \). In the current context, especially in connection with \hyperref[def:category_of_cones/limit]{limits} and \hyperref[def:category_of_cones/colimit]{colimits}, we will call the components of the counit \( \pi: F \bincirc G \Rightarrow \id_{\cat{D}} \) --- \term{projections}, and the components of the unit \( \iota: \id_{\cat{C}} \Rightarrow G \bincirc F \) --- \term{coprojections}.
+
+  Take objects \( A \) in \( \cat{C} \) and \( X \) in \( \cat{D} \) and a morphism \( f: A \to G(X) \). We want to obtain a morphism \( \widetilde{f}: F(A) \to X \), for which the following diagram commutes:
+  \begin{equation}\label{eq:rem:universal_mapping_property/c_triangle}
+    \begin{aligned}
+      \includegraphics[page=1]{output/rem__universal_mapping_property.pdf}
+    \end{aligned}
+  \end{equation}
+
+  From the naturality of \( \iota \) and from the triangle diagram \eqref{eq:def:category_adjunction/c_triangle} it follows that the following diagram commutes:
+  \begin{equation}\label{eq:rem:universal_mapping_property/f_tilde_existence}
+    \begin{aligned}
+      \includegraphics[page=2]{output/rem__universal_mapping_property.pdf}
+    \end{aligned}
+  \end{equation}
+
+  It is clear from \eqref{eq:rem:universal_mapping_property/f_tilde_existence} that
+  \begin{equation*}
+    G(\widetilde{f}) = G(\pi_X) \bincirc [G \bincirc F](f) = G(\pi_X \bincirc F(f)).
+  \end{equation*}
+
+  Furthermore, this value is unique. From the naturality of \( \pi \) and the triangle diagram \eqref{eq:def:category_adjunction/d_triangle} it follows that the following diagram commutes:
+  \begin{equation}\label{eq:rem:universal_mapping_property/f_tilde_uniquness}
+    \begin{aligned}
+      \includegraphics[page=3]{output/rem__universal_mapping_property.pdf}
+    \end{aligned}
+  \end{equation}
+
+  Therefore,
+  \begin{equation*}
+    \widetilde{f} = \pi_X \bincirc F(f)
+  \end{equation*}
+
+  Taking into account that the functor \( F \) itself is unique up to a unique isomorphism, as per \fullref{thm:left_adjoint_uniqueness}, we have proved the following statement:
+  \begin{displayquote}
+    For every object \( A \) in \( \cat{C} \), there exist unique up to a unique isomorphism object \( F(A) \) in \( \cat{D} \) and canonical coprojection map \( \iota_A: A \to [G \bincirc F](A) \) satisfying the following property, called a \term{universal mapping property}:
+    \begin{displayquote}
+      For every object \( X \) in \( \cat{D} \) and for every map \( f: A \to G(X) \) in \( \cat{C} \), there exists a unique map \( \widetilde{f}: F(A) \to X \) in \( \cat{D} \) such that the diagram \eqref{eq:rem:universal_mapping_property/c_triangle} commutes.
+    \end{displayquote}
+  \end{displayquote}
+
+  Intuitively, this universal mapping property states that any map (morphism) with domain \( A \) in \( \cat{C} \) can be transformed into a map with domain \( F(A) \) in \( \cat{D} \).
+
+  The statement becomes more meaningful when we regard \( G: \cat{D} \to \cat{C} \) as a \hyperref[def:concrete_category]{forgetful functor}. In this case, every object of \( \cat{D} \) is regarded as an object of \( \cat{C} \), and we write \( X \) rather than \( G(X) \). The universal mapping property then becomes:
+  \begin{displayquote}
+    For every object \( A \) in \( \cat{C} \), there exist unique up to a unique isomorphism object \( F(A) \) in \( \cat{D} \) and canonical coprojection map \( \iota_A: A \to F(A) \) satisfying the following universal property:
+    \begin{displayquote}
+      For every object \( X \) in \( \cat{D} \) and for every map \( f: A \to X \) in \( \cat{C} \), there exists a unique map \( \widetilde{f}: F(A) \to X \) in \( \cat{D} \) such that the following diagram commutes:
+      \begin{equation}\label{eq:rem:universal_mapping_property/c_triangle_forgetful}
+        \begin{aligned}
+          \includegraphics[page=4]{output/rem__universal_mapping_property.pdf}
+        \end{aligned}
+      \end{equation}
+    \end{displayquote}
+  \end{displayquote}
+
+  In \fullref{def:concrete_category} we mentioned that we will call the left adjoint of a forgetful functor a free functor. Universal mapping properties allow characterizing certain \enquote{free constructions}, such as the free groups defined in \fullref{def:free_group}, without explicitly building a free functor and proving that it is left adjoint. Indeed, for every suitable object and map, we explicitly build the natural isomorphism \( \varphi \) of a hom-adjunction, and the commutative triangle \eqref{eq:rem:universal_mapping_property/c_triangle} ensures that this \( \varphi \) is a natural transformation.
+
+  Universal mapping properties of this form are used for \hyperref[def:category_of_cones/colimit]{colimits} --- see \fullref{rem:limit_universal_mapping_property}.
+
+  Of course, there is a \hyperref[rem:categorical_principle_of_duality]{dual} universal mapping property:
+  \begin{displayquote}
+    For every object \( X \) in \( \cat{D} \) there exist unique up to a unique isomorphism object \( G(X) \) in \( \cat{C} \) and canonical projection map \( \pi_X: [F \bincirc G](X) \to X \) satisfying the following property, called a \term{universal mapping property}:
+    \begin{displayquote}
+      For every object \( A \) in \( \cat{C} \) and for every map \( g: F(A) \to X \) in \( \cat{D} \), there exists a unique map \( \widetilde{g}: A \to G(X) \) in \( \cat{C} \) such that the following diagram commutes:
+      \begin{equation}\label{eq:rem:universal_mapping_property/d_triangle}
+        \begin{aligned}
+          \includegraphics[page=5]{output/rem__universal_mapping_property.pdf}
+        \end{aligned}
+      \end{equation}
+    \end{displayquote}
+  \end{displayquote}
+
+  In this case, we can regard \( F \) as a forgetful functor and \( G \) as a free functor to obtain the following:
+  \begin{displayquote}
+    For every object \( X \) in \( \cat{D} \) there exist unique up to a unique isomorphism object \( G(X) \) in \( \cat{C} \) and canonical projection map \( \pi_X: G(X) \to X \) satisfying the following property, called a \term{universal mapping property}:
+    \begin{displayquote}
+      For every object \( A \) in \( \cat{C} \) and for every map \( g: A \to X \) in \( \cat{D} \), there exists a unique map \( \widetilde{g}: A \to G(X) \) in \( \cat{C} \) such that the following diagram commutes:
+      \begin{equation}\label{eq:rem:universal_mapping_property/d_triangle_forgetful}
+        \begin{aligned}
+          \includegraphics[page=6]{output/rem__universal_mapping_property.pdf}
+        \end{aligned}
+      \end{equation}
+    \end{displayquote}
+  \end{displayquote}
+
+  Universal mapping properties of this form are used for \hyperref[def:category_of_cones/limit]{limits} --- see \fullref{rem:limit_universal_mapping_property}.
 \end{remark}
