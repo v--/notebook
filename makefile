@@ -30,4 +30,4 @@ watch:
 	@poetry run python watcher.py
 
 git-commit-info: .git/refs/heads/master
-	LC_ALL=en_BG.UTF-8 git log --max-count 1 --format=format:'hash={%h},date={%cd}' --date='format:%d %B %Y' HEAD > git-commit-info
+	LC_ALL=en_US.UTF-8 git log --max-count 1 --format=format:'hash={%h},date={%cd}' --date='format:%d %B %Y' HEAD > git-commit-info
