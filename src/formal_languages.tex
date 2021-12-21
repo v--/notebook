@@ -159,105 +159,48 @@ Languages are used to define formulas for expressing the \hyperref[def:zfc]{axio
   For this reason, we will say that the Backus-Naur form specifies \term{grammar schemas} and not grammars. Given a grammar schema, we can select any of its variables to obtain a grammar.
 \end{definition}
 
-\begin{definition}\label{def:abstract_reduction_system}\cite[def. 1.1.2]{Book1993}
-  Fix an arbitrary \hyperref[def:set]{set} \( A \) and an \hyperref[rem:first_order_formula_conventions/infix]{infix} \hyperref[def:binary_relation]{binary relation} \( \to \) on \( A \). We call the operation \( \to \) a \term{reduction relation}, and the pair \( (A, \to) \) --- an \term{abstract reduction system}.
-
-  \begin{thmenum}
-    \thmitem{def:abstract_reduction_system/derivations}\mimprovised A \term{reduction path} or \term{derivation} of \( x_n \) from \( x_1 \) is a \hyperref[def:quiver_path/directed]{directed path} from \( x_1 \) to \( x_n \) in the quiver \( (A, \to) \), i.e. a chain
-    \begin{equation}\label{eq:def:abstract_reduction_system/derivation}
-      \begin{aligned}
-        \includegraphics[page=1]{output/def__abstract_reduction_system.pdf}
-      \end{aligned}
-    \end{equation}
-
-    This terminology is not established and is based on similar concepts from formal grammars.
-
-    We allow empty paths with the caveat described in \fullref{def:quiver_path} that every element of \( A \) has a distinct empty path.
-
-    It there exists at least one derivation of \( x_n \) from \( x_1 \), we say that \( x_n \) is \term{derivable from} \( x_1 \) and that \( x_1 \) is \term{reducible into} \( x_n \). We say that \( x_1 \) itself is \term{derivable} (resp. \term{reducible}) if it is derivable from (resp. reducible into) at least one element and \term{non-derivable} (resp. \term{irreducible}) otherwise.
-
-    \thmitem{def:abstract_reduction_system/ambiguity}\mimprovised A derivable element is \term{uniquely derivable} if it has a unique derivation from a non-derivable element.
-
-    If every derivable element is uniquely derivable, we say that the system is \term{unambiguous}.
-
-    \begin{figure}[h]
-      \begin{equation*}
-        \begin{aligned}
-          \includegraphics[page=2]{output/def__abstract_reduction_system.pdf}
-        \end{aligned}
-      \end{equation*}
-      \caption{A finite \hyperref[def:abstract_reduction_system/ambiguity]{unambiguous} \hyperref[def:abstract_reduction_system]{abstract reduction system}}\label{fig:def:abstract_reduction_system}
-    \end{figure}
-
-    \thmitem{def:abstract_reduction_system/relations}\mcite[not. 1.1.1]{Book1993} We also introduce the following auxiliary relations:
-    \begin{itemize}
-      \item \( \reloset n \to \) is the \( n \)-th \hyperref[def:binary_relation/composition]{iterated composition} of \( \to \), where \( n \) is a nonnegative integer. Clearly \( x \reloset n \to y \) if there exists a derivation of length \( n \) from \( x \) to \( y \).
-
-      \item \( \reloset + \to \) is the \hyperref[def:relation_closures/transitive]{transitive closure} of \( \to \). Clearly \( x \reloset + \to y \) if \( y \neq x \) is derivable from \( x \).
-
-      \item \( \reloset {*} \to \) is the \hyperref[def:relation_closures/reflexive]{reflexive closure} of \( \reloset + \to \). Clearly \( x \reloset + \to y \) if \( y \) is derivable from \( x \), including the case \( y = x \).
-
-      \item \( {\leftrightarrow} \) is the \hyperref[def:relation_closures/symmetric]{symmetric closure} of \( \to \).
-
-      \item \( \reloset + \leftrightarrow \) is the \hyperref[def:relation_closures/transitive]{transitive closure} of \( \leftrightarrow \).
-
-      \item \( \reloset {*} \leftrightarrow \) is the \hyperref[def:relation_closures/reflexive]{reflexive closure} of \( \reloset + \leftrightarrow \), i.e. the smallest equivalence relation containing \( \to \).
-    \end{itemize}
-
-    \thmitem{def:abstract_reduction_system/equivalent} We say that \( x \) and \( y \) are \term{equivalent} if \( x \reloset {*} \leftrightarrow y \). This is a stronger condition than \( x \) and \( y \) being reducible into each other. Indeed, the latter corresponds to \hyperref[def:quiver_connectedness/weak]{weak connectedness} of quivers and equivalence corresponds to \hyperref[def:quiver_connectedness/strong]{strong connectedness}.
-
-    \thmitem{def:abstract_reduction_system/normal_form}\mcite[def. 1.1.5]{Book1993} Given an \hyperref[def:equivalence_relation]{equivalence relation} \( \cong \), if \( x \cong y \) and \( y \) is irreducible, we say that \( x \) is a \term{normal form} of \( y \) modulo \( \cong \).
-
-    Without further context, we assume that \( \cong \) is the equivalence relation \( \reloset {*} \leftrightarrow \).
-  \end{thmenum}
-\end{definition}
-
-\begin{theorem}[Structural induction]\label{thm:structural_induction}\mimprovised
-  Let \( (A, \to) \) be an \hyperref[def:abstract_reduction_system/ambiguity]{unambiguous abstract reduction system}.
-
-  Unlike for the other induction principles in \fullref{rem:induction}, we will not formulate the \term{structural induction} principle via logical formulas. This will complicate us unnecessarily. We will instead describe how the principle is used in practice.
-
-  Suppose we want to prove some statement for every member of \( A \). We can proceed as follows:
-  \begin{thmenum}
-    \thmitem{thm:structural_induction/base_step} The \term{base step} is to prove the statement for all non-derivable elements of \( A \).
-    \thmitem{thm:structural_induction/inductive_step} The \term{inductive step} is to fix a derivable element \( x \), suppose that the statement holds for all immediate ancestors of \( x \), and then prove it for \( x \).
-  \end{thmenum}
-\end{theorem}
-\begin{proof}
-  We prove the object statement for all non-derivable elements of \( A \) via \fullref{thm:structural_induction/base_step} and for all derivable elements via \fullref{thm:structural_induction/inductive_step}. Therefore, statement holds for all elements of \( A \).
-
-  We require unique derivability because without it, it is possible to prove the statement for \( x \) using one derivation and disprove it using another derivation.
-\end{proof}
-
-\begin{definition}\label{def:string_rewriting_system}\mcite[def. 2.1.1]{Book1993}
-  Fix an \hyperref[def:formal_language/alphabet]{alphabet} \( \mscrA \). A \term{string rewriting system} over \( \mscrA \) is an \hyperref[def:abstract_reduction_system]{abstract reduction system} over the \hyperref[thm:kleene_star_is_monoid]{Kleene star} \( \mscrA^* \).
-
-  A member of the reduction relation \( \to \) of a string rewriting system is called a \term{rewrite rule}.
-\end{definition}
-
 \begin{definition}\label{def:grammar_derivation}
   Fix a \hyperref[def:formal_grammar]{formal grammar} \( G = (V, S, \Sigma, \to) \).
 
   \begin{thmenum}
-    \thmitem{def:grammar_derivation/full} For any two \hyperref[def:formal_language/word]{words} \( p \) and \( s \) over \( V \cup \Sigma \) and every production rule \( v \to w \), we write \( pvw \Rightarrow pws \). The relation \( \Rightarrow \) induced a \hyperref[def:string_rewriting_system]{string rewriting system} over \( V \cup \Sigma \), which we call the \term{full derivation system} of the grammar.
+    \thmitem{def:grammar_derivation/derivation} We define the binary relation \( \Rightarrow \) on the Kleene star \( (V \cup \Sigma)^* \) by declaring that, for every two \hyperref[def:formal_language/word]{words} \( p \) and \( s \) over \( V \cup \Sigma \) and every production rule \( v \to w \), we have \( pvw \Rightarrow pws \). We also define the relation \( \Rightarrow_L \) as a restriction of \( \Rightarrow \) to the cases where \( p \) contains only terminal symbols and \( \Rightarrow_R \) --- if \( s \) contains only terminal symbols.
+
+    A \term{derivation} of the word \( w_n \) from \( w_1 \) is a \hyperref[def:quiver_path/directed]{directed path} in the quiver induced by the relation \( \Rightarrow \), i.e.
+    \begin{equation}\label{eq:def:grammar_derivation/derivation}
+      w_1 \Rightarrow w_2 \Rightarrow \cdots \Rightarrow  w_{n-1} \Rightarrow  w_n
+    \end{equation}
+
+    A \term{leftmost derivation} is a derivation performed using \( \Rightarrow_L \) rather than \( \Rightarrow \). \term{Rightmost derivations} are defined analogously.
+
+    We say that \( w_n \) is \term{derivable} from \( w_1 \) if there exists a derivation from \( w_1 \) to \( w_n \).
+
+    We denote the \hyperref[def:relation_closures/transitive]{transitive closure} of \( \Rightarrow \) by \( \reloset + \Rightarrow \) and the \hyperref[def:relation_closures/reflexive]{reflexive} closure of \( \reloset + \Rightarrow \) by \( \reloset {*} \Rightarrow \). Clearly \( w_1 \) is derivable from \( w_n \) if and only if \( w_1 \reloset {*} \Rightarrow w_n \).
+
+    The leftmost and rightmost derivations generate the same derivability relation --- the only potential difference is in the order of rule applications in the derivation itself.
+
+    \thmitem{def:grammar_derivation/unambiguous}\mcite[def. 2.7]{Sipser2013} We say that the word \( w \) can be derived \term{unambiguously} if it has a unique leftmost derivation.
+
+    Define the set
+    \begin{equation*}
+      D \coloneqq \set{ w \in (V \cup \Sigma)^* \colon S \reloset + \Rightarrow w }
+    \end{equation*}
+    of all words derivable from the starting symbol \( S \).
+
+    If every word in \( D \) can be derived unambiguously, we say that the grammar itself is unambiguous.
+
+    In an unambiguous grammar, \fullref{thm:structural_induction} can be used on the \hyperref[def:quiver/simple]{simple directed graph} \( (D, \Rightarrow_L) \). Indeed, every word in \( D \) is derivable from \( S \) and every leftmost derivation is unique.
 
     \thmitem{def:grammar_derivation/grammar_language} The \term{language} of the grammar is the set
     \begin{equation*}
-      \mscrL(G) \coloneqq \set{ w \in \Sigma^* \colon S \Rightarrow w }
+      \mscrL(G) \coloneqq \set{ w \in \Sigma^* \colon S \reloset + \Rightarrow w }
     \end{equation*}
-    of all ancestors of the starting symbol \( S \) under the full (i.e. not leftmost) rewriting system.
+    of all terminal-only words derivable from the starting symbol \( S \).
 
     We also say that strings in \( \mscrL(G) \) are \term{generated} by the grammar \( G \).
 
     If a language can be generated by a \hyperref[def:chomsky_hierarchy/regular]{regular} grammar, we say that the language itself is regular, and similarly for \hyperref[def:chomsky_hierarchy/context_free]{context-free} and \hyperref[def:chomsky_hierarchy/context_sensitive]{context-sensitive} grammars.
 
     For other grammars, for example \hyperref[def:chomsky_hierarchy/unrestricted]{unrestricted} or \hyperref[def:chomsky_hierarchy/non_contracting]{non-contracting}, such a terminology is not established.
-
-    \thmitem{def:grammar_derivation/unambiguous} In grammars we have different possible notions of non-ambiguity.
-
-    We define the relation \( \Rightarrow_L \) as the restriction of \( \Rightarrow \) to the cases where the prefix \( p \) contains only terminal symbols. This relation induces a string rewriting system, which we call the \term{leftmost derivation system} because it always substitutes the leftmost possible non-terminal. Rightmost derivations are defined analogously.
-
-    We say that \( G \) is \term{unambiguous} if its leftmost derivation system is unambiguous when restricted to \( \mscrL(G) \). Restricting this requirement to \( \mscrL(G) \) makes sure that extraneous rules that cannot be reached from \( S \) do not introduce ambiguity. The choice of leftmost derivations for defining grammar ambiguity is established in practice.
   \end{thmenum}
 \end{definition}
 
