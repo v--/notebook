@@ -41,5 +41,11 @@
       {
         fill,
         fill opacity=0.2
+      },
+    SubTree/.style=
+      {
+        draw,
+        regular polygon,
+        regular polygon sides=3
       }
   }

@@ -10,9 +10,11 @@ Languages are used to define formulas for expressing the \hyperref[def:zfc]{axio
 
     \thmitem{def:formal_language/symbol} We call each element of \( \mscrA \) a \term{symbol}.
 
-    \thmitem{def:formal_language/word} A \term{word} over \( \mscrA \) is a \hyperref[def:sequence]{finite sequence} of symbols. If \( (a, b, c) \) is a word, for convenience we write it as the string \( abc \). This is the reason words are also referred to as \term{strings}. This notation only makes sense if each symbol of the language is actually represented by one typographic symbol.
+    \thmitem{def:formal_language/word} A \term{string} over \( \mscrA \) is a \hyperref[def:sequence]{finite sequence} of symbols. If \( (a, b, c) \) is a word, for convenience we write it as the string \( abc \). This is the reason words are also referred to as \term{strings}. This notation only makes sense if each symbol of the language is actually represented by one typographic symbol.
 
-    \thmitem{def:formal_language/empty_word} We denote the empty word by \( \varepsilon \).
+    The term \enquote{string} is common in programming practice. In the context of formal languages, strings are often called \term{words}. We will avoid the later term since it does not correspond to the everyday use of the term \enquote{word}.
+
+    \thmitem{def:formal_language/empty_word} We denote the empty string by \( \varepsilon \).
 
     \thmitem{def:formal_language/word_length} The \term{length} \( \len(w) \) of a word \( w \) is the number of elements of the tuple \( w \).
 
@@ -106,31 +108,37 @@ Languages are used to define formulas for expressing the \hyperref[def:zfc]{axio
 \begin{example}\label{ex:natural_number_arithmetic_grammar/backus_naur_form}
   We define a grammar for primary school notation of multiplication and division of \hyperref[def:set_of_natural_numbers]{natural numbers}. Note that we consider the numbers in \( \BbbN \) only as symbols, without any regard to semantics.
 
-  Let \( V \coloneqq \set{ E } \) and \( \Sigma \coloneqq \BbbN \cup \set{ \times, \div, (, ) } \). Define the grammar
+  Let \( V \coloneqq \set{ N, O, M, E } \) and \( \Sigma \coloneqq \BbbN \cup \set{ \times, \div, (, ) } \). Define the grammar
   \begin{equation}\label{eq:ex:natural_number_arithmetic_grammar/backus_naur_form/simple}
     \begin{aligned}
-      &E \to 0 \\
-      &E \to 1 \\
-      &\phantom{E \to} \vdots \\
-      &E \to n \\
-      &\phantom{E \to} \vdots \\
-      &E \to (E \times E) \\
-      &E \to (E \div E)
+      N &\to 0 \\
+      N &\to 1 \\
+      \phantom{N} &\vdots \\
+      N &\to n \\
+      \phantom{N} &\vdots \\
+      O &\to \times \\
+      O &\to \div \\
+      E &\to N \\
+      E &\to (E O E)
     \end{aligned}
   \end{equation}
 
-  We can use the following shorthand:
+  It is convenient to use the following shorthands:
   \begin{equation}\label{eq:ex:natural_number_arithmetic_grammar/backus_naur_form/shorthand}
-    E \to 0 \mid 1 \mid \ldots \mid (E \times E) \mid (E \div E).
+    \begin{aligned}
+      N &\to 0 \mid 1 \mid 2 \mid \ldots \\
+      O &\to \times \mid \div \\
+      E &\to N \mid (E O E)
+    \end{aligned}
   \end{equation}
 
-  This grammar is clearly \hyperref[def:chomsky_hierarchy]{context-free}.
+  We can choose different non-terminals as the starting symbol. The symbol \( N \) corresponds to numbers, \( O \) corresponds to operations, and \( E \) can be either a number or an expression. We say that \eqref{eq:ex:natural_number_arithmetic_grammar/backus_naur_form/shorthand} specifies a \term{grammar schema}. With any starting symbol, the grammar is clearly \hyperref[def:chomsky_hierarchy]{context-free}.
+\end{example}
 
-  The infinitude of possible rules may not bother us formally, but when dealing with software implementations, we must have a finite number of rules. An example of a nontrivial grammar in the wild is the Python grammar that can be found in \cite{Python39Grammar}.
+\begin{remark}\label{rem:backus_naur_form}
+  The infinitude of possible rules in \fullref{ex:natural_number_arithmetic_grammar/backus_naur_form} may not bother us formally, but when dealing with software implementations, we must have a finite number of rules. An example of a nontrivial grammar in the wild is the Python grammar that can be found in \cite{Python39Grammar}. There are also other advantages of introducing a more convenient metasyntax (a syntax for describing language syntax).
 
-  There are other advantages of introducing a more convenient metasyntax (a syntax for describing language syntax).
-
-  For \hyperref[def:chomsky_hierarchy/context_free]{context-free grammars}, is often convenient to use the \term{Backus-Naur form (BNF)}. In our example, this becomes
+  For \hyperref[def:chomsky_hierarchy/context_free]{context-free grammars}, is often convenient to use the \term{Backus-Naur form (BNF)}. For \fullref{ex:natural_number_arithmetic_grammar/backus_naur_form}, the BNF is
   \begin{bnf*}
     \bnfprod{nonzero digit} {\bnfts{1} \bnfor \bnfts{2} \bnfor \bnfts{3} \bnfor \bnfts{4} \bnfor \bnfts{5} \bnfor \bnfts{6} \bnfor \bnfts{7} \bnfor \bnfts{8} \bnfor \bnfts{9}} \\
     \bnfprod{digit}         {\bnfts{0} \bnfor \bnfpn{nonzero digit}} \\
@@ -138,7 +146,6 @@ Languages are used to define formulas for expressing the \hyperref[def:zfc]{axio
     \bnfprod{operation}     {\bnfts{\( \times \)} \bnfor \bnfts{\( \div \)}} \\
     \bnfprod{expression}    {\bnfpn{number} \bnfor \bnfts{(} \bnfsp \bnfpn{number} \bnfsp \bnfpn{operation} \bnfsp \bnfpn{number} \bnfsp \bnfts{)}}.
   \end{bnf*}
-  with \( \bnfpn{expression} \) as the starting variable.
 
   The obvious difference is that we explicitly define numbers via their decimal representation, which means that we get a finite amount of rules. Compared to \eqref{eq:ex:natural_number_arithmetic_grammar/backus_naur_form/simple} some other differences are:
   \begin{itemize}
@@ -149,15 +156,7 @@ Languages are used to define formulas for expressing the \hyperref[def:zfc]{axio
     \item Different rules with the same, source are concatenated as in \eqref{eq:ex:natural_number_arithmetic_grammar/backus_naur_form/shorthand}.
     \item In order to fully describe a context-free grammar, we must only specify its Backus-Naur form and its starting variable.
   \end{itemize}
-\end{example}
-
-\begin{definition}\label{def:backus_naur_form}
-  We have defined the \term{Backus-Naur form} of a \hyperref[def:chomsky_hierarchy/context_free]{context-free grammar} in \fullref{ex:natural_number_arithmetic_grammar/backus_naur_form}.
-
-  Although formally necessary for \fullref{def:formal_grammar}, it is of slight inconvenience to explicitly specify the starting variable for a nontrivial grammar in Backus-Naur form because the same Backus-Naur form can be used with different starting variables.
-
-  For this reason, we will say that the Backus-Naur form specifies \term{grammar schemas} and not grammars. Given a grammar schema, we can select any of its variables to obtain a grammar.
-\end{definition}
+\end{remark}
 
 \begin{definition}\label{def:grammar_derivation}
   Fix a \hyperref[def:formal_grammar]{formal grammar} \( G = (V, S, \Sigma, \to) \).
@@ -167,7 +166,15 @@ Languages are used to define formulas for expressing the \hyperref[def:zfc]{axio
 
     A \term{derivation} of the word \( w_n \) from \( w_1 \) is a \hyperref[def:quiver_path/directed]{directed path} in the quiver induced by the relation \( \Rightarrow \), i.e.
     \begin{equation}\label{eq:def:grammar_derivation/derivation}
-      w_1 \Rightarrow w_2 \Rightarrow \cdots \Rightarrow  w_{n-1} \Rightarrow  w_n
+      w_1
+      \reloset {u_1 \to v_1} \implies
+      w_2
+      \reloset {u_2 \to v_2} \implies
+      \cdots
+      \reloset {u_{n-2} \to v_{n-2}} \implies
+      w_{n-1}
+      \reloset {u_{n-1} \to v_{n-1}} \implies
+      w_n.
     \end{equation}
 
     A \term{leftmost derivation} is a derivation performed using \( \Rightarrow_L \) rather than \( \Rightarrow \). \term{Rightmost derivations} are defined analogously.
@@ -186,7 +193,7 @@ Languages are used to define formulas for expressing the \hyperref[def:zfc]{axio
     \end{equation*}
     of all words derivable from the starting symbol \( S \).
 
-    If every word in \( D \) can be derived unambiguously, we say that the grammar itself is unambiguous.
+    If every word in \( D \) can be derived unambiguously, we say that the grammar itself is \term{unambiguous}.
 
     In an unambiguous grammar, \fullref{thm:structural_induction} can be used on the \hyperref[def:quiver/simple]{simple directed graph} \( (D, \Rightarrow_L) \). Indeed, every word in \( D \) is derivable from \( S \) and every leftmost derivation is unique.
 
@@ -225,17 +232,93 @@ Languages are used to define formulas for expressing the \hyperref[def:zfc]{axio
     \hfill
     \includegraphics[page=2]{output/ex__natural_number_arithmetic_grammar__derivation.pdf}
     \hfill\hfill
-    \caption{Different leftmost derivations of the parenthesis-less arithmetic expression \( 6 \div 2 \times 3 \)}
+    \caption{Different leftmost derivations of the parenthesis-less arithmetic expression \( 6 \div 3 \times 2 \)}
     \label{fig:ex:natural_number_arithmetic_grammar/derivation/ambiguous}
   \end{figure}
-\end{example}
-\begin{proof}
+
   We will show that \( G \) is unambiguous. Let \( w \) be a word in \( \mscrL(G) \). We explicitly build the leftmost derivation of \( w \) using recursion on \( \len(w) \):
   \begin{itemize}
-    \item If \( \len(w) = 1 \), then \( w = n \in \BbbN \), and the word has been generated by the rule \( E \to n \).
+    \item If \( \len(w) = 1 \), then \( w = n \in \BbbN \), and the word has been derived as \( E \to N \to n \).
 
     \item Assume that \( w \) is unambiguously derived for \( \len(w) < m + 2 \) and let \( \len(w) = m + 2 \), then \( w \) is necessarily enclosed in parentheses. Let \( w = ( \sigma_1 \ldots \sigma_m ) \) be the symbols of \( w \). Because of the parentheses, the only possibility for \( \sigma_1 \ldots \sigma_m \) is that it consists of two words in \( \mscrL(G) \) with either a multiplication symbol \( \times \) or a division symbol \( \div \) between them. Let \( k \) be the index of the operator symbol, that is, the index such that \( \sigma_1 \ldots \sigma_{k-1} \) and \( \sigma_{k+1} \ldots \sigma_m \) both belong to \( \mscrL(G) \).
 
-    By the inductive hypothesis, both \( \sigma_1 \ldots \sigma_{k-1} \) and \( \sigma_{k+1} \ldots \sigma_m \) are unambiguously derived. Depending on the operator symbol \( \sigma_k \), there are two possible rules for how \( w \) has been generated from the subwords \( \sigma_1 \ldots \sigma_{k-1} \) and \( \sigma_{k+1} \ldots \sigma_m \). Therefore, the derivation of \( w \) is also unambiguous.
+    By the inductive hypothesis, both \( \sigma_1 \ldots \sigma_{k-1} \) and \( \sigma_{k+1} \ldots \sigma_m \) are unambiguously derived from \( E \). Then \( w \) is generated by the rule \( E \to (E O E) \), where the operator symbol \( \sigma_k \) determines the terminal of \( O \). Therefore, the derivation of \( w \) is also unambiguous.
   \end{itemize}
+\end{example}
+
+\begin{definition}\label{def:ordered_arborescence}
+  An \term{ordered arborescence} is an \hyperref[def:arborescence]{arborescence} \( T = (G, A) \) with a \hyperref[def:partially_ordered_set]{partial order} \( \leq \) such that every set of \hyperref[def:arborescence/ancestry]{siblings} is a \hyperref[def:partially_ordered_set_chain_and_antichain]{chain}.
+\end{definition}
+
+\begin{definition}\label{def:grammar_syntax_tree}\mimprovised
+  Fix a \hyperref[def:chomsky_hierarchy/context_free]{context-free} \hyperref[def:formal_grammar]{formal grammar} \( G = (V, S, \Sigma, \to) \).
+
+  For every word \( w \) in \( \mscrL(G) \), we will build an \hyperref[def:ordered_arborescence]{ordered} \hyperref[def:arborescence/undirected]{rooted tree} whose \hyperref[def:arborescence/ancestry]{leaves} are the symbols of \( w \) and whose root is \( S \). We will call this a \term{syntax tree} for \( w \).
+
+  \begin{figure}
+    \hfill
+    \includegraphics[page=1]{output/alg__grammar_syntax_tree.pdf}
+    \hfill\hfill
+    \caption{A grammar tree corresponding to the expression \( (6 \div (3 \times 2)) \) from \cref{fig:ex:natural_number_arithmetic_grammar/derivation/unambiguous}}
+    \label{fig:def:grammar_syntax_tree}
+  \end{figure}
+
+  Fix a derivation
+  \begin{equation}\label{eq:def:grammar_syntax_tree/derivation}
+    S \Rightarrow w_1 \Rightarrow \cdots \Rightarrow w_{n-1} \Rightarrow w_n.
+  \end{equation}
+
+  We use \hyperref[rem:natural_number_recursion]{natural number recursion} on \( n \) to build the tree. Note that, for the purposes of recursion, we allow \( w_n \) to contain non-terminals.
+
+  \begin{itemize}
+    \item In the trivial case where \( n = 0 \), and there is no actual derivation, we build a single-vertex tree with root \( S \).
+
+    \item Suppose that we can build a tree for all derivations of length \( m - 1 \) and fix a derivation \eqref{eq:def:grammar_syntax_tree/derivation} of length \( n \).
+
+    First, build a tree \( T \) from the derivation
+    \begin{equation*}
+      S \Rightarrow w_1 \Rightarrow \cdots \Rightarrow w_{n-2} \Rightarrow w_{n-1}.
+    \end{equation*}
+
+    There must exist words \( p \), \( s \) and \( v \) and a non-terminal \( A \) such that
+    \begin{equation*}
+      w_{n-1} = pAs \Rightarrow pvs = w_n.
+    \end{equation*}
+
+    There already exists a leaf for \( A \) in \( T \). For every symbol in \( v \), add a new node as a child of this node.
+  \end{itemize}
+\end{definition}
+
+\begin{proposition}\label{thm:unambiguous_grammar_syntax_trees}
+  A \hyperref[def:chomsky_hierarchy/context_free]{context-free} grammar is \hyperref[def:chomsky_hierarchy/context_free]{unambiguous} if and only if every word has a unique \hyperref[def:grammar_syntax_tree]{syntax tree}.
+\end{proposition}
+
+\begin{theorem}[Structural induction on unambiguous grammars]\label{thm:structural_induction_on_unambiguous_grammars}\mimprovised
+  Let \( G = (V, S, \Sigma, \to) \) be an \hyperref[def:chomsky_hierarchy/context_free]{unambiguous} \hyperref[def:chomsky_hierarchy/context_free]{context-free} \hyperref[def:formal_grammar]{formal grammar}.
+
+  Suppose that we want to prove a statement for every word in \( \mscrL(G) \). It is sufficient to perform the following for every rule \( A \to w \):
+  \begin{displayquote}
+    Let \( A_1, \ldots, A_n \) be all non-terminals of \( w \) and let \( u_0, \ldots, u_n \) be subwords of \( w \) such that
+    \begin{equation*}
+      w = u_0 A_1 u_1 A_2 \ldots A_n u_n.
+    \end{equation*}
+
+    Let \( v_1, \ldots, v_n \) be arbitrary words in \( \mscrL(G) \) derivable from \( A_1, \ldots, A_n \), respectively, so that we have the syntax tree
+    \begin{equation*}
+      \begin{aligned}
+        \includegraphics[page=1]{output/thm__structural_induction_on_unambiguous_grammars.pdf}
+      \end{aligned}
+    \end{equation*}
+
+    Then we must prove the statement for the word
+    \begin{equation*}
+      u_0 v_1 u_1 \ldots v_n u_n.
+    \end{equation*}
+  \end{displayquote}
+
+  Compare this principle to the more general \fullref{thm:structural_induction}.
+\end{theorem}
+\begin{proof}
+  Clearly every word in \( \mscrL(G) \) can be obtained in this way.
+  The role of non-ambiguity is discussed in the proof of \fullref{thm:structural_induction}.
 \end{proof}
