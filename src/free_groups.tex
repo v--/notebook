@@ -1,13 +1,46 @@
-\subsection{Group presentations}\label{subsec:group_presentations}
+\subsection{Free groups}\label{subsec:free_groups}
 
 \begin{definition}\label{def:free_monoid}
-  Let \( \mscrS \) be an arbitrary set. We associate with \( \mscrS \) its \term{free monoid} \( F(\mscrS) \coloneqq (\mscrS^{\ast}, \cdot) \), where \( \mscrS^{\ast} \) is the \hyperref[def:formal_language/kleene_star]{Kleene star} and \( \cdot \) is \hyperref[def:formal_language/concatenation]{concatenation}.
+  Let \( S \) be an arbitrary set. We associate with \( S \) its \term{free monoid} \( F(S) \coloneqq (S^{\ast}, \cdot) \), where \( S^{\ast} \) is the \hyperref[def:formal_language/kleene_star]{Kleene star} and \( \cdot \) is \hyperref[def:formal_language/concatenation]{concatenation}.
 \end{definition}
 \begin{proof}
   It is a monoid due to \fullref{thm:kleene_star_is_monoid}.
 \end{proof}
 
-\begin{proposition}\label{thm:free_monoid_is_free_functor}
+\begin{proposition}\label{thm:free_monoid_universal_property}
+  For every set \( A \), denote by \( \iota_A: A \to F(A) \) the canonical inclusion function, which sends every member of \( A \) into the corresponding single-symbol word in the \hyperref[def:free_monoid]{free monoid} \( F(A) \).
+
+  As a consequence of \fullref{thm:free_monoid_universal_property}, \( F(A) \) is the unique up to an isomorphism monoid that satisfies the following \hyperref[rem:universal_mapping_property]{universal mapping property}:
+  \begin{displayquote}
+    For every monoid \( \mscrM \) and every function \( f: A \to \mscrM \), there exists a unique monoid homomorphism \( \widetilde{f}: F(A) \to \mscrM \) such that the following diagram commutes:
+    \begin{equation}\label{eq:def:free_monoid/diagram}
+      \begin{aligned}
+        \includegraphics[page=1]{output/def__free_monoid.pdf}
+      \end{aligned}
+    \end{equation}
+  \end{displayquote}
+\end{proposition}
+\begin{proof}
+  For every function \( f: A \to \mscrM \), we have the monoid homomorphism
+  \begin{equation*}
+    \begin{aligned}
+      &\widetilde{f}: F(A) \to \mscrM, \\
+      &\widetilde{f}(x_1 x_2 \ldots x_n) \coloneqq f(x_1) \cdot f(x_2) \cdot \ldots \cdot f(x_n)
+    \end{aligned}
+  \end{equation*}
+  obtained by applying the monoid operation \( \cdot \) recursively to the pointwise image
+  \begin{equation*}
+    f(x_1) f(x_2) \ldots f(x_n)
+  \end{equation*}
+  of the word
+  \begin{equation*}
+    x_1 x_2 \ldots x_n.
+  \end{equation*}
+
+  The homomorphism \( \widetilde{f} \) is uniquely determined by the action of \( f \) on single-symbol words.
+\end{proof}
+
+\begin{corollary}\label{thm:free_monoid_functor}
   Consider the functor \( F: \cat{Set} \to \cat{Mon} \) defined for objects pointwise in \fullref{def:free_monoid}. For every function \( f: A \to B \), define the \hyperref[def:unital_magma/homomorphism]{monoid homomorphism}
   \begin{equation*}
     \begin{aligned}
@@ -17,31 +50,15 @@
   \end{equation*}
 
   This functor is \hyperref[def:category_adjunction]{left adjoint} to the \hyperref[def:concrete_category]{forgetful functor} \( U: \cat{Mon} \to \cat{Set} \).
-\end{proposition}
+\end{corollary}
 \begin{proof}
-  Fix a small monoid \( \mscrM \) and small set \( A \). We will first show that
-  \begin{equation*}
-    \cat{Mon}(F(A), \mscrM) \cong \cat{Set}(A, U(\mscrM)).
-  \end{equation*}
-
-  For every homomorphism \( \varphi: F(A) \to \mscrM \), we can define a function \( f: A \to U(\mscrM) \) by restricting \( \varphi \) to single-symbol \hyperref[def:formal_language/word]{words}.
-
-  Conversely, for every function \( f: A \to U(\mscrM) \), we have the monoid homomorphism
-  \begin{equation*}
-    \begin{aligned}
-      &\varphi: F(A) \to \mscrM \\
-      &\varphi(x_1 \cdots x_n) \coloneqq x_1 \cdot \ldots \cdot x_n
-    \end{aligned}
-  \end{equation*}
-  obtained by applying the monoid operation \( \cdot \) recursively to the word \( x_1 \cdots x_n \).
-
-  This establishes a correspondence between \( \cat{Mon}(F(A), \mscrM) \) and \( \cat{Set}(A, U(\mscrM)) \). We need to establish that this is a natural transformation.
+  Follows from \fullref{thm:free_monoid_universal_property} via \fullref{rem:universal_mapping_property}.
 \end{proof}
 
 \begin{definition}\label{def:free_group}
-  Let \( \mscrS \) be an arbitrary set. We will now construct the \term{free group} \( F(\mscrS) \) of \( \mscrS \). The construction is similar to that of \hyperref[def:free_monoid]{free monoids}, but it is much more complicated because of special reduction rules for \hyperref[def:unital_magma_inverse_element]{inverse elements}. Refer to \cite{code:free_group_grammar_verification} for a, software implementation of the construction.
+  Let \( S \) be an arbitrary set. We will now construct the \term{free group} \( F(S) \) of \( S \). The construction is similar to that of \hyperref[def:free_monoid]{free monoids}, but it is much more complicated because of special reduction rules for \hyperref[def:unital_magma_inverse_element]{inverse elements}. Refer to \cite{code:free_group_grammar_verification} for a software implementation of the construction.
 
-  Let \( \star \) be a \hyperref[def:formal_language/symbol]{symbol} not in \( \mscrS \). Our goal is, for each \( a \in S \), to make the word \( a{\star} \) behave like the inverse of \( a \) in a group. Rather than considering the \hyperref[def:formal_language/kleene_star]{Kleene star} \( (S \cup \{ \star \})^* \) and removing elements via \enquote{reductions} as in \cite{code:free_group_reduction_verification} and \cite[306]{Knapp2016BasicAlgebra}, we directly build a language of \term{reduced words} using the mutually recursive \hyperref[def:formal_grammar]{grammar}
+  Let \( \star \) be a \hyperref[def:formal_language/symbol]{symbol} not in \( S \). Our goal is, for each \( a \in S \), to make the word \( a{\star} \) behave like the inverse of \( a \) in a group. Rather than considering the \hyperref[def:formal_language/kleene_star]{Kleene star} \( (S \cup \{ \star \})^* \) and removing elements via \enquote{reductions} as in \cite{code:free_group_reduction_verification} and \cite[306]{Knapp2016BasicAlgebra}, we directly build a language of \term{reduced words} using the mutually recursive \hyperref[def:formal_grammar]{grammar}
   \begin{alignedeq}\label{eq:def:free_group/grammar}
     &I \to \varepsilon,           &&                        && \text{\( I \) is the initial state} \\
     &I \to S_a \mid D_a,             && a \in S              && \\
@@ -51,7 +68,7 @@
     &D_a \to a\star \mid a\star D_a, && a \in S              && \\
   \end{alignedeq}
 
-  The \term{free group} \( F(\mscrS) \) is defined to be the language of \eqref{eq:def:free_group/grammar} equipped with the inductively defined operation
+  The \term{free group} \( F(S) \) is defined to be the language of \eqref{eq:def:free_group/grammar} equipped with the inductively defined operation
   \begin{equation}\label{eq:def:free_group/operation}
     w_1 \odot w_2 \coloneqq \begin{cases}
      p \odot s, &w_1 = p a \T{and} w_2 = a\star s \text{ for some } a \in S, \\
@@ -71,33 +88,33 @@
    \end{equation}
    for \( k = 1, \ldots, n \).
 
-  The group \( (F(\mscrS), \odot) \) is called the \term{free group} generated by \( \mscrS \).
+  The group \( (F(S), \odot) \) is called the \term{free group} generated by \( S \).
 \end{definition}
 \begin{proof}
-  The proof of the well-definedness of the group structure of \( F(\mscrS) \) is a straightforward (but tedious) application of induction.
+  The proof of the well-definedness of the group structure of \( F(S) \) is a straightforward (but tedious) application of induction.
 \end{proof}
 
 \begin{proposition}\label{thm:free_group_is_free_functor}
   The functor \( F: \cat{Set} \to \cat{Grp} \), defined pointwise in \fullref{def:free_group}, is \hyperref[def:category_adjunction]{free}.
 \end{proposition}
 \begin{proof}
-  The outline of the proof is similar to the proof of \fullref{thm:free_monoid_is_free_functor}.
+  The outline of the proof is similar to the proof of \fullref{thm:free_monoid_universal_property}.
 \end{proof}
 
 \begin{definition}\label{def:group_presentation}\mcite[314]{Knapp2016BasicAlgebra}
-  Let \( \mscrS \) be a set, \( F(\mscrS) \) be the \hyperref[def:free_group]{free group} and \( \mscrR \subseteq F(\mscrS) \) be a subset. Denote by \( \mscrN(\mscrR) \) the smallest normal subgroup of \( F(\mscrS) \) that includes \( \mscrR \) as a subset.
+  Let \( S \) be a set, \( F(S) \) be the \hyperref[def:free_group]{free group} and \( \mscrR \subseteq F(S) \) be a subset. Denote by \( \mscrN(\mscrR) \) the smallest normal subgroup of \( F(S) \) that includes \( \mscrR \) as a subset.
 
   We define the group
   \begin{equation}\label{eq:def:group_presentation/presentation}
-    \mscrG = \braket{ \mscrS \mid \mscrR} \coloneqq F(\mscrS) / \mscrN(\mscrR)
+    \mscrG = \braket{ S \mid \mscrR} \coloneqq F(S) / \mscrN(\mscrR)
   \end{equation}
-  called the group with \term{generators} \( \mscrS \) and \term{relators} \( \mscrR \). The expression \eqref{eq:def:group_presentation/presentation} is called a \term{presentation} of \( \mscrG \).
+  called the group with \term{generators} \( S \) and \term{relators} \( \mscrR \). The expression \eqref{eq:def:group_presentation/presentation} is called a \term{presentation} of \( \mscrG \).
 
-  If there exists a presentation for \( \mscrG \) such that \( \mscrS \) is finite, it is called a \term{finitely generated} group. If there exists a presentation such that both \( \mscrS \) and \( \mscrR \) are finite, it is called \term{finitely presented}.
+  If there exists a presentation for \( \mscrG \) such that \( S \) is finite, it is called a \term{finitely generated} group. If there exists a presentation such that both \( S \) and \( \mscrR \) are finite, it is called \term{finitely presented}.
 
   If \( \mscrR = \varnothing \), there are no restrictions and we use the notation
   \begin{equation}\label{eq:def:group_presentation/free}
-    \mscrG = \braket{ \mscrS } \coloneqq F(\mscrS)
+    \mscrG = \braket{ S } \coloneqq F(S)
   \end{equation}
   for the free group.
 \end{definition}
@@ -106,14 +123,14 @@
   Every group \( \mscrG \) has at least one \hyperref[def:group_presentation]{presentation}.
 \end{theorem}
 \begin{proof}
-  Let \( \mscrG \) be an arbitrary group and let \( \mscrS \coloneqq U(\mscrG) \) be the underlying set. Let \( F(\mscrS) \) be the corresponding free group with \( \iota: \mscrS \to F(\mscrS) \) sending elements of \( \mscrS \) to singleton words in \( F(\mscrS) \). By \fullref{thm:free_group_is_free_functor}, there exists a unique homomorphism \( \varphi: F(\mscrS) \to \mscrG \) such that
+  Let \( \mscrG \) be an arbitrary group and let \( S \coloneqq U(\mscrG) \) be the underlying set. Let \( F(S) \) be the corresponding free group with \( \iota: S \to F(S) \) sending elements of \( S \) to singleton words in \( F(S) \). By \fullref{thm:free_group_is_free_functor}, there exists a unique homomorphism \( \varphi: F(S) \to \mscrG \) such that
   \begin{equation*}
     \text{\todo{Add diagram}}\iffalse\begin{mplibcode}
       beginfig(1);
       input metapost/graphs;
 
-      v1 := thelabel("$\mscrS$", origin);
-      v2 := thelabel("$U(F(\mscrS))$", (-1, -1) scaled u);
+      v1 := thelabel("$S$", origin);
+      v2 := thelabel("$U(F(S))$", (-1, -1) scaled u);
       v3 := thelabel("$U(G)$", (1, -1) scaled u);
 
       a1 := straight_arc(v1, v2);
@@ -132,9 +149,9 @@
       endfig;
     \end{mplibcode}\fi
   \end{equation*}
-  that is, \( U(\varphi) \circ \iota = \id \). Thus, \( G = \mscrS \subseteq \ker \varphi \). Define \( \mscrR \coloneqq \ker \varphi \). By \fullref{def:normal_subgroup}, \( \mscrR \) is a normal subgroup of \( F(\mscrS) \), thus
+  that is, \( U(\varphi) \circ \iota = \id \). Thus, \( G = S \subseteq \ker \varphi \). Define \( \mscrR \coloneqq \ker \varphi \). By \fullref{def:normal_subgroup}, \( \mscrR \) is a normal subgroup of \( F(S) \), thus
   \begin{equation*}
-    G = \varphi(F(\mscrS)) \cong F(\mscrS) / \ker \varphi = \braket{ \mscrS \mid \mscrR }.
+    G = \varphi(F(S)) \cong F(S) / \ker \varphi = \braket{ S \mid \mscrR }.
   \end{equation*}
 \end{proof}
 
@@ -154,9 +171,9 @@
 \end{definition}
 
 \begin{definition}\label{def:group_free_product}\mcite[323]{Knapp2016BasicAlgebra}
-  The \term{free product} of a nonempty family of groups \( \seq{ \mscrX_k }_{k \in \mscrK} \) with presentations \( \braket{\mscrS_k \mid \mscrR_k}, k \in \mscrK \) is the group
+  The \term{free product} of a nonempty family of groups \( \seq{ \mscrX_k }_{k \in \mscrK} \) with presentations \( \braket{S_k \mid \mscrR_k}, k \in \mscrK \) is the group
   \begin{equation*}
-    \Ast_{k \in \mscrK} \mscrX_k \coloneqq \braket*{ \coprod_{k \in \mscrK} \mscrS_k \given* \coprod_{k \in \mscrK} \mscrR_k },
+    \Ast_{k \in \mscrK} \mscrX_k \coloneqq \braket*{ \coprod_{k \in \mscrK} S_k \given* \coprod_{k \in \mscrK} \mscrR_k },
   \end{equation*}
   where \( \coprod \) is the \hyperref[def:disjoint_union]{disjoint union}.
 \end{definition}
