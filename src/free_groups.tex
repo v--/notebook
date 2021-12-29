@@ -1,7 +1,7 @@
 \subsection{Free groups}\label{subsec:free_groups}
 
 \begin{definition}\label{def:free_monoid}
-  Let \( S \) be an arbitrary set. We associate with \( S \) its \term{free monoid} \( F(S) \coloneqq (S^{\ast}, \cdot) \), where \( S^{\ast} \) is the \hyperref[def:formal_language/kleene_star]{Kleene star} and \( \cdot \) is \hyperref[def:formal_language/concatenation]{concatenation}.
+  Let \( A \) be an arbitrary set. We associate with \( A \) its \term{free monoid} \( F(A) \coloneqq (A^*, \cdot) \), where \( A^* \) is the \hyperref[def:formal_language/kleene_star]{Kleene star} and \( \cdot \) is \hyperref[def:formal_language/concatenation]{concatenation}.
 \end{definition}
 \begin{proof}
   It is a monoid due to \fullref{thm:kleene_star_is_monoid}.
@@ -10,18 +10,18 @@
 \begin{proposition}\label{thm:free_monoid_universal_property}
   For every set \( A \), denote by \( \iota_A: A \to F(A) \) the canonical inclusion function, which sends every member of \( A \) into the corresponding single-symbol word in the \hyperref[def:free_monoid]{free monoid} \( F(A) \).
 
-  As a consequence of \fullref{thm:free_monoid_universal_property}, \( F(A) \) is the unique up to an isomorphism monoid that satisfies the following \hyperref[rem:universal_mapping_property]{universal mapping property}:
+  Then \( F(A) \) is the unique up to an isomorphism monoid that satisfies the following \hyperref[rem:universal_mapping_property]{universal mapping property}:
   \begin{displayquote}
     For every monoid \( \mscrM \) and every function \( f: A \to \mscrM \), there exists a unique monoid homomorphism \( \widetilde{f}: F(A) \to \mscrM \) such that the following diagram commutes:
-    \begin{equation}\label{eq:def:free_monoid/diagram}
+    \begin{equation}\label{eq:thm:free_monoid_universal_property/diagram}
       \begin{aligned}
-        \includegraphics[page=1]{output/def__free_monoid.pdf}
+        \includegraphics[page=1]{output/thm__free_monoid_universal_property.pdf}
       \end{aligned}
     \end{equation}
   \end{displayquote}
 \end{proposition}
 \begin{proof}
-  For every function \( f: A \to \mscrM \), we have the monoid homomorphism
+  For every function \( f: A \to \mscrM \), define the monoid homomorphism
   \begin{equation*}
     \begin{aligned}
       &\widetilde{f}: F(A) \to \mscrM, \\
@@ -45,7 +45,7 @@
   \begin{equation*}
     \begin{aligned}
       &F(f): F(A) \to F(B) \\
-      &F(f)(x_1 \cdots x_n) \coloneqq f(x_1) \cdots f(x_n).
+      &F(f)(x_1 x_2 \ldots x_n) \coloneqq f(x_1) f(x_2) \ldots f(x_n).
     \end{aligned}
   \end{equation*}
 
@@ -55,103 +55,196 @@
   Follows from \fullref{thm:free_monoid_universal_property} via \fullref{rem:universal_mapping_property}.
 \end{proof}
 
-\begin{definition}\label{def:free_group}
-  Let \( S \) be an arbitrary set. We will now construct the \term{free group} \( F(S) \) of \( S \). The construction is similar to that of \hyperref[def:free_monoid]{free monoids}, but it is much more complicated because of special reduction rules for \hyperref[def:unital_magma_inverse_element]{inverse elements}. Refer to \cite{code:free_group_grammar_verification} for a software implementation of the construction.
+\begin{definition}\label{def:abstract_reduction_system}\mcite[def. 1.1.2]{Book1993}
+  Fix an arbitrary \hyperref[def:set]{set} \( A \) and an \hyperref[rem:first_order_formula_conventions/infix]{infix} \hyperref[def:binary_relation]{binary relation} \( \to \) on \( A \). We call the operation \( \to \) a \term{reduction relation}, and the pair \( (A, \to) \) --- an \term{abstract reduction system}.
 
-  Let \( \star \) be a \hyperref[def:formal_language/symbol]{symbol} not in \( S \). Our goal is, for each \( a \in S \), to make the word \( a{\star} \) behave like the inverse of \( a \) in a group. Rather than considering the \hyperref[def:formal_language/kleene_star]{Kleene star} \( (S \cup \{ \star \})^* \) and removing elements via \enquote{reductions} as in \cite{code:free_group_reduction_verification} and \cite[306]{Knapp2016BasicAlgebra}, we directly build a language of \term{reduced words} using the mutually recursive \hyperref[def:formal_grammar]{grammar}
-  \begin{alignedeq}\label{eq:def:free_group/grammar}
-    &I \to \varepsilon,           &&                        && \text{\( I \) is the initial state} \\
-    &I \to S_a \mid D_a,             && a \in S              && \\
-    &S_a \to a \mid a S_a,           && a \in S              && S_a \text{ does not produce words beginning with } a\star \\
-    &S_a \to a D_b,               && a, b \in S, a \neq b && \\
-    &D_a \to a\star S_b,          && a, b \in S, a \neq b && D_a \text{ does not produce words beginning with } a \\
-    &D_a \to a\star \mid a\star D_a, && a \in S              && \\
-  \end{alignedeq}
+  In the case where \( A \) is the \hyperref[def:formal_language/kleene_star]{Kleene star} of some set, we also call \( (A, \to) \) a \term{string rewriting system}.
 
-  The \term{free group} \( F(S) \) is defined to be the language of \eqref{eq:def:free_group/grammar} equipped with the inductively defined operation
-  \begin{equation}\label{eq:def:free_group/operation}
-    w_1 \odot w_2 \coloneqq \begin{cases}
-     p \odot s, &w_1 = p a \T{and} w_2 = a\star s \text{ for some } a \in S, \\
-     p \odot s, &w_1 = p a\star \T{and} w_2 = as \T{and} s \neq \star t \text{ for some } a \in S, \\
-     ps,        &\text{otherwise}.
-   \end{cases}
-  \end{equation}
+  \begin{thmenum}
+    \thmitem{def:abstract_reduction_system/relations}\mcite[not. 1.1.1]{Book1993} We also introduce the following auxiliary relations:
+    \begin{itemize}
+      \item \( \reloset n \to \) is the \( n \)-th \hyperref[def:binary_relation/composition]{iterated composition} of \( \to \), where \( n \) is a nonnegative integer.
 
-  The inverse of the word \( w = a_1 \ldots a_n \) is \( w^{-1} \coloneqq b_1 \ldots b_n \), where
-   \begin{equation}\label{eq:def:free_group/inverse}
-     b_{n-k+1} \coloneqq \begin{cases}
-       \varnothing, &a_k = {\star} \\
-       a_k{\star},  &a_k \neq {\star} \T{and} k = n \\
-       a_k{\star},  &a_k \neq {\star} \T{and} a_{k+1} \neq {\star} \\
-       a_k,         &a_k \neq {\star} \T{and} k \neq n \T{and} a_{k+1} = {\star} \\
-     \end{cases}
-   \end{equation}
-   for \( k = 1, \ldots, n \).
+      \item \( \reloset + \to \) is the \hyperref[def:relation_closures/transitive]{transitive closure} of \( \to \).
 
-  The group \( (F(S), \odot) \) is called the \term{free group} generated by \( S \).
+      \item \( \reloset {*} \to \) is the \hyperref[def:relation_closures/reflexive]{reflexive closure} of \( \reloset + \to \).
+
+      \item \( {\leftrightarrow} \) is the \hyperref[def:relation_closures/symmetric]{symmetric closure} of \( \to \).
+
+      \item \( \reloset + \leftrightarrow \) is the \hyperref[def:relation_closures/transitive]{transitive closure} of \( \leftrightarrow \).
+
+      \item \( \reloset {*} \leftrightarrow \) is the \hyperref[def:relation_closures/reflexive]{reflexive closure} of \( \reloset + \leftrightarrow \), the smallest equivalence relation containing \( \to \).
+    \end{itemize}
+
+    \thmitem{def:abstract_reduction_system/hierarchy}\mcite[def. 1.1.3]{Book1993} In analogy with \fullref{def:arborescence/ancestry}, if \( x \reloset {*} \to y \), we say that \( y \) is a \term{descendant} of \( x \) and that \( x \) is an \term{ancestor} of \( y \). If \( x \to y \), we say that \( y \) is an \term{immediate descendant}, or a \term{successor}, especially when considering \( (A, \to) \) as a \hyperref[def:quiver]{quiver}.
+
+    We say that an element is \term{reducible} if it has an immediate descendant and \term{irreducible} otherwise.
+
+    \thmitem{def:abstract_reduction_system/equivalent}\mcite[def. 1.1.3]{Book1993} We say that \( x \) and \( y \) are \term{equivalent} if \( x \reloset {*} \leftrightarrow y \). This is a stronger condition than \( x \reloset {*} \to y \) and \( y \reloset {*} \to x \). Indeed, the latter corresponds to \hyperref[def:quiver_connectedness/weak]{weak connectedness} of quivers and equivalence corresponds to \hyperref[def:quiver_connectedness/strong]{strong connectedness}.
+
+    \thmitem{def:abstract_rewriting_system/normal_form}\mcite[def. 1.1.5]{Book1993} Given an \hyperref[def:equivalence_relation]{equivalence relation} \( \cong \), if \( x \cong y \) and \( y \) is irreducible, we say that \( y \) is a \term{normal form} of \( x \) modulo \( \cong \), and that \( x \) is \term{normalizable} modulo \( \cong \).
+
+    If \( x \) has a unique normal form, denote it by \( \op{nf}(x) \).
+
+    Without further context, we assume that \( \cong \) is the equivalence relation \( \reloset {*} \leftrightarrow \).
+  \end{thmenum}
 \end{definition}
-\begin{proof}
-  The proof of the well-definedness of the group structure of \( F(S) \) is a straightforward (but tedious) application of induction.
-\end{proof}
 
-\begin{proposition}\label{thm:free_group_is_free_functor}
-  The functor \( F: \cat{Set} \to \cat{Grp} \), defined pointwise in \fullref{def:free_group}, is \hyperref[def:category_adjunction]{free}.
+\begin{definition}\label{def:abstract_rewriting_convergence}
+  Let \( (A, \to) \) be an \hyperref[def:abstract_reduction_system]{abstract reduction system}. We will list several conditions ensuring existence and uniqueness of \hyperref[def:abstract_rewriting_system/normal_form]{normal forms}.
+
+  \begin{thmenum}
+    \thmitem{def:abstract_rewriting_convergence/confluence}\mcite[def. 1.1.6]{Book1993} We call the system \term{confluent} if, whenever \( x \) and \( y \) are descendants of \( w \), they have a common descendant \( z \). That is,
+    \begin{equation}\label{eq:def:abstract_rewriting_convergence/confluence/diagram}
+      \begin{aligned}
+        \includegraphics[page=1]{output/def__abstract_rewriting_convergence.pdf}
+      \end{aligned}
+    \end{equation}
+
+    If there always exists an \hi{immediate descendant} \( z \), we say that the system is \term{locally confluent}.
+
+    \thmitem{def:abstract_rewriting_convergence/noetherian}\mcite[def. 1.1.9]{Book1993} We call the system \term{noetherian} or \term{strongly normalizable} if there exists no \term{infinitely ascending sequence}
+    \begin{equation*}
+      x_1 \to x_2 \to x_3 \to \cdots.
+    \end{equation*}
+
+    This is dual to \hyperref[def:well_founded_relation]{well-foundedness}.
+
+    \thmitem{def:abstract_rewriting_convergence/convergent}\mcite[def. 1.1.11]{Book1993} Finally, we call the system \term{convergent} if it is both confluent and noetherian.
+
+    By \fullref{thm:noetherian_rewriting_system_local_confluence}, this is equivalent to the system being \hi{locally} confluent and noetherian.
+  \end{thmenum}
+\end{definition}
+
+\begin{proposition}\label{thm:noetherian_rewriting_system_local_confluence}\mcite[thm. 1.1.13]{Book1993}
+  A \hyperref[def:abstract_rewriting_convergence/noetherian]{noetherian}  \hyperref[def:abstract_reduction_system]{abstract reduction system} is \hyperref[def:abstract_rewriting_convergence/confluence]{confluent} if and only if it is \hyperref[def:abstract_rewriting_convergence/confluence]{locally confluent}.
+\end{proposition}
+
+\begin{proposition}\label{thm:convergent_reduction_system_normal_forms}
+  In a \hyperref[def:abstract_rewriting_convergence/convergent]{convergent} \hyperref[def:abstract_reduction_system]{abstract reduction system}, every element has a unique \hyperref[def:abstract_rewriting_system/normal_form]{normal form}.
 \end{proposition}
 \begin{proof}
-  The outline of the proof is similar to the proof of \fullref{thm:free_monoid_universal_property}.
+  Let \( (A, \to) \) be a convergent abstract reduction system.
+
+  \SubProof{Proof of existence} Suppose that \( x \) has no normal form. Hence, it is reducible and has an immediate descendant \( x_1 \). Proceeding by \hyperref[rem:natural_number_recursion]{natural number recursion}, we can build a sequence
+  \begin{equation*}
+    x \to x_1 \to x_2 \to \cdots.
+  \end{equation*}
+
+  Such a sequence cannot exist, however, since the system is \hyperref[def:abstract_rewriting_convergence/noetherian]{noetherian}.
+
+  \SubProof{Proof of uniqueness} Suppose that both \( y \) and \( z \) are normal forms of \( w \).
+
+  Since the system is confluent, there exists an element \( z \) that is a descendant of both \( x \) and \( y \). But \( x \) and \( y \) are irreducible, therefore \( x = y \).
+\end{proof}
+
+\begin{definition}\label{def:free_group}
+  Let \( A \) be an arbitrary set. We will now construct the \term{free group} \( F(A) \) of \( A \).
+
+  Let \( \anon \) be an arbitrary set not in \( A \). Consider the \hyperref[def:disjoint_union]{disjoint union} \( U \coloneqq A \amalg \set{ +, - } \), whose members we will denote by \( a^+ \) and \( a^- \).
+
+  On the \hyperref[def:formal_language/kleene_star]{Kleene star} \( U \), define the relation \( \to \) to hold for \( x \to y \) if there exists \( a \in A \) and words \( p \) and \( s \) such that \( y = ps \) and either \( x = p a^+ a^- s \) or \( x = p a^+ a^- s \).
+
+  Then \( (U, \to) \) is a \hyperref[def:abstract_rewriting_convergence/convergent]{convergent} \hyperref[def:abstract_reduction_system]{abstract reduction system}. The \term{free group} \( F(S) \) is the set of \hyperref[def:abstract_reduction_system/hierarchy]{irreducible elements} in \( U \), with the operation \( v \star w \coloneqq \op{nf}(vw) \) that gives the \hyperref[def:abstract_reduction_system/normal_form]{normal form} of the concatenated string \( vw \).
+
+  The identity is the empty word and the inverse \( v^{-1} \) of \( v \) can be characterized recursively as
+  \begin{equation*}
+    v^{-1} \coloneqq \begin{cases}
+      \varepsilon &v = \varepsilon \\
+      u^{-1} a^-  &v = u a^+ \\
+      u^{-1} a^+  &v = u a^-
+    \end{cases}
+  \end{equation*}
+
+  The canonical inclusion is
+  \begin{equation*}
+    \begin{aligned}
+      &\iota_A: A \to F(A) \\
+      &\iota_A(a) \coloneqq a^+.
+    \end{aligned}
+  \end{equation*}
+\end{definition}
+\begin{defproof}
+  We need to prove that the system \( (U, \to) \) is convergent. Then from \fullref{thm:convergent_reduction_system_normal_forms} it will follow that every word has a unique normal form.
+
+  \SubProofOf[def:abstract_rewriting_convergence/confluence]{local confluence} Fix two reductions \( w \to x \) and \( w \to y \).
+
+  If \( x = y \), define \( z \coloneqq x \). Otherwise, let \( p_x \) and \( s_x \) be words such that \( w = p_x a^+ a^- s_x \) and \( x = p_x s_x \) (the case where \( w = p_x a^- a^+ s_x \) is analogous). Similarly, let \( p_y \) and \( s_y \) be words such that \( w = p_y b^+ b^- s_y \) and \( y = p_y s_y \).
+
+  Without loss of generality, suppose that \( p_x \) is a subword of \( p_y \). Then there exists a word \( v \) such that
+  \begin{equation*}
+    w = p_x a^+ a^- v b^+ b^- s_y.
+  \end{equation*}
+
+  Then both \( x \) and \( y \) are reducible to \( z \coloneqq p_x v s_y \).
+
+  This shows that the rewriting system is locally confluent.
+
+  \SubProofOf[def:abstract_rewriting_convergence/noetherian]{noetherianity} All words are finite, and a reduction always removes two symbols. Hence, there cannot exist an infinite reduction path.
+\end{defproof}
+
+\begin{proposition}\label{thm:free_group_universal_property}
+  The \hyperref[def:free_group]{free group} \( F(A) \) is the unique up to an isomorphism group that satisfies the following \hyperref[rem:universal_mapping_property]{universal mapping property}:
+  \begin{displayquote}
+    For every group \( \mscrG \) and every function \( f: A \to \mscrG \), there exists a unique group homomorphism \( \widetilde{f}: F(A) \to \mscrG \) such that the following diagram commutes:
+    \begin{equation}\label{eq:thm:free_group_universal_property/diagram}
+      \begin{aligned}
+        \includegraphics[page=1]{output/thm__free_group_universal_property.pdf}
+      \end{aligned}
+    \end{equation}
+  \end{displayquote}
+\end{proposition}
+\begin{proof}
+  The free group operation is more complicated than the free monoid operation, however the proof of the universal mapping property is identical to the property in \fullref{thm:free_monoid_universal_property}.
+\end{proof}
+
+\begin{corollary}\label{thm:free_monoid_functor}
+  Consider the functor \( F: \cat{Set} \to \cat{Grp} \) defined for objects pointwise in \fullref{def:free_group}. For every function \( f: A \to B \), define the \hyperref[def:group/homomorphism]{group homomorphism}
+  \begin{equation*}
+    \begin{aligned}
+      &F(f): F(A) \to F(B) \\
+      &F(f)(x_1 x_2 \ldots x_n) \coloneqq \op{nf}(f(x_1) f(x_2) \ldots f(x_n)).
+    \end{aligned}
+  \end{equation*}
+
+  This functor is \hyperref[def:category_adjunction]{left adjoint} to the \hyperref[def:concrete_category]{forgetful functor} \( U: \cat{Grp} \to \cat{Set} \).
+\end{corollary}
+\begin{proof}
+  Follows from \fullref{thm:free_group_universal_property} via \fullref{rem:universal_mapping_property}.
 \end{proof}
 
 \begin{definition}\label{def:group_presentation}\mcite[314]{Knapp2016BasicAlgebra}
-  Let \( S \) be a set, \( F(S) \) be the \hyperref[def:free_group]{free group} and \( \mscrR \subseteq F(S) \) be a subset. Denote by \( \mscrN(\mscrR) \) the smallest normal subgroup of \( F(S) \) that includes \( \mscrR \) as a subset.
+  Let \( S \) be a set, \( F(S) \) be the \hyperref[def:free_group]{free group} and \( R \subseteq F(S) \) be a subset. Denote by \( \mscrN(R) \) the \hyperref[def:first_order_generated_substructure]{induced} by \( R \) \hyperref[def:normal_subgroup]{normal subgroup}.
 
-  We define the group
+  The group with \term{generators} \( S \) and \term{relators} \( R \) is
   \begin{equation}\label{eq:def:group_presentation/presentation}
-    \mscrG = \braket{ S \mid \mscrR} \coloneqq F(S) / \mscrN(\mscrR)
+    \braket{ S \mid R } \coloneqq F(S) / \mscrN(R).
   \end{equation}
-  called the group with \term{generators} \( S \) and \term{relators} \( \mscrR \). The expression \eqref{eq:def:group_presentation/presentation} is called a \term{presentation} of \( \mscrG \).
 
-  If there exists a presentation for \( \mscrG \) such that \( S \) is finite, it is called a \term{finitely generated} group. If there exists a presentation such that both \( S \) and \( \mscrR \) are finite, it is called \term{finitely presented}.
+  We call the pair \( (S, R) \) \eqref{eq:def:group_presentation/presentation} a \term{presentation} of \( \braket{ S \mid R } \), although we usually denote the presentation itself via \( \braket{ S \mid R } \).
 
-  If \( \mscrR = \varnothing \), there are no restrictions and we use the notation
+  We say that the group \( \mscrG \) is \term{finitely generated} if it has a presentation \( \braket{ S \mid R } \) such that \( S \) is a \hyperref[def:set_finiteness]{finite set}. If only \( R \) is finite, we call \( \mscrG \) \term{finitely presented}.
+
+  If \( R = \varnothing \), there are no relators, and we use the following notation for the free group:
   \begin{equation}\label{eq:def:group_presentation/free}
-    \mscrG = \braket{ S } \coloneqq F(S)
+    \braket{ S } \coloneqq F(S)
   \end{equation}
-  for the free group.
 \end{definition}
 
 \begin{theorem}\label{thm:every_group_is_representable}\mcite[prop. 7.7]{Knapp2016BasicAlgebra}
-  Every group \( \mscrG \) has at least one \hyperref[def:group_presentation]{presentation}.
+  Every group has at least one \hyperref[def:group_presentation]{presentation}.
 \end{theorem}
 \begin{proof}
-  Let \( \mscrG \) be an arbitrary group and let \( S \coloneqq U(\mscrG) \) be the underlying set. Let \( F(S) \) be the corresponding free group with \( \iota: S \to F(S) \) sending elements of \( S \) to singleton words in \( F(S) \). By \fullref{thm:free_group_is_free_functor}, there exists a unique homomorphism \( \varphi: F(S) \to \mscrG \) such that
+  Fix an arbitrary group \( \mscrG \) and let \( S \coloneqq U(\mscrG) \) be the underlying set.
+
+  By \fullref{thm:free_group_universal_property}, there exists a unique group homomorphism \( \varphi: F(S) \to \mscrG \) such that
   \begin{equation*}
-    \text{\todo{Add diagram}}\iffalse\begin{mplibcode}
-      beginfig(1);
-      input metapost/graphs;
-
-      v1 := thelabel("$S$", origin);
-      v2 := thelabel("$U(F(S))$", (-1, -1) scaled u);
-      v3 := thelabel("$U(G)$", (1, -1) scaled u);
-
-      a1 := straight_arc(v1, v2);
-      a2 := straight_arc(v1, v3);
-
-      d1 := straight_arc(v2, v3);
-
-      draw_vertices(v);
-      draw_arcs(a);
-
-      drawarrow d1 dotted;
-
-      label.ulft("$\iota$", straight_arc_midpoint of a1);
-      label.urt("$\id$", straight_arc_midpoint of a2);
-      label.top("$U(\varphi)$", straight_arc_midpoint of d1);
-      endfig;
-    \end{mplibcode}\fi
+    U(\varphi) \bincirc \iota_S = \id_S.
   \end{equation*}
-  that is, \( U(\varphi) \circ \iota = \id \). Thus, \( G = S \subseteq \ker \varphi \). Define \( \mscrR \coloneqq \ker \varphi \). By \fullref{def:normal_subgroup}, \( \mscrR \) is a normal subgroup of \( F(S) \), thus
+
+  By \fullref{def:normal_subgroup}, \( \ker \varphi \) is a normal subgroup of \( \mscrG \), thus
   \begin{equation*}
-    G = \varphi(F(S)) \cong F(S) / \ker \varphi = \braket{ S \mid \mscrR }.
+    \mscrG = \varphi(F(S)) \cong F(S) / \ker \varphi = \braket{ S \mid \ker \varphi }.
   \end{equation*}
 \end{proof}
 
@@ -167,7 +260,7 @@
 
   We use the same notation independent of \( a \) because all cyclic groups of the same order are obviously \hyperref[def:group/homomorphism]{isomorphic}.
 
-  See \fullref{thm:cyclic_group_isomorphic_to_integers_modulo_n}.
+  As shown in \fullref{thm:cyclic_group_isomorphic_to_integers_modulo_n}, cyclic groups are isomorphic to certain groups of integers, however it is still useful to have cyclic groups as a separate concept.
 \end{definition}
 
 \begin{definition}\label{def:group_free_product}\mcite[323]{Knapp2016BasicAlgebra}
@@ -178,41 +271,24 @@
   where \( \coprod \) is the \hyperref[def:disjoint_union]{disjoint union}.
 \end{definition}
 
-\begin{definition}\label{def:free_abelian_group}
-  A \term{free abelian group} is a \hyperref[def:free_left_module]{free} \hyperref[thm:abelian_group_iff_z_module]{\( \BbbZ \)-module}. This definition of a free abelian group is different from the definition of a \hyperref[def:free_group]{free group}.
+\begin{definition}\label{def:group_direct_product}
+  The \term{direct product} of a nonempty family of groups \( \seq{ \mscrX_k }_{k \in \mscrK} \) is their \hyperref[def:cartesian_product]{Cartesian product} \( \prod_{k \in \mscrK} \mscrX_k \) with the componentwise group operation
+  \begin{equation*}
+    \seq{ x_k }_{k \in \mscrK} \cdot \seq{ y_k }_{k \in \mscrK}
+    \coloneqq
+    \seq{ x_k \cdot y_k }_{k \in \mscrK}.
+  \end{equation*}
 \end{definition}
 
 \begin{proposition}\label{thm:product_of_cyclic_groups}
   The \hyperref[def:group_direct_product]{direct product} \( C_n \times C_m \) of two \hyperref[def:cyclic_group]{cyclic groups} is cyclic if and only if \( n \) and \( m \) are \hyperref[def:coprime_numbers]{coprime}.
 \end{proposition}
 \begin{proof}
-  Take \( (a^i, a^j) \in C_n \times C_m \).
+  \todo{Prove}.
 \end{proof}
 
-\begin{definition}\label{def:group_direct_product}
-  The \term{direct product} of a nonempty family of groups \( \{ \mscrX_k \}_{k \in \mscrK} \) is their \hyperref[def:cartesian_product]{Cartesian product} \( \prod_{k \in \mscrK} \mscrX_k \) with the componentwise group operation
-  \begin{equation*}
-    \{ x_k \}_{k \in \mscrK} \cdot \{ y_k \}_{k \in \mscrK}
-    \coloneqq
-    \{ x_k \cdot y_k \}_{k \in \mscrK}.
-  \end{equation*}
-\end{definition}
-
 \begin{definition}\label{def:group_direct_sum}
-  The \term{direct sum} \( \bigoplus_{k \in \mscrK} \mscrX_k \) of a nonempty family of groups \( \{ \mscrX_k \}_{k \in \mscrK} \) is a subgroup of their \hyperref[def:group_direct_sum]{direct product} where, for any group element \( \{ x_k \}_{k \in \mscrK} \), only finitely many components are different from zero.
-
-  \begin{thmenum}
-    \thmitem{def:group_direct_sum/internal}\mcite[126]{Knapp2016BasicAlgebra}If all \( \{ \mscrX_k \}_{k \in \mscrK} \) are subgroups of a group \( \mscrX \), we say that \( \mscrX \) is their \term{internal direct sum} if the homomorphism
-    \begin{align*}
-       &\varphi: \bigoplus_{k \in \mscrK} \mscrX_k \to X \\
-       &\varphi(\{ x_k \}_{k \in \mscrK}) \coloneqq \cdot_{k \in \mscrK} x_k
-    \end{align*}
-    is an isomorphism.
-
-    The sum is well-defined since, by definition, there are only finitely many non-identity summands.
-
-    \thmitem{def:group_direct_sum/external} To distinguish \( \bigoplus_{k \in \mscrK} \mscrX_k \) from \( X \), we sometimes call it the \term{external direct product}.
-  \end{thmenum}
+  The \term{direct sum} \( \bigoplus_{k \in \mscrK} \mscrX_k \) of a nonempty family of groups \( \seq{ \mscrX_k }_{k \in \mscrK} \) is a subgroup of their \hyperref[def:group_direct_sum]{direct product} where, for any group element \( \seq{ x_k }_{k \in \mscrK} \), only finitely many components are different from zero.
 \end{definition}
 
 \begin{proposition}\label{thm:group_categorical_limits}
