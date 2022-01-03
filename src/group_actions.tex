@@ -121,26 +121,36 @@
   of all bijective functions from the set \( \set{ 1, 2, \ldots, n } \) to itself.
 
   \begin{thmenum}
-    \thmitem{def:symmetric_group/permutation} We call members of \( S_n \) \term{permutations}.
-
-    \thmitem{def:symmetric_group/inversion} We say that the pair \( (p(k), p(m)) \) is an \term{inversion} of the permutation \( p \) if \( k < m \) and \( p(k) > p(m) \).
-
-    \thmitem{def:symmetric_group/permutation_parity} We say that a permutation is \term{even} (resp. \term{odd}) depending on whether it has an even or odd number of inversions.
-
-    \thmitem{def:symmetric_group/permutation_sign} We define the \term{sign} of a permutation as
+    \thmitem{def:symmetric_group/permutation} We call members of \( S_n \) \term{permutations}. It is common to write a permutation \( p \) as
     \begin{equation*}
-      \begin{aligned}
-         &\sgn: S_n \to \set{ -1, 1 }, \\
-         &\sgn(p) \coloneqq \begin{cases}
-          1,  &p \T{is even} \\
-          -1, &p \T{is odd}
-        \end{cases}
-      \end{aligned}
+      \begin{pmatrix}
+        1    & \cdots & n \\
+        p(1) & \cdots & p(n)
+      \end{pmatrix}
     \end{equation*}
 
-    \thmitem{def:symmetric_group/alternating} We call the subgroup of all even permutations the \term{alternating group} of order \( n \); we denote it by \( A_n \).
+    \thmitem{def:symmetric_group/cycle} If there exists a finite sequence \( (k_1, \ldots, k_m) \) of distinct numbers such that \( p(k_m) = k_1 \) and \( p(k_{i+1}) = p(k_i) \) for each \( i < m \), we say that the permutation is \term{cyclic} or a \term{cycle} of order \( m \). For brevity, we denote this cycle by \( \cycle{k_1, \ldots, k_m} \). We associate a \term{length} with each cycle defined in an obvious way.
+
+    Cycles of length \( 2 \) are also called \term{transpositions}. Every \hyperref[def:symmetric_group/cycle]{transposition} is an \hyperref[def:set_with_involution]{involution}, and thus \( t = t^{-1} \) (as permutations).
+
+    \thmitem{def:symmetric_group/disjoint_cycle} If \( \cycle{k_1, \ldots, k_m} \) and \( \cycle{s_1, \ldots, s_l} \) are two cycles and if the sets \( \set{ k_1, \ldots, k_m } \) and \( \set{ s_1, \ldots, s_l } \) are disjoint, we say that the cycles themselves are \term{disjoint}.
+
+    Two disjoint cycles commute. That is,
+    \begin{equation*}
+      \cycle{k_1, \ldots, k_m} \bincirc \cycle{s_1, \ldots, s_l} = \cycle{s_1, \ldots, s_l} \bincirc \cycle{k_1, \ldots, k_m}.
+    \end{equation*}
   \end{thmenum}
 \end{definition}
+
+\begin{proposition}\label{thm:cycle_transposition_decomposition}
+  Every cycle \( \cycle{ k_1, \ldots, k_m } \) can be decomposed into the product of transpositions
+  \begin{equation*}
+    \cycle{ k_1, \ldots, k_m } = \cycle{ k_1, k_m } \bincirc \cycle{ k_1, k_{m-1} } \bincirc \cdots \bincirc \cycle{ k_1, k_2 }.
+  \end{equation*}
+\end{proposition}
+\begin{proof}
+  Trivial.
+\end{proof}
 
 \begin{definition}\label{def:group_action}
   Let \( G \) be a \hyperref[def:group]{group} and let \( X \) be an object in some \hyperref[def:concrete_category]{concrete category} \( \cat{C} \).
@@ -151,7 +161,7 @@
   \begin{thmenum}
     \thmitem{def:group_action/family} An \hyperref[def:cartesian_product/indexed_family]{indexed family} \( \seq{ \Phi_x }_{x \in G} \) of \hyperref[def:morphism_invertibility/isomorphism]{isomorphisms} of \( X \) such that, for every pair \( g, h \in G \),
     \begin{equation}\label{eq:def:group_action/family/compatibility}\tag{\logic{GA}}
-      \Phi_{gh} = \Phi_h \bincirc \Phi_h.
+      \Phi_{gh} = \Phi_g \bincirc \Phi_h.
     \end{equation}
 
     This defines a function \( \Phi: G \times A \to A \).
@@ -165,7 +175,7 @@
   The proof of equivalence is simple; it is similar to \fullref{def:monoid_action}.
 \end{proof}
 
-\begin{lemma}\label{thm:group_multiplication_is_bijection}
+\begin{lemma}\label{thm:group_operation_is_bijection}
   For each element \( g \) of a group \( G \), consider the function \( \varphi_g \coloneqq g \id_G \), i.e.
   \begin{equation*}
     \begin{aligned}
@@ -193,7 +203,7 @@
   Compare this result to \fullref{thm:monoid_is_action}.
 \end{theorem}
 \begin{proof}
-  Follows directly from \fullref{thm:monoid_is_action} and \fullref{thm:group_multiplication_is_bijection}.
+  Follows directly from \fullref{thm:monoid_is_action} and \fullref{thm:group_operation_is_bijection}.
 \end{proof}
 
 \begin{proposition}\label{thm:exponentiation_group_action}
@@ -204,6 +214,31 @@
 \begin{proof}
   Follows from \fullref{thm:exponentiation_monoid_action}.
 \end{proof}
+
+\begin{definition}\label{def:group_action_orbit}\mcite[163]{Knapp2016BasicAlgebra}
+  The \term{orbit} of \( x \) under the \hyperref[def:group_action]{group action} \( \Phi: G \to \End(X) \) is the set
+  \begin{equation*}
+    \set{ \Phi_g(x) \given g \in G }.
+  \end{equation*}
+
+  This is the set of all members of \( X \) \enquote{reachable} from \( x \) via the action.
+
+  The relation \( g \sim h \) on \( G \), defined to hold if \( g \) and \( h \) have the same \hyperref[def:group_action_orbit]{orbit}, is an \hyperref[def:equivalence_relation]{equivalence relation}. The quotient set \( G / {\sim} \) is a partition of \( G \) into sets called \term{orbits}.
+\end{definition}
+
+\begin{example}\label{ex:plane_rotation_action_orbits}
+  Consider the action of the additive group of \( \BbbR \) on \( \BbbR^2 \) given by the \hyperref[def:euclidean_transformation/rotation]{rotation} \hyperref[def:array/matrix]{matrices}
+  \begin{equation*}
+    \Phi_r \coloneqq \begin{pmatrix}
+      \cos(r)  & \sin(r) \\
+      -\sin(r) & \cos(r) \\
+    \end{pmatrix}
+  \end{equation*}
+
+  Fix a nonzero vector \( (x, y)^T \) in \( \BbbR^2 \) with norm \( l \). Since rotation matrices are orthogonal, they preserve norms. Furthermore, given a vector of norm \( l \), with the angle \( r \) defined via \eqref{eq:def:angle/measure}, \( \Phi_r^{-1} \) sends the vector to \( (x, y)^T \).
+
+  The \hyperref[def:group_action_orbit]{orbit} of \( (x, y)^T \) is thus a \hyperref[def:quadratic_plane_curve/ellipse]{circle} at the origin with radius \( l \).
+\end{example}
 
 \begin{proposition}\label{thm:group_conjugation_action}\mcite[165]{Knapp2016BasicAlgebra}
   Every \hyperref[def:group]{group} \hyperref[def:group_action]{acts} on itself via the \term{conjugation automorphisms} defined as
@@ -231,32 +266,188 @@
     \op{out}(G) \coloneqq \aut(G) / \op{inn}(G).
   \end{equation*}
 \end{definition}
+\begin{defproof}
+  We will show that \( \op{inn}(G) \) is a \hyperref[def:normal_subgroup]{normal subgroup} of \( \aut(G) \).
 
-\begin{example}\label{ex:integer_automorphism_groups}
-  If the group operation is \hyperref[def:magma/commutative]{commutative}, the only inner automorphism is the identity. Therefore, \( \aut(G) \cong \op{out}(G) \).
-\end{example}
-
-\begin{definition}\label{def:group_action_orbit}\mcite[163]{Knapp2016BasicAlgebra}
-  The \term{orbit} of \( x \) under the \hyperref[def:group_action]{group action} \( \Phi: G \to \End(X) \) is the set
+  Fix a member \( g \) of \( G \) and define the inner automorphism
   \begin{equation*}
-    \set{ \Phi_g(x) \given g \in G }.
+    \varphi(h) \coloneqq gh^{-1}g.
   \end{equation*}
 
-  This is the set of all members of \( X \) \enquote{reachable} from \( x \) via the action.
+  Let \( \psi \) be an arbitrary automorphism of \( G \). Then
+  \begin{equation*}
+    [\varphi \bincirc \varphi \bincirc \varphi^{-1}](h)
+    =
+    \varphi(g \varphi^{-1}(h) g^{-1})
+    =
+    \varphi(g) h \varphi(g^{-1}),
+  \end{equation*}
+  and thus \( \varphi \bincirc \varphi \bincirc \varphi^{-1} \) is again an inner automorphism.
+\end{defproof}
+
+\begin{definition}\label{def:permutation_cycle_decomposition}\mimprovised
+  Let \( S_n \) be a \hyperref[def:symmetric_group]{symmetric group} and let \( p \) be a permutation in \( S_n \). Consider the \hyperref[def:group_action]{group action}
+  \begin{equation*}
+    \begin{aligned}
+      &\Phi^{(p)}: \braket{ p } \times \set{ 1, \ldots, n } \to \set{ 1, \ldots, n } \\
+      &\Phi^{(p)}_p(k) \coloneqq p(k)
+    \end{aligned}
+  \end{equation*}
+  of the \hyperref[def:first_order_generated_substructure]{generated subgroup} \( \braket{ p } \).
+
+  The \hyperref[def:group_action_orbit]{orbit} of \( k \) under \( \Phi^{(p)} \) is the set
+  \begin{equation*}
+    O_p(k) \coloneqq \set{ p^m(k) \given m \in \BbbZ }
+  \end{equation*}
+  of all numbers reachable from \( k \) via iterated application of \( p \) or \( p^{-1} \). The family
+  \begin{equation*}
+    \set{ O_p(k) \given k = 1, \ldots, n }
+  \end{equation*}
+  of orbits partitions \( 1, \ldots, n \) into disjoint subsets.
+
+  Each orbit \( O \) has a smallest element \( o \); and \( O_p(o) = O \). This smallest element uniquely identifies a cycle
+  \begin{equation*}
+    \cycle{o, p(o), p^2(o), \ldots, p^{c-1}(o)},
+  \end{equation*}
+  where \( c \) is the cardinality of \( O_p(o) \).
+
+  Cycles of length \( 1 \) are not useful to us since they represent fixed points of \( p \); we ignore these cycles. We obtain a unique set of disjoint cycles for every permutation \( p \) in \( S_n \), which we call the \term{cycle decomposition} of \( p \). We denote this set by \( C_p \).
+\end{definition}
+\begin{defproof}
+  We must prove that \( C_p \) is family of disjoint sets. Let \( O_p(k_1) \) and \( O_p(k_2) \) be two orbits.
+
+  Suppose that there exists a number \( k \in O_p(k_2) \cap O_p(k_1) \). Then there exist \( m_1, m_2 \leq n \) such that \( k = p^{m_1}(k_1) \) and \( k = p^{m_2}(k_2) \). Then
+  \begin{equation*}
+    k_1 = p^{-m_1}(k) = p^{-m_1}(p^{m_2}(k_2)) = p^{m_2 - m_1}(k_2),
+  \end{equation*}
+  and thus \( O_p(k_2) \subseteq O_p(k_1) \). We can analogously obtain the converse inclusion.
+
+  Therefore, if two orbits have a nonempty intersection, they are equal.
+\end{defproof}
+
+\begin{proposition}\label{thm:permutation_decomposition}
+  Given a permutation \( p \), for every ordering \( c_1, \ldots, c_m \) of the \hyperref[def:permutation_cycle_decomposition]{cycle decomposition} of \( p \), we have
+  \begin{equation*}
+    p = c_1 \bincirc \cdots \bincirc c_m.
+  \end{equation*}
+\end{proposition}
+\begin{proof}
+  We will use induction on \( m \). The case \( m = 0 \) is trivial. For the inductive hypothesis, note that \( c_1^{-1} p \) has as cycles \( c_2, \ldots, c_m \) because all the numbers in \( c_1 \) are fixed points of \( c_1^{-1} p \). Thus, the inductive hypothesis holds for \( c_1^{-1} p \).
+
+  From
+  \begin{equation*}
+    c_1^{-1} p = c_2 \bincirc \cdots \bincirc c_m
+  \end{equation*}
+  it follows that
+  \begin{equation*}
+    p = c_1 \bincirc \cdots \bincirc c_m.
+  \end{equation*}
+\end{proof}
+
+\begin{definition}\label{def:permutation_parity}
+  Let \( C_p \) be the \hyperref[def:permutation_cycle_decomposition]{cycle decomposition} of \( p \). We say that \( p \) is an \term{even permutation} if the sum
+  \begin{equation*}
+    \sum_{c \in C_p} (\len(c) - 1)
+  \end{equation*}
+  is a an even number; and likewise for \term{odd permutations}.
+
+  Using the decomposition of individual cycles from \fullref{thm:cycle_transposition_decomposition}, we obtain that the above is precisely the total number of transpositions in the decomposition of all the cycles.
+
+  We correspondingly define the \term{sign} of a permutation as
+  \begin{equation*}
+    \begin{aligned}
+       &\sgn: S_n \to \set{ -1, 1 }, \\
+       &\sgn(p) \coloneqq \begin{cases}
+        1,  &p \T{is even} \\
+        -1, &p \T{is odd}
+      \end{cases}
+    \end{aligned}
+  \end{equation*}
 \end{definition}
 
-\begin{example}\label{ex:plane_rotation_action_orbits}
-  Consider the action of the additive group of \( \BbbR \) on \( \BbbR^2 \) given by the \hyperref[def:euclidean_transformation/rotation]{rotation} \hyperref[def:array/matrix]{matrices}
+\begin{definition}\label{def:alternating_group}
+  The \term{alternating group} \( A_n \) of order \( n \) is the subgroup of all \hyperref[def:permutation_parity]{even permutation} in the \hyperref[def:symmetric_group]{symmetric group} \( S_n \).
+\end{definition}
+
+\begin{example}\label{ex:s3_and_a3}
+  The \hyperref[def:symmetric_group]{symmetric group} \( S_3 \) contains the following \hyperref[def:symmetric_group/permutation]{permutations}:
   \begin{equation*}
-    \Phi_r \coloneqq \begin{pmatrix}
-      \cos(r)  & \sin(r) \\
-      -\sin(r) & \cos(r) \\
-    \end{pmatrix}
+    S_3
+    \coloneqq
+    \set*
+    {
+      \begin{pmatrix}
+        1 & 2 & 3 \\
+        1 & 2 & 3
+      \end{pmatrix},
+      \underbrace
+        {
+          \begin{pmatrix}
+            1 & 2 & 3 \\
+            2 & 1 & 3
+          \end{pmatrix}
+        }_{
+          \cycle{ 1, 2 }
+        },
+      \underbrace
+        {
+          \begin{pmatrix}
+            1 & 2 & 3 \\
+            2 & 3 & 1
+          \end{pmatrix}
+        }_{
+          \cycle{ 1, 3 } \bincirc* \cycle{ 1, 2 }
+        },
+      \underbrace
+        {
+          \begin{pmatrix}
+            1 & 2 & 3 \\
+            3 & 2 & 1
+          \end{pmatrix}
+        }_{
+          \cycle{ 1, 3 }
+        },
+      \underbrace
+        {
+          \begin{pmatrix}
+            1 & 2 & 3 \\
+            3 & 1 & 2
+          \end{pmatrix}
+        }_{
+          \cycle{ 1, 2 } \bincirc* \cycle{ 1, 3 }
+        },
+      \underbrace
+        {
+          \begin{pmatrix}
+            1 & 2 & 3 \\
+            1 & 3 & 2
+          \end{pmatrix}
+        }_{
+          \cycle{ 2, 3 }
+        }
+    }
   \end{equation*}
 
-  Fix a nonzero vector \( (x, y)^T \) in \( \BbbR^2 \) with norm \( l \). Since rotation matrices are orthogonal, they preserve norms. Furthermore, given a vector of norm \( l \), with the angle \( r \) defined via \eqref{eq:def:angle/measure}, \( \Phi_r^{-1} \) sends the vector to \( (x, y)^T \).
+  The \hyperref[def:alternating_group]{alternating group} \( A_3 \) consists of the first, third and fifth permutations, which decompose into an even number of transpositions.
 
-  The \hyperref[def:group_action_orbit]{orbit} of \( (x, y)^T \) is thus a \hyperref[def:quadratic_plane_curve/ellipse]{circle} at the origin with radius \( l \).
+  The \hyperref[def:automorphism_group]{automorphism group} \( \aut(A_3) \) consists of:
+  \begin{itemize}
+    \item Conjugation with all three elements gives the identity \( \id_{A_3} \). Thus, the \hyperref[def:inner_and_outer_automorphisms]{inner automorphism group} is trivial.
+
+    \item The map \( p \mapsto p^{-1} \), which takes the inverse function of a permutation, is then an \hyperref[def:inner_and_outer_automorphisms]{outer automorphism}.
+  \end{itemize}
+
+  Compare this to the situation in \( S_3 \):
+  \begin{itemize}
+    \item All permutations except for \( \cycle{ 1, 3 } \bincirc \cycle{ 1, 2 } \) and \( \cycle{ 1, 2 } \bincirc \cycle{ 1, 3 } \) are involutions.
+    \item The map \( p \mapsto p^{-1} \) is given by conjugation with \( \cycle{ 1, 3 } \).
+    \item Every conjugation automorphism is unique, and thus
+    \begin{equation*}
+      \op{inn}(S_3) = \aut(S_3) \cong S_3.
+    \end{equation*}
+
+    In particular, the outer automorphism group \( \op{out}(S_3) \) is trivial.
+  \end{itemize}
 \end{example}
 
 \begin{definition}\label{def:dynamical_system}\mimprovised
