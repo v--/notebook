@@ -1,147 +1,116 @@
 \subsection{Group actions}\label{subsec:group_actions}
 
 \begin{definition}\label{def:endomorphism_monoid}
-  For every object \( A \) in an arbitrary \hyperref[def:category]{category} \( \cat{C} \), the set \( \cat{C}(A) \) is a \hyperref[def:unital_magma/monoid]{monoid} with morphism composition as the monoid operation and \( \id_A \) as the monoid identity.
+  For every object \( X \) in an arbitrary \hyperref[def:category]{category} \( \cat{C} \), the set \( \cat{C}(X) \) is a \hyperref[def:unital_magma/monoid]{monoid} with morphism composition as the monoid operation and \( \id_X \) as the monoid identity.
 
-  Outside of \hyperref[sec:category_theory]{category theory}, whenever the category \( \cat{C} \) is clear from the context, we call \( \cat{C}(A) \) the \term{endomorphism monoid} over \( A \) and denote it by \( \End(A) \).
+  Outside of \hyperref[sec:category_theory]{category theory}, whenever the category \( \cat{C} \) is clear from the context, we call \( \cat{C}(X) \) the \term{endomorphism monoid} over \( X \) and denote it by \( \End(X) \).
 \end{definition}
 
 \begin{definition}\label{def:monoid_action}
-  Let \( \mscrM \) be a \hyperref[def:unital_magma/monoid]{monoid} and let \( A \) be a set or, more generally, an object in some \hyperref[def:concrete_category]{concrete category} \( \cat{C} \).
+  Let \( M \) be a \hyperref[def:unital_magma/monoid]{monoid} and let \( X \) be an object in some \hyperref[def:category]{category} \( \cat{C} \).
 
-  We will define monoid actions of \( \mscrM \) on \( A \), which we will sometimes call \term{left monoid actions}. There are also \term{right monoid actions}, which are defined as left monoid actions of the \hyperref[def:group/duality]{dual group} \( G^{\opcat} \).
+  We will define monoid actions of \( M \) on \( X \), which we will sometimes call \term{left monoid actions}. There are also \term{right monoid actions}, which are defined as left monoid actions of the \hyperref[def:group/duality]{dual group} \( G^{\opcat} \).
 
   A \term{monoid action} can be defined equivalently as:
   \begin{thmenum}
-    \thmitem{def:monoid_action/operation} A heterogeneous \hyperref[def:magma]{binary operation} \( \star: \mscrM \times A \to A \) such that
-    \begin{thmenum}
-      \thmitem[def:monoid_action/operation/identity]{MA1} For every \( a \in A \),
-      \begin{equation}\label{eq:def:monoid_action/operation/identity}\tag{\logic{MA1}}
-        e \star a = a.
-      \end{equation}
+    \thmitem{def:monoid_action/family} An \hyperref[def:indexed_family]{indexed family} \( \seq{ \Phi_m }_{m \in M} \) of \hyperref[def:morphism_invertibility/endomorphism]{endomorphisms} of \( X \) such that
+    \begin{align}
+      &\Phi_e = \id_X, \label{eq:def:monoid_action/family/identity}\tag{\logic{MA1}} \\
+      &\Phi_{mn} = \Phi_m \bincirc \Phi_n. \label{eq:def:monoid_action/family/compatibility}\tag{\logic{MA2}}
+    \end{align}
 
-      \thmitem[def:monoid_action/operation/compatibility]{MA2} For every \( x, y \in M \) and \( a \in A \),
-      \begin{equation}\label{eq:def:monoid_action/operation/compatibility}\tag{\logic{MA2}}
-        (xy) \star a = x \star (y \star a).
-      \end{equation}
-    \end{thmenum}
+    This defines a function \( \Phi: M \times A \to A \).
 
-    See \fullref{rem:theory_of_monoid_actions} for the \hyperref[def:first_order_theory]{first-order logic theory} behind this operation.
-
-    \thmitem{def:monoid_action/homomorphism} A \hyperref[def:unital_magma/homomorphism]{homomorphism} from \( \mscrM \) to the \hyperref[def:endomorphism_monoid]{endomorphism monoid} \( \End(A) \).
+    \thmitem{def:monoid_action/homomorphism} A \hyperref[def:unital_magma/homomorphism]{homomorphism} from \( M \) to the \hyperref[def:endomorphism_monoid]{endomorphism monoid} \( \End(X) \).
 
     \thmitem{def:monoid_action/functor} A \hyperref[def:functor]{functor} from the \hyperref[def:monoid_delooping]{delooping} \( \cat{B}_M \) to \( \cat{C} \) (right actions are \hyperref[rem:contravariant_functor]{contravariant functors}).
   \end{thmenum}
 \end{definition}
 \begin{proof}
-  \ImplicationSubProof{def:monoid_action/operation}{def:monoid_action/homomorphism} Suppose that we have an operation \( \star: \mscrM \times A \to A \) that satisfies the axioms for left action. Define the function
+  \ImplicationSubProof{def:monoid_action/family}{def:monoid_action/homomorphism} Suppose that we have an indexed family \( \seq{ \Phi_m }_{m \in M} \) of endomorphisms of \( A \) that satisfies the axioms for left action. Regard this indexed family as a function \( \Phi: M \to \End(X) \).
+
+  Then \( \Phi \) is a monoid homomorphism because \ref{eq:def:monoid_action/family/identity} implies \( \Phi(e) = \id_X \) and \eqref{eq:def:monoid_action/family/compatibility} implies
   \begin{equation*}
-    \begin{aligned}
-      &\tau: \mscrM \to \End(A) \\
-      &\tau(x) \coloneqq a \mapsto x \star a.
-    \end{aligned}
+    \Phi(mn) = \Phi(m) \bincirc \Phi(n).
   \end{equation*}
 
-  Then \( \tau \) is a monoid homomorphism because \ref{def:monoid_action/operation/identity} implies \( \tau(e) = \id_A \) and
-  \begin{equation}\label{def:monoid_action/homomorphism/proof}
-    [\tau(xy)](a)
-    =
-    xy \star a
-    \reloset {\eqref{eq:def:monoid_action/operation/compatibility}} =
-    x (y \star a)
-    =
-    [\tau(x)]\parens[\Big]{ [\tau(y)](a) }
-    =
-    [\tau(x) \bincirc \tau(y)](a).
-  \end{equation}
-
-  \ImplicationSubProof{def:monoid_action/homomorphism}{def:monoid_action/functor} Suppose that we have a monoid homomorphism \( \varphi: \mscrM \to \End(A) \). Define the functor
+  \ImplicationSubProof{def:monoid_action/homomorphism}{def:monoid_action/functor} Suppose that we have a monoid homomorphism \( \Phi: M \to \End(X) \). Define the functor
   \begin{equation*}
     \begin{aligned}
       &F: \cat{B}_M \to \cat{C} \\
-      &F(\anon) \coloneqq A \\
-      &F(x) \coloneqq \varphi(x).
+      &F(\anon) \coloneqq X \\
+      &F(m) \coloneqq \Phi(m).
     \end{aligned}
   \end{equation*}
 
   This is indeed a functor because \eqref{eq:def:functor/CF1} follows from \eqref{eq:def:pointed_set/homomorphism} and \eqref{eq:def:functor/CF2} follows from \eqref{eq:def:magma/homomorphism}.
 
-  \ImplicationSubProof{def:monoid_action/functor}{def:monoid_action/operation} Suppose that we have a functor \( F: \cat{B}_M \to \cat{C} \). Define the operation
+  \ImplicationSubProof{def:monoid_action/functor}{def:monoid_action/family} Suppose that we have a functor \( F: \cat{B}_M \to \cat{C} \). Let \( X \coloneqq F(\anon) \) and define the \( M \)-indexed family
   \begin{equation*}
     \begin{aligned}
-      &\star: \mscrM \times A \to A \\
-      &x \star a \coloneqq F(x)(a).
+      &\Phi_m: X \to X \\
+      &\Phi_m \coloneqq F(m).
     \end{aligned}
   \end{equation*}
 
   It satisfies the necessary axioms:
   \begin{itemize}
-    \item \ref{def:monoid_action/operation/identity} holds: for every \( a \in A \), we have
+    \item \ref{eq:def:monoid_action/family/identity} holds:
     \begin{equation*}
-      e \star a
+      \Phi_e
       =
-      F(e)(a)
+      F(e)
       \reloset {\eqref{eq:def:functor/CF1}} =
-      \id_A(a)
-      =
-      a.
+      \id_A.
     \end{equation*}
 
-    \item \ref{def:monoid_action/operation/compatibility} holds: for every \( x, y \in M \) and \( a \in A \), we have
+    \item \ref{eq:def:monoid_action/family/compatibility} holds: for every pair \( m, n \in M \), we have
     \begin{equation*}
-      (x y) \star a
+      \Phi_{mn}
       =
-      F(x y)(a)
+      F(mn)
       \reloset {\eqref{eq:def:functor/CF2}} =
-      [F(x) \bincirc F(y)](a)
+      F(m) \bincirc F(n)
       =
-      F(x)\parens[\Big]{ F(y)(a) }
-      =
-      x \star (y \star a).
+      \Phi_m \bincirc \Phi_n
     \end{equation*}
   \end{itemize}
 \end{proof}
 
-\begin{remark}\label{rem:theory_of_monoid_actions}
-  In order to fit the heterogeneous operation of \hyperref[def:monoid_action]{left monoid actions} into the framework of \hyperref[def:first_order_semantics/satisfiability]{first-order logic models}, we need the category \( \cat{C} \) to be a \hyperref[def:category_of_small_first_order_models]{category of small models}. A monoid action is then obtained by extending the corresponding.
-
-  \begin{thmenum}
-    \thmitem{rem:theory_of_monoid_actions/functions} For every \( x \in \mscrM \), add a unary \hyperref[def:first_order_language/func]{functional symbol} \( \tau_x \).
-
-    \thmitem{rem:theory_of_monoid_actions/axiom} For every pair \( x, y \in \mscrM \), add the axiom
-    \begin{equation}\label{eq:rem:theory_of_monoid_actions/axiom_schema}
-      \qforall \xi \parens[\Big]{ \tau_{xy}(\xi) \doteq \tau_x(\tau_y(\xi)) }.
-    \end{equation}
-  \end{thmenum}
-\end{remark}
-
 \begin{proposition}\label{thm:monoid_is_action}
-  Any \hyperref[def:unital_magma/monoid]{monoid} \hyperref[def:monoid_action]{acts} on itself by \hyperref[def:multi_valued_function/endofunction]{endofunctions} via the monoid operation.
+  Every \hyperref[def:unital_magma/monoid]{monoid} \hyperref[def:monoid_action]{acts} on itself via the family of functions \( h \mapsto g \cdot h \) indexed by \( g \). These functions are not monoid homomorphisms in general.
 
   Compare this result to \fullref{thm:cayleys_theorem}.
 \end{proposition}
 \begin{proof}
-  We will show that \( \cdot \) satisfies \fullref{def:monoid_action/operation}:
+  The family satisfies \fullref{def:monoid_action/family}:
   \begin{itemize}
-    \item \ref{def:monoid_action/operation/identity} follows from \eqref{eq:def:unital_magma/theory/identity}.
+    \item \ref{eq:def:monoid_action/family/identity} follows from \eqref{eq:def:unital_magma/theory/identity}.
 
-    \item \ref{def:monoid_action/operation/compatibility} follows from associativity.
+    \item \ref{eq:def:monoid_action/family/compatibility} follows from associativity:
+    \begin{equation*}
+      [h \mapsto g_1 \cdot h] \bincirc [h \mapsto g_2 \cdot h] = [h \mapsto g_1 \cdot (g_2 \cdot h)] = [h \mapsto (g_1 \cdot g_2) \cdot h].
+    \end{equation*}
   \end{itemize}
 \end{proof}
 
-\begin{proposition}\label{thm:natural_numbers_monoid_action}
-  The \hyperref[def:set_of_natural_numbers]{natural numbers} \( \BbbN \) (\hyperref[rem:peano_arithmetic_zero]{with zero}) act on any \hyperref[def:unital_magma/monoid]{monoid} by \hyperref[def:unital_magma/exponentiation]{exponentiation}.
+\begin{proposition}\label{thm:exponentiation_monoid_action}
+  The \hyperref[def:set_of_natural_numbers]{natural numbers} \( \BbbN \) (\hyperref[rem:peano_arithmetic_zero]{with zero}) act on any \hyperref[def:unital_magma/monoid]{monoid} by \hyperref[def:unital_magma/exponentiation]{exponentiation} via the family of function \( g \mapsto g^n \) indexed by \( n \in \BbbN \).
 
-  Compare this result to \fullref{thm:integers_group_action}.
+  Compare this result to \fullref{thm:exponentiation_group_action}.
 \end{proposition}
 \begin{proof}
-  The action is given by \( n \mapsto (x \mapsto x^n) \). This action satisfies \fullref{def:monoid_action/operation} because \ref{def:monoid_action/operation/identity} is obvious and \ref{def:monoid_action/operation/compatibility} follows from \fullref{thm:magma_exponentiation_properties/repeated}.
+  This family satisfies \fullref{def:monoid_action/family}:
+  \begin{itemize}
+    \item \ref{eq:def:monoid_action/family/identity} is obvious.
+    \item \ref{eq:def:monoid_action/family/compatibility} follows from \fullref{thm:magma_exponentiation_properties/repeated}.
+  \end{itemize}
 \end{proof}
 
 \begin{definition}\label{def:automorphism_group}
-  For every object \( A \) in a \hyperref[def:groupoid]{groupoid} \( \cat{G} \), the set \( \cat{G}(A) \) is a \hyperref[def:group]{group} with morphism composition as the group operation.
+  For every object \( X \) in a \hyperref[def:groupoid]{groupoid} \( \cat{G} \), the set \( \cat{G}(X) \) is a \hyperref[def:group]{group} with morphism composition as the group operation.
 
-  As for \hyperref[def:endomorphism_monoid]{endomorphism monoids}, whenever the groupoid \( \cat{G} \) is clear from the context, we call \( \cat{G}(A) \) the \term{automorphism group} over \( A \) and denote it by \( \End(A) \).
+  As for \hyperref[def:endomorphism_monoid]{endomorphism monoids}, whenever the groupoid \( \cat{G} \) is clear from the context, we call \( \cat{G}(X) \) the \term{automorphism group} over \( X \) and denote it by \( \End(X) \).
 \end{definition}
 
 \begin{definition}\label{def:symmetric_group}
@@ -174,25 +143,20 @@
 \end{definition}
 
 \begin{definition}\label{def:group_action}
-  Let \( G \) be a \hyperref[def:group]{group} and let \( A \) be a set or, more generally, an object in some \hyperref[def:concrete_category]{concrete category} \( \cat{C} \).
+  Let \( G \) be a \hyperref[def:group]{group} and let \( X \) be an object in some \hyperref[def:concrete_category]{concrete category} \( \cat{C} \).
 
-  We will define group actions analogously to \hyperref[def:monoid_action]{monoid actions}, with the same remarks regarding left and right group actions.
+  We will define group actions as a special case of \hyperref[def:monoid_action]{monoid actions}, with the same remarks regarding left and right group actions.
 
-  A \term{group action} can be defined equivalently as:
+  X \term{group action} can be defined equivalently as:
   \begin{thmenum}
-    \thmitem{def:group_action/operation} A heterogeneous \hyperref[def:magma]{binary operation} \( \star: \mscrM \times A \to A \) such that
-    \begin{thmenum}
-      \thmitem[def:group_action/operation/compatibility]{GA} For every \( x, y \in M \) and \( a \in A \),
-      \begin{equation}\label{eq:def:group_action/operation/compatibility}\tag{\logic{GA}}
-        (xy) \star a = x \star (y \star a).
-      \end{equation}
-    \end{thmenum}
+    \thmitem{def:group_action/family} An \hyperref[def:indexed_family]{indexed family} \( \seq{ \Phi_x }_{x \in G} \) of \hyperref[def:morphism_invertibility/isomorphism]{isomorphisms} of \( X \) such that, for every pair \( g, h \in G \),
+    \begin{equation}\label{eq:def:group_action/family/compatibility}\tag{\logic{GA}}
+      \Phi_{gh} = \Phi_h \bincirc \Phi_h.
+    \end{equation}
 
-    See \fullref{rem:theory_of_monoid_actions} for the \hyperref[def:first_order_theory]{first-order logic theory} behind this operation.
+    This defines a function \( \Phi: G \times A \to A \).
 
-    Note that the condition \eqref{eq:def:monoid_action/operation/identity} from the definition of monoid action is redundant. It follows from \eqref{eq:def:group_action/operation/compatibility}, as shown in \fullref{thm:group_homomorphism_single_condition}.
-
-    \thmitem{def:group_action/homomorphism} A \hyperref[def:group/homomorphism]{homomorphism} from \( G \) to the \hyperref[def:automorphism_group]{automorphism group} \( \aut(A) \).
+    \thmitem{def:group_action/homomorphism} A \hyperref[def:group/homomorphism]{homomorphism} from \( G \) to the \hyperref[def:automorphism_group]{automorphism group} \( \aut(X) \).
 
     \thmitem{def:group_action/functor} A \hyperref[def:functor]{functor} from the \hyperref[def:monoid_delooping]{delooping} \( \cat{B}_G \) to \( \cat{C} \) (right actions are \hyperref[rem:contravariant_functor]{contravariant functors}).
   \end{thmenum}
@@ -202,11 +166,11 @@
 \end{proof}
 
 \begin{lemma}\label{thm:group_multiplication_is_bijection}
-  For each element \( x \) of a group \( G \), consider the function \( \varphi_x \coloneqq x \id_G \), i.e.
+  For each element \( g \) of a group \( G \), consider the function \( \varphi_g \coloneqq g \id_G \), i.e.
   \begin{equation*}
     \begin{aligned}
       &\varphi_x: G \to G \\
-      &\varphi_x(y) \coloneqq xy.
+      &\varphi_x(y) \coloneqq x \cdot y.
     \end{aligned}
   \end{equation*}
 
@@ -224,7 +188,7 @@
 \end{proof}
 
 \begin{theorem}[Cayley's theorem]\label{thm:cayleys_theorem}
-  Every \hyperref[def:group]{group} \hyperref[def:group_action]{acts} on itself by \hyperref[def:multi_valued_function/endofunction]{endofunctions} via the group operation.
+  Every \hyperref[def:group]{group} \hyperref[def:group_action]{acts} on itself via the family of functions \( y \mapsto x \cdot y \) indexed by \( x \). These functions are not group homomorphisms in general.
 
   Compare this result to \fullref{thm:monoid_is_action}.
 \end{theorem}
@@ -232,21 +196,21 @@
   Follows directly from \fullref{thm:monoid_is_action} and \fullref{thm:group_multiplication_is_bijection}.
 \end{proof}
 
-\begin{proposition}\label{thm:integers_group_action}
-  The \hyperref[def:set_of_integers]{integers} \( \BbbZ \) act on any \hyperref[def:group]{group} by \hyperref[def:group/exponentiation]{exponentiation}.
+\begin{proposition}\label{thm:exponentiation_group_action}
+  The \hyperref[def:set_of_integers]{integers} \( \BbbZ \) act on any \hyperref[def:group]{group} by \hyperref[def:unital_magma/exponentiation]{exponentiation} via the family of function \( g \mapsto g^n \) indexed by \( n \in \BbbZ \).
 
-  Compare this result to \fullref{thm:natural_numbers_monoid_action}.
+  Compare this result to \fullref{thm:exponentiation_monoid_action}.
 \end{proposition}
 \begin{proof}
-  Follows from \fullref{thm:natural_numbers_monoid_action}.
+  Follows from \fullref{thm:exponentiation_monoid_action}.
 \end{proof}
 
 \begin{proposition}\label{thm:group_conjugation_action}\mcite[165]{Knapp2016BasicAlgebra}
-  Every \hyperref[def:group]{group} \hyperref[def:group_action]{acts} on itself by \hyperref[def:multi_valued_function/endofunction]{endofunctions} via the \term{conjugation operation} defined as
+  Every \hyperref[def:group]{group} \hyperref[def:group_action]{acts} on itself via the \term{conjugation automorphisms} defined as
   \begin{equation*}
     \begin{aligned}
-      &\star: G \times G \to G, \\
-      &x \star y \coloneqq x y x^{-1}.
+      &\Phi_g: G \to G, \\
+      &\Phi_g(h) \coloneqq g h g^{-1}.
     \end{aligned}
   \end{equation*}
 \end{proposition}
@@ -254,30 +218,98 @@
   Trivial.
 \end{proof}
 
-\begin{definition}\label{def:dynamical_system}\mimprovised
-  A \term{dynamical system} is a \hyperref[def:monoid_action]{monoid action} \( \star: T \times X \to X \). We call \( X \) the \term{phase space}; in applications, we interpret the monoid \( T \) as \term{time} and consider it to be \hyperref[rem:additive_magma]{additive}.
+\begin{definition}\label{def:inner_and_outer_automorphisms}\mcite[exer. 6.12.15]{Knapp2016BasicAlgebra}
+  Denote by \( \Phi: G \to \aut(G) \) the \hyperref[thm:group_conjugation_action]{conjugation action} on the group \( G \).
 
-  We call the system \term{discrete} if \( T \) is the monoid of \hyperref[def:set_of_natural_numbers]{natural numbers} (with zero) and \term{continuous} if \( T \) is the monoid of nonnegative \hyperref[def:set_of_real_numbers]{real numbers}, with or without \hyperref[def:extended_real_numbers]{an infinite element} \( \infty \).
+  The \term{inner automorphisms group} of \( G \) is
+  \begin{equation*}
+    \op{inn}(G) \coloneqq \set{ \Phi_g \given g \in G }.
+  \end{equation*}
 
-  The monoid \( T \) can theoretically be a \hyperref[def:group]{group}, in which case we consider \hyperref[def:group_action]{group actions}, however negative time is more rarely needed in practice.
-
-  \begin{thmenum}
-    \thmitem{def:dynamical_system/trajectory} A \term{trajectory} starting at \term{initial state} \( x_0 \in A \) is an \hyperref[def:cartesian_product/indexed_family]{indexed family} \( \seq{ x_t }_{t \in T} \) obtained as
-    \begin{equation*}
-      x_t \coloneqq t \star x_0.
-    \end{equation*}
-
-    The condition \ref{def:monoid_action/operation/identity} ensures that \( 0 \star x_0 = x_0 \). and \ref{def:monoid_action/operation/compatibility} ensures that
-    \begin{equation*}
-      x_{t + s}
-      =
-      (t + s) \star x_0
-      =
-      t \star x_s.
-    \end{equation*}
-
-    \thmitem{def:dynamical_system/homogeneity} We call the system \term{homogeneous} if the trajectories are invariant with respect to time in the sense that \( t \star x = 0 \star x \) for every moment \( t \).
-
-    The \term{transition function} of a homogeneous system is \( x \mapsto 0 \star x \).
-  \end{thmenum}
+  The \term{outer automorphism group} is the \hyperref[def:quotient_group]{quotient group}
+  \begin{equation*}
+    \op{out}(G) \coloneqq \aut(G) / \op{inn}(G).
+  \end{equation*}
 \end{definition}
+
+\begin{example}\label{ex:integer_automorphism_groups}
+  If the group operation is \hyperref[def:magma/commutative]{commutative}, the only inner automorphism is the identity. Therefore, \( \aut(G) \cong \op{out}(G) \).
+\end{example}
+
+\begin{definition}\label{def:group_action_orbit}\mcite[163]{Knapp2016BasicAlgebra}
+  The \term{orbit} of \( x \) under the \hyperref[def:group_action]{group action} \( \Phi: G \to \End(X) \) is the set
+  \begin{equation*}
+    \set{ \Phi_g(x) \given g \in G }.
+  \end{equation*}
+
+  This is the set of all members of \( X \) \enquote{reachable} from \( x \) via the action.
+\end{definition}
+
+\begin{example}\label{ex:plane_rotation_action_orbits}
+  Consider the action of the additive group of \( \BbbR \) on \( \BbbR^2 \) given by the \hyperref[def:euclidean_transformation/rotation]{rotation} \hyperref[def:array/matrix]{matrices}
+  \begin{equation*}
+    \Phi_r \coloneqq \begin{pmatrix}
+      \cos(r)  & \sin(r) \\
+      -\sin(r) & \cos(r) \\
+    \end{pmatrix}
+  \end{equation*}
+
+  Fix a nonzero vector \( (x, y)^T \) in \( \BbbR^2 \) with norm \( l \). Since rotation matrices are orthogonal, they preserve norms. Furthermore, given a vector of norm \( l \), with the angle \( r \) defined via \eqref{eq:def:angle/measure}, \( \Phi_r^{-1} \) sends the vector to \( (x, y)^T \).
+
+  The \hyperref[def:group_aciton_orbit]{orbit} of \( (x, y)^T \) is thus a \hyperref[def:quadratic_plane_curve/ellipse]{circle} at the origin with radius \( l \).
+\end{example}
+
+\begin{definition}\label{def:dynamical_system}\mimprovised
+  Suppose that \( \cat{C} \) is a \hyperref[def:concrete_category]{concrete category} and let \( X \) be an object of \( \cat{C} \).
+
+  A \term{dynamical system} is a \hyperref[def:monoid_action]{monoid action} \( \Phi: T \times X \to X \). We call \( X \) the \term{phase space} of the system. In applications, we interpret the monoid \( T \) as \term{time} and consider it to be \hyperref[rem:additive_magma]{additive}. We call \( \Phi \) the \term{evolution function} of the system.
+
+  We will call the system \term{discrete} if \( T \) is the monoid of \hyperref[def:set_of_natural_numbers]{natural numbers} (with zero) and \term{continuous} if \( T \) is the monoid of nonnegative \hyperref[def:set_of_real_numbers]{real numbers}, with or without \hyperref[def:extended_real_numbers]{an infinite element}.
+
+  The monoid \( T \) can theoretically be a \hyperref[def:group]{group}, in which case we consider \hyperref[def:group_action]{group actions}, however negative time is not as often needed in practice.
+\end{definition}
+
+\begin{example}\label{ex:abstract_reductions_as_dynamical_systems}
+  Every \hyperref[def:abstract_reduction_system]{abstract reduction system} \( (A, \to) \) gives rise to many \hyperref[def:dynamical_system]{discrete dynamical system}. Let \( c \) be a \hyperref[def:choice_function]{choice function} for \( A \). We can inductively define the evolution function:
+  \begin{equation*}
+    \begin{aligned}
+      \Phi: \BbbN \times A \to A \\
+      \Phi_t(x) \coloneqq \begin{cases}
+        x,                          &t = 0, \\
+        x                           &t = 1 \T{and} x \T{is irreducible}, \\
+        c(\set{ y \given x \to y }) &t = 1 \T{and} x \T{is reducible}, \\
+        \Phi_1(\Phi_{t-1}(x))       &t > 1
+      \end{cases}
+    \end{aligned}
+  \end{equation*}
+
+  This shows how abstract reduction systems can be used to model computation. As long as we have a procedure for deciding which branch of computation to follow, we can regard the reduction system as a deterministic time-dependent computation device. If the reduction system is \hyperref[def:abstract_rewriting_convergence/convergent]{convergent}, the choice function \( c \) should be irrelevant since we will eventually reach the only end of the computation.
+
+  If, instead, we want to try all possible branches simultaneously, the device becomes nondeterministic and no longer fits as nicely in the abstraction of dynamical systems.
+\end{example}
+
+\begin{definition}\label{def:dynamical_system_trajectory}
+  Fix a \hyperref[def:dynamical_system]{dynamical system} with evolution function \( \Phi: T \times X \to X \).
+
+  A \term{trajectory} in a starting at the \term{initial state} \( x_0 \in X \) is an \hyperref[def:cartesian_product/indexed_family]{indexed family} \( \seq{ x_t }_{t \in T} \) obtained as
+  \begin{equation*}
+    x_t \coloneqq \Phi_t(x_0).
+  \end{equation*}
+
+  The condition \ref{eq:def:monoid_action/family/identity} ensures that \( \Phi_0(x_0) = x_0 \), and \ref{eq:def:monoid_action/family/compatibility} ensures that
+  \begin{equation*}
+    x_{t + s}
+    =
+    \Phi_{t + s}(x_0)
+    =
+    \Phi_t(x_s).
+  \end{equation*}
+
+  For discrete dynamical systems, trajectories are sequences.
+\end{definition}
+
+\begin{example}\label{ex:abstract_reduction_trajectories}
+  In \fullref{ex:abstract_reductions_as_dynamical_systems} we described how, given a choice function \( c \), an abstract reduction system \( (A, \to) \) can be regarded as a discrete dynamical system with evolution function \( \Phi: \BbbN \times A \to A \).
+
+  A \hyperref[def:dynamical_system_trajectory]{trajectory} in this system is a reduction path. Without the choice function, trajectories are general \hyperref[def:arborescence]{arborescences} rather than paths, with every branching of the tree corresponding to some parallel computation.
+\end{example}
