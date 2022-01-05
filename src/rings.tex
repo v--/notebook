@@ -1,46 +1,211 @@
 \subsection{Rings}\label{subsec:rings}
 
-\begin{definition}\label{def:semiring}
-  A \term{semiring} \( (R, +, \cdot) \) is an algebraic structure with two binary operations:
-  \begin{thmenum}[series=def:semiring]
-    \thmitem{def:semiring/addition} The \term{addition} \( + \) is \hyperref[def:magma/associative]{associative}, \hyperref[def:unital_magma]{unital} and \hyperref[def:magma/commutative]{commutative}, i.e. \( (R, +) \) is a commutative \hyperref[def:unital_magma/monoid]{monoid}. The additive identity is usually denoted by \( 0 \). We denote this monoid by \( R^+ \).
+We will start by defining semirings, and to do that we will first motivate distributivity.
 
-    \thmitem{def:semiring/multiplication} The \term{multiplication} \( \cdot \) (usually written using juxtaposition) is \hyperref[def:magma/associative]{associative}, i.e. \( (R, \cdot) \) a \hyperref[def:magma/associative]{semigroup}. We denote this semigroup by \( R^\times \).
+\begin{proposition}\label{thm:monoid_distributivity}
+  Fix a \hyperref[def:magma/commutative]{commutative} \hyperref[def:monoid]{monoid} \( (R, +, \cdot) \), where \( +: R \times R \to R \) is the monoid operation and \( \cdot: \BbbN \times R \to R \) is \hyperref[rem:additive_magma/multiplication]{recursively defined multiplication}.
 
-    \thmitem{def:semiring/distributivity} We require that \( \cdot \) \term{distributes} over \( + \), i.e.
-    \begin{align}\label{eq:def:semiring/distributivity}
-      (x + y)z = xz + yz
-      &&
-      x(y + z) = xy + xz
-    \end{align}
+  We have the following property, which we call \term{distributivity} of \( \cdot \) over \( + \):
+  \begin{equation}\label{eq:thm:monoid_distributivity}
+    n \cdot (x + y) = n \cdot x + n \cdot y.
+  \end{equation}
+\end{proposition}
+\begin{proof}
+  We use induction on \( n \). The case \( n = 0 \) is trivial. Suppose that \eqref{eq:thm:monoid_distributivity} holds. Then
+  \begin{equation*}
+    (n + 1) \cdot (x + y)
+    \reloset {\eqref{eq:def:magma/exponentiation}} =
+    n \cdot (x + y) + (x + y)
+    \reloset {\T{ind.}} =
+    n \cdot x + n \cdot y + (x + y)
+    \reloset {\eqref{eq:def:magma/exponentiation}} =
+    (n + 1) \cdot x + (n + 1) \cdot y.
+  \end{equation*}
+\end{proof}
+
+\begin{definition}\label{def:semiring}\mcite[ch. 3, sec. 2.1]{GondranMinoux1984Graphs}
+  A \term{semiring} is a \hyperref[def:magma/commutative]{commutative} \hyperref[def:monoid]{monoid} \( (R, +) \) with a second \hyperref[def:magma/associative]{associative} operation \( \cdot: R \times R \to R \) called \term{multiplication} that satisfies the following properties:
+  \begin{thmenum}
+    \thmitem{def:semiring/left_distributivity} Multiplication on the left distributes over addition:
+    \begin{equation}\label{eq:def:semiring/left_distributivity}
+      x \cdot (y + z) = x \cdot y + x \cdot z.
+    \end{equation}
+
+    \thmitem{def:semiring/right_distributivity} Multiplication on the right distributes over addition:
+    \begin{equation}\label{eq:def:semiring/right_distributivity}
+      (x + y) \cdot z = x \cdot z + y \cdot z.
+    \end{equation}
+
+    If multiplication is commutative, right distributivity follows from left distributivity.
+
+    \thmitem{def:semiring/absorption} Zero is an absorbing element:
+    \begin{equation}\label{eq:def:semiring/absorption}
+      x \cdot 0 = 0 \cdot x = 0.
+    \end{equation}
+
+    \thmitem{def:semiring/identity} There exists a multiplicative \hyperref[def:magma_identity]{identity} \( 1 \). That is, an element of \( R \) satisfying
+    \begin{equation}\label{eq:def:semiring/identity}
+      x \cdot 1 = 1 \cdot x = x.
+    \end{equation}
+
+    This notation is justified by \fullref{thm:semiring_characteristic_homomorphism}.
+
+    If an identity does not exist, we call \( (R, +, \cdot) \) a \term{nonunital semiring}. We will not need nonunital semirings, but it is important to acknowledge their existence and spread. In this context, if an identity exists, we will sometimes call \( (R, + \cdot) \) a \term{unital semiring}.
   \end{thmenum}
 
-  The \term{trivial semiring} consists only of the additive identity \( \{ 0 \} \).
+  We call \( (R, +) \) the \term{additive monoid} and \( (R, \cdot) \) the \term{multiplicative monoid} of the semiring.
 
-  We say that \( x \) is \term{nilpotent} if \( x^n = 0 \) for some nonnegative integer \( n \).
+  Semirings have the following metamathematical properties:
+  \begin{thmenum}
+    \thmitem{def:semiring/theory} The \hyperref[def:first_order_theory]{first-order theory} for semirings extends the \hyperref[def:monoid/theory]{theory of monoids} by adding another \hyperref[rem:first_order_formula_conventions/infix]{infix} binary functional symbol \( \cdot \), a constant \( 1 \), requiring \hyperref[def:magma/commutative]{commutativity} for \( + \), \hyperref[def:magma/associative]{associativity} for \( \cdot \), \hyperref[eq:def:monoid/theory/identity]{identity} for \( 1 \), and translating \eqref{eq:def:semiring/left_distributivity}, \eqref{eq:def:semiring/right_distributivity} and \eqref{eq:def:semiring/absorption} into first-order formulas from the metalogic.
 
+    \thmitem{def:semiring/homomorphism} A \hyperref[def:first_order_homomorphism]{first-order homomorphism} between the semirings \( R \) and \( S \) is a function \( \varphi: R \to S \) that is a \hyperref[def:monoid/homomorphism]{monoid homomorphism} both for their additive monoids also for their multiplicative monoids.
+
+    For semirings, \( \varphi \) must be a monoid homomorphism for the multiplicative monoids also. That is, it must preserve the multiplicative identity \( 1 \).
+
+    \thmitem{def:semiring/submodel} The set \( S \subseteq R \) is a \hyperref[thm:substructure_is_model]{submodel} of \( R \) if it is a both \hyperref[def:monoid/submodel]{submonoid} of the additive monoid and also of the multiplicative monoid.
+
+    As a consequence of \fullref{thm:positive_formulas_preserved_under_homomorphism}, the \hyperref[def:multi_valued_function/image]{image} of a group homomorphism \( \varphi: R \to S \) is a subgroup of \( S \).
+
+    For an arbitrary set \( S \), we denote the \hyperref[def:first_order_generated_substructure]{generated submodel} by \( \braket{ S } \).
+
+    \thmitem{def:semiring/trivial} The \hyperref[thm:substructures_form_complete_lattice/bottom]{trivial} semiring is the \hyperref[def:pointed_set/trivial]{trivial pointed set} \( \set{ 0 } \).
+
+    See \fullref{ex:trivial_semiring} for some properties of the trivial semiring.
+
+    \thmitem{def:semiring/category} The \hyperref[def:category_of_small_first_order_models]{category of \( \mscrU \)-small models} for semirings does not have an established name. It is \hyperref[def:monoid]{\( \ucat{CMon} \)}-\hyperref[def:concrete_category]{concrete} with the forgetful functor taking the additive monoids.
+
+    \thmitem{def:semiring/exponentiation} As we shall see in \fullref{thm:semiring_characteristic_homomorphism}, multiplication in \( \cdot \) extends multiplication by natural numbers in the abelian group \( (R, +) \). We do have a third operation, however --- \hyperref[def:monoid/exponentiation]{monoid exponentiation} in \( (R, \cdot) \).
+
+    For any integer \( n \), we have the fundamental property \( 1^n = 1 \).
+
+    \thmitem{def:semiring/commutative} If multiplication is commutative, we call the semiring itself \term{commutative}.
+  \end{thmenum}
+\end{definition}
+
+\begin{example}\label{ex:trivial_semiring}
+  A \hyperref[def:semiring/homomorphism]{semiring} is trivial if and only if \( 0_R = 1_R \). This follows from \eqref{eq:def:semiring/absorption} and \eqref{eq:def:semiring/zero}.
+
+  As a consequence, if \( \varphi: \set{ 0 } \to R \) is a \hyperref[def:semiring/homomorphism]{semiring} homomorphism, \( R \) is a trivial semiring. This is further strengthened by \fullref{thm:semiring_embedding_preserves_characterstic}.
+\end{example}
+
+\begin{proposition}\label{thm:semiring_characteristic_homomorphism}
+  For every \hyperref[def:semiring/identity]{semiring}, multiplication extends the abelian group multiplication.
+
+  More precisely, denote the additive identity by \( 0_R \) and the multiplicative identity by \( 1_R \). Define the following semiring homomorphism:
+  \begin{equation}\label{eq:thm:semiring_characteristic_homomorphism}
+    \begin{aligned}
+      &\iota: \BbbN \to R \\
+      &\iota(n) \coloneqq \begin{cases}
+        0_R                &n = 0, \\
+        \iota(n - 1) + 1_R &n > 0.
+      \end{cases}
+    \end{aligned}
+  \end{equation}
+
+  This is the unique homomorphism from \( \BbbN \) to \( R \). Furthermore, we have the following analogue to \eqref{eq:def:magma/exponentiation}:
+  \begin{equation}\label{eq:thm:semiring_characteristic_homomorphism/multiplication}
+    \iota(n) \cdot x \coloneqq \begin{cases}
+      0_R,                      &n = 0, \\
+      \iota(n - 1) \cdot x + x, &n > 1.
+    \end{cases}
+  \end{equation}
+\end{proposition}
+\begin{proof}
+  First note that \eqref{eq:thm:semiring_characteristic_homomorphism/multiplication} follows from \eqref{eq:thm:semiring_characteristic_homomorphism} via \hyperref[def:semiring/right_distributivity]{right distributivity}.
+
+  It remains to show that \( \iota \) is a monoid homomorphism, and that it is unique. Clearly \( \iota(0) = 0_R \) and \( \iota(1) = 1_R \). Proving \( \iota(n + m) = \iota(n) + \iota(m) \) and \( \iota(nm) = \iota(n) \cdot \iota(m) \) can be done via nested induction.
+
+  Now suppose \( \varphi: \BbbN \to R \) is a homomorphism. It is clear that \( \varphi(0) = 0_R \) and \( \varphi(1) = 1_R \), and also
+  \begin{equation*}
+    \varphi(n + 1) = \varphi(n) + \varphi(1) = \varphi(n) + 1_R.
+  \end{equation*}
+
+  This implies \( \iota = \varphi \).
+\end{proof}
+
+\begin{definition}\label{def:semiring_characteristic}\mimprovised
+  We define the \term{characteristic} \( \op{char}(R) \) of a semiring \( R \) via the following equivalent definitions:
+  \begin{thmenum}
+    \thmitem{def:semiring_characteristic/homomorphism} \( \op{char}(R) \) is the nonnegative integer \( n \) such that
+    \begin{equation*}
+      n \BbbZ = \ker\iota,
+    \end{equation*}
+    where \( \iota \) is the homomorphism from the natural numbers defined via \eqref{eq:thm:semiring_characteristic_homomorphism}.
+
+    \thmitem{def:semiring_characteristic/direct} \( \op{char}(R) \) is the smallest positive integer \( n \) such that \( n \cdot 1_R = 0_R \) and \( \op{char}(R) = 0 \) if \( 0_R \) cannot be obtained in this way.
+  \end{thmenum}
+\end{definition}
+\begin{defproof}
+  \EquivalenceSubProof{def:semiring_characteristic/homomorphism}{def:semiring_characteristic/direct} Let \( n \) be such that
+  \begin{equation*}
+    n \BbbZ = \ker\iota.
+  \end{equation*}
+
+  In particular, \( \iota(0) = \iota(n) \).
+
+  If \( n = 0 \), \( \ker\iota \) is a trivial group and \( \iota \) is an embedding. Then there cannot exist a positive integer \( n \) such that
+  \begin{equation*}
+    n \cdot 1_R = 0_R.
+  \end{equation*}
+
+  Otherwise, \( n \) is the smallest positive integer such that
+  \begin{equation*}
+    n \cdot 1_R = 0 \cdot 1_R = 0_R.
+  \end{equation*}
+\end{defproof}
+
+\begin{proposition}\label{thm:semiring_embedding_preserves_characterstic}
+  If \( \varphi: R \to T \) is a \hyperref[def:semiring/homomorphism]{semiring embedding}, then the \hyperref[def:semiring_characteristic]{characteristic} of \( R \) is equal to that of \( T \).
+\end{proposition}
+\begin{proof}
+  First suppose that \( R \) has positive characteristic \( n \). Then \( n \cdot 1_R = 0_R \), which implies \( n \cdot \varphi(1_R) = \varphi(0_R) \), hence \( \op{char}(T) \leq n \). But \( \varphi \) is an embedding, hence if \( k \cdot 1_R \neq 0_R \), then
+  \begin{equation*}
+    k \cdot \varphi(1_R) \neq \varphi(0_R).
+  \end{equation*}
+
+  This implies that \( \op{char}(T) \geq \op{char}(R) \), which in turn shows that \( \op{char}(T) = \op{char}(R) \).
+
+  If \( R \) has characteristic zero, then \( \iota: \BbbN \to R \) is an embedding and thus \( \varphi \bincirc \iota: \BbbN \to T \) is also an embedding. It is unique as shown in \fullref{thm:semiring_characteristic_homomorphism}. Therefore, \( T \) also has characteristic zero.
+\end{proof}
+
+\begin{example}\label{ex:semiring_characteristic}
+  The following are examples of \hyperref[def:semiring_characteristic]{semiring characteristics}:
+
+  \begin{thmenum}
+    \thmitem{ex:semiring_characteristic/nonnegative_integers} The zero-based \hyperref[def:set_of_natural_numbers]{natural numbers} \( \BbbN \) have characteristic \( \op{char}(\BbbN) = 0 \) because \( \iota \) is an isomorphism. Consequently, by \fullref{thm:semiring_embedding_preserves_characterstic}, any supersemiring of \( \BbbN \) has characteristic zero, most notably the ring of integers \( \BbbZ \) and the fields \( \BbbQ \), \( \BbbR \), \( \BbbC \).
+
+    \thmitem{ex:semiring_characteristic/integers_modulo} The ring \hyperref[def:ring_of_integers_modulo]{\( \BbbZ_n \)} of integers modulo \( n \) has characteristic \( \op{char}(\BbbZ_n) = n \) because of \fullref{thm:integers_modulo_isomorphic_to_quotient_group}.
+
+    \thmitem{ex:semiring_characteristic/polynomial_ring} An \hyperref[def:algebra_over_ring]{algebra} \( A \) over a nontrivial commutative unital ring \( R \) has characteristic \( \op{char}(A) = R \) because of the canonical embedding of \( R \) in \( A \). In particular, polynomial \hyperref[def:algebra_of_polynomials]{rings} \( R[X] \) have the same characteristic as their ring.
+
+    \thmitem{ex:semiring_characteristic/galois_fields} The \hyperref[thm:galois_field_existence]{Galois field} \( \BbbF_{p^n} \) has characteristic \( p \) because it is a field extension of \( \BbbF_p \).
+  \end{thmenum}
+\end{example}
+
+\begin{proposition}\label{thm:semiring_cancellative_iff_no_zero_divisors}
+  An element \( x \in R \) of a commutative ring is a zero divisor if and only if it is cancellable (with respect to multiplication).
+\end{proposition}
+\begin{proof}
+  If \( x \) is a zero divisor, fix \( y \in R \) such that \( xy = 0 \). For any \( z \in R \) we have
+  \begin{equation*}
+    xy = 0 = x(yz)
+  \end{equation*}
+ , but \( y \neq yz \) in general.
+
+  Thus, \( x \) is not cancellable.
+\end{proof}
+
+\begin{definition}
   The following are special kinds of semirings:
   \begin{thmenum}[resume=def:semiring]
-    \thmitem{def:semiring/dioid} \term{Dioids} are unital semirings, that is, both \( (R, +) \) and \( (R, \cdot) \) are monoids. The term \enquote{semiring} is sometimes reserved for dioids while \enquote{hemiring} is used for what we call semirings.
-
-    We define integer exponentiation as a shorthand for iterated multiplication. That is, if multiplication is invertible, for \( r \in R \) and \( n \in \BbbZ \) we define
-    \begin{equation*}
-      r^n \coloneqq \begin{cases}
-        1,                      & n = 0  \\
-        r^{n - 1} \cdot r,      & n > 0  \\
-        r^{n + 1} \cdot r^{-1}, & n < 0.
-      \end{cases}
-    \end{equation*}
-
-    If multiplication is not invertible, we skip defining negative exponents.
-
     \thmitem{def:semiring/no_zero_divisor} If \( xy = 0 \) whenever \( x \) and \( y \) are nonzero, we say that the semiring has \term{no zero divisors}.
 
     \thmitem{def:semiring/ring} \term{Rings} are semirings with invertible addition, i.e. \( (R, +) \) forms an \hyperref[def:abelian_group]{abelian group}. The category of rings is denoted by \( \cat{Ring} \).
 
-    \thmitem{def:semiring/unital_ring} \term{Unital rings} are \hyperref[def:semiring/ring]{rings} in which multiplication is unital, i.e. \( R, \cdot \) is a \hyperref[def:unital_magma/monoid]{monoid} with identity \( 1 \). Some authors define all rings to be unital. Invertible elements under multiplication are called \term{units} (see \fullref{rem:units_in_rings_etymology}) and the operation itself is called \term{division}.
+    \thmitem{def:semiring/unital_ring} \term{Unital rings} are \hyperref[def:semiring/ring]{rings} in which multiplication is unital, i.e. \( R, \cdot \) is a \hyperref[def:monoid]{monoid} with identity \( 1 \). Some authors define all rings to be unital. Invertible elements under multiplication are called \term{units} (see \fullref{rem:units_in_rings_etymology}) and the operation itself is called \term{division}.
 
-    We may additionally require that the ring is nontrivial, so that \( 0 \neq 1 \) (see \fullref{thm:def:semiring/properties/identities_are_equal_iff_trivial_ring}).
+    We may additionally require that the ring is nontrivial, so that \( 0 \neq 1 \) (see \fullref{ex:trivial_semiring}).
 
     \thmitem{def:semiring/commutative_ring} \term{Commutative rings} are \hyperref[def:semiring/ring]{rings} in which multiplication is \hyperref[def:magma/commutative]{commutative}, i.e. \( R, \cdot \) is a commutative semigroup.
 
@@ -48,9 +213,9 @@
 
     We are mostly interested in these rings because if \( R \) is a commutative unital ring, so is its polynomial \hyperref[def:algebra_of_polynomials]{ring} \( R[X] \) and, by induction, multivariate polynomial \hyperref[def:multivariate_polynomial]{rings} (\( R[X, Y] = R[X][Y] \)). So we are interested in properties of \( R \) that are preserves by \( R[X] \). This is the reason, so many types of commutative rings and ideals are studied. We are interested in integral domains when we speak of divisibility and factorization and since zero is absorbing, it does not interact nicely with factorization. Refer to \fullref{sec:commutative_algebra}.
 
-    \thmitem{def:semiring/integral_domain} \term{Integral domains} are nontrivial commutative unital \hyperref[def:semiring/commutative_unital_ring]{rings} with no zero \hyperref[def:commutative_ring_division]{divisors}. This implies that \( 1 \neq 0 \) because otherwise \( 1 \cdot 1 = 0 \) and \( 1 \) would be a zero divisor. This in turn implies that \fullref{thm:def:semiring/properties/identities_are_equal_iff_trivial_ring}.
+    \thmitem{def:semiring/integral_domain} \term{Integral domains} are nontrivial commutative unital \hyperref[def:semiring/commutative_unital_ring]{rings} with no zero \hyperref[def:commutative_ring_division]{divisors}. This implies that \( 1 \neq 0 \) because otherwise \( 1 \cdot 1 = 0 \) and \( 1 \) would be a zero divisor. This in turn implies that \fullref{ex:trivial_semiring}.
 
-    \Fullref{thm:def:semiring/properties/cancellable_iff_not_zero_divisor} shows that a commutative unital ring \( R \) is an integral domain if and only if its multiplication is cancellable.
+    \Fullref{thm:semiring_cancellative_iff_no_zero_divisors} shows that a commutative unital ring \( R \) is an integral domain if and only if its multiplication is cancellable.
 
     \thmitem{def:semiring/unique_factorization_domain} \term{Unique factorization domains} are integral domains in which every element has unique \hyperref[def:factorization_in_ring]{factorization} exists.
 
@@ -88,19 +253,19 @@
 
     Another example of Euclidean domains are the polynomial rings over a field (see \fullref{thm:polynomials_over_field_are_euclidean_domain}).
 
-    \refitem{def:semiring/dioid} By removing additive inverses from the integers, we obtain the dioid \( (\BbbN, +, \cdot) \) of \hyperref[def:set_of_natural_numbers]{natural numbers}.
+    \refitem{def:semiring/identity} By removing additive inverses from the integers, we obtain the semiring \( (\BbbN, +, \cdot) \) of \hyperref[def:set_of_natural_numbers]{natural numbers}.
 
     Take only the commutative monoid \( (\BbbN, +) \) of \hyperref[def:set_of_natural_numbers]{natural numbers} with addition. The endomorphism semiring
     \begin{equation*}
       \End(\BbbN)
     \end{equation*}
-    is a noncommutative dioid.
+    is a noncommutative semiring.
 
-    Tropical \hyperref[def:tropical_semiring]{semirings} are another example noncommutative dioids.
+    Tropical \hyperref[def:tropical_semiring]{semirings} are another example noncommutative semirings.
 
     \refitem{def:semiring} Simple examples of semirings (but not rings) without unity are proper semiring ideals. For example, the ideal \( 2\BbbN \) of positive even numbers is a non-unital semiring.
 
-    Another example can be given by taking a subsemiring, but not a unital subsemiring of the endomorphism dioid \( \End(\BbbN, \oplus) \), for example the functions
+    Another example can be given by taking a subsemiring, but not a unital subsemiring of the endomorphism semiring \( \End(\BbbN, \oplus) \), for example the functions
     \begin{balign*}
        & f_n: \BbbN \to \BbbN        \\
        & f_n(x) \coloneqq x + n,
@@ -158,111 +323,6 @@
 
     More generally, any nontrivial commutative unital can be embedded in a field by \fullref{def:field_of_fractions}.
   \end{refenum}
-\end{example}
-
-\begin{proposition}\label{thm:def:semiring/properties}
-  Any semiring \( R \) has the following basic properties:
-  \begin{thmenum}
-    \thmitem{thm:def:semiring/properties/zero_is_absorbing} Multiplication by \( 0 \) is \term{absorbing}, that is, \( x0 = 0x = 0 \) for any \( x \in R \).
-    \thmitem{thm:def:semiring/properties/one_exponents} For any integer \( n \), \( 1^n = 1 \).
-    \thmitem{thm:def:semiring/properties/identities_are_equal_iff_trivial_ring} In a unital \hyperref[def:semiring/unital_ring]{ring}, the additive and multiplicative identities are equal if and only if the ring is trivial.
-    \thmitem{thm:def:semiring/properties/cancellable_iff_not_zero_divisor} An element \( x \in R \) of a commutative ring is a zero divisor if and only if it is cancellable (with respect to multiplication).
-  \end{thmenum}
-\end{proposition}
-\begin{proof}
-  \SubProofOf{thm:def:semiring/properties/zero_is_absorbing} Follows from \fullref{thm:def:left_module/properties/ring_zero_is_absorbing} and \fullref{thm:def:left_module/properties/module_zero_is_absorbing}.
-  \SubProofOf{thm:def:semiring/properties/one_exponents} By definition, \( r \cdot 1 = r \) for any \( r \in R \). Hence, for \( 1 \cdot 1 = 1 \). Proceeding by induction, we can show that for \( 1^n = 1 \) for positive \( n \). For negative \( n \), since \( 1 \) is its own inverse, we also have \( 1^n = 1 \).
-
-  \SubProofOf{thm:def:semiring/properties/identities_are_equal_iff_trivial_ring}
-  Let \( 0 = 1 \) in a unital ring \( R \). Let \( r \in R \). Then, by \fullref{thm:def:semiring/properties/zero_is_absorbing},
-  \begin{equation*}
-    r = 1r = 0r = 0.
-  \end{equation*}
-
-  Thus, \( r = 0 \). Since \( r \) was arbitrary, we conclude that \( R = \{ 0 \} \) is the trivial ring.
-
-  \SubProofOf{thm:def:semiring/properties/zero_is_absorbing} Follows from \fullref{thm:def:left_module/properties/ring_zero_is_absorbing} and \fullref{thm:def:left_module/properties/module_zero_is_absorbing}.
-
-  \SubProofOf{thm:def:semiring/properties/one_exponents} By definition, \( r \cdot 1 = r \) for any \( r \in R \). Hence, for \( 1 \cdot 1 = 1 \). Proceeding by induction, we can show that for \( 1^n = 1 \) for positive \( n \). For negative \( n \), since \( 1 \) is its own inverse, we also have \( 1^n = 1 \).
-
-  \SubProofOf{thm:def:semiring/properties/identities_are_equal_iff_trivial_ring} The trivial ring only has one element, hence \( 0 = 1 \).
-
-  \SufficiencySubProofOf{thm:def:semiring/properties/cancellable_iff_not_zero_divisor}
-  Suppose that \( x \in R \) is not cancellable. Then there exist \( y \neq z \) for which \( xy = xz \). We have \( y - z \neq 0 \) and
-  \begin{equation*}
-    x(y - z) = xy - xz = 0.
-  \end{equation*}
-
-  Thus, \( x \) is a zero divisor.
-
-  \NecessitySubProofOf{thm:def:semiring/properties/cancellable_iff_not_zero_divisor} If \( x \) is a zero divisor, fix \( y \in R \) such that \( xy = 0 \). For any \( z \in R \) we have
-  \begin{equation*}
-    xy = 0 = x(yz)
-  \end{equation*}
- , but \( y \neq yz \) in general.
-
-  Thus, \( x \) is not cancellable.
-\end{proof}
-
-\begin{definition}\label{def:semiring_characteristic}
-  Fix a nontrivial unital semiring \( R \) (the nontrivial condition is essential because of \fullref{thm:embedding_preserves_characteristic}). We define its \term{characteristic} \( \op{char}(R) \) via any of the equivalent definitions:
-  \begin{thmenum}
-    \thmitem{def:semiring_characteristic/direct} \( \op{char}(R) \) is the smallest number of times \( 1_R \) must be added to itself in order to obtain \( 0_R \) and zero if \( 0_R \) cannot be obtained in this way.
-
-    \thmitem{def:semiring_characteristic/homomorphism} The semiring \( \BbbZ_{\geq 0} \) of nonnegative integers can be embedded into \( R \) via the unique homomorphism
-    \begin{balign*}
-       & \iota: \BbbZ_{\geq 0} \to R                     \\
-       & \iota(k) \coloneqq \begin{cases}
-        0_R,                & k = 0 \\
-        \iota(k - 1) + 1_R, & k > 1
-      \end{cases}
-    \end{balign*}
-    that adds the identity \( 1_R \) to itself \( n \) times. This allows us to use the positive integers in any semiring. Note that if addition in \( R \) is invertible (that is, if \( R \) is a ring), we can embed all integers by defining \( \iota(n) \coloneqq -\iota(-n) \) for \( n < 0 \).
-
-    We define \( \op{char}(R) \) as the positive integer \( n \) such that
-    \begin{equation*}
-      n\BbbZ_{\geq 0} \cong \ker\iota.
-    \end{equation*}
-  \end{thmenum}
-\end{definition}
-\begin{proof}
-  We will show that \( \iota \) is unique. Let \( \varphi: \BbbZ_{\geq 0} \to R \) be another embedding. Obviously
-  \begin{equation*}
-    \iota(1_{\BbbZ}) = 1_R = \varphi(1_{\BbbZ}).
-  \end{equation*}
-
-  Then by induction on \( k \) we can show that
-  \begin{equation*}
-    \iota(k) = \underbrace{1_R + \cdots + 1_R}_{k \text{ times }} = \varphi(k).
-  \end{equation*}
-
-  Hence, \( \iota = \varphi \).
-\end{proof}
-
-\begin{proposition}\label{thm:embedding_preserves_characteristic}
-  If \( R \) is a nontrivial unital semiring and \( T \) is a unital supersemiring of \( R \), then
-  \begin{equation*}
-    \op{char}(T) = \op{char}(R).
-  \end{equation*}
-\end{proposition}
-\begin{proof}
-  Note that if \( R \) was the trivial unital semiring, its characteristic would be \( 1 \) and yet the characteristic of \( T \) could be nonzero. So the theorem would not hold if \( R \) was trivial.
-
-  Now assume that \( R \) is nontrivial and let \( \iota: \BbbZ_{\geq 0} \to R \) be the embedding defining \( \op{char}(R) \). Then it is obviously also an embedding of \( \BbbZ_{\geq 0} \) into \( T \). Since \( 0_R = 0_T \), then \( \ker \iota = \ker \varphi = n\BbbZ_{\geq 0} \), where \( n = \op{char}(R) \).
-\end{proof}
-
-\begin{example}\label{ex:semiring_characteristic}
-  We find examples of semiring characteristics via the embedding \( \iota \) defined in \fullref{def:semiring_characteristic}:
-
-  \begin{thmenum}
-    \thmitem{ex:semiring_characteristic/nonnegative_integers} The zero-based \hyperref[def:set_of_natural_numbers]{natural numbers} \( \BbbN \) have characteristic \( \op{char}(\BbbN) = 0 \) because \( \iota \) is an isomorphism. Consequently, any supersemiring of \( \BbbN \) has characteristic zero, most notably the integers \( \BbbZ \) and the fields \( \BbbQ \), \( \BbbR \), \( \BbbC \).
-
-    \thmitem{ex:semiring_characteristic/integers_modulo} The integers modulo \( n \) (see \fullref{def:ring_of_integers_modulo}) have characteristic \( \op{char}(\BbbZ_n) = n \) because of \fullref{thm:integers_modulo_isomorphic_to_quotient_group}.
-
-    \thmitem{ex:semiring_characteristic/polynomial_ring} An \hyperref[def:algebra_over_ring]{algebra} \( A \) over a nontrivial commutative unital ring \( R \) has characteristic \( \op{char}(A) = R \) because of the canonical embedding of \( R \) in \( A \). In particular, polynomial \hyperref[def:algebra_of_polynomials]{rings} \( R[X] \) have the same characteristic as their ring.
-
-    \thmitem{ex:semiring_characteristic/galois_fields} The \hyperref[thm:galois_field_existence]{Galois field} \( \BbbF_{p^n} \) has characteristic \( p \) because it is a field extension of \( \BbbF_p \).
-  \end{thmenum}
 \end{example}
 
 \begin{definition}\label{def:semiring_kernel}
@@ -384,7 +444,7 @@
     \end{cases}
   \end{balign*}
 
-  This makes \( (T, \oplus, \odot) \) into a \hyperref[def:semiring/dioid]{dioid} with additive identity \( \infty \) and multiplicative identity \( 0 \). We call \( (T, \oplus, \odot) \) the \( \min \)-\term{tropical semiring} or simply the \term{tropical semiring} over \( M \). We define the \( \max \)-\term{tropical semiring} analogously by simply replacing \( \min \) with \( \max \).
+  This makes \( (T, \oplus, \odot) \) into a \hyperref[def:semiring/identity]{semiring} with additive identity \( \infty \) and multiplicative identity \( 0 \). We call \( (T, \oplus, \odot) \) the \( \min \)-\term{tropical semiring} or simply the \term{tropical semiring} over \( M \). We define the \( \max \)-\term{tropical semiring} analogously by simply replacing \( \min \) with \( \max \).
 \end{definition}
 
 \begin{definition}\label{def:semiring_direct_product}
@@ -427,16 +487,16 @@
   The quotient \( R / I \) of any unital \hyperref[def:semiring/unital_ring]{ring} \( R \) by its commutator ideal \( I \) is \hyperref[def:semiring/commutative_ring]{commutative}.
 \end{proposition}
 
-\begin{definition}\label{def:endomorphism_dioid}
+\begin{definition}\label{def:endomorphism_semiring}
   Let \( (X, +) \) be an monoid and let \( \End(X) \) be set of endomorphism over \( X \). We define two operations:
   \begin{itemize}
     \item Pointwise addition \( [f + g](x) \coloneqq f(x) + g(x) \).
     \item Multiplication by composition \( [fg](x) \coloneqq f(g(x)) \).
   \end{itemize}
 
-  These operations make \( \End(X) \) into a dioid. If \( X \) is a group, then \( \End(X) \) is a ring.
+  These operations make \( \End(X) \) into a semiring. If \( X \) is a group, then \( \End(X) \) is a ring.
 
-  If \( X \) is a dioid, we define \( \End(X) \) to be a set of dioid endomorphisms (that is, we want the additive group homomorphisms to preserve multiplication and units). Then \( \End(X) \) is again a dioid and, if \( X \) is a unital ring, so is \( \End(X) \).
+  If \( X \) is a semiring, we define \( \End(X) \) to be a set of semiring endomorphisms (that is, we want the additive group homomorphisms to preserve multiplication and units). Then \( \End(X) \) is again a semiring and, if \( X \) is a unital ring, so is \( \End(X) \).
 \end{definition}
 
 \begin{definition}\label{def:function_support}
