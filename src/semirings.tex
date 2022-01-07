@@ -1,4 +1,4 @@
-\subsection{Rings}\label{subsec:rings}
+\subsection{Semirings}\label{subsec:semirings}
 
 We will start by defining semirings, and to do that we will first motivate distributivity.
 
@@ -23,8 +23,8 @@ We will start by defining semirings, and to do that we will first motivate distr
   \end{equation*}
 \end{proof}
 
-\begin{definition}\label{def:semiring}\mcite[ch. 3, sec. 2.1]{GondranMinoux1984Graphs}
-  A \term{semiring} is a \hyperref[def:magma/commutative]{commutative} \hyperref[def:monoid]{monoid} \( (R, +) \) with a second \hyperref[def:magma/associative]{associative} operation \( \cdot: R \times R \to R \) called \term{multiplication}, which extends multiplication with natural numbers. The precise compatibility axioms are listed in \fullref{def:semiring/theory}.
+\begin{definition}\label{def:semiring}\mcite[1]{Golan2010}
+  A \term{semiring} is a \hyperref[def:magma/commutative]{commutative} \hyperref[def:monoid]{monoid} \( (R, +) \) with a second \hyperref[def:magma/associative]{associative} operation \( \cdot: R \times R \to R \) called \term{multiplication}, which extends multiplication with natural numbers. The precise compatibility axioms are listed in \fullref{def:semiring/theory} because they fit nicely into first-order logic (unlike the \hyperref[def:semimodule/theory]{theory of semimodules}, for example, for which we prefer expressing these conditions in the metalogic).
 
   Although not strictly necessary, it will be convenient for us to assume that multiplication has an identity. If a multiplicative identity does not exist, we call \( (R, +, \cdot) \) a \term{nonunital semiring}. We will not use nonunital semirings, but it is important to acknowledge their existence. In this context, if an identity exists, we will sometimes call \( (R, + \cdot) \) a \term{unital semiring}.
 
@@ -63,11 +63,9 @@ We will start by defining semirings, and to do that we will first motivate distr
 
     \thmitem{def:semiring/homomorphism} A \hyperref[def:first_order_homomorphism]{first-order homomorphism} between the semirings \( R \) and \( S \) is a function \( \varphi: R \to S \) that is a \hyperref[def:monoid/homomorphism]{monoid homomorphism} both for their additive monoids also for their multiplicative monoids.
 
-    For semirings, \( \varphi \) must be a monoid homomorphism for the multiplicative monoids also. That is, it must preserve the multiplicative identity \( 1 \).
-
     \thmitem{def:semiring/submodel} The set \( S \subseteq R \) is a \hyperref[thm:substructure_is_model]{submodel} of \( R \) if it is a both \hyperref[def:monoid/submodel]{submonoid} of the additive monoid and also of the multiplicative monoid.
 
-    As a consequence of \fullref{thm:positive_formulas_preserved_under_homomorphism}, the \hyperref[def:multi_valued_function/image]{image} of a group homomorphism \( \varphi: R \to S \) is a subgroup of \( S \).
+    As a consequence of \fullref{thm:positive_formulas_preserved_under_homomorphism}, the \hyperref[def:multi_valued_function/image]{image} of a semiring homomorphism \( \varphi: R \to S \) is a sub-semiring of \( S \).
 
     For an arbitrary set \( S \), we denote the \hyperref[def:first_order_generated_substructure]{generated submodel} by \( \braket{ S } \).
 
@@ -75,13 +73,15 @@ We will start by defining semirings, and to do that we will first motivate distr
 
     See \fullref{ex:trivial_semiring} for some properties of the trivial semiring.
 
-    \thmitem{def:semiring/category} The \hyperref[def:category_of_small_first_order_models]{category of \( \mscrU \)-small models} for semirings does not have an established name. It is \hyperref[def:monoid]{\( \ucat{CMon} \)}-\hyperref[def:concrete_category]{concrete} with the forgetful functor taking the additive monoids.
+    \thmitem{def:semiring/category} The \hyperref[def:category_of_small_first_order_models]{category of \( \mscrU \)-small models} \( \ucat{SRing} \) is \hyperref[def:concrete_category]{concrete} over \hyperref[def:monoid]{\( \ucat{CMon} \)} with the forgetful functor taking the additive monoids.
 
     \thmitem{def:semiring/exponentiation} As we shall see in \fullref{thm:semiring_characteristic_homomorphism}, multiplication in \( \cdot \) extends multiplication by natural numbers in the abelian group \( (R, +) \). We do have a third operation, however --- \hyperref[def:monoid/exponentiation]{monoid exponentiation} in \( (R, \cdot) \).
 
     For any integer \( n \), we have the fundamental property \( 1^n = 1 \).
 
-    \thmitem{def:semiring/commutative} If multiplication is commutative, we call the semiring itself \term{commutative}.
+    \thmitem{def:semiring/commutative} If multiplication is commutative, we call the semiring itself \term{commutative}. Unless multiplication corresponds to function composition, most semirings we will encounter will be commutative.
+
+    Notable exceptions to this rule are \hyperref[def:ordinal]{ordinals}. An ordinal \( \alpha \), regarded as the set of all smaller ordinals, is a semiring. It is not commutative, however, as shown in \fullref{ex:ordinal_addition}.
   \end{thmenum}
 \end{definition}
 
@@ -208,7 +208,7 @@ We will start by defining semirings, and to do that we will first motivate distr
   An element of a commutative ring is a \hyperref[def:semiring_division]{zero divisor} if and only if it is not cancellable. That is, \( x \mid 0 \) if and only if \( xy = xz \) does not imply \( y = z \).
 \end{proposition}
 \begin{proof}
-  Zero is obviously a zero divisor, and it is not cancellable. Let \( x \) be a nonzero element.
+  Let \( x \) be a nonzero element.
 
   \SufficiencySubProof Suppose that \( x \) is a zero divisor and let \( y \) be such that \( xy = 0 \). For any element \( z \), we have
   \begin{equation*}
@@ -224,64 +224,6 @@ We will start by defining semirings, and to do that we will first motivate distr
   Thus, \( x \) is not a zero divisor.
 \end{proof}
 
-\begin{definition}\label{def:semiring_kernel}
-  The \term{kernel} \( \ker(f) \) of a semiring homomorphism \( f: R \to S \) is the \hyperref[def:zero_locus]{zero locus} of \( f \), that is, \hyperref[thm:def:function/properties/preimage]{preimage} \( f^{-1}(0_S) \).
-
-  It is an instance of \fullref{def:zero_morphisms/kernel}.
-\end{definition}
-
-\begin{definition}\label{def:quotient_semiring}
-  Let \( R \) be a ring and \( I \) be an ideal of \( M \). Define the \term{quotient ring} to be the quotient \hyperref[def:quotient_left_module]{module} when considering \( R \) as a module over itself.
-\end{definition}
-
-\begin{theorem}\label{thm:homomorphism_theorem_for_rings}
-  Let \( \varphi: R \to T \) be a homomorphism of rings. We have the isomorphism
-  \begin{equation*}
-    R / \ker \varphi \cong \img \varphi.
-  \end{equation*}
-\end{theorem}
-\begin{proof}
-  Special case of \fullref{thm:homomorphism_theorem_for_left_modules}.
-\end{proof}
-
-\begin{definition}\label{def:tropical_semiring}\mcite{nLab:tropical_semiring}
-  Fix a partially \hyperref[def:partially_ordered_set]{ordered} \hyperref[def:abelian_group]{abelian group} \( (M, +, \leq) \). Let \( \infty \) be a sentinel symbol not in \( M \). Define
-  \begin{equation*}
-    T \coloneqq M \cup \{ \infty \}
-  \end{equation*}
-  with operations
-  \begin{balign*}
-     & \oplus: T \times T \to T                        \\
-     & x \oplus y \coloneqq \begin{cases}
-      \min \{ x, y \}, & x \neq \infty \text{ and } y \neq \infty \text{ and they are comparable}, \\
-      \infty,          & x = \infty \text{ or } y = \infty
-    \end{cases} \\
-    \\
-     & \odot: T \times T \to T                         \\
-     & x \odot y \begin{cases}
-      x + y,  & x \neq \infty \text{ and } y \neq \infty, \\
-      \infty, & x = \infty \text{ or } y = \infty
-    \end{cases}
-  \end{balign*}
-
-  This makes \( (T, \oplus, \odot) \) into a \hyperref[def:semiring/identity]{semiring} with additive identity \( \infty \) and multiplicative identity \( 0 \). We call \( (T, \oplus, \odot) \) the \( \min \)-\term{tropical semiring} or simply the \term{tropical semiring} over \( M \). We define the \( \max \)-\term{tropical semiring} analogously by simply replacing \( \min \) with \( \max \).
-\end{definition}
-
-\begin{definition}\label{def:endomorphism_semiring}
-  Let \( (X, +) \) be an monoid and let \( \End(X) \) be set of endomorphism over \( X \). We define two operations:
-  \begin{itemize}
-    \item Pointwise addition \( [f + g](x) \coloneqq f(x) + g(x) \).
-    \item Multiplication by composition \( [fg](x) \coloneqq f(g(x)) \).
-  \end{itemize}
-
-  These operations make \( \End(X) \) into a semiring. If \( X \) is a group, then \( \End(X) \) is a ring.
-
-  If \( X \) is a semiring, we define \( \End(X) \) to be a set of semiring endomorphisms (that is, we want the additive group homomorphisms to preserve multiplication and units). Then \( \End(X) \) is again a semiring and, if \( X \) is a unital ring, so is \( \End(X) \).
-\end{definition}
-
 \begin{definition}\label{def:ordered_semiring}
-  Extending \fullref{def:preordered_magma} to (semi)rings, we define a \term{preordered semiring} to be a semiring \( \BbbR \) with a magma preorder \( \leq \) that additionally satisfies
-  \begin{equation}\label{eq:def:ordered_semiring/nonnegativity}
-    0 \leq y \T{and} 0 \leq y \T{implies} 0 \leq xy.
-  \end{equation}
+  A \term{preordered semiring} is a semiring \( R \) with a \hyperref[def:preordered_set]{preorder} \( \leq \) such that \( (R, +) \) is a \hyperref[def:ordered_magma]{ordered magma} and, additionally, \( 0 \leq x \) and \( 0 \leq y \) implies \( 0 \leq xy \).
 \end{definition}
