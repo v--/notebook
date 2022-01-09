@@ -30,8 +30,60 @@
   where \( e \) is a unit in \( R \).
 \end{definition}
 
+\begin{definition}\label{def:integral_domain}
+  An \term{integral domain} is a \hyperref[def:ring/trivial]{nontrivial} \hyperref[def:ring/commutative]{commutative ring} that satisfies any of the following equivalent conditions:
+  \begin{thmenum}
+    \thmitem{def:integral_domain/zero_divisors} The ring has no \hyperref[def:semiring_division]{zero divisors}.
+    \thmitem{def:integral_domain/cancellative} Multiplication of nonzero elements is \hyperref[def:magma/cancellative]{cancellative}.
+  \end{thmenum}
+\end{definition}
+\begin{defproof}
+  The equivalence follows from \fullref{thm:semiring_cancellative_iff_no_zero_divisors}.
+\end{defproof}
+
+\begin{definition}\label{def:principal_ideal_domain}
+  A \term{principal ideal domain} is an \hyperref[def:integral_domain]{integral domain} in which every \hyperref[def:semiring_ideal]{ideal} is \hyperref[def:semiring_ideal/principal]{principal}.
+\end{definition}
+
+\begin{example}\label{ex:def:integral_domain}
+  We list some counterexamples of \hyperref[def:integral_domain]{integral domains}.
+
+  \begin{refenum}
+    \refitem{def:integral_domain/not_commutative} For an example of a nonunital commutative ring, consider again the Banach space \( C_0(\co) \), however define multiplication as pointwise function multiplication rather than by composition. The constant function \( f(x) = 1 \) does not vanish at infinity, hence \( (C_0(\co), +, \cdot) \) is a commutative, but not unital ring.
+
+    \refitem{def:integral_domain/zero_divisors} An example of a nontrivial commutative unital ring that has zero divisors is the matrix algebra \( \BbbZ^{2 \times 2} \) over the integers. It is a ring under addition and matrix multiplication. We have
+    \begin{equation*}
+      \begin{pmatrix}
+        1 & 0 \\
+        1 & 0
+      \end{pmatrix}
+      \begin{pmatrix}
+        0 & 0 \\
+        0 & 1
+      \end{pmatrix}
+      =
+      \begin{pmatrix}
+        0 & 0 \\
+        0 & 0
+      \end{pmatrix},
+    \end{equation*}
+    thus there are zero divisors in \( \BbbZ^{2 \times 2} \).
+  \end{refenum}
+\end{example}
+
+\begin{definition}\label{def:unique_factorization_domain}
+  A \term{unique factorization domain} is an \hyperref[def:integral_domain]{integral domain} in which every element has a \hyperref[def:factorization_in_ring]{unique factorization}.
+\end{definition}
+
+\begin{example}\label{ex:integral_domain_not_ufd}\mcite[388]{Knapp2016BasicAlgebra}
+  The ring \( \BbbZ[\sqrt{-5}] \) is an integral domain by \fullref{thm:polynomials_over_integral_domain_are_integral_domain}. It is not a \hyperref[def:unique_factorization_domain]{unique factorization domain} because
+  \begin{equation*}
+    6 = (1 + \sqrt{-5}) (1 - \sqrt{-5}) = 2 \cdot 3.
+  \end{equation*}
+\end{example}
+
 \begin{definition}\label{def:euclidean_domain}\mcite{nLab:euclidean_domain}
-  Let \( R \) be an integral \hyperref[def:semiring/integral_domain]{domain}. Multiplication is not invertible in general, but we can instead define \term{Euclidean division} with remainders.
+  Let \( R \) be an integral \hyperref[def:integral_domain]{domain}. Multiplication is not invertible in general, but we can instead define \term{Euclidean division} with remainders.
 
   We endow \( R \) with an additional function \( \delta: R \to \BbbZ_{\geq 0} \). Let \( a, b \in R \). If there exists a pair \( (q, r) \) such that
   \begin{equation*}
@@ -52,7 +104,7 @@
   Let \( R \) be an Euclidean domain. Fix \( a, b \in R \) with \( b \neq 0 \). The \term{Euclidean algorithm} for finding \( \gcd(a, b) \) proceeds as follows:
   \begin{thmenum}
     \thmitem{alg:euclidean_algorithm/initialization} Define \( r_0 \coloneqq a \) and \( r_1 \coloneqq b \).
-    \thmitem{alg:euclidean_algorithm/step} Starting with \( i = 2 \), obtain \( q_i \) and \( r_i \) from \hyperref[def:semiring/euclidean_domain]{division}
+    \thmitem{alg:euclidean_algorithm/step} Starting with \( i = 2 \), obtain \( q_i \) and \( r_i \) from \hyperref[def:euclidean_domain]{division}
     \begin{equation*}
       r_{i-2} = r_{i-1} q_i + r_i.
     \end{equation*}
@@ -83,7 +135,9 @@
 \end{proof}
 
 \begin{proposition}\label{thm:euclidean_domain_is_pid}
-  Every Euclidean \hyperref[def:semiring/euclidean_domain]{domain} is a principal ideal \hyperref[def:semiring/principal_ideal_domain]{domain}.
+  Every Euclidean \hyperref[def:euclidean_domain]{domain} is a principal ideal \hyperref[def:principal_ideal_domain]{domain}.
+
+  Counterexamples to the converse are discussed in \cite{Anderson1988}.
 \end{proposition}
 \begin{proof}
   Fix an ideal \( I \) of the Euclidean domain \( R \). By \fullref{thm:natural_numbers_are_well_ordered}, the set \( \delta(I) \) has a minimum. Choose an element \( m \in I \) such that \( \delta(m) = \min \delta(I) \). We will prove that \( I = \braket m \).
@@ -104,8 +158,22 @@
 \end{proof}
 
 \begin{proposition}\label{thm:pid_is_ufd}
-  Every principal ideal \hyperref[def:semiring/principal_ideal_domain]{domain} is a unique factorization \hyperref[def:semiring/unique_factorization_domain]{domain}.
+  Every principal ideal \hyperref[def:principal_ideal_domain]{domain} is a unique factorization \hyperref[def:unique_factorization_domain]{domain}.
+
+  \Fullref{thm:ufd_is_not_pid} contains a counterexample to the converse.
 \end{proposition}
+
+\begin{example}\label{thm:ufd_is_not_pid}\cite{ProofWiki:polynomials_in_integers_is_not_principal_ideal_domain}
+  The unique factorization domain \( \BbbZ[X] \) is not a principal ideal domain.
+
+  Note that \( \BbbZ[X] \) is a unique factorization domain by \fullref{thm:polynomials_over_integral_domain_are_integral_domain}.
+
+  Consider the ideal \( I \) of polynomials with an even constant term.
+
+  Assume that \( I \) is generated by the polynomial \( p(X) \in \BbbZ[X] \). Since \( 2 \in I \), then \( p(X) \) divides \( 2 \), so \( p(X) \in \{ -2, -1, 1, 2 \} \), that is \( p(X) \) is a unit of \( \BbbZ[X] \). But then \( I = \braket{p(X)} = \BbbZ[X] \), which contradicts the definition of \( I \).
+
+  The obtained contradiction proves that \( \BbbZ[X] \) is not a principal ideal domain.
+\end{example}
 
 \begin{theorem}[Bezout's identity]\label{thm:bezout_identity}
   Let \( R \) be a principal ideal domain. Let \( a, b \in R \) with \( b \neq 0 \). Then \( \gcd(a, b) \) exists and, furthermore, there exist \( x, y \) such that
