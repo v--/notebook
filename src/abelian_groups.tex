@@ -2,6 +2,8 @@
 
 \begin{definition}\label{def:abelian_group}
   A \hyperref[def:magma/commutative]{commutative} \hyperref[def:group]{group} is usually called an \term{abelian group}. We denote by \( \cat{Ab} \) the category of abelian groups.
+
+  By \fullref{thm:abelian_group_is_module}, the abelian groups are precisely the \hyperref[def:module]{modules} over \( \BbbZ \), and we have an \hyperref[rem:category_similarity/isomorphism]{isomorphism of categories} \( \cat{Ab} \cong \cat{Mod}_\BbbZ \).
 \end{definition}
 
 \begin{remark}\label{rem:additive_magma}
@@ -164,47 +166,6 @@
   and the analogous homomorphism for the infinite group, are isomorphisms.
 \end{proof}
 
-\begin{definition}\label{def:group_direct_sum}
-  The \term{direct sum} \( \bigoplus_{k \in \mscrK} G_k \) of a family \( \seq{ G_k }_{k \in \mscrK} \) of (not necessarily abelian) groups is the subgroup of the \hyperref[def:group_direct_product]{direct product} \( \prod_{k \in \mscrK} G_k \), in which only finitely many components of each tuple are distinct from the identity.
-\end{definition}
-
-\begin{proposition}\label{thm:abelian_group_categorical_limits}
-  \hfill
-  \begin{thmenum}
-    \thmitem{thm:abelian_group_categorical_limits/product} As for the category \hyperref[def:group/category]{\( \cat{Grp} \)} of small group, the \hyperref[def:discrete_category_limits]{categorical product} of the family \( \seq{ G_k }_{k \in \mscrK} \) in the category \( \cat{Ab} \) of small \hyperref[def:abelian_group]{abelian groups} is their \hyperref[def:group_direct_product]{direct product} \( \prod_{k \in \mscrK} G_k \).
-
-    This is discussed as proved in \fullref{thm:group_categorical_limits/product}; and the proof holds in \( \cat{Ab} \).
-
-    \thmitem{thm:abelian_group_categorical_limits/coproduct} The \hyperref[def:discrete_category_limits]{categorical coproduct} of the family \( \seq{ G_k }_{k \in \mscrK} \) of \hyperref[def:abelian_group]{abelian groups} is their \hyperref[def:group_direct_sum]{direct sum} \( \biguplus_{k \in \mscrK} X_k \), the inclusion morphisms being
-    \begin{equation*}
-      \begin{aligned}
-         &\iota_m: X_m \to \oplus_{k \in \mscrK} X_k \\
-         &\iota_m(x_m) \coloneqq \begin{cases}
-          \begin{rcases}
-            x_m, &k = m \\
-            0_k, &k \neq m
-          \end{rcases}_{k \in \mscrK}
-        \end{cases}
-      \end{aligned}
-    \end{equation*}
-
-    Compare this to \fullref{thm:group_categorical_limits/coproduct}.
-  \end{thmenum}
-\end{proposition}
-\begin{proof}
-  \SubProofOf{thm:abelian_group_categorical_limits/coproduct} Let \( (A, \alpha) \) be a \hyperref[def:category_of_cones/cocone]{cocone} for the discrete diagram \( \seq{ G_k }_{k \in \mscrK} \). We want to define a group homomorphism \( l: \bigoplus_{k \in \mscrK} G_k \to A \) such that, for every \( m \in \mscrK \),
-  \begin{equation*}
-    \alpha_m(x) = l_A(\iota_m(x)).
-  \end{equation*}
-
-  This suggests the definition
-  \begin{equation*}
-    l_A(\seq{ x_k }_{k \in \mscrK}) \coloneqq \sum\set{ \alpha_k(x_k) \given k \in \mscrK \T{and} x_k \neq e_k }.
-  \end{equation*}
-
-  It is now evident why both commutativity and the assumption about only finitely many non-identity components is crucial.
-\end{proof}
-
 \begin{definition}\label{def:monoid_grothendieck_completion}\mcite{nLab:grothendieck_group_of_a_commutative_monoid}
   Let \( M \) be a \hyperref[def:magma/commutative]{commutative} \hyperref[def:monoid]{monoid}. Define the \hyperref[def:equivalence_relation]{equivalence relation} \( \sim \) on tuples of members of \( M \) to hold for \( (x_1, x_2) \sim (x_1', x_2') \) if there exists an element \( a \) of \( M \) such that
   \begin{equation*}
@@ -341,18 +302,32 @@
   The \term{commutator subgroup} \( [G, G] \) of \( G \) is the subgroup \hyperref[def:group/submodel]{generated} by all the commutators in \( G \).
 \end{definition}
 
-\begin{proposition}\label{thm:quotient_by_commutator_subgroup}\mcite[prop. 7.4]{Knapp2016BasicAlgebra}
-  The commutator group \( [G, G] \) of any group \( G \) is \hyperref[def:normal_subgroup]{normal} and the quotient \( G / C \) is \hyperref[def:abelian_group]{abelian}.
+\begin{proposition}\label{thm:group_abelianization_universal_property}\mcite[prop. 7.4]{Knapp2016BasicAlgebra}
+  The commutator group \( [G, G] \) of any group \( G \) is \hyperref[def:normal_subgroup]{normal} and the quotient \( G / [G, G] \) is an abelian group, which we call the \term{abelianization} of \( G \), satisfies the following \hyperref[rem:universal_mapping_property]{universal mapping property}:
+  \begin{displayquote}
+    For every abelian group \( H \) and every group homomorphism \( \varphi: G \to H \), there exists a unique group homomorphism \( \widetilde{\varphi}: G / [G, G] \to H \) such that the following diagram commutes:
+    \begin{equation}\label{eq:thm:group_abelianization_universal_property/diagram}
+      \begin{aligned}
+        \includegraphics[page=1]{output/thm__group_abelianization_universal_property.pdf}
+      \end{aligned}
+    \end{equation}
+  \end{displayquote}
+
+  Via \fullref{rem:universal_mapping_property}, the abelianization functor becomes \hyperref[def:category_adjunction]{left adjoint} to the \hyperref[def:concrete_category]{forgetful functor} \( U: \cat{Ab} \to \cat{Grp} \).
+
+  Compare this result to \fullref{thm:semiring_grothendieck_completion_universal_property}.
 \end{proposition}
 \begin{proof}
-  Normality easily follows from
+  Let \( C \coloneqq [G, G] \).
+
+  \SubProof{Proof that \( G / C \) is abelian} Normality of \( G / C \) easily follows from
   \begin{equation*}
     a xyx^{-1}y^{-1} a^{-1}
     =
     (a x a^{-1}) (a y a^{-1}) (a x a^{-1})^{-1} (a y a^{-1})^{-1}.
   \end{equation*}
 
-  Then for the cosets \( a C \) and \( b C \) we have
+  Then for the cosets \( a C \) and \( b C \), we have
   \begin{equation*}
     a C \cdot b C
     =
@@ -364,64 +339,45 @@
   \end{equation*}
 
   Therefore, the quotient group \( G / C \) is abelian.
+
+  \SubProof{Proof of universal mapping property} Let \( H \) be an abelian group and let \( \varphi: G \to H \) be a group homomorphism.
+
+  Observe that \( \varphi(C) = e_H \). Indeed, since \( H \) is abelian, for \( [x, y] = xyx^{-1}y^{-1} \in C \) we have
+  \begin{equation*}
+    \varphi([x, y]) = \varphi(x) \varphi(y) \varphi(x^{-1}) \varphi(y^{-1}) = \varphi(x) \varphi(x^{-1}) \varphi(y) \varphi(y^{-1}).
+  \end{equation*}
+
+  We want \( \overline{\varphi}: G / C \to H \) to satisfy
+  \begin{equation*}
+    \overline{\varphi}(\underbrace{\pi_G(x)}_{xC}) = \varphi(x).
+  \end{equation*}
+
+  This suggests the definition
+  \begin{equation*}
+    \overline{\varphi}(xC) \coloneqq \varphi(x).
+  \end{equation*}
+
+  It is well-defined because if \( xC = yC \), we have
+  \begin{equation*}
+    \varphi(x)
+    =
+    \varphi(x) e_H
+    =
+    \varphi(x) \varphi(C)
+    =
+    \varphi(x C)
+    =
+    \varphi(y C)
+    =
+    \ldots
+    =
+    \varphi(y).
+  \end{equation*}
 \end{proof}
 
-\begin{definition}\label{def:free_abelian_group}\mimprovised
-  We associate with every set \( A \) its \term{free abelian group} \( F(A) \) defined as the set
-  \begin{equation*}
-    F(A) \coloneqq \set{ s: A \to \BbbZ \given s \T{has finitely many nonzero values} }
-  \end{equation*}
-  with addition inherited from \( \BbbZ \).
-
-  We may equivalently reformulate the definition using \hyperref[def:weighted_set/multiset]{multisets} of integers, however this will not benefit us.
-
-  The canonical inclusion function is
-  \begin{equation*}
-    \begin{aligned}
-      &\iota_A: A \to F(A) \\
-      &\iota_A(x) \coloneqq \parens[\Bigg]
-        {
-          y \mapsto \begin{rcases}
-            \begin{cases}
-              1, &y = x \\
-              0, &y \neq x
-            \end{cases}
-          \end{rcases}
-        }
-    \end{aligned}
-  \end{equation*}
-
-  Compare this definition to free groups defined in \fullref{def:free_group}.
-\end{definition}
-\begin{defproof}
-  This is an abelian group as a consequence of \fullref{thm:functions_over_model_form_model}.
-\end{defproof}
-
-\begin{proposition}\label{thm:free_abelian_group_universal_property}
-  The \hyperref[def:free_abelian_group]{free abelian group} \( F(A) \) is the unique up to an isomorphism abelian group that satisfies the following \hyperref[rem:universal_mapping_property]{universal mapping property}:
-  \begin{displayquote}
-    For every abelian group \( G \) and every function \( f: A \to G \), there exists a unique group homomorphism \( \widetilde{f}: F(A) \to G \) such that the following diagram commutes:
-    \begin{equation}\label{eq:thm:free_abelian_group_universal_property/diagram}
-      \begin{aligned}
-        \includegraphics[page=1]{output/thm__free_abelian_group_universal_property.pdf}
-      \end{aligned}
-    \end{equation}
-  \end{displayquote}
-
-  Via \fullref{rem:universal_mapping_property}, \( F \) becomes \hyperref[def:category_adjunction]{left adjoint} to the \hyperref[def:concrete_category]{forgetful functor} \( U: \cat{Set} \to \cat{Ab} \).
+\begin{proposition}\label{thm:free_abelian_group_as_quotient}
+  The \hyperref[def:free_semimodule]{free abelian group} over a set is (isomorphic to) the \hyperref[thm:group_abelianization_universal_property]{abelianization} of the \hyperref[def:free_group]{free group} over the same set.
 \end{proposition}
 \begin{proof}
-  For every function \( f: A \to G \), we want
-  \begin{equation*}
-    \widehat{f}(\iota_A(x)) = f(x).
-  \end{equation*}
-
-  This implies the definition
-  \begin{equation*}
-    \widehat{f}(s) \coloneqq \sum_{x \in A} s(x) \cdot f(x).
-  \end{equation*}
-
-  Note that the expression \( s(x) \cdot f(x) \) is \hyperref[rem:additive_magma/multiplication]{additive notation} for group exponentiation.
-
-  As in \fullref{thm:abelian_group_categorical_limits/coproduct}, it becomes evident why we need the assumptions of commutativity and finitely many nonzero values of \( s \).
+  By the universal mapping property \fullref{thm:free_semimodule_universal_property} for abelian groups, it is unique up to a unique isomorphism. The universal properties \fullref{thm:free_group_universal_property} for free groups and \fullref{thm:group_abelianization_universal_property} for group abelianization give us another abelian group with the same universal property. Hence, the two are isomorphic.
 \end{proof}

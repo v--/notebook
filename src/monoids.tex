@@ -342,7 +342,7 @@ As discussed in \fullref{rem:first_order_model_notation}, denoting all operation
 \end{example}
 
 \begin{example}\label{ex:monoid_cancellation_not_preserved_by_homomorphism}\mcite{MathSE:magma_cancellation_not_preserved}
-  \hyperref[def:monoid/homomorphism]{Monoid homomorphisms} may not preserve the \hyperref[def:magma/cancellative]{cancellation property}. For example, the \hyperref[def:set_of_natural_numbers]{natural numbers} \( \BbbN \) are a cancellative monoid under addition, as shown in \fullref{thm:natural_number_addition_properties}), but the homomorphism
+  \hyperref[def:monoid/homomorphism]{Monoid homomorphisms} may not preserve the \hyperref[def:magma/cancellative]{cancellation property}. For example, the \hyperref[def:set_of_natural_numbers]{natural numbers} \( \BbbN \) are a cancellative monoid under addition, as shown in \fullref{thm:natural_number_addition_properties}, but the homomorphism
   \begin{equation*}
     \begin{aligned}
       &h: (\BbbN, +) \to (\hyperref[thm:galois_field_existence]{\BbbF_2}, \max) \\
@@ -367,4 +367,77 @@ As discussed in \fullref{rem:first_order_model_notation}, denoting all operation
   \begin{equation*}
     \varphi(xy) = \varphi(x) \varphi(y) = e_N e_N = e_N.
   \end{equation*}
+\end{proof}
+
+\begin{definition}\label{def:monoid_direct_product}
+  The \term{direct product} of a family of \hyperref[def:monoid]{monoids} \( \seq{ M_k }_{k \in \mscrK} \) is their \hyperref[def:cartesian_product]{Cartesian product} \( \prod_{k \in \mscrK} M_k \) with the componentwise operation
+  \begin{equation*}
+    \seq{ x_k }_{k \in \mscrK} \cdot \seq{ y_k }_{k \in \mscrK}
+    \coloneqq
+    \seq{ x_k \cdot y_k }_{k \in \mscrK}.
+  \end{equation*}
+
+  For every index \( m \in \mscrK \), we define the canonical projection
+  \begin{equation*}
+    \begin{aligned}
+      &\pi_m: \prod_{k \in \mscrK} M_k \to M_m \\
+      &\pi_m(\seq{ x_k }_{k \in \mscrK}) \coloneqq x_m.
+    \end{aligned}
+  \end{equation*}
+
+  The \term{direct sum} \( \bigoplus_{k \in \mscrK} M_k \) is the submonoid of the direct product, in which only finitely many components of each tuple are distinct from the identity.
+
+  For every index \( m \in \mscrK \), we define the canonical embedding
+  \begin{equation*}
+    \begin{aligned}
+       &\iota_m: M_m \to \bigoplus_{k \in \mscrK} M_k \\
+       &\iota_m(x_m) \coloneqq
+        \begin{rcases}
+          \begin{cases}
+            x_m, &k = m \\
+            e_k, &k \neq m
+          \end{cases}
+        \end{rcases}_{k \in \mscrK}
+    \end{aligned}
+  \end{equation*}
+
+  Unlike the product, the direct sum is mostly useful for commutative monoids --- see \fullref{thm:monoid_categorical_limits}.
+\end{definition}
+
+\begin{proposition}\label{thm:monoid_categorical_limits}
+  \hfill
+  \begin{thmenum}
+    \thmitem{thm:monoid_categorical_limits/product} The \hyperref[def:discrete_category_limits]{categorical product} of the family \( \seq{ M_k }_{k \in \mscrK} \) in the category \hyperref[def:monoid/category]{\( \cat{Mon} \)} of monoids is their \hyperref[def:monoid_direct_product]{direct product} \( \prod_{k \in \mscrK} M_k \).
+
+    \thmitem{thm:monoid_categorical_limits/coproduct} The \hyperref[def:discrete_category_limits]{categorical coproduct} of the family \( \seq{ M_k }_{k \in \mscrK} \) in the category \hyperref[def:monoid/category]{\( \cat{CMon} \)} of \hi{commutative} monoids is their \hyperref[def:monoid_direct_product]{direct sum} \( \bigoplus_{k \in \mscrK} M_k \).
+
+    Compare this to the non-commutative case for groups discussed in \fullref{thm:group_categorical_limits/coproduct}.
+  \end{thmenum}
+\end{proposition}
+\begin{proof}
+  \SubProofOf{thm:monoid_categorical_limits/product} Let \( (A, \alpha) \) be a \hyperref[def:category_of_cones/cone]{cone} for the \hyperref[def:discrete_category]{discrete} \hyperref[def:categorical_diagram]{diagram} \( \seq{ M_k }_{k \in \mscrK} \). We want to define a monoid homomorphism \( l_A: A \to \prod_{k \in \mscrK} M_k \) such that, for every \( m \in \mscrK \) and \( a \in A \),
+  \begin{equation*}
+    \alpha_m(a) = \pi_m(l_A(a)).
+  \end{equation*}
+
+  This suggests the definition
+  \begin{equation*}
+    l_A(a) \coloneqq \seq{ \alpha_k(a) }_{k \in \mscrK}.
+  \end{equation*}
+
+  \SubProofOf{thm:monoid_categorical_limits/coproduct}  Let \( (A, \alpha) \) be a \hyperref[def:category_of_cones/cocone]{cocone} for the discrete diagram \( \seq{ M_k }_{k \in \mscrK} \). We want to define a monoid homomorphism \( l_A: \bigoplus_{k \in \mscrK} M_k \to A \) such that, for every \( m \in \mscrK \) and \( x \in M_m \),
+  \begin{equation*}
+    \alpha_m(x) = l_A(\iota_m(x)).
+  \end{equation*}
+
+  This suggests the definition
+  \begin{equation*}
+    l_A(\seq{ x_k }_{k \in \mscrK}) \coloneqq \prod_{i=1}^n \alpha_i(x_i).
+  \end{equation*}
+  where \( 1, \ldots, n \) is any well-ordering on the set
+  \begin{equation*}
+    \set{ k \in \mscrK \given \alpha_k(x_k) \neq e_k }
+  \end{equation*}
+
+  Commutativity ensures that this homomorphism is well-defined.
 \end{proof}
