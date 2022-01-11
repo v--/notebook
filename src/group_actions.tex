@@ -197,35 +197,13 @@
   The proof of equivalence is simple; it is similar to \fullref{def:monoid_action}.
 \end{proof}
 
-\begin{lemma}\label{thm:group_operation_is_bijection}
-  For each element \( g \) of a group \( G \), consider the function \( \varphi_g \coloneqq g \id_G \), i.e.
-  \begin{equation*}
-    \begin{aligned}
-      &\varphi_x: G \to G \\
-      &\varphi_x(y) \coloneqq x \cdot y.
-    \end{aligned}
-  \end{equation*}
-
-  This is a bijective function (but not necessarily a group isomorphism).
-\end{lemma}
-\begin{proof}
-  \SubProofOf[def:function_invertibility/injective]{injectivity} If \( y_1, y_2 \in G \) and \( \varphi_x(y_1) = \varphi_x(y_2) \), we have
-  \begin{equation*}
-    xy_1 = \varphi_x(y_1) = \varphi_x(y_2) = xy_2.
-  \end{equation*}
-
-  By \fullref{thm:def:group/properties/cancellative}, \( y_1 = y_2 \). Therefore, \( \varphi_x \) is injective.
-
-  \SubProofOf[def:function_invertibility/surjective]{surjectivity} If \( z \in G \), then \( z = x(x^{-1} z) \). Therefore, \( z = \varphi_x(x^{-1} z) \), and thus every member of \( G \) has a preimage. Thus, \( \varphi_x \) is surjective.
-\end{proof}
-
 \begin{theorem}[Cayley's theorem]\label{thm:cayleys_theorem}
   Every \hyperref[def:group]{group} \hyperref[def:group_action]{acts} on itself via the family of functions \( y \mapsto x \cdot y \) indexed by \( x \). These functions are not group homomorphisms in general.
 
   Compare this result to \fullref{thm:monoid_is_action}.
 \end{theorem}
 \begin{proof}
-  Follows directly from \fullref{thm:monoid_is_action} and \fullref{thm:group_operation_is_bijection}.
+  Follows directly from \fullref{thm:monoid_is_action} and \fullref{thm:group_operation_induces_bijections}.
 \end{proof}
 
 \begin{proposition}\label{thm:exponentiation_group_action}
@@ -283,13 +261,13 @@
     \op{inn}(G) \coloneqq \set{ \Phi_g \given g \in G }.
   \end{equation*}
 
-  The \term{outer automorphism group} is the \hyperref[def:quotient_group]{quotient group}
+  The \term{outer automorphism group} is the \hyperref[def:group/quotient]{quotient group}
   \begin{equation*}
     \op{out}(G) \coloneqq \aut(G) / \op{inn}(G).
   \end{equation*}
 \end{definition}
 \begin{defproof}
-  We will show that \( \op{inn}(G) \) is a \hyperref[def:normal_subgroup]{normal subgroup} of \( \aut(G) \).
+  We will show that \( \op{inn}(G) \) is a \hyperref[thm:normal_subgroup_equivalences]{normal subgroup} of \( \aut(G) \).
 
   Fix a member \( g \) of \( G \) and define the inner automorphism
   \begin{equation*}
@@ -298,13 +276,13 @@
 
   Let \( \psi \) be an arbitrary automorphism of \( G \). Then
   \begin{equation*}
-    [\varphi \bincirc \varphi \bincirc \varphi^{-1}](h)
+    [\varphi \bincirc \psi \bincirc \varphi^{-1}](h)
     =
     \varphi(g \varphi^{-1}(h) g^{-1})
     =
     \varphi(g) h \varphi(g^{-1}),
   \end{equation*}
-  and thus \( \varphi \bincirc \varphi \bincirc \varphi^{-1} \) is again an inner automorphism.
+  and thus \( \varphi \bincirc \psi \bincirc \varphi^{-1} \) is again an inner automorphism.
 \end{defproof}
 
 \begin{definition}\label{def:permutation_cycle_decomposition}\mimprovised
@@ -371,7 +349,7 @@
   \begin{equation*}
     \sum_{c \in C_p} (\len(c) - 1)
   \end{equation*}
-  is a an even number; and likewise for \term{odd permutations}. In particular, a cycle \( p \neq \id \) is an even permutation if and only if \( \len(p) \) is \hi{odd}.
+  is a an even number; and likewise for \term{odd permutations}. In particular, a non-identity cycle \( p \) is an even permutation if and only if \( \len(p) \) is \hi{odd}.
 
   The decomposition of individual cycles from \fullref{thm:cycle_transposition_decomposition} implies that the above is precisely the total number of transpositions in the decomposition of all the cycles.
 
@@ -485,6 +463,43 @@
     This map is given by the restriction of the conjugation \( p \mapsto \cycle{1, 2} p \cycle{1, 2} \) to \( A_3 \). It is an inner automorphism of \( S_3 \), but an outer automorphism of \( A_3 \).
   \end{itemize}
 \end{example}
+
+\begin{proposition}\label{thm:group_epimorphisms_are_surjective}\mcite[exer. I.5.5]{MacLane1994}
+  Every \hyperref[def:morphism_invertibility/right_cancellative]{epimorphism} in \hyperref[def:group/category]{\( \cat{Grp} \)} is \hyperref[def:function_invertibility/surjective]{surjective}.
+\end{proposition}
+\begin{proof}
+  Let \( \varphi: G \to H \) be an epimorphism and suppose that it is not surjective. Let \( M \) be the smallest normal subgroup of \( H \) containing \( \img \varphi \).
+
+  If \( M \) has index \( 2 \) in \( H \), consider the quotient map \( \pi: H \to H / M \) and the constant map \( c(h) \coloneqq M \). Then
+  \begin{equation*}
+    \pi \bincirc \varphi = c \bincirc \varphi.
+  \end{equation*}
+
+  Since \( \varphi \) is an epimorphism, we have \( \pi = c \). But we have deliberately taken \( \pi \) and \( c \) so that \( \pi \neq c \). The obtained contradiction shows that \( M \) must have an index greater than \( 2 \).
+
+  Let \( M \), \( uM \) and \( vM \) be different cosets. Define \( \sigma: H \to H \) as the \hyperref[def:symmetric_group/permutation]{permutation} on \( H \) that exchanges \( xu \) with \( xv \) for every \( x \in M \). Define the homomorphism
+  \begin{equation*}
+    \begin{aligned}
+      &\psi: H \to \aut(H) \\
+      &\psi(h) \coloneqq (x \mapsto hx).
+    \end{aligned}
+  \end{equation*}
+
+  This is indeed a homomorphism by \fullref{thm:cayleys_theorem}. By \fullref{thm:group_conjugation_action}, another homomorphism is
+  \begin{equation*}
+    \begin{aligned}
+      &\theta: H \to \aut(H) \\
+      &\theta(h) \coloneqq \sigma^{-1} \bincirc \psi(h) \bincirc \sigma.
+    \end{aligned}
+  \end{equation*}
+
+  Since \( \sigma \) fixes the members of \( M \) in-place, we have \( \theta(h)\restr_M = \psi(h)\restr_M \). Since \( M \) contains the image of \( \varphi \), this implies
+  \begin{equation*}
+    \psi \bincirc \varphi = \theta \bincirc \varphi.
+  \end{equation*}
+
+  Since \( \varphi \) is an epimorphism, we have \( \psi = \theta \). But we have deliberately constructed \( \psi \) and \( \theta \) such that \( \psi \neq \theta \). The obtained contradiction shows that \( \img \varphi \) cannot be a strict subgroup of \( G \). Therefore, \( \varphi \) must be surjective.
+\end{proof}
 
 \begin{definition}\label{def:dynamical_system}\mimprovised
   Suppose that \( \cat{C} \) is a \hyperref[def:concrete_category]{concrete category} and let \( X \) be an object of \( \cat{C} \).
