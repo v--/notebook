@@ -224,7 +224,7 @@ Languages are used to define formulas for expressing the \hyperref[def:zfc]{axio
     \hfill
     \includegraphics[page=1]{output/ex__natural_number_arithmetic_grammar__derivation.pdf}
     \hfill\hfill
-    \caption{The unique way to produce the parenthesized arithmetic expression \( ((6 \div 2) \times 3) \)}
+    \caption{The unique leftmost derivation of the parenthesized arithmetic expression \( ((6 \div 2) \times 3) \)}
     \label{fig:ex:natural_number_arithmetic_grammar/derivation/unambiguous}
   \end{figure}
 
@@ -250,30 +250,32 @@ Languages are used to define formulas for expressing the \hyperref[def:zfc]{axio
   An \term{ordered arborescence} is an \hyperref[def:arborescence]{arborescence} \( T = (G, A) \) with a \hyperref[def:partially_ordered_set]{partial order} \( \leq \) such that every set of \hyperref[def:arborescence/ancestry]{siblings} is a \hyperref[def:partially_ordered_set_chain_and_antichain]{chain}.
 \end{definition}
 
-\begin{definition}\label{def:grammar_syntax_tree}\mimprovised
+\begin{definition}\label{def:concrete_syntax_tree}\mimprovised
   Fix a \hyperref[def:chomsky_hierarchy/context_free]{context-free} \hyperref[def:formal_grammar]{formal grammar} \( G = (V, S, \Sigma, \to) \).
 
-  For every word \( w \) in \( \mscrL(G) \), we will build an \hyperref[def:ordered_arborescence]{ordered} \hyperref[def:arborescence/undirected]{rooted tree} whose \hyperref[def:arborescence/ancestry]{leaves} are the symbols of \( w \) and whose root is \( S \). We will call this a \term{syntax tree} for \( w \).
+  For every word \( w \) in \( \mscrL(G) \), we will build an \hyperref[def:ordered_arborescence]{ordered} \hyperref[def:arborescence/undirected]{rooted tree} whose \hyperref[def:arborescence/ancestry]{leaves} are the symbols of \( w \) and whose root is \( S \). We will call this a \term{concrete syntax tree} for \( w \).
 
   \begin{figure}
     \hfill
-    \includegraphics[page=1]{output/alg__grammar_syntax_tree.pdf}
+    \includegraphics[page=1]{output/def__concrete_syntax_tree.pdf}
     \hfill\hfill
-    \caption{A grammar tree corresponding to the expression \( (6 \div (3 \times 2)) \) from \cref{fig:ex:natural_number_arithmetic_grammar/derivation/unambiguous}}
-    \label{fig:def:grammar_syntax_tree}
+    \caption{A concrete syntax tree for the expression \( (6 \div (3 \times 2)) \) from \cref{fig:ex:natural_number_arithmetic_grammar/derivation/unambiguous}}
+    \label{fig:def:concrete_syntax_tree}
   \end{figure}
 
   Fix a derivation
-  \begin{equation}\label{eq:def:grammar_syntax_tree/derivation}
+  \begin{equation}\label{eq:def:concrete_syntax_tree/derivation}
     S \Rightarrow w_1 \Rightarrow \cdots \Rightarrow w_{n-1} \Rightarrow w_n.
   \end{equation}
+
+  In practice, we want this to be unique and hence we can restrict ourselves to leftmost derivations in \hyperref[def:chomsky_hierarchy/context_free]{unambiguous} grammars.
 
   We use \hyperref[rem:natural_number_recursion]{natural number recursion} on \( n \) to build the tree. Note that, for the purposes of recursion, we allow \( w_n \) to contain non-terminals.
 
   \begin{itemize}
     \item In the trivial case where \( n = 0 \), and there is no actual derivation, we build a single-vertex tree with root \( S \).
 
-    \item Suppose that we can build a tree for all derivations of length \( m - 1 \) and fix a derivation \eqref{eq:def:grammar_syntax_tree/derivation} of length \( n \).
+    \item Suppose that we can build a tree for all derivations of length \( m - 1 \) and fix a derivation \eqref{eq:def:concrete_syntax_tree/derivation} of length \( n \).
 
     First, build a tree \( T \) from the derivation
     \begin{equation*}
@@ -289,12 +291,8 @@ Languages are used to define formulas for expressing the \hyperref[def:zfc]{axio
   \end{itemize}
 \end{definition}
 
-\begin{proposition}\label{thm:unambiguous_grammar_syntax_trees}
-  A \hyperref[def:chomsky_hierarchy/context_free]{context-free} grammar is \hyperref[def:chomsky_hierarchy/context_free]{unambiguous} if and only if every word has a unique \hyperref[def:grammar_syntax_tree]{syntax tree}.
-\end{proposition}
-
 \begin{theorem}[Structural induction on unambiguous grammars]\label{thm:structural_induction_on_unambiguous_grammars}\mimprovised
-  Unlike for the other induction principles in \fullref{rem:induction}, we will not formulate this one via logical formulas. This will complicate us unnecessarily. We will instead describe how the principle is used in practice.
+  Unlike for the other induction principles in \fullref{rem:induction}, we will not formulate this one via logical formulas. This will complicate us unnecessarily. We will instead describe how the principle is used. It should be noted that, in applications of this principle, we prefer using \hyperref[rem:abstract_syntax_tree]{abstract syntax trees} to \hyperref[def:concrete_syntax_tree]{concrete syntax trees}, but formulating the principle itself is easier via concrete syntax trees.
 
   Let \( G = (V, S, \Sigma, \to) \) be an \hyperref[def:chomsky_hierarchy/context_free]{unambiguous} \hyperref[def:chomsky_hierarchy/context_free]{context-free} \hyperref[def:formal_grammar]{formal grammar}.
 
@@ -305,7 +303,7 @@ Languages are used to define formulas for expressing the \hyperref[def:zfc]{axio
       w = u_0 A_1 u_1 A_2 \ldots A_n u_n.
     \end{equation*}
 
-    Let \( v_1, \ldots, v_n \) be arbitrary words in \( \mscrL(G) \) derivable from \( A_1, \ldots, A_n \), respectively, so that we have the syntax tree
+    Let \( v_1, \ldots, v_n \) be arbitrary words in \( \mscrL(G) \) derivable from \( A_1, \ldots, A_n \), respectively, so that we have the concrete syntax tree
     \begin{equation*}
       \begin{aligned}
         \includegraphics[page=1]{output/thm__structural_induction_on_unambiguous_grammars.pdf}
@@ -321,6 +319,107 @@ Languages are used to define formulas for expressing the \hyperref[def:zfc]{axio
   Compare this principle to the more general \fullref{thm:well_founded_induction}.
 \end{theorem}
 \begin{proof}
-  Clearly every word in \( \mscrL(G) \) can be obtained in this way.
-  The role of non-ambiguity is discussed in the proof of \fullref{thm:well_founded_induction}.
+  Clearly every word in \( \mscrL(G) \) can be obtained in this way. The principle itself follows from \fullref{thm:well_founded_induction} even without non-ambiguity.
+
+  Non-ambiguity ensures that every word has a unique concrete syntax tree, and prevents us from proving the statement for one tree of a word and disproving it for another.
 \end{proof}
+
+\begin{remark}\label{rem:abstract_syntax_tree}
+  Unlike \hyperref[def:concrete_syntax_tree]{concrete syntax trees}, which focus on how words are built from symbols, \term{abstract syntax trees} focus on how words are built with respect to semantics. For example, natural number arithmetic is not concerned with the symbols themselves but only in how operations are applied to numbers. This is better expressed via the abstract syntax tree in \cref{fig:rem:abstract_syntax_tree} rather than the concrete syntax tree in \cref{fig:def:concrete_syntax_tree}.
+
+  A formal definition for an abstract syntax tree would be clunky. It is an \hyperref[def:ordered_arborescence]{ordered} \hyperref[def:arborescence/undirected]{rooted tree} of words that unambiguously encodes a concrete syntax tree. The structure of an abstract syntax tree is determined entirely by the concrete application, and we will not attempt to give a more precise definition.
+
+  Applications of \fullref{thm:structural_induction_on_unambiguous_grammars} use abstract syntax trees as can be seen in \fullref{subsec:propositional_logic} and \fullref{subsec:first_order_logic}, and a broader discussion on the properties of certain trees can be found in \fullref{rem:binary_operation_syntax_trees}.
+
+  \begin{figure}
+    \hfill
+    \includegraphics[page=1]{output/rem__abstract_syntax_tree.pdf}
+    \hfill\hfill
+    \caption{An abstract syntax tree for the expression \( (6 \div (3 \times 2)) \) from \cref{fig:ex:natural_number_arithmetic_grammar/derivation/unambiguous}}
+    \label{fig:rem:abstract_syntax_tree}
+  \end{figure}
+\end{remark}
+
+\begin{remark}\label{rem:binary_operation_syntax_trees}
+  \hyperref[def:magma]{Binary operations} are easily extended to higher arities. Given a binary operation \( +: M \times M \to M \), we can extend it via \hyperref[rem:natural_number_recursion]{natural number recursion} to arbitrary \( n \)-tuples \( x_1, \ldots, x_n \) as
+  \begin{equation}\label{eq:rem:binary_operation_syntax_trees/expression}
+    (x_1 + (x_2 + \cdots + (x_{n-1} + x_n) \cdots )).
+  \end{equation}
+
+  This expression corresponds to the \hyperref[rem:abstract_syntax_tree]{abstract syntax tree}
+  \begin{equation}\label{eq:rem:binary_operation_syntax_trees/tree/basic}
+    \begin{aligned}
+      \includegraphics[page=1]{output/rem__binary_operation_syntax_trees.pdf}
+    \end{aligned}
+  \end{equation}
+
+  Several things can be noted here.
+  \begin{thmenum}
+    \thmitem{rem:binary_operation_syntax_trees/associativity} When exchanging the order of the parentheses in the expression \eqref{eq:rem:binary_operation_syntax_trees/expression}, only the root is changed in the syntax tree \eqref{eq:rem:binary_operation_syntax_trees/tree/basic}. Therefore, for an \hyperref[def:magma/associative]{associative} binary operation, abstract syntax trees can instead be represented as finite ordered rooted trees like
+    \begin{equation}\label{eq:rem:binary_operation_syntax_trees/tree/associative}
+      \begin{aligned}
+        \includegraphics[page=2]{output/rem__binary_operation_syntax_trees.pdf}
+      \end{aligned}
+    \end{equation}
+
+    Of course, \( n \)-ary trees can still be used for non-associative binary operations, as long as we have selected a strategy for evaluation. If we evaluate \eqref{eq:rem:binary_operation_syntax_trees/tree/associative} as \eqref{eq:rem:binary_operation_syntax_trees/expression}, we say that the operation is \term{right associative}. Dually, if we evaluate \eqref{eq:rem:binary_operation_syntax_trees/tree/associative} as
+    \begin{equation*}
+      (( \cdots (x_1 + x_2) + \cdots + x_{n-1}) + x_n),
+    \end{equation*}
+    we say that the operation is \term{left associative}.
+
+    Note that, unlike associativity, left and right associativity are not properties of the operation, but rather conventions on how to evaluate expressions without explicit parentheses. For example, in a \hyperref[def:heyting_algebra]{Heyting algebra}, the \hyperref[eq:def:heyting_algebra/conditional]{conditional} \( \rightarrow \) is not associative, but it is often taken to be right associative so that
+    \begin{equation*}
+      x \rightarrow y \rightarrow z
+    \end{equation*}
+    is evaluated as
+    \begin{equation*}
+      (x \rightarrow (y \rightarrow z)).
+    \end{equation*}
+
+    \thmitem{rem:binary_operation_syntax_trees/commutativity} If, additionally, the operation is \hyperref[def:magma/commutative]{commutative}, we can regard the syntax tree as unordered.
+
+    Note that extending operations can be confusing for commutative but non-associative operations. Commutativity allows us to swap summands inside parentheses, and associativity is needed to \enquote{remove} the parentheses.
+
+    Consider the real number midpoint operation
+    \begin{equation*}
+      x \oplus y \coloneqq \frac {x + y} 2
+    \end{equation*}
+    from \fullref{ex:def:magma/midpoint}. It is commutative and not associative, and in the expression \( x \oplus y \oplus z \), we can swap \( x \) with \( y \) but not with \( z \). This can be very unintuitive. We aim to always write parentheses for non-associative operations.
+
+    \thmitem{rem:binary_operation_syntax_trees/infinite} Suppose that \( + \) is associative and commutative. Suppose also that we are given an \hyperref[def:cartesian_product/indexed_family]{indexed family} \( \seq{ x_k }_{k \in \mscrK} \) of elements of \( M \). We can obviously construct a tree with root \( + \) and children \( \seq{ x_k }_{k \in \mscrK} \).
+
+    This is not strictly a syntax tree. Syntax trees are necessarily finite, and the family may even be uncountable. Nevertheless, we can sometimes evaluate this tree to obtain a member of the monoid.
+    \begin{thmenum}
+      \thmitem{rem:binary_operation_syntax_trees/infinite/lattice} The operations of a \hyperref[def:lattice]{lattice} arise by specializing \hyperref[def:partially_ordered_set_extremal_points/supremum_and_infimum]{suprema and infima} to binary sets. Conversely, as discussed in \fullref{thm:binary_lattice_operations/new_lattice}, the binary lattice operations induce a \hyperref[def:partially_ordered_set]{partial order}, and we can define suprema and infima. If the lattice happens to be \hyperref[def:lattice/complete]{complete}, instead of the binary operations, we can use
+      \begin{equation*}
+        \bigvee_{k \in \mscrK} x_k = \sup\set{ x_k \given k \in \mscrK }.
+      \end{equation*}
+
+      \thmitem{rem:binary_operation_syntax_trees/infinite/convergence} If \( M \) is a \hyperref[def:topological_magma]{topological} monoid and if \( \mscrK = \set{ 1, 2, 3, \ldots } \), the family is a \hyperref[def:sequence]{sequence}, and we can define the sequence of partial sums
+      \begin{equation*}
+        \seq*{ \sum_{k=1}^n x_k }_{n=1}^\infty
+      \end{equation*}
+
+      This gives rise to \hyperref[def:convergent_series]{series} discussed in \fullref{subsec:series} and \fullref{subsec:real_series}. A limit may not exist for the net, unfortunately, and if it does, it may not be unique (if the topology is not \hyperref[def:separation_axioms/T2]{Hausdorff}).
+
+      \thmitem{rem:binary_operation_syntax_trees/infinite/direct_sum} Suppose that \( M \) has an \hyperref[def:monoid]{identity element} \( 0_M \). If only finitely many elements of the family are different from \( 0_M \), we regard the ordinary summation operation as well-defined on the whole family and write
+      \begin{equation*}
+        s \coloneqq \sum_{k \in \mscrK} x_k.
+      \end{equation*}
+
+      Technically, this involves selecting a \hyperref[def:well_ordered_set]{well-ordering} \( x_{1_n}, \ldots, x_{k_n} \) on the set
+      \begin{equation*}
+        \set{ x_k \given k \in \mscrK \T{and} x_k \neq 0 }
+      \end{equation*}
+      and assigning to \( s \) the result of the iterated binary operation
+      \begin{equation*}
+        (x_{1_n} + (x_{2_n} + \cdots + (x_{k_{n-1}} + x_{k_n}) \cdots)).
+      \end{equation*}
+
+      Commutativity ensures that the sum \( s \) does not depend on the order of summands (and hence on the well-order we have chosen). Adding any member of the family would not change the sum, which justifies this shorthand definition. Furthermore, since we only sum finitely many summands, we can construct a well-ordering using \hyperref[rem:natural_number_recursion]{natural number recursion} without relying on the \hyperref[def:zfc/choice]{axiom of choice}.
+
+      This is fundamental for the definition of \hyperref[def:monoid_direct_product]{direct sums}, which in turn are used to define \hyperref[def:linear_combination]{linear combinations} and \hyperref[def:polynomial]{polynomials}.
+    \end{thmenum}
+  \end{thmenum}
+\end{remark}
