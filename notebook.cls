@@ -92,10 +92,10 @@
 \RequirePackage[altpo,epsilon]{backnaur}
 \RequirePackage[ISO]{diffcoeff}
 \RequirePackage{blkarray}
-\RequirePackage{synttree}
 \RequirePackage{ebproof}
 \RequirePackage{bigints}
 \RequirePackage{xfrac}
+\RequirePackage{forest}
 
 % Custom code
 \RequirePackage{packages/math_macros}
