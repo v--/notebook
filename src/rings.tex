@@ -21,8 +21,6 @@
 
     \thmitem{def:ring/commutative} If multiplication is commutative, we call the ring itself \term{commutative}. Unless multiplication corresponds to function composition, most rings we will encounter will be commutative.
 
-    \Fullref{sec:commutative_algebra} is entirely devoted to commutative unital rings.
-
     \thmitem{def:ring/category} The corresponding \hyperref[def:category_of_small_first_order_models]{category of \( \mscrU \)-small models} \( \ucat{Ring} \) is \hyperref[def:concrete_category]{concrete} over \hyperref[def:monoid]{\( \ucat{SRing} \)}. We denote the category of commutative rings by \( \cat{CRing} \).
 
     Unlike the category \hyperref[def:group/category]{\( \cat{Grp} \)} of groups, \( \cat{Ring} \) is not as well-behaved. Nevertheless, kernels and quotients of rings are commonly established concepts.
@@ -58,6 +56,10 @@
     Despite being \hyperref[def:zero_morphisms/cokernel]{categorical cokernel} only in the category of nonunital rings, the quotient \( R / I \) is defined and used mainly for unital rings.
 
     Fortunately, for unital ring \( R \), the quotient \( R / I \) is also unital. The projection morphism is an epimorphism by \fullref{thm:equalizer_invertibility}, and hence \( R / I \) is a \hyperref[def:subobject_and_quotient]{categorical quotient object}.
+
+    \thmitem{def:ring/simple} Analogously to \hyperref[def:group/simple]{simple groups}, if the only proper \hyperref[def:semiring_ideal]{ideal} of \( R \) is the \hyperref[def:ring/trivial]{trivial ideal} \( \set{ 0_R } \), we say that \( R \) is a \term{simple ring}.
+
+    The trivial ring itself is not simple, because it has no proper ideals.
   \end{thmenum}
 \end{definition}
 
@@ -122,7 +124,7 @@
   \end{equation*}
 \end{proof}
 
-\begin{theorem}[Quotient ring universal property]\label{thm:quotient_ring_universal_property}\mcite[thm. 7.12]{Aluffi2009}
+\begin{theorem}[Quotient ring universal property]\label{thm:quotient_ring_universal_property}
   For every \hyperref[def:ring]{ring} \( R \) and \hyperref[def:semiring_ideal]{ideal} \( I \), the \hyperref[def:ring/quotient]{quotient ring} \( R / I \) has the following \hyperref[rem:universal_mapping_property]{universal mapping property}:
   \begin{displayquote}
     Every ring homomorphism \( \varphi: R \to S \) satisfying \( I \subseteq \ker \varphi \) \hyperref[def:factors_through]{uniquely factors through} \( R / I \). That is, there exists a unique homomorphism \( \widetilde{\varphi}: R / I \to S \) such that the following diagram commutes:
@@ -139,6 +141,24 @@
 \end{theorem}
 \begin{proof}
   Simple refinement of \fullref{thm:quotient_group_universal_property}.
+\end{proof}
+
+\begin{theorem}[Quotient subring lattice theorem]\label{thm:quotient_subring_lattice_theorem}
+  Given a \hyperref[def:semiring_ideal]{two-sided ideal} \( I \) of the \hyperref[def:ring]{ring} \( R \), the function \( S \mapsto S / I \) is a \hyperref[def:semilattice/homomorphism]{lattice isomorphism} between the lattice of \hyperref[def:ring/submodel]{subrings} of \( R \) containing \( I \) and the lattice of subrings of the \hyperref[def:ring/quotient]{quotient} \( R / I \).
+
+  Compare this result to \fullref{thm:quotient_subgroup_lattice_theorem} and \fullref{thm:quotient_submodule_lattice_theorem}.
+\end{theorem}
+\begin{proof}
+  Simple refinement of \fullref{thm:quotient_subgroup_lattice_theorem}.
+\end{proof}
+
+\begin{proposition}\label{thm:quotient_by_maximal_ideal}
+  The two-sided ideal \( M \) of the \hyperref[def:ring]{ring} \( R \) is \hyperref[def:semiring_ideal/maximal]{maximal} if and only if the \hyperref[def:ring/quotient]{quotient} \( R / M \) is a \hyperref[def:ring/simple]{simple ring}.
+
+  See \fullref{thm:quotient_by_prime_ideal} for the corresponding statement for \hyperref[def:semiring_ideal/prime]{prime ideals} in commutative rings.
+\end{proposition}
+\begin{proof}
+  Since \( M \) is maximal, only \( M \) and \( R \) are ideals of \( R \) containing \( M \). Therefore, by \fullref{thm:quotient_subring_lattice_theorem}, \( R / M \) has only two ideals.
 \end{proof}
 
 \begin{proposition}\label{thm:semiring_grothendieck_completion}
@@ -256,4 +276,94 @@
     =
     (y + I) (x + I).
   \end{equation*}
+\end{proof}
+\subsection{Localization}\label{subsec:localization}
+
+\begin{definition}\label{def:ring_localization}\mcite[428]{Knapp2016BasicAlgebra}
+  Let \( S \subseteq R \) be closed under multiplication.
+
+  Define the following equivalence relation on \( R \times S \):
+  \begin{equation*}
+    (r, s) \cong (r', s') \iff \exists t \in S: t(rs' - sr') = 0.
+  \end{equation*}
+
+  Define the ring
+  \begin{equation*}
+    S^{-1} R \coloneqq R \times S / \cong
+  \end{equation*}
+  with operations inherited from \( R \) using the injection
+  \begin{balign*}
+     & \iota: R \to S^{-1} R        \\
+     & \iota(r) \coloneqq [(r, 1)].
+  \end{balign*}
+\end{definition}
+
+\begin{proposition}\label{thm:ring_localization_universal_property}\mcite[431]{Knapp2016BasicAlgebra}
+  Let \( S \subseteq R \) be closed under multiplication. The ring \hyperref[def:ring_localization]{localization} \( S^{-1} R \) satisfies the following universal mapping property: if \( T \) is a nontrivial commutative unital ring and \( \varphi: R \to T \) is a unital ring homomorphism such that \( \varphi(S) \) are units in \( T \), there exists a unique ring homomorphism \( \hat \varphi \) such that the following diagram commutes:
+
+  \begin{alignedeq}\label{thm:ring_localization_universal_property/diagram}
+    \text{\todo{Add diagram}}\iffalse\begin{mplibcode}
+      beginfig(1);
+      input metapost/graphs;
+
+      v1 := thelabel("$S^{-1} R$", origin);
+      v2 := thelabel("$T$", (2, 0) scaled u);
+      v3 := thelabel("$R$", (1, 1) scaled u);
+
+      a1 := straight_arc(v3, v2);
+      a2 := straight_arc(v3, v1);
+
+      d1 := straight_arc(v1, v2);
+
+      draw_vertices(v);
+      draw_arcs(a);
+
+      drawarrow d1 dotted;
+
+      label.urt("$\varphi$", straight_arc_midpoint of a1);
+      label.ulft("$\iota$", straight_arc_midpoint of a2);
+      label.top("$\hat\varphi$", straight_arc_midpoint of d1);
+      endfig;
+    \end{mplibcode}\fi
+  \end{alignedeq}
+\end{proposition}
+
+\begin{proposition}\label{thm:ring_localization_preserves_ideals}\mcite[432]{Knapp2016BasicAlgebra}
+  If \( I \) is an ideal in \( R \), then
+  \begin{equation*}
+    S^{-1} I \coloneqq \{ s^{-1} x \mid s \in S, x \in I \}
+  \end{equation*}
+  is an ideal in the \hyperref[def:ring_localization]{localization} \( S^{-1} R \).
+\end{proposition}
+
+\begin{definition}\label{def:local_ring}
+  If \( R \) has a unique \hyperref[def:maximal_ring_ideal]{maximal ideal}, we say that it is a \term{local ring}.
+\end{definition}
+
+\begin{proposition}\label{thm:localization_of_prime_is_local}\mcite[cor. 8.50]{Knapp2016BasicAlgebra}
+  Fix a prime ideal \( P \). Its complement
+  \begin{equation*}
+    S \coloneqq \BbbZ \setminus P
+  \end{equation*}
+  is closed under multiplication and we can perform \hyperref[def:ring_localization]{localization}.
+
+  In this case, the ring \( S^{-1} R \) is a local \hyperref[def:local_ring]{ring} and \( M \coloneqq S^{-1} P \) is its unique maximal ideal.
+\end{proposition}
+
+\begin{example}\label{ex:ring_localization}\mcite[430]{Knapp2016BasicAlgebra}
+  Let \( p \) be a prime \hyperref[def:prime_number]{number} and \( P = \braket p \) be the corresponding \hyperref[def:prime_ring_ideal]{prime ideal}. Denote its complement by \( S \).
+
+  The ring \( S^{-1} R \) then consists of all rational \hyperref[def:set_of_rational_numbers]{numbers} whose denominators are not divisible by \( p \).
+
+  In particular, if \( p = 2 \), then \( S^{-1} R \) is the set of all rational numbers with odd denominators.
+\end{example}
+
+\begin{definition}\label{def:field_of_fractions}
+  The \term{field of fractions} of \( R \) is defined as the \hyperref[def:ring_localization]{localization} of \( R \) by the set
+  \begin{equation*}
+    S \coloneqq R \setminus \{ 0 \}.
+  \end{equation*}
+\end{definition}
+\begin{proof}
+  This is indeed a field since all nonzero elements are invertible.
 \end{proof}
