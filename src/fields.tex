@@ -39,40 +39,104 @@
   By \fullref{thm:division_ring_is_entire}, a field is necessarily an integral domain. Since every element of \( \BbbK \) is divisible (without remainder), the Euclidean function can be arbitrary; for definiteness, we take it to be canonically zero.
 \end{proof}
 
-\begin{lemma}\label{thm:ring_of_integers_modulo_zero_divisors}
-  In the ring \hyperref[thm:ring_of_integers_modulo]{\( \BbbZ_n \)} of integers modulo \( n \), a nonzero number \( m \) is a \hyperref[def:divisibility]{zero divisor} if and only if \( m \) is not \hyperref[def:coprime_numbers]{coprime} to \( n \).
-\end{lemma}
-\begin{proof}
-  Simply note that \( m \odot k = 0 \) for nonzero \( m \) and \( k \) if and only if \( n \mid mk \).
-\end{proof}
-
-\begin{proposition}\label{thm:ring_of_integers_modulo_prime_is_field}
-  For a \hyperref[def:prime_number]{prime number} \( p \), the ring \hyperref[thm:ring_of_integers_modulo]{\( \BbbZ_p \)} of integers modulo \( p \) is a \hyperref[def:field]{field}.
+\begin{proposition}\label{thm:field_of_fractions}
+  Let \( R \) be an \hyperref[def:integral_domain]{integral domain}. The \hyperref[def:ring_localization]{localization} of \( R \) at the zero ideal \( \set{ 0_R } \) is a \hyperref[def:field]{field}, which we call the \term{field of fractions} of \( R \).
 \end{proposition}
 \begin{proof}
-  By \fullref{thm:ring_of_integers_modulo}, \( \BbbZ_p \) is a commutative ring. By \fullref{thm:ring_of_integers_modulo_zero_divisors}, it has no zero divisors for prime \( p \).
+  By \fullref{thm:def:ring_localization/properties/prime_ideal}, the localization by the prime ideal \( \set{ 0_R } \) has  whose only maximal ideal is \( S^{-1} \set{ 0_R } \). Since \( 0_R \) is absorbing, \( S^{-1} \set{ 0_R } \) is again the zero ideal.  Therefore, it is the only proper ideal of the localization \( S^{-1} R \), and hence the localization is a \hyperref[def:ring/simple]{simple ring}.
 
-  Hence, it only remains to show that every number \( m < p \) has a multiplicative inverse in \( \BbbZ_p \). \Fullref{thm:bezout_identity} gives us integers \( a, b \in \BbbZ \) such that
+  Since \( R \) is an integral domain, by \fullref{thm:def:ring_localization/properties/injective_inclusion}, \( S^{-1} R \) is a superring of \( R \). It is therefore a nontrivial commutative simple ring, and thus it satisfies \fullref{def:field/simple}.
+\end{proof}
+
+\begin{proposition}\label{thm:prime_fields}
+  For a \hyperref[def:prime_number]{prime number} \( p \), the ring \hyperref[thm:ring_of_integers_modulo]{\( \BbbZ_p \)} of integers modulo \( p \) is a \hyperref[def:field]{field}.
+
+  We will refer to such fields as \term{prime fields}. It is conventional to denote prime fields via \( \BbbF_p \).
+\end{proposition}
+\begin{proof}
+  Follows from \fullref{thm:cyclic_groups_are_simple} applied to the additive group.
+\end{proof}
+
+\begin{lemma}\label{thm:prime_field_all_root_polynomial}
+  In a \hyperref[thm:prime_fields]{prime field} \( \BbbF_p \), we have the polynomial equality
   \begin{equation*}
-    am + bp = \gcd(m, p) = 1.
+    X^p - X = \prod_{m < p} (X - m).
+  \end{equation*}
+\end{lemma}
+\begin{proof}
+  Every nonnegative integer \( m < p \) is a root of
+  \begin{equation*}
+    \prod_{m < p} (X - m).
   \end{equation*}
 
-  Without loss of generality, we can assume that \( a < p \). We can take \( \rem(a, p) \) otherwise.
+  By \fullref{thm:fermats_little_theorem}, \( m \) is also root of \( X^p - X \).
 
-  We have
+  Therefore, their difference
   \begin{equation*}
-    m \odot a = \rem(ma, p) = \rem(ma + bp, p) = \rem(1, p) = 1.
+    (X^p - X) - \prod_{m < p} (X - m)
+  \end{equation*}
+  has \( p + 1 \) roots. By \fullref{thm:integral_domain_polynomial_root_limit}, this is the zero polynomial.
+\end{proof}
+
+\begin{proposition}\label{thm:functions_over_prime_fields}
+  For every \hyperref[thm:prime_fields]{prime field} \hyperref[thm:ring_of_integers_modulo]{\( \BbbF_p \)} and for every \hyperref[def:polynomial_semiring]{polynomial ring} \( \BbbZ_p[X_1, \ldots, X_n] \) in finitely many indeterminates, there exists an \hyperref[def:algebra_over_ring]{\( \BbbZ_p \)-algebra isomorphism}
+  \begin{equation*}
+    \frac {\BbbZ_n[X_1, \ldots, X_n]} {\braket[\Big]{ X_i^p - X_i \given* i = 1, \ldots, n }} \cong \fun(\BbbF_p^n, \BbbF_p),
+  \end{equation*}
+  where \( \fun(\BbbF_p^n, \BbbF_p) \) is the \( \BbbZ_p \)-algebra \hyperref[thm:functions_over_semimodule]{of all functions} from \( \BbbF_p^n \) to \( \BbbF_p \).
+
+  Furthermore, \fullref{thm:prime_field_lagrange_interpolation} associates with any function from \( \BbbF_p^n \) to \( \BbbF_p \) a unique polynomial from the corresponding equivalence class.
+\end{proposition}
+\begin{proof}
+  Consider the \hyperref[thm:polynomial_semiring_universal_property]{functional evaluation homomorphism}
+  \begin{equation*}
+    \Phi: \BbbZ_n[X_1, \ldots, X_m] \to \fun(\BbbZ_n^m, \BbbZ_n).
   \end{equation*}
 
-  Then \( a \) is a multiplicative inverse of \( m \).
+  By \fullref{thm:prime_field_lagrange_interpolation}, \( \Phi \) is surjective. Then, by \fullref{thm:quotient_ring_universal_property},
+  \begin{equation*}
+    \BbbZ_n[X_1, \ldots, X_n] / \ker \Phi \cong \fun(\BbbZ_n^m, \BbbZ_n).
+  \end{equation*}
+
+  We will now prove that \( \ker \Phi \) equals
+  \begin{equation*}
+    I \coloneqq \braket[\Big]{ X_i^p - X_i \given* i = 1, \ldots, n }.
+  \end{equation*}
+
+  First, let \( f: \mscrX \to \BbbZ_p \) be the variable assignment that assigns \( x_1, \ldots, x_n \) to the corresponding indeterminates. By \fullref{thm:fermats_little_theorem}, for any indeterminate \( X_i \), we have
+  \begin{equation*}
+    \Phi_f(X_i^p - X_i) = x_i^p - x_i = 0.
+  \end{equation*}
+
+  Hence, the polynomial function \( \Phi(X_i^p - X_i) \) is the zero constant function. It follows that any linear combination of the polynomials \( X_i^p - X_i \) for \( i = 1, \ldots, n \) is also the zero function. Therefore, \( I \subseteq \ker \Phi \).
+
+  We will prove the converse inclusion via induction on \( n \).
+
+  In the case of a single indeterminate \( X \), for every polynomial \( q(X) \in \ker \Phi \), we know that every nonnegative integer \( m < p \) is a root of \( q(X) \). By \fullref{thm:integral_domain_polynomial_root_limit}, \( q(X) \) has at most \( p \) roots. Hence, these are all the roots, and by \fullref{thm:polynomial_root_iff_divisible}, \( X - m \) divides \( q(X) \) for every \( m < p \). We have
+  \begin{equation*}
+    \underbrace{\prod_{m=0}^{p - 1} (X - m)}_{\mathclap{ X^p - X \T*{by \fullref{thm:prime_field_all_root_polynomial}}}} \mid q(X),
+  \end{equation*}
+  and hence \( q(X) \in \braket{ X^p - X } \).
+
+  We have, up until now, shown that the entire proposition holds for the case of one indeterminate. Suppose that the proposition holds for \( n - 1 \) indeterminates and let \( q \in R[X_1, \ldots, X_n] \) be such that \( \Phi(q) \) is the zero function. Due to \fullref{thm:def:polynomial_semiring/properties/iterated}, we can regard \( q \) as a member of \( R[X_1, \ldots, X_{n-1}][X_n] \). Thus,
+  \begin{equation*}
+    q(X_1, \ldots, X_n) = \sum_{k=0}^\infty \parens*{ \sum_\gamma a_{(k,\gamma)} X_1^{\gamma_1} X_2^{\gamma_1} \cdots X_{n-1}^{\gamma_{n-1}} } {X_n}^k,
+  \end{equation*}
+  where \( \gamma \) is a multi-index over the first \( n - 1 \) indeterminates.
+
+  The inductive hypothesis holds for \( R[X_1, \ldots, X_{n-1}] \). The coefficients of \( q \) before \( X_n^k \) are polynomials from \( R[X_1, \ldots, X_{n-1}] \). If \( \Phi(q) \) is the zero function, we have several possibilities.
+  \begin{itemize}
+    \item If the coefficient polynomials of \( q \) evaluate to the zero function, by the inductive hypothesis,
+    \begin{equation*}
+      q \in \braket[\Big]{ X_i^q - X_i \given* i = 1, \ldots, n - 1 } \subsetneq I.
+    \end{equation*}
+
+    \item If there exists a coefficient polynomial \( q(X_1, \ldots, X_{n-1}) \) such that \( \Phi(q) \) is not the zero function, there must exist another coefficient polynomial \( r(X_1, \ldots, X_{n-1}) \) such that \( \Phi(q + r) \) is the zero function. Then \( q + r \in I \). Using induction on the number of nonzero coefficients of \( q \), we conclude that \( q \in I \).
+  \end{itemize}
 \end{proof}
 
 \begin{definition}\label{def:field_extension}
   If \( \Bbbk \) and \( \BbbK \) are fields and \( \Bbbk \) is an \hyperref[def:ring/submodel]{unital subring} of \( \BbbK \), we say that \( \Bbbk \) is a \term{subfield} of \( \BbbK \) and that \( \BbbK \) is a \term{field extension} of \( \Bbbk \). A field extension that is not a proper superring is often called \term{trivial}.
-
-  \begin{thmenum}
-    \thmitem{def:field_extension/dimension} A field extension \( \BbbK \) of \( \Bbbk \) is a \hyperref[def:vector_space]{vector space} over \( \Bbbk \). Of particular importance are extensions of finite dimension, which we call \term{finite field extensions}.
-  \end{thmenum}
 \end{definition}
 
 \begin{definition}\label{def:transcendetal_element}\mcite[454]{Knapp2016BasicAlgebra}
@@ -117,7 +181,11 @@
   \end{equation*}
 \end{example}
 
-\begin{lemma}\label{thm:finite_field_extensions_are_algebraic}
+\begin{definition}\label{def:finite_field_extension}
+  If \( \BbbK \) is \hyperref[def:module_presentation]{finitely generated} over \( \Bbbk \) (i.e. a finite-dimensional \hyperref[def:vector_space]{vector space}), we say that \( \BbbK \) is a \term{finite extensions} of \( \Bbbk \).
+\end{definition}
+
+\begin{lemma}\label{thm:prime_field_extensions_are_algebraic}
   Every finite \hyperref[def:field_extension]{field extension} is \hyperref[def:transcendetal_element]{algebraic}.
 \end{lemma}
 \begin{proof}
@@ -139,9 +207,9 @@
 \begin{proof}
   \ImplicationSubProof{def:algebraically_closed_field/trivial_algebraic_extensions}{def:algebraically_closed_field/linear_irreducible_polynomials} Let \( p(X) \) be an irreducible polynomial in \( \BbbK[X] \).
 
-  By \fullref{thm:ufd_prime_iff_irreducible}, \( p(X) \) is a prime element, and thus \( \braket {p(X)} \) is a \hyperref[def:prime_ideal]{prime ideal} in \( \BbbK[X] \). By \fullref{thm:prime_ideals_are_maximal_in_pid}, it is also a maximal ideal. By \fullref{def:maximal_ring_ideal/quotient}, the quotient \( Q \coloneqq \BbbK[X] / \braket{ p(X) } \) is a field. As a module over a field, it is a vector space, and thus a field extension of \( \BbbK \). Furthermore, it is a finite field extension because the dimension of \( Q \) is the degree of \( p(X) \).
+  By \fullref{thm:ufd_prime_iff_irreducible}, \( p(X) \) is a prime element, and thus \( \braket {p(X)} \) is a \hyperref[def:prime_ideal]{prime ideal} in \( \BbbK[X] \). By \fullref{thm:prime_ideals_are_maximal_in_pid}, it is also a maximal ideal. By \fullref{def:maximal_ring_ideal/quotient}, the quotient \( Q \coloneqq \BbbK[X] / \braket{ p(X) } \) is a field. As a module over \( \BbbK \), it is finitely generated because the dimension of \( Q \) is the degree of \( p(X) \).
 
-  By \fullref{thm:finite_field_extensions_are_algebraic}, \( Q \) is an algebraic extension of \( \BbbK \). Since \( \BbbK \) has no nontrivial algebraic extensions, it follows that \( \BbbK = Q \). Thus, \( Q \) has dimension \( 1 \), and we have already discussed that \( \dim Q = \deg p \). Therefore, \( p \) is a linear polynomial.
+  By \fullref{thm:prime_field_extensions_are_algebraic}, \( Q \) is an algebraic extension of \( \BbbK \). Since \( \BbbK \) has no nontrivial algebraic extensions, it follows that \( \BbbK = Q \). Thus, \( Q \) has dimension \( 1 \), and we have already discussed that \( \dim Q = \deg p \). Therefore, \( p \) is a linear polynomial.
 
   \ImplicationSubProof{def:algebraically_closed_field/linear_irreducible_polynomials}{def:algebraically_closed_field/at_least_one_root} Suppose that every irreducible polynomial is linear.
 
@@ -169,116 +237,5 @@
   An \hyperref[def:algebraically_closed_field]{algebraically closed field} has no nontrivial finite extension fields.
 \end{proposition}
 \begin{proof}
-  Follows from \fullref{def:algebraically_closed_field/trivial_algebraic_extensions} and \fullref{thm:finite_field_extensions_are_algebraic}.
-\end{proof}
-
-\begin{proposition}\label{thm:f2_is_boolean_algebra}
-  The finite field \( \BbbZ_2 \) is \hyperref[def:partially_ordered_set/homomorphism]{order-isomorphic} to the two-element \hyperref[def:boolean_algebra/trivial]{Boolean algebra} \( \set{ \top, \bot } \).
-\end{proposition}
-\begin{proof}
-  We identify \( 0 \) with \( \bot \) and \( 1 \) with \( \top \). The verification itself is straightforward.
-\end{proof}
-
-\begin{algorithm}\label{alg:finite_field_polynomial_reduction}
-  Consider the field \( \BbbZ_p \) for some prime number \( p \) and the nonzero polynomial
-  \begin{equation*}
-    f(X_1, \ldots, X_n) \coloneqq \sum_{k_1=0}^{m_1} \cdots \sum_{k_n=0}^{m_n} a_{k_1,\ldots,k_n} X_1^{k_1} \cdots X_n^{k_n}.
-  \end{equation*}
-
-  We will build a polynomial \( \hat f(X_1, \ldots, X_n) \) of degree at most \( n - 1 \) that corresponds to the same function. In terms of the \hyperref[thm:polynomial_ring_universal_property]{evaluation homomorphism}
-  \begin{equation*}
-    \Phi: \BbbZ_p[X_1, \ldots, X_n] \to \fun(\BbbZ_p^n, \BbbZ_p),
-  \end{equation*}
-  this means that
-  \begin{equation*}
-    \Phi(f) = \Phi(\hat f).
-  \end{equation*}
-
-  This can be achieved by grouping some of the coefficients. The univariate case is more understandable, so we will initially consider the polynomial
-  \begin{equation*}
-    g(X) \coloneqq \sum_{k=0}^m a_k X^k.
-  \end{equation*}
-
-  We will now use (and later prove) that the following two univariate polynomials evaluate to the same function:
-  \begin{equation}\label{eq:alg:finite_field_polynomial_reduction/reduction}
-    \Phi(X^s) = \Phi(X^{\rho(s)}),
-  \end{equation}
-  where
-  \begin{align*}
-    &\rho: \set{ 1, 2, 3, \ldots } \to \set{ 1, 2, \ldots, p - 1 } \\
-    &\rho(s) \coloneqq \begin{cases}
-      p - 1,          &(p - 1) \mid s, \\
-      \rem(s, p - 1), &\T{otherwise}
-    \end{cases}
-  \end{align*}
-
-  Obviously \( \rho(s) = s \) for \( s < p \). It follows from the linearity of \( \Phi \) that
-  \begin{equation*}
-    \hat g(X)
-    \coloneqq
-    \sum_{k=0}^m a_k X^{r(k)}
-    =
-    \sum_{j=0}^{p-1} \left( \sum_{k \in r^{-1}(j)} a_k \right) X^j
-  \end{equation*}
-  is the desired polynomial.
-
-  In the multivariate case, the reduced polynomial is
-  \begin{equation*}
-    \hat f(X_1, \ldots, X_n) \coloneqq \sum_{j_1=0}^{p-1} \cdots \sum_{j_n=0}^{p-1} \left( \sum_{k_1 \in r^{-1}(j_1)} \cdots \sum_{k_n \in r^{-1}(j_n)} a_{k_1,\ldots,k_n} \right) X_1^{k_1} \cdots X_n^{k_n}.
-  \end{equation*}
-
-  Correctness follows, again, from the linearity of \( \Phi \).
-\end{algorithm}
-\begin{proof}[Proof of \eqref{eq:alg:finite_field_polynomial_reduction/reduction}]
-  By \fullref{thm:fermats_little_theorem},
-  \begin{equation}\label{eq:alg:finite_field_polynomial_reduction/fermat}
-    \Phi(X^p) = \Phi(X).
-  \end{equation}
-
-  We now use induction on \( q \coloneqq \quot(s, p) \).
-  \begin{itemize}
-    \item If \( q = 0 \), then \( s < p \) and no reduction is necessary.
-    \item If \( q > 0 \), division gives us \( s = (p - 1) q + r \). We have two cases
-    \begin{itemize}
-      \item If \( (p - 1) \mid s \), i.e. if \( r = 0 \), then
-      \begin{balign*}
-        \Phi(X^s)
-        &=
-        \Phi(X^{(p-1)q})
-        = \\ &=
-        \Phi(X^{(p-1)(q-1) + (p-1)})
-        = \\ &=
-        \Phi(X^{(p-1)(q-1)}) \Phi(X^{p-1})
-        \reloset {\T{ind.}} = \\ &=
-        \Phi(X^{p-1}) \Phi(X^{p-1})
-        = \\ &=
-        \Phi(X^{2(p-1)})
-        = \\ &=
-        \Phi(X^{p+(p-2)})
-        = \\ &=
-        \Phi(X^p) \Phi(X^{p-2})
-        \reloset {\eqref{eq:alg:finite_field_polynomial_reduction/fermat}} = \\ &=
-        \Phi(X^{p-1}).
-      \end{balign*}
-
-      \item If \( r > 0 \), we have
-      \begin{balign*}
-        \Phi(X^s)
-        &=
-        \Phi(X^{(p-1)q+r})
-        = \\ &=
-        \Phi(X^{[(p-1)(q-1) + r] + (p-1)})
-        = \\ &=
-        \Phi(X^{(p-1)(q-1)+r}) \Phi(X^{p-1})
-        \reloset {\T{ind.}} = \\ &=
-        \Phi(X^r) \Phi(X^{p-1})
-        = \\ &=
-        \Phi(X^{r-1}) \Phi(X^p)
-        \reloset {\eqref{eq:alg:finite_field_polynomial_reduction/fermat}} = \\ &=
-        \Phi(X^{r-1}) \Phi(X)
-        = \\ &=
-        \Phi(X^r).
-      \end{balign*}
-    \end{itemize}
-  \end{itemize}
+  Follows from \fullref{def:algebraically_closed_field/trivial_algebraic_extensions} and \fullref{thm:prime_field_extensions_are_algebraic}.
 \end{proof}

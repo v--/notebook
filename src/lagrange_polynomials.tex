@@ -12,7 +12,7 @@
   \begin{equation*}
     \omega'(x_j) = \prod_{\substack{j = 0 \\ j \neq k}}^n (x_j - x_k),
   \end{equation*}
-  where \( \omega' \) is the algebraic \hyperref[def:algebraic_derivative]{derivative} of \( \omega \).
+  where \( \omega' \) is the \hyperref[def:algebraic_derivative]{algebraic derivative} of \( \omega \).
 \end{proposition}
 \begin{proof}
   Fix \( k \in \{ 0, \ldots, n \} \) and denote
@@ -36,23 +36,47 @@
 \end{proof}
 
 \begin{theorem}[Lagrange interpolation]\label{thm:lagrange_interpolation}
-  Let \( x_0, x_1, \ldots, x_n \) be pairwise distinct elements of \( \BbbK \) and \( y_0, y_1, \ldots, y_n \) be arbitrary elements of \( \BbbK \). Then there exists a unique \hyperref[def:polynomial_semiring]{polynomial} \( L_n(X) \in \pi_n \) (where \( \pi_n \) is the \hyperref[def:polynomial_semiring_free_module]{\( n \)-dimensional polynomial vector space}) such that
-  \begin{equation}\label{eq:thm:lagrange_interpolation/condition}
-    L_n(x_k) = y_k, k = 0, 1, \ldots, n.
-  \end{equation}
+  Let \( x_0, x_1, \ldots, x_n \) be pairwise distinct elements of \( \BbbK \) and let \( y_0, y_1, \ldots, y_n \) be arbitrary elements of \( \BbbK \). Then there exists a unique \hyperref[def:polynomial_semiring]{polynomial} \( L(X) \) of degree at most \( n \) such that \( L(x_k) = y_k \) for \( k = 1, \ldots, n \).
 \end{theorem}
 \begin{proof}
-  We will first show uniqueness. Let \( p, q \in \pi_n \) both satisfy \fullref{eq:thm:lagrange_interpolation/condition}. Their difference \( p - q \) is a polynomial of degree at most \( n \) that has \( n + 1 \) roots. By \fullref{thm:integral_domain_polynomial_root_limit}, \( p - q = 0 \). This proves uniqueness.
+  \SubProof{Proof of uniqueness} Suppose that \( p, q \) are polynomials of degree at most \( n \) that both satisfy \( L(x_k) = y_k \) for \( k = 1, \ldots, n \). Their difference \( p - q \) is a polynomial of degree at most \( n \) that has \( n + 1 \) roots. By \fullref{thm:integral_domain_polynomial_root_limit}, \( p - q = 0 \).
 
-  We construct the polynomial explicitly. Define the Lagrange polynomial
+  \SubProof{Proof of existence} We will construct the polynomial explicitly. Define the Lagrange basis polynomial
   \begin{equation*}
-    L_n(X) = \sum_{m=0}^n y_m \prod_{\substack{j = 0 \\ j \neq m}}^n \frac {(X - x_j)} {(x_m - x_j)}.
+    L(X) = \sum_{m=0}^n y_m \prod_{\substack{j = 0 \\ j \neq m}}^n \frac {(X - x_j)} {(x_m - x_j)}.
   \end{equation*}
 
   For \( k = 0, 1, \ldots, n \) we have
   \begin{equation*}
-    L_n(x_k) = y_k \underbrace{\prod_{\substack{j = 0 \\ j \neq k}}^n \frac {(x_k - x_j)} {(x_k - x_j)}}_{=1} + \sum_{\substack{m = 0 \\ m \neq k}}^n y_m \overbrace{\frac{(x_k - x_m)}{(x_k - x_m)}}^{=0} \prod_{\substack{j = 0 \\ j \neq k \\ j \neq m}}^n \frac {(x_k - x_j)} {(x_m - x_j)} = y_k.
+    L(x_k) = y_k \underbrace{\prod_{\substack{j = 0 \\ j \neq k}}^n \frac {(x_k - x_j)} {(x_k - x_j)}}_{1} + \sum_{\substack{m = 0 \\ m \neq k}}^n y_m \overbrace{\frac{(x_k - x_m)}{(x_k - x_m)}}^{0} \prod_{\substack{j = 0 \\ j \neq k \\ j \neq m}}^n \frac {(x_k - x_j)} {(x_m - x_j)} = y_k.
   \end{equation*}
 
-  Therefore, \( L_n \) satisfies \eqref{eq:thm:lagrange_interpolation/condition}, which proves existence.
+  Therefore, \( L \) is the desired polynomial.
+\end{proof}
+
+\begin{theorem}[Prime field Lagrange interpolation]\label{thm:prime_field_lagrange_interpolation}\mcite{MathOF:functions_over_finite_fields}
+  For a multivariate function \( f: \BbbF_p^n \to \BbbF_p \) over the \hyperref[def:prime_field]{prime field} \( \BbbF_p \), there exists a unique multivariate polynomial \( L(X_1, \ldots, X_n) \) such that
+  \begin{itemize}
+    \item For any sequence of values \( x_1, \ldots, x_n \),
+    \begin{equation*}
+      f(x_1, \ldots, x_n) = L(x_1, \ldots, x_n).
+    \end{equation*}
+
+    \item For every monomial \( X_1^{\gamma_n} \cdots X_n^{\gamma_n} \) of \( L \), \( \gamma_i < p \) for \( i = 1, \ldots, n \).
+  \end{itemize}
+\end{theorem}
+\begin{proof}
+  For any point \( (x_1, \ldots, x_n) \in \BbbZ_p^n \), the characteristic polynomial
+  \begin{equation*}
+    c(X_1, \ldots, X_n) \coloneqq \prod_{i=0}^n \parens*{ \prod_{\substack{m=0 \\ m \neq x_i}}^{p - 1} \frac {X_i - m} {x_i - m} }
+  \end{equation*}
+  satisfies
+  \begin{equation*}
+    c(y_1, \ldots, y_n) = \begin{cases}
+      1, &x_i = y_i \T{for all} i = 1, \ldots, n \\
+      0, &\T{otherwise.}
+    \end{cases}
+  \end{equation*}
+
+  As in \fullref{thm:lagrange_interpolation}, give us the desired polynomial, a linear combination of these basis polynomials with coefficients corresponding to the values of \( f \) give us the desired polynomial.
 \end{proof}
