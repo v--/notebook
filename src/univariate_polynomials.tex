@@ -1,6 +1,6 @@
 \subsection{Univariate polynomials}\label{subsec:univariate_polynomials}
 
-We will discuss here the \hyperref[def:polynomial_semiring]{polynomial ring} \( R[X] \) in one indeterminate over the nontrivial \hyperref[def:ring/commutative]{commutative ring} \( R \). We call them \term{univariate polynomials} using the general convention for function arguments from \fullref{def:multi_valued_function/arguments}. Polynomials are not functions in general, and the exact relationship between polynomials and polynomial functions is discussed in \fullref{thm:polynomial_semiring_universal_property} and \fullref{thm:functions_over_finite_fields}.
+We will discuss here the \hyperref[def:polynomial_semiring]{polynomial ring} \( R[X] \) in one indeterminate over the nontrivial \hyperref[def:ring/commutative]{commutative unital ring} \( R \). We call them \term{univariate polynomials} using the general convention for function arguments from \fullref{def:multi_valued_function/arguments}. Polynomials are not functions in general, and the exact relationship between polynomials and polynomial functions is discussed in \fullref{thm:polynomial_semiring_universal_property} and \fullref{thm:functions_over_finite_fields}.
 
 \begin{definition}\label{def:polynomial_degree}
   The \term{degree} of the nonzero univariate \hyperref[def:polynomial_semiring]{monomial} \( X^k \) is its power \( k \). More generally, the degree of a multivariate monomial \( \prod_{X \in \mscrX} X^{\gamma_X} \) in the set of indeterminates \( \mscrX \) is the \hyperref[def:multi_index]{multi-index norm} \( \norm \gamma = \sum_{X \in \mscrX} \gamma_X \).
@@ -31,6 +31,10 @@ We will discuss here the \hyperref[def:polynomial_semiring]{polynomial ring} \( 
   \end{center}
 \end{definition}
 
+\begin{definition}\label{def:monic_polynomial}
+  We say that the nonzero univariate polynomial \( p(X) \) is \term{monic} if its leading coefficient is \( 1 \).
+\end{definition}
+
 \begin{proposition}\label{thm:def:polynomial_degree/properties}
   The \hyperref[def:polynomial_degree]{polynomial degree} has the following basic properties:
   \begin{thmenum}
@@ -43,6 +47,8 @@ We will discuss here the \hyperref[def:polynomial_semiring]{polynomial ring} \( 
     \begin{equation}\label{eq:thm:def:polynomial_degree/properties/product}
       \deg (pq) = \deg p + \deg q.
     \end{equation}
+
+    An easy sufficient condition for \eqref{eq:thm:def:polynomial_degree/properties/product} is for the ring to be \hyperref[def:entire_semiring]{entire}, although it is sufficient for the ring to be nontrivial (so that \( 0_R \neq 1_R \)) and either \( p(X) \) or \( q(X) \) to be \hyperref[def:monic_polynomial]{monic}.
   \end{thmenum}
 \end{proposition}
 \begin{proof}
@@ -65,19 +71,73 @@ We will discuss here the \hyperref[def:polynomial_semiring]{polynomial ring} \( 
   \end{equation*}
 \end{proof}
 
-\begin{definition}\label{def:monic_polynomial}
-  We say that the nonzero univariate polynomial \( p(X) \) is \term{monic} if its leading coefficient is \( 1 \).
-\end{definition}
+\begin{algorithm}[Euclidean division of polynomials]\label{thm:euclidean_division_of_polynomials}\mcite[prop. 1.12]{Knapp2016BasicAlgebra}
+  Fix two univariate polynomials \( f(X) \) and \( g(X) \), and assume that \( g(X) \) is \hyperref[def:monic_polynomial]{monic}.
 
-\begin{theorem}[Euclidean division of polynomials]\label{thm:euclidean_division_of_polynomials}\mcite[prop. 1.12]{Knapp2016BasicAlgebra}
-  Fix two polynomials \( f(X) \) and \( g(X) \) over the \hi{nontrivial} commutative ring \( R \), and assume that \( g(X) \) is \hyperref[def:monic_polynomial]{monic}.
-
-  Then there exist unique polynomials \( q(X) \) and \( r(X) \), where \( r(X) \) is either zero or \( \deg r < \deg g \), such that
+  We will build polynomials \( q(X) \) and \( r(X) \), where \( r(X) \) is either zero or \( \deg r < \deg g \), such that
   \begin{equation*}
     f(X) = g(X) q(X) + r(X).
   \end{equation*}
-\end{theorem}
-\begin{proof}
+
+  The algorithm only demonstrates existence; we will prove uniqueness right after it.
+
+  \begin{thmenum}
+    \thmitem{thm:euclidean_division_of_polynomials/zero_degree} If \( \deg f = \deg g = 0 \), necessarily \( g(X) = 1_R \), and in this case we define
+    \begin{align*}
+      q(X) &\coloneqq f(X), \\
+      r(X) &\coloneqq 0_R.
+    \end{align*}
+
+    \thmitem{thm:euclidean_division_of_polynomials/no_division} If \( f(X) \) is the zero polynomial or \( \deg f < \deg g \), define
+    \begin{align*}
+      q(X) &\coloneqq 0_R, \\
+      r(X) &\coloneqq f(X).
+    \end{align*}
+
+    In this case, \( r(X) \) is either zero or \( \deg r = \deg f < \deg b \).
+
+    \thmitem{thm:euclidean_division_of_polynomials/positive_degree} Suppose that
+    \begin{align*}
+      f(X) = a_n X^n + \hat f(X), \\
+      g(X) = X^m + \hat g(X),
+    \end{align*}
+    where \( n \) and \( m \) are positive, \( \hat f(X) \) is either zero or \( \deg \hat f < \deg f \), and similarly for \( \deg \hat g \).
+
+    Then
+    \begin{align*}
+    f(X) - g(X) a_n X^{n-m}
+    &=
+    a_n X^n + \hat f(X) - (b_m X^m + \hat g(X)) a_n X^{n-m}
+    = \\ &=
+    a_n X^n + \hat f(X) - a_n X^n - \hat g(X) a_n X^{n-m}
+    = \\ &=
+    \underbrace{\hat f(X) - \hat g(X) a_n X^{n-m}}_{\hat r(X)}.
+    \end{align*}
+
+    The polynomial \( \hat r(X) \) is either zero, in which case we define \( r(X) \coloneqq \hat r(X) \), or \( \deg \hat r \leq n - 1 \).
+
+    In the latter case, we use the algorithm recursively to divide \( \hat r(X) \) by \( g(X) \), and obtain \( \hat q(X) \) and \( r(X) \) such that
+    \begin{equation*}
+      \hat r(X) \coloneqq g(X) \hat q(X) + r(X),
+    \end{equation*}
+    where \( r(X) \) is either zero or \( \deg r < \deg g \).
+
+    Then
+    \begin{align*}
+      \hat r(X)                                         &= f(X) - g(X) a_n X^{n-m} \\
+      g(X) \hat q(X) + r(X)                             &= f(X) - g(X) a_n X^{n-m} \\
+      g(X) \left(\hat q(X) - a_n X^{n-m} \right) + r(X) &= f(X).
+    \end{align*}
+
+    Define
+    \begin{equation*}
+      q(X) \coloneqq \hat q(X) - a_n X^{n-m}.
+    \end{equation*}
+
+    We have obtained polynomials \( r(X) \) and \( q(X) \) where \( r(X) \) is either zero or \( \deg r < \deg g \).
+  \end{thmenum}
+\end{algorithm}
+\begin{defproof}
   \SubProof{Proof of uniqueness} Suppose that
   \begin{equation*}
     a(X) = g(X)q(X) + r(X) = g(X) \widetilde{q}(X) + \widetilde{r}(X),
@@ -117,68 +177,155 @@ We will discuss here the \hyperref[def:polynomial_semiring]{polynomial ring} \( 
 
     By \eqref{thm:def:polynomial_degree/properties/product}, \( \deg g \leq \widetilde{r} \), which contradicts our choice of \( \widetilde{r}(X) \).
   \end{itemize}
+\end{defproof}
 
-  \SubProof{Proof of existence} If \( f(X) \) is the zero polynomial or \( \deg f < \deg g \), define
-  \begin{align*}
-    q(X) &\coloneqq 0_R, \\
-    r(X) &\coloneqq f(X).
-  \end{align*}
-
-  In this case, \( r(X) \) is either zero or \( \deg r = \deg f < \deg b \).
-
-  Now suppose that \( \deg b \leq \deg f \). We will use proof by induction on \( \deg f \).
-
-  If \( \deg f = 0 \), obviously \( \deg b = 0 \) (thus \( b = 1_R \)) and we define
-  \begin{align*}
-    q(X) &\coloneqq f(X), \\
-    r(X) &\coloneqq 0_R.
-  \end{align*}
-
-  Assume that the result holds for \( \deg f < n \), and let \( \deg f = n \) and \( \deg b = m \). Then there exists a polynomial \( \hat f(X) \) that is either zero or \( \deg \hat f = n - 1 \) such that
+\begin{definition}\label{def:algebraic_derivative}
+  Generalizing \fullref{def:differentiability} from analysis, we define the \term{algebraic derivative} of a univariate polynomial
   \begin{equation*}
-    f(X) = a_n X^n + \hat f(X).
+    p(X) = \sum_{k=0}^n a_k X^k = a_n X^n + a_{n-1} X^{n-1} + \cdots + a_2 X^2 + a_1 X + a_0
+  \end{equation*}
+  as
+  \begin{equation*}
+    p'(X) \coloneqq \sum_{k=1}^n k a_k X^{k-1} = n a_n X^{n-1} + (n-1) a_{n-1} X^{n-2} + \cdots + a_2 X + a_1.
   \end{equation*}
 
-  Analogously, we find \( \hat g(X) \) that is either zero or \( \deg \hat g = m - 1 \) such that
+  Via \hyperref[rem:natural_number_recursion]{natural number recursion}, we can define algebraic derivatives of order \( m \) as
   \begin{equation*}
-    g(X) = X^m + \hat g(X).
+    p^{(m)}(X) \coloneqq \begin{cases}
+      p(X)              &m = 0 \\
+      \parens[\Big]{ p^{(m - 1)} }'(X) &m > 0
+    \end{cases}
   \end{equation*}
+\end{definition}
 
-  Thus,
+\begin{proposition}\label{thm:def:algebraic_derivative/properties}
+  \hyperref[def:algebraic_derivative]{Algebraic derivatives} have the following basic properties:
+  \begin{thmenum}
+    \thmitem{thm:def:algebraic_derivative/properties/linear} The derivative operator \( p(X) \mapsto p'(X) \) is linear.
+    \thmitem{thm:def:algebraic_derivative/properties/degree} \( p^{(n)}(X) \) is either zero or has degree \( \deg p - n \).
+
+    \thmitem{thm:def:algebraic_derivative/properties/product} We have the product rule
+    \begin{equation}\label{eq:thm:def:algebraic_derivative/properties/product}
+      (pq)' = p'q + pq'.
+    \end{equation}
+
+    \thmitem{thm:def:algebraic_derivative/properties/leibniz} Leibniz' rule holds:
+    \begin{equation}\label{thm:def:algebraic_derivative/properties/product}
+      (pq)^{(n)} = \sum_{k=0}^n \binom n k p^{(k)} q^{(n-k)}
+    \end{equation}
+
+    \thmitem{thm:def:algebraic_derivative/properties/affine_power} If \( m \leq n \), the \( m \)-th derivative of \( (X - u)^n \) is \( \tfrac {n!} {(n-m)!} (X - u)^{n-m} \).
+  \end{thmenum}
+\end{proposition}
+\begin{proof}
+  \SubProofOf{thm:def:algebraic_derivative/properties/linear} Trivial.
+
+  \SubProofOf{thm:def:algebraic_derivative/properties/degree} Trivial.
+
+  \SubProofOf{thm:def:algebraic_derivative/properties/product} By \fullref{thm:def:algebraic_derivative/properties/linear}, it is enough to consider the case where both \( p(X) \) and \( q(X) \) are monomials.
+
   \begin{align*}
-    f(X) - g(X) a_n X^{n-m}
+    p'(X) q(X) + p(X) q'(X)
     &=
-    a_n X^n + \hat f(X) - (b_m X^m + \hat g(X)) a_n X^{n-m}
+    n a_n X^{n-1} \cdot b_m X^m + a_n X^n \cdot m b_m X^{m-1}
     = \\ &=
-    a_n X^n + \hat f(X) - a_n X^n - \hat g(X) a_n X^{n-m}
+    (n + m) a_n b_m X^{n+m-1}
     = \\ &=
-    \underbrace{\hat f(X) - \hat g(X) a_n X^{n-m}}_{\hat r(X)}.
+    (a_n b_m X^{n+m})'
+    = \\ &=
+    (pq)'(X).
   \end{align*}
 
-  Therefore, \( \hat r(X) \) is either the zero polynomial (in which case we define \( r(X) \coloneqq \hat r(X) \)) or \( \deg \hat r \leq n - 1 \). In the latter case, we can divide \( \hat r \) by \( g(X) \) to obtain \( \hat q(X) \) and \( r(X) \) such that
-  \begin{equation*}
-    \hat r(X) \coloneqq g(X) \hat q(X) + r(X),
-  \end{equation*}
-  where \( r \) is either zero or \( \deg r < \deg g \).
+  \SubProofOf{thm:def:algebraic_derivative/properties/leibniz} The proof in \fullref{thm:leibniz_rule} relies only on the product rule, hence it holds here as well.
 
-  Then
-  \begin{align*}
-    \hat r(X)                                         &= f(X) - g(X) a_n X^{n-m} \\
-    g(X) \hat q(X) + r(X)                             &= f(X) - g(X) a_n X^{n-m} \\
-    g(X) \left(\hat q(X) - a_n X^{n-m} \right) + r(X) &= f(X).
-  \end{align*}
+  \SubProofOf{thm:def:algebraic_derivative/properties/affine_power} We use outer induction on \( m \) and inner induction on \( n \).
 
-  Define
+  The case \( m = n = 1 \) is obvious. Assume that the statement holds for \( m = 1 \) and \( n - 1 \). Then
   \begin{equation*}
-    q(X) \coloneqq \hat q(X) - a_n X^{n-m}.
+    \parens[\Big]{ (X - u)^n }'
+    =
+    \parens[\Big]{ (X - u)^{n-1} \cdot (X - u) }'
+    \reloset {\eqref{eq:thm:def:algebraic_derivative/properties/product}} =
+    \parens[\Big]{ (X - u)^{n-1} }' (X - u) + (X - u)^{n-1}
+    \reloset {\T{ind.}} =
+    n (X - u)^{n-1}.
   \end{equation*}
 
-  We have obtained polynomials \( r(X) \) and \( q(X) \) where \( r(X) \) is either zero or \( \deg r < \deg g \).
+  Now suppose that the statement holds for derivatives of order less than \( m \) and for every \( n \geq m \). Then,
+  \begin{equation*}
+    \parens[\Big]{ (X - u)^n }^{(m)}
+    =
+    \parens*{\parens[\Big]{ (X - u)^n }^{(m-1)}}'
+    \reloset {\T{ind.}} =
+    \parens*{ \frac {n!} {(n - m + 1)!} (X - u)^{n - m + 1} }'
+    \reloset {\T{ind.}} =
+    \frac {n!} {(n - m)!} (X - u)^{n - m}.
+  \end{equation*}
 \end{proof}
 
-\begin{corollary}\label{thm:representatives_in_univariate_polynomial_quotient_set}
+\begin{definition}\label{def:polynomial_root}
+  Let \( R \) be a nontrivial commutative ring.
+
+  We say that the value \( u \in R \) is a \term{root} of multiplicity \( m \) for the univariate polynomial \( p(X) \in R[X] \) of degree \( n \geq m \) if any of the following equivalent conditions hold:
+  \begin{thmenum}
+    \thmitem{def:polynomial_root/division} The polynomial \( (X - u)^m \) divides \( p(X) \).
+
+    \thmitem{def:polynomial_root/derivative_roots} The value \( u \) is a \hyperref[def:zero_locus]{zero} of the \hyperref[def:algebraic_derivative]{algebraic derivatives} \( p^{(0)}(X), p^{(1)}(X), \ldots, p^{(m-1)}(X) \) of \( p(X) \).
+  \end{thmenum}
+\end{definition}
+\begin{defproof}
+  \ImplicationSubProof{def:polynomial_root/division}{def:polynomial_root/derivative_roots} Suppose that \( (X - u)^m \) divides \( p(X) \). Then there exists a polynomial \( q(X) \) such that
+  \begin{equation*}
+    p(X) = (X - u)^m q(X).
+  \end{equation*}
+
+  For the \( n < m \)-th derivative of \( p(X) \), by \fullref{thm:def:algebraic_derivative/properties/leibniz}, we have
+  \begin{equation*}
+    p^{(n)}(X) = \sum_{k=0}^n \binom n k \underbrace{\parens[\Big]{ (X - u)^m }^{(k)}}_{\mathclap{\frac {m!} {k!} (X - u)^{m-k} \T*{by} \ref{thm:def:algebraic_derivative/properties/affine_power}}} q^{(n-k)}(X).
+  \end{equation*}
+
+  Let \( \Phi_u: R[X] \to R \) be the \hyperref[thm:polynomial_semiring_universal_property]{evaluation homomorphism} at \( u \). Then
+  \begin{equation*}
+    \Phi_u(p^{(n)}) = \sum_{k=0}^n \binom n k \frac {m!} {k!} 0_R^{m-k} \Phi_u(q^{(n-k)})
+  \end{equation*}
+
+  For \( n < m \), clearly \( \Phi_u(p^{(n)}) = 0_R \).
+
+  \ImplicationSubProof{def:polynomial_root/derivative_roots}{def:polynomial_root/division} Suppose that \( u \) is a root of \( p^{(0)}(X), \ldots, p^{(m-1)}(X) \). We will use induction on \( m \) to show that \( (X - u)^m \mid p(X) \).
+
+  The case \( m = 0 \) is trivial. Suppose that \( u \) being a root of \( p^{(0)}(X), \ldots, p^{(m-1)}(X) \) implies that \( (X - u)^{m-1} \mid p(X) \), and additionally let \( u \) be a root of \( p^{(m)}(X) \).
+
+  By the inductive hypothesis, there exists a polynomial \( q(X) \) such that
+  \begin{equation*}
+    p(X) = (X - u)^{m-1} q(X).
+  \end{equation*}
+
+  By \fullref{thm:def:algebraic_derivative/properties/leibniz},
+  \begin{equation*}
+    p^{(m-1)}(X) = \sum_{k=0}^{m-1} \binom {m-1} k \underbrace{\parens[\Big]{ (X - u)^{m - 1} }^{(k)}}_{\mathclap{\frac {(m - 1)!} {k!} (X - u)^{m - k - 1} \T*{by} \ref{thm:def:algebraic_derivative/properties/affine_power}}} q^{(m - k - 1)}(X).
+  \end{equation*}
+
+  Then
+  \begin{equation*}
+    \Phi_u(p^{(m-1)}) = \sum_{k=0}^{m-1} \binom {m-1} k \frac {(m - 1)!} {k!} 0_R^{m - k - 1} \Phi_u(q^{(m - k - 1)}).
+  \end{equation*}
+
+  All terms on the right are zero except for \( \Phi_u(q) \). But \( u \) is a root of \( p^{(m-1)} \), implying that it is also a root of \( q \).
+
+  We use \fullref{thm:euclidean_division_of_polynomials} to obtain a polynomial \( s(X) \) and a constant polynomial \( r(X) = r_0 \) so that
+  \begin{equation*}
+    q(X) = (X - u) s(X) + r_0.
+  \end{equation*}
+
+  Since \( \Phi_u(q) = 0_R \), then necessarily \( r_0 = 0_R \). Therefore,
+  \begin{equation*}
+    p(X) = (X - u)^{m-1} q(X) = (X - u)^m s(X).
+  \end{equation*}
+\end{defproof}
+
+\begin{proposition}\label{thm:representatives_in_univariate_polynomial_quotient_set}
   Given \hyperref[def:monic_polynomial]{monic polynomial} \( g(X) \) in a nontrivial commutative ring \( R \), every coset in \( R[X] / \braket{ g(X) } \) has a unique representative that is either the zero polynomial or a polynomial of degree less than \( g(X) \).
-\end{corollary}
+\end{proposition}
 \begin{proof}
   Let \( f(X) \) be an arbitrary polynomial. \Fullref{thm:euclidean_division_of_polynomials} gives us polynomials \( q(X) \) and \( r(X) \) so that
   \begin{equation*}
@@ -191,17 +338,38 @@ We will discuss here the \hyperref[def:polynomial_semiring]{polynomial ring} \( 
   By the uniqueness of \( r(X) \), the statement of the corollary follows.
 \end{proof}
 
-\begin{corollary}\label{thm:polynomial_quotient_modules_vs_quotient_algebras}
-  For two nonzero monic polynomials \( p(X) \) and \( q(X) \) of the same degree, the \hyperref[def:ring/quotient]{quotient rings} \( R[X] / \braket{ p(X) } \) and \( R[X] / \braket{ q(X) } \) are isomorphic as \( R \)-modules, but may not be isomorphic as \( R \)-algebras.
-\end{corollary}
+\begin{proposition}\label{thm:adjoining_roots}
+  Fix arbitrary commutative rings \( R \subseteq S \) and a polynomial \( p(X) \in R[X] \). If \( u \) is a \hyperref[def:polynomial_root_multiplicity]{root} of \( p(X) \) in \( S \), meaning that the \hyperref[thm:polynomial_semiring_universal_property]{evaluation homomorphism} \( \Phi_u: R[X] \to S \) sends \( p(X) \) to \( 0_S \), then we have the ring isomorphism
+  \begin{equation*}
+    R[X] / \braket{ p(X) } \cong R[u].
+  \end{equation*}
+\end{proposition}
 \begin{proof}
-  By \fullref{thm:representatives_in_univariate_polynomial_quotient_set}, for every coset in the quotient, \fullref{thm:euclidean_division_of_polynomials} gives us a unique representative of the corresponding degree. Addition and scalar multiplication must be the same in both.
+  Define the homomorphism
+  \begin{equation*}
+    \begin{aligned}
+      &\varphi: R[X] / \braket{ p(X) } \to R[u] \\
+      &\varphi\parens[\Big]{ f(X) + q(X) p(X) } \coloneqq \Phi_u(f).
+    \end{aligned}
+  \end{equation*}
 
-  As shown in \fullref{ex:gaussian_integers} and \fullref{ex:integers_modulo_sqrt2}, however, the vector multiplication operation may differ.
+  It is well-defined because all multiples of \( p(X) \) are in the kernel of \( \Phi_u \). This homomorphism is injective as a consequence of \fullref{thm:representatives_in_univariate_polynomial_quotient_set}. We must show that it is surjective.
+
+  Let
+  \begin{equation*}
+    y = \sum_{k=0}^n a_k u^k
+  \end{equation*}
+  be some element of \( R[u] \). Then the polynomial
+  \begin{equation*}
+    p(X) \coloneqq \sum_{k=0}^n a_k X^k
+  \end{equation*}
+  is such that \( \varphi(p) = y \).
+
+  Therefore, \( \varphi \) is an isomorphism.
 \end{proof}
 
 \begin{example}\label{ex:gaussian_integers}
-  The \term{Gaussian integers} are complex numbers \( z = a + bi \) with integer real and imaginary components. We can define several isomorphic rings for the Gaussian integers.
+  The \term{Gaussian integers} are complex numbers \( z = a + bi \) with integer real and imaginary components. We can define several isomorphic rings for the Gaussian integers, demonstrating \fullref{thm:adjoining_roots}.
 
   \begin{thmenum}
     \thmitem{ex:gaussian_integers/quotient} We can take the \hyperref[def:ring/quotient]{quotient ring} \( \BbbZ[X] / \braket{X^2 + 1} \). By \fullref{thm:representatives_in_univariate_polynomial_quotient_set}, the remainder from \fullref{thm:euclidean_division_of_polynomials} can be used as a canonical representative within the quotient. The remainder must be either a constant or a linear polynomial. That is, \( r(X) = aX + Y \).
@@ -212,7 +380,7 @@ We will discuss here the \hyperref[def:polynomial_semiring]{polynomial ring} \( 
       &\cong
       bdX^2 + (ad + bc)X + ac
       &\pmod {X^2 + 1} \cong \\ &\cong
-      bd[X^2 + 1] + [(ad + bc)X - bd + ac]
+      bd\parens[\Big]{ X^2 + 1 } + \parens[\Big]{ (ad + bc)X - bd + ac }
       &\pmod {X^2 + 1} \cong \\ &\cong
       (ad + bc)X + (ac - bd)
       &\pmod {X^2 + 1}. \phantom{\cong}
@@ -257,69 +425,30 @@ We will discuss here the \hyperref[def:polynomial_semiring]{polynomial ring} \( 
   \end{thmenum}
 \end{example}
 
-\begin{example}\label{ex:integers_modulo_sqrt2}
-  Similarly to how the Gaussian integers were defined in multiple ways in \fullref{ex:gaussian_integers},
+\begin{corollary}\label{thm:polynomial_quotient_modules_vs_algebras}
+  For two nonzero monic polynomials \( p(X) \) and \( q(X) \) of the same degree, the \hyperref[def:ring/quotient]{quotient rings} \( R[X] / \braket{ p(X) } \) and \( R[X] / \braket{ q(X) } \) are isomorphic as \( R \)-modules, but may not be isomorphic as \( R \)-algebras.
+\end{corollary}
+\begin{proof}
+  By \fullref{thm:representatives_in_univariate_polynomial_quotient_set}, for every coset in the quotient, \fullref{thm:euclidean_division_of_polynomials} gives us a unique representative of the corresponding degree. Addition and scalar multiplication must be the same in both.
+
+  As shown in \fullref{ex:gaussian_integers} and \fullref{ex:integers_with_sqrt2}, however, the vector multiplication operation may differ.
+\end{proof}
+
+\begin{example}\label{ex:integers_with_sqrt2}
+  Similarly to how the Gaussian integers were defined in multiple ways in \fullref{ex:gaussian_integers}, \fullref{thm:adjoining_roots} gives us an isomorphism
   \begin{equation*}
     \BbbZ[X] / \braket{X^2 - 2} \cong \BbbZ[\sqrt 2].
   \end{equation*}
 
-  The gist of this example is that, even though \( \BbbZ[\sqrt 2] \) and \( \BbbZ[i] \) are isomorphic as modules, their vector multiplication operation is different. Multiplication modulo \( X^2 - 2 \) works as follows:
+  The gist of this example is that, even though \( \BbbZ[\sqrt 2] \) and \( \BbbZ[i] \) are isomorphic as modules, their vector multiplication operation is different. Indeed, multiplication modulo \( X^2 - 2 \) works as follows:
   \begin{balign*}
     (aX + b) (cX + bd)
     &\cong
     acX^2 + (bc + ad)X + bd
     &\pmod X^2 - 2 \cong \\ &\cong
-    ac[X^2 - 2] + [(bc + ad)X + 2ac + bd]
+    ac(X^2 - 2) + \parens[\Big]{ (bc + ad)X + 2ac + bd }
     &\pmod X^2 - 2 \cong \\ &\cong
     (bc + ad)X + (2ac + bd)
     &\pmod X^2 - 2. \phantom{\cong}
   \end{balign*}
 \end{example}
-
-\begin{definition}\label{def:algebraic_derivative}
-  Generalizing \fullref{def:differentiability} from analysis, we define the \term{algebraic derivative} of a univariate polynomial \( p(X) \) as
-  \begin{equation*}
-    p'(X) \coloneqq n a_n X^{n-1} + (n-1) a_{n-1} X^{n-2} + \cdots + a_2 X + a_1.
-  \end{equation*}
-\end{definition}
-
-\begin{proposition}\label{thm:def:algebraic_derivative/properties}
-  \hyperref[def:algebraic_derivative]{Algebraic derivatives} have the following basic properties:
-  \begin{thmenum}
-    \thmitem{thm:def:algebraic_derivative/properties/linear} The derivative operator \( p(X) \mapsto p'(X) \) is linear.
-    \thmitem{thm:def:algebraic_derivative/properties/product} We have the product rule
-    \begin{equation*}
-      (pq)' = p'q + pq'.
-    \end{equation*}
-
-    \thmitem{thm:def:algebraic_derivative/properties/affine_power} The derivative of \( (X - u)^n \) is \( n(X - u)^{n-1} \).
-  \end{thmenum}
-\end{proposition}
-\begin{proof}
-  \SubProofOf{thm:def:algebraic_derivative/properties/linear} Trivial.
-  \SubProofOf{thm:def:algebraic_derivative/properties/product} By \fullref{thm:def:algebraic_derivative/properties/linear}, it is enough to consider the case where both \( p(X) \) and \( q(X) \) are monomials.
-
-  \begin{align*}
-    p'(X) q(X) + p(X) q'(X)
-     & =
-    n a_n X^{n-1} \cdot b_m X^m + a_n X^n \cdot m b_m X^{m-1}
-    =    \\ &=
-    (n + m) a_n b_m X^{n+m-1}
-    =    \\ &=
-    (a_n b_m X^{n+m})'
-    =    \\ &=
-    (pq)'(X).
-  \end{align*}
-
-  \SubProofOf{thm:def:algebraic_derivative/properties/affine_power} We use induction on \( n \). The case \( n = 1 \) is obvious. Assume that the statement holds for \( 1, \ldots, n - 1 \).
-
-  By \fullref{thm:algebraic_derivative_product_rule}, the derivative of \( (X - u)^n \) is
-  \begin{align*}
-    &\phantom{{}={}}
-    [a(X - u)^{n-1}]' (X - u) + a(X - u)^{n-1} [(X - u)]'
-    = \\ &=
-    a(n-1)(X - u)^{n-2} (X - u) + a(X - u)^{n-1}
-    = \\ &=
-    an(X - u)^{n-1}.
-  \end{align*}
-\end{proof}
