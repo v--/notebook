@@ -51,7 +51,7 @@ class BiberTask(Task):
     def __init__(self, biber_path: pathlib.Path, tex_path: pathlib.Path):
         self.biber_path = biber_path
         self.tex_path = tex_path
-        self.sublogger = logger.bind(name=str(self.biber_path))
+        self.sublogger = logger.bind(name=str(self.biber_path.relative_to(ROOT_DIR)))
 
     def __repr__(self):
         return f'BiberTask({repr(self.biber_path)})'
@@ -75,7 +75,7 @@ class TeXTask(Task):
 
     def __init__(self, tex_path: pathlib.Path):
         self.tex_path = tex_path
-        self.sublogger = logger.bind(name=str(self.tex_path))
+        self.sublogger = logger.bind(name=str(self.tex_path.relative_to(ROOT_DIR)))
 
     def __repr__(self):
         return f'TeXTask({repr(self.tex_path)})'
