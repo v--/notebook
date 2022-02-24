@@ -1,18 +1,5 @@
 \subsection{Fields}\label{subsec:fields}
 
-\begin{definition}\label{def:division_ring}\mcite[144]{Knapp2016BasicAlgebra}
-  If every nonzero element of a ring is \hyperref[def:divisibility/unit]{invertible}, we call it a \term{division ring}.
-\end{definition}
-
-\begin{proposition}\label{thm:division_ring_is_entire}
-  A nontrivial \hyperref[def:division_ring]{division ring} is \hyperref[def:entire_semiring]{entire}.
-\end{proposition}
-\begin{proof}
-  Let \( xy = 0 \). If \( x \) is nonzero, multiplying both sides by \( x^{-1} \), we obtain \( y = 0 \). Analogously, \( y \neq 0 \) implies that \( x = 0 \). In all cases, either \( x \) or \( y \) is necessarily zero.
-
-  Therefore, the ring has no nontrivial zero divisors.
-\end{proof}
-
 \begin{definition}\label{def:field}
   We will call the \hyperref[def:ring/trivial]{nontrivial} \hyperref[def:ring]{ring} \( \BbbK \) a \term{field} if any of the following equivalent conditions hold:
   \begin{thmenum}
@@ -71,7 +58,7 @@
 
   Thus, for any \( f(X) \) and a nonzero \( g(X) \) with leading coefficients \( b_m \), \fullref{alg:euclidean_division_of_polynomials} gives us
   \begin{equation*}
-    f(X) = \frac {g(X)} b_m q(X) + r(X).
+    f(X) = \frac {g(X)} {b_m} q(X) + r(X).
   \end{equation*}
 \end{proof}
 
@@ -99,10 +86,115 @@
   This is simply a special case of \fullref{thm:ring_localization_universal_property}.
 \end{proof}
 
-\begin{definition}\label{def:rational_function_field}
-  The \term{field of rational algebraic functions} \( D(\mscrX) \) for the set of indeterminates \( \mscrX \) over the \hyperref[def:integral_domain]{integral domain} \( D \) is the \hyperref[thm:field_of_fractions]{field of fractions} of the \hyperref[def:polynomial_semiring]{polynomial ring} \( D[\mscrX] \).
+\begin{definition}\label{def:polynomial_content}\mcite[def. V.4.6]{Aluffi2009}
+  The \term{content} of a univariate polynomial
+  \begin{equation*}
+    p(X) = \sum_{k=0}^n a_k X^k
+  \end{equation*}
+  over a \hyperref[def:greatest_common_divisor_domain]{greatest common divisor domain} is
+  \begin{equation*}
+    \op{cont}(p) \coloneqq \gcd(a_0, \ldots, a_n).
+  \end{equation*}
 
-  Despite the name, elements of the field of fractions are not actually functions, but merely formal expressions.
+  Dividing \( p(X) \) by its content, we obtain another polynomial, which we call the \term{primitive part} of \( p(X) \). Polynomials whose content is a unit are sometimes called \term{primitive}.
+\end{definition}
+
+\begin{lemma}[Gauss' lemma]\label{thm:gauss_lemma}
+  If \( p(X) \) and \( q(X) \) are \hyperref[def:polynomial_content]{primitive polynomials}, then \( p(X) q(X) \) is also primitive.
+\end{lemma}
+\begin{proof}
+  Fix two primitive polynomials
+  \begin{equation*}
+    p(X) = \sum_{k=0}^n a_k X^k
+  \end{equation*}
+  and
+  \begin{equation*}
+    q(X) = \sum_{k=0}^m b_k X^k.
+  \end{equation*}
+
+  Let \( d \) be the content of \( p(X) q(X) \). It divides every coefficient
+  \begin{equation*}
+    \sum_{i+j=k} a_i b_j
+  \end{equation*}
+  of \( p(X) q(X) \), and hence also \( a_i b_j \) for every particular pair of indices \( i < n \) and \( j < m \).
+
+  For any fixed \( i < n \), \( d \) divides \( a_i b_j \) for every \( j < m \). Since \( q(X) \) is primitive, \( d \) cannot divide \( b_j \) for every \( j < m \) unless \( d \) is a unit. Hence, \( d \) necessarily divides \( a_i \). Our choice of \( i \) was arbitrary, hence \( d \) divides \( a_i \) for every \( i < n \). But \( p(X) \) is also primitive. Therefore, \( d \) can only be a unit.
+\end{proof}
+
+\begin{lemma}\label{thm:irreducible_primitive_polynomial_in_field_of_fractions}
+  Let \( D \) be a \hyperref[def:greatest_common_divisor_domain]{greatest common divisor domain} and let \( \BbbK \) be its \hyperref[thm:field_of_fractions]{field of fractions}. If a \hyperref[def:polynomial_content]{primitive polynomial} \( p(X) \) is \hyperref[def:domain_divisibility/irreducible]{irreducible} in the polynomial ring \( \BbbK[X] \), then it is irreducible in \( D[X] \).
+\end{lemma}
+\begin{proof}
+  \SubProofOf{thm:def:rational_function_field/irreducible} Suppose that \( p(X) \) is primitive and irreducible in \( \BbbK[X] \). Let
+  \begin{equation*}
+    p(X) = q(X) r(X),
+  \end{equation*}
+  where \( q(X) \) and \( r(X) \) are polynomials from \( D[X] \). Then \( q(X) \) or \( r(X) \) is a unit in \( \BbbK[X] \), hence it is a nonzero constant polynomial. Suppose that \( q(X) = q_0 \).
+
+  Then \( q_0 \) is an element of \( D \) that divides all coefficients of \( p(X) \). By assumption, the coefficients of \( p(X) \) are coprime. It follows that \( q_0 \) is a unit in \( D \).
+\end{proof}
+
+\begin{proposition}\label{thm:polynomial_ring_of_field_of_fractions}
+  Let \( D \) be an \hyperref[def:integral_domain]{integral domain} and \( D[X] \) be its univariate \hyperref[def:polynomial_ring]{polynomial ring}.
+
+  \begin{thmenum}
+    \thmitem{thm:polynomial_ring_of_field_of_fractions/gcdd} If \( D \) is a \hyperref[def:greatest_common_divisor_domain]{greatest common divisor domain}, so is \( D[X] \).
+
+    \thmitem{thm:polynomial_ring_of_field_of_fractions/ufd} If \( D \) is a \hyperref[def:unique_factorization_domain]{unique factorization domain}, so is \( D[X] \).
+  \end{thmenum}
+\end{proposition}
+\begin{proof}
+  Let \( D \) be a GCD domain and let \( \BbbK \) be its \hyperref[thm:field_of_fractions]{field of fractions}.
+
+  \SubProofOf{thm:polynomial_ring_of_field_of_fractions/gcdd} Let \( p(X) \) and \( q(X) \) be arbitrary polynomials in \( D[X] \). We will show that they have a greatest common divisor.
+
+  By \fullref{thm:def:field/polynomial_ring}, \( \BbbK[X] \) is an Euclidean domain, and thus \( p(X) \) and \( q(X) \) have a GCD in \( \BbbK[X] \), which is unique up to multiplication by a unit in \( \BbbK[X] \). Thus, taking an arbitrary GCD
+  \begin{equation*}
+    r(X) = \sum_{k=0}^n {a_k} {b_k} X^k,
+  \end{equation*}
+  the polynomial \( b_0 \cdots b_n r(X) \) is also a GCD. Furthermore, the latter is actually a polynomial in \( D[X] \).
+
+  Therefore, \( p(X) \) and \( q(X) \) have a GCD in \( D[X] \).
+
+  \SubProofOf{thm:polynomial_ring_of_field_of_fractions/ufd} We have shown that \( D[X] \) is a GCD domain. Then \fullref{thm:def:greatest_common_divisor_domain/irreducible_is_prime} is satisfied, with by \fullref{thm:def:irreducible_factorization/uniqueness} implies that if an element has at least one \hyperref[def:irreducible_factorizaion]{irreducible factorization}, all others are equivalent to it.
+
+  With the additional assumption that \( D[X] \) is an unique factorization domain, we will now show that an irreducible factorization exists.
+
+  Let \( p(X) \) be a polynomial in \( D[X] \). By \fullref{thm:def:field/polynomial_ring}, \( p(X) \) has an irreducible factorization
+  \begin{equation*}
+    p(X) = u q_1(X) \cdots q_n(X),
+  \end{equation*}
+  where \( q_1(X), \ldots, q_n(X) \) belong to \( \BbbK[X] \).
+
+  For a fixed index \( i = 1, \ldots, n \), if the polynomial \( q_i(X) \) has the form
+  \begin{equation*}
+    q_i(X) = \sum_{k=0}^n \frac {a_k} {b_k} X^k,
+  \end{equation*}
+  then \( b_1 \cdots b_n q_i(X) \) is a polynomial in \( D[X] \). Denote by \( r_i(X) \) the \hyperref[def:polynomial_content]{primitive part} this polynomial in \( D[X] \). Since every scalar from \( D \) is simply a unit in \( \BbbK[X] \), it follows that \( r_i(X) \) is also irreducible in \( \BbbK[X] \).
+
+  Hence, for the appropriate scalar \( v \in \BbbK \),
+  \begin{equation*}
+    p(X) = v r_1(X) \cdots r_n(X).
+  \end{equation*}
+  is an irreducible factorization in \( \BbbK[X] \).
+
+  By \fullref{thm:irreducible_primitive_polynomial_in_field_of_fractions}, \( r_1(X), \ldots, r_n(X) \) are irreducible elements of \( D[X] \). Thus, if \( v = \tfrac c d \) with \( c \) and \( d \) coprime, then
+  \begin{equation*}
+    d p(X) = c r_1(X) \cdots r_n(X)
+  \end{equation*}
+  is an irreducible factorization in \( D[X] \).
+
+  By \fullref{thm:gauss_lemma}, the product \( r_1(X) \cdots r_n(X) \) is a primitive polynomial in \( D[X] \). Hence, \( d \) cannot divide neither \( c \) nor \( r_1(X) \cdots r_n(X) \), implying that \( d \) is a unit. Therefore,
+  \begin{equation*}
+    p(X) = c r_1(X) \cdots r_n(X)
+  \end{equation*}
+  is an irreducible factorization of \( p(X) \) in \( D[X] \).
+\end{proof}
+
+\begin{definition}\label{def:rational_function_field}
+  The field of \term{rational algebraic functions} \( D(\mscrX) \) for the set of indeterminates \( \mscrX \) over the \hyperref[def:integral_domain]{integral domain} \( D \) is the \hyperref[thm:field_of_fractions]{field of fractions} of the \hyperref[def:polynomial_semiring]{polynomial ring} \( D[\mscrX] \).
+
+  Despite the name, elements of the field of fractions are not actually functions, but merely formal expressions. In particular, an analog of \fullref{thm:polynomial_semiring_universal_property} does not really make sense.
 \end{definition}
 
 \begin{proposition}\label{thm:adjoining_elements_to_field}
@@ -110,7 +202,7 @@
 
   Let \( \Bbbk[A] \) be the ring obtained by adjoining the elements of \( A \) to \( \Bbbk \) as described in \fullref{thm:adjoining_elements_to_semiring}. The \hyperref[def:field_of_fractions]{field of fractions} of \( \Bbbk[A] \) is the smallest field extension of \( \Bbbk \) containing \( A \).
 
-  We denote this extension by \( \Bbbk(A) \).
+  We denote this extension by \( \Bbbk(A) \). It should not be confused with the image of the evaluation homomorphism on the \hyperref[def:rational_function_field]{field of rational functions}; the rational functions do not actually have an evaluation homomorphism.
 \end{proposition}
 \begin{proof}
   It follows from \fullref{thm:adjoining_elements_to_semiring} that \( \Bbbk[A] \) is the smallest superring of \( \Bbbk \) containing \( A \). By \fullref{thm:field_of_fractions_universal_property}, \( \Bbbk(A) \) is the smallest field containing \( \Bbbk[A] \).
@@ -133,7 +225,7 @@
 
   Suppose that there exist splitting fields for polynomials over \( \Bbbk \) of degree \( n - 1 \). By \fullref{thm:maximal_ideal_theorem}, the \hyperref[def:semiring_ideal]{principal ideal} \( \braket{ f(X) } \) is contained in some maximal ideal \( M \). By \fullref{thm:quotient_by_maximal_ideal}, the quotient of \( R[X] \) by \( M \) is a field.
 
-  Define \( u_n \coloneqq \braket{ X } + M \). We have \( f(u_n) = \braket{ f(X) } + M \), hence \( u_n \) is a root of \( f \) in \( M \). By \fullref{thm:polynomial_root_iff_divisible},
+  Define \( u_n \coloneqq \braket{ X } + M \). We have \( f(u_n) = \braket{ f(X) } + M \), hence \( u_n \) is a root of \( f \) in \( M \). Then
   \begin{equation*}
     f(X) = (X - u_n) q(X)
   \end{equation*}
@@ -188,7 +280,7 @@
 
   The multiplicative group of \( \BbbK \) has order \( q - 1 \). The order of a non-zero element \( a \in \BbbK \) divides \( q - 1 \) by \fullref{thm:def:group_order/divides}, hence \( a^{q - 1} = 1 \). We also have \( 0^q = 0 \). Therefore, for every element of \( \BbbF_q \), we have \( a^q = a \).
 
-  From \fullref{thm:polynomial_root_iff_divisible} it follows that
+  Then
   \begin{equation*}
     X^q - X = \prod_{u \in \BbbK} (X - u).
   \end{equation*}
@@ -229,7 +321,7 @@
 
   We will prove the converse inclusion via induction on \( n \).
 
-  In the case of a single indeterminate \( X \), for every polynomial \( f(X) \in \ker \Phi \), we know that the entirety of \( \BbbF_q \) are roots of \( f(X) \). By \fullref{thm:integral_domain_polynomial_root_limit}, \( f(X) \) has at most \( q \) roots. Hence, by \fullref{thm:polynomial_root_iff_divisible}, \( X - u \) divides \( f(X) \) for every \( u \in \BbbF_q \). We have
+  In the case of a single indeterminate \( X \), for every polynomial \( f(X) \in \ker \Phi \), we know that the entirety of \( \BbbF_q \) are roots of \( f(X) \). By \fullref{thm:integral_domain_polynomial_root_limit}, \( f(X) \) has at most \( q \) roots. Hence, \( X - u \) divides \( f(X) \) for every \( u \in \BbbF_q \). We have
   \begin{equation*}
     \underbrace{\prod_{u \in \BbbF_q} (X - u)}_{\mathclap{ X^q - X \T*{by \fullref{thm:finite_fields/splitting}}}} \mid f(X),
   \end{equation*}
@@ -350,13 +442,13 @@
 
   By assumption, the irreducible polynomials are linear, and hence have roots. Therefore, \( p(X) \) has at least one root.
 
-  \ImplicationSubProof{def:algebraically_closed_field/at_least_one_root}{def:algebraically_closed_field/factorization} Suppose that \( u_1 \) is a root of \( p(X) \). \Fullref{thm:polynomial_root_iff_divisible} tells us that \( p(X) \) is divisible by \( (X - u_1) \). Using induction on the degree of \( p(X) \), we can factor \( p(X) \) into
+  \ImplicationSubProof{def:algebraically_closed_field/at_least_one_root}{def:algebraically_closed_field/factorization} Suppose that \( u_1 \) is a root of \( p(X) \). Then \( p(X) \) is divisible by \( (X - u_1) \). Using induction on the degree of \( p(X) \), we can factor \( p(X) \) into
   \begin{equation*}
     p(X) = a (X - u_1) (X - u_2) \cdots (X - u_n),
   \end{equation*}
   where \( a \) is a unit of \( \BbbK \). This is the desired factorization.
 
-  \ImplicationSubProof{def:algebraically_closed_field/factorization}{def:algebraically_closed_field/exactly_n_roots} Follows from \fullref{thm:polynomial_root_iff_divisible} by induction on the polynomial degree. By \fullref{thm:integral_domain_polynomial_root_limit}, the number of roots is bounded by \( n \).
+  \ImplicationSubProof{def:algebraically_closed_field/factorization}{def:algebraically_closed_field/exactly_n_roots} Follows from the equivalence in \fullref{def:polynomial_root} by induction on the polynomial degree. By \fullref{thm:integral_domain_polynomial_root_limit}, the number of roots is bounded by \( n \).
 
   \ImplicationSubProof{def:algebraically_closed_field/exactly_n_roots}{def:algebraically_closed_field/trivial_algebraic_extensions} Suppose that every nonconstant polynomial of degree \( n \) has exactly \( n \) roots in \( \Bbbk \) and let \( \BbbK \) be an algebraic extension of \( \Bbbk \).
 
