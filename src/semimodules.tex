@@ -74,7 +74,7 @@ Semimodules are generalizations of monoid actions. Notation and terminology-wise
 
     \Fullref{rem:span_over_different_semirings} shows how it is important to be unambiguous about over which semiring we take the span of \( A \). In case of possible ambiguity, we will use subscripts like \( \linspan_R A \).
 
-    The linear span can be characterized via \hyperref[def:linear_combination]{linear combinations} --- see \fullref{ex:def:first_order_substructure/vector_space}.
+    The linear span can be characterized via \hyperref[rem:linear_combinations]{linear combinations} --- see \fullref{ex:def:first_order_substructure/vector_space}.
 
     \thmitem{def:semimodule/trivial} The \hyperref[thm:substructures_form_complete_lattice/bottom]{trivial} semimodule is the \hyperref[def:pointed_set/trivial]{trivial pointed set} \( \set{ 0 } \).
 
@@ -250,17 +250,17 @@ Semimodules are generalizations of monoid actions. Notation and terminology-wise
 \begin{definition}\label{def:free_semimodule}\mimprovised
   Fix a \hyperref[def:semiring]{(semi)ring} \( R \). We associate with every set \( A \) its \term{free \( R \)-(semi)module} \( R^{\oplus A} \) over \( R \) defined as the set
   \begin{equation*}
-    R^{\bigoplus A} \coloneqq \bigoplus_{x \in A} R = \set{ t: A \to R \given t \T{has finite \hyperref[def:function_support]{support}} }.
+    R^{\oplus A} \coloneqq \bigoplus_{x \in A} R = \set{ t: A \to R \given t \T{has finite \hyperref[def:function_support]{support}} }.
   \end{equation*}
 
   In the case when \( R \) is the (semi)ring \( \BbbN \) of natural numbers, \( \BbbN^{\oplus A} \) is the set of finite \hyperref[def:weighted_set/multiset]{multisets} over \( S \).
 
-  We call \( A \) the \term{basis} of \( R \). As with general direct sums, we regard the function \( t \) as the indexed family \( \seq{ t_x }_{x \in A} \).
+  We call \( A \) the \term{basis} of \( R \). As with general direct sums, we regard the function \( t \) as the indexed family \( \seq{ t_x }_{x \in A} \), and we call the indexed family a \term{linear combination} over \( R \).
 
-  By \fullref{thm:functions_over_model_form_model}, \( F(A) \) inherits addition and multiplication from \( R \) and is actually a (semi)ring. Scalar multiplication can be defined as
+  By \fullref{thm:functions_over_model_form_model}, \( R^{\oplus A} \) inherits addition and multiplication from \( R \) and is actually a (semi)ring. Scalar multiplication can be defined as
   \begin{equation*}
     \begin{aligned}
-      &\cdot: R \times F(A) \to F(A), \\
+      &\cdot: R \times R^{\oplus A} \to R^{\oplus A}, \\
       &r \cdot \seq{ t_x }_{x \in A} \coloneqq \seq{ r \cdot t_x }_{x \in A}.
     \end{aligned}
   \end{equation*}
@@ -268,7 +268,7 @@ Semimodules are generalizations of monoid actions. Notation and terminology-wise
   Finally, define the canonical inclusion.
   \begin{equation*}
     \begin{aligned}
-      &\iota_A: A \to F(A), \\
+      &\iota_A: A \to R^{\oplus A}, \\
       &\iota_A(x) \coloneqq \parens[\Bigg]
         {
           y \mapsto \begin{rcases}
@@ -287,7 +287,7 @@ Semimodules are generalizations of monoid actions. Notation and terminology-wise
 \begin{proposition}\label{thm:free_semimodule_universal_property}
   Fix a semiring \( R \) and a set \( A \). The \hyperref[def:free_semimodule]{free \( R \)-semimodule} \( R^{\oplus A} \) over \( R \) is the unique up to a unique isomorphism semimodule that satisfies the following \hyperref[rem:universal_mapping_property]{universal mapping property}:
   \begin{displayquote}
-    For every semimodule \( M \) over \( R \) and every function \( f: A \to M \), there exists a unique \( R \)-semimodule homomorphism \( \widetilde{f}: F(A) \to M \) such that the following diagram commutes:
+    For every semimodule \( M \) over \( R \) and every function \( e: A \to M \), there exists a unique \( R \)-semimodule homomorphism \( \Phi_e: R^{\oplus A} \to M \) such that the following diagram commutes:
     \begin{equation}\label{eq:thm:free_semimodule_universal_property/diagram}
       \begin{aligned}
         \includegraphics[page=1]{output/thm__free_semimodule_universal_property.pdf}
@@ -295,55 +295,38 @@ Semimodules are generalizations of monoid actions. Notation and terminology-wise
     \end{equation}
   \end{displayquote}
 
-  Via \fullref{rem:universal_mapping_property}, \( F \) becomes \hyperref[def:category_adjunction]{left adjoint} to the \hyperref[def:concrete_category]{forgetful functor}
+  Via \fullref{rem:universal_mapping_property}, \( A \mapsto R^{\oplus A} \) becomes \hyperref[def:category_adjunction]{left adjoint} to the \hyperref[def:concrete_category]{forgetful functor}
   \begin{equation*}
     U: \cat{SMod}_R \to \cat{Set}.
   \end{equation*}
+
+  The function \( e \) assigns a value from \( M \) for each component of a linear combination, while \( \Phi_e \) evaluates the obtained sum. We call \( \Phi_e \) the \term{linear combination evaluation homomorphism} corresponding to \( e \).
 \end{proposition}
 \begin{proof}
-  For every function \( f: A \to M \), we want
+  For every function \( e: A \to M \), we want
   \begin{equation*}
-    \widetilde{f}(\iota(x)) = f(x).
+    \Phi_e(\iota(x)) = e(x).
   \end{equation*}
 
   This suggests the definition
   \begin{equation*}
     \begin{aligned}
-      &\widetilde{f}: F(A) \to M, \\
-      &\widetilde{f}(\seq{ t_x }_{x \in A}) \coloneqq \sum_{x \in A}^n t_x \cdot f(x).
+      &\Phi_e: R^{\oplus A} \to M, \\
+      &\Phi_e(\seq{ t_x }_{x \in A}) \coloneqq \sum_{x \in A}^n t_x \cdot e(x).
     \end{aligned}
   \end{equation*}
 
   We discuss well-definedness of infinitary operations in direct sums in \fullref{rem:binary_operation_syntax_trees/infinite/direct_sum}.
 \end{proof}
 
-\begin{definition}\label{def:linear_combination}\mimprovised
-  A \term{linear combination} over a \hyperref[def:semiring]{semiring} \( R \) is a finite sequence \( t_1, \ldots, t_n \) of scalars, which we call the \term{coefficients} of the combination. More abstractly, a linear combination is a member of the \hyperref[def:semimodule_direct_product]{direct sum} \( R^{\oplus \BbbN} \); as per our general convention from \fullref{rem:peano_arithmetic_zero}, however, we will start the sequence of coefficients with \( 1 \) rather than \( 0 \).
+\begin{remark}\label{rem:linear_combinations}
+  The \hyperref[def:free_semimodule]{linear combination} \( \sum_{x \in A} t_x x \) can instead be written as \( \sum_{k=1}^n t_k x_k \), where \( x_1, \ldots, x_n \) are the values in \( A \) for which the scalars \( t_1, \ldots, t_n \) are nonzero (we denote \( t_{x_k} \) by \( t_k \) for brevity). This is actually the dominating convention.
 
-  Given an \( R \)-\hyperref[def:semimodule]{semimodule} \( M \) and a corresponding sequence of vectors \( x_1, \ldots, x_n \), we can \term{evaluate} the linear combination as
-  \begin{equation}
-    \sum_{k=0}^n t_k x_k
-  \end{equation}
-  to obtain a vector in \( M \). Evaluation defines an \( R \)-semimodule homomorphism
-  \begin{equation*}
-    \Phi: \underbrace{R^{\oplus \BbbN}}_{\T{scalars}} \times \underbrace{M^{\oplus \BbbN}}_{\T{vectors}} \to M.
-  \end{equation*}
-
-  The gist is that we treat linear combinations as syntactic objects and then, given a corresponding sequence of vectors, we interpret this syntactic object to obtain another vector. This corresponds to mathematical practice, although making this idea precise requires some level of mathematical maturity.
-
-  \begin{thmenum}
-    \thmitem{def:linear_combination/trivial} A \term{trivial} linear combination is the zero vector in \( R^{\oplus \BbbN} \). In practice, this corresponds to a finite sequence of zeros.
-
-    \thmitem{def:linear_combination/affine} An \term{affine combination} is a linear combination such that \( \sum_{k=1}^n t_k = 1_R \).
-
-    \thmitem{def:linear_combination/conic} If \( R \) is an \hyperref[def:ordered_semiring]{ordered semiring}, a \term{conic combination} in \( R \) is a linear combination with \hyperref[def:ordered_semiring]{nonnegative coefficients}.
-
-    \thmitem{def:linear_combination/convex} A \term{convex combination} is a linear combination that is both affine and conic.
-  \end{thmenum}
-\end{definition}
+  This issue is discussed in more generality in \fullref{rem:binary_operation_syntax_trees/infinite/direct_sum}.
+\end{remark}
 
 \begin{proposition}\label{thm:span_via_linear_combinations}
-  For a set \( A \) in an \( R \)-\hyperref[def:semimodule]{semimodule} \( M \), the \hyperref[def:semimodule/submodel]{linear span} of \( A \), defined as the \( R \)-submodule generated by \( A \) in the sense of \fullref{def:first_order_generated_substructure}, equals the set of all \hyperref[def:linear_combination]{linear combinations} over \( A \).
+  For a set \( A \) in an \( R \)-\hyperref[def:semimodule]{semimodule} \( M \), the \hyperref[def:semimodule/submodel]{linear span} of \( A \), defined as the \( R \)-submodule generated by \( A \) in the sense of \fullref{def:first_order_generated_substructure}, equals the set of all \hyperref[rem:linear_combinations]{linear combinations} over \( A \).
 
   We say that \( A \) is a \term{generating set} of \( M \).
 
