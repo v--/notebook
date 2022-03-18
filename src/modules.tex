@@ -222,17 +222,6 @@
   \ImplicationSubProof{def:hamel_basis/free}{def:hamel_basis/independent} Suppose that \( \Psi: R^{\oplus B} \to M \) is a linear isomorphism. By \fullref{def:linear_dependence/evaluation}, \( \Psi \) is surjective, and hence a generating set of \( M \). Furthermore, it satisfies \fullref{def:linear_dependence/evaluation}, meaning that \( B \) is a linearly independent set.
 \end{defproof}
 
-\begin{definition}\label{rem:basis_decomposition}
-  If \( B \) is a basis of the \( R \)-module \( M \), for every vector \( x \in M \) there exists a \hyperref[def:free_semimodule]{linear combination} \( \seq{ t_b }_{b \in B} \) such that
-  \begin{equation*}
-    x = \sum_{b \in B} t_b b.
-  \end{equation*}
-
-  We call this linear combination the \term{decomposition} of \( x \) along the basis \( B \).
-
-  As in \fullref{rem:linear_combinations}, we sometimes take only the basis vectors with nonzero coefficients as \enquote{the} decomposition.
-\end{definition}
-
 \begin{proposition}\label{thm:def:hamel_basis}
   \hyperref[def:hamel_basis]{Bases} of the \( R \)-module \( M \) have the following basic properties:
   \begin{thmenum}
@@ -259,6 +248,31 @@
   Therefore, no proper subset of \( B \) is generating for \( M \).
 \end{proof}
 
+\begin{definition}\label{def:basis_decomposition}
+  If \( B \) is a basis of the \( R \)-\hyperref[def:module]{module} \( M \), we have some linear isomorphism \( \pi: M \to R^{\oplus B} \). We denote the \( b \)-th component of this function by \( \pi_b: M \to R \). This is also a linear map, which we call the \term{coordinate projection} for \( b \).
+
+  For every vector \( x \) in \( M \), we have
+  \begin{equation*}
+    x = \sum_{b \in B} \pi_b(x) \cdot b.
+  \end{equation*}
+
+  This linear combination is unique, and we call it the \term{decomposition} of \( x \) along \( B \).
+
+  As in \fullref{rem:linear_combinations}, we sometimes take only the basis vectors with nonzero coefficients as \enquote{the} decomposition.
+\end{definition}
+\begin{defproof}
+  The decomposition is unique. Indeed, if
+  \begin{equation*}
+    x = \sum_{b \in B} t_b b = \sum_{b \in B} r_b b,
+  \end{equation*}
+  then
+  \begin{equation*}
+    \sum_{b \in B} (t_b - r_b) b = 0_M.
+  \end{equation*}
+
+  Since \( B \) is a basis, it is linearly independent and hence \( t_b = r_b \) for all \( b \) in \( B \).
+\end{defproof}
+
 \begin{definition}\label{def:vector_space}
   A \term{vector space} is a \hyperref[def:module]{left module} over a \hyperref[def:field]{field}.
 
@@ -277,6 +291,8 @@
     \thmitem{thm:def:vector_space/minimal_generating} Every minimal generating subset of \( V \) is a basis.
 
     The converse holds more generally --- see \fullref{thm:def:hamel_basis/minimal_generating}.
+
+    \thmitem{thm:def:vector_space/dimension_lemma} If \( \linspan\set{ a_1, \ldots, a_n } \subseteq \linspan\set{ b_1, \ldots, b_m } \), then \( n \leq m \).
   \end{thmenum}
 \end{proposition}
 \begin{proof}
@@ -312,6 +328,30 @@
   \end{equation*}
 
   Then \( \linspan A = \linspan A \setminus \set{ x_{k_0} } \), contradicting the minimality of \( A \).
+
+  \SubProofOf{thm:def:vector_space/dimension_lemma} We will use induction on \( n \). The base case \( n = 0 \) holds because \( \linspan{ 0_V } \) is the only submodule of the linear span of zero vectors.
+
+  Suppose that the statement holds for \( n - 1 \) and note that \( b_m \) can be \hyperref[def:basis_decomposition]{decomposed} as
+  \begin{equation*}
+    b_m = \sum_{k=1}^n t_k a_k.
+  \end{equation*}
+
+  Then
+  \begin{equation*}
+    a_k = \frac 1 {t_{k_0}} b_m - \sum_{k \neq k_0} \frac {t_k} {t_{k_0}} a_{k_0}.
+  \end{equation*}
+
+  Thus,
+  \begin{equation*}
+    \linspan\set{ a_1, \ldots, a_n } = \linspan\set{ a_1, \ldots, a_{k_0 - 1}, a_{k_0 + 1}, \ldots, a_n, b_m }.
+  \end{equation*}
+
+  We can thus remove \( b_m \) to obtain the inclusion
+  \begin{equation*}
+    \linspan\set{ b_1, \ldots, b_{m-1} } \subseteq \linspan\set{ a_1, \ldots, a_{k_0 - 1}, a_{k_0 + 1}, a_n }.
+  \end{equation*}
+
+  From the inductive hypothesis, we conclude that \( m - 1 \leq n - 1 \), and hence \( m \leq n \).
 \end{proof}
 
 \begin{proposition}\label{thm:vector_space_dimension}
@@ -319,9 +359,96 @@
 
   We define the \term{dimension} \( \dim V \) of the vector space \( V \) as the \hyperref[thm:cardinality_existence]{cardinality} of any of its bases.
 \end{proposition}
+\begin{proof}
+  Let \( A \) and \( B \) be bases of \( V \).
+
+  \SubProof{Proof for finite bases} Suppose that \( a_1, \ldots, a_n \) are the vectors of \( A \) and, aiming at a contradiction, suppose that \( B \) is infinite.
+
+  Every vector \( a_i \) of \( A \) can be \hyperref[def:basis_decomposition]{decomposed} along \( B \) as
+  \begin{equation*}
+    a_i = \sum_{j=1}^{m_i} t^{(i)}_j b^{(i)}_j.
+  \end{equation*}
+  for appropriate scalars from \( \BbbK \) and vectors from \( B \). Since this can be done for every \( a_i \) in \( A \), we conclude that
+  \begin{equation*}
+    V = \linspan\set{ a_1, \ldots, a_n } = \linspan\set{ b^{(1)}_1, \ldots, b^{(1)}_{m_1}, \ldots, b^{(n)}_1, \ldots, b^{(n)}_{m_n} }.
+  \end{equation*}
+
+  Hence, a finite subset of \( B \) generates \( V \), contradicting \fullref{thm:def:hamel_basis/minimal_generating}. Therefore, \( B \) must be a finite set.
+
+  Let \( b_1, \ldots, b_m \) be the vectors of \( B \). By applying \fullref{thm:def:vector_space/dimension_lemma} twice, we conclude that \( n \leq m \) and \( m \leq n \), hence \( n = m \).
+
+  \SubProof{Proof for infinite bases} Suppose that both \( A \) and \( B \) are infinite. Let \( S_x \) be the set of vectors in \( B \) with nonzero coefficients in the decomposition of \( x \in V \).
+  \begin{itemize}
+    \item \( S_x \) is necessarily a finite set.
+    \item Every vector \( x \) in \( V \) belongs to \( S_a \) for some \( a \in A \).
+
+    Indeed, \( x \) can be decomposed along \( A \) as
+    \begin{equation*}
+      x = \sum_{a \in A} \pi_a(x) \cdot a,
+    \end{equation*}
+    and \( x \in S_{a_k} \) whenever \( \pi(a) \neq 0_\BbbK \).
+
+    \item For every basis vector \( b \) in \( B \), \( S_b = \set{ b } \).
+
+    \item We have
+    \begin{equation*}
+      B \subseteq \bigcup_{a \in A} S_a
+    \end{equation*}
+  \end{itemize}
+
+  Therefore,
+  \begin{equation*}
+    \card(B)
+    \leq
+    \card\parens[\Bigg]{ \bigcup_{a \in A} S_a }
+    \leq
+    \card\parens[\Bigg]{ \coprod_{a \in A} S_a }
+    \leq
+    \card(A \times \omega)
+    \leq
+    \card(A) \cdot \aleph_0
+    \reloset {\ref{thm:simplified_cardinal_arithmetic/infinite}} \leq
+    \card(A).
+  \end{equation*}
+
+  Since \( A \) and \( B \) were arbitrary bases, we can exchange them to obtain the converse inequality, and thus \( \card(A) = \card(B) \).
+\end{proof}
 
 \begin{proposition}\label{thm:commutative_module_rank}
   All \hyperref[def:hamel_basis]{bases} of a \hyperref[def:module]{module} over a nontrivial \hyperref[def:ring/commutative]{commutative ring} are \hyperref[def:semimodule/homomorphism]{linearly isomorphic}.
 
   We define the \term{rank} of a module as the \hyperref[thm:cardinality_existence]{cardinality} of any of its bases. This is a generalization of \hyperref[thm:vector_space_dimension]{vector space dimensions}.
 \end{proposition}
+\begin{proof}
+  Suppose that \( A \) and \( B \) are bases of the \( R \)-module \( M \). Let \( I \) be a \hyperref[def:semiring_ideal/maximal]{maximal ideal} of \( R \).
+
+  By \fullref{thm:quotient_by_maximal_ideal}, \( \BbbK = R / I \) is a field (this is a forward reference to \fullref{thm:quotient_by_maximal_ideal}). Given an isomorphism \( \Phi: R^{\oplus A} \to R^{\oplus B} \) with components \( \Phi_b: R^{\oplus A} \to R \), define
+  \begin{equation*}
+    \begin{aligned}
+      &\Psi: \BbbK^{\oplus A} \to \BbbK^{\oplus B} \\
+      &\Psi\parens[\Big]{ \seq{ t_a + I }_{a \in A} } \coloneqq \seq[\Big]{ \Phi_b(\seq{ t_a }_{a \in A}) + I }_{b \in B}
+    \end{aligned}
+  \end{equation*}
+
+  This is clearly an isomorphism if it is well-defined. Suppose we are given \( t_a + I = t_a' + I \) for every \( a \in A \), i.e. \( t_a - t_a' \in I \). Then
+  \small
+  \begin{equation*}
+    \Phi_b(\seq{ t_a }_{a \in A}) - \Phi_b(\seq{ t_a' }_{a \in A})
+    =
+    \Phi_b(\seq{ t_a }_{a \in A} - \seq{ t_a' }_{a \in A})
+    =
+    \Phi_b(\seq{ t_a - t_a' }_{a \in A})
+    =
+    \sum_{a \in A} (\underbrace{ t_a - t_a' }_I) \Phi_b(a)
+    \in
+    I.
+  \end{equation*}
+  \normalsize
+
+  Thus,
+  \begin{equation*}
+    \Phi_b(\seq{ t_a }_{a \in A}) + I = \Phi_b(\seq{ t_a' }_{a \in A}) + I.
+  \end{equation*}
+
+  Therefore, \( \Psi \) is a well-defined linear isomorphism. Applying \fullref{thm:vector_space_dimension}, we conclude that \( A \) and \( B \) are equinumerous.
+\end{proof}
