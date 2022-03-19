@@ -138,6 +138,8 @@
   \end{thmenum}
 
   Unsurprisingly, if the elements of \( B \) are not \term{linearly independent}, we say that they are \term{linearly dependent}.
+
+  Compare this concept to \hyperref[def:algebraic_dependence]{algebraic dependence}.
 \end{definition}
 \begin{defproof}
   \ImplicationSubProof{def:linear_dependence/direct}{def:linear_dependence/evaluation} Suppose that only the trivial linear combination of \( B \) sums to zero. If \( \sum_{b \in B} t_b b = \sum_{b \in B} r_b b \), then
@@ -234,6 +236,8 @@
     \thmitem{thm:def:hamel_basis/minimal_generating} Every basis of \( M \) is minimal among generating sets.
 
     The converse holds for vector spaces --- see \fullref{thm:def:vector_space/minimal_generating}.
+
+    \thmitem{thm:def:hamel_basis/expansion} If \( A \) is a finite basis of the submodule \( N \) of \( M \), and if \( M \) has at least one finite basis, then there exists a finite basis \( B \) of \( M \) such that \( A \subseteq B \). That is, we expand the basis of \( N \) to a basis of \( M \).
   \end{thmenum}
 \end{proposition}
 \begin{proof}
@@ -246,12 +250,27 @@
   Then there exists some vector \( x \in B \setminus A \). Since both sets are generating, \( \linspan A = \linspan B \). By \fullref{thm:def:linear_dependence/span_dependent}, \( A \cup \set{ x } \) is linearly dependent, and by \fullref{thm:def:linear_dependence/monotonicity}, \( B \) is linearly dependent. This contradicts the assumption that \( B \) has a basis.
 
   Therefore, no proper subset of \( B \) is generating for \( M \).
+
+  \SubProofOf{thm:def:hamel_basis/expansion} Let \( a_1, \ldots, a_n \) be a basis of \( N \) and let \( b_1, \ldots, b_m \) be a basis of \( M \). Then \( \set{ a_1, \ldots, a_n, b_1, \ldots, b_m } \) is necessarily a linearly dependent set. Hence, \( b_m \) is a linear combination of the others, and
+  \begin{equation*}
+    \linspan\set{ a_1, \ldots, a_n, b_1, \ldots, b_{m-1} } = \linspan\set{ a_1, \ldots, a_n, b_1, \ldots, b_{m-1}, b_m }.
+  \end{equation*}
+
+  Continuing by induction, we will obtain a generating set of \( M \) that it linearly independent and contains \( a_1, \ldots, a_n \).
 \end{proof}
 
 \begin{definition}\label{def:basis_decomposition}
-  If \( B \) is a basis of the \( R \)-\hyperref[def:module]{module} \( M \), we have some linear isomorphism \( \pi: M \to R^{\oplus B} \). We denote the \( b \)-th component of this function by \( \pi_b: M \to R \). This is also a linear map, which we call the \term{coordinate projection} for \( b \).
+  If \( B \) is a basis of the \( R \)-\hyperref[def:module]{module} \( M \), the inverse of the linear isomorphism from \fullref{def:hamel_basis/evaluation} is
+  \begin{equation*}
+    \begin{aligned}
+      &\pi_B: M \to R^{\oplus B} \\
+      &\pi_B\parens[\Big]{ \sum_{b \in B} t_b \cdot b } \coloneqq \seq{ t_b }_{b \in B}.
+    \end{aligned}
+  \end{equation*}
 
-  For every vector \( x \) in \( M \), we have
+  We denote the \( b \)-th component of this function by \( \pi_b: M \to R \). This is also a linear map, which we call the \term{coordinate projection} for \( b \).
+
+  For every vector \( x \) in \( M \), we thus have
   \begin{equation*}
     x = \sum_{b \in B} \pi_b(x) \cdot b.
   \end{equation*}
@@ -261,7 +280,7 @@
   As in \fullref{rem:linear_combinations}, we sometimes take only the basis vectors with nonzero coefficients as \enquote{the} decomposition.
 \end{definition}
 \begin{defproof}
-  The decomposition is unique. Indeed, if
+  The decomposition is indeed unique --- if
   \begin{equation*}
     x = \sum_{b \in B} t_b b = \sum_{b \in B} r_b b,
   \end{equation*}
@@ -280,7 +299,7 @@
 \end{definition}
 
 \begin{proposition}\label{thm:def:vector_space}
-  \hyperref[def:vector_space]{Vector spaces} of the vector space over \( \BbbK \) \( V \) have the following basic properties:
+  The \hyperref[def:vector_space]{vector space} \( V \) over \( \BbbK \) have the following basic properties:
   \begin{thmenum}
     \thmitem{thm:def:linear_dependence/span_independent} For a linearly independent set \( A \), if \( x \in V \setminus \linspan A \), then \( A \cup \set{ x } \) is also a linearly independent set.
 
@@ -296,7 +315,7 @@
   \end{thmenum}
 \end{proposition}
 \begin{proof}
-  \SubProofOf{thm:def:linear_dependence/span_independent} Suppose that \( x \in V \setminus \linspan A \) and let
+  \SubProofOf{thm:def:linear_dependence/span_independent} Suppose that \( x \in V \setminus \linspan A \) and that \( A \cup \set{ x } \) is linearly dependent, Then there exist coefficients \( t_0, t_1, \ldots, t_n \) such that
   \begin{equation*}
     t_0 x + \sum_{k=1}^n t_k a_k = 0_M.
   \end{equation*}
@@ -354,10 +373,23 @@
   From the inductive hypothesis, we conclude that \( m - 1 \leq n - 1 \), and hence \( m \leq n \).
 \end{proof}
 
+\begin{theorem}[Vector space basis existence]\label{thm:vector_space_basis_existence}
+  Every \hyperref[def:vector_space]{vector space} has a \hyperref[def:hamel_basis]{basis}.
+
+  Within \hyperref[def:zfc]{\logic{ZF}}, this theorem is equivalent to the \hyperref[def:zfc/choice]{axiom of choice} --- see \fullref{thm:axiom_of_choice_equivalences/vector_space_bases}.
+\end{theorem}
+\begin{proof}
+  \ImplicationSubProof[thm:zorns_lemma]{Zorn's lemma}[thm:vector_space_basis_existence]{vector space existence} Let \( V \) be a vector space over \( \BbbK \). Let \( \mathcal{B} \) be the family of all linearly independent \hyperref[rem:linear_combinations]{subsets} of \( V \).
+
+  The family \( \mathcal{B} \) is nonempty since any \hyperref[rem:singleton_sets]{singleton} from \( V \) belongs to \( \mathcal{B} \). The union of any chain \( \mathcal{B}' \subseteq \mathcal{B} \) can then contain only linearly independent elements since otherwise we would have that some set in \( \mathcal{B}' \) is not linearly independent. Thus, \fullref{thm:zorns_lemma} shows the existence of a maximal linearly independent set \( B \). By \fullref{thm:def:vector_space/maximal_independent}, \( B \) is a basis.
+
+  \ImplicationSubProof[thm:vector_space_basis_existence]{vector space existence}[def:zfc/choice]{the axiom of choice} Shown in \cite{Blass1984}.
+\end{proof}
+
 \begin{proposition}\label{thm:vector_space_dimension}
   All \hyperref[def:hamel_basis]{bases} of a \hyperref[def:vector_space]{vector space} are \hyperref[def:equinumerosity]{equinumerous}.
 
-  We define the \term{dimension} \( \dim V \) of the vector space \( V \) as the \hyperref[thm:cardinality_existence]{cardinality} of any of its bases.
+  We define the \term{dimension} \( \dim V \) of the vector space \( V \) as the \hyperref[thm:cardinality_existence]{cardinality} of any of its bases. By \fullref{thm:vector_space_basis_existence}, every vector space has a dimension.
 \end{proposition}
 \begin{proof}
   Let \( A \) and \( B \) be bases of \( V \).
@@ -414,10 +446,14 @@
   Since \( A \) and \( B \) were arbitrary bases, we can exchange them to obtain the converse inequality, and thus \( \card(A) = \card(B) \).
 \end{proof}
 
+\begin{remark}\label{rem:finite_dimensional_vector_space_uniqueness}
+  Because of \fullref{thm:vector_space_basis_existence}, we often regard finite-dimensional vector spaces as spaces of tuples defined in \fullref{def:module_of_tuples}.
+\end{remark}
+
 \begin{proposition}\label{thm:commutative_module_rank}
   All \hyperref[def:hamel_basis]{bases} of a \hyperref[def:module]{module} over a nontrivial \hyperref[def:ring/commutative]{commutative ring} are \hyperref[def:semimodule/homomorphism]{linearly isomorphic}.
 
-  We define the \term{rank} of a module as the \hyperref[thm:cardinality_existence]{cardinality} of any of its bases. This is a generalization of \hyperref[thm:vector_space_dimension]{vector space dimensions}.
+  We define the \term{rank} of a module as the \hyperref[thm:cardinality_existence]{cardinality} of any of its bases. This is a generalization of \hyperref[thm:vector_space_dimension]{vector space dimensions}. Unlike vector space dimensions, however, module ranks may not exist --- see \fullref{ex:module_without_basis}. Modules with at least one basis are often called \term{free}, however we will prefer to use the term for modules with a concrete bases, as in \fullref{def:free_semimodule}.
 \end{proposition}
 \begin{proof}
   Suppose that \( A \) and \( B \) are bases of the \( R \)-module \( M \). Let \( I \) be a \hyperref[def:semiring_ideal/maximal]{maximal ideal} of \( R \).
@@ -452,3 +488,99 @@
 
   Therefore, \( \Psi \) is a well-defined linear isomorphism. Applying \fullref{thm:vector_space_dimension}, we conclude that \( A \) and \( B \) are equinumerous.
 \end{proof}
+
+\begin{corollary}\label{thm:finitely_generated_module_basis}
+  For a nontrivial commutative ring \( R \), if a \hyperref[def:module_presentation]{finitely-generated} \( R \)-module has a \hyperref[def:hamel_basis]{basis}, the basis is finite.
+\end{corollary}
+\begin{proof}
+  Follows from \fullref{thm:commutative_module_rank}.
+\end{proof}
+
+\begin{example}\label{ex:field_submodules}
+  For a nontrivial \hyperref[def:ring/commutative]{commutative ring} \( R \), every ideal of \( R \) is a submodule of the \hyperref[thm:commutative_module_rank]{rank-one} \hyperref[def:module]{module} \( R \). For example, both \( \BbbZ \) and \( 2\BbbZ \) are \( \BbbZ \)-modules of rank one.
+
+  For a \hyperref[def:field]{field} \( \BbbK \), every ideal of \( \BbbK \) is a submodule of the \hyperref[thm:vector_space_dimension]{unidimensional} \hyperref[def:vector_space]{vector space} \( \BbbK \). The only ideals of \( \BbbK \) are the zero ideal, whose dimension is zero, and the field itself, whose dimension is one.
+\end{example}
+
+\begin{example}\label{ex:module_without_basis}
+  As a \hyperref[thm:abelian_group_is_module]{\( \BbbZ \)-module}, the additive group of \( \BbbQ \) has no basis.
+
+  Indeed, given any two rational numbers \( \ifrac a b \) and \( \ifrac c d \), we have
+  \begin{equation*}
+    cb \cdot \frac a b + da \cdot \frac c d = 0.
+  \end{equation*}
+
+  Therefore, only singleton sets of rational numbers are linearly independent with respect to \( \BbbZ \). But no single integer generates \( \BbbQ \).
+\end{example}
+
+\begin{proposition}\label{thm:module_rank_monotonicity}
+  For a nontrivial commutative ring \( R \), if \( N \subseteq M \) are two \( R \)-modules, and if both have bases, then \( \rank N \leq \rank M \).
+\end{proposition}
+\begin{proof}
+  Let \( A \) be a basis of \( N \). By \fullref{thm:def:hamel_basis/expansion}, there exists a basis \( B \) of \( M \) such that \( A \subseteq B \). Then clearly \( \rank N \leq \rank M \).
+\end{proof}
+
+\begin{proposition}\label{thm:submodule_rank}
+  For a nontrivial commutative ring \( R \), if \( N \) is a submodule of the module \( M \), and if both have finite rank, then
+  \begin{equation*}
+    \rank N = \rank M + \rank M / N.
+  \end{equation*}
+\end{proposition}
+\begin{proof}
+  By \fullref{thm:module_rank_monotonicity}, \( \rank N \leq \rank M \). Let \( a_1, \ldots, a_n \) be an ordered basis of \( U \). By \fullref{thm:def:hamel_basis/expansion}, there exist vectors \( a_{n+1}, \ldots, a_m \) such that \( a_1, \ldots, a_m \) is a basis of \( M \).
+
+  Define the projection
+  \begin{equation*}
+    \begin{aligned}
+      &\pi: M \to N \\
+      &\pi\parens*{ \sum_{k=1}^m t_k a_k } \coloneqq \sum_{k=1}^n t_k a_k.
+    \end{aligned}
+  \end{equation*}
+
+  Clearly \( \img \pi = N \) is a module of rank \( n \). The kernel \( \ker \varphi \) consists of all sequences whose first \( n \) coordinates are zero. It is module of rank \( n - m \). Clearly \( n + (n - m) = m \).
+
+  We must only show that \( \ker \varphi \) is isomorphic to \( M / N \). This is clear since, by \fullref{thm:quotient_equality_via_difference}, \( x + N = y + N \) if and only if \( x - y \in N \), and the latter holds if and only if \( x \) and \( y \) have identical values for the first \( n \) coordinates.
+\end{proof}
+
+\begin{theorem}[Rank-nullity theorem]\label{thm:rank_nullity_theorem}
+  For a nontrivial commutative ring \( R \), let \( \varphi: M \to N \) be a linear map between \hyperref[thm:commutative_module_rank]{finite rank} \( R \)-\hyperref[def:modules]{modules}. Suppose also that both modules \( \ker \varphi \) and \( \img \varphi \) have a basis. Then
+  \begin{equation*}
+    \rank M = \rank \ker \varphi + \rank \img \varphi.
+  \end{equation*}
+
+  This is called the \enquote{rank-nullity theorem} because \( \img \varphi \) is sometimes referred to as the \term{rank} of \( \varphi \) and \( \ker \varphi \) --- the \term{nullity} of \( \varphi \).
+\end{theorem}
+\begin{proof}
+  By \fullref{thm:module_rank_monotonicity}, \( \rank \ker \varphi \leq \rank M \). Let \( a_1, \ldots, a_n \) be an ordered basis for \( \ker \varphi \). By \fullref{thm:def:hamel_basis/expansion}, there exist vectors \( a_{n+1}, \ldots, a_m \) such that \( a_1, \ldots, a_m \) is a basis of \( M \). We will show that \( \varphi(a_{n+1}), \ldots, \varphi(a_m) \) is a basis of \( \img \varphi \).
+
+  It is clearly a generating set, because \( \varphi(a_1), \ldots, \varphi(a_n) \) is a generating set for \( \img \varphi \) and \( a_1, \ldots, a_n \) are in the kernel.
+
+  It remains to show that it is linearly independent. Let
+  \begin{equation*}
+    \sum_{k={n+1}}^m t_k \varphi(a_k) = 0_N.
+  \end{equation*}
+
+  By linearity of \( \varphi \),
+  \begin{equation*}
+    \varphi\parens*{ \sum_{k={n+1}}^m t_k a_k } = 0_N,
+  \end{equation*}
+  so
+  \begin{equation*}
+    \sum_{k={n+1}}^m t_k a_k \in \ker \varphi.
+  \end{equation*}
+
+  But \( a_{n+1}, \ldots, a_m \) are linearly independent from \( a_1, \ldots, a_n \), thus
+  \begin{equation*}
+    \sum_{k={n+1}}^m t_k a_k = 0_M,
+  \end{equation*}
+  which further implies that \( t_k = 0_R \) for \( k = n + 1, \ldots, m \).
+
+  Therefore, \( \varphi(a_1), \ldots, \varphi(a_n) \) is a linearly independent generating set for \( \img \varphi \), i.e. a basis. Furthermore,
+  \begin{equation*}
+    \underbrace{\dim M}_m = \underbrace{\dim \ker \varphi}_n + \underbrace{\dim \img \varphi}_{m - n}.
+  \end{equation*}
+\end{proof}
+
+\begin{example}\label{ex:z4_rank_nullity}
+  For example, consider the \hyperref[thm:ring_of_integers_modulo]{ring} \( \BbbZ_4 \) as a rank-one module and the \hyperref[def:first_order_homomorphism_invertibility/endomorphism]{endomorphism} \( n \mapsto 2n \). The kernel and image of this endomorphism are both \( \set{ 0, 2 } \). The latter submodule does not have a basis, hence \fullref{thm:rank_nullity_theorem} does not hold.
+\end{example}
