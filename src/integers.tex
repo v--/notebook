@@ -120,9 +120,74 @@
   The ring \( \BbbZ \) is an Euclidean domain by \fullref{thm:integers_are_euclidean_domain}, which is a principal ideal domain by \fullref{thm:euclidean_domain_is_pid}, which is a unique factorization domain by \fullref{thm:pid_is_ufd}.
 \end{proof}
 
-\begin{proposition}[Fermat's little theorem]\label{thm:fermats_little_theorem}
-  If \( p \) is a prime \hyperref[def:prime_number]{number}, for any integer \( x \) we have
+\begin{definition}\label{def:eulers_totient_function}
+  For any positive integer \( n \), denote by \( \varphi(n) \) the number of strictly smaller than \( n \) positive integers that are \hyperref[def:coprime_numbers]{coprime} to \( n \). We call \( \varphi: \BbbZ_{>0} \to \BbbZ_{\geq 0} \) \term{Euler's totient function}.
+\end{definition}
+
+\begin{proposition}\label{thm:def:eulers_totient_function}
+  \hyperref[def:eulers_totient_function]{Euler's totient function} \( \varphi \) has the following basic properties:
+  \begin{thmenum}
+    \thmitem{thm:def:eulers_totient_function/one} \( \varphi(1) = 0 \).
+    \thmitem{thm:def:eulers_totient_function/prime} If \( p \) is \hyperref[def:prime_number]{prime}, then \( \varphi(p) = p - 1 \).
+    \thmitem{thm:def:eulers_totient_function/zn} The \hyperref[def:semiring]{multiplicative group} \( \BbbZ_n^\times \) of the ring \hyperref[thm:ring_of_integers_modulo]{\( \BbbZ_n \)} of integers modulo \( n > 1 \) has order \( \varphi(n) \).
+  \end{thmenum}
+\end{proposition}
+\begin{proof}
+  \SubProofOf{thm:def:eulers_totient_function/one} There are no positive integers smaller than \( 1 \).
+
+  \SubProofOf{thm:def:eulers_totient_function/prime} Every positive integer smaller than \( p \) is coprime to \( p \), and there are exactly \( p - 1 \) positive integers smaller than \( p \) --- \( 1, 2, \ldots, p - 1 \).
+
+  \SubProofOf{thm:def:eulers_totient_function/zn} Follows from \fullref{thm:multiplicative_group_of_integers_modulo}.
+\end{proof}
+
+\begin{theorem}[Euler's totient theorem]\label{thm:eulers_totient_theorem}
+  For positive integers \( n \) and \( x \), we have
+  \begin{equation*}
+    x^{\varphi(n)} \cong 1 \pmod n,
+  \end{equation*}
+  where \( \varphi \) is \hyperref[def:eulers_totient_function]{Euler's totient function}.
+\end{theorem}
+\begin{proof}
+  For \( n = 1 \), this is obvious from \fullref{thm:def:eulers_totient_function/one}. Suppose that \( n > 1 \).
+
+  Consider the \hyperref[def:semiring]{multiplicative group} \( \BbbZ_n^\times \) of the ring \hyperref[thm:ring_of_integers_modulo]{\( \BbbZ_n \)} of integers modulo \( n \). For some positive integer \( x < n \), consider the \hyperref[def:cyclic_group]{cyclic subgroup} \( \set{ 1, x, x^2, \ldots } \) (modulo \( n \)). It is necessarily finite as a subgroup of \( \BbbZ_n^\times \). Furthermore, by \fullref{thm:lagranges_theorem_for_groups}, its order \( k \) divides the order of \( \BbbZ_n^\times \). By \fullref{thm:def:eulers_totient_function/zn}, the order of \( \BbbZ_n^\times \) is \( \varphi(n) \).
+
+  We have \( x^k \cong 1 \pmod n \) since \( k \) is the order of a cyclic group. If \( \varphi(n) = km \), then
+  \begin{equation*}
+    x^{\varphi(n)}
+    =
+    x^{km}
+    \reloset {\eqref{eq:thm:magma_exponentiation_properties/repeated}} =
+    (x^k)^m
+    \cong
+    1^m
+    \pmod n.
+  \end{equation*}
+\end{proof}
+
+\begin{proposition}\label{thm:division_modulo}
+  Given positive integers \( n \) and \( m \), we can apply \fullref{alg:euclidean_division_of_integers} to obtain \( n = a \varphi(m) + b \), where \( \varphi \) is \hyperref[def:eulers_totient_function]{Euler's totient function}.
+
+  Then
+  \begin{equation*}
+    x^n \cong x^b \pmod m,
+  \end{equation*}
+\end{proposition}
+\begin{proof}
+  By \fullref{thm:eulers_totient_theorem}, \( x^{\varphi(m)} \cong 1 \pmod m \). Then
+  \begin{equation*}
+    x^n = (x^{\varphi(m)})^a x^b \cong x^b \pmod m.
+  \end{equation*}
+\end{proof}
+
+\begin{theorem}[Fermat's little theorem]\label{thm:fermats_little_theorem}
+  For a \hyperref[def:prime_number]{prime number} \( p \) and for any positive integer \( x \), we have
   \begin{equation*}
     x^p \cong x \pmod p.
   \end{equation*}
-\end{proposition}
+\end{theorem}
+\begin{proof}
+  If \( p \mid x \), then both \( x^p \) and \( x \) and congruent to \( 0 \) modulo \( p \).
+
+  Otherwise, by \fullref{thm:eulers_totient_theorem}, we have \( x^{\varphi(p) + 1} \cong x \pmod p \), and by \fullref{thm:def:eulers_totient_function/prime}, we have \( \varphi(p) + 1 = p \).
+\end{proof}
