@@ -1,127 +1,275 @@
 \subsection{Integers}\label{subsec:integers}
 
 \begin{definition}\label{def:set_of_integers}
-  The set \( \BbbZ \) of \term{integers} is defined as the Grothendieck \hyperref[thm:monoid_grothendieck_completion_universal_property]{completion} of the commutative monoid \( (\BbbN, +) \).
-
-  Let \( \oplus \), \( \odot \) and \( \leq_N \) be the operations in \( \BbbN \) (see \fullref{thm:natural_number_multiplication_properties}). Since either \( x \in \BbbZ \) or \( -x \in \BbbZ \) is isomorphic to a natural number, we extend the operations to \( \BbbZ \) as follows:
-  \begin{thmenum}
-    \item addition is defined in the completion.
-    \item multiplication is defined as follows:
-          \begin{equation*}
-            x \cdot y \coloneqq \begin{cases}
-              x \odot y,    & x \geq 0 \iff y \geq 0      \\
-              (-x) \odot y, & x < 0 \text{ and } y \geq 0 \\
-              x \odot (-y), & x \geq 0 \text{ and } y < 0
-            \end{cases}
-          \end{equation*}
-
-    \thmitem{def:set_of_integers/order} the order is inherited
-    \item the additional absolute \hyperref[def:absolute_value]{value} operation is defined as
-          \begin{equation*}
-            \abs{x} \coloneqq \begin{cases}
-              x,  & x \geq 0, \\
-              -x, & x < 0.
-            \end{cases}
-          \end{equation*}
-  \end{thmenum}
+  The \hyperref[def:ring]{ring} \( \BbbZ \) of \term{integers} is defined as the \hyperref[thm:grothendieck_semiring_completion]{Grothendieck completion} of the \hyperref[def:semiring/commutative]{commutative semiring} \( \BbbN \) of zero-based natural numbers.
 \end{definition}
-\begin{proof}
-  The proof that multiplication and absolute values are well-defined can be done similarly to the proof of \fullref{thm:monoid_grothendieck_completion_universal_property}.
 
-  Integer multiplication obviously generalizes natural number multiplication.
+\begin{definition}\label{def:integer_signum}
+  Consider the canonical embedding \( \iota: \BbbN \to \BbbZ \). Define the \term{signum} function
+  \begin{equation*}
+    \begin{aligned}
+      &\sgn: \BbbZ \to \BbbZ \\
+      &\sgn(n) \coloneqq \begin{cases}
+        0,  &n = \iota(0_\BbbN), \\
+        1,  &n = \iota(a) \T{for some nonzero natural number} a, \\
+        -1, &n = -\iota(a) \T{for some nonzero natural number} a
+      \end{cases}
+    \end{aligned}
+  \end{equation*}
+
+  We then classify integers based in their sign as follows
+  \begin{center}
+    \begin{tabular}{l | l || l | l}
+      Positive    & \( \sgn(n) = 1 \)  & Nonpositive & \( \sgn(n) \neq 1 \) \\
+      Negative    & \( \sgn(n) = -1 \) & Nonnegative & \( \sgn(n) \neq -1 \) \\
+      Zero        & \( \sgn(n) = 0 \)  & Nonzero     & \( \sgn(n) \neq 0 \) \\
+    \end{tabular}
+  \end{center}
+\end{definition}
+\begin{defproof}
+  We must prove that \( \sgn \) is a well-defined \hyperref[def:multi_valued_function/total]{total function} \( \sgn: \BbbZ \to \BbbZ \).
+
+  Due to the trichotomy on natural numbers shown in \fullref{def:natural_number_ordering}, we have the following possibilities:
+  \begin{itemize}
+    \item If \( a = b \), then \( x = [(a, a)] = [(0_\BbbN, 0_\BbbN)] \), hence \( x \) is zero.
+    \item If \( a < b \), by \fullref{def:natural_number_ordering}, there exists some positive natural number \( c \) such that \( a + c = 0_\BbbN + b \). Then
+    \begin{equation*}
+      x = [(a, b)] = [(c, 0_\BbbN)] = \iota(c).
+    \end{equation*}
+
+    Since \( c \) is positive, so is \( x \).
+
+    \item If \( a > b \), there exists some natural number \( d \) such that \( 0_\BbbN + a = b + d \). Then
+    \begin{equation*}
+      x = [(a, b)] = [(0_\BbbN, d)] = -[(d, 0_\BbbN)] = -\iota(d).
+    \end{equation*}
+
+    Then \( x \) is negative.
+  \end{itemize}
+
+  Therefore, every integer is either zero, positive or negative.
+\end{defproof}
+
+\begin{proposition}\label{thm:def:integer_signum}
+  \hyperref[def:integer_signum]{Integer signs} has the following basic properties:
+  \begin{thmenum}
+    \thmitem{thm:def:integer_signum/entire} The ring of integers is \hyperref[def:divisibility/zero]{entire}, i.e. an \hyperref[def:integral_domain]{integral domain}.
+    \thmitem{thm:def:integer_signum/sum} If two integers have the same sign, their sum also has the same sign.
+    \thmitem{thm:def:integer_signum/product} \( \sgn(nm) = \sgn(n) \cdot \sgn(m) \).
+    \thmitem{thm:def:integer_signum/zero} \( n \) is zero if and only if \( -n \) is zero.
+    \thmitem{thm:def:integer_signum/inverse} \( n \) is positive if and only if \( -n \) is negative.
+  \end{thmenum}
+\end{proposition}
+\begin{proof}
+  \SubProofOf{thm:def:integer_signum/entire} Suppose that \( nm = 0 \).
+
+  \begin{itemize}
+    \item If \( n = \iota(a) \) and \( m = \iota(b) \) are nonnegative, since \( \BbbN \) is entire and since \( \iota \) is a homomorphism, then \( nm = \iota(a) \cdot \iota(b) = \iota(ab) = \iota(0_\BbbN) \) implies that at least one of \( a \) or \( b \) is zero.
+    \item If \( n = \iota(a) \) is nonnegative and \( m = -\iota(b) \) is nonpositive, this reduces to the previous case since \( nm = 0 = n(-m) \).
+    \item The other cases are similar.
+  \end{itemize}
+
+  Therefore, \( n = 0 \) or \( m = 0 \).
+
+  \SubProofOf{thm:def:integer_signum/sum} Fix two integers \( n \) and \( m \).
+
+  \begin{itemize}
+    \item If \( n \) and \( m \) are both zero, their sum is also zero.
+    \item If \( n = \iota(a) \) and \( m = \iota(b) \) are both positive, then \( n + m = \iota(a + b) \), so \( n + m \) is also positive.
+    \item If \( n = -\iota(a) \) and \( m = -\iota(b) \) are both negative, then \( n + m = -\iota(a + b) \), so \( n + m \) is also negative.
+  \end{itemize}
+
+  \SubProofOf{thm:def:integer_signum/product} Fix two integers \( n \) and \( m \).
+
+  \begin{itemize}
+    \item If either \( n \) or \( m \) is zero, the product \( nm \) is again zero, so
+    \begin{equation*}
+      \sgn(nm) = \sgn(n) \cdot \sgn(m) = 0.
+    \end{equation*}
+
+    \item If both \( n = \iota(a) \) and \( m = \iota(b) \) are positive, then \( nm = \iota(ab) \) is nonnegative. Furthermore, \( nm \) cannot be zero because \( \BbbZ \) is an integral domain. Hence,
+    \begin{equation*}
+      \sgn(nm) = \sgn(n) \cdot \sgn(m) = 1.
+    \end{equation*}
+
+    \item If \( n = \iota(a) \) is positive and \( m = -\iota(b) \) is negative, then \( n(-m) = \iota(ab) \) is positive. Furthermore, \( nm = -n(-m) = -\iota(ab) \), and hence \( nm \) is negative. Then
+    \begin{equation*}
+      \sgn(nm) = \underbrace{\sgn(n)}_1 \cdot \underbrace{\sgn(m)}_{-1} = -1.
+    \end{equation*}
+
+    The case where \( n \) is negative and \( m \) is positive follows from this one due to commutativity.
+
+    \item If both \( n = -\iota(a) \) and \( m = -\iota(b) \) are negative, then \( (-n)(-m) = \iota(ab) \) is positive. Furthermore, \( nm = (-n)(-m) = -\iota(ab) \), and hence \( nm \) is positive.
+    \begin{equation*}
+      \sgn(nm) = \underbrace{\sgn(n)}_{-1} \cdot \underbrace{\sgn(m)}_{-1} = 1.
+    \end{equation*}
+  \end{itemize}
+
+  \SubProofOf{thm:def:integer_signum/zero} This is actually a statement about group inverses because \( 0 = -0 \).
+
+  \SubProofOf{thm:def:integer_signum/inverse} From \fullref{thm:def:integer_signum/product} it follows that \( \sgn(-n) = \sgn(-1) \cdot \sgn(n) = -\sgn(n) \).
+\end{proof}
+
+\begin{definition}\label{def:integer_ordering}
+  We extend the \hyperref[def:natural_number_ordering]{natural number ordering} \( \leq_\BbbN \) to the \hyperref[def:set_of_integers]{integers} \( \BbbZ \) via the following truth table:
+  \begin{center}
+    \begin{tabular}{c c c}
+      \( n \) & \( m \) & \( n \leq m \) \\
+      \hline
+      nonnegative       & nonnegative & \( n \leq_\BbbN m \) \\
+      nonnegative       & negative    & \( F \) \\
+      negative          & nonnegative & \( T \) \\
+      negative          & negative    & \( -m \leq_\BbbN -n \)
+    \end{tabular}
+  \end{center}
+\end{definition}
+
+\begin{proposition}\label{thm:def:integer_ordering}
+  \hyperref[def:integer_ordering]{Integer ordering} has the following basic properties:
+  \begin{thmenum}
+    \thmitem{thm:def:integer_ordering/positive} \( 0 \leq n \) if and only if \( n \) is positive.
+    \thmitem{thm:def:integer_ordering/negative} \( 0 \geq n \) if and only if \( n \) is negative.
+    \thmitem{thm:def:integer_ordering/inverse} \( n \leq m \) if and only if \( -m \leq -n \).
+    \thmitem{thm:def:integer_ordering/total} It is a \hyperref[def:totally_ordered_set]{total order}.
+  \end{thmenum}
+\end{proposition}
+\begin{proof}
+  \SubProofOf{thm:def:integer_ordering/positive} Trivial.
+  \SubProofOf{thm:def:integer_ordering/negative} Trivial.
+
+  \SubProofOf{thm:def:integer_ordering/inverse} Let \( n \leq m \).
+  \begin{itemize}
+    \item If \( n \) and \( m \) are both either nonnegative or negative, then \( -m \leq -n \) by definition.
+    \item If \( n \) is negative and \( m \) is not, then by \fullref{thm:def:integer_signum/inverse} \( -m \) is negative and \( -n \) is not. Hence \( -m \leq -n \).
+  \end{itemize}
+
+  The converse direction of the proof is identical.
+
+  \SubProofOf{thm:def:integer_ordering/total} The order \( \leq \) is clearly defined for every pair of integers, so it remains to show that \( \leq \) is a partial order.
+
+  \SubProofOf*[def:binary_relation/reflexive]{reflexivity} If \( n \) is positive, then \( n \leq n \) since \( n \leq_\BbbN n \). Otherwise, \( n \leq n \) since \( -n \leq_\BbbN -n \).
+
+  \SubProofOf*[def:binary_relation/antisymmetric]{antisymmetry} Suppose that \( n \leq m \) and \( m \leq n \).
+  \begin{itemize}
+    \item If \( n \) and \( m \) are both nonnegative, then \( n = m \) from the antisymmetry of the natural number ordering.
+    \item If \( n \) and \( m \) are both negative, then \( -n = -m \) from the antisymmetry of the natural number ordering.
+    \item If \( n \) is nonnegative and \( m \) is negative, we have \( m \leq n \) but not \( n \leq m \). This contradicts our assumption.
+    \item If \( n \) is negative and \( m \) is nonnegative, we have \( n \leq m \) but not \( m \leq n \). This contradicts our assumption.
+  \end{itemize}
+
+  \SubProofOf*[def:binary_relation/transitive]{transitivity} Suppose that \( n \leq m \) and \( m \leq k \).
+  \begin{itemize}
+    \item If \( n \), \( m \) and \( k \) are nonnegative, then \( n \leq k \) from the transitivity of the natural number ordering.
+    \item If \( n \), \( m \) and \( k \) are negative, then \( -k \leq -n \) and, by \fullref{thm:def:integer_ordering/inverse}, \( n \leq k \).
+    \item If \( n \) is negative and \( k \) is nonnegative, then \( n \leq k \) by definition.
+  \end{itemize}
+\end{proof}
+
+\begin{definition}\label{def:integer_absolute_value}
+  We define the function
+  \begin{equation*}
+    \begin{aligned}
+      &\abs{\anon}: \BbbZ \to \BbbN \\
+      &\abs{n} \coloneqq \begin{cases}
+        n,  n \geq 0 \\
+        -n, n < 0.
+      \end{cases}
+    \end{aligned}
+  \end{equation*}
+
+  We call \( \abs{\anon} \) the \term{absolute value function} in \( \BbbZ \). It does satisfy the absolute value axioms from \fullref{def:absolute_value}. A proof would be cyclic, however, since the real numbers rely on an extension of \( \abs{\anon} \).
+\end{definition}
+
+\begin{algorithm}[Euclidean division of integers]\label{alg:euclidean_division_of_integers}
+  Fix two integers \( n \) and \( m \), and assume that \( m \) is nonzero. Define
+  \begin{align*}
+    q &\coloneqq \sgn(nm) \cdot \max\set{ y \geq 0 \colon y\abs{m} < \abs{n} } \\
+    r &\coloneqq n - mq
+  \end{align*}
+
+  Then \( q \) and \( r \) and the unique integers such that \( \abs{r} < \abs{m} \) and
+  \begin{equation*}
+    n = mq + r.
+  \end{equation*}
+
+  We will use the notation \( \quot(n, m) \) and \( \rem(n, m) \) from \fullref{def:euclidean_domain}.
+\end{algorithm}
+\begin{proof}
+  \SubProof{Proof of correctness} The case \( n = 0 \) is trivial so assume that \( n \neq 0 \). We have
+  \begin{center}
+    \begin{tabular}{l | l | l}
+      \( n \)  & \( m \)  & \( q \) \\
+      positive & positive & \( \phantom{-}\max\set{ y \geq 0 \colon (n - m \leq) \thickspace y(+m) < +n } \) \\
+      positive & negative & \( -\max\set{ y \geq 0 \colon (n + m \leq) \thickspace y(-m) < +n } \) \\
+      negative & positive & \( -\max\set{ y \geq 0 \colon (m - n \leq) \thickspace y(+m) < -n } \) \\
+      negative & negative & \( \phantom{-}\max\set{ y \geq 0 \colon (n - m \leq) \thickspace y(-m) < -n } \)
+    \end{tabular}
+  \end{center}
+
+  It follows that \( \abs{n - mq} < \abs{m} \).
+
+  \SubProof{Proof of uniqueness} Suppose that \( n = mq + r = mq' + r' \), where \( \abs{r} < \abs{m} \) and \( \abs{r'} < \abs{m} \). Then
+  \begin{equation*}
+    m(q - q') = -(r - r').
+  \end{equation*}
+
+  Thus, \( m \) divides \( r - r' \). Then \( m \) divides \( r \) and \( r' \) contradicting the assumption that \( \abs{r} < \abs{m} \).
 \end{proof}
 
 \begin{proposition}\label{thm:integers_are_euclidean_domain}
-  The \hyperref[def:integral_domain]{domain} of integers \( \BbbZ \) is \hyperref[def:euclidean_domain]{Euclidean} with \( \delta(n) \coloneqq \abs{n} \). Furthermore, the remainder and quotient are unique.
+  The \hyperref[def:set_of_integers]{ring of integers} is an \hyperref[def:euclidean_domain]{Euclidean domain} with division given by \fullref{alg:euclidean_division_of_integers} and degree function \( \abs{\anon} \).
 \end{proposition}
 \begin{proof}
-  Let \( a, b \in \BbbZ \) and \( b \neq 0 \). Suppose that \( b > 0 \). Define
-  \begin{balign*}
-    q & \coloneqq \max \{ q \in \BbbZ \colon bq \leq \abs{a} \} \\
-    r & \coloneqq a - bq.
-  \end{balign*}
-
-  It remains to show that either \( r = 0 \) or \( \delta(r) < \delta(b) \).
-
-  Note that \( r = 0 \) if and only if \( b \) is a \hyperref[def:divisibility]{divisor} of \( a \).
-
-  Suppose that \( b \) is not a divisor of \( a \). Note that \( g \geq 0 \) and \( r > 0 \). If \( r \geq b \), this would imply \( r - b \geq 0 \) and
-  \begin{equation*}
-    a = bq + r = b(q + 1) + (r - b) \geq b(q + 1),
-  \end{equation*}
-  which would contradict the maximality of \( q \). Thus, \( r < b \).
-
-  It remains to show uniqueness. Suppose that \( a = bq + r = bq' + r' \). Then
-  \begin{equation*}
-    0 = b(q - q') + (r - r').
-  \end{equation*}
-
-  Thus, \( b \mid r - r' \). But \( -b < r - r' < b \), which implies that \( r = r' \). Thus, also implies that \( q = q' \) since \( b \neq 0 \).
-
-  Now suppose that \( b < 0 \). Define
-  \begin{balign*}
-    q & \coloneqq \min \{ q \in \BbbZ \colon -\abs{a} \leq bq \} \\
-    r & \coloneqq a - bq.
-  \end{balign*}
-
-  Suppose that \( b \) is not a divisor of \( a \). Note that \( q \geq 0 \) and \( r < 0 \). If \( r \leq b \), this would imply \( r - b \leq 0 \) and
-  \begin{equation*}
-    a = bq + r = b(q + 1) + (r - b) \leq b(q + 1),
-  \end{equation*}
-  which would contradict the minimality of \( q \). Thus, \( r > b \) and, since both \( b \) and \( r \) are negative, \( \abs{r} < \abs{b} \).
-
-  To see uniqueness, suppose that \( a = bq + r = bq' + r' \). Thus, \( b \mid r - r' \). But \( -\abs{b} = b < r - r' < -b = \abs{b} \), which implies that \( r = r' \) and \( q = q' \).
-
-  In both cases, we obtained unique integers \( q \) and \( r \) such that \( a = bq + r \) with \( \abs{r} < \abs{b} \).
+  By \fullref{thm:def:integer_signum/entire}, \( \BbbZ \) is an integral domain. The Euclidean domain structure is described by \fullref{alg:euclidean_division_of_integers}.
 \end{proof}
 
-\begin{remark}\label{rem:units_in_rings_etymology}
-  An integer \( a \) is divisible by \( b \neq 0 \) if there exists a number \( q \) such that
-  \begin{equation*}
-    a = qb.
-  \end{equation*}
+\begin{remark}\label{rem:integer_domain_chain}\hfill
+  \begin{itemize}
+    \item By \fullref{thm:integers_are_euclidean_domain}, \( \BbbZ \) is a \hyperref[def:euclidean_domain]{Euclidean domain}.
+    \item By \fullref{thm:def:euclidean_domain/pid}, \( \BbbZ \) is a \hyperref[def:principal_ideal_domain]{principal ideal domain}.
+    \item By \fullref{thm:def:principal_ideal_domain/ufd}, \( \BbbZ \) is a \hyperref[def:unique_factorization_domain]{unique factorization domain}.
+    \item By \fullref{thm:def:unique_factorization_domain/gcd}, \( \BbbZ \) is a \hyperref[def:gcd_domain]{GCD domain}.
+  \end{itemize}
+\end{remark}
 
-  Obviously \( q = (-q)(-1) \), so the following also holds:
-  \begin{equation*}
-    a = [(-q)(-1)]b = (-q)(-b),
-  \end{equation*}
-  hence \( a \) is also divisible by \( -b \).
+\begin{remark}\label{rem:integer_gcd}
+  We discuss in \fullref{rem:choice_of_associates} and \fullref{rem:lattice_of_principal_ideals} how, in general \hyperref[def:gcd_domain]{GCD domain}, the \hyperref[def:gcd_and_lcm]{greatest common divisors} are not unique.
 
-  For any nonzero number \( b = 1 \cdot b \) that divides \( a \), the number \( -b = (-1) \cdot b \) also divides \( a \). Both \( 1 \) and \( -1 \) have unit norm (that is, \( \abs{1} = \abs{-1} = 1 \)), so it is reasonable to call them \enquote{units}. They are the only integers \( e \) with the property that if \( b | a \), then \( eb | a \). This is probably the reason why invertible elements in arbitrary rings are named \enquote{units}. Another reason is that invertible elements divide the multiplicative identity, commonly denoted by \( 1 \).
+  The \hyperref[def:gcd_and_lcm]{greatest common divisor} of is, by convention, \hi{positive}. This leaves a canonical choice for both the greatest common divisor and the least common multiple. By \fullref{thm:natural_number_divisibility_lattice}, the \hyperref[thm:semiring_divisibility_order]{divisibility order} of positive integers is compatible with the usual \hyperref[def:integer_ordering]{integer ordering}.
 
-  Consider fields, in which all nonzero elements are units. It makes no sense to speak of divisibility whatsoever because any real number \( a \) is divisible by any nonzero real number \( b \). Putting \( q \coloneqq \frac a b \) satisfies the divisibility condition. Now if \( e \) is any unit in \( \BbbR \), we have
-  \begin{equation*}
-    a = qb = q(e^{-1} e) b = (qe^{-1}) (eb),
-  \end{equation*}
-  hence \( eb \) also divides \( a \).
+  \Fullref{alg:euclidean_algorithm} allows us to explicitly compute both GCDs and LCMs.
+\end{remark}
+
+\begin{definition}\label{def:prime_number}
+  A \term{prime number} is an integer greater than \( 1 \) whose only proper \hyperref[def:divisibility]{divisor} is \( 1 \). Non-prime integers greater than \( 1 \) are called \term{composite numbers}.
+\end{definition}
+
+\begin{remark}\label{rem:prime_numbers}
+  The definition of a prime number given in \fullref{def:prime_number} is standard, however it seems quite inconsistent with \fullref{subsec:integral_domains}.
+
+  First, \fullref{subsec:integral_domains} actually defines \hyperref[def:domain_divisibility/irreducible]{irreducible elements} rather than \hyperref[def:domain_divisibility/prime]{prime elements} of the domain \( \BbbZ \). Second, if \( p \) is a prime number, \( -p \) is also a prime number.
+
+  Fortunately, prime and irreducible elements coincide in \hyperref[def:gcd_domain]{GCD domains} by \fullref{thm:def:gcd_domain/irreducible_is_prime} and \fullref{thm:def:gcd_domain/irreducible_is_prime}. Unfortunately, calling negative prime elements of \( \BbbZ \) \enquote{prime numbers} is not accepted.
+
+  Coprime integers are, fortunately, defined as in general GCD domains via \fullref{def:coprime_elements}.
 \end{remark}
 
 \begin{lemma}[Euclid's lemma]\label{thm:euclids_lemma}
-  An \hyperref[def:set_of_integers]{integer} is \hyperref[def:semiring_ideal/prime]{prime} if and only if it is irreducible.
+  If \( p \) is a \hyperref[def:prime_number]{prime number}, then \( p \mid nm \) implies \( p \mid n \) or \( p \mid m \).
 \end{lemma}
 \begin{proof}
-  Follows from \fullref{thm:ufd_prime_iff_irreducible}.
+  Since \( \BbbZ \) is a GCD domain, the lemma follows from \fullref{thm:def:gcd_domain/irreducible_is_prime}.
 \end{proof}
 
-\begin{definition}\label{def:prime_number}
-  Despite negative integers being prime \hyperref[thm:euclids_lemma]{elements} of the ring \( \BbbZ \), we only call positive prime integers \term{prime numbers}. That is, a positive integer is prime if it has no divisors except \( 1 \) and itself.
-
-  Non-prime integers are called \term{composite numbers}.
-\end{definition}
-
-\begin{definition}\label{def:coprime_numbers}
-  Two integers \( n, m \) are called \term{coprime} (see \fullref{def:semiring_ideal/coprime}) if \( \gcd(n, m) = 1 \).
-\end{definition}
-
 \begin{theorem}[Fundamental theorem of arithmetic]\label{thm:fundamental_theorem_of_arithmetic}
-  Every positive integer greater than \( 2 \) can be \hyperref[def:irreducible_factorization]{factored} into a product of \hyperref[def:prime_number]{prime} powers.
+  Every integer greater than \( 1 \) can be \hyperref[def:irreducible_factorization]{factored} into a product of \hyperref[def:prime_number]{prime} powers.
 \end{theorem}
 \begin{proof}
-  The ring \( \BbbZ \) is an Euclidean domain by \fullref{thm:integers_are_euclidean_domain}, which is a principal ideal domain by \fullref{thm:euclidean_domain_is_pid}, which is a unique factorization domain by \fullref{thm:pid_is_ufd}.
+  We have discussed in \fullref{rem:integer_domain_chain} that \( \BbbZ \) is a unique factorization domain.
 \end{proof}
 
 \begin{definition}\label{def:eulers_totient_function}
-  For any positive integer \( n \), denote by \( \varphi(n) \) the number of strictly smaller than \( n \) positive integers that are \hyperref[def:coprime_numbers]{coprime} to \( n \). We call \( \varphi: \BbbZ_{>0} \to \BbbZ_{\geq 0} \) \term{Euler's totient function}.
+  For any positive integer \( n \), denote by \( \varphi(n) \) the number of strictly smaller than \( n \) positive integers that are \hyperref[def:coprime_elements]{coprime} to \( n \). We call \( \varphi: \BbbZ_{>0} \to \BbbZ_{\geq 0} \) \term{Euler's totient function}.
 \end{definition}
 
 \begin{proposition}\label{thm:def:eulers_totient_function}
@@ -141,7 +289,7 @@
 \end{proof}
 
 \begin{theorem}[Euler's totient theorem]\label{thm:eulers_totient_theorem}
-  For positive integers \( n \) and \( x \), we have
+  For positive coprime integers \( n \) and \( x < n \), we have
   \begin{equation*}
     x^{\varphi(n)} \cong 1 \pmod n,
   \end{equation*}
@@ -150,7 +298,7 @@
 \begin{proof}
   For \( n = 1 \), this is obvious from \fullref{thm:def:eulers_totient_function/one}. Suppose that \( n > 1 \).
 
-  Consider the \hyperref[def:semiring]{multiplicative group} \( \BbbZ_n^\times \) of the ring \hyperref[thm:ring_of_integers_modulo]{\( \BbbZ_n \)} of integers modulo \( n \). For some positive integer \( x < n \), consider the \hyperref[def:cyclic_group]{cyclic subgroup} \( \set{ 1, x, x^2, \ldots } \) (modulo \( n \)). It is necessarily finite as a subgroup of \( \BbbZ_n^\times \). Furthermore, by \fullref{thm:lagranges_theorem_for_groups}, its order \( k \) divides the order of \( \BbbZ_n^\times \). By \fullref{thm:def:eulers_totient_function/zn}, the order of \( \BbbZ_n^\times \) is \( \varphi(n) \).
+  Consider the \hyperref[def:semiring]{multiplicative group} \( \BbbZ_n^\times \) of the ring \hyperref[thm:ring_of_integers_modulo]{\( \BbbZ_n \)} of integers modulo \( n \) and the \hyperref[def:cyclic_group]{cyclic subgroup} \( \set{ 1, x, x^2, \ldots } \) (modulo \( n \)). It is necessarily finite as a subgroup of \( \BbbZ_n^\times \). Furthermore, by \fullref{thm:lagranges_theorem_for_groups}, its order \( k \) divides the order of \( \BbbZ_n^\times \). By \fullref{thm:def:eulers_totient_function/zn}, the order of \( \BbbZ_n^\times \) is \( \varphi(n) \).
 
   We have \( x^k \cong 1 \pmod n \) since \( k \) is the order of a cyclic group. If \( \varphi(n) = km \), then
   \begin{equation*}
@@ -165,20 +313,29 @@
   \end{equation*}
 \end{proof}
 
-\begin{proposition}\label{thm:division_modulo}
+\begin{corollary}\label{thm:division_modulo}
   Given positive integers \( n \) and \( m \), we can apply \fullref{alg:euclidean_division_of_integers} to obtain \( n = a \varphi(m) + b \), where \( \varphi \) is \hyperref[def:eulers_totient_function]{Euler's totient function}.
 
-  Then
+  Then, for a positive integer \( x \) coprime to \( m \), we have
   \begin{equation*}
     x^n \cong x^b \pmod m,
   \end{equation*}
-\end{proposition}
+\end{corollary}
 \begin{proof}
   By \fullref{thm:eulers_totient_theorem}, \( x^{\varphi(m)} \cong 1 \pmod m \). Then
   \begin{equation*}
     x^n = (x^{\varphi(m)})^a x^b \cong x^b \pmod m.
   \end{equation*}
 \end{proof}
+
+\begin{example}\label{ex:division_modulo}
+  The integers \( 9 \) and \( 10 \) are coprime. We have \( \varphi(9) = 6 \) and \( 1000 = 166 \cdot 6 + 4 \). By \fullref{thm:division_modulo},
+  \begin{equation*}
+    9^{1000} \cong 9^4 \cong 6561 \cong 1 \pmod {10}.
+  \end{equation*}
+
+  We can thus vastly simplify finding the last digit of the decimal representation of \( 9^{1000} \).
+\end{example}
 
 \begin{theorem}[Fermat's little theorem]\label{thm:fermats_little_theorem}
   For a \hyperref[def:prime_number]{prime number} \( p \) and for any positive integer \( x \), we have
