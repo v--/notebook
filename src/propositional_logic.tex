@@ -37,7 +37,7 @@
   The following related definitions constitute what is called the \term{syntax of propositional logic}.
 
   \begin{thmenum}
-    \thmitem{def:propositional_syntax/grammar_schema} Consider the following \hyperref[ex:natural_number_arithmetic_grammar/backus_naur_form]{grammar schema}:
+    \thmitem{def:propositional_syntax/grammar_schema} Consider the following \hyperref[rem:backus_naur_form]{grammar schema}:
     \begin{bnf*}
       \bnfprod{variable}   {P \in \boldop{Prop}} \\
       \bnfprod{connective} {\circ \in \Sigma} \\
@@ -331,7 +331,7 @@
 \begin{definition}\label{def:propositional_substitution}
   We sometimes want to substitute a propositional variable with another variable or even with a formula. This is akin to applying a \hyperref[def:boolean_function]{Boolean function} like \( x \vee y \) to different variables (e.g. to obtain \( x \vee x \)) or even concrete values (e.g. \( F \vee T \)), except that it is done on a purely syntactic level without involving any semantics involved.
 
-  It does not pose any technical difficulty to extend this definition beyond replacing a variable like it is usually done (e.g. \cite[def. 7.8]{OpenLogicFull}). Not only that, we can then use this mechanism to define complicated rewriting rules as in \fullref{alg:conjunctive_normal_form_reduction} and have semantic equivalence automatically follow from \fullref{thm:propositional_substitution_equivalence}.
+  It does not pose any technical difficulty to extend this definition beyond replacing a variable like it is usually done (e.g. \cite[def. 7.8]{OpenLogicFull}). Not only that, we can then use this mechanism to define complicated rewriting rules as in \fullref{alg:perfect_cnf_and_dnf} and have semantic equivalence automatically follow from \fullref{thm:propositional_substitution_equivalence}.
 
   \begin{thmenum}
     \thmitem{def:propositional_substitution/single} We define the \term{substitution} of the propositional formula \( \theta \) with \( \chi \) in \( \varphi \) as
@@ -419,72 +419,124 @@
 
   This is useful in
   \begin{itemize}
-    \item Reduction to normal forms such as the \hyperref[def:conjunctive_disjunctive_normal_form]{conjunctive normal form} in \fullref{alg:conjunctive_normal_form_reduction}.
+    \item Reduction to normal forms such as the \hyperref[def:cnf_and_dnf]{conjunctive normal form} in \fullref{alg:perfect_cnf_and_dnf}.
 
     \item \hyperref[def:propositional_semantics/satisfiability]{Satisfiability} proofs that rely on \hyperref[rem:structural_recursion_and_induction]{structural induction} because it allows us to consider less cases in the induction.
 
-    \item Having fewer rules in \hyperref[alg:conjunctive_normal_form_reduction]{deductive systems}. For example, we may choose to add \eqref{eq:thm:minimal_propositional_negation_laws/pierce} to the axioms of the \hyperref[def:positive_implicational_deductive_system]{positive implicational derivation system} and due to \fullref{thm:minimal_propositional_negation_laws} this derivation system would be able to emulate the \hyperref[def:classical_propositional_deductive_systems]{classical derivation system}.
+    \item Having fewer rules in \hyperref[alg:perfect_cnf_and_dnf]{deductive systems}. For example, we may choose to add \eqref{eq:thm:minimal_propositional_negation_laws/pierce} to the axioms of the \hyperref[def:positive_implicational_deductive_system]{positive implicational derivation system} and due to \fullref{thm:minimal_propositional_negation_laws} this derivation system would be able to emulate the \hyperref[def:classical_propositional_deductive_systems]{classical derivation system}.
   \end{itemize}
 \end{remark}
 
-\begin{definition}\label{def:conjunctive_disjunctive_normal_form}
-  We will now introduce the conjunctive and disjunctive normal forms. The concepts are related but distinct from that of \hyperref[rem:lattice_polynomials]{lattice polynomials}.
+\begin{definition}\label{def:cnf_and_dnf}\mcite[I.1.\S4]{Яблонский1986}
+  We will now introduce \term{conjunctive normal forms} (CNF) and \term{disjunctive normal forms} (DNF) for propositional formulas. The concepts are related but distinct from that of \hyperref[rem:lattice_polynomials]{lattice polynomials}.
 
   \begin{thmenum}
-    \thmitem{def:conjunctive_disjunctive_normal_form/literal} A \term{literal} is either a propositional variable \( L = P \) or a negation \( L = \neg P \) of a propositional variable. These are called \term{positive} and \term{negative} literals, correspondingly.
+    \thmitem{def:cnf_and_dnf/grammar} The structure of these formulas is best described by the \hyperref[rem:backus_naur_form]{grammar schema}:
+    \begin{bnf*}
+      \bnfprod{positive literal}     {P \in \boldop{Prop}} \\
+      \bnfprod{negative literal}     {\neg \bnfpn{positive literal}} \\
+      \bnfprod{literal}              {\bnfpn{positive literal} \bnfor \bnfpn{negative literal}} \\
+      \bnfprod{disjunct}             {\bnfpn{literal} \bnfor \bnfts{(} \bnfsp \bnfpn{literal}  \bnfsp \bnfts{\( \vee \)}   \bnfsp \bnfpn{disjunct} \bnfsp \bnfts{)}} \\
+      \bnfprod{CNF}                  {\bnfpn{CNF}     \bnfor \bnfts{(} \bnfsp \bnfpn{disjunct} \bnfsp \bnfts{\( \wedge \)} \bnfsp \bnfpn{CNF}      \bnfsp \bnfts{)}} \\
+      \bnfprod{conjunct}             {\bnfpn{literal} \bnfor \bnfts{(} \bnfsp \bnfpn{literal}  \bnfsp \bnfts{\( \wedge \)} \bnfsp \bnfpn{conjunct} \bnfsp \bnfts{)}} \\
+      \bnfprod{DNF}                  {\bnfpn{DNF}     \bnfor \bnfts{(} \bnfsp \bnfpn{conjunct} \bnfsp \bnfts{\( \vee \)}   \bnfsp \bnfpn{DNF}      \bnfsp \bnfts{)}}
+    \end{bnf*}
 
-    \thmitem{def:conjunctive_disjunctive_normal_form/normal_form} A propositional formula \( \varphi \) is in \term{conjunctive normal form} (resp. \term{disjunctive normal form}) if \( \varphi \) is a finite conjunction of disjunctions (resp. finite disjunction of conjunctions) of literals. That is, if \( \varphi \) is in conjunctive normal form, it has the form
+    As usual, we utilize the convention in \fullref{rem:propositional_formula_parentheses} and avoid excessive parentheses.
+
+    In this context, the terms \term{conjunct} and \term{disjunct} are commonly used to refer to sets of literals rather than the formulas containing them.
+
+    \thmitem{def:cnf_and_dnf/variable_power} Given a variable \( P \) and a \hyperref[def:boolean_value]{Boolean value} \( x \in \set{ T, F } \), define
     \begin{equation*}
-      (L_{1,1} \vee \ldots \vee L_{1,n_1}) \wedge \cdots \wedge (L_{k,1} \vee \ldots \vee L_{k,n_k}).
+      P^x \coloneqq \begin{cases}
+        P      &x = T, \\
+        \neg P &x = F.
+      \end{cases}
     \end{equation*}
 
-    \thmitem{def:conjunctive_disjunctive_normal_form/conjunct_disjunct} A \term{disjunct} (resp. a \term{conjunct}) is a set of literals, the difference between the two being the context in which they are used. To each formula in conjunctive normal form there corresponds a set of disjuncts and to each formula in disjunctive normal form there corresponds a set of conjuncts.
+    \thmitem{def:cnf_and_dnf/perfect} Given a finite sequence of distinct variables \( P_1, \ldots, P_n \), we say that a formula is in \term{perfect} CNF with respect to them if the following conditions hold:
+    \begin{thmenum}
+      \thmitem{def:cnf_and_dnf/perfect/fullness} Every disjunct contains \( n \) literals and the \( k \)-th literal is either \( P_k \) or \( \neg P_k \).
+      \thmitem{def:cnf_and_dnf/perfect/ordering} The disjuncts are ordered \hyperref[def:lexicographic_order]{lexicographically} so that, for the \( k \)-th literals, \( L_k \leq R_k \) if either \( L_k \) is a negative literal or if both literals are positive.
+    \end{thmenum}
+
+    A formula in perfect conjunctive normal form can be written as
+    \begin{equation*}
+      \bigwedge_{(x_1, \ldots, x_n) \in B} P_1^{x_1} \vee \cdots \vee P_n^{x_n}.
+    \end{equation*}
+
+    Perfect DNFs are defined analogously. These additional conditions ensure uniqueness --- see \fullref{alg:perfect_cnf_and_dnf}.
   \end{thmenum}
 \end{definition}
 
-\begin{algorithm}\label{alg:conjunctive_normal_form_reduction}
-  Let \( \varphi \) be any formula. We explicitly derive a formula in conjunctive normal form that is \hyperref[def:propositional_semantics/equivalence]{semantically equivalent} to \( \varphi \). In a software implementation, we can easily construct an efficient recursive procedure based on the following steps.
+\begin{example}\label{ex:def:cnf_and_dnf}
+  We list examples of formulas in \hyperref[def:cnf_and_dnf]{conjunctive and disjunctive normal forms}:
+  \begin{thmenum}
+    \thmitem{def:cnf_and_dnf/perfect_cnf} The \hyperref[thm:boolean_equivalences]{Boolean equivalence} \eqref{eq:thm:boolean_equivalences/conditional_as_disjunction} allows us to convert the \hyperref[def:propositional_language/connectives/conditional]{conditional} \( P \to Q \) to \( \neg P \vee Q \), which is both in CNF and in DNF.
+
+    It is its own only disjunct, and it contains both variable, hence it is in perfect CNF.
+
+    The DNF is not perfect, however. because neither conditions \fullref{def:cnf_and_dnf/perfect/fullness} nor \fullref{def:cnf_and_dnf/perfect/ordering} are satisfied.
+
+    \thmitem{def:cnf_and_dnf/perfect_dnf} Consider instead the formula
+    \begin{equation*}
+      (\neg P \wedge \neg Q) \vee (\neg P \wedge Q) \vee (P \wedge Q).
+    \end{equation*}
+
+    It is in perfect DNF, and it is equivalent to \( P \to Q \).
+  \end{thmenum}
+\end{example}
+
+\begin{algorithm}[Perfect CNFs and DNFs]\label{alg:perfect_cnf_and_dnf}\mcite[thm. I.1.3]{Яблонский1986}
+  Let \( f(x_1, \ldots, x_n) \) be an arbitrary \hyperref[def:boolean_function]{Boolean function}. We will build a formula in \hyperref[def:cnf_and_dnf/perfect]{perfect disjunctive normal form} and one in \hyperref[def:cnf_and_dnf/perfect]{perfect conjunctive normal form}. The \hyperref[def:propositional_formula_induced_function]{induced function} of both of these formulas will be \( f \). Both formulas are unique, as we will show.
 
   \begin{thmenum}
-    \thmitem{alg:conjunctive_normal_form_reduction/constants} Pick any variable \( P \) and substitute
-    \begin{align*}
-      \top \T{with} P \vee \neg P, && \bot \T{with} P \wedge \neg P
-    \end{align*}
-    to get rid of the \hyperref[def:propositional_language/constants]{propositional constants}.
+    \thmitem{alg:perfect_cnf_and_dnf/guard} If \( f \) is constant, the constant itself is both a perfect CNF and DNF.
 
-    \thmitem{alg:conjunctive_normal_form_reduction/iff} For any subformulas \( \psi \) and \( \theta \) of \( \varphi \), perform the substitution
-    \begin{equation*}
-      \psi \leftrightarrow \theta \T{with} (\psi \rightarrow \theta) \wedge (\theta \rightarrow \psi)
-    \end{equation*}
-    to get rid of \hyperref[def:propositional_language/connectives/biconditional]{biconditional connectives}. Semantic equivalence with \( \varphi \) is then justified by \fullref{thm:boolean_equivalences/biconditional_via_conditionals}.
+    \thmitem{alg:perfect_cnf_and_dnf/algorithm} Suppose that \( f \) is nonconstant and fix some propositional variables \( P_1, \ldots, P_n \). The following is a formula in perfect CNF whose \hyperref[def:propositional_formula_induced_function]{induced function} is \( f \):
+    \begin{equation}\label{alg:perfect_cnf_and_dnf/cnf}
+      \bigwedge_{f(x_1, \ldots, x_n) = F} P_1^{x_1} \vee \cdots \vee P_n^{x_n}.
+    \end{equation}
 
-    \thmitem{alg:conjunctive_normal_form_reduction/implies} For any subformulas \( \psi \) and \( \theta \) of \( \varphi \), perform the substitution
-    \begin{equation*}
-      \psi \rightarrow \theta \T{with} \neg \psi \vee \theta.
-    \end{equation*}
-    to get rid of \hyperref[def:propositional_language/connectives/conditional]{conditional connectives}. Equivalence with \( \varphi \) is justified by \fullref{thm:boolean_equivalences/conditional_as_disjunction}.
+    Assuming that \( F < T \), we order the disjuncts with respect to the \hyperref[def:lexicographic_order]{lexicographic order} on the set \( \set{ T, F }^n \) to which the tuples of Boolean values \( (x_1, \ldots, x_n) \) belong.
 
-    \thmitem{alg:conjunctive_normal_form_reduction/de_morgan} For any subformulas \( \psi \) and \( \theta \) of \( \varphi \), use \fullref{thm:de_morgans_laws} to justify the substitution
-    \begin{align*}
-      \neg(\psi \vee \theta) \T{with} \neg \psi \wedge \neg \theta
-      &&
-      \neg(\psi \wedge \theta) \T{with} \neg \psi \vee \neg \theta.
-    \end{align*}
-
-    In order to ensure that \hyperref[def:propositional_language/negation]{negation} is only present before propositional variables, repeat \ref{alg:conjunctive_normal_form_reduction/de_morgan} until we reach a fixed point, i.e. until nothing is substituted anymore.
-
-    \thmitem{alg:conjunctive_normal_form_reduction/double_negation} For any variable \( P \) of \( \varphi \), use \fullref{eq:thm:boolean_equivalences/double_negation} to justify the substitution
-    \begin{equation*}
-      \neg \neg P \T{with} P.
-    \end{equation*}
-
-    \thmitem{alg:conjunctive_normal_form_reduction/distributivity} Finally, for any subformulas \( \psi \), \( \theta \) and \( \chi \) of \( \varphi \), use \hyperref[eq:def:semilattice/distributive_lattice/finite/join_over_meet]{distributivity} of \( \vee \) over \( \wedge \) to justify the substitution
-    \begin{equation*}
-      \psi \vee (\theta \wedge \chi) \T{with} (\psi \vee \theta) \wedge (\theta \vee \chi).
-    \end{equation*}
-
-    In order to ensure that conjunction is always one level higher than disjunction, repeat \ref{alg:conjunctive_normal_form_reduction/distributivity} until we reach a fixed point.
+    \hyperref[def:semilattice/duality]{Dually}, we construct the perfect DNF as
+    \begin{equation}\label{alg:perfect_cnf_and_dnf/cnf}
+      \bigvee_{f(x_1, \ldots, x_n) = T} P_1^{\overline{x_1}} \wedge \cdots \wedge P_n^{\overline{x_n}},
+    \end{equation}
   \end{thmenum}
-
-  The resulting formula is in conjunctive normal form. As a consequence of \fullref{thm:propositional_substitution_equivalence}, it is equivalent to \( \varphi \).
 \end{algorithm}
+\begin{defproof}
+  We will derive existence and uniqueness of perfect DNFs simultaneously from first principles. The derivation for CNFs is dual, but is more convoluted conceptually.
+
+  Fix sequences of Boolean values \( a_1, \ldots, a_n \) and \( x_1, \ldots, x_n \). Then
+  \begin{center}
+    \begin{tabular}{c c | c}
+      \( x_k \) & \( a_k \) & \( P_k^{\overline{x_k}}\Bracks{a_k} \) \\
+      \hline
+      \( F \)   & \( F \)   & \( T \) \\
+      \( F \)   & \( T \)   & \( F \) \\
+      \( T \)   & \( F \)   & \( F \) \\
+      \( T \)   & \( T \)   & \( T \)
+    \end{tabular}
+  \end{center}
+
+  Therefore, \( P_k^{\overline{x_1}}\Bracks{a_k} = T \) if and only if \( x_k = a_k \). Then
+  \begin{equation*}
+    \parens*{ P_1^{\overline{x_1}} \vee \cdots \vee P_n^{\overline{x_1}} }\bracks{ a_1, \ldots, a_n }
+    =
+    \begin{cases}
+      T, &a_k = x_k \T{for all} k = 1, \ldots, n, \\
+      F, &\T{otherwise.}
+    \end{cases}
+  \end{equation*}
+
+  Given some set \( B \subseteq \set{ T, F }^n \), we have
+  \begin{equation*}
+    \parens*{ \bigvee_{(x_1, \ldots, x_n) \in B} P_1^{\overline{x_1}} \vee \cdots \vee P_n^{\overline{x_n}} }\bracks{ a_1, \ldots, a_n } = T
+  \end{equation*}
+  if and only if there exists some tuple \( (x_1, \ldots, x_n) \in B \) such that \( x_k = a_k \) for every index \( k \). That is, if the tuple \( (a_1, \ldots, a_n) \) belongs to the complement \( B \). This leads us to the only possible definition
+  \begin{equation*}
+    B \coloneqq \set{ (x_1, \ldots, x_n) \given f(x_1, \ldots, x_n) = T }.
+  \end{equation*}
+\end{defproof}
