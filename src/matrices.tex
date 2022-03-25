@@ -1,5 +1,7 @@
 \subsection{Matrices}\label{subsec:matrices}
 
+Although we will mostly be concerned with matrices over \hyperref[def:field]{fields}, in this subsection we will work over \hyperref[def:ring/commutative]{commutative rings}. Some definitions and statements hold even more generally, in \hyperref[def:semiring]{semirings}, however we have only developed a suitable theory of \hyperref[def:hamel_basis]{Hamel bases} over commutative rings.
+
 \begin{definition}\label{def:array}\mimprovised
   Let \( S \) be any nonempty \hyperref[def:set]{set} and \( n_1, \ldots, n_k \) be \hyperref[def:integer_signum]{positive integers}. An \term{array} of shape \( n_1 \times \cdots \times n_k \) is a \hyperref[def:function]{function} with signature
   \begin{equation*}
@@ -36,6 +38,8 @@
         a_{m,1}
       \end{pmatrix}.
     \end{equation*}
+
+    When \( S \) is a \hyperref[def:semiring]{semiring} \( R \), we often identify the set of all \( m \)-dimensional column vectors with the free semimodule \hyperref[def:standard_basis]{\( R^m \)}.
 
     \thmitem{def:array/row_vector} A \term{row vector} of dimension \( n \) is simply an \( 1 \times n \) matrix
     \begin{equation*}
@@ -146,7 +150,7 @@
       \end{pmatrix}.
     \end{equation*}
 
-    \thmitem{def:matrix_algebra/scalar_multiplication} We define \term{scalar multiplication} as
+    \thmitem{def:matrix_algebra/scalar_multiplication} We define \term{scalar multiplication} \( \cdot: R \times R^{m \times n} \to R^{m \times n} \) as
     \begin{equation*}
        \lambda \cdot \begin{pmatrix}
         a_{1,1} & \cdots & a_{1,n} \\
@@ -161,12 +165,12 @@
       \end{pmatrix}.
     \end{equation*}
 
-    \thmitem{def:matrix_algebra/matrix_multiplication} We define \term{matrix multiplication} in two steps. The complexity of the definition is justified by \fullref{thm:finite_dimensional_operators_are_isomorphic_to_matrices}. First, if \( \seq{ a_{1,j} }_{j=1}^n \) is a \hyperref[def:array/row_vector]{row vector} and \( \seq{ b_{i,1} }_{i=1}^m \) is a \hyperref[def:array/column_vector]{column vector}, we define their \term{inner product} as
+    \thmitem{def:matrix_algebra/matrix_multiplication} We define \term{matrix multiplication} in two steps. The definition is justified by \fullref{thm:matrix_and_linear_function_algebras}. First, if \( \seq{ a_{1,j} }_{j=1}^n \) is a \hyperref[def:array/row_vector]{row vector} and \( \seq{ b_{i,1} }_{i=1}^m \) is a \hyperref[def:array/column_vector]{column vector}, we define their \term{inner product} as
     \begin{equation*}
       a \cdot b \coloneqq \sum_{i=1}^n a_i b_i.
     \end{equation*}
 
-    We can now define matrix multiplication \( {}\cdot{}: R^{m \times k} \times R^{k \times n} \to R^{m \times n} \) as
+    We can now define matrix multiplication \( \odot: R^{m \times k} \times R^{k \times n} \to R^{m \times n} \) as
     \begin{equation*}
      \parens*
        {
@@ -180,7 +184,7 @@
             a_{m,-}
           \end{array}
         }
-      \cdot
+      \odot
       \parens*
         {
           \begin{array}{c|c|c|c}
@@ -278,24 +282,179 @@
   \end{align*}
 \end{example}
 
-\begin{proposition}\label{thm:finite_dimensional_operators_are_isomorphic_to_matrices}
-  For a \hyperref[def:ring/commutative]{commutative ring} \( R \), the \hyperref[def:matrix_algebra]{matrix algebra} \( R^{m \times n} \) is \hyperref[def:algebra_over_semiring/homomorphism]{isomorphic} to the \hyperref[thm:functions_over_algebra]{linear function algebra} \( \hom(R^n, R^m) \)\footnote{Note that the maps are from \( R^n \) to \( R^m \) and not vice versa}.
+\begin{definition}\label{def:transpose_matrix}
+  The \term{transpose matrix} of
+  \begin{equation*}
+    A = \begin{pmatrix}
+      a_{1,1} & a_{1,2} & \cdots & a_{1,n} \\
+      a_{2,1} & a_{2,2} & \cdots & a_{2,n} \\
+      \vdots  & \vdots  & \ddots & \vdots  \\
+      a_{m,1} & a_{m,2} & \cdots & a_{m,n}
+    \end{pmatrix}
+  \end{equation*}
+  is defined as
+  \begin{equation*}
+    A^T = \begin{pmatrix}
+      a_{1,1} & a_{1,2} & \cdots & a_{n,1} \\
+      a_{2,1} & a_{2,2} & \cdots & a_{n,2} \\
+      \vdots  & \vdots  & \ddots & \vdots  \\
+      a_{1,m} & a_{2,m} & \cdots & a_{n,m}
+    \end{pmatrix}.
+  \end{equation*}
 
-  This justifies using juxtaposition for application of linear functions, e.g. \( Lx \) rather than \( L(x) \).
+  A matrix that is equal to its transpose is called \term{symmetric}.
+\end{definition}
+
+\begin{remark}\label{rem:matrices_as_functions}
+  Let \( R \) be a \hyperref[def:ring/commutative]{commutative ring} and let \( e_1, \ldots, e_n \) be the \hyperref[def:standard_basis]{standard basis} of \( R \). The \hyperref[def:basis_decomposition]{coordinate projections} \( \pi_{e_1}, \ldots, \pi_{e_n} \) allow us to identify \( R^n \) with the module \( R^{n \times 1} \) of \hyperref[def:array/column_vector]{column vectors} by regarding the vector \( x \) from \( R^n \) as the column vector
+  \begin{equation*}
+    \begin{pmatrix}
+      \pi_{e_1}(x) \\
+      \vdots \\
+      \pi_{e_n}(x)
+    \end{pmatrix}.
+  \end{equation*}
+
+  Let \( A = \seq{ a_{ij} }_{i,j=1}^{m,n} \) be an \( m \times n \) matrix over \( R \). If we regard \( R^n \) as a set of column vectors, then \hyperref[thm:matrix_algebra/matrix_multiplication]{matrix multiplication} allows us to regard \( A \) as the function \( x \mapsto Ax \), which maps column vectors from \( R^n \) to column vectors in \( R^m \).
+
+  This justifies using juxtaposition for application of linear maps, e.g. \( Lx \) rather than \( L(x) \).
+
+  Conversely, let \( e_1, \ldots, e_n \) be the standard basis of \( R^n \) and \( f_1, \ldots, f_m \) --- of \( R^m \). The linear map \( L: R^n \to R^m \) corresponds to the following matrix:
+  \begin{equation*}
+    \begin{pmatrix}
+      \pi_{e_1}(L f_1) & \cdots & \pi_{e_1}(L f_1) \\
+      \vdots           & \ddots & \vdots       \\
+      \pi_{e_n}(L f_m) & \cdots & \pi_{e_n}(L f_m)
+    \end{pmatrix}.
+  \end{equation*}
+\end{remark}
+
+\begin{proposition}\label{thm:matrix_and_linear_function_algebras}
+  For a \hyperref[def:ring/commutative]{commutative ring} \( R \), the \hyperref[def:matrix_algebra]{matrix algebra} \( R^{m \times n} \) is \hyperref[def:algebra_over_semiring/homomorphism]{isomorphic} to the \hyperref[thm:functions_over_algebra]{linear function algebra} \( \hom(R^n, R^m) \)\footnote{Note that the maps are from \( R^n \) to \( R^m \) and not vice versa}.
 \end{proposition}
+\begin{proof}
+  Follows from our discussion in \fullref{rem:matrices_as_functions} due to linearity.
+\end{proof}
+
+\begin{remark}\label{rem:double_index_maps}
+  We want to be able to map single indices to double indices and vice versa, for example for the purpose of \fullref{thm:matrix_spaces_are_free_modules}. As an example, we want to be able to \enquote{linearize} an \( m \times n \) matrix such as the \( 2 \times 3 \) matrix
+  \begin{equation}\label{eq:rem:double_index_maps/example/matrix}
+    \begin{pmatrix}
+      1 & 2 & 3 \\
+      4 & 5 & 6
+    \end{pmatrix}
+  \end{equation}
+  into the tuple
+  \begin{equation}\label{eq:rem:double_index_maps/example/row_major}
+    (1, 2, 3, 4, 5, 6)
+  \end{equation}
+  and vice versa. This is called \term{row-major order} of the elements of a matrix. The \term{column-major order} would instead be
+  \begin{equation}\label{eq:rem:double_index_maps/example/column_major}
+    (1, 4, 2, 5, 3, 6).
+  \end{equation}
+
+  Let \( m \) and \( n \) be \hyperref[def:integer_signum]{positive integers}. We will explicitly define functions for linearizing a matrix like \eqref{eq:rem:double_index_maps/example/matrix} into its row-major order \eqref{eq:rem:double_index_maps/example/row_major}. Consider the sets
+  \begin{align*}
+    S &\coloneqq \overbrace{ \set{ 1, \ldots, mn - 1, mn } }^{\T{single indices}}
+    \\
+    D &\coloneqq \underbrace{ \set{ 1, \ldots, m } \times \set{ 1, \ldots, n } }_{\T{double indices}}
+  \end{align*}
+  and the mutually inverse operations
+  \begin{align}
+    &\begin{aligned}\label{eq:rem:double_index_maps/sharp}
+      &\sharp: S \to D \\
+      &\sharp(k) \coloneqq \parens[\Big]{ \quot(k - 1, m) + 1, \rem(k - 1, m) + 1 } \\
+    \end{aligned}
+    \\[0.5\baselineskip]
+    &\begin{aligned}\label{eq:rem:double_index_maps/flat}
+      &\flat: D \to S \\
+      &\flat(i, j) \coloneqq (i - 1) \cdot m + (j - 1) + 1.
+    \end{aligned}
+  \end{align}
+
+  The operation \( \sharp \) encodes the matrix \eqref{eq:rem:double_index_maps/example/matrix} into its row-major order \eqref{eq:rem:double_index_maps/example/row_major} and \( \flat \) does the opposite. Both operations are trivial except for the shifting needed in to allow us to use \hyperref[def:euclidean_domain]{remainders and quotients}.
+
+  We can easily verify that \( \sharp \) is a \hyperref[def:morphism_invertibility/left_invertible]{left inverse} of \( \flat \) (note that \( j < m \)):
+  \begin{align*}
+    \sharp(\flat(i, j))
+    &=
+    \sharp\parens[\Big]{ (i - 1) \cdot m + (j - 1) + 1 }
+    = \\ &=
+    \parens[\Big]{ \quot(\cdots, m) + 1, \rem(\cdots, m) + 1 }
+    = \\ &=
+    \parens[\Big]{ (i - 1) + 1, (j - 1) + 1 }
+    = \\ &=
+    (i, j).
+  \end{align*}
+
+  We can just as easily verify that \( \flat \) is a \hyperref[def:morphism_invertibility/right_invertible]{right inverse} of \( \sharp \):
+  \begin{align*}
+    \flat(\sharp(k))
+    &=
+    \flat\parens[\Big]{ \quot(k, m) + 1, \rem(k, m) + 1 }
+    = \\ &=
+    \quot(k, m) \cdot m + \rem(k, m)
+    = \\ &=
+    k.
+  \end{align*}
+
+  Hence, \( \sharp \) is fully invertible with inverse \( \flat \). By \fullref{thm:function_invertibility_categorical/fully_invertible}, it is bijective.
+\end{remark}
+
+\begin{proposition}\label{thm:matrix_spaces_are_free_modules}
+  The \hyperref[thm:matrix_algebra]{matrix algebra} \( R^{m \times n} \) is isomorphic as a semimodule to \( R^{mn} \).
+\end{proposition}
+\begin{proof}
+  \Fullref{rem:double_index_maps} gives us a semimodule isomorphism between \( m \times n \) matrices and \( mn \)-dimensional column vectors when extended to linear maps via \fullref{thm:free_semimodule_universal_property}.
+\end{proof}
 
 \begin{definition}\label{def:matrix_determinant}\mcite[215]{Knapp2016BasicAlgebra}
-  Fix the \hyperref[def:matrix_algebra]{matrix space} \( R^{n \times n} \) over a commutative unital ring \( R \). We define its determinant as
-  \begin{balign*}
-     & \det: R^{n \times n} \to R                                                                  \\
-     & \det(\{ a_{i,j} \}_{i,j=1}^n) \coloneqq \sum_{p \in S_n} \sgn(p) \prod_{i=1}^n a_{i,p(i)},
-  \end{balign*}
-  where \( S_n \) is the \hyperref[def:symmetric_group]{symmetric group} of order \( n \).
-
-  The determinant of a matrix is not invertible, we say that it is \term{singular}. \Fullref{thm:matrix_invertible_iff_nonsingular} gives a strong link between the invertibility of a matrix and the invertibility of its determinant.
-
-  If \( R \) is a field, then only the zero is not invertible and hence only matrices with \( \det A = 0 \) are singular.
+  The \term{determinant} for the \hyperref[thm:matrix_algebra]{matrix algebra} \( R^{n \times n} \) over the semiring \( R \) is the function
+  \begin{equation*}
+    \begin{aligned}
+      &\det: R^{n \times n} \to R \\
+      &\det(\seq{ a_{i,j} }_{i,j=1}^n) \coloneqq \sum_{p \in S_n} \sgn(p) \prod_{i=1}^n a_{i,p(i)},
+    \end{aligned}
+  \end{equation*}
+  where \( S_n \) is the \hyperref[def:symmetric_group]{symmetric group} and \( \sgn \) is the \hyperref[def:permutation_parity]{sign} of the permutation \( p \).
 \end{definition}
+
+\begin{proposition}\label{thm:def:matrix_determinant}
+  \hyperref[def:matrix_determinant]{Determinants} have the following basic properties:
+  \begin{thmenum}
+    \thmitem{thm:def:matrix_determinant/transpose} \( \det(A^T) = \det(A) \).
+    \thmitem{thm:def:matrix_determinant/homogeneous} \( \det(tA) = t\det(A) \).
+    \thmitem{thm:def:matrix_determinant/multilinear} The determinant is \hyperref[def:multilinear_function]{multilinear} with respect to the columns of the matrix. More precisely,
+    \begin{equation*}
+      \det \parens*
+      {
+        \begin{array}{c | c | c}
+          \cdots & t x + r y & \cdots
+        \end{array}
+      }
+      =
+      t \cdot \det \parens*
+      {
+        \begin{array}{c | c | c}
+          \cdots & x & \cdots
+        \end{array}
+      }
+      +
+      r \cdot \det \parens*
+      {
+        \begin{array}{c | c | c}
+          \cdots & y & \cdots
+        \end{array}
+      }.
+    \end{equation*}
+
+    Due to \fullref{thm:def:matrix_determinant/transpose}, the determinant is also multilinear with respect to the rows of the matrix.
+
+    \thmitem{thm:def:matrix_determinant/homomorphism} \( \det(AB) = \det(A) \cdot \det(B) \).
+
+    That is, \( \det: R^{n \times n} \to R \) is a \hyperref[def:monoid/homomorphism]{monoid homomorphism} from the \hyperref[def:semiring]{multiplicative monoid} of the ring \( R^{n \times n} \) to the multiplicative monoid of \( R \).
+  \end{thmenum}
+\end{proposition}
 
 \begin{example}\label{ex:vandermonde_matrix}\mcite[corr. 2.37]{Knapp2016BasicAlgebra}
   The matrix
@@ -319,32 +478,6 @@
   Hence, the determinant is nonzero if and only if all of \( x_0, \ldots, x_n \) are distinct.
 \end{example}
 
-\begin{proposition}\label{thm:def:matrix_determinant}\mcite[prop. 5.1]{Knapp2016BasicAlgebra}
-  Matrix determinants over the commutative unital ring \( R \) have the following basic properties:
-  \begin{thmenum}
-    \thmitem{thm:def:matrix_determinant/identity} For the identity matrix \( E_n \in R^n \) we have
-    \begin{equation*}
-      \det(E_n) = 1.
-    \end{equation*}
-
-    \thmitem{thm:def:matrix_determinant/transpose} For the transpose \hyperref[def:matrix_transpose]{matrix} \( A^T \) of \( A \in R^n \), we have
-    \begin{equation*}
-      \det(A^T) = \det(A).
-    \end{equation*}
-
-    \thmitem{thm:def:matrix_determinant/product} For matrices \( A, B \in R^n \) we have
-    \begin{equation*}
-      \det(A) \det(B) = \det(AB).
-    \end{equation*}
-  \end{thmenum}
-\end{proposition}
-
-\begin{proposition}\label{thm:matrix_invertible_iff_nonsingular}\mcite[cor. 5.5]{Knapp2016BasicAlgebra}
-  A matrix over \( R \) is invertible if and only if its determinant is invertible in \( R \).
-
-  In particular, a matrix over a field is invertible if and only if its determinant is nonzero.
-\end{proposition}
-
 \begin{definition}\label{def:inverse_matrix}
   Let \( A \) be a square matrix of order \( n \) over a semiring \( R \). We say that \( B \) is an \term{inverse matrix} of \( A \) if
   \begin{equation*}
@@ -365,7 +498,7 @@
   Fix a semiring \( R \). The general linear group \( \op{GL}_n(R) \) is isomorphic to the group of all invertible linear transformations over \( R^n \) under composition.
 \end{proposition}
 \begin{proof}
-  Follows from \fullref{thm:finite_dimensional_operators_are_isomorphic_to_matrices}.
+  Follows from \fullref{thm:matrix_and_linear_function_algebras}.
 \end{proof}
 
 \begin{definition}\label{def:orthogonal_matrix}
@@ -446,7 +579,7 @@
 \end{proof}
 
 \begin{proposition}\label{thm:column_and_row_spaces_are_images}
-  Fix a semiring \( R \). Let \( L: R^m \to R^n \) be a linear map and let \( A \in R^{n \times m} \) be the corresponding \hyperref[thm:finite_dimensional_operators_are_isomorphic_to_matrices]{matrix}. The \hyperref[def:matrix_column_and_row_space]{column space} of \( A \) is isomorphic to the image \( \img(L) \) and the row space is isomorphic to \( \img(L^*) \).
+  Fix a semiring \( R \). Let \( L: R^m \to R^n \) be a linear map and let \( A \in R^{n \times m} \) be the corresponding \hyperref[thm:matrix_and_linear_function_algebras]{matrix}. The \hyperref[def:matrix_column_and_row_space]{column space} of \( A \) is isomorphic to the image \( \img(L) \) and the row space is isomorphic to \( \img(L^*) \).
 \end{proposition}
 \begin{proof}
   The column space of \( A \) lies within \( R^{n \times 1} \), which is isomorphic to \( R^n \). We will assume that it is a subset of \( R^n \) and will prove that it is equal to \( \img(L) \).
