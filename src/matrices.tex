@@ -1,6 +1,6 @@
 \subsection{Matrices}\label{subsec:matrices}
 
-Although we will mostly be concerned with matrices over \hyperref[def:field]{fields}, in this subsection we will work over \hyperref[def:ring/commutative]{commutative rings}. Some definitions and statements hold even more generally, in \hyperref[def:semiring]{semirings}, however we have only developed a suitable theory of \hyperref[def:hamel_basis]{Hamel bases} over commutative rings.
+Although we will mostly be concerned with matrices over \hyperref[def:field]{fields}, in this subsection we will work over \hyperref[def:ring/commutative]{commutative unital rings}. Some definitions and statements hold even more generally, in arbitrary \hyperref[def:semiring]{semirings}, however we have only developed a suitable theory of \hyperref[def:hamel_basis]{Hamel bases} over commutative rings.
 
 \begin{definition}\label{def:array}\mimprovised
   Let \( S \) be any nonempty \hyperref[def:set]{set} and \( n_1, \ldots, n_k \) be \hyperref[def:integer_signum]{positive integers}. An \term{array} of shape \( n_1 \times \cdots \times n_k \) is a \hyperref[def:function]{function} with signature
@@ -126,6 +126,32 @@ Although we will mostly be concerned with matrices over \hyperref[def:field]{fie
   \end{equation*}
 \end{definition}
 
+\begin{definition}\label{def:matrix_diagonal}
+  The \term{main diagonal} of the matrix \( A = \seq{ a_{i,j} }_{i,j=1}^{m,n} \) is the sequence \( a_{1,1}, \ldots, a_{i,i}, \ldots, a_{k,k} \), where \( k \coloneqq \min\set{ m, n } \). The \term{antidiagonal} is instead \( a_{1,k}, \ldots, a_{i,k-i}, \ldots, a_{k,n-k} \). These can be visualized as follows:
+  \begin{equation*}
+    \begin{pmatrix}
+      \fbox{\( a_{1,1} \)} & a_{1,2}                & \cdots & a_{1,k-1}                & \fbox{\( a_{k,k} \)} & \cdots \\
+      a_{2,1}              & \fbox{\( a_{2,2} \)}   &        & \fbox{\( a_{2,k-1} \)}   & a_{2,k}              &        \\
+      \vdots               &                        & \ddots &                          & \vdots               &        \\
+      a_{k-1,1}            & \fbox{\( a_{k-1,2} \)} &        & \fbox{\( a_{k-1,k-1} \)} & a_{k-1,k}            & \cdots \\
+      \fbox{\( a_{k,1} \)} & a_{k,2}                & \cdots & a_{k,k-1}                & \fbox{\( a_{k,k} \)} &        \\
+      \vdots               &                        &        & \vdots                   &                      & \ddots
+    \end{pmatrix}
+  \end{equation*}
+
+  Over a \hyperref[def:semiring]{semiring}, we say that a square matrix \term{diagonal} if all entries outside the main diagonal are zero. For brevity, we write
+  \begin{equation*}
+    \op{diag}(a_1, \ldots, a_n)
+    \coloneqq
+    \begin{pmatrix}
+      a_1    & 0      & \cdots & 0      \\
+      0      & a_2    & \cdots & 0      \\
+      \vdots & \vdots & \ddots & \vdots \\
+      0      & 0      & \cdots & a_n
+    \end{pmatrix}
+  \end{equation*}
+\end{definition}
+
 \begin{proposition}\label{thm:matrix_algebra}
   Denote by \( R^{m \times n} \) the set of \( m \times n \) \hyperref[def:array/matrix]{matrices} over the \hyperref[def:semiring]{semiring} \( R \). We define three operations on matrices:
   \begin{thmenum}
@@ -150,6 +176,16 @@ Although we will mostly be concerned with matrices over \hyperref[def:field]{fie
       \end{pmatrix}.
     \end{equation*}
 
+    With addition, \( R^{m \times n} \) becomes an \hyperref[def:monoid/commutative]{commutative monoid} with neutral element the \term{zero matrix}
+    \begin{equation}\label{eq:def:matrix_algebra/matrix_multiplication/zero}
+      \begin{pmatrix}
+        0       & 0      & \cdots & 0      \\
+        0       & 0      & \cdots & 0      \\
+        \vdots  & \vdots & \ddots & \vdots \\
+        0       & \vdots & \cdots & 0
+      \end{pmatrix}.
+    \end{equation}
+
     \thmitem{def:matrix_algebra/scalar_multiplication} We define \term{scalar multiplication} \( \cdot: R \times R^{m \times n} \to R^{m \times n} \) as
     \begin{equation*}
        \lambda \cdot \begin{pmatrix}
@@ -164,6 +200,8 @@ Although we will mostly be concerned with matrices over \hyperref[def:field]{fie
         \lambda a_{m,1} & \cdots & \lambda a_{m,n}
       \end{pmatrix}.
     \end{equation*}
+
+    Under \hyperref[def:matrix_algebra/addition]{addition} and \hyperref[def:matrix_algebra/scalar_multiplication]{scalar multiplication}, \( R^{m \times n} \) becomes an \( R \)-\hyperref[def:semimodule]{semimodule}.
 
     \thmitem{def:matrix_algebra/matrix_multiplication} We define \term{matrix multiplication} in two steps. The definition is justified by \fullref{thm:matrix_and_linear_function_algebras}. First, if \( \seq{ a_{1,j} }_{j=1}^n \) is a \hyperref[def:array/row_vector]{row vector} and \( \seq{ b_{i,1} }_{i=1}^m \) is a \hyperref[def:array/column_vector]{column vector}, we define their \term{inner product} as
     \begin{equation*}
@@ -199,9 +237,19 @@ Although we will mostly be concerned with matrices over \hyperref[def:field]{fie
         a_{m,-} \cdot b_{-,1} & a_{m,-} \cdot b_{-,2} & \cdots & a_{m,-} \cdot b_{-,n}
       \end{pmatrix}.
     \end{equation*}
-  \end{thmenum}
 
-  Under \hyperref[def:matrix_algebra/addition]{addition} and \hyperref[def:matrix_algebra/scalar_multiplication]{scalar multiplication}, \( R^{m \times n} \) becomes an \( R \)-\hyperref[def:semimodule]{semimodule}. If, additionally, \( n \) and \( m \) are equal, \( R^{n \times n} \) becomes an \( R \)-\hyperref[def:algebra_over_semiring]{algebra} under \hyperref[def:matrix_algebra/matrix_multiplication]{matrix multiplication}.
+    If \( n \) and \( m \) are equal, \( R^{n \times n} \) becomes an \( R \)-\hyperref[def:algebra_over_semiring]{algebra} under \hyperref[def:matrix_algebra/matrix_multiplication]{matrix multiplication} with multiplicative identity the \term{identity matrix} of order \( n \)
+    \begin{equation}\label{eq:def:matrix_algebra/matrix_multiplication/identity}
+      \op{diag}(\underbrace{ 1, \cdots, 1 }_{n \T*{ones}})
+      =
+      \begin{pmatrix}
+        1       & 0      & \cdots & 0      \\
+        0       & 1      & \cdots & 0      \\
+        \vdots  & \vdots & \ddots & \vdots \\
+        0       & \vdots & \cdots & 1
+      \end{pmatrix}.
+    \end{equation}
+  \end{thmenum}
 \end{proposition}
 \begin{proof}
   The semimodule structure is inherited by the \hyperref[thm:semiring_is_semimodule]{semimodule structure} on \( R \). We will show that, if \( n = n \), matrix multiplication is associative and bilinear. Fix matrices
@@ -282,29 +330,6 @@ Although we will mostly be concerned with matrices over \hyperref[def:field]{fie
   \end{align*}
 \end{example}
 
-\begin{definition}\label{def:transpose_matrix}
-  The \term{transpose matrix} of
-  \begin{equation*}
-    A = \begin{pmatrix}
-      a_{1,1} & a_{1,2} & \cdots & a_{1,n} \\
-      a_{2,1} & a_{2,2} & \cdots & a_{2,n} \\
-      \vdots  & \vdots  & \ddots & \vdots  \\
-      a_{m,1} & a_{m,2} & \cdots & a_{m,n}
-    \end{pmatrix}
-  \end{equation*}
-  is defined as
-  \begin{equation*}
-    A^T = \begin{pmatrix}
-      a_{1,1} & a_{1,2} & \cdots & a_{n,1} \\
-      a_{2,1} & a_{2,2} & \cdots & a_{n,2} \\
-      \vdots  & \vdots  & \ddots & \vdots  \\
-      a_{1,m} & a_{2,m} & \cdots & a_{n,m}
-    \end{pmatrix}.
-  \end{equation*}
-
-  A matrix that is equal to its transpose is called \term{symmetric}.
-\end{definition}
-
 \begin{remark}\label{rem:matrices_as_functions}
   Let \( R \) be a \hyperref[def:ring/commutative]{commutative ring} and let \( e_1, \ldots, e_n \) be the \hyperref[def:standard_basis]{standard basis} of \( R \). The \hyperref[def:basis_decomposition]{coordinate projections} \( \pi_{e_1}, \ldots, \pi_{e_n} \) allow us to identify \( R^n \) with the module \( R^{n \times 1} \) of \hyperref[def:array/column_vector]{column vectors} by regarding the vector \( x \) from \( R^n \) as the column vector
   \begin{equation*}
@@ -314,6 +339,8 @@ Although we will mostly be concerned with matrices over \hyperref[def:field]{fie
       \pi_{e_n}(x)
     \end{pmatrix}.
   \end{equation*}
+
+  Under this identification, the columns on the identity matrix \eqref{eq:def:matrix_algebra/matrix_multiplication/identity} are precisely the column vectors of the \hyperref[def:standard_basis]{standard basis}.
 
   Let \( A = \seq{ a_{ij} }_{i,j=1}^{m,n} \) be an \( m \times n \) matrix over \( R \). If we regard \( R^n \) as a set of column vectors, then \hyperref[thm:matrix_algebra/matrix_multiplication]{matrix multiplication} allows us to regard \( A \) as the function \( x \mapsto Ax \), which maps column vectors from \( R^n \) to column vectors in \( R^m \).
 
@@ -402,59 +429,217 @@ Although we will mostly be concerned with matrices over \hyperref[def:field]{fie
 \end{remark}
 
 \begin{proposition}\label{thm:matrix_spaces_are_free_modules}
-  The \hyperref[thm:matrix_algebra]{matrix algebra} \( R^{m \times n} \) is isomorphic as a semimodule to \( R^{mn} \).
+  The \hyperref[thm:matrix_algebra]{matrix algebra} \( R^{m \times n} \) is isomorphic as a \hyperref[def:semimodule]{semimodule} to \( R^{mn} \).
 \end{proposition}
 \begin{proof}
   \Fullref{rem:double_index_maps} gives us a semimodule isomorphism between \( m \times n \) matrices and \( mn \)-dimensional column vectors when extended to linear maps via \fullref{thm:free_semimodule_universal_property}.
 \end{proof}
 
 \begin{definition}\label{def:matrix_determinant}\mcite[215]{Knapp2016BasicAlgebra}
-  The \term{determinant} for the \hyperref[thm:matrix_algebra]{matrix algebra} \( R^{n \times n} \) over the semiring \( R \) is the function
+  The \term{determinant} for the \hyperref[thm:matrix_algebra]{matrix algebra} \( R^{n \times n} \) over the \hyperref[def:semiring/commutative]{commutative semiring} \( R \) is the function
   \begin{equation*}
     \begin{aligned}
       &\det: R^{n \times n} \to R \\
-      &\det(\seq{ a_{i,j} }_{i,j=1}^n) \coloneqq \sum_{p \in S_n} \sgn(p) \prod_{i=1}^n a_{i,p(i)},
+      &\det(\seq{ a_{i,j} }_{i,j=1}^n) \coloneqq \sum_{\sigma \in S_n} \sgn(\sigma) \prod_{i=1}^n a_{i,\sigma(i)},
     \end{aligned}
   \end{equation*}
   where \( S_n \) is the \hyperref[def:symmetric_group]{symmetric group} and \( \sgn \) is the \hyperref[def:permutation_parity]{sign} of the permutation \( p \).
 \end{definition}
 
+\begin{definition}\label{def:symmetric_function}\mimprovised
+  Given a function \( f: X^n \to Y \), where \( X \) and \( Y \) are \hyperref[def:set]{plain sets}, we say that \( f \) is \term{symmetric} if, for any \hyperref[def:symmetric_group/permutation]{permutation} \( \sigma \in S_n \), we have
+  \begin{equation*}
+    f(x_1, \ldots, x_n) = f(x_{\sigma(1)}, \ldots, x_{\sigma(n)}).
+  \end{equation*}
+
+  A permutation can be decomposed into \hyperref[def:symmetric_group/transposition]{transpositions} due to \fullref{thm:permutation_decomposition}. Hence, the above condition reduces to the simpler condition of \( f \) being invariant with respect to swapping any two arguments. That is,
+  \begin{equation*}
+    f(\ldots, x_{i-1}, \fbox{\( x_i \)}, x_{i+1}, \cdots, x_{j-1}, \fbox{\( x_j \)}, x_{j+1}, \ldots)
+    =
+    f(\ldots, x_{i-1}, \fbox{\( x_j \)}, x_{i+1}, \cdots, x_{j-1}, \fbox{\( x_i \)}, x_{j+1}, \ldots).
+  \end{equation*}
+
+  In the case where \( n = 2 \), this reduces to the simple condition
+  \begin{equation*}
+    f(x, y) = f(y, x).
+  \end{equation*}
+
+  Symmetric functions should not be confused with symmetric binary relations defined in \fullref{def:binary_relation/symmetric}.
+\end{definition}
+
+\begin{definition}\label{def:antisymmetric_function}\mimprovised
+  Given a function \( f: X^n \to Y \), where \( X \) is a \hyperref[def:set]{plain set} and \( Y \) is an \hyperref[rem:additive_magma]{additive group}, we say that \( f \) is \term{antisymmetric} if, for any \hyperref[def:symmetric_group/permutation]{permutation} \( \sigma \in S_n \), we have
+  \begin{equation*}
+    f(x_1, \ldots, x_n) = \sgn(\sigma) \cdot f(x_{\sigma(1)}, \ldots, x_{\sigma(n)}).
+  \end{equation*}
+
+  A permutation can be decomposed into \hyperref[def:symmetric_group/transposition]{transpositions} due to \fullref{thm:permutation_decomposition}. Hence, the above condition reduces to the simpler condition of \( f \) changing sign when swapping any two arguments. That is,
+  \begin{equation*}
+    f(\ldots, x_{i-1}, \fbox{\( x_i \)}, x_{i+1}, \cdots, x_{j-1}, \fbox{\( x_j \)}, x_{j+1}, \ldots)
+    =
+    -f(\ldots, x_{i-1}, \fbox{\( x_j \)}, x_{i+1}, \cdots, x_{j-1}, \fbox{\( x_i \)}, x_{j+1}, \ldots).
+  \end{equation*}
+
+  In the case where \( n = 2 \), this reduces to the simple condition
+  \begin{equation*}
+    f(x, y) = -f(y, x).
+  \end{equation*}
+
+  Antisymmetric functions should not be confused with antisymmetric binary relations defined in \fullref{def:binary_relation/antisymmetric}.
+\end{definition}
+
+\begin{definition}\label{def:alternating_function}\mimprovised
+  Given a commutative ring \( R \), and \( R \)-module \( M \) and a \hyperref[def:multilinear_function]{multilinear function} \( f: M \to R \), we say that \( f \) is \term{alternating} if, \( x_i = x_j \) implies that
+  \begin{equation*}
+    f(x_1, \ldots, x_i, \ldots, x_j, \ldots x_n) = 0.
+  \end{equation*}
+\end{definition}
+
+\begin{proposition}\label{thm:alternating_multilinear_is_antisymmetric}
+  If a \hyperref[def:multilinear_function]{multilinear map} is \hyperref[def:alternating_function]{alternating}, it is \hyperref[def:antisymmetric_function]{antisymmetric}. The converse holds if \( 2 \) is a unit.
+\end{proposition}
+\begin{proof}
+  \SufficiencySubProof If \( f \) is an alternating multilinear map, then
+  \begin{equation*}
+    0
+    =
+    f(\cdots, x_i + x_j, \cdots, x_i + x_j, \cdots)
+    =
+    f(\cdots, x_i, \cdots, x_j, \cdots)
+    +
+    f(\cdots, x_j, \cdots, x_i, \cdots).
+  \end{equation*}
+
+  Therefore,
+  \begin{equation*}
+    f(\cdots, x_i, \cdots, x_j, \cdots)
+    =
+    -f(\cdots, x_j, \cdots, x_i, \cdots).
+  \end{equation*}
+
+  \NecessitySubProof If \( f \) is an antisymmetric multilinear map, then
+  \begin{equation*}
+    0
+    =
+    f(\cdots, x_i + x_i, x_i, \cdots)
+    =
+    2 f(\cdots, x_i, x_i, \cdots).
+  \end{equation*}
+
+  If \( 2 \) is a unit, this implies
+  \begin{equation*}
+    f(\cdots, x_i, x_i, \cdots) = 0.
+  \end{equation*}
+\end{proof}
+
+\begin{proposition}\label{thm:determinant_on_columns}
+  In the \hyperref[thm:matrix_algebra]{matrix algebra} \( R^{n \times n} \) over the commutative ring \( R \), the determinant function \( \det: R^{n \times n} \to R \) can be regarded as a function that maps \( n \) column vectors from \( R^n \) to \( R \). That is,
+  \begin{equation}\label{eq:thm:determinant_on_columns}
+    \det(x_1, \cdots, x_n) = \sum_{\sigma \in S_n} \sgn(\sigma) \prod_{i=1}^n \pi_{\sigma(i)} (x_i).
+  \end{equation}
+
+  The determinant is an \hyperref[def:alternating_function]{alternating} \hyperref[def:multilinear_function]{multilinear function} on columns.
+\end{proposition}
+\begin{proof}
+  \SubProof{Proof of multilinearity} Due to linearity of the coordinate projection functionals \( \pi_i \) and due to distributivity in \( R \), for every \( j \) we have
+  \begin{align*}
+    &\phantom{{}={}}
+    \det(\cdots, x_{j-1}, ty + rz, x_{j+1}, \cdots)
+    = \\ &=
+    \sum_{\sigma \in S_n} \sgn(\sigma) \cdot \pi_{\sigma(j)} (ty + rz) \prod_{i \neq j} \pi_{\sigma(i)} (x_i)
+    = \\ &=
+    t \sum_{\sigma \in S_n} \sgn(\sigma) \cdot \pi_{\sigma(j)} (y) \prod_{i \neq j} \pi_{\sigma(i)} (x_i) + r \sum_{\sigma \in S_n} \sgn(\sigma) \cdot \pi_{\sigma(j)} (z) \prod_{i \neq j} \pi_{\sigma(i)} (x_i)
+    = \\ &=
+    t \cdot \det(\cdots, y, \cdots) + r \cdot \det(\cdots, z, \cdots).
+  \end{align*}
+
+  \SubProof{Proof of alternation} If \( x_i = x_j \), then for every even (resp. odd) permutation \( \sigma \), the permutation \( \cycle{i, j} \bincirc \sigma \) is odd (resp. even), and hence they cancel out in the sum \eqref{eq:thm:determinant_on_columns}. This holds for every permutation, hence it remains for the determinant to be zero.
+\end{proof}
+
+\begin{definition}\label{def:transpose_matrix}
+  The \term{transpose matrix} of
+  \begin{equation*}
+    A = \begin{pmatrix}
+      a_{1,1} & a_{1,2} & \cdots & a_{1,n} \\
+      a_{2,1} & a_{2,2} & \cdots & a_{2,n} \\
+      \vdots  & \vdots  & \ddots & \vdots  \\
+      a_{m,1} & a_{m,2} & \cdots & a_{m,n}
+    \end{pmatrix}
+  \end{equation*}
+  is defined as
+  \begin{equation*}
+    A^T = \begin{pmatrix}
+      a_{1,1} & a_{1,2} & \cdots & a_{n,1} \\
+      a_{2,1} & a_{2,2} & \cdots & a_{n,2} \\
+      \vdots  & \vdots  & \ddots & \vdots  \\
+      a_{1,m} & a_{2,m} & \cdots & a_{n,m}
+    \end{pmatrix}.
+  \end{equation*}
+
+  A matrix that is equal to its transpose is called \term{symmetric}.
+\end{definition}
+
 \begin{proposition}\label{thm:def:matrix_determinant}
-  \hyperref[def:matrix_determinant]{Determinants} have the following basic properties:
+  In the \hyperref[thm:matrix_algebra]{matrix algebra} \( R^{n \times n} \) over the commutative ring \( R \), the \hyperref[def:matrix_determinant]{determinant} as function on matrices has the following basic properties:
   \begin{thmenum}
     \thmitem{thm:def:matrix_determinant/transpose} \( \det(A^T) = \det(A) \).
-    \thmitem{thm:def:matrix_determinant/homogeneous} \( \det(tA) = t\det(A) \).
-    \thmitem{thm:def:matrix_determinant/multilinear} The determinant is \hyperref[def:multilinear_function]{multilinear} with respect to the columns of the matrix. More precisely,
-    \begin{equation*}
-      \det \parens*
-      {
-        \begin{array}{c | c | c}
-          \cdots & t x + r y & \cdots
-        \end{array}
-      }
-      =
-      t \cdot \det \parens*
-      {
-        \begin{array}{c | c | c}
-          \cdots & x & \cdots
-        \end{array}
-      }
-      +
-      r \cdot \det \parens*
-      {
-        \begin{array}{c | c | c}
-          \cdots & y & \cdots
-        \end{array}
-      }.
-    \end{equation*}
-
-    Due to \fullref{thm:def:matrix_determinant/transpose}, the determinant is also multilinear with respect to the rows of the matrix.
-
-    \thmitem{thm:def:matrix_determinant/homomorphism} \( \det(AB) = \det(A) \cdot \det(B) \).
+    \thmitem{thm:def:matrix_determinant/homogeneous} \( \det(tA) = t^n \cdot \det(A) \).
+    \thmitem{thm:def:matrix_determinant/homomorphism}\mcite[sec. 6.7]{Тыртышников2004Лекции} \( \det(AB) = \det(A) \cdot \det(B) \).
 
     That is, \( \det: R^{n \times n} \to R \) is a \hyperref[def:monoid/homomorphism]{monoid homomorphism} from the \hyperref[def:semiring]{multiplicative monoid} of the ring \( R^{n \times n} \) to the multiplicative monoid of \( R \).
   \end{thmenum}
 \end{proposition}
+\begin{proof}
+  \SubProofOf{thm:def:matrix_determinant/transpose} The inverse of any permutation in \( S_n \) is also a permutation in \( S_n \), hence
+  \begin{equation*}
+    \det(A^T)
+    =
+    \sum_{\sigma \in S_n} \sgn(\sigma) \prod_{i=1}^n a_{\sigma(i),i}
+    =
+    \sum_{\sigma \in S_n} \sgn(\sigma^{-1}) \prod_{i=1}^n a_{i,\sigma^{-1}(i)}
+    =
+    \det(A).
+  \end{equation*}
+
+  \SubProofOf{thm:def:matrix_determinant/homogeneous} Follows from \fullref{thm:determinant_on_columns}.
+
+  \SubProofOf{thm:def:matrix_determinant/homomorphism} The \( j \)-th column of the product \( C = AB \) is
+  \begin{equation*}
+    c_{\anon*,j}
+    =
+    \sum_{i=1}^n b_{i,j} a_{\anon*,i}
+    =
+    \begin{pmatrix}
+      \sum_{i=1}^n a_{1,i} b_{i,j} \\
+      \vdots \\
+      \sum_{i=1}^n a_{n,i} b_{i,j} \\
+    \end{pmatrix}.
+  \end{equation*}
+
+  Since the determinant is a multilinear function on columns,
+  \begin{balign*}
+    \det(c_{\anon*,1}, \cdots, c_{\anon*,n})
+    &=
+    \det\parens*{ \sum_{i_1=1}^n b_{i_1,1} a_{\anon*,i_1}, \cdots, \sum_{i_n=1}^n b_{i_n,n} a_{\anon*,i_n} }
+    = \\ &=
+    \sum_{i_1=1}^n b_{i_1,1} \det\parens*{ a_{\anon*,i_1}, \cdots, \sum_{i_n=1}^n b_{i_n,n} a_{\anon*,i_n} }
+    = \\ &=
+    \sum_{i_1=1}^n b_{i_1,1} \cdots \sum_{i_n=1}^n b_{i_n,n} \det(a_{\anon*,i_1}, \cdots, a_{\anon*,i_n})
+    = \\ &=
+    \sum_{i_1=1}^n \cdots \sum_{i_n=1}^n b_{i_1,1} \cdots b_{i_n,n} \det(a_{\anon*,i_1}, \cdots, a_{\anon*,i_n}).
+  \end{balign*}
+
+  Since the determinant is \hyperref[def:alternating_function]{alternating} on columns, \( \det(a_{\anon*,i_1}, \cdots, a_{\anon*,i_n}) \) is zero when not all of \( i_1, \ldots, i_n \) are distinct. They are necessarily distinct if the indices are given by a permutation from \( S_n \). Therefore,
+  \begin{balign*}
+    \det(AB)
+    &=
+    \sum_{\sigma \in S_n} \prod_{i=1}^n a_{i,\sigma(i)} \cdot \sigma(a_{\anon*, \sigma(1)}, \ldots, a_{\anon*, \sigma(n)})
+    = \\ &=
+    \sum_{\sigma \in S_n} \prod_{i=1}^n a_{i,\sigma(i)} \cdot \sgn(\sigma) \cdot \sigma(a_{\anon*, 1}, \ldots, a_{\anon*, n})
+    = \\ &=
+    \det(B) \det(A).
+  \end{balign*}
+\end{proof}
 
 \begin{example}\label{ex:vandermonde_matrix}\mcite[corr. 2.37]{Knapp2016BasicAlgebra}
   The matrix
