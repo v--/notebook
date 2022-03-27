@@ -437,13 +437,15 @@ Although we will mostly be concerned with matrices over \hyperref[def:field]{fie
 
 \begin{definition}\label{def:matrix_determinant}\mcite[215]{Knapp2016BasicAlgebra}
   The \term{determinant} for the \hyperref[thm:matrix_algebra]{matrix algebra} \( R^{n \times n} \) over the \hyperref[def:semiring/commutative]{commutative semiring} \( R \) is the function
-  \begin{equation*}
+  \begin{equation}\label{eq:def:matrix_determinant}
     \begin{aligned}
       &\det: R^{n \times n} \to R \\
       &\det(\seq{ a_{i,j} }_{i,j=1}^n) \coloneqq \sum_{\sigma \in S_n} \sgn(\sigma) \prod_{i=1}^n a_{i,\sigma(i)},
     \end{aligned}
-  \end{equation*}
-  where \( S_n \) is the \hyperref[def:symmetric_group]{symmetric group} and \( \sgn \) is the \hyperref[def:permutation_parity]{sign} of the permutation \( p \).
+  \end{equation}
+  where \( S_n \) is the \hyperref[def:symmetric_group]{symmetric group} and \( \sgn \) is the \hyperref[def:permutation_parity]{sign} of the permutation \( \sigma \).
+
+  See the proof of \fullref{thm:determinant_on_columns} for a justification of the definition.
 \end{definition}
 
 \begin{definition}\label{def:symmetric_function}\mimprovised
@@ -538,9 +540,11 @@ Although we will mostly be concerned with matrices over \hyperref[def:field]{fie
     \det(x_1, \cdots, x_n) = \sum_{\sigma \in S_n} \sgn(\sigma) \prod_{i=1}^n \pi_{\sigma(i)} (x_i).
   \end{equation}
 
-  The determinant is an \hyperref[def:alternating_function]{alternating} \hyperref[def:multilinear_function]{multilinear function} on columns.
+  The determinant is an \hyperref[def:alternating_function]{alternating} \hyperref[def:multilinear_function]{multilinear function} on columns. Furthermore, it is the unique alternating multilinear function \( f(x_1, \ldots, x_n) \) such that \( f(e_1, \ldots, e_n) = 1 \), where \( e_1, \ldots, e_n \) are vectors of the \hyperref[def:standard_basis]{standard basis} in \( R^n \).
 \end{proposition}
 \begin{proof}
+  Let \( \pi_1, \ldots, \pi_n \) be the \hyperref[def:basis_decomposition]{projection functionals} corresponding to the \hyperref[def:standard_basis]{standard basis} \( e_1, \ldots, e_n \).
+
   \SubProof{Proof of multilinearity} Due to linearity of the coordinate projection functionals \( \pi_i \) and due to distributivity in \( R \), for every \( j \) we have
   \begin{align*}
     &\phantom{{}={}}
@@ -554,6 +558,45 @@ Although we will mostly be concerned with matrices over \hyperref[def:field]{fie
   \end{align*}
 
   \SubProof{Proof of alternation} If \( x_i = x_j \), then for every even (resp. odd) permutation \( \sigma \), the permutation \( \cycle{i, j} \bincirc \sigma \) is odd (resp. even), and hence they cancel out in the sum \eqref{eq:thm:determinant_on_columns}. This holds for every permutation, hence it remains for the determinant to be zero.
+
+  \SubProof{Proof of \( \det(I_n) = 1 \)} Note that
+  \begin{equation*}
+    \prod_{i=1}^n \pi_i (e_{\sigma(i)}) \neq 0
+  \end{equation*}
+  if and only if \( i = \sigma(i) \) for every \( i = 1, \ldots, n \). This only holds for the identity permutation, hence
+  \begin{equation*}
+    \det(e_1, \ldots, e_n) = \prod_{i=1}^n \pi_i(e_i) = \prod_{i=1}^n 1 = 1.
+  \end{equation*}
+
+  \SubProof{Proof of uniqueness} Suppose that \( f(x_1, \ldots, x_n) \) is an alternating multilinear function such that \( f(e_1, \ldots, e_n) = 1 \).
+
+  For an arbitrary column vector \( x_j \) in \( R^n \), we have
+  \begin{equation*}
+    x_j = \sum_{i=1}^n \pi_i(x_j) \cdot e_i.
+  \end{equation*}
+
+  Then
+  \begin{align*}
+    f(x_1, \ldots, x_n)
+    &=
+    f\parens*{ \sum_{i_1=1}^n \pi_{i_1}(x_1) \cdot e_{i_1}, \ldots, \sum_{i_n=1}^n \pi_{i_n}(x_n) \cdot e_{i_n} }
+    = \\ &=
+    \sum_{i_1=1}^n \pi_{i_1}(x_1) \cdots \sum_{i_n=1}^n \pi_{i_n}(x_n) f(e_{i_1}, \ldots, e_{i_n})
+    = \\ &=
+    \sum_{\sigma \in S_n} \pi_{\sigma(i)}(x_i) f(e_{\sigma(1)}, \ldots, e_{\sigma(n)}).
+  \end{align*}
+
+  The last step is valid because \( f \) is \hyperref[def:alternating_function]{alternating} and thus \( f(e_{i_1}, \cdots, e_{i_n}) \) is zero when not all of \( i_1, \ldots, i_n \) are distinct, and they are necessarily distinct if the indices are given by a permutation from \( S_n \).
+
+  Finally, since \( f \) is \hyperref[def:antisymmetric_function]{antisymmetric} due to \fullref{thm:alternating_multilinear_is_antisymmetric},
+  \begin{equation*}
+    f(e_{\sigma(1)}, \ldots, e_{\sigma(n)}) = \sgn(\sigma) \underbrace{f(e_1, \ldots, e_n)}_{1 \T*{by assumption}} = \sgn(\sigma).
+  \end{equation*}
+
+  Therefore,
+  \begin{equation*}
+    f(x_1, \ldots, x_n) = \det(x_1, \ldots, x_n).
+  \end{equation*}
 \end{proof}
 
 \begin{definition}\label{def:transpose_matrix}
@@ -641,149 +684,136 @@ Although we will mostly be concerned with matrices over \hyperref[def:field]{fie
   \end{balign*}
 \end{proof}
 
-\begin{example}\label{ex:vandermonde_matrix}\mcite[corr. 2.37]{Knapp2016BasicAlgebra}
-  The matrix
-  \begin{equation*}
-    V_n(x_0, x_1, \ldots, x_n)
-    \coloneqq
-    \begin{pmatrix}
-      x_0^0  & x_0^1  & x_0^2  & \cdots & x_0^n  \\
-      x_1^0  & x_1^1  & x_1^2  & \cdots & x_1^n  \\
-      \vdots & \vdots & \vdots & \ddots & \vdots \\
-      x_n^0  & x_n^1  & x_n^2  & \cdots & x_n^n
-    \end{pmatrix}.
-  \end{equation*}
-  is called the \term{Vandermonde matrix} corresponding to \( x_0, \ldots, x_n \).
+\begin{definition}\label{def:triangular_matrix}
+  An \term{upper triangular matrix} over a semiring is one with zeros below its \hyperref[def:matrix_diagonal]{main diagonal}. More precisely, \( U = \seq{ u_{i,j} }_{i,j=1}^{m,n} \) is an upper triangular matrix if \( u_{i,j} = 0 \) when \( i > j \).
 
-  Its determinant is
+  Similarly, a \term{lower triangular matrix} is one with zeros above its main diagonal.
+
+  A matrix that is either upper or lower triangular is simply referred to as \enquote{triangular}.
+
+  A matrix that is both upper and lower triangular is a \hyperref[def:matrix_diagonal]{diagonal matrix}.
+\end{definition}
+
+\begin{proposition}\label{thm:def:triangular_matrix}
+  \hyperref[def:triangular_matrix]{Triangular matrices} have the following basic properties:
+  \begin{thmenum}
+    \thmitem{thm:def:triangular_matrix/product} The \hyperref[def:matrix_algebra/matrix_multiplication]{product} of upper (resp. lower) triangular matrices is upper (resp. lower).
+
+    Consequently, the product of diagonal matrices is a diagonal matrix.
+
+    \thmitem{thm:def:triangular_matrix/determinant} The \hyperref[def:matrix_determinant]{determinant} of an upper or lower triangular square matrix is the product of the elements on its \hyperref[def:matrix_diagonal]{main diagonal}.
+  \end{thmenum}
+\end{proposition}
+\begin{proof}
+  \SubProofOf{thm:def:triangular_matrix/product} Let \( A \) be an \( m \times k \) upper triangular matrix and \( B \) be a \( k \times n \) upper triangular matrix. The \( (i, j) \)-th element of \( C = AB \) is
   \begin{equation*}
-    \det(V_n) = \prod_{i < j} (r_j - r_i).
+    \sum_{l=1}^k a_{i,l} b_{l,j}.
   \end{equation*}
 
-  Hence, the determinant is nonzero if and only if all of \( x_0, \ldots, x_n \) are distinct.
-\end{example}
+  Since \( A \) and \( B \) are upper triangular, we have \( b_{l,j} = 0 \) whenever \( l > j \) and \( a_{i,l} = 0 \) whenever \( l < i \). Thus, \( a_{i,l} b_{l,j} = 0 \) if either condition holds. If \( i > j \), then either \( l > j \) or \( l < j < i \), implying that \( a_{i,l} b_{l,j} = 0 \). Therefore, \( AB \) is also upper triangular.
+
+  The proof for lower triangular matrices is analogous.
+
+  \SubProofOf{thm:def:triangular_matrix/determinant} Let \( A \) be an \( n \times n \) upper triangular matrix. Let \( \sigma \in S_n \) be any permutation. Then \( a_{i,\sigma(i)} = 0 \) when \( i > \sigma(i) \). Hence, the only permutation for which the product \( \prod_{i=1}^n a_{i,\sigma(i)} \) is nonzero is the identity permutation. Therefore,
+  \begin{equation*}
+    \det(A) = \prod_{i=1}^n a_{i,i}.
+  \end{equation*}
+\end{proof}
 
 \begin{definition}\label{def:inverse_matrix}
-  Let \( A \) be a square matrix of order \( n \) over a semiring \( R \). We say that \( B \) is an \term{inverse matrix} of \( A \) if
-  \begin{equation*}
-    AB = BA = E_n.
-  \end{equation*}
+  Let \( A \) be an \( m \times n \) matrix over a semiring \( R \). We say that \( B \) is a \term{left inverse matrix} of \( A \) if \( BA \) is the identity matrix \( I_n \) and a \term{right inverse matrix} if \( AB \) is \( I_n \).
 
-  An inverse matrix, if it exists, is unique. We denote this inverse of \( A \) by \( A^{-1} \).
+  These are precisely the left and right inverse linear maps in the correspondence described in \fullref{thm:matrix_and_linear_function_algebras}.
 
-  The set of all invertible matrices of order \( n \) over \( R \) is called the \term{general linear group} and is denoted by \( \op{GL}_n(R) \). It forms a group with respect to matrix multiplication.
+  If \( B \) is both a left and a right inverse of \( A \), we say that it is a \term{two-sided inverse} or simply \term{inverse}. An inverse matrix, if it exists, is unique. We denote this inverse of \( A \) by \( A^{-1} \).
 
-  If \( R \) is commutative, we also consider the \term{special linear group} \( \op{SL}_n(R) \) of matrices with \hyperref[def:matrix_determinant]{determinant} \( 1 \).
+  We say that \( A \) is \term{invertible} if an inverse exists, and \term{singular} otherwise.
 \end{definition}
 \begin{proof}
   The inverse is unique by \fullref{thm:monoid_inverse_unique}.
 \end{proof}
 
-\begin{proposition}\label{thm:general_linear_group_isomorphic_to_automorphism_group}
-  Fix a semiring \( R \). The general linear group \( \op{GL}_n(R) \) is isomorphic to the group of all invertible linear transformations over \( R^n \) under composition.
+\begin{definition}\label{def:elementary_matrix}
+  We introduce the following three types of \hyperref[def:inverse_matrix]{invertible} \( n \times n \) matrices, collectively known as \term{elementary matrices}:
+  \begin{thmenum}
+    \thmitem{def:elementary_matrix/permutation} A \term{permutation matrix} is obtained by permuting the columns \( e_1, \ldots, e_n \) of the identity matrix \( I_n \). Every permutation \( \sigma \in S_n \) corresponds to exactly one permutation matrix, namely
+    \begin{equation*}
+      \parens*
+      {
+        \begin{array}{c|c|c}
+          e_{\sigma(1)} & \cdots & e_{\sigma(n)}
+        \end{array}
+      }.
+    \end{equation*}
+
+    The inverse of a permutation matrix is the matrix corresponding to its inverse permutation.
+
+    \thmitem{def:elementary_matrix/scaling} A \term{scaling matrix} is a \hyperref[def:matrix_diagonal]{diagonal matrix} with at most one entry that is a \hyperref[def:divisibility/unit]{unit} possible different from \( 1 \). That is,
+    \begin{equation*}
+      \begin{pmatrix}
+        1      & \cdots & 0       & 0      & 0      & \cdots & 0      \\
+        \vdots & \ddots &         & \vdots &        &        & \vdots \\
+        0      &        & 1       & 0      &        &        & 0      \\
+        0      & \cdots & 0       & a      & 0      & \cdots & 0      \\
+        0      &        &         & 0      & 1      &        & 0      \\
+        \vdots &        &         & \vdots &        & \ddots & \vdots \\
+        0      & \cdots & 0       & 0      & 0      & \cdots & 1
+      \end{pmatrix}
+    \end{equation*}
+    for some unit \( a \neq 0 \).
+
+    The inverse of the above matrix is the same matrix with \( a \) replaced by its multiplicative inverse \( a^{-1} \).
+
+    \thmitem{def:elementary_matrix/transvection} A \term{transvection matrix} is obtained by adding a single off-diagonal entry to the identity matrix. Such a matrix has the form
+    \begin{equation*}
+      \begin{pmatrix}
+        1      & \cdots & 0       & \cdots & 0      & \cdots & 0      \\
+        \vdots & \ddots &         &        &        &        & \vdots \\
+        0      &        & 1       & 0      &        &        &        \\
+        \vdots &        & \vdots  & 1      & 0      & \cdots & 0      \\
+        0      & \cdots & a       & \cdots & 1      &        &        \\
+        \vdots &        & \vdots  &        &        & \ddots & \vdots \\
+        0      & \cdots & 0       & \cdots & 0      & \cdots & 1
+      \end{pmatrix}.
+    \end{equation*}
+
+    The inverse of this matrix is the same matrix with \( a \) replaced by its additive inverse \( -a \).
+  \end{thmenum}
+\end{definition}
+
+\begin{proposition}\label{thm:def:elementary_matrix}
+  \hyperref[def:elementary_matrix]{Elementary matrices} have the following basic properties:
+  \begin{thmenum}
+    \thmitem{thm:def:elementary_matrix/permutation_product} The product of \hyperref[def:elementary_matrix/permutation]{permutation matrices} is a permutation matrix.
+
+    \thmitem{thm:def:elementary_matrix/permutation_determinant} The \hyperref[def:matrix_determinant]{determinant} of a permutation matrix is the \hyperref[def:permutation_parity]{sign} of the \hyperref[def:symmetric_group/permutation]{permutation}.
+
+    \thmitem{thm:def:elementary_matrix/transvection_product} The product of the \hyperref[def:elementary_matrix/transvection]{transvection matrices} \( A \) and \( B \) with nonzero off-diagonal entries \( a_{i_A,j_A} \) and \( b_{i_B,j_B} \), correspondingly, is an identity matrix with nonzero off-diagonal entries \( a_{i_A,j_A} \) and \( b_{i_B,j_B} \).
+  \end{thmenum}
 \end{proposition}
 \begin{proof}
-  Follows from \fullref{thm:matrix_and_linear_function_algebras}.
-\end{proof}
+  \SubProofOf{thm:def:elementary_matrix/permutation_product} Trivial.
 
-\begin{definition}\label{def:orthogonal_matrix}
-  Let \( R \) be a semiring. We say that the square matrix \( A \) is \term{orthogonal} if \( A^T = A^{-1} \). If \( R \) is a commutative unital ring, the set of all orthogonal matrices of order \( n \) forms a subgroup of \( \op{GL}_n(R) \) called the \term{orthogonal group} \( \op{O}_n(R) \).
-\end{definition}
+  \SubProofOf{thm:def:elementary_matrix/permutation_determinant} As discussed in the proof of \fullref{thm:determinant_on_columns}, the determinant of any permutation of the vectors of the standard basis is the sign of the permutation.
 
-\begin{definition}\label{def:unitary_matrix}
-  We say that the complex square matrix \( A \) is \term{unitary} if \( A^\dagger = A^{-1} \). The set of all unitary matrices of order \( n \) is called the unitary group \( \op{U}_n \) and is a subgroup of \( \op{GL}_n(\co) \).
-\end{definition}
-
-\begin{definition}\label{def:matrix_column_and_row_space}
-  Fix a matrix \( A \in R^{n \times m} \) over a semiring \( R \). We define its \term{row space} as
+  \SubProofOf{thm:def:elementary_matrix/transvection_product} The \( (i, j) \)-th entry of the product \( C = AB \) is
   \begin{equation*}
-    \linspan \{ a_{i,-} \colon i = 1, \ldots, n \}
-  \end{equation*}
-  and its \term{column space} as
-  \begin{equation*}
-    \linspan \{ a_{-,j} \colon j = 1, \ldots, m \}.
-  \end{equation*}
-\end{definition}
-
-\begin{definition}\label{def:matrix_transpose}
-  Let \( A = \{ a_{i,j} \}_{i,j=1}^{n,m} \) be a matrix. We define its \term{transpose matrix} by \term{flipping it over its main diagonal}, that is,
-  \begin{equation*}
-    A^T \coloneqq \begin{pmatrix}
-      a_{1,1} & a_{2,1} & \cdots & a_{n,1} \\
-      a_{1,2} & a_{2,2} & \cdots & a_{n,2} \\
-      \vdots  & \vdots  & \ddots & \vdots  \\
-      a_{1,m} & a_{2,m} & \cdots & a_{n,m}
-    \end{pmatrix}.
-  \end{equation*}
-\end{definition}
-
-\begin{definition}\label{def:symmetric_matrix}
-  A square matrix \( A \) is said to be \term{symmetric} if \( A = A^T \).
-\end{definition}
-
-\begin{definition}\label{def:matrix_conjugate_transpose}
-  Let \( A \) be a complex matrix. We define its \term{conjugate transpose matrix} as
-  \begin{equation*}
-    A^\dagger \coloneqq \begin{pmatrix}
-      \overline{a_{1,1}} & \overline{a_{2,1}} & \cdots & \overline{a_{n,1}} \\
-      \overline{a_{1,2}} & \overline{a_{2,2}} & \cdots & \overline{a_{n,2}} \\
-      \vdots       & \vdots       & \ddots & \vdots       \\
-      \overline{a_{1,m}} & \overline{a_{2,m}} & \cdots & \overline{a_{n,m}}
-    \end{pmatrix}.
-  \end{equation*}
-\end{definition}
-
-\begin{definition}\label{def:hermitian_matrix}
-  If \( A \) is a complex matrix, we say that it is Hermitian if \( A = A^\dagger \).
-\end{definition}
-
-\begin{proposition}\label{thm:dual_linear_operator_matrix_transpose}
-  Let \( L: F^m \to F^n \) be a linear operator and let \( L^*: {F^n}^* \to {F^m}^* \) be its dual \hyperref[def:dual_linear_operator]{operator}.
-
-  If \( A \in F^{n \times m} \) is the matrix of \( L \), then its \hyperref[def:matrix_transpose]{transpose} \( A^T \) is the matrix of \( L^* \) when regarding \( L^* \) as an operator acting on column vectors.
-\end{proposition}
-\begin{proof}
-  Let \( l \in {F^n}^* \) be a linear functional regarded as a function and \( \vect l \) be the same functional regarded as a column \hyperref[rem:finite_dimensional_dual_space_isomorphism]{vector}. We have
-  \begin{equation*}
-    L^*(l)
-    =
-    l \circ L
-    =
-    (x \mapsto l(L(x)))
-    =
-    (x \mapsto \vect l^T Ax)
-    =
-    \vect l^T A.
+    c_{i,j} = \sum_{k=1}^n a_{i,k} b_{k,j}.
   \end{equation*}
 
-  Thus,
-  \begin{equation*}
-    L^*(l) = A^T \vect l,
-  \end{equation*}
-  i.e. the matrix \( A^T \) corresponds to the dual operator \( L^* \).
-\end{proof}
+  \begin{itemize}
+    \item If \( i = j \), \( c_{i,j} \) is clearly \( 1 \).
+    \item If \( i = i_A \) and \( j = j_A \), then
+    \begin{equation*}
+      a_{i_A,k} b_{k,j_A} = \begin{cases}
+        a_{i_A,j_A}, &i_A = j_A \\
+        0,           &i_A \neq j_A
+      \end{cases}.
+    \end{equation*}
 
-\begin{proposition}\label{thm:column_and_row_spaces_are_images}
-  Fix a semiring \( R \). Let \( L: R^m \to R^n \) be a linear map and let \( A \in R^{n \times m} \) be the corresponding \hyperref[thm:matrix_and_linear_function_algebras]{matrix}. The \hyperref[def:matrix_column_and_row_space]{column space} of \( A \) is isomorphic to the image \( \img(L) \) and the row space is isomorphic to \( \img(L^*) \).
-\end{proposition}
-\begin{proof}
-  The column space of \( A \) lies within \( R^{n \times 1} \), which is isomorphic to \( R^n \). We will assume that it is a subset of \( R^n \) and will prove that it is equal to \( \img(L) \).
+    Thus, \( c_{i_A,j_A} = a_{i_A,j_A} \).
 
-  Denote by \( e_1, \ldots, e_m \) the basis of \( R^m \). The \( j \)-th column \( a_{-,j} \) of \( A \) can be represented as
-  \begin{equation*}
-    A e_j = a_{-,j}.
-  \end{equation*}
-
-  Thus, \( a_{-,j} \in \img(L), j = 1, \ldots, m \). Since \( \img(L) \) is a linear subspace of \( R^n \), it contains the linear span of any finite collection of its vectors. Consequently, the column space of \( A \) is a subspace of \( \img(L) \).
-
-  To see the converse, let \( x \in \BbbR^m \). We have
-  \begin{equation*}
-    L(x) = Ax = \sum_{j=1}^m x_i A e_j = \sum_{j=1}^m a_{-,j}.
-  \end{equation*}
-
-  Hence, the image of any vector \( x \) under \( L \) is a linear combination of the columns of \( A \).
-
-  Thus, proves that the column space of \( A \) is equal to \( \img(L) \).
-
-  The proof that the row space is isomorphic to \( \img(L^*) \) is identical, noting that \( A^T \) corresponds to \( L^* \) by \fullref{thm:dual_linear_operator_matrix_transpose}.
+    \item Analogously, \( c_{i_B,j_B} = b_{i_B,j_B} \).
+    \item Otherwise, for \( k = 1, \ldots, n \), either \( a_{i,k} \) or \( b_{k,j} \) is zero, hence \( c_{i,j} \) also is.
+  \end{itemize}
 \end{proof}
