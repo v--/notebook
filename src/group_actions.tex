@@ -13,7 +13,6 @@
 
   A \term{monoid action} can be defined equivalently as:
   \begin{thmenum}
-
     \thmitem{def:monoid_action/homomorphism} A \hyperref[def:monoid/homomorphism]{homomorphism} from \( M \) to the \hyperref[def:endomorphism_monoid]{endomorphism monoid} \( \End(X) \).
 
     \thmitem{def:monoid_action/functor} A \hyperref[def:functor]{functor} from the \hyperref[def:monoid_delooping]{delooping} \( \cat{B}_M \) to \( \cat{C} \).
@@ -137,7 +136,7 @@
 
     \thmitem{def:symmetric_group/cycle} If there exists a finite sequence \( k_1, \ldots, k_m \) of distinct numbers such that \( \sigma(k_m) = k_1 \) and \( \sigma(k_{i+1}) = \sigma(k_i) \) for each \( i < m \), we say that the permutation is \term{cyclic} or a \term{cycle} of \term{length} \( m \). For brevity, we denote this cycle by \( \cycle{k_1, \cdots, k_m} \).
 
-    Cycles of length \( 2 \) are also called \term{transpositions}. Every \hyperref[def:symmetric_group/cycle]{transposition} is an \hyperref[def:set_with_involution]{involution}, and thus \( t = t^{-1} \) (as permutations).
+    We call cycles of length \( 1 \) \term{trivial cycles} or \term{loops} and cycles of length \( 2 \) --- \term{transpositions}. Every \hyperref[def:symmetric_group/cycle]{transposition} is an \hyperref[def:set_with_involution]{involution}, and thus a transposition is equal to its inverse permutation.
 
     \thmitem{def:symmetric_group/disjoint_cycle} If \( \cycle{k_1, \cdots, k_m} \) and \( \cycle{s_1, \cdots, s_l} \) are two cycles and if the sets \( \set{ k_1, \ldots, k_m } \) and \( \set{ s_1, \ldots, s_l } \) are disjoint, we say that the cycles themselves are \term{disjoint}.
 
@@ -149,7 +148,7 @@
 \end{definition}
 
 \begin{proposition}\label{thm:cycle_transposition_decomposition}
-  Every cycle \( \cycle{ k_1, \cdots, k_m } \) can be decomposed into the product of transpositions
+  Every nontrivial cycle \( \cycle{ k_1, \cdots, k_m } \) can be decomposed into the product of transpositions
   \begin{equation*}
     \cycle{ k_1, \cdots, k_m } = \cycle{ k_1, k_m } \bincirc \cycle{ k_1, k_{m-1} } \bincirc \cdots \bincirc \cycle{ k_1, k_2 }.
   \end{equation*}
@@ -164,7 +163,7 @@
 \begin{proof}
   We use induction on \( n \). The case \( n = 1 \) is trivial. Suppose that \( S_{n-1} \) has \( (n-1)! \) elements. Then \( S_n \) is obtained by permuting \( n \) with each element of \( S_{n-1} \). That is,
   \begin{equation*}
-    S_n = \set{ \cycle{ k, n } \bincirc p \given p \in S_{n-1} \T{and} 1 \leq k \leq n }.
+    S_n = \set{ \cycle{ k, n } \bincirc \sigma \given \sigma \in S_{n-1} \T{and} 1 \leq k \leq n }.
   \end{equation*}
 
   It follows that
@@ -288,21 +287,31 @@
   and thus \( \varphi \bincirc \psi \bincirc \varphi^{-1} \) is again an inner automorphism.
 \end{defproof}
 
-\begin{definition}\label{def:permutation_cycle_decomposition}\mimprovised
-  Let \( S_n \) be a \hyperref[def:symmetric_group]{symmetric group} and let \( \sigma \) be a permutation in \( S_n \). Consider the \hyperref[def:group_action]{group action}
+\begin{proposition}\label{thm:permutation_decomposition_existence}
+  Let \( S_n \) be a \hyperref[def:symmetric_group]{symmetric group} and let \( \sigma \) be a permutation in \( S_n \). Then there exists a finite sequence \( c_1, \ldots, c_m \) of nontrivial \hyperref[def:symmetric_group/disjoint_cycle]{disjoint cycles} such that
+  \begin{equation*}
+    \sigma = c_1 \bincirc \cdots \bincirc c_m.
+  \end{equation*}
+
+  We call this a \term{cycle decomposition} of \( \sigma \). Via \fullref{thm:cycle_transposition_decomposition}, this permutation can further be decomposed into a composition of individual transpositions. We call the latter a \term{transposition decomposition} of \( \sigma \).
+
+  Neither decomposition is unique. Nonetheless, existence is sufficient for most practical purposes, including permutation parity defined in \fullref{def:permutation_parity}.
+\end{proposition}
+\begin{proof}
+  Consider the \hyperref[def:group_action]{group action}
   \begin{equation*}
     \begin{aligned}
-      &\Phi^{(p)}: \braket{ p } \times \set{ 1, \ldots, n } \to \set{ 1, \ldots, n } \\
-      &\Phi^{(p)}_\sigma(k) \coloneqq \sigma(k)
+      &\Phi^{(\sigma)}: \braket{ \sigma } \times \set{ 1, \ldots, n } \to \set{ 1, \ldots, n } \\
+      &\Phi^{(\sigma)}_\sigma(k) \coloneqq \sigma(k)
     \end{aligned}
   \end{equation*}
-  of the \hyperref[def:first_order_generated_substructure]{generated subgroup} \( \braket{ p } \).
+  of the \hyperref[def:first_order_generated_substructure]{generated subgroup} \( \braket{ \sigma } \).
 
-  The \hyperref[def:group_action_orbit]{orbit} of \( k \) under \( \Phi^{(p)} \) is the set
+  The \hyperref[def:group_action_orbit]{orbit} of \( k \) under \( \Phi^{(\sigma)} \) is the set
   \begin{equation*}
-    O_\sigma(k) \coloneqq \set{ p^m(k) \given m \in \BbbZ }
+    O_\sigma(k) \coloneqq \set{ \sigma^m(k) \given m \in \BbbZ }
   \end{equation*}
-  of all numbers reachable from \( k \) via iterated application of \( \sigma \) or \( p^{-1} \). The family
+  of all numbers reachable from \( k \) via iterated application of \( \sigma \) or \( \sigma^{-1} \). The family
   \begin{equation*}
     \set{ O_\sigma(k) \given k = 1, \ldots, n }
   \end{equation*}
@@ -310,53 +319,57 @@
 
   Each orbit \( O \) has a smallest element \( o \); and \( O_\sigma(o) = O \). This smallest element uniquely identifies a cycle
   \begin{equation*}
-    \cycle{o, \sigma(o), p^2(o), \ldots, p^{c-1}(o)},
+    \cycle{o, \sigma(o), \sigma^2(o), \ldots, \sigma^{c-1}(o)},
   \end{equation*}
   where \( c \) is the cardinality of \( O_\sigma(o) \).
 
-  Cycles of length \( 1 \) are not useful to us since they represent fixed points of \( \sigma \); we ignore these cycles. We obtain a unique set of disjoint cycles for every permutation \( \sigma \) in \( S_n \), which we call the \term{cycle decomposition} of \( \sigma \). We denote this set by \( C_\sigma \).
-\end{definition}
-\begin{defproof}
+  Ignoring the trivial cycles, we obtain a unique set of disjoint nontrivial cycles for every permutation \( \sigma \) in \( S_n \), which we call the \term{cycle decomposition} of \( \sigma \). Denote this set by \( C_\sigma \).
+
   We must prove that \( C_\sigma \) is family of disjoint sets. Let \( O_\sigma(k_1) \) and \( O_\sigma(k_2) \) be two orbits.
 
-  Suppose that there exists a number \( k \in O_\sigma(k_2) \cap O_\sigma(k_1) \). Then there exist \( m_1, m_2 \leq n \) such that \( k = p^{m_1}(k_1) \) and \( k = p^{m_2}(k_2) \). Then
+  Suppose that there exists a number \( k \in O_\sigma(k_2) \cap O_\sigma(k_1) \). Then there exist \( m_1, m_2 \leq n \) such that \( k = \sigma^{m_1}(k_1) \) and \( k = \sigma^{m_2}(k_2) \). Then
   \begin{equation*}
-    k_1 = p^{-m_1}(k) = p^{-m_1}(p^{m_2}(k_2)) = p^{m_2 - m_1}(k_2),
+    k_1 = \sigma^{-m_1}(k) = \sigma^{-m_1}(\sigma^{m_2}(k_2)) = \sigma^{m_2 - m_1}(k_2),
   \end{equation*}
   and thus \( O_\sigma(k_2) \subseteq O_\sigma(k_1) \). We can analogously obtain the converse inclusion.
 
   Therefore, if two orbits have a nonempty intersection, they are equal.
-\end{defproof}
 
-\begin{proposition}\label{thm:permutation_decomposition}
-  Given a permutation \( \sigma \), for every ordering \( c_1, \ldots, c_m \) of the \hyperref[def:permutation_cycle_decomposition]{cycle decomposition} of \( \sigma \), we have
-  \begin{equation*}
-    p = c_1 \bincirc \cdots \bincirc c_m.
-  \end{equation*}
-
-  Via \fullref{thm:cycle_transposition_decomposition}, this permutation can further be decomposed into a composition of individual transpositions.
-\end{proposition}
-\begin{proof}
-  We will use induction on \( m \). The case \( m = 0 \) is trivial. For the inductive hypothesis, note that \( c_1^{-1} p \) has as cycles \( c_2, \ldots, c_m \) because all the numbers in \( c_1 \) are fixed points of \( c_1^{-1} p \). Thus, the inductive hypothesis holds for \( c_1^{-1} p \).
+  Finally, we will use induction on \( m \) to show that these cycles give us \( \sigma \). The case \( m = 0 \) is trivial. For the inductive hypothesis, note that \( c_1^{-1} \sigma \) has as cycles \( c_2, \ldots, c_m \) because all the numbers in \( c_1 \) are fixed points of \( c_1^{-1} \sigma \). Thus, the inductive hypothesis holds for \( c_1^{-1} \sigma \).
 
   From
   \begin{equation*}
-    c_1^{-1} p = c_2 \bincirc \cdots \bincirc c_m
+    c_1^{-1} \sigma = c_2 \bincirc \cdots \bincirc c_m
   \end{equation*}
   it follows that
   \begin{equation*}
-    p = c_1 \bincirc \cdots \bincirc c_m.
+    \sigma = c_1 \bincirc \cdots \bincirc c_m.
   \end{equation*}
 \end{proof}
 
-\begin{definition}\label{def:permutation_parity}
-  Let \( C_\sigma \) be the \hyperref[def:permutation_cycle_decomposition]{cycle decomposition} of \( \sigma \). We say that \( \sigma \) is an \term{even permutation} if the sum
-  \begin{equation*}
-    \sum_{c \in C_\sigma} (\len(c) - 1)
-  \end{equation*}
-  is an even number; and likewise for \term{odd permutations}. In particular, a non-identity cycle \( \sigma \) is an even permutation if and only if \( \len(\sigma) \) is \hi{odd}.
+\begin{lemma}\label{thm:permutation_parity_correctness}
+  If a \hyperref[def:symmetric_group/permutation]{permutation} \( \sigma \in S_n \) can be decomposed into \hyperref[def:symmetric_group/cycle]{transpositions} as both
+  \begin{equation}\label{eq:thm:permutation_parity_correctness/k}
+    \sigma = \underbrace{\cycle{ k_1, k_2 } \bincirc \cycle{ k_3, k_4 } \bincirc \cdots \bincirc \cycle{ k_{2n-1}, k_{2n} }}_{n \T*{transpositions}}
+  \end{equation}
+  and
+  \begin{equation}\label{eq:thm:permutation_parity_correctness/l}
+    \sigma = \underbrace{\cycle{ l_1, l_2 } \bincirc \cycle{ l_3, l_4 } \bincirc \cdots \bincirc \cycle{ l_{2m-1}, l_{2m} }}_{m \T*{transpositions}},
+  \end{equation}
+  then \( n - m \) is an even number.
+\end{lemma}
+\begin{proof}
+  We will use induction on \( n \). First consider the base case \( n = 0 \). Then \( \sigma \) is the identity. Hence, every transposition in \eqref{eq:thm:permutation_parity_correctness/l} should be present twice so that its action cancels out. Therefore, \( m \) is an even number.
 
-  The decomposition of individual cycles from \fullref{thm:cycle_transposition_decomposition} implies that the above is precisely the total number of transpositions in the decomposition of all the cycles.
+  Now suppose that the statement holds for \( n - 1 \). Add (compose on the right) the last transposition \( \cycle{ k_{2n-1}, k_{2n} } \) of \eqref{eq:thm:permutation_parity_correctness/k} to both \eqref{eq:thm:permutation_parity_correctness/k} and \eqref{eq:thm:permutation_parity_correctness/l}. The obtained permutations are obviously equal. Furthermore, since \( \cycle{ k_{2n-1}, k_{2n} } \) is its own inverse, we can just as well remove \( \cycle{ k_{2n-1}, k_{2n} } \) from \eqref{eq:thm:permutation_parity_correctness/k} to obtain a decomposition into \( n - 1 \) (rather than \( n + 1 \)) transpositions.
+
+  By the inductive hypothesis, \( (n - 1) - (m + 1) = n - m - 2 \) is an even number. Therefore, \( n - m \) is also an even number.
+\end{proof}
+
+\begin{definition}\label{def:permutation_parity}
+  We say that a \hyperref[def:symmetric_group/permutation]{permutation} \( \sigma \in S_n \) is \term{even} (resp. \term{odd}) if a decomposition of \( \sigma \) into \hyperref[def:symmetric_group/cycle]{transpositions} has an even (resp. odd) number of transpositions.
+
+  The existence of such a decomposition follows from \fullref{thm:permutation_decomposition_existence} and the correctness of the definition follows from \fullref{thm:permutation_parity_correctness}.
 
   We correspondingly define the \term{sign} of a permutation as
   \begin{equation*}
@@ -370,17 +383,6 @@
   \end{equation*}
 \end{definition}
 
-\begin{proposition}\label{thm:parity_of_permutation_composition}
-  If \( \sigma \) and \( \tau \) are both permutations from \( S_n \), the \hyperref[def:permutation_parity]{sign} of their composition is the product of their signs.
-
-  In particular, swapping two elements changes the sign of a permutation.
-\end{proposition}
-\begin{proof}
-  A \hyperref[def:permutation_cycle_decomposition]{cycle decomposition} of \( \tau \bincirc \sigma \) can be obtained from the decompositions of \( \tau \) and \( \sigma \) by removing cycles that are inverses of each other. This will always remove an even number of transpositions. Hence, the cycle decomposition of \( \tau \bincirc \sigma \) will have the same parity as simply combining the decompositions of \( \tau \) and \( \sigma \).
-
-  If \( \tau \) and \( \sigma \) are both either odd or even, \( \tau \bincirc \sigma \) is even. Otherwise, \( \tau \bincirc \sigma \) is odd.
-\end{proof}
-
 \begin{definition}\label{def:alternating_group}
   The \term{alternating group} \( A_n \) on \( n \) letters is the subgroup of all \hyperref[def:permutation_parity]{even permutation} in the \hyperref[def:symmetric_group]{symmetric group} \( S_n \).
 \end{definition}
@@ -393,7 +395,7 @@
 
   We use induction on \( n \). The case \( n = 1 \) is trivial. Suppose that \( A_{n-1} \) has \( \ifrac {(n-1)!} 2 \) elements. Then
   \begin{equation*}
-    A_n = \set{ \cycle{ k, n } \bincirc p \given p \in S_{n-1} \setminus A_{n-1} \T{and} 1 \leq k \leq n }.
+    A_n = \set{ \cycle{ k, n } \bincirc \sigma \given \sigma \in S_{n-1} \setminus A_{n-1} \T{and} 1 \leq k \leq n }.
   \end{equation*}
 
   We obtain \( A_n \) by taking all the odd permutations in \( S_{n-1} \) and composing them with one new transposition. It follows that
@@ -474,9 +476,9 @@
       \aut(A_3) \cong \op{out}(A_3).
     \end{equation*}
 
-    \item The map \( p \mapsto p^{-1} \), which fixes the identity and exchanges the two other permutations, is an automorphism of \( A_3 \). It is distinct from the identity, hence it is an outer automorphism.
+    \item The map \( \sigma \mapsto \sigma^{-1} \), which fixes the identity and exchanges the two other permutations, is an automorphism of \( A_3 \). It is distinct from the identity, hence it is an outer automorphism.
 
-    This map is given by the restriction of the conjugation \( p \mapsto \cycle{1, 2} p \cycle{1, 2} \) to \( A_3 \). It is an inner automorphism of \( S_3 \), but an outer automorphism of \( A_3 \).
+    This map is given by the restriction of the conjugation \( \sigma \mapsto \cycle{1, 2} \sigma \cycle{1, 2} \) to \( A_3 \). It is an inner automorphism of \( S_3 \), but an outer automorphism of \( A_3 \).
   \end{itemize}
 \end{example}
 
@@ -526,9 +528,9 @@
   \begin{thmenum}
     \thmitem{def:dynamical_system/ifs} If \( T \) is either the additive monoid of the \hyperref[def:set_of_natural_numbers]{natural numbers} or the additive group of the \hyperref[def:set_of_integers]{integers}, we say that the dynamical system has \term{discrete time}.
 
-    Due to \fullref{eq:def:monoid_action/family/compatibility}, \( \Phi_{n+1} = \Phi_n \circ \Phi_1 \) for any integer \( n \). Using \hyperref[rem:induction/peano_arithmetic]{natural number induction} and \fullref{thm:def:group/negative_power}, we can show that \( \Phi_n = \Phi_1^n \) for every integer \( n \).
+    Due to \eqref{eq:def:monoid_action/family/compatibility}, \( \Phi_{n+1} = \Phi_n \bigcirc \Phi_1 \) for any integer \( n \). Using \hyperref[rem:induction/peano_arithmetic]{natural number induction} and \fullref{thm:def:group/negative_power}, we can show that \( \Phi_n = \Phi_1^n \) for every integer \( n \).
 
-    Therefore, the entire evolution function of a discrete-time dynamical system is determined by a single function \( \varphi: X \to X \). For this reason, we also refer to discrete-time dynamical systems as \term{iterated function systems}.
+    Therefore, the entire evolution function of a discrete-time dynamical system is determined by a single endofunction \( \varphi: X \to X \). For this reason, we also refer to discrete-time dynamical systems as \term{iterated function systems}.
 
     \thmitem{def:dynamical_system/semiflow} If \( T \) is the additive monoid of \hyperref[def:set_of_real_numbers]{real numbers}, with or without \hyperref[def:extended_real_numbers]{an infinite element}, we say that the system is a \term{semiflow}.
 
