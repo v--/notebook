@@ -1,0 +1,300 @@
+\subsection{Matrices over fields}\label{subsec:matrices_over_fields}
+
+We will assume that all matrices have entries from some fixed \hyperref[def:field]{field} \( \BbbK \). We will later on need to distinguish between real and complex matrices, but the theory built here holds more generally than that, and we choose to postulate it for arbitrary fields.
+
+The definitions of \hyperref[def:triangular_matrix]{triangular} and \hyperref[def:triangular_matrix]{elementary matrices} make sense over more general rings, however we introduce them because of \fullref{alg:plu_decomposition}, which has no direct generalization.
+
+\begin{definition}\label{def:triangular_matrix}
+  An \term{upper triangular matrix} is one with zeros below its \hyperref[def:matrix_diagonal]{main diagonal}. More precisely, \( U = \seq{ u_{i,j} }_{i,j=1}^{m,n} \) is an upper triangular matrix if \( u_{i,j} = 0 \) when \( i > j \).
+
+  Similarly, a \term{lower triangular matrix} is one with zeros above its main diagonal.
+
+  A matrix that is either upper or lower triangular is simply referred to as \enquote{triangular}.
+\end{definition}
+
+\begin{proposition}\label{thm:def:triangular_matrix}
+  \hyperref[def:triangular_matrix]{Triangular matrices} have the following basic properties:
+  \begin{thmenum}
+    \thmitem{thm:def:triangular_matrix/diagonal} A matrix that is both upper and lower triangular is a \hyperref[def:matrix_diagonal]{diagonal matrix}.
+
+
+    \thmitem{thm:def:triangular_matrix/product} The \hyperref[def:matrix_algebra/matrix_multiplication]{product} of upper (resp. lower) triangular matrices is upper (resp. lower).
+
+    Consequently, the product of diagonal matrices is a diagonal matrix.
+
+    \thmitem{thm:def:triangular_matrix/determinant} The \hyperref[thm:def:triangular_matrix/determinant]{determinant} of a triangular matrix is the product of (the entries on) its main diagonal.
+
+    \thmitem{thm:def:triangular_matrix/invertible} A triangular matrix is \hyperref[def:inverse_matrix]{invertible} if and only if its main diagonal has no zero entries.
+
+    Here, the assumption that \( \BbbK \) is a field is essential.
+  \end{thmenum}
+\end{proposition}
+\begin{proof}
+  \SubProofOf{thm:def:triangular_matrix/diagonal} Trivial.
+
+  \SubProofOf{thm:def:triangular_matrix/product} Let \( A \) be an \( m \times k \) upper triangular matrix and \( B \) be a \( k \times n \) upper triangular matrix. The \( (i, j) \)-th element of \( C = AB \) is
+  \begin{equation*}
+    \sum_{l=1}^k a_{i,l} b_{l,j}.
+  \end{equation*}
+
+  Since \( A \) and \( B \) are upper triangular, we have \( b_{l,j} = 0 \) whenever \( l > j \) and \( a_{i,l} = 0 \) whenever \( l < i \). Thus, \( a_{i,l} b_{l,j} = 0 \) if either condition holds. If \( i > j \), then either \( l > j \) or \( l < j < i \), implying that \( a_{i,l} b_{l,j} = 0 \). Therefore, \( AB \) is also upper triangular.
+
+  The proof for lower triangular matrices is analogous.
+
+  \SubProofOf{thm:def:triangular_matrix/determinant} Let \( A \) be an \( n \times n \) upper triangular matrix. Let \( \sigma \in S_n \) be any permutation. Then \( a_{i,\sigma(i)} = 0 \) when \( i > \sigma(i) \). Hence, the only permutation for which the product \( \prod_{i=1}^n a_{i,\sigma(i)} \) is nonzero is the identity permutation. Therefore,
+  \begin{equation*}
+    \det(A) = \prod_{i=1}^n a_{i,i}.
+  \end{equation*}
+
+  \SubProofOf{thm:def:triangular_matrix/invertible} Follows from \fullref{thm:def:triangular_matrix/determinant} and \fullref{thm:matrix_invertibility} by noting that \( 0 \) is the only non-invertible element in a field.
+\end{proof}
+
+\begin{definition}\label{def:elementary_matrix}
+  We introduce the following three types of \hyperref[def:inverse_matrix]{invertible} \( n \times n \) matrices, collectively known as \term{elementary matrices}:
+  \begin{thmenum}
+    \thmitem{def:elementary_matrix/permutation} For a \hyperref[def:symmetric_group/permutation]{permutation} \( \sigma \in S_n \), the \term{permutation matrix} \( P_\sigma \) is obtained by permuting the columns \( e_1, \ldots, e_n \) of the identity matrix \( I_n \) in accordance with \( \sigma \). The permutation matrix
+    \begin{equation*}
+      P_\sigma = \parens*
+      {
+        \begin{array}{c|c|c}
+          e_{\sigma(1)} & \cdots & e_{\sigma(n)}
+        \end{array}
+      }
+    \end{equation*}
+    acts on the \( n \times m \) matrix \( B = \seq{ b_{i,j} }_{i,j=1}^{m,n} \) by permuting the \hi{rows} of \( B \), i.e.
+    \begin{equation*}
+      P_\sigma B
+      =
+      \parens*
+      {
+        \begin{array}{c|c|c}
+          e_{\sigma(1)} & \cdots & e_{\sigma(n)}
+        \end{array}
+      }
+      \cdot
+      \begin{pmatrix}
+        b_{1,1} & b_{1,2} & \cdots & b_{1,m} \\
+        \vdots  & \vdots  & \ddots & \vdots \\
+        b_{n,1} & b_{n,2} & \cdots & b_{n,m}
+      \end{pmatrix}
+      =
+      \begin{pmatrix}
+        b_{\sigma(1),1} & b_{\sigma(1),2} & \cdots & b_{\sigma(1),m} \\
+        \vdots          & \vdots          & \ddots & \vdots \\
+        b_{\sigma(n),1} & b_{\sigma(n),2} & \cdots & b_{\sigma(n),m}
+      \end{pmatrix}.
+    \end{equation*}
+
+    The inverse is the matrix corresponding to its inverse permutation.
+
+    \thmitem{def:elementary_matrix/scaling} For a nonzero element \( a \) and index \( i \), the \( n \times n \) \term{scaling matrix} \( S_{i \mapsto a} \) is a \hyperref[def:matrix_diagonal]{diagonal matrix} that differs from the identity by replacing \( 1 \) with \( a \) instead of \( 1 \) in the \( (i, i) \)-th place. The scaling matrix
+    \begin{equation*}
+      S_{i \mapsto a}
+      \coloneqq
+      \begin{blockarray}{cccccccc}
+      1      & \cdots & {i-1}   & i      & {i+1}  & \cdots & n      &        \\
+      \begin{block}{(ccccccc)c}
+      1      & \cdots & 0       & 0      & 0      & \cdots & 0      & 1      \\
+      \vdots & \ddots &         & \vdots &        &        & \vdots & \vdots \\
+      0      &        & 1       & 0      &        &        & 0      & {i-1}  \\
+      0      & \cdots & 0       & a      & 0      & \cdots & 0      & i      \\
+      0      &        &         & 0      & 1      &        & 0      & {i+1}  \\
+      \vdots &        &         & \vdots &        & \ddots & \vdots & \vdots \\
+      0      & \cdots & 0       & 0      & 0      & \cdots & 1      & n      \\
+      \end{block}
+      \end{blockarray}
+    \end{equation*}
+    acts on the \( n \times m \) matrix \( B \) by scaling the \( i \)-th row of \( B \) by \( a \).
+
+    The inverse is the same matrix with \( a \) replaced by its multiplicative inverse \( a^{-1} \).
+
+    \thmitem{def:elementary_matrix/transvection} For any element \( a \) and indices \( i \) and \( j \), the \term{transvection matrix} \( T_{i \reloset a \to j} \) is obtained from the identity matrix \( I_n \) by placing \( a \) on the \( (j, i) \)-th place. The transvection matrix
+    \begin{equation*}
+      T_{i \reloset a \to j}
+      \coloneqq
+      \begin{blockarray}{cccccccc}
+        1      & \cdots & i       &        &        &        & n      &        \\
+      \begin{block}{(ccccccc)c}
+        1      & \cdots & 0       & \cdots & 0      & \cdots & 0      & 1      \\
+        \vdots & \ddots &         &        &        &        & \vdots &        \\
+        0      &        & 1       & 0      &        & \cdots & 0      &        \\
+        \vdots &        &         & \ddots & 0      &        & \vdots &        \\
+        0      & \cdots & a       &        & 1      & \cdots & 0      & j      \\
+        \vdots &        & \vdots  &        &        & \ddots & \vdots & \vdots \\
+        0      & \cdots & 0       & \cdots & 0      & \cdots & 1      & n      \\
+      \end{block}
+      \end{blockarray}
+    \end{equation*}
+    acts on the \( n \times m \) matrix \( B \) by adding the \( i \)-th row of \( B \) scaled by \( a \) to the \( j \)-th row.
+
+    The order of indices is important --- if the \( (j, i) \)-th entry is nonzero, the scaled \( i \)-th row gets added to the \( j \)-th.
+
+    The inverse is the same matrix with \( a \) replaced by its additive inverse \( -a \).
+  \end{thmenum}
+\end{definition}
+
+\begin{proposition}\label{thm:def:elementary_matrix}
+  \hyperref[def:elementary_matrix]{Elementary matrices} have the following basic properties:
+  \begin{thmenum}
+    \thmitem{thm:def:elementary_matrix/permutation_product} The product of \hyperref[def:elementary_matrix/permutation]{permutation matrices} is a permutation matrix.
+
+    \thmitem{thm:def:elementary_matrix/permutation_determinant} The \hyperref[def:matrix_determinant]{determinant} of a permutation matrix is the \hyperref[def:permutation_parity]{sign} of the \hyperref[def:symmetric_group/permutation]{permutation}.
+
+    \thmitem{thm:def:elementary_matrix/transvection_product_same} The product of the \hyperref[def:elementary_matrix/transvection]{transvection matrices} \( T_{i \reloset \alpha \to j} \) and \( T_{i \reloset \beta \to j} \) is the transvection matrix \( T_{i \reloset {\alpha + \beta} \to j} \).
+
+    \thmitem{thm:def:elementary_matrix/transvection_product} The product of the \hyperref[def:elementary_matrix/transvection]{transvection matrices} \( A = T_{i_A \reloset \alpha \to j_A} \) and \( B = T_{i_B \reloset \beta \to j_B} \) with \( i_A \neq i_B \) or \( j_A \neq j_B \) is the identity matrix \( I_n \) modified with \( \alpha \) in the \( (j_A, i_A) \)-th place and \( \beta \) in the \( (j_B, i_B) \)-th.
+  \end{thmenum}
+\end{proposition}
+\begin{proof}
+  \SubProofOf{thm:def:elementary_matrix/permutation_product} Trivial.
+
+  \SubProofOf{thm:def:elementary_matrix/permutation_determinant} As discussed in the proof of \fullref{thm:determinant_on_columns}, the determinant of any permutation of the vectors of the standard basis is the sign of the permutation.
+
+  \SubProofOf{thm:def:elementary_matrix/transvection_product} The \( (i, j) \)-th entry of the product \( C = AB \) is
+  \begin{equation*}
+    c_{i,j} = \sum_{k=1}^n a_{i,k} b_{k,j}.
+  \end{equation*}
+
+  \begin{itemize}
+    \item If \( i = j \), \( c_{i,j} \) is clearly \( 1 \).
+    \item If \( i = i_A \) and \( j = j_A \), then
+    \begin{equation*}
+      a_{i_A,k} b_{k,j_A} = \begin{cases}
+        a_{i_A,j_A}, &i_A = j_A \\
+        0,           &i_A \neq j_A
+      \end{cases}.
+    \end{equation*}
+
+    Thus, \( c_{i_A,j_A} = a_{i_A,j_A} \).
+
+    \item Analogously, \( c_{i_B,j_B} = b_{i_B,j_B} \).
+    \item Otherwise, for \( k = 1, \ldots, n \), either \( a_{i,k} \) or \( b_{k,j} \) is zero, hence \( c_{i,j} \) also is.
+  \end{itemize}
+
+  \SubProofOf{thm:def:elementary_matrix/transvection_product_same} This proof only requires a slight modification to the proof of \fullref{thm:def:elementary_matrix/transvection_product}.
+\end{proof}
+
+\begin{algorithm}[PLU decomposition]\label{alg:plu_decomposition}
+  Fix an \( n \times n \) matrix \( A \). We will build a \hyperref[def:triangular_matrix]{lower triangular matrix} \( L \), \hyperref[def:triangular_matrix]{upper triangular matrix} \( U \) and a \hyperref[def:elementary_matrix/permutation]{permutation matrix} \( P \) such that \( A = PLU \).
+
+  The algorithm itself is also called \term{Gaussian elimination} and \( U \) is said to be a \term{row-echelon form} of \( A \), although both terms may have different meanings depending on the context.
+
+  We will proceed via \hyperref[thm:bounded_transfinite_recursion]{bounded recursion} on \( n \). After the \( k \)-th step, for \( k = 1, \ldots, n - 1 \), we will have built a lower triangular matrix \( L_k \) and a permutation matrix \( P_k \) such that for \( i > k \), \( (i, k) \)-th entry of \( L_k P_k A \) is zero.
+
+  Furthermore, we will obtain \( L_k \) as a product of \hyperref[def:elementary_matrix/transvection]{transvection} and permutation matrices. Therefore, at each step, both \( P_k \) and \( L_k \) will be \hyperref[def:inverse_matrix]{invertible} as products of invertible matrices.
+
+  The matrix \( U \coloneqq L_{n-1} P_{n-1} A \) will be upper triangular, and hence, putting \( P \coloneqq P_{n-1}^{-1} \) and \( L \coloneqq L_{n-1}^{-1} \), we obtain
+  \begin{equation*}
+    A = PLU.
+  \end{equation*}
+
+  \begin{thmenum}
+    \thmitem{alg:plu_decomposition/initialization} As an initial condition, put \( L_0 \coloneqq I_n \) and \( P_0 \coloneqq I_n \) as identity matrices.
+
+    \thmitem{alg:plu_decomposition/step} Suppose that we have already built \( L_{k-1} \) and \( P_{k-1} \). Let \( U_{k-1} \coloneqq L_{k-1} P_{k-1} A \). We will describe step \( k \) of the algorithm.
+
+    If the \( (k, j) \)-th entry of \( U_{k-1} \) is zero for all \( j > k \), put \( P_k = P_{k-1} \) and \( L_k = L_{k-1} \).
+
+    Otherwise, let \( j_0 \) be the first row index of \( L_{k-1} P_{k-1} A \) for which the \( k \)-th entry is nonzero. Let \( P_{k \to j_0} \) be the permutation matrix exchanging the \( k \)-th and \( j_0 \)-th column of the identity and put
+    \begin{equation*}
+      P_k \coloneqq P_{k \to j_0} P_{k-1}.
+    \end{equation*}
+
+    Then, since \( P_{k \to j_0} \) is its own inverse,
+    \begin{equation*}
+      \widehat{U}_{k-1} \coloneqq P_{k \to j_0} U_{k-1} = P_{k \to j_0} L_{k-1} (\smash{ \overbrace{P_{k \to j_0} P_{k \to j_0}}^{I_n} P_{k-1}) A = (P_{k \to j_0} L_{k-1} P_{k \to j_0}) } P_k A.
+    \end{equation*}
+
+    Denote by \( u_{i,j} \) the entries of \( \widehat{U}_{k-1} \).
+
+    Also put \( \widehat{L}_{k-1} \coloneqq P_{k \to j_0} L_{k-1} P_{k \to j_0} \). This is again a lower triangular matrix since we only swap columns below the main diagonal.
+
+    For each row \( j > k \), define \( \upsilon_j \coloneqq - \ifrac {(u_{k,j})} {(u_{k,k})} \) consider the transvection matrix \( T_{k \reloset {\upsilon_j} \to j} \). When multiplied by \( \widehat{U}_{k-1} \) from the right, it adds the \( k \)-th row of \( \widehat{U}_{k-1} \) to the \( j \)-th after multiplying it by \( \upsilon_j \). Hence, \( T_{k \reloset {\upsilon_j} \to j} \widehat{U}_{k-1} \) has zero at as its \( (i, j) \)-th entry.
+
+    Finally, put
+    \begin{equation*}
+      L_k \coloneqq \parens*{ \prod_{j=k}^n T_{k \reloset {\upsilon_j} \to j} } \widehat{L}_{k-1}.
+    \end{equation*}
+
+    By \fullref{thm:def:elementary_matrix/transvection_product}, \( L_k \) adds nonzero entries to \( \widehat{L}_{k-1} \) only below the main diagonal. Since \( \widehat{L}_{k-1} \) is lower triangular, so is \( L_k \). Furthermore, for \( j > k \), the coefficient \( \upsilon_j \) is chosen so that the \( (k, j) \)-th entry of \( L_k P_k A \) of zero, which ensures that the latter matrix will be upper triangular when \( k = n - 1 \).
+  \end{thmenum}
+\end{algorithm}
+
+\begin{proposition}\label{thm:alg:plu_decomposition}
+  Let \( A = PLU \) be the decomposition of some matrix \( A \) obtained via \fullref{alg:plu_decomposition}.
+
+  \begin{thmenum}
+    \thmitem{thm:alg:plu_decomposition/upper_triangular} If \( A \) is upper triangular, then \( P = L = I_n \) and \( A = U \).
+
+    \thmitem{thm:alg:plu_decomposition/nonsingular} \( A \) is \hyperref[def:inverse_matrix]{nonsingular} if and only if \( U \) is nonsingular.
+  \end{thmenum}
+\end{proposition}
+\begin{proof}
+  \SubProofOf{thm:alg:plu_decomposition/upper_triangular} Suppose that \( A \) is upper triangular. Then, at step \( k \) of the algorithm:
+  \begin{itemize}
+     \item If \( u_{k,k} \) is zero, then all entries below it are also zero, and hence we directly continue to the next step.
+     \item If \( u_{k,k} \) is not zero, then the transvection matrices \( T_{k \reloset 0 \to j} \) for \( j > k \) are all identity matrices, and hence \( L_k \) is also the identity.
+  \end{itemize}
+
+  In both cases, \( L_k = P_k = I_n \).
+
+  \SubProofOf{thm:alg:plu_decomposition/nonsingular} By \fullref{thm:def:matrix_determinant/homomorphism},
+  \begin{equation*}
+    \det(A) = \det(P) \det(L) \det(U).
+  \end{equation*}
+
+  Since \( P \) and \( L \) are products of permutation and transvection matrices, by \fullref{thm:def:elementary_matrix/permutation_determinant} and \fullref{thm:def:elementary_matrix/transvection_product}, their determinants are either \( 1 \) or \( -1 \). Hence,
+  \begin{equation*}
+    \abs{\det(A)} = \abs{\det(U)}.
+  \end{equation*}
+
+  It follows from \fullref{thm:def:elementary_matrix/transvection_product} that \( A \) is nonsingular if and only if \( U \) is.
+\end{proof}
+
+\begin{algorithm}[Elementary matrix decomposition]\label{alg:elementary_matrix_decomposition}
+  Fix a \hyperref[def:inverse_matrix]{nonsingular} \( n \times n \) matrix \( A \). Let \( A = PLU \) be the decomposition obtained via \fullref{alg:plu_decomposition}. By \fullref{thm:alg:plu_decomposition/nonsingular}, \( U \) is a nonsingular matrix. Both \( P \) and \( L \) are products of elementary matrices, hence it suffices to show that \( U \) is a product of elementary matrices in order to show that \( A \) is a product of elementary matrices.
+
+  The algorithm is complementary to \fullref{alg:plu_decomposition}, although with noticeable differences. We will assume that \( k = 2, \ldots, n \). At each step, we will build a matrix \( U_k \) whose first \( k \) columns match those of \( U \). Then \( U_n \) must equal \( U \).
+
+  Denote by \( u_{i,j} \) the entries of \( U \).
+
+  \begin{thmenum}
+    \thmitem{alg:elementary_matrix_decomposition/initialization} We will define the initial condition \( U_1 \) to be he diagonal matrix whose main diagonal matches that of \( U \). This can be achieved via \hyperref[def:elementary_matrix/scaling]{scaling matrices}:
+    \begin{equation*}
+      U_1 \coloneqq \prod_{i=1}^n S_{i \mapsto u_{i,i}}.
+    \end{equation*}
+
+    \thmitem{alg:elementary_matrix_decomposition/step} At step \( k \), given \( U_{k-1} \), for \( j < k \) define \( \upsilon_j \coloneqq \ifrac {(u_{k,j})} {(u_{k,k})} \). It is important that here, unlike in \fullref{alg:plu_decomposition}, we put no minus sign in \( \upsilon_j \) since we are building the matrix \( U \) directly rather than building an intermediate matrix that we will later invert. Put
+    \begin{equation*}
+      U_k \coloneqq \parens*{ \prod_{j=k}^n T_{k \reloset {\upsilon_j} \to j} } U_{k-1}.
+    \end{equation*}
+
+    Since \( U \) is nonsingular, by \fullref{thm:def:triangular_matrix/determinant}, \( u_{k,k} \) must be nonzero. Hence, we can divide by it.
+
+    As a product of scaling and \hyperref[def:elementary_matrix/transvection]{transvection matrices} with nonzero entries above the main diagonal, \( U_k \) is an upper diagonal matrix. Furthermore, the scaling matrices neutralize the division done by the transvection matrices, so the \( k \)-th column of \( U_k \) and \( U \) must match.
+  \end{thmenum}
+\end{algorithm}
+
+\begin{proposition}\label{thm:product_of_elementary_matrices_iff_invertible}
+  The square matrix over a field is \hyperref[def:inverse_matrix]{invertible} if and only if it is a product of \hyperref[def:elementary_matrix]{elementary matrices}.
+\end{proposition}
+\begin{proof}
+  \SufficiencySubProof Follows from \fullref{alg:elementary_matrix_decomposition}.
+  \NecessitySubProof Follows from \fullref{thm:def:matrix_determinant/homomorphism}.
+\end{proof}
+
+\begin{remark}\label{rem:system_of_linear_equation}
+  Given an \( m \times n \) matrix \( A \) and an \( m \)-dimensional column vector \( b \), we consider the \term{system of linear equations}
+  \begin{equation}\label{eq:rem:system_of_linear_equation/matrix_form}
+    Ax = b.
+  \end{equation}
+
+  This is often written in scalar form as
+  \begin{equation}\label{eq:rem:system_of_linear_equation/scalar_form}
+    \begin{array}{ccccccc}
+      a_{1,1} x_1 & +      & \cdots & +      & a_{m,1} x_m & =      & b_1 \\
+      \vdots      &        &        & \vdots &             &        & \vdots \\
+      a_{1,n} x_1 & +      & \cdots & +      & a_{m,n} x_m & =      & b_m.
+    \end{array}
+  \end{equation}
+\end{remark}
