@@ -1,5 +1,7 @@
 \subsection{Bilinear forms}\label{subsec:bilinear_forms}
 
+In this subsection, we restrict ourselves to fields rather than arbitrary rings.
+
 We define \hyperref[def:bilinear_form]{bilinear forms} over arbitrary fields, although they are almost exclusively used over the field of real numbers. In the latter case, they are a special case of \hyperref[def:sesquilinear_form]{sesquilinear forms} over complex numbers.
 
 \begin{definition}\label{def:bilinear_form}\mcite[249]{Knapp2016BasicAlgebra}
@@ -210,6 +212,8 @@ We define \hyperref[def:bilinear_form]{bilinear forms} over arbitrary fields, al
   \end{equation*}
 
   Hermitian forms coincide with symmetric forms when restricted to real numbers.
+
+  This should not be confused with \hyperref[def:adjoint_operator]{Hermitian linear operators}.
 \end{definition}
 
 \begin{definition}\label{def:conjugate_transpose}
@@ -272,12 +276,128 @@ We define \hyperref[def:bilinear_form]{bilinear forms} over arbitrary fields, al
   \end{equation*}
 
   This notation is generalized for application of linear functionals --- see \fullref{rem:dual_space_bilinear_form}.
+
+  By default, for \( \BbbK^n \) we assume that the inner product is the \term{dot product} \( \inprod x y \coloneqq x^T y \) or, when working over complex inner product spaces, \( \inprod x y \coloneqq y^* x \).
 \end{definition}
+
+\begin{remark}\label{rem:structure_hierarchy}
+  The hierarchy in \cref{fig:rem:structure_hierarchy} describes how, given any of the structures there, we automatically also have available all the ones to the bottom of it. For example, every real or complex inner product space is also a normed space, metric space and so forth. We will use this implicitly.
+
+  \begin{figure}[h]
+    \caption{Hierarchy of important mathematical structures}\label{fig:rem:structure_hierarchy}
+    \smallskip
+    \hfill
+    \begin{forest}
+      [
+        {\hyperref[def:inner_product_space]{inner product}}, name=product
+        [
+          {\hyperref[def:norm]{norm}}, name=norm, edge label={node[midway,left]{\hyperref[def:bilinear_form_induced_norm]{induced norm}}}
+          [
+            {\hyperref[def:metric_space]{metric}}, name=metric, edge label={node[midway,left]{\hyperref[def:norm_induced_metric]{induced metric}}}
+            [
+              {\hyperref[def:uniform_space]{uniformity}}, name=uniformity, edge label={node[midway,left]{\hyperref[def:metric_uniformity]{metric uniformity}}}
+              [
+                {\hyperref[def:topological_space]{topology}}, name=topology, edge label={node[midway,left]{\hyperref[def:uniform_topology]{uniform topology}}}
+              ]
+            ]
+          ]
+        ]
+      ]
+    \end{forest}
+    \hfill\hfill
+  \end{figure}
+\end{remark}
+
+\begin{definition}\label{def:orthogonality}\mimprovised
+  We say that the vectors \( x \) and \( y \) are \term{orthogonal} and write \( x \perp y \) if \( \inprod x y = 0 \). If, in addition, both vectors have unit norm, we say that they are \term{orthonormal}.
+\end{definition}
+
+\begin{theorem}[Pythagoras' theorem]\label{thm:pythagoras_theorem}
+  In an \hyperref[def:inner_product_space]{inner product space}, if \( x \) and \( y \) are \hyperref[def:orthogonality]{orthogonal}, then
+  \begin{equation*}
+    \norm{x + y} = \norm{x} + \norm{y}.
+  \end{equation*}
+\end{theorem}
+\begin{proof}
+  Since \( \inprod x y = \inprod y x = 0 \), then
+  \begin{equation*}
+    \norm{x + y}^2
+    =
+    \inprod {x + y} {x + y}
+    =
+    \inprod x x + \inprod x y + \inprod y x + \inprod y y
+    =
+    \norm{x}^2 + \norm{y}^2.
+  \end{equation*}
+\end{proof}
+
+\begin{proposition}\label{thm:orthogonal_implies_linearly_independent}
+  Two nonzero orthogonal vectors are necessarily \hyperref[def:linear_dependence]{linearly independent}.
+\end{proposition}
+\begin{proof}
+  We will prove the converse. Suppose that \( x = ty \) and that both vectors are nonzero. In particular, \( t \neq 0 \). Then
+  \begin{equation*}
+    \inprod x y = t \inprod y y.
+  \end{equation*}
+
+  Since inner products are positive definite, \( \inprod y y > 0 \) and hence \( \inprod x y > 0 \). Therefore, \( x \) and \( y \) are not orthogonal.
+\end{proof}
+
+\begin{definition}\label{def:orthogonal_complement}\mimprovised
+  The \term{orthogonal complement} of the subspace \( U \) of \( V \) is the subspace
+  \begin{equation*}
+    U^\perp \coloneqq \set{ y \in U \given \qforall {x \in U} \inprod x y = 0 }
+  \end{equation*}
+  of \hyperref[def:orthogonality]{orthogonal} to all members of \( U \) subspaces.
+
+  The (bi)linearity of the inner product ensures that \( U^\perp \) is indeed a subspace.
+
+  This concept generalizes to \hyperref[def:orthogonal_complement]{annihilators}.
+\end{definition}
+
+\begin{theorem}[Gram–Schmidt orthogonalization]\label{thm:gramm_schmidt_orthogonalization}
+  Let \( e_1, \ldots, e_n \) be a \hyperref[def:orthogonality]{basis} for the vector space \( V \). For \( i = 1, \ldots, n \) define
+  \begin{equation*}
+    f_k \coloneqq e_k - \sum_{i=1}^{k-1} \frac { \inprod {e_k} {f_i} } { \inprod {f_i} {f_i} } f_i.
+  \end{equation*}
+
+  Then \( f_1, \ldots, f_n \) is an \hyperref[def:orthogonality]{orthogonal} basis. We can then additionally rescale these vectors to obtain an \hyperref[def:orthogonality]{orthonormal} basis.
+\end{theorem}
+\begin{proof}
+  Since for \( k \leq n \), the vector \( f_k \) is a linear combination of \( e_1, \ldots, e_k \), we have
+  \begin{equation*}
+    \linspan\set{ f_1, \ldots, f_n } = \linspan\set{ e_1, \ldots, e_n }.
+  \end{equation*}
+
+  We will use induction on \( n \) to show that \( f_1, \ldots, f_{n-1} \) are orthogonal (and, in particular, linearly independent). Since \( f_1 = e_1 \), the case \( n = 1 \) is trivial. Suppose that the first \( n - 1 \) vectors are orthogonal. Then, for \( k < n \),
+  \small
+  \begin{equation*}
+    \inprod{f_n} {f_k}
+    =
+    \inprod*{ e_n - \sum_{i=1}^{n-1} \frac { \inprod {e_n} {f_i} } { \inprod {f_i} {f_i} } f_i} {f_k}
+    =
+    \inprod {e_n} {f_k} - \sum_{i=1}^{n-1} \frac { \inprod {e_n} {f_i} } { \inprod {f_i} {f_i} } \underbrace{ \inprod{f_i } {f_k} }_{ 0 \T*{if} i \neq j }
+    =
+    \inprod {e_n} {f_k} - \frac { \inprod {e_n} {f_k} } { \inprod {f_k} {f_k} } \inprod {f_k} {f_k}
+    =
+    0.
+  \end{equation*}
+  \normalsize
+
+  Therefore, \( f_1, \ldots, f_n \) are pairwise orthogonal.
+\end{proof}
+
+\begin{corollary}\label{thm:finite_dimensional_orthonormal_basis_existence}
+  Any finite-dimensional vector space has an orthonormal basis.
+\end{corollary}
+\begin{proof}
+  We can simply apply \fullref{thm:gramm_schmidt_orthogonalization} to any basis.
+\end{proof}
 
 \begin{theorem}[Cauchy-Bunyakovsky-Schwarz inequality]\label{thm:cauchy_bunyakovsky_schwarz_inequality}
   In a real or complex \hyperref[def:inner_product_space]{inner product space}, the following inequality holds:
   \begin{equation}\label{thm:cauchy_bunyakovsky_schwarz_inequality/inequality}
-    {\abs{\inprod x y}}^2 \leq \inprod x x \cdot \inprod y y.
+    \abs{ \inprod x y} \leq \norm x \cdot \norm y.
   \end{equation}
 
   Furthermore, equality holds if and only if \( x \) and \( y \) are linearly dependent.
@@ -293,22 +413,22 @@ We define \hyperref[def:bilinear_form]{bilinear forms} over arbitrary fields, al
     =    \\ &=
     Q(x) + \overline t \inprod x y + t \inprod y x + \abs{t}^2 Q(y)
     =    \\ &=
-    Q(x) + 2\real \parens*{ t \overline{\inprod x y} } + \abs{t}^2 Q(y).
+    Q(x) + 2\real \parens*{ t \overline{ \inprod x y} } + \abs{t}^2 Q(y).
   \end{balign*}
 
-  Take \( t \coloneqq - \ifrac {\inprod x y} {Q(y)} \), so that
+  Take \( t \coloneqq - \ifrac { \inprod x y} {Q(y)} \), so that
   \begin{equation*}
     Q(x + ty)
     =
-    Q(x) - 2 \frac {\abs{\inprod x y}^2} {Q(y)} + \frac {\abs{\inprod x y}^2} {Q(y)}
+    Q(x) - 2 \frac {\abs{ \inprod x y}^2} {Q(y)} + \frac {\abs{ \inprod x y}^2} {Q(y)}
     =
-    Q(x) - \frac {\abs{\inprod x y}^2} {Q(y)}.
+    Q(x) - \frac {\abs{ \inprod x y}^2} {Q(y)}.
   \end{equation*}
 
   Since \( Q(x + ty) \geq 0 \), it follows that
   \begin{balign*}
-    Q(x) - \frac {\abs{\inprod x y}^2} {Q(y)} &\geq 0                  \\
-    Q(x) Q(y)                                 &\geq \abs{\inprod x y}^2.
+    Q(x) - \frac {\abs{ \inprod x y}^2} {Q(y)} &\geq 0                  \\
+    Q(x) Q(y)                                 &\geq \abs{ \inprod x y}^2.
   \end{balign*}
 
   \SubProof{Proof of equality} If \( x \) and \( y \) are linearly dependent, equality obviously holds. Conversely, suppose that equality holds. This implies that
