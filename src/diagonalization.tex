@@ -233,7 +233,7 @@ In this subsection, we restrict ourselves to fields rather than arbitrary rings.
 
   The characteristic polynomial of this matrix is
   \begin{equation*}
-    p_A(\Lambda) = (\Lambda - \lambda)^k p_C(\Lambda).
+    p_A(\Lambda) = (\lambda - \Lambda)^k p_C(\Lambda).
   \end{equation*}
 
   Therefore, the algebraic multiplicity of \( A \) is at least \( k \).
@@ -243,88 +243,119 @@ In this subsection, we restrict ourselves to fields rather than arbitrary rings.
   The set of all \hyperref[def:eigenpair]{eigenvalues} of a linear endomorphism is called its \term{point spectrum}.
 \end{definition}
 
-\begin{definition}\label{def:diagonalizable_matrix}\mimprovised
-  A square matrix is called \term{diagonalizable} if it is \hyperref[def:similar_matrices]{similar} to a diagonal matrix.
-\end{definition}
+\begin{proposition}\label{thm:operator_diagonalizability}
+  Let \( T: V \to V \) be a linear endomorphism over the vector space \( V \) over \( \BbbK \) of dimension \( n \). The following are equivalent:
+  \begin{thmenum}
+    \thmitem{thm:operator_diagonalizability/basis} The space \( V \) has a basis \( e_1, \ldots, e_n \) of eigenvectors of \( T \).
 
-\begin{proposition}\label{thm:diagonalizable_matrix_iff_eigenvectors}
-  An \( n \times n \) square matrix \( A \) is \hyperref[def:diagonalizable_matrix]{diagonalizable} via \( D = P^{-1} A P \) if and only if there exist \( n \) linearly independent \hyperref[def:eigenpair]{eigenvectors} \( e_1, \ldots, e_n \) such that
-  \begin{equation*}
-    P = \parens*
-    {
-      \begin{array}{c|c|c}
-        e_1 & \cdots & e_n
-      \end{array}
-    }.
-  \end{equation*}
+    \thmitem{thm:operator_diagonalizability/diagonal} There exists a basis \( e_1, \ldots, e_n \) of \( V \) such that \( T \) has a diagonal matrix with respect to this basis.
+
+    The \( k \)-th diagonal entry of this matrix is then an eigenvalue of \( T \) for which \( e_k \) is an eigenvector.
+
+    \thmitem{thm:operator_diagonalizability/multiplicities} There exist eigenvalues \( \lambda_1, \ldots, \lambda_m \) whose algebraic and geometric multiplicities coincide and sum to \( n \).
+
+    \thmitem{thm:operator_diagonalizability/direct_sum} There exist eigenvalues \( \lambda_1, \ldots, \lambda_m \) such that
+    \begin{equation*}
+      V \cong \ker(A - \lambda_1) \oplus \cdots \oplus \ker(A - \lambda_n).
+    \end{equation*}
+  \end{thmenum}
 \end{proposition}
 \begin{proof}
-  \NecessitySubProof Let \( e_1, \ldots, e_n \) be linearly independent eigenvectors corresponding to the eigenvalues \( \lambda_1, \ldots, \lambda_n \). Let \( P \) be the matrix whole columns are these eigenvectors and let
+  \ImplicationSubProof{thm:operator_diagonalizability/basis}{thm:operator_diagonalizability/diagonal} Suppose that there exists a basis \( e_1, \ldots, e_n \) of \( V \) such that \( Te_k = \lambda_k e_k \) for some eigenvalues \( \lambda_1, \ldots, \lambda_n \). Let
   \begin{equation*}
-    D \coloneqq \op{diag}(\lambda_1, \ldots, \lambda_n).
+    A \coloneqq \op{diag}(\lambda_1, \ldots, \lambda_n).
+  \end{equation*}
+
+  Given an arbitrary vector \( x \) from \( V \), we have
+  \begin{equation*}
+    x = \sum_{k=1}^n \pi_{e_k}(x) \cdot e_k.
+  \end{equation*}
+
+  Define
+  \begin{equation*}
+    \begin{aligned}
+      &\Phi: V \to \BbbK^n \\
+      &\Phi(x) \coloneqq \begin{pmatrix}
+        \pi_{e_1}(x) \\
+        \vdots \\
+        \pi_{e_n}(x) \\
+      \end{pmatrix}.
+    \end{aligned}
   \end{equation*}
 
   Then
-  \begin{balign*}
-    P D
-    &=
-    \parens*
-      {
-        \begin{array}{c}
-          \vect \lambda_1^T \\ \hline \vdots \\ \hline \vect \lambda_n^T
-        \end{array}
-      }
-    \parens*
-      {
-        \begin{array}{c|c|c}
-          e_1 & \cdots & e_n
-        \end{array}
-      }
-    = \\ &=
-    \sum_{k=1}^n \vect \lambda_k^T e_k
-    = \\ &=
-    \parens*
-      {
-        \begin{array}{c|c|c|c}
-          \lambda_1 e_1 & \vect 0 & \cdots & \vect 0
-        \end{array}
-      }
-    +
-    \parens*
-      {
-        \begin{array}{c|c|c|c}
-          \vect 0 & \lambda_2 e_2 & \cdots & \vect 0
-        \end{array}
-      }
-    +
-    \cdots
-    +
-    \parens*
-      {
-        \begin{array}{c|c|c|c}
-          \vect 0 & \vect 0 & \cdots & \lambda_n e_n
-        \end{array}
-      }
-    = \\ &=
-    \parens*
-      {
-        \begin{array}{c|c|c|c}
-          \lambda_1 e_1 & \lambda_2 e_2 & \cdots & \lambda_n e_n
-        \end{array}
-      }
-    = \\ &=
-    \parens*
-      {
-        \begin{array}{c|c|c|c}
-          A e_1 & A e_2 & \cdots & A e_n
-        \end{array}
-      }
-    = \\ &=
-    A P.
-  \end{balign*}
+  \begin{multline*}
+    \Phi(T x)
+    =
+    \Phi\parens*{ T \parens*{ \sum_{k=1}^n \pi_{e_k}(x) \cdot e_k } }
+    =
+    \Phi\parens*{ \sum_{k=1}^n \pi_{e_k}(x) \cdot T e_k }
+    = \\ =
+    \Phi\parens*{ \sum_{k=1}^n \lambda_k \cdot \pi_{e_k}(x) \cdot e_k }
+    =
+    \begin{pmatrix}
+      \lambda_1 \cdot \pi_{e_1}(x) \\
+      \vdots \\
+      \lambda_n \cdot \pi_{e_n}(x)
+    \end{pmatrix}
+    =
+    A \cdot \Phi(x)
+  \end{multline*}
 
-  \SufficiencySubProof Similar to the necessity proof except that \( P D = A P \) is the assumption and \( (\lambda_k, e_k) \) being eigenpairs is the conclusion.
+  \ImplicationSubProof{thm:operator_diagonalizability/diagonal}{thm:operator_diagonalizability/basis} Conversely, suppose that
+  \begin{equation*}
+    A \coloneqq \op{diag}(\lambda_1, \ldots, \lambda_n)
+  \end{equation*}
+  is the matrix of \( T \) with respect to the basis \( e_1, \ldots, e_n \), i.e.
+  \begin{equation*}
+    \Phi(T x) = A \cdot \Phi(x).
+  \end{equation*}
+
+  Then
+  \begin{equation*}
+    A \cdot \Phi(e_k) = a_{k,\anon*} = \begin{pmatrix} 0 & \lambda_k & \end{pmatrix} = \lambda_k \Phi(e_k)
+  \end{equation*}
+  and
+  \begin{equation*}
+    T e_k = \Phi^{-1}(A \cdot \Phi(e_k)) = \lambda_k e_k.
+  \end{equation*}
+
+  Therefore, \( e_k \) is an eigenvector of \( T \) corresponding to \( \lambda_k \).
+
+  \ImplicationSubProof{thm:operator_diagonalizability/basis}{thm:operator_diagonalizability/multiplicities} Suppose that there exists a basis \( e_1, \ldots, e_n \) of \( V \) such that \( Te_k = \lambda_k e_k \) for some eigenvalues \( \lambda_1, \ldots, \lambda_n \).
+
+  If \( \lambda_{i_1} = \cdots = \lambda_{i_m} \) and all other eigenvalues are distinct from \( \lambda_{i_1} \), then
+  \begin{equation*}
+    \ker(T - \lambda_{i_1} \id) = \linspan\set{ e_{i_1}, \cdots, e_{i_m} }.
+  \end{equation*}
+
+  Thus, the algebraic and geometric multiplicities coincide. The sum of multiplicities over all distinct eigenvalues is obviously \( n \).
+
+  \ImplicationSubProof{thm:operator_diagonalizability/multiplicities}{thm:operator_diagonalizability/direct_sum} Suppose that \( \lambda_1, \ldots, \lambda_m \) are the distinct eigenvalues of \( T \) and that their algebraic and geometric multiplicities coincide and sum to \( n \).
+
+  By \fullref{thm:rank_nullity_theorem},
+  \begin{equation*}
+    V \cong \ker(T - \lambda_1 \id) \oplus \img(T - \lambda_1 \id).
+  \end{equation*}
+
+  \ImplicationSubProof{thm:operator_diagonalizability/direct_sum}{thm:operator_diagonalizability/basis} Suppose that
+  \begin{equation*}
+    V \cong \ker(T - \lambda_1 \id) \oplus \img(T - \lambda_1 \id).
+  \end{equation*}
+
+  Construct a basis of \( V \) by taking bases of the eigenspaces \( \ker(T - \lambda_k \id) \) together. This will obviously be a basis of eigenvectors.
 \end{proof}
+
+\begin{definition}\label{def:diagonalizable_matrix}\mimprovised
+  A square matrix is called \term{diagonalizable} if, as a linear endomorphism, it satisfies any of the conditions from \fullref{thm:operator_diagonalizability}.
+
+  The condition \fullref{thm:operator_diagonalizability/diagonal} for the \( n \times n \) matrix \( A \) is then equivalent to the existence of a \hyperref[rem:change_of_basis]{change of basis} matrix \( P \) and a \hyperref[def:matrix_diagonal]{diagonal matrix} \( D \) such that
+  \begin{equation*}
+    A = P^{-1} D P.
+  \end{equation*}
+
+  It is thus necessary and sufficient for \( A \) to be \hyperref[def:similar_matrices]{similar} to a diagonal matrix. This is often taken as \enquote{the} definition of diagonalizability, however it hides the relationship with the theory of eigenvalues and eigenspaces presented in \fullref{thm:operator_diagonalizability}. That is, the \( k \)-th diagonal entry of \( D \) is an eigenvalue of \( A \) for which the \( k \)-th column of \( P \) is an eigenvector.
+\end{definition}
 
 \begin{definition}\label{def:adjoint_operator}\mcite[sec. 38.1]{Тыртышников2004Лекции}
   We say that the linear operator \( T^*: V \to U \) between \hyperref[def:inner_product_space]{inner product spaces} is \term{adjoint} to \( T: U \to V \) if for every \( x \in U \) and \( y \in V \) we have
@@ -414,28 +445,6 @@ In this subsection, we restrict ourselves to fields rather than arbitrary rings.
   \end{equation*}
 \end{proof}
 
-\begin{proposition}\label{thm:hermitian_operator_eigenvalues_are_real}
-  The \hyperref[def:eigenpair]{eigenvalues} of a \hyperref[def:adjoint_operator]{self-adjoint linear operator} are real.
-\end{proposition}
-\begin{proof}
-  For every eigenpair \( (\lambda, x) \) of \( T: V \to V \) we have
-  \begin{equation*}
-    \lambda \inprod x x
-    =
-    \inprod {\lambda x} x
-    =
-    \inprod {L x} x
-    =
-    \inprod x {L x}
-    =
-    \inprod x {\lambda x}
-    =
-    \overline \lambda \inprod x x.
-  \end{equation*}
-
-  Since inner products are positive definite, \( \inprod x x \) is a positive real number and hence we can cancel it to obtain the equality \( \lambda = \overline \lambda \). Hence, if \( \lambda \) is an eigenvalue, it is a real number.
-\end{proof}
-
 \begin{theorem}[Finite-dimensional spectral theorem]\label{thm:spectral_theorem}
   Let \( V \) be a real (resp. complex) vector space of dimension \( n \).
 
@@ -450,7 +459,7 @@ In this subsection, we restrict ourselves to fields rather than arbitrary rings.
     \end{equation*}
     where \( D \) is a real diagonal matrix of eigenvalues and \( P \) is a unitary matrix whose columns are eigenvalues of \( A \).
 
-    Furthermore, the \( k \)-th column of \( P \) is an eigenvector of the \( (k, k) \)-th entry of \( D \).
+    Furthermore, the \( k \)-th diagonal entry of \( D \) is an eigenvalue of \( A \) for which the \( k \)-th column of \( P \) is an eigenvector.
   \end{thmenum}
 \end{theorem}
 \begin{proof}
@@ -492,5 +501,5 @@ In this subsection, we restrict ourselves to fields rather than arbitrary rings.
 
   \SubProof*{Real numbers} If \( V \) is instead a real vector space, we embed \( V \) into \( \BbbC^n \), find the eigenvalues of the embedding of \( T \) and then conclude that they are real numbers and hence eigenvalues of \( T \) itself.
 
-  \SubProofOf{thm:spectral_theorem/matrix} Follows from \fullref{thm:spectral_theorem/basis}, \fullref{thm:diagonalizable_matrix_iff_eigenvectors} and \fullref{thm:spectral_theorem/eigenvalues}.
+  \SubProofOf{thm:spectral_theorem/matrix} Follows from \fullref{thm:spectral_theorem/basis}, \fullref{thm:spectral_theorem/eigenvalues} and \fullref{thm:operator_diagonalizability}.
 \end{proof}
