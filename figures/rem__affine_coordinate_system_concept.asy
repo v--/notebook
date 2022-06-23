@@ -1,6 +1,6 @@
 settings.outformat = 'pdf';
 
-usepackage("stix2");
+usepackage('stix2');
 defaultpen(fontsize(10pt));
 
 draw(circle((0, 0), 1cm));
