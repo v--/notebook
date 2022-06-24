@@ -2,9 +2,9 @@ import graph;
 
 settings.outformat = 'pdf';
 
-size(15cm, 7cm, keepAspect=false);
+size(15, 7, keepAspect=false);
 usepackage('stix2');
-defaultpen(fontsize(10pt));
+unitsize(1cm);
 
 real a = 0.9;
 real b = 7;

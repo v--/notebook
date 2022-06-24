@@ -1,11 +1,11 @@
 settings.outformat = 'pdf';
 
 usepackage('stix2');
-defaultpen(fontsize(10pt));
+unitsize(0.5cm);
 
-path l = (0, -1cm) -- (3cm, 0);
-path h = (0, -2cm) -- (3cm, -1cm);
-path g = (0, 0) -- (3cm, -2cm);
+path l = (0, -1) -- (3, 0);
+path h = (0, -2) -- (3, -1);
+path g = (0, 0) -- (3, -2);
 
 pair P = point(g, 0.2);
 pair Q = point(g, 0.8);
