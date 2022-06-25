@@ -2,7 +2,7 @@
 
 In this subsection, we restrict ourselves to fields rather than arbitrary rings.
 
-We define \hyperref[def:bilinear_form]{bilinear forms} over arbitrary fields, although they are almost exclusively used over the field of real numbers. In the latter case, they are a special case of \hyperref[def:sesquilinear_form]{sesquilinear forms} over complex numbers.
+We define \hyperref[def:bilinear_form]{bilinear forms} over arbitrary fields, although they are almost exclusively used over the field of real numbers. In the latter case, they are a special case of \hyperref[def:sesquilinear_form]{sesquilinear forms} over complex numbers. This relationship is made precise via \hyperref[def:complexification]{complexification}. This is discussed further in \fullref{rem:real_field_extensions}.
 
 \begin{definition}\label{def:bilinear_form}\mcite[249]{Knapp2016BasicAlgebra}
   A \term{bilinear form} over the vector space \( V \) over \( \BbbK \) is a bilinear form is a \hyperref[def:multilinear_function]{multilinear function} with signature \( L: V \times V \to \BbbK \).
@@ -190,6 +190,85 @@ We define \hyperref[def:bilinear_form]{bilinear forms} over arbitrary fields, al
   \end{equation*}
 \end{proof}
 
+\begin{definition}\label{def:complexification}\mcite[def. 2.1]{Conrad2020Complexification}
+  Let \( V \) be a real vector space. The \term{complexification} \( V^\BbbC \) of \( V \) is the \hyperref[def:semimodule_direct_product]{direct sum} \( V \oplus V \) equipped with the canonical inclusion
+  \begin{equation*}
+    \begin{aligned}
+      &\iota_V: V \to V \oplus V, \\
+      &\iota_V(x) \coloneqq (x, 0_V).
+    \end{aligned}
+  \end{equation*}
+
+  We regard it as a complex vector space by defining scalar multiplication as
+  \begin{equation*}
+    (a + bi) \cdot (x, y) = (ax - by, bx + ay).
+  \end{equation*}
+
+  To avoid working with ordered pairs, we use that
+  \begin{equation*}
+    (x, y) = \iota(x) + i \cdot \iota(y).
+  \end{equation*}
+
+  Conversely, given a complex vector space \( W \), we define its \term{decomplexification} \( W^\BbbR \) as the same underlying Abelian group but with scalars restricted to real numbers.
+
+  Therefore, \( \iota \) embeds \( V \) into \( (V^\BbbC)^\BbbR = V \oplus V \).
+\end{definition}
+
+\begin{proposition}\label{thm:basis_of_complexification}
+  If \( B \) is a basis of the real vector space \( V \), then
+  \begin{equation*}
+    B^\BbbC \coloneqq \set{ \iota(b) \given b \in B }
+  \end{equation*}
+  is a basis of its \hyperref[def:complexification]{complexification} \( V^\BbbC \).
+\end{proposition}
+\begin{proof}
+  It is obvious that the vectors in \( B^\BbbC \) are linearly independent. We have to show that they span \( V^\BbbC \).
+
+  Let \( (x, y) \) be a vector of \( V^\BbbC = V \oplus V \). Then
+  \begin{equation*}
+    (x, y)
+    =
+    \iota(x) + i \cdot \iota(y)
+    =
+    \iota\parens*{ \sum_{b \in B} \pi_b(x) \cdot b } + i \cdot \iota\parens*{ \sum_{b \in B} \pi_b(y) \cdot b }
+    =
+    \sum_{b \in B} \parens[\Big]{ \pi_b(x) + i \cdot \pi_b(y) } \cdot \iota(b).
+  \end{equation*}
+\end{proof}
+
+\begin{theorem}[Complexification universal property]\label{thm:complexification_universal_property}
+  The \hyperref[def:complexification]{complexification} \( V^\BbbC \) of a real vector space \( V \) satisfies the following \hyperref[rem:universal_mapping_property]{universal mapping property}:
+  \begin{displayquote}
+    For every complex vector space \( W \) and every real linear map \( T: V \to W^\BbbR \), there exists a unique complex linear map \( T^\BbbC: V^\BbbC \to W \) such that the following diagram commutes:
+    \begin{equation}\label{eq:thm:complexification_universal_property/diagram}
+      \begin{aligned}
+        \includegraphics[page=1]{output/thm__complexification_universal_property.pdf}
+      \end{aligned}
+    \end{equation}
+  \end{displayquote}
+
+  Note that \( W^\BbbR \) and \( W \) have the same underlying abelian group but the scalar multiplication in \( W^\BbbR \) is restricted to real numbers.
+
+  Via \fullref{rem:universal_mapping_property}, \( (\anon*)^\BbbC \) becomes \hyperref[def:category_adjunction]{left adjoint} to the \hyperref[def:complexification]{decomplexification} \hyperref[def:concrete_category]{forgetful functor}
+  \begin{equation*}
+    (\anon*)^\BbbR: \cat{Vect}_\BbbC \to \cat{Vect}_\BbbR.
+  \end{equation*}
+\end{theorem}
+\begin{proof}
+  Given \( T: V \to W^\BbbR \) and \( x \in V \), the map \( T^\BbbC \) must satisfy
+  \begin{equation*}
+    T^\BbbC(x) = Tx.
+  \end{equation*}
+
+  This suggests the only possible definition
+  \begin{equation*}
+    \begin{aligned}
+      &T^\BbbC: V^\BbbC \to W, \\
+      &T^\BbbC(x + i \cdot y) \coloneqq Tx + i \cdot Ty.
+    \end{aligned}
+  \end{equation*}
+\end{proof}
+
 \begin{definition}\label{def:antilinear_function}\mimprovised
   We say that the function \( L: V \to W \) between complex vector spaces is \term{antilinear} if it satisfies the additivity condition \eqref{eq:def:semimodule/homomorphism/additive} and if
   \begin{equation}\label{eq:def:antilinear_function}
@@ -215,6 +294,59 @@ We define \hyperref[def:bilinear_form]{bilinear forms} over arbitrary fields, al
 
   This should not be confused with \hyperref[def:adjoint_operator]{Hermitian linear operators}.
 \end{definition}
+
+\begin{proposition}\label{thm:complexification_of_symmetric_bilinear_form}
+  If \( L: V \times V \to \BbbR \) is a real \hyperref[def:symmetric_function]{symmetric} \hyperref[def:bilinear_form]{bilinear form}, then its \hyperref[def:complexification]{complexification}
+  \begin{equation*}
+    \begin{aligned}
+      &L^\BbbC: V^\BbbC \times V^\BbbC \to \BbbC, \\
+      &L^\BbbC\parens[\Big]{ \iota(x) + i \cdot \iota(y), \iota(u) + i \cdot \iota(v) } \coloneqq L(x, u) + L(y, v) - i \cdot L(x, v) + i \cdot L(u, y).
+    \end{aligned}
+  \end{equation*}
+  is a \hyperref[def:hermitian_form]{Hermitian form}.
+
+  Furthermore,
+  \begin{equation*}
+    L^\BbbC(\iota(x), \iota(y)) = L(x, y).
+  \end{equation*}
+\end{proposition}
+\begin{proof}
+  The additivity of \( L^\BbbC = L \oplus L \) follows from the additivity of \( L \).
+
+  Note that
+  \begin{equation*}
+    (a + bi) (\iota(x) + i \cdot \iota(y)) = \iota(ax - by) + i \cdot \iota(bx + ay).
+  \end{equation*}
+
+  By the homogeneity and symmetry of \( L \), we have linearity in the first argument:
+  \begin{balign*}
+    &\phantom{{}={}}
+    L^\BbbC \parens[\Big]{ (a + bi) \parens[\Big]{ \iota(x) + i \cdot \iota(y) }, \iota(u) + i \cdot \iota(v) }
+    = \\ &=
+    L(ax - by, u) + L(bx + ay, v) - i \cdot L(ax - by, v) + i \cdot L(u, bx + ay)
+    = \\ &=
+    a L(x, u) - b L(y, u) + b L(x, v) + a L(y, v) - ai L(x, v) + bi L(y, v) + bi L(u, x) + ai L(u, y)
+    = \\ &=
+    (a + bi) L(x, u) + i(a + bi) L(u, y) - i(a + bi) L(x, v) + (a + bi) L(y, v)
+    = \\ &=
+    (a + bi) \cdot L^\BbbC \parens[\Big]{ \iota(x) + i \cdot \iota(y), \iota(u) + i \cdot \iota(v) }
+  \end{balign*}
+  and antilinearity in the second:
+  \begin{balign*}
+    &\phantom{{}={}}
+    L^\BbbC \parens[\Big]{ \iota(x) + i \cdot \iota(y), (a + bi) \parens[\Big]{ \iota(u) + i \cdot \iota(v) } }
+    = \\ &=
+    L(x, au - bv) + L(y, bu + av) - i \cdot L(x, bu + av) + i \cdot L(au - bv, y)
+    = \\ &=
+    a L(x, u) - b L(x, v) + b L(y, u) + a L(y, v) - bi L(x, u) - ai L(x, v) + ai L(u, y) - bi L(v, y)
+    = \\ &=
+    (a - bi) L(x, u) - i (a - bi) L(x, v) + i (a - bi) L(u, y) + (a - bi) L(y, v)
+    = \\ &=
+    (a - bi) \cdot L^\BbbC \parens[\Big]{ \iota(x) + i \cdot \iota(y), \iota(u) + i \cdot \iota(v) }.
+  \end{balign*}
+
+  The Hermitian property follows easily.
+\end{proof}
 
 \begin{definition}\label{def:conjugate_transpose}
   The \term{conjugate transpose} \( A^* \) of the matrix \( A \) over the complex numbers is the \hyperref[def:transpose_matrix]{transpose matrix} in which we take the complex conjugate of every entry.
@@ -457,25 +589,25 @@ We define \hyperref[def:bilinear_form]{bilinear forms} over arbitrary fields, al
 
   We have
   \begin{balign*}
-    Q(x + ty)
+    Q(x + y)
      & =
-    \inprod {x + ty} {x + ty}
+    \inprod {x + y} {x + y}
     =    \\ &=
-    Q(x) + \overline t \inprod x y + t \inprod y x + \abs{t}^2 Q(y)
+    Q(x) + \overline t \inprod x y +  \inprod y x + \abs{t}^2 Q(y)
     =    \\ &=
     Q(x) + 2\real \parens*{ t \overline{ \inprod x y} } + \abs{t}^2 Q(y).
   \end{balign*}
 
   Take \( t \coloneqq - \ifrac { \inprod x y} {Q(y)} \), so that
   \begin{equation*}
-    Q(x + ty)
+    Q(x + y)
     =
     Q(x) - 2 \frac {\abs{ \inprod x y}^2} {Q(y)} + \frac {\abs{ \inprod x y}^2} {Q(y)}
     =
     Q(x) - \frac {\abs{ \inprod x y}^2} {Q(y)}.
   \end{equation*}
 
-  Since \( Q(x + ty) \geq 0 \), it follows that
+  Since \( Q(x + y) \geq 0 \), it follows that
   \begin{balign*}
     Q(x) - \frac {\abs{ \inprod x y}^2} {Q(y)} &\geq 0                  \\
     Q(x) Q(y)                                 &\geq \abs{ \inprod x y}^2.
@@ -483,7 +615,7 @@ We define \hyperref[def:bilinear_form]{bilinear forms} over arbitrary fields, al
 
   \SubProof{Proof of equality} If \( x \) and \( y \) are linearly dependent, equality obviously holds. Conversely, suppose that equality holds. This implies that
   \begin{equation*}
-    Q(x + ty) = 0,
+    Q(x + y) = 0,
   \end{equation*}
   which by the positive definiteness of \( Q \) means that \( x = -ty \). Thus, \( x \) and \( y \) are linearly dependent.
 \end{proof}
