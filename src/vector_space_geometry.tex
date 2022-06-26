@@ -1,5 +1,7 @@
 \subsection{Vector space geometry}\label{subsec:vector_space_geometry}
 
+We will denote by \( \BbbK \) either the field of \hyperref[def:real_numbers]{real numbers} or the \hyperref[def:real_numbers]{complex numbers}.
+
 \begin{remark}\label{rem:real_field_extensions}
   When speaking about vector spaces, we usually restrict ourselves to vector spaces over \( \BbbR \) or, at most, \( \BbbC \). This restriction may seem arbitrary, however important concepts like \hyperref[def:geometric_ray]{rays} or \hyperref[def:convex_set]{convexity} requires the field to be an extension of \( \BbbR \), and it just so happens that, by \fullref{thm:fundamental_theorem_of_algebra} and \fullref{thm:no_finite_extensions_of_closed_fields}, the only nontrivial finite \hyperref[def:field/submodel]{field extension} of \( \BbbR \) is \( \BbbC \). It is technically possible to work with infinite field extensions, however in practice vector spaces over \( \BbbC \) are esoteric enough.
 
@@ -9,54 +11,203 @@
 \begin{definition}\label{def:geometric_shape}
   A \term{geometric shape} is an informal notion that refers to certain special subsets of a vector space, usually defined in a coordinate-independent manner. Shapes in two-dimensional spaces are called \term{figures} and shapes in three dimensions are called \term{surfaces}.
 
-  When two geometric shapes shapes intersect, we say that they are \term{incident}.
+  When two geometric shapes intersect, we say that they are \term{incident}. This relates to \hyperref[def:hypergraph/incidence]{(hyper)graph incidence} via \hyperref[def:quiver_geometric_realization]{geometric realizations}.
 \end{definition}
 
 \begin{definition}\label{def:point}
-  A \term{point} is a simple geometric \hyperref[def:geometric_shape]{shape} comprising a singleton subset of any set (usually a vector space or a topological space). We use the convention \fullref{rem:singleton_sets} and, unless the distinction is important, we do not distinguish between singleton sets and their only element - e.g. in \fullref{def:simplex/point}.
+  A \term{point} is a simple \hyperref[def:geometric_shape]{geometric shape} comprising a singleton subset of a topological space. We use the convention \fullref{rem:singleton_sets} and, unless the distinction is important, we do not distinguish between singleton sets and their only element --- see \fullref{def:simplex/point} for an example.
 
-  Points are also called vectors, which is justified by \fullref{def:euclidean_plane_coordinate_system}.
+  Within vector spaces points are also called vectors, which is justified by \fullref{def:euclidean_plane_coordinate_system}.
 \end{definition}
 
-\begin{definition}\label{def:euclidean_transformation}
-  The following bijections from \( \BbbR^n \) to \( \BbbR^n \) are collectively called \term{Euclidean transformations} or \term{rigid motions} in \( \BbbR^n \):
+\begin{definition}\label{def:affine_hull}\mimprovised
+  Let \( X \) be a vector space over \( \BbbK \). We say that the \hyperref[rem:linear_combinations]{linear combination}
+  \begin{equation*}
+    t_1 x_1 + \ldots + t_n x_n
+  \end{equation*}
+  with real coefficients is an \term{affine combination} if
+  \begin{equation*}
+    t_1 + \cdots + t_n = 1.
+  \end{equation*}
 
+  This can be expressed more succinctly by saying that for any real number \( \lambda \) and any vectors \( x \) and \( y \), we have
+  \begin{equation}\label{eq:def:affine_hull/combination}
+    \lambda x + (1 - \lambda) y.
+  \end{equation}
+
+  The \term{affine hull} of the set \( S \) is the set of all affine combinations of members of \( S \). This is a \hyperref[def:closure_operator]{closure operator}.
+
+  Geometrically, the affine hull of \( S \) is the smallest translated vector subspace of \( X \). Unlike the linear span, the affine hull does not necessarily contain the zero vector because it is not itself a vector subspace, but a translation of one.
+
+  \begin{figure}[!ht]
+    \centering
+    \includegraphics[page=1]{output/def__convex_hull.pdf}
+    \caption{The \hyperref[def:affine_hull]{affine}, \hyperref[def:conic_hull]{conic} and \hyperref[def:convex_hull]{convex} hulls of \( \set{ A, B, C } \).}\label{fig:def:convex_hull}
+  \end{figure}
+\end{definition}
+\begin{defproof}
+  We will show that the affine hull operator \( A: \pow(X) \to \pow(X) \) is a closure operator.
+
+  \SubProofOf[def:inflationary_function]{inflation} Obviously \( S \subseteq A(S) \).
+
+  \SubProofOf[def:magma/idempotent]{idempotence} Consider the affine combination \( \lambda x + (1 - \lambda) y \) of vectors from \( A(S) \). Suppose that \( x = t_x u_x + (1 - t_x) v_x \) and \( y = t_y u_y + (1 - t_y) v_y \), where \( u_x \), \( u_y \), \( v_x \) and \( v_y \) are vectors from \( S \).
+
+  Then
+  \begin{equation*}
+    \lambda x + (1 - \lambda) y
+    =
+    \lambda t_x u_x + \lambda (1 - t_x) v_x + (1 - \lambda) t_y u_y + (1 - \lambda) (1 - t_y) v_y.
+  \end{equation*}
+
+  This is an affine combination of members of \( S \). Therefore, \( A(A(S)) = A(S) \).
+
+  \SubProofOf[eq:def:partially_ordered_set/homomorphism/nonstrict]{monotonicity} If \( S_1 \subseteq S_2 \), then \( A(S_2) \) contains the affine combinations of the members of \( S_1 \) in addition to others. Hence, \( A(S_1) \subseteq A(S_2) \).
+\end{defproof}
+
+\begin{definition}\label{def:affine_operator}
+  We say that the function \( f: U \to V \) between vector spaces over \( \BbbK \) is an \term{affine operator} if any of the following equivalent conditions hold:
   \begin{thmenum}
-    \thmitem{def:euclidean_transformation/translation} For any vector \( v \in \BbbR^n \), the function
-    \begin{equation*}
-      \op{t}_v(x) \coloneqq x + v
-    \end{equation*}
-    is called a \term{translation} along the \term{direction} \( v \).
-
-    This easily generalizes to an arbitrary \hyperref[def:magma]{magma} \( (M, \cdot) \) by setting
-    \begin{equation*}
-      \op{t}_v(x) \coloneqq v \cdot x
-    \end{equation*}
-    for some \( v \in M \).
-
-    \thmitem{def:euclidean_transformation/dilation} For any scalar \( \lambda \in \BbbR^n \), the function
-    \begin{equation*}
-      \op{d}_\lambda(x) \coloneqq \lambda x
-    \end{equation*}
-    is called a \term{dilation} or \term{scaling} by \( \lambda \).
-
-    This easily generalizes to an arbitrary (left) \hyperref[def:magma]{module} \( (M, +, \cdot) \).
-
-    \thmitem{def:euclidean_transformation/homothety} A composition of a \hyperref[def:euclidean_transformation/dilation]{dilation} with a \hyperref[def:euclidean_transformation/translation]{translation} is called a \term{homothety}.
-
-    \thmitem{def:euclidean_transformation/rotation} For any point \( p \in \BbbR^n \) and any special (i.e. \hyperref[def:matrix_determinant]{determinant} one) \hyperref[def:unitary_matrix]{orthogonal matrix} \( A \in \op{O}_n(\BbbR) \), the function
-    \begin{equation*}
-      \op{rot}_{A,p}(x) \coloneqq p + A (x - p)
-    \end{equation*}
-    is called a \term{rotation} by \( A \) around \( p \).
-
-    \thmitem{def:euclidean_transformation/reflection} For any point \( p \in \BbbR^n \), the function
-    \begin{equation*}
-      \op{ref}_p(x) \coloneqq 2p - x
-    \end{equation*}
-    is called a \term{point reflection} or \term{inversion} with respect to the point \( p \).
+    \thmitem{def:affine_operator/translation} The map \( T(x) \coloneqq f(x) - f(0) \) is a linear operator.
+    \thmitem{def:affine_operator/combination} \( f \) preserves \hyperref[def:affine_hull]{affine combinations}. That is, for any real number \( \lambda \),
+    \begin{equation}\label{eq:def:affine_operator/combination}
+      f\parens[\Big]{ \lambda x + (1 - \lambda) y } = \lambda f(x) + (1 - \lambda) f(y).
+    \end{equation}
   \end{thmenum}
 \end{definition}
+\begin{defproof}
+  \ImplicationSubProof{def:affine_operator/translation}{def:affine_operator/combination} Suppose that \( T \) is linear. Then for an arbitrary real number \( \lambda \),
+  \begin{balign*}
+    f(\lambda x + (1 - \lambda) y)
+    &=
+    T(\lambda x + (1 - \lambda) y) + f(0)
+    = \\ &=
+    \lambda T(x) + (1 - \lambda) T(y) + f(0)
+    = \\ &=
+    \lambda \parens[\Big]{ f(x) - f(0) } + (1 - \lambda) \parens[\Big]{ f(y) - f(0) } + f(0)
+    = \\ &=
+    \lambda f(x) + (1 - \lambda) f(y).
+  \end{balign*}
+
+  We can cancel \( f(0) \) to obtain \eqref{eq:def:affine_operator/combination}.
+
+  \ImplicationSubProof{def:affine_operator/combination}{def:affine_operator/translation} Suppose that \eqref{eq:def:affine_operator/combination} holds. Then
+  \begin{balign*}
+    T(x + y)
+    &=
+    f(x + y) - f(0)
+    = \\ &=
+    f(1 \cdot x - 1 \cdot 0 + 1 \cdot y - 1 \cdot 0 + 1 \cdot 0) - f(0)
+    = \\ &=
+    \parens[\Big]{ f(x) - f(0) } + \parens[\Big]{ f(y) - f(0) } + f(0) - f(0)
+    = \\ &=
+    T(x) + T(y).
+  \end{balign*}
+
+  Also,
+  \begin{equation*}
+    T(\lambda x)
+    =
+    f(\lambda x + (1 - \lambda) 0) - f(0)
+    =
+    \lambda f(x) - \lambda f(0)
+    =
+    \lambda T(x).
+  \end{equation*}
+
+  This shows that \( T \) is a linear operator.
+\end{defproof}
+
+\begin{proposition}\label{thm:isometry_iff_affine_unitary_operator}\mcite[thm. 7.1]{Treil2017}
+  The endofunction \( f: V \to V \) over the real inner product space \( V \) is an \hyperref[def:isometry]{isometry} if and only if it is an \hyperref[def:affine_operator]{affine operator} whose linear part \( T(x) \coloneqq f(x) - f(0) \) is \hyperref[def:unitary_operator]{unitary}.
+\end{proposition}
+\begin{proof}
+  \SufficiencySubProof Suppose that \( f \) is an isometry.
+
+  First note that
+  \begin{equation*}
+    \inprod { f(x) } { f(y) } = \inprod x y.
+  \end{equation*}
+
+  Indeed, we have
+  \begin{equation*}
+    \norm{ f(x) - f(y) } = \norm{ f(x) } + \norm{ f(y) } - 2 \inprod { f(x) } { f(y) }
+  \end{equation*}
+  and
+  \begin{equation*}
+    \norm{ x - y } = \norm x + \norm y - 2 \inprod x y.
+  \end{equation*}
+
+  Therefore,
+  \begin{equation*}
+    \inprod { f(x) } { f(y) }
+    =
+    \frac{ \norm{ f(x) - f(y) } - \norm{ f(x) } - \norm{ f(y) } } 2
+    =
+    \frac{ \norm{ x - y } - \norm{ x } - \norm{ y } } 2
+    =
+    \inprod x y.
+  \end{equation*}
+
+  Now we can show additivity of \( T \):
+  \begin{balign*}
+    &\phantom{{}={}}
+    \norm{ T(x + y) - T(x) - T(y) }^2
+    = \\ &=
+    \norm{ f(x + y) - f(0) - f(x) + f(0) - f(y) + f(0) }^2
+    = \\ &=
+    \norm{ \parens{ f(x + y) - f(x) } - \parens{ f(y) - f(0) } }^2
+    = \\ &=
+    \norm{ f(x + y) - f(x) }^2 + \norm{ f(y) - f(0) }^2 - 2 \inprod{ f(x + y) - f(x) } { f(y) - f(0) }
+    = \\ &=
+    \norm{ x + y - x }^2 + \norm{y}^2 - 2 \inprod{x + y} y + 2 \inprod x y - 2 \inprod {x + y} 0 + 2 \inprod x 0
+    = \\ &=
+    2 \norm{y}^2 - 2 \inprod x y - 2 \norm{y}^2 + 2 \inprod x y.
+  \end{balign*}
+
+  The norm is zero, hence \( T(x + y) = T(x) + T(y) \).
+
+  Similarly,
+  \begin{balign*}
+    &\phantom{{}={}}
+    \norm{ T(\lambda x) - \lambda T(x) }^2
+    = \\ &=
+    \norm{ f(\lambda x) - f(0) - \lambda f(x) + \lambda f(0) }^2
+    = \\ &=
+    \norm{ f(\lambda x) - f(0) }^2 + \norm{ \lambda f(x) - \lambda f(0) }^2 - 2 \inprod{ f(\lambda x) - f(0) } { \lambda f(x) - \lambda f(0) }
+    = \\ &=
+    \norm{\lambda x}^2 + \lambda^2 \norm{x}^2 - 2 \lambda \inprod{ f(\lambda x) - f(0) } { f(x) - f(0) }
+    = \\ &=
+    2 \lambda^2 \norm{x}^2 - 2 \lambda^2 \inprod x x.
+  \end{balign*}
+
+  This norm is also zero, hence \( T(\lambda x) = \lambda T(x) \).
+
+  Finally, we must show that \( T \) is a unitary operator:
+  \begin{balign*}
+    \inprod{ T(x) }{ T(y) }
+    &=
+    \inprod{ f(x) - f(0) }{ f(y) - f(0) }
+    = \\ &=
+    \inprod{ f(x) }{ f(y) } - \inprod{ f(x) }{ f(0) } - \inprod{ f(0) }{ f(y) } + \inprod{ f(0) }{ f(0) }
+    = \\ &=
+    \inprod x y.
+  \end{balign*}
+
+  \NecessitySubProof Suppose that \( f(x) = Tx + f_0 \) for some unitary operator \( T \) and some vector \( f_0 \). Then
+  \begin{balign*}
+    \norm{ f(x) - f(y) }^2
+    &=
+    \norm{ Tx - f_0 - Ty + f_0 }^2
+    = \\ &=
+    \norm{ T(x - y) }^2
+    = \\ &=
+    \inprod{ T(x - y) }{ T(x - y) }
+    = \\ &=
+    \inprod{ x - y }{ T^{-1} T(x - y) }
+    = \\ &=
+    \norm{ x - y }^2.
+  \end{balign*}
+\end{proof}
 
 \begin{definition}\label{def:zero_locus}
   Let \( S \) be an arbitrary set and let \( M \) be a \hyperref[def:monoid]{monoid} with identity \( e \).
@@ -131,7 +282,7 @@
   Dually to \hyperref[def:geometric_line]{lines}, another particularly important \hyperref[def:hypersurface]{hypersurface} is a \term{hyperplane} in a vector space \( X \) over any field.
 
   \begin{thmenum}
-    \thmitem{def:hyperplane/subspace} A \term{linear hyperplane} is simply a subspace of \( X \) of \hyperref[thm:vector_space_dimension]{codimension} one. As in \fullref{def:geometric_line/subspace}, we define a \term{affine hyperplane} to be a \hyperref[def:euclidean_transformation/translation]{translation} of a linear hyperplane.
+    \thmitem{def:hyperplane/subspace} A \term{linear hyperplane} is simply a subspace of \( X \) of \hyperref[thm:vector_space_dimension]{codimension} one. As in \fullref{def:geometric_line/subspace}, we define a \term{affine hyperplane} to be a \hyperref[def:rigid_motion/translation]{translation} of a linear hyperplane.
 
     \thmitem{def:hyperplane/kernel} Linear hyperplanes (as defined in \fullref{def:hyperplane/subspace}) are simply zero \hyperref[def:zero_locus]{loci} (\hyperref[def:ring/kernel]{kernels}) of linear \hyperref[def:semimodule/homomorphism]{functionals}. and affine hyperplanes are zero loci of \hyperref[def:affine_operator]{affine functionals}.
   \end{thmenum}
@@ -225,9 +376,9 @@
   \begin{equation*}
     \sum_{k=1}^n t_k x_k
     =
-    s \sum_{k=1}^n \frac {t_k} s x_k
+    s \sum_{k=1}^n \frac{t_k} s x_k
     =
-    s \underbrace{\sum_{k=1}^{n-1} \frac {t_k} s x_k}_{\eqqcolon y} + t_n x_n.
+    s \underbrace{\sum_{k=1}^{n-1} \frac{t_k} s x_k}_{\eqqcolon y} + t_n x_n.
   \end{equation*}
 
   By the inductive hypothesis, \( y \in C \). Note that \( s \in [0, 1] \) and that \( s + t_n = 1 \) by definitions of \( s \). Then \( s y + t_n x_n \) is a binary convex combination that we know is contained in \( C \) by definition.
@@ -240,7 +391,7 @@
 \end{proof}
 
 \begin{definition}\label{def:affine_dependence}\mimprovised
-  Let \( V \) be a vector space over \( \BbbR \) and let \( B \) be a subset of \( V \). We say that the elements of \( B \) are \term{affinely independent} if there exists a nontrivial linear combination
+  Let \( X \) be a vector space over \( \BbbR \) and let \( B \) be a subset of \( X \). We say that the elements of \( B \) are \term{affinely independent} if there exists a nontrivial linear combination
   \begin{equation*}
     t_1 b_1 + \cdots + t_n b_n
   \end{equation*}
