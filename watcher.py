@@ -69,7 +69,7 @@ class BiberTask(Task):
 
     @property
     def command(self):
-        return f'biber {self.biber_path}'
+        return f'biber --quiet {self.biber_path}'
 
     async def post_process(self, runner: TaskRunner):
         runner.schedule(TeXTask(self.tex_path), str(self.biber_path))
@@ -167,7 +167,7 @@ class AsymptoteTask(Task):
 
     @property
     def command(self):
-        return f'asy -outname={self.aux_pdf_path} {self.src_path}'
+        return f'asy -quiet -outname={self.aux_pdf_path} {self.src_path}'
 
     async def post_process(self, runner: TaskRunner):
         shutil.copyfile(self.aux_pdf_path, self.build_pdf_path)

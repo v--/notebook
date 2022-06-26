@@ -7,7 +7,7 @@ DOC_SOURCE := notebook.cls notebook.tex bib/*.bib packages/*.sty src/*.tex $(FIG
 
 output/notebook.pdf: $(DOC_SOURCE)
 	$(COMPILER) -output-directory=aux -draftmode notebook.tex
-	biber aux/notebook.bcf
+	biber --quiet aux/notebook.bcf
 	$(COMPILER) -output-directory=aux -draftmode notebook.tex
 	$(COMPILER) -output-directory=aux notebook.tex
 	cat aux/notebook.pdf > output/notebook.pdf
@@ -17,7 +17,7 @@ output/%.pdf: tikzcd.cls packages/*.sty figures/%.tex
 	cat aux/$*.pdf > output/$*.pdf
 
 output/%.pdf: figures/%.asy
-	asy -outname=aux/$*.asy figures/$*.asy
+	asy -quiet -outname=aux/$*.asy figures/$*.asy
 	cat aux/$*.pdf > output/$*.pdf
 
 figures: $(FIGURES_TEX_PDF) $(FIGURES_ASY_PDF)
