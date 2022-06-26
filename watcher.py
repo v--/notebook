@@ -4,6 +4,7 @@ from datetime import datetime, timedelta
 from fnmatch import fnmatch
 from timeit import default_timer as timer
 from typing import Optional
+from enum import Enum
 import asyncio
 import os.path
 import pathlib
@@ -22,10 +23,16 @@ AUX_DIR = ROOT_DIR / 'aux'
 OUTPUT_DIR = ROOT_DIR / 'output'
 
 
+class WatchTarget(Enum):
+    all = 'all'
+    notebook = 'notebook'
+    figures = 'figures'
+
+
 class Task:
     command: str
     sublogger: Logger
-    out_buffer: int
+    out_buffer: Optional[int]
 
     def __eq__(self, other):
         return isinstance(other, Task) and self.command == other.command
@@ -44,7 +51,7 @@ class Task:
 
 
 class BiberTask(Task):
-    out_buffer: int = asyncio.subprocess.PIPE
+    out_buffer: Optional[int] = None
     biber_path: pathlib.Path
     tex_path: pathlib.Path
 
@@ -70,7 +77,7 @@ class BiberTask(Task):
 
 class TeXTask(Task):
     tex_path: pathlib.Path
-    out_buffer: int = asyncio.subprocess.DEVNULL
+    out_buffer: Optional[int] = asyncio.subprocess.DEVNULL
     _bcf_file_hash: Optional[int] = None
 
     def __init__(self, tex_path: pathlib.Path):
@@ -141,7 +148,7 @@ class TeXTask(Task):
 
 class AsymptoteTask(Task):
     src_path: pathlib.Path
-    out_buffer: int = asyncio.subprocess.PIPE
+    out_buffer: Optional[int] = None
 
     def __init__(self, src_path: pathlib.Path):
         self.src_path = src_path
@@ -182,8 +189,9 @@ class TaskRunner:
 
         proc = await asyncio.create_subprocess_shell(
             task.command,
+            stdin=asyncio.subprocess.DEVNULL,
             stdout=task.out_buffer,
-            stderr=task.out_buffer,
+            stderr=task.out_buffer
         )
 
         exit_code = await proc.wait()
@@ -231,42 +239,52 @@ async def iter_file_changes():
                 yield pathlib.Path(event.path)
 
 
-async def setup_watchers():
+async def setup_watchers(target: WatchTarget):
     runner = TaskRunner()
 
     async for path in iter_file_changes():
-        if fnmatch(path, 'tikzcd.cls') or fnmatch(path, 'packages/*.sty'):
-            figures_dir = pathlib.Path('figures')
+        if target in [WatchTarget.all, WatchTarget.figures]:
+            if fnmatch(path, 'tikzcd.cls') or fnmatch(path, 'packages/*.sty'):
+                figures_dir = pathlib.Path('figures')
 
-            for figure_path in figures_dir.glob('*.tex'):
-                runner.schedule(TeXTask(figure_path.resolve()), trigger=str(path))
+                for figure_path in figures_dir.glob('*.tex'):
+                    runner.schedule(TeXTask(figure_path.resolve()), trigger=str(path))
 
-            for figure_path in figures_dir.glob('*.asy'):
-                runner.schedule(AsymptoteTask(figure_path.resolve()), trigger=str(path))
+                for figure_path in figures_dir.glob('*.asy'):
+                    runner.schedule(AsymptoteTask(figure_path.resolve()), trigger=str(path))
 
-        if fnmatch(path, 'figures/*.tex'):
-            runner.schedule(TeXTask(path), trigger=str(path))
+            if fnmatch(path, 'figures/*.tex'):
+                runner.schedule(TeXTask(path), trigger=str(path))
 
-        if fnmatch(path, 'figures/*.asy'):
-            runner.schedule(AsymptoteTask(path), trigger=str(path))
+            if fnmatch(path, 'figures/*.asy'):
+                runner.schedule(AsymptoteTask(path), trigger=str(path))
 
-        if not fnmatch(path, 'output/notebook.pdf') and (
-            fnmatch(path, 'notebook.tex') or
-            fnmatch(path, 'notebook.cls') or
-            fnmatch(path, 'src/*.tex') or
-            fnmatch(path, 'output/*.pdf') or
-            fnmatch(path, 'packages/*.sty')
-        ):
+        if target in [WatchTarget.all, WatchTarget.notebook] and \
+            not fnmatch(path, 'output/notebook.pdf') and (
+                fnmatch(path, 'notebook.tex') or
+                fnmatch(path, 'notebook.cls') or
+                fnmatch(path, 'src/*.tex') or
+                fnmatch(path, 'output/*.pdf') or
+                fnmatch(path, 'packages/*.sty')
+            ):
             runner.schedule(TeXTask(pathlib.Path('notebook.tex')), trigger=str(path))
 
 
 if __name__ == '__main__':
     import sys
-    logger.remove()
-    logger.add(sys.stdout, colorize=True, format='<green>{time:HH:mm:ss}</green> | <level>{level:7}</level> | {extra[name]} | <level>{message}</level>')
 
-    with logger.contextualize(name='<system>'):
-        try:
-            asyncio.run(setup_watchers())
-        except KeyboardInterrupt:
-            logger.info('Gracefully shutting down')
+    try:
+        target = WatchTarget[sys.argv[1]]
+    except IndexError:
+        print('What to watch?', file=sys.stderr)
+    except KeyError:
+        print(f'Invalid target {sys.argv[1]}. Expected {" or ".join(repr(t.value) for t in WatchTarget)}.', file=sys.stderr)
+    else:
+        logger.remove()
+        logger.add(sys.stdout, colorize=True, format='<green>{time:HH:mm:ss}</green> | <level>{level:7}</level> | {extra[name]} | <level>{message}</level>')
+
+        with logger.contextualize(name='<system>'):
+            try:
+                asyncio.run(setup_watchers(target))
+            except KeyboardInterrupt:
+                logger.info('Gracefully shutting down')

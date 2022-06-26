@@ -27,7 +27,10 @@ format-figures:
 
 # I have implemented a very useful build system for LaTeX with log processing and debouncing
 watch:
-	@poetry run python watcher.py
+	@poetry run python watcher.py all
+
+watch-figures:
+	@poetry run python watcher.py figures
 
 git-commit-info: .git/refs/heads/master
 	LC_ALL=en_US.UTF-8 git log --max-count 1 --format=format:'hash={%h},date={%cd}' --date='format:%d %B %Y' HEAD > git-commit-info
