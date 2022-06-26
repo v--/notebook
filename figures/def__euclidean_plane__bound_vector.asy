@@ -10,11 +10,8 @@ pair R = (-2, 0.5);
 path PQ = P -- Q;
 path PR = P -- R;
 
-draw(PQ, arrow=Arrow(TeXHead));
-label(Label('$\overrightarrow{PQ}$', position=MidPoint), align=SE, PQ);
-
-draw(PR, arrow=Arrow(TeXHead));
-label(Label('$\overrightarrow{PR}$', position=MidPoint), align=SW, PR);
+draw(PQ, arrow=Arrow(TeXHead), L=Label('$\overrightarrow{PQ}$', position=MidPoint), align=SE);
+draw(PR, arrow=Arrow(TeXHead), L=Label('$\overrightarrow{PR}$', position=MidPoint), align=SW);
 
 dot(P);
 label(Label('$P$', position=MidPoint), align=S, P);

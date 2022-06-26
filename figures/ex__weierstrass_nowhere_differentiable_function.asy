@@ -1,10 +1,10 @@
-import graph;
-
 settings.outformat = 'pdf';
 
 size(15, 7, keepAspect=false);
 usepackage('stix2');
 unitsize(1cm);
+
+import graph;
 
 real a = 0.9;
 real b = 7;

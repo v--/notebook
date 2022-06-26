@@ -81,6 +81,7 @@
 \RequirePackage{xspace}
 \RequirePackage{enumitem}
 \RequirePackage{graphicx}
+\RequirePackage{graphbox}
 \RequirePackage{crossreftools}
 \RequirePackage{csquotes}
 

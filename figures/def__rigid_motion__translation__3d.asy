@@ -10,15 +10,15 @@ import three;
 currentprojection = perspective(camera=(1.5, 1, 1.5));
 
 transform3 f = {
-  {1, 0, 0, -1},
+  {1, 0, 0, -0.5},
   {0, 1, 0, 1.5},
-  {0, 0, 1, 2},
+  {0, 0, 1, 0},
   {0, 0, 0, 1}
 };
 
-draw(-6X -- 2.5X, gray);
+draw(-4X -- 2.5X, gray);
 draw(-2Y -- 3.5Y, gray);
-draw(-2.5Z -- 3Z, gray);
+draw(-2.5Z -- 2Z, gray);
 
 draw(unitcube, gray);
 draw(f * unitcube, white);

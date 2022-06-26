@@ -1,8 +1,9 @@
 settings.outformat = 'pdf';
-import patterns;
 
 usepackage('stix2');
 unitsize(1cm);
+
+import patterns;
 
 path l = (0, -1) -- (3, 0);
 draw(l);

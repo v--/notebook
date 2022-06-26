@@ -16,6 +16,13 @@ transform3 f = {
   {0, 0, 0, 1}
 };
 
+transform3 f = {
+  {1, 0, 0, 0},
+  {0, 0, -1, 0},
+  {0, -1, 0, 0},
+  {0, 0, 0, 1}
+};
+
 draw(f * unitcube, white);
 
 draw(-1.5X -- 1.5X, gray);
