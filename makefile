@@ -34,3 +34,6 @@ watch-figures:
 
 git-commit-info: .git/refs/heads/master
 	LC_ALL=en_US.UTF-8 git log --max-count 1 --format=format:'hash={%h},date={%cd}' --date='format:%d %B %Y' HEAD > git-commit-info
+
+clean:
+	rm --recursive aux/* output/*
