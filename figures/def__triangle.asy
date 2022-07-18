@@ -29,8 +29,8 @@ draw(
   arc(
     B,
     r=0.3,
-    angle1=degrees(atan2((A - B).y, (A - B).x)),
-    angle2=degrees(atan2((C - B).y, (C - B).x))
+    angle1=degrees(atan2((C - B).y, (C - B).x)),
+    angle2=degrees(atan2((A - B).y, (A - B).x))
   ),
   L=Label('$\\beta$', position=MidPoint)
 );

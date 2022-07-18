@@ -5,16 +5,16 @@ unitsize(1cm);
 
 import graph;
 
-pair v0 = (1, 1 / 3);
-pair v1 = (4, 11 / 6);
-pair v2 = (2, 13 / 3);
+pair p = (1, 1 / 3);
+pair q = (4, 11 / 6);
+pair r = (2, 13 / 3);
 
-draw(v0 -- v1, arrow=Arrow(TeXHead));
-draw(v0 -- v2, arrow=Arrow(TeXHead));
+draw(p -- q, arrow=Arrow(TeXHead));
+draw(p -- r, arrow=Arrow(TeXHead));
 
-draw(v0 -- (v0.x, v2.y), dotted);
-draw((v0.x, v1.y) -- v1, dashed, L=Label('$x_1$', align=N));
-draw((v0.x, v2.y) -- v2, dashed, L=Label('$x_2$', align=S));
+draw(p -- (p.x, r.y), dotted);
+draw((p.x, q.y) -- q, dashed, L=Label('$x_r$', align=N));
+draw((p.x, r.y) -- r, dashed, L=Label('$x_s$', align=S));
 
 xaxis(
   arrow=Arrow(TeXHead),
