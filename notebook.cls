@@ -97,6 +97,7 @@
 \RequirePackage{bigints}
 \RequirePackage{xfrac}
 \RequirePackage{forest}
+\RequirePackage{cancel}
 
 % Custom code
 \RequirePackage{packages/math_macros}
