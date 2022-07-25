@@ -5,25 +5,43 @@ unitsize(1cm);
 
 import graph;
 
-pair p = (1, 1 / 3);
-pair q = (4, 11 / 6);
-pair r = (2, 13 / 3);
+pair O = (0, 0);
+pair P = (9 / 4, 9 / 8);
+pair Q = (3 / 4, 3);
 
-draw(p -- q, arrow=Arrow(TeXHead));
-draw(p -- r, arrow=Arrow(TeXHead));
+draw(O -- P, arrow=Arrow(TeXHead), L=Label('$r$', position=EndPoint));
+draw(O -- Q, arrow=Arrow(TeXHead), L=Label('$s$', position=EndPoint));
 
-draw(p -- (p.x, r.y), dotted);
-draw((p.x, q.y) -- q, dashed, L=Label('$x_r$', align=N));
-draw((p.x, r.y) -- r, dashed, L=Label('$x_s$', align=S));
-
-xaxis(
+draw(
+  arc(
+    O,
+    r=0.9,
+    angle1=degrees(atan2(P.y, P.x)),
+    angle2=degrees(atan2(Q.y, Q.x))
+  ),
   arrow=Arrow(TeXHead),
-  above=true,
-  xmin=-0.2
+  L=Label('$\\sphericalangle(r, s)$', position=0.8, align=NE)
 );
 
-yaxis(
+draw(
+  arc(
+    O,
+    r=0.9,
+    angle1=degrees(atan2(Q.y, Q.x)),
+    angle2=180 + degrees(atan2(P.y, P.x))
+  ),
+  dotted,
+  arrow=Arrow(TeXHead)
+);
+
+draw(
+  arc(
+    O,
+    r=0.9,
+    angle1=180 + degrees(atan2(P.y, P.x)),
+    angle2=360 + degrees(atan2(P.y, P.x))
+  ),
+  dotted,
   arrow=Arrow(TeXHead),
-  above=true,
-  ymin=-0.2
+  L=Label('$\\sphericalangle(s, r)$', position=BeginPoint, align=SW)
 );
