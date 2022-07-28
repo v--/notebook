@@ -18,7 +18,7 @@ import texoutparse
 
 DEBOUNCE_THRESHOLD = timedelta(seconds=1)
 TEX_LOG_ENCODING = 'latin-1'
-ROOT_DIR = pathlib.Path('.')
+ROOT_DIR = pathlib.Path('.').resolve()
 AUX_DIR = ROOT_DIR / 'aux'
 OUTPUT_DIR = ROOT_DIR / 'output'
 
@@ -58,7 +58,7 @@ class BiberTask(Task):
     def __init__(self, biber_path: pathlib.Path, tex_path: pathlib.Path):
         self.biber_path = biber_path
         self.tex_path = tex_path
-        self.sublogger = logger.bind(name=str(self.biber_path.relative_to(ROOT_DIR)))
+        self.sublogger = logger.bind(name=str(os.path.relpath(self.biber_path, ROOT_DIR)))
 
     def __repr__(self):
         return f'BiberTask({repr(self.biber_path)})'
@@ -80,9 +80,9 @@ class TeXTask(Task):
     out_buffer: Optional[int] = asyncio.subprocess.DEVNULL
     _bcf_file_hash: Optional[int] = None
 
-    def __init__(self, tex_path: pathlib.Path):
-        self.tex_path = tex_path
-        self.sublogger = logger.bind(name=str(self.tex_path.relative_to(ROOT_DIR)))
+    def __init__(self, tex_path: pathlib.Path | str):
+        self.tex_path = pathlib.Path(tex_path)
+        self.sublogger = logger.bind(name=str(os.path.relpath(self.tex_path, ROOT_DIR)))
 
     def __repr__(self):
         return f'TeXTask({repr(self.tex_path)})'
@@ -150,8 +150,8 @@ class AsymptoteTask(Task):
     src_path: pathlib.Path
     out_buffer: Optional[int] = None
 
-    def __init__(self, src_path: pathlib.Path):
-        self.src_path = src_path
+    def __init__(self, src_path: pathlib.Path | str):
+        self.src_path = pathlib.Path(src_path)
         self.sublogger = logger.bind(name=str(self.src_path))
 
     def __repr__(self):
@@ -236,7 +236,7 @@ async def iter_file_changes():
 
         async for event in inotify:
             if event.path is not None:
-                yield pathlib.Path(event.path)
+                yield os.path.relpath(event.path, ROOT_DIR)
 
 
 async def setup_watchers(target: WatchTarget):
@@ -266,7 +266,7 @@ async def setup_watchers(target: WatchTarget):
                 fnmatch(path, 'src/*.tex') or
                 fnmatch(path, 'output/*.pdf') or
                 fnmatch(path, 'packages/*.sty')
-            ):
+        ):
             runner.schedule(TeXTask(pathlib.Path('notebook.tex')), trigger=str(path))
 
 
