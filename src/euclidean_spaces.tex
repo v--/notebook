@@ -147,7 +147,7 @@
       \includegraphics[align=c]{output/def__rigid_motion__translation__3d.pdf}
       \hfill
       \hfill
-      \caption{Translation of the unit square in \( \BbbR^2 \) and unit cube in \( \BbbR^3 \).}\label{fig:def/rigid_motion/translation}
+      \caption{Translation of the unit square in \( \BbbR^2 \) and unit cube in \( \BbbR^3 \).}\label{fig:def:rigid_motion/translation}
     \end{figure}
 
     The term \enquote{translation} generalizes to an arbitrary \hyperref[def:magma]{magma} via
@@ -164,10 +164,10 @@
       \includegraphics[align=c]{output/def__rigid_motion__rotation__3d.pdf}
       \hfill
       \hfill
-      \caption{Rotation of the unit square in \( \BbbR^2 \) and unit cube in \( \BbbR^3 \).}\label{fig:def/rigid_motion/rotation}
+      \caption{Rotation of the unit square in \( \BbbR^2 \) and unit cube in \( \BbbR^3 \).}\label{fig:def:rigid_motion/rotation}
     \end{figure}
 
-    \thmitem{def:rigid_motion/reflection} The \term{Householder reflection} with \term{normal vector} \( v \) is, assuming \( \norm v = 1 \),
+    \thmitem{def:rigid_motion/householder_reflection} The \term{Householder reflection} with \term{normal vector} \( v \) is, assuming \( \norm v = 1 \),
     \begin{equation*}
       f(x) \coloneqq x - (2 \inprod x v) v.
     \end{equation*}
@@ -185,13 +185,33 @@
 
     \begin{figure}[!ht]
       \hfill
-      \includegraphics[align=c]{output/def__rigid_motion__reflection__2d.pdf}
+      \includegraphics[align=c]{output/def__rigid_motion__householder_reflection__2d.pdf}
       \hfill
-      \includegraphics[align=c]{output/def__rigid_motion__reflection__3d.pdf}
+      \includegraphics[align=c]{output/def__rigid_motion__householder_reflection__3d.pdf}
       \hfill
       \hfill
-      \caption{Reflection of the unit square in \( \BbbR^2 \) and unit cube in \( \BbbR^3 \).}\label{fig:def/rigid_motion/reflection}
+      \caption{Householder reflection of the unit square in \( \BbbR^2 \) and unit cube in \( \BbbR^3 \).}\label{fig:def:rigid_motion/householder_reflection}
     \end{figure}
+
+    \thmitem{def:rigid_motion/point_reflection} Similarly, the \term{point reflection} about \( O \) is
+    \begin{equation*}
+      f(x) \coloneqq x - 2\vect{Ox} = 2O - x.
+    \end{equation*}
+
+    \begin{figure}[!ht]
+      \hfill
+      \includegraphics[align=c]{output/def__rigid_motion__point_reflection__2d.pdf}
+      \hfill
+      \includegraphics[align=c]{output/def__rigid_motion__point_reflection__3d.pdf}
+      \hfill
+      \hfill
+      \caption{Point reflection of the unit square in \( \BbbR^2 \) and unit cube in \( \BbbR^3 \).}\label{fig:def:rigid_motion/point_reflection}
+    \end{figure}
+
+    \thmitem{def:rigid_motion/orthogonal_projection} The \term{orthogonal projection} onto the affine subspace \( A \) is, given an orthonormal \hyperref[def:affine_coordinate_system]{affine coordinate system} \( O e_1 \cdots e_m \) of \( A \),
+    \begin{equation*}
+      f(x) \coloneqq O + \sum_{k=1}^m \inprod x {e_k} \cdot e_k.
+    \end{equation*}
   \end{thmenum}
 \end{definition}
 
@@ -217,6 +237,15 @@
   \end{equation*}
 \end{proof}
 
+\begin{proposition}\label{thm:orthogonal_projection_minimizes_distance}
+  The \hyperref[def:rigid_motion/orthogonal_projection]{orthogonal projection} \( y_0 \) of a point \( x_0 \) onto the affine subspace \( A \) is the unique point in \( A \) that solves the optimization problem
+  \begin{equation*}
+     \min_{a \in A} \norm{x - a} \to \min.
+  \end{equation*}
+
+  Furthermore, the vector \( \op{x_0 y_0} \) is orthogonal to every vector in the direction \( \vect A \).
+\end{proposition}
+
 \begin{definition}\label{def:half_space}\mcite[41]{Clarke2013}
   Given a \hyperref[def:affine_hyperplane]{hyperplane} \( H \) in \( \BbbR^n \) defined by the affine functional \( f(x) = \inprod l x - a \), its \term{closed half-spaces} are defined as
   \begin{equation*}
@@ -237,6 +266,50 @@
 
   If the inequalities are strict, we instead obtain \term{open half-spaces}.
 \end{definition}
+
+\begin{definition}\label{def:equidistant_points}
+  We say that a set of points \( A \) is \enquote{equidistant} from \( x \) if every point \( y \) in \( A \) has equal distance \( \norm{y - x} \) from \( x \).
+\end{definition}
+
+\begin{proposition}\label{thm:segment_midpoint}
+  Let \( x \) and \( y \) be distinct points. The convex combination \( \ifrac {x + y} 2 \) is the unique point of the \hyperref[def:line_segment]{segment} \( [x, y] \) that is \hyperref[def:equidistant_points]{equidistant} from both \( x \) and \( y \). We call it the \term{midpoint} of the segment.
+\end{proposition}
+\begin{proof}
+  Let \( z = \lambda x + (1 - \lambda) y \) be a convex combination that is equidistant from \( x \) and from \( y \).
+
+  Then
+  \begin{equation*}
+    \norm{ z - x }
+    =
+    \norm{ \lambda x + (1 - \lambda) y - x }
+    =
+    \norm{ (\lambda - 1) x + (1 - \lambda) y }
+    =
+    (1 - \lambda) \norm{ y - x }.
+  \end{equation*}
+
+  Analogously,
+  \begin{equation*}
+    \norm{ z - y }
+    =
+    \norm{ \lambda x + (1 - \lambda) y - y }
+    =
+    \norm{ \lambda x - \lambda y }
+    =
+    \lambda \norm{ x - y }.
+  \end{equation*}
+
+  From the equidistance assumption,
+  \begin{equation*}
+    (1 - \lambda) \norm{ y - x } = \lambda \norm{ x - y }.
+  \end{equation*}
+
+  Since the points \( x \) and \( y \) are distinct, \( \norm{ y - x } \neq 0 \), hence we can cancel it to obtain
+  \begin{equation*}
+    1 - \lambda = \lambda,
+  \end{equation*}
+  implying that \( \lambda = \ifrac 1 2 \).
+\end{proof}
 
 \begin{definition}\label{def:normal_vector}\mimprovised
   A \term{normal vector} to an \hyperref[def:affine_subspace]{affine subspace} \( L \) is a nonzero vector that is \hyperref[def:orthogonality]{orthogonal} to the direction \( \vect L \).

@@ -10,13 +10,6 @@ import three;
 currentprojection = perspective(camera=(-0.2, 0.3, 0.2));
 
 transform3 f = {
-  {1 / 3, -2 / 3, -2 / 3, 0},
-  {-2 / 3, 1 / 3, -2 / 3, 0},
-  {-2 / 3, -2 / 3, 1 / 3, 0},
-  {0, 0, 0, 1}
-};
-
-transform3 f = {
   {1, 0, 0, 0},
   {0, 0, -1, 0},
   {0, -1, 0, 0},
