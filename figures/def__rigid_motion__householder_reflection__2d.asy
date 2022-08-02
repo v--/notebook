@@ -3,32 +3,30 @@ settings.outformat = 'pdf';
 usepackage('stix2');
 unitsize(1.5cm);
 
-import graph;
+pair O = -1 / 10 * (1, 1);
+pair v = sqrt(2) / 2 * (1, 1);
 
-real angle = 4;
-transform f = (
+transform g = (
   0, 0,
-  cos(angle), sin(angle),
-  sin(angle), -cos(angle)
+  2 * v.x * v.x, 2 * v.y * v.x,
+  2 * v.x * v.y, 2 * v.y * v.y
 );
 
-pair v = (
-  sqrt(1 / 2 + cos(angle) / 2),
-  -sqrt(1 / 2 - cos(angle) / 2)
+transform f = (
+  g.xx * O.x + g.xy * O.y, g.yx * O.x + g.yy * O.y,
+  1 - g.xx,   - g.yx,
+    - g.xy, 1 - g.yy
 );
+
+void trajectory(pair p) {
+  dot(p, linewidth(2));
+  draw(p -- f * p, arrow=Arrow(TeXHead));
+}
 
 fill(unitsquare, gray);
-dot((0.5, 1));
 fill(f * unitsquare, mediumgray);
-dot(f * (0.5, 1));
-draw(v -- -v, dashed);
+draw((O.x + v.y, O.y - v.x) -- (O.x - v.y, O.y + v.x), gray + dashed);
 
-xaxis(
-  xmax=1.2,
-  above=true
-);
-
-yaxis(
-  ymax=1.2,
-  above=true
-);
+trajectory((0, 0));
+trajectory((1, 0));
+trajectory((0, 1));

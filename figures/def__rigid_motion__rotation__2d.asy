@@ -5,24 +5,28 @@ unitsize(1.5cm);
 
 import graph;
 
-real angle = 2.5;
-transform f = (
-  0, 0,
-  cos(angle), -sin(angle),
-  sin(angle), cos(angle)
-);
+real final_angle = 2.5;
+
+transform rot(real angle) {
+  return (
+    0, 0,
+    cos(angle), -sin(angle),
+    sin(angle), cos(angle)
+  );
+};
+
+void trajectory(pair p) {
+  dot(p, linewidth(2));
+
+  pair f(real angle) {
+    return rot(angle) * p;
+  }
+
+  draw(graph(f, 0, final_angle), arrow=Arrow(TeXHead));
+}
 
 fill(unitsquare, gray);
-dot((0.5, 1));
-fill(f * unitsquare, mediumgray);
-dot(f * (0.5, 1));
+fill(rot(final_angle) * unitsquare, mediumgray);
 
-xaxis(
-  xmax=1.2,
-  above=true
-);
-
-yaxis(
-  ymax=1.2,
-  above=true
-);
+trajectory((1, 1));
+trajectory((0, 1));

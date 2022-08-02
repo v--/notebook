@@ -1,34 +1,54 @@
 settings.outformat = 'pdf';
 settings.prc = false;
-settings.render = 0;
+settings.render = 5;
 
 usepackage('stix2');
-unitsize(1cm);
+unitsize(1.5cm);
 
 import three;
+import graph3;
 
-currentprojection = perspective(camera=(-0.5, -3, 1.5));
+currentprojection = perspective(camera=(-0.5, -2, 1.5));
+currentlight = (-1, -0.5, 5);
 
-real angle_f = 2;
-transform3 f = {
-  {cos(angle_f), -sin(angle_f), 0, 0},
-  {sin(angle_f), cos(angle_f), 0, 0},
-  {0, 0, 1, 0},
-  {0, 0, 0, 1}
+real final_angle_f = -pi/2;
+real final_angle_g = 2.5;
+
+transform3 rot(real factor) {
+  real angle_f = factor * final_angle_f;
+  real angle_g = factor * final_angle_g;
+
+  transform3 g = {
+    {cos(angle_g), -sin(angle_g), 0, 0},
+    {sin(angle_g), cos(angle_g), 0, 0},
+    {0, 0, 1, 0},
+    {0, 0, 0, 1}
+  };
+
+  transform3 f = {
+    {1, 0, 0, 0},
+    {0, cos(angle_f), -sin(angle_f), 0},
+    {0, sin(angle_f), cos(angle_f), 0},
+    {0, 0, 0, 1}
+  };
+
+  return g * f;
 };
 
-real angle_g = -1;
-transform3 g = {
-  {1, 0, 0, 0},
-  {0, cos(angle_g), -sin(angle_g), 0},
-  {0, sin(angle_g), cos(angle_g), 0},
-  {0, 0, 0, 1}
-};
+void trajectory(triple p) {
+  dot(p, linewidth(2));
 
-draw(unitcube, gray);
+  triple f(real factor) {
+    return rot(factor) * p;
+  }
 
-draw(-1.5X -- 1.5X, gray);
-draw(-1.5Y -- 1.5Y, gray);
-draw(-1.5Z -- 1.5Z, gray);
+  draw(graph(f, 0, 1), arrow=Arrow3(TeXHead2()));
+}
 
-draw(f * g * unitcube, white);
+draw(unitcube, gray + opacity(0.75));
+draw(rot(1) * unitcube, white + opacity(0.75));
+
+dot((0, 0, 0), linewidth(2));
+trajectory((0, 0, 1));
+trajectory((1, 0, 1));
+trajectory((1, 0, 0));

@@ -167,20 +167,22 @@
       \caption{Rotation of the unit square in \( \BbbR^2 \) and unit cube in \( \BbbR^3 \).}\label{fig:def:rigid_motion/rotation}
     \end{figure}
 
-    \thmitem{def:rigid_motion/householder_reflection} The \term{Householder reflection} with \term{normal vector} \( v \) is, assuming \( \norm v = 1 \),
+    \thmitem{def:rigid_motion/householder_reflection} The \term{Householder reflection} about the \hyperref[def:geometric_ray]{ray} \( r \) with origin \( O \) and unit directional vector \( v \) is
     \begin{equation*}
-      f(x) \coloneqq x - (2 \inprod x v) v.
+      f(x) \coloneqq x - (2 \inprod {x - O} v) v.
     \end{equation*}
+
+    The vector \( v \) is interpreted as a \hyperref[def:normal_vector]{normal vector} of the \hyperref[def:affine_hyperplane]{affine hypersurface} \( O + \braket{ v }^\perp \).
 
     This can be expressed in matrix form as
     \begin{equation*}
       f(x)
       =
-      x - (2 x^T v) v
+      x - (2 (x - O)^T v) v
       \reloset {\ref{thm:dot_product_and_outer_product}} =
-      x - 2 v v^T x
+      x - 2 v v^T (x - O)
       =
-      (I_n - 2 v v^T) x.
+      2 v v^T O + (I_n - 2 v v^T) x.
     \end{equation*}
 
     \begin{figure}[!ht]
@@ -207,43 +209,42 @@
       \hfill
       \caption{Point reflection of the unit square in \( \BbbR^2 \) and unit cube in \( \BbbR^3 \).}\label{fig:def:rigid_motion/point_reflection}
     \end{figure}
-
-    \thmitem{def:rigid_motion/orthogonal_projection} The \term{orthogonal projection} onto the affine subspace \( A \) is, given an orthonormal \hyperref[def:affine_coordinate_system]{affine coordinate system} \( O e_1 \cdots e_m \) of \( A \),
-    \begin{equation*}
-      f(x) \coloneqq O + \sum_{k=1}^m \inprod x {e_k} \cdot e_k.
-    \end{equation*}
   \end{thmenum}
 \end{definition}
 
-\begin{proposition}\label{thm:rigid_motion_fixed_point}
-  The point \( x_0 \) is a \hyperref[def:fixed_point]{fixed point} of the \hyperref[def:rigid_motion]{rigid motion} \( f(x) \) if and only if
-  \begin{equation}\label{eq:thm:rigid_motion_fixed_point}
-    f(x) = x_0 + T(x - x_0),
-  \end{equation}
-  where \( T \) is the linear part of \( f \).
-\end{proposition}
-\begin{proof}
-  \SufficiencySubProof Let \( x_0 \) be a fixed point of \( f(x) \).
-
-  Then \( T(x) \coloneqq f(x + x_0) - f(x_0) \) is a linear operator since \( f \) is affine. Thus,
+\begin{definition}\label{def:orthogonal_projection}
+  Let \( L \) be an affine subspace of \( \BbbR^n \) of dimension \( m \) and let \( O e_1 \cdots e_m \) be an orthogonal \hyperref[def:affine_coordinate_system]{affine coordinate system} of \( L \). Define the matrix
   \begin{equation*}
-    T(x - x_0) = f(x) - f(x_0) = f(x) - x_0,
+    A \coloneqq \parens*
+      {
+        \begin{array}{c|c|c}
+          e_1 & \cdots & e_m
+        \end{array}
+      }
   \end{equation*}
-  and \eqref{eq:thm:rigid_motion_fixed_point} follows.
-
-  \NecessitySubProof Suppose that \eqref{eq:thm:rigid_motion_fixed_point} holds. Then
+  and the affine operator
   \begin{equation*}
-    f(x_0) = x_0 + T(x_0 - x_0) = x_0.
+    f(v) \coloneqq O + A^T (A A^T)^{-1} A(v - O).
   \end{equation*}
-\end{proof}
+
+  We call \( f(v) \) the \term{orthogonal projection} or \term{shadow} onto \( L \).
+
+  \begin{figure}[!ht]
+    \hfill
+    \includegraphics[align=c]{output/def__rigid_motion__orthogonal_projection.pdf}
+    \hfill
+    \hfill
+    \caption{Orthogonal projection of the unit cube in \( \BbbR^3 \) onto an affine plane.}\label{fig:def:orthogonal_projection}
+  \end{figure}
+\end{definition}
 
 \begin{proposition}\label{thm:orthogonal_projection_minimizes_distance}
-  The \hyperref[def:rigid_motion/orthogonal_projection]{orthogonal projection} \( y_0 \) of a point \( x_0 \) onto the affine subspace \( A \) is the unique point in \( A \) that solves the optimization problem
+  The \hyperref[def:orthogonal_projection]{orthogonal projection} \( y_0 \) of a point \( x_0 \) onto the affine subspace \( A \) is the unique point in \( A \) that solves the optimization problem
   \begin{equation*}
-     \min_{a \in A} \norm{x - a} \to \min.
+     \min_{a \in A} \norm{x_0 - a}.
   \end{equation*}
 
-  Furthermore, the vector \( \op{x_0 y_0} \) is orthogonal to every vector in the direction \( \vect A \).
+  Furthermore, the vector \( \vect{x_0 y_0} \) is orthogonal to every vector in the \hyperref[def:affine_subspace]{direction} \( \vect A \).
 \end{proposition}
 
 \begin{definition}\label{def:half_space}\mcite[41]{Clarke2013}
@@ -260,8 +261,8 @@
 
   \begin{figure}[!ht]
     \centering
-    \includegraphics{output/def__half_space.pdf}
-    \caption{Half-planes}\label{fig:def:half_space}
+    \includegraphics{output/def__half_space__half_plane.pdf}
+    \caption{Half-planes}\label{fig:def:half_space/half_plane}
   \end{figure}
 
   If the inequalities are strict, we instead obtain \term{open half-spaces}.

@@ -1,13 +1,14 @@
 settings.outformat = 'pdf';
 settings.prc = false;
-settings.render = 0;
+settings.render = 5;
 
 usepackage('stix2');
-unitsize(1cm);
+unitsize(1.5cm);
 
 import three;
 
-currentprojection = perspective(camera=(-0.2, 0.3, 0.2));
+currentprojection = orthographic(camera=(-0.5, 0.5, 0.2));
+currentlight = (0.5, 1, 1.25);
 
 transform3 f = {
   {1, 0, 0, 0},
@@ -16,10 +17,16 @@ transform3 f = {
   {0, 0, 0, 1}
 };
 
+void trajectory(triple p) {
+  dot(p, linewidth(2));
+  draw(p -- f * p, arrow=Arrow3(TeXHead2()));
+}
+
 draw(f * unitcube, white);
-
-draw(-1.5X -- 1.5X, gray);
-draw(-3Y -- 2Y, gray);
-draw(-1.5Z -- 1.5Z, gray);
-
 draw(unitcube, gray);
+draw(surface((-1, 1, -1) --- (2, 1, -1) --- (2, -1, 1) --- (-1, -1, 1) --- cycle), gray + opacity(0.5));
+
+trajectory((1, 1, 0));
+trajectory((0, 1, 0));
+trajectory((0, 0, 1));
+trajectory((0, 1, 1));

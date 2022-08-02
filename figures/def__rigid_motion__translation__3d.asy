@@ -1,24 +1,30 @@
 settings.outformat = 'pdf';
 settings.prc = false;
-settings.render = 0;
+settings.render = 5;
 
 usepackage('stix2');
-unitsize(1cm);
+unitsize(1.5cm);
 
 import three;
 
-currentprojection = perspective(camera=(1.5, 1, 1.5));
+currentprojection = orthographic(camera=(2, 0.5, 1));
 
 transform3 f = {
-  {1, 0, 0, -0.5},
-  {0, 1, 0, 1.5},
+  {1, 0, 0, -1},
+  {0, 1, 0, -1.5},
   {0, 0, 1, 0},
   {0, 0, 0, 1}
 };
 
-draw(-4X -- 2.5X, gray);
-draw(-2Y -- 3.5Y, gray);
-draw(-2.5Z -- 2Z, gray);
+void trajectory(triple p) {
+  dot(p, linewidth(2));
+  draw(p -- f * p, arrow=Arrow3(TeXHead2()));
+}
 
-draw(unitcube, gray);
 draw(f * unitcube, white);
+draw(unitcube, gray);
+
+trajectory((1, 0, 0));
+trajectory((1, 0, 1));
+trajectory((0, 0, 1));
+trajectory((0, 1, 1));

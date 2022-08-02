@@ -1,7 +1,7 @@
 settings.outformat = 'pdf';
 
 usepackage('stix2');
-unitsize(1cm);
+unitsize(1.5cm);
 
 import patterns;
 
