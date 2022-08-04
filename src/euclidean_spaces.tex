@@ -169,7 +169,7 @@
 
     \thmitem{def:rigid_motion/householder_reflection} The \term{Householder reflection} about the \hyperref[def:geometric_ray]{ray} \( r \) with origin \( O \) and unit directional vector \( v \) is
     \begin{equation*}
-      f(x) \coloneqq x - (2 \inprod {x - O} v) v.
+      f(x) \coloneqq x - 2 \inprod {x - O} v v.
     \end{equation*}
 
     The vector \( v \) is interpreted as a \hyperref[def:normal_vector]{normal vector} of the \hyperref[def:affine_hyperplane]{affine hypersurface} \( O + \braket{ v }^\perp \).
@@ -178,7 +178,7 @@
     \begin{equation*}
       f(x)
       =
-      x - (2 (x - O)^T v) v
+      x - (2 (x - O)^T v) \cdot v
       \reloset {\ref{thm:dot_product_and_outer_product}} =
       x - 2 v v^T (x - O)
       =
@@ -213,21 +213,15 @@
 \end{definition}
 
 \begin{definition}\label{def:orthogonal_projection}
-  Let \( L \) be an affine subspace of \( \BbbR^n \) of dimension \( m \) and let \( O e_1 \cdots e_m \) be an orthogonal \hyperref[def:affine_coordinate_system]{affine coordinate system} of \( L \). Define the matrix
+  Let \( L \) be an affine subspace of \( \BbbR^n \). Let \( Oe_1 \cdots e_m \) be an orthogonal \hyperref[def:affine_coordinate_system]{affine coordinate system} of \( L \). The \term{orthogonal projection} or \term{shadow} onto \( L \) is the affine operator
   \begin{equation*}
-    A \coloneqq \parens*
-      {
-        \begin{array}{c|c|c}
-          e_1 & \cdots & e_m
-        \end{array}
-      }
-  \end{equation*}
-  and the affine operator
-  \begin{equation*}
-    f(v) \coloneqq O + A^T (A A^T)^{-1} A(v - O).
+    \begin{aligned}
+      &\pi: \BbbR^n \to L, \\
+      &\pi(x) \coloneqq O + \sum_{k=1}^m \inprod {\vect{Ox}} {e_k} \cdot e_k.
+    \end{aligned}
   \end{equation*}
 
-  We call \( f(v) \) the \term{orthogonal projection} or \term{shadow} onto \( L \).
+  The definition does not depend on the choice of coordinate system. \Fullref{thm:def:orthogonal_projection} lists important properties of orthogonal projections.
 
   \begin{figure}[!ht]
     \hfill
@@ -237,15 +231,113 @@
     \caption{Orthogonal projection of the unit cube in \( \BbbR^3 \) onto an affine plane.}\label{fig:def:orthogonal_projection}
   \end{figure}
 \end{definition}
+\begin{defproof}
+  Let \( O e_1\cdots e_m \) and \( P f_1 \cdots f_m \) be affine coordinate systems in \( L \). Then, for any \( x \) in \( \BbbR^n \),
+  \begin{align*}
+    \sum_{i=1}^m \inprod {\vect{Px}} {f_i} \cdot f_i
+    &=
+    \sum_{i=1}^m \inprod {\vect{Px}} {f_i} \cdot \parens*{ \sum_{j=1}^m \inprod {f_i} {e_j} \cdot e_j }
+    = \\ &=
+    \sum_{j=1}^m \parens*{ \sum_{i=1}^m \inprod {\vect{Px}} {f_i} \inprod {f_i} {e_j} } \cdot e_j
+    = \\ &=
+    \sum_{j=1}^m \inprod* {\vect{Px}} {\sum_{i=1}^m \inprod {f_i} {e_j} \cdot f_i} \cdot e_j
+    = \\ &=
+    \sum_{j=1}^m \inprod {\vect{Px}} {e_j} \cdot e_j.
+  \end{align*}
 
-\begin{proposition}\label{thm:orthogonal_projection_minimizes_distance}
-  The \hyperref[def:orthogonal_projection]{orthogonal projection} \( y_0 \) of a point \( x_0 \) onto the affine subspace \( A \) is the unique point in \( A \) that solves the optimization problem
+  Furthermore,
   \begin{equation*}
-     \min_{a \in A} \norm{x_0 - a}.
+    \vect{Px} = \vect{PO} + \vect{Ox}.
   \end{equation*}
 
-  Furthermore, the vector \( \vect{x_0 y_0} \) is orthogonal to every vector in the \hyperref[def:affine_subspace]{direction} \( \vect A \).
+  Therefore, since \( \vect{PO} \) is a vector from the direction \( \vect L \),
+  \begin{align*}
+    P + \sum_{i=1}^m \inprod {\vect{Px}} {f_i} \cdot f_i
+    &=
+    P + \sum_{j=1}^m \inprod {\vect{Px}} {e_j} \cdot e_j
+    = \\ &=
+    P + \sum_{j=1}^m \inprod {\vect{PO}} {e_j} \cdot e_j + \sum_{j=1}^m \inprod {\vect{Ox}} {e_j} \cdot e_j
+    = \\ &=
+    P + \vect{PO} + \sum_{j=1}^m \inprod {\vect{Ox}} {e_j} \cdot e_j.
+  \end{align*}
+\end{defproof}
+
+\begin{definition}\label{def:argmin_argmax}
+  Given a \hyperref[def:function]{plain function} \( f: A \to B \) from a \hyperref[def:set]{plain set} \( A \) to a \hyperref[def:partially_ordered_set]{partially ordered set} \( (B, \leq) \), if, for a unique value \( a_0 \in A \), we have
+  \begin{equation*}
+    f(a_0) = \min\set{ f(a) \given a \in A },
+  \end{equation*}
+  we denote this value \( a_0 \) via
+  \begin{equation*}
+    \argmin_{a \in A} f(a).
+  \end{equation*}
+
+  \hyperref[def:partially_ordered_set/duality]{Duality} the allows us to define
+  \begin{equation*}
+    \argmax_{a \in A} f(a).
+  \end{equation*}
+\end{definition}
+
+\begin{proposition}\label{thm:def:orthogonal_projection}
+  The \hyperref[def:orthogonal_projection]{orthogonal projection} \( \pi: \BbbR^n \to L \) has the following basic properties:
+
+  \begin{thmenum}
+    \thmitem{thm:def:orthogonal_projection/fixed} Every point in \( L \) is \hyperref[def:fixed_point]{fixed} under \( \pi \).
+    \thmitem{thm:def:orthogonal_projection/orthogonal} The vector \( \vect{x,\pi(x)} = \pi(x) - x \) is orthogonal to every vector in the \hyperref[def:affine_subspace]{direction} \( \vect L \).
+    \thmitem{thm:def:orthogonal_projection/distance} The point \( \pi(x) \) is the unique point in \( L \) that minimizes the distance to \( x \). That is, that unique point in \( L \) such that
+    \begin{equation*}
+      \norm{ x - \pi(x) } = \min_{y \in L} \norm{ x - y }.
+    \end{equation*}
+
+    This gives an alternative characterization of \( \pi \) as
+    \begin{equation}\label{eq:thm:def:orthogonal_projection/distance/argmin}
+      \pi(x) \coloneqq \operatorname*{\hyperref[def:argmin_argmax]{argmin}}_{y \in L} \norm{ x - y }.
+    \end{equation}
+  \end{thmenum}
 \end{proposition}
+\begin{proof}
+  Let \( O e_1 \cdots e_m \) be an orthonormal affine coordinate system in \( L \) and let \( e_{m+1}, \cdots, e_n \) be an expansion of \( e_1, \ldots, e_m \) to an orthonormal basis of \( \BbbR^n \). Let
+  \begin{equation*}
+    \pi(x) \coloneqq O + \sum_{k=1}^m \inprod {\vect{Ox}} {e_k} \cdot e_k.
+  \end{equation*}
+
+  \SubProofOf{thm:def:orthogonal_projection/fixed} For every point \( x \) in \( L \), \( \pi \) simply gives an expansion along the coordinate system \( O e_1 \cdots e_m \).
+
+  \SubProofOf{thm:def:orthogonal_projection/orthogonal} Let \( x \) be a point in \( L \) and let \( v \) be a vector in \( \vect L \). Then
+  \begin{equation*}
+    v = \sum_{k=1}^m \inprod v {e_k} \cdot e_k
+  \end{equation*}
+  and
+  \begin{equation*}
+    \inprod x v
+    =
+    \sum_{k=1}^m \inprod v {e_k} \cdot \inprod x {e_k}
+    =
+    \sum_{k=1}^m \inprod x {e_k} \cdot \inprod v {e_k}
+    =
+    \inprod {\pi(x)} v.
+  \end{equation*}
+
+  Therefore,
+  \begin{equation*}
+    \inprod {\pi(x) - x} v
+    =
+    \inprod {\pi(x)} v - \inprod x v
+    =
+    0.
+  \end{equation*}
+
+  \SubProofOf{thm:def:orthogonal_projection/distance} From \fullref{thm:def:orthogonal_projection/orthogonal} it follows that
+  \begin{equation*}
+    \norm{ x - y }^2
+    =
+    \norm{ x - \pi(x) + \pi(x) - y }^2
+    \reloset {\ref{thm:pythagoras_theorem}} =
+    \norm{ x - \pi(x) }^2 + \norm{ \pi(x) - y }^2.
+  \end{equation*}
+
+  Since norms are nonnegative, the minimum along \( y \in L \) is obtained if \( \pi(x) = y \).
+\end{proof}
 
 \begin{definition}\label{def:half_space}\mcite[41]{Clarke2013}
   Given a \hyperref[def:affine_hyperplane]{hyperplane} \( H \) in \( \BbbR^n \) defined by the affine functional \( f(x) = \inprod l x - a \), its \term{closed half-spaces} are defined as
