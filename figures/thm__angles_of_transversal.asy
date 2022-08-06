@@ -11,7 +11,7 @@ pair R = (P + Q) / 2;
 pair G = (R.x, P.y);
 pair H = (R.x, Q.y);
 
-path l = (-2, -2 / 3) -- (3, 8 / 3);
+path l = (2Q - R) -- (2P - R);
 path g = (-3, 0) -- (4, 0);
 path h = (-3, 2) -- (4, 2);
 
@@ -25,6 +25,7 @@ dot(2P - G, L=Label('$G\'$', align=S));
 dot(Q, L=Label('$Q$', align=N));
 dot(H, L=Label('$H$', align=N));
 dot(R, L=Label('$R$', align=NW));
+dot(2P - R, L=Label('$R\'$', align=W));
 
 draw(
   arc(
