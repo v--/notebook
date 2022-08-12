@@ -17,7 +17,7 @@ output/%.pdf: tikzcd.cls packages/*.sty figures/%.tex
 	cat aux/$*.pdf > output/$*.pdf
 
 output/%.pdf: figures/%.asy
-	asy -quiet -outname=aux/$*.asy figures/$*.asy
+	asy -quiet -outname=aux/$*.pdf figures/$*.asy
 	cat aux/$*.pdf > output/$*.pdf
 
 figures: $(FIGURES_TEX_PDF) $(FIGURES_ASY_PDF)
