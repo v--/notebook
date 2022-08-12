@@ -10,6 +10,8 @@ We will denote by \( \BbbK \) either the field of \hyperref[def:real_numbers]{re
   It is technically possible to work with infinite field extensions, however then we lose the concept of \hyperref[def:inner_product_space]{inner products}, which is another fundamental reasons for working with real or complex vector spaces.
 
   Considering only \( \BbbR \) and \( \BbbC \) leads to certain concepts being defined for complex vector spaces and then real vector spaces become a special case. This is formalized via \hyperref[def:complexification]{complexification}. For example, inner products are defined in \fullref{def:inner_product_space} differently for real and complex vector spaces, however we can transition between them due to \fullref{thm:complexification_universal_property} and \fullref{thm:complexification_of_symmetric_bilinear_form}.
+
+  Furthermore, complex linear functionals are entirely defined by their real parts as discussed in \fullref{rem:complex_linear_functional}.
 \end{remark}
 
 \begin{definition}\label{def:convex_hull}\mimprovised
@@ -104,6 +106,38 @@ We will denote by \( \BbbK \) either the field of \hyperref[def:real_numbers]{re
   \end{figure}
 \end{definition}
 
+\begin{proposition}\label{thm:hyperplane_via_ray}
+  For every \hyperref[def:affine_hyperplane]{hyperplane} \( H \) in \( \BbbK^n \) for \( n > 1 \) there exists a \hyperref[def:geometric_ray]{ray} \( r(t) = O + td \) such that
+  \begin{equation}\label{eq:thm:hyperplane_via_ray}
+    H = \set{ \tau_v(O) \given \inprod v d = 0 }.
+  \end{equation}
+
+  It automatically follows that \( d \) is a \hyperref[def:normal_vector]{normal vector} for \( H \).
+
+  Conversely, the set \eqref{eq:thm:hyperplane_via_ray} is a hyperplane for every ray \( r(t) \).
+\end{proposition}
+\begin{proof}
+  \SufficiencySubProof Let \( H \) be a hyperplane. Then the direction \( \vect H \) has dimension \( n - 1 \). Fix some point in \( O \) from \( H \) and some vector \( d \) from the \hyperref[def:orthogonal_complement]{orthogonal complement} of \( \vect H \).
+
+  Then for any point \( x \) in \( H \) distinct from \( O \), we have \( x = \tau_{\vect{Ox}}(O) \). Furthermore, by definition \( \vect{Ox} \) and \( d \) are orthogonal. Then
+  \begin{equation*}
+    H \subseteq \set{ \tau_v(O) \given \inprod v d = 0 }.
+  \end{equation*}
+
+  Conversely, for every vector \( v \) orthogonal to \( d \), i.e. for every vector \( v \) from \( \vect H \), the point \( \tau_v(O) \) belongs to \( H \). It follows that
+  \begin{equation*}
+    \set{ \tau_v(O) \given \inprod v d = 0 } \subseteq H.
+  \end{equation*}
+
+  The equality \eqref{eq:thm:hyperplane_via_ray} now follows.
+
+  \NecessitySubProof Let \( r(t) = O + td \) be some ray. \Fullref{thm:rank_nullity_theorem} implies that \hyperref[def:orthogonal_complement]{orthogonal complement} of \( \linspan\set{ d } \) has dimension \( n - 1 \). Then
+  \begin{equation*}
+    O + \linspan\set{ d }^\perp
+  \end{equation*}
+  is a hyperplane.
+\end{proof}
+
 \begin{definition}\label{def:geometric_cone}\mcite[20]{Clarke2013}
   A \term{cone} is a union of \hyperref[def:geometric_ray]{rays} with a common vertex.
 
@@ -121,18 +155,22 @@ We will denote by \( \BbbK \) either the field of \hyperref[def:real_numbers]{re
   \begin{equation*}
     \begin{aligned}
       &s: [0, 1] \to A \\
-      &s(t) \coloneqq (1 - t) x + t y.
+      &s(t) \coloneqq x + t \vect{xy} = t y + (1 - t) x.
     \end{aligned}
   \end{equation*}
 
-  We denote the image of \( s \) via \( [x, y] \).
+  The \hyperref[def:totally_ordered_set]{total order} on \( [0, 1] \) induces a total order on the image of \( s \). This allows us to use the notation for \hyperref[def:partially_ordered_set_interval]{intervals}, i.e. \( [x, y] \), \( [x, y) \), \( (x, y] \) and \( (x, y) \).
 \end{definition}
 
 \begin{proposition}\label{thm:def:convex_hull}
   \hyperref[def:convex_hull]{Convex sets} have the following basic properties:
 
   \begin{thmenum}
-    \thmitem{thm:def:convex_hull/line_segments} A set is convex if and only if it contains the entire \hyperref[def:line_segment]{line} between any two of its points.
+    \thmitem{thm:def:convex_hull/line_segments} A set is convex if and only if it contains the entire \hyperref[def:line_segment]{line segment} between any two of its points.
+
+    \thmitem{thm:def:convex_hull/affine_subspace} \hyperref[def:affine_subspace]{Affine subspaces} are convex.
+
+    \thmitem{thm:def:convex_hull/convex_in_subspace} Convex sets in \hyperref[def:affine_subspace]{affine subspaces} are also convex in the ambient space.
 
     \thmitem{thm:def:convex_hull/conic_cone} A \hyperref[def:geometric_cone]{cone} coincides with its \hyperref[def:convex_hull]{conic hull} if and only if it is a \hyperref[def:convex_hull]{convex set}.
 
@@ -141,6 +179,10 @@ We will denote by \( \BbbK \) either the field of \hyperref[def:real_numbers]{re
 \end{proposition}
 \begin{proof}
   \SubProofOf{thm:def:convex_hull/line_segments} Trivial.
+
+  \SubProofOf{thm:def:convex_hull/affine_subspace} Convex combinations are affine, and subspaces are closed under affine combinations, hence they are also closed under convex combinations.
+
+  \SubProofOf{thm:def:convex_hull/convex_in_subspace} Trivial.
 
   \SubProofOf{thm:def:convex_hull/conic_cone}
   \SufficiencySubProof* Trivial since convex combinations are conic.
@@ -170,8 +212,141 @@ We will denote by \( \BbbK \) either the field of \hyperref[def:real_numbers]{re
   \SubProofOf{thm:def:convex_hull/closed_under_intersections} Trivial.
 \end{proof}
 
-\begin{definition}\label{def:simplex}
-  A \( k \)-\term{simplex} is the \hyperref[def:convex_hull]{convex hull} of \( k + 1 \) \hyperref[def:affine_dependence]{affinely independent} vectors, which we call the \term{vertices} of the simplex. The convex hull of any subset of the vertices is called a \term{face} of the simplex.
+\begin{definition}\label{def:half_space}\mcite[41]{Clarke2013}
+  We again restrict our attention to real affine spaces. Given an affine functional \( f(x) \), its \term{closed half-spaces} are
+  \begin{align*}
+    H^+ \coloneqq \set{ f(x) \geq 0 },
+    &&
+    H^- \coloneqq \set{ f(x) \leq 0 }.
+  \end{align*}
+
+  The affine functional \( g(x) \coloneqq -f(x) \) defines the same half-spaces, but swaps \( H^+ \) and \( H^- \).
+
+  We say that the half-spaces are separated by the common \hyperref[def:affine_hyperplane]{hyperplane} parameterized by both \( f(x) \) and \( g(x) \). An arbitrary hyperplane induces two half-spaces, although we need additional information to systematically choose a \enquote{positive} and \enquote{negative} half-space.
+
+  In \( \BbbR^2 \), we call them \term{half-planes}.
+
+  \begin{figure}[!ht]
+    \centering
+    \includegraphics{output/def__half_space__half_plane.pdf}
+    \caption{Half-planes}\label{fig:def:half_space/half_plane}
+  \end{figure}
+
+  If the inequalities are strict, we instead obtain \term{open half-spaces}.
+\end{definition}
+
+\begin{proposition}\label{thm:half_spaces_are_convex}
+  \hyperref[def:half_space]{Half-spaces} (and half-spaces of subspaces) are \hyperref[def:convex_hull]{convex}.
+\end{proposition}
+\begin{proof}
+  Let \( f \) be an affine functional. If \( f(x) \leq 0 \) and \( f(y) \leq 0 \), then
+  \begin{equation*}
+    f(\lambda x + (1 - \lambda) y)
+    =
+    \lambda f(x) + (1 - \lambda) f(y)
+    \leq
+    \lambda 0 + (1 - \lambda) 0
+    =
+    0.
+  \end{equation*}
+\end{proof}
+
+\begin{definition}\label{def:extremal_point}\mcite[def. 3.6]{Gallier2011}
+  We say that a point \( x \) is \term{extremal} for a \hyperref[def:convex_hull]{convex set} \( A \) if any of the following equivalent conditions hold:
+
+  \begin{thmenum}
+    \thmitem{def:extremal_point/combination} If \( x \) is a convex combination of points of \( A \), then \( x \) coincides with one of them.
+
+    \thmitem{def:extremal_point/segment} If \( x \) belongs to some segment with endpoints in \( A \), then \( x \) is an endpoint of the segment.
+
+    \thmitem{def:extremal_point/difference} The set \( A \setminus \set{ x } \) is convex.
+  \end{thmenum}
+\end{definition}
+\begin{defproof}
+  \ImplicationSubProof{def:extremal_point/segment}{def:extremal_point/combination} Follows easily via \hyperref[rem:induction/peano_arithmetic]{natural number induction}.
+
+  \ImplicationSubProof{def:extremal_point/combination}{def:extremal_point/segment} Special case.
+
+  \ImplicationSubProof{def:extremal_point/segment}{def:extremal_point/difference} Suppose that every segment containing \( x \) has \( x \) as an endpoint.
+
+  Let \( y \) and \( z \) be points in \( A \setminus \set{ x } \) and consider the convex combination \( \lambda y + (1 - \lambda) z \).
+
+  \begin{itemize}
+    \item If \( \lambda y + (1 - \lambda) z = x \), then by our assumption \( x \) is either \( y \) or \( z \), and hence \( y \) and \( z \) cannot both be points of \( A \setminus \set{ x } \).
+
+    \item Otherwise, if \( \lambda y + (1 - \lambda) z \neq x \), then it belongs to \( A \) because the latter is convex, and to \( A \setminus \set{ x } \) because \( \lambda y + (1 - \lambda) z \neq x \).
+  \end{itemize}
+
+  \ImplicationSubProof{def:extremal_point/difference}{def:extremal_point/segment} Suppose that \( A \setminus \set{ x } \) is convex. Also suppose that \( x = \lambda y + (1 - \lambda) z \) for some points \( y \) and \( z \) in \( A \) and some \( \lambda \) in the unit interval.
+
+  If \( 0 < \lambda < 1 \), then \( x \) splits the segment into the half-open segments \( [z, x) \) and \( (x, y] \). Their union does not contain \( x \). But \( z \) and \( y \) belong to \( A \setminus \set{ x } \), hence \( x \) must also belong to \( A \setminus \set{ x } \) in order for \( A \setminus \set{ x } \) to be convex.
+
+  But we have assumed that \( A \setminus \set{ x } \) is convex, hence \( \lambda \) is either \( 0 \) or \( 1 \).
+\end{defproof}
+
+\begin{example}\label{ex:def:extremal_point}
+  We give several examples of \hyperref[def:extremal_point]{extremal points}:
+  \begin{thmenum}
+    \thmitem{ex:def:extremal_point/one} Every point \( x \) is extremal for the \hyperref[rem:singleton_sets]{singleton set} \( \set{ x } \) because the empty set is vacuously convex.
+
+    \thmitem{ex:def:extremal_point/segment} The extremal points of a \hyperref[def:line_segment]{line segment} \( [x, y] \) are \( x \) and \( y \). This is a restatement of \fullref{def:extremal_point/segment}.
+
+    \thmitem{ex:def:extremal_point/subspace} An affine subspace \( L \) has no extremal points unless \( \dim L = 0 \).
+
+    Indeed, suppose that \( x \) is extremal. Then, given any point \( y \), define \( z \coloneqq \tau_{2 \vect{yx}}(y) \). Then
+    \begin{equation*}
+      \vect{yz} = 2 \vect{yx},
+    \end{equation*}
+    hence
+    \begin{equation*}
+      \vect{yx} = \frac {\vect{yz}} 2 = \frac {\vect{yy} + \vect{yz}} 2
+    \end{equation*}
+    and
+    \begin{equation*}
+      x = \frac {y + z} 2.
+    \end{equation*}
+
+    Thus, \( L \setminus \set{ x } \) is not convex, which contradicts our assumption that \( x \) is extremal.
+
+    Therefore, there are no extremal points in \( L \).
+  \end{thmenum}
+\end{example}
+
+\begin{proposition}\label{thm:extremal_points_of_convex_hull}
+  The \hyperref[def:extremal_point]{extremal points} of \( \conv A \) are a subset of \( A \).
+\end{proposition}
+\begin{proof}
+  Let \( x \) be an extremal point of \( \conv A \). Then there exist some points \( x_1, \ldots, x_n \) in \( A \) and convex coefficients \( t_1, \ldots, t_n \) such that
+  \begin{equation*}
+    x = \sum_{k=1}^n t_k x_k.
+  \end{equation*}
+
+  Then, by \fullref{def:extremal_point/combination}, \( x \) coincides with one of \( x_1, \ldots, x_n \). Hence, it belongs to \( A \).
+\end{proof}
+
+\begin{definition}\label{def:convex_polytope}\mimprovised
+  A \term{convex polytope} is a nonempty intersection of finitely many \hyperref[def:half_space]{half-spaces}.
+
+  We refer to the \hyperref[def:extremal_point]{extremal points} of the polytope as \term{vertices}.
+\end{definition}
+
+\begin{proposition}\label{thm:def:convex_polytope}
+  \hyperref[def:convex_polytope]{Convex polytopes} have the following basic properties:
+  \begin{thmenum}
+    \thmitem{thm:def:convex_polytope/convex} Convex polytopes are, surprisingly, \hyperref[def:convex_hull]{convex sets}.
+    \thmitem{thm:def:convex_polytope/non_collinear_vertices} No three vertices are \hyperref[def:collinear_points]{collinear}.
+  \end{thmenum}
+\end{proposition}
+\begin{proof}
+  \SubProofOf{thm:def:convex_polytope/convex} Follows from \fullref{thm:half_spaces_are_convex} and \fullref{thm:def:convex_hull/closed_under_intersections}.
+
+  \SubProofOf{thm:def:convex_polytope/non_collinear_vertices} If three vertices \( x \), \( y \) and \( z \) are collinear, they lie on the same line, and one of them is a convex combination of the other two, making it not an extremal point.
+\end{proof}
+
+\begin{definition}\label{def:simplex}\mcite
+  A \( k \)-\term{simplex} is the \hyperref[def:convex_hull]{convex hull} of \( k + 1 \) \hyperref[def:affine_dependence]{affinely independent} points, which we call vertices. The convex hull of any subset of the vertices is called a \term{face} of the simplex.
+
+  \Fullref{thm:def:simplex/extremal} implies that the \hyperref[def:extremal_point]{extremal points} of a simplex are its vertices, hence it is always possible to uniquely determine the vertices given only the simplex as a set of points. \Fullref{thm:def:simplex/polytope} then implies that this terminology is consistent is that for \hyperref[def:convex_polytope]{convex polytopes}.
 \end{definition}
 
 \begin{example}\label{ex:def:simplex}
@@ -190,3 +365,47 @@ We will denote by \( \BbbK \) either the field of \hyperref[def:real_numbers]{re
     \thmitem{ex:def:simplex/triangle} A \( 2 \)-simplex is a \hyperref[def:triangle]{triangle} --- this is actually the definition we will use in \fullref{def:triangle}.
   \end{thmenum}
 \end{example}
+
+\begin{proposition}\label{thm:def:simplex}
+  \hyperref[def:simplex]{Simplices} have the following basic properties:
+  \begin{thmenum}
+    \thmitem{thm:def:simplex/polytope} Simplices are \hyperref[def:convex_polytope]{convex polytopes}.
+    \thmitem{thm:def:simplex/extremal} The \hyperref[def:extremal_point]{extremal points} of a simplex are precisely its vertices.
+  \end{thmenum}
+\end{proposition}
+\begin{proof}
+  \SubProofOf{thm:def:simplex/polytope} Let \( \conv\set{ x_0, x_1, \ldots, x_n } \) be an \( n \)-simplex.
+
+  Let \( L \) be the affine subspace generated by \( x_0, \cdots, x_n \). Since they are affinely independent, they form a \hyperref[def:barycentric_coordinate_system]{barycentric coordinate system} for \( L \). Then \( \vect{x_0 x_1}, \cdots, \vect{x_0 x_n} \) is an ordered basis for the direction \( \vect L \).
+
+  \begin{equation*}
+    l_k(x) \coloneqq \begin{cases}
+      1 - \sum_{i=1}^n \inprod {\vect{x_0 x_i}} {\vect{x_0 x}}, &k = 0, \\
+      \inprod {\vect{x_0 x_k}} {\vect{x_0 x}},                  &k > 0
+    \end{cases}.
+  \end{equation*}
+
+  Then \( l_0, l_1, \ldots, l_n \) are affine functionals that determine the barycentric coordinates of \( x \):
+  \begin{equation*}
+    x = \sum_{k=0}^n l_k(x) \cdot x_k.
+  \end{equation*}
+
+  This combination is convex if \( l_k(x) \geq 0 \) for \( k = 0, \ldots, n \). Therefore,
+  \begin{equation*}
+    \conv\set{ x_0, x_1, \ldots, x_n } = \bigcap_{k=0}^n \set{ x \in X \given l_k(x) \geq 0 }.
+  \end{equation*}
+
+  \SubProofOf{thm:def:simplex/extremal} Let \( \conv\set{ x_0, x_1, \ldots, x_n } \) be an \( n \)-simplex.
+
+  Consider some convex combination
+  \begin{equation*}
+    x = \sum_{k=0}^n t_k \cdot x_k.
+  \end{equation*}
+
+  This is the unique convex combination of \( x_0, \ldots, x_n \) that determines \( x \) because the vertices determine a barycentric coordinate system.
+
+  In order for \( x \) to be extremal, we obtain that \( x \) is one of the vertices. Conversely, if \( x = x_k \), then because of the uniqueness of the coefficients it follows that \( t_k = 1 \) and
+  \begin{equation*}
+    t_0 = \cdots = t_{k-1} = t_{k+1} = \cdots = t_n = 0.
+  \end{equation*}
+\end{proof}

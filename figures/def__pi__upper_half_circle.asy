@@ -10,6 +10,7 @@ pair f(real t) {
 }
 
 draw(graph(f, 0, pi), arrow=Arrow(TeXHead));
+dot((0, 0), L=Label('O', align=SE));
 
 xaxis(
   arrow=Arrow(TeXHead),
