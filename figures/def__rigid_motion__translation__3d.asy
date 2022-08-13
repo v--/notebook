@@ -6,25 +6,21 @@ usepackage('stix2');
 unitsize(1.5cm);
 
 import three;
+import 'asy/trajectories.asy' as trajectories;
 
 currentprojection = orthographic(camera=(2, 0.5, 1));
 
-transform3 f = {
+transform3 T = {
   {1, 0, 0, -1},
   {0, 1, 0, -1.5},
   {0, 0, 1, 0},
   {0, 0, 0, 1}
 };
 
-void trajectory(triple p) {
-  dot(p, linewidth(2));
-  draw(p -- f * p, arrow=Arrow3(TeXHead2()));
-}
-
-draw(f * unitcube, white);
+draw(T * unitcube, white);
 draw(unitcube, gray);
 
-trajectory((1, 0, 0));
-trajectory((1, 0, 1));
-trajectory((0, 0, 1));
-trajectory((0, 1, 1));
+trajectory(T, (1, 0, 0));
+trajectory(T, (1, 0, 1));
+trajectory(T, (0, 0, 1));
+trajectory(T, (0, 1, 1));

@@ -3,7 +3,7 @@ settings.outformat = 'pdf';
 usepackage('stix2');
 unitsize(1cm);
 
-import graph;
+import geometry;
 
 pair P = (-1, 0);
 pair Q = (2, 2);
@@ -27,32 +27,20 @@ dot(H, L=Label('$H$', align=N));
 dot(R, L=Label('$R$', align=NW));
 dot(2P - R, L=Label('$R\'$', align=W));
 
-draw(
-  arc(
-    P,
-    r=0.6,
-    angle1=0,
-    angle2=degrees(atan2((Q - P).y, (Q - P).x))
-  ),
+markangle(
+  G, P, R,
+  radius=15,
   arrow=Arrow(TeXHead)
 );
 
-draw(
-  arc(
-    P,
-    r=0.6,
-    angle1=180,
-    angle2=180 + degrees(atan2((Q - P).y, (Q - P).x))
-  ),
+markangle(
+  2P - G, P, 2P - R,
+  radius=15,
   arrow=Arrow(TeXHead)
 );
 
-draw(
-  arc(
-    Q,
-    r=0.6,
-    angle1=180,
-    angle2=180 + degrees(atan2((Q - P).y, (Q - P).x))
-  ),
+markangle(
+  H, Q, R,
+  radius=15,
   arrow=Arrow(TeXHead)
 );

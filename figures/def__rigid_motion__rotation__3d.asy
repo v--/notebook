@@ -6,7 +6,7 @@ usepackage('stix2');
 unitsize(1.5cm);
 
 import three;
-import graph3;
+import 'asy/trajectories.asy' as trajectories;
 
 currentprojection = perspective(camera=(-0.5, -2, 1.5));
 currentlight = (-1, -0.5, 5);
@@ -35,20 +35,10 @@ transform3 rot(real factor) {
   return g * f;
 };
 
-void trajectory(triple p) {
-  dot(p, linewidth(2));
-
-  triple f(real factor) {
-    return rot(factor) * p;
-  }
-
-  draw(graph(f, 0, 1), arrow=Arrow3(TeXHead2()));
-}
-
 draw(unitcube, gray + opacity(0.75));
 draw(rot(1) * unitcube, white + opacity(0.75));
 
 dot((0, 0, 0), linewidth(2));
-trajectory((0, 0, 1));
-trajectory((1, 0, 1));
-trajectory((1, 0, 0));
+trajectory(rot, 0, 1, (0, 0, 1));
+trajectory(rot, 0, 1, (1, 0, 1));
+trajectory(rot, 0, 1, (1, 0, 0));

@@ -4,6 +4,7 @@ usepackage('stix2');
 unitsize(1cm);
 
 import graph;
+import geometry;
 
 pair O = (0, 0);
 pair P = (2, 0);
@@ -20,46 +21,30 @@ dot(-P, L=Label('$P\'$', align=N));
 dot(Q, L=Label('$Q$', align=SE));
 dot(-Q, L=Label('$Q\'$', align=SE));
 
-draw(
-  arc(
-    O,
-    r=0.6,
-    angle1=degrees(atan2(P.y, P.x)),
-    angle2=degrees(atan2(Q.y, Q.x))
-  ),
-  arrow=Arrow(TeXHead),
-  L=Label('$\\scriptstyle\\sphericalangle(\\overrightarrow{OP}, \\overrightarrow{OQ})$', position=0.25, align=NE)
+markangle(
+  P, O, Q,
+  radius=15,
+  L=Label('$\\scriptstyle\\sphericalangle(\\overrightarrow{OP}, \\overrightarrow{OQ})$'),
+  arrow=Arrow(TeXHead)
 );
 
-draw(
-  arc(
-    O,
-    r=0.6,
-    angle1=degrees(atan2(-Q.y, -Q.x)),
-    angle2=degrees(atan2(P.y, P.x))
-  ),
-  arrow=Arrow(TeXHead),
-  L=Label('$\\scriptstyle\\sphericalangle(\\overrightarrow{OQ\'}, \\overrightarrow{OP})$', position=0.5, align=SE)
+markangle(
+  -Q, O, P,
+  radius=15,
+  L=Label('$\\scriptstyle\\sphericalangle(\\overrightarrow{OQ\'}, \\overrightarrow{OP})$'),
+  arrow=Arrow(TeXHead)
 );
 
-draw(
-  arc(
-    O,
-    r=0.6,
-    angle1=degrees(atan2(-P.y, -P.x)),
-    angle2=degrees(atan2(-Q.y, -Q.x))
-  ),
-  arrow=Arrow(TeXHead),
-  L=Label('$\\scriptstyle\\sphericalangle(\\overrightarrow{OP\'}, \\overrightarrow{OQ\'})$', position=0.25, align=SW)
+markangle(
+  -P, O, -Q,
+  radius=15,
+  L=Label('$\\scriptstyle\\sphericalangle(\\overrightarrow{OP\'}, \\overrightarrow{OQ\'})$'),
+  arrow=Arrow(TeXHead)
 );
 
-draw(
-  arc(
-    O,
-    r=0.6,
-    angle1=degrees(atan2(Q.y, Q.x)),
-    angle2=degrees(atan2(P.y, -P.x))
-  ),
-  arrow=Arrow(TeXHead),
-  L=Label('$\\scriptstyle\\sphericalangle(\\overrightarrow{OQ}, \\overrightarrow{OP\'})$', position=0.5, align=NW)
+markangle(
+  Q, O, -P,
+  radius=15,
+  L=Label('$\\scriptstyle\\sphericalangle(\\overrightarrow{OQ}, \\overrightarrow{OP\'})$'),
+  arrow=Arrow(TeXHead)
 );

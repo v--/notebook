@@ -230,6 +230,7 @@ async def iter_file_changes():
         inotify.add_watch(ROOT_DIR, Mask.MODIFY)
         inotify.add_watch(ROOT_DIR / 'src', Mask.MODIFY)
         inotify.add_watch(ROOT_DIR / 'output', Mask.MODIFY)
+        inotify.add_watch(ROOT_DIR / 'asy', Mask.MODIFY)
         inotify.add_watch(ROOT_DIR / 'figures', Mask.MODIFY)
         inotify.add_watch(ROOT_DIR / 'packages', Mask.MODIFY)
         logger.info('Started daemon and initialized watchers')
@@ -248,16 +249,20 @@ async def setup_watchers(target: WatchTarget):
                 figures_dir = pathlib.Path('figures')
 
                 for figure_path in figures_dir.glob('*.tex'):
-                    runner.schedule(TeXTask(figure_path.resolve()), trigger=str(path))
+                    runner.schedule(TeXTask(figure_path), trigger=str(path))
 
                 for figure_path in figures_dir.glob('*.asy'):
-                    runner.schedule(AsymptoteTask(figure_path.resolve()), trigger=str(path))
+                    runner.schedule(AsymptoteTask(figure_path), trigger=str(path))
 
             if fnmatch(path, 'figures/*.tex'):
                 runner.schedule(TeXTask(path), trigger=str(path))
 
             if fnmatch(path, 'figures/*.asy'):
                 runner.schedule(AsymptoteTask(path), trigger=str(path))
+
+            if fnmatch(path, 'asy/*.asy'):
+                for figure_path in pathlib.Path('figures').glob('*.asy'):
+                    runner.schedule(AsymptoteTask(figure_path), trigger=str(path))
 
         if target in [WatchTarget.all, WatchTarget.notebook] and \
             not fnmatch(path, 'output/notebook.pdf') and (
