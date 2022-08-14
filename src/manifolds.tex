@@ -1,5 +1,141 @@
 \subsection{Manifolds}\label{subsec:manifolds}
 
+\begin{remark}\label{rem:smooth_manifold}
+  In the theory of \hyperref[def:topological_manifold]{manifolds}, the term \enquote{smooth} refers not to \enquote{infinitely differentiable} but to \enquote{\( r \) times differentiable} for some integer \( r \) depending on the context.
+\end{remark}
+
+\begin{definition}\label{def:smooth_curve}\mcite[8]{ИвановТужилин2017}
+  A \term{smooth curve} is a \hyperref[def:parametric_curve]{parametric curve} \( \gamma: I \to \BbbR^n \) that is \( r \) times pointwise \hyperref[def:differentiability/frechet]{differentiable}. If
+  \begin{equation*}
+    \gamma(t) = \begin{pmatrix}
+      \gamma_1(t) \\
+      \vdots \\
+      \gamma_n(t)
+    \end{pmatrix},
+  \end{equation*}
+  then the \( k \)-th pointwise derivative is at \( t \in I \) is the vector
+  \begin{equation*}
+    \gamma^{(k)}(t) = \begin{pmatrix}
+      \gamma_1^{(k)}(t) \\
+      \vdots \\
+      \gamma_n^{(k)}(t)
+    \end{pmatrix}.
+  \end{equation*}
+
+  \begin{thmenum}
+    \thmitem{def:smooth_curve/speed} If \( \gamma \) does not intersect itself at the point \( \gamma(t_0) \), we call the norm \( \norm{\gamma'(t_0)} \) the \term{speed} of \( \gamma \) at the point \( \gamma(t_0) \).
+
+    If the curve intersects itself at this point, it has multiple speed values, and the concept is ambiguous unless the vectors have equal norms.
+
+    \thmitem{def:smooth_curve/regular} We say that the curve is \term{regular} if the speed vector is always nonzero.
+
+    \thmitem{def:smooth_curve/natural_parameter} We say that the \hyperref[def:reparametrization]{reparametrization} \( s: J \to I \) is a \term{natural parameter} if, at any point \( s \in J \), we have \( \norm{\gamma'(s)} = 1 \).
+
+    Of course, \( s \) can be the identity, in which case we say that the original parametrization is natural.
+
+    \thmitem{def:smooth_curve/curvature} If the naturally parametrized curve \( \gamma: I \to \BbbR^n \) does not intersect itself at the point \( \gamma(t_0) \), we call the norm \( \norm{\gamma^\dprime(t_0)} \) the \term{curvature} of \( \gamma \) at \( \gamma(t_0) \).
+
+    Again, if the curve intersects itself at \( \gamma(t_0) \), the concept is ambiguous.
+  \end{thmenum}
+\end{definition}
+
+\begin{proposition}\label{thm:regular_reparametrization}
+  A \hyperref[def:function_regular_at_point]{regular} \hyperref[def:parametric_curve_reparametrization]{reparametrization} of a \hyperref[def:smooth_curve/regular]{regular} \hyperref[def:parametric_curve]{parametric curve} is regular.
+\end{proposition}
+\begin{proof}
+  The composition of regular functions is regular.
+\end{proof}
+
+\begin{example}\label{ex:def:smooth_curve}
+  We list several examples of \hyperref[def:smooth_curve]{smooth curves}:
+  \begin{thmenum}
+    \thmitem{ex:def:smooth_curve/line} An \hyperref[def:affine_line]{affine line} \( l(t) = O + td \) has the entire real line as its domain.
+
+    The \hyperref[def:smooth_curve/speed]{speed} at any point is \( \norm{d} \). Hence, the curve is regular, but it may not be naturally parametrized. If it is not, we can obviously replace \( d \) with a normed vector and the parametrization would become natural.
+
+    The second derivative is the zero vector, and hence the \hyperref[def:smooth_curve/curvature]{curvature} is zero.
+
+    \thmitem{ex:def:smooth_curve/circle} Consider the \hyperref[def:circle]{circle} \( \gamma: [0, 2\pi) \to \BbbR^2 \) with \hyperref[eq:def:ellipse/parametric_equation]{parametric equation}
+    \begin{equation*}
+      \begin{cases}
+        x = x_0 + r \cdot \cos \varphi, \\
+        y = y_0 + r \cdot \sin \varphi.
+      \end{cases}
+    \end{equation*}
+
+    The first derivative is
+    \begin{equation*}
+      \gamma'(\varphi) = r \cdot (-\sin \varphi, \cos \varphi).
+    \end{equation*}
+
+    The norm of this derivative is \( r \). A natural parameter is
+    \begin{equation*}
+      \varphi(\psi) \coloneqq \frac \psi r
+    \end{equation*}
+    so that, by \fullref{thm:chain_rule},
+    \begin{equation*}
+      \gamma'(\varphi(\psi)) = r \cdot \frac 1 r \cdot (-\sin \varphi(\psi), \cos \varphi(\psi)).
+    \end{equation*}
+
+    The second derivative is then
+    \begin{equation*}
+      \gamma^\dprime(\varphi(\psi)) = \frac 1 r \cdot (-\cos \varphi(\psi), -\sin \varphi(\psi)).
+    \end{equation*}
+
+    Therefore, the curvature of \( \gamma \) is \( \ifrac 1 r \).
+  \end{thmenum}
+\end{example}
+
+\begin{proposition}\label{thm:natural_reparametrization}
+  Every \hyperref[def:smooth_curve/regular]{regular} \hyperref[def:parametric_curve]{parametric curve} has a \hyperref[def:smooth_curve/natural_parameter]{natural parametrization}.
+\end{proposition}
+\begin{proof}
+  Consider the regular curve \( \gamma: I \to \BbbR^n \). Define the reparametrization
+  \begin{equation*}
+    s(t) \coloneqq \int_0^t \norm{\gamma'(\tau)} \cdot \dl \tau
+  \end{equation*}
+  over the same interval.
+
+  \Fullref{thm:fundamental_theorem_of_calculus} implies that
+  \begin{equation*}
+    s'(t) = \norm{\gamma'(t)}.
+  \end{equation*}
+
+  Since \( \gamma \) is regular, \( t'(s) \) is nonzero. Hence, its inverse has a derivative
+  \begin{equation*}
+    t'(s) = \frac 1 {\norm{\gamma'(s)}}.
+  \end{equation*}
+
+  For \( \delta(s) \coloneqq \gamma(t(s)) \), \fullref{thm:chain_rule} implies
+  \begin{equation*}
+    \delta'(s)
+    =
+    t'(s) \cdot \gamma'(s)
+    =
+    \frac {\gamma'(s)} {\norm{\gamma'(s)}}.
+  \end{equation*}
+
+  Since \( t_0 \) was arbitrary, we conclude that this holds for the entire interval \( I \).
+\end{proof}
+
+\begin{example}\label{ex:natural_reparametrization_of_line}
+  We can demonstrate the trick from \fullref{thm:natural_reparametrization} to reparametrize the line \( \gamma(t) = O + td \). Define
+  \begin{equation*}
+    s(t) \coloneqq \int_0^t \norm{\gamma'(\tau)} \cdot \dl \tau = t \norm{d}.
+  \end{equation*}
+
+  Its inverse is
+  \begin{equation*}
+    t(s) = \frac s {\norm{d}}.
+  \end{equation*}
+
+  Then
+  \begin{equation*}
+    \gamma(t(s)) = O + s \frac d {\norm{d}},
+  \end{equation*}
+  and this is obviously a natural reparametrization.
+\end{example}
+
 \begin{definition}\label{def:atlas}\mcite[def. 12.1]{ИвановТужилин2017}
   Let \( X \) be a \hyperref[def:topological_space]{topological space} and \( Y \) be a \hyperref[def:topological_vector_space]{topological vector space}.
 
