@@ -1,7 +1,7 @@
 settings.outformat = 'pdf';
 
 usepackage('stix2');
-unitsize(2cm);
+unitsize(1.5cm);
 
 import geometry;
 import 'asy/angles.asy' as angles;

@@ -4,6 +4,7 @@ usepackage('stix2');
 unitsize(1cm);
 
 import graph;
+import 'asy/plotting.asy' as plotting;
 
 pair f(real t) {
   return (cosh(t), sinh(t));
@@ -13,10 +14,8 @@ pair g(real t) {
   return (-cosh(t), sinh(t));
 }
 
-draw(graph(f, -5 / 12 * pi, -pi / 6), arrow=Arrow(TeXHead));
-draw(graph(f, -pi / 6, 5 / 12 * pi), arrow=Arrow(TeXHead));
-draw(graph(g, -5 / 12 * pi, -pi / 6), arrow=Arrow(TeXHead));
-draw(graph(g, -pi / 6, 5 / 12 * pi), arrow=Arrow(TeXHead));
+draw(graph(f, -5pi / 12, 5pi / 12), marker=arrow_marker(2));
+draw(graph(g, -5pi / 12, 5pi / 12), marker=arrow_marker(2));
 
 xaxis(
   arrow=Arrow(TeXHead),

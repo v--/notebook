@@ -4,13 +4,13 @@ usepackage('stix2');
 unitsize(1cm);
 
 import graph;
+import 'asy/plotting.asy' as plotting;
 
 pair f(real t) {
   return (3 / 2 * cos(t), 5 / 4 * sin(t));
 }
 
-draw(graph(f, -pi / 4, 3 / 4 * pi), arrow=Arrow(TeXHead));
-draw(graph(f, 3 / 4 * pi, 7 / 4 * pi), arrow=Arrow(TeXHead));
+draw(graph(f, 0, 2pi), marker=arrow_marker(4));
 dot((3 / 2, 0));
 
 xaxis(

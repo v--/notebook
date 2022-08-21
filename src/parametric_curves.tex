@@ -1,0 +1,513 @@
+\subsection{Parametric curves}\label{subsec:parametric_curves}
+
+\begin{definition}\label{def:parametric_curve}\mimprovised
+  A \term{parametric curve} in a \hyperref[def:topological_space]{topological space} \( X \) is a set \( C \) of points for which there exists a \hyperref[def:global_continuity]{continuous function} \( \gamma: I \to X \), where \( I \) is a nonempty interval in \( \BbbR \) with potentially infinite endpoints, such that \( \gamma(I) = C \).
+
+  Multiple functions correspond to the same curve, the most trivial example being \( t \mapsto \gamma(-t) \). We call any concrete function \( \gamma: I \to X \) a \term{parametrization} of \( C \). We prefer the interval \( I \) to be either \( [0, 1] \), \( (-\infty, 0] \), \( [0, \infty) \) or \( (-\infty, \infty) \).
+
+  \begin{figure}[!ht]
+    \centering
+    \includegraphics{output/def__parametric_curve.pdf}
+    \caption{Part of the Lissajous curve parametrized by \( (\sin(2t), \cos(3t)) \) for \( 3 \ifrac \pi 4 \leq t \leq 9 \ifrac \pi 4 \).}\label{fig:def:parametric_curve}
+  \end{figure}
+\end{definition}
+
+\begin{definition}\label{def:simple_curve}\mimprovised
+  We say that a \hyperref[def:parametric_curve]{parametric curve} is \term{simple} if it has an injective parametrization.
+\end{definition}
+
+\begin{example}\label{ex:def:simple_curve}
+  \hfill
+  \begin{thmenum}
+    \thmitem{ex:def:simple_curve/segment} \hyperref[def:line_segment]{Line segments} in \hyperref[def:topological_vector_space]{topological vector spaces} are simple curves. The segment between \( x \) and \( y \) can be parametrized via the bijective function
+    \begin{equation*}
+      \begin{aligned}
+        &\gamma: [0, 1] \to X \\
+        &\gamma(t) \coloneqq ty + (1 - t)x.
+      \end{aligned}
+    \end{equation*}
+
+    \thmitem{ex:def:simple_curve/lissajous} The Lissajous curve
+    \begin{equation*}
+      \gamma \coloneqq \begin{pmatrix} \sin(2t) \\ \cos(3t) \end{pmatrix}
+    \end{equation*}
+    for \( 0 \leq t \leq 2\pi \) is not simple. Part of this curve is shown in \cref{fig:def:parametric_curve}.
+
+    To see that it is not simple, note that the curve is zero at both \( t = \ifrac \pi 2 \) and \( t = \ifrac {3\pi} 2 \). For small enough \( \varepsilon > 0 \), the restrictions of \( \gamma(t) \) to an \( \varepsilon \)-neighborhood around \( \ifrac \pi 2 \) and around \( \ifrac {3\pi} 2 \) are simple curves that intersect only at zero --- see \fullref{fig:ex:def:simple_curve/lissajous}. An injective parametrization of \( \gamma \) cannot be continuous because it needs to pass through zero from different directions. But parametrizations are continuous by definition.
+
+    Therefore, \( \gamma \) has no injective parametrization and is thus not a simple curve.
+
+    \begin{figure}[!ht]
+      \centering
+      \includegraphics{output/ex__def__simple_curve__lissajous.pdf}
+      \caption{Self-intersection at zero of a Lissajous curve.}\label{fig:ex:def:simple_curve/lissajous}
+    \end{figure}
+  \end{thmenum}
+\end{example}
+
+\begin{example}\label{ex:curve_moving_backwards}
+  One thing we wish to avoid is \enquote{moving backwards} during parametrization of a \hyperref[ref:parametric_curve]{parametric curve}.
+
+  Consider the \hyperref[def:line_segment]{line segment}
+  \begin{equation*}
+    \gamma(t) \coloneqq (1 - t) x + ty,
+  \end{equation*}
+  where \( 0 \leq t \leq 1 \).
+
+  \begin{figure}[!ht]
+    \centering
+    \includegraphics{output/ex__curve_moving_backwards.pdf}
+    \caption{A line segment being traversed twice in opposite directions.}\label{fig:ex:curve_moving_backwards}
+  \end{figure}
+
+  We can also parametrize it via the function
+  \begin{equation*}
+    \delta(s) \coloneqq \begin{cases}
+      (1 - s)x + sy,       &0 \leq s \leq 1, \\
+      (s - 1)x + (2 - s)y, &1 \leq s \leq 2.
+    \end{cases}
+  \end{equation*}
+
+  In this case, we have the symmetry \( \delta(1 + s) = \delta(1 - s) \) for \( 0 \leq s \leq 1 \). Hence, when regarding the parameter as time, after moving from \( x \) to \( y \), we start \enquote{moving backwards} via the same path.
+
+  This can cause problems with certain definitions. For example, if we regard merely continuous periodic curves as \hyperref[def:closed_curve]{closed}, \( \delta \) can be extended to a periodic function, making the segment a closed curve.
+
+  Fortunately, this can be avoided easily by requiring that \( \delta \) is \hyperref[def:differentiability/frechet]{differentiable}. In our case,
+  \begin{equation*}
+    \delta'(s) = \begin{cases}
+      -x + y, &0 \leq s < 1, \\
+      x - y,  &1 < s \leq 2.
+    \end{cases}
+  \end{equation*}
+
+  But \( \delta \) is not differentiable at \( s = 1 \). On the other hand, \( \gamma \) is differentiable, and it avoids \enquote{moving backwards}.
+
+  Among other pathologies, this leads to \fullref{def:smooth_curve}.
+\end{example}
+
+\begin{definition}\label{def:smooth_curve}\mcite[8]{ИвановТужилин2017}
+  An \( r \) times \term{smooth curve} is a \hyperref[def:parametric_curve]{parametric curve} for which there exists an \( r \) times \hyperref[def:differentiability/frechet]{differentiable} parametrization \( \gamma: I \to \BbbR^n \). If
+  \begin{equation*}
+    \gamma(t) = \begin{pmatrix}
+      \gamma_1(t) \\
+      \vdots \\
+      \gamma_n(t)
+    \end{pmatrix},
+  \end{equation*}
+  then the \( k \)-th pointwise derivative is at \( t \in I \) is the vector
+  \begin{equation*}
+    \gamma^{(k)}(t) = \begin{pmatrix}
+      \gamma_1^{(k)}(t) \\
+      \vdots \\
+      \gamma_n^{(k)}(t)
+    \end{pmatrix}.
+  \end{equation*}
+
+  By \enquote{parametrization of a smooth curve} we implicitly assume one that is \( r \) times differentiable.
+
+  We call the first derivative \( \gamma'(t) \) --- \term{speed vector} or \term{tangent vector} and \( \gamma^\dprime(t) \) --- the \term{acceleration vector}. Both concepts obviously depend on the parametrization.
+\end{definition}
+
+\begin{remark}\label{rem:smooth_curve}
+  We will use the term \enquote{smooth} in the context of \hyperref[def:smooth_curve]{smooth curves} and implicitly mean \( r \)-times smooth for large enough \( r \). It is possible for us to require the curve to be infinitely differentiable, in which case we write \( r = \infty \).
+\end{remark}
+
+\begin{proposition}\label{thm:tangent_vector_dependent}
+  Let \( \gamma: I \to \BbbR^n \) and \( \delta: J \to \BbbR^n \) be two parametrizations of the same smooth curve. Let \( \gamma(t_0) = \delta(s_0) \). Furthermore, suppose that the curve does not intersect itself at this point. That is, suppose that \( s_0 \) is the only solution to \( \gamma(t_0) = \delta(s) \).
+
+  Then the speed vectors \( \gamma'(t_0) \) and \( \delta'(s_0) \) are linearly dependent.
+\end{proposition}
+\begin{proof}
+  If either \( \gamma'(t_0) \) or \( \delta'(s_0) \) is the zero vector, they are vacuously linearly dependent.
+
+  Suppose that both are nonzero. \Fullref{thm:inverse_function_theorem} implies that there exist some neighborhoods \( I \) of \( t_0 \) and \( U \) of \( \gamma(t_0) \) in which there exists a continuously differentiable local inverse \( g: U \to I \) of \( \gamma \). Let \( J \) be the preimage of \( U \) under \( \delta \). Then \( t \coloneqq g \bincirc \delta \) is a smooth map from \( J \) to \( I \). Hence, for \( s \in J \),
+  \begin{equation*}
+    \delta(s) = \gamma(t(s)).
+  \end{equation*}
+
+  Consequently,
+  \begin{equation*}
+    \delta'(s) = \gamma'(t(s)) \cdot t'(s).
+  \end{equation*}
+
+  We have assumed that \( s_0 \) is the only parameter for which \( t_0 = t(s_0) \). We conclude that \( \gamma'(t_0) \) and \( \delta'(s_0) \) are linearly dependent.
+\end{proof}
+
+\begin{definition}\label{def:tangent_line}
+  Let \( \gamma: I \to \BbbR^n \) be a parametrization of a smooth curve. Suppose that the curve does not intersect itself at \( \gamma(t_0) \) (restrict the domain if necessary). Also suppose that \( \gamma'(t_0) \) is not zero.
+
+  Then we define the \term{tangent line} at \( \gamma(t_0) \) as the \hyperref[def:affine_line]{affine line} with origin \( \gamma(t_0) \) and direction vector \( \gamma'(t_0) \).
+
+  \begin{figure}[!ht]
+    \centering
+    \includegraphics{output/def__tangent_line.pdf}
+    \caption{Several tangent lines to the same curve at different points}\label{fig:def:tangent_line}
+  \end{figure}
+
+  \Fullref{thm:tangent_vector_dependent} implies that tangent lines, unlike tangent vectors, do not depend on the parametrization.
+
+  If the curve intersects itself at \( \gamma(t_0) \), the concept is ambiguous.
+\end{definition}
+
+\begin{definition}\label{def:closed_curve}\mimprovised
+  We say that the \hyperref[def:smooth_curve]{smooth curve} \( C \) is \term{closed} if it can be parametrized via a smooth \hyperref[def:periodic_function]{periodic function} \( \gamma: \BbbR \to X \).
+
+  Suppose that \( \gamma \) has period \( p \). Then every interval \( [a, a + p) \) is also a parametrization of \( C \), and for convenience we often take the closed interval \( [a, a + p] \). In particular, if \( \gamma: [a, b) \) is a closed curve that is also \hyperref[def:simple_curve]{simple}, we sometimes refer to \( \gamma: [a, b] \to X \) as a \enquote{simple closed curve}. Here \( \gamma(a) = \gamma(b) \) hods for \( a \neq b \) and \( \gamma \) not injective, however the curve admits an injective parametrization obtained by simply removing \( b \) from the domain of \( \gamma \).
+
+  Of course, different periodic parametrizations may have different periods.
+
+  Conversely, if \( \delta: [a, b] \to X \) is some parametrization of \( C \) such that \( \delta(a) = \delta(b) \), then
+  \begin{equation*}
+    \begin{aligned}
+      &\widetilde{\delta}: \BbbR \to X \\
+      &\widetilde{\delta}(t) \coloneqq \delta(a + \rem(t - a, b - a)).
+    \end{aligned}
+  \end{equation*}
+  is a differentiable periodic function.
+
+  Consequently, for a general closed curve, we have no obvious choice of parametrization.
+
+  \begin{figure}[!ht]
+    \hfill
+    \includegraphics{output/def__closed_curve__a.pdf}
+    \hfill
+    \hfill
+    \includegraphics{output/def__closed_curve__b.pdf}
+    \hfill
+    \hfill
+    \caption{Two different parametrizations of the same closed trefoil curve.}\label{fig:def:closed_curve}
+  \end{figure}
+\end{definition}
+
+\begin{example}\label{ex:def:closed_curve}
+  \hfill
+  \begin{thmenum}
+    \thmitem{ex:def:closed_curve/segment} \hyperref[def:line_segment]{Line segments} are not closed curves because the canonical parametrization is not periodic. Furthermore, differentiability avoids the pathologies discussed in \fullref{ex:curve_moving_backwards}, which would technically make line segments closed curves.
+
+    \thmitem{ex:def:closed_curve/lissajous} The parametrization
+    \begin{equation*}
+      \gamma \coloneqq \begin{pmatrix} \sin(2t) \\ \cos(3t) \end{pmatrix}
+    \end{equation*}
+    of a Lissajous curve is \( 2\pi \)-periodic, hence the curve is closed.
+  \end{thmenum}
+\end{example}
+
+\begin{example}\label{ex:curve_staying_in_place}
+  We have avoided \hyperref[def:ex:curve_moving_backwards]{\enquote{moving backwards}} by requiring that curves are \hyperref[def:smooth_curve]{smooth}, however we have not avoided \enquote{staying in place}.
+
+  For example, the graph of the absolute value function can be parametrized as follows:
+  \begin{equation*}
+    \gamma(t) \coloneqq \begin{cases}
+      ( t^2     , t^2 )^T,     &-1 \leq t \leq 0, \\
+      ( 0       , 0 )^T,       &0 < t < 1, \\
+      ( (t-1)^2 , (t-1)^2 )^T, &1 \leq t \leq 2, \\
+    \end{cases}
+  \end{equation*}
+
+  Its derivative is
+  \begin{equation*}
+    \gamma'(t) = \begin{cases}
+      ( 2t     , 2t )^T,     &-1 \leq t \leq 0, \\
+      ( 0      , 0 )^T,      &0 < t < 1, \\
+      ( 2(t-1) , 2(t-1) )^T, &1 \leq t \leq 2, \\
+    \end{cases}
+  \end{equation*}
+
+  Clearly \( \gamma(t) \) is continuously differentiable. We can consider \( t^{2r} \) instead of \( t^2 \) in order to make it \( 2r - 1 \) times continuously differentiable.
+
+  We do have, however, \( \gamma(t_1) = \gamma(t_2) \) for \( 0 \leq t_1 \leq t_2 \leq 1 \). This is one of the things we generally wish to avoid when working with curves. For this reason, \hyperref[def:regular_curve]{regular curves} impose the additional requirement that \( \gamma'(t) \) should be nonzero at any point.
+\end{example}
+
+\begin{definition}\label{def:curve_speed}
+  Given a parametrization of a \hyperref[def:smooth_curve]{smooth curve}, its \term{speed} at a point is defined as the norm of its speed vector at that point. The concept depends on the parametrization, and for this reason we prefer \hyperref[thm:natural_parametrization_existence]{natural parameters} with constant speed.
+\end{definition}
+
+\begin{example}\label{ex:nonregular_curve}
+  Consider the smooth curve
+  \begin{equation*}
+    \gamma(t)
+    \coloneqq
+    \begin{pmatrix}
+      t^3 \\ t^2
+    \end{pmatrix},
+  \end{equation*}
+  where \( t \) is any real number. For any \( t \), the speed vector is
+  \begin{equation*}
+    \gamma'(t)
+    \coloneqq
+    \begin{pmatrix}
+      3t^2 \\ 2t
+    \end{pmatrix}.
+  \end{equation*}
+
+  \begin{figure}[!ht]
+    \centering
+    \includegraphics{output/ex__nonregular_curve.pdf}
+    \caption{The curve \( (t^3, t^2) \) has a cusp at zero.}\label{fig:ex:nonregular_curve}
+  \end{figure}
+
+  The \hyperref[def:curve_speed]{speed} is
+  \begin{equation*}
+    \norm{\gamma'(t)} = \abs{t} \sqrt{9 t^2 + 4}.
+  \end{equation*}
+
+  Fix some \( \varepsilon > 0 \). Then, for any point \( t \) such that \( 0 < 9 t^2 + 4 < \varepsilon^2 \), we have
+  \begin{equation*}
+    \norm{\gamma'(t)} < \varepsilon.
+  \end{equation*}
+
+  Hence, we technically avoid the \enquote{staying in place} discussed in \fullref{ex:curve_staying_in_place}, but the speed of movement becomes arbitrarily slow until it eventually reaches zero.
+
+  In this particular case, the curve does not allow a parametrization with entirely nonzero speed. Indeed, suppose that there exists a parametrization \( \delta: J \to \BbbR^2 \) that has nonzero speed at every point. Let \( s_0 \) be a value for which \( \delta(s_0) = \gamma(0) = (0, 0) \).
+
+  \Fullref{thm:inverse_function_theorem} implies that there exist neighborhoods \( (a, b) \) of \( s_0 \) and \( U \) of \( (0, 0) \) in which \( \delta \) is invertible via some continuously differentiable function \( f: U \to (a, b) \).
+
+  For small enough \( t > 0 \), the point \( \gamma(t) = (t^3, t^2) \) is in \( U \), hence \( a < f(\gamma(t)) < b \). Define
+  \begin{equation*}
+    s(t) \coloneqq f(\gamma(t)).
+  \end{equation*}
+
+  Then
+  \begin{equation*}
+    s'(t) = f'(\gamma(t)) \cdot \gamma'(t).
+  \end{equation*}
+
+  This derivative is zero at \( t = 0 \), implying that \( s(t) \) is constant. But \( \gamma \) and \( f \) are both injective, hence \( s(t) \) should also be injective.
+
+  The obtained contradiction shows that \( \delta \) must have zero speed at \( 0 \).
+\end{example}
+
+\begin{definition}\label{def:regular_curve}
+  A \hyperref[def:smooth_curve]{smooth curve} is called \term{regular} if it has a parametrization whose speed is always nonzero.
+\end{definition}
+
+\begin{example}\label{ex:nonregular_parametrization}\mcite[rem. 1.16]{ИвановТужилин2017}
+  Consider the \hyperref[def:smooth_curve]{smooth curve}
+  \begin{equation*}
+    \gamma(t)
+    \coloneqq
+    \begin{pmatrix}
+      t \\ t^2
+    \end{pmatrix},
+  \end{equation*}
+  where \( t \) is any real number. For any \( t \), the speed vector is
+  \begin{equation*}
+    \gamma'(t)
+    \coloneqq
+    \begin{pmatrix}
+      1 \\ 2t
+    \end{pmatrix}.
+  \end{equation*}
+
+  It is never the zero vector, hence the curve is \hyperref[def:regular_curve]{regular}.
+
+  We can also reparametrize via \( t(s) = s^3 \) so that
+  \begin{equation*}
+    \delta(s)
+    \coloneqq
+    \gamma(t(s))
+    =
+    \begin{pmatrix}
+      s^3 \\ s^6
+    \end{pmatrix}.
+  \end{equation*}
+
+  Then the derivative
+  \begin{equation*}
+    \delta'(s)
+    =
+    \begin{pmatrix}
+      3t^2 \\ 6t^5
+    \end{pmatrix}
+  \end{equation*}
+  is the zero vector when \( t = 0 \). Hence, \( \delta \) is not a regular parametrization of a regular curve.
+
+  \begin{figure}[!ht]
+    \centering
+    \includegraphics{output/ex__nonsmooth_parametrization.pdf}
+    \caption{Part of the curve \( (t, t^2) \) from \( t = -1 \) to \( t = 1 \).}\label{fig:ex:nonsmooth_parametrization}
+  \end{figure}
+\end{example}
+
+\begin{proposition}\label{thm:natural_parametrization_existence}
+  Every \hyperref[def:smooth_curve/regular]{regular} \hyperref[def:parametric_curve]{parametric curve} has a parametrization for which the \hyperref[def:curve_speed]{speed} is always \( 1 \). We call such a parametrization a \term{natural parametrization} or, due to \fullref{thm:length_of_smooth_curves}, an \term{arc length parametrization}.
+\end{proposition}
+\begin{proof}
+  Consider the regular curve \( \gamma: I \to \BbbR^n \). Define the function
+  \begin{equation*}
+    s(t) \coloneqq \int_0^t \norm{\gamma'(\tau)} \cdot \dl \tau
+  \end{equation*}
+  over the same interval.
+
+  \Fullref{thm:fundamental_theorem_of_calculus} implies that
+  \begin{equation*}
+    s'(t) = \norm{\gamma'(t)}.
+  \end{equation*}
+
+  Since \( \gamma \) is regular, \( t'(s) \) is nonzero. Hence, its inverse has a derivative
+  \begin{equation*}
+    t'(s) = \frac 1 {\norm{\gamma'(s)}}.
+  \end{equation*}
+
+  For \( \delta(s) \coloneqq \gamma(t(s)) \), \fullref{thm:chain_rule} implies
+  \begin{equation*}
+    \delta'(s)
+    =
+    t'(s) \cdot \gamma'(s)
+    =
+    \frac {\gamma'(s)} {\norm{\gamma'(s)}}.
+  \end{equation*}
+
+  Since \( t_0 \) was arbitrary, we conclude that this holds for the entire interval \( I \).
+\end{proof}
+
+\begin{example}\label{ex:natural_reparametrization_of_line}
+  We can demonstrate the trick from \fullref{thm:natural_reparametrization_existence} to reparametrize the line \( \gamma(t) = O + td \). Define
+  \begin{equation*}
+    s(t) \coloneqq \int_0^t \norm{\gamma'(\tau)} \cdot \dl \tau = t \norm{d}.
+  \end{equation*}
+
+  Its inverse is
+  \begin{equation*}
+    t(s) = \frac s {\norm{d}}.
+  \end{equation*}
+
+  Then
+  \begin{equation*}
+    \gamma(t(s)) = O + s \frac d {\norm{d}},
+  \end{equation*}
+  and this is obviously a natural reparametrization.
+\end{example}
+
+\begin{proposition}\label{thm:natural_reparametrization_existence}
+  For two \hyperref[def:smooth_curve/natural_parameter]{natural parameters} \( t_1: J_1 \to I \) and \( t_2: J_2 \to I \) of \( \gamma: I \to \BbbR^n \), there exists some constant \( a \) such that \( J_2 = a + J_1 \) and, for all \( s \in J_2 \), \( t_2(s) = t_1(a + s) \).
+\end{proposition}
+\begin{proof}
+  Define
+  \begin{equation*}
+    \delta_1(s) \coloneqq \gamma(t_1(s))
+  \end{equation*}
+  and similarly for \( \delta_2(s) \).
+
+  We have
+  \begin{equation*}
+    \delta_1'(s) = t_1'(s) \cdot \gamma'(t_1(s)).
+  \end{equation*}
+
+  Since \( \delta_1 \) is natural, it follows that
+  \begin{equation*}
+    1 = \norm{\delta_1'(s)} = \abs{t_1'(s)} \cdot \norm{\gamma'(s)},
+  \end{equation*}
+  and similarly for \( \delta_2(s) \)
+
+  Furthermore, since \( t_1 \) and \( t_2 \) are strictly monotone, their derivatives positive. Therefore,
+  \begin{equation*}
+    t_1'(s) = t_2'(s) = \frac 1 {\norm{\gamma'(s)}}.
+  \end{equation*}
+
+  Then \( t_1'(s) - t_2'(s) = 0 \), implying that the different between \( t_1(s) \) and \( t_2(s) \) is a constant.
+\end{proof}
+
+\begin{definition}\label{def:regular_curve_curvature}
+  If the \hyperref[thm:natural_reparametrization_existence]{naturally parametrized} curve \( \gamma: I \to \BbbR^n \) does not intersect itself at the point \( \gamma(t_0) \), we call the norm \( \norm{\gamma^\dprime(t_0)} \) of the \hyperref[def:smooth_curve]{acceleration vector} the \term{curvature} of \( \gamma \) at \( \gamma(t_0) \). \Fullref{thm:natural_reparametrization_existence} ensures that this definition does not depend on the parametrization, as long as it is natural.
+
+  If the curve intersects itself at \( \gamma(t_0) \), the concept is ambiguous.
+\end{definition}
+
+\begin{proposition}\label{thm:line_curvature}
+  The \hyperref[def:regular_curve_curvature]{curvature} of the \hyperref[thm:natural_reparametrization_existence]{naturally parametrized} \( \gamma: I \to \BbbR^n \) is always \( 0 \) if and only if \( \gamma(t) = O + td \).
+
+  That is, \( \gamma(t) \) is an
+  \begin{itemize}
+    \item \hyperref[def:affine_line]{affine line} in case \( I \) is unbounded.
+    \item \hyperref[def:geometric_ray]{ray} in case \( I \) is bounded from one side.
+    \item \hyperref[def:affine_line]{affine line} in case \( I \) is bounded from both sides.
+  \end{itemize}
+\end{proposition}
+\begin{proof}
+  \SufficiencySubProof Suppose that \( \norm{\gamma^\dprime(t)} = 0 \). Then the acceleration vector is zero, implying that the speed vector \( d \coloneqq \gamma'(t) \) is a constant and \( \gamma \) itself is
+  \begin{equation*}
+    \gamma(t) = O + t d
+  \end{equation*}
+  for some point \( O \).
+
+  Determining both \( O \) and \( d \) requires additional information.
+
+  \NecessitySubProof Clearly \( \gamma'(t) = d \) and thus \( \gamma^\dprime(t) = \vect 0 \).
+\end{proof}
+
+\begin{definition}\label{def:arc_length}
+  \begin{figure}[!ht]
+    \centering
+    \includegraphics[page=1]{output/def__parametric_curve_length__approximation.pdf}
+    \caption{A rough approximation of a curve using three line segments.}\label{def:arc_length/approximation}.
+  \end{figure}
+
+  Let \( X \) be a \hyperref[def:banach_space]{Banach space}, let \( C \) be a \hyperref[def:parametric_curve]{parametric curve} and let \( \gamma: [a, b] \to X \) be some parametrization of \( C \).
+
+  For each \hyperref[def:riemann_partition/tagged]{tagged Riemann partition}
+  \begin{equation*}
+    \begin{aligned}
+      &\Delta: a = t_0 < t_1 < \ldots < t_n = b \\
+      &\Tau: \tau_k \in [t_{k-1}, t_k], k = 1, \ldots, n,
+    \end{aligned}
+  \end{equation*}
+  assign
+  \begin{equation*}
+    \len(\gamma, \Delta, \Tau) \coloneqq \sum_{k=1}^n \norm{\gamma(\tau_k) - \gamma(\tau_{k-1})}.
+  \end{equation*}
+
+  If the limit over all tagged partition with respect to the order \fullref{def:riemann_partition/order/diameter} exists, we call it the \term{arc length} of \( C \) with respect to \( \gamma \) and say that \( C \) is \term{rectifiable}.
+
+  This concept unfortunately depends on the parametrization in the general case.
+\end{definition}
+
+\begin{proposition}\label{thm:length_of_smooth_curves}
+  For a \hyperref[def:smooth_curve]{smooth curve} \( C \) with parametrization \( \gamma: [a, b] \to \BbbR^n \), we have
+  \begin{equation*}
+    \len(\gamma) = \int_a^b \norm{\gamma'(t)} \dl t.
+  \end{equation*}
+\end{proposition}
+\begin{proof}
+  By \fullref{thm:lagranges_mean_value_theorem}, given a Riemann partition
+  \begin{equation*}
+    \Delta: a = t_0 < \cdots < t_n = b,
+  \end{equation*}
+  for each \( k = 1, \ldots, n \) there exists a point \( \tau_k \in [t_{k-1}, t_k] \) such that
+  \begin{equation*}
+    \gamma(t_k) - \gamma(t_{k-1}) = \gamma'(\tau_k) (t_k - t_{k-1}).
+  \end{equation*}
+
+  Then
+  \begin{equation*}
+    \len(\gamma, \Delta, \Tau)
+    =
+    \sum_{k=1}^n \norm{\gamma(t_k) - \gamma(t_{k-1})}
+    =
+    \sum_{k=1}^n \norm{\gamma'(\tau_k)} (t_k - t_{k-1}),
+  \end{equation*}
+  which is a standard Riemann sum for the function \( t \mapsto \norm{\gamma'(t)} \). Therefore, \fullref{thm:countinuous_functions_integrable} implies that the curve is rectifiable and
+  \begin{equation*}
+    \len(\gamma) = \int_a^b \norm{\gamma'(t)} \dl t.
+  \end{equation*}
+\end{proof}
+
+\begin{corollary}\label{thm:length_of_piecewise_smooth_curves}
+  The \hyperref[def:arc_length]{arc length} of a piecewise smooth curve is the sum of the lengths of its components.
+\end{corollary}
+
+\begin{corollary}\label{thm:length_of_function_graph}
+  The \hyperref[def:arc_length]{length} of the \hyperref[def:multi_valued_function/graph]{graph} of a \hyperref[def:differentiability/frechet]{differentiable} function \( f: [a, b] \to \BbbR \), if it exists, is given by
+  \begin{equation*}
+    \len(\gph(f)) \coloneqq \int_a^b \sqrt{1 + [f'(x)]^2} \dl x.
+  \end{equation*}
+\end{corollary}
+\begin{proof}
+  Apply \fullref{thm:length_of_smooth_curves} for the parametric curve \( t \mapsto (t, f(t)) \).
+\end{proof}
+
+\begin{definition}\label{def:perimeter}
+  Consider a \hyperref[rem:geometric_shape]{geometric shape}, i.e. a set of points in an Euclidean space. Suppose that the \hyperref[def:topological_boundary]{boundary} of the shape is a \hyperref[def:parametric_curve]{parametric curve}. Suppose also that the curve is \hyperref[def:arc_length]{rectifiable}.
+
+  In this case, we call the arc length of this curve the \term{perimeter} of the shape.
+\end{definition}
