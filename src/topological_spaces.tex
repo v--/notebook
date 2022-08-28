@@ -16,7 +16,7 @@
 
   If \( \mscrT \) is a topology on \( X \), we call \( (X, \mscrT) \) a \term{topological space}. When the topology is obvious from the context, we refer to \( X \) itself as a topological space.
 
-  Elements of \( X \) are called \term{points} of the topological space, elements of \( \mscrT \) are called \term{open sets} and \hyperref[thm:boolean_algebra_of_subsets/complement]{set-theoretic complements} of open sets are called \term{closed sets}.
+  Elements of \( X \) are called \term{points} of the topological space, elements of \( \mscrT \) are called \term{open sets} and \hyperref[thm:boolean_algebra_of_subsets/complement]{set-theoretic complements} of open sets are called \term{closed sets}. We will later prove that open sets are \hyperref[def:fixed_point]{fixed points} of the \hyperref[def:topological_interior_operator]{topological interior operator} and closed sets are fixed points of the \hyperref[def:topological_closure_operator]{topological closure operator}.
 \end{definition}
 
 \begin{definition}\label{def:topology_ordering}\mcite[16]{Engelking1989}
@@ -68,6 +68,8 @@
     \thmitem{rem:constructing_topologies/base} By specifying only a \hyperref[def:topological_base]{base} of open sets --- \fullref{thm:topology_from_base}.
     \thmitem{rem:constructing_topologies/subbase} By specifying only some family of open sets --- \fullref{thm:topology_from_subbase}. This is the approach we use for order topologies in \fullref{def:order_topology}.
     \thmitem{rem:constructing_topologies/local_base} By specifying a \hyperref[def:topological_local_base]{local base} of open sets at every point --- \fullref{thm:topology_from_local_base}. This is the approach we use for metric spaces in \fullref{def:metric_topology} and uniform spaces in \fullref{def:uniform_topology}.
+    \thmitem{rem:constructing_topologies/closure} By specifying a \hyperref[def:topological_closure_operator]{closure operator} --- \fullref{thm:topology_from_closure_operator}.
+    \thmitem{rem:constructing_topologies/interior} By specifying an \hyperref[def:topological_interior_operator]{interior operator} --- \fullref{thm:topology_from_interior_operator}.
   \end{thmenum}
 \end{remark}
 
@@ -76,14 +78,16 @@
 
   This is commonly expressed via the following three conditions on an arbitrary family \( \mscrF \) of subsets:
   \begin{thmenum}
-    \thmitem[def:topological_space/F1]{F1} \( \mscrF \) contains both \( \varnothing \) and \( X \).
-    \thmitem[def:topological_space/F2]{F2} \( \mscrF \) is closed under finite unions: \( U, V \in \mscrF \) implies \( U \cup V \in \mscrF \).
-    \thmitem[def:topological_space/F3]{F3} \( \mscrF \) is closed under arbitrary intersections: \( \mscrF' \subseteq \mscrF \) implies \( \bigcap \mscrF' \in \mscrF \).
+    \thmitem[thm:topology_from_closed_sets/C1]{C1} \( \mscrF \) contains both \( \varnothing \) and \( X \).
+    \thmitem[thm:topology_from_closed_sets/C2]{C2} \( \mscrF \) is closed under finite unions: \( U, V \in \mscrF \) implies \( U \cup V \in \mscrF \).
+    \thmitem[thm:topology_from_closed_sets/C3]{C3} \( \mscrF \) is closed under arbitrary intersections: \( \mscrF' \subseteq \mscrF \) implies \( \bigcap \mscrF' \in \mscrF \).
   \end{thmenum}
 \end{proposition}
 \begin{proof}
-  \SubProofOf{def:topological_space/O1} Follows directly from \ref{def:topological_space/F1}.
-  \SubProofOf{def:topological_space/O2} If \( F, G \in \mscrF \), then \ref{def:topological_space/F2} implies \( F \cup G \in \mscrF \).
+  We will show that the axioms \ref{thm:topology_from_closed_sets/C1} --- \ref{thm:topology_from_closed_sets/C3} imply \ref{def:topological_space/O1} --- \ref{def:topological_space/O3}. The converse is also true, but we will not give a proof because it is straightforward.
+
+  \SubProofOf{def:topological_space/O1} Follows directly from \ref{thm:topology_from_closed_sets/C1}.
+  \SubProofOf{def:topological_space/O2} If \( F, G \in \mscrF \), then \ref{thm:topology_from_closed_sets/C2} implies \( F \cup G \in \mscrF \).
 
   By \fullref{thm:de_morgans_laws_for_sets},
   \begin{equation*}
@@ -91,7 +95,7 @@
   \end{equation*}
   hence \( (X \setminus F), (X \setminus G) \in \mscrT \) implies \( X \setminus (F \cup G) \in \mscrT \).
 
-  \SubProofOf{def:topological_space/O3} Follows from \ref{def:topological_space/F3} via \fullref{thm:de_morgans_laws_for_sets}.
+  \SubProofOf{def:topological_space/O3} Follows from \ref{thm:topology_from_closed_sets/C3} via \fullref{thm:de_morgans_laws_for_sets}.
 \end{proof}
 
 \begin{definition}\label{def:neighborhood_system}\mcite[39]{Kelley1975}
@@ -526,139 +530,255 @@
   \end{thmenum}
 \end{example}
 
-\begin{definition}\label{def:topological_closure_operator}\mcite[33]{Engelking1989}
-  Let \( (X, \mscrT) \) be a topological space. Define the \term{closure operator}
-  \begin{balign*}
-     & \cl: \pow(X) \to \pow(X)                                           \\
-     & \cl(A) \coloneqq \bigcap \{ F : F \in F_\mscrT, A \subseteq F \}.
-  \end{balign*}
+\begin{definition}\label{def:topological_closure_operator}\mcite[thm. 1.1.6]{Engelking1989}
+  Let \( (X, \mscrT) \) be a topological space. Define the \term{topological closure} of \( A \) as the intersection of all closed sets containing \( A \):
+  \begin{equation*}
+    \begin{aligned}
+      &\cl: \pow(X) \to \pow(X) \\
+      &\cl(A) \coloneqq \bigcap \set{ X \setminus U \given U \in \mscrT \T{and} A \subseteq X \setminus U }.
+    \end{aligned}
+  \end{equation*}
+
+  As an intersection of closed set, \( \cl(A) \) is closed. It is actually the smallest closed set containing \( A \) because it is a subset of every closed set containing \( A \). In particular, the \hyperref[def:fixed_point]{fixed points} of the operator are the closed sets of \( \mscrT \).
+
+  Furthermore, it is an \hyperref[def:abstract_closure_operator]{abstract closure operator}.
 \end{definition}
+\begin{defproof}
+  \SubProofOf[def:extensive_function]{extensivity} Since \( A \) belongs to any closed superset, it follows that \( A \subseteq \cl(A) \).
 
-\begin{proposition}\label{thm:def:topological_closure_operator}
-  The closure \hyperref[def:topological_closure_operator]{operator} has the following basic properties
+  \SubProofOf[def:magma/idempotent]{idempotence} Since \( \cl(A) \) is the smallest closed set containing \( \cl(A) \), we conclude that \( \cl(\cl(A)) = \cl(A) \).
+
+  \SubProofOf[eq:def:partially_ordered_set/homomorphism/nonstrict]{monotonicity} If \( A \subseteq B \), then every closed superset of \( B \) is also a closed superset of \( A \). Hence, \( \cl(A) \subseteq \cl(B) \).
+\end{defproof}
+
+\begin{proposition}\label{thm:topology_from_closure_operator}
+  Let \( X \) be an arbitrary set and let \( \cl: \pow(X) \to \pow(X) \) be a function that satisfies \term{Kuratowski's axioms}:
   \begin{thmenum}
-    \thmitem{thm:def:topological_closure_operator/closed} The set \( A \) is closed if and only if \( A = \cl A \).
-    \thmitem{thm:def:topological_closure_operator/neighborhood_intersection} For any \( x \in X \), \( x \in \cl A \) if and only if every neighborhood of \( x \) intersects \( A \).
-    \thmitem{thm:def:topological_closure_operator/monotone} \( \cl \) is \hyperref[def:partially_ordered_set/homomorphism]{monotone}, i.e. if \( A \subseteq B \), then \( \cl(A) \subseteq \cl(B) \).
-  \end{thmenum}
-\end{proposition}
-\begin{proof}
-  \SubProofOf{thm:def:topological_closure_operator/closed} The condition \( A = \cl{A} \) is equivalent to \( A \) being a closed superset of itself, which is equivalent to \( A \) being closed.
-
-  \SubProofOf{thm:def:topological_closure_operator/neighborhood_intersection} Note that this proof relies on \fullref{def:topological_boundary}, however we do not use this property when defining the boundary.
-
-  \SufficiencySubProof Fix \( x \in \cl{A} \) and let \( U \) be a neighborhood of \( x \). If \( x \in A \), then obviously \( x \in U \cap A \neq \varnothing \). If \( x \not\in A \), then \( U \cap A \neq \varnothing \) by \fullref{def:topological_boundary/neighborhoods}. In both cases, we obtain \( U \cap A \neq \varnothing \), which proves the statement.
-
-  \NecessitySubProof Fix \( x \in X \) and assume that every neighborhood of \( x \) intersects \( A \). Since the case \( x \in A \) is trivial, suppose that \( x \not\in A \). By \fullref{thm:set_open_iff_neighborhood_is_contained}, every neighborhood \( U \) of \( x \) does not entirely belong to \( A \). By \fullref{def:topological_boundary/neighborhoods}, \( x \in \fr A \subseteq \cl A \).
-
-  \SubProofOf{thm:def:topological_closure_operator/monotone} If \( A \subseteq B \), every closed superset of \( B \) is also a closed superset of \( A \).
-\end{proof}
-
-\begin{proposition}\label{thm:topological_closure_operator_axioms}\mcite[14]{Engelking1989}
-  Let \( X \) be an arbitrary set and let \( \cl: \pow(X) \to \pow(X) \) be a function that satisfies
-  \begin{thmenum}
-    \thmitem[thm:topological_closure_operator_axioms/CO1]{CO1} \( \cl(\varnothing) = \varnothing \)
-    \thmitem[thm:topological_closure_operator_axioms/CO2]{CO2} \( \forall A \in \pow(X), A \subseteq \cl(A) \)
-    \thmitem[thm:topological_closure_operator_axioms/CO3]{CO3} \( \forall A, B \in \pow(X), \cl(A \cup B) = \cl(A) \cup \cl(B) \)
-    \thmitem[thm:topological_closure_operator_axioms/CO4]{CO4} \( \forall A \in \pow(X), \cl(\cl(A)) = \cl(A) \)
+    \thmitem[thm:topology_from_closure_operator/CO1]{CO1} \( \cl(\varnothing) = \varnothing \),
+    \thmitem[thm:topology_from_closure_operator/CO2]{CO2} It is \hyperref[def:extensive_function]{extensive}: \( A \subseteq \cl(A) \),
+    \thmitem[thm:topology_from_closure_operator/CO3]{CO3} It preserves finite unions: \( \cl(A \cup B) = \cl(A) \cup \cl(B) \),
+    \thmitem[thm:topology_from_closure_operator/CO4]{CO4} It is \hyperref[def:magma/idempotent]{idempotent}: \( \cl(\cl(A)) = \cl(A) \).
   \end{thmenum}
 
   Then the family
   \begin{equation*}
-    \mscrT \coloneqq \{ X \setminus F \colon F = \cl(F) \}
+    \mscrF \coloneqq \set{ A \subseteq X \given A = \cl(A) }
   \end{equation*}
-  is a topology on \( X \). Furthermore, \( \cl = \cl^{\mscrT} \), where \( \cl^{\mscrT} \) is the closure \hyperref[def:topological_closure_operator]{operator} on \( (X, \mscrT) \).
+  generates via \fullref{thm:topology_from_closed_sets} the topology
+  \begin{equation*}
+    \mscrT \coloneqq \set{ X \setminus F \given F \in \mscrF }
+  \end{equation*}
+  for which \( \mscrF \) is the family of closed sets.
 
-  In particular, the closure operator on any topology satisfies \fullref{thm:topological_closure_operator_axioms/CO1} -- \fullref{thm:topological_closure_operator_axioms/CO4}.
-\end{proposition}
-
-\begin{definition}\label{def:interior_operator}\mcite[15]{Engelking1989}
-  Let \( (X, \mscrT) \) be a topological space. Define the \term{interior operator}
-  \begin{balign*}
-     & \Int: \pow(X) \to \pow(X)                                     \\
-     & \Int(A) \coloneqq \bigcup \{ U : U \in T, U \subseteq A \}.
-  \end{balign*}
-\end{definition}
-
-\begin{proposition}\label{thm:def:interior_operator}
-  The interior \hyperref[def:interior_operator]{operator} has the following basic properties
-  \begin{thmenum}
-    \thmitem{thm:def:interior_operator/open} A set \( A \) is a topological space is open if and only if \( A = \int A \).
-    \thmitem{thm:def:interior_operator/monotone} \( \int \) is \hyperref[def:partially_ordered_set/homomorphism]{monotone}, i.e. if \( A \subseteq B \), then \( \Int(A) \subseteq \Int(B) \).
-  \end{thmenum}
+  Furthermore, \( \cl \), is the \hyperref[def:topological_closure_operator]{topological closure operator} on \( (X, \mscrT) \).
 \end{proposition}
 \begin{proof}
-  \SubProofOf{thm:def:interior_operator/open} Follows from \fullref{thm:def:topological_closure_operator/closed} and \fullref{thm:interior_closure_complement}.
-  \SubProofOf{thm:def:interior_operator/monotone} Follows from \fullref{thm:def:topological_closure_operator/monotone} and \fullref{thm:interior_closure_complement}.
+  \SubProofOf[eq:def:partially_ordered_set/homomorphism/nonstrict]{monotonicity} \ref{thm:topology_from_closure_operator/CO3} implies that, if \( A \subseteq B \), then
+  \begin{equation*}
+    \cl(B) = \cl(A \cup B \setminus A) = \cl(A) \cup \cl(B \setminus A).
+  \end{equation*}
+
+  Hence, \( \cl(A) \subseteq \cl(B) \).
+
+  \SubProof{Proof that \( \mscrF \) satisfies \fullref{thm:topology_from_closed_sets}}
+
+  \SubProofOf*{thm:topology_from_closed_sets/C1} \ref{thm:topology_from_closure_operator/CO1} implies that \( \varnothing \in \mscrF \). \ref{thm:topology_from_closure_operator/CO2} implies that \( X \subseteq \cl(X) \), hence \( X = \cl(X) \) and thus \( X \in \mscrF \).
+
+  \SubProofOf*{thm:topology_from_closed_sets/C2} \ref{thm:topology_from_closure_operator/CO3} implies that, if \( F, G \in \mscrF \), then
+  \begin{equation*}
+    F \cup G = \cl(F) \cup \cl(G) = \cl(F \cup G),
+  \end{equation*}
+  and thus \( F \cup G \in \mscrF \).
+
+  \SubProofOf*{thm:topology_from_closed_sets/C3} Let \( \mscrF' \subseteq \mscrF \). \ref{thm:topology_from_closure_operator/CO2} implies that
+  \begin{equation*}
+    \bigcap \mscrF' \subseteq \cl\parens*{ \bigcap \mscrF' }.
+  \end{equation*}
+
+  Conversely, monotonicity implies that, for any \( F_0 \in \mscrF' \),
+  \begin{equation*}
+    \cl\parens*{ \bigcap \mscrF' }
+    \subseteq
+    \cl(F_0)
+    =
+    F_0.
+  \end{equation*}
+
+  Therefore,
+  \begin{equation*}
+    \cl\parens*{ \bigcap \mscrF' } \subseteq \bigcap \mscrF'.
+  \end{equation*}
+
+  \SubProof{Proof that \( \cl \) is the topological closure operator} Fix a set \( A \) and let \( \mscrF' \subset \mscrF \) be the family of closed sets containing \( A \). Then
+  \begin{equation*}
+    \cl(A) \subseteq \cl\parens*{ \bigcap \mscrF' } = \bigcap \mscrF'.
+  \end{equation*}
+
+  \ref{thm:topology_from_closure_operator/CO2} implies that \( A \subseteq \cl(A) \). \ref{thm:topology_from_closure_operator/CO4} implies that \( \cl(A) \) is a closet set. Hence, \( \cl(A) \) belongs to \( \mscrF' \) and
+  \begin{equation*}
+    \bigcap \mscrF' \subseteq \cl(A).
+  \end{equation*}
+
+  We conclude that \( \cl(A) \) is the closure operator for the induced topology.
 \end{proof}
 
-\begin{proposition}\label{thm:interior_closure_complement} For every set \( A \subseteq X \) we have
-  \begin{itemize}
-    \item \( X \setminus \Int(A) = \cl(X \setminus A) \)
-    \item \( X \setminus \cl(A) = \Int(X \setminus A) \)
-  \end{itemize}
+\begin{proposition}\label{thm:topological_closure_operator_can_generate_topology}
+  Every \hyperref[def:topological_closure_operator]{topological closure operator} satisfies \ref{thm:topology_from_closure_operator/CO1} -- \ref{thm:topology_from_closure_operator/CO4}.
 \end{proposition}
 \begin{proof}
-  Any open subset \( U \subseteq A \) is a closed superset of \( X \setminus A \). A point belongs to \( \Int(A) \) if it belongs to at least one open subset of \( A \), which happens if and only if it belongs to at least one closed superset of \( X \setminus A \). Therefore,
+  \SubProofOf{thm:topology_from_closure_operator/CO1} Since \( \varnothing \) is closed, \( \cl(\varnothing) = \varnothing \).
+  \SubProofOf{thm:topology_from_closure_operator/CO2} Already proven in \fullref{def:topological_closure_operator}.
+  \SubProofOf{thm:topology_from_closure_operator/CO3} Fix sets \( A \) and \( B \). Note that \( \cl(A \cup B) \) is a closed set containing both \( A \) and \( B \), hence
+  \begin{align*}
+    \cl(A) \subseteq \cl(A \cup B)
+    &&
+    \cl(B) \subseteq \cl(A \cup B).
+  \end{align*}
+
+  Then
+  \begin{equation*}
+    \cl(A) \cup \cl(B) \subseteq \cl(A \cup B).
+  \end{equation*}
+
+  Conversely, \( \cl(A) \cup \cl(B) \) is a closed set containing both \( A \) and \( B \), and hence \( A \cup B \), thus
+  \begin{equation*}
+    \cl(A \cup B) \subseteq \cl(A) \cup \cl(B).
+  \end{equation*}
+
+  We conclude that \( \cl \) preserves finite unions.
+
+  \SubProofOf{thm:topology_from_closure_operator/CO4} Already proven in \fullref{def:topological_closure_operator}.
+\end{proof}
+
+\begin{definition}\label{def:topological_interior_operator}\mcite[thm. 1.1.6]{Engelking1989}
+  Let \( (X, \mscrT) \) be a topological space. Define the \term{interior} of \( A \) as the union of all open sets contained in \( A \):
+  \begin{equation*}
+    \begin{aligned}
+      &\Int: \pow(X) \to \pow(X) \\
+      &\Int(A) \coloneqq \bigcup \set{ U \given U \in \mscrT \T{and} U \subseteq A }.
+    \end{aligned}
+  \end{equation*}
+
+  As a union of open sets, \( \Int(A) \) is open. It is actually the largest open set containing \( A \) because it is a superset of every closed set contained in \( A \). In particular, the \hyperref[def:fixed_point]{fixed points} of the operator are the open sets of \( \mscrT \).
+
+  It is not an \hyperref[def:abstract_closure_operator]{abstract closure operator} --- it is \hyperref[eq:def:partially_ordered_set/homomorphism/nonstrict]{monotone} and \hyperref[def:magma/idempotent]{idempotent}, but \hyperref[def:extensive_function]{anti-extensive} rather than \hyperref[def:extensive_function]{extensive}. It does have a deep relationship with the \hyperref[def:topological_closure_operator]{topological closure operator} -- see \fullref{thm:interior_closure_complement}.
+\end{definition}
+\begin{defproof}
+  \SubProofOf[def:extensive_function]{anti-extensivity} Since \( A \) contains any open subset, it follows that \( \Int(A) \subseteq A \).
+
+  \SubProofOf[def:magma/idempotent]{idempotence} Since \( \Int(A) \) is the largest an open set contained in \( \Int(A) \), we conclude that \( \Int(\Int(A)) = \Int(A) \)
+
+  \SubProofOf[eq:def:partially_ordered_set/homomorphism/nonstrict]{monotonicity} If \( A \subseteq B \), then every open subset of \( A \) is also an open subset of \( B \). Hence, \( \Int(A) \subseteq \Int(B) \).
+\end{defproof}
+
+\begin{proposition}\label{thm:interior_closure_complement}
+  The \hyperref[def:topological_closure_operator]{topological closure operator} and the \hyperref[def:topological_interior_operator]{topological interior operator} on the same space are related as follows:
+  \begin{align}
+    X \setminus \Int(A) = \cl(X \setminus A)
+    &&
+    X \setminus \cl(A) = \Int(X \setminus A)
+    \label{eq:thm:interior_closure_complement}
+  \end{align}
+\end{proposition}
+\begin{proof}
+  We have
   \begin{balign*}
     X \setminus \Int(A)
-     & =
-    X \setminus \bigcup \{ U : U \in T, U \subseteq A \}
-    =                                            \\ &=
-    X \setminus \bigcup \{ F : F \in F_\mscrT, X \setminus A \subseteq F \}
-    \reloset {X \setminus (X \setminus A) = A} = \\ &=
-    \bigcup \{ F : F \in F_\mscrT, F \subseteq A \}.
-    =                                            \\ &=
-    \cl(A).
+    &=
+    X \setminus \bigcup \set[\Big]{ U \given* U \in \mscrT \T{and} U \subseteq A }
+    \reloset {\eqref{eq:thm:de_morgans_laws_for_sets/complement_of_union}} = \\ &=
+    \bigcap \set[\Big]{ X \setminus U \given* U \in \mscrT \T{and} U \subseteq A }
+    = \\ &=
+    \bigcap \set[\Big]{ X \setminus U \given* U \in \mscrT \T{and} X \setminus A \subseteq X \setminus U }
+    = \\ &=
+    \cl(X \setminus A).
   \end{balign*}
 
-  The other equality is obtained by noting that \( X \setminus \cl(A) = X \setminus (X \setminus \Int(A)) = \Int(A) \).
+  The other equality is obtained by noting that
+  \begin{equation*}
+    X \setminus \cl(A)
+    =
+    X \setminus (X \setminus \Int(A))
+    \reloset {\ref{thm:set_difference/double_difference}} =
+    \Int(A).
+  \end{equation*}
 \end{proof}
 
-\begin{proposition}\label{thm:interior_operator_axioms}
-  Let \( X \) be an arbitrary set and let \( \int: \pow(X) \to \pow(X) \) be a function that satisfies
+\begin{proposition}\label{thm:topology_from_interior_operator}
+  Let \( X \) be an arbitrary set and let \( \Int: \pow(X) \to \pow(X) \) be a function that satisfies the conditions:
   \begin{thmenum}
-    \thmitem[thm:interior_operator_axioms/IO1]{IO1} \( \Int(X) = X \)
-    \thmitem[thm:interior_operator_axioms/IO2]{IO2} \( \forall A \in \pow(X), \Int(A) \subseteq A \)
-    \thmitem[thm:interior_operator_axioms/IO3]{IO3} \( \forall A, B \in \pow(X), \Int(A \cap B) = \Int(A) \cap \Int(B) \)
-    \thmitem[thm:interior_operator_axioms/IO4]{IO4} \( \forall A \in \pow(X), \Int(\Int(A)) = \Int(A) \)
+    \thmitem[thm:topology_from_interior_operator/IO1]{IO1} \( \Int(X) = X \)
+    \thmitem[thm:topology_from_interior_operator/IO2]{IO2} It is \hyperref[def:extensive_function]{anti-extensive}: \( \Int(A) \subseteq A \),
+    \thmitem[thm:topology_from_interior_operator/IO3]{IO3} It preserves finite intersections: \( \Int(A \cap B) = \Int(A) \cap \Int(B) \),
+    \thmitem[thm:topology_from_interior_operator/IO4]{IO4} It is \hyperref[def:magma/idempotent]{idempotent}: \( \Int(\Int(A)) = \Int(A) \).
   \end{thmenum}
 
   Then the family
   \begin{equation*}
-    \mscrT \coloneqq \{ U \colon U = \Int(U) \}
+    \mscrT \coloneqq \set{ A \subseteq X \given A = \cl(A) }
   \end{equation*}
-  is a topology on \( X \). Furthermore, \( \int = \int_\mscrT \), where \( \int_\mscrT \) is the interior \hyperref[def:interior_operator]{operator} on \( (X, \mscrT) \).
+  is a topology on \( X \).
 
-  In particular, the interior operator on any topology satisfies \fullref{thm:interior_operator_axioms/IO1} -- \fullref{thm:interior_operator_axioms/IO4}.
+  Furthermore, \( \Int \), is the \hyperref[def:topological_interior_operator]{topological interior operator} on \( (X, \mscrT) \).
 \end{proposition}
+\begin{proof}
+  Note that \( \cl(A) \coloneqq X \setminus \Int(A) \) satisfies \ref{thm:topology_from_interior_operator/CO1} -- \ref{thm:topology_from_interior_operator/CO4}. Then \( \mscrT \) is a topology, \( \cl(A) \) is the closure operator for \( \mscrT \), and \fullref{thm:interior_closure_complement} implies that \( \Int(A) \) is the interior operator for \( \mscrT \).
+\end{proof}
+
+\begin{proposition}\label{thm:topological_interior_operator_can_generate_topology}
+  Every \hyperref[def:topological_interior_operator]{topological interior operator} satisfies \ref{thm:topology_from_interior_operator/IO1} -- \ref{thm:topology_from_interior_operator/IO4}.
+\end{proposition}
+\begin{proof}
+  Follows from \fullref{thm:interior_closure_complement} and \fullref{thm:topological_closure_operator_can_generate_topology}.
+\end{proof}
 
 \begin{definition}\label{def:topological_boundary}
-  For a subset \( A \) of a topological space we define its \term{boundary} \( \fr(A) \) equivalently as
+  Let \( (X, \mscrT) \) be a topological space. Define the \term{boundary operator}
+  \begin{equation*}
+    \fr: \pow(X) \to \pow(X)
+  \end{equation*}
+  via the equivalent definitions:
   \begin{thmenum}
     \thmitem{def:topological_boundary/closure} \( \fr(A) \coloneqq \cl(A) \setminus \Int(A) \)
-    \thmitem{def:topological_boundary/neighborhoods} \( \fr(A) \) is the set of all points \( x \in X \) such that every neighborhood of \( x \) intersects both \( A \) and \( X \setminus A \).
+    \thmitem{def:topological_boundary/neighborhoods} \( \fr(A) \) is the set of all points for which every neighborhood intersects both \( A \) and \( X \setminus A \).
   \end{thmenum}
 \end{definition}
 \begin{proof}
-  The equivalence of the definitions is trivial when \( \fr(A) = \varnothing \). We assume that \( \fr(A) \neq \varnothing \).
+  The equivalence of the definitions is trivial when \( \fr(A) = \varnothing \). Assume that \( \fr(A) \neq \varnothing \).
 
   \ImplicationSubProof{def:topological_boundary/closure}{def:topological_boundary/neighborhoods} Let \( x \in \cl(A) \setminus \Int(A) \).
 
-  Aiming for a contradiction, suppose that there is a neighborhood \( U \) of \( x \) that does not intersect \( A \). Then \( U \subseteq X \setminus A \). Hence, \( A \subseteq X \setminus U \). Since \( X \setminus U \) is closed, it follows that \( \cl(A) \subseteq X \setminus U \) as the intersection of all closed supersets of \( A \). But \( x \not\in X \setminus U \), therefore \( x \not\in \cl(A) \), which contradicts our choice of \( x \in \cl(A) \).
+  Aiming for a contradiction, suppose that there is a neighborhood \( U \) of \( x \) that does not intersect \( A \). Then \( U \subseteq X \setminus A \). Hence, \( A \subseteq X \setminus U \). Since \( X \setminus U \) is closed, it follows that \( \cl(A) \subseteq X \setminus U \). But \( x \not\in X \setminus U \), therefore \( x \not\in \cl(A) \), which contradicts our choice of \( x \in \cl(A) \).
 
   This proves that every neighborhood of \( x \) intersects \( A \).
 
   By passing to complements, we can reuse this to prove that every neighborhood of \( x \) intersects \( X \setminus A \) using \fullref{thm:interior_closure_complement}.
 
-  \ImplicationSubProof{def:topological_boundary/neighborhoods}{def:topological_boundary/closure} Suppose that every neighborhood of \( x \in \fr(A) \) intersects both \( A \) and \( X \setminus A \). Therefore, no neighborhood of \( x \) is contained in neither \( A \) not \( X \setminus A \) and \( x \) belongs to neither \( \Int(A) \) nor \( \Int(X \setminus A) \). Hence,
+  \ImplicationSubProof{def:topological_boundary/neighborhoods}{def:topological_boundary/closure} Suppose that every neighborhood of \( x \) intersects both \( A \) and \( X \setminus A \). Therefore, no neighborhood of \( x \) is contained in neither \( A \) not \( X \setminus A \), and \( x \) belongs to neither \( \Int(A) \) nor \( \Int(X \setminus A) \). Hence,
   \begin{equation*}
-    x \in (X \setminus \Int(X \setminus A)) \setminus \Int(A) \reloset {\ref{thm:interior_closure_complement}} = \cl(A) \setminus \Int(A).
+    x
+    \in
+    \parens[\Big]{ X \setminus \Int(X \setminus A)) \setminus \Int(A) }
+    \reloset {\ref{thm:interior_closure_complement}} =
+    \cl(A) \setminus \Int(A).
   \end{equation*}
 \end{proof}
 
+\begin{proposition}\label{thm:def:topological_closure_operator}
+  For any point \( x \in X \), \( x \in \cl A \) if and only if every neighborhood of \( x \) intersects \( A \).
+\end{proposition}
+\begin{proof}
+  \SufficiencySubProof Fix \( x \in \cl{A} \), and let \( U \) be a neighborhood of \( x \).
+
+  If \( x \in A \), then \( x \in U \cap A \), and \( U \) intersects \( A \).
+
+  If \( x \not\in A \), then \( x \in \cl(A) \setminus \Int(A) \), and the equivalences in \fullref{def:topological_boundary} imply that every neighborhood of \( x \) intersects both \( \cl(A) \) and \( \Int(A) \). In particular, \( U \) intersects \( \Int(A) \subseteq A \).
+
+  \NecessitySubProof Fix \( x \in X \) and assume that every neighborhood of \( x \) intersects \( A \). Since the case \( x \in A \) is trivial, suppose that \( x \not\in A \). By \fullref{thm:set_open_iff_neighborhood_is_contained}, every neighborhood \( U \) of \( x \) does not entirely belong to \( A \). Then \( x \in \fr A \subseteq \cl A \).
+\end{proof}
+
 \begin{proposition}\label{thm:def:topological_boundary}
-  The \hyperref[def:topological_boundary]{topological boundary} has the following basic properties
+  The \hyperref[def:topological_boundary]{topological boundary} has the following basic properties:
   \begin{thmenum}
     \thmitem{thm:def:topological_boundary/closed} \( \fr(A) \) is a closed set.
     \thmitem{thm:def:topological_boundary/not_open} If \( \fr(A) \) is not empty, it is not an open set.
@@ -672,21 +792,21 @@
   \end{equation*}
   which is the intersection of two closed sets. Hence, \( \fr(A) \) is itself a closed set.
 
-  \SubProofOf{thm:def:topological_boundary/not_open} Note that \( \fr(A) \) is either empty or is not open because \fullref{def:topological_boundary/neighborhoods} is incompatible with \fullref{thm:set_open_iff_neighborhood_is_contained}.
+  \SubProofOf{thm:def:topological_boundary/not_open} The set \( \fr(A) \) is either empty or is not open because \fullref{def:topological_boundary/neighborhoods} is incompatible with \fullref{thm:set_open_iff_neighborhood_is_contained}.
 
-  \SubProofOf{thm:def:topological_boundary/complement} By \fullref{thm:interior_closure_complement},
+  \SubProofOf{thm:def:topological_boundary/complement} \Fullref{thm:interior_closure_complement} implies that
   \begin{balign*}
-    \fr(A)
-     & =
-    \cl(A) \setminus \Int(A)
-    =                                                  \\ &=
-    \cl(A) \cap (X \setminus \Int(A))
-    \reloset {\ref{thm:interior_closure_complement}} = \\ &=
-    (X \setminus \Int(X \setminus A)) \cap \cl(X \setminus A)
-    =                                                  \\ &=
+    \fr(X \setminus A)
+    &=
     \cl(X \setminus A) \setminus \Int(X \setminus A)
-    =                                                  \\ &=
-    \fr(X \setminus A).
+    = \\ &=
+    \cl(X \setminus A) \cap (X \setminus \Int(X \setminus A))
+    \reloset {\ref{thm:interior_closure_complement}} = \\ &=
+    (X \setminus \Int(A)) \cap \cl(A)
+    = \\ &=
+    \cl(A) \setminus \Int(A)
+    = \\ &=
+    \fr(A).
   \end{balign*}
 \end{proof}
 
@@ -776,11 +896,11 @@
   \begin{thmenum}
     \thmitem{def:topologically_dense_set/dense} \term{dense} in \( X \) if \( \cl{A} = X \) (if \( X \) is assumed from the context, we simply say that \( A \) is dense).
 
-    \thmitem{def:topologically_dense_set/codense} \term{codense} in \( X \) if \( X \setminus A \) is dense, i.e. \( \cl(X \setminus A) = X \).
+    \thmitem{def:topologically_dense_set/codense} \term{codense} in \( X \) if \( X \setminus A \) is dense: \( \cl(X \setminus A) = X \).
 
-    \thmitem{def:topologically_dense_set/nowhere_dense} \term{nowhere dense} in \( X \) if \( \cl(A) \) is codense, i.e. \( X = \cl(X \setminus \cl A) \reloset {\ref{thm:interior_closure_complement}} = \cl(\Int(X \setminus A)) \).
+    \thmitem{def:topologically_dense_set/nowhere_dense} \term{nowhere dense} in \( X \) if \( \cl(A) \) is codense: \( X = \cl(X \setminus \cl A) \reloset {\ref{thm:interior_closure_complement}} = \cl(\Int(X \setminus A)) \).
 
-    \thmitem{def:topologically_dense_set/dense_in_itself} \term{dense in itself} if \( A \subseteq \derived(A) \), i.e. if \( A \) has no isolated points.
+    \thmitem{def:topologically_dense_set/dense_in_itself} \term{dense in itself} if \( A \subseteq \derived(A) \): if \( A \) has no isolated points.
   \end{thmenum}
 
   We define the \term{density} \( d(X) \) of \( X \) to be the minimum \hyperref[def:cardinal]{cardinality} of all dense sets. If \( d(X) \leq \aleph_0 \), we say that the space is \term{separable}.
