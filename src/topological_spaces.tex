@@ -5,7 +5,7 @@
 \end{remark}
 
 \begin{definition}\label{def:topological_space}\mcite[11]{Engelking1989}
-  A \term{topology} on a set \( X \) is a \hyperref[def:semilattice/submodel]{bounded sublattice} of the \hyperref[thm:boolean_algebra_of_subsets]{Boolean algebra of subsets} that is closed under arbitrary unions.
+  A \term{topology} on a set \( X \) is a \hyperref[def:semilattice/lattice]{join-complete} \hyperref[def:semilattice/submodel]{bounded sublattice} of the \hyperref[thm:boolean_algebra_of_subsets]{Boolean algebra of subsets}.
 
   This is commonly expressed via the following three conditions on an arbitrary family \( \mscrT \) of subsets:
   \begin{thmenum}
@@ -19,26 +19,43 @@
   Elements of \( X \) are called \term{points} of the topological space, elements of \( \mscrT \) are called \term{open sets} and \hyperref[thm:boolean_algebra_of_subsets/complement]{set-theoretic complements} of open sets are called \term{closed sets}.
 \end{definition}
 
-\begin{example}\label{ex:boolean_subalgebras_as_topological_spaces}
-  Every \hyperref[def:boolean_algebra/submodel]{complete Boolean subalgebra} of \( \pow(X) \) is a topology on \( X \). Important examples are the discrete topology defined in \hyperref{def:discrete_topology}, the indiscrete topology defined in \hyperref{def:indiscrete_topology} and the topology of the Sierpinski space defined in \fullref{def:sierpinski_space}.
-\end{example}
+\begin{definition}\label{def:topology_ordering}\mcite[16]{Engelking1989}
+  We say that the topology \( \mscrT \) on \( X \) is \term{coarser} than the topology \( \mscrO \) on \( X \) if \( \mscrT \) is a subset of \( \mscrO \). We say that \( \mscrO \) is \term{finer} than \( \mscrT \).
 
-\begin{definition}\label{def:discrete_topology}
+  As we shall see in \fullref{thm:lattice_of_topologies}, this is a \hyperref[def:partially_ordered_set]{partial ordering} in the \hyperref[thm:lattice_of_topologies]{lattice of topologies} on \( X \).
+\end{definition}
+
+\begin{definition}\label{def:discrete_topology}\mcite[37]{Kelley1975}
   The \term{discrete topology} on the set \( X \) is simply the Boolean algebra of subsets \( \pow(X) \).
+
+  It is the in the \hyperref[def:topology_ordering]{finest} topology in the \hyperref[thm:lattice_of_topologies]{lattice of topologies} on \( X \), and is \hyperref[def:category_adjunction]{left adjoint} to the \hyperref[def:concrete_category]{forgetful functor} \( U: \cat{Top} \to \cat{Set} \).
 \end{definition}
 
-\begin{definition}\label{def:indiscrete_topology}
-  The \term{indiscrete topology} on the set \( X \) is simply the trivial subalgebra \( \set{ 0, X } \) of \( \pow(X) \).
+\begin{definition}\label{def:indiscrete_topology}\mcite[37]{Kelley1975}
+  The \term{trivial} or \term{indiscrete topology} on the set \( X \) is simply the \hyperref[def:boolean_algebra/trivial]{trivial subalgebra} \( \set{ 0, X } \) of \( \pow(X) \).
+
+  It is the in the \hyperref[def:topology_ordering]{coarsest} topology in the \hyperref[thm:lattice_of_topologies]{lattice of topologies} on \( X \), and is \hyperref[def:category_adjunction]{right adjoint} to the \hyperref[def:concrete_category]{forgetful functor} \( U: \cat{Top} \to \cat{Set} \).
 \end{definition}
 
-\begin{definition}\label{def:sierpinski_topology}
-  The initial lattice \( \set{ \top, \bot } \) endowed with the topology \( \set{ \varnothing, \set{ \top }, \set{ \top, \bot } } \) is called the \term{Sierpinski space}.
+\begin{proposition}\label{thm:empty_set_discrete_and_indiscrete_topologies}
+  A set is \hyperref[def:empty_set]{empty} if and only if its \hyperref[def:discrete_topology]{discrete} and \hyperref[def:indiscrete_topology]{indiscrete} topologies coincide.
+\end{proposition}
+\begin{proof}
+  Trivial.
+\end{proof}
+
+\begin{definition}\label{def:sierpinski_space}\mcite[exmpl. 2.1.7(e)]{Perrone2019}
+  The \hyperref[def:boolean_algebra/trivial]{two-element Boolean algebra} \( \set{ \top, \bot } \) endowed with the topology
+  \begin{equation*}
+    \set[\Big]{ \varnothing, \set{ \top }, \set{ \top, \bot } }
+  \end{equation*}
+  is called the \term{Sierpinski space}.
 
   \begin{figure}[!ht]
     \hfill
     \includegraphics[page=1]{output/def__sierpinski_space.pdf}
     \hfill\hfill
-    \caption{The \hyperref[def:hasse_diagram]{Hasse diagram} of the topology of the \hyperref[def:sierpinski_space]{Sierpinski space}.}
+    \caption{A \hyperref[def:hasse_diagram]{Hasse diagram} of the \hyperref[def:discrete_topology]{discrete} and the \hyperref[def:sierpinski_space]{Sierpinski topologies} on \( \set{ \top, \bot } \). }
     \label{fig:def:sierpinski_space}
   \end{figure}
 \end{definition}
@@ -49,6 +66,7 @@
     \thmitem{rem:constructing_topologies/open} By specifying all open sets --- \fullref{def:topological_space}.
     \thmitem{rem:constructing_topologies/closed} By specifying all closed sets --- \fullref{thm:topology_from_closed_sets}.
     \thmitem{rem:constructing_topologies/base} By specifying only a \hyperref[def:topological_base]{base} of open sets --- \fullref{thm:topology_from_base}.
+    \thmitem{rem:constructing_topologies/subbase} By specifying only some family of open sets --- \fullref{thm:topology_from_subbase}.
   \end{thmenum}
 \end{remark}
 
@@ -75,7 +93,7 @@
   \SubProofOf{def:topological_space/O3} Follows from \ref{def:topological_space/F3} via \fullref{thm:de_morgans_laws_for_sets}.
 \end{proof}
 
-\begin{definition}\label{def:topological_neighborhood}\mimprovised
+\begin{definition}\label{def:neighborhood_system}\mimprovised
   Let \( A \) be a nonempty set in a topological space \( (X, \mscrT) \). We say that the set \( U \) is a \term[bg=околност,ru=окрестность]{neighborhood} of \( A \) if \( A \subseteq U \) and \( U \) is open. The definition usually applies to singleton sets \( A = \set{ x } \), in which case we refer to \enquote{neighborhoods of a point}.
 
   We define the \term{neighborhood system} of \( A \) as
@@ -88,8 +106,19 @@
   Note that some authors --- for example \cite[12]{Engelking1989}, \cite[7]{Rudin1991Functional} and \cite[def. 10.2]{ИвановТужилин2017} --- stick to this definition, while others define neighborhoods to be an arbitrary superset of what we call a neighborhood --- for example \cite[8]{Kelley1975}.
 \end{definition}
 
+\begin{example}\label{ex:def:neighborhood_system}
+  We list several examples of \hyperref[def:neighborhood_system]{neighborhood systems}:
+  \begin{thmenum}
+    \thmitem{ex:def:neighborhood_system/discrete} With the \hyperref[def:discrete_topology]{discrete topology} on \( X \), the \hyperref[def:neighborhood_system]{neighborhood system} of the point \( x \) is the \hyperref[ex:principal_ultrafilter]{principal ultrafilter} of \( x \).
+
+    \thmitem{ex:def:neighborhood_system/indiscrete} At the other end, with the \hyperref[def:indiscrete_topology]{indiscrete topology} on \( X \), the \hyperref[def:neighborhood_system]{neighborhood system} of any point \( x \) is \( \set{ X } \).
+  \end{thmenum}
+\end{example}
+
 \begin{proposition}\label{thm:neighborhood_filter}
-  The \hyperref[def:topological_neighborhood]{neighborhood system} \( \mscrT(A) \) is a \hyperref[def:lattice_ideal/ideal]{filter} in \( \mscrT \).
+  The \hyperref[def:neighborhood_system]{neighborhood system} \( \mscrT(A) \) is a \hyperref[def:lattice_ideal/ideal]{filter} in \( \mscrT \).
+
+  For a singleton set \( A = \set{ x } \), \( \mscrT(x) \) is a \hyperref[def:lattice_ideal/submodel]{subfilter} of the \hyperref[ex:principal_ultrafilter]{principal ultrafilter} of \( x \).
 \end{proposition}
 \begin{proof}
   The intersection of finitely many neighborhoods of \( A \) is again a neighborhood of \( A \).
@@ -98,7 +127,7 @@
 \end{proof}
 
 \begin{proposition}\label{thm:set_open_iff_neighborhood_is_contained}
-  A set \( A \) is open if and only if every point of \( A \) has a \hyperref[def:topological_neighborhood]{neighborhood} contained in \( A \).
+  A set \( A \) is open if and only if every point of \( A \) has a \hyperref[def:neighborhood_system]{neighborhood} contained in \( A \).
 \end{proposition}
 \begin{proof}
   This holds vacuously for empty sets. Assume that \( A \subseteq X \) is nonempty.
@@ -138,6 +167,31 @@
   \end{equation*}
 \end{proof}
 
+\begin{example}\label{ex:def:topological_base}
+  We list several examples of \hyperref[def:topological_base]{topological bases}:
+  \begin{thmenum}
+    \thmitem{ex:def:topological_base/topology} Every topology is itself a base. The topology with the empty set removed is also a base.
+
+    \thmitem{ex:def:topological_base/superset} If \( \mscrB \) is a base of \( \mscrT \), then any set between \( \mscrB \) and \( \mscrT \) is also a base.
+
+    \thmitem{ex:def:topological_base/indiscrete} The family \( \set{ X } \) is a base for the \hyperref[def:indiscrete_topology]{indiscrete topology} on a nonempty set \( X \). It is the only proper base.
+
+    For an empty space \( X = \varnothing \), the indiscrete topology is \( \set{ \varnothing } \), and hence the empty family is a base.
+
+    \thmitem{ex:def:topological_base/sierpinski} The \hyperref[def:sierpinski_space]{Sierpinski space} also has only two bases: the topology itself and the set
+    \begin{equation*}
+      \set{ \set{ \top }, \set{ \top, \bot } }.
+    \end{equation*}
+
+    \thmitem{ex:def:topological_base/discrete} For the \hyperref[def:discrete_topology]{discrete topology} \( \pow(X) \) on a set \( X \), the following is a base:
+    \begin{equation*}
+      \mscrB = \set{ \set{ x } \given x \in X }.
+    \end{equation*}
+
+    Indeed, every subset of \( X \) is a union of members of \( \mscrB \).
+  \end{thmenum}
+\end{example}
+
 \begin{proposition}\label{thm:topology_from_base}\mcite[12]{Engelking1989}
   Let \( X \) be an arbitrary set and let \( \mscrB \) be a family of subsets that satisfies the conditions
   \begin{thmenum}
@@ -147,16 +201,18 @@
 
   Then the family
   \begin{equation}\label{eq:thm:topology_from_base/topology}
-    \mscrT \coloneqq \set*{ \bigcup \mscrB' \colon \mscrB' \subseteq B }
+    \mscrT \coloneqq \set*{ \bigcup \mscrB' \given \mscrB' \subseteq \mscrB }
   \end{equation}
-  is a topology on \( X \).
+  is the coarsest topology on \( X \) containing \( \mscrB \).
 
   Furthermore, \( \mscrB \) satisfies \fullref{def:topological_base/union} is thus a \hyperref[def:topological_base]{base} of \( \mscrT \).
 \end{proposition}
 \begin{proof}
-  \SubProofOf{def:topological_space/O1} \( \varnothing = \bigcup \varnothing \) and, by \ref{thm:topology_from_base/B1}, \( X = \bigcup \mscrB \).
+  \SubProof{Proof that \( \mscrT \) is a topology}
 
-  \SubProofOf{def:topological_space/O3} Pick a subfamily \( \mscrT' \subseteq \mscrT \). For each \( U \in \mscrT' \), there exists a subfamily \( \mscrB_U' \) such that \( U = \bigcup \mscrB_U' \). Define
+  \SubProofOf*{def:topological_space/O1} \( \varnothing = \bigcup \varnothing \) and, by \ref{thm:topology_from_base/B1}, \( X = \bigcup \mscrB \).
+
+  \SubProofOf*{def:topological_space/O3} Pick a subfamily \( \mscrT' \subseteq \mscrT \). For each \( U \in \mscrT' \), there exists a subfamily \( \mscrB_U' \) such that \( U = \bigcup \mscrB_U' \). Define
   \begin{equation*}
     \mscrB'
     \coloneqq
@@ -182,7 +238,7 @@
 
   Hence, \( \bigcup\mscrT' \in \mscrT \).
 
-  \SubProofOf{def:topological_space/O2} Fix \( U, V \in T \). Then there exist families \( \mscrB_U, \mscrB_V \subseteq B \) such that \( U = \bigcup \mscrB_U' \) and \( V = \bigcup \mscrB_V' \).
+  \SubProofOf*{def:topological_space/O2} Fix \( U, V \in T \). Then there exist families \( \mscrB_U, \mscrB_V \subseteq B \) such that \( U = \bigcup \mscrB_U' \) and \( V = \bigcup \mscrB_V' \).
 
   Furthermore, by \ref{thm:topology_from_base/B2}, for every \( x \in U' \cap V' \) there exists a neighborhood \( W_x \) of \( x \) such that \( W \subseteq U' \cap V' \). We have
   \begin{equation*}
@@ -207,6 +263,12 @@
   \end{align*}
 
   Therefore, \( U \cap V \) is a union of members of \( \mscrB \), and is thus a member of \( \mscrT \).
+
+  \SubProof{Proof of minimality of \( \mscrT \)} Let \( \mscrO \) be another topology on \( X \) containing \( \mscrB \).
+
+  Since \( \mscrO \) must be closed under arbitrary unions, and since \( \mscrB \) may not be closed under arbitrary unions, it follows that \( \mscrO \) must contain the union \( \bigcup \mscrB' \) of an arbitrary subset \( \mscrB' \subseteq \mscrB \).
+
+  Therefore, \( \mscrT \) is necessarily a subset of \( \mscrO \).
 \end{proof}
 
 \begin{proposition}\label{thm:topological_base_can_generate_topology}
@@ -236,21 +298,106 @@
   The definition is correct because cardinals are well-ordered when regarded as initial ordinals.
 \end{defproof}
 
-\begin{example}\label{ex:topological_bases_with_same_cardinality}
-  For an \hyperref[def:euclidean_space]{Euclidean space}, the \hyperref[def:metric_topology]{metric topology}
+\begin{example}\label{ex:def:topological_space_weight}
+  We list several examples of \hyperref[def:topological_space_weight]{topological space weights}:
+  \begin{thmenum}
+    \thmitem{ex:def:topological_space_weight/indiscrete} We have shown in \fullref{ex:def:topological_base/indiscrete} that \( \set{ X } \) is the unique base of the indiscrete topology on a nonempty set \( X \) that is not the topology itself. Hence, the weight of any indiscrete topology is \( 1 \).
+
+    The weight of the indiscrete topology on the empty set is \( 0 \).
+
+    \thmitem{ex:def:topological_space_weight/sierpinski} Similarly to \fullref{ex:def:topological_space_weight/indiscrete}, \fullref{ex:def:topological_base/sierpinski} allows us to conclude that the weight of the Sierpinski space is \( 2 \).
+
+    \thmitem{ex:def:topological_base/discrete} Let \( \mscrB \) be an arbitrary base of the \hyperref[def:discrete_topology]{discrete topology} \( \pow(X) \) on \( X \).
+
+    There are \( 2^{\card \mscrB} \) subfamilies of \( \mscrB \). The union of two distinct subfamilies may be the same, hence
+    \begin{equation*}
+      \card(\pow X) = 2^{\card X} \leq 2^{\card \mscrB}.
+    \end{equation*}
+
+    \Fullref{thm:cardinal_exponentiation_comparison} then implies that \( \card X \leq \card \mscrB \). The base discussed in \fullref{ex:def:topological_base/discrete} has the cardinality of \( X \) itself, hence it is possible to attain equality.
+
+    Therefore, the weight of the discrete topology on \( X \) is \( \card X \).
+  \end{thmenum}
 \end{example}
 
 \begin{definition}\label{def:topological_subbase}\mcite[12]{Engelking1989}
-  Fix a topological space \( (X, \mscrT) \). We say that the family \( P \subseteq T \) is a \term{subbase} for the topology \( \mscrT \) if the family
-  \begin{equation*}
-    \mscrB \coloneqq \left\{ \bigcap P' \colon P' \text{ is a nonempty \hyperref[def:set_finiteness]{finite} subset of } P \right\}
-  \end{equation*}
+  Fix a topological space \( (X, \mscrT) \). We say that the family \( \mscrP \subseteq \mscrT \) is a \term{subbase} for the topology \( \mscrT \) if the family
+  \begin{equation}\label{eq:def:topological_subbase/base}
+    \mscrB \coloneqq \set{ X } \cup \set*{ \bigcap \mscrP' \colon \mscrP' \T{is a finite nonempty subfamily of} \mscrP }
+  \end{equation}
   of finite intersections of \( P \) is a \hyperref[def:topological_base]{base} of \( \mscrT \).
 \end{definition}
 
-\begin{proposition}\label{thm:subbase_from_arbitrary_family}
-  Fix a set \( X \) and a family of subsets \( P \subseteq \pow(X) \). The family \( P' \coloneqq P \cup X \) is then a \hyperref[def:topological_subbase]{subbase} of some topology on \( X \).
+\begin{remark}\label{rem:subbase_and_empty_intersection}
+  In the context of an ambient topological space, the intersection of empty sets discussed in \fullref{def:basic_set_operations/intersection} is safe to use. It can be utilized, for example, in \fullref{def:topological_subbase} to avoid the union with \( \set{ X } \).
+
+  Nonetheless, we prefer not to use empty intersections because of possible ambiguity.
+\end{remark}
+
+\begin{example}\label{ex:def:topological_subbase}
+  We list several examples of \hyperref[def:topological_subbase]{topological subbases}:
+  \begin{thmenum}
+    \thmitem{ex:def:topological_subbase/topology} Every topology is itself a subbase, as well as any base.
+
+    \thmitem{ex:def:topological_subbase/superset} If \( \mscrP \) is a subbase of \( \mscrT \), then any set between \( \mscrP \) and \( \mscrT \) is also a subbase.
+
+    \thmitem{ex:def:topological_subbase/indiscrete} The empty family is a subbase for the \hyperref[def:indiscrete_topology]{indiscrete topology} on any set.
+
+    \thmitem{ex:def:topological_subbase/sierpinski} The family \( \set{ \set{ \top } } \) is a subbase of the \hyperref[def:sierpinski_space]{Sierpinski space}.
+
+    \thmitem{ex:def:topological_subbase/discrete} For the \hyperref[def:discrete_topology]{discrete topology} \( \pow(X) \) on a set \( X \) with at least three elements, the following is a subbase:
+    \begin{equation*}
+      \mscrP = \set{ \set{ x, y } \given x \in X \T{and} y \in X \T{and} x \neq y }.
+    \end{equation*}
+
+    Indeed, \fullref{ex:def:topological_base/discrete} implies that
+    \begin{equation*}
+      \mscrB = \set{ \set{ x } \given x \in X }
+    \end{equation*}
+    is a base, and, for \( y \neq z \) distinct from \( x \),
+    \begin{equation*}
+      \set{ x } = \set{ x, y } \cap \set{ x, z }.
+    \end{equation*}
+  \end{thmenum}
+\end{example}
+
+\begin{proposition}\label{thm:topology_from_subbase}
+  Fix a set \( X \) and a family of subsets \( \mscrP \) of \( X \). Then the base \eqref{eq:def:topological_subbase/base} generates the coarsest topology on \( X \) containing \( \mscrP \).
+
+  Furthermore, \( \mscrP \) is a \hyperref[def:topological_subbase]{subbase} of the topology.
 \end{proposition}
+\begin{proof}
+  \Fullref{thm:topology_from_base} already shows well-definedness and minimality of the topology with respect to the base. Minimality with respect to the subbase can be shown similarly.
+\end{proof}
+
+\begin{proposition}\label{thm:lattice_of_topologies}
+  The family \( \mfrakT \) of all \hyperref[def:topological_space]{topologies} on a set \( X \) is a \hyperref[def:semilattice/lattice]{complete bounded lattice}. Explicitly:
+
+  \begin{thmenum}
+    \thmitem{thm:lattice_of_topologies/join} The \hyperref[def:semilattice/join]{join} of an arbitrary family \( \mfrakT' \) of topologies on \( X \) is the topology generated by the family \( \bigcup \mfrakT' \) via \fullref{thm:topology_from_subbase}.
+
+    \thmitem{thm:lattice_of_topologies/top} The \hyperref[def:partially_ordered_set_extremal_points/top_and_bottom]{top element} is the \hyperref[def:discrete_topology]{discrete topology} on \( X \).
+
+    \thmitem{thm:lattice_of_topologies/meet} The \hyperref[def:semilattice/meet]{meet} of an arbitrary family \( \mfrakT' \) of topologies on \( X \) is simply their intersection \( \bigcap \mfrakT' \).
+
+    \thmitem{thm:lattice_of_topologies/bottom} The \hyperref[def:partially_ordered_set_extremal_points/top_and_bottom]{bottom element} is the \hyperref[def:indiscrete_topology]{indiscrete topology} on \( X \).
+  \end{thmenum}
+\end{proposition}
+\begin{proof}
+  \SubProofOf{thm:lattice_of_topologies/join} Minimality is shown in \fullref{thm:topology_from_subbase}.
+
+  \SubProofOf{thm:lattice_of_topologies/top} Every topology is by definition a sublattice of the discrete topology.
+
+  \SubProofOf{thm:lattice_of_topologies/meet} We have shown in \fullref{thm:boolean_algebra_of_subsets/meet} that \( \bigcap \mfrakT' \) the meet of \( \mfrakT' \) in the Boolean algebra of sets. It remains only to show that \( \bigcap \mfrakT' \) is a topology.
+
+  \SubProofOf*{def:topological_space/O1} Every topology must contain the empty set and the space itself, hence so does the intersection of any family of topologies.
+
+  \SubProofOf*{def:topological_space/O2} Any finite family of sets from \( \bigcap \mfrakT' \) belongs to every topology in \( \mfrakT' \), hence their intersection also belongs to every topology in \( \mfrakT' \).
+
+  \SubProofOf*{def:topological_space/O3} Similarly, any family of sets from \( \bigcap \mfrakT' \) belongs to every topology in \( \mfrakT' \), hence their union also belongs to every topology in \( \mfrakT' \).
+
+  \SubProofOf{thm:lattice_of_topologies/bottom} The intersection of all topologies on \( X \) is the initial sublattice.
+\end{proof}
 
 \begin{definition}\label{def:topological_local_base}\mcite[12]{Engelking1989}
   Fix a topological space \( (X, \mscrT) \) and a point \( x \in X \). We say that the family \( \mscrB(x) \subseteq T \) is a \term{local base} for \( \mscrT \) at \( x \) if every neighborhood of \( x \) contains a set from \( \mscrB(x) \).
