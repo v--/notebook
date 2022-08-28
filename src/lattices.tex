@@ -335,18 +335,20 @@
     \hspace{0.02\textwidth}
     \begin{minipage}[t]{0.45\textwidth}
       \hyperref[def:partially_ordered_set/duality]{Dually}, we call the subset \( F \) a \term{filter} if it is closed under meets and if \( f \in F \) and \( l \in L \) together imply \( f \vee l \in F \).
+
+      An equivalent condition is given in \fullref{thm:def:lattice_ideal/directed_and_closed}.
     \end{minipage}
 
     \thmitem{def:lattice_ideal/principal}
     \begin{minipage}[t]{0.45\textwidth}
-      We define the \term{principal ideal} of \( x \) as the set
+      We define the \term{principal ideal} of \( x \) as the \term{downward closure}
       \begin{equation*}
         \set{ y \in L \given y \leq x }.
       \end{equation*}
     \end{minipage}
     \hspace{0.02\textwidth}
     \begin{minipage}[t]{0.45\textwidth}
-      Dually, we define the \term{principal filter} of \( x \) as
+      Dually, we define the \term{principal filter} of \( x \) as the \term{upward closure}
       \begin{equation*}
         \set{ y \in L \given y \geq x }.
       \end{equation*}
@@ -520,6 +522,85 @@
     By \hyperref[def:lattice/duality]{duality}, the sublattice of subgroups containing \( N \) (rather than contained in \( N \)) is a filter (rather than an ideal).
   \end{thmenum}
 \end{example}
+
+\begin{definition}\label{def:prefilter}\mcite[52]{Engelking1989}
+  We say that a subset \( P \) of a filter \( F \) is a \term{prefilter} or \term{filter base} of \( F \) if, for every \( x \in F \), there exists some \( y \in P \) such that \( y \leq x \).
+\end{definition}
+
+\begin{proposition}\label{thm:filter_from_prefilter}
+  Let \( P \) be a \hyperref[def:directed_set]{downward directed} set in \( L \). Then the union of upward closures
+  \begin{equation*}
+    F \coloneqq \bigcup_{x \in P} \set{ y \in L \given y \geq x } = \set{ y \in L \given \qexists{x \in P} y \geq x }
+  \end{equation*}
+  is the smallest \hyperref[def:lattice_ideal/ideal]{filter} containing \( P \).
+
+  Furthermore, \( P \) is a \hyperref[def:prefilter]{prefilter} of \( F \). We say that the prefilter \( P \) \term{generates} \( F \).
+\end{proposition}
+\begin{proof}
+  \SubProof{Proof that \( F \) is a filter}
+
+  \begin{itemize}
+    \item \( F \) is closed under meets. Fix some members \( x \) and \( y \) of \( F \). Since \( P \) is downward directed, there exists some \( z \in P \) such that \( z \leq x \wedge y \). Then \( x \wedge y \) belongs to the upward closure of \( z \), and hence \( F \) contains the meet of any two of its members.
+
+    \item \( F \) is closed under joins with members of \( L \). Fix \( l \in L \) and \( f \in F \). Since \( f \leq f \vee l \), and since \( F \) contains the upward closure of \( f \), it follows that \( f \vee l \in F \).
+  \end{itemize}
+
+  \SubProof{Proof that \( F \) is minimal} Fix some other filter \( G \) containing \( P \).
+
+  Since \( P \) is not guaranteed to be upward closed, \( G \) must contain the upward closure of each of its members. Thus, \( G \) must contain \( F \).
+
+  This shows the minimality of \( F \).
+
+  \SubProof{Proof that \( P \) is a prefilter} Since \( P \) contains a lower bound for any member of \( F \), it is a prefilter.
+\end{proof}
+
+\begin{proposition}\label{thm:prefilter_can_generate_filter}
+  Every prefilter is downward directed.
+\end{proposition}
+\begin{proof}
+  Given two members \( a \) and \( b \) of \( P \), since they are also members of \( F \) and so is their meet \( a \wedge b \), there exists some \( y \in P \) such that \( y \leq a \wedge b \).
+\end{proof}
+
+\begin{definition}\label{def:centered_family}\mcite[123]{Engelking1989}
+  We say that a set in a lattice is a \term{centered family} or a \term{filter subbase} if the meet of any finite subfamily is not the bottom.
+
+  In a \hyperref[thm:boolean_algebra_of_subsets]{Boolean algebra of subsets}, this amounts to the intersection of any finite subfamily being nonempty. The term \term{finite intersection property} is also used in this context.
+
+  Centered families are sometimes used in the context of a given filter --- see \fullref{thm:filter_from_subbase}.
+\end{definition}
+
+\begin{definition}\label{def:filter_subbase}\mimprovised
+  We say that a subset \( S \) of a filter \( F \) is a \term{filter subbase} of \( F \) if, for every \( x \in F \), there exists some subfamily \( y_1, \ldots, y_n \in P \) such that
+  \begin{equation}\label{eq:def:filter_subbase}
+    \bot < y_1 \wedge \cdots \wedge y_n \leq x.
+  \end{equation}
+\end{definition}
+
+\begin{proposition}\label{thm:filter_from_subbase}
+  Let \( S \) be a \hyperref[def:centered]{centered family} on \( L \). Then the family
+  \begin{equation*}
+    P \coloneqq \set{ \bigwedge S' \given S' \T{is a finite nonempty subfamily of} S }
+  \end{equation*}
+  is a \hyperref[def:prefilter]{prefilter}, and its generated filter \( F \) is the smallest one containing \( S \). Note that we make no claims about \( P \) being the smallest prefilter containing \( S \).
+
+  Unlike in \fullref{def:topological_subbase}, it is not necessary for the top element \( \top \) to belong to \( P \), hence we may avoid taking the meet of the empty family.
+
+  The set \( S \) is a \hyperref[def:filter_subbase]{filter subbase} of \( F \). We say that the subbase \( S \) \term{generates} \( F \).
+\end{proposition}
+\begin{proof}
+  The family \( P \) is a filter because it is clearly downward directed.
+
+  The prefilter \( P \) may or may not be the smallest one containing \( S \) --- since \( x \wedge y \wedge z \leq x \wedge y \), including the element \( x \wedge y \) in \( P \) may be redundant. After taking the upward closure, however, this becomes irrelevant.
+
+  Since we are taking the \hi{greatest} lower bound of a subfamily of \( S \) when generating the prefilter \( P \), it follows that every filter containing \( S \) also contains \( F \).
+\end{proof}
+
+\begin{proposition}\label{thm:filterr_subbase_can_generate_filter}
+  Every filter subbase is a centered family.
+\end{proposition}
+\begin{proof}
+  The strict inequality in \eqref{eq:def:filter_subbase} implies that every subbase is a centered family.
+\end{proof}
 
 \begin{definition}\label{def:lattice_prime_element}
   We say that the element \( p \) of the lattice \( L \) is \term{prime} if any of the following equivalent conditions hold:
