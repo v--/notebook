@@ -3,7 +3,7 @@ from __future__ import annotations
 from datetime import datetime, timedelta
 from fnmatch import fnmatch
 from timeit import default_timer as timer
-from typing import Any, Optional
+from typing import Any
 from enum import Enum
 import asyncio
 import os.path
@@ -37,7 +37,7 @@ class WatchTarget(Enum):
 class Task:
     command: str
     sublogger: Any
-    out_buffer: Optional[int]
+    out_buffer: int | None
 
     def __eq__(self, other):
         return isinstance(other, Task) and self.command == other.command
@@ -56,7 +56,7 @@ class Task:
 
 
 class BiberTask(Task):
-    out_buffer: Optional[int] = None
+    out_buffer: int | None
     biber_path: pathlib.Path
     tex_path: pathlib.Path
 
@@ -82,8 +82,8 @@ class BiberTask(Task):
 
 class TeXTask(Task):
     tex_path: pathlib.Path
-    out_buffer: Optional[int] = asyncio.subprocess.DEVNULL
-    _bcf_file_hash: Optional[int] = None
+    out_buffer: int | None = asyncio.subprocess.DEVNULL
+    _bcf_file_hash: int | None = None
 
     def __init__(self, tex_path: pathlib.Path | str):
         self.tex_path = pathlib.Path(tex_path)
@@ -103,7 +103,7 @@ class TeXTask(Task):
     def command(self):
         return f'pdflatex -interaction=batchmode -output-directory={AUX_DIR} {self.tex_path}'
 
-    def get_bcf_hash(self) -> Optional[int]:
+    def get_bcf_hash(self) -> int | None:
         try:
             with open(self.get_aux_path('.bcf'), 'r') as bcf_file:
                 return hash(bcf_file.read())
@@ -153,7 +153,7 @@ class TeXTask(Task):
 
 class AsymptoteTask(Task):
     src_path: pathlib.Path
-    out_buffer: Optional[int] = None
+    out_buffer: int | None = None
 
     def __init__(self, src_path: pathlib.Path | str):
         self.src_path = pathlib.Path(src_path)
@@ -182,7 +182,7 @@ class TaskRunner:
     active_tasks: set[Task] = set()
     last_run_attempt: dict[Task, datetime] = {}
 
-    async def run_task(self, task: Task, trigger: Optional[str] = None):
+    async def run_task(self, task: Task, trigger: str | None = None):
         self.active_tasks.add(task)
         await task.pre_process(self)
         start = timer()
@@ -213,7 +213,7 @@ class TaskRunner:
 
         self.active_tasks.remove(task)
 
-    async def run_task_debounced(self, task: Task, trigger: Optional[str] = None):
+    async def run_task_debounced(self, task: Task, trigger: str | None = None):
         # This means that the task has already been scheduled
         if task in self.last_run_attempt:
             self.last_run_attempt[task] = datetime.now()
@@ -227,7 +227,7 @@ class TaskRunner:
         del self.last_run_attempt[task]
         await self.run_task(task, trigger)
 
-    def schedule(self, task: Task, trigger: Optional[str] = None):
+    def schedule(self, task: Task, trigger: str | None = None):
         asyncio.create_task(self.run_task_debounced(task, trigger))
 
 
