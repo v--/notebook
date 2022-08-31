@@ -2,7 +2,7 @@ import pytest
 
 from ..exceptions import NotebookCodeError
 from .parser import parse_formula
-from .pnf import is_formula_in_pnf, move_negations, move_quantifiers, remove_conditionals, to_pnf
+from .pnf import is_formula_in_pnf, remove_conditionals, move_negations, move_quantifiers, to_pnf
 
 
 def test_is_formula_in_pnf():
@@ -56,6 +56,9 @@ def test_move_quantifiers():
     with pytest.raises(NotebookCodeError):
         t('¬(p(ξ) ↔ p(η))')
 
+    # It is expected not to work on formulas where negations are not moved inwards.
+    assert t('¬∀η.p(ξ)') == '¬∀η.p(ξ)'
+
     assert t('(ξ = η)') == '(ξ = η)'
     assert t('∀η.p(ξ)') == '∀η.p(ξ)'
     assert t('∀η.∀η.p(ξ)') == '∀η.∀η.p(ξ)'
@@ -64,7 +67,7 @@ def test_move_quantifiers():
     assert t('(∀ξ.p(ξ) ∨ q(ξ))') == '∀ξ1.(p(ξ1) ∨ q(ξ))'
     assert t('(∀ξ.p(ξ) ∨ q(ξ1))') == '∀ξ2.(p(ξ2) ∨ q(ξ1))'
     assert t('(∀ξ.p(ξ) ∨ ∀ξ.q(ξ))') == '∀ξ1.∀ξ2.(p(ξ1) ∨ q(ξ2))'
-    assert t('((∃ξ.p(ξ) ∧ ∃η.q(η)) ∨ (∃ξ.p(ξ) ∧ ∃η.q(η)))') == '∃ξ2.∃ξ3.∃η2.∃η3.((p(ξ2) ∧ q(η2)) ∨ (p(ξ3) ∧ q(η3)))'
+    assert t('((∃ξ.p(ξ) ∧ ∃η.q(η)) ∨ (∃ξ.p(ξ) ∧ ∃η.q(η)))') == '∃ξ2.∃η2.∃ξ3.∃η3.((p(ξ2) ∧ q(η2)) ∨ (p(ξ3) ∧ q(η3)))'
     assert t('((∀ξ.p(ξ) ∨ q(ξ)) ∧ ∃ξ1.r(ξ1))') == '∃ξ2.∀ξ3.((p(ξ3) ∨ q(ξ)) ∧ r(ξ2))'
 
 
@@ -73,5 +76,6 @@ def test_to_pnf():
         return str(to_pnf(parse_formula(string)))
 
     assert t('(ξ = η)') == '(ξ = η)'
+    assert t('¬∀η.p(ξ)') == '∃η.¬p(ξ)'
     assert t('((∀ξ.p(ξ) ∨ q(ξ)) ∧ ∃ξ.¬¬r(ξ))') == '∃ξ1.∀ξ2.((p(ξ2) ∨ q(ξ)) ∧ r(ξ1))'
     assert t('((∃ξ.¬p(ξ) → q(ξ)) ∧ ∃ξ.r(ξ2))') == '∃ξ1.∀ξ3.((p(ξ3) ∨ q(ξ)) ∧ r(ξ2))'

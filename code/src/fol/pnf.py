@@ -2,7 +2,7 @@ from ..exceptions import NotebookCodeError
 from .types import Connective, Quantifier, Formula, EqualityFormula, PredicateFormula, NegationFormula, ConnectiveFormula, QuantifierFormula, Formula, Variable
 from .visitors import FormulaVisitor, FormulaTransformationVisitor
 from .substitution import substitute_in_formula
-from .variables import get_free_variables, new_var_name
+from .variables import get_bound_variables, get_free_variables, new_var_name
 
 
 class PNFVerificationVisitor(FormulaVisitor):
@@ -118,10 +118,12 @@ class MoveQuantifiersVisitor(FormulaTransformationVisitor):
             return QuantifierFormula(
                 formula.a.quantifier,
                 new_var,
-                ConnectiveFormula(
-                    formula.conn,
-                    substitute_in_formula(formula.a.sub, formula.a.variable, new_var),
-                    formula.b
+                self.visit(
+                    ConnectiveFormula(
+                        formula.conn,
+                        substitute_in_formula(formula.a.sub, formula.a.variable, new_var),
+                        formula.b
+                    )
                 )
             )
 
@@ -133,28 +135,29 @@ class MoveQuantifiersVisitor(FormulaTransformationVisitor):
             return QuantifierFormula(
                 formula.b.quantifier,
                 new_var,
-                ConnectiveFormula(
-                    formula.conn,
-                    formula.a,
-                    substitute_in_formula(formula.b.sub, formula.b.variable, new_var),
+                self.visit(
+                    ConnectiveFormula(
+                        formula.conn,
+                        formula.a,
+                        substitute_in_formula(formula.b.sub, formula.b.variable, new_var),
+                    )
                 )
             )
 
-        return ConnectiveFormula(
-            formula.conn,
-            self.visit(formula.a),
-            self.visit(formula.b)
+        if len(get_bound_variables(formula.a)) == 0 and len(get_bound_variables(formula.b)) == 0:
+            return formula
+
+        return self.visit(
+            ConnectiveFormula(
+                formula.conn,
+                self.visit(formula.a),
+                self.visit(formula.b)
+            )
         )
 
 
 def move_quantifiers(formula: Formula):
-    visitor = MoveQuantifiersVisitor()
-    result = formula
-
-    while result != visitor.visit(result):
-        result = visitor.visit(result)
-
-    return result
+    return MoveQuantifiersVisitor().visit(formula)
 
 
 def to_pnf(formula: Formula):

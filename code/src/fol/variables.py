@@ -37,6 +37,27 @@ def get_free_variables(formula: Formula) -> set[str]:
     return FreeVariableVisitor().visit(formula)
 
 
+class BoundVariableVisitor(FormulaVisitor):
+    def visit_equality(self, formula: EqualityFormula):
+        return set()
+
+    def visit_predicate(self, formula: PredicateFormula):
+        return set()
+
+    def visit_negation(self, formula: NegationFormula):
+        return self.visit(formula.sub)
+
+    def visit_connective(self, formula: ConnectiveFormula):
+        return self.visit(formula.a) | self.visit(formula.b)
+
+    def visit_quantifier(self, formula: QuantifierFormula):
+        return self.visit(formula.sub) | {formula.variable.name}
+
+
+def get_bound_variables(formula: Formula) -> set[str]:
+    return BoundVariableVisitor().visit(formula)
+
+
 def new_var_name(old_name, context: set[str]):
     match = re.match(r'(\D+)([1-9]\d*)', old_name)
 
