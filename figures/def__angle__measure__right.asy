@@ -5,7 +5,7 @@ usepackage('amsmath');
 unitsize(1cm);
 
 import geometry;
-import 'asy/angles.asy' as angles;
+import 'asymptote/angles.asy' as angles;
 
 pair O = (0, 0);
 pair P = (3 / 4, 3);

@@ -1,5 +1,5 @@
 \NeedsTeXFormat{LaTeX2e}
-\ProvidesClass{tikzcd}
+\ProvidesClass{classes/tikzcd}
 \LoadClass[tikz]{standalone}
 
 \RequirePackage{stix2}

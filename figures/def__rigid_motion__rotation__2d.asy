@@ -4,7 +4,7 @@ usepackage('stix2');
 unitsize(1.5cm);
 
 import graph;
-import 'asy/trajectories.asy' as trajectories;
+import 'asymptote/trajectories.asy' as trajectories;
 
 real final_angle = 2.5;
 

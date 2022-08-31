@@ -3,7 +3,7 @@ from __future__ import annotations
 from datetime import datetime, timedelta
 from fnmatch import fnmatch
 from timeit import default_timer as timer
-from typing import Optional
+from typing import Any, Optional
 from enum import Enum
 import asyncio
 import os.path
@@ -12,15 +12,20 @@ import shutil
 
 from asyncinotify import Inotify, Mask
 from loguru import logger
-from loguru._logger import Logger
 import texoutparse
 
 
 DEBOUNCE_THRESHOLD = timedelta(seconds=1)
 TEX_LOG_ENCODING = 'latin-1'
+
 ROOT_DIR = pathlib.Path('.').resolve()
+
+while not (ROOT_DIR / 'notebook.tex').exists():
+    ROOT_DIR = ROOT_DIR.parent
+
 AUX_DIR = ROOT_DIR / 'aux'
 OUTPUT_DIR = ROOT_DIR / 'output'
+FIGURES_DIR = ROOT_DIR / 'figures'
 
 
 class WatchTarget(Enum):
@@ -31,7 +36,7 @@ class WatchTarget(Enum):
 
 class Task:
     command: str
-    sublogger: Logger
+    sublogger: Any
     out_buffer: Optional[int]
 
     def __eq__(self, other):
@@ -191,7 +196,8 @@ class TaskRunner:
             task.command,
             stdin=asyncio.subprocess.DEVNULL,
             stdout=task.out_buffer,
-            stderr=task.out_buffer
+            stderr=task.out_buffer,
+            cwd=ROOT_DIR
         )
 
         exit_code = await proc.wait()
@@ -228,11 +234,13 @@ class TaskRunner:
 async def iter_file_changes():
     with Inotify() as inotify:
         inotify.add_watch(ROOT_DIR, Mask.MODIFY)
-        inotify.add_watch(ROOT_DIR / 'src', Mask.MODIFY)
-        inotify.add_watch(ROOT_DIR / 'output', Mask.MODIFY)
-        inotify.add_watch(ROOT_DIR / 'asy', Mask.MODIFY)
-        inotify.add_watch(ROOT_DIR / 'figures', Mask.MODIFY)
+        inotify.add_watch(ROOT_DIR / 'text', Mask.MODIFY)
         inotify.add_watch(ROOT_DIR / 'packages', Mask.MODIFY)
+        inotify.add_watch(ROOT_DIR / 'figures', Mask.MODIFY)
+        inotify.add_watch(ROOT_DIR / 'bibliography', Mask.MODIFY)
+        inotify.add_watch(ROOT_DIR / 'asymptote', Mask.MODIFY)
+        inotify.add_watch(ROOT_DIR / 'classes', Mask.MODIFY)
+        inotify.add_watch(ROOT_DIR / 'output', Mask.MODIFY)
         logger.info('Started daemon and initialized watchers')
 
         async for event in inotify:
@@ -245,14 +253,9 @@ async def setup_watchers(target: WatchTarget):
 
     async for path in iter_file_changes():
         if target in [WatchTarget.all, WatchTarget.figures]:
-            if fnmatch(path, 'tikzcd.cls') or fnmatch(path, 'packages/*.sty'):
-                figures_dir = pathlib.Path('figures')
-
-                for figure_path in figures_dir.glob('*.tex'):
+            if fnmatch(path, 'classes/tikzcd.cls') or fnmatch(path, 'packages/*.sty'):
+                for figure_path in FIGURES_DIR.glob('*.tex'):
                     runner.schedule(TeXTask(figure_path), trigger=str(path))
-
-                for figure_path in figures_dir.glob('*.asy'):
-                    runner.schedule(AsymptoteTask(figure_path), trigger=str(path))
 
             if fnmatch(path, 'figures/*.tex'):
                 runner.schedule(TeXTask(path), trigger=str(path))
@@ -260,19 +263,20 @@ async def setup_watchers(target: WatchTarget):
             if fnmatch(path, 'figures/*.asy'):
                 runner.schedule(AsymptoteTask(path), trigger=str(path))
 
-            if fnmatch(path, 'asy/*.asy'):
-                for figure_path in pathlib.Path('figures').glob('*.asy'):
+            if fnmatch(path, 'asymptote/*.asy'):
+                for figure_path in FIGURES_DIR.glob('*.asy'):
                     runner.schedule(AsymptoteTask(figure_path), trigger=str(path))
 
         if target in [WatchTarget.all, WatchTarget.notebook] and \
             not fnmatch(path, 'output/notebook.pdf') and (
                 fnmatch(path, 'notebook.tex') or
-                fnmatch(path, 'notebook.cls') or
-                fnmatch(path, 'src/*.tex') or
+                fnmatch(path, 'classes/notebook.cls') or
+                fnmatch(path, 'bibliography/*.bib') or
+                fnmatch(path, 'text/*.tex') or
                 fnmatch(path, 'output/*.pdf') or
                 fnmatch(path, 'packages/*.sty')
         ):
-            runner.schedule(TeXTask(pathlib.Path('notebook.tex')), trigger=str(path))
+            runner.schedule(TeXTask(ROOT_DIR / 'notebook.tex'), trigger=str(path))
 
 
 if __name__ == '__main__':

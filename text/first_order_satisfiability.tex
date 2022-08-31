@@ -41,15 +41,15 @@
         \tau_1[\kappa \mapsto \mu] \doteq \tau_2[\kappa \mapsto \mu],      &\varphi = \tau_1 \doteq \tau_2, \\
         \neg \psi[\kappa \mapsto \mu],                                     &\varphi = \neg \psi, \\
         \psi_1[\kappa \mapsto \mu] \bincirc \psi_2[\xi \mapsto \mu],       &\varphi = \psi_1 \bincirc \psi_2, \bincirc \in \Sigma, \\
-        (\dagger),                                                         &\varphi = \quantifier{Q}{\xi} \psi, Q \in \set{ \forall, \exists },
+        (\dagger),                                                         &\varphi = \quantifier Q {\xi} \psi, Q \in \set{ \forall, \exists },
       \end{cases}
     \end{equation}
     where
     \begin{empheq}[left=(\dagger) \coloneqq \empheqlbrace]{align}
       &\varphi,                                                                        && \xi \in \boldop{Var}(\kappa), \label{eq:def:first_order_substitution/term_in_formula/quantifiers/trivial} \\
-      &\quantifier{Q}{\xi} \parens[\Big]{\psi[\kappa \mapsto \mu]},                    && \xi \not\in \boldop{Var}(\kappa) \cup \boldop{Var}(\mu), \label{eq:def:first_order_substitution/term_in_formula/quantifiers/direct} \\
-      &\quantifier{Q}{\eta} \parens[\Big]{\psi[\xi \mapsto \eta][\kappa \mapsto \mu]}, && \xi \not\in \boldop{Var}(\kappa) \T{and} \xi \in \boldop{Var}(\mu) \T{and} &\label{eq:def:first_order_substitution/term_in_formula/quantifiers/renaming} \\
-                                                                                      &&& \eta \not\in \boldop{Var}(\kappa) \cup \boldop{Var}(\mu) \cup \boldop{Var}(\psi). \nonumber
+      &\quantifier Q {\xi} \parens[\Big]{\psi[\kappa \mapsto \mu]},                    && \xi \not\in \boldop{Var}(\kappa) \cup \boldop{Var}(\mu), \label{eq:def:first_order_substitution/term_in_formula/quantifiers/direct} \\
+      &\quantifier Q {\eta} \parens[\Big]{\psi[\xi \mapsto \eta][\kappa \mapsto \mu]}, && \xi \not\in \boldop{Var}(\kappa) \T{and} \xi \in \boldop{Var}(\mu) \T{and} &\label{eq:def:first_order_substitution/term_in_formula/quantifiers/renaming} \\
+                                                                                      &&& \eta \not\in \boldop{Var}(\kappa) \cup \boldop{Var}(\mu) \cup \boldop{Free}(\psi). \nonumber
     \end{empheq}
 
     In \eqref{eq:def:first_order_substitution/term_in_formula/quantifiers/renaming}, we chose a new variable \( \eta \). We implicitly assume that there exist enough variables in the language, so that we can find \( \eta \) that satisfies the condition. In order to fully avoid nondeterminism in the choice of \( \eta \), we can pick a well-ordering on the set \( \boldop{Var} \) and always choose \( \eta \) to be the smallest variable not present in \( \varphi \). This rule is called \term{renaming of the bound variables} \( \xi \) to \( \eta \) and is done to mitigate capturing as described in \fullref{rem:first_order_substitution_renaming_justification/capturing}.
@@ -61,6 +61,8 @@
     See \fullref{rem:first_order_substitution_parentheses} regarding the additional parentheses in \eqref{eq:def:first_order_substitution/term_in_formula/quantifiers/renaming}.
 
     See \fullref{ex:first_order_substitution} for examples of applying the different quantifier rules.
+
+    This exact algorithm is implemented in \cite{code}.
   \end{thmenum}
 \end{definition}
 
@@ -548,6 +550,139 @@
 
   Therefore, \( \mscrX \) is also a model for \( \varphi \).
 \end{proof}
+
+\begin{proposition}\label{thm:pulling_quantifiers_out}
+  For \( Q \in \set{ \forall, \exists } \) and \( \bincirc \in \set{ \vee, \wedge } \), if \( \eta \) is not free in \( \varphi \) nor \( \psi \), then
+  \begin{equation}\label{thm:pulling_quantifiers_out/first}
+    \parens[\Big]{ \quantifier Q \xi \varphi } \bincirc \psi \gleichstark \quantifier Q \eta \parens[\Big]{ \varphi[\xi \mapsto \eta] \bincirc \psi }\phantom{.}
+  \end{equation}
+  and similarly
+  \begin{equation}\label{thm:pulling_quantifiers_out/second}
+    \varphi \bincirc \parens[\Big]{ \quantifier Q \xi \psi } \gleichstark \quantifier Q \eta \parens[\Big]{ \varphi \bincirc \psi[\xi \mapsto \eta] }.
+  \end{equation}
+\end{proposition}
+\begin{proof}
+  We will only consider one special case of \eqref{thm:pulling_quantifiers_out/first}:
+  \begin{equation}\label{thm:pulling_quantifiers_out/first_proof}
+    \parens[\Big]{ \qforall \xi \varphi } \wedge \psi \gleichstark \qforall \xi \parens[\Big]{ \varphi[\xi \mapsto \eta] \wedge \psi }
+  \end{equation}
+
+  Fix some \hyperref[def:first_order_structure]{structure} \( \mscrX = (X, I) \) and some \hyperref[def:first_order_valuation/variable_assignment]{variable assignment} \( v: \boldop{Var} \to X \). Since \( \eta \) is not free in \( \psi \),
+  \begin{balign*}
+    \parens[\Big]{ \qforall \eta \parens[\Big]{ \varphi[\xi \mapsto \eta] \wedge \psi } }\Bracks{v}
+    &=
+    \bigvee\set[\Big]{ \varphi[\xi \mapsto \eta]\Bracks{v_{\eta \mapsto x}} \wedge \psi\Bracks{v_{\eta \mapsto x}} \given* x \in X }
+    \reloset {\eqref{eq:thm:renaming_assignment_compatibility/formulas}} = \\ &=
+    \bigvee\set[\Big]{ \varphi\Bracks{v_{\xi \mapsto \eta,\eta \mapsto x}} \wedge \psi\Bracks{v_{\eta \mapsto x}} \given* x \in X }
+    = \\ &=
+    \bigvee\set[\Big]{ \varphi\Bracks{v_{\xi \mapsto x}} \wedge \psi\Bracks{v_{\eta \mapsto x}} \given* x \in X }
+    = \\ &=
+    \bigvee\set[\Big]{ \varphi\Bracks{v_{\xi \mapsto x}} \wedge \psi\Bracks{v} \given* x \in X }
+    \reloset {\eqref{eq:def:semilattice/distributive_lattice/arbitrary/meet_over_join}} = \\ &=
+    \bigvee\set[\Big]{ \varphi\Bracks{v_{\xi \mapsto x}} \given* x \in X } \wedge \psi\Bracks{v}
+    = \\ &=
+    \parens[\Big]{ \qforall \xi \varphi }\Bracks{v} \wedge \psi\Bracks{v}
+    = \\ &=
+    \parens[\Big]{ \parens[\Big]{ \qforall \xi \varphi } \wedge \psi }\Bracks{v}.
+  \end{balign*}
+
+  Generalizing on variable assignments and structures, we conclude that \eqref{thm:pulling_quantifiers_out/first_proof} holds.
+
+  The other cases are similar.
+\end{proof}
+
+\begin{definition}\label{def:prenex_normal_form}\mimprovised
+  We say that the formula \( \varphi \) over \( \mscrL \) is in \term{prenex normal form} if it can be split as \( \varphi = \psi \theta \), where \( \psi \) contains only quantifiers and their variables (and dots) and \( \theta \) is a formula without quantifiers. We call \( \psi \) the \term{quantifier prefix} of \( \varphi \).
+\end{definition}
+
+\begin{remark}\label{rem:straightforward_traversal}
+  Consider the identity operator for formulas over some language:
+  \begin{equation*}
+    \begin{aligned}
+      I(\varphi) \coloneqq \begin{cases}
+        \varphi,                      &\varphi \T{is atomic}, \\
+        \neg I(\psi),                 &\varphi = \neg \psi, \\
+        I(\psi_1) \bincirc I(\psi_2), &\varphi = \psi_1 \bincirc \psi_2, \bincirc \in \Sigma, \\
+        \quantifier Q \xi I(\psi),    &\varphi = \quantifier Q \xi \psi, Q \in \set{ \forall, \exists }. \\
+      \end{cases}
+    \end{aligned}
+  \end{equation*}
+
+  When defining an operator acting on formulas, we usually handle only a few cases, and the others become straightforward. For example, replacing \( \neg \varphi \) with \( \varphi \rightarrow \bot \), as justified by \fullref{eq:thm:boolean_equivalences/negation_bottom}, can be achieved via
+  \begin{equation*}
+    \begin{aligned}
+      R(\varphi) \coloneqq \begin{cases}
+        \varphi,                      &\varphi \T{is atomic}, \\
+        R(\psi) \rightarrow \bot,     &\varphi = \neg \psi, \\
+        R(\psi_1) \bincirc R(\psi_2), &\varphi = \psi_1 \bincirc \psi_2, \bincirc \in \Sigma, \\
+        \quantifier Q \xi R(\psi),    &\varphi = \quantifier Q \xi \psi, Q \in \set{ \forall, \exists }. \\
+      \end{cases}
+    \end{aligned}
+  \end{equation*}
+
+  We can instead use the shorthand
+  \begin{equation*}
+    \begin{aligned}
+      R(\varphi) \coloneqq \begin{cases}
+        R(\psi) \rightarrow \bot,                                                &\varphi = \neg \psi, \\
+        \hyperref[rem:straightforward_traversal]{\T{straightforward traversal}}, &\T{otherwise.}
+      \end{cases}
+    \end{aligned}
+  \end{equation*}
+
+  In computer programming, this exact problem is solved via the visitor design pattern --- visitors for formulas of first-order logic can be found in \cite{code}.
+\end{remark}
+
+\begin{algorithm}[Prenex normal form conversion]\label{alg:prenex_normal_form_conversion}
+  We will describe an algorithm that takes a formula \( \varphi \) over \( \mscrL \) and outputs another formula \( \theta \) over \( \mscrL \) that is \hyperref[def:first_order_semantics/equivalence]{semantically equivalent}, but is in \hyperref[def:prenex_normal_form]{prenex normal form}. This exact algorithm is implemented in \cite{code}.
+
+  \begin{thmenum}
+    \thmitem{alg:prenex_normal_form/conditionals} First, we will remove the conditional \( \rightarrow \) and biconditional \( \leftrightarrow \). Define
+    \begin{equation*}
+      P_1(\varphi) \coloneqq \begin{cases}
+        \neg P_1(\psi) \vee P_1(\theta),                                                                          &\varphi = \psi \rightarrow \theta, \\
+        \parens[\Big]{ \neg P_1(\psi) \vee P_1(\theta) } \wedge \parens[\Big]{ P_1(\psi) \vee \neg P_1(\theta) }, &\varphi = \psi \leftrightarrow \theta, \\
+        \hyperref[rem:straightforward_traversal]{\T{straightforward traversal}},                                  &\T{otherwise.}
+      \end{cases}
+    \end{equation*}
+
+    \Fullref{thm:boolean_equivalences/conditional_as_disjunction}, \fullref{thm:boolean_equivalences/biconditional_as_conjunction} and \fullref{thm:first_order_substitution_equivalence/propositional} together ensure that \( P_1(\varphi) \gleichstark \varphi \) for any formula \( \varphi \).
+
+    \thmitem{alg:prenex_normal_form/negation} Second, we will \enquote{move} negations to the inside. Define
+    \begin{equation*}
+      P_2(\varphi) \coloneqq \begin{cases}
+        \qexists \xi P_2(\neg \psi),                                             &\varphi = \neg \qforall \xi \psi, \\
+        \qforall \xi P_2(\neg \psi),                                             &\varphi = \neg \qexists \xi \psi, \\
+        P_2(\neg \psi) \wedge P_2(\neg \theta),                                  &\varphi = \neg (\psi \vee \theta), \\
+        P_2(\neg \psi) \vee P_2(\neg \theta),                                    &\varphi = \neg (\psi \wedge \theta), \\
+        P_2(\psi),                                                               &\varphi = \neg \neg \psi, \\
+        \neg P_2(\psi),                                                          &\T{otherwise if} \varphi = \neg \psi, \\
+        \hyperref[rem:straightforward_traversal]{\T{straightforward traversal}}, &\T{otherwise.}
+      \end{cases}
+    \end{equation*}
+
+    \Fullref{thm:de_morgans_laws}, \fullref{thm:boolean_equivalences/double_negation}, \fullref{thm:first_order_substitution_equivalence/propositional} and \fullref{thm:pulling_quantifiers_out} ensure that \( P_2(\varphi) \gleichstark \varphi \) for any formula \( \varphi \)  not containing \( \rightarrow \) or \( \leftrightarrow \).
+
+    \thmitem{alg:prenex_normal_form/quantifiers} Finally, we will \enquote{move} quantifiers to the outside. Define
+    \begin{equation*}
+      P_3(\varphi) \coloneqq \begin{cases}
+        \quantifier Q \eta P_3 \parens[\Big]{ \varphi[\xi \mapsto \eta] \bincirc \theta }, &\varphi = \parens[\Big]{ \quantifier Q \xi \psi } \bincirc \theta, \\
+                                                                                           &Q \in \set{ \forall, \exists }, \quad \bincirc \in \set{ \vee, \wedge }, \\
+                                                                                           &\eta \not\in \boldop{Free}(\psi) \cup \boldop{Free}(\theta), \\
+        \quantifier Q \eta P_3 \parens[\Big]{ \varphi \bincirc \theta[\xi \mapsto \eta] }, &\varphi = \psi \bincirc \parens[\Big]{ \quantifier Q \xi \theta }, \\
+                                                                                           &Q \in \set{ \forall, \exists }, \quad \bincirc \in \set{ \vee, \wedge }, \\
+                                                                                           &\eta \not\in \boldop{Free}(\psi) \cup \boldop{Free}(\theta), \\
+        \hyperref[rem:straightforward_traversal]{\T{straightforward traversal}},           &\T{otherwise.}
+      \end{cases}
+    \end{equation*}
+
+    Denote by \( \widehat{P_3} \) the idempotent closure of \( P_3 \). That is, the function that applies \( P_3 \) repeatedly until it converges to fixed point. A fixed point must always exist because we move quantifiers \enquote{outwards} at each step.
+
+    \Fullref{thm:pulling_quantifiers_out} ensures that \( \widehat{P_3}(\varphi) \gleichstark \varphi \) for any formula \( \varphi \) not containing \( \rightarrow \) or \( \leftrightarrow \).
+  \end{thmenum}
+
+  The formula \( \widehat{P_3}(P_2(P_1(\varphi))) \) is then in prenex normal form and is semantically equivalent to \( \varphi \).
+\end{algorithm}
 
 \begin{proposition}\label{thm:quantifier_satisfiability}
   Let \( \mscrL \) be a first-order language, \( \varphi \) be a formula, \( \xi \) be any variable and \( \tau \) be a \hyperref[def:first_order_syntax/ground_term]{ground term} in \( \mscrL \). The following hold:

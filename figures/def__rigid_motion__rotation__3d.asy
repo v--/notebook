@@ -6,7 +6,7 @@ usepackage('stix2');
 unitsize(1.5cm);
 
 import three;
-import 'asy/trajectories.asy' as trajectories;
+import 'asymptote/trajectories.asy' as trajectories;
 
 currentprojection = perspective(camera=(-0.5, -2, 1.5));
 currentlight = (-1, -0.5, 5);

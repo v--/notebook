@@ -6,7 +6,7 @@ usepackage('stix2');
 unitsize(2cm);
 
 import three;
-import 'asy/trajectories.asy' as trajectories;
+import 'asymptote/trajectories.asy' as trajectories;
 
 currentprojection = orthographic(camera=(-0.2, 0.3, 0.2));
 

@@ -1,0 +1,43 @@
+from .substitution import substitute_in_formula, substitute_in_term
+from .parser import parse, parse_formula
+
+
+def test_substitute_in_term():
+    def t(term: str, from_term: str, to_term: str):
+        return str(
+            substitute_in_term(
+                parse(term, 'term'),
+                parse(from_term, 'term'),
+                parse(to_term, 'term')
+            )
+        )
+
+    assert t('ξ', 'ξ', 'η') == 'η'
+    assert t('η', 'ξ', 'ζ') == 'η'
+    assert t('f(ξ)', 'ξ', 'η') == 'f(η)'
+    assert t('f(g(ξ), h(g(ξ)))', 'g(ξ)', 'η') == 'f(η, h(η))'
+
+
+def test_substitute_in_formula():
+    def t(formula: str, from_term: str, to_term: str):
+        return str(
+            substitute_in_formula(
+                parse(formula, 'formula'),
+                parse(from_term, 'term'),
+                parse(to_term, 'term')
+            )
+        )
+
+    # Straighforward substitution
+    assert t('p(ξ)', 'ξ', 'η') == 'p(η)'
+    assert t('p(η)', 'ξ', 'ζ') == 'p(η)'
+    assert t('(g(ξ) = h(g(ξ)))', 'g(ξ)', 'η') == '(η = h(η))'
+    assert t('((∃ξ.¬p(ξ) → ¬q(ξ)) ∧ ∃ξ.r(ζ))', 'ξ', 'η') == '((∃ξ.¬p(ξ) → ¬q(η)) ∧ ∃ξ.r(ζ))'
+
+    # (Avoiding) capturing free variables
+    assert t('∀ξ.p(η)', 'η', 'ζ') == '∀ξ.p(ζ)'
+    assert t('∀ξ.p(η)', 'η', 'ξ') == '∀ξ1.p(ξ)'
+    assert t('∀ξ.p(ξ, η)', 'η', 'ξ') == '∀ξ1.p(ξ1, ξ)'
+
+    # (Avoiding) colliding variables
+    assert t('∀ξ.p(η)', 'η', 'ξ') == '∀ξ1.p(ξ)'

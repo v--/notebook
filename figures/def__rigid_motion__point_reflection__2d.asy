@@ -3,7 +3,7 @@ settings.outformat = 'pdf';
 usepackage('stix2');
 unitsize(1.5cm);
 
-import 'asy/trajectories.asy' as trajectories;
+import 'asymptote/trajectories.asy' as trajectories;
 
 real angle = 4;
 pair O = -0.3 * (1, 1);

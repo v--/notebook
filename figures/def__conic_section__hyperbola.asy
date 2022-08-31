@@ -4,7 +4,7 @@ usepackage('stix2');
 unitsize(1cm);
 
 import graph;
-import 'asy/plotting.asy' as plotting;
+import 'asymptote/plotting.asy' as plotting;
 
 pair f(real t) {
   return (cosh(t), sinh(t));

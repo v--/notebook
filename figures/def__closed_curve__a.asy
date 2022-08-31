@@ -4,7 +4,7 @@ usepackage('stix2');
 unitsize(1.5cm);
 
 import graph;
-import 'asy/plotting.asy' as plotting;
+import 'asymptote/plotting.asy' as plotting;
 
 pair g(real t) {
   return (cos(3t) * cos(t), cos(3t) * sin(t));

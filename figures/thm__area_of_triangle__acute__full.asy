@@ -4,7 +4,7 @@ usepackage('stix2');
 unitsize(1.5cm);
 
 import geometry;
-import 'asy/angles.asy' as angles;
+import 'asymptote/angles.asy' as angles;
 
 pair A = (0, 0);
 pair B = (3, 0);

@@ -1,5 +1,5 @@
 \NeedsTeXFormat{LaTeX2e}
-\ProvidesClass{notebook}
+\ProvidesClass{classes/notebook}
 
 \LoadClass
   [

@@ -5,7 +5,7 @@ usepackage('mathtools');
 unitsize(1cm);
 
 import geometry;
-import 'asy/angles.asy' as angles;
+import 'asymptote/angles.asy' as angles;
 
 pair O = (0, 0);
 pair A = (4, -0.5);

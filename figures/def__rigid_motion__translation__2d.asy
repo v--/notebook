@@ -3,7 +3,7 @@ settings.outformat = 'pdf';
 usepackage('stix2');
 unitsize(1.5cm);
 
-import 'asy/trajectories.asy' as trajectories;
+import 'asymptote/trajectories.asy' as trajectories;
 
 transform T = (
   1.5, 0.5,
