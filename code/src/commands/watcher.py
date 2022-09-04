@@ -56,13 +56,13 @@ class Task:
 
 
 class BiberTask(Task):
-    out_buffer: int | None
+    out_buffer: int | None = None
     biber_path: pathlib.Path
     tex_path: pathlib.Path
 
-    def __init__(self, biber_path: pathlib.Path, tex_path: pathlib.Path):
-        self.biber_path = biber_path
-        self.tex_path = tex_path
+    def __init__(self, biber_path: pathlib.Path | str, tex_path: pathlib.Path | str):
+        self.biber_path = pathlib.Path(biber_path)
+        self.tex_path = pathlib.Path(tex_path)
         self.sublogger = logger.bind(name=str(os.path.relpath(self.biber_path, ROOT_DIR)))
 
     def __repr__(self):
