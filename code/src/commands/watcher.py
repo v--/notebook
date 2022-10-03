@@ -253,7 +253,7 @@ async def setup_watchers(target: WatchTarget):
 
     async for path in iter_file_changes():
         if target in [WatchTarget.all, WatchTarget.figures]:
-            if fnmatch(path, 'classes/tikzcd.cls') or fnmatch(path, 'packages/*.sty'):
+            if fnmatch(path, 'classes/tikzcd.cls') or fnmatch(path, 'classes/forest.cls') or fnmatch(path, 'packages/*.sty'):
                 for figure_path in FIGURES_DIR.glob('*.tex'):
                     runner.schedule(TeXTask(figure_path), trigger=str(path))
 

@@ -1,0 +1,659 @@
+\subsection{Syntax trees}\label{subsec:syntax_trees}
+
+\begin{definition}\label{def:parse_tree}\mimprovised
+  A \term{parse tree} or \term{concrete syntax tree} for the \hyperref[def:chomsky_hierarchy/context_free]{context-free grammar} \( G = (V, \Sigma, \to, S) \) is an \hyperref[def:ordered_tree]{ordered tree} \( T = (X, E, r, \leq) \) \hyperref[def:weighted_set]{node-labeled} by \( l: X \to V \cup \Sigma \cup \set{ \varepsilon } \) such that:
+  \begin{thmenum}
+    \thmitem{def:parse_tree/root} The root \( r \) has label \( l(r) = S \).
+    \thmitem{def:parse_tree/leaves} The \hyperref[def:arborescence/ancestry]{leaves} of \( T \) are labeled by terminals or \( \varepsilon \).
+    \thmitem{def:parse_tree/successors} The \hyperref[def:arborescence/ancestry]{successors} of \( x \) are \( y_1 < \ldots < y_n \) if and only if there is a rule
+    \begin{equation*}
+      l(x) \to l(y_1) \cdots l(y_n).
+    \end{equation*}
+
+    We handle the special case \( l(x) \to \varepsilon \) by introducing a single child for \( x \) with a label \( \varepsilon \). This is done in order to distinguish \( \varepsilon \)-rules from \enquote{dangling} non-terminals.
+  \end{thmenum}
+\end{definition}
+\begin{comments}
+  \item We associate with each parse tree a word as shown in \fullref{def:parse_tree_word}.
+\end{comments}
+
+\begin{remark}\label{rem:parse_tree_roots}
+  In recursive definitions and inductive proofs, for example in relation to \hyperref[rem:evaluation]{evaluation}, we usually consider \hyperref[ex:natural_number_arithmetic_grammar/rules]{grammar schemas} and each subtree has a root with a different label. In this case, we work with parse trees for different grammars over the same grammar schema (differing by the start symbol). We also allow singleton trees consisting of a single terminal or \( \varepsilon \), acknowledging that these are not technically parse trees.
+\end{remark}
+
+\begin{definition}\label{def:parse_tree_word}\mimprovised
+  Let \( T = (X, A, r, \leq, l) \) be a \hyperref[def:parse_tree]{parse tree}. Let \( x_1, \ldots, x_n \) be the nodes in the \hyperref[def:traversal_ordering]{pre-order} of \( T \) whose labels are terminals. We say that \( T \) \term{yields} the word
+  \begin{equation*}
+    l(x_1) \cdots l(x_n).
+  \end{equation*}
+
+  We implicitly associate this word with the parse tree.
+\end{definition}
+
+\begin{example}\label{ex:def:parse_tree}
+  We give several examples of \hyperref[def:parse_tree]{parse trees}.
+
+  \begin{thmenum}
+    \thmitem{ex:def:parse_tree/an} Consider the grammar
+    \begin{equation*}
+      \begin{aligned}
+        S &\to A \mid \varepsilon, \\
+        A &\to aA \mid a.
+      \end{aligned}
+    \end{equation*}
+    from \fullref{ex:def:chomsky_hierarchy/an}.
+
+    It describes the language \( \mscrL = \set{ a^n \given n \geq 0 } \) discussed in \fullref{ex:def:formal_language/an}. The only possible parse tree for the word \( aaa \) is
+    \begin{equation*}\label{eq:ex:def:parse_tree/an}
+      \begin{aligned}
+        \includegraphics[page=1]{output/ex__def__parse_tree.pdf}
+      \end{aligned}
+    \end{equation*}
+
+    If we instead use the \enquote{simpler} grammar
+    \begin{equation*}
+      S \to aS \mid \varepsilon,
+    \end{equation*}
+    then we would have an \( \varepsilon \)-labeled node in the parse tree:
+    \begin{equation*}
+      \begin{aligned}
+        \includegraphics[page=2]{output/ex__def__parse_tree.pdf}
+      \end{aligned}
+    \end{equation*}
+
+    \thmitem{ex:def:parse_tree/anbn} Consider the grammar
+    \begin{equation*}
+      \begin{aligned}
+        S &\to A \mid \varepsilon, \\
+        A &\to aAb \mid ab
+      \end{aligned}
+    \end{equation*}
+    from \fullref{ex:def:chomsky_hierarchy/anbn} describing \( \mscrL = \set{ a^n b^n \given n \geq 0 } \) from \fullref{ex:def:formal_language/anbn}.
+
+    The only possible parse tree for the word \( aaabbb \) is
+    \begin{equation*}
+      \begin{aligned}
+        \includegraphics[page=3]{output/ex__def__parse_tree.pdf}
+      \end{aligned}
+    \end{equation*}
+
+    \thmitem{ex:def:parse_tree/arithmetic} We continue the binary natural number grammar example from \fullref{ex:natural_number_arithmetic_grammar/rules} with the grammar \eqref{eq:ex:natural_number_arithmetic_grammar/rules/shorthand}.
+
+    The only possible parse tree for the expression \( (10 \times (1 + 10)) \) is
+    \begin{equation*}
+      \begin{aligned}
+        \includegraphics[page=4]{output/ex__def__parse_tree.pdf}
+      \end{aligned}
+    \end{equation*}
+
+    We will discuss abstract syntax trees in \fullref{rem:abstract_syntax_tree}, which are notably smaller.
+
+    We can \hyperref[rem:evaluation]{evaluation} this parse tree by substituting every binary number string (such as \( 10 \)) with its numeric value in \( \BbbN \) and then recursively applying the corresponding expressions. Evaluating the above parse tree results in \( 10 \times 11 = 110 \). More formal details on this evaluation are discussed in \fullref{ex:natural_number_arithmetic_grammar/evaluation}.
+
+    Consider instead the same grammar without parentheses, that is, replace the expression expansion rule
+    \begin{equation*}
+      E \to (E O E)
+    \end{equation*}
+    with
+    \begin{equation*}
+      E \to E O E.
+    \end{equation*}
+
+    The corresponding expression \( 10 + 1 \times 10 \) has more than one parse tree:
+    \begin{equation*}
+      \begin{aligned}
+        \includegraphics[page=5]{output/ex__def__parse_tree.pdf}
+        \qquad\qquad
+        \includegraphics[page=6]{output/ex__def__parse_tree.pdf}
+      \end{aligned}
+    \end{equation*}
+
+    If we evaluate the first parse tree, we obtain \( 10 \times (1 + 10) = 10 \times 11 = 110 \). If we evaluate the second one, we obtain \( (10 \times 1) + 10 = 10 + 10 = 100 \) (\( 10 \) in binary notation is \( 2 \) is decimal notation, and \( 100 \) in binary is \( 4 \) in decimal).
+
+    Thus, removing parentheses makes the grammar ambiguous in the sense of \fullref{def:grammar_ambiguity}. We will show in \fullref{ex:natural_number_arithmetic_grammar/unambiguous} that the parenthesized grammar is unambiguous.
+  \end{thmenum}
+\end{example}
+
+\begin{definition}\label{def:leftmost_derivation}\mcite[53]{Salomaa1987}
+  In a context-free grammar, we say that the derivation
+  \begin{equation*}
+    S \Rightarrow w_1 \Rightarrow \cdots \Rightarrow w_m = w
+  \end{equation*}
+  is \term{leftmost} if, given any step \( w_{k-1} = p_k A_k s_k \Rightarrow p_k v_k s_k = w_k \), the prefix \( p_k \) contains only terminals.
+
+  We define \term{rightmost} by instead requiring that the suffix \( s_k \) contains only terminals.
+\end{definition}
+
+\begin{example}\label{ex:natural_number_arithmetic_grammar/derivation}
+  We will consider derivations in the binary natural number grammar \eqref{eq:ex:natural_number_arithmetic_grammar/rules/shorthand} from \fullref{ex:natural_number_arithmetic_grammar/rules}.
+
+  We have shown in \fullref{ex:def:parse_tree/arithmetic} that removing parentheses results in multiple parse trees yielding the same word.
+
+  Similarly, using parentheses results in a single leftmost derivation:
+  \begin{equation*}
+    \begin{aligned}
+      \includegraphics[page=1]{output/ex__natural_number_arithmetic_grammar__derivation.pdf}
+    \end{aligned}
+  \end{equation*}
+
+  Removing parentheses allows for multiple leftmost derivations:
+  \begin{equation*}
+    \begin{aligned}
+      \includegraphics[page=2]{output/ex__natural_number_arithmetic_grammar__derivation.pdf}
+    \end{aligned}
+  \end{equation*}
+\end{example}
+
+\begin{proposition}\label{thm:leftmost_derivation_existence}
+  Every word in a grammar's generated language has at least one \hyperref[def:leftmost_derivation]{leftmost derivation}.
+\end{proposition}
+\begin{proof}
+  A leftmost derivation can be achieved via reordering of the derivation steps.
+\end{proof}
+
+\begin{proposition}\label{thm:derivations_and_parse_trees}
+  For every \hyperref[def:leftmost_derivation]{leftmost derivation} in a \hyperref[def:chomsky_hierarchy/context_free]{context-free grammar} there exists a unique \hyperref[def:parse_tree]{parse tree} for the same word and vice versa.
+\end{proposition}
+\begin{comments}
+  \item When combined with \fullref{thm:leftmost_derivation_existence}, this implies that a word is derivable if and only if there exists a parse tree for it.
+  \item We will not prove uniqueness separately because it is clear from the existence proof.
+\end{comments}
+\begin{proof}
+  Fix a context-free grammar \( G = (V, \Sigma, \to, S) \).
+
+  \SufficiencySubProof Let
+  \begin{equation*}
+    S \Rightarrow w_1 \Rightarrow \cdots \Rightarrow w_m = w
+  \end{equation*}
+  be a leftmost derivation of the word
+  \begin{equation*}
+    w = (a_1, \ldots, a_n).
+  \end{equation*}
+
+  Construct a parse tree recursively as follows:
+  \begin{itemize}
+    \item Let \( t_1, \ldots, t_{n_1} \) be the (terminal and non-terminal) symbols of \( w_1 \).
+
+    Define a labeled ordered tree
+    \begin{equation*}
+      T_1 = (X_1, E_1, r, \leq, l_1)
+    \end{equation*}
+    as follows:
+    \begin{itemize}
+      \item Let \( X_1 \coloneqq \set{ 0, 1, \ldots, n_1 } \).
+      \item Let \( r \coloneqq 0 \) be the root.
+      \item Let
+      \begin{equation*}
+        l_1(k) \coloneqq \begin{cases}
+          S,   &k = 0, \\
+          t_k, &k > 0.
+        \end{cases}
+      \end{equation*}
+
+      \item Let \( E_1 \coloneqq \set{ (r, k) \given k = 1, \ldots, n_1 } \).
+      \item Let \( \leq \) be the usual integer ordering.
+    \end{itemize}
+
+    \item Suppose that we have already built
+    \begin{equation*}
+      T_{i-1} = (X_{i-1}, E_{i-1}, r_{i-1}, \leq, l_{i-1})
+    \end{equation*}
+    for \( w_{i-1} \).
+
+    Let \( A \to t_1 \cdots t_{n_i} \) be a rule such that \( w_{i-1} = p A s \) and \( w_i = p t_1 \cdots t_{n_i} s \). Since the derivation is leftmost, \( p \) consists only of terminals. It is possible for \( t_{n_i} \) to be zero in the case of \( \varepsilon \)-rules, and we will handle such cases.
+
+    Let \( s \) be the first node in \( T_{i-1} \) with label \( A \) with respect to the \hyperref[def:traversal_ordering]{pre-ordering relation}.
+
+    Put
+    \begin{equation*}
+      N_{i-1} \coloneqq \sum_{j=1}^{i-1} n_j.
+    \end{equation*}
+
+    Define
+    \begin{equation*}
+      T_i = (X_i, E_i, r, \leq, l_i)
+    \end{equation*}
+    as follows:
+    \begin{itemize}
+      \item Let \( X \coloneqq X_{i-1} \cup \set{ N_{i-1} + 1, \ldots, N_{i-1} + \max\set{ 1, n_i } } \).
+      \item Let
+      \begin{equation*}
+        l_i(k) \coloneqq \begin{cases}
+          l_{i-1}(k),      &k \leq N_{i-1}, \\
+          \varepsilon,     &k = N_{i-1} + 1 \T{and} t_{n_i} = 0, \\
+          t_{k - n_{i-1}}, &k > N_{i-1} \T{and} t_{n_i} > 0.
+        \end{cases}
+      \end{equation*}
+
+      \item Let \( E_i \coloneqq E_{i-1} \cup \set{ (s, n_{i-1} + k) \given k = 1, \ldots, \max\set{ 1, n_i } } \).
+    \end{itemize}
+  \end{itemize}
+
+  Then \( T_m \) is the desired parse tree for \( w \).
+
+  \NecessitySubProof Let \( T = (X, E, r, \leq, l) \) be a parse tree for \( w = a_1 \cdots a_n \).
+
+  Construct a derivation recursively as follows:
+  \begin{itemize}
+    \item Let \( k_1, \ldots, k_{n_1} \) be the successors of \( r \). Define
+    \begin{equation*}
+      w_1 \coloneqq l(k_1) \cdots l(k_{n_1}).
+    \end{equation*}
+
+    \item Suppose that we have a derivation
+    \begin{equation*}
+      w_{i-1} = t_1 \cdots t_{i-1},
+    \end{equation*}
+    where \( t_1, \ldots, t_{i-1} \) are labels of leaves of a subtree \( T_{i-1} \) of \( T \) traversed in \hyperref[def:traversal_ordering]{pre-order}.
+
+    Let \( t_{k_i} \) be the first node with a non-terminal label in \( T_{i-1} \). Let \( s_1 < \cdots < s_l \) be the successors of \( t_{k_i} \). Then define
+    \begin{equation*}
+      w_i \coloneqq l(t_1) \cdots l(t_{k_i - 1}) l(s_1) \cdots l(s_l) l(t_{k_i + 1}) \cdots l(t_{n-1}).
+    \end{equation*}
+
+    It is possible that \( l = 1 \) and \( s_1 = \varepsilon \), and we properly handle this case.
+  \end{itemize}
+
+  Then \fullref{def:parse_tree/successors} ensures that
+  \begin{equation*}
+    S \Rightarrow w_1 \Rightarrow \cdots \Rightarrow w_m = w.
+  \end{equation*}
+\end{proof}
+
+\begin{algorithm}[Recursive descent parsing]\label{alg:recursive_descent_parsing}
+  Fix an \hyperref[def:epsilon_free_grammar]{essentially \( \varepsilon \)-free} \hyperref[def:chomsky_hierarchy/context_free]{context-free grammar} \( G = (V, \Sigma, \to, S) \). For each non-terminal \( A \), we will introduce a function
+  \begin{equation*}
+    P_A: \Sigma^* \to \mscrT_A \cup \set{ \bot },
+  \end{equation*}
+  where \( \mscrT_A \) denotes the set of \hyperref[def:parse_tree]{parse trees} for \( G \) with starting symbol \( A \).
+
+  Given any word \( w \), \( P_A(w) \) is either a parse tree for \( w \), or otherwise it fails to parse \( w \) and reports this failure via the sentinel symbol \( \bot \).
+
+  We will actually define a more general family: for each non-terminal \( A \), we will define a function
+  \begin{equation*}
+    P_A': \Sigma^* \times \BbbN \to \mscrT_A \cup \set{ \bot }.
+  \end{equation*}
+
+  While \( P_A \) must match \( w \) exactly, \( P_A' \) must only match a prefix of \( w \). Thus, we define
+  \begin{equation*}
+    P_A(w) \coloneqq \begin{cases}
+      P_A'(w, 0), &P_A'(w, 0) \T{is a tree and it matches the entirety of} w, \\
+      \bot,       &\T{otherwise.}
+    \end{cases}
+  \end{equation*}
+
+  The additional numeric parameter \( k \) in \( P_A'(w, k) \) allows us to halt if the algorithm enters a cycle. \Fullref{thm:length_increasing_grammar} gives us an upper bound on derivation length. Combined with the rule ordering in \fullref{alg:recursive_descent_parsing/init}, this restriction enables parsing \hyperref[def:chomsky_hierarchy/regular]{left-linear} grammars like
+  \begin{equation*}
+    S \to Sa \mid a,
+  \end{equation*}
+  which would be problematic without an upper bound on the derivation length. We make no claim about whether this algorithm works for every \( \varepsilon \)-free context-free grammar.
+
+  Fix parameters \( A \), \( k \) and \( w = a_1 \cdots a_n \) for \( P_A'(w, k) \).
+
+  \begin{thmenum}
+    \thmitem{alg:recursive_descent_parsing/init}
+    \begin{itemize}
+      \item If there is no rule with source \( A \), if \( n = 0 \) and there is no rule \( A \to \varepsilon \) or if
+      \begin{equation*}
+        k > \card(V \cup \Sigma)^{n+1},
+      \end{equation*}
+      immediately fail with
+      \begin{equation*}
+        P_A'(w, k) \coloneqq \bot.
+      \end{equation*}
+
+      \item If \( n = 0 \) and there is a rule \( A \to \varepsilon \), succeed by assigning to \( P_A'(w, k) \) the tree
+      \begin{equation*}
+        \begin{aligned}
+          \includegraphics[page=1]{output/alg__recursive_descent_parsing.pdf}
+        \end{aligned}
+      \end{equation*}
+
+      This rule can only apply for \( A = S \) given our assumption that \( G \) is essentially \( \varepsilon \)-free.
+
+      \item Otherwise, enumerate all \( m \) rules with source \( A \) as follows:
+      \begin{itemize}
+        \item First, place the rules \( A \to v \) where \( v \) starts with a non-terminal, and sort them by descending order of the length of their non-terminal prefix.
+
+        \item Then place the rules \( A \to v \) having a prefix with at least one terminal in \( v \), and sort them by descending order of the length of their terminal prefix.
+      \end{itemize}
+
+      Denote by \( v_1, \ldots, v_m \) be the right sides of the enumerated rules.
+
+      Let \( i \coloneqq 1 \) and go to step \ref{alg:recursive_descent_parsing/step}.
+    \end{itemize}
+
+    \thmitem{alg:recursive_descent_parsing/step} Suppose that \( v_i = u_0 B_1 u_1 B_2 \cdots u_{s-1} B_s u_s \), where \( u_0, u_1, \ldots, u_s \) consist entirely of terminals.
+
+    \begin{figure}[!ht]
+      \centering
+      \includegraphics[page=2]{output/alg__recursive_descent_parsing.pdf}
+      \caption{A parse tree-like representation of the rule \( A_i \to v_i \) in \fullref{alg:recursive_descent_parsing/step}, labeled with words rather than individual terminals.}
+      \label{fig:alg:recursive_descent_parsing/rule}
+    \end{figure}
+
+    \begin{itemize}
+      \item If \( u_0 \) is not a prefix of \( w \), go to the failure step \ref{alg:recursive_descent_parsing/failure}.
+      \item If \( s = 0 \), go directly to the assembly step \ref{alg:recursive_descent_parsing/assembly}.
+      \item Otherwise, let \( k_0 \coloneqq \len(u_0) + 1 \), let \( j \coloneqq 1 \) and go to step \ref{alg:recursive_descent_parsing/subtrees}.
+    \end{itemize}
+
+    \thmitem{alg:recursive_descent_parsing/subtrees} If \( T_j \coloneqq P_{B_1}(a_{k_{j-1}}, k + 1) \) is \( \bot \), go to the failure step \ref{alg:recursive_descent_parsing/failure}
+
+    Otherwise, suppose that \( T_j \) \hyperref[def:parse_tree_word]{yields} \( w_j \). Let
+    \begin{equation*}
+      k_j \coloneqq k_{j-1} + \len(w_j) + \len(u_j).
+    \end{equation*}
+
+    \begin{itemize}
+      \item If either \( k_j > n \) or \( u_j \neq a_{k_j - \len(u_j)} \cdots a_{k_j} \), go to the failure step \ref{alg:recursive_descent_parsing/failure}.
+      \item If \( j < s \), increment \( j \) and go to the same step \ref{alg:recursive_descent_parsing/subtrees}.
+      \item If \( j = s \), go to the assembly step \ref{alg:recursive_descent_parsing/assembly}.
+    \end{itemize}
+
+    \begin{figure}[!ht]
+      \centering
+      \includegraphics[page=3]{output/alg__recursive_descent_parsing.pdf}
+      \caption{Different sections of the word \( w = a_1 \cdots a_n \) in \fullref{alg:recursive_descent_parsing/subtrees}}
+      \label{fig:alg:recursive_descent_parsing/subtrees}
+    \end{figure}
+
+    \thmitem{alg:recursive_descent_parsing/assembly} We now have a parse tree \( T_j = (X_j, E_j, r_j, \leq_j, l_j) \) for every non-terminal \( B_j \) in \( v_i \). Let \( u_j = b_1^{(j)} \cdots b_{l_j}^{(j)} \) for \( j = 0, \ldots, n \).
+
+    \begin{figure}[!ht]
+      \centering
+      \includegraphics[page=4]{output/alg__recursive_descent_parsing.pdf}
+      \caption{Combining parse trees in \fullref{alg:recursive_descent_parsing/assembly}}
+      \label{fig:alg:recursive_descent_parsing/assembly}
+    \end{figure}
+
+    Define a parse tree \( T = (X, E, r, \leq, l) \) for \( w' \coloneqq a_1 \cdots a_{k_s} \) as follows:
+    \begin{itemize}
+      \item Let the root \( r \) be a new node, not in \( X_1 \cup \cdots \cup X_s \).
+      \item Let
+      \begin{equation*}
+        X \coloneqq X_1 \cup \cdots \cup X_s \cup \set{ r } \cup \set[\Big]{ x_t^{(j)} \given j = 1, \ldots, m \T{and} t = 1, \ldots, l_j },
+      \end{equation*}
+      where \( x_t^{(j)} \) are also new nodes, not in \( X_1 \cup \cdots \cup X_s \).
+
+      \item Let
+      \begin{equation*}
+        l(x) \coloneqq \begin{cases}
+          A_i,       &x = r, \\
+          b_t^{(j)}, &x = x_t^{(j)}, \\
+          l_j(x),    &x \in X_j.
+        \end{cases}
+      \end{equation*}
+
+      \item Let
+      \begin{equation*}
+        E \coloneqq \bigcup_{j=1}^s E_j \cup \set[\Big]{ \set{ r, r_j } \given j = 1, \ldots, s } \cup \set[\Big]{ \set{ r, b_t^{(j)} } \given j = 1, \ldots, s \T{and} t = 1, \ldots, l_j }.
+      \end{equation*}
+
+      \item Let \( < \) extend the union of the relations \( {}<_1{} \), \( \cdots \), \( {}<_s{} \) with
+      \begin{equation*}
+        b_1^{(0)} < \cdots < b_{l_0}^{(0)} < r_1 < b_1^{(1)} < \cdots < b_{l_1}^{(1)} < r_2 < \cdots < r_s < b_1^{(s)} < \cdots < b_{l_s}^{(s)}.
+      \end{equation*}
+    \end{itemize}
+
+    Finally, let
+    \begin{equation*}
+      P_A'(w, k) \coloneqq T.
+    \end{equation*}
+
+    \thmitem{alg:recursive_descent_parsing/failure} On failure:
+    \hfill
+    \begin{itemize}
+      \item If \( i < m \), increment \( i \) and go to \fullref{alg:recursive_descent_parsing/step}.
+      \item If \( i = m \), define
+      \begin{equation*}
+        P_A'(w, k) \coloneqq \bot.
+      \end{equation*}
+    \end{itemize}
+  \end{thmenum}
+\end{algorithm}
+
+\begin{definition}\label{def:grammar_ambiguity}\mcite[54]{Salomaa1987}
+  We say that a word generated by a \hyperref[def:chomsky_hierarchy/context_free]{context-free grammar} is \term{ambiguous} if any of the following equivalent conditions hold:
+  \begin{thmenum}
+    \thmitem{def:grammar_ambiguity/tree} It has multiple \hyperref[def:parse_tree]{parse trees}.
+    \thmitem{def:grammar_ambiguity/leftmost} It has multiple \hyperref[def:leftmost_derivation]{leftmost derivations}.
+    \thmitem{def:grammar_ambiguity/rightmost} It has multiple \hyperref[def:leftmost_derivation]{right derivations}.
+  \end{thmenum}
+
+  We say that the grammar itself is \term{ambiguous} if it generates at least one ambiguous word, and \term{unambiguous} otherwise.
+\end{definition}
+\begin{comments}
+  \item \Fullref{thm:derivations_and_parse_trees} ensures that every word has at least one parse tree.
+  \item \Fullref{thm:leftmost_derivation_existence} ensures that every word has at least one leftmost derivation.
+\end{comments}
+\begin{proof}
+  \EquivalenceSubProof{def:grammar_ambiguity/tree}{def:grammar_ambiguity/leftmost} Follows from \fullref{thm:derivations_and_parse_trees}.
+  \EquivalenceSubProof{def:grammar_ambiguity/leftmost}{def:grammar_ambiguity/rightmost} Trivial.
+\end{proof}
+
+\begin{example}\label{ex:natural_number_arithmetic_grammar/unambiguous}
+  We will show that the binary natural number grammar \eqref{eq:ex:natural_number_arithmetic_grammar/rules/shorthand} from \fullref{ex:natural_number_arithmetic_grammar/rules} is \hyperref[ex:natural_number_arithmetic_grammar/unambiguous]{unambiguous}.
+
+  Let \( w \) be a word in \( \mscrL(G) \). We will build a derivation tree for \( w \) via \hyperref[rem:natural_number_recursion]{natural number recursion} on \( \len(w) \):
+
+  \begin{itemize}
+    \item If \( \len(w) = 1 \), then \( w = 0 \) or \( w = 1 \), and the possible parse trees are
+    \begin{equation*}
+      \begin{aligned}
+        \includegraphics[page=1]{output/ex__natural_number_arithmetic_grammar__unambiguous.pdf}
+        \qquad\qquad
+        \includegraphics[page=2]{output/ex__natural_number_arithmetic_grammar__unambiguous.pdf}
+      \end{aligned}
+    \end{equation*}
+
+    \item Let \( w = a_1 \cdots a_n \) be a word of length \( n \) and suppose that every word shorter than \( w \) is unambiguous.
+
+    \begin{itemize}
+      \item If \( a_1 \) is \( ( \), then \( w \) is an expression. Hence, \( a_n \) is \( ) \) and there exists some index \( k \) such that \( a_k \in \set{ +, -, \times, + } \). The inductive hypothesis applies to \( a_2 \cdots a_{k-1} \) and  \( a_{k+1} \cdots a_{n-1} \), and gives us parse trees \( T_1 \) and \( T_2 \) whose roots are labeled with \( E \). Then the following is the unique parse tree of \( w \):
+      \begin{equation*}
+        \begin{aligned}
+          \includegraphics[page=3]{output/ex__natural_number_arithmetic_grammar__unambiguous.pdf}
+        \end{aligned}
+      \end{equation*}
+
+      \item Otherwise, \( w \) is a binary numerical string. Given a parse tree of \( a_1 \cdots a_{n-2} \), since the grammar with start symbol \( N \) is right-linear, the parse tree for \( w \) requires simply adding the dotted edges
+      \begin{equation*}
+        \begin{aligned}
+          \includegraphics[page=4]{output/ex__natural_number_arithmetic_grammar__unambiguous.pdf}
+        \end{aligned}
+      \end{equation*}
+    \end{itemize}
+  \end{itemize}
+\end{example}
+
+\begin{remark}\label{rem:evaluation}
+  \term{Evaluation} is the process of transforming a word in some \hyperref[def:formal_grammar/language]{grammar's language} into some other object, perhaps even another word. This is easily achieved via pattern matching depending on the structure of the word.
+
+  Fix a grammar \( G = (V, \Sigma, \to, S) \) with non-terminals \( A_1, \cdots, A_n \). Then an example evaluation function has the form
+  \begin{equation}\label{eq:rem:evaluation}
+    F(w) \coloneqq \begin{cases}
+      \cdots, &w \T{is generated from} S, \\
+      \cdots, &w \T{is generated from} A_1, \\
+              &\vdots,
+    \end{cases}
+  \end{equation}
+
+  \term{Pattern matching} is a term used for partial definition of \( F \) based on the structure of \( w \). Pattern matching depends on knowing the possible parse trees for \( w \). We use parse trees implicitly without recognizing it. \Fullref{ex:natural_number_arithmetic_grammar/evaluation} and \fullref{ex:evaluation_via_trees} provide justification for not using parse trees directly. Of course, more granular rules are possible based on the structure of words --- see \fullref{ex:natural_number_arithmetic_grammar/evaluation} for an example.
+\end{remark}
+\begin{comments}
+  \item In order for \( F \) to be \hyperref[def:function]{single-valued}, the grammar must be \hyperref[def:grammar_derivation/unambiguous]{unambiguous}.
+  \item We allow different starting non-terminals because, if \( F \) calls itself recursively, it must be able to process words generated in different ways.
+\end{comments}
+
+\begin{example}\label{ex:natural_number_arithmetic_grammar/evaluation}
+  We will define \hyperref[rem:evaluation]{evaluation} for the binary natural number grammar \eqref{eq:ex:natural_number_arithmetic_grammar/rules/shorthand} from \fullref{ex:natural_number_arithmetic_grammar/rules}. Let
+  \begin{equation*}
+    E(w) \coloneqq \begin{cases}
+      0,                 &w = \mathtt{0}, \\
+      1,                 &w = \mathtt{1}, \\
+      2 E(w'),           &w = w' \mathtt{0}, \\
+      2 E(w') \oplus 1,  &w = w' \mathtt{1}, \\
+      E(u) \oplus E(v),  &w = \mathtt{(} \thinspace u + v \thinspace \mathtt{)}, \\
+      E(u) \otimes E(v), &w = \mathtt{(} \thinspace u \times v \thinspace \mathtt{)},
+    \end{cases}
+  \end{equation*}
+  where:
+  \begin{itemize}
+    \item Circled operators like \( \oplus \) are the actual operations in \( \BbbN \) defined in \fullref{subsec:natural_numbers}, while plain operators like \( + \) are symbols in an abstract alphabet.
+    \item Numbers in \( \BbbN \) are noted using the usual math font as \( 0, 1, 2 \), while \( \mathtt{0} \) and \( \mathtt{1} \) are symbols in an abstract alphabet.
+  \end{itemize}
+
+  In this example, we do pattern matching on the word \( w \). This pattern matching depends on knowing the possible parse trees and knowing that the grammar is unambiguous. We use parse trees implicitly without recognizing it.
+\end{example}
+
+\begin{example}\label{ex:evaluation_via_trees}
+  If we use \hyperref[def:parse_tree]{parse trees} for \hyperref[rem:evaluation]{evaluation} instead of doing pattern matching on words, it will be more awkward for us. Consider the following example:
+
+  Let \( T = (X, E, r, \leq, l) \) be a parse tree for the word \( w \), and let \( T_1, \ldots, T_n \) be the immediate subtrees whose roots \( r_1 < \ldots < r_n \) are successors of \( r \). Then evaluating \( T \) via
+  \begin{equation*}
+    F(T) \coloneqq \begin{cases}
+      \varepsilon,          &l(r) = \varepsilon, \\
+      l(r),                 &l(r) \T{is a terminal}, \\
+      F(T_1) \cdots F(T_n), &l(r) \T{is a non-terminal}
+    \end{cases}
+  \end{equation*}
+  produces the word \hyperref[def:parse_tree_word]{yielded} by \( T \).
+\end{example}
+
+\begin{remark}\label{rem:abstract_syntax_tree}
+  \hyperref[def:parse_tree]{Parse trees} focus on how words are built from symbols. Take the following parse tree from \fullref{ex:def:parse_tree/arithmetic}:
+  \begin{equation}\label{eq:rem:abstract_syntax_tree/base}
+    \begin{aligned}
+      \includegraphics[page=1]{output/rem__abstract_syntax_tree.pdf}
+    \end{aligned}
+  \end{equation}
+
+  Most of the information in this tree is not necessary for \hyperref[rem:evaluation]{evaluating} it. An \term{abstract syntax tree} (AST) is instead a tree that contains information that is necessary for evaluation, but not for yielding the source word. The possible abstract syntax trees for a language differ depending on their use, as we will show, and are often produced from parse trees (which we called \enquote{concrete syntax trees} in \fullref{def:parse_tree}). The only restriction we put on abstract syntax trees is that there should be exactly one AST for every parse tree and vice versa.
+
+  First, we can vastly simplify the tree by splitting the grammar \eqref{eq:ex:natural_number_arithmetic_grammar/rules/shorthand} into two parts:
+  \begin{thmenum}
+    \thmitem{rem:abstract_syntax_tree/lexical} The \term{lexical part}
+    \begin{equation*}
+      \begin{aligned}
+        N &\to 0 \mid 1 \mid 1 B \\
+        B &\to 0 \mid B 0 \mid 1 \mid B 1 \\
+        O &\to + \mid - \mid \times \mid +
+      \end{aligned}
+    \end{equation*}
+
+    Any words produced via the lexical rules are called \term{lexemes}. The goal is to isolate atoms of a language from arbitrarily complicated recursive structures. This distinction is important for evaluation and becomes apparent in more complicated use cases like \fullref{def:first_order_substitution}.
+
+    We rarely need parse trees for lexical rules. The lexical grammar is often \hyperref[def:chomsky_hierarchy/regular]{regular}.
+
+    \thmitem{rem:abstract_syntax_tree/syntactic} The \term{syntactic part}
+    \begin{equation*}
+      E \to N \mid (E O E)
+    \end{equation*}
+
+    Syntactic rules regard lexemes as base symbols, although this is often not possible formally. In this example, \( N \) produces infinitely many words, and be definition a grammar's terminals are only finitely many.
+
+    Compared to lexical rules, syntactic rules benefit from parse trees because they highlight the recursive structure of a word.
+  \end{thmenum}
+
+  One simplification we can do to \eqref{eq:rem:abstract_syntax_tree/base} is to collapse lexical rules and regard lexemes as words:
+  \begin{equation}\label{eq:rem:abstract_syntax_tree/syntactic}
+    \begin{aligned}
+      \includegraphics[page=2]{output/rem__abstract_syntax_tree.pdf}
+    \end{aligned}
+  \end{equation}
+
+  Another thing we can simplify is to remove auxiliary symbols like parentheses\footnote{Whitespace and comments in programming languages are also often useless in parse trees during evaluation, but they are useful for code refactoring tools, error reporting and metaprogramming.}. They are only necessary in order to the grammar to be unambiguous, but once we already have a parse tree, they become meaningless. This leads to
+  \begin{equation}\label{eq:rem:abstract_syntax_tree/no_parens}
+    \begin{aligned}
+      \includegraphics[page=3]{output/rem__abstract_syntax_tree.pdf}
+    \end{aligned}
+  \end{equation}
+
+  We can also remove unnecessarily long chains of non-terminals from \eqref{eq:rem:abstract_syntax_tree/no_parens} where that would not be ambiguous (i.e. collapse \( E \to O \to + \) to \( E \to + \)):
+  \begin{equation}\label{eq:rem:abstract_syntax_tree/collapsed}
+    \begin{aligned}
+      \includegraphics[page=4]{output/rem__abstract_syntax_tree.pdf}
+    \end{aligned}
+  \end{equation}
+
+  We can now do a simplification based on our intended semantics. Every node in \eqref{eq:rem:abstract_syntax_tree/collapsed} is labeled via either a number lexeme, operation symbol or \( E \). We know the operations are binary, and we can use the symbol of the operation instead of \( E \) as a label, removing the need to keep a separate node for the operation symbol. This leads to
+  \begin{equation}\label{eq:rem:abstract_syntax_tree/final}
+    \begin{aligned}
+      \includegraphics[page=5]{output/rem__abstract_syntax_tree.pdf}
+    \end{aligned}
+  \end{equation}
+
+  This last tree has only 5 nodes, compared to the original tree \eqref{eq:rem:abstract_syntax_tree/base} with 21 nodes. Yet, we can recover \eqref{eq:rem:abstract_syntax_tree/base} from \eqref{eq:rem:abstract_syntax_tree/final}.
+\end{remark}
+
+\begin{theorem}[Induction on syntax trees]\label{thm:induction_on_syntax_trees}
+  Fix a \hyperref[def:chomsky_hierarchy/context_free]{context-free grammar} \( G = (V, \Sigma, \to, S) \). Suppose that we want to prove a statement for every word in \( \mscrL(G) \). Then it is sufficient to do the following for an arbitrary word \( w \):
+  \begin{displayquote}
+    For every \hyperref[def:parse_tree]{parse tree} \( T = (X, E, r, \leq, l) \) of \( w \), let \( T_1, \ldots, T_n \) be the immediate subtrees whose roots \( r_1 < \ldots < r_n \) are successors of \( r \).
+
+    Then assume that the statement holds for \( T_k \), \( k = 1, \ldots, n \), if \( l(r_k) = S \) and prove the statement for \( T \).
+  \end{displayquote}
+\end{theorem}
+\begin{comments}
+  \item It is beneficial, but not strictly necessary for the grammar to be \hyperref[def:grammar_ambiguity]{unambiguous}. If it is unambiguous, we only have to consider one parse tree for every word.
+  \item In practice, we skip the hairy part with building a parse tree and instead rely on \hyperref[rem:evaluation]{pattern matching}.
+  \item Unlike for the other induction principles in \fullref{rem:induction}, we did not formulate this one via logical formulas. This would make the statement unnecessarily convoluted with no gains.
+  \item We may just as well use \hyperref[rem:abstract_syntax_tree]{abstract syntax trees}, as long as we have an established convention on how they are represented.
+\end{comments}
+\begin{proof}
+  This is an instance of \fullref{thm:well_founded_induction} if we order the tree nodes by their \hyperref[def:arborescence/depth]{depth}.
+\end{proof}
+
+\begin{example}\label{ex:natural_number_arithmetic_grammar/induction}
+  We will show how to use \fullref{thm:induction_on_trees} in the context of the binary natural number grammar \eqref{eq:ex:natural_number_arithmetic_grammar/rules/shorthand} from \fullref{ex:natural_number_arithmetic_grammar/rules}.
+
+  We want to prove that an expression without ones \hyperref[rem:evaluation]{evaluates} to zero.
+
+  \begin{itemize}
+    \item The simplest expressions we have are number \hyperref[rem:abstract_syntax_tree/lexical]{lexemes}. The only one that does not contain ones is \( \mathtt{0} \), which evaluates to zero.
+
+    \item Consider the expression \( (u + v) \).
+
+    We implicitly assume that existence of a unique parse tree
+    \begin{equation*}
+      \begin{aligned}
+        \includegraphics[page=1]{output/ex__natural_number_arithmetic_grammar__induction.pdf}
+      \end{aligned}
+    \end{equation*}
+    where \( T_u \) and \( T_v \) are the (unique) parse trees for \( u \) and \( v \). It is easier for us to rely on \hyperref[rem:evaluation]{pattern matching} than to explicitly construct the tree, and have only done it for demonstrational purposes.
+
+    Having assumed that both \( u \) and \( v \) don't contain ones and thus evaluate to zero, we conclude that their sum \( (u + v) \) should also evaluate to zero due to \ref{eq:def:peano_arithmetic/PA4}.
+
+    \item Analogously, the expression \( (u \times v) \) evaluates to zero due to \ref{eq:def:peano_arithmetic/PA6}.
+  \end{itemize}
+\end{example}
+
+\begin{remark}\label{rem:backus_normal_form}\mcite[14]{Backus1958}
+  Practice requires introducing a more convenient metasyntax (a syntax for describing language syntax).
+
+  For \hyperref[def:chomsky_hierarchy/context_free]{context-free grammars}, we can use the \term{Backus normal form} (BNF), sometimes also called \term{Backus-Naur form}. Backus himself in \cite[14]{Backus1958} described it via examples.
+
+  For \fullref{ex:natural_number_arithmetic_grammar/rules}, one possible BNF is
+  \begin{bnf*}
+    \bnfprod{expression}     {\bnfpn{number} \bnfor \bnfts{(} \bnfsp \bnfpn{number} \bnfsp \bnfpn{operation} \bnfsp \bnfpn{number} \bnfsp \bnfts{)}} \\
+    \bnfprod{number}         {\bnfts{\( 0 \)} \bnfor \bnfts{\( 1 \)} \bnfor \bnfts{\( 1 \)} \bnfsp \bnfpn{numeric suffix}} \\
+    \bnfprod{numeric suffix} {\bnfts{\( 0 \)} \bnfor \bnfts{\( 0 \)} \bnfsp \bnfpn{numeric suffix} \bnfor \bnfts{\( 1 \)} \bnfor \bnfts{\( 1 \)} \bnfsp \bnfpn{numeric suffix}} \\
+    \bnfprod{operation}      {\bnfts{\( + \)} \bnfor \bnfts{\( \times \)}}
+  \end{bnf*}
+
+  Note that we have placed the (only) \hyperref[rem:abstract_syntax_tree/syntactic]{syntactic rule} on top.
+
+  Compared to \eqref{eq:ex:natural_number_arithmetic_grammar/rules/simple}, some differences are:
+  \begin{itemize}
+    \item Variables are denoted by \( \langle \)words enclosed in angle brackets\( \rangle \), so that we can name variables more descriptively using more than one symbol.
+    \item Terminals are, by convention, put in \enquote{quotes}. In human-readable rich text documents like this one, it is sometimes possible to use different fonts, and so instead of using \enquote{quotes} we specify terminals using an \texttt{upright typewriter font}.
+    \item Free-text rules can be specified using a normal font. This is also only used in human-readable rich text documents, however this usage is justified because such rules are only beneficial for human understanding and not for machine parsing.
+    \item By convention, the symbol \( \Coloneqq \) is used instead of \( \to \) for specifying transition rules.
+    \item Different rules with the same source are concatenated as in \eqref{eq:ex:natural_number_arithmetic_grammar/rules/shorthand}.
+    \item In order to fully describe a context-free grammar, we must only specify its Backus-Naur form and its starting variable.
+  \end{itemize}
+\end{remark}
+\begin{comments}
+  \item We will use Backus normal forms in more complicated grammars like \fullref{def:propositional_syntax/grammar_schema} and \fullref{def:first_order_syntax/grammar_schema}, while preferring more the primitive notation \eqref{eq:ex:natural_number_arithmetic_grammar/rules/simple} for generic examples relating to grammars.
+\end{comments}

@@ -2,419 +2,853 @@
 
 Languages are used to define formulas for expressing the \hyperref[def:zfc]{axioms of set theory}. Here, sets are used to formally define languages. A simple way out of this vicious cycle is via the theory-metatheory relationship discussed in \fullref{rem:metalogic} and \fullref{rem:set_definition_recursion}. In short, we define languages within the metatheory using the already available concept of set, and we later define formulas, again in the metatheory, which allows us to subsequently formally define sets via axioms within the object logic.
 
-\begin{definition}\label{def:formal_language}
-  Fix a nonempty set \( \mscrA \).
+\begin{definition}\label{def:formal_language}\mcite[3]{Salomaa1987}
+  Fix a nonempty set \( \mscrA \), which we will call an \term{alphabet}. Unless explicitly noted otherwise, like in \fullref{subsec:free_groups}, we will assume that \( \mscrA \) is finite.
 
   \begin{thmenum}
-    \thmitem{def:formal_language/alphabet} We call \( \mscrA \) an \term{alphabet}.
-
     \thmitem{def:formal_language/symbol} We call each element of \( \mscrA \) a \term{symbol}.
 
-    \thmitem{def:formal_language/word} A \term{string} over \( \mscrA \) is a \hyperref[def:sequence]{finite sequence} of symbols. If \( (a, b, c) \) is a word, for convenience we write it as the string \( abc \). This is the reason words are also referred to as \term{strings}. This notation only makes sense if each symbol of the language is actually represented by one typographic symbol.
+    \thmitem{def:formal_language/word} A \hyperref[def:sequence]{finite sequence} of symbols over is called a \term{word} or \term{string}. If \( (a, b, c) \) is a word, for convenience we write it as \( abc \). This notation only makes sense if each symbol of the language is actually represented by one typographic symbol.
 
-    The term \enquote{string} is common in programming practice. In the context of formal languages, strings are often called \term{words}. We will avoid the later term since it does not correspond to the everyday use of the term \enquote{word}.
+    \thmitem{def:formal_language/empty_word} We denote the empty word by \( \varepsilon \)\footnote{This notation is used, for example, by \cite[9]{Savage1998}. Other authors like Arto Salomaa in \cite[3]{Salomaa1987} use \( \lambda \) instead.}.
 
-    \thmitem{def:formal_language/empty_word} We denote the empty string by \( \varepsilon \).
+    \thmitem{def:formal_language/word_length} We define the \term{length} \( \len(w) \) of a word \( w \) as the number of elements of the corresponding tuple.
 
-    \thmitem{def:formal_language/word_length} The \term{length} \( \len(w) \) of a word \( w \) is the number of elements of the tuple \( w \).
-
-    \thmitem{def:formal_language/concatenation} The \term{concatenation} of the words \( v = (v_1, \ldots, v_n) \) and \( w = (w_1, \ldots, w_m) \) is the word
+    \thmitem{def:formal_language/concatenation} We define \term{concatenation} of the words \( v = (v_1, \ldots, v_n) \) and \( w = (w_1, \ldots, w_m) \) as the word
     \begin{equation*}
-      vw \coloneqq (v_1, \ldots, v_n, w_1, \ldots, w_m).
+      v \cdot w \coloneqq (v_1, \ldots, v_n, w_1, \ldots, w_m).
     \end{equation*}
 
-    We abbreviate \( \overbrace{w w \ldots w}^{k \T{times}} \) as \( w^k \). This is only a notation. We do not distinguish, formally, between the words \( aaabbaa \) and \( a^3 b^2 a^2 \), nor between \( a \varepsilon b \) and \( ab \).
+    We abbreviate \( \smash{\overbrace{w \ldots w}^{k \T*{times}}} \) as \( w^k \). This is only a notational shortcut within the metalogic. We do not distinguish, formally, between the words \( aaabbaa \) and \( a^3 b^2 a^2 \), nor between \( a \varepsilon b \) and \( ab \).
 
-    \thmitem{def:formal_language/reverse} The \term{reverse word} of \( w = (w_1, \ldots, w_n) \) is
+    \thmitem{def:formal_language/reverse}\mcite[exmpl. 2.7]{Salomaa1987} We define the \term{reverse word} of \( w = (w_1, \ldots, w_n) \) as
     \begin{equation*}
       \op{rev}(w) \coloneqq (w_n, \ldots, w_1).
     \end{equation*}
 
-    \thmitem{def:formal_language/prefix} The word \( p = (p_1, \ldots, p_m) \) is a \term{prefix} of \( w = (w_1, \ldots, w_n) \) if
+    \thmitem{def:formal_language/prefix} We say that word \( p = (p_1, \ldots, p_m) \) is a \term{prefix} of \( w = (w_1, \ldots, w_n) \) if
     \begin{equation*}
       w = (\underbrace{p_1, \ldots, p_m}_p, w_{m+1}, \ldots, w_n).
     \end{equation*}
 
-    \thmitem{def:formal_language/suffix} The word \( s \) is a \term{suffix} of \( w \) if \( \op{rev}(s) \) is a prefix of \( \op{rev}(w) \).
+    \thmitem{def:formal_language/suffix} We say that the word \( s \) is a \term{suffix} of \( w \) if \( \op{rev}(s) \) is a prefix of \( \op{rev}(w) \).
 
-    \thmitem{def:formal_language/subword} The word \( v \) is a \term{subword} of \( w \) if there exists a prefix \( p \) and a suffix \( s \) of \( v \) such that
+    \thmitem{def:formal_language/subword} We say that the word \( v \) is a \term{subword} of \( w \) if there exists a prefix \( p \) and a suffix \( s \) of \( v \) such that
     \begin{equation*}
-      w = pvs.
+      w = p v s.
     \end{equation*}
 
-    \thmitem{def:formal_language/kleene_star} The \term{Kleene star} \( \mscrA^* \) of \( \mscrA \) is the set of all words over \( \mscrA \). If we wish to exclude the empty word, like we often do, we instead write \( \mscrA^+ \) for the set of all non-empty words over \( \mscrA \).
+    \thmitem{def:formal_language/kleene_star} We define the \term{Kleene star}\footnote{The Kleene star is also called the free monoid on \( \mscrA \) --- see \fullref{thm:free_monoid_universal_property}.} \( \mscrA^* \) of \( \mscrA \) as the set of all words over \( \mscrA \). If we wish to exclude the empty word, like we often do, we instead write \( \mscrA^+ \) for the set of all non-empty words over \( \mscrA \).
 
-    The Kleene star is also called the free monoid on \( A \) --- see \fullref{thm:free_monoid_universal_property}.
-
-    \thmitem{def:formal_language/language} A \term{language} over \( \mscrA \) is any subset of \( \mscrA^* \). Note that in some contexts like \hyperref[subsec:propositional_logic]{propositional logic} or \hyperref[subsec:first_order_logic]{first-order logic} the term \enquote{language} may refer to the alphabet itself; see \fullref{rem:propositional_language_is_alphabet} for a further discussion.
+    \thmitem{def:formal_language/language} We call any subset of \( \mscrA^* \) a \term{language} over \( \mscrA \).
   \end{thmenum}
 \end{definition}
+\begin{comments}
+  \item Note that in some contexts like \hyperref[subsec:propositional_logic]{propositional logic} or \hyperref[subsec:first_order_logic]{first-order logic}, the term \enquote{language} may refer to the alphabet itself, as noted in \fullref{rem:propositional_language_is_alphabet}.
+\end{comments}
 
-\begin{definition}\label{def:formal_grammar}\mcite[def. 2.2]{Sipser2013}
-  Let \( V \) and \( \Sigma \) be disjoint nonempty subsets of some \hyperref[def:formal_language/alphabet]{alphabet}.
+\begin{example}\label{ex:def:formal_language}
+  We list several examples of \hyperref[def:formal_language]{formal languages}:
+  \begin{thmenum}
+    \thmitem{ex:def:formal_language/full} The simplest examples are the empty language and the Kleene star itself. Both are useless in practice, however.
+
+    \thmitem{ex:def:formal_language/an} For any alphabet, we can pick one letter \( a \) and form the language
+    \begin{equation*}
+      \mscrL \coloneqq \set{ a^n \given n \geq 0 },
+    \end{equation*}
+    consisting of all finite repetitions of the symbol \( a \).
+
+    We can redefine all operations from \fullref{subsec:natural_numbers} to hold for words in \( \mscrL \). For example, addition of \( a^n \) and \( a^m \) is their concatenation \( a^{n + m} \), while the exponentiation \( (a^n)^m \) is a repetition of the word \( a^n \).
+
+    We can identify the language with the \hyperref[def:weighted_set]{edge-labeled} \hyperref[def:quiver/graph]{directed graph}
+    \begin{equation}\label{def:formal_language/an}
+      \begin{aligned}
+        \includegraphics[page=1]{output/ex__def__formal_language.pdf}
+      \end{aligned}
+    \end{equation}
+
+    Each word in \( \mscrL \) corresponds to a \hyperref[def:quiver_path/directed]{directed path} in \eqref{eq:fig:def:formal_language/an} and vice versa.
+
+    \thmitem{ex:def:formal_language/anbn} A slightly more complicated language is
+    \begin{equation*}
+      \mscrL \coloneqq \set{ a^n b^n \given n \geq 0 }.
+    \end{equation*}
+
+    It can encode natural number operations just as well. It cannot, however, be represented via a directed graph like \eqref{eq:fig:def:formal_language/an/quiver}. This will be made precise and proved in \fullref{ex:def:finite_automaton/anbn}.
+
+    \thmitem{ex:def:formal_language/even} Even numbers in binary notation are described by the language
+    \begin{equation*}
+      \mscrL \coloneqq \set[\Big]{ w0 \given w \in \set{ 0, 1 }^* }.
+    \end{equation*}
+
+    \thmitem{ex:def:formal_language/leucine}\mcite{codon_charts} The \term{Leucine} amino-acid is encoded by the language
+    \begin{equation*}
+       \mscrL \coloneqq \set{ \texttt{TTA}, \texttt{TTG}, \texttt{CTT}, \texttt{CTC}, \texttt{CTA}, \texttt{CTG} }.
+    \end{equation*}
+  \end{thmenum}
+\end{example}
+
+\begin{definition}\label{def:finite_automaton}\mcite[def. 4.1.1]{Savage1998}
+  Let \( \Sigma \) be some \hyperref[def:formal_language]{alphabet}. Let \( Q \) be a finite nonempty set, whose members we will call \term{states}. Let \( \delta: Q \times \Sigma \to Q \) be a \hyperref[def:multi_valued_function/total]{multi-valued function}, which we will call a \term{transition function} because, depending on a state in \( Q \) and a symbol in \( \Sigma \), \( \delta \) gives us the possible states towards we can transition.
+
+  Finally, let \( S \) and \( T \) be nonempty sets of vertices, which we call an \term{initial} and \term{terminal states}, correspondingly.
+
+  We call this entire contraption \( (\Sigma, Q, \delta, I, T) \) a \term{finite automaton}. It models a real-world device that starts its work from some initial state and, via a sequence of state transitions, reaches some terminal state.
+
+  \begin{figure}[!ht]
+    \hfill
+    \includegraphics[page=1]{output/def__finite_automaton.pdf}
+    \hfill
+    \includegraphics[page=2]{output/def__finite_automaton.pdf}
+    \hfill\hfill
+    \caption{A \hyperref[def:finite_automaton/determinism]{nondeterministic finite automaton} and its \hyperref[alg:determinization_of_finite_automata]{determinization} accepting the language \( \set{ a } \cup \set{ b^n \given n > 0 } \cup \set{ aa b^n \given n > 0 } \).}
+    \label{fig:def:finite_automaton}
+  \end{figure}
 
   \begin{thmenum}
-    \thmitem{def:formal_grammar/terminals} We call elements of \( \Sigma \) \term{terminals}. We denote terminals in abstract grammars using lowercase Greek letters, and we denote words using lowercase Latin letters.
+    \thmitem{def:finite_automaton/graph} Consider \( \delta \) as a set of triples \( (h_0, l_0, t_0) \). Denote by \( h: \delta \to Q \), \( l: \delta \to \Sigma \) and \( t: \delta \to Q \) the functions that take the corresponding entry out of each triple.
 
-    \thmitem{def:formal_grammar/non_terminals} We call elements of \( V \) \term{non-terminals}. By convention, variables are denoted using capital letters.
+    Then the quadruple \( (Q, \delta, h, t) \) is a \hyperref[def:quiver]{quiver}, whose arcs are \hyperref[def:weighted_set]{labeled} by \( l \).
 
-    \thmitem{def:formal_grammar/start} We assume that a special \term{start symbol} \( S \in V \) is fixed.
+    We often identify the automaton with its quiver. When drawing this quiver, for example in \cref{fig:def:finite_automaton}, we denote initial states via inward arrows without a source and terminal states via double circles.
 
-    \thmitem{def:formal_grammar/production_rules} We define a binary \hyperref[def:relation]{relation} \( \to \) of \term{production rules} over \( (V \cup \Sigma)^* \).
+    \thmitem{def:finite_automaton/determinism} If there is only one initial state and if \( \delta \) is a \hyperref[def:partial_function]{single-valued partial function}, we say that the automata is \term{deterministic}.
 
-    We impose the restriction that no rules of the form \( \varepsilon \to v \) exist for any word \( v \). We do allow, however, production rules of the form \( v \to \varepsilon \). Such rules are called \term{\( \varepsilon \)-rules}.
+    Determinism ensures that there is at most one possible state to transition to, given a current state and a symbol.
 
-    Rules describe transformations that define how a language is \enquote{generated} starting from \( S \). See \fullref{def:grammar_derivation} and \fullref{ex:natural_number_arithmetic_grammar/derivation}.
+    \thmitem{def:finite_automaton/recognition} We say that the automaton \term{accepts} or \term{recognizes} the \hyperref[def:formal_language/word]{word} \( a_1 \cdots a_n \) over \( \mscrA \) if there exists a directed path
+    \begin{equation*}
+      p = (s, e_1, e_2, \ldots, e_n)
+    \end{equation*}
+    starting at \( s \) such that
+    \begin{itemize}
+      \item The label \( l(e_k) \) is \( a_k \) for every \( k = 1, \ldots, n \).
+      \item The tail \( t(e_n) \) of the path is a terminal state from \( T \).
+    \end{itemize}
 
-    \thmitem{def:formal_grammar/grammar} The quadruple \( G \coloneqq (V, S, \Sigma, \to) \) is called a \term{formal grammar} or simply a \term{grammar}.
+    \thmitem{def:finite_automaton/language} The set of all words recognized by the automaton is called the language \term{accepted} or \term{recognized} by the automaton. We denote this language via \( \mscrL(F) \).
+
+    \thmitem{def:finite_automaton/equivalent} We say that two finite automata are \term{equivalent} if they recognize the same language.
   \end{thmenum}
 \end{definition}
 
-\begin{definition}\label{def:chomsky_hierarchy}
-  We will define the \term{Chomsky hierarchy} of \hyperref[def:formal_grammar]{formal grammars}. We can classify a grammar \( G = (V, S, \Sigma, \to) \) as follows, based on their rules:
+\begin{definition}\label{def:reverse_language}\mcite[17]{Salomaa1987}
+  We define the \term{reverse language} of \( \mscrL \) as
+  \begin{equation*}
+    \op{rev}(\mscrL) \coloneqq \set{ \op{rev}(w) \given w \in \mscrL }.
+  \end{equation*}
+\end{definition}
+
+\begin{proposition}\label{thm:reverse_language_involution}
+  The \hyperref[def:reverse_language]{reverse} of the reverse of \( \mscrL \) is \( \mscrL \) itself.
+\end{proposition}
+\begin{proof}
+  Trivial.
+\end{proof}
+
+\begin{definition}\label{def:reverse_automaton}\mimprovised
+  We define the \term{reverse automaton} of \( F = (\Sigma, Q, \delta, I, T) \) as
+  \begin{equation*}
+    \op{rev}(F) \coloneqq (\Sigma, Q, \op{rev}(\delta), T, I),
+  \end{equation*}
+  where
+  \begin{equation*}
+    \op{rev}(\delta)(B, a) \coloneqq A \T{if} \delta(A, a) \coloneqq B.
+  \end{equation*}
+\end{definition}
+
+\begin{proposition}\label{thm:reverse_finite_automaton_graph}
+  The \hyperref[def:finite_automaton/graph]{graph} of the \hyperref[def:reverse_automaton]{reverse automaton} \( \op{rev}(F) \) is the \hyperref[def:quiver/duality]{opposite graph}.
+\end{proposition}
+\begin{proof}
+  Trivial.
+\end{proof}
+
+\begin{proposition}\label{thm:reverse_finite_automaton_language}
+  For a given \hyperref[def:finite_automaton]{finite automaton} \( F = (\Sigma, Q, \delta, I, T) \), we have
+  \begin{equation*}
+    \mscrL(\op{rev}(F)) = \op{rev}(\mscrL(F)).
+  \end{equation*}
+\end{proposition}
+\begin{proof}
+  Trivial.
+\end{proof}
+
+\begin{example}\label{ex:def:finite_automaton}
+  We list several examples of \hyperref[def:finite_automaton]{finite automata}:
   \begin{thmenum}
-    \thmitem{def:chomsky_hierarchy/unrestricted} In general, every production rule has the form \( v \to w \), where both \( v \) and \( w \) are words consisting of terminal and non-terminals, and \( v \) is nonempty.
+    \thmitem{ex:def:finite_automaton/even} Consider the language form \fullref{ex:def:formal_language/leucine} describing even binary numbers. The language can be recognized by
+    \begin{equation*}
+      \includegraphics[page=2]{output/ex__def__finite_automaton.pdf}
+    \end{equation*}
 
-    When no additional restrictions are imposed on the rules of the grammar, we call it \term{unrestricted grammar}. The other levels of the hierarchy are subsets of the unrestricted grammars.
+    \thmitem{ex:def:finite_automaton/leucine} Consider the language form \fullref{ex:def:formal_language/leucine} describing Leucine. It can be recognized by the nondeterministic finite automaton
+    \begin{equation*}
+      \includegraphics[page=1]{output/ex__def__finite_automaton.pdf}
+    \end{equation*}
 
-    \thmitem{def:chomsky_hierarchy/non_contracting} The grammar is \term{non-contracting} if \( \len(v) \leq \len(w) \) for every production rule \( v \to w \).
+    \thmitem{ex:def:finite_automaton/anbn} Consider the language
+    \begin{equation*}
+      \mscrL \coloneqq \set{ a^n b^n \given n \geq 0 }
+    \end{equation*}
+    from \fullref{ex:def:formal_language/anbn}.
 
-    \thmitem{def:chomsky_hierarchy/context_sensitive} The grammar is \term{context-sensitive} if every rule has the form \( aAb \to w \) for some non-terminal \( A \), arbitrary words \( a \) and \( b \), and a nonempty word \( w \).
+    As we will see in \fullref{alg:determinization_of_finite_automata}, a deterministic automaton exists accepting a language if and only if a nondeterministic one exists. Aiming at a contradiction, suppose that there exists some deterministic finite automaton \( F = (\Sigma, Q, \delta, \set{ s }, T) \) whose language is \( \mscrL \). Let \( G \) be its quiver.
 
-    The requirement for \( w \) to be nonempty is set up so that context-sensitive grammars are non-contracting.
+    Since \( s \) is the only initial state, and since \( \mscrL \) contains the empty string, then \( s \) must also be a terminal state.
 
-    \thmitem{def:chomsky_hierarchy/context_free} The grammar is \term{context-free} every rule has the form \( A \to w \) for some non-terminal \( A \) and a nonempty word \( w \).
+    Furthermore, \( \mscrL \) contains the word \( ab \), hence there must exist a terminal state \( t_1 \) and an intermediate state \( q_1 \) such that
+    \begin{equation*}
+      \includegraphics[page=3]{output/ex__def__finite_automaton.pdf}
+    \end{equation*}
 
-    Unlike for context-sensitive languages, \( w \) is allowed to be empty. Thus, a context-free grammar is non-contracting, however it may not be context-sensitive if it has \( \varepsilon \)-rules.
+    Furthermore, the above is a full subquiver of \( G \) --- none of the states above are interconnected by any additional arcs.
 
-    \thmitem{def:chomsky_hierarchy/regular} Finally, the grammar is \term{regular} if every rule has one of the forms
-    \begin{align*}
-      &A \to \varepsilon, \\
-      &A \to B \tau, \\
-      &A \to \tau B, \\
-      &A \to \tau,
-    \end{align*}
-    where \( A \) and \( B \) are non-terminals and \( \tau \) is a terminal.
+    Then, in order for \( F \) to accept \( aabb \), it must have more states. Since the automaton is deterministic, there cannot be another arc with label \enquote{\( a \)} starting at \( s \). Hence, \( q_1 \) is the only node where it is possible to have another arc with label \enquote{\( a \)}.
 
-    Regular grammars are obviously context-free.
+    Hence, \( G \) either has as a subquiver either
+    \begin{equation*}
+      \includegraphics[page=4]{output/ex__def__finite_automaton.pdf}
+    \end{equation*}
+    or
+    \begin{equation*}
+      \includegraphics[page=5]{output/ex__def__finite_automaton.pdf}
+    \end{equation*}
+
+    In particular, \( F \) must have at least five states in order to recognize \( a^2 b^2 \).
+
+    Continuing by induction, we conclude that in order for \( F \) to recognize \( a^n b^n \), it must have at least \( 2n + 1 \) states. For example, the following automaton recognizes \( a^n b^n \):
+    \begin{equation*}
+      \includegraphics[page=6]{output/ex__def__finite_automaton.pdf}
+    \end{equation*}
+
+    But \( \mscrL \) contains word of arbitrary length. Therefore, no finite automaton is able to recognize \( \mscrL \).
+  \end{thmenum}
+\end{example}
+
+\begin{algorithm}[Determinization of finite automata]\label{alg:determinization_of_finite_automata}
+  Let \( N = (\Sigma, Q, \delta, I, T) \) be a \hyperref[def:finite_automaton]{finite automaton}. We will build an \hyperref[def:finite_automaton/equivalent]{equivalent} \hyperref[def:finite_automaton/determinism]{deterministic automaton} \( \det(N) \).
+
+  This can be achieved by grouping states that would otherwise make the automaton nondeterministic. We will first recursively construct the operator \( \mscrD(A, V) \), which, given a set of states \( A \) and a family of \enquote{visited} sets of states \( V \), produces a family of triples describing the transitions of the deterministic automaton. The family \( V \) helps us avoid cycles when traversing \( N \).
+
+  \begin{thmenum}
+    \thmitem{alg:determinization_of_finite_automata/step} Suppose we are given a set \( A \) of vertices and a family \( V \) of sets of visited states. Let
+    \begin{equation*}
+      K \coloneqq \set{ l(e) \given e \in E \T{and} h(e) \in A }
+    \end{equation*}
+    be the set of all labels of arcs going out from \( A \), and, for each \( k \in K \), let
+    \begin{equation*}
+      O_k \coloneqq \set{ t(e) \given e \in E \T{and} h(e) \in A \T{and} l(e) = k }
+    \end{equation*}
+    be the set of all terminal vertices \( b \) of arcs going out from \( A \) that have label \( k \).
+
+    Define the set of triples
+    \begin{equation*}
+      E_A \coloneqq \set{ (A, O_k, k) \given k \in K }.
+    \end{equation*}
+
+    Finally, define
+    \begin{equation*}
+      \mscrD(A, V) \coloneqq E_A \cup \bigcup \set[\Big]{ \mscrD\parens*{ O_k , V \cup \set{ A } } \given* k \in K \T{and} O_k \not\in V }.
+    \end{equation*}
+
+    Note how we used \( V \) to filter out only those sets \( O_k \) that have not yet been visited.
+
+    \thmitem{alg:determinization_of_finite_automata/run} Let \( \delta' \coloneqq \mscrD(I, \varnothing) \). Define
+    \begin{equation*}
+      Q' \coloneqq \set{ A \given (A, O_k, k) \in \delta' } \cup \set{ O_k \given (A, O_k, k) \in \delta' }.
+    \end{equation*}
+
+    Define also the set of initial states \( I' \coloneqq \set{ I } \) and of terminal states
+    \begin{equation*}
+      T' \coloneqq \set{ A \given A \T{is a vertex of} G' \T{and} A \cap T \neq \varnothing }.
+    \end{equation*}
+
+    Then \( \det(N) \coloneqq (\Sigma, Q', \delta', I', T') \) is the desired finite automaton.
+  \end{thmenum}
+\end{algorithm}
+\begin{comments}
+  \item This algorithm can be found as \texttt{automata.finite.determinize} in \cite{code}.
+\end{comments}
+\begin{defproof}
+  We have explicitly made \( I \) the only initial state, and we have grouped arcs with identical labels. Hence, \( F \) is indeed deterministic.
+
+  We must show that \( \mscrL(N) = \mscrL(F) \). We have introduced a special state for every occurrence of several vertices that have incoming arcs with identical labels. Hence, we replace every such group of arcs with a single arc. The two automata should then accept identical languages.
+\end{defproof}
+
+\begin{definition}\label{def:formal_grammar}\mcite[9]{Salomaa1987}
+  Let \( \Sigma \) and \( V \) be disjoint nonempty subsets of some \hyperref[def:formal_language]{alphabet}, whose members we call \term{terminals} and \term{variables}, respectively. Fix some \term{start symbol} \( S \in V \).
+
+  Let \( \to \) be some \hyperref[def:binary_relation]{binary relation} over \( (V \cup \Sigma)^* \), whose members we call \term{production rules}. We impose the restriction that, for every rule \( v \to w \), the word \( v \) contains at least one terminal.
+
+  We call the quadruple \( (V, \Sigma, \to, S) \) a \term{phrase-structure grammar} or simply a \term{formal grammar}.
+
+  \begin{thmenum}
+    \thmitem{def:formal_grammar/derivation} We define the binary relation \( \Rightarrow \) on the Kleene star \( (V \cup \Sigma)^* \) by declaring that, for every two \hyperref[def:formal_language/word]{words} \( p \) and \( s \) over \( V \cup \Sigma \) and every production rule \( v \to w \), we have \( pvs \Rightarrow pws \).
+
+    A \term{derivation} of the word \( w_m \) from \( w_1 \) is a finite sequence of words such that
+    \begin{equation}\label{eq:def:formal_grammar/derivation}
+      w_1
+      \Rightarrow
+      w_2
+      \Rightarrow
+      \cdots
+      \Rightarrow
+      w_{n-1}
+      \Rightarrow
+      w_m.
+    \end{equation}
+
+    We say that \( w_m \) is \term{derivable} from \( w_1 \) if there exists a derivation from \( w_1 \) to \( w_m \).
+
+    We denote the \hyperref[def:relation_closures/transitive]{transitive closure} of \( \Rightarrow \) by \( \reloset + \Rightarrow \) and the \hyperref[def:relation_closures/reflexive]{reflexive} closure of \( \reloset + \Rightarrow \) by \( \reloset {*} \Rightarrow \). Clearly \( w_1 \) is derivable from \( w_n \) if and only if \( w_1 \reloset {*} \Rightarrow w_m \).
+
+    \thmitem{def:formal_grammar/language} We associate the following language with the grammar \( G \):
+    \begin{equation*}
+      \mscrL(G) \coloneqq \set{ w \in \Sigma^* \given S \reloset + \Rightarrow w }.
+    \end{equation*}
+
+    It consists of all words that are derivable from \( S \) and contain only terminals.
+
+    We say that words in \( \mscrL(G) \) are \term{generated} by \( G \).
+
+    \thmitem{def:formal_grammar/equivalent} We say that two grammars are \term{equivalent} if they generate the same language.
+
+    \thmitem{def:formal_grammar/graph}\mimprovised We can regard the derivation relation \( \Rightarrow \) as a set of \hyperref[def:quiver/arcs]{arcs} over the grammar language \( \mscrL(G) \). Thus, \( (\mscrL(G), \Rightarrow) \) is a \hyperref[def:quiver/simple]{directed graph}, whose nonempty paths are precisely the derivations in \( G \). Furthermore, we can \hyperref[def:weighted_set]{label} each arc with the rule applied.
+
+    We call it the \term{derivation graph} of \( G \).
   \end{thmenum}
 \end{definition}
 
-\begin{example}\label{ex:natural_number_arithmetic_grammar/backus_naur_form}
-  We define a grammar for primary school notation of multiplication and division of \hyperref[def:natural_numbers]{natural numbers}. Note that we consider the numbers in \( \BbbN \) only as symbols, without any regard to semantics.
+\begin{proposition}\label{thm:derivation_graph_connected}
+  Every \hyperref[def:formal_grammar/graph]{derivation graph} is \hyperref[def:quiver_connectedness/strong]{strongly connected}.
+\end{proposition}
+\begin{proof}
+  A \hyperref[def:formal_grammar/language]{grammar's language} is defined as the set of all words that can be derived from the starting symbol.
+\end{proof}
 
-  Let \( V \coloneqq \set{ N, O, M, E } \) and \( \Sigma \coloneqq \BbbN \cup \set{ \times, \div, (, ) } \). Define the grammar
-  \begin{equation}\label{eq:ex:natural_number_arithmetic_grammar/backus_naur_form/simple}
+\begin{example}\label{ex:natural_number_arithmetic_grammar/rules}
+  We define a grammar for arithmetic of \hyperref[def:natural_numbers]{natural numbers}. We will use binary notation for simplicity.
+
+  Let \( V \coloneqq \set{ N, O, E } \) and \( \Sigma \coloneqq \set{ 0, 1, +, \times, (, ) } \). Consider the derivation rules
+  \begin{equation}\label{eq:ex:natural_number_arithmetic_grammar/rules/simple}
     \begin{aligned}
-      N &\to 0 \\
-      N &\to 1 \\
-      \phantom{N} &\vdots \\
-      N &\to n \\
-      \phantom{N} &\vdots \\
-      O &\to \times \\
-      O &\to \div \\
-      E &\to N \\
-      E &\to (E O E)
+      N &\to 0   & \quad B &\to 0   & \quad O &\to +      & \quad E &\to N \\
+      N &\to 1   & \quad B &\to 0 B & \quad O &\to -      & \quad E &\to (E O E) \\
+      N &\to 1 B & \quad B &\to 1   & \quad   &           &         & \\
+        &        & \quad B &\to 1 B & \quad   &           &         & \\
     \end{aligned}
   \end{equation}
 
   It is convenient to use the following shorthands:
-  \begin{equation}\label{eq:ex:natural_number_arithmetic_grammar/backus_naur_form/shorthand}
+  \begin{equation}\label{eq:ex:natural_number_arithmetic_grammar/rules/shorthand}
     \begin{aligned}
-      N &\to 0 \mid 1 \mid 2 \mid \ldots \\
-      O &\to \times \mid \div \\
+      N &\to 0 \mid 1 \mid 1 B \\
+      B &\to 0 \mid B 0 \mid 1 \mid B 1 \\
+      O &\to + \mid \times \\
       E &\to N \mid (E O E)
     \end{aligned}
   \end{equation}
 
-  We can choose different non-terminals as the starting symbol. The symbol \( N \) corresponds to numbers, \( O \) corresponds to operations, and \( E \) can be either a number or an expression. We say that \eqref{eq:ex:natural_number_arithmetic_grammar/backus_naur_form/shorthand} specifies a \term{grammar schema}. With any starting symbol, the grammar is clearly \hyperref[def:chomsky_hierarchy]{context-free}.
+  We can choose different non-terminals as the starting symbol. The symbol \( N \) corresponds to numbers, \( O \) corresponds to operations, and \( E \) can be either a number or a binary expression. We say that \eqref{eq:ex:natural_number_arithmetic_grammar/rules/shorthand} specifies a \term{grammar schema}.
+
+  \begin{figure}[!ht]
+    \centering
+    \includegraphics[page=1]{output/ex__natural_number_arithmetic_grammar__rules.pdf}
+    \caption{A fragment of the \hyperref[def:formal_grammar/graph]{derivation graph} of the binary natural number arithmetic grammar from \fullref{ex:natural_number_arithmetic_grammar/rules}.}
+    \label{fig:ex:natural_number_arithmetic_grammar/rules}
+  \end{figure}
 \end{example}
 
-\begin{remark}\label{rem:backus_naur_form}
-  The infinitude of possible rules in \fullref{ex:natural_number_arithmetic_grammar/backus_naur_form} may not bother us formally, but when dealing with software implementations, we must have a finite number of rules. An example of a nontrivial grammar in the wild is the Python grammar that can be found in \cite{Python39Grammar}. There are also other advantages of introducing a more convenient metasyntax (a syntax for describing language syntax).
+\begin{remark}\label{rem:length_increasing_grammar}
+  Given a finite set of grammar rules, there may \hyperref[def:formal_grammar/derivation]{derivations} of arbitrary length. This can happen even if we remove cycles from the \hyperref[def:formal_grammar/graph]{derivation graph} --- see \fullref{ex:thm:length_increasing_grammar}. We will discuss a way to restrict this behavior and ensure that it is possible to determine whether a derivation exists in finitely many steps.
 
-  For \hyperref[def:chomsky_hierarchy/context_free]{context-free grammars}, is often convenient to use the \term{Backus-Naur form (BNF)}. For \fullref{ex:natural_number_arithmetic_grammar/backus_naur_form}, the BNF is
-  \begin{bnf*}
-    \bnfprod{nonzero digit} {\bnfts{1} \bnfor \bnfts{2} \bnfor \bnfts{3} \bnfor \bnfts{4} \bnfor \bnfts{5} \bnfor \bnfts{6} \bnfor \bnfts{7} \bnfor \bnfts{8} \bnfor \bnfts{9}} \\
-    \bnfprod{digit}         {\bnfts{0} \bnfor \bnfpn{nonzero digit}} \\
-    \bnfprod{number}        {\bnfpn{nonzero digit} \bnfor \bnfpn{number} \bnfsp \bnfpn{digit}} \\
-    \bnfprod{operation}     {\bnfts{\( \times \)} \bnfor \bnfts{\( \div \)}} \\
-    \bnfprod{expression}    {\bnfpn{number} \bnfor \bnfts{(} \bnfsp \bnfpn{number} \bnfsp \bnfpn{operation} \bnfsp \bnfpn{number} \bnfsp \bnfts{)}}.
-  \end{bnf*}
+  In general, given the grammar rule \( v \to w \), it is possible that \( \len(v) \geq \len(w) \). This is always true for \hyperref[def:epsilon_free_grammar]{\( \varepsilon \)-rules}, for example.
 
-  The obvious difference is that we explicitly define numbers via their decimal representation, which means that we get a finite amount of rules. Compared to \eqref{eq:ex:natural_number_arithmetic_grammar/backus_naur_form/simple} some other differences are:
-  \begin{itemize}
-    \item Variables are denoted by \( \langle \)words enclosed in angle brackets\( \rangle \), so that we can name variables more descriptively using more than one symbol.
-    \item Terminals are, by convention, put in \enquote{quotes}. In human-readable rich text documents like this one, it is sometimes possible to use different fonts, and so instead of using \enquote{quotes} we specify terminals using an \texttt{upright typewriter font}.
-    \item Free-text rules can be specified using a normal font. This is also only used in human-readable rich text documents, however this usage is justified because such rules are only beneficial for human understanding and not for machine parsing.
-    \item By convention, the symbol \( \Coloneqq \) is used instead of \( \to \) for specifying transition rules.
-    \item Different rules with the same, source are concatenated as in \eqref{eq:ex:natural_number_arithmetic_grammar/backus_naur_form/shorthand}.
-    \item In order to fully describe a context-free grammar, we must only specify its Backus-Naur form and its starting variable.
-  \end{itemize}
+  Noam Chomsky in \cite[361]{MathPsychology1963Vol2} defines \enquote{type 1} grammars as those satisfying the inequality \( \len(v) \leq \len(w) \) for every rule \( v \to w \). These grammars still have cycles like \( A \to B \to A \), but they avoid more convoluted cases and lead to \Fullref{alg:length_increasing_grammar}.
+
+  This restriction excludes the empty string from the grammar's language. Arto Salomaa in \cite[15]{Salomaa1987} additionally allows the rule \( S \to \varepsilon \), but only if \( S \) does not occur on the right side of any derivation. \Fullref{ex:thm:length_increasing_grammar} highlights the importance of the latter assumption.
+
+  Salomaa calls these grammars \enquote{length-increasing}, preferring to use \enquote{type 1} for what we call \hyperref[def:chomsky_hierarchy/context_sensitive]{context-sensitive} grammars. The latter are, up to nuances of \( \varepsilon \)-rules, called \enquote{type 1} grammars by Chomsky earlier in \cite[142]{Chomsky1959}. John Savage in \cite[def. 4.9.2]{Savage1998} defines \enquote{context-sensitive grammars} as what Salomaa calls length-increasing. We introduce the term \enquote{essentially length-increasing} in \fullref{def:length_increasing_grammar} and generally avoid \enquote{type 1} when referring to grammars or languages to circumvent ambiguity.
+
+  (What we call) context-sensitive \hi{grammars} are a strict subset of the essentially length-increasing grammars, but \fullref{thm:context_sensitive_languages} shows that context-sensitive \hi{languages} and length-increasing languages coincide. Hence, the term \enquote{type 1 language} makes sense, although we prefer \enquote{context-sensitive language}.
 \end{remark}
 
-\begin{definition}\label{def:grammar_derivation}
-  Fix a \hyperref[def:formal_grammar]{formal grammar} \( G = (V, S, \Sigma, \to) \).
+\begin{definition}\label{def:epsilon_free_grammar}\mimprovised
+  Fix a formal grammar \( G = (V, \Sigma, \to, S) \). Rules of the form \( A \to \varepsilon \), where \( A \) is a non-terminal, play a special role. We call them \( \varepsilon \)-rules.
 
-  \begin{thmenum}
-    \thmitem{def:grammar_derivation/derivation} We define the binary relation \( \Rightarrow \) on the Kleene star \( (V \cup \Sigma)^* \) by declaring that, for every two \hyperref[def:formal_language/word]{words} \( p \) and \( s \) over \( V \cup \Sigma \) and every production rule \( v \to w \), we have \( pvw \Rightarrow pws \). We also define the relation \( \Rightarrow_L \) as a restriction of \( \Rightarrow \) to the cases where \( p \) contains only terminal symbols and \( \Rightarrow_R \) --- if \( s \) contains only terminal symbols.
+  We say that \( G \) is \term{\( \mathbf{\varepsilon} \)-free} if there are no \( \varepsilon \) rules.
 
-    A \term{derivation} of the word \( w_n \) from \( w_1 \) is a \hyperref[def:quiver_path/directed]{directed path} in the quiver induced by the relation \( \Rightarrow \), i.e.
-    \begin{equation}\label{eq:def:grammar_derivation/derivation}
-      w_1
-      \reloset {u_1 \to v_1} \implies
-      w_2
-      \reloset {u_2 \to v_2} \implies
-      \cdots
-      \reloset {u_{n-2} \to v_{n-2}} \implies
-      w_{n-1}
-      \reloset {u_{n-1} \to v_{n-1}} \implies
-      w_n.
-    \end{equation}
-
-    A \term{leftmost derivation} is a derivation performed using \( \Rightarrow_L \) rather than \( \Rightarrow \). \term{Rightmost derivations} are defined analogously.
-
-    We say that \( w_n \) is \term{derivable} from \( w_1 \) if there exists a derivation from \( w_1 \) to \( w_n \).
-
-    We denote the \hyperref[def:relation_closures/transitive]{transitive closure} of \( \Rightarrow \) by \( \reloset + \Rightarrow \) and the \hyperref[def:relation_closures/reflexive]{reflexive} closure of \( \reloset + \Rightarrow \) by \( \reloset {*} \Rightarrow \). Clearly \( w_1 \) is derivable from \( w_n \) if and only if \( w_1 \reloset {*} \Rightarrow w_n \).
-
-    The leftmost and rightmost derivations generate the same derivability relation --- the only potential difference is in the order of rule applications in the derivation itself.
-
-    \thmitem{def:grammar_derivation/unambiguous}\mcite[def. 2.7]{Sipser2013} We say that the word \( w \) can be derived \term{unambiguously} if it has a unique leftmost derivation.
-
-    Define the set
-    \begin{equation*}
-      D \coloneqq \set{ w \in (V \cup \Sigma)^* \colon S \reloset + \Rightarrow w }
-    \end{equation*}
-    of all words derivable from the starting symbol \( S \).
-
-    If every word in \( D \) can be derived unambiguously, we say that the grammar itself is \term{unambiguous}.
-
-    In an unambiguous grammar, \fullref{thm:structural_induction_on_unambiguous_grammars} can be used on the \hyperref[def:quiver/simple]{simple directed graph} \( (D, \Rightarrow_L) \). Indeed, every word in \( D \) is derivable from \( S \) and every leftmost derivation is unique.
-
-    \thmitem{def:grammar_derivation/grammar_language} The \term{language} of the grammar is the set
-    \begin{equation*}
-      \mscrL(G) \coloneqq \set{ w \in \Sigma^* \colon S \reloset + \Rightarrow w }
-    \end{equation*}
-    of all terminal-only words derivable from the starting symbol \( S \).
-
-    We also say that strings in \( \mscrL(G) \) are \term{generated} by the grammar \( G \).
-
-    If a language can be generated by a \hyperref[def:chomsky_hierarchy/regular]{regular} grammar, we say that the language itself is regular, and similarly for \hyperref[def:chomsky_hierarchy/context_free]{context-free} and \hyperref[def:chomsky_hierarchy/context_sensitive]{context-sensitive} grammars.
-
-    For other grammars, for example \hyperref[def:chomsky_hierarchy/unrestricted]{unrestricted} or \hyperref[def:chomsky_hierarchy/non_contracting]{non-contracting}, such a terminology is not established.
-  \end{thmenum}
+  This condition turns out to be too restrictive because it disallows the grammar to generate empty words. Thus, we introduce another concept. We say that \( G \) is \term{essentially \( \mathbf{\varepsilon} \)-free} if \( S \to \varepsilon \) is the only \( \varepsilon \)-rule allowed, and if it is present, \( S \) must not be on the right side of any rule.
 \end{definition}
 
-\begin{example}\label{ex:natural_number_arithmetic_grammar/derivation}
-  We continue \fullref{ex:natural_number_arithmetic_grammar/backus_naur_form}. Depending on our choice of starting symbol, we can derive different sets of words.
-
-  For the sake of simplifying our exposition and proof, however, we will assume the simpler grammar described in \eqref{eq:ex:natural_number_arithmetic_grammar/backus_naur_form/simple}.
-
-  Choose the starting symbol to be \( E \). We will show that this grammar is unambiguous.
-
-  \Cref{fig:ex:natural_number_arithmetic_grammar/derivation/ambiguous} demonstrates that removing the parentheses makes even this simple grammar ambiguous.
-
-  \begin{figure}[!ht]
-    \hfill
-    \includegraphics[page=1]{output/ex__natural_number_arithmetic_grammar__derivation.pdf}
-    \hfill\hfill
-    \caption{The unique leftmost derivation of the parenthesized arithmetic expression \( ((6 \div 2) \times 3) \)}
-    \label{fig:ex:natural_number_arithmetic_grammar/derivation/unambiguous}
-  \end{figure}
-
-  \begin{figure}[!ht]
-    \hfill
-    \includegraphics[page=2]{output/ex__natural_number_arithmetic_grammar__derivation.pdf}
-    \hfill\hfill
-    \caption{Different leftmost derivations of the parenthesis-less arithmetic expression \( 6 \div 3 \times 2 \)}
-    \label{fig:ex:natural_number_arithmetic_grammar/derivation/ambiguous}
-  \end{figure}
-
-  We will show that \( G \) is unambiguous. Let \( w \) be a word in \( \mscrL(G) \). We explicitly build the leftmost derivation of \( w \) using recursion on \( \len(w) \):
-  \begin{itemize}
-    \item If \( \len(w) = 1 \), then \( w = n \in \BbbN \), and the word has been derived as \( E \to N \to n \).
-
-    \item Assume that \( w \) is unambiguously derived for \( \len(w) < m + 2 \) and let \( \len(w) = m + 2 \), then \( w \) is necessarily enclosed in parentheses. Let \( w = ( \sigma_1 \ldots \sigma_m ) \) be the symbols of \( w \). Because of the parentheses, the only possibility for \( \sigma_1 \ldots \sigma_m \) is that it consists of two words in \( \mscrL(G) \) with either a multiplication symbol \( \times \) or a division symbol \( \div \) between them. Let \( k \) be the index of the operator symbol, that is, the index such that \( \sigma_1 \ldots \sigma_{k-1} \) and \( \sigma_{k+1} \ldots \sigma_m \) both belong to \( \mscrL(G) \).
-
-    By the inductive hypothesis, both \( \sigma_1 \ldots \sigma_{k-1} \) and \( \sigma_{k+1} \ldots \sigma_m \) are unambiguously derived from \( E \). Then \( w \) is generated by the rule \( E \to (E O E) \), where the operator symbol \( \sigma_k \) determines the terminal of \( O \). Therefore, the derivation of \( w \) is also unambiguous.
-  \end{itemize}
-\end{example}
-
-\begin{definition}\label{def:ordered_arborescence}
-  An \term{ordered arborescence} is an \hyperref[def:arborescence]{arborescence} \( T = (G, A) \) with a \hyperref[def:partially_ordered_set]{partial order} \( \leq \) such that every set of \hyperref[def:arborescence/ancestry]{siblings} is a \hyperref[def:partially_ordered_set_chain_and_antichain]{chain}.
+\begin{definition}\label{def:length_increasing_grammar}\mcite[15]{Salomaa1987}
+  We say that the grammar \( G = (V, \Sigma, \to, S) \) is \term{length-increasing} if \( \len(v) \leq \len(w) \) for every rule \( v \to w \) and \term{essentially length-increasing} if it is \hyperref[def:epsilon_free_grammar]{essentially \( \varepsilon \)-free} and if \( \len(v) \leq \len(w) \) for any non-\( \varepsilon \)-rule.
 \end{definition}
 
-\begin{definition}\label{def:concrete_syntax_tree}\mimprovised
-  Fix a \hyperref[def:chomsky_hierarchy/context_free]{context-free} \hyperref[def:formal_grammar]{formal grammar} \( G = (V, S, \Sigma, \to) \).
+\begin{lemma}\label{thm:length_increasing_grammar}
+  Fix an \hyperref[def:length_increasing_grammar]{essentially length-increasing} grammar \( G = (V, \Sigma, \to, S) \). Let \( m \) be the cardinality of \( \Sigma \cup V \).
 
-  For every word \( w \) in \( \mscrL(G) \), we will build an \hyperref[def:ordered_arborescence]{ordered} \hyperref[def:arborescence/undirected]{rooted tree} whose \hyperref[def:arborescence/ancestry]{leaves} are the symbols of \( w \) and whose root is \( S \). We will call this a \term{concrete syntax tree} for \( w \).
+  If the word \( w \) over \( \Sigma \) of length \( n \) is derivable, there exists a derivation of length at most \( m^{n+1} \).
+\end{lemma}
+\begin{comments}
+  \item This is only a rough bound on the derivation length. With minimal changes to the proof, we can reduce the bound to
+  \begin{equation*}
+    \sum_{k=0}^n m^k
+    \reloset {\ref{thm:geometric_series_properties/finite_sum}} =
+    \frac {1 - m^{n+1}} {1 - m}
+  \end{equation*}
+  and perhaps further, but we are only interested in a \hi{finite} upper bound.
 
-  \begin{figure}[!ht]
-    \hfill
-    \includegraphics[page=1]{output/def__concrete_syntax_tree.pdf}
-    \hfill\hfill
-    \caption{A concrete syntax tree for the expression \( (6 \div (3 \times 2)) \) from \cref{fig:ex:natural_number_arithmetic_grammar/derivation/unambiguous}}
-    \label{fig:def:concrete_syntax_tree}
-  \end{figure}
-
-  Fix a derivation
-  \begin{equation}\label{eq:def:concrete_syntax_tree/derivation}
-    S \Rightarrow w_1 \Rightarrow \cdots \Rightarrow w_{n-1} \Rightarrow w_n.
-  \end{equation}
-
-  In practice, we want this to be unique and hence we can restrict ourselves to leftmost derivations in \hyperref[def:grammar_derivation/unambiguous]{unambiguous} grammars.
-
-  We use \hyperref[rem:natural_number_recursion]{natural number recursion} on \( n \) to build the tree. Note that, for the purposes of recursion, we allow \( w_n \) to contain non-terminals.
-
-  \begin{itemize}
-    \item In the trivial case where \( n = 0 \), and there is no actual derivation, we build a single-vertex tree with root \( S \).
-
-    \item Suppose that we can build a tree for all derivations of length \( m - 1 \) and fix a derivation \eqref{eq:def:concrete_syntax_tree/derivation} of length \( n \).
-
-    First, build a tree \( T \) from the derivation
-    \begin{equation*}
-      S \Rightarrow w_1 \Rightarrow \cdots \Rightarrow w_{n-2} \Rightarrow w_{n-1}.
-    \end{equation*}
-
-    There must exist words \( p \), \( s \) and a rule \( A \to v \) such that
-    \begin{equation*}
-      w_{n-1} = pAs \Rightarrow pvs = w_n.
-    \end{equation*}
-
-    There already exists a leaf for \( A \) in \( T \). For every symbol in \( v \), add a new node as a child of this node.
-  \end{itemize}
-\end{definition}
-
-\begin{theorem}[Structural induction on unambiguous grammars]\label{thm:structural_induction_on_unambiguous_grammars}\mimprovised
-  Unlike for the other induction principles in \fullref{rem:induction}, we will not formulate this one via logical formulas. This will complicate us unnecessarily. We will instead describe how the principle is used. It should be noted that, in applications of this principle, we prefer using \hyperref[rem:abstract_syntax_tree]{abstract syntax trees} to \hyperref[def:concrete_syntax_tree]{concrete syntax trees}, but formulating the principle itself is easier via concrete syntax trees.
-
-  Let \( G = (V, S, \Sigma, \to) \) be an \hyperref[def:chomsky_hierarchy/context_free]{unambiguous} \hyperref[def:chomsky_hierarchy/context_free]{context-free} \hyperref[def:formal_grammar]{formal grammar}.
-
-  Suppose that we want to prove a statement for every word in \( \mscrL(G) \). It is sufficient to perform the following for every word \( w \):
-  \begin{displayquote}
-    Let \( A_1, \ldots, A_n \) be all non-terminals of \( w \) and let \( u_0, \ldots, u_n \) be subwords of \( w \) such that
-    \begin{equation*}
-      w = u_0 A_1 u_1 A_2 \ldots A_n u_n.
-    \end{equation*}
-
-    Let \( v_1, \ldots, v_n \) be arbitrary words in \( \mscrL(G) \) derivable from \( A_1, \ldots, A_n \), respectively, so that we have the concrete syntax tree
-    \begin{equation*}
-      \begin{aligned}
-        \includegraphics[page=1]{output/thm__structural_induction_on_unambiguous_grammars.pdf}
-      \end{aligned}
-    \end{equation*}
-
-    Then we must prove the statement for the word
-    \begin{equation*}
-      u_0 v_1 u_1 \ldots v_n u_n.
-    \end{equation*}
-  \end{displayquote}
-
-  Compare this principle to the more general \fullref{thm:well_founded_induction}.
-\end{theorem}
+  \item Chomsky introduced length-increasing grammars in \cite[360]{MathPsychology1963Vol2} and on the same page hinted at this property of theirs, which we will use in \fullref{alg:length_increasing_grammar}.
+\end{comments}
 \begin{proof}
-  Clearly every word in \( \mscrL(G) \) can be obtained in this way. The principle itself follows from \fullref{thm:well_founded_induction} even without non-ambiguity.
+  We will use \hyperref[rem:induction/peano_arithmetic]{natural number induction} on \( n \) to show a slightly more general statement, in which the word \( w \) is over \( \Sigma \cup V \) and not only over \( \Sigma \).
 
-  Non-ambiguity ensures that every word has a unique concrete syntax tree, and prevents us from proving the statement for one tree of a word and disproving it for another.
+  \begin{itemize}
+    \item The case where \( w \) is empty is handled separately. Either \( S \to \varepsilon \) is a rule in \( G \) or not, hence if \( \varepsilon \) is derivable, it has exactly one possible derivation, whose length is \( 1 = m^0 \).
+
+    \item Suppose that \( w \) consists of a single letter \( a \).
+
+    There are \( m \) terminals and non-terminals in \( G \). Hence, there are at most \( m - 1 \) non-terminals, and thus at most \( m - 1 \) steps from one single-symbol word to another. This follows from \fullref{def:pigeonhole_principle} --- any longer derivation would result in a \hyperref[def:quiver_path/cycle]{cycle} in the \hyperref[def:formal_grammar/graph]{derivation graph}. Thus, if we can \( w \), we can derive it in at most \( m - 1 \) steps by potentially eliminating cycles.
+
+    In the simplest case, there is a rule \( S \to a \), while in the most complicated case there is a chain
+    \begin{equation*}
+      S \to A_1 \to \cdots \to A_{m-2} \to a.
+    \end{equation*}
+
+    \item Let \( \len(w) = n > 1 \) and suppose that the lemma holds for words of smaller length. Consider the derivation
+    \begin{equation*}
+      S \Rightarrow w_1 \Rightarrow \cdots \Rightarrow w_r = w.
+    \end{equation*}
+
+    Let \( s \) be the last index for which \( w_s \) has length strictly less than \( n \). Let \( n_0 \) be the length of the word \( w_s \).
+
+    By the inductive hypothesis, the derivation of \( w_s \) from \( S \) has length \( s \leq m^{n_0 + 1} \).
+
+    There are exactly \( m^n \) words of length \( n \) over \( \Sigma \cup V \). Hence, again by \fullref{def:pigeonhole_principle}, there are at most \( m^n \) steps between \( w_s \) and \( w_k \). Therefore,
+    \begin{equation*}
+      r
+      \leq
+      s + m^n
+      =
+      m^{n_0 + 1} + m^n
+      \leq
+      m^{n+1},
+    \end{equation*}
+    where we have used that \( \card(m) \geq 2 \).
+  \end{itemize}
 \end{proof}
 
-\begin{remark}\label{rem:abstract_syntax_tree}
-  Unlike \hyperref[def:concrete_syntax_tree]{concrete syntax trees}, which focus on how words are built from symbols, \term{abstract syntax trees} focus on how words are built with respect to semantics. For example, natural number arithmetic is not concerned with the symbols themselves but only in how operations are applied to numbers. This is better expressed via the abstract syntax tree in \cref{fig:rem:abstract_syntax_tree} rather than the concrete syntax tree in \cref{fig:def:concrete_syntax_tree}.
-
-  A formal definition for an abstract syntax tree would be clunky. It is an \hyperref[def:ordered_arborescence]{ordered} \hyperref[def:arborescence/undirected]{rooted tree} of words that unambiguously encodes a concrete syntax tree. The structure of an abstract syntax tree is determined entirely by the concrete application, and we will not attempt to give a more precise definition. Dirk van Dalen in \cite{VanDalen2004} uses the term \term{parsing tree} for a similar notion.
-
-  Applications of \fullref{thm:structural_induction_on_unambiguous_grammars} use abstract syntax trees as can be seen in \fullref{subsec:propositional_logic} and \fullref{subsec:first_order_logic}, and a broader discussion on the properties of certain trees can be found in \fullref{rem:binary_operation_syntax_trees}.
-
-  \begin{figure}[!ht]
-    \hfill
-    \includegraphics[page=1]{output/rem__abstract_syntax_tree.pdf}
-    \hfill\hfill
-    \caption{An abstract syntax tree for the expression \( (6 \div (3 \times 2)) \) from \cref{fig:ex:natural_number_arithmetic_grammar/derivation/unambiguous}}
-    \label{fig:rem:abstract_syntax_tree}
-  \end{figure}
-\end{remark}
-
-\begin{remark}\label{rem:binary_operation_syntax_trees}
-  \hyperref[def:magma]{Binary operations} are easily extended to higher arities. Given a binary operation \( +: M \times M \to M \), we can extend it via \hyperref[rem:natural_number_recursion]{natural number recursion} to arbitrary \( n \)-tuples \( x_1, \ldots, x_n \) as
-  \begin{equation}\label{eq:rem:binary_operation_syntax_trees/expression}
-    (x_1 + (x_2 + \cdots + (x_{n-1} + x_n) \cdots )).
-  \end{equation}
-
-  This expression corresponds to the \hyperref[rem:abstract_syntax_tree]{abstract syntax tree}
-  \begin{equation}\label{eq:rem:binary_operation_syntax_trees/tree/basic}
+\begin{example}\label{ex:thm:length_increasing_grammar}
+  Consider the grammar
+  \begin{equation}\label{eq:ex:thm:length_increasing_grammar/bad}
     \begin{aligned}
-      \includegraphics[page=1]{output/rem__binary_operation_syntax_trees.pdf}
+      S &\to \varepsilon \\
+      S &\to a, \\
+      S &\to SS.
     \end{aligned}
   \end{equation}
 
-  Several things can be noted here.
+  It is not \hyperref[def:epsilon_free_grammar]{essentially epsilon-free}, hence also not \hyperref[def:length_increasing_grammar]{essentially length-increasing}, and thus \fullref{thm:length_increasing_grammar} does not apply. The lemma would imply that the acyclic derivation length should be bounded by \( 2 \), while there exist countably many acyclic derivations of the word \( a \):
+  \begin{equation*}
+    \begin{aligned}
+      S &\Rightarrow a \\
+      S &\Rightarrow SS \Rightarrow Sa \Rightarrow a \\
+      S &\Rightarrow SS \Rightarrow SSS \Rightarrow SSa \Rightarrow Sa \Rightarrow a \\
+        &\vdots
+    \end{aligned}
+  \end{equation*}
+
+  \Fullref{alg:epsilon_rule_removal} suggests instead the essentially length-increasing grammar:
+  \begin{equation*}
+    \begin{aligned}
+      S &\to \varepsilon \\\
+      S &\to A, \\
+      A &\to a, \\
+      A &\to AA.
+    \end{aligned}
+  \end{equation*}
+\end{example}
+
+\begin{algorithm}[Word membership in context-sensitive languages]\label{alg:length_increasing_grammar}
+  Let \( G = (V, \Sigma, \to, S) \) be an \hyperref[def:length_increasing_grammar]{essentially length-increasing} grammar for \( \mscrL \), and let \( w \) be a word of length \( n \) over \( \Sigma \).
+
+  We will construct a derivation of \( w \), if one exists. The algorithm itself is na\"ive --- generate all derivations from \( S \) of length at most \( \card(V \cup \Sigma)^{n+1} \), and check if any of them ends with \( w \).
+\end{algorithm}
+\begin{comments}
+  \item This algorithm can be used to test whether a word belongs to a \hyperref[def:chomsky_hierarchy/context_sensitive]{context-sensitive language}, hence the name.
+
+  \item Compare this to the much more complicated \fullref{alg:recursive_descent_parsing} that works in more restricted cases.
+\end{comments}
+\begin{proof}
+  As a consequence of \fullref{thm:length_increasing_grammar}, \( w \) belongs to \( \mscrL \) if and only if some derivation from \( S \) of length at most \( \card(V \cup \Sigma)^{n+1} \) ends with \( w \).
+\end{proof}
+
+\begin{definition}\label{def:chomsky_hierarchy}\mcite[15]{Salomaa1987}
+  We can classify \hyperref[def:formal_grammar]{formal grammars} and \hyperref[def:language]{languages} to form the \term{Chomsky hierarchy}. Chomsky himself in \cite[def. 6]{Chomsky1959} defined a hierarchy of grammars consisting of four types --- \enquote{type 0} through \enquote{type 3}. He also defined a parallel hierarchy of languages, in which \( \mscrL \) is a \enquote{type \( i \) language} if there exists a type \( i \) grammar \hyperref[def:grammar_derivation/grammar_language]{generating it}.
+
+  Unfortunately, these definitions later evolved to be inconsistent across authors, and even among different publications by Chomsky. We thus entirely avoid numeric grammar and language types, and use more descriptive names instead. The grammars no longer form a hierarchy, but the corresponding languages do.
+
   \begin{thmenum}
-    \thmitem{rem:binary_operation_syntax_trees/associativity} When exchanging the order of the parentheses in the expression \eqref{eq:rem:binary_operation_syntax_trees/expression}, only the root is changed in the syntax tree \eqref{eq:rem:binary_operation_syntax_trees/tree/basic}. Therefore, for an \hyperref[def:magma/associative]{associative} binary operation, abstract syntax trees can instead be represented as finite ordered rooted trees like
-    \begin{equation}\label{eq:rem:binary_operation_syntax_trees/tree/associative}
-      \begin{aligned}
-        \includegraphics[page=2]{output/rem__binary_operation_syntax_trees.pdf}
-      \end{aligned}
-    \end{equation}
+    \thmitem{def:chomsky_hierarchy/unrestricted} When no additional restrictions are imposed on the rules of the grammar, we say that it is \term{unrestricted}. We call the corresponding languages \term{recursively enumerable}.
 
-    Of course, \( n \)-ary trees can still be used for non-associative binary operations, as long as we have selected a strategy for evaluation. If we evaluate \eqref{eq:rem:binary_operation_syntax_trees/tree/associative} as \eqref{eq:rem:binary_operation_syntax_trees/expression}, we say that the operation is \term{right associative}. Dually, if we evaluate \eqref{eq:rem:binary_operation_syntax_trees/tree/associative} as
+    \thmitem{def:chomsky_hierarchy/context_sensitive} We say that the grammar is \term{context-sensitive} if it is \hyperref[def:epsilon_free_grammar]{essentially \( \varepsilon \)-free} and if every non-\( \varepsilon \)-rule has the form
     \begin{equation*}
-      (( \cdots (x_1 + x_2) + \cdots + x_{n-1}) + x_n),
+      p A s \to p w s
     \end{equation*}
-    we say that the operation is \term{left associative}.
+    for a non-terminal \( A \), arbitrary words \( p \) and \( s \) and a nonempty word \( w \). Of course, there may be multiple such representations for a single rule.
 
-    Note that, unlike associativity, left and right associativity are not properties of the operation, but rather conventions on how to evaluate expressions without explicit parentheses. For example, in a \hyperref[def:heyting_algebra]{Heyting algebra}, the \hyperref[eq:def:heyting_algebra/conditional]{conditional} \( \rightarrow \) is not associative, but it is often taken to be right associative so that
+    We call the corresponding languages \term{context-sensitive}. The kerfuffle surrounding the term \enquote{context-sensitive} is discussed in \fullref{rem:length_increasing_grammar}. \Fullref{thm:context_sensitive_languages} better characterizes these languages.
+
+    \thmitem{def:chomsky_hierarchy/context_free} We say that the grammar is \term{context-free} if every rule has the form
     \begin{equation*}
-      x \rightarrow y \rightarrow z
+      A \to w,
     \end{equation*}
-    is evaluated as
-    \begin{equation*}
-      (x \rightarrow (y \rightarrow z)).
-    \end{equation*}
+    where \( A \) is a non-terminal and \( w \) is an arbitrary word.
 
-    \thmitem{rem:binary_operation_syntax_trees/commutativity} If, additionally, the operation is \hyperref[def:magma/commutative]{commutative}, we can regard the syntax tree as unordered.
+    We call the corresponding languages \term{context-free}. While it is possible for a context-free \hi{grammar} to not be \hyperref[def:epsilon_free_grammar]{essentially \( \varepsilon \)-free} and hence not context-sensitive, a context-free \hi{language} is context-sensitive. This is shown in \fullref{thm:context_free_languages_are_conext_sensitive} and discussed in \fullref{rem:chomsky_hierarchy_failure}.
 
-    Note that extending operations can be confusing for commutative but non-associative operations. Commutativity allows us to swap summands inside parentheses, and associativity is needed to \enquote{remove} the parentheses.
+    \thmitem{def:chomsky_hierarchy/regular} Finally, we call the grammar \term{left-linear} if every rule has one of the forms
+    \begin{itemize}
+      \item \( A \to w \),
+      \item \( A \to B w \),
+    \end{itemize}
+    where \( w \) is an arbitrary word consisting entirely of terminals. Similarly, it is \term{right-linear} if every rule has one of the forms
+    \begin{itemize}
+      \item \( A \to w \),
+      \item \( A \to w B \).
+    \end{itemize}
 
-    Consider the real number midpoint operation
-    \begin{equation*}
-      x \oplus y \coloneqq \frac {x + y} 2
-    \end{equation*}
-    from \fullref{ex:def:magma/midpoint}. It is commutative and not associative, and in the expression \( x \oplus y \oplus z \), we can swap \( x \) with \( y \) but not with \( z \). This can be very unintuitive. We aim to always write parentheses for non-associative operations.
-
-    \thmitem{rem:binary_operation_syntax_trees/infinite} Suppose that \( + \) is associative and commutative. Suppose also that we are given an \hyperref[def:cartesian_product/indexed_family]{indexed family} \( \seq{ x_k }_{k \in \mscrK} \) of elements of \( M \). We can obviously construct a tree with root \( + \) and children \( \seq{ x_k }_{k \in \mscrK} \).
-
-    This is not strictly a syntax tree. Syntax trees are necessarily finite, and the family may even be uncountable. Nevertheless, we can sometimes evaluate this tree to obtain a member of the monoid.
-    \begin{thmenum}
-      \thmitem{rem:binary_operation_syntax_trees/infinite/lattice} The operations of a \hyperref[def:semilattice/lattice]{lattice} arise by specializing \hyperref[def:partially_ordered_set_extremal_points/supremum_and_infimum]{suprema and infima} to binary sets. Conversely, as discussed in \fullref{thm:binary_lattice_operations/new_lattice}, the binary lattice operations induce a \hyperref[def:partially_ordered_set]{partial order}, and we can define suprema and infima. If the lattice happens to be \hyperref[def:semilattice/complete]{complete}, instead of the binary operations, we can use
-      \begin{equation*}
-        \bigvee_{k \in \mscrK} x_k = \sup\set{ x_k \given k \in \mscrK }.
-      \end{equation*}
-
-      \thmitem{rem:binary_operation_syntax_trees/infinite/convergence} If \( M \) is a \hyperref[rem:topological_first_order_structures]{topological monoid} and if \( \mscrK = \set{ 1, 2, 3, \ldots } \), the family is a \hyperref[def:sequence]{sequence}, and we can define the sequence of partial sums
-      \begin{equation*}
-        \seq*{ \sum_{k=1}^n x_k }_{n=1}^\infty
-      \end{equation*}
-
-      This gives rise to \hyperref[def:convergent_series]{series} discussed in \fullref{subsec:series} and \fullref{subsec:real_series}. A limit may not exist for the net, unfortunately, and if it does, it may not be unique (if the topology is not \hyperref[def:separation_axioms/T2]{Hausdorff}).
-
-      \thmitem{rem:binary_operation_syntax_trees/infinite/direct_sum} Suppose that \( M \) has an \hyperref[def:monoid]{identity element} \( 0_M \). If only finitely many elements of the family are different from \( 0_M \), we regard the ordinary summation operation as well-defined on the whole family and write
-      \begin{equation*}
-        s \coloneqq \sum_{k \in \mscrK} x_k.
-      \end{equation*}
-
-      Technically, this involves selecting a \hyperref[def:well_ordered_set]{well-ordering} \( x_{1_n}, \ldots, x_{k_n} \) on the set
-      \begin{equation*}
-        \set{ x_k \given k \in \mscrK \T{and} x_k \neq 0 }
-      \end{equation*}
-      and assigning to \( s \) the result of the iterated binary operation
-      \begin{equation*}
-        (x_{1_n} + (x_{2_n} + \cdots + (x_{k_{n-1}} + x_{k_n}) \cdots)).
-      \end{equation*}
-
-      Commutativity ensures that the sum \( s \) does not depend on the order of summands (and hence on the well-order we have chosen). Adding any member of the family would not change the sum, which justifies this shorthand definition. Furthermore, since we only sum finitely many summands, we can construct a well-ordering using \hyperref[rem:natural_number_recursion]{natural number recursion} without relying on the \hyperref[def:zfc/choice]{axiom of choice}.
-
-      This is fundamental for the definition of \hyperref[def:monoid_direct_product]{direct sums}, which in turn are used to define \hyperref[rem:linear_combinations]{linear combinations} and \hyperref[def:polynomial_algebra]{polynomials}.
-    \end{thmenum}
+    We call the language \term{regular} if it can be generated by either a left-linear or a right-linear grammar. \Fullref{thm:regular_languages} better characterizes these languages.
   \end{thmenum}
+\end{definition}
+\begin{comments}
+  \item In \cite[142]{Chomsky1959}, Chomsky called context-free languages \enquote{type 2} and regular languages \enquote{type 3}, while in \cite[366]{MathPsychology1963Vol2} he called context-free languages \enquote{type 4} and gave no number for regular languages.
+\end{comments}
+
+\begin{proposition}\label{thm:non_recursively_enumerable_language}\mcite[thm. 5.7.4]{Savage1998}
+  There exists a formal language that cannot be generated by a grammar.
+\end{proposition}
+
+\begin{example}\label{ex:def:chomsky_hierarchy}
+  We give several examples of grammars in the \hyperref[def:chomsky_hierarchy]{Chomsky hierarchy}.
+
+  \begin{thmenum}
+    \thmitem{ex:def:chomsky_hierarchy/non_enumerable} While every grammar is an unrestricted grammar, \fullref{thm:non_recursively_enumerable_language} shows that not every language is recursively enumerable.
+
+    \thmitem{ex:def:chomsky_hierarchy/an} The \hyperref[def:chomsky_hierarchy/regular]{right-linear grammar}
+    \begin{equation*}
+      \begin{aligned}
+        S &\to aS \mid \varepsilon
+      \end{aligned}
+    \end{equation*}
+    describes the language \( \mscrL = \set{ a^n \given n \geq 0 } \) discussed in \fullref{ex:def:formal_language/an}.
+
+    It can also be described via the left-linear grammar
+    \begin{equation*}
+      \begin{aligned}
+        S &\to Sa \mid \varepsilon.
+      \end{aligned}
+    \end{equation*}
+
+    Neither of these grammars is \hyperref[def:epsilon_free_grammar]{essentially \( \varepsilon \)-free}. \Fullref{alg:epsilon_rule_removal} suggests the essentially length-increasing grammar
+    \begin{equation*}
+      \begin{aligned}
+        S &\to A \mid \varepsilon, \\
+        A &\to aA \mid a.
+      \end{aligned}
+    \end{equation*}
+
+    \thmitem{ex:def:chomsky_hierarchy/anbn} Consider the \hyperref[def:chomsky_hierarchy/context_free]{context-free grammar}
+    \begin{equation*}
+      \begin{aligned}
+        S &\to A \mid \varepsilon, \\
+        A &\to aAb \mid ab
+      \end{aligned}
+    \end{equation*}
+    describing \( \mscrL = \set{ a^n b^n \given n \geq 0 } \) from \fullref{ex:def:formal_language/anbn}.
+
+    We have shown in \fullref{ex:def:finite_automaton/anbn} that this language cannot be recognized by a finite automaton. \Fullref{thm:regular_languages} suggests that it is not \hyperref[def:chomsky_hierarchy/regular]{regular}.
+
+    Hence, \( \mscrL \) is a context-free language that is not regular.
+  \end{thmenum}
+\end{example}
+
+\begin{algorithm}[Length-increasing to context-sensitive grammar]\label{alg:length_increasing_to_context_sensitive}\mcite[thm. 9.2]{Salomaa1987}
+  Fix an \hyperref[def:length_increasing_grammar]{essentially length-increasing} grammar \( G = (V, \Sigma, \to, S) \). We will build an \hyperref[def:formal_grammar/equivalent]{equivalent} \hyperref[def:chomsky_hierarchy/context_sensitive]{context-sensitive} grammar \( G' = (V', \Sigma, \to', S) \) with the same terminals.
+
+  \begin{thmenum}
+    \thmitem{alg:length_increasing_to_context_sensitive/intermediate} Build an intermediate grammar \( G_I = (V_I, \Sigma, \to_I, S) \) as follows:
+    \begin{thmenum}
+      \thmitem{alg:length_increasing_to_context_sensitive/intermediate/new} Let \( \Sigma_I \) is a set of new non-terminals, one for each terminal in \( \Sigma \), and let \( \varphi: \Sigma \to \Sigma_I \) be an explicit bijective mapping between the two.
+      \thmitem{alg:length_increasing_to_context_sensitive/intermediate/non_terminals} Let \( V_I \coloneqq V \cup \Sigma_I \).
+      \thmitem{alg:length_increasing_to_context_sensitive/intermediate/new_rules} For each terminal \( a \in \Sigma \), add to \( G_I \) a new rule \( \varphi(a) \to a \).
+      \thmitem{alg:length_increasing_to_context_sensitive/intermediate/substitution} For each rule \( v \to w \), we add a corresponding rule to \( G_I \) by replacing all terminals in \( v \) and \( w \) with the corresponding new non-terminals.
+    \end{thmenum}
+
+    \thmitem{alg:length_increasing_to_context_sensitive/init} Let \( V_0 \coloneqq V_I \) and let \( \to'_0 \) be the set of context-sensitive rules of \( G_I \), excluding \( S \to \varepsilon \). Enumerate all non-context-sensitive rules in \( G_I \) as \( v_k \to w_k \) for \( k = 1, \ldots, m \).
+
+    \thmitem{alg:length_increasing_to_context_sensitive/rules} For each \( k = 1, \ldots, m \), let \( v_k = A_1 \cdots A_r \) and \( w_k = B_1 \cdots B_s \). Clearly \( r \leq s \). Let \( C_1, \ldots, C_r \) be new non-terminals.
+
+    \begin{thmenum}
+      \thmitem{alg:length_increasing_to_context_sensitive/rules/non_terminals} Define \( V_k \coloneqq V_{k-1} \cup \set{ C_1, \ldots, C_r } \).
+      \thmitem{alg:length_increasing_to_context_sensitive/rules/new} Define \( \to'_k \) as \( \to'_{k-1} \) with the following additional rules:
+      \begin{align*}
+        A_1 A_2 \cdots A_r                            &\to'_k C_1 A_2 \cdots A_r, \\
+        C_1 A_2 \cdots A_r                            &\to'_k C_1 C_2 \cdots A_r, \\
+                                                      &\vdots, \\
+        C_1 C_2 \cdots C_{r-1} A_r                    &\to'_k C_1 C_2 \cdots C_{r-1} C_r B_{r+1} \cdots B_s, \\
+        C_1 C_2 \cdots C_{r-1} C_r B_{r+1} \cdots B_s &\to'_k B_1 C_2 \cdots C_{r-1} C_r B_{r+1} \cdots B_s, \\
+                                                      &\vdots, \\
+        B_1 B_2 \cdots B_{r-1} B_r B_{r+1} \cdots B_s &\to'_k B_1 B_2 \cdots B_{r-1} B_r B_{r+1} \cdots B_s
+      \end{align*}
+    \end{thmenum}
+
+    \thmitem{alg:length_increasing_to_context_sensitive/finish} Define \( V' \coloneqq V'_m \) and \( {}\to'{} \coloneqq {}\to'_m{} \).
+
+    Then \( G' = (V', \Sigma, \to', S) \) is the desired grammar.
+  \end{thmenum}
+\end{algorithm}
+
+\begin{proposition}\label{thm:context_sensitive_languages}
+  The class of languages generated by \hyperref[def:chomsky_hierarchy/context_sensitive]{context-sensitive grammars} and by \hyperref[def:length_increasing_grammar]{essentially length-increasing} grammars coincide.
+\end{proposition}
+\begin{comments}
+  \item As discussed in \fullref{rem:length_increasing_grammar} and \fullref{def:chomsky_hierarchy/context_sensitive}, we call this class of languages \enquote{context-sensitive languages}.
+\end{comments}
+\begin{proof}
+  Every context-sensitive grammar is, by definition, essentially length-increasing. \Fullref{alg:length_increasing_to_context_sensitive} shows that every essentially length-increasing grammar has an equivalent context-sensitive grammar.
+\end{proof}
+
+\begin{remark}\label{rem:chomsky_hierarchy_failure}
+  Every \hyperref[def:chomsky_hierarchy/regular]{left-linear} (resp. right-linear) grammar is \hyperref[def:chomsky_hierarchy/context_free]{context-free}, but not every context-free grammar is \hyperref[def:epsilon_free_grammar]{essentially \( \varepsilon \)-free} and hence \hyperref[def:chomsky_hierarchy/context_sensitive]{context-sensitive}. Chomsky disallowed \( \varepsilon \)-rules in \cite[def. 6]{Chomsky1959}, and this led to a tidy hierarchy because it made context-free grammars necessarily context-sensitive.
+
+  Fortunately, context-free \hi{languages} are context-sensitive as a consequence of \fullref{thm:context_free_languages_are_conext_sensitive}.
+
+  Unfortunately, for an arbitrary context-free grammar, \fullref{thm:length_increasing_grammar} does not hold, and neither does \fullref{alg:length_increasing_grammar}. There is a well-developed theory (and practice) for parsing context-free languages (which are mostly restricted to certain classes of context-free grammars; see e.g. \cite[ch. 6]{Salomaa1987}). We only present \fullref{alg:recursive_descent_parsing}.
+
+  For theoretical purposes, we can use \fullref{alg:epsilon_rule_removal} to adapt context-free languages to \fullref{alg:length_increasing_grammar}.
 \end{remark}
+
+\begin{algorithm}[Epsilon rule removal]\label{alg:epsilon_rule_removal}\mcite[thm. 6.2]{Salomaa1987}
+  Fix a \hyperref[def:chomsky_hierarchy/context_free]{context-free} grammar \( G = (V, \Sigma, \to, S) \). We will build an \hyperref[def:formal_grammar/equivalent]{equivalent} context-free grammar \( G' = (V', \Sigma, \to', S') \) with the same terminals, such that \( G' \) is \hyperref[def:epsilon_free_grammar]{essentially \( \varepsilon \)-free}, and thus context-sensitive.
+
+  \begin{thmenum}
+    \thmitem{alg:epsilon_rule_removal/init} Define recursively the sequence of sets
+    \begin{equation*}
+      U_k \coloneqq \begin{cases}
+        \set{ A \in V \given A \to \varepsilon },                              &k = 0, \\
+        U_{k-1} \cup \set{ A \in V \given \qexists{w \in U_{k-1}^*} A \to w }, &k > 0.
+      \end{cases}
+    \end{equation*}
+
+    Since \( V \) has only finitely many non-terminals, the sequence stabilizes, that is there exists some index \( m \) such that \( U_m = U_{m+k} \) for any \( k > 0 \).
+
+    We have constructed \( U_m \) so that \( A \reloset {*} \Rightarrow \varepsilon \) if and only if \( A \in U_m \).
+
+    \thmitem{alg:epsilon_rule_removal/rules} Now our goal is to define the rules of \( G' \) based on the rules of \( G \), but with zero or more \enquote{nullable} non-terminals removed from the right side of any rule.
+
+    Let \( S' \) be an entirely new start symbol and let \( V' \coloneqq V \cup \set{ S' } \). Define the production relation \( A \to' w \) to hold if \( w \) is nonempty and there exist words \( w_0, \ldots, w_n \) over \( V \cup \Sigma \) and non-terminals \( B_1, \ldots, B_n \) from \( U_m \) such that
+    \begin{equation*}
+      A \to w_0 B_1 w_1 B_2 w_2 \cdots B_n w_n.
+    \end{equation*}
+    and
+    \begin{equation*}
+      w = w_0 w_1 w_2 \cdots w_n.
+    \end{equation*}
+
+    \thmitem{alg:epsilon_rule_removal/finish} Define \( S' \to S \). If \( \varepsilon \in \mscrL(G) \), also add the rule \( S' \to \varepsilon \).
+
+    Then \( G' = (V', \Sigma, \to', S') \) is the desired grammar.
+  \end{thmenum}
+\end{algorithm}
+
+\begin{proposition}\label{thm:context_free_languages_are_conext_sensitive}
+  \hyperref[def:chomsky_hierarchy/context_free]{Context-free} \hi{languages} are \hyperref[def:chomsky_hierarchy/context_sensitive]{context-sensitive}.
+\end{proposition}
+\begin{proof}
+  \Fullref{alg:epsilon_rule_removal} shows that every context-free grammar can be converted to another context-free grammar that is also context-sensitive.
+\end{proof}
+
+\begin{algorithm}[Renaming rule collapse]\label{alg:rewriting_rule_collapse}
+  Fix a \hyperref[def:chomsky_hierarchy/context_free]{context-free} grammar \( G = (V, \Sigma, \to, S) \). We will build an \hyperref[def:formal_grammar/equivalent]{equivalent} context-free grammar \( G' = (V, \Sigma, \to', S) \) in which there are no \enquote{renaming} rules of the form \( A \to B \) (except possibly when \( A = S \)).
+
+  \begin{thmenum}
+    \thmitem{alg:rewriting_rule_collapse/init} Recursively define
+    \begin{equation*}
+      U_k \coloneqq \begin{cases}
+        \set{ (A, A) \given A \in V },                                                          &k = 0, \\
+        U_{k-1} \cup \set{ (A, C) \given (A, B) \in U_{k-1} \T{and} B \to C \T{and} C \neq A }, &k > 0.
+      \end{cases}
+    \end{equation*}
+
+    Since \( V \) has only finitely many non-terminals, the sequence stabilizes at some index \( m \).
+
+    \thmitem{alg:rewriting_rule_collapse/rules} Let \( S \to' w \) if \( S \to w \) and, for \( A \neq S \), \( A \to' w \) if \( B \to w \), where
+    \begin{itemize}
+      \item \( (A, B) \in U_m \),
+      \item the word \( w \) is \hi{not} a single non-terminal.
+    \end{itemize}
+  \end{thmenum}
+\end{algorithm}
+
+\begin{definition}\label{def:reverse_grammar}\mcite[17]{Salomaa1987}
+  We define the \term{reverse grammar} of the \hyperref[def:chomsky_hierarchy/context_free]{context-free} \( G = (V, \Sigma, \to, S) \) as
+  \begin{equation*}
+    \op{rev}(G) \coloneqq (V, \Sigma, \to_{\op{rev}}, S),
+  \end{equation*}
+  where
+  \begin{equation*}
+    A \to_{\op{rev}} \op{rev}(w) \T{if} A \to w.
+  \end{equation*}
+\end{definition}
+\begin{comments}
+  \item For example, the rule \( A \to Ba_1 \cdots a_n \) becomes \( A \to_{\op{rev}} a_n \cdots a_1 B \).
+\end{comments}
+
+\begin{proposition}\label{thm:reverse_linear_grammar}
+  The \hyperref[def:reverse_grammar]{reverse} of a \hyperref[def:chomsky_hierarchy/regular]{left-linear grammar} is \hyperref[def:chomsky_hierarchy/regular]{right-linear} and vice versa.
+\end{proposition}
+\begin{proof}
+  Trivial.
+\end{proof}
+
+\begin{proposition}\label{thm:reverse_grammar_language}
+  For a given \hyperref[def:chomsky_hierarchy/context_free]{context-free} grammar \( G = (V, \Sigma, \to, S) \), we have
+  \begin{equation*}
+    \mscrL(\op{rev}(G)) = \op{rev}(\mscrL(G)).
+  \end{equation*}
+\end{proposition}
+\begin{proof}
+  Trivial.
+\end{proof}
+
+\begin{algorithm}[Finite automaton from regular grammar]\label{alg:finite_automaton_from_regular_grammar}
+  Let \( G = (V, \Sigma, \to, S) \) be a \hyperref[def:chomsky_hierarchy/regular]{regular grammar}. We will construct a \hyperref[def:finite_automaton]{finite automaton} that \hyperref[def:finite_automaton/language]{accepts} \( \mscrL(G) \).
+
+  \begin{thmenum}
+    \thmitem{alg:finite_automaton_from_regular_grammar/init} Let \( G_1 = (V, \Sigma, \to_1, S) \) be \( G_1 \) if it is right-linear and \( \op{rev}{G} \) if it is left-linear. Then \( G_1 \) is necessarily right-linear.
+
+    \thmitem{alg:finite_automaton_from_regular_grammar/epsilon} Let \( G_2 = (V_2, \Sigma, \to_2, S_2) \) be the grammar obtained from \( G_1 \) by removing \( \varepsilon \)-rules via \Fullref{alg:epsilon_rule_removal}.
+
+    \thmitem{alg:finite_automaton_from_regular_grammar/collapse} Let \( G_3 = (V_2, \Sigma, \to_3, S_2) \) be the grammar obtained from \( G_2 \) by collapsing renaming rules via \fullref{alg:rewriting_rule_collapse}.
+
+    \thmitem{alg:finite_automaton_from_regular_grammar/intermediate} Build another intermediate grammar \( G_4 = (V_4, \Sigma, \to_4, S_2) \) by replacing
+    \begin{itemize}
+      \item each rule \( A \to_3 w \), \( w = a_1 \cdots a_n \), with a sequence of rules
+      \begin{align*}
+        A       &\to_4 a_1 A_1, \\
+        A_1     &\to_4 a_2 A_2, \\
+                &\vdots \\
+        A_{n-1} &\to_4 a_n,
+      \end{align*}
+      where \( A_1, \ldots, A_{n-1} \) are new non-terminals.
+
+      \item each rule \( A \to_3 wB \), \( \len(w) > 0 \), with a similar sequence, but the last rule being \( A_{n-1} \to_4 a_n B \).
+    \end{itemize}
+
+    Thus, every rule in \( G_4 \) has one of the forms \( A \to_4 a \) or \( A \to_4 a B \) or \( A \to_4 B \).
+
+    \thmitem{alg:finite_automaton_from_regular_grammar/automaton}\mcite[thm. 4.10.1]{Savage1998} Let \( F \) be some new non-terminal symbol. Then the following is a finite automaton that accepts \( \mscrL(G_4) \), and hence also \( G_2 \) and \( G_1 \):
+    \begin{itemize}
+      \item \( \Sigma \) is the alphabet.
+      \item \( V_4 \cup \set{ F } \) is the set of states.
+      \item \( S_2 \) the only starting state.
+      \item \( F \) is a final state. \( S_2 \) is also a final state if \( \varepsilon \in \mscrL(G) \).
+      \item Add the following transitions:
+      \begin{itemize}
+        \item \( \delta(A, a) \coloneqq F \) if \( A \to_4 a \).
+        \item \( \delta(A, a) \coloneqq B \) if \( A \to_4 aB \).
+      \end{itemize}
+    \end{itemize}
+
+    \thmitem{alg:finite_automaton_from_regular_grammar/reverse} If \( G \) is right-linear, then \( F \) is the desired automaton because
+    \begin{equation*}
+      \mscrL(F) = \mscrL(G) = \mscrL(G_4).
+    \end{equation*}
+
+    Otherwise, we take the \hyperref[def:reverse_finite_automaton]{reverse automaton} \( \op{rev}(F) \) because
+    \begin{equation*}
+      \mscrL(\op{rev}(F))
+      \reloset {\ref{thm:reverse_finite_automaton_language}} =
+      \op{rev}(\mscrL(F))
+      =
+      \op{rev}(\mscrL(G_4))
+      =
+      \op{rev}(\mscrL(\op{rev}(G)))
+      \reloset {\ref{thm:reverse_grammar_language}} =
+      \op{rev}(\op{rev}(\mscrL(G)))
+      \reloset {\ref{thm:reverse_language_involution}} =
+      \mscrL(G).
+    \end{equation*}
+  \end{thmenum}
+\end{algorithm}
+
+\begin{algorithm}[Right-linear grammar from finite automaton]\label{alg:right_linear_grammar_from_finite_automaton}\mcite[thm. 4.10.1]{Savage1998}
+  Let \( F = (\Sigma, Q, \delta, I, T) \) be a \hyperref[def:finite_automaton]{finite automaton}. We will build a \hyperref[def:chomsky_hierarchy/regular]{right-linear grammar} \( G = (V, \Sigma, \to, S) \) that \hyperref[def:grammar_derivation/grammar_language]{generates} \( \mscrL(F) \).
+
+  \begin{thmenum}
+    \thmitem{alg:right_linear_grammar_from_finite_automaton/determinize} Use \fullref{alg:determinization_of_finite_automata} to obtain a deterministic automaton \( \det(F) = (\Sigma, Q', \delta', \set{ I }, T') \) equivalent to \( F \).
+
+    \thmitem{alg:right_linear_grammar_from_finite_automaton/grammar} The following describes the desired grammar:
+    \begin{itemize}
+      \item \( \Sigma \) is the set of terminals.
+      \item \( Q' \) is the set of non-terminals.
+      \item \( I \) is the starting non-terminal.
+      \item The following are rules:
+      \begin{itemize}
+        \item \( A \to aB \) if \( \delta'(A, a) = B \).
+        \item \( A \to \varepsilon \) for each terminal state \( A \in T' \).
+      \end{itemize}
+    \end{itemize}
+  \end{thmenum}
+\end{algorithm}
+
+\begin{proposition}\label{thm:regular_languages}
+  The following are equivalent for a given \hyperref[def:formal_language/language]{language}:
+  \begin{thmenum}
+    \thmitem{thm:regular_languages/right} It is \hyperref[def:formal_grammar/language]{generated} by a \hyperref[def:chomsky_hierarchy/regular]{right-linear grammar}.
+    \thmitem{thm:regular_languages/left} It is \hyperref[def:formal_grammar/language]{generated} by a \hyperref[def:chomsky_hierarchy/regular]{left-linear grammar}.
+    \thmitem{thm:regular_languages/automata} It is \hyperref[def:finite_automaton/language]{recognized} by a \hyperref[def:finite_automaton]{finite automaton}.
+  \end{thmenum}
+\end{proposition}
+\begin{proof}
+  \ImplicationSubProof{thm:regular_languages/right}{thm:regular_languages/left} Let \( G = (V, \Sigma, \to, S) \) be a right-regular grammar. We will describe a procedure for obtaining an equivalent left-regular grammar.
+
+  \begin{itemize}
+    \item \Fullref{alg:finite_automaton_from_regular_grammar} gives us a finite automaton \( F = (\Sigma, Q, \delta, \set{ S }, T) \) such that \( \mscrL(F) = \mscrL(G) \).
+
+    \item Take the \hyperref[def:reverse_finite_automaton]{reverse automaton} \( \op{rev}(F) \) of \( F \).
+
+    \item Determinize \( \op{rev}(F) \) via \fullref{alg:determinization_of_finite_automata}.
+
+    \item Use \fullref{alg:right_linear_grammar_from_finite_automaton} to convert \( \det(\op{rev}(F)) \) to a right-regular grammar \( G' \). At this point, we have
+    \begin{equation*}
+      \mscrL(G')
+      =
+      \mscrL(\det(\op{rev}(F)))
+      =
+      \mscrL(\op{rev}(F))
+      \reloset {\ref{thm:reverse_finite_automaton_language}} =
+      \op{rev}(\mscrL(F)).
+    \end{equation*}
+
+    \item Finally, take the \hyperref[def:reverse_grammar]{reverse grammar} \( \op{rev}(G') \). It is a left-regular grammar as a consequence of \fullref{thm:reverse_linear_grammar}. Furthermore,
+    \begin{equation*}
+      \mscrL(\op{rev}(G'))
+      \reloset {\ref{thm:reverse_grammar_language}} =
+      \op{rev}(\mscrL(G'))
+      =
+      \op{rev}(\op{rev}(\mscrL(F)))
+      \reloset {\ref{thm:reverse_language_involution}} =
+      \mscrL(F).
+    \end{equation*}
+
+    Hence, \( \op{rev}(G') \) is the desired left-linear grammar.
+  \end{itemize}
+
+  \ImplicationSubProof{thm:regular_languages/left}{thm:regular_languages/automata} \Fullref{alg:finite_automaton_from_regular_grammar} allows us to convert every left-linear grammar to a finite automaton.
+
+  \ImplicationSubProof{thm:regular_languages/automata}{thm:regular_languages/right} \Fullref{alg:right_linear_grammar_from_finite_automaton} allows us to convert every finite automaton to a right-linear grammar.
+\end{proof}

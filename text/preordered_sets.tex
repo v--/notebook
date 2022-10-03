@@ -1,11 +1,25 @@
 \subsection{Preordered sets}\label{subsec:preordered_sets}
 
-\begin{definition}\label{def:preordered_set}\mcite[def. 2.14]{OpenLogicFull}
-  A \term{preordered set} is a set \( P \) endowed with a \hyperref[def:binary_relation/reflexive]{reflexive} and \hyperref[def:binary_relation/transitive]{transitive} \hyperref[def:binary_relation]{binary relation} \( \leq \). The relation itself is called a \term{preorder}.
+\begin{definition}\label{def:preordered_set}\mcite[3]{Roman2008}
+  We say that a \hyperref[def:binary_relation]{binary relation} \( \leq \) on \( P \) is a \term{preorder} if it is \hyperref[def:binary_relation/reflexive]{reflexive} and \hyperref[def:binary_relation/transitive]{transitive} . The pair \( (P, \leq) \) is then called a \term{preordered set}.
 
   It is conventional to use the same symbol \( \leq \) as for \hyperref[def:partially_ordered_set]{partial orders}, however the lack of \hyperref[def:binary_relation/antisymmetric]{antisymmetry} may be confusing --- see \fullref{ex:preorder_nonuniqueness}.
 
-  We define \( \geq \) as the \hyperref[def:binary_relation/converse]{inverse relation} of \( \leq \).
+  We define \( \geq \) as the \hyperref[def:binary_relation/converse]{converse relation} of \( \leq \).
+
+  We also define the relation \( < \) as \( \leq \) without the \hyperref[def:binary_relation/diagonal]{diagonal relation} \( \Delta \). This condition corresponds to the following axiom:
+  \begin{equation}\label{eq:def:preordered_set/compatibility_nonstrict}
+    (\xi \leq \eta) \leftrightarrow \parens[\Big]{(\xi < \eta) \vee (\xi \doteq \eta)}.
+  \end{equation}
+
+  By adding \( \anon \wedge \neg (x = y) \) to both sides of \eqref{eq:def:preordered_set/compatibility_nonstrict}, using \fullref{thm:de_morgans_laws} and taking irreflexivity of \( < \) into account, we obtain
+  \begin{equation}\label{eq:def:preordered_set/compatibility_strict}
+    (\xi < \eta) \leftrightarrow \parens[\Big]{(\xi \leq \eta) \wedge \neg (\xi = \eta)}.
+  \end{equation}
+
+  We call \( < \) the \term{strict preorder} associated with \( \leq \), in which context we call \( \leq \) \term{nonstrict preorder}. We also define \( > \) as the converse relation of \( < \).
+
+  The elements \( x, y \in P \) are called \term{comparable} if either \( x \leq y \) or \( y \leq x \). That is, they are comparable if they are related by \( \leq \).
 
   Preordered sets have the following metamathematical properties:
   \begin{thmenum}
@@ -16,12 +30,11 @@
       (\xi \leq \eta) \leftrightarrow (\eta \geq \xi).
     \end{equation}
 
-    \thmitem{def:preordered_set/homomorphism} A \hyperref[def:first_order_homomorphism]{homomorphism} from \( (P, \leq_P) \) to \( (Q, \leq_Q) \) is, explicitly, a function \( f: P \to Q \) such that
-    \begin{equation}\label{eq:def:preordered_set/homomorphism}
-      x \leq_P y \T{implies} f(x) \leq_Q f(y).
-    \end{equation}
+    We purposely avoid adding \( < \) and \( > \) to this language because that would change the behavior of \hyperref[def:first_order_homomorphism]{first-order homomorphisms}. If needed, we can regard them as \hyperref[rem:predicate_formula]{predicate formulas}.
 
-    These are precisely the \hyperref[eq:def:partially_ordered_set/homomorphism/nonstrict]{nonstrict monotone maps}.
+    If we want to add strict orders to the language, we should also add one of the compatibility axioms \eqref{eq:def:preordered_set/compatibility_nonstrict} or \eqref{eq:def:preordered_set/compatibility_strict} to the resulting theory (it is unnecessary to add both).
+
+    \thmitem{def:preordered_set/homomorphism} The \hyperref[def:first_order_homomorphism]{first-order homomorphisms} between two preordered sets are the \hyperref[def:order_homomorphism/increasing]{nonstrictly order-preserving maps}, which we will discuss shortly.
 
     \thmitem{def:preordered_set/submodel} Since the theory contains only positive formulas over a language with no functional symbols, any subset \( A \) of the domain of a preordered set \( P \) becomes a preordered set with the induced preorder \( \leq_A \) defined as the \hyperref[def:binary_relation/restriction]{restriction} of \( \leq_P \) to only elements of \( A \).
 
@@ -31,38 +44,46 @@
 
     \thmitem{def:preordered_set/category}  We denote the \hyperref[def:category_of_small_first_order_models]{category of \( \mscrU \)-small models} for the theory of preordered sets by \( \ucat{PreOrd} \).
 
-    This category is equivalent to that of \( \mscrU \)-small preorder categories --- see \fullref{thm:order_category_isomorphism}.
-
-    \thmitem{def:preordered_set/duality} We define the \term{opposite preordered set} of \( (P, \leq) \) as \( (P, \geq) \).
-
-    The \term{principle of duality} states that the formula \( \varphi \) is derivable in the \hyperref[def:preordered_set/theory]{theory of preordered sets} if and only if the opposite formula \( \varphi^{\opcat} \), in which we swap all instances of \( \leq \) and \( \geq \), is also derivable. Observe that \( \varphi \) is satisfied in a preordered set if and only if \( \varphi^{\opcat} \) is satisfied in the opposite preordered set.
-
-    There is a actually a very simple proof. If \( \varphi \) is derivable in the theory, it is satisfied by every preordered set. Let \( P \) be a preordered set. Then \( \varphi \) is satisfied in both \( (P, \leq) \) and its opposite \( (P, \geq) \). But if \( \varphi \) is valid for the opposite preordered set \( (P, \geq) \), its opposite formula \( \varphi^{\opcat} \) is valid for the double opposite preordered set, which is \( (P, \leq) \). Since \( (P, \leq) \) was chosen arbitrarily, the opposite formula \( \varphi^{\opcat} \) is valid for every preordered set and, so it belongs to the theory of preordered sets.
-
-    The opposite of the opposite formula of \( \varphi \) is obviously \( \varphi \). The actual replacement can be formalized by performing the \hyperref[def:first_order_substitution/term_in_formula]{simultaneous substitution}
-    \begin{equation*}
-      \begin{aligned}
-        \varphi^{\opcat} \coloneqq \varphi[
-          &\xi_1 \leq \eta_1 \mapsto \xi_1 \geq \eta_1, &&\xi_1 \geq \eta_1 \mapsto \xi_1 \leq \eta_1, \\
-          &\vdots                                       &&\vdots \\
-          &\xi_n \leq \eta_n \mapsto \xi_n \geq \eta_n, &&\xi_n \geq \eta_n \mapsto \xi_n \leq \eta_n]
-      \end{aligned}
-    \end{equation*}
-    for all pairs \( (\xi_k, \eta_k) \) of free variables in \( \varphi \).
-
-    Another form of this duality is formalized in \fullref{thm:order_category_isomorphism}.
+    This category is isomorphic to that of \( \mscrU \)-small preorder categories --- see \fullref{thm:order_category_isomorphism}.
   \end{thmenum}
 \end{definition}
 
-\begin{definition}\label{def:directed_set}\mcite[8]{Engelking1989}
-  A \hyperref[def:preordered_set]{preordered set} \( P \) is called an \term{upward/right directed set} if every finite subset of \( P \) has an \hyperref[def:partially_ordered_set_extremal_points/upper_and_lower_bounds]{upper bound}, i.e. for all \( x, y \in P \) there must exist \( z \in P \) such that \( x \leq z \) and \( y \leq z \). We do not care how many upper bounds exist and how they are related, we simply need one upper bound to exist for every pair of elements of \( P \).
+\begin{theorem}[Principle of duality for preorders]\label{thm:preorder_duality}
+  We define the \term{opposite preordered set} of \( (P, \leq) \) as \( (P, \geq) \) and the \term{opposite formula} \( \varphi^{\opcat} \)as \( \varphi \) in which we swap all instances of \( \leq \) and \( \geq \).
 
-  \hyperref[def:preordered_set/duality]{Dually}, \( P \) is a \term{downward/left directed set} if every two elements have a lower bound.
+  Then the structure \( (P, \leq) \) \hyperref[def:first_order_semantics/satisfiability]{satisfies} \( \varphi \) if and only if \( (P, \geq) \) satisfies \( \varphi^{\opcat} \).
+\end{theorem}
+\begin{comments}
+  \item The weaker syntactic statement is that the formula \( \varphi \) is \hyperref[def:proof_derivability]{derivable} in the \hyperref[def:preordered_set/theory]{theory of preordered sets} if and only if the opposite formula \( \varphi^{\opcat} \) is also derivable.
 
-  Directed sets are used to define nets in topological spaces, see \fullref{def:topological_net}.
+  \item The opposite of the opposite formula of \( \varphi \) is obviously \( \varphi \).
+
+  \item Another form of this duality is formalized in \fullref{thm:order_category_isomorphism}.
+
+  \item The actual replacement can be formalized by performing the \hyperref[def:first_order_substitution/term_in_formula]{simultaneous substitution}
+  \begin{equation*}
+    \begin{aligned}
+      \varphi^{\opcat} \coloneqq \varphi[
+        &\tau_1 \leq \sigma_1 \mapsto \tau_1 \geq \sigma_1, &&\tau_1 \geq \sigma_1 \mapsto \tau_1 \leq \sigma_1, \\
+        &\vdots                                       &&\vdots \\
+        &\tau_n \leq \sigma_n \mapsto \tau_n \geq \sigma_n, &&\tau_n \geq \sigma_n \mapsto \tau_n \leq \sigma_n]
+    \end{aligned}
+  \end{equation*}
+  for all pairs \( (\tau_k, \sigma_k) \) of terms in \( \varphi \).
+\end{comments}
+\begin{proof}
+  Note that the semantics of \( \leq \) and \( \geq \) are swapped along with the swapping of the corresponding symbols in the formulas.
+\end{proof}
+
+\begin{definition}\label{def:inequality}\mimprovised
+  When regarding some \hyperref[def:preordered_set]{preorder relation} \( \leq \) as a \hyperref[def:first_order_language/pred]{first-order predicate}, we call the corresponding \hyperref[def:first_order_syntax/atomic_formula]{atomic formulas} \term{inequalities}. That is, an inequality is a formula of the form \( \tau \leq \sigma \).
+
+  We distinguish between \term{strict inequalities} \( \tau < \sigma \) and \term{nonstrict inequalities} \( \tau \leq \sigma \).
+
+  As in the case of \hyperref[def:equation]{equations}, we call the set \hyperref[def:first_order_definability]{defined} by an inequality a \term{solution set}.
 \end{definition}
 
-\begin{definition}\label{def:cofinal_set}
+\begin{definition}\label{def:cofinal_set}\mcite[8]{Engelking1989}
   A subset \( A \) of a preordered set \( (P, \leq) \) is called \term{cofinal} if for every \( x \in P \) there exists some \( y \in A \) such that \( x \leq y \).
 \end{definition}
 
@@ -79,3 +100,115 @@
     \thmitem{ex:def:cofinal_set/regular_cardinals} \hyperref[def:regular_cardinal]{Regular cardinals} are equal to their own \hyperref[def:cofinality]{cofinality}.
   \end{itemize}
 \end{example}
+
+\begin{definition}\label{def:order_homomorphism}
+  Fix \hyperref[def:preordered_set]{preordered sets} \( (P, \leq_P) \) and \( (Q, \leq_Q) \) and consider an arbitrary function \( f: P \to Q \). \Fullref{rem:order_homomorphism_terminology} demonstrates how widely the terminology for such functions varies. We try to choose the most unambiguous terminology.
+
+  \begin{thmenum}
+    \thmitem{def:order_homomorphism/increasing}\mcite[13]{Roman2008} We call \( f \) \term{order-preserving} or an \term{order homomorphism} if
+    \begin{equation}\label{eq:def:order_homomorphism/increasing}
+      x \leq_P y \T{implies} f(x) \leq_Q f(y).
+    \end{equation}
+
+    If the inequalities are strict, i.e. if
+    \begin{equation}\label{eq:def:order_homomorphism/increasing/strict}
+      x <_P y \T{implies} f(x) <_Q f(y),
+    \end{equation}
+    we call \( f \) \term{strictly order-preserving}.
+
+    To disambiguate, we sometimes call function satisfying \eqref{eq:def:order_homomorphism/increasing} \term{nonstrictly order-preserving}.
+
+    In the case of a \hyperref[def:totally_ordered_set]{totally ordered set}, we usually prefer the term (strictly) \term{increasing}, following the convention endorsed by Thomas Jech in \cite[17]{Jech2003}.
+
+    While we avoid the term \term{monotone} for non-real-valued functions, we refer to this property as \term{monotonicity}.
+
+    \thmitem{def:order_homomorphism/decreasing}\mcite[58]{Roman2008} \hyperref[thm:preorder_duality]{Dually}, we call \( f \) \term{order-reversing} or \term{decreasing} if
+    \begin{equation}\label{eq:def:order_homomorphism/decreasing}
+      x \leq_P y \T{implies} f(x) \geq_Q f(y).
+    \end{equation}
+    and \term{strictly decreasing} or \term{strictly order-reversing} if
+    \begin{equation}\label{eq:def:order_homomorphism/decreasing/strict}
+      x <_P y \T{implies} f(x) >_Q f(y).
+    \end{equation}
+
+    In the case of a \hyperref[def:totally_ordered_set]{totally ordered set}, we usually prefer the term (strictly) \term{decreasing}.
+
+    \thmitem{def:order_homomorphism/monotone}\mcite[№47]{ФихтенгольцОсновыТом1} In the context of real-valued functions, we use the \term{monotone}  as a collective term for nondecreasing and nonincreasing functions. Similarly, we use \term{strictly monotone} for increasing and decreasing functions, in which context we refer to usual monotone functions as \term{nonstrictly monotone}.
+
+    Outside of analysis, we generally avoid the term \enquote{monotone} due to ambiguity.
+
+    \thmitem{def:order_homomorphism/reflecting}\mcite[exmpl. 1.5.9]{Perrone2019} We call \( f \) \term{order-reflecting} if it satisfies \hyperref[def:material_implication/converse]{converse} of \eqref{eq:def:order_homomorphism/increasing}:
+    \begin{equation}\label{eq:def:order_homomorphism/reflecting}
+      f(x) \leq_Q f(y) \T{implies} x \leq_Q y.
+    \end{equation}
+
+    \thmitem{def:order_homomorphism/embedding}\mcite[13]{Roman2008} If \( f \) is an \hyperref[def:function_invertibility/injective]{injective function} that is both order-preserving and order-reflecting, we say that it is an \term{order embedding}.
+
+    \thmitem{def:order_homomorphism/isomorphism}\mcite[13]{Roman2008} If \( f \) is a \hyperref[def:function_invertibility/bijective]{bijective} embedding, we say that it is an \term{order isomorphism}.
+  \end{thmenum}
+\end{definition}
+\begin{comments}
+  \item Nonstrict order-preserving maps are used extensively in the theory of \hyperref[subsec:partially_ordered_sets]{partially ordered sets}, in particular in \hyperref[subsec:lattices]{lattice theory}.
+
+  \item Strict order-preserving maps are used in the theory of \hyperref[subsec:partially_ordered_sets]{totally ordered sets}, in particular for \hyperref[subsec:well_ordered_sets]{well-ordered sets} and \hyperref[subsec:ordinals]{ordinals}.
+
+  \item Embeddings and isomorphisms are simpler for totally ordered sets, where \fullref{thm:total_order_embedding_iff_strict} and \fullref{thm:totally_ordered_strict_isomorphisms} hold.
+\end{comments}
+
+\begin{remark}\label{rem:order_homomorphism_terminology}
+  There is widely varying terminology for the maps in \fullref{def:order_homomorphism}.
+
+  \begin{itemize}
+    \item \term{Monotone} is used by
+    \begin{itemize}
+      \item Steven Roman in \cite[13]{Roman2008}, John Kelley in \cite[3]{Kelley1975}, Paolo Perrone in \cite[exmpl. 1.5.9]{Perrone2019} and Saunders Mac Lane in \cite[92]{MacLane1998} for what we call a nonstrictly order-preserving map.
+      \item Grigoriy Fichtenholz in \cite[№47]{ФихтенгольцОсновыТом1} and Walter Rudin in \cite[def. 4.28]{Rudin1976Principles} for what we call either a nonincreasing or nondecreasing real-valued function.
+    \end{itemize}
+
+    \item \term{Weakly monotone} is used by Saunders Mac Lane in \cite[175]{MacLane1998} for what we call a nondecreasing function.
+
+    \item \term{Strictly monotone} is used by Steven Roman in \cite[13]{Roman2008} for what we call an increasing function. Walter Rudin in \cite[def. 4.28]{Rudin1976Principles} uses \term{strictly increasing} for what we call an increasing real-valued function.
+
+    \item \term{Isotone} is used by Steven Roman in \cite[13]{Roman2008} and John Kelley in \cite[3]{Kelley1975} for what we call a nondecreasing function.
+
+    \item \term{Order-preserving} is used by
+    \begin{itemize}
+       \item Steven Roman in \cite[13]{Roman2008}, John Kelley in \cite[3]{Kelley1975}, Thomas Jech in \cite[17]{Jech2003} and Saunders Mac Lane in \cite[95]{MacLane1998} for what we call a nondecreasing function.
+
+       \item Ryszard Engelking in \cite[4]{Engelking1989} for what we call a strictly order-preserving function, however only for totally ordered sets.
+    \end{itemize}
+
+    \item \term{Order-reversing} is used by Steven Roman in \cite[58]{Roman2008} and Saunders Mac Lane in \cite[95]{MacLane1998} for what we call analogously.
+
+    \item \term{Order-reflecting} is used by Paolo Perrone in \cite[exmpl. 1.5.9]{Perrone2019} for what we call analogously.
+
+    \item \term{Nondecreasing} is used by
+    \begin{itemize}
+      \item Ryszard Engelking in \cite[8]{Engelking1989} for what we call analogously, however only for totally ordered sets.
+      \item Grigoriy Fichtenholz in \cite[№47]{ФихтенгольцОсновыТом1} for what we call analogously, however only for the real numbers.
+    \end{itemize}
+
+    Both use \term{nonincreasing} similarly.
+
+    \item \term{Increasing} is used by
+    \begin{itemize}
+      \item Grigoriy Fichtenholz in \cite[№47]{ФихтенгольцОсновыТом1} and Walter Rudin in \cite[def. 4.28]{Rudin1976Principles} for what we call analogously, however only for the real numbers (both use \term{decreasing} in the same context).
+
+      \item Thomas Jech in \cite[17]{Jech2003} for what we call analogously, however only for totally ordered sets.
+    \end{itemize}
+  \end{itemize}
+\end{remark}
+
+\begin{proposition}\label{thm:order_embedding_is_strict}
+  Every \hyperref[def:function_invertibility/injective]{injective} \hyperref[def:order_homomorphism/increasing]{order homomorphism} is \hyperref[def:order_homomorphism/increasing]{strict}.
+\end{proposition}
+\begin{comments}
+  \item For totally ordered sets, the converse holds --- see \fullref{thm:total_order_embedding_iff_strict}.
+\end{comments}
+\begin{proof}
+  Let \( f: P \to Q \) be an injective homomorphism.
+
+  Let \( x <_P y \) for some members \( x \) and \( y \) of \( P \). Since \( f \) is an order homomorphism, we have \( f(x) \leq_Q f(y) \). Since it is also injective, \( f(x) = f(y) \) implies \( x = y \), which contradicts our previous assumption.
+
+  Therefore, \( f(x) <_Q f(y) \). Generalizing on \( x \) and \( y \), we conclude that \( f \) is a strict order homomorphism.
+\end{proof}

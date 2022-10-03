@@ -10,7 +10,7 @@
 \RequirePackage{packages/unicode_math_symbols}
 \RequirePackage{packages/paired_delimiters}
 
-\usetikzlibrary{cd,shapes.geometric,fit}
+\usetikzlibrary{cd,shapes.geometric,fit,automata}
 \tikzcdset{arrow style=math font}
 \tikzset
   {
@@ -42,10 +42,6 @@
         fill,
         fill opacity=0.2
       },
-    SubTree/.style=
-      {
-        draw,
-        regular polygon,
-        regular polygon sides=3
-      }
+    % https://tikz.dev/library-automata
+    initial text=
   }

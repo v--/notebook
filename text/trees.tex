@@ -54,7 +54,7 @@ In this section, we will regard the edges of simple undirected graphs as sets of
 \begin{example}\label{ex:def:tree}
   The reduced infinite integer graphs \eqref{eq:ex:infinite_integer_graphs/positive}, \eqref{eq:ex:infinite_integer_graphs/negative} and \eqref{eq:ex:infinite_integer_graphs/two_sided} from \fullref{ex:infinite_integer_graphs} are simple examples of infinite trees.
 
-  Examples of finite trees are \hyperref[def:proof_tree]{proof trees} from \fullref{subsec:deductive_systems} and \hyperref[def:concrete_syntax_tree]{concrete} and \hyperref[rem:abstract_syntax_tree]{abstract syntax trees} from \hyperref[def:formal_grammar]{formal grammar}.
+  Examples of finite trees are \hyperref[def:proof_tree]{proof trees} from \fullref{subsec:deductive_systems} and \hyperref[def:parse_tree]{concrete} and \hyperref[rem:abstract_syntax_tree]{abstract syntax trees} from \hyperref[def:formal_grammar]{formal grammar}.
 \end{example}
 
 \begin{definition}\label{def:arborescence}\mcite[ch. 4, sec. 3.1]{GondranMinoux1984Graphs}
@@ -67,7 +67,7 @@ In this section, we will regard the edges of simple undirected graphs as sets of
 
     For this reason, we identify rooted trees with their induced arborescences.
 
-    \thmitem{def:arborescence/depth} The \term{depth} of a node \( v \) is the length of the path from \( r \) to \( v \). The term \term{level} is also sometimes used but with a slightly different meaning --- the greater the depth, the lower the level.
+    \thmitem{def:arborescence/depth} The \term{depth} of a node \( v \) is the length of the path from \( r \) to \( v \). The term \term{level} is also sometimes used but with a slightly different connotation --- the greater the depth, the lower the level.
 
     \thmitem{def:arborescence/ancestry} If \( v \) has a strictly greater depth than \( u \), we say that \( u \) is an \term{ancestor} of \( v \) and that \( v \) is a \term{descendant} of \( u \).
 
@@ -87,9 +87,95 @@ In this section, we will regard the edges of simple undirected graphs as sets of
   \end{thmenum}
 \end{definition}
 
-\begin{theorem}[K\"onig's lemma]\label{thm:konigs_lemma}
+\begin{definition}\label{def:set_theoretic_tree}\mcite[def. 9.10]{Jech2003}
+  A set-theoretic \term{tree} is a \hyperref[def:partially_ordered_set]{partially ordered set} \( (T, \leq) \) such that, for each element \( x \in T \), the \hyperref[def:order_interval/ray]{initial segment} \( T_{<x} \) of all predecessors of \( x \) is \hyperref[def:well_ordered_set]{well-ordered} by \( < \).
+
+  \begin{thmenum}
+    \thmitem{def:set_theoretic_tree/level} The \term{level} of an element \( x \) is \( \ord(T_{<x}) \).
+    \thmitem{def:set_theoretic_tree/root} We call the element \( x \) a \term{root} if it has level \( 0 \), that is, if it is not contained in any initial segment.
+  \end{thmenum}
+\end{definition}
+
+\begin{proposition}\label{thm:set_theoretic_tree_as_arborescence}
+  Every finite \hyperref[def:arborescence]{arborescence} \( (V, A, r) \) is a \hyperref[def:set_theoretic_tree]{set-theoretic tree} if we define \( x \leq y \) to hold if \( x \) is an ancestor of \( y \).
+
+  The converse holds only partially: given a \hyperref[def:set_theoretic_tree/root]{root} \( x \) in a finite set-theoretic tree \( (T, \leq) \), the family \( T_{\geq x} \) is an arborescence with arcs induced by the order relation.
+\end{proposition}
+\begin{proof}
+  \SufficiencySubProof Define a partial order \( x \leq y \) on the arborescence \( (V, A, r) \) to hold if there is a path from \( x \) to \( y \).
+
+  Fix a vertex \( x \). We will show that \( \leq \) is a total order when restricted to \( T_{< x} \). For any two distinct predecessors \( y \) and \( z \) of \( x \), both \( y \) and \( z \) lie on the unique path from \( r \) to \( x \). Therefore, either \( y \leq z \) or \( z \leq y \). Hence, the order is total.
+
+  \Fullref{thm:finite_totally_ordered_set_is_well_ordered} then implies that \( T_{< x} \) is well-ordered. Therefore, \( (V, \leq) \) is a set-theoretic tree.
+
+  \NecessitySubProof Let \( r \) be a root of the set-theoretic tree \( (T, \leq) \). Given \( x > r \), there exists a unique path from \( r \) to \( x \). Indeed, the set \( T_{<x} \) is well-ordered, and hence it is a finite sequence, that is, a function from its \hyperref[def:set_theoretic_tree/level]{level} \( n \) to \( T \). Each member is strictly less than the next, hence this is the unique path.
+\end{proof}
+
+\begin{definition}\label{def:ordered_tree}\mimprovised
+  An \term{ordered tree} is a \hyperref[def:arborescence/undirected]{tree} with a \hyperref[def:partially_ordered_set]{partial order} such that every set of \hyperref[def:arborescence/ancestry]{siblings} is a \hyperref[def:partial_order_chain]{chain}.
+\end{definition}
+
+\begin{definition}\label{def:traversal_ordering}\mimprovised
+  We will define two \term{traversal orderings} on a given finite \hyperref[def:ordered_tree]{ordered tree} \( T = (V, A, r, \leq) \). These are \hyperref[def:well_ordered_set]{well-orderings} \( \leq_W \) of the vertices of \( V \). A \term{pre-order traversal}\footnote{This concept is not related to \hyperref[def:preordered_set]{preordered sets}.} (see \ref{def:traversal_ordering/step/pre}) visits each root before the successors, while a \term{post-order traversal} (see \ref{def:traversal_ordering/step/post}) visits the root last. Equivalently, we can regard a traversal as a \hyperref[def:sequence]{finite sequence} of elements of \( V \) rather than an ordering of \( V \).
+
+  The relation \( \leq_W \) can be defined on \( \card(V) \) as follows:
+  \begin{thmenum}
+    \thmitem{def:traversal_ordering/init} If \( \card(V) = 1 \), then the ordering is trivial --- let \( r \leq_W r \).
+    \thmitem{def:traversal_ordering/step} Suppose that \( \card(V) = n \) and that we have already built a well-order for all smaller trees. Let \( T_k = (V_k, A_k, r_k) \), \( k = 1, \ldots, n \) be rooted subtrees, whose roots \( r_1 < \ldots < r_n \) are successors of \( r \), that is,
+    \begin{equation*}
+      \begin{aligned}
+        \includegraphics[page=1]{output/def__traversal_ordering.pdf}
+      \end{aligned}
+    \end{equation*}
+
+    Let \( \leq_{W_k} \) be the recursively defined traversal ordering on \( T_k \).
+
+    Define the relation \( x \leq_W y \) on \( V \) to hold:
+    \begin{thmenum}
+      \thmitem{def:traversal_ordering/step/same} If both \( x \) and \( y \) belong to \( V_i \) and \( x \leq_{W_i} y \).
+      \thmitem{def:traversal_ordering/step/different} If \( x \in V_i \) and \( y \in V_j \) with \( i < j \).
+      \thmitem{def:traversal_ordering/step/root} If \( x = y = r \).
+      \thmitem{def:traversal_ordering/step/pre} If \( x = r \) in case we want a pre-order.
+      \thmitem{def:traversal_ordering/step/post} If \( y = r \) in case we want a post-order.
+    \end{thmenum}
+  \end{thmenum}
+
+  \begin{figure}[!ht]
+    \centering
+    \includegraphics[page=2]{output/def__traversal_ordering.pdf}
+    \caption{An ordered tree whose \hyperref[def:traversal_ordering]{pre-order traversal} is \( abcde \) and whose \hyperref[def:traversal_ordering]{post-order traversal} is \( cdbea \).}
+    \label{fig:def:traversal_ordering}
+  \end{figure}
+\end{definition}
+\begin{defproof}
+  We will show via induction on \( \card(V) \) that \( \leq_W \) is a well-order. Since the trivial case \( \card(V) = 1 \) is vacuous, suppose that \( \card(V) > 1 \).
+
+  \SubProofOf[def:binary_relation/reflexive]{reflexivity} Follows from \fullref{def:traversal_ordering/step/root}.
+
+  \SubProofOf[def:binary_relation/antisymmetric]{antisymmetry} Suppose that \( x \leq_W y \) and \( y \leq_W x \) with \( x \neq y \).
+  \begin{itemize}
+    \item If both \( x \) and \( y \) belong to \( V_i \), antisymmetry follows from the inductive hypothesis.
+    \item If \( x \in V_i \) and \( y \in V_j \) with \( i < j \), then we cannot possibly have \( y \leq_W x \).
+    \item If \( x = r \), then \( r \leq y \); this is pre-order traversal, hence we cannot have \( r \geq y \).
+    \item We handle post-order traversal similarly.
+  \end{itemize}
+
+  \SubProofOf[def:binary_relation/transitive]{transitivity} Suppose that \( x \leq_W y \) and \( y \leq_W z \) with all three elements distinct.
+  \begin{itemize}
+    \item If all three belong to \( V_i \), antisymmetry follows from the inductive hypothesis.
+    \item If \( x = r \), then \( r \leq y \); this is pre-order traversal, hence by definition \( x \leq_W z \).
+    \item If \( z = r \), then \( y \leq z \); this is post-order traversal, hence by definition \( x \leq_W z \).
+    \item We cannot have \( y = r \).
+    \item If \( x, y \in V_i \) and \( z \in V_j \) with \( i < j \), then \( x \leq_W z \) by \fullref{def:traversal_ordering/step/different}.
+    \item If \( x \in V_i \) and \( y, z \in V_j \) with \( i < j \), then also \( x \leq_W z \) by \fullref{def:traversal_ordering/step/different}.
+  \end{itemize}
+
+  \SubProofOf[def:well_founded_relation]{well-foundedness} Follows from \fullref{thm:finite_totally_ordered_set_is_well_ordered}.
+\end{defproof}
+
+\begin{lemma}[K\"onig's lemma]\label{thm:konigs_lemma}
   Every \hyperref[def:hypergraph/degree]{locally finite} \hyperref[def:arborescence]{arborescence} of \hyperref[def:hypergraph/order]{infinite} \hyperref[def:hypergraph/order]{order} contains a \hyperref[def:undirected_multigraph_path/simple]{simple path} of infinite length.
-\end{theorem}
+\end{lemma}
 \begin{proof}
   Let \( T = (V, A, r) \) be a locally finite infinite arborescence. We will build an infinite simple path
   \begin{equation*}

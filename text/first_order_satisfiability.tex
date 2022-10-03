@@ -51,20 +51,21 @@
       &\quantifier Q {\eta} \parens[\Big]{\psi[\xi \mapsto \eta][\kappa \mapsto \mu]}, && \xi \not\in \boldop{Var}(\kappa) \T{and} \xi \in \boldop{Var}(\mu) \T{and} &\label{eq:def:first_order_substitution/term_in_formula/quantifiers/renaming} \\
                                                                                       &&& \eta \not\in \boldop{Var}(\kappa) \cup \boldop{Var}(\mu) \cup \boldop{Free}(\psi). \nonumber
     \end{empheq}
-
-    In \eqref{eq:def:first_order_substitution/term_in_formula/quantifiers/renaming}, we chose a new variable \( \eta \). We implicitly assume that there exist enough variables in the language, so that we can find \( \eta \) that satisfies the condition. In order to fully avoid nondeterminism in the choice of \( \eta \), we can pick a well-ordering on the set \( \boldop{Var} \) and always choose \( \eta \) to be the smallest variable not present in \( \varphi \). This rule is called \term{renaming of the bound variables} \( \xi \) to \( \eta \) and is done to mitigate capturing as described in \fullref{rem:first_order_substitution_renaming_justification/capturing}.
-
-    We could avoid the rule for renaming (as it is done in \cite[def. 15.25]{OpenLogicFull}), however renaming both free and bound variables is natural and is often done in practice. For example, consider the \hyperref[def:peano_arithmetic]{Peano arithmetic} formula \enquote{there exists \( n \) such that \( nm \) is even}. Note that the bound variable \( n \) is renamed to \( k \) and the free variable \( m \) to \( n \) in the larger formula \enquote{for every \( n \) there exists \( k \) such that \( kn \) is even}.
-
-    The rule \eqref{eq:def:first_order_substitution/term_in_formula/quantifiers/trivial} may seem redundant, but when doing inductive proofs (e.g. the proof of \fullref{thm:renaming_assignment_compatibility}), we usually need to separately consider the cases where \( \xi \in \boldop{Var}(\kappa) \) and \( \xi \not\in \boldop{Var}(\kappa) \setminus \boldop{Var}(\mu) \) and the rule \eqref{eq:def:first_order_substitution/term_in_formula/quantifiers/direct} being trivial simplifies the proofs.
-
-    See \fullref{rem:first_order_substitution_parentheses} regarding the additional parentheses in \eqref{eq:def:first_order_substitution/term_in_formula/quantifiers/renaming}.
-
-    See \fullref{ex:first_order_substitution} for examples of applying the different quantifier rules.
-
-    This exact algorithm is implemented in \cite{code}.
   \end{thmenum}
 \end{definition}
+\begin{comments}
+  \item In \eqref{eq:def:first_order_substitution/term_in_formula/quantifiers/renaming}, we chose a new variable \( \eta \). We implicitly assume that there exist enough variables in the language, so that we can find \( \eta \) that satisfies the condition. In order to fully avoid nondeterminism in the choice of \( \eta \), we can pick a well-ordering on the set \( \boldop{Var} \) and always choose \( \eta \) to be the smallest variable not present in \( \varphi \). This rule is called \term{renaming of the bound variables} \( \xi \) to \( \eta \) and is done to mitigate capturing as described in \fullref{rem:first_order_substitution_renaming_justification/capturing}.
+
+  \item We could avoid the rule for renaming (as it is done in \cite[def. 15.25]{OpenLogicFull}), however renaming both free and bound variables is natural and is often done in practice. For example, consider the \hyperref[def:peano_arithmetic]{Peano arithmetic} formula \enquote{there exists \( n \) such that \( nm \) is even}. Note that the bound variable \( n \) is renamed to \( k \) and the free variable \( m \) to \( n \) in the larger formula \enquote{for every \( n \) there exists \( k \) such that \( kn \) is even}.
+
+  \item The rule \eqref{eq:def:first_order_substitution/term_in_formula/quantifiers/trivial} may seem redundant, but when doing inductive proofs (e.g. the proof of \fullref{thm:renaming_assignment_compatibility}), we usually need to separately consider the cases where \( \xi \in \boldop{Var}(\kappa) \) and \( \xi \not\in \boldop{Var}(\kappa) \setminus \boldop{Var}(\mu) \) and the rule \eqref{eq:def:first_order_substitution/term_in_formula/quantifiers/direct} being trivial simplifies the proofs.
+
+  \item See \fullref{rem:first_order_substitution_parentheses} regarding the additional parentheses in \eqref{eq:def:first_order_substitution/term_in_formula/quantifiers/renaming}.
+
+  \item See \fullref{ex:first_order_substitution} for examples of applying the different quantifier rules.
+
+  \item These algorithms can be found as \texttt{fol.substitution.substitute\_in\_term} and \texttt{fol.substitution.substitute\_in\_formula} in \cite{code}.
+\end{comments}
 
 \begin{remark}\label{rem:first_order_substitution_renaming_justification}
   The renaming rule \eqref{eq:def:first_order_substitution/term_in_formula/quantifiers/renaming} is designed to mitigate the following two problems (compared to \eqref{eq:def:first_order_substitution/term_in_formula/quantifiers/direct}):
@@ -486,7 +487,7 @@
 \end{proof}
 
 \begin{remark}\label{rem:predicate_formula}
-  As explained in \fullref{rem:first_order_formula_conventions/necessary_signature}, we avoid adding to a language more predicates than necessary. For this reason, we sometimes use \term{predicate formulas}. For example, if \( \leq \) is a \hyperref[def:partially_ordered_set/theory]{partial order} symbol and we want to have a predicate for whether \( \xi \) is the \hyperref[def:partially_ordered_set_extremal_points/top_and_bottom]{bottom element}, we can define the formula
+  As explained in \fullref{rem:first_order_formula_conventions/necessary_signature}, we avoid adding to a language more predicates than necessary. For this reason, we sometimes use \term{predicate formulas}. For example, if \( \leq \) is a \hyperref[]{partial order} symbol and we want to have a predicate for whether \( \xi \) is the \hyperref[def:extremal_points/top_and_bottom]{bottom element}, we can define the formula
   \begin{equation}\taglabel[\op{IsBottom}]{rem:predicate_formula/bottom}
     \ref{rem:predicate_formula/bottom}[\xi] \coloneqq \qforall \eta (\xi \leq \eta).
   \end{equation}
@@ -634,7 +635,7 @@
 \end{remark}
 
 \begin{algorithm}[Prenex normal form conversion]\label{alg:prenex_normal_form_conversion}
-  We will describe an algorithm that takes a formula \( \varphi \) over \( \mscrL \) and outputs another formula \( \theta \) over \( \mscrL \) that is \hyperref[def:first_order_semantics/equivalence]{semantically equivalent}, but is in \hyperref[def:prenex_normal_form]{prenex normal form}. This exact algorithm is implemented in \cite{code}.
+  We will describe an algorithm that takes a formula \( \varphi \) over \( \mscrL \) and outputs another formula \( \theta \) over \( \mscrL \) that is \hyperref[def:first_order_semantics/equivalence]{semantically equivalent}, but is in \hyperref[def:prenex_normal_form]{prenex normal form}.
 
   \begin{thmenum}
     \thmitem{alg:prenex_normal_form/conditionals} First, we will remove the conditional \( \rightarrow \) and biconditional \( \leftrightarrow \). Define
@@ -685,6 +686,9 @@
 
   It remains to compose the operators. As per our comments above, the formula \( P_3(P_2(P_1(\varphi))) \) is in prenex normal form and is semantically equivalent to \( \varphi \).
 \end{algorithm}
+\begin{comments}
+  \item This algorithm can be found as \texttt{fol.pnf.to\_pnf} in \cite{code}.
+\end{comments}
 
 \begin{proposition}\label{thm:quantifier_satisfiability}
   Let \( \mscrL \) be a first-order language, let \( \varphi \) be a formula, let \( \xi \) be any variable and let \( \tau \) be any term in \( \mscrL \). The following hold:
@@ -767,13 +771,11 @@
 
   Then the entailment \( \Gamma, \varphi \vDash \psi \) holds if and only if \( \Gamma \vDash \varphi \to \psi \) holds.
 \end{theorem}
-\begin{thmcomment}
-  \begin{itemize}
-    \item See \fullref{rem:deduction_with_free_variables} for the importance of the condition that \( \varphi \) is a closed formula.
-    \item Due to \fullref{rem:propositional_logic_as_first_order_logic}, this theorem also holds for propositional formulas.
-    \item Compare this result with \fullref{thm:syntactic_deduction_theorem}.
-  \end{itemize}
-\end{thmcomment}
+\begin{comments}
+  \item See \fullref{rem:deduction_with_free_variables} for the importance of the condition that \( \varphi \) is a closed formula.
+  \item Due to \fullref{rem:propositional_logic_as_first_order_logic}, this theorem also holds for propositional formulas.
+  \item Compare this result with \fullref{thm:syntactic_deduction_theorem}.
+\end{comments}
 \begin{proof}
   \SufficiencySubProof Let \( \Gamma, \varphi \vDash \psi \) and let \( \mscrX = (X, I) \) be a model for \( \Gamma \).
 
