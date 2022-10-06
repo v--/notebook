@@ -1,26 +1,5 @@
-import pytest
-
-from .grammar import Epsilon, Grammar, GrammarRule, GrammarSchema, NonTerminal, Terminal
-
-
-@pytest.fixture
-def an():
-    schema = GrammarSchema()
-    schema.add_rule('<S> → ε')
-    schema.add_rule('<S> → <A>')
-    schema.add_rule('<A> → <A> "a"')
-    schema.add_rule('<A> → "a"')
-    return schema.instantiate_grammar('S')
-
-
-@pytest.fixture
-def anbn():
-    schema = GrammarSchema()
-    schema.add_rule('<S> → ε')
-    schema.add_rule('<S> → <A>')
-    schema.add_rule('<A> → "a" <A> "b"')
-    schema.add_rule('<A> → "a" "b"')
-    return schema.instantiate_grammar('S')
+from .grammar import Epsilon, Grammar, GrammarRule, NonTerminal, Terminal
+from .fixtures import *
 
 
 def test_an(an: Grammar):

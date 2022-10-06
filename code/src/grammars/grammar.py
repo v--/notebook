@@ -1,31 +1,17 @@
 from __future__ import annotations
 
 from dataclasses import dataclass, field
-import itertools
 import functools
-from typing import cast
+import itertools
 
 from ..support.tokenization import Tokenizer
 
 
-@dataclass
-@functools.total_ordering
 class GrammarSymbol:
-    value: str
-
-    def __hash__(self):
-        return hash(self.value)
-
-    def __eq__(self, other: object):
-        return type(self) == type(other) and self.value == cast(GrammarSymbol, other).value
-
-    def __le__(self, other: object):
-        return type(self) == type(other) and self.value <= cast(GrammarSymbol, other).value
+    pass
 
 
-@dataclass
-@functools.total_ordering
-class Epsilon:
+class Epsilon(GrammarSymbol):
     def __str__(self):
         return f'ε'
 
@@ -33,15 +19,10 @@ class Epsilon:
         return hash('ε')
 
     def __eq__(self, other: object):
-        return type(self) == type(other)
-
-    def __le__(self, other: object):
-        return type(self) == type(other)
+        return isinstance(other, Epsilon)
 
 
-@dataclass
-@functools.total_ordering
-class RightArrow:
+class RightArrow(GrammarSymbol):
     def __str__(self):
         return f'→'
 
@@ -49,20 +30,35 @@ class RightArrow:
         return hash('→')
 
     def __eq__(self, other: object):
-        return type(self) == type(other)
-
-    def __le__(self, other: object):
-        return type(self) == type(other)
+        return isinstance(other, RightArrow)
 
 
+@dataclass
 class Terminal(GrammarSymbol):
+    value: str
+
     def __str__(self):
         return f'"{self.value}"'
 
+    def __hash__(self):
+        return hash(self.value)
 
+    def __eq__(self, other: object):
+        return isinstance(other, Terminal) and self.value == other.value
+
+
+@dataclass
 class NonTerminal(GrammarSymbol):
+    value: str
+
     def __str__(self):
         return f'<{self.value}>'
+
+    def __hash__(self):
+        return hash(self.value)
+
+    def __eq__(self, other: object):
+        return isinstance(other, NonTerminal) and self.value == other.value
 
 
 @dataclass
@@ -107,7 +103,7 @@ class GrammarRuleTokenizer(Tokenizer):
                 self.advance()
 
             else:
-                assert False, f'unexpected symbol {self.peek()}'
+                assert False, f'Unexpected symbol {self.peek()}'
 
 
 @dataclass
@@ -117,6 +113,7 @@ class GrammarRule:
 
     def __post_init__(self):
         assert any(isinstance(sym, NonTerminal) for sym in self.src), 'The source must contain at least one non-terminal, but it is {}'.format(' '.join(str(sym) for sym in self.src))
+        assert all(not isinstance(sym, Epsilon) for sym in self.dest) or len(self.dest) == 1, 'Epsilon rules cannot contain other symbols, got {}'.format(' '.join(str(sym) for sym in self.dest))
 
     @classmethod
     def parse(cls, string: str):
@@ -169,6 +166,12 @@ class GrammarSchema:
     def __str__(self):
         return '\n'.join(str(rule) for rule in self.rules)
 
+    @classmethod
+    def parse(cls, string: str):
+        return cls(
+            set(GrammarRule.parse(substr) for substr in string.split('\n') if len(substr.strip()) > 0)
+        )
+
     def add_rule(self, string: str):
         self.rules.add(GrammarRule.parse(string))
 
@@ -184,8 +187,9 @@ class GrammarSchema:
             (set(rule.get_non_terminals()) for rule in self.rules)
         )
 
-    def instantiate_grammar(self, start: str):
-        return Grammar(self, NonTerminal(start))
+    def instantiate(self, start: NonTerminal):
+        assert start in self.get_non_terminals()
+        return Grammar(self, start)
 
 
 @dataclass
@@ -195,3 +199,8 @@ class Grammar:
 
     def __post_init__(self):
         assert self.start in self.schema.get_non_terminals(), f'The starting symbol {self.start} must be a non-terminal in {self.schema}'
+
+    def iter_starting_rules(self):
+        for rule in self.schema.rules:
+            if rule.src == [self.start]:
+                yield rule

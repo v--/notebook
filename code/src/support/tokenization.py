@@ -6,6 +6,9 @@ class Tokenizer:
     string: str
     index: int = field(default=0, init=False)
 
+    def reset(self):
+        self.index = 0
+
     def is_at_end(self):
         return self.index == len(self.string)
 

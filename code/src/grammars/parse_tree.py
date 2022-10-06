@@ -2,6 +2,8 @@ from __future__ import annotations
 
 from dataclasses import dataclass, field
 
+from rich.tree import Tree
+
 from .grammar import Epsilon, NonTerminal, Terminal
 
 
@@ -19,3 +21,14 @@ class ParseTree:
 
     def yield_word(self):
         return ''.join(self.yield_word_iter())
+
+    def build_rich_tree(self):
+        if isinstance(self.payload, Epsilon):
+            tree = Tree('ε')
+        else:
+            tree = Tree(self.payload.value)
+
+        for node in self.successors:
+            tree.add(node.build_rich_tree())
+
+        return tree
