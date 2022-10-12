@@ -1,10 +1,10 @@
-from .grammar import Epsilon, Grammar, GrammarRule, NonTerminal, Terminal
+from .grammar import epsilon, Grammar, GrammarRule, NonTerminal, Terminal
 from .fixtures import *
 
 
 def test_an(an: Grammar):
     assert an.schema.rules == {
-        GrammarRule([NonTerminal('S')], [Epsilon()]),
+        GrammarRule([NonTerminal('S')], [epsilon]),
         GrammarRule([NonTerminal('S')], [NonTerminal('A')]),
         GrammarRule([NonTerminal('A')], [NonTerminal('A'), Terminal('a')]),
         GrammarRule([NonTerminal('A')], [Terminal('a')]),
