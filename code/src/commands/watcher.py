@@ -10,9 +10,9 @@ import os.path
 import pathlib
 import shutil
 
-from asyncinotify import Inotify, Mask
-from loguru import logger
-import texoutparse
+from asyncinotify import Inotify, Mask  # type: ignore
+from loguru import logger  # type: ignore
+import texoutparse  # type: ignore
 
 
 DEBOUNCE_THRESHOLD = timedelta(seconds=1)
