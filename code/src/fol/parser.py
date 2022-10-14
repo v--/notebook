@@ -1,170 +1,234 @@
-from typing import Literal, cast
-from ..support.parsing import ParserError
-from ..grammars.grammar import GrammarSchema, NonTerminal
-from ..grammars.parse_tree import ParseTree, RuleVisitor
-from ..grammars import unger
+from typing import Iterable, Sequence
 
-from .types import Term, Variable, FunctionTerm, Formula
+from ..support.parsing import Parser
 
+from .tokens import FOLToken, GreekName, LatinName, NaturalNumber, \
+    left_parenthesis, right_parenthesis, comma, equality, space, dot, negation, \
+    CONNECTIVES, LITERALS, QUANTIFIERS
 
-grammar_schema = GrammarSchema.parse('''
-    <variable>           →   <greek_name>
-    <constant>           →   <latin_name>
-    <function>           →   <latin_name> <arg_list>
-    <term>               →   <function> | <constant> | <variable>
-
-    <equality>           →   "(" <term> <opt_space> "=" <opt_space> <term> ")"
-    <predicate>          →   <latin_name> <arg_list>
-    <atomic>             →   <equality> | <predicate>
-    <negation>           →   "¬" <formula>
-    <conn_formula>       →   "(" <formula> <opt_space> <connective> <opt_space> <formula> ")"
-    <quan_formula>       →   <quantifier> <variable> "." <formula>
-    <formula>            →   <atomic> | <negation> | <conn_formula> | <quan_formula>
-    <quantifier>         →   "∀" | "∃"
-    <connective>         →   "∨" | "∧" | "→" | "↔"
-
-    <latin_letter>       →   "a" | "b" | "c" | "d" | "e" | "f" | "g" | "h" | "i" | "j" | "k" | "l" | "m" | "n" | "o" | "p" | "q" | "r" | "s" | "t" | "u" | "v" | "w" | "x" | "y" | "z"
-    <latin_string>       →   <latin_letter> | <latin_letter> <latin_string>
-    <latin_name>         →   <latin_string> | <latin_string> <natural_number>
-
-    <greek_letter>       →   "α" | "β" | "γ" | "δ" | "ε" | "ζ" | "η" | "θ" | "ι" | "κ" | "λ" | "μ" | "ν" | "ξ" | "ο" | "π" | "ρ" | "σ" | "τ" | "υ" | "φ" | "χ" | "ψ" | "ω"
-    <greek_string>       →   <greek_letter> | <greek_letter> <greek_string>
-    <greek_name>         →   <greek_string> | <greek_string> <natural_number>
-
-    <nonzero_digit>      →   "1" | "2" | "3" | "4" | "5" | "6" | "7" | "8" | "9"
-    <digit>              →   "0" | <nonzero_digit>
-    <natural_number_aux> →   <digit> | <digit> <natural_number_aux>
-    <natural_number>     →   <digit> | <nonzero_digit> <natural_number_aux>
-
-    <arg_list_aux>       →   ε | "," <opt_space> <term> <opt_space> <arg_list_aux>
-    <arg_list>           →   "(" <opt_space> <term> <arg_list_aux> <opt_space> ")"
-    <opt_space>          →   ε | " " | " " <opt_space>
-''')
+from .types import ConnectiveFormula, EqualityFormula, NegationFormula, PredicateFormula, QuantifierFormula, \
+    FunctionTerm, Term, Variable, Formula
 
 
-class FOLVisitor(RuleVisitor):
-    def visit_variable(self, tree: ParseTree, name: str):
+class FOLTokenizer(Parser[str]):
+    def take_while_in_range(self, start: str, end: str):
+        buffer: list[str] = []
+
+        while not self.is_at_end() and start < self.peek() < end:
+            buffer.append(self.peek())
+            self.advance()
+
+        assert len(buffer) > 0
+        return ''.join(buffer)
+
+    def parse(self) -> Iterable[FOLToken]:
+        while not self.is_at_end():
+            yield from self.parse_step(self.peek())
+
+    def parse_step(self, head: str):
+        literal = next(
+            (literal for literal in LITERALS if head == literal.value),
+            None
+        )
+
+        if literal is not None:
+            yield literal
+            self.advance()
+
+        elif head == '0':
+            raise self.error('Natural numbers cannot start with zero')
+
+        elif head.isdigit():
+            yield NaturalNumber(self.take_while_in_range('0', '9'))
+
+        elif 'a' < head < 'z':
+            yield LatinName(self.take_while_in_range('a', 'z'))
+
+        elif 'α' < head < 'ω':
+            yield GreekName(self.take_while_in_range('α', 'ω'))
+
+        elif head == ' ':
+            self.advance()
+        else:
+            raise self.error(f'Unexpected symbol')
+
+
+class FOLParser(Parser[Sequence[FOLToken]]):
+    def peek(self):
+        while super().peek() == space:
+            self.advance()
+
+        return super().peek()
+
+    def parse_variable(self):
+        assert isinstance(self.peek(), GreekName)
+        name = self.peek().value
+        self.advance()
+
+        if not self.is_at_end() and isinstance(self.peek(), NaturalNumber):
+            name += self.peek().value
+            self.advance()
+
         return Variable(name)
 
-    def visit_constant(self, tree: ParseTree, name: str):
+    def parse_args(self):
+        assert self.peek() == left_parenthesis
+        self.advance()
+
+        if self.peek() == right_parenthesis:
+            raise self.error('Empty argument list disallowed')
+
+        while self.peek() != right_parenthesis:
+            if isinstance(self.peek(), GreekName):
+                yield self.parse_variable()
+
+            elif isinstance(self.peek(), LatinName):
+                yield self.parse_function()
+
+            if self.peek() == comma:
+                self.advance()
+            elif self.peek() != right_parenthesis:
+                raise self.error('Unexpected token')
+
+        if self.peek() == right_parenthesis:
+            self.advance()
+
+    def parse_function(self):
+        assert isinstance(self.peek(), LatinName)
+        name = self.peek().value
+        self.advance()
+
+        if self.is_at_end():
+            return FunctionTerm(name, [])
+
+        if isinstance(self.peek(), NaturalNumber):
+            name += self.peek().value
+            self.advance()
+
+        if not self.is_at_end() and self.peek() == left_parenthesis:
+            return FunctionTerm(name, list(self.parse_args()))
+
         return FunctionTerm(name, [])
 
-    def visit_function(self, tree: ParseTree, name: str, args: list[Term]):
-        return FunctionTerm(name, args)
+    def parse_term(self):
+        head = self.peek()
 
-    def visit_term(self, tree: ParseTree, value: Term):
-        return value
+        if isinstance(head, GreekName):
+            return self.parse_variable()
 
-    # def visit_equality(self, tree: ParseTree):
-    #     (_, a, _, _, _, b, _) = visited_children
-    #     return EqualityFormula(a, b)
+        elif isinstance(head, LatinName):
+            return self.parse_function()
 
-    # def visit_predicate(self, tree: ParseTree):
-    #     name, arguments = visited_children
-    #     return PredicateFormula(name, arguments)
+        else:
+            raise self.error('Unexpected token')
 
-    # def visit_atomic(self, tree: ParseTree):
-    #     formula, = visited_children
-    #     return formula
+    def parse_binary_formula(self):
+        assert self.peek() == left_parenthesis
+        self.advance()
+        a_start = self.index
 
-    # def visit_negation(self, tree: ParseTree):
-    #     _, formula = visited_children
-    #     return NegationFormula(formula)
+        if isinstance(self.peek(), (GreekName, LatinName)):
+            # We later correct it to a predicate formula if necessary
+            a = self.parse_term()
+        else:
+            a = self.parse_formula()
 
-    # def visit_conn_formula(self, tree: ParseTree):
-    #     _, a, _, conn, _, b, _ = visited_children
-    #     return ConnectiveFormula(conn, a, b)
+        if self.peek() == equality:
+            if isinstance(a, Term):  # type: ignore
+                self.advance()
+                b = self.parse_term()
 
-    # def visit_quan_formula(self, tree: ParseTree):
-    #     quantifier, var, _, formula = visited_children
-    #     return QuantifierFormula(quantifier, var, formula)
+                if self.peek() == right_parenthesis:
+                    self.advance()
+                    return EqualityFormula(a, b)
+                else:
+                    raise self.error('Unclosed parentheses for binary formula', precede=self.index - a_start)
+            else:
+                raise self.error('The left side of an equality formula must be a term', precede=self.index - a_start)
 
-    # def visit_formula(self, tree: ParseTree):
-    #     formula, = visited_children
-    #     return formula
+        elif self.peek() in CONNECTIVES:
+            connective = self.peek()
 
-    # def visit_quantifier(self, tree: ParseTree):
-    #     return visited_children[0].text
+            if isinstance(a, FunctionTerm) and len(a.arguments) > 0:
+                a = PredicateFormula(a.name, a.arguments)
 
-    # def visit_connective(self, tree: ParseTree):
-    #     return visited_children[0].text
+            if isinstance(a, Formula):  # type: ignore
+                self.advance()
+                b = self.parse_formula()
 
-    # def visit_arg_list(self, tree: ParseTree):
-    #     (_, _, first, rest, _) = visited_children
-    #     return [first] + [var for (_, _, var, _) in rest]
+                if self.peek() == right_parenthesis:
+                    self.advance()
+                    return ConnectiveFormula(connective, a, b)
+                else:
+                    raise self.error('Unclosed parentheses for binary formula', precede=self.index - a_start)
+            else:
+                raise self.error('The left side of an equality formula must be a formula', precede=self.index - a_start)
 
-    def visit_latin_letter(self, tree: ParseTree, letter: str):
-        return letter
+        else:
+            raise self.error('Unexpected token')
 
-    def visit_latin_string(self, tree: ParseTree, letter: str, rest: str = ''):
-        return letter + rest
+    def parse_negation_formula(self):
+        assert self.peek() == negation
+        self.advance()
+        return NegationFormula(self.parse_formula())
 
-    def visit_latin_name(self, tree: ParseTree, string: str, number: str = ''):
-        return string + number
+    def parse_quantifier_formula(self):
+        assert self.peek() in QUANTIFIERS
+        q = self.peek()
+        self.advance()
+        var = self.parse_variable()
 
-    def visit_greek_letter(self, tree: ParseTree, letter: str):
-        return letter
+        if self.peek() == dot:
+            self.advance()
+        else:
+            raise self.error('Expected dot after variable')
 
-    def visit_greek_string(self, tree: ParseTree, letter: str, rest: str = ''):
-        return letter + rest
+        return QuantifierFormula(q, var, self.parse_formula())
 
-    def visit_greek_name(self, tree: ParseTree, string: str, number: str = ''):
-        return string + number
+    def parse_predicate(self):
+        assert isinstance(self.peek(), LatinName)
+        name = self.peek().value
+        self.advance()
 
-    def visit_nonzero_digit(self, tree: ParseTree, digit: str):
-        return digit
+        if self.is_at_end():
+            raise self.error('Predicates must have parameters')
+        elif isinstance(self.peek(), NaturalNumber):
+            name += self.peek().value
+            self.advance()
 
-    def visit_digit(self, tree: ParseTree, digit: str):
-        return digit
+        if self.is_at_end():
+            raise self.error('Predicates must have parameters')
+        elif self.peek() == left_parenthesis:
+            return PredicateFormula(name, list(self.parse_args()))
 
-    def visit_natural_number_aux(self, tree: ParseTree, digit: str, aux: str = ''):
-        return digit + aux
+        return PredicateFormula(name, [])
 
-    def visit_natural_number(self, tree: ParseTree, digit: str, aux: str = ''):
-        return digit + aux
+    def parse_formula(self):
+        head = self.peek()
 
-    def visit_arg_list_aux(
-        self,
-        tree: ParseTree,
-        comma: Literal['<'] | None = None,
-        opt_space_1: str | None = None,
-        term: Term | None = None,
-        opt_space_2: str | None = None,
-        aux: list[Term] | None = None
-    ):
-        # This will always short-circuit, but both conditions are necessary for mypy
-        if term is None or aux is None:
-            return []
+        if head == left_parenthesis:
+            return self.parse_binary_formula()
 
-        return [term] + aux
+        if head == negation:
+            return self.parse_negation_formula()
 
-    def visit_arg_list(
-        self,
-        tree: ParseTree,
-        opening_brace: Literal['('],
-        opt_space_1: str,
-        term: str,
-        aux: list[Term],
-        opt_space_2: str,
-        closing_brace: Literal[')']
-    ):
-        return [term] + aux
+        if head in QUANTIFIERS:
+            return self.parse_quantifier_formula()
 
-    def visit_opt_space(self, tree: ParseTree, space: str, more_space: str = ''):
-        # <space> may be ε
-        return (space or '') + more_space
+        elif isinstance(head, LatinName):
+            return self.parse_predicate()
 
+        else:
+            raise self.error('Unexpected token')
 
-visitor = FOLVisitor()
-
-
-def parse(string: str, rule: NonTerminal):
-    # Return first
-    for tree in unger.parse(grammar_schema.instantiate(rule), string):
-        return visitor.visit(tree)
-
-    raise ParserError(f'Could not parse {string} as {rule}')
+    parse = parse_formula
 
 
-def parse_formula(string: str) -> Formula:
-    return parse(string, rule=NonTerminal('formula'))
+def parse_term(string: str):
+    tokens = list(FOLTokenizer(string).parse())
+    return FOLParser(tokens).parse_term()
+
+
+def parse_formula(string: str):
+    tokens = list(FOLTokenizer(string).parse())
+    return FOLParser(tokens).parse_formula()

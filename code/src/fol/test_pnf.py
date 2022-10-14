@@ -18,6 +18,7 @@ def test_is_formula_in_pnf():
 
 def test_remove_conditionals():
     def t(string: str):
+        assert parse_formula(string)
         return str(remove_conditionals(parse_formula(string)))
 
     assert t('(ξ = η)') == '(ξ = η)'

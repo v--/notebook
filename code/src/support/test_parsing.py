@@ -12,6 +12,16 @@ test
 '''
 
 
+def test_error_on_eot():
+    parser = Parser('test')
+    parser.advance(4)
+    msg = parser.get_error_message('Error', precede=0, succeed=0)
+    assert msg == '''Error
+test⌁
+    ↑
+'''
+
+
 def test_error_multiline_basic():
     parser = Parser('test1\ntest2\ntest3')
     parser.advance(7)

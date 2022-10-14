@@ -1,14 +1,14 @@
 from .substitution import substitute_in_formula, substitute_in_term
-from .parser import parse, parse_formula
+from .parser import parse_formula, parse_term
 
 
 def test_substitute_in_term():
     def t(term: str, from_term: str, to_term: str):
         return str(
             substitute_in_term(
-                parse(term, 'term'),
-                parse(from_term, 'term'),
-                parse(to_term, 'term')
+                parse_term(term),
+                parse_term(from_term),
+                parse_term(to_term)
             )
         )
 
@@ -22,9 +22,9 @@ def test_substitute_in_formula():
     def t(formula: str, from_term: str, to_term: str):
         return str(
             substitute_in_formula(
-                parse(formula, 'formula'),
-                parse(from_term, 'term'),
-                parse(to_term, 'term')
+                parse_formula(formula),
+                parse_term(from_term),
+                parse_term(to_term)
             )
         )
 

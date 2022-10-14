@@ -29,13 +29,10 @@ def iter_partitions(seq: str, dest: list[NonTerminal | Terminal | SingletonSymbo
 
 
 def generate_trees(sym: NonTerminal | Terminal | SingletonSymbol, string: str, grammar: Grammar, used: set[tuple[NonTerminal, str]] = set()) -> list[ParseTree]:
-    if sym == epsilon and len(string) == 0:
+    if isinstance(sym, Terminal) and sym.value == string:
         return [ParseTree(sym)]
 
-    elif isinstance(sym, Terminal) and sym.value == string:
-        return [ParseTree(sym)]
-
-    elif isinstance(sym, NonTerminal) and (sym, string) not in used:
+    if isinstance(sym, NonTerminal) and (sym, string) not in used:
         return list(
             parse_impl(
                 grammar.schema.instantiate(sym),
@@ -49,9 +46,19 @@ def generate_trees(sym: NonTerminal | Terminal | SingletonSymbol, string: str, g
 
 def parse_impl(grammar: Grammar, string: str, used: set[tuple[NonTerminal, str]]) -> Iterator[ParseTree]:
     for rule in grammar.iter_starting_rules():
-        for part in iter_partitions(string, rule.dest):
-            for subtrees in itertools.product(*(generate_trees(sym, substr, grammar, used) for sym, substr in zip(rule.dest, part))):
-                yield ParseTree(grammar.start, list(subtrees))
+        if rule.dest == [epsilon] and len(string) == 0:
+            yield ParseTree(
+                rule.src[0],
+                [ParseTree(epsilon)]
+            )
+        else:
+            for part in iter_partitions(string, rule.dest):
+                for subtrees in itertools.product(
+                    *(
+                        generate_trees(sym, substr, grammar, used) for sym, substr in zip(rule.dest, part)
+                    )
+                ):
+                    yield ParseTree(grammar.start, list(subtrees))
 
 
 def parse(grammar: Grammar, string: str) -> Iterator[ParseTree]:

@@ -13,7 +13,7 @@ class GrammarSymbol:
     value: str
 
     def __str__(self):
-        return f'{self.value}'
+        return self.value
 
     def __hash__(self):
         return hash(self.value)
@@ -26,7 +26,6 @@ class SingletonSymbol(GrammarSymbol):
     pass
 
 
-space = SingletonSymbol(' ')
 epsilon = SingletonSymbol('ε')
 right_arrow = SingletonSymbol('→')
 pipe = SingletonSymbol('|')
@@ -56,12 +55,17 @@ class GrammarTokenizer(Parser[str]):
             if self.peek() == delim_a:
                 raise self.error(f'Strings cannot be nested', precede=len(buffer) + 1)
 
-            if self.peek_multiple(2) in (r'\<', r'\>', r'\"', r'\\'):
+            if self.peek() == '\\':
                 self.advance()
-                buffer.append(*self.peek())
+
+                if self.peek() in (delim_a, delim_b, '\\'):
+                    buffer.append(self.peek())
+                else:
+                    raise self.error(f'Invalid escape code', precede=1)
+
                 self.advance()
             else:
-                buffer.append(*self.peek())
+                buffer.append(self.peek())
                 self.advance()
 
         self.advance()
@@ -69,36 +73,36 @@ class GrammarTokenizer(Parser[str]):
 
     def parse(self):
         while not self.is_at_end():
-            symbol = self.peek()
+            yield from self.parse_step(self.peek())
 
-            if symbol == 'ε':
-                yield epsilon
-                self.advance()
+    def parse_step(self, head: str):
+        if head == 'ε':
+            yield epsilon
+            self.advance()
 
-            elif symbol == '→':
-                yield right_arrow
-                self.advance()
+        elif head == '→':
+            yield right_arrow
+            self.advance()
 
-            elif symbol == '|':
-                yield pipe
-                self.advance()
+        elif head == '|':
+            yield pipe
+            self.advance()
 
-            elif symbol == '\n':
-                yield new_line
-                self.advance()
+        elif head == '\n':
+            yield new_line
+            self.advance()
 
-            elif symbol == ' ':
-                yield space
-                self.advance()
+        elif head == '<':
+            yield NonTerminal(self.parse_string('<', '>'))
 
-            elif symbol == '<':
-                yield NonTerminal(self.parse_string('<', '>'))
+        elif head == '"':
+            yield Terminal(self.parse_string('"', '"'))
 
-            elif symbol == '"':
-                yield Terminal(self.parse_string('"', '"'))
+        elif head == ' ':
+            self.advance()
 
-            else:
-                raise self.error(f'Unexpected symbol')
+        else:
+            raise self.error(f'Unexpected symbol')
 
 
 class GrammarParser(Parser[Sequence[GrammarSymbol]]):

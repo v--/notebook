@@ -23,15 +23,13 @@ class Parser(Generic[T]):
         return self.index == len(self.seq)
 
     def advance(self, count: int = 1):
-        # assert 0 <= self.index + count < len(self.seq)
+        assert 0 <= self.index + count <= len(self.seq)
         self.index += count
 
-    def peek_multiple(self, count: int):
-        assert 0 <= self.index + count < len(self.seq)
-        return self.seq[self.index: self.index + count]
-
     def peek(self):
-        assert 0 <= self.index < len(self.seq)
+        if self.is_at_end():
+            raise self.error('Unexpected end of input')
+
         return self.seq[self.index]
 
     def parse(self):
@@ -74,17 +72,20 @@ class Parser(Generic[T]):
                 elif i < self.index:
                     min_str_index += len(value)
 
-        marked_value = str(self.seq[self.index])
+        if self.index < len(self.seq):
+            marked_value = str(self.seq[self.index])
 
-        if '\n' in marked_value:
-            if marked_value.endswith('\n'):
-                yield marked_value[:-1] + '↵'
-            else:
-                yield marked_value
+            if '\n' in marked_value:
+                if marked_value.endswith('\n'):
+                    yield marked_value[:-1] + '↵'
+                else:
+                    yield marked_value
+        else:
+            yield '⌁'
 
         yield '\n'
         yield ' ' * min_str_index
-        yield '↑' * len(str(self.seq[self.index]))
+        yield '↑' * (len(str(self.seq[self.index])) if self.index < len(self.seq) else 1)
         yield '\n'
 
         for i in range(mid_seq_index + 1, max_seq_index + 1):

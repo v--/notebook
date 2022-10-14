@@ -1,4 +1,4 @@
-from .types import Variable, FunctionTerm, Term, Formula, EqualityFormula, PredicateFormula, NegationFormula, ConnectiveFormula, QuantifierFormula, Formula
+from .types import Variable, FunctionTerm, Term, Formula, EqualityFormula, PredicateFormula, QuantifierFormula, Formula
 from .visitors import TermVisitor, FormulaTransformationVisitor
 from .variables import get_variables, get_free_variables, new_var_name
 

@@ -1,6 +1,7 @@
 from __future__ import annotations
 from dataclasses import dataclass
-from typing import Literal
+
+from .tokens import SingletonFOLToken
 
 
 @dataclass
@@ -51,12 +52,9 @@ class NegationFormula:
         return f'¬{self.sub}'
 
 
-Connective = Literal['∨', '∧', '→', '↔']
-
-
 @dataclass
 class ConnectiveFormula:
-    conn: Connective
+    conn: SingletonFOLToken
     a: Formula
     b: Formula
 
@@ -64,17 +62,14 @@ class ConnectiveFormula:
         return f'({self.a} {self.conn} {self.b})'
 
 
-Quantifier = Literal['∀', '∃']
-
-
 @dataclass
 class QuantifierFormula:
-    quantifier: Quantifier
+    quantifier: SingletonFOLToken
     variable: Variable
     sub: Formula
 
     def __str__(self):
-        return f'{self.quantifier}{self.variable}.{self.sub}'
+        return f'{self.quantifier.value}{self.variable}.{self.sub}'
 
 
 Formula = EqualityFormula | PredicateFormula | NegationFormula | ConnectiveFormula | QuantifierFormula
