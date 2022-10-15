@@ -174,8 +174,10 @@ class GrammarRule:
             yield cls(src, dest)
 
     @property
-    def is_epsilon(self):
-        return self.dest == [epsilon]
+    def src_symbol(self) -> NonTerminal:
+        assert len(self.src) == 1
+        assert isinstance(self.src[0], NonTerminal)
+        return self.src[0]
 
     def __str__(self):
         return ' '.join(str(sym) for sym in self.src) + ' → ' + ' '.join(str(sym) for sym in self.dest)

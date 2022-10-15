@@ -1,6 +1,7 @@
 import pytest
 
-from .grammar import GrammarSchema, NonTerminal
+from .grammar import Grammar, GrammarSchema, NonTerminal
+from .unger import derives
 
 
 @pytest.fixture
@@ -12,6 +13,17 @@ def an():
         <A> → "a"
     ''')
     return schema.instantiate(NonTerminal('S'))
+
+
+def assert_an(an: Grammar):
+    assert derives(an, '')
+    assert derives(an, 'a')
+    assert derives(an, 'aaa')
+    assert derives(an, 'aaaaaa')
+
+    assert not derives(an, 'b')
+    assert not derives(an, 'ba')
+    assert not derives(an, 'ab')
 
 
 @pytest.fixture
@@ -26,6 +38,15 @@ def anbn():
     return schema.instantiate(NonTerminal('S'))
 
 
+def assert_anbn(anbn: Grammar):
+    assert derives(anbn, '')
+    assert derives(anbn, 'ab')
+    assert derives(anbn, 'aaabbb')
+
+    assert not derives(anbn, 'a')
+    assert not derives(anbn, 'ba')
+
+
 @pytest.fixture
 def s3():
     schema = GrammarSchema.parse('''
@@ -35,3 +56,35 @@ def s3():
     ''')
 
     return schema.instantiate(NonTerminal('S'))
+
+
+def assert_s3(s3: Grammar):
+    assert derives(s3, '')
+    assert derives(s3, 'a')
+    assert derives(s3, 'aa')
+    assert derives(s3, 'aaa')
+    assert derives(s3, 'aaaa')
+
+    assert not derives(s3, 'b')
+
+
+@pytest.fixture
+def binary():
+    schema = GrammarSchema.parse('''
+        <N> → "0" | "1" | "1" <B>
+        <B> → "0" | "1" <B> | "1" | "1" <B>
+    ''')
+
+    return schema.instantiate(NonTerminal('N'))
+
+
+def assert_binary(binary: Grammar):
+    assert derives(binary, '0')
+    assert derives(binary, '1')
+    assert derives(binary, '10')
+    assert derives(binary, '11')
+    assert derives(binary, '100')
+    assert derives(binary, '101')
+
+    assert not derives(binary, '')
+    assert not derives(binary, '01')

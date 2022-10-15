@@ -1,5 +1,3 @@
-import re
-
 from .types import FunctionTerm, Formula, EqualityFormula, PredicateFormula, NegationFormula, ConnectiveFormula, QuantifierFormula, Formula, Term, Variable
 from .visitors import FormulaVisitor, TermVisitor
 
@@ -56,19 +54,3 @@ class BoundVariableVisitor(FormulaVisitor):
 
 def get_bound_variables(formula: Formula) -> set[str]:
     return BoundVariableVisitor().visit(formula)
-
-
-def new_var_name(old_name, context: set[str]):
-    match = re.match(r'(\D+)([1-9]\d*)', old_name)
-
-    if match is None:
-        letters = old_name
-        n = 1
-    else:
-        letters, digits = match.groups()
-        n = int(digits) + 1
-
-    while letters + str(n) in context:
-        n += 1
-
-    return letters + str(n)

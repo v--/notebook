@@ -4,8 +4,8 @@ test:
 	@poetry run pytest --capture=tee-sys
 
 lint:
-	@poetry run pycodestyle .
-	@poetry run mypy .
+	@poetry run pycodestyle src
+	@poetry run mypy src
 
 format-figures:
 	@poetry run python src/commands/format_matrices.py ../figures/*.tex

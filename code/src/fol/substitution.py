@@ -1,6 +1,8 @@
+from ..support.names import new_var_name
+
 from .types import Variable, FunctionTerm, Term, Formula, EqualityFormula, PredicateFormula, QuantifierFormula, Formula
 from .visitors import TermVisitor, FormulaTransformationVisitor
-from .variables import get_variables, get_free_variables, new_var_name
+from .variables import get_variables, get_free_variables
 
 
 class TermSubstitutionVisitor(TermVisitor):

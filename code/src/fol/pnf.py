@@ -1,10 +1,11 @@
 from ..exceptions import NotebookCodeError
+from ..support.names import new_var_name
 
 from .tokens import SingletonFOLToken, meet, join, conditional, biconditional, universal_quantifier, existential_quantifier
 from .types import Formula, EqualityFormula, PredicateFormula, NegationFormula, ConnectiveFormula, QuantifierFormula, Formula, Variable
 from .visitors import FormulaVisitor, FormulaTransformationVisitor
 from .substitution import substitute_in_formula
-from .variables import get_bound_variables, get_free_variables, new_var_name
+from .variables import get_bound_variables, get_free_variables
 
 
 class PNFVerificationVisitor(FormulaVisitor):

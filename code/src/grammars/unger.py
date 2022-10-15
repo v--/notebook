@@ -3,29 +3,18 @@ import itertools
 from typing import Iterator
 
 from .grammar import SingletonSymbol, epsilon, Grammar, NonTerminal, Terminal
-from .chomsky import is_context_free
+from .context_free import is_context_free
 from .parse_tree import ParseTree
+from .epsilon_rules import is_epsilon_rule
 
 
-def iter_partitions(seq: str, dest: list[NonTerminal | Terminal | SingletonSymbol]) -> Iterator[list[str]]:
-    if len(seq) == 0:
-        pass
-    elif len(dest) == 1:
+def iter_partitions(seq: str, n: int) -> Iterator[list[str]]:
+    if n == 1:
         yield [seq]
     else:
-        head = dest[0]
-        tail = dest[1:]
-
-        if head == epsilon:
-            for part in iter_partitions(seq, tail):
-                yield ['', *part]
-        elif isinstance(head, Terminal) and seq[0] == head.value:
-            for part in iter_partitions(seq[1:], tail):
-                yield [seq[0], *part]
-        elif isinstance(head, NonTerminal):
-            for i in range(len(seq) + 1):
-                for part in iter_partitions(seq[i:], tail):
-                    yield [seq[:i], *part]
+        for i in range(len(seq) + 1):
+            for part in iter_partitions(seq[i:], n - 1):
+                yield [seq[:i], *part]
 
 
 def generate_trees(sym: NonTerminal | Terminal | SingletonSymbol, string: str, grammar: Grammar, used: set[tuple[NonTerminal, str]] = set()) -> list[ParseTree]:
@@ -34,7 +23,7 @@ def generate_trees(sym: NonTerminal | Terminal | SingletonSymbol, string: str, g
 
     if isinstance(sym, NonTerminal) and (sym, string) not in used:
         return list(
-            parse_impl(
+            parse(
                 grammar.schema.instantiate(sym),
                 string,
                 {(grammar.start, string), *used}
@@ -44,23 +33,25 @@ def generate_trees(sym: NonTerminal | Terminal | SingletonSymbol, string: str, g
     return []
 
 
-def parse_impl(grammar: Grammar, string: str, used: set[tuple[NonTerminal, str]]) -> Iterator[ParseTree]:
+def parse(grammar: Grammar, string: str, used: set[tuple[NonTerminal, str]] = set()) -> Iterator[ParseTree]:
+    assert is_context_free(grammar), "Unger's parsing algorithm only works on context-free grammars"
     for rule in grammar.iter_starting_rules():
-        if rule.dest == [epsilon] and len(string) == 0:
-            yield ParseTree(
-                rule.src[0],
-                [ParseTree(epsilon)]
-            )
+        if is_epsilon_rule(rule):
+            if len(string) == 0:
+                yield ParseTree(
+                    rule.src_symbol,
+                    [ParseTree(epsilon)]
+                )
         else:
-            for part in iter_partitions(string, rule.dest):
+            for part in iter_partitions(string, len(rule.dest)):
                 for subtrees in itertools.product(
                     *(
-                        generate_trees(sym, substr, grammar, used) for sym, substr in zip(rule.dest, part)
+                        generate_trees(sym, substr, grammar, used)
+                        for sym, substr in zip(rule.dest, part)
                     )
                 ):
                     yield ParseTree(grammar.start, list(subtrees))
 
 
-def parse(grammar: Grammar, string: str) -> Iterator[ParseTree]:
-    assert is_context_free(grammar), "Unger's parsing algorithm only works on context-free grammars"
-    return parse_impl(grammar, string, set())
+def derives(grammar: Grammar, string: str):
+    return sum(1 for tree in parse(grammar, string)) > 0

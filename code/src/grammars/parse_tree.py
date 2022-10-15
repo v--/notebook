@@ -100,7 +100,7 @@ def derivation_to_parse_tree(derivation: Derivation) -> ParseTree:
     tree = None
 
     for step in derivation.steps:
-        subtree = ParseTree(step.rule.src[0])
+        subtree = ParseTree(step.rule.src_symbol)
 
         if len(step.rule.dest) == 0:
             subtree.children.append(ParseTree(epsilon))
@@ -118,6 +118,7 @@ def derivation_to_parse_tree(derivation: Derivation) -> ParseTree:
 def parse_tree_to_derivation(tree: ParseTree) -> Derivation:
     assert isinstance(tree.payload, NonTerminal)
     queue: SimpleQueue[ParseTree] = SimpleQueue()
+
     first_rule = GrammarRule(
         [tree.payload],
         [subtree.payload for subtree in tree.children]
