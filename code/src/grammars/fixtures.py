@@ -72,7 +72,7 @@ def assert_s3(s3: Grammar):
 def binary():
     schema = GrammarSchema.parse('''
         <N> → "0" | "1" | "1" <B>
-        <B> → "0" | "1" <B> | "1" | "1" <B>
+        <B> → "0" | "0" <B> | "1" | "1" <B>
     ''')
 
     return schema.instantiate(NonTerminal('N'))

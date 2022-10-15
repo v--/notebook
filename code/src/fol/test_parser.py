@@ -26,7 +26,7 @@ def test_parsing_variables_invalid():
         parse_term('Εὐκλείδης')
 
 
-def xtest_parsing_functions_valid():
+def test_parsing_functions_valid():
     assert parse_term('f') == FunctionTerm('f', [])
     assert parse_term('f13') == FunctionTerm('f13', [])
     assert parse_term('f(ξ)') == FunctionTerm('f', [Variable('ξ')])

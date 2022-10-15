@@ -24,7 +24,7 @@ def is_essentially_epsilon_free(grammar: Grammar):
     return True
 
 
-def identify_nullable_nonterminals(grammar: Grammar):
+def identify_nullable_non_terminals(grammar: Grammar):
     nullable: set[NonTerminal] = set()
     added_during_iteration = False
 
@@ -60,7 +60,7 @@ def iter_rules_without_nullables(nullable: set[NonTerminal], dest: list[NonTermi
 
 
 def remove_epsilon_rules(grammar: Grammar) -> Grammar:
-    nullable = identify_nullable_nonterminals(grammar)
+    nullable = identify_nullable_non_terminals(grammar)
     new_start = NonTerminal(
         new_var_name(
             grammar.start.value,

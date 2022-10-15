@@ -60,5 +60,19 @@ def test_epsilon_rules_valid(s3: Grammar):
     assert_word_rebuilt(s3, 'aaa')
 
 
-def xtest_epsilon_rules_invalid(s3: Grammar):
+def test_epsilon_rules_invalid(s3: Grammar):
     assert_word_invalid(s3, 'b')
+
+
+def test_binary_numbers_valid(binary: Grammar):
+    assert_word_rebuilt(binary, '0')
+    assert_word_rebuilt(binary, '1')
+    assert_word_rebuilt(binary, '10')
+    assert_word_rebuilt(binary, '11')
+    assert_word_rebuilt(binary, '100')
+    assert_word_rebuilt(binary, '101')
+
+
+def test_binary_numbers_invalid(binary: Grammar):
+    assert_word_invalid(binary, '')
+    assert_word_invalid(binary, '01')

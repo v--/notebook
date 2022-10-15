@@ -43,22 +43,22 @@ class NonTerminal(GrammarSymbol):
 
 
 class GrammarTokenizer(Parser[str]):
-    def parse_string(self, delim_a: str, delim_b: str):
-        assert self.peek() == delim_a
+    def parse_non_terminal(self):
+        assert self.peek() == '<'
         self.advance()
         buffer: list[str] = []
 
-        while self.peek() != delim_b:
+        while self.peek() != '>':
             if self.is_at_end():
-                raise self.error(f'String not closed', precede=len(buffer) + 1)
+                raise self.error(f'Non-terminal identifier not closed', precede=len(buffer) + 1)
 
-            if self.peek() == delim_a:
-                raise self.error(f'Strings cannot be nested', precede=len(buffer) + 1)
+            if self.peek() == '<':
+                raise self.error(f'Non-terminal names cannot be nested', precede=len(buffer) + 1)
 
             if self.peek() == '\\':
                 self.advance()
 
-                if self.peek() in (delim_a, delim_b, '\\'):
+                if self.peek() in ('<', '>', '\\'):
                     buffer.append(self.peek())
                 else:
                     raise self.error(f'Invalid escape code', precede=1)
@@ -93,10 +93,22 @@ class GrammarTokenizer(Parser[str]):
             self.advance()
 
         elif head == '<':
-            yield NonTerminal(self.parse_string('<', '>'))
+            yield NonTerminal(self.parse_non_terminal())
 
         elif head == '"':
-            yield Terminal(self.parse_string('"', '"'))
+            self.advance()
+            value = self.peek()
+
+            if value == '"':
+                raise self.error('Empty terminals are disallowed')
+
+            self.advance()
+
+            if self.peek() != '"':
+                raise self.error('Multi-symbol terminals are disallowed')
+
+            self.advance()
+            yield Terminal(value)
 
         elif head == ' ':
             self.advance()
