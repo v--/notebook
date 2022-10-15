@@ -1,7 +1,6 @@
 from .finite import FiniteAutomaton
 from .finite_determinize import determinize
 from .fixtures import *
-from .fixtures import assert_aabn, assert_leucine
 
 
 # ex:def:formal_language/an

@@ -2,6 +2,9 @@ import re
 
 
 def new_var_name(prefix: str, context: set[str]):
+    if prefix not in context:
+        return prefix
+
     match = re.match(r'(\D+)([1-9]\d*)', prefix)
 
     if match is None:

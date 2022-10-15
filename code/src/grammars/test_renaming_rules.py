@@ -24,6 +24,17 @@ def test_collapse_renaming_rules_simple():
     assert not has_renaming_rules(new_grammar)
 
 
+def test_collapse_renaming_rules_cyclic():
+    grammar = GrammarSchema.parse('''
+        <S> → <A>
+        <A> → "a" | <S>
+    ''').instantiate(NonTerminal('S'))
+
+    assert has_renaming_rules(grammar)
+    new_grammar = collapse_renaming_rules(grammar)
+    assert not has_renaming_rules(new_grammar)
+
+
 def test_collapse_renaming_rules_complex():
     grammar = GrammarSchema.parse('''
         <S> → <A> | <C> | <E>

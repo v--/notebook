@@ -58,49 +58,9 @@ class FiniteAutomaton(Generic[TState, TLabel]):
         return f'Initial: \n\t{str(self.initial)}\nTerminal: \n\t{str(self.terminal)}\nTransitions: \n\t{transition_str}'
 
 
-def determinize_recurse(
-    nondet: FiniteAutomaton[TState, TLabel],
-    visited: set[frozenset[TState]],
-    src_set: frozenset[TState]
-) -> list[FiniteAutomatonTransition[frozenset[TState], TLabel]]:
-    by_label: dict[TLabel, set[TState]] = {}
-    triples: list[FiniteAutomatonTransition[frozenset[TState], TLabel]] = []
-
-    for src, label, dest in nondet.triples:
-        if src in src_set:
-            by_label[label] = by_label.get(label, set())
-            by_label[label].add(dest)
-
-    for label, dest_set_mut in by_label.items():
-        dest_set = frozenset(dest_set_mut)
-        triples.append((src_set, label, dest_set))
-
-    return list(
-        set(
-            itertools.chain(
-                triples,
-                *(
-                    determinize_recurse(nondet, visited | {src_set}, frozenset(dest_set_mut))
-                    for dest_set_mut in by_label.values()
-                    if frozenset(dest_set_mut) not in visited
-                )
-            )
-        )
-    )
-
-
-def determinize(nondet: FiniteAutomaton[TState, TLabel]) -> FiniteAutomaton[frozenset[TState], TLabel]:
-    triples = determinize_recurse(
-        nondet,
-        set(),
-        frozenset(nondet.initial)
-    )
-
+def reverse_automaton(aut: FiniteAutomaton[TState, TLabel]) -> FiniteAutomaton[TState, TLabel]:
     return FiniteAutomaton(
-        triples,
-        initial={frozenset(nondet.initial)},
-        terminal=(
-            set(src for src, _, _ in triples if len(src & nondet.terminal) > 0) |
-            set(dest for _, _, dest in triples if len(dest & nondet.terminal) > 0)
-        ),
+        triples=[(dest, label, src) for (src, label, dest) in aut.triples],
+        initial=aut.terminal,
+        terminal=aut.initial
     )
