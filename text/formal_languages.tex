@@ -281,7 +281,7 @@ Languages are used to define formulas for expressing the \hyperref[def:zfc]{axio
 
   Let \( \to \) be some \hyperref[def:binary_relation]{binary relation} over \( (V \cup \Sigma)^* \), whose members we call \term{production rules}. We impose the restriction that, for every rule \( v \to w \), the word \( v \) contains at least one terminal.
 
-  We call the quadruple \( (V, \Sigma, \to, S) \) a \term{phrase-structure grammar} or simply a \term{formal grammar}.
+  We call the quadruple \( (V, \Sigma, \to, S) \) a \term{formal grammar}.
 
   \begin{thmenum}
     \thmitem{def:formal_grammar/derivation} We define the binary relation \( \Rightarrow \) on the Kleene star \( (V \cup \Sigma)^* \) by declaring that, for every two \hyperref[def:formal_language/word]{words} \( p \) and \( s \) over \( V \cup \Sigma \) and every production rule \( v \to w \), we have \( pvs \Rightarrow pws \).
@@ -460,15 +460,16 @@ Languages are used to define formulas for expressing the \hyperref[def:zfc]{axio
     \end{aligned}
   \end{equation*}
 
-  \Fullref{alg:epsilon_rule_removal} suggests instead the essentially length-increasing grammar:
+  This is problematic for parsing algorithms because we cannot check in finitely many steps whether a grammar generates a word. \Fullref{alg:epsilon_rule_removal} suggests instead the essentially length-increasing grammar
   \begin{equation*}
     \begin{aligned}
       S &\to \varepsilon \\\
       S &\to A, \\
       A &\to a, \\
-      A &\to AA.
+      A &\to AA,
     \end{aligned}
   \end{equation*}
+  which disallows the aforementioned derivations.
 \end{example}
 
 \begin{algorithm}[Word membership in context-sensitive languages]\label{alg:length_increasing_grammar}
@@ -479,7 +480,7 @@ Languages are used to define formulas for expressing the \hyperref[def:zfc]{axio
 \begin{comments}
   \item This algorithm can be used to test whether a word belongs to a \hyperref[def:chomsky_hierarchy/context_sensitive]{context-sensitive language}, hence the name.
 
-  \item Compare this to the much more complicated \fullref{alg:brute_force_parsing} that works in more restricted cases.
+  \item Compare this to the more complicated \fullref{alg:brute_force_parsing} that handled more restricted cases, but also handles \( \varepsilon \)-rules.
 \end{comments}
 \begin{proof}
   As a consequence of \fullref{thm:length_increasing_grammar}, \( w \) belongs to \( \mscrL \) if and only if some derivation from \( S \) of length at most \( \card(V \cup \Sigma)^{n+1} \) ends with \( w \).
@@ -580,12 +581,12 @@ Languages are used to define formulas for expressing the \hyperref[def:zfc]{axio
 
   \begin{thmenum}
     \thmitem{alg:length_increasing_to_context_sensitive/intermediate} Build an intermediate grammar \( G_I = (V_I, \Sigma, \to_I, S) \) as follows:
-    \begin{thmenum}
-      \thmitem{alg:length_increasing_to_context_sensitive/intermediate/new} Let \( \Sigma_I \) is a set of new non-terminals, one for each terminal in \( \Sigma \), and let \( \varphi: \Sigma \to \Sigma_I \) be an explicit bijective mapping between the two.
-      \thmitem{alg:length_increasing_to_context_sensitive/intermediate/non_terminals} Let \( V_I \coloneqq V \cup \Sigma_I \).
-      \thmitem{alg:length_increasing_to_context_sensitive/intermediate/new_rules} For each terminal \( a \in \Sigma \), add to \( G_I \) a new rule \( \varphi(a) \to a \).
-      \thmitem{alg:length_increasing_to_context_sensitive/intermediate/substitution} For each rule \( v \to w \), we add a corresponding rule to \( G_I \) by replacing all terminals in \( v \) and \( w \) with the corresponding new non-terminals.
-    \end{thmenum}
+    \begin{itemize}
+      \item Let \( \Sigma_I \) be a set of new non-terminals, one for each terminal in \( \Sigma \), and let \( \varphi: \Sigma \to \Sigma_I \) be an explicit bijective mapping between the two.
+      \item Let \( V_I \coloneqq V \cup \Sigma_I \).
+      \item For each terminal \( a \in \Sigma \), add to \( G_I \) a new rule \( \varphi(a) \to a \).
+      \item For each rule \( v \to w \), add a corresponding rule to \( G_I \) by replacing all terminals in \( v \) and \( w \) with the corresponding new non-terminals.
+    \end{itemize}
 
     \thmitem{alg:length_increasing_to_context_sensitive/init} Let \( V_0 \coloneqq V_I \) and let \( \to'_0 \) be the set of context-sensitive rules of \( G_I \), excluding \( S \to \varepsilon \). Enumerate all non-context-sensitive rules in \( G_I \) as \( v_k \to w_k \) for \( k = 1, \ldots, m \).
 
@@ -630,7 +631,7 @@ Languages are used to define formulas for expressing the \hyperref[def:zfc]{axio
   \begin{itemize}
     \item For theoretical purposes, we can use \fullref{alg:epsilon_rule_removal} to adapt context-free languages to \fullref{alg:length_increasing_grammar}.
 
-    \item For practical purposes, there exists many algorithms for parsing context-free languages. These algorithms are mostly restricted to certain classes of context-free grammars; see e.g. \cite[ch. 6]{Salomaa1987}. General algorithms for parsing all context-free grammars are scarcer; several are discussed in \cite{Economopoulos2006}. We present \fullref{alg:brute_force_parsing}, which handles arbitrary context-free grammars, but is too inefficient to use in practice.
+    \item For practical purposes, parsing context-free languages is a topic in itself. These algorithms are mostly restricted to certain classes of context-free grammars; see e.g. \cite[ch. 6]{Salomaa1987}. General algorithms for parsing all context-free grammars are scarcer; several are discussed in \cite{Economopoulos2006}. We present \fullref{alg:brute_force_parsing}, which handles arbitrary context-free grammars, but is too inefficient to use in practice.
   \end{itemize}
 \end{remark}
 
@@ -641,8 +642,8 @@ Languages are used to define formulas for expressing the \hyperref[def:zfc]{axio
     \thmitem{alg:epsilon_rule_removal/init} Define recursively the sequence of sets
     \begin{equation*}
       U_k \coloneqq \begin{cases}
-        \set{ A \in V \given A \to \varepsilon },                              &k = 0, \\
-        U_{k-1} \cup \set{ A \in V \given \qexists{B \in U_{k-1}^*} A \to B }, &k > 0.
+        \set{ A \in V \given A \to \varepsilon },                                                          &k = 0, \\
+        U_{k-1} \cup \set{ A \in V \given \qexists{B_1, \ldots, B_n \in U_{k-1}^*} A \to B_1 \cdots B_n }, &k > 0.
       \end{cases}
     \end{equation*}
 
@@ -652,7 +653,7 @@ Languages are used to define formulas for expressing the \hyperref[def:zfc]{axio
 
     \thmitem{alg:epsilon_rule_removal/rules} Now our goal is to define the rules of \( G' \) based on the rules of \( G \), but with zero or more \enquote{nullable} non-terminals removed from the right side of any rule.
 
-    Let \( S' \) be an entirely new start symbol and let \( V' \coloneqq V \cup \set{ S' } \). Define the production relation \( A \to' w \) to hold if \( w \) is nonempty and there exist words \( w_0, \ldots, w_n \) over \( V \cup \Sigma \) and non-terminals \( B_1, \ldots, B_n \) from \( U_m \) such that
+    Let \( S' \) be an entirely new start symbol and let \( V' \coloneqq V \cup \set{ S' } \). Define the production relation \( A \to' w \) to hold if \( w \) \hi{is nonempty} and there exist words \( w_0, \ldots, w_n \) over \( V \cup \Sigma \) and non-terminals \( B_1, \ldots, B_n \) from \( U_m \) such that
     \begin{equation*}
       A \to w_0 B_1 w_1 B_2 w_2 \cdots B_n w_n.
     \end{equation*}
@@ -674,27 +675,27 @@ Languages are used to define formulas for expressing the \hyperref[def:zfc]{axio
   \Fullref{alg:epsilon_rule_removal} shows that every context-free grammar can be converted to another context-free grammar that is also context-sensitive.
 \end{proof}
 
-\begin{algorithm}[Renaming rule collapse]\label{alg:rewriting_rule_collapse}
-  Fix a \hyperref[def:chomsky_hierarchy/context_free]{context-free} grammar \( G = (V, \Sigma, \to, S) \). We will build an \hyperref[def:formal_grammar/equivalent]{equivalent} context-free grammar \( G' = (V, \Sigma, \to', S) \) in which there are no \enquote{renaming} rules of the form \( A \to B \) (except possibly when \( A = S \)).
+\begin{algorithm}[Renaming rule collapse]\label{alg:renaming_rule_collapse}
+  Fix an \hyperref[def:epsilon_free_grammar]{essentially \( \varepsilon \)-free} \hyperref[def:chomsky_hierarchy/context_free]{context-free} grammar \( G = (V, \Sigma, \to, S) \). We will build an \hyperref[def:formal_grammar/equivalent]{equivalent} context-free grammar \( G' = (V, \Sigma, \to', S) \) in which there are no rules of the form \( A \to B \). We call such rules \term{renaming rules}.
+
+  Out goal is to \enquote{collapse} derivations like \( A \to B \to C \to w \) into \( A \to' w \).
 
   \begin{thmenum}
-    \thmitem{alg:rewriting_rule_collapse/init} Recursively define
+    \thmitem{alg:renaming_rule_collapse/rules} For every rule \( A \to w \), we define a \hyperref[def:multi_valued_function]{multi-valued function} \( C(A \to w, U) \) whose values are words over \( V \cup \Sigma \). The parameter \( U \) is a set of non-terminals \enquote{already traversed} during recursion, we use it to avoid unbounded recursion like in the case of \( A \to B \to A \). Let
     \begin{equation*}
-      U_k \coloneqq \begin{cases}
-        \set{ (A, A) \given A \in V },                                                          &k = 0, \\
-        U_{k-1} \cup \set{ (A, C) \given (A, B) \in U_{k-1} \T{and} B \to C \T{and} C \neq A }, &k > 0.
+      C(A \to w, U) \coloneqq \begin{cases}
+        \varnothing,                  &A \in U, \\
+        C(B \to v, U \cup \set{ A }), &w = B \T{and} B \to v, \\
+        \set{ v },                    &\T{otherwise.}
       \end{cases}
     \end{equation*}
 
-    Since \( V \) has only finitely many non-terminals, the sequence stabilizes at some index \( m \).
-
-    \thmitem{alg:rewriting_rule_collapse/rules} Let \( S \to' w \) if \( S \to w \) and, for \( A \neq S \), \( A \to' w \) if \( B \to w \), where
-    \begin{itemize}
-      \item \( (A, B) \in U_m \),
-      \item the word \( w \) is \hi{not} a single non-terminal.
-    \end{itemize}
+    \thmitem{alg:renaming_rule_collapse/new_grammar} Let \( A \to' v \) hold if and only if \( v \in C(A \to w, \varnothing) \) for some rule \( A \to w \).
   \end{thmenum}
 \end{algorithm}
+\begin{comments}
+  \item This algorithm can be found as \texttt{grammars.renaming\_rules.collapse\_renaming\_rules} in \cite{code}.
+\end{comments}
 
 \begin{definition}\label{def:reverse_grammar}\mcite[17]{Salomaa1987}
   We define the \term{reverse grammar} of the \hyperref[def:chomsky_hierarchy/context_free]{context-free} \( G = (V, \Sigma, \to, S) \) as
@@ -735,7 +736,7 @@ Languages are used to define formulas for expressing the \hyperref[def:zfc]{axio
 
     \thmitem{alg:finite_automaton_from_regular_grammar/epsilon} Let \( G_2 = (V_2, \Sigma, \to_2, S_2) \) be the grammar obtained from \( G_1 \) by removing \( \varepsilon \)-rules via \Fullref{alg:epsilon_rule_removal}.
 
-    \thmitem{alg:finite_automaton_from_regular_grammar/collapse} Let \( G_3 = (V_2, \Sigma, \to_3, S_2) \) be the grammar obtained from \( G_2 \) by collapsing renaming rules via \fullref{alg:rewriting_rule_collapse}.
+    \thmitem{alg:finite_automaton_from_regular_grammar/collapse} Let \( G_3 = (V_2, \Sigma, \to_3, S_2) \) be the grammar obtained from \( G_2 \) by collapsing renaming rules via \fullref{alg:renaming_rule_collapse}.
 
     \thmitem{alg:finite_automaton_from_regular_grammar/intermediate} Build another intermediate grammar \( G_4 = (V_4, \Sigma, \to_4, S_2) \) by replacing
     \begin{itemize}
@@ -787,6 +788,9 @@ Languages are used to define formulas for expressing the \hyperref[def:zfc]{axio
     \end{equation*}
   \end{thmenum}
 \end{algorithm}
+\begin{comments}
+  \item This algorithm can be found as \texttt{grammars.regular.to\_finite\_automaton} in \cite{code}.
+\end{comments}
 
 \begin{algorithm}[Right-linear grammar from finite automaton]\label{alg:right_linear_grammar_from_finite_automaton}\mcite[thm. 4.10.1]{Savage1998}
   Let \( F = (\Sigma, Q, \delta, I, T) \) be a \hyperref[def:finite_automaton]{finite automaton}. We will build a \hyperref[def:chomsky_hierarchy/regular]{right-linear grammar} \( G = (V, \Sigma, \to, S) \) that \hyperref[def:formal_grammar/language]{generates} \( \mscrL(F) \).
@@ -807,6 +811,9 @@ Languages are used to define formulas for expressing the \hyperref[def:zfc]{axio
     \end{itemize}
   \end{thmenum}
 \end{algorithm}
+\begin{comments}
+  \item This algorithm can be found as \texttt{grammars.regular.from\_finite\_automaton} in \cite{code}.
+\end{comments}
 
 \begin{proposition}\label{thm:regular_languages}
   The following are equivalent for a given \hyperref[def:formal_language/language]{language}:

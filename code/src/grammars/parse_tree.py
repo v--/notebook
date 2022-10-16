@@ -11,6 +11,7 @@ from rich.tree import Tree
 from ..support.rich import rich_to_text
 
 from .grammar import GrammarRule, SingletonSymbol, epsilon, NonTerminal, Terminal
+from .epsilon_rules import is_epsilon_rule
 
 
 @dataclass
@@ -96,13 +97,14 @@ def _insert_subtree_leftmost(tree: ParseTree, subtree: ParseTree):
     return False
 
 
+# This is alg:leftmost_derivation_from_parse_tree in the text
 def derivation_to_parse_tree(derivation: Derivation) -> ParseTree:
     tree = None
 
     for step in derivation.steps:
         subtree = ParseTree(step.rule.src_symbol)
 
-        if len(step.rule.dest) == 0:
+        if is_epsilon_rule(step.rule):
             subtree.children.append(ParseTree(epsilon))
         else:
             subtree.children = [ParseTree(sym) for sym in step.rule.dest]
@@ -115,6 +117,7 @@ def derivation_to_parse_tree(derivation: Derivation) -> ParseTree:
     return cast(ParseTree, tree)
 
 
+# This is alg:parse_tree_from_derivation in the text
 def parse_tree_to_derivation(tree: ParseTree) -> Derivation:
     assert isinstance(tree.payload, NonTerminal)
     queue: SimpleQueue[ParseTree] = SimpleQueue()

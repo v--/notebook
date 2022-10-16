@@ -78,6 +78,7 @@ def remove_epsilon_rules(grammar: Grammar) -> Grammar:
             continue
 
         for new_dest in iter_rules_without_nullables(nullable, cast(list[NonTerminal | Terminal], rule.dest)):
-            new_schema.rules.append(GrammarRule(rule.src, new_dest))
+            if len(new_dest) > 0:
+                new_schema.rules.append(GrammarRule(rule.src, new_dest))
 
     return new_schema.instantiate(new_start)

@@ -163,5 +163,6 @@ def move_quantifiers(formula: Formula):
     return MoveQuantifiersVisitor().visit(formula)
 
 
+# This is alg:prenex_normal_form_conversion in the text
 def to_pnf(formula: Formula):
     return move_quantifiers(move_negations(remove_conditionals(formula)))

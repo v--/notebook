@@ -151,117 +151,123 @@
   A leftmost derivation can be achieved via reordering of the derivation steps.
 \end{proof}
 
+\begin{algorithm}[Parse tree from derivation]\label{alg:parse_tree_from_derivation}
+  Fix a context-free grammar \( G = (V, \Sigma, \to, S) \) and a derivation
+  \begin{equation*}
+    S = w_0 \Rightarrow w_1 \Rightarrow \cdots \Rightarrow w_m = w
+  \end{equation*}
+  of the word
+  \begin{equation*}
+    w = (a_1, \ldots, a_n).
+  \end{equation*}
+
+  We will construct a parse tree recursively. At step \( i \), where \( i = 0, \ldots, m \), the leaves of the tree \( T_i \) (traversed via \hyperref[def:traversal_ordering]{pre-ordering}) should be the symbols of \( w_i \). Proceed as follows:
+  \begin{thmenum}
+    \thmitem{alg:parse_tree_from_derivation/initial} Let \( T_0 \) be the tree with only node \( S \).
+
+    \thmitem{alg:parse_tree_from_derivation/step} For every \( i > 0 \), suppose that we have already built \( T_{i-1} \) for \( w_{i-1} \). Let \( A \to t_1 \cdots t_{n_i} \) be the rule producing \( w_i \) from \( w_{i-1} \).
+
+    Since the leaves of \( T_{i-1} \) are the symbols of \( w_{i-1} \), there exists a leaf label in \( T_{i-1} \) is \( A \). For definiteness, fix the first such leaf with respect to the \hyperref[def:traversal_ordering]{pre-ordering relation}. Then \( T_{i-1} \) has the form
+    \begin{equation*}
+      \begin{aligned}
+        \includegraphics[page=1]{output/alg__parse_tree_from_derivation.pdf}
+      \end{aligned}
+    \end{equation*}
+
+    \begin{itemize}
+      \item If \( n_i = 0 \), i.e. if \( w_i = \varepsilon \), let \( T_i \) be the tree
+      \begin{equation*}
+        \begin{aligned}
+          \includegraphics[page=2]{output/alg__parse_tree_from_derivation.pdf}
+        \end{aligned}
+      \end{equation*}
+
+      \item If \( n_i > 0 \), let \( T_i \) instead be the tree
+      \begin{equation*}
+        \begin{aligned}
+          \includegraphics[page=3]{output/alg__parse_tree_from_derivation.pdf}
+        \end{aligned}
+      \end{equation*}
+    \end{itemize}
+
+    In both cases, the leaves of \( T_i \) are the symbols of \( w_i \).
+  \end{thmenum}
+
+  Then \( T_m \) is the desired parse tree for \( w \).
+\end{algorithm}
+\begin{comments}
+  \item This algorithm can be found as \texttt{grammars.parse\_tree.parse\_tree\_to\_derivation} in \cite{code}.
+\end{comments}
+
+\begin{algorithm}[Leftmost derivation from parse tree]\label{alg:leftmost_derivation_from_parse_tree}
+  Let \( T = (X, E, r, \leq, l) \) be a parse tree for \( w = a_1 \cdots a_n \).
+
+  We will construct a derivation recursively. We will actually construct a sequence
+  \begin{equation*}
+    u_0, u_1, u_2, \ldots
+  \end{equation*}
+  of words over \( X \), i.e. sequences of nodes of \( T \), such that the ordering of the symbols of \( u_i \) agrees with the \hyperref[def:traversal_ordering]{pre-ordering traversal} in \( T \). Since there are only finitely many nodes in \( T \), this sequence stabilizes, and there exists some index \( m \) such that the labels of \( u_m \) are terminals and \( u_{m+i} = u_m \) for any \( i > 0 \).
+
+  Proceed as follows:
+  \begin{thmenum}
+    \thmitem{alg:leftmost_derivation_from_parse_tree/initial} Define
+    \begin{equation*}
+      u_0 \coloneqq r
+    \end{equation*}
+    and
+    \begin{equation*}
+      w_0 \coloneqq l(r) = S.
+    \end{equation*}
+
+    \thmitem{alg:leftmost_derivation_from_parse_tree/step} For every \( i > 0 \), suppose that
+    \begin{equation*}
+      u_{i-1} = k_1 \cdots k_{n_{i-1}}.
+    \end{equation*}
+
+    \begin{itemize}
+      \item If \( l(k_j) \) is a terminal for each \( j = 1, \ldots, n_{i-1} \), let \( u_i \coloneqq u_{i-1} \). This will mean that the \enquote{stabilizing index} \( m \) is either \( i - 1 \) or some smaller index.
+
+      \item Otherwise, let \( j \) be the smallest index such that \( l(k_j) \) is a non-terminal, and let \( k'_1 < \cdots < k'_{n'_j} \) be the successors of \( k_j \). Then define
+      \begin{equation*}
+        u_i \coloneqq k_1 \cdots k_{j-1} \overline{ k'_1 \cdots k'_{n'_j} } k_{j+1} \cdots k_{n_j}.
+      \end{equation*}
+
+      Define also
+      \begin{equation*}
+        w_i \coloneqq l(k_1) \cdots l(k_{j-1}) \overline{ l(k'_1) \cdots l(k'_{n'_j}) } l(k_{j+1}) \cdots l(k_{n_j}).
+      \end{equation*}
+
+      \Fullref{def:parse_tree/successors} ensures there exists a rule
+      \begin{equation*}
+        l(k_j) \to l(k'_1) \cdots l(k'_{n'_j})
+      \end{equation*}
+      that allows us to transition from \( w_{i-1} \) to \( w_i \).
+    \end{itemize}
+
+    \thmitem{alg:leftmost_derivation_from_parse_tree/down} The desired derivation is
+    \begin{equation*}
+      S = w_0 \Rightarrow w_1 \cdots w_{m-1} \Rightarrow w_m.
+    \end{equation*}
+  \end{thmenum}
+\end{algorithm}
+\begin{comments}
+  \item This algorithm can be found as \texttt{grammars.parse\_tree.derivation\_to\_parse\_tree} in \cite{code}.
+\end{comments}
+
 \begin{proposition}\label{thm:derivations_and_parse_trees}
   For every \hyperref[def:leftmost_derivation]{leftmost derivation} in a \hyperref[def:chomsky_hierarchy/context_free]{context-free grammar} there exists a unique \hyperref[def:parse_tree]{parse tree} for the same word and vice versa.
 \end{proposition}
 \begin{comments}
   \item When combined with \fullref{thm:leftmost_derivation_existence}, this implies that a word is derivable if and only if there exists a parse tree for it.
-  \item We will not prove uniqueness separately because it is clear from the existence proof.
 \end{comments}
 \begin{proof}
-  Fix a context-free grammar \( G = (V, \Sigma, \to, S) \).
+  \Fullref{alg:parse_tree_from_derivation} allows us to construct a parse tree from any derivation. Multiple derivations can lead to the same parse tree, but our choice of non-terminal in \fullref{alg:parse_tree_from_derivation/step} ensures that a leftmost derivation leads to a unique parse tree.
 
-  \SufficiencySubProof Let
-  \begin{equation*}
-    S \Rightarrow w_1 \Rightarrow \cdots \Rightarrow w_m = w
-  \end{equation*}
-  be a leftmost derivation of the word
-  \begin{equation*}
-    w = (a_1, \ldots, a_n).
-  \end{equation*}
-
-  Construct a parse tree recursively as follows:
-  \begin{itemize}
-    \item Let \( t_1, \ldots, t_{n_1} \) be the (terminal and non-terminal) symbols of \( w_1 \).
-
-    Define a labeled ordered tree
-    \begin{equation*}
-      T_1 = (X_1, E_1, r, \leq, l_1)
-    \end{equation*}
-    as follows:
-    \begin{itemize}
-      \item Let \( X_1 \coloneqq \set{ 0, 1, \ldots, n_1 } \).
-      \item Let \( r \coloneqq 0 \) be the root.
-      \item Let
-      \begin{equation*}
-        l_1(k) \coloneqq \begin{cases}
-          S,   &k = 0, \\
-          t_k, &k > 0.
-        \end{cases}
-      \end{equation*}
-
-      \item Let \( E_1 \coloneqq \set{ (r, k) \given k = 1, \ldots, n_1 } \).
-      \item Let \( \leq \) be the usual integer ordering.
-    \end{itemize}
-
-    \item Suppose that we have already built
-    \begin{equation*}
-      T_{i-1} = (X_{i-1}, E_{i-1}, r_{i-1}, \leq, l_{i-1})
-    \end{equation*}
-    for \( w_{i-1} \).
-
-    Let \( A \to t_1 \cdots t_{n_i} \) be a rule such that \( w_{i-1} = p A s \) and \( w_i = p t_1 \cdots t_{n_i} s \). Since the derivation is leftmost, \( p \) consists only of terminals. It is possible for \( t_{n_i} \) to be zero in the case of \( \varepsilon \)-rules, and we will handle such cases.
-
-    Let \( s \) be the first node in \( T_{i-1} \) with label \( A \) with respect to the \hyperref[def:traversal_ordering]{pre-ordering relation}.
-
-    Put
-    \begin{equation*}
-      N_{i-1} \coloneqq \sum_{j=1}^{i-1} n_j.
-    \end{equation*}
-
-    Define
-    \begin{equation*}
-      T_i = (X_i, E_i, r, \leq, l_i)
-    \end{equation*}
-    as follows:
-    \begin{itemize}
-      \item Let \( X \coloneqq X_{i-1} \cup \set{ N_{i-1} + 1, \ldots, N_{i-1} + \max\set{ 1, n_i } } \).
-      \item Let
-      \begin{equation*}
-        l_i(k) \coloneqq \begin{cases}
-          l_{i-1}(k),      &k \leq N_{i-1}, \\
-          \varepsilon,     &k = N_{i-1} + 1 \T{and} t_{n_i} = 0, \\
-          t_{k - n_{i-1}}, &k > N_{i-1} \T{and} t_{n_i} > 0.
-        \end{cases}
-      \end{equation*}
-
-      \item Let \( E_i \coloneqq E_{i-1} \cup \set{ (s, n_{i-1} + k) \given k = 1, \ldots, \max\set{ 1, n_i } } \).
-    \end{itemize}
-  \end{itemize}
-
-  Then \( T_m \) is the desired parse tree for \( w \).
-
-  \NecessitySubProof Let \( T = (X, E, r, \leq, l) \) be a parse tree for \( w = a_1 \cdots a_n \).
-
-  Construct a derivation recursively as follows:
-  \begin{itemize}
-    \item Let \( k_1, \ldots, k_{n_1} \) be the successors of \( r \). Define
-    \begin{equation*}
-      w_1 \coloneqq l(k_1) \cdots l(k_{n_1}).
-    \end{equation*}
-
-    \item Suppose that we have a derivation
-    \begin{equation*}
-      w_{i-1} = t_1 \cdots t_{i-1},
-    \end{equation*}
-    where \( t_1, \ldots, t_{i-1} \) are labels of leaves of a subtree \( T_{i-1} \) of \( T \) traversed in \hyperref[def:traversal_ordering]{pre-order}.
-
-    Let \( t_{k_i} \) be the first node with a non-terminal label in \( T_{i-1} \). Let \( s_1 < \cdots < s_l \) be the successors of \( t_{k_i} \). Then define
-    \begin{equation*}
-      w_i \coloneqq l(t_1) \cdots l(t_{k_i - 1}) l(s_1) \cdots l(s_l) l(t_{k_i + 1}) \cdots l(t_{n-1}).
-    \end{equation*}
-
-    It is possible that \( l = 1 \) and \( s_1 = \varepsilon \), and we properly handle this case.
-  \end{itemize}
-
-  Then \fullref{def:parse_tree/successors} ensures that
-  \begin{equation*}
-    S \Rightarrow w_1 \Rightarrow \cdots \Rightarrow w_m = w.
-  \end{equation*}
+  Conversely, \fullref{alg:leftmost_derivation_from_parse_tree} allows us to construct a leftmost derivation from any parse tree. Uniqueness is ensured by choosing at \fullref{alg:leftmost_derivation_from_parse_tree/step} the smallest possible index.
 \end{proof}
 
 \begin{algorithm}[Brute force parsing]\label{alg:brute_force_parsing}
-  Fix a \hyperref[def:chomsky_hierarchy/context_free]{context-free grammar} \( G = (V, \Sigma, \to, S) \). For each non-terminal \( A \), we will introduce a \hyperref[def:multi_valued_function/total]{multi-valued function} \( P_A(w) \), whose values are parse trees of \( w \).
+  Fix a \hyperref[def:chomsky_hierarchy/context_free]{context-free grammar} \( G = (V, \Sigma, \to, S) \). For each non-terminal \( A \), we will introduce a \hyperref[def:multi_valued_function]{multi-valued function} \( P_A(w) \), whose values are parse trees of \( w \).
 
   To avoid unbounded recursion, we will also define the auxiliary multi-valued function \( P'_A(w, U) \), where \( U \) is a set of pairs \( (A, w) \) \enquote{already traversed} during recursion.
 
@@ -299,8 +305,8 @@
       \item If \( v_k \) is a non-terminal, let
       \begin{equation*}
         \mscrT_k \coloneqq \begin{cases}
-          \varnothing,                                         &(v_k, w_k) \in U, \\
-          P'_{v_k}\parens[\Big]{ w_k, U \cup \set{ (A, w) } }, &\T{otherwise.}
+          \varnothing,                          &(v_k, w_k) \in U, \\
+          P'_{v_k}(w_k, U \cup \set{ (A, w) }), &\T{otherwise.}
         \end{cases}
       \end{equation*}
     \end{itemize}
@@ -335,7 +341,7 @@
 \begin{comments}
   \item This is a variation of Stephen Unger's algorithm described in \cite{Unger1968}.
   \item This algorithm can be found as \texttt{grammars.brute\_force\_parse.parse} in \cite{code}.
-  \item We can avoid the auxiliary parameter \( U \) if the grammar has no \hyperref[def:epsilon_free_grammar]{\( \varepsilon \)-rules} and no \hyperref[alg:rewriting_rule_collapse]{renaming rules}, but otherwise we can easily get stuck in a loop like \( A \Rightarrow B \Rightarrow A \) (if \( A \to B \) and \( B \to A \)) or \( A \Rightarrow AB \Rightarrow A \) (if \( B \to \varepsilon \)).
+  \item We can avoid the auxiliary parameter \( U \) if the grammar has no \hyperref[def:epsilon_free_grammar]{\( \varepsilon \)-rules} and no \hyperref[alg:renaming_rule_collapse]{renaming rules}, but otherwise we can easily get stuck in a loop like \( A \Rightarrow B \Rightarrow A \) (if \( A \to B \) and \( B \to A \)) or \( A \Rightarrow AB \Rightarrow A \) (if \( B \to \varepsilon \)).
 \end{comments}
 
 \begin{definition}\label{def:grammar_ambiguity}\mcite[54]{Salomaa1987}
