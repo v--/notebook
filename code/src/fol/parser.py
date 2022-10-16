@@ -14,7 +14,7 @@ class FOLTokenizer(Parser[str]):
     def take_while_in_range(self, start: str, end: str):
         buffer: list[str] = []
 
-        while not self.is_at_end() and start < self.peek() < end:
+        while not self.is_at_end() and start <= self.peek() <= end:
             buffer.append(self.peek())
             self.advance()
 
@@ -41,10 +41,10 @@ class FOLTokenizer(Parser[str]):
         elif head.isdigit():
             yield NaturalNumber(self.take_while_in_range('0', '9'))
 
-        elif 'a' < head < 'z':
+        elif 'a' <= head <= 'z':
             yield LatinName(self.take_while_in_range('a', 'z'))
 
-        elif 'α' < head < 'ω':
+        elif 'α' <= head <= 'ω':
             yield GreekName(self.take_while_in_range('α', 'ω'))
 
         elif head == ' ':
