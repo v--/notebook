@@ -1,7 +1,7 @@
 from ..support.parsing import ParserError
 
 from .epsilon_rules import remove_epsilon_rules, is_epsilon_free, is_essentially_epsilon_free
-from .unger import parse
+from .brute_force_parse import parse
 from .fixtures import *
 
 

@@ -1,7 +1,7 @@
 import pytest
 
 from .grammar import Grammar, GrammarSchema, NonTerminal
-from .unger import derives
+from .brute_force_parse import derives
 
 
 @pytest.fixture

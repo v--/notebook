@@ -1,7 +1,7 @@
 from ..support.parsing import ParserError
 
 from .renaming_rules import has_renaming_rules, collapse_renaming_rules
-from .unger import parse
+from .brute_force_parse import parse
 from .fixtures import *
 
 

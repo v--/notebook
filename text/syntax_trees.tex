@@ -260,158 +260,83 @@
   \end{equation*}
 \end{proof}
 
-\begin{algorithm}[Recursive descent parsing]\label{alg:recursive_descent_parsing}
-  Fix an \hyperref[def:epsilon_free_grammar]{essentially \( \varepsilon \)-free} \hyperref[def:chomsky_hierarchy/context_free]{context-free grammar} \( G = (V, \Sigma, \to, S) \). For each non-terminal \( A \), we will introduce a function
+\begin{algorithm}[Brute force parsing]\label{alg:brute_force_parsing}
+  Fix a \hyperref[def:chomsky_hierarchy/context_free]{context-free grammar} \( G = (V, \Sigma, \to, S) \). For each non-terminal \( A \), we will introduce a \hyperref[def:multi_valued_function/total]{multi-valued function} \( P_A(w) \), whose values are parse trees of \( w \).
+
+  To avoid unbounded recursion, we will also define the auxiliary multi-valued function \( P'_A(w, U) \), where \( U \) is a set of pairs \( (A, w) \) \enquote{already traversed} during recursion.
+
+  Suppose that we are given the rule \( A \to v_1 \cdots v_m \), where each \( v_k \) is a single symbol (either a terminal or non-terminal). The algorithm relies on partitioning \( w \) into \( m \) parts - one for each symbol in \( v \) - by which we mean
   \begin{equation*}
-    P_A: \Sigma^* \to \mscrT_A \cup \set{ \bot },
+    w = \underbrace{ a_1 \cdots a_{\gamma_1} }_{w_1} \underbrace{ a_{\gamma_1 + 1} \cdots a_{\gamma_1 + \gamma_2} }_{w_2} \cdots \underbrace{ a_{\gamma_1 + \cdots + \gamma_{m-1} + 1} \cdots a_{\gamma_1 + \cdots + \gamma_m} }_{w_m},
   \end{equation*}
-  where \( \mscrT_A \) denotes the set of \hyperref[def:parse_tree]{parse trees} for \( G \) with starting symbol \( A \).
+  where \( \gamma \) is a \hyperref[def:multi_index]{multi-index} over \( 1, \ldots, m \) with \hyperref[def:multi_index]{norm} \( n \).
 
-  Given any word \( w \), \( P_A(w) \) is either a parse tree for \( w \), or otherwise it fails to parse \( w \) and reports this failure via the sentinel symbol \( \bot \).
-
-  We will actually define a more general family: for each non-terminal \( A \), we will define a function
+  Hence, we will introduce the auxiliary multi-valued function
   \begin{equation*}
-    P_A': \Sigma^* \times \BbbN \to \mscrT_A \cup \set{ \bot }.
-  \end{equation*}
-
-  While \( P_A \) must match \( w \) exactly, \( P_A' \) must only match a prefix of \( w \). Thus, we define
-  \begin{equation*}
-    P_A(w) \coloneqq \begin{cases}
-      P_A'(w, 0), &P_A'(w, 0) \T{is a tree and it matches the entirety of} w, \\
-      \bot,       &\T{otherwise.}
-    \end{cases}
+    P^\dprime_A(A \to v_1 \cdots v_m, \gamma, U).
   \end{equation*}
 
-  The additional numeric parameter \( k \) in \( P_A'(w, k) \) allows us to halt if the algorithm enters a cycle. \Fullref{thm:length_increasing_grammar} gives us an upper bound on derivation length. Combined with the rule ordering in \fullref{alg:recursive_descent_parsing/init}, this restriction enables parsing \hyperref[def:chomsky_hierarchy/regular]{left-linear} grammars like
+  Finally, define
   \begin{equation*}
-    S \to Sa \mid a,
+    P_A(w)
+    \coloneqq
+    P'_A(w, \varnothing)
+    =
+    \bigcup_{A \to v_1 \cdots v_m} \bigcup_{\norm \gamma = n} P^\dprime_A(A \to v_1 \cdots v_m, \gamma, \varnothing).
   \end{equation*}
-  which would be problematic without an upper bound on the derivation length. We make no claim about whether this algorithm works for every \( \varepsilon \)-free context-free grammar.
-
-  Fix parameters \( A \), \( k \) and \( w = a_1 \cdots a_n \) for \( P_A'(w, k) \).
 
   \begin{thmenum}
-    \thmitem{alg:recursive_descent_parsing/init}
-    \begin{itemize}
-      \item If there is no rule with source \( A \), if \( n = 0 \) and there is no rule \( A \to \varepsilon \) or if
-      \begin{equation*}
-        k > \card(V \cup \Sigma)^{n+1},
-      \end{equation*}
-      immediately fail with
-      \begin{equation*}
-        P_A'(w, k) \coloneqq \bot.
-      \end{equation*}
+    \thmitem{alg:brute_force_parsing/init} In order to define
+    \begin{equation*}
+      P^\dprime_A(A \to v_1 \cdots v_m, \gamma, U),
+    \end{equation*}
+    we fix a rule \( A \to v_1 \cdots v_m \), a multi-index \( \gamma \) inducing the partition \( w = w_1 \cdots w_m \), and a set \( U \).
 
-      \item If \( n = 0 \) and there is a rule \( A \to \varepsilon \), succeed by assigning to \( P_A'(w, k) \) the tree
+    \thmitem{alg:brute_force_parsing/tree_set} For each \( v_k \), construct a set \( \mscrT_k \) of parse trees as follows:
+    \begin{itemize}
+      \item If \( v_k \) is a terminal and \( w_k = v_k \), let \( \mscrT_k \) be a singleton set whose only element is the tree with only one node \( v_k \).
+
+      \item If \( v_k \) is a non-terminal, let
+      \begin{equation*}
+        \mscrT_k \coloneqq \begin{cases}
+          \varnothing,                                         &(v_k, w_k) \in U, \\
+          P'_{v_k}\parens[\Big]{ w_k, U \cup \set{ (A, w) } }, &\T{otherwise.}
+        \end{cases}
+      \end{equation*}
+    \end{itemize}
+
+    \thmitem{alg:brute_force_parsing/combine} Finally, combine the above sets \( \mscrT_1, \cdots, \mscrT_m \) as follows:
+    \begin{itemize}
+      \item If \( m = n = 0 \), i.e. if \( A \to \varepsilon \) and \( w = \varepsilon \), let
+      \begin{equation*}
+        P^\dprime_A(A \to v_1 \cdots v_m, \gamma, U)
+      \end{equation*}
+      consist of a single tree
       \begin{equation*}
         \begin{aligned}
-          \includegraphics[page=1]{output/alg__recursive_descent_parsing.pdf}
+          \includegraphics[page=1]{output/alg__brute_force_parsing.pdf}
         \end{aligned}
       \end{equation*}
 
-      This rule can only apply for \( A = S \) given our assumption that \( G \) is essentially \( \varepsilon \)-free.
-
-      \item Otherwise, enumerate all \( m \) rules with source \( A \) as follows:
-      \begin{itemize}
-        \item First, place the rules \( A \to v \) where \( v \) starts with a non-terminal, and sort them by descending order of the length of their non-terminal prefix.
-
-        \item Then place the rules \( A \to v \) having a prefix with at least one terminal in \( v \), and sort them by descending order of the length of their terminal prefix.
-      \end{itemize}
-
-      Denote by \( v_1, \ldots, v_m \) be the right sides of the enumerated rules.
-
-      Let \( i \coloneqq 1 \) and go to step \ref{alg:recursive_descent_parsing/step}.
-    \end{itemize}
-
-    \thmitem{alg:recursive_descent_parsing/step} Suppose that \( v_i = u_0 B_1 u_1 B_2 \cdots u_{s-1} B_s u_s \), where \( u_0, u_1, \ldots, u_s \) consist entirely of terminals.
-
-    \begin{figure}[!ht]
-      \centering
-      \includegraphics[page=2]{output/alg__recursive_descent_parsing.pdf}
-      \caption{A parse tree-like representation of the rule \( A_i \to v_i \) in \fullref{alg:recursive_descent_parsing/step}, labeled with words rather than individual terminals.}
-      \label{fig:alg:recursive_descent_parsing/rule}
-    \end{figure}
-
-    \begin{itemize}
-      \item If \( u_0 \) is not a prefix of \( w \), go to the failure step \ref{alg:recursive_descent_parsing/failure}.
-      \item If \( s = 0 \), go directly to the assembly step \ref{alg:recursive_descent_parsing/assembly}.
-      \item Otherwise, let \( k_0 \coloneqq \len(u_0) + 1 \), let \( j \coloneqq 1 \) and go to step \ref{alg:recursive_descent_parsing/subtrees}.
-    \end{itemize}
-
-    \thmitem{alg:recursive_descent_parsing/subtrees} If \( T_j \coloneqq P_{B_1}(a_{k_{j-1}}, k + 1) \) is \( \bot \), go to the failure step \ref{alg:recursive_descent_parsing/failure}
-
-    Otherwise, suppose that \( T_j \) \hyperref[def:parse_tree_word]{yields} \( w_j \). Let
-    \begin{equation*}
-      k_j \coloneqq k_{j-1} + \len(w_j) + \len(u_j).
-    \end{equation*}
-
-    \begin{itemize}
-      \item If either \( k_j > n \) or \( u_j \neq a_{k_j - \len(u_j)} \cdots a_{k_j} \), go to the failure step \ref{alg:recursive_descent_parsing/failure}.
-      \item If \( j < s \), increment \( j \) and go to the same step \ref{alg:recursive_descent_parsing/subtrees}.
-      \item If \( j = s \), go to the assembly step \ref{alg:recursive_descent_parsing/assembly}.
-    \end{itemize}
-
-    \begin{figure}[!ht]
-      \centering
-      \includegraphics[page=3]{output/alg__recursive_descent_parsing.pdf}
-      \caption{Different sections of the word \( w = a_1 \cdots a_n \) in \fullref{alg:recursive_descent_parsing/subtrees}}
-      \label{fig:alg:recursive_descent_parsing/subtrees}
-    \end{figure}
-
-    \thmitem{alg:recursive_descent_parsing/assembly} We now have a parse tree \( T_j = (X_j, E_j, r_j, \leq_j, l_j) \) for every non-terminal \( B_j \) in \( v_i \). Let \( u_j = b_1^{(j)} \cdots b_{l_j}^{(j)} \) for \( j = 0, \ldots, n \).
-
-    \begin{figure}[!ht]
-      \centering
-      \includegraphics[page=4]{output/alg__recursive_descent_parsing.pdf}
-      \caption{Combining parse trees in \fullref{alg:recursive_descent_parsing/assembly}}
-      \label{fig:alg:recursive_descent_parsing/assembly}
-    \end{figure}
-
-    Define a parse tree \( T = (X, E, r, \leq, l) \) for \( w' \coloneqq a_1 \cdots a_{k_s} \) as follows:
-    \begin{itemize}
-      \item Let the root \( r \) be a new node, not in \( X_1 \cup \cdots \cup X_s \).
-      \item Let
+      \item Otherwise, let
       \begin{equation*}
-        X \coloneqq X_1 \cup \cdots \cup X_s \cup \set{ r } \cup \set[\Big]{ x_t^{(j)} \given j = 1, \ldots, m \T{and} t = 1, \ldots, l_j },
+        P^\dprime_A(A \to v_1 \cdots v_m, \gamma, U)
       \end{equation*}
-      where \( x_t^{(j)} \) are also new nodes, not in \( X_1 \cup \cdots \cup X_s \).
-
-      \item Let
+      consist of all trees of the form
       \begin{equation*}
-        l(x) \coloneqq \begin{cases}
-          A_i,       &x = r, \\
-          b_t^{(j)}, &x = x_t^{(j)}, \\
-          l_j(x),    &x \in X_j.
-        \end{cases}
+        \begin{aligned}
+          \includegraphics[page=2]{output/alg__brute_force_parsing.pdf}
+        \end{aligned}
       \end{equation*}
-
-      \item Let
-      \begin{equation*}
-        E \coloneqq \bigcup_{j=1}^s E_j \cup \set[\Big]{ \set{ r, r_j } \given j = 1, \ldots, s } \cup \set[\Big]{ \set{ r, b_t^{(j)} } \given j = 1, \ldots, s \T{and} t = 1, \ldots, l_j }.
-      \end{equation*}
-
-      \item Let \( < \) extend the union of the relations \( {}<_1{} \), \( \cdots \), \( {}<_s{} \) with
-      \begin{equation*}
-        b_1^{(0)} < \cdots < b_{l_0}^{(0)} < r_1 < b_1^{(1)} < \cdots < b_{l_1}^{(1)} < r_2 < \cdots < r_s < b_1^{(s)} < \cdots < b_{l_s}^{(s)}.
-      \end{equation*}
-    \end{itemize}
-
-    Finally, let
-    \begin{equation*}
-      P_A'(w, k) \coloneqq T.
-    \end{equation*}
-
-    \thmitem{alg:recursive_descent_parsing/failure} On failure:
-    \hfill
-    \begin{itemize}
-      \item If \( i < m \), increment \( i \) and go to \fullref{alg:recursive_descent_parsing/step}.
-      \item If \( i = m \), define
-      \begin{equation*}
-        P_A'(w, k) \coloneqq \bot.
-      \end{equation*}
+      where \( (T_1, \ldots, T_m) \) is a tuple in the Cartesian product \( \mscrT_1 \times \cdots \times \mscrT_m \).
     \end{itemize}
   \end{thmenum}
 \end{algorithm}
+\begin{comments}
+  \item This is a variation of Stephen Unger's algorithm described in \cite{Unger1968}.
+  \item This algorithm can be found as \texttt{grammars.brute\_force\_parse.parse} in \cite{code}.
+  \item We can avoid the auxiliary parameter \( U \) if the grammar has no \hyperref[def:epsilon_free_grammar]{\( \varepsilon \)-rules} and no \hyperref[alg:rewriting_rule_collapse]{renaming rules}, but otherwise we can easily get stuck in a loop like \( A \Rightarrow B \Rightarrow A \) (if \( A \to B \) and \( B \to A \)) or \( A \Rightarrow AB \Rightarrow A \) (if \( B \to \varepsilon \)).
+\end{comments}
 
 \begin{definition}\label{def:grammar_ambiguity}\mcite[54]{Salomaa1987}
   We say that a word generated by a \hyperref[def:chomsky_hierarchy/context_free]{context-free grammar} is \term{ambiguous} if any of the following equivalent conditions hold:

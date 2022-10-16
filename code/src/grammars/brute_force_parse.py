@@ -17,23 +17,20 @@ def iter_partitions(seq: str, n: int) -> Iterator[list[str]]:
                 yield [seq[:i], *part]
 
 
-def generate_trees(sym: NonTerminal | Terminal | SingletonSymbol, string: str, grammar: Grammar, used: set[tuple[NonTerminal, str]] = set()) -> list[ParseTree]:
+def generate_trees(sym: NonTerminal | Terminal | SingletonSymbol, string: str, grammar: Grammar, traversed: set[tuple[NonTerminal, str]]) -> Iterator[ParseTree]:
     if isinstance(sym, Terminal) and sym.value == string:
-        return [ParseTree(sym)]
+        yield ParseTree(sym)
 
-    if isinstance(sym, NonTerminal) and (sym, string) not in used:
-        return list(
-            parse(
-                grammar.schema.instantiate(sym),
-                string,
-                {(grammar.start, string), *used}
-            )
+    elif isinstance(sym, NonTerminal) and (sym, string) not in traversed:
+        yield from parse(
+            grammar.schema.instantiate(sym),
+            string,
+            {(grammar.start, string), *traversed}
         )
 
-    return []
 
-
-def parse(grammar: Grammar, string: str, used: set[tuple[NonTerminal, str]] = set()) -> Iterator[ParseTree]:
+# This is alg:brute_force_parsing in the text
+def parse(grammar: Grammar, string: str, traversed: set[tuple[NonTerminal, str]] = set()) -> Iterator[ParseTree]:
     assert is_context_free(grammar), "Unger's parsing algorithm only works on context-free grammars"
     for rule in grammar.iter_starting_rules():
         if is_epsilon_rule(rule):
@@ -46,7 +43,7 @@ def parse(grammar: Grammar, string: str, used: set[tuple[NonTerminal, str]] = se
             for part in iter_partitions(string, len(rule.dest)):
                 for subtrees in itertools.product(
                     *(
-                        generate_trees(sym, substr, grammar, used)
+                        list(generate_trees(sym, substr, grammar, traversed))
                         for sym, substr in zip(rule.dest, part)
                     )
                 ):

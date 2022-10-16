@@ -177,6 +177,7 @@ class GrammarRule:
     def __post_init__(self):
         assert any(isinstance(sym, NonTerminal) for sym in self.src), 'The source must contain at least one non-terminal, but it is {}'.format(' '.join(str(sym) for sym in self.src))
         assert all(sym != epsilon for sym in self.dest) or len(self.dest) == 1, 'epsilon rules cannot contain other symbols, got {}'.format(' '.join(str(sym) for sym in self.dest))
+        assert all(len(sym.value) == 1 for sym in itertools.chain(self.src, self.dest) if isinstance(sym, Terminal)), 'Multi-symbol terminals are disallowed'
 
     @classmethod
     def parse(cls, string: str):

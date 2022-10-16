@@ -1,5 +1,5 @@
 from .grammar import Grammar
-from .unger import iter_partitions, parse
+from .brute_force_parse import iter_partitions, parse
 from .fixtures import *
 
 

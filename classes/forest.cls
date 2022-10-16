@@ -19,7 +19,9 @@
     isosceles triangle,
     draw,
     shape border rotate=90,
-    child anchor=apex,
-    anchor=apex
+    minimum size=3.5em,
+    font=\scriptsize,
+    child anchor=north,
+    anchor=north
   }
 }
