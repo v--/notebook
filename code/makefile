@@ -12,7 +12,7 @@ format-figures:
 
 # I have implemented a very useful build system for LaTeX with log processing and debouncing
 watch:
-	@poetry run python src/commands/watcher.py all
+	@poetry run python watcher.py all
 
 watch-figures:
-	@poetry run python src/commands/watcher.py figures
+	@poetry run python watcher.py figures
