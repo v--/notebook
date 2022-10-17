@@ -15,31 +15,31 @@ class LaTeXToken:
         return isinstance(other, type(self)) and self.value == other.value
 
 
-class Word(LaTeXToken):
+class WordToken(LaTeXToken):
     pass
 
 
-class EscapedWord(LaTeXToken):
+class EscapedWordToken(LaTeXToken):
     def __str__(self):
         return '\\' + self.value
 
 
-class Special(LaTeXToken):
+class SpecialToken(LaTeXToken):
     pass
 
 
-ampersand = Special('&')
-underscore = Special('_')
-caret = Special('^')
-opening_brace = Special('{')
-closing_brace = Special('}')
-opening_bracket = Special('[')
-closing_bracket = Special(']')
+ampersand_token = SpecialToken('&')
+underscore_token = SpecialToken('_')
+caret_token = SpecialToken('^')
+opening_brace = SpecialToken('{')
+closing_brace = SpecialToken('}')
+opening_bracket = SpecialToken('[')
+closing_bracket = SpecialToken(']')
 
 special_symbol_map = {
-    '&':  ampersand,
-    '_': underscore,
-    '^': caret,
+    '&': ampersand_token,
+    '_': underscore_token,
+    '^': caret_token,
     '{': opening_brace,
     '}': closing_brace,
     '[': opening_bracket,
@@ -48,16 +48,5 @@ special_symbol_map = {
 
 
 @dataclass
-class Whitespace(LaTeXToken):
-    value: str
-
-
-single_space = Whitespace(' ')
-tab = Whitespace(' ')
-newline = Whitespace('\n')
-
-single_whitespace_map = {
-    ' ':  single_space,
-    '\t': tab,
-    '\n': newline
-}
+class WhitespaceToken(LaTeXToken):
+    pass

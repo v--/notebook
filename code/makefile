@@ -8,7 +8,7 @@ lint:
 	@poetry run mypy src
 
 format-figures:
-	@poetry run python src/commands/format_matrices.py ../figures/*.tex
+	@poetry run python format_matrices.py ../figures/*.tex
 
 # I have implemented a very useful build system for LaTeX with log processing and debouncing
 watch:

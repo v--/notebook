@@ -18,8 +18,7 @@ def test_parsing_variables_invalid():
         parse_term('ξ0')
 
     # Allow only Greek letters for names
-    with pytest.raises(ParserError):
-        parse_term('a')
+    assert not isinstance(parse_term('a'), Variable)
 
     # Not too Greek
     with pytest.raises(ParserError):
@@ -40,8 +39,7 @@ def test_parsing_functions_invalid():
         parse_term('f0')
 
     # Allow only Latin letters for names
-    with pytest.raises(ParserError):
-        parse_term('α')
+    assert not isinstance(parse_term('α'), FunctionTerm)
 
     # Not too Latin
     with pytest.raises(ParserError):
