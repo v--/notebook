@@ -1,10 +1,8 @@
-from ..support.parsing import ParserError
-
 from .epsilon_rules import remove_epsilon_rules, is_epsilon_free, is_essentially_epsilon_free
-from .brute_force_parse import parse
 from .fixtures import *
 
 
+# See ex:alg:epsilon_rule_removal/an in the text
 def test_remove_epsilon_rules_simple():
     grammar = GrammarSchema.parse('''
         <S> → ε | "a" <S>
@@ -19,6 +17,7 @@ def test_remove_epsilon_rules_simple():
     assert_an(new_grammar)
 
 
+# See ex:alg:epsilon_rule_removal/dead in the text
 def test_remove_epsilon_rules_terminal_rule():
     grammar = GrammarSchema.parse('''
         <S> → <A> <B>
@@ -42,6 +41,7 @@ def test_remove_epsilon_rules_terminal_rule():
     assert len(list(new_grammar.schema.instantiate(NonTerminal('B')).iter_starting_rules())) == 0
 
 
+# See ex:alg:epsilon_rule_removal/natural in the text
 def test_remove_epsilon_rules_natural():
     grammar = GrammarSchema.parse('''
         <N> → "0" | "1" <B>

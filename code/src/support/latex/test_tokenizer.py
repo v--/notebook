@@ -2,7 +2,7 @@ import pytest
 
 from ..parsing import ParserError
 
-from .tokens import LaTeXToken, WordToken, EscapedWordToken, ampersand_token, underscore_token, caret_token, opening_brace, closing_brace, WhitespaceToken
+from .tokens import WordToken, EscapedWordToken, ampersand_token, underscore_token, caret_token, opening_brace, closing_brace, WhitespaceToken
 from .tokenizer import tokenize_latex
 
 

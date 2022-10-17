@@ -4,7 +4,7 @@
   A \term{parse tree} or \term{concrete syntax tree} for the \hyperref[def:chomsky_hierarchy/context_free]{context-free grammar} \( G = (V, \Sigma, \to, S) \) is an \hyperref[def:ordered_tree]{ordered tree} \( T = (X, E, r, \leq) \) \hyperref[def:weighted_set]{node-labeled} by \( l: X \to V \cup \Sigma \cup \set{ \varepsilon } \) such that:
   \begin{thmenum}
     \thmitem{def:parse_tree/root} The root \( r \) has label \( l(r) = S \).
-    \thmitem{def:parse_tree/leaves} The \hyperref[def:arborescence/ancestry]{leaves} of \( T \) are labeled by terminals or \( \varepsilon \).
+    \thmitem{def:parse_tree/leaves} The \hyperref[def:arborescence/ancestry]{leaves} of \( T \) are labeled by terminals or by \( \varepsilon \).
     \thmitem{def:parse_tree/successors} The \hyperref[def:arborescence/ancestry]{successors} of \( x \) are \( y_1 < \ldots < y_n \) if and only if there is a rule
     \begin{equation*}
       l(x) \to l(y_1) \cdots l(y_n).
@@ -88,9 +88,9 @@
 
     We will discuss abstract syntax trees in \fullref{rem:abstract_syntax_tree}, which are notably smaller.
 
-    We can \hyperref[rem:evaluation]{evaluation} this parse tree by substituting every binary number string (such as \( 10 \)) with its numeric value in \( \BbbN \) and then recursively applying the corresponding expressions. Evaluating the above parse tree results in \( 10 \times 11 = 110 \). More formal details on this evaluation are discussed in \fullref{ex:natural_number_arithmetic_grammar/evaluation}.
+    We can \hyperref[rem:evaluation]{evaluate} this parse tree by substituting every binary number string (such as \( 10 \)) with its numeric value in \( \BbbN \) and then recursively applying the corresponding expressions. Evaluating the above parse tree results in \( 10 \times 11 = 110 \). More formal details on this evaluation are discussed in \fullref{ex:natural_number_arithmetic_grammar/evaluation}.
 
-    Consider instead the same grammar without parentheses, that is, replace the expression expansion rule
+    Now consider instead the same grammar without parentheses, that is, replace the expression expansion rule
     \begin{equation*}
       E \to (E O E)
     \end{equation*}
@@ -189,8 +189,6 @@
         \end{aligned}
       \end{equation*}
     \end{itemize}
-
-    In both cases, the leaves of \( T_i \) are the symbols of \( w_i \).
   \end{thmenum}
 
   Then \( T_m \) is the desired parse tree for \( w \).
@@ -355,8 +353,8 @@
   We say that the grammar itself is \term{ambiguous} if it generates at least one ambiguous word, and \term{unambiguous} otherwise.
 \end{definition}
 \begin{comments}
-  \item \Fullref{thm:derivations_and_parse_trees} ensures that every word has at least one parse tree.
-  \item \Fullref{thm:leftmost_derivation_existence} ensures that every word has at least one leftmost derivation.
+  \item \Fullref{thm:derivations_and_parse_trees} ensures that every generated word has at least one parse tree.
+  \item \Fullref{thm:leftmost_derivation_existence} ensures that every generated word has at least one leftmost derivation.
 \end{comments}
 \begin{proof}
   \EquivalenceSubProof{def:grammar_ambiguity/tree}{def:grammar_ambiguity/leftmost} Follows from \fullref{thm:derivations_and_parse_trees}.
@@ -406,18 +404,20 @@
 \end{proof}
 
 \begin{remark}\label{rem:evaluation}
-  \term{Evaluation} is the process of transforming a word in some \hyperref[def:formal_grammar/language]{grammar's language} into some other object, perhaps even another word. This is easily achieved via pattern matching depending on the structure of the word.
+  \term{Evaluation} is the process of transforming a word in some \hyperref[def:formal_grammar/language]{grammar's language} into some other object, perhaps even another word. This is easily achieved via partial definitions depending on the structure of the word.
 
   Fix a grammar \( G = (V, \Sigma, \to, S) \) with non-terminals \( A_1, \cdots, A_n \). Then an example evaluation function has the form
-  \begin{equation}\label{eq:rem:evaluation}
+  \begin{equation*}
     F(w) \coloneqq \begin{cases}
       \cdots, &w \T{is generated from} S, \\
       \cdots, &w \T{is generated from} A_1, \\
               &\vdots,
     \end{cases}
-  \end{equation}
+  \end{equation*}
 
-  \term{Pattern matching} is a term used for partial definition of \( F \) based on the structure of \( w \). Pattern matching depends on knowing the possible parse trees for \( w \). We use parse trees implicitly without recognizing it. \Fullref{ex:natural_number_arithmetic_grammar/evaluation} and \fullref{ex:evaluation_via_trees} provide justification for not using parse trees directly. Of course, more granular rules are possible based on the structure of words --- see \fullref{ex:natural_number_arithmetic_grammar/evaluation} for an example.
+  \term{Pattern matching} is a term used for partial definition of \( F \) based on the structure of \( w \). Pattern matching depends on knowing the possible parse trees for \( w \). We use parse trees implicitly without explicitly mentioning it. \Fullref{ex:natural_number_arithmetic_grammar/evaluation} and \fullref{ex:evaluation_via_trees} provide justification for not using parse trees directly.
+
+  We use the convention from \fullref{rem:parse_tree_roots} regarding parse tree for different starting nodes over the same grammar schema. Of course, more granular rules are possible based on the structure of words --- see \fullref{ex:natural_number_arithmetic_grammar/evaluation} for an example.
 \end{remark}
 \begin{comments}
   \item In order for \( F \) to be \hyperref[def:function]{single-valued}, the grammar must be \hyperref[def:grammar_ambiguity]{unambiguous}.
@@ -436,7 +436,7 @@
       E(u) \Bracks{\times} E(v),     &w = \mathtt{(} \thinspace u \times v \thinspace \mathtt{)},
     \end{cases}
   \end{equation*}
-  where \( + \) and \( 1 \) denote symbols in some abstract alphabet, while \( \Bracks{+} \) and \( \Bracks{1} \) denote their obvious interpretation.
+  where \( + \) and \( 1 \) denote symbols in the abstract alphabet, while \( \Bracks{+} \) and \( \Bracks{1} \) denote their obvious interpretation.
 
   In this example, we do pattern matching on the word \( w \). This pattern matching depends on knowing the possible parse trees and knowing that the grammar is unambiguous. We use parse trees implicitly without recognizing it.
 \end{example}
@@ -444,12 +444,19 @@
 \begin{example}\label{ex:evaluation_via_trees}
   If we use \hyperref[def:parse_tree]{parse trees} for \hyperref[rem:evaluation]{evaluation} instead of doing pattern matching on words, it will be more awkward for us. Consider the following example:
 
-  Let \( T = (X, E, r, \leq, l) \) be a parse tree for the word \( w \), and let \( T_1, \ldots, T_n \) be the immediate subtrees whose roots \( r_1 < \ldots < r_n \) are successors of \( r \). Then evaluating \( T \) via
+  Let \( v \) be a symbol, either a terminal or non-terminal, and let \( T \) be the tree
+  \begin{equation*}
+    \begin{aligned}
+      \includegraphics[page=1]{output/ex__evaluation_via_trees.pdf}
+    \end{aligned}
+  \end{equation*}
+
+  Then
   \begin{equation*}
     F(T) \coloneqq \begin{cases}
-      \varepsilon,          &l(r) = \varepsilon, \\
-      l(r),                 &l(r) \T{is a terminal}, \\
-      F(T_1) \cdots F(T_n), &l(r) \T{is a non-terminal}
+      \varepsilon,          &v = \varepsilon, \\
+      v,                    &v \T{is a terminal}, \\
+      F(T_1) \cdots F(T_n), &v \T{is a non-terminal}
     \end{cases}
   \end{equation*}
   produces the word \hyperref[def:parse_tree_word]{yielded} by \( T \).
@@ -476,7 +483,7 @@
       \end{aligned}
     \end{equation*}
 
-    Any words produced via the lexical rules are called \term{lexemes}. The goal is to isolate atoms of a language from arbitrarily complicated recursive structures. This distinction is important for evaluation and becomes apparent in more complicated use cases like \fullref{def:first_order_substitution}.
+    Any words produced via the lexical rules are called \term{lexemes}. The goal is to isolate atoms of a language from arbitrarily complicated recursive structures. This distinction is important for evaluation and becomes apparent in more complicated use cases like first-order formula substitution in \fullref{def:first_order_substitution}.
 
     We rarely need parse trees for lexical rules. The lexical grammar is often \hyperref[def:chomsky_hierarchy/regular]{regular}.
 
@@ -485,7 +492,7 @@
       E \to N \mid (E O E)
     \end{equation*}
 
-    Syntactic rules regard lexemes as base symbols, although this is often not possible formally. In this example, \( N \) produces infinitely many words, and be definition a grammar's terminals are only finitely many.
+    Syntactic rules regard lexemes as base symbols, although this is often not possible formally. In this example, \( N \) produces infinitely many words, and by definition a grammar's terminals are only finitely many.
 
     Compared to lexical rules, syntactic rules benefit from parse trees because they highlight the recursive structure of a word.
   \end{thmenum}
@@ -504,7 +511,7 @@
     \end{aligned}
   \end{equation}
 
-  We can also remove unnecessarily long chains of non-terminals from \eqref{eq:rem:abstract_syntax_tree/no_parens} where that would not be ambiguous (i.e. collapse \( E \to O \to + \) to \( E \to + \)):
+  We can also remove unnecessarily long chains of non-terminals from \eqref{eq:rem:abstract_syntax_tree/no_parens} where that would not be ambiguous (i.e. collapse \( E \to E \to 10 \) to \( E \to 10 \)):
   \begin{equation}\label{eq:rem:abstract_syntax_tree/collapsed}
     \begin{aligned}
       \includegraphics[page=4]{output/rem__abstract_syntax_tree.pdf}
@@ -524,9 +531,9 @@
 \begin{theorem}[Induction on syntax trees]\label{thm:induction_on_syntax_trees}
   Fix a \hyperref[def:chomsky_hierarchy/context_free]{context-free grammar} \( G = (V, \Sigma, \to, S) \). Suppose that we want to prove a statement for every word in \( \mscrL(G) \). Then it is sufficient to do the following for an arbitrary word \( w \):
   \begin{displayquote}
-    For every \hyperref[def:parse_tree]{parse tree} \( T = (X, E, r, \leq, l) \) of \( w \), let \( T_1, \ldots, T_n \) be the immediate subtrees whose roots \( r_1 < \ldots < r_n \) are successors of \( r \).
+    For every \hyperref[def:parse_tree]{parse tree} \( T \) of \( w \), let \( T_1, \ldots, T_n \) be the immediate subtrees whose roots are labeled by \( S \).
 
-    Then assume that the statement holds for \( T_k \), \( k = 1, \ldots, n \), if \( l(r_k) = S \) and prove the statement for \( T \).
+    Suppose that the statement holds for all \( T_k \), \( k = 1, \ldots, n \), and prove the statement for \( T \).
   \end{displayquote}
 \end{theorem}
 \begin{comments}
@@ -536,7 +543,7 @@
   \item We may just as well use \hyperref[rem:abstract_syntax_tree]{abstract syntax trees}, as long as we have an established convention on how they are represented.
 \end{comments}
 \begin{proof}
-  This is an instance of \fullref{thm:well_founded_induction} if we order the tree nodes by their \hyperref[def:arborescence/depth]{depth}.
+  This is an instance of \fullref{thm:well_founded_induction} if we order the tree nodes according to their \hyperref[def:arborescence/depth]{depth}.
 \end{proof}
 
 \begin{example}\label{ex:natural_number_arithmetic_grammar/induction}
@@ -566,7 +573,7 @@
 \begin{remark}\label{rem:backus_normal_form}\mcite[14]{Backus1958}
   Practice requires introducing a more convenient metasyntax (a syntax for describing language syntax).
 
-  For \hyperref[def:chomsky_hierarchy/context_free]{context-free grammars}, we can use the \term{Backus normal form} (BNF), sometimes also called \term{Backus-Naur form}. Backus himself in \cite[14]{Backus1958} described it via examples.
+  For \hyperref[def:chomsky_hierarchy/context_free]{context-free grammars}, we can use the \term{Backus normal form} (BNF), sometimes also called \term{Backus-Naur form} (also BNF). Backus himself in \cite[14]{Backus1958} described it via examples.
 
   For \fullref{ex:natural_number_arithmetic_grammar/rules}, one possible BNF is
   \begin{bnf*}
