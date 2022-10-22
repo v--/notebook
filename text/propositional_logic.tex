@@ -1,63 +1,99 @@
 \subsection{Propositional logic}\label{subsec:propositional_logic}
 
-\begin{remark}\label{rem:propositional_language_is_alphabet}
-  The \hyperref[def:propositional_language]{language of propositional logic} is, strictly speaking, an \hyperref[def:formal_language]{alphabet} rather than a \hyperref[def:formal_language/language]{language}. Nonetheless, this is the established terminology.
+Propositional logic allows us to express basic relations between atomic propositions --- variables that are either true or false.
+
+\begin{remark}\label{rem:propositional_syntax_and_grammars}
+  There are different approaches to formalizing the syntax of propositional logic. We use the theory of formal grammars that we have developed in \fullref{subsec:formal_languages} and \fullref{subsec:syntax_trees}. This requires specific adjustments related to other treatments of propositional logic --- i.e. \cite[ch. 2]{Wasilewska2018} or \cite[ch. 1]{VanDalen2004} --- but allows us to use powerful tools while treating the object logic in complete formality.
+\end{remark}
+
+\begin{remark}\label{rem:grammar_rules_for_variables}
+  We need to introduce conventions for identifiers --- i.e. names of variables, functions and so forth --- in order to be able to be able to express infinitely many variables with finitely many grammar rules. The variable names that we will actually use will be a very specific subset of the ones we allow formally. Consider the following \hyperref[rem:backus_normal_form]{grammar schema}:
+  \begin{bnf*}
+    \bnfprod{Latin letter}       {\bnftsq{A} \bnfor \bnftsq{B} \bnfor \cdots \bnfor \bnftsq{Z} \bnfor \bnftsq{a} \bnfor \bnftsq{b} \bnfor \cdots \bnfor \bnftsq{z}} \\
+    \bnfprod{Latin word}         {\bnfpn{Latin letter} \bnfor \bnfpn{Latin letter} \bnfsp \bnfpn{Latin word}} \\
+    \bnfprod{Latin identifier}   {\bnfpn{Latin word} \bnfor \bnfpn{Latin word} \bnfsp \bnfpn{natural number}},
+  \end{bnf*}
+  where grammar rules for natural numbers can be taken from \fullref{rem:decimal_notation_grammar}.
+
+  An identifier is a nonempty sequence of Latin letters, optionally followed by a number. We treat this number as a suffix and write it as a subscript, that is, we write \( P_1 \) instead of \( P1 \).
+
+  A benefit of this naming schema is that we can introduce a \hyperref[thm:well_ordered_lexicographic_order_is_well_ordered]{lexicographic well-ordering} on the set of identifiers. This ordering will benefit us in \fullref{def:propositional_valuation/valuation_function}, \fullref{def:propositional_substitution/simultaneous} and \fullref{def:first_order_substitution/term_in_formula}. We use the following conventions:
+  \begin{itemize}
+    \item Individual digits are ordered as they are listed in \fullref{rem:decimal_notation_grammar}, i.e.
+    \begin{equation*}
+      0 < 1 < \cdots < 9.
+    \end{equation*}
+
+    \item Individual letters are ordered as they are listed above, i.e.
+    \begin{equation*}
+      A < B < \cdots < Z < a < b < \cdots < z.
+    \end{equation*}
+
+    \item Digits are smaller than letters.
+
+    \item In the case of words of different lengths, if one word is a prefix of another, we assume that the shorter word is smaller, i.e.
+    \begin{equation*}
+      a < a_{13} < aa.
+    \end{equation*}
+
+    Comparing words of different lengths is discussed in \fullref{ex:def:lexicographic_order/heterogenous_words}.
+  \end{itemize}
+
+  We introduce analogous rules for \( \bnfpn{Greek identifier} \) that we will use in \fullref{def:first_order_syntax}.
 \end{remark}
 
 \begin{definition}\label{def:propositional_language}\mcite[def. 1.1.1]{VanDalen2004}
-  The \term{language of propositional logic} consists of:
+  The \term{language of propositional logic}\footnote{This is strictly speaking, an \hyperref[def:formal_language]{alphabet} rather than a \hyperref[def:formal_language/language]{language}. Nonetheless, this is the established terminology.} consists of:
 
   \begin{thmenum}
-    \thmitem{def:propositional_language/prop} A nonempty, \hyperref[def:set_countability/at_most_countable]{at most countable} set \( \boldop{Prop} \) of \term{propositional variables}. Technically, we can have different languages with different variables, but it is safe to assume that there is only one single language of propositional language.
-
     \thmitem{def:propositional_language/constants} Two \term{propositional constants} (also known as \term{truth values}):
     \begin{thmenum}
-      \thmitem{def:propositional_language/constants/verum} The \term{verum} \( \top \).
-      \thmitem{def:propositional_language/constants/falsum} The \term{falsum} \( \bot \).
+      \thmitem{def:propositional_language/constants/verum} The \term{verum} \enquote{\( \top \)}.
+      \thmitem{def:propositional_language/constants/falsum} The \term{falsum} \enquote{\( \bot \)}.
     \end{thmenum}
 
-    \thmitem{def:propositional_language/negation} \term{Negation} \( \neg \).
-    \thmitem{def:propositional_language/connectives} The set \( \Sigma \) of \term{propositional connectives}, namely
+    \thmitem{def:propositional_language/negation} \term{Negation} \enquote{\( \neg \)}.
+    \thmitem{def:propositional_language/connectives} The set \enquote{\( \Sigma \)} of \term{propositional connectives}, namely
     \begin{thmenum}
-      \thmitem{def:propositional_language/connectives/conjunction} \term{Conjunction} \( \wedge \) (also known as \hyperref[def:standard_boolean_operators]{\term{and}} and \hyperref[def:semilattice/meet]{\term{meet}}).
-      \thmitem{def:propositional_language/connectives/disjunction} \term{Disjunction} \( \vee \) (also known as \hyperref[def:standard_boolean_operators]{\term{or}} and \hyperref[def:semilattice/join]{\term{join}}).
-      \thmitem{def:propositional_language/connectives/conditional} \term{Conditional} \( \rightarrow \) (also known as \term{if\ldots then} and \hyperref[def:material_implication]{\term{material implication}}).
-      \thmitem{def:propositional_language/connectives/biconditional} \term{Biconditional} \( \leftrightarrow \) (also known as \term{iff} and \term{material equivalence}).
+      \thmitem{def:propositional_language/connectives/disjunction} \term{Disjunction} \enquote{\( \vee \)} (also known as \hyperref[def:standard_boolean_operators]{\term{or}} and \hyperref[def:semilattice/join]{\term{join}}).
+      \thmitem{def:propositional_language/connectives/conjunction} \term{Conjunction} \enquote{\( \wedge \)} (also known as \hyperref[def:standard_boolean_operators]{\term{and}} and \hyperref[def:semilattice/meet]{\term{meet}}).
+      \thmitem{def:propositional_language/connectives/conditional} \term{Conditional} \enquote{\( \rightarrow \)} (also known as \term{if\ldots then} and \hyperref[def:material_implication]{\term{material implication}}).
+      \thmitem{def:propositional_language/connectives/biconditional} \term{Biconditional} \enquote{\( \leftrightarrow \)} (also known as \term{iff}\footnote{\enquote{iff} is a common abbreviation for \enquote{if and only if}.} and \term{material equivalence}).
     \end{thmenum}
 
      Note that \enquote{conditional} and \enquote{biconditional} are nouns in this context.
 
-    \thmitem{def:propositional_language/parentheses} Parentheses \( ( \) and \( ) \) for defining the order of operations unambiguously (see \fullref{rem:propositional_formula_parentheses} for a further discussion).
+    \thmitem{def:propositional_language/parentheses} Parentheses \enquote{\( ( \)} and \enquote{\( ) \)} for defining the order of operations unambiguously (see \fullref{rem:propositional_formula_parentheses} for a further discussion).
   \end{thmenum}
-
-  \Fullref{rem:smaller_propositional_language} shows we can actually utilize a smaller propositional language without losing any of its semantics.
 \end{definition}
+\begin{comments}
+  \item If desired, we can utilize a smaller propositional language without losing its semantical properties. One important example are the \hyperref[def:cnf_and_dnf]{conjunctive normal forms} in \fullref{alg:perfect_cnf_and_dnf}, although similar constructions hold for other \hyperref[def:boolean_closure/complete]{complete sets of Boolean operators} like those from \fullref{thm:complete_sets_of_boolean_operators}.
+\end{comments}
 
-\begin{definition}\label{def:propositional_syntax}\mcite[def. 1.1.2]{VanDalen2004}
+\begin{definition}\label{def:propositional_syntax}\mimprovised
   The following related definitions constitute what is called the \term{syntax of propositional logic}.
 
   \begin{thmenum}
     \thmitem{def:propositional_syntax/grammar_schema} Consider the following \hyperref[rem:backus_normal_form]{grammar schema}:
     \begin{bnf*}
-      \bnfprod{variable}   {P \in \boldop{Prop}} \\
-      \bnfprod{connective} {\circ \in \Sigma} \\
-      \bnfprod{formula}    {\bnfpn{variable} \bnfor} \\
-      \bnfmore             {\bnftsq{\( \top \)} \bnfor \bnftsq{\( \bot \)} \bnfor} \\
-      \bnfmore             {\bnftsq{\( \neg \)} \bnfpn{formula} \bnfor} \\
-      \bnfmore             {\bnftsq{(} \bnfsp \bnfpn{formula} \bnfsp \bnfpn{connective} \bnfsp \bnfpn{formula} \bnfsp \bnftsq{)}}
+      \bnfprod{variable}           {\bnfpn{Latin identifier}} \\
+      \bnfprod{connective}         {\bnftsq{\( \vee \)} \bnfor \bnftsq{\( \wedge \)} \bnfor \bnftsq{\( \rightarrow \)} \bnfor \bnftsq{\( \leftrightarrow \)}} \\
+      \bnfprod{formula}            {\bnfpn{variable} \bnfor} \\
+      \bnfmore                     {\bnftsq{\( \top \)} \bnfor \bnftsq{\( \bot \)} \bnfor} \\
+      \bnfmore                     {\bnftsq{\( \neg \)} \bnfsp \bnfpn{formula} \bnfor} \\
+      \bnfmore                     {\bnftsq{(} \bnfsp \bnfpn{formula} \bnfsp \bnfpn{connective} \bnfsp \bnfpn{formula} \bnfsp \bnftsq{)}}
     \end{bnf*}
+    where we use the identifiers discussed in \fullref{rem:grammar_rules_for_variables}.
 
-    Note that \( \boldop{Prop} \) may be infinite, in which case the grammars may have infinitely many rules. If needed, we can circumvent this by introducing an appropriate naming convention for variables, for example by allowing arbitrary strings of alphanumeric characters for variable names.
+    \thmitem{def:propositional_syntax/prop} We denote by \( \boldop{Prop} \) the set of strings generated by the above grammar schema with starting rule \( \bnfpn{variable} \).
 
-    For the sake of readability, we will be using the conventions in \fullref{rem:propositional_formula_parentheses} regarding parentheses.
+    \thmitem{def:propositional_syntax/formula} Similarly, we denote by \( \boldop{Form} \) the set of strings generated with starting rule \( \bnfpn{formula} \).
 
-    \thmitem{def:propositional_syntax/formula} The set \( \boldop{Form} \) of \term{propositional formulas} is the language \hyperref[def:formal_grammar/language]{generated} by this grammar schema with \( \bnfpn{formula} \) as a starting rule. Propositional formulas are also called sentenced unlike in first-order logic where only specific formulas are called sentences --- see \fullref{def:first_order_syntax/ground_formula}.
-
-    The grammar of propositional formulas is unambiguous as shown by \fullref{thm:propositional_formulas_are_unambiguous}, which makes it possible to perform proofs via \fullref{thm:induction_on_syntax_trees}.
+    We implicitly associate with each propositional formula a syntax tree. The grammar of propositional formulas is unambiguous as shown by \fullref{thm:propositional_formulas_are_unambiguous}, which makes it possible to perform proofs via \fullref{thm:induction_on_syntax_trees}.
 
     \thmitem{def:propositional_syntax/subformula} If \( \varphi \) and \( \psi \) are formulas and \( \psi \) is a \hyperref[def:formal_language/subword]{subword} of \( \varphi \), we say that \( \psi \) is a \term{subformula} of \( \varphi \).
 
-    \thmitem{def:propositional_syntax/variables} For each formula \( \varphi \), we inductively define its \term{variables} to be elements of the set
+    \thmitem{def:propositional_syntax/variables} For each formula \( \varphi \), we \hyperref[rem:evaluation]{recursively define} the set of variables occurring in the formula:
     \begin{equation}\label{eq:def:propositional_syntax/varables}
       \boldop{Var}(\varphi) \coloneqq \begin{cases}
         \varnothing,                                  &\varphi \in \set{ \top, \bot } \\
@@ -66,16 +102,17 @@
         \boldop{Var}(\psi) \cup \boldop{Var}(\theta), &\varphi = \psi \bincirc \theta, \bincirc \in \Sigma.
       \end{cases}
     \end{equation}
-
-    Note that \( \boldop{Var}(\varphi) \) can naturally be totally ordered by the position of the first occurrence of a variable.
   \end{thmenum}
 \end{definition}
+\begin{comments}
+  \item Propositional formulas are also called \term{sentences}. Unlike in first-order logic, where only specific formulas are called sentences --- see \fullref{def:first_order_syntax/ground_formula}.
+\end{comments}
 
 \begin{proposition}\label{thm:propositional_formulas_are_unambiguous}
   The grammar of \hyperref[def:propositional_syntax/formula]{propositional formulas} is \hyperref[def:grammar_ambiguity]{unambiguous}.
 \end{proposition}
 \begin{proof}
-  This can be proved based on \fullref{ex:natural_number_arithmetic_grammar/unambiguous}.
+  This can be proved based on a similar proof from \fullref{ex:natural_number_arithmetic_grammar/unambiguous}.
 \end{proof}
 
 \begin{remark}\label{rem:propositional_formula_parentheses}
@@ -83,7 +120,7 @@
   \begin{thmenum}
     \thmitem{rem:propositional_formula_parentheses/outermost} We may skip the outermost parentheses in formulas with top-level \hyperref[def:propositional_language/connectives]{connectives}, e.g. we may write \( P \wedge Q \) rather than \( (P \wedge Q) \).
 
-    \thmitem{rem:propositional_formula_parentheses/associative} Because of the associativity of \( \wedge \) and \( \vee \), which is implied by \fullref{def:propositional_formula_induced_function} and \fullref{def:standard_boolean_operators}, we may skip the parentheses in chains like
+    \thmitem{rem:propositional_formula_parentheses/associative} Because of the associativity of \( \wedge \) and \( \vee \), which is implied by \fullref{def:propositional_valuation/valuation_function} and \fullref{def:standard_boolean_operators}, we may skip the parentheses in chains like
     \begin{equation*}
       ( \ldots ((P_1 \wedge P_2) \wedge P_3) \wedge \ldots \wedge P_{n-1} ) \wedge P_n.
     \end{equation*}
@@ -110,149 +147,110 @@
 \begin{definition}\label{def:material_implication}\mcite[1]{DienerMcKubreJordens2016}
   Theorems in mathematics usually have the form \( P \rightarrow Q \). Formulas of this form are called \term{material implications} in order to distinguish them from logical implication, which relates to the metatheoretic concept of \hyperref[def:propositional_semantics/entailment]{entailment}. Note that the term \enquote{material implication} sometimes also refers to the conditional connective \hyperref[def:propositional_language/connectives/conditional]{\( \rightarrow \)} itself.
 
-  We introduce terminology that is conventionally used when dealing with theorems.
+  We introduce terminology that is conventionally used when dealing with theorems:
 
   \begin{thmenum}
     \thmitem{def:material_implication/sufficient_condition} \( P \) is a \term{sufficient condition} for \( Q \).
 
     \thmitem{def:material_implication/necessary_condition} \( Q \) is a \term{necessary condition} for \( P \).
 
-    \thmitem{def:material_implication/antecedent} \( P \) the \term{antecedent} of \( \varphi \).
+    \thmitem{def:material_implication/antecedent} \( P \) is the \term{antecedent} of \( \varphi \).
 
-    \thmitem{def:material_implication/consequent} \( Q \) the \term{consequent} of \( \varphi \).
+    \thmitem{def:material_implication/consequent} \( Q \) is the \term{consequent} of \( \varphi \).
 
     \thmitem{def:material_implication/inverse} The formula \( \neg P \rightarrow \neg Q \) is the \term[bg=противоположна,ru=противоположная]{inverse} of \( \varphi \).
 
     \thmitem{def:material_implication/converse} The formula \( Q \rightarrow P \) is the \term[bg=обратна,ru=обратная]{converse} of \( \varphi \).
 
-    \thmitem{def:material_implication/contrapositive} The formula \( \neg Q \rightarrow \neg P \) is the \term{contrapositive} of \( \varphi \). In classical logic, it is \hyperref[def:propositional_semantics/equivalence]{equivalent} to the original formula due to \fullref{thm:boolean_equivalences/contrapositive}.
+    \thmitem{def:material_implication/contrapositive} The formula \( \neg Q \rightarrow \neg P \) is the \term{contrapositive} of \( \varphi \).
   \end{thmenum}
 \end{definition}
+\begin{comments}
+  \item  In classical logic, the contrapositive is \hyperref[def:propositional_semantics/equivalence]{equivalent} to the original formula due to \fullref{thm:boolean_equivalences/contrapositive}.
+\end{comments}
 
 \begin{definition}\label{def:propositional_valuation}\mcite[def. 1.2.1]{VanDalen2004}
-  We define \term[bg=оценка,ru=оценка]{valuations} for propositional formulas. It is possible to define different valuations, so in case of doubt, we will refer to the one defined here as the \term{classical valuation} giving \term{classical semantics}.
-
-  This valuation implicitly depends on the \hyperref[def:boolean_algebra]{Boolean algebra} fixed in \fullref{def:boolean_operator}. When dealing with \hyperref[def:propositional_heyting_algebra_semantics]{Heyting semantics}, we use more general Heyting algebras where not only the top and bottom, but also other values are utilized.
+  We will define \term[bg=оценка,ru=оценка]{valuations} for propositional formulas.
 
   \begin{thmenum}
-    \thmitem{def:propositional_valuation/interpretation} A \term{propositional interpretation} is a function with signature \( I: \boldop{Prop} \to \set{ T, F } \). See \fullref{def:boolean_value} for remarks regarding the \hyperref[def:boolean_algebra]{Boolean algebra} \( \set{ T, F } \) and the \fullref{def:standard_boolean_operators} for a list of some standard Boolean operators.
+    \thmitem{def:propositional_valuation/interpretation} A \term{propositional interpretation} is a function with signature \( I: \boldop{Prop} \to \set{ T, F } \).
 
-    \thmitem{def:propositional_valuation/formula_valuation} Given an interpretation \( I \), we define the \term{valuation} of a formula \( \varphi \) inductively as
+    \thmitem{def:propositional_valuation/formula_valuation} Given an interpretation \( I \), we define the \term{valuation} of a formula \( \varphi \) inductively as follows:
     \begin{equation}\label{eq:def:propositional_valuation/formula_interpretation}
-      \varphi\Bracks{I} \coloneqq \begin{cases}
-        T,                                         &\varphi = \top \\
-        F,                                         &\varphi = \bot \\
-        I(P),                                      &\varphi = P \in \boldop{Prop} \\
-        \overline{\psi\Bracks{I}},                 &\varphi = \neg \psi \\
-        \psi_1\Bracks{I} \bincirc \psi_2\Bracks{I} &\varphi = \psi_1 \bincirc \psi_2, \bincirc \in \Sigma,
+      \Bracks{\varphi}_I \coloneqq \begin{cases}
+        T,                                                                &\varphi = \top \\
+        F,                                                                &\varphi = \bot \\
+        I(P),                                                             &\varphi = P \in \boldop{Prop} \\
+        \overline{\Bracks{\psi}_I},                                       &\varphi = \neg \psi \\
+        \Bracks[\Big]{\psi_1}_I \Bracks{\bincirc} \Bracks[\Big]{\psi_2}_I &\varphi = \psi_1 \bincirc \psi_2, \bincirc \in \Sigma,
       \end{cases}
     \end{equation}
+    where \( \Bracks{\bincirc} \) denotes \hyperref[def:standard_boolean_operators]{Boolean operator} corresponding to the connective \( \bincirc \).
+
+    \thmitem{def:propositional_valuation/valuation_function} If \( \boldop{Var}(\varphi) \subseteq \set{ P_1, \ldots, P_n } \), the valuation \( \Bracks{\varphi}_I \) only depends on the particular values \( I(P_1), \ldots, I(P_n) \) of \( I \). Hence, if the variables are clear from the context, we obtain a Boolean operator
+    \begin{equation*}
+      \begin{aligned}
+        &\Bracks{\varphi}: \set{ T, F }^n \to \set{ T, F }, \\
+        &\Bracks{\varphi}(x_1, \ldots, x_n) \coloneqq \Bracks{\varphi}_I,
+      \end{aligned}
+    \end{equation*}
+    where \( I \) is any interpretation such that \( I(P_k) = x_k \) for \( k = 1, \ldots, n \).
+
+    Unless otherwise noted, we assume that \( \boldop{Var}(\varphi) = \set{ P_1, \ldots, P_n } \), where we use the lexicographic ordering on identifiers discussed in \fullref{rem:grammar_rules_for_variables}.
   \end{thmenum}
-  where \( \bincirc \) on the left denotes the \hyperref[def:standard_boolean_operators]{Boolean operator} corresponding to the connective \( \bincirc \) on the right.
 \end{definition}
+\begin{comments}
+  \item See \fullref{def:boolean_value} for remarks regarding the \hyperref[def:boolean_algebra]{Boolean algebra} \( \set{ T, F } \) and the \fullref{def:standard_boolean_operators} for a list of some standard Boolean operators.
+  \item It is possible to define different valuations, so in case of doubt, we will refer to the one defined here as the \term{classical valuation} giving \term{classical semantics}. It implicitly depends on the \hyperref[def:boolean_algebra]{Boolean algebra} fixed in \fullref{def:boolean_value}. When dealing with \hyperref[def:propositional_heyting_algebra_semantics]{Heyting semantics}, we use more general Heyting algebras where not only the top and bottom, but also other values are utilized.
+\end{comments}
 
-\begin{remark}\label{rem:propositional_formula_valuation_without_variable_assignment}
-  If we know that \( \boldop{Var}(\varphi) \subseteq \{ P_1, \ldots, P_n \} \), it follows that the \hyperref[def:first_order_valuation/formula_valuation]{valuation} \( \varphi\Bracks{I} \) only depends on the particular values \( I(P_1), \ldots, I(P_n) \) of \( I \).
-
-  Let \( x_1, \ldots, x_n \in \set{ F, T } \) and let \( I \) be such that \( I(P_k) = x_k \) for \( k = 1, \ldots, n \). We introduce the notation
-  \begin{equation}\label{eq:rem:propositional_formula_valuation_without_variable_assignment/short_semantic}
-    \varphi\Bracks{x_1, \ldots, x_n}
-  \end{equation}
-  for \( \varphi\Bracks{I} \) because the rest of the interpretation \( I \) plays no role here. We may also use
-  \begin{equation}\label{eq:rem:propositional_formula_valuation_without_variable_assignment/short_syntactic}
-    \varphi[\psi_1, \ldots, \psi_n]
-  \end{equation}
-  to denote \hyperref[def:propositional_substitution]{substitution}.
-
-  When using this notation, we implicitly assume that \( \boldop{Var}(\varphi) \subseteq \set{ P_1, \ldots, P_n } \).
-\end{remark}
-
-\begin{definition}\label{def:propositional_formula_induced_function}
-  Let \( \varphi \) be a propositional formula and let \( \boldop{Var}(\varphi) = \set{ P_1, \ldots, P_n } \) be an ordering of the free variables of \( \varphi \). We define the \hyperref[def:boolean_operator]{Boolean operator}
-  \begin{equation}\label{eq:def:propositional_formula_induced_function}
-    \begin{split}
-      &\fun_\varphi: \set{ T, F }^n \to \set{ T, F } \\
-      &\fun_\varphi(x_1, \ldots, x_n) \coloneqq \varphi\Bracks{x_1, \ldots, x_n}.
-    \end{split}
-  \end{equation}
-\end{definition}
-
-\begin{definition}\label{def:propositional_semantics}
-  We now define \term{semantical} properties of propositional formulas. Because of the connection with \hyperref[def:boolean_operator]{Boolean operators} given in \fullref{def:propositional_formula_induced_function}, we also formulate some of the properties using Boolean operators.
+\begin{definition}\label{def:propositional_semantics}\mimprovised
+  We now define \term{semantical} properties of propositional formulas.
 
   \begin{thmenum}
-    \thmitem{def:propositional_semantics/satisfiability} Given an interpretation \( I \) and a set \( \Gamma \) of formulas, we say that \( I \) \term{satisfies} \( \Gamma \) if, for every formula \( \varphi \in \Gamma \) we have \( \varphi\Bracks{I} = T \).
+    \thmitem{def:propositional_semantics/satisfies} Given an interpretation \( I \) and a set \( \Gamma \) of formulas, we say that \( I \) \term{satisfies} \( \Gamma \) if we have \( \Bracks{\varphi}_I = T \) for every formula \( \varphi \in \Gamma \). We also say that \( I \) is a \term{model} of \( \Gamma \) and write \( I \vDash \Gamma \).
 
-    We also say that \( I \) is a \term{model} of \( \Gamma \) and write \( I \vDash \Gamma \).
-
-    If \( \Gamma = \set{ \gamma_1, \ldots, \gamma_n } \) is a finite ordered set, we use the shorthand \( I \vDash \gamma_1, \ldots, \gamma_n \) rather than \( I \vDash \set{ \gamma_1, \ldots, \gamma_n } \). In particular, if \( \Gamma = \set{ \varphi } \) we write \( I \vDash \varphi \).
+    If \( \Gamma = \set{ \gamma_1, \ldots, \gamma_n } \) is a finite well-ordered set, we use the notation \( I \vDash \gamma_1, \ldots, \gamma_n \) rather than \( I \vDash \set{ \gamma_1, \ldots, \gamma_n } \). In particular, if \( \Gamma = \set{ \varphi } \), we write \( I \vDash \varphi \).
 
     Note that every interpretation vacuously satisfies the empty set \( \Gamma = \varnothing \) of formulas.
 
-    We say that \( \Gamma \) is \term{satisfiable} if there exists a model for \( \Gamma \).
+    \thmitem{def:propositional_semantics/satisfiable} We say that \( \Gamma \) is \term{satisfiable} if there exists at least one model for \( \Gamma \).
 
-    \thmitem{def:propositional_semantics/entailment}\mcite[def. 1.2.4(iii)]{VanDalen2004} We say that the set of formulas \( \Gamma \) \term{entails} the set of formulas \( \Delta \) and write \( \Gamma \vDash \Delta \) if either of the following hold:
-    \begin{itemize}
-      \thmitem{def:propositional_semantics/entailment/direct} Every model of \( \Gamma \) is also a model of \( \Delta \).
-      \thmitem{def:propositional_semantics/entailment/functional} The following \hyperref[thm:def:function/preimage]{preimage} inclusion holds:
-      \begin{equation*}
-        \bigcap_{\varphi \in \Gamma} \fun_\varphi^{-1}(T) \subseteq \bigcap_{\psi \in \Delta} \fun_\psi^{-1}(T).
-      \end{equation*}
-    \end{itemize}
+    \thmitem{def:propositional_semantics/entailment}\mcite[def. 1.2.4(iii)]{VanDalen2004} We say that the set of formulas \( \Gamma \) \term{entails} the set of formulas \( \Delta \) and write \( \Gamma \vDash \Delta \) if every model of \( \Gamma \) is also a model of \( \Delta \).
 
-    \thmitem{def:propositional_semantics/tautology} The formula \( \varphi \) is a (semantic) \term{tautology} if either:
-    \begin{itemize}
+    \thmitem{def:propositional_semantics/tautology}\mcite[def. 1.2.4(i)]{VanDalen2004} A (semantic) \term{tautology} is a formula \( \varphi \)\footnote{We also say that \( \varphi \) is \term{valid}.} such that either:
+    \begin{thmenum}
       \thmitem{def:propositional_semantics/tautology/interpretations} Every interpretation satisfies \( \varphi \).
       \thmitem{def:propositional_semantics/tautology/entailment} The empty set \( \Gamma = \varnothing \) of formulas entails \( \varphi \), i.e. \( \vDash \varphi \).
-      \thmitem{def:propositional_semantics/tautology/functional} The function \( \fun_\varphi \) is canonically true.
-    \end{itemize}
+    \end{thmenum}
 
-    We also say that \( \varphi \) is \term{valid}.
-
-    \thmitem{def:propositional_semantics/contradiction} Dually, \( \varphi \) is a (semantic) \term{contradiction} if either:
-    \begin{itemize}
+    \thmitem{def:propositional_semantics/contradiction} Dually, a (semantic) \term{contradiction} is a formula \( \varphi \) such that either:
+    \begin{thmenum}
       \thmitem{def:propositional_semantics/contradiction/interpretations} No interpretation satisfies \( \varphi \).
       \thmitem{def:propositional_semantics/contradiction/entailment} The formula \( \varphi \) entails \( \bot \), i.e. \( \varphi \vDash \bot \).
-      \thmitem{def:propositional_semantics/contradiction/functional} The function \( \fun_\varphi \) is canonically false.
-    \end{itemize}
+    \end{thmenum}
 
     \thmitem{def:propositional_semantics/equivalence} We say that \( \varphi \) and \( \psi \) are \term{semantically equivalent} and write \( \varphi \gleichstark \psi \) if either:
-    \begin{itemize}
-      \thmitem{def:propositional_semantics/equivalence/interpretations} We have \( \varphi\Bracks{I} = \psi\Bracks{I} \) for every interpretation \( I \).
+    \begin{thmenum}
+      \thmitem{def:propositional_semantics/equivalence/interpretations} We have \( \Bracks{\varphi}_I = \Bracks{\psi}_I \) for every interpretation \( I \).
       \thmitem{def:propositional_semantics/equivalence/entailment} Both \( \varphi \vDash \psi \) and \( \psi \vDash \varphi \).
-    \end{itemize}
+    \end{thmenum}
 
-    \thmitem{def:propositional_semantics/equisatisfiability} A weaker notion than that of semantic equivalence is that of \term{equisatisfiability}. We say that the families \( \Gamma \) and \( \Delta \) are equisatisfiable if the following holds: \enquote{\( \Gamma \) is satisfiable if and only if \( \Delta \) is satisfiable}. For single-formula families \( \Gamma = \set{ \varphi } \) and \( \Delta = \set{ \psi } \), the following are equivalent conditions for equisatisfiability:
-    \begin{itemize}
-      \thmitem{def:propositional_semantics/equisatisfiability/interpretations} There exist interpretations \( I \) and \( J \) such that \( \varphi\Bracks{I} = \psi\Bracks{J} \).
-      \thmitem{def:propositional_semantics/equisatisfiability/functional} We have \( \fun_\varphi = \fun_\psi \) for the induced functions.
-    \end{itemize}
+    \thmitem{def:propositional_semantics/equisatisfiability} A weaker notion than that of semantic equivalence is that of \term{equisatisfiability}. We say that the families \( \Gamma \) and \( \Delta \) are equisatisfiable if the following holds:
+    \begin{displayquote}
+      The set \( \Gamma \) is satisfiable if and only if \( \Delta \) is satisfiable.
+    \end{displayquote}
 
-    A trivial example of equisatisfiable, but not equivalent formulas are \( \varphi = P \) and \( \psi = Q \) for \( P \neq Q \).
+    The formulas \( \varphi \) and \( \psi \) are equisatisfiable if there exist interpretations \( I \) and \( J \) such that \( \Bracks{\varphi}_I = \Bracks{\psi}_J \).
   \end{thmenum}
 \end{definition}
 
-\begin{theorem}\label{thm:lindenmaum_tarski_algebra_of_full_propositional_logic}
-  We give an explicit connection between \hyperref[def:propositional_syntax/formula]{propositional formulas} and \hyperref[def:boolean_operator]{Boolean operators}.
-
-  \begin{thmenum}
-    \thmitem{thm:lindenmaum_tarski_algebra_of_full_propositional_logic/equivalence_classes} The \hyperref[def:propositional_semantics/equivalence]{semantic equivalence} \( \gleichstark \) is an equivalence relation on the set \( \boldop{Form} \) of all propositional formulas.
-
-    \thmitem{thm:lindenmaum_tarski_algebra_of_full_propositional_logic/bijection} The \hyperref[def:lindenbaum_tarski_algebra]{Lindenbaum-Tarski algebra}  \( \boldop{Form} / {{}\gleichstark} \) of all propositional formulas with respect to semantic equivalence is bijective with the set of all \hyperref[def:boolean_operator]{Boolean operators} of arbitrary arity.
-
-    Both are provably Boolean algebras, but with very different proofs --- the Lindenbaum-Tarski algebra is Boolean due to the purely syntactic \fullref{thm:intuitionistic_lindenbaum_tarski_algebra} and the set of all Boolean operators is a Boolean algebra due to the semantic \fullref{thm:functions_over_model_form_model}. This is another demonstration of \fullref{thm:classical_propositional_logic_is_sound_and_complete}.
-
-    See \fullref{rem:thm:intuitionistic_lindenbaum_tarski_algebra/syntactic_proof}.
-  \end{thmenum}
-\end{theorem}
-\begin{proof}
-  \SubProofOf{thm:lindenmaum_tarski_algebra_of_full_propositional_logic/equivalence_classes} Follows from the equivalences in \fullref{def:equivalence_relation}.
-
-  \SubProofOf{thm:lindenmaum_tarski_algebra_of_full_propositional_logic/bijection} Follows from the equivalences in \fullref{def:propositional_semantics/equivalence}.
-\end{proof}
+\begin{example}\label{ex:equisatisfiable_not_equivalent}
+  A trivial example of equisatisfiable, but not equivalent formulas are \( \varphi = P \) and \( \psi = Q \) for \( P \neq Q \).
+\end{example}
 
 \begin{proposition}\label{thm:boolean_equivalences}
-  The following (and many more) are called \term{Boolean equivalences} because they are actually statements about our choice of \hyperref[def:standard_boolean_operators]{standard Boolean operators}. They are formulated here because the framework of propositional logic is more convenient for stating the equivalences. Note that most of these equivalences fail in \hyperref[def:intuitionistic_propositional_deductive_systems]{intuitionistic logic}.
+  The following (and many more) are called \term{Boolean equivalences} because they are actually statements about \hyperref[def:standard_boolean_operators]{standard Boolean operators}. They are formulated here because the framework of propositional logic is more convenient for stating the equivalences.
 
   For arbitrary propositional formulas \( \varphi \) and \( \psi \), the following semantic equivalences hold:
   \begin{thmenum}
@@ -308,7 +306,7 @@
     \thmitem{thm:boolean_equivalences/biconditional_member_negation} A \hyperref[def:propositional_language/connectives/biconditional]{biconditional} is equivalent its termwise negation:
     \begin{equation}\label{eq:thm:boolean_equivalences/biconditional_member_negation}
       \begin{split}
-        \mathllap{\neg \varphi \leftrightarrow \neg \psi} &\gleichstark \mathrlap{\varphi \leftrightarrow \psi.}
+        \mathllap{\varphi \leftrightarrow \psi} &\gleichstark \mathrlap{\neg \varphi \leftrightarrow \neg \psi.}
       \end{split}
     \end{equation}
 
@@ -324,6 +322,9 @@
     \end{equation}
   \end{thmenum}
 \end{proposition}
+\begin{comments}
+  \item Most of these equivalences fail in \hyperref[def:intuitionistic_propositional_deductive_systems]{intuitionistic logic}.
+\end{comments}
 \begin{proof}
   The proofs follow directly from the table in \fullref{def:standard_boolean_operators}.
 \end{proof}
@@ -331,7 +332,7 @@
 \begin{definition}\label{def:propositional_substitution}\mimprovised
   We sometimes want to substitute a propositional variable with another variable or even with a formula. This is akin to applying a \hyperref[def:boolean_operator]{Boolean operator} like \( x \vee y \) to different variables (e.g. to obtain \( x \vee x \)) or even concrete values (e.g. \( F \vee T \)), except that it is done on a purely syntactic level without involving any semantics involved.
 
-  It does not pose any technical difficulty to extend this definition beyond replacing a variable like it is usually done (e.g. \cite[def: 1.2.5]{VanDalen2004}). Not only that, we can then use this mechanism to define complicated rewriting rules and have semantic equivalence automatically follow from \fullref{thm:propositional_substitution_equivalence}.
+  It does not pose any technical difficulty to extend this definition beyond replacing a variable like it is usually done (e.g. \cite[def. 1.2.5]{VanDalen2004}). Not only that, we can then use this mechanism to define complicated rewriting rules and have semantic equivalence automatically follow from \fullref{thm:propositional_substitution_equivalence}.
 
   \begin{thmenum}
     \thmitem{def:propositional_substitution/single} We define the \term{substitution} of the propositional formula \( \theta \) with \( \chi \) in \( \varphi \) as
@@ -346,7 +347,7 @@
 
     Note that it is not strictly necessary for \( \theta \) to be a subformula of \( \varphi \).
 
-    In the case where \( \theta \) is a single variable, if \( P \in \boldop{Var}(\varphi) \), then \( \varphi[P \mapsto \chi] \) is said to be an \term{instance} of \( \varphi \).
+    In the case where \( \theta \) is a single variable \( P \), then \( \varphi[P \mapsto \chi] \) is said to be an \term{instance} of \( \varphi \).
 
     \thmitem{def:propositional_substitution/simultaneous} We will now define \term{simultaneous substitution} of \( \theta_1, \ldots, \theta_n \) with \( \chi_1, \ldots, \chi_n \). We wish to avoid the case where \( \theta_k \) is a subformula of \( \chi_{k-1} \) and it accidentally gets replaced during \( \varphi[\theta_{k-1} \mapsto \chi_{k-1}][\theta_k \mapsto \chi_k] \).
 
@@ -354,7 +355,7 @@
     \begin{equation*}
       \cat{Bound} \coloneqq \boldop{Var}(\chi_1) \cup \ldots \cup \boldop{Var}(\chi_n).
     \end{equation*}
-    and, for each variable \( P_k \) in \( \cat{Bound} \), pick a variable \( Q_k \) from \( \boldop{Prop} \setminus \boldop{Bound} \) (we implicitly assume the existence of enough variables in \( \boldop{Prop} \)). Let \( m \) be the \hyperref[def:cardinal]{cardinality} of \( \boldop{Bound} \). The simultaneous substitution can now be defined as
+    and, for each variable \( P_k \) in \( \cat{Bound} \), pick a variable \( Q_k \) from \( \boldop{Prop} \setminus \boldop{Bound} \). We are able to do a deterministic choice of new variables due to our well-ordering of identifiers discussed in \fullref{rem:grammar_rules_for_variables}. Let \( m \) be the \hyperref[def:cardinal]{cardinality} of \( \boldop{Bound} \). The simultaneous substitution can now be defined as
     \begin{align*}
       \varphi[\theta_1 \mapsto \chi_1, \ldots, \theta_n \mapsto \chi_n] \coloneqq \varphi
       [\theta_1 \mapsto \chi_1[P_1 \mapsto Q_1, \ldots, P_m \mapsto Q_m]] \\
@@ -366,13 +367,14 @@
 \end{definition}
 
 \begin{proposition}\label{thm:propositional_substitution_equivalence}
-  If \( \theta \) is a subformula of \( \varphi \) and if \( \theta \gleichstark \chi \), then
+  If \( \theta \gleichstark \chi \), then
   \begin{equation}\label{eq:thm:propositional_substitution_equivalence}
     \varphi[\theta \mapsto \chi] \gleichstark \varphi.
   \end{equation}
-
-  By induction, this also holds for \hyperref[def:propositional_substitution/simultaneous]{simultaneous substitution}.
 \end{proposition}
+\begin{comments}
+  \item By induction, this also holds for \hyperref[def:propositional_substitution/simultaneous]{simultaneous substitution}.
+\end{comments}
 \begin{proof}
   We use \fullref{thm:induction_on_syntax_trees} on \( \varphi \):
 
@@ -384,28 +386,33 @@
 
     \item If \( \varphi \neq \theta \) and \( \varphi \in \set{ \top, \bot } \cup \boldop{Prop} \), then \( \varphi[\theta \mapsto \chi] = \varphi \) and \eqref{eq:thm:propositional_substitution_equivalence} again holds trivially.
 
-    \item If \( \varphi \neq \theta \) and \( \varphi = \neg \chi \) and if the inductive hypothesis holds for \( \chi \), then \( \varphi[\theta \mapsto \chi] = \neg \psi[\theta \mapsto \chi] \). For any interpretation \( I \),
+    \item If \( \varphi \neq \theta \) and \( \varphi = \neg \chi \) and if the inductive hypothesis holds for \( \chi \), then
     \begin{equation*}
-      \parens[\Big]{ \varphi[\theta \mapsto \chi] }\Bracks{I}
+      \varphi[\theta \mapsto \chi] = \neg \psi[\theta \mapsto \chi].
+    \end{equation*}
+
+    For any interpretation \( I \),
+    \begin{equation*}
+      \Bracks[\Big]{ \varphi[\theta \mapsto \chi] }_I
       =
-      \overline{\parens[\Big]{ \psi[\theta \mapsto \chi] }\Bracks{I}}
+      \overline{\Bracks[\Big]{\psi[\theta \mapsto \chi] }_I}
       \reloset {\T{ind.}} =
-      \overline{\psi\Bracks{I}}
+      \overline{\Bracks{\psi}_I}
       =
-      \varphi\Bracks{I}.
+      \Bracks{\varphi}_I.
     \end{equation*}
 
     Therefore, \eqref{eq:thm:propositional_substitution_equivalence} holds in this case.
 
     \item If \( \varphi \neq \theta \) and \( \varphi = \psi_1 \bincirc \psi_2, \bincirc \in \Sigma \) and if the inductive hypothesis holds for both \( \psi_1 \) and \( \psi_2 \), then for any interpretation \( I \),
     \begin{equation*}
-      \parens[\Big]{ \varphi[\theta \mapsto \chi] }\Bracks{I}
+      \Bracks[\Big]{ \varphi[\theta \mapsto \chi] }_I
       =
-      \parens[\Big]{ \psi_1[\theta \mapsto \chi] }\Bracks{I} \bincirc \parens[\Big]{ \psi_2[\theta \mapsto \chi] }\Bracks{I}
+      \Bracks[\Big]{ \psi_1[\theta \mapsto \chi] }_I \bincirc \Bracks[\Big]{ \psi_2[\theta \mapsto \chi] }_I
       \reloset {\T{ind.}} =
-      \psi_1\Bracks{I} \bincirc \psi_2\Bracks{I}
+      \Bracks[\Big]{\psi_1}_I \Bracks{\bincirc} \Bracks[\Big]{\psi_2}_I
       =
-      \varphi\Bracks{I}.
+      \Bracks{\varphi}_I.
     \end{equation*}
 
     Therefore, \eqref{eq:thm:propositional_substitution_equivalence} holds in this case also.
@@ -414,26 +421,13 @@
   We have verified that \eqref{eq:thm:propositional_substitution_equivalence} holds in all cases.
 \end{proof}
 
-\begin{remark}\label{rem:smaller_propositional_language}
-  For \hyperref[def:propositional_semantics]{semantical} concepts, it is immaterial which element of an equivalence class we consider. \hyperref[def:boolean_closure]{Complete sets of Boolean operations} allow us to represent each formula using a strict subset of the \hyperref[def:propositional_language/constants]{propositional constants}, \hyperref[def:propositional_language/negation]{negation} and \hyperref[def:propositional_language/connectives]{connectives}. \Fullref{ex:thm:posts_completeness_theorem} shows some concrete commonly used complete sets of Boolean operations. This is also the motivation for studying \hyperref[def:lindenbaum_tarski_algebra]{Lindenbaum-Tarski algebras}.
-
-  This is useful in
-  \begin{itemize}
-    \item Reduction to normal forms such as the \hyperref[def:cnf_and_dnf]{conjunctive normal form} in \fullref{alg:perfect_cnf_and_dnf}.
-
-    \item \hyperref[def:propositional_semantics/satisfiability]{Satisfiability} proofs that rely on \fullref{thm:induction_on_syntax_trees} because it allows us to consider less cases in the induction.
-
-    \item Having fewer rules in \hyperref[alg:perfect_cnf_and_dnf]{deductive systems}. For example, we may choose to add \eqref{eq:thm:minimal_propositional_negation_laws/pierce} to the axioms of the \hyperref[def:positive_implicational_deductive_system]{positive implicational derivation system} and due to \fullref{thm:minimal_propositional_negation_laws} this derivation system would be able to emulate the \hyperref[def:classical_propositional_deductive_systems]{classical derivation system}.
-  \end{itemize}
-\end{remark}
-
 \begin{definition}\label{def:cnf_and_dnf}\mcite[I.1.\S4]{Яблонский1986}
   We will now introduce \term{conjunctive normal forms} (CNF) and \term{disjunctive normal forms} (DNF) for propositional formulas. The concepts are related but distinct from that of \hyperref[rem:lattice_polynomials]{lattice polynomials}.
 
   \begin{thmenum}
     \thmitem{def:cnf_and_dnf/grammar} The structure of these formulas is best described by the \hyperref[rem:backus_normal_form]{grammar schema}:
     \begin{bnf*}
-      \bnfprod{positive literal}     {P \in \boldop{Prop}} \\
+      \bnfprod{positive literal}     {\bnfpn{variable}} \\
       \bnfprod{negative literal}     {\neg \bnfpn{positive literal}} \\
       \bnfprod{literal}              {\bnfpn{positive literal} \bnfor \bnfpn{negative literal}} \\
       \bnfprod{disjunct}             {\bnfpn{literal} \bnfor \bnftsq{(} \bnfsp \bnfpn{literal}  \bnfsp \bnftsq{\( \vee \)}   \bnfsp \bnfpn{disjunct} \bnfsp \bnftsq{)}} \\
@@ -460,12 +454,14 @@
       \thmitem{def:cnf_and_dnf/perfect/ordering} The disjuncts are ordered \hyperref[def:lexicographic_order]{lexicographically} so that, for the \( k \)-th literals, \( L_k \leq R_k \) if either \( L_k \) is a negative literal or if both literals are positive.
     \end{thmenum}
 
+    These additional conditions ensure uniqueness --- see \fullref{alg:perfect_cnf_and_dnf}.
+
     A formula in perfect conjunctive normal form can be written as
     \begin{equation*}
-      \bigwedge_{(x_1, \ldots, x_n) \in B} P_1^{x_1} \vee \cdots \vee P_n^{x_n}.
+      \bigwedge_{(x_1, \ldots, x_n) \in \set{ T, F }^n} P_1^{x_1} \vee \cdots \vee P_n^{x_n}.
     \end{equation*}
 
-    Perfect DNFs are defined analogously. These additional conditions ensure uniqueness --- see \fullref{alg:perfect_cnf_and_dnf}.
+    Perfect DNFs are defined analogously.
   \end{thmenum}
 \end{definition}
 
@@ -488,17 +484,17 @@
 \end{example}
 
 \begin{algorithm}[Perfect CNFs and DNFs]\label{alg:perfect_cnf_and_dnf}\mcite[thm. I.1.3]{Яблонский1986}
-  Let \( f(x_1, \ldots, x_n) \) be an arbitrary \hyperref[def:boolean_operator]{Boolean operator}. We will build a formula in \hyperref[def:cnf_and_dnf/perfect]{perfect disjunctive normal form} and one in \hyperref[def:cnf_and_dnf/perfect]{perfect conjunctive normal form}. The \hyperref[def:propositional_formula_induced_function]{induced function} of both of these formulas will be \( f \). Both formulas are unique, as we will show.
+  Let \( f(x_1, \ldots, x_n) \) be an arbitrary \hyperref[def:boolean_operator]{Boolean operator}. We will build a formula in \hyperref[def:cnf_and_dnf/perfect]{perfect disjunctive normal form} and one in \hyperref[def:cnf_and_dnf/perfect]{perfect conjunctive normal form}. The \hyperref[def:propositional_valuation/valuation_function]{induced function} of both of these formulas will be \( f \). Both formulas are unique, as we will show.
 
   \begin{thmenum}
     \thmitem{alg:perfect_cnf_and_dnf/guard} If \( f \) is constant, the constant itself is both a perfect CNF and DNF.
 
-    \thmitem{alg:perfect_cnf_and_dnf/algorithm} Suppose that \( f \) is nonconstant and fix some propositional variables \( P_1, \ldots, P_n \). The following is a formula in perfect CNF whose \hyperref[def:propositional_formula_induced_function]{induced function} is \( f \):
+    \thmitem{alg:perfect_cnf_and_dnf/algorithm} Suppose that \( f \) is nonconstant and fix some propositional variables \( P_1, \ldots, P_n \). The following is a formula in perfect CNF whose \hyperref[def:propositional_valuation/valuation_function]{induced function} is \( f \):
     \begin{equation}\label{alg:perfect_cnf_and_dnf/cnf}
       \bigwedge_{f(x_1, \ldots, x_n) = F} P_1^{x_1} \vee \cdots \vee P_n^{x_n}.
     \end{equation}
 
-    Assuming that \( F < T \), we order the disjuncts with respect to the \hyperref[def:lexicographic_order]{lexicographic order} on the set \( \set{ T, F }^n \) to which the tuples of Boolean values \( (x_1, \ldots, x_n) \) belong.
+    We order the disjuncts with respect to the \hyperref[def:lexicographic_order]{lexicographic order} on the set \( \set{ T, F }^n \) to which the tuples of Boolean values \( (x_1, \ldots, x_n) \) belong.
 
     \hyperref[def:semilattice/duality]{Dually}, we construct the perfect DNF as
     \begin{equation}\label{alg:perfect_cnf_and_dnf/dnf}
@@ -540,3 +536,31 @@
     B \coloneqq \set{ (x_1, \ldots, x_n) \given f(x_1, \ldots, x_n) = T }.
   \end{equation*}
 \end{defproof}
+
+\begin{proposition}\label{thm:lindenmaum_tarski_algebra_of_full_propositional_logic}
+  \hyperref[def:propositional_syntax/formula]{Propositional formulas} have the following structural properties when treated as \hyperref[def:boolean_operator]{Boolean operators}:
+
+  \begin{thmenum}
+    \thmitem{thm:lindenmaum_tarski_algebra_of_full_propositional_logic/equivalence_classes} The \hyperref[def:propositional_semantics/equivalence]{semantic equivalence} \( \gleichstark \) is an equivalence relation on the set \( \boldop{Form} \) of all propositional formulas.
+
+    \thmitem{thm:lindenmaum_tarski_algebra_of_full_propositional_logic/bijection} The map
+    \begin{equation*}
+      \begin{aligned}
+        &\Phi: \boldop{Form} / {}\gleichstark{} \to \mscrB \\
+        &\Phi([\varphi]) \coloneqq \Bracks{\varphi}.
+      \end{aligned}
+    \end{equation*}
+    is a well-defined bijection, where \( \mscrB \) is the set of all \hyperref[def:boolean_operator]{Boolean operators} of arbitrary arity.
+  \end{thmenum}
+\end{proposition}
+\begin{comments}
+  \item This is one of the motivations for studying \hyperref[def:lindenbaum_tarski_algebra]{Lindenbaum-Tarski algebras}.
+  \item Both \( \boldop{Form} / {}\gleichstark{} \) and \( \mscrB \) are provably Boolean algebras, but we give very different proofs --- the former is a Boolean algebra due to the syntactic \fullref{thm:intuitionistic_lindenbaum_tarski_algebra}, and the latter is a Boolean algebra due to the semantic \fullref{thm:functions_over_model_form_model}. This is another demonstration of the soundness and completeness stated in \fullref{thm:classical_propositional_logic_is_sound_and_complete}. See also \fullref{rem:thm:intuitionistic_lindenbaum_tarski_algebra/syntactic_proof}.
+\end{comments}
+\begin{proof}
+  \SubProofOf{thm:lindenmaum_tarski_algebra_of_full_propositional_logic/equivalence_classes} Straightforward.
+
+  \SubProofOf{thm:lindenmaum_tarski_algebra_of_full_propositional_logic/bijection} The map \( \Phi \) is well-defined since, by definition of semantic equivalence, \( \Bracks{\varphi}_I = \Bracks{\psi}_I \) for every interpretation \( I \) whenever \( \varphi \gleichstark \psi \).
+
+  Injectivity of \( \Phi \) is also obvious from the definition of semantic equivalence, while surjectivity is given by \fullref{alg:perfect_cnf_and_dnf}.
+\end{proof}
