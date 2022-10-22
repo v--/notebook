@@ -69,11 +69,11 @@ It is challenging to formally define a deductive system in a way that reflects r
 
   We will not attempt to encode inference rules themselves into the object theory and instead regard a deductive system as a pair \( (\mscrF, \mscrP) \), where \( \mscrF \) is a set of logical formulas and \( \mscrP \) is a set of proofs over \( \mscrF \).
 
-  We define the set \( \mscrP \) of proofs via \hyperref[thm:structural_recursion]{structural recursion}.
+  We define the set \( \mscrP = \bigcup_{k=0}^\infty \mscrP_k \) of proofs inductively as follows:
   \begin{thmenum}
-    \thmitem{def:deductive_system/base} For every formula \( \varphi \) in \( \mscrF \), the tree with root \( \varphi \) and no children is a proof \( \mscrP \).
+    \thmitem{def:deductive_system/base} Let \( \mscrP_0 \) be the following containing, for every formula \( \varphi \) in \( \mscrF \), the tree with only one node --- the root \( \varphi \).
 
-    \thmitem{def:deductive_system/rule} Let \( \varphi_1, \ldots, \varphi_n \) and \( \psi \) be formulas in \( \mscrF \) and \( P_1, \ldots, P_n \) be proofs of \( \varphi_1, \ldots, \varphi_n \).
+    \thmitem{def:deductive_system/rule} For every \( k > 0 \), let \( \varphi_1, \ldots, \varphi_n \) and \( \psi \) be formulas in \( \mscrF \) and \( P_1, \ldots, P_n \) be proofs of \( \varphi_1, \ldots, \varphi_n \) from \( \mscrP_{k-1} \).
 
     Suppose that the deductive system has an inference rule
     \begin{equation*}
@@ -86,11 +86,11 @@ It is challenging to formally define a deductive system in a way that reflects r
     \end{equation*}
     such that
     \begin{equation*}
-      R\Bracks{ \Phi_1 \mapsto P_1, \ldots, \Phi_n \mapsto P_n, \Psi \mapsto \psi } = T
+      \Bracks{R}(P_1, \ldots, P_n, \psi) = T
     \end{equation*}
     in the metalogic.
 
-    Then the tree with root \( \psi \), subtrees \( P_1, \ldots, P_n \) of the root, and label \( R \), is a proof in \( \mscrP \). In the case of rules with no premises like \eqref{eq:def:minimal_propositional_natural_deduction_system/top/intro}, we add a \hyperref[def:proof_tree/premises]{non-premise label} to the proof in order to exclude \( \psi \) from the list of premises of the proof.
+    Then the tree with root \( \psi \), subtrees \( P_1, \ldots, P_n \) of the root, and label \( R \), is a proof. In the case of rules with no premises like \eqref{eq:def:minimal_propositional_natural_deduction_system/top/intro}, we add a \hyperref[def:proof_tree/premises]{non-premise label} to the proof in order to exclude \( \psi \) from the list of premises of the proof.
 
     We say that the resulting proof
     \begin{equation*}
@@ -102,6 +102,8 @@ It is challenging to formally define a deductive system in a way that reflects r
       \end{prooftree}
     \end{equation*}
     is an \term{application} of the rule \( R \).
+
+    Let \( \mscrP_k \) consist of all such applications.
   \end{thmenum}
 \end{definition}
 
@@ -745,14 +747,14 @@ It is challenging to formally define a deductive system in a way that reflects r
 
   Fix a Heyting algebra \( \mscrH = (H, \sup, \inf, T, F, \rightarrow) \). \hyperref[def:propositional_valuation/interpretation]{Propositional interpretations} in Heyting semantics may take any value in \( X \), as can \hyperref[def:propositional_valuation/formula_valuation]{formula valuations}.
 
-  Given an interpretation \( I \) and a formula \( \varphi \), we define \( \varphi\Bracks{I} \) via \eqref{eq:def:propositional_valuation/formula_interpretation}, the sole difference being that negation valuation is defined via the pseudocomplement:
+  Given an interpretation \( I \) and a formula \( \varphi \), we define \( \Bracks{\varphi}_I \) via \eqref{eq:def:propositional_valuation/formula_interpretation}, the sole difference being that negation valuation is defined via the pseudocomplement:
   \begin{equation*}
-    (\neg \psi)\Bracks{I} \coloneqq \widetilde{\varphi\Bracks{I}}.
+    \Bracks{\neg \psi}_I \coloneqq \widetilde{\Bracks{\varphi}_I}.
   \end{equation*}
 
-  We say that \( I \) satisfies \( \varphi \) if \( \varphi\Bracks{I} = T \). Thus, if the valuation of \( \varphi \) takes any value in \( H \setminus \set{ T } \), then \( I \) does not satisfy \( \varphi \), but that does not necessarily mean that \( I \) satisfies \( \neg \varphi \).
+  We say that \( I \) satisfies \( \varphi \) if \( \Bracks{\varphi}_I = T \). Thus, if the valuation of \( \varphi \) takes any value in \( H \setminus \set{ T } \), then \( I \) does not satisfy \( \varphi \), but that does not necessarily mean that \( I \) satisfies \( \neg \varphi \).
 
-  Then \( \Gamma \) entails \( \varphi \) if, for every \( \psi \in \Gamma \) and every interpretation \( I \) in every Heyting algebra, we have \( \varphi\Bracks{I} = \psi\Bracks{I} \).
+  Then \( \Gamma \) entails \( \varphi \) if, for every \( \psi \in \Gamma \) and every interpretation \( I \) in every Heyting algebra, we have \( \Bracks{\varphi}_I = \Bracks{\psi}_I \).
 
   It is important that different Heyting algebras may provide different semantics --- see \fullref{ex:heyting_semantics_lem_counterexample} for an example of what is impossible in a Boolean algebra.
 \end{definition}
@@ -773,9 +775,9 @@ It is challenging to formally define a deductive system in a way that reflects r
 
   Then the valuation of \eqref{eq:thm:minimal_propositional_negation_laws/lem} is
   \begin{equation*}
-    (P \vee \neg P)\Bracks{I}
+    \Bracks{P \vee \neg P}_I
     =
-    \sup\set{ P\Bracks{I}, \widetilde{P\Bracks{I}} }
+    \sup\set{ \Bracks{P}_I, \widetilde{\Bracks{P}_I} }
     =
     \sup\set{ N, \widetilde{N} }
     =
@@ -804,16 +806,16 @@ It is challenging to formally define a deductive system in a way that reflects r
 \begin{example}\label{ex:topological_semantics_lem_counterexample}
   Let \( U \) be an open set in the standard topology in \( \BbbR \). We will examine \eqref{eq:thm:minimal_propositional_negation_laws/lem} with respect to \hyperref[def:propositional_topological_semantics]{topological semantics} for \( \BbbR \). Due to \fullref{ex:topological_space_is_heyting_algebra}, given any \hyperref[def:propositional_valuation]{propositional interpretation} \( I \) such that \( I(P) = U \), we have
   \begin{equation*}
-    (P \vee \neg P)\Bracks{I}
+    \Bracks{P \vee \neg P}_I
     =
-    P\Bracks{I} \cup \widetilde{P\Bracks{I}}
+    \Bracks{P}_I \cup \widetilde{\Bracks{P}_I}
     =
     U \cup \widetilde{U}
     =
     U \cup \Int(\BbbR \setminus U).
   \end{equation*}
 
-  If \( U = \varnothing \), then \( (P \vee \neg P)\Bracks{I} = \BbbR \) and \eqref{eq:thm:minimal_propositional_negation_laws/lem} holds. If \( U = (0, 1) \), then \( (P \vee \neg P)\Bracks{I} = \BbbR \setminus \set{ 0, 1 } \) and \eqref{eq:thm:minimal_propositional_negation_laws/lem} does not hold.
+  If \( U = \varnothing \), then \( \Bracks{P \vee \neg P}_I = \BbbR \) and \eqref{eq:thm:minimal_propositional_negation_laws/lem} holds. If \( U = (0, 1) \), then \( \Bracks{P \vee \neg P}_I = \BbbR \setminus \set{ 0, 1 } \) and \eqref{eq:thm:minimal_propositional_negation_laws/lem} does not hold.
 
   Compare this result with \fullref{ex:heyting_semantics_lem_counterexample}.
 \end{example}
