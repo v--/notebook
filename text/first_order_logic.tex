@@ -1,91 +1,94 @@
 \subsection{First-order logic}\label{subsec:first_order_logic}
 
-\begin{definition}\label{def:first_order_language}\mcite[sec. 15.2]{OpenLogicFull}
-  The idea of first-order predicate logic (we will omit \enquote{predicate} and only refer to \enquote{first-order logic}) is to create a formal language whose semantics (given by structures) support boolean operations and can quantify over all elements of an ambient universe. Unlike in \hyperref[subsec:propositional_logic]{propositional logic}, there are different first-order logic languages.
+The idea of first-order predicate logic (we will omit \enquote{predicate} and only refer to \enquote{first-order logic}) is to create a formal language whose semantics (given by structures) support boolean operations and can quantify over all elements of an ambient universe. Unlike in \hyperref[subsec:propositional_logic]{propositional logic}, there are different first-order logic languages.
 
-  The alphabet for a \term{first-order logic \hyperref[def:formal_language]{language}} \( \mscrL \) extends that of \hyperref[subsec:propositional_logic]{propositional logic} and consists of two types of symbols.
+\begin{definition}\label{def:first_order_language}\mcite[def. 2.1.2]{Hinman2005}
+  A \term{first-order language}\footnote{As in propositional logic, a first-order language is an \hyperref[def:formal_language]{alphabet} rather than a \hyperref[def:formal_language/language]{formal language}.} \( \mscrL \) extends the language of \hyperref[subsec:propositional_logic]{propositional logic} and consists of two types of symbols.
 
   \begin{description}
     \item[Logical symbols]
     \hfill
     \begin{thmenum}[series=def:first_order_language]
-      \thmitem{def:first_order_language/propositional} The entirety of the \hyperref[subsec:propositional_logic]{propositional logic language} except for the \hyperref[def:propositional_syntax/prop]{propositional variables}.
-
-      \thmitem{def:first_order_language/var} A nonempty \hyperref[def:set_countability/at_most_countable]{at most countable} alphabet of \term{individual variables} \( \boldop{Var} \), usually denoted by small Greek letters \( \xi_1, \xi_2, \ldots \) or \( \xi, \eta, \zeta \) --- see \fullref{rem:mathematical_logic_conventions/variable_symbols}.
+      \thmitem{def:first_order_language/propositional} The entirety of the \hyperref[subsec:propositional_logic]{propositional logic language}.
 
       \thmitem{def:first_order_language/quantifiers} The quantifiers \( Q = \set{ \forall, \exists } \):
       \begin{thmenum}
         \thmitem{def:first_order_language/quantifiers/universal} The \term{universal quantifier} \( \forall \).
         \thmitem{def:first_order_language/quantifiers/existential} The \term{existential quantifier} \( \exists \).
-        \thmitem{def:first_order_language/quantifiers/dot} The dot \( . \) for separating a quantifier from its formula.
+        \thmitem{def:first_order_language/quantifiers/dot} A dot \( . \) for separating a quantifier from its formula.
       \end{thmenum}
 
-      The dot is not itself a quantifier and is not formally necessary --- we use it only for readability.
+      The dot is not itself a quantifier and is not strictly necessary --- we use it only for readability.
 
-      \thmitem{def:first_order_language/equality} A symbol for \term{formal equality} \( \doteq \). Equality is sometimes omitted by logicians, but examples of first-order languages without formal equality are obscure.
+      \thmitem{def:first_order_language/equality} A symbol for \term{formal equality}\footnote{Equality is sometimes omitted by logicians, but examples of first-order languages without formal equality are obscure.} \( \doteq \).
     \end{thmenum}
 
     \item[Non-logical symbols]
     \hfill
     \begin{thmenum}[resume=def:first_order_language]
-      \thmitem{def:first_order_language/func} A set of functional symbols, \( \boldop{Fun} \), whose elements are usually denoted by \( f_1, f_2, \ldots \) or \( f, g \) or by symbols like \( \otimes \). In the latter case we usually use the infix notation discussed in \fullref{rem:first_order_formula_conventions/infix}. Each functional symbol has an associated natural number called its \term{arity}, denoted by \( \# f \). Functional symbols with a zero arity are called \term{constants}.
+      \thmitem{def:first_order_language/fun} A possibly empty \hi{finite} set \( \boldop{Fun} \) of symbols for denoting functions.
 
-      \thmitem{def:first_order_language/pred} A set of predicate symbols, \( \boldop{Pred} \), whose elements are usually denoted by \( p_1, p_2, \ldots \) or by symbols like \( \leq \). Again, in the latter case we use infix notation. Predicate symbols also have an associated arity. Predicate symbols with zero arity are called \term{propositional variables}.
+      Note that, despite using notation like \( f_n \), we regard \( f_n \) as a single symbol, and it is usually a single symbol like \( + \) or \( / \).
+
+      Each functional symbol has an associated natural number called its \term{arity}, which we denote by \( \# f \). Functional symbols of zero arity are called \term{constants}.
+
+      Of course, none of the functional symbols are allowed to clash with the logical symbols.
+
+      \thmitem{def:first_order_language/pred} A possibly empty \hi{finite} set \( \boldop{Pred} \) of symbols for denoting predicates.
+
+      Predicate symbols also have an associated arity. Predicate symbols of zero arity act as \hyperref[def:propositional_syntax/prop]{propositional variables}.
+
+      None of the predicate symbols are allowed to clash with either the functional symbols or with the logical symbols.
     \end{thmenum}
   \end{description}
 
   The logical symbols are common for all first-order languages. Thus, first-order languages differ by their non-logical symbols. The collection of functional and predicate symbols of a language are sometimes called its \term{signature}.
 \end{definition}
 
+\begin{remark}\label{rem:uncountable_first_order_language}
+  We require the sets of \hyperref[def:first_order_language/fun]{functional symbols} and \hyperref[def:first_order_language/fun]{predicate symbols} to be finite. This restriction is natural in several ways:
+  \begin{itemize}
+    \item This allows us to stick to the conventional theory of \hyperref[def:formal_language/language]{formal languages} over finite alphabets and \hyperref[def:formal_grammar]{formal grammars} over finite alphabets with finitely many rules.
+
+    \item The above carets to the philosophical implication of languages being at most countable.
+
+    \item The above also allows us to implement these concepts in \cite{code}.
+  \end{itemize}
+
+  Unfortunately, this decision also limits us in certain definitions like \fullref{def:semimodule/theory}, where we may need uncountably many functional symbols. This concrete example may be considered pathological, because more general logical frameworks provide more elegant solutions otherwise.
+
+  Thus, we restrict ourselves to what Peter Hinman in \cite[def. 2.1.27]{Hinman2005} calls \term{finite languages}.
+\end{remark}
+
 \begin{definition}\label{def:first_order_syntax}
-  Similarly to the \hyperref[def:propositional_syntax]{syntax of propositional logic}, we define the \term{syntax} of a fixed first-order language \( \mscrL \).
+  Similarly to the \hyperref[def:propositional_syntax]{syntax of propositional logic}, we define the \term{syntax} of a fixed \hyperref[def:first_order_language]{first-order language} \( \mscrL \).
 
   \begin{thmenum}
     \thmitem{def:first_order_syntax/grammar_schema} Consider the following \hyperref[rem:backus_normal_form]{grammar schema}:
     \begin{bnf*}
-      \bnfprod{variable}        {v \in \boldop{Var}} \\
-      \bnfprod{connective}      {\bincirc \in \Sigma} \\
+      \bnfprod{variable}        {\bnfpn{Greek identifier}} \\
+      \bnfprod{connective}      {\bnftsq{\( \vee \)} \bnfor \bnftsq{\( \wedge \)} \bnfor \bnftsq{\( \rightarrow \)} \bnfor \bnftsq{\( \leftrightarrow \)}} \\
       \bnfprod{quantifier}      {\bnftsq{\( \forall \)} \bnfor \bnftsq{\( \exists \)}} \\
-      \bnfprod{unary function}  {f \in \boldop{Fun}, \#f = 1} \\
-      \bnfmore                  {\vdots} \\
-      \bnfprod{\( n \)-ary function}  {f \in \boldop{Fun}, \#f = n \T{(standalone rule for each \( n \))}} \\
-      \bnfmore                  {\vdots} \\
-      \bnfprod{unary predicate} {p \in \boldop{Pred}, \#p = 1} \\
-      \bnfmore                  {\vdots} \\
-      \bnfprod{\( n \)-ary predicate} {p \in \boldop{Pred}, \#p = n \T{(standalone rule for each \( n \))}} \\
-      \bnfmore                  {\vdots} \\
       \bnfprod{term}            {\bnfpn{variable} \bnfor} \\
-      \bnfmore                  {\bnfpn{unary function} \bnfsp \bnftsq{(} \bnfsp \bnfpn{term} \bnfsp \bnftsq{)} \bnfor} \\
-      \bnfmore                  {\hspace{3cm} \vdots} \\
-      \bnfmore                  {\bnfpn{n-ary function} \bnfsp \underbrace{\bnftsq{(} \bnfsp \bnfpn{term} \bnftsq{,} \bnfsk \bnftsq{,} \bnfpn{term} \bnfsp \bnftsq{)}}_{n \T{terms}} \bnfor} \\
-      \bnfmore                  {\hspace{3cm} \vdots} \\
+      \bnfmore                  {\underbrace{f \bnfsp \bnftsq{(} \bnfsp \overbrace{\bnfpn{term} \bnfsp \bnftsq{,} \bnfsp \bnfsk \bnfsp \bnftsq{,} \bnfsp \bnfpn{term}}^{\# f \T*{terms separated by commas}} \bnfsp \bnftsq{)}}_{\T{Standalone rule for each } f \in \boldop{Fun}}} \\
       \bnfprod{atomic formula}  {\bnftsq{\( \top \)} \bnfor \bnftsq{\( \bot \)} \bnfor} \\
       \bnfmore                  {\bnftsq{(} \bnfsp \bnfpn{term} \bnfsp \bnftsq{\( \doteq \)} \bnfsp \bnfpn{term} \bnfsp \bnftsq{)} \bnfor} \\
-      \bnfmore                  {\bnfpn{unary predicate} \bnfsp \bnftsq{(} \bnfsp \bnfpn{term} \bnfsp \bnftsq{)} \bnfor} \\
-      \bnfmore                  {\hspace{3cm} \vdots} \\
-      \bnfmore                  {\bnfpn{n-ary predicate} \bnfsp \underbrace{\bnftsq{(} \bnfsp \bnfpn{term} \bnftsq{,} \bnfsk \bnftsq{,} \bnfpn{term} \bnfsp \bnftsq{)}}_{n \T{terms}} \bnfor} \\
-      \bnfmore                  {\hspace{3cm} \vdots} \\
+      \bnfmore                  {\underbrace{p \bnfsp \bnftsq{(} \bnfsp \overbrace{\bnfpn{term} \bnfsp \bnftsq{,} \bnfsp \bnfsk \bnfsp \bnftsq{,} \bnfsp \bnfpn{term}}^{\# p \T*{terms separated by commas}} \bnfsp \bnftsq{)}}_{\T{Standalone rule for each } p \in \boldop{Prod}}} \\
       \bnfprod{formula}         {\bnfpn{atomic formula} \bnfor} \\
       \bnfmore                  {\bnftsq{\( \neg \)} \bnfpn{formula} \bnfor} \\
       \bnfmore                  {\bnftsq{(} \bnfsp \bnfpn{formula} \bnfsp \bnfpn{connective} \bnfsp \bnfpn{formula} \bnfsp \bnftsq{)} \bnfor} \\
       \bnfmore                  {\bnfpn{quantifier} \bnfsp \bnfpn{variable} \bnfsp \bnftsq{.} \bnfsp \bnfpn{formula}}
     \end{bnf*}
 
-    In practice, we usually only have functions and predicates of specific arities. Note that we can have infinitely many functions, but only finitely many different arities. The \hyperref[def:semimodule/theory]{theory of semimodules} is an example of a first-order language with infinitely many unary functional symbols, one constant and one binary functional symbol.
+    \thmitem{def:first_order_syntax/var} We denote by \( \boldop{Var} \) the set of strings generated by the above grammar schema with starting rule \( \bnfpn{variable} \).
 
-    If we need the grammars to have a finite set of rules, except for having only finitely many different arities, we need to introduce appropriate naming conventions for variables, functions and predicates, analogously to the \hyperref[def:propositional_syntax/grammar_schema]{grammar schema of propositional logic}.
+    \thmitem{def:first_order_syntax/term} Similarly, we denote by \( \boldop{Term} \) the set of strings generated with starting rule \( \bnfpn{term} \).
 
-    We use the conventions in \fullref{rem:propositional_formula_parentheses} regarding parentheses by extending them wherever appropriate.
-
-    In order to simplify notation, we also use the conventions in \fullref{rem:first_order_formula_conventions}.
-
-    \thmitem{def:first_order_syntax/term} The set \( \boldop{Term} \) of \term{terms} in \( \mscrL \) is the language \hyperref[def:formal_grammar/language]{generated} by this grammar schema with \( \bnfpn{term} \) as a starting rule.
-
-    The grammar of first-order terms is unambiguous due to \fullref{thm:first_order_terms_and_formulas_are_unambiguous}, which makes it possible to perform proofs via \fullref{thm:induction_on_syntax_trees}.
+    We implicitly associate with each first-order term a syntax tree. The grammar of terms is unambiguous as shown by \fullref{thm:propositional_formulas_are_unambiguous}, which makes it possible to perform proofs via \fullref{thm:induction_on_syntax_trees}.
 
     \thmitem{def:first_order_syntax/subterm} If \( \tau \) and \( \kappa \) are terms and \( \kappa \) is a \hyperref[def:formal_language/subword]{subword} of \( \tau \), we say that \( \kappa \) is a \term{subterm} of \( \tau \).
 
-    \thmitem{def:first_order_syntax/term_variables} For each term \( \tau \), we define its variables as
+    \thmitem{def:first_order_syntax/term_variables} For each term \( \tau \), we define the set of variables occurring in the term:
     \begin{equation}\label{eq:def:first_order_syntax/term_variables}
       \boldop{Var}(\tau) \coloneqq \begin{cases}
         \xi,                                                        &\tau = \xi \in \boldop{Var}, \\
@@ -93,15 +96,13 @@
       \end{cases}
     \end{equation}
 
-    As in \fullref{def:propositional_syntax/variables}, \( \boldop{Var} \) is ordered by the position of the first occurrence of a variable.
+    \thmitem{def:first_order_syntax/closed_term}\cite[382]{Wasilewska2018} A term \( \tau \) is called a \term{closed term} if \( \boldop{Var}(\tau) = \varnothing \).
 
-    \thmitem{def:first_order_syntax/ground_term} A term \( \tau \) is called a \term{ground term} if \( \boldop{Var}(\tau) = \varnothing \). Ground terms are also called \term{closed terms}.
+    Some authors like Anil Nerode and Robert Shore in \cite[def. 2.3]{NerodeShore1993} call them \enquote{ground terms}, but we prefer \enquote{closed term} because of similarity with closed formulas defined in \fullref{def:first_order_syntax/closed_formula}.
 
-    \thmitem{def:first_order_syntax/atomic_formula} The set \( \boldop{Atom} \) of \term{atomic formulas} in \( \mscrL \) is the language \hyperref[def:formal_grammar/language]{generated} by this grammar schema with \( \bnfpn{atomic formula} \) as a starting rule.
+    \thmitem{def:first_order_syntax/atomic_formula} We denote by \( \boldop{Var} \) the set of strings generated by the above grammar schema with starting rule \( \bnfpn{atomic formula} \).
 
-    \thmitem{def:first_order_syntax/formula} The set \( \boldop{Form} \) of \term{formulas} in \( \mscrL \) is the language \hyperref[def:formal_grammar/language]{generated} by this grammar schema with \( \bnfpn{formula} \) as a starting rule.
-
-    The \term{atomic formulas} are the ones generated from \( \bnfpn{atomic formula} \).
+    \thmitem{def:first_order_syntax/formula} Similarly, we denote by \( \boldop{Formula} \) the set of strings generated with starting rule \( \bnfpn{formula} \).
 
     The grammar of first-order formulas is unambiguous as shown by \fullref{thm:first_order_terms_and_formulas_are_unambiguous}.
 
@@ -111,7 +112,17 @@
 
     \thmitem{def:first_order_syntax/formula_terms} If \( \varphi \) is a formula, if \( \tau \) is a term and if \( \tau \) is a \hyperref[def:formal_language/subword]{subword} of \( \varphi \), we say that \( \tau \) is a \term{term} of \( \varphi \).
 
-    \thmitem{def:first_order_syntax/formula_free_variables} The \term{free variables} of a formula are defined as
+    \thmitem{def:first_order_syntax/formula_bound_variables} For each formula \( \varphi \), we define its set of \term{bound variables} as
+    \begin{equation}\label{eq:def:first_order_syntax/formula_bound_variables}
+      \boldop{Bound}(\varphi) \coloneqq \begin{cases}
+        \varnothing,                                        &\varphi \T{is atomic,} \\
+        \boldop{Bound}(\psi),                               &\varphi = \neg \psi, \\
+        \boldop{Bound}(\psi_1) \cup \boldop{Bound}(\psi_2), &\varphi = \psi_1 \bincirc \psi_2, \bincirc \in \Sigma, \\
+        \boldop{Bound}(\psi) \cup \set{ \xi },              &\varphi = \quantifier{Q}{\xi} \psi, Q \in \set{ \forall, \exists }.
+      \end{cases}
+    \end{equation}
+
+    \thmitem{def:first_order_syntax/formula_free_variables} Dually, we define the set of \term{free variables} as
     \begin{equation}\label{eq:def:first_order_syntax/formula_free_variables}
       \boldop{Free}(\varphi) \coloneqq \begin{cases}
         \varnothing,                                                &\varphi \in \set{ \top, \bot } \\
@@ -123,19 +134,9 @@
       \end{cases}
     \end{equation}
 
-    \thmitem{def:first_order_syntax/ground_formula} A formula \( \varphi \) is called a \term{ground formula} if \( \boldop{Free}(\varphi) = \varnothing \). Ground formulas are also called \term{closed formulas} or \term{sentences} (unlike in propositional logic where all formulas are called sentences --- see \fullref{def:propositional_syntax/formula}).
+    \thmitem{def:first_order_syntax/closed_formula}\mcite[exmpl. 2.6.4]{Wasilewska2018} A formula \( \varphi \) is called a \term{closed formula}.
 
-    We will not restrict our attention only to closed formulas, and we will even rely on implicit quantification as mentioned in \fullref{rem:mathematical_logic_conventions/quantification}. That being said, certain important theorems like \fullref{thm:semantic_deduction_theorem} and \fullref{thm:syntactic_deduction_theorem} require some of the formulas to be closed, so we will often follow this restriction.
-
-    \thmitem{def:first_order_syntax/formula_bound_variables} Dually, the \term{bound variables} of a formula are defined as
-    \begin{equation}\label{eq:def:first_order_syntax/formula_bound_variables}
-      \boldop{Bound}(\varphi) \coloneqq \begin{cases}
-        \varnothing,                                        &\varphi \T{is atomic,} \\
-        \boldop{Bound}(\psi),                               &\varphi = \neg \psi, \\
-        \boldop{Bound}(\psi_1) \cup \boldop{Bound}(\psi_2), &\varphi = \psi_1 \bincirc \psi_2, \bincirc \in \Sigma, \\
-        \boldop{Bound}(\psi) \cup \set{ \xi },              &\varphi = \quantifier{Q}{\xi} \psi, Q \in \set{ \forall, \exists }.
-      \end{cases}
-    \end{equation}
+    Some authors like Peter Hinman in \cite[def. 2.2.7]{Hinman2005} and Anita Wasilewska in \cite[40]{Wasilewska2018} call them \term{sentences}. This contrasts with propositional logic, where all formulas are called sentences --- see \fullref{def:propositional_syntax/formula}. We prefer \enquote{closed formula} because of similarity with closed terms defined in \fullref{def:first_order_syntax/closed_terms}.
 
     \thmitem{def:first_order_syntax/formula_variables} Finally, the set of all variables of a formula \( \varphi \) is
     \begin{equation}\label{eq:def:first_order_syntax/formula_variables}
@@ -143,17 +144,22 @@
     \end{equation}
   \end{thmenum}
 \end{definition}
+\begin{comments}
+  \item We will not restrict our attention only to closed formulas, and we will even rely on implicit quantification as mentioned in \fullref{rem:mathematical_logic_conventions/quantification}. That being said, certain important theorems like \fullref{thm:semantic_deduction_theorem} and \fullref{thm:syntactic_deduction_theorem} require some formulas to be closed, so we will often follow this restriction.
+\end{comments}
 
 \begin{proposition}\label{thm:first_order_terms_and_formulas_are_unambiguous}
   The grammars of \hyperref[def:first_order_syntax/term]{first-order terms} and of \hyperref[def:first_order_syntax/formula]{first-order formulas} are \hyperref[def:grammar_ambiguity]{unambiguous}.
 \end{proposition}
 \begin{proof}
-  The proof is more complicated, but similar in spirit to \fullref{thm:propositional_formulas_are_unambiguous}.
+  The proof is more complicated, but similar to \fullref{thm:propositional_formulas_are_unambiguous}.
 \end{proof}
 
 \begin{remark}\label{rem:first_order_formula_conventions}
-  In order to simplify exposition, we use the following conventions
+  In order to simplify exposition, we use several conventions. As in the case of \fullref{rem:propositional_formula_parentheses}, both of these conventions exist only in the metalanguage and the formulas themselves are assumed to have the former form within the object language.
   \begin{thmenum}
+    \thmitem{rem:first_order_formula_conventions/parentheses} We use the parentheses conventions from \fullref{rem:propositional_formula_parentheses}.
+
     \thmitem{rem:first_order_formula_conventions/infix} Binary functional symbols are often written using \term{infix notation}, i.e.
     \begin{equation*}
       \zeta \doteq \xi + \eta
@@ -174,7 +180,7 @@
       \neg(\xi \sim \eta).
     \end{equation*}
 
-    \thmitem{rem:first_order_formula_conventions/relativization}\mcite[def. 2.5.12]{VanDalen2004} If \( \sim \) is a binary predicate, to further shorten notation, we write
+    \thmitem{rem:first_order_formula_conventions/relativization}\mcite[def. 2.6.24]{Hinman2005} If \( \sim \) is a binary predicate, to further shorten notation, we write
     \begin{equation*}
       \qforall {\xi \sim \eta} \varphi
     \end{equation*}
@@ -191,7 +197,7 @@
       \qexists \xi (\xi \sim \eta \wedge \varphi).
     \end{equation*}
 
-    This is called \term{relativization} of the quantifier and is immensely useful when working with heterogeneous objects or even in \hyperref[sec:set_theory]{set theory}.
+    This is called \term{relativization} of the quantifier and is useful when working with heterogeneous objects or even in \hyperref[sec:set_theory]{set theory}.
 
     \thmitem{rem:first_order_formula_conventions/exists_unique} We sometimes want to specify not only existence, but also uniqueness. This is the case in \eqref{eq:def:zfc/choice}, for example. It is conventional to write
     \begin{equation*}
@@ -199,37 +205,36 @@
     \end{equation*}
     as a shorthand for
     \begin{equation*}
-      \qexists \xi \parens[\Big]{ \varphi \wedge \parens[\Big]{ \qforall \eta \varphi[\xi \mapsto \eta] \rightarrow (\xi \doteq \eta) } }.
+      \qexists \xi \parens[\Big]{ \varphi \wedge \parens[\Big]{ \qforall \eta \varphi[\xi \mapsto \eta] \rightarrow (\xi \doteq \eta) } },
     \end{equation*}
+    where \( \varphi[\xi \mapsto \eta] \) is substitution defined in \fullref{def:first_order_substitution/term_in_formula}.
 
     \thmitem{rem:first_order_formula_conventions/necessary_signature} We only add to the language itself the functional and predicate symbols that are necessary for our desired axioms --- see \fullref{def:first_order_theory}. We can define additional functions and predicates in terms of these, but we avoid using them as much as possible when writing formulas in the object language. For example, we avoid adding the functional symbols \hyperref[thm:well_ordered_order_type_existence]{\( \ord(A) \)} and \hyperref[def:cardinal]{\( \card(A) \)} or even \hyperref[def:basic_set_operations/union]{\( \cup \)} and \hyperref[def:basic_set_operations/intersection]{\( \cap \)} to \hyperref[def:zfc]{\logic{ZFC}}.
 
     If needed, we can consider these new functions and predicates to be abbreviations for more verbose terms and formulas as described in \fullref{rem:predicate_formula}.
   \end{thmenum}
-
-  As for \fullref{rem:propositional_formula_parentheses}, both of these conventions exist only in the metalanguage and the formulas themselves are assumed to have the former form within the object language.
 \end{remark}
 
-\begin{definition}\label{def:first_order_structure}\mcite[def. 16.1]{OpenLogicFull}
+\begin{definition}\label{def:first_order_structure}\mcite[def. 2.1.15]{Hinman2005}
   Fix a first-order logic language \( \mscrL \). A \term{structure} for \( \mscrL \) is a pair \( \mscrX = (X, I) \), where
   \begin{thmenum}
-    \thmitem{def:first_order_structure/set} \( X \) is a nonempty set called the \term{domain} or \term{universe} of the structure \( \mscrX \). See \fullref{rem:empty_models}.
+    \thmitem{def:first_order_structure/set}\mcite[def. 2.1.15(i)]{Hinman2005} \( X \) is a nonempty set called the \term{domain} or \term{universe} of the structure \( \mscrX \). See \fullref{rem:empty_models} regarding special cases where we allow \( X \) to be empty.
 
     \thmitem{def:first_order_structure/interpretation} The \term{interpretation} \( I \) of the structure \( \mscrX \) is a \hyperref[def:function]{function} that is defined on the signature of \( \mscrL \) and satisfies the following conditions:
     \begin{thmenum}
-      \thmitem{def:first_order_structure/interpretation/function} For every \( n \)-ary function symbol \( f \), its interpretation is a \hyperref[def:function]{function} with signature \( I(f): X^n \to X \).
+      \thmitem{def:first_order_structure/interpretation/function}\mcite[def. 2.1.15(ii)]{Hinman2005} For every \( n \)-ary function symbol \( f \), its interpretation is a \hyperref[def:function]{function} with signature \( I(f): X^n \to X \).
 
-      \thmitem{def:first_order_structure/interpretation/predicate} For every \( n \)-ary predicate \( p \), its interpretation is a an n-ary \hyperref[def:boolean_operator]{Boolean-valued function} with signature \( I(p): X^n \to \set{ T, F } \). A tuple \( (x_1, \ldots, x_n) \) satisfies \( p \) if \( p(x_1, \ldots, x_n) = T \).
-
-      It is conventional to define the interpretation of a predicate to be a \hyperref[def:relation]{relation} \( I(p) \subseteq X^n \) (see e.g. \mcite[def. 16.1]{OpenLogicFull}), however it is more convenient for us to work with Boolean-valued functions. The two approaches are equivalent as explained in \fullref{rem:boolean_valued_functions_and_predicates}.
+      \thmitem{def:first_order_structure/interpretation/predicate}\mcite[def. 2.1.15(iii)]{Hinman2005} For every \( n \)-ary predicate \( p \), its interpretation is an n-ary \hyperref[def:boolean_operator]{Boolean-valued function} with signature \( I(p): X^n \to \set{ T, F } \). A tuple \( (x_1, \ldots, x_n) \) satisfies \( p \) if \( p(x_1, \ldots, x_n) = T \).
     \end{thmenum}
   \end{thmenum}
-
-  Unlike in the rest of this document, when dealing with first-order structures, it is important to distinguish between the structure \( \mscrX \) as a pair and its domain \( X \) as a set. See \fullref{rem:first_order_model_notation}.
 \end{definition}
+\begin{comments}
+  \item Some authors like Peter Hinman in \cite[def. 2.1.15(iii)]{Hinman2005} and Anil Nerode and Richard Shore in \cite[def. 4.1]{NerodeShore1993} define \( I(p) \) to be a \hyperref[def:relation]{relation} \( I(p) \subseteq X^n \), however it is more convenient for us to work with Boolean-valued functions. The two approaches are equivalent as explained in \fullref{rem:boolean_valued_functions_and_predicates}.
+  \item Unlike in the rest of this document, when dealing with first-order structures directly, it is important to distinguish between the structure \( \mscrX \) as a pair and its domain \( X \) as a set. See \fullref{rem:first_order_model_notation}.
+\end{comments}
 
 \begin{remark}\label{rem:empty_models}
-   If we allow for the domain of a structure to be empty, we would have to reformulate a lot of important theorems (e.g. see the proof of \fullref{thm:renaming_assignment_compatibility/formulas}), which would complicate compatibility between semantics and \hyperref[def:deductive_system]{deductive systems}.
+   If we allow the domain of a structure to be empty, we would have to reformulate a lot of important theorems (e.g. the proof of \fullref{thm:renaming_assignment_compatibility/formulas}), which would complicate compatibility between semantics and \hyperref[def:deductive_system]{deductive systems}.
 
    See \fullref{def:trivial_structure} and \fullref{thm:substructures_form_complete_lattice/bottom} for contexts where empty sets are justified as domains of first-order structures.
 \end{remark}
@@ -246,9 +251,11 @@
   Fix a structure \( \mscrX = (X, I) \) for a first-order logic language \( \mscrL \).
 
   \begin{thmenum}
-    \thmitem{def:first_order_valuation/variable_assignment}\mcite[def. 16.7]{OpenLogicFull} A \term{variable assignment} for the variables of \( \mscrL \) is any function \( v: \boldop{Var} \to X \) (loosely similar to \hyperref[def:propositional_valuation/interpretation]{propositional interpretations}).
+    \thmitem{def:first_order_valuation/variable_assignment}\mcite[def. 2.1.16]{Hinman2005} A \term{variable assignment} for the variables of \( \mscrL \) is any function \( v: \boldop{Var} \to X \).
 
-    \thmitem{def:first_order_valuation/modified_assignment} For every variable \( \xi \) and every domain element \( x \in X \) we also define the \term{modified assignment} at \( \xi \) with \( x \):
+    These are loosely similar to \hyperref[def:propositional_valuation/interpretation]{propositional interpretations}.
+
+    \thmitem{def:first_order_valuation/modified_assignment}\mcite[92]{Hinman2005} For every variable \( \xi \) and every domain element \( x \in X \) we also define the \term{modified assignment} at \( \xi \) with \( x \):
     \begin{equation*}
       v_{\xi \mapsto x}(\zeta) \coloneqq \begin{cases}
         x,        &\zeta = \xi, \\
@@ -269,99 +276,73 @@
       v_{\xi_1 \mapsto x_1, \ldots, \xi_n \mapsto x_n}(\eta) \coloneqq ((\ldots(v_{\xi_1 \mapsto x_1})\ldots)_{\xi_n \mapsto x_n})(\eta).
     \end{equation*}
 
-    Except for semantics of quantification, these are also used in other places like \fullref{thm:renaming_assignment_compatibility} and \fullref{rem:first_order_formula_valuation_without_variable_assignment}.
-
-    \thmitem{def:first_order_valuation/term_valuation}\mcite[def. 16.8]{OpenLogicFull} The \term{valuation} of a term \( \tau \) is a value in the domain \( X \) given by
+    \thmitem{def:first_order_valuation/term_valuation}\mcite[def. 2.1.17]{Hinman2005} The \term{valuation} of a term \( \tau \) is a value in the domain \( X \) given by
     \begin{equation}\label{eq:def:first_order_valuation/term_valuation}
-      \tau\Bracks{v} \coloneqq \begin{cases}
-        v(\xi),                                           &\tau = \xi \in \boldop{Var}, \\
-        I(f)(\tau_1\Bracks{v}, \ldots, \tau_n\Bracks{v}), &\tau = f(\tau_1, \ldots, \tau_n).
+      \Bracks{\tau}_v \coloneqq \begin{cases}
+        v(\xi),                                             &\tau = \xi \in \boldop{Var}, \\
+        I(f)(\Bracks{\tau_1}_v, \ldots, \Bracks{\tau_n}_v), &\tau = f(\tau_1, \ldots, \tau_n).
       \end{cases}
     \end{equation}
 
-    \thmitem{def:first_order_valuation/formula_valuation}\mcite[def. 16.11]{OpenLogicFull} We extend the classical propositional valuations from \fullref{def:propositional_valuation}. The (classical) \term{valuation} of a formula \( \varphi \) is a \hyperref[def:boolean_value]{Boolean value} given by
+    \thmitem{def:propositional_valuation/term_valuation_function} Analogously to how we defined Boolean functions for propositional formulas in \fullref{def:propositional_valuation/valuation_function}, if \( \boldop{Var}(\tau) \subseteq \set{ \xi_1, \ldots, \xi_n } \), the valuation \( \Bracks{\tau}_v \) only depends on the particular values \( v(\xi_1), \ldots, v(\xi_n) \). Hence, if the variables are clear from the context, we obtain a function
+    \begin{equation*}
+      \begin{aligned}
+        &\Bracks{\tau}_\mscrX: X^n \to X, \\
+        &\Bracks{\tau}_\mscrX(x_1, \ldots, x_n) \coloneqq \Bracks{\tau}_v,
+      \end{aligned}
+    \end{equation*}
+    where \( v \) is any variable assignment such that \( v(\xi_k) = x_k \) for \( k = 1, \ldots, n \).
+
+    \thmitem{def:first_order_valuation/formula_valuation}\mcite[def. 2.1.19 \\ def. 2.1.22]{Hinman2005} We extend the classical propositional valuations from \fullref{def:propositional_valuation}. The (classical) \term{valuation} of a formula \( \varphi \) is a \hyperref[def:boolean_value]{Boolean value} given by
     \begin{equation}\label{eq:def:first_order_valuation/formula_valuation}
-      \varphi\Bracks{v} \coloneqq \begin{cases}
-        T,                                                              &\varphi = \top, \\
-        F,                                                              &\varphi = \bot, \\
-        \tau_1\Bracks{v} = \tau_2\Bracks{v},                            &\varphi = \tau_1 \doteq \tau_2, \\
-        I(p)(\tau_1\Bracks{v}, \ldots, \tau_n\Bracks{v}),               &\varphi = p(\tau_1, \ldots, \tau_n), \\
-        \overline{\psi\Bracks{v}},                                      &\varphi = \neg \psi, \\
-        \psi_1\Bracks{v} \bincirc \psi_2\Bracks{v},                     &\varphi = \psi_1 \bincirc \psi_2, \bincirc \in \Sigma, \\
-        \bigvee\set[\Big]{ \psi\Bracks{v_{\xi \mapsto x}} \given x \in X },   &\varphi = \qforall \xi \psi, \\
-        \bigwedge\set[\Big]{ \psi\Bracks{v_{\xi \mapsto x}} \given x \in X }, &\varphi = \qexists \xi \psi.
+      \Bracks{\varphi}_v \coloneqq \begin{cases}
+        T,                                                                       &\varphi = \top, \\
+        F,                                                                       &\varphi = \bot, \\
+        \Bracks{\tau_1}_v = \Bracks{\tau_2}_v,                                   &\varphi = \tau_1 \doteq \tau_2, \\
+        I(p)(\Bracks{\tau_1}_v, \ldots, \Bracks{\tau_n}_v),                      &\varphi = p(\tau_1, \ldots, \tau_n), \\
+        \overline{\Bracks{\psi}_v},                                              &\varphi = \neg \psi, \\
+        \Bracks{\psi_1}_v \Bracks{\bincirc} \Bracks{\psi_2}_v,       &\varphi = \psi_1 \bincirc \psi_2, \bincirc \in \Sigma, \\
+        \bigvee\set[\Big]{ \Bracks{\psi}_{v_{\xi \mapsto x}} \given x \in X },   &\varphi = \qforall \xi \psi, \\
+        \bigwedge\set[\Big]{ \Bracks{\psi}_{v_{\xi \mapsto x}} \given x \in X }, &\varphi = \qexists \xi \psi.
       \end{cases}
     \end{equation}
 
-    The rules for evaluating constants, negations and connectives are a direct extension of the \hyperref[def:propositional_valuation/formula_valuation]{rules for propositional logic}.
-
-    It is important that the domain is nonempty because \( \bigwedge\varnothing = T \), which directly contradicts our intent of defining \( \exists \) as a quantifier for existence.
+    \thmitem{def:propositional_valuation/formula_valuation_function} We also define a function corresponding to a first-order formula, but we are only interested in the \hyperref[def:first_order_syntax/formula_free_variables]{free variables} rather than \hyperref[def:first_order_syntax/formula_variables]{all variables}:
+    \begin{equation*}
+      \begin{aligned}
+        &\Bracks{\varphi}_\mscrX: X^n \to \set{ T, F }, \\
+        &\Bracks{\varphi}_\mscrX(\xi_1, \ldots, \xi_n) \coloneqq \Bracks{\varphi}_v,
+      \end{aligned}
+    \end{equation*}
+    where \( v \) is any variable assignment such that \( v(\xi_k) = x_k \) for \( k = 1, \ldots, n \).
   \end{thmenum}
 \end{definition}
+\begin{comments}
+  \item The rules for evaluating constants, negations and connectives are a direct extension of the \hyperref[def:propositional_valuation/formula_valuation]{rules for propositional logic}.
 
-\begin{remark}\label{rem:first_order_formula_valuation_without_variable_assignment}
-  If we know that \( \boldop{Free}(\varphi) \subseteq \{ \xi_1, \ldots, \xi_n \} \), we know that the \hyperref[def:first_order_valuation/formula_valuation]{valuation} \( \varphi\Bracks{v} \) only depends on the values \( v(\xi_1), \ldots, v(\xi_n) \). This allows us to introduce the shorthand
-  \begin{equation}\label{eq:rem:first_order_formula_valuation_without_variable_assignment/long_semantic}
-    \varphi\Bracks{\xi_1 \mapsto x_1, \ldots, \xi_n \mapsto x_n}
-  \end{equation}
-  or even
-  \begin{equation}\label{eq:rem:first_order_formula_valuation_without_variable_assignment/short_semantic}
-    \varphi\Bracks{x_1, \ldots, x_n}
-  \end{equation}
-  for
-  \begin{equation*}
-    \varphi\Bracks{v_{\xi_1 \mapsto x_1, \ldots, \xi_n \mapsto x_n}}
-  \end{equation*}
-  because the variable assignment \( v \) plays no role here.
+  \item It is important that the domain is nonempty because \( \bigwedge\varnothing = T \), which directly contradicts our intent of defining \( \exists \) as a quantifier for existence.
 
-  When using either of these shorthand notations, we implicitly assume that \( \boldop{Free}(\varphi) \subseteq \set{ \xi_1, \ldots, \xi_n } \).
+  \item Except for semantics of quantification, modified assignments are also used in other places like \fullref{thm:renaming_assignment_compatibility}.
+\end{comments}
 
-  When \( \varphi = p(\xi_1, \ldots, \xi_n) \) is a predicate formula, the shorter notation \eqref{eq:rem:first_order_formula_valuation_without_variable_assignment/short_semantic} translates to
+\begin{definition}\label{def:first_order_equation}\mimprovised
+  A \term{first-order equation} over some fixed \hyperref[def:first_order_language]{language} with \term{left side} the \hyperref[def:first_order_syntax/term]{term} \( \tau \) and \term{right side} \( \sigma \) is the \hyperref[def:first_order_syntax/formula]{formula} \( (\tau \doteq \sigma) \).
+
+  Suppose that the \hyperref[def:first_order_syntax/formula_free_variables]{free variables} (which are actually all the variables) of this formula are among \( \xi_1, \ldots, \xi_n \). Then our goal is to find values \( x_1, \ldots, x_n \) in the domain of some \hyperref[def:first_order_structure]{structure} \( \mscrX \) such that
   \begin{equation*}
-    p\Bracks{x_1, \ldots, x_n} = I(p)(x_1, \ldots, x_n) \in \set{ T, F }
-  \end{equation*}
-  and analogously for function terms we have
-  \begin{equation*}
-    f\Bracks{x_1, \ldots, x_n} = I(f)(x_1, \ldots, x_n) \in X.
+    \Bracks{\tau}_\mscrX(x_1, \ldots, x_n) = \Bracks{\sigma}_\mscrX(x_1, \ldots, x_n).
   \end{equation*}
 
-  Of course, we avoid this notation for formulas like \( p(f(\xi)) \) because \( p\Bracks{x} \) would mean \( I(p)(I(f)(x)) \) rather than \( I(p)(x) \), which would be confusing.
-
-  We apply this notation for terms and, in particular, functions.
-
-  We also sometimes use the shortened notation
-  \begin{equation}\label{eq:rem:first_order_formula_valuation_without_variable_assignment/short_syntactic}
-    \varphi[\tau_1, \ldots, \tau_n]
-  \end{equation}
-  for \hyperref[def:first_order_substitution/term_in_formula]{substituting terms in formulas}.
-\end{remark}
-
-\begin{definition}\label{def:first_order_equation}
-  A \term{first-order equation} is a formula of the form
-  \begin{equation}\label{eq:def:first_order_equation}
-    f(\xi_1, \ldots, \xi_n) \doteq g(\xi_1, \ldots, \xi_n),
-  \end{equation}
-  where both \( f(\xi_1, \ldots, \xi_n) \) and \( g(\xi_1, \ldots, \xi_n) \) are functional symbols with the same free variables.
-
-  Given a structure \( \mscrX = (X, I) \), we call the elements of the set defined by this formula \term{solutions}. That is, we say that the tuple \( (x_1, \ldots, x_n) \) is a, solution to the equation \eqref{eq:def:first_order_equation} if
-  \begin{equation*}
-    f\Bracks{x_1, \ldots, x_n} = g\Bracks{x_1, \ldots, x_n}.
-  \end{equation*}
-
-  We can actually replace \( f \) and \( g \) with more general terms \( \tau \) and \( \sigma \), in which case the equation becomes \( (\tau \doteq \sigma) \) and is satisfied if
-  \begin{equation*}
-    \tau\Bracks{x_1, \ldots, x_n} = \sigma\Bracks{x_1, \ldots, x_n}.
-  \end{equation*}
+  We call any such tuple \( (x_1, \ldots, x_n) \) in any structure \( \mscrX \) a \term{solution} of the equation.
 \end{definition}
 
 \begin{example}\label{ex:equations}
-  A remarkable portion of mathematics concerns the study of different types of equations (even though they are not generally restricted to \hyperref[def:first_order_equation]{equations in first-order logic}). The reason for this is that equations provide a simple way to specify rich semantic structure using simple syntactic objects.
+  A remarkable portion of mathematics concerns the study of different types of equations, and many of them are more general than \hyperref[def:first_order_equation]{equations in first-order logic}. The reason for this interest is that equations provide a simple way to specify rich semantic structure using simple syntactic objects.
 
   \begin{itemize}
     \item Matrix theory can be regarded as the study of linear equations. See \fullref{subsec:matrices_over_rings} and \fullref{subsec:matrices_over_fields}.
     \item Differential equations is aptly named since it studies equations in functional spaces concerning functions and their derivatives.
     \item Roots of generalized derivatives are studied in optimization. See \fullref{subsec:nonsmooth_derivatives}.
-    \item Diophantine equations are studied in number theory. See \fullref{subsec:integers}.
     \item Fixed points of functions are studied in different branches of mathematics. See \fullref{thm:banach_fixed_point_theorem} or \fullref{thm:knaster_tarski_theorem}.
     \item Affine varieties, which are sets of roots of polynomials, are studied in algebraic geometry. See \fullref{subsec:quadratic_plane_curves}.
   \end{itemize}
@@ -370,19 +351,19 @@
 \begin{definition}\label{def:first_order_semantics}
   Fix a first-order logic language \( \mscrL \). We introduce notions analogous to \hyperref[def:propositional_semantics]{propositional semantics}:
   \begin{thmenum}
-    \thmitem{def:first_order_semantics/satisfiability}\mcite[def. 16.11]{OpenLogicFull} Given a \hyperref[def:first_order_structure]{structure} \( \mscrX = (X, I) \), a \hyperref[def:first_order_valuation/variable_assignment]{variable assignment} \( v \) and a set \( \Gamma \) of \hyperref[def:first_order_syntax/formula]{first-order formulas}, we say that the variable assignment \( v \) \term{satisfies} \( \Gamma \) and we write \( \mscrX \vDash_v \Gamma \) if, for every formula \( \gamma \in \Gamma \) we have \( \gamma\Bracks{v} = T \).
+    \thmitem{def:first_order_semantics/satisfiability}\mcite[def. 2.1.23 \\ rem. 2.2.17]{Hinman2005} Given a \hyperref[def:first_order_structure]{structure} \( \mscrX = (X, I) \), a \hyperref[def:first_order_valuation/variable_assignment]{variable assignment} \( v \) and a set \( \Gamma \) of \hyperref[def:first_order_syntax/formula]{first-order formulas}, we say that the variable assignment \( v \) \term{satisfies} \( \Gamma \) and we write \( \mscrX \vDash_v \Gamma \) if, for every formula \( \gamma \in \Gamma \) we have \( \Bracks{\gamma}_v = T \).
 
-    If every variable assignment in \( \mscrX \) satisfies \( \Gamma \), we say that \( \mscrX \) itself satisfies \( \Gamma \) or that \( \mscrX \) is a \term{model} of \( \Gamma \) and write \( \mscrX \vDash \Gamma \) (or simply \( \mscrX \vDash \Gamma \) if the interpretation is clear from the context).
+    If every variable assignment in \( \mscrX \) satisfies \( \Gamma \), we say that \( \mscrX \) itself satisfies \( \Gamma \) or that \( \mscrX \) is a \term{model} of \( \Gamma \) and write \( \mscrX \vDash \Gamma \) or even \( X \vDash \Gamma \) if the interpretation is clear from the context.
 
-    Analogously to \fullref{def:propositional_semantics/satisfies}, we say that \( \Gamma \) is satisfiable if there exists a model for \( \Gamma \).
+    \thmitem{def:propositional_semantics/satisfiable}\mcite[def. 1.4.8]{Hinman2005} Analogously to \fullref{def:propositional_semantics/satisfies}, we say that \( \Gamma \) is satisfiable if there exists a model for \( \Gamma \).
 
-    \thmitem{def:first_order_semantics/entailment} We say that the set of formulas \( \Gamma \) \term{entails} the set of formulas \( \Delta \) and write \( \Gamma \vDash \Delta \) if every model of \( \Gamma \) is also a model of \( \Delta \).
+    \thmitem{def:first_order_semantics/entailment}\mcite[def. 2.2.1(iv)]{Hinman2005} We say that the set of formulas \( \Gamma \) \term{entails} the formula \( \psi \) and write \( \Gamma \vDash \psi \) if every model of \( \Gamma \) is also a model of \( \psi \).
 
     \thmitem{def:first_order_semantics/tautology} The formula \( \varphi \) is a \term{tautology} if every structure is a model of \( \varphi \).
 
     \thmitem{def:first_order_semantics/contradiction} Dually, \( \varphi \) is a \term{contradiction} is no structure is a model of \( \varphi \).
 
-    \thmitem{def:first_order_semantics/equivalence} As in the simplest case with \hyperref[def:propositional_semantics/equivalence]{propositional semantical equivalence}, we say that \( \Gamma \) and \( \Delta \) are \term{semantically equivalent} and write \( \Gamma \gleichstark \Delta \) if both \( \Gamma \vDash \Delta \) and \( \Delta \vDash \Gamma \).
+    \thmitem{def:first_order_semantics/equivalence}\mcite[def. 2.2.1(ii)]{Hinman2005} As in the simplest case with \hyperref[def:propositional_semantics/equivalence]{propositional semantical equivalence}, we say that \( \varphi \) and \( \psi \) are \term{semantically equivalent} and write \( \varphi \gleichstark \psi \) if both \( \varphi \vDash \psi \) and \( \psi \vDash \varphi \).
 
     \thmitem{def:first_order_semantics/equisatisfiability} Again as in the simplest case with \hyperref[def:propositional_semantics/equisatisfiability]{propositional equisatisfiability}, we say that the sets of formulas \( \Gamma \) and \( \Delta \) are \term{equisatisfiable} when it holds that \( \Gamma \) is satisfiable if and only if \( \Delta \) is satisfiable.
 
@@ -390,12 +371,8 @@
   \end{thmenum}
 \end{definition}
 
-\begin{remark}\label{rem:propositional_logic_as_first_order_logic}
-  It is now clear that the \hyperref[subsec:propositional_logic]{propositional logic language} can be regarded as a degenerate first-order logic language with at most countably many predicate symbols, all of arity \( 0 \), and no functional symbols. Thus, first-order logic is indeed an extension of propositional logic.
-\end{remark}
-
 \begin{remark}\label{rem:first_order_model_notation}
-  In first-order logic, \hyperref[def:first_order_semantics/satisfiability]{models} are defined as pairs \( \mscrX = (X, I) \). Each area of mathematics has its own conventions and models are usually specified as simply as possible without being unambiguous (and sometimes even beyond non-ambiguity).
+  In first-order logic, \hyperref[def:first_order_structure]{structures} are defined as pairs \( \mscrX = (X, I) \). Each area of mathematics has its own conventions and structures are usually specified as simply as possible without being unambiguous (and sometimes even beyond non-ambiguity).
 
   A popular convention is to use compatible letters like we did with \( X \) and \( \mscrX \) or \( G \) and \( \mscrG \), where the structure itself is named using calligraphic letters while the domain is named using the corresponding capital letter in normal font. This only works very simple cases where we can say \enquote{Let \( \mscrP = (P, \leq) \) be a \hyperref[def:partially_ordered_set]{partially ordered set}}.
 
