@@ -1,55 +1,45 @@
 from __future__ import annotations
+from dataclasses import dataclass
+import functools
+import operator
 
-from dataclasses import dataclass, field
+from ..parsing import TokenEnum, TokenMixin
 
 
-class LaTeXNode:
+class Word(TokenMixin):
     pass
 
 
-@dataclass
-class Word(LaTeXNode):
-    value: str
+class Whitespace(TokenMixin):
+    pass
 
+
+class Command(TokenMixin):
     def __str__(self):
-        return self.value
+        return '\\' + self.value
+
+
+class SpecialNode(TokenEnum):
+    ampersand = '&'
+    underscore = '_'
+    caret = '^'
 
 
 @dataclass
-class Whitespace(LaTeXNode):
-    value: str
-
-    def __str__(self):
-        return self.value
-
-
-@dataclass
-class Command(LaTeXNode):
-    name: str
-
-    def __str__(self):
-        return '\\' + self.name
-
-
-@dataclass
-class SpecialNode(LaTeXNode):
-    value: str
-
-    def __str__(self):
-        return self.value
-
-
-ampersand = SpecialNode('&')
-underscore = SpecialNode('_')
-caret = SpecialNode('^')
-
-
-@dataclass
-class Group(LaTeXNode):
+class Group:
     contents: list[LaTeXNode]
 
     def __str__(self):
         return ''.join(str(node) for node in self.contents)
+
+    def __hash__(self):
+        return functools.reduce(operator.xor, map(hash, self.contents), 0)
+
+    def __eq__(self, other: object):
+        if isinstance(other, Group):
+            return all(a == b for a, b in zip(self.contents, other.contents))
+
+        return False
 
 
 class BracelessGroup(Group):
@@ -72,3 +62,6 @@ class Environment(Group):
 
     def __str__(self):
         return '\\begin{%s}' % self.name + super().__str__() + '\\end{%s}' % self.name
+
+
+LaTeXNode = Word | Whitespace | Command | SpecialNode | BracelessGroup | BraceGroup | BracketGroup | Environment

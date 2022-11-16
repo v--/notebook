@@ -1,4 +1,5 @@
-from .types import FunctionTerm, Formula, EqualityFormula, PredicateFormula, NegationFormula, ConnectiveFormula, QuantifierFormula, Formula, Term, Variable
+from .terms import Variable, Term, FunctionTerm
+from .formulas import Formula, EqualityFormula, PredicateFormula, NegationFormula, ConnectiveFormula, QuantifierFormula, Formula
 from .visitors import FormulaVisitor, TermVisitor
 
 

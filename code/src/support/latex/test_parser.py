@@ -55,7 +55,7 @@ def test_command_with_brace_arg():
 
 
 def test_unmatched_brace():
-    string: int = '\\test{a'
+    string = '\\test{a'
 
     with pytest.raises(ParserError):
         parse_latex(string)
@@ -71,7 +71,7 @@ def test_command_with_bracket_arg():
 
 
 def test_unmatched_bracket():
-    string: int = '\\test[a'
+    string = '\\test[a'
 
     with pytest.raises(ParserError):
         parse_latex(string)

@@ -2,7 +2,7 @@ from .directed import DirectedGraph
 
 
 def test_can_add_vertices():
-    graph = DirectedGraph()
+    graph: DirectedGraph = DirectedGraph()
 
     assert 1 not in graph.vertices
     graph.vertices.add(1)
@@ -11,7 +11,7 @@ def test_can_add_vertices():
 
 
 def test_can_add_vertices_with_attr():
-    graph = DirectedGraph()
+    graph: DirectedGraph = DirectedGraph()
 
     assert 1 not in graph.vertices
     graph.vertices[1] = 'test'
@@ -19,7 +19,7 @@ def test_can_add_vertices_with_attr():
 
 
 def test_can_add_edges():
-    graph = DirectedGraph()
+    graph: DirectedGraph = DirectedGraph()
 
     assert 1 not in graph.vertices
     assert 2 not in graph.vertices
@@ -31,7 +31,7 @@ def test_can_add_edges():
 
 
 def test_can_add_edges_with_attr():
-    graph = DirectedGraph()
+    graph: DirectedGraph = DirectedGraph()
 
     graph.arcs[1, 2] = 'test'
     assert graph.arcs[1, 2] == 'test'

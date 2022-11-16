@@ -5,7 +5,7 @@ from .fixtures import *
 
 # ex:def:formal_language/an
 def test_finite_automaton_recognizes_an():
-    aut = FiniteAutomaton()
+    aut: FiniteAutomaton = FiniteAutomaton()
     aut.add_transition(1, 'a', 1)
     aut.initial.add(1)
     aut.terminal.add(1)
@@ -32,7 +32,7 @@ def test_finite_automaton_recognizes_leucine(leucine: FiniteAutomaton):
 
 # fig:def:finite_automaton
 def test_determinize_preserves_parallel_arcs():
-    aut = FiniteAutomaton()
+    aut: FiniteAutomaton = FiniteAutomaton()
     aut.add_transition(1, 'a', 2)
     aut.add_transition(1, 'b', 2)
     aut.add_transition(1, 'a', 3)

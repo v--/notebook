@@ -16,7 +16,7 @@ def test_to_finite_automaton_an(an: Grammar):
 
 
 def test_from_finite_automaton_an():
-    aut = FiniteAutomaton()
+    aut: FiniteAutomaton = FiniteAutomaton()
     aut.add_transition(1, 'a', 1)
     aut.initial.add(1)
     aut.terminal.add(1)

@@ -1,8 +1,4 @@
-from typing import cast
-
-from ..support.names import new_var_name
-
-from .grammar import Grammar, GrammarRule, GrammarSchema, GrammarSymbol, NonTerminal, Terminal, epsilon
+from .grammar import Grammar, GrammarRule, GrammarSchema, NonTerminal
 from .epsilon_rules import is_essentially_epsilon_free
 
 

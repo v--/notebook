@@ -1,8 +1,8 @@
 from ..exceptions import NotebookCodeError
 from ..support.names import new_var_name
 
-from .tokens import SingletonFOLToken, meet, join, conditional, biconditional, universal_quantifier, existential_quantifier
-from .types import Formula, EqualityFormula, PredicateFormula, NegationFormula, ConnectiveFormula, QuantifierFormula, Formula, Variable
+from .tokens import BinaryConnective, Quantifier
+from .formulas import Formula, EqualityFormula, PredicateFormula, NegationFormula, ConnectiveFormula, QuantifierFormula, Formula, Variable
 from .visitors import FormulaVisitor, FormulaTransformationVisitor
 from .substitution import substitute_in_formula
 from .variables import get_bound_variables, get_free_variables
@@ -40,17 +40,17 @@ class ConditionalRemovalVisitor(FormulaTransformationVisitor):
         a = self.visit(formula.a)
         b = self.visit(formula.b)
 
-        if formula.conn == join or formula.conn == meet:
+        if formula.conn == BinaryConnective.join_ or formula.conn == BinaryConnective.meet:
             return ConnectiveFormula(formula.conn, a, b)
 
-        if formula.conn == conditional:
-            return ConnectiveFormula(join, NegationFormula(a), b)
+        if formula.conn == BinaryConnective.conditional:
+            return ConnectiveFormula(BinaryConnective.join_, NegationFormula(a), b)
 
-        if formula.conn == biconditional:
+        if formula.conn == BinaryConnective.biconditional:
             return ConnectiveFormula(
-                meet,
-                ConnectiveFormula(join, NegationFormula(a), b),
-                ConnectiveFormula(join, a, NegationFormula(b))
+                BinaryConnective.meet,
+                ConnectiveFormula(BinaryConnective.join_, NegationFormula(a), b),
+                ConnectiveFormula(BinaryConnective.join_, a, NegationFormula(b))
             )
 
 
@@ -61,12 +61,12 @@ def remove_conditionals(formula: Formula):
 class MoveNegationsVisitor(FormulaTransformationVisitor):
     def visit_negation(self, formula: NegationFormula):
         if isinstance(formula.sub, ConnectiveFormula):
-            new_conn: SingletonFOLToken
+            new_conn: BinaryConnective
 
-            if formula.sub.conn == join:
-                new_conn = meet
-            elif formula.sub.conn == meet:
-                new_conn = join
+            if formula.sub.conn == BinaryConnective.join_:
+                new_conn = BinaryConnective.meet
+            elif formula.sub.conn == BinaryConnective.meet:
+                new_conn = BinaryConnective.join_
             else:
                 raise NotebookCodeError(f'Unexpected connective {formula.sub.conn}')
 
@@ -77,12 +77,12 @@ class MoveNegationsVisitor(FormulaTransformationVisitor):
             )
 
         if isinstance(formula.sub, QuantifierFormula):
-            new_quantifier: SingletonFOLToken
+            new_quantifier: Quantifier
 
-            if formula.sub.quantifier == universal_quantifier:
-                new_quantifier = existential_quantifier
-            elif formula.sub.quantifier == existential_quantifier:
-                new_quantifier = universal_quantifier
+            if formula.sub.quantifier == Quantifier.universal:
+                new_quantifier = Quantifier.existential
+            elif formula.sub.quantifier == Quantifier.existential:
+                new_quantifier = Quantifier.universal
             else:
                 raise NotebookCodeError(f'Unexpected quantifier {formula.sub.quantifier}')
 
@@ -98,7 +98,7 @@ class MoveNegationsVisitor(FormulaTransformationVisitor):
         return NegationFormula(self.visit(formula.sub))
 
     def visit_connective(self, formula: ConnectiveFormula):
-        if formula.conn != join and formula.conn != meet:
+        if formula.conn != BinaryConnective.join_ and formula.conn != BinaryConnective.meet:
             raise NotebookCodeError(f'Unexpected connective {formula.conn}')
 
         return super().visit_connective(formula)
@@ -110,7 +110,7 @@ def move_negations(formula: Formula):
 
 class MoveQuantifiersVisitor(FormulaTransformationVisitor):
     def visit_connective(self, formula: ConnectiveFormula):
-        if formula.conn != join and formula.conn != meet:
+        if formula.conn != BinaryConnective.join_ and formula.conn != BinaryConnective.meet:
             raise NotebookCodeError(f'Unexpected connective {formula.conn}')
 
         if isinstance(formula.a, QuantifierFormula):

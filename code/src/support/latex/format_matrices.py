@@ -1,7 +1,7 @@
 from typing import TypeVar, Generic, cast
 from dataclasses import dataclass, field
 
-from .nodes import BraceGroup, BracketGroup, LaTeXNode, Command, Environment, Group, Whitespace, BracelessGroup, ampersand
+from .nodes import BracketGroup, LaTeXNode, Command, Environment, Group, Whitespace, BracelessGroup, SpecialNode
 from .parser import parse_latex
 
 
@@ -44,7 +44,7 @@ def construct_environment_matrix(env: Environment) -> tuple[BracelessGroup, Matr
         if isinstance(node, BracketGroup) and len(prefix.contents) == 0 and all(isinstance(sym, Whitespace) for sym in buffer.contents):
             prefix.contents = buffer.contents + [node]
             buffer = BracelessGroup([])
-        elif node == ampersand:
+        elif node == SpecialNode.ampersand:
             matrix[i, j] = buffer
             buffer = BracelessGroup([])
             j += 1
@@ -104,7 +104,7 @@ def matrix_to_environment(name: str, prefix: BracelessGroup, matrix: Matrix[Brac
     for i in range(h):
         for j in range(w - 1):
             env.contents.append(matrix[i, j])
-            env.contents.append(ampersand)
+            env.contents.append(SpecialNode.ampersand)
 
         if i == h - 1:
             env.contents.append(strip_trailing_space(matrix[i, w - 1]))

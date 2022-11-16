@@ -1,8 +1,5 @@
-from dataclasses import dataclass
-from typing import Sequence
-
 from ..parsing import Parser
-from .tokens import LaTeXToken, WordToken, EscapedWordToken, special_symbol_map, WhitespaceToken
+from .tokens import WordToken, EscapedWordToken, WhitespaceToken, SpecialToken
 
 
 class LaTeXTokenizer(Parser[str]):
@@ -42,23 +39,24 @@ class LaTeXTokenizer(Parser[str]):
 
     def parse(self):
         while not self.is_at_end():
-            if self.peek() == '\\':
-                self.advance()
-
-                if self.peek() in (' ', '\\', '(', ')', '{', '}'):
-                    yield EscapedWordToken(self.peek())
+            match self.peek():
+                case '\\':
                     self.advance()
-                elif 'a' <= self.peek() <= 'z' or 'A' <= self.peek() <= 'Z':
-                    yield EscapedWordToken(self.capture_latin_string())
-                else:
-                    raise self.error('Unrecognized escape character')
-            elif self.peek() in ('&', '_', '^', '{', '}', '[', ']'):
-                yield special_symbol_map[self.peek()]
-                self.advance()
-            elif self.peek() in (' ', '\t', '\n'):
-                yield self.capture_and_group_whitespace()
-            else:
-                yield WordToken(self.capture_word())
+
+                    if self.peek() in (' ', '\\', '(', ')', '{', '}'):
+                        yield EscapedWordToken(self.peek())
+                        self.advance()
+                    elif 'a' <= self.peek() <= 'z' or 'A' <= self.peek() <= 'Z':
+                        yield EscapedWordToken(self.capture_latin_string())
+                    else:
+                        raise self.error('Unrecognized escape character')
+                case ' ' | '\t' | '\n':
+                    yield self.capture_and_group_whitespace()
+                case _ if SpecialToken.try_match(self.peek()):
+                    yield SpecialToken(self.peek())
+                    self.advance()
+                case _:
+                    yield WordToken(self.capture_word())
 
 
 def tokenize_latex(string: str):

@@ -1,28 +1,8 @@
 from __future__ import annotations
 from dataclasses import dataclass
 
-from .tokens import SingletonFOLToken
-
-
-@dataclass
-class Variable:
-    name: str
-
-    def __str__(self):
-        return self.name
-
-
-@dataclass
-class FunctionTerm:
-    name: str
-    arguments: list[Term]
-
-    def __str__(self):
-        arg_list = ', '.join(str(arg) for arg in self.arguments)
-        return f'{self.name}({arg_list})'
-
-
-Term = Variable | FunctionTerm
+from .tokens import BinaryConnective, Quantifier
+from .terms import Variable, Term
 
 
 @dataclass
@@ -54,7 +34,7 @@ class NegationFormula:
 
 @dataclass
 class ConnectiveFormula:
-    conn: SingletonFOLToken
+    conn: BinaryConnective
     a: Formula
     b: Formula
 
@@ -64,7 +44,7 @@ class ConnectiveFormula:
 
 @dataclass
 class QuantifierFormula:
-    quantifier: SingletonFOLToken
+    quantifier: Quantifier
     variable: Variable
     sub: Formula
 

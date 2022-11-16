@@ -1,45 +1,31 @@
 from __future__ import annotations
 from collections.abc import Sequence
-
 from dataclasses import dataclass, field
 import functools
 import itertools
+from typing import Literal
 
-from ..support.parsing import Parser
-
-
-@dataclass
-class GrammarSymbol:
-    value: str
-
-    def __str__(self):
-        return self.value
-
-    def __hash__(self):
-        return hash(self.value)
-
-    def __eq__(self, other: object):
-        return isinstance(other, type(self)) and self.value == other.value
+from ..support.parsing import Parser, TokenEnum, TokenMixin
 
 
-class SingletonSymbol(GrammarSymbol):
-    pass
-
-
-epsilon = SingletonSymbol('ε')
-right_arrow = SingletonSymbol('→')
-pipe = SingletonSymbol('|')
-new_line = SingletonSymbol('\n')
-
-
-class Terminal(GrammarSymbol):
+class Terminal(TokenMixin):
     def __str__(self):
         return f'"{self.value}"'
 
 
-class NonTerminal(GrammarSymbol):
+class NonTerminal(TokenMixin):
     def __str__(self):
         return f'<{self.value}>'
+
+
+class SingletonSymbol(TokenEnum):
+    epsilon = 'ε'
+    right_arrow = '→'
+    pipe = '|'
+    new_line = '\n'
+
+
+GrammarSymbol = Terminal | NonTerminal | Literal[SingletonSymbol.epsilon]
 
 
 class GrammarTokenizer(Parser[str]):
@@ -73,110 +59,103 @@ class GrammarTokenizer(Parser[str]):
 
     def parse(self):
         while not self.is_at_end():
-            yield from self.parse_step(self.peek())
+            sym = self.parse_step(self.peek())
+
+            if sym is not None:
+                yield sym
 
     def parse_step(self, head: str):
-        if head == 'ε':
-            yield epsilon
-            self.advance()
+        match head:
+            case '<':
+                return NonTerminal(self.parse_non_terminal())
 
-        elif head == '→':
-            yield right_arrow
-            self.advance()
+            case '"':
+                self.advance()
+                value = self.peek()
 
-        elif head == '|':
-            yield pipe
-            self.advance()
+                if value == '"':
+                    raise self.error('Empty terminals are disallowed')
 
-        elif head == '\n':
-            yield new_line
-            self.advance()
+                self.advance()
 
-        elif head == '<':
-            yield NonTerminal(self.parse_non_terminal())
+                if self.peek() != '"':
+                    raise self.error('Multi-symbol terminals are disallowed')
 
-        elif head == '"':
-            self.advance()
-            value = self.peek()
+                self.advance()
+                return Terminal(value)
 
-            if value == '"':
-                raise self.error('Empty terminals are disallowed')
+            case ' ':
+                self.advance()
 
-            self.advance()
+            case _ if SingletonSymbol.try_match(head):
+                self.advance()
+                return SingletonSymbol(head)
 
-            if self.peek() != '"':
-                raise self.error('Multi-symbol terminals are disallowed')
-
-            self.advance()
-            yield Terminal(value)
-
-        elif head == ' ':
-            self.advance()
-
-        else:
-            raise self.error(f'Unexpected symbol')
+            case _:
+                raise self.error(f'Unexpected symbol')
 
 
-class GrammarParser(Parser[Sequence[GrammarSymbol]]):
+class GrammarParser(Parser[Sequence[Terminal | NonTerminal | SingletonSymbol]]):
     def parse(self):
         src: list[Terminal | NonTerminal] = []
-        dest: list[Terminal | NonTerminal | SingletonSymbol] = []
+        dest: list[GrammarSymbol] = []
         in_dest = False
 
         while not self.is_at_end():
             symbol = self.peek()
 
-            if symbol == new_line or symbol == pipe:
-                if in_dest and len(dest) > 0:
-                    yield src, dest
-                elif len(src) > 0:
-                    raise self.error(f'Attempting to end an incomplete rule')
+            match symbol:
+                case SingletonSymbol.new_line | SingletonSymbol.pipe:
+                    if in_dest and len(dest) > 0:
+                        yield src, dest
+                    elif len(src) > 0:
+                        raise self.error(f'Attempting to end an incomplete rule')
 
-                if symbol == new_line:
-                    src = []
-                    in_dest = False
+                    if symbol == SingletonSymbol.new_line:
+                        src = []
+                        in_dest = False
 
-                dest = []
-                self.advance()
+                    dest = []
+                    self.advance()
 
-            elif isinstance(symbol, (Terminal, NonTerminal)):
-                if in_dest:
-                    if epsilon in dest:
-                        raise self.error(f'Unexpected {symbol} after ε')
+                case Terminal() | NonTerminal():
+                    if in_dest:
+                        if SingletonSymbol.epsilon in dest:
+                            raise self.error(f'Unexpected {symbol} after ε')
 
-                    dest.append(symbol)
-                else:
-                    src.append(symbol)
+                        dest.append(symbol)
+                    else:
+                        src.append(symbol)
 
-                self.advance()
+                    self.advance()
 
-            elif symbol == epsilon:
-                if in_dest and len(dest) == 0:
-                    dest.append(epsilon)
-                else:
-                    raise self.error(f'ε is only allowed on its own on the right side of a rule')
+                case SingletonSymbol.epsilon:
+                    if in_dest and len(dest) == 0:
+                        dest.append(SingletonSymbol.epsilon)
+                    else:
+                        raise self.error(f'ε is only allowed on its own on the right side of a rule')
 
-                self.advance()
+                    self.advance()
 
-            elif symbol == right_arrow:
-                if in_dest:
-                    raise self.error(f'Only one → allowed per line')
+                case SingletonSymbol.right_arrow:
+                    if in_dest:
+                        raise self.error(f'Only one → allowed per line')
 
-                in_dest = True
-                self.advance()
+                    in_dest = True
+                    self.advance()
 
-            else:
-                self.advance()
+                case _:
+                    self.advance()
 
 
 @dataclass
 class GrammarRule:
     src: list[Terminal | NonTerminal]
-    dest: list[Terminal | NonTerminal | SingletonSymbol]
+    dest: list[GrammarSymbol]
 
     def __post_init__(self):
         assert any(isinstance(sym, NonTerminal) for sym in self.src), 'The source must contain at least one non-terminal, but it is {}'.format(' '.join(str(sym) for sym in self.src))
-        assert all(sym != epsilon for sym in self.dest) or len(self.dest) == 1, 'epsilon rules cannot contain other symbols, got {}'.format(' '.join(str(sym) for sym in self.dest))
+        assert all(sym != SingletonSymbol.epsilon for sym in self.dest) or len(self.dest) == 1, 'SingletonSymbol.epsilon rules cannot contain other symbols, got {}'.format(' '.join(str(sym) for sym in self.dest))
         assert all(len(sym.value) == 1 for sym in itertools.chain(self.src, self.dest) if isinstance(sym, Terminal)), 'Multi-symbol terminals are disallowed'
 
     @classmethod

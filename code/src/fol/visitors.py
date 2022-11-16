@@ -1,13 +1,15 @@
-from .types import Variable, FunctionTerm, Term, Formula, EqualityFormula, PredicateFormula, NegationFormula, ConnectiveFormula, QuantifierFormula, Formula
+from .terms import Variable, FunctionTerm, Term
+from .formulas import Formula, EqualityFormula, PredicateFormula, NegationFormula, ConnectiveFormula, QuantifierFormula, Formula
 
 
 class TermVisitor:
     def visit(self, term: Term):
-        if isinstance(term, Variable):
-            return self.visit_variable(term)
+        match term:
+            case Variable():
+                return self.visit_variable(term)
 
-        if isinstance(term, FunctionTerm):
-            return self.visit_function(term)
+            case FunctionTerm():
+                return self.visit_function(term)
 
     def visit_variable(self, term: Variable):
         return self.generic_visit(term)
@@ -32,20 +34,21 @@ class TermTransformationVisitor(TermVisitor):
 
 class FormulaVisitor:
     def visit(self, formula: Formula):
-        if isinstance(formula, EqualityFormula):
-            return self.visit_equality(formula)
+        match formula:
+            case EqualityFormula():
+                return self.visit_equality(formula)
 
-        if isinstance(formula, PredicateFormula):
-            return self.visit_predicate(formula)
+            case PredicateFormula():
+                return self.visit_predicate(formula)
 
-        if isinstance(formula, NegationFormula):
-            return self.visit_negation(formula)
+            case NegationFormula():
+                return self.visit_negation(formula)
 
-        if isinstance(formula, ConnectiveFormula):
-            return self.visit_connective(formula)
+            case ConnectiveFormula():
+                return self.visit_connective(formula)
 
-        if isinstance(formula, QuantifierFormula):
-            return self.visit_quantifier(formula)
+            case QuantifierFormula():
+                return self.visit_quantifier(formula)
 
     def visit_equality(self, formula: EqualityFormula):
         return self.generic_visit(formula)

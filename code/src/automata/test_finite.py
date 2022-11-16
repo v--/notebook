@@ -4,7 +4,7 @@ from .fixtures import *
 
 # ex:def:formal_language/an
 def test_finite_automaton_recognizes_an():
-    aut = FiniteAutomaton()
+    aut: FiniteAutomaton = FiniteAutomaton()
     aut.add_transition(1, 'a', 1)
     aut.initial.add(1)
     aut.terminal.add(1)

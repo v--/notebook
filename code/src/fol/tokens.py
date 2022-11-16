@@ -1,77 +1,44 @@
-from dataclasses import dataclass
+from ..support.parsing import TokenMixin, TokenEnum
 
 
-@dataclass
-class FOLToken:
-    value: str
-
-    def __str__(self):
-        return self.value
-
-    def __hash__(self):
-        return hash(self.value)
-
-    def __eq__(self, other: object):
-        return isinstance(other, type(self)) and self.value == other.value
-
-
-class NaturalNumber(FOLToken):
+class NaturalNumber(TokenMixin):
     pass
 
 
-class LatinName(FOLToken):
+class LatinName(TokenMixin):
     pass
 
 
-class GreekName(FOLToken):
+class GreekName(TokenMixin):
     pass
 
 
-class SingletonFOLToken(FOLToken):
-    pass
+class PropConstant(TokenEnum):
+    verum = '⊤'
+    falsum = '⊥'
 
 
-left_parenthesis = SingletonFOLToken('(')
-right_parenthesis = SingletonFOLToken(')')
-comma = SingletonFOLToken(',')
-dot = SingletonFOLToken('.')
-space = SingletonFOLToken(' ')
+class BinaryConnective(TokenEnum):
+    join_ = '∨'
+    meet = '∧'
+    conditional = '→'
+    biconditional = '↔'
 
-equality = SingletonFOLToken('=')
-negation = SingletonFOLToken('¬')
 
-verum = SingletonFOLToken('⊤')
-falsum = SingletonFOLToken('⊥')
+class Quantifier(TokenEnum):
+    universal = '∀'
+    existential = '∃'
 
-PROP_CONSTANTS = [
-    verum, falsum
-]
 
-join = SingletonFOLToken('∨')
-meet = SingletonFOLToken('∧')
-conditional = SingletonFOLToken('→')
-biconditional = SingletonFOLToken('↔')
+class MiscToken(TokenEnum):
+    left_parenthesis = '('
+    right_parenthesis = ')'
+    comma = ','
+    dot = '.'
+    space = ' '
 
-CONNECTIVES = [
-    join, meet, conditional, biconditional
-]
+    equality = '='
+    negation = '¬'
 
-universal_quantifier = SingletonFOLToken('∀')
-existential_quantifier = SingletonFOLToken('∃')
 
-QUANTIFIERS = [
-    universal_quantifier, existential_quantifier
-]
-
-LITERALS = [
-    left_parenthesis,
-    right_parenthesis,
-    comma,
-    dot,
-    space,
-    equality,
-    negation,
-    *PROP_CONSTANTS,
-    *CONNECTIVES,
-    *QUANTIFIERS
-]
+FOLToken = NaturalNumber | LatinName | GreekName | PropConstant | BinaryConnective | Quantifier | MiscToken

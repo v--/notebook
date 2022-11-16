@@ -1,7 +1,7 @@
 from ..automata.finite import FiniteAutomaton, reverse_automaton
 from ..automata.finite_determinize import determinize
 
-from .grammar import GrammarSchema, Grammar, GrammarRule, NonTerminal, Terminal, epsilon
+from .grammar import GrammarSchema, Grammar, GrammarRule, NonTerminal, Terminal, SingletonSymbol
 from .context_free import reverse_grammar
 from .epsilon_rules import is_epsilon_rule, is_epsilon_free, remove_epsilon_rules
 from .renaming_rules import collapse_renaming_rules
@@ -89,7 +89,7 @@ def from_finite_automaton(aut: FiniteAutomaton) -> Grammar:
         GrammarRule([NonTerminal(str(src))], [Terminal(str(label)), NonTerminal(str(dest))])
         for (src, label, dest) in det.triples
     ] + [
-        GrammarRule([NonTerminal(str(src))], [epsilon]) for src in det.terminal
+        GrammarRule([NonTerminal(str(src))], [SingletonSymbol.epsilon]) for src in det.terminal
     ])
 
     return schema.instantiate(NonTerminal(str(next(iter(det.initial)))))
