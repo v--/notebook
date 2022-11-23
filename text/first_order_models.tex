@@ -1,18 +1,66 @@
 \subsection{First-order models}\label{subsec:first_order_models}
 
-Much of \fullref{subsec:first_order_logic} is dedicated to semantic equivalences between logical formulas, which are formulated and proved using \hyperref[def:first_order_structure]{structures}. This section is dedicated to the study of structures themselves and relations between them. While model theory is a wide topic, for the purposes of this document we are only interested in the following questions:
+\begin{definition}\label{def:propositional_model}\mcite[def. 1.4.1(i)]{Hinman2005}
+  We say that the \hyperref[def:propositional_valuation/interpretation]{propositional interpretation} \( I \) is a \term{propositional model} of the set of \hyperref[def:propositional_syntax/formula]{propositional formulas} \( \Gamma \) if \( \Bracks{\varphi}_I = T \) for every formula \( \varphi \in \Gamma \).
 
-\begin{itemize}
-  \item Which subsets of a structure form a \hyperref[def:first_order_substructure]{substructure}?
+  We also say that \( I \) \term{satisfies} \( \Gamma \) and that the set \( \Gamma \) is \term{satisfiable} if there exists at least one model it.
+\end{definition}
 
-  This is answered by \fullref{def:first_order_substructure} and by \fullref{def:first_order_generated_substructure}. Vacuously, if the language contains no functional symbols, by \fullref{thm:def:first_order_substructure/no_functions} every subset of a structure is a substructure. Such is the case with \hyperref[def:set]{sets} themselves, with \hyperref[def:partially_ordered_set]{partially ordered sets} or with \hyperref[def:metric_space]{metric} and \hyperref[def:topological_space]{topological spaces}.
+\begin{remark}\label{rem:first_order_satisfiability_bivalence}
+  We will now show why \fullref{def:propositional_model} requires some adjustments for first-order formulas.
 
-  \Fullref{thm:substructures_form_complete_lattice} shows that the set of all substructures of a structure is worth studying in itself.
+  Given a \hyperref[def:propositional_syntax/formula]{propositional formula} \( \varphi \) and an \hyperref[def:propositional_valuation/interpretation]{interpretation} \( I \), the latter \hyperref[def:propositional_model]{satisfies} either \( \varphi \) or \( \neg \varphi \). Then \( I \) necessarily satisfies \( \varphi \vee \neg \varphi \), which is the principle of bivalence (a.k.a. law of the excluded middle) discussed in \fullref{rem:classical_logic}.
 
-  \item Given a model of some set \( \Gamma \) of formulas, which substructures and \hyperref[def:first_order_homomorphism]{homomorphic} images of the model are again models of \( \Gamma \)?
+  Similarly, given a \hyperref[def:first_order_valuation/variable_assignment]{first-order variable assignment} \( v \) in the \hyperref[def:first_order_structure]{structure} \( \mscrX \) and a \hyperref[def:first_order_syntax/formula]{first-order formula} \( \varphi \), we have \( \Bracks{\varphi \vee \neg \varphi}_v = T \).
 
-  This is answered by \fullref{thm:positive_formulas_preserved_under_homomorphism}, \fullref{thm:arbitrary_formulas_preserved_under_isomorphisms} and \fullref{thm:functions_over_model_form_model}.
-\end{itemize}
+  It is obvious how we should define satisfiability for a concrete variable assignment, but the question remains how to define it for a structure.
+
+  Fix an arbitrary structure \( \mscrX = (X, I) \) with two elements \( X = \set{ a, b } \) and consider the formula \( \xi \doteq \eta \). Let \( v \) be any variable assignment such that \( v(\xi) = v(\eta) = a \) and let \( w \) be an assignment such that \( w(\xi) = a \) and \( w(\eta) = b \). Clearly \( \Bracks{\xi \doteq \eta}_v = T \) and \( \Bracks{\xi \doteq \eta}_w = F \). Thus, some assignments satisfy the formula and some do not.
+
+  It makes sense to define
+  \begin{equation*}
+    \Bracks{\varphi}_\mscrX
+    \coloneqq
+    \begin{cases}
+      T, \Bracks{\varphi}_v = T \T{for every assignment} v, \\
+      F, \T{otherwise}.
+    \end{cases}
+  \end{equation*}
+
+  This is what Peter Hinman in \cite[rem. 2.2.17]{Hinman2005} calls \term{universally valid} formulas in \( \mscrX \).
+
+  We just saw that \( \xi \doteq \eta \) is not universally valid. But neither is \( \xi \doteq \eta \) because
+  \begin{equation*}
+    \Bracks{\neg (\xi \doteq \eta)}_v = \overline{\Bracks{\xi \doteq \eta}_v} = F
+  \end{equation*}
+
+  Therefore, the principle of bivalence does not hold for universal validity. In order for it to hold, what we will do in \fullref{def:first_order_model} is restrict ourselves to \hyperref[def:first_order_syntax/closed_formula]{closed formulas}, which depend only on the underlying structure and not on the variable assignments.
+\end{remark}
+
+\begin{definition}\label{def:first_order_model}\mcite[def. 2.2.13(ii)]{Hinman2005}
+  We say that the \hyperref[def:first_order_structure]{first-order structure} \( \mscrX = (X, I) \) is a \term{first-order model} of the set of \hyperref[def:first_order_syntax/closed_formula]{closed first-order formulas} \( \Gamma \) if, for an arbitrary variable assignment \( v \) in \( \mscrX \), \( \Bracks{\varphi}_v = T \) for every formula \( \varphi \in \Gamma \).
+
+  As in the case of \hyperref[rem:first_order_satisfiability_bivalence]{propositional models}, we also say that \( \mscrX \) \term{satisfies} \( \Gamma \) and that the set \( \Gamma \) is \term{satisfiable} if there exists at least one model it.
+\end{definition}
+\begin{comments}
+  \item Since the formulas are closed, the result does not depend on the assignment. We only use it as a technical tool because we avoid defining entailment within a structure. The problems of doing the latter are discussed in \fullref{rem:first_order_satisfiability_bivalence}.
+\end{comments}
+
+\begin{remark}\label{rem:questions_regarding_structures}
+  Within this section, we are interested in the following questions regarding \hyperref[def:first_order_structure]{first-order structure} and \hyperref[def:first_order_model]{models}:
+
+  \begin{itemize}
+    \item Which subsets of a structure form a \hyperref[def:first_order_substructure]{substructure}?
+
+    This is answered by \fullref{def:first_order_substructure} and by \fullref{def:first_order_generated_substructure}. Vacuously, if the language contains no functional symbols, by \fullref{thm:def:first_order_substructure/no_functions} every subset of a structure is a substructure. Such is the case with \hyperref[def:set]{sets} themselves, with \hyperref[def:partially_ordered_set]{partially ordered sets} or with \hyperref[def:metric_space]{metric} and \hyperref[def:topological_space]{topological spaces}.
+
+    \Fullref{thm:substructures_form_complete_lattice} shows that the set of all substructures of a structure is worth studying in itself.
+
+    \item Given a model of some set \( \Gamma \) of formulas, which substructures and \hyperref[def:first_order_homomorphism]{homomorphic} images of the model are again models of \( \Gamma \)?
+
+    This is answered by \fullref{thm:positive_formulas_preserved_under_homomorphism}, \fullref{thm:arbitrary_formulas_preserved_under_isomorphisms} and \fullref{thm:functions_over_model_form_model}.
+  \end{itemize}
+\end{remark}
 
 \begin{definition}\label{def:first_order_substructure}\mcite[def. 3.3.4]{VanDalen2004}
   Let \( \mscrX = (X, I) \) be a structure for the language \( \mscrL \) and let \( Y \subseteq X \). We say that \( \mscrY = (Y, I) \) is a \term{substructure} of \( \mscrX \) if it satisfies any of the following equivalent conditions:
