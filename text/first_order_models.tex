@@ -254,20 +254,32 @@
   \SubProofOf{thm:substructures_form_complete_lattice/bottom} It follows from \fullref{thm:substructures_form_complete_lattice/meet} that the bottom element is the intersection of all substructures of \( \mscrX \).
 \end{proof}
 
-\begin{definition}\label{def:first_order_homomorphism}\mcite[def. 3.3.1(i)]{VanDalen2004}
-  Let \( \mscrX = (X, I) \) and \( \mscrY = (Y, I) \) be structures over a common language. We say that the \hyperref[def:function]{function} \( h: X \to Y \) is a \term{homomorphism} between \( \mscrX \) and \( \mscrY \) if it preserves all functions and relations. Explicitly:
+\begin{definition}\label{def:first_order_homomorphism}\mcite[def. 2.3.26(i) \\ rem. 2.3.27]{Hinman2005}
+  Let \( \mscrX = (X, I) \) and \( \mscrY = (Y, J) \) be structures over a common language. We say that the \hyperref[def:function]{function} \( h: X \to Y \) is a \term{homomorphism} between \( \mscrX \) and \( \mscrY \) if it preserves all functions and relations. Explicitly:
   \begin{thmenum}
     \thmitem{def:first_order_homomorphism/functions} For any functional symbol \( f \in \boldop{Fun} \) of arity \( n \) and any tuple \( x_1, \ldots, x_n \in X \) we have
     \begin{equation*}
-      h\parens[\Big]{ I_X(f)(x_1, \ldots, x_n) } = I_Y(f) \parens[\Big]{ h(x_1), \ldots, h(x_n) }
+      h\parens[\Big]{ I(f)(x_1, \ldots, x_n) } = J(f) \parens[\Big]{ h(x_1), \ldots, h(x_n) }
     \end{equation*}
 
-    \thmitem{def:first_order_homomorphism/predicates} \( h \) preserves relations. That is, for any predicate symbol \( p \in \boldop{Pred} \) of arity \( n \) and any \( x_1, \ldots, x_n \in X \),
+    \thmitem{def:first_order_homomorphism/predicates} For any predicate symbol \( p \in \boldop{Pred} \) of arity \( n \) and any \( x_1, \ldots, x_n \in X \),
     \begin{equation*}
-      I_X(p) (x_1, \ldots, x_n) = T \T{implies} I_Y(p) \parens[\Big]{ h(x_1), \ldots, h(x_n) } = T.
+      I(p) (x_1, \ldots, x_n) = T \T{implies} J(p) \parens[\Big]{ h(x_1), \ldots, h(x_n) } = T.
     \end{equation*}
   \end{thmenum}
 \end{definition}
+\begin{comments}
+  \item We sometimes use the notation \( h: \mscrX \to \mscrY \).
+  \item Note that the condition \fullref{def:first_order_homomorphism/predicates} for predicates is strictly weaker than
+  \begin{equation*}
+    I(p) (x_1, \ldots, x_n) = J(p) \parens[\Big]{ h(x_1), \ldots, h(x_n) },
+  \end{equation*}
+  which is used in \fullref{def:first_order_embedding} to define embeddings.
+
+  Peter Hinman in \cite[def. 2.3.26(i)]{Hinman2005} requires the latter condition, and then in \cite[rem. 2.3.27]{Hinman2005} calls \term{positive homomorphism} out definition.
+
+  We see this as unnecessarily complicated since most of our use cases like \hyperref[def:partially_ordered_set]{partially ordered sets} and \hyperref[def:quiver/simple]{simple graphs} are covered precisely by (what we just called) positive homomorphisms.
+\end{comments}
 
 \begin{proposition}\label{thm:def:first_order_homomorphism}
   \hyperref[def:first_order_homomorphism]{First-order structure homomorphisms} have the following basic properties:
@@ -279,81 +291,84 @@
         &\iota(y) \coloneqq y
       \end{aligned}
     \end{equation}
-    is indeed a homomorphism (and thus an embedding in the sense of \fullref{def:first_order_isomorphism}).
+    is indeed a homomorphism (and thus an embedding in the sense of \fullref{def:first_order_embedding}).
 
-    \thmitem{thm:def:first_order_homomorphism/preserves_substructures} If \( \mscrX = (X, I_X) \) and \( \mscrY = (Y, I_Y) \) are structures and \( h: X \to Y \) is a (weak) homomorphism, then the \hyperref[def:multi_valued_function/image]{image} \( h(\mscrX) \coloneqq (h(X), I_Y) \) is a substructure of \( \mscrY \).
+    \thmitem{thm:def:first_order_homomorphism/image_is_substructure} Given a homomorphism \( h: \mscrX \to \mscrY \), its image \hyperref[def:multi_valued_function/image]{image} \( (h[X], J) \) is a substructure of \( \mscrY \).
 
     \thmitem{thm:def:first_order_homomorphism/composition} The \hyperref[def:multi_valued_function/composition]{composition} of two homomorphisms is again a homomorphism.
 
-    \thmitem{thm:def:first_order_homomorphism/term_valuation} Fix a homomorphism \( h: X \to Y \) and a term \( \tau \). For any variable assignments \( v_X \) and \( v_Y \) such that \( v_Y(\xi) = h(v_X(\xi)) \) for all \( \xi \in \boldop{Var}(\tau) \), we have
+    \thmitem{thm:def:first_order_homomorphism/term_valuation} Fix a homomorphism \( h: X \to Y \) and a term \( \tau \). For any variable assignments \( v \) and \( w \) such that \( w(\xi) = h(v(\xi)) \) for all \( \xi \in \boldop{Var}(\tau) \), we have
     \begin{equation*}
-      h(\tau\Bracks{v_X}) = \tau\Bracks{v_Y}.
+      h(\Bracks{\tau}_v) = \Bracks{\tau}_w.
     \end{equation*}
   \end{thmenum}
 \end{proposition}
 \begin{proof}
-  \SubProofOf{thm:def:first_order_homomorphism/submodel} The interpretation in the substructure \( \mscrY \) is the \hyperref[def:multi_valued_function/restriction]{restriction} \( I\restr_Y \) of \( I \) to \( \mscrY \) which simply restricts the domain of any predicate and function is indeed an interpretation in \( \mscrY \). Thus, \( (Y, I\restr_Y) \) is a structure.
+  \SubProofOf{thm:def:first_order_homomorphism/submodel} The interpretation in the substructure \( \mscrY \) is the \hyperref[def:multi_valued_function/restriction]{restriction} \( J \) of \( I \) to \( Y \). Thus, \( \mscrY = (Y, J) \) is a structure. Conditions \fullref{def:first_order_homomorphism/functions} and \fullref{def:first_order_homomorphism/predicates} are thus satisfied. Hence, \( \iota \) is a homomorphism.
 
-  Conditions \fullref{def:first_order_homomorphism/functions} and \fullref{def:first_order_homomorphism/predicates} are both satisfied since the interpretation of any function and predicate is restricted to \( \mscrY \). Thus, \( \iota \) is a homomorphism.
+  \SubProofOf{thm:def:first_order_homomorphism/image_is_substructure} We will show that the image \( h[X] \) satisfies \fullref{def:first_order_substructure/universe/deductive} holds and thus the domain of a substructure of \( \mscrY \).
 
-  \SubProofOf{thm:def:first_order_homomorphism/preserves_substructures} To prove that \( (f(X), I_Y) \) is a substructure of \( \mscrY \), we will show that \fullref{def:first_order_substructure/universe/deductive} holds.
-
-  Indeed, due to \fullref{def:first_order_homomorphism/functions}, for any \( n \)-ary functional symbol and any tuple \( {x_1, \ldots, x_n \in X} \), we have that
+  Indeed, due to \fullref{def:first_order_homomorphism/functions}, for any \( n \)-ary functional symbol and any tuple \( x_1, \ldots, x_n \) from \( X \), we have that
   \begin{equation*}
-    I_Y(f) \parens[\Big]{ h(x_1), \ldots, f(x_n) }
+    J(f) \parens[\Big]{ h(x_1), \ldots, f(x_n) }
     \reloset {\ref{def:first_order_homomorphism/functions}} =
-    h\parens[\Big]{ I_X(f)(x_1, \ldots, x_n) }
+    h\parens[\Big]{ I(f)(x_1, \ldots, x_n) }
     \reloset {\ref{def:first_order_substructure/universe/deductive}} \in
-    h(X).
+    h[X].
   \end{equation*}
 
-  \SubProofOf{thm:def:first_order_homomorphism/composition} Let \( h: \mscrX \mapsto \mscrY \) and \( l: \mscrY \mapsto \mscrZ \) both be homomorphisms.
+  \SubProofOf{thm:def:first_order_homomorphism/composition} Let \( h: \mscrX \mapsto \mscrY \) and \( l: \mscrY \mapsto \mscrZ \) both be homomorphisms. Then \( l \bincirc h: \mscrX \to \mscrY \) is a homomorphism:
 
   \begin{itemize}
     \item \Fullref{def:first_order_homomorphism/functions} is satisfied because for any \( n \)-ary functional symbol \( f \) and any tuple \( x_1, \ldots, x_n \in X \),
-    \begin{align*}
-      &\phantom{{}={}}
-      (l \bincirc h) \parens[\Big]{ I_X(f)(x_1, \ldots, x_n) }
-      \reloset {\ref{def:first_order_homomorphism/functions}} = \\ &=
-      l\parens[\Big]{ I_Y(f) \parens[\Big]{ h(x_1), \ldots, h(x_n) } }
-      \reloset {\ref{def:first_order_homomorphism/functions}} = \\ &=
+    \small
+    \begin{equation*}
+      (l \bincirc h) \parens[\Big]{ I(f)(x_1, \ldots, x_n) }
+      \reloset {\ref{def:first_order_homomorphism/functions}} =
+      l\parens[\Big]{ J(f) \parens[\Big]{ h(x_1), \ldots, h(x_n) } }
+      \reloset {\ref{def:first_order_homomorphism/functions}} =
       I_{\mscrZ}(f) \parens[\Big]{ (l \bincirc h)(x_1), \ldots, (l \bincirc h)(x_n) }.
-    \end{align*}
+    \end{equation*}
+    \normalsize
 
     \item \Fullref{def:first_order_homomorphism/predicates} is satisfied because for any \( n \)-ary predicate symbol \( p \) and any tuple \( x_1, \ldots, x_n \in X \),
-    \begin{align*}
-      &\phantom{{}={}}
-      I_X(p) (x_1, \ldots, x_n)
-      \reloset {\ref{def:first_order_homomorphism/predicates}} = \\ &=
-      I_Y(p) \parens[\Big]{ h(x_1), \ldots, h(x_n) }
-      \reloset {\ref{def:first_order_homomorphism/predicates}} = \\ &=
+    \begin{equation*}
+      I(p) (x_1, \ldots, x_n)
+      \reloset {\ref{def:first_order_homomorphism/predicates}} =
+      J(p) \parens[\Big]{ h(x_1), \ldots, h(x_n) }
+      \reloset {\ref{def:first_order_homomorphism/predicates}} =
       I_{\mscrZ}(p) \parens[\Big]{ (l \bincirc h)(x_1), \ldots, (l \bincirc h)(x_n) }.
-    \end{align*}
+    \end{equation*}
   \end{itemize}
 
-  \SubProofOf{thm:def:first_order_homomorphism/term_valuation} We use induction on the structure of \( \tau \). If \( \tau \) is a variable, the statement is obvious from the compatibility condition for \( v_X \) and \( v_Y \). If \( \tau = f(\kappa_1, \ldots, \kappa_m) \), then
-  \begin{align*}
-    \tau\Bracks{v_Y}
-    &=
-    I(f) \parens[\Big]{ \kappa_1\Bracks{v_Y}, \ldots, \kappa_m\Bracks{v_Y} }
-    = \\ &=
-    I(f) \parens[\Big]{ h(\kappa_1\Bracks{v_X}), \ldots, h(\kappa_m\Bracks{v_X}) }
-    \reloset {\ref{def:first_order_homomorphism/functions}} = \\ &=
-    h\parens[\Big]{ I(f) \parens[\Big]{ \kappa_1\Bracks{v_X}, \ldots, \kappa_m\Bracks{v_X} } }
-    = \\ &=
-    h(\tau\Bracks{v_X}).
-  \end{align*}
+  \SubProofOf{thm:def:first_order_homomorphism/term_valuation} We use induction on the structure of \( \tau \).
+  \begin{itemize}
+    \item If \( \tau \) is a variable, the statement is obvious from the compatibility condition for \( v \) and \( w \).
+    \item If \( \tau = f(\kappa_1, \ldots, \kappa_m) \), then
+    \begin{align*}
+      \Bracks{\tau}_w
+      &=
+      I(f) \parens[\Big]{ \Bracks{\kappa_1}_w, \ldots, \Bracks{\kappa_m}_w }
+      = \\ &=
+      I(f) \parens[\Big]{ h(\Bracks{\kappa_1}_v), \ldots, h(\Bracks{\kappa_m}_v) }
+      \reloset {\ref{def:first_order_homomorphism/functions}} = \\ &=
+      h\parens[\Big]{ I(f) \parens[\Big]{ \Bracks{\kappa_1}_v, \ldots, \Bracks{\kappa_m}_v } }
+      = \\ &=
+      h(\Bracks{\tau}_v).
+    \end{align*}
+  \end{itemize}
 \end{proof}
 
-\begin{definition}\label{def:first_order_isomorphism}\mcite[def. 3.3.1(ii)]{VanDalen2004}
-  We say that an \hyperref[def:function_invertibility/injective]{injective} \hyperref[def:first_order_homomorphism]{homomorphism} \( h: \mscrX \to \mscrY \) is an \term{embedding} if its inverse is also a homomorphism.
+\begin{definition}\label{def:first_order_embedding}\mcite[def. 2.3.26(ii)]{Hinman2005}
+  We say that an \hyperref[def:function_invertibility/injective]{injective} (resp. \hyperref[def:function_invertibility/bijective]{bijective}) \hyperref[def:first_order_homomorphism]{homomorphism} \( h: \mscrX \to \mscrY \) is an \term{embedding} (resp. \term{isomorphism}) if any of the following equivalent conditions hold:
 
-  For a bijective homomorphism \( h: \mscrX \to \mscrY \), this amounts to requiring that, for any predicate symbol \( p \),
-  \begin{equation*}
-    I_X(p) (x_1, \ldots, x_n) = I_Y(p) \parens[\Big]{ h(x_1), \ldots, h(x_n) }.
-  \end{equation*}
-
-  It is a strengthening of the usual condition \fullref{def:first_order_homomorphism/predicates} on predicates.
+  \begin{thmenum}
+    \thmitem{def:first_order_embedding/inverse} The inverse of \( h \) on its image is also a homomorphism.
+    \thmitem{def:first_order_embedding/predicates} For any predicate symbol \( p \),
+    \begin{equation*}
+      I(p) (x_1, \ldots, x_n) = J(p) \parens[\Big]{ h(x_1), \ldots, h(x_n) }.
+    \end{equation*}
+  \end{thmenum}
 \end{definition}
 \begin{comments}
   \item \Fullref{ex:bijective_order_homomorphism_not_isomorphism} demonstrates how a bijective homomorphism may fail to be an isomorphism.
@@ -361,12 +376,12 @@
   \item This condition can often be relaxed --- see \fullref{thm:automorphism_without_predicate_symbols} and \fullref{thm:totally_ordered_strict_isomorphisms}.
 \end{comments}
 
-\begin{definition}\label{def:first_order_automorphism}
-  We define an \term{endomorphism} on a \hyperref[def:first_order_structure]{first-order structure} to be a \hyperref[def:first_order_homomorphism]{homomorphism} from the structure to itself and an \term{automorphism} to be an \hyperref[def:first_order_isomorphism]{isomorphism} from the structure to itself.
+\begin{definition}\label{def:first_order_isomorphism}\mcite[def. 2.3.1(i)]{Hinman2005}
+  If a \hyperref[def:first_order_embedding]{first-order embedding} is \hyperref[def:function_invertibility/surjective]{surjective}, we call it an \term{isomorphism} and say that the structures are \term{isomorphic}. We call an isomorphism from a structure to itself an \term{automorphism}.
 \end{definition}
 
 \begin{example}\label{ex:bijective_order_homomorphism_not_isomorphism}
-  Consider the \hyperref[def:integers]{set of integers \( \BbbZ \)} endowed with two different \hyperref[def:partially_ordered_set]{partial orders}:
+  Consider the \hyperref[def:integers]{set of integers} \( \BbbZ \) endowed with two different \hyperref[def:partially_ordered_set]{partial orders}:
   \begin{itemize}
     \item The standard total order \( \leq \) where \( n \leq m \) if there exists a nonnegative integer \( k \) such that \( n + k = m \).
     \item The equality \( = \) relation, which is simply the \hyperref[def:binary_relation/diagonal]{diagonal relation} \( \increment \).
@@ -380,10 +395,10 @@
 \end{example}
 
 \begin{proposition}\label{thm:automorphism_without_predicate_symbols}
-  Let \( \mscrL \) be a language without predicate symbols. Then any bijective homomorphism between structures for \( \mscrL \) is an \hyperref[def:first_order_isomorphism]{isomorphism}.
+  A bijective homomorphism over a language without predicate symbols is an \hyperref[def:first_order_isomorphism]{isomorphism}.
 \end{proposition}
 \begin{proof}
-  If \( \mscrL \) has no predicate symbols, then \fullref{def:first_order_homomorphism/predicates} is vacuously satisfied for the inverse of any bijective homomorphism. It is just as well satisfied if we restrict ourselves to strong homomorphisms.
+  If \( \mscrL \) has no predicate symbols, then \fullref{def:first_order_embedding/predicates} is vacuously satisfied.
 \end{proof}
 
 \begin{definition}\label{def:positive_formula}
@@ -399,84 +414,84 @@
 \begin{proposition}\label{thm:positive_formulas_preserved_under_homomorphism}
   Let \( \mscrX = (X, I) \) and \( \mscrY = (Y, I) \) be structures over a common language \( \mscrL \) and let \( h: X \to Y \) be a \hyperref[def:first_order_homomorphism]{homomorphism} between them. Take \( \Gamma \) to be a nonempty set of \hyperref[def:positive_formula]{positive formulas}.
 
-  Then \( h \) preserves models of \( \Gamma \). That is, if \( \mscrX \vDash \Gamma \) then \( (h(X), I_Y) \vDash \Gamma \).
+  Then \( h \) preserves models of \( \Gamma \). That is, if \( \mscrX \vDash \Gamma \) then \( (h(X), J) \vDash \Gamma \).
 \end{proposition}
 \begin{proof}
-  Let \( v \) a variable assignment in \( \mscrY \). Let \( v_X: \boldop{Var} \to X \) be an assignment such that for any variable \( \xi \) we have
+  Let \( v \) a variable assignment in \( \mscrY \). Let \( v: \boldop{Var} \to X \) be an assignment such that for any variable \( \xi \) we have
   \begin{equation*}
-    v_X(\xi) \in h^{-1}(v_Y(\xi)).
+    v(\xi) \in h^{-1}(w(\xi)).
   \end{equation*}
 
   At least one such assignment exists due to \fullref{def:zfc/choice}. If \( h \) is injective, this assignment is unique.
 
   We will show that
   \begin{equation}\label{thm:positive_formulas_preserved_under_homomorphism/ind_hyp_x}
-    \mscrX \vDash_{v_X} \varphi
+    \mscrX \vDash_{v} \varphi
   \end{equation}
   implies
   \begin{equation}\label{thm:positive_formulas_preserved_under_homomorphism/ind_hyp_y}
-    (h(X), I_Y) \vDash_{v_Y} \varphi.
+    (h(X), J) \vDash_{w} \varphi.
   \end{equation}
 
   We assume \eqref{thm:positive_formulas_preserved_under_homomorphism/ind_hyp_x} for \( \varphi \) and we use induction on the structure of \( \varphi \) to prove \eqref{thm:positive_formulas_preserved_under_homomorphism/ind_hyp_y}, starting with different \hyperref[def:first_order_syntax/atomic_formula]{atomic formulas}:
   \begin{itemize}
     \item The constant \( \top \) is vacuously preserved by homomorphisms because it does not depend on the interpretation or variable assignment.
 
-    \item Suppose that \( \varphi = (\tau_1 \doteq \tau_2) \). We have \( \tau_1\Bracks{v_X} = \tau_2\Bracks{v_X} \) and hence \( h(\tau_1\Bracks{v_X}) = h(\tau_2\Bracks{v_X}) \) and
+    \item Suppose that \( \varphi = (\tau_1 \doteq \tau_2) \). We have \( \tau_1\Bracks{v} = \tau_2\Bracks{v} \) and hence \( h(\tau_1\Bracks{v}) = h(\tau_2\Bracks{v}) \) and
     \begin{equation*}
-      \tau_1\Bracks{v_Y}
+      \tau_1\Bracks{w}
       \reloset {\ref{thm:def:first_order_homomorphism/term_valuation}} =
-      h(\tau_1\Bracks{v_X})
+      h(\tau_1\Bracks{v})
       =
-      h(\tau_2\Bracks{v_X})
+      h(\tau_2\Bracks{v})
       \reloset {\ref{thm:def:first_order_homomorphism/term_valuation}} =
-      \tau_2\Bracks{v_Y}.
+      \tau_2\Bracks{w}.
     \end{equation*}
 
-    \item Suppose that \( \varphi \) is the predicate formula \( p(\tau_1, \ldots, \tau_n) \). By assumption for every variable assignment in \( \mscrX \) and, in particular, for any \( v_X \),
+    \item Suppose that \( \varphi \) is the predicate formula \( p(\tau_1, \ldots, \tau_n) \). By assumption for every variable assignment in \( \mscrX \) and, in particular, for any \( v \),
     \begin{equation*}
-      \mscrX \vDash_{v_X} p(\tau_1, \ldots, \tau_n),
+      \mscrX \vDash_{v} p(\tau_1, \ldots, \tau_n),
     \end{equation*}
     then
     \begin{equation}\label{eq:thm:positive_formulas_preserved_under_homomorphism/predicates/x}
-      I_X(p) \parens[\Big]{ \tau_1\Bracks{v_X}, \ldots, \tau_n\Bracks{v_X} } = T.
+      I(p) \parens[\Big]{ \tau_1\Bracks{v}, \ldots, \tau_n\Bracks{v} } = T.
     \end{equation}
 
     By definition of homomorphism, we have
     \begin{equation}\label{eq:thm:positive_formulas_preserved_under_homomorphism/predicates/y}
-      I_Y(p) \parens[\Big]{ h(\tau_1\Bracks{v_X}), \ldots, h(\tau_n\Bracks{v_X}) } = T.
+      J(p) \parens[\Big]{ h(\tau_1\Bracks{v}), \ldots, h(\tau_n\Bracks{v}) } = T.
     \end{equation}
 
     Now
     \begin{equation*}
-      (h(X), I_Y) \vDash_{v_Y} p(\tau_1, \ldots, \tau_n),
+      (h(X), J) \vDash_{w} p(\tau_1, \ldots, \tau_n),
     \end{equation*}
     follows from \fullref{thm:def:first_order_homomorphism/term_valuation}.
 
     \item Suppose that \( \varphi = \psi_1 \wedge \psi_2 \) and that the inductive hypothesis holds for \( \psi_1 \) and \( \psi_2 \).
 
-    Since \( \varphi\Bracks{v_X} = T \) by assumption, by definition of valuation of conjunction we have
+    Since \( \varphi\Bracks{v} = T \) by assumption, by definition of valuation of conjunction we have
     \begin{equation*}
-      \psi_1\Bracks{v_X}
+      \psi_1\Bracks{v}
       =
-      \psi_2\Bracks{v_X}
+      \psi_2\Bracks{v}
       =
       T.
     \end{equation*}
 
     This allows us to apply the inductive hypothesis to obtain
     \begin{equation*}
-      \psi_1\Bracks{v_Y}
+      \psi_1\Bracks{w}
       =
-      \psi_2\Bracks{v_Y}
+      \psi_2\Bracks{w}
       =
       T.
     \end{equation*}
     and conclude that
     \begin{equation*}
-      \varphi\Bracks{v_Y}
+      \varphi\Bracks{w}
       =
-      \psi_1\Bracks{v_Y} \wedge \psi_2\Bracks{v_Y}
+      \psi_1\Bracks{w} \wedge \psi_2\Bracks{w}
       =
       T \wedge T
       =
@@ -485,29 +500,29 @@
 
     \item Suppose that \( \varphi = \psi_1 \vee \psi_2 \) and that the inductive hypothesis holds for \( \psi_1 \) and \( \psi_2 \).
 
-    Since the formula \( \varphi \) is valid in \( \mscrX \), at least one of \( \psi_1 \) or \( \psi_2 \) is valid under \( v_X \). For different \( v_X \) the valuation pair \( (\psi_1\Bracks{v_X}, \psi_2\Bracks{v_X}) \) may be different, but will always have at least one \( T \) value.
+    Since the formula \( \varphi \) is valid in \( \mscrX \), at least one of \( \psi_1 \) or \( \psi_2 \) is valid under \( v \). For different \( v \) the valuation pair \( (\psi_1\Bracks{v}, \psi_2\Bracks{v}) \) may be different, but will always have at least one \( T \) value.
 
-    The inductive hypothesis holds for both \( \psi_1 \) and \( \psi_2 \) and therefore \( (\psi_1\Bracks{v_Y}, \psi_2\Bracks{v_Y}) \) also contains at least one \( T \) value.
+    The inductive hypothesis holds for both \( \psi_1 \) and \( \psi_2 \) and therefore \( (\psi_1\Bracks{w}, \psi_2\Bracks{w}) \) also contains at least one \( T \) value.
 
     This allows us to conclude that
     \begin{equation*}
-      \varphi\Bracks{v_Y}
+      \varphi\Bracks{w}
       =
-      \psi_1\Bracks{v_Y} \vee \psi_2\Bracks{v_Y}
+      \psi_1\Bracks{w} \vee \psi_2\Bracks{w}
       =
       T.
     \end{equation*}
 
-    \item To see how this proof fails for conditionals, consider \( \varphi = (\psi_1 \rightarrow \psi_2) \). Then \( \varphi\Bracks{v_X} = T \) implies either \( \psi_1\Bracks{v_X} = F \) or \( \psi_1\Bracks{v_X} = \psi_2\Bracks{v_X} = T \).
+    \item To see how this proof fails for conditionals, consider \( \varphi = (\psi_1 \rightarrow \psi_2) \). Then \( \varphi\Bracks{v} = T \) implies either \( \psi_1\Bracks{v} = F \) or \( \psi_1\Bracks{v} = \psi_2\Bracks{v} = T \).
 
-    If \( \psi_1\Bracks{v_X} = \psi_2\Bracks{v_X} = F \), we have \( \varphi\Bracks{v_X} = T \), but we cannot conclude that \( \varphi\Bracks{v_Y} = T \) because that would require the \hyperref[def:material_implication/inverse]{inverse} of the inductive hypothesis to hold for \( \psi_1 \) and \( \psi_2 \).
+    If \( \psi_1\Bracks{v} = \psi_2\Bracks{v} = F \), we have \( \varphi\Bracks{v} = T \), but we cannot conclude that \( \varphi\Bracks{w} = T \) because that would require the \hyperref[def:material_implication/inverse]{inverse} of the inductive hypothesis to hold for \( \psi_1 \) and \( \psi_2 \).
 
     See \fullref{ex:monoid_cancellation_not_preserved_by_homomorphism} for an example where a conditional is not preserved by a homomorphism.
   \end{itemize}
 
   Since \( v \) was chosen arbitrarily, we conclude that
   \begin{equation*}
-    (h(X), I_Y) \vDash \varphi.
+    (h(X), J) \vDash \varphi.
   \end{equation*}
 \end{proof}
 
@@ -519,7 +534,7 @@
 \end{proof}
 
 \begin{proposition}\label{thm:arbitrary_formulas_preserved_under_isomorphisms}\mcite[lemma 3.3.3]{VanDalen2004}
-  If \( \mscrX = (X, I_X) \) is a model of \( \Gamma \) and if \( h: X \to Y \) is an embedding from \( \mscrX \) to \( \mscrY = (Y, I_Y) \), then \( (h(X), I_Y) \) is also a model of \( \Gamma \).
+  If \( \mscrX = (X, I) \) is a model of \( \Gamma \) and if \( h: X \to Y \) is an embedding from \( \mscrX \) to \( \mscrY = (Y, J) \), then \( (h(X), J) \) is also a model of \( \Gamma \).
 \end{proposition}
 \begin{comments}
   \item We say that embeddings preserve the validity arbitrary formulas.
@@ -527,7 +542,7 @@
 \begin{proof}
   The proof simply extends the induction in the proof of \fullref{thm:arbitrary_formulas_preserved_under_isomorphisms} to
   \begin{equation*}
-    \varphi\Bracks{v_Y} = \varphi\Bracks{v_Y}
+    \varphi\Bracks{w} = \varphi\Bracks{w}
   \end{equation*}
   which allows us to use the usual induction on the negation and all connectives and quantifiers.
 
@@ -539,43 +554,43 @@
 
   Define the function \( \iota: X \mapsto Y \) by sending each \( x \in X \) to the corresponding constant function in \( Y \).
 
-  Define the interpretation \( I_Y \) as follows:
+  Define the interpretation \( J \) as follows:
   \begin{itemize}
     \item For each \( n \)-ary functional symbol \( f \) in \( \mscrL \), define the interpretation of the functions \( k_1, \ldots, k_n \) componentwise as
     \begin{equation*}
       \begin{aligned}
-        &I_Y(f): Y^n \to Y \\
-        &I_Y(f) \parens[\Big]{ k_1, \ldots, k_n } \coloneqq \parens[\Big]{ s \mapsto I(f) \parens[\Big]{ k_1(s), \ldots, k_n(s) } }.
+        &J(f): Y^n \to Y \\
+        &J(f) \parens[\Big]{ k_1, \ldots, k_n } \coloneqq \parens[\Big]{ s \mapsto I(f) \parens[\Big]{ k_1(s), \ldots, k_n(s) } }.
       \end{aligned}
     \end{equation*}
 
-    \item For each \( n \)-ary predicate symbol \( p \) in \( \mscrL \), define \( I_Y(p) \subseteq Y^n \) via
+    \item For each \( n \)-ary predicate symbol \( p \) in \( \mscrL \), define \( J(p) \subseteq Y^n \) via
     \begin{equation*}
       \begin{aligned}
-        &I_Y(p): Y^n \to \set{ T, F } \\
-        &I_Y(p) \parens[\Big]{ k_1, \ldots, k_n } \coloneqq \bigwedge \set[\Big]{ I(p) \parens[\Big]{ k_1(s), \ldots, k_n(s) } \given* s \in S }.
+        &J(p): Y^n \to \set{ T, F } \\
+        &J(p) \parens[\Big]{ k_1, \ldots, k_n } \coloneqq \bigwedge \set[\Big]{ I(p) \parens[\Big]{ k_1(s), \ldots, k_n(s) } \given* s \in S }.
       \end{aligned}
     \end{equation*}
 
-    That is, \( I_Y(p) (k_1, \ldots, k_n) = T \) if and only if \( I(p) (k_1(s), \ldots, k_n(s)) = T \) simultaneously for all \( s \in S \).
+    That is, \( J(p) (k_1, \ldots, k_n) = T \) if and only if \( I(p) (k_1(s), \ldots, k_n(s)) = T \) simultaneously for all \( s \in S \).
   \end{itemize}
 
-  Then the structure \( \mscrY = (Y, I_Y) \) is also a model of \( \Gamma \) and \( \iota: \mscrX \to \mscrY \) is an embedding.
+  Then the structure \( \mscrY = (Y, J) \) is also a model of \( \Gamma \) and \( \iota: \mscrX \to \mscrY \) is an embedding.
 \end{proposition}
 \begin{proof}
   It is obvious that \( \mscrY \) is a structure and that \( \iota \) is an embedding. We will prove using induction on the structure of a formula \( \varphi \) that \( \mscrX \vDash \varphi \) implies \( \mscrY \vDash \varphi \).
 
-  Let \( v_Y \) be a variable assignment in \( \mscrY \).
+  Let \( w \) be a variable assignment in \( \mscrY \).
 
-  Suppose that \( \mscrX \vDash \varphi \). We use induction on the structure of \( \varphi \) to show that \( \varphi\Bracks{v_Y} = T \).
+  Suppose that \( \mscrX \vDash \varphi \). We use induction on the structure of \( \varphi \) to show that \( \varphi\Bracks{w} = T \).
   \begin{itemize}
-    \item If \( \varphi \) is a propositional constant, its value does not depend on \( v_Y \) and thus \( \varphi\Bracks{v_Y} = \varphi\Bracks{v_X} \).
+    \item If \( \varphi \) is a propositional constant, its value does not depend on \( w \) and thus \( \varphi\Bracks{w} = \varphi\Bracks{v} \).
 
-    \item If \( \varphi = (\tau_1 \doteq \tau_2) \), then \( \tau_1\Bracks{v_X} = \tau_2\Bracks{v_X} \) for all assignments \( v_X \) in \( \mscrX \), hence for any \( s \in S \) we have \( \parens[\Big]{\tau_1\Bracks{v_Y}}(s) = \parens[\Big]{\tau_2\Bracks{v_Y}}(s) \) since both sides of the equality here are elements of \( \mscrX \).
+    \item If \( \varphi = (\tau_1 \doteq \tau_2) \), then \( \tau_1\Bracks{v} = \tau_2\Bracks{v} \) for all assignments \( v \) in \( \mscrX \), hence for any \( s \in S \) we have \( \parens[\Big]{\tau_1\Bracks{w}}(s) = \parens[\Big]{\tau_2\Bracks{w}}(s) \) since both sides of the equality here are elements of \( \mscrX \).
 
     \item Analogously, if \( \varphi = p(\tau_1, \ldots, \tau_n) \), then
     \begin{equation*}
-      I_Y(p) \parens[\Big]{ k_1, \ldots, k_n }
+      J(p) \parens[\Big]{ k_1, \ldots, k_n }
       =
       \bigwedge \set[\Big]{ I(p) \parens[\Big]{ k_1(s), \ldots, k_n(s) } \given* s \in S }
       =
@@ -638,7 +653,7 @@
 \end{comments}
 
 \begin{proposition}\label{thm:automorphism_preserves_validity}
-  Let \( \mscrX = (X, I) \) be a structure over some language \( \mscrL \). Then for every formula \( \varphi[\xi_1, \ldots, \xi_n] \) in \( \mscrL \) and any \hyperref[def:first_order_automorphism]{automorphism} \( h: X \to X \) we have
+  Let \( \mscrX = (X, I) \) be a structure over some language \( \mscrL \). Then for every formula \( \varphi[\xi_1, \ldots, \xi_n] \) in \( \mscrL \) and any \hyperref[def:first_order_endomorphism]{automorphism} \( h: X \to X \) we have
   \begin{equation*}
     \varphi\Bracks{x_1, \ldots, x_n} = \varphi\Bracks{h(x_1), \ldots, h(x_n)}.
   \end{equation*}
