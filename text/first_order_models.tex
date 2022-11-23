@@ -37,6 +37,43 @@
   Therefore, the principle of bivalence does not hold for universal validity. In order for it to hold, what we will do in \fullref{def:first_order_model} is restrict ourselves to \hyperref[def:first_order_syntax/closed_formula]{closed formulas}, which depend only on the underlying structure and not on the variable assignments.
 \end{remark}
 
+\begin{definition}\label{def:universal_closure}\mcite[def. 2.2.28(i)]{Hinman2005}
+  Given a formula \( \varphi \) with free variables \( \xi_1, \ldots, \xi_n \), we call
+  \begin{equation*}
+    \qforall {\xi_1} \cdots \qforall {\xi_n} \varphi
+  \end{equation*}
+  its \term{universal closure} and say that \( \varphi \) itself is \term{implicitly universally quantified}. Universal closures of quantifierless formulas are called \term{universal formulas}.
+\end{definition}
+\begin{comments}
+  \item This allows us to skip quantifiers when writing formulas without changing their validity. This is useful for notational brevity and is used all across the document whenever we want \hi{closed} formulas, for example in \fullref{def:semiring/theory}, \fullref{def:semiring/theory} or \fullref{def:binary_relation}.
+\end{comments}
+
+\begin{proposition}\label{thm:implicit_universal_quantification}
+  Every first-order formula is semantically equivalent to its \hyperref[def:universal_closure]{universal closure}.
+\end{proposition}
+\begin{comments}
+  \item See \fullref{ex:def:first_order_natural_deduction_system/eigenvariables/invalid_universal_closure} for how this fails for derivability rather than entailment.
+\end{comments}
+\begin{proof}
+  \SufficiencySubProof Let \( \mscrX = (X, I) \) be a structure that satisfies \( \varphi \). Let \( v \) be a variable assignment in \( \mscrX \). Then for any \( x \in X \), the modified variable assignment \( v_{\xi \mapsto x} \) also satisfies \( \varphi \), i.e.
+  \begin{equation*}
+    \varphi\Bracks{v} = \varphi\Bracks{v_{\xi \mapsto x}} = T.
+  \end{equation*}
+
+  Thus, \( \mscrX \) is also a model for \( \qforall \xi \varphi \).
+
+  \NecessitySubProof Conversely, suppose that \( \mscrX \) satisfies \( \qforall \xi \varphi \) and \( v \) is any variable assignment. Then
+  \begin{equation*}
+    \varphi\Bracks{v_{\xi \mapsto x}} = T
+  \end{equation*}
+  for any \( x \), including \( x = v(\xi) \). Thus,
+  \begin{equation*}
+    \varphi\Bracks{v_{\xi \mapsto v(\xi)}} = \varphi\Bracks{v} = T.
+  \end{equation*}
+
+  Therefore, \( \mscrX \) is also a model for \( \varphi \).
+\end{proof}
+
 \begin{definition}\label{def:first_order_model}\mcite[def. 2.2.13(ii)]{Hinman2005}
   We say that the \hyperref[def:first_order_structure]{first-order structure} \( \mscrX = (X, I) \) is a \term{first-order model} of the set of \hyperref[def:first_order_syntax/closed_formula]{closed first-order formulas} \( \Gamma \) if, for an arbitrary variable assignment \( v \) in \( \mscrX \), \( \Bracks{\varphi}_v = T \) for every formula \( \varphi \in \Gamma \).
 
@@ -45,6 +82,24 @@
 \begin{comments}
   \item Since the formulas are closed, the result does not depend on the assignment. We only assignments as a technical tool because we avoid defining entailment within a structure. The problems of doing the latter are discussed in \fullref{rem:first_order_satisfiability_bivalence}.
 \end{comments}
+
+\begin{remark}\label{rem:first_order_model_notation}
+  In first-order logic, \hyperref[def:first_order_structure]{structures} are defined as pairs \( \mscrX = (X, I) \). Each area of mathematics has its own conventions and structures are usually specified as simply as possible without being unambiguous (and sometimes even beyond non-ambiguity).
+
+  A popular convention is to use compatible letters like we did with \( X \) and \( \mscrX \) or \( G \) and \( \mscrG \), where the structure itself is named using calligraphic letters while the domain is named using the corresponding capital letter in normal font. This only works very simple cases where we can say \enquote{Let \( \mscrP = (P, \leq) \) be a \hyperref[def:partially_ordered_set]{partially ordered set}}.
+
+  The language of the \hyperref[def:group/theory]{theory of groups} has a signature consisting of three functional symbols and no predicate symbols. Specifying a structure for this language is thus the same as specifying a quadruple \( \mscrG = (G, e, (\anon)^{-1}, \cdot) \). We usually specify only the domain \( G \) and the basic structure needed to avoid ambiguity, for example \enquote{Let \( (G, \cdot) \) be a group}. This is technically wrong, but it is both convenient and conventional. The rest of the definition of the group can easily be inferred. In case of ambiguity, the simplest disambiguation is to use lower indices with the name of the structure, e.g. \( +_G \) and \( +_H \) may be the addition operation in different abelian groups.
+
+  Furthermore, stating that \( (G, \cdot, \leq, \mscrT) \) is a totally ordered topological group is cumbersome and can even raise questions; for example, is \( \mscrT \) the \hyperref[def:order_topology]{order topology} or just an arbitrary \hyperref[rem:topological_first_order_structures]{group topology}?
+\end{remark}
+
+\begin{definition}\label{def:trivial_structure}\mimprovised
+  A \term{trivial structure} for the language \( \mscrL \) is one with minimal \hyperref[thm:cardinality_existence]{cardinality}, assuming different structures with this cardinality are isomorphic.
+
+  The domain usually consists of a subset of the language's constant symbols, assuming that it is possible to uniquely define an appropriate interpretation for functions and predicates.
+
+  Thus, the trivial structure for a language may or may nor exist, although it usually does in practice. See \fullref{ex:def:category_of_small_first_order_models}.
+\end{definition}
 
 \begin{remark}\label{rem:questions_regarding_structures}
   Within this section, we are interested in the following questions regarding \hyperref[def:first_order_structure]{first-order structure} and \hyperref[def:first_order_model]{models}:
@@ -62,35 +117,46 @@
   \end{itemize}
 \end{remark}
 
-\begin{definition}\label{def:first_order_substructure}\mcite[def. 3.3.4]{VanDalen2004}
-  Let \( \mscrX = (X, I) \) be a structure for the language \( \mscrL \) and let \( Y \subseteq X \). We say that \( \mscrY = (Y, I) \) is a \term{substructure} of \( \mscrX \) if it satisfies any of the following equivalent conditions:
+\begin{definition}\label{def:first_order_substructure}\mcite[def. 2.3.12]{Hinman2005}
+  Let \( \mscrX = (X, I) \) be a structure for the language \( \mscrL \) and let \( Y \subseteq X \). We say that \( \mscrY = (Y, J) \) is a \term{substructure} of \( \mscrX \) if:
 
   \begin{thmenum}
-    \thmitem{def:first_order_substructure/deductive} If \( Y \) is closed under function application, that is, for any functional symbol \( f \) in \( \mscrL \) with arity \( n \), we have \( I(f)(Y^n) \subseteq Y \).
+    \thmitem{def:first_order_substructure/universe} The universe \( Y \) satisfies either of the equivalent conditions:
 
-    \thmitem{def:first_order_substructure/inductive} The universe \( Y \) is a \hyperref[def:fixed_point]{fixed point} of the operator
-    \begin{equation}\label{eq:def:first_order_substructure/inductive/operator}
-      \begin{aligned}
-        &T: \pow(X) \to \pow(X) \\
-        &T(A) \coloneqq A \cup \set*{ x \in X \given \qexists{f \in \boldop{Fun}} \qexists{x_1, \ldots, x_{\#f} \in A} f\Bracks{x_1, \ldots, x_{\#f}} = x },
-      \end{aligned}
-    \end{equation}
-    which enlarges \( A \) with the union of all image of \( A \) under functions of the language \( \mscrL \).
+    \begin{thmenum}
+      \thmitem{def:first_order_substructure/universe/deductive} It is closed under function application, that is, for any functional symbol \( f \) in \( \mscrL \) with arity \( n \), we have \( I(f)(Y^n) \subseteq Y \).
+
+      \thmitem{def:first_order_substructure/universe/inductive} It is a \hyperref[def:fixed_point]{fixed point} of the operator
+      \begin{equation*}
+        \begin{aligned}
+          &T: \pow(X) \to \pow(X), \\
+          &T(A) \coloneqq A \cup \set*{ x \in X \given \qexists{f \in \boldop{Fun}} \qexists{x_1, \ldots, x_{\#f} \in A} \Bracks{f}(x_1, \ldots, x_{\#f}) = x },
+        \end{aligned}
+      \end{equation*}
+      which enlarges \( A \) with the union of all image of \( A \) under functions of the language \( \mscrL \).
+    \end{thmenum}
+
+    \thmitem{def:first_order_substructure/functional} For every functional symbol \( f \in \boldop{Fun}_\mscrL \), the interpretation \( J(f) \) is a restriction of \( I(f) \) to \( Y \).
+
+    \thmitem{def:first_order_substructure/predicate} For every predicate symbol \( p \in \boldop{Pred}_\mscrL \), the interpretation \( J(p) \) is a restriction of \( I(p) \) to \( Y \).
   \end{thmenum}
 \end{definition}
-\begin{comments}
-  \item Note that the formula inside \eqref{eq:def:first_order_substructure/inductive/operator} is in the metalanguage despite using syntax similar to first-order logic formulas.
-\end{comments}
-\begin{proof}
-  By definition of \( T \), \( Y \) if a fixed point if and only if
+\begin{defproof}
+  \ImplicationSubProof{def:first_order_substructure/universe/deductive}{def:first_order_substructure/universe/inductive} By definition of \( T \), \( Y \) if a fixed point if and only if
   \begin{equation*}
-    \set*{ x \in X \given \qexists{f \in \boldop{Fun}} \qexists{x_1, \ldots, x_{\#f} \in A} f\Bracks{x_1, \ldots, x_{\#f}} = x } \subseteq Y.
+    \set*{ x \in X \given \qexists{f \in \boldop{Fun}} \qexists{x_1, \ldots, x_{\#f} \in A} \Bracks{f}(x_1, \ldots, x_{\#f}) = x } \subseteq Y.
   \end{equation*}
 
-  This condition is clearly satisfied if \( B \) satisfies \fullref{def:first_order_substructure/deductive}.
+  This condition is clearly satisfied if \( B \) satisfies \fullref{def:first_order_substructure/universe/deductive}.
 
-  If, instead \( Y \) is a fixed point of \( T \), for the \( n \)-ary functional symbol \( f \in \boldop{Fun} \) and for any tuple \( x_1, \ldots, x_n \), the value \( I(f)(x_1, \ldots, x_n) \) belongs to \( Y \). Therefore, \fullref{def:first_order_substructure/deductive} is satisfied.
-\end{proof}
+  \ImplicationSubProof{def:first_order_substructure/universe/inductive}{def:first_order_substructure/universe/deductive} If, instead \( Y \) is a fixed point of \( T \), for the \( n \)-ary functional symbol \( f \in \boldop{Fun} \) and for any tuple \( x_1, \ldots, x_n \), the value \( I(f)(x_1, \ldots, x_n) \) belongs to \( Y \). Therefore, \fullref{def:first_order_substructure/universe/deductive} is satisfied.
+\end{defproof}
+
+\begin{example}\label{ex:def:first_order_substructure/vector_space}
+  The classic definition for a subset \( U \) of a \hyperref[def:vector_space]{vector space} \( \mscrV \) being a vector subspace is that \( U \) is closed under \hyperref[rem:linear_combinations]{linear combinations}. Linear combinations are simply finite \hyperref[def:multi_valued_function/superposition]{superpositions} of addition and scalar multiplication in \( \mscrV \). So this condition ensures that \( U \) is closed under application of the functional symbols corresponding to addition and scalar multiplication.
+
+  See \fullref{thm:span_via_linear_combinations} for a further discussion.
+\end{example}
 
 \begin{remark}\label{rem:topological_first_order_structures}
   Let \( \mscrX = (X, I) \) be a structure over some language \( \mscrL \) without predicate symbols.
@@ -102,43 +168,30 @@
   Naturally, every substructure of a topological structure is again a topological structure.
 \end{remark}
 
-\begin{example}\label{ex:def:first_order_substructure/vector_space}
-  The classic definition for a subset \( U \) of a \hyperref[def:vector_space]{vector space} \( \mscrV \) being a vector subspace is that \( U \) is closed under \hyperref[rem:linear_combinations]{linear combinations}. Linear combinations are simply finite \hyperref[def:multi_valued_function/superposition]{superpositions} of addition and scalar multiplication in \( \mscrV \). So this condition ensures that \( U \) is closed under application of the functional symbols corresponding to addition and scalar multiplication.
-
-  See \fullref{thm:span_via_linear_combinations} for a further discussion.
-\end{example}
-
-\begin{proposition}\label{thm:def:first_order_substructure}
-  Fix a language \( \mscrL \). The \hyperref[def:first_order_substructure]{first order substructures} of a structure \( \mscrX = (X, I) \) have the following basic properties:
-  \begin{thmenum}
-    \thmitem{thm:def:first_order_substructure/no_functions} If \( \mscrL \) has no functional symbols, then \( (Y, I) \) is a substructure where \( Y \) is any subset of \( X \).
-
-    \thmitem{thm:def:first_order_substructure/intersection} Let \( \seq{ (Y_k, I) }_{k \in \mscrK} \) be a family of substructures of \( \mscrX \). Then their \term{intersection structure} \( \parens*{\bigcap_{k \in \mscrK} Y_k, I} \) is again a substructure of \( \mscrX \).
-  \end{thmenum}
+\begin{proposition}\label{thm:intersection_structure}
+  Let \( \seq{ (Y_k, J_k) }_{k \in \mscrK} \) be a family of substructures of \( \mscrX \). Then their \term{intersection structure} \( \parens*{\bigcap_{k \in \mscrK} Y_k, \bigcap_{k \in \mscrK} J_k} \) is again a substructure of \( \mscrX \).
 \end{proposition}
 \begin{proof}
-  \SubProofOf{thm:def:first_order_substructure/no_functions} Both conditions in \fullref{def:first_order_substructure} are vacuously satisfied if there are no functional symbols in \( \mscrL \).
-
-  \SubProofOf{thm:def:first_order_substructure/intersection} For any functional symbol \( f \) in \( \mscrL \) with arity \( n \), we have
+  For any functional symbol \( f \) in \( \mscrL \) with arity \( n \), we have
   \begin{equation*}
     I(f)\parens*{\parens*{\bigcap_{\smash{k \in \mscrK}} Y_k}^n}
     \reloset {\ref{thm:def:function_image/intersection}} \subseteq
-    \bigcap_{k \in \mscrK} I(f)(Y_k^n) \subseteq \bigcap_{k \in \mscrK} \mscrY_k.
+    \bigcap_{k \in \mscrK} I(f)(Y_k^n).
   \end{equation*}
 
-  Therefore, \( \parens*{\bigcap_{k \in \mscrK} Y_k, I} \) is indeed a substructure of \( \mscrX \).
+  Therefore, \( \parens*{\bigcap_{k \in \mscrK} Y_k, \bigcap_{k \in \mscrK} J_k} \) is indeed a substructure of \( \mscrX \).
 \end{proof}
 
-\begin{definition}\label{def:first_order_generated_substructure}
-  Let \( \mscrX = (X, I) \) be a structure over \( \mscrL \) and let \( A \subseteq X \) be any set. The set \( A \) is said to \term[bg=поражда,ru=порождает]{generate} the substructure \( \mscrY = (Y, I) \) if it satisfies any of the equivalent statements:
+\begin{definition}\label{def:first_order_generated_substructure}\mimprovised
+  Let \( \mscrX = (X, I) \) be a structure over \( \mscrL \) and let \( A \subseteq X \) be any set. The set \( A \) is said to \term[bg=поражда,ru=порождает]{generate} the substructure \( \mscrY = (Y, J) \) if it satisfies any of the equivalent statements:
   \begin{thmenum}
     \thmitem{def:first_order_generated_substructure/smallest} Out of all substructures of \( \mscrX \) whose domain contains \( A \), the domain \( \mscrY \) is the smallest with respect to \hyperref[def:subset]{set inclusion}.
 
-    \thmitem{def:first_order_generated_substructure/intersection} \( \mscrY \) is the intersection structure of all substructures of \( \mscrX \) that contain \( A \).
+    \thmitem{def:first_order_generated_substructure/intersection} \( \mscrY \) is the \hyperref[thm:intersection_structure]{intersection structure} of all substructures of \( \mscrX \) that contain \( A \).
   \end{thmenum}
 \end{definition}
-\begin{proof}
-  Let \( \seq{ (Y_k, I) }_{k \in \mscrK} \) be the family of all substructures of \( \mscrX \) whose domains contain \( A \). Fix one of these substructures, say \( (Y_{k_0}, I) \).
+\begin{defproof}
+  \EquivalenceSubProof{def:first_order_generated_substructure/smallest}{def:first_order_generated_substructure/intersection} Let \( \seq{ (Y_k, J_k) }_{k \in \mscrK} \) be the family of all substructures of \( \mscrX \) whose domains contain \( A \). Fix one of these substructures, say \( (Y_{k_0}, J_{k_0}) \).
 
   We have the obvious inclusion
   \begin{equation*}
@@ -146,60 +199,61 @@
   \end{equation*}
 
   The reverse inclusion holds if and only if \( Y_{k_0} \) is contained in each one of domains \( Y_k \) for \( k \in \mscrK \). In other words, \( Y_{k_0} \) is the smallest of the domains \( \seq{ Y_k }_{k \in \mscrK} \) with respect to set inclusion if and only if \( Y_{k_0} \) equals their intersection.
-\end{proof}
+\end{defproof}
 
 \begin{example}\label{ex:def:first_order_generated_substructure}
   Common examples of generated substructures are the \hyperref[def:semimodule/submodel]{linear span} discussed in \fullref{thm:span_via_linear_combinations} and the \hyperref[def:semiring_ideal/generated]{generated ring ideals}.
 \end{example}
 
 \begin{proposition}\label{thm:first_order_generated_substructures_exist}
-  Let \( \mscrX = (X, I) \) be a structure for the language \( \mscrL \).
+  Let \( \mscrX = (X, I) \) be a structure for the language \( \mscrL \) and let \( A \) be an arbitrary subset of \( X \). Then there exists a unique substructure \( \mscrY = (Y, I) \) \hyperref[def:first_order_generated_substructure]{generated} by \( A \).
 
-  Every subset of \( X \) has a \hyperref[def:first_order_generated_substructure]{generated substructure}.
+  Furthermore, if \( \mscrL \) has no functional symbols, then \( A = Y \).
 \end{proposition}
 \begin{proof}
-  Given a set \( Y \subseteq X \), we apply \fullref{thm:knaster_tarski_theorem} to the \hyperref[thm:boolean_algebra_of_subsets]{Boolean algebra of all subsets} \( \pow(X) \) with the operator
+  Given a set \( A \subseteq X \), we apply \fullref{thm:knaster_tarski_theorem} to the \hyperref[thm:boolean_algebra_of_subsets]{Boolean algebra of all subsets} \( \pow(X) \) with the operator
   \begin{equation*}
     \begin{aligned}
       &R: \pow(X) \to \pow(X) \\
-      &R(A) \coloneqq Y \cup T(A),
+      &R(B) \coloneqq A \cup T(B),
     \end{aligned}
   \end{equation*}
-  where \( T \) is defined in \eqref{eq:def:first_order_substructure/inductive/operator}.
+  where \( T \) is defined in \fullref{def:first_order_substructure/universe/inductive/operator}.
 
-  We thus obtain the smallest fixed point \( Z \) of \( T \), which contains \( Y \) and satisfies \fullref{def:first_order_substructure/inductive}. The structure \( \mscrZ = (Z, I) \) is thus a substructure of \( \mscrX \).
+  We thus obtain the smallest fixed point \( Y \) of \( T \), which contains \( A \) and satisfies \fullref{def:first_order_substructure/universe/inductive}. The structure \( \mscrY = (Y, J) \), where \( J \) is obtained from \( I \) by restricting all functions to \( Y \), is thus a substructure of \( \mscrX \).
 
-  Furthermore, \( \mscrZ \) is unique because its domain is the smallest set invariant under \( R \).
+  If there are no functional symbols in \( \mscrL \), both conditions in \fullref{def:first_order_substructure/universe} are vacuously satisfied for \( A \), and hence it is the fixed point of \( R \).
 \end{proof}
 
 \begin{proposition}\label{thm:substructures_form_complete_lattice}
   Fix a structure \( \mscrX = (X, I) \) for the language \( \mscrL \).
 
-  The set of all substructures of a \( \mscrX \) forms a complete lattice with respect to set inclusion of domains. It is isomorphic to a complete \hyperref[def:semilattice/submodel]{sublattice} of the Boolean algebra \( \pow(X) \) described in \fullref{thm:boolean_algebra_of_subsets}.
+  With respect to set inclusion of domains, the set of all substructures of a \( \mscrX \) forms a complete lattice that is isomorphic to a \hyperref[def:semilattice/complete]{complete} \hyperref[def:semilattice/submodel]{sublattice} of the Boolean algebra \( \pow(X) \) described in \fullref{thm:boolean_algebra_of_subsets}.
 
   Explicitly:
   \begin{thmenum}
-    \thmitem{thm:substructures_form_complete_lattice/join} The \hyperref[def:semilattice/join]{join} of the family of substructures with domains \( \seq{ (Y_k, I) }_{k \in \mscrK} \) is the \hyperref[def:first_order_generated_substructure]{generated substructure} of the set \( \bigcup_{k \in \mscrK} Y_k \).
+    \thmitem{thm:substructures_form_complete_lattice/join} The \hyperref[def:semilattice/join]{join} of the family of substructures with domains \( \seq{ (Y_k, J_k) }_{k \in \mscrK} \) is the \hyperref[def:first_order_generated_substructure]{generated substructure} of the set \( \bigcup_{k \in \mscrK} Y_k \).
 
-    \thmitem{thm:substructures_form_complete_lattice/top} The \hyperref[def:extremal_points/top_and_bottom]{top element} is the substructure \( \mscrX \) itself. Any substructures that are different from \( \mscrX \) are called \term{proper}.
+    \thmitem{thm:substructures_form_complete_lattice/top} The \hyperref[def:extremal_points/top_and_bottom]{top element} is the structure \( \mscrX \) itself. Any substructures that are different from \( \mscrX \) are called \term{proper}.
 
-    \thmitem{thm:substructures_form_complete_lattice/meet} The \hyperref[def:semilattice/meet]{meet} of the family of substructures \( \seq{ (Y_k, I) }_{k \in \mscrK} \) is simply the \hyperref[thm:def:first_order_substructure/intersection]{intersection structure} of the family.
+    \thmitem{thm:substructures_form_complete_lattice/meet} The \hyperref[def:semilattice/meet]{meet} of the family of substructures \( \seq{ (Y_k, J_k) }_{k \in \mscrK} \) is simply the \hyperref[thm:def:first_order_substructure/intersection]{intersection structure} \( \parens*{\bigcap_{k \in \mscrK} Y_k, \bigcap_{k \in \mscrK} J_k} \).
 
     \thmitem{thm:substructures_form_complete_lattice/bottom} The \hyperref[def:extremal_points/top_and_bottom]{bottom element} of this lattice is the intersection of all substructures. This is called the \term{initial substructure}. The name is inspired by \fullref{thm:order_category_isomorphism_properties/universal}.
-
-    The initial substructure may or may not be isomorphic to the \hyperref[def:trivial_structure]{trivial structure}.
-
-    As discussed in \fullref{rem:empty_first_order_structures}, the empty set is not allowed to be the domain of a structure by definition. Nevertheless, for the sake of having a bottom element we allow structures with empty domains in this lattice.
   \end{thmenum}
 \end{proposition}
+\begin{comments}
+  \item The initial substructure may or may not be isomorphic to the \hyperref[def:trivial_structure]{trivial structure}.
+
+  \item As discussed in \fullref{rem:empty_first_order_structures}, the empty set is not allowed to be the domain of a structure by definition. Nevertheless, for the sake of having a bottom element we allow structures with empty domains in this lattice.
+\end{comments}
 \begin{proof}
-  \SubProofOf{thm:substructures_form_complete_lattice/join} Let \( (Y, I) \) be the generated substructure of the set \( A \coloneqq \bigcup_{k \in \mscrK} \mscrY_k \). From \fullref{def:first_order_generated_substructure/smallest} it follows that out of the domains of all substructures of \( \mscrX \), \( Y \) is the smallest that contains \( A \) and hence the smallest that contains \( Y_k \) for all \( k \in \mscrK \). Therefore, it is indeed the supremum of the family \( \seq{ (Y_k, I) }_{k \in \mscrK} \) with respect to set inclusion of domains.
+  \SubProofOf{thm:substructures_form_complete_lattice/join} Let \( (Y, J) \) be the generated substructure of the set \( A \coloneqq \bigcup_{k \in \mscrK} \mscrY_k \). From \fullref{def:first_order_generated_substructure/smallest} it follows that out of the domains of all substructures of \( \mscrX \), \( Y \) is the smallest that contains \( A \) and hence the smallest that contains \( Y_k \) for all \( k \in \mscrK \). Therefore, it is indeed the supremum of the family \( \seq{ (Y_k, J_k) }_{k \in \mscrK} \) with respect to set inclusion of domains.
 
   \SubProofOf{thm:substructures_form_complete_lattice/top} Since \( \mscrX \) is a substructure of itself, it is not only the supremum of the entire lattice, but actually the maximum.
 
-  \SubProofOf{thm:substructures_form_complete_lattice/meet} The domain of the intersection structure of the family \( \seq{ (Y_k, I) }_{k \in \mscrK} \) of substructures of \( \mscrX \) is obviously the infimum of the family since its domain are the infimum in the \hyperref[thm:boolean_algebra_of_subsets]{Boolean algebra of subsets} of \( X \).
+  \SubProofOf{thm:substructures_form_complete_lattice/meet} The domain of the intersection structure of the family \( \seq{ (Y_k, J_k) }_{k \in \mscrK} \) of substructures of \( \mscrX \) is the infimum of the family as a consequence of the equivalence in \fullref{def:first_order_generated_substructure}.
 
-  \SubProofOf{thm:substructures_form_complete_lattice/bottom} It trivially follows from \fullref{thm:substructures_form_complete_lattice/meet} that the bottom element is the intersection of all substructures of \( \mscrX \).
+  \SubProofOf{thm:substructures_form_complete_lattice/bottom} It follows from \fullref{thm:substructures_form_complete_lattice/meet} that the bottom element is the intersection of all substructures of \( \mscrX \).
 \end{proof}
 
 \begin{definition}\label{def:first_order_homomorphism}\mcite[def. 3.3.1(i)]{VanDalen2004}
@@ -244,14 +298,14 @@
 
   Conditions \fullref{def:first_order_homomorphism/functions} and \fullref{def:first_order_homomorphism/predicates} are both satisfied since the interpretation of any function and predicate is restricted to \( \mscrY \). Thus, \( \iota \) is a homomorphism.
 
-  \SubProofOf{thm:def:first_order_homomorphism/preserves_substructures} To prove that \( (f(X), I_Y) \) is a substructure of \( \mscrY \), we will show that \fullref{def:first_order_substructure/deductive} holds.
+  \SubProofOf{thm:def:first_order_homomorphism/preserves_substructures} To prove that \( (f(X), I_Y) \) is a substructure of \( \mscrY \), we will show that \fullref{def:first_order_substructure/universe/deductive} holds.
 
   Indeed, due to \fullref{def:first_order_homomorphism/functions}, for any \( n \)-ary functional symbol and any tuple \( {x_1, \ldots, x_n \in X} \), we have that
   \begin{equation*}
     I_Y(f) \parens[\Big]{ h(x_1), \ldots, f(x_n) }
     \reloset {\ref{def:first_order_homomorphism/functions}} =
     h\parens[\Big]{ I_X(f)(x_1, \ldots, x_n) }
-    \reloset {\ref{def:first_order_substructure/deductive}} \in
+    \reloset {\ref{def:first_order_substructure/universe/deductive}} \in
     h(X).
   \end{equation*}
 
