@@ -3,7 +3,7 @@
 \begin{definition}\label{def:propositional_model}\mcite[def. 1.4.1(i)]{Hinman2005}
   We say that the \hyperref[def:propositional_valuation/interpretation]{propositional interpretation} \( I \) is a \term{propositional model} of the set of \hyperref[def:propositional_syntax/formula]{propositional formulas} \( \Gamma \) if \( \Bracks{\varphi}_I = T \) for every formula \( \varphi \in \Gamma \).
 
-  We also say that \( I \) \term{satisfies} \( \Gamma \) and that the set \( \Gamma \) is \term{satisfiable} if there exists at least one model it.
+  We also say that \( \Gamma \) is \term{valid} under \( I \), that \( I \) \term{satisfies} \( \Gamma \) and that the set \( \Gamma \) is \term{satisfiable} if there exists at least one model it.
 \end{definition}
 
 \begin{remark}\label{rem:first_order_satisfiability_bivalence}
@@ -57,18 +57,18 @@
 \begin{proof}
   \SufficiencySubProof Let \( \mscrX = (X, I) \) be a structure that satisfies \( \varphi \). Let \( v \) be a variable assignment in \( \mscrX \). Then for any \( x \in X \), the modified variable assignment \( v_{\xi \mapsto x} \) also satisfies \( \varphi \), i.e.
   \begin{equation*}
-    \varphi\Bracks{v} = \varphi\Bracks{v_{\xi \mapsto x}} = T.
+    \Bracks{\varphi}_v = \Bracks{\varphi}_{v_{\xi \mapsto x}} = T.
   \end{equation*}
 
   Thus, \( \mscrX \) is also a model for \( \qforall \xi \varphi \).
 
   \NecessitySubProof Conversely, suppose that \( \mscrX \) satisfies \( \qforall \xi \varphi \) and \( v \) is any variable assignment. Then
   \begin{equation*}
-    \varphi\Bracks{v_{\xi \mapsto x}} = T
+    \Bracks{\varphi}_{v_{\xi \mapsto x}} = T
   \end{equation*}
   for any \( x \), including \( x = v(\xi) \). Thus,
   \begin{equation*}
-    \varphi\Bracks{v_{\xi \mapsto v(\xi)}} = \varphi\Bracks{v} = T.
+    \Bracks{\varphi}_{v_{\xi \mapsto v(\xi)}} = \Bracks{\varphi}_v = T.
   \end{equation*}
 
   Therefore, \( \mscrX \) is also a model for \( \varphi \).
@@ -77,7 +77,7 @@
 \begin{definition}\label{def:first_order_model}\mcite[def. 2.2.13(ii)]{Hinman2005}
   We say that the \hyperref[def:first_order_structure]{first-order structure} \( \mscrX = (X, I) \) is a \term{first-order model} of the set of \hyperref[def:first_order_syntax/closed_formula]{closed first-order formulas} \( \Gamma \) if, for an arbitrary variable assignment \( v \) in \( \mscrX \), \( \Bracks{\varphi}_v = T \) for every formula \( \varphi \in \Gamma \).
 
-  As in the case of \hyperref[rem:first_order_satisfiability_bivalence]{propositional models}, we also say that \( \mscrX \) \term{satisfies} \( \Gamma \) and that the set \( \Gamma \) is \term{satisfiable} if there exists at least one model it.
+  We also say that \( \Gamma \) is \term{valid} in \( \mscrX \), that \( \mscrX \) \term{satisfies} \( \Gamma \) and that the set \( \Gamma \) is \term{satisfiable} if there exists at least one model it.
 \end{definition}
 \begin{comments}
   \item Since the formulas are closed, the result does not depend on the assignment. We only assignments as a technical tool because we avoid defining entailment within a structure. The problems of doing the latter are discussed in \fullref{rem:first_order_satisfiability_bivalence}.
@@ -128,7 +128,7 @@
       \begin{equation*}
         \begin{aligned}
           &T: \pow(X) \to \pow(X), \\
-          &T(A) \coloneqq A \cup \set*{ x \in X \given \qexists{f \in \boldop{Fun}} \qexists{x_1, \ldots, x_{\#f} \in A} \Bracks{f}(x_1, \ldots, x_{\#f}) = x },
+          &T(A) \coloneqq A \cup \set*{ x \in X \given \qexists{f \in \boldop{Fun}} \qexists{x_1, \ldots, x_{\#f} \in A} \Bracks{f}_\mscrX(x_1, \ldots, x_{\#f}) = x },
         \end{aligned}
       \end{equation*}
       which enlarges \( A \) with the union of all image of \( A \) under functions of the language \( \mscrL \).
@@ -142,7 +142,7 @@
 \begin{defproof}
   \ImplicationSubProof{def:first_order_substructure/universe/deductive}{def:first_order_substructure/universe/inductive} By definition of \( T \), \( Y \) if a fixed point if and only if
   \begin{equation*}
-    \set*{ x \in X \given \qexists{f \in \boldop{Fun}} \qexists{x_1, \ldots, x_{\#f} \in A} \Bracks{f}(x_1, \ldots, x_{\#f}) = x } \subseteq Y.
+    \set*{ x \in X \given \qexists{f \in \boldop{Fun}} \qexists{x_1, \ldots, x_{\#f} \in A} \Bracks{f}_\mscrX(x_1, \ldots, x_{\#f}) = x } \subseteq Y.
   \end{equation*}
 
   This condition is clearly satisfied if \( B \) satisfies \fullref{def:first_order_substructure/universe/deductive}.
@@ -306,7 +306,7 @@
 \begin{proof}
   \SubProofOf{thm:def:first_order_homomorphism/submodel} The interpretation in the substructure \( \mscrY \) is the \hyperref[def:multi_valued_function/restriction]{restriction} \( J \) of \( I \) to \( Y \). Thus, \( \mscrY = (Y, J) \) is a structure. Conditions \fullref{def:first_order_homomorphism/functions} and \fullref{def:first_order_homomorphism/predicates} are thus satisfied. Hence, \( \iota \) is a homomorphism.
 
-  \SubProofOf{thm:def:first_order_homomorphism/image_is_substructure} We will show that the image \( h[X] \) satisfies \fullref{def:first_order_substructure/universe/deductive} holds and thus the domain of a substructure of \( \mscrY \).
+  \SubProofOf{thm:def:first_order_homomorphism/image_is_substructure} We must show that the image \( h[X] \) satisfies \fullref{def:first_order_substructure/universe/deductive} and thus the domain of a substructure of \( \mscrY \).
 
   Indeed, due to \fullref{def:first_order_homomorphism/functions}, for any \( n \)-ary functional symbol and any tuple \( x_1, \ldots, x_n \) from \( X \), we have that
   \begin{equation*}
@@ -359,8 +359,256 @@
   \end{itemize}
 \end{proof}
 
+\begin{definition}\label{def:positive_formula}\mcite[def. 3.5.67]{Hinman2005}
+  The following grammar rule, extending the \hyperref[def:first_order_syntax/grammar_schema]{grammar schema of first-order logic}, describes what we call \term{positive formulas}:
+  \begin{bnf*}
+    \bnfprod{positive formula} {\bnftsq{\( \top \)} \bnfor} \\
+    \bnfmore                   {\bnfpn{atomic formula} \bnfor} \\
+    \bnfmore                   {\bnftsq{(} \bnfsp \bnfpn{formula} \bnfsp \bnftsq{\( \vee \)} \bnfsp \bnfpn{formula} \bnfsp \bnftsq{)} \bnfor} \\
+    \bnfmore                   {\bnftsq{(} \bnfsp \bnfpn{formula} \bnfsp \bnftsq{\( \wedge \)} \bnfsp \bnfpn{formula} \bnfsp \bnftsq{)} \bnfor} \\
+    \bnfmore                   {\bnfpn{quantifier} \bnfsp \bnfpn{variable} \bnfsp \bnftsq{.} \bnfsp \bnfpn{formula}}
+  \end{bnf*}
+\end{definition}
+\begin{comments}
+  \item The point of positive formulas is to avoid \hyperref[def:propositional_language/negation]{negation \( \neg \)}. We also avoid \( \rightarrow \) because, assuming classical logic, \fullref{thm:boolean_equivalences/conditional_as_disjunction} would then allow us to introduce negation.
+
+  \item Positive formulas are used in \fullref{thm:positive_formulas_preserved_under_homomorphism}, which fails to hold for some non-positive formulas --- see \fullref{ex:monoid_cancellation_not_preserved_by_homomorphism}.
+
+  \item When dealing with first-order logic, we simply use \hyperref[thm:first_order_substitution_equivalence/propositional]{substitution} to replace propositional variables with atomic formulas. This way we obtain positive first-order formulas with \hyperref[thm:implicit_universal_quantification]{implicit universal quantification}. Of course, we can always add explicit universal quantifiers, but we avoid existential quantifiers because of \fullref{thm:first_order_quantifiers_are_dual}.
+\end{comments}
+
+\begin{proposition}\label{thm:positive_formulas_preserved_under_homomorphism}
+  A \hyperref[def:first_order_homomorphism]{first-order homomorphism} preserves models of closed \hyperref[def:positive_formula]{positive formulas}.
+
+  More concretely, given some language \( \mscrL \), if \( \Gamma \) is a set of closed positive formulas and \( h: \mscrX \to \mscrY \) is a homomorphism between \hyperref[def:first_order_model]{models} of \( \Gamma \), then the image \( h[X] \) is also (the domain of) a model of \( \Gamma \).
+\end{proposition}
+\begin{comments}
+  \item Compare this to \fullref{thm:arbitrary_formulas_preserved_under_isomorphisms}, which places restrictions on the homomorphism rather than the formulas.
+\end{comments}
+\begin{proof}
+  Since the formulas in \( \Gamma \) are closed, we are free to choose any variable assignment we like. Via \fullref{thm:induction_on_syntax_trees} on an arbitrary positive formula \( \varphi \), we will show that, for every variable assignment \( w \) in \( \mscrY \), there exists an assignment \( v \) in \( \mscrX \) such that \( \Bracks{\varphi}_v = T \) implies \( \Bracks{\varphi}_w = T \).
+
+  Let \( w \) a variable assignment in \( \mscrY \). Let \( v \) be an assignment in \( \mscrX \) such that, for any variable \( \xi \), we have
+  \begin{equation*}
+    h(v(\xi)) = w(\xi).
+  \end{equation*}
+
+  The \hyperref[def:zfc/choice]{axiom of choice} guarantees the existence of such an assignment. Furthermore, if \( h \) is injective, this assignment is unique.
+
+  The inductive hypothesis is more general than \enquote{\( \Bracks{\varphi}_v = T \) implies \( \Bracks{\varphi}_w = T \)} because of the more complicated case of quantified formulas. Nonetheless, given our fixed assignments \( v \) and \( w \), the inductive conclusion in turn implies that the image \( h[X] \) satisfies any closed positive formula if \( \mscrX \) does, in particular the formulas from \( \Gamma \).
+
+  \begin{itemize}
+    \item The constant \( \top \) is vacuously preserved by homomorphisms because it does not depend on the interpretation or variable assignment.
+
+    \item Suppose that \( \varphi = \tau_1 \doteq \tau_2 \). We have \( \Bracks{\tau_1}_v = \Bracks{\tau_2}_v \) and hence
+    \begin{equation*}
+      \Bracks{\tau_1}_w
+      \reloset {\ref{thm:def:first_order_homomorphism/term_valuation}} =
+      h(\Bracks{\tau_1}_v)
+      =
+      h(\Bracks{\tau_2}_v)
+      \reloset {\ref{thm:def:first_order_homomorphism/term_valuation}} =
+      \Bracks{\tau_2}_w.
+    \end{equation*}
+
+    \item Suppose that \( \varphi \) is the predicate formula \( p(\tau_1, \ldots, \tau_n) \). By assumption, \( \vDash_v p(\tau_1, \ldots, \tau_n) \). Then
+    \begin{equation}\label{eq:thm:positive_formulas_preserved_under_homomorphism/predicates/x}
+      I(p) \parens[\Big]{ \Bracks{\tau_1}_v, \ldots, \Bracks{\tau_n}_v } = T.
+    \end{equation}
+
+    By the definition of homomorphism, this implies
+    \begin{equation}\label{eq:thm:positive_formulas_preserved_under_homomorphism/predicates/y}
+      J(p) \parens[\Big]{ \underbrace{h(\Bracks{\tau_1}_v)}_{\Bracks{\tau_1}_w}, \ldots, \underbrace{h(\Bracks{\tau_n}_v)}_{\Bracks{\tau_n}_w} } = T.
+    \end{equation}
+
+    Now \( \vDash_w p(\tau_1, \ldots, \tau_n) \) follows from \fullref{thm:def:first_order_homomorphism/term_valuation}.
+
+    \item Suppose that \( \varphi = \psi_1 \wedge \psi_2 \), where \( \psi_1 \) and \( \psi_2 \) are positive formulas, and that the inductive hypothesis holds for \( \psi_1 \) and \( \psi_2 \).
+
+    Since \( \Bracks{\varphi}_v = T \) by assumption, by definition of valuation of conjunction we have
+    \begin{equation*}
+      \Bracks{\psi_1}_v
+      =
+      \Bracks{\psi_2}_v
+      =
+      T.
+    \end{equation*}
+
+    This allows us to apply the inductive hypothesis to obtain
+    \begin{equation*}
+      \Bracks{\psi_1}_w
+      =
+      \Bracks{\psi_2}_w
+      =
+      T.
+    \end{equation*}
+    and conclude that
+    \begin{equation*}
+      \Bracks{\varphi}_w
+      =
+      \Bracks{\psi_1}_w \wedge \Bracks{\psi_2}_w
+      =
+      T \wedge T
+      =
+      T.
+    \end{equation*}
+
+    \item Suppose that \( \varphi = \psi_1 \vee \psi_2 \), where \( \psi_1 \) and \( \psi_2 \) are positive formulas, and that the inductive hypothesis holds for \( \psi_1 \) and \( \psi_2 \).
+
+    Since the formula \( \varphi \) is valid in \( \mscrX \), at least one of \( \psi_1 \) or \( \psi_2 \) is valid under \( v \), hence
+    \begin{equation}\label{eq:thm:positive_formulas_preserved_under_homomorphism/sup_of_disjunction}
+      \Bracks{\varphi}_v = \sup\set{ \Bracks{\psi_1}_v, \Bracks{\psi_2}_v } = T.
+    \end{equation}
+
+    The values \( \Bracks{\psi_1}_v \) and \( \Bracks{\psi_2}_v \) may differ between \( \psi_1 \) and \( \psi_2 \), but \eqref{eq:thm:positive_formulas_preserved_under_homomorphism/sup_of_disjunction} always holds.
+
+    The inductive hypothesis holds for both \( \psi_1 \) and \( \psi_2 \), therefore
+    \begin{equation*}
+      \Bracks{\varphi}_w = \sup\set{ \Bracks{\psi_1}_w, \Bracks{\psi_2}_w } = T.
+    \end{equation*}
+
+    \item Suppose that \( \varphi = \qforall \xi \psi \), where \( \psi \) is a positive formula for which the inductive hypothesis holds.
+
+    Fix some \( x \in X \). Since \( \Bracks{\varphi}_v = T \), then \( \Bracks{\psi}_{v_{\xi \to x}} = T \), hence the inductive hypothesis implies \( \Bracks{\psi}_{w_{\xi \to x}} = T \). This happens for all \( x \in X \), therefore \( \Bracks{\varphi}_w = T \).
+
+    \item Finally, suppose that \( \varphi = \qexists \xi \psi \), where again \( \psi \) is a positive formula for which the inductive hypothesis holds.
+
+    Since \( \Bracks{\varphi}_v = T \), there exists some \( x \in X \) such that \( \Bracks{\psi}_{v_{\xi \to x}} = T \), hence the inductive hypothesis implies \( \Bracks{\psi}_{w_{\xi \to x}} = T \). Therefore, \( \Bracks{\varphi}_w = T \).
+  \end{itemize}
+\end{proof}
+
+\begin{example}\label{ex:thm:positive_formulas_preserved_under_homomorphism/proof_failure}
+  To see how our proof of \fullref{thm:positive_formulas_preserved_under_homomorphism} fails for conditionals, consider the formula \( \varphi = \psi_1 \rightarrow \psi_2 \), where the inductive hypothesis holds for \( \psi_1 \) and \( \psi_2 \).
+
+  If \( \Bracks{\varphi}_v = T \), then one of the following holds:
+  \begin{itemize}
+    \item \( \Bracks{\psi_1}_v = \Bracks{\psi_2}_v = T \), which via the inductive hypothesis implies \( \Bracks{\psi_1}_w = \Bracks{\psi_2}_w = T \) and hence \( \Bracks{\varphi}_w = T \).
+    \item \( \Bracks{\psi_1}_v = F \), which doesn't imply \( \Bracks{\psi_1}_w = F \). In this case it is possible to have \( \Bracks{\psi_1}_w = T \) and \( \Bracks{\psi_2}_w = F \), which implies \( \Bracks{\varphi}_w = F \). This is the negation of what we need to prove.
+  \end{itemize}
+
+  What if we change our inductive hypothesis to \( \Bracks{\varphi}_v = \Bracks{\varphi}_w \)\footnote{This is precisely what we will do in the case of \hyperref[def:first_order_embedding]{embeddings} in \fullref{thm:arbitrary_formulas_preserved_under_isomorphisms}}? This fails for atomic formulas because \( \Bracks{\tau_1 \doteq \tau_2}_v = F \) doesn't imply \( \Bracks{\tau_1 \doteq \tau_2}_w = F \) --- consider the case of a group homomorphism from \( (\BbbR, +) \) to \( (\set{ 0 }, +) \). We can this of this alternative inductive hypothesis as a semantical way of introducing negation, which turns our to cause problems.
+
+  See \fullref{ex:monoid_cancellation_not_preserved_by_homomorphism} for an example where a conditional is not preserved by a homomorphism.
+\end{example}
+
+\begin{example}\label{ex:replacing_functional_symbols_via_relations}
+  Consider the \hyperref[def:magma/theory]{theory of magmas}. We have a functional symbol \( \cdot \), which we can also represent via the ternary predicate \( p(\xi, \eta, \zeta) \), which holds for \( (x, y, z) \) in some model \( \mscrX \) if and only if \( x \cdot y = z \).
+
+  If we choose to work only with the relation, the language would not have any functional symbols, and, by \fullref{thm:first_order_generated_substructures_exist}, every subset of (the domain of) \( \mscrX \) would be a substructure.
+
+  This also introduces a complication, however. We must ensure that the relation represents a function, and this can be done via the axiom
+  \begin{equation*}
+    \qforall \xi \qforall \eta \qExists \zeta p(\xi, \eta, \zeta),
+  \end{equation*}
+  where we have used the unique existence shorthand from \fullref{ex:replacing_functional_symbols_via_relations}.
+
+  In this setting, a model of the theory of magmas must satisfy this axiom, and thus it is possible for a substructure not to be a model.
+
+  For example, the negative real numbers are not a magma under multiplication because the product of two negative numbers is positive. A functional symbol encodes this requirement into the definition of a substructure. But otherwise we must encode this via formulas, which makes the definition of substructure trivial, but now it is possible for a substructure not to be a model.
+\end{example}
+
+\begin{proposition}\label{thm:functions_over_model_form_model}
+  Let \( \Gamma \) to be a set of closed \hyperref[def:positive_formula]{positive formulas} \hi{without existential quantifiers}. Let \( \mscrX = (X, I) \) be a model of \( \Gamma \) and let \( A \) be a nonempty \hyperref[def:set]{plain set}, possibly unrelated to \( \mscrX \). Consider the set \( Y \coloneqq \fun(A, \mscrX) \) of \hyperref[def:function]{all set functions} from \( A \) to \( X \).
+
+  Define \( \iota: X \mapsto Y \) by sending each \( x \in X \) to the corresponding constant function in \( Y \).
+
+  Define the interpretation \( J \) as follows:
+  \begin{itemize}
+    \item For each \( n \)-ary functional symbol \( f \) in \( \mscrL \), define the interpretation of the functions \( y_1, \ldots, y_n \) componentwise as
+    \begin{equation*}
+      \begin{aligned}
+        &J(f): Y^n \to Y \\
+        &J(f) \parens[\Big]{ y_1, \ldots, y_n } \coloneqq \parens[\Big]{ s \mapsto I(f) \parens[\Big]{ y_1(s), \ldots, y_n(s) } }.
+      \end{aligned}
+    \end{equation*}
+
+    \item For each \( n \)-ary predicate symbol \( p \) in \( \mscrL \), define \( J(p) \subseteq Y^n \) via
+    \begin{equation*}
+      \begin{aligned}
+        &J(p): Y^n \to \set{ T, F } \\
+        &J(p) \parens[\Big]{ y_1, \ldots, y_n } \coloneqq \bigwedge \set[\Big]{ I(p) \parens[\Big]{ y_1(s), \ldots, y_n(s) } \given* s \in S }.
+      \end{aligned}
+    \end{equation*}
+
+    This way \( J(p) (y_1, \ldots, y_n) = T \) if and only if \( I(p) (y_1(s), \ldots, y_n(s)) = T \) simultaneously for all \( s \in S \).
+  \end{itemize}
+
+  Then the structure \( \mscrY = (Y, J) \) is also a model of \( \Gamma \) and \( \iota: \mscrX \to \mscrY \) is an embedding.
+\end{proposition}
+\begin{proof}
+  It is obvious that \( \mscrY \) is a structure and that \( \iota \) is an embedding.
+
+  Let \( \varphi \) be a positive formula and suppose that it is valid in \( \mscrX \). We will use \fullref{thm:induction_on_syntax_trees} to show that \( \Bracks{\varphi}_w = T \) for a fixed variable assignment \( w \) in \( \mscrY \).
+  \begin{itemize}
+    \item If \( \varphi = \top \), its valuation does not depend on \( w \) and thus \( \Bracks{\varphi}_w = T \).
+
+    \item If \( \varphi = \tau_1 \doteq \tau_2 \), then \( \Bracks{\tau_1}_v = \Bracks{\tau_2}_v \) for every assignment \( v \) in \( \mscrX \), hence for any \( s \in S \) we have \( \Bracks{\tau_1}_w(s) = \Bracks{\tau_2}_w(s) \) since both sides of the latter equality here are elements of \( \mscrX \).
+
+    \item Similarly, if \( \varphi = p(\tau_1, \ldots, \tau_n) \), then
+    \begin{equation*}
+      J(p) \parens[\Big]{ y_1, \ldots, y_n }
+      =
+      \bigwedge \set[\Big]{ I(p) \parens[\Big]{ y_1(s), \ldots, y_n(s) } \given* s \in S }
+      =
+      \bigwedge \set{ T \given s \in S }
+      =
+      T.
+    \end{equation*}
+
+    \item Analogous to our proof of \fullref{thm:positive_formulas_preserved_under_homomorphism}, conjunction and disjunction formulas that are valid in \( \mscrX \) are valid in \( \mscrY \).
+
+    \item If \( \varphi = \qforall \xi \psi \) and the inductive hypothesis holds for \( \psi \), then
+    \begin{equation*}
+      \Bracks{\varphi}_w
+      =
+      \bigwedge_{y \in Y} \Bracks{\psi}_{w_{\xi \to y}}
+      \geq
+      \bigwedge_{\substack{\T{const.} \\ \T{func.} y}} \Bracks{\psi}_{w_{\xi \to y}}
+      =
+      \bigwedge_{x \in X} \Bracks{\psi}_{v_{\xi \to x}}
+      =
+      \bigwedge_{x \in X} T
+      =
+      T.
+    \end{equation*}
+  \end{itemize}
+\end{proof}
+
+\begin{example}\label{ex:thm:functions_over_model_of_positive_formulas_form_model}
+  While the statement of \fullref{thm:functions_over_model_form_model} may be a little cryptic, a few examples show that it is actually obvious.
+  \begin{itemize}
+    \item \hyperref[def:boolean_operator]{Boolean operators} have their values in the Boolean algebra \( \set{ T, F } \). Let \( S \) be the set of all tuples of values in \( \set{ T, F }^n \) for arbitrary \( n \). That is,
+    \begin{equation*}
+      S \coloneqq \bigcup_{n \geq 1} \set{ T, F }^n.
+    \end{equation*}
+
+    Then from \fullref{thm:functions_over_model_form_model} it follows that the set \( B = \fun(S, \set{ T, F }) \) of all Boolean operators of arbitrary arities is again a Boolean algebra. See \fullref{thm:lindenmaum_tarski_algebra_of_full_propositional_logic/bijection} for further discussion.
+
+    \item If \( R \) is a \hyperref[def:ring]{ring} and \( A \) is any set, then \( \fun(A, R) \) is again a ring with componentwise operations --- see \fullref{thm:functions_over_algebra}.
+
+    This is useful in functional analysis where we study real-valued and complex-valued functions over arbitrary sets.
+
+    \item If \( \BbbK \) is a \hyperref[def:field]{field}, then in general \( \fun(A, \BbbK) \) is not a field. The simplest example are the real-valued real functions --- \( \sin(x) \) has no multiplicative inverse since \( \ifrac 1 {\sin(x)} \) is not defined for \( x = 2k\pi, k = 1, 2, \ldots \). We can form a \hyperref[def:ring_localization]{field of fractions}, but in general fields of fractions over function rings no longer correspond to functions --- they are purely algebraic constructions, just like \hyperref[def:formal_power_series]{formal power series}.
+
+    This happens because the definition of a field and has an axiom with an existential quantifier --- it requires every nonzero element to have a multiplicative inverse, which can be described formally as
+    \begin{equation*}
+      \qforall \xi \parens[\Big]{ (\xi \doteq 0) \vee \qexists \eta (\xi \cdot \eta \doteq 1) }.
+    \end{equation*}
+  \end{itemize}
+\end{example}
+
+\begin{proposition}\label{thm:substructure_is_model}
+  If \( \Gamma \) is a set of closed \hyperref[def:positive_formula]{positive formulas} \hi{without existential quantifiers}, any \hyperref[def:first_order_substructure]{substructure} of a model of \( \Gamma \) is again a model of \( \Gamma \).
+\end{proposition}
+\begin{comments}
+  \item See \fullref{ex:replacing_functional_symbols_via_relations} for an example of how this may fail if there are existential quantifiers.
+\end{comments}
+\begin{proof}
+  This proposition can be proven by a straightforward application of \fullref{thm:induction_on_syntax_trees}. In each case of the induction, we do not require any elements in addition to those already present in the substructure.
+\end{proof}
+
 \begin{definition}\label{def:first_order_embedding}\mcite[def. 2.3.26(ii)]{Hinman2005}
-  We say that an \hyperref[def:function_invertibility/injective]{injective} (resp. \hyperref[def:function_invertibility/bijective]{bijective}) \hyperref[def:first_order_homomorphism]{homomorphism} \( h: \mscrX \to \mscrY \) is an \term{embedding} (resp. \term{isomorphism}) if any of the following equivalent conditions hold:
+  We say that an \hyperref[def:function_invertibility/injective]{injective} \hyperref[def:first_order_homomorphism]{homomorphism} \( h: \mscrX \to \mscrY \) is an \term{embedding} if any of the following equivalent conditions hold:
 
   \begin{thmenum}
     \thmitem{def:first_order_embedding/inverse} The inverse of \( h \) on its image is also a homomorphism.
@@ -384,7 +632,7 @@
   Consider the \hyperref[def:integers]{set of integers} \( \BbbZ \) endowed with two different \hyperref[def:partially_ordered_set]{partial orders}:
   \begin{itemize}
     \item The standard total order \( \leq \) where \( n \leq m \) if there exists a nonnegative integer \( k \) such that \( n + k = m \).
-    \item The equality \( = \) relation, which is simply the \hyperref[def:binary_relation/diagonal]{diagonal relation} \( \increment \).
+    \item The equality \( = \) relation.
   \end{itemize}
 
   The identity \( \id(x) = x \) is an \hyperref[def:order_homomorphism]{order homomorphisms} from \( (\BbbZ, =) \) to \( (\BbbZ, \leq) \). Indeed, for any integers \( n \) and \( m \), \( n = m \) implies \( n \leq m \).
@@ -401,291 +649,69 @@
   If \( \mscrL \) has no predicate symbols, then \fullref{def:first_order_embedding/predicates} is vacuously satisfied.
 \end{proof}
 
-\begin{definition}\label{def:positive_formula}
-  We say that a \hyperref[def:propositional_syntax/formula]{propositional formula} \( \varphi \) is \term{positive} if it contains only \hyperref[def:cnf_and_dnf]{positive literals} connected using \hyperref[def:propositional_language/connectives/conjunction]{conjunction \( \wedge \)} and \hyperref[def:propositional_language/connectives/disjunction]{disjunction \( \vee \)}. We can also add propositional constants, however that would be redundant due to \fullref{thm:binary_lattice_operations/identity}.
+\begin{proposition}\label{thm:arbitrary_formulas_preserved_under_isomorphisms}
+  A \hyperref[def:first_order_embedding]{first-order embeddings} preserves models of arbitrary closed formulas.
 
-  The point of positive formulas is to avoid \hyperref[def:propositional_language/negation]{negation \( \neg \)}. This definition is not equivalent to \hyperref[def:positive_implicational_deductive_system]{positive implicational formulas} where \( \rightarrow \) is the only connective. We avoid adding \( \rightarrow \) because that would allow us, assuming classical logic, to derive negation using \fullref{thm:boolean_equivalences/negation_bottom}.
-
-  Positive formulas are used in \fullref{thm:positive_formulas_preserved_under_homomorphism}, which fails to hold for some non-positive formulas --- see \fullref{ex:monoid_cancellation_not_preserved_by_homomorphism}.
-
-  When dealing with first-order logic, we simply use \hyperref[thm:first_order_substitution_equivalence/propositional]{substitution} to replace propositional variables with atomic formulas. This way we obtain positive first-order formulas with \hyperref[thm:implicit_universal_quantification]{implicit universal quantification}. Of course, we can always add explicit universal quantifiers, but we avoid existential quantifiers because of \fullref{thm:first_order_quantifiers_are_dual}.
-\end{definition}
-
-\begin{proposition}\label{thm:positive_formulas_preserved_under_homomorphism}
-  Let \( \mscrX = (X, I) \) and \( \mscrY = (Y, I) \) be structures over a common language \( \mscrL \) and let \( h: X \to Y \) be a \hyperref[def:first_order_homomorphism]{homomorphism} between them. Take \( \Gamma \) to be a nonempty set of \hyperref[def:positive_formula]{positive formulas}.
-
-  Then \( h \) preserves models of \( \Gamma \). That is, if \( \mscrX \vDash \Gamma \) then \( (h(X), J) \vDash \Gamma \).
-\end{proposition}
-\begin{proof}
-  Let \( v \) a variable assignment in \( \mscrY \). Let \( v: \boldop{Var} \to X \) be an assignment such that for any variable \( \xi \) we have
-  \begin{equation*}
-    v(\xi) \in h^{-1}(w(\xi)).
-  \end{equation*}
-
-  At least one such assignment exists due to \fullref{def:zfc/choice}. If \( h \) is injective, this assignment is unique.
-
-  We will show that
-  \begin{equation}\label{thm:positive_formulas_preserved_under_homomorphism/ind_hyp_x}
-    \mscrX \vDash_{v} \varphi
-  \end{equation}
-  implies
-  \begin{equation}\label{thm:positive_formulas_preserved_under_homomorphism/ind_hyp_y}
-    (h(X), J) \vDash_{w} \varphi.
-  \end{equation}
-
-  We assume \eqref{thm:positive_formulas_preserved_under_homomorphism/ind_hyp_x} for \( \varphi \) and we use induction on the structure of \( \varphi \) to prove \eqref{thm:positive_formulas_preserved_under_homomorphism/ind_hyp_y}, starting with different \hyperref[def:first_order_syntax/atomic_formula]{atomic formulas}:
-  \begin{itemize}
-    \item The constant \( \top \) is vacuously preserved by homomorphisms because it does not depend on the interpretation or variable assignment.
-
-    \item Suppose that \( \varphi = (\tau_1 \doteq \tau_2) \). We have \( \tau_1\Bracks{v} = \tau_2\Bracks{v} \) and hence \( h(\tau_1\Bracks{v}) = h(\tau_2\Bracks{v}) \) and
-    \begin{equation*}
-      \tau_1\Bracks{w}
-      \reloset {\ref{thm:def:first_order_homomorphism/term_valuation}} =
-      h(\tau_1\Bracks{v})
-      =
-      h(\tau_2\Bracks{v})
-      \reloset {\ref{thm:def:first_order_homomorphism/term_valuation}} =
-      \tau_2\Bracks{w}.
-    \end{equation*}
-
-    \item Suppose that \( \varphi \) is the predicate formula \( p(\tau_1, \ldots, \tau_n) \). By assumption for every variable assignment in \( \mscrX \) and, in particular, for any \( v \),
-    \begin{equation*}
-      \mscrX \vDash_{v} p(\tau_1, \ldots, \tau_n),
-    \end{equation*}
-    then
-    \begin{equation}\label{eq:thm:positive_formulas_preserved_under_homomorphism/predicates/x}
-      I(p) \parens[\Big]{ \tau_1\Bracks{v}, \ldots, \tau_n\Bracks{v} } = T.
-    \end{equation}
-
-    By definition of homomorphism, we have
-    \begin{equation}\label{eq:thm:positive_formulas_preserved_under_homomorphism/predicates/y}
-      J(p) \parens[\Big]{ h(\tau_1\Bracks{v}), \ldots, h(\tau_n\Bracks{v}) } = T.
-    \end{equation}
-
-    Now
-    \begin{equation*}
-      (h(X), J) \vDash_{w} p(\tau_1, \ldots, \tau_n),
-    \end{equation*}
-    follows from \fullref{thm:def:first_order_homomorphism/term_valuation}.
-
-    \item Suppose that \( \varphi = \psi_1 \wedge \psi_2 \) and that the inductive hypothesis holds for \( \psi_1 \) and \( \psi_2 \).
-
-    Since \( \varphi\Bracks{v} = T \) by assumption, by definition of valuation of conjunction we have
-    \begin{equation*}
-      \psi_1\Bracks{v}
-      =
-      \psi_2\Bracks{v}
-      =
-      T.
-    \end{equation*}
-
-    This allows us to apply the inductive hypothesis to obtain
-    \begin{equation*}
-      \psi_1\Bracks{w}
-      =
-      \psi_2\Bracks{w}
-      =
-      T.
-    \end{equation*}
-    and conclude that
-    \begin{equation*}
-      \varphi\Bracks{w}
-      =
-      \psi_1\Bracks{w} \wedge \psi_2\Bracks{w}
-      =
-      T \wedge T
-      =
-      T.
-    \end{equation*}
-
-    \item Suppose that \( \varphi = \psi_1 \vee \psi_2 \) and that the inductive hypothesis holds for \( \psi_1 \) and \( \psi_2 \).
-
-    Since the formula \( \varphi \) is valid in \( \mscrX \), at least one of \( \psi_1 \) or \( \psi_2 \) is valid under \( v \). For different \( v \) the valuation pair \( (\psi_1\Bracks{v}, \psi_2\Bracks{v}) \) may be different, but will always have at least one \( T \) value.
-
-    The inductive hypothesis holds for both \( \psi_1 \) and \( \psi_2 \) and therefore \( (\psi_1\Bracks{w}, \psi_2\Bracks{w}) \) also contains at least one \( T \) value.
-
-    This allows us to conclude that
-    \begin{equation*}
-      \varphi\Bracks{w}
-      =
-      \psi_1\Bracks{w} \vee \psi_2\Bracks{w}
-      =
-      T.
-    \end{equation*}
-
-    \item To see how this proof fails for conditionals, consider \( \varphi = (\psi_1 \rightarrow \psi_2) \). Then \( \varphi\Bracks{v} = T \) implies either \( \psi_1\Bracks{v} = F \) or \( \psi_1\Bracks{v} = \psi_2\Bracks{v} = T \).
-
-    If \( \psi_1\Bracks{v} = \psi_2\Bracks{v} = F \), we have \( \varphi\Bracks{v} = T \), but we cannot conclude that \( \varphi\Bracks{w} = T \) because that would require the \hyperref[def:material_implication/inverse]{inverse} of the inductive hypothesis to hold for \( \psi_1 \) and \( \psi_2 \).
-
-    See \fullref{ex:monoid_cancellation_not_preserved_by_homomorphism} for an example where a conditional is not preserved by a homomorphism.
-  \end{itemize}
-
-  Since \( v \) was chosen arbitrarily, we conclude that
-  \begin{equation*}
-    (h(X), J) \vDash \varphi.
-  \end{equation*}
-\end{proof}
-
-\begin{corollary}\label{thm:substructure_is_model}
-  If \( \Gamma \) is a set of positive formulas, any \hyperref[def:first_order_substructure]{substructure} of a model of \( \Gamma \) is again a model of \( \Gamma \).
-\end{corollary}
-\begin{proof}
-  Follows from \fullref{thm:def:first_order_homomorphism/submodel} and \fullref{thm:positive_formulas_preserved_under_homomorphism}.
-\end{proof}
-
-\begin{proposition}\label{thm:arbitrary_formulas_preserved_under_isomorphisms}\mcite[lemma 3.3.3]{VanDalen2004}
-  If \( \mscrX = (X, I) \) is a model of \( \Gamma \) and if \( h: X \to Y \) is an embedding from \( \mscrX \) to \( \mscrY = (Y, J) \), then \( (h(X), J) \) is also a model of \( \Gamma \).
+  More concretely, given some language \( \mscrL \), if \( \Gamma \) is a set of closed formulas and \( h: \mscrX \to \mscrY \) is an embedding between \hyperref[def:first_order_model]{models} of \( \Gamma \), then the image \( h[X] \) is also (the domain of) a model of \( \Gamma \).
 \end{proposition}
 \begin{comments}
+  \item Compare this to \fullref{thm:positive_formulas_preserved_under_homomorphism}, which places restrictions on the formulas rather than the homomorphism.
   \item We say that embeddings preserve the validity arbitrary formulas.
 \end{comments}
 \begin{proof}
-  The proof simply extends the induction in the proof of \fullref{thm:arbitrary_formulas_preserved_under_isomorphisms} to
-  \begin{equation*}
-    \varphi\Bracks{w} = \varphi\Bracks{w}
-  \end{equation*}
-  which allows us to use the usual induction on the negation and all connectives and quantifiers.
-
-  The result regarding strong homomorphisms is shown in the note about \eqref{eq:thm:positive_formulas_preserved_under_homomorphism/predicates/x} following from \eqref{eq:thm:positive_formulas_preserved_under_homomorphism/predicates/y} under strong homomorphisms.
+  The embedding condition allows us to extend the induction in our proof of \fullref{thm:arbitrary_formulas_preserved_under_isomorphisms} to the case of arbitrary formulas by instead requiring that \( \Bracks{\varphi}_v = \Bracks{\varphi}_w \) with the fixed variable assignments \( v \) and \( w \) from our proof of \fullref{thm:arbitrary_formulas_preserved_under_isomorphisms}.
 \end{proof}
 
-\begin{proposition}\label{thm:functions_over_model_form_model}
-  Let \( \Gamma \) to be a nonempty set of \hyperref[def:positive_formula]{positive formulas}. Let \( \mscrX \) be a model of \( \Gamma \) and let \( A \) be any nonempty set. Consider the set \( Y \coloneqq \fun(A, \mscrX) \) of \hyperref[def:function]{all set functions} from \( A \) to \( X \).
-
-  Define the function \( \iota: X \mapsto Y \) by sending each \( x \in X \) to the corresponding constant function in \( Y \).
-
-  Define the interpretation \( J \) as follows:
-  \begin{itemize}
-    \item For each \( n \)-ary functional symbol \( f \) in \( \mscrL \), define the interpretation of the functions \( k_1, \ldots, k_n \) componentwise as
-    \begin{equation*}
-      \begin{aligned}
-        &J(f): Y^n \to Y \\
-        &J(f) \parens[\Big]{ k_1, \ldots, k_n } \coloneqq \parens[\Big]{ s \mapsto I(f) \parens[\Big]{ k_1(s), \ldots, k_n(s) } }.
-      \end{aligned}
-    \end{equation*}
-
-    \item For each \( n \)-ary predicate symbol \( p \) in \( \mscrL \), define \( J(p) \subseteq Y^n \) via
-    \begin{equation*}
-      \begin{aligned}
-        &J(p): Y^n \to \set{ T, F } \\
-        &J(p) \parens[\Big]{ k_1, \ldots, k_n } \coloneqq \bigwedge \set[\Big]{ I(p) \parens[\Big]{ k_1(s), \ldots, k_n(s) } \given* s \in S }.
-      \end{aligned}
-    \end{equation*}
-
-    That is, \( J(p) (k_1, \ldots, k_n) = T \) if and only if \( I(p) (k_1(s), \ldots, k_n(s)) = T \) simultaneously for all \( s \in S \).
-  \end{itemize}
-
-  Then the structure \( \mscrY = (Y, J) \) is also a model of \( \Gamma \) and \( \iota: \mscrX \to \mscrY \) is an embedding.
-\end{proposition}
-\begin{proof}
-  It is obvious that \( \mscrY \) is a structure and that \( \iota \) is an embedding. We will prove using induction on the structure of a formula \( \varphi \) that \( \mscrX \vDash \varphi \) implies \( \mscrY \vDash \varphi \).
-
-  Let \( w \) be a variable assignment in \( \mscrY \).
-
-  Suppose that \( \mscrX \vDash \varphi \). We use induction on the structure of \( \varphi \) to show that \( \varphi\Bracks{w} = T \).
-  \begin{itemize}
-    \item If \( \varphi \) is a propositional constant, its value does not depend on \( w \) and thus \( \varphi\Bracks{w} = \varphi\Bracks{v} \).
-
-    \item If \( \varphi = (\tau_1 \doteq \tau_2) \), then \( \tau_1\Bracks{v} = \tau_2\Bracks{v} \) for all assignments \( v \) in \( \mscrX \), hence for any \( s \in S \) we have \( \parens[\Big]{\tau_1\Bracks{w}}(s) = \parens[\Big]{\tau_2\Bracks{w}}(s) \) since both sides of the equality here are elements of \( \mscrX \).
-
-    \item Analogously, if \( \varphi = p(\tau_1, \ldots, \tau_n) \), then
-    \begin{equation*}
-      J(p) \parens[\Big]{ k_1, \ldots, k_n }
-      =
-      \bigwedge \set[\Big]{ I(p) \parens[\Big]{ k_1(s), \ldots, k_n(s) } \given* s \in S }
-      =
-      \bigwedge \set{ T \given s \in S }
-      =
-      T.
-    \end{equation*}
-
-    \item Analogous to the proof of \fullref{thm:positive_formulas_preserved_under_homomorphism}, conjunction and disjunction formulas that are valid in \( \mscrX \) are valid in \( \mscrY \) while conditional formulas may fail to be valid. See \fullref{ex:thm:functions_over_model_of_positive_formulas_form_model} for examples where this proposition fails.
-  \end{itemize}
-\end{proof}
-
-\begin{example}\label{ex:thm:functions_over_model_of_positive_formulas_form_model}
-  While the statement of \fullref{thm:functions_over_model_form_model} may be a little cryptic, a few examples show that it is actually obvious.
-  \begin{itemize}
-    \item \hyperref[def:boolean_operator]{Boolean operators} have their values in the Boolean algebra \( \set{ T, F } \). Let \( S \) be the set of all tuples of values in \( \set{ T, F }^n \) for arbitrary \( n \). That is,
-    \begin{equation*}
-      S \coloneqq \bigcup_{n \geq 1} \set{ T, F }^n.
-    \end{equation*}
-
-    Then from \fullref{thm:functions_over_model_form_model} it follows that the set \( B = \fun(S, \set{ T, F }) \) of all Boolean operators of arbitrary arities is again a Boolean algebra. See \fullref{thm:lindenmaum_tarski_algebra_of_full_propositional_logic/bijection} for further discussion.
-
-    \item If \( R \) is a \hyperref[def:ring]{ring} and \( A \) is any set, then \( \fun(A, R) \) is again a ring with componentwise operations --- see \fullref{thm:functions_over_algebra}.
-
-    This is useful in functional analysis where we study real-valued and complex-valued functions over arbitrary sets.
-
-    \item If \( \BbbK \) is a field, then in general \( \fun(A, \BbbK) \) is not a field. The simplest example are the real-valued real functions --- \( \sin(x) \) has no multiplicative inverse since \( \sfrac 1 {\sin(x)} \) is not defined for \( x = 2k\pi, k = 1, 2, \ldots \). We can form a \hyperref[def:ring_localization]{field of fractions}, but in general fields of fractions over function rings no longer correspond to functions --- they are purely algebraic constructions, just like \hyperref[def:formal_power_series]{formal power series}.
-
-    This happens because the definition of a field and, more generally has a non-positive axiom --- it requires every nonzero element to have a multiplicative inverse, which can be described formally as
-    \begin{equation*}
-      \qforall \xi \parens[\Big]{ (\xi \doteq 0) \vee \qexists \eta (\xi \cdot \eta \doteq 1) }.
-    \end{equation*}
-
-    As discussed in \fullref{def:positive_formula}, a formula with an existential quantifier may fail to be positive.
-  \end{itemize}
-\end{example}
-
-\begin{definition}\label{def:first_order_definability}
+\begin{definition}\label{def:first_order_definability}\mcite[def. 2.3.37]{Hinman2005}
   Fix a \hyperref[def:first_order_syntax]{first-order language} \( \mscrL \) and a \hyperref[def:first_order_structure]{structure} \( \mscrX = (X, I) \) for \( \mscrL \).
 
-  To every formula \hyperref[def:first_order_syntax]{formula} \( \varphi \) whose free variables are among \( \xi_1, \ldots, \xi_n \), there corresponds a set \( A \subseteq X^n \) such that
+  To every \hyperref[def:first_order_syntax/formula]{formula} \( \varphi \) whose \hyperref[def:first_order_syntax/free_variable]{free variables} are among \( \xi_1, \ldots, \xi_n, \eta_1, \ldots, \eta_m \), and to every \( m \)-tuple \( u_1, \ldots, u_m \) of members of \( A \), which we call \term{parameters}, there corresponds a set \( A \subseteq X^n \) such that
   \begin{equation*}
-    (x_1, \ldots, x_n) \in A \T{if and only if} \varphi\Bracks{x_1, \ldots, x_n} = T.
+    (x_1, \ldots, x_n) \in A \T{if and only if} \Bracks{\varphi}(x_1, \ldots, x_n, u_1, \ldots, u_m) = T,
   \end{equation*}
+  where \( \Bracks{\varphi}_{\anon} \) denotes the valuation function defined in \fullref{def:propositional_valuation/valuation_function}.
 
-  We say that \( \varphi \) \term{defines} \( A \). An arbitrary set \( A \subseteq X^n \) is \term{definable} if there exists a formula \( \varphi \) that defines \( A \).
-
-  See \fullref{thm:cumulative_hierarchy_model_of_zfc} for how this concept deeply relates to set theory.
-\end{definition}
-
-\begin{definition}\label{def:equation}\mimprovised
-  For an arbitrary \hyperref[def:first_order_syntax]{first-order language}, consider \hyperref[def:first_order_syntax/atomic_formula]{atomic formulas} featuring \hyperref[def:first_order_language/equality]{formal equality}. That is, consider formulas of type \( \tau \doteq \sigma \).
-
-  If the formula is a \hyperref[def:first_order_semantics/tautology]{tautology}, we say that it is an \term{equality} or \term{identity}.
-
-  Otherwise, we call it an \term{equation}. The set an equation \hyperref[def:first_order_definability]{defines} is called its \term{solution set}.
+  We say that \( \varphi \) \term{defines} \( A \) with parameters \( u_1, \ldots, u_m \). An arbitrary set \( A \subseteq X^n \) is \term{definable} with parameters \( u_1, \ldots, u_m \) if there exists a formula \( \varphi \) that defines \( A \), or simply \enquote{definable} if it is definable without parameters.
 \end{definition}
 \begin{comments}
-  \item Compare this to inequalities defined in \fullref{def:inequality}.
+  \item See \fullref{def:set_builder_notation} and \fullref{thm:cumulative_hierarchy_model_of_zfc} for how this concept deeply relates to set theory.
 \end{comments}
 
-\begin{proposition}\label{thm:automorphism_preserves_validity}
-  Let \( \mscrX = (X, I) \) be a structure over some language \( \mscrL \). Then for every formula \( \varphi[\xi_1, \ldots, \xi_n] \) in \( \mscrL \) and any \hyperref[def:first_order_endomorphism]{automorphism} \( h: X \to X \) we have
+\begin{proposition}\label{thm:automorphism_preserves_validity}\mcite[prop. 2.3.39]{Hinman2005}
+  Let \( h: \mscrX \to \mscrY \) be a \hyperref[def:first_order_isomorphism]{first-order isomorphism}. Fix a formula \( \varphi \) in \( \mscrL \) whose free variables are among \( \xi_1, \ldots, \xi_n \). Then
   \begin{equation*}
-    \varphi\Bracks{x_1, \ldots, x_n} = \varphi\Bracks{h(x_1), \ldots, h(x_n)}.
+    \Bracks{\varphi}_\mscrX(x_1, \ldots, x_n) = \Bracks{\varphi}_\mscrY\parens[\Big]{ h(x_1), \ldots, h(x_n) },
   \end{equation*}
+  where \( \Bracks{\varphi}_{\anon} \) denotes the valuation function defined in \fullref{def:propositional_valuation/valuation_function}.
 \end{proposition}
 \begin{proof}
   Let \( x_1, \ldots, x_n \) be points in \( X \) such that
   \begin{equation*}
-    \varphi\Bracks{x_1, \ldots, x_n} = T.
+    \Bracks{\varphi}_\mscrX(x_1, \ldots, x_n) = T.
   \end{equation*}
 
   Since \( h \) is a homomorphism, it follows that
   \begin{equation*}
-    \varphi\Bracks{h(x_1), \ldots, h(x_n)} = \varphi\Bracks{x_1, \ldots, x_n} = T.
+    \Bracks{\varphi}_\mscrY\parens[\Big]{h(x_1), \ldots, h(x_n)} = \Bracks{\varphi}_\mscrX(x_1, \ldots, x_n) = T.
   \end{equation*}
 
   Conversely, suppose that \( x_1, \ldots, x_n \) are points in \( X \) such that
   \begin{equation*}
-    \varphi\Bracks{h(x_1), \ldots, h(x_n)} = T.
+    \Bracks{\varphi}_\mscrX\parens[\Big]{h(x_1), \ldots, h(x_n)} = T.
   \end{equation*}
 
   Then since \( h^{-1} \) is a homomorphism, we have
   \begin{equation*}
-    \varphi\Bracks{h^{-1}(h(x_1)), \ldots, h^{-1}(h(x_n))}
+    \Bracks{\varphi}_\mscrY\parens[\Big]{h^{-1}(h(x_1)), \ldots, h^{-1}(h(x_n))}
     =
-    \varphi\Bracks{x_1, \ldots, x_n}
+    \Bracks{\varphi}_\mscrX(x_1, \ldots, x_n)
     =
     T.
   \end{equation*}
 
   Therefore,
   \begin{equation*}
-    \varphi\Bracks{h(x_1), \ldots, h(x_n)} = T \T{if and only if} \varphi\Bracks{x_1, \ldots, x_n} = T,
+    \Bracks{\varphi}_\mscrY\parens[\Big]{ h(x_1), \ldots, h(x_n) } = T \T{if and only if} \Bracks{\varphi}_\mscrX(x_1, \ldots, x_n) = T,
   \end{equation*}
   which is equivalent to the statement of the proposition.
 \end{proof}
@@ -694,12 +720,22 @@
   Let \( \mscrX = (X, I) \) be a structure over some language \( \mscrL \).
 
   \begin{thmenum}
-    \thmitem{thm:automorphism_of_definable_set/direct} If the set \( A \subseteq X \) is \hyperref[def:first_order_definability]{definable} and if \( h: X \to X \) is an automorphism, then \( h(A) = A \).
+    \thmitem{thm:automorphism_of_definable_set/direct}\mcite[corr. 2.3.40]{Hinman2005} If the set \( A \subseteq X \) is \hyperref[def:first_order_definability]{definable} (without parameters) and if \( h: X \to X \) is an automorphism, then \( h(A) = A \).
+
     \thmitem{thm:automorphism_of_definable_set/contrapositive} If for some automorphism \( h: X \to X \) we have \( h(A) \neq A \), then the set \( A \subseteq X \) is not definable.
   \end{thmenum}
 \end{corollary}
 \begin{proof}
-  \SubProofOf{thm:automorphism_of_definable_set/direct} If \( A \) is definable via \( \varphi[\xi] \), then by \fullref{thm:automorphism_preserves_validity} for any automorphism \( h: X \to X \) we have \( \varphi\Bracks{x} = \varphi\Bracks{h(x)} \). Thus, the set \( h(A) \) is just as well-definable via \( \varphi \), which implies \( A = h(A) \).
+  \SubProofOf{thm:automorphism_of_definable_set/direct} If \( A \) is definable via \( \varphi \), then \fullref{thm:automorphism_preserves_validity} implies that,if \( (x_1, \ldots, x_n) \in A \), then
+  \begin{equation*}
+    \Bracks{\varphi}_\mscrX\parens[\Big]{ h(x_1), \ldots, h(x_n) } = \Bracks{\varphi}_\mscrX(x_1, \ldots, x_n) = T,
+  \end{equation*}
+  which in turn implies
+  \begin{equation*}
+    \parens[\Big]{ h(x_1), \ldots, h(x_n) } \in A.
+  \end{equation*}
+
+  Thus, \( A = h(A) \).
 
   \SubProofOf{thm:automorphism_of_definable_set/contrapositive} This is the contrapositive of \fullref{thm:automorphism_of_definable_set/direct}.
 \end{proof}
