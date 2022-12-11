@@ -1,14 +1,14 @@
 \subsection{Deductive systems}\label{subsec:deductive_systems}
 
-Without a clear context, by \enquote{logical formula} we will mean a \hyperref[def:formal_language/word]{word} over some \hyperref[def:formal_language]{alphabet}. In practice, these will be either \hyperref[def:propositional_syntax/formula]{propositional formulas} or \hyperref[def:first_order_syntax/formula]{first-order formulas}.
-
 It is challenging to formally define a deductive system in a way that reflects reality. We will do this via some auxiliary definitions that rely heavily on the interaction between the object logic and the \hyperref[rem:metalogic]{metalogic}.
+
+Without further context, by \enquote{logical formula} we will mean a \hyperref[def:formal_language/word]{word} over some \hyperref[def:formal_language]{alphabet}. In practice, these will be either \hyperref[def:propositional_syntax/formula]{propositional formulas} or \hyperref[def:first_order_syntax/formula]{first-order formulas}.
 
 \begin{definition}\label{def:judgment}\mimprovised
   A \term{judgment} is a logical formula of the metalogic, which is usually used for assertion. Using judgments allows us to quantify over metalogical properties. We will be interested in the following kinds of judgments:
 
   \begin{thmenum}
-    \thmitem{def:judgment/sequent} A \term{sequent} is a judgment with at least two free variables. We denote a sequent \( \vdash \) with sets of free variables \( \Gamma \) and \( \Delta \) by
+    \thmitem{def:judgment/sequent} A \term{sequent} is a judgment with at least two free variables. We denote a sequent \( \vdash \) with free variables \( \Gamma \) and \( \Delta \) via
     \begin{equation*}
       \Gamma \vdash \Delta.
     \end{equation*}
@@ -17,12 +17,12 @@ It is challenging to formally define a deductive system in a way that reflects r
 
     We could have defined a sequent as a predicate, however we may not have appropriate predicate symbols on the metalanguage. This issue is discussed in \fullref{rem:predicate_formula}.
 
-    \thmitem{def:judgment/inference_rule} An \term{inference rule} is a judgment with at least one free variable. We denote an inference rule \( R \) with free variables \( \psi \) and \( \varphi_1, \ldots, \varphi_n \) by
+    \thmitem{def:judgment/inference_rule} An \term{inference rule} is a judgment with at least one free variable. We denote an inference rule \( R \) with free variables \( \psi \) and \( \psi_1, \ldots, \psi_n \) via
     \begin{equation*}
       \begin{prooftree}
-        \hypo{ \varphi_1 }
+        \hypo{ \psi_1 }
         \hypo{ \cdots }
-        \hypo{ \varphi_n }
+        \hypo{ \psi_n }
         \infer3[R]{ \psi }
       \end{prooftree}
     \end{equation*}
@@ -34,33 +34,33 @@ It is challenging to formally define a deductive system in a way that reflects r
       \end{prooftree}
     \end{equation*}
 
-    The intended interpretation for the listed variables is that of formulas in the object logic, in which case an inference rule expresses the metalogical statement that \enquote{the premises \( \varphi_1, \ldots, \varphi_n \) collectively entail the consequence \( \psi \), as justified by the rule \( R \)}. When building complicated proofs, however, the applicability of the rule may depend on some context, and for this reason \( \varphi_1, \ldots, \varphi_n \) are often interpreted as \hyperref[def:proof_tree]{proof trees} rather than single formulas. See \fullref{def:first_order_natural_deduction_system/eigenvariables} for such an example.
+    The intended interpretation for the listed variables is that of formulas in the object logic, in which case an inference rule expresses the metalogical statement that \enquote{the premises \( \psi_1, \ldots, \psi_n \) collectively entail the consequence \( \psi \), as justified by the rule \( R \)}. When building complicated proofs, however, the applicability of the rule may depend on some context, and, for this reason, \( \psi_1, \ldots, \psi_n \) are often interpreted as \hyperref[def:proof_tree]{proof trees} rather than single formulas. See \fullref{def:first_order_natural_deduction_system/eigenvariables} for such an example.
   \end{thmenum}
 \end{definition}
 
 \begin{remark}\label{rem:sequents_inference_rules}
-  Inference rules are both special cases and generalizations of sequents, depending on how we view them. Using an interpretation where \( \Gamma = \varphi_1, \ldots, \varphi_n \) and \( \Delta = \psi \), inference rules simply allow an alternative syntax for sequents.
+  Inference rules are both special cases and generalizations of sequents, depending on how we view them. Using an interpretation where \( \Gamma = \psi_1, \ldots, \psi_n \) and \( \Delta = \psi \), inference rules simply allow an alternative syntax for sequents.
 
-  It is sometimes convenient, however, to interpret the formulas \( \varphi_1, \ldots, \varphi_n \) as sequents in some auxiliary logic between the object and metalogic, in which case we are able to express more complicated inference rules of the sort
+  It is sometimes convenient, however, to interpret the formulas \( \psi_1, \ldots, \psi_n \) as sequents in some auxiliary logic between the object and metalogic, in which case we are able to express more complicated inference rules of the sort
   \begin{equation*}
     \begin{prooftree}
-      \hypo{ \varphi, \Gamma \vdash \Delta, \psi }
-      \infer1{ \Gamma \vdash \Delta, \varphi \to \psi }
+      \hypo{ \psi, \Gamma \vdash \Delta, \psi }
+      \infer1{ \Gamma \vdash \Delta, \psi \to \psi }
     \end{prooftree}
   \end{equation*}
 
-  This can be very useful when inductively defining the metalogical relation \( \vdash \).
+  This can be useful when inductively defining the metalogical relation \( \vdash \).
 \end{remark}
 
 \begin{definition}\label{def:proof_tree}\mimprovised
-  A \term{proof tree} is a \hyperref[def:arborescence/undirected]{rooted tree} of logical formulas. The validity of a proof tree is handled by \hyperref[def:deductive_system]{deductive system} and is irrelevant for this definition.
+  A \term{proof tree} is a \hyperref[def:arborescence/undirected]{rooted tree} of logical formulas. The validity of a proof tree is handled by \hyperref[def:deductive_system]{deductive systems} and is irrelevant for this definition.
 
   \begin{thmenum}
-    \thmitem{def:proof_tree/subproof} A \term{subproof} is simply a subtree of a proof. If a subproof was obtained using an \hyperref[def:judgment/inference_rule]{inference rule}, the subproof \hyperref[def:weighted_set]{labeled} with the name of the rule by the deductive systems.
+    \thmitem{def:proof_tree/subproof} A \term{subproof} is simply a subtree of a proof. If a subproof was obtained using an \hyperref[def:judgment/inference_rule]{inference rule}, we \hyperref[def:weighted_set]{label} the subproof with the name of the rule.
 
-    \thmitem{def:proof_tree/premises} The root of the tree is called the \term{conclusion} of the proof and the \hyperref[def:arborescence/ancestry]{leaves} are called \term{premises} or, in the context of \hyperref[def:natural_deduction_system]{natural deduction}, \term{assumptions}. We sometimes add a \term{non-premise} label to a leaf that prevents it from being added to the list of premises.
+    \thmitem{def:proof_tree/premises} The root of the tree is called the \term{conclusion} of the proof and the \hyperref[def:arborescence/ancestry]{leaves} are called \term{premises} or, especially in the context of \hyperref[def:natural_deduction_system]{natural deduction}, \term{assumptions}. We sometimes add a \term{non-premise} label to a leaf that prevents it from being added to the list of premises.
 
-    \thmitem{def:proof_tree/drawing} We will draw graphically proof trees with no edges and with the root at the bottom in a style inspired by inference rules. See \fullref{ex:def:positive_implicational_deductive_system/identity} for an example.
+    \thmitem{def:proof_tree/drawing} We will draw graphically proof trees with no edges and with the root at the bottom in a style inspired by inference rules. See \fullref{ex:def:implicational_propositional_hilbert_system/identity}.
   \end{thmenum}
 \end{definition}
 
@@ -71,9 +71,9 @@ It is challenging to formally define a deductive system in a way that reflects r
 
   We define the set \( \mscrP = \bigcup_{k=0}^\infty \mscrP_k \) of proofs inductively as follows:
   \begin{thmenum}
-    \thmitem{def:deductive_system/base} Let \( \mscrP_0 \) be the following containing, for every formula \( \varphi \) in \( \mscrF \), the tree with only one node --- the root \( \varphi \).
+    \thmitem{def:deductive_system/base} Let \( \mscrP_0 \) be the set containing only, for every formula \( \psi \) in \( \mscrF \), the tree with only one node --- the root \( \psi \).
 
-    \thmitem{def:deductive_system/rule} For every \( k > 0 \), let \( \varphi_1, \ldots, \varphi_n \) and \( \psi \) be formulas in \( \mscrF \) and \( P_1, \ldots, P_n \) be proofs of \( \varphi_1, \ldots, \varphi_n \) from \( \mscrP_{k-1} \).
+    \thmitem{def:deductive_system/rule} For every \( k > 0 \), let \( \psi_1, \ldots, \psi_n \) and \( \psi \) be formulas in \( \mscrF \) and \( P_1, \ldots, P_n \) be proofs of \( \psi_1, \ldots, \psi_n \) from \( \mscrP_{k-1} \).
 
     Suppose that the deductive system has an inference rule
     \begin{equation*}
@@ -90,103 +90,104 @@ It is challenging to formally define a deductive system in a way that reflects r
     \end{equation*}
     in the metalogic.
 
-    Then the tree with root \( \psi \), subtrees \( P_1, \ldots, P_n \) of the root, and label \( R \), is a proof. In the case of rules with no premises like \eqref{eq:def:minimal_propositional_natural_deduction_system/top/intro}, we add a \hyperref[def:proof_tree/premises]{non-premise label} to the proof in order to exclude \( \psi \) from the list of premises of the proof.
-
-    We say that the resulting proof
+    Then the tree
     \begin{equation*}
       \begin{prooftree}
         \hypo{ P_1 }
         \hypo{ \cdots }
         \hypo{ P_n }
-        \infer3[r]{ \psi }
+        \infer3[R]{ \psi }
       \end{prooftree}
     \end{equation*}
-    is an \term{application} of the rule \( R \).
+    with root \( \psi \), subtrees \( P_1, \ldots, P_n \) of the root, and label \( R \), is a proof. In the case of rules with no premises like \eqref{eq:def:minimal_propositional_natural_deduction_system/top/intro}, we add a \hyperref[def:proof_tree/premises]{non-premise label} to the proof in order to exclude \( \psi \) from the list of premises of the proof.
 
-    Let \( \mscrP_k \) consist of all such applications.
+    We say that the resulting proof is an \term{application} of the rule \( R \).
+
+    We define \( \mscrP_k \) as the set of all such applications based on premises from \( \mscrP_{k-1} \).
   \end{thmenum}
 \end{definition}
+
+\begin{proposition}\label{thm:deductive_system_transitivity}
+  Given a deductive system, for any formula \( \psi \) and any sets \( \Gamma \) and \( \Delta \), \( \Gamma \vdash \psi \) implies \( \Gamma, \Delta \vdash \psi \).
+
+  If every formula in \( \Delta \) is derivable from \( \Gamma \), then the converse to the above also holds: \( \Gamma, \Delta \vdash \psi \) implies \( \Gamma \vdash \psi \).
+\end{proposition}
+\begin{proof}
+  If there exists a proof \( \psi \) from \( \Gamma \), then adding additional axioms does not change anything.
+
+  The second part of the theorem requires a tad more complicated proof. Assume that every formula in \( \Delta \) is derivable from \( \Gamma \) and that \( \Gamma, \Delta \vdash \psi \).
+
+  For every \( \delta \in \Delta \), let \( P_\delta \) be a proof of \( \delta \) from members of \( \Gamma \) and let \( P_\psi \) be a proof of \( \psi \) from \( \Gamma \cup \Delta \).
+
+  Then, for every \( \delta \in \Delta \), we can replace the subtree of \( \delta \) with \( P_\delta \) to obtain a proof of \( \psi \) from \( \Gamma \). Therefore, \( \Gamma \vdash \psi \).
+\end{proof}
 
 \begin{definition}\label{def:proof_derivability}\mimprovised
   We are often interested not in the proofs of a \hyperref[def:deductive_system]{deductive system}, but in \term{provability}, which we express via \hyperref[def:judgment/sequent]{sequents}.
 
-  Fix a deductive system \( (\mscrF, \mscrP) \). If \( \mscrP \) contains a proof of \( \varphi \), whose premises are all members of \( \Gamma \), the following sequent is valid:
+  Fix a deductive system \( (\mscrF, \mscrP) \). If \( \mscrP \) contains a proof of \( \psi \), whose premises are all members of \( \Gamma \), the following sequent is valid:
   \begin{equation*}
-    \Gamma \vdash \varphi.
+    \Gamma \vdash \psi.
   \end{equation*}
 
-  We say that \( \varphi \) is a \term{theorem} of \( \Gamma \). If \( \Gamma \) is empty, we say that \( \varphi \) is a \term{logical theorem}.
-
-  Furthermore, \( \vdash \) is a reflexive and transitive relation, which makes \( (\pow(\mscrF), \vdash) \) a \hyperref[def:preordered_set]{preordered set}.
+  We say that \( \psi \) is a \term{theorem} of \( \Gamma \). If \( \Gamma \) is empty, we say that \( \psi \) is a \term{logical theorem} because it only depends on the underlying logical framework.
 \end{definition}
+\begin{comments}
+  \item \( \vdash \) is a reflexive and transitive relation, which makes \( (\pow(\mscrF), \vdash) \) a \hyperref[def:preordered_set]{preordered set}.
+\end{comments}
 
 \begin{definition}\label{def:axiomatic_deductive_system}\mcite[sec. 1.3.9]{TroelstraSchwichtenberg2000}
   \term{Axiomatic deductive systems}, also called \term{Hilbert-style systems}, are \hyperref[def:deductive_system]{deductive systems} for propositional formulas consist of the single \hyperref[def:judgment/inference_rule]{inference rule} \term[en=mode that by affirming affirms]{modus ponens}:
-  \begin{equation*}\taglabel[\textrm{MP}]{eq:def:def:axiomatic_deductive_system/mp}
+  \begin{equation*}\taglabel[\logic{MP}]{eq:def:def:axiomatic_deductive_system/mp}
     \begin{prooftree}
-      \hypo{ \varphi }
-      \hypo{ \varphi \rightarrow \psi }
+      \hypo{ \psi }
+      \hypo{ \psi \rightarrow \psi }
       \infer2[\ref{eq:def:def:axiomatic_deductive_system/mp}]{ \psi }
     \end{prooftree}
   \end{equation*}
 
-  Fix a set \( \mscrF \) of logical formulas. Let \( \mscrA \subseteq \mscrF \) be a predefined subset of formulas, which we will call \term{logical axioms} of \( \mscrF \). The axiomatic deductive system itself is the pair \( (\mscrF, \mscrA) \).
+  Fix a set \( \mscrF \) of logical formulas. Let \( \mscrA \subseteq \mscrF \) be a predefined subset of formulas, which we will call \term{logical axioms} of \( \mscrF \). The Hilbert system itself is the pair \( (\mscrF, \mscrA) \).
 
-  Given a proof of the deductive system, we split its premises into \term{logical axioms} and \term{non-logical axioms} depending on whether they belong to \( \mscrA \) or not.
-
-  Note that we cannot have a complete axiomatic deductive system for first-order logic because of the eigenvariable condition in the rules \eqref{eq:def:first_order_natural_deduction_system/forall/intro} and \eqref{eq:def:first_order_natural_deduction_system/exists/elim}.
+  Given a proof of the deductive system, we split its \hyperref[def:deductive_system]{premises} into \term{logical axioms} and \term{non-logical axioms} depending on whether they belong to \( \mscrA \) or not.
 \end{definition}
+\begin{comments}
+  \item Our definition of axiomatic systems prevents us from introducing complicated rules like the first-order eigenvariable condition in the rules \eqref{eq:def:first_order_natural_deduction_system/forall/intro} and \eqref{eq:def:first_order_natural_deduction_system/exists/elim}. We only restrict ourselves to axiomatic systems for propositional logic.
+\end{comments}
 
-\begin{proposition}\label{thm:deductive_system_transitivity}
-  Given a deductive system, if \( \Gamma \vdash \varphi \), then \( \Gamma, \Delta \vdash \varphi \) for any formula \( \varphi \) and any sets \( \Gamma \) and \( \Delta \).
+\begin{definition}\mcite[sec. 1.3.9]{TroelstraSchwichtenberg2000}\label{def:implicational_propositional_hilbert_system}
+  The \term{implicational propositional Hilbert system} is an extraordinarily simple \hyperref[def:axiomatic_deductive_system]{Hilbert system}.
 
-  If every formula in \( \Delta \) is derivable from \( \Gamma \), then the converse also holds: \( \Gamma, \Delta \vdash \varphi \) implies \( \Gamma \vdash \varphi \).
-\end{proposition}
-\begin{proof}
-  If there exists a proof \( \varphi \) from \( \Gamma \), then adding additional axioms does not change anything.
-
-  The second part of the theorem has a tad more complicated proof. Assume that every formula in \( \Delta \) is derivable from \( \Gamma \) and that \( \Gamma, \Delta \vdash \varphi \).
-
-  For every \( \delta \in \Delta \), let \( P_\delta \) be a proof of \( \delta \) from members of \( \Gamma \) and let \( P_\varphi \) be a proof of \( \varphi \) from \( \Gamma \cup \Delta \).
-
-  Then, for every \( \delta \in \Delta \), we can replace the subtree of \( \delta \) with \( P_\delta \) to obtain a proof of \( \varphi \) from \( \Gamma \).
-
-  Therefore, \( \Gamma \vdash \varphi \).
-\end{proof}
-
-\begin{definition}\mcite[sec. 1.3.9]{TroelstraSchwichtenberg2000}\label{def:positive_implicational_deductive_system}
-  The \term{positive implicational propositional deductive system} is an extraordinarily simple \hyperref[def:axiomatic_deductive_system]{axiomatic deductive system}.
-
-  It is based on the \hyperref[def:propositional_language]{language of propositional logic}, but limited to formulas containing only the \hyperref[def:propositional_language/connectives/conditional]{conditional connective} \( \rightarrow \), without any \hyperref[def:propositional_language/constants]{propositional constants} or \hyperref[def:propositional_language/negation]{negation}. Note that this is only a special case of \hyperref[def:positive_formula]{positive formulas}.
-
-  The adjective \enquote{positive} in the name of the system refers to the impossibility to negate a formula. \enquote{Implicational} refers to the fact that all formulas are \hyperref[def:material_implication]{material implications} and the \hyperref[eq:def:def:axiomatic_deductive_system/mp]{sole inference rule} is based on eliminating the connective.
+  It is based on the \hyperref[def:propositional_language]{language of propositional logic}, but limited to formulas containing only the \hyperref[def:propositional_language/connectives/conditional]{conditional connective} \( \rightarrow \), without any \hyperref[def:propositional_language/constants]{propositional constants} or \hyperref[def:propositional_language/negation]{negation}.
 
   The system has the following logical axiom schemas:
   \begin{thmenum}
-    \thmitem{def:positive_implicational_deductive_system/intro} For every formula \( \varphi \), we can \enquote{introduce} an \hyperref[def:material_implication]{implication} whose consequent is \( \varphi \) and whose antecedent is any other formula \( \psi \):
-    \begin{equation}\label{eq:def:positive_implicational_deductive_system/intro}
-      \varphi \rightarrow (\psi \rightarrow \varphi) \tag{\textrm{A} \( \rightarrow^+ \)}.
+    \thmitem{def:implicational_propositional_hilbert_system/intro} For every formula \( \varphi \), we can \enquote{introduce} an \hyperref[def:material_implication]{implication} whose consequent is \( \varphi \) and whose antecedent is any other formula \( \psi \):
+    \begin{equation}\label{eq:def:implicational_propositional_hilbert_system/intro}
+      \varphi \rightarrow (\psi \rightarrow \varphi) \tag{\( \rightarrow_A^+ \)}.
     \end{equation}
 
-    \thmitem{def:positive_implicational_deductive_system/trans} Implication is transitive:
-    \begin{equation}\label{eq:def:positive_implicational_deductive_system/trans}
-      \parens[\Big]{ \varphi \rightarrow (\psi \rightarrow \theta) } \rightarrow \parens[\Big]{ (\varphi \rightarrow \psi) \rightarrow (\varphi \rightarrow \theta)} \tag{\textrm{A} \( \twoheadrightarrow \)}.
+    \thmitem{def:implicational_propositional_hilbert_system/trans} Implication distributes over itself:
+    \begin{equation}\label{eq:def:implicational_propositional_hilbert_system/trans}
+      \parens[\Big]{ \varphi \rightarrow (\psi \rightarrow \theta) } \rightarrow \parens[\Big]{ (\varphi \rightarrow \psi) \rightarrow (\varphi \rightarrow \theta)} \tag{\( \twoheadrightarrow_A \)}.
     \end{equation}
   \end{thmenum}
 \end{definition}
+\begin{comments}
+  \item \enquote{Implicational} refers to the fact that all formulas are \hyperref[def:material_implication]{material implications} and the \hyperref[eq:def:def:axiomatic_deductive_system/mp]{sole inference rule} is based on eliminating the connective.
+\end{comments}
 
-\begin{example}\label{ex:def:positive_implicational_deductive_system/identity}
-  Fix any \hyperref[def:positive_implicational_deductive_system]{positive implicational formula} \( \varphi \). We will construct a derivation of the implication
-  \begin{equation}\label{eq:ex:def:positive_implicational_deductive_system/identity}
+\begin{example}\label{ex:def:implicational_propositional_hilbert_system/identity}
+  Fix any \hyperref[def:implicational_propositional_hilbert_system]{implicational formula} \( \varphi \). We will construct a derivation of
+  \begin{equation}\label{eq:ex:def:implicational_propositional_hilbert_system/identity}
     \varphi \rightarrow \varphi.
   \end{equation}
 
   We derive the proof from the two logical axioms:
-  \begin{equation}\label{eq:ex:def:positive_implicational_deductive_system/identity/proof}
+  \begin{equation}\label{eq:ex:def:implicational_propositional_hilbert_system/identity/proof}
     \begin{prooftree}[separation=3em]
       \hypo
         {
-          \eqref{eq:def:positive_implicational_deductive_system/intro}
+          \eqref{eq:def:implicational_propositional_hilbert_system/intro}
         }
 
       \ellipsis
@@ -198,12 +199,12 @@ It is challenging to formally define a deductive system in a way that reflects r
           \end{array} \)
         }
         {
-          \eqref{eq:ex:propositional_positive_implicational_logic/dagger}
+          \eqref{eq:ex:propositional_implicational_logic/dagger}
         }
 
       \hypo
         {
-          \eqref{eq:def:positive_implicational_deductive_system/trans}
+          \eqref{eq:def:implicational_propositional_hilbert_system/trans}
         }
 
       \ellipsis
@@ -215,7 +216,7 @@ It is challenging to formally define a deductive system in a way that reflects r
           \end{array} \)
         }
         {
-          \eqref{eq:ex:propositional_positive_implicational_logic/dagger}
+          \eqref{eq:ex:propositional_implicational_logic/dagger}
           \rightarrow ((\varphi \rightarrow (\varphi \rightarrow \varphi)) \rightarrow (\varphi \rightarrow \varphi))
         }
 
@@ -223,7 +224,7 @@ It is challenging to formally define a deductive system in a way that reflects r
 
       \hypo
         {
-          \eqref{eq:def:positive_implicational_deductive_system/intro}
+          \eqref{eq:def:implicational_propositional_hilbert_system/intro}
         }
 
       \ellipsis
@@ -238,131 +239,159 @@ It is challenging to formally define a deductive system in a way that reflects r
     \end{prooftree}
   \end{equation}
   where
-  \begin{equation}\label{eq:ex:propositional_positive_implicational_logic/dagger}
+  \begin{equation}\label{eq:ex:propositional_implicational_logic/dagger}
     \varphi \rightarrow ((\varphi \rightarrow \varphi) \rightarrow \varphi).
   \end{equation}
 
-  The only assumptions used in the derivation were logical axioms, hence \eqref{eq:ex:def:positive_implicational_deductive_system/identity} is a logical theorem.
+  The only assumptions used in the derivation were logical axioms, hence \eqref{eq:ex:def:implicational_propositional_hilbert_system/identity} is a logical theorem.
 \end{example}
 
-\begin{definition}\label{def:derivability_and_satisfiability}\mcite[205]{Hinman2005}
-  We introduce two notions connecting \hyperref[def:proof_derivability]{derivability} and \hyperref[def:first_order_semantics/satisfiability]{satisfiability}:
-  \begin{thmenum}
-    \thmitem{def:derivability_and_satisfiability/soundness} If, for any closed formula \( \varphi \), derivability \( \vdash \varphi \) implies satisfiability \( \vDash \varphi \), we say that the deductive system is \term{sound} with respect to the semantical framework.
-
-    \thmitem{def:derivability_and_satisfiability/completeness} Dually, if satisfiability \( \vDash \varphi \) implies derivability \( \vdash \varphi \) for any closed formula \( \varphi \), we say that the deductive system is \term{complete} with respect to the semantical framework.
-  \end{thmenum}
-\end{definition}
-\begin{comments}
-  \item We restrict our attention to closed formulas because we wish to avoid the problems described in \fullref{rem:deduction_with_free_variables}. If we have a formula with free variables, we may simply take its \hyperref[def:universal_closure]{universal closure}.
-\end{comments}
-
-\begin{proposition}\label{thm:soundness_of_positive_implicational_propositional_deductive_system}
-  The \hyperref[def:positive_implicational_deductive_system]{positive implicational propositional deductive system} is \hyperref[def:derivability_and_satisfiability/soundness]{sound} with respect to \hyperref[def:propositional_semantics]{classical semantics}.
-\end{proposition}
-\begin{proof}
-  Follows from the truth tables in \fullref{def:standard_boolean_operators}.
-\end{proof}
-
 \begin{theorem}[Syntactic deduction theorem]\label{thm:syntactic_deduction_theorem}
-  In the \hyperref[def:positive_implicational_deductive_system]{positive implicational deductive system}, \( \Gamma, \psi \vdash \varphi \) holds if and only if \( \Gamma \vdash \psi \rightarrow \varphi \) holds.
+  In the \hyperref[def:implicational_propositional_hilbert_system]{implicational propositional Hilbert system}, for arbitrary first-order formulas, \( \Gamma, \varphi \vdash \psi \) holds if and only if \( \Gamma \vdash \varphi \rightarrow \psi \) holds.
 \end{theorem}
 \begin{comments}
   \item This theorem also holds for propositional deductive systems which extend the positive implication system with compatible rules, as in the case of \fullref{def:minimal_propositional_natural_deduction_system} or \fullref{def:first_order_natural_deduction_system}.
 \end{comments}
 \begin{proof}
-  \SufficiencySubProof Suppose that \( \Gamma, \psi \vdash \varphi \) and let \( P \) be a proof of \( \varphi \) from \( \Gamma \cup \set{ \psi } \). We will use \fullref{thm:induction_on_syntax_trees} on \( \varphi \).
+  \SufficiencySubProof Suppose that \( \Gamma, \varphi \vdash \psi \) and let \( P \) be a proof of \( \psi \) from \( \Gamma \cup \set{ \varphi } \). We will use \fullref{thm:induction_on_syntax_trees} on \( \psi \).
 
   \begin{itemize}
-    \item First suppose that \( \varphi \) is either a logical or a nonlogical axiom; in the latter case either \( \varphi \in \Gamma \) or \( \varphi = \psi \). In all three cases, the logical axiom \eqref{eq:def:positive_implicational_deductive_system/intro} allows us to derive \( \psi \rightarrow \varphi \) from \( \Gamma \) using \eqref{eq:def:def:axiomatic_deductive_system/mp}.
+    \item First suppose that \( \psi \) is either a logical or a nonlogical axiom; in the latter case either \( \psi \in \Gamma \) or \( \psi = \varphi \). In all three cases, the logical axiom \eqref{eq:def:implicational_propositional_hilbert_system/intro} allows us to derive \( \varphi \rightarrow \psi \) from \( \Gamma \) using \eqref{eq:def:def:axiomatic_deductive_system/mp}.
 
-    \item Otherwise, since the only rule is \eqref{eq:def:def:axiomatic_deductive_system/mp}, there exists some formula \( \theta \) derivable from \( \Gamma \cup \set{ \psi } \) such that \( P \) contains the formulas \( \theta \) and for \( \theta \rightarrow \varphi \). The inductive hypothesis holds for both, and hence \( \Gamma \vdash \psi \to \theta \) and \( \Gamma \vdash \psi \to (\theta \rightarrow \varphi) \). Let \( P_1 \) and \( P_2 \) be proofs corresponding to these two sequents.
+    \item Otherwise, since the only rule is \eqref{eq:def:def:axiomatic_deductive_system/mp}, there exists some formula \( \varphi \) derivable from \( \Gamma \cup \set{ \varphi } \) such that \( P \) contains the formulas \( \varphi \) and for \( \varphi \rightarrow \psi \). The inductive hypothesis holds for both, and hence \( \Gamma \vdash \varphi \to \varphi \) and \( \Gamma \vdash \varphi \to (\varphi \rightarrow \psi) \). Let \( P_1 \) and \( P_2 \) be proofs corresponding to these two sequents.
 
-    We can now build the following proof of \( \psi \to \varphi \) from \( \Gamma \):
+    We can now build the following proof of \( \varphi \to \psi \) from \( \Gamma \):
     \begin{equation*}
       \begin{prooftree}
-        \hypo{ P_2 }
-
-        \hypo{ \eqref{eq:def:positive_implicational_deductive_system/trans} }
+        \hypo{ \eqref{eq:def:implicational_propositional_hilbert_system/trans} }
         \ellipsis
           {}
           {
-            \parens[\Big]{ \psi \rightarrow (\theta \rightarrow \varphi) } \rightarrow \parens[\Big]{ (\psi \rightarrow \theta) \rightarrow (\psi \rightarrow \varphi)}
+            \parens[\Big]{ \varphi \rightarrow (\varphi \rightarrow \psi) } \rightarrow \parens[\Big]{ (\varphi \rightarrow \varphi) \rightarrow (\varphi \rightarrow \psi)}
           }
 
-        \infer2[\ref{eq:def:def:axiomatic_deductive_system/mp}]{ (\psi \rightarrow \theta) \rightarrow (\psi \rightarrow \varphi) }
+        \hypo{ P_2 }
+
+        \infer2[\ref{eq:def:def:axiomatic_deductive_system/mp}]{ (\varphi \rightarrow \varphi) \rightarrow (\varphi \rightarrow \psi) }
 
         \hypo{ P_1 }
-        \infer2[\ref{eq:def:def:axiomatic_deductive_system/mp}]{ \psi \rightarrow \varphi }
+        \infer2[\ref{eq:def:def:axiomatic_deductive_system/mp}]{ \varphi \rightarrow \psi }
       \end{prooftree}
     \end{equation*}
   \end{itemize}
 
-  \NecessitySubProof Now suppose that \( \Gamma \vdash \psi \rightarrow \varphi \). Then we can apply \eqref{eq:def:def:axiomatic_deductive_system/mp} to obtain \( \varphi \) from \( \Gamma \cup \set{ \psi } \).
+  \NecessitySubProof Now suppose that \( \Gamma \vdash \varphi \rightarrow \psi \). Then we can apply \eqref{eq:def:def:axiomatic_deductive_system/mp} to obtain \( \psi \) from \( \Gamma \cup \set{ \varphi } \).
 \end{proof}
 
-\begin{definition}\label{def:minimal_propositional_axiomatic_deductive_system}\mcite[def. 2.4.1]{TroelstraSchwichtenberg2000}
-  While the \hyperref[def:positive_implicational_deductive_system]{positive implicational propositional deductive system} is simple, it is of more practical use to have all propositional connectives available. As it turns out, we cannot utilize \hyperref[def:boolean_closure/complete]{complete sets of Boolean operators} unless we are dealing with \hyperref[def:propositional_semantics]{classical semantics} --- see for example \fullref{ex:heyting_semantics_lem_counterexample} and \fullref{ex:topological_semantics_lem_counterexample} for how \fullref{thm:boolean_equivalences/conditional_as_disjunction} fails to hold.
+\begin{definition}\label{def:derivability_and_satisfiability}\mcite[205]{Hinman2005}
+  We introduce two notions connecting \hyperref[def:proof_derivability]{derivability} and \hyperref[def:first_order_model]{satisfiability}:
+  \begin{thmenum}
+    \thmitem{def:derivability_and_satisfiability/soundness} If, for any closed formula \( \psi \), derivability \( \vdash \psi \) implies satisfiability \( \vDash \psi \), we say that the deductive system is \term{sound} with respect to the semantical framework.
 
-  Our goal is to define the (axiomatic) \term{minimal propositional axiomatic deductive system}, which would correspond to \hyperref[rem:minimal_logic]{minimal logic}. It is axiomatic in the sense that we do not use new rules to express the rest of the propositional syntax, but instead we need axiom schemas for each connective. The only exception is \hyperref[def:propositional_language/constants/verum]{\( \bot \)}, the axioms for which tend to change semantics by a lot --- see \fullref{thm:minimal_propositional_negation_laws}.
+    \thmitem{def:derivability_and_satisfiability/completeness} Dually, if satisfiability \( \vDash \psi \) implies derivability \( \vdash \psi \) for any closed formula \( \psi \), we say that the deductive system is \term{complete} with respect to the semantical framework.
+  \end{thmenum}
+\end{definition}
+\begin{comments}
+  \item In the case of \hyperref[def:first_order_syntax/formula]{first-order formulas} and not merely \hyperref[def:propositional_syntax/formula]{propositional formulas}, we restrict ourselves to \hyperref[def:first_order_syntax/closed_formula]{closed formulas}. This avoids any possible ambiguity on how to deal with free variables. As in the case of \fullref{def:first_order_natural_deduction_system}, it makes sense to discuss derivations for formulas with free variables because of intermediate formulas in proofs, which may lack outermost quantifiers.
+\end{comments}
+
+\begin{proposition}\label{thm:soundness_of_implicational_propositional_deductive_system}
+  The \hyperref[def:implicational_propositional_hilbert_system]{implicational propositional Hilbert system} is \hyperref[def:derivability_and_satisfiability/soundness]{sound} with respect to \hyperref[def:propositional_semantics]{classical semantics}.
+\end{proposition}
+\begin{proof}
+  Suppose that \( \vdash \varphi \). We will use induction on \( \varphi \), which is either a \hyperref[def:axiomatic_deductive_system]{logical axiom} or can be derived from logical axioms. We have the following possibilities for \( \varphi \):
+  \begin{itemize}
+    \item If \( \varphi \) is an instance of the axiom schema \eqref{eq:def:implicational_propositional_hilbert_system/intro}, say \( \varphi = \psi \rightarrow (\theta \rightarrow \psi) \), consider an arbitrary \hyperref[def:propositional_valuation]{propositional interpretation} \( I \). Then
+    \begin{equation*}
+      \Bracks{\varphi}_I
+      =
+      \Bracks{\psi \rightarrow (\theta \rightarrow \psi)}_I
+      =
+      \Bracks{\psi}_I \Bracks{\rightarrow} \parens[\Big]{ \Bracks{\theta}_I \Bracks{\rightarrow} \Bracks{\psi}_I }
+      =
+      \begin{cases}
+        T,                                            &\Bracks{\psi}_I = F, \\
+        \Bracks{\theta}_I \Bracks{\rightarrow} T = T, &\Bracks{\psi}_I = T.
+      \end{cases}
+    \end{equation*}
+
+    Therefore, \( \vDash \varphi \).
+
+    \item If \( \varphi \) is an instance of \eqref{eq:def:implicational_propositional_hilbert_system/trans}, we proceed similarly to prove that \( \vDash \varphi \).
+
+    \item Finally, in the case where \( \vdash \psi \rightarrow \varphi \) and \( \vdash \psi \) can both be derived from logical axioms, \ref{eq:def:def:axiomatic_deductive_system/mp} ensures that \( \vdash \varphi \).
+
+    If we assume that \( \vDash \psi \rightarrow \varphi \) and \( \vDash \psi \), then for any interpretation \( I \),
+    \begin{equation*}
+      \underbrace{\Bracks{\psi \rightarrow \varphi}_I}_T = \underbrace{\Bracks{\psi}_I}_T \Bracks{\rightarrow} \Bracks{\varphi}_I.
+    \end{equation*}
+
+    It remains for \( \Bracks{\varphi}_I \) to be true, which, generalizing on \( I \), proves that \( \vDash \varphi \).
+  \end{itemize}
+\end{proof}
+
+\begin{definition}\label{def:minimal_propositional_hilbert_system}\mcite[def. 2.4.1]{TroelstraSchwichtenberg2000}
+  While the \hyperref[def:implicational_propositional_hilbert_system]{implicational propositional Hilbert system} is simple, it is of more practical use to have all propositional connectives available. As it turns out, we cannot utilize \hyperref[def:boolean_closure/complete]{complete sets of Boolean operators} unless we are dealing with \hyperref[def:propositional_semantics]{classical semantics} --- see \fullref{ex:heyting_semantics_lem_counterexample} and \fullref{ex:topological_semantics_lem_counterexample} for cases where \fullref{thm:boolean_equivalences/conditional_as_disjunction} fails to hold.
+
+  Our goal is to define the \term{minimal propositional Hilbert system}, which would correspond to \hyperref[rem:minimal_logic]{minimal logic}. It is axiomatic in the sense that we do not use new rules to express the rest of the propositional syntax, but instead we need axiom schemas for each connective. The only exception is \hyperref[def:propositional_language/constants/verum]{\( \bot \)}, the axioms for which tend to change semantics by a lot --- see \fullref{thm:minimal_propositional_negation_laws}.
 
   Axioms with \( + \) in the superscript are called \term{introduction axioms} and axioms with \( - \) are called \term{elimination axioms}.
 
   The following axioms are essential in the sense that they cannot be defined in terms of others:
-  \begin{thmenum}[series=def:minimal_propositional_axiomatic_deductive_system]
-    \thmitem{def:minimal_propositional_axiomatic_deductive_system/top} The simplest axiom states that the constant \hyperref[def:propositional_language/constants/verum]{\( \top \)} is itself an axiom:
-    \begin{equation}\label{eq:def:minimal_propositional_axiomatic_deductive_system/top/intro}
-      \top \tag{\textrm{A} \( \top^+ \)}
+  \begin{thmenum}[series=def:minimal_propositional_hilbert_system]
+    \thmitem{def:minimal_propositional_hilbert_system/top} The simplest axiom states that the constant \hyperref[def:propositional_language/constants/verum]{\( \top \)} is itself an axiom:
+    \begin{equation}\label{eq:def:minimal_propositional_hilbert_system/top/intro}
+      \top \tag{\( \top_A^+ \)}
     \end{equation}
 
-    \thmitem{def:minimal_propositional_axiomatic_deductive_system/and} Axioms for \hyperref[def:propositional_language/connectives/conjunction]{conjunction}:
+    \thmitem{def:minimal_propositional_hilbert_system/and} Axioms for \hyperref[def:propositional_language/connectives/conjunction]{conjunction}:
     \begin{align}
-      \mathllap{ (\varphi \wedge \psi) } &\rightarrow \mathrlap{ \psi } \tag{\textrm{A} \( \wedge_L^- \)} \label{eq:def:minimal_propositional_axiomatic_deductive_system/and/elim_left} \\
-      \mathllap{ (\varphi \wedge \psi) } &\rightarrow \mathrlap{ \varphi } \tag{\textrm{A} \( \wedge_R^- \)} \label{eq:def:minimal_propositional_axiomatic_deductive_system/and/elim_right} \\
-      \mathllap{ \varphi }               &\rightarrow \mathrlap{ \parens[\Big]{ \psi \rightarrow (\varphi \wedge \psi) } } \tag{\textrm{A} \( \wedge^+ \)} \label{eq:def:minimal_propositional_axiomatic_deductive_system/and/intro}
+      \mathllap{ (\psi \wedge \psi) } &\rightarrow \mathrlap{ \psi } \tag{\( \wedge_A^{+_L} \)} \label{eq:def:minimal_propositional_hilbert_system/and/elim_left} \\
+      \mathllap{ (\psi \wedge \psi) } &\rightarrow \mathrlap{ \psi } \tag{\( \wedge_A^{+_R} \)} \label{eq:def:minimal_propositional_hilbert_system/and/elim_right} \\
+      \mathllap{ \psi }               &\rightarrow \mathrlap{ \parens[\Big]{ \psi \rightarrow (\psi \wedge \psi) } } \tag{\( \wedge_A^{-} \)} \label{eq:def:minimal_propositional_hilbert_system/and/intro}
     \end{align}
 
-    \thmitem{def:minimal_propositional_axiomatic_deductive_system/or} Axioms for \hyperref[def:propositional_language/connectives/disjunction]{disjunction}:
+    \thmitem{def:minimal_propositional_hilbert_system/or} Axioms for \hyperref[def:propositional_language/connectives/disjunction]{disjunction}:
     \begin{align}
-      \mathllap{ \varphi }                      &\rightarrow \mathrlap{ (\varphi \vee \psi) } \tag{\textrm{A} \( \vee_L^+ \)} \label{eq:def:minimal_propositional_axiomatic_deductive_system/or/intro_left} \\
-      \mathllap{ \psi }                      &\rightarrow \mathrlap{ (\varphi \vee \psi) } \tag{\textrm{A} \( \vee_R^+ \)} \label{eq:def:minimal_propositional_axiomatic_deductive_system/or/intro_right} \\
-      \mathllap{ (\varphi \rightarrow \theta) } &\rightarrow \mathrlap{ \parens[\Big]{ (\psi \rightarrow \theta) \rightarrow ((\varphi \vee \psi) \rightarrow \theta) } } \tag{\textrm{A} \( \vee^- \)} \label{eq:def:minimal_propositional_axiomatic_deductive_system/or/elim}
+      \mathllap{ \psi }                      &\rightarrow \mathrlap{ (\psi \vee \psi) } \tag{\( \vee_A^{+_L} \)} \label{eq:def:minimal_propositional_hilbert_system/or/intro_left} \\
+      \mathllap{ \psi }                      &\rightarrow \mathrlap{ (\psi \vee \psi) } \tag{\( \vee_A^{+_R} \)} \label{eq:def:minimal_propositional_hilbert_system/or/intro_right} \\
+      \mathllap{ (\psi \rightarrow \theta) } &\rightarrow \mathrlap{ \parens[\Big]{ (\psi \rightarrow \theta) \rightarrow ((\psi \vee \psi) \rightarrow \theta) } } \tag{\( \vee_A^{-} \)} \label{eq:def:minimal_propositional_hilbert_system/or/elim}
     \end{align}
   \end{thmenum}
 
   The following axioms and are said to be \enquote{abbreviations} and do not affect semantics:
-  \begin{thmenum}[resume=def:minimal_propositional_axiomatic_deductive_system]
-    \thmitem{def:minimal_propositional_axiomatic_deductive_system/iff} The axioms for the biconditional are motivated by \fullref{thm:boolean_equivalences/biconditional_via_conditionals}:
+  \begin{thmenum}[resume=def:minimal_propositional_hilbert_system]
+    \thmitem{def:minimal_propositional_hilbert_system/iff} The axioms for the biconditional are motivated by \fullref{thm:boolean_equivalences/biconditional_via_conditionals}:
     \begin{align}
-      \mathllap{ (\varphi \rightarrow \psi)     } &\rightarrow \mathrlap{ \parens[\Big]{ (\psi \rightarrow \varphi) \rightarrow (\varphi \leftrightarrow \psi) } } \tag{\textrm{A} \( \leftrightarrow^+ \)} \label{def:minimal_propositional_axiomatic_deductive_system/iff/intro} \\
-      \mathllap{ (\varphi \leftrightarrow \psi)  }&\rightarrow \mathrlap{ (\varphi \rightarrow \psi) } \tag{\textrm{A} \( \leftrightarrow_L^- \)} \label{eq:def:minimal_propositional_axiomatic_deductive_system/iff/elim_left} \\
-      \mathllap{ (\varphi \leftrightarrow \psi) } &\rightarrow \mathrlap{ (\psi \rightarrow \varphi) } \tag{\textrm{A} \( \leftrightarrow_R^- \)} \label{eq:def:minimal_propositional_axiomatic_deductive_system/iff/elim_right}
+      \mathllap{ (\psi \rightarrow \psi)     } &\rightarrow \mathrlap{ \parens[\Big]{ (\psi \rightarrow \psi) \rightarrow (\psi \leftrightarrow \psi) } } \tag{\( \leftrightarrow_A^{+} \)} \label{def:minimal_propositional_hilbert_system/iff/intro} \\
+      \mathllap{ (\psi \leftrightarrow \psi)  }&\rightarrow \mathrlap{ (\psi \rightarrow \psi) } \tag{\( \leftrightarrow_A^{-_L} \)} \label{eq:def:minimal_propositional_hilbert_system/iff/elim_left} \\
+      \mathllap{ (\psi \leftrightarrow \psi) } &\rightarrow \mathrlap{ (\psi \rightarrow \psi) } \tag{\( \leftrightarrow_A^{-_R} \)} \label{eq:def:minimal_propositional_hilbert_system/iff/elim_right}
     \end{align}
 
-    \thmitem{def:minimal_propositional_axiomatic_deductive_system/negation} The axioms for negation are motivated by \fullref{thm:boolean_equivalences/negation_bottom}:
+    \thmitem{def:minimal_propositional_hilbert_system/negation} The axioms for negation are motivated by \fullref{thm:boolean_equivalences/negation_bottom}:
     \begin{align}
-      \mathllap{ \neg \varphi }               &\rightarrow \mathrlap{ (\varphi \rightarrow \bot) } \tag{\textrm{A} \( \neg^- \)} \label{eq:def:minimal_propositional_axiomatic_deductive_system/neg/elim} \\
-      \mathllap{ (\varphi \rightarrow \bot) } &\rightarrow \mathrlap{ \neg \varphi } \tag{\textrm{A} \( \neg^+ \)} \label{eq:def:minimal_propositional_axiomatic_deductive_system/neg/intro}
+      \mathllap{ \neg \psi }               &\rightarrow \mathrlap{ (\psi \rightarrow \bot) } \tag{\( \neg_A^- \)} \label{eq:def:minimal_propositional_hilbert_system/neg/elim} \\
+      \mathllap{ (\psi \rightarrow \bot) } &\rightarrow \mathrlap{ \neg \psi } \tag{\( \neg_A^+ \)} \label{eq:def:minimal_propositional_hilbert_system/neg/intro}
     \end{align}
   \end{thmenum}
 \end{definition}
 
 \begin{definition}\label{def:natural_deduction_system}\mcite[sec. 1.3.2]{TroelstraSchwichtenberg2000}
-  \term{Natural deductive systems} are \hyperref[def:deductive_system]{deductive systems} whose set of rules allows \term{discharging} certain assumptions of the proof tree. These rules correspond to \enquote{bringing in} the sequent \( \varphi \vdash \psi \) as a formula \( \varphi \to \psi \), thus eliminating \( \varphi \) as an assumption as justified by \fullref{thm:syntactic_deduction_theorem}.
+  \term{Natural deductive systems} are \hyperref[def:deductive_system]{deductive systems} whose set of rules allows \enquote{discharging} certain assumptions of the proof tree. These rules correspond to \enquote{bringing in} the sequent \( \psi \vdash \psi \) as a formula \( \psi \to \psi \), thus eliminating \( \psi \) as an assumption as justified by \fullref{thm:syntactic_deduction_theorem}.
 
-  In a natural deduction system, all assumptions in a \hyperref[def:proof_tree]{proof trees} are labeled differently. When applying a rule that supports discharging assumptions, we add an additional \hyperref[def:weighted_set]{label} to the subproof that matches the label of the assumption which we discharge.
+  In a natural deduction system, every assumption in a \hyperref[def:proof_tree]{proof trees} has a unique \hyperref[def:weighted_set]{label}. By default, we say that assumptions are \term{undischarged}. When applying a rule that supports discharging, we add a label to the subproof that matches the label of the assumption which we discharge. We additionally add a \hyperref[def:proof_tree/premises]{non-premise label} to every discharged assumption so that it does not affect \hyperref[def:proof_derivability]{derivability}.
 
-  This allows us to distinguish between \term{discharged assumptions} and \term{undischarged assumptions}. We add a \hyperref[def:proof_tree/premises]{non-premise label} to every discharged assumption so that it does not affect \hyperref[def:proof_derivability]{derivability}.
+  We allow applying rules without discharging any assumptions. For example, sometimes we do not have any assumptions to discharge e.g. in our proof of correctness of \fullref{def:minimal_propositional_natural_deduction_system/imp}.
 \end{definition}
 
 \begin{definition}\label{def:minimal_propositional_natural_deduction_system}\mcite[def. 2.1.1]{TroelstraSchwichtenberg2000}
-  We define the \term{minimal propositional natural deduction system}, which is the \hyperref[def:natural_deduction_system]{natural deduction} equivalent of the \hyperref[def:minimal_propositional_axiomatic_deductive_system]{minimal propositional axiomatic deductive system}.
+  We define the \term{minimal propositional natural deduction system}, which is the \hyperref[def:natural_deduction_system]{natural deduction} equivalent of the \hyperref[def:minimal_propositional_hilbert_system]{minimal propositional Hilbert system}.
 
   \begin{thmenum}
-    \thmitem{def:minimal_propositional_natural_deduction_system/imp} The following rules corresponds to the conditional axiom schemas in \fullref{def:positive_implicational_deductive_system}:
+    \thmitem{def:minimal_propositional_natural_deduction_system/imp} The following rules corresponds to the conditional axiom schemas in \fullref{def:implicational_propositional_hilbert_system}:
 
     \begin{minipage}[t]{0.45\textwidth}
-      This rule is inspired by \eqref{eq:def:positive_implicational_deductive_system/intro}:
+      This rule is inspired by \eqref{eq:def:implicational_propositional_hilbert_system/intro}:
       \begin{equation*}\taglabel[\( \rightarrow^+ \)]{eq:def:minimal_propositional_natural_deduction_system/imp/intro}
         \begin{prooftree}
           \hypo{ [\psi]^n }
@@ -385,9 +414,9 @@ It is challenging to formally define a deductive system in a way that reflects r
 
     The additional notation in \eqref{eq:def:minimal_propositional_natural_deduction_system/imp/intro} means that the premise labeled with \( n \), if any, can be discharged.
 
-    Note that there is no rule corresponding to \eqref{eq:def:positive_implicational_deductive_system/trans} because this axiom schema follows from \eqref{eq:def:minimal_propositional_natural_deduction_system/imp/intro} and \eqref{eq:def:minimal_propositional_natural_deduction_system/imp/elim}. Unlike in the axiomatic deductive system where \eqref{eq:def:positive_implicational_deductive_system/trans} is used to prove \fullref{thm:syntactic_deduction_theorem}, here we have a stronger connection between \( \rightarrow \) in the object language and \( \vdash \) in the metalanguage given by \eqref{eq:def:minimal_propositional_natural_deduction_system/imp/intro}.
+    Note that there is no rule corresponding to \eqref{eq:def:implicational_propositional_hilbert_system/trans} because this axiom schema follows from \eqref{eq:def:minimal_propositional_natural_deduction_system/imp/intro} and \eqref{eq:def:minimal_propositional_natural_deduction_system/imp/elim}. Unlike in the Hilbert system where \eqref{eq:def:implicational_propositional_hilbert_system/trans} is used to prove \fullref{thm:syntactic_deduction_theorem}, here we have a stronger connection between \( \rightarrow \) in the object language and \( \vdash \) in the metalanguage given by \eqref{eq:def:minimal_propositional_natural_deduction_system/imp/intro}.
 
-    \thmitem{def:minimal_propositional_natural_deduction_system/top} The following rule corresponds to the axiom \eqref{eq:def:minimal_propositional_axiomatic_deductive_system/top/intro}:
+    \thmitem{def:minimal_propositional_natural_deduction_system/top} The following rule corresponds to the axiom \eqref{eq:def:minimal_propositional_hilbert_system/top/intro}:
     \begin{equation*}\taglabel[\( \top^+ \)]{eq:def:minimal_propositional_natural_deduction_system/top/intro}
       \begin{prooftree}
         \infer0[\ref{eq:def:minimal_propositional_natural_deduction_system/top/intro}]{ \top }
@@ -396,7 +425,7 @@ It is challenging to formally define a deductive system in a way that reflects r
 
     As discussed in \fullref{def:deductive_system/rule}, applications of this rule have a \hyperref[def:proof_tree/premises]{non-premise label} in order to prevent \( \top \) as an undischarged assumption.
 
-    \thmitem{def:minimal_propositional_natural_deduction_system/and} The following rules corresponds to the conjunction axiom schemas in \fullref{def:minimal_propositional_axiomatic_deductive_system/and}:
+    \thmitem{def:minimal_propositional_natural_deduction_system/and} The following rules corresponds to the conjunction axiom schemas in \fullref{def:minimal_propositional_hilbert_system/and}:
 
     \begin{minipage}{0.3\textwidth}
       \begin{equation*}\taglabel[\( \wedge^+ \)]{eq:def:minimal_propositional_natural_deduction_system/and/intro}
@@ -409,7 +438,7 @@ It is challenging to formally define a deductive system in a way that reflects r
     \end{minipage}
     \hfill
     \begin{minipage}{0.3\textwidth}
-      \begin{equation*}\taglabel[\( \wedge_L^- \)]{eq:def:minimal_propositional_natural_deduction_system/and/elim_left}
+      \begin{equation*}\taglabel[\( \wedge^{-_L} \)]{eq:def:minimal_propositional_natural_deduction_system/and/elim_left}
         \begin{prooftree}
           \hypo{ \varphi \wedge \psi }
           \infer1[\ref{eq:def:minimal_propositional_natural_deduction_system/and/elim_left}]{ \psi }
@@ -418,7 +447,7 @@ It is challenging to formally define a deductive system in a way that reflects r
     \end{minipage}
     \hfill
     \begin{minipage}{0.3\textwidth}
-      \begin{equation*}\taglabel[\( \wedge_R^- \)]{eq:def:minimal_propositional_natural_deduction_system/and/elim_right}
+      \begin{equation*}\taglabel[\( \wedge^{-_R} \)]{eq:def:minimal_propositional_natural_deduction_system/and/elim_right}
         \begin{prooftree}
           \hypo{ \varphi \wedge \psi }
           \infer1[\ref{eq:def:minimal_propositional_natural_deduction_system/and/elim_right}]{ \varphi }
@@ -426,10 +455,10 @@ It is challenging to formally define a deductive system in a way that reflects r
       \end{equation*}
     \end{minipage}
 
-    \thmitem{def:minimal_propositional_natural_deduction_system/or} The following rules corresponds to the disjunction axiom schemas in \fullref{def:minimal_propositional_axiomatic_deductive_system/or}:
+    \thmitem{def:minimal_propositional_natural_deduction_system/or} The following rules corresponds to the disjunction axiom schemas in \fullref{def:minimal_propositional_hilbert_system/or}:
 
     \begin{minipage}{0.3\textwidth}
-      \begin{equation*}\taglabel[\( \vee_L^+ \)]{eq:def:minimal_propositional_natural_deduction_system/or/intro_left}
+      \begin{equation*}\taglabel[\( \vee^{+_L} \)]{eq:def:minimal_propositional_natural_deduction_system/or/intro_left}
         \begin{prooftree}
           \hypo{ \varphi }
           \infer1[\ref{eq:def:minimal_propositional_natural_deduction_system/or/intro_left}]{ \varphi \vee \psi }
@@ -438,7 +467,7 @@ It is challenging to formally define a deductive system in a way that reflects r
     \end{minipage}
     \hfill
     \begin{minipage}{0.3\textwidth}
-      \begin{equation*}\taglabel[\( \vee_R^+ \)]{eq:def:minimal_propositional_natural_deduction_system/or/intro_right}
+      \begin{equation*}\taglabel[\( \vee^{+_R} \)]{eq:def:minimal_propositional_natural_deduction_system/or/intro_right}
         \begin{prooftree}
           \hypo{ \psi }
           \infer1[\ref{eq:def:minimal_propositional_natural_deduction_system/or/intro_right}]{ \varphi \vee \psi }
@@ -459,22 +488,20 @@ It is challenging to formally define a deductive system in a way that reflects r
       \end{equation*}
     \end{minipage}
 
-    \thmitem{def:minimal_propositional_natural_deduction_system/iff} The following rules corresponds to the biconditional axiom schemas in \fullref{def:minimal_propositional_axiomatic_deductive_system/iff}:
+    \thmitem{def:minimal_propositional_natural_deduction_system/iff} The following rules corresponds to the biconditional axiom schemas in \fullref{def:minimal_propositional_hilbert_system/iff}:
 
     \begin{minipage}{0.3\textwidth}
       \begin{equation*}\taglabel[\( \leftrightarrow^+ \)]{eq:def:minimal_propositional_natural_deduction_system/iff/intro}
         \begin{prooftree}
-          \hypo{ [\varphi]^n }
-          \ellipsis {} { \psi }
-          \hypo{ [\psi]^n }
-          \ellipsis {} { \varphi }
+          \hypo{ \varphi \rightarrow \psi }
+          \hypo{ \psi \rightarrow \varphi }
           \infer[left label=\( n \)]2[\ref{eq:def:minimal_propositional_natural_deduction_system/iff/intro}]{ \varphi \leftrightarrow \psi }
         \end{prooftree}
       \end{equation*}
     \end{minipage}
     \hfill
     \begin{minipage}{0.3\textwidth}
-      \begin{equation*}\taglabel[\( \leftrightarrow_L^- \)]{eq:def:minimal_propositional_natural_deduction_system/iff/elim_left}
+      \begin{equation*}\taglabel[\( \leftrightarrow^{-_L} \)]{eq:def:minimal_propositional_natural_deduction_system/iff/elim_left}
         \begin{prooftree}
           \hypo{ \varphi \leftrightarrow \psi }
           \hypo{ \psi }
@@ -484,7 +511,7 @@ It is challenging to formally define a deductive system in a way that reflects r
     \end{minipage}
     \hfill
     \begin{minipage}{0.3\textwidth}
-      \begin{equation*}\taglabel[\( \leftrightarrow_R^- \)]{eq:def:minimal_propositional_natural_deduction_system/iff/elim_right}
+      \begin{equation*}\taglabel[\( \leftrightarrow^{-_R} \)]{eq:def:minimal_propositional_natural_deduction_system/iff/elim_right}
         \begin{prooftree}
           \hypo{ \varphi \leftrightarrow \psi }
           \hypo{ \varphi }
@@ -493,7 +520,7 @@ It is challenging to formally define a deductive system in a way that reflects r
       \end{equation*}
     \end{minipage}
 
-    \thmitem{def:minimal_propositional_natural_deduction_system/negation} The following rules corresponds to the negation axiom schemas in \fullref{def:minimal_propositional_axiomatic_deductive_system/negation}:
+    \thmitem{def:minimal_propositional_natural_deduction_system/negation} The following rules corresponds to the negation axiom schemas in \fullref{def:minimal_propositional_hilbert_system/negation}:
 
     \begin{minipage}{0.45\textwidth}
       \begin{equation*}\taglabel[\( \neg^+ \)]{eq:def:minimal_propositional_natural_deduction_system/neg/intro}
@@ -517,20 +544,22 @@ It is challenging to formally define a deductive system in a way that reflects r
   \end{thmenum}
 \end{definition}
 \begin{defproof}
-  We will prove that the axiomatic \hyperref[def:minimal_propositional_axiomatic_deductive_system]{minimal propositional axiomatic deductive system} is equivalent to the rules of natural deduction described in this proposition.
+  We will prove that the axiomatic \hyperref[def:minimal_propositional_hilbert_system]{minimal propositional Hilbert system} is equivalent to the rules of natural deduction described in this proposition.
 
-  \SubProofOf{def:minimal_propositional_natural_deduction_system/imp} Consider first the axiom \eqref{eq:def:positive_implicational_deductive_system/intro}. Fix two formulas \( \varphi \) and \( \psi \). Then \( \varphi \rightarrow (\psi \rightarrow \varphi) \) is an instance of \eqref{eq:def:positive_implicational_deductive_system/intro}. Thus, we obtain \( \varphi \vdash \psi \rightarrow \varphi \) by applying \eqref{eq:def:def:axiomatic_deductive_system/mp}, which in turn shows the validity of the rule \eqref{eq:def:minimal_propositional_natural_deduction_system/imp/intro}.
-
-  The labeled assumption here is essential for showing that \eqref{eq:def:minimal_propositional_natural_deduction_system/imp/intro} implies \eqref{eq:def:positive_implicational_deductive_system/intro}. Without it we would have the rule
+  \SubProofOf{def:minimal_propositional_natural_deduction_system/imp} Consider first the axiom \eqref{eq:def:implicational_propositional_hilbert_system/intro}. It can be derived via \eqref{eq:def:minimal_propositional_natural_deduction_system/imp/intro} as follows:
   \begin{equation*}
     \begin{prooftree}
-      \hypo{ \psi }
-      \infer1{ \varphi \rightarrow \psi }
+      \hypo{ [\varphi]^1 }
+      \infer1[\ref{eq:def:minimal_propositional_natural_deduction_system/imp/intro}]{ \psi \rightarrow \varphi }
+      \infer[left label=\( 1 \)]1[\ref{eq:def:minimal_propositional_natural_deduction_system/imp/intro}]{ \varphi \rightarrow (\psi \rightarrow \varphi) }
     \end{prooftree}
   \end{equation*}
-  which would not allow us to discharge the assumption \( \varphi \) when it is in fact immaterial for the validity of \( \psi \).
 
-  Now we will show that \eqref{eq:def:positive_implicational_deductive_system/trans} can be derived using only the rules \eqref{eq:def:minimal_propositional_natural_deduction_system/imp/intro} and \eqref{eq:def:minimal_propositional_natural_deduction_system/imp/elim}:
+  Note that we have used \ref{eq:def:minimal_propositional_natural_deduction_system/imp/intro} twice, but have only discharged an assumption the second time.
+
+  Conversely, fix two formulas \( \varphi \) and \( \psi \). Then \( \psi \rightarrow (\varphi \rightarrow \psi) \) is an instance of \eqref{eq:def:implicational_propositional_hilbert_system/intro}. Thus, we obtain \( \psi \vdash \varphi \rightarrow \psi \) by applying \eqref{eq:def:def:axiomatic_deductive_system/mp}, which in turn shows the validity of the rule \eqref{eq:def:minimal_propositional_natural_deduction_system/imp/intro}.
+
+  Now we will show that \eqref{eq:def:implicational_propositional_hilbert_system/trans} can be derived using only the rules \eqref{eq:def:minimal_propositional_natural_deduction_system/imp/intro} and \eqref{eq:def:minimal_propositional_natural_deduction_system/imp/elim}:
   \begin{equation}\label{eq:def:minimal_propositional_natural_deduction_system/imp/trans_derivation}
     \begin{prooftree}
       \hypo{ [\varphi \rightarrow (\psi \rightarrow \theta)]^1 }
@@ -545,17 +574,17 @@ It is challenging to formally define a deductive system in a way that reflects r
 
       \infer[left label=\( 2 \)]1[\ref{eq:def:minimal_propositional_natural_deduction_system/imp/intro}]{ \varphi \rightarrow \theta }
       \infer[left label=\( 3 \)]1[\ref{eq:def:minimal_propositional_natural_deduction_system/imp/intro}]{ (\varphi \rightarrow \psi) \rightarrow (\varphi \rightarrow \theta) }
-      \infer[left label=\( 1 \)]1[\ref{eq:def:minimal_propositional_natural_deduction_system/imp/intro}]{ \eqref{eq:def:positive_implicational_deductive_system/trans} }
+      \infer[left label=\( 1 \)]1[\ref{eq:def:minimal_propositional_natural_deduction_system/imp/intro}]{ \eqref{eq:def:implicational_propositional_hilbert_system/trans} }
     \end{prooftree}
   \end{equation}
 
   \SubProofOf{def:minimal_propositional_natural_deduction_system/top} Obvious.
 
-  \SubProofOf{def:minimal_propositional_natural_deduction_system/and} The rule \eqref{eq:def:minimal_propositional_axiomatic_deductive_system/and/intro} is equivalent by more readable than proving \( \set{ \varphi, \psi } \vdash \varphi \wedge \psi \) directly. Indeed, compare it to
+  \SubProofOf{def:minimal_propositional_natural_deduction_system/and} The rule \eqref{eq:def:minimal_propositional_hilbert_system/and/intro} is equivalent but more readable than proving \( \set{ \varphi, \psi } \vdash \varphi \wedge \psi \) directly. Indeed, compare it to
   \begin{equation*}
     \begin{prooftree}
       \hypo{ \varphi }
-      \hypo{ \eqref{eq:def:minimal_propositional_axiomatic_deductive_system/and/intro} }
+      \hypo{ \eqref{eq:def:minimal_propositional_hilbert_system/and/intro} }
       \infer2[\ref{eq:def:def:axiomatic_deductive_system/mp}]{ \psi \rightarrow (\varphi \wedge \psi) }
 
       \hypo{ \psi }
@@ -569,16 +598,16 @@ It is challenging to formally define a deductive system in a way that reflects r
       \hypo{ [\psi]^2 }
       \infer2[\ref{eq:def:minimal_propositional_natural_deduction_system/and/intro}]{ \varphi \wedge \psi }
       \infer[left label=\( 2 \)]1[\ref{eq:def:minimal_propositional_natural_deduction_system/imp/intro}]{ \psi \rightarrow (\varphi \wedge \psi) },
-      \infer[left label=\( 1 \)]1[\ref{eq:def:minimal_propositional_natural_deduction_system/imp/intro}]{ \eqref{eq:def:minimal_propositional_axiomatic_deductive_system/and/intro} },
+      \infer[left label=\( 1 \)]1[\ref{eq:def:minimal_propositional_natural_deduction_system/imp/intro}]{ \eqref{eq:def:minimal_propositional_hilbert_system/and/intro} },
     \end{prooftree}
   \end{equation}
 
   The other two rules are trivially connected to the corresponding axioms using a single application of \eqref{eq:def:def:axiomatic_deductive_system/mp}.
 
-  \SubProofOf{def:minimal_propositional_natural_deduction_system/or} For a more complicated example, consider \eqref{eq:def:minimal_propositional_axiomatic_deductive_system/or/elim}. We have
+  \SubProofOf{def:minimal_propositional_natural_deduction_system/or} For a more complicated example, consider \eqref{eq:def:minimal_propositional_hilbert_system/or/elim}. We have
   \begin{equation*}
     \begin{prooftree}
-      \hypo{ \eqref{eq:def:minimal_propositional_axiomatic_deductive_system/or/elim} }
+      \hypo{ \eqref{eq:def:minimal_propositional_hilbert_system/or/elim} }
       \hypo{ \varphi \rightarrow \theta }
       \infer2[\ref{eq:def:def:axiomatic_deductive_system/mp}]{ (\psi \rightarrow \theta) \rightarrow ((\varphi \vee \psi) \rightarrow \theta) },
 
@@ -592,13 +621,13 @@ It is challenging to formally define a deductive system in a way that reflects r
 
   The assumptions of this derivations are \( \varphi \rightarrow \theta \), \( \psi \rightarrow \theta \) and \( \varphi \vee \psi \). Instead of adding them directly as premises of the inference rule \eqref{eq:def:minimal_propositional_natural_deduction_system/or/elim}, we replace the conditional \( \rightarrow \) with labeled assumptions that correspond to \( \varphi \vdash \theta \) and \( \psi \vdash \theta \).
 
-  We can prove that \eqref{eq:def:minimal_propositional_natural_deduction_system/or/elim} implies \eqref{eq:def:minimal_propositional_axiomatic_deductive_system/or/elim} analogously to \eqref{eq:def:minimal_propositional_natural_deduction_system/and_intro_axiom_derivation}.
+  We can prove that \eqref{eq:def:minimal_propositional_natural_deduction_system/or/elim} implies \eqref{eq:def:minimal_propositional_hilbert_system/or/elim} analogously to \eqref{eq:def:minimal_propositional_natural_deduction_system/and_intro_axiom_derivation}.
 
   The other two rules are again trivial to obtain from the corresponding axioms and vice versa.
 
   \SubProofOf{def:minimal_propositional_natural_deduction_system/iff} Analogous to what we have already shown.
 
-  \SubProofOf{def:minimal_propositional_natural_deduction_system/negation} \eqref{eq:def:minimal_propositional_natural_deduction_system/neg/intro} is obtained from \eqref{eq:def:minimal_propositional_axiomatic_deductive_system/neg/intro} by applying \eqref{eq:def:def:axiomatic_deductive_system/mp} once and \eqref{eq:def:minimal_propositional_natural_deduction_system/neg/elim} is obtained from \eqref{eq:def:minimal_propositional_axiomatic_deductive_system/neg/intro} by applying \eqref{eq:def:def:axiomatic_deductive_system/mp} twice. Using the rules to derive the axioms is similar to \eqref{eq:def:minimal_propositional_natural_deduction_system/and_intro_axiom_derivation}.
+  \SubProofOf{def:minimal_propositional_natural_deduction_system/negation} \eqref{eq:def:minimal_propositional_natural_deduction_system/neg/intro} is obtained from \eqref{eq:def:minimal_propositional_hilbert_system/neg/intro} by applying \eqref{eq:def:def:axiomatic_deductive_system/mp} once and \eqref{eq:def:minimal_propositional_natural_deduction_system/neg/elim} is obtained from \eqref{eq:def:minimal_propositional_hilbert_system/neg/elim} by applying \eqref{eq:def:def:axiomatic_deductive_system/mp} twice. Using the rules to derive the axioms is similar to \eqref{eq:def:minimal_propositional_natural_deduction_system/and_intro_axiom_derivation}.
 \end{defproof}
 
 \begin{proposition}\label{thm:conjunction_of_premises}
@@ -636,33 +665,33 @@ It is challenging to formally define a deductive system in a way that reflects r
   \begin{thmenum}
     \thmitem{thm:minimal_propositional_negation_laws/dne} Double negation elimination:
     \begin{equation}\label{eq:thm:minimal_propositional_negation_laws/dne}
-      \neg \neg \varphi \rightarrow \varphi \tag{A DNE}.
+      \neg \neg \varphi \rightarrow \varphi \tag{\( \logic{DNE}_A \)}.
     \end{equation}
 
     The semantic counterpart to this law is \fullref{thm:boolean_equivalences/double_negation}.
 
     \thmitem{thm:minimal_propositional_negation_laws/efq} \term[en=from falsity everything follows]{Ex falso quodlibet}, also known as the \term{principle of explosion}:
     \begin{equation}\label{eq:thm:minimal_propositional_negation_laws/efq}
-      \bot \rightarrow \varphi \tag{A EFQ}
+      \bot \rightarrow \varphi \tag{\( \logic{EFQ}_A \)}
     \end{equation}
 
     \thmitem{thm:minimal_propositional_negation_laws/pierce} \term{Pierce's law}:
     \begin{equation}\label{eq:thm:minimal_propositional_negation_laws/pierce}
-      ((\varphi \rightarrow \psi) \rightarrow \varphi) \rightarrow \varphi \tag{A Pierce}
+      ((\varphi \rightarrow \psi) \rightarrow \varphi) \rightarrow \varphi \tag{\( \logic{Pierce}_A \)}
     \end{equation}
 
     \thmitem{thm:minimal_propositional_negation_laws/lem} The \term{law of the excluded middle}:
     \begin{equation}\label{eq:thm:minimal_propositional_negation_laws/lem}
-      \varphi \vee \neg \varphi \tag{A LEM}
+      \varphi \vee \neg \varphi \tag{\( \logic{LEM}_A \)}
     \end{equation}
 
     \thmitem{thm:minimal_propositional_negation_laws/lnc} The \term{law of non-contradiction}:
     \begin{equation}\label{eq:thm:minimal_propositional_negation_laws/lnc}
-      \neg (\varphi \wedge \neg \varphi). \tag{A LNC}
+      \neg (\varphi \wedge \neg \varphi). \tag{\( \logic{LNC}_A \)}
     \end{equation}
   \end{thmenum}
 
-  Assuming the \hyperref[def:minimal_propositional_axiomatic_deductive_system]{minimal propositional axiomatic deductive system}, we have the following derivations:
+  Assuming the \hyperref[def:minimal_propositional_hilbert_system]{minimal propositional Hilbert system}, we have the following derivations:
   \begin{center}
     \begin{forest}
       [
@@ -707,13 +736,12 @@ It is challenging to formally define a deductive system in a way that reflects r
 \begin{proposition}\label{thm:syntactic_contraposition}
   In the \hyperref[def:minimal_propositional_natural_deduction_system]{minimal propositional natural deduction system}, we have
   \begin{align}
-    \varphi \rightarrow \psi &\vdash \neg \psi \rightarrow \neg \varphi \label{eq:thm:syntactic_contraposition/straight} \\
-    \eqref{eq:thm:minimal_propositional_negation_laws/dne}, \neg \varphi \rightarrow \neg \psi &\vdash \psi \rightarrow \varphi \label{eq:thm:syntactic_contraposition/reverse}
+    (\varphi \rightarrow \psi) &\vdash (\neg \psi \rightarrow \neg \varphi) \label{eq:thm:syntactic_contraposition/straight} \\
+    \eqref{eq:thm:minimal_propositional_negation_laws/dne}, (\neg \varphi \rightarrow \neg \psi) &\vdash (\psi \rightarrow \varphi) \label{eq:thm:syntactic_contraposition/reverse}
   \end{align}
 \end{proposition}
 \begin{proof}
-  We will only prove \eqref{eq:thm:syntactic_contraposition/straight}. The derivability \eqref{eq:thm:syntactic_contraposition/reverse} can be proved in the same way except that we would use \eqref{eq:def:minimal_propositional_natural_deduction_system/neg/intro} rather than \eqref{eq:def:classical_propositional_deductive_systems/rules/dne}.
-
+  We can easily derive \eqref{eq:thm:syntactic_contraposition/straight}:
   \begin{equation*}
     \begin{prooftree}
       \hypo{ \varphi \rightarrow \psi }
@@ -727,21 +755,39 @@ It is challenging to formally define a deductive system in a way that reflects r
       \infer[left label=\( 2 \)]1[\eqref{eq:def:minimal_propositional_natural_deduction_system/imp/intro}]{ \neg \psi \rightarrow \neg \varphi }
     \end{prooftree}
   \end{equation*}
+
+  We can similarly derive \eqref{eq:thm:syntactic_contraposition/reverse}, the only difference being in applying \eqref{eq:thm:minimal_propositional_negation_laws/dne}:
+  \begin{equation*}
+    \begin{prooftree}
+      \hypo{ \eqref{eq:thm:minimal_propositional_negation_laws/dne} }
+
+      \hypo{ \neg \varphi \rightarrow \neg \psi }
+      \hypo{ [\neg \varphi]^1 }
+      \infer2[\eqref{eq:def:minimal_propositional_natural_deduction_system/imp/elim}]{ \neg \psi }
+
+      \hypo{ [\psi]^2 }
+      \infer2[\eqref{eq:def:minimal_propositional_natural_deduction_system/neg/elim}]{ \bot }
+
+      \infer[left label=\( 1 \)]1[\eqref{eq:def:minimal_propositional_natural_deduction_system/neg/intro}]{ \neg \neg \varphi }
+      \infer2[\eqref{eq:def:def:axiomatic_deductive_system/mp}]{ \varphi }
+      \infer[left label=\( 2 \)]1[\eqref{eq:def:minimal_propositional_natural_deduction_system/imp/intro}]{ \psi \rightarrow \varphi }
+    \end{prooftree}
+  \end{equation*}
 \end{proof}
 
 \begin{definition}\label{def:intuitionistic_propositional_deductive_systems}\mcite[def. 2.1.1]{TroelstraSchwichtenberg2000}
   The \term{intuitionistic propositional natural deduction system} extends the \hyperref[def:minimal_propositional_natural_deduction_system]{minimal propositional natural deduction system} with the rule
-  \begin{equation*}\taglabel[\textrm{EFQ}]{eq:def:intuitionistic_propositional_deductive_systems/rules/efq}
+  \begin{equation*}\taglabel[\logic{EFQ}]{eq:def:intuitionistic_propositional_deductive_systems/rules/efq}
     \begin{prooftree}
       \hypo{ \bot }
       \infer1[\ref{eq:def:intuitionistic_propositional_deductive_systems/rules/efq}]{ \varphi }
     \end{prooftree}
   \end{equation*}
-
-  This corresponds to the axiom \eqref{eq:thm:minimal_propositional_negation_laws/efq}, which we can add to the \hyperref[def:minimal_propositional_axiomatic_deductive_system]{minimal propositional axiomatic deductive system}.
-
-  The corresponding semantics are defined in \fullref{def:propositional_heyting_algebra_semantics} and their link with the deductive system is given in \fullref{thm:intuitionistic_propositional_logic_is_sound_and_complete}.
 \end{definition}
+\begin{comments}
+  \item This corresponds to the axiom \eqref{eq:thm:minimal_propositional_negation_laws/efq}, which we can add to the \hyperref[def:minimal_propositional_hilbert_system]{minimal propositional Hilbert system}.
+  \item The corresponding semantics are defined in \fullref{def:propositional_heyting_algebra_semantics} and their link with the deductive system is given in \fullref{thm:intuitionistic_propositional_logic_is_sound_and_complete}.
+\end{comments}
 
 \begin{definition}\label{def:propositional_heyting_algebra_semantics}\mcite[14]{BezhanishviliHolliday2019}
   We define \term{Heyting semantics} for propositional formulas similarly to how it is done with classical Boolean semantics in \fullref{def:propositional_semantics}, except that instead of using a \hyperref[def:boolean_algebra]{Boolean algebra} we use a more general \hyperref[def:heyting_algebra]{Heyting algebra}.
@@ -757,9 +803,9 @@ It is challenging to formally define a deductive system in a way that reflects r
 
   We say that \( I \) satisfies \( \varphi \) if \( \Bracks{\varphi}_I = T \). Thus, if the valuation of \( \varphi \) takes any value in \( H \setminus \set{ T } \), then \( I \) does not satisfy \( \varphi \), but that does not necessarily mean that \( I \) satisfies \( \neg \varphi \).
 
-  Then \( \Gamma \) entails \( \varphi \) if, for every \( \psi \in \Gamma \) and every interpretation \( I \) in every Heyting algebra, we have \( \Bracks{\varphi}_I = \Bracks{\psi}_I \).
+  Then \( \Gamma \) entails \( \varphi \) if for every \( \psi \in \Gamma \) and every interpretation \( I \) in every Heyting algebra, we have \( \Bracks{\varphi}_I = \Bracks{\psi}_I \).
 
-  It is important that different Heyting algebras may provide different semantics --- see \fullref{ex:heyting_semantics_lem_counterexample} for an example of what is impossible in a Boolean algebra.
+  Note that different Heyting algebras may provide different semantics --- see \fullref{ex:heyting_semantics_lem_counterexample} for an example of what is impossible in a Boolean algebra.
 \end{definition}
 
 \begin{example}\label{ex:heyting_semantics_lem_counterexample}
@@ -836,26 +882,26 @@ It is challenging to formally define a deductive system in a way that reflects r
     \thmitem{rem:brouwer_heyting_kolmogorov_interpretation/conditional} A construction of \( \psi_1 \rightarrow \psi_2 \) is a function that converts a construction of \( \psi_1 \) into a construction of \( \psi_2 \). The notion of a function here is informal.
   \end{thmenum}
 
-  The negation \( \neg\psi \) that corresponds to pseudocomplements in Heyting algebra semantics corresponds to the metastatement \enquote{a construction of \( \psi \) is impossible} under the Heyting-Brouwer-Kolmogorov interpretation.
+  The negation \( \neg\psi \) that corresponds to pseudocomplements in Heyting algebra semantics corresponds to the metastatement \enquote{a construction of \( \psi \) is impossible} under the Brouwer-Heyting-Kolmogorov interpretation.
 
   If the set \( \Gamma \) of formulas does not derive \( \varphi \), we say that \( \varphi \) is non-constructive under the axioms \( \Gamma \).
 \end{remark}
 
 \begin{remark}\label{rem:brouwer_heyting_kolmogorov_interpretation_compatibility}
-  Since the \hyperref[rem:brouwer_heyting_kolmogorov_interpretation]{Heyting-Brouwer-Kolmogorov interpretation} is not very formal, we cannot properly prove its soundness or completeness with respect to the \hyperref[def:intuitionistic_propositional_deductive_systems]{intuitionistic propositional deductive system}.
+  Since the \hyperref[rem:brouwer_heyting_kolmogorov_interpretation]{Brouwer-Heyting-Kolmogorov interpretation} is not very formal, we cannot properly prove its soundness or completeness with respect to the \hyperref[def:intuitionistic_propositional_deductive_systems]{intuitionistic propositional deductive system}.
 
   Nevertheless, we generally accept the interpretation and conflate \enquote{constructive} and \enquote{intuitionistic} statements.
 \end{remark}
 
 \begin{example}\label{ex:rem:brouwer_heyting_kolmogorov_interpretation/well_ordering_principle_zfc}
-  \Fullref{thm:well_ordering_theorem} in \hyperref[def:set]{\logic{ZFC}} does not provide a way to well-order an arbitrary set. The theorem relies on the axiom of choice, whose consequence \fullref{thm:diaconescu_goodman_myhill_theorem} implies the law of the excluded middle (LEM) assuming the nonlogical axioms of \logic{ZFC}.
+  \Fullref{thm:well_ordering_theorem} in \hyperref[def:set]{\logic{ZFC}} does not provide a way to well-order an arbitrary set. The theorem relies on the axiom of choice, whose consequence \fullref{thm:diaconescu_goodman_myhill_theorem} implies the law of the excluded middle (\logic{LEM}) assuming the nonlogical axioms of \logic{ZFC}.
 
-  Since LEM may not hold in intuitionistic logic, it follows that both \fullref{thm:well_ordering_theorem} and the axiom of choice itself should not in general hold under the Heyting-Brouwer-Kolmogorov interpretation, hence by the terminology in \fullref{rem:brouwer_heyting_kolmogorov_interpretation}, \fullref{thm:well_ordering_theorem} is a non-constructive theorem.
+  Since \logic{LEM} may not hold in intuitionistic logic, it follows that both \fullref{thm:well_ordering_theorem} and the axiom of choice itself should not in general hold under the Brouwer-Heyting-Kolmogorov interpretation, hence by the terminology in \fullref{rem:brouwer_heyting_kolmogorov_interpretation}, \fullref{thm:well_ordering_theorem} is a non-constructive theorem.
 \end{example}
 
 \begin{definition}\label{def:classical_propositional_deductive_systems}
   In order to obtain a deductive system that matches \hyperref[def:propositional_semantics]{classical propositional semantics}, we may extend the \hyperref[def:minimal_propositional_natural_deduction_system]{minimal propositional natural deduction system} with the rule
-  \begin{equation*}\taglabel[\textrm{DNE}]{eq:def:classical_propositional_deductive_systems/rules/dne}
+  \begin{equation*}\taglabel[\logic{DNE}]{eq:def:classical_propositional_deductive_systems/rules/dne}
     \begin{prooftree}
       \hypo{ [\neg \varphi]^n }
       \ellipsis {} { \bot }
@@ -863,7 +909,7 @@ It is challenging to formally define a deductive system in a way that reflects r
     \end{prooftree}
   \end{equation*}
 
-  This corresponds to the axiom \eqref{eq:thm:minimal_propositional_negation_laws/dne}, which we can add to the \hyperref[def:minimal_propositional_axiomatic_deductive_system]{minimal propositional axiomatic deductive system}. As per \fullref{thm:minimal_propositional_negation_laws}, we can instead add \eqref{eq:thm:minimal_propositional_negation_laws/lem} to the \hyperref[def:intuitionistic_propositional_deductive_systems]{intuitionistic propositional axiomatic deductive system}, since
+  This corresponds to the axiom \eqref{eq:thm:minimal_propositional_negation_laws/dne}, which we can add to the \hyperref[def:minimal_propositional_hilbert_system]{minimal propositional Hilbert system}. As per \fullref{thm:minimal_propositional_negation_laws}, we can instead add \eqref{eq:thm:minimal_propositional_negation_laws/lem} to the \hyperref[def:intuitionistic_propositional_deductive_systems]{intuitionistic propositional Hilbert system}, since
   \begin{equation*}
     \eqref{eq:thm:minimal_propositional_negation_laws/lem}, \eqref{eq:thm:minimal_propositional_negation_laws/efq} \vdash \eqref{eq:thm:minimal_propositional_negation_laws/dne}
   \end{equation*}
@@ -874,12 +920,6 @@ It is challenging to formally define a deductive system in a way that reflects r
 \begin{theorem}[Glivenko's double negation theorem]\label{thm:glivenkos_double_negation_theorem}\mcite[4]{BezhanishviliHolliday2019}
   A formula \( \varphi \) is derivable in the \hyperref[def:classical_propositional_deductive_systems]{classical propositional natural deduction system} if and only if it's double negation \( \neg \neg \varphi \) is derivable in the \hyperref[def:intuitionistic_propositional_deductive_systems]{intuitionistic propositional natural deduction system}.
 \end{theorem}
-
-\begin{theorem}\label{thm:classical_propositional_logic_is_sound_and_complete}\mcite[thm. 1.5.13]{VanDalen2004}
-  The \hyperref[def:classical_propositional_deductive_systems]{classical propositional natural deduction system} is \hyperref[def:derivability_and_satisfiability/soundness]{sound} and \hyperref[def:derivability_and_satisfiability/completeness]{complete} with respect to \hyperref[def:propositional_semantics]{classical semantics}.
-\end{theorem}
-
-\medskip
 
 \begin{definition}\label{def:first_order_natural_deduction_system}\mcite[def. 2.1.1]{TroelstraSchwichtenberg2000}
   If we wish to work with first-order logic rather than merely propositional logic, we must extend the \hyperref[def:classical_propositional_deductive_systems]{classical propositional natural deduction system}. We call this, very simply, the (classical) \term{first-order natural deduction system}.
@@ -907,7 +947,7 @@ It is challenging to formally define a deductive system in a way that reflects r
       \end{equation*}
     \end{minipage}
 
-    Here \( \xi \) is a variable that is not free in any undischarged assumption in our proof of \( \varphi \) (it may be free in \( \varphi \) as long as \( \varphi \) is not itself an undischarged assumption). A variable \( \xi \) satisfying these conditions is called an \term{eigenvariable} of the rule.
+    Here \( \xi \) is a variable that is not free in any undischarged assumption in our proof of \( \varphi \) (it may be free in \( \varphi \) as long as \( \varphi \) itself is discharged). A variable \( \xi \) satisfying these conditions is called an \term{eigenvariable} of the rule.
 
     These rules are the primary motivation for inference rules accepting proof trees rather than only formulas --- see \fullref{def:judgment/inference_rule} and \fullref{def:deductive_system/rule}. See \fullref{ex:def:first_order_natural_deduction_system/eigenvariables/invalid_universal} for why this condition is important.
 
@@ -971,7 +1011,7 @@ It is challenging to formally define a deductive system in a way that reflects r
     \thmitem{ex:def:first_order_natural_deduction_system/eigenvariables/invalid_universal_closure} We explicitly forbid the syntactic equivalent of \fullref{thm:implicit_universal_quantification} in order to avoid invalid proofs like \fullref{ex:def:first_order_natural_deduction_system/eigenvariables/invalid_universal}. Consider the proof
     \begin{equation*}
       \begin{prooftree}
-        \hypo{ [\varphi]^1 }
+        \hypo{ \varphi }
         \infer1[\ref{eq:def:first_order_natural_deduction_system/forall/intro}]{ \qforall \xi \varphi }
       \end{prooftree}
     \end{equation*}
@@ -1067,8 +1107,10 @@ It is challenging to formally define a deductive system in a way that reflects r
   \end{equation*}
 \end{proof}
 
-\begin{theorem}\label{thm:classical_first_order_logic_is_sound_and_complete}\mcite[thm. 3.1.13]{VanDalen2004}
+\begin{theorem}[Soundness and completeness of first-order logic]\label{thm:classical_first_order_logic_is_sound_and_complete}\mcite[thm. 3.4.1]{Hinman2005}
   The \hyperref[def:first_order_natural_deduction_system]{classical first-order natural deduction system} is \hyperref[def:derivability_and_satisfiability/soundness]{sound} and \hyperref[def:derivability_and_satisfiability/completeness]{complete} with respect to \hyperref[def:first_order_semantics]{classical semantics}.
-
-  The completeness part is known as \enquote{G\"odel's completeness theorem} and requires an elaborate proof.
 \end{theorem}
+\begin{comments}
+  \item The completeness part is known as \enquote{G\"odel's completeness theorem} and requires an elaborate proof.
+  \item The theorem also applies, with obvious simplifications, to the \hyperref[def:classical_propositional_deductive_systems]{classical propositional natural deduction system}.
+\end{comments}
