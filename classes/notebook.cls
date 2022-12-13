@@ -27,35 +27,11 @@
 \DeclareFontFamilySubstitution{T2A}{stix2}{LibertinusSerif-TLF} % Fallback font that looks similar to STIX Two Text
 \RequirePackage{microtype}
 
-% Reference packages
-% Using hypertexnames=false is suggested in https://tex.stackexchange.com/a/282313 and explained in https://tex.stackexchange.com/a/3197
-% Without it the log gets cluttered with insubstantial warnings
-\RequirePackage[colorlinks,unicode,hypertexnames=false]{hyperref}
-%% https://tex.stackexchange.com/a/525297
-\RequirePackage{xcolor}
-
 \NewDocumentCommand \boldtt {m}
   {
     \DeclareFontFamilySubstitution{T1}{cmtt}{lmtt} % Use the slightly heavier latin modern typewriter font
     #1
   }
-
-\NewDocumentCommand \SetHRColor {mmm}
-  {
-    \definecolor{Hy#1color}{#2}{#3}
-    \hypersetup{#1color=Hy#1color}
-  }
-
-\SetHRColor{link}{HTML}{800006}
-\SetHRColor{cite}{HTML}{2E7E2A}
-\SetHRColor{file}{HTML}{131877}
-\SetHRColor{url} {HTML}{8A0087}
-\SetHRColor{menu}{HTML}{727500}
-\SetHRColor{run} {HTML}{137776}
-
-\let\SetHRColor\relax
-
-\RequirePackage[nameinlink]{cleveref}
 
 % Internationalization
 \RequirePackage[english]{babel}
@@ -89,13 +65,36 @@
 \setlist[itemize,1]{label=\( \bullet \)}
 \setlist[itemize,3]{label=\( \ast \)}
 
+% Reference packages
+% Using hypertexnames=false is suggested in https://tex.stackexchange.com/a/282313 and explained in https://tex.stackexchange.com/a/3197
+% Without it the log gets cluttered with insubstantial warnings
+\RequirePackage[colorlinks,unicode,hypertexnames=false]{hyperref}
+%% https://tex.stackexchange.com/a/525297
+\RequirePackage{xcolor}
+
+\NewDocumentCommand \SetHRColor {mmm}
+  {
+    \definecolor{Hy#1color}{#2}{#3}
+    \hypersetup{#1color=Hy#1color}
+  }
+
+\SetHRColor{link}{HTML}{800006}
+\SetHRColor{cite}{HTML}{2E7E2A}
+\SetHRColor{file}{HTML}{131877}
+\SetHRColor{url} {HTML}{8A0087}
+\SetHRColor{menu}{HTML}{727500}
+\SetHRColor{run} {HTML}{137776}
+
+\let\SetHRColor\relax
+
+\RequirePackage[nameinlink]{cleveref}
+
 % Misc math packages
 \RequirePackage[altpo,epsilon]{backnaur}
 \RequirePackage[ISO]{diffcoeff}
 \RequirePackage{blkarray}
 \RequirePackage{ebproof}
 \RequirePackage{bigints}
-\RequirePackage{xfrac}
 \RequirePackage{forest}
 \RequirePackage{cancel}
 
