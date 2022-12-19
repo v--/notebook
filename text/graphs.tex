@@ -1,0 +1,253 @@
+\subsection{Graphs}\label{subsec:graphs}
+
+The term \enquote{graph} is unfortunately very ambiguous\footnote{The \hyperref[def:relation/graph]{graph of a relation} or function is unrelated to the ones discussed here, which we will call \enquote{combinatorial graphs}.} - it is a set of vertices connected by either directed arcs or undirected edges. We introduce distinct definitions for the four types of graphs from \fullref{fig:def:graph_functors}, along with comments on how the definitions are used in the literature, and then in \fullref{def:graph_functors} we will define functors that help transparently transform some types of graphs into others. It is an established convention to not go through these hoops and implicitly transfer concepts between different kinds of graphs without even mentioning morphisms and categories. We will later follow this convention, but will nonetheless first describe the details.
+
+\begin{figure}[!ht]
+  \caption{Functors between the categories of different kinds of graphs. The dashed functors are actually families of functors and, unlike the rest, are not part of an adjoint pair.}\label{fig:def:graph_functors}
+  \smallskip
+  \hfill
+  \begin{tikzpicture}
+    \node[align=center] (dm) at (0, 0) {\hyperref[def:directed_graph/category]{Simple} \\ \hyperref[def:directed_graph/category]{undirected} \\ \hyperref[def:directed_graph/category]{graphs}};
+    \node[align=center] (um) at (5cm, 0) {\hyperref[def:undirected_graph/category]{Simple} \\ \hyperref[def:undirected_graph/category]{undirected} \\ \hyperref[def:undirected_graph/category]{graphs}};
+    \node[align=center] (ds) at (0, -3cm) {\hyperref[def:directed_multigraph/category]{Directed} \\ \hyperref[def:directed_multigraph/category]{multigraphs}};
+    \node[align=center] (us) at (5cm, -3cm) {\hyperref[def:undirected_multigraph/category]{Undirected} \\ \hyperref[def:undirected_multigraph/category]{multigraphs}};
+    \draw[->] (dm) to node[midway, above] {\hyperref[def:graph_functors/multi_forgetful]{\( U_S \)}} (um);
+    \draw[->, bend left] (um) to node[midway, below] {\hyperref[def:graph_functors/simple_doubling]{\( D_S \)}} (dm);
+    \draw[->] (ds) to node[midway, below] {\hyperref[def:graph_functors/multi_forgetful]{\( U_M \)}} (us);
+    \draw[->, bend left] (dm) to node[midway, right] {\hyperref[def:graph_functors/directed_forgetful]{\( U_D \)}} (ds);
+    \draw[->, bend left] (ds) to node[midway, left] {\hyperref[def:graph_functors/directed_embedding]{\( I_D \)}} (dm);
+    \draw[->, bend left] (um) to node[midway, right] {\hyperref[def:graph_functors/undirected_forgetful]{\( U_U \)}} (us);
+    \draw[->, bend left] (us) to node[midway, left] {\hyperref[def:graph_functors/undirected_embedding]{\( I_U \)}} (um);
+  \end{tikzpicture}
+  \hfill\hfill
+\end{figure}
+
+\begin{definition}\label{def:directed_multigraph}\mcite[10]{MacLane1998}
+  A \term{directed multigraph} \( G \) consists of the following:
+  \begin{thmenum}[series=def:directed_multigraph]
+    \thmitem{def:directed_multigraph/vertices} A set \( V_G \), whose elements we call \term{vertices}.
+    \thmitem{def:directed_multigraph/arcs} A disjoint from \( V_G \) set \( A_G \), whose elements we call \term{arcs}.
+    \thmitem{def:directed_multigraph/head} A function \( i_G: A \to V \), giving the \term{initial vertex} of an arc.
+    \thmitem{def:directed_multigraph/terminal} A function \( t_G: A \to V \), giving the \term{terminal vertex} of an arc.
+  \end{thmenum}
+
+  \Cref{fig:def:directed_multigraph} illustrates this definition. The figure is not merely illustrative --- it is a \hyperref[def:directed_multigraph_geometric_realization/embedding]{graph embedding}.
+
+  \begin{figure}[!ht]
+    \begin{equation}\label{eq:fig:def:directed_multigraph}
+      \begin{aligned}
+        \includegraphics[page=1]{output/def__directed_multigraph.pdf}
+      \end{aligned}
+    \end{equation}
+    \caption{A directed multigraph with a pair of parallel arcs, a pair of opposing arcs and a loop. Removing the dashed arcs makes it a \hyperref[def:directed_graph]{simple directed graph}.}\label{fig:def:directed_multigraph}
+  \end{figure}
+
+  We will need the following basic notions:
+  \begin{thmenum}[resume=def:directed_multigraph]
+    \thmitem{def:directed_multigraph/homomorphism}\mcite[48]{MacLane1998} A \term{homomorphism} between directed multigraphs \( G \) and \( H \) is a pair of functions
+    \begin{align*}
+      &f_V: V_G \to V_H, \\
+      &f_A: A_G \to A_H,
+    \end{align*}
+    such that
+    \begin{align}
+      i_H \bincirc f_A &= f_V \bincirc i_G, \label{eq:def:directed_multigraph/homomorphism/initial} \\
+      t_H \bincirc f_A &= f_V \bincirc t_G. \label{eq:def:directed_multigraph/homomorphism/terminal}
+    \end{align}
+
+    \thmitem{def:directed_multigraph/category}\mcite[48]{MacLane1998} For a Grothendieck universe \( \mscrU \), we can define the \hyperref[def:category]{category} of \( \mscrU \)-small directed multigraphs (where both the vertex and arc sets are \( \mscrU \)-small) and their homomorphisms.
+  \end{thmenum}
+\end{definition}
+\begin{comments}
+  \item Formally, we define a directed multigraph as a quadruple \( G = (V_G, A_G, i_G, t_G) \). We may skip indices when unnecessary, i.e. we may write \( G = (V, A, i, t) \), or we may prefer other symbols like \( H = (W, B, j, u) \) if desired.
+
+  \item Reinhard Diestel defines directed multigraphs in \cite[28]{Diestel2005}, but calls them \enquote{directed graphs}, while reserving the term \enquote{multigraph} for \hyperref[def:undirected_multigraph]{undirected multigraphs}. He also implicitly restricts graphs to finite graphs. Nonetheless, we use his convention of defining directed multigraphs are quadruples, and we use his terminology for arcs, initial and terminal vertices.
+
+  Bela Bollobas defines directed multigraphs in \cite[8]{Bollobas1998}, and calls them as such, but also assumes that they are finite.
+
+  Both books use \hyperref[def:undirected_graph]{simple undirected graphs} almost exclusively.
+
+  Saunders Mac Lane in \cite[10]{MacLane1998} uses the term \enquote{graphs} for what we call directed multigraphs, and uses them to define categories. For the purposes of category theory, he makes no finiteness assumptions.
+\end{comments}
+
+\begin{definition}\label{def:directed_graph}\mcite[2]{GodsilRoyle2001}
+  A \term{simple directed graph} \( G \) consists of the following:
+  \begin{thmenum}[series=def:directed_graph]
+    \thmitem{def:directed_graph/vertices} A set \( V_G \), whose elements we call \term{vertices}.
+    \thmitem{def:directed_graph/arcs} A set \( A_G \) of \hyperref[def:cartesian_product/kuratowski_pair]{ordered pairs} of \hi{distinct} vertices. As in the case of directed multigraphs, we call the elements of \( A_G \) \term{arcs}.
+  \end{thmenum}
+
+  We will use the following basic terminology:
+  \begin{thmenum}[resume=def:directed_graph]
+    \thmitem{def:directed_graph/homomorphism}\mcite[7]{GodsilRoyle2001} A \term{homomorphism} between the directed graphs \( G \) and \( H \) is a function \( f: V_G \to V_H \) such that \( (v, w) \in A_G \) implies \( (f(v), f(w)) \in A_H \).
+
+    \thmitem{def:directed_graph/category} For a Grothendieck universe \( \mscrU \), we can define the \hyperref[def:category]{category} of \( \mscrU \)-small simple directed graphs and their homomorphisms.
+  \end{thmenum}
+\end{definition}
+\begin{comments}
+  \item Chris Godsil and Gordon Royle define simple directed graphs in \cite[2]{GodsilRoyle2001}, but call them \enquote{directed graphs}, preferring to use \enquote{simple graph} for what we call \enquote{simple undirected graph}. Bela Bollobas defines directed graphs and directed multigraphs separately in a remark in \cite[8]{Bollobas1998}, but does not give a formal definition. Finiteness is implicitly assumed in both books.
+
+  Michel Gondran and Michel Minoux in \cite[2]{GondranMinoux1984Graphs} use the term \enquote{graph} to refer to what we call (simple) directed graphs, but allow arcs from a vertex to itself (loops).
+\end{comments}
+
+\begin{definition}\label{def:undirected_multigraph}\mcite[28]{Diestel2005}
+  An \term{undirected multigraph} \( G \) consists of the following:
+  \begin{thmenum}[series=def:undirected_multigraph]
+    \thmitem{def:undirected_multigraph/vertices} A set \( V_G \), whose elements we call \term{vertices}.
+    \thmitem{def:undirected_multigraph/edges} A disjoint from \( V_G \) set \( E_G \), whose elements we call \term{edges}.
+    \thmitem{def:undirected_multigraph/endpoints} A map
+    \begin{equation*}
+      \mscrE: E \to \set[\Big]{ \set{ v, w } \given* v, w \in V },
+    \end{equation*}
+    giving an unordered pair of \term{endpoints} of an edge.
+  \end{thmenum}
+
+  \begin{figure}[!ht]
+    \begin{equation}\label{eq:fig:def:undirected_multigraph}
+      \begin{aligned}
+        \includegraphics[page=1]{output/def__undirected_multigraph.pdf}
+      \end{aligned}
+    \end{equation}
+    \caption{An undirected multigraph, which becomes simple after removing the dashed edges.}\label{fig:def:undirected_multigraph}
+  \end{figure}
+
+  We will use the following basic terminology:
+  \begin{thmenum}[resume=def:undirected_multigraph]
+    \thmitem{def:undirected_multigraph/homomorphism} A \term{homomorphism} between the undirected multigraphs \( G \) and \( H \) is a pair of functions
+    \begin{align*}
+      &f_V: V_G \to V_H, \\
+      &f_E: E_G \to E_H,
+    \end{align*}
+    such that, for each edge \( e \in E_G \),
+    \begin{equation}\label{eq:def:undirected_multigraph/homomorphism}
+      \mscrE_H(f_E(e)) = \set[\Big]{ f_V(v) \given* v \in \mscrE_G(e) }.
+    \end{equation}
+
+    \thmitem{def:undirected_multigraph/category} For a Grothendieck universe \( \mscrU \), we can define the \hyperref[def:category]{category} of \( \mscrU \)-small undirected multigraphs and their homomorphisms.
+  \end{thmenum}
+\end{definition}
+\begin{comments}
+  \item Reinhard Diestel defines undirected multigraphs in \cite[28]{Diestel2005} and Bela Bollobas defines them in \cite[6]{Bollobas1998}. Both omit the prefix \enquote{undirected}, although Bollobas later explicitly defines directed multigraphs, while Diestel uses the term \enquote{directed graph} for what we call a \hyperref[def:directed_multigraph]{directed multigraph}.
+
+  Michel Gondran and Michel Minoux define multigraphs in \cite[3]{GondranMinoux1984Graphs} without specifying whether they are directed or not, but later implicitly assume that they are undirected.
+\end{comments}
+
+\begin{definition}\label{def:undirected_graph}\mcite[28]{Diestel2005}
+  A \term{simple undirected graph} \( G \) consists of the following:
+  \begin{thmenum}[series=def:undirected_graph]
+    \thmitem{def:undirected_graph/vertices} A set \( V_G \), whose elements we call \term{vertices}.
+    \thmitem{def:undirected_graph/edges} A set \( E \) of unordered pairs of \hi{distinct} vertices, i.e. sets of the form \( \set{ v, w } \), whose elements we call \term{edges}.
+  \end{thmenum}
+
+  We will use the following basic terminology:
+  \begin{thmenum}[resume=def:undirected_graph]
+    \thmitem{def:undirected_graph/homomorphism}\mcite[7]{GodsilRoyle2001} A \term{homomorphism} between the simple undirected graphs \( G \) and \( H \) is a function \( f: V_G \to V_H \) such that \( \set{ v, w } \in E_G \) implies \( \set{ f(v), f(w) } \in E_H \).
+
+    \thmitem{def:undirected_graph/category} For a Grothendieck universe \( \mscrU \), we can define the \hyperref[def:category]{category} of \( \mscrU \)-small simple undirected graphs and their homomorphisms.
+  \end{thmenum}
+\end{definition}
+\begin{comments}
+  \item Reinhard Diestel defines simple undirected graphs in \cite[2]{Diestel2005} as \enquote{graphs}, and so do Bela Bollobas in \cite[1]{Bollobas1998} and Chris Godsil and Gordon Royle in \cite[2]{GodsilRoyle2001}. Michel Gondran and Michel Minoux define (simple) undirected graphs in \cite[3]{GondranMinoux1984Graphs}, after already introducing (simple) directed graphs.
+
+  All mentioned authors except for Diestel remark that \enquote{simple graph} may be used to disambiguate when (undirected) multigraphs may otherwise be involved.
+\end{comments}
+
+\begin{definition}\label{def:graph_orientation}\mcite[28]{Diestel2005}
+  We call the \hyperref[def:directed_multigraph]{directed multigraph} \( D = (V, A, i, t) \) an \term{orientation} of the \hyperref[def:undirected_multigraph]{undirected multigraph} \( G = (U, E, \mscrE) \) if \( U = V \), \( A = E \), and, for every arc \( e \in A \), we have \( \mscrE(e) = \set{ i(e), t(e) } \).
+\end{definition}
+
+\begin{definition}\label{def:graph_functors}\mimprovised
+  Different kinds of graphs are related via the following functors (shown graphically in \fullref{fig:def:graph_functors}):
+  \begin{thmenum}
+    \thmitem{def:graph_functors/directed_forgetful} The simple \hyperref[def:concrete_category]{forgetful functor}:
+    \begin{flalign*}
+      &U_D: \hyperref[def:directed_multigraph/category]{\T*{Directed multigraphs}} \to \hyperref[def:directed_graph/category]{\T*{Simple directed graphs}}, &&\\
+      &U_D(V, A, i, t) \coloneqq \parens[\Big]{ V, \set[\Big]{ \parens[\Big]{ i(a), t(a) } \given* a \in A } }, &&\\
+      &U_D(f_V, f_A) \coloneqq f_V.
+    \end{flalign*}
+
+    \thmitem{def:graph_functors/directed_embedding} A \hyperref[def:category_adjunction]{left adjoint}:
+    \begin{flalign*}
+      &I_D: \hyperref[def:directed_graph/category]{\T*{Simple directed graphs}} \to \hyperref[def:directed_multigraph/category]{\T*{Directed multigraphs}}, &&\\
+      &I_D(V, A) \coloneqq \parens[\Big]{ V, A, (v, w) \mapsto v, (v, w) \mapsto w }, &&\\
+      &I_D(f) \coloneqq \parens[\Big]{ f, (v, w) \mapsto \parens[\Big]{ f(v), f(w) } }.
+    \end{flalign*}
+
+    \thmitem{def:graph_functors/undirected_forgetful} A similar forgetful functor for undirected graphs:
+    \begin{flalign*}
+      &U_U: \hyperref[def:undirected_multigraph/category]{\T*{Undirected multigraphs}} \to \hyperref[def:undirected_graph/category]{\T*{Simple undirected graphs}}, &&\\
+      &U_U(V, E, \mscrE) \coloneqq \parens[\Big]{ V, \set[\Big]{ \mscrE(e) \given* e \in E } }, &&\\
+      &U_U(f_V, f_E) \coloneqq f_V.
+    \end{flalign*}
+
+    \thmitem{def:graph_functors/undirected_embedding} A left adjoint:
+    \begin{flalign*}
+      &I_U: \hyperref[def:undirected_graph/category]{\T*{Simple undirected graphs}} \to \hyperref[def:undirected_multigraph/category]{\T*{Undirected multigraphs}}, &&\\
+      &I_U(V, E) \coloneqq \parens[\Big]{ V, E, e \mapsto e }, &&\\
+      &I_U(f) \coloneqq \parens[\Big]{ f, \set{ v, w } \mapsto \set{ f(v), f(w) } }.
+    \end{flalign*}
+
+    \thmitem{def:graph_functors/multi_forgetful} A functor that forgets the direction of arcs in a multigraph:
+    \begin{flalign*}
+      &U_M: \hyperref[def:directed_multigraph/category]{\T*{Directed multigraphs}} \to \hyperref[def:undirected_multigraph/category]{\T*{Undirected multigraphs}}, &&\\
+      &U_M(V, A, i, t) \coloneqq \parens[\Big]{ V, A, e \mapsto \set{ i(e), t(e) } }, &&\\
+      &U_M(f_V, f_A) \coloneqq (f_V, f_A).
+    \end{flalign*}
+
+    \thmitem{def:graph_functors/simple_forgetful} A functor that forgets the orientation of a simple graph:
+    \begin{flalign*}
+      &U_S: \hyperref[def:directed_graph/category]{\T*{Simple directed graphs}} \to \hyperref[def:undirected_graph/category]{\T*{Simple undirected multigraphs}}, &&\\
+      &U_S(V, A) \coloneqq \parens[\Big]{ V, A, (v, w) \mapsto \set{ v, w } }, &&\\
+      &U_S(f) \coloneqq f.
+    \end{flalign*}
+
+    \thmitem{def:graph_functors/simple_doubling} A right adjoint to \( U_S \), which doubles each edge to produce arcs in both directions:
+    \begin{flalign*}
+      &D_S: \hyperref[def:undirected_graph/category]{\T*{Simple undirected multigraphs}} \to \hyperref[def:directed_multigraph/category]{\T*{Simple directed multigraphs}}, &&\\
+      &D_S(V, E) \coloneqq \parens[\Big]{ V, \set[\Big]{ (v, w) \in V^2 \given \set{ v, w } \in E } }, &&\\
+      &D_S(f) \coloneqq f.
+    \end{flalign*}
+  \end{thmenum}
+\end{definition}
+\begin{comments}
+  \item \Fullref{ex:def:category_adjunction/us_ds} discussed the doubling functor from \fullref{def:graph_functors/simple_doubling}.
+\end{comments}
+
+\begin{definition}\label{def:directed_multigraph_free_category}\mcite[48]{MacLane1998}
+  Let \( G = (V, A, h, t) \) be a \hyperref[def:directed_multigraph]{directed multigraph}. We define the \term{free category} \( F(G) \) generated by \( G \) as follows:
+  \begin{itemize}
+    \item The \hyperref[def:category/objects]{set of objects} is the set of vertices \( V \).
+
+    \item The \hyperref[def:category/morphisms]{morphisms} between two vertices are the \hyperref[def:directed_multigraph_path/walk]{walks} between them.
+
+    \item The \hyperref[def:category/composition]{composition of the morphisms} \( p: u \to v \) and \( q: v \to w \) is their \hyperref[def:directed_multigraph_path/concatenation]{concatenation}:
+    \begin{equation*}
+      q \bincirc p = p \cdot q.
+    \end{equation*}
+
+    \item The \hyperref[def:category/identity]{identity morphism} on the vertex \( v \) is the \hyperref[def:directed_multigraph_path/empty]{empty path} at \( v \). This is the primary motivation for having a distinct empty path at every vertex.
+  \end{itemize}
+
+  Since \( F(G) \) is already defined for every directed multigraph \( G \), if we also define how it acts on \hyperref[eq:def:directed_multigraphs/homomorphism]{directed multigraph homomorphisms}, this will make \( F \) a \hyperref[def:functor]{functor} from the \hyperref[def:directed_multigraph/category]{category of small directed multigraphs} to the \hyperref[def:directed_multigraph/category]{category of small categories}.
+
+  For every small category \( \cat{C} \) and every directed multigraph homomorphism
+  \begin{equation*}
+    (g_V, g_A): G \to U(\cat{C}),
+  \end{equation*}
+  consider the following functor, which \enquote{evaluates} walks from \( G \) inside \( \cat{C} \):
+  \begin{equation}\label{eq:def:directed_multigraph_free_category/functor_from_homomorphism}
+    \begin{aligned}
+      &G: F(G) \to \cat{C}, \\
+      &G(v) \coloneqq g_V(v) \\
+      &G\parens*{ v \overset {e_1} \to \anon \overset \cdots \to \anon \overset {e_n} \to \anon } \coloneqq \begin{cases}
+        \id_v,                                                                                                  &n = 0, \\
+        g_A(e_n) \bincirc G(v \overset {e_1} \to \anon \overset \cdots \to \anon \overset {e_{n-1}} \to \anon), &n > 0,
+      \end{cases}
+    \end{aligned}
+  \end{equation}
+
+  Put \( F(f_V, f_A) \coloneqq G \). Parameterized on \( G \) and \( (f_V, f_A) \), \( F \) becomes a functor from directed multigraphs to categories.
+\end{definition}
+\begin{comments}
+  \item We will see in \fullref{ex:def:category_adjunction/dm_cat} that \( F \) is actually left adjoint to the forgetful functor \( U \). The new identity loops are an important part of this adjunction.
+\end{comments}
