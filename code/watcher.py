@@ -163,19 +163,19 @@ class AsymptoteTask(Task):
         return f'AsymptoteTask({repr(self.src_path)})'
 
     @property
-    def aux_pdf_path(self):
-        return AUX_DIR / self.src_path.with_suffix('.pdf').name
+    def aux_eps_path(self):
+        return AUX_DIR / self.src_path.with_suffix('.eps').name
 
     @property
-    def build_pdf_path(self):
-        return OUTPUT_DIR / self.src_path.with_suffix('.pdf').name
+    def build_eps_path(self):
+        return OUTPUT_DIR / self.src_path.with_suffix('.eps').name
 
     @property
     def command(self):
-        return f'asy -quiet -outname={self.aux_pdf_path} {self.src_path}'
+        return f'asy -quiet -render=0 -outname={self.aux_eps_path} {self.src_path}'
 
     async def post_process(self, runner: TaskRunner):
-        shutil.copyfile(self.aux_pdf_path, self.build_pdf_path)
+        shutil.copyfile(self.aux_eps_path, self.build_eps_path)
 
 
 class TaskRunner:

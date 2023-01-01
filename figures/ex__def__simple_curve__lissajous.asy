@@ -1,5 +1,3 @@
-settings.outformat = 'pdf';
-
 usepackage('amsmath');
 usepackage('stix2');
 unitsize(1.5cm);

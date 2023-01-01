@@ -1,7 +1,3 @@
-settings.outformat = 'pdf';
-settings.prc = false;
-settings.render = 5;
-
 usepackage('stix2');
 unitsize(1.5cm);
 
@@ -19,8 +15,8 @@ transform3 T = {
 };
 
 draw(T * unitcube, white);
-draw(unitcube, gray);
 draw(surface((-1, 1, -1) --- (2, 1, -1) --- (2, -1, 1) --- (-1, -1, 1) --- cycle), gray + opacity(0.5));
+draw(unitcube, gray);
 
 trajectory(T, (1, 1, 0));
 trajectory(T, (0, 1, 0));

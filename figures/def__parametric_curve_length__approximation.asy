@@ -1,7 +1,5 @@
 import graph;
 
-settings.outformat = 'pdf';
-
 usepackage('stix2');
 unitsize(0.75cm);
 

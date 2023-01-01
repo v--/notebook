@@ -1,7 +1,3 @@
-settings.outformat = 'pdf';
-settings.prc = false;
-settings.render = 5;
-
 usepackage('stix2');
 unitsize(1cm);
 
@@ -24,16 +20,16 @@ draw(surface(P -- Q -- R -- cycle), convex_hull);
 draw(O -- 1.5P, conic_hull_border);
 draw(O -- 1.5Q, conic_hull_border);
 draw(O -- 1.5R, conic_hull_border);
-draw(surface(O -- P -- Q -- cycle), conic_hull);
-draw(surface(O -- P -- R -- cycle), conic_hull);
 draw(surface(O -- Q -- R -- cycle), conic_hull);
+draw(surface(O -- P -- R -- cycle), conic_hull);
+draw(surface(O -- P -- Q -- cycle), conic_hull);
 draw(surface(plane(8 X, 8 Y, O=(-3, -3, 3))), affine_hull);
-draw(surface(Q -- P -- 1.5P -- 1.5Q -- cycle), conic_hull);
-draw(surface(R -- P -- 1.5P -- 1.5R -- cycle), conic_hull);
 draw(surface(R -- Q -- 1.5Q -- 1.5R -- cycle), conic_hull);
+draw(surface(R -- P -- 1.5P -- 1.5R -- cycle), conic_hull);
+draw(surface(Q -- P -- 1.5P -- 1.5Q -- cycle), conic_hull);
 
 label(Label('affine hull'), (3.5, 3, 2.1));
-label(Label('convex hull'), (0, 2.5, 3.2));
+label(Label('convex hull'), (0.2, 3, 3.4));
 label(Label('conic hull'), (2.3, 0, 1));
 
 dot(O, L=Label('$O$', align=S));

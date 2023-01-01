@@ -1,5 +1,3 @@
-settings.outformat = 'pdf';
-
 size(15, 7, keepAspect=false);
 usepackage('stix2');
 unitsize(1cm);

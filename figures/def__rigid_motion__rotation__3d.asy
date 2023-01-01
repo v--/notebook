@@ -1,7 +1,3 @@
-settings.outformat = 'pdf';
-settings.prc = false;
-settings.render = 5;
-
 usepackage('stix2');
 unitsize(1.5cm);
 

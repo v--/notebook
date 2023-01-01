@@ -1,6 +1,6 @@
 COMPILER := pdflatex -interaction=batchmode
 FIGURES_TEX_PDF := $(patsubst figures/%.tex,output/%.pdf,$(wildcard figures/*.tex))
-FIGURES_ASY_PDF := $(patsubst figures/%.asy,output/%.pdf,$(wildcard figures/*.asy))
+FIGURES_ASY_PDF := $(patsubst figures/%.asy,output/%.eps,$(wildcard figures/*.asy))
 TEXT_SOURCE := notebook.tex classes/notebook.cls bibliography/*.bib packages/*.sty text/*.tex $(FIGURES_TEX_PDF) $(FIGURES_ASY_PDF)
 
 .PHONY: notebook figures watch watch-figures format-figures clean
@@ -24,9 +24,9 @@ output/%.pdf: classes/tikzcd.cls packages/*.sty figures/%.tex | aux output
 	$(COMPILER) -output-directory=aux figures/$*.tex
 	cat aux/$*.pdf > output/$*.pdf
 
-output/%.pdf: figures/%.asy | aux output
-	asy -quiet -outname=aux/$*.pdf figures/$*.asy
-	cat aux/$*.pdf > output/$*.pdf
+output/%.eps: figures/%.asy | aux output
+	asy -quiet -render=0 -outname=aux/$*.eps figures/$*.asy
+	cat aux/$*.eps > output/$*.eps
 
 figures: $(FIGURES_TEX_PDF) $(FIGURES_ASY_PDF)
 
