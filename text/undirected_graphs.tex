@@ -1,0 +1,106 @@
+\begin{definition}\label{def:undirected_multigraph_path}
+  Let \( G = (V, E, \mscrE) \) be an \hyperref[def:undirected_multigraph]{undirected multigraph}. We will adapt the definition of a \term{directed path} from \fullref{def:graph_walk/path}. Different authors use similar terms like \term{walk} and \term{trail} and put different restrictions on them. We will not put as few restrictions as possible.
+
+  \begin{figure}[!ht]
+    \begin{equation}\label{eq:fig:def:undirected_multigraph_path}
+      \begin{aligned}
+        \includegraphics[page=1]{output/def__undirected_multigraph_path}
+      \end{aligned}
+    \end{equation}
+    \caption{The dashed solid lines indicate the path with head \( a \) and edges \( (e_2, e_4, e_6) \) in the graph \eqref{eq:fig:def:undirected_multigraph}.}\label{fig:def:undirected_multigraph_path}
+  \end{figure}
+
+  Analogously to \hyperref[def:graph_walk/path]{directed multigraph path}, consider a sequence \( p = (v, e_1, e_2, \ldots) \), where \( e_1, e_2, \ldots \) are edges and \( v \) is a vertex incident to \( e_1 \).
+
+  Unlike arcs in directed multigraphs, however, edges have no head and tail. Fortunately, we can define them via mutual recursion, with the caveat that every edge may have a different head and tail with respect to another path:
+  \begin{itemize}
+    \item If \( e_k \) is a loop at \( u \), then \( u \) is both the head and the tail of \( e_k \).
+    \item If \( e_1 \) is not a loop, its head is \( v \) and the tail is the other endpoint of \( e_1 \)
+    \item If \( e_k \neq e_1 \) is not a loop, if \( e_{k-1} \) has a tail \( t(e_{k-1}) \) and if \( t(e_{k-1}) \) is an endpoint of \( e_k \), we define the head of \( e_k \) to be \( t(e_{k-1}) \) and the tail of \( e_k \) is the other endpoint of \( e_k \).
+  \end{itemize}
+
+  If the head and tail is defined for every edge in \( p \), and if \( e_k \neq e_{k-1} \) but \( i(e_k) = t(e_{k-1}) \) for every index \( k \), we say that \( p \) is a \term{path}.
+
+  Note that it is not sufficient for \( e_k \) and \( e_{k-1} \) to be adjacent. Consider the following scenario, in which \( (v, e_1, e_2, e_3) \) is not a path because the tail of \( e_2 \) is not incident to \( e_3 \):
+  \begin{equation}\label{eq:def:undirected_multigraph_path/almost_directed}
+    \begin{aligned}
+      \includegraphics[page=2]{output/def__undirected_multigraph_path}
+    \end{aligned}
+  \end{equation}
+
+  We introduce the following terminology:
+  \begin{thmenum}
+    \thmitem{def:undirected_multigraph_path/endpoints} The \term{head} of the entire path \( p = (v, e_1, \ldots, e_n) \) is \( i(p) \coloneqq v \) and the \term{tail} is \( t(p) \coloneqq t(e_n) \). Note that the tail is only defined for finite paths.
+
+    \thmitem{def:undirected_multigraph_path/empty} The \term{empty path} at \( v \) is the path \( p = (v) \). We call it empty because it has no edges. It is not an empty sequence because we want it to have a head and tail. The primary motivation for different empty paths are the identity morphisms in the free category for a \hyperref[def:directed_multigraph]{directed multigraph} defined in \fullref{def:directed_multigraph_free_category}.
+
+    \thmitem{def:undirected_multigraph_path/length} The \term{length} \( \len(p) \) of a path \( p \) is simply the number of edges. Hence, empty paths have length zero.
+
+    \thmitem{def:undirected_multigraph_path/domain} The \term{domain} \( \dom(p) \) of \( p \) is the set of all vertices that belong to at least one edge in \( p \). We say that the path \term{visits} each member of \( \dom(p) \).
+
+    The domain of the path \eqref{eq:fig:def:undirected_multigraph_path} is the set \( \set{ e_2, e_4, e_6 } \).
+
+    Note that
+    \begin{equation}\label{eq:def:undirected_multigraph_path/length_and_domain}
+      \card(\dom(p)) + 1 \leq \len(p)
+    \end{equation}
+    in general since a vertex can be an endpoint of many edges.
+
+    \thmitem{def:undirected_multigraph_path/concatenation} Similarly to concatenation of words defined in \fullref{def:formal_language/concatenation}, the concatenation of the paths
+    \begin{align*}
+              p &= (v, e_1, \ldots, e_n) \\
+      \T{and} q &= (t(p), e_{n+1}, e_{n+1}, \ldots)
+    \end{align*}
+    is simply the path
+    \begin{equation*}
+      p \cdot q \coloneqq (v, e_1, e_2, \ldots, e_n, e_{n+1}, e_{n+1}, \ldots).
+    \end{equation*}
+
+    Note that the head of \( q \) must be the tail of \( p \) and that \( p \) is necessarily finite.
+
+    \thmitem{def:undirected_multigraph_path/subpath} We say that the \hyperref[def:sequence]{subsequence} \( q \) of \( p \) is a \term{subpath} of \( p \) if the edges of \( q \) are consecutive in \( p \), i.e. there exists some index \( n \geq 0 \) such that \( q_k = e_{n + k} \) for \( 0 < k < \len(q) \).
+
+    In \eqref{eq:fig:def:undirected_multigraph_path}, the subsequence \( (a, e_2, e_4) \) is a subpath and \( (a, e_2, e_6) \) is not.
+
+    \thmitem{def:undirected_multigraph_path/cycle} A nonempty path \( p \) is a \term{cycle} if \( i(p) = t(p) \). Cycles are also called \term{closed paths}.
+
+    Consider the graph \eqref{eq:fig:def:undirected_multigraph_path}. The path \( (a, e_2, e_4, e_3, e_1) \) is a cycle and so is and so is \( (a, e_2, \widehat{e_2}) \). We have forbidden for the same edge to appear twice consecutively, which means that \( (a, e_2, e_2) \) is not a cycle because it is not a valid path.
+
+    A graph without cycles is called \term{acyclic}.
+
+    \thmitem{def:undirected_multigraph_path/simple} The path \( p \) is \term{simple} if no subpath is a cycle.
+
+    An alternative characterization is that every vertex in \( \dom(p) \) is visited only once, i.e. for every vertex in \( \dom(p) \), there exist at most two edges of the path which are incident to it.
+
+    Another characterization is that equality holds in \eqref{eq:def:undirected_multigraph_path/length_and_domain}.
+
+    \thmitem{def:undirected_multigraph_path/converse} If the chain \eqref{eq:fig:def:undirected_multigraph_path} is finite of length \( n \), we define its \term{converse} as
+    \begin{equation*}
+      p^{-1} \coloneqq \parens[\Big]{ t(p), e_n, e_{n-1}, \cdots, e_2, e_1 }.
+    \end{equation*}
+
+    \thmitem{def:undirected_multigraph_path/characteristic_vector} The \term{characteristic vector} \( \vect{p} \) of a path \( p \) is defined as the characteristic vector of \( \dom(p) \) in the \hyperref[def:hypergraph_vector_spaces/edge]{edge space} \( \BbbF_2^E \).
+  \end{thmenum}
+\end{definition}
+
+\begin{definition}\label{def:undirected_multigraph_connectedness}
+  Let \( G = (V, E, \mscrE) \) be an undirected multigraph.
+
+  \begin{thmenum}
+    \thmitem{def:undirected_multigraph_connectedness/reachability} We say that the vertices \( u \) and \( v \) are \term{connected} if there exists a path from \( u \) to \( v \).
+
+    In relation to \fullref{def:directed_multigraph_condensation}, we also say that \( v \) is \term{reachable} from \( v \) and vice versa.
+
+    \thmitem{def:undirected_multigraph_connectedness/components} Connectedness is obviously an equivalence relation in \( E \). Denote it by \( {\sim} \). For each vertex \( v \), the equivalence class \( [v] \) of all vertices reachable from \( v \) is called a \term{connected component}.
+
+    The \term{connectivity number} of \( G \) is the cardinality \( \card(V / {\sim}) \) of the quotient set.
+
+    If \( G \) has only one connected component, we say that it itself is \term{connected}. Equivalently, \( G \) is connected if every vertex is reachable from every other vertex.
+
+    \thmitem{def:undirected_multigraph_connectedness/condensation} The \term{condensation} of \( G \) is the edgeless graph with vertices \( V / {\sim} \).
+
+    This concept is useless for undirected graphs but important for \hyperref[def:directed_multigraph]{directed multigraphs} --- see \fullref{def:directed_multigraph_condensation}.
+  \end{thmenum}
+
+  Compare this definition to \fullref{def:directed_multigraph_connectedness}.
+\end{definition}
