@@ -1,95 +1,110 @@
 \subsection{Graph embeddings}\label{subsec:graph_embeddings}
 
-\begin{definition}\label{def:directed_multigraph_geometric_realization}
-  Let \( Q = (V, A, h, t) \) be a \hyperref[def:directed_multigraph]{directed multigraph}. Our goal is to construct a \hyperref[def:topological_space]{topological space} that translates the connectivity properties of \( Q \) into their topological equivalents.
+\begin{definition}\label{def:graph_geometric_realization}\mimprovised
+  Let \( G = (V, A, h, t) \) be a \hyperref[def:directed_multigraph]{directed multigraph}. Our goal is to construct a \hyperref[def:topological_space]{topological space} that translates the connectivity properties of \( G \) into their topological equivalents.
 
   Consider the \hyperref[def:topological_sum]{topological sum}
   \begin{equation*}
-    S \coloneqq \parens[\Bigg]{ \coprod_{a \in A} [0, 1] } \amalg \parens[\Bigg]{ \coprod_{\deg(v) = 0} \set{ v } }.
+    S \coloneqq \parens[\Bigg]{ \coprod_{e \in A} [0, 1] } \amalg \parens[\Bigg]{ \coprod_{\deg(v) = 0} \set{ v } }.
   \end{equation*}
 
   The space \( S \) consists of disjoint unit intervals, one for each arc, and of disjoint points, one for each \hyperref[def:graph_cardinality/directed_degree]{isolated vertex}.
 
-  We now want to glue common endpoints of arcs in \( \Sigma \). We define the function
-  \begin{equation}\label{eq:def:directed_multigraph_geometric_realization/rv}
+  We now want to glue common endpoints of arcs in \( \Sigma \). We define the functions
+  \begin{equation}\label{eq:def:graph_geometric_realization/rv}
     \begin{aligned}
       &R_V: V \to \pow(S), \\
       &R_V(v) \coloneqq \begin{cases}
         \set[\Big]{ (v, v) },                                                           &\deg(v) = 0 \\
-        \set[\Big]{ (0, a) \given i(a) = v } \cup \set[\Big]{ (1, a) \given t(a) = v }, &\deg(v) > 0
+        \set[\Big]{ (0, e) \given h(e) = v } \cup \set[\Big]{ (1, e) \given t(e) = v }, &\deg(v) > 0
       \end{cases}
     \end{aligned}
   \end{equation}
   and
-  \begin{equation}\label{eq:def:directed_multigraph_geometric_realization/ra}
+  \begin{equation}\label{eq:def:graph_geometric_realization/ra}
     \begin{aligned}
       &R_A: A \to \pow(\pow(S)), \\
-      &R_A(a) \coloneqq \set[\Big]{ R_V(i(a)), R_V(t(a)) } \cup \set[\Big]{ \set{ (x, a) } \given 0 < x < 1 }.
+      &R_A(e) \coloneqq \set[\Big]{ \set{ (p, e) } \given 0 < p < 1 }.
     \end{aligned}
   \end{equation}
 
+  The set \( R_V(v) \) is a set in \( S \) whose role is to be a vertex, and \( R_A(e) \) is the interior of an arc, i.e. a set of points between vertices in the topological sense.
+
   The family
   \begin{equation*}
-    X \coloneqq \bigcup \set[\Big]{ R_A(a) \given* a \in A } \cup \set[\Big]{ R_V(v) \given* \deg(v) = 0 }.
+    X \coloneqq \bigcup \set[\Big]{ R_A(e) \given* e \in A } \cup \set[\Big]{ R_V(v) \given* v \in V }.
   \end{equation*}
-  is a \hyperref[def:set_partition]{partition} of \( S \). For each vertex, there is a single point in \( X \) (which is a set in \( S \)) and for each arc, the interior of the arc is a subset of \( X \).
+  is then a \hyperref[def:set_partition]{partition} of \( S \).
 
-  We can endow the partition \( X \) it with a \hyperref[def:topological_quotient]{quotient topology} \( \mscrT \). We will call the topological space \( (X, \mscrT, R_V, R_A) \) endowed with the functions \( R_V \) and \( R_A \) the \term{geometric realization} of \( G \).
+  The partition \( X \) can be endowed with a \hyperref[def:topological_quotient]{quotient topology} \( \mscrT \). We call the topological space \( (X, \mscrT, R_V, R_A) \) endowed with the functions \( R_V \) and \( R_A \) the \term{geometric realization} of \( G \).
 
   \begin{thmenum}
-    \thmitem{def:directed_multigraph_geometric_realization/undirected} For an \hyperref[def:undirected_multigraph]{undirected multigraph} \( G = (V, E, \mscrE) \), the geometric realization is any of the geometric realizations of its \hyperref[def:graph_orientation]{orientations}. This construction is dependent on a choice function, but fortunately all the geometric realizations are homeomorphic as shown in \fullref{thm:undirected_multigraph_geometric_realizations_homeomorphic}. Hence, for a lot of purposes, we can speak of \enquote{the} geometric realization of an undirected multigraph.
+    \thmitem{def:graph_geometric_realization/undirected} For an \hyperref[def:undirected_multigraph]{undirected multigraph} \( G = (V, E, \mscrE) \), the geometric realization is any of the geometric realizations of its \hyperref[def:multigraph_orientation]{orientations}. This construction is dependent on a choice function, but fortunately all the geometric realizations are homeomorphic as shown in \fullref{thm:undirected_multigraph_geometric_realizations_homeomorphic}.
 
-    \thmitem{def:directed_multigraph_geometric_realization/drawing} We will call any \hyperref[def:global_continuity]{continuous function} with domain \( (X, \mscrT) \) a \term{graph drawing}. The term \enquote{graph drawing} is not standard terminology, but unfortunately non-injective continuous images of the realization have no established name.
+    \thmitem{def:graph_geometric_realization/embedding} We will call any \hyperref[def:homeomorphism]{homeomorphic embedding} with domain \( (X, \mscrT) \) a \term{graph embedding}.
 
-    \thmitem{def:directed_multigraph_geometric_realization/embedding} An injective graph drawing is called a \term{graph embedding}.
+    Every simple graph can be embedded into \( \BbbR^3 \) as shown in \fullref{thm:directed_multigraph_can_be_embedded_into_r3}.
 
-    Every graph can be embedded into \( \BbbR^3 \) as shown in \fullref{thm:directed multigraph_can_be_embedded_into_r3}.
+    \thmitem{def:graph_geometric_realization/planar} If a graph can be embedded into \( \BbbR^2 \), we say that it is \term{planar}.
 
-    \thmitem{def:directed_multigraph_geometric_realization/planar} If a graph can be embedded into \( \BbbR^2 \), we say that it is \term{planar}.
-
-    \thmitem{def:directed_multigraph_geometric_realization/linear} If a graph can be embedded into \( \BbbR \), we say that it is \term{linear}.
+    \thmitem{def:graph_geometric_realization/linear} If a graph can be embedded into \( \BbbR \), we say that it is \term{linear}.
   \end{thmenum}
 \end{definition}
 
-\begin{example}\label{ex:def:directed_multigraph_geometric_realization}
-  We will give a few examples of \hyperref[def:directed_multigraph_geometric_realization/undirected]{directed multigraph geometric realizations}.
+\begin{example}\label{ex:def:graph_geometric_realization}
+  We will give a few examples of \hyperref[def:graph_geometric_realization]{graph geometric realizations}.
 
   \begin{thmenum}
-    \thmitem{ex:def:directed_multigraph_geometric_realization/order_zero} The geometric realization of an \hyperref[rem:trivial_graph]{arcless} directed multigraph is the discrete topological space on its vertices.
+    \thmitem{ex:def:graph_geometric_realization/order_zero} The geometric realization of an \hyperref[rem:trivial_graph]{arcless} directed multigraph is the discrete topological space on its vertices.
 
     In particular, the geometric realization of the \hyperref[rem:trivial_graph]{order-zero} directed multigraph (without any arcs and edges) is the empty topological space.
 
-    \thmitem{ex:def:directed_multigraph_geometric_realization/positive_integers} Consider the reduced positive integer graph \eqref{eq:ex:infinite_integer_graphs/positive}. We start with \( \aleph_0 \) copies of \( [0, 1] \) and glue both ends of each of them except for the first. Thus, we obtain (a space homeomorphic to)
+    \thmitem{ex:def:graph_geometric_realization/positive_integers} Consider the reduced positive integer graph \eqref{eq:ex:infinite_integer_graphs/positive}. We start with \( \aleph_0 \) copies of \( [0, 1] \) and glue both ends of each of them except for the first. Thus, we obtain (a space homeomorphic to)
     \begin{equation*}
       \bigcup_{k \geq 0} [k, k + 1] = [0, \infty).
     \end{equation*}
 
-    Therefore, \eqref{eq:ex:infinite_integer_graphs/positive} is a \hyperref[def:directed_multigraph_geometric_realization/linear]{linear graph}.
+    Therefore, \eqref{eq:ex:infinite_integer_graphs/positive} is a \hyperref[def:graph_geometric_realization/linear]{linear graph}.
 
-    \thmitem{ex:def:directed_multigraph_geometric_realization/k3} The graph with vertices \( V = \set{ a, b, c } \) and arcs \( \set{ \overbrace{a \to b}^{e_1}, \overbrace{b \to c}^{e_2}, \overbrace{c \to a}^{e_3} } \) is more subtle.
+    \thmitem{ex:def:graph_geometric_realization/k3} The graph with vertices \( V = \set{ a, b, c } \) and arcs \( \set{ \overbrace{a \to b}^{e_1}, \overbrace{b \to c}^{e_2}, \overbrace{c \to a}^{e_3} } \) is more subtle.
 
-    We start with three copies of the interval \( [0, 1] \), depicted in \eqref{eq:ex:def:directed_multigraph_geometric_realization/k3/relization} as upward-pointing arrows, and use dashed lines to connect the endpoints that we want to glue together.
-    \begin{equation}\label{eq:ex:def:directed_multigraph_geometric_realization/k3/relization}
+    We start with three copies of the interval \( [0, 1] \), depicted in \eqref{eq:ex:def:graph_geometric_realization/k3/relization} as upward-pointing arrows, and use dashed lines to connect the endpoints that we want to glue together.
+    \begin{equation}\label{eq:ex:def:graph_geometric_realization/k3/relization}
       \begin{aligned}
         \includegraphics[page=1]{output/ex__def__graph_geometric_realization}
       \end{aligned}
     \end{equation}
 
-    After contracting the dashed lines, we obtain a topological space that can easily be \hyperref[def:directed_multigraph_geometric_realization/embedding]{embedded} into \( \BbbR^2 \). An obvious embedding corresponds to \enquote{pulling up} \( e_2 \) and \( e_3 \):
-    \begin{equation}\label{eq:ex:def:directed_multigraph_geometric_realization/k3/embedding}
+    After contracting the dashed lines, we obtain a topological space that can easily be \hyperref[def:graph_geometric_realization/embedding]{embedded} into \( \BbbR^2 \). An obvious embedding corresponds to \enquote{pulling up} \( e_2 \) and \( e_3 \):
+    \begin{equation}\label{eq:ex:def:graph_geometric_realization/k3/embedding}
       \begin{aligned}
         \includegraphics[page=2]{output/ex__def__graph_geometric_realization}
       \end{aligned}
     \end{equation}
 
-    This is only one possible embedding of the geometric realization. It is sufficient, however, for proving that the graph is \hyperref[def:directed_multigraph_geometric_realization/planar]{planar}. The underlying undirected graph is the \hyperref[ex:complete_graph]{complete graph} \( K_3 \), hence we have shown that \( K_3 \) is also planar.
+    This is only one possible embedding of the geometric realization. It is sufficient, however, for proving that the graph is \hyperref[def:graph_geometric_realization/planar]{planar}.
 
-    \thmitem{ex:def:directed_multigraph_geometric_realization/k4} \Cref{fig:ex:complete_graph} shows that the complete graph \( K_4 \) is planar.
-
-    This is not-at-all obvious from its geometric realization, however.
-    \begin{equation}\label{eq:ex:def:directed_multigraph_geometric_realization/k4/realization}
+    The corresponding undirected graph is the \hyperref[ex:complete_graph]{complete graph} \( K_3 \). We may have different orientations of \( K_3 \). Consider the following two:
+    \begin{equation}\label{eq:ex:def:graph_geometric_realization/k3/undirected_1}
       \begin{aligned}
         \includegraphics[page=3]{output/ex__def__graph_geometric_realization}
+      \end{aligned}
+    \end{equation}
+
+    \begin{equation}\label{eq:ex:def:graph_geometric_realization/k3/undirected_2}
+      \begin{aligned}
+        \includegraphics[page=4]{output/ex__def__graph_geometric_realization}
+      \end{aligned}
+    \end{equation}
+
+    If we reverse the direction of \( R_{A_c}(e_1) \) in order to obtain \( R_{A_d}(e_1) \), we must also unglue its head and tail and then glue them in its inverse direction. This is an explicit homeomorphism. This example generalizes to \fullref{thm:undirected_multigraph_geometric_realizations_homeomorphic}.
+
+    \thmitem{ex:def:graph_geometric_realization/k4} \Cref{fig:ex:complete_graph} shows that the complete graph \( K_4 \) is planar.
+
+    This is, however, not-at-all obvious from the geometric realization of a particular orientation.
+    \begin{equation}\label{eq:ex:def:graph_geometric_realization/k4/realization}
+      \begin{aligned}
+        \includegraphics[page=5]{output/ex__def__graph_geometric_realization}
       \end{aligned}
     \end{equation}
 
@@ -97,91 +112,16 @@
   \end{thmenum}
 \end{example}
 
-\begin{proposition}\label{thm:linear_directed multigraph_equivalence}
-  If finite directed multigraph is \hyperref[def:directed_multigraph_geometric_realization/linear]{linear}, it has degree at most \( 2 \).
-\end{proposition}
-\begin{proof}
-  Let \( Q = (V, A, t, h) \) be a directed multigraph and let \( (X, \mscrT, R_V, R_A) \) be its geometric realization. Let \( f: X \to \BbbR \) be an injective continuous function, i.e. a topological embedding.
-
-  Suppose that the vertex \( v \) has degree larger than \( 2 \). It is sufficient to consider the case where \( a \), \( b \) and \( c \) are distinct arcs incident to \( v \).
-
-  We have
-  \begin{equation*}
-    R_V(v) \in R_A(a) \cap R_A(b) \cap R_A(c)
-  \end{equation*}
-  thus
-  \begin{equation*}
-    f(R_V(v)) \in f(R_A(a)) \cap f(R_A(b)) \cap f(R_A(c))
-  \end{equation*}
-
-  Since \( R_A(a) \), \( R_A(b) \) and \( R_A(c) \) are \hyperref[def:connected_space]{connected}, so are their images under \( f \). If \( f(R_A(a)) \) has a point to the right of \( f(R_V(v)) \), then \( f(R_A(b)) \) must be left of \( R_V(v) \) and there remains nowhere to place \( R_A(c) \).
-
-  Therefore, \( \deg(v) \leq 2 \) and, since \( v \) was arbitrary, \( \deg(Q) \leq 2 \).
-\end{proof}
-
-\begin{proposition}\label{thm:moment_curve}
-  Consider \hyperref[def:parametric_curve]{curve}
-  \begin{equation*}
-    \begin{aligned}
-      &\gamma: \BbbR \to \BbbR^n \\
-      &\gamma(t) \coloneqq (t, t^2, \ldots, t^n).
-    \end{aligned}
-  \end{equation*}
-
-  For any \( t_1 < \ldots < t_n \), the points \( \gamma(t_1), \ldots, \gamma(t_n) \) are linearly independent.
-
-  This curve is called the \term{moment curve} of dimension \( n \).
-\end{proposition}
-\begin{proof}
-  Follows from \fullref{ex:vandermonde_matrix}.
-\end{proof}
-
-\begin{proposition}\label{thm:directed multigraph_can_be_embedded_into_r3}
-  Every finite directed multigraph can be embedded into \( \BbbR^3 \).
-\end{proposition}
-\begin{proof}
-  Let \( Q = (V, A, t, h) \) be a finite directed multigraph of order \( n \). By definition of cardinality, there exists a bijection from \( n \) to \( V \).
-
-  Place the vertices of \( Q \) along the \hyperref[thm:moment_curve]{moment curve} by using \( \gamma(k) \) as the position for the \( k \)-th vertex of \( V \). Then by \fullref{thm:moment_curve}, no four of these points are \hyperref[def:coplanar_points]{coplanar}. Hence, if we connect their vertices using a straight line where there is an arc, no two lines would intersect.
-
-  Therefore, this is an embedding.
-\end{proof}
-
-\begin{proposition}\label{thm:def:directed_multigraph_geometric_realization}
-  Let \( Q = (V, A, h, t) \) be a \hyperref[def:directed_multigraph]{directed multigraph} and let \( (X, \mscrT, R_V, R_A) \) be its \hyperref[def:directed_multigraph_geometric_realization]{geometric realization}.
-
-  \begin{thmenum}
-    \thmitem{thm:def:directed_multigraph_geometric_realization/isolated} A vertex \( v \in V \) is isolated in \( Q \), i.e. has degree zero, if and only if \( R_V(v) \) is an isolated point of \( X \).
-
-    \thmitem{thm:def:directed_multigraph_geometric_realization/t1} If \( Q \) is \hyperref[def:graph_cardinality/local]{locally finite}, then the space \( (X, \mscrT) \) satisfies the \ref{def:separation_axioms/T1} separation axiom.
-  \end{thmenum}
-\end{proposition}
-\begin{proof}
-  \SubProofOf{thm:def:directed_multigraph_geometric_realization/isolated} For every isolated vertex \( v \), the point \( R_V(v) = \set{ (v, v) } \) is isolated by definition.
-
-  Now suppose that \( v \) is not an isolated vertex. Then \( R_V(v) \) is defined differently in \eqref{eq:def:directed_multigraph_geometric_realization/rv}. If there exists an arc \( a \) such that \( v = i(a) \), then \( (a, 0) \in R_V(v) \) and hence there exists no neighborhood of \( R_V(v) \) disjoin from \( R_A(a) \), hence \( R_V(v) \) is not a disjoint point of \( X \). The case \( v = t(a) \) is handled analogously.
-
-  \SubProofOf{thm:def:directed_multigraph_geometric_realization/t1} Let \( x \in X \).
-
-  If \( x = \set{ (t, a) } \) for some arc \( a \) and \( 0 < t < 1 \), then \( \set{ x } \) is closed because \( [0, 1] \) satisfies \hyperref[def:separation_axioms/T1]{T1} and hence \( \set{ t } \) is closed in \( [0, 1] \).
-
-  If \( x = R_V(v) = \set{ (v, v) } \) for some isolated vertex \( v \), then \( R_V(v) \) is clopen by definition.
-
-  If \( x = R_V(v) \) for some vertex \( v \) of positive degree, then
-  \begin{equation*}
-    R_V(v) = \set[\Big]{ (0, a) \given i(a) = v } \cup \set[\Big]{ (1, a) \given t(a) = v }.
-  \end{equation*}
-
-  Both \( \set{ 0 } \) and \( \set{ 1 } \) are closed in \( [0, 1] \), hence \( \set{ 0, 1 } \) is also closed in \( [0, 1] \). Since \( Q \) is locally finite, \( R_V(v) \) is the union of finitely many closed sets and is thus itself closed.
-\end{proof}
-
 \begin{proposition}\label{thm:undirected_multigraph_geometric_realizations_homeomorphic}
   Let \( G = (V, E, \mscrE) \) be an \hyperref[def:undirected_multigraph]{undirected multigraph}.
 
-  Let \( (X_c, \mscrT_c, R_{V_c}, R_{A_c}) \) and \( (X_d, \mscrT_d, R_{V_d}, R_{A_d}) \) be geometric realizations corresponding to the \hyperref[def:graph_orientation]{orientations} \( O_c(G) \) and \( O_d(G) \) of \( G \).
+  Let \( (X_c, \mscrT_c, R_{V_c}, R_{A_c}) \) and \( (X_d, \mscrT_d, R_{V_d}, R_{A_d}) \) be geometric realizations corresponding to the \hyperref[def:multigraph_orientation]{orientations} \( O_c(G) \) and \( O_d(G) \) of \( G \).
 
   Then \( (X_c, \mscrT_c) \) and \( (X_c, \mscrT_d) \) are homeomorphic.
 \end{proposition}
+\begin{comments}
+  \item The proof is motivated by \fullref{ex:def:graph_geometric_realization/k3}.
+\end{comments}
 \begin{proof}
   Let \( h_c \) and \( h_d \) be the head functions from the \hyperref[def:directed_multigraph]{directed multigraphs} \( O_c(G) \) and \( O_d(G) \).
 
@@ -190,108 +130,174 @@
     \begin{aligned}
       &f: X_c \to X_d \\
       &f(x) \coloneqq \begin{cases}
-        \set[\Big]{ (0, e) \given h_d(e) = v } \cup \set[\Big]{ (1, e) \given t_d(e) = v }, &x = R_{V_c}(v) \T{and} \deg(v) > 0 \\
-        \set[\Big]{ (e, 1 - t) },                                                           &x = \set{ (e, t) } \T{and} h_c(e) \neq h_d(e) \\
-        x,                                                                                  &\T{otherwise.}
+        R_{V_d}(v),         &x = R_{V_c}(v), \\
+        \set{ (e, p) },     &x = \set{ (e, p) } \T{and} h_c(e) = h_d(e), \\
+        \set{ (e, 1 - p) }, &x = \set{ (e, p) } \T{and} h_c(e) \neq h_d(e).
       \end{cases}
     \end{aligned}
   \end{equation*}
 
-  This function \enquote{reverses} the direction of some of the intervals in the construction of the realizations and fixes everything else in place. It is clearly bijective. It is also continuous because it satisfies \fullref{def:global_continuity/closure}. Finally, it is a homeomorphism because the inverse function is defined in the same way by interchanging \( c \) and \( d \).
+  This function \enquote{reverses} the direction of some intervals in the construction of the realizations and fixes everything else in place. It is clearly bijective. It is also continuous because it satisfies \fullref{def:global_continuity/closure}. Finally, it is a homeomorphism because the inverse function is defined in the same way by interchanging \( c \) and \( d \).
 \end{proof}
 
-\begin{proposition}\label{thm:directed multigraph_geometric_realization_paths}
-  Let \( Q = (V, A, h, t) \) be a \hyperref[def:directed_multigraph]{directed multigraph} and let \( (X, \mscrT, R_V, R_A) \) be its \hyperref[def:directed_multigraph_geometric_realization]{geometric realization}.
+\begin{proposition}\label{thm:def:graph_geometric_realization}
+  Let \( G = (V, A, h, t) \) be a \hyperref[def:directed_multigraph]{directed multigraph} and let \( (X, \mscrT, R_V, R_A) \) be its \hyperref[def:graph_geometric_realization]{geometric realization}.
 
   \begin{thmenum}
-    \thmitem{thm:directed multigraph_geometric_realization_paths/directed multigraph_to_realization} If there exists an \hyperref[def:graph_walk/undirected]{undirected path} \( p = (v, e_1, \ldots, e_n) \) from \( s \) to \( f \), then there exists a \hyperref[def:parametric_curve]{continuous path} \( \gamma: [0, 1] \to X \) from \( R_V(s)  \) to \( R_V(f) \).
+    \thmitem{thm:def:graph_geometric_realization/isolated} A vertex \( v \in V \) is \hyperref[def:isolated_vertex]{isolated} in \( G \), i.e. has degree zero, if and only if \( R_V(v) \) is an \hyperref[def:cluster_point]{isolated point} of \( X \).
 
-    \thmitem{thm:directed multigraph_geometric_realization_paths/realization_to_directed multigraph} If \( Q \) is finite and if there exists a simple continuous path \( \gamma: [0, 1] \to X \) from \( R_V(s)  \) to \( R_V(f) \), then there exists a simple undirected path from \( s \) to \( f \).
+    \thmitem{thm:def:graph_geometric_realization/t1} If \( G \) is \hyperref[def:graph_cardinality/local]{locally finite}, then the space \( (X, \mscrT) \) satisfies the \ref{def:separation_axioms/T1} separation axiom.
   \end{thmenum}
 \end{proposition}
 \begin{proof}
-  The case \( s = f \) is trivial, and we assume that \( s \neq f \).
+  \SubProofOf{thm:def:graph_geometric_realization/isolated}
 
-  \SubProofOf{thm:directed multigraph_geometric_realization_paths/directed multigraph_to_realization} Suppose that \( p \) is an undirected path from \( s \) to \( f \). We will use \hyperref[rem:induction/well_founded]{strong induction} on the length of \( p \) to show that there exists a continuous path between the points \( R_V(s) \) and \( R_V(f)  \) of \( X \).
+  \SufficiencySubProof* For every isolated vertex \( v \), the point \( R_V(v) = \set{ (v, v) } \) is isolated by definition.
 
-  Suppose that the statement holds for paths of length smaller than \( n \) and let
-  \begin{equation*}
-    p = (v, e_1, \ldots, e_{n-1}, e_n)
-  \end{equation*}
-  be a path of length \( n \) from some vertex \( s \) to \( f \). The inductive hypothesis holds for the initial segment \( (e_1, \ldots, e_{n-1}) \) of \( p \), hence there exists a continuous path \( \gamma: [0, 1] \to X \) from \( s \) to an endpoint of \( e_{n-1} \).
+  \NecessitySubProof* Now suppose that \( R_V(v) \) is an isolated point but \( v \) is not an isolated vertex.
+
+  Then there exists an arc \( e \) such that \( v = h(e) \) or \( v = t(e) \). In the first case, \( (e, 0) \in R_V(v) \), and hence there exists no neighborhood of \( R_V(v) \) disjoint from \( R_A(e) \). In the second case, \( (e, 1) \in R_V(v) \), and the same conclusion holds.
+
+  Hence, \( R_V(v) \) is not an isolated point of \( X \). The obtained contradiction shows that \( v \) must be an isolated vertex.
+
+  \SubProofOf{thm:def:graph_geometric_realization/t1} Let \( x \in X \).
+
   \begin{itemize}
-    \item If both \( e_{n-1} \) and \( e_n \) are positively oriented, then \( t(e_{n-1}) = i(e_n) \) and thus \( \gamma \) is a continuous path from \( R_V(s)  \) to \( R_V(i(e_n)) \). We can then append to \( \gamma \) the continuous path from \( R_V(i(e_n)) \) to \( R_V(t(e_n)) = R_V(f)  \) to obtain a path from \( R_V(s)  \) to \( R_V(f)  \).
+    \item If \( x = \set{ (p, e) } \) for some arc \( e \) and \( 0 < p < 1 \), then \( \set{ x } \) is closed because \( [0, 1] \) satisfies \hyperref[def:separation_axioms/T1]{T1} and hence \( \set{ p } \) is closed in \( [0, 1] \).
 
-    \item If \( e_{n-1} \) is positively oriented but \( e_n \) is not, then \( \gamma \) is a continuous path from \( R_V(s)  \) to \( R_V(i(e_{n-1})) \). We can then append to \( \gamma \) the paths from \( R_V(i(e_{n-1})) \) to \( R_V(t(e_{n-1})) = R_V(t(e_n)) \) and from \( R_V(t(e_n)) \) to \( R_V(i(e_n)) = R_V(f)  \).
+    \item If \( x = R_V(v) = \set{ (v, v) } \) for some isolated vertex \( v \), then \( R_V(v) \) is clopen by definition.
 
-    \item Similarly, if \( e_{n-1} \) is negatively oriented but \( e_n \) is not, then \( \gamma \) is a continuous path from \( R_V(s)  \) to \( R_V(t(e_{n-1})) \), and we can append to it the paths from \( R_V(t(e_{n-1})) \) to \( R_V(i(e_{n-1})) = R_V(i(e_n)) \) and from \( R_V(i(e_n)) \) to \( R_V(t(e_n)) \).
-
-    \item Finally, if both \( e_{n-1} \) and \( e_n \) are negatively oriented, then \( \gamma \) is a continuous path from \( R_V(s)  \) to \( R_V(t(e_{n-1})) \), and we can append to it the paths from \( R_V(t(e_{n-1})) \) to \( R_V(i(e_{n-1})) = R_V(t(e_n)) \) and from \( R_V(t(e_n)) \) to \( R_V(i(e_n)) = R_V(f)  \).
+    \item If \( x = R_V(v) \) for some vertex \( v \) of positive degree, then
+    \begin{equation*}
+      R_V(v) = \set[\Big]{ (0, e) \given* h(e) = v } \cup \set[\Big]{ (1, e) \given* t(e) = v }.
+    \end{equation*}
   \end{itemize}
 
-  We have shown that there exists a continuous path from \( R_V(s) \) to \( R_V(f)  \).
+  Both \( \set{ 0 } \) and \( \set{ 1 } \) are closed in \( [0, 1] \), hence \( \set{ 0, 1 } \) is also closed in \( [0, 1] \). Since \( G \) is locally finite, \( R_V(v) \) is the union of finitely many closed sets and is thus itself closed.
+\end{proof}
 
-  \SubProofOf{thm:directed multigraph_geometric_realization_paths/realization_to_directed multigraph} Suppose that \( Q \) is finite and let \( \gamma: [0, 1] \to X \) be a continuous path from \( R_V(s) \) to \( R_V(f) \). We will show that there is an undirected path from \( s \) to \( f \).
+\begin{proposition}\label{thm:linear_directed multigraph_equivalence}
+  If a finite simple directed graph is \hyperref[def:graph_geometric_realization/linear]{linear}, every vertex has \hyperref[def:graph_cardinality/directed_degree]{degree} at most \( 2 \).
+\end{proposition}
+\begin{proof}
+  Let \( G = (V, A) \) be a finite simple directed graph and let \( (X, \mscrT, R_V, R_A) \) be its geometric realization. Let \( f: X \to \BbbR \) be a homeomorphic embedding.
 
-  \SubProof*{\( \gamma \) contains no isolated vertices} We have
-  \begin{equation}\label{eq:thm:directed multigraph_geometric_realization_paths/full_preimage}
-    \gamma^{-1}(X) = \bigcup_{a \in A} \gamma^{-1}(R_A(a)) \cup \bigcup_{\mathclap{\deg(v) = 0}} \gamma^{-1}(R_V(v)).
-  \end{equation}
+  Suppose that the vertex \( v \) has degree larger than \( 2 \). It is sufficient to consider the case where \( e \), \( f \) and \( g \) are distinct arcs incident to \( v \). Then \( f(R_V(e)) \) must be the point that connects \( f(R_A(e)) \), \( f(R_A(f)) \) and \( f(R_A(g)) \). If \( f(R_A(e)) \) is placed to the left of \( f(R_V(e)) \) and \( f(R_A(f)) \) --- to the right, then there is nowhere to place \( f(R_A(g)) \) without it crossing the other two curves.
 
-  For each arc \( a \), the set \( R_A(a) \) is closed as a homeomorphic image of the unit interval \( [0, 1] \). From \fullref{thm:def:directed_multigraph_geometric_realization/t1} it follows that \( \set{ R_V(v) } \) is a closed set for every vertex \( v \in V \). Therefore, \( \gamma^{-1}(X) \) is a union of disjoint closed sets.
+  The obtained contradiction shows that \( \deg(v) \leq 2 \).
+\end{proof}
 
-  If we assume that \( \gamma \) passes through an isolated vertex \( v \), then \( \gamma^{-1}(v) \) would be a nonempty closed set. Then \( \img(\gamma) = \set{ v } \) because otherwise \( [0, 1] \) would be the union of finitely many nonempty disjoint closed sets, which would contradict \fullref{def:connected_space/closed_union} because \( [0, 1] \) is \hyperref[def:connected_space]{connected}.
-
-  But \( \gamma \) passes through at least two vertices because \( s \neq t \), and hence it doesn't pass through any isolated vertex.
-
-  \SubProof*{\( \gamma \) contains the entirety of each arc it intersects} Suppose that \( R_A(a) \cap \img(\gamma) = \varnothing \) for some arc \( a \).
-
-  Let \( l \coloneqq \inf\set{ 0 < t < 1 \given \gamma(t) \in R_A(a) } \) and \( r \coloneqq \sup\set{ 0 < t < 1 \given \gamma(t) \in R_A(a) } \). The closed interval \( [l, r] \) is compact, hence \( \gamma([l, r]) \) is a continuous image of a compact set and hence is itself compact.
-
-  Since \( \Int R_A(a) \) is a subset of \( \gamma([l, r]) \) and since \( \gamma([l, r]) \) is closed, its closure \( R_A(a) \) is also a subset of \( \gamma([l, r]) \).
-
-  Therefore, if an internal point of an arc belongs to \( \img(\gamma) \), so does the entire arc.
-
-  \SubProof*{\( \gamma \) contains an arc} From \eqref{eq:thm:directed multigraph_geometric_realization_paths/full_preimage} if follows that
-  \begin{equation*}
-    \gamma^{-1}(X)
-    =
-    \bigcup_{a \in A} \gamma^{-1}(R_A(a))
-    \reloset{\ref{thm:topology_from_closure_operator/CO3}} =
-    \cl\parens*{ \bigcup_{a \in A} \gamma^{-1}(\Int R_A(a)) }.
-  \end{equation*}
-
-  Hence, \( \img(\gamma) \) contains at least one internal point of some arc and thus the entire arc.
-
-  \SubProof*{\( \gamma \) induces an undirected path from \( s \) to \( f \)} We have that \( \gamma(0) = R_V(s) \). By what we have already shown, \( \img(\gamma) \) contains no isolated points, hence \( \gamma \) contains the set \( R_A(a) \), where \( a \) is some arc incident to \( s \).
-
-  Suppose that \( i(a) = s \). Then \( p = (s, a) \) is an undirected path from \( s \) to \( t(a) \). If \( t(a) = f \), the proof is finished. Otherwise, define
-  \begin{equation*}
-    x_0 \coloneqq \sup\set{ x \in [0, 1] \given \gamma(x) = R_V(t(a)) }
-  \end{equation*}
-  and
+\begin{proposition}\label{thm:moment_curve}
+  Consider the \hyperref[def:parametric_curve]{parametric curve}
   \begin{equation*}
     \begin{aligned}
-      &\delta: [0, 1] \to X, \\
-      &\delta(x) \coloneqq \gamma(x_0 + (1 - x_0) x).
+      &\gamma: \BbbR \to \BbbR^n \\
+      &\gamma(t) \coloneqq (t, t^2, \ldots, t^n).
     \end{aligned}
   \end{equation*}
 
-  Then \( \delta \) is a continuous path from \( R_V(t(a)) \) to \( R_V(f) \).
+  This curve is called the \term{moment curve} of dimension \( n \).
 
-  We now proceed by \fullref{thm:bounded_transfinite_induction} bounded by the number of arcs to define an undirected path \( p \) from \( s \) to \( f \). Since the path \( \gamma \) is simple, it does not intersect itself and hence the image of the arc \( a \) at each step will not be in \( \delta \).
+  For any \( t_1 < \ldots < t_n \), the points \( \gamma(t_1), \ldots, \gamma(t_n) \) are linearly independent.
+\end{proposition}
+\begin{proof}
+  Follows from \fullref{ex:vandermonde_matrix}.
 \end{proof}
 
-\begin{corollary}\label{thm:directed multigraph_geometric_realization_connectedness}
-  A finite \hyperref[def:directed_multigraph]{directed multigraph} is \hyperref[def:graph_connectedness/weak]{weakly connected} if and only if its \hyperref[def:directed_multigraph_geometric_realization/undirected]{geometric realization} is \hyperref[def:path_connected_space]{path connected}.
+\begin{proposition}\label{thm:directed_multigraph_can_be_embedded_into_r3}
+  Every simple finite directed graph can be embedded into \( \BbbR^3 \).
+\end{proposition}
+\begin{proof}
+  Let \( G = (V, A) \) be a finite simple directed graph of order \( n \). By definition of cardinality, there exists a bijection from \( n \) to \( V \).
+
+  Place the vertices of \( G \) along the \hyperref[thm:moment_curve]{moment curve} by using \( \gamma(k) \) as the position for the \( k \)-th vertex of \( V \). Then by \fullref{thm:moment_curve}, no three of these points are \hyperref[def:collinear_points]{collinear}. Hence, if we connect their vertices using a straight line where there is an arc, the interiors of no two lines would intersect.
+
+  Therefore, this is an embedding.
+\end{proof}
+
+\begin{proposition}\label{thm:directed_multigraph_geometric_realization_paths}
+  Let \( G = (V, A, h, t) \) be a \hyperref[def:directed_multigraph]{directed multigraph} and let \( (X, \mscrT, R_V, R_A) \) be its \hyperref[def:graph_geometric_realization]{geometric realization}.
+
+  Fix a \hyperref[def:parametric_curve]{continuous path} \( \gamma: [0, 1] \to X \) whose endpoints \( \gamma(0) = R_V(v_0) \) and \( \gamma(1) = R_V(v_n) \) are vertices. Let \( s_0 \coloneqq 0 \), \( s_n \coloneqq 1 \) and, for \( k = 1, \ldots, n - 1 \), denote by \( s_k > s_{k-1} \) the smallest parameter such that \( \gamma(s_k) = R_V(v_k) \) for some vertex \( v_k \).
+
+  \begin{thmenum}
+    \thmitem{thm:directed_multigraph_geometric_realization_paths/graph_to_realization} If there exists a \hyperref[def:graph_walk/generalized]{generalized walk}
+    \begin{equation}\label{eq:thm:directed_multigraph_geometric_realization_paths/graph_to_realization/graph}
+      s, e_1, v_1, e_2, v_2, \cdots, v_{n-1}, e_n, f
+    \end{equation}
+    then there exists a \hyperref[def:parametric_curve]{continuous path} \( \gamma: [0, 1] \to X \) from \( R_V(s) \) to \( R_V(f) \).
+
+    \thmitem{thm:directed_multigraph_geometric_realization_paths/realization_to_graph} If \( G \) is finite and if there exists a simple continuous path \( \gamma: [0, 1] \to X \) from \( R_V(s) \) to \( R_V(f) \), then there exists a generalized walk from \( s \) to \( f \).
+  \end{thmenum}
+\end{proposition}
+\begin{proof}
+  \SubProofOf{thm:directed_multigraph_geometric_realization_paths/graph_to_realization} Suppose that we are given the path \eqref{eq:thm:directed_multigraph_geometric_realization_paths/graph_to_realization/graph}.
+
+  We will use \hyperref[rem:induction/well_founded]{strong induction} on \( n \) to show that there exists a continuous path between the points \( R_V(s) \) and \( R_V(f)  \) of \( X \).
+
+  Suppose that the statement holds for paths of length smaller than \( n \). The inductive hypothesis holds for the initial segment
+  \begin{equation*}
+    s, e_1, v_1, e_2, v_2, \cdots, e_{n-1}, v_{n-1},
+  \end{equation*}
+  hence there exists a continuous path \( \delta: [0, 1] \to X \) from \( R_V(s) \) to \( R_V(v_{n-1}) \).
+
+  \begin{itemize}
+    \item If \( e_n \) are positively oriented, then \eqref{eq:thm:directed_multigraph_geometric_realization_paths/graph_to_realization/graph} ends with
+    \begin{equation*}
+      \cdots v_{n-1} \reloset{e_n} \to f.
+    \end{equation*}
+
+    Thus, \( \delta \) is a continuous path from \( R_V(s) \) to \( R_V(v_{k-1}) \), and \( R_A(e_n) \) is a continuous path from \( R_V(v_{k-1}) \) to \( R_V(f) \). We can concatenate the two to obtain a path from \( R_V(s)  \) to \( R_V(f) \).
+
+    \item If \( e_n \) is negatively oriented, then \eqref{eq:thm:directed_multigraph_geometric_realization_paths/graph_to_realization/graph} ends with
+    \begin{equation*}
+      \cdots v_{n-1} \reloset{e_n} \leftarrow f.
+    \end{equation*}
+
+    Thus, \( \delta \) is again a continuous path from \( R_V(s) \) to \( R_V(v_{k-1}) \), but \( R_A(e_n) \) is a continuous path from \( R_V(f) \) to \( R_V(v_{k-1}) \). We can thus concatenate \( \delta \) with the inversely parameterized path \( R_A(e_n)^{-1} \) of \( R_A(e_n) \) to obtain a path from \( R_V(s) \) to \( R_V(f) \).
+  \end{itemize}
+
+  In both cases, we have build a continuous path from \( R_V(s) \) to \( R_V(f)  \).
+
+  \SubProofOf{thm:directed_multigraph_geometric_realization_paths/realization_to_graph} Suppose that \( G \) is a finite graph and let \( \gamma: [0, 1] \to X \) be a simple continuous path from \( R_V(s) \) to \( R_V(f) \).
+
+  For every number \( s \in [0, 1] \), define the set
+  \begin{equation*}
+    A_s \coloneqq \set{ p > s \given \qexists {v \in V} R_V(v) = \gamma(p) }.
+  \end{equation*}
+
+  Note that \( n \) is finite since we have assumed that the graph is finite. Let \( n \coloneqq \card(A_0) + 1 \), i.e. the number of vertices lying on the path \( \gamma \). Then recursively define the sequence
+  \begin{equation*}
+    0 = s_0 < s_1 < \cdots < s_{n-1} < s_n = 1
+  \end{equation*}
+  as follows:
+  \begin{equation*}
+    s_k \coloneqq \begin{cases}
+      0,                &k = 0, \\
+      \min A_{s_{k-1}}, &0 < k \leq n. \\
+    \end{cases}
+  \end{equation*}
+
+  Since the path \( \gamma \) is simple, no vertex can be traversed twice. Thus, we have located the unique vertices lying on \( \gamma \). Denote them via \( v_0, \ldots, v_n \).
+
+  There must be a unique arc \( e_k \) between \( v_{k-1} \) and \( v_k \) lying on \( \gamma \) (note that we do not specify its direction). At least one such an arc must exist because otherwise we could not construct a continuous path. Furthermore, given a pair of numbers \( s < s' \) between \( s_{k-1} \) and \( s_k \), we claim that if \( \gamma(s) = (e_k, r) \) and \( \gamma'(s) = (e_k', r') \), then \( e_k = e_k' \). Indeed, the segment of \( \gamma \) between \( s_{k-1} \) and \( s_k \) is path-connected as a continuous image of the open interval \( (s_{k-1}, s_k) \). Since we have constructed the space \( X \) so that the arcs \( R_A(e_k) \) and \( R_A(e_k') \) are disjoint whenever \( e_k \neq e_k' \), a continuous path passing through both \( R_A(e_k) \) and \( R_A(e_k') \) must contain a vertex common to both arcs. But there cannot be a vertex between \( s_{k-1} \) and \( s_k \). The obtained shows that \( e_k = e_k' \).
+
+  It now remains to define our desired walk in \( G \) as
+  \begin{equation*}
+    \underbrace{v_0}_s, e_1, v_1, e_2, v_2, \cdots, v_{n-1}, e_n, \underbrace{v_n}_f.
+  \end{equation*}
+\end{proof}
+
+\begin{corollary}\label{thm:directed_multigraph_geometric_realization_connectedness}
+  A finite \hyperref[def:directed_multigraph]{directed multigraph} is \hyperref[def:graph_connectedness/weak]{weakly connected} if and only if its \hyperref[def:graph_geometric_realization/undirected]{geometric realization} is \hyperref[def:path_connected_space]{path connected}.
 \end{corollary}
 \begin{proof}
-  Follows from \fullref{thm:directed multigraph_geometric_realization_paths}.
+  Follows from \fullref{thm:directed_multigraph_geometric_realization_paths}.
 \end{proof}
 
 \begin{corollary}\label{thm:undirected_multigraph_geometric_realization_connectedness}
-  A finite \hyperref[def:undirected_multigraph]{undirected multigraph} is \hyperref[def:graph_connectedness/undirected]{connected} if and only if its \hyperref[def:directed_multigraph_geometric_realization/undirected]{geometric realization} is a \hyperref[def:path_connected_space]{path connected}.
+  A finite \hyperref[def:undirected_multigraph]{undirected multigraph} is \hyperref[def:graph_connectedness/undirected]{connected} if and only if its \hyperref[def:graph_geometric_realization/undirected]{geometric realization} is a \hyperref[def:path_connected_space]{path connected}.
 \end{corollary}
 \begin{proof}
-  Follows from \fullref{thm:directed multigraph_geometric_realization_connectedness}.
+  Follows from \fullref{thm:directed_multigraph_geometric_realization_connectedness}.
 \end{proof}
