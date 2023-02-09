@@ -126,11 +126,20 @@ class TeXTask(Task):
             self.sublogger.error('Could not open TeX log file.')
         else:
             if len(parser.errors) > 0:
-                self.sublogger.error(f'Compiled with {len(parser.errors)} errors. The first error is:\n {str(parser.errors[0])}')
+                if len(parser.errors) == 1:
+                    self.sublogger.error(f'Compiled with an error:\n {str(parser.errors[0])}')
+                else:
+                    self.sublogger.error(f'Compiled with {len(parser.errors)} errors. The first error is:\n {str(parser.errors[0])}')
             elif len(parser.warnings) > 0:
-                self.sublogger.warning(f'Compiled with {len(parser.warnings)} warnings. The first warning is:\n {str(parser.warnings[0])}')
+                if len(parser.warnings) == 1:
+                    self.sublogger.warning(f'Compiled with a warning:\n {str(parser.warnings[0])}')
+                else:
+                    self.sublogger.warning(f'Compiled with {len(parser.warnings)} warnings. The first warning is:\n {str(parser.warnings[0])}')
             elif len(parser.badboxes) > 0:
-                self.sublogger.warning(f'Compiled with {len(parser.badboxes)} bad boxes. The first bad box is:\n {str(parser.badboxes[0])}')
+                if len(parser.badboxes) == 1:
+                    self.sublogger.warning(f'Compiled with a bad box:\n {str(parser.badboxes[0])}')
+                else:
+                    self.sublogger.warning(f'Compiled with {len(parser.badboxes)} bad boxes. The first bad box is:\n {str(parser.badboxes[0])}')
 
         if len(parser.errors) != 0:
             return
