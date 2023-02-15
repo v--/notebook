@@ -58,7 +58,6 @@
 \RequirePackage{enumitem}
 \RequirePackage{graphicx}
 \RequirePackage{graphbox}
-\RequirePackage{crossreftools}
 \RequirePackage{csquotes}
 
 % stix2 doesn't behave well with text symbols, so I use math symbols instead
@@ -88,6 +87,7 @@
 \let\SetHRColor\relax
 
 \RequirePackage[nameinlink]{cleveref}
+\RequirePackage{crossreftools}
 
 % Misc math packages
 \RequirePackage[altpo,epsilon]{backnaur}
