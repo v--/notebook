@@ -521,3 +521,140 @@
 \begin{theorem}[Diaconescu-Goodman-Myhill theorem]\label{thm:diaconescu_goodman_myhill_theorem}\mcite[corr. 2]{Diaconescu1975}
   In \hyperref[def:zfc]{\logic{ZF}}, the \hyperref[def:zfc/choice]{axiom of choice} entails the law of the excluded middle \eqref{eq:thm:minimal_propositional_negation_laws/lem}.
 \end{theorem}
+
+\begin{remark}\label{rem:well_founded_relation}
+  If \( \prec \) is simply a binary relation without any additional conditions imposed, we can still make sense of the chain conditions from \fullref{def:chain_condition}. We will restrict ourselves to the descending chain condition --- we call the relation \( \prec \) \term{well-founded} if any of the following equivalent conditions hold:
+
+  \begin{thmenum}
+    \thmitem{rem:well_founded_relation/maximal} \Fullref{def:chain_condition/maximal} can be restated as follows: every nonempty subset of \( P \) has a minimal element \( m \) in the sense that there does not exist any other element \( x \) from \( P \) such that \( x \prec m \).
+
+    \thmitem{rem:well_founded_relation/stabilization} \Fullref{def:chain_condition/stabilization} can be restated as follows: every nonstrict descending sequence
+    \begin{equation}\label{eq:rem:well_founded_relation/stabilization}
+      \cdots \prec x_3 \prec x_2 \prec x_1
+    \end{equation}
+    stabilizes in the sense that there exists an index \( n \) such that \( x_k = x_n \) for \( k > n \).
+
+    \thmitem{rem:well_founded_relation/infinite} \Fullref{def:chain_condition/infinite} can be restarted as follows: there exists no strictly infinitely ascending descending sequence in \( P \), i.e. a sequence of the form \eqref{eq:rem:well_founded_relation/stabilization} such that no two members are equal.
+  \end{thmenum}
+\end{remark}
+
+\begin{proposition}\label{thm:set_membership_is_well_founded}
+  Set membership is \hyperref[rem:well_founded_relation]{well-founded} in \logic{ZFC}. More precisely, given a set \( A \), if we regard \( \in \) as a binary relation between members of \( A \), then we would obtain that \( \in \) is a well-founded relation.
+\end{proposition}
+\begin{proof}
+  The empty set is vacuously well-founded, so suppose that \( A \) is nonempty.
+
+  Aiming at a contradiction, suppose also that \( \in \) is not well-founded on \( A \). Then there exists an infinitely descending sequence \( \seq{ x_k }_{k=1}^\infty \subseteq A \) such that
+  \begin{equation*}
+    \cdots \in x_3 \in x_2 \in x_1.
+  \end{equation*}
+
+  Denote by \( B \) the set \( \set{ x_k \given k = 1, 2, \ldots } \). By the \hyperref[def:zfc/foundation]{axiom of foundation}, \( B \) contains a set \( C \) which is disjoint from \( B \).
+
+  Clearly \( C \) coincides with at least one of \( x_1, x_2, \ldots \). Let \( C = x_{k_0} \). Since \( x_{k_0} \cap B = \varnothing \), then \( x_{k_0 + 1} \) is either not a member of \( x_{k_0} \) or of \( B \). But it is a member of both by our assumption that the sequence is infinitely descending.
+
+  The obtained contradiction proves that \( \in \) is well-founded on \( A \).
+\end{proof}
+
+\begin{corollary}\label{thm:simple_foundation_theorems}
+  We list several statements, which are consequences of the \hyperref[def:zfc/foundation]{axiom of foundation} via \fullref{thm:set_membership_is_well_founded}:
+
+  \begin{thmenum}
+    \thmitem{thm:simple_foundation_theorems/member_of_itself} No set is a member of itself.
+
+    \thmitem{thm:simple_foundation_theorems/mutual_membership} For any two sets \( A \) and \( B \), it is not possible for both \( A \in B \) and \( B \in A \) to hold.
+
+    \thmitem{thm:simple_foundation_theorems/ordinal_successor_is_injective} The \hyperref[def:ordinal_successor]{ordinal successor operation} is injective. That is, for every two set \( A \) and \( B \) from \( \op{succ}(A) = \op{succ}(B) \) it follows that \( A = B \).
+  \end{thmenum}
+\end{corollary}
+\begin{proof}
+  \SubProofOf{thm:simple_foundation_theorems/member_of_itself} The sequence
+  \begin{equation*}
+    \cdots A \in A \in A
+  \end{equation*}
+  is infinitely descending, hence \( A \) cannot be a member of itself.
+
+  \SubProofOf{thm:simple_foundation_theorems/mutual_membership} The sequence
+  \begin{equation*}
+    \cdots A \in B \in A \in B \in A
+  \end{equation*}
+  is infinitely descending, hence \( A \in B \) and \( B \in A \) cannot simultaneously hold.
+
+  \SubProofOf{thm:simple_foundation_theorems/ordinal_successor_is_injective} Note that \( A \in \op{succ}(A) = \op{succ}(B) \), hence either \( A = B \) or \( A \in B \). We can analogously conclude that either \( A = B \) or \( B \in A \).
+
+  But \( A \in B \) and \( B \in A \) cannot simultaneously hold due to \fullref{thm:simple_foundation_theorems/mutual_membership}. Hence, it remains for \( A = B \) to hold.
+\end{proof}
+
+\begin{theorem}[Well-founded induction]\label{thm:well_founded_induction}\mcite[33]{Birkhoff1948}
+  Let \( \mscrL \) be the \hyperref[def:first_order_syntax]{first-order language} with no functional symbols and a single predicate symbol \( \prec \). We have already mentioned that we cannot formalize the concept of well-foundedness in first-order logic alone, so we will work with \hyperref[def:first_order_structure]{structures} directly.
+
+  Every \hyperref[rem:well_founded_relation]{well-founded} structure \( \mscrX = (X, I) \) over \( \mscrL \) satisfies an inductive axiom schema. For every formula \( \varphi \) over \( \mscrL \) not containing \( \eta \) nor \( \zeta \) as free variables, \( X \) satisfies
+  \begin{equation}\label{eq:thm:well_founded_induction}
+    \qforall \eta
+    \parens[\Big]
+      {
+        \overbrace
+          {
+            \underbrace{ \parens[\Big]{ \qforall {\zeta \prec \eta} \varphi[\xi \mapsto \zeta] } }_{\mathclap{\substack{\T{inductive} \\ \T{hypothesis}}}}
+            \rightarrow
+            \underbrace{ \varphi[\xi \mapsto \eta] }_{\mathclap{\substack{\T{inductive step} \\ \T{conclusion}}}}
+          }^{\T{inductive step}}
+      }
+    \rightarrow
+    \underbrace{ \qforall \eta \varphi[\xi \mapsto \eta] }_{\T{conclusion}}.
+  \end{equation}
+\end{theorem}
+\begin{comments}
+  \item See the comments in \fullref{def:peano_arithmetic/PA3} regarding variables and quantification in axiom schemas and \fullref{rem:induction} for a general discussion of induction.
+  \item In the special case where \( X = \BbbN \), this is called \term{strong induction} compared to the usual natural number induction \eqref{eq:def:peano_arithmetic/PA3}. This is discussed in \fullref{rem:induction/well_founded}.
+\end{comments}
+\begin{proof}
+  Fix a formula \( \varphi \) in \( \mscrL \). Fix a variable assignment \( v \) in \( X \). We will show that the \hyperref[def:material_implication/contrapositive]{contraposition} of \eqref{eq:thm:well_founded_induction} holds in this model.
+
+  Suppose that there exists a value \( x \in X \) such that \( \Bracks{\varphi}_{v_{\xi \mapsto x}} = F \), that is,
+  \begin{equation*}
+    \qexists \eta \neg \varphi[\xi \mapsto \eta].
+  \end{equation*}
+  holds.
+
+  Let \( x_0 \) be the smallest such value (which is guaranteed to exist because \( X \) is well-founded by \( \prec \)). Thus, the inductive hypothesis \( \qforall {\zeta < x_0} \varphi[\xi \mapsto \zeta] \) holds, but the inductive step conclusion \( \varphi[\xi \mapsto x_0] \) does not.
+
+  Since \( v \) was chosen arbitrarily, this is true for all variable assignments in \( X \). Then the following formula is \hyperref[def:first_order_model]{valid} in \( \mscrX \):
+  \begin{equation}\label{eq:thm:well_founded_induction/contraposition}
+    \qexists \eta \neg \varphi[\xi \mapsto \eta]
+    \rightarrow
+    \qexists \eta
+    \parens[\Big]
+      {
+        \qforall {\zeta \prec \eta} \varphi[\xi \mapsto \zeta] \wedge \neg \varphi[\xi \mapsto \eta]
+      }
+  \end{equation}
+
+  This is precisely the contrapositive of \eqref{eq:thm:well_founded_induction}. Since we are working in classical logic, the contrapositive is semantically equivalent to its original implication, hence \( \eqref{eq:thm:well_founded_induction} \) is also valid in \( \mscrX \).
+\end{proof}
+
+\begin{theorem}[Epsilon induction]\label{thm:epsilon_induction}
+  For every formula \( \varphi \) in the language of set theory not containing \( \eta \) nor \( \zeta \) as free variables, the following is a theorem of \logic{ZFC}:
+  \begin{equation*}
+    \qforall \eta
+    \parens[\Big]
+      {
+        \overbrace
+          {
+            \underbrace{ \parens[\Big]{ \qforall {\zeta \in \eta} \varphi[\xi \mapsto \zeta] } }_{\mathclap{\substack{\T{inductive} \\ \T{hypothesis}}}}
+            \rightarrow
+            \underbrace{ \varphi[\xi \mapsto \eta] }_{\mathclap{\substack{\T{inductive step} \\ \T{conclusion}}}}
+          }^{\T{inductive step}}
+      }
+    \rightarrow
+    \underbrace{ \qforall \eta \varphi[\xi \mapsto \eta] }_{\T{conclusion}}.
+  \end{equation*}
+\end{theorem}
+\begin{comments}
+  \item This induction schema is called \enquote{\( \varepsilon \)-induction} because the set membership symbol \( \in \) is derived from \( \varepsilon \) as explained in \fullref{rem:epsilon_and_set_membership}.
+
+  \item See the comments in \fullref{def:peano_arithmetic/PA3} regarding variables and quantification in axiom schemas and \fullref{rem:induction} for a general discussion of induction.
+\end{comments}
+\begin{proof}
+  Every model of \logic{ZFC} is well-founded by \( \in \) as a consequence of \fullref{thm:set_membership_is_well_founded}. The corollary then follows from \fullref{thm:well_founded_induction}.
+\end{proof}

@@ -126,6 +126,62 @@
   The proof for the reverse lexicographic order is analogous.
 \end{proof}
 
+\begin{definition}\label{def:stabilizing_chain}\mimprovised
+  We say that the \hyperref[def:sequence]{sequence} \( x_1, x_2, \ldots \) is an \term{ascending} if \( x_k \leq x_{k+1} \) for every \( k = 1, 2, \ldots \) and a \term{descending} if \( x_k \geq x_{k+1} \) instead. They are also referred to as \enquote{ascending/descending chains}.
+
+  If there exists an index \( n \) such that \( x_k = x_n \) for \( k > n \). we say that the chain \term{stabilizes}.
+\end{definition}
+
+\begin{definition}\label{def:chain_condition}
+  We say that a \hyperref[def:partially_ordered_set]{partially ordered set} \( (P, \leq) \) satisfies the \term{ascending chain condition} (resp. \term{descending chain condition}) if any of the following equivalent conditions hold:
+  \begin{thmenum}
+    \thmitem{def:chain_condition/maximal}\mcite[37]{Birkhoff1948} Every nonempty subset of \( P \) has a \hyperref[def:extremal_points/maximal_and_minimal_element]{maximal} (resp. minimal) element.
+
+    \medskip
+
+    \thmitem{def:chain_condition/stabilization}\mcite[thm. 5]{Birkhoff1948} Every nonstrict ascending (resp. descending) sequence \hyperref[def:stabilizing_chain]{stabilizes}.
+
+    \medskip
+
+    \thmitem{def:chain_condition/infinite}\mcite[thm. 9A]{Enderton1977Sets} There exists no strictly infinitely ascending (resp. descending) sequence in \( P \).
+
+    \medskip
+  \end{thmenum}
+\end{definition}
+\begin{defproof}
+  We will restrict ourselves to ascending chains and maximal elements.
+
+  \ImplicationSubProof{def:chain_condition/maximal}{def:chain_condition/stabilization} Suppose that every subset of \( P \) has a maximal element.
+
+  Suppose that there is a nonstrict ascending sequence
+  \begin{equation*}
+    x_1 \leq x_2 \leq x_3 \leq \cdots.
+  \end{equation*}
+
+  Then the set \( \set{ x_k \given k \geq 1 } \) has a maximal element, say \( x_{k_0} \). Then, since \( x_{k_0} \) is maximal, using \hyperref[rem:induction/peano_arithmetic]{natural number induction} we can prove that \( x_{k_0} = x_{k_0 + i} \) for \( i \geq 0 \).
+
+  Thus, the sequence stabilizes.
+
+  \ImplicationSubProof{def:chain_condition/stabilization}{def:chain_condition/infinite} Suppose that every ascending chain in \( P \) stabilizes.
+
+  Every strictly ascending sequence is also nonstrictly ascending, hence it stabilizes, which contradicts our assumption that it is strictly ascending. The obtained contradiction shows that there are not strictly ascending sequences in \( P \).
+
+  \ImplicationSubProof{def:chain_condition/infinite}{def:chain_condition/maximal} Suppose that there exists no infinite strictly ascending sequence in \( P \).
+
+  Let \( A \) be a nonempty subset of \( P \). Aiming at a contradiction, suppose that it has no maximal element.
+
+  Pick \( x_1 \in A \). Since \( x_1 \) is not maximal, there must exist some element \( x_2 \in A \) such that \( x_1 < x_2 \). Using \hyperref[rem:natural_number_recursion]{natural number recursion}, we can build an infinitely strongly ascending sequence
+  \begin{equation*}
+    x_1 < x_2 < x_3 < \cdots.
+  \end{equation*}
+
+  But the existence of such a chain contradicts our assumption. Therefore, every nonempty set in \( P \) must have a maximal element.
+\end{defproof}
+
+\begin{definition}\label{def:well_ordered_set}\mcite[37]{Birkhoff1948}
+  We say that a \hyperref[def:totally_ordered_set]{totally ordered set} \( (P, \leq) \) is \term{well-ordered} if it satisfies the \hyperref[def:chain_condition]{descending chain condition}.
+\end{definition}
+
 \begin{proposition}\label{thm:finite_totally_ordered_set_is_well_ordered}
   Every finite \hyperref[def:totally_ordered_set]{totally ordered set} is \hyperref[def:well_ordered_set]{well-ordered}.
 \end{proposition}
@@ -136,6 +192,58 @@
     \item If \( A = \set{ a } \), then \( a \) is vacuously a minimum.
     \item Suppose that all subsets of \( P \) of cardinality \( k - 1 \) have a minimum. Let \( \card(A) = k \). Pick an arbitrary element \( a \in A \). By the inductive hypothesis, \( A \setminus \set{ a } \) has a minimum, say \( b \). Then \( \min\set{ a, b } \) is a minimum of \( A \).
   \end{itemize}
+\end{proof}
+
+\begin{lemma}\label{thm:well_ordered_embedding_extensive}
+  Any \hyperref[def:order_homomorphism/embedding]{order embedding} on a well-ordered set is \hyperref[def:extensive_function]{extensive}.
+
+  That is, if \( (P, \leq) \) is a well-ordered set and \( f: P \to P \) is an order embedding, then \( x \leq f(x) \) for any \( x \in P \).
+\end{lemma}
+\begin{proof}
+  We proceed by induction on \( P \). Fix \( x_0 \) and suppose that \( y \leq f(y) \) for all \( y < x_0 \).
+
+  Aiming at a contradiction, suppose that \( f(x_0) < x_0 \). Thus, there exists some \( y_0 < x_0 \) such that \( f(x_0) = y_0 \). By the inductive hypothesis we have \( f(x_0) = y_0 \leq f(y_0) \). Thus, either \( f(x_0) < f(y_0) \), which contradicts that \( f \) is an order homomorphism, or \( f(x_0) = f(y_0) \), which contradicts the injectivity of \( f \).
+
+  The obtained contradiction demonstrates that \( x \leq f(x) \) for all \( x \in P \).
+\end{proof}
+
+\begin{proposition}\label{thm:well_ordered_isomorphism_is_unique}
+  There is at most one isomorphism between any pair of well-ordered sets.
+\end{proposition}
+\begin{proof}
+  Fix two well-ordered sets \( (P, \leq_P) \) and \( (Q, \leq_Q) \) and let \( f: P \to Q \) and \( g: P \to Q \) be two order isomorphisms.
+
+  For any member \( x \) of \( P \) we have the following possibilities:
+  \begin{itemize}
+    \item If \( f(x) <_Q g(x) \), then \( g^{-1}(f(x)) <_P x \) and \( f(g^{-1}(f(x))) <_Q f(x) \). Then we can use \hyperref[rem:natural_number_recursion]{natural number recursion} to build an infinitely descending sequence of members of \( Q \). But this is a contradiction because \( Q \) satisfies the descending chain condition.
+
+    \item We can build a similar sequence if \( g(x) <_Q f(x) \).
+
+    \item It remains for \( f(x) = g(x) \) to hold.
+  \end{itemize}
+
+  Since \( x \in P \) was arbitrary, we conclude that \( f = g \).
+\end{proof}
+
+\begin{proposition}\label{thm:well_ordered_lexicographic_order_is_well_ordered}
+  If \( (P, \leq_P) \) and \( (Q, \leq_Q) \) are \hyperref[def:well_ordered_set]{well-ordered sets}, then the \hyperref[eq:def:lexicographic_order]{lexicographic} and \hyperref[eq:def:lexicographic_order/reverse]{reverse lexicographic} orders on \( P \times Q \) are well-ordering relations.
+\end{proposition}
+\begin{comments}
+  \item An analogous result holds for partial orders (\fullref{thm:lexicographic_order_is_partial_order}) and total orders (\fullref{thm:total_lexicographic_order_is_total_order}).
+\end{comments}
+\begin{proof}
+  We have already shown in \fullref{thm:total_lexicographic_order_is_total_order} and these total orders. It only remains to check the \hyperref[def:chain_conditions]{descending chain condition}.
+
+  Let \( \prec \) be the lexicographic order on \( P \times Q \).
+
+  Suppose that there exists an infinitely descending sequence
+  \begin{equation*}
+    \cdots \prec (a_3, b_3) \prec (a_2, b_2) \prec (a_1, b_1).
+  \end{equation*}
+
+  Since \( P \) satisfies the descending chain condition, the corresponding sequence \( \seq{ a_k }_{k=1}^\infty \). Then there exists an index \( k_0 \) such that \( a_{k_0} = a_k \) for \( k \geq k_0 \). Therefore, the sequence \( \set{ b_k }_{k=k_0}^\infty \) must be infinitely descending. But this contradicts the chain condition imposed on \( Q \).
+
+  Therefore, no infinitely descending sequence exists in the totally ordered set \( (P \times Q, \prec) \), and thus it is well-ordered.
 \end{proof}
 
 \begin{definition}\label{def:order_topology}\mcite[exer. 1.7.4]{Engelking1989}
