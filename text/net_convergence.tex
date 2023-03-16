@@ -1,69 +1,138 @@
 \subsection{Net convergence}\label{subsec:net_convergence}
 
-Fix some nonempty \hyperref[def:topological_space]{topological space} \( (X, \mscrT) \).
+\subsubsection{Nets}
 
-\begin{definition}\label{def:subsequence}\mcite[63]{Kelley1975}
-  We say that \( A_{k_1}, A_{k_2}, \ldots \) is a \term{subsequence} of \( A_1, A_2, \ldots \) if \( k_1 < k_2 < \ldots \).
-\end{definition}
+\begin{definition}\label{def:topological_net}\mcite[65]{Kelley1975}
+  A \term{net} or \term{generalized sequence} is a family of elements of a \hyperref[def:topological_space]{topological space} \hyperref[def:cartesian_product/indexed_family]{indexed} by a \hyperref[def:directed_set]{directed set}.
 
-\begin{definition}\label{def:topological_net}
-  Let \( S \) be a \hyperref[def:set]{plain set}. A family of elements of \( S \) \hyperref[def:cartesian_product/indexed_family]{indexed} by a nonempty \hyperref[def:directed_set]{directed set} is called a \term{net} or \term{generalized \hyperref[def:sequence]{sequence}} or \term{Moore-Smith sequence}. A net is a function from a nonempty directed set \( (\mscrK, \leq) \) to \( S \). We use the following notation
+  We reuse the notation for indexed families from \fullref{def:cartesian_product/indexed_family}:
   \begin{equation*}
     \set{ x_k }_{k \in \mscrK}
   \end{equation*}
-  as a generalization of our notation for sequences discussed in \fullref{def:sequence}.
-
-  Note that this definition does not require a topology on \( S \). Some other important definitions also do not require topologies:
-  \begin{thmenum}
-    \thmitem{def:topological_net/frequently_in} We say that \( \seq{ x_k }_{k \in \mscrK} \) is \term{frequently in} the set \( A \subseteq S \) if for every index \( k_0 \in \mscrK \) there exists an index \( k \geq k_0 \) such that \( x_k \in A \).
-
-    This translates \hyperref[def:cofinal_set]{cofinality} to nets rather than sets.
-
-    \thmitem{def:topological_net/eventually_in} We say that \( \seq{ x_k }_{k \in \mscrK} \) is \term{eventually in} the set \( A \subseteq S \) if there exists an index \( k_0 \) such that \( x_k \in A \) whenever \( k \geq k_0 \). This is obviously a stronger condition.
-
-    \thmitem{def:topological_net/subnet}\mcite{Lehuta2009} We say that the net \( \seq{ y_m }_{m \in \mscrM} \subseteq S \) is a \term{subnet} of \( \seq{ x_k }_{k \in \mscrK} \subseteq S \) if \( \seq{ y_k }_{k \in \mscrK} \) being frequently in \( A \) implies that \( \seq{ x_k }_{k \in \mscrK} \) is frequently in \( A \).
-  \end{thmenum}
 \end{definition}
+\begin{comments}
+  \item This definition does not require a topology, but, unlike sequences, this concept of a net is only discussed in the context of topological spaces.
+\end{comments}
+
+\begin{definition}\label{def:net_eventually_in}\mcite[65]{Kelley1975}
+  We say that the \hyperref[def:topological_net]{net} \( \set{ x_k }_{k \in \mscrK} \) is \term{eventually in} the set \( A \) if there exists an index \( k_0 \in \mscrK \) such that, for every \( k \geq k_0 \), we have \( x_k \in A \).
+\end{definition}
+
+\begin{proposition}\label{thm:eventually_in_implies_nonempty}
+  If the net \( \set{ x_k }_{k \in \mscrK} \) is \hyperref[def:net_eventually_in]{eventually in} some set \( A \), then both \( \mscrK \) and \( A \) are nonempty.
+\end{proposition}
+\begin{proof}
+  By definition, there exists some index \( k_0 \in \mscrK \) such that \( x_{k_0} \in A \).
+\end{proof}
+
+\begin{definition}\label{def:net_frequently_in}\mcite[65]{Kelley1975}
+  We say that the \hyperref[def:topological_net]{net} \( \set{ x_k }_{k \in \mscrK} \) is \term{frequently in} the set \( A \) if, for every index \( k_0 \in \mscrK \), there exists some \( k \geq k_0 \) such that \( x_k \in A \).
+\end{definition}
+
+\begin{proposition}\label{thm:empty_index_set_implies_frequently_in}
+  A net \( \set{ x_k }_{k \in \varnothing} \) over the empty set is \hyperref[def:net_frequently_in]{frequently in} any set.
+\end{proposition}
+\begin{proof}
+  Any condition with quantifier \enquote{for every index in \( \varnothing \)} is vacuously true.
+\end{proof}
+
+\begin{proposition}\label{thm:eventually_in_implies_frequently_in}
+  If a net is \hyperref[def:net_eventually_in]{eventually in} a set, it is also \hyperref[def:net_frequently_in]{frequently in} it.
+\end{proposition}
+\begin{proof}
+  Suppose that \( \seq{ x_k }_{k \in \mscrK} \) is eventually in \( A \). Then there exists some index \( k_e \in \mscrK \) such that \( x_k \in A \) for \( k \geq k_e \).
+
+  Fix some arbitrary index \( k_f \in \mscrK \). Then, since \( \mscrK \) is directed, there must exist an upper bound \( k_u \) for \( k_e \) and \( k_f \).
+
+  Since \( k_u \geq k_e \), we have \( x_{k_u} \in A \). Therefore, \( \seq{ x_k }_{k \in \mscrK} \) is frequently in \( A \).
+\end{proof}
+
+\begin{proposition}\label{thm:eventually_and_frequently_in}
+  The net \( \seq{ x_k }_{k \in \mscrK} \) in the space \( X \) is \hyperref[def:net_eventually_in]{eventually in} \( A \) if and only if it is not \hyperref[def:net_frequently_in]{frequently in} \( X \setminus A \).
+\end{proposition}
+\begin{proof}
+  \Fullref{thm:relativized_first_order_quantifiers_are_dual} implies that
+  \begin{equation*}
+    \qexists {k_0 \in \mscrK} \qforall {k \geq k_0} x_k \in A
+  \end{equation*}
+  if and only if
+  \begin{equation*}
+    \neg \qforall {k_0 \in \mscrK} \qexists {k \geq k_0} \neg (x_k \in A).
+  \end{equation*}
+\end{proof}
+
+\begin{proposition}\label{thm:cofinal_iff_frequently_in}
+  Let \( \mscrK \) be a directed set, let \( A \subseteq \mscrK \) be a subset and let \( \seq{ x_k }_{k \in \mscrK} \) be a net.
+
+  Then \( A \) is \hyperref[def:cofinal_set]{cofinal} if and only if \( x \) is \hyperref[def:net_frequently_in]{frequently in} the \( \set{ x_a \given a \in A } \).
+\end{proposition}
+\begin{proof}
+  The net \( \seq{ x_k }_{k \in \mscrK} \) is frequently in \( \set{ x_a \given a \in A } \) if
+  \begin{equation*}
+    \qforall {k_0 \in \mscrK} \qexists {a_0 \in \mscrK} k \leq a_0 \T{and} x_{a_0} \in A,
+  \end{equation*}
+  which can be rewritten as
+  \begin{equation*}
+    \qforall {k_0 \in \mscrK} \qexists {a_0 \in A} k \leq a_0.
+  \end{equation*}
+
+  This is exactly the condition for \( A \) to be cofinal in \( \mscrK \).
+\end{proof}
 
 \begin{example}\label{ex:def:topological_net}
   We list several examples of \hyperref[def:topological_net]{nets}:
   \begin{thmenum}
-    \thmitem{def:topological_net/singleton} The most basic example of a net is the empty set. Indeed, an empty set is vacuously directed.
+    \thmitem{def:topological_net/empty} The most basic example of a net is the empty set. Indeed, an empty set is vacuously directed.
 
-    It is vacuously \hyperref[def:topological_net/frequently_in]{frequently in} any set, but it is not \hyperref[def:topological_net/eventually_in]{eventually in} any.
+    It is also vacuously \hyperref[def:net_frequently_in]{frequently in} any set as a consequence of \fullref{thm:empty_index_set_implies_frequently_in}, but it is not \hyperref[def:net_eventually_in]{eventually in} any set because of \fullref{thm:eventually_in_implies_nonempty}.
 
-    Its only subnet is the empty set.
+    \thmitem{def:topological_net/finite_sequence} Any \hyperref[def:sequence]{finite sequence} \( x_1, \ldots, x_n \) is a net.
 
-    \thmitem{def:topological_net/sequence} The second most basic examples of nets are the singleton sets.
+    It is eventually in (and hence also frequently in) \( \set{ x_n } \) and any of its supersets.
 
-    A singleton net is frequently in (also, eventually in) a set if and only if the set contains it.
-
-    Its only subnets are the net itself and the empty net.
+    \thmitem{def:topological_net/sequence} For a finite sequence it suffices for \( A \) to contain the last element, but for an infinite sequence \( x_1, x_2, x_3, \ldots \), this condition is more complicated. \Fullref{thm:cofinal_iff_frequently_in} implies that the sequence is frequently in some set \( A \) if and only if \( A \) contains a \hyperref[def:cofinal_set]{cofinal subset} of the sequence (when regarding the sequence as a well-ordered set).
   \end{thmenum}
 \end{example}
 
-\begin{proposition}\label{thm:def:topological_net}
-  \hyperref[def:topological_net]{Nets} have the following basic properties:
+\subsubsection{Subnets}
 
+It is unfortunately an established convention for subsequences to be defined differently compared to subnets. There are actually different definitions of subnets --- see \cite{Lehuta2009} --- but we will base our exposition on that of John Kelley in \cite[ch. 2]{Kelley1975}.
+
+\begin{definition}\label{def:subsequence}\mcite[63]{Kelley1975}
+  We say that
+  \begin{equation}\label{eq:def:subsequence/sub}
+    y_1, y_2, y_3, y_4, \ldots
+  \end{equation}
+  is a \term{subsequence} of
+  \begin{equation}\label{eq:def:subsequence/original}
+    x_1, x_2, x_3, x_4, \ldots
+  \end{equation}
+  if there exists a strictly increasing sequence of indices
+  \begin{equation*}
+    i_1 < i_2 < i_3 < i_4 < \cdots
+  \end{equation*}
+  such that \( y_k = x_{i_k} \) for every \( k = 1, 2, \ldots \).
+\end{definition}
+\begin{comments}
+  \item While Kelley in \cite[63]{Kelley1975} calls this definition \enquote{unnecessarily stringent} before introducing nets, other authors like Walter Rudin in \cite[def. 3.5]{Rudin1976Principles} prefer this definition.
+
+  \item If we regard \( x \) and \( y \) as functions from \( \BbbZ_{>0} \) to \( X \), then \( y \) is a subsequence of \( x \) if and only if there exists a \hyperref[def:order_homomorphism/increasing]{strictly increasing} inclusion \hyperref[def:function/endofunction]{endofunction} \( \iota: \BbbZ_{>0} \to \BbbZ_{>0} \) such that \( y = x \cdot \iota \).
+\end{comments}
+
+\begin{definition}\label{def:subnet}\mcite[70]{Kelley1975}
+  We say that the net \( \seq{ y_m }_{m \in \mscrM} \) is a \term{subnet} of \( \seq{ x_k }_{k \in \mscrK} \) if there exists a family \( \seq{ i_m }_{m \in \mscrM} \) of indices from \( \mscrK \) such that
   \begin{thmenum}
-    \thmitem{thm:def:topological_net/eventually_in_implies_frequently_in} \enquote{\hyperref[def:topological_net/eventually_in]{Eventually in}} implies \enquote{\hyperref[def:topological_net/frequently_in]{frequently in}}.
+    \thmitem{def:topological_net/subnet/composition} For every \( m \in \mscrM \), we have \( x_{i_m} = y_m \).
 
-    \thmitem{thm:def:topological_net/net_eventually_in_iff_not_frequently_in_complement} The net \( \seq{ x_k }_{k \in \mscrK} \subseteq S \) is eventually in \( A \subseteq S \) if and only if it is not frequently in \( S \setminus A \).
+    This condition ensures that the subnet consists of members of the supernet.
+
+    \thmitem{def:topological_net/subnet/cofinality} For every \( k_0 \in \mscrK \), there exists some index \( m_0 \in \mscrM \) such that, for every \( m \geq m_0 \), we have \( i_m \geq k_0 \).
+
+    This condition ensures that the subnet \enquote{follows} the direction of the supernet. It involves only the index sets and not the actual nets.
   \end{thmenum}
-\end{proposition}
-\begin{proof}
-  \SubProofOf{thm:def:topological_net/eventually_in_implies_frequently_in} Suppose that the net \( \seq{ x_k }_{k \in \mscrK} \subseteq S \) is eventually in \( A \subseteq S \). Then there exists an index \( k_0 \) such that \( x_k \in A \) for all \( k \geq k_0 \).
+\end{definition}
 
-  Given any index \( k_1 \), we choose \( k_2 \) such that \( k_2 \geq k_0 \) and \( k_2 \geq k_1 \) (this is possible by the definition of a directed set). Then \( x_{k_2} \in A \) and \( k_2 \) satisfies the existence quantifier in \fullref{def:topological_net/frequently_in}.
-
-  \SubProofOf{thm:def:topological_net/net_eventually_in_iff_not_frequently_in_complement} Suppose that \( \seq{ x_k }_{k \in \mscrK} \) is both eventually in \( A \) and frequently in \( S \setminus A \).
-
-  Since the net is eventually in \( A \), we can fix an index \( k_0 \) such that \( x_k \in A \) whenever \( k \geq k_0 \).
-
-  Since the net is frequently in \( A \), we can fix an index \( k_1 \geq k_0 \) such that \( k_1 \in S \setminus A \), which is a contradiction.
-
-  This proves that the two conditions are incompatible.
-\end{proof}
+\subsubsection{Convergence of nets}
 
 \begin{definition}\label{def:net_convergence}
   Let \( X \) be a topological space and \( \seq{ x_k }_{k \in \mscrK} \subseteq X \) be a net.
@@ -136,20 +205,20 @@ Fix some nonempty \hyperref[def:topological_space]{topological space} \( (X, \ms
 \begin{proof}
   \SubProofOf{thm:def:net_convergence/sequence_converges_iff_almost_entirely_in_neighborhood} This is simply a restatement of \fullref{def:net_convergence/limit} for the special case of sequences.
 
-  \SubProofOf{thm:def:net_convergence/limit_point_is_cluster_point} Follows from \fullref{thm:def:topological_net/eventually_in_implies_frequently_in}.
+  \SubProofOf{thm:def:net_convergence/limit_point_is_cluster_point} Follows from \fullref{thm:eventually_in_implies_frequently_in}.
 
   \SubProofOf{thm:def:net_convergence/cluster_point_iff_subnet_limit_point}
   The definition of a cluster point (\fullref{def:net_convergence/cluster}) allows us to build a reverse inclusion net in the style of \fullref{ex:reverse_inclusion_net}.
 
-  \SubProofOf{thm:def:topological_net/eventually_in_implies_frequently_in} Suppose that the net \( \seq{ x_k }_{k \in \mscrK} \subseteq S \) is eventually in \( A \subseteq S \). Then there exists an index \( k_0 \) such that \( x_k \in A \) for all \( k \geq k_0 \).
+  \SubProofOf{thm:eventually_in_implies_frequently_in} Suppose that the net \( \seq{ x_k }_{k \in \mscrK} \subseteq S \) is eventually in \( A \subseteq S \). Then there exists an index \( k_0 \) such that \( x_k \in A \) for all \( k \geq k_0 \).
 
-  Given any index \( k_1 \), we choose \( k_2 \) such that \( k_2 \geq k_0 \) and \( k_2 \geq k_1 \) (this is possible by the definition of a directed set). Then \( x_{k_2} \in A \) and \( k_2 \) satisfies the existence quantifier in \fullref{def:topological_net/frequently_in}.
+  Given any index \( i_1 \), we choose \( i_2 \) such that \( i_2 \geq k_0 \) and \( i_2 \geq i_1 \) (this is possible by the definition of a directed set). Then \( x_{i_2} \in A \) and \( i_2 \) satisfies the existence quantifier in \fullref{def:net_frequently_in}.
 
-  \SubProofOf{thm:def:topological_net/net_eventually_in_iff_not_frequently_in_complement} Suppose that \( \seq{ x_k }_{k \in \mscrK} \) is both eventually in \( A \) and frequently in \( S \setminus A \).
+  \SubProofOf{thm:eventually_and_frequently_in} Suppose that \( \seq{ x_k }_{k \in \mscrK} \) is both eventually in \( A \) and frequently in \( S \setminus A \).
 
   Since the net is eventually in \( A \), we can fix an index \( k_0 \) such that \( x_k \in A \) whenever \( k \geq k_0 \).
 
-  Since the net is frequently in \( A \), we can fix an index \( k_1 \geq k_0 \) such that \( k_1 \in S \setminus A \), which is a contradiction.
+  Since the net is frequently in \( A \), we can fix an index \( i_1 \geq k_0 \) such that \( i_1 \in S \setminus A \), which is a contradiction.
 
   This proves that the two conditions are incompatible.
 \end{proof}
@@ -179,7 +248,7 @@ Fix some nonempty \hyperref[def:topological_space]{topological space} \( (X, \ms
 \begin{proof}
   \SufficiencySubProof Let \( x_0 \in \drv(A) \). By \fullref{thm:properties_via_bases/cluster}, every neighborhood \( U \) of \( x_0 \) intersects \( A \setminus \{ x_0 \} \). Choose \( x_U \in U \cap (A \setminus \{ x_0 \}) \) for every neighborhood \( U \) of \( x_0 \) and form the reverse inclusion \hyperref[ex:reverse_inclusion_net]{net} \( \{ x_U \}_{U \in T(x)} \). Then \( x_0 \) is a limit point of this net. Furthermore, the net is contained in \( A \setminus \{ x_0 \} \).
 
-  \NecessitySubProof Conversely, if \( \seq{ x_k }_{k \in \mscrK} \subseteq A \setminus \{ x_0 \} \) is a net and if \( x_0 \) is a limit point of this net, then for every neighborhood \( U \) of \( x_0 \) there exists an index \( k_U \) such that for \( k \geq k_U \) we have \(  x_k \in U \). In particular, \( U \cap A \) contains elements other than \( x_0 \). Since this is true for any neighborhood \( U \) of \( x_0 \), by \fullref{thm:properties_via_bases/cluster} we conclude that \( x_0 \) is a cluster point of the set\( A \).
+  \NecessitySubProof Conversely, if \( \seq{ x_k }_{k \in \mscrK} \subseteq A \setminus \{ x_0 \} \) is a net and if \( x_0 \) is a limit point of this net, then for every neighborhood \( U \) of \( x_0 \) there exists an index \( i_U \) such that for \( k \geq i_U \) we have \(  x_k \in U \). In particular, \( U \cap A \) contains elements other than \( x_0 \). Since this is true for any neighborhood \( U \) of \( x_0 \), by \fullref{thm:properties_via_bases/cluster} we conclude that \( x_0 \) is a cluster point of the set\( A \).
 \end{proof}
 
 \begin{corollary}\label{thm:closed_iff_contains_all_net_cluster_points}
@@ -235,9 +304,9 @@ Fix some nonempty \hyperref[def:topological_space]{topological space} \( (X, \ms
 
   Since \( X \) is a first countable space, we can fix a countable local \hyperref[def:topological_local_base]{base} \( \{ U_k \}_{k=1}^\infty \) at \( x_0 \). For each \( k = 1, 2, \ldots \), define the neighborhood \( V_k \coloneqq \bigcap_{m=1}^k U_m \), so that \( V_k \subseteq V_m \) whenever \( k \geq m \).
 
-  For each neighborhood \( V_k \), since \( \seq{ x_k }_{k \in \mscrK} \) is eventually in \( V_k \), there exists an index \( k_k \) such that \( x_{k_k} \in V_k \).
+  For each neighborhood \( V_k \), since \( \seq{ x_k }_{k \in \mscrK} \) is eventually in \( V_k \), there exists an index \( i_k \) such that \( x_{i_k} \in V_k \).
 
-  Thus, we obtain a sequence \( \{ x_{k_k} \}_{k=1}^\infty \) that is eventually in every neighborhood of the local base \( \{ V_k \}_{k=1}^\infty \) of \( x_0 \), which by \fullref{thm:net_convergence_via_subbases} is sufficient for \( x_0 \) to be a limit point of the sequence.
+  Thus, we obtain a sequence \( \{ x_{i_k} \}_{k=1}^\infty \) that is eventually in every neighborhood of the local base \( \{ V_k \}_{k=1}^\infty \) of \( x_0 \), which by \fullref{thm:net_convergence_via_subbases} is sufficient for \( x_0 \) to be a limit point of the sequence.
 \end{proof}
 
 \begin{proposition}\label{thm:first_countable_spaces_are_sequential}

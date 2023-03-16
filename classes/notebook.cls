@@ -12,6 +12,7 @@
 \RedeclareSectionCommand[tocnumwidth=2.9em]{subsection}
 \addtokomafont{section}{\clearpage}
 \addtokomafont{subsection}{\clearpage}
+\setcounter{tocdepth}{2}
 
 % Generic math packages (load first to avoid misbehaving macros later)
 \RequirePackage{mathtools} % Loads amsmath
