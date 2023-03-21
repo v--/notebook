@@ -1,7 +1,6 @@
 import functools
 import operator
 from typing import TypeVar
-from numbers import Number
 
 from .matrix import Matrix, eye
 from .triangular import lower_triangular_inv, upper_triangular_inv
@@ -28,10 +27,11 @@ def transvection_matrix(n: int, i: int, j: int, alpha: float):
     return result
 
 
-N = TypeVar('N', bound=Number)
+N = TypeVar('N', bound=int | float)
 
 
 # PLU decomposition done entirely via multiplication of elementary matrices
+# alg:plu_decomposition
 def plu(a: Matrix[N]) -> tuple[Matrix[N], Matrix[N], Matrix[N]]:
     assert a.is_square()
 

@@ -1,8 +1,9 @@
 from ..automata.finite import FiniteAutomaton
 
-from .grammar import Grammar, NonTerminal
+from .grammar import GrammarSchema, Grammar, NonTerminal
 from .regular import is_regular, is_right_linear, to_finite_automaton, from_finite_automaton
-from .fixtures import *
+
+from .conftest import assert_an
 
 
 def test_to_finite_automaton_an(an: Grammar):

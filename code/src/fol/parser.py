@@ -48,7 +48,7 @@ class FOLTokenizer(Parser[str]):
         elif head == ' ':
             self.advance()
         else:
-            raise self.error(f'Unexpected symbol')
+            raise self.error('Unexpected symbol')
 
 
 class FOLParser(Parser[FOLToken]):

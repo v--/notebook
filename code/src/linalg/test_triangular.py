@@ -1,6 +1,5 @@
 from .matrix import Matrix, eye, is_close
 from .triangular import lower_triangular_inv
-from .fixtures import *
 
 
 def test_lower_triangular_inv(lower_pascal3: Matrix[int]):

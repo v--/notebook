@@ -1,7 +1,7 @@
 from ..support.names import new_var_name
 
 from .terms import Variable, FunctionTerm, Term
-from .formulas import Formula, EqualityFormula, PredicateFormula, QuantifierFormula, Formula
+from .formulas import Formula, EqualityFormula, PredicateFormula, QuantifierFormula
 from .visitors import TermVisitor, FormulaTransformationVisitor
 from .variables import get_variables, get_free_variables
 

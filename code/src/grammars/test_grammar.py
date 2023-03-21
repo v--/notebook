@@ -1,5 +1,4 @@
 from .grammar import SingletonSymbol, Grammar, GrammarRule, NonTerminal, Terminal
-from .fixtures import *
 
 
 def test_an(an: Grammar):

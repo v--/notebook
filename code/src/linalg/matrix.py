@@ -1,10 +1,9 @@
 from __future__ import annotations
 
-from numbers import Number
 from typing import TypeVar, Generic, cast
 
 
-N = TypeVar('N', bound=Number)
+N = TypeVar('N', bound=int | float)
 
 
 class Matrix(Generic[N]):
@@ -96,7 +95,7 @@ class Matrix(Generic[N]):
         j_range = list(self.__j_range(j))
 
         if isinstance(value, list):
-            raise ValueError(f'Cannot assign a list onto a matrix')
+            raise ValueError('Cannot assign a list onto a matrix')
 
         elif isinstance(value, Matrix):
             if value.m == len(i_range) and value.n == len(j_range):
@@ -127,7 +126,7 @@ class Matrix(Generic[N]):
             if j >= self.n or j < -self.n:
                 raise IndexError(f'Attempted to access row {j}, but the matrix has only {self.n} rows')
 
-            if isinstance(value, Number):
+            if isinstance(value, int | float):
                 self.payload[(i % self.m) * self.n + (j % self.n)] = cast(N, value)
             else:
                 raise ValueError(f'Invalid scalar value {repr(value)}')
@@ -181,7 +180,7 @@ class Matrix(Generic[N]):
         return self + (-other)
 
     def __mul__(self, other: object):
-        if not isinstance(other, Number):
+        if not isinstance(other, int | float):
             return NotImplemented
 
         return Matrix([
@@ -190,7 +189,7 @@ class Matrix(Generic[N]):
         ])
 
     def __truediv__(self, other: object):
-        if not isinstance(other, Number):
+        if not isinstance(other, int | float):
             return NotImplemented
 
         return self * (1 / other)
@@ -222,7 +221,7 @@ def zeros(n: int):
     ])
 
 
-def is_close(a: Matrix, b: Matrix, tolerance: float = 1e-3):
+def is_close(a: Matrix[N], b: Matrix[N], tolerance: float = 1e-3):
     assert a.m == b.m
     assert a.n == b.n
 

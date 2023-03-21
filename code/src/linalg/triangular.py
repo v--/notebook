@@ -1,10 +1,9 @@
 from typing import TypeVar
-from numbers import Number
 
 from .matrix import Matrix, eye, is_close
 
 
-N = TypeVar('N', bound=Number)
+N = TypeVar('N', bound=int | float)
 
 
 def is_orthogonal(l: Matrix[N]):

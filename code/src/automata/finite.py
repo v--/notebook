@@ -2,7 +2,6 @@ from __future__ import annotations
 
 from dataclasses import dataclass, field
 from typing import Generic, TypeVar
-import itertools
 
 
 TState = TypeVar('TState')

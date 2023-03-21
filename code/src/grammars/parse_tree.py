@@ -10,7 +10,7 @@ from rich.tree import Tree
 
 from ..support.rich import rich_to_text
 
-from .grammar import GrammarRule, GrammarSymbol, SingletonSymbol, SingletonSymbol, NonTerminal, Terminal
+from .grammar import GrammarRule, GrammarSymbol, SingletonSymbol, NonTerminal, Terminal
 from .epsilon_rules import is_epsilon_rule
 
 

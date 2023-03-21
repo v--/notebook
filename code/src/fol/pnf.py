@@ -2,7 +2,7 @@ from ..exceptions import NotebookCodeError
 from ..support.names import new_var_name
 
 from .tokens import BinaryConnective, Quantifier
-from .formulas import Formula, EqualityFormula, PredicateFormula, NegationFormula, ConnectiveFormula, QuantifierFormula, Formula, Variable
+from .formulas import Formula, EqualityFormula, PredicateFormula, NegationFormula, ConnectiveFormula, QuantifierFormula, Variable
 from .visitors import FormulaVisitor, FormulaTransformationVisitor
 from .substitution import substitute_in_formula
 from .variables import get_bound_variables, get_free_variables

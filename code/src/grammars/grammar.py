@@ -36,10 +36,10 @@ class GrammarTokenizer(Parser[str]):
 
         while self.peek() != '>':
             if self.is_at_end():
-                raise self.error(f'Non-terminal identifier not closed', precede=len(buffer) + 1)
+                raise self.error('Non-terminal identifier not closed', precede=len(buffer) + 1)
 
             if self.peek() == '<':
-                raise self.error(f'Non-terminal names cannot be nested', precede=len(buffer) + 1)
+                raise self.error('Non-terminal names cannot be nested', precede=len(buffer) + 1)
 
             if self.peek() == '\\':
                 self.advance()
@@ -47,7 +47,7 @@ class GrammarTokenizer(Parser[str]):
                 if self.peek() in ('<', '>', '\\'):
                     buffer.append(self.peek())
                 else:
-                    raise self.error(f'Invalid escape code', precede=1)
+                    raise self.error('Invalid escape code', precede=1)
 
                 self.advance()
             else:
@@ -92,7 +92,7 @@ class GrammarTokenizer(Parser[str]):
                 return SingletonSymbol(head)
 
             case _:
-                raise self.error(f'Unexpected symbol')
+                raise self.error('Unexpected symbol')
 
 
 class GrammarParser(Parser[Sequence[Terminal | NonTerminal | SingletonSymbol]]):
@@ -109,7 +109,7 @@ class GrammarParser(Parser[Sequence[Terminal | NonTerminal | SingletonSymbol]]):
                     if in_dest and len(dest) > 0:
                         yield src, dest
                     elif len(src) > 0:
-                        raise self.error(f'Attempting to end an incomplete rule')
+                        raise self.error('Attempting to end an incomplete rule')
 
                     if symbol == SingletonSymbol.new_line:
                         src = []
@@ -133,13 +133,13 @@ class GrammarParser(Parser[Sequence[Terminal | NonTerminal | SingletonSymbol]]):
                     if in_dest and len(dest) == 0:
                         dest.append(SingletonSymbol.epsilon)
                     else:
-                        raise self.error(f'ε is only allowed on its own on the right side of a rule')
+                        raise self.error('ε is only allowed on its own on the right side of a rule')
 
                     self.advance()
 
                 case SingletonSymbol.right_arrow:
                     if in_dest:
-                        raise self.error(f'Only one → allowed per line')
+                        raise self.error('Only one → allowed per line')
 
                     in_dest = True
                     self.advance()

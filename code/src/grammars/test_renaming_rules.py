@@ -1,5 +1,6 @@
 from .renaming_rules import has_renaming_rules, collapse_renaming_rules
-from .fixtures import *
+from .grammar import GrammarSchema, NonTerminal
+from .brute_force_parse import derives
 
 
 def test_collapse_renaming_rules_simple():

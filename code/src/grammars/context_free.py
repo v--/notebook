@@ -1,4 +1,4 @@
-from .grammar import GrammarSchema, Grammar, GrammarRule, NonTerminal
+from .grammar import GrammarSchema, Grammar, GrammarRule
 
 
 def is_context_free(grammar: Grammar):

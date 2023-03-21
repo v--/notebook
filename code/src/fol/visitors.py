@@ -1,5 +1,5 @@
 from .terms import Variable, FunctionTerm, Term
-from .formulas import Formula, EqualityFormula, PredicateFormula, NegationFormula, ConnectiveFormula, QuantifierFormula, Formula
+from .formulas import Formula, EqualityFormula, PredicateFormula, NegationFormula, ConnectiveFormula, QuantifierFormula
 
 
 class TermVisitor:

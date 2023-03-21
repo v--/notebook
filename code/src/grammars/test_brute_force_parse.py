@@ -1,6 +1,5 @@
 from .grammar import Grammar
 from .brute_force_parse import iter_partitions, parse
-from .fixtures import *
 
 
 def assert_word_rebuilt(grammar: Grammar, string: str):

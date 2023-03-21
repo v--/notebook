@@ -4,7 +4,7 @@ test:
 	@poetry run pytest --capture=tee-sys
 
 lint:
-	@poetry run pycodestyle src
+	@poetry run ruff check src
 	@poetry run mypy src
 
 format-figures:

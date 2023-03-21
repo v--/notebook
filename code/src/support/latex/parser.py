@@ -31,17 +31,17 @@ class LaTeXParser(Parser[Sequence[LaTeXToken]]):
         self.advance()
 
         if self.is_at_end() or self.peek() != SpecialToken.opening_brace:
-            raise self.error(f'No environment name specified', precede=self.index - start_index)
+            raise self.error('No environment name specified', precede=self.index - start_index)
 
         self.advance()
         if self.is_at_end() or not isinstance(self.peek(), WordToken):
-            raise self.error(f'No environment name specified', precede=self.index - start_index)
+            raise self.error('No environment name specified', precede=self.index - start_index)
 
         environment = Environment(name=self.peek().value, contents=[])
         self.advance()
 
         if self.is_at_end() or self.peek() != SpecialToken.closing_brace:
-            raise self.error(f'Unclosed brace when specifying environment name', precede=self.index - start_index)
+            raise self.error('Unclosed brace when specifying environment name', precede=self.index - start_index)
 
         self.advance()
 
