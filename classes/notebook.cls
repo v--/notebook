@@ -92,7 +92,7 @@
 
 % Misc math packages
 \RequirePackage[altpo,epsilon]{backnaur}
-\RequirePackage[ISO]{diffcoeff}
+\RequirePackage{diffcoeff}
 \RequirePackage{blkarray}
 \RequirePackage{ebproof}
 \RequirePackage{bigints}
