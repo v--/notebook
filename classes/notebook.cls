@@ -8,38 +8,16 @@
   ]
   {scrartcl}
 
+\RequirePackage{packages/font_definitions}
+\RequirePackage{microtype}
+
 \RedeclareSectionCommand[tocnumwidth=2.2em]{section}
 \RedeclareSectionCommand[tocnumwidth=2.9em]{subsection}
 \addtokomafont{section}{\clearpage}
 \addtokomafont{subsection}{\clearpage}
 \setcounter{tocdepth}{2}
 
-% Generic math packages (load first to avoid misbehaving macros later)
-\RequirePackage{mathtools} % Loads amsmath
-\RequirePackage{empheq}
-\RequirePackage{amsthm}
-\RequirePackage{thmtools}
-
-% Fonts
-%% I avoid fontspec and unicode-math (and hence XeTeX/LuaTeX) because they drastically slow down the compilation
-\RequirePackage[T2A,T1]{fontenc}
-\RequirePackage[not1,notextcomp]{stix2} % Serf and math font families; load after amsmath despite documentation, it breaks otherwise
-\RequirePackage[sans,tt=false,ScaleRM=1.075]{libertinus} % Sans-serif
-\DeclareFontFamilySubstitution{T2A}{stix2}{LibertinusSerif-TLF} % Fallback font that looks similar to STIX Two Text
-\RequirePackage{microtype}
-
-\NewDocumentCommand \boldtt {m}
-  {
-    \DeclareFontFamilySubstitution{T1}{cmtt}{lmtt} % Use the slightly heavier latin modern typewriter font
-    #1
-  }
-
-% Internationalization
-\RequirePackage[english]{babel}
-\RequirePackage[autostyle]{csquotes}
-
 % Citations
-\selectfont
 \RequirePackage
   [
     backend=biber,
@@ -48,11 +26,15 @@
   ]
   {biblatex}
 
-\AtBeginBibliography
-  {
-    \fontencoding{T2A}
-    \selectfont
-  }
+% Generic math packages (load first to avoid misbehaving macros later)
+\RequirePackage{mathtools} % Loads amsmath
+\RequirePackage{empheq}
+\RequirePackage{amsthm}
+\RequirePackage{thmtools}
+
+% Internationalization
+\RequirePackage[english]{babel}
+\RequirePackage[autostyle]{csquotes}
 
 % Misc nonmath packages
 \RequirePackage{xspace}
@@ -60,10 +42,6 @@
 \RequirePackage{graphicx}
 \RequirePackage{graphbox}
 \RequirePackage{csquotes}
-
-% stix2 doesn't behave well with text symbols, so I use math symbols instead
-\setlist[itemize,1]{label=\( \bullet \)}
-\setlist[itemize,3]{label=\( \ast \)}
 
 % Reference packages
 % Using hypertexnames=false is suggested in https://tex.stackexchange.com/a/282313 and explained in https://tex.stackexchange.com/a/3197
@@ -100,9 +78,9 @@
 \RequirePackage{cancel}
 
 % Custom code
+\RequirePackage{packages/font_adjustments}
 \RequirePackage{packages/math_macros}
 \RequirePackage{packages/math_environments}
-\RequirePackage{packages/unicode_math_symbols}
 \RequirePackage{packages/paired_delimiters}
 \RequirePackage{packages/references}
 \RequirePackage{packages/subproofs}
