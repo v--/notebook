@@ -5,9 +5,9 @@
 \RequirePackage{stix2}
 \RequirePackage{mathtools}
 
+\RequirePackage{packages/font_adjustments}
 \RequirePackage{packages/math_macros}
 \RequirePackage{packages/math_environments}
-\RequirePackage{packages/unicode_math_symbols}
 \RequirePackage{packages/paired_delimiters}
 
 \usetikzlibrary{cd,shapes.geometric,fit,automata}
