@@ -1,18 +1,18 @@
 .PHONY: test lint
 
 test:
-	@poetry run pytest --capture=tee-sys
+	poetry run pytest --capture=tee-sys
 
 lint:
-	@poetry run ruff check src
-	@poetry run mypy src
+	poetry run ruff check src
+	poetry run mypy --package src
 
 format-figures:
-	@poetry run python format_matrices.py ../figures/*.tex
+	poetry run python format_matrices.py ../figures/*.tex
 
 # I have implemented a very useful build system for LaTeX with log processing and debouncing
 watch:
-	@poetry run python watcher.py all
+	poetry run python watcher.py all
 
 watch-figures:
-	@poetry run python watcher.py figures
+	poetry run python watcher.py figures
