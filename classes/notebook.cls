@@ -15,7 +15,6 @@
 \RedeclareSectionCommand[tocnumwidth=2.9em]{subsection}
 \addtokomafont{section}{\clearpage}
 \addtokomafont{subsection}{\clearpage}
-\setcounter{tocdepth}{2}
 
 % Citations
 \RequirePackage
