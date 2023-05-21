@@ -1,5 +1,7 @@
 \subsection{Lattices}\label{subsec:lattices}
 
+\subsubsection{Semilattices and lattices}
+
 \begin{definition}\label{def:semilattice}\mcite[16]{Birkhoff1948}
   Lattices are \hyperref[def:partially_ordered_set]{partially ordered sets} in which \hyperref[def:extremal_points/supremum_and_infimum]{suprema and infima} are taken as basic operations called \enquote{joins} and \enquote{meets}\footnote{The terms \hyperref[def:semilattice/join]{\enquote{join}} for \( \vee \) and \hyperref[def:semilattice/meet]{\enquote{meet}} for \( \wedge \) are notoriously difficult to remember. A helpful accident is the ability to write \enquote{meet} as \enquote{\( \wedge \wedge \)eet}.}. This shifts the focus from ordering to operations, i.e. from predicates to functions.
 
@@ -189,6 +191,8 @@
   Obvious when the lattice is regarded as a partially ordered set.
 \end{proof}
 
+\subsubsection{Lattice fixed points}
+
 \begin{definition}\label{def:fixed_point}\mimprovised
   Given a \hyperref[def:function]{function} \( f: A \to A \) between \hyperref[def:set]{plain set}, we call \( x \in A \) a \term{fixed point} of \( f \) if \( x = f(x) \).
 \end{definition}
@@ -238,6 +242,8 @@
 
   We can analogously show that \( \sup G \in F \) and conclude that \( (F, \leq) \) is itself a complete lattice.
 \end{proof}
+
+\subsubsection{Lattice polynomials}
 
 \begin{definition}\label{def:square_free}\mimprovised
   An element \( x \) of a \hyperref[def:semiring/commutative]{commutative semiring} is said to be \term{square-free} if \( y \mid x \) implies that \( y^2 \not\mid x \).
@@ -303,6 +309,8 @@
     This corresponds to a bivariate polynomial over the negative semiring of \( \set{ T, F } \).
   \end{thmenum}
 \end{example}
+
+\subsubsection{Ideals and filters in lattices}
 
 \begin{proposition}\label{thm:lattice_divisibility}
   Identify a \hyperref[def:semilattice/bounded]{bounded} \hyperref[def:semilattice/distributive_lattice]{distributive lattice} with its \hyperref[ex:def:semiring/lattice]{positive semilattice}.
@@ -383,15 +391,6 @@
       Dually, we call a proper filter is \term{maximal} if it is maximal with respect to inclusion.
 
       Unlike for semirings, it is possible for a maximal ideal or filter not to be prime.
-    \end{minipage}
-
-    \thmitem{def:lattice_ideal/submodel}
-    \begin{minipage}[t]{0.45\textwidth}
-      We say that \( J \) is a \term{subideal} of \( I \) if both are ideals and if \( J \subseteq I \).
-    \end{minipage}
-    \hspace{0.02\textwidth}
-    \begin{minipage}[t]{0.45\textwidth}
-      Dually, we say that \( G \) is a \term{subfilter} of \( F \) if both are filters and if \( G \subseteq F \).
     \end{minipage}
   \end{thmenum}
 \end{definition}
@@ -561,3 +560,229 @@
 
   The obtained contradiction shows that if \( x \wedge y \in I \), then \( x \in I \) or \( y \in I \).
 \end{defproof}
+
+\subsubsection{Dedekind-MacNeille completion}
+
+\begin{lemma}\label{thm:dedekind_macnielle_closure}
+  Let \( (P, \leq) \) be a \hyperref[def:partially_ordered_set]{partially ordered set}. For a given subset \( A \) of \( P \), define the following sets of all \hyperref[def:extremal_points/upper_and_lower_bounds]{upper bounds} and of all \hyperref[def:extremal_points/upper_and_lower_bounds]{lower bounds} of \( A \):
+  \begin{align*}
+    A^U \coloneqq \overbrace{\bigcap_{a \in A} P_{\geq a}}^{\mathclap{\set{ x \in L \given \qforall {a \in A} x \leq a }}}
+    &&
+    A^L \coloneqq \overbrace{\bigcap_{a \in A} P_{\leq a}}^{\mathclap{\set{ x \in L \given \qforall {a \in A} a \leq x }}}
+  \end{align*}
+
+  Then \( A \mapsto A^{UL} \) is a \hyperref[def:moore_closure_operator]{Moore closure operator}.
+\end{lemma}
+\begin{proof}
+  \SubProof{Proof that the operator is \hyperref[def:extensive_function]{extensive}} Fix a subset \( A \) of \( P \) and a member \( x \) of \( A \).
+
+  For every \( u \in A^U \), by definition of upper limit we have \( x \leq u \). Then \( x \) is a lower limit of \( A^U \), hence \( x \in A^{UL} \).
+
+  Generalizing on \( x \in A \), we conclude that \( A \subseteq A^{UL} \).
+
+  \SubProofOf[def:magma/idempotent]{idempotence} Fix again a subset \( A \) of \( P \).
+
+  We have shown that \( B \subseteq B^{UL} \) for any subset \( B \) of \( P \), in particular for \( B = A \). Dually, we can show that \( B \subseteq B^{LU} \), in particular for \( B = A^U \). Furthermore, \( A \subseteq A^{UL} \) implies \( A^U \supseteq A^{ULU} \) because an upper limit for a set is necessarily an upper limit for a subset.
+
+  Thus,
+  \begin{equation*}
+    A^U \subseteq A^{ULU} \subseteq A^U.
+  \end{equation*}
+
+  Therefore, \( A^U = A^{ULU} \) and \( A^{UL} = A^{ULUL} \).
+
+  \SubProofOf[def:order_homomorphism/increasing]{monotonicity} Fix subsets \( A \subseteq B \) of \( P \) and a member \( a' \) of \( A^{UL} \). We will show that \( a' \) is also a member of \( B^{UL} \).
+
+  First note that \( B^U \subseteq A^U \) because an upper limit of \( B \) is necessarily also an upper limit of \( A \).
+
+  For every member \( u \) of \( A^U \), we have \( a' \leq u \), in particular for those \( u \) that belong to \( B^U \). Therefore, \( a' \) is a lower bound of \( B^U \), that is, a member of \( B^{UL} \).
+\end{proof}
+
+\begin{definition}[Dedekind-MacNeille completion]\label{def:dedekind_macnielle_completion}\mcite[thm. 12]{Birkhoff1948}
+  Let \( (P, \leq) \) be a \hyperref[def:partially_ordered_set]{partially ordered set}. Using the closure operator from \fullref{thm:dedekind_macnielle_closure}, we define the \term{Dedekind-MacNeille completion} of \( P \) as the family
+  \begin{equation*}
+    D(P) \coloneqq \set{ A \subseteq P \given A = A^{UL} }
+  \end{equation*}
+  ordered via \hyperref[def:subset]{set inclusion}.
+
+  The set \( P \) itself can be embedded via the \hyperref[def:order_homomorphism/increasing]{order-preserving map} which sends each member of \( P \) to its \hyperref[def:order_interval/ray]{initial segment}, that is,
+  \begin{equation*}
+    \begin{aligned}
+      &\iota: P \to D(P), \\
+      &\iota(x) \coloneqq P_{\leq x}.
+    \end{aligned}
+  \end{equation*}
+
+  The completion is a \hyperref[def:semilattice/lattice]{complete lattice} with the following operations:
+  \begin{align*}
+    \bigvee \mscrA   &\coloneqq \parens[\Big]{ \bigcup \mscrA }^{UL} \\
+    \bigwedge \mscrA &\coloneqq \bigcap \mscrA
+  \end{align*}
+
+  Furthermore, joins and meets from \( P \) (whenever they exist) are preserved in \( D(P) \).
+\end{definition}
+\begin{comments}
+  \item Note that \( P_{\leq x} = \set{ x }^{UL} \).
+  \item Joins may misbehave without the closure provided by \( A \mapsto A^{UL} \) --- see \fullref{ex:dedekind_macnielle_join_closure}.
+\end{comments}
+\begin{defproof}
+  It is obvious that \( D(P) \) is partially ordered by \( \subseteq \).
+
+  \SubProof{Proof that \( D(P) \) is join-complete} Let \( \mscrA \) be a family of members of \( D(P) \). Then, since we have shown idempotence in \fullref{thm:dedekind_macnielle_closure}, we have
+  \begin{equation*}
+    \parens[\Big]{ \bigvee \mscrA }^{UL}
+    =
+    \parens[\Big]{ \bigcup \mscrA }^{ULUL}
+    =
+    \parens[\Big]{ \bigcup \mscrA }^{UL}
+    =
+    \bigvee \mscrA.
+  \end{equation*}
+
+  Therefore, the join \( \bigvee \mscrA \) of members of \( P \) also belongs to \( D(P) \).
+
+  \SubProof{Proof that \( D(P) \) is meet-complete} For any family \( \mscrB \) of members of \( D(P) \), we have
+  \begin{align*}
+    \parens[\Big]{ \bigcap \mscrB }^U
+    &=
+    \set[\Big]{ u \in P \given* \qforall {x \in \bigcap \mscrB} x \leq u }
+    = \\ &=
+    \set[\Big]{ u \in P \given* \qforall {B \in \mscrB} \qforall {x \in B} x \leq u }
+    = \\ &=
+    \bigcap_{B \in \mscrB} B^U
+  \end{align*}
+  and similarly
+  \begin{equation*}
+    \parens[\Big]{ \bigcap \mscrB }^L
+    =
+    \bigcap_{B \in \mscrB} B^L.
+  \end{equation*}
+
+  Therefore, for a fixed family \( \mscrA \subseteq D(P) \), we have
+  \begin{equation*}
+    \parens[\Big]{ \bigwedge \mscrA }^{UL}
+    =
+    \parens[\Big]{ \bigcap \mscrA }^{UL}
+    =
+    \parens[\Big]{ \bigcap \mscrA }^U
+    =
+    \bigcap \mscrA.
+  \end{equation*}
+
+  Therefore, the meet \( \bigwedge \mscrA \) is also a member of \( D(P) \).
+
+  \SubProof{Proof that \( D(P) \) preserves joins} Let \( A \) be a set in \( P \) such that \( a_0 \coloneqq \bigvee^P A \) exists.
+
+  Then
+  \begin{equation*}
+    \bigvee\nolimits^{D(P)} \set{ \iota(a) \given a \in A }
+    =
+    \bigvee\nolimits^{D(P)} \set{ P_{\leq a} \given a \in A }
+    =
+    \parens[\Big]{ \bigcup_{a \in A} P_{\leq a} }^{UL}
+    =
+    \parens[\Big]{ P_{\geq a_0} }^L
+    =
+    P_{\leq a_0}
+    =
+    \iota(a_0).
+  \end{equation*}
+
+  \SubProof{Proof that \( D(P) \) preserves meets} Let \( A \) be a set in \( P \) such that \( a_0 \coloneqq \bigwedge^P A \) exists.
+
+  Then
+  \begin{equation*}
+    \bigwedge\nolimits^{D(P)} \set{ \iota(a) \given a \in A }
+    =
+    \bigwedge\nolimits^{D(P)} \set{ P_{\leq a} \given a \in A }
+    =
+    \bigcap_{a \in A} P_{\leq a}
+    =
+    P_{\leq a_0}
+    =
+    \iota(a_0).
+  \end{equation*}
+\end{defproof}
+
+\begin{example}\label{ex:dedekind_macnielle_join_closure}
+  Taking the closure of the union in the definition of join for \hyperref[def:dedekind_macnielle_completion]{Dedekind-MacNeille completions} can be justified as follows.
+
+  Consider the sequence of \hyperref[def:rational_number]{rational numbers}
+  \begin{equation*}
+    a_n \coloneqq -\frac 1 n.
+  \end{equation*}
+
+  The supremum of this sequence is zero --- it is clearly an upper bound and, for any negative rational number \( -r \), we have a larger negative number from the sequence:
+  \begin{equation*}
+    -r
+    =
+    -\frac 1 {\ifrac 1 r}
+    \leq
+    -\frac 1 {\floor(\ifrac 1 r)}
+    <
+    0.
+  \end{equation*}
+
+  Now consider the completion \( D(\BbbQ) \) and take the embeddings of \( \seq{ a_n }_{n=1}^\infty \), the sequence
+  \begin{equation*}
+    a_n' \coloneqq \iota(a_n) = \set*{ x \in \BbbQ \given* x \leq -\frac 1 n }.
+  \end{equation*}
+
+  Then
+  \begin{equation*}
+    \bigcup a_n' = \set{ x \in \BbbQ \given x < 0 },
+  \end{equation*}
+  but this is not an upper bound because the set does not itself belong to \( D(\BbbQ) \).
+
+  Taking the closure, however, we obtain
+  \begin{equation*}
+    \parens[\Big]{ \bigcup a_n' }^{UL}
+    =
+    \set{ x \in \BbbQ \given x \geq 0 }^L
+    =
+    \set{ x \in \BbbQ \given x \leq 0 }
+    =
+    \bigcup a_n' \cup \set{ 0 }
+    =
+    \iota(0),
+  \end{equation*}
+  which is actually the supremum of \( \seq{ a_n' }_{n=1}^\infty \) in \( D(\BbbQ) \).
+\end{example}
+
+\begin{theorem}[Dedekind-MacNeille completion universal property]\label{thm:dedekind_macneille_completion_universal_property}\mcite[thm. 12]{Birkhoff1948}
+  The \hyperref[def:dedekind_macnielle_completion]{Dedekind-MacNeille completion} \( D(P) \) of a \hyperref[def:partially_ordered_set]{partially ordered set} \( P \) (resp. lattice) satisfies the following \hyperref[rem:universal_mapping_property]{universal mapping property}:
+  \begin{displayquote}
+    For every \hyperref[def:semilattice/lattice]{complete lattice} \( L \), every order-preserving map (lattice homomorphism) \( \varphi: P \to L \) \hyperref[def:factors_through]{uniquely factors through} \( D(P) \). More precisely, there exists a unique lattice homomorphism \( \widetilde{\varphi}: D(P) \to L \) such that the following diagram commutes:
+    \begin{equation}\label{eq:thm:dedekind_macneille_completion_universal_property/diagram}
+      \begin{aligned}
+        \includegraphics[page=1]{output/thm__dedekind_macneille_completion_universal_property}
+      \end{aligned}
+    \end{equation}
+  \end{displayquote}
+
+  Via \fullref{rem:universal_mapping_property}, the abelianization functor becomes \hyperref[def:category_adjunction]{left adjoint} to the \hyperref[def:concrete_category]{forgetful functor} from complete lattices to partially ordered sets (resp. lattices).
+\end{theorem}
+\begin{proof}
+  In order for a homomorphism \( \widetilde{\varphi} \) to satisfy the theorem, it must satisfy
+  \begin{equation*}
+    \widetilde{\varphi}(\iota(x)) = \varphi(x).
+  \end{equation*}
+
+  Thus, \( \widetilde{\varphi}(\iota(x)) \) depends on \( \varphi(x) \), which suggests the definition
+  \begin{equation*}
+    \widetilde{\varphi}(A) \coloneqq \bigvee\nolimits^L \set{ \varphi(a) \given a \in A }.
+  \end{equation*}
+
+  Since \( L \) is a complete lattice, it has arbitrary joins and hence the homomorphism is well-defined. Furthermore,
+  \begin{equation*}
+    \widetilde{\varphi}(\iota(x))
+    =
+    \widetilde{\varphi}(P_{\leq x})
+    =
+    \bigvee\nolimits^L \set{ \varphi(a) \given a \in P_{\leq x} }
+    \reloset {\eqref{eq:def:order_homomorphism/increasing}} =
+    \varphi(x).
+  \end{equation*}
+
+  The last equality holds because \( \varphi \) is order-preserving, hence \( \varphi(x) \geq \varphi(a) \) for every \( a \leq x \).
+\end{proof}
