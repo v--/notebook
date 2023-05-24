@@ -1,6 +1,5 @@
 \ExplSyntaxOn
 
-%% In order to speed up compilation, I usually use pdflatex for development.
 \bool_if:nTF
   { \sys_if_engine_xetex_p: || \sys_if_engine_luatex_p: }
   {
@@ -11,9 +10,19 @@
       ]
       {unicode-math}
 
-    \setmainfont{STIX~Two~Text}
-    \setsansfont{Libertinus~Sans}
+    % Speed up compilation during development
+    \ifdefined\quick
+      \setmainfont[Renderer=Base]{STIX~Two~Text}
+    \else
+      \setmainfont[Renderer=OpenType]{STIX~Two~Text}
+    \fi
+
+    \setsansfont[BoldItalicFont={Libertinus~Sans}]{Libertinus~Sans}
     \setmathfont{STIX~Two~Math}
+
+    \ifdefined\quick\else
+      \RequirePackage{microtype}
+    \fi
   }
   {
     \RequirePackage[T2A,T1]{fontenc}
@@ -68,5 +77,3 @@
       }
   }
 \ExplSyntaxOff
-
-\RequirePackage{microtype}
