@@ -10,13 +10,13 @@ import os.path
 import pathlib
 import shutil
 
-from asyncinotify import Inotify, Mask  # type: ignore
-from loguru import logger  # type: ignore
-import texoutparse  # type: ignore
+from asyncinotify import Inotify, Mask
+from loguru import logger
+import texoutparse
 
 
 DEBOUNCE_THRESHOLD = timedelta(seconds=1)
-TEX_LOG_ENCODING = 'latin-1'
+TEX_LOG_ENCODING = 'utf-8'
 
 ROOT_DIR = pathlib.Path('.').resolve()
 
@@ -101,7 +101,7 @@ class TeXTask(Task):
 
     @property
     def command(self):
-        return f'pdflatex -interaction=batchmode -output-directory={AUX_DIR} {self.tex_path}'
+        return r'lualatex -interaction=batchmode -output-directory=%s "\def\quick{}\input{%s}"' % (AUX_DIR, self.tex_path)
 
     def get_bcf_hash(self) -> int | None:
         try:
