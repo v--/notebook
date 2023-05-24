@@ -8,8 +8,11 @@
   ]
   {scrartcl}
 
-\RequirePackage{packages/font_definitions}
-\RequirePackage{microtype}
+% Generic math packages (load first to avoid misbehaving macros later)
+\RequirePackage{mathtools} % Loads amsmath
+\RequirePackage{empheq}
+\RequirePackage{amsthm}
+\RequirePackage{thmtools}
 
 \RedeclareSectionCommand[tocnumwidth=2.2em]{section}
 \RedeclareSectionCommand[tocnumwidth=2.9em]{subsection}
@@ -24,12 +27,6 @@
     citestyle=alphabetic
   ]
   {biblatex}
-
-% Generic math packages (load first to avoid misbehaving macros later)
-\RequirePackage{mathtools} % Loads amsmath
-\RequirePackage{empheq}
-\RequirePackage{amsthm}
-\RequirePackage{thmtools}
 
 % Internationalization
 \RequirePackage[english]{babel}
@@ -77,7 +74,7 @@
 \RequirePackage{cancel}
 
 % Custom code
-\RequirePackage{packages/font_adjustments}
+\RequirePackage{packages/fonts}
 \RequirePackage{packages/math_macros}
 \RequirePackage{packages/math_environments}
 \RequirePackage{packages/paired_delimiters}

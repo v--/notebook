@@ -2,10 +2,9 @@
 \ProvidesClass{classes/tikzcd}
 \LoadClass[tikz]{standalone}
 
-\RequirePackage{stix2}
 \RequirePackage{mathtools}
 
-\RequirePackage{packages/font_adjustments}
+\RequirePackage{packages/fonts}
 \RequirePackage{packages/math_macros}
 \RequirePackage{packages/math_environments}
 \RequirePackage{packages/paired_delimiters}
