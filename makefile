@@ -31,14 +31,14 @@ output/%.eps: figures/%.asy | aux output
 figures: $(FIGURES_TEX_PDF) $(FIGURES_ASY_PDF)
 
 format-figures:
-	@$(MAKE) --no-print-directory --directory code format-figures
+	@poetry --directory code run python -m code.commands.format_matrices figures/*.tex
 
 # I have implemented a very useful build system for LaTeX with log processing and debouncing
 watch: | aux output
-	@$(MAKE) --no-print-directory --directory code watch
+	@poetry --directory code run python -m code.commands.watcher all
 
 watch-figures: | aux output
-	@$(MAKE) --no-print-directory --directory code watch-figures
+	@poetry --directory code run python -m code.commands.watcher figures
 
 git-commit-info: .git/refs/heads/master
 	LC_ALL=en_US.UTF-8 git log --max-count 1 --format=format:'hash={%h},date={%cd}' --date='format:%d %B %Y' HEAD > git-commit-info
