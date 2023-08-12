@@ -72,6 +72,7 @@
 \RequirePackage{bigints}
 \RequirePackage{forest}
 \RequirePackage{cancel}
+\RequirePackage{diagbox}
 
 % Custom code
 \RequirePackage{packages/fonts}

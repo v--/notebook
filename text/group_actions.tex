@@ -1,5 +1,7 @@
 \subsection{Group actions}\label{subsec:group_actions}
 
+\paragraph{Monoid actions}
+
 \begin{definition}\label{def:endomorphism_monoid}
   For every object \( X \) in an arbitrary \hyperref[def:category]{category} \( \cat{C} \), the set \( \cat{C}(X) \) is a \hyperref[def:monoid]{monoid} with morphism composition as the monoid operation and \( \id_X \) as the monoid identity.
 
@@ -87,7 +89,7 @@
 \begin{proof}
   The family satisfies \fullref{def:monoid_action/family}:
   \begin{itemize}
-    \item \ref{eq:def:monoid_action/family/identity} follows from \eqref{eq:def:monoid/theory/identity}.
+    \item \ref{eq:def:monoid_action/family/identity} follows from \eqref{eq:def:monoid/theory/neutral}.
 
     \item \ref{eq:def:monoid_action/family/compatibility} follows from associativity:
     \begin{equation*}
@@ -108,6 +110,8 @@
     \item \ref{eq:def:monoid_action/family/compatibility} follows from \fullref{thm:semigroup_exponentiation_properties/repeated}.
   \end{itemize}
 \end{proof}
+
+\paragraph{Symmetric groups}
 
 \begin{definition}\label{def:automorphism_group}
   For every object \( X \) in a \hyperref[def:groupoid]{groupoid} \( \cat{G} \), the set \( \cat{G}(X) \) is a \hyperref[def:group]{group} with morphism composition as the group operation.
@@ -134,9 +138,9 @@
       \end{pmatrix}
     \end{equation*}
 
-    \thmitem{def:symmetric_group/cycle} If there exists a finite sequence \( k_1, \ldots, k_m \) of distinct numbers such that \( \sigma(k_m) = k_1 \) and \( \sigma(k_{i+1}) = \sigma(k_i) \) for each \( i < m \), we say that the permutation is \term{cyclic} or a \term{cycle} of \term{length} \( m \). For brevity, we denote this cycle by \( \cycle{k_1, \cdots, k_m} \).
+    \thmitem{def:symmetric_group/cycle} If there exists a finite sequence \( k_1, \ldots, k_m \) of distinct numbers such that \( \sigma(k_m) = k_1 \) and \( \sigma(k_{i+1}) = k_i \) for each \( i < m \), we say that the permutation is \term{cyclic} or a \term{cycle} of \term{length} \( m \). For brevity, we denote this cycle by \( \cycle{k_1, \cdots, k_m} \).
 
-    We call cycles of length \( 1 \) \term{trivial cycles} or \term{loops} and cycles of length \( 2 \) --- \term{transpositions}. Every \hyperref[def:symmetric_group/cycle]{transposition} is an \hyperref[def:set_with_involution]{involution}, and thus a transposition is equal to its inverse permutation.
+    We call cycles of length \( 1 \) \term{trivial cycles} or \term{loops} and cycles of length \( 2 \) --- \term{transpositions}. Every \hyperref[def:symmetric_group/cycle]{transposition} is an \hyperref[def:involution]{involution}, and thus a transposition is equal to its inverse permutation.
 
     \thmitem{def:symmetric_group/disjoint_cycle} If \( \cycle{k_1, \cdots, k_m} \) and \( \cycle{s_1, \cdots, s_l} \) are two cycles and if the sets \( \set{ k_1, \ldots, k_m } \) and \( \set{ s_1, \ldots, s_l } \) are disjoint, we say that the cycles themselves are \term{disjoint}.
 
@@ -154,7 +158,30 @@
   \end{equation*}
 \end{proposition}
 \begin{proof}
-  Trivial.
+  We will use induction by \( m \). The proposition is trivial for transpositions (\( m = 2 \)), hence suppose that it holds for \( m - 1 \) and consider the transposition \( \cycle{ k_1, \cdots, k_m } \).
+
+  We have, by the inductive hypothesis,
+  \begin{equation*}
+    \cycle{ k_1, \cdots, k_{m - 1} }
+    =
+    \cycle{ k_1, k_{m - 1} } \bincirc \cycle{ k_1, k_{m-1} } \bincirc \cdots \bincirc \cycle{ k_1, k_2 }.
+  \end{equation*}
+
+  By definition of cycle, \( k_{m-1} \) and \( k_1 \) get swapped, therefore
+  \begin{equation*}
+    \cycle{ k_1, \cdots, k_m } = \cycle{ k_1, k_m } \bincirc \cycle{ k_1, \cdots, k_{m - 1} }.
+  \end{equation*}
+
+  This completes the induction.
+\end{proof}
+
+\begin{proposition}\label{thm:cycle_cyclic_shift}
+  The cycles \( \cycle{ k_1, \cdots, k_m } \) and \( \cycle{ k_{\rem(1 + i, m)}, \cdots, k_{\rem(m + i, m)} } \) are equivalent as permutation functions for any positive integer \( i \).
+
+  We call this \term{cyclic shift} by \( i \).
+\end{proposition}
+\begin{proof}
+  Obvious from the definition of cycle.
 \end{proof}
 
 \begin{proposition}\label{thm:symmetric_group_cardinality}
@@ -171,6 +198,117 @@
     \card(S_n) = n \cdot \card(S_{n-1}) = n (n-1)! = n!.
   \end{equation*}
 \end{proof}
+
+\begin{example}\label{ex:s3}
+  The \hyperref[def:symmetric_group]{symmetric group} \( S_3 \) contains the following \hyperref[def:symmetric_group/permutation]{permutations}:
+  \begin{equation*}
+    S_3
+    \coloneqq
+    \set[\vast]
+    {
+      \underbrace
+        {
+          \begin{pmatrix}
+            1 & 2 & 3 \\
+            1 & 2 & 3
+          \end{pmatrix}
+        }_{
+          \id
+        },
+      \underbrace
+        {
+          \begin{pmatrix}
+            1 & 2 & 3 \\
+            2 & 1 & 3
+          \end{pmatrix}
+        }_{
+          \cycle{ 1, 2 }
+        },
+      \underbrace
+        {
+          \begin{pmatrix}
+            1 & 2 & 3 \\
+            2 & 3 & 1
+          \end{pmatrix}
+        }_{
+          \cycle{ 1, 2, 3 }
+        },
+      \underbrace
+        {
+          \begin{pmatrix}
+            1 & 2 & 3 \\
+            3 & 2 & 1
+          \end{pmatrix}
+        }_{
+          \cycle{ 1, 3 }
+        },
+      \underbrace
+        {
+          \begin{pmatrix}
+            1 & 2 & 3 \\
+            3 & 1 & 2
+          \end{pmatrix}
+        }_{
+          \cycle{ 1, 3, 2 }
+        },
+      \underbrace
+        {
+          \begin{pmatrix}
+            1 & 2 & 3 \\
+            1 & 3 & 2
+          \end{pmatrix}
+        }_{
+          \cycle{ 2, 3 }
+        }
+    }
+  \end{equation*}
+
+  We will now construct a multiplication table to show that \( S_3 \) is not commutative. This will help us build examples based on \( S_3 \) later on.
+
+  The entire table can be filled using the following techniques:
+  \begin{itemize}
+    \item The identity permutation \( \id \) leaves the other multiplicand unchanged.
+    \item The cycles \( \cycle{ 1, 2, 3 } \) and \( \cycle{ 1, 3, 2 } \) are inverses of each other, and all others are \hyperref[def:involution]{involutions}.
+    \item \Fullref{thm:cycle_transposition_decomposition} implies that \( \cycle{ 1, 2, 3 } = \cycle{ 1, 3 } \bincirc \cycle{ 1, 2 } \) and \( \cycle{ 1, 3, 2 } = \cycle{ 1, 2 } \bincirc \cycle{ 1, 3 } \).
+    \item The last two points together imply
+    \begin{equation*}
+      \cycle{ 1, 2, 3 } \bincirc \cycle{ 1, 2 }
+      =
+      \cycle{ 1, 3 } \bincirc \cycle{ 1, 2 } \bincirc \cycle{ 1, 2 }
+      =
+      \cycle{ 1, 3 }.
+    \end{equation*}
+
+    \item We can also utilize cyclic shifts as justified by \fullref{thm:cycle_cyclic_shift}:
+    \begin{equation*}
+      \cycle{ 1, 2 } \bincirc \cycle{ 2, 3 }
+      =
+      \cycle{ 2, 1 } \bincirc \cycle{ 2, 3 }
+      =
+      \cycle{ 2, 3, 1 }
+      =
+      \cycle{ 1, 2, 3 }
+    \end{equation*}
+
+    Other cases can be handled similarly.
+  \end{itemize}
+
+  All in all, here is a table for \( \tau \bincirc \sigma \):
+  \begin{center}
+    \begin{tabular}{r | c c c c c c}
+      \diagbox[height=2em]{\( \tau \)}{\( \sigma \)} & \( \id \)               & \( \cycle{ 1, 2 } \)    & \( \cycle{ 1, 3 } \)    & \( \cycle{ 2, 3 } \)    & \( \cycle{ 1, 2, 3 } \) & \( \cycle{ 1, 3, 2 } \) \\
+      \hline
+      \( \id \)                                      & \( \id \)               & \( \cycle{ 1, 2 } \)    & \( \cycle{ 1, 3 } \)    & \( \cycle{ 2, 3 } \)    & \( \cycle{ 1, 2, 3 } \) & \( \cycle{ 1, 3, 2 } \) \\
+      \( \cycle{ 1, 2 } \)                           & \( \cycle{ 1, 2 } \)    & \( \id \)               & \( \cycle{ 1, 3, 2 } \) & \( \cycle{ 1, 2, 3 } \) & \( \cycle{ 2, 3 } \)    & \( \cycle{ 1, 3 } \)    \\
+      \( \cycle{ 1, 3 } \)                           & \( \cycle{ 1, 3 } \)    & \( \cycle{ 1, 2, 3 } \) & \( \id \)               & \( \cycle{ 1, 3, 2 } \) & \( \cycle{ 1, 2 } \)    & \( \cycle{ 2, 3 } \)    \\
+      \( \cycle{ 2, 3 } \)                           & \( \cycle{ 2, 3 } \)    & \( \cycle{ 1, 3, 2 } \) & \( \cycle{ 1, 2, 3 } \) & \( \id \)               & \( \cycle{ 1, 3 } \)    & \( \cycle{ 1, 2 } \)    \\
+      \( \cycle{ 1, 2, 3 } \)                        & \( \cycle{ 1, 2, 3 } \) & \( \cycle{ 1, 3 } \)    & \( \cycle{ 2, 3 } \)    & \( \cycle{ 1, 2 } \)    & \( \cycle{ 1, 3, 2 } \) & \( \id \)               \\
+      \( \cycle{ 1, 3, 2 } \)                        & \( \cycle{ 1, 3, 2 } \) & \( \cycle{ 2, 3 } \)    & \( \cycle{ 1, 2 } \)    & \( \cycle{ 1, 3 } \)    & \( \id \)               & \( \cycle{ 1, 2, 3 } \) \\
+    \end{tabular}
+  \end{center}
+\end{example}
+
+\paragraph{Group actions}
 
 \begin{definition}\label{def:group_action}
   Let \( G \) be a \hyperref[def:group]{group} and let \( X \) be an object in some \hyperref[def:concrete_category]{concrete category} \( \cat{C} \).
@@ -197,6 +335,28 @@
 \end{definition}
 \begin{proof}
   The proof of equivalence is simple; it is similar to \fullref{def:monoid_action}.
+\end{proof}
+
+\begin{lemma}\label{thm:group_operation_induces_bijections}
+  For each element \( x \) of a group \( G \), consider the function \( \varphi_x \coloneqq x \cdot \id_G \), that is,
+  \begin{equation*}
+    \begin{aligned}
+      &\varphi_x: G \to G \\
+      &\varphi_x(y) \coloneqq x \cdot y.
+    \end{aligned}
+  \end{equation*}
+
+  This is a bijective function (but not necessarily a group isomorphism).
+\end{lemma}
+\begin{proof}
+  \SubProofOf[def:function_invertibility/injective]{injectivity} If \( y, y' \in G \) and \( \varphi_x(y) = \varphi_x(y') \), we have
+  \begin{equation*}
+    xy = \varphi_x(y) = \varphi_x(y') = xy'.
+  \end{equation*}
+
+  By \fullref{thm:def:group/cancellative}, \( y = y' \). Therefore, \( \varphi_x \) is injective.
+
+  \SubProofOf[def:function_invertibility/surjective]{surjectivity} If \( z \in G \), then \( z = x(x^{-1} z) \). Therefore, \( z = \varphi_x(x^{-1} z) \), and thus every member of \( G \) has a preimage. Thus, \( \varphi_x \) is surjective.
 \end{proof}
 
 \begin{theorem}[Cayley's theorem]\label{thm:cayleys_theorem}
@@ -244,38 +404,6 @@
 \begin{proof}
   Trivial.
 \end{proof}
-
-\begin{definition}\label{def:inner_and_outer_automorphisms}\mcite[exer. 6.12.15]{Knapp2016BasicAlgebra}
-  Denote by \( \Phi: G \to \aut(G) \) the \hyperref[thm:group_conjugation_action]{conjugation action} on the group \( G \).
-
-  The \term{inner automorphisms group} of \( G \) is
-  \begin{equation*}
-    \op{inn}(G) \coloneqq \set{ \Phi_g \given g \in G }.
-  \end{equation*}
-
-  The \term{outer automorphism group} is the \hyperref[def:group/quotient]{quotient group}
-  \begin{equation*}
-    \op{out}(G) \coloneqq \aut(G) / \op{inn}(G).
-  \end{equation*}
-\end{definition}
-\begin{defproof}
-  We will show that \( \op{inn}(G) \) is a \hyperref[thm:normal_subgroup_equivalences]{normal subgroup} of \( \aut(G) \).
-
-  Fix a member \( g \) of \( G \) and define the inner automorphism
-  \begin{equation*}
-    \varphi(h) \coloneqq gh^{-1}g.
-  \end{equation*}
-
-  Let \( \psi \) be an arbitrary automorphism of \( G \). Then
-  \begin{equation*}
-    [\varphi \bincirc \psi \bincirc \varphi^{-1}](h)
-    =
-    \varphi(g \varphi^{-1}(h) g^{-1})
-    =
-    \varphi(g) h \varphi(g^{-1}),
-  \end{equation*}
-  and thus \( \varphi \bincirc \psi \bincirc \varphi^{-1} \) is again an inner automorphism.
-\end{defproof}
 
 \begin{proposition}\label{thm:permutation_decomposition_existence}
   Let \( S_n \) be a \hyperref[def:symmetric_group]{symmetric group} and let \( \sigma \) be a permutation in \( S_n \). Then there exists a finite sequence \( c_1, \ldots, c_m \) of nontrivial \hyperref[def:symmetric_group/disjoint_cycle]{disjoint cycles} such that
@@ -399,81 +527,7 @@
 \end{proof}
 
 \begin{example}\label{ex:s3_and_a3}
-  The \hyperref[def:symmetric_group]{symmetric group} \( S_3 \) contains the following \hyperref[def:symmetric_group/permutation]{permutations}:
-  \begin{equation*}
-    S_3
-    \coloneqq
-    \set[\vast]
-    {
-      \begin{pmatrix}
-        1 & 2 & 3 \\
-        1 & 2 & 3
-      \end{pmatrix},
-      \underbrace
-        {
-          \begin{pmatrix}
-            1 & 2 & 3 \\
-            2 & 1 & 3
-          \end{pmatrix}
-        }_{
-          \cycle{ 1, 2 }
-        },
-      \underbrace
-        {
-          \begin{pmatrix}
-            1 & 2 & 3 \\
-            2 & 3 & 1
-          \end{pmatrix}
-        }_{
-          \cycle{ 1, 2, 3 }
-        },
-      \underbrace
-        {
-          \begin{pmatrix}
-            1 & 2 & 3 \\
-            3 & 2 & 1
-          \end{pmatrix}
-        }_{
-          \cycle{ 1, 3 }
-        },
-      \underbrace
-        {
-          \begin{pmatrix}
-            1 & 2 & 3 \\
-            3 & 1 & 2
-          \end{pmatrix}
-        }_{
-          \cycle{ 1, 3, 2 }
-        },
-      \underbrace
-        {
-          \begin{pmatrix}
-            1 & 2 & 3 \\
-            1 & 3 & 2
-          \end{pmatrix}
-        }_{
-          \cycle{ 2, 3 }
-        }
-    }
-  \end{equation*}
-
-  We can observe the following:
-  \begin{itemize}
-    \item The permutations \( \cycle{ 1, 2, 3 } \) and \( \cycle{ 1, 3, 2 } \) are inverses of each other and all other permutations are involutions.
-
-    \item Every conjugation automorphism is unique. This can be verified explicitly. Therefore, the \hyperref[def:inner_and_outer_automorphisms]{inner automorphism group} \( \op{inn}(S_3) \) is isomorphic to \( S_3 \).
-
-    \item The \hyperref[def:alternating_group]{alternating group} \( A_3 \) consists of the identity and the odd-length cycles \( (1, 2, 3) \) and \( (1, 3, 2) \).
-
-    \item When restricted to \( A_3 \), all conjugation automorphisms are trivial. This can be verified explicitly. Therefore, the inner automorphism group \( \op{inn}(A_3) \) is trivial, and hence
-    \begin{equation*}
-      \aut(A_3) \cong \op{out}(A_3).
-    \end{equation*}
-
-    \item The map \( \sigma \mapsto \sigma^{-1} \), which fixes the identity and exchanges the two other permutations, is an automorphism of \( A_3 \). It is distinct from the identity, hence it is an outer automorphism.
-
-    This map is given by the restriction of the conjugation \( \sigma \mapsto \cycle{1, 2} \sigma \cycle{1, 2} \) to \( A_3 \). It is an inner automorphism of \( S_3 \), but an outer automorphism of \( A_3 \).
-  \end{itemize}
+  In the \hyperref[def:symmetric_group]{symmetric group} \( S_3 \) discussed in \fullref{ex:s3}, the \hyperref[def:alternating_group]{alternating group} \( A_3 \) consists of the identity and the odd-length cycles \( \cycle{ 1, 2, 3 } \) and \( \cycle{ 1, 3, 2 } \).
 \end{example}
 
 \begin{proposition}\label{thm:group_epimorphisms_are_surjective}\mcite[exer. I.5.5]{MacLane1998}
