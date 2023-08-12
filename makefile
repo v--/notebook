@@ -33,6 +33,9 @@ figures: $(FIGURES_TEX_PDF) $(FIGURES_ASY_PDF)
 format-figures:
 	@poetry --directory code run python -m code.commands.format_matrices figures/*.tex
 
+find-obsolete-figures:
+	@poetry --directory code run python -m code.commands.find_obsolete_figures
+
 # I have implemented a very useful build system for LaTeX with log processing and debouncing
 watch: | aux output
 	@poetry --directory code run python -m code.commands.watcher all
