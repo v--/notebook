@@ -1,20 +1,20 @@
 \subsection{Free groups}\label{subsec:free_groups}
 
-\begin{definition}\label{def:free_monoid}
-  We associate with every \hyperref[def:set]{plain set} \( A \) its \term{free monoid} \( F(A) \coloneqq (A^*, \cdot) \), where \( A^* \) is the \hyperref[def:formal_language/kleene_star]{Kleene star} and \( \cdot \) is \hyperref[def:formal_language/concatenation]{concatenation}.
+\paragraph{Free monoids}
 
-  Denote by \( \iota_A: A \to F(A) \) the canonical inclusion function, which sends every member of \( A \) into the corresponding single-symbol word in the \hyperref[def:free_monoid]{free monoid} \( F(A) \).
+\begin{definition}\label{def:free_monoid}\mcite[48]{MacLane1998}
+  We associate with every \hyperref[def:set]{plain set} \( A \) its \term{free monoid} as the \hyperref[def:formal_language/kleene_star]{Kleene star} \( A^* \) with \hyperref[def:formal_language/concatenation]{concatenation} as the monoid operation.
+
+  Denote by \( \iota_A: A \to A^* \) the canonical inclusion function, which sends every member of \( A \) into the corresponding single-symbol word in the \hyperref[def:free_monoid]{free monoid} \( A^* \).
 \end{definition}
-\begin{proof}
+\begin{defproof}
   Concatenation is clearly associative and the empty word \( \varepsilon \) is an \hyperref[def:monoid]{neutral element} under concatenation.
-\end{proof}
+\end{defproof}
 
 \begin{theorem}[Free monoid universal property]\label{thm:free_monoid_universal_property}
-  We associate with every set \( A \) its \hyperref[def:formal_language/kleene_star]{Kleene star} \( A^* \). Denote by \( \iota_A: A \to F(A) \) the canonical inclusion function, which sends every member of \( A \) into the corresponding single-symbol word in \( A^* \).
-
-  The Kleene star \( A^* \) with \hyperref[def:formal_language/concatenation]{concatenation} is the unique up to an isomorphism monoid that satisfies the following \hyperref[rem:universal_mapping_property]{universal mapping property}:
+  The \hyperref[def:free_monoid]{free monoid} \( A^* \) is the unique up to an isomorphism monoid that satisfies the following \hyperref[rem:universal_mapping_property]{universal mapping property}:
   \begin{displayquote}
-    For every monoid \( M \) and every function \( f: A \to M \), there exists a unique monoid homomorphism \( \widetilde{f}: A^* \to M \) such that the following diagram commutes:
+    For every monoid \( M \) and every function \( f: A \to M \), there exists a unique \hyperref[def:monoid/homomorphism]{monoid homomorphism} \( \widetilde{f}: A^* \to M \) such that the following diagram commutes:
     \begin{equation}\label{eq:thm:free_monoid_universal_property/diagram}
       \begin{aligned}
         \includegraphics[page=1]{output/thm__free_monoid_universal_property}
@@ -28,41 +28,40 @@
   \end{equation*}
 \end{theorem}
 \begin{proof}
-  For every function \( f: A \to M \), define the monoid homomorphism
+  In order for \( \widetilde{f} \) to be a monoid homomorphism, it must satisfy \( \widetilde{f}(\varepsilon) = e_M \) and
   \begin{equation*}
-    \begin{aligned}
-      &\widetilde{f}: A^* \to M, \\
-      &\widetilde{f}(x_1 x_2 \ldots x_n) \coloneqq f(x_1) \cdot f(x_2) \cdot \ldots \cdot f(x_n)
-    \end{aligned}
-  \end{equation*}
-  obtained by applying the monoid operation \( \cdot \) recursively to the pointwise image
-  \begin{equation*}
-    f(x_1) f(x_2) \ldots f(x_n)
-  \end{equation*}
-  of the word
-  \begin{equation*}
-    x_1 x_2 \ldots x_n.
+    \widetilde{f}(a_1 a_2 \ldots a_n) = \widetilde{f}(a_1) \cdot \widetilde{f}(a_2) \cdot \ldots \cdot \widetilde{f}(a_n).
   \end{equation*}
 
-  The homomorphism \( \widetilde{f} \) is uniquely determined by the action of \( f \) on single-symbol words.
+  Every two such functions are equal because their action is determined entirely by the empty word and the action of \( f \) on the symbols from \( A \).
+
+  This suggests the recursive definition
+  \begin{equation*}
+    \widetilde{f}(w) \coloneqq \begin{cases}
+      e_M,                         &w = \varepsilon, \\
+      f(a) \cdot \widetilde{f}(w') &w = a \cdot w'.
+    \end{cases}
+  \end{equation*}
 \end{proof}
+
+\paragraph{Free groups}
 
 \begin{definition}\label{def:free_group}\mimprovised
   Let \( A \) be a \hyperref[def:set]{plain set}. We will now construct the \term{free group} \( F(A) \) of \( A \).
 
   Let \( + \) and \( - \) be a arbitrary plain sets not in \( A \). Consider the \hyperref[def:disjoint_union]{disjoint union} \( U \coloneqq A \times \set{ +, - } \), whose members we will denote by \( a^+ \) and \( a^- \).
 
-  Consider the \hyperref[def:formal_language/kleene_star]{Kleene star} \( U^* \). We say that a word in \( U^* \) is \term{reduced} if there exists no \( a \in A \) such that either \( a^+ a^- \) or \( a^- a^+ \) is a subword of \( w \).
+  Consider the \hyperref[def:formal_language/kleene_star]{Kleene star} \( U^* \). We say that a word in \( U^* \) is \term{reduced} if there exists no symbol \( a \in A \) such that either \( a^+ a^- \) or \( a^- a^+ \) is a subword of \( w \).
 
   Define via \hyperref[rem:evaluation]{pattern matching} the reduction function
   \begin{equation*}
     \red(w) \coloneqq \begin{cases}
-      p \red(s), &w = p a^+ a^- s \T{or} w = p a^- a^* s, \T{where} p \T{is reduced} \\
-      w,         &\T{otherwise.}
+      p \cdot \red(s), &w = p a^+ a^- s \T{or} w = p a^- a^+ s, \T{where} p \T{is reduced} \\
+      w,               &\T{otherwise.}
     \end{cases}
   \end{equation*}
 
-  It is well-defined because \( s \) is always shorter than \( w \) and thus \( \red \) recursively applies itself finitely many times. Furthermore, the condition for \( p \) to be reduced ensures that the leftmost pair always gets eliminated, making the process deterministic.
+  It is well-defined because \( s \) is always shorter than \( w \) and thus \( \red(w) \) recursively applies itself finitely many times. Furthermore, the condition for \( p \) to be reduced ensures that the leftmost pair always gets eliminated, making the process deterministic.
 
   Clearly \( w \) is reduced if and only if \( w = \red(w) \).
 
@@ -72,8 +71,8 @@
   \begin{equation*}
     w^{-1} = \begin{cases}
       \varepsilon &w = \varepsilon \\
-      a^- w^{-1}  &w = a^+ v \\
-      a^+ w^{-1}  &w = a^- v
+      w^{-1} a^-  &w = a^+ v \\
+      w^{-1} a^+  &w = a^- v
     \end{cases}
   \end{equation*}
 
@@ -86,13 +85,13 @@
   \end{equation*}
 \end{definition}
 \begin{comments}
-  \item Compare this definition to free abelian groups defined in \fullref{def:free_semimodule}.
+  \item Compare this definition to the much less syntactic definition of free abelian groups as \hyperref[def:free_semimodule]{free modules} over \( \BbbZ \).
 \end{comments}
 
 \begin{theorem}[Free group universal property]\label{thm:free_group_universal_property}
   The \hyperref[def:free_group]{free group} \( F(A) \) is the unique up to an isomorphism group that satisfies the following \hyperref[rem:universal_mapping_property]{universal mapping property}:
   \begin{displayquote}
-    For every group \( G \) and every function \( f: A \to G \), there exists a unique group homomorphism \( \widetilde{f}: F(A) \to G \) such that the following diagram commutes:
+    For every group \( G \) and every function \( f: A \to G \), there exists a unique \hyperref[def:group/homomorphism]{group homomorphism} \( \widetilde{f}: F(A) \to G \) such that the following diagram commutes:
     \begin{equation}\label{eq:thm:free_group_universal_property/diagram}
       \begin{aligned}
         \includegraphics[page=1]{output/thm__free_group_universal_property}
@@ -106,20 +105,29 @@
   \end{equation*}
 \end{theorem}
 \begin{proof}
-  The free group operation is more complicated than the free monoid operation, however our proof of the universal mapping property is identical to the property in \fullref{thm:free_monoid_universal_property}.
+  A group homomorphism is a monoid homomorphism, hence we can utilize our reasoning for free monoids to extend the definition from \fullref{thm:free_monoid_universal_property} to
+  \begin{equation*}
+    \widetilde{f}(w) \coloneqq \begin{cases}
+      \varepsilon,                      &w = \varepsilon, \\
+      f(a) \cdot \widetilde{f}(w')      &w = a^+ \cdot w', \\
+      f(a)^{-1} \cdot \widetilde{f}(w') &w = a^- \cdot w'.
+    \end{cases}
+  \end{equation*}
 \end{proof}
 
 \begin{corollary}\label{thm:injective_group_homomorphisms_are_monomorphisms}
   Injective group homomorphisms are \hyperref[def:morphism_invertibility/left_cancellative]{categorical monomorphisms}.
 \end{corollary}
 \begin{proof}
-  Follows from \fullref{thm:first_order_categorical_invertibility/injective}.
+  Follows from \fullref{thm:free_group_universal_property} and \fullref{thm:first_order_categorical_invertibility/injective}.
 \end{proof}
 
-\begin{definition}\label{def:group_presentation}\mcite[314]{Knapp2016BasicAlgebra}
-  Let \( A \) be a \hyperref[def:set]{plain set} with \hyperref[def:free_group]{free group} \( F(A) \) and let \( R \subseteq F(A) \) be a set of words in \( F(A) \). Denote by \( N(R) \) the \hyperref[def:normal_subgroup]{normal subgroup} \hyperref[def:first_order_generated_substructure]{generated} by \( R \).
+\paragraph{Group presentations}
 
-  Then we define the group with \term{generators} \( A \) and \term{relators} \( R \) as
+\begin{definition}\label{def:group_presentation}\mcite[314]{Knapp2016BasicAlgebra}
+  Let \( A \) be a \hyperref[def:set]{plain set} with \hyperref[def:free_group]{free group} \( F(A) \) and let \( R \subseteq F(A) \) be a set of words in \( F(A) \). Denote by \( N(R) \) the intersection of all normal subgroups of \( F(A) \) containing \( R \).
+
+  Then we can define the group with a set of \term{generators} \( A \) and a set of \term{relators} \( R \) as
   \begin{equation}\label{eq:def:group_presentation/presentation}
     \braket{ A \mid R } \coloneqq F(A) / N(R).
   \end{equation}
@@ -129,7 +137,7 @@
     \braket{ A } \coloneqq F(A)
   \end{equation}
 
-  Note that we use similar notation compared to generated subgroups defined in \fullref{def:group/submodel}. The former defines a new group operation from scratch, while the latter uses an existing group operation and is restricted by this operation.
+  Note that we use similar notation compared to generated subgroups discussed in \fullref{def:group/submodel}. The former defines a new group operation from scratch, while the latter uses an existing group operation and is restricted by this operation.
 
   If, for a given group \( G \) and subsets \( A \) and \( R \) of \( G \), we have
   \begin{equation*}
@@ -147,7 +155,7 @@
   Every group has at least one \hyperref[def:group_presentation]{presentation}.
 \end{proposition}
 \begin{comments}
-  \item Compare this to \fullref{thm:module_presentation_existence} and \fullref{thm:algebra_presentation_existence}.
+  \item Compare this to similar results --- \fullref{thm:module_presentation_existence} for \( R \)-modules and \fullref{thm:algebra_presentation_existence} for \( R \)-algebras.
 \end{comments}
 \begin{proof}
   Fix an arbitrary group \( G \) and let \( A \coloneqq U(G) \) be the underlying set.
@@ -159,11 +167,11 @@
 
   By \fullref{thm:kernel_is_normal_subgroup}, the kernel \( \ker \varphi \) is a normal subgroup of \( A \), hence by \fullref{thm:quotient_structure_universal_property},
   \begin{equation*}
-    G = \varphi(F(A)) \cong F(A) / \ker \varphi = \braket{ S \mid \ker \varphi }.
+    G = \varphi[F(A)] \cong F(A) / \ker \varphi = \braket{ A \mid \ker \varphi }.
   \end{equation*}
 \end{proof}
 
-\begin{example}\label{ex:free_group_with_uncountably_many_subgroups}\cite{MathSE:countable_group_uncountably_many_distinct_subgroup}
+\begin{example}\label{ex:free_group_with_uncountably_many_subgroups}\mcite{MathSE:countable_group_uncountably_many_distinct_subgroup}
   Consider some sequence \( x_1, x_2, \ldots \), as well as the \hyperref[def:free_group]{free group} with \hyperref[def:group_presentation]{presentation}
   \begin{equation*}
     F_\infty = \braket{ x_1, x_2, x_3, \ldots }.
@@ -180,15 +188,15 @@
 \end{example}
 
 \begin{definition}\label{def:group_free_product}\mcite[323]{Knapp2016BasicAlgebra}
-  The \term{free product} of a nonempty pairwise disjoint family of groups \( \seq{ X_k }_{k \in \mscrK} \) with \hyperref[def:group_presentation]{presentations} \( \braket{S_k \mid R_k}, k \in \mscrK \) is the group with presentation
+  We define the \term{free product} of a nonempty pairwise disjoint family of groups \( \seq{ \braket{S_k \mid R_k} }_{k \in \mscrK} \) as the group with presentation
   \begin{equation*}
-    \Ast_{k \in \mscrK} X_k \coloneqq \braket*{ \bigcup_{k \in \mscrK} S_k \given[\Big] \bigcup_{k \in \mscrK} R_k }.
+    \Ast_{k \in \mscrK} X_k \coloneqq \braket*{ \bigcup_{k \in \mscrK} S_k \given* \bigcup_{k \in \mscrK} R_k }.
   \end{equation*}
 
   If the constituent groups are not disjoint, we may instead use \hyperref[def:disjoint_union]{disjoint unions} as
   \small
   \begin{equation*}
-    \Ast_{k \in \mscrK} X_k \coloneqq \braket*{ \set[\Big]{ (k, x) \given k \in \mscrK \T{and} x \in S_k } \given[\Big] \set[\Big]{ (k, x_1) (k, x_2) \ldots (k, x_n) \colon k \in \mscrK \T{and} x_1 x_2 \ldots x_n \in R_k } }.
+    \Ast_{k \in \mscrK} X_k \coloneqq \braket*{ \coprod_{k \in \mscrK} S_k \given* \set[\Big]{ (k, x_1) (k, x_2) \ldots (k, x_n) \given x_1 x_2 \ldots x_n \in R_k } }.
   \end{equation*}
   \normalsize
 
@@ -201,77 +209,17 @@
   \end{equation*}
 \end{definition}
 
-\begin{definition}\label{def:cyclic_group}
-  For a singleton alphabet \( \set{ a } \), we define the \term{infinite cyclic group}
-  \begin{equation*}
-    C_\infty \coloneqq \braket{ a }
-  \end{equation*}
-  and, for positive integers \( n \), the \term{finite cyclic group} of \term{order} \( n \) as
-  \begin{equation*}
-    C_n \coloneqq \braket{ a \given a^n }.
-  \end{equation*}
-
-  We use the same notation independent of \( a \) because all cyclic groups of the same order are obviously \hyperref[def:group/homomorphism]{isomorphic}.
-
-  Given an ambient group \( G \) and some element \( g \in G \), the \term{cyclic subgroup} of \( g \) is the cyclic group isomorphic to the \hyperref[def:group/submodel]{generated subgroup} of \( G \).
-
-  As shown in \fullref{thm:cyclic_group_isomorphic_to_integers_modulo_n}, cyclic groups are isomorphic to certain groups of integers, however it is still useful to have cyclic groups as a separate concept.
-\end{definition}
-
-\begin{definition}\label{def:group_element_order}\mimprovised
-  The \term{order} \( \ord(x) \) of a member \( x \) of a group is the smallest positive integer \( n \) such that \( x^n = e \), i.e. order of the \hyperref[def:cyclic_group]{cyclic subgroup} \hyperref[def:group/submodel]{generated} by \( x \).
-\end{definition}
-
-\begin{proposition}\label{thm:def:group_element_order}
-  \hyperref[def:group_element_order]{Orders of group elements} have the following basic properties:
-  \begin{thmenum}
-    \thmitem{thm:def:group_element_order/divides} For finite groups, the order of a group element divides the order of the group.
-    \thmitem{thm:def:group_element_order/prime_order} Groups of \hyperref[def:prime_number]{prime} order are \hyperref[def:simple_object]{simple}.
-    \thmitem{thm:def:group_element_order/subgroups_of_cyclic} The \hyperref[def:cyclic_group]{cyclic group} \( C_n \) has a subgroup of order \( m \) if and only if \( m \) divides \( n \).
-    \thmitem{thm:def:group_element_order/product_of_cyclic} The \hyperref[def:first_order_direct_product]{direct sum} \( C_m \oplus C_n \) of two \hyperref[def:cyclic_group]{cyclic groups} is cyclic if and only if \( m \) and \( n \) are \hyperref[def:coprime_elements]{coprime}.
-  \end{thmenum}
-\end{proposition}
-\begin{proof}
-  \SubProofOf{thm:def:group_element_order/divides} Follows from \fullref{thm:lagranges_subgroup_theorem}.
-  \SubProofOf{thm:def:group_element_order/prime_order} Let \( N \) be a proper normal subgroup of \( G \), where \( \ord(G) \) is a prime number.
-
-  From \fullref{thm:lagranges_subgroup_theorem} it follows that \( \ord(N) \) divides \( p \). But \( p \) is prime, hence \( N \) is either the trivial group or the full group.
-
-  Therefore, \( G \) is a simple group.
-
-  \SubProofOf{thm:def:group_element_order/subgroups_of_cyclic} If \( H \) is a subgroup of \( C_n = \braket{ a \given a^n } \), by \fullref{thm:lagranges_subgroup_theorem}, its order divides \( n \). Conversely, let \( m \mid n \). Then the following is a cyclic subgroup of exactly \( m \) elements:
-  \begin{equation*}
-    \set{ e, a^{\ifrac n m}, \cdots, a^{(m - 1) \cdot \ifrac n m} }.
-  \end{equation*}
-
-  \SubProofOf{thm:def:group_element_order/product_of_cyclic} Consider the product \( C_m \times C_n \), where \( a \) is the generator of \( C_m \) and \( b \) is the generator of \( C_n \). The order of the element \( (a, e) \) is \( m \) and the order of \( (e, b) \) is \( n \). The order of
-  \begin{equation*}
-    (a, b) = (a, e) \cdot (e, b)
-  \end{equation*}
-  is the least common multiple of \( m \) and \( n \), which equals \( mn \) if and only if \( m \) and \( n \) are coprime.
-\end{proof}
-
-\begin{proposition}\label{thm:cyclic_groups_are_simple}
-  Groups of \hyperref[def:prime_number]{prime} \hyperref[def:group_order]{order} are \hyperref[def:simple_object]{simple}.
-\end{proposition}
-\begin{proof}
-  Let \( N \) be a proper normal subgroup of \( G \), where \( \ord(G) \) is a prime number.
-
-  From \fullref{thm:lagranges_subgroup_theorem} it follows that \( \ord(N) \) divides \( p \). But \( p \) is prime, hence \( N \) is either the trivial group or the full group.
-
-  Therefore, \( G \) is a simple group.
-\end{proof}
-
 \begin{proposition}\label{thm:group_categorical_limits}
   \hfill
   \begin{thmenum}
     \thmitem{thm:group_categorical_limits/product} The \hyperref[def:discrete_category_limits]{categorical product} of the family \( \seq{ G_k }_{k \in \mscrK} \) in the category \hyperref[def:group/category]{\( \cat{Grp} \)} of groups is their \hyperref[def:first_order_direct_product]{monoid direct product} \( \prod_{k \in \mscrK} G_k \).
 
-    \thmitem{thm:group_categorical_limits/coproduct} The \hyperref[def:discrete_category_limits]{categorical coproduct} of the family \( \seq{ G_k }_{k \in \mscrK} \) in the category \hyperref[def:monoid/category]{\( \cat{CMon} \)} of \hi{commutative} monoids is their \hyperref[def:group_free_product]{group free product} \( \Ast_{k \in \mscrK} G_k \).
-
-    Compare this to the commutative case discussed in \fullref{thm:monoid_categorical_limits/coproduct}.
+    \thmitem{thm:group_categorical_limits/coproduct} The \hyperref[def:discrete_category_limits]{categorical coproduct} of the family \( \seq{ G_k }_{k \in \mscrK} \) in the category \hyperref[def:group/category]{\( \cat{Grp} \)} of groups is their \hyperref[def:group_free_product]{free product} \( \Ast_{k \in \mscrK} G_k \).
   \end{thmenum}
 \end{proposition}
+\begin{comments}
+  \item Compare \fullref{thm:group_categorical_limits/coproduct} to the non-commutative case for monoids discussed in \fullref{thm:monoid_categorical_limits/coproduct}.
+\end{comments}
 \begin{proof}
   \SubProofOf{thm:group_categorical_limits/product} Follows from \fullref{thm:monoid_categorical_limits/product}.
 
@@ -284,4 +232,58 @@
   \begin{equation*}
     l_A\parens[\Big]{ (k_1, x_1) (k_2, x_2) \ldots (k_n, x_n) } \coloneqq \alpha_{k_1}(x_1) \cdot \alpha_{k_2}(x_k) \cdot \ldots \cdot \alpha_{k_n}(x_n).
   \end{equation*}
+\end{proof}
+
+\paragraph{Cyclic groups}
+
+\begin{definition}\label{def:cyclic_group}\mcite[def. II.4.7]{Aluffi2009}
+  For a singleton alphabet \( \set{ a } \), we define the \term[ru=(бесконечная) циклическая группа (\cite[sec. 2.11]{Тыртышников2007})]{infinite cyclic group} as
+  \begin{equation}\label{def:cyclic_group/infinite}
+    C_\infty \coloneqq \braket{ a }
+  \end{equation}
+  and, for positive integers \( n \), the \term{finite cyclic group} of \term{order} \( n \) as
+  \begin{equation}\label{def:cyclic_group/finite}
+    C_n \coloneqq \braket{ a \given a^n }.
+  \end{equation}
+
+  We use the same notation with no regard to the alphabet because all cyclic groups of the same order are \hyperref[def:group/homomorphism]{isomorphic}.
+\end{definition}
+\begin{comments}
+  \item Given an ambient group \( G \) and some element \( g \in G \), the \term{cyclic subgroup} of \( g \) is the cyclic group isomorphic to the \hyperref[def:group/submodel]{generated subgroup} of \( G \).
+
+  \item As shown in \fullref{thm:cyclic_group_isomorphic_to_integers_modulo_n}, cyclic groups are isomorphic to certain groups of integers, however it is still useful to have cyclic groups as a separate concept.
+\end{comments}
+
+\begin{proposition}\label{thm:def:cyclic_group}
+  \hyperref[def:cyclic_group]{Cyclic groups} have the following basic properties:
+  \begin{thmenum}
+    \thmitem{thm:def:cyclic_group/subgroups} The \hyperref[def:cyclic_group]{cyclic group} \( C_n \) has a subgroup of order \( m \) if and only if \( m \) divides \( n \).
+    \thmitem{thm:def:cyclic_group/direct_sum} The \hyperref[def:first_order_direct_product]{direct sum} \( C_m \oplus C_n \) of two \hyperref[def:cyclic_group]{cyclic groups} is cyclic if and only if \( m \) and \( n \) are \hyperref[def:coprime_elements]{coprime}.
+  \end{thmenum}
+\end{proposition}
+\begin{proof}
+  \SubProofOf{thm:def:cyclic_group/subgroups}
+  \SufficiencySubProof* If \( H \) is a subgroup of \( C_n = \braket{ a \given a^n } \), by \fullref{thm:lagranges_subgroup_theorem}, its order divides \( n \).
+
+  \NecessitySubProof* Conversely, let \( m \mid n \). Then the following is a cyclic subgroup of exactly \( m \) elements:
+  \begin{equation*}
+    \set{ e, a^{\ifrac n m}, \cdots, a^{(m - 1) \cdot \ifrac n m} }.
+  \end{equation*}
+
+  \SubProofOf{thm:def:cyclic_group/direct_sum} Consider the product \( C_m \times C_n \), where \( a \) is the generator of \( C_m \) and \( b \) is the generator of \( C_n \). The order of the element \( (a, e) \) is \( m \) and the order of \( (e, b) \) is \( n \). The order of
+  \begin{equation*}
+    (a, b) = (a, e) \cdot (e, b)
+  \end{equation*}
+  is the least common multiple of \( m \) and \( n \), which equals \( mn \) if and only if \( m \) and \( n \) are coprime.
+\end{proof}
+
+\begin{definition}\label{def:group_element_order}\mcite[130]{Knapp2016BasicAlgebra}
+  The \term[ru=степень (\cite[sec. 2.10]{Тыртышников2007})]{order} \( \ord(x) \) of a member \( x \) of a group is the smallest positive integer \( n \) such that \( x^n = e \), i.e. order of the \hyperref[def:cyclic_group]{cyclic subgroup} \hyperref[def:group/submodel]{generated} by \( x \).
+\end{definition}
+
+\begin{proposition}\label{thm:def:group_element_order}
+  For finite groups, the orders of any group element in the sense of \fullref{def:group_element_order} divides the order of the group in the sense of \fullref{def:group_order}.
+\end{proposition}
+\begin{proof}
+  Follows from \fullref{thm:lagranges_subgroup_theorem}.
 \end{proof}
