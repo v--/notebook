@@ -2,24 +2,27 @@
 
 \paragraph{Monoid actions}
 
-\begin{definition}\label{def:endomorphism_monoid}
-  For every object \( X \) in an arbitrary \hyperref[def:category]{category} \( \cat{C} \), the set \( \cat{C}(X) \) is a \hyperref[def:monoid]{monoid} with morphism composition as the monoid operation and \( \id_X \) as the monoid identity.
+\begin{definition}\label{def:endomorphism_monoid}\mimprovised
+  For every object \( X \) in an arbitrary \hyperref[def:category]{category} \( \cat{C} \), the set \( \cat{C}(X) \) is a \hyperref[def:monoid]{monoid} with morphism composition as the monoid operation and the identity \( \id_X \) as the monoid neutral element.
 
   Outside of \hyperref[sec:category_theory]{category theory}, whenever the category \( \cat{C} \) is clear from the context, we call \( \cat{C}(X) \) the \term{endomorphism monoid} over \( X \) and denote it by \( \End(X) \).
 \end{definition}
+\begin{comments}
+  \item The notation is based on Paolo Aluffi's from \cite[29]{Aluffi2009}, while the name is based on the special case for \hyperref[def:undirected_graph]{simple undirected graphs} from \cite[8]{GodsilRoyle2001}.
+\end{comments}
 
-\begin{definition}\label{def:monoid_action}
-  Let \( M \) be a \hyperref[def:monoid]{monoid} and let \( X \) be an object in some \hyperref[def:category]{category} \( \cat{C} \).
+\begin{definition}\label{def:monoid_action}\mimprovised
+  Let \( M \) be a \hyperref[def:monoid]{monoid} and let \( X \) be an object in some \hyperref[def:concrete_category]{concrete category} \( \cat{C} \).
 
-  We will define monoid actions of \( M \) on \( X \), which we will sometimes call \term{left monoid actions}. There are also \term{right monoid actions}, which are only briefly mentioned in \fullref{def:monoid_action/functor}.
-
-  A \term{monoid action} can be defined equivalently as:
+  A \term{left monoid action} or simply \term{monoid action} of \( M \) on \( X \) can be defined equivalently as:
   \begin{thmenum}
-    \thmitem{def:monoid_action/homomorphism} A \hyperref[def:monoid/homomorphism]{homomorphism} from \( M \) to the \hyperref[def:endomorphism_monoid]{endomorphism monoid} \( \End(X) \).
+    \thmitem{def:monoid_action/homomorphism} A \hyperref[def:monoid/homomorphism]{monoid homomorphism} from \( M \) to the \hyperref[def:endomorphism_monoid]{endomorphism monoid} of \( X \).
+
+    Right actions are instead homomorphisms from the \hyperref[def:monoid/opposite]{opposite monoid} \( M^{\opcat} \) to \( \End(X) \).
 
     \thmitem{def:monoid_action/functor} A \hyperref[def:functor]{functor} from the \hyperref[def:monoid_delooping]{delooping} \( \cat{B}_M \) to \( \cat{C} \).
 
-    Right actions are \hyperref[rem:contravariant_functor]{contravariant functors}.
+    Right actions are instead \hyperref[rem:contravariant_functor]{contravariant functors}.
 
     \thmitem{def:monoid_action/family} An \hyperref[def:cartesian_product/indexed_family]{indexed family} \( \seq{ \Phi_m }_{m \in M} \) of \hyperref[def:morphism_invertibility/endomorphism]{endomorphisms} of \( X \) such that
     \begin{align}
@@ -27,10 +30,10 @@
       &\Phi_{mn} = \Phi_m \bincirc \Phi_n. \label{eq:def:monoid_action/family/compatibility}\tag{\logic{MA2}}
     \end{align}
 
-    This defines a function \( \Phi: M \times A \to A \).
+    This defines a function \( \Phi: M \times X \to X \).
   \end{thmenum}
 \end{definition}
-\begin{proof}
+\begin{defproof}
   \ImplicationSubProof{def:monoid_action/homomorphism}{def:monoid_action/functor} Suppose that we have a monoid homomorphism \( \Phi: M \to \End(X) \). Define the functor
   \begin{equation*}
     \begin{aligned}
@@ -79,13 +82,22 @@
   \begin{equation*}
     \Phi(mn) = \Phi(m) \bincirc \Phi(n).
   \end{equation*}
-\end{proof}
+\end{defproof}
+
+\begin{remark}\label{rem:monoid_action_notation}
+  For convenience, we will sometimes denote the values of the \hyperref[def:monoid_action]{evolution function} \( \Phi: T \times X \to X \) as \( \Phi_t(x) \) rather than \( \Phi(t, x) \).
+\end{remark}
 
 \begin{proposition}\label{thm:monoid_is_action}
-  Every \hyperref[def:monoid]{monoid} \hyperref[def:monoid_action]{acts} on itself via the family of functions \( h \mapsto g \cdot h \) indexed by \( g \). These functions are not monoid homomorphisms in general.
-
-  Compare this result to \fullref{thm:cayleys_theorem}.
+  Every \hyperref[def:monoid]{monoid} \( M \) \hyperref[def:monoid_action]{acts} on itself via the family of plain functions
+  \begin{equation*}
+    \Phi_m(h) \coloneqq m \cdot h.
+  \end{equation*}
 \end{proposition}
+\begin{comments}
+  \item These functions are not monoid homomorphisms in general.
+  \item Compare this result to the case of groups in \fullref{thm:group_is_action}.
+\end{comments}
 \begin{proof}
   The family satisfies \fullref{def:monoid_action/family}:
   \begin{itemize}
@@ -93,16 +105,27 @@
 
     \item \ref{eq:def:monoid_action/family/compatibility} follows from associativity:
     \begin{equation*}
-      [h \mapsto g_1 \cdot h] \bincirc [h \mapsto g_2 \cdot h] = [h \mapsto g_1 \cdot (g_2 \cdot h)] = [h \mapsto (g_1 \cdot g_2) \cdot h].
+      [\Phi_{m_1}(h)] \bincirc [\Phi_{m_2}(h)] = [\Phi_{m_1}(\Phi_{m_2}(h))] = [\Phi_{m_1 \cdot m_2}(h)].
     \end{equation*}
   \end{itemize}
 \end{proof}
 
-\begin{proposition}\label{thm:exponentiation_monoid_action}
-  The \hyperref[def:natural_numbers]{natural numbers} \( \BbbN \) (\hyperref[rem:peano_arithmetic_zero]{with zero}) act on any \hyperref[def:monoid]{monoid} by \hyperref[def:monoid/exponentiation]{exponentiation} via the family of function \( g \mapsto g^n \) indexed by \( n \in \BbbN \).
+\begin{theorem}[Cayley's theorem for monoids]\label{thm:cayleys_theorem_for_monoids}
+  Every \hyperref[def:monoid]{monoid} \( M \) \hyperref[rem:embeds_isomorphically]{embeds isomorphically} into the monoid of all functions on \( M \).
+\end{theorem}
+\begin{comments}
+  \item Compare this to \fullref{thm:cayleys_theorem}.
+\end{comments}
+\begin{proof}
+  The embedding is given by the group action from \fullref{thm:monoid_is_action}.
+\end{proof}
 
-  Compare this result to \fullref{thm:exponentiation_group_action}.
+\begin{proposition}\label{thm:exponentiation_monoid_action}
+  The monoid of \hyperref[def:natural_numbers]{natural numbers} \( \BbbN \) (\hyperref[rem:peano_arithmetic_zero]{with zero}) act on any \hyperref[def:monoid]{monoid} by \hyperref[def:monoid/exponentiation]{exponentiation} via the family of function \( g \mapsto g^n \) indexed by \( n \in \BbbN \).
 \end{proposition}
+\begin{comments}
+  \item A stronger result holds for groups --- see \fullref{thm:exponentiation_group_action}.
+\end{comments}
 \begin{proof}
   This family satisfies \fullref{def:monoid_action/family}:
   \begin{itemize}
@@ -111,79 +134,555 @@
   \end{itemize}
 \end{proof}
 
-\paragraph{Symmetric groups}
+\paragraph{Group actions}
 
-\begin{definition}\label{def:automorphism_group}
-  For every object \( X \) in a \hyperref[def:groupoid]{groupoid} \( \cat{G} \), the set \( \cat{G}(X) \) is a \hyperref[def:group]{group} with morphism composition as the group operation.
+\begin{definition}\label{def:automorphism_group}\mcite[29]{Aluffi2009}
+  For every object \( X \) in an arbitrary \hyperref[def:category]{category} \( \cat{C} \), define the \term{automorphism group} \( \aut(X) \) as the set of all invertible endomorphisms on \( X \).
+\end{definition}
+\begin{defproof}
+  \Fullref{thm:invertible_submonoid_is_group} implies that \( \aut(X) \) is indeed a group as the subset of all invertible elements of the \hyperref[def:endomorphism_monoid]{endomorphism monoid} \( \End(X) \).
+\end{defproof}
 
-  Similarly to \hyperref[def:endomorphism_monoid]{endomorphism monoids}, whenever the groupoid \( \cat{G} \) is clear from the context, we call \( \cat{G}(X) \) the \term{automorphism group} over \( X \) and denote it by \( \aut(X) \).
+\begin{definition}\label{def:group_action}
+  Let \( G \) be a \hyperref[def:group]{group} and let \( X \) be an object in some \hyperref[def:concrete_category]{concrete category} \( \cat{C} \).
+
+  A \term{left group action} or simply \term{group action} of \( G \) on \( X \) can be defined equivalently as:
+  \begin{thmenum}
+    \thmitem{def:group_action/homomorphism}\mcite[108]{Aluffi2009} A \hyperref[def:group/homomorphism]{group homomorphism} from \( G \) to the \hyperref[def:automorphism_group]{automorphism group} \( \aut(X) \).
+
+    Right actions are instead homomorphisms from the \hyperref[def:group/opposite]{opposite group} \( G^{\opcat} \) to \( \aut(X) \).
+
+    \thmitem{def:group_action/functor} A \hyperref[def:functor]{functor} from the \hyperref[def:monoid_delooping]{delooping} \( \cat{B}_G \) to \( \cat{C} \).
+
+    Right actions are instead \hyperref[rem:contravariant_functor]{contravariant functors}.
+
+    \thmitem{def:group_action/family} An \hyperref[def:cartesian_product/indexed_family]{indexed family} \( \seq{ \Phi_x }_{x \in G} \) of \hyperref[def:morphism_invertibility/isomorphism]{isomorphisms} of \( X \) such that, for every pair \( g, h \in G \),
+    \begin{equation}\label{eq:def:group_action/family/compatibility}\tag{\logic{GA}}
+      \Phi_{gh} = \Phi_g \bincirc \Phi_h.
+    \end{equation}
+
+    This defines a function \( \Phi: M \times X \to X \).
+  \end{thmenum}
 \end{definition}
 
-\begin{definition}\label{def:symmetric_group}
-  We call the \hyperref[def:automorphism_group]{automorphism group} of a set \( A \) the \term{symmetric group}\footnote{The term possibly comes from symmetric functions defined in \fullref{def:symmetric_function}} on \( A \) and denote it by \( S(A) \). The group \( S(A) \) consists of bijective functions, which we call \term{permutations}.
+\begin{proposition}\label{thm:group_action_of_neutral_element}
+  For a \hyperref[def:group_action]{group action} \( \Phi: G \times X \to X \), the morphism \( \Phi_e \) is the identity on \( X \).
+\end{proposition}
+\begin{comments}
+  \item This is a restatement of \eqref{eq:def:monoid_action/family/identity}.
+\end{comments}
+\begin{proof}
+  Since \( \Phi \) is, equivalently, a group homomorphism from \( G \) to \( \aut(X) \), the morphism \( \Phi_e \) is the neutral element of \( \aut(X) \), hence it is the identity on \( X \).
+\end{proof}
 
-  Rather than for arbitrary sets, we often consider symmetric group
+\begin{lemma}\label{thm:group_operation_induces_bijections}
+  For each element \( g \) of a group \( G \), the function \( h \mapsto g \cdot h \) is bijective.
+\end{lemma}
+\begin{comments}
+  \item These functions are not group isomorphisms unless \( g \) is the neutral element.
+\end{comments}
+\begin{proof}
+  Denote \( h \mapsto g \cdot h \) by \( \Phi_g \).
+
+  \SubProofOf[def:function_invertibility/injective/equality]{injectivity} If \( \Phi_g(h) = \Phi_g(h') \), then
+  \begin{equation*}
+    gh = \Phi_g(h) = \Phi_g(h') = gh'.
+  \end{equation*}
+
+  By \fullref{thm:def:group/cancellative}, \( h = h' \).
+
+  \SubProofOf[def:function_invertibility/surjective/existence]{surjectivity} If \( h \in G \), then \( h = g(g^{-1} h) \). Therefore, \( h = \Phi_g(g^{-1} h) \), and thus every member of \( G \) has a preimage.
+\end{proof}
+
+\begin{proposition}\label{thm:group_is_action}
+  Every \hyperref[def:group]{group} \( G \) \hyperref[def:group_action]{acts} on itself via the family of plain (bijective) functions
+  \begin{equation*}
+    \Phi_g(h) \coloneqq g \cdot h.
+  \end{equation*}
+\end{proposition}
+\begin{comments}
+  \item The phrase \enquote{plain bijective functions} highlight that the functions may not be group homomorphisms.
+\end{comments}
+\begin{proof}
+  Follows directly from \fullref{thm:monoid_is_action} and \fullref{thm:group_operation_induces_bijections}.
+\end{proof}
+
+\begin{theorem}[Cayley's theorem]\label{thm:cayleys_theorem}
+  Every \hyperref[def:group]{group} \( G \) \hyperref[rem:embeds_isomorphically]{embeds isomorphically} into the corresponding \hyperref[def:symmetric_group]{symmetric group} \( S_G \).
+\end{theorem}
+\begin{comments}
+  \item Compare this to \fullref{thm:cayleys_theorem_for_monoids}.
+\end{comments}
+\begin{proof}
+  The embedding is given by the group action from \fullref{thm:group_is_action}.
+\end{proof}
+
+\begin{proposition}\label{thm:exponentiation_group_action}
+  The group of \hyperref[def:integers]{integers} \( \BbbZ \) acts on any \hyperref[def:group]{group} by \hyperref[def:monoid/exponentiation]{exponentiation} via the family of function \( g \mapsto g^n \) indexed by \( n \in \BbbZ \).
+\end{proposition}
+\begin{comments}
+  \item A weaker result holds for monoid --- see \fullref{thm:exponentiation_monoid_action}.
+\end{comments}
+\begin{proof}
+  Follows from \fullref{thm:exponentiation_monoid_action}.
+\end{proof}
+
+\begin{proposition}\label{thm:group_conjugation_action}\mcite[165]{Knapp2016BasicAlgebra}
+  Left (resp. right) \hyperref[def:group_conjugation]{conjugation} by group elements is a left (resp. right) \hyperref[def:group_action]{group action} of the group on itself.
+\end{proposition}
+\begin{proof}
+  We will first consider left actions. Let
+  \begin{equation*}
+    \Phi_g(x) \coloneqq g \cdot x \cdot g^{-1}.
+  \end{equation*}
+
+  We must only verify \eqref{eq:def:group_action/family/compatibility}, which follows directly from \fullref{thm:def:group/inverse_composition}:
+  \begin{equation*}
+    \Phi_{gh}(x)
+    =
+    g \cdot h \cdot x \cdot h^{-1} \cdot g^{-1}
+    =
+    \Phi_g(\Phi_h(x)).
+  \end{equation*}
+
+  For right conjugation, we instead have
+  \begin{equation*}
+    \Phi_{gh}(x)
+    =
+    h^{-1} \cdot g^{-1} \cdot x \cdot g \cdot h
+    =
+    \Phi_h(\Phi_g(x)).
+  \end{equation*}
+\end{proof}
+
+\begin{definition}\label{def:group_action_orbit}\mcite[163]{Knapp2016BasicAlgebra}
+  The \term[ru=орбита (\cite[60]{Арнольд2012})]{orbit} of \( x \) under the \hyperref[def:group_action]{group action} \( \Phi: G \times X \to X \) is the set of all members of \( X \) \enquote{reachable} from \( x \):
+  \begin{equation*}
+    \set{ \Phi_g(x) \given g \in G }.
+  \end{equation*}
+\end{definition}
+
+\begin{proposition}\label{thm:orbit_induces_partition}
+  The set of all \hyperref[def:group_action_orbit]{orbits} of a group action \( \Phi: G \times X \to X \) is a \hyperref[def:set_partition]{partition} of \( X \).
+\end{proposition}
+\begin{proof}
+  It will be simpler for us to show that \( {\sim} \) is an equivalence relation, where we define \( {\sim} \) to hold for \( x \) and \( x' \) if they belong to the same orbit.
+
+  \SubProofOf[def:binary_relation/reflexive]{reflexivity} \Fullref{thm:group_action_of_neutral_element} implies that, for any \( x \in X \), we have \( \Phi_e(x) = x \) and hence \( x \sim x \).
+
+  \SubProofOf[def:binary_relation/symmetric]{symmetry} If \( x \sim x' \), then there exists a group element \( g \) such that \( x' = \Phi_g(x) \). Then \( x = \Phi_{g^{-1}}(x') \).
+
+  \SubProofOf[def:binary_relation/transitive]{transitivity} Follows directly from \eqref{eq:def:group_action/family/compatibility}.
+\end{proof}
+
+\begin{example}\label{ex:def:group_action_orbit}
+  We give examples of \hyperref[def:group_action_orbit]{orbits} of group actions:
+  \begin{thmenum}
+    \thmitem{ex:def:group_action_orbit/rotation} The \hyperref[def:circle_group]{circle group} represents \hyperref[def:rigid_motion/rotation]{rotation} in the \hyperref[def:euclidean_plane]{Euclidean plane} under composition and \hyperref[def:group_action_orbit]{orbits} of this action are \hyperref[def:circle]{circles}.
+
+    \begin{figure}
+      \centering
+      \includegraphics{output/ex__def__group_action_orbit__rotation}
+      \caption{The rotation action from \fullref{ex:def:group_action_orbit/rotation}}
+      \label{fig:ex:def:group_action_orbit/rotation}
+    \end{figure}
+
+    Indeed, the orbit of the point \( (x, y) \) is the set of all rotations of \( (x, y) \). \Fullref{thm:isometry_iff_affine_orthogonal_operator} implies that rotations are isometries, hence the point \( (x, y) \) uniquely determines the norm of each point in its orbit. Therefore, this orbit is precisely the \hyperref[def:circle]{circle} centered at \( \vec 0 \) with radius \( \sqrt{x^2 + y^2} \).
+  \end{thmenum}
+\end{example}
+
+\paragraph{Symmetric groups and permutations}
+
+\begin{definition}\label{def:symmetric_group}\mcite[def. II.2.1]{Aluffi2009}
+  We call the \hyperref[def:automorphism_group]{automorphism group} of a set \( A \) the \term[ru=симметрическая группа (\cite[sec. 4.2]{Тыртышников2007})]{symmetric group}\footnote{The term is closely related to symmetric functions defined in \fullref{def:symmetric_function}} on \( A \) and denote it by \( S(A) \). The group \( S(A) \) consists of bijective functions, which we call \term[ru=перестановка (\cite[sec. 4.2]{Тыртышников2007})]{permutations}.
+
+  Rather than considering arbitrary sets, we often restrict \( A \) to be the set of the first \( n \) positive integers:
   \begin{equation*}
     S_n \coloneqq S(\set{ 1, 2, \ldots, n }).
   \end{equation*}
 
-  It is conventional to call \( S_n \) the \enquote{symmetric group on \( n \) letters}.
-
-  \begin{thmenum}
-    \thmitem{def:symmetric_group/permutation} It is common to write a permutation \( \sigma \) in \( S_n \) as
-    \begin{equation*}
-      \begin{pmatrix}
-        1         & \cdots & n \\
-        \sigma(1) & \cdots & \sigma(n)
-      \end{pmatrix}
-    \end{equation*}
-
-    \thmitem{def:symmetric_group/cycle} If there exists a finite sequence \( k_1, \ldots, k_m \) of distinct numbers such that \( \sigma(k_m) = k_1 \) and \( \sigma(k_{i+1}) = k_i \) for each \( i < m \), we say that the permutation is \term{cyclic} or a \term{cycle} of \term{length} \( m \). For brevity, we denote this cycle by \( \cycle{k_1, \cdots, k_m} \).
-
-    We call cycles of length \( 1 \) \term{trivial cycles} or \term{loops} and cycles of length \( 2 \) --- \term{transpositions}. Every \hyperref[def:symmetric_group/cycle]{transposition} is an \hyperref[def:involution]{involution}, and thus a transposition is equal to its inverse permutation.
-
-    \thmitem{def:symmetric_group/disjoint_cycle} If \( \cycle{k_1, \cdots, k_m} \) and \( \cycle{s_1, \cdots, s_l} \) are two cycles and if the sets \( \set{ k_1, \ldots, k_m } \) and \( \set{ s_1, \ldots, s_l } \) are disjoint, we say that the cycles themselves are \term{disjoint}.
-
-    Two disjoint cycles commute. That is,
-    \begin{equation*}
-      \cycle{k_1, \cdots, k_m} \bincirc \cycle{s_1, \cdots, s_l} = \cycle{s_1, \cdots, s_l} \bincirc \cycle{k_1, \cdots, k_m}.
-    \end{equation*}
-  \end{thmenum}
-\end{definition}
-
-\begin{proposition}\label{thm:cycle_transposition_decomposition}
-  Every nontrivial cycle \( \cycle{ k_1, \cdots, k_m } \) can be decomposed into the product of transpositions
+  We can denote the permutation \( \sigma \) in \( S_n \) as
   \begin{equation*}
-    \cycle{ k_1, \cdots, k_m } = \cycle{ k_1, k_m } \bincirc \cycle{ k_1, k_{m-1} } \bincirc \cdots \bincirc \cycle{ k_1, k_2 }.
+    \sigma
+    =
+    \begin{pmatrix}
+      1         & \cdots & n \\
+      \sigma(1) & \cdots & \sigma(n)
+    \end{pmatrix}.
+  \end{equation*}
+\end{definition}
+\begin{comments}
+  \item Some authors, for example Saunders Mac Lane in \cite[253]{MacLane1998} and Anthony Knapp in \cite[121]{Knapp2016BasicAlgebra}, call \( S_n \) the \enquote{symmetric group on \( n \) letters}.
+  \item Our first complete example of a symmetric group will be given for \( S_3 \) in \fullref{ex:s3}, since we need additional machinery in order to properly study it.
+\end{comments}
+
+\begin{example}\label{ex:def:symmetric_group}
+  We list examples of \hyperref[def:symmetric_group]{symmetric groups and permutations}
+  \begin{thmenum}
+    \thmitem{ex:def:symmetric_group/automorphism} Every \hyperref[def:morphism_invertibility/automorphism]{automorphism} is a permutation, but not vice versa.
+
+    For example, the additive group of integers \( \BbbZ \) has an automorphism given by \( x \mapsto -x \), and this is a permutation since the only requirement for being a permutation is being a bijective function.
+
+    But an arbitrary permutation like \( x \mapsto x + 1 \) is not an automorphism since \( 0 \mapsto 1 \).
+
+    \thmitem{ex:def:symmetric_group/diamond} The permutation
+    \begin{equation}\label{eq:ex:def:symmetric_group/diamond}
+      \begin{pmatrix}
+        1 & 2 & 3 & 4 & 5 & 6 \\
+        3 & 4 & 5 & 6 & 1 & 2
+      \end{pmatrix}
+    \end{equation}
+    is displayed graphically in \ref{fig:ex:def:symmetric_group/diamond}.
+
+    The permutation sends even numbers to even numbers and odd numbers to odd numbers. In fact, we can represent it as the composition
+    \begin{equation*}
+      \underbrace
+        {
+          \begin{pmatrix}
+            \mathbf{1} & 2 & \mathbf{3} & 4 & \mathbf{5} & 6 \\
+            \mathbf{3} & 2 & \mathbf{5} & 4 & \mathbf{1} & 6
+          \end{pmatrix}
+        }
+        _
+        {
+          \cycle{ 1, 3, 5 }
+        }
+      \bincirc
+      \underbrace
+        {
+          \begin{pmatrix}
+            1 & \mathbf{2} & 3 & \mathbf{4} & 5 & \mathbf{6} \\
+            1 & \mathbf{4} & 3 & \mathbf{6} & 5 & \mathbf{2}
+          \end{pmatrix}.
+        }
+        _
+        {
+          \cycle{ 2, 4, 6 }
+        }
+    \end{equation*}
+
+    The shortened notation in the underbraces is introduced in \fullref{rem:cycle_notation} and, for these concrete permutations, discussed in \fullref{ex:def:cyclic_permutation/diamond}.
+
+    \begin{figure}
+      \centering
+      \includegraphics{output/ex__def__symmetric_group}
+      \caption{A visualization of the permutation from \fullref{ex:def:symmetric_group/diamond}}
+      \label{fig:ex:def:symmetric_group/diamond}
+    \end{figure}
+  \end{thmenum}
+\end{example}
+
+\begin{lemma}\label{thm:sum_of_powers_in_composition}
+  For any endomorphism \( f: A \to A \) in any \hyperref[def:category]{category}, for any integers \( n \) and \( m \) we have
+  \begin{equation*}
+    f^{n + m} = f^n \bincirc f^m.
+  \end{equation*}
+\end{lemma}
+\begin{proof}
+  Follows via simple induction on \( m \).
+\end{proof}
+
+\begin{proposition}\label{thm:symmetric_group_action}
+  Given any \hyperref[def:symmetric_group]{permutation} \( \sigma \) from \( S_A \), the additive group of integers \( \BbbZ \) \hyperref[def:group_action]{acts} on \( A \) via
+  \begin{equation*}
+    \Phi_e(a) \coloneqq \sigma^e(a).
   \end{equation*}
 \end{proposition}
 \begin{proof}
-  We will use induction by \( m \). The proposition is trivial for transpositions (\( m = 2 \)), hence suppose that it holds for \( m - 1 \) and consider the transposition \( \cycle{ k_1, \cdots, k_m } \).
+  \Fullref{thm:sum_of_powers_in_composition} implies that the condition \eqref{eq:def:group_action/family/compatibility} holds.
+\end{proof}
+
+\begin{remark}\label{rem:symmetric_group_actions}
+  Every symmetric group \( S_A \) acts on \( A \) via
+  \begin{equation*}
+    \Phi_\sigma(a) \coloneqq \sigma(a).
+  \end{equation*}
+
+  This should not be confused with the action \fullref{thm:symmetric_group_action}, with respect to which we consider orbits in \fullref{def:cyclic_permutation}.
+\end{remark}
+
+\paragraph{Cyclic permutations}
+
+\begin{definition}\label{def:cyclic_permutation}\mcite[def. II.4.1]{Aluffi2009}
+  We say that the \hyperref[def:symmetric_group]{permutation} \( \sigma \) in \( S_n \) is \term{cyclic} or a \term[ru=цикл (\cite[sec. 4.3]{Тыртышников2007})]{cycle} if the action \( \Phi_e \) from \fullref{thm:symmetric_group_action} has exactly one \hyperref[def:group_action_orbit]{orbit} that is nontrivial, that is, it has more than one element. We call the cardinality of this orbit the \term{length} of the cycle.
+\end{definition}
+\begin{comments}
+  \item Cyclic permutations are defined only for the finite symmetric groups \( S_n \).
+  \item We elaborate on the definition in \fullref{thm:cyclic_permutation_characterization} and introduce a special cycle notation in \fullref{rem:cycle_notation}.
+\end{comments}
+
+\begin{proposition}\label{thm:cyclic_permutation_characterization}
+  \hyperref[def:cyclic_permutation]{Cyclic permutations} in \( S_n \) can be characterized as follows:
+  \begin{thmenum}
+    \thmitem{thm:cyclic_permutation_characterization/cycle} Pick one element from the nontrivial orbit and denote it by \( s_1 \). Recursively define
+    \begin{equation*}
+      s_{k+1} \coloneqq \sigma(s_k).
+    \end{equation*}
+    for all \( k < m \). Then
+    \begin{equation}\label{eq:thm:def:cyclic_permutation/cycle}
+      \sigma(q) = \begin{cases}
+        s_1,       &q = s_m, \\
+        s_{i + 1}, &q = s_i \T{for} i < m, \\
+        q,         &\T{otherwise}
+      \end{cases}
+    \end{equation}
+
+    \begin{figure}
+      \centering
+      \includegraphics{output/thm__cyclic_permutation_characterization}
+      \caption{Visualization of a cycle with five elements}
+      \label{fig:thm:cyclic_permutation_characterization}
+    \end{figure}
+
+    \thmitem{thm:cyclic_permutation_characterization/generating} If \( s_1, \ldots, s_m \) are distinct numbers between \( 1 \) and \( n \) and if \( m > 1 \), then \fullref{eq:thm:def:cyclic_permutation/cycle} defines a cycle of length \( m \).
+  \end{thmenum}
+\end{proposition}
+\begin{comments}
+  \item Some authors like Anthony Knapp in \cite[15]{Knapp2016BasicAlgebra} and Evgeny Tyrtyshnikov in \cite[sec. 4.3]{Тыртышников2007} define cycles as permutations satisfying \cref{eq:thm:def:cyclic_permutation/cycle}.
+\end{comments}
+\begin{proof}
+  \SubProofOf{thm:cyclic_permutation_characterization/cycle} We will prove the individual cases in \eqref{eq:thm:def:cyclic_permutation/cycle}:
+  \begin{itemize}
+    \item \Fullref{def:pigeonhole_principle} implies that the value \( \sigma(s_m) \) must be among \( s_1, \ldots, s_m \).
+
+    If \( \sigma(s_m) = s_i \) for \( i > 1 \), then \( \sigma(s_m) = s_i = \sigma(s_{i-1}) \), contradicting the injectivity of \( \sigma \).
+
+    Hence, it follows that \( \sigma(s_m) = s_1 \).
+
+    \item For any \( i < m \), by definition \( \sigma(s_i) = s_{i + 1} \).
+
+    \item If \( q \) is not in the nontrivial orbit of \( \sigma \), it is the only element of its own orbit, and hence \( \sigma(q) = q \).
+  \end{itemize}
+
+  \SubProofOf{thm:cyclic_permutation_characterization/generating} Trivial.
+\end{proof}
+
+\begin{remark}\label{rem:cycle_notation}
+  Having \fullref{thm:cyclic_permutation_characterization} in mind, we can introduce a simplified notation for \hyperref[def:cyclic_permutation]{cyclic permutations}.
+
+  Rather than the elaborate definition \eqref{eq:thm:def:cyclic_permutation/cycle}, we can write the corresponding cycle as
+  \begin{equation*}
+    \sigma = \cycle{ s_1, \ldots, s_m }.
+  \end{equation*}
+\end{remark}
+
+\begin{example}\label{ex:def:cyclic_permutation}
+  We list examples of \hyperref[def:cyclic_permutation]{cyclic permutations}:
+  \begin{thmenum}
+    \thmitem{ex:def:cyclic_permutation/id} The identity does not satisfy our definition of permutation because every orbit is trivial.
+
+    \thmitem{ex:def:cyclic_permutation/123} Consider the permutation \( \cycle{ 1, 2, 3 } \) from \( S_3 \). Writing it via the permutation notation from \fullref{def:symmetric_group}, we obtain
+    \begin{equation*}
+      \begin{pmatrix}
+        1 & 2 & 3 \\
+        2 & 3 & 1
+      \end{pmatrix}.
+    \end{equation*}
+
+    Furthermore,
+    \begin{equation*}
+      \cycle{ 1, 2, 3 } = \cycle{ 1, 3 } \bincirc \cycle{ 1, 2 },
+    \end{equation*}
+    which generalizes to \fullref{thm:cycle_transposition_decomposition}.
+
+    We will discuss this group in detail in \fullref{ex:s3}.
+
+    \thmitem{ex:def:cyclic_permutation/diamond} Consider the permutation \eqref{eq:ex:def:symmetric_group/diamond} from \fullref{ex:def:symmetric_group/diamond}. It has two orbits --- \( \set{ 1, 3, 5 } \) and \( \set{ 2, 4, 6 } \). The two orbits correspond to the cycles \( \cycle{ 1, 3, 5 } \) and \( \cycle{ 2, 4, 6 } \). Composing these cycles in any order gives \eqref{eq:ex:def:symmetric_group/diamond}.
+
+    This is generalized in \fullref{thm:permutation_decomposition_into_disjoint_cycles}.
+
+    Furthermore, from \cref{fig:ex:def:symmetric_group/diamond} it becomes clear that
+    \begin{equation*}
+      \cycle{ 1, 3, 5 } = \cycle{ 3, 5, 1 } = \cycle{ 5, 1, 3 }.
+    \end{equation*}
+
+    This is generalized in \fullref{thm:cyclic_permutation_cyclic_shift}.
+  \end{thmenum}
+\end{example}
+
+\begin{definition}\label{def:cyclic_shift}\mimprovised
+  The \term{cyclic shift} of a finite sequence
+  \begin{equation*}
+    a_1, a_2, \ldots, a_n
+  \end{equation*}
+  by an integer \( c \) is the sequence
+  \begin{equation*}
+    a_{k_1}, \ldots, a_{k_n},
+  \end{equation*}
+  where \( k_i \coloneqq \rem(i + c, m) \) for \( i = 1, \ldots, n \).
+\end{definition}
+
+\begin{proposition}\label{thm:cyclic_permutation_cyclic_shift}
+  \hyperref[def:cyclic_permutation]{Cyclic permutations} are invariant under \hyperref[def:cyclic_shift]{cyclic shifts} of the elements in their representations.
+
+  More concretely, consider a cycle \( \cycle{ s_1, \cdots, s_m } \) from \( S_n \) and let \( k_1, \ldots, k_m \) be the coefficients of some cyclic shift of \( s_1, \ldots, s_n \). Then
+  \begin{equation*}
+    \cycle{ s_1, \cdots, s_m } = \cycle{ s_{k_1}, \cdots, s_{k_m} }.
+  \end{equation*}
+\end{proposition}
+\begin{comments}
+  \item If we visualize the cycle as in \cref{fig:thm:cyclic_permutation_characterization}, cyclic shifting corresponds to \hyperref[def:rigid_motion/rotation]{plane rotation}.
+\end{comments}
+\begin{proof}
+  Obvious from the definition of cycle.
+\end{proof}
+
+\begin{definition}\label{def:disjoint_cycle}\mcite[214]{Aluffi2009}
+  We say that two \hyperref[def:cyclic_permutation]{cycles} on \( S_n \) are \term[ru=независимые (\cite[sec. 4.3]{Тыртышников2007})]{disjoint} if their nontrivial \hyperref[def:group_action_orbit]{orbits} are disjoint.
+\end{definition}
+\begin{comments}
+  \item More simply, the cycles \( \cycle{ s_1, \ldots, s_m } \) and \( \cycle{ r_1, \ldots, r_l } \) are disjoint if the sets \( \set{ s_1, \ldots, s_m } \) and \( \set{ r_1, \ldots, r_l } \) are disjoint.
+\end{comments}
+
+\begin{proposition}\label{thm:disjoint_cycles_commute}
+  \hyperref[def:disjoint_cycle]{Disjoint cycles} commute under composition.
+\end{proposition}
+\begin{proof}
+  Trivial.
+\end{proof}
+
+\begin{proposition}\label{thm:permutation_decomposition_into_disjoint_cycles}
+  Let \( \sigma \) be an arbitrary permutation in \( S_n \) and let \( O_1, \ldots, O_p \) be the nontrivial orbits of \( \sigma \).
+
+  To each nontrivial orbit \( O_i \) there corresponds some cycle \( \cycle{ s_{i,1}, \ldots, s_{i,m_i} } \). Then
+  \begin{equation*}
+    \sigma = \cycle{ s_{1,1}, \ldots, s_{1,m_1} } \bincirc \cdots \bincirc \cycle{ s_{p,1}, \ldots, s_{p,m_p} }.
+  \end{equation*}
+
+  Furthermore, the cycles are pairwise \hyperref[def:disjoint_cycle]{disjoint}, and \fullref{thm:disjoint_cycles_commute} implies that we can rearrange them.
+\end{proposition}
+\begin{proof}
+  Trivial.
+\end{proof}
+
+\paragraph{Alternating groups}
+
+\begin{definition}\label{def:transposition}\mcite[219]{Aluffi2009}
+  A \term{transposition} is a \hyperref[def:cyclic_permutation]{cyclic permutation} of length \( 2 \).
+\end{definition}
+
+\begin{proposition}\label{thm:transpositions_are_involutions}
+  Every \hyperref[def:transposition]{transposition} is an \hyperref[def:involution]{involution}.
+\end{proposition}
+\begin{proof}
+  Trivial.
+\end{proof}
+
+\begin{proposition}\label{thm:cycle_transposition_decomposition}
+  Every nontrivial cycle \( \cycle{ s_1, \cdots, s_m } \) can be decomposed into the product of \hyperref[def:transposition]{transpositions}
+  \begin{equation*}
+    \cycle{ s_1, \cdots, s_m } = \cycle{ s_1, s_m } \bincirc \cycle{ s_1, s_{m-1} } \bincirc \cdots \bincirc \cycle{ s_1, s_2 }.
+  \end{equation*}
+\end{proposition}
+\begin{proof}
+  We will use induction by \( m \). The proposition is trivial for transpositions (\( m = 2 \)), hence suppose that it holds for \( m - 1 \) and consider the transposition \( \cycle{ s_1, \cdots, s_m } \).
 
   We have, by the inductive hypothesis,
   \begin{equation*}
-    \cycle{ k_1, \cdots, k_{m - 1} }
+    \cycle{ s_1, \cdots, s_{m - 1} }
     =
-    \cycle{ k_1, k_{m - 1} } \bincirc \cycle{ k_1, k_{m-1} } \bincirc \cdots \bincirc \cycle{ k_1, k_2 }.
+    \cycle{ s_1, s_{m - 1} } \bincirc \cycle{ s_1, s_{m-1} } \bincirc \cdots \bincirc \cycle{ s_1, s_2 }.
   \end{equation*}
 
-  By definition of cycle, \( k_{m-1} \) and \( k_1 \) get swapped, therefore
+  By definition of cycle, \( s_{m-1} \) and \( s_1 \) get swapped, therefore
   \begin{equation*}
-    \cycle{ k_1, \cdots, k_m } = \cycle{ k_1, k_m } \bincirc \cycle{ k_1, \cdots, k_{m - 1} }.
+    \cycle{ s_1, \cdots, s_m } = \cycle{ s_1, s_m } \bincirc \cycle{ s_1, \cdots, s_{m - 1} }.
   \end{equation*}
 
   This completes the induction.
 \end{proof}
 
-\begin{proposition}\label{thm:cycle_cyclic_shift}
-  The cycles \( \cycle{ k_1, \cdots, k_m } \) and \( \cycle{ k_{\rem(1 + i, m)}, \cdots, k_{\rem(m + i, m)} } \) are equivalent as permutation functions for any positive integer \( i \).
-
-  We call this \term{cyclic shift} by \( i \).
-\end{proposition}
+\begin{lemma}\label{thm:permutation_parity_correctness}
+  If a \hyperref[def:symmetric_group]{permutation} \( \sigma \in S_n \) can be decomposed into \hyperref[def:transposition]{transpositions} as both
+  \begin{equation}\label{eq:thm:permutation_parity_correctness/s}
+    \sigma = \underbrace{\cycle{ s_1, s_2 } \bincirc \cycle{ s_3, s_4 } \bincirc \cdots \bincirc \cycle{ s_{2m-1}, s_{2m} }}_{m \T*{transpositions}}
+  \end{equation}
+  and
+  \begin{equation}\label{eq:thm:permutation_parity_correctness/r}
+    \sigma = \underbrace{\cycle{ r_1, r_2 } \bincirc \cycle{ r_3, r_4 } \bincirc \cdots \bincirc \cycle{ r_{2l-1}, r_{2l} }}_{l \T*{transpositions}},
+  \end{equation}
+  then \( m - l \) is an even number.
+\end{lemma}
+\begin{comments}
+  \item The gist of the proposition is discussed in \fullref{ex:thm:permutation_parity_correctness}.
+\end{comments}
 \begin{proof}
-  Obvious from the definition of cycle.
+  We will use induction on \( m \). First consider the base case \( m = 0 \). Then \( \sigma \) is the identity. Hence, every transposition in \eqref{eq:thm:permutation_parity_correctness/r} should be present twice so that its action cancels out. Therefore, \( l \) is an even number.
+
+  Now suppose that the statement holds for \( m - 1 \). Add (compose on the right) the last transposition \( \cycle{ s_{2m-1}, s_{2m} } \) of \eqref{eq:thm:permutation_parity_correctness/s} to both \eqref{eq:thm:permutation_parity_correctness/s} and \eqref{eq:thm:permutation_parity_correctness/r}. The obtained permutations are obviously equal. Furthermore, since \( \cycle{ s_{2m-1}, s_{2m} } \) is its own inverse, we can just as well remove \( \cycle{ s_{2m-1}, s_{2m} } \) from \eqref{eq:thm:permutation_parity_correctness/s} to obtain a decomposition of \( \sigma \bincirc \cycle{ s_{2m-1}, s_{2m} } \) into \( m - 1 \) (rather than \( m + 1 \)) transpositions.
+
+  By the inductive hypothesis, \( (m - 1) - (l + 1) = m - l - 2 \) is an even number. Therefore, \( m - l \) is also an even number.
 \end{proof}
 
+\begin{example}\label{ex:thm:permutation_parity_correctness}
+  We will demonstrate \fullref{thm:permutation_parity_correctness}. Consider the permutation \( \sigma \) from \fullref{ex:def:symmetric_group/diamond}. We have shown in \fullref{ex:def:cyclic_permutation/diamond} that
+  \begin{equation*}
+    \sigma = \cycle{ 1, 3, 5 } \bincirc \cycle{ 2, 4, 6 }.
+  \end{equation*}
+
+  \Fullref{thm:cycle_transposition_decomposition} implies that
+  \begin{equation*}
+    \sigma = \cycle{ 1, 5 } \bincirc \cycle{ 1, 3 } \bincirc \cycle{ 2, 4 } \bincirc \cycle{ 2, 6 }.
+  \end{equation*}
+
+  We can add any transposition to this decomposition, but we must also reverse its action to obtain \( \eqref{eq:ex:def:symmetric_group/diamond} \) again. For example, \( \sigma \bincirc \cycle{ 1, 2 } \) is not equal to \( \sigma \), but
+  \begin{equation*}
+    \sigma \bincirc \cycle{ 1, 2 } \bincirc \cycle{ 1, 2 } = \sigma.
+  \end{equation*}
+
+  Let us try to find another decomposition of \( \sigma \). First note that
+  \begin{equation*}
+    \sigma \bincirc \cycle{ 1, 2 }
+    =
+    \begin{pmatrix}
+      1 & 2 & 3 & 4 & 5 & 6 \\
+      3 & 4 & 5 & 6 & 2 & 1
+    \end{pmatrix}
+    =
+    \cycle{ 1, 3, 5, 2, 4, 6 }
+    \reloset {\ref{thm:cyclic_permutation_cyclic_shift}} =
+    \cycle{ 3, 5, 2, 4, 6, 1 }.
+  \end{equation*}
+
+  We choose to start with \( 3 \) so that no two transpositions in our final representation are equal. \Fullref{thm:cycle_transposition_decomposition} implies that
+  \begin{equation*}
+    \sigma \bincirc \cycle{ 1, 2 }
+    =
+    \underbrace{\cycle{ 3, 1 }}_{\cycle{ 1, 3 }} \bincirc \cycle{ 3, 6 } \bincirc \cycle{ 3, 4 } \bincirc \underbrace{\cycle{ 3, 2 }}_{\cycle{ 2, 3 }} \bincirc \cycle{ 3, 5 }.
+  \end{equation*}
+
+  Then
+  \begin{equation*}
+    \sigma
+    \reloset {\ref{thm:transpositions_are_involutions}} =
+    \sigma \bincirc \cycle{ 1, 2 } \bincirc \cycle{ 1, 2 }
+    =
+    \cycle{ 1, 3 } \bincirc \cycle{ 3, 6 } \bincirc \cycle{ 3, 4 } \bincirc \cycle{ 2, 3 } \bincirc \cycle{ 3, 5 } \bincirc \cycle{ 1, 2 }.
+  \end{equation*}
+
+  These transpositions are not disjoint, unlike those from our initial decomposition.
+\end{example}
+
+\begin{proposition}\label{thm:permutation_decomposition_existence}
+  Every \hyperref[def:symmetric_group]{permutation} from \( S_n \) can be decomposed into a product of \hyperref[def:cyclic_permutation]{transpositions}.
+\end{proposition}
+\begin{comments}
+  \item It follows from the discussion in \fullref{ex:thm:permutation_parity_correctness} that this decomposition is not unique.
+\end{comments}
+\begin{proof}
+  By \fullref{thm:permutation_decomposition_into_disjoint_cycles}, the permutation can be decomposed into a (perhaps nullary) product of cycles. By \fullref{thm:permutation_parity_correctness}, each of those cycles can be decomposed into a product of transpositions. Hence, at least one decomposition into transpositions exists for every permutation.
+\end{proof}
+
+\begin{definition}\label{def:permutation_parity}\mimprovised
+  We say that a \hyperref[def:symmetric_group]{permutation} from \( S_n \) is \term{even} if it can be decomposed into an even number of \hyperref[def:cyclic_permutation]{transpositions}. Otherwise, we call the permutation \term{odd}.
+
+  We correspondingly define the \term{sign} of a permutation as \( 1 \) for even permutations and as \( -1 \) for odd permutation.
+\end{definition}
+\begin{defproof}
+  \Fullref{thm:permutation_decomposition_existence} implies that at least one such decomposition exists.
+
+  \Fullref{thm:permutation_parity_correctness} implies that if one such decomposition has an even (resp. odd) number of transpositions, every other decomposition also has an even (resp. odd) number of transpositions.
+\end{defproof}
 \begin{proposition}\label{thm:symmetric_group_cardinality}
   The \hyperref[def:symmetric_group]{symmetric group} \( S_n \) has \( n! \) elements.
 \end{proposition}
@@ -200,7 +699,7 @@
 \end{proof}
 
 \begin{example}\label{ex:s3}
-  The \hyperref[def:symmetric_group]{symmetric group} \( S_3 \) contains the following \hyperref[def:symmetric_group/permutation]{permutations}:
+  The \hyperref[def:symmetric_group]{symmetric group} \( S_3 \) contains the following \hyperref[def:symmetric_group]{permutations}:
   \begin{equation*}
     S_3
     \coloneqq
@@ -263,12 +762,12 @@
     }
   \end{equation*}
 
-  We will now construct a multiplication table to show that \( S_3 \) is not commutative. This will help us build examples based on \( S_3 \) later on.
+  We will now construct a multiplication table to show that \( S_3 \) is not commutative. This will also help us build examples based on \( S_3 \) later on.
 
   The entire table can be filled using the following techniques:
   \begin{itemize}
     \item The identity permutation \( \id \) leaves the other multiplicand unchanged.
-    \item The cycles \( \cycle{ 1, 2, 3 } \) and \( \cycle{ 1, 3, 2 } \) are inverses of each other, and all others are \hyperref[def:involution]{involutions}.
+    \item The cycles \( \cycle{ 1, 2, 3 } \) and \( \cycle{ 1, 3, 2 } \) are inverses of each other, and \fullref{thm:transpositions_are_involutions} implies that all others are \hyperref[def:involution]{involutions}.
     \item \Fullref{thm:cycle_transposition_decomposition} implies that \( \cycle{ 1, 2, 3 } = \cycle{ 1, 3 } \bincirc \cycle{ 1, 2 } \) and \( \cycle{ 1, 3, 2 } = \cycle{ 1, 2 } \bincirc \cycle{ 1, 3 } \).
     \item The last two points together imply
     \begin{equation*}
@@ -279,7 +778,7 @@
       \cycle{ 1, 3 }.
     \end{equation*}
 
-    \item We can also utilize cyclic shifts as justified by \fullref{thm:cycle_cyclic_shift}:
+    \item We can also utilize cyclic shifts as justified by \fullref{thm:cyclic_permutation_cyclic_shift}:
     \begin{equation*}
       \cycle{ 1, 2 } \bincirc \cycle{ 2, 3 }
       =
@@ -308,203 +807,6 @@
   \end{center}
 \end{example}
 
-\paragraph{Group actions}
-
-\begin{definition}\label{def:group_action}
-  Let \( G \) be a \hyperref[def:group]{group} and let \( X \) be an object in some \hyperref[def:concrete_category]{concrete category} \( \cat{C} \).
-
-  We will define group actions as a special case of \hyperref[def:monoid_action]{monoid actions}, with the same remarks regarding left and right group actions.
-
-  A \term{group action} can be defined equivalently as:
-  \begin{thmenum}
-    \thmitem{def:group_action/homomorphism} A \hyperref[def:group/homomorphism]{homomorphism} from \( G \) to the \hyperref[def:automorphism_group]{automorphism group} \( \aut(X) \).
-
-    Right actions are homomorphisms from the \hyperref[def:monoid/opposite]{opposite} group \( G^{\opcat} \) to \( \aut(X) \).
-
-    \thmitem{def:group_action/functor} A \hyperref[def:functor]{functor} from the \hyperref[def:monoid_delooping]{delooping} \( \cat{B}_G \) to \( \cat{C} \).
-
-    Right actions are \hyperref[rem:contravariant_functor]{contravariant functors}.
-
-    \thmitem{def:group_action/family} An \hyperref[def:cartesian_product/indexed_family]{indexed family} \( \seq{ \Phi_x }_{x \in G} \) of \hyperref[def:morphism_invertibility/isomorphism]{isomorphisms} of \( X \) such that, for every pair \( g, h \in G \),
-    \begin{equation}\label{eq:def:group_action/family/compatibility}\tag{\logic{GA}}
-      \Phi_{gh} = \Phi_g \bincirc \Phi_h.
-    \end{equation}
-
-    This defines a function \( \Phi: G \times A \to A \).
-  \end{thmenum}
-\end{definition}
-\begin{proof}
-  The proof of equivalence is simple; it is similar to \fullref{def:monoid_action}.
-\end{proof}
-
-\begin{lemma}\label{thm:group_operation_induces_bijections}
-  For each element \( x \) of a group \( G \), consider the function \( \varphi_x \coloneqq x \cdot \id_G \), that is,
-  \begin{equation*}
-    \begin{aligned}
-      &\varphi_x: G \to G \\
-      &\varphi_x(y) \coloneqq x \cdot y.
-    \end{aligned}
-  \end{equation*}
-
-  This is a bijective function (but not necessarily a group isomorphism).
-\end{lemma}
-\begin{proof}
-  \SubProofOf[def:function_invertibility/injective]{injectivity} If \( y, y' \in G \) and \( \varphi_x(y) = \varphi_x(y') \), we have
-  \begin{equation*}
-    xy = \varphi_x(y) = \varphi_x(y') = xy'.
-  \end{equation*}
-
-  By \fullref{thm:def:group/cancellative}, \( y = y' \). Therefore, \( \varphi_x \) is injective.
-
-  \SubProofOf[def:function_invertibility/surjective]{surjectivity} If \( z \in G \), then \( z = x(x^{-1} z) \). Therefore, \( z = \varphi_x(x^{-1} z) \), and thus every member of \( G \) has a preimage. Thus, \( \varphi_x \) is surjective.
-\end{proof}
-
-\begin{theorem}[Cayley's theorem]\label{thm:cayleys_theorem}
-  Every \hyperref[def:group]{group} \hyperref[def:group_action]{acts} on itself via the family of functions \( y \mapsto x \cdot y \) indexed by \( x \). These functions are not group homomorphisms in general.
-
-  Compare this result to \fullref{thm:monoid_is_action}.
-\end{theorem}
-\begin{proof}
-  Follows directly from \fullref{thm:monoid_is_action} and \fullref{thm:group_operation_induces_bijections}.
-\end{proof}
-
-\begin{proposition}\label{thm:exponentiation_group_action}
-  The \hyperref[def:integers]{integers} \( \BbbZ \) act on any \hyperref[def:group]{group} by \hyperref[def:monoid/exponentiation]{exponentiation} via the family of function \( g \mapsto g^n \) indexed by \( n \in \BbbZ \).
-
-  Compare this result to \fullref{thm:exponentiation_monoid_action}.
-\end{proposition}
-\begin{proof}
-  Follows from \fullref{thm:exponentiation_monoid_action}.
-\end{proof}
-
-\begin{definition}\label{def:group_action_orbit}\mcite[163]{Knapp2016BasicAlgebra}
-  The \term{orbit} of \( x \) under the \hyperref[def:group_action]{group action} \( \Phi: G \to \End(X) \) is the set
-  \begin{equation*}
-    \set{ \Phi_g(x) \given g \in G }.
-  \end{equation*}
-
-  This is the set of all members of \( X \) \enquote{reachable} from \( x \) via the action.
-
-  The relation \( g \sim h \) on \( G \), defined to hold if \( g \) and \( h \) have the same \hyperref[def:group_action_orbit]{orbit}, is an \hyperref[def:equivalence_relation]{equivalence relation}. The quotient set \( G / {\sim} \) is a partition of \( G \) into sets called \term{orbits}.
-\end{definition}
-
-\begin{example}\label{ex:plane_rotation_action_orbits}
-  The \hyperref[def:circle_group]{circle group} represents \hyperref[def:rigid_motion/rotation]{rotation} in the \hyperref[def:euclidean_plane]{Euclidean plane} under composition. The \hyperref[def:group_action_orbit]{orbits} of this group are \hyperref[def:circle]{circles}.
-\end{example}
-
-\begin{proposition}\label{thm:group_conjugation_action}\mcite[165]{Knapp2016BasicAlgebra}
-  Every \hyperref[def:group]{group} \hyperref[def:group_action]{acts} on itself via the \term{conjugation automorphisms} defined as
-  \begin{equation*}
-    \begin{aligned}
-      &\Phi_g: G \to G, \\
-      &\Phi_g(h) \coloneqq g h g^{-1}.
-    \end{aligned}
-  \end{equation*}
-\end{proposition}
-\begin{proof}
-  Trivial.
-\end{proof}
-
-\begin{proposition}\label{thm:permutation_decomposition_existence}
-  Let \( S_n \) be a \hyperref[def:symmetric_group]{symmetric group} and let \( \sigma \) be a permutation in \( S_n \). Then there exists a finite sequence \( c_1, \ldots, c_m \) of nontrivial \hyperref[def:symmetric_group/disjoint_cycle]{disjoint cycles} such that
-  \begin{equation*}
-    \sigma = c_1 \bincirc \cdots \bincirc c_m.
-  \end{equation*}
-
-  The case where \( \sigma \) is the identity permutation corresponds to \( m = 0 \).
-
-  We call this a \term{cycle decomposition} of \( \sigma \). Via \fullref{thm:cycle_transposition_decomposition}, this permutation can further be decomposed into a composition of individual transpositions. We call the latter a \term{transposition decomposition} of \( \sigma \).
-
-  Neither decomposition is unique. Nonetheless, existence is sufficient for most practical purposes, including permutation parity defined in \fullref{def:permutation_parity}.
-\end{proposition}
-\begin{proof}
-  Suppose that \( \sigma \) is not the identity.
-
-  Consider the \hyperref[def:group_action]{group action}
-  \begin{equation*}
-    \begin{aligned}
-      &\Phi^{(\sigma)}: \braket{ \sigma } \times \set{ 1, \ldots, n } \to \set{ 1, \ldots, n } \\
-      &\Phi^{(\sigma)}_\sigma(k) \coloneqq \sigma(k)
-    \end{aligned}
-  \end{equation*}
-  of the \hyperref[def:first_order_generated_substructure]{generated subgroup} \( \braket{ \sigma } \).
-
-  The \hyperref[def:group_action_orbit]{orbit} of \( k \) under \( \Phi^{(\sigma)} \) is the set
-  \begin{equation*}
-    O_\sigma(k) \coloneqq \set{ \sigma^m(k) \given m \in \BbbZ }
-  \end{equation*}
-  of all numbers reachable from \( k \) via iterated application of \( \sigma \) or \( \sigma^{-1} \). The family
-  \begin{equation*}
-    \set{ O_\sigma(k) \given k = 1, \ldots, n }
-  \end{equation*}
-  of orbits partitions \( 1, \ldots, n \) into disjoint subsets.
-
-  Each orbit \( O \) has a smallest element \( o \); and \( O_\sigma(o) = O \). This smallest element uniquely identifies a cycle
-  \begin{equation*}
-    \cycle{o, \sigma(o), \sigma^2(o), \ldots, \sigma^{c-1}(o)},
-  \end{equation*}
-  where \( c \) is the cardinality of \( O_\sigma(o) \).
-
-  Ignoring the trivial cycles, we obtain a unique set of disjoint nontrivial cycles for every permutation \( \sigma \) in \( S_n \), which we call the \term{cycle decomposition} of \( \sigma \). Denote this set by \( C_\sigma \).
-
-  We must prove that \( C_\sigma \) is family of disjoint sets. Let \( O_\sigma(k_1) \) and \( O_\sigma(k_2) \) be two orbits.
-
-  Suppose that there exists a number \( k \in O_\sigma(k_2) \cap O_\sigma(k_1) \). Then there exist \( m_1, m_2 \leq n \) such that \( k = \sigma^{m_1}(k_1) \) and \( k = \sigma^{m_2}(k_2) \). Then
-  \begin{equation*}
-    k_1 = \sigma^{-m_1}(k) = \sigma^{-m_1}(\sigma^{m_2}(k_2)) = \sigma^{m_2 - m_1}(k_2),
-  \end{equation*}
-  and thus \( O_\sigma(k_2) \subseteq O_\sigma(k_1) \). We can analogously obtain the converse inclusion.
-
-  Therefore, if two orbits have a nonempty intersection, they are equal.
-
-  Finally, we will use induction on \( m \) to show that these cycles give us \( \sigma \). The case \( m = 0 \) is trivial. For the inductive hypothesis, note that \( c_1^{-1} \sigma \) has as cycles \( c_2, \ldots, c_m \) because all the numbers in \( c_1 \) are fixed points of \( c_1^{-1} \sigma \). Thus, the inductive hypothesis holds for \( c_1^{-1} \sigma \).
-
-  From
-  \begin{equation*}
-    c_1^{-1} \sigma = c_2 \bincirc \cdots \bincirc c_m
-  \end{equation*}
-  it follows that
-  \begin{equation*}
-    \sigma = c_1 \bincirc \cdots \bincirc c_m.
-  \end{equation*}
-\end{proof}
-
-\begin{lemma}\label{thm:permutation_parity_correctness}
-  If a \hyperref[def:symmetric_group/permutation]{permutation} \( \sigma \in S_n \) can be decomposed into \hyperref[def:symmetric_group/cycle]{transpositions} as both
-  \begin{equation}\label{eq:thm:permutation_parity_correctness/k}
-    \sigma = \underbrace{\cycle{ k_1, k_2 } \bincirc \cycle{ k_3, k_4 } \bincirc \cdots \bincirc \cycle{ k_{2n-1}, k_{2n} }}_{n \T*{transpositions}}
-  \end{equation}
-  and
-  \begin{equation}\label{eq:thm:permutation_parity_correctness/l}
-    \sigma = \underbrace{\cycle{ l_1, l_2 } \bincirc \cycle{ l_3, l_4 } \bincirc \cdots \bincirc \cycle{ l_{2m-1}, l_{2m} }}_{m \T*{transpositions}},
-  \end{equation}
-  then \( n - m \) is an even number.
-\end{lemma}
-\begin{proof}
-  We will use induction on \( n \). First consider the base case \( n = 0 \). Then \( \sigma \) is the identity. Hence, every transposition in \eqref{eq:thm:permutation_parity_correctness/l} should be present twice so that its action cancels out. Therefore, \( m \) is an even number.
-
-  Now suppose that the statement holds for \( n - 1 \). Add (compose on the right) the last transposition \( \cycle{ k_{2n-1}, k_{2n} } \) of \eqref{eq:thm:permutation_parity_correctness/k} to both \eqref{eq:thm:permutation_parity_correctness/k} and \eqref{eq:thm:permutation_parity_correctness/l}. The obtained permutations are obviously equal. Furthermore, since \( \cycle{ k_{2n-1}, k_{2n} } \) is its own inverse, we can just as well remove \( \cycle{ k_{2n-1}, k_{2n} } \) from \eqref{eq:thm:permutation_parity_correctness/k} to obtain a decomposition into \( n - 1 \) (rather than \( n + 1 \)) transpositions.
-
-  By the inductive hypothesis, \( (n - 1) - (m + 1) = n - m - 2 \) is an even number. Therefore, \( n - m \) is also an even number.
-\end{proof}
-
-\begin{definition}\label{def:permutation_parity}
-  We say that a \hyperref[def:symmetric_group/permutation]{permutation} \( \sigma \in S_n \) is \term{even} (resp. \term{odd}) if a decomposition of \( \sigma \) into \hyperref[def:symmetric_group/cycle]{transpositions} has an even (resp. odd) number of transpositions.
-
-  By \fullref{thm:permutation_decomposition_existence}, such a decomposition exists. By \fullref{thm:permutation_parity_correctness}, all such decompositions yield the same parity even if they decompose into a differing number of transpositions.
-
-  We correspondingly define the \term{sign} of a permutation as
-  \begin{equation*}
-    \begin{aligned}
-       &\sgn: S_n \to \BbbZ, \\
-       &\sgn(\sigma) \coloneqq \begin{cases}
-        1,  &\sigma \T{is even} \\
-        -1, &\sigma \T{is odd}
-      \end{cases}
-    \end{aligned}
-  \end{equation*}
-\end{definition}
-
 \begin{definition}\label{def:alternating_group}
   The \term{alternating group} \( A_n \) on \( n \) letters is the subgroup of all \hyperref[def:permutation_parity]{even permutation} in the \hyperref[def:symmetric_group]{symmetric group} \( S_n \).
 \end{definition}
@@ -513,8 +815,6 @@
   The \hyperref[def:alternating_group]{alternating group} \( A_n \) has \( \ifrac {n!} 2 \) elements.
 \end{proposition}
 \begin{proof}
-  The proof is similar to that of \fullref{thm:symmetric_group_cardinality}, but is a little different.
-
   We use induction on \( n \). The case \( n = 1 \) is trivial. Suppose that \( A_{n-1} \) has \( \ifrac {(n-1)!} 2 \) elements. Then
   \begin{equation*}
     A_n = \set{ \cycle{ k, n } \bincirc \sigma \given \sigma \in S_{n-1} \setminus A_{n-1} \T{and} 1 \leq k \leq n }.
@@ -527,7 +827,12 @@
 \end{proof}
 
 \begin{example}\label{ex:s3_and_a3}
-  In the \hyperref[def:symmetric_group]{symmetric group} \( S_3 \) discussed in \fullref{ex:s3}, the \hyperref[def:alternating_group]{alternating group} \( A_3 \) consists of the identity and the odd-length cycles \( \cycle{ 1, 2, 3 } \) and \( \cycle{ 1, 3, 2 } \).
+  In the \hyperref[def:symmetric_group]{symmetric group} \( S_3 \) discussed in \fullref{ex:s3}, the \hyperref[def:alternating_group]{alternating group} \( A_3 \) consists of:
+  \begin{itemize}
+    \item The identity, which is a product of zero transpositions.
+    \item The odd-length cycle \( \cycle{ 1, 2, 3 } = \cycle{ 1, 3 } \bincirc \cycle{ 1, 2 } \).
+    \item The odd-length cycle \( \cycle{ 1, 3, 2 } = \cycle{ 1, 2 } \bincirc \cycle{ 1, 3 } \).
+  \end{itemize}
 \end{example}
 
 \begin{proposition}\label{thm:group_epimorphisms_are_surjective}\mcite[exer. I.5.5]{MacLane1998}
@@ -536,29 +841,29 @@
 \begin{proof}
   Let \( \varphi: G \to H \) be an epimorphism and suppose that it is not surjective. Let \( M \) be the smallest normal subgroup of \( H \) containing \( \img \varphi \).
 
-  If \( M \) has index \( 2 \) in \( H \), consider the quotient map \( \pi: H \to H / M \) and the constant map \( c(h) \coloneqq M \). Then
+  Aiming at a contradiction, suppose that \( M \) has \hyperref[def:subgroup_index]{index} \( 2 \) in \( H \), consider the quotient map \( \pi: H \to H / M \) and the constant map \( c(h) \coloneqq M \). Then
   \begin{equation*}
     \pi \bincirc \varphi = c \bincirc \varphi.
   \end{equation*}
 
   Since \( \varphi \) is an epimorphism, we have \( \pi = c \). But we have deliberately taken \( \pi \) and \( c \) so that \( \pi \neq c \). The obtained contradiction shows that \( M \) must have an index greater than \( 2 \).
 
-  Let \( M \), \( uM \) and \( vM \) be different cosets. Define \( \sigma: H \to H \) as the \hyperref[def:symmetric_group/permutation]{permutation} on \( H \) that exchanges \( xu \) with \( xv \) for every \( x \in M \). Define the homomorphism
-  \begin{equation*}
-    \begin{aligned}
-      &\psi: H \to S(H) \\
-      &\psi(h) \coloneqq (x \mapsto hx),
-    \end{aligned}
-  \end{equation*}
-  where \( S(H) \) is the \hyperref[def:symmetric_group]{symmetric group}.
-
-  This is indeed a homomorphism by \fullref{thm:cayleys_theorem}. By \fullref{thm:group_conjugation_action}, another homomorphism is
+  Thus, the index of \( M \) in \( G \) is greater than \( 2 \). Let \( M \), \( uM \) and \( vM \) be different cosets. Define \( \sigma: H \to H \) as the \hyperref[def:symmetric_group]{permutation} on \( H \) that exchanges \( xu \) with \( xv \) for every \( x \in M \). \Fullref{thm:group_conjugation_action} implies that the following is a homomorphism:
   \begin{equation*}
     \begin{aligned}
       &\theta: H \to S(H) \\
       &\theta(h) \coloneqq \sigma^{-1} \bincirc \psi(h) \bincirc \sigma.
     \end{aligned}
   \end{equation*}
+
+  Consider also another homomorphism,
+  \begin{equation*}
+    \begin{aligned}
+      &\psi: H \to S(H) \\
+      &\psi(h) \coloneqq (x \mapsto hx),
+    \end{aligned}
+  \end{equation*}
+  where \( S(H) \) is the \hyperref[def:symmetric_group]{symmetric group}. This is indeed a homomorphism by \fullref{thm:cayleys_theorem}.
 
   Since \( \sigma \) fixes the members of \( M \) in-place, we have \( \theta(h)\restr_M = \psi(h)\restr_M \). Since \( M \) contains the image of \( \varphi \), this implies
   \begin{equation*}
@@ -568,44 +873,102 @@
   Since \( \varphi \) is an epimorphism, we have \( \psi = \theta \). But we have deliberately constructed \( \psi \) and \( \theta \) such that \( \psi \neq \theta \). The obtained contradiction shows that \( \img \varphi \) cannot be a strict subgroup of \( G \). Therefore, \( \varphi \) must be surjective.
 \end{proof}
 
+\paragraph{Dynamical systems}
+
 \begin{definition}\label{def:dynamical_system}\mimprovised
-  Suppose that \( \cat{C} \) is a \hyperref[def:concrete_category]{concrete category} and let \( X \) be an object of \( \cat{C} \).
+  Fix an object \( X \) in some \hyperref[def:concrete_category]{concrete category} and an \hyperref[rem:additive_semigroup]{additive} \hyperref[def:monoid]{monoid} (resp. \hyperref[def:group]{group}) \( T \).
 
-  A \term{dynamical system} is a \hyperref[def:monoid_action]{monoid action} \( \Phi: T \times X \to X \). We call \( X \) the \term{phase space} of the system. In applications, we interpret the monoid \( T \) as \term{time} and consider it to be \hyperref[rem:additive_semigroup]{additive}. We call \( \Phi \) the \term{evolution function} of the system.
-
-  \begin{thmenum}
-    \thmitem{def:dynamical_system/ifs} If \( T \) is either the additive monoid of the \hyperref[def:natural_numbers]{natural numbers} or the additive group of the \hyperref[def:integers]{integers}, we say that the dynamical system has \term{discrete time}.
-
-    Due to \eqref{eq:def:monoid_action/family/compatibility}, \( \Phi_{n+1} = \Phi_n \bincirc \Phi_1 \) for any integer \( n \). Using \hyperref[rem:induction/peano_arithmetic]{natural number induction} and \fullref{thm:def:group/negative_power}, we can show that \( \Phi_n = \Phi_1^n \) for every integer \( n \).
-
-    Therefore, the entire evolution function of a discrete-time dynamical system is determined by a single endofunction \( \varphi: X \to X \). For this reason, we also refer to discrete-time dynamical systems as \term{iterated function systems}.
-
-    \thmitem{def:dynamical_system/semiflow} If \( T \) is the additive monoid of \hyperref[def:real_numbers]{real numbers}, with or without \hyperref[def:extended_real_numbers]{an infinite element}, we say that the system is a \term{semiflow}.
-
-    \thmitem{def:dynamical_system/flow} If \( T \) is the additive group of \hyperref[def:real_numbers]{real numbers}, we say that the system is a \term{flow}.
-  \end{thmenum}
-
-  We will call the system \term{discrete} if \( T \) is the monoid of zero-based \hyperref[def:natural_numbers]{natural numbers} and \term{continuous} if \( T \) is the monoid of nonnegative \hyperref[def:real_numbers]{real numbers}, with or without \hyperref[def:extended_real_numbers]{an infinite element}.
-
-  The monoid \( T \) can theoretically be a \hyperref[def:group]{group}, in which case we consider \hyperref[def:group_action]{group actions}, however negative time is not as often needed in practice.
+  A \term{dynamical system} with \term{phase space} \( X \) and \term{time system} \( T \) is a \hyperref[def:monoid_action]{monoid action} (resp. \hyperref[def:group_action]{group action}) \( \Phi: T \times X \to X \). We refer to \( \Phi \) itself as the \term{evolution function} of the system.
 \end{definition}
+\begin{comments}
+  \item The purpose of this definition is to make concrete any discussion of dynamical systems. Formally, it is the same concept as that of a monoid or group action.
+\end{comments}
 
-\begin{definition}\label{def:dynamical_system_trajectory}
+\begin{example}\label{ex:def:dynamical_system}
+  We list examples of \hyperref[def:dynamical_system]{dynamical systems}:
+  \begin{thmenum}
+    \thmitem{ex:def:dynamical_system/rotation} Let our phase space be the \hyperref[def:euclidean_plane]{Euclidean plane}. A dynamical system then corresponds to movement of points in the plane.
+
+    For example, in \fullref{ex:def:group_action_orbit/rotation} we discussed that rotation is a group action on the plane, and hence we can view rotation as a dynamical system whose time is given by the \hyperref[def:circle_group]{circle group}.
+  \end{thmenum}
+\end{example}
+
+\begin{definition}\label{def:dynamical_system_time_classification}\mimprovised
+  We say that a \hyperref[def:dynamical_system]{dynamical system} has \term{discrete time} if \( T \) is a \hyperref[def:monoid/submodel]{submonoid} of the additive group of \hyperref[def:integers]{integers} \( \BbbZ \) and \term{continuous time} if \( T \) is a submonoid of the additive group of the \hyperref[def:real_numbers]{real numbers} \( \BbbR \).
+\end{definition}
+\begin{comments}
+  \item We choose whether the system is a monoid action or a group action based on the context. Since subgroups are submonoids, the definition holds generally.
+\end{comments}
+
+\begin{proposition}\label{thm:discrete_dynamical_system}
+  \hyperref[def:dynamical_system_time_classification]{Discrete-time} \hyperref[def:dynamical_system]{dynamical systems} are particularly simple.
+
+  The evolution function \( \Phi: T \times X \to X \) is entirely determined by \( \Phi_1 \) in the following sense: for any integer \( n \), we have
+  \begin{equation}\label{eq:thm:discrete_dynamical_system}
+    \Phi_n(x) = \Phi_1^n(x).
+  \end{equation}
+
+  Therefore, the entire evolution function is determined by a single endofunction on \( X \).
+\end{proposition}
+\begin{proof}
+  We will first show \eqref{eq:thm:discrete_dynamical_system} for nonnegative integers via \hyperref[rem:induction/peano_arithmetic]{natural number induction}:
+  \begin{itemize}
+    \item For the base case, \eqref{eq:def:monoid_action/family/identity} implies that \( \Phi_0(x) = x = \Phi_1^0(x) \).
+
+    \item Suppose that \eqref{eq:thm:discrete_dynamical_system} holds. Then
+    \begin{equation*}
+      \Phi_{n + 1}(x)
+      \reloset {\eqref{eq:def:monoid_action/family/compatibility}} =
+      \Phi_n(x) \bincirc \Phi_1(x)
+      \reloset {\T{ind.}} =
+      \Phi^n(x) \bincirc \Phi_1(x)
+      =
+      \Phi^{n+1}(x).
+    \end{equation*}
+  \end{itemize}
+
+  For negative numbers (if the time system is a group) we can also use induction, with \eqref{eq:def:group_action/family/compatibility} instead of \eqref{eq:def:monoid_action/family/compatibility}, but with a different hypothesis: for every nonnegative integer \( n \), we have
+  \begin{equation}\label{eq:thm:discrete_dynamical_system/nonpositive}
+    \Phi_{-n}(x) = \Phi_1^{-n}(x)
+  \end{equation}
+
+  In order for \eqref{eq:thm:discrete_dynamical_system/nonpositive} to make sense, \( \Phi_1(x) \) must be invertible. This follows from \eqref{eq:def:group_action/family/compatibility} by noting that
+  \begin{equation*}
+    \id(x) = \Phi_0(x) = \Phi_1(x) \bincirc \Phi_{-1}(x),
+  \end{equation*}
+  implying that \( \Phi_1(x)^{-1} = \Phi_{-1}(x) \).
+\end{proof}
+
+\begin{definition}\label{def:dynamical_system_trajectory}\mimprovised
   Fix a \hyperref[def:dynamical_system]{dynamical system} with evolution function \( \Phi: T \times X \to X \).
 
-  A \term{trajectory} in a starting at the \term{initial state} \( x_0 \in X \) is an \hyperref[def:cartesian_product/indexed_family]{indexed family} \( \seq{ x_t }_{t \in T} \) obtained as
+  A \term{trajectory} starting at the \term{initial state} \( x_0 \in X \) is an \hyperref[def:cartesian_product/indexed_family]{indexed family} \( \seq{ x_t }_{t \in T} \) obtained as
   \begin{equation*}
     x_t \coloneqq \Phi_t(x_0).
   \end{equation*}
-
-  The condition \ref{eq:def:monoid_action/family/identity} ensures that \( \Phi_0(x_0) = x_0 \), and \ref{eq:def:monoid_action/family/compatibility} ensures that
-  \begin{equation*}
-    x_{t + s}
-    =
-    \Phi_{t + s}(x_0)
-    =
-    \Phi_t(x_s).
-  \end{equation*}
-
-  For discrete dynamical systems, trajectories are sequences.
 \end{definition}
+\begin{comments}
+  \item This notation is consistent because \eqref{eq:def:monoid_action/family/identity} implies that \( \Phi_0(x_0) = x_0 \).
+\end{comments}
+
+\begin{proposition}\label{thm:def:dynamical_system_trajectory}
+  \hyperref[def:dynamical_system_trajectory]{Dynamic system trajectories} have the following basic properties:
+  \begin{thmenum}
+    \thmitem{thm:def:dynamical_system_trajectory/composition} For a dynamical system with evolution function \( \Phi: T \times X \to X \), the trajectory of \( x_0 \) satisfies, for every \( t \in X \),
+    \begin{equation*}
+      x_{t+s} = \Phi_s(x_t).
+    \end{equation*}
+
+    The order of \( s \) and \( t \) is important unless \( T \) is commutative.
+
+    \thmitem{thm:def:dynamical_system_trajectory/discrete} For a \hyperref[def:dynamical_system_time_classification]{discrete-time} dynamical system with evolution function \( \Phi: T \times X \to X \), the trajectory of \( x_0 \) is a sequence, perhaps two-sided, such that, for any integer \( n \) in \( T \), we have
+    \begin{equation*}
+      x_n = \Phi_1^n(x_0).
+    \end{equation*}
+  \end{thmenum}
+\end{proposition}
+\begin{proof}
+  \SubProofOf{thm:def:dynamical_system_trajectory/composition} Follows from \eqref{eq:def:monoid_action/family/compatibility}.
+
+  \SubProofOf{thm:def:dynamical_system_trajectory/discrete} Follows from \fullref{thm:def:dynamical_system_trajectory/composition} and \fullref{thm:discrete_dynamical_system}.
+\end{proof}
