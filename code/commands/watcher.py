@@ -16,7 +16,7 @@ import texoutparse
 
 
 DEBOUNCE_THRESHOLD = timedelta(seconds=1)
-TEX_LOG_ENCODING = 'utf-8'
+TEX_LOG_ENCODING = 'latin-1'
 
 ROOT_DIR = pathlib.Path('.').resolve()
 
@@ -101,7 +101,7 @@ class TeXTask(Task):
 
     @property
     def command(self):
-        return r'lualatex -interaction=batchmode -output-directory=%s "\def\quick{}\input{%s}"' % (AUX_DIR, self.tex_path)
+        return r'pdflatex -interaction=batchmode -output-directory=%s "\def\quick{}\input{%s}"' % (AUX_DIR, self.tex_path)
 
     def get_bcf_hash(self) -> int | None:
         try:
@@ -229,7 +229,12 @@ class TaskRunner:
             return
 
         # Loop asynchronously until enough time has passed since the last scheduling
-        while task in self.active_tasks or task not in self.last_run_attempt or datetime.now() - self.last_run_attempt[task] < DEBOUNCE_THRESHOLD:
+        while (
+            len(self.active_tasks) >= 5 or
+            task in self.active_tasks or
+            task not in self.last_run_attempt or
+            datetime.now() - self.last_run_attempt[task] < DEBOUNCE_THRESHOLD
+        ):
             self.last_run_attempt[task] = datetime.now()
             await asyncio.sleep(DEBOUNCE_THRESHOLD.seconds)
 
