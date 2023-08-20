@@ -101,7 +101,7 @@ class TeXTask(Task):
 
     @property
     def command(self):
-        return r'pdflatex -interaction=batchmode -output-directory=%s "\def\quick{}\input{%s}"' % (AUX_DIR, self.tex_path)
+        return r'pdflatex -interaction=batchmode -output-directory=%s %s' % (AUX_DIR, self.tex_path)
 
     def get_bcf_hash(self) -> int | None:
         try:
