@@ -3,7 +3,7 @@ FIGURES_TEX_PDF := $(patsubst figures/%.tex,output/%.pdf,$(wildcard figures/*.te
 FIGURES_ASY_PDF := $(patsubst figures/%.asy,output/%.eps,$(wildcard figures/*.asy))
 TEXT_SOURCE := notebook.tex classes/notebook.cls bibliography/*.bib packages/*.sty text/*.tex $(FIGURES_TEX_PDF) $(FIGURES_ASY_PDF)
 
-.PHONY: notebook figures watch watch-figures format-figures clean
+.PHONY: notebook figures watch watch-figures format-figures clean checkcites
 
 notebook: output/notebook.pdf
 
@@ -35,6 +35,9 @@ format-figures:
 
 find-obsolete-figures:
 	@poetry --directory code run python -m code.commands.find_obsolete_figures
+
+checkcites:
+	@checkcites --backend biber --all aux/notebook.bcf
 
 # I have implemented a very useful build system for LaTeX with log processing and debouncing
 watch: | aux output
