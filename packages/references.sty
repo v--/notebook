@@ -24,44 +24,32 @@
       }
   }
 
-\seq_new:N \l_term_group_prop
+\prop_new:N \l_term_group_prop
 \seq_new:N \l_term_group_seq
 
 \NewDocumentCommand \term {om}
   {
-    \textbf {#2}
-
-    \IfValueT {#1}
-    {
-      \prop_set_from_keyval:Nn \l_term_group_prop {#1}
-
-      \prop_map_inline:Nn \l_term_group_prop
+    \textbf{#2}
+    \IfValueT{#1}
       {
-        \seq_push:Nn \l_term_group_seq
-        {
-          ##1:~##2
-        }
-      }
+        \prop_set_from_keyval:Nn \l_term_group_prop {#1}
 
-      % \prop_set_from_keyval:Nn seems to create the sequence in reverse
-      \seq_reverse:N \l_term_group_seq
-
-      \footnote
-        {
-          \group_begin:
-            \bool_if:nF
-              { \sys_if_engine_xetex_p: || \sys_if_engine_luatex_p: }
+        \prop_map_inline:Nn \l_term_group_prop
+          {
+            \seq_put_right:Nn \l_term_group_seq
               {
-                \fontencoding {T2A}
-                \selectfont
+                ##1:~##2
               }
-            \seq_use:Nnnn \l_term_group_seq { ,~ } { ,~ } { ,~ }
-          \group_end:
-        }
+          }
 
-      \prop_clear:N \l_term_group_prop
-      \seq_clear:N \l_term_group_seq
-    }
+        \footnote
+          {
+            \seq_use:Nn \l_term_group_seq { ,~ }
+          }
+
+        \prop_clear:N \l_term_group_prop
+        \seq_clear:N \l_term_group_seq
+      }
   }
 
 % https://tex.stackexchange.com/a/427559
@@ -98,6 +86,7 @@
   }
 
 % I have no idea why the colors sometimes get messed up or why the color hack below fixes it.
+\tl_new:N \l_mcite_loc_tl
 \NewDocumentCommand \mcite {om}
   {
     \leavevmode
@@ -110,14 +99,16 @@
         \normalcolor
         \IfValueT {#1}
         {
-          \seq_set_split:Nnn \l_tmpa_seq {\\} {#1}
-          \seq_map_inline:Nn \l_tmpa_seq
+          \seq_set_split:Nnn \l_mcite_loc_tl {\\} {#1}
+          \seq_map_inline:Nn \l_mcite_loc_tl
             {
               \if_is_int:nTF {##1} { page~##1 \\ } {##1 \\}
             }
         }
       }
     \ignorespaces
+
+    \tl_clear:N \l_mcite_loc_tl
   }
 
 %
