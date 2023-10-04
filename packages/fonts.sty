@@ -16,18 +16,44 @@
     \RequirePackage{microtype}
   }
   {
-    \RequirePackage[T2A,T1]{fontenc}
+    \RequirePackage[TS1,OT2,T2A,T1]{fontenc}
     \RequirePackage[not1,notextcomp]{stix2} % Serf and math font families; load after amsmath despite documentation, it breaks otherwise
     \RequirePackage[sans,tt=false,ScaleRM=1.075]{libertinus} % Sans-serif
     \RequirePackage{microtype}
-    \DeclareFontFamilySubstitution{T2A}{stix2}{LibertinusSerif-TLF} % Fallback font that looks similar to STIX Two Text
+
+    % https://tex.stackexchange.com/a/460325
+    \cs_new_protected:Nn \__recode:N
+      {% #1 is \u8:<bytes> which expands to \IeC{<LICR>}
+        \exp_last_unbraced:No \__recode_aux:nn #1
+      }
+    \cs_new_protected:Nn \__recode_aux:nn { \DeclareTextSymbolDefault#2{OT2} }
+    \cs_generate_variant:Nn \__recode:N { c }
+    \tl_map_inline:nn
+      {
+        {А} {Б} {В} {Г} {Д} {Е} {Ё} {Ж} {З} {И} {і} {Й} {К} {Л} {М} {Н} {О} {П} {Р} {С} {Т} {У} {Ў} {Ф} {Х} {Ц} {Ч} {Ш} {Щ} {Ъ} {Ы} {Ь} {Э} {Ю} {Я}
+        {а} {б} {в} {г} {д} {е} {ё} {ж} {з} {и} {І} {й} {к} {л} {м} {н} {о} {п} {р} {с} {т} {у} {ў} {ф} {х} {ц} {ч} {ш} {щ} {ъ} {ы} {ь} {э} {ю} {я}
+      }
+      {
+        \__recode:c { u8: \tl_to_str:n { #1 } }
+      }
+
+    \DeclareTextSymbolDefault{\textnumero}{TS1}
+    \DeclareTextSymbolDefault{\textparagraph}{TS1}
+
     % Imitate some macros from unicode-math
     \DeclareMathOperator \Alpha   {A}
     \DeclareMathOperator \Beta    {B}
+    \DeclareMathOperator \Epsilon {E}
+    \DeclareMathOperator \Zeta    {Z}
     \DeclareMathOperator \Eta     {H}
-    \DeclareMathOperator \Tau     {T}
     \DeclareMathOperator \Iota    {I}
+    \DeclareMathOperator \Kappa   {K}
+    \DeclareMathOperator \Mu      {M}
+    \DeclareMathOperator \Omicron {O}
     \DeclareMathOperator \omicron {o}
+    \DeclareMathOperator \Rho     {R}
+    \DeclareMathOperator \Tau     {T}
+    \DeclareMathOperator \Chi     {X}
 
     % https://tex.stackexchange.com/a/564222
     \NewDocumentCommand \DefineAlphabet {mmmm}
@@ -57,15 +83,6 @@
       {
         \setlist[itemize,1]{label=\( \bullet \)}
         \setlist[itemize,3]{label=\( \ast \)}
-      }
-
-    \cs_if_exist:cT {AtBeginBibliography}
-      {
-        \AtBeginBibliography
-          {
-            \fontencoding{T2A}
-            \selectfont
-          }
       }
   }
 \ExplSyntaxOff
