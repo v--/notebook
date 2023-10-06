@@ -52,22 +52,15 @@
       }
   }
 
-% https://tex.stackexchange.com/a/427559
-\prg_new_protected_conditional:Npnn \if_is_int:n #1 { T, F, TF }
-  {
-    \regex_match:nnTF { ^[\+\-]?[\d]+$ } {#1} % $
-      { \prg_return_true: }
-      { \prg_return_false: }
-  }
-
 \NewDocumentCommand \mnote {m}
   {
     \leavevmode
     \marginpar
       {
         \raggedleft
-        \footnotesize
-        #1
+        \scriptsize
+        % For some reason, the text is sometimes not black, e.g. has the color of a hyperlink
+        \textcolor {black} {#1}
       }
     \ignorespaces
   }
@@ -80,35 +73,21 @@
       }
   }
 
+\DeclareCiteCommand
+  {\mcite}
+  {}
+  {
+    \mnote
+      {
+          \usebibmacro{prenote} \usebibmacro{cite} \usebibmacro{postnote}
+      }
+  }
+  {}
+  {}
+
 \NewDocumentCommand \incite {O{}m}
   {
     \citeauthor{#2}~in~\cite[#1]{#2}
-  }
-
-% I have no idea why the colors sometimes get messed up or why the color hack below fixes it.
-\tl_new:N \l_mcite_loc_tl
-\NewDocumentCommand \mcite {om}
-  {
-    \leavevmode
-    \marginpar
-      {
-        \raggedleft
-        \footnotesize
-        \textcolor { black } { \cite{#2} }
-        \par
-        \normalcolor
-        \IfValueT {#1}
-        {
-          \seq_set_split:Nnn \l_mcite_loc_tl {\\} {#1}
-          \seq_map_inline:Nn \l_mcite_loc_tl
-            {
-              \if_is_int:nTF {##1} { page~##1 \\ } {##1 \\}
-            }
-        }
-      }
-    \ignorespaces
-
-    \tl_clear:N \l_mcite_loc_tl
   }
 
 %
