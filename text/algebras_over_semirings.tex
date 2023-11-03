@@ -98,58 +98,184 @@
   By \fullref{thm:functions_over_model_form_model}, \( N \) is both an \( R \)-semiring and an \( R \)-semimodule. Compatibility comes from left distributivity in \( N \).
 \end{proof}
 
-\paragraph{Polynomial algebras}
+\paragraph{Semigroup algebras}
 
-\begin{definition}\label{def:multi_index}\mimprovised
-  A \term{multi-index} over the \hyperref[def:set]{plain set} \( \mscrK \) is a member of the \hyperref[def:free_semimodule]{free \( \BbbN \)-semimodule} \( \mscrK^{\oplus \BbbN} \) over \( \mscrK \). We endow \( \mscrK^{\oplus \BbbN} \) with the \hyperref[def:norm]{norm}
-  \begin{equation*}
-    \norm{ \alpha } \coloneqq \sum_{k \in \mscrK} \alpha_k
-  \end{equation*}
-  and the \hyperref[def:partially_ordered_set]{partial order}
-  \begin{equation*}
-    \alpha \leq \beta \T{if and only if} \qforall {k \in \mscrK} \alpha_k \leq \beta_k.
-  \end{equation*}
+\begin{definition}\label{def:semigroup_algebra}\mcite[29]{Golan2010}
+  Fix a \hyperref[def:semigroup]{semigroup} \( G \) and an unital \hyperref[def:semiring]{semiring} \( R \).
+
+  We define the corresponding \term{semiring algebra} or \term[ru=групповая алгебра (\cite[504]{Винберг2014}), en=group ring (\cite[127]{Aluffi2009})]{semigroup semiring} \( R[G] \) as the \hyperref[def:free_semimodule]{free semimodule} endowed with a vector multiplication operation \( \odot \) called \term[ru=свёртка (\cite[62]{Боровков1999Вероятности}) / конволюция (\cite[179]{ИоффеТихомиров1974})]{convolution product} and defined as follows:
+  \begin{equation}\label{eq:def:semigroup_algebra/multiplication}
+    \parens[\Big]{ \Bbbsum_{a \in G} x_a \cdot a } \odot \parens[\Big]{ \Bbbsum_{b \in G} y_b \cdot b }
+    \coloneqq
+    \Bbbsum_{g \in G} \parens[\Big]{ \sum_{ab = g} x_a y_b } \cdot g.
+  \end{equation}
+
+  We also define the embedding
+  \begin{equation}\label{eq:def:semigroup_algebra/embedding}
+    \begin{aligned}
+      &\iota: G \to R[G] \\
+      &\iota(g) \coloneqq 1_R \cdot g.
+    \end{aligned}
+  \end{equation}
 \end{definition}
 \begin{comments}
-  \item Multi-indices are \hyperref[def:labeled_set/multiset]{multisets} with extra structure.
+  \item More simply put, the coefficient before \( g \) in the product is the sum of products \( x_a y_b \) where \( ab = g \). This definition is justified in our proof of \fullref{thm:semigroup_algebra_universal_property}.
+
+  \item Although we will often use the same symbols for all the operations, it is important to highlight that this definition uses six distinct operations --- four for multiplication and two for addition. In \eqref{eq:def:semigroup_algebra/multiplication} we have used juxtaposition for both the semigroup and the semiring multiplication, \( \cdot \) for the scalar multiplication and \( \odot \) for vector multiplication. The (semi)ring summation denoted via \( \sum \) and the (semi)module summation denoted via \( \Bbbsum \).
 \end{comments}
 
+\begin{theorem}[Semigroup algebra universal property]\label{thm:semigroup_algebra_universal_property}\mcite[381]{Knapp2016BasicAlgebra}
+  The \hyperref[def:semigroup_algebra]{semigroup algebra} \( R[G] \) is the unique up to a unique isomorphism \hyperref[def:algebra_over_semiring]{algebra} over the \hyperref[def:semiring]{semiring} \( R \) that satisfies the following \hyperref[rem:universal_mapping_property]{universal mapping property}:
+  \begin{displayquote}
+    For every \( R \)-algebra \( M \) and every \hyperref[def:semigroup/homomorphism]{semigroup homomorphism} \( e: G \to M \) into the multiplicative group of \( M \), there exists a unique homomorphism of \( R \)-algebras \( e: R[G] \to M \) such that the following diagram commutes:
+    \begin{equation}\label{eq:thm:semigroup_algebra_universal_property}
+      \begin{aligned}
+        \includegraphics[page=1]{output/thm__semigroup_algebra_universal_property}
+      \end{aligned}
+    \end{equation}
+  \end{displayquote}
+\end{theorem}
+\begin{comments}
+  \item Via \fullref{rem:universal_mapping_property}, \( G \mapsto R[G] \) becomes \hyperref[def:category_adjunction]{left adjoint} to the \hyperref[def:concrete_category]{forgetful functor} which sends \( R \)-algebras to their multiplicative group.
+\end{comments}
+\begin{proof}
+  \Fullref{thm:free_semimodule_universal_property} implies that the following is an \( R \)-module homomorphism:
+  \begin{equation*}
+    \begin{aligned}
+      &\Phi: R[G] \to M, \\
+      &\Phi\parens[\Big]{ \Bbbsum_{a \in G} x_a \cdot a } \coloneqq \sum_{a \in G} x_a \cdot_M \varphi(a).
+    \end{aligned}
+  \end{equation*}
+
+  We will show that \( \Phi \) preserves products, that is, that \( \Phi \) also a homomorphism of \( R \)-algebras.
+
+  Fix some vector \( \Bbbsum_{b \in G} y_b \cdot b \). We will use induction on the number of nonzero coefficients in this sum to show that
+  \begin{equation}\label{eq:thm:semigroup_algebra_universal_property/hypothesis}
+    \Phi\parens[\Big]{ \Bbbsum_{a \in G} x_a \cdot a } \odot_M \Phi\parens[\Big]{ \Bbbsum_{b \in G} y_b \cdot b }
+    =
+    \Bbbsum_{g \in G} \parens[\Big]{ \sum_{a b = g} x_a y_b } \cdot_M \varphi(g).
+  \end{equation}
+
+  \begin{itemize}
+    \item If \( y_b = 0 \) for every \( b \in G \), then \( x_a y_b = 0 \) and thus the product \eqref{eq:def:semigroup_algebra/multiplication} with any other vector is necessarily zero. Thus,
+    \begin{equation*}
+      \Phi\parens[\Big]{ \Bbbsum_{a \in G} x_a \cdot a } \odot_M \Phi\parens[\Big]{ \Bbbsum_{b \in G} \underbrace{y_b}_{\mathclap{\T*{zero}}} \cdot b }
+      =
+      \Bbbsum_{g \in G} \underbrace{\parens[\Big]{ \sum_{a b = g} x_a y_b }}_{\T{zero}} \cdot_M \varphi(g).
+    \end{equation*}
+
+    \item Otherwise, suppose that \eqref{eq:thm:semigroup_algebra_universal_property/hypothesis} holds for \( m \) nonzero coefficients and consider a vector
+    \begin{equation*}
+      \sum_{k=1}^{m+1} y_{b_k} \cdot b_k.
+    \end{equation*}
+
+    Since \( \odot_M \) is additive in its second argument, we have
+    \begin{align}
+      &\phantom{{}={}}
+      \Phi\parens[\Big]{ \Bbbsum_{a \in G} x_a \cdot a } \odot_M \Phi\parens[\Big]{ \Bbbsum_{b=1}^{m+1} y_{b_k} \cdot b_k }
+      = \nonumber \\ &=
+      \Phi\parens[\Big]{ \Bbbsum_{a \in G} x_a \cdot a } \odot_M \Phi\parens[\Big]{ \Bbbsum_{b=1}^m y_{b_k} \cdot b_k } + \Phi\parens[\Big]{ \Bbbsum_{a \in G} x_a \cdot a } \odot_M \Phi\parens[\Big]{ y_{b_{m+1}} \cdot b_{m+1} }. \label{eq:thm:semigroup_algebra_universal_property/split}
+    \end{align}
+
+    We will study the second term. Because \( \odot_M \) is homogeneous in both arguments, and since \( \Phi \) is also homogeneous, we have
+    \begin{align*}
+      &\phantom{{}={}}
+      \Phi\parens[\Big]{ \Bbbsum_{a \in G} x_a \cdot a } \odot_M \Phi\parens[\Big]{ y_{b_{m+1}} \cdot b_{m+1} }
+      = \\ &=
+      y_{b_{m+1}} \cdot \bracks[\Bigg]{ \Phi\parens[\Big]{ \Bbbsum_{a \in G} x_a \cdot a } \odot_M \Phi\parens[\Big]{ b_{m+1} } }
+      = \\ &=
+      \Phi\parens[\Big]{ \Bbbsum_{a \in G} x_a y_{b_{m+1}} \cdot a } \odot_M \Phi\parens[\Big]{ b_{m+1} }
+      = \\ &=
+      \Bbbsum_{a \in G} x_a y_{b_{m+1}} \cdot_M \underbrace{\varphi(a) \odot_M \varphi(b_{m+1})}_{\varphi(ab_{m+1})}.
+    \end{align*}
+
+    The last term can be rewritten by grouping coefficients before the same vectors:
+    \begin{equation}\label{eq:thm:semigroup_algebra_universal_property/second}
+      \Bbbsum_{g \in G} \parens[\Big]{ \sum_{ab_{m+1} = g} x_a y_{b_{m+1}} } \cdot_M \varphi(g).
+    \end{equation}
+
+    Substituting the second term in \eqref{eq:thm:semigroup_algebra_universal_property/split} for \eqref{eq:thm:semigroup_algebra_universal_property/second} and using the inductive hypothesis on the first term, we obtain
+    \begin{align*}
+      &\phantom{{}={}}
+      \Phi\parens[\Big]{ \Bbbsum_{a \in G} x_a \cdot a } \odot_M \Phi\parens[\Big]{ \Bbbsum_{b=1}^m y_{b_k} \cdot b_k } + \Phi\parens[\Big]{ \Bbbsum_{a \in G} x_a \cdot a } \odot_M \Phi\parens[\Big]{ y_{b_{m+1}} \cdot b_{m+1} }
+      = \\ &=
+      \Bbbsum_{g \in G} \parens[\Big]{ \sum_{\substack{a b_k = g \\ 1 \leq k \leq m}} x_a y_{b_k} } \cdot_M \varphi(g) + \Bbbsum_{g \in G} \parens[\Big]{ \sum_{ab_{m+1} = g} x_a y_{b_{m+1}} } \cdot_M \varphi(g)
+      = \\ &=
+      \Bbbsum_{g \in G} \parens[\Big]{ \sum_{\substack{a b_k = g \\ 1 \leq k \leq m}} x_a y_{b_k} + \sum_{ab_{m+1} = g} x_a y_{b_{m+1}} } \cdot_M \varphi(g)
+      = \\ &=
+      \Bbbsum_{g \in G} \parens[\Big]{ \sum_{\substack{a b_k = g \\ 1 \leq k \leq m + 1}} x_a y_{b_k} } \cdot_M \varphi(g)
+      = \\ &=
+      \Bbbsum_{g \in G} \parens[\Big]{ \sum_{a b = g} x_a y_b } \cdot_M \varphi(g).
+    \end{align*}
+  \end{itemize}
+
+  This completes the induction. We conclude the \eqref{eq:thm:semigroup_algebra_universal_property/hypothesis} holds no matter how many nonzero coefficients are there in the sum
+  \begin{equation*}
+    \sum_{b \in B} y_b \cdot b.
+  \end{equation*}
+
+  This in turn implies that \( \Phi \) preserves multiplication, making it a homomorphism of \( R \)-algebras.
+\end{proof}
+
+\begin{example}\label{ex:def:semigroup_algebra}
+  We list examples of \hyperref[def:semigroup_algebra]{semigroup algebras}:
+  \begin{thmenum}
+    \thmitem{ex:def:semigroup_algebra/zero} If the semigroup is empty, the semimodule has only one element.
+
+    \thmitem{ex:def:semigroup_algebra/one} If the semigroup has one element \( e \), then \( R[\set{ e }] \) is isomorphic as an algebra to \( R \).
+
+    Indeed, the multiplication operation \eqref{eq:def:semigroup_algebra/multiplication} reduces to
+    \begin{equation*}
+      (a \cdot e) \odot (b \cdot e) = ab \cdot e.
+    \end{equation*}
+
+    The semimodule axiom \eqref{eq:def:semimodule/operation/scalar_addition_distributivity} implies that vector addition also satisfies a similar property:
+    \begin{equation*}
+      (a \cdot e) \oplus (b \cdot e) = (a + b) \cdot e.
+    \end{equation*}
+
+    Lastly, \eqref{eq:def:semimodule/operation/scalar_multiplication_action/compatibility} implies that scalar multiplication satisfies
+    \begin{equation*}
+      b \cdot (a \cdot e) = ba \cdot e.
+    \end{equation*}
+
+    \thmitem{ex:def:semigroup_algebra/z} The group algebra of the \hyperref[def:semimodule_direct_sum]{direct sum} \( \BbbN^n \) over \( R \) is the \hyperref[def:polynomial_algebra]{polynomial algebra} in \( n \) indeterminates over \( R \).
+
+    \thmitem{ex:def:semigroup_algebra/laurent} The group algebra of \( \BbbZ \) over \( R \) is the \hyperref[def:ring_of_laurent_polynomials]{algebra of Laurent polynomials} over \( R \).
+  \end{thmenum}
+\end{example}
+
+\paragraph{Polynomial algebras}
+
 \begin{definition}\label{def:polynomial_algebra}\mimprovised
-  Fix a \hyperref[def:semiring/commutative]{commutative semiring} \( R \) and a set \( \mscrX \) of \hyperref[def:formal_language/symbol]{symbols}, which we will call \term[]{indeterminates}.
+  Fix a \hyperref[def:semiring/commutative]{commutative semiring} \( R \) and a set \( \mscrX \) of \hyperref[def:formal_language/symbol]{symbols}, which we will call \term{indeterminates}.
 
   \begin{thmenum}
-    \thmitem{def:polynomial_algebra/monomials} Let \( \mscrM \) be the \hyperref[def:free_semimodule]{free \( R \)-semimodule} over \( \mscrX \), written \hyperref[rem:additive_semigroup]{multiplicatively}. We will call the members of \( \mscrM \) \term[ru=одночлен/моном (\cite[sec. 11.3]{Тыртышников2007})]{monomials}. Using a \hyperref[def:multi_index]{multi-index} \( \gamma \) over \( \mscrX \), every monomial can be written as
+    \thmitem{def:polynomial_algebra/monomials} Consider the \hyperref[def:free_commutative_monoid]{multiplicatively-written} \hyperref[def:free_commutative_monoid]{free commutative monoid} \( \BbbN^{\oplus \mscrX} \).
+
+    As discussed in \fullref{rem:free_commutative_monoid_as_quotient}, we can regard elements of this monoid as congruence classes of strings of indeterminates. We call these congruence classes \term[ru=одночлен/моном (\cite[sec. 11.3]{Тыртышников2007})]{monomials}.
+
+    We denote monomials as strings of indeterminates, e.g. \( XY \) or \( YX \), however regard them as their corresponding congruence classes and consider congruent strings to be equal.
+
+    \thmitem{def:polynomial_algebra/algebra} We define the \term[ru=алгебра многочленов (\cite[92]{Винберг2014})]{polynomial algebra} \( R[\mscrX] \) as the \hyperref[def:semigroup_algebra]{monoid semiring} \( R[\BbbN^{\oplus \mscrX}] \).
+
+    If \( \mscrX = \set{ X_1, \ldots, X_n } \), we also write \( R[X_1, \ldots, X_n] \).
+
+    We call elements of \( R[\mscrX] \) \term[bg=полиноми (\cite[22]{ГеновМиховскиМоллов1991}), ru=многочлены (\cite[92]{Винберг2014}; многочлены/полиномы (\cite[sec. 11.3]{Тыртышников2007})]{polynomials}. A polynomial is thus a linear combination of monomials with the \hyperref[def:semigroup_algebra]{convolution product}.
+
+    \thmitem{def:polynomial_algebra/embedding} Thus, we have the following chain of canonical maps:
     \begin{equation*}
-      \prod_{X \in \mscrX} X^{\gamma_X},
+      \mscrX \to \BbbN^{\oplus \mscrX} \to R[\mscrX].
     \end{equation*}
-    where \( \gamma_X \) are the coefficients in \( R^{\oplus \mscrX} \) of the monomial.
 
-    \thmitem{def:polynomial_algebra/algebra} The \term[ru=алгебра многочленов (\cite[92]{Винберг2014})]{polynomial algebra} \( R[\mscrX] \) for the given indeterminates is the \hyperref[def:free_semimodule]{free \( R \)-semimodule} over \( \mscrM \).
+    The first map is a plain function and the second one is a group homomorphism from the (multiplicatively written) \hyperref[def:free_commutative_monoid]{free commutative monoid} \( \BbbN^{\oplus \mscrX} \) of monomials into the multiplicative group of the \( R \)-algebra \( R[\mscrX] \) of polynomials.
 
-    \thmitem{def:polynomial_algebra/polynomial} A \term[bg=полином (\cite[22]{ГеновМиховскиМоллов1991}), ru=многочлен (\cite[92]{Винберг2014}; многочлен/полином (\cite[sec. 11.3]{Тыртышников2007})]{polynomial} \( p \in R[\mscrX] \) is an \( R \)-linear combination of monomials, and we denote polynomials by
-    \begin{equation}\label{eq:def:polynomial_algebra/p}
-      p(\mscrX) = \sum_\gamma a_\gamma \prod_{X \in \mscrX} X^{\gamma_X}.
-    \end{equation}
-
-    We call \( a_\gamma \) the \term[bg=коефициенти (\cite[22]{ГеновМиховскиМоллов1991}), ru=коэффициенты (\cite[92]{Винберг2014})]{coefficients} of the polynomial. We use the components of the multi-index as powers in the monomials, but we use \( \gamma \) itself as an index for the coefficient \( a_\gamma \). Unfortunately, multi-indices are sometimes confusing, but often their brevity outweighs the possible confusion.
-
-    \thmitem{def:polynomial_algebra/multiplication} We conflate exponentiation in \( \mscrM \) in the sense of \fullref{def:monoid/exponentiation} with exponentiation in \( R[\mscrX] \) in the sense of \fullref{def:semiring/exponentiation}. Multiplication in \( \mscrM \) motivates us to define multiplication in \( R[\mscrX] \) via a convolution of the coefficients. We define the product of \( p(X) \) from \eqref{eq:def:polynomial_algebra/p} with
-    \begin{equation}\label{eq:def:polynomial_algebra/q}
-      q(\mscrX) = \sum_\gamma b_\gamma \prod_{X \in \mscrX} X^{\gamma_X}
-    \end{equation}
-    as
-    \begin{equation}\label{eq:def:polynomial_algebra/pq}
-      [pq](\mscrX) \coloneqq \sum_\gamma \parens*{ \sum_{\delta + \eta = \gamma} a_\delta b_\eta } \prod_{X \in \mscrX} X^{\gamma_X}.
-    \end{equation}
-
-    Here we simultaneously use multi-indices as vectors with pointwise summation (i.e. \( \delta + \eta = \gamma \)) and as indices of coefficients (i.e. \( a_\delta \) and \( b_\eta \)).
-
-    \thmitem{def:polynomial_algebra/embedding} We avoid writing the inclusion \( \iota: \mscrX \to R[\mscrX] \), but it is sometimes beneficial to denote it explicitly, for example in \fullref{thm:polynomial_algebra_universal_property}.
+    Whenever we need to be explicit, like in \fullref{thm:polynomial_algebra_universal_property}, we denote their composition by \( \iota: \mscrX \to R[\mscrX] \).
   \end{thmenum}
 \end{definition}
 
 \begin{theorem}[Polynomial algebra universal property]\label{thm:polynomial_algebra_universal_property}
-  Fix a \hyperref[def:semiring/commutative]{commutative semiring} \( R \) and a set \( \mscrX \) of indeterminates. The \hyperref[def:polynomial_algebra]{polynomial algebra} \( R[\mscrX] \) is the unique up to a unique isomorphism commutative \hyperref[def:algebra_over_semiring]{algebra} that satisfies the following \hyperref[rem:universal_mapping_property]{universal mapping property}:
+  Fix a \hyperref[def:semiring/commutative]{commutative semiring} \( R \) and a set \( \mscrX \) of indeterminates. The \hyperref[def:polynomial_algebra]{polynomial algebra} \( R[\mscrX] \) is the unique up to a unique isomorphism \hyperref[def:algebra_over_semiring/commutative]{commutative \( R \)-algebra} that satisfies the following \hyperref[rem:universal_mapping_property]{universal mapping property}:
   \begin{displayquote}
     For every commutative \( R \)-algebra \( M \) and every function \( e: \mscrX \to M \), there exists a unique \( R \)-algebra homomorphism \( \Phi_e: R[\mscrX] \to M \) such that the following diagram commutes:
     \begin{equation}\label{eq:thm:polynomial_algebra_universal_property/diagram}
@@ -160,23 +286,6 @@
   \end{displayquote}
 \end{theorem}
 \begin{comments}
-  \item The function \( e \) evaluates each indeterminate in \( M \), while \( \Phi_e \) substitutes this value in every polynomial. We call \( \Phi_e \) the \term{substitution homomorphism} corresponding to the \term{variable assignment} \( e \). We can parameterize this by the evaluation functions to obtain the functional evaluation homomorphism
-  \begin{equation*}
-    \begin{aligned}
-      &\Phi: R[\mscrX] \to \fun(M^\mscrX, M) \\
-      &\Phi(p) \coloneqq (e \mapsto \Phi_e(p))
-    \end{aligned}
-  \end{equation*}
-
-  \item We call the values of \( \Phi \) \term{polynomial functions}. Given elements \( x_1, \ldots, x_n \) of \( M \), we write
-  \begin{equation*}
-    p(x_1, \ldots, x_n)
-  \end{equation*}
-  rather than
-  \begin{equation*}
-    \Phi(p)(x_1, \ldots, x_n).
-  \end{equation*}
-
   \item Via \fullref{rem:universal_mapping_property}, \( R[\anon*] \) becomes \hyperref[def:category_adjunction]{left adjoint} to the \hyperref[def:concrete_category]{forgetful functor}
   \begin{equation*}
     U: \cat{CAlg}_R \to \cat{Set}.
@@ -185,22 +294,29 @@
   The action of \( R[\anon*] \) on morphisms is given by \( \Phi \).
 \end{comments}
 \begin{proof}
-  For every indeterminate \( X \), we want
-  \begin{equation*}
-    \Phi_e(\iota(X)) = e(X).
-  \end{equation*}
+  \Fullref{thm:free_semimodule_universal_property} gives us a unique monoid homomorphism \( \widehat{e}: \BbbN^{\oplus \mscrX} \to M \) such that \( \widehat{e}(X) = e(X) \) for every indeterminate \( X \).
 
-  In order for \( \Phi_e \) to be a homomorphism, we must then define it for the polynomial
+  \Fullref{thm:semigroup_algebra_universal_property} gives us a unique homomorphism of \( R \)-algebras \( \Phi_e: R[\mscrX] \to M \) such that, for every indeterminate \( X \),
   \begin{equation*}
-    p(\mscrX) = \sum_\gamma a_\gamma \prod_{X \in \mscrX} \iota(X)^{\gamma_X}
+    \Phi_e(X) = \widehat{e}(X) = e(X).
   \end{equation*}
-  as
-  \begin{equation*}
-    \Phi_e(p) \coloneqq \sum_\gamma a_\gamma \prod_{X \in \mscrX} e(X)^{\gamma_X}.
-  \end{equation*}
-
-  We discuss well-definedness of infinitary operations in direct sums in \fullref{rem:binary_operation_syntax_trees/infinite/direct_sum}.
 \end{proof}
+
+\begin{remark}\label{rem:substitution_homomorphism}
+  In \fullref{thm:polynomial_algebra_universal_property}, the function \( e \) evaluates each indeterminate from \( \mscrX \) within \( M \), while \( \Phi_e \) substitutes this value in the polynomials from \( R[\mscrX] \). We call \( \Phi_e \) the \term{substitution homomorphism} or \term{evaluation homomorphism} corresponding to the \term{variable assignment} \( e \). We can parameterize this by the evaluation functions to obtain the \enquote{functional substitution homomorphism}
+  \begin{equation*}
+    \begin{aligned}
+      &\Phi: R[\mscrX] \to \fun(\fun(\mscrX, M), M), \\
+      &\Phi(p) \coloneqq (e \mapsto \Phi_e(p)).
+    \end{aligned}
+  \end{equation*}
+
+  To each polynomial \( p \) in \( R[\mscrX] \), the homomorphism \( \Phi \) sends \( p \) to a function that, given a value in \( M \) for each indeterminate from \( \mscrX \), evaluates \( p \) in \( M \). We call \( \Phi(p) \) the \term{polynomial function} corresponding to \( p \).
+
+  In the case of \( n \) indeterminates, \( \Phi(p) \) is a function from \( M^n \) to \( M \).
+
+  The precise relationship between polynomials and polynomial functions in \hyperref[thm:finite_fields]{finite fields} are discussed in \fullref{thm:functions_over_prime_fields}.
+\end{remark}
 
 \begin{remark}\label{rem:polynomials_over_infinitely_many_indeterminates}
   As we saw in \fullref{def:polynomial_algebra} and \fullref{thm:polynomial_algebra_universal_property}, it is possible to define polynomial algebras over infinitely many indeterminates.
@@ -213,11 +329,11 @@
 \end{remark}
 
 \begin{proposition}\label{thm:def:polynomial_algebra}
-  The following are basic properties of \hyperref[def:polynomial_algebra]{polynomial semirings}:
+  The following are basic properties of \hyperref[def:polynomial_algebra]{polynomial algebras}:
   \begin{thmenum}
     \thmitem{thm:def:polynomial_algebra/empty} If \( \mscrX \) is empty, \( R[\mscrX] \cong R \).
 
-    \thmitem{thm:def:polynomial_algebra/iterated} The polynomial algebras \( R[\mscrX] \) and \( R[\mscrX \setminus \set{ X_0 }][X_0] \) are isomorphic for any \( X_0 \in \mscrX \) (in case \( \mscrX \) has more than one member).
+    \thmitem{thm:def:polynomial_algebra/iterated} If \( \mscrX \) is nonempty, the polynomial algebras \( R[\mscrX] \) and \( R[\mscrX \setminus \set{ X_0 }][X_0] \) are isomorphic for any \( X_0 \in \mscrX \).
 
     In particular,
     \begin{equation*}
@@ -234,16 +350,18 @@
 
   \SubProofOf{thm:def:polynomial_algebra/iterated} Polynomials in \( R[\mscrX] \) have the form
   \begin{equation*}
-    p(\mscrX) = \sum_{k=0}^\infty \sum_\gamma \parens*{ a_{(k,\gamma)} \prod_{\mathclap{X \in \mscrX \setminus \set{ X_0 }}} X^{\gamma_X} } X_0^k,
+    p(\mscrX) = \sum_{X_1 \ldots X_m} a_{X_1 \ldots X_m} X_1 \ldots X_m,
   \end{equation*}
-  where \( \gamma \) is a \hyperref[def:multi_index]{multi-index} on \( \mscrX \setminus \set{ X_0 } \).
+  where \( X_1 \ldots X_m \) is a monomial over \( \mscrX \).
 
-  Due to associativity, commutativity and distributivity, this can be rewritten as
+  Due to distributivity, this can be rewritten as
   \begin{equation*}
-    p(\mscrX) = \sum_{k=0}^\infty \parens*{ \sum_\gamma a_{(k,\gamma)} \prod_{\mathclap{X \in \mscrX \setminus \set{ X_0 }}} X^{\gamma_X} } X_0^k.
+    \widehat{p}(\mscrX) = \sum_{k=0}^n \parens[\Big]{ \sum_{X_0^k X_1 \ldots X_m} a_{X_0^k X_1 \ldots X_m} X_1 \ldots X_m } X_0^k.
   \end{equation*}
 
-  This shows how \( R[\mscrX] \) can be embedded into \( R[\mscrX \setminus \set{ X_0 }][X_0] \). This embedding is surjective because the coefficients \( a_\gamma \) range through \( R \). Therefore, the embedding is an isomorphism.
+  This shows how every polynomial \( p \) in \( R[\mscrX] \) can be regarded as a polynomial \( \widehat{p} \) in \( X_0 \) over the ring \( R[\mscrX \setminus \set{ X_0 }] \).
+
+  This map \( p \mapsto \widehat{p} \) is clearly an isomorphism of \( R \)-algebras.
 
   \SubProofOf{thm:def:polynomial_algebra/entire}
 
@@ -320,7 +438,7 @@
 \begin{proposition}\label{thm:adjoining_elements_to_semiring}
   Let \( R \subseteq S \) be \hyperref[def:semiring/commutative]{commutative semirings} and let \( A \subseteq S \) be an arbitrary subset.
 
-  Fix a set \( \mscrX \) of indeterminates and a bijective function \( e: \mscrX \to A \) and consider the \hyperref[thm:polynomial_algebra_universal_property]{evaluation homomorphism}
+  Fix a set \( \mscrX \) of indeterminates and a bijective function \( e: \mscrX \to A \) and consider the \hyperref[rem:substitution_homomorphism]{evaluation homomorphism}
   \begin{equation*}
     \Phi_e: R[\mscrX] \to S.
   \end{equation*}
@@ -376,7 +494,7 @@
 \end{example}
 
 \begin{definition}\label{def:formal_power_series}\mimprovised
-  If we extend the concept of \hyperref[def:polynomial_algebra]{polynomials} to allow countably many nonzero terms, we obtain a set \( R\Bracks{\mscrX} \) which we call the \term{formal power series} over \( R \) with indeterminates from the set \( \mscrX \).
+  If we extend the concept of \hyperref[def:polynomial_algebra]{polynomials} to allow countably many monomials with nonzero coefficients, we obtain a set \( R\Bracks{\mscrX} \) which we call the \term{formal power series} over \( R \) with indeterminates from the set \( \mscrX \).
 
   The evaluation homomorphism defined in \fullref{thm:polynomial_algebra_universal_property} is problematic, however, since algebraic operations are finitary by nature. This is discussed in \fullref{rem:binary_operation_syntax_trees/infinite}, along with how sometimes we can make sense of infinitary algebraic operations.
 \end{definition}
