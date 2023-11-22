@@ -1,5 +1,3 @@
-from __future__ import annotations
-
 from dataclasses import dataclass, field
 from queue import SimpleQueue
 from typing import Any, cast
@@ -34,7 +32,7 @@ class Derivation:
 @dataclass
 class ParseTree:
     payload: GrammarSymbol
-    children: list[ParseTree] = field(default_factory=list)
+    children: list['ParseTree'] = field(default_factory=list)
 
     def is_leaf(self):
         return len(self.children) == 0

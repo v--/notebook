@@ -1,5 +1,3 @@
-from __future__ import annotations
-
 from datetime import datetime, timedelta
 from fnmatch import fnmatch
 from timeit import default_timer as timer
@@ -45,13 +43,13 @@ class Task:
     def __hash__(self):
         return hash(self.command)
 
-    async def pre_process(self, runner: TaskRunner):
+    async def pre_process(self, runner: 'TaskRunner'):
         pass
 
-    async def post_process(self, runner: TaskRunner):
+    async def post_process(self, runner: 'TaskRunner'):
         pass
 
-    async def on_failure(self, runner: TaskRunner):
+    async def on_failure(self, runner: 'TaskRunner'):
         pass
 
 
@@ -76,7 +74,7 @@ class BiberTask(Task):
     def command(self):
         return f'biber --quiet {self.biber_path}'
 
-    async def post_process(self, runner: TaskRunner):
+    async def post_process(self, runner: 'TaskRunner'):
         runner.schedule(TeXTask(self.tex_path), str(self.biber_path))
 
 
@@ -110,10 +108,10 @@ class TeXTask(Task):
         except IOError:
             return None
 
-    async def pre_process(self, runner: TaskRunner):
+    async def pre_process(self, runner: 'TaskRunner'):
         self._bcf_file_hash = self.get_bcf_hash()
 
-    async def post_process(self, runner: TaskRunner):
+    async def post_process(self, runner: 'TaskRunner'):
         parser = texoutparse.LatexLogParser()
         requires_rerun = False
 
@@ -145,7 +143,7 @@ class TeXTask(Task):
             return
 
         if not self.get_aux_path('.pdf').exists():
-            self.sublogger.error(f'No output file')
+            self.sublogger.error('No output file')
             return
 
         if self.get_bcf_hash() != self._bcf_file_hash:
@@ -183,7 +181,7 @@ class AsymptoteTask(Task):
     def command(self):
         return f'asy -quiet -render=0 -outname={self.aux_eps_path} {self.src_path}'
 
-    async def post_process(self, runner: TaskRunner):
+    async def post_process(self, runner: 'TaskRunner'):
         shutil.copyfile(self.aux_eps_path, self.build_eps_path)
 
 
@@ -197,7 +195,7 @@ class TaskRunner:
         start = timer()
 
         if trigger is None:
-            task.sublogger.info(f'Manually triggered')
+            task.sublogger.info('Manually triggered')
         else:
             task.sublogger.info(f'Triggered by {trigger}')
 

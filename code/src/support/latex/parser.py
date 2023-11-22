@@ -1,5 +1,3 @@
-from __future__ import annotations
-
 from typing import Iterator, Sequence
 
 from ..parsing import Parser
