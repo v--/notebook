@@ -3,7 +3,7 @@ FIGURES_TEX_PDF := $(patsubst figures/%.tex,output/%.pdf,$(wildcard figures/*.te
 FIGURES_ASY_PDF := $(patsubst figures/%.asy,output/%.eps,$(wildcard figures/*.asy))
 TEXT_SOURCE := notebook.tex classes/notebook.cls bibliography/*.bib packages/*.sty text/*.tex $(FIGURES_TEX_PDF) $(FIGURES_ASY_PDF)
 
-.PHONY: notebook figures watch watch-figures format-figures clean checkcites
+.PHONY: notebook figures watch watch-figures format-figures find-obsolete-figures tidy-bib-files clean checkcites
 
 notebook: output/notebook.pdf
 
@@ -35,6 +35,9 @@ format-figures:
 
 find-obsolete-figures:
 	@poetry --directory code run python -m code.commands.find_obsolete_figures
+
+tidy-bib-files:
+	@poetry --directory code run python -m code.commands.tidy_bib_files
 
 checkcites:
 	@checkcites --backend biber --all aux/notebook.bcf
