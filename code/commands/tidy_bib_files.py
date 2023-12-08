@@ -62,7 +62,7 @@ def refine_bib_files():
         )
 
         for entry in bibtex_db.entries:
-            if 'shortauthor' in entry['language']:
+            if 'shortauthor' in entry:
                 continue
 
             if entry['language'] == 'russian' or entry['language'] == 'bulgarian':
