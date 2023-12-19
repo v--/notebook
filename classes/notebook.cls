@@ -38,6 +38,10 @@
 \RequirePackage{graphicx}
 \RequirePackage{graphbox}
 \RequirePackage{csquotes}
+\RequirePackage{paracol}
+
+% Don't use separate footnotes in paracol environments
+\footnotelayout{m}
 
 % Reference packages
 % Using hypertexnames=false is suggested in https://tex.stackexchange.com/a/282313 and explained in https://tex.stackexchange.com/a/3197
