@@ -1,3 +1,5 @@
+\ExplSyntaxOn
+
 % Missing trigonometry
 \DeclareMathOperator  \arccot          {arccot}
 \DeclareMathOperator  \arctantwo       {arctan2}
@@ -27,12 +29,57 @@
     #1\text{-}\cat{#2}
   }
 
+% Syntactic logical symbols
+\NewDocumentCommand   \syntop         {} {\dot\top}
+\NewDocumentCommand   \synbot         {} {\dot\bot}
+\NewDocumentCommand   \synneg         {} {\dot\neg}
+\NewDocumentCommand   \synvee         {} {\veedot}
+\NewDocumentCommand   \synwedge       {} {\wedgedot}
+\NewDocumentCommand   \syneq          {} {\doteq}
+\NewDocumentCommand   \synexists      {} {\dot\exists}
+
+\box_new:N \l_nb_superimpose_box
+\cs_new_protected:Nn \nb_superimpose:NN
+  {
+    \hbox_set:Nn \l_nb_superimpose_box {\ensuremath{#1}}
+    \mathclap {\hspace {\box_wd:N \l_nb_superimpose_box} #2}
+    \box_use:N \l_nb_superimpose_box
+  }
+
+\NewDocumentCommand \syniff {}
+  {
+    \mathrel { \nb_superimpose:NN \leftrightarrow \dotminus }
+  }
+
+% We avoid using "\nb_superimpose" because we do not want the dot to be centered
+\NewDocumentCommand \synimplies {}
+  {
+    \mathrel
+      {
+        \mathrlap{\dotminus}
+        {\rightarrow}
+      }
+  }
+
+\box_new:N \l_nb_vreduce_box
+\cs_new_protected:Nn \nb_vreduce:nn
+  {
+    \hbox_set:Nn \l_nb_vreduce_box {\ensuremath{#1}}
+    \box_set_ht:Nn \l_nb_vreduce_box {\box_ht:N \l_nb_vreduce_box - #2}
+    \box_use:N \l_nb_vreduce_box
+  }
+
+\NewDocumentCommand \synforall {}
+  {
+    \mathrel{ \dot{ \nb_vreduce:nn {\forall} {2.3pt} } }
+  }
+
 % Properly spaced quantifiers
-\NewDocumentCommand   \qdelim       {} {.}
-\NewDocumentCommand   \quantifier {mm} {#1 \thinspace #2 \thinspace \qdelim \thinspace}
-\NewDocumentCommand   \qexists     {m} {\quantifier \exists {#1}}
-\NewDocumentCommand   \qExists     {m} {\quantifier \exists {! \thinspace #1}}
-\NewDocumentCommand   \qforall     {m} {\quantifier \forall {#1}}
+\cs_new:Nn \nb_qdelim: {.}
+\NewDocumentCommand   \quantifier {mm} {#1 \thinspace #2 \thinspace \nb_qdelim: \thinspace}
+\NewDocumentCommand   \qexists     {m} {\quantifier {\synexists} {#1}}
+\NewDocumentCommand   \qExists     {m} {\quantifier {\synexists} {! \thinspace #1}}
+\NewDocumentCommand   \qforall     {m} {\quantifier {\synforall} {#1}}
 \NewDocumentCommand   \qabstr      {m} {\quantifier \muplambda {#1}}
 
 % More operators
@@ -76,13 +123,10 @@
 
 \NewDocumentCommand \restr {} {\vert}
 
-\ExplSyntaxOn
-
 \NewDocumentCommand \reloset {smm}
-{
-  \IfBooleanTF {#1}
   {
-    \negthinspace
+    \IfBooleanT {#1} {\negthinspace}
+
     \overset
       {
         \smash
@@ -91,46 +135,34 @@
           }
       }
       {#3}
-    \negthinspace
+
+    \IfBooleanT {#1} {\negthinspace}
   }
-  {
-    \overset
-      {
-        \smash
-          {
-            \raisebox {-0.1em} { \( \scriptscriptstyle #2 \) }
-          }
-      }
-      {#3}
-  }
-}
 
 % Math mode text with spacing
 \NewDocumentCommand \T {sm}
-{
-  \IfBooleanTF {#1}
-    { \thinspace \text{#2} \thinspace }
-    { \mathrel { \text{#2} } }
-}
+  {
+    \IfBooleanTF {#1}
+      { \thinspace \text{#2} \thinspace }
+      { \mathrel { \text{#2} } }
+  }
 
 % Permutation cycles
 % Based on https://tex.stackexchange.com/a/135899
+\seq_new:N \l_nb_cycle_seq
 \NewDocumentCommand \cycle {O{\enspace}m}
   {
     \parens*
     {
-      \seq_set_split:Nnn \l_tmpa_seq {,} {#2}
-      \seq_use:Nn \l_tmpa_seq {#1}
+      \seq_set_split:Nnn \l_nb_cycle_seq {,} {#2}
+      \seq_use:Nn \l_nb_cycle_seq {#1}
     }
   }
 
-\ExplSyntaxOff
-
 % Double overlines
-% Based on https://tex.stackexchange.com/a/488246
 \NewDocumentCommand \doverline {m}
   {
-    \setbox0=\hbox{\( \overline{#1} \)}
-    \ht0=\dimexpr\ht0-.10ex\relax
-    \overline{\copy0}
+    \overline{ \nb_vreduce:nn { \overline{#1} } {2.3pt} }
   }
+
+\ExplSyntaxOff
