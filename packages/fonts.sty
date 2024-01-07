@@ -21,7 +21,7 @@
     \RequirePackage[sans,tt=false,ScaleRM=1.075]{libertinus} % Sans-serif
     \RequirePackage{microtype}
 
-    % https://tex.stackexchange.com/a/460325
+    % Based on https://tex.stackexchange.com/a/460325
     \cs_new_protected:Nn \__recode:N
       {% #1 is \u8:<bytes> which expands to \IeC{<LICR>}
         \exp_last_unbraced:No \__recode_aux:nn #1
@@ -55,28 +55,26 @@
     \DeclareMathOperator \Tau     {T}
     \DeclareMathOperator \Chi     {X}
 
-    % https://tex.stackexchange.com/a/564222
-    \NewDocumentCommand \DefineAlphabet {mmmm}
-      {% #1 = prefix, #2 = command, #3 = start, #4 = end
+    % Based on https://tex.stackexchange.com/a/564222
+    \cs_new_protected:Nn \nb_define_alphabet:Nnnn
+      {% #1 = command, #2 = prefix, #3 = start, #4 = end
         \int_step_inline:nnn { `#3 } { `#4 }
           {
-            \cs_new_protected:cpx { #1 \char_generate:nn { ##1 }{ 11 } }
+            \cs_new_protected:cpx { #2 \char_generate:nn { ##1 }{ 11 } }
               {
-                \exp_not:N #2 { \char_generate:nn { ##1 } { 11 } }
+                \exp_not:N #1 { \char_generate:nn { ##1 } { 11 } }
               }
           }
       }
 
     \let\Bbbk\relax
 
-    \DefineAlphabet {Bbb}   \mathbb   {A} {Z}
-    \DefineAlphabet {Bbb}   \mathbb   {a} {z}
-    \DefineAlphabet {mscr}  \mathcal  {A} {Z}
-    \DefineAlphabet {mscr}  \mathcal  {a} {z}
-    \DefineAlphabet {mfrak} \mathfrak {A} {Z}
-    \DefineAlphabet {mfrak} \mathfrak {a} {z}
-
-    \let\DefineAlphabet\relax
+    \nb_define_alphabet:Nnnn \mathbb   {Bbb}   {A} {Z}
+    \nb_define_alphabet:Nnnn \mathbb   {Bbb}   {a} {z}
+    \nb_define_alphabet:Nnnn \mathcal  {mscr}  {A} {Z}
+    \nb_define_alphabet:Nnnn \mathcal  {mscr}  {a} {z}
+    \nb_define_alphabet:Nnnn \mathfrak {mfrak} {A} {Z}
+    \nb_define_alphabet:Nnnn \mathfrak {mfrak} {a} {z}
 
     % stix2 doesn't behave well with text symbols, so I use math symbols instead
     \cs_if_exist:cT {setlist}

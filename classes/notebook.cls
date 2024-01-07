@@ -1,3 +1,5 @@
+\ExplSyntaxOn
+
 \NeedsTeXFormat{LaTeX2e}
 \ProvidesClass{classes/notebook}
 
@@ -55,23 +57,21 @@
   ]
   {hyperref}
 
-%% https://tex.stackexchange.com/a/525297
+%% Based on https://tex.stackexchange.com/a/525297
 \RequirePackage{xcolor}
 
-\NewDocumentCommand \SetHRColor {mmm}
+\cs_new_protected:Nn \nb_set_hyperref_color:nn
   {
-    \definecolor{Hy#1color}{#2}{#3}
+    \definecolor{Hy#1color}{HTML}{#2}
     \hypersetup{#1color=Hy#1color}
   }
 
-\SetHRColor{link}{HTML}{800006}
-\SetHRColor{cite}{HTML}{2E7E2A}
-\SetHRColor{file}{HTML}{131877}
-\SetHRColor{url} {HTML}{8A0087}
-\SetHRColor{menu}{HTML}{727500}
-\SetHRColor{run} {HTML}{137776}
-
-\let\SetHRColor\relax
+\nb_set_hyperref_color:nn {link} {800006}
+\nb_set_hyperref_color:nn {cite} {2E7E2A}
+\nb_set_hyperref_color:nn {file} {131877}
+\nb_set_hyperref_color:nn {url}  {8A0087}
+\nb_set_hyperref_color:nn {menu} {727500}
+\nb_set_hyperref_color:nn {run}  {137776}
 
 \RequirePackage[nameinlink]{cleveref}
 \RequirePackage{crossreftools}
@@ -98,3 +98,5 @@
 
 % Use the left margins rather than the right margins
 \reversemarginpar
+
+\ExplSyntaxOff
