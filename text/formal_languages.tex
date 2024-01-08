@@ -1,5 +1,7 @@
 \subsection{Formal languages}\label{subsec:formal_languages}
 
+\paragraph{Languages}
+
 Languages are used to define formulas for expressing the \hyperref[def:zfc]{axioms of set theory}. Here, sets are used to formally define languages. A simple way out of this vicious cycle is via the theory-metatheory relationship discussed in \fullref{rem:metalogic} and \fullref{rem:set_definition_recursion}. In short, we define languages within the metatheory using the already available concept of set, and we later define formulas, again in the metatheory, which allows us to subsequently formally define sets via axioms within the object logic.
 
 \begin{definition}\label{def:formal_language}\mcite[3; 4]{Salomaa1987}
@@ -21,7 +23,7 @@ Languages are used to define formulas for expressing the \hyperref[def:zfc]{axio
 
     We abbreviate \( \smash{\overbrace{w \ldots w}^{k \T*{times}}} \) as \( w^k \).\fnote{This is only a notational shortcut within the metalogic. We do not distinguish, formally, between the words \( aaabbaa \) and \( a^3 b^2 a^2 \), nor between \( a \varepsilon b \) and \( ab \).}
 
-    \thmitem{def:formal_language/reverse}\mcite[example 2.7]{Salomaa1987} We define the \term{reverse word} of \( w = (w_1, \ldots, w_n) \) as
+    \thmitem{def:formal_language/reverse}\mimprovised We define the \term{reverse word} of \( w = (w_1, \ldots, w_n) \) as
     \begin{equation*}
       \op{rev}(w) \coloneqq (w_n, \ldots, w_1).
     \end{equation*}
@@ -38,7 +40,7 @@ Languages are used to define formulas for expressing the \hyperref[def:zfc]{axio
       w = p v s.
     \end{equation*}
 
-    \thmitem{def:formal_language/kleene_star}\mcite[158]{Savage1998} We define the \term{Kleene star}\fnote{The Kleene star is also called the free monoid on \( \mscrA \) --- see \fullref{thm:free_monoid_universal_property}.} \( \mscrA^* \) of \( \mscrA \) as the set of all words over \( \mscrA \). If we wish to exclude the empty word, like we often do, we instead write \( \mscrA^+ \) for the set of all non-empty words over \( \mscrA \).
+    \thmitem{def:formal_language/kleene_star}\mcite[158]{Savage1998} We define the \term{Kleene star}\fnote{The Kleene star is a monoid --- see \fullref{def:free_monoid}.} \( \mscrA^* \) of \( \mscrA \) as the set of all words over \( \mscrA \). If we wish to exclude the empty word, like we often do, we instead write \( \mscrA^+ \) for the set of all non-empty words over \( \mscrA \).
 
     \thmitem{def:formal_language/language} We call any subset of \( \mscrA^* \) a \term{language} over \( \mscrA \).
   \end{thmenum}
@@ -50,15 +52,15 @@ Languages are used to define formulas for expressing the \hyperref[def:zfc]{axio
 \begin{example}\label{ex:def:formal_language}
   We list several examples of \hyperref[def:formal_language]{formal languages}:
   \begin{thmenum}
-    \thmitem{ex:def:formal_language/full} The simplest examples are the empty language and the Kleene star itself. Both are useless in practice, however.
+    \thmitem{ex:def:formal_language/full} The simplest examples are the empty language and the Kleene star itself.
 
     \thmitem{ex:def:formal_language/an} For any alphabet, we can pick one letter \( a \) and form the language
     \begin{equation*}
-      \mscrL \coloneqq \set{ a^n \given n \geq 0 },
+      \mscrL \coloneqq \set{ a^n \given n \geq 0 }
     \end{equation*}
     consisting of all finite repetitions of the symbol \( a \).
 
-    We can redefine all operations from \fullref{subsec:natural_numbers} to hold for words in \( \mscrL \). For example, addition of \( a^n \) and \( a^m \) is their concatenation \( a^{n + m} \), while the exponentiation \( (a^n)^m \) is a repetition of the word \( a^n \).
+    We can redefine all operations from \fullref{subsec:natural_numbers} to hold for words in \( \mscrL \). For example, addition of \( a^n \) and \( a^m \) is their concatenation \( a^{n + m} \), while the exponentiation \( (a^n)^m \) corresponds to \( m \) repetitions of the word \( a^n \), that is, to \( a^{nm} \).
 
     We can identify the language with the \hyperref[def:labeled_set]{edge-labeled} \hyperref[def:directed_graph]{directed graph}
     \begin{equation}\label{eq:def:formal_language/an}
@@ -88,12 +90,14 @@ Languages are used to define formulas for expressing the \hyperref[def:zfc]{axio
   \end{thmenum}
 \end{example}
 
-\begin{definition}\label{def:finite_automaton}\mcite[def. 4.1.1]{Savage1998}
-  Let \( \Sigma \) be some \hyperref[def:formal_language]{alphabet}. Let \( Q \) be a finite nonempty set, whose members we will call \term{states}. Let \( \delta: Q \times \Sigma \to \pow(Q) \) be a \hyperref[def:function]{set-valued map}, which we will call a \term{transition function} because, depending on a state in \( Q \) and a symbol in \( \Sigma \), \( \delta \) gives us the possible states towards we can transition.
+\paragraph{Finite automata}
 
-  Finally, let \( S \) and \( T \) be nonempty sets of vertices, which we call an \term{initial} and \term{terminal states}, correspondingly.
+\begin{definition}\label{def:finite_automaton}\mcite[27]{Salomaa1987}
+  Fix an \hyperref[def:formal_language]{alphabet} \( \Sigma \). Let \( Q \) be a finite nonempty set, whose members we will call \term{states}. Let \( \delta: Q \times \Sigma \multto Q \) be a \hyperref[def:set_valued_map]{set-valued map}, which we will call a \term{transition function} because, depending on a state in \( Q \) and a symbol in \( \Sigma \), \( \delta \) gives us the possible states towards we can transition.
 
-  We call this entire contraption \( (\Sigma, Q, \delta, I, T) \) a \term{finite automaton}. It models a real-world device that starts its work from some initial state and, via a sequence of state transitions, reaches some terminal state.
+  Finally, let \( S \) and \( T \) be nonempty sets of states, which we call an \term{initial} and \term{terminal states}, correspondingly.
+
+  We call this entire contraption \( (\Sigma, Q, \delta, I, T) \) a \term[ru=конечный автомат (\cite[159]{Гладкий1973})]{finite automaton}. It models a real-world device that starts its work from some initial state and, via a sequence of state transitions, reaches some terminal state.
 
   \begin{figure}[!ht]
     \hfill
@@ -101,22 +105,22 @@ Languages are used to define formulas for expressing the \hyperref[def:zfc]{axio
     \hfill
     \includegraphics[page=2]{output/def__finite_automaton}
     \hfill\hfill
-    \caption{A \hyperref[def:finite_automaton/determinism]{nondeterministic finite automaton} and its \hyperref[alg:determinization_of_finite_automata]{determinization} accepting the language \( \set{ a } \cup \set{ b^n \given n > 0 } \cup \set{ aa b^n \given n > 0 } \).}
+    \caption{A \hyperref[def:finite_automaton/determinism]{nondeterministic finite automaton} accepting the language \( \set{ a } \cup \set{ b^n \given n > 0 } \cup \set{ aa b^n \given n > 0 } \) and its \hyperref[alg:determinization_of_finite_automata]{determinization}.}
     \label{fig:def:finite_automaton}
   \end{figure}
 
   \begin{thmenum}
-    \thmitem{def:finite_automaton/graph} Consider \( \delta \) as a set of triples \( (h_0, l_0, t_0) \). Denote by \( h: \delta \to Q \), \( l: \delta \to \Sigma \) and \( t: \delta \to Q \) the functions that take the corresponding entry out of each triple.
+    \thmitem{def:finite_automaton/graph}\mimprovised Regard \( \delta \) as a set of triples \( (h_0, l_0, t_0) \). Denote by \( h: \delta \to Q \), \( l: \delta \to \Sigma \) and \( t: \delta \to Q \) the functions that take the corresponding entry out of each triple.
 
     Then the quadruple \( (Q, \delta, h, t) \) is a \hyperref[def:directed_multigraph]{directed multigraph}, whose arcs are \hyperref[def:labeled_set]{labeled} by \( l \).
 
-    We often identify the automaton with its (multi)graph. When drawing this graph, for example in \cref{fig:def:finite_automaton}, we denote initial states via inward arrows without a source and terminal states via double circles.
+    We can identify the automaton with its (multi)graph. When drawing this graph, for example in \cref{fig:def:finite_automaton}, we denote initial states via inward arrows without a source and terminal states via double circles.
 
     \thmitem{def:finite_automaton/determinism} If there is only one initial state and if \( \delta \) is a \hyperref[def:set_valued_map/partial]{single-valued partial function}, we say that the automata is \term{deterministic}.
 
     Determinism ensures that there is at most one possible state to transition to, given a current state and a symbol.
 
-    \thmitem{def:finite_automaton/recognition} We say that the automaton \term{accepts} or \term{recognizes} the \hyperref[def:formal_language/word]{word} \( a_1 \cdots a_n \) over \( \mscrA \) if there exists a \hyperref[def:graph_walk/directed]{walk}
+    \thmitem{def:finite_automaton/recognition}\mcite[def. 4.1.1]{Savage1998} We say that the automaton \term{accepts} or \term{recognizes} the \hyperref[def:formal_language/word]{word} \( a_1 \cdots a_n \) over \( \mscrA \) if there exists a \hyperref[def:graph_walk/directed]{walk}
     \begin{equation*}
       s \reloset {e_1} \to \anon \reloset {e_2} \to \cdots \reloset {e_{n-1}} \to \anon \reloset {e_n} \to \anon.
     \end{equation*}
@@ -126,13 +130,13 @@ Languages are used to define formulas for expressing the \hyperref[def:zfc]{axio
       \item The tail \( t(e_n) \) of the walk is a terminal state from \( T \).
     \end{itemize}
 
-    \thmitem{def:finite_automaton/language} The set of all words recognized by the automaton is called the language \term{accepted} or \term{recognized} by the automaton. We denote this language via \( \mscrL(F) \).
+    \thmitem{def:finite_automaton/language} The set of all words recognized by the automaton is called the language \term{accepted} or \term[ru=(язык) распознается (автоматом) (\cite[45]{Гладкий1973})]{recognized} by the automaton. We denote this language via \( \mscrL(F) \).
 
-    \thmitem{def:finite_automaton/equivalent} We say that two finite automata are \term{equivalent} if they recognize the same language.
+    \thmitem{def:finite_automaton/equivalent}\mcite[152]{Savage1998} We say that two finite automata are \term[ru=(автоматы) эквивалентны (\cite[48]{Гладкий1973})]{equivalent} if they recognize the same language.
   \end{thmenum}
 \end{definition}
 
-\begin{definition}\label{def:reverse_language}\mcite[17]{Salomaa1987}
+\begin{definition}\label{def:reverse_language}\mimprovised
   We define the \term{reverse language} of \( \mscrL \) as
   \begin{equation*}
     \op{rev}(\mscrL) \coloneqq \set{ \op{rev}(w) \given w \in \mscrL }.
@@ -140,7 +144,7 @@ Languages are used to define formulas for expressing the \hyperref[def:zfc]{axio
 \end{definition}
 
 \begin{proposition}\label{thm:reverse_language_involution}
-  The \hyperref[def:reverse_language]{reverse} of the reverse of \( \mscrL \) is \( \mscrL \) itself.
+  The \hyperref[def:reverse_language]{reverse} of the reverse of a language is the original language.
 \end{proposition}
 \begin{proof}
   Trivial.
@@ -153,12 +157,12 @@ Languages are used to define formulas for expressing the \hyperref[def:zfc]{axio
   \end{equation*}
   where
   \begin{equation*}
-    \op{rev}(\delta)(B, a) \coloneqq A \T{if} \delta(A, a) \coloneqq B.
+    A \in \op{rev}(\delta)(B, a) \T{if} B \in \delta(A, a).
   \end{equation*}
 \end{definition}
 
 \begin{proposition}\label{thm:reverse_finite_automaton_graph}
-  The \hyperref[def:finite_automaton/graph]{graph} of the \hyperref[def:reverse_finite_automaton]{reverse automaton} \( \op{rev}(F) \) is the \hyperref[def:opposite_directed_multigraph]{opposite graph}.
+  The \hyperref[def:finite_automaton/graph]{multigraph} of a \hyperref[def:reverse_finite_automaton]{reverse automaton} is its \hyperref[def:opposite_directed_multigraph]{opposite multigraph}.
 \end{proposition}
 \begin{proof}
   Trivial.
@@ -177,7 +181,7 @@ Languages are used to define formulas for expressing the \hyperref[def:zfc]{axio
 \begin{example}\label{ex:def:finite_automaton}
   We list several examples of \hyperref[def:finite_automaton]{finite automata}:
   \begin{thmenum}
-    \thmitem{ex:def:finite_automaton/even} Consider the language form \fullref{ex:def:formal_language/leucine} describing even binary numbers. The language can be recognized by
+    \thmitem{ex:def:finite_automaton/even} Consider the language form \fullref{ex:def:formal_language/leucine} describing even binary numbers. The language can be recognized by the automaton with multigraph
     \begin{equation*}
       \includegraphics[page=2]{output/ex__def__finite_automaton}
     \end{equation*}
@@ -229,39 +233,36 @@ Languages are used to define formulas for expressing the \hyperref[def:zfc]{axio
 \begin{algorithm}[Determinization of finite automata]\label{alg:determinization_of_finite_automata}
   Let \( N = (\Sigma, Q, \delta, I, T) \) be a \hyperref[def:finite_automaton]{finite automaton}. We will build an \hyperref[def:finite_automaton/equivalent]{equivalent} \hyperref[def:finite_automaton/determinism]{deterministic automaton} \( \det(N) \).
 
-  This can be achieved by grouping states that would otherwise make the automaton nondeterministic. We will first recursively construct the operator \( \mscrD(A, V) \), which, given a set of states \( A \) and a family of \enquote{visited} sets of states \( V \), produces a family of triples describing the transitions of the deterministic automaton. The family \( V \) helps us avoid cycles when traversing \( N \).
+  This can be achieved by grouping states that would otherwise make the automaton nondeterministic. We will first recursively construct the operator \( \mscrD(P, V) \), which, given a set of states \( P \) and a family of \enquote{visited} sets of states \( V \), produces a family of triples describing the transitions of the deterministic automaton. The family \( V \) helps us avoid cycles when traversing \( N \).
 
   \begin{thmenum}
-    \thmitem{alg:determinization_of_finite_automata/step} Suppose we are given a set \( A \) of vertices and a family \( V \) of sets of visited states. Let
-    \begin{equation*}
-      K \coloneqq \set{ l(e) \given e \in E \T{and} h(e) \in A }
-    \end{equation*}
-    be the set of all labels of arcs going out from \( A \), and, for each \( k \in K \), let
-    \begin{equation*}
-      O_k \coloneqq \set{ t(e) \given e \in E \T{and} h(e) \in A \T{and} l(e) = k }
-    \end{equation*}
-    be the set of all terminal vertices \( b \) of arcs going out from \( A \) that have label \( k \).
+    \thmitem{alg:determinization_of_finite_automata/step} Suppose we are given a subset \( P \) of \( P \) and a subset \( V \) of \( \pow(Q) \).
 
-    Define the set of triples
+    For every symbol \( a \in \Sigma \), consider the set of all states that we can transition to via \( a \) from some state in \( P \):
     \begin{equation*}
-      E_A \coloneqq \set{ (A, O_k, k) \given k \in K }.
+      O_a \coloneqq \set{ q \in Q \given \qexists* {p \in P} q \in \delta(p, a) }.
+    \end{equation*}
+
+    Define the set of triples that would become part the graph of the new transition function:
+    \begin{equation*}
+      E_P \coloneqq \set{ (P, a, O_a) \given O_a \neq \varnothing }.
     \end{equation*}
 
     Finally, define
     \begin{equation*}
-      \mscrD(A, V) \coloneqq E_A \cup \bigcup \set[\Big]{ \mscrD\parens*{ O_k , V \cup \set{ A } } \given* k \in K \T{and} O_k \not\in V }.
+      \mscrD(P, V) \coloneqq E_P \cup \bigcup \set[\Big]{ \mscrD\parens*{ O_a , V \cup \set{ P } } \given* O_a \neq \varnothing \T{and} O_a \not\in V }.
     \end{equation*}
 
-    Note how we used \( V \) to filter out only those sets \( O_k \) that have not yet been visited.
+    Note how we used \( V \) to filter out only those sets of states that have not yet been visited.
 
-    \thmitem{alg:determinization_of_finite_automata/run} Let \( \delta' \coloneqq \mscrD(I, \varnothing) \). Define
+    \thmitem{alg:determinization_of_finite_automata/run} Let \( \delta' \coloneqq \mscrD(I, \varnothing) \). Define the new set of states
     \begin{equation*}
-      Q' \coloneqq \set{ A \given (A, O_k, k) \in \delta' } \cup \set{ O_k \given (A, O_k, k) \in \delta' }.
+      Q' \coloneqq \set{ P \given (P, a, O) \in \delta' } \cup \set{ O \given (P, a, O) \in \delta' }.
     \end{equation*}
 
     Define also the set of initial states \( I' \coloneqq \set{ I } \) and of terminal states
     \begin{equation*}
-      T' \coloneqq \set{ A \given A \T{is a vertex of} G' \T{and} A \cap T \neq \varnothing }.
+      T' \coloneqq \set{ P \in Q' \given P \cap T \neq \varnothing }.
     \end{equation*}
 
     Then \( \det(N) \coloneqq (\Sigma, Q', \delta', I', T') \) is the desired finite automaton.
@@ -275,6 +276,8 @@ Languages are used to define formulas for expressing the \hyperref[def:zfc]{axio
 
   We must show that \( \mscrL(N) = \mscrL(F) \). We have introduced a special state for every occurrence of several vertices that have incoming arcs with identical labels. Hence, we replace every such group of arcs with a single arc. The two automata should then accept identical languages.
 \end{defproof}
+
+\paragraph{Formal grammars}
 
 \begin{definition}\label{def:formal_grammar}\mcite[9]{Salomaa1987}
   Let \( \Sigma \) and \( V \) be disjoint nonempty subsets of some \hyperref[def:formal_language]{alphabet}, whose members we call \term{terminals} and \term{variables}, respectively. Fix some \term{start symbol} \( S \in V \).
