@@ -36,10 +36,10 @@ class GrammarTokenizer(Parser[str]):
 
         while self.peek() != '>':
             if self.is_at_end():
-                raise self.error('Non-terminal identifier not closed', precede=len(buffer) + 1)
+                raise self.error('Nonterminal identifier not closed', precede=len(buffer) + 1)
 
             if self.peek() == '<':
-                raise self.error('Non-terminal names cannot be nested', precede=len(buffer) + 1)
+                raise self.error('Nonterminal names cannot be nested', precede=len(buffer) + 1)
 
             if self.peek() == '\\':
                 self.advance()
@@ -154,7 +154,7 @@ class GrammarRule:
     dest: list[GrammarSymbol]
 
     def __post_init__(self):
-        assert any(isinstance(sym, NonTerminal) for sym in self.src), 'The source must contain at least one non-terminal, but it is {}'.format(' '.join(str(sym) for sym in self.src))
+        assert any(isinstance(sym, NonTerminal) for sym in self.src), 'The source must contain at least one nonterminal, but it is {}'.format(' '.join(str(sym) for sym in self.src))
         assert all(sym != SingletonSymbol.epsilon for sym in self.dest) or len(self.dest) == 1, 'SingletonSymbol.epsilon rules cannot contain other symbols, got {}'.format(' '.join(str(sym) for sym in self.dest))
         assert all(len(sym.value) == 1 for sym in itertools.chain(self.src, self.dest) if isinstance(sym, Terminal)), 'Multi-symbol terminals are disallowed'
 
@@ -222,7 +222,7 @@ class Grammar:
     start: NonTerminal
 
     def __post_init__(self):
-        assert self.start in self.schema.get_non_terminals(), f'The starting symbol {self.start} must be a non-terminal in {self.schema}'
+        assert self.start in self.schema.get_non_terminals(), f'The starting symbol {self.start} must be a nonterminal in {self.schema}'
 
     def iter_starting_rules(self):
         for rule in self.schema.rules:
