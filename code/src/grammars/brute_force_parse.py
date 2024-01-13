@@ -7,12 +7,12 @@ from .parse_tree import ParseTree
 from .epsilon_rules import is_epsilon_rule
 
 
-def iter_partitions(seq: str, n: int) -> Iterator[list[str]]:
-    if n == 1:
+def iter_partitions(seq: str, m: int) -> Iterator[list[str]]:
+    if m == 1:
         yield [seq]
     else:
         for i in range(len(seq) + 1):
-            for part in iter_partitions(seq[i:], n - 1):
+            for part in iter_partitions(seq[i:], m - 1):
                 yield [seq[:i], *part]
 
 
@@ -30,7 +30,7 @@ def generate_trees(sym: GrammarSymbol, string: str, grammar: Grammar, traversed:
 
 # This is alg:brute_force_parsing in the text
 def parse(grammar: Grammar, string: str, traversed: set[tuple[NonTerminal, str]] = set()) -> Iterator[ParseTree]:
-    assert is_context_free(grammar), "Unger's parsing algorithm only works on context-free grammars"
+    assert is_context_free(grammar), 'Brute force parsing algorithm only works on context-free grammars'
     for rule in grammar.iter_starting_rules():
         if is_epsilon_rule(rule):
             if len(string) == 0:
