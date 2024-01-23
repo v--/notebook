@@ -19,8 +19,8 @@ class PropConstant(TokenEnum):
 
 
 class BinaryConnective(TokenEnum):
-    join_ = '∨'
-    meet = '∧'
+    disjunction = '∨'
+    conjunction = '∧'
     conditional = '→'
     biconditional = '↔'
 

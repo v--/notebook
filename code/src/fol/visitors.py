@@ -1,5 +1,5 @@
 from .terms import Variable, FunctionTerm, Term
-from .formulas import Formula, EqualityFormula, PredicateFormula, NegationFormula, ConnectiveFormula, QuantifierFormula
+from .formulas import Formula, ConstantFormula, EqualityFormula, PredicateFormula, NegationFormula, ConnectiveFormula, QuantifierFormula
 
 
 class TermVisitor:
@@ -35,6 +35,9 @@ class TermTransformationVisitor(TermVisitor):
 class FormulaVisitor:
     def visit(self, formula: Formula):
         match formula:
+            case ConstantFormula():
+                return self.visit_constant(formula)
+
             case EqualityFormula():
                 return self.visit_equality(formula)
 
@@ -49,6 +52,9 @@ class FormulaVisitor:
 
             case QuantifierFormula():
                 return self.visit_quantifier(formula)
+
+    def visit_constant(self, formula: ConstantFormula):
+        return self.generic_visit(formula)
 
     def visit_equality(self, formula: EqualityFormula):
         return self.generic_visit(formula)
@@ -70,6 +76,9 @@ class FormulaVisitor:
 
 
 class FormulaTransformationVisitor(FormulaVisitor):
+    def visit_constant(self, formula: ConstantFormula):
+        return formula
+
     def visit_equality(self, formula: EqualityFormula):
         return formula
 

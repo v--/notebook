@@ -1,4 +1,4 @@
-from collections.abc import MutableMapping, Sequence, Iterable, Iterator
+from collections.abc import MutableMapping, Iterable, Iterator
 from dataclasses import dataclass
 from typing import TypeVar, Generic
 

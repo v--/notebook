@@ -1,11 +1,16 @@
 from typing import Iterable
 
 from ..support.parsing import Parser
+from ..exceptions import NotebookCodeError
 
 from .tokens import BinaryConnective, FOLToken, GreekName, LatinName, MiscToken, NaturalNumber, PropConstant, Quantifier
 
 from .terms import Variable, FunctionTerm, Term
-from .formulas import ConnectiveFormula, EqualityFormula, NegationFormula, PredicateFormula, QuantifierFormula, Formula
+from .formulas import ConstantFormula, ConnectiveFormula, EqualityFormula, NegationFormula, PredicateFormula, QuantifierFormula, Formula
+
+
+class IncompleteMatchError(NotebookCodeError):
+    pass
 
 
 class FOLTokenizer(Parser[str]):
@@ -115,6 +120,12 @@ class FOLParser(Parser[FOLToken]):
             case _:
                 raise self.error('Unexpected token')
 
+    def parse_constant_formula(self):
+        value = PropConstant.try_match(self.peek())
+        assert value is not None
+        self.advance()
+        return ConstantFormula(value)
+
     def parse_binary_formula(self):
         assert self.peek() == MiscToken.left_parenthesis
         self.advance()
@@ -137,12 +148,12 @@ class FOLParser(Parser[FOLToken]):
                 else:
                     raise self.error('Unclosed parentheses for binary formula', precede=self.index - a_start)
             else:
-                raise self.error('The left side of an MiscToken.equality formula must be a term', precede=self.index - a_start)
+                raise self.error('The left side of an equality formula must be a term', precede=self.index - a_start)
 
         elif BinaryConnective.try_match(self.peek()):
             connective = self.peek()
 
-            if isinstance(a, FunctionTerm) and len(a.arguments) > 0:
+            if isinstance(a, FunctionTerm):
                 a = PredicateFormula(a.name, a.arguments)
 
             if isinstance(a, Formula):  # type: ignore
@@ -155,7 +166,7 @@ class FOLParser(Parser[FOLToken]):
                 else:
                     raise self.error('Unclosed parentheses for binary formula', precede=self.index - a_start)
             else:
-                raise self.error('The left side of an MiscToken.equality formula must be a formula', precede=self.index - a_start)
+                raise self.error('The left side of a connective formula must be a formula', precede=self.index - a_start)
 
         else:
             raise self.error('Unexpected token')
@@ -184,20 +195,22 @@ class FOLParser(Parser[FOLToken]):
         self.advance()
 
         if self.is_at_end():
-            raise self.error('Predicates must have parameters')
-        elif isinstance(self.peek(), NaturalNumber):
+            return PredicateFormula(name, [])
+
+        if isinstance(self.peek(), NaturalNumber):
             name += self.peek().value
             self.advance()
 
-        if self.is_at_end():
-            raise self.error('Predicates must have parameters')
-        elif self.peek() == MiscToken.left_parenthesis:
+        if not self.is_at_end() and self.peek() == MiscToken.left_parenthesis:
             return PredicateFormula(name, list(self.parse_args()))
 
         return PredicateFormula(name, [])
 
     def parse_formula(self):
         match self.peek():
+            case _ if PropConstant.try_match(self.peek()):
+                return self.parse_constant_formula()
+
             case _ if Quantifier.try_match(self.peek()):
                 return self.parse_quantifier_formula()
 
@@ -218,9 +231,21 @@ class FOLParser(Parser[FOLToken]):
 
 def parse_term(string: str):
     tokens = list(FOLTokenizer(string).parse())
-    return FOLParser(tokens).parse_term()
+    parser = FOLParser(tokens)
+    term = parser.parse_term()
+
+    if not parser.is_at_end():
+        raise IncompleteMatchError(f'Did not match {repr(string)} in its entirety')
+
+    return term
 
 
 def parse_formula(string: str):
     tokens = list(FOLTokenizer(string).parse())
-    return FOLParser(tokens).parse_formula()
+    parser = FOLParser(tokens)
+    formula = parser.parse_formula()
+
+    if not parser.is_at_end():
+        raise IncompleteMatchError(f'Did not match {repr(string)} in its entirety')
+
+    return formula

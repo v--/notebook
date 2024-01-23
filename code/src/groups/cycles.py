@@ -1,4 +1,4 @@
-from collections.abc import MutableMapping, Sequence
+from collections.abc import Sequence
 from dataclasses import dataclass
 from typing import TypeVar, Generic
 import functools

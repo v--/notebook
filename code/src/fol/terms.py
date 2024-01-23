@@ -16,8 +16,8 @@ class FunctionTerm:
     arguments: list[Term]
 
     def __str__(self):
-        arg_list = ', '.join(str(arg) for arg in self.arguments)
-        return f'{self.name}({arg_list})'
+        args = ', '.join(str(arg) for arg in self.arguments)
+        return f'{self.name}({args})' if len(args) > 0 else self.name
 
 
 Term = Variable | FunctionTerm

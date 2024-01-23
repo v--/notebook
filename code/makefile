@@ -1,7 +1,7 @@
 .PHONY: test lint
 
 test:
-	poetry run pytest --capture=tee-sys
+	poetry run pytest
 
 lint:
 	poetry run ruff check src

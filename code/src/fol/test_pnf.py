@@ -2,7 +2,18 @@ import pytest
 
 from ..exceptions import NotebookCodeError
 from .parser import parse_formula
-from .pnf import is_formula_in_pnf, remove_conditionals, move_negations, move_quantifiers, to_pnf
+from .pnf import is_formula_quantifierless, is_formula_in_pnf, remove_conditionals, push_negations, move_quantifiers, to_pnf
+
+
+def test_is_formula_quantifierless():
+    def t(string: str):
+        return is_formula_quantifierless(parse_formula(string))
+
+    assert t('⊤')
+    assert t('(ξ = η)')
+    assert t('((ξ = η) ∨ ¬(ξ = η))')
+    assert not t('∀ξ.p(η)')
+    assert not t('¬∀ξ.p(η)')
 
 
 def test_is_formula_in_pnf():
@@ -18,7 +29,6 @@ def test_is_formula_in_pnf():
 
 def test_remove_conditionals():
     def t(string: str):
-        assert parse_formula(string)
         return str(remove_conditionals(parse_formula(string)))
 
     assert t('(ξ = η)') == '(ξ = η)'
@@ -31,7 +41,7 @@ def test_remove_conditionals():
 
 def test_move_negations():
     def t(string: str):
-        return str(move_negations(parse_formula(string)))
+        return str(push_negations(parse_formula(string)))
 
     with pytest.raises(NotebookCodeError):
         t('¬(p(ξ) → p(η))')
@@ -74,7 +84,9 @@ def test_move_quantifiers():
 
 def test_to_pnf():
     def t(string: str):
-        return str(to_pnf(parse_formula(string)))
+        pnf = to_pnf(parse_formula(string))
+        assert is_formula_in_pnf(pnf)
+        return str(pnf)
 
     assert t('(ξ = η)') == '(ξ = η)'
     assert t('¬∀η.p(ξ)') == '∃η.¬p(ξ)'

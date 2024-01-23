@@ -2,17 +2,32 @@ from ..exceptions import NotebookCodeError
 from ..support.names import new_var_name
 
 from .tokens import BinaryConnective, Quantifier
-from .formulas import Formula, EqualityFormula, PredicateFormula, NegationFormula, ConnectiveFormula, QuantifierFormula, Variable
+from .formulas import Formula, NegationFormula, ConnectiveFormula, QuantifierFormula, Variable
 from .visitors import FormulaVisitor, FormulaTransformationVisitor
 from .substitution import substitute_in_formula
 from .variables import get_bound_variables, get_free_variables
 
 
-class PNFVerificationVisitor(FormulaVisitor):
-    def visit_equality(self, formula: EqualityFormula):
+class QuantifierlessVerificationVisitor(FormulaVisitor):
+    def generic_visit(self, formula: Formula):
         return True
 
-    def visit_predicate(self, formula: PredicateFormula):
+    def visit_negation(self, formula: NegationFormula):
+        return self.visit(formula.sub)
+
+    def visit_connective(self, formula: ConnectiveFormula):
+        return self.visit(formula.a) and self.visit(formula.b)
+
+    def visit_quantifier(self, formula: QuantifierFormula):
+        return False
+
+
+def is_formula_quantifierless(formula: Formula):
+    return QuantifierlessVerificationVisitor().visit(formula)
+
+
+class PNFVerificationVisitor(FormulaVisitor):
+    def generic_visit(self, formula: Formula):
         return True
 
     def visit_negation(self, formula: NegationFormula):
@@ -40,18 +55,19 @@ class ConditionalRemovalVisitor(FormulaTransformationVisitor):
         a = self.visit(formula.a)
         b = self.visit(formula.b)
 
-        if formula.conn == BinaryConnective.join_ or formula.conn == BinaryConnective.meet:
-            return ConnectiveFormula(formula.conn, a, b)
+        match formula.conn:
+            case BinaryConnective.disjunction | BinaryConnective.conjunction:
+                return ConnectiveFormula(formula.conn, a, b)
 
-        if formula.conn == BinaryConnective.conditional:
-            return ConnectiveFormula(BinaryConnective.join_, NegationFormula(a), b)
+            case BinaryConnective.conditional:
+                return ConnectiveFormula(BinaryConnective.disjunction, NegationFormula(a), b)
 
-        if formula.conn == BinaryConnective.biconditional:
-            return ConnectiveFormula(
-                BinaryConnective.meet,
-                ConnectiveFormula(BinaryConnective.join_, NegationFormula(a), b),
-                ConnectiveFormula(BinaryConnective.join_, a, NegationFormula(b))
-            )
+            case BinaryConnective.biconditional:
+                return ConnectiveFormula(
+                    BinaryConnective.conjunction,
+                    ConnectiveFormula(BinaryConnective.disjunction, NegationFormula(a), b),
+                    ConnectiveFormula(BinaryConnective.disjunction, a, NegationFormula(b))
+                )
 
 
 def remove_conditionals(formula: Formula):
@@ -63,12 +79,13 @@ class MoveNegationsVisitor(FormulaTransformationVisitor):
         if isinstance(formula.sub, ConnectiveFormula):
             new_conn: BinaryConnective
 
-            if formula.sub.conn == BinaryConnective.join_:
-                new_conn = BinaryConnective.meet
-            elif formula.sub.conn == BinaryConnective.meet:
-                new_conn = BinaryConnective.join_
-            else:
-                raise NotebookCodeError(f'Unexpected connective {formula.sub.conn}')
+            match formula.sub.conn:
+                case BinaryConnective.disjunction:
+                    new_conn = BinaryConnective.conjunction
+                case BinaryConnective.conjunction:
+                    new_conn = BinaryConnective.disjunction
+                case _:
+                    raise NotebookCodeError(f'Unexpected connective {formula.sub.conn}')
 
             return ConnectiveFormula(
                 new_conn,
@@ -79,12 +96,13 @@ class MoveNegationsVisitor(FormulaTransformationVisitor):
         if isinstance(formula.sub, QuantifierFormula):
             new_quantifier: Quantifier
 
-            if formula.sub.quantifier == Quantifier.universal:
-                new_quantifier = Quantifier.existential
-            elif formula.sub.quantifier == Quantifier.existential:
-                new_quantifier = Quantifier.universal
-            else:
-                raise NotebookCodeError(f'Unexpected quantifier {formula.sub.quantifier}')
+            match formula.sub.quantifier:
+                case Quantifier.universal:
+                    new_quantifier = Quantifier.existential
+                case Quantifier.existential:
+                    new_quantifier = Quantifier.universal
+                case _:
+                    raise NotebookCodeError(f'Unexpected quantifier {formula.sub.quantifier}')
 
             return QuantifierFormula(
                 new_quantifier,
@@ -98,19 +116,19 @@ class MoveNegationsVisitor(FormulaTransformationVisitor):
         return NegationFormula(self.visit(formula.sub))
 
     def visit_connective(self, formula: ConnectiveFormula):
-        if formula.conn != BinaryConnective.join_ and formula.conn != BinaryConnective.meet:
+        if formula.conn != BinaryConnective.disjunction and formula.conn != BinaryConnective.conjunction:
             raise NotebookCodeError(f'Unexpected connective {formula.conn}')
 
         return super().visit_connective(formula)
 
 
-def move_negations(formula: Formula):
+def push_negations(formula: Formula):
     return MoveNegationsVisitor().visit(formula)
 
 
 class MoveQuantifiersVisitor(FormulaTransformationVisitor):
     def visit_connective(self, formula: ConnectiveFormula):
-        if formula.conn != BinaryConnective.join_ and formula.conn != BinaryConnective.meet:
+        if formula.conn != BinaryConnective.disjunction and formula.conn != BinaryConnective.conjunction:
             raise NotebookCodeError(f'Unexpected connective {formula.conn}')
 
         if isinstance(formula.a, QuantifierFormula):
@@ -165,4 +183,4 @@ def move_quantifiers(formula: Formula):
 
 # This is alg:prenex_normal_form_conversion in the text
 def to_pnf(formula: Formula):
-    return move_quantifiers(move_negations(remove_conditionals(formula)))
+    return move_quantifiers(push_negations(remove_conditionals(formula)))

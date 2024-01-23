@@ -46,7 +46,7 @@ class Matrix(Generic[N]):
             for i_ in self.__i_range(i)
         ])
 
-    def __setitem_islice(self, i: slice, j: int, value: N | list[N] | 'Matrix'[N]):
+    def __setitem_islice(self, i: slice, j: int, value: N | list[N] | 'Matrix[N]'):
         i_range = list(self.__i_range(i))
 
         if isinstance(value, list):
@@ -67,7 +67,7 @@ class Matrix(Generic[N]):
             for i_ in i_range:
                 self[i, i_] = value
 
-    def __setitem_jslice(self, i: int, j: slice, value: N | list[N] | 'Matrix'[N]):
+    def __setitem_jslice(self, i: int, j: slice, value: N | list[N] | 'Matrix[N]'):
         j_range = list(self.__j_range(j))
 
         if isinstance(value, list):
@@ -88,7 +88,7 @@ class Matrix(Generic[N]):
             for j_ in j_range:
                 self[i, j_] = value
 
-    def __setitem_slices(self, i: slice, j: slice, value: N | list[N] | 'Matrix'[N]):
+    def __setitem_slices(self, i: slice, j: slice, value: N | list[N] | 'Matrix[N]'):
         i_range = list(self.__i_range(i))
         j_range = list(self.__j_range(j))
 
@@ -108,7 +108,7 @@ class Matrix(Generic[N]):
                 for j_ in j_range:
                     self[i_, j_] = value
 
-    def __setitem__(self, key: tuple[int | slice, int | slice], value: N | list[N] | 'Matrix'[N]):
+    def __setitem__(self, key: tuple[int | slice, int | slice], value: N | list[N] | 'Matrix[N]'):
         i, j = key
 
         if isinstance(i, slice) and isinstance(j, slice):

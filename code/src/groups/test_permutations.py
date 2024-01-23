@@ -2,7 +2,7 @@ import functools
 import operator
 
 from .cycles import Cycle
-from .permutations import Permutation, Cycle
+from .permutations import Permutation
 
 
 def test_permutation_completion():

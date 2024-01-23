@@ -25,6 +25,10 @@ def test_parsing_variables_invalid():
     with pytest.raises(ParserError):
         parse_term('Εὐκλείδης')
 
+    # And no trailing characters
+    with pytest.raises(ParserError):
+        parse_term('ξ ')
+
 
 def test_parsing_functions_valid():
     assert parse_term('f') == FunctionTerm('f', [])
@@ -81,6 +85,8 @@ def test_parsing_formulas_valid():
     def is_formula_rebuilt(string: str):
         assert str(parse_formula(string)) == string
 
+    is_formula_rebuilt('⊤')
+    is_formula_rebuilt('⊥')
     is_formula_rebuilt('(ξ = η)')
     is_formula_rebuilt('∀ξ.p(η)')
     is_formula_rebuilt('(p(ξ) ∧ p(η))')
@@ -91,10 +97,6 @@ def test_parsing_formulas_valid():
 
 
 def test_parsing_formulas_invalid():
-    # Cannot have term as a formula in a quantifier expression
-    with pytest.raises(ParserError):
-        parse_formula('∀ξ.f')
-
     # Parentheses must be closed
     with pytest.raises(ParserError):
         parse_formula('(p(ξ) ∧ p(η)')
@@ -102,6 +104,10 @@ def test_parsing_formulas_invalid():
     # All parentheses must be closed
     with pytest.raises(ParserError):
         parse_formula('(¬p(ζ) ∧ ∀ξ.(q(ζ, ξ) → ¬r(η, ξ))')
+
+    # And no trailing characters
+    with pytest.raises(ParserError):
+        parse_term('p ')
 
 
 def test_reparsing_formulas():
