@@ -1,4 +1,3 @@
-from __future__ import annotations
 from dataclasses import dataclass
 
 
@@ -13,7 +12,7 @@ class Variable:
 @dataclass
 class FunctionTerm:
     name: str
-    arguments: list[Term]
+    arguments: 'list[Term]'
 
     def __str__(self):
         args = ', '.join(str(arg) for arg in self.arguments)

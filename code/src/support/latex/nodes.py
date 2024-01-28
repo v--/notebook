@@ -1,4 +1,3 @@
-from __future__ import annotations
 from dataclasses import dataclass
 import functools
 import operator
@@ -27,7 +26,7 @@ class SpecialNode(TokenEnum):
 
 @dataclass
 class Group:
-    contents: list[LaTeXNode]
+    contents: 'list[LaTeXNode]'
 
     def __str__(self):
         return ''.join(str(node) for node in self.contents)

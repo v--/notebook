@@ -1,4 +1,3 @@
-from __future__ import annotations
 from dataclasses import dataclass
 from typing import Generic, TypeVar
 
@@ -10,7 +9,7 @@ TAttrArc = TypeVar('TAttrArc')
 
 @dataclass
 class VertexView(Generic[TVert, TAttrVert]):
-    graph: DirectedGraph
+    graph: 'DirectedGraph'
 
     def __contains__(self, key: TVert):
         return key in self.graph._vertices
@@ -43,7 +42,7 @@ class VertexView(Generic[TVert, TAttrVert]):
 
 @dataclass
 class ArcView(Generic[TVert, TAttrArc]):
-    graph: DirectedGraph
+    graph: 'DirectedGraph'
 
     def __contains__(self, key: tuple[TVert, TVert]):
         assert isinstance(key, tuple) and len(key) == 2

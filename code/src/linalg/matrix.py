@@ -205,16 +205,26 @@ class Matrix(Generic[N]):
         ])
 
 
-def eye(n: int, m: int):
+def eye(n: int, m: int | None = None):
+    assert n >= 0
+
+    if m is not None:
+        assert m >= 0
+
     return Matrix([
-        [1 if i == j else 0 for j in range(m)]
+        [1 if i == j else 0 for j in range(m or n)]
         for i in range(n)
     ])
 
 
-def zeros(n: int, m: int):
+def zeros(n: int, m: int | None = None):
+    assert n >= 0
+
+    if m is not None:
+        assert m >= 0
+
     return Matrix([
-        [0 for _ in range(m)]
+        [0 for _ in range(m or n)]
         for _ in range(n)
     ])
 
