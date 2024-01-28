@@ -1,0 +1,361 @@
+\subsection{Untyped lambda calculus}\label{subsec:untyped_lambda_calculus}
+
+\paragraph{Untyped \( \synlambda \)-terms}
+
+\begin{definition}\label{def:lambda_term}\mimprovised
+  Consider the following \hyperref[def:formal_grammar/schema]{grammar schema}:
+  \begin{bnf*}
+    \bnfprod{variable}    {\bnfpn{Latin identifier}} \\
+    \bnfprod{application} {\bnftsq{\( ( \)} \bnfsp \bnfpn{term} \bnfsp \bnfpn{term} \bnfsp \bnftsq{\( ) \)}} \\
+    \bnfprod{abstraction} {\bnftsq{\( ( \)} \bnfsp \bnftsq{\( \synlambda \)} \bnfsp \bnfpn{variable} \bnfsp \bnftsq{.} \bnfsp \bnfpn{term} \bnfsp \bnftsq{\( ) \)}} \\
+    \bnfprod{term}        {\bnfpn{variable} \bnfor \bnfpn{application} \bnfor \bnfpn{abstraction}}
+  \end{bnf*}
+
+  When introducing what is now known as \( \synlambda \)-calculus, \incite[352]{Church1932} used \( \synlambda \) as part of the grammar. We will henceforth refer to \( \synlambda \)-\term[ru=апликация (\cite[188]{Герасимов2011})]{applications}, \( \synlambda \)-\term[ru=абстракция (\cite[188]{Герасимов2011})]{abstractions} and \( \synlambda \)-\term[ru=терм (\cite[188]{Герасимов2011})]{terms}.
+
+  \begin{thmenum}
+    \thmitem{def:lambda_term/subterm}\mcite[def. 1A3]{Hindley1997} We define the set of all \term[ru=подтерм (\cite[189]{Герасимов2011})]{subterms} of a term \( M \) as
+    \begin{equation*}
+      \boldop{Subterm}(M) \coloneqq \begin{cases}
+        \set{ x },                                    &M = x, \\
+        \boldop{Subterm}(N) \cup \boldop{Subterm}(K), &M = N K, \\
+        \boldop{Subterm}(N),                          &M = \qabs x N.
+      \end{cases}
+    \end{equation*}
+
+    See \fullref{ex:def:lambda_term/naive_subterm} for a subtlety regarding this definition.
+
+    \thmitem{def:lambda_term/bound}\mcite[def. 1A6]{Hindley1997} For each term \( M \), we define its set of \term[ru=связанные (переменные) (\cite[188]{Герасимов2011})]{bound variables} as
+    \begin{equation*}
+      \boldop{Bound}(M) \coloneqq \begin{cases}
+        \varnothing,                              &M = x, \\
+        \boldop{Bound}(N) \cup \boldop{Bound}(K), &M = N K, \\
+        \boldop{Bound}(N) \cup \set{ x },         &M = \qabs x N. \\
+      \end{cases}
+    \end{equation*}
+
+    \thmitem{def:lambda_term/free}\mcite[def. 1A6]{Hindley1997} We also define the set of \term[ru=свободные (переменные) (\cite[189]{Герасимов2011})]{free variables} as
+    \begin{equation*}
+      \boldop{Free}(M) \coloneqq \begin{cases}
+        \varnothing,                            &M = x, \\
+        \boldop{Free}(N) \cup \boldop{Free}(K), &M = N K, \\
+        \boldop{Free}(N) \setminus \set{ x },   &M = \qabs x N. \\
+      \end{cases}
+    \end{equation*}
+
+    \thmitem{def:lambda_term/closed}\mcite[def. 1A10]{Hindley1997} We say that a term is \term{closed} if it has no bound variables. Closed terms are also called \term[ru=комбинаторы (\cite[188]{Герасимов2011})]{combinators}.
+  \end{thmenum}
+\end{definition}
+\begin{comments}
+  \item We need the parentheses so that we can prove unambiguity in \fullref{thm:lambda_terms_are_unambiguous}. Informally, we will use the conventions from \fullref{rem:propositional_formula_parentheses} regarding parentheses.
+\end{comments}
+
+\begin{proposition}\label{thm:lambda_terms_are_unambiguous}
+  The grammar of \hyperref[def:lambda_term]{\( \synlambda \)-terms} is \hyperref[def:grammar_ambiguity]{unambiguous}.
+\end{proposition}
+\begin{proof}
+  Similarly to \fullref{thm:propositional_formulas_are_unambiguous}, the proof is again based on \fullref{ex:natural_number_arithmetic_grammar/unambiguous}.
+\end{proof}
+
+\begin{remark}\label{rem:lambda_term_ast}
+  For a given \( \synlambda \)-term \( M \), we can build a \hyperref[rem:abstract_syntax_tree]{abstract syntax tree} as follows:
+  \begin{itemize}
+    \item If \( M \) is a variable, build a tree with a single node labeled by \( M \).
+    \item If \( M = (NK) \), build the following binary tree:
+    \begin{equation*}
+      \begin{aligned}
+        \includegraphics[page=1]{output/rem__lambda_term_ast}
+      \end{aligned}
+    \end{equation*}
+
+    \item If \( M = (\synlambda x N) \), build the following binary tree:
+    \begin{equation*}
+      \begin{aligned}
+        \includegraphics[page=2]{output/rem__lambda_term_ast}
+      \end{aligned}
+    \end{equation*}
+  \end{itemize}
+\end{remark}
+
+\begin{remark}\label{rem:lambda_term_parentheses}
+  We use some \enquote{abuse-of-notation} syntactic conventions somewhat resembling \fullref{rem:propositional_formula_parentheses}:
+  \begin{thmenum}
+    \thmitem{rem:lambda_term_parentheses/outermost} As in \fullref{rem:propositional_formula_parentheses/outermost}, we avoid writing the outermost parentheses in terms like \( (xy) \) or \( ((xy)z) \).
+
+    \thmitem{rem:lambda_term_parentheses/abstraction} We generally avoid writing parentheses around \( \synlambda \)-abstractions.
+
+    Actually, it is not necessary to put parentheses around \( \synlambda \)-abstractions in order for the grammar to be unambiguous. Not requiring them, however, leads to the following unintuitive artifact.
+
+    Consider the term \( \qabs x y z \). If parentheses are required only for \( \synlambda \)-abstractions but not for \( \synlambda \)-applications, it would unambiguously correspond to the following \hyperref[rem:lambda_term_ast]{abstract syntax tree}:
+    \begin{equation*}
+      \begin{aligned}
+        \includegraphics[page=1]{output/rem__lambda_term_parentheses}
+      \end{aligned}
+    \end{equation*}
+
+    But it is reasonable to expect instead the following tree:
+    \begin{equation*}
+      \begin{aligned}
+        \includegraphics[page=2]{output/rem__lambda_term_parentheses}
+      \end{aligned}
+    \end{equation*}
+
+    Since we will generally expect the latter, it is simpler to require parentheses around \( \synlambda \)-abstractions in the formal syntax and then, when convenient, avoid writing them within the metalogic.
+
+    \thmitem{rem:lambda_term_parentheses/right_associative} We suppose that \( \synlambda \)-application is \hyperref[rem:binary_operation_syntax_trees/associativity]{right-associative}, which allows us to vastly simplify notation in some cases like \eqref{eq:ex:def:lambda_term/combinator/s} where we use \( xzyz \) rather than \( x(z(yz)) \).
+  \end{thmenum}
+\end{remark}
+
+\begin{example}\label{ex:def:lambda_term}
+  We list examples of \hyperref[def:lambda_term]{\( \synlambda \)-terms}:
+  \begin{thmenum}
+    \thmitem{ex:def:lambda_term/var} The simplest \( \synlambda \)-terms are the variables themselves, for example \( x \) or \( y \).
+    \thmitem{ex:def:lambda_term/naive_subterm} Suppose that, as in \fullref{def:propositional_syntax/subformula} for propositional subformulas, we say that \( N \) is a subterm of \( M \) if it is itself a \hyperref[def:formal_language/subword]{subword} of \( M \).
+
+    Then the term \( \qabs x y \) would have both \( x \) and \( y \) as subterms, while according to \fullref{def:lambda_term/subterm}, only \( y \) is a subterm.
+
+    \thmitem{ex:def:lambda_term/combinator}\mcite[def. 1A10.1]{Hindley1997} The following \hyperref[def:lambda_term/closed]{combinators} have established names:
+    \begin{align}
+      &\qabs x x, \label{eq:ex:def:lambda_term/combinator/i}\tag{\logic{I}} \\
+      &\qabs x \qabs y yx, \nonumber\label{eq:ex:def:lambda_term/combinator/k}\tag{\logic{K}} \\
+      &\qabs x \qabs y \qabs z xzyz, \label{eq:ex:def:lambda_term/combinator/s}\tag{\logic{S}} \\
+      &\qabs x (\qabs y xyy) (\qabs y xyy). \label{eq:ex:def:lambda_term/combinator/y}\tag{\logic{Y}}
+    \end{align}
+  \end{thmenum}
+\end{example}
+
+\paragraph{Variable substitution}
+
+\begin{definition}\label{def:lambda_substitution}\mcite[def. 1A7]{Hindley1997}
+  We define the \term{substitution} of the variable \( x \) in the term \( M \) with \( N \) as
+  \begin{subequations}
+    \begin{empheq}[left={M[x \mapsto L]} \coloneqq \empheqlbrace]{align}
+      &N,                                        &&M = x,                                                            \label{eq:def:lambda_substitution/var/direct} \\
+      &x,                                        &&M = y \neq x,                                                     \label{eq:def:lambda_substitution/var/noop} \\
+      &N[x \mapsto L] \thinspace K[x \mapsto L], &&M = NK,                                                           \label{eq:def:lambda_substitution/application} \\
+      &M,                                        &&M = \qabs x N,                                                    \label{eq:def:lambda_substitution/abstraction/self} \\
+      &M,                                        &&M = \qabs y N \T{and} x \not\in \boldop{Free}(N),                 \label{eq:def:lambda_substitution/abstraction/noop} \\
+      &\qabs y N[x \mapsto L],                   &&M = \qabs y N \T{and} x \in \boldop{Free}(N) \T{and} \nonumber \\
+      &                                          &&\quad y \not\in \boldop{Free}(L),                                 \label{eq:def:lambda_substitution/abstraction/direct} \\
+      &\qabs z N[y \mapsto z][x \mapsto L],      &&M = \qabs y N \T{and} x \in \boldop{Free}(N) \T{and} \nonumber \\
+      &                                          &&\quad y \in \boldop{Free}(L) \T{and} z \not\in \boldop{Free}(NP), \label{eq:def:lambda_substitution/abstraction/renaming}
+    \end{empheq}
+  \end{subequations}
+  where \( z \) in \eqref{eq:def:lambda_substitution/abstraction/renaming} can be any variable not free in either \( N \) nor \( P \).
+
+  We call the general process \eqref{eq:def:lambda_substitution/abstraction/renaming} of substituting a free variable with a suitable one \term[ru=переименование переменной (\cite[71]{Герасимов2011})]{variable renaming}.
+\end{definition}
+\begin{comments}
+  \item For the sake of determinism, considering the identifier ordering discussed in \fullref{rem:grammar_rules_for_variables}, it makes sense for \( z \) in \eqref{eq:def:lambda_substitution/abstraction/renaming} to be the \enquote{smallest} suitable variable.
+
+  \item The substitution rules \eqref{eq:def:lambda_substitution/abstraction/self} through \eqref{eq:def:lambda_substitution/abstraction/renaming} are adjusted so that \fullref{thm:lambda_substitution_free_variables} holds and the pitfalls of \fullref{ex:def:lambda_substitution} are avoided.
+
+  \item The rule \eqref{eq:def:lambda_substitution/abstraction/self} is not strictly necessary, see \fullref{ex:def:lambda_substitution/self} for a discussion.
+\end{comments}
+
+\begin{proposition}\label{thm:lambda_substitution_free_variables}
+  For any \( \synlambda \)-terms \( M \) and \( L \) and any variable \( x \), we have
+  \begin{subequations}
+    \begin{equation}\label{eq:thm:lambda_substitution_free_variables/free}
+      \boldop{Free}\parens[\Big]{ M[x \mapsto L] } = \parens[\Big]{ \boldop{Free}(M) \setminus \set{ x } } \cup \boldop{Free}(L)
+    \end{equation}
+    if \( x \) is free in \( M \) and
+    \begin{equation}\label{eq:thm:lambda_substitution_free_variables/not_free}
+      M[x \mapsto L] = M
+    \end{equation}
+  \end{subequations}
+  otherwise.
+\end{proposition}
+\begin{proof}
+  We will use \fullref{thm:induction_on_syntax_trees} on \( M \):
+  \begin{itemize}
+    \item If \( M \) is a variable, we have the following possibilities:
+    \begin{itemize}
+      \item If \( M = x \), then \( M[x \mapsto L] \reloset {\eqref{eq:def:lambda_substitution/var/direct}} = L \) and hence
+      \begin{equation*}
+        \boldop{Free}\parens[\Big]{ M[x \mapsto L] }
+        =
+        \boldop{Free}(L).
+      \end{equation*}
+
+      Furthermore,
+      \begin{equation*}
+        \parens[\Big]{ \underbrace{\boldop{Free}(M)}_{\set{ x }} \setminus \set{ x } } \cup \boldop{Free}(L)
+        =
+        \boldop{Free}(L).
+      \end{equation*}
+
+      The two are equal, thus \eqref{eq:thm:lambda_substitution_free_variables/free} holds.
+
+      \item If \( M = y \neq x \), then \( M[x \mapsto L] \reloset {\eqref{eq:def:lambda_substitution/var/noop}} = M \) and thus  \eqref{eq:thm:lambda_substitution_free_variables/non_free} holds.
+    \end{itemize}
+
+    \item If \( M = NK \), where the inductive hypothesis holds for \( N \) and \( K \), then
+    \begin{align*}
+      \boldop{Free}\parens[\Big]{ M[x \mapsto L] }
+      &\reloset {\eqref{eq:def:lambda_substitution/application}} =
+      \boldop{Free}\parens[\Big]{ N[x \mapsto L] \thinspace K[x \mapsto L] }
+      = \\ &=
+      \boldop{Free}\parens[\Big]{ N[x \mapsto L] } \cup \boldop{Free}\parens[\Big]{ K[x \mapsto L] }.
+    \end{align*}
+
+    We have several possibilities:
+    \begin{itemize}
+      \item If \( x \) is free in both \( N \) and \( K \), then
+      \begin{balign*}
+        &\phantom{{}={}}
+        \boldop{Free}\parens[\Big]{ N[x \mapsto L] } \cup \boldop{Free}\parens[\Big]{ K[x \mapsto L] }
+        \reloset {\T{ind.}} = \\ &=
+        \parens[\bigg]{ \parens[\Big]{ \boldop{Free}(N) \setminus \set{ x } } \cup \boldop{Free}(L) }
+        \cup
+        \parens[\bigg]{ \parens[\Big]{ \boldop{Free}(K) \setminus \set{ x } } \cup \boldop{Free}(L) }
+        = \\ &=
+        \parens[\bigg]{ \parens[\Big]{ \boldop{Free}(N) \cup \boldop{Free}(K) } \setminus \set{ x } } \cup \boldop{Free}(L)
+        = \\ &=
+        \parens[\Big]{ \boldop{Free}(NK) \setminus \set{ x } } \cup \boldop{Free}(L).
+      \end{balign*}
+
+      Then \eqref{eq:thm:lambda_substitution_free_variables/free} holds.
+
+      \item If \( x \) is free in \( N \) but not \( K \), then
+      \begin{balign*}
+        &\phantom{{}={}}
+        \boldop{Free}\parens[\Big]{ N[x \mapsto L] } \cup \boldop{Free}\parens[\Big]{ K[x \mapsto L] }
+        \reloset {\T{ind.}} = \\ &=
+        \parens[\bigg]{ \parens[\Big]{ \boldop{Free}(N) \setminus \set{ x } } \cup \boldop{Free}(L) } \cup \boldop{Free}(K)
+        = \\ &=
+        \parens[\Big]{ \boldop{Free}(N) \setminus \set{ x } } \cup \boldop{Free}(L) \cup \boldop{Free}(K)
+        = \\ &=
+        \parens[\Big]{ \boldop{Free}(NK) \setminus \set{ x } } \cup \boldop{Free}(L),
+      \end{balign*}
+      and again \eqref{eq:thm:lambda_substitution_free_variables/free} holds.
+
+      \item If \( x \) is free in \( K \) but not in \( N \), we obtain \eqref{eq:thm:lambda_substitution_free_variables/free} as in the preceding case.
+
+      \item If \( x \) is not free in either \( N \) nor \( K \), then
+      \begin{equation*}
+        \boldop{Free}\parens[\Big]{ N[x \mapsto L] } \cup \boldop{Free}\parens[\Big]{ K[x \mapsto L] }
+        \reloset {\T{ind.}} =
+        \boldop{Free}(N) \cup \boldop{Free}(K)
+        =
+        \boldop{Free}(NK).
+      \end{equation*}
+
+      In this case, \eqref{eq:thm:lambda_substitution_free_variables/non_free} holds.
+    \end{itemize}
+
+    \item If \( M = \qabs y N \), where the inductive hypothesis holds for \( N \), we must again consider distinct cases.
+    \begin{itemize}
+      \item If \( y = x \), then \( M[x \mapsto L] \reloset {\eqref{eq:def:lambda_substitution/abstraction/self}} = M \), and thus \eqref{eq:thm:lambda_substitution_free_variables/non_free} holds.
+
+      \item If \( y \neq x \) and \( x \) is not free in \( N \), then \( M[x \mapsto L] \reloset {\eqref{eq:def:lambda_substitution/abstraction/noop}} = M \), and again \eqref{eq:thm:lambda_substitution_free_variables/non_free} holds.
+
+      \item If \( y \neq x \), \( x \) is free in \( N \) and \( y \) is not free in \( L \), then
+      \begin{equation*}
+        M[x \mapsto L]
+        =
+        (\qabs y N)[x \mapsto L]
+        \reloset {\eqref{eq:def:lambda_substitution/abstraction/direct}} =
+        \qabs y N[x \mapsto L].
+      \end{equation*}
+
+      For the corresponding free variables, we have
+      \begin{balign*}
+        \boldop{Free}\parens[\Big]{ M[x \mapsto L] }
+        &=
+        \boldop{Free}\parens[\Big]{ \qabs y N[x \mapsto L] }
+        = \\ &=
+        \boldop{Free}\parens[\Big]{ N[x \mapsto L] } \setminus \set{ y }
+        \reloset {\T{ind.}} = \\ &=
+        \parens[\bigg]{ \parens[\Big]{ \boldop{Free}(N) \setminus \set{ x } } \cup \boldop{Free}(L) } \setminus \set{ y }
+        = \\ &=
+        \parens[\Big]{ \boldop{Free}(N) \setminus \set{ x, y } } \cup \boldop{Free}(L)
+        = \\ &=
+        \parens[\Big]{ \boldop{Free}(M) \setminus \set{ x } } \cup \boldop{Free}(L),
+      \end{balign*}
+      hence \eqref{eq:thm:lambda_substitution_free_variables/free} holds.
+
+      \item Finally, if \( y \neq x \), \( x \) is free in \( N \) and \( y \) is free in \( L \), then, given a variable \( z \) not free in either, we have
+      \begin{equation*}
+        M[x \mapsto L]
+        =
+        (\qabs y N)[x \mapsto L]
+        \reloset {\eqref{eq:def:lambda_substitution/abstraction/renaming}} =
+        \qabs z N[y \mapsto z][x \mapsto L].
+      \end{equation*}
+
+      For the corresponding free variables, we have
+      \begin{balign*}
+        \boldop{Free}\parens[\Big]{ M[x \mapsto L] }
+        &=
+        \boldop{Free}\parens[\Big]{ \qabs z N[y \mapsto z][x \mapsto L] }
+        = \\ &=
+        \boldop{Free}\parens[\Big]{ N[y \mapsto z][x \mapsto L] } \setminus \set{ z }
+        \reloset {\T{ind.}} = \\ &=
+        \parens[\bigg]{ \parens[\Big]{ \boldop{Free}(N[y \mapsto z]) \setminus \set{ x } } \cup \boldop{Free}(L) } \setminus \set{ z }
+        = \\ &=
+        \parens[\Big]{ \boldop{Free}(N[y \mapsto z]) \setminus \set{ x, z } } \cup \boldop{Free}(L)
+        \reloset {\T{ind.}} = \\ &=
+        \parens[\bigg]{ \parens[\bigg]{ \parens[\Big]{ \boldop{Free}(N) \setminus \set{ y } } \cup \boldop{Free}(z) } \setminus \set{ x, z } } \cup \boldop{Free}(L)
+        = \\ &=
+        \parens[\Big]{ \boldop{Free}(N) \setminus \set{ x, y } } \cup \boldop{Free}(L)
+        = \\ &=
+        \parens[\Big]{ \boldop{Free}(M) \setminus \set{ x } } \cup \boldop{Free}(L)
+      \end{balign*}
+      hence \eqref{eq:thm:lambda_substitution_free_variables/free} holds.
+    \end{itemize}
+  \end{itemize}
+
+  We have obtained either \eqref{eq:thm:lambda_substitution_free_variables/free} or \eqref{eq:thm:lambda_substitution_free_variables/non_free} in any case of the induction, and have thus proven the proposition.
+\end{proof}
+
+\begin{example}\label{ex:def:lambda_substitution}
+  We list examples of \hyperref[def:lambda_substitution]{substitution} of \( \synlambda \)-terms:
+  \begin{thmenum}
+    \thmitem{ex:def:lambda_substitution/capture} The gist of \fullref{thm:lambda_substitution_free_variables} is that substitution avoids \enquote{capturing} free variables under the scope of some abstraction. Instead of \( (\qabs x y)[y \mapsto x] \) giving
+    \begin{equation*}
+      \qabs x y[y \mapsto x] = \qabs x x,
+    \end{equation*}
+    which \enquote{captures} \( x \) under the scope of the closest abstraction, our definition of substitution gives
+    \begin{equation*}
+      (\qabs x y)[y \mapsto x] = \qabs z x
+    \end{equation*}
+    for some new variable \( z \).
+
+    \thmitem{ex:def:lambda_substitution/self} The rule \eqref{eq:def:lambda_substitution/abstraction/self} is not strictly necessary. Without it, in the substitution \( (\qabs x x)[x \mapsto y] \), we would instead use \eqref{eq:def:lambda_substitution/abstraction/renaming} and rename \( x \) to \( z \) first:
+    \begin{equation*}
+      (\qabs x x)[x \mapsto y]
+      \reloset {\eqref{eq:def:lambda_substitution/abstraction/renaming}} =
+      \qabs z x[x \mapsto z][x \mapsto y]
+      =
+      \qabs z z[x \mapsto y]
+      =
+      \qabs z z.
+    \end{equation*}
+
+    One could argue that \eqref{eq:def:lambda_substitution/abstraction/self} prevents unnecessary renaming, and this is true, but it doesn't help in \enquote{nested} cases like
+    \begin{align*}
+      \ref{eq:ex:def:lambda_term/combinator/k}[y \mapsto x]
+      &=
+      (\qabs x \qabs y yx)[y \mapsto x]
+      = \\ &=
+      (\qabs x \qabs y yx)[y \mapsto x]
+      \reloset {\eqref{eq:def:lambda_substitution/abstraction/renaming}} = \\ &=
+      \qabs z (\qabs y yx)[x \mapsto z][y \mapsto x]
+      \reloset {\eqref{eq:def:lambda_substitution/abstraction/direct}} = \\ &=
+      \qabs z (\qabs y yz)[y \mapsto x]
+      \reloset {\eqref{eq:def:lambda_substitution/abstraction/renaming}} = \\ &=
+      \qabs z \qabs t (yz)[y \mapsto t][y \mapsto x]
+       = \\ &=
+      \qabs z \qabs t tz.
+    \end{align*}
+
+    We include the aforementioned substitution rule \eqref{eq:def:lambda_substitution/abstraction/self} simply because it is simpler to work with during inductive proofs.
+  \end{thmenum}
+\end{example}
+
+\paragraph{\( \beta \)-reduction}
+
+\begin{definition}\label{def:beta_redex}\mcite[def. 1B1]{Hindley1997}
+  A \( \beta \)-regex is a \( \synlambda \)-application whose first term is a \( \synlambda \)-abstraction, that is, a \( \synlambda \)-term of the form \( (\qabs x M) N \)
+\end{definition}
