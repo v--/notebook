@@ -37,7 +37,7 @@ def is_regular(grammar: Grammar):
     return is_left_linear(grammar) or is_right_linear(grammar)
 
 
-# This is alg:finite_automaton_from_regular_grammar in the text
+# This is alg:regular_grammar_to_automaton in the text
 def to_finite_automaton(grammar: Grammar) -> FiniteAutomaton:
     assert is_regular(grammar)
 
@@ -82,7 +82,7 @@ def to_finite_automaton(grammar: Grammar) -> FiniteAutomaton:
     return reverse_automaton(aut)
 
 
-# This is alg:right_linear_grammar_from_finite_automaton from the text
+# This is alg:finite_automaton_to_right_linear_grammar from the text
 def from_finite_automaton(aut: FiniteAutomaton) -> Grammar:
     det = determinize(aut)
     schema = GrammarSchema([

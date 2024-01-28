@@ -205,16 +205,16 @@ class Matrix(Generic[N]):
         ])
 
 
-def eye(n: int):
+def eye(n: int, m: int):
     return Matrix([
-        [1 if i == j else 0 for j in range(n)]
+        [1 if i == j else 0 for j in range(m)]
         for i in range(n)
     ])
 
 
-def zeros(n: int):
+def zeros(n: int, m: int):
     return Matrix([
-        [0 for _ in range(n)]
+        [0 for _ in range(m)]
         for _ in range(n)
     ])
 

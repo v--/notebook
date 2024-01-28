@@ -91,198 +91,133 @@ Languages are used to define formulas for expressing the \hyperref[def:zfc]{axio
   \end{thmenum}
 \end{example}
 
-\paragraph{Finite automata}
+\paragraph{Word distance}
 
-\begin{definition}\label{def:finite_automaton}\mcite[27]{Salomaa1987}
-  Fix an \hyperref[def:formal_language]{alphabet} \( \Sigma \). Let \( Q \) be a finite nonempty set, whose members we will call \term{states}. Let \( \delta: Q \times \Sigma \multto Q \) be a \hyperref[def:set_valued_map]{set-valued map}, which we will call a \term{transition function} because, depending on a state in \( Q \) and a symbol in \( \Sigma \), \( \delta \) gives us the possible states towards we can transition.
-
-  Finally, let \( S \) and \( T \) be nonempty sets of states, which we call an \term{initial} and \term{terminal states}, correspondingly.
-
-  We call this entire contraption \( (\Sigma, Q, \delta, I, T) \) a \term[ru=конечный автомат (\cite[159]{Гладкий1973Языки})]{finite automaton}. It models a real-world device that starts its work from some initial state and, via a sequence of state transitions, reaches some terminal state.
-
-  \begin{figure}[!ht]
-    \hfill
-    \includegraphics[page=1]{output/def__finite_automaton}
-    \hfill
-    \includegraphics[page=2]{output/def__finite_automaton}
-    \hfill\hfill
-    \caption{A \hyperref[def:finite_automaton/determinism]{nondeterministic finite automaton} accepting the language \( \set{ a } \cup \set{ b^n \given n > 0 } \cup \set{ aa b^n \given n > 0 } \) and its \hyperref[alg:determinization_of_finite_automata]{determinization}.}
-    \label{fig:def:finite_automaton}
-  \end{figure}
-
-  \begin{thmenum}
-    \thmitem{def:finite_automaton/graph}\mimprovised Regard \( \delta \) as a set of triples \( (h_0, l_0, t_0) \). Denote by \( h: \delta \to Q \), \( l: \delta \to \Sigma \) and \( t: \delta \to Q \) the functions that take the corresponding entry out of each triple.
-
-    Then the quadruple \( (Q, \delta, h, t) \) is a \hyperref[def:directed_multigraph]{directed multigraph}, whose arcs are \hyperref[def:labeled_set]{labeled} by \( l \).
-
-    We can identify the automaton with its (multi)graph. When drawing this graph, for example in \cref{fig:def:finite_automaton}, we denote initial states via inward arrows without a source and terminal states via double circles.
-
-    \thmitem{def:finite_automaton/determinism} If there is only one initial state and if \( \delta \) is a \hyperref[def:set_valued_map/partial]{single-valued partial function}, we say that the automata is \term{deterministic}.
-
-    Determinism ensures that there is at most one possible state to transition to, given a current state and a symbol.
-
-    \thmitem{def:finite_automaton/recognition}\mcite[def. 4.1.1]{Savage1998} We say that the automaton \term{accepts} or \term{recognizes} the \hyperref[def:formal_language/word]{word} \( a_1 \cdots a_n \) over \( \mscrA \) if there exists a \hyperref[def:graph_walk/directed]{walk}
-    \begin{equation*}
-      s \reloset {e_1} \to \anon \reloset {e_2} \to \cdots \reloset {e_{n-1}} \to \anon \reloset {e_n} \to \anon.
-    \end{equation*}
-    such that
-    \begin{itemize}
-      \item The label \( l(e_k) \) is \( a_k \) for every \( k = 1, \ldots, n \).
-      \item The tail \( t(e_n) \) of the walk is a terminal state from \( T \).
-    \end{itemize}
-
-    \thmitem{def:finite_automaton/language} The set of all words recognized by the automaton is called the language \term{accepted} or \term[ru=(язык) распознается (автоматом) (\cite[45]{Гладкий1973Языки})]{recognized} by the automaton. We denote this language via \( \mscrL(F) \).
-
-    \thmitem{def:finite_automaton/equivalent}\mcite[152]{Savage1998} We say that two finite automata are \term{equivalent} if they recognize the same language.
-  \end{thmenum}
+\begin{definition}\label{def:hamming_distance}\mcite[993]{Rosen1999}
+  The \term{Hamming distance} between two \hyperref[def:formal_language/word]{words} \( a_1 \cdots a_n \) and \( b_1 \cdots b_n \) of the same length is simply the number of indices for which \( a_k \neq b_k \).
 \end{definition}
 
-\begin{definition}\label{def:reverse_language}\mimprovised
-  We define the \term{reverse language} of \( \mscrL \) as
-  \begin{equation*}
-    \op{rev}(\mscrL) \coloneqq \set{ \op{rev}(w) \given w \in \mscrL }.
-  \end{equation*}
-\end{definition}
+\begin{definition}\label{def:levenshtein_distance}\mcite[4]{Левенштейн1965}
+  The \term{Levenshtein distance} from the \hyperref[def:formal_language/word]{word} \( v \) to \( w \) is the minimum number of single-symbol insertions, deletions and substitutions needed to obtain \( w \) from \( v \).
 
-\begin{proposition}\label{thm:reverse_language_involution}
-  The \hyperref[def:reverse_language]{reverse} of the reverse of a language is the original language.
-\end{proposition}
-\begin{proof}
-  Trivial.
-\end{proof}
-
-\begin{definition}\label{def:reverse_finite_automaton}\mimprovised
-  We define the \term{reverse automaton} of \( F = (\Sigma, Q, \delta, I, T) \) as
-  \begin{equation*}
-    \op{rev}(F) \coloneqq (\Sigma, Q, \op{rev}(\delta), T, I),
-  \end{equation*}
-  where
-  \begin{equation*}
-    \op{rev}(\delta) \coloneqq \set{ (q, a, p) \given (p, a, q) \in \delta }.
-  \end{equation*}
+  In this context, following \incite[168]{WagnerFischer1974}, we will refer to these operations as \enquote{edit operations}.
 \end{definition}
 \begin{comments}
-  \item We have
-  \begin{equation*}
-    p \in \op{rev}(\delta)(q, a) \T{if and only if} q \in \delta(p, a).
-  \end{equation*}
+  \item We give here Levenshtein's definition, but we will conflate it with the recursively-defined function from \fullref{thm:levenshtein_distance_characterization}. The latter makes it clear that the distance is well-defined and symmetric.
+
+  \item \incite[2]{Левенштейн1965} also discusses a similar distance function, but without allowing substitutions. We use here the more established version, called \enquote{edit distance} by \incite[168]{WagnerFischer1974}.
 \end{comments}
 
-\begin{proposition}\label{thm:reverse_finite_automaton_graph}
-  The \hyperref[def:finite_automaton/graph]{multigraph} of a \hyperref[def:reverse_finite_automaton]{reverse automaton} is its \hyperref[def:opposite_directed_multigraph]{opposite multigraph}.
+\begin{proposition}\label{thm:levenshtein_distance_characterization}
+  The following function describes the \hyperref[def:levenshtein_distance]{Levenshtein distance} between two words:
+  \begin{equation}\label{eq:thm:levenshtein_distance_characterization}
+    l(v, w) \coloneqq \begin{cases}
+      \len(w),                                             &v = \varepsilon, \\
+      \len(v),                                             &w = \varepsilon, \\
+      l(v', w'),                                           &v = av' \T{and} w = bw' \T{and} a = b, \\
+      1 + \min\set[\Big]{ l(v, w'), l(v', w), l(v', w') }, &v = av' \T{and} w = bw' \T{and} a \neq b.
+    \end{cases}
+  \end{equation}
 \end{proposition}
-\begin{proof}
-  Trivial.
-\end{proof}
-
-\begin{proposition}\label{thm:reverse_finite_automaton_language}
-  For a given \hyperref[def:finite_automaton]{finite automaton} \( F = (\Sigma, Q, \delta, I, T) \), we have
+\begin{comments}
+  \item In order for this definition to be precise, we must define \( l \) as a function over the Kleene star of some alphabet.
+  \item If we wish to disallow substitution, following Levenshtein's original discussion in \cite[2]{Левенштейн1965}, we must replace the last case with
   \begin{equation*}
-    \mscrL(\op{rev}(F)) = \op{rev}(\mscrL(F)).
+    \min\set[\Big]{ 1 + l(v, w'), 1 + l(v', w), 2 + l(v', w') }.
   \end{equation*}
-\end{proposition}
+
+  See the proof for the corresponding reasoning.
+\end{comments}
 \begin{proof}
-  Trivial.
+  We use natural number induction on the minimum of the lengths of \( v \) and \( w \):
+  \begin{itemize}
+    \item If \( v = \varepsilon \), then \( w \) can be obtained from \( v \) only by appending every symbol of \( w \), hence the Levenshtein distance is the length of \( w \).
+
+    \item If \( w = \varepsilon \), then \( w \) can be obtained from \( v \) only by removing every symbol of \( v \), hence the Levenshtein distance is the length of \( v \).
+
+    \item If \( v = av' \) and \( w = bw' \) and \( a = b \), then the Levenshtein distance from \( v \) to \( w \) is the distance of \( v' \) to \( w' \). Assuming the inductive hypothesis holds for \( \min\set{ \len(v'), \len(w') } \), we conclude that \( l(v', w') \) is the corresponding Levenshtein distance.
+
+    \item If again \( v = av' \) and \( w = bw' \) but \( a \neq b \), assuming the inductive hypothesis holds for pairs whose minimum length is less than that of \( v \) and \( w \), we have several possibilities:
+    \begin{itemize}
+      \item We can delete the first symbol of \( w \) and then obtain \( w' \) from \( v \). The inductive hypothesis holds for \( v \) and \( w' \), hence this requires \( 1 + l(v, w') \) operations.
+
+      \item We can delete the first symbol from \( v \) and then obtain \( w \) from \( v' \). This requires \( 1 + l(v', w) \) operations.
+
+      \item We can substitute the first symbol of \( v \) with that of \( w \) and then obtain \( w' \) from \( v' \). This requires \( 1 + l(v', w') \) operations.
+
+      \item If we wish to avoid substitution and only work with addition and deletion, the last case would require \( 2 + \len(v', w') \) operations because we must first remove the initial symbol from \( w \) and add \( a \) instead.
+    \end{itemize}
+  \end{itemize}
+
+  Summarizing the above, we obtain the piecewise recursive definition \eqref{eq:thm:levenshtein_distance_characterization}.
 \end{proof}
 
-\begin{example}\label{ex:def:finite_automaton}
-  We list several examples of \hyperref[def:finite_automaton]{finite automata}:
+\begin{proposition}\label{thm:levenshtein_distance_metric}
+  As an operator on the Kleene star of some alphabet, the \hyperref[def:levenshtein_distance]{Levenshtein distance} is a \hyperref[def:metric_space]{metric}.
+\end{proposition}
+\begin{proof}
+  \SubProofOf{def:metric_space/M1} No edit operations are needed if and only if the two strings match, that is, \( l(v, w) = 0 \) if and only if \( v = w \).
+
+  \SubProofOf{def:metric_space/M2} It is clear from \eqref{eq:thm:levenshtein_distance_characterization} that Levenshtein distance is symmetric.
+
+  \SubProofOf{def:metric_space/M3} For any three words \( u \), \( v \) and \( w \), the minimum number of edit operations needed to convert \( u \) to \( w \) is bounded by the number of operations needed for \( u \) to \( v \) and then \( v \) to \( w \).
+\end{proof}
+
+\begin{example}\label{ex:def:levenshtein_distance}
+  We list examples of \hyperref[def:levenshtein_distance]{Levenshtein distances}:
   \begin{thmenum}
-    \thmitem{ex:def:finite_automaton/even} Consider the language form \fullref{ex:def:formal_language/leucine} describing even binary numbers. The language can be recognized by the automaton with multigraph
+    \thmitem{ex:def:levenshtein_distance/shift} We only need two edit operations to convert \( a b^n c \) to \( b^n c a \) --- one for deleting \( a \) from the start and another for inserting it at the end. The Levenshtein distance is thus \( 2 \) for any nonnegative integer \( n \).
+
+    The \hyperref[def:hamming_distance]{Hamming distance} is \( 2 \) if \( n = 0 \) and otherwise it is
     \begin{equation*}
-      \includegraphics[page=2]{output/ex__def__finite_automaton}
+      l(a b^n c, b^n c a) = l(a b^{n-1} b c, b b^{n-1} c a) = 3.
     \end{equation*}
 
-    \thmitem{ex:def:finite_automaton/leucine} Consider the language form \fullref{ex:def:formal_language/leucine} describing Leucine. It can be recognized by the nondeterministic finite automaton
+    \thmitem{ex:def:levenshtein_distance/spelling} A useful application of the Levenshtein metric is to perform \enquote{fuzzy search}, that is, to find the closest matching word from a list.
+
+    For example, a spelling correction program that works on the dictionary
     \begin{equation*}
-      \includegraphics[page=1]{output/ex__def__finite_automaton}
+      \set{ \texttt{junction}, \texttt{conjunction}, \texttt{disjunction} }
+    \end{equation*}
+    will be able to correct the word \( \texttt{conunction} \) to \( \texttt{conjunction} \) because
+    \begin{equation*}
+      l(\texttt{conunction}, \texttt{con}\oline{\texttt{j}}\texttt{unction}) = 1,
+    \end{equation*}
+    while
+    \begin{equation*}
+      l(\hi{\texttt{con}}\texttt{unction}, \oline{\texttt{j}}\texttt{unction}) = 1 + l(\hi{\texttt{co}}\oline{\texttt{j}}\texttt{unction}, \oline{\texttt{j}}\texttt{unction}) = 3
+    \end{equation*}
+    and
+    \begin{equation*}
+      l(\hi{\texttt{con}}\texttt{unction}, \hi{\texttt{dis}}\oline{\texttt{j}}\texttt{unction}) = 1 + l(\hi{\texttt{con}}\oline{\texttt{j}}\texttt{unction}, \hi{\texttt{dis}}\oline{\texttt{j}}\texttt{unction}) = 4.
     \end{equation*}
 
-    \thmitem{ex:def:finite_automaton/anbn} Consider the language
-    \begin{equation*}
-      \mscrL \coloneqq \set{ a^n b^n \given n \geq 0 }
-    \end{equation*}
-    from \fullref{ex:def:formal_language/anbn}.
-
-    As we will see in \fullref{alg:determinization_of_finite_automata}, a deterministic automaton exists accepting a language if and only if a nondeterministic one exists. Aiming at a contradiction, suppose that there exists some deterministic finite automaton \( F = (\Sigma, Q, \delta, \set{ s }, T) \) whose language is \( \mscrL \). Let \( G \) be its multigraph.
-
-    Since \( s \) is the only initial state, and since \( \mscrL \) contains the empty string, then \( s \) must also be a terminal state.
-
-    Furthermore, \( \mscrL \) contains the word \( ab \), hence there must exist a terminal state \( t_1 \) and an intermediate state \( q_1 \) such that
-    \begin{equation*}
-      \includegraphics[page=3]{output/ex__def__finite_automaton}
-    \end{equation*}
-
-    Furthermore, the above is a full subgraph of \( G \) --- none of the states above are interconnected by any additional arcs.
-
-    Then, in order for \( F \) to accept \( aabb \), it must have more states. Since the automaton is deterministic, there cannot be another arc with label \enquote{\( a \)} starting at \( s \). Hence, \( q_1 \) is the only node where it is possible to have another arc with label \enquote{\( a \)}.
-
-    Hence, \( G \) either has as a subgraph either
-    \begin{equation*}
-      \includegraphics[page=4]{output/ex__def__finite_automaton}
-    \end{equation*}
-    or
-    \begin{equation*}
-      \includegraphics[page=5]{output/ex__def__finite_automaton}
-    \end{equation*}
-
-    In particular, \( F \) must have at least five states in order to recognize \( a^2 b^2 \).
-
-    Continuing by induction, we conclude that in order for \( F \) to recognize \( a^n b^n \), it must have at least \( 2n + 1 \) states. For example, the following automaton recognizes \( a^n b^n \):
-    \begin{equation*}
-      \includegraphics[page=6]{output/ex__def__finite_automaton}
-    \end{equation*}
-
-    But \( \mscrL \) contains word of arbitrary length. Therefore, no finite automaton is able to recognize \( \mscrL \).
+    On the other hand, \( \texttt{subjunction} \) is at a distance of \( 3 \) from all three words.
   \end{thmenum}
 \end{example}
 
-\begin{algorithm}[Determinization of finite automata]\label{alg:determinization_of_finite_automata}
-  Let \( N = (\Sigma, Q, \delta, I, T) \) be a \hyperref[def:finite_automaton]{finite automaton}. We will build an \hyperref[def:finite_automaton/equivalent]{equivalent} \hyperref[def:finite_automaton/determinism]{deterministic automaton} \( \det(N) \).
+\begin{algorithm}[Wagner-Fisher algorithm for Levenshtein distance]\label{alg:wagner_fisher}\mcite[171; 172]{WagnerFischer1974}
+  Fix two words
+  \begin{align*}
+    v = a_1 \cdots a_n && w = b_1 \cdots b_m.
+  \end{align*}
 
-  This can be achieved by grouping states that would otherwise make the automaton nondeterministic. We will first recursively construct the operator \( \mscrD(P, V) \), which, given a set of states \( P \) and a family of \enquote{visited} sets of states \( V \), produces a family of triples describing the transitions of the deterministic automaton. The family \( V \) helps us avoid cycles when traversing \( N \).
+  The \hyperref[def:levenshtein_distance]{Levenshtein distance} from the prefix \( a_1 \cdots a_j \) to the prefix \( b_1 \cdots b_i \) can be computed recursively as follows:
+  \begin{equation*}
+    d_{i,j} = \begin{cases}
+      j,                                                         &i = 0, \\
+      i,                                                         &j = 0, \\
+      \min\set{ 1 + d_{i-1,j}, 1 + d_{i,j-1}, 0 + d_{i-1,j-1} }, &i > 0 \T{and} j > 0 \T{and} a_i = b_i, \\
+      \min\set{ 1 + d_{i-1,j}, 1 + d_{i,j-1}, 1 + d_{i-1,j-1} }, &i > 0 \T{and} j > 0 \T{and} a_i \neq b_i.
+    \end{cases}
+  \end{equation*}
 
-  \begin{thmenum}
-    \thmitem{alg:determinization_of_finite_automata/step} Suppose we are given a subset \( P \) of \( P \) and a subset \( V \) of \( \pow(Q) \).
-
-    For every symbol \( a \) in \( \Sigma \), consider the set of all states that we can transition to via \( a \) from some state in \( P \):
-    \begin{equation*}
-      \delta(P, a) = \bigcup_{p \in P} \delta(p, a) = \set{ q \in Q \given \qexists* {p \in P} q \in \delta(p, a) }.
-    \end{equation*}
-
-    Define the set of triples that would become part the graph of the new transition function:
-    \begin{equation*}
-      E_P \coloneqq \set{ (P, a, \delta(P, a)) \given \delta(P, a) \neq \varnothing }.
-    \end{equation*}
-
-    Finally, define
-    \begin{equation*}
-      \mscrD(P, V) \coloneqq E_P \cup \bigcup \set[\Big]{ \mscrD\parens[\Big]{ \delta(P, a), V \cup \set{ P } } \given* \delta(P, a) \T{is nonempty and is not in} V }.
-    \end{equation*}
-
-    Note how we used \( V \) to filter out only those sets of states that have not yet been visited.
-
-    \thmitem{alg:determinization_of_finite_automata/run} Let \( \delta' \coloneqq \mscrD(I, \varnothing) \). Define the new set of states
-    \begin{equation*}
-      Q' \coloneqq \set[\Big]{ P \given* (P, a, O) \in \delta' } \cup \set[\Big]{ O \given* (P, a, O) \in \delta' }.
-    \end{equation*}
-
-    Define also the set of initial states \( I' \coloneqq \set{ I } \) and of terminal states
-    \begin{equation*}
-      T' \coloneqq \set{ P \in Q' \given P \cap T \neq \varnothing }.
-    \end{equation*}
-
-    Then \( \det(N) \coloneqq (\Sigma, Q', \delta', I', T') \) is the desired finite automaton.
-  \end{thmenum}
+  The algorithm itself consists of arranging these values into a \( (m + 1) \times (n + 1) \) matrix.
 \end{algorithm}
 \begin{comments}
-  \item This algorithm can be found as \texttt{automata.finite.determinize} in \cite{code}.
+  \item Unlike in \fullref{subsec:matrices_over_rings}, both the row and the column index here must start at zero.
+  \item This algorithm can be found as \texttt{lang.distance.wagner\_fisher} in \cite{code}.
 \end{comments}
-\begin{defproof}
-  We have explicitly made \( I \) the only initial state, and we have grouped arcs with identical labels. Hence, \( F \) is indeed deterministic.
-
-  We must show that \( \mscrL(N) = \mscrL(F) \). We have introduced a special state for every occurrence of several vertices that have incoming arcs with identical labels. Hence, we replace every such group of arcs with a single arc. The two automata should then accept identical languages.
-\end{defproof}
 
 \paragraph{Formal grammars}
 
@@ -586,7 +521,7 @@ Languages are used to define formulas for expressing the \hyperref[def:zfc]{axio
     \end{equation*}
     describing \( \mscrL = \set{ a^n b^n \given n \geq 0 } \) from \fullref{ex:def:formal_language/anbn}.
 
-    We have shown in \fullref{ex:def:finite_automaton/anbn} that this language cannot be recognized by a finite automaton. \Fullref{thm:regular_languages} suggests that it is not \hyperref[def:chomsky_hierarchy/regular]{regular}.
+    We have shown in \fullref{ex:def:finite_automaton/anbn} that this language cannot be recognized by a finite automaton. In \fullref{subsec:regular_languages} we will prove \fullref{thm:regular_languages}, which suggests that \( \mscrL \) is not \hyperref[def:chomsky_hierarchy/regular]{regular}.
 
     Hence, \( \mscrL \) is a context-free language that is not regular.
 
@@ -851,174 +786,3 @@ Languages are used to define formulas for expressing the \hyperref[def:zfc]{axio
     \bnfprod{natural number} {\bnfpn{digit} \bnfor \bnfpn{nonzero digit} \bnfsp \bnfpn{digit string}}
   \end{bnf*}
 \end{remark}
-
-\paragraph{Regular languages}
-
-\begin{definition}\label{def:reverse_grammar}\mcite[17]{Salomaa1987}
-  We define the \term{reverse grammar} of the \hyperref[def:chomsky_hierarchy/context_free]{context-free} \( G = (V, \Sigma, \to, S) \) as
-  \begin{equation*}
-    \op{rev}(G) \coloneqq (V, \Sigma, \to_{\op{rev}}, S),
-  \end{equation*}
-  where
-  \begin{equation*}
-    A \to_{\op{rev}} \op{rev}(w) \T{if} A \to w.
-  \end{equation*}
-\end{definition}
-\begin{comments}
-  \item For example, the rule \( A \to Ba_1 \cdots a_n \) becomes \( A \to_{\op{rev}} a_n \cdots a_1 B \).
-\end{comments}
-
-\begin{proposition}\label{thm:reverse_linear_grammar}
-  The \hyperref[def:reverse_grammar]{reverse} of a \hyperref[def:chomsky_hierarchy/regular]{left linear grammar} is \hyperref[def:chomsky_hierarchy/regular]{right linear} and vice versa.
-\end{proposition}
-\begin{proof}
-  Trivial.
-\end{proof}
-
-\begin{proposition}\label{thm:reverse_grammar_language}
-  For a given \hyperref[def:chomsky_hierarchy/context_free]{context-free} grammar \( G = (V, \Sigma, \to, S) \), we have
-  \begin{equation*}
-    \mscrL(\op{rev}(G)) = \op{rev}(\mscrL(G)).
-  \end{equation*}
-\end{proposition}
-\begin{proof}
-  Trivial.
-\end{proof}
-
-\begin{algorithm}[Finite automaton from regular grammar]\label{alg:finite_automaton_from_regular_grammar}
-  Let \( G = (V, \Sigma, \to, S) \) be a \hyperref[def:chomsky_hierarchy/regular]{regular grammar}. We will construct a \hyperref[def:finite_automaton]{finite automaton} that \hyperref[def:finite_automaton/language]{accepts} \( \mscrL(G) \).
-
-  \begin{thmenum}
-    \thmitem{alg:finite_automaton_from_regular_grammar/init} Let \( G_1 = (V, \Sigma, \to_1, S) \) be \( G_1 \) if it is right linear and \( \op{rev}(G) \) if it is left linear. Then \( G_1 \) is necessarily right linear.
-
-    \thmitem{alg:finite_automaton_from_regular_grammar/epsilon} Let \( G_2 = (V_2, \Sigma, \to_2, S_2) \) be the grammar obtained from \( G_1 \) by removing \( \varepsilon \) rules via \Fullref{alg:epsilon_rule_removal}.
-
-    \thmitem{alg:finite_automaton_from_regular_grammar/collapse} Let \( G_3 = (V_2, \Sigma, \to_3, S_2) \) be the grammar obtained from \( G_2 \) by collapsing renaming rules via \fullref{alg:renaming_rule_collapse}.
-
-    \thmitem{alg:finite_automaton_from_regular_grammar/intermediate} Build another intermediate grammar \( G_4 = (V_4, \Sigma, \to_4, S_2) \) as follows:
-    \begin{itemize}
-      \item For each rule \( A \to_3 w \), \( w = a_1 \cdots a_n \), instead consider the sequence of rules
-      \begin{align*}
-        A       &\to_4 a_1 A_1, \\
-        A_1     &\to_4 a_2 A_2, \\
-                &\vdots \\
-        A_{n-1} &\to_4 a_n,
-      \end{align*}
-      where \( A_1, \ldots, A_{n-1} \) are new nonterminals.
-
-      \item For each rule \( A \to_3 wB \) with \( \len(w) > 0 \), consider a similar sequence, but the last rule being
-      \begin{equation*}
-        A_{n-1} \to_4 a_n B.
-      \end{equation*}
-    \end{itemize}
-
-    Thus, every rule in \( G_4 \) has one of the forms \( A \to_4 a \) or \( A \to_4 a B \) or \( A \to_4 B \).
-
-    \thmitem{alg:finite_automaton_from_regular_grammar/automaton}\mcite[thm. 4.10.1]{Savage1998} Let \( F \) be some new nonterminal symbol. Then the following is a finite automaton that accepts \( \mscrL(G_4) \), and hence also \( G_2 \) and \( G_1 \):
-    \begin{itemize}
-      \item \( \Sigma \) is the alphabet.
-      \item \( V_4 \cup \set{ F } \) is the set of states.
-      \item \( S_2 \) the only starting state.
-      \item \( F \) is a final state. \( S_2 \) is also a final state if \( \varepsilon \in \mscrL(G) \).
-      \item Add the following transitions:
-      \begin{itemize}
-        \item \( \delta(A, a) \coloneqq F \) if \( A \to_4 a \).
-        \item \( \delta(A, a) \coloneqq B \) if \( A \to_4 aB \).
-      \end{itemize}
-    \end{itemize}
-
-    \thmitem{alg:finite_automaton_from_regular_grammar/reverse} If \( G \) is right linear, then \( F \) is the desired automaton because
-    \begin{equation*}
-      \mscrL(F) = \mscrL(G) = \mscrL(G_4).
-    \end{equation*}
-
-    Otherwise, we take the \hyperref[def:reverse_finite_automaton]{reverse automaton} \( \op{rev}(F) \) because
-    \begin{equation*}
-      \mscrL(\op{rev}(F))
-      \reloset {\ref{thm:reverse_finite_automaton_language}} =
-      \op{rev}(\mscrL(F))
-      =
-      \op{rev}(\mscrL(G_4))
-      =
-      \op{rev}(\mscrL(\op{rev}(G)))
-      \reloset {\ref{thm:reverse_grammar_language}} =
-      \op{rev}(\op{rev}(\mscrL(G)))
-      \reloset {\ref{thm:reverse_language_involution}} =
-      \mscrL(G).
-    \end{equation*}
-  \end{thmenum}
-\end{algorithm}
-\begin{comments}
-  \item This algorithm can be found as \texttt{grammars.regular.to\_finite\_automaton} in \cite{code}.
-\end{comments}
-
-\begin{algorithm}[Right-linear grammar from finite automaton]\label{alg:right_linear_grammar_from_finite_automaton}\mcite[thm. 4.10.1]{Savage1998}
-  Let \( F = (\Sigma, Q, \delta, I, T) \) be a \hyperref[def:finite_automaton]{finite automaton}. We will build a \hyperref[def:chomsky_hierarchy/regular]{right linear grammar} \( G = (V, \Sigma, \to, S) \) that \hyperref[def:formal_grammar/language]{generates} \( \mscrL(F) \).
-
-  \begin{thmenum}
-    \thmitem{alg:right_linear_grammar_from_finite_automaton/determinize} Use \fullref{alg:determinization_of_finite_automata} to obtain a deterministic automaton \( \det(F) = (\Sigma, Q', \delta', \set{ I }, T') \) equivalent to \( F \).
-
-    \thmitem{alg:right_linear_grammar_from_finite_automaton/grammar} The following describes the desired grammar:
-    \begin{itemize}
-      \item \( \Sigma \) is the set of terminals.
-      \item \( Q' \) is the set of nonterminals.
-      \item \( I \) is the starting nonterminal.
-      \item The following are rules:
-      \begin{itemize}
-        \item \( A \to aB \) if \( \delta'(A, a) = B \).
-        \item \( A \to \varepsilon \) for each terminal state \( A \in T' \).
-      \end{itemize}
-    \end{itemize}
-  \end{thmenum}
-\end{algorithm}
-\begin{comments}
-  \item This algorithm can be found as \texttt{grammars.regular.from\_finite\_automaton} in \cite{code}.
-\end{comments}
-
-\begin{proposition}\label{thm:regular_languages}
-  The following are equivalent for a given \hyperref[def:formal_language/language]{language}:
-  \begin{thmenum}
-    \thmitem{thm:regular_languages/right} It is \hyperref[def:formal_grammar/language]{generated} by a \hyperref[def:chomsky_hierarchy/regular]{right linear grammar}.
-    \thmitem{thm:regular_languages/left} It is \hyperref[def:formal_grammar/language]{generated} by a \hyperref[def:chomsky_hierarchy/regular]{left linear grammar}.
-    \thmitem{thm:regular_languages/automata} It is \hyperref[def:finite_automaton/language]{recognized} by a \hyperref[def:finite_automaton]{finite automaton}.
-  \end{thmenum}
-\end{proposition}
-\begin{proof}
-  \ImplicationSubProof{thm:regular_languages/right}{thm:regular_languages/left} Let \( G = (V, \Sigma, \to, S) \) be a right-regular grammar. We will describe a procedure for obtaining an equivalent left-regular grammar.
-
-  \begin{itemize}
-    \item \Fullref{alg:finite_automaton_from_regular_grammar} gives us a finite automaton \( F = (\Sigma, Q, \delta, \set{ S }, T) \) such that \( \mscrL(F) = \mscrL(G) \).
-
-    \item Take the \hyperref[def:reverse_finite_automaton]{reverse automaton} \( \op{rev}(F) \) of \( F \).
-
-    \item Determinize \( \op{rev}(F) \) via \fullref{alg:determinization_of_finite_automata}.
-
-    \item Use \fullref{alg:right_linear_grammar_from_finite_automaton} to convert \( \det(\op{rev}(F)) \) to a right-regular grammar \( G' \). At this point, we have
-    \begin{equation*}
-      \mscrL(G')
-      =
-      \mscrL(\det(\op{rev}(F)))
-      =
-      \mscrL(\op{rev}(F))
-      \reloset {\ref{thm:reverse_finite_automaton_language}} =
-      \op{rev}(\mscrL(F)).
-    \end{equation*}
-
-    \item Finally, take the \hyperref[def:reverse_grammar]{reverse grammar} \( \op{rev}(G') \). It is a left-regular grammar as a consequence of \fullref{thm:reverse_linear_grammar}. Furthermore,
-    \begin{equation*}
-      \mscrL(\op{rev}(G'))
-      \reloset {\ref{thm:reverse_grammar_language}} =
-      \op{rev}(\mscrL(G'))
-      =
-      \op{rev}(\op{rev}(\mscrL(F)))
-      \reloset {\ref{thm:reverse_language_involution}} =
-      \mscrL(F).
-    \end{equation*}
-
-    Hence, \( \op{rev}(G') \) is the desired left linear grammar.
-  \end{itemize}
-
-  \ImplicationSubProof{thm:regular_languages/left}{thm:regular_languages/automata} \Fullref{alg:finite_automaton_from_regular_grammar} allows us to convert every left linear grammar to a finite automaton.
-
-  \ImplicationSubProof{thm:regular_languages/automata}{thm:regular_languages/right} \Fullref{alg:right_linear_grammar_from_finite_automaton} allows us to convert every finite automaton to a right linear grammar.
-\end{proof}

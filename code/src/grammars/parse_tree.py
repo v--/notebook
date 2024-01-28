@@ -95,7 +95,7 @@ def _insert_subtree_leftmost(tree: ParseTree, subtree: ParseTree):
     return False
 
 
-# This is alg:leftmost_derivation_from_parse_tree in the text
+# This is alg:parse_tree_to_leftmost_derivation in the text
 def derivation_to_parse_tree(derivation: Derivation) -> ParseTree:
     tree = None
 
@@ -115,7 +115,7 @@ def derivation_to_parse_tree(derivation: Derivation) -> ParseTree:
     return cast(ParseTree, tree)
 
 
-# This is alg:parse_tree_from_derivation in the text
+# This is alg:derivation_to_parse_tree in the text
 def parse_tree_to_derivation(tree: ParseTree) -> Derivation:
     assert isinstance(tree.payload, NonTerminal)
     queue: SimpleQueue[ParseTree] = SimpleQueue()
