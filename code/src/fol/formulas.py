@@ -1,20 +1,17 @@
-from dataclasses import dataclass
-from typing import TypeGuard
+from typing import TypeGuard, NamedTuple
 
 from .tokens import BinaryConnective, Quantifier, PropConstant
 from .terms import Variable, Term
 
 
-@dataclass
-class ConstantFormula:
+class ConstantFormula(NamedTuple):
     value: PropConstant
 
     def __str__(self):
         return str(self.value)
 
 
-@dataclass
-class EqualityFormula:
+class EqualityFormula(NamedTuple):
     a: Term
     b: Term
 
@@ -22,8 +19,7 @@ class EqualityFormula:
         return f'({self.a} = {self.b})'
 
 
-@dataclass
-class PredicateFormula:
+class PredicateFormula(NamedTuple):
     name: str
     arguments: list[Term]
 
@@ -32,16 +28,14 @@ class PredicateFormula:
         return f'{self.name}({args})' if len(args) > 0 else self.name
 
 
-@dataclass
-class NegationFormula:
+class NegationFormula(NamedTuple):
     sub: 'Formula'
 
     def __str__(self):
         return f'¬{self.sub}'
 
 
-@dataclass
-class ConnectiveFormula:
+class ConnectiveFormula(NamedTuple):
     conn: BinaryConnective
     a: 'Formula'
     b: 'Formula'
@@ -50,8 +44,7 @@ class ConnectiveFormula:
         return f'({self.a} {self.conn} {self.b})'
 
 
-@dataclass
-class QuantifierFormula:
+class QuantifierFormula(NamedTuple):
     quantifier: Quantifier
     variable: Variable
     sub: 'Formula'
@@ -62,17 +55,22 @@ class QuantifierFormula:
 
 Formula = ConstantFormula | EqualityFormula | PredicateFormula | NegationFormula | ConnectiveFormula | QuantifierFormula
 
+
 def is_atomic(formula: Formula) -> TypeGuard[ConstantFormula | EqualityFormula | PredicateFormula]:
     return isinstance(formula, ConstantFormula | EqualityFormula | PredicateFormula)
+
 
 def is_disjunction(formula: Formula) -> TypeGuard[ConnectiveFormula]:
     return isinstance(formula, ConnectiveFormula) and formula.conn == BinaryConnective.disjunction
 
+
 def is_conjunction(formula: Formula) -> TypeGuard[ConnectiveFormula]:
     return isinstance(formula, ConnectiveFormula) and formula.conn == BinaryConnective.conjunction
 
+
 def is_conditional(formula: Formula) -> TypeGuard[ConnectiveFormula]:
     return isinstance(formula, ConnectiveFormula) and formula.conn == BinaryConnective.conditional
+
 
 def is_biconditional(formula: Formula) -> TypeGuard[ConnectiveFormula]:
     return isinstance(formula, ConnectiveFormula) and formula.conn == BinaryConnective.biconditional

@@ -84,6 +84,9 @@ class Parser(Generic[T]):
 
         return self.seq[self.index]
 
+    def peek_multiple(self, count: int):
+        return self.seq[self.index: self.index + count]
+
     def parse(self):
         raise NotImplementedError()
 

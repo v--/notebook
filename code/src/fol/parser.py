@@ -1,7 +1,6 @@
 from typing import Iterable
 
-from ..support.parsing import Parser
-from ..exceptions import NotebookCodeError
+from ..support.parsing import Parser, ParserError
 
 from .tokens import BinaryConnective, FOLToken, GreekName, LatinName, MiscToken, NaturalNumber, PropConstant, Quantifier
 
@@ -9,7 +8,7 @@ from .terms import Variable, FunctionTerm, Term
 from .formulas import ConstantFormula, ConnectiveFormula, EqualityFormula, NegationFormula, PredicateFormula, QuantifierFormula, Formula
 
 
-class IncompleteMatchError(NotebookCodeError):
+class IncompleteMatchError(ParserError):
     pass
 
 

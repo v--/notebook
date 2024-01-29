@@ -1,9 +1,14 @@
+from typing import TypeVar, Generic
+
 from .terms import Variable, FunctionTerm, Term
 from .formulas import Formula, ConstantFormula, EqualityFormula, PredicateFormula, NegationFormula, ConnectiveFormula, QuantifierFormula
 
 
-class TermVisitor:
-    def visit(self, term: Term):
+T = TypeVar('T')
+
+
+class TermVisitor(Generic[T]):
+    def visit(self, term: Term) -> T:
         match term:
             case Variable():
                 return self.visit_variable(term)
@@ -11,17 +16,17 @@ class TermVisitor:
             case FunctionTerm():
                 return self.visit_function(term)
 
-    def visit_variable(self, term: Variable):
+    def visit_variable(self, term: Variable) -> T:
         return self.generic_visit(term)
 
-    def visit_function(self, term: FunctionTerm):
+    def visit_function(self, term: FunctionTerm) -> T:
         return self.generic_visit(term)
 
-    def generic_visit(self, term: Term):
+    def generic_visit(self, term: Term) -> T:
         raise NotImplementedError
 
 
-class TermTransformationVisitor(TermVisitor):
+class TermTransformationVisitor(TermVisitor[Term]):
     def visit_variable(self, term: Variable):
         return term
 
@@ -32,8 +37,8 @@ class TermTransformationVisitor(TermVisitor):
         )
 
 
-class FormulaVisitor:
-    def visit(self, formula: Formula):
+class FormulaVisitor(Generic[T]):
+    def visit(self, formula: Formula) -> T:
         match formula:
             case ConstantFormula():
                 return self.visit_constant(formula)
@@ -53,29 +58,29 @@ class FormulaVisitor:
             case QuantifierFormula():
                 return self.visit_quantifier(formula)
 
-    def visit_constant(self, formula: ConstantFormula):
+    def visit_constant(self, formula: ConstantFormula) -> T:
         return self.generic_visit(formula)
 
-    def visit_equality(self, formula: EqualityFormula):
+    def visit_equality(self, formula: EqualityFormula) -> T:
         return self.generic_visit(formula)
 
-    def visit_predicate(self, formula: PredicateFormula):
+    def visit_predicate(self, formula: PredicateFormula) -> T:
         return self.generic_visit(formula)
 
-    def visit_negation(self, formula: NegationFormula):
+    def visit_negation(self, formula: NegationFormula) -> T:
         return self.generic_visit(formula)
 
-    def visit_connective(self, formula: ConnectiveFormula):
+    def visit_connective(self, formula: ConnectiveFormula) -> T:
         return self.generic_visit(formula)
 
-    def visit_quantifier(self, formula: QuantifierFormula):
+    def visit_quantifier(self, formula: QuantifierFormula) -> T:
         return self.generic_visit(formula)
 
-    def generic_visit(self, formula: Formula):
+    def generic_visit(self, formula: Formula) -> T:
         raise NotImplementedError
 
 
-class FormulaTransformationVisitor(FormulaVisitor):
+class FormulaTransformationVisitor(FormulaVisitor[Formula]):
     def visit_constant(self, formula: ConstantFormula):
         return formula
 

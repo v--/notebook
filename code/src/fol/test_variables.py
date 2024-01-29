@@ -4,7 +4,7 @@ from .parser import parse_formula
 
 def test_get_free_variables():
     def t(string: str):
-        return get_free_variables(parse_formula(string))
+        return set(map(str, get_free_variables(parse_formula(string))))
 
     assert t('(ξ = η)') == {'ξ', 'η'}
     assert t('(ξ1 = η2)') == {'ξ1', 'η2'}

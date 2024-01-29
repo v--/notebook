@@ -1,11 +1,10 @@
 from ..exceptions import NotebookCodeError
-from ..support.names import new_var_name
 
 from .tokens import BinaryConnective, Quantifier
-from .formulas import Formula, NegationFormula, ConnectiveFormula, QuantifierFormula, Variable
+from .formulas import Formula, NegationFormula, ConnectiveFormula, QuantifierFormula
 from .visitors import FormulaVisitor, FormulaTransformationVisitor
 from .substitution import substitute_in_formula
-from .variables import get_bound_variables, get_free_variables
+from .variables import new_variable, get_bound_variables, get_free_variables
 
 
 class QuantifierlessVerificationVisitor(FormulaVisitor):
@@ -132,9 +131,7 @@ class MoveQuantifiersVisitor(FormulaTransformationVisitor):
             raise NotebookCodeError(f'Unexpected connective {formula.conn}')
 
         if isinstance(formula.a, QuantifierFormula):
-            old_name = formula.a.variable.name
-            new_name = new_var_name(old_name, get_free_variables(formula.a.sub) | get_free_variables(formula.b))
-            new_var = Variable(new_name)
+            new_var = new_variable(formula.a.variable, get_free_variables(formula.a.sub) | get_free_variables(formula.b))
 
             return QuantifierFormula(
                 formula.a.quantifier,
@@ -149,9 +146,7 @@ class MoveQuantifiersVisitor(FormulaTransformationVisitor):
             )
 
         if isinstance(formula.b, QuantifierFormula):
-            old_name = formula.b.variable.name
-            new_name = new_var_name(old_name, get_free_variables(formula.a) | get_free_variables(formula.b.sub))
-            new_var = Variable(new_name)
+            new_var = new_variable(formula.b.variable, get_free_variables(formula.a) | get_free_variables(formula.b.sub))
 
             return QuantifierFormula(
                 formula.b.quantifier,

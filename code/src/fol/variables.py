@@ -1,26 +1,32 @@
+from ..support.names import new_var_name
+
 from .terms import Variable, Term, FunctionTerm
 from .formulas import Formula, EqualityFormula, PredicateFormula, NegationFormula, ConnectiveFormula, QuantifierFormula
 from .visitors import FormulaVisitor, TermVisitor
 
 
-class TermVariableVisitor(TermVisitor):
+def new_variable(old: Variable, context: set[Variable]) -> Variable:
+    return Variable(new_var_name(old.name, set(map(str, context))))
+
+
+class TermVariableVisitor(TermVisitor[set[Variable]]):
     def visit_variable(self, term: Variable):
-        return {term.name}
+        return {term}
 
     def visit_function(self, term: FunctionTerm):
         return {var for arg in term.arguments for var in self.visit(arg)}
 
 
-def get_variables(term: Term) -> set[str]:
+def get_term_variables(term: Term) -> set[Variable]:
     return TermVariableVisitor().visit(term)
 
 
-class FreeVariableVisitor(FormulaVisitor):
+class FreeVariableVisitor(FormulaVisitor[set[Variable]]):
     def visit_equality(self, formula: EqualityFormula):
-        return get_variables(formula.a) | get_variables(formula.b)
+        return get_term_variables(formula.a) | get_term_variables(formula.b)
 
     def visit_predicate(self, formula: PredicateFormula):
-        return {var for arg in formula.arguments for var in get_variables(arg)}
+        return {var for arg in formula.arguments for var in get_term_variables(arg)}
 
     def visit_negation(self, formula: NegationFormula):
         return self.visit(formula.sub)
@@ -29,14 +35,14 @@ class FreeVariableVisitor(FormulaVisitor):
         return self.visit(formula.a) | self.visit(formula.b)
 
     def visit_quantifier(self, formula: QuantifierFormula):
-        return self.visit(formula.sub) - {formula.variable.name}
+        return self.visit(formula.sub) - {formula.variable}
 
 
-def get_free_variables(formula: Formula) -> set[str]:
+def get_free_variables(formula: Formula) -> set[Variable]:
     return FreeVariableVisitor().visit(formula)
 
 
-class BoundVariableVisitor(FormulaVisitor):
+class BoundVariableVisitor(FormulaVisitor[set[Variable]]):
     def visit_equality(self, formula: EqualityFormula):
         return set()
 
@@ -53,5 +59,8 @@ class BoundVariableVisitor(FormulaVisitor):
         return self.visit(formula.sub) | {formula.variable.name}
 
 
-def get_bound_variables(formula: Formula) -> set[str]:
+def get_bound_variables(formula: Formula) -> set[Variable]:
     return BoundVariableVisitor().visit(formula)
+
+def get_formula_variables(formula: Formula) -> set[Variable]:
+    return get_free_variables(formula) | get_bound_variables(formula)

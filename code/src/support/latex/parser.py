@@ -1,4 +1,4 @@
-from typing import Iterator, Sequence
+from typing import Iterator, Sequence, cast
 
 from ..parsing import Parser
 from .tokenizer import tokenize_latex
@@ -24,7 +24,7 @@ class LaTeXParser(Parser[Sequence[LaTeXToken]]):
         return group
 
     def match_environment(self):
-        assert isinstance(self.peek(), EscapedWordToken) and self.peek().value == 'begin'
+        assert isinstance(self.peek(), EscapedWordToken) and cast(EscapedWordToken, self.peek()).value == 'begin'
         start_index = self.index
         self.advance()
 
@@ -32,10 +32,11 @@ class LaTeXParser(Parser[Sequence[LaTeXToken]]):
             raise self.error('No environment name specified', precede=self.index - start_index)
 
         self.advance()
+
         if self.is_at_end() or not isinstance(self.peek(), WordToken):
             raise self.error('No environment name specified', precede=self.index - start_index)
 
-        environment = Environment(name=self.peek().value, contents=[])
+        environment = Environment(name=cast(WordToken, self.peek()).value, contents=[])
         self.advance()
 
         if self.is_at_end() or self.peek() != SpecialToken.closing_brace:
@@ -49,7 +50,7 @@ class LaTeXParser(Parser[Sequence[LaTeXToken]]):
         parsed = self.parse_iter()
 
         while not self.is_at_end():
-            if self.seq[self.index:self.index + 4] == [EscapedWordToken('end'), SpecialToken.opening_brace, WordToken(environment.name), SpecialToken.closing_brace]:
+            if self.peek_multiple(4) == [EscapedWordToken('end'), SpecialToken.opening_brace, WordToken(environment.name), SpecialToken.closing_brace]:
                 self.advance(4)
                 return environment
             else:

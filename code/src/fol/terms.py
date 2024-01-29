@@ -1,16 +1,14 @@
-from dataclasses import dataclass
+from typing import NamedTuple
 
 
-@dataclass
-class Variable:
+class Variable(NamedTuple):
     name: str
 
     def __str__(self):
         return self.name
 
 
-@dataclass
-class FunctionTerm:
+class FunctionTerm(NamedTuple):
     name: str
     arguments: 'list[Term]'
 

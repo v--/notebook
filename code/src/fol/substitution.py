@@ -1,12 +1,10 @@
-from ..support.names import new_var_name
-
 from .terms import Variable, FunctionTerm, Term
 from .formulas import Formula, EqualityFormula, PredicateFormula, QuantifierFormula
-from .visitors import TermVisitor, FormulaTransformationVisitor
-from .variables import get_variables, get_free_variables
+from .visitors import TermTransformationVisitor, FormulaTransformationVisitor
+from .variables import new_variable, get_term_variables, get_free_variables
 
 
-class TermSubstitutionVisitor(TermVisitor):
+class TermSubstitutionVisitor(TermTransformationVisitor):
     from_term: Term
     to_term: Term
 
@@ -46,22 +44,21 @@ class FormulaSubstitutionVisitor(FormulaTransformationVisitor):
         return PredicateFormula(formula.name, [term_visitor.visit(arg) for arg in formula.arguments])
 
     def visit_quantifier(self, formula: QuantifierFormula):
-        free_from = get_variables(self.from_term)
-        free_to = get_variables(self.to_term)
-        old_var_name = formula.variable.name
+        free_from = get_term_variables(self.from_term)
+        free_to = get_term_variables(self.to_term)
 
         # This first check is not strictly necessary, but it is how we defined the algorithm
-        if old_var_name in free_from:
+        if formula.variable in free_from:
             return formula
 
-        if old_var_name not in free_from | free_to:
+        if formula.variable not in free_from | free_to:
             return QuantifierFormula(
                 formula.quantifier,
                 formula.variable,
                 self.visit(formula.sub)
             )
 
-        new_var = Variable(new_var_name(old_var_name, free_from | free_to | get_free_variables(formula.sub)))
+        new_var = new_variable(formula.variable, free_from | free_to | get_free_variables(formula.sub))
         sub_visitor = FormulaSubstitutionVisitor(formula.variable, new_var)
 
         return QuantifierFormula(

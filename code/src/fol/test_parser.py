@@ -43,10 +43,7 @@ def test_parsing_functions_invalid():
     with pytest.raises(ParserError):
         parse_term('f0')
 
-    # Allow only Latin letters for names
-    assert not isinstance(parse_term('α'), FunctionTerm)
-
-    # Not too Latin
+    # Only allow the letters from a to z and from α to ω
     with pytest.raises(ParserError):
         parse_term('ö')
 
@@ -76,9 +73,9 @@ def test_parsing_equalities_invalid():
     with pytest.raises(ParserError):
         parse_formula('(ξ = η')
 
-    # Neither side can be a formula
+    # The left side of an equality formula must be a term
     with pytest.raises(ParserError):
-        parse_formula('(∀ξ.p(ξ) = η)')
+        parse_formula('(¬p(ξ) = η)')
 
 
 def test_parsing_formulas_valid():
@@ -99,15 +96,34 @@ def test_parsing_formulas_valid():
 def test_parsing_formulas_invalid():
     # Parentheses must be closed
     with pytest.raises(ParserError):
-        parse_formula('(p(ξ) ∧ p(η)')
+        parse_formula('(p')
 
-    # All parentheses must be closed
+    with pytest.raises(ParserError):
+        parse_formula('(p ∧')
+
+    with pytest.raises(ParserError):
+        parse_formula('(p ∧ q')
+
     with pytest.raises(ParserError):
         parse_formula('(¬p(ζ) ∧ ∀ξ.(q(ζ, ξ) → ¬r(η, ξ))')
 
-    # And no trailing characters
+    # No trailing characters
     with pytest.raises(ParserError):
         parse_term('p ')
+
+    # No incomplete quantifier formulas
+    with pytest.raises(ParserError):
+        parse_term('∀')
+
+    with pytest.raises(ParserError):
+        parse_term('∀ξ')
+
+    with pytest.raises(ParserError):
+        parse_term('∀ξ.')
+
+    # No invalid variables
+    with pytest.raises(ParserError):
+        parse_term('∀x')
 
 
 def test_reparsing_formulas():
