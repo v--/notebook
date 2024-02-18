@@ -101,13 +101,15 @@
 
     Then the term \( \qabs x y \) would have both \( x \) and \( y \) as subterms, while according to \fullref{def:lambda_term/subterm}, only \( y \) is a subterm.
 
-    \thmitem{ex:def:lambda_term/combinator}\mcite[def. 1A10.1]{Hindley1997} The following \hyperref[def:lambda_term/closed]{combinators} have established names:
+    \thmitem{ex:def:lambda_term/combinator}\mcite[def. 1A10.1]{Hindley1997} The following terms have established names:
     \begin{align}
-      &\qabs x x, \label{eq:ex:def:lambda_term/combinator/i}\tag{\logic{I}} \\
-      &\qabs x \qabs y yx, \nonumber\label{eq:ex:def:lambda_term/combinator/k}\tag{\logic{K}} \\
-      &\qabs x \qabs y \qabs z xz(yz), \label{eq:ex:def:lambda_term/combinator/s}\tag{\logic{S}} \\
-      &\qabs x (\qabs y xyy) (\qabs y xyy). \label{eq:ex:def:lambda_term/combinator/y}\tag{\logic{Y}}
+      &\qabs x x, \label{eq:ex:def:lambda_term/combinator/i}\tag{I} \\
+      &\qabs x \qabs y yx, \nonumber\label{eq:ex:def:lambda_term/combinator/k}\tag{K} \\
+      &\qabs x \qabs y \qabs z xz(yz), \label{eq:ex:def:lambda_term/combinator/s}\tag{S} \\
+      &\qabs x (\qabs y xyy) (\qabs y xyy). \label{eq:ex:def:lambda_term/combinator/y}\tag{Y}
     \end{align}
+
+    They are combinators in the sense that will be defined in \fullref{def:lambda_combinator}, and are referred to as such.
   \end{thmenum}
 \end{example}
 
@@ -140,9 +142,9 @@
       \includegraphics[page=1]{output/def__lambda_variable_freeness}
     \end{equation*}
 
-     This occurrence is bound in the term \( \logic{I} \) and free in the subterm \( x \). Then \( x \) is a bound variable in \( \logic{I} \) and a free variable in \( \logic{I} \).
+     This occurrence is bound in the term \( I \) and free in the subterm \( x \). Then \( x \) is a bound variable in \( I \) and a free variable in \( I \).
 
-    \thmitem{ex:def:lambda_variable_freeness/both} The term \( M = \logic{I} x = (\qabs x x) x \) has two occurrences of the variable \( x \):
+    \thmitem{ex:def:lambda_variable_freeness/both} The term \( M = I x = (\qabs x x) x \) has two occurrences of the variable \( x \):
     \begin{equation*}
       \includegraphics[page=2]{output/def__lambda_variable_freeness}
     \end{equation*}
@@ -195,7 +197,7 @@
       &                                          &&\quad y \in \boldop{Free}(L) \T{and} z \not\in \boldop{Free}(NP), \label{eq:def:lambda_substitution/abstraction/renaming}
     \end{empheq}
   \end{subequations}
-  where \( z \) in \eqref{eq:def:lambda_substitution/abstraction/renaming} can be any variable not free in either \( N \) nor \( P \).
+  where \( z \) in \eqref{eq:def:lambda_substitution/abstraction/renaming} can be any variable free in neither \( N \) nor \( P \).
 
   We call the general process \eqref{eq:def:lambda_substitution/abstraction/renaming} of substituting a free variable with a suitable one \term[ru=переименование переменной (\cite[71]{Герасимов2011})]{variable renaming}.
 \end{definition}
@@ -286,7 +288,7 @@
 
       \item If \( x \) is free in \( K \) but not in \( N \), we obtain \eqref{eq:thm:lambda_substitution_free_variables/free} as in the preceding case.
 
-      \item If \( x \) is not free in either \( N \) nor \( K \), then
+      \item If \( x \) is free in neither \( N \) nor \( K \), then
       \begin{equation*}
         \boldop{Free}\parens[\Big]{ N[x \mapsto L] } \cup \boldop{Free}\parens[\Big]{ K[x \mapsto L] }
         \reloset {\T{ind.}} =
@@ -407,6 +409,57 @@
     We include the aforementioned substitution rule \eqref{eq:def:lambda_substitution/abstraction/self} simply because it is simpler to work with during inductive proofs.
   \end{thmenum}
 \end{example}
+
+\paragraph{\( \alpha \)-equivalence}
+
+\begin{definition}\label{def:lambda_term_alpha_equivalence}\mimprovised
+  We say that the \( \synlambda \)-terms \( M \) and \( N \) are \( \alpha \)-\term{equivalent} and write \( M \aequiv N \) if any of the following conditions hold:
+  \begin{thmenum}
+    \thmitem{def:lambda_term_alpha_equivalence/variable} If both \( M = x = N \) for some variable \( x \).
+    \thmitem{def:lambda_term_alpha_equivalence/application} If \( M = A B \) and \( N = C D \) and both \( A \aequiv C \) and \( B \aequiv D \).
+    \thmitem{def:lambda_term_alpha_equivalence/abstraction} If \( M = \qabs a A \) and \( N = \qabs b B \) and \( A[a \mapsto c] \aequiv B[b \mapsto c] \) for every variable \( c \) free in neither \( A \) nor \( B \).
+  \end{thmenum}
+\end{definition}
+\begin{comments}
+  \item Two terms are \( \alpha \)-equivalent if they are \enquote{essentially the same} in the sense that they differ only by the names of the variables bound by abstractors.
+
+  \item \Fullref{thm:def:lambda_term_alpha_equivalence/matching_abstraction} gives us an additional rule that can be used for simplifying induction proofs. We choose not to include it, however.
+\end{comments}
+
+\begin{example}\label{ex:def:lambda_term_alpha_equivalence}
+  We list examples of \hyperref[def:lambda_term_alpha_equivalence]{\( \alpha \)-equivalence}:
+  \begin{thmenum}
+    \thmitem{ex:def:lambda_term_alpha_equivalence/combinator} The combinator \( \ref{eq:ex:def:lambda_term/combinator/i} \) has the same essential structure regardless of how we name its variables:
+    \begin{equation*}
+      I = \qabs x x \aequiv \qabs y y \aequiv \qabs a a \aequiv \cdots
+    \end{equation*}
+
+    \thmitem{ex:def:lambda_term_alpha_equivalence/freeing} In \fullref{ex:def:lambda_variable_freeness/both} we discussed how \( x \) is both bound and free in \( M = Ix = (\qabs x x) x \).
+
+    We can use the term \( M' = (\qabs y y) x \) instead, where all occurrences of \( x \) are free and all occurrences of \( y \) are bound.
+
+    This is generalized by \fullref{alg:alpha_equivalent_term_with_distinct_variables}.
+  \end{thmenum}
+\end{example}
+
+\begin{algorithm}\label{alg:alpha_equivalent_term_with_distinct_variables}
+  Fix a \( \synlambda \)-term \( M \). We will build an \hyperref[def:lambda_term_alpha_equivalence]{\( \alpha \)-equivalent} term \( M' \) where the \hyperref[def:lambda_variable_freeness]{free and bound variables} are distinct.
+
+  We will use the auxiliary function
+  \begin{equation*}
+    D(M, G) \coloneqq \begin{cases}
+      x,                                          &M = x, \\
+      D(N, G) \thinspace D(K, G),                 &M = NK, \\
+      \qabs y D(N, G \cup \set{ y })[x \mapsto y] &M = \qabs x N,
+    \end{cases}
+  \end{equation*}
+  where \( G \) is a set of variables that should be avoided and \( y \not\in G \).
+
+  We then simply define
+  \begin{equation*}
+    M' \coloneqq D(M, \boldop{Free}(M)).
+  \end{equation*}
+\end{algorithm}
 
 \paragraph{\( \beta \)-reduction}
 

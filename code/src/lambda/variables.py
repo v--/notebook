@@ -25,7 +25,7 @@ def get_free_variables(term: Term) -> set[Variable]:
 
 class BoundVariableVisitor(TermVisitor[set[Variable]]):
     def visit_variable(self, term: Variable):
-        return term
+        return set()
 
     def visit_application(self, term: Application):
         return self.visit(term.a) | self.visit(term.b)
