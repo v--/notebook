@@ -82,9 +82,10 @@
 \RequirePackage{blkarray}
 \RequirePackage{ebproof}
 \RequirePackage{bigints}
+\RequirePackage{diagbox}
+\RequirePackage{abraces}
 \RequirePackage{forest}
 \RequirePackage{cancel}
-\RequirePackage{diagbox}
 
 % Custom code
 \RequirePackage{packages/fonts}

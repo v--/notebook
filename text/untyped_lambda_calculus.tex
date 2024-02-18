@@ -2,56 +2,18 @@
 
 \paragraph{Untyped \( \synlambda \)-terms}
 
-\begin{definition}\label{def:lambda_term}\mimprovised
-  Consider the following \hyperref[def:formal_grammar/schema]{grammar schema}:
+\begin{definition}\label{def:untyped_lambda_term}\mimprovised
+  We introduce \enquote{\( \synlambda \)-terms}, \enquote{\( \synlambda \)-applications} and \enquote{\( \synlambda \)-abstractions} via the following \hyperref[def:formal_grammar/schema]{grammar schema}:
   \begin{bnf*}
     \bnfprod{variable}    {\bnfpn{Short Latin identifier}} \\
     \bnfprod{application} {\bnftsq{\( ( \)} \bnfsp \bnfpn{term} \bnfsp \bnfpn{term} \bnfsp \bnftsq{\( ) \)}} \\
     \bnfprod{abstraction} {\bnftsq{\( ( \)} \bnfsp \bnftsq{\( \synlambda \)} \bnfsp \bnfpn{variable} \bnfsp \bnftsq{.} \bnfsp \bnfpn{term} \bnfsp \bnftsq{\( ) \)}} \\
     \bnfprod{term}        {\bnfpn{variable} \bnfor \bnfpn{application} \bnfor \bnfpn{abstraction}}
   \end{bnf*}
-
-  When introducing what is now known as \( \synlambda \)-calculus, \incite[352]{Church1932} used \( \synlambda \) as part of the grammar. We will henceforth refer to \( \synlambda \)-\term[ru=апликация (\cite[188]{Герасимов2011})]{applications}, \( \synlambda \)-\term[ru=абстракция (\cite[188]{Герасимов2011})]{abstractions} and \( \synlambda \)-\term[ru=терм (\cite[188]{Герасимов2011})]{terms}.
-
-  \begin{thmenum}
-    \thmitem{def:lambda_term/subterm}\mcite[def. 1A3]{Hindley1997} We define the set of all \term[ru=подтерм (\cite[189]{Герасимов2011})]{subterms} of a term \( M \) as
-    \begin{equation*}
-      \boldop{Subterm}(M) \coloneqq \begin{cases}
-        \set{ x },                                    &M = x, \\
-        \boldop{Subterm}(N) \cup \boldop{Subterm}(K), &M = N K, \\
-        \boldop{Subterm}(N),                          &M = \qabs x N.
-      \end{cases}
-    \end{equation*}
-
-    See \fullref{ex:def:lambda_term/naive_subterm} for a subtlety regarding this definition.
-
-    \thmitem{def:lambda_term/bound}\mcite[def. 1A6]{Hindley1997} For each term \( M \), we define its set of \term[ru=связанные (переменные) (\cite[188]{Герасимов2011})]{bound variables} as
-    \begin{equation*}
-      \boldop{Bound}(M) \coloneqq \begin{cases}
-        \varnothing,                              &M = x, \\
-        \boldop{Bound}(N) \cup \boldop{Bound}(K), &M = N K, \\
-        \boldop{Bound}(N) \cup \set{ x },         &M = \qabs x N. \\
-      \end{cases}
-    \end{equation*}
-
-    \thmitem{def:lambda_term/free}\mcite[def. 1A6]{Hindley1997} We also define the set of \term[ru=свободные (переменные) (\cite[189]{Герасимов2011})]{free variables} as
-    \begin{equation*}
-      \boldop{Free}(M) \coloneqq \begin{cases}
-        \varnothing,                            &M = x, \\
-        \boldop{Free}(N) \cup \boldop{Free}(K), &M = N K, \\
-        \boldop{Free}(N) \setminus \set{ x },   &M = \qabs x N. \\
-      \end{cases}
-    \end{equation*}
-
-    \thmitem{def:lambda_term/closed}\mcite[def. 1A10]{Hindley1997} We say that a term is \term{closed} if it has no bound variables. Closed terms are also called \term[ru=комбинаторы (\cite[188]{Герасимов2011})]{combinators}.
-
-    \thmitem{def:first_order_syntax/formula_variables} Finally, the set of all variables of a term \( M \) is
-    \begin{equation*}
-      \boldop{Var}(M) \coloneqq \boldop{Free}(M) \cup \boldop{Bound}(M).
-    \end{equation*}
-  \end{thmenum}
 \end{definition}
 \begin{comments}
+  \item These notions are based on \cite[352]{Church1932}. It is not clear why has Church used \( \synlambda \) as part of the grammar.
+
   \item We use the nonterminal \( \bnfpn{Short Latin identifier} \) rather than \( \bnfpn{Latin identifier} \) because otherwise it would be unclear how to parse applications --- in \( (xyz) \), are the variables \( xy \) and \( z \) or \( x \) and \( yz \)?. An alternative would be to introduce a separator for applications, but that would only make our notation more cumbersome.
 
   \item We need all the parentheses so that we can prove unambiguity in \fullref{thm:lambda_terms_are_unambiguous}. Informally, we will use the conventions from \fullref{rem:propositional_formula_parentheses} regarding parentheses.
@@ -64,25 +26,29 @@
   Similarly to \fullref{thm:propositional_formulas_are_unambiguous}, the proof is again based on \fullref{ex:natural_number_arithmetic_grammar/unambiguous}.
 \end{proof}
 
-\begin{remark}\label{rem:lambda_term_ast}
-  For a given \( \synlambda \)-term \( M \), we can build a \hyperref[rem:abstract_syntax_tree]{abstract syntax tree} as follows:
-  \begin{itemize}
-    \item If \( M \) is a variable, build a tree with a single node labeled by \( M \).
-    \item If \( M = (NK) \), build the following binary tree:
+\begin{definition}\label{def:lambda_term_ast}
+  We implicitly associate with each \( \synlambda \)-term \( M \) an \hyperref[rem:abstract_syntax_tree]{abstract syntax tree} \( T(M) \) defined as follows:
+  \begin{thmenum}
+    \thmitem{def:lambda_term_ast/variable} If \( M \) is a variable, let \( T(M) \) be a tree with a single node labeled by it.
+
+    \thmitem{def:lambda_term_ast/application} If \( M = NK \), assuming we have already built \( T(N) \) and \( T(K) \), we obtain \( T(M) \) by joining their roots, and labeling the new node via the symbol \( \cdot \):
     \begin{equation*}
       \begin{aligned}
-        \includegraphics[page=1]{output/rem__lambda_term_ast}
+        \includegraphics[page=1]{output/def__lambda_term_ast}
       \end{aligned}
     \end{equation*}
 
-    \item If \( M = (\synlambda x N) \), build the following binary tree:
+    \thmitem{def:lambda_term_ast/abstraction} If \( \varphi = \abs x N \), assuming we have already built \( T(N) \), we obtain \( T(M) \) by adding one node, and labeling it via \( \abs* x \):
     \begin{equation*}
       \begin{aligned}
-        \includegraphics[page=2]{output/rem__lambda_term_ast}
+        \includegraphics[page=2]{output/def__lambda_term_ast}
       \end{aligned}
     \end{equation*}
-  \end{itemize}
-\end{remark}
+  \end{thmenum}
+\end{definition}
+\begin{comments}
+  \item Formally our ASTs for abstractions are not ideal because we need to \enquote{parse} the string at the root. They are, however, convenient for defining variable occurrences in \fullref{def:lambda_variable_occurrence}, and are also easier to parse visually.
+\end{comments}
 
 \begin{remark}\label{rem:lambda_term_parentheses}
   We use some \enquote{abuse-of-notation} syntactic conventions somewhat resembling \fullref{rem:propositional_formula_parentheses}:
@@ -109,15 +75,37 @@
 
     Since we will generally expect the latter, it is simpler to require parentheses around \( \synlambda \)-abstractions in the formal syntax and then, when convenient, avoid writing them within the metalogic.
 
-    \thmitem{rem:lambda_term_parentheses/right_associative} We suppose that \( \synlambda \)-application is \hyperref[rem:binary_operation_syntax_trees/associativity]{right-associative}, which allows us to vastly simplify notation in some cases like \eqref{eq:ex:def:lambda_term/combinator/s} where we use \( xzyz \) rather than \( x(z(yz)) \).
+    \thmitem{rem:lambda_term_parentheses/left_associative} We suppose that \( \synlambda \)-application is \hyperref[rem:binary_operation_syntax_trees/associativity]{left-associative}, which allows us to simplify notation in some cases like \eqref{eq:ex:def:lambda_term/combinator/s}, where we use \( xz(yz) \) rather than \( (xz)(yz) \).
   \end{thmenum}
 \end{remark}
+
+\begin{definition}\label{def:lambda_subterm}\mcite[def. 1A3]{Hindley1997}
+  We define the set of all \term[ru=подтерм (\cite[189]{Герасимов2011})]{subterms} of a term \( M \) as follows:
+  \begin{equation*}
+    \boldop{Subterm}(M) \coloneqq \begin{cases}
+      \set{ x },                                                 &M = x, \\
+      \set{M} \cup \boldop{Subterm}(N) \cup \boldop{Subterm}(K), &M = N K, \\
+      \set{M} \cup \boldop{Subterm}(N),                          &M = \qabs x N.
+    \end{cases}
+  \end{equation*}
+\end{definition}
+\begin{comments}
+  \item Note that the analog of \fullref{thm:propositional_formula_characterization} no longer holds --- a variable that is a substring of a term is not necessarily a subterm --- see \fullref{ex:def:lambda_term/naive_subterm}.
+\end{comments}
+
+\begin{proposition}\label{thm:lambda_subterm_characterization}
+  Suppose that the \hyperref[def:formal_language/subword]{substring} \( N \) of the \( \synlambda \)-term \( M \) is \hi{not a variable}. Then \( N \) is a \hyperref[def:lambda_subterm]{subterm} of \( M \) if and only if \( N \) is itself a \( \synlambda \)-term.
+\end{proposition}
+\begin{proof}
+  We can give a proof similar to \fullref{thm:propositional_formula_characterization}.
+\end{proof}
 
 \begin{example}\label{ex:def:lambda_term}
   We list examples of \hyperref[def:lambda_term]{\( \synlambda \)-terms}:
   \begin{thmenum}
     \thmitem{ex:def:lambda_term/var} The simplest \( \synlambda \)-terms are the variables themselves, for example \( x \) or \( y \).
-    \thmitem{ex:def:lambda_term/naive_subterm} Suppose that, as in \fullref{def:propositional_syntax/subformula} for propositional subformulas, we say that \( N \) is a subterm of \( M \) if it is itself a \hyperref[def:formal_language/subword]{subword} of \( M \).
+
+    \thmitem{ex:def:lambda_term/naive_subterm} Suppose that, as in \fullref{def:propositional_subformula} for propositional subformulas, we say that \( N \) is a subterm of \( M \) if it is itself a \hyperref[def:formal_language/subword]{subword} of \( M \).
 
     Then the term \( \qabs x y \) would have both \( x \) and \( y \) as subterms, while according to \fullref{def:lambda_term/subterm}, only \( y \) is a subterm.
 
@@ -125,11 +113,82 @@
     \begin{align}
       &\qabs x x, \label{eq:ex:def:lambda_term/combinator/i}\tag{\logic{I}} \\
       &\qabs x \qabs y yx, \nonumber\label{eq:ex:def:lambda_term/combinator/k}\tag{\logic{K}} \\
-      &\qabs x \qabs y \qabs z xzyz, \label{eq:ex:def:lambda_term/combinator/s}\tag{\logic{S}} \\
+      &\qabs x \qabs y \qabs z xz(yz), \label{eq:ex:def:lambda_term/combinator/s}\tag{\logic{S}} \\
       &\qabs x (\qabs y xyy) (\qabs y xyy). \label{eq:ex:def:lambda_term/combinator/y}\tag{\logic{Y}}
     \end{align}
   \end{thmenum}
 \end{example}
+
+\paragraph{Variable scope}
+
+\begin{definition}\label{def:lambda_abstractor}\mcite[def. 1A5]{Hindley1997}
+  Given an abstraction \( M = \qabs x N \), we call \( \quantifier* \synlambda x \) the \term{abstractor} and \( N \) --- the \term{body} of \( M \).
+
+  We say that the body \( N \) is the \term[ru=область действия (\cite[64]{Герасимов2011})]{scope} of the abstractor \( \quantifier* \synlambda x \) and that the abstractor \term{binds} the variable \( x \) in \( N \).
+\end{definition}
+
+\begin{definition}\label{def:lambda_variable_occurrence}\mimprovised
+  An \term[ru=вхождение (\cite[64]{Герасимов2011})]{occurrence} of a variable \( x \) in a \( \synlambda \)-term \( M \) is a variable node labeled by \( x \) in the \hyperref[def:lambda_term_ast]{AST} of \( M \).
+
+  We say that the occurrence is \term[ru=свободное (вхождение) (\cite[64]{Герасимов2011})]{free} in \( M \) if the root of the AST can be reached without passing through a corresponding abstractor. If a variable is not free, there exists an abstractor that binds it, and we say that the occurrence is \term[ru=связанное (вхождение) (\cite[64]{Герасимов2011})]{bound} in \( M \).
+\end{definition}
+
+\begin{definition}\label{def:lambda_variable_freeness}\mimprovised
+  We say that a variable \( x \) is \term{free} in a \( \synlambda \)-term \( M \) if \( x \) has at least one \hyperref[def:lambda_variable_occurrence]{free occurrence} in \( M \) and \term{bound} if it has a \hyperref[def:lambda_variable_occurrence]{bound occurrence} in \( M \).
+\end{definition}
+\begin{comments}
+  \item We may use the recursive definitions from \fullref{thm:lambda_variable_freeness_characterization} instead.
+\end{comments}
+
+\begin{example}\label{ex:def:lambda_variable_freeness}
+  We list examples of free and bound variables and variables occurrences:
+  \begin{thmenum}
+    \thmitem{ex:def:lambda_variable_freeness/abstractor} The term \( \ref{eq:ex:def:lambda_term/combinator/i} = \qabs x x \) has exactly one occurrence of \( x \):
+    \begin{equation*}
+      \begin{aligned}
+        \includegraphics[page=1]{output/def__lambda_variable_freeness}
+      \end{aligned}
+    \end{equation*}
+
+     This occurrence is bound in the term \( \logic{I} \) and free in the subterm \( x \). Then \( x \) is a bound variable in \( \logic{I} \) and a free variable in \( \logic{I} \).
+
+    \thmitem{ex:def:lambda_variable_freeness/both} The term \( M = \logic{I} x = (\qabs x x) x \) has two occurrences of the variable \( x \):
+    \begin{equation*}
+      \begin{aligned}
+        \includegraphics[page=2]{output/def__lambda_variable_freeness}
+      \end{aligned}
+    \end{equation*}
+
+    One of the occurrences is free, which makes \( x \) a free variable of \( M \), and one of the occurrences if bound, which makes \( x \) a bound variable of \( M \).
+  \end{thmenum}
+\end{example}
+
+\begin{proposition}\label{thm:lambda_variable_freeness_characterization}
+  The set of all \hyperref[def:lambda_variable_freeness]{free variables} of a \( \synlambda \)-term can be characterized as follows:
+  \begin{equation*}
+    \boldop{Free}(M) \coloneqq \begin{cases}
+      \set{ x },                              &M = x, \\
+      \boldop{Free}(N) \cup \boldop{Free}(K), &M = N K, \\
+      \boldop{Free}(N) \setminus \set{ x },   &M = \qabs x N. \\
+    \end{cases}
+  \end{equation*}
+
+  Similarly, the bound variables can be characterized via
+  \begin{equation*}
+    \boldop{Bound}(M) \coloneqq \begin{cases}
+      \varnothing,                              &M = y, \\
+      \boldop{Bound}(N) \cup \boldop{Bound}(K), &M = N K, \\
+      \boldop{Bound}(N) \cup \set{ x },         &M = \qabs x N. \\
+    \end{cases}
+  \end{equation*}
+\end{proposition}
+\begin{proof}
+  Straightforward.
+\end{proof}
+
+\begin{definition}\label{def:lambda_combinator}\mcite[def. 1A10]{Hindley1997}
+  If a \( \synlambda \)-term has no \hyperref[def:lambda_variable_freeness]{free variables}, we say that it is \term{closed}. Closed terms are also called \term[ru=комбинаторы (\cite[188]{Герасимов2011})]{combinators}.
+\end{definition}
 
 \paragraph{Variable substitution}
 
