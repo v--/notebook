@@ -25,7 +25,7 @@ output/%.pdf: classes/tikzcd.cls packages/*.sty figures/%.tex | aux output
 	cat aux/$*.pdf > output/$*.pdf
 
 output/%.eps: figures/%.asy | aux output
-	asy -quiet -render=5 -outname=aux/$*.eps figures/$*.asy
+	asy -quiet -render=5 -outname=aux/$* figures/$*.asy
 	cat aux/$*.eps > output/$*.eps
 
 figures: $(FIGURES_TEX_PDF) $(FIGURES_ASY_PDF)
