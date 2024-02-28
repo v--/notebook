@@ -1207,3 +1207,199 @@ The idea of first-order predicate logic (we will omit \enquote{predicate} and on
 
   Generalizing on \( v \) and \( \mscrX \), we conclude that \( \Gamma, \varphi \vDash \psi \).
 \end{proof}
+
+\paragraph{Natural deduction}
+
+\begin{definition}\label{def:first_order_natural_deduction_system}\mcite[def. 2.1.1]{TroelstraSchwichtenberg2000}
+  If we wish to work with first-order logic rather than merely propositional logic, we must extend the \hyperref[def:classical_propositional_deductive_systems]{classical propositional natural deduction system}. We call this, very simply, the (classical) \term{first-order natural deduction system}.
+
+  \begin{thmenum}
+    \thmitem{def:first_order_natural_deduction_system/eigenvariables} We first add the following two \hyperref[def:judgment/inference_rule]{inference rules} for quantification:
+
+    \begin{minipage}{0.45\textwidth}
+      \begin{equation*}\taglabel[\( \synforall^+ \)]{eq:def:first_order_natural_deduction_system/forall/intro}
+        \begin{prooftree}
+          \hypo{ \varphi }
+          \infer1[\ref{eq:def:first_order_natural_deduction_system/forall/intro}]{ \qforall \xi \varphi }
+        \end{prooftree}
+      \end{equation*}
+    \end{minipage}
+    \hfill
+    \begin{minipage}{0.45\textwidth}
+      \begin{equation*}\taglabel[\( \synexists^- \)]{eq:def:first_order_natural_deduction_system/exists/elim}
+        \begin{prooftree}
+          \hypo{ \qexists \xi \varphi }
+          \hypo{ [\varphi]^n }
+          \ellipsis {} { \psi }
+          \infer[left label=\( n \)]2[\ref{eq:def:first_order_natural_deduction_system/exists/elim}]{ \psi }
+        \end{prooftree}
+      \end{equation*}
+    \end{minipage}
+
+    Here \( \xi \) is a variable that is not free in any undischarged assumption in our proof of \( \varphi \) (it may be free in \( \varphi \) as long as \( \varphi \) itself is discharged). A variable \( \xi \) satisfying these conditions is called an \term{eigenvariable} of the rule.
+
+    These rules are the primary motivation for inference rules accepting proof trees rather than only formulas --- see \fullref{def:judgment/inference_rule} and \fullref{def:deductive_system/rule}. See \fullref{ex:def:first_order_natural_deduction_system/eigenvariables/invalid_universal} for why this condition is important.
+
+    \thmitem{def:first_order_natural_deduction_system/terms} We add two \hyperref[def:judgment/inference_rule]{inference rules}, where \( \tau \) is an arbitrary term:
+
+    \begin{minipage}{0.45\textwidth}
+      \begin{equation*}\taglabel[\( \synforall^- \)]{eq:def:first_order_natural_deduction_system/forall/elim}
+        \begin{prooftree}
+          \hypo{ \qforall \xi \varphi }
+          \infer1[\ref{eq:def:first_order_natural_deduction_system/forall/elim}]{ \varphi[\xi \mapsto \tau] }
+        \end{prooftree}
+      \end{equation*}
+    \end{minipage}
+    \hfill
+    \begin{minipage}{0.45\textwidth}
+      \begin{equation*}\taglabel[\( \synexists^+ \)]{eq:def:first_order_natural_deduction_system/exists/intro}
+        \begin{prooftree}
+          \hypo{ \varphi[\xi \mapsto \tau] }
+          \infer1[\ref{eq:def:first_order_natural_deduction_system/exists/intro}]{ \qexists \xi \varphi }
+        \end{prooftree}
+      \end{equation*}
+    \end{minipage}
+
+    Compare this to \fullref{thm:quantifier_satisfiability}.
+
+    \thmitem{def:first_order_natural_deduction_system/equality} Finally, we also add three rules for formal equality:
+
+    \begin{minipage}{0.3\textwidth}
+      \begin{equation*}\taglabel[\( \syneq^+ \)]{eq:def:first_order_natural_deduction_system/equality/intro}
+        \begin{prooftree}
+          \infer0[\ref{eq:def:first_order_natural_deduction_system/equality/intro}]{ \tau \syneq \tau }
+        \end{prooftree}
+      \end{equation*}
+    \end{minipage}
+    \hfill
+    \begin{minipage}{0.3\textwidth}
+      \begin{equation*}\taglabel[\( \syneq_L^- \)]{eq:def:first_order_natural_deduction_system/equality/elim_left}
+        \begin{prooftree}
+          \hypo{ \tau \syneq \sigma }
+          \hypo{ \varphi[\xi \mapsto \tau] }
+          \infer2[\ref{eq:def:first_order_natural_deduction_system/equality/elim_left}]{ \varphi[\xi \mapsto \sigma] }
+        \end{prooftree}
+      \end{equation*}
+    \end{minipage}
+    \hfill
+    \begin{minipage}{0.3\textwidth}
+      \begin{equation*}\taglabel[\( \syneq_L^+ \)]{eq:def:first_order_natural_deduction_system/equality/elim_right}
+        \begin{prooftree}
+          \hypo{ \tau \syneq \sigma }
+          \hypo{ \varphi[\xi \mapsto \sigma] }
+          \infer2[\ref{eq:def:first_order_natural_deduction_system/equality/elim_right}]{ \varphi[\xi \mapsto \tau] }
+        \end{prooftree}
+      \end{equation*}
+    \end{minipage}
+  \end{thmenum}
+\end{definition}
+
+\begin{example}\label{ex:def:first_order_natural_deduction_system/eigenvariables}
+  \hfill
+  \begin{thmenum}
+    \thmitem{ex:def:first_order_natural_deduction_system/eigenvariables/invalid_universal_closure} We explicitly forbid the syntactic equivalent of \fullref{thm:implicit_universal_quantification} in order to avoid invalid proofs like \fullref{ex:def:first_order_natural_deduction_system/eigenvariables/invalid_universal}. Consider the proof
+    \begin{equation*}
+      \begin{prooftree}
+        \hypo{ \varphi }
+        \infer1[\ref{eq:def:first_order_natural_deduction_system/forall/intro}]{ \qforall \xi \varphi }
+      \end{prooftree}
+    \end{equation*}
+
+    The problem here is that \( \varphi \) is itself an undischarged assumption, hence \eqref{eq:def:first_order_natural_deduction_system/forall/intro} is actually inapplicable here, and the proof is invalid.
+
+    \thmitem{ex:def:first_order_natural_deduction_system/eigenvariables/invalid_universal} To see why the eigenvariable conditions in \fullref{def:first_order_natural_deduction_system/eigenvariables} are essential, consider the following proof of \( \qforall \xi \varphi \) from \( \qexists \xi \varphi \):
+    \begin{equation*}
+      \begin{prooftree}
+        \hypo{ \qexists \xi \varphi }
+
+        \hypo{ [\varphi]^1 }
+        \infer1[\ref{eq:def:first_order_natural_deduction_system/forall/intro}]{ \qforall \xi \varphi }
+
+        \infer[left label=\( 1 \)]2[\ref{eq:def:first_order_natural_deduction_system/exists/elim}]{ \qforall \xi \varphi }
+      \end{prooftree}
+    \end{equation*}
+
+    This proof relies on \fullref{ex:def:first_order_natural_deduction_system/eigenvariables/invalid_universal_closure}, which we have already demonstrated to be invalid.
+
+    \thmitem{ex:def:first_order_natural_deduction_system/eigenvariables/invalid_existence} Another invalid proof, in case \( \xi \in \boldop{Free}(\varphi) \), is
+    \begin{equation*}
+      \begin{prooftree}
+        \hypo{ \qexists \xi \varphi }
+
+        \hypo{ [\varphi]^1 }
+        \infer1{ \varphi }
+
+        \infer[left label=\( 1 \)]2[\ref{eq:def:first_order_natural_deduction_system/exists/elim}]{ \varphi }
+      \end{prooftree}
+    \end{equation*}
+
+    \thmitem{ex:def:first_order_natural_deduction_system/eigenvariables/universal_implies_existence} On the other hand, \( \qexists \xi \varphi \) can easily be derived from \( \qforall \xi \varphi \):
+    \begin{equation*}
+      \begin{prooftree}
+        \hypo{ \qforall \xi \varphi }
+        \infer1[\ref{eq:def:first_order_natural_deduction_system/forall/elim}]{ \varphi = \varphi[\xi \mapsto \xi] }
+        \infer1[\ref{eq:def:first_order_natural_deduction_system/exists/intro}]{ \qexists \xi \varphi }
+      \end{prooftree}
+    \end{equation*}
+
+    \thmitem{ex:def:first_order_natural_deduction_system/eigenvariables/universal_implies_universal} It is also valid to perform the completely meaningless derivation:
+    \begin{equation*}
+      \begin{prooftree}
+        \hypo{ \qforall \xi \varphi }
+        \infer1[\ref{eq:def:first_order_natural_deduction_system/forall/elim}]{ \varphi = \varphi[\xi \mapsto \xi] }
+        \infer1[\ref{eq:def:first_order_natural_deduction_system/forall/intro}]{ \qforall \xi \varphi }
+      \end{prooftree}
+    \end{equation*}
+  \end{thmenum}
+\end{example}
+
+\begin{proposition}\label{thm:syntactic_first_order_quantifiers_are_dual}
+  For any formula \( \varphi \) and any variable \( \xi \) over \( \mscrL \), we have the following interderivable pairs:
+  \begin{align}
+    \synneg \qforall \xi \varphi &\T{and} \qexists \xi \synneg \varphi \label{thm:syntactic_first_order_quantifiers_are_dual/negation_of_universal} \\
+    \synneg \qexists \xi \varphi &\T{and} \qforall \xi \synneg \varphi \label{thm:syntactic_first_order_quantifiers_are_dual/negation_of_existential}
+  \end{align}
+\end{proposition}
+\begin{proof}
+  We will only show \eqref{thm:syntactic_first_order_quantifiers_are_dual/negation_of_universal}. First,
+
+  \begin{equation*}
+    \begin{prooftree}
+      \hypo{ \synneg \qforall \xi \varphi }
+      \hypo{ [\qforall \xi \varphi]^1 }
+      \infer2[\eqref{eq:def:minimal_propositional_natural_deduction_system/neg/elim}]{ \synbot }
+      \infer[left label=\( 1 \)]1[\eqref{eq:def:classical_propositional_deductive_systems/rules/dne}]{ \qforall \xi \varphi }
+      \infer1[\eqref{eq:def:first_order_natural_deduction_system/forall/elim}]{ \varphi }
+
+      \hypo{ [\synneg \varphi]^2 }
+      \infer2[\eqref{eq:def:minimal_propositional_natural_deduction_system/neg/elim}]{ \synbot }
+
+      \infer[left label=\( 2 \)]1[\eqref{eq:def:minimal_propositional_natural_deduction_system/neg/intro}]{ \synneg \varphi }
+      \infer1[\eqref{eq:def:first_order_natural_deduction_system/exists/intro}]{ \qexists \xi \synneg \varphi }
+    \end{prooftree}
+  \end{equation*}
+
+  Conversely,
+  \begin{equation*}
+    \begin{prooftree}
+      \hypo{ \qexists \xi \synneg \varphi }
+
+      \hypo{ [\qforall \xi \varphi]^1 }
+      \infer1[\eqref{eq:def:first_order_natural_deduction_system/forall/elim}]{ \varphi }
+
+      \hypo{ [\synneg \varphi]^2 }
+      \infer2[\eqref{eq:def:minimal_propositional_natural_deduction_system/neg/elim}]{ \synbot }
+      \infer[left label=\( 1 \)]1[\eqref{eq:def:minimal_propositional_natural_deduction_system/neg/intro}]{ \synneg \qforall \xi \varphi }
+
+      \infer[left label=\( 2 \)]2[\eqref{eq:def:first_order_natural_deduction_system/exists/elim}]{ \synneg \qforall \xi \varphi }
+    \end{prooftree}
+  \end{equation*}
+\end{proof}
+
+\begin{theorem}[Soundness and completeness of first-order logic]\label{thm:classical_first_order_logic_is_sound_and_complete}\mcite[thm. 3.4.1]{Hinman2005}
+  The \hyperref[def:first_order_natural_deduction_system]{classical first-order natural deduction system} is \hyperref[def:derivability_and_satisfiability/soundness]{sound} and \hyperref[def:derivability_and_satisfiability/completeness]{complete} with respect to \hyperref[def:first_order_semantics]{classical semantics}.
+\end{theorem}
+\begin{comments}
+  \item The completeness part is known as \enquote{G\"odel's completeness theorem} and requires an elaborate proof.
+  \item The theorem also applies, with adaptations based on \fullref{rem:propositional_logic_as_first_order_logic}, to the \hyperref[def:classical_propositional_deductive_systems]{classical propositional natural deduction system}.
+\end{comments}
