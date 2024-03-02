@@ -20,7 +20,7 @@
 \end{comments}
 
 \begin{remark}\label{rem:parse_tree_roots}
-  In recursive definitions and inductive proofs, for example in relation to \hyperref[rem:evaluation]{evaluation}, we usually consider \hyperref[def:formal_grammar/schema]{grammar schemas} and each subtree has a root with a different label. In this case, we work with parse trees for different grammars over the same grammar schema (differing by the start symbol). We also allow singleton trees consisting of a single terminal or \( \varepsilon \), acknowledging that these are not technically parse trees.
+  In recursive definitions and inductive proofs, for example in relation to \hyperref[con:evaluation]{evaluation}, we usually consider \hyperref[def:formal_grammar/schema]{grammar schemas} and each subtree has a root with a different label. In this case, we work with parse trees for different grammars over the same grammar schema (differing by the start symbol). We also allow singleton trees consisting of a single terminal or \( \varepsilon \), acknowledging that these are not technically parse trees.
 \end{remark}
 
 \begin{definition}\label{def:parse_tree_word}\mcite[46]{Aho2006}
@@ -82,9 +82,9 @@
       \includegraphics[page=4]{output/ex__def__parse_tree}
     \end{equation*}
 
-    We will discuss abstract syntax trees in \fullref{rem:abstract_syntax_tree}, which are notably tidier.
+    We will discuss abstract syntax trees in \fullref{con:abstract_syntax_tree}, which are notably tidier.
 
-    We can \hyperref[rem:evaluation]{evaluate} this parse tree by substituting every binary number string (such as \( 10 \)) with its numeric value in \( \BbbN \) and then recursively applying the corresponding expressions. Evaluating the above parse tree results in \( 10 \times 11 = 110 \). More formal details on this evaluation are discussed in \fullref{ex:natural_number_arithmetic_grammar/evaluation}.
+    We can \hyperref[con:evaluation]{evaluate} this parse tree by substituting every binary number string (such as \( 10 \)) with its numeric value in \( \BbbN \) and then recursively applying the corresponding expressions. Evaluating the above parse tree results in \( 10 \times 11 = 110 \). More formal details on this evaluation are discussed in \fullref{ex:natural_number_arithmetic_grammar/evaluation}.
 
     Now consider instead the same grammar without parentheses, that is, replace the expression expansion rule
     \begin{equation*}
@@ -402,7 +402,7 @@
 
 \paragraph{Translation and evaluation}
 
-\begin{remark}\label{rem:evaluation}
+\begin{concept}\label{con:evaluation}
   \term{Evaluation}, also called \term{syntax-directed translation} by \incite[sec. 2.3]{Aho2006} in the context of programming language compilers, is the process of somehow \enquote{giving values} to \enquote{purely syntactic objects}, that is, transforming a word in some \hyperref[def:formal_grammar/language]{grammar's language} into some other object, perhaps even another word. This is easily achieved via partial definitions depending on the structure of the word.
 
   Fix a grammar \( G = (V, \Sigma, \to, S) \) with nonterminals \( A_1, \cdots, A_n \). Then an example evaluation function has the form
@@ -417,14 +417,14 @@
   \term{Pattern matching} is a term used for partial definition of \( E \) based on the structure of \( w \). Pattern matching depends on knowing the possible parse trees for \( w \). We use parse trees implicitly without explicitly mentioning it. \Fullref{ex:natural_number_arithmetic_grammar/evaluation} provides justification for not using parse trees directly.
 
   We use the convention from \fullref{rem:parse_tree_roots} regarding parse tree for different starting nodes over the same grammar schema. Of course, more granular rules are possible based on the structure of words --- see \fullref{ex:natural_number_arithmetic_grammar/evaluation} for an example.
-\end{remark}
+\end{concept}
 \begin{comments}
   \item If the grammar is not \hyperref[def:grammar_ambiguity]{unambiguous}, \( E \) may not be \hyperref[def:function]{single-valued} if we are not careful.
   \item We allow different starting nonterminals because, if \( F \) applies itself recursively, it must be able to process words generated in different ways.
 \end{comments}
 
 \begin{example}\label{ex:natural_number_arithmetic_grammar/evaluation}
-  We will define \hyperref[rem:evaluation]{evaluation} for the binary natural number grammar \eqref{eq:ex:natural_number_arithmetic_grammar/schema/shorthand} from \fullref{ex:natural_number_arithmetic_grammar/schema}. Let
+  We will define \hyperref[con:evaluation]{evaluation} for the binary natural number grammar \eqref{eq:ex:natural_number_arithmetic_grammar/schema/shorthand} from \fullref{ex:natural_number_arithmetic_grammar/schema}. Let
   \begin{equation*}
     F(w) \coloneqq \begin{cases}
       \Bracks{0},                             &w = 0, \\
@@ -450,19 +450,19 @@
 
 \paragraph{Abstract syntax trees}
 
-\begin{remark}\label{rem:abstract_syntax_tree}
+\begin{concept}\label{con:abstract_syntax_tree}
   \hyperref[def:parse_tree]{Parse trees} focus on how words are built from symbols. Take the following parse tree from \fullref{ex:def:parse_tree/arithmetic}:
-  \begin{equation}\label{eq:rem:abstract_syntax_tree/base}
+  \begin{equation}\label{eq:con:abstract_syntax_tree/base}
     \begin{aligned}
       \includegraphics[page=1]{output/rem__abstract_syntax_tree}
     \end{aligned}
   \end{equation}
 
-  Most of the information in this tree is not necessary for \hyperref[rem:evaluation]{evaluating} it. An \term[en=abstract syntax tree (\cite[41]{Aho2006})]{abstract syntax tree} (AST) is instead a tree that contains information that is necessary for evaluation, but not for yielding the source word. The possible abstract syntax trees for a language differ depending on their use, as we will show, and are often produced from parse trees (which we called \enquote{concrete syntax trees} in \fullref{def:parse_tree}). The only restriction we put on abstract syntax trees is that they should be in a bijective correspondence with parse trees.
+  Most of the information in this tree is not necessary for \hyperref[con:evaluation]{evaluating} it. An \term[en=abstract syntax tree (\cite[41]{Aho2006})]{abstract syntax tree} (AST) is instead a tree that contains information that is necessary for evaluation, but not for yielding the source word. The possible abstract syntax trees for a language differ depending on their use, as we will show, and are often produced from parse trees (which we called \enquote{concrete syntax trees} in \fullref{def:parse_tree}). The only restriction we put on abstract syntax trees is that they should be in a bijective correspondence with parse trees.
 
   First, we can vastly simplify the tree by splitting the grammar \eqref{eq:ex:natural_number_arithmetic_grammar/schema/shorthand} into two parts:
   \begin{thmenum}
-    \thmitem{rem:abstract_syntax_tree/lexical} The \term{lexical part}
+    \thmitem{con:abstract_syntax_tree/lexical} The \term{lexical part}
     \begin{equation*}
       \begin{aligned}
         N &\to 0 \mid 1 \mid 1 B \\
@@ -475,7 +475,7 @@
 
     We rarely need parse trees for lexical rules. The lexical grammar is often \hyperref[def:chomsky_hierarchy/regular]{regular}.
 
-    \thmitem{rem:abstract_syntax_tree/syntactic} The \term{syntactic part}
+    \thmitem{con:abstract_syntax_tree/syntactic} The \term{syntactic part}
     \begin{equation*}
       E \to N \mid (E O E)
     \end{equation*}
@@ -485,36 +485,36 @@
     Compared to lexical rules, syntactic rules benefit from parse trees because they highlight the recursive structure of a word.
   \end{thmenum}
 
-  One simplification we can do to \eqref{eq:rem:abstract_syntax_tree/base} is to collapse lexical rules and regard lexemes as words:
-  \begin{equation}\label{eq:rem:abstract_syntax_tree/syntactic}
+  One simplification we can do to \eqref{eq:con:abstract_syntax_tree/base} is to collapse lexical rules and regard lexemes as words:
+  \begin{equation}\label{eq:con:abstract_syntax_tree/syntactic}
     \begin{aligned}
       \includegraphics[page=2]{output/rem__abstract_syntax_tree}
     \end{aligned}
   \end{equation}
 
-  Another thing we can simplify is to remove auxiliary symbols like parentheses\fnote{Whitespace and comments in programming languages are also often useless in parse trees during evaluation, but they are useful for code refactoring tools, error reporting and metaprogramming.}. They are only necessary in order to the grammar to be unambiguous, but once we already have a parse tree, they become meaningless. Removing the parentheses in \eqref{eq:rem:abstract_syntax_tree/syntactic} leads to
-  \begin{equation}\label{eq:rem:abstract_syntax_tree/no_parens}
+  Another thing we can simplify is to remove auxiliary symbols like parentheses\fnote{Whitespace and comments in programming languages are also often useless in parse trees during evaluation, but they are useful for code refactoring tools, error reporting and metaprogramming.}. They are only necessary in order to the grammar to be unambiguous, but once we already have a parse tree, they become meaningless. Removing the parentheses in \eqref{eq:con:abstract_syntax_tree/syntactic} leads to
+  \begin{equation}\label{eq:con:abstract_syntax_tree/no_parens}
     \begin{aligned}
       \includegraphics[page=3]{output/rem__abstract_syntax_tree}
     \end{aligned}
   \end{equation}
 
-  We can also remove unnecessarily long chains of nonterminals from \eqref{eq:rem:abstract_syntax_tree/no_parens} where that would not be ambiguous (i.e. collapse \( E \to E \to 10 \) to \( E \to 10 \)):
-  \begin{equation}\label{eq:rem:abstract_syntax_tree/collapsed}
+  We can also remove unnecessarily long chains of nonterminals from \eqref{eq:con:abstract_syntax_tree/no_parens} where that would not be ambiguous (i.e. collapse \( E \to E \to 10 \) to \( E \to 10 \)):
+  \begin{equation}\label{eq:con:abstract_syntax_tree/collapsed}
     \begin{aligned}
       \includegraphics[page=4]{output/rem__abstract_syntax_tree}
     \end{aligned}
   \end{equation}
 
-  We can now do a simplification based on our intended semantics. Every node in \eqref{eq:rem:abstract_syntax_tree/collapsed} is labeled via either a number lexeme, operation symbol or \( E \). We know the operations are binary, and we can use the symbol of the operation instead of \( E \) as a label, removing the need to keep a separate node for the operation symbol. This leads to
-  \begin{equation}\label{eq:rem:abstract_syntax_tree/final}
+  We can now do a simplification based on our intended semantics. Every node in \eqref{eq:con:abstract_syntax_tree/collapsed} is labeled via either a number lexeme, operation symbol or \( E \). We know the operations are binary, and we can use the symbol of the operation instead of \( E \) as a label, removing the need to keep a separate node for the operation symbol. This leads to
+  \begin{equation}\label{eq:con:abstract_syntax_tree/final}
     \begin{aligned}
       \includegraphics[page=5]{output/rem__abstract_syntax_tree}
     \end{aligned}
   \end{equation}
 
-  This last tree has only 5 nodes, compared to the original tree \eqref{eq:rem:abstract_syntax_tree/base} with 21 nodes. Yet, we can recover \eqref{eq:rem:abstract_syntax_tree/base} from \eqref{eq:rem:abstract_syntax_tree/final}.
-\end{remark}
+  This last tree has only 5 nodes, compared to the original tree \eqref{eq:con:abstract_syntax_tree/base} with 21 nodes. Yet, we can recover \eqref{eq:con:abstract_syntax_tree/base} from \eqref{eq:con:abstract_syntax_tree/final}.
+\end{concept}
 
 \begin{theorem}[Induction on syntax trees]\label{thm:induction_on_syntax_trees}
   Fix a \hyperref[def:chomsky_hierarchy/context_free]{context-free grammar} \( G = (V, \Sigma, \to, S) \). Suppose that we want to prove a statement for every word in \( \mscrL(G) \). Then it is sufficient to do the following for an arbitrary word \( w \):
@@ -524,9 +524,9 @@
 \end{theorem}
 \begin{comments}
   \item It is beneficial, but not strictly necessary for the grammar to be \hyperref[def:grammar_ambiguity]{unambiguous}. If it is unambiguous, we only have to consider one parse tree for every word.
-  \item In practice, we skip the hairy part with building a parse tree and instead rely on \hyperref[rem:evaluation]{pattern matching}.
-  \item Unlike for the other induction principles in \fullref{rem:induction}, we did not formulate this one via logical formulas. This would make the statement unnecessarily convoluted with no gains.
-  \item We may just as well use \hyperref[rem:abstract_syntax_tree]{abstract syntax trees}, as long as we have an established convention on how they are represented.
+  \item In practice, we skip the hairy part with building a parse tree and instead rely on \hyperref[con:evaluation]{pattern matching}.
+  \item Unlike for the other induction principles in \fullref{con:induction}, we did not formulate this one via logical formulas. This would make the statement unnecessarily convoluted with no gains.
+  \item We may just as well use \hyperref[con:abstract_syntax_tree]{abstract syntax trees}, as long as we have an established convention on how they are represented.
 \end{comments}
 \begin{proof}
   This is an instance of \fullref{thm:well_founded_induction} if we order the tree nodes according to their \hyperref[def:rooted_tree/height]{height}.
@@ -535,10 +535,10 @@
 \begin{example}\label{ex:natural_number_arithmetic_grammar/induction}
   We will show how to use \fullref{thm:induction_on_syntax_trees} in the context of the binary natural number grammar \eqref{eq:ex:natural_number_arithmetic_grammar/schema/shorthand} from \fullref{ex:natural_number_arithmetic_grammar/schema}.
 
-  We want to prove that an expression without ones \hyperref[rem:evaluation]{evaluates} to zero.
+  We want to prove that an expression without ones \hyperref[con:evaluation]{evaluates} to zero.
 
   \begin{itemize}
-    \item The simplest expressions we have are number \hyperref[rem:abstract_syntax_tree/lexical]{lexemes}. The only one that does not contain ones is \( \mathtt{0} \), which evaluates to zero.
+    \item The simplest expressions we have are number \hyperref[con:abstract_syntax_tree/lexical]{lexemes}. The only one that does not contain ones is \( \mathtt{0} \), which evaluates to zero.
 
     \item Consider the expression \( (u + v) \).
 
@@ -550,7 +550,7 @@
 
     Having assumed that both \( u \) and \( v \) don't contain ones and thus evaluate to zero, we conclude that their sum \( (u + v) \) should also evaluate to zero due to \ref{eq:def:peano_arithmetic/PA4}.
 
-    It is easier for us to rely on \hyperref[rem:evaluation]{pattern matching} than to explicitly construct the tree, and we have only done it for demonstrational purposes.
+    It is easier for us to rely on \hyperref[con:evaluation]{pattern matching} than to explicitly construct the tree, and we have only done it for demonstrational purposes.
 
     \item Analogously, the expression \( (u \times v) \) evaluates to zero due to \ref{eq:def:peano_arithmetic/PA6}.
   \end{itemize}
