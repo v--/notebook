@@ -1,83 +1,59 @@
 \section{Mathematical logic}\label{sec:mathematical_logic}
 
-Mathematical logic uses mathematics to study logic and vice versa. In order to build a mathematical theory to study mathematical theories, if we are to use \hyperref[def:well_founded_relation]{well-founded} concepts, we must accept some notions as fundamental without being able to properly define them. We will try to be concise without diving into epistemology.
+Mathematical logic uses mathematics to study logic and vice versa. In order to build a theory to study theories, if we are to use \hyperref[def:well_founded_relation]{well-founded} concepts, we must accept some notions as fundamental without being able to properly define them. We will call such an informal definition a \enquote{concept}.
 
 \begin{concept}\label{con:judgement}
-  Our first fundamental notions are that of a \term{judgment}. To quote \incite[9]{MartinLof1996Meanings}:
+  Our first fundamental notion is that of a \term{judgment}. To quote \incite[9]{MartinLof1996Meanings}:
   \begin{displayquote}
     \enquote{What is a judgment?} is no small question, because the notion of judgment is just about the first of all the notions of logic, the one that has to be explained before all the others, before even the notions of proposition and truth, for instance. There is therefore an intimate relation between the answer to the question what a judgment is and the very question what logic itself is. I shall start by giving a very simple answer, which is essentially right: after some elaboration, at least, I hope that we shall have a sufficiently clear understanding of it. And the definition would simply be that, when understood as an act of judging, a judgment is nothing but an act of knowing, and, when understood as that which is judged, it is a piece or, more solemnly, an object of knowledge.
   \end{displayquote}
 \end{concept}
 \begin{comments}
   \item In more practical terms, within this monograph, what we call judgments are statements regarding objects of study --- every theorem, lemma, proposition or minor assertion listed here is a judgment. Mathematical logic allows us to systemize judgments and study them and the connections between them.
+
+  \item In order to study judgments formally, we must encode them into some language that is convenient for us to study. We will call such an encoded judgment a \enquote{sentence}. \Fullref{def:consequence_operator} allows us to introduce important definitions independent of the encoding scheme.
 \end{comments}
 
-\begin{definition}\label{def:logical_formula}\mimprovised
-  Our second step is to encode \hyperref[def:judgment]{judgments} into strings of symbols in a way that allows us to study them systematically. We will refer to the encoded objects as \term[ru=формула (\cite[def. 1.1.3]{Герасимов2011}), en=formula (\cite[18]{Kleene2002Logic})]{logical formulas}. There are different ways to encode the same judgment, and for those we describe here, we will use the apparatus developed in \fullref{sec:formal_language_theory}.
+\begin{definition}\label{def:consequence_operator}\mimprovised
+  Fix a set \( S \), whose elements we will call \term[ru=предложения (\cite[103]{КолмогоровДрагалин2006}), en=sentences (\cite[63]{Woodger1983Tarski})]{sentences}. If \( \op{Cn} \) is a \hyperref[def:moore_closure_operator]{Moore closure operator} on the power set of \( S \), we say that it is a \term{Tarski consequence operator} on \( S \).
 
-  It is safe to assume that the formulas we consider are \hyperref[def:first_order_syntax/formula]{first-order formulas}, but we may sometimes restrict ourselves \hyperref[def:propositional_formula]{propositional formulas}.
+  \begin{thmenum}
+    \thmitem{def:consequence_operator/compact}\mcite[95]{CitkinMuravitsky2021} We say that \( \op{Cn} \) is \term{compact} if the following condition holds:
+    \begin{equation*}
+      \op{Cn}(\Gamma) = \bigcup\set{ \op{Cn}(\Delta) \given \Delta \T{is a finite subset of} \Gamma }.
+    \end{equation*}
+  \end{thmenum}
 \end{definition}
 \begin{comments}
-  \item Our approach of utilizing \fullref{sec:formal_language_theory} allows us to use powerful tools while treating the object logic in complete formality. At the same time, it requires specific adjustments related to other treatments of logic --- e.g. \incite[ch. 1]{Hinman2005}, \incite[ch. 1]{VanDalen2004} and \incite[ch. 1]{КолмогоровДрагалин2006} --- which rely on a more informal treatment of syntax.
+  \item Will consider two types of consequence operators:
+  \begin{itemize}
+    \item Syntactic consequence based on building proof trees. This will be formalized via derivation systems in \fullref{subsec:derivation_systems}.
+    \item Semantic consequence based on interpreting theories as judgments about metatheoretic objects. This will be formalized via institutions in \fullref{thm:institution_entailment_properties/consequence}.
+  \end{itemize}
 
-  \item We are concerned with the epistemology of the judgments used to assert properties of formulas and relations between them. At the same time, we are not concerned with epistemology of formulas, but regard them as autonomous abstract objects which can either be manipulated by \hyperref[def:inference_rule]{inference rules} or interpreted in some \hyperref[def:logical_model]{model}.
+  \item Tarski himself defines several variations of consequence operators. Our definition is based on \cite[64]{Woodger1983Tarski}, but, following \incite[4.2.1]{CitkinMuravitsky2021}, we replace the mandatory compactness condition with the weaker \hyperref[def:order_function/preserving]{monotonicity} property. Our main motivation for this is that we want to provide a general definition that is useful without a tedious proof of compactness, which may even not exist. Tarski proves monotonicity as a consequence of compactness.
+
+  In \cite[30]{Woodger1983Tarski}, which chronologically precedes the aforementioned definition, Tarski additionally requires that there exists a sentence \( s \) such that \( S = \op{Cn}(\set{ s }) \).
+
+  \item Sentences themselves are not, in practice, atoms. In propositional logic, they are formulas, which themselves have an elaborate structure discussed in \fullref{def:propositional_grammar_schema/formula}. In first-order logic their structure is even more elaborate --- see \fullref{def:first_order_syntax/closed_formula}.
+
+  \item We are concerned with the epistemology of the judgments used to assert properties of sentences and consequence operators. At the same time, we are not concerned with epistemology of the sentences themselves, but regard them as autonomous abstract objects which can either be manipulated mechanically.
 \end{comments}
 
-\begin{definition}\label{def:inference_rule}\mimprovised
-  Having encoded judgments into \hyperref[def:logical_formula]{formulas}, we can specify rules for deducing particular formulas from others. An \term[ru=правило вывода (\cite[31]{Герасимов2011}), en=inference rule (\cite[34]{Kleene2002Logic}), de=schlu\ss{}figur (\cite[181]{Gentzen1935})]{inference rule} is a judgment that asserts that the sequence of formulas \( \varphi_1 \), \( \cdots \), \( \varphi_n \) entails the formula \( \psi \).
+\begin{definition}\label{def:logical_theory}\mcite[96]{CitkinMuravitsky2021}
+  If a set \( \Gamma \) of sentences closed with respect to the \hyperref[def:consequence_operator]{consequence operator} \( \op{Cn} \), that is, if \( \Gamma = \op{Cn}(\Gamma) \), we say that \( \Gamma \) is a \term[ru=теория (\cite[3.1.1]{Герасимов2011})]{theory} with respect to \( \op{Cn} \).
 
-  \incite[181]{Gentzen1935} introduced the following convenient syntax for inference rules:
-  \begin{equation*}
-    \begin{prooftree}
-      \hypo{ \psi_1 }
-      \hypo{ \cdots }
-      \hypo{ \psi_n }
-      \infer3[R]{ \psi }
-    \end{prooftree},
-  \end{equation*}
-  where \enquote{\( R \)} is the name of the rule.
-
-  We allow the possibility that \( n = 0 \), in which case the rule becomes
-  \begin{equation*}
-    \begin{prooftree}
-      \infer0[R]{ \psi }
-    \end{prooftree}
-  \end{equation*}
-
-  Inference rules may also express entailment of judgments rather than formulas.
+  \begin{thmenum}
+    \thmitem{def:logical_theory/generated} More generally, if \( \Gamma \) is arbitrary, we say that it \term{generates} the theory \( \op{Cn}(\Gamma) \).
+    \thmitem{def:logical_theory/equivalent}\mcite[72]{Woodger1983Tarski} We say that two sets of sentences are \term{equivalent} if they generate the same theory.
+    \thmitem{def:logical_theory/axiomatization}\mimprovised If \( \Gamma \) is equivalent to a subset \( \Delta \) of itself, we say that \( \Delta \) \term{axiomatizes} \( \Gamma \).
+  \end{thmenum}
 \end{definition}
-\begin{comments}
-  \item Inference rules are grouped into deductive systems. We will make heavy use of inference rules in \fullref{subsec:deductive_systems}, but for the purpose of this overview, we may just assume that they are what allows logicians to mechanically derive some statements from others.
-\end{comments}
-
-\begin{definition}\label{def:logical_theory}\mimprovised
-   We group related \hyperref[def:logical_formula]{formulas} into \term[ru=теория (\cite[3.1.1]{Герасимов2011}), en=theory (\cite[7]{Hinman2005})]{logical theories}. In order for an arbitrary set of formulas to be well-behaved, certain consistency conditions must be met, which prevents us from discussing general conceptual definitions.
-
-   It is safe to assume that the theories are will be considering are \hyperref[def:first_order_theory]{first-order theories}.
-\end{definition}
-
-\begin{definition}\label{def:logical_model}\mimprovised
-  A \hyperref[def:logical_formula]{formula} by itself has no inherent meaning, but we may interpret it in order within some existing mathematical structure, in which case it becomes a statement about that particular structure. Under certain consistency conditions such as those discussed in \fullref{rem:first_order_satisfiability_bivalence}, we call an interpretation for a logical \hyperref[def:logical_theory]{theory} a \term[ru=модель (\cite[def. 1.1.10]{Герасимов2011}), en=model (\cite[4]{Hinman2005})]{model} of the theory.
-
-  When working, as usual, with \hyperref[def:first_order_syntax/formula]{first-order formulas}, we consider \hyperref[def:first_order_structure]{first-order structures} and \hyperref[def:first_order_model]{first-order models}.
-\end{definition}
-\begin{comments}
-  \item A very general formal treatment of models and interpretations is given by \incite{Barwise1974}, but we do not find it worthwhile to explore this level of abstraction.
-
-  \item The interplay between models and inference rules is a central topic in \fullref{subsec:deductive_systems}.
-\end{comments}
-
-\begin{definition}\label{def:logical_framework}
-  Compatibly-encoded \hyperref[def:logical_formula]{formulas}, regarded as strings of symbols, form a formal language in the sense of \fullref{def:formal_language}. When endowed with a \hyperref[def:deductive_system]{deductive system} and a corresponding concepts of \hyperref[def:logical_model]{logical models}, we obtain what we will call a \term{logical framework}.
-\end{definition}
-\begin{comments}
-  \item We will later describe \hyperref[def:minimal_logic]{minimal}, \hyperref[def:intuitionistic_logic]{intuitionistic} and \hyperref[def:classical_logic]{classical logic}, of which we will almost exclusively use classical logic.
-\end{comments}
 
 \begin{concept}\label{con:metalogic}
-  When studying a \hyperref[def:logical_framework]{logical framework}, we call this framework the \term[en=object logic (\cite[3]{Kleene2002Logic})]{object logic}, and the corresponding collection of formulas the \term[ru=предметный язык (\cite[35]{Герасимов2011}), en=object language (\cite[3]{Kleene2002Logic})]{object language}. Correspondingly, when studying a concrete \hyperref[def:logical_theory]{logical theory}, we call it the \term{object theory}
+  When studying a logical framework that gives rise to some \hyperref[def:consequence_operator]{consequence operator}, we call this framework the \term[en=object logic (\cite[3]{Kleene2002Logic})]{object logic}, and the corresponding collection of sentences the \term[ru=предметный язык (\cite[35]{Герасимов2011}), en=object language (\cite[3]{Kleene2002Logic})]{object language}. Correspondingly, when studying a concrete \hyperref[def:logical_theory]{logical theory}, we call it the \term{object theory}.
 
-  The collection of all judgments also forms a language, which we call the \term[ru=метаязык (\cite[35]{Герасимов2011}), en=metalanguage (\cite[3]{Kleene2002Logic})]{metalanguage}. We reason about the metalanguage via some logical framework, the \term{metalogic}. The metalogic allows us to encode the concepts we work with, including the object logic, as a logical theory, which theory we call call our \term[en=metatheory (\cite[199]{Kleene2002Logic})]{metatheory}.
+  The collection of all judgments also forms a language, which we call the \term[ru=метаязык (\cite[35]{Герасимов2011}), en=metalanguage (\cite[3]{Kleene2002Logic})]{metalanguage}. We reason about the metalanguage via some logical framework, the \term{metalogic}. The metalogic allows us to encode the concepts we work with, including the object logic, as a logical theory, which theory we call our \term[en=metatheory (\cite[199]{Kleene2002Logic})]{metatheory}.
 
   \Cref{con:metalogic} schematically represents the relationships between these concepts.
 
@@ -89,34 +65,34 @@ Mathematical logic uses mathematics to study logic and vice versa. In order to b
   \end{figure}
 \end{concept}
 \begin{comments}
-  \item A human begins his journey of understanding mathematical logic \enquote{inside} a model of some informally specified metatheory, following inference rules of the metalogical derivation system to prove statements about the object logic. Whenever he improves his understanding of a given logical framework, this also improves his understanding of how to reason within the confines of this framework, that is, how to use this framework as a metalogic. This process can be roughly visualized as \enquote{moving} one level down in \cref{con:metalogic}, so that our previous object theory becomes the new metatheory.
+  \item A human begins his journey of understanding mathematical logic by using the syntactic or semantic metalogical consequence operator to prove statements about the object logic. Whenever he improves his understanding of a given logical framework, this also improves his understanding of how to reason within the confines of this framework, that is, how to use this framework as a metalogic. This process can be roughly visualized as \enquote{moving} one level down in \cref{fig:con:metalogic}, so that our previous object theory becomes the new metatheory.
 
   \item Set theory features an important connection between the object theory and the metatheory --- see \fullref{rem:set_definition_recursion}.
 \end{comments}
 
-\begin{definition}\label{def:classical_logic}
+\begin{concept}\label{con:classical_logic}
   By \term[ru=классическая логика (\cite[58]{ШеньВерещагин2017Языки}), en=classical logic (\cite[8]{TroelstraSchwichtenberg2000})]{classical logic} we will mean either the logical framework of \hyperref[def:propositional_syntax/formula]{propositional formulas}, \hyperref[def:propositional_model]{Boolean models} and the \hyperref[def:classical_propositional_deductive_system]{classical propositional natural deduction system}, or to the framework of \hyperref[def:first_order_syntax/formula]{first-order formulas}, \hyperref[def:first_order_model]{classical first-order models} and the \hyperref[def:first_order_natural_deduction_system]{classical first-order natural deduction system}.
 
   Classical logic is characterized by the ability to use the law of double negation elimination \eqref{eq:thm:minimal_propositional_negation_laws/dne}. A more popular (but less accurate due to \fullref{thm:minimal_propositional_negation_laws}) characterization is that the law of the excluded middle \eqref{eq:thm:minimal_propositional_negation_laws/lem} holds.
-\end{definition}
+\end{concept}
 \begin{comments}
   \item Within the metalogic, the law of the excluded middle is called the \enquote{principle of bivalence} and states that either a \hyperref[def:judgment]{judgment} or its negation holds.
 \end{comments}
 
-\begin{remark}\label{def:intuitionistic_logic}
-  By \term[ru=интуиционисткая логика (\cite[58]{ШеньВерещагин2017Языки}), en=intuitionistic logic (\cite[8]{TroelstraSchwichtenberg2000})]{intuitionistic logic} we will mean the generalization of \hyperref[def:classical_logic]{classical logic} where instead of the law of the excluded middle \eqref{eq:thm:minimal_propositional_negation_laws/lem}, we have the strictly weaker principle of explosion \eqref{eq:thm:minimal_propositional_negation_laws/efq} stating that everything can be proven from a contradiction.
+\begin{concept}\label{con:intuitionistic_logic}
+  By \term[ru=интуиционисткая логика (\cite[58]{ШеньВерещагин2017Языки}), en=intuitionistic logic (\cite[8]{TroelstraSchwichtenberg2000})]{intuitionistic logic} we will mean the generalization of \hyperref[con:classical_logic]{classical logic} where instead of the law of the excluded middle \eqref{eq:thm:minimal_propositional_negation_laws/lem}, we have the strictly weaker principle of explosion \eqref{eq:thm:minimal_propositional_negation_laws/efq} stating that everything can be proven from a contradiction.
 
   We will only discuss one logical framework --- that of \hyperref[def:propositional_formula]{propositional formulas}, \hyperref[def:propositional_heyting_algebra_semantics]{Heyting algebra models} and the \hyperref[def:intuitionistic_propositional_deductive_systems]{intuitionistic propositional natural deduction system}.
-\end{remark}
+\end{concept}
 \begin{comments}
   \item Intuitionistic logic can also be called \enquote{constructive logic} due to the \hyperref[con:brouwer_heyting_kolmogorov_interpretation]{Brouwer-Heyting-Kolmogorov interpretation}. See \fullref{rem:brouwer_heyting_kolmogorov_interpretation_compatibility} for further discussion of the topic.
 \end{comments}
 
-\begin{remark}\label{def:minimal_logic}
-  By \term[en=minimal logic (\cite[8]{TroelstraSchwichtenberg2000})]{minimal logic} we will mean the generalization of \hyperref[def:intuitionistic_logic]{intuitionistic logic} where instead of the law of the excluded middle \eqref{eq:thm:minimal_propositional_negation_laws/lem} or the strictly weaker principle of explosion \eqref{eq:thm:minimal_propositional_negation_laws/efq}, we have the even weaker law of non-contradiction \eqref{eq:thm:minimal_propositional_negation_laws/lnc}.
+\begin{concept}\label{con:minimal_logic}
+  By \term[en=minimal logic (\cite[8]{TroelstraSchwichtenberg2000})]{minimal logic} we will mean the generalization of \hyperref[con:intuitionistic_logic]{intuitionistic logic} where instead of the law of the excluded middle \eqref{eq:thm:minimal_propositional_negation_laws/lem} or the strictly weaker principle of explosion \eqref{eq:thm:minimal_propositional_negation_laws/efq}, we have the even weaker law of non-contradiction \eqref{eq:thm:minimal_propositional_negation_laws/lnc}.
 
   \Fullref{def:minimal_propositional_hilbert_system} provides a deductive system for \hyperref[subsec:propositional_logic]{propositional logic}. We avoid studying semantics of minimal logic.
-\end{remark}
+\end{concept}
 \begin{comments}
   \item Metalogically speaking, we can only conclude that there is no \hyperref[def:judgment]{judgment} such that both the \hyperref[def:judgment]{judgment} and its negation are true. If the statement instead does not hold, we cannot automatically conclude that its negation holds.
 \end{comments}
@@ -124,7 +100,7 @@ Mathematical logic uses mathematics to study logic and vice versa. In order to b
 \begin{remark}\label{rem:mathematical_logic_conventions}
   Several conventions related to logic are followed through the monograph.
 
-  We only work within \hyperref[def:classical_logic]{classical} \hyperref[con:metalogic]{metallogic}. Outside this section, we will only adhere to formal logic in dedicated places like \fullref{def:lattice/theory}, which describes the \hyperref[def:logical_theory]{logical theory} of \hyperref[def:lattice]{lattices}. Other theories like that of \hyperref[def:complete_lattice]{complete lattices} cannot be elegantly presented via first-order formulas and are instead formulated entirely within the metalanguage under the assumption that we are working within a model of set theory --- \hyperref[def:axiom_of_universes]{\logic{ZFC+U}}, to be more precise. Using logical theories like \fullref{def:lattice/theory} allows us to implicitly reuse a plethora of definitions and theorems regarding first-order models from \fullref{subsec:first_order_models}. To keep a clear distinction between logical formulas and non-logical axioms and, more generally, to distinguishing between the object logic and the metalogic, we use the following conventions:
+  We only work within \hyperref[con:classical_logic]{classical} \hyperref[con:metalogic]{metallogic}. Outside this section, we will only adhere to formal logic in dedicated places like \fullref{def:lattice/theory}, which describes the \hyperref[def:logical_theory]{logical theory} of \hyperref[def:lattice]{lattices}. Other theories like that of \hyperref[def:complete_lattice]{complete lattices} cannot be elegantly presented via first-order sentences and are instead formulated entirely within the metalanguage under the assumption that we are working within a model of set theory --- \hyperref[def:axiom_of_universes]{\logic{ZFC+U}}, to be more precise. Using logical theories like \fullref{def:lattice/theory} allows us to implicitly reuse a plethora of definitions and theorems regarding first-order models from \fullref{subsec:first_order_models}. To keep a clear distinction between logical formulas and non-logical conditions and, more generally, to distinguishing between the object logic and the metalogic, we use the following conventions:
 
   \begin{thmenum}
     \thmitem{rem:mathematical_logic_conventions/variable_symbols} Variables in the object language are denoted by the small Greek letters, usually \( \xi, \eta, \zeta \), while variables in the metalanguage are denoted by small Latin letters, usually \( x, y, z \). If needed, we add subscripts with indices.

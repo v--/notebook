@@ -54,7 +54,7 @@ There are different approaches to formalizing the syntax of propositional logic.
     \end{thmenum}
 
     \thmitem{def:propositional_alphabet/negation} \term[ru=отрицание (\cite[17]{КолмогоровДрагалин2006})]{Negation} \enquote{\( \synneg \)}.
-    \thmitem{def:propositional_alphabet/connectives} The set \( \Sigma \) of \term{binary propositional connectives}, namely
+    \thmitem{def:propositional_alphabet/connectives} The set \( \boldop{Conn} \) of \term{binary propositional connectives}, namely
     \begin{thmenum}
       \thmitem{def:propositional_alphabet/connectives/disjunction} \term[ru=дизъюнкция (\cite[17]{КолмогоровДрагалин2006})]{Disjunction} \enquote{\( \synvee \)}, also known as \hyperref[def:standard_boolean_functions]{\term{or}}.
       \thmitem{def:propositional_alphabet/connectives/conjunction} \term[ru=конъюнкция (\cite[17]{КолмогоровДрагалин2006})]{Conjunction} \enquote{\( \synwedge \)}, also known as \hyperref[def:standard_boolean_functions]{\term{and}}.
@@ -212,7 +212,7 @@ There are different approaches to formalizing the syntax of propositional logic.
     \boldop{Subform}(\varphi) \coloneqq \begin{cases}
       \set{ \varphi },                                                            &\varphi \in \set{ \syntop, \synbot } \T{or} P \in \boldop{Prop}, \\
       \set{ \varphi } \bigcup \boldop{Subform}(\psi),                             &\varphi = \synneg \psi, \\
-      \set{ \varphi } \bigcup \boldop{Subform}(\psi) \cup \boldop{Subform}(\psi), &\varphi = \psi \syncirc \theta, {\syncirc} \in \Sigma.
+      \set{ \varphi } \bigcup \boldop{Subform}(\psi) \cup \boldop{Subform}(\psi), &\varphi = \psi \syncirc \theta, {\syncirc} \in \boldop{Conn}.
     \end{cases}
   \end{equation*}
 \end{definition}
@@ -259,6 +259,89 @@ There are different approaches to formalizing the syntax of propositional logic.
   \NecessitySubProof Suppose that \( \psi \) is itself a formula. Then \fullref{thm:propositional_subformula_lemma} implies that it falls into one of the cases of \fullref{def:propositional_subformula}, and is thus a subformula of \( \varphi \).
 \end{proof}
 
+\paragraph{Institutions}
+
+\begin{definition}\label{def:institution}\mcite[def. 1]{GoguenBurstall1992}
+  An \term{institution} \( \mscrI \) consists of the following:
+  \begin{thmenum}
+    \thmitem{def:institution/signatures} A \hyperref[def:category]{category} \( \cat{Sign}_\mscrI \), whose objects we will call \term{signatures}.
+
+    \thmitem{def:institution/sentences} A \hyperref[def:functor]{functor} \( \boldop{Sen}_\mscrI: \cat{Sign}_\mscrI \to \cat{Set} \). We call the elements of the set \( \boldop{Sen}_\mscrI(\Sigma) \) \term{sentences}.
+
+    \thmitem{def:institution/models} A \hyperref[def:functor]{functor} \( \cat{Mod}_\mscrI: \cat{Sign}_\mscrI \to \cat{Cat}^{\oppos} \). We call the objects of the category \( \boldop{Mod}_\mscrI(\Sigma) \) \term{models} and the morphisms --- \term{homomorphisms}.
+
+    \thmitem{def:institution/satisfaction} A family of \hyperref[def:relation]{relations} indexed by \( \obj(\cat{Sign}_\mscrI) \), where, for a given signature \( \Sigma \), \( \vDash_\Sigma \) is a relation between \( \obj(\boldop{Mod}_\mscrI(\Sigma)) \) and \( \cat{Sen}_\Sigma \) such that, for each signature morphism \( s: \Sigma \to \Tau \), each sentence \( \varphi \) in \( \boldop{Sen}_\mscrI(\Sigma) \) and each model \( \mscrT \) in \( \boldop{Mod}\mscrI_\Tau \), the following condition holds:
+    \begin{equation}\label{eq:def:institution/satisfaction}
+      \mscrT \vDash_\Tau \aunderbrace{\boldop{Sen}_\mscrI(s)}_{\boldop{Sen}_\mscrI(\Sigma) \to \boldop{Sen}_\mscrI(\Tau)}(\varphi)
+      \quad\T{if and only if}\quad
+      \aunderbrace{\boldop{Mod}(s)}_{\boldop{Mod}_\mscrI(\Tau) \to \boldop{Mod}_\mscrI(\Sigma)}(\mscrT) \vDash_\Sigma \varphi
+    \end{equation}
+
+    We call \( \vDash_\Sigma \) the \term{satisfaction} relation for \( \Sigma \).
+  \end{thmenum}
+\end{definition}
+
+\begin{definition}\label{def:institution_satisfaction}\mcite[def. 2(1)]{GoguenBurstall1992}
+  Fix an \hyperref[def:institution]{institution} \( \mscrI \) and a signature \( \Sigma \) in \( \cat{Sign}_\mscrI \).
+
+  We say that the model \( \mscrX \) \term{satisfies} the sentence \( \varphi \) if \( \mscrX \vDash_\Sigma \varphi \). This extends to sets of sentences: if \( \mscrX \vDash_\Sigma \varphi \) for every sentence \( \varphi \) in the set \( \Gamma \), we say that \( \mscrX \) \term{satisfies} \( \Gamma \) and write \( \mscrX \vDash_\Sigma \Gamma \).
+
+  If \( \mscrX \) satisfies \( \Gamma \), we call \( \mscrX \) a \term{model} of \( \Gamma \).
+\end{definition}
+\begin{comments}
+  \item We must distinguish between the phrases \enquote{\( \mscrX \) is a model} and \enquote{\( \mscrX \) is a model of \( \Gamma \)}. In the concrete institutions we will consider, the category \( \boldop{Mod}_\mscrI(\Sigma) \) consists of objects that are not called models --- for example \hyperref[def:propositional_interpretations]{propositional interpretation} or \hyperref[def:first_order_structure]{first-order structures}.
+\end{comments}
+
+\begin{definition}\label{def:institution_entailment}\mcite[def. 2(9)]{GoguenBurstall1992}
+  Again, fix an \hyperref[def:institution]{institution} \( \mscrI \) and a signature \( \Sigma \) in \( \cat{Sign}_\mscrI \).
+
+  We say that the set of sentences \( \Gamma \) \term{entails} the sentence \( \psi \) and write \( \Gamma \vDash_\Sigma \psi \) if, whenever for some model \( \mscrX \) we have \( \mscrX \vDash_\Sigma \Gamma \), we also have \( \mscrX \vDash_\Sigma \psi \).
+
+  We prefer the notation \( \gamma_1, \ldots, \gamma_n \vDash_\Sigma \psi \) to \( \set{ \gamma_1, \ldots, \gamma_n } \vDash_\Sigma \psi \). In particular, we write \( \varphi \vDash_\Sigma \psi \) in case of one sentence \( \vDash_\Sigma \psi \) in case of zero sentences.
+\end{definition}
+
+\begin{proposition}\label{thm:institution_entailment_properties}
+  The \hyperref[def:institution_entailment]{entailment relation} \( {\vDash_\Sigma} \) for a signature \( \Sigma \) in the \hyperref[def:institution]{institution} \( \mscrI \) has the following basic properties:
+  \begin{thmenum}
+    \thmitem{thm:institution_entailment_properties/weakening} If \( \Gamma \subseteq \Delta \) are sets of sentences and if \( \Gamma \vDash \varphi \), then \( \Delta \vDash \varphi \).
+
+    This corresponds to \enquote{weakening} rules in sequent calculus --- see \cite[29]{TroelstraSchwichtenberg2000}.
+
+    \thmitem{thm:institution_entailment_properties/preorder} Regarded as a binary relation between sentences, it is a \hyperref[def:preordered_set]{preorder}, that is, it is \hyperref[def:binary_relation/reflexive]{reflexive} and \hyperref[def:binary_relation/transitive]{transitive}.
+
+    This motivates Lindenbaum-Tarski algebras --- see \fullref{def:lindenbaum_tarski_algebra}.
+
+    \thmitem{thm:institution_entailment_properties/consequence} Denote the set of sentences \( \boldop{Sen}_\mscrI(\Sigma) \) by \( S \). Then the following is a \hyperref[def:consequence_operator]{Tarski consequence operator}:
+    \begin{equation*}
+      \begin{aligned}
+        &\op{Cn}_\Sigma: \pow(S) \to \pow(S), \\
+        &\op{Cn}_\Sigma(\Gamma) \coloneqq \set{ \psi \in S \given \Gamma \vDash_\Sigma \psi }
+      \end{aligned}
+    \end{equation*}
+  \end{thmenum}
+\end{proposition}
+\begin{proof}
+  \SubProofOf{thm:institution_entailment_properties/weakening} Trivial.
+
+  \SubProofOf{thm:institution_entailment_properties/preorder}
+
+  \SubProofOf*[def:binary_relation/reflexive]{reflexivity} For any model \( \mscrX \) and sentence \( \varphi \) for the given signature, if \( \mscrX \vDash_\Sigma \varphi \), then, vacuously, \( \mscrX \vDash_\Sigma \varphi \). The first judgment implies the second one, that is, itself. Then \( \varphi \vDash_\Sigma \varphi \).
+
+  \SubProofOf*[def:binary_relation/transitive]{transitivity} Suppose that \( \varphi \vDash_\Sigma \psi \) and \( \psi \vDash_\Sigma \theta \).
+
+  If, for some model \( \mscrX \), we have \( \mscrX \vDash_\Sigma \varphi \), this implies \( \mscrX \vDash_\Sigma \psi \), which in turn implies \( \mscrX \vDash_\Sigma \theta \).
+
+  Therefore, \( \varphi \vDash_\Sigma \theta \).
+
+  \SubProofOf{thm:institution_entailment_properties/consequence}
+
+  \SubProofOf*[def:extensive_function]{extensiveness} Because of reflexivity shown in \fullref{thm:institution_entailment_properties/preorder}, the set \( \op{Cn}_\Sigma(\Gamma) \) should contain every sentence in \( \Gamma \).
+
+  \SubProofOf*[def:idempotent_function]{idempotence} Idempotence follows from transitivity.
+
+  \SubProofOf*[def:order_function/preserving]{monotonicity} Finally, suppose that \( \Gamma \subseteq \Delta \). If \( \Gamma \vDash_\Sigma \psi \), \fullref{thm:institution_entailment_properties/weakening} implies that \( \Delta \vDash_\Sigma \psi \). This shows that \( \op{Cn}_\Sigma(\Gamma) \subseteq \op{Cn}_\Sigma(\Delta) \).
+\end{proof}
+
 \paragraph{Implications and entailment}
 
 \begin{definition}\label{def:conditional_formula}
@@ -280,7 +363,7 @@ There are different approaches to formalizing the syntax of propositional logic.
   \end{thmenum}
 \end{definition}
 \begin{comments}
-  \item In \hyperref[def:classical_logic]{classical logic}, the contrapositive is \hyperref[def:propositional_entailment/equivalence]{equivalent} to the original formula due to \fullref{thm:boolean_equivalences/contrapositive}.
+  \item In \hyperref[con:classical_logic]{classical logic}, the contrapositive is \hyperref[def:propositional_entailment/equivalence]{equivalent} to the original formula due to \fullref{thm:boolean_equivalences/contrapositive}.
 \end{comments}
 
 \begin{remark}\label{rem:material_implication}
@@ -291,7 +374,7 @@ There are different approaches to formalizing the syntax of propositional logic.
 
   Thus, material implication resembles the Boolean function \( {\rightarrow} \) defined in \fullref{def:standard_boolean_functions}. The adjective \enquote{material} is used to distinguish it from \enquote{strict} and \enquote{relevant} implications, as well as \enquote{assertions} and other possibilities that try to avoid the so-called \enquote{paradoxes of material implication}. A survey of the aforementioned concepts has been written by \incite{StanfordPlato:logic_of_conditionals}.
 
-  Material implication fits naturally in \hyperref[def:classical_logic]{classical} \hyperref[con:metalogic]{metalogic} due to \fullref{thm:semantic_deduction_theorem}, although \fullref{rem:first_order_entailment_without_closed_formulas} highlights possible complications with arbitrary \hyperref[def:first_order_syntax/formula]{first-order formulas}.
+  Material implication fits naturally in \hyperref[con:classical_logic]{classical} \hyperref[con:metalogic]{metalogic} due to \fullref{thm:semantic_deduction_theorem}, although \fullref{rem:first_order_entailment_without_closed_formulas} highlights possible complications with arbitrary \hyperref[def:first_order_syntax/formula]{first-order formulas}.
 \end{remark}
 
 \begin{definition}\label{def:propositional_formula_variables}\mimprovised
@@ -301,13 +384,13 @@ There are different approaches to formalizing the syntax of propositional logic.
       \varnothing,                                  &\varphi \in \set{ \syntop, \synbot }, \\
       \set{ P },                                    &\varphi = P \in \boldop{Prop}, \\
       \boldop{Var}(\psi),                           &\varphi = \synneg \psi, \\
-      \boldop{Var}(\psi) \cup \boldop{Var}(\theta), &\varphi = \psi \syncirc \theta, {\syncirc} \in \Sigma.
+      \boldop{Var}(\psi) \cup \boldop{Var}(\theta), &\varphi = \psi \syncirc \theta, {\syncirc} \in \boldop{Conn}.
     \end{cases}
   \end{equation*}
 \end{definition}
 
 \begin{definition}\label{def:propositional_valuation}\mimprovised
-  We define (\hyperref[def:classical_logic]{classical}) \term[ru=значение истинности (формулы) (\cite[8]{Эдельман1975}), en=valuation \cite[def. 1.2.1]{VanDalen2004}]{valuation} for propositional formulas.
+  We define (\hyperref[con:classical_logic]{classical}) \term[ru=значение истинности (формулы) (\cite[8]{Эдельман1975}), en=valuation \cite[def. 1.2.1]{VanDalen2004}]{valuation} for propositional formulas.
 
   \begin{thmenum}
     \thmitem{def:propositional_valuation/interpretation} A \term{propositional interpretation} is a function with signature \( I: \boldop{Prop} \to \set{ T, F } \).
@@ -319,7 +402,7 @@ There are different approaches to formalizing the syntax of propositional logic.
         F,                                         &\varphi = \synbot \\
         I(P),                                      &\varphi = P \in \boldop{Prop} \\
         \oline{\Bracks{\psi}_I},                   &\varphi = \synneg \psi \\
-        \Bracks{\psi}_I \relcirc \Bracks{\theta}_I &\varphi = \psi \syncirc \theta, {\syncirc} \in \Sigma,
+        \Bracks{\psi}_I \relcirc \Bracks{\theta}_I &\varphi = \psi \syncirc \theta, {\syncirc} \in \boldop{Conn},
       \end{cases}
     \end{equation}
     where \( \relcirc \) denotes \hyperref[def:standard_boolean_functions]{Boolean function} corresponding to the connective \( \syncirc \).
@@ -337,7 +420,7 @@ There are different approaches to formalizing the syntax of propositional logic.
   \end{thmenum}
 \end{definition}
 \begin{comments}
-  \item This definition implicitly depends on the two-element \hyperref[def:boolean_algebra]{Boolean algebra} discussed in \fullref{def:boolean_value}. When dealing with \hyperref[def:propositional_heyting_algebra_semantics]{Heyting semantics} for \hyperref[def:intuitionistic_logic]{intuitionistic logic}, we can use the \hyperref[def:heyting_algebra]{relative pseudocomplement} and \hyperref[def:heyting_algebra/pseudocomplement]{pseudocomplement} rather than the Boolean implication and complement.
+  \item This definition implicitly depends on the two-element \hyperref[def:boolean_algebra]{Boolean algebra} discussed in \fullref{def:boolean_value}. When dealing with \hyperref[def:propositional_heyting_algebra_semantics]{Heyting semantics} for \hyperref[con:intuitionistic_logic]{intuitionistic logic}, we can use the \hyperref[def:heyting_algebra]{relative pseudocomplement} and \hyperref[def:heyting_algebra/pseudocomplement]{pseudocomplement} rather than the Boolean implication and complement.
 \end{comments}
 
 \begin{definition}\label{def:propositional_entailment}\mcite[26]{Kleene2002Logic}
@@ -376,7 +459,7 @@ There are different approaches to formalizing the syntax of propositional logic.
   \begin{thmenum}
     \thmitem{thm:def:propositional_entailment/transitivity} It is \hyperref[def:binary_relation/transitive]{transitive} in the following sense: if \( \varphi \vDash \psi \) and \( \psi \vDash \theta \), then \( \varphi \vDash \theta \).
 
-    \thmitem{thm:def:propositional_entailment/more_on_left} If \( \Gamma \vDash \varphi \), then \( \Gamma, \Delta \vDash \varphi \) for any set of formulas \( \Delta \).
+    \thmitem{thm:def:propositional_entailment/weakening} If \( \Gamma \vDash \varphi \), then \( \Gamma, \Delta \vDash \varphi \) for any set of formulas \( \Delta \).
 
     \thmitem{thm:def:propositional_entailment/top} \( \varphi \vDash \syntop \) for every formula \( \varphi \).
 
@@ -386,11 +469,11 @@ There are different approaches to formalizing the syntax of propositional logic.
 \begin{proof}
   \SubProofOf{thm:def:propositional_entailment/transitivity} Trivial.
 
-  \SubProofOf{thm:def:propositional_entailment/more_on_left} Trivial.
+  \SubProofOf{thm:def:propositional_entailment/weakening} Trivial.
 
   \SubProofOf{thm:def:propositional_entailment/top} For any interpretation \( I \), \( \Bracks{\syntop}_I = T \) regardless of the value of \( \Bracks{\varphi}_I \).
 
-  \SubProofOf{thm:def:propositional_entailment/bot} For any interpretation \( I \), since \( \Bracks{\synbot}_I = F \), everything is vacuously true regarding the \hyperref[def:conditional_formula/consequent]{consequent} \( \varphi \) because \eqref{eq:def:intuitionistic_propositional_deductive_systems/rules/efq} holds in \hyperref[def:classical_logic]{classical} \hyperref[con:metalogic]{metalogic}. In particular, \( \synbot \) entails \( \varphi \) under \( I \).
+  \SubProofOf{thm:def:propositional_entailment/bot} For any interpretation \( I \), since \( \Bracks{\synbot}_I = F \), everything is vacuously true regarding the \hyperref[def:conditional_formula/consequent]{consequent} \( \varphi \) because \eqref{eq:def:intuitionistic_propositional_deductive_systems/rules/efq} holds in \hyperref[con:classical_logic]{classical} \hyperref[con:metalogic]{metalogic}. In particular, \( \synbot \) entails \( \varphi \) under \( I \).
 \end{proof}
 
 \begin{proposition}\label{thm:boolean_equivalences}
@@ -472,7 +555,7 @@ There are different approaches to formalizing the syntax of propositional logic.
   \end{thmenum}
 \end{proposition}
 \begin{comments}
-  \item Most of these equivalences fail in \hyperref[def:intuitionistic_logic]{intuitionistic logic}.
+  \item Most of these equivalences fail in \hyperref[con:intuitionistic_logic]{intuitionistic logic}.
 \end{comments}
 \begin{proof}
   The proofs follow directly from the table in \fullref{def:standard_boolean_functions}.
@@ -490,7 +573,7 @@ There are different approaches to formalizing the syntax of propositional logic.
         \omega,                                                         &\varphi = \chi \\
         \varphi,                                                        &\varphi \neq \chi \T{and} \varphi \in \set{ \syntop, \synbot } \cup \boldop{Prop} \\
         \synneg \psi[\chi \mapsto \omega],                              &\varphi \neq \chi \T{and} \varphi = \synneg \psi \\
-        \psi[\chi \mapsto \omega] \syncirc \theta[\chi \mapsto \omega], &\varphi \neq \chi \T{and} \varphi = \psi \syncirc \theta, \circ \in \Sigma.
+        \psi[\chi \mapsto \omega] \syncirc \theta[\chi \mapsto \omega], &\varphi \neq \chi \T{and} \varphi = \psi \syncirc \theta, \circ \in \boldop{Conn}.
       \end{cases}
     \end{equation}
 
@@ -553,7 +636,7 @@ There are different approaches to formalizing the syntax of propositional logic.
 
     Generalizing on \( I \), we conclude that \eqref{eq:thm:propositional_substitution_equivalence/proof} holds in this case.
 
-    \item If \( \varphi \neq \chi \) and \( \varphi = \psi \syncirc \theta, {\syncirc} \in \Sigma \) and if the inductive hypothesis holds for both \( \psi \) and \( \theta \), then for any interpretation \( I \),
+    \item If \( \varphi \neq \chi \) and \( \varphi = \psi \syncirc \theta, {\syncirc} \in \boldop{Conn} \) and if the inductive hypothesis holds for both \( \psi \) and \( \theta \), then for any interpretation \( I \),
     \begin{equation*}
       \Bracks[\Big]{ \varphi[\chi \mapsto \omega] }_I
       =
@@ -671,7 +754,7 @@ There are different approaches to formalizing the syntax of propositional logic.
         \varphi,                        &\varphi \in \set{ \syntop, \synbot } \\
         \varphi,                        &\varphi = P \in \boldop{Prop} \\
         \synneg \id(\psi),              &\varphi = \synneg \psi, \\
-        \id(\psi) \syncirc \id(\theta), &\varphi = \psi \syncirc \theta, {\syncirc} \in \Sigma, \\
+        \id(\psi) \syncirc \id(\theta), &\varphi = \psi \syncirc \theta, {\syncirc} \in \boldop{Conn}, \\
       \end{cases}
     \end{aligned}
   \end{equation*}
@@ -683,7 +766,7 @@ There are different approaches to formalizing the syntax of propositional logic.
         \varphi,                     &\varphi \in \set{ \syntop, \synbot } \\
         \varphi,                     &\varphi = P \in \boldop{Prop} \\
         R(\psi) \synimplies \synbot, &\varphi = \synneg \psi, \\
-        R(\psi) \syncirc R(\theta),  &\varphi = \psi \syncirc \theta, {\syncirc} \in \Sigma, \\
+        R(\psi) \syncirc R(\theta),  &\varphi = \psi \syncirc \theta, {\syncirc} \in \boldop{Conn}, \\
       \end{cases}
     \end{aligned}
   \end{equation*}
