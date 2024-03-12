@@ -66,13 +66,15 @@
 
     As will be shown in \fullref{thm:cumulative_hierarchy_model_of_zfc_without_infinity}, no other axioms of \logic{ZFC} ensure the existence of at least one infinite set.
 
-    \thmitem{def:zfc/choice}\mcite[def. 6.4.1]{Hinman2005} The \term{axiom of choice} states that a \hyperref[def:choice_function]{choice function} exists for any family of nonempty sets. To state the axiom via a formula, we will avoid functions and only state it in terms of the image of the choice function. That is, we will formulate that for each family \( \mscrA \) of nonempty sets, there exists a set \( B \) such that \( A \cap B \) is a singleton set for each \( A \in \mscrA \). In symbols:
+    \thmitem{def:zfc/choice}\mcite[def. 6.4.1]{Hinman2005} The \term{axiom of choice} states that a \hyperref[def:choice_function]{choice function} exists for any family of nonempty sets. In symbols:
     \begin{equation}\label{eq:def:zfc/choice}
-      \qforall \sigma \parens[\Bigg]
+      \qforall \sigma \qexists \rho \parens[\Bigg]
         {
-          \parens[\Big]{ \qforall {\xi \in \sigma} \synneg \ref{eq:def:empty_set/predicate}[\xi] }
-          \synimplies
-          \parens[\Big]{ \qexists \rho \qforall {\xi \in \sigma} \qExists {\eta \in \rho} \eta \in \xi }.
+          \ref{eq:def:function/predicate}[\rho]
+          \wedge
+          \ref{eq:def:function/predicate_dom}[\sigma]
+          \wedge
+          \qforall {\xi \in \sigma} \parens[\Big]{ \neg\ref{eq:def:empty_set/predicate}[\xi] \synimplies \qexists \eta (\eta \in \rho \synimplies \qExists \zeta (\zeta \in \xi \synwedge \ref{eq:def:cartesian_product/kuratowski_pair_predicate}[\eta, \xi, \zeta]) }
         }
     \end{equation}
 
@@ -518,9 +520,52 @@
   The equivalence proofs can be found in the linked theorems since that is usually the most appropriate place to put them.
 \end{proof}
 
-\begin{theorem}[Diaconescu-Goodman-Myhill theorem]\label{thm:diaconescu_goodman_myhill_theorem}\mcite[corr. 2]{Diaconescu1975}
+\begin{theorem}[Diaconescu-Goodman-Myhill theorem]\label{thm:diaconescu_goodman_myhill_theorem}\mcite{GoodmanMyhill1978}
   In \hyperref[def:zfc]{\logic{ZF}}, the \hyperref[def:zfc/choice]{axiom of choice} entails the law of the excluded middle \eqref{eq:thm:minimal_propositional_negation_laws/lem}.
 \end{theorem}
+\begin{comments}
+  \item \incite[corr. 2]{Diaconescu1975} formulated a more abstract result, which \incite{GoodmanMyhill1978} later vastly simplified for the case of intuitionistic set theory. Our proof is based on the one given by \incite[thm. 5.3.3.6]{Mimram2020}, which in turn is based on the later.
+\end{comments}
+\begin{proof}
+  Fix any closed formula \( \varphi \) and consider the sets
+  \begin{align*}
+    A \coloneqq \set[\Big]{ x \in \set{ T, F } \given* \Bracks{(\xi \doteq \eta) \synvee \varphi}(x, T) }
+    &&\T{and}&&
+    B \coloneqq \set[\Big]{ x \in \set{ T, F } \given* \Bracks{(\xi \doteq \eta) \synvee \varphi}(x, F) },
+  \end{align*}
+  where \( T \) and \( F \) are the Boolean values discussed in \fullref{def:boolean_value}, which we may, for simplicity, regard as \( \set{ \varnothing } \) and \( \varnothing \).
+
+  Both are not empty since \( T \in A \) and \( F \in B \). Since the axiom of choice holds, there exists a choice function \( c: \set{ A, B } \to \set{ T, F } \).
+
+  We have the following possibilities:
+  \begin{itemize}
+    \item If \( c(A) = F \), then
+    \begin{equation*}
+      T = \Bracks{(\xi \doteq \eta) \synvee \varphi}(c(A), T) = \underbrace{\Bracks{\xi \doteq \eta}(c(A), T)}_{F} \vee \Bracks{\varphi},
+    \end{equation*}
+    thus \( \Bracks{\varphi} = T \).
+
+    \item If \( c(B) = T \), then similarly \( \Bracks{\varphi} = T \).
+
+    \item If \( c(A) = T \) and \( c(B) = F \), then \( A \neq B \), and we have the following possibilities:
+    \begin{itemize}
+      \item If \( A = \set{ T } \), then
+      \begin{equation*}
+        F = \Bracks{(\xi \doteq \eta) \synvee \varphi}(c(A), F) = \underbrace{\Bracks{\xi \doteq \eta}(c(A), F)}_{F} \vee \Bracks{\varphi},
+      \end{equation*}
+      hence \( \Bracks{\varphi} = F \).
+
+      \item If \( B = \set{ F } \), we similarly conclude that \( \Bracks{\varphi} = F \).
+    \end{itemize}
+  \end{itemize}
+
+  In all cases, either \( \Bracks{\varphi} = T \) or \( \Bracks{\neg \varphi} = \oline{\Bracks{\varphi}} = T \), hence
+  \begin{equation*}
+    \Bracks{\varphi \synvee \neg \varphi} = T.
+  \end{equation*}
+
+  This is precisely \eqref{eq:thm:minimal_propositional_negation_laws/lem}.
+\end{proof}
 
 \begin{definition}\label{def:well_founded_relation}
   If \( \prec \) is simply a binary relation without any additional conditions imposed, we can still make sense of the chain conditions from \fullref{def:chain_condition}. We will restrict ourselves to the descending chain condition --- we call the relation \( \prec \) \term{well-founded} if any of the following equivalent conditions hold:
