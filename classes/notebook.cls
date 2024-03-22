@@ -83,7 +83,6 @@
 \RequirePackage{ebproof}
 \RequirePackage{bigints}
 \RequirePackage{diagbox}
-\RequirePackage{abraces}
 \RequirePackage{forest}
 \RequirePackage{cancel}
 
