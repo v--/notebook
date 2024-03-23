@@ -1,22 +1,21 @@
-\subsection{Deductive systems}\label{subsec:deductive_systems}
+\subsection{Deduction systems}\label{subsec:deduction_systems}
 
-It is challenging to formally define a deductive system in a way that reflects reality. We will do this via some auxiliary definitions that rely heavily on the interaction between the object logic and the \hyperref[con:metalogic]{metalogic}.
+\paragraph{Proof trees}
 
-Without further context, by \enquote{logical formula} we will mean a \hyperref[def:formal_language/word]{word} over some \hyperref[def:formal_language]{alphabet}. In practice, these will be either \hyperref[def:propositional_grammar_schema/formula]{propositional formulas} or \hyperref[def:first_order_syntax/formula]{first-order formulas}, and in the latter case, unless their recursive structure is important, we will usually assume that the formulas are \hyperref[def:first_order_syntax/closed_formula]{closed}.
+\begin{concept}\label{con:inference_rule}\mimprovised
+  An \term[ru=правило вывода (\cite[31]{Герасимов2011}), en=inference rule (\cite[2]{MartinLof1996Meanings})]{inference rule} is a specification of when a judgment placeholder \( J \) can follow from the placeholders \( I_1, I_2, \cdots, I_n \).
 
-\begin{definition}\label{con:inference_rule}\mimprovised
-  An \term[ru=правило вывода (\cite[31]{Герасимов2011}), en=inference rule (\cite[34]{Kleene2002Logic}), de=schlu\ss{}figur (\cite[181]{Gentzen1935})]{inference rule} is a specification of how the judgment \( J \) follows from the judgments \( I_1, I_2, \cdots, I_n \).
-
-  \incite[291]{Szabo1964Gentzen} introduced the following convenient syntax for inference rules:
+  \incite[291]{Szabo1964Gentzen} introduced the following convenient notation for an inference rule with name \enquote{\( R \)}:
   \begin{equation*}
     \begin{prooftree}
       \hypo{ I_1 }
       \hypo{ \cdots }
       \hypo{ I_n }
       \infer3[R]{ J }
-    \end{prooftree},
+    \end{prooftree}.
   \end{equation*}
-  where \enquote{\( R \)} is the name of the rule.
+
+  For convenience in our definitions, where we will refer to rules only by name, we will suppose that names are derived from the \( \bnfpn{Latin string} \) nonterminal from \fullref{rem:grammar_rules_for_variables}.
 
   We allow the possibility that \( n = 0 \), in which case the rule becomes
   \begin{equation*}
@@ -24,97 +23,45 @@ Without further context, by \enquote{logical formula} we will mean a \hyperref[d
       \infer0[R]{ J }
     \end{prooftree}
   \end{equation*}
-\end{definition}
+\end{concept}
 \begin{comments}
-  \item We can use inference rules to specify entailment of sentences in an object logic rather than entailment of judgments in the metalogic. We will use this in \fullref{subsec:deductive_systems}.
+  \item We can use inference rules to specify entailment of sentences in an object logic rather than entailment of judgments in the metalogic. The epistemology of inference rules is discussed \incite[2]{MartinLof1996Meanings}.
+
+  \item Inference rules can easily be formalized as \hyperref[def:relation]{relations}, as is done in \incite[31]{Герасимов2011}, but this approach makes it difficult to rely on additional metalogical context, as we will need to do in \fullref{def:first_order_natural_deduction_system} with regard to eigenvariables or in \fullref{subsec:simple_type_theory} with regard to typing rules.
 \end{comments}
 
 \begin{definition}\label{def:proof_tree}\mimprovised
-  A \term{proof tree} is a \hyperref[def:rooted_tree]{rooted tree} of logical formulas. The validity of a proof tree is handled by \hyperref[def:deductive_system]{deductive systems} and is irrelevant for this definition.
+  Let \( S \) be a nonempty set, whose elements we will call \enquote{entries} as may be may expect them to be formulas or sequents. A \term{proof tree} for \( S \) is an \hyperref[def:ordered_tree]{ordered tree} whose nodes are \hyperref[def:labeled_set]{labeled} by a pair consisting of an element of \( S \) and the name of an \hyperref[con:inference_rule]{inference rule}. We impose the restriction that nodes whose rule name is the empty string \( \varepsilon \) cannot have children.
 
-  \begin{thmenum}
-    \thmitem{def:proof_tree/subproof} A \term{subproof} is simply a subtree of a proof. If a subproof was obtained using an \hyperref[con:judgment/inference_rule]{inference rule}, we \hyperref[def:labeled_set]{label} the subproof with the name of the rule.
-
-    \thmitem{def:proof_tree/premises} The root of the tree is called the \term{conclusion} of the proof and the \hyperref[def:rooted_tree/leaf]{leaves} are called \term{premises} or, especially in the context of \hyperref[def:natural_deduction_system]{natural deduction}, \term{assumptions}. We sometimes add a \term{non-premise} label to a leaf that prevents it from being added to the list of premises.
-
-    \thmitem{def:proof_tree/drawing} We will draw graphically proof trees with no edges and with the root at the bottom in a style inspired by inference rules. See \fullref{ex:def:implicational_propositional_hilbert_system/identity}.
-  \end{thmenum}
-\end{definition}
-
-\begin{definition}\label{def:deductive_system}\mimprovised
-  A \term{deductive system} for a set \( \mscrF \) of formulas in the object logic is a metalogical collection of \hyperref[con:judgment/inference_rule]{inference rules}, which are used to generate \hyperref[def:proof_tree]{proof trees} in the object logic.
-
-  We will not attempt to encode inference rules themselves into the object theory and instead regard a deductive system as a pair \( (\mscrF, \mscrP) \), where \( \mscrF \) is a set of logical formulas and \( \mscrP \) is a set of proofs over \( \mscrF \).
-
-  We define the set \( \mscrP = \bigcup_{k=0}^\infty \mscrP_k \) of proofs inductively as follows:
-  \begin{thmenum}
-    \thmitem{def:deductive_system/base} Let \( \mscrP_0 \) be the set containing only, for every formula \( \psi \) in \( \mscrF \), the tree with only one node --- the root \( \psi \).
-
-    \thmitem{def:deductive_system/rule} For every \( k > 0 \), let \( \psi_1, \ldots, \psi_n \) and \( \psi \) be formulas in \( \mscrF \) and \( P_1, \ldots, P_n \) be proofs of \( \psi_1, \ldots, \psi_n \) from \( \mscrP_{k-1} \).
-
-    Suppose that the deductive system has an inference rule
-    \begin{equation*}
-      \begin{prooftree}
-        \hypo{ \Phi_1 }
-        \hypo{ \cdots }
-        \hypo{ \Phi_n }
-        \infer3[R]{ \Psi }
-      \end{prooftree}
-    \end{equation*}
-    such that
-    \begin{equation*}
-      \Bracks{R}(P_1, \ldots, P_n, \psi) = T
-    \end{equation*}
-    in the metalogic.
-
-    Then the tree
-    \begin{equation*}
-      \begin{prooftree}
-        \hypo{ P_1 }
-        \hypo{ \cdots }
-        \hypo{ P_n }
-        \infer3[R]{ \psi }
-      \end{prooftree}
-    \end{equation*}
-    with root \( \psi \), subtrees \( P_1, \ldots, P_n \) of the root, and label \( R \), is a proof. In the case of rules with no premises like \eqref{eq:def:minimal_propositional_natural_deduction_system/top/intro}, we add a \hyperref[def:proof_tree/premises]{non-premise label} to the proof in order to exclude \( \psi \) from the list of premises of the proof.
-
-    We say that the resulting proof is an \term{application} of the rule \( R \).
-
-    We define \( \mscrP_k \) as the set of all such applications based on premises from \( \mscrP_{k-1} \).
-  \end{thmenum}
-\end{definition}
-
-\begin{proposition}\label{thm:deductive_system_transitivity}
-  Given a deductive system, for any formula \( \psi \) and any sets \( \Gamma \) and \( \Delta \), \( \Gamma \vdash \psi \) implies \( \Gamma, \Delta \vdash \psi \).
-
-  If every formula in \( \Delta \) is derivable from \( \Gamma \), then the converse to the above also holds: \( \Gamma, \Delta \vdash \psi \) implies \( \Gamma \vdash \psi \).
-\end{proposition}
-\begin{proof}
-  If there exists a proof \( \psi \) from \( \Gamma \), then adding additional axioms does not change anything.
-
-  The second part of the theorem requires a tad more complicated proof. Assume that every formula in \( \Delta \) is derivable from \( \Gamma \) and that \( \Gamma, \Delta \vdash \psi \).
-
-  For every \( \delta \in \Delta \), let \( P_\delta \) be a proof of \( \delta \) from members of \( \Gamma \) and let \( P_\psi \) be a proof of \( \psi \) from \( \Gamma \cup \Delta \).
-
-  Then, for every \( \delta \in \Delta \), we can replace the subtree of \( \delta \) with \( P_\delta \) to obtain a proof of \( \psi \) from \( \Gamma \). Therefore, \( \Gamma \vdash \psi \).
-\end{proof}
-
-\begin{definition}\label{def:proof_derivability}\mimprovised
-  We are often interested not in the proofs of a \hyperref[def:deductive_system]{deductive system}, but in \term{provability}, which we express via \hyperref[con:judgment/sequent]{sequents}.
-
-  Fix a deductive system \( (\mscrF, \mscrP) \). If \( \mscrP \) contains a proof of \( \psi \), whose premises are all members of \( \Gamma \), the following sequent is valid:
+  This allows us to extend the notation we introduced for inference rules --- if a node with entry \( \varphi \) and rule name \( R \) has \( T_1, \ldots, T_n \) as subtrees, we may denote this as
   \begin{equation*}
-    \Gamma \vdash \psi.
+    \begin{prooftree}
+      \hypo{ T_1 }
+      \hypo{ \cdots }
+      \hypo{ T_n }
+      \infer3[R]{ \varphi }
+    \end{prooftree}
   \end{equation*}
 
-  We say that \( \psi \) is a \term{theorem} of \( \Gamma \). If \( \Gamma \) is empty, we say that \( \psi \) is a \term{logical theorem} because it only depends on the underlying logical framework.
+  \begin{thmenum}
+    \thmitem{def:proof_tree/conclusion} We will call the root of the tree its \term[en=conclusion (\cite[22]{TroelstraSchwichtenberg2000})]{conclusion}.
+
+    \thmitem{def:proof_tree/premises} We will call the nodes with an empty rule name \term[en=premises (\cite[22]{TroelstraSchwichtenberg2000})]{premises} or, in the context of \hyperref[def:natural_deduction_system]{natural deduction}, \term[en=assumption (\cite[23]{TroelstraSchwichtenberg2000})]{assumptions}. Because of our aforementioned restriction, these are necessarily \hyperref[def:rooted_tree/leaf]{leaves}.
+
+    \thmitem{def:proof_tree/subproof} A \term{subproof} is simply a subtree of a proof tree.
+  \end{thmenum}
 \end{definition}
 \begin{comments}
-  \item \( \vdash \) is a reflexive and transitive relation, which makes \( (\pow(\mscrF), \vdash) \) a \hyperref[def:preordered_set]{preordered set}.
+  \item Of course, we expect each node to either be a premise or an application of an actual rule from the metalogic. The concrete rules depend on the deductive system.
+  \item This definition somewhat resembles \enquote{prooftrees} from \incite[22]{TroelstraSchwichtenberg2000}, but is more rigorous and explicitly encodes which inference rules have been used.
 \end{comments}
 
-\begin{definition}\label{def:axiomatic_deductive_system}\mcite[sec. 1.3.9]{TroelstraSchwichtenberg2000}
-  \term{Axiomatic deductive systems}, also called \term{Hilbert-style systems}, are \hyperref[def:deductive_system]{deductive systems} for propositional formulas consist of the single \hyperref[con:judgment/inference_rule]{inference rule} \term{modus ponens} (\enquote{mode that by affirming affirms}):
+\paragraph{Axiomatic deduction systems}
+
+\begin{definition}\label{def:axiomatic_deductive_system}\mimprovised
+  Fix a nonempty set \( S \), whose elements we will call \term{formulas}\fnote{We allow these formulas to have free variables, so we avoid calling them sentences.}. An \term[en=axiomatic system (\cite[6D1]{Hindley1997})]{axiomatic deduction system} for \( S \), also called a \term[ru=исчисление высказываний гильбертовского типа (\cite[35]{Герасимов2011}), en=Hilbert-style system (\cite[6D1]{Hindley1997}); Hilbert system (\cite[33]{TroelstraSchwichtenberg2000}); Hilbert calculus (\cite[103]{Mimram2020})]{Hilbert-style system}, is simply a subset \( \mscrA \) of \( S \), whose elements we call \term{logical axioms}.
+
+  We rely only on a single \hyperref[con:judgment/inference_rule]{inference rule}, \term[en=modus ponens (\cite[6D1]{Hindley1997})]{modus ponens}:
   \begin{equation*}\taglabel[\logic{MP}]{eq:def:def:axiomatic_deductive_system/mp}
     \begin{prooftree}
       \hypo{ \psi }
@@ -122,13 +69,13 @@ Without further context, by \enquote{logical formula} we will mean a \hyperref[d
       \infer2[\ref{eq:def:def:axiomatic_deductive_system/mp}]{ \psi }
     \end{prooftree}
   \end{equation*}
-
-  Fix a set \( \mscrF \) of logical formulas. Let \( \mscrA \subseteq \mscrF \) be a predefined subset of formulas, which we will call \term{logical axioms} of \( \mscrF \). The Hilbert system itself is the pair \( (\mscrF, \mscrA) \).
 \end{definition}
 \begin{comments}
-  \item Our definition of axiomatic systems prevents us from introducing complicated rules like the first-order eigenvariable condition in the rules \eqref{eq:def:first_order_natural_deduction_system/forall/intro} and \eqref{eq:def:first_order_natural_deduction_system/exists/elim}. We only restrict ourselves to axiomatic systems for propositional logic.
+  \item Our definition mostly resembles that of \incite[6D1]{Hindley1997}, but with some important differences --- we do not require axioms to be tautologies and avoid adding additional rules. We also use somewhat different terminology.
 
-  \item Non-logical axioms can be defined with respect to theories --- see \fullref{def:first_order_theory/axiomatized}.
+  \item The term \enquote{logical axiom} may have different meaning depending on the author. \incite[6D1]{Hindley1997} uses the term \enquote{axiom} for our notion of \enquote{logical axiom}. \incite[205]{Hinman2005} gives an ad-hoc definition of derivability from a set of \enquote{logical axioms} via \( \logic{MP} \). \incite{TroelstraSchwichtenberg2000} uses both \enquote{logical axiom} and \enquote{nonlogical axiom} but does not define the terms, while \incite{Kleene2002Logic} only uses the latter term, again without defining it.
+
+  \item We may alternatively encode the axioms as inference rules without premises, as it is done in \cite[103]{Mimram2020}.
 \end{comments}
 
 \begin{definition}\mcite[sec. 1.3.9]{TroelstraSchwichtenberg2000}\label{def:implicational_propositional_hilbert_system}
@@ -227,7 +174,7 @@ Without further context, by \enquote{logical formula} we will mean a \hyperref[d
   In the \hyperref[def:implicational_propositional_hilbert_system]{implicational propositional Hilbert system}, for arbitrary first-order formulas, \( \Gamma, \varphi \vdash \psi \) holds if and only if \( \Gamma \vdash \varphi \synimplies \psi \) holds.
 \end{theorem}
 \begin{comments}
-  \item This theorem also holds for propositional deductive systems which extend the positive implication system with compatible rules, as in the case of \fullref{def:minimal_propositional_natural_deduction_system} or \fullref{def:first_order_natural_deduction_system}.
+  \item This theorem also holds for propositional deduction systems which extend the positive implication system with compatible rules, as in the case of \fullref{def:minimal_propositional_natural_deduction_system} or \fullref{def:first_order_natural_deduction_system}.
 \end{comments}
 \begin{proof}
   \SufficiencySubProof Suppose that \( \Gamma, \varphi \vdash \psi \) and let \( P \) be a proof of \( \psi \) from \( \Gamma \cup \set{ \varphi } \). We will use \fullref{thm:induction_on_syntax_trees} on \( \psi \).
@@ -354,7 +301,7 @@ Without further context, by \enquote{logical formula} we will mean a \hyperref[d
 \end{definition}
 
 \begin{definition}\label{def:natural_deduction_system}\mcite[sec. 1.3.2]{TroelstraSchwichtenberg2000}
-  \term{Natural deductive systems} are \hyperref[def:deductive_system]{deductive systems} whose set of rules allows \enquote{discharging} certain assumptions of the proof tree. These rules correspond to \enquote{bringing in} the sequent \( \psi \vdash \psi \) as a formula \( \psi \to \psi \), thus eliminating \( \psi \) as an assumption as justified by \fullref{thm:syntactic_deduction_theorem}.
+  \term{Natural deduction systems} are \hyperref[def:deductive_system]{deduction systems} whose set of rules allows \enquote{discharging} certain assumptions of the proof tree. These rules correspond to \enquote{bringing in} the sequent \( \psi \vdash \psi \) as a formula \( \psi \to \psi \), thus eliminating \( \psi \) as an assumption as justified by \fullref{thm:syntactic_deduction_theorem}.
 
   In a natural deduction system, every assumption in a \hyperref[def:proof_tree]{proof trees} has a unique \hyperref[def:labeled_set]{label}. By default, we say that assumptions are \term{undischarged}. When applying a rule that supports discharging, we add a label to the subproof that matches the label of the assumption which we discharge. We additionally add a \hyperref[def:proof_tree/premises]{non-premise label} to every discharged assumption so that it does not affect \hyperref[def:proof_derivability]{derivability}.
 
@@ -608,7 +555,7 @@ Without further context, by \enquote{logical formula} we will mean a \hyperref[d
 \end{defproof}
 
 \begin{proposition}\label{thm:conjunction_of_premises}
-  In deductive systems that extend the \hyperref[def:minimal_propositional_natural_deduction_system]{minimal propositional natural deduction system}, we have \( \psi_1, \psi_1 \vdash \varphi \) if and only if \( (\psi_1 \synwedge \psi_2) \vdash \varphi \).
+  In deduction systems that extend the \hyperref[def:minimal_propositional_natural_deduction_system]{minimal propositional natural deduction system}, we have \( \psi_1, \psi_1 \vdash \varphi \) if and only if \( (\psi_1 \synwedge \psi_2) \vdash \varphi \).
 \end{proposition}
 \begin{proof}
   \SufficiencySubProof If \( \psi_1, \psi_2 \vdash \varphi \), then
