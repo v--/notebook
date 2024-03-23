@@ -3,6 +3,7 @@ import pathlib
 import bibtexparser
 from bibtexparser.bparser import BibTexParser
 from bibtexparser.bwriter import BibTexWriter
+from titlecase import titlecase
 
 
 BIB_PATH = pathlib.Path('bibliography').resolve()
@@ -62,6 +63,16 @@ def refine_bib_files():
         )
 
         for entry in bibtex_db.entries:
+            if entry['ENTRYTYPE'] != 'online':
+                for field in ['title', 'subtitle']:
+                    if field not in entry:
+                        continue
+
+                    title_cased = titlecase(entry[field], callback=lambda string, **kwargs: string if not string.isascii() else None)
+
+                    if title_cased:
+                        entry[field] = title_cased
+
             if 'shortauthor' in entry:
                 continue
 
