@@ -1,6 +1,6 @@
 from typing import Iterable
 
-from ..support.parsing import Parser, ParserError
+from ..support.parsing.parser import Parser, ParserError
 
 from .tokens import LambdaToken, LatinLetter, NaturalNumber, MiscToken
 

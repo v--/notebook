@@ -1,6 +1,6 @@
 import pytest
 
-from ..parsing import ParserError
+from ..parsing.parser import ParserError
 
 from .nodes import Command, BracelessGroup, BraceGroup, BracketGroup, Word, Whitespace, Environment
 from .parser import parse_latex

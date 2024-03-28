@@ -1,7 +1,7 @@
 from dataclasses import dataclass, field
 from typing import Generic, Sequence, TypeVar
 
-from ..exceptions import NotebookCodeError
+from ...exceptions import NotebookCodeError
 
 
 class ParserError(NotebookCodeError):

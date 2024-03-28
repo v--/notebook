@@ -1,4 +1,4 @@
-from ..parsing import Parser
+from ..parsing.parser import Parser
 from .tokens import WordToken, EscapedWordToken, WhitespaceToken, SpecialToken
 
 

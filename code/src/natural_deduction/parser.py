@@ -1,12 +1,10 @@
 from typing import Iterable
 
-from ..support.parsing import Parser, ParserError
+from ..support.parsing.parser import Parser, ParserError
 
-from .tokens import RuleToken, MiscToken, ContextToken, LatinName, GreekName, NaturalNumber
-from .contexts import ContextEntry
+from .tokens import RuleToken, MiscToken, LatinName, GreekName, NaturalNumber
 from .rules import AtomicFormulaPlaceholder, ConstantFormulaPlaceholder, NegationFormulaPlaceholder, ConnectiveFormulaPlaceholder, QuantifierFormulaPlaceholder, FormulaPlaceholder, Premise, Rule
 from ..fol.terms import Variable
-from ..fol.formulas import Formula
 from ..fol.tokens import PropConstant, BinaryConnective, Quantifier
 
 

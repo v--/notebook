@@ -1,6 +1,6 @@
 import pytest
 
-from ..parsing import ParserError
+from ..parsing.parser import ParserError
 
 from .tokens import WordToken, EscapedWordToken, WhitespaceToken, SpecialToken
 from .tokenizer import tokenize_latex

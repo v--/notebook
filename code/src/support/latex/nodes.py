@@ -2,7 +2,7 @@ from dataclasses import dataclass
 import functools
 import operator
 
-from ..parsing import TokenEnum, TokenMixin
+from ..parsing.tokens import TokenEnum, TokenMixin
 
 
 class Word(TokenMixin):

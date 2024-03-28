@@ -1,6 +1,6 @@
 from typing import Iterator, Sequence, cast
 
-from ..parsing import Parser
+from ..parsing.parser import Parser
 from .tokenizer import tokenize_latex
 from .tokens import LaTeXToken, WordToken, EscapedWordToken, WhitespaceToken, SpecialToken
 from .nodes import Command, BracelessGroup, BraceGroup, BracketGroup, LaTeXNode, Word, Whitespace, Group, Environment, SpecialNode

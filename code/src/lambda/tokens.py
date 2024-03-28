@@ -1,4 +1,4 @@
-from ..support.parsing import TokenMixin, TokenEnum
+from ..support.parsing.tokens import TokenMixin, TokenEnum
 
 
 class LatinLetter(TokenMixin):

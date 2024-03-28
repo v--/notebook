@@ -4,7 +4,8 @@ import functools
 import itertools
 from typing import Literal
 
-from ..support.parsing import Parser, TokenEnum, TokenMixin
+from ..support.parsing.tokens import TokenMixin, TokenEnum
+from ..support.parsing.parser import Parser
 
 
 class Terminal(TokenMixin):

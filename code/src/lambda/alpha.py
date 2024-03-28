@@ -1,5 +1,5 @@
 from .terms import Variable, Application, Abstraction, Term
-from .variables import new_variable, get_free_variables, get_bound_variables
+from .variables import new_variable, get_free_variables
 from .substitution import substitute_in_term
 
 

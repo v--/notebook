@@ -1,6 +1,6 @@
 import pytest
 
-from ..support.parsing import ParserError
+from ..support.parsing.parser import ParserError
 
 from .terms import Variable
 from .parser import parse_term

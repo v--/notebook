@@ -1,5 +1,5 @@
 from dataclasses import dataclass
-from .parsing import Parser
+from .parsing.parser import Parser
 
 
 def test_error_basic():
