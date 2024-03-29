@@ -4,7 +4,7 @@ import shutil
 import hashlib
 import tempfile
 
-from ..src.support.latex.format_matrices import format_tex_matrices
+from ..src.support.latex.format_matrices import format_tex_matrices  # type: ignore[import-untyped]
 
 
 def format_matrices_in_file(path: str):

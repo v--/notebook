@@ -4,5 +4,5 @@ test:
 	poetry run pytest
 
 lint:
-	poetry run ruff check src
-	poetry run mypy --package src
+	poetry run ruff check
+	poetry run mypy --package src --package commands
