@@ -2,7 +2,7 @@ from dataclasses import dataclass, field
 import functools
 import itertools
 
-from .alphabet import Terminal, NonTerminal
+from .alphabet import Terminal, NonTerminal, empty
 
 
 @dataclass
@@ -17,7 +17,7 @@ class GrammarRule:
         return self.src[0]
 
     def __str__(self):
-        return ' '.join(str(sym) for sym in self.src) + ' → ' + ' '.join(str(sym) for sym in self.dest)
+        return ' '.join(str(sym) for sym in self.src) + ' → ' + (' '.join(str(sym) for sym in self.dest) if len(self.dest) > 0 else empty)
 
     def __hash__(self):
         return hash(str(self))

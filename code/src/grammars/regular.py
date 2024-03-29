@@ -53,6 +53,11 @@ def to_finite_automaton(grammar: Grammar) -> FiniteAutomaton:
     new_names = {sym.value for sym in g3.schema.get_non_terminals()}
 
     for rule in g3.schema.rules:
+        if is_epsilon_rule(rule):
+            assert rule.src == [g3.start]
+            g4_schema.rules.append(rule)
+            continue
+
         last = rule.src_symbol
         last_index = -1 if isinstance(rule.dest[-1], Terminal) else -2
 

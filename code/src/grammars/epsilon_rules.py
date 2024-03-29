@@ -1,11 +1,11 @@
 from ..support.names import new_var_name
 
-from .alphabet import NonTerminal, Terminal, empty
+from .alphabet import NonTerminal, Terminal
 from .grammar import Grammar, GrammarRule, GrammarSchema
 
 
 def is_epsilon_rule(rule: GrammarRule):
-    return len(rule.src) == 1 and rule.dest == [empty]
+    return len(rule.dest) == 0
 
 
 def is_epsilon_free(grammar: Grammar):
