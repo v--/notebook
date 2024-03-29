@@ -2,7 +2,7 @@ import pytest
 
 from ...parsing.parser import ParserError
 
-from .tokens import WordToken, EscapedWordToken, WhitespaceToken, SpecialToken
+from .tokens import WordToken, EscapedWordToken, MiscToken
 from .tokenizer import tokenize_latex
 
 
@@ -40,7 +40,7 @@ def test_latin_escaped():
 
 
 def test_escaped_with_underscore():
-    assert tokenize_latex('\\test_test') == [EscapedWordToken('test'), SpecialToken.underscore_token, WordToken('test')]
+    assert tokenize_latex('\\test_test') == [EscapedWordToken('test'), MiscToken.underscore, WordToken('test')]
 
 
 def test_escaped_whitespace():
@@ -52,49 +52,49 @@ def test_escaped_whitespace():
 def test_single_space():
     string = ' '
     tokens = tokenize_latex(string)
-    assert tokens == [WhitespaceToken(' ')]
+    assert tokens == [MiscToken.space]
 
 
 def test_multiple_spaces():
-    string = '   '
+    string = ' ' * 3
     tokens = tokenize_latex(string)
-    assert tokens == [WhitespaceToken('   ')]
+    assert tokens == [MiscToken.space] * 3
 
 
 def test_multiple_tabs():
     string = '\t' * 3
     tokens = tokenize_latex(string)
-    assert tokens == [WhitespaceToken('\t' * 3)]
+    assert tokens == [MiscToken.tab] * 3
 
 
-def test_multiple_newlines():
+def test_multiple_line_breaks():
     string = '\n' * 3
     tokens = tokenize_latex(string)
-    assert tokens == [WhitespaceToken('\n' * 3)]
+    assert tokens == [MiscToken.line_break] * 3
 
 
 def test_ampersand():
     string = '&'
     tokens = tokenize_latex(string)
-    assert tokens == [SpecialToken.ampersand_token]
+    assert tokens == [MiscToken.ampersand]
 
 
 def test_caret():
     string = '^'
     tokens = tokenize_latex(string)
-    assert tokens == [SpecialToken.caret_token]
+    assert tokens == [MiscToken.caret]
 
 
 def test_underscore():
     string = '_'
     tokens = tokenize_latex(string)
-    assert tokens == [SpecialToken.underscore_token]
+    assert tokens == [MiscToken.underscore]
 
 
 def test_command():
     string = '\\sum_{k \\in \\mscrK}'
     tokens = tokenize_latex(string)
-    assert tokens == [EscapedWordToken('sum'), SpecialToken.underscore_token, SpecialToken.opening_brace, WordToken('k'), WhitespaceToken(' '), EscapedWordToken('in'), WhitespaceToken(' '), EscapedWordToken('mscrK'), SpecialToken.closing_brace]
+    assert tokens == [EscapedWordToken('sum'), MiscToken.underscore, MiscToken.opening_brace, WordToken('k'), MiscToken.space, EscapedWordToken('in'), MiscToken.space, EscapedWordToken('mscrK'), MiscToken.closing_brace]
 
 
 def test_real():

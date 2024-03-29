@@ -7,7 +7,7 @@ class MiscToken(TokenEnum):
     epsilon = 'ε'
     right_arrow = '→'
     pipe = '|'
-    new_line = '\n'
+    line_break = '\n'
 
 
 GrammarToken = Terminal | NonTerminal | MiscToken

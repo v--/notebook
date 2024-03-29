@@ -1,4 +1,5 @@
 from dataclasses import dataclass
+from typing import TypeGuard
 import functools
 import operator
 
@@ -6,10 +7,6 @@ from ..parsing.tokens import TokenEnum, TokenMixin
 
 
 class Word(TokenMixin):
-    pass
-
-
-class Whitespace(TokenMixin):
     pass
 
 
@@ -22,6 +19,9 @@ class SpecialNode(TokenEnum):
     ampersand = '&'
     underscore = '_'
     caret = '^'
+    space = ' '
+    line_break = '\n'
+    tab = '\t'
 
 
 @dataclass
@@ -63,4 +63,8 @@ class Environment(Group):
         return '\\begin{%s}' % self.name + super().__str__() + '\\end{%s}' % self.name
 
 
-LaTeXNode = Word | Whitespace | Command | SpecialNode | BracelessGroup | BraceGroup | BracketGroup | Environment
+LaTeXNode = Word | Command | SpecialNode | BracelessGroup | BraceGroup | BracketGroup | Environment
+
+
+def is_whitespace_node(node: LaTeXNode) -> TypeGuard[SpecialNode]:
+    return node == SpecialNode.space or node == SpecialNode.tab or node == SpecialNode.line_break

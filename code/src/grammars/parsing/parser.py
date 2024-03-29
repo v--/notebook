@@ -8,18 +8,18 @@ from .tokenizer import GrammarTokenizer
 
 
 class GrammarParser(Parser[GrammarToken]):
-    def skip_whitespace(self):
+    def skip_spaces(self):
         while not self.is_at_end() and self.peek() == MiscToken.space:
             self.advance()
 
     def skip_empty_lines(self):
-        while not self.is_at_end() and self.peek() == MiscToken.new_line:
+        while not self.is_at_end() and self.peek() == MiscToken.line_break:
             self.advance()
-            self.skip_whitespace()
+            self.skip_spaces()
 
-    def advance_and_with_whitespace(self):
+    def advance_and_skip_spaces(self):
         self.advance()
-        self.skip_whitespace()
+        self.skip_spaces()
 
     def parse_rule_src(self) -> Iterable[Terminal | NonTerminal]:
         assert isinstance(self.peek(), Terminal | NonTerminal)
@@ -27,7 +27,7 @@ class GrammarParser(Parser[GrammarToken]):
 
         while isinstance(head := self.peek(), Terminal | NonTerminal):
             yield head
-            self.advance_and_with_whitespace()
+            self.advance_and_skip_spaces()
 
             contains_nonterminal |= isinstance(head, NonTerminal)
 
@@ -39,7 +39,7 @@ class GrammarParser(Parser[GrammarToken]):
         is_epsilon_rule = self.peek() == MiscToken.epsilon
 
         if is_epsilon_rule:
-            self.advance_and_with_whitespace()
+            self.advance_and_skip_spaces()
 
         while isinstance(head := self.peek(), Terminal | NonTerminal) or head == MiscToken.epsilon:
             if is_epsilon_rule:
@@ -47,10 +47,10 @@ class GrammarParser(Parser[GrammarToken]):
             else:
                 assert isinstance(head, Terminal | NonTerminal)
                 yield head
-                self.advance_and_with_whitespace()
+                self.advance_and_skip_spaces()
 
     def parse_rule_line(self) -> Iterable[GrammarRule]:
-        self.skip_whitespace()
+        self.skip_spaces()
 
         if not isinstance(self.peek(), Terminal | NonTerminal):
             raise self.error('The left side of a rule must consist of only terminals and nonterminals')
@@ -58,7 +58,7 @@ class GrammarParser(Parser[GrammarToken]):
         src = list(self.parse_rule_src())
 
         if self.peek() == MiscToken.right_arrow:
-            self.advance_and_with_whitespace()
+            self.advance_and_skip_spaces()
         else:
             raise self.error('Expected an arrow after the rule source')
 
@@ -69,12 +69,12 @@ class GrammarParser(Parser[GrammarToken]):
             dest = list(self.parse_rule_dest())
             yield GrammarRule(src, dest)
 
-            if self.peek() == MiscToken.new_line:
-                self.advance_and_with_whitespace()
+            if self.peek() == MiscToken.line_break:
+                self.advance_and_skip_spaces()
                 return
 
             if self.peek() == MiscToken.pipe:
-                self.advance_and_with_whitespace()
+                self.advance_and_skip_spaces()
             else:
                 raise self.error('The right side of a rule must contain a pipe between runs of terminals, nonterminals and ε')
 

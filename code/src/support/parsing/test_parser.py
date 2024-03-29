@@ -53,7 +53,7 @@ test2
 test3'''
 
 
-def test_error_on_newline():
+def test_error_on_line_break():
     parser = Parser('test1\ntest2\ntest3')
     parser.advance(11)
     msg = parser.get_error_message('Error', precede=0, succeed=1)
@@ -83,7 +83,7 @@ test1
 '''
 
 
-def test_string_wrapper_on_newline():
+def test_string_wrapper_on_line_break():
     parser = Parser([
         StringWrapper('test1\n'),
         StringWrapper('test2\n'),

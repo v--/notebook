@@ -10,18 +10,17 @@ class EscapedWordToken(TokenMixin):
         return '\\' + self.value
 
 
-class WhitespaceToken(TokenMixin):
-    pass
-
-
-class SpecialToken(TokenEnum):
-    ampersand_token = '&'
-    underscore_token = '_'
-    caret_token = '^'
+class MiscToken(TokenEnum):
+    line_break = '\n'
+    tab = '\t'
+    space = ' '
+    ampersand = '&'
+    underscore = '_'
+    caret = '^'
     opening_brace = '{'
     closing_brace = '}'
     opening_bracket = '['
     closing_bracket = ']'
 
 
-LaTeXToken = WordToken | EscapedWordToken | WhitespaceToken | SpecialToken
+LaTeXToken = WordToken | EscapedWordToken | MiscToken
