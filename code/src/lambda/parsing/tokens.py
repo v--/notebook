@@ -1,5 +1,5 @@
-from ..support.parsing.tokens import TokenEnum
-from ..support.parsing.identifiers import LatinIdentifier
+from ...support.parsing.tokens import TokenEnum
+from ...support.parsing.identifiers import LatinIdentifier
 
 
 class MiscToken(TokenEnum):

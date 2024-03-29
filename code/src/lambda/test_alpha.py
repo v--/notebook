@@ -1,5 +1,5 @@
 from .alpha import are_terms_alpha_equivalent, disunify_free_bound_variables
-from .parser import parse_term
+from .parsing.parser import parse_term
 from .variables import get_bound_variables, get_free_variables
 
 

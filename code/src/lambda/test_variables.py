@@ -1,5 +1,5 @@
 from .variables import get_free_variables
-from .parser import parse_term
+from .parsing.parser import parse_term
 
 
 def test_get_free_variables():

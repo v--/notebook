@@ -1,9 +1,8 @@
 import pytest
 
-from ..support.parsing.parser import ParserError
-
-from .terms import Variable, FunctionTerm
-from .formulas import EqualityFormula
+from ...support.parsing.parser import ParserError
+from ..formulas import EqualityFormula
+from ..terms import Variable, FunctionTerm
 from .parser import parse_term, parse_formula
 
 
@@ -16,7 +15,7 @@ def test_parsing_variables_valid():
 def test_parsing_variables_invalid():
     # Disallow leading zeros
     with pytest.raises(ParserError):
-        parse_term('ξ0')
+        parse_term('ξ₀₁')
 
     # Allow only Greek letters for names
     assert not isinstance(parse_term('a'), Variable)
@@ -32,7 +31,7 @@ def test_parsing_variables_invalid():
 
 def test_parsing_functions_valid():
     assert parse_term('f') == FunctionTerm('f', [])
-    assert parse_term('f₁₃') == FunctionTerm('f₁₃', [])
+    assert parse_term('f₁₂') == FunctionTerm('f₁₂', [])
     assert parse_term('f(ξ)') == FunctionTerm('f', [Variable('ξ')])
     assert parse_term('f(ξ, η, ζ)') == FunctionTerm('f', [Variable('ξ'), Variable('η'), Variable('ζ')])
     assert parse_term('f(ξ,η,  ζ)') == FunctionTerm('f', [Variable('ξ'), Variable('η'), Variable('ζ')])
@@ -41,7 +40,7 @@ def test_parsing_functions_valid():
 def test_parsing_functions_invalid():
     # Disallow leading zeros
     with pytest.raises(ParserError):
-        parse_term('f₀₁')
+        parse_term('f₀₀')
 
     # Only allow the letters from a to z and from α to ω
     with pytest.raises(ParserError):
@@ -132,5 +131,5 @@ def test_reparsing_formulas():
 
     is_formula_rebuilt('∀η.∃ζ.(¬p(ζ) ∧ ∀ξ.(q(ζ, ξ) → ¬r(η, ξ)))')
     is_formula_rebuilt('∀η.∃ζ.(¬p(ζ) ∧ ∀ξ.(q(ζ, ξ) → ¬r(η, ξ)))')
-    is_formula_rebuilt('∀η₁.(∀ζ.(¬r(ζ) → ¬q(η₁, ζ)) → p(η₁))')
+    is_formula_rebuilt('∀η₀.(∀ζ.(¬r(ζ) → ¬q(η₀, ζ)) → p(η₀))')
     is_formula_rebuilt('((∃ξ.p(ξ) ∧ ∃η.q(η)) ∨ (∃ξ.p(ξ) ∧ ∃η.q(η)))')

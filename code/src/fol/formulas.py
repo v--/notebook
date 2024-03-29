@@ -1,6 +1,6 @@
 from typing import TypeGuard, NamedTuple
 
-from .tokens import BinaryConnective, Quantifier, PropConstant
+from .alphabet import BinaryConnective, Quantifier, PropConstant
 from .terms import Variable, Term
 
 

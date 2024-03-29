@@ -3,7 +3,7 @@ from typing import Sequence
 import inspect
 import itertools
 
-from .tokens import BinaryConnective, PropConstant
+from .alphabet import BinaryConnective, PropConstant
 from .formulas import Formula, ConstantFormula, PredicateFormula, NegationFormula, ConnectiveFormula, QuantifierFormula, is_atomic, is_conjunction, is_disjunction
 from .visitors import FormulaVisitor, FormulaTransformationVisitor
 from .pnf import remove_conditionals, push_negations, is_formula_quantifierless

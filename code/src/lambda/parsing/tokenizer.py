@@ -1,6 +1,5 @@
-from ..support.parsing.identifiers import Capitalization, LatinIdentifier
-from ..support.parsing.tokenizer import BaseTokenizer
-
+from ...support.parsing.identifiers import Capitalization, LatinIdentifier
+from ...support.parsing.tokenizer import BaseTokenizer
 from .tokens import LambdaToken, MiscToken
 
 

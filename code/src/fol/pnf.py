@@ -1,6 +1,6 @@
 from ..exceptions import NotebookCodeError
 
-from .tokens import BinaryConnective, Quantifier
+from .alphabet import BinaryConnective, Quantifier
 from .formulas import Formula, NegationFormula, ConnectiveFormula, QuantifierFormula
 from .visitors import FormulaVisitor, FormulaTransformationVisitor
 from .substitution import substitute_in_formula

@@ -1,11 +1,10 @@
-from ..support.parsing.parser import Parser
-from ..support.parsing.identifiers import LatinIdentifier, GreekIdentifier
-
+from ...fol.alphabet import PropConstant, BinaryConnective, Quantifier
+from ...fol.terms import Variable
+from ...support.parsing.identifiers import LatinIdentifier, GreekIdentifier
+from ...support.parsing.parser import Parser
+from ..rules import AtomicFormulaPlaceholder, ConstantFormulaPlaceholder, NegationFormulaPlaceholder, ConnectiveFormulaPlaceholder, QuantifierFormulaPlaceholder, FormulaPlaceholder, Premise, Rule
 from .tokens import RuleToken, MiscToken
-from .rules import AtomicFormulaPlaceholder, ConstantFormulaPlaceholder, NegationFormulaPlaceholder, ConnectiveFormulaPlaceholder, QuantifierFormulaPlaceholder, FormulaPlaceholder, Premise, Rule
 from .tokenizer import NaturalDeductionTokenizer
-from ..fol.terms import Variable
-from ..fol.tokens import PropConstant, BinaryConnective, Quantifier
 
 
 class NaturalDeductionParser(Parser[RuleToken]):

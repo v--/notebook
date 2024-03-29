@@ -1,8 +1,7 @@
 import pytest
 
-from ..support.parsing.parser import ParserError
-
-from .terms import Variable
+from ...support.parsing.parser import ParserError
+from ..terms import Variable
 from .parser import parse_term
 
 
@@ -19,7 +18,7 @@ def test_parsing_variables_invalid():
 
     # Disallow leading zeros
     with pytest.raises(ParserError):
-        parse_term('x0')
+        parse_term('x₀₁')
 
     # And no trailing characters
     with pytest.raises(ParserError):

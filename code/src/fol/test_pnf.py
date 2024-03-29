@@ -1,7 +1,7 @@
 import pytest
 
 from ..exceptions import NotebookCodeError
-from .parser import parse_formula
+from .parsing.parser import parse_formula
 from .pnf import is_formula_quantifierless, is_formula_in_pnf, remove_conditionals, push_negations, move_quantifiers, to_pnf
 
 

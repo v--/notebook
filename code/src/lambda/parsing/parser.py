@@ -1,9 +1,8 @@
-from ..support.parsing.parser import Parser
-from ..support.parsing.identifiers import LatinIdentifier
-
-from .tokens import LambdaToken, MiscToken
-from .terms import Variable, Application, Abstraction
+from ...support.parsing.identifiers import LatinIdentifier
+from ...support.parsing.parser import Parser
+from ..terms import Variable, Application, Abstraction
 from .tokenizer import LambdaTokenizer
+from .tokens import LambdaToken, MiscToken
 
 
 class LambdaParser(Parser[LambdaToken]):

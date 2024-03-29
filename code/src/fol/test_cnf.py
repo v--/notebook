@@ -1,6 +1,6 @@
 from collections.abc import Callable
 
-from .parser import parse_formula
+from .parsing.parser import parse_formula
 from .cnf import is_formula_in_cnf, pull_conjunction, to_cnf, function_to_cnf
 
 

@@ -1,6 +1,6 @@
 from typing import NamedTuple
 
-from ..fol.tokens import BinaryConnective, PropConstant, Quantifier
+from ..fol.alphabet import BinaryConnective, PropConstant, Quantifier
 from ..fol.terms import Variable
 
 
