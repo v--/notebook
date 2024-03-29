@@ -1,4 +1,4 @@
-from ..parsing.tokens import TokenEnum, TokenMixin
+from ...parsing.tokens import TokenEnum, TokenMixin
 
 
 class WordToken(TokenMixin):

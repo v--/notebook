@@ -2,7 +2,7 @@ from typing import TypeVar, Generic, cast
 from dataclasses import dataclass, field
 
 from .nodes import BracketGroup, LaTeXNode, Command, Environment, Group, Whitespace, BracelessGroup, SpecialNode
-from .parser import parse_latex
+from .parsing.parser import parse_latex
 
 
 T = TypeVar('T')

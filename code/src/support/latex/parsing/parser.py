@@ -1,12 +1,12 @@
-from typing import Iterator, Sequence, cast
+from typing import Iterator, cast
 
-from ..parsing.parser import Parser
+from ...parsing.parser import Parser
+from ..nodes import Command, BracelessGroup, BraceGroup, BracketGroup, LaTeXNode, Word, Whitespace, Group, Environment, SpecialNode
 from .tokenizer import tokenize_latex
 from .tokens import LaTeXToken, WordToken, EscapedWordToken, WhitespaceToken, SpecialToken
-from .nodes import Command, BracelessGroup, BraceGroup, BracketGroup, LaTeXNode, Word, Whitespace, Group, Environment, SpecialNode
 
 
-class LaTeXParser(Parser[Sequence[LaTeXToken]]):
+class LaTeXParser(Parser[LaTeXToken]):
     def match_brace(self, cls: type[Group], opening: LaTeXToken, closing: LaTeXToken):
         assert self.peek() == opening
         start_index = self.index
@@ -116,5 +116,9 @@ class LaTeXParser(Parser[Sequence[LaTeXToken]]):
         return BracelessGroup(contents=result)
 
 
-def parse_latex(string: str):
-    return LaTeXParser(tokenize_latex(string)).parse()
+def parse_latex(string: str) -> BracelessGroup:
+    tokens = tokenize_latex(string)
+    parser = LaTeXParser(tokens)
+    group = parser.parse()
+    parser.assert_exhausted()
+    return group
