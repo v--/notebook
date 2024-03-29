@@ -38,7 +38,11 @@ class Parser(Generic[T]):
     def parse(self):
         raise NotImplementedError()
 
-    # May God fogive me for this function
+    def assert_exhausted(self):
+        if not self.is_at_end():
+            raise self.error('Finished parsing but there is still input left')
+
+    # May God forgive me for this function
     def _iter_error_message(self, message: str, precede: int, succeed: int):
         yield message
         yield '\n'

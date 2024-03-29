@@ -36,8 +36,8 @@ def test_substitute_in_formula():
 
     # (Avoiding) capturing free variables
     assert t('∀ξ.p(η)', 'η', 'ζ') == '∀ξ.p(ζ)'
-    assert t('∀ξ.p(η)', 'η', 'ξ') == '∀ξ1.p(ξ)'
-    assert t('∀ξ.p(ξ, η)', 'η', 'ξ') == '∀ξ1.p(ξ1, ξ)'
+    assert t('∀ξ.p(η)', 'η', 'ξ') == '∀ξ₀.p(ξ)'
+    assert t('∀ξ.p(ξ, η)', 'η', 'ξ') == '∀ξ₀.p(ξ₀, ξ)'
 
     # (Avoiding) colliding variables
-    assert t('∀ξ.p(η)', 'η', 'ξ') == '∀ξ1.p(ξ)'
+    assert t('∀ξ.p(η)', 'η', 'ξ') == '∀ξ₀.p(ξ)'

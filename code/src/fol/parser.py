@@ -1,58 +1,12 @@
 from typing import Iterable
 
-from ..support.parsing.parser import Parser, ParserError
+from ..support.parsing.parser import Parser
+from ..support.parsing.identifiers import LatinIdentifier, GreekIdentifier
 
-from .tokens import BinaryConnective, FOLToken, GreekName, LatinName, MiscToken, NaturalNumber, PropConstant, Quantifier
-
+from .tokens import BinaryConnective, FOLToken, MiscToken, PropConstant, Quantifier
 from .terms import Variable, FunctionTerm, Term
 from .formulas import ConstantFormula, ConnectiveFormula, EqualityFormula, NegationFormula, PredicateFormula, QuantifierFormula, Formula
-
-
-class IncompleteMatchError(ParserError):
-    pass
-
-
-class FOLTokenizer(Parser[str]):
-    def take_while_in_range(self, start: str, end: str):
-        buffer: list[str] = []
-
-        while not self.is_at_end() and start <= self.peek() <= end:
-            buffer.append(self.peek())
-            self.advance()
-
-        assert len(buffer) > 0
-        return ''.join(buffer)
-
-    def parse(self) -> Iterable[FOLToken]:
-        while not self.is_at_end():
-            yield self.parse_step(self.peek())
-
-    def parse_step(self, head: str):
-        sym = PropConstant.try_match(head) or \
-            BinaryConnective.try_match(head) or \
-            Quantifier.try_match(head) or \
-            MiscToken.try_match(head)
-
-        if sym is not None:
-            self.advance()
-            return sym
-
-        if head == '0':
-            raise self.error('Natural numbers cannot start with zero')
-
-        elif head.isdigit():
-            return NaturalNumber(self.take_while_in_range('0', '9'))
-
-        elif 'a' <= head <= 'z':
-            return LatinName(self.take_while_in_range('a', 'z'))
-
-        elif 'α' <= head <= 'ω':
-            return GreekName(self.take_while_in_range('α', 'ω'))
-
-        elif head == ' ':
-            self.advance()
-        else:
-            raise self.error('Unexpected symbol')
+from .tokenizer import FOLTokenizer
 
 
 class FOLParser(Parser[FOLToken]):
@@ -62,18 +16,13 @@ class FOLParser(Parser[FOLToken]):
 
         return super().peek()
 
-    def parse_variable(self):
-        assert isinstance(self.peek(), GreekName)
-        name = self.peek().value
+    def parse_variable(self) -> Variable:
+        head = self.peek()
+        assert isinstance(head, GreekIdentifier)
         self.advance()
+        return Variable(head.value)
 
-        if not self.is_at_end() and isinstance(self.peek(), NaturalNumber):
-            name += self.peek().value
-            self.advance()
-
-        return Variable(name)
-
-    def parse_args(self):
+    def parse_args(self) -> Iterable[Term]:
         assert self.peek() == MiscToken.left_parenthesis
         self.advance()
 
@@ -91,93 +40,87 @@ class FOLParser(Parser[FOLToken]):
         if self.peek() == MiscToken.right_parenthesis:
             self.advance()
 
-    def parse_function(self):
-        assert isinstance(self.peek(), LatinName)
+    def parse_function(self) -> FunctionTerm:
+        assert isinstance(self.peek(), LatinIdentifier)
         name = self.peek().value
         self.advance()
-
-        if self.is_at_end():
-            return FunctionTerm(name, [])
-
-        if isinstance(self.peek(), NaturalNumber):
-            name += self.peek().value
-            self.advance()
 
         if not self.is_at_end() and self.peek() == MiscToken.left_parenthesis:
             return FunctionTerm(name, list(self.parse_args()))
 
         return FunctionTerm(name, [])
 
-    def parse_term(self):
+    def parse_term(self) -> Term:
         match self.peek():
-            case GreekName():
+            case GreekIdentifier():
                 return self.parse_variable()
 
-            case LatinName():
+            case LatinIdentifier():
                 return self.parse_function()
 
             case _:
                 raise self.error('Unexpected token')
 
-    def parse_constant_formula(self):
-        value = PropConstant.try_match(self.peek())
-        assert value is not None
+    def parse_constant_formula(self) -> ConstantFormula:
+        head = self.peek()
+        assert isinstance(head, PropConstant)
         self.advance()
-        return ConstantFormula(value)
+        return ConstantFormula(head)
 
-    def parse_binary_formula(self):
+    def parse_binary_formula(self) -> EqualityFormula | ConnectiveFormula:
         assert self.peek() == MiscToken.left_parenthesis
         self.advance()
-        a_start = self.index
 
-        if isinstance(self.peek(), (GreekName, LatinName)):
+        a_start = self.index
+        a_term: Term | None = None
+        a_form: Formula | None = None
+
+        if isinstance(self.peek(), (GreekIdentifier, LatinIdentifier)):
             # We later correct it to a predicate formula if necessary
-            a = self.parse_term()
+            a_term = self.parse_term()
         else:
-            a = self.parse_formula()
+            a_form = self.parse_formula()
 
         if self.peek() == MiscToken.equality:
-            if isinstance(a, Term):  # type: ignore
-                self.advance()
-                b = self.parse_term()
-
-                if self.peek() == MiscToken.right_parenthesis:
-                    self.advance()
-                    return EqualityFormula(a, b)
-                else:
-                    raise self.error('Unclosed parentheses for binary formula', precede=self.index - a_start)
-            else:
+            if a_term is None:
                 raise self.error('The left side of an equality formula must be a term', precede=self.index - a_start)
 
-        elif BinaryConnective.try_match(self.peek()):
-            connective = self.peek()
+            self.advance()
+            b_term = self.parse_term()
 
-            if isinstance(a, FunctionTerm):
-                a = PredicateFormula(a.name, a.arguments)
-
-            if isinstance(a, Formula):  # type: ignore
+            if self.peek() == MiscToken.right_parenthesis:
                 self.advance()
-                b = self.parse_formula()
-
-                if self.peek() == MiscToken.right_parenthesis:
-                    self.advance()
-                    return ConnectiveFormula(connective, a, b)
-                else:
-                    raise self.error('Unclosed parentheses for binary formula', precede=self.index - a_start)
+                return EqualityFormula(a_term, b_term)
             else:
+                raise self.error('Unclosed parentheses for binary formula', precede=self.index - a_start)
+
+        elif isinstance(connective := self.peek(), BinaryConnective):
+            if isinstance(a_term, FunctionTerm):
+                a_form = PredicateFormula(a_term.name, a_term.arguments)
+
+            if a_form is None:
                 raise self.error('The left side of a connective formula must be a formula', precede=self.index - a_start)
+
+            self.advance()
+            b_form = self.parse_formula()
+
+            if self.peek() == MiscToken.right_parenthesis:
+                self.advance()
+                return ConnectiveFormula(connective, a_form, b_form)  # type: ignore
+            else:
+                raise self.error('Unclosed parentheses for binary formula', precede=self.index - a_start)
 
         else:
             raise self.error('Unexpected token')
 
-    def parse_negation_formula(self):
+    def parse_negation_formula(self) -> NegationFormula:
         assert self.peek() == MiscToken.negation
         self.advance()
         return NegationFormula(self.parse_formula())
 
-    def parse_quantifier_formula(self):
-        assert Quantifier.try_match(self.peek())
+    def parse_quantifier_formula(self) -> QuantifierFormula:
         q = self.peek()
+        assert isinstance(q, Quantifier)
         self.advance()
         var = self.parse_variable()
 
@@ -188,29 +131,22 @@ class FOLParser(Parser[FOLToken]):
 
         return QuantifierFormula(q, var, self.parse_formula())
 
-    def parse_predicate(self):
-        assert isinstance(self.peek(), LatinName)
+    def parse_predicate(self) -> PredicateFormula:
+        assert isinstance(self.peek(), LatinIdentifier)
         name = self.peek().value
         self.advance()
-
-        if self.is_at_end():
-            return PredicateFormula(name, [])
-
-        if isinstance(self.peek(), NaturalNumber):
-            name += self.peek().value
-            self.advance()
 
         if not self.is_at_end() and self.peek() == MiscToken.left_parenthesis:
             return PredicateFormula(name, list(self.parse_args()))
 
         return PredicateFormula(name, [])
 
-    def parse_formula(self):
+    def parse_formula(self) -> Formula:
         match self.peek():
-            case _ if PropConstant.try_match(self.peek()):
+            case PropConstant():
                 return self.parse_constant_formula()
 
-            case _ if Quantifier.try_match(self.peek()):
+            case Quantifier():
                 return self.parse_quantifier_formula()
 
             case MiscToken.left_parenthesis:
@@ -219,7 +155,7 @@ class FOLParser(Parser[FOLToken]):
             case MiscToken.negation:
                 return self.parse_negation_formula()
 
-            case LatinName():
+            case LatinIdentifier():
                 return self.parse_predicate()
 
             case _:
@@ -232,10 +168,7 @@ def parse_term(string: str):
     tokens = list(FOLTokenizer(string).parse())
     parser = FOLParser(tokens)
     term = parser.parse_term()
-
-    if not parser.is_at_end():
-        raise IncompleteMatchError(f'Did not match {repr(string)} in its entirety')
-
+    parser.assert_exhausted()
     return term
 
 
@@ -243,8 +176,5 @@ def parse_formula(string: str):
     tokens = list(FOLTokenizer(string).parse())
     parser = FOLParser(tokens)
     formula = parser.parse_formula()
-
-    if not parser.is_at_end():
-        raise IncompleteMatchError(f'Did not match {repr(string)} in its entirety')
-
+    parser.assert_exhausted()
     return formula

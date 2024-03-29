@@ -9,7 +9,7 @@ from .parser import parse_term
 def test_parsing_variables_valid():
     assert parse_term('x') == Variable('x')
     assert parse_term('y') == Variable('y')
-    assert parse_term('z12') == Variable('z12')
+    assert parse_term('z₁₂') == Variable('z₁₂')
 
 
 def test_parsing_variables_invalid():
@@ -32,7 +32,7 @@ def test_parsing_terms_valid():
 
     is_term_rebuilt('x')
     is_term_rebuilt('(xy)')
-    is_term_rebuilt('(x1y2)')
+    is_term_rebuilt('(x₁y₂)')
     is_term_rebuilt('(λx.x)') # I combinator
     is_term_rebuilt('(λx.y)')
 

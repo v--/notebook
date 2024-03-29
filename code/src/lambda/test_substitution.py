@@ -19,4 +19,4 @@ def test_substitute_in_term():
     assert t('(λx.(yz))', 'x', 'y') == '(λx.(yz))'
     assert t('(λy.(λx.(yz)))', 'x', 'y') == '(λy.(λx.(yz)))'
     assert t('(λx.(yz))', 'y', 'z') == '(λx.(zz))'
-    assert t('(λx.(yz))', 'y', 'x') == '(λx1.(xz))'
+    assert t('(λx.(yz))', 'y', 'x') == '(λx₀.(xz))'

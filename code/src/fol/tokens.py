@@ -1,16 +1,5 @@
-from ..support.parsing.tokens import TokenMixin, TokenEnum
-
-
-class NaturalNumber(TokenMixin):
-    pass
-
-
-class LatinName(TokenMixin):
-    pass
-
-
-class GreekName(TokenMixin):
-    pass
+from ..support.parsing.tokens import TokenEnum
+from ..support.parsing.identifiers import LatinIdentifier, GreekIdentifier
 
 
 class PropConstant(TokenEnum):
@@ -41,4 +30,4 @@ class MiscToken(TokenEnum):
     negation = '¬'
 
 
-FOLToken = NaturalNumber | LatinName | GreekName | PropConstant | BinaryConnective | Quantifier | MiscToken
+FOLToken = LatinIdentifier | GreekIdentifier | PropConstant | BinaryConnective | Quantifier | MiscToken

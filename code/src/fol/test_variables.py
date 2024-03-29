@@ -7,7 +7,7 @@ def test_get_free_variables():
         return set(map(str, get_free_variables(parse_formula(string))))
 
     assert t('(ξ = η)') == {'ξ', 'η'}
-    assert t('(ξ1 = η2)') == {'ξ1', 'η2'}
+    assert t('(ξ₁ = η₂)') == {'ξ₁', 'η₂'}
     assert t('p(ξ, η)') == {'ξ', 'η'}
     assert t('∀η.p(ξ)') == {'ξ'}
     assert t('∀ξ.p(ξ)') == set()

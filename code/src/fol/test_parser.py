@@ -10,7 +10,7 @@ from .parser import parse_term, parse_formula
 def test_parsing_variables_valid():
     assert parse_term('ξ') == Variable('ξ')
     assert parse_term('η') == Variable('η')
-    assert parse_term('η12') == Variable('η12')
+    assert parse_term('η₁₂') == Variable('η₁₂')
 
 
 def test_parsing_variables_invalid():
@@ -32,7 +32,7 @@ def test_parsing_variables_invalid():
 
 def test_parsing_functions_valid():
     assert parse_term('f') == FunctionTerm('f', [])
-    assert parse_term('f13') == FunctionTerm('f13', [])
+    assert parse_term('f₁₃') == FunctionTerm('f₁₃', [])
     assert parse_term('f(ξ)') == FunctionTerm('f', [Variable('ξ')])
     assert parse_term('f(ξ, η, ζ)') == FunctionTerm('f', [Variable('ξ'), Variable('η'), Variable('ζ')])
     assert parse_term('f(ξ,η,  ζ)') == FunctionTerm('f', [Variable('ξ'), Variable('η'), Variable('ζ')])
@@ -41,7 +41,7 @@ def test_parsing_functions_valid():
 def test_parsing_functions_invalid():
     # Disallow leading zeros
     with pytest.raises(ParserError):
-        parse_term('f0')
+        parse_term('f₀₁')
 
     # Only allow the letters from a to z and from α to ω
     with pytest.raises(ParserError):
@@ -132,5 +132,5 @@ def test_reparsing_formulas():
 
     is_formula_rebuilt('∀η.∃ζ.(¬p(ζ) ∧ ∀ξ.(q(ζ, ξ) → ¬r(η, ξ)))')
     is_formula_rebuilt('∀η.∃ζ.(¬p(ζ) ∧ ∀ξ.(q(ζ, ξ) → ¬r(η, ξ)))')
-    is_formula_rebuilt('∀η1.(∀ζ.(¬r(ζ) → ¬q(η1, ζ)) → p(η1))')
+    is_formula_rebuilt('∀η₁.(∀ζ.(¬r(ζ) → ¬q(η₁, ζ)) → p(η₁))')
     is_formula_rebuilt('((∃ξ.p(ξ) ∧ ∃η.q(η)) ∨ (∃ξ.p(ξ) ∧ ∃η.q(η)))')

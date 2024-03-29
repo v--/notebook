@@ -1,64 +1,11 @@
-from typing import Iterable
+from ..support.parsing.parser import Parser
+from ..support.parsing.identifiers import LatinIdentifier, GreekIdentifier
 
-from ..support.parsing.parser import Parser, ParserError
-
-from .tokens import RuleToken, MiscToken, LatinName, GreekName, NaturalNumber
+from .tokens import RuleToken, MiscToken
 from .rules import AtomicFormulaPlaceholder, ConstantFormulaPlaceholder, NegationFormulaPlaceholder, ConnectiveFormulaPlaceholder, QuantifierFormulaPlaceholder, FormulaPlaceholder, Premise, Rule
+from .tokenizer import NaturalDeductionTokenizer
 from ..fol.terms import Variable
 from ..fol.tokens import PropConstant, BinaryConnective, Quantifier
-
-
-class IncompleteMatchError(ParserError):
-    pass
-
-
-class NaturalDeductionTokenizer(Parser[str]):
-    def take_while_in_range(self, start: str, end: str):
-        buffer: list[str] = []
-
-        while not self.is_at_end() and start <= self.peek() <= end:
-            buffer.append(self.peek())
-            self.advance()
-
-        assert len(buffer) > 0
-        return ''.join(buffer)
-
-    def parse(self) -> Iterable[RuleToken]:
-        while not self.is_at_end():
-            yield self.parse_step(self.peek())
-
-    def parse_step(self, head: str):
-        sym = PropConstant.try_match(head) or \
-            BinaryConnective.try_match(head) or \
-            Quantifier.try_match(head) or \
-            MiscToken.try_match(head)
-
-        if sym is not None:
-            self.advance()
-            return sym
-
-        if head == '₀':
-            raise self.error('Natural numbers cannot start with zero')
-
-        elif head.isdigit():
-            return NaturalNumber(self.take_while_in_range('₀', '₉'))
-
-        elif 'A' <= head <= 'Z':
-            return LatinName(self.take_while_in_range('A', 'Z'))
-
-        elif 'a' <= head <= 'z':
-            return LatinName(self.take_while_in_range('a', 'z'))
-
-        elif 'Α' <= head <= 'Ω':
-            return GreekName(self.take_while_in_range('Α', 'Ω'))
-
-        elif 'α' <= head <= 'ω':
-            return GreekName(self.take_while_in_range('α', 'ω'))
-
-        elif head == ' ':
-            self.advance()
-        else:
-            raise self.error('Unexpected symbol')
 
 
 class NaturalDeductionParser(Parser[RuleToken]):
@@ -69,46 +16,35 @@ class NaturalDeductionParser(Parser[RuleToken]):
         return super().peek()
 
     def parse_variable(self):
-        assert isinstance(self.peek(), GreekName)
-        name = self.peek().value
+        head = self.peek()
+        assert isinstance(head, GreekIdentifier)
         self.advance()
-
-        if not self.is_at_end() and isinstance(self.peek(), NaturalNumber):
-            name += self.peek().value
-            self.advance()
-
-        return Variable(name)
+        return Variable(head.value)
 
     def parse_atomic(self):
-        assert isinstance(self.peek(), GreekName)
-        name = self.peek().value
+        head = self.peek()
+        assert isinstance(head, GreekIdentifier)
         self.advance()
-
-        if not self.is_at_end() and isinstance(self.peek(), NaturalNumber):
-            name += self.peek().value
-            self.advance()
-
-        return AtomicFormulaPlaceholder(name)
+        return AtomicFormulaPlaceholder(head.value)
 
     def parse_constant_formula(self):
-        value = PropConstant.try_match(self.peek())
-        assert value is not None
+        head = self.peek()
+        assert isinstance(head, PropConstant)
         self.advance()
-        return ConstantFormulaPlaceholder(value)
+        return ConstantFormulaPlaceholder(head)
 
     def parse_binary_placeholder(self):
         assert self.peek() == MiscToken.left_parenthesis
         self.advance()
         a_start = self.index
 
-        if isinstance(self.peek(), GreekName):
+        if isinstance(self.peek(), GreekIdentifier):
             a = self.parse_placeholder()
         else:
             raise self.error('Expected a formula placeholder', precede=self.index - a_start)
 
-        if BinaryConnective.try_match(self.peek()):
-            connective = self.peek()
-
+        if isinstance(connective := self.peek(), BinaryConnective):
+            # See https://github.com/python/mypy/issues/16707
             if isinstance(a, FormulaPlaceholder):  # type: ignore
                 self.advance()
                 b = self.parse_placeholder()
@@ -130,8 +66,8 @@ class NaturalDeductionParser(Parser[RuleToken]):
         return NegationFormulaPlaceholder(self.parse_placeholder())
 
     def parse_quantifier_placeholder(self):
-        assert Quantifier.try_match(self.peek())
         q = self.peek()
+        assert isinstance(q, Quantifier)
         self.advance()
         var = self.parse_variable()
 
@@ -144,10 +80,10 @@ class NaturalDeductionParser(Parser[RuleToken]):
 
     def parse_placeholder(self):
         match self.peek():
-            case _ if PropConstant.try_match(self.peek()):
+            case PropConstant():
                 return self.parse_constant_formula()
 
-            case _ if Quantifier.try_match(self.peek()):
+            case Quantifier():
                 return self.parse_quantifier_placeholder()
 
             case MiscToken.left_parenthesis:
@@ -156,7 +92,7 @@ class NaturalDeductionParser(Parser[RuleToken]):
             case MiscToken.negation:
                 return self.parse_negation_placeholder()
 
-            case GreekName():
+            case GreekIdentifier():
                 return self.parse_atomic()
 
             case _:
@@ -184,8 +120,8 @@ class NaturalDeductionParser(Parser[RuleToken]):
         else:
             raise self.error('A rule must start with an opening parenthesis')
 
-        if isinstance(self.peek(), LatinName):
-            name = self.peek()
+        if isinstance(head := self.peek(), LatinIdentifier):
+            name = head.value
             self.advance()
         else:
             raise self.error('The name of a rule must be a Latin identifier')
@@ -221,9 +157,6 @@ class NaturalDeductionParser(Parser[RuleToken]):
 def parse_rule(string: str):
     tokens = list(NaturalDeductionTokenizer(string).parse())
     parser = NaturalDeductionParser(tokens)
-    formula = parser.parse_rule()
-
-    if not parser.is_at_end():
-        raise IncompleteMatchError(f'Did not match {repr(string)} in its entirety')
-
-    return formula
+    rule = parser.parse_rule()
+    parser.assert_exhausted()
+    return rule

@@ -3,13 +3,13 @@ from typing import Protocol
 
 
 class AbstractToken(Protocol):
-    def __str__(self):
+    def __str__(self) -> str:
         ...
 
-    def __hash__(self):
+    def __hash__(self) -> int:
         ...
 
-    def __eq__(self, other: object):
+    def __eq__(self, other: object) -> bool:
         ...
 
 

@@ -1,16 +1,6 @@
-from ..support.parsing.tokens import TokenMixin, TokenEnum
-
-
-class NaturalNumber(TokenMixin):
-    pass
-
-
-class LatinName(TokenMixin):
-    pass
-
-
-class GreekName(TokenMixin):
-    pass
+from ..support.parsing.tokens import TokenEnum
+from ..support.parsing.identifiers import LatinIdentifier, GreekIdentifier
+from ..fol.tokens import PropConstant, BinaryConnective, Quantifier
 
 
 class MiscToken(TokenEnum):
@@ -26,5 +16,5 @@ class MiscToken(TokenEnum):
     negation = '¬'
 
 
-ContextToken = LatinName | GreekName | NaturalNumber
-RuleToken = LatinName | GreekName | NaturalNumber | MiscToken | ContextToken
+ContextToken = LatinIdentifier | GreekIdentifier
+RuleToken = LatinIdentifier | GreekIdentifier | PropConstant | BinaryConnective | Quantifier | MiscToken | ContextToken

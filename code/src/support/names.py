@@ -1,20 +1,21 @@
 import re
+from .subscripts import atoi_subscripts, itoa_subscripts
 
 
 def new_var_name(prefix: str, context: set[str]):
     if prefix not in context:
         return prefix
 
-    match = re.match(r'(\D+)([1-9]\d*)', prefix)
+    match = re.match(r'(?P<symbols>^[^₀-₉]*)(?P<digits>₀|[₁-₉][₀-₉]*)$', prefix)
 
     if match is None:
         letters = prefix
-        n = 1
+        n = 0
     else:
-        letters, digits = match.groups()
-        n = int(digits) + 1
+        letters = match['symbols']
+        n = atoi_subscripts(match['digits']) + 1
 
-    while letters + str(n) in context:
+    while letters + itoa_subscripts(n) in context:
         n += 1
 
-    return letters + str(n)
+    return letters + itoa_subscripts(n)

@@ -1,12 +1,5 @@
-from ..support.parsing.tokens import TokenMixin, TokenEnum
-
-
-class LatinLetter(TokenMixin):
-    pass
-
-
-class NaturalNumber(TokenMixin):
-    pass
+from ..support.parsing.tokens import TokenEnum
+from ..support.parsing.identifiers import LatinIdentifier
 
 
 class MiscToken(TokenEnum):
@@ -17,4 +10,4 @@ class MiscToken(TokenEnum):
     space = ' '
 
 
-LambdaToken = LatinLetter | NaturalNumber | MiscToken
+LambdaToken = LatinIdentifier | MiscToken
