@@ -1,10 +1,11 @@
-from .renaming_rules import has_renaming_rules, collapse_renaming_rules
-from .grammar import GrammarSchema, NonTerminal
+from .alphabet import NonTerminal
 from .brute_force_parse import derives
+from .parsing.parser import parse_grammar_schema
+from .renaming_rules import has_renaming_rules, collapse_renaming_rules
 
 
 def test_collapse_renaming_rules_simple():
-    grammar = GrammarSchema.parse('''
+    grammar = parse_grammar_schema('''
         <S> → <A>
         <A> → "a"
     ''').instantiate(NonTerminal('S'))
@@ -23,7 +24,7 @@ def test_collapse_renaming_rules_simple():
 
 
 def test_collapse_renaming_rules_cyclic():
-    grammar = GrammarSchema.parse('''
+    grammar = parse_grammar_schema('''
         <S> → <A>
         <A> → "a" | <S>
     ''').instantiate(NonTerminal('S'))
@@ -34,7 +35,7 @@ def test_collapse_renaming_rules_cyclic():
 
 
 def test_collapse_renaming_rules_complex():
-    grammar = GrammarSchema.parse('''
+    grammar = parse_grammar_schema('''
         <S> → <A> | <C> | <E>
         <A> → <B>
         <B> → "c"

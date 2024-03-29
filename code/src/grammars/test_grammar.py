@@ -1,9 +1,10 @@
-from .grammar import SingletonSymbol, Grammar, GrammarRule, NonTerminal, Terminal
+from .alphabet import NonTerminal, Terminal
+from .grammar import Grammar, GrammarRule
 
 
 def test_an(an: Grammar):
     assert an.schema.rules == [
-        GrammarRule([NonTerminal('S')], [SingletonSymbol.epsilon]),
+        GrammarRule([NonTerminal('S')], []),
         GrammarRule([NonTerminal('S')], [NonTerminal('A')]),
         GrammarRule([NonTerminal('A')], [NonTerminal('A'), Terminal('a')]),
         GrammarRule([NonTerminal('A')], [Terminal('a')]),

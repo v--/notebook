@@ -1,12 +1,11 @@
-from typing import cast
-
 from ..support.names import new_var_name
 
-from .grammar import Grammar, GrammarRule, GrammarSchema, NonTerminal, Terminal, SingletonSymbol
+from .alphabet import NonTerminal, Terminal, empty
+from .grammar import Grammar, GrammarRule, GrammarSchema
 
 
 def is_epsilon_rule(rule: GrammarRule):
-    return len(rule.src) == 1 and rule.dest == [SingletonSymbol.epsilon]
+    return len(rule.src) == 1 and rule.dest == [empty]
 
 
 def is_epsilon_free(grammar: Grammar):
@@ -71,13 +70,13 @@ def remove_epsilon_rules(grammar: Grammar) -> Grammar:
     new_schema = GrammarSchema(rules=[GrammarRule(src=[new_start], dest=[grammar.start])])
 
     if grammar.start in nullable:
-        new_schema.rules.append(GrammarRule(src=[new_start], dest=[SingletonSymbol.epsilon]))
+        new_schema.rules.append(GrammarRule(src=[new_start], dest=[]))
 
     for rule in grammar.schema.rules:
         if is_epsilon_rule(rule):
             continue
 
-        for new_dest in iter_rules_without_nullables(nullable, cast(list[NonTerminal | Terminal], rule.dest)):
+        for new_dest in iter_rules_without_nullables(nullable, rule.dest):
             if len(new_dest) > 0:
                 new_schema.rules.append(GrammarRule(rule.src, new_dest))
 

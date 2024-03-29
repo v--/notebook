@@ -1,4 +1,5 @@
-from .grammar import GrammarRule, NonTerminal, Terminal, SingletonSymbol
+from .alphabet import NonTerminal, Terminal, empty
+from .grammar import GrammarRule
 from .parse_tree import Derivation, DerivationStep, ParseTree, derivation_to_parse_tree, parse_tree_to_derivation
 
 
@@ -68,7 +69,7 @@ def test_derivation_and_parse_tree_branching():
 
 def test_derivation_to_parse_tree_rearrangement():
     rule_s = GrammarRule([NonTerminal('S')], [NonTerminal('A'), NonTerminal('S'), NonTerminal('B')])
-    rule_e = GrammarRule([NonTerminal('S')], [SingletonSymbol.epsilon])
+    rule_e = GrammarRule([NonTerminal('S')], [])
     rule_a = GrammarRule([NonTerminal('A')], [Terminal('a')])
     rule_b = GrammarRule([NonTerminal('B')], [Terminal('b')])
 
@@ -121,7 +122,7 @@ def test_derivation_to_parse_tree_rearrangement():
 
 def test_derivation_and_parse_tree_epsilon():
     rule_a = GrammarRule([NonTerminal('S')], [Terminal('a'), NonTerminal('S'), Terminal('b')])
-    rule_b = GrammarRule([NonTerminal('S')], [SingletonSymbol.epsilon])
+    rule_b = GrammarRule([NonTerminal('S')], [])
     derivation = Derivation(
         start=NonTerminal('S'),
         steps=[
@@ -140,7 +141,7 @@ def test_derivation_and_parse_tree_epsilon():
         NonTerminal('S'),
         children=[
             ParseTree(Terminal('a')),
-            ParseTree(NonTerminal('S'), children=[ParseTree(SingletonSymbol.epsilon)]),
+            ParseTree(NonTerminal('S'), children=[ParseTree(empty)]),
             ParseTree(Terminal('b'))
         ]
     )

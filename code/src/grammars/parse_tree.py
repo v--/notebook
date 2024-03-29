@@ -8,7 +8,8 @@ from rich.tree import Tree
 
 from ..support.rich import rich_to_text
 
-from .grammar import GrammarRule, GrammarSymbol, SingletonSymbol, NonTerminal, Terminal
+from .alphabet import NonTerminal, Terminal, Empty, empty
+from .grammar import GrammarRule
 from .epsilon_rules import is_epsilon_rule
 
 
@@ -31,7 +32,7 @@ class Derivation:
 
 @dataclass
 class ParseTree:
-    payload: GrammarSymbol
+    payload: NonTerminal | Terminal | Empty
     children: list['ParseTree'] = field(default_factory=list)
 
     def is_leaf(self):
@@ -50,7 +51,7 @@ class ParseTree:
         return ''.join(sym.value for sym in self.iter_symbols() if isinstance(sym, Terminal))
 
     def build_rich_tree(self):
-        if self.payload == SingletonSymbol.epsilon:
+        if self.payload == empty:
             tree = Tree('ε')
         else:
             tree = Tree(str(self.payload))
@@ -76,7 +77,7 @@ class RuleVisitor:
         if isinstance(tree.payload, Terminal):
             return tree.payload.value
 
-        # We do nothing on SingletonSymbol.epsilon rules
+        # We do nothing on empty rules
 
     def generic_visit(self, tree: ParseTree, *args: Any):
         pass
@@ -103,7 +104,7 @@ def derivation_to_parse_tree(derivation: Derivation) -> ParseTree:
         subtree = ParseTree(step.rule.src_symbol)
 
         if is_epsilon_rule(step.rule):
-            subtree.children.append(ParseTree(SingletonSymbol.epsilon))
+            subtree.children.append(ParseTree(empty))
         else:
             subtree.children = [ParseTree(sym) for sym in step.rule.dest]
 
@@ -122,16 +123,13 @@ def parse_tree_to_derivation(tree: ParseTree) -> Derivation:
 
     first_rule = GrammarRule(
         [tree.payload],
-        [subtree.payload for subtree in tree.children]
+        [subtree.payload for subtree in tree.children if isinstance(subtree.payload, Terminal | NonTerminal)]
     )
 
     derivation = Derivation(
         tree.payload,
         [
-            DerivationStep(
-                [sym for sym in first_rule.dest if isinstance(sym, (Terminal, NonTerminal))],
-                first_rule
-            )
+            DerivationStep(first_rule.dest, first_rule)
         ]
     )
 
@@ -150,7 +148,10 @@ def parse_tree_to_derivation(tree: ParseTree) -> Derivation:
 
         new_step = DerivationStep(
             new_step_payload,
-            GrammarRule([subtree.payload], [subsubtree.payload for subsubtree in subtree.children])
+            GrammarRule(
+                [subtree.payload],
+                [subsubtree.payload for subsubtree in subtree.children if isinstance(subsubtree.payload, Terminal | NonTerminal)]
+            )
         )
 
         derivation.steps.append(new_step)

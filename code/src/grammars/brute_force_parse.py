@@ -1,7 +1,8 @@
 import itertools
 from typing import Iterator
 
-from .grammar import GrammarSymbol, SingletonSymbol, Grammar, NonTerminal, Terminal
+from .alphabet import NonTerminal, Terminal, empty
+from .grammar import Grammar
 from .context_free import is_context_free
 from .parse_tree import ParseTree
 from .epsilon_rules import is_epsilon_rule
@@ -16,7 +17,7 @@ def iter_partitions(seq: str, m: int) -> Iterator[list[str]]:
                 yield [seq[:i], *part]
 
 
-def generate_trees(sym: GrammarSymbol, string: str, grammar: Grammar, traversed: set[tuple[NonTerminal, str]]) -> Iterator[ParseTree]:
+def generate_trees(sym: NonTerminal | Terminal, string: str, grammar: Grammar, traversed: set[tuple[NonTerminal, str]]) -> Iterator[ParseTree]:
     if isinstance(sym, Terminal) and sym.value == string:
         yield ParseTree(sym)
 
@@ -36,7 +37,7 @@ def parse(grammar: Grammar, string: str, traversed: set[tuple[NonTerminal, str]]
             if len(string) == 0:
                 yield ParseTree(
                     rule.src_symbol,
-                    [ParseTree(SingletonSymbol.epsilon)]
+                    [ParseTree(empty)]
                 )
         else:
             for part in iter_partitions(string, len(rule.dest)):

@@ -1,6 +1,8 @@
 from ..automata.finite import FiniteAutomaton
 
-from .grammar import GrammarSchema, Grammar, NonTerminal
+from .alphabet import NonTerminal
+from .grammar import Grammar
+from .parsing.parser import parse_grammar_schema
 from .regular import is_regular, is_right_linear, to_finite_automaton, from_finite_automaton
 
 from .conftest import assert_an
@@ -28,7 +30,7 @@ def test_from_finite_automaton_an():
 
 
 def test_to_finite_automaton_complex():
-    grammar = GrammarSchema.parse('''
+    grammar = parse_grammar_schema('''
         <S> → "a" "b" "c" <D>
         <D> → "d" <E> | ε
         <E> → "e" "f" <E> | ε

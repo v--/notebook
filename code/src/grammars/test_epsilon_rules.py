@@ -1,13 +1,14 @@
-from .grammar import GrammarSchema, NonTerminal
-from .epsilon_rules import remove_epsilon_rules, is_epsilon_free, is_essentially_epsilon_free
+from .alphabet import NonTerminal
 from .brute_force_parse import derives
+from .epsilon_rules import remove_epsilon_rules, is_epsilon_free, is_essentially_epsilon_free
+from .parsing.parser import parse_grammar_schema
 
 from .conftest import assert_an, assert_binary
 
 
 # See ex:alg:epsilon_rule_removal/an in the text
 def test_remove_epsilon_rules_simple():
-    grammar = GrammarSchema.parse('''
+    grammar = parse_grammar_schema('''
         <S> → ε | "a" <S>
     ''').instantiate(NonTerminal('S'))
 
@@ -22,7 +23,7 @@ def test_remove_epsilon_rules_simple():
 
 # See ex:alg:epsilon_rule_removal/dead in the text
 def test_remove_epsilon_rules_terminal_rule():
-    grammar = GrammarSchema.parse('''
+    grammar = parse_grammar_schema('''
         <S> → <A> <B>
         <A> → ε | "a"
         <B> → ε
@@ -46,7 +47,7 @@ def test_remove_epsilon_rules_terminal_rule():
 
 # See ex:alg:epsilon_rule_removal/natural in the text
 def test_remove_epsilon_rules_natural():
-    grammar = GrammarSchema.parse('''
+    grammar = parse_grammar_schema('''
         <N> → "0" | "1" <B>
         <B> → ε | "0" <B> | "1" <B>
     ''').instantiate(NonTerminal('N'))

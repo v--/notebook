@@ -1,12 +1,13 @@
 import pytest
 
-from .grammar import Grammar, GrammarSchema, NonTerminal
+from .grammar import Grammar, NonTerminal
+from .parsing.parser import parse_grammar_schema
 from .brute_force_parse import derives
 
 
 @pytest.fixture
 def an():
-    schema = GrammarSchema.parse('''
+    schema = parse_grammar_schema('''
         <S> → ε
         <S> → <A>
         <A> → <A> "a"
@@ -28,7 +29,7 @@ def assert_an(an: Grammar):
 
 @pytest.fixture
 def anbn():
-    schema = GrammarSchema.parse('''
+    schema = parse_grammar_schema('''
         <S> → ε
         <S> → <A>
         <A> → "a" <A> "b"
@@ -49,7 +50,7 @@ def assert_anbn(anbn: Grammar):
 
 @pytest.fixture
 def s3():
-    schema = GrammarSchema.parse('''
+    schema = parse_grammar_schema('''
         <S> → ε
         <S> → <S> <S> <S>
         <S> → "a"
@@ -70,7 +71,7 @@ def assert_s3(s3: Grammar):
 
 @pytest.fixture
 def binary():
-    schema = GrammarSchema.parse('''
+    schema = parse_grammar_schema('''
         <N> → "0" | "1" | "1" <B>
         <B> → "0" | "0" <B> | "1" | "1" <B>
     ''')
