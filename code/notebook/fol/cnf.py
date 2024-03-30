@@ -1,12 +1,22 @@
-from collections.abc import Callable
-from typing import Sequence
 import inspect
 import itertools
+from collections.abc import Callable
+from typing import Sequence
 
 from .alphabet import BinaryConnective, PropConstant
-from .formulas import Formula, ConstantFormula, PredicateFormula, NegationFormula, ConnectiveFormula, QuantifierFormula, is_atomic, is_conjunction, is_disjunction
-from .visitors import FormulaVisitor, FormulaTransformationVisitor
-from .pnf import remove_conditionals, push_negations, is_formula_quantifierless
+from .formulas import (
+    ConnectiveFormula,
+    ConstantFormula,
+    Formula,
+    NegationFormula,
+    PredicateFormula,
+    QuantifierFormula,
+    is_atomic,
+    is_conjunction,
+    is_disjunction,
+)
+from .pnf import is_formula_quantifierless, push_negations, remove_conditionals
+from .visitors import FormulaTransformationVisitor, FormulaVisitor
 
 
 def is_literal(formula: Formula) -> bool:

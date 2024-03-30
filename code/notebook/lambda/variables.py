@@ -1,6 +1,5 @@
 from ..support.names import new_var_name
-
-from .terms import Variable, Term, Application, Abstraction
+from .terms import Abstraction, Application, Term, Variable
 from .visitors import TermVisitor
 
 

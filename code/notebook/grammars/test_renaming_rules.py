@@ -1,7 +1,7 @@
 from .alphabet import NonTerminal
 from .brute_force_parse import derives
 from .parsing.parser import parse_grammar_schema
-from .renaming_rules import has_renaming_rules, collapse_renaming_rules
+from .renaming_rules import collapse_renaming_rules, has_renaming_rules
 
 
 def test_collapse_renaming_rules_simple():

@@ -1,8 +1,8 @@
-from collections.abc import Sequence
-from dataclasses import dataclass
-from typing import TypeVar, Generic
 import functools
 import operator
+from collections.abc import Sequence
+from dataclasses import dataclass
+from typing import Generic, TypeVar
 
 
 T = TypeVar('T')

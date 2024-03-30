@@ -1,4 +1,4 @@
-from .distance import hamming, fisher_wagner
+from .distance import fisher_wagner, hamming
 
 
 def test_hamming():

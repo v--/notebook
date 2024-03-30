@@ -1,7 +1,7 @@
 from ...support.parsing.tokenizer import Tokenizer
 from ...support.parsing.whitespace import Whitespace
-from ..alphabet import Terminal, NonTerminal
-from .tokens import MiscToken, GrammarToken
+from ..alphabet import NonTerminal, Terminal
+from .tokens import GrammarToken, MiscToken
 
 
 class GrammarTokenizer(Tokenizer[GrammarToken]):

@@ -1,6 +1,12 @@
 from .alphabet import NonTerminal, Terminal, empty
 from .grammar import GrammarRule
-from .parse_tree import Derivation, DerivationStep, ParseTree, derivation_to_parse_tree, parse_tree_to_derivation
+from .parse_tree import (
+    Derivation,
+    DerivationStep,
+    ParseTree,
+    derivation_to_parse_tree,
+    parse_tree_to_derivation,
+)
 
 
 def test_derivation_and_parse_tree_basic():

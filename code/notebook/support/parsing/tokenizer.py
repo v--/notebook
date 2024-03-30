@@ -1,9 +1,9 @@
 from abc import ABC, abstractmethod
 from typing import Generic, Iterable, TypeVar
 
+from .identifiers import AlphabeticIdentifier, Capitalization
 from .parser import Parser
 from .tokens import AbstractToken
-from .identifiers import Capitalization, AlphabeticIdentifier
 
 
 T_co = TypeVar('T_co', bound=AbstractToken, covariant=True)

@@ -1,7 +1,6 @@
 import pytest
 
 from ...support.parsing.parser import ParserError
-
 from .parser import parse_rule
 
 

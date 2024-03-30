@@ -1,6 +1,6 @@
 from ...parsing.tokenizer import Tokenizer
 from ...parsing.whitespace import Whitespace
-from .tokens import WordToken, EscapedWordToken, MiscToken, LaTeXToken
+from .tokens import EscapedWordToken, LaTeXToken, MiscToken, WordToken
 
 
 class LaTeXTokenizer(Tokenizer[LaTeXToken]):

@@ -1,7 +1,7 @@
-from typing import TypeGuard, NamedTuple
+from typing import NamedTuple, TypeGuard
 
-from .alphabet import BinaryConnective, Quantifier, PropConstant
-from .terms import Variable, Term
+from .alphabet import BinaryConnective, PropConstant, Quantifier
+from .terms import Term, Variable
 
 
 class ConstantFormula(NamedTuple):

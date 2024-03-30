@@ -1,5 +1,5 @@
-from .grammar import Grammar, GrammarRule, GrammarSchema, NonTerminal
 from .epsilon_rules import is_essentially_epsilon_free
+from .grammar import Grammar, GrammarRule, GrammarSchema, NonTerminal
 
 
 def is_rule_renaming(rule: GrammarRule) -> bool:

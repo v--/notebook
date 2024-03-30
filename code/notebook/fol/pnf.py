@@ -1,10 +1,9 @@
 from ..exceptions import NotebookCodeError
-
 from .alphabet import BinaryConnective, Quantifier
-from .formulas import Formula, NegationFormula, ConnectiveFormula, QuantifierFormula
-from .visitors import FormulaVisitor, FormulaTransformationVisitor
+from .formulas import ConnectiveFormula, Formula, NegationFormula, QuantifierFormula
 from .substitution import substitute_in_formula
-from .variables import new_variable, get_bound_variables, get_free_variables
+from .variables import get_bound_variables, get_free_variables, new_variable
+from .visitors import FormulaTransformationVisitor, FormulaVisitor
 
 
 class QuantifierlessVerificationVisitor(FormulaVisitor):

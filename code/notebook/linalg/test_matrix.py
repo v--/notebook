@@ -1,6 +1,6 @@
 import pytest
 
-from .matrix import Matrix, eye, zeros, is_close
+from .matrix import Matrix, eye, is_close, zeros
 
 
 def test_matrix_getter(mat123: Matrix[int]):

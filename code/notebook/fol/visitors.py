@@ -1,7 +1,15 @@
-from typing import TypeVar, Generic
+from typing import Generic, TypeVar
 
-from .terms import Variable, FunctionTerm, Term
-from .formulas import Formula, ConstantFormula, EqualityFormula, PredicateFormula, NegationFormula, ConnectiveFormula, QuantifierFormula
+from .formulas import (
+    ConnectiveFormula,
+    ConstantFormula,
+    EqualityFormula,
+    Formula,
+    NegationFormula,
+    PredicateFormula,
+    QuantifierFormula,
+)
+from .terms import FunctionTerm, Term, Variable
 
 
 T = TypeVar('T')

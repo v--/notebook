@@ -1,7 +1,7 @@
-from .terms import Variable, FunctionTerm, Term
-from .formulas import Formula, EqualityFormula, PredicateFormula, QuantifierFormula
-from .visitors import TermTransformationVisitor, FormulaTransformationVisitor
-from .variables import new_variable, get_term_variables, get_free_variables
+from .formulas import EqualityFormula, Formula, PredicateFormula, QuantifierFormula
+from .terms import FunctionTerm, Term, Variable
+from .variables import get_free_variables, get_term_variables, new_variable
+from .visitors import FormulaTransformationVisitor, TermTransformationVisitor
 
 
 class TermSubstitutionVisitor(TermTransformationVisitor):

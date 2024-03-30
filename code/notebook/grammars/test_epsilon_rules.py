@@ -1,9 +1,12 @@
 from .alphabet import NonTerminal
 from .brute_force_parse import derives
-from .epsilon_rules import remove_epsilon_rules, is_epsilon_free, is_essentially_epsilon_free
-from .parsing.parser import parse_grammar_schema
-
 from .conftest import assert_an, assert_binary
+from .epsilon_rules import (
+    is_epsilon_free,
+    is_essentially_epsilon_free,
+    remove_epsilon_rules,
+)
+from .parsing.parser import parse_grammar_schema
 
 
 # See ex:alg:epsilon_rule_removal/an in the text

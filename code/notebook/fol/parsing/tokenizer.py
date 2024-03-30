@@ -1,6 +1,10 @@
-from ...support.parsing.identifiers import Capitalization, LatinIdentifier, GreekIdentifier
-from ...support.parsing.tokenizer import Tokenizer
+from ...support.parsing.identifiers import (
+    Capitalization,
+    GreekIdentifier,
+    LatinIdentifier,
+)
 from ...support.parsing.mixins.identifiers import IdentifierTokenizerMixin
+from ...support.parsing.tokenizer import Tokenizer
 from ..alphabet import BinaryConnective, PropConstant, Quantifier
 from .tokens import FOLToken, MiscToken
 

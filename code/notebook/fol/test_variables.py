@@ -1,5 +1,5 @@
-from .variables import get_free_variables
 from .parsing.parser import parse_formula
+from .variables import get_free_variables
 
 
 def test_get_free_variables():

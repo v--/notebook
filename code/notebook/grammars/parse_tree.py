@@ -1,16 +1,15 @@
+import functools
+import operator
 from dataclasses import dataclass, field
 from queue import SimpleQueue
 from typing import Any, cast
-import functools
-import operator
 
 from rich.tree import Tree
 
 from ..support.rich import rich_to_text
-
-from .alphabet import NonTerminal, Terminal, Empty, empty
-from .grammar import GrammarRule
+from .alphabet import Empty, NonTerminal, Terminal, empty
 from .epsilon_rules import is_epsilon_rule
+from .grammar import GrammarRule
 
 
 @dataclass

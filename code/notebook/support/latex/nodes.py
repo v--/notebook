@@ -1,7 +1,7 @@
-from dataclasses import dataclass
-from typing import TypeGuard
 import functools
 import operator
+from dataclasses import dataclass
+from typing import TypeGuard
 
 from ..parsing.tokens import TokenEnum, TokenMixin
 from ..parsing.whitespace import Whitespace

@@ -1,11 +1,14 @@
 from ..automata.finite import FiniteAutomaton
-
 from .alphabet import NonTerminal
+from .conftest import assert_an
 from .grammar import Grammar
 from .parsing.parser import parse_grammar_schema
-from .regular import is_regular, is_right_linear, to_finite_automaton, from_finite_automaton
-
-from .conftest import assert_an
+from .regular import (
+    from_finite_automaton,
+    is_regular,
+    is_right_linear,
+    to_finite_automaton,
+)
 
 
 def test_to_finite_automaton_an(an: Grammar):

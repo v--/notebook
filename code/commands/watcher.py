@@ -1,16 +1,16 @@
-from datetime import datetime, timedelta
-from fnmatch import fnmatch
-from timeit import default_timer as timer
-from typing import Any
-from enum import Enum
 import asyncio
 import os.path
 import pathlib
 import shutil
+from datetime import datetime, timedelta
+from enum import Enum
+from fnmatch import fnmatch
+from timeit import default_timer as timer
+from typing import Any
 
+import texoutparse
 from asyncinotify import Inotify, Mask
 from loguru import logger
-import texoutparse
 
 
 DEBOUNCE_THRESHOLD = timedelta(seconds=1)

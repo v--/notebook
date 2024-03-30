@@ -1,7 +1,7 @@
 from collections.abc import Callable
 
+from .cnf import function_to_cnf, is_formula_in_cnf, pull_conjunction, to_cnf
 from .parsing.parser import parse_formula
-from .cnf import is_formula_in_cnf, pull_conjunction, to_cnf, function_to_cnf
 
 
 def test_is_formula_in_cnf():

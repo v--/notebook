@@ -1,8 +1,8 @@
 from abc import ABC, abstractmethod
 from typing import Generic, Iterable, TypeVar
 
-from ..tokens import AbstractToken
 from ..tokenizer import Parser
+from ..tokens import AbstractToken
 from ..whitespace import Whitespace
 
 

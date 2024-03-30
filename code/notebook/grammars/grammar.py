@@ -1,8 +1,8 @@
-from dataclasses import dataclass, field
 import functools
 import itertools
+from dataclasses import dataclass, field
 
-from .alphabet import Terminal, NonTerminal, empty
+from .alphabet import NonTerminal, Terminal, empty
 
 
 @dataclass

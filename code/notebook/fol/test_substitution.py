@@ -1,5 +1,5 @@
-from .substitution import substitute_in_formula, substitute_in_term
 from .parsing.parser import parse_formula, parse_term
+from .substitution import substitute_in_formula, substitute_in_term
 
 
 def test_substitute_in_term():

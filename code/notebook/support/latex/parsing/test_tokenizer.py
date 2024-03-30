@@ -2,9 +2,8 @@ import pytest
 
 from ...parsing.parser import ParserError
 from ...parsing.whitespace import Whitespace
-
-from .tokens import WordToken, EscapedWordToken, MiscToken
 from .tokenizer import tokenize_latex
+from .tokens import EscapedWordToken, MiscToken, WordToken
 
 
 def test_empty_string():

@@ -1,4 +1,4 @@
-from typing import TypeVar, Generic, cast
+from typing import Generic, TypeVar, cast
 
 
 N = TypeVar('N', bound=int | float)

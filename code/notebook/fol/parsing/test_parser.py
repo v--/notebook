@@ -2,8 +2,8 @@ import pytest
 
 from ...support.parsing.parser import ParserError
 from ..formulas import EqualityFormula
-from ..terms import Variable, FunctionTerm
-from .parser import parse_term, parse_formula
+from ..terms import FunctionTerm, Variable
+from .parser import parse_formula, parse_term
 
 
 def test_parsing_variables_valid():

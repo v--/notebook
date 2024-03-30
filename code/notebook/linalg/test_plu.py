@@ -1,7 +1,6 @@
-from .matrix import Matrix, is_close
-from .triangular import is_lower_triangular, is_orthogonal, is_upper_triangular
-from .matrix import eye
+from .matrix import Matrix, eye, is_close
 from .plu import plu, plu_inv
+from .triangular import is_lower_triangular, is_orthogonal, is_upper_triangular
 
 
 def test_plu_basic(mat123: Matrix[int]):

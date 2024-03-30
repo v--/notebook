@@ -2,7 +2,15 @@ import pytest
 
 from ...parsing.parser import ParserError
 from ...parsing.whitespace import Whitespace
-from ..nodes import Command, BracelessGroup, BraceGroup, BracketGroup, Word, Environment, SpecialNode
+from ..nodes import (
+    BraceGroup,
+    BracelessGroup,
+    BracketGroup,
+    Command,
+    Environment,
+    SpecialNode,
+    Word,
+)
 from .parser import parse_latex
 
 

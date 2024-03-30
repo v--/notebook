@@ -1,10 +1,18 @@
-from typing import TypeVar, Generic, Iterator
 from dataclasses import dataclass, field, replace
+from typing import Generic, Iterator, TypeVar
 
-from .nodes import BracketGroup, LaTeXNode, Command, Environment, Group, BracelessGroup, SpecialNode
-from .parsing.parser import parse_latex
 from ..parsing.parser import Parser
 from ..parsing.whitespace import Whitespace
+from .nodes import (
+    BracelessGroup,
+    BracketGroup,
+    Command,
+    Environment,
+    Group,
+    LaTeXNode,
+    SpecialNode,
+)
+from .parsing.parser import parse_latex
 
 
 INDENT = 2

@@ -1,6 +1,6 @@
-from mmap import mmap, PROT_READ
 import pathlib
 import re
+from mmap import PROT_READ, mmap
 
 
 BASE_PATH = pathlib.Path('.').resolve()

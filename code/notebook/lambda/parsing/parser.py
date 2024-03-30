@@ -1,6 +1,6 @@
 from ...support.parsing.identifiers import LatinIdentifier
 from ...support.parsing.parser import Parser
-from ..terms import Variable, Application, Abstraction
+from ..terms import Abstraction, Application, Variable
 from .tokenizer import LambdaTokenizer
 from .tokens import LambdaToken, MiscToken
 

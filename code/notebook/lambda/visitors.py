@@ -1,6 +1,6 @@
-from typing import TypeVar, Generic
+from typing import Generic, TypeVar
 
-from .terms import Variable, Application, Abstraction, Term
+from .terms import Abstraction, Application, Term, Variable
 
 
 T = TypeVar('T')

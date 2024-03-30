@@ -1,5 +1,4 @@
 from ..support.names import new_var_name
-
 from .alphabet import NonTerminal, Terminal
 from .grammar import Grammar, GrammarRule, GrammarSchema
 

@@ -5,6 +5,7 @@ from ..identifiers import AlphabeticIdentifier, Capitalization
 from ..tokenizer import Tokenizer
 from ..tokens import AbstractToken
 
+
 T_co = TypeVar('T_co', bound=AbstractToken, covariant=True)
 IdentifierT = TypeVar('IdentifierT', bound=AlphabeticIdentifier)
 

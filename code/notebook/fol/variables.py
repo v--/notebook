@@ -1,7 +1,13 @@
 from ..support.names import new_var_name
-
-from .terms import Variable, Term, FunctionTerm
-from .formulas import Formula, EqualityFormula, PredicateFormula, NegationFormula, ConnectiveFormula, QuantifierFormula
+from .formulas import (
+    ConnectiveFormula,
+    EqualityFormula,
+    Formula,
+    NegationFormula,
+    PredicateFormula,
+    QuantifierFormula,
+)
+from .terms import FunctionTerm, Term, Variable
 from .visitors import FormulaVisitor, TermVisitor
 
 

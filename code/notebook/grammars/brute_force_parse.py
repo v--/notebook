@@ -2,10 +2,10 @@ import itertools
 from typing import Iterator
 
 from .alphabet import NonTerminal, Terminal, empty
-from .grammar import Grammar
 from .context_free import is_context_free
-from .parse_tree import ParseTree
 from .epsilon_rules import is_epsilon_rule
+from .grammar import Grammar
+from .parse_tree import ParseTree
 
 
 def iter_partitions(seq: str, m: int) -> Iterator[list[str]]:

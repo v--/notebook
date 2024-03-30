@@ -1,10 +1,10 @@
-import io
-import sys
-import shutil
 import hashlib
+import io
+import shutil
+import sys
 import tempfile
 
-from ..src.support.latex.format_matrices import format_tex_matrices  # type: ignore[import-untyped]
+from ..notebook.support.latex.format_matrices import format_tex_matrices
 
 
 def format_matrices_in_file(path: str):

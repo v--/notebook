@@ -1,12 +1,12 @@
 from typing import Iterable
 
-from ...support.parsing.parser import Parser
 from ...support.parsing.mixins.whitespace import WhitespaceTokenizerMixin
+from ...support.parsing.parser import Parser
 from ...support.parsing.whitespace import Whitespace
-from ..alphabet import Terminal, NonTerminal
+from ..alphabet import NonTerminal, Terminal
 from ..grammar import GrammarRule, GrammarSchema
-from .tokens import MiscToken, GrammarToken
 from .tokenizer import GrammarTokenizer
+from .tokens import GrammarToken, MiscToken
 
 
 class GrammarParser(WhitespaceTokenizerMixin[GrammarToken], Parser[GrammarToken]):

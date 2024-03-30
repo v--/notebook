@@ -1,13 +1,11 @@
 from ..automata.finite import FiniteAutomaton, reverse_automaton
 from ..automata.finite_determinize import determinize
-
-from .alphabet import NonTerminal, Terminal
-from .grammar import GrammarSchema, Grammar, GrammarRule
-from .context_free import reverse_grammar
-from .epsilon_rules import is_epsilon_rule, is_epsilon_free, remove_epsilon_rules
-from .renaming_rules import collapse_renaming_rules
-
 from ..support.names import new_var_name
+from .alphabet import NonTerminal, Terminal
+from .context_free import reverse_grammar
+from .epsilon_rules import is_epsilon_free, is_epsilon_rule, remove_epsilon_rules
+from .grammar import Grammar, GrammarRule, GrammarSchema
+from .renaming_rules import collapse_renaming_rules
 
 
 def is_left_linear_rule(rule: GrammarRule):

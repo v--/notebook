@@ -1,9 +1,9 @@
-from collections.abc import MutableMapping, Iterable, Iterator
+from collections.abc import Iterable, Iterator, MutableMapping
 from dataclasses import dataclass
-from typing import TypeVar, Generic
+from typing import Generic, TypeVar
 
-from rich.table import Table
 from rich import box
+from rich.table import Table
 
 from ..support.rich import rich_to_text
 from .cycles import Cycle

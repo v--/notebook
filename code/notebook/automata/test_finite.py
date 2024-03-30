@@ -1,6 +1,5 @@
-from .finite import FiniteAutomaton
-
 from .conftest import assert_aabn, assert_leucine
+from .finite import FiniteAutomaton
 
 
 # ex:def:formal_language/an

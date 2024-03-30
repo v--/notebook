@@ -1,7 +1,6 @@
+from ...support.parsing.identifiers import GreekIdentifier, LatinIdentifier
 from ...support.parsing.tokens import TokenEnum
-from ...support.parsing.identifiers import LatinIdentifier, GreekIdentifier
-
-from ..alphabet import PropConstant, BinaryConnective, Quantifier
+from ..alphabet import BinaryConnective, PropConstant, Quantifier
 
 
 class MiscToken(TokenEnum):

@@ -2,10 +2,10 @@ from dataclasses import dataclass
 
 import pytest
 
+from ..identifiers import Capitalization, GreekIdentifier, LatinIdentifier
 from ..parser import ParserError
-from ..tokens import TokenEnum
 from ..tokenizer import Tokenizer
-from ..identifiers import Capitalization, LatinIdentifier, GreekIdentifier
+from ..tokens import TokenEnum
 from .identifiers import IdentifierTokenizerMixin
 
 

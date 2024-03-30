@@ -1,8 +1,18 @@
 from ...parsing.parser import Parser
 from ...parsing.whitespace import Whitespace
-from ..nodes import Command, BracelessGroup, BraceGroup, BracketGroup, LaTeXNode, Word, Group, Environment, SpecialNode
+from ..nodes import (
+    BraceGroup,
+    BracelessGroup,
+    BracketGroup,
+    Command,
+    Environment,
+    Group,
+    LaTeXNode,
+    SpecialNode,
+    Word,
+)
 from .tokenizer import tokenize_latex
-from .tokens import LaTeXToken, WordToken, EscapedWordToken, MiscToken
+from .tokens import EscapedWordToken, LaTeXToken, MiscToken, WordToken
 
 
 class LaTeXParser(Parser[LaTeXToken]):

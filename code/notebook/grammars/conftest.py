@@ -1,8 +1,8 @@
 import pytest
 
+from .brute_force_parse import derives
 from .grammar import Grammar, NonTerminal
 from .parsing.parser import parse_grammar_schema
-from .brute_force_parse import derives
 
 
 @pytest.fixture

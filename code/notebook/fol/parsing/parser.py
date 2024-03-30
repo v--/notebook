@@ -1,10 +1,18 @@
 from typing import Iterable
 
-from ...support.parsing.identifiers import LatinIdentifier, GreekIdentifier
+from ...support.parsing.identifiers import GreekIdentifier, LatinIdentifier
 from ...support.parsing.parser import Parser
 from ..alphabet import BinaryConnective, PropConstant, Quantifier
-from ..formulas import ConstantFormula, ConnectiveFormula, EqualityFormula, NegationFormula, PredicateFormula, QuantifierFormula, Formula
-from ..terms import Variable, FunctionTerm, Term
+from ..formulas import (
+    ConnectiveFormula,
+    ConstantFormula,
+    EqualityFormula,
+    Formula,
+    NegationFormula,
+    PredicateFormula,
+    QuantifierFormula,
+)
+from ..terms import FunctionTerm, Term, Variable
 from .tokenizer import FOLTokenizer
 from .tokens import FOLToken, MiscToken
 

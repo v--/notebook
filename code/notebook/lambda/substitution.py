@@ -1,6 +1,6 @@
-from .terms import Variable, Abstraction, Term
+from .terms import Abstraction, Term, Variable
+from .variables import get_free_variables, new_variable
 from .visitors import TermTransformationVisitor
-from .variables import new_variable, get_free_variables
 
 
 # This is def:lambda_substitution in the text

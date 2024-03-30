@@ -1,6 +1,6 @@
-from .terms import Variable, Application, Abstraction, Term
-from .variables import new_variable, get_free_variables
 from .substitution import substitute_in_term
+from .terms import Abstraction, Application, Term, Variable
+from .variables import get_free_variables, new_variable
 
 
 # The assertions are needed because mypy doesn't handle such complicated type narrowing
