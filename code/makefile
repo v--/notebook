@@ -5,4 +5,4 @@ test:
 
 lint:
 	poetry run ruff check
-	poetry run mypy --package src --package commands
+	poetry run mypy --package notebook --package commands
