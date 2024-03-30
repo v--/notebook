@@ -1,9 +1,10 @@
 from ...support.parsing.identifiers import Capitalization, LatinIdentifier
-from ...support.parsing.tokenizer import BaseTokenizer
+from ...support.parsing.tokenizer import Tokenizer
+from ...support.parsing.mixins.identifiers import IdentifierTokenizerMixin
 from .tokens import LambdaToken, MiscToken
 
 
-class LambdaTokenizer(BaseTokenizer[LambdaToken]):
+class LambdaTokenizer(IdentifierTokenizerMixin[LambdaToken], Tokenizer[LambdaToken]):
     def parse_step(self, head: str) -> LambdaToken:
         sym = MiscToken.try_match(head)
 

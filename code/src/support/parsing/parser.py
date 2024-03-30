@@ -19,20 +19,20 @@ class Parser(Generic[T]):
     def reset(self):
         self.index = 0
 
-    def is_at_end(self):
+    def is_at_end(self) -> bool:
         return self.index == len(self.seq)
 
     def advance(self, count: int = 1):
         assert 0 <= self.index + count <= len(self.seq)
         self.index += count
 
-    def peek(self):
+    def peek(self) -> T:
         if self.is_at_end():
             raise self.error('Unexpected end of input')
 
         return self.seq[self.index]
 
-    def peek_multiple(self, count: int):
+    def peek_multiple(self, count: int) -> Sequence[T]:
         return self.seq[self.index: self.index + count]
 
     def parse(self):

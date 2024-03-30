@@ -1,11 +1,12 @@
 from ...support.parsing.identifiers import Capitalization, LatinIdentifier, GreekIdentifier
-from ...support.parsing.tokenizer import BaseTokenizer
+from ...support.parsing.tokenizer import Tokenizer
+from ...support.parsing.mixins.identifiers import IdentifierTokenizerMixin
 from ...fol.alphabet import PropConstant, BinaryConnective, Quantifier
 
 from .tokens import RuleToken, MiscToken
 
 
-class NaturalDeductionTokenizer(BaseTokenizer[RuleToken]):
+class NaturalDeductionTokenizer(IdentifierTokenizerMixin[RuleToken], Tokenizer[RuleToken]):
     def parse_step(self, head: str) -> RuleToken:
         sym = PropConstant.try_match(head) or \
             BinaryConnective.try_match(head) or \

@@ -1,8 +1,8 @@
-from ...parsing.tokenizer import BaseTokenizer
+from ...parsing.tokenizer import Tokenizer
 from .tokens import WordToken, EscapedWordToken, MiscToken, LaTeXToken
 
 
-class LaTeXTokenizer(BaseTokenizer[LaTeXToken]):
+class LaTeXTokenizer(Tokenizer[LaTeXToken]):
     def accept_word(self):
         buffer = []
 

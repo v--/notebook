@@ -1,9 +1,9 @@
-from ...support.parsing.tokenizer import BaseTokenizer
+from ...support.parsing.tokenizer import Tokenizer
 from ..alphabet import Terminal, NonTerminal
 from .tokens import MiscToken, GrammarToken
 
 
-class GrammarTokenizer(BaseTokenizer[GrammarToken]):
+class GrammarTokenizer(Tokenizer[GrammarToken]):
     def parse_non_terminal(self) -> NonTerminal:
         assert self.peek() == '<'
         self.advance()

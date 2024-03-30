@@ -2,10 +2,11 @@ from dataclasses import dataclass
 
 import pytest
 
-from .parser import ParserError
-from .tokens import TokenEnum
-from .tokenizer import BaseTokenizer
-from .identifiers import Capitalization, LatinIdentifier, GreekIdentifier
+from ..parser import ParserError
+from ..tokens import TokenEnum
+from ..tokenizer import Tokenizer
+from ..identifiers import Capitalization, LatinIdentifier, GreekIdentifier
+from .identifiers import IdentifierTokenizerMixin
 
 
 class MiscToken(TokenEnum):
@@ -17,7 +18,7 @@ TestToken = LatinIdentifier | GreekIdentifier | MiscToken
 
 
 @dataclass
-class TestTokenizer(BaseTokenizer[TestToken]):
+class TestTokenizer(IdentifierTokenizerMixin[TestToken], Tokenizer[TestToken]):
     capitalization: Capitalization
     short: bool
 
