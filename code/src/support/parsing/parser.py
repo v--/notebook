@@ -43,7 +43,7 @@ class Parser(Generic[T]):
             raise self.error('Finished parsing but there is still input left')
 
     # May God forgive me for this function
-    def _iter_error_message(self, message: str, precede: int, succeed: int):
+    def _iter_error_message(self, message: str, precede: int, succeed: int): # noqa: C901
         yield message
         yield '\n'
 
