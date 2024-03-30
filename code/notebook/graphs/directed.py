@@ -2,29 +2,29 @@ from dataclasses import dataclass
 from typing import Generic, TypeVar
 
 
-TVert = TypeVar('TVert')
-TAttrVert = TypeVar('TAttrVert')
-TAttrArc = TypeVar('TAttrArc')
+VertT = TypeVar('VertT')
+AttrVertT = TypeVar('AttrVertT')
+AttrArcT = TypeVar('AttrArcT')
 
 
 @dataclass
-class VertexView(Generic[TVert, TAttrVert]):
+class VertexView(Generic[VertT, AttrVertT]):
     graph: 'DirectedGraph'
 
-    def __contains__(self, key: TVert):
+    def __contains__(self, key: VertT):
         return key in self.graph._vertices
 
-    def __getitem__(self, key: TVert) -> TAttrVert | None:
+    def __getitem__(self, key: VertT) -> AttrVertT | None:
         assert key in self
         return self.graph._vertices[key]
 
-    def __setitem__(self, key: TVert, value: TAttrVert | None):
+    def __setitem__(self, key: VertT, value: AttrVertT | None):
         if key not in self.graph._arcs:
             self.graph._arcs[key] = {}
 
         self.graph._vertices[key] = value
 
-    def add(self, key: TVert):
+    def add(self, key: VertT):
         self[key] = None
 
     def keys(self):
@@ -41,20 +41,20 @@ class VertexView(Generic[TVert, TAttrVert]):
 
 
 @dataclass
-class ArcView(Generic[TVert, TAttrArc]):
+class ArcView(Generic[VertT, AttrArcT]):
     graph: 'DirectedGraph'
 
-    def __contains__(self, key: tuple[TVert, TVert]):
+    def __contains__(self, key: tuple[VertT, VertT]):
         assert isinstance(key, tuple) and len(key) == 2
         src, dest = key
         return src in self.graph.vertices and dest in self.graph._arcs[src]
 
-    def __getitem__(self, key: tuple[TVert, TVert]):
+    def __getitem__(self, key: tuple[VertT, VertT]):
         assert key in self
         src, dest = key
         return self.graph._arcs[src][dest]
 
-    def __setitem__(self, key: tuple[TVert, TVert], value: TAttrArc | None):
+    def __setitem__(self, key: tuple[VertT, VertT], value: AttrArcT | None):
         assert isinstance(key, tuple) and len(key) == 2
         src, dest = key
 
@@ -66,7 +66,7 @@ class ArcView(Generic[TVert, TAttrArc]):
 
         self.graph._arcs[src][dest] = value
 
-    def add(self, src: TVert, dest: TVert):
+    def add(self, src: VertT, dest: VertT):
         self[src, dest] = None
 
     def __iter__(self):
@@ -75,23 +75,23 @@ class ArcView(Generic[TVert, TAttrArc]):
                 yield src, dest, label
 
 
-class DirectedGraph(Generic[TVert, TAttrVert, TAttrArc]):
-    _vertices: dict[TVert, TAttrVert]
+class DirectedGraph(Generic[VertT, AttrVertT, AttrArcT]):
+    _vertices: dict[VertT, AttrVertT]
     vertices: VertexView
-    _arcs: dict[TVert, dict[TVert, TAttrArc]]
+    _arcs: dict[VertT, dict[VertT, AttrArcT]]
     arcs: ArcView
 
     def __init__(
         self,
-        vertices: dict[TVert, TAttrVert] | None = None,
-        arcs: dict[TVert, dict[TVert, TAttrArc]] | None = None
+        vertices: dict[VertT, AttrVertT] | None = None,
+        arcs: dict[VertT, dict[VertT, AttrArcT]] | None = None
     ):
         self._vertices = vertices or {}
         self._arcs = arcs or {}
         self.vertices = VertexView(self)
         self.arcs = ArcView(self)
 
-    def get_in_arcs(self, dest: TVert):
+    def get_in_arcs(self, dest: VertT):
         assert dest in self.vertices
         return (
             (in_vert, attr)
@@ -100,7 +100,7 @@ class DirectedGraph(Generic[TVert, TAttrVert, TAttrArc]):
             if out_vert == dest
         )
 
-    def get_out_arcs(self, src: TVert):
+    def get_out_arcs(self, src: VertT):
         assert src in self.vertices
         return self._arcs[src].items()
 
@@ -108,8 +108,8 @@ class DirectedGraph(Generic[TVert, TAttrVert, TAttrArc]):
         return '\n'.join(f'{src} -{label}-> {dest}' for src, dest, label in self.arcs)
 
 
-def union(*graphs: DirectedGraph[TVert, TAttrVert, TAttrArc]) -> DirectedGraph[TVert, TAttrVert, TAttrArc]:
-    result: DirectedGraph[TVert, TAttrVert, TAttrArc] = DirectedGraph()
+def union(*graphs: DirectedGraph[VertT, AttrVertT, AttrArcT]) -> DirectedGraph[VertT, AttrVertT, AttrArcT]:
+    result: DirectedGraph[VertT, AttrVertT, AttrArcT] = DirectedGraph()
 
     for graph in graphs:
         for vert, label in graph.vertices:

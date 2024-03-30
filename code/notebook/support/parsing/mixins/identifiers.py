@@ -1,13 +1,12 @@
 from abc import ABC, abstractmethod
 from typing import Generic, Iterable, TypeVar
 
-from ..tokens import AbstractToken
-from ..tokenizer import Tokenizer
 from ..identifiers import AlphabeticIdentifier, Capitalization
-
+from ..tokenizer import Tokenizer
+from ..tokens import AbstractToken
 
 T_co = TypeVar('T_co', bound=AbstractToken, covariant=True)
-TIdentifier = TypeVar('TIdentifier', bound=AlphabeticIdentifier)
+IdentifierT = TypeVar('IdentifierT', bound=AlphabeticIdentifier)
 
 
 class IdentifierTokenizerMixin(Tokenizer[T_co]):
@@ -53,7 +52,7 @@ class IdentifierTokenizerMixin(Tokenizer[T_co]):
             Capitalization.capital in capitalization and cls.is_capital_letter(head)
         )
 
-    def parse_identifier(self, cls: type[TIdentifier], capitalization: Capitalization, short: bool) -> TIdentifier:
+    def parse_identifier(self, cls: type[IdentifierT], capitalization: Capitalization, short: bool) -> IdentifierT:
         assert self.accept_alphabetic_string(cls, capitalization)
         symbols = self.peek()
         self.advance()

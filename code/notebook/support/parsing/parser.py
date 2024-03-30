@@ -8,7 +8,7 @@ class ParserError(NotebookCodeError):
     pass
 
 
-T_co = TypeVar('T_co')
+T_co = TypeVar('T_co', covariant=True)
 
 
 @dataclass

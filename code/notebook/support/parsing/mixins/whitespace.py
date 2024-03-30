@@ -6,7 +6,7 @@ from ..tokenizer import Parser
 from ..whitespace import Whitespace
 
 
-T_co = TypeVar('T_co', bound=AbstractToken)
+T_co = TypeVar('T_co', bound=AbstractToken, covariant=True)
 
 
 class WhitespaceTokenizerMixin(Parser[T_co]):

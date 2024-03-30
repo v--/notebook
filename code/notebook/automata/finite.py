@@ -2,23 +2,23 @@ from dataclasses import dataclass, field
 from typing import Generic, TypeVar
 
 
-TState = TypeVar('TState')
-TLabel = TypeVar('TLabel')
+StateT = TypeVar('StateT')
+LabelT = TypeVar('LabelT')
 
 
-FiniteAutomatonTransition = tuple[TState, TLabel, TState]
+FiniteAutomatonTransition = tuple[StateT, LabelT, StateT]
 
 
 @dataclass
-class FiniteAutomaton(Generic[TState, TLabel]):
+class FiniteAutomaton(Generic[StateT, LabelT]):
     triples: list[FiniteAutomatonTransition] = field(default_factory=list)
-    initial: set[TState] = field(default_factory=set)
-    terminal: set[TState] = field(default_factory=set)
+    initial: set[StateT] = field(default_factory=set)
+    terminal: set[StateT] = field(default_factory=set)
 
-    def add_transition(self, src: TState, label: TLabel, dest: TState):
+    def add_transition(self, src: StateT, label: LabelT, dest: StateT):
         self.triples.append((src, label, dest))
 
-    def _recognize_recurse(self, word: str, initial: TState):
+    def _recognize_recurse(self, word: str, initial: StateT):
         if len(word) == 0:
             return initial in self.terminal
 
@@ -35,7 +35,7 @@ class FiniteAutomaton(Generic[TState, TLabel]):
         if len(self.initial) != 1:
             return False
 
-        used_labels: dict[TState, set[TLabel]] = {}
+        used_labels: dict[StateT, set[LabelT]] = {}
 
         for src, label, _ in self.triples:
             used_labels[src] = used_labels.get(src, set())
@@ -55,7 +55,7 @@ class FiniteAutomaton(Generic[TState, TLabel]):
         return f'Initial: \n\t{str(self.initial)}\nTerminal: \n\t{str(self.terminal)}\nTransitions: \n\t{transition_str}'
 
 
-def reverse_automaton(aut: FiniteAutomaton[TState, TLabel]) -> FiniteAutomaton[TState, TLabel]:
+def reverse_automaton(aut: FiniteAutomaton[StateT, LabelT]) -> FiniteAutomaton[StateT, LabelT]:
     return FiniteAutomaton(
         triples=[(dest, label, src) for (src, label, dest) in aut.triples],
         initial=aut.terminal,
