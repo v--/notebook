@@ -1,4 +1,5 @@
 from ...parsing.parser import Parser
+from ...parsing.whitespace import Whitespace
 from ..nodes import Command, BracelessGroup, BraceGroup, BracketGroup, LaTeXNode, Word, Group, Environment, SpecialNode
 from .tokenizer import tokenize_latex
 from .tokens import LaTeXToken, WordToken, EscapedWordToken, MiscToken
@@ -69,6 +70,10 @@ class LaTeXParser(Parser[LaTeXToken]):
                 self.advance()
                 return Command(head.value)
 
+            case Whitespace():
+                self.advance()
+                return head
+
             case MiscToken.opening_brace:
                 return self.parse_brace(BraceGroup, MiscToken.opening_brace, MiscToken.closing_brace)
 
@@ -83,7 +88,7 @@ class LaTeXParser(Parser[LaTeXToken]):
                 self.advance()
                 return Word(head.value)
 
-            case MiscToken.ampersand | MiscToken.underscore | MiscToken.caret | MiscToken.line_break | MiscToken.tab | MiscToken.space:
+            case MiscToken.ampersand | MiscToken.underscore | MiscToken.caret:
                 self.advance()
                 return getattr(SpecialNode, MiscToken(head).name)
 

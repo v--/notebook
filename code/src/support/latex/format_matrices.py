@@ -1,9 +1,10 @@
 from typing import TypeVar, Generic, Iterator
 from dataclasses import dataclass, field, replace
 
-from .nodes import BracketGroup, LaTeXNode, Command, Environment, Group, BracelessGroup, SpecialNode, is_whitespace_node
+from .nodes import BracketGroup, LaTeXNode, Command, Environment, Group, BracelessGroup, SpecialNode
 from .parsing.parser import parse_latex
 from ..parsing.parser import Parser
+from ..parsing.whitespace import Whitespace
 
 
 INDENT = 2
@@ -18,13 +19,13 @@ def strip_whitespace(grp: BracelessGroup):
     trailing = 0
 
     for node in grp.contents:
-        if is_whitespace_node(node):
+        if isinstance(node, Whitespace):
             leading += 1
         else:
             break
 
     for node in reversed(grp.contents):
-        if is_whitespace_node(node):
+        if isinstance(node, Whitespace):
             trailing += 1
         else:
             break
@@ -75,7 +76,7 @@ class MatrixEnvironmentParser(Parser[LaTeXNode]):
     whitespace_prefix_length: int
 
     def skip_whitespace(self):
-        while not self.is_at_end() and is_whitespace_node(self.peek()):
+        while not self.is_at_end() and isinstance(self.peek(), Whitespace):
             self.advance()
 
     def advance_and_skip_whitespace(self):
@@ -149,7 +150,7 @@ def align_spaces_in_matrix(env: MatrixEnvironment) -> MatrixEnvironment:
             else:
                 new_matrix[i, j] = BracelessGroup(
                     [env.matrix[i, j]] + \
-                    [SpecialNode.space] * (max_col_width - len(str(env.matrix[i, j])))
+                    [Whitespace.space] * (max_col_width - len(str(env.matrix[i, j])))
                 )
 
     return replace(env, matrix=new_matrix)
@@ -161,41 +162,41 @@ def matrix_to_environment(env: MatrixEnvironment):
     if env.options is not None:
         # Put multiline options on a new line
         if '\n' in str(env.options):
-            result.contents.append(SpecialNode.line_break)
-            result.contents.extend([SpecialNode.space] * (env.whitespace_prefix_length + INDENT))
+            result.contents.append(Whitespace.line_break)
+            result.contents.extend([Whitespace.space] * (env.whitespace_prefix_length + INDENT))
 
         result.contents.append(env.options)
 
-    result.contents.append(SpecialNode.line_break)
+    result.contents.append(Whitespace.line_break)
 
     w = env.matrix.get_width()
     h = env.matrix.get_height()
 
     if h == 0:
-        result.contents.extend([SpecialNode.space] * env.whitespace_prefix_length)
+        result.contents.extend([Whitespace.space] * env.whitespace_prefix_length)
 
     for i in range(h):
         for j in range(w):
             if j == 0:
-                result.contents.extend([SpecialNode.space] * (env.whitespace_prefix_length + INDENT))
+                result.contents.extend([Whitespace.space] * (env.whitespace_prefix_length + INDENT))
 
             result.contents.append(env.matrix[i, j])
 
             if j < w - 1:
                 if len(str(env.matrix[i, j])) > 0:
-                    result.contents.append(SpecialNode.space)
+                    result.contents.append(Whitespace.space)
 
                 result.contents.append(SpecialNode.ampersand)
 
                 if len(str(env.matrix[i, j + 1])) > 0:
-                    result.contents.append(SpecialNode.space)
+                    result.contents.append(Whitespace.space)
             elif i < h - 1:
-                result.contents.append(SpecialNode.space)
+                result.contents.append(Whitespace.space)
                 result.contents.append(line_break_command)
-                result.contents.append(SpecialNode.line_break)
+                result.contents.append(Whitespace.line_break)
             else:
-                result.contents.append(SpecialNode.line_break)
-                result.contents.extend([SpecialNode.space] * env.whitespace_prefix_length)
+                result.contents.append(Whitespace.line_break)
+                result.contents.extend([Whitespace.space] * env.whitespace_prefix_length)
 
     return result
 
@@ -209,15 +210,15 @@ def format_recurse(node: LaTeXNode, whitespace_prefix_length: int):
 
     for child in node.contents:
         match child:
-            case SpecialNode.line_break:
+            case Whitespace.line_break:
                 child_whitespace_prefix_length = 0
                 new_contents.append(child)
 
-            case SpecialNode.space:
+            case Whitespace.space:
                 child_whitespace_prefix_length += 1
                 new_contents.append(child)
 
-            case SpecialNode.tab:
+            case Whitespace.tab:
                 child_whitespace_prefix_length += 4
                 new_contents.append(child)
 

@@ -1,6 +1,7 @@
 import pytest
 
 from ...parsing.parser import ParserError
+from ...parsing.whitespace import Whitespace
 from ..nodes import Command, BracelessGroup, BraceGroup, BracketGroup, Word, Environment, SpecialNode
 from .parser import parse_latex
 
@@ -14,13 +15,13 @@ def test_empty_string():
 def test_tab():
     string = '\t'
     node = parse_latex(string)
-    assert node == SpecialNode.tab
+    assert node == Whitespace.tab
 
 
 def test_line_break():
     string = '\n'
     node = parse_latex(string)
-    assert node == SpecialNode.line_break
+    assert node == Whitespace.line_break
 
 
 def test_word():
@@ -40,7 +41,7 @@ def test_command_with_space():
     node = parse_latex(string)
     assert node == BracelessGroup([
         Command('test'),
-        SpecialNode.space
+        Whitespace.space
     ])
 
 
@@ -81,16 +82,16 @@ def test_command_with_mixed_args():
     node = parse_latex(string)
     assert node == BracelessGroup([
         Command('test'),
-        SpecialNode.tab,
+        Whitespace.tab,
         BracketGroup([Word('a')]),
         BraceGroup([Word('b')]),
-        SpecialNode.space,
+        Whitespace.space,
         BracketGroup([
             Word('c'),
-            SpecialNode.space
+            Whitespace.space
         ]),
-        SpecialNode.space,
-        SpecialNode.line_break,
+        Whitespace.space,
+        Whitespace.line_break,
         BraceGroup([Word('d')]),
     ])
 
@@ -101,7 +102,7 @@ def test_basic_environment():
     assert node == Environment(
         name='test',
         contents=[
-            SpecialNode.space
+            Whitespace.space
         ]
     )
 
@@ -140,16 +141,16 @@ def test_different_nested_environments():
     assert node == Environment(
         name='test',
         contents=[
-            SpecialNode.space,
+            Whitespace.space,
             Environment(
                 name='test2',
                 contents=[
-                    SpecialNode.space,
+                    Whitespace.space,
                     Word('inner'),
-                    SpecialNode.space
+                    Whitespace.space
                 ]
             ),
-            SpecialNode.space
+            Whitespace.space
         ]
     )
 
@@ -160,16 +161,16 @@ def test_same_nested_environment():
     assert node == Environment(
         name='test',
         contents=[
-            SpecialNode.space,
+            Whitespace.space,
             Environment(
                 name='test',
                 contents=[
-                    SpecialNode.space,
+                    Whitespace.space,
                     Word('inner'),
-                    SpecialNode.space
+                    Whitespace.space
                 ]
             ),
-            SpecialNode.space
+            Whitespace.space
         ]
     )
 

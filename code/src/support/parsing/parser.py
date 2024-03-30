@@ -8,12 +8,12 @@ class ParserError(NotebookCodeError):
     pass
 
 
-T = TypeVar('T')
+T_co = TypeVar('T_co')
 
 
 @dataclass
-class Parser(Generic[T]):
-    seq: Sequence[T]
+class Parser(Generic[T_co]):
+    seq: Sequence[T_co]
     index: int = field(default=0, init=False)
 
     def reset(self):
@@ -26,13 +26,13 @@ class Parser(Generic[T]):
         assert 0 <= self.index + count <= len(self.seq)
         self.index += count
 
-    def peek(self) -> T:
+    def peek(self) -> T_co:
         if self.is_at_end():
             raise self.error('Unexpected end of input')
 
         return self.seq[self.index]
 
-    def peek_multiple(self, count: int) -> Sequence[T]:
+    def peek_multiple(self, count: int) -> Sequence[T_co]:
         return self.seq[self.index: self.index + count]
 
     def parse(self):

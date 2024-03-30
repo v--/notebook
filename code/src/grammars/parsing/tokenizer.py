@@ -1,4 +1,5 @@
 from ...support.parsing.tokenizer import Tokenizer
+from ...support.parsing.whitespace import Whitespace
 from ..alphabet import Terminal, NonTerminal
 from .tokens import MiscToken, GrammarToken
 
@@ -49,7 +50,7 @@ class GrammarTokenizer(Tokenizer[GrammarToken]):
         return Terminal(value)
 
     def parse_step(self, head: str) -> GrammarToken:
-        sym = MiscToken.try_match(head)
+        sym = MiscToken.try_match(head) or Whitespace.try_match(head)
 
         if sym is not None:
             self.advance()

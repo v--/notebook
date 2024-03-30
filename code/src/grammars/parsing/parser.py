@@ -1,26 +1,15 @@
 from typing import Iterable
 
 from ...support.parsing.parser import Parser
+from ...support.parsing.mixins.whitespace import WhitespaceTokenizerMixin
+from ...support.parsing.whitespace import Whitespace
 from ..alphabet import Terminal, NonTerminal
 from ..grammar import GrammarRule, GrammarSchema
 from .tokens import MiscToken, GrammarToken
 from .tokenizer import GrammarTokenizer
 
 
-class GrammarParser(Parser[GrammarToken]):
-    def skip_spaces(self):
-        while not self.is_at_end() and self.peek() == MiscToken.space:
-            self.advance()
-
-    def skip_empty_lines(self):
-        while not self.is_at_end() and self.peek() == MiscToken.line_break:
-            self.advance()
-            self.skip_spaces()
-
-    def advance_and_skip_spaces(self):
-        self.advance()
-        self.skip_spaces()
-
+class GrammarParser(WhitespaceTokenizerMixin[GrammarToken], Parser[GrammarToken]):
     def parse_rule_src(self) -> Iterable[Terminal | NonTerminal]:
         assert isinstance(self.peek(), Terminal | NonTerminal)
         contains_nonterminal = False
@@ -69,7 +58,7 @@ class GrammarParser(Parser[GrammarToken]):
             dest = list(self.parse_rule_dest())
             yield GrammarRule(src, dest)
 
-            if self.peek() == MiscToken.line_break:
+            if self.peek() == Whitespace.line_break:
                 self.advance_and_skip_spaces()
                 return
 

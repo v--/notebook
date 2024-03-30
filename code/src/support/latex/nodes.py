@@ -4,6 +4,7 @@ import functools
 import operator
 
 from ..parsing.tokens import TokenEnum, TokenMixin
+from ..parsing.whitespace import Whitespace
 
 
 class Word(TokenMixin):
@@ -19,9 +20,6 @@ class SpecialNode(TokenEnum):
     ampersand = '&'
     underscore = '_'
     caret = '^'
-    space = ' '
-    line_break = '\n'
-    tab = '\t'
 
 
 @dataclass
@@ -63,8 +61,4 @@ class Environment(Group):
         return '\\begin{%s}' % self.name + super().__str__() + '\\end{%s}' % self.name
 
 
-LaTeXNode = Word | Command | SpecialNode | BracelessGroup | BraceGroup | BracketGroup | Environment
-
-
-def is_whitespace_node(node: LaTeXNode) -> TypeGuard[SpecialNode]:
-    return node == SpecialNode.space or node == SpecialNode.tab or node == SpecialNode.line_break
+LaTeXNode = Word | Command | SpecialNode | Whitespace | BracelessGroup | BraceGroup | BracketGroup | Environment

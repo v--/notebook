@@ -1,4 +1,5 @@
 from ...parsing.tokens import TokenEnum, TokenMixin
+from ...parsing.whitespace import Whitespace
 
 
 class WordToken(TokenMixin):
@@ -11,9 +12,6 @@ class EscapedWordToken(TokenMixin):
 
 
 class MiscToken(TokenEnum):
-    line_break = '\n'
-    tab = '\t'
-    space = ' '
     ampersand = '&'
     underscore = '_'
     caret = '^'
@@ -23,4 +21,4 @@ class MiscToken(TokenEnum):
     closing_bracket = ']'
 
 
-LaTeXToken = WordToken | EscapedWordToken | MiscToken
+LaTeXToken = WordToken | EscapedWordToken | Whitespace | MiscToken

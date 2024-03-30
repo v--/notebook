@@ -1,4 +1,5 @@
 from ...parsing.tokenizer import Tokenizer
+from ...parsing.whitespace import Whitespace
 from .tokens import WordToken, EscapedWordToken, MiscToken, LaTeXToken
 
 
@@ -28,7 +29,7 @@ class LaTeXTokenizer(Tokenizer[LaTeXToken]):
         return ''.join(buffer)
 
     def parse_step(self, head: str):
-        if (token := MiscToken.try_match(head)):
+        if (token := MiscToken.try_match(head) or Whitespace.try_match(head)):
             self.advance()
             return token
 

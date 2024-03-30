@@ -1,6 +1,7 @@
 import pytest
 
 from ...parsing.parser import ParserError
+from ...parsing.whitespace import Whitespace
 
 from .tokens import WordToken, EscapedWordToken, MiscToken
 from .tokenizer import tokenize_latex
@@ -52,25 +53,25 @@ def test_escaped_whitespace():
 def test_single_space():
     string = ' '
     tokens = tokenize_latex(string)
-    assert tokens == [MiscToken.space]
+    assert tokens == [Whitespace.space]
 
 
 def test_multiple_spaces():
     string = ' ' * 3
     tokens = tokenize_latex(string)
-    assert tokens == [MiscToken.space] * 3
+    assert tokens == [Whitespace.space] * 3
 
 
-def test_multiple_tabs():
-    string = '\t' * 3
+def test_tab():
+    string = '\t'
     tokens = tokenize_latex(string)
-    assert tokens == [MiscToken.tab] * 3
+    assert tokens == [Whitespace.tab]
 
 
-def test_multiple_line_breaks():
-    string = '\n' * 3
+def test_line_break():
+    string = '\n'
     tokens = tokenize_latex(string)
-    assert tokens == [MiscToken.line_break] * 3
+    assert tokens == [Whitespace.line_break]
 
 
 def test_ampersand():
@@ -94,7 +95,17 @@ def test_underscore():
 def test_command():
     string = '\\sum_{k \\in \\mscrK}'
     tokens = tokenize_latex(string)
-    assert tokens == [EscapedWordToken('sum'), MiscToken.underscore, MiscToken.opening_brace, WordToken('k'), MiscToken.space, EscapedWordToken('in'), MiscToken.space, EscapedWordToken('mscrK'), MiscToken.closing_brace]
+    assert tokens == [
+        EscapedWordToken('sum'),
+        MiscToken.underscore,
+        MiscToken.opening_brace,
+        WordToken('k'),
+        Whitespace.space,
+        EscapedWordToken('in'),
+        Whitespace.space,
+        EscapedWordToken('mscrK'),
+        MiscToken.closing_brace
+    ]
 
 
 def test_real():
