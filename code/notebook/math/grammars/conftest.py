@@ -1,3 +1,5 @@
+from textwrap import dedent
+
 import pytest
 
 from .brute_force_parse import derives
@@ -7,12 +9,16 @@ from .parsing.parser import parse_grammar_schema
 
 @pytest.fixture
 def an():
-    schema = parse_grammar_schema('''
-        <S> → ε
-        <S> → <A>
-        <A> → <A> "a"
-        <A> → "a"
-    ''')
+    schema = parse_grammar_schema(
+        dedent('''\
+            <S> → ε
+            <S> → <A>
+            <A> → <A> "a"
+            <A> → "a"
+            '''
+        )
+    )
+
     return schema.instantiate(NonTerminal('S'))
 
 
@@ -29,12 +35,15 @@ def assert_an(an: Grammar):
 
 @pytest.fixture
 def anbn():
-    schema = parse_grammar_schema('''
-        <S> → ε
-        <S> → <A>
-        <A> → "a" <A> "b"
-        <A> → "a" "b"
-    ''')
+    schema = parse_grammar_schema(
+        dedent('''\
+            <S> → ε
+            <S> → <A>
+            <A> → "a" <A> "b"
+            <A> → "a" "b"
+            '''
+        )
+    )
 
     return schema.instantiate(NonTerminal('S'))
 
@@ -50,11 +59,14 @@ def assert_anbn(anbn: Grammar):
 
 @pytest.fixture
 def s3():
-    schema = parse_grammar_schema('''
-        <S> → ε
-        <S> → <S> <S> <S>
-        <S> → "a"
-    ''')
+    schema = parse_grammar_schema(
+        dedent('''\
+            <S> → ε
+            <S> → <S> <S> <S>
+            <S> → "a"
+            '''
+        )
+    )
 
     return schema.instantiate(NonTerminal('S'))
 
@@ -71,10 +83,13 @@ def assert_s3(s3: Grammar):
 
 @pytest.fixture
 def binary():
-    schema = parse_grammar_schema('''
-        <N> → "0" | "1" | "1" <B>
-        <B> → "0" | "0" <B> | "1" | "1" <B>
-    ''')
+    schema = parse_grammar_schema(
+        dedent('''\
+            <N> → "0" | "1" | "1" <B>
+            <B> → "0" | "0" <B> | "1" | "1" <B>
+            '''
+        )
+    )
 
     return schema.instantiate(NonTerminal('N'))
 

@@ -1,3 +1,5 @@
+from textwrap import dedent
+
 from ..automata.finite import FiniteAutomaton
 from .alphabet import NonTerminal
 from .conftest import assert_an
@@ -33,11 +35,15 @@ def test_from_finite_automaton_an():
 
 
 def test_to_finite_automaton_complex():
-    grammar = parse_grammar_schema('''
-        <S> → "a" "b" "c" <D>
-        <D> → "d" <E> | ε
-        <E> → "e" "f" <E> | ε
-    ''').instantiate(NonTerminal('S'))
+    grammar = parse_grammar_schema(
+        dedent('''\
+            <S> → "a" "b" "c" <D>
+            <D> → "d" <E> | ε
+            <E> → "e" "f" <E> | ε
+            '''
+        )
+    ).instantiate(NonTerminal('S'))
+
     aut = to_finite_automaton(grammar)
 
     assert is_regular(grammar)

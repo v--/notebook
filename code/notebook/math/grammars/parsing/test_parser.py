@@ -1,3 +1,5 @@
+from textwrap import dedent
+
 import pytest
 
 from ....parsing.parser import ParsingError
@@ -7,23 +9,32 @@ from .parser import parse_grammar_schema
 
 
 def test_valid_schemas():
-    assert parse_grammar_schema('''
-        <S> → <S>
-    ''') == GrammarSchema([
+    assert parse_grammar_schema(
+        dedent('''\
+            <S> → <S>
+            '''
+        )
+    ) == GrammarSchema([
         GrammarRule([NonTerminal('S')], [NonTerminal('S')])
     ])
 
-    assert parse_grammar_schema('''
-        <S> → ε | "a" <S>
-    ''') == GrammarSchema([
+    assert parse_grammar_schema(
+        dedent('''\
+            <S> → ε | "a" <S>
+            '''
+        )
+    ) == GrammarSchema([
         GrammarRule([NonTerminal('S')], []),
         GrammarRule([NonTerminal('S')], [Terminal('a'), NonTerminal('S')]),
     ])
 
-    assert parse_grammar_schema('''
-        <S> → ε
-        <S> → "a" <S>
-    ''') == GrammarSchema([
+    assert parse_grammar_schema(
+        dedent('''\
+            <S> → ε
+            <S> → "a" <S>
+            '''
+        )
+    ) == GrammarSchema([
         GrammarRule([NonTerminal('S')], []),
         GrammarRule([NonTerminal('S')], [Terminal('a'), NonTerminal('S')]),
     ])
@@ -48,14 +59,20 @@ def test_parsing_variables_invalid():
 
     # No line break is allowed before the arrow
     with pytest.raises(ParsingError):
-        parse_grammar_schema('''
-            <S>
-            → ε
-        ''')
+        parse_grammar_schema(
+            dedent('''\
+                <S>
+                → ε
+                '''
+            )
+        )
 
     # No line break is allowed after the arrow
     with pytest.raises(ParsingError):
-        parse_grammar_schema('''
-            <S> →
-            ε
-        ''')
+        parse_grammar_schema(
+            dedent('''\
+                <S> →
+                ε
+                '''
+            )
+        )
