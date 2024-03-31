@@ -3,9 +3,8 @@ FIGURES_TEX_PDF := $(patsubst figures/%.tex,output/%.pdf,$(wildcard figures/*.te
 FIGURES_ASY_PDF := $(patsubst figures/%.asy,output/%.eps,$(wildcard figures/*.asy))
 TEXT_SOURCE := notebook.tex classes/notebook.cls bibliography/*.bib packages/*.sty text/*.tex $(FIGURES_TEX_PDF) $(FIGURES_ASY_PDF)
 
-.PHONY: notebook figures watch watch-figures format-figures find-obsolete-figures tidy-bib-files clean checkcites
-
-notebook: output/notebook.pdf
+.PHONY: figures clean
+.DEFAULT_GOAL := output/notebook.pdf
 
 aux:
 	mkdir --parents aux
@@ -29,25 +28,6 @@ output/%.eps: figures/%.asy | aux output
 	cat aux/$*.eps > output/$*.eps
 
 figures: $(FIGURES_TEX_PDF) $(FIGURES_ASY_PDF)
-
-format-figures:
-	@poetry --directory code run python -m code.commands.format_matrices figures/*.tex
-
-find-obsolete-figures:
-	@poetry --directory code run python -m code.commands.find_obsolete_figures
-
-tidy-bib-files:
-	@poetry --directory code run python -m code.commands.tidy_bib_files
-
-checkcites:
-	@checkcites --backend biber --all aux/notebook.bcf
-
-# I have implemented a very useful build system for LaTeX with log processing and debouncing
-watch: | aux output
-	@poetry --directory code run python -m code.commands.watcher all
-
-watch-figures: | aux output
-	@poetry --directory code run python -m code.commands.watcher figures
 
 git-commit-info: .git/refs/heads/master
 	LC_ALL=en_US.UTF-8 git log --max-count 1 --format=format:'hash={%h},date={%cd}' --date='format:%d %B %Y' HEAD > git-commit-info

@@ -1,0 +1,52 @@
+# poetry
+[tool.poetry]
+name = "notebook-commands"
+version = "1.0.0"
+description = "Auxiliary commands for my math notebook"
+authors = ["Ianis Vasilev <ianis@ivasilev.net>"]
+license = "Unlicense"
+package-mode = false
+
+[tool.poetry.dependencies]
+python = "^3.12"
+loguru = "^0.7.2"
+texoutparse = {git = "https://github.com/v--/texoutparse.git"}
+asyncinotify = "^4.0.6"
+bibtexparser = "^1.4.1"
+titlecase = "^2.4.1"
+notebook = {path="../code", develop=true}
+click = "^8.1.7"
+
+[tool.poetry.group.dev.dependencies]
+mypy = "^1.9.0"
+ruff = "^0.3.4"
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"
+
+# poe
+[tool.poe.tasks]
+ruff = "ruff check"
+mypy = "mypy ."
+lint.sequence = ["ruff", "mypy"]
+
+[tool.poe.tasks.test]
+imports = ["os"]
+expr = "os.getcwd()"
+
+[tool.poe.tasks.format-bibliography]
+cmd = "python -m format_bibliography"
+
+# ruff
+[tool.ruff.lint.isort]
+known-first-party = ["notebook"]
+
+# mypy
+[[tool.mypy.overrides]]
+module = [
+  "bibtexparser.*",
+  "texoutparse.*",
+  "titlecase.*"
+]
+ignore_missing_imports = true
