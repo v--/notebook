@@ -2,18 +2,18 @@ from .brute_force_parse import iter_partitions, parse
 from .grammar import Grammar
 
 
-def assert_word_rebuilt(grammar: Grammar, string: str):
+def assert_string_rebuilt(grammar: Grammar, string: str):
     trees = list(parse(grammar, string))
     assert len(trees) > 0
 
     for tree in trees:
-        if tree.yield_word() != string:
+        if tree.yield_string() != string:
             print(tree)
 
-        assert tree.yield_word() == string
+        assert tree.yield_string() == string
 
 
-def assert_word_invalid(grammar: Grammar, string: str):
+def assert_string_invalid(grammar: Grammar, string: str):
     trees = list(parse(grammar, string))
 
     if len(trees) > 0:
@@ -31,47 +31,47 @@ def test_iter_partitions():
 
 
 def test_an_valid(an: Grammar):
-    assert_word_rebuilt(an, '')
-    assert_word_rebuilt(an, 'a')
-    assert_word_rebuilt(an, 'aaa')
+    assert_string_rebuilt(an, '')
+    assert_string_rebuilt(an, 'a')
+    assert_string_rebuilt(an, 'aaa')
 
 
 def test_an_invalid(an: Grammar):
-    assert_word_invalid(an, 'b')
-    assert_word_invalid(an, 'ab')
+    assert_string_invalid(an, 'b')
+    assert_string_invalid(an, 'ab')
 
 
 def test_anbn_valid(anbn: Grammar):
-    assert_word_rebuilt(anbn, '')
-    assert_word_rebuilt(anbn, 'ab')
-    assert_word_rebuilt(anbn, 'aaabbb')
+    assert_string_rebuilt(anbn, '')
+    assert_string_rebuilt(anbn, 'ab')
+    assert_string_rebuilt(anbn, 'aaabbb')
 
 
 def test_anbn_invalid(anbn: Grammar):
-    assert_word_invalid(anbn, 'a')
-    assert_word_invalid(anbn, 'ba')
+    assert_string_invalid(anbn, 'a')
+    assert_string_invalid(anbn, 'ba')
 
 
 def test_epsilon_rules_valid(s3: Grammar):
-    assert_word_rebuilt(s3, '')
-    assert_word_rebuilt(s3, 'a')
-    assert_word_rebuilt(s3, 'aa')
-    assert_word_rebuilt(s3, 'aaa')
+    assert_string_rebuilt(s3, '')
+    assert_string_rebuilt(s3, 'a')
+    assert_string_rebuilt(s3, 'aa')
+    assert_string_rebuilt(s3, 'aaa')
 
 
 def test_epsilon_rules_invalid(s3: Grammar):
-    assert_word_invalid(s3, 'b')
+    assert_string_invalid(s3, 'b')
 
 
 def test_binary_numbers_valid(binary: Grammar):
-    assert_word_rebuilt(binary, '0')
-    assert_word_rebuilt(binary, '1')
-    assert_word_rebuilt(binary, '10')
-    assert_word_rebuilt(binary, '11')
-    assert_word_rebuilt(binary, '100')
-    assert_word_rebuilt(binary, '101')
+    assert_string_rebuilt(binary, '0')
+    assert_string_rebuilt(binary, '1')
+    assert_string_rebuilt(binary, '10')
+    assert_string_rebuilt(binary, '11')
+    assert_string_rebuilt(binary, '100')
+    assert_string_rebuilt(binary, '101')
 
 
 def test_binary_numbers_invalid(binary: Grammar):
-    assert_word_invalid(binary, '')
-    assert_word_invalid(binary, '01')
+    assert_string_invalid(binary, '')
+    assert_string_invalid(binary, '01')

@@ -46,7 +46,7 @@ class ParseTree:
         for node in self.children:
             yield from node.iter_symbols()
 
-    def yield_word(self):
+    def yield_string(self):
         return ''.join(sym.value for sym in self.iter_symbols() if isinstance(sym, Terminal))
 
     def build_rich_tree(self):

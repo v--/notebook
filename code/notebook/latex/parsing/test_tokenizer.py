@@ -12,19 +12,19 @@ def test_empty_string():
     assert tokens == []
 
 
-def test_latin_word():
+def test_latin_string():
     string = 'test'
     tokens = tokenize_latex(string)
     assert tokens == [WordToken('test')]
 
 
-def test_cyrillic_word():
+def test_cyrillic_string():
     string = 'тест'
     tokens = tokenize_latex(string)
     assert tokens == [WordToken('тест')]
 
 
-def test_numeric_word():
+def test_numeric_string():
     string = '1153'
     tokens = tokenize_latex(string)
     assert tokens == [WordToken('1153')]

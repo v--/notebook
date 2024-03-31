@@ -18,18 +18,18 @@ class FiniteAutomaton(Generic[StateT, LabelT]):
     def add_transition(self, src: StateT, label: LabelT, dest: StateT):
         self.triples.append((src, label, dest))
 
-    def _recognize_recurse(self, word: str, initial: StateT):
-        if len(word) == 0:
+    def _recognize_recurse(self, string: str, initial: StateT):
+        if len(string) == 0:
             return initial in self.terminal
 
         return any(
-            self._recognize_recurse(word[1:], dest)
+            self._recognize_recurse(string[1:], dest)
             for src, label, dest in self.triples
-            if src == initial and label == word[0]
+            if src == initial and label == string[0]
         )
 
-    def recognize(self, word: str):
-        return any(self._recognize_recurse(word, i) for i in self.initial)
+    def recognize(self, string: str):
+        return any(self._recognize_recurse(string, i) for i in self.initial)
 
     def is_deterministic(self):
         if len(self.initial) != 1:
