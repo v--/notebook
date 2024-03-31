@@ -1,7 +1,6 @@
 from abc import ABC, abstractmethod
 from typing import Generic, Iterable, TypeVar
 
-from .identifiers import AlphabeticIdentifier, Capitalization
 from .parser import Parser
 from .tokens import AbstractToken
 

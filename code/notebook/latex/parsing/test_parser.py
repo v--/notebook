@@ -9,7 +9,6 @@ from ..nodes import (
     BracketGroup,
     Command,
     Environment,
-    SpecialNode,
     Word,
     stringify_nodes,
 )

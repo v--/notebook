@@ -1,9 +1,7 @@
-from collections.abc import Iterable, Sequence
+from collections.abc import Sequence
 from dataclasses import dataclass, field
-from textwrap import indent
 from typing import Generic, TypeVar
 
-from .annotation import annotate_existing_tokens
 from .exceptions import ParsingError
 from .highlighter import ErrorHighlighter
 from .tokens import AbstractToken

@@ -4,7 +4,6 @@ import pytest
 
 from ....parsing.parser import ParsingError
 from ..alphabet import NonTerminal, Terminal
-from ..grammar import GrammarRule, GrammarSchema
 from .tokenizer import tokenize_bnf
 
 

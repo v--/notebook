@@ -1,7 +1,7 @@
 import functools
 import operator
 from dataclasses import dataclass
-from typing import Iterable, TypeGuard
+from typing import Iterable
 
 from ..parsing.tokens import TokenEnum, TokenMixin
 from ..parsing.whitespace import Whitespace

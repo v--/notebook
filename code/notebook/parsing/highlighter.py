@@ -1,9 +1,8 @@
 from collections.abc import Iterable, Sequence
 from dataclasses import dataclass, field
 from enum import StrEnum
-from typing import Generic, NamedTuple, TypeVar
+from typing import Generic, TypeVar
 
-from ..exceptions import NotebookCodeError
 from ..support.iteration import string_accumulator
 from .annotation import AnnotatedToken, annotate_existing_tokens
 from .tokens import AbstractToken

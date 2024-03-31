@@ -1,5 +1,4 @@
-from abc import ABC, abstractmethod
-from typing import Generic, Iterable, TypeVar
+from typing import TypeVar
 
 from ..tokenizer import Parser
 from ..tokens import AbstractToken

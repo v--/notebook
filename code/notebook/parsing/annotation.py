@@ -1,6 +1,6 @@
 from collections.abc import Iterable, Sequence
 from dataclasses import dataclass
-from typing import Generic, ParamSpec, TypeVar
+from typing import Generic, TypeVar
 
 from ..support.iteration import list_accumulator
 from .tokens import AbstractToken
