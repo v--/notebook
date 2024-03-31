@@ -1,7 +1,7 @@
 .PHONY: test lint
 
 test:
-	poetry run pytest notebook
+	poetry run pytest
 
 lint:
 	poetry run ruff check
