@@ -1,8 +1,8 @@
 .PHONY: test lint
 
 test:
-	poetry run pytest
+	poetry run pytest notebook
 
 lint:
 	poetry run ruff check
-	poetry run mypy --package notebook --package commands
+	poetry run mypy --package notebook

@@ -2,7 +2,6 @@ from ...parsing.parser import Parser
 from ...parsing.whitespace import Whitespace
 from ..nodes import (
     BraceGroup,
-    BracelessGroup,
     BracketGroup,
     Command,
     Environment,
@@ -21,10 +20,10 @@ class LaTeXParser(Parser[LaTeXToken]):
         start_index = self.index
         self.advance()
         group = cls(contents=[])
-        parsed = self.parse_all_steps()
+        parsed_iter = self.parse()
 
         while not self.is_at_end() and self.peek() != closing:
-            group.contents.append(next(parsed))
+            group.contents.append(next(parsed_iter))
 
         if self.is_at_end() or self.peek() != closing:
             raise self.error(f'Unmatched {opening}', precede=self.index - start_index)
@@ -56,14 +55,14 @@ class LaTeXParser(Parser[LaTeXToken]):
         if self.is_at_end():
             raise self.error('Unmatched \\begin{%s}' % environment.name, precede=self.index - start_index)
 
-        parsed = self.parse_all_steps()
+        parsed_iter = self.parse()
 
         while not self.is_at_end():
             if self.peek_multiple(4) == [EscapedWordToken('end'), MiscToken.opening_brace, WordToken(environment.name), MiscToken.closing_brace]:
                 self.advance(4)
                 return environment
             else:
-                environment.contents.append(next(parsed))
+                environment.contents.append(next(parsed_iter))
 
         raise self.error(f'Unmatched {MiscToken.opening_brace}', precede=self.index - start_index)
 
@@ -105,22 +104,14 @@ class LaTeXParser(Parser[LaTeXToken]):
             case _:
                 raise self.error('Unexpected token')
 
-    def parse_all_steps(self):
+    def parse(self):
         while not self.is_at_end():
             yield self.parse_step(self.peek())
 
-    def parse(self):
-        result = list(self.parse_all_steps())
 
-        if len(result) == 1:
-            return result[0]
-
-        return BracelessGroup(contents=result)
-
-
-def parse_latex(string: str) -> BracelessGroup:
+def parse_latex(string: str) -> list[LaTeXNode]:
     tokens = tokenize_latex(string)
     parser = LaTeXParser(tokens)
-    group = parser.parse()
+    result = list(parser.parse())
     parser.assert_exhausted()
-    return group
+    return result

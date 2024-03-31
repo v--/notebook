@@ -1,7 +1,7 @@
 import functools
 import operator
 from dataclasses import dataclass
-from typing import TypeGuard
+from typing import Iterable, TypeGuard
 
 from ..parsing.tokens import TokenEnum, TokenMixin
 from ..parsing.whitespace import Whitespace
@@ -39,10 +39,6 @@ class Group:
         return False
 
 
-class BracelessGroup(Group):
-    pass
-
-
 class BraceGroup(Group):
     def __str__(self):
         return '{' + super().__str__() + '}'
@@ -61,4 +57,8 @@ class Environment(Group):
         return '\\begin{%s}' % self.name + super().__str__() + '\\end{%s}' % self.name
 
 
-LaTeXNode = Word | Command | SpecialNode | Whitespace | BracelessGroup | BraceGroup | BracketGroup | Environment
+LaTeXNode = Word | Command | SpecialNode | Whitespace | BraceGroup | BracketGroup | Environment
+
+
+def stringify_nodes(nodes: Iterable[LaTeXNode]) -> str:
+    return ''.join(map(str, nodes))

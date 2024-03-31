@@ -1,16 +1,16 @@
 from dataclasses import dataclass, field, replace
-from typing import Generic, Iterator, TypeVar
+from typing import Generic, Iterable, TypeVar
 
 from ..parsing.parser import Parser
 from ..parsing.whitespace import Whitespace
 from .nodes import (
-    BracelessGroup,
     BracketGroup,
     Command,
     Environment,
     Group,
     LaTeXNode,
     SpecialNode,
+    stringify_nodes,
 )
 from .parsing.parser import parse_latex
 
@@ -19,32 +19,31 @@ INDENT = 2
 
 
 line_break_command = Command('\\')
-empty_group = BracelessGroup(contents=[])
 
 
-def strip_whitespace(grp: BracelessGroup):
+def strip_whitespace(contents: list[LaTeXNode]) -> list[LaTeXNode]:
     leading = 0
     trailing = 0
 
-    for node in grp.contents:
+    for node in contents:
         if isinstance(node, Whitespace):
             leading += 1
         else:
             break
 
-    for node in reversed(grp.contents):
+    for node in reversed(contents):
         if isinstance(node, Whitespace):
             trailing += 1
         else:
             break
 
-    if leading + trailing >= len(grp.contents):
-        return BracelessGroup([])
+    if leading + trailing >= len(contents):
+        return []
 
     if trailing == 0:
-        return BracelessGroup(grp.contents[leading:])
+        return contents[leading:]
 
-    return BracelessGroup(grp.contents[leading:-trailing])
+    return contents[leading:-trailing]
 
 
 T = TypeVar('T')
@@ -72,7 +71,7 @@ class SparseMatrix(Generic[T]):
 
 @dataclass
 class MatrixEnvironment:
-    matrix: SparseMatrix[LaTeXNode]
+    matrix: SparseMatrix[list[LaTeXNode]]
     name: str
     options: BracketGroup | None
     whitespace_prefix_length: int
@@ -91,16 +90,16 @@ class MatrixEnvironmentParser(Parser[LaTeXNode]):
         self.advance()
         self.skip_whitespace()
 
-    def parse_cell(self) -> BracelessGroup:
+    def parse_cell(self) -> list[LaTeXNode]:
         buffer: list[LaTeXNode] = []
 
         while not self.is_at_end() and self.peek() != SpecialNode.ampersand and self.peek() != line_break_command:
             buffer.append(self.peek())
             self.advance()
 
-        return strip_whitespace(BracelessGroup(buffer))
+        return strip_whitespace(buffer)
 
-    def parse_line(self) -> Iterator[BracelessGroup]:
+    def parse_line(self) -> Iterable[list[LaTeXNode]]:
         while not self.is_at_end():
             yield self.parse_cell()
 
@@ -118,7 +117,7 @@ class MatrixEnvironmentParser(Parser[LaTeXNode]):
 
     def parse(self):
         env = MatrixEnvironment(
-            SparseMatrix(default=empty_group),
+            SparseMatrix(default=[]),
             self.environment_name, None,
             self.whitespace_prefix_length
         )
@@ -144,22 +143,19 @@ def align_spaces_in_matrix(env: MatrixEnvironment) -> MatrixEnvironment:
     w = env.matrix.get_width()
     h = env.matrix.get_height()
 
-    new_matrix: SparseMatrix[LaTeXNode] = SparseMatrix(default=empty_group)
+    new_matrix: SparseMatrix[list[LaTeXNode]] = SparseMatrix(default=[])
 
     for j in range(w):
-        max_col_width = max(len(str(env.matrix[i, j])) for i in range(h))
+        max_col_width = max(len(stringify_nodes(env.matrix[i, j])) for i in range(h))
 
         for i in range(h):
-            # print(repr(env.matrix[i, j]))
             if max_col_width == 0:
-                new_matrix[i, j] = BracelessGroup([])
+                new_matrix[i, j] = []
             elif i == h - 1 and j == w - 1:
-                new_matrix[i, j] = BracelessGroup([env.matrix[i, j]])
+                new_matrix[i, j] = env.matrix[i, j]
             else:
-                new_matrix[i, j] = BracelessGroup(
-                    [env.matrix[i, j]] + \
-                    [Whitespace.space] * (max_col_width - len(str(env.matrix[i, j])))
-                )
+                new_matrix[i, j] = env.matrix[i, j] + \
+                    [Whitespace.space] * (max_col_width - len(stringify_nodes(env.matrix[i, j])))
 
     return replace(env, matrix=new_matrix)
 
@@ -188,15 +184,15 @@ def matrix_to_environment(env: MatrixEnvironment):
             if j == 0:
                 result.contents.extend([Whitespace.space] * (env.whitespace_prefix_length + INDENT))
 
-            result.contents.append(env.matrix[i, j])
+            result.contents.extend(env.matrix[i, j])
 
             if j < w - 1:
-                if len(str(env.matrix[i, j])) > 0:
+                if len(stringify_nodes(env.matrix[i, j])) > 0:
                     result.contents.append(Whitespace.space)
 
                 result.contents.append(SpecialNode.ampersand)
 
-                if len(str(env.matrix[i, j + 1])) > 0:
+                if len(stringify_nodes(env.matrix[i, j + 1])) > 0:
                     result.contents.append(Whitespace.space)
             elif i < h - 1:
                 result.contents.append(Whitespace.space)
@@ -209,41 +205,39 @@ def matrix_to_environment(env: MatrixEnvironment):
     return result
 
 
-def format_recurse(node: LaTeXNode, whitespace_prefix_length: int):
-    if not isinstance(node, Group):
-        return node
-
-    new_contents: list[LaTeXNode] = []
+def format_recurse(nodes: Iterable[LaTeXNode], whitespace_prefix_length: int) -> Iterable[LaTeXNode]:
     child_whitespace_prefix_length = whitespace_prefix_length
 
-    for child in node.contents:
-        match child:
+    for node in nodes:
+        match node:
             case Whitespace.line_break:
                 child_whitespace_prefix_length = 0
-                new_contents.append(child)
+                yield node
 
             case Whitespace.space:
                 child_whitespace_prefix_length += 1
-                new_contents.append(child)
+                yield node
 
             case Whitespace.tab:
                 child_whitespace_prefix_length += 4
-                new_contents.append(child)
+                yield node
+
+            case Group():
+                formatted_contents = list(format_recurse(node.contents, child_whitespace_prefix_length))
+
+                if isinstance(node, Environment):
+                    parser = MatrixEnvironmentParser(formatted_contents, node.name, child_whitespace_prefix_length)
+                    matrix = parser.parse()
+                    aligned_matrix = align_spaces_in_matrix(matrix)
+                    yield matrix_to_environment(aligned_matrix)
+                else:
+                    yield type(node)(contents=formatted_contents)
 
             case _:
-                new_child = format_recurse(child, child_whitespace_prefix_length)
-                new_contents.append(new_child)
-
-    if isinstance(node, Environment):
-        parser = MatrixEnvironmentParser(new_contents, node.name, whitespace_prefix_length)
-        matrix = parser.parse()
-        aligned_matrix = align_spaces_in_matrix(matrix)
-        return matrix_to_environment(aligned_matrix)
-
-    return type(node)(contents=new_contents)
+                yield node
 
 
 def format_tex_matrices(string: str):
-    parsed = parse_latex(string)
-    new = format_recurse(parsed, whitespace_prefix_length=0)
-    return str(new)
+    nodes = parse_latex(string)
+    formatted = format_recurse(nodes, whitespace_prefix_length=0)
+    return stringify_nodes(formatted)
