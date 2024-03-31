@@ -1,6 +1,6 @@
 import pytest
 
-from ....parsing.parser import ParserError
+from ....parsing.parser import ParsingError
 from .parser import parse_rule
 
 
@@ -15,23 +15,23 @@ def test_parsing_atomic_valid():
 
 def test_parsing_atomic_invalid():
     # There must be a name
-    with pytest.raises(ParserError):
+    with pytest.raises(ParsingError):
         parse_rule('Φ ⇛ Ψ')
 
     # The name must not be empty
-    with pytest.raises(ParserError):
+    with pytest.raises(ParsingError):
         parse_rule('() Φ ⇛ Ψ')
 
     # The name parentheses must be closed
-    with pytest.raises(ParserError):
+    with pytest.raises(ParsingError):
         parse_rule('(R Φ ⇛ Ψ')
 
     # Premises must be separated by commas
-    with pytest.raises(ParserError):
+    with pytest.raises(ParsingError):
         parse_rule('(R) Φ₁ Φ₂ ⇛ Ψ')
 
     # There must be a conclusion
-    with pytest.raises(ParserError):
+    with pytest.raises(ParsingError):
         parse_rule('(R) ⇛')
 
 
@@ -44,11 +44,11 @@ def test_parsing_markers_valid():
 
 def test_parsing_markers_invalid():
     # The discharge brackets must be closed
-    with pytest.raises(ParserError):
+    with pytest.raises(ParsingError):
         parse_rule('(R) [θ Φ ⇛ Ψ')
 
     # The conclusion cannot have a marker
-    with pytest.raises(ParserError):
+    with pytest.raises(ParsingError):
         parse_rule('(R) ⇛ [θ] Ψ')
 
 

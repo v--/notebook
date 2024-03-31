@@ -91,7 +91,7 @@ class FOLParser(Parser[FOLToken]):
 
         if self.peek() == MiscToken.equality:
             if a_term is None:
-                raise self.error('The left side of an equality formula must be a term', precede=self.index - a_start)
+                raise self.error('The left side of an equality formula must be a term', i_first_token=a_start)
 
             self.advance()
             b_term = self.parse_term()
@@ -100,14 +100,14 @@ class FOLParser(Parser[FOLToken]):
                 self.advance()
                 return EqualityFormula(a_term, b_term)
             else:
-                raise self.error('Unclosed parentheses for binary formula', precede=self.index - a_start)
+                raise self.error('Unclosed parentheses for binary formula', i_first_token=a_start)
 
         elif isinstance(connective := self.peek(), BinaryConnective):
             if isinstance(a_term, FunctionTerm):
                 a_form = PredicateFormula(a_term.name, a_term.arguments)
 
             if a_form is None:
-                raise self.error('The left side of a connective formula must be a formula', precede=self.index - a_start)
+                raise self.error('The left side of a connective formula must be a formula', i_first_token=a_start)
 
             self.advance()
             b_form = self.parse_formula()
@@ -116,7 +116,7 @@ class FOLParser(Parser[FOLToken]):
                 self.advance()
                 return ConnectiveFormula(connective, a_form, b_form)  # type: ignore
             else:
-                raise self.error('Unclosed parentheses for binary formula', precede=self.index - a_start)
+                raise self.error('Unclosed parentheses for binary formula', i_first_token=a_start)
 
         else:
             raise self.error('Unexpected token')

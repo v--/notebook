@@ -24,19 +24,19 @@ class LambdaParser(Parser[LambdaToken]):
         self.advance(2)
 
         if not isinstance(self.peek(), LatinIdentifier):
-            raise self.error('Expected a variable name after "λ."', precede=self.index - start)
+            raise self.error('Expected a variable name after "λ."', i_first_token=start)
 
         var = self.parse_variable()
 
         if self.peek() == MiscToken.dot:
             self.advance()
         else:
-            raise self.error('Expected dot after variable', precede=self.index - start)
+            raise self.error('Expected dot after variable', i_first_token=start)
 
         sub = self.parse_term()
 
         if self.is_at_end() or self.peek() != MiscToken.right_parenthesis:
-            raise self.error('Unclosed parentheses for abstraction', precede=self.index - start)
+            raise self.error('Unclosed parentheses for abstraction', i_first_token=start)
 
         self.advance()
         return Abstraction(var, sub)
@@ -49,12 +49,12 @@ class LambdaParser(Parser[LambdaToken]):
         a = self.parse_term()
 
         if self.is_at_end():
-            raise self.error('Unexpected end while parsing application', precede=self.index - start)
+            raise self.error('Unexpected end while parsing application', i_first_token=start)
 
         b = self.parse_term()
 
         if self.is_at_end() or self.peek() != MiscToken.right_parenthesis:
-            raise self.error('Unclosed parentheses for application', precede=self.index - start)
+            raise self.error('Unclosed parentheses for application', i_first_token=start)
 
         self.advance()
         return Application(a, b)

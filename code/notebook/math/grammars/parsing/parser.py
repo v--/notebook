@@ -5,7 +5,7 @@ from ....parsing.parser import Parser
 from ....parsing.whitespace import Whitespace
 from ..alphabet import NonTerminal, Terminal
 from ..grammar import GrammarRule, GrammarSchema
-from .tokenizer import GrammarTokenizer
+from .tokenizer import tokenize_bnf
 from .tokens import GrammarToken, MiscToken
 
 
@@ -85,7 +85,7 @@ class GrammarParser(WhitespaceTokenizerMixin[GrammarToken], Parser[GrammarToken]
 
 
 def parse_grammar_schema(string: str) -> GrammarSchema:
-    tokens = list(GrammarTokenizer(string).parse())
+    tokens = tokenize_bnf(string)
     parser = GrammarParser(tokens)
     schema = parser.parse_schema()
     parser.assert_exhausted()

@@ -1,6 +1,6 @@
 import pytest
 
-from ....parsing.parser import ParserError
+from ....parsing.parser import ParsingError
 from ..terms import Variable
 from .parser import parse_term
 
@@ -13,15 +13,15 @@ def test_parsing_variables_valid():
 
 def test_parsing_variables_invalid():
     # Only one letter per variable
-    with pytest.raises(ParserError):
+    with pytest.raises(ParsingError):
         parse_term('xy')
 
     # Disallow leading zeros
-    with pytest.raises(ParserError):
+    with pytest.raises(ParsingError):
         parse_term('x₀₁')
 
     # And no trailing characters
-    with pytest.raises(ParserError):
+    with pytest.raises(ParsingError):
         parse_term('x ')
 
 
@@ -41,27 +41,27 @@ def test_parsing_terms_valid():
 
 
 def test_parsing_abstraction_invalid():
-    with pytest.raises(ParserError):
+    with pytest.raises(ParsingError):
         parse_term('(λ')
 
-    with pytest.raises(ParserError):
+    with pytest.raises(ParsingError):
         parse_term('(λx')
 
-    with pytest.raises(ParserError):
+    with pytest.raises(ParsingError):
         parse_term('(λx.')
 
-    with pytest.raises(ParserError):
+    with pytest.raises(ParsingError):
         parse_term('(λx.x')
 
 
 def test_parsing_application_invalid():
-    with pytest.raises(ParserError):
+    with pytest.raises(ParsingError):
         parse_term('(')
 
-    with pytest.raises(ParserError):
+    with pytest.raises(ParsingError):
         parse_term('(x')
 
-    with pytest.raises(ParserError):
+    with pytest.raises(ParsingError):
         parse_term('(xy')
 
 

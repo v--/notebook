@@ -49,7 +49,7 @@ class NaturalDeductionParser(Parser[RuleToken]):
         if isinstance(self.peek(), GreekIdentifier):
             a = self.parse_placeholder()
         else:
-            raise self.error('Expected a formula placeholder', precede=self.index - a_start)
+            raise self.error('Expected a formula placeholder', i_first_token=a_start)
 
         if isinstance(connective := self.peek(), BinaryConnective):
             # See https://github.com/python/mypy/issues/16707
@@ -61,9 +61,9 @@ class NaturalDeductionParser(Parser[RuleToken]):
                     self.advance()
                     return ConnectiveFormulaPlaceholder(connective, a, b)
                 else:
-                    raise self.error('Unclosed parentheses for binary formula placeholder', precede=self.index - a_start)
+                    raise self.error('Unclosed parentheses for binary formula placeholder', i_first_token=a_start)
             else:
-                raise self.error('The left side of a connective formula placeholder must itself be a placeholder', precede=self.index - a_start)
+                raise self.error('The left side of a connective formula placeholder must itself be a placeholder', i_first_token=a_start)
 
         else:
             raise self.error('Unexpected token')

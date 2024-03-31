@@ -1,6 +1,8 @@
+from textwrap import dedent
+
 import pytest
 
-from ...parsing.parser import ParserError
+from ...parsing.parser import ParsingError
 from ...parsing.whitespace import Whitespace
 from ..nodes import (
     BraceGroup,
@@ -65,7 +67,7 @@ def test_command_with_brace_arg():
 def test_unmatched_brace():
     string = '\\test{a'
 
-    with pytest.raises(ParserError):
+    with pytest.raises(ParsingError):
         parse_latex(string)
 
 
@@ -81,7 +83,7 @@ def test_command_with_bracket_arg():
 def test_unmatched_bracket():
     string = '\\test[a'
 
-    with pytest.raises(ParserError):
+    with pytest.raises(ParsingError):
         parse_latex(string)
 
 
@@ -120,28 +122,28 @@ def test_basic_environment():
 def test_unmatched_environment():
     string = '\\begin{test}'
 
-    with pytest.raises(ParserError):
+    with pytest.raises(ParsingError):
         parse_latex(string)
 
 
 def test_missing_environment_name():
     string = '\\begin'
 
-    with pytest.raises(ParserError):
+    with pytest.raises(ParsingError):
         parse_latex(string)
 
 
 def test_unclosed_and_missing_environment_name():
     string = '\\begin{'
 
-    with pytest.raises(ParserError):
+    with pytest.raises(ParsingError):
         parse_latex(string)
 
 
 def test_unclosed_environment_name():
     string = '\\begin{test'
 
-    with pytest.raises(ParserError):
+    with pytest.raises(ParsingError):
         parse_latex(string)
 
 
@@ -190,12 +192,14 @@ def test_same_nested_environment():
 
 
 def test_matrix_environment():
-    string = r'''
+    string = dedent(r'''
         \begin{pmatrix}
           1 & 0 \\
           0 & 1
         \end{pmatrix}
-    '''
+        '''
+    )
+
     nodes = parse_latex(string)
     assert ''.join(map(str, nodes)) == string
 

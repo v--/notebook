@@ -1,6 +1,6 @@
 import pytest
 
-from ....parsing.parser import ParserError
+from ....parsing.parser import ParsingError
 from ..alphabet import NonTerminal, Terminal
 from ..grammar import GrammarRule, GrammarSchema
 from .parser import parse_grammar_schema
@@ -31,30 +31,30 @@ def test_valid_schemas():
 
 def test_parsing_variables_invalid():
     # The schema must be nonempty
-    with pytest.raises(ParserError):
+    with pytest.raises(ParsingError):
         parse_grammar_schema('')
 
     # The left side must have a nonterminal
-    with pytest.raises(ParserError):
+    with pytest.raises(ParsingError):
         parse_grammar_schema('"a" → ε')
 
     # The left side must not contain ε
-    with pytest.raises(ParserError):
+    with pytest.raises(ParsingError):
         parse_grammar_schema('ε → ε')
 
     # The right side must not contain anything after ε
-    with pytest.raises(ParserError):
+    with pytest.raises(ParsingError):
         parse_grammar_schema('<S> → ε <S>')
 
     # No line break is allowed before the arrow
-    with pytest.raises(ParserError):
+    with pytest.raises(ParsingError):
         parse_grammar_schema('''
             <S>
             → ε
         ''')
 
     # No line break is allowed after the arrow
-    with pytest.raises(ParserError):
+    with pytest.raises(ParsingError):
         parse_grammar_schema('''
             <S> →
             ε

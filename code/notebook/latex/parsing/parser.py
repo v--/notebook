@@ -26,7 +26,7 @@ class LaTeXParser(Parser[LaTeXToken]):
             group.contents.append(next(parsed_iter))
 
         if self.is_at_end() or self.peek() != closing:
-            raise self.error(f'Unmatched {opening}', precede=self.index - start_index)
+            raise self.error(f'Unmatched {opening}', i_first_token=start_index)
 
         self.advance()
         return group
@@ -37,34 +37,44 @@ class LaTeXParser(Parser[LaTeXToken]):
         self.advance()
 
         if self.is_at_end() or self.peek() != MiscToken.opening_brace:
-            raise self.error('No environment name specified', precede=self.index - start_index)
+            raise self.error('No environment name specified', i_first_token=start_index)
 
         self.advance()
 
         if self.is_at_end() or not isinstance(head := self.peek(), WordToken):
-            raise self.error('No environment name specified', precede=self.index - start_index)
+            raise self.error('No environment name specified', i_first_token=start_index)
 
         environment = Environment(name=head.value, contents=[])
         self.advance()
 
         if self.is_at_end() or self.peek() != MiscToken.closing_brace:
-            raise self.error('Unclosed brace when specifying environment name', precede=self.index - start_index)
+            raise self.error('Unclosed brace when specifying environment name', i_first_token=start_index)
 
         self.advance()
 
         if self.is_at_end():
-            raise self.error('Unmatched \\begin{%s}' % environment.name, precede=self.index - start_index)
+            raise self.error('Unmatched \\begin{%s}' % environment.name, i_first_token=start_index)
 
         parsed_iter = self.parse()
 
         while not self.is_at_end():
-            if self.peek_multiple(4) == [EscapedWordToken('end'), MiscToken.opening_brace, WordToken(environment.name), MiscToken.closing_brace]:
-                self.advance(4)
-                return environment
+            next_tokens = self.peek_multiple(4)
+
+            if len(next_tokens) == 4 and \
+                next_tokens[:2] == [EscapedWordToken('end'), MiscToken.opening_brace] \
+                and isinstance(next_tokens[2], WordToken) \
+                and next_tokens[3] == MiscToken.closing_brace:
+
+                if next_tokens[2].value == environment.name:
+                    self.advance(4)
+                    return environment
+                else:
+                    self.advance(3)
+                    raise self.error('Mismatched environment \\begin{%s}' % environment.name, i_first_token=start_index)
             else:
                 environment.contents.append(next(parsed_iter))
 
-        raise self.error(f'Unmatched {MiscToken.opening_brace}', precede=self.index - start_index)
+        raise self.error(f'Unmatched {MiscToken.opening_brace}', i_first_token=start_index)
 
     def parse_step(self, head: LaTeXToken) -> LaTeXNode:
         match head:

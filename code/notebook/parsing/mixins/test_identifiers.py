@@ -3,7 +3,7 @@ from dataclasses import dataclass
 import pytest
 
 from ..identifiers import Capitalization, GreekIdentifier, LatinIdentifier
-from ..parser import ParserError
+from ..parser import ParsingError
 from ..tokenizer import Tokenizer
 from ..tokens import TokenEnum
 from .identifiers import IdentifierTokenizerMixin
@@ -64,11 +64,11 @@ def test_valid_latin_identifiers():
 
 def test_invalid_latin_identifiers():
     # Fails to parse Cyrillic
-    with pytest.raises(ParserError):
+    with pytest.raises(ParsingError):
         tokenize('Тест')
 
     # Fails to parse capitalized identifiers when uncapitalized ones are expected
-    with pytest.raises(ParserError):
+    with pytest.raises(ParsingError):
         tokenize('TEST', Capitalization.small)
 
 

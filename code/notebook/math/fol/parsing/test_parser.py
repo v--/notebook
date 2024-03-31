@@ -1,6 +1,6 @@
 import pytest
 
-from ....parsing.parser import ParserError
+from ....parsing.parser import ParsingError
 from ..formulas import EqualityFormula
 from ..terms import FunctionTerm, Variable
 from .parser import parse_formula, parse_term
@@ -14,18 +14,18 @@ def test_parsing_variables_valid():
 
 def test_parsing_variables_invalid():
     # Disallow leading zeros
-    with pytest.raises(ParserError):
+    with pytest.raises(ParsingError):
         parse_term('ξ₀₁')
 
     # Allow only Greek letters for names
     assert not isinstance(parse_term('a'), Variable)
 
     # Not too Greek
-    with pytest.raises(ParserError):
+    with pytest.raises(ParsingError):
         parse_term('Εὐκλείδης')
 
     # And no trailing characters
-    with pytest.raises(ParserError):
+    with pytest.raises(ParsingError):
         parse_term('ξ ')
 
 
@@ -39,22 +39,22 @@ def test_parsing_functions_valid():
 
 def test_parsing_functions_invalid():
     # Disallow leading zeros
-    with pytest.raises(ParserError):
+    with pytest.raises(ParsingError):
         parse_term('f₀₀')
 
     # Only allow the letters from a to z and from α to ω
-    with pytest.raises(ParserError):
+    with pytest.raises(ParsingError):
         parse_term('ö')
 
     # Disallow empty argument list
-    with pytest.raises(ParserError):
+    with pytest.raises(ParsingError):
         parse_term('f()')
 
     # Validate closing parentheses
-    with pytest.raises(ParserError):
+    with pytest.raises(ParsingError):
         parse_term('f(')
 
-    with pytest.raises(ParserError):
+    with pytest.raises(ParsingError):
         parse_term('f(a,b')
 
 
@@ -65,15 +65,15 @@ def test_parsing_equalities_valid():
 
 def test_parsing_equalities_invalid():
     # Disallow obviously invalid expressions
-    with pytest.raises(ParserError):
+    with pytest.raises(ParsingError):
         parse_formula('(ξ = )')
 
     # Parentheses must be closed
-    with pytest.raises(ParserError):
+    with pytest.raises(ParsingError):
         parse_formula('(ξ = η')
 
     # The left side of an equality formula must be a term
-    with pytest.raises(ParserError):
+    with pytest.raises(ParsingError):
         parse_formula('(¬p(ξ) = η)')
 
 
@@ -94,34 +94,34 @@ def test_parsing_formulas_valid():
 
 def test_parsing_formulas_invalid():
     # Parentheses must be closed
-    with pytest.raises(ParserError):
+    with pytest.raises(ParsingError):
         parse_formula('(p')
 
-    with pytest.raises(ParserError):
+    with pytest.raises(ParsingError):
         parse_formula('(p ∧')
 
-    with pytest.raises(ParserError):
+    with pytest.raises(ParsingError):
         parse_formula('(p ∧ q')
 
-    with pytest.raises(ParserError):
+    with pytest.raises(ParsingError):
         parse_formula('(¬p(ζ) ∧ ∀ξ.(q(ζ, ξ) → ¬r(η, ξ))')
 
     # No trailing characters
-    with pytest.raises(ParserError):
+    with pytest.raises(ParsingError):
         parse_term('p ')
 
     # No incomplete quantifier formulas
-    with pytest.raises(ParserError):
+    with pytest.raises(ParsingError):
         parse_term('∀')
 
-    with pytest.raises(ParserError):
+    with pytest.raises(ParsingError):
         parse_term('∀ξ')
 
-    with pytest.raises(ParserError):
+    with pytest.raises(ParsingError):
         parse_term('∀ξ.')
 
     # No invalid variables
-    with pytest.raises(ParserError):
+    with pytest.raises(ParsingError):
         parse_term('∀x')
 
 

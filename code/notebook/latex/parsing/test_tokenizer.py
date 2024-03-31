@@ -1,6 +1,6 @@
 import pytest
 
-from ...parsing.parser import ParserError
+from ...parsing.parser import ParsingError
 from ...parsing.whitespace import Whitespace
 from .tokenizer import tokenize_latex
 from .tokens import EscapedWordToken, MiscToken, WordToken
@@ -31,7 +31,7 @@ def test_numeric_word():
 
 
 def test_empty_escaped():
-    with pytest.raises(ParserError):
+    with pytest.raises(ParsingError):
         tokenize_latex('\\')
 
 
