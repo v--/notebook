@@ -1,5 +1,6 @@
 from ....parsing.identifiers import LatinIdentifier
 from ....parsing.tokens import TokenEnum
+from ....parsing.whitespace import Space
 
 
 class MiscToken(TokenEnum):
@@ -7,7 +8,6 @@ class MiscToken(TokenEnum):
     right_parenthesis = ')'
     l = 'λ'
     dot = '.'
-    space = ' '
 
 
-LambdaToken = LatinIdentifier | MiscToken
+LambdaToken = LatinIdentifier | Space | MiscToken

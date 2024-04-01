@@ -8,7 +8,7 @@ from ..whitespace import Whitespace
 T_co = TypeVar('T_co', bound=AbstractToken, covariant=True)
 
 
-class WhitespaceTokenizerMixin(Parser[T_co]):
+class WhitespaceParserMixin(Parser[T_co]):
     def skip_spaces(self):
         while not self.is_at_end() and self.peek() == Whitespace.space:
             self.advance()

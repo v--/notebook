@@ -32,7 +32,7 @@ class IdentifierTokenizerMixin(Tokenizer[T_co]):
         self.advance()
 
         if digits == '₀' and self._accept_numeric_suffix():
-            raise self.error('Nonzero natural numbers cannot start with zero')
+            raise self.error('Nonzero natural numbers cannot start with zero', i_first_token=self.index - 1)
 
         while self._accept_numeric_suffix():
             digits += self.peek()

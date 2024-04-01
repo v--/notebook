@@ -1,6 +1,7 @@
 from typing import Iterable
 
 from ....parsing.identifiers import GreekIdentifier, LatinIdentifier
+from ....parsing.mixins.whitespace import WhitespaceParserMixin
 from ....parsing.parser import Parser
 from ..alphabet import BinaryConnective, PropConstant, Quantifier
 from ..formulas import (
@@ -17,13 +18,7 @@ from .tokenizer import FOLTokenizer
 from .tokens import FOLToken, MiscToken
 
 
-class FOLParser(Parser[FOLToken]):
-    def peek(self):
-        while super().peek() == MiscToken.space:
-            self.advance()
-
-        return super().peek()
-
+class FOLParser(WhitespaceParserMixin[FOLToken], Parser[FOLToken]):
     def parse_variable(self) -> Variable:
         head = self.peek()
         assert isinstance(head, GreekIdentifier)
@@ -32,18 +27,25 @@ class FOLParser(Parser[FOLToken]):
 
     def parse_args(self) -> Iterable[Term]:
         assert self.peek() == MiscToken.left_parenthesis
-        self.advance()
+        start = self.index
+        self.advance_and_skip_spaces()
 
-        if self.peek() == MiscToken.right_parenthesis:
-            raise self.error('Empty argument list disallowed')
+        if not self.is_at_end() and self.peek() == MiscToken.right_parenthesis:
+            raise self.error('Empty argument list disallowed', i_first_token=start)
 
-        while self.peek() != MiscToken.right_parenthesis:
+        while not self.is_at_end() and self.peek() != MiscToken.right_parenthesis:
             yield self.parse_term()
 
+            if self.is_at_end():
+                raise self.error('Unclosed argument list', i_first_token=start)
+
             if self.peek() == MiscToken.comma:
-                self.advance()
+                self.advance_and_skip_spaces()
             elif self.peek() != MiscToken.right_parenthesis:
                 raise self.error('Unexpected token')
+
+        if self.is_at_end():
+            raise self.error('Unclosed argument list', i_first_token=start)
 
         if self.peek() == MiscToken.right_parenthesis:
             self.advance()
@@ -76,6 +78,8 @@ class FOLParser(Parser[FOLToken]):
         return ConstantFormula(head)
 
     def parse_binary_formula(self) -> EqualityFormula | ConnectiveFormula:
+        start = self.index
+
         assert self.peek() == MiscToken.left_parenthesis
         self.advance()
 
@@ -89,34 +93,53 @@ class FOLParser(Parser[FOLToken]):
         else:
             a_form = self.parse_formula()
 
+        a_end = self.index - 1
+        self.skip_spaces()
+
         if self.peek() == MiscToken.equality:
             if a_term is None:
-                raise self.error('The left side of an equality formula must be a term', i_first_token=a_start)
+                raise self.error('The left side of an equality formula must be a term', i_first_token=a_start, i_last_token=a_end)
 
-            self.advance()
+            self.advance_and_skip_spaces()
+
+            if not self.is_at_end() and self.peek() == MiscToken.right_parenthesis:
+                raise self.error('Equality formulas must have a second term', i_first_token=start)
+
+            if self.is_at_end():
+                raise self.error('Unclosed parentheses for equality formula', i_first_token=start)
+
             b_term = self.parse_term()
 
-            if self.peek() == MiscToken.right_parenthesis:
+            if not self.is_at_end() and self.peek() == MiscToken.right_parenthesis:
                 self.advance()
                 return EqualityFormula(a_term, b_term)
             else:
-                raise self.error('Unclosed parentheses for binary formula', i_first_token=a_start)
+                raise self.error('Unclosed parentheses for equality formula', i_first_token=start, i_last_token=self.index - 1)
 
         elif isinstance(connective := self.peek(), BinaryConnective):
             if isinstance(a_term, FunctionTerm):
                 a_form = PredicateFormula(a_term.name, a_term.arguments)
 
             if a_form is None:
-                raise self.error('The left side of a connective formula must be a formula', i_first_token=a_start)
+                raise self.error('The left side of a binary formula must be a formula', i_first_token=a_start, i_last_token=a_end)
 
-            self.advance()
+            self.advance_and_skip_spaces()
+
+            if not self.is_at_end() and self.peek() == MiscToken.right_parenthesis:
+                raise self.error('Binary formulas must have a second subformula', i_first_token=start)
+
+            if self.is_at_end():
+                raise self.error('Unclosed parentheses for binary formula', i_first_token=start)
+
+            b_start = self.index
             b_form = self.parse_formula()
+            b_end = self.index - 1
 
-            if self.peek() == MiscToken.right_parenthesis:
+            if not self.is_at_end() and self.peek() == MiscToken.right_parenthesis:
                 self.advance()
                 return ConnectiveFormula(connective, a_form, b_form)  # type: ignore
             else:
-                raise self.error('Unclosed parentheses for binary formula', i_first_token=a_start)
+                raise self.error('Unclosed parentheses for binary formula', i_first_token=start, i_last_token=self.index - 1)
 
         else:
             raise self.error('Unexpected token')
@@ -129,13 +152,19 @@ class FOLParser(Parser[FOLToken]):
     def parse_quantifier_formula(self) -> QuantifierFormula:
         q = self.peek()
         assert isinstance(q, Quantifier)
+
+        start = self.index
         self.advance()
+
+        if self.is_at_end() or not isinstance(self.peek(), GreekIdentifier):
+            raise self.error('Expected a variable after the quantifier', i_first_token=start)
+
         var = self.parse_variable()
 
-        if self.peek() == MiscToken.dot:
+        if not self.is_at_end() and self.peek() == MiscToken.dot:
             self.advance()
         else:
-            raise self.error('Expected dot after variable')
+            raise self.error('Expected dot after variable', i_first_token=start)
 
         return QuantifierFormula(q, var, self.parse_formula())
 

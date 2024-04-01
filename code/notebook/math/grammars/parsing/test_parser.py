@@ -40,25 +40,75 @@ def test_valid_schemas():
     ])
 
 
-def test_parsing_variables_invalid():
-    # The schema must be nonempty
-    with pytest.raises(ParsingError):
+def test_parsing_empty_schema():
+    with pytest.raises(ParsingError) as excinfo:
         parse_grammar_schema('')
 
-    # The left side must have a nonterminal
-    with pytest.raises(ParsingError):
+    assert str(excinfo.value) == 'Expected at least one grammar rule'
+
+
+def test_parsing_empty_left_side():
+    with pytest.raises(ParsingError) as excinfo:
+        parse_grammar_schema('→ ε')
+
+    assert str(excinfo.value) == 'The left side of a rule must be nonempty'
+    assert excinfo.value.__notes__[0] == dedent('''\
+        1 │ → ε
+          │ ^
+        '''
+    )
+
+
+def test_parsing_lone_terminal_on_left():
+    with pytest.raises(ParsingError) as excinfo:
         parse_grammar_schema('"a" → ε')
 
-    # The left side must not contain ε
-    with pytest.raises(ParsingError):
+    assert str(excinfo.value) == 'The left side of a rule must contain at least one nonterminal'
+    assert excinfo.value.__notes__[0] == dedent('''\
+        1 │ "a" → ε
+          │ ^^^
+        '''
+    )
+
+
+def test_parsing_epsilon_on_left():
+    with pytest.raises(ParsingError) as excinfo:
         parse_grammar_schema('ε → ε')
 
-    # The right side must not contain anything after ε
-    with pytest.raises(ParsingError):
+    assert str(excinfo.value) == 'The left side of a rule must consist of only terminals and nonterminals'
+    assert excinfo.value.__notes__[0] == dedent('''\
+        1 │ ε → ε
+          │ ^
+        '''
+    )
+
+
+def test_parsing_pipe_on_left():
+    with pytest.raises(ParsingError) as excinfo:
+        parse_grammar_schema('<S> | <A> → ε')
+
+    assert str(excinfo.value) == 'Expected an arrow after the rule source'
+    assert excinfo.value.__notes__[0] == dedent('''\
+        1 │ <S> | <A> → ε
+          │     ^
+        '''
+    )
+
+
+def test_parsing_rule_with_epsilon_and_nonterminal():
+    with pytest.raises(ParsingError) as excinfo:
         parse_grammar_schema('<S> → ε <S>')
 
-    # No line break is allowed before the arrow
-    with pytest.raises(ParsingError):
+    assert str(excinfo.value) == 'ε is only allowed on its own on the right side of a rule'
+    assert excinfo.value.__notes__[0] == dedent('''\
+        1 │ <S> → ε <S>
+          │       ^
+        '''
+    )
+
+
+def test_parsing_line_break_inside_rule():
+    with pytest.raises(ParsingError) as excinfo:
         parse_grammar_schema(
             dedent('''\
                 <S>
@@ -67,12 +117,36 @@ def test_parsing_variables_invalid():
             )
         )
 
-    # No line break is allowed after the arrow
-    with pytest.raises(ParsingError):
+    assert str(excinfo.value) == 'Expected an arrow after the rule source'
+    assert excinfo.value.__notes__[0] == dedent('''\
+        1 │ <S>↵
+          │    ^
+        '''
+    )
+
+
+def test_parsing_invalid_right_side():
+    with pytest.raises(ParsingError) as excinfo:
         parse_grammar_schema(
-            dedent('''\
-                <S> →
-                ε
-                '''
-            )
+            dedent('<S> → →')
         )
+
+    assert str(excinfo.value) == 'The right side of a rule must contain only terminals and nonterminals and at most a single ε'
+    assert excinfo.value.__notes__[0] == dedent('''\
+        1 │ <S> → →
+          │       ^
+        '''
+    )
+
+
+    with pytest.raises(ParsingError) as excinfo:
+        parse_grammar_schema(
+            dedent('<S> → "A" →')
+        )
+
+    assert str(excinfo.value) == 'The right side of a rule must contain a pipe between runs of terminals, nonterminals and ε'
+    assert excinfo.value.__notes__[0] == dedent('''\
+        1 │ <S> → "A" →
+          │           ^
+        '''
+    )

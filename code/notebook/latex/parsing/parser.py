@@ -33,27 +33,28 @@ class LaTeXParser(Parser[LaTeXToken]):
 
     def parse_environment(self):
         assert isinstance(head := self.peek(), EscapedWordToken) and head.value == 'begin'
-        start_index = self.index
+        env_start_index = self.index
         self.advance()
 
         if self.is_at_end() or self.peek() != MiscToken.opening_brace:
-            raise self.error('No environment name specified', i_first_token=start_index)
+            raise self.error('No environment name specified', i_first_token=env_start_index)
 
         self.advance()
 
         if self.is_at_end() or not isinstance(head := self.peek(), WordToken):
-            raise self.error('No environment name specified', i_first_token=start_index)
+            raise self.error('No environment name specified', i_first_token=env_start_index)
 
+        name_start_index = self.index
         environment = Environment(name=head.value, contents=[])
         self.advance()
 
         if self.is_at_end() or self.peek() != MiscToken.closing_brace:
-            raise self.error('Unclosed brace when specifying environment name', i_first_token=start_index)
+            raise self.error('Unclosed brace when specifying environment name', i_first_token=name_start_index)
 
         self.advance()
 
         if self.is_at_end():
-            raise self.error('Unmatched \\begin{%s}' % environment.name, i_first_token=start_index)
+            raise self.error(f'Unmatched environment {repr(environment.name)}', i_first_token=env_start_index)
 
         parsed_iter = self.parse()
 
@@ -70,11 +71,11 @@ class LaTeXParser(Parser[LaTeXToken]):
                     return environment
                 else:
                     self.advance(3)
-                    raise self.error('Mismatched environment \\begin{%s}' % environment.name, i_first_token=start_index)
+                    raise self.error(f'Mismatched environment {repr(environment.name)}', i_first_token=env_start_index)
             else:
                 environment.contents.append(next(parsed_iter))
 
-        raise self.error(f'Unmatched {MiscToken.opening_brace}', i_first_token=start_index)
+        raise self.error(f'Unmatched {MiscToken.opening_brace}', i_first_token=env_start_index)
 
     def parse_step(self, head: LaTeXToken) -> LaTeXNode:
         match head:

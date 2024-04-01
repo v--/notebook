@@ -5,6 +5,7 @@ from ....parsing.identifiers import (
 )
 from ....parsing.mixins.identifiers import IdentifierTokenizerMixin
 from ....parsing.tokenizer import Tokenizer
+from ....parsing.whitespace import Whitespace
 from ..alphabet import BinaryConnective, PropConstant, Quantifier
 from .tokens import FOLToken, MiscToken
 
@@ -19,6 +20,10 @@ class FOLTokenizer(IdentifierTokenizerMixin[FOLToken], Tokenizer[FOLToken]):
         if sym is not None:
             self.advance()
             return sym
+
+        if head == Whitespace.space.value:
+            self.advance()
+            return Whitespace.space
 
         if self.accept_alphabetic_string(LatinIdentifier, Capitalization.mixed):
             return self.parse_identifier(LatinIdentifier, Capitalization.mixed, short=False)

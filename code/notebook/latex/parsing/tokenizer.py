@@ -1,32 +1,21 @@
 from ...parsing.tokenizer import Tokenizer
 from ...parsing.whitespace import Whitespace
+from ...support.iteration import string_accumulator
 from .tokens import EscapedWordToken, LaTeXToken, MiscToken, WordToken
 
 
 class LaTeXTokenizer(Tokenizer[LaTeXToken]):
+    @string_accumulator()
     def accept_word(self):
-        buffer = []
-
-        while not self.is_at_end() and self.peek() not in (' ', '\t', '\n', '\\', '{', '}', '[', ']', '&', '_', '^'):
-            buffer.append(self.peek())
+        while not self.is_at_end() and not (MiscToken.try_match(self.peek()) or Whitespace.try_match(self.peek())):
+            yield self.peek()
             self.advance()
 
-        if len(buffer) == 0:
-            raise self.error('Expected at least one alphanumeric character')
-
-        return ''.join(buffer)
-
+    @string_accumulator()
     def accept_latin_string(self):
-        buffer = []
-
         while not self.is_at_end() and ('a' <= self.peek() <= 'z' or 'A' <= self.peek() <= 'Z'):
-            buffer.append(self.peek())
+            yield self.peek()
             self.advance()
-
-        if len(buffer) == 0:
-            raise self.error('Expected at least one Latin character')
-
-        return ''.join(buffer)
 
     def parse_step(self, head: str):
         if (token := MiscToken.try_match(head) or Whitespace.try_match(head)):
@@ -34,6 +23,7 @@ class LaTeXTokenizer(Tokenizer[LaTeXToken]):
             return token
 
         if head == '\\':
+            start = self.index
             self.advance()
 
             if self.peek() in (' ', '\\', '(', ')', '{', '}'):
@@ -44,7 +34,7 @@ class LaTeXTokenizer(Tokenizer[LaTeXToken]):
             if 'a' <= self.peek() <= 'z' or 'A' <= self.peek() <= 'Z':
                 return EscapedWordToken(self.accept_latin_string())
 
-            raise self.error('Unrecognized escape character')
+            raise self.error('Unrecognized escape character', i_first_token=start)
 
         return WordToken(self.accept_word())
 

@@ -1,3 +1,5 @@
+from textwrap import dedent
+
 import pytest
 
 from ....parsing.parser import ParsingError
@@ -5,27 +7,37 @@ from ..terms import Variable
 from .parser import parse_term
 
 
-def test_parsing_variables_valid():
+def test_parsing_valid_variables():
     assert parse_term('x') == Variable('x')
     assert parse_term('y') == Variable('y')
     assert parse_term('z₁₂') == Variable('z₁₂')
 
 
-def test_parsing_variables_invalid():
-    # Only one letter per variable
-    with pytest.raises(ParsingError):
+def test_parsing_long_variable_names():
+    with pytest.raises(ParsingError) as excinfo:
         parse_term('xy')
 
-    # Disallow leading zeros
-    with pytest.raises(ParsingError):
+    assert str(excinfo.value) == 'Finished parsing but there is still input left'
+    assert excinfo.value.__notes__[0] == dedent('''\
+        1 │ xy
+          │  ^
+        '''
+    )
+
+
+def test_parsing_invalid_variable_suffix():
+    with pytest.raises(ParsingError) as excinfo:
         parse_term('x₀₁')
 
-    # And no trailing characters
-    with pytest.raises(ParsingError):
-        parse_term('x ')
+    assert str(excinfo.value) == 'Nonzero natural numbers cannot start with zero'
+    assert excinfo.value.__notes__[0] == dedent('''\
+        1 │ x₀₁
+          │  ^^
+        '''
+    )
 
 
-def test_parsing_terms_valid():
+def test_parsing_valid_terms():
     def is_term_rebuilt(string: str):
         assert str(parse_term(string)) == string
 
@@ -40,29 +52,64 @@ def test_parsing_terms_valid():
     is_term_rebuilt('(λf.((λx.(f(xx)))(λx.(f(xx)))))') # Y combinator
 
 
-def test_parsing_abstraction_invalid():
-    with pytest.raises(ParsingError):
-        parse_term('(λ')
-
-    with pytest.raises(ParsingError):
-        parse_term('(λx')
-
-    with pytest.raises(ParsingError):
-        parse_term('(λx.')
-
-    with pytest.raises(ParsingError):
+def test_parsing_abstraction_with_unclosed_parens():
+    with pytest.raises(ParsingError) as excinfo:
         parse_term('(λx.x')
 
+    assert str(excinfo.value) == 'Unclosed parentheses for abstraction'
+    assert excinfo.value.__notes__[0] == dedent('''\
+        1 │ (λx.x
+          │ ^^^^^
+        '''
+    )
 
-def test_parsing_application_invalid():
-    with pytest.raises(ParsingError):
-        parse_term('(')
 
-    with pytest.raises(ParsingError):
-        parse_term('(x')
+def test_parsing_abstraction_with_unclosed_parens_truncated():
+    with pytest.raises(ParsingError) as excinfo:
+        parse_term('(λ')
 
-    with pytest.raises(ParsingError):
-        parse_term('(xy')
+    assert str(excinfo.value) == 'Expected a variable name after λ'
+    assert excinfo.value.__notes__[0] == dedent('''\
+        1 │ (λ
+          │ ^^
+        '''
+    )
+
+
+def test_parsing_abstraction_with_no_dot():
+    with pytest.raises(ParsingError) as excinfo:
+        parse_term('(λxx)')
+
+    assert str(excinfo.value) == 'Expected a dot after an abstraction variable'
+    assert excinfo.value.__notes__[0] == dedent('''\
+        1 │ (λxx)
+          │ ^^^^
+        '''
+    )
+
+
+def test_parsing_empty_application():
+    with pytest.raises(ParsingError) as excinfo:
+        parse_term('()')
+
+    assert str(excinfo.value) == 'Applications must have two terms, while abstractions must begin with λ'
+    assert excinfo.value.__notes__[0] == dedent('''\
+        1 │ ()
+          │ ^^
+        '''
+    )
+
+
+def test_parsing_incomplete_application():
+    with pytest.raises(ParsingError) as excinfo:
+        parse_term('(x)')
+
+    assert str(excinfo.value) == 'Applications must have a second subterm'
+    assert excinfo.value.__notes__[0] == dedent('''\
+        1 │ (x)
+          │ ^^^
+        '''
+    )
 
 
 def test_reparsing_terms():

@@ -65,6 +65,6 @@ class Rule(NamedTuple):
     def __str__(self):
         if len(self.premises) > 0:
             premise_str = ', '.join(map(str, self.premises))
-            return f'({self.name}) {premise_str} ⇛ {self.conclusion}'
+            return f'({self.name}) {premise_str} ⫢ {self.conclusion}'
 
-        return f'({self.name}) ⇛ {self.conclusion}'
+        return f'({self.name}) ⫢ {self.conclusion}'

@@ -1,3 +1,5 @@
+from textwrap import dedent
+
 import pytest
 
 from ...parsing.parser import ParsingError
@@ -31,8 +33,27 @@ def test_numeric_string():
 
 
 def test_empty_escaped():
-    with pytest.raises(ParsingError):
+    with pytest.raises(ParsingError) as excinfo:
         tokenize_latex('\\')
+
+    assert str(excinfo.value) == 'Unexpected end of input'
+    assert excinfo.value.__notes__[0] == dedent(r'''
+        1 │ \
+          │ ^
+        '''[1:]
+    )
+
+
+def test_invalid_escaped():
+    with pytest.raises(ParsingError) as excinfo:
+        tokenize_latex('\\3')
+
+    assert str(excinfo.value) == 'Unrecognized escape character'
+    assert excinfo.value.__notes__[0] == dedent(r'''
+        1 │ \3
+          │ ^^
+        '''[1:]
+    )
 
 
 def test_latin_escaped():

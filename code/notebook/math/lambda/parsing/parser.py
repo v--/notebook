@@ -6,12 +6,6 @@ from .tokens import LambdaToken, MiscToken
 
 
 class LambdaParser(Parser[LambdaToken]):
-    def peek(self):
-        while super().peek() == MiscToken.space:
-            self.advance()
-
-        return super().peek()
-
     def parse_variable(self) -> Variable:
         head = self.peek()
         assert isinstance(head, LatinIdentifier)
@@ -23,15 +17,15 @@ class LambdaParser(Parser[LambdaToken]):
         start = self.index
         self.advance(2)
 
-        if not isinstance(self.peek(), LatinIdentifier):
-            raise self.error('Expected a variable name after "λ."', i_first_token=start)
+        if self.is_at_end() or not isinstance(self.peek(), LatinIdentifier):
+            raise self.error('Expected a variable name after λ', i_first_token=start)
 
         var = self.parse_variable()
 
         if self.peek() == MiscToken.dot:
             self.advance()
         else:
-            raise self.error('Expected dot after variable', i_first_token=start)
+            raise self.error('Expected a dot after an abstraction variable', i_first_token=start)
 
         sub = self.parse_term()
 
@@ -48,8 +42,8 @@ class LambdaParser(Parser[LambdaToken]):
 
         a = self.parse_term()
 
-        if self.is_at_end():
-            raise self.error('Unexpected end while parsing application', i_first_token=start)
+        if self.is_at_end() or self.peek() == MiscToken.right_parenthesis:
+            raise self.error('Applications must have a second subterm', i_first_token=start)
 
         b = self.parse_term()
 
@@ -62,6 +56,8 @@ class LambdaParser(Parser[LambdaToken]):
     def parse_term(self):
         if isinstance(self.peek(), LatinIdentifier):
             return self.parse_variable()
+        elif self.peek_multiple(2) == [MiscToken.left_parenthesis, MiscToken.right_parenthesis]:
+            raise self.error('Applications must have two terms, while abstractions must begin with λ', i_last_token=self.index + 1)
         elif self.peek_multiple(2) == [MiscToken.left_parenthesis, MiscToken.l]:
             return self.parse_abstraction()
         elif self.peek() == MiscToken.left_parenthesis:

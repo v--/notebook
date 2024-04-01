@@ -1,5 +1,6 @@
 from ....parsing.identifiers import GreekIdentifier, LatinIdentifier
 from ....parsing.tokens import TokenEnum
+from ....parsing.whitespace import Space
 from ..alphabet import BinaryConnective, PropConstant, Quantifier
 
 
@@ -8,10 +9,9 @@ class MiscToken(TokenEnum):
     right_parenthesis = ')'
     comma = ','
     dot = '.'
-    space = ' '
 
     equality = '='
     negation = '¬'
 
 
-FOLToken = LatinIdentifier | GreekIdentifier | PropConstant | BinaryConnective | Quantifier | MiscToken
+FOLToken = LatinIdentifier | GreekIdentifier | PropConstant | BinaryConnective | Quantifier | MiscToken | Space

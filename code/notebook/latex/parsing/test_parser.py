@@ -40,13 +40,13 @@ def test_word():
 
 
 def test_command_without_args():
-    string = '\\test'
+    string = r'\test'
     nodes = parse_latex(string)
     assert nodes == [Command('test')]
 
 
 def test_command_with_space():
-    string = '\\test '
+    string = r'\test '
     nodes = parse_latex(string)
     assert nodes == [
         Command('test'),
@@ -55,7 +55,7 @@ def test_command_with_space():
 
 
 def test_command_with_brace_arg():
-    string = '\\test{a}'
+    string = r'\test{a}'
     nodes = parse_latex(string)
     assert nodes == [
         Command('test'),
@@ -64,10 +64,16 @@ def test_command_with_brace_arg():
 
 
 def test_unmatched_brace():
-    string = '\\test{a'
+    with pytest.raises(ParsingError) as excinfo:
+        parse_latex('\\test{a')
 
-    with pytest.raises(ParsingError):
-        parse_latex(string)
+    assert str(excinfo.value) == 'Unmatched {'
+    assert excinfo.value.__notes__[0] == dedent(r'''
+        1 │ \test{a
+          │      ^^
+        '''[1:]
+    )
+
 
 
 def test_command_with_bracket_arg():
@@ -80,10 +86,15 @@ def test_command_with_bracket_arg():
 
 
 def test_unmatched_bracket():
-    string = '\\test[a'
+    with pytest.raises(ParsingError) as excinfo:
+        parse_latex('\\test[a')
 
-    with pytest.raises(ParsingError):
-        parse_latex(string)
+    assert str(excinfo.value) == 'Unmatched ['
+    assert excinfo.value.__notes__[0] == dedent(r'''
+        1 │ \test[a
+          │      ^^
+        '''[1:]
+    )
 
 
 def test_command_with_mixed_args():
@@ -106,7 +117,7 @@ def test_command_with_mixed_args():
 
 
 def test_basic_environment():
-    string = '\\begin{test} \\end{test}'
+    string = r'\begin{test} \end{test}'
     nodes = parse_latex(string)
 
     assert len(nodes) == 1
@@ -119,31 +130,83 @@ def test_basic_environment():
 
 
 def test_unmatched_environment():
-    string = '\\begin{test}'
+    with pytest.raises(ParsingError) as excinfo:
+        parse_latex(r'\begin{test}')
 
-    with pytest.raises(ParsingError):
-        parse_latex(string)
+    assert str(excinfo.value) == "Unmatched environment 'test'"
+    assert excinfo.value.__notes__[0] == dedent(r'''
+        1 │ \begin{test}
+          │ ^^^^^^^^^^^^
+        '''[1:]
+    )
+
+
+def test_mismatched_environment():
+    with pytest.raises(ParsingError) as excinfo:
+        parse_latex(
+            dedent(r'''
+                \begin{test}
+                \end{tes}
+                '''[1:]
+            )
+        )
+
+    assert str(excinfo.value) == "Mismatched environment 'test'"
+    assert excinfo.value.__notes__[0] == dedent(r'''
+        1 │ \begin{test}↵
+          │ ^^^^^^^^^^^^^
+        2 │ \end{tes}↵
+          │ ^^^^^^^^^
+        '''[1:]
+    )
 
 
 def test_missing_environment_name():
-    string = '\\begin'
+    with pytest.raises(ParsingError) as excinfo:
+        parse_latex(r'\begin')
 
-    with pytest.raises(ParsingError):
-        parse_latex(string)
+    assert str(excinfo.value) == 'No environment name specified'
+    assert excinfo.value.__notes__[0] == dedent(r'''
+        1 │ \begin
+          │ ^^^^^^
+        '''[1:]
+    )
 
 
 def test_unclosed_and_missing_environment_name():
-    string = '\\begin{'
+    with pytest.raises(ParsingError) as excinfo:
+        parse_latex(r'\begin{')
 
-    with pytest.raises(ParsingError):
-        parse_latex(string)
+    assert str(excinfo.value) == 'No environment name specified'
+    assert excinfo.value.__notes__[0] == dedent(r'''
+        1 │ \begin{
+          │ ^^^^^^^
+        '''[1:]
+    )
+
+
+def test_invalid_environment_name():
+    with pytest.raises(ParsingError) as excinfo:
+        parse_latex(r'\begin{&}')
+
+    assert str(excinfo.value) == 'No environment name specified'
+    assert excinfo.value.__notes__[0] == dedent(r'''
+        1 │ \begin{&}
+          │ ^^^^^^^^
+        '''[1:]
+    )
 
 
 def test_unclosed_environment_name():
-    string = '\\begin{test'
+    with pytest.raises(ParsingError) as excinfo:
+        parse_latex(r'\begin{test')
 
-    with pytest.raises(ParsingError):
-        parse_latex(string)
+    assert str(excinfo.value) == 'Unclosed brace when specifying environment name'
+    assert excinfo.value.__notes__[0] == dedent(r'''
+        1 │ \begin{test
+          │        ^^^^
+        '''[1:]
+    )
 
 
 def test_different_nested_environments():

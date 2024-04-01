@@ -1,5 +1,6 @@
-from ....parsing.identifiers import GreekIdentifier, LatinIdentifier
+from ....parsing.identifiers import GreekIdentifier, LatinIdentifier  # noqa: I001
 from ....parsing.parser import Parser
+from ....parsing.mixins.whitespace import WhitespaceParserMixin
 from ...fol.alphabet import BinaryConnective, PropConstant, Quantifier
 from ...fol.terms import Variable
 from ..rules import (
@@ -16,80 +17,85 @@ from .tokenizer import NaturalDeductionTokenizer
 from .tokens import MiscToken, RuleToken
 
 
-class NaturalDeductionParser(Parser[RuleToken]):
-    def peek(self):
-        while super().peek() == MiscToken.space:
-            self.advance()
-
-        return super().peek()
-
-    def parse_variable(self):
+class NaturalDeductionParser(WhitespaceParserMixin[RuleToken], Parser[RuleToken]):
+    def parse_variable(self) -> Variable:
         head = self.peek()
         assert isinstance(head, GreekIdentifier)
         self.advance()
         return Variable(head.value)
 
-    def parse_atomic(self):
+    def parse_atomic_placeholder(self) -> AtomicFormulaPlaceholder:
         head = self.peek()
         assert isinstance(head, GreekIdentifier)
         self.advance()
         return AtomicFormulaPlaceholder(head.value)
 
-    def parse_constant_formula(self):
+    def parse_constant_placeholder(self) -> ConstantFormulaPlaceholder:
         head = self.peek()
         assert isinstance(head, PropConstant)
         self.advance()
         return ConstantFormulaPlaceholder(head)
 
-    def parse_binary_placeholder(self):
+    def parse_binary_placeholder(self) -> ConnectiveFormulaPlaceholder:
+        start = self.index
+
         assert self.peek() == MiscToken.left_parenthesis
         self.advance()
-        a_start = self.index
 
-        if isinstance(self.peek(), GreekIdentifier):
-            a = self.parse_placeholder()
-        else:
-            raise self.error('Expected a formula placeholder', i_first_token=a_start)
+        a_start = self.index
+        a_form = self.parse_placeholder()
+        a_end = self.index - 1
+        self.skip_spaces()
 
         if isinstance(connective := self.peek(), BinaryConnective):
-            # See https://github.com/python/mypy/issues/16707
-            if isinstance(a, FormulaPlaceholder):  # type: ignore
-                self.advance()
-                b = self.parse_placeholder()
+            self.advance_and_skip_spaces()
 
-                if self.peek() == MiscToken.right_parenthesis:
-                    self.advance()
-                    return ConnectiveFormulaPlaceholder(connective, a, b)
-                else:
-                    raise self.error('Unclosed parentheses for binary formula placeholder', i_first_token=a_start)
+            if not self.is_at_end() and self.peek() == MiscToken.right_parenthesis:
+                raise self.error('Binary placeholders must have a second sub-placeholder', i_first_token=start)
+            if self.is_at_end():
+                raise self.error('Unclosed parentheses for binary placeholder', i_first_token=start)
+
+            b_start = self.index
+            b_form = self.parse_placeholder()
+            b_end = self.index - 1
+
+            if not self.is_at_end() and self.peek() == MiscToken.right_parenthesis:
+                self.advance()
+                return ConnectiveFormulaPlaceholder(connective, a_form, b_form)  # type: ignore
             else:
-                raise self.error('The left side of a connective formula placeholder must itself be a placeholder', i_first_token=a_start)
+                raise self.error('Unclosed parentheses for binary placeholder', i_first_token=start, i_last_token=self.index - 1)
 
         else:
             raise self.error('Unexpected token')
 
-    def parse_negation_placeholder(self):
+    def parse_negation_placeholder(self) -> NegationFormulaPlaceholder:
         assert self.peek() == MiscToken.negation
         self.advance()
         return NegationFormulaPlaceholder(self.parse_placeholder())
 
-    def parse_quantifier_placeholder(self):
+    def parse_quantifier_placeholder(self) -> QuantifierFormulaPlaceholder:
         q = self.peek()
         assert isinstance(q, Quantifier)
+
+        start = self.index
         self.advance()
+
+        if self.is_at_end() or not isinstance(self.peek(), GreekIdentifier):
+            raise self.error('Expected a variable after the quantifier', i_first_token=start)
+
         var = self.parse_variable()
 
-        if self.peek() == MiscToken.dot:
+        if not self.is_at_end() and self.peek() == MiscToken.dot:
             self.advance()
         else:
-            raise self.error('Expected dot after variable')
+            raise self.error('Expected dot after variable', i_first_token=start)
 
         return QuantifierFormulaPlaceholder(q, var, self.parse_placeholder())
 
-    def parse_placeholder(self):
+    def parse_placeholder(self) -> FormulaPlaceholder:
         match self.peek():
             case PropConstant():
-                return self.parse_constant_formula()
+                return self.parse_constant_placeholder()
 
             case Quantifier():
                 return self.parse_quantifier_placeholder()
@@ -101,13 +107,14 @@ class NaturalDeductionParser(Parser[RuleToken]):
                 return self.parse_negation_placeholder()
 
             case GreekIdentifier():
-                return self.parse_atomic()
+                return self.parse_atomic_placeholder()
 
             case _:
                 raise self.error('Unexpected token')
 
-    def parse_premise(self):
+    def parse_premise(self) -> Premise:
         discharge: FormulaPlaceholder | None = None
+        start = self.index
 
         if self.peek() == MiscToken.left_bracket:
             self.advance()
@@ -115,49 +122,57 @@ class NaturalDeductionParser(Parser[RuleToken]):
             discharge = self.parse_placeholder()
 
             if self.peek() == MiscToken.right_bracket:
-                self.advance()
+                self.advance_and_skip_spaces()
             else:
-                raise self.error('Brackets for discharge formulas must be closed')
+                raise self.error('Unclosed brackets for discharge placeholders', i_first_token=start)
 
         main = self.parse_placeholder()
+        self.skip_spaces()
         return Premise(main, discharge)
 
-    def parse_rule(self):
+    def parse_rule(self) -> Rule:
+        start = self.index
+
         if self.peek() == MiscToken.left_parenthesis:
             self.advance()
         else:
-            raise self.error('A rule must start with an opening parenthesis')
+            raise self.error('A rule must start with a parenthesized name')
 
         if isinstance(head := self.peek(), LatinIdentifier):
             name = head.value
             self.advance()
         else:
-            raise self.error('The name of a rule must be a Latin identifier')
+            raise self.error('The name of a rule must be a Latin identifier', i_first_token=start)
 
         if self.peek() == MiscToken.right_parenthesis:
-            self.advance()
+            self.advance_and_skip_spaces()
         else:
-            raise self.error('A rule must have a closing parenthesis after its name')
+            raise self.error('Unclosed parenthesis after rule name', i_first_token=start)
 
         premises: list[Premise] = []
 
-        while self.peek() != MiscToken.sequent_relation:
+        while not self.is_at_end() and self.peek() != MiscToken.sequent_relation:
             premises.append(self.parse_premise())
 
-            if self.peek() == MiscToken.sequent_relation:
+            if self.is_at_end() or self.peek() == MiscToken.sequent_relation:
                 continue
-            if self.peek() == MiscToken.comma:
-                self.advance()
-            else:
-                raise self.error('Expected either a comma a sequent symbol after a formula placeholder')
 
-        if self.peek() == MiscToken.sequent_relation:
-            self.advance()
-        else:
+            if self.peek() == MiscToken.comma:
+                self.advance_and_skip_spaces()
+            else:
+                raise self.error('Expected either a comma or a sequent symbol after a placeholder')
+
+        if self.is_at_end():
             raise self.error('Expected a sequent symbol')
 
-        conclusion = self.parse_placeholder()
-        return Rule(name, premises, conclusion)
+        self.advance_and_skip_spaces()
+        c_start = self.index
+        conclusion = self.parse_premise()
+
+        if conclusion.discharge is not None:
+            raise self.error('The conclusion cannot have a discharge placeholder', i_first_token=c_start)
+
+        return Rule(name, premises, conclusion.main)
 
     parse = parse_rule
 
