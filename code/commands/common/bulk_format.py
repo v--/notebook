@@ -9,7 +9,7 @@ from .paths import ROOT_DIR
 from .exceptions import NotebookCommandError
 
 
-def bulk_format(path: pathlib.Path, glob_pattern: str, formatter_cls: type[Formatter]):
+def bulk_format(path: pathlib.Path, glob_pattern: str, formatter_cls: type[Formatter]) -> None:
     if not path.is_absolute():
         path = ROOT_DIR / path
 

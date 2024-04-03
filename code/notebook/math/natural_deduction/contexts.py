@@ -7,5 +7,5 @@ class ContextEntry(NamedTuple):
     marker: str
     formula: Formula
 
-    def __str__(self):
+    def __str__(self) -> str:
         return f'{self.formula}:{self.marker}'

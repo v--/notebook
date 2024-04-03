@@ -1,7 +1,9 @@
-from typing import Generic, TypeVar, cast
+from collections.abc import Iterable
+from typing import Generic, TypeVar, overload
 
 
-N = TypeVar('N', bound=int | float)
+N = TypeVar('N', int, float, complex)
+M = TypeVar('M', int, float, complex)
 
 
 class Matrix(Generic[N]):
@@ -9,7 +11,7 @@ class Matrix(Generic[N]):
     n: int
     payload: list[N]
 
-    def __init__(self, rows: list[list[N]]):
+    def __init__(self, rows: list[list[N]]) -> None:
         for row in rows:
             assert len(row) == len(rows[0])
 
@@ -17,19 +19,27 @@ class Matrix(Generic[N]):
         self.n = len(rows[0])
         self.payload = [x for row in rows for x in row]
 
-    def __i_range(self, i: int | slice):
+    def __i_range(self, i: int | slice) -> Iterable[int]:
         if isinstance(i, int):
             return [i]
 
         return range(i.stop or self.m)[i]
 
-    def __j_range(self, j: int | slice):
+    def __j_range(self, j: int | slice) -> Iterable[int]:
         if isinstance(j, int):
             return [j]
 
         return range(j.stop or self.n)[j]
 
-    def __getitem__(self, key: tuple[int | slice, int | slice]):
+    @overload
+    def __getitem__(self, key: tuple[int, int]) -> 'N': ...
+    @overload
+    def __getitem__(self, key: tuple[int, slice]) -> 'Matrix[N]': ...
+    @overload
+    def __getitem__(self, key: tuple[slice, int]) -> 'Matrix[N]': ...
+    @overload
+    def __getitem__(self, key: tuple[slice, slice]) -> 'Matrix[N]': ...
+    def __getitem__(self, key: tuple[int | slice, int | slice]) -> 'N | Matrix[N]':
         i, j = key
 
         if isinstance(i, int) and isinstance(j, int):
@@ -46,7 +56,7 @@ class Matrix(Generic[N]):
             for i_ in self.__i_range(i)
         ])
 
-    def __setitem_islice(self, i: slice, j: int, value: N | list[N] | 'Matrix[N]'):
+    def __setitem_islice(self, i: slice, j: int, value: 'N | list[N] | Matrix[N]') -> None:
         i_range = list(self.__i_range(i))
 
         if isinstance(value, list):
@@ -65,9 +75,9 @@ class Matrix(Generic[N]):
 
         else:
             for i_ in i_range:
-                self[i, i_] = value
+                self[i_, j] = value
 
-    def __setitem_jslice(self, i: int, j: slice, value: N | list[N] | 'Matrix[N]'):
+    def __setitem_jslice(self, i: int, j: slice, value: 'N | list[N] | Matrix[N]') -> None:
         j_range = list(self.__j_range(j))
 
         if isinstance(value, list):
@@ -88,14 +98,14 @@ class Matrix(Generic[N]):
             for j_ in j_range:
                 self[i, j_] = value
 
-    def __setitem_slices(self, i: slice, j: slice, value: N | list[N] | 'Matrix[N]'):
+    def __setitem_slices(self, i: slice, j: slice, value: 'N | list[N] | Matrix[N]') -> None:
         i_range = list(self.__i_range(i))
         j_range = list(self.__j_range(j))
 
         if isinstance(value, list):
-            raise ValueError('Cannot assign a list onto a matrix')
+            raise TypeError('Cannot assign a list onto a matrix')
 
-        elif isinstance(value, Matrix):
+        if isinstance(value, Matrix):
             if value.m == len(i_range) and value.n == len(j_range):
                 for i_ in i_range:
                     for j_ in j_range:
@@ -108,7 +118,15 @@ class Matrix(Generic[N]):
                 for j_ in j_range:
                     self[i_, j_] = value
 
-    def __setitem__(self, key: tuple[int | slice, int | slice], value: N | list[N] | 'Matrix[N]'):
+    @overload
+    def __setitem__(self, key: tuple[int, int], value: 'N') -> None: ...
+    @overload
+    def __setitem__(self, key: tuple[int, slice], value: 'N | list[N] | Matrix[N]') -> None: ...
+    @overload
+    def __setitem__(self, key: tuple[slice, int], value: 'N | list[N] | Matrix[N]') -> None: ...
+    @overload
+    def __setitem__(self, key: tuple[slice, slice], value: 'N | Matrix[N]') -> None: ...
+    def __setitem__(self, key: tuple[int | slice, int | slice], value: 'N | list[N] | Matrix[N]') -> None:
         i, j = key
 
         if isinstance(i, slice) and isinstance(j, slice):
@@ -124,45 +142,61 @@ class Matrix(Generic[N]):
             if j >= self.n or j < -self.n:
                 raise IndexError(f'Attempted to access row {j}, but the matrix has only {self.n} rows')
 
-            if isinstance(value, int | float):
-                self.payload[(i % self.m) * self.n + (j % self.n)] = cast(N, value)
-            else:
-                raise ValueError(f'Invalid scalar value {repr(value)}')
+            assert isinstance(value, int | float | complex)
+            self.payload[(i % self.m) * self.n + (j % self.n)] = value
 
-    def get_rows(self):
+    def get_rows(self) -> list[list[N]]:
         return [
             [self[i, j] for j in range(self.n)]
             for i in range(self.m)
         ]
 
-    def get_cols(self):
+    def get_cols(self) -> list[list[N]]:
         return [
             [self[i, j] for i in range(self.m)]
             for j in range(self.n)
         ]
 
-    def is_square(self):
+    def is_square(self) -> bool:
         return self.m == self.n
 
-    def transpose(self):
+    def transpose(self) -> 'Matrix[N]':
         return Matrix(self.get_cols())
 
-    def __str__(self):
+    def __str__(self) -> str:
         return '|' + '|\n|'.join('\t'.join(map(str, row)) for row in self.get_rows()) + '|'
 
-    def __eq__(self, other: object):
+    def __eq__(self, other: object) -> bool:
         if not isinstance(other, Matrix):
             return NotImplemented
 
         return self.payload == other.payload
 
-    def __neg__(self):
+    def __neg__(self) -> 'Matrix[N]':
         return Matrix([
             [-x for x in row]
             for row in self.get_rows()
         ])
 
-    def __add__(self, other: object):
+    @overload
+    def __add__(self: 'Matrix[int]', other: 'Matrix[int]') -> 'Matrix[int]': ...
+    @overload
+    def __add__(self: 'Matrix[int]', other: 'Matrix[float]') -> 'Matrix[float]': ...
+    @overload
+    def __add__(self: 'Matrix[float]', other: 'Matrix[int]') -> 'Matrix[float]': ...
+    @overload
+    def __add__(self: 'Matrix[int]', other: 'Matrix[complex]') -> 'Matrix[complex]': ...
+    @overload
+    def __add__(self: 'Matrix[complex]', other: 'Matrix[int]') -> 'Matrix[complex]': ...
+    @overload
+    def __add__(self: 'Matrix[float]', other: 'Matrix[float]') -> 'Matrix[float]': ...
+    @overload
+    def __add__(self: 'Matrix[float]', other: 'Matrix[complex]') -> 'Matrix[complex]': ...
+    @overload
+    def __add__(self: 'Matrix[complex]', other: 'Matrix[float]') -> 'Matrix[complex]': ...
+    @overload
+    def __add__(self: 'Matrix[complex]', other: 'Matrix[complex]') -> 'Matrix[complex]': ...
+    def __add__(self, other: 'Matrix') -> 'Matrix':
         if not isinstance(other, Matrix) or self.m != other.m or self.n != other.n:
             return NotImplemented
 
@@ -171,28 +205,80 @@ class Matrix(Generic[N]):
             for row_a, row_b in zip(self.get_rows(), other.get_rows())
         ])
 
-    def __sub__(self, other: object):
+    @overload
+    def __sub__(self: 'Matrix[int]', other: 'Matrix[int]') -> 'Matrix[int]': ...
+    @overload
+    def __sub__(self: 'Matrix[int]', other: 'Matrix[float]') -> 'Matrix[float]': ...
+    @overload
+    def __sub__(self: 'Matrix[float]', other: 'Matrix[int]') -> 'Matrix[float]': ...
+    @overload
+    def __sub__(self: 'Matrix[int]', other: 'Matrix[complex]') -> 'Matrix[complex]': ...
+    @overload
+    def __sub__(self: 'Matrix[complex]', other: 'Matrix[int]') -> 'Matrix[complex]': ...
+    @overload
+    def __sub__(self: 'Matrix[float]', other: 'Matrix[float]') -> 'Matrix[float]': ...
+    @overload
+    def __sub__(self: 'Matrix[float]', other: 'Matrix[complex]') -> 'Matrix[complex]': ...
+    @overload
+    def __sub__(self: 'Matrix[complex]', other: 'Matrix[float]') -> 'Matrix[complex]': ...
+    @overload
+    def __sub__(self: 'Matrix[complex]', other: 'Matrix[complex]') -> 'Matrix[complex]': ...
+    def __sub__(self, other: 'Matrix') -> 'Matrix':
         if not isinstance(other, Matrix) or self.m != other.m or self.n != other.n:
             return NotImplemented
 
         return self + (-other)
 
-    def __mul__(self, other: object):
-        if not isinstance(other, int | float):
-            return NotImplemented
-
+    @overload
+    def __mul__(self: 'Matrix[int]', other: 'int') -> 'Matrix[int]': ...
+    @overload
+    def __mul__(self: 'Matrix[int]', other: 'float') -> 'Matrix[float]': ...
+    @overload
+    def __mul__(self: 'Matrix[int]', other: 'complex') -> 'Matrix[complex]': ...
+    @overload
+    def __mul__(self: 'Matrix[float]', other: 'float') -> 'Matrix[float]': ...
+    @overload
+    def __mul__(self: 'Matrix[float]', other: 'complex') -> 'Matrix[complex]': ...
+    @overload
+    def __mul__(self: 'Matrix[complex]', other: 'complex') -> 'Matrix[complex]': ...
+    def __mul__(self, other: 'M') -> 'Matrix':
         return Matrix([
             [other * x for x in row]
             for row in self.get_rows()
         ])
 
-    def __truediv__(self, other: object):
-        if not isinstance(other, int | float):
-            return NotImplemented
-
+    @overload
+    def __truediv__(self: 'Matrix[int]', other: 'float') -> 'Matrix[float]': ...
+    @overload
+    def __truediv__(self: 'Matrix[int]', other: 'complex') -> 'Matrix[complex]': ...
+    @overload
+    def __truediv__(self: 'Matrix[float]', other: 'float') -> 'Matrix[float]': ...
+    @overload
+    def __truediv__(self: 'Matrix[float]', other: 'complex') -> 'Matrix[complex]': ...
+    @overload
+    def __truediv__(self: 'Matrix[complex]', other: 'complex') -> 'Matrix[complex]': ...
+    def __truediv__(self, other: 'M') -> 'Matrix':
         return self * (1 / other)
 
-    def __matmul__(self, other: object):
+    @overload
+    def __matmul__(self: 'Matrix[int]', other: 'Matrix[int]') -> 'Matrix[int]': ...
+    @overload
+    def __matmul__(self: 'Matrix[int]', other: 'Matrix[float]') -> 'Matrix[float]': ...
+    @overload
+    def __matmul__(self: 'Matrix[float]', other: 'Matrix[int]') -> 'Matrix[float]': ...
+    @overload
+    def __matmul__(self: 'Matrix[int]', other: 'Matrix[complex]') -> 'Matrix[complex]': ...
+    @overload
+    def __matmul__(self: 'Matrix[complex]', other: 'Matrix[int]') -> 'Matrix[complex]': ...
+    @overload
+    def __matmul__(self: 'Matrix[float]', other: 'Matrix[float]') -> 'Matrix[float]': ...
+    @overload
+    def __matmul__(self: 'Matrix[float]', other: 'Matrix[complex]') -> 'Matrix[complex]': ...
+    @overload
+    def __matmul__(self: 'Matrix[complex]', other: 'Matrix[float]') -> 'Matrix[complex]': ...
+    @overload
+    def __matmul__(self: 'Matrix[complex]', other: 'Matrix[complex]') -> 'Matrix[complex]': ...
+    def __matmul__(self, other: 'Matrix') -> 'Matrix':
         if not isinstance(other, Matrix) or self.n != other.m:
             return NotImplemented
 
@@ -205,19 +291,19 @@ class Matrix(Generic[N]):
         ])
 
 
-def eye(n: int, m: int | None = None):
+def eye(n: int, m: int | None = None, dtype: type[N] = int) -> Matrix[N]:
     assert n >= 0
 
     if m is not None:
         assert m >= 0
 
     return Matrix([
-        [1 if i == j else 0 for j in range(m or n)]
+        [dtype(1) if i == j else 0 for j in range(m or n)]
         for i in range(n)
     ])
 
 
-def zeros(n: int, m: int | None = None):
+def zeros(n: int, m: int | None = None) -> Matrix[int]:
     assert n >= 0
 
     if m is not None:
@@ -229,7 +315,7 @@ def zeros(n: int, m: int | None = None):
     ])
 
 
-def is_close(a: Matrix[N], b: Matrix[N], tolerance: float = 1e-3):
+def is_close(a: Matrix[N], b: Matrix[M], tolerance: float = 1e-3) -> bool:
     assert a.m == b.m
     assert a.n == b.n
 

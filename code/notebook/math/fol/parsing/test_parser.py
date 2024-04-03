@@ -8,13 +8,13 @@ from ..terms import FunctionTerm, Variable
 from .parser import parse_formula, parse_term
 
 
-def test_parsing_valid_variables():
+def test_parsing_valid_variables() -> None:
     assert parse_term('ξ') == Variable('ξ')
     assert parse_term('η') == Variable('η')
     assert parse_term('η₁₂') == Variable('η₁₂')
 
 
-def test_parsing_invalid_variable_suffix():
+def test_parsing_invalid_variable_suffix() -> None:
     with pytest.raises(ParsingError) as excinfo:
         parse_term('ξ₀₁')
 
@@ -26,12 +26,12 @@ def test_parsing_invalid_variable_suffix():
     )
 
 
-def test_parsing_latin_variable_name():
+def test_parsing_latin_variable_name() -> None:
     # Allow only Greek letters for names
     assert not isinstance(parse_term('a'), Variable)
 
 
-def test_parsing_accented_greek_variable_name():
+def test_parsing_accented_greek_variable_name() -> None:
     with pytest.raises(ParsingError) as excinfo:
         parse_term('Εὐκλείδης')
 
@@ -43,7 +43,7 @@ def test_parsing_accented_greek_variable_name():
     )
 
 
-def test_space_after_variable_name():
+def test_space_after_variable_name() -> None:
     with pytest.raises(ParsingError) as excinfo:
         parse_term('ξ ')
 
@@ -54,7 +54,7 @@ def test_space_after_variable_name():
     )
 
 
-def test_parsing_valid_functions():
+def test_parsing_valid_functions() -> None:
     assert parse_term('f') == FunctionTerm('f', [])
     assert parse_term('f₁₂') == FunctionTerm('f₁₂', [])
     assert parse_term('f(ξ)') == FunctionTerm('f', [Variable('ξ')])
@@ -62,7 +62,7 @@ def test_parsing_valid_functions():
     assert parse_term('f(ξ,η,  ζ)') == FunctionTerm('f', [Variable('ξ'), Variable('η'), Variable('ζ')])
 
 
-def test_parsing_invalid_function_suffix():
+def test_parsing_invalid_function_suffix() -> None:
     with pytest.raises(ParsingError) as excinfo:
         parse_term('f₀₀')
 
@@ -73,7 +73,7 @@ def test_parsing_invalid_function_suffix():
     ''')
 
 
-def test_parsing_function_with_empty_arg_list():
+def test_parsing_function_with_empty_arg_list() -> None:
     with pytest.raises(ParsingError) as excinfo:
         parse_term('f()')
 
@@ -84,7 +84,7 @@ def test_parsing_function_with_empty_arg_list():
     ''')
 
 
-def test_parsing_function_with_only_open_paren():
+def test_parsing_function_with_only_open_paren() -> None:
     with pytest.raises(ParsingError) as excinfo:
         parse_term('f(')
 
@@ -95,7 +95,7 @@ def test_parsing_function_with_only_open_paren():
     ''')
 
 
-def test_parsing_function_with_unclosed_arg_list():
+def test_parsing_function_with_unclosed_arg_list() -> None:
     with pytest.raises(ParsingError) as excinfo:
         parse_term('f(a,b')
 
@@ -106,12 +106,12 @@ def test_parsing_function_with_unclosed_arg_list():
     ''')
 
 
-def test_parsing_valid_equalities():
+def test_parsing_valid_equalities() -> None:
     assert parse_formula('(ξ = η)') == EqualityFormula(Variable('ξ'), Variable('η'))
     assert parse_formula('(f(ξ) = g(η, ζ))') == EqualityFormula(FunctionTerm('f', [Variable('ξ')]), FunctionTerm('g', [Variable('η'), Variable('ζ')]))
 
 
-def test_parsing_unclosed_equality_parentheses():
+def test_parsing_unclosed_equality_parentheses() -> None:
     with pytest.raises(ParsingError) as excinfo:
         parse_formula('(ξ = η =')
 
@@ -122,7 +122,7 @@ def test_parsing_unclosed_equality_parentheses():
     ''')
 
 
-def test_parsing_unclosed_equality_parentheses_truncated():
+def test_parsing_unclosed_equality_parentheses_truncated() -> None:
     with pytest.raises(ParsingError) as excinfo:
         parse_formula('(ξ = η')
 
@@ -133,7 +133,7 @@ def test_parsing_unclosed_equality_parentheses_truncated():
     ''')
 
 
-def test_parsing_invalid_equality():
+def test_parsing_invalid_equality() -> None:
     with pytest.raises(ParsingError) as excinfo:
         parse_formula('(ξ = )')
 
@@ -144,7 +144,7 @@ def test_parsing_invalid_equality():
     ''')
 
 
-def test_parsing_equality_with_formulas_inside():
+def test_parsing_equality_with_formulas_inside() -> None:
     with pytest.raises(ParsingError) as excinfo:
         parse_formula('(¬p = η)')
 
@@ -155,8 +155,8 @@ def test_parsing_equality_with_formulas_inside():
     ''')
 
 
-def test_parsing_valid_formulas():
-    def is_formula_rebuilt(string: str):
+def test_parsing_valid_formulas() -> None:
+    def is_formula_rebuilt(string: str) -> None:
         assert str(parse_formula(string)) == string
 
     is_formula_rebuilt('⊤')
@@ -170,7 +170,7 @@ def test_parsing_valid_formulas():
     is_formula_rebuilt('∀ζ.∃ζ.(¬r(η) ∧ ¬r(ζ, η))')
 
 
-def test_parsing_unclosed_conjunction_parentheses():
+def test_parsing_unclosed_conjunction_parentheses() -> None:
     with pytest.raises(ParsingError) as excinfo:
         parse_formula('(p ∧ q ∧')
 
@@ -181,7 +181,7 @@ def test_parsing_unclosed_conjunction_parentheses():
     ''')
 
 
-def test_parsing_unclosed_conjunction_parentheses_truncated():
+def test_parsing_unclosed_conjunction_parentheses_truncated() -> None:
     with pytest.raises(ParsingError) as excinfo:
         parse_formula('(p ∧ q')
 
@@ -192,7 +192,7 @@ def test_parsing_unclosed_conjunction_parentheses_truncated():
     ''')
 
 
-def test_parsing_invalid_conjunction():
+def test_parsing_invalid_conjunction() -> None:
     with pytest.raises(ParsingError) as excinfo:
         parse_formula('(p ∧ )')
 
@@ -203,7 +203,7 @@ def test_parsing_invalid_conjunction():
     ''')
 
 
-def test_parsing_conjunction_with_formulas_inside():
+def test_parsing_conjunction_with_formulas_inside() -> None:
     with pytest.raises(ParsingError) as excinfo:
         parse_formula('(ξ ∧ q)')
 
@@ -214,7 +214,7 @@ def test_parsing_conjunction_with_formulas_inside():
     ''')
 
 
-def test_complex_unbalanced_formula():
+def test_complex_unbalanced_formula() -> None:
     with pytest.raises(ParsingError) as excinfo:
         parse_formula('(∀ξ.(q(ζ, ξ) → ¬r(η, ξ) ∧ ¬p(ζ))')
 
@@ -225,7 +225,7 @@ def test_complex_unbalanced_formula():
     ''')
 
 
-def test_lone_quantifier():
+def test_lone_quantifier() -> None:
     with pytest.raises(ParsingError) as excinfo:
         parse_formula('∀')
 
@@ -236,7 +236,7 @@ def test_lone_quantifier():
     ''')
 
 
-def test_quantifier_with_latin_variable():
+def test_quantifier_with_latin_variable() -> None:
     with pytest.raises(ParsingError) as excinfo:
         parse_formula('∀x.p')
 
@@ -247,7 +247,7 @@ def test_quantifier_with_latin_variable():
     ''')
 
 
-def test_quantifier_with_no_dot():
+def test_quantifier_with_no_dot() -> None:
     with pytest.raises(ParsingError) as excinfo:
         parse_formula('∀ξp')
 
@@ -258,7 +258,7 @@ def test_quantifier_with_no_dot():
     ''')
 
 
-def test_quantifier_with_no_subformula():
+def test_quantifier_with_no_subformula() -> None:
     with pytest.raises(ParsingError) as excinfo:
         parse_formula('∀ξ.')
 
@@ -269,8 +269,8 @@ def test_quantifier_with_no_subformula():
     ''')
 
 
-def test_reparsing_formulas():
-    def is_formula_rebuilt(string: str):
+def test_reparsing_formulas() -> None:
+    def is_formula_rebuilt(string: str) -> None:
         assert str(parse_formula(str(parse_formula(string)))) == string
 
     is_formula_rebuilt('∀η.∃ζ.(¬p(ζ) ∧ ∀ξ.(q(ζ, ξ) → ¬r(η, ξ)))')

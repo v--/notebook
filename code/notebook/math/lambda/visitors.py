@@ -1,13 +1,13 @@
 from typing import Generic, TypeVar
 
-from .terms import Abstraction, Application, Term, Variable
+from .terms import Abstraction, Application, LambdaTerm, Variable
 
 
 T = TypeVar('T')
 
 
 class TermVisitor(Generic[T]):
-    def visit(self, term: Term) -> T:
+    def visit(self, term: LambdaTerm) -> T:
         match term:
             case Variable():
                 return self.visit_variable(term)
@@ -27,16 +27,16 @@ class TermVisitor(Generic[T]):
     def visit_abstraction(self, term: Abstraction) -> T:
         return self.generic_visit(term)
 
-    def generic_visit(self, term: Term) -> T:
+    def generic_visit(self, term: LambdaTerm) -> T:
         raise NotImplementedError
 
 
-class TermTransformationVisitor(TermVisitor[Term]):
-    def visit_variable(self, term: Variable):
+class TermTransformationVisitor(TermVisitor[LambdaTerm]):
+    def visit_variable(self, term: Variable) -> LambdaTerm:
         return term
 
-    def visit_application(self, term: Application):
+    def visit_application(self, term: Application) -> LambdaTerm:
         return Application(self.visit(term.a), self.visit(term.b))
 
-    def visit_abstraction(self, term: Abstraction):
-        return Application(term.var, self.visit(term.sub))
+    def visit_abstraction(self, term: Abstraction) -> LambdaTerm:
+        return Abstraction(term.var, self.visit(term.sub))

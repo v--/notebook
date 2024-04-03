@@ -9,7 +9,7 @@ from .parse_tree import (
 )
 
 
-def test_derivation_and_parse_tree_basic():
+def test_derivation_and_parse_tree_basic() -> None:
     derivation = Derivation(
         start=NonTerminal('S'),
         steps=[
@@ -26,7 +26,7 @@ def test_derivation_and_parse_tree_basic():
     assert parse_tree_to_derivation(tree) == derivation
 
 
-def test_derivation_and_parse_tree_branching():
+def test_derivation_and_parse_tree_branching() -> None:
     rule_a = GrammarRule([NonTerminal('S')], [Terminal('a'), NonTerminal('S'), Terminal('b')])
     rule_b = GrammarRule([NonTerminal('S')], [Terminal('a'), Terminal('b')])
     derivation = Derivation(
@@ -73,7 +73,7 @@ def test_derivation_and_parse_tree_branching():
     assert parse_tree_to_derivation(tree) == derivation
 
 
-def test_derivation_to_parse_tree_rearrangement():
+def test_derivation_to_parse_tree_rearrangement() -> None:
     rule_s = GrammarRule([NonTerminal('S')], [NonTerminal('A'), NonTerminal('S'), NonTerminal('B')])
     rule_e = GrammarRule([NonTerminal('S')], [])
     rule_a = GrammarRule([NonTerminal('A')], [Terminal('a')])
@@ -126,7 +126,7 @@ def test_derivation_to_parse_tree_rearrangement():
     assert derivation_to_parse_tree(derivation_1) == derivation_to_parse_tree(derivation_2)
 
 
-def test_derivation_and_parse_tree_epsilon():
+def test_derivation_and_parse_tree_epsilon() -> None:
     rule_a = GrammarRule([NonTerminal('S')], [Terminal('a'), NonTerminal('S'), Terminal('b')])
     rule_b = GrammarRule([NonTerminal('S')], [])
     derivation = Derivation(
@@ -156,7 +156,7 @@ def test_derivation_and_parse_tree_epsilon():
     assert parse_tree_to_derivation(tree) == derivation
 
 
-def test_derivation_and_parse_tree_left_recursion():
+def test_derivation_and_parse_tree_left_recursion() -> None:
     rule_a = GrammarRule([NonTerminal('S')], [NonTerminal('S'), Terminal('a')])
     rule_b = GrammarRule([NonTerminal('S')], [Terminal('a')])
     derivation = Derivation(

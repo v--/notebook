@@ -7,11 +7,11 @@ from ..alphabet import NonTerminal, Terminal
 from .tokenizer import tokenize_bnf
 
 
-def test_parsing_valid_terminals():
+def test_parsing_valid_terminals() -> None:
     assert tokenize_bnf('"S"') == [Terminal('S')]
 
 
-def test_parsing_empty_terminal():
+def test_parsing_empty_terminal() -> None:
     with pytest.raises(ParsingError) as excinfo:
         tokenize_bnf('""')
 
@@ -23,7 +23,7 @@ def test_parsing_empty_terminal():
     )
 
 
-def test_parsing_invalid_incomplete_terminals():
+def test_parsing_invalid_incomplete_terminals() -> None:
     with pytest.raises(ParsingError) as excinfo:
         tokenize_bnf('"S')
 
@@ -35,7 +35,7 @@ def test_parsing_invalid_incomplete_terminals():
     )
 
 
-def test_parsing_multichar_terminals():
+def test_parsing_multichar_terminals() -> None:
     with pytest.raises(ParsingError) as excinfo:
         tokenize_bnf('"SS"')
 
@@ -47,7 +47,7 @@ def test_parsing_multichar_terminals():
     )
 
 
-def test_parsing_valid_nonterminals():
+def test_parsing_valid_nonterminals() -> None:
     assert tokenize_bnf('<S>') == [NonTerminal('S')]
     assert tokenize_bnf('<SS>') == [NonTerminal('SS')]
 
@@ -56,7 +56,7 @@ def test_parsing_valid_nonterminals():
     assert tokenize_bnf(r'<\\>') == [NonTerminal('\\')]
 
 
-def test_parsing_invalid_nonterminals():
+def test_parsing_invalid_nonterminals() -> None:
     with pytest.raises(ParsingError) as excinfo:
         tokenize_bnf('<>')
 
@@ -68,7 +68,7 @@ def test_parsing_invalid_nonterminals():
     )
 
 
-def test_parsing_unclosed_nonterminal_brace():
+def test_parsing_unclosed_nonterminal_brace() -> None:
     with pytest.raises(ParsingError) as excinfo:
         tokenize_bnf('<S')
 
@@ -80,7 +80,7 @@ def test_parsing_unclosed_nonterminal_brace():
     )
 
 
-def test_parsing_nested_nonterminals():
+def test_parsing_nested_nonterminals() -> None:
     with pytest.raises(ParsingError) as excinfo:
         tokenize_bnf('<S<S>>')
 
@@ -91,7 +91,7 @@ def test_parsing_nested_nonterminals():
     ''')
 
 
-def test_parsing_invalid_escape_code():
+def test_parsing_invalid_escape_code() -> None:
     with pytest.raises(ParsingError) as excinfo:
         tokenize_bnf(r'<S\r>')
 

@@ -4,7 +4,7 @@ from .finite_determinize import determinize
 
 
 # ex:def:formal_language/an
-def test_finite_automaton_recognizes_an():
+def test_finite_automaton_recognizes_an() -> None:
     aut: FiniteAutomaton = FiniteAutomaton()
     aut.add_transition(1, 'a', 1)
     aut.initial.add(1)
@@ -20,18 +20,18 @@ def test_finite_automaton_recognizes_an():
 
 
 # fig:def:finite_automaton
-def test_finite_automaton_recognizes_aabn(aabn: FiniteAutomaton):
+def test_finite_automaton_recognizes_aabn(aabn: FiniteAutomaton) -> None:
     assert not aabn.is_deterministic()
     assert_aabn(aabn)
 
 
-def test_finite_automaton_recognizes_leucine(leucine: FiniteAutomaton):
+def test_finite_automaton_recognizes_leucine(leucine: FiniteAutomaton) -> None:
     assert not leucine.is_deterministic()
     assert_leucine(leucine)
 
 
 # fig:def:finite_automaton
-def test_determinize_preserves_parallel_arcs():
+def test_determinize_preserves_parallel_arcs() -> None:
     aut: FiniteAutomaton = FiniteAutomaton()
     aut.add_transition(1, 'a', 2)
     aut.add_transition(1, 'b', 2)
@@ -43,22 +43,22 @@ def test_determinize_preserves_parallel_arcs():
 
     det = determinize(aut)
 
-    assert {'a', 'b'} == set(
+    assert {'a', 'b'} == {
         label
         for src, label, dest in det.triples
         if src == frozenset({1}) and dest == frozenset({2, 3})
-    )
+    }
 
 
 # fig:def:finite_automaton
-def test_determinize_aabn(aabn: FiniteAutomaton):
+def test_determinize_aabn(aabn: FiniteAutomaton) -> None:
     det = determinize(aabn)
     assert det.is_deterministic()
     assert_aabn(det)
 
 
 # ex:def:formal_language/leucine
-def test_determinize_leucine(leucine: FiniteAutomaton):
+def test_determinize_leucine(leucine: FiniteAutomaton) -> None:
     det = determinize(leucine)
     assert det.is_deterministic()
     assert frozenset({3, 6}) in det.get_states()

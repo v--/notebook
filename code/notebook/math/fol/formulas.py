@@ -7,7 +7,7 @@ from .terms import Term, Variable
 class ConstantFormula(NamedTuple):
     value: PropConstant
 
-    def __str__(self):
+    def __str__(self) -> str:
         return str(self.value)
 
 
@@ -15,7 +15,7 @@ class EqualityFormula(NamedTuple):
     a: Term
     b: Term
 
-    def __str__(self):
+    def __str__(self) -> str:
         return f'({self.a} = {self.b})'
 
 
@@ -23,7 +23,7 @@ class PredicateFormula(NamedTuple):
     name: str
     arguments: list[Term]
 
-    def __str__(self):
+    def __str__(self) -> str:
         args = ', '.join(str(arg) for arg in self.arguments)
         return f'{self.name}({args})' if len(args) > 0 else self.name
 
@@ -31,7 +31,7 @@ class PredicateFormula(NamedTuple):
 class NegationFormula(NamedTuple):
     sub: 'Formula'
 
-    def __str__(self):
+    def __str__(self) -> str:
         return f'¬{self.sub}'
 
 
@@ -40,7 +40,7 @@ class ConnectiveFormula(NamedTuple):
     a: 'Formula'
     b: 'Formula'
 
-    def __str__(self):
+    def __str__(self) -> str:
         return f'({self.a} {self.conn} {self.b})'
 
 
@@ -49,7 +49,7 @@ class QuantifierFormula(NamedTuple):
     variable: Variable
     sub: 'Formula'
 
-    def __str__(self):
+    def __str__(self) -> str:
         return f'{self.quantifier.value}{self.variable}.{self.sub}'
 
 

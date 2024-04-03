@@ -2,7 +2,7 @@ from .matrix import Matrix, eye, is_close
 from .triangular import lower_triangular_inv
 
 
-def test_lower_triangular_inv(lower_pascal3: Matrix[int]):
+def test_lower_triangular_inv(lower_pascal3: Matrix[int]) -> None:
     assert is_close(
         lower_triangular_inv(lower_pascal3) @ lower_pascal3,
         eye(3)

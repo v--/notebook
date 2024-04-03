@@ -1,5 +1,5 @@
 import itertools
-from typing import Iterator
+from typing import Iterator, Optional
 
 from .alphabet import NonTerminal, Terminal, empty
 from .context_free import is_context_free
@@ -30,7 +30,9 @@ def generate_trees(sym: NonTerminal | Terminal, string: str, grammar: Grammar, t
 
 
 # This is alg:brute_force_parsing in the text
-def parse(grammar: Grammar, string: str, traversed: set[tuple[NonTerminal, str]] = set()) -> Iterator[ParseTree]:
+def parse(grammar: Grammar, string: str, traversed: Optional[set[tuple[NonTerminal, str]]] = None) -> Iterator[ParseTree]:
+    if traversed is None:
+        traversed = set()
     assert is_context_free(grammar), 'Brute force parsing algorithm only works on context-free grammars'
     for rule in grammar.iter_starting_rules():
         if is_epsilon_rule(rule):
@@ -50,5 +52,8 @@ def parse(grammar: Grammar, string: str, traversed: set[tuple[NonTerminal, str]]
                     yield ParseTree(grammar.start, list(subtrees))
 
 
-def derives(grammar: Grammar, string: str):
-    return sum(1 for tree in parse(grammar, string)) > 0
+def derives(grammar: Grammar, string: str) -> bool:
+    for _tree in parse(grammar, string):
+        return True
+
+    return False

@@ -35,10 +35,10 @@ class TermVisitor(Generic[T]):
 
 
 class TermTransformationVisitor(TermVisitor[Term]):
-    def visit_variable(self, term: Variable):
+    def visit_variable(self, term: Variable) -> Term:
         return term
 
-    def visit_function(self, term: FunctionTerm):
+    def visit_function(self, term: FunctionTerm) -> Term:
         return FunctionTerm(
             term.name,
             [self.visit(arg) for arg in term.arguments]
@@ -89,26 +89,26 @@ class FormulaVisitor(Generic[T]):
 
 
 class FormulaTransformationVisitor(FormulaVisitor[Formula]):
-    def visit_constant(self, formula: ConstantFormula):
+    def visit_constant(self, formula: ConstantFormula) -> Formula:
         return formula
 
-    def visit_equality(self, formula: EqualityFormula):
+    def visit_equality(self, formula: EqualityFormula) -> Formula:
         return formula
 
-    def visit_predicate(self, formula: PredicateFormula):
+    def visit_predicate(self, formula: PredicateFormula) -> Formula:
         return formula
 
-    def visit_negation(self, formula: NegationFormula):
+    def visit_negation(self, formula: NegationFormula) -> Formula:
         return NegationFormula(self.visit(formula.sub))
 
-    def visit_connective(self, formula: ConnectiveFormula):
+    def visit_connective(self, formula: ConnectiveFormula) -> Formula:
         return ConnectiveFormula(
             formula.conn,
             self.visit(formula.a),
             self.visit(formula.b)
         )
 
-    def visit_quantifier(self, formula: QuantifierFormula):
+    def visit_quantifier(self, formula: QuantifierFormula) -> Formula:
         return QuantifierFormula(
             formula.quantifier,
             formula.variable,

@@ -3,7 +3,7 @@ import re
 from .subscripts import atoi_subscripts, itoa_subscripts
 
 
-def new_var_name(prefix: str, context: set[str]):
+def new_var_name(prefix: str, context: set[str]) -> str:
     if prefix not in context:
         return prefix
 

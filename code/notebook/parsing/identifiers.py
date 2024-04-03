@@ -15,7 +15,7 @@ class AlphabeticIdentifier(TokenMixin, ABC):
     capitalization: Capitalization
     short: bool
 
-    def __init__(self, value: str, capitalization: Capitalization = Capitalization.mixed, short: bool = False):
+    def __init__(self, value: str, capitalization: Capitalization = Capitalization.mixed, *, short: bool = False) -> None:
         super().__init__(value)
         self.capitalization = capitalization
         self.short = short

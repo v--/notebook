@@ -6,16 +6,16 @@ from ....parsing.parser import ParsingError
 from .parser import parse_rule
 
 
-def test_parsing_atomic_valid():
-    def is_rule_rebuilt(string: str):
+def test_parsing_atomic_valid() -> None:
+    def assert_rule_rebuilt(string: str) -> None:
         assert str(parse_rule(string)) == string
 
-    is_rule_rebuilt('(R) ⫢ Ψ')
-    is_rule_rebuilt('(R) Φ ⫢ Ψ')
-    is_rule_rebuilt('(R) Φ₁, Φ₂ ⫢ Ψ')
+    assert_rule_rebuilt('(R) ⫢ Ψ')
+    assert_rule_rebuilt('(R) Φ ⫢ Ψ')
+    assert_rule_rebuilt('(R) Φ₁, Φ₂ ⫢ Ψ')
 
 
-def test_parsing_without_rule_name():
+def test_parsing_without_rule_name() -> None:
     with pytest.raises(ParsingError) as excinfo:
         parse_rule('Φ ⫢ Ψ')
 
@@ -27,7 +27,7 @@ def test_parsing_without_rule_name():
     )
 
 
-def test_parsing_with_empty_name():
+def test_parsing_with_empty_name() -> None:
     with pytest.raises(ParsingError) as excinfo:
         parse_rule('() Φ ⫢ Ψ')
 
@@ -39,7 +39,7 @@ def test_parsing_with_empty_name():
     )
 
 
-def test_parsing_rule_with_unclosed_parens():
+def test_parsing_rule_with_unclosed_parens() -> None:
     with pytest.raises(ParsingError) as excinfo:
         parse_rule('(R Φ ⫢ Ψ')
 
@@ -51,7 +51,7 @@ def test_parsing_rule_with_unclosed_parens():
     )
 
 
-def test_parsing_rule_with_no_comma():
+def test_parsing_rule_with_no_comma() -> None:
     with pytest.raises(ParsingError) as excinfo:
         parse_rule('(R) Φ₁ Φ₂ ⫢ Ψ')
 
@@ -63,7 +63,7 @@ def test_parsing_rule_with_no_comma():
     )
 
 
-def test_parsing_rule_with_no_conclusion():
+def test_parsing_rule_with_no_conclusion() -> None:
     with pytest.raises(ParsingError) as excinfo:
         parse_rule('(R) Φ')
 
@@ -75,14 +75,14 @@ def test_parsing_rule_with_no_conclusion():
     )
 
 
-def test_parsing_valid_discharge_placeholders():
-    def is_rule_rebuilt(string: str):
+def test_parsing_valid_discharge_placeholders() -> None:
+    def assert_rule_rebuilt(string: str) -> None:
         assert str(parse_rule(string)) == string
 
-    is_rule_rebuilt('(R) [θ] Φ ⫢ Ψ')
+    assert_rule_rebuilt('(R) [θ] Φ ⫢ Ψ')
 
 
-def test_parsing_discharge_placeholder_with_no_name():
+def test_parsing_discharge_placeholder_with_no_name() -> None:
     with pytest.raises(ParsingError) as excinfo:
         parse_rule('(R) [] Φ ⫢ Ψ')
 
@@ -94,7 +94,7 @@ def test_parsing_discharge_placeholder_with_no_name():
     )
 
 
-def test_parsing_discharge_placeholder_with_no_closing_bracket():
+def test_parsing_discharge_placeholder_with_no_closing_bracket() -> None:
     with pytest.raises(ParsingError) as excinfo:
         parse_rule('(R) [θ Φ ⫢ Ψ')
 
@@ -106,7 +106,7 @@ def test_parsing_discharge_placeholder_with_no_closing_bracket():
     )
 
 
-def test_parsing_discharge_in_conclusion():
+def test_parsing_discharge_in_conclusion() -> None:
     with pytest.raises(ParsingError) as excinfo:
         parse_rule('(R) ⫢ [Θ] Ψ')
 
@@ -118,18 +118,18 @@ def test_parsing_discharge_in_conclusion():
     )
 
 
-def test_parsing_complex_placeholders():
-    def is_rule_rebuilt(string: str):
+def test_parsing_complex_placeholders() -> None:
+    def assert_rule_rebuilt(string: str) -> None:
         assert str(parse_rule(string)) == string
 
-    is_rule_rebuilt('(R) ⫢ ⊥')
-    is_rule_rebuilt('(R) ⫢ ¬Ψ')
-    is_rule_rebuilt('(R) ⫢ (Ψ₁ ∧ Ψ₂)')
-    is_rule_rebuilt('(R) ⫢ ∀ξ.Ψ')
+    assert_rule_rebuilt('(R) ⫢ ⊥')
+    assert_rule_rebuilt('(R) ⫢ ¬Ψ')
+    assert_rule_rebuilt('(R) ⫢ (Ψ₁ ∧ Ψ₂)')
+    assert_rule_rebuilt('(R) ⫢ ∀ξ.Ψ')
 
 
 # The quantifier parser is an almost literal copy of the one from the FOL parser, so we rely on the tests there
-def test_parsing_quantifier_placeholder_with_no_dot():
+def test_parsing_quantifier_placeholder_with_no_dot() -> None:
     with pytest.raises(ParsingError) as excinfo:
         parse_rule('(R) ⫢ ∀ξΨ')
 
@@ -141,7 +141,7 @@ def test_parsing_quantifier_placeholder_with_no_dot():
 
 
 # The same goes for the binary placeholder parser
-def test_parsing_invalid_binary_placeholder():
+def test_parsing_invalid_binary_placeholder() -> None:
     with pytest.raises(ParsingError) as excinfo:
         parse_rule('(R) ⫢ (Φ ∧ )')
 

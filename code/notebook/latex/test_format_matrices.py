@@ -3,7 +3,7 @@ from textwrap import dedent
 from .format_matrices import format_tex_matrices
 
 
-def test_empty_matrix():
+def test_empty_matrix() -> None:
     string = dedent(r'''
         \begin{pmatrix}
         \end{pmatrix}
@@ -14,7 +14,7 @@ def test_empty_matrix():
     assert formatted == string
 
 
-def test_simple_formatted():
+def test_simple_formatted() -> None:
     string = dedent(r'''
         \begin{pmatrix}
           1 & 0 \\
@@ -27,7 +27,7 @@ def test_simple_formatted():
     assert formatted == string
 
 
-def test_simple_unformatted():
+def test_simple_unformatted() -> None:
     string = dedent(r'''
         \begin{pmatrix}
           1 & 0 \\
@@ -46,7 +46,7 @@ def test_simple_unformatted():
     )
 
 
-def test_formatted_with_space_in_cells():
+def test_formatted_with_space_in_cells() -> None:
     string = dedent(r'''
         \begin{pmatrix}[option]
           1     1 & 0     0 \\
@@ -59,7 +59,7 @@ def test_formatted_with_space_in_cells():
     assert formatted == string
 
 
-def test_formatted_with_option():
+def test_formatted_with_option() -> None:
     string = dedent(r'''
         \begin{pmatrix}[option]
           1 & 0 \\
@@ -72,7 +72,7 @@ def test_formatted_with_option():
     assert formatted == string
 
 
-def test_formatted_with_multiline_option():
+def test_formatted_with_multiline_option() -> None:
     string = dedent(r'''
         \begin{pmatrix}
           [
@@ -88,7 +88,7 @@ def test_formatted_with_multiline_option():
     assert formatted == string
 
 
-def test_misaligned_initial_columns():
+def test_misaligned_initial_columns() -> None:
     string = dedent(r'''
         \begin{pmatrix}
         1 & 0 \\
@@ -109,7 +109,7 @@ def test_misaligned_initial_columns():
     )
 
 
-def test_formatted_with_blank_initial_cell():
+def test_formatted_with_blank_initial_cell() -> None:
     string = dedent(r'''
         \begin{pmatrix}
           1 & 0 \\
@@ -122,7 +122,7 @@ def test_formatted_with_blank_initial_cell():
     assert formatted == string
 
 
-def test_formatted_with_blank_final_cell():
+def test_formatted_with_blank_final_cell() -> None:
     string = dedent(r'''
         \begin{pmatrix}
           1 &   \\
@@ -135,7 +135,7 @@ def test_formatted_with_blank_final_cell():
     assert formatted == string
 
 
-def test_newline_command_unformatted():
+def test_newline_command_unformatted() -> None:
     string = dedent(r'''
         \begin{pmatrix}
           1 & 0    \\
@@ -156,7 +156,7 @@ def test_newline_command_unformatted():
     )
 
 
-def test_empty_column():
+def test_empty_column() -> None:
     string = dedent(r'''
         \begin{pmatrix}
           1 &  & 0 \\
@@ -175,7 +175,7 @@ def test_empty_column():
     )
 
 
-def test_empty_first_column():
+def test_empty_first_column() -> None:
     string = dedent(r'''
         \begin{pmatrix}
           & 0 \\
@@ -188,7 +188,7 @@ def test_empty_first_column():
     assert formatted == string
 
 
-def test_empty_final_column():
+def test_empty_final_column() -> None:
     string = dedent(r'''
         \begin{pmatrix}
           1 & \\
@@ -201,7 +201,7 @@ def test_empty_final_column():
     assert formatted == string
 
 
-def test_nested_unformatted():
+def test_nested_unformatted() -> None:
     string = dedent(r'''
         \begin{equation}
           \begin{aligned}

@@ -7,21 +7,21 @@ from ..fol.terms import Variable
 class AtomicFormulaPlaceholder(NamedTuple):
     name: str
 
-    def __str__(self):
+    def __str__(self) -> str:
         return self.name
 
 
 class ConstantFormulaPlaceholder(NamedTuple):
     value: PropConstant
 
-    def __str__(self):
+    def __str__(self) -> str:
         return str(self.value)
 
 
 class NegationFormulaPlaceholder(NamedTuple):
     sub: 'FormulaPlaceholder'
 
-    def __str__(self):
+    def __str__(self) -> str:
         return f'¬{self.sub}'
 
 
@@ -30,7 +30,7 @@ class ConnectiveFormulaPlaceholder(NamedTuple):
     a: 'FormulaPlaceholder'
     b: 'FormulaPlaceholder'
 
-    def __str__(self):
+    def __str__(self) -> str:
         return f'({self.a} {self.conn} {self.b})'
 
 
@@ -39,7 +39,7 @@ class QuantifierFormulaPlaceholder(NamedTuple):
     variable: Variable
     sub: 'FormulaPlaceholder'
 
-    def __str__(self):
+    def __str__(self) -> str:
         return f'{self.quantifier.value}{self.variable}.{self.sub}'
 
 
@@ -50,7 +50,7 @@ class Premise(NamedTuple):
     main: FormulaPlaceholder
     discharge: FormulaPlaceholder | None
 
-    def __str__(self):
+    def __str__(self) -> str:
         if self.discharge is None:
             return str(self.main)
 
@@ -62,7 +62,7 @@ class Rule(NamedTuple):
     premises: list[Premise]
     conclusion: FormulaPlaceholder
 
-    def __str__(self):
+    def __str__(self) -> str:
         if len(self.premises) > 0:
             premise_str = ', '.join(map(str, self.premises))
             return f'({self.name}) {premise_str} ⫢ {self.conclusion}'

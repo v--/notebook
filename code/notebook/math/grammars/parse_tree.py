@@ -1,10 +1,11 @@
 import functools
 import operator
+from collections.abc import Iterable
 from dataclasses import dataclass, field
 from queue import SimpleQueue
-from typing import Any, cast
+from typing import cast
 
-from rich.tree import Tree
+import rich.tree
 
 from ...support.rich import rich_to_text
 from .alphabet import Empty, NonTerminal, Terminal, empty
@@ -23,7 +24,7 @@ class Derivation:
     start: NonTerminal
     steps: list[DerivationStep]
 
-    def __str__(self):
+    def __str__(self) -> str:
         return str(self.start) + ' ⟹ ' + ' ⟹ '.join(
             str(' '.join(str(s) for s in step.payload)) for step in self.steps
         )
@@ -34,65 +35,43 @@ class ParseTree:
     payload: NonTerminal | Terminal | Empty
     children: list['ParseTree'] = field(default_factory=list)
 
-    def is_leaf(self):
+    def is_leaf(self) -> bool:
         return len(self.children) == 0
 
-    def insert_subtree(self):
+    def insert_subtree(self) -> None:
         pass
 
-    def iter_symbols(self):
+    def iter_symbols(self) -> Iterable[Terminal | NonTerminal | Empty]:
         yield self.payload
 
         for node in self.children:
             yield from node.iter_symbols()
 
-    def yield_string(self):
+    def yield_string(self) -> str:
         return ''.join(sym.value for sym in self.iter_symbols() if isinstance(sym, Terminal))
 
-    def build_rich_tree(self):
-        if self.payload == empty:
-            tree = Tree('ε')
-        else:
-            tree = Tree(str(self.payload))
+    def build_rich_tree(self) -> rich.tree.Tree:
+        tree = rich.tree.Tree('ε') if self.payload == empty else rich.tree.Tree(str(self.payload))
 
         for node in self.children:
             tree.add(node.build_rich_tree())
 
         return tree
 
-    def __str__(self):
+    def __str__(self) -> str:
         return rich_to_text(self.build_rich_tree())
 
-    def __hash__(self):
+    def __hash__(self) -> int:
         return hash(self.payload) + functools.reduce(operator.xor, map(hash, self.children), 0)
 
 
-class RuleVisitor:
-    def visit(self, tree: ParseTree):
-        if isinstance(tree.payload, NonTerminal):
-            args = [self.visit(succ) for succ in tree.children]
-            return getattr(self, 'visit_' + tree.payload.value, self.generic_visit)(tree, *args)
-
-        if isinstance(tree.payload, Terminal):
-            return tree.payload.value
-
-        # We do nothing on empty rules
-
-    def generic_visit(self, tree: ParseTree, *args: Any):
-        pass
-
-
-def _insert_subtree_leftmost(tree: ParseTree, subtree: ParseTree):
+def _insert_subtree_leftmost(tree: ParseTree, subtree: ParseTree) -> bool:
     for i, child in enumerate(tree.children):
         if child.payload == subtree.payload and child.is_leaf():
             tree.children[i] = subtree
             return True
-    else:
-        for child in tree.children:
-            if _insert_subtree_leftmost(child, subtree):
-                return True
 
-    return False
+    return any(_insert_subtree_leftmost(child, subtree) for child in tree.children)
 
 
 # This is alg:parse_tree_to_leftmost_derivation in the text

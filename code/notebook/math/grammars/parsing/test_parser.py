@@ -8,7 +8,7 @@ from ..grammar import GrammarRule, GrammarSchema
 from .parser import parse_grammar_schema
 
 
-def test_valid_schemas():
+def test_valid_schemas() -> None:
     assert parse_grammar_schema(
         dedent('''\
             <S> → <S>
@@ -40,14 +40,14 @@ def test_valid_schemas():
     ])
 
 
-def test_parsing_empty_schema():
+def test_parsing_empty_schema() -> None:
     with pytest.raises(ParsingError) as excinfo:
         parse_grammar_schema('')
 
     assert str(excinfo.value) == 'Expected at least one grammar rule'
 
 
-def test_parsing_empty_left_side():
+def test_parsing_empty_left_side() -> None:
     with pytest.raises(ParsingError) as excinfo:
         parse_grammar_schema('→ ε')
 
@@ -59,7 +59,7 @@ def test_parsing_empty_left_side():
     )
 
 
-def test_parsing_lone_terminal_on_left():
+def test_parsing_lone_terminal_on_left() -> None:
     with pytest.raises(ParsingError) as excinfo:
         parse_grammar_schema('"a" → ε')
 
@@ -71,7 +71,7 @@ def test_parsing_lone_terminal_on_left():
     )
 
 
-def test_parsing_epsilon_on_left():
+def test_parsing_epsilon_on_left() -> None:
     with pytest.raises(ParsingError) as excinfo:
         parse_grammar_schema('ε → ε')
 
@@ -83,7 +83,7 @@ def test_parsing_epsilon_on_left():
     )
 
 
-def test_parsing_pipe_on_left():
+def test_parsing_pipe_on_left() -> None:
     with pytest.raises(ParsingError) as excinfo:
         parse_grammar_schema('<S> | <A> → ε')
 
@@ -95,7 +95,7 @@ def test_parsing_pipe_on_left():
     )
 
 
-def test_parsing_rule_with_epsilon_and_nonterminal():
+def test_parsing_rule_with_epsilon_and_nonterminal() -> None:
     with pytest.raises(ParsingError) as excinfo:
         parse_grammar_schema('<S> → ε <S>')
 
@@ -107,7 +107,7 @@ def test_parsing_rule_with_epsilon_and_nonterminal():
     )
 
 
-def test_parsing_line_break_inside_rule():
+def test_parsing_line_break_inside_rule() -> None:
     with pytest.raises(ParsingError) as excinfo:
         parse_grammar_schema(
             dedent('''\
@@ -125,7 +125,7 @@ def test_parsing_line_break_inside_rule():
     )
 
 
-def test_parsing_invalid_right_side():
+def test_parsing_invalid_right_side() -> None:
     with pytest.raises(ParsingError) as excinfo:
         parse_grammar_schema(
             dedent('<S> → →')

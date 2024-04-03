@@ -1,15 +1,17 @@
-from collections.abc import Iterable, Iterator, MutableMapping
+from collections.abc import Iterable, Iterator, MutableMapping, Sequence
 from dataclasses import dataclass
 from typing import Generic, TypeVar
 
 from rich import box
 from rich.table import Table
 
+from ...support.adt.comparable import Comparable
 from ...support.rich import rich_to_text
 from .cycles import Cycle
 
 
-T = TypeVar('T')
+T = TypeVar('T', bound=Comparable)
+PermutationT = TypeVar('PermutationT', bound='Permutation')
 
 
 @dataclass
@@ -17,7 +19,7 @@ class Permutation(Generic[T]):
     mapping: MutableMapping[T, T]
 
     @classmethod
-    def from_incomplete_mapping(cls, incomplete: MutableMapping[T, T]):
+    def from_incomplete_mapping(cls: type[PermutationT], incomplete: MutableMapping[T, T]) -> PermutationT:
         complete = {}
 
         for key in list(incomplete):
@@ -30,7 +32,7 @@ class Permutation(Generic[T]):
         return cls(complete)
 
     @classmethod
-    def from_cycle(cls, cycle: Cycle[T]):
+    def from_cycle(cls, cycle: Cycle[T]) -> 'Permutation[T]':
         if len(cycle) == 0:
             return Permutation({})
 
@@ -42,17 +44,17 @@ class Permutation(Generic[T]):
         return Permutation(mapping)
 
     @classmethod
-    def identity(cls, values: Iterable[T]):
+    def identity(cls, values: Iterable[T]) -> 'Permutation[T]':
         return Permutation({value: value for value in values})
 
-    def __getitem__(self, key: T):
+    def __getitem__(self, key: T) -> T:
         return self.mapping[key]
 
     @property
-    def values(self):
+    def values(self) -> Sequence[T]:
         return sorted(self.mapping)
 
-    def __str__(self):
+    def __str__(self) -> str:
         table = Table(box=box.SIMPLE)
         keys = self.values
 
@@ -62,7 +64,7 @@ class Permutation(Generic[T]):
         table.add_row(*(str(self[key]) for key in keys))
         return rich_to_text(table)
 
-    def __matmul__(self, other: object):
+    def __matmul__(self, other: 'Permutation[T]') -> 'Permutation[T]':
         if not isinstance(other, Permutation):
             return NotImplemented
 
@@ -76,7 +78,7 @@ class Permutation(Generic[T]):
 
         return Permutation(mapping)
 
-    def inverse(self):
+    def inverse(self) -> 'Permutation[T]':
         return Permutation({self[value]: value for value in self.values})
 
     def iter_decomposed(self) -> Iterator[Cycle[T]]:

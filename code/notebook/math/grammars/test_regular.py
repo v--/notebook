@@ -13,7 +13,7 @@ from .regular import (
 )
 
 
-def test_to_finite_automaton_an(an: Grammar):
+def test_to_finite_automaton_an(an: Grammar) -> None:
     assert is_regular(an)
     aut = to_finite_automaton(an)
 
@@ -23,7 +23,7 @@ def test_to_finite_automaton_an(an: Grammar):
     assert aut.recognize('aaaaaaaaaa')
 
 
-def test_from_finite_automaton_an():
+def test_from_finite_automaton_an() -> None:
     aut: FiniteAutomaton = FiniteAutomaton()
     aut.add_transition(1, 'a', 1)
     aut.initial.add(1)
@@ -34,7 +34,7 @@ def test_from_finite_automaton_an():
     assert_an(grammar)
 
 
-def test_to_finite_automaton_complex():
+def test_to_finite_automaton_complex() -> None:
     grammar = parse_grammar_schema(
         dedent('''\
             <S> → "a" "b" "c" <D>

@@ -6,7 +6,7 @@ from loguru import logger
 
 
 @pytest.fixture(scope='session', autouse=True)
-def execute_before_any_test():
+def _execute_before_any_test() -> None:
     logger.remove()
     logger.add(
         sys.stdout,

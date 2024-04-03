@@ -3,8 +3,8 @@ import pytest
 from .finite import FiniteAutomaton
 
 
-@pytest.fixture
-def aabn():
+@pytest.fixture()
+def aabn() -> FiniteAutomaton:
     aut: FiniteAutomaton = FiniteAutomaton()
     aut.add_transition(1, 'a', 2)
     aut.add_transition(1, 'b', 3)
@@ -21,7 +21,7 @@ def aabn():
     return aut
 
 
-def assert_aabn(aut: FiniteAutomaton):
+def assert_aabn(aut: FiniteAutomaton) -> None:
     assert not aut.recognize('')
     assert not aut.recognize('ab')
     assert not aut.recognize('abb')
@@ -35,8 +35,8 @@ def assert_aabn(aut: FiniteAutomaton):
     assert aut.recognize('aab')
 
 
-@pytest.fixture
-def leucine():
+@pytest.fixture()
+def leucine() -> FiniteAutomaton:
     aut: FiniteAutomaton = FiniteAutomaton()
     aut.add_transition(1, 'C', 2)
     aut.add_transition(2, 'U', 3)
@@ -56,7 +56,7 @@ def leucine():
     return aut
 
 
-def assert_leucine(aut: FiniteAutomaton):
+def assert_leucine(aut: FiniteAutomaton) -> None:
     assert not aut.recognize('')
     assert not aut.recognize('U')
     assert not aut.recognize('UU')

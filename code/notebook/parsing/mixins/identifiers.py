@@ -10,7 +10,7 @@ IdentifierT = TypeVar('IdentifierT', bound=AlphabeticIdentifier)
 
 
 class IdentifierTokenizerMixin(Tokenizer[T_co]):
-    def take_while_in_range(self, start: str, end: str):
+    def take_while_in_range(self, start: str, end: str) -> str:
         buffer: list[str] = []
 
         while not self.is_at_end() and start <= self.peek() <= end:
@@ -20,13 +20,13 @@ class IdentifierTokenizerMixin(Tokenizer[T_co]):
         assert len(buffer) > 0
         return ''.join(buffer)
 
-    def _accept_numeric_suffix(self):
+    def _accept_numeric_suffix(self) -> bool:
         if self.is_at_end():
             return False
 
         return '₀' <= self.peek() <= '₉'
 
-    def _parse_numeric_suffix(self):
+    def _parse_numeric_suffix(self) -> str:
         assert self._accept_numeric_suffix()
         digits = self.peek()
         self.advance()
@@ -40,7 +40,7 @@ class IdentifierTokenizerMixin(Tokenizer[T_co]):
 
         return digits
 
-    def accept_alphabetic_string(self, cls: type[AlphabeticIdentifier], capitalization: Capitalization):
+    def read_alphabetic_string(self, cls: type[AlphabeticIdentifier], capitalization: Capitalization) -> bool:
         if self.is_at_end():
             return False
 
@@ -52,17 +52,17 @@ class IdentifierTokenizerMixin(Tokenizer[T_co]):
             Capitalization.capital in capitalization and cls.is_capital_letter(head)
         )
 
-    def parse_identifier(self, cls: type[IdentifierT], capitalization: Capitalization, short: bool) -> IdentifierT:
-        assert self.accept_alphabetic_string(cls, capitalization)
+    def parse_identifier(self, cls: type[IdentifierT], capitalization: Capitalization, *, short: bool) -> IdentifierT:
+        assert self.read_alphabetic_string(cls, capitalization)
         symbols = self.peek()
         self.advance()
 
         if not short:
-            while self.accept_alphabetic_string(cls, capitalization):
+            while self.read_alphabetic_string(cls, capitalization):
                 symbols += self.peek()
                 self.advance()
 
         if self._accept_numeric_suffix():
             symbols += self._parse_numeric_suffix()
 
-        return cls(symbols, capitalization, short)
+        return cls(symbols, capitalization, short=short)

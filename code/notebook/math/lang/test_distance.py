@@ -1,7 +1,7 @@
 from .distance import fisher_wagner, hamming
 
 
-def test_hamming():
+def test_hamming() -> None:
     assert hamming('', '') == 0
     assert hamming('test', 'test') == 0
 
@@ -12,7 +12,7 @@ def test_hamming():
     assert hamming('abbbc', 'bbbca') == 3
 
 
-def test_fisher_wagner():
+def test_fisher_wagner() -> None:
     assert fisher_wagner('', '') == 0
     assert fisher_wagner('test', 'test') == 0
 

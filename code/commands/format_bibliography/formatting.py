@@ -16,7 +16,7 @@ def titlecase_bib_callback(string: str, **kwargs) -> str | None:
 
 
 class BibFormatter(Formatter):
-    def format(self, src: TextIO, dest: TextIO):
+    def format(self, src: TextIO, dest: TextIO) -> None:
         parser = BibTexParser(ignore_nonstandard_types=False)
         bibtex_db = bibtexparser.load(src, parser)
 

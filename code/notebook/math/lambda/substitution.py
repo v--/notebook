@@ -1,4 +1,4 @@
-from .terms import Abstraction, Term, Variable
+from .terms import Abstraction, LambdaTerm, Variable
 from .variables import get_free_variables, new_variable
 from .visitors import TermTransformationVisitor
 
@@ -6,16 +6,16 @@ from .visitors import TermTransformationVisitor
 # This is def:lambda_substitution in the text
 class TermSubstitutionVisitor(TermTransformationVisitor):
     var: Variable
-    rep: Term
+    rep: LambdaTerm
 
-    def __init__(self, var: Variable, rep: Term):
+    def __init__(self, var: Variable, rep: LambdaTerm) -> None:
         self.var = var
         self.rep = rep
 
-    def visit_variable(self, term: Variable):
+    def visit_variable(self, term: Variable) -> LambdaTerm:
         return self.rep if term == self.var else term
 
-    def visit_abstraction(self, term: Abstraction):
+    def visit_abstraction(self, term: Abstraction) -> Abstraction:
         if term.var == self.var:
             return term
 
@@ -38,5 +38,5 @@ class TermSubstitutionVisitor(TermTransformationVisitor):
         )
 
 
-def substitute_in_term(term: Term, var: Variable, replacement: Term):
+def substitute_in_term(term: LambdaTerm, var: Variable, replacement: LambdaTerm) -> LambdaTerm:
     return TermSubstitutionVisitor(var, replacement).visit(term)

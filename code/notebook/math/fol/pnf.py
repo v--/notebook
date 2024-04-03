@@ -10,50 +10,50 @@ class PNFError(NotebookCodeError):
     pass
 
 
-class QuantifierlessVerificationVisitor(FormulaVisitor):
-    def generic_visit(self, formula: Formula):
+class QuantifierlessVerificationVisitor(FormulaVisitor[bool]):
+    def generic_visit(self, formula: Formula) -> bool:  # noqa: ARG002
         return True
 
-    def visit_negation(self, formula: NegationFormula):
+    def visit_negation(self, formula: NegationFormula) -> bool:
         return self.visit(formula.sub)
 
-    def visit_connective(self, formula: ConnectiveFormula):
+    def visit_connective(self, formula: ConnectiveFormula) -> bool:
         return self.visit(formula.a) and self.visit(formula.b)
 
-    def visit_quantifier(self, formula: QuantifierFormula):
+    def visit_quantifier(self, formula: QuantifierFormula) -> bool:  # noqa: ARG002
         return False
 
 
-def is_formula_quantifierless(formula: Formula):
+def is_formula_quantifierless(formula: Formula) -> bool:
     return QuantifierlessVerificationVisitor().visit(formula)
 
 
-class PNFVerificationVisitor(FormulaVisitor):
-    def generic_visit(self, formula: Formula):
+class PNFVerificationVisitor(FormulaVisitor[bool]):
+    def generic_visit(self, formula: Formula) -> bool:  # noqa: ARG002
         return True
 
-    def visit_negation(self, formula: NegationFormula):
+    def visit_negation(self, formula: NegationFormula) -> bool:
         if isinstance(formula.sub, QuantifierFormula):
             return False
 
         return self.visit(formula.sub)
 
-    def visit_connective(self, formula: ConnectiveFormula):
+    def visit_connective(self, formula: ConnectiveFormula) -> bool:
         if isinstance(formula.a, QuantifierFormula) or isinstance(formula.b, QuantifierFormula):
             return False
 
         return self.visit(formula.a) and self.visit(formula.b)
 
-    def visit_quantifier(self, formula: QuantifierFormula):
+    def visit_quantifier(self, formula: QuantifierFormula) -> bool:
         return self.visit(formula.sub)
 
 
-def is_formula_in_pnf(formula: Formula):
+def is_formula_in_pnf(formula: Formula) -> bool:
     return PNFVerificationVisitor().visit(formula)
 
 
 class ConditionalRemovalVisitor(FormulaTransformationVisitor):
-    def visit_connective(self, formula: ConnectiveFormula):
+    def visit_connective(self, formula: ConnectiveFormula) -> ConnectiveFormula:
         a = self.visit(formula.a)
         b = self.visit(formula.b)
 
@@ -72,12 +72,12 @@ class ConditionalRemovalVisitor(FormulaTransformationVisitor):
                 )
 
 
-def remove_conditionals(formula: Formula):
+def remove_conditionals(formula: Formula) -> Formula:
     return ConditionalRemovalVisitor().visit(formula)
 
 
 class MoveNegationsVisitor(FormulaTransformationVisitor):
-    def visit_negation(self, formula: NegationFormula):
+    def visit_negation(self, formula: NegationFormula) -> Formula:
         if isinstance(formula.sub, ConnectiveFormula):
             new_conn: BinaryConnective
 
@@ -117,20 +117,20 @@ class MoveNegationsVisitor(FormulaTransformationVisitor):
 
         return NegationFormula(self.visit(formula.sub))
 
-    def visit_connective(self, formula: ConnectiveFormula):
-        if formula.conn != BinaryConnective.disjunction and formula.conn != BinaryConnective.conjunction:
+    def visit_connective(self, formula: ConnectiveFormula) -> Formula:
+        if formula.conn not in (BinaryConnective.disjunction, BinaryConnective.conjunction):
             raise PNFError(f'Unexpected connective {formula.conn}')
 
         return super().visit_connective(formula)
 
 
-def push_negations(formula: Formula):
+def push_negations(formula: Formula) -> Formula:
     return MoveNegationsVisitor().visit(formula)
 
 
 class MoveQuantifiersVisitor(FormulaTransformationVisitor):
-    def visit_connective(self, formula: ConnectiveFormula):
-        if formula.conn != BinaryConnective.disjunction and formula.conn != BinaryConnective.conjunction:
+    def visit_connective(self, formula: ConnectiveFormula) -> Formula:
+        if formula.conn not in (BinaryConnective.disjunction, BinaryConnective.conjunction):
             raise PNFError(f'Unexpected connective {formula.conn}')
 
         if isinstance(formula.a, QuantifierFormula):
@@ -175,10 +175,10 @@ class MoveQuantifiersVisitor(FormulaTransformationVisitor):
         )
 
 
-def move_quantifiers(formula: Formula):
+def move_quantifiers(formula: Formula) -> Formula:
     return MoveQuantifiersVisitor().visit(formula)
 
 
 # This is alg:prenex_normal_form_conversion in the text
-def to_pnf(formula: Formula):
+def to_pnf(formula: Formula) -> Formula:
     return move_quantifiers(push_negations(remove_conditionals(formula)))

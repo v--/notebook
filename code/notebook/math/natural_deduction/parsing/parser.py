@@ -42,9 +42,8 @@ class NaturalDeductionParser(WhitespaceParserMixin[RuleToken], Parser[RuleToken]
         assert self.peek() == MiscToken.left_parenthesis
         self.advance()
 
-        a_start = self.index
         a_form = self.parse_placeholder()
-        a_end = self.index - 1
+        self.index - 1
         self.skip_spaces()
 
         if isinstance(connective := self.peek(), BinaryConnective):
@@ -55,18 +54,16 @@ class NaturalDeductionParser(WhitespaceParserMixin[RuleToken], Parser[RuleToken]
             if self.is_at_end():
                 raise self.error('Unclosed parentheses for binary placeholder', i_first_token=start)
 
-            b_start = self.index
             b_form = self.parse_placeholder()
-            b_end = self.index - 1
+            self.index - 1
 
             if not self.is_at_end() and self.peek() == MiscToken.right_parenthesis:
                 self.advance()
-                return ConnectiveFormulaPlaceholder(connective, a_form, b_form)  # type: ignore
-            else:
-                raise self.error('Unclosed parentheses for binary placeholder', i_first_token=start, i_last_token=self.index - 1)
+                return ConnectiveFormulaPlaceholder(connective, a_form, b_form)
 
-        else:
-            raise self.error('Unexpected token')
+            raise self.error('Unclosed parentheses for binary placeholder', i_first_token=start, i_last_token=self.index - 1)
+
+        raise self.error('Unexpected token')
 
     def parse_negation_placeholder(self) -> NegationFormulaPlaceholder:
         assert self.peek() == MiscToken.negation
@@ -174,10 +171,8 @@ class NaturalDeductionParser(WhitespaceParserMixin[RuleToken], Parser[RuleToken]
 
         return Rule(name, premises, conclusion.main)
 
-    parse = parse_rule
 
-
-def parse_rule(string: str):
+def parse_rule(string: str) -> Rule:
     tokens = list(NaturalDeductionTokenizer(string).parse())
     parser = NaturalDeductionParser(tokens)
     rule = parser.parse_rule()

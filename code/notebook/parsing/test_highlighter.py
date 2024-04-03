@@ -4,7 +4,7 @@ from textwrap import dedent
 from .highlighter import ErrorHighlighter
 
 
-def test_error_basic():
+def test_error_basic() -> None:
     highlighter = ErrorHighlighter(
         'test',
         i_first_token=1,
@@ -18,7 +18,7 @@ def test_error_basic():
     )
 
 
-def test_error_on_end():
+def test_error_on_end() -> None:
     highlighter = ErrorHighlighter(
         'test\n',
         i_first_token=4,
@@ -32,7 +32,7 @@ def test_error_on_end():
     )
 
 
-def test_error_multiline_basic():
+def test_error_multiline_basic() -> None:
     highlighter = ErrorHighlighter(
         'test1\ntest2\ntest3',
         i_first_token=7,
@@ -46,7 +46,7 @@ def test_error_multiline_basic():
     )
 
 
-def test_error_multiline_succeed():
+def test_error_multiline_succeed() -> None:
     highlighter = ErrorHighlighter(
         'test1\ntest2\ntest3',
         i_first_token=7,
@@ -66,11 +66,11 @@ def test_error_multiline_succeed():
 class StringWrapper:
     payload: str
 
-    def __str__(self):
+    def __str__(self) -> str:
         return self.payload
 
 
-def test_string_wrapper_basic():
+def test_string_wrapper_basic() -> None:
     highlighter = ErrorHighlighter(
         [StringWrapper('test1')],
         i_first_token=0,
@@ -84,7 +84,7 @@ def test_string_wrapper_basic():
     )
 
 
-def test_string_wrapper_with_line_break():
+def test_string_wrapper_with_line_break() -> None:
     highlighter = ErrorHighlighter(
         [
             StringWrapper('test1\n'),

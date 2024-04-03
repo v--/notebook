@@ -3,7 +3,7 @@ import pytest
 from .matrix import Matrix, eye, is_close, zeros
 
 
-def test_matrix_getter(mat123: Matrix[int]):
+def test_matrix_getter(mat123: Matrix[int]) -> None:
     assert mat123[0, 0] == 1
     assert mat123[1, 1] == 5
     assert mat123[2, 2] == 10
@@ -30,7 +30,7 @@ def test_matrix_getter(mat123: Matrix[int]):
     assert mat123[:, :] == mat123
 
 
-def test_matrix_setter(mat123: Matrix[int]):
+def test_matrix_setter(mat123: Matrix[int]) -> None:
     mod = mat123[:, :]
     mod[1, 1] = 10
     assert mod[1, 1] == 10
@@ -50,25 +50,25 @@ def test_matrix_setter(mat123: Matrix[int]):
         mod[1, 1:4] = [-1] * 3
 
     # List too large
-    with pytest.raises(ValueError):
+    with pytest.raises(ValueError, match='List of length 4 does not fit in 3 places'):
         mod[1, :] = [-1] * 4
 
     mod[:, :] = eye(3)
     assert mod == eye(3)
 
     # Matrix of incompatible size
-    with pytest.raises(ValueError):
+    with pytest.raises(ValueError, match='Matrix of size 2×2 does not fit in 3×3 places'):
         mod[:, :] = eye(2)
 
 
-def test_matrix_addition(mat123: Matrix[int], lower_pascal3: Matrix[int]):
+def test_matrix_addition(mat123: Matrix[int], lower_pascal3: Matrix[int]) -> None:
     res = mat123 + lower_pascal3
     assert res[0, 0] == 2
     assert res[1, 1] == 6
     assert res[2, 2] == 11
 
 
-def test_matrix_addition_properties(mat123: Matrix[int], lower_pascal3: Matrix[int]):
+def test_matrix_addition_properties(mat123: Matrix[int], lower_pascal3: Matrix[int]) -> None:
     # Associativity
     assert (eye(3) + mat123) + lower_pascal3 == eye(3) + (mat123 + lower_pascal3)
 
@@ -82,14 +82,14 @@ def test_matrix_addition_properties(mat123: Matrix[int], lower_pascal3: Matrix[i
     assert -mat123 + mat123 == zeros(3)
 
 
-def test_matrix_mult(mat123: Matrix[int], lower_pascal3: Matrix[int]):
+def test_matrix_mult(mat123: Matrix[int], lower_pascal3: Matrix[int]) -> None:
     res = mat123 @ lower_pascal3
     assert res[0, 0] == 6
     assert res[1, 1] == 17
     assert res[2, 2] == 10
 
 
-def test_matrix_mult_properties(mat123: Matrix[int], mat123inv: Matrix[float], lower_pascal3: Matrix[int]):
+def test_matrix_mult_properties(mat123: Matrix[int], mat123inv: Matrix[float], lower_pascal3: Matrix[int]) -> None:
     # Associativity
     assert is_close((eye(3) @ mat123) @ lower_pascal3, eye(3) @ (mat123 @ lower_pascal3))
 

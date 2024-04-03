@@ -12,7 +12,7 @@ class Word(TokenMixin):
 
 
 class Command(TokenMixin):
-    def __str__(self):
+    def __str__(self) -> str:
         return '\\' + self.value
 
 
@@ -26,13 +26,13 @@ class SpecialNode(TokenEnum):
 class Group:
     contents: 'list[LaTeXNode]'
 
-    def __str__(self):
+    def __str__(self) -> str:
         return ''.join(str(node) for node in self.contents)
 
-    def __hash__(self):
+    def __hash__(self) -> int:
         return functools.reduce(operator.xor, map(hash, self.contents), 0)
 
-    def __eq__(self, other: object):
+    def __eq__(self, other: object) -> bool:
         if isinstance(other, Group):
             return all(a == b for a, b in zip(self.contents, other.contents))
 
@@ -40,12 +40,12 @@ class Group:
 
 
 class BraceGroup(Group):
-    def __str__(self):
+    def __str__(self) -> str:
         return '{' + super().__str__() + '}'
 
 
 class BracketGroup(Group):
-    def __str__(self):
+    def __str__(self) -> str:
         return '[' + super().__str__() + ']'
 
 
@@ -53,7 +53,7 @@ class BracketGroup(Group):
 class Environment(Group):
     name: str
 
-    def __str__(self):
+    def __str__(self) -> str:
         return '\\begin{%s}' % self.name + super().__str__() + '\\end{%s}' % self.name
 
 

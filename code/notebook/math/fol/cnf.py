@@ -47,7 +47,7 @@ def connect_formulas(formulas: Sequence[Formula], conn: BinaryConnective) -> For
 
 
 class RemoveConstantsVisitor(FormulaTransformationVisitor):
-    def visit_constant(self, formula: ConstantFormula):
+    def visit_constant(self, formula: ConstantFormula) -> ConnectiveFormula:
         p = PredicateFormula('p', [])
 
         match formula.value:
@@ -62,14 +62,14 @@ def remove_constants(formula: Formula) -> Formula:
     return RemoveConstantsVisitor().visit(formula)
 
 
-class HasReachableConjunctionVisitor(FormulaVisitor):
-    def generic_visit(self, formula: Formula):
+class HasReachableConjunctionVisitor(FormulaVisitor[bool]):
+    def generic_visit(self, formula: Formula) -> bool:  # noqa: ARG002
         return False
 
-    def visit_negation(self, formula: NegationFormula):
+    def visit_negation(self, formula: NegationFormula) -> bool:  # noqa: ARG002
         return False
 
-    def visit_connective(self, formula: ConnectiveFormula):
+    def visit_connective(self, formula: ConnectiveFormula) -> bool:
         match formula.conn:
             case BinaryConnective.disjunction:
                 return self.visit(formula.a) or self.visit(formula.b)
@@ -80,16 +80,16 @@ class HasReachableConjunctionVisitor(FormulaVisitor):
             case _:
                     return False
 
-    def visit_quantifier(self, formula: QuantifierFormula):
+    def visit_quantifier(self, formula: QuantifierFormula) -> bool:
         return self.visit(formula.sub)
 
 
-def has_reachable_conjunction(formula: Formula):
+def has_reachable_conjunction(formula: Formula) -> bool:
     return HasReachableConjunctionVisitor().visit(formula)
 
 
 class PullConjunctionVisitor(FormulaTransformationVisitor):
-    def visit_connective(self, formula: ConnectiveFormula):
+    def visit_connective(self, formula: ConnectiveFormula) -> ConnectiveFormula:
         a = self.visit(formula.a)
 
         if is_disjunction(formula) and is_conjunction(a):
@@ -116,13 +116,13 @@ def pull_conjunction(formula: Formula) -> Formula:
 
 
 # This is alg:cnf_and_dnf in the text
-def to_cnf(formula: Formula):
+def to_cnf(formula: Formula) -> Formula:
     assert is_formula_quantifierless(formula)
     return pull_conjunction(push_negations(remove_conditionals(remove_constants(formula))))
 
 
 # This is alg:perfect_cnf_and_dnf in the text
-def function_to_cnf(fun: Callable[..., bool]):
+def function_to_cnf(fun: Callable[..., bool]) -> Formula:
     fun_params = inspect.signature(fun).parameters
 
     if len(fun_params) == 0:
@@ -139,16 +139,14 @@ def function_to_cnf(fun: Callable[..., bool]):
 
     # These names will generate valid formulas only when they consist of Latin letters
     predicates = [PredicateFormula(param.name, []) for param in fun_params.values()]
-    disjuncts: list[Formula] = []
-
-    for arg_tuple in itertools.product([False, True], repeat=len(fun_params)):
-        if fun(*arg_tuple) is False:
-            disjuncts.append(
-                connect_formulas(
-                    [NegationFormula(p) if arg else p for p, arg in zip(predicates, arg_tuple)],
-                    BinaryConnective.disjunction
-                )
-            )
+    disjuncts: list[Formula] = [
+        connect_formulas(
+            [NegationFormula(p) if arg else p for p, arg in zip(predicates, arg_tuple)],
+            BinaryConnective.disjunction
+        )
+        for arg_tuple in itertools.product([False, True], repeat=len(fun_params))
+        if fun(*arg_tuple) is False
+    ]
 
     if len(disjuncts) == 0:  # fun is vacuously true
         p = predicates[0]

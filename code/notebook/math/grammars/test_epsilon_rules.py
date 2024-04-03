@@ -12,7 +12,7 @@ from .parsing.parser import parse_grammar_schema
 
 
 # See ex:alg:epsilon_rule_removal/an in the text
-def test_remove_epsilon_rules_simple():
+def test_remove_epsilon_rules_simple() -> None:
     grammar = parse_grammar_schema(
         dedent('''\
             <S> → ε | "a" <S>
@@ -30,7 +30,7 @@ def test_remove_epsilon_rules_simple():
 
 
 # See ex:alg:epsilon_rule_removal/dead in the text
-def test_remove_epsilon_rules_terminal_rule():
+def test_remove_epsilon_rules_terminal_rule() -> None:
     grammar = parse_grammar_schema(
         dedent('''\
             <S> → <A> <B>
@@ -57,7 +57,7 @@ def test_remove_epsilon_rules_terminal_rule():
 
 
 # See ex:alg:epsilon_rule_removal/natural in the text
-def test_remove_epsilon_rules_natural():
+def test_remove_epsilon_rules_natural() -> None:
     grammar = parse_grammar_schema(
         dedent('''\
             <N> → "0" | "1" <B>

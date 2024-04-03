@@ -8,7 +8,7 @@ from ..common.inflection import prefix_cardinal
 from ..common.paths import FIGURES_PATH, TEXT_PATH
 
 
-def check_is_figure_used(figure_name: str):
+def check_is_figure_used(figure_name: str) -> bool:
     pattern = re.compile(b'{output/' + figure_name.encode('utf8') + b'}')
 
     for src_file_path in TEXT_PATH.iterdir():
@@ -23,7 +23,7 @@ def check_is_figure_used(figure_name: str):
 
 
 @click.command()
-def find_obsolete_figures():
+def find_obsolete_figures() -> None:
     total_count = 0
     obsolete_count = 0
 

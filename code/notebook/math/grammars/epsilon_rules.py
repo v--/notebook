@@ -1,28 +1,27 @@
+from collections.abc import Iterable
+
 from ...support.names import new_var_name
 from .alphabet import NonTerminal, Terminal
 from .grammar import Grammar, GrammarRule, GrammarSchema
 
 
-def is_epsilon_rule(rule: GrammarRule):
+def is_epsilon_rule(rule: GrammarRule) -> bool:
     return len(rule.dest) == 0
 
 
-def is_epsilon_free(grammar: Grammar):
+def is_epsilon_free(grammar: Grammar) -> bool:
     return all(not is_epsilon_rule(rule) for rule in grammar.schema.rules)
 
 
-def is_essentially_epsilon_free(grammar: Grammar):
+def is_essentially_epsilon_free(grammar: Grammar) -> bool:
     for rule in grammar.schema.rules:
-        if is_epsilon_rule(rule):
-            if rule.src != [grammar.start]:
-                return False
-            elif any(grammar.start in r.dest for r in grammar.schema.rules):
-                return False
+        if is_epsilon_rule(rule) and (rule.src != [grammar.start] or any(grammar.start in r.dest for r in grammar.schema.rules)):
+            return False
 
     return True
 
 
-def identify_nullable_non_terminals(grammar: Grammar):
+def identify_nullable_non_terminals(grammar: Grammar) -> set[NonTerminal]:
     nullable: set[NonTerminal] = set()
     added_during_iteration = False
 
@@ -41,7 +40,7 @@ def identify_nullable_non_terminals(grammar: Grammar):
     return nullable
 
 
-def iter_rules_without_nullables(nullable: set[NonTerminal], dest: list[NonTerminal | Terminal]):
+def iter_rules_without_nullables(nullable: set[NonTerminal], dest: list[NonTerminal | Terminal]) -> Iterable[list[NonTerminal | Terminal]]:
     assert len(dest) > 0
 
     if len(dest) == 1:

@@ -1,13 +1,17 @@
 from .parsing.parser import parse_term
 from .substitution import substitute_in_term
+from .terms import Variable
 
 
-def test_substitute_in_term():
-    def t(term: str, var: str, replacement: str):
+def test_substitute_in_term() -> None:
+    def t(term: str, var: str, replacement: str) -> str:
+        parsed_var = parse_term(var)
+        assert isinstance(parsed_var, Variable)
+
         return str(
             substitute_in_term(
                 parse_term(term),
-                parse_term(var),
+                parsed_var,
                 parse_term(replacement)
             )
         )

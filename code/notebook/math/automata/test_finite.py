@@ -3,7 +3,7 @@ from .finite import FiniteAutomaton
 
 
 # ex:def:formal_language/an
-def test_finite_automaton_recognizes_an():
+def test_finite_automaton_recognizes_an() -> None:
     aut: FiniteAutomaton = FiniteAutomaton()
     aut.add_transition(1, 'a', 1)
     aut.initial.add(1)
@@ -19,11 +19,11 @@ def test_finite_automaton_recognizes_an():
 
 
 # fig:def:finite_automaton
-def test_finite_automaton_recognizes_aabn(aabn: FiniteAutomaton):
+def test_finite_automaton_recognizes_aabn(aabn: FiniteAutomaton) -> None:
     assert not aabn.is_deterministic()
     assert_aabn(aabn)
 
 
-def test_finite_automaton_recognizes_leucine(leucine: FiniteAutomaton):
+def test_finite_automaton_recognizes_leucine(leucine: FiniteAutomaton) -> None:
     assert not leucine.is_deterministic()
     assert_leucine(leucine)

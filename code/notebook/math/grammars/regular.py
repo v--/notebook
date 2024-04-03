@@ -8,31 +8,23 @@ from .grammar import Grammar, GrammarRule, GrammarSchema
 from .renaming_rules import collapse_renaming_rules
 
 
-def is_left_linear_rule(rule: GrammarRule):
-    for i, sym in enumerate(rule.dest):
-        if isinstance(sym, NonTerminal) and 0 < i:
-            return False
-
-    return True
+def is_left_linear_rule(rule: GrammarRule) -> bool:
+    return all(not (isinstance(sym, NonTerminal) and i > 0) for i, sym in enumerate(rule.dest))
 
 
-def is_left_linear(grammar: Grammar):
+def is_left_linear(grammar: Grammar) -> bool:
     return all(is_left_linear_rule(rule) for rule in grammar.schema.rules)
 
 
-def is_right_linear_rule(rule: GrammarRule):
-    for i, sym in enumerate(rule.dest):
-        if isinstance(sym, NonTerminal) and i < len(rule.dest) - 1:
-            return False
-
-    return True
+def is_right_linear_rule(rule: GrammarRule) -> bool:
+    return all(not (isinstance(sym, NonTerminal) and i < len(rule.dest) - 1) for i, sym in enumerate(rule.dest))
 
 
-def is_right_linear(grammar: Grammar):
+def is_right_linear(grammar: Grammar) -> bool:
     return all(is_right_linear_rule(rule) for rule in grammar.schema.rules)
 
 
-def is_regular(grammar: Grammar):
+def is_regular(grammar: Grammar) -> bool:
     return is_left_linear(grammar) or is_right_linear(grammar)
 
 
@@ -40,10 +32,7 @@ def is_regular(grammar: Grammar):
 def to_finite_automaton(grammar: Grammar) -> FiniteAutomaton:
     assert is_regular(grammar)
 
-    if is_right_linear(grammar):
-        g1 = grammar
-    else:
-        g1 = reverse_grammar(grammar)
+    g1 = grammar if is_right_linear(grammar) else reverse_grammar(grammar)
 
     g2 = remove_epsilon_rules(g1)
     g3 = collapse_renaming_rules(g2)

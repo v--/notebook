@@ -54,19 +54,19 @@ class SparseMatrix(Generic[T]):
     default: T
     payload: dict[tuple[int, int], T] = field(default_factory=dict)
 
-    def __getitem__(self, index: tuple[int, int]):
+    def __getitem__(self, index: tuple[int, int]) -> T:
         i, j = index
         return self.payload.get((i, j), self.default)
 
-    def __setitem__(self, index: tuple[int, int], value: T):
+    def __setitem__(self, index: tuple[int, int], value: T) -> None:
         i, j = index
         self.payload[i, j] = value
 
-    def get_height(self):
-        return max((i + 1 for (i, j) in self.payload.keys()), default=0)
+    def get_height(self) -> int:
+        return max((i + 1 for (i, j) in self.payload), default=0)
 
-    def get_width(self):
-        return max((j + 1 for (i, j) in self.payload.keys()), default=0)
+    def get_width(self) -> int:
+        return max((j + 1 for (i, j) in self.payload), default=0)
 
 
 @dataclass
@@ -82,11 +82,11 @@ class MatrixEnvironmentParser(Parser[LaTeXNode]):
     environment_name: str
     whitespace_prefix_length: int
 
-    def skip_whitespace(self):
+    def skip_whitespace(self) -> None:
         while not self.is_at_end() and isinstance(self.peek(), Whitespace):
             self.advance()
 
-    def advance_and_skip_whitespace(self):
+    def advance_and_skip_whitespace(self) -> None:
         self.advance()
         self.skip_whitespace()
 
@@ -115,7 +115,7 @@ class MatrixEnvironmentParser(Parser[LaTeXNode]):
             else:
                 raise self.error('Unexpected node')
 
-    def parse(self):
+    def parse(self) -> MatrixEnvironment:
         env = MatrixEnvironment(
             SparseMatrix(default=[]),
             self.environment_name, None,
@@ -160,11 +160,11 @@ def align_spaces_in_matrix(env: MatrixEnvironment) -> MatrixEnvironment:
     return replace(env, matrix=new_matrix)
 
 
-def matrix_to_environment(env: MatrixEnvironment):
+def matrix_to_environment(env: MatrixEnvironment) -> Environment:
     result = Environment(name=env.name, contents=[])
 
     if env.options is not None:
-        # Put multiline options on a new line
+        # Put multi-line options on a new line
         if '\n' in str(env.options):
             result.contents.append(Whitespace.line_break)
             result.contents.extend([Whitespace.space] * (env.whitespace_prefix_length + INDENT))
@@ -237,7 +237,7 @@ def format_recurse(nodes: Iterable[LaTeXNode], whitespace_prefix_length: int) ->
                 yield node
 
 
-def format_tex_matrices(string: str):
+def format_tex_matrices(string: str) -> str:
     nodes = parse_latex(string)
     formatted = format_recurse(nodes, whitespace_prefix_length=0)
     return stringify_nodes(formatted)

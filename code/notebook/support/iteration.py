@@ -44,7 +44,7 @@ def string_accumulator(joiner: str = '') -> Callable[[Callable[P, Iterable[T]]],
     def decorator(fun: Callable[P, Iterable[T]]) -> Callable[P, str]:
         @functools.wraps(fun)
         def wrapper(*args: P.args, **kwargs: P.kwargs) -> str:
-            return ''.join(str(value) for value in fun(*args, **kwargs))
+            return joiner.join(str(value) for value in fun(*args, **kwargs))
 
         return wrapper
 

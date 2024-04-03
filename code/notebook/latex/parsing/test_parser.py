@@ -15,37 +15,37 @@ from ..nodes import (
 from .parser import parse_latex
 
 
-def test_empty_string():
+def test_empty_string() -> None:
     string = ''
     nodes = parse_latex(string)
     assert nodes == []
 
 
-def test_tab():
+def test_tab() -> None:
     string = '\t'
     nodes = parse_latex(string)
     assert nodes == [Whitespace.tab]
 
 
-def test_line_break():
+def test_line_break() -> None:
     string = '\n'
     nodes = parse_latex(string)
     assert nodes == [Whitespace.line_break]
 
 
-def test_word():
+def test_word() -> None:
     string = 'test'
     nodes = parse_latex(string)
     assert nodes == [Word(value='test')]
 
 
-def test_command_without_args():
+def test_command_without_args() -> None:
     string = r'\test'
     nodes = parse_latex(string)
     assert nodes == [Command('test')]
 
 
-def test_command_with_space():
+def test_command_with_space() -> None:
     string = r'\test '
     nodes = parse_latex(string)
     assert nodes == [
@@ -54,7 +54,7 @@ def test_command_with_space():
     ]
 
 
-def test_command_with_brace_arg():
+def test_command_with_brace_arg() -> None:
     string = r'\test{a}'
     nodes = parse_latex(string)
     assert nodes == [
@@ -63,7 +63,7 @@ def test_command_with_brace_arg():
     ]
 
 
-def test_unmatched_brace():
+def test_unmatched_brace() -> None:
     with pytest.raises(ParsingError) as excinfo:
         parse_latex('\\test{a')
 
@@ -76,7 +76,7 @@ def test_unmatched_brace():
 
 
 
-def test_command_with_bracket_arg():
+def test_command_with_bracket_arg() -> None:
     string = '\\test[a]'
     nodes = parse_latex(string)
     assert nodes == [
@@ -85,7 +85,7 @@ def test_command_with_bracket_arg():
     ]
 
 
-def test_unmatched_bracket():
+def test_unmatched_bracket() -> None:
     with pytest.raises(ParsingError) as excinfo:
         parse_latex('\\test[a')
 
@@ -97,7 +97,7 @@ def test_unmatched_bracket():
     )
 
 
-def test_command_with_mixed_args():
+def test_command_with_mixed_args() -> None:
     string = '\\test\t[a]{b} [c ] \n{d}'
     nodes = parse_latex(string)
     assert nodes == [
@@ -116,7 +116,7 @@ def test_command_with_mixed_args():
     ]
 
 
-def test_basic_environment():
+def test_basic_environment() -> None:
     string = r'\begin{test} \end{test}'
     nodes = parse_latex(string)
 
@@ -129,7 +129,7 @@ def test_basic_environment():
     )
 
 
-def test_unmatched_environment():
+def test_unmatched_environment() -> None:
     with pytest.raises(ParsingError) as excinfo:
         parse_latex(r'\begin{test}')
 
@@ -141,7 +141,7 @@ def test_unmatched_environment():
     )
 
 
-def test_mismatched_environment():
+def test_mismatched_environment() -> None:
     with pytest.raises(ParsingError) as excinfo:
         parse_latex(
             dedent(r'''
@@ -161,7 +161,7 @@ def test_mismatched_environment():
     )
 
 
-def test_missing_environment_name():
+def test_missing_environment_name() -> None:
     with pytest.raises(ParsingError) as excinfo:
         parse_latex(r'\begin')
 
@@ -173,7 +173,7 @@ def test_missing_environment_name():
     )
 
 
-def test_unclosed_and_missing_environment_name():
+def test_unclosed_and_missing_environment_name() -> None:
     with pytest.raises(ParsingError) as excinfo:
         parse_latex(r'\begin{')
 
@@ -185,7 +185,7 @@ def test_unclosed_and_missing_environment_name():
     )
 
 
-def test_invalid_environment_name():
+def test_invalid_environment_name() -> None:
     with pytest.raises(ParsingError) as excinfo:
         parse_latex(r'\begin{&}')
 
@@ -197,7 +197,7 @@ def test_invalid_environment_name():
     )
 
 
-def test_unclosed_environment_name():
+def test_unclosed_environment_name() -> None:
     with pytest.raises(ParsingError) as excinfo:
         parse_latex(r'\begin{test')
 
@@ -209,7 +209,7 @@ def test_unclosed_environment_name():
     )
 
 
-def test_different_nested_environments():
+def test_different_nested_environments() -> None:
     string = '\\begin{test} \\begin{test2} inner \\end{test2} \\end{test}'
     nodes = parse_latex(string)
 
@@ -231,7 +231,7 @@ def test_different_nested_environments():
     )
 
 
-def test_same_nested_environment():
+def test_same_nested_environment() -> None:
     string = '\\begin{test} \\begin{test} inner \\end{test} \\end{test}'
     nodes = parse_latex(string)
 
@@ -253,7 +253,7 @@ def test_same_nested_environment():
     )
 
 
-def test_matrix_environment():
+def test_matrix_environment() -> None:
     string = dedent(r'''
         \begin{pmatrix}
           1 & 0 \\
@@ -266,8 +266,8 @@ def test_matrix_environment():
     assert ''.join(map(str, nodes)) == string
 
 
-def test_real():
-    with open('../figures/thm__natural_number_divisibility_order.tex') as file:
+def test_real() -> None:
+    with open('../figures/thm__natural_number_divisibility_order.tex') as file:  # noqa: PTH123
         string = file.read()
         nodes = parse_latex(string)
         assert stringify_nodes(nodes) == string

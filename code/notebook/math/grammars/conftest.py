@@ -2,13 +2,14 @@ from textwrap import dedent
 
 import pytest
 
+from .alphabet import NonTerminal
 from .brute_force_parse import derives
-from .grammar import Grammar, NonTerminal
+from .grammar import Grammar
 from .parsing.parser import parse_grammar_schema
 
 
-@pytest.fixture
-def an():
+@pytest.fixture()
+def an() -> Grammar:
     schema = parse_grammar_schema(
         dedent('''\
             <S> → ε
@@ -22,7 +23,7 @@ def an():
     return schema.instantiate(NonTerminal('S'))
 
 
-def assert_an(an: Grammar):
+def assert_an(an: Grammar) -> None:
     assert derives(an, '')
     assert derives(an, 'a')
     assert derives(an, 'aaa')
@@ -33,8 +34,8 @@ def assert_an(an: Grammar):
     assert not derives(an, 'ab')
 
 
-@pytest.fixture
-def anbn():
+@pytest.fixture()
+def anbn() -> Grammar:
     schema = parse_grammar_schema(
         dedent('''\
             <S> → ε
@@ -48,7 +49,7 @@ def anbn():
     return schema.instantiate(NonTerminal('S'))
 
 
-def assert_anbn(anbn: Grammar):
+def assert_anbn(anbn: Grammar) -> None:
     assert derives(anbn, '')
     assert derives(anbn, 'ab')
     assert derives(anbn, 'aaabbb')
@@ -57,8 +58,8 @@ def assert_anbn(anbn: Grammar):
     assert not derives(anbn, 'ba')
 
 
-@pytest.fixture
-def s3():
+@pytest.fixture()
+def s3() -> Grammar:
     schema = parse_grammar_schema(
         dedent('''\
             <S> → ε
@@ -71,7 +72,7 @@ def s3():
     return schema.instantiate(NonTerminal('S'))
 
 
-def assert_s3(s3: Grammar):
+def assert_s3(s3: Grammar) -> None:
     assert derives(s3, '')
     assert derives(s3, 'a')
     assert derives(s3, 'aa')
@@ -81,8 +82,8 @@ def assert_s3(s3: Grammar):
     assert not derives(s3, 'b')
 
 
-@pytest.fixture
-def binary():
+@pytest.fixture()
+def binary() -> Grammar:
     schema = parse_grammar_schema(
         dedent('''\
             <N> → "0" | "1" | "1" <B>
@@ -94,7 +95,7 @@ def binary():
     return schema.instantiate(NonTerminal('N'))
 
 
-def assert_binary(binary: Grammar):
+def assert_binary(binary: Grammar) -> None:
     assert derives(binary, '0')
     assert derives(binary, '1')
     assert derives(binary, '10')

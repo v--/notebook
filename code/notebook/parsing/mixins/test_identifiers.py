@@ -29,23 +29,23 @@ class TestTokenizer(IdentifierTokenizerMixin[TestToken], Tokenizer[TestToken]):
             self.advance()
             return sym
 
-        if self.accept_alphabetic_string(LatinIdentifier, self.capitalization):
-            return self.parse_identifier(LatinIdentifier, self.capitalization, self.short)
+        if self.read_alphabetic_string(LatinIdentifier, self.capitalization):
+            return self.parse_identifier(LatinIdentifier, self.capitalization, short=self.short)
 
-        if self.accept_alphabetic_string(GreekIdentifier, self.capitalization):
-            return self.parse_identifier(GreekIdentifier, self.capitalization, self.short)
+        if self.read_alphabetic_string(GreekIdentifier, self.capitalization):
+            return self.parse_identifier(GreekIdentifier, self.capitalization, short=self.short)
 
         raise self.error('Unexpected symbol')
 
 
-def tokenize(string: str, capitalization: Capitalization = Capitalization.mixed, short: bool = False):
+def tokenize(string: str, capitalization: Capitalization = Capitalization.mixed, *, short: bool = False) -> list[TestToken]:
     tokenizer = TestTokenizer(string, capitalization, short)
     result = list(tokenizer.parse())
     tokenizer.assert_exhausted()
     return result
 
 
-def test_valid_latin_identifiers():
+def test_valid_latin_identifiers() -> None:
     assert tokenize('Test') == [LatinIdentifier('Test')]
     assert tokenize('Test', short=True) == [
         LatinIdentifier('T', short=True),
@@ -62,7 +62,7 @@ def test_valid_latin_identifiers():
     ]
 
 
-def test_invalid_latin_identifiers():
+def test_invalid_latin_identifiers() -> None:
     # Fails to parse Cyrillic
     with pytest.raises(ParsingError):
         tokenize('Тест')
@@ -72,7 +72,7 @@ def test_invalid_latin_identifiers():
         tokenize('TEST', Capitalization.small)
 
 
-def test_type_assignments():
+def test_type_assignments() -> None:
     assert tokenize('x: τ') == [
         LatinIdentifier('x'),
         MiscToken.colon,

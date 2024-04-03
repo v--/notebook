@@ -25,7 +25,7 @@ class ErrorHighlighter(Generic[T_co]):
     special: type[SpecialChars] = SpecialChars
     annotated: Sequence[AnnotatedToken[T_co]] = field(init=False)
 
-    def __post_init__(self):
+    def __post_init__(self) -> None:
         assert 0 <= self.i_first_token <= self.i_last_token < len(self.seq)
         self.annotated = annotate_existing_tokens(self.seq)
 
@@ -49,7 +49,7 @@ class ErrorHighlighter(Generic[T_co]):
         yield str(lineno).ljust(lineno_prefix_length)
         yield ' ' + self.special.lineno_sep + ' '
 
-        for i, atoken in enumerate(self.annotated):
+        for _i, atoken in enumerate(self.annotated):
             if atoken.end.lineno == lineno:
                 value = str(atoken.token)
                 lines = value.splitlines(keepends=True)

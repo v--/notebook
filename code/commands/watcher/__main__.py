@@ -6,12 +6,12 @@ from datetime import datetime, timedelta
 from enum import Enum
 from fnmatch import fnmatch
 from timeit import default_timer as timer
-from typing import Any
+from typing import AsyncIterator
+from abc import ABC, abstractmethod
 
 import texoutparse
 from asyncinotify import Inotify, Mask
-from loguru import logger
-
+from loguru import Logger, logger
 
 DEBOUNCE_THRESHOLD = timedelta(seconds=1)
 TEX_LOG_ENCODING = 'latin-1'
@@ -32,24 +32,28 @@ class WatchTarget(Enum):
     figures = 'figures'
 
 
-class Task:
-    command: str
-    sublogger: Any
+class Task(ABC):
+    sublogger: Logger
     out_buffer: int | None
 
-    def __eq__(self, other):
+    def __eq__(self, other) -> bool:
         return isinstance(other, Task) and self.command == other.command
 
-    def __hash__(self):
+    def __hash__(self) -> int:
         return hash(self.command)
 
-    async def pre_process(self, runner: 'TaskRunner'):
+    @abstractmethod
+    @property
+    def command(self) -> str:
         pass
 
-    async def post_process(self, runner: 'TaskRunner'):
+    async def pre_process(self, runner: 'TaskRunner') -> None:
         pass
 
-    async def on_failure(self, runner: 'TaskRunner'):
+    async def post_process(self, runner: 'TaskRunner') -> None:
+        pass
+
+    async def on_failure(self, runner: 'TaskRunner') -> None:
         pass
 
 
@@ -58,23 +62,23 @@ class BiberTask(Task):
     biber_path: pathlib.Path
     tex_path: pathlib.Path
 
-    def __init__(self, biber_path: pathlib.Path | str, tex_path: pathlib.Path | str):
+    def __init__(self, biber_path: pathlib.Path | str, tex_path: pathlib.Path | str) -> None:
         self.biber_path = pathlib.Path(biber_path)
         self.tex_path = pathlib.Path(tex_path)
         self.sublogger = logger.bind(name=str(os.path.relpath(self.biber_path, ROOT_DIR)))
 
-    def __repr__(self):
+    def __repr__(self) -> str:
         return f'BiberTask({repr(self.biber_path)})'
 
     @property
-    def base_name(self):
+    def base_name(self) -> str:
         return os.path.splitext(self.biber_path)[0]
 
     @property
-    def command(self):
+    def command(self) -> str:
         return f'biber --quiet {self.biber_path}'
 
-    async def post_process(self, runner: 'TaskRunner'):
+    async def post_process(self, runner: 'TaskRunner') -> None:
         runner.schedule(TeXTask(self.tex_path), str(self.biber_path))
 
 
@@ -83,22 +87,22 @@ class TeXTask(Task):
     out_buffer: int | None = asyncio.subprocess.DEVNULL
     _bcf_file_hash: int | None = None
 
-    def __init__(self, tex_path: pathlib.Path | str):
+    def __init__(self, tex_path: pathlib.Path | str) -> None:
         self.tex_path = pathlib.Path(tex_path)
         self.sublogger = logger.bind(name=str(os.path.relpath(self.tex_path, ROOT_DIR)))
 
-    def __repr__(self):
+    def __repr__(self) -> str:
         return f'TeXTask({repr(self.tex_path)})'
 
-    def get_aux_path(self, extension: str):
+    def get_aux_path(self, extension: str) -> pathlib.Path:
         return AUX_DIR / self.tex_path.with_suffix(extension).name
 
     @property
-    def build_pdf_path(self):
+    def build_pdf_path(self) -> pathlib.Path:
         return OUTPUT_DIR / self.tex_path.with_suffix('.pdf').name
 
     @property
-    def command(self):
+    def command(self) -> str:
         return r'pdflatex -interaction=batchmode -output-directory=%s %s' % (AUX_DIR, self.tex_path)
 
     def get_bcf_hash(self) -> int | None:
@@ -108,10 +112,10 @@ class TeXTask(Task):
         except IOError:
             return None
 
-    async def pre_process(self, runner: 'TaskRunner'):
+    async def pre_process(self, runner: 'TaskRunner') -> None:
         self._bcf_file_hash = self.get_bcf_hash()
 
-    async def post_process(self, runner: 'TaskRunner'):
+    async def post_process(self, runner: 'TaskRunner') -> None:
         parser = texoutparse.LatexLogParser()
         requires_rerun = False
 
@@ -162,26 +166,26 @@ class AsymptoteTask(Task):
     src_path: pathlib.Path
     out_buffer: int | None = None
 
-    def __init__(self, src_path: pathlib.Path | str):
+    def __init__(self, src_path: pathlib.Path | str) -> None:
         self.src_path = pathlib.Path(src_path)
         self.sublogger = logger.bind(name=str(self.src_path))
 
-    def __repr__(self):
+    def __repr__(self) -> str:
         return f'AsymptoteTask({repr(self.src_path)})'
 
     @property
-    def aux_eps_path(self):
+    def aux_eps_path(self) -> pathlib.Path:
         return AUX_DIR / self.src_path.with_suffix('.eps').name
 
     @property
-    def build_eps_path(self):
+    def build_eps_path(self) -> pathlib.Path:
         return OUTPUT_DIR / self.src_path.with_suffix('.eps').name
 
     @property
-    def command(self):
+    def command(self) -> str:
         return f'asy -quiet -render=0 -outname={self.aux_eps_path} {self.src_path}'
 
-    async def post_process(self, runner: 'TaskRunner'):
+    async def post_process(self, runner: 'TaskRunner') -> None:
         shutil.copyfile(self.aux_eps_path, self.build_eps_path)
 
 
@@ -189,7 +193,7 @@ class TaskRunner:
     active_tasks: set[Task] = set()
     last_run_attempt: dict[Task, datetime] = {}
 
-    async def run_task(self, task: Task, trigger: str | None = None):
+    async def run_task(self, task: Task, trigger: str | None = None) -> None:
         self.active_tasks.add(task)
         await task.pre_process(self)
         start = timer()
@@ -220,7 +224,7 @@ class TaskRunner:
 
         self.active_tasks.remove(task)
 
-    async def run_task_debounced(self, task: Task, trigger: str | None = None):
+    async def run_task_debounced(self, task: Task, trigger: str | None = None) -> None:
         # This means that the task has already been scheduled
         if task in self.last_run_attempt:
             self.last_run_attempt[task] = datetime.now()
@@ -239,11 +243,11 @@ class TaskRunner:
         del self.last_run_attempt[task]
         await self.run_task(task, trigger)
 
-    def schedule(self, task: Task, trigger: str | None = None):
+    def schedule(self, task: Task, trigger: str | None = None) -> None:
         asyncio.create_task(self.run_task_debounced(task, trigger))
 
 
-async def iter_file_changes():
+async def iter_file_changes() -> AsyncIterator:
     with Inotify() as inotify:
         inotify.add_watch(ROOT_DIR, Mask.MODIFY)
         inotify.add_watch(ROOT_DIR / 'text', Mask.MODIFY)
@@ -260,7 +264,7 @@ async def iter_file_changes():
                 yield os.path.relpath(event.path, ROOT_DIR)
 
 
-async def setup_watchers(target: WatchTarget):
+async def setup_watchers(target: WatchTarget) -> None:
     runner = TaskRunner()
 
     async for path in iter_file_changes():

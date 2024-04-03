@@ -4,8 +4,8 @@ from .cnf import function_to_cnf, is_formula_in_cnf, pull_conjunction, to_cnf
 from .parsing.parser import parse_formula
 
 
-def test_is_formula_in_cnf():
-    def t(string: str):
+def test_is_formula_in_cnf() -> None:
+    def t(string: str) -> bool:
         return is_formula_in_cnf(parse_formula(string))
 
     assert t('p')
@@ -16,8 +16,8 @@ def test_is_formula_in_cnf():
     assert not t('∀ξ.p')
 
 
-def test_pull_conjunction():
-    def t(string: str):
+def test_pull_conjunction() -> None:
+    def t(string: str) -> str:
         return str(pull_conjunction(parse_formula(string)))
 
     # Trivial cases
@@ -40,8 +40,8 @@ def test_pull_conjunction():
     assert t('(p ∨ (q → (r ∧ s)))') == '(p ∨ (q → (r ∧ s)))'
 
 
-def test_to_cnf():
-    def t(string: str):
+def test_to_cnf() -> None:
+    def t(string: str) -> str:
         cnf = to_cnf(parse_formula(string))
         # assert is_formula_in_cnf(cnf)
         return str(cnf)
@@ -66,14 +66,14 @@ def test_to_cnf():
     assert t('(p ∨ ¬(p ∧ ¬(q ∧ r)))') == '((p ∨ (¬p ∨ q)) ∧ (p ∨ (¬p ∨ r)))'
 
 
-def test_function_to_cnf():
-    def t(fun: Callable[..., bool]):
+def test_function_to_cnf() -> None:
+    def t(fun: Callable[..., bool]) -> str:
         return str(function_to_cnf(fun))
 
     assert t(lambda: True) == '(p ∨ ¬p)'
     assert t(lambda: False) == '(p ∧ ¬p)'
-    assert t(lambda a, b: True) == '(a ∨ ¬a)'
+    assert t(lambda a, b: True) == '(a ∨ ¬a)'  # noqa: ARG005
     assert t(lambda a, b: a or b) == '(a ∨ b)'
-    assert t(lambda a, b: a) == '((a ∨ b) ∧ (a ∨ ¬b))'
+    assert t(lambda a, b: a) == '((a ∨ b) ∧ (a ∨ ¬b))'  # noqa: ARG005
     assert t(lambda a, b: a and b) == '(((a ∨ b) ∧ (a ∨ ¬b)) ∧ (¬a ∨ b))'
-    assert t(lambda a, b: False) == '((((a ∨ b) ∧ (a ∨ ¬b)) ∧ (¬a ∨ b)) ∧ (¬a ∨ ¬b))'
+    assert t(lambda a, b: False) == '((((a ∨ b) ∧ (a ∨ ¬b)) ∧ (¬a ∨ b)) ∧ (¬a ∨ ¬b))'  # noqa: ARG005

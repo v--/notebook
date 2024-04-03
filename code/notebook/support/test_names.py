@@ -1,7 +1,7 @@
 from .names import new_var_name
 
 
-def test_new_var_name():
+def test_new_var_name() -> None:
     assert new_var_name('test', set()) == 'test'
     assert new_var_name('test', {'test'}) == 'test₀'
     assert new_var_name('test', {'test', 'test₀'}) == 'test₁'

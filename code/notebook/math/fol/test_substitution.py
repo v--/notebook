@@ -2,8 +2,8 @@ from .parsing.parser import parse_formula, parse_term
 from .substitution import substitute_in_formula, substitute_in_term
 
 
-def test_substitute_in_term():
-    def t(term: str, from_term: str, to_term: str):
+def test_substitute_in_term() -> None:
+    def t(term: str, from_term: str, to_term: str) -> str:
         return str(
             substitute_in_term(
                 parse_term(term),
@@ -18,8 +18,8 @@ def test_substitute_in_term():
     assert t('f(g(ξ), h(g(ξ)))', 'g(ξ)', 'η') == 'f(η, h(η))'
 
 
-def test_substitute_in_formula():
-    def t(formula: str, from_term: str, to_term: str):
+def test_substitute_in_formula() -> None:
+    def t(formula: str, from_term: str, to_term: str) -> str:
         return str(
             substitute_in_formula(
                 parse_formula(formula),

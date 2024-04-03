@@ -15,10 +15,10 @@ class FiniteAutomaton(Generic[StateT, LabelT]):
     initial: set[StateT] = field(default_factory=set)
     terminal: set[StateT] = field(default_factory=set)
 
-    def add_transition(self, src: StateT, label: LabelT, dest: StateT):
+    def add_transition(self, src: StateT, label: LabelT, dest: StateT) -> None:
         self.triples.append((src, label, dest))
 
-    def _recognize_recurse(self, string: str, initial: StateT):
+    def _recognize_recurse(self, string: str, initial: StateT) -> bool:
         if len(string) == 0:
             return initial in self.terminal
 
@@ -28,10 +28,10 @@ class FiniteAutomaton(Generic[StateT, LabelT]):
             if src == initial and label == string[0]
         )
 
-    def recognize(self, string: str):
+    def recognize(self, string: str) -> bool:
         return any(self._recognize_recurse(string, i) for i in self.initial)
 
-    def is_deterministic(self):
+    def is_deterministic(self) -> bool:
         if len(self.initial) != 1:
             return False
 
@@ -47,12 +47,12 @@ class FiniteAutomaton(Generic[StateT, LabelT]):
 
         return True
 
-    def get_states(self):
+    def get_states(self) -> list[StateT]:
         return [src for src, _, _ in self.triples] + [dest for dest, _, _ in self.triples]
 
-    def __str__(self):
+    def __str__(self) -> str:
         transition_str = '\n\t'.join(f'{src} -{label}-> {dest}' for src, label, dest in self.triples)
-        return f'Initial: \n\t{str(self.initial)}\nTerminal: \n\t{str(self.terminal)}\nTransitions: \n\t{transition_str}'
+        return f'Initial: \n\t{self.initial!s}\nTerminal: \n\t{self.terminal!s}\nTransitions: \n\t{transition_str}'
 
 
 def reverse_automaton(aut: FiniteAutomaton[StateT, LabelT]) -> FiniteAutomaton[StateT, LabelT]:

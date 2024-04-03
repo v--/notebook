@@ -12,8 +12,8 @@ from .pnf import (
 )
 
 
-def test_is_formula_quantifierless():
-    def t(string: str):
+def test_is_formula_quantifierless() -> None:
+    def t(string: str) -> bool:
         return is_formula_quantifierless(parse_formula(string))
 
     assert t('⊤')
@@ -23,8 +23,8 @@ def test_is_formula_quantifierless():
     assert not t('¬∀ξ.p(η)')
 
 
-def test_is_formula_in_pnf():
-    def t(string: str):
+def test_is_formula_in_pnf() -> None:
+    def t(string: str) -> bool:
         return is_formula_in_pnf(parse_formula(string))
 
     assert t('(ξ = η)')
@@ -34,8 +34,8 @@ def test_is_formula_in_pnf():
     assert not t('∀η.∃ζ.(¬p(ζ) ∧ ∀ξ.(q(ζ, ξ) → ¬r(η, ξ)))')
 
 
-def test_remove_conditionals():
-    def t(string: str):
+def test_remove_conditionals() -> None:
+    def t(string: str) -> str:
         return str(remove_conditionals(parse_formula(string)))
 
     assert t('(ξ = η)') == '(ξ = η)'
@@ -46,8 +46,8 @@ def test_remove_conditionals():
     assert t('∀η.∃ζ.¬(p(ξ) → q(η))') == '∀η.∃ζ.¬(¬p(ξ) ∨ q(η))'
 
 
-def test_move_negations():
-    def t(string: str):
+def test_move_negations() -> None:
+    def t(string: str) -> str:
         return str(push_negations(parse_formula(string)))
 
     with pytest.raises(PNFError):
@@ -64,8 +64,8 @@ def test_move_negations():
     assert t('¬(p(ξ) ∨ ¬(q(η) ∧ ¬(∃ζ.r(ζ) ∨ ¬s(τ))))') == '(¬p(ξ) ∧ (q(η) ∧ (∀ζ.¬r(ζ) ∧ s(τ))))'
 
 
-def test_move_quantifiers():
-    def t(string: str):
+def test_move_quantifiers() -> None:
+    def t(string: str) -> str:
         return str(move_quantifiers(parse_formula(string)))
 
     with pytest.raises(PNFError):
@@ -89,8 +89,8 @@ def test_move_quantifiers():
     assert t('((∀ξ.p(ξ) ∨ q(ξ)) ∧ ∃ξ₀.r(ξ₀))') == '∃ξ₁.∀ξ₂.((p(ξ₂) ∨ q(ξ)) ∧ r(ξ₁))'
 
 
-def test_to_pnf():
-    def t(string: str):
+def test_to_pnf() -> None:
+    def t(string: str) -> str:
         pnf = to_pnf(parse_formula(string))
         assert is_formula_in_pnf(pnf)
         return str(pnf)

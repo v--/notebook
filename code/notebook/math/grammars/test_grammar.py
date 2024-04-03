@@ -2,7 +2,7 @@ from .alphabet import NonTerminal, Terminal
 from .grammar import Grammar, GrammarRule
 
 
-def test_an(an: Grammar):
+def test_an(an: Grammar) -> None:
     assert an.schema.rules == [
         GrammarRule([NonTerminal('S')], []),
         GrammarRule([NonTerminal('S')], [NonTerminal('A')]),

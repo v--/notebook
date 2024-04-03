@@ -1,12 +1,13 @@
 from ..linalg.matrix import zeros
 
 
-def hamming(v: str, w: str):
+def hamming(v: str, w: str) -> int:
+    assert len(v) == len(w)
     return sum(a != b for a, b in zip(v, w))
 
 
 # This is alg:wagner_fisher in the text
-def fisher_wagner(v: str, w: str):
+def fisher_wagner(v: str, w: str) -> int:
     mtx = zeros(len(v) + 1, len(w) + 1)
 
     for i in range(len(v) + 1):

@@ -16,7 +16,7 @@ class Formatter(ABC):
     path: str | pathlib.Path
 
     @abstractmethod
-    def format(self, src: TextIO, dest: TextIO):
+    def format(self, src: TextIO, dest: TextIO) -> None:
         ...
 
     def process(self) -> bool:

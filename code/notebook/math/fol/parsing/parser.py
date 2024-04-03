@@ -77,7 +77,7 @@ class FOLParser(WhitespaceParserMixin[FOLToken], Parser[FOLToken]):
         self.advance()
         return ConstantFormula(head)
 
-    def parse_binary_formula(self) -> EqualityFormula | ConnectiveFormula:
+    def parse_binary_formula(self) -> EqualityFormula | ConnectiveFormula:  # noqa: PLR0912
         start = self.index
 
         assert self.peek() == MiscToken.left_parenthesis
@@ -113,10 +113,10 @@ class FOLParser(WhitespaceParserMixin[FOLToken], Parser[FOLToken]):
             if not self.is_at_end() and self.peek() == MiscToken.right_parenthesis:
                 self.advance()
                 return EqualityFormula(a_term, b_term)
-            else:
-                raise self.error('Unclosed parentheses for equality formula', i_first_token=start, i_last_token=self.index - 1)
 
-        elif isinstance(connective := self.peek(), BinaryConnective):
+            raise self.error('Unclosed parentheses for equality formula', i_first_token=start, i_last_token=self.index - 1)
+
+        if isinstance(connective := self.peek(), BinaryConnective):
             if isinstance(a_term, FunctionTerm):
                 a_form = PredicateFormula(a_term.name, a_term.arguments)
 
@@ -131,18 +131,16 @@ class FOLParser(WhitespaceParserMixin[FOLToken], Parser[FOLToken]):
             if self.is_at_end():
                 raise self.error('Unclosed parentheses for binary formula', i_first_token=start)
 
-            b_start = self.index
             b_form = self.parse_formula()
-            b_end = self.index - 1
+            self.index - 1
 
             if not self.is_at_end() and self.peek() == MiscToken.right_parenthesis:
                 self.advance()
-                return ConnectiveFormula(connective, a_form, b_form)  # type: ignore
-            else:
-                raise self.error('Unclosed parentheses for binary formula', i_first_token=start, i_last_token=self.index - 1)
+                return ConnectiveFormula(connective, a_form, b_form)
 
-        else:
-            raise self.error('Unexpected token')
+            raise self.error('Unclosed parentheses for binary formula', i_first_token=start, i_last_token=self.index - 1)
+
+        raise self.error('Unexpected token')
 
     def parse_negation_formula(self) -> NegationFormula:
         assert self.peek() == MiscToken.negation
@@ -198,10 +196,8 @@ class FOLParser(WhitespaceParserMixin[FOLToken], Parser[FOLToken]):
             case _:
                 raise self.error('Unexpected token')
 
-    parse = parse_formula
 
-
-def parse_term(string: str):
+def parse_term(string: str) -> Term:
     tokens = list(FOLTokenizer(string).parse())
     parser = FOLParser(tokens)
     term = parser.parse_term()
@@ -209,7 +205,7 @@ def parse_term(string: str):
     return term
 
 
-def parse_formula(string: str):
+def parse_formula(string: str) -> Formula:
     tokens = list(FOLTokenizer(string).parse())
     parser = FOLParser(tokens)
     formula = parser.parse_formula()

@@ -3,7 +3,7 @@ import sys
 from loguru import logger
 
 
-def setup_loguru(default_name: str = '<system>'):
+def setup_loguru(default_name: str = '<system>') -> None:
     logger.configure(extra=dict(name=default_name))
     logger.remove()
     logger.add(

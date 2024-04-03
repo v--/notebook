@@ -25,10 +25,10 @@ class NaturalDeductionTokenizer(IdentifierTokenizerMixin[RuleToken], Tokenizer[R
             self.advance()
             return Whitespace.space
 
-        if self.accept_alphabetic_string(LatinIdentifier, Capitalization.mixed):
+        if self.read_alphabetic_string(LatinIdentifier, Capitalization.mixed):
             return self.parse_identifier(LatinIdentifier, Capitalization.mixed, short=False)
 
-        if self.accept_alphabetic_string(GreekIdentifier, Capitalization.mixed):
+        if self.read_alphabetic_string(GreekIdentifier, Capitalization.mixed):
             return self.parse_identifier(GreekIdentifier, Capitalization.mixed, short=False)
 
         raise self.error('Unexpected symbol')

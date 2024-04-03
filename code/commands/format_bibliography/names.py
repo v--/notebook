@@ -39,7 +39,7 @@ CYR_TO_LAT_TABLE = str.maketrans({
 })
 
 
-def latinize_cyrillic_name(name: str):
+def latinize_cyrillic_name(name: str) -> str:
     return name \
         .lower() \
         .replace('ий', 'iy') \

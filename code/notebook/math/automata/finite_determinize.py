@@ -45,7 +45,7 @@ def determinize(nondet: FiniteAutomaton[StateT, LabelT]) -> FiniteAutomaton[froz
         triples,
         initial={frozenset(nondet.initial)},
         terminal=(
-            set(src for src, _, _ in triples if len(src & nondet.terminal) > 0) |
-            set(dest for _, _, dest in triples if len(dest & nondet.terminal) > 0)
+            {src for src, _, _ in triples if len(src & nondet.terminal) > 0} |
+            {dest for _, _, dest in triples if len(dest & nondet.terminal) > 0}
         ),
     )

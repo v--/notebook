@@ -7,13 +7,13 @@ from ..terms import Variable
 from .parser import parse_term
 
 
-def test_parsing_valid_variables():
+def test_parsing_valid_variables() -> None:
     assert parse_term('x') == Variable('x')
     assert parse_term('y') == Variable('y')
     assert parse_term('z₁₂') == Variable('z₁₂')
 
 
-def test_parsing_long_variable_names():
+def test_parsing_long_variable_names() -> None:
     with pytest.raises(ParsingError) as excinfo:
         parse_term('xy')
 
@@ -25,7 +25,7 @@ def test_parsing_long_variable_names():
     )
 
 
-def test_parsing_invalid_variable_suffix():
+def test_parsing_invalid_variable_suffix() -> None:
     with pytest.raises(ParsingError) as excinfo:
         parse_term('x₀₁')
 
@@ -37,8 +37,8 @@ def test_parsing_invalid_variable_suffix():
     )
 
 
-def test_parsing_valid_terms():
-    def is_term_rebuilt(string: str):
+def test_parsing_valid_terms() -> None:
+    def is_term_rebuilt(string: str) -> None:
         assert str(parse_term(string)) == string
 
     is_term_rebuilt('x')
@@ -52,7 +52,7 @@ def test_parsing_valid_terms():
     is_term_rebuilt('(λf.((λx.(f(xx)))(λx.(f(xx)))))') # Y combinator
 
 
-def test_parsing_abstraction_with_unclosed_parens():
+def test_parsing_abstraction_with_unclosed_parens() -> None:
     with pytest.raises(ParsingError) as excinfo:
         parse_term('(λx.x')
 
@@ -64,7 +64,7 @@ def test_parsing_abstraction_with_unclosed_parens():
     )
 
 
-def test_parsing_abstraction_with_unclosed_parens_truncated():
+def test_parsing_abstraction_with_unclosed_parens_truncated() -> None:
     with pytest.raises(ParsingError) as excinfo:
         parse_term('(λ')
 
@@ -76,7 +76,7 @@ def test_parsing_abstraction_with_unclosed_parens_truncated():
     )
 
 
-def test_parsing_abstraction_with_no_dot():
+def test_parsing_abstraction_with_no_dot() -> None:
     with pytest.raises(ParsingError) as excinfo:
         parse_term('(λxx)')
 
@@ -88,7 +88,7 @@ def test_parsing_abstraction_with_no_dot():
     )
 
 
-def test_parsing_empty_application():
+def test_parsing_empty_application() -> None:
     with pytest.raises(ParsingError) as excinfo:
         parse_term('()')
 
@@ -100,7 +100,7 @@ def test_parsing_empty_application():
     )
 
 
-def test_parsing_incomplete_application():
+def test_parsing_incomplete_application() -> None:
     with pytest.raises(ParsingError) as excinfo:
         parse_term('(x)')
 
@@ -112,8 +112,8 @@ def test_parsing_incomplete_application():
     )
 
 
-def test_reparsing_terms():
-    def is_term_rebuilt(string: str):
+def test_reparsing_terms() -> None:
+    def is_term_rebuilt(string: str) -> None:
         assert str(parse_term(str(parse_term(string)))) == string
 
     is_term_rebuilt('(λx.(λy.x))') # K combinator

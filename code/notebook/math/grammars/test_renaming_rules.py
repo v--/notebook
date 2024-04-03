@@ -6,7 +6,7 @@ from .parsing.parser import parse_grammar_schema
 from .renaming_rules import collapse_renaming_rules, has_renaming_rules
 
 
-def test_collapse_renaming_rules_simple():
+def test_collapse_renaming_rules_simple() -> None:
     grammar = parse_grammar_schema(
         dedent('''\
             <S> → <A>
@@ -28,7 +28,7 @@ def test_collapse_renaming_rules_simple():
     assert not has_renaming_rules(new_grammar)
 
 
-def test_collapse_renaming_rules_cyclic():
+def test_collapse_renaming_rules_cyclic() -> None:
     grammar = parse_grammar_schema(
         dedent('''\
             <S> → <A>
@@ -42,7 +42,7 @@ def test_collapse_renaming_rules_cyclic():
     assert not has_renaming_rules(new_grammar)
 
 
-def test_collapse_renaming_rules_complex():
+def test_collapse_renaming_rules_complex() -> None:
     grammar = parse_grammar_schema(
         dedent('''\
             <S> → <A> | <C> | <E>

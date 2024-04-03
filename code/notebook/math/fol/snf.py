@@ -3,9 +3,9 @@ from .pnf import PNFVerificationVisitor
 
 
 class SNFVerificationVisitor(PNFVerificationVisitor):
-    def visit_quantifier(self, formula: QuantifierFormula):
+    def visit_quantifier(self, formula: QuantifierFormula) -> bool:
         return formula.quantifier == '∀' and self.visit(formula.sub)
 
 
-def is_formula_in_snf(formula: Formula):
+def is_formula_in_snf(formula: Formula) -> bool:
     return SNFVerificationVisitor().visit(formula)

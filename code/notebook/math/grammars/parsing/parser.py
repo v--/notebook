@@ -72,12 +72,12 @@ class GrammarParser(WhitespaceParserMixin[GrammarToken], Parser[GrammarToken]):
             else:
                 raise self.error('The right side of a rule must contain a pipe between runs of terminals, nonterminals and ε')
 
-    def parse_all_rules(self):
+    def parse_all_rules(self) -> Iterable[GrammarRule]:
         while not self.is_at_end():
             yield from self.parse_rule_line()
             self.skip_empty_lines()
 
-    def parse_schema(self):
+    def parse_schema(self) -> GrammarSchema:
         self.skip_empty_lines()
         rules = list(self.parse_all_rules())
 
