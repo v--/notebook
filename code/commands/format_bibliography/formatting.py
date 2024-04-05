@@ -1,15 +1,16 @@
+from typing import TextIO
+
 import bibtexparser
 from bibtexparser.bparser import BibTexParser
 from bibtexparser.bwriter import BibTexWriter
 from titlecase import titlecase
-from typing import TextIO
 
-from .names import latinize_cyrillic_name
 from ..common.formatting import Formatter
+from .names import latinize_cyrillic_name
 
 
-def titlecase_bib_callback(string: str, **kwargs) -> str | None:
-    if not string.isascii() or string == string.upper():
+def titlecase_bib_callback(string: str, all_caps: bool) -> str | None:  # noqa: FBT001
+    if all_caps or not string.isascii():
         return string
 
     return None

@@ -2,22 +2,22 @@ import asyncio
 import os.path
 import pathlib
 import shutil
+from abc import ABC, abstractmethod
 from datetime import datetime, timedelta
 from enum import Enum
 from fnmatch import fnmatch
 from timeit import default_timer as timer
-from typing import AsyncIterator
-from abc import ABC, abstractmethod
+from typing import AsyncIterator, ClassVar
 
-import texoutparse
 import structlog
+import texoutparse
 from asyncinotify import Inotify, Mask
 
 
 DEBOUNCE_THRESHOLD = timedelta(seconds=1)
 TEX_LOG_ENCODING = 'latin-1'
 
-ROOT_DIR = pathlib.Path('.').resolve()
+ROOT_DIR = pathlib.Path().resolve()
 
 while not (ROOT_DIR / 'notebook.tex').exists():
     ROOT_DIR = ROOT_DIR.parent
@@ -37,7 +37,7 @@ class Task(ABC):
     sublogger: structlog.stdlib.BoundLogger
     out_buffer: int | None
 
-    def __eq__(self, other) -> bool:
+    def __eq__(self, other: object) -> bool:
         return isinstance(other, Task) and self.command == other.command
 
     def __hash__(self) -> int:
@@ -48,13 +48,13 @@ class Task(ABC):
     def command(self) -> str:
         pass
 
-    async def pre_process(self, runner: 'TaskRunner') -> None:
+    async def pre_process(self, runner: 'TaskRunner') -> None:  # noqa: B027
         pass
 
-    async def post_process(self, runner: 'TaskRunner') -> None:
+    async def post_process(self, runner: 'TaskRunner') -> None:  # noqa: B027
         pass
 
-    async def on_failure(self, runner: 'TaskRunner') -> None:
+    async def on_failure(self, runner: 'TaskRunner') -> None:  # noqa: B027
         pass
 
 
@@ -71,18 +71,18 @@ class BiberTask(Task):
         self.sublogger = base_logger.bind(logger=str(os.path.relpath(self.biber_path, ROOT_DIR)))
 
     def __repr__(self) -> str:
-        return f'BiberTask({repr(self.biber_path)})'
+        return f'BiberTask({self.biber_path!r})'
 
     @property
     def base_name(self) -> str:
-        return os.path.splitext(self.biber_path)[0]
+        return self.biber_path.stem
 
     @property
     def command(self) -> str:
         return f'biber --quiet {self.biber_path}'
 
     async def post_process(self, runner: 'TaskRunner') -> None:
-        runner.schedule(TeXTask(self.tex_path, self.base_logger), str(self.biber_path))
+        runner.schedule(TeXTask(self.base_logger, self.tex_path), str(self.biber_path))
 
 
 class TeXTask(Task):
@@ -96,7 +96,7 @@ class TeXTask(Task):
         self.sublogger = base_logger.bind(logger=str(os.path.relpath(self.tex_path, ROOT_DIR)))
 
     def __repr__(self) -> str:
-        return f'TeXTask({repr(self.tex_path)})'
+        return f'TeXTask({self.tex_path!r})'
 
     def get_aux_path(self, extension: str) -> pathlib.Path:
         return AUX_DIR / self.tex_path.with_suffix(extension).name
@@ -107,45 +107,45 @@ class TeXTask(Task):
 
     @property
     def command(self) -> str:
-        return r'pdflatex -interaction=batchmode -output-directory=%s %s' % (AUX_DIR, self.tex_path)
+        return r'pdflatex -interaction=batchmode -output-directory=%s %s' % (AUX_DIR, self.tex_path)  # noqa: UP031
 
     def get_bcf_hash(self) -> int | None:
         try:
-            with open(self.get_aux_path('.bcf'), 'r') as bcf_file:
+            with self.get_aux_path('.bcf').open() as bcf_file:
                 return hash(bcf_file.read())
-        except IOError:
+        except OSError:
             return None
 
-    async def pre_process(self, runner: 'TaskRunner') -> None:
+    async def pre_process(self, runner: 'TaskRunner') -> None:  # noqa: ARG002
         self._bcf_file_hash = self.get_bcf_hash()
 
-    async def post_process(self, runner: 'TaskRunner') -> None:
+    async def post_process(self, runner: 'TaskRunner') -> None:  # noqa: PLR0912
         parser = texoutparse.LatexLogParser()
         requires_rerun = False
 
         try:
-            with open(self.get_aux_path('.log'), 'r', encoding=TEX_LOG_ENCODING) as log_file:
+            with self.get_aux_path('.log').open(encoding=TEX_LOG_ENCODING) as log_file:
                 requires_rerun = 'Rerun to get' in log_file.read()
                 log_file.seek(0)
                 parser.process(log_file)
         except OSError:
-            self.sublogger.error('Could not open TeX log file.')
+            self.sublogger.exception('Could not open TeX log file.')
         else:
             if len(parser.errors) > 0:
                 if len(parser.errors) == 1:
-                    self.sublogger.error(f'Compiled with an error:\n {str(parser.errors[0])}')
+                    self.sublogger.error(f'Compiled with an error:\n {parser.errors[0]!s}')
                 else:
-                    self.sublogger.error(f'Compiled with {len(parser.errors)} errors. The first error is:\n {str(parser.errors[0])}')
+                    self.sublogger.error(f'Compiled with {len(parser.errors)} errors. The first error is:\n {parser.errors[0]!s}')
             elif len(parser.warnings) > 0:
                 if len(parser.warnings) == 1:
-                    self.sublogger.warning(f'Compiled with a warning:\n {str(parser.warnings[0])}')
+                    self.sublogger.warning(f'Compiled with a warning:\n {parser.warnings[0]!s}')
                 else:
-                    self.sublogger.warning(f'Compiled with {len(parser.warnings)} warnings. The first warning is:\n {str(parser.warnings[0])}')
+                    self.sublogger.warning(f'Compiled with {len(parser.warnings)} warnings. The first warning is:\n {parser.warnings[0]!s}')
             elif len(parser.badboxes) > 0:
                 if len(parser.badboxes) == 1:
-                    self.sublogger.warning(f'Compiled with a bad box:\n {str(parser.badboxes[0])}')
+                    self.sublogger.warning(f'Compiled with a bad box:\n {parser.badboxes[0]!s}')
                 else:
-                    self.sublogger.warning(f'Compiled with {len(parser.badboxes)} bad boxes. The first bad box is:\n {str(parser.badboxes[0])}')
+                    self.sublogger.warning(f'Compiled with {len(parser.badboxes)} bad boxes. The first bad box is:\n {parser.badboxes[0]!s}')
 
         if len(parser.errors) != 0:
             return
@@ -176,7 +176,7 @@ class AsymptoteTask(Task):
         self.sublogger = base_logger.bind(logger=str(self.src_path))
 
     def __repr__(self) -> str:
-        return f'AsymptoteTask({repr(self.src_path)})'
+        return f'AsymptoteTask({self.src_path!r})'
 
     @property
     def aux_eps_path(self) -> pathlib.Path:
@@ -190,13 +190,14 @@ class AsymptoteTask(Task):
     def command(self) -> str:
         return f'asy -quiet -render=0 -outlogger={self.aux_eps_path} {self.src_path}'
 
-    async def post_process(self, runner: 'TaskRunner') -> None:
+    async def post_process(self, runner: 'TaskRunner') -> None:  # noqa: ARG002
         shutil.copyfile(self.aux_eps_path, self.build_eps_path)
 
 
 class TaskRunner:
-    active_tasks: set[Task] = set()
-    last_run_attempt: dict[Task, datetime] = {}
+    active_aio_tasks: ClassVar[set[asyncio.Task]] = set()
+    active_tasks: ClassVar[set[Task]] = set()
+    last_run_attempt: ClassVar[dict[Task, datetime]] = {}
 
     async def run_task(self, task: Task, trigger: str | None = None) -> None:
         self.active_tasks.add(task)
@@ -249,7 +250,9 @@ class TaskRunner:
         await self.run_task(task, trigger)
 
     def schedule(self, task: Task, trigger: str | None = None) -> None:
-        asyncio.create_task(self.run_task_debounced(task, trigger))
+        aio_task = asyncio.create_task(self.run_task_debounced(task, trigger))
+        self.active_aio_tasks.add(aio_task)
+        aio_task.add_done_callback(self.active_aio_tasks.discard)
 
 
 async def iter_file_changes(logger: structlog.stdlib.BoundLogger) -> AsyncIterator:
@@ -306,9 +309,9 @@ if __name__ == '__main__':
     try:
         target = WatchTarget[sys.argv[1]]
     except IndexError:
-        print('What to watch?', file=sys.stderr)
+        print('What to watch?', file=sys.stderr)  # noqa: T201
     except KeyError:
-        print(f'Invalid target {sys.argv[1]}. Expected {" or ".join(repr(t.value) for t in WatchTarget)}.', file=sys.stderr)
+        print(f'Invalid target {sys.argv[1]}. Expected {" or ".join(repr(t.value) for t in WatchTarget)}.', file=sys.stderr)  # noqa: T201
     else:
         base_logger = structlog.get_logger().bind(logger='<system>')
 

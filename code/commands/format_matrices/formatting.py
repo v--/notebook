@@ -1,8 +1,8 @@
 from typing import TextIO
 
-from ..common.formatting import Formatter
-
 from notebook.latex.format_matrices import format_tex_matrices
+
+from ..common.formatting import Formatter
 
 
 class MatrixFormatter(Formatter):

@@ -1,12 +1,11 @@
+import hashlib
+import io
+import pathlib
+import shutil
+import tempfile
 from abc import ABC, abstractmethod
 from dataclasses import dataclass
 from typing import TextIO
-import os
-import hashlib
-import pathlib
-import io
-import shutil
-import tempfile
 
 import structlog
 
@@ -14,16 +13,16 @@ import structlog
 @dataclass
 class Formatter(ABC):
     logger: structlog.stdlib.BoundLogger
-    path: str | pathlib.Path
+    path: pathlib.Path
 
     @abstractmethod
     def format(self, src: TextIO, dest: TextIO) -> None:
         ...
 
     def process(self) -> bool:
-        file = open(self.path, 'r+')
+        file = self.path.open('r+')
         old_hash = hashlib.sha1(file.read().encode('utf-8')).hexdigest()
-        bak_path = os.path.join(tempfile.gettempdir(), old_hash + '.bak')
+        bak_path = pathlib.Path(tempfile.gettempdir()) / (old_hash + '.bak')
 
         file.seek(0)
 
@@ -37,7 +36,7 @@ class Formatter(ABC):
             self.logger.info(f'Formatting and backing up into {bak_path}.')
 
             file.seek(0)
-            with open(bak_path, 'w') as bak_file:
+            with bak_path.open('w') as bak_file:
                 shutil.copyfileobj(file, bak_file)
 
             file.seek(0)

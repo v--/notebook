@@ -1,8 +1,9 @@
-import click
 import pathlib
 
-from .formatting import MatrixFormatter
+import click
+
 from ..common.bulk_format import bulk_format
+from .formatting import MatrixFormatter
 
 
 @click.command()

@@ -1,14 +1,21 @@
 [tool.poe.tasks]
 test = "pytest"
-coverage-collect = "coverage run -m pytest"
-coverage-report = "coverage html"
-coverage.sequence = ["coverage-collect", "coverage-report"]
+coverage.sequence = [
+  { cmd = "coverage run -m pytest" },
+  { cmd = "coverage html" }
+]
 
 [tool.poe.tasks.lint]
 sequence = [
   { cmd = "ruff check $path" },
   { cmd = "mypy $path" }
 ]
+args = [
+  { name = "path", positional = true, default = "" }
+]
+
+[tool.poe.tasks.format]
+cmd = "ruff check --fix $path"
 args = [
   { name = "path", positional = true, default = "" }
 ]

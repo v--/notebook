@@ -12,7 +12,7 @@ def check_is_figure_used(figure_name: str) -> bool:
     pattern = re.compile(b'{output/' + figure_name.encode('utf8') + b'}')
 
     for src_file_path in TEXT_PATH.iterdir():
-        with open(src_file_path, 'r') as file:
+        with src_file_path.open() as file:
             file_contents = mmap(file.fileno(), length=0, prot=PROT_READ)
             match = re.search(pattern, file_contents)
 
