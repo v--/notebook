@@ -8,11 +8,12 @@ import io
 import shutil
 import tempfile
 
-from loguru import logger
+import structlog
 
 
 @dataclass
 class Formatter(ABC):
+    logger: structlog.stdlib.BoundLogger
     path: str | pathlib.Path
 
     @abstractmethod
@@ -33,7 +34,7 @@ class Formatter(ABC):
         new_hash = hashlib.sha1(buffer.read().encode('utf-8')).hexdigest()
 
         if new_hash != old_hash:
-            logger.info(f'Formatting {self.path} and backing up into {bak_path}.')
+            self.logger.info(f'Formatting and backing up into {bak_path}.')
 
             file.seek(0)
             with open(bak_path, 'w') as bak_file:

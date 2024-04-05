@@ -10,8 +10,9 @@ from typing import AsyncIterator
 from abc import ABC, abstractmethod
 
 import texoutparse
+import structlog
 from asyncinotify import Inotify, Mask
-from loguru import Logger, logger
+
 
 DEBOUNCE_THRESHOLD = timedelta(seconds=1)
 TEX_LOG_ENCODING = 'latin-1'
@@ -33,7 +34,7 @@ class WatchTarget(Enum):
 
 
 class Task(ABC):
-    sublogger: Logger
+    sublogger: structlog.stdlib.BoundLogger
     out_buffer: int | None
 
     def __eq__(self, other) -> bool:
@@ -42,8 +43,8 @@ class Task(ABC):
     def __hash__(self) -> int:
         return hash(self.command)
 
-    @abstractmethod
     @property
+    @abstractmethod
     def command(self) -> str:
         pass
 
@@ -58,14 +59,16 @@ class Task(ABC):
 
 
 class BiberTask(Task):
+    base_logger: structlog.stdlib.BoundLogger
     out_buffer: int | None = None
     biber_path: pathlib.Path
     tex_path: pathlib.Path
 
-    def __init__(self, biber_path: pathlib.Path | str, tex_path: pathlib.Path | str) -> None:
+    def __init__(self, base_logger: structlog.stdlib.BoundLogger, biber_path: pathlib.Path | str, tex_path: pathlib.Path | str) -> None:
         self.biber_path = pathlib.Path(biber_path)
         self.tex_path = pathlib.Path(tex_path)
-        self.sublogger = logger.bind(name=str(os.path.relpath(self.biber_path, ROOT_DIR)))
+        self.base_logger = base_logger
+        self.sublogger = base_logger.bind(logger=str(os.path.relpath(self.biber_path, ROOT_DIR)))
 
     def __repr__(self) -> str:
         return f'BiberTask({repr(self.biber_path)})'
@@ -79,7 +82,7 @@ class BiberTask(Task):
         return f'biber --quiet {self.biber_path}'
 
     async def post_process(self, runner: 'TaskRunner') -> None:
-        runner.schedule(TeXTask(self.tex_path), str(self.biber_path))
+        runner.schedule(TeXTask(self.tex_path, self.base_logger), str(self.biber_path))
 
 
 class TeXTask(Task):
@@ -87,9 +90,10 @@ class TeXTask(Task):
     out_buffer: int | None = asyncio.subprocess.DEVNULL
     _bcf_file_hash: int | None = None
 
-    def __init__(self, tex_path: pathlib.Path | str) -> None:
+    def __init__(self, base_logger: structlog.stdlib.BoundLogger, tex_path: pathlib.Path | str) -> None:
         self.tex_path = pathlib.Path(tex_path)
-        self.sublogger = logger.bind(name=str(os.path.relpath(self.tex_path, ROOT_DIR)))
+        self.base_logger = base_logger
+        self.sublogger = base_logger.bind(logger=str(os.path.relpath(self.tex_path, ROOT_DIR)))
 
     def __repr__(self) -> str:
         return f'TeXTask({repr(self.tex_path)})'
@@ -151,7 +155,7 @@ class TeXTask(Task):
             return
 
         if self.get_bcf_hash() != self._bcf_file_hash:
-            runner.schedule(BiberTask(self.get_aux_path('.bcf'), self.tex_path), str(self.tex_path))
+            runner.schedule(BiberTask(self.base_logger, self.get_aux_path('.bcf'), self.tex_path), str(self.tex_path))
 
         if requires_rerun:
             runner.schedule(self, 'last build')
@@ -166,9 +170,10 @@ class AsymptoteTask(Task):
     src_path: pathlib.Path
     out_buffer: int | None = None
 
-    def __init__(self, src_path: pathlib.Path | str) -> None:
+    def __init__(self, base_logger: structlog.stdlib.BoundLogger, src_path: pathlib.Path | str) -> None:
         self.src_path = pathlib.Path(src_path)
-        self.sublogger = logger.bind(name=str(self.src_path))
+        self.base_logger = base_logger
+        self.sublogger = base_logger.bind(logger=str(self.src_path))
 
     def __repr__(self) -> str:
         return f'AsymptoteTask({repr(self.src_path)})'
@@ -183,7 +188,7 @@ class AsymptoteTask(Task):
 
     @property
     def command(self) -> str:
-        return f'asy -quiet -render=0 -outname={self.aux_eps_path} {self.src_path}'
+        return f'asy -quiet -render=0 -outlogger={self.aux_eps_path} {self.src_path}'
 
     async def post_process(self, runner: 'TaskRunner') -> None:
         shutil.copyfile(self.aux_eps_path, self.build_eps_path)
@@ -247,7 +252,7 @@ class TaskRunner:
         asyncio.create_task(self.run_task_debounced(task, trigger))
 
 
-async def iter_file_changes() -> AsyncIterator:
+async def iter_file_changes(logger: structlog.stdlib.BoundLogger) -> AsyncIterator:
     with Inotify() as inotify:
         inotify.add_watch(ROOT_DIR, Mask.MODIFY)
         inotify.add_watch(ROOT_DIR / 'text', Mask.MODIFY)
@@ -264,24 +269,24 @@ async def iter_file_changes() -> AsyncIterator:
                 yield os.path.relpath(event.path, ROOT_DIR)
 
 
-async def setup_watchers(target: WatchTarget) -> None:
+async def setup_watchers(target: WatchTarget, base_logger: structlog.stdlib.BoundLogger) -> None:
     runner = TaskRunner()
 
-    async for path in iter_file_changes():
+    async for path in iter_file_changes(base_logger):
         if target in [WatchTarget.all, WatchTarget.figures]:
             if fnmatch(path, 'classes/tikzcd.cls') or fnmatch(path, 'classes/forest.cls') or fnmatch(path, 'packages/*.sty'):
                 for figure_path in FIGURES_DIR.glob('*.tex'):
-                    runner.schedule(TeXTask(figure_path), trigger=str(path))
+                    runner.schedule(TeXTask(base_logger, figure_path), trigger=str(path))
 
             if fnmatch(path, 'figures/*.tex'):
-                runner.schedule(TeXTask(path), trigger=str(path))
+                runner.schedule(TeXTask(base_logger, path), trigger=str(path))
 
             if fnmatch(path, 'figures/*.asy'):
-                runner.schedule(AsymptoteTask(path), trigger=str(path))
+                runner.schedule(AsymptoteTask(base_logger, path), trigger=str(path))
 
             if fnmatch(path, 'asymptote/*.asy'):
                 for figure_path in FIGURES_DIR.glob('*.asy'):
-                    runner.schedule(AsymptoteTask(figure_path), trigger=str(path))
+                    runner.schedule(AsymptoteTask(base_logger, figure_path), trigger=str(path))
 
         if target in [WatchTarget.all, WatchTarget.notebook] and \
             not fnmatch(path, 'output/notebook.pdf') and (
@@ -292,7 +297,7 @@ async def setup_watchers(target: WatchTarget) -> None:
                 fnmatch(path, 'output/*.pdf') or
                 fnmatch(path, 'packages/*.sty')
         ):
-            runner.schedule(TeXTask(ROOT_DIR / 'notebook.tex'), trigger=str(path))
+            runner.schedule(TeXTask(base_logger, ROOT_DIR / 'notebook.tex'), trigger=str(path))
 
 
 if __name__ == '__main__':
@@ -305,11 +310,9 @@ if __name__ == '__main__':
     except KeyError:
         print(f'Invalid target {sys.argv[1]}. Expected {" or ".join(repr(t.value) for t in WatchTarget)}.', file=sys.stderr)
     else:
-        logger.remove()
-        logger.add(sys.stdout, colorize=True, format='<green>{time:HH:mm:ss}</green> | <level>{level:7}</level> | {extra[name]} | <level>{message}</level>')
+        base_logger = structlog.get_logger().bind(logger='<system>')
 
-        with logger.contextualize(name='<system>'):
-            try:
-                asyncio.run(setup_watchers(target))
-            except KeyboardInterrupt:
-                logger.info('Gracefully shutting down')
+        try:
+            asyncio.run(setup_watchers(target, base_logger))
+        except KeyboardInterrupt:
+            base_logger.info('Gracefully shutting down')
