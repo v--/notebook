@@ -17,7 +17,7 @@ class LambdaTokenizer(IdentifierTokenizerMixin[LambdaToken], Tokenizer[LambdaTok
             self.advance()
             return Whitespace.space
 
-        if self.read_alphabetic_string(LatinIdentifier, Capitalization.mixed):
+        if self.is_at_alphabetic_string(LatinIdentifier, Capitalization.mixed):
             return self.parse_identifier(LatinIdentifier, Capitalization.mixed, short=True)
 
         raise self.error('Unexpected symbol')

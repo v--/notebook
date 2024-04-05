@@ -20,27 +20,27 @@ class IdentifierTokenizerMixin(Tokenizer[T_co]):
         assert len(buffer) > 0
         return ''.join(buffer)
 
-    def _accept_numeric_suffix(self) -> bool:
+    def _is_at_numeric_suffix(self) -> bool:
         if self.is_at_end():
             return False
 
         return '₀' <= self.peek() <= '₉'
 
     def _parse_numeric_suffix(self) -> str:
-        assert self._accept_numeric_suffix()
+        assert self._is_at_numeric_suffix()
         digits = self.peek()
         self.advance()
 
-        if digits == '₀' and self._accept_numeric_suffix():
+        if digits == '₀' and self._is_at_numeric_suffix():
             raise self.error('Nonzero natural numbers cannot start with zero', i_first_token=self.index - 1)
 
-        while self._accept_numeric_suffix():
+        while self._is_at_numeric_suffix():
             digits += self.peek()
             self.advance()
 
         return digits
 
-    def read_alphabetic_string(self, cls: type[AlphabeticIdentifier], capitalization: Capitalization) -> bool:
+    def is_at_alphabetic_string(self, cls: type[AlphabeticIdentifier], capitalization: Capitalization) -> bool:
         if self.is_at_end():
             return False
 
@@ -53,16 +53,16 @@ class IdentifierTokenizerMixin(Tokenizer[T_co]):
         )
 
     def parse_identifier(self, cls: type[IdentifierT], capitalization: Capitalization, *, short: bool) -> IdentifierT:
-        assert self.read_alphabetic_string(cls, capitalization)
+        assert self.is_at_alphabetic_string(cls, capitalization)
         symbols = self.peek()
         self.advance()
 
         if not short:
-            while self.read_alphabetic_string(cls, capitalization):
+            while self.is_at_alphabetic_string(cls, capitalization):
                 symbols += self.peek()
                 self.advance()
 
-        if self._accept_numeric_suffix():
+        if self._is_at_numeric_suffix():
             symbols += self._parse_numeric_suffix()
 
         return cls(symbols, capitalization, short=short)

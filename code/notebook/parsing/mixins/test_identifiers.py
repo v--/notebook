@@ -29,10 +29,10 @@ class TestTokenizer(IdentifierTokenizerMixin[TestToken], Tokenizer[TestToken]):
             self.advance()
             return sym
 
-        if self.read_alphabetic_string(LatinIdentifier, self.capitalization):
+        if self.is_at_alphabetic_string(LatinIdentifier, self.capitalization):
             return self.parse_identifier(LatinIdentifier, self.capitalization, short=self.short)
 
-        if self.read_alphabetic_string(GreekIdentifier, self.capitalization):
+        if self.is_at_alphabetic_string(GreekIdentifier, self.capitalization):
             return self.parse_identifier(GreekIdentifier, self.capitalization, short=self.short)
 
         raise self.error('Unexpected symbol')

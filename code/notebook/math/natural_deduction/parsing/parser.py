@@ -1,6 +1,6 @@
-from ....parsing.identifiers import GreekIdentifier, LatinIdentifier  # noqa: I001
-from ....parsing.parser import Parser
+from ....parsing.identifiers import GreekIdentifier, LatinIdentifier
 from ....parsing.mixins.whitespace import WhitespaceParserMixin
+from ....parsing.parser import Parser
 from ...fol.alphabet import BinaryConnective, PropConstant, Quantifier
 from ...fol.terms import Variable
 from ..rules import (

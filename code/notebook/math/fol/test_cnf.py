@@ -2,11 +2,12 @@ from collections.abc import Callable
 
 from .cnf import function_to_cnf, is_formula_in_cnf, pull_conjunction, to_cnf
 from .parsing.parser import parse_formula
+from .signature import FOLSignature
 
 
-def test_is_formula_in_cnf() -> None:
+def test_is_formula_in_cnf(propositional_signature: FOLSignature) -> None:
     def t(string: str) -> bool:
-        return is_formula_in_cnf(parse_formula(string))
+        return is_formula_in_cnf(parse_formula(propositional_signature, string))
 
     assert t('p')
     assert t('(p ∧ q)')
@@ -16,9 +17,9 @@ def test_is_formula_in_cnf() -> None:
     assert not t('∀ξ.p')
 
 
-def test_pull_conjunction() -> None:
+def test_pull_conjunction(propositional_signature: FOLSignature) -> None:
     def t(string: str) -> str:
-        return str(pull_conjunction(parse_formula(string)))
+        return str(pull_conjunction(parse_formula(propositional_signature, string)))
 
     # Trivial cases
     assert t('p') == 'p'
@@ -40,9 +41,9 @@ def test_pull_conjunction() -> None:
     assert t('(p ∨ (q → (r ∧ s)))') == '(p ∨ (q → (r ∧ s)))'
 
 
-def test_to_cnf() -> None:
+def test_to_cnf(propositional_signature: FOLSignature) -> None:
     def t(string: str) -> str:
-        cnf = to_cnf(parse_formula(string))
+        cnf = to_cnf(parse_formula(propositional_signature, string))
         # assert is_formula_in_cnf(cnf)
         return str(cnf)
 

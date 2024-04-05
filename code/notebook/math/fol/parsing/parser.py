@@ -1,6 +1,7 @@
+from dataclasses import dataclass
 from typing import Iterable
 
-from ....parsing.identifiers import GreekIdentifier, LatinIdentifier
+from ....parsing.identifiers import GreekIdentifier
 from ....parsing.mixins.whitespace import WhitespaceParserMixin
 from ....parsing.parser import Parser
 from ..alphabet import BinaryConnective, PropConstant, Quantifier
@@ -13,63 +14,82 @@ from ..formulas import (
     PredicateFormula,
     QuantifierFormula,
 )
+from ..signature import FOLSignature, FunctionSymbol, PredicateSymbol
 from ..terms import FunctionTerm, Term, Variable
 from .tokenizer import FOLTokenizer
-from .tokens import FOLToken, MiscToken
+from .tokens import FOLToken, FunctionSymbolToken, MiscToken, PredicateSymbolToken
 
 
+@dataclass
 class FOLParser(WhitespaceParserMixin[FOLToken], Parser[FOLToken]):
+    signature: FOLSignature
+
     def parse_variable(self) -> Variable:
         head = self.peek()
         assert isinstance(head, GreekIdentifier)
         self.advance()
         return Variable(head.value)
 
-    def parse_args(self) -> Iterable[Term]:
+    def parse_args(self, sym: FunctionSymbol | PredicateSymbol, i_start: int) -> Iterable[Term]:
         assert self.peek() == MiscToken.left_parenthesis
-        start = self.index
         self.advance_and_skip_spaces()
 
         if not self.is_at_end() and self.peek() == MiscToken.right_parenthesis:
-            raise self.error('Empty argument list disallowed', i_first_token=start)
+            if sym.arity == 0:
+                raise self.error('Avoid the argument list at all when zero arguments are expected', i_first_token=i_start)
 
-        while not self.is_at_end() and self.peek() != MiscToken.right_parenthesis:
+            raise self.error('Empty argument lists are disallowed', i_first_token=i_start)
+
+        while True:
+            if self.is_at_end():
+                raise self.error('Unclosed argument list', i_first_token=i_start)
+
+            if self.peek() == MiscToken.right_parenthesis:
+                raise self.error('Unexpected closing parenthesis for argument list', i_first_token=i_start)
+
             yield self.parse_term()
 
             if self.is_at_end():
-                raise self.error('Unclosed argument list', i_first_token=start)
+                raise self.error('Unclosed argument list', i_first_token=i_start)
 
             if self.peek() == MiscToken.comma:
                 self.advance_and_skip_spaces()
-            elif self.peek() != MiscToken.right_parenthesis:
+            elif self.peek() == MiscToken.right_parenthesis:
+                self.advance()
+                return
+            else:
                 raise self.error('Unexpected token')
 
-        if self.is_at_end():
-            raise self.error('Unclosed argument list', i_first_token=start)
-
-        if self.peek() == MiscToken.right_parenthesis:
-            self.advance()
-
-    def parse_function(self) -> FunctionTerm:
-        assert isinstance(self.peek(), LatinIdentifier)
+    def _parse_function_like(self, sym: FunctionSymbol | PredicateSymbol) -> tuple[str, list[Term]]:
+        i_start = self.index
         name = self.peek().value
         self.advance()
 
-        if not self.is_at_end() and self.peek() == MiscToken.left_parenthesis:
-            return FunctionTerm(name, list(self.parse_args()))
+        arguments: list[Term] = []
 
-        return FunctionTerm(name, [])
+        if not self.is_at_end() and self.peek() == MiscToken.left_parenthesis:
+            arguments = list(self.parse_args(sym, i_start))
+
+        if sym.arity != len(arguments):
+            raise self.error(f'Expected {sym.arity} arguments for {name} but got {len(arguments)}', i_first_token=i_start)
+
+        return (name, arguments)
+
+    def parse_function(self, sym: FunctionSymbol | PredicateSymbol) -> FunctionTerm:
+        return FunctionTerm(
+            *self._parse_function_like(sym)
+        )
 
     def parse_term(self) -> Term:
         match self.peek():
             case GreekIdentifier():
                 return self.parse_variable()
 
-            case LatinIdentifier():
-                return self.parse_function()
+            case FunctionSymbolToken():
+                sym = next(sym for sym in self.signature.function_symbols if sym.name == self.peek().value)
+                return self.parse_function(sym)
 
-            case _:
-                raise self.error('Unexpected token')
+        raise self.error('Unexpected token')
 
     def parse_constant_formula(self) -> ConstantFormula:
         head = self.peek()
@@ -78,35 +98,34 @@ class FOLParser(WhitespaceParserMixin[FOLToken], Parser[FOLToken]):
         return ConstantFormula(head)
 
     def parse_binary_formula(self) -> EqualityFormula | ConnectiveFormula:  # noqa: PLR0912
-        start = self.index
+        i_start = self.index
 
         assert self.peek() == MiscToken.left_parenthesis
         self.advance()
 
-        a_start = self.index
+        i_a_start = self.index
         a_term: Term | None = None
         a_form: Formula | None = None
 
-        if isinstance(self.peek(), (GreekIdentifier, LatinIdentifier)):
-            # We later correct it to a predicate formula if necessary
+        if isinstance(self.peek(), (GreekIdentifier, FunctionSymbolToken)):
             a_term = self.parse_term()
         else:
             a_form = self.parse_formula()
 
-        a_end = self.index - 1
+        i_a_end = self.index - 1
         self.skip_spaces()
 
         if self.peek() == MiscToken.equality:
             if a_term is None:
-                raise self.error('The left side of an equality formula must be a term', i_first_token=a_start, i_last_token=a_end)
+                raise self.error('The left side of an equality formula must be a term', i_first_token=i_a_start, i_last_token=i_a_end)
 
             self.advance_and_skip_spaces()
 
             if not self.is_at_end() and self.peek() == MiscToken.right_parenthesis:
-                raise self.error('Equality formulas must have a second term', i_first_token=start)
+                raise self.error('Equality formulas must have a second term', i_first_token=i_start)
 
             if self.is_at_end():
-                raise self.error('Unclosed parentheses for equality formula', i_first_token=start)
+                raise self.error('Unclosed parentheses for equality formula', i_first_token=i_start)
 
             b_term = self.parse_term()
 
@@ -114,22 +133,22 @@ class FOLParser(WhitespaceParserMixin[FOLToken], Parser[FOLToken]):
                 self.advance()
                 return EqualityFormula(a_term, b_term)
 
-            raise self.error('Unclosed parentheses for equality formula', i_first_token=start, i_last_token=self.index - 1)
+            raise self.error('Unclosed parentheses for equality formula', i_first_token=i_start, i_last_token=self.index - 1)
 
         if isinstance(connective := self.peek(), BinaryConnective):
             if isinstance(a_term, FunctionTerm):
                 a_form = PredicateFormula(a_term.name, a_term.arguments)
 
             if a_form is None:
-                raise self.error('The left side of a binary formula must be a formula', i_first_token=a_start, i_last_token=a_end)
+                raise self.error('The left side of a binary formula must be a formula', i_first_token=i_a_start, i_last_token=i_a_end)
 
             self.advance_and_skip_spaces()
 
             if not self.is_at_end() and self.peek() == MiscToken.right_parenthesis:
-                raise self.error('Binary formulas must have a second subformula', i_first_token=start)
+                raise self.error('Binary formulas must have a second subformula', i_first_token=i_start)
 
             if self.is_at_end():
-                raise self.error('Unclosed parentheses for binary formula', i_first_token=start)
+                raise self.error('Unclosed parentheses for binary formula', i_first_token=i_start)
 
             b_form = self.parse_formula()
             self.index - 1
@@ -138,7 +157,7 @@ class FOLParser(WhitespaceParserMixin[FOLToken], Parser[FOLToken]):
                 self.advance()
                 return ConnectiveFormula(connective, a_form, b_form)
 
-            raise self.error('Unclosed parentheses for binary formula', i_first_token=start, i_last_token=self.index - 1)
+            raise self.error('Unclosed parentheses for binary formula', i_first_token=i_start, i_last_token=self.index - 1)
 
         raise self.error('Unexpected token')
 
@@ -151,30 +170,25 @@ class FOLParser(WhitespaceParserMixin[FOLToken], Parser[FOLToken]):
         q = self.peek()
         assert isinstance(q, Quantifier)
 
-        start = self.index
+        i_start = self.index
         self.advance()
 
         if self.is_at_end() or not isinstance(self.peek(), GreekIdentifier):
-            raise self.error('Expected a variable after the quantifier', i_first_token=start)
+            raise self.error('Expected a variable after the quantifier', i_first_token=i_start)
 
         var = self.parse_variable()
 
         if not self.is_at_end() and self.peek() == MiscToken.dot:
             self.advance()
         else:
-            raise self.error('Expected dot after variable', i_first_token=start)
+            raise self.error('Expected dot after variable', i_first_token=i_start)
 
         return QuantifierFormula(q, var, self.parse_formula())
 
-    def parse_predicate(self) -> PredicateFormula:
-        assert isinstance(self.peek(), LatinIdentifier)
-        name = self.peek().value
-        self.advance()
-
-        if not self.is_at_end() and self.peek() == MiscToken.left_parenthesis:
-            return PredicateFormula(name, list(self.parse_args()))
-
-        return PredicateFormula(name, [])
+    def parse_predicate(self, sym: PredicateSymbol) -> PredicateFormula:
+        return PredicateFormula(
+            *self._parse_function_like(sym)
+        )
 
     def parse_formula(self) -> Formula:
         match self.peek():
@@ -190,24 +204,25 @@ class FOLParser(WhitespaceParserMixin[FOLToken], Parser[FOLToken]):
             case MiscToken.negation:
                 return self.parse_negation_formula()
 
-            case LatinIdentifier():
-                return self.parse_predicate()
+            case PredicateSymbolToken():
+                sym = next(sym for sym in self.signature.predicate_symbols if sym.name == self.peek().value)
+                return self.parse_predicate(sym)
 
             case _:
                 raise self.error('Unexpected token')
 
 
-def parse_term(string: str) -> Term:
-    tokens = list(FOLTokenizer(string).parse())
-    parser = FOLParser(tokens)
+def parse_term(signature: FOLSignature, string: str) -> Term:
+    tokens = list(FOLTokenizer(string, signature).parse())
+    parser = FOLParser(tokens, signature)
     term = parser.parse_term()
     parser.assert_exhausted()
     return term
 
 
-def parse_formula(string: str) -> Formula:
-    tokens = list(FOLTokenizer(string).parse())
-    parser = FOLParser(tokens)
+def parse_formula(signature: FOLSignature, string: str) -> Formula:
+    tokens = list(FOLTokenizer(string, signature).parse())
+    parser = FOLParser(tokens, signature)
     formula = parser.parse_formula()
     parser.assert_exhausted()
     return formula

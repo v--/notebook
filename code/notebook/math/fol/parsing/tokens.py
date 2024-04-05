@@ -1,7 +1,15 @@
-from ....parsing.identifiers import GreekIdentifier, LatinIdentifier
-from ....parsing.tokens import TokenEnum
+from ....parsing.identifiers import GreekIdentifier
+from ....parsing.tokens import TokenEnum, TokenMixin
 from ....parsing.whitespace import Space
 from ..alphabet import BinaryConnective, PropConstant, Quantifier
+
+
+class FunctionSymbolToken(TokenMixin):
+    pass
+
+
+class PredicateSymbolToken(TokenMixin):
+    pass
 
 
 class MiscToken(TokenEnum):
@@ -14,4 +22,4 @@ class MiscToken(TokenEnum):
     negation = '¬'
 
 
-FOLToken = LatinIdentifier | GreekIdentifier | PropConstant | BinaryConnective | Quantifier | MiscToken | Space
+FOLToken = FunctionSymbolToken | PredicateSymbolToken | GreekIdentifier | PropConstant | BinaryConnective | Quantifier | MiscToken | Space
