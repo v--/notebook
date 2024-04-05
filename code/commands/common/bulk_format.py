@@ -5,14 +5,14 @@ import structlog
 from .exceptions import NotebookCommandError
 from .formatting import Formatter
 from .inflection import prefix_cardinal
-from .paths import ROOT_DIR
+from .paths import ROOT_PATH
 
 
 def bulk_format(path: pathlib.Path, glob_pattern: str, formatter_cls: type[Formatter]) -> None:
     base_logger = structlog.get_logger().bind(logger=path)
 
     if not path.is_absolute():
-        path = ROOT_DIR / path
+        path = ROOT_PATH / path
 
     total_count = 0
     formatted_count = 0
