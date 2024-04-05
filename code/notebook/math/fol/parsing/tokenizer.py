@@ -30,15 +30,15 @@ class FOLTokenizer(IdentifierTokenizerMixin[FOLToken], Tokenizer[FOLToken]):
             self.advance()
             return Whitespace.space
 
-        for fs in self.signature.function_symbols:
-            if self.peek_multiple(len(fs.name)) == fs.name:
-                self.advance(len(fs.name))
-                return FunctionSymbolToken(fs.name)
+        for fs in self.signature.iter_function_symbols():
+            if self.peek_multiple(len(fs)) == fs:
+                self.advance(len(fs))
+                return FunctionSymbolToken(fs)
 
-        for ps in self.signature.predicate_symbols:
-            if self.peek_multiple(len(ps.name)) == ps.name:
-                self.advance(len(ps.name))
-                return PredicateSymbolToken(ps.name)
+        for ps in self.signature.iter_predicate_symbols():
+            if self.peek_multiple(len(ps)) == ps:
+                self.advance(len(ps))
+                return PredicateSymbolToken(ps)
 
         if self.is_at_alphabetic_string(GreekIdentifier, Capitalization.mixed):
             return self.parse_identifier(GreekIdentifier, Capitalization.mixed, short=False)

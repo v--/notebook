@@ -14,7 +14,7 @@ from ..formulas import (
     PredicateFormula,
     QuantifierFormula,
 )
-from ..signature import FOLSignature, FunctionSymbol, PredicateSymbol
+from ..signature import FOLSignature
 from ..terms import FunctionTerm, Term, Variable
 from .tokenizer import FOLTokenizer
 from .tokens import FOLToken, FunctionSymbolToken, MiscToken, PredicateSymbolToken
@@ -30,12 +30,12 @@ class FOLParser(WhitespaceParserMixin[FOLToken], Parser[FOLToken]):
         self.advance()
         return Variable(head.value)
 
-    def parse_args(self, sym: FunctionSymbol | PredicateSymbol, i_start: int) -> Iterable[Term]:
+    def parse_args(self, arity: int, i_start: int) -> Iterable[Term]:
         assert self.peek() == MiscToken.left_parenthesis
         self.advance_and_skip_spaces()
 
         if not self.is_at_end() and self.peek() == MiscToken.right_parenthesis:
-            if sym.arity == 0:
+            if arity == 0:
                 raise self.error('Avoid the argument list at all when zero arguments are expected', i_first_token=i_start)
 
             raise self.error('Empty argument lists are disallowed', i_first_token=i_start)
@@ -60,7 +60,7 @@ class FOLParser(WhitespaceParserMixin[FOLToken], Parser[FOLToken]):
             else:
                 raise self.error('Unexpected token')
 
-    def _parse_function_like(self, sym: FunctionSymbol | PredicateSymbol) -> tuple[str, list[Term]]:
+    def _parse_function_like(self, arity: int) -> tuple[str, list[Term]]:
         i_start = self.index
         name = self.peek().value
         self.advance()
@@ -68,17 +68,12 @@ class FOLParser(WhitespaceParserMixin[FOLToken], Parser[FOLToken]):
         arguments: list[Term] = []
 
         if not self.is_at_end() and self.peek() == MiscToken.left_parenthesis:
-            arguments = list(self.parse_args(sym, i_start))
+            arguments = list(self.parse_args(arity, i_start))
 
-        if sym.arity != len(arguments):
-            raise self.error(f'Expected {sym.arity} arguments for {name} but got {len(arguments)}', i_first_token=i_start)
+        if arity != len(arguments):
+            raise self.error(f'Expected {arity} arguments for {name} but got {len(arguments)}', i_first_token=i_start)
 
         return (name, arguments)
-
-    def parse_function(self, sym: FunctionSymbol | PredicateSymbol) -> FunctionTerm:
-        return FunctionTerm(
-            *self._parse_function_like(sym)
-        )
 
     def parse_term(self) -> Term:
         match self.peek():
@@ -86,8 +81,8 @@ class FOLParser(WhitespaceParserMixin[FOLToken], Parser[FOLToken]):
                 return self.parse_variable()
 
             case FunctionSymbolToken():
-                sym = next(sym for sym in self.signature.function_symbols if sym.name == self.peek().value)
-                return self.parse_function(sym)
+                arity = self.signature.get_function_arity(str(self.peek()))
+                return FunctionTerm(*self._parse_function_like(arity))
 
         raise self.error('Unexpected token')
 
@@ -185,11 +180,6 @@ class FOLParser(WhitespaceParserMixin[FOLToken], Parser[FOLToken]):
 
         return QuantifierFormula(q, var, self.parse_formula())
 
-    def parse_predicate(self, sym: PredicateSymbol) -> PredicateFormula:
-        return PredicateFormula(
-            *self._parse_function_like(sym)
-        )
-
     def parse_formula(self) -> Formula:
         match self.peek():
             case PropConstant():
@@ -205,8 +195,8 @@ class FOLParser(WhitespaceParserMixin[FOLToken], Parser[FOLToken]):
                 return self.parse_negation_formula()
 
             case PredicateSymbolToken():
-                sym = next(sym for sym in self.signature.predicate_symbols if sym.name == self.peek().value)
-                return self.parse_predicate(sym)
+                arity = self.signature.get_predicate_arity(str(self.peek()))
+                return PredicateFormula(*self._parse_function_like(arity))
 
             case _:
                 raise self.error('Unexpected token')

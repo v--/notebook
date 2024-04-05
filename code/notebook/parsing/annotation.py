@@ -24,8 +24,8 @@ class AnnotatedToken(Generic[T_co]):
 
 @list_accumulator
 def annotate_existing_tokens(seq: Sequence[T_co]) -> Iterable[AnnotatedToken[T_co]]:
-    """Take a sequence of tokens and add positional annotation.
-    We assume that their string representation is accurate."""
+    '''Take a sequence of tokens and add positional annotation.
+    We assume that their string representation is accurate.'''
 
     lineno = 1
     column = 1
