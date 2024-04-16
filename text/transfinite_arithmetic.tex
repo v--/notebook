@@ -10,7 +10,7 @@ Our purpose is to extend natural number arithmetic to ordinals and cardinals. It
     \begin{equation}\label{eq:def:ordinal_arithmetic/addition}
       \alpha + \beta \coloneqq \begin{cases}
         \alpha,                                            &\beta = 0 \\
-        \op{succ}(\alpha + \gamma),                        &\beta = \op{succ}(\gamma) \\
+        \op{sc}(\alpha + \gamma),                        &\beta = \op{sc}(\gamma) \\
         \sup\set{ \alpha + \gamma \given \gamma < \beta }, &\beta \T{is a limit ordinal} \\
       \end{cases}
     \end{equation}
@@ -21,7 +21,7 @@ Our purpose is to extend natural number arithmetic to ordinals and cardinals. It
     \begin{equation}\label{eq:def:ordinal_arithmetic/multiplication}
       \alpha \cdot \beta \coloneqq \begin{cases}
         0,                                                     &\beta = 0 \\
-        \alpha \cdot \gamma + \alpha,                          &\beta = \op{succ}(\gamma) \\
+        \alpha \cdot \gamma + \alpha,                          &\beta = \op{sc}(\gamma) \\
         \sup\set{ \alpha \cdot \gamma \given \gamma < \beta }, &\beta \T{is a limit ordinal} \\
       \end{cases}
     \end{equation}
@@ -30,7 +30,7 @@ Our purpose is to extend natural number arithmetic to ordinals and cardinals. It
     \begin{equation}\label{eq:def:ordinal_arithmetic/exponentiation}
       \alpha^\beta \coloneqq \begin{cases}
         1,                                               &\beta = 0 \\
-        \alpha^\gamma \cdot \alpha,                      &\beta = \op{succ}(\gamma) \\
+        \alpha^\gamma \cdot \alpha,                      &\beta = \op{sc}(\gamma) \\
         \sup\set{ \alpha^\gamma \given \gamma < \beta }, &\beta \T{is a limit ordinal} \\
       \end{cases}
     \end{equation}
@@ -40,18 +40,18 @@ Our purpose is to extend natural number arithmetic to ordinals and cardinals. It
 \begin{remark}\label{rem:ordinal_successor_via_addition}
   For any ordinal \( \alpha \) we have
   \begin{equation*}
-    \op{succ}(\alpha)
+    \op{sc}(\alpha)
     \reloset {\ref{eq:def:ordinal_arithmetic/addition}} =
-    \op{succ}(\alpha + 0)
+    \op{sc}(\alpha + 0)
     \reloset {\ref{eq:def:ordinal_arithmetic/addition}} =
-    \alpha + \op{succ}(0)
+    \alpha + \op{sc}(0)
     =
     \alpha + 1.
   \end{equation*}
 
   We will occasionally use the later notation.
 
-  Note that for infinite ordinals \( \op{succ}(\alpha) = 1 + \alpha \) as discussed in \fullref{ex:ordinal_addition}.
+  Note that for infinite ordinals \( \op{sc}(\alpha) = 1 + \alpha \) as discussed in \fullref{ex:ordinal_addition}.
 
   This is an extension of \fullref{rem:natural_number_successor_via_addition}.
 \end{remark}
@@ -69,64 +69,79 @@ Our purpose is to extend natural number arithmetic to ordinals and cardinals. It
       \alpha < \beta \T{implies} \alpha + \gamma \leq \beta + \gamma.
     \end{equation}
 
-    See \fullref{ex:ordinal_addition} for examples where the strict inequality fails.
+    Note that the inequality here is not strict --- see \fullref{ex:ordinal_addition} for counterexamples.
   \end{thmenum}
 \end{proposition}
 \begin{proof}
-  \SubProofOf{thm:ordinal_addition_is_monotone/left} We proceed by induction on \( \beta \).
+  \SubProofOf{thm:ordinal_addition_is_monotone/left} We proceed by induction on \( \beta \):
   \begin{itemize}
     \item The condition \( \alpha < \beta \) is vacuously false for the base case \( \beta = 0 \), hence by \eqref{eq:def:intuitionistic_propositional_deduction_systems/rules/efq} the statement vacuously holds.
 
-    \item Fix some nonzero \( \beta \) and some \( \alpha < \beta \). If \( \gamma + \alpha < \gamma + \beta \), then
-    \begin{equation*}
-      \gamma + \alpha < \gamma + \beta < \op{succ}(\gamma + \beta) = \gamma + \op{succ}(\beta).
-    \end{equation*}
+    \item If \( \beta = 1 \), then \( \alpha = 0 \), and
+    \begin{equation}\label{thm:ordinal_addition_is_monotone/left/ind_base}
+      \gamma + \alpha = \gamma < \op{sc}(\gamma) = \gamma + 1 = \gamma + \beta.
+    \end{equation}
 
-    Since \( \beta < \op{succ}(\beta) \), we have used the inductive hypothesis to conclude that
-    \begin{equation*}
-      \alpha < \op{succ}(\beta) \T{implies} \gamma + \alpha < \gamma + \op{succ}(\beta).
-    \end{equation*}
+    \item Suppose that \( \beta = \op{sc}(\delta) \) and that the inductive hypothesis holds for \( \delta \). We have two possibilities:
+    \begin{itemize}
+      \item If \( \alpha < \delta \), then
+      \begin{equation*}
+        \gamma + \alpha
+        \reloset {\T{ind.}} <
+        \gamma + \delta
+        \reloset {\eqref{thm:ordinal_addition_is_monotone/left/ind_base}} <
+        \gamma + (\delta + 1)
+        =
+        \gamma + \beta
+      \end{equation*}
 
-    \item Let \( \lambda \) be a limit ordinal and suppose that \eqref{eq:thm:ordinal_addition_is_monotone/left} holds for all \( \beta < \lambda \). Let \( \alpha < \lambda \). Then \( \op{succ}(\alpha) < \lambda \) since \( \lambda \) is a limit ordinal and thus
+      \item If \( \alpha = \delta \) then
+      \begin{equation*}
+        \gamma + \alpha
+        \reloset {\eqref{thm:ordinal_addition_is_monotone/left/ind_base}} <
+        \gamma + (\alpha + 1)
+        =
+        \gamma + \beta
+      \end{equation*}
+    \end{itemize}
+
+    \item Suppose that \( \beta \) is a limit ordinal and that \eqref{eq:thm:ordinal_addition_is_monotone/left} holds for all \( \delta < \beta \). Then
     \begin{equation*}
       \gamma + \alpha
-      <
-      \gamma + \op{succ}(\alpha)
+      \reloset {\eqref{thm:ordinal_addition_is_monotone/left/ind_base}} <
+      \gamma + (\alpha + 1)
       \leq
-      \sup\set{ \gamma + \beta \given \beta < \lambda }
+      \sup\set{ \gamma + \delta \given \delta < \beta }
       =
-      \gamma + \lambda.
+      \gamma + \beta.
     \end{equation*}
   \end{itemize}
 
-  \SubProofOf{thm:ordinal_addition_is_monotone/right} We proceed by induction on \( \gamma \).
+  \SubProofOf{thm:ordinal_addition_is_monotone/right} We proceed by induction on \( \gamma \):
   \begin{itemize}
     \item The base case \( \gamma = 0 \) is vacuous.
-    \item If \( \alpha + \gamma < \beta + \gamma \), then
+    \item Suppose that \( \gamma = \op{sc}(\delta) \) and that the inductive hypothesis holds for \( \delta \). Then
     \begin{equation*}
-      \alpha + \op{succ}(\gamma)
+      \alpha + \op{sc}(\delta)
       \reloset {\eqref{eq:def:ordinal_arithmetic/addition}} =
-      \op{succ}(\alpha + \gamma)
+      \op{sc}(\alpha + \delta)
       \reloset {\ref{thm:ordinal_successor_strictly_monotone_on_ordinals}} <
-      \op{succ}(\beta + \gamma)
+      \op{sc}(\beta + \delta)
       \reloset {\eqref{eq:def:ordinal_arithmetic/addition}} =
-      \beta + \op{succ}(\gamma).
+      \beta + \op{sc}(\delta).
     \end{equation*}
 
-    \item Let \( \lambda \) be a limit ordinal and suppose that the lemma holds for every \( \gamma < \lambda \). That is, for every \( \gamma < \lambda \) we have
-    \begin{equation*}
-      \alpha + \gamma < \beta + \gamma.
-    \end{equation*}
+    Note that we have not needed the inductive hypothesis.
 
-    Thus,
+    \item Suppose that \( \gamma \) is a limit ordinal and that the lemma holds for every \( \delta < \gamma \). Then
     \begin{equation*}
-      \alpha + \lambda
+      \alpha + \gamma
       =
-      \sup\set{ \alpha + \gamma \given \gamma < \lambda }
-      \leq
-      \sup\set{ \beta + \gamma \given \gamma < \lambda }
+      \sup\set{ \alpha + \delta \given \delta < \alpha }
+      \reloset {\T{ind.}} \leq
+      \sup\set{ \beta + \delta \given \delta < \beta }
       =
-      \beta + \lambda.
+      \beta + \gamma.
     \end{equation*}
 
     We cannot make a stronger conclusion here --- see \fullref{ex:ordinal_addition} for a counterexample.
@@ -149,19 +164,19 @@ Our purpose is to extend natural number arithmetic to ordinals and cardinals. It
 
     \item Suppose that \( \alpha < \beta \) and that there exists a unique \( \gamma \leq \beta \) such that \( \alpha + \gamma = \beta \). Then
     \begin{equation*}
-      \alpha + \op{succ}(\gamma)
+      \alpha + \op{sc}(\gamma)
       \reloset {\eqref{eq:def:ordinal_arithmetic/addition}} =
-      \op{succ}(\alpha + \gamma)
+      \op{sc}(\alpha + \gamma)
       =
-      \op{succ}(\beta).
+      \op{sc}(\beta).
     \end{equation*}
 
-    Since \( \alpha < \beta \) and \( \beta < \op{succ}(\beta) \), we have used the inductive hypothesis to conclude that
+    Since \( \alpha < \beta \) and \( \beta < \op{sc}(\beta) \), we have used the inductive hypothesis to conclude that
     \begin{equation*}
-      \alpha < \op{succ}(\beta) \T{implies} \qexists {\underbrace{\delta}_{\mathclap{\op{succ}(\gamma)}}} \alpha + \delta = \op{succ}(\beta).
+      \alpha < \op{sc}(\beta) \T{implies} \qexists* {\underbrace{\delta}_{\mathclap{\op{sc}(\gamma)}}} \alpha + \delta = \op{sc}(\beta).
     \end{equation*}
 
-    Furthermore, since \( \gamma \leq \beta \), then also \( \op{succ}(\gamma) \leq \op{succ}(\beta) \).
+    Furthermore, since \( \gamma \leq \beta \), then also \( \op{sc}(\gamma) \leq \op{sc}(\beta) \).
 
     \item Suppose that \( \lambda \) is a limit ordinal, \( \alpha < \lambda \) and for each \( \beta < \lambda \) there exists some \( \gamma_\beta \leq \beta \) such that \( \alpha + \gamma_\beta = \beta \). Define
     \begin{equation*}
@@ -209,14 +224,13 @@ Our purpose is to extend natural number arithmetic to ordinals and cardinals. It
 \end{proof}
 
 \begin{proposition}\label{thm:ordinal_addition_algebraic_properties}
-  Ordinal number addition is \hyperref[def:binary_operation/associative]{associative} and \hyperref[def:binary_operation/cancellative]{left cancellative}.
+  Ordinal number addition is \hyperref[def:zerosumfree]{zerosumfree}, \hyperref[def:binary_operation/associative]{associative} and \hyperref[def:binary_operation/cancellative]{left cancellative}.
 
   As in \fullref{thm:ordinals_are_well_ordered}, we adapt the corresponding axioms due to \fullref{thm:burali_forti_paradox}. The more concrete result is:
   \begin{thmenum}
-    \thmitem{thm:ordinal_addition_algebraic_properties/associative} For any three ordinals \( \alpha \), \( \beta \) and \( \gamma \) we have
-    \begin{equation*}
-      (\alpha + \beta) + \gamma = \alpha + (\beta + \gamma).
-    \end{equation*}
+    \thmitem{thm:ordinal_addition_algebraic_properties/zerosumfree} If \( \alpha + \beta = 0 \), then \( \alpha = \beta = 0 \).
+
+    \thmitem{thm:ordinal_addition_algebraic_properties/associative} For any three ordinals \( (\alpha + \beta) + \gamma = \alpha + (\beta + \gamma) \).
 
     \thmitem{thm:ordinal_addition_algebraic_properties/left_cancellative} For any three ordinals \( \alpha \), \( \beta \) and \( \gamma \) such that \( \gamma + \alpha = \gamma + \beta \), we have \( \alpha = \beta \).
   \end{thmenum}
@@ -226,6 +240,14 @@ Our purpose is to extend natural number arithmetic to ordinals and cardinals. It
    Compare this with \fullref{thm:natural_number_addition_properties} and \fullref{thm:cardinal_addition_algebraic_properties}.
 \end{proposition}
 \begin{proof}
+  \SubProofOf{thm:ordinal_addition_algebraic_properties/zerosumfree} Suppose that \( \alpha + \beta = 0 \).
+
+  If \( \beta > 0 \), by \fullref{thm:ordinal_addition_is_monotone/left} we have \( \alpha + 0 < \alpha + \beta \), which contradicts the minimality of \( \alpha + \beta = 0 \).
+
+  Then \( \beta = 0 \), hence \( 0 = \alpha + \beta = \alpha \), forcing \( \alpha \) to be \( 0 \).
+
+  Therefore, if \( \alpha + \beta = 0 \), both \( \alpha \) and \( \beta \) must be \( 0 \).
+
   \SubProofOf{thm:ordinal_addition_algebraic_properties/associative} We will use induction on \( \gamma \). \Fullref{thm:natural_number_addition_properties} already proves the base and successor cases.
 
   Fix some ordinals \( \alpha \) and \( \beta \). Let \( \lambda \) be a limit ordinal and suppose that
@@ -249,55 +271,78 @@ Our purpose is to extend natural number arithmetic to ordinals and cardinals. It
 \end{proof}
 
 \begin{proposition}\label{thm:ordinal_addition_disjoin_union}
-  For any two ordinals \( \alpha \) and \( \beta \), their \hyperref[def:ordinal_arithmetic/addition]{sum} satisfies
-  \begin{equation*}
-    \alpha + \beta = \ord(\alpha \amalg \beta, \prec),
-  \end{equation*}
-  where \( \prec \) is the \hyperref[def:lexicographic_order]{reverse lexicographic order} on the \hyperref[def:disjoint_union]{disjoint union} \( \alpha \amalg \beta \).
-\end{proposition}
-\begin{comments}
-  \item By our definition of disjoint union, we have
-  \begin{equation*}
-    \alpha \amalg \beta = \set{ (\gamma, 0) \given \gamma < \alpha } \cup \set{ (\delta, 1) \given \beta < \beta } \subseteq (\alpha \cup \beta) \times \set{ 0, 1 }.
-  \end{equation*}
-
-  Under the reverse lexicographic order, we have \( (\gamma, 0) \prec (\delta, 1) \) for every \( \gamma < \alpha \) and \( \delta < \beta \).
-
-  If \( \alpha < \beta \), there are no elements of the form \( (\delta, 0) \), where \( \delta \geq \alpha \). Similarly, if \( \alpha > \beta \), there are no elements of the form \( (\gamma, 1) \).
-\end{comments}
-\begin{proof}
-  We will explicitly build an \hyperref[def:preordered_set/homomorphism]{order isomorphism} between \( (\alpha + \beta, \in) \) and \( (\alpha \amalg \beta, \prec) \). Define
+  For the \hyperref[def:ordinal_arithmetic/addition]{sum} of two ordinals \( \alpha \) and \( \beta \), the following is an \hyperref[def:preordered_set/homomorphism]{order isomorphism}:
   \begin{equation*}
     \begin{aligned}
-      &f: (\alpha + \beta) \to (\alpha \amalg \beta) \\
-      &f(\gamma) \coloneqq \begin{cases}
-        (\gamma, 0), &\gamma < \alpha \\
-        (\delta, 1), &\qexists \delta (\gamma = \alpha + \delta).
+      &f: \alpha \amalg \beta \to \alpha + \beta, \\
+      &f(k, \gamma) \coloneqq \alpha \cdot k + \gamma = \begin{cases}
+        \gamma,          &k = 0, \\
+        \alpha + \gamma, &k = 1, \\
       \end{cases}
     \end{aligned}
   \end{equation*}
-
-  From \fullref{thm:ordinal_ordering_via_addition} it follows that the existence of \( \delta \) such that \( \gamma = \alpha + \delta \) is equivalent to the condition \( \gamma \geq \alpha \). Since \( \gamma < \alpha + \beta \), we have \( \alpha + \delta < \alpha + \beta \) and from \fullref{thm:ordinal_addition_algebraic_properties/left_cancellative} we have \( \delta < \beta \). Therefore, \( f \) is a total function. Furthermore, it is single-valued because of the uniqueness of \( \delta \).
-
-  We will first show that \( f \) is a strict order homomorphism. Let \( \gamma_1 < \gamma_2 \). We have the following possibilities:
-  \begin{itemize}
-    \item If \( \gamma_2 < \alpha \), then \( f(\gamma_1) = (\gamma_1, 0) < (\gamma_2, 0) = f(\gamma_2) \).
-    \item If \( \gamma_1 \geq \alpha \), then \( f(\gamma_1) = (\gamma_1, 1) < (\gamma_2, 1) = f(\gamma_2) \).
-    \item If \( \gamma_1 < \alpha \leq \gamma_2 \), then \( f(\gamma_1) = (\gamma_1, 0) < (\gamma_2, 1) = f(\gamma_2) \).
-  \end{itemize}
-
-  Therefore, \( f \) is a strict order homomorphism and from \fullref{thm:def:totally_ordered_set/embedding_iff_strict} it follows that \( f \) is an order embedding. Due to \fullref{thm:def:totally_ordered_set/embedding_iff_strict}, in order to show that \( f \) is an order isomorphism it only remains to show that it is a surjective function.
-
-  Let \( (\gamma, k) \in \alpha \amalg \beta \).
-  \begin{itemize}
-    \item If \( k = 0 \), then \( f(\gamma) = (\gamma, k) \) since \( \gamma \in \alpha \).
-    \item If \( k = 1 \), then \( \gamma \in \beta \) and by \eqref{eq:thm:ordinal_addition_is_monotone/left} we have \( \alpha + \gamma < \alpha + \beta \), so \( \alpha + \gamma \) is within the domain of \( f \). Furthermore, as shown in \fullref{thm:ordinal_ordering_via_addition}, if \( \alpha + \delta = \alpha + \gamma \), then \( \delta = \gamma \), Thus, \( f(\alpha + \gamma) = (\gamma, 1) \) .
-  \end{itemize}
-
-  Therefore, \( f \) is an order isomorphism between \( (\alpha + \beta, \in) \) and \( (\alpha \amalg \beta, \prec) \) and hence
+  where for the \hyperref[def:disjoint_union]{disjoint union} \( \alpha \amalg \beta \) we use the \hyperref[def:lexicographic_order]{lexicographic order} inherited from \( \set{ 0, 1 } \times (\alpha \cup \beta) \), under which \( (k_1, \gamma_1) \prec (k_2, \gamma_2) \) if either \( k_1 < k_2 \) or both \( k_1 = k_2 \) and \( \gamma_1 < \gamma_2 \).
+\end{proposition}
+\begin{proof}
+  We will use induction on \( \beta \) to show that
   \begin{equation*}
-    \alpha + \beta = \ord(\alpha \amalg \beta, \prec).
+    \begin{aligned}
+      &f_\beta: \alpha \amalg \beta \to \alpha + \beta, \\
+      &f_\beta(k, \gamma) \coloneqq \alpha \cdot k + \gamma = \begin{cases}
+        \gamma,          &k = 0, \\
+        \alpha + \gamma, &k = 1, \\
+      \end{cases}
+    \end{aligned}
   \end{equation*}
+  is an order isomorphism.
+
+  \begin{itemize}
+    \item If \( \beta = 0 \), we have
+    \begin{equation*}
+       \alpha \amalg \beta = \set{ (0, \gamma) \given \gamma < \alpha } = \set{ 0 } \times \alpha,
+    \end{equation*}
+    and \( f_0(0, \gamma) = \gamma \) is obviously an isomorphism of \( \alpha \amalg \beta \) with \( \alpha + \beta = \alpha \).
+
+    \item Suppose that \( \beta = \op{sc}(\delta) \) and that the inductive hypothesis holds for \( f_\delta \).
+
+    We have
+    \begin{equation*}
+      \alpha \amalg \beta = \alpha \amalg \delta \cup \set{ (1, \delta) }
+    \end{equation*}
+    and
+    \begin{equation*}
+      (\alpha + \beta) = (\alpha + \delta) \cup \set{ \alpha + \delta }.
+    \end{equation*}
+
+    Furthermore,
+    \begin{equation*}
+      f_\beta(k, \gamma) = \begin{cases}
+        f_\delta(0, \gamma), &k = 0, \\
+        f_\delta(1, \gamma), &k = 1 \T{and} \gamma < \beta, \\
+        \alpha + \beta,      &k = 1 \T{and} \gamma = \beta,
+      \end{cases}
+    \end{equation*}
+    hence \( f_\beta \) coincides with \( f_\delta \) but has one additional tuple added that maps \( (1, \beta) \) to \( (\alpha + \beta) \).
+
+    Therefore, since \( f_\delta \) is an isomorphism, \( f_\beta \) also is.
+
+    \item Suppose that \( \beta \) is a limit ordinal and if the inductive hypothesis holds for \( f_\delta \) whenever \( \delta < \beta \).
+
+    We have
+    \begin{equation*}
+      f_\beta = \bigcup_{\delta < \beta} f_\delta.
+    \end{equation*}
+
+    Hence, for every argument, \( f_\beta \) coincides with one of the maps we have assumed are isomorphisms:
+    \begin{equation*}
+      f_\beta(k, \gamma) = \begin{cases}
+        f_\alpha(0, \gamma),            &k = 0, \\
+        f_{\op{sc}(\gamma)}(1, \gamma), &k = 1 \T{and} \gamma < \beta,
+      \end{cases}
+    \end{equation*}
+
+    Since these maps are all extensions of each other, we conclude that their union \( f_\beta \) is also an order isomorphism.
+  \end{itemize}
 \end{proof}
 
 \begin{example}\label{ex:ordinal_addition}
@@ -341,50 +386,114 @@ Our purpose is to extend natural number arithmetic to ordinals and cardinals. It
   As discussed in our proof of \fullref{thm:cardinal_addition_algebraic_properties}, this is only a restriction of well-orders and not of the resulting sets themselves.
 \end{example}
 
-\begin{proposition}\label{thm:ordinal_multiplication_cartesian_product}
-  For any two ordinals \( \alpha \) and \( \beta \), their \hyperref[def:ordinal_arithmetic/multiplication]{product} satisfies
-  \begin{equation*}
-    \alpha \cdot \beta = \ord(\alpha \times \beta, \prec),
-  \end{equation*}
-  where \( \prec \) is the \hyperref[def:lexicographic_order]{reverse lexicographic order} on the \hyperref[def:cartesian_product]{Cartesian product} \( \alpha \times \beta \).
+\begin{proposition}\label{thm:ordinal_multiplication_is_monotone}
+  \hyperref[def:ordinal_arithmetic/multiplication]{Ordinal multiplication} has the following monotonicity properties:
+  \begin{thmenum}
+    \thmitem{thm:ordinal_multiplication_is_monotone/left} Left multiplication is \hyperref[eq:def:order_function/preserving]{order-preserving}:
+    \begin{equation}\label{eq:thm:ordinal_multiplication_is_monotone/left}
+      \alpha < \beta \T{implies} \gamma \cdot \alpha \leq \gamma \cdot \beta.
+    \end{equation}
+
+    The inequality is strict if \( \gamma \) is not zero.
+
+    \thmitem{thm:ordinal_multiplication_is_monotone/right} Right multiplication is \hyperref[def:order_function/preserving]{order-preserving}:
+    \begin{equation}\label{eq:thm:ordinal_multiplication_is_monotone/right}
+      \alpha < \beta \T{implies} \alpha \cdot \gamma \leq \beta \cdot \gamma.
+    \end{equation}
+  \end{thmenum}
 \end{proposition}
 \begin{proof}
-  We will build an order isomorphism between \( (\alpha \cdot \beta, \in) \) and \( (\alpha \times \beta, \prec) \) using recursion on \( \beta \).
+  \SubProofOf{thm:ordinal_multiplication_is_monotone/left} Similarly to \fullref{thm:ordinal_addition_is_monotone/left}, we proceed by induction on \( \beta \):
   \begin{itemize}
-    \item Both sets \( \alpha \cdot 0 \) and \( \alpha \times 0 \) are empty, and the empty function is an order isomorphism.
-    \item Suppose that \( f: \alpha \cdot \beta \to \alpha \times \beta \) is an order isomorphism. Consider the function
+    \item The condition \( \alpha < \beta \) is vacuously false for the base case \( \beta = 0 \), hence by \eqref{eq:def:intuitionistic_propositional_deduction_systems/rules/efq} the statement vacuously holds.
+
+    \item If \( \beta = 1 \), then \( \alpha = 0 \), and
+    \begin{equation}\label{thm:ordinal_multiplication_is_monotone/left/ind_base}
+      \gamma \cdot \alpha = 0 \leq \gamma = \gamma \cdot 1 = \gamma \cdot \beta.
+    \end{equation}
+
+    If \( \gamma > 0 \), the inequality is strict.
+
+    \item Suppose that \( \beta = \op{sc}(\delta) \) and that the inductive hypothesis holds for \( \delta \). We have two possibilities:
+    \begin{itemize}
+      \item If \( \alpha < \delta \), then
+      \begin{equation*}
+        \gamma \cdot \alpha
+        \reloset {\T{ind.}} <
+        \gamma \cdot \delta,
+        \reloset {\eqref{eq:thm:ordinal_addition_is_monotone/left}} \leq
+        \underbrace{\gamma \cdot \delta + \gamma}_{\op{sc}(\delta)}
+        =
+        \gamma \cdot \beta.
+      \end{equation*}
+
+      Again, if \( \gamma > 0 \), the inequality is strict.
+
+      \item If \( \alpha = \delta \) then
+      \begin{equation*}
+        \gamma \cdot \alpha
+        \reloset {\eqref{eq:thm:ordinal_addition_is_monotone/left}} \leq
+        \underbrace{\gamma \cdot \alpha + \gamma}_{\op{sc}(\alpha)}
+        =
+        \gamma \cdot \beta
+      \end{equation*}
+
+      Once again, if \( \gamma > 0 \), the inequality is strict.
+    \end{itemize}
+
+    \item Suppose that \( \beta \) is a limit ordinal and that \eqref{eq:thm:ordinal_multiplication_is_monotone/left} holds for all \( \delta < \beta \). Then
     \begin{equation*}
-      \begin{aligned}
-        &\widehat f: \alpha \cdot (\beta + 1) \to \alpha \times (\beta + 1) \\
-        &\widehat f \coloneqq \begin{cases}
-          f(\gamma),       &\gamma < \alpha \cdot \beta \\
-          (\delta, \beta), &\qexists \delta (\gamma = \alpha \cdot \beta + \delta).
-        \end{cases}
-      \end{aligned}
+      \gamma \cdot \alpha
+      =
+      \sup\set{ \gamma \cdot \delta \given \delta < \alpha }
+      \reloset {\eqref{eq:thm:ordinal_addition_is_monotone/left}} \leq
+      \sup\set{ \underbrace{\gamma \cdot \delta + \gamma}_{\op{sc}(\delta)} \given \delta < \alpha }
+      \leq
+      \sup\set{ \gamma \cdot \delta \given \delta < \beta }
+      =
+      \gamma \cdot \beta.
     \end{equation*}
 
-    In complete analogy with \fullref{thm:ordinal_ordering_via_addition}, we can prove that \( \widehat f \) is an order isomorphism.
+    As in the other cases, if \( \gamma > 0 \), the inequality is strict.
+  \end{itemize}
 
-    \item Let \( \lambda \) be a limit ordinal and let \( f_\beta: \alpha \cdot \beta \to \alpha \times \beta \) be an order isomorphism for every \( \beta < \lambda \). Take their union
+  \SubProofOf{thm:ordinal_multiplication_is_monotone/right} Similarly to \fullref{thm:ordinal_addition_is_monotone/right}, we proceed by induction on \( \gamma \):
+  \begin{itemize}
+    \item The base case \( \gamma = 0 \) is vacuous.
+    \item Suppose that \( \gamma = \op{sc}(\delta) \) and that the inductive hypothesis holds for \( \delta \). Then
     \begin{equation*}
-      f \coloneqq \bigcup\set{ f_\beta \given \beta < \lambda }.
+      \alpha \cdot \op{sc}(\delta)
+      \reloset {\eqref{eq:def:ordinal_arithmetic/multiplication}} =
+      \alpha \cdot \delta + \alpha
+      \reloset {\eqref{eq:thm:ordinal_addition_is_monotone/right}} \leq
+      \beta \cdot \delta + \alpha
+      \reloset {\eqref{eq:thm:ordinal_addition_is_monotone/left}} <
+      \beta \cdot \delta + \beta
+      \reloset {\eqref{eq:def:ordinal_arithmetic/multiplication}} =
+      \beta \cdot \op{sc}(\delta).
     \end{equation*}
 
-    The uniqueness of each \( f_\beta \) from \fullref{thm:well_ordered_order_type_existence} shows that \( f_{\beta_1} \subseteq f_{\beta_2} \) for each pair \( \beta_1 < \beta_2 \). Therefore, the union \( f \) is a single-valued partial function. It is also total because every ordinal \( \gamma < \alpha \cdot \lambda \) is contains in the image of the function \( f_{\gamma + 1} \).
-
-    The function \( f \) is an order embedding by construction. It is also surjective because, if \( (\delta, \beta) \in \alpha \times \lambda \), then from the successor step we can conclude that \( f(\alpha \cdot \beta + \delta) = (\delta, \beta) \).
-
-    Therefore, \( f \) is an order isomorphism.
+    \item Suppose that \( \gamma \) is a limit ordinal and that the lemma holds for every \( \delta < \gamma \). Then
+    \begin{equation*}
+      \alpha \cdot \gamma
+      =
+      \sup\set{ \alpha \cdot \delta \given \delta < \alpha }
+      \reloset {\T{ind.}} \leq
+      \sup\set{ \beta \cdot \delta \given \delta < \beta }
+      =
+      \beta \cdot \gamma.
+    \end{equation*}
   \end{itemize}
 \end{proof}
 
 \begin{proposition}\label{thm:ordinal_multiplication_algebraic_properties}
-  Similarly to \fullref{thm:ordinal_addition_algebraic_properties} for ordinal number addition, multiplication is also \hyperref[def:binary_operation/associative]{associative} and \hyperref[def:binary_operation/cancellative]{left cancellative}:
+  Similarly to \fullref{thm:ordinal_addition_algebraic_properties} for ordinal number addition, multiplication is \hyperref[def:entire_semiring]{entire}, \hyperref[def:semiring/absorption]{absorbing}, \hyperref[def:binary_operation/associative]{associative} and \hyperref[def:binary_operation/cancellative]{left cancellative}:
   \begin{thmenum}
-    \thmitem{thm:ordinal_multiplication_algebraic_properties/associative} For any three ordinals \( \alpha \), \( \beta \) and \( \gamma \) we have
-    \begin{equation*}
-      (\alpha \cdot \beta) \cdot \gamma = \alpha \cdot (\beta \cdot \gamma).
-    \end{equation*}
+    \thmitem{thm:ordinal_multiplication_algebraic_properties/entire} If \( \alpha \cdot \beta = 0 \), then \( \alpha = 0 \) or \( \beta = 0 \).
+
+    \thmitem{thm:ordinal_multiplication_algebraic_properties/absorption} If \( \alpha = 0 \) or \( \beta = 0 \), then \( \alpha \cdot \beta = 0 \).
+
+    \thmitem{thm:ordinal_multiplication_algebraic_properties/associative} For any three ordinals \( (\alpha \cdot \beta) \cdot \gamma = \alpha \cdot (\beta \cdot \gamma) \).
 
     \thmitem{thm:ordinal_multiplication_algebraic_properties/left_cancellative} For any three ordinals \( \alpha \), \( \beta \) and \( \gamma \) such that \( \gamma \cdot \alpha = \gamma \cdot \beta \), we have \( \alpha = \beta \).
   \end{thmenum}
@@ -392,6 +501,18 @@ Our purpose is to extend natural number arithmetic to ordinals and cardinals. It
   Compare this with \fullref{thm:natural_number_multiplication_properties} and \fullref{thm:cardinal_multiplication_algebraic_properties}.
 \end{proposition}
 \begin{proof}
+  \SubProofOf{thm:ordinal_multiplication_algebraic_properties/entire} Suppose that \( \alpha \cdot \beta = 0 \).
+
+  If \( \beta > 0 \), by \fullref{thm:ordinal_multiplication_is_monotone/left} we have
+  \begin{equation*}
+    0 = \alpha \cdot 0 \leq \alpha \cdot \beta = 0,
+  \end{equation*}
+  which forces \( \alpha \) to be \( 0 \) because otherwise a strict inequality holds.
+
+  If \( \alpha > 0 \), then \( \beta > 0 \) entails \( \alpha = 0 \), and to avoid a contradiction, \( \beta \) must be \( 0 \).
+
+  \SubProofOf{thm:ordinal_multiplication_algebraic_properties/absorbing} We have \( \alpha \cdot 0 = 0 \) by definition and \( 0 \cdot \beta = 0 \) is a straightforward application of induction.
+
   \SubProofOf{thm:ordinal_multiplication_algebraic_properties/associative} Associativity follows easily from the obvious isomorphisms between \( (\alpha \times \beta) \times \gamma \) and \( \alpha \times (\beta \times \gamma) \).
 
   \SubProofOf{thm:ordinal_multiplication_algebraic_properties/left_cancellative} Now suppose that \( \gamma \cdot \alpha = \gamma \cdot \beta \). Let \( f \) the unique order isomorphism between \( \gamma \times \alpha \) and \( \gamma \times \beta \).
@@ -399,6 +520,154 @@ Our purpose is to extend natural number arithmetic to ordinals and cardinals. It
   Suppose that \( \alpha \neq \beta \). Without loss of generality, suppose that \( \beta \subsetneq \alpha \). Then \( f\restr_{\gamma \times \alpha} \) is the identity mapping and hence any set from \( \gamma \times (\beta \setminus \alpha) \) would make \( f \) not injective.
 
   The obtained contradiction shows that \( \alpha = \beta \).
+\end{proof}
+
+\begin{proposition}\label{thm:ordinal_multiplication_cartesian_product}
+  For the \hyperref[def:ordinal_arithmetic/multiplication]{product} of two ordinals \( \alpha \) and \( \beta \), the following is an \hyperref[def:preordered_set/homomorphism]{order isomorphism}:
+  \begin{equation*}
+    \begin{aligned}
+      &f: \alpha \times \beta \to \alpha \cdot \beta, \\
+      &f(\gamma, \delta) \coloneqq \alpha \cdot \delta + \gamma,
+    \end{aligned}
+  \end{equation*}
+  where for the \hyperref[def:cartesian_product]{Cartesian product} \( \alpha \times \beta \) we use the \hyperref[def:lexicographic_order]{reverse lexicographic order}, under which \( (\gamma_1, \delta_1) \prec (\gamma_2, \delta_2) \) if either \( \delta_1 < \delta_2 \) or both \( \delta_1 = \delta_2 \) and \( \gamma_1 < \gamma_2 \).
+\end{proposition}
+\begin{comments}
+  \item The order of the multiplicands is such that \( \gamma < \alpha \) and \( \delta < \beta \).
+\end{comments}
+\begin{proof}
+  Similarly to \fullref{thm:ordinal_addition_disjoin_union}, we will use induction on \( \beta \) to show that
+  \begin{equation*}
+    \begin{aligned}
+      &f_\beta: \alpha \times \beta \to \alpha \cdot \beta, \\
+      &f_\beta(\gamma, \delta) \coloneqq \alpha \cdot \delta + \gamma
+    \end{aligned}
+  \end{equation*}
+  is an order isomorphism.
+
+  \begin{itemize}
+    \item If \( \beta = 0 \), both \( \alpha \times \beta \) and \( \alpha \cdot \beta \) are empty, and so \( f_0 \) is vacuously an isomorphism.
+
+    \item Suppose that \( \beta = \op{sc}(\varepsilon) \) and that the inductive hypothesis holds for \( f_\delta \).
+
+    We have
+    \begin{equation*}
+      \alpha \times \beta = (\alpha \times \varepsilon) \cup (\alpha \times \set{ \varepsilon })
+    \end{equation*}
+    and
+    \begin{equation*}
+      \alpha \cdot \beta = (\alpha \cdot \varepsilon) \cup [\alpha \cdot \varepsilon, \alpha \cdot \beta).
+    \end{equation*}
+
+    Note that \( (\alpha \cdot \varepsilon) \) is simply a parenthesized expression for the ordinal \( \alpha \cdot \varepsilon \) regarded as a set, while \( [\alpha \cdot \varepsilon, \alpha \cdot \beta) \) is a \hyperref[def:order_interval/half_open]{half-open interval}.
+
+    Furthermore,
+    \begin{equation*}
+      f_\beta(\gamma, \delta) = \begin{cases}
+        f_\delta(\gamma, \delta),     &\delta < \varepsilon, \\
+        \alpha \cdot \delta + \gamma, &\delta = \varepsilon,
+      \end{cases}
+    \end{equation*}
+    hence \( f_\beta \) coincides with \( f_\varepsilon \) but additionally maps the set \( \alpha \times \set{ \varepsilon } \) to the interval \( [\alpha \cdot \varepsilon, \alpha \cdot \beta) \).
+
+    Therefore, since \( f_\delta \) is an isomorphism, \( f_\beta \) also is.
+
+    \item Suppose that \( \beta \) is a limit ordinal and that the inductive hypothesis holds for \( f_\delta \) whenever \( \delta < \beta \).
+
+    We have
+    \begin{equation*}
+      f_\beta = \bigcup_{\delta < \beta} f_\delta.
+    \end{equation*}
+
+    Hence, for every argument, \( f_\beta \) coincides with one of the maps we have assumed are isomorphisms:
+    \begin{equation*}
+      f_\beta(\gamma, \delta) = f_{\op{sc}(\delta)}(\gamma, \delta).
+    \end{equation*}
+
+    Since these maps are all extensions of each other, we conclude that their union \( f_\beta \) is also an order isomorphism.
+  \end{itemize}
+\end{proof}
+
+\begin{corollary}\label{thm:ordinal_division}
+  For every ordinal \( \alpha \) and every nonzero ordinal \( \beta \), there exists a unique pair of ordinals \( \delta \) and \( \rho \) such that \( \rho < \beta \) and
+  \begin{equation*}
+    \alpha = \beta \cdot \delta + \rho.
+  \end{equation*}
+\end{corollary}
+\begin{proof}
+  \SubProof{Proof if \( \alpha \) is zero} \Fullref{thm:ordinal_addition_algebraic_properties/zerosumfree} implies that in order for \( \beta \cdot \delta + \rho \) to be zero, both \( \delta \cdot \beta \) and \( \rho \) must be zero.
+
+  \Fullref{thm:ordinal_multiplication_algebraic_properties/entire} implies that in order for \( \delta \cdot \beta \) to be zero, \( \beta \) or \( \delta \) must be zero. But \( \beta \) is nonzero by assumption, so \( \delta \) must be zero.
+
+  Therefore, if \( \alpha \) is zero, both \( \delta \) and \( \rho \) must be zero.
+
+  \SubProof{Proof if \( \alpha \) is nonzero} From \fullref{thm:ordinal_multiplication_cartesian_product} it follows that the following is an isomorphism:
+  \begin{equation*}
+    \begin{aligned}
+      &f: \beta \times \op{sc}(\alpha) \to \beta \cdot \op{sc}(\alpha), \\
+      &f(\rho, \delta) \coloneqq \beta \cdot \delta + \rho.
+    \end{aligned}
+  \end{equation*}
+
+  \Fullref{thm:ordinal_multiplication_is_monotone/right} implies that \( \alpha \leq \beta \cdot \alpha \), thus we can take \( \delta \) and \( \rho \) to be the corresponding elements of the preimage \( f^{-1}(\alpha) \).
+\end{proof}
+
+\begin{corollary}\label{thm:ordinal_division_omega}
+  Every ordinal \( \alpha \) can be represented as \( \omega \cdot \delta + n \), where \( \omega \) is the \hyperref[thm:omega_is_an_ordinal]{smallest infinite ordinal} and \( n \) is a natural number (i.e. a finite ordinal).
+\end{corollary}
+\begin{proof}
+  Follows from \fullref{thm:ordinal_division} with \( \beta = \omega \).
+\end{proof}
+
+\begin{proposition}\label{thm:limit_ordinal_division_characterization}
+  The nonzero ordinal \( \alpha \) is a limit ordinal if and only if it is a right multiple of \( \omega \), that is, if there exists some \( \delta \) such that \( \alpha = \omega \cdot \delta \).
+\end{proposition}
+\begin{proof}
+  \SufficiencySubProof Suppose that \( \alpha \) is a limit ordinal. \Fullref{thm:ordinal_division_omega} gives us an ordinal \( \delta \) and a natural number \( n \) such that \( \alpha = \omega \cdot \delta + n \).
+
+  Suppose that \( n > 0 \) and let \( m \) be its \hyperref[thm:nonzero_natural_numbers_have_predecessors]{predecessor} so that \( n = \op{sc}(m) \). Then, by definition of ordinal addition,
+  \begin{equation*}
+    \alpha
+    =
+    \omega \cdot \delta + n
+    =
+    \omega \cdot \delta + \op{sc}(m)
+    =
+    \op{sc}(\omega \cdot \delta + m),
+  \end{equation*}
+  implying that \( \alpha \) is a successor ordinal.
+
+  The obtained contradiction demonstrates that \( n = 0 \).
+
+  \NecessitySubProof If \( \alpha = \omega \cdot \delta \), consider any strictly smaller ordinal \( \beta \). \Fullref{thm:ordinal_division_omega} gives us an ordinal \( \varepsilon \) and a natural number \( m \) such that \( \beta = \omega \cdot \varepsilon + m \).
+
+  \Fullref{thm:ordinal_addition_is_monotone/left} implies that
+  \begin{equation*}
+    \omega \cdot \varepsilon < \omega \cdot \varepsilon + m = \beta.
+  \end{equation*}
+
+  Then
+  \begin{equation*}
+    \omega \cdot \varepsilon < \omega \cdot \delta = \alpha
+  \end{equation*}
+  and \fullref{thm:def:totally_ordered_set/embedding_iff_strict} applied to \fullref{thm:ordinal_multiplication_is_monotone/left} implies that \( \varepsilon < \delta \).
+
+  Therefore,
+  \begin{equation*}
+    \op{sc}(\beta)
+    =
+    \omega \cdot \varepsilon + \op{sc}(m)
+    \reloset {\eqref{eq:thm:ordinal_addition_is_monotone/left}} <
+    \omega \cdot \varepsilon + \omega
+    =
+    \omega \cdot \op{sc}(\varepsilon)
+    \reloset {\eqref{eq:thm:ordinal_multiplication_is_monotone/left}} \leq
+    \omega \cdot \delta
+    =
+    \alpha.
+  \end{equation*}
+
+  Since the successor of every ordinal less than \( \alpha \) is also less than \( \alpha \), it is a limit ordinal.
 \end{proof}
 
 \begin{example}\label{ex:countable_limit_ordinals}
@@ -705,7 +974,7 @@ Our purpose is to extend natural number arithmetic to ordinals and cardinals. It
   \begin{equation}\label{eq:def:beth_hierarchy}
     \beth_\alpha \coloneqq \begin{cases}
       \omega,                                       &\alpha = 0 \\
-      2^\beta,                                      &\alpha = \op{succ}(\beta) \\
+      2^\beta,                                      &\alpha = \op{sc}(\beta) \\
       \sup\set{ \beth_\beta \given \beta < \alpha } &\alpha \T{is a limit ordinal}.
     \end{cases}
   \end{equation}
