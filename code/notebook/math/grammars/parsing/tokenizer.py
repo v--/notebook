@@ -75,7 +75,5 @@ class GrammarTokenizer(Tokenizer[GrammarToken]):
 
 
 def tokenize_bnf(string: str) -> list[GrammarToken]:
-    tokenizer = GrammarTokenizer(string)
-    tokens = list(tokenizer.parse())
-    tokenizer.assert_exhausted()
-    return tokens
+    with GrammarTokenizer(string) as tokenizer:
+        return list(tokenizer.parse())

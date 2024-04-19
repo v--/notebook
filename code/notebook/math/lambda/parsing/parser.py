@@ -73,7 +73,6 @@ class LambdaParser(Parser[LambdaToken]):
 
 def parse_term(string: str) -> LambdaTerm:
     tokens = list(LambdaTokenizer(string).parse())
-    parser = LambdaParser(tokens)
-    term = parser.parse_term()
-    parser.assert_exhausted()
-    return term
+
+    with LambdaParser(tokens) as parser:
+        return parser.parse_term()

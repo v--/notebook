@@ -194,47 +194,37 @@
   \item An alternative approach is to encode the logical axioms as inference rules without premises, as it is done in \cite[103]{Mimram2020}.
 \end{comments}
 
-\begin{definition}\label{def:axiomatic_deductive_entailment}\mimprovised
-  Fix an \hyperref[def:axiomatic_deductive_system]{axiomatic deductive system} and denote by \( \mscrA \) its set of axiom schemas. We will define a \hyperref[def:consequence_relation]{consequence relation} on the set \( \op*{Form} \) of all propositional formulas via the flavor of \fullref{thm:least_fixed_point_recursion} discussed in \fullref{ex:fixed_point_recursion_for_relations}.
+\begin{definition}\label{def:axiomatic_derivation}\mcite[51]{TroelstraSchwichtenberg2000}
+  Fix an \hyperref[def:axiomatic_deductive_system]{axiomatic deductive system}.
 
-  In the following, \( \Gamma \) is a \hyperref[def:logical_context]{context placeholder}, while \( \Phi \) and \( \Psi \) are \hyperref[def:propositional_formula_placeholder]{formula placeholders}:
-  \begin{align*}
-    \begin{prooftree}
-      \hypo{ \Phi \in \mscrA }
-      \infer1{ \Gamma \vdash \Phi }
-    \end{prooftree}
-    &&
-    \begin{prooftree}
-      \hypo{ \Phi \in \Gamma }
-      \infer1{ \Gamma \vdash \Phi }
-    \end{prooftree}
-  \end{align*}
-  \begin{equation*}
-    \begin{prooftree}
-      \hypo{ \Gamma \vdash (\Phi \rightarrow \Psi) }
-      \hypo{ \Gamma \vdash \Phi }
-      \infer2[\logic{MP}]{ \Gamma \vdash \Psi }
-    \end{prooftree}
-  \end{equation*}
+  An \term[ru=вывод (\cite[35]{Герасимов2011})]{axiomatic derivation} of the single formula \( \varphi \) from the set \( \Gamma \) of formulas is a nonempty list \( \psi_1, \ldots, \psi_n \) of formulas such that \( \psi_n = \varphi \) and, for every \( k = 1, \ldots, n \), any of the following hold:
+  \begin{thmenum}
+    \thmitem{def:axiomatic_derivation/axiom} \( \psi_k \) is a logical axiom.
+    \thmitem{def:axiomatic_derivation/premise} \( \psi_k \) is a premise, that is, it belongs to \( \Gamma \).
+    \thmitem{def:axiomatic_derivation/mp} There exist indices \( i \) and \( j \), both smaller than \( k \), such that \( \psi_j = (\psi_i \synimplies \psi_k) \).
+  \end{thmenum}
 \end{definition}
 \begin{comments}
-  \item This is an adaptation of the ad-hoc definitions of \enquote{proofs} given by \incite[205]{Hinman2005} and \incite[79]{Smullyan1995}.
-  \item We only gave a name to the last inference rule. \( \logic{MP} \) stands for \enquote{modus ponens}, which is a simplified form of the natural deduction rule \eqref{eq:def:minimal_propositional_natural_deduction_system/imp/elim}.
+  \item \incite[51]{TroelstraSchwichtenberg2000} use the term \enquote{axiomatic deduction}. We prefer \enquote{derivation} to \enquote{deduction} based on an analogy with \hyperref[def:formal_grammar/derivation]{derivations} on \hyperref[def:formal_grammar]{formal grammars}. \incite[117]{CitkinMuravitsky2021} also prefer the term \enquote{derivation}.
+  \item \Fullref{def:axiomatic_derivation/mp} can be expressed via the inference rule \eqref{eq:thm:implicational_natural_deduction/mp} rule, as will be discussed in \fullref{thm:implicational_natural_deduction/mp}.
 \end{comments}
+
+\begin{definition}\label{def:axiomatic_deductive_entailment}\mcite[205]{Hinman2005}
+  For a \hyperref[def:axiomatic_deductive_system]{axiomatic deductive system}, we define a \hyperref[def:consequence_relation]{consequence relation} \( \Gamma \vdash \varphi \) that holds when there is an \hyperref[def:axiomatic_derivation]{axiomatic derivation} of \( \varphi \) from \( \Gamma \).
+\end{definition}
 \begin{defproof}
   We must show that \( {\vdash} \) satisfies the conditions for being a consequence relation.
 
-  \SubProofOf[def:consequence_relation/reflexivity]{reflexivity} For every \( \varphi \in \Gamma \), a tree with a single node marked by the sentence \( \varphi \) is a derivation of \( \varphi \) from \( \Gamma \).
+  \SubProofOf[def:consequence_relation/reflexivity]{reflexivity} \Fullref{def:axiomatic_derivation/premise} ensures that \( \Gamma \vdash \varphi \) whenever \( \varphi \in \Gamma \).
 
-  \SubProofOf[def:consequence_relation/monotonicity]{monotonicity} Trivial.
+  \SubProofOf[def:consequence_relation/monotonicity]{monotonicity} If \( \Gamma \vdash \varphi \), then we can build a list of formulas satisfying the definition. But we could build the same list of formulas out of every superset of \( \Gamma \).
 
   \SubProofOf[def:consequence_relation/transitivity]{transitivity} Suppose that \( \Delta, \Epsilon \vdash \varphi \) and that, for every \( \psi \in \Delta \), we have \( \Gamma, \Epsilon \vdash \psi \).
 
-  For every \( \psi \in \Delta \), let \( T_\psi \) be a proof tree of \( \psi \) from \( \Gamma \). Let \( T_\varphi \) be a proof tree of \( \varphi \) from \( \Delta \cup \Epsilon \).
-
-  Whenever \( \psi \) occurs in \( T_\varphi \) as a premise, we can replace it with \( T_\psi \) instead to obtain a proof tree of \( \varphi \) from \( \Gamma \cup \Epsilon \).
-
-  Then \( \Gamma, \Epsilon \vdash \varphi \).
+  Let \( \theta_1, \ldots, \theta_n \) be a derivation of \( \varphi \) from \( \Delta \cup \Epsilon \) and let \( \chi_{1,k}, \ldots, \chi_{m_k,k} \) be a derivation of \( \theta_k \) from \( \Gamma \cup \Epsilon \). Then the following is a derivation of \( \varphi \) from \( \Gamma \cup \Epsilon \):
+  \begin{equation*}
+    \chi_{1,1}, \ldots, \chi_{m_1,1}, \ldots, \chi_{1,n}, \ldots, \chi_{m_n,n}.
+  \end{equation*}
 \end{defproof}
 
 \paragraph{Implicational logic}\hfill
@@ -253,14 +243,14 @@ Implicational logic is both a toy derivation system we will explore and a useful
 
   The system has the following logical axiom schemas:
   \begin{thmenum}
-    \thmitem{def:minimal_implication_logic/intro} Every formula \( \varphi \) is the consequent of an implication whose antecedent can be any other formula \( \psi \):
+    \thmitem{def:minimal_implication_logic/intro} Every formula is the consequent of an implication whose antecedent can be any other formula:
     \begin{equation}\label{eq:def:minimal_implication_logic/intro}
-      \varphi \synimplies (\psi \synimplies \varphi) \tag{\( \rightarrow_A^+ \)}.
+      \Phi \synimplies (\Psi \synimplies \Phi) \tag{\( \rightarrow_A^+ \)}.
     \end{equation}
 
     \thmitem{def:minimal_implication_logic/trans} Implication distributes over itself:
     \begin{equation}\label{eq:def:minimal_implication_logic/trans}
-      \parens[\Big]{ \varphi \synimplies (\psi \synimplies \theta) } \synimplies \parens[\Big]{ (\varphi \synimplies \psi) \synimplies (\varphi \synimplies \theta)} \tag{\( \twoheadrightarrow_A \)}.
+      \parens[\Big]{ \Phi \synimplies (\Psi \synimplies \Theta) } \synimplies \parens[\Big]{ (\Phi \synimplies \Psi) \synimplies (\Phi \synimplies \Theta)} \tag{\( \twoheadrightarrow_A \)}.
     \end{equation}
   \end{thmenum}
 \end{definition}
@@ -268,162 +258,95 @@ Implicational logic is both a toy derivation system we will explore and a useful
   \item The subscript \enquote{A} in \eqref{eq:def:minimal_implication_logic/intro} highlights that it is an axiom schema. This convention allows us to distinguish the axiom schema \eqref{eq:thm:minimal_propositional_negation_laws/efq} from the inference rule \eqref{eq:def:intuitionistic_propositional_deduction_systems/rules/efq}.
 \end{comments}
 
-\begin{example}\label{ex:minimal_implication_logic_identity}
-  Fix any \hyperref[def:minimal_implication_logic]{implicational formula} \( \varphi \) and consider the formula
-  \begin{equation}\label{eq:ex:minimal_implication_logic_identity}
+\begin{example}\label{ex:minimal_implication_logic_identity/derivation}
+  Fix any \hyperref[def:minimal_implication_logic]{implicational formula} \( \varphi \) and consider
+  \begin{equation}\label{eq:ex:minimal_implication_logic_identity/derivation/final}
     \varphi \synimplies \varphi.
   \end{equation}
 
-  We can build a proof tree from the two logical axioms of \hyperref[def:minimal_implication_logic]{minimal implicational logic}:
-  \begin{equation}\label{eq:ex:minimal_implication_logic_identity/proof}
-    \begin{prooftree}[separation=3em]
-      \hypo
-        {
-          \eqref{eq:def:minimal_implication_logic/intro}
-        }
+  We will build an \hyperref[def:axiomatic_derivation]{axiomatic derivation} in \hyperref[def:minimal_implication_logic]{minimal implicational logic}. First, consider the following two instances of \eqref{eq:def:minimal_implication_logic/intro}:
+  \begin{align}
+    \varphi \synimplies (\varphi \synimplies \varphi), \label{eq:ex:minimal_implication_logic_identity/derivation/intro_1} \\
+    \varphi \synimplies ((\varphi \synimplies \varphi) \synimplies \varphi). \label{eq:ex:minimal_implication_logic_identity/derivation/intro_2}
+  \end{align}
 
-      \ellipsis
-        {
-          \( \begin{array}{l}
-            \psi \mapsto (\varphi \synimplies \varphi)
-            \\
-            \mbox{}
-          \end{array} \)
-        }
-        {
-          \eqref{eq:ex:propositional_implicational_logic/dagger}
-        }
-
-      \hypo
-        {
-          \eqref{eq:def:minimal_implication_logic/trans}
-        }
-
-      \ellipsis
-        {
-          \( \begin{array}{l}
-            \psi \mapsto (\varphi \synimplies \varphi)
-            \\
-            \theta \mapsto \varphi
-          \end{array} \)
-        }
-        {
-          \eqref{eq:ex:propositional_implicational_logic/dagger}
-          \synimplies ((\varphi \synimplies (\varphi \synimplies \varphi)) \synimplies (\varphi \synimplies \varphi))
-        }
-
-      \infer2[\ref{eq:def:def:axiomatic_deductive_system/mp}]{(\varphi \synimplies (\varphi \synimplies \varphi)) \synimplies (\varphi \synimplies \varphi)}
-
-      \hypo
-        {
-          \eqref{eq:def:minimal_implication_logic/intro}
-        }
-
-      \ellipsis
-        {
-          \( \psi \mapsto \varphi \)
-        }
-        {
-          \varphi \synimplies (\varphi \synimplies \varphi)
-        }
-
-      \infer2[\ref{eq:def:def:axiomatic_deductive_system/mp}]{\varphi \synimplies \varphi}
-    \end{prooftree}
-  \end{equation}
-  where
-  \begin{equation}\label{eq:ex:propositional_implicational_logic/dagger}
-    \varphi \synimplies ((\varphi \synimplies \varphi) \synimplies \varphi).
+  Our only intermediate step will be the following formula:
+  \begin{equation}\label{eq:ex:minimal_implication_logic_identity/derivation/intermediate}
+    (\varphi \synimplies (\varphi \synimplies \varphi)) \synimplies (\varphi \synimplies \varphi).
   \end{equation}
 
-  Therefore,
+  Finally, we will need the following instance of \eqref{eq:def:minimal_implication_logic/trans}:
+  \begin{equation}\label{eq:ex:minimal_implication_logic_identity/derivation/trans}
+    \eqref{eq:ex:minimal_implication_logic_identity/derivation/intro_2} \synimplies \eqref{eq:ex:minimal_implication_logic_identity/derivation/intermediate}
+  \end{equation}
+
+  Our derivation is then
   \begin{equation*}
-    \vdash (\varphi \synimplies \varphi).
+    \eqref{eq:ex:minimal_implication_logic_identity/derivation/intro_1}, \eqref{eq:ex:minimal_implication_logic_identity/derivation/intro_2}, \eqref{eq:ex:minimal_implication_logic_identity/derivation/intermediate}, \eqref{eq:ex:minimal_implication_logic_identity/derivation/trans}, \eqref{eq:ex:minimal_implication_logic_identity/derivation/final}.
   \end{equation*}
+
+  Indeed, we can derive the intermediate step \eqref{eq:ex:minimal_implication_logic_identity/derivation/intermediate} via \fullref{def:axiomatic_derivation/mp} from \eqref{eq:ex:minimal_implication_logic_identity/derivation/trans} and \eqref{eq:ex:minimal_implication_logic_identity/derivation/intro_2} and the conclusion \eqref{eq:ex:minimal_implication_logic_identity/derivation/final} from the intermediate step \eqref{eq:ex:minimal_implication_logic_identity/derivation/intermediate} and \eqref{eq:ex:minimal_implication_logic_identity/derivation/intro_1}.
 \end{example}
+\begin{comments}
+  \item We will present a more demonstrative proof in \eqref{ex:minimal_implication_logic_identity/tree}.
+\end{comments}
+
+\begin{algorithm}[Derivation conclusion hypothesis introduction]\label{alg:derivation_conclusion_hypothesis_introduction}
+  We will present an algorithm that, given an \hyperref[def:axiomatic_derivation]{axiomatic derivation} of \( \phi \) from \( \Gamma \cup \set{ \varphi } \), will provide a derivation of \( \varphi \synimplies \phi \) from \( \Gamma \).
+
+  We will refer to the formula \( \varphi \synimplies \phi \) as our \term{goal}. We will use \hyperref[rem:natural_number_recursion]{natural number recursion} on the length of the derivation \( \theta_1, \ldots, \theta_n \), although we will only need this in \fullref{alg:derivation_conclusion_hypothesis_introduction/recursive}.
+
+  \begin{thmenum}
+    \thmitem{alg:derivation_conclusion_hypothesis_introduction/goal_premise} If our goal is either an axiom or a premise from \( \Gamma \), the desired derivation is simply the singleton list \( \varphi \synimplies \phi \).
+
+    \thmitem{alg:derivation_conclusion_hypothesis_introduction/identity} Otherwise, if \( \varphi = \psi \), then we must derive \( \varphi \synimplies \varphi \), which can be done via logical axioms alone as shown in \fullref{ex:minimal_implication_logic_identity/derivation}.
+
+    \thmitem{alg:derivation_conclusion_hypothesis_introduction/conclusion_premise} Otherwise, if \( \psi \) is either an axiom or a premise from \( \Gamma \), then the following is a derivation of \( \varphi \synimplies \psi \):
+    \begin{equation*}
+      \underbrace{\psi \synimplies (\varphi \synimplies \psi)}_{\eqref{eq:def:minimal_implication_logic/intro}},
+      \psi,
+      \varphi \synimplies \psi.
+    \end{equation*}
+
+    \thmitem{alg:derivation_conclusion_hypothesis_introduction/recursive} Otherwise, there must exist indices \( i \) and \( j \) such that
+    \begin{equation*}
+      \theta_i = \theta_j \synimplies \theta_n.
+    \end{equation*}
+
+    Suppose that the inductive hypothesis holds for all formulas preceding \( \theta_n = \phi \) in the derivation. Then we can obtain a derivation \( \chi_1, \ldots, \chi_m \) of \( \varphi \synimplies \theta_i \) and \( \omega_1, \ldots, \omega_k \) of \( \varphi \synimplies \theta_j \), and use them to build a derivation of our goal:
+    \small
+    \begin{equation*}
+      \underbrace{\chi_1, \ldots, \chi_m}_{\varphi \synimplies \theta_i},
+      \underbrace{(\varphi \synimplies \theta_i) \synimplies ((\varphi \synimplies \theta_j) \synimplies (\varphi \synimplies \theta_n))}_{\eqref{eq:def:minimal_implication_logic/intro}},
+      \underbrace{((\varphi \synimplies \theta_j) \synimplies (\varphi \synimplies \theta_n))}_{\ref{def:axiomatic_derivation/mp}},
+      \underbrace{\omega_1, \ldots, \omega_k}_{\varphi \synimplies \theta_j},
+      \underbrace{\varphi \synimplies \theta_n}_{\ref{def:axiomatic_derivation/mp}}.
+    \end{equation*}
+    \normalsize
+  \end{thmenum}
+\end{algorithm}
+\begin{comments}
+  \item This algorithm can be found as \identifier{natural_deduction.derivation.introduce_conclusion_hypothesis} in \cite{code}.
+\end{comments}
 
 \begin{theorem}[Implicational syntactic deduction theorem]\label{thm:implicational_syntactic_deduction_theorem}
   In \hyperref[def:minimal_implication_logic]{minimal implicational logic}, For arbitrary propositional formulas, we have
   \begin{equation*}
-    \Gamma, \varphi \vDash \psi \T{if and only if} \Gamma \vDash \varphi \synimplies \psi.
+    \Gamma, \varphi \vdash \psi \T{if and only if} \Gamma \vdash \varphi \synimplies \psi.
   \end{equation*}
 \end{theorem}
 \begin{comments}
   \item See \fullref{rem:deduction_theorem_list} for a list of similar theorems.
 \end{comments}
 \begin{proof}
-  Denote by \( \mscrA \) the set of logical axioms.
+  \SufficiencySubProof If \( \Gamma, \varphi \vdash \phi \), \fullref{alg:derivation_conclusion_hypothesis_introduction} allows us to build a derivation of \( \varphi \synimplies \phi \) from \( \Gamma \), and the existence of such a derivation implies \( \Gamma \vdash \phi \).
 
-  \SufficiencySubProof Suppose that \( \Gamma, \varphi \vdash \psi \) and let \( T \) be a proof tree of \( \psi \) from \( \Gamma \cup \set{ \varphi } \).
-
-  We have the following possibilities for \( \psi \):
-  \begin{itemize}
-    \item If \( \psi \in \mscrA \), then \( \vdash \psi \) and \eqref{eq:def:consequence_relation/monotonicity} implies that \( \Gamma \vdash \psi \).
-    \item If \( \psi \in \Gamma \), then \eqref{eq:def:consequence_relation/reflexivity} implies that \( \Gamma \vdash \psi \).
-    \item If \( \psi = \varphi \), \fullref{ex:minimal_implication_logic_identity} shows that \( \vdash (\psi \synimplies \psi) \), and we can again use \fullref{eq:def:consequence_relation/monotonicity} to conclude \( \Gamma \vdash (\psi \synimplies \psi) \).
-    \item Otherwise,
-  \end{itemize}
-
-  %    in the latter case either \( \psi \in \Gamma \) or \( \psi = \varphi \). In all three cases, the logical axiom \eqref{eq:def:minimal_implication_logic/intro} allows us to derive \( \varphi \synimplies \psi \) from \( \Gamma \) using \eqref{eq:def:def:axiomatic_deductive_system/mp}.
-
-  %   \item Otherwise, since the only rule is \eqref{eq:def:def:axiomatic_deductive_system/mp}, there exists some formula \( \varphi \) derivable from \( \Gamma \cup \set{ \varphi } \) such that \( P \) contains the formulas \( \varphi \) and for \( \varphi \synimplies \psi \). The inductive hypothesis holds for both, and hence \( \Gamma \vdash \varphi \to \varphi \) and \( \Gamma \vdash \varphi \to (\varphi \synimplies \psi) \). Let \( P_1 \) and \( P_2 \) be proofs corresponding to these two sequents.
-
-  %   We can now build the following proof of \( \varphi \to \psi \) from \( \Gamma \):
-  %   \begin{equation*}
-  %     \begin{prooftree}
-  %       \hypo{ \eqref{eq:def:minimal_implication_logic/trans} }
-  %       \ellipsis
-  %         {}
-  %         {
-  %           \parens[\Big]{ \varphi \synimplies (\varphi \synimplies \psi) } \synimplies \parens[\Big]{ (\varphi \synimplies \varphi) \synimplies (\varphi \synimplies \psi)}
-  %         }
-
-  %       \hypo{ P_2 }
-
-  %       \infer2[\ref{eq:def:def:axiomatic_deductive_system/mp}]{ (\varphi \synimplies \varphi) \synimplies (\varphi \synimplies \psi) }
-
-  %       \hypo{ P_1 }
-  %       \infer2[\ref{eq:def:def:axiomatic_deductive_system/mp}]{ \varphi \synimplies \psi }
-  %     \end{prooftree}
-  %   \end{equation*}
-  % \end{itemize}
-
-  \NecessitySubProof Now suppose that \( \Gamma \vdash \varphi \synimplies \psi \). Then we can apply \eqref{eq:def:def:axiomatic_deductive_system/mp} to obtain \( \psi \) from \( \Gamma \cup \set{ \varphi } \).
+  \NecessitySubProof If \( \Gamma \vdash \varphi \synimplies \psi \), we can add \( \varphi, \psi \) to any derivation to obtain a derivation of \( \psi \) from \( \Gamma \cup \set{ \varphi } \).
 \end{proof}
 
-\begin{proposition}\label{thm:soundness_of_implicational_propositional_deduction_system}
-  The \hyperref[def:minimal_implication_logic]{minimal implicational logic} is \hyperref[def:logical_framework/soundness]{sound} with respect to \hyperref[def:propositional_model]{classical semantics}.
-\end{proposition}
-\begin{proof}
-  Suppose that \( \vdash \varphi \). We will use induction on \( \varphi \), which is either a \hyperref[def:axiomatic_deductive_system]{logical axiom} or can be derived from logical axioms. We have the following possibilities for \( \varphi \):
-  \begin{itemize}
-    \item If \( \varphi \) is an instance of the axiom schema \eqref{eq:def:minimal_implication_logic/intro}, say \( \varphi = \psi \synimplies (\theta \synimplies \psi) \), consider an arbitrary \hyperref[def:propositional_valuation]{propositional interpretation} \( I \). Then
-    \begin{equation*}
-      \Bracks{\varphi}_I
-      =
-      \Bracks{\psi \synimplies (\theta \synimplies \psi)}_I
-      =
-      \Bracks{\psi}_I \rightarrow \parens[\Big]{ \Bracks{\theta}_I \rightarrow \Bracks{\psi}_I }
-      =
-      \begin{cases}
-        T,                                            &\Bracks{\psi}_I = F, \\
-        \Bracks{\theta}_I \rightarrow T = T, &\Bracks{\psi}_I = T.
-      \end{cases}
-    \end{equation*}
-
-    Therefore, \( \vDash \varphi \).
-
-    \item If \( \varphi \) is an instance of \eqref{eq:def:minimal_implication_logic/trans}, we proceed similarly to prove that \( \vDash \varphi \).
-
-    \item Finally, in the case where \( \vdash \psi \synimplies \varphi \) and \( \vdash \psi \) can both be derived from logical axioms, \ref{eq:def:def:axiomatic_deductive_system/mp} ensures that \( \vdash \varphi \).
-
-    If we assume that \( \vDash \psi \synimplies \varphi \) and \( \vDash \psi \), then for any interpretation \( I \),
-    \begin{equation*}
-      \underbrace{\Bracks{\psi \synimplies \varphi}_I}_T = \underbrace{\Bracks{\psi}_I}_T \rightarrow \Bracks{\varphi}_I.
-    \end{equation*}
-
-    It remains for \( \Bracks{\varphi}_I \) to be true, which, generalizing on \( I \), proves that \( \vDash \varphi \).
-  \end{itemize}
-\end{proof}
+\begin{theorem}[Implicational logic is sound]\label{thm:implicational_logic_is_sound}
+  \hyperref[def:minimal_implication_logic]{Minimal implicational logic} is \hyperref[def:logical_framework/soundness]{sound} with respect to \hyperref[def:propositional_semantics]{classical semantics}.
+\end{theorem}
 
 \paragraph{Natural deduction systems}
 

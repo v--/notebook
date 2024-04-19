@@ -44,3 +44,8 @@ class FOLTokenizer(IdentifierTokenizerMixin[FOLToken], Tokenizer[FOLToken]):
             return self.parse_identifier(GreekIdentifier, Capitalization.mixed, short=False)
 
         raise self.error('Unexpected symbol')
+
+
+def tokenize_fol_string(signature: FOLSignature, string: str) -> list[FOLToken]:
+    with FOLTokenizer(string, signature) as tokenizer:
+        return list(tokenizer.parse())

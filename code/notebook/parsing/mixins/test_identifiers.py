@@ -39,10 +39,8 @@ class TestTokenizer(IdentifierTokenizerMixin[TestToken], Tokenizer[TestToken]):
 
 
 def tokenize(string: str, capitalization: Capitalization = Capitalization.mixed, *, short: bool = False) -> list[TestToken]:
-    tokenizer = TestTokenizer(string, capitalization, short)
-    result = list(tokenizer.parse())
-    tokenizer.assert_exhausted()
-    return result
+    with TestTokenizer(string, capitalization, short) as tokenizer:
+        return list(tokenizer.parse())
 
 
 def test_valid_latin_identifiers() -> None:

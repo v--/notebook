@@ -51,14 +51,13 @@ async def setup_watchers(target: WatchTarget, base_logger: structlog.stdlib.Boun
                 for figure_path in FIGURES_PATH.glob('*.asy'):
                     runner.schedule(AsymptoteTask(base_logger, figure_path), trigger=str(path))
 
-        if target == 'all' or target == 'notebook' and \
-            not fnmatch(path, 'output/notebook.pdf') and (
-                fnmatch(path, 'notebook.tex') or
-                fnmatch(path, 'classes/notebook.cls') or
-                fnmatch(path, 'bibliography/*.bib') or
-                fnmatch(path, 'text/*.tex') or
-                fnmatch(path, 'output/*.pdf') or
-                fnmatch(path, 'packages/*.sty')
+        if (target == 'all' or target == 'notebook') and not fnmatch(path, 'output/notebook.pdf') and (
+            fnmatch(path, 'notebook.tex') or
+            fnmatch(path, 'classes/notebook.cls') or
+            fnmatch(path, 'bibliography/*.bib') or
+            fnmatch(path, 'text/*.tex') or
+            fnmatch(path, 'output/*.pdf') or
+            fnmatch(path, 'packages/*.sty')
         ):
             runner.schedule(LaTeXTask(base_logger, ROOT_PATH / 'notebook.tex'), trigger=str(path))
 

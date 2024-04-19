@@ -1,3 +1,4 @@
+from collections.abc import Sequence
 from typing import NamedTuple, TypeGuard
 
 from .alphabet import BinaryConnective, PropConstant, Quantifier
@@ -21,7 +22,7 @@ class EqualityFormula(NamedTuple):
 
 class PredicateFormula(NamedTuple):
     name: str
-    arguments: list[Term]
+    arguments: Sequence[Term]
 
     def __str__(self) -> str:
         args = ', '.join(str(arg) for arg in self.arguments)

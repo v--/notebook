@@ -80,6 +80,7 @@
 \RequirePackage[altpo,epsilon]{backnaur}
 \RequirePackage{diffcoeff}
 \RequirePackage{blkarray}
+\RequirePackage{seqsplit}
 \RequirePackage{ebproof}
 \RequirePackage{bigints}
 \RequirePackage{diagbox}

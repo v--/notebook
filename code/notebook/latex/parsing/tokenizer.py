@@ -44,7 +44,5 @@ class LaTeXTokenizer(Tokenizer[LaTeXToken]):
 
 
 def tokenize_latex(string: str) -> list[LaTeXToken]:
-    tokenizer = LaTeXTokenizer(string)
-    tokens = list(tokenizer.parse())
-    tokenizer.assert_exhausted()
-    return tokens
+    with LaTeXTokenizer(string) as tokenizer:
+        return list(tokenizer.parse())

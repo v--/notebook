@@ -13,7 +13,7 @@ from ..rules import (
     QuantifierFormulaPlaceholder,
     Rule,
 )
-from .tokenizer import NaturalDeductionTokenizer
+from .tokenizer import tokenize_nd_string
 from .tokens import MiscToken, RuleToken
 
 
@@ -172,9 +172,15 @@ class NaturalDeductionParser(WhitespaceParserMixin[RuleToken], Parser[RuleToken]
         return Rule(name, premises, conclusion.main)
 
 
+def parse_placeholder(string: str) -> FormulaPlaceholder:
+    tokens = tokenize_nd_string(string)
+
+    with NaturalDeductionParser(tokens) as parser:
+        return parser.parse_placeholder()
+
+
 def parse_rule(string: str) -> Rule:
-    tokens = list(NaturalDeductionTokenizer(string).parse())
-    parser = NaturalDeductionParser(tokens)
-    rule = parser.parse_rule()
-    parser.assert_exhausted()
-    return rule
+    tokens = tokenize_nd_string(string)
+
+    with NaturalDeductionParser(tokens) as parser:
+        return parser.parse_rule()

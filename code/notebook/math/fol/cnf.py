@@ -126,7 +126,7 @@ def function_to_cnf(fun: Callable[..., bool]) -> Formula:
     fun_params = inspect.signature(fun).parameters
 
     if len(fun_params) == 0:
-        p = PredicateFormula('p', [])
+        p = PredicateFormula('p', ())
         return ConnectiveFormula(
             BinaryConnective.disjunction if fun() else BinaryConnective.conjunction,
             p,
@@ -138,7 +138,7 @@ def function_to_cnf(fun: Callable[..., bool]) -> Formula:
             f'In order to become a valid predicate name, the parameter name {param.name} must consist only of small Latin characters.'
 
     # These names will generate valid formulas only when they consist of Latin letters
-    predicates = [PredicateFormula(param.name, []) for param in fun_params.values()]
+    predicates = [PredicateFormula(param.name, ()) for param in fun_params.values()]
     disjuncts: list[Formula] = [
         connect_formulas(
             [NegationFormula(p) if arg else p for p, arg in zip(predicates, arg_tuple)],

@@ -1,6 +1,7 @@
 from collections.abc import Sequence
 from dataclasses import dataclass, field
-from typing import Generic, TypeVar
+from types import TracebackType
+from typing import Generic, Self, TypeVar
 
 from .exceptions import ParsingError
 from .highlighter import ErrorHighlighter
@@ -55,3 +56,14 @@ class Parser(Generic[T_co]):
 
         err.add_note(highlighter.highlight())
         return err
+
+    def __enter__(self) -> Self:
+        return self
+
+    def __exit__(
+        self,
+        exc_type: type[BaseException] | None,
+        exc_value: BaseException | None,
+        traceback: TracebackType | None
+     ) -> None:
+        self.assert_exhausted()

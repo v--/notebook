@@ -1,3 +1,4 @@
+from collections.abc import Sequence
 from typing import NamedTuple
 
 
@@ -10,7 +11,7 @@ class Variable(NamedTuple):
 
 class FunctionTerm(NamedTuple):
     name: str
-    arguments: 'list[Term]'
+    arguments: 'Sequence[Term]'
 
     def __str__(self) -> str:
         args = ', '.join(str(arg) for arg in self.arguments)

@@ -129,7 +129,6 @@ class LaTeXParser(Parser[LaTeXToken]):
 
 def parse_latex(string: str) -> list[LaTeXNode]:
     tokens = tokenize_latex(string)
-    parser = LaTeXParser(tokens)
-    result = list(parser.parse())
-    parser.assert_exhausted()
-    return result
+
+    with LaTeXParser(tokens) as parser:
+        return list(parser.parse())

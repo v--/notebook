@@ -32,3 +32,8 @@ class NaturalDeductionTokenizer(IdentifierTokenizerMixin[RuleToken], Tokenizer[R
             return self.parse_identifier(GreekIdentifier, Capitalization.mixed, short=False)
 
         raise self.error('Unexpected symbol')
+
+
+def tokenize_nd_string(string: str) -> list[RuleToken]:
+    with NaturalDeductionTokenizer(string) as tokenizer:
+        return list(tokenizer.parse())

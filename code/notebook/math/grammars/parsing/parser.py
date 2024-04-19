@@ -91,7 +91,6 @@ class GrammarParser(WhitespaceParserMixin[GrammarToken], Parser[GrammarToken]):
 
 def parse_grammar_schema(string: str) -> GrammarSchema:
     tokens = tokenize_bnf(string)
-    parser = GrammarParser(tokens)
-    schema = parser.parse_schema()
-    parser.assert_exhausted()
-    return schema
+
+    with GrammarParser(tokens) as parser:
+        return parser.parse_schema()

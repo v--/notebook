@@ -16,7 +16,7 @@ from ..formulas import (
 )
 from ..signature import FOLSignature
 from ..terms import FunctionTerm, Term, Variable
-from .tokenizer import FOLTokenizer
+from .tokenizer import tokenize_fol_string
 from .tokens import FOLToken, FunctionSymbolToken, MiscToken, PredicateSymbolToken
 
 
@@ -60,15 +60,15 @@ class FOLParser(WhitespaceParserMixin[FOLToken], Parser[FOLToken]):
             else:
                 raise self.error('Unexpected token')
 
-    def _parse_function_like(self, arity: int) -> tuple[str, list[Term]]:
+    def _parse_function_like(self, arity: int) -> tuple[str, tuple[Term, ...]]:
         i_start = self.index
         name = self.peek().value
         self.advance()
 
-        arguments: list[Term] = []
+        arguments: tuple[Term, ...] = ()
 
         if not self.is_at_end() and self.peek() == MiscToken.left_parenthesis:
-            arguments = list(self.parse_args(arity, i_start))
+            arguments = tuple(self.parse_args(arity, i_start))
 
         if arity != len(arguments):
             raise self.error(f'Expected {arity} arguments for {name} but got {len(arguments)}', i_first_token=i_start)
@@ -203,16 +203,14 @@ class FOLParser(WhitespaceParserMixin[FOLToken], Parser[FOLToken]):
 
 
 def parse_term(signature: FOLSignature, string: str) -> Term:
-    tokens = list(FOLTokenizer(string, signature).parse())
-    parser = FOLParser(tokens, signature)
-    term = parser.parse_term()
-    parser.assert_exhausted()
-    return term
+    tokens = tokenize_fol_string(signature, string)
+
+    with FOLParser(tokens, signature) as parser:
+        return parser.parse_term()
 
 
 def parse_formula(signature: FOLSignature, string: str) -> Formula:
-    tokens = list(FOLTokenizer(string, signature).parse())
-    parser = FOLParser(tokens, signature)
-    formula = parser.parse_formula()
-    parser.assert_exhausted()
-    return formula
+    tokens = tokenize_fol_string(signature, string)
+
+    with FOLParser(tokens, signature) as parser:
+        return parser.parse_formula()
