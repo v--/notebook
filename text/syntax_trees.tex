@@ -3,16 +3,17 @@
 \paragraph{Parse trees}
 
 \begin{definition}\label{def:parse_tree}\mcite[81]{Aho2006}
-  A \term[ru=дерево вывода (\cite[81]{Гладкий1973Языки})]{parse tree} or \term{concrete syntax tree} for the \hyperref[def:chomsky_hierarchy/context_free]{context-free grammar} \( G = (V, \Sigma, \to, S) \) is an \hyperref[def:ordered_tree]{ordered tree} \( T = (X, E, r, \leq) \) whose nodes are \hyperref[def:labeled_set]{labeled} by \( l: X \to V \cup \Sigma \cup \set{ \varepsilon } \) such that:
+  A \term[ru=дерево вывода (\cite[81]{Гладкий1973Языки})]{parse tree} or \term{concrete syntax tree} for the \hyperref[def:chomsky_hierarchy/context_free]{context-free grammar} \( G = (V, \Sigma, \to, S) \) is a \hyperref[def:multiway_tree]{multiway tree} over \( V \cup \Sigma \cup \set{ \varepsilon } \) such that:
   \begin{thmenum}
-    \thmitem{def:parse_tree/root} The label of the root \( r \) is \( l(r) = S \).
-    \thmitem{def:parse_tree/leaves} The \hyperref[def:rooted_tree/leaf]{leaves} of \( T \) are labeled by terminals or by \( \varepsilon \).
-    \thmitem{def:parse_tree/children} The \hyperref[def:rooted_tree/parent_child]{children} of \( x \) are \( y_1 < \ldots < y_n \) if and only if there is a rule
+    \thmitem{def:parse_tree/root} The root has value \( S \).
+    \thmitem{def:parse_tree/leaves} The values of the leaves are either terminals or \( \varepsilon \).
+    \thmitem{def:parse_tree/children} There is a rule
     \begin{equation*}
-      l(x) \to l(y_1) \cdots l(y_n).
+      x \to y_1 \cdots y_n,
     \end{equation*}
+    where \( x \) is the value of the root of \( T \) and \( y_1, \ldots, y_n \) --- of the immediate children of \( T \).
 
-    In order to distinguish \( \varepsilon \) rules from \enquote{dangling} nonterminals, we handle the special case \( l(x) \to \varepsilon \) by introducing a single child for \( x \) with a label \( \varepsilon \).
+    In order to distinguish \( \varepsilon \) rules from \enquote{dangling} nonterminals, we handle the special case \( x \to \varepsilon \) by introducing a single subtree whose root has value \( \varepsilon \).
   \end{thmenum}
 \end{definition}
 \begin{comments}
@@ -20,17 +21,15 @@
 \end{comments}
 
 \begin{remark}\label{rem:parse_tree_roots}
-  In recursive definitions and inductive proofs, for example in relation to \hyperref[con:evaluation]{evaluation}, we usually consider \hyperref[def:formal_grammar/schema]{grammar schemas} and each subtree has a root with a different label. In this case, we work with parse trees for different grammars over the same grammar schema (differing by the start symbol). We also allow singleton trees consisting of a single terminal or \( \varepsilon \), acknowledging that these are not technically parse trees.
+  In syntactic definitions and proofs, for example in relation to \hyperref[con:evaluation]{evaluation}, we usually consider \hyperref[def:formal_grammar/schema]{grammar schemas} and each subtree has a root with a different label. In this case, we work with parse trees for different grammars over the same grammar schema (differing by the start symbol). We also allow singleton trees consisting of a single terminal or \( \varepsilon \), acknowledging that these are not technically parse trees.
 \end{remark}
 
 \begin{definition}\label{def:parse_tree_string}\mcite[46]{Aho2006}
-  Let \( T = (X, A, r, \leq, l) \) be a \hyperref[def:parse_tree]{parse tree}. Let \( x_1, \ldots, x_n \) be the nodes in the \hyperref[def:traversal_ordering]{pre-order traversal} of \( T \) whose labels are terminals. We say that \( T \) \term{yields} the string
-  \begin{equation*}
-    l(x_1) \cdots l(x_n).
-  \end{equation*}
-
-  We implicitly associate this string with the parse tree.
+  We say that the \hyperref[def:parse_tree]{parse tree} \( T \) \term{yields} the string \( x_1 \cdots x_n \) if, for \( k = 1, \ldots, n \), the \( k \)-th member in the \hyperref[def:traversal_ordering]{pre-order traversal} of \( T \) has value \( x_k \).
 \end{definition}
+\begin{comments}
+  \item We implicitly associate this string with the parse tree.
+\end{comments}
 
 \begin{example}\label{ex:def:parse_tree}
   We give several examples of \hyperref[def:parse_tree]{parse trees}.
@@ -140,7 +139,7 @@
   \begin{thmenum}
     \thmitem{alg:brute_force_parsing/tree_set} For each \( v_k \) in the rule \( A \to v_1 \cdots v_m \), construct a set \( \mscrT_k \) of parse trees as follows:
     \begin{itemize}
-      \item If \( v_k \) is a terminal, let \( \mscrT_k \) be a set with one element --- the tree whose only node has a label \( w_k \).
+      \item If \( v_k \) is a terminal, let \( \mscrT_k \) be a set with one element --- the singleton tree with value \( w_k \).
 
       \item If \( v_k \) is a nonterminal, let
       \begin{equation*}
@@ -235,7 +234,7 @@
 
   We will construct a parse tree recursively. At step \( i \), where \( i = 0, \ldots, m \), the leaves of the tree \( T_i \) (traversed via \hyperref[def:traversal_ordering]{pre-ordering}) should be the symbols of \( w_i \). Proceed as follows:
   \begin{thmenum}
-    \thmitem{alg:derivation_to_parse_tree/initial} Let \( T_0 \) be the tree with only node \( S \).
+    \thmitem{alg:derivation_to_parse_tree/initial} Let \( T_0 \) be the singleton tree with value \( S \).
 
     \thmitem{alg:derivation_to_parse_tree/step} For every \( i > 0 \), suppose that we have already built \( T_{i-1} \) for \( w_{i-1} \). The tree \( T_{i-1} \) has the form
     \begin{equation*}
@@ -267,46 +266,32 @@
 \end{comments}
 
 \begin{algorithm}[Leftmost derivation from parse tree]\label{alg:parse_tree_to_leftmost_derivation}
-  Let \( T = (X, E, r, \leq, l) \) be a parse tree for \( w = r_1 \cdots r_n \).
+  Let \( T \) be a parse tree for \( w = x_1 \cdots x_n \), let \( V \) be its set of nodes and let \( X \) be its underlying set of values.
 
   We will construct a derivation recursively. We will actually construct a sequence
   \begin{equation*}
     u_0, u_1, u_2, \ldots
   \end{equation*}
-  of strings over \( X \), i.e. sequences of nodes of \( T \), such that the ordering of the symbols of \( u_i \) agrees with the \hyperref[def:traversal_ordering]{pre-ordering traversal} in \( T \). Since there are only finitely many nodes in \( T \), this sequence \hyperref[def:stabilizing_sequence]{stabilizes} --- there exists some index \( m \) such that the labels of \( u_m \) are terminals and \( u_i = u_m \) for any \( i > m \).
+  of strings over \( V \), i.e. sequences of nodes in \( T \), such that the ordering of the symbols of \( u_i \) agrees with the \hyperref[def:traversal_ordering]{pre-ordering traversal} in \( T \). Since there are only finitely many nodes in \( T \), this sequence \hyperref[def:stabilizing_sequence]{stabilizes} --- there exists some index \( m \) such that the values of \( u_m \) are terminals and \( u_i = u_m \) for any \( i > m \).
 
-  Proceed as follows:
+  We proceed as follows:
   \begin{thmenum}
-    \thmitem{alg:parse_tree_to_leftmost_derivation/initial} Define
-    \begin{equation*}
-      u_0 \coloneqq r
-    \end{equation*}
-    and
-    \begin{equation*}
-      w_0 \coloneqq l(r) = S.
-    \end{equation*}
+    \thmitem{alg:parse_tree_to_leftmost_derivation/initial} Define \( u_0 \) to be the root of \( T \) and let \( w_0 \) be its value.
 
-    \thmitem{alg:parse_tree_to_leftmost_derivation/step} For every \( i > 0 \), suppose that
-    \begin{equation*}
-      u_{i-1} = r_1 \cdots r_{n_{i-1}}.
-    \end{equation*}
+    \thmitem{alg:parse_tree_to_leftmost_derivation/step} For every \( i > 0 \), let \( r_1 \cdots r_{n_{i-1}} \) be the elements of \( u_{i-1} \).
 
     \begin{itemize}
-      \item If \( l(r_j) \) is a terminal for each \( j = 1, \ldots, n_{i-1} \), let \( u_i \coloneqq u_{i-1} \). This will mean that the \enquote{stabilizing index} \( m \) is either \( i - 1 \) or some smaller index.
+      \item If the value of \( r_j \) is a terminal for each \( j = 1, \ldots, n_{i-1} \), let \( u_i \coloneqq u_{i-1} \). This will mean that the \enquote{stabilizing index} \( m \) is either \( i - 1 \) or some smaller index.
 
-      \item Otherwise, let \( j \) be the smallest index such that \( l(r_j) \) is a nonterminal, and let \( k'_1 < \cdots < k'_{n'_j} \) be the child nodes of \( r_j \). Then define
+      \item Otherwise, let \( j \) be the smallest index such that the value \( u \) of \( r_j \) is a nonterminal, and let \( k_1, \cdots, k_{n_j} \) be the immediate children of \( r_j \). Then define
       \begin{equation*}
-        u_i \coloneqq r_1 \cdots r_{j-1} \hi{ k'_1 \cdots k'_{n'_j} } r_{j+1} \cdots r_{n_j}.
+        u_i \coloneqq r_1 \cdots r_{j-1} \underbrace{ k_1 \cdots k_{n_j} } r_{j+1} \cdots r_{n_j}
       \end{equation*}
+      and let \( w_i \) be the corresponding string of values.
 
-      Define also
+      Denote by \( v_1, \ldots, v_{n_j} \) the values of \( k_1, \cdots, k_{n_j} \). \Fullref{def:parse_tree/children} ensures that there exists a rule
       \begin{equation*}
-        w_i \coloneqq l(r_1) \cdots l(r_{j-1}) \hi{ l(k'_1) \cdots l(k'_{n'_j}) } l(r_{j+1}) \cdots l(r_{n_j}).
-      \end{equation*}
-
-      \Fullref{def:parse_tree/children} ensures there exists a rule
-      \begin{equation*}
-        l(r_j) \to l(k'_1) \cdots l(k'_{n'_j})
+        u \to v_1 \cdots v_{n_j}
       \end{equation*}
       that allows us to transition from \( w_{i-1} \) to \( w_i \).
     \end{itemize}

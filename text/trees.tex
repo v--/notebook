@@ -65,17 +65,6 @@
   Therefore, \( T \) is also acyclic in addition to being connected.
 \end{proof}
 
-\begin{example}\label{ex:def:tree}
-  We list several examples of \hyperref[def:tree]{trees}:
-  \begin{thmenum}
-    \thmitem{ex:def:tree/integers} The reduced infinite integer graphs \eqref{eq:ex:infinite_integer_graphs/positive}, \eqref{eq:ex:infinite_integer_graphs/negative} and \eqref{eq:ex:infinite_integer_graphs/two_sided} from \fullref{ex:infinite_integer_graphs} are simple examples of infinite trees.
-
-    \thmitem{ex:def:tree/proofs} We use \hyperref[def:natural_deduction_proof_tree]{proof trees} in \fullref{subsec:deduction_systems}. Proof trees can have \hyperref[def:labeled_set]{labels} on their nodes and edges.
-
-    \thmitem{ex:def:tree/syntax} In order to formalize logical formulas, we use \hyperref[def:parse_tree]{concrete} and \hyperref[con:abstract_syntax_tree]{abstract syntax trees} from \hyperref[def:formal_grammar]{formal grammar}. Except for labels, they also have additional structure --- they are \hyperref[def:ordered_tree]{ordered}.
-  \end{thmenum}
-\end{example}
-
 \begin{definition}\label{def:rooted_tree}\mcite[15]{Diestel2005}
   A \term[ru=корневое дерево (\cite[37]{Карпов2017})]{rooted tree} is a triple \( T = (V, E, r) \), where \( (V, E) \) is a \hyperref[def:tree]{tree} and \( r \) is a distinguished node, called the \term{root}.
 
@@ -96,30 +85,93 @@
   \end{thmenum}
 \end{definition}
 
-\begin{definition}\label{def:ordered_tree}\mcite[exer. 3.52(b)]{Erickson2019}
-  An \term{ordered tree} is a \hyperref[def:rooted_tree]{rooted tree} with a \hyperref[def:partially_ordered_set]{partial order} such that every set of \hyperref[def:rooted_tree/siblings]{siblings} is a \hyperref[def:partial_order_chain]{chain}.
+\paragraph{Multiway trees}
+
+\begin{remark}\label{rem:multiway_trees}
+  The term \enquote{tree} refers to slightly different concepts in graph theory, where \fullref{def:tree} is ubiquitous, and in informatics, where the approach we will present is more useful.
+
+  Consider the \hyperref[con:abstract_syntax_tree]{abstract syntax tree} of the axiom schema \eqref{eq:def:minimal_implication_logic/dist}:
+  \begin{equation}\label{eq:rem:multiway_trees/dist}
+    \begin{aligned}
+      \includegraphics[page=1]{output/rem__multiway_trees}
+    \end{aligned}
+  \end{equation}
+
+  Let us analyze the features that \fullref{def:tree} lacks in order to represent it:
+  \begin{itemize}
+    \item The above tree has a distinguished root and leaves marked with atomic formula placeholders. Graph-theoretic trees have no distinguished root, although this problem is easily solved by considering \hyperref[def:rooted_tree]{rooted trees} instead.
+    \item The nodes of every child are ordered by their horizontal position in the drawing. We can mitigate this for graph-theoretic trees by introducing an ordering that is total on the children of any node.
+    \item The same node cannot be a child of two distinct nodes because that would introduce a \hyperref[def:graph_cycle]{cycle}. This can be mitigated by instead considering trees whose nodes are natural numbers, and the actual values we are interested in representing are \hyperref[def:labeled_set]{labels}.
+  \end{itemize}
+
+  The first two points require some adjustments to the definition, but the third has an important consequence that is not easy to mitigate --- we lose uniqueness because multiple distinct trees may have the same labels, and we rely on such trees being identical.
+
+  Furthermore, the kinds of trees we are interested in representing in this way are built recursively, with a focus on inductive reasoning.
+
+  This leads to \fullref{def:multiway_tree}, which provides a very different outlook on trees, but also provides a simple reduction to graph-theoretic trees.
+\end{remark}
+
+\begin{definition}\label{def:multiway_tree}\mimprovised
+  Suppose that we are given a \hyperref[def:grothendieck_universe]{Grothendieck universe} \( \mscrU \), which is safe to assume to be the smallest suitable one as explained in \fullref{def:large_and_small_sets}.
+
+  Fix a set \( X \) in \( \mscrU \), whose elements we will call \term{values}, and consider the following operator:
+  \begin{equation*}
+    \begin{aligned}
+      &R: \mscrU \to \mscrU \\
+      &R(A) \coloneqq X \times A^*,
+    \end{aligned}
+  \end{equation*}
+  where \( A^* \) is the \hyperref[def:formal_language/kleene_star]{Kleene star} of \( A \).
+
+  A \term{multiway tree} over \( X \) is a member of the least fixed point, in the sense of \fullref{thm:knaster_tarski_iteration/continuous}, of \( R \). More concretely, a multiway tree is an \( (n + 1) \)-tuple \( T = (x, T_1, \ldots, T_n) \), where \( x \) is a value and \( T_1, \ldots, T_n \) are other trees. We will refer to these trees as the \term{immediate subtrees} of \( T \).
+
+  \begin{thmenum}
+    \thmitem{def:multiway_tree/subtree} We will say that \( T' \) is a \term{subtree} of \( T \) if it is either \( T \) itself, an immediate subtree (i.e. a non-value tuple member) of \( T \), or, recursively, a subtree of an immediate subtree of \( T \).
+
+    \thmitem{def:multiway_tree/rooted} We can regard a multiway tree \( T \) as a graph-theoretic \hyperref[def:rooted_tree]{rooted tree} as follows:
+    \begin{itemize}
+      \item The set of nodes (vertices) is the set of subtrees of \( T \), the root being \( T \) itself.
+      \item Two nodes are connected by an edge if either is an immediate subtree of the other.
+    \end{itemize}
+
+    \thmitem{def:multiway_tree/occurrence} An \term{occurrence} of the value \( a \) in \( T \) is simply a node (subtree) of \( T \) whose value is \( v \).
+  \end{thmenum}
 \end{definition}
+\begin{comments}
+  \item We use the adjective \enquote{multiway} to contrast with trees with an unrestricted number of immediate subtrees, similarly to \incite[561]{Savage1998}. We needed a specific adjective to distinguish multiway trees from graph-theoretic trees.
+
+  \item Although multiway trees have a very distinct definition from graph-theoretic trees, \fullref{def:multiway_tree/rooted} allows us to use the machinery of \fullref{subsec:trees} where appropriate. Of course, the definitions \fullref{def:multiway_tree/leaf} and \fullref{def:rooted_tree/leaf} for a leaf coincide.
+\end{comments}
+\begin{defproof}
+  \SubProof{Proof that \( R \) is \hyperref[def:scott_continuity]{Scott-continuous}} We need this in order to justify our usage of \fullref{thm:knaster_tarski_iteration/continuous}.
+
+  Fix an upward-directed family \( \mscrA \) of sets in \( \mscrU \). If \( (r, T_1, \ldots, T_n) \in R(\bigcup \mscrA) \), then \( T_1, \ldots, T_n \) are elements of \( \bigcup \mscrA \). Denote by \( A_i \) the set towards which \( T_i \) belongs. Then, since \( \mscrA \) is upward-directed, there exists a set \( A \) containing \( A_1, \ldots, A_n \), and \( (r, T_1, \ldots, T_n) \in R(A) \).
+
+  \SubProof{Proof that the subtrees of \( T \) form a rooted tree} It is easiest to show \fullref{def:tree/single_path} --- there is indeed a unique path from the root to any node.
+\end{defproof}
 
 \begin{definition}\label{def:traversal_ordering}\mcite[228]{Erickson2019}
-  We will define two \term{traversal orderings} on a given \hyperref[def:set_finiteness]{finiteness} \hyperref[def:ordered_tree]{ordered tree} \( T = (V, A, r, \leq) \). These are \hyperref[def:well_ordered_set]{well-orderings} \( \leq_W \) of the vertices of \( V \). A \term{pre-order traversal}\fnote{This concept is not related to \hyperref[def:preordered_set]{preordered sets}.} (see \ref{def:traversal_ordering/step/pre}) visits each root before the successors, while a \term{post-order traversal} (see \ref{def:traversal_ordering/step/post}) visits the root last. Equivalently, we can regard a traversal as a \hyperref[def:sequence]{finite sequence} of vertices rather than an ordering of \( V \).
+  Fix a finite \hyperref[def:multiway_tree]{multiway tree} \( T \) and let \( V \) be its family of nodes. We will define two \hyperref[def:well_ordered_set]{well-orderings} on \( V \) obtained by \enquote{traversing} \( T \).
 
-  The relation \( \leq_W \) can be defined on \( \card(V) \) as follows:
+  A \term{pre-order traversal}\fnote{This concept is not related to \hyperref[def:preordered_set]{preordered sets}.} (see \ref{def:traversal_ordering/step/pre}) visits each root before the children, while a \term{post-order traversal} (see \ref{def:traversal_ordering/step/post}) visits the root after them.
+
+  The relation \( \leq \) can be defined via recursion on the cardinality \( n \) of \( V \) as follows:
   \begin{thmenum}
-    \thmitem{def:traversal_ordering/init} If \( \card(V) = 1 \), then the ordering is trivial --- let \( r \leq_W r \).
-    \thmitem{def:traversal_ordering/step} Suppose that \( \card(V) = n \) and that we have already built a well-order for all smaller trees. Let \( T_k = (V_k, A_k, r_k) \), \( k = 1, \ldots, n \) be rooted subtrees, whose roots \( r_1 < \ldots < r_n \) are successors of \( r \), that is,
+    \thmitem{def:traversal_ordering/init} If \( n = 1 \), the ordering is trivial --- let \( v \leq v \).
+    \thmitem{def:traversal_ordering/step} Suppose that we have already built a well-ordering for trees with fewer than \( n \) nodes, and that \( T \) has exactly \( n \) nodes. Let \( r \) be the root and \( T_1, \ldots, T_m \) be the immediate descendants of \( T \), that is,
     \begin{equation*}
       \includegraphics[page=1]{output/def__traversal_ordering}
     \end{equation*}
 
-    Let \( \leq_{W_k} \) be the recursively defined traversal ordering on \( T_k \).
+    For \( k = 1, \ldots, m \) denote by \( \leq_i \) the recursively defined ordering on \( T_i \), and by \( V_i \) --- the set of nodes.
 
-    Define the relation \( x \leq_W y \) on \( V \) to hold:
+    Define the relation \( v \leq w \) on \( V \) to hold in the following cases:
     \begin{thmenum}
-      \thmitem{def:traversal_ordering/step/same} If both \( x \) and \( y \) belong to \( V_i \) and \( x \leq_{W_i} y \).
-      \thmitem{def:traversal_ordering/step/different} If \( x \in V_i \) and \( y \in V_j \) with \( i < j \).
-      \thmitem{def:traversal_ordering/step/root} If \( x = y = r \).
-      \thmitem{def:traversal_ordering/step/pre} If \( x = r \) in case we want a pre-order.
-      \thmitem{def:traversal_ordering/step/post} If \( y = r \) in case we want a post-order.
+      \thmitem{def:traversal_ordering/step/same} If both \( v \) and \( w \) belong to \( V_i \) and \( x \leq_i y \).
+      \thmitem{def:traversal_ordering/step/different} If \( v \in V_i \) and \( w \in V_j \) with \( i < j \).
+      \thmitem{def:traversal_ordering/step/root} If \( v = w = r \).
+      \thmitem{def:traversal_ordering/step/pre} If \( v = w \) in case we want a pre-order.
+      \thmitem{def:traversal_ordering/step/post} If \( v = r \) in case we want a post-order.
     \end{thmenum}
   \end{thmenum}
 
@@ -131,26 +183,26 @@
   \end{figure}
 \end{definition}
 \begin{defproof}
-  We will show via induction on \( \card(V) \) that \( \leq_W \) is a well-order. Since the trivial case \( \card(V) = 1 \) is vacuous, suppose that \( \card(V) > 1 \).
+  We will show via induction on \( n \) that \( \leq \) is a well-order. Since the trivial case \( n = 1 \) is vacuous, suppose that \( n > 1 \).
 
   \SubProofOf[def:binary_relation/reflexive]{reflexivity} Follows from \fullref{def:traversal_ordering/step/root}.
 
-  \SubProofOf[def:binary_relation/antisymmetric]{antisymmetry} Suppose that \( x \leq_W y \) and \( y \leq_W x \) with \( x \neq y \).
+  \SubProofOf[def:binary_relation/antisymmetric]{antisymmetry} Suppose that \( v \leq w \) and \( w \leq v \) with \( v \neq w \).
   \begin{itemize}
-    \item If both \( x \) and \( y \) belong to \( V_i \), antisymmetry follows from the inductive hypothesis.
-    \item If \( x \in V_i \) and \( y \in V_j \) with \( i < j \), then we cannot possibly have \( x \geq_W y \).
-    \item If \( x = r \), then \( r \leq y \); this is pre-order traversal, hence we cannot have \( r \geq y \).
+    \item If both \( v \) and \( w \) belong to \( V_i \), antisymmetry follows from the inductive hypothesis.
+    \item If \( v \in V_i \) and \( w \in V_j \) with \( i < j \), then we cannot possibly have \( v \geq_W w \).
+    \item If \( v = r \), then \( r \leq w \); this is pre-order traversal, hence we cannot have \( r \geq w \).
     \item We handle post-order traversal similarly.
   \end{itemize}
 
-  \SubProofOf[def:binary_relation/transitive]{transitivity} Suppose that \( x \leq_W y \) and \( y \leq_W z \) with all three elements distinct.
+  \SubProofOf[def:binary_relation/transitive]{transitivity} Suppose that \( u \leq v \) and \( v \leq w \) with all three elements distinct.
   \begin{itemize}
     \item If all three belong to \( V_i \), antisymmetry follows from the inductive hypothesis.
-    \item If \( x = r \), then \( r \leq y \); this is pre-order traversal, hence by definition \( x \leq_W z \).
-    \item If \( z = r \), then \( y \leq z \); this is post-order traversal, hence by definition \( x \leq_W z \).
-    \item We cannot have \( y = r \).
-    \item If \( x, y \in V_i \) and \( z \in V_j \) with \( i < j \), then \( x \leq_W z \) by \ref{def:traversal_ordering/step/different}.
-    \item If \( x \in V_i \) and \( y, z \in V_j \) with \( i < j \), then also \( x \leq_W z \) by \ref{def:traversal_ordering/step/different}.
+    \item If \( u = r \), then \( r \leq v \); this is pre-order traversal, hence by definition \( u \leq w \).
+    \item If \( w = r \), then \( v \leq w \); this is post-order traversal, hence by definition \( u \leq w \).
+    \item We cannot have \( v = r \).
+    \item If \( x, v \in V_i \) and \( w \in V_j \) with \( i < j \), then \( u \leq w \) by \ref{def:traversal_ordering/step/different}.
+    \item If \( u \in V_i \) and \( y, w \in V_j \) with \( i < j \), then also \( u \leq w \) by \ref{def:traversal_ordering/step/different}.
   \end{itemize}
 
   \SubProofOf[def:well_founded_relation]{well-foundedness} Follows from \fullref{thm:def:well_ordered_set/finite_chain}.
