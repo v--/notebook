@@ -1,5 +1,105 @@
 \subsection{Propositional normal forms}\label{subsec:propositional_normal_forms}
 
+\paragraph{Substitution}
+
+\begin{definition}\label{def:propositional_substitution}
+  We sometimes want to substitute a propositional variable with another variable or even with a formula. This is akin to applying a \hyperref[def:boolean_function]{Boolean function} like \( x \synvee y \) to different variables (e.g. to obtain \( x \synvee x \)) or even concrete values (e.g. \( F \synvee T \)), except that it is done on a purely syntactic level without involving any semantics involved.
+
+  \begin{thmenum}
+    \thmitem{def:propositional_substitution/literal}\mcite[def. 1.3.13]{Hinman2005} We define the \term[ru=подстановка (\cite[66]{КолмогоровДрагалин2006}), en=substitution]{literal substitution} of the propositional formula \( \chi \) with \( \omega \) in \( \varphi \) as follows:
+    \begin{equation}\label{eq:def:propositional_substitution/single}
+      \varphi[\chi \mapsto \omega] \coloneqq \begin{cases}
+        \omega,                                                         &\varphi = \chi \\
+        \varphi,                                                        &\varphi \neq \chi \T{and} \varphi \in \set{ \syntop, \synbot } \cup \op*{Prop} \\
+        \synneg \psi[\chi \mapsto \omega],                              &\varphi \neq \chi \T{and} \varphi = \synneg \psi \\
+        \psi[\chi \mapsto \omega] \syncirc \theta[\chi \mapsto \omega], &\varphi \neq \chi \T{and} \varphi = \psi \syncirc \theta, \circ \in \op*{Conn}.
+      \end{cases}
+    \end{equation}
+
+    Note that it is not necessary for \( \chi \) to be a subformula of \( \varphi \) --- the substitution simply does nothing otherwise.
+
+    \thmitem{def:propositional_substitution/uniform}\mcite[def. 3.1.3]{CitkinMuravitsky2021} A \term{uniform substitution} is a map \( \sigma: \op*{Form} \to \op*{Form} \) such that
+    \begin{align*}
+      \sigma(\synneg \varphi) = \synneg \sigma(\varphi) &&\T{and}&& \sigma(\varphi \syncirc \psi) = \synneg \sigma(\varphi) \syncirc \sigma(\psi).
+    \end{align*}
+
+    These conditions make it clear how to extend a substitution only defined for variables.
+  \end{thmenum}
+\end{definition}
+
+\begin{proposition}\label{thm:propositional_substitution_equivalence}
+  If \( \chi \gleichstark \omega \), then
+  \begin{equation*}
+    \varphi[\chi \mapsto \omega] \gleichstark \varphi.
+  \end{equation*}
+\end{proposition}
+\begin{proof}
+  Suppose that \( \chi \gleichstark \omega \). We use \fullref{thm:induction_on_syntax_trees} on \( \varphi \) to show that
+  \begin{equation}\label{eq:thm:propositional_substitution_equivalence/proof}
+    \varphi[\chi \mapsto \omega] \gleichstark \varphi.
+  \end{equation}
+
+  \begin{itemize}
+    \item If \( \varphi = \chi \), then \( \varphi[\chi \mapsto \omega] = \omega \) and, by definition,
+    \begin{equation*}
+      \varphi = \chi \gleichstark \omega = \varphi[\chi \mapsto \omega].
+    \end{equation*}
+
+    \item If \( \varphi \neq \chi \) and \( \varphi \in \set{ \syntop, \synbot } \cup \op*{Prop} \), then \( \varphi[\chi \mapsto \omega] = \varphi \) and \eqref{eq:thm:propositional_substitution_equivalence/proof} again holds trivially.
+
+    \item If \( \varphi \neq \chi \) and \( \varphi = \synneg \omega \) and if the inductive hypothesis holds for \( \omega \), then
+    \begin{equation*}
+      \varphi[\chi \mapsto \omega] = \synneg \psi[\chi \mapsto \omega].
+    \end{equation*}
+
+    For any interpretation \( I \),
+    \begin{equation*}
+      \Bracks[\Big]{ \varphi[\chi \mapsto \omega] }_I
+      =
+      \oline{\Bracks[\Big]{\psi[\chi \mapsto \omega] }_I}
+      \reloset {\T{ind.}} =
+      \oline{\Bracks{\psi}_I}
+      =
+      \Bracks{\varphi}_I.
+    \end{equation*}
+
+    Generalizing on \( I \), we conclude that \eqref{eq:thm:propositional_substitution_equivalence/proof} holds in this case.
+
+    \item If \( \varphi \neq \chi \) and \( \varphi = \psi \syncirc \theta, {\syncirc} \in \op*{Conn} \) and if the inductive hypothesis holds for both \( \psi \) and \( \theta \), then for any interpretation \( I \),
+    \begin{equation*}
+      \Bracks[\Big]{ \varphi[\chi \mapsto \omega] }_I
+      =
+      \Bracks[\Big]{ \psi[\chi \mapsto \omega] }_I \relcirc \Bracks[\Big]{ \theta[\chi \mapsto \omega] }_I
+      \reloset {\T{ind.}} =
+      \Bracks[\Big]{\psi}_I \relcirc \Bracks[\Big]{\theta}_I
+      =
+      \Bracks{\varphi}_I.
+    \end{equation*}
+
+    Again, generalizing on \( I \), we conclude that \eqref{eq:thm:propositional_substitution_equivalence/proof} holds.
+  \end{itemize}
+
+  We have verified that \eqref{eq:thm:propositional_substitution_equivalence/proof} holds in all cases.
+\end{proof}
+
+\begin{remark}\label{rem:uniform_substitution_notation}
+  For \hyperref[def:propositional_substitution/uniform]{uniform substitution}, instead of writing \( \sigma(\varphi) \), we may write \( \varphi[\sigma] \) or, in case only finitely many variables are not \hyperref[def:fixed_point]{fixed points},
+  \begin{equation*}
+    \varphi[P_1 \mapsto \sigma(P_1), \cdots, P_n \mapsto \sigma(P_n)]
+  \end{equation*}
+
+  when the variables \( P_1, \ldots, P_n \) are clear from the context, we write
+  \begin{equation*}
+    \varphi[\omega_1, \cdots, \omega_n]
+  \end{equation*}
+  as a shorthand for
+  \begin{equation*}
+    \varphi[P_1 \to \omega_1, \cdots, P_n \to \omega_n].
+  \end{equation*}
+
+  This also applies to the different kinds of first-order substitution defined in \fullref{def:first_order_substitution}, where the notation also allows us to use predicate formulas discussed in \fullref{rem:uniform_substitution_notation}.
+\end{remark}
+
 \paragraph{Conjunctive and disjunctive normal forms}
 
 \begin{definition}\label{def:cnf_and_dnf}\mimprovised
@@ -50,7 +150,7 @@
     \Bracks{L_1^\oppos}_I \wedge \cdots \wedge \Bracks{L_n^\oppos}_I
     =
     \oline{\Bracks{L_1}_I} \wedge \cdots \wedge \oline{\Bracks{L_n}_I}
-    \reloset {\ref{thm:boolean_equivalences/de_morgan}} =
+    \reloset {\ref{thm:classical_equivalences/de_morgan}} =
     \oline{ \Bracks{L_1}_I \vee \cdots \vee \Bracks{L_n}_I }
     =
     \oline{ \Bracks{\psi}_I }
@@ -71,7 +171,7 @@
     \Bracks{\psi_1^\oppos}_I \vee \cdots \vee \Bracks{\psi_m^\oppos}_I
     =
     \oline{\Bracks{\psi_1}_I} \vee \cdots \vee \oline{\Bracks{\psi_m}_I}
-    \reloset {\ref{thm:boolean_equivalences/de_morgan}} =
+    \reloset {\ref{thm:classical_equivalences/de_morgan}} =
     \oline{ \Bracks{\psi_1}_I \wedge \cdots \wedge \Bracks{\psi_m}_I }
     =
     \oline{ \Bracks{\varphi}_I }
@@ -150,7 +250,7 @@
       \end{cases}
     \end{equation*}
 
-    \Fullref{thm:boolean_equivalences/conditional_as_disjunction} and \fullref{def:heyting_algebra/biconditional} justify the substitutions and ensure that \( C_2(\varphi) \gleichstark \varphi \).
+    \Fullref{thm:classical_equivalences/conditional_as_disjunction} and \fullref{def:heyting_algebra/biconditional} justify the substitutions and ensure that \( C_2(\varphi) \gleichstark \varphi \).
 
     \thmitem{alg:cnf_and_dnf/negation} We \enquote{push} negations inwards. Let
     \begin{equation*}
@@ -163,7 +263,7 @@
       \end{cases}
     \end{equation*}
 
-    \Fullref{thm:boolean_equivalences/de_morgan} and \fullref{thm:boolean_equivalences/double_negation} ensure that \( C_3(\varphi) \gleichstark \varphi \) for any formula \( \varphi \).
+    \Fullref{thm:classical_equivalences/de_morgan} and \fullref{thm:classical_equivalences/double_negation} ensure that \( C_3(\varphi) \gleichstark \varphi \) for any formula \( \varphi \).
 
     If case \( \varphi \) has no (bi)conditionals (e.g. due to \( C_2 \)), the result \( C_3(\varphi) \) has negations only before propositional variables.
 
@@ -180,7 +280,7 @@
 
     The last case is due to the usual traversal rules, and we could avoid writing it, but we wanted to be explicit about how conjunction behaves with \( C_4 \).
 
-    \Fullref{thm:boolean_equivalences/distributivity} ensures that \( C_4(\varphi) \gleichstark \varphi \) for any formula \( \varphi \).
+    \Fullref{thm:classical_equivalences/distributivity} ensures that \( C_4(\varphi) \gleichstark \varphi \) for any formula \( \varphi \).
 
     To \enquote{pull} out disjunctions instead, we will need the operator \( C_4^\oppos \), which is defined like \( C_4 \) but with \( \synvee \) and \( \synwedge \) swapped.
   \end{thmenum}
@@ -360,7 +460,7 @@
 \begin{example}\label{ex:def:cnf_and_dnf}
   We list examples of formulas in \hyperref[def:cnf_and_dnf]{conjunctive and disjunctive normal forms}:
   \begin{thmenum}
-    \thmitem{def:cnf_and_dnf/perfect_cnf} The \hyperref[thm:boolean_equivalences]{Boolean equivalence} \eqref{eq:thm:boolean_equivalences/conditional_as_disjunction} allows us to represent convert the \hyperref[def:propositional_alphabet/connectives/conditional]{conditional} \( \varphi \synimplies \psi \) to \( \synneg \varphi \synvee \psi \), which is both in CNF and in DNF.
+    \thmitem{def:cnf_and_dnf/perfect_cnf} The \hyperref[thm:classical_equivalences]{Boolean equivalence} \eqref{eq:thm:classical_equivalences/conditional_as_disjunction} allows us to represent convert the \hyperref[def:propositional_alphabet/connectives/conditional]{conditional} \( \varphi \synimplies \psi \) to \( \synneg \varphi \synvee \psi \), which is both in CNF and in DNF.
 
     It is an elementary disjunction, hence it is vacuously in perfect CNF.
 
