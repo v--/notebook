@@ -3,16 +3,15 @@ from ....parsing.mixins.whitespace import WhitespaceParserMixin
 from ....parsing.parser import Parser
 from ...fol.alphabet import BinaryConnective, PropConstant, Quantifier
 from ...fol.terms import Variable
-from ..rules import (
+from ..placeholders import (
     AtomicFormulaPlaceholder,
     ConnectiveFormulaPlaceholder,
     ConstantFormulaPlaceholder,
     FormulaPlaceholder,
     NegationFormulaPlaceholder,
-    Premise,
     QuantifierFormulaPlaceholder,
-    Rule,
 )
+from ..rules import Premise, Rule
 from .tokenizer import tokenize_nd_string
 from .tokens import MiscToken, RuleToken
 

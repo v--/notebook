@@ -1,33 +1,77 @@
+from collections.abc import Iterable
+from dataclasses import dataclass
+from typing import NamedTuple
+
+from ...exceptions import NotebookCodeError
+from ...support.names import new_var_name
 from ..fol.alphabet import BinaryConnective
 from ..fol.formulas import ConnectiveFormula, Formula, is_conditional
-from .rules import FormulaPlaceholder
-from .schemas import is_schema_instance
+from .parsing.parser import parse_rule
+from .placeholders import AtomicFormulaPlaceholder, FormulaPlaceholder
+from .proof_trees import AssumptionTree, NaturalDeductionSystem, ProofTree, RuleApplicationTree
+from .rules import Rule
+from .substitutions import UniformSubstitution, build_substitution, is_schema_instance
 
 
-def is_valid_derivation(axiom_schemas: set[FormulaPlaceholder], premises: set[Formula], derivation: list[Formula]) -> bool:  # noqa: PLR0911
-    if len(derivation) == 0:
-        return True
+class AxiomaticDerivationError(NotebookCodeError):
+    pass
 
-    *rest, conclusion = derivation
 
-    if not is_valid_derivation(axiom_schemas, premises, rest):
-        return False
+class InvalidDerivationError(AxiomaticDerivationError):
+    pass
 
-    if conclusion in premises:
-        return True
 
-    if any(is_schema_instance(schema, conclusion) for schema in axiom_schemas):
-        return True
+MODUS_PONENS = parse_rule('(MP) (φ → ψ), φ ⫢ ψ')
 
-    for premise in premises:
-        if is_conditional(premise) and premise.b == conclusion and any(premise.a == derived for derived in rest):
-            return True
 
-    for derived in rest:
-        if is_conditional(derived) and derived.b == conclusion and any(derived.a == past for past in rest):
-            return True
+class ModusPonensConfig(NamedTuple):
+    conditional_index: int
+    antecedent_index: int
+    conclusion_index: int
 
-    return False
+
+@dataclass
+class AxiomaticDerivation:
+    axiom_schemas: frozenset[FormulaPlaceholder]
+    payload: list[Formula]
+
+    def __post_init__(self) -> None:
+        assert len(self.payload) > 0
+
+    def get_conclusion(self) -> Formula:
+        return self.payload[-1]
+
+    def is_axiom(self, formula: Formula) -> bool:
+        return any(is_schema_instance(schema, formula) for schema in self.axiom_schemas)
+
+    def get_mp_config(self, k: int | None = None) -> ModusPonensConfig | None:
+        if k is None:
+            k = len(self.payload) - 1
+
+        formula = self.payload[k]
+
+        for i, cond in enumerate(self.payload[:k]):
+            if is_conditional(cond) and cond.b == formula:
+                for j, antecedent in enumerate(self.payload):
+                     if antecedent == cond.a:
+                        return ModusPonensConfig(i, j, k)
+
+        return None
+
+    def iter_premises(self) -> Iterable[Formula]:
+        for k, conclusion in enumerate(self.payload):
+            if not self.is_axiom(conclusion) and self.get_mp_config(k) is None:
+                yield conclusion
+
+    def is_premise(self, formula: Formula) -> bool:
+        return any(formula == premise for premise in self.iter_premises())
+
+    def truncate(self, index: int) -> 'AxiomaticDerivation':
+        assert index < len(self.payload)
+        return AxiomaticDerivation(
+            axiom_schemas=self.axiom_schemas,
+            payload=self.payload[:index + 1]
+        )
 
 
 def get_identity_derivation(formula: Formula) -> list[Formula]:
@@ -44,50 +88,129 @@ def get_identity_derivation(formula: Formula) -> list[Formula]:
     # This is an axiom from the second schema
     c = ConnectiveFormula(BinaryConnective.conditional, b, i)
 
-    return [a, b, c, i, goal]
+    return [c, b, i, a, goal]
 
 
-def introduce_conclusion_hypothesis(axiom_schemas: set[FormulaPlaceholder], premises: set[Formula], derivation: list[Formula], hypothesis: Formula) -> list[Formula]:
-    if len(derivation) == 0:
+def introduce_conclusion_hypothesis(derivation: AxiomaticDerivation, hypothesis: Formula) -> AxiomaticDerivation:
+    if len(derivation.payload) == 0:
         return derivation
 
-    *rest, conclusion = derivation
+    *rest, conclusion = derivation.payload
 
     goal = ConnectiveFormula(BinaryConnective.conditional, hypothesis, conclusion)
 
-    if goal in premises or any(is_schema_instance(schema, goal) for schema in axiom_schemas):
-        return [goal]
+    if derivation.is_axiom(goal) or derivation.is_premise(goal):
+        return AxiomaticDerivation(
+            axiom_schemas=derivation.axiom_schemas,
+            payload=[goal]
+        )
 
     if conclusion == hypothesis:
-        return get_identity_derivation(conclusion)
+        return AxiomaticDerivation(
+            axiom_schemas=derivation.axiom_schemas,
+            payload=get_identity_derivation(conclusion)
+        )
 
-    if conclusion in premises or any(is_schema_instance(schema, conclusion) for schema in axiom_schemas):
-        return [
-            ConnectiveFormula(BinaryConnective.conditional, conclusion, ConnectiveFormula(BinaryConnective.conditional, hypothesis, conclusion)),
-            conclusion,
-            goal
-        ]
+    if derivation.is_axiom(conclusion) or derivation.is_premise(conclusion):
+        return AxiomaticDerivation(
+            axiom_schemas=derivation.axiom_schemas,
+            payload=[
+                ConnectiveFormula(
+                    BinaryConnective.conditional,
+                    conclusion,
+                    ConnectiveFormula(BinaryConnective.conditional, hypothesis, conclusion)
+                ),
+                conclusion,
+                goal
+            ]
+        )
 
-    for i, formula in enumerate(rest):  # noqa: B007
-        if is_conditional(formula) and formula.b == conclusion:
-            break
-    else:
+    mp_config = derivation.get_mp_config()
+
+    if mp_config is None:
         return derivation
 
-    j = rest.index(formula.a)
-    rel_i = introduce_conclusion_hypothesis(axiom_schemas, premises, rest[:i + 1], hypothesis)
-    rel_j = introduce_conclusion_hypothesis(axiom_schemas, premises, rest[:j + 1], hypothesis)
+    cond = derivation.payload[mp_config.conditional_index]
+    assert is_conditional(cond)
+    cond_deriv = introduce_conclusion_hypothesis(derivation.truncate(mp_config.conditional_index), hypothesis)
+    antecetent_deriv = introduce_conclusion_hypothesis(derivation.truncate(mp_config.antecedent_index), hypothesis)
 
     dist = ConnectiveFormula(
         BinaryConnective.conditional,
-        ConnectiveFormula(BinaryConnective.conditional, hypothesis, formula.a),
-        ConnectiveFormula(BinaryConnective.conditional, hypothesis, formula.b)
+        ConnectiveFormula(BinaryConnective.conditional, hypothesis, cond.a),
+        ConnectiveFormula(BinaryConnective.conditional, hypothesis, cond.b)
     )
 
-    return [
-        *rel_i,
-        ConnectiveFormula(BinaryConnective.conditional, rel_i[-1], dist),
-        dist,
-        *rel_j,
-        goal
-    ]
+    return AxiomaticDerivation(
+        axiom_schemas=derivation.axiom_schemas,
+        payload=[
+            *cond_deriv.payload,
+            ConnectiveFormula(BinaryConnective.conditional, cond_deriv.get_conclusion(), dist),
+            dist,
+            *antecetent_deriv.payload,
+            goal
+        ]
+    )
+
+
+def derivation_to_proof_tree(derivation: AxiomaticDerivation, used_markers: frozenset = frozenset()) -> ProofTree:
+    conclusion = derivation.get_conclusion()
+    system = NaturalDeductionSystem(
+        frozenset(
+            [MODUS_PONENS] + [
+                Rule(name='Ax', premises=[], conclusion=axiom_schema)
+                for axiom_schema in derivation.axiom_schemas
+            ]
+        )
+    )
+
+    if derivation.is_premise(conclusion):
+        return AssumptionTree(system, conclusion, marker=new_var_name('u₁', used_markers))
+
+    for rule in system.rules:
+        if rule.name != 'Ax' or (substitution := build_substitution(rule.conclusion, conclusion)) is None:
+            continue
+
+        return RuleApplicationTree(
+            system=system,
+            rule=rule,
+            substitution=substitution,
+            subtrees=[]
+        )
+
+    mp_config = derivation.get_mp_config()
+
+    if mp_config is None:
+        raise AxiomaticDerivationError(f'Invalid derivation of {conclusion}')
+
+    cond = derivation.payload[mp_config.conditional_index]
+    assert is_conditional(cond)
+    conditional_subtree = derivation_to_proof_tree(derivation.truncate(mp_config.conditional_index), used_markers)
+    markers = frozenset(ass.marker for ass in conditional_subtree.iter_open_assumptions())
+    antecedent_subtree = derivation_to_proof_tree(derivation.truncate(mp_config.antecedent_index), used_markers | markers)
+    substitution = UniformSubstitution({
+        AtomicFormulaPlaceholder('φ'): antecedent_subtree.conclusion,
+        AtomicFormulaPlaceholder('ψ'): conclusion
+    })
+
+    return RuleApplicationTree(
+        system=system,
+        rule=MODUS_PONENS,
+        substitution=substitution,
+        subtrees=[conditional_subtree, antecedent_subtree]
+    )
+
+
+def _proof_tree_to_derivation_payload(tree: ProofTree) -> Iterable[Formula]:
+    if isinstance(tree, RuleApplicationTree):
+        for subtree in tree.subtrees:
+            yield from _proof_tree_to_derivation_payload(subtree)
+
+    yield tree.conclusion
+
+
+def proof_tree_to_derivation(tree: ProofTree) -> AxiomaticDerivation:
+    return AxiomaticDerivation(
+        axiom_schemas=frozenset(rule.conclusion for rule in tree.system.rules if rule is not MODUS_PONENS),
+        payload=list(_proof_tree_to_derivation_payload(tree))
+    )

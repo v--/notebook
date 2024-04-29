@@ -1,6 +1,6 @@
 import pytest
 
-from ...support.subscripts import itoa_subscripts
+from ...support.unicode import itoa_subscripts
 from .signature import FOLSignature
 
 

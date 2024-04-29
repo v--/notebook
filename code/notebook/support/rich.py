@@ -1,9 +1,10 @@
 from typing import Any
 
-from rich.console import Console
+import rich.console
+import rich.tree
 
 
-console = Console()
+console = rich.console.Console()
 
 
 def rich_to_text(value: Any) -> str:  # noqa: ANN401
@@ -11,3 +12,12 @@ def rich_to_text(value: Any) -> str:  # noqa: ANN401
         console.print(value)
 
     return capture.get()
+
+
+class RichTreeMixin:
+    def build_rich_tree(self) -> rich.tree.Tree:
+        raise NotImplementedError
+
+    def __str__(self) -> str:
+        return rich_to_text(self.build_rich_tree())
+

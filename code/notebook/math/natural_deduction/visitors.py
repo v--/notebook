@@ -1,6 +1,6 @@
 from typing import Generic, TypeVar
 
-from .rules import (
+from .placeholders import (
     AtomicFormulaPlaceholder,
     ConnectiveFormulaPlaceholder,
     ConstantFormulaPlaceholder,
@@ -48,3 +48,28 @@ class FormulaPlaceholderVisitor(Generic[T]):
 
     def generic_visit(self, placeholder: FormulaPlaceholder) -> T:
         raise NotImplementedError
+
+
+class FormulaPlaceholderTransformationVisitor(FormulaPlaceholderVisitor[FormulaPlaceholder]):
+    def visit_constant(self, placeholder: ConstantFormulaPlaceholder) -> FormulaPlaceholder:
+        return placeholder
+
+    def visit_atomic(self, placeholder: AtomicFormulaPlaceholder) -> FormulaPlaceholder:
+        return placeholder
+
+    def visit_negation(self, placeholder: NegationFormulaPlaceholder) -> FormulaPlaceholder:
+        return NegationFormulaPlaceholder(self.visit(placeholder.sub))
+
+    def visit_connective(self, placeholder: ConnectiveFormulaPlaceholder) -> FormulaPlaceholder:
+        return ConnectiveFormulaPlaceholder(
+            placeholder.conn,
+            self.visit(placeholder.a),
+            self.visit(placeholder.b)
+        )
+
+    def visit_quantifier(self, placeholder: QuantifierFormulaPlaceholder) -> FormulaPlaceholder:
+        return QuantifierFormulaPlaceholder(
+            placeholder.quantifier,
+            placeholder.variable,
+            self.visit(placeholder.sub)
+        )

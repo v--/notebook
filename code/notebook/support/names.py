@@ -1,9 +1,10 @@
 import re
+from collections.abc import Iterable
 
-from .subscripts import atoi_subscripts, itoa_subscripts
+from .unicode import atoi_subscripts, itoa_subscripts
 
 
-def new_var_name(prefix: str, context: set[str]) -> str:
+def new_var_name(prefix: str, context: Iterable[str]) -> str:
     if prefix not in context:
         return prefix
 

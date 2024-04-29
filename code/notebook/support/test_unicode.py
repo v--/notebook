@@ -1,4 +1,11 @@
-from .subscripts import atoi_subscripts, itoa_subscripts
+from .unicode import atoi_subscripts, itoa_subscripts, to_superscript
+
+
+def test_to_superscript() -> None:
+    assert to_superscript('abc') == 'ᵃᵇᶜ'
+    assert to_superscript('ABC') == 'ᴬᴮꟲ'
+    assert to_superscript('AbC') == 'ᴬᵇꟲ'
+    assert to_superscript('абв') == 'абв'
 
 
 def test_atoi_subscripts() -> None:

@@ -6,8 +6,8 @@ from .rules import FormulaPlaceholder
 
 
 @pytest.fixture()
-def implicational_axioms() -> set[FormulaPlaceholder]:
-    return {
+def implicational_axioms() -> frozenset[FormulaPlaceholder]:
+    return frozenset([
         parse_placeholder('(Φ → (Ψ → Φ))'),
         parse_placeholder('((Φ → (Ψ → Θ)) → ((Φ → Ψ) → (Φ → Θ)))'),
-    }
+    ])

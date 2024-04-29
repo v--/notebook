@@ -7,7 +7,7 @@ from typing import cast
 
 import rich.tree
 
-from ...support.rich import rich_to_text
+from ...support.rich import RichTreeMixin
 from .alphabet import Empty, NonTerminal, Terminal, empty
 from .epsilon_rules import is_epsilon_rule
 from .grammar import GrammarRule
@@ -31,7 +31,7 @@ class Derivation:
 
 
 @dataclass
-class ParseTree:
+class ParseTree(RichTreeMixin):
     payload: NonTerminal | Terminal | Empty
     children: list['ParseTree'] = field(default_factory=list)
 
@@ -57,9 +57,6 @@ class ParseTree:
             tree.add(node.build_rich_tree())
 
         return tree
-
-    def __str__(self) -> str:
-        return rich_to_text(self.build_rich_tree())
 
     def __hash__(self) -> int:
         return hash(self.payload) + functools.reduce(operator.xor, map(hash, self.children), 0)
