@@ -6,10 +6,10 @@ from ...exceptions import NotebookCodeError
 from ...support.names import new_var_name
 from ..fol.formulas import Formula, is_conditional
 from .parsing.parser import parse_rule
-from .proof_trees import AssumptionTree, NaturalDeductionSystem, ProofTree, RuleApplicationTree
+from .proof_tree import AssumptionTree, NaturalDeductionSystem, ProofTree, RuleApplicationTree
 from .rules import Rule
 from .schemas import FormulaPlaceholder, FormulaSchema
-from .substitutions import UniformSubstitution, build_substitution, is_schema_instance
+from .substitution import UniformSubstitution, build_substitution, is_schema_instance
 
 
 class AxiomaticDerivationError(NotebookCodeError):

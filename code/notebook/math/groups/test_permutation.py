@@ -1,8 +1,8 @@
 import functools
 import operator
 
-from .cycles import Cycle
-from .permutations import Permutation
+from .cycle import Cycle
+from .permutation import Permutation
 
 
 def test_permutation_completion() -> None:

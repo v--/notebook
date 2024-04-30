@@ -1,4 +1,4 @@
-from .cycles import Cycle
+from .cycle import Cycle
 
 
 def test_empty_cycle_decomposition() -> None:

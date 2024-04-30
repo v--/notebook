@@ -9,7 +9,7 @@ from ...support.rich import RichTreeMixin
 from ...support.unicode import to_superscript
 from ..fol.formulas import Formula
 from .rules import Rule
-from .substitutions import UniformSubstitution
+from .substitution import UniformSubstitution
 
 
 @dataclass

@@ -3,7 +3,7 @@ from dataclasses import dataclass
 from typing import Generic, TypeVar
 
 from ...support.adt.comparable import Comparable
-from .cycles import Cycle
+from .cycle import Cycle
 
 
 T = TypeVar('T', bound=Comparable)

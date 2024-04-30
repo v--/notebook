@@ -3,7 +3,7 @@ from collections.abc import Sequence
 from ..fol.formulas import Formula
 from ..fol.parsing.parser import parse_formula
 from ..fol.signature import FOLSignature
-from .axiomatic_derivations import AxiomaticDerivation
+from .axiomatic_derivation import AxiomaticDerivation
 from .minimal_implicational_logic import (
     IMPLICATIONAL_AXIOMS,
     get_identity_derivation_payload,

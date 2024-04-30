@@ -6,7 +6,7 @@ from ..fol.parsing.parser import parse_formula
 from ..fol.signature import FOLSignature
 from .parsing.parser import parse_schema
 from .schemas import FormulaPlaceholder
-from .substitutions import SubstitutionError, UniformSubstitution, is_schema_instance
+from .substitution import SubstitutionError, UniformSubstitution, is_schema_instance
 
 
 def test_substitution_application(propositional_signature: FOLSignature) -> None:

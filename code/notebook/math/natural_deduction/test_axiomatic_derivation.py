@@ -4,7 +4,7 @@ from textwrap import dedent
 from ..fol.formulas import Formula
 from ..fol.parsing.parser import parse_formula
 from ..fol.signature import FOLSignature
-from .axiomatic_derivations import (
+from .axiomatic_derivation import (
     AxiomaticDerivation,
     are_derivations_equivalent,
     derivation_to_proof_tree,
