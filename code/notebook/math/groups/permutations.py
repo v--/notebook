@@ -1,12 +1,8 @@
-from collections.abc import Iterable, Iterator, MutableMapping, Sequence
+from collections.abc import Iterable, Mapping, Sequence
 from dataclasses import dataclass
 from typing import Generic, TypeVar
 
-from rich import box
-from rich.table import Table
-
 from ...support.adt.comparable import Comparable
-from ...support.rich import rich_to_text
 from .cycles import Cycle
 
 
@@ -16,72 +12,76 @@ PermutationT = TypeVar('PermutationT', bound='Permutation')
 
 @dataclass
 class Permutation(Generic[T]):
-    mapping: MutableMapping[T, T]
+    domain: Sequence[T]
+    _payload: Mapping[T, T]
 
     @classmethod
-    def from_incomplete_mapping(cls: type[PermutationT], incomplete: MutableMapping[T, T]) -> PermutationT:
+    def from_incomplete_mapping(cls: type[PermutationT], domain: Sequence[T], incomplete: Mapping[T, T]) -> PermutationT:
         complete = {}
 
         for key in list(incomplete):
             value = incomplete[key]
+
+            if key == value:
+                continue
+
             complete[key] = value
 
             if value not in incomplete:
                 complete[value] = key
 
-        return cls(complete)
+        return cls(domain, complete)
 
     @classmethod
-    def from_cycle(cls, cycle: Cycle[T]) -> 'Permutation[T]':
+    def from_cycle(cls, domain: Sequence[T], cycle: Cycle[T]) -> 'Permutation[T]':
         if len(cycle) == 0:
-            return Permutation({})
+            return Permutation(domain, {})
 
         mapping = {cycle[-1]: cycle[0]}
 
         for src, dest in zip(cycle[:-1], cycle[1:]):
             mapping[src] = dest
 
-        return Permutation(mapping)
+        return Permutation(domain, mapping)
 
     @classmethod
-    def identity(cls, values: Iterable[T]) -> 'Permutation[T]':
-        return Permutation({value: value for value in values})
+    def identity(cls, domain: Sequence[T]) -> 'Permutation[T]':
+        return Permutation(domain, {})
 
     def __getitem__(self, key: T) -> T:
-        return self.mapping[key]
+        return self._payload.get(key, key)
+
+    def get_mapping(self) -> dict[T, T]:
+        return {key: self[key] for key in self.domain}
 
     @property
     def values(self) -> Sequence[T]:
-        return sorted(self.mapping)
-
-    def __str__(self) -> str:
-        table = Table(box=box.SIMPLE)
-        keys = self.values
-
-        for key in keys:
-            table.add_column(str(key))
-
-        table.add_row(*(str(self[key]) for key in keys))
-        return rich_to_text(table)
+        return sorted(self._payload)
 
     def __matmul__(self, other: 'Permutation[T]') -> 'Permutation[T]':
         if not isinstance(other, Permutation):
             return NotImplemented
 
-        mapping = dict(self.mapping)
+        mapping = dict(self._payload)
 
         for key in other.values:
-            if other[key] in self.mapping:
-                mapping[key] = self.mapping[other[key]]
+            if other[key] in self._payload:
+                mapping[key] = self._payload[other[key]]
             else:
                 mapping[key] = other[key]
 
-        return Permutation(mapping)
+        return Permutation(self.domain, mapping)
+
+    def __eq__(self, other: object) -> bool:
+        if not isinstance(other, Permutation) or self.domain != other.domain:
+            return NotImplemented
+
+        return self.get_mapping() == other.get_mapping()
 
     def inverse(self) -> 'Permutation[T]':
-        return Permutation({self[value]: value for value in self.values})
+        return Permutation(self.domain, {self[value]: value for value in self.values})
 
-    def iter_decomposed(self) -> Iterator[Cycle[T]]:
+    def iter_decomposed(self) -> Iterable[Cycle[T]]:
         consumed_values = set()
 
         for value in self.values:

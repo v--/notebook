@@ -1,5 +1,3 @@
-import functools
-import operator
 from collections.abc import Iterable, Iterator, Sequence
 from dataclasses import dataclass
 from typing import Generic, TypeVar, overload
@@ -19,11 +17,7 @@ class Cycle(Generic[T]):
         return '(' + ' '.join(map(str, self.payload)) + ')'
 
     def __hash__(self) -> int:
-        return functools.reduce(
-            operator.xor,
-            (hash(i) ^ hash(value) for i, value in enumerate(self.payload)),
-            0
-        )
+        return hash(tuple(self.payload))
 
     def __len__(self) -> int:
         return len(self.payload)
