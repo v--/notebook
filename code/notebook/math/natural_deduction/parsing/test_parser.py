@@ -31,7 +31,7 @@ def test_parsing_with_empty_name() -> None:
     with pytest.raises(ParsingError) as excinfo:
         parse_rule('() Φ ⫢ Ψ')
 
-    assert str(excinfo.value) == 'The name of a rule must be a Latin identifier'
+    assert str(excinfo.value) == 'The name of a rule cannot be empty'
     assert excinfo.value.__notes__[0] == dedent('''\
         1 │ () Φ ⫢ Ψ
           │ ^^

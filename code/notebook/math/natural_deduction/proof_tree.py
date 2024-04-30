@@ -1,20 +1,14 @@
 import abc
+import itertools
 from collections.abc import Iterable
-from dataclasses import dataclass
 from typing import NamedTuple, override
 
-import rich.tree
-
-from ...support.rich import RichTreeMixin
+from ...support.iteration import string_accumulator
 from ...support.unicode import to_superscript
 from ..fol.formulas import Formula
 from .rules import Rule
 from .substitution import UniformSubstitution
-
-
-@dataclass
-class NaturalDeductionSystem:
-    rules: frozenset[Rule]
+from .system import NaturalDeductionSystem
 
 
 class MarkedFormula(NamedTuple):
@@ -22,7 +16,7 @@ class MarkedFormula(NamedTuple):
     marker: str
 
 
-class ProofTree(abc.ABC, RichTreeMixin):
+class ProofTree(abc.ABC):
     system: NaturalDeductionSystem
     conclusion: Formula
 
@@ -43,9 +37,8 @@ class AssumptionTree(ProofTree):
     def iter_open_assumptions(self) -> Iterable[MarkedFormula]:
         yield MarkedFormula(self.conclusion, self.marker)
 
-    @override
-    def build_rich_tree(self) -> rich.tree.Tree:
-        return rich.tree.Tree(f'\\[{self.conclusion}]{to_superscript(self.marker)}')
+    def __str__(self) -> str:
+        return f'[{self.conclusion}]{to_superscript(self.marker)}\n'
 
 
 class RuleApplicationTree(ProofTree):
@@ -81,16 +74,52 @@ class RuleApplicationTree(ProofTree):
                 if self.substitution.apply_to(premise.discharge) == open_assumption.formula:
                     yield open_assumption
 
-    @override
-    def build_rich_tree(self) -> rich.tree.Tree:
+    @string_accumulator()
+    def __str__(self) -> Iterable[str]:
+        subtree_strings = list(map(str, self.subtrees))
         markers = [ass.marker for ass in self.iter_assumptions_closed_at_step()]
+        conclusion_str = str(self.conclusion)
+
+        subtree_matrix = list(reversed(list(
+            itertools.zip_longest(
+                *(reversed(s.splitlines()) for s in subtree_strings),
+                fillvalue=''
+            )
+        )))
+
+        col_widths = [max(map(len, col)) for col in zip(*subtree_matrix)]
+
+        line_length = max(
+            sum(col_widths) + (len(col_widths) - 1) * 4,
+            len(conclusion_str)
+        )
+
+        marker_prefix = (1 + 3 * (len(markers) - 1) + 1) if len(markers) > 0 else 0
+
+        for line in subtree_matrix:
+            yield ' ' * marker_prefix
+
+            for j, cell in enumerate(line):
+                if j < len(col_widths) - 1 and any(c != '' for c in line[j + 1:]):
+                    yield cell.ljust(col_widths[j] + 4, ' ')
+                else:
+                    yield cell
+
+            yield '\n'
+
+        for i, marker in enumerate(markers):
+            if i > 0:
+                yield ', '
+
+            yield marker
 
         if len(markers) > 0:
-            tree = rich.tree.Tree(f'({self.rule.name} closing {", ".join(markers)}) {self.conclusion}')
-        else:
-            tree = rich.tree.Tree(f'({self.rule.name}) {self.conclusion}')
+            yield ' '
 
-        for subtree in self.subtrees:
-            tree.add(subtree.build_rich_tree())
-
-        return tree
+        yield '_' * line_length
+        yield ' '
+        yield self.rule.name
+        yield '\n'
+        yield ' ' * (marker_prefix + (line_length - len(conclusion_str)) // 2)
+        yield conclusion_str
+        yield '\n'

@@ -1,7 +1,7 @@
 from ....parsing.identifiers import GreekIdentifier, LatinIdentifier
 from ....parsing.tokens import TokenEnum
 from ....parsing.whitespace import Space
-from ...fol.alphabet import BinaryConnective, PropConstant, Quantifier
+from ...fol.alphabet import BinaryConnective, PropConstant, Quantifier, UnaryConnective
 
 
 class MiscToken(TokenEnum):
@@ -13,8 +13,11 @@ class MiscToken(TokenEnum):
     dot = '.'
     sequent_relation = '⫢'
     colon = ':'
-    negation = '¬'
 
 
-ContextToken = LatinIdentifier | GreekIdentifier | Space
-RuleToken = LatinIdentifier | GreekIdentifier | PropConstant | BinaryConnective | Quantifier | MiscToken | ContextToken | Space
+class SuperscriptToken(TokenEnum):
+    plus = '⁺'
+    minus = '⁻'
+
+
+RuleToken = LatinIdentifier | GreekIdentifier | PropConstant | BinaryConnective | Quantifier | UnaryConnective | MiscToken | SuperscriptToken | Space

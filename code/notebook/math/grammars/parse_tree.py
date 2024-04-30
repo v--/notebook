@@ -5,9 +5,6 @@ from dataclasses import dataclass, field
 from queue import SimpleQueue
 from typing import cast
 
-import rich.tree
-
-from ...support.rich import RichTreeMixin
 from .alphabet import Empty, NonTerminal, Terminal, empty
 from .epsilon_rules import is_epsilon_rule
 from .grammar import GrammarRule
@@ -31,7 +28,7 @@ class Derivation:
 
 
 @dataclass
-class ParseTree(RichTreeMixin):
+class ParseTree:
     payload: NonTerminal | Terminal | Empty
     children: list['ParseTree'] = field(default_factory=list)
 
@@ -49,14 +46,6 @@ class ParseTree(RichTreeMixin):
 
     def yield_string(self) -> str:
         return ''.join(sym.value for sym in self.iter_symbols() if isinstance(sym, Terminal))
-
-    def build_rich_tree(self) -> rich.tree.Tree:
-        tree = rich.tree.Tree('ε') if self.payload == empty else rich.tree.Tree(str(self.payload))
-
-        for node in self.children:
-            tree.add(node.build_rich_tree())
-
-        return tree
 
     def __hash__(self) -> int:
         return hash(self.payload) + functools.reduce(operator.xor, map(hash, self.children), 0)

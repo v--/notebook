@@ -6,6 +6,9 @@ class PropConstant(TokenEnum):
     falsum = '⊥'
 
 
+class UnaryConnective(TokenEnum):
+    negation = '¬'
+
 
 class BinaryConnective(TokenEnum):
     disjunction = '∨'

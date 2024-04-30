@@ -4,7 +4,7 @@ from typing import Iterable
 from ....parsing.identifiers import GreekIdentifier
 from ....parsing.mixins.whitespace import WhitespaceParserMixin
 from ....parsing.parser import Parser
-from ..alphabet import BinaryConnective, PropConstant, Quantifier
+from ..alphabet import BinaryConnective, PropConstant, Quantifier, UnaryConnective
 from ..formulas import (
     ConnectiveFormula,
     ConstantFormula,
@@ -157,7 +157,7 @@ class FOLParser(WhitespaceParserMixin[FOLToken], Parser[FOLToken]):
         raise self.error('Unexpected token')
 
     def parse_negation_formula(self) -> NegationFormula:
-        assert self.peek() == MiscToken.negation
+        assert self.peek() == UnaryConnective.negation
         self.advance()
         return NegationFormula(self.parse_formula())
 
@@ -191,7 +191,7 @@ class FOLParser(WhitespaceParserMixin[FOLToken], Parser[FOLToken]):
             case MiscToken.left_parenthesis:
                 return self.parse_binary_formula()
 
-            case MiscToken.negation:
+            case UnaryConnective.negation:
                 return self.parse_negation_formula()
 
             case PredicateSymbolToken():

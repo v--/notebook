@@ -1,7 +1,8 @@
 from ....parsing.identifiers import GreekIdentifier, LatinIdentifier
 from ....parsing.mixins.whitespace import WhitespaceParserMixin
 from ....parsing.parser import Parser
-from ...fol.alphabet import BinaryConnective, PropConstant, Quantifier
+from ....parsing.whitespace import Space
+from ...fol.alphabet import BinaryConnective, PropConstant, Quantifier, UnaryConnective
 from ...fol.terms import Variable
 from ..rules import Premise, Rule
 from ..schemas import (
@@ -13,7 +14,7 @@ from ..schemas import (
     QuantifierFormulaSchema,
 )
 from .tokenizer import tokenize_nd_string
-from .tokens import MiscToken, RuleToken
+from .tokens import MiscToken, RuleToken, SuperscriptToken
 
 
 class NaturalDeductionParser(WhitespaceParserMixin[RuleToken], Parser[RuleToken]):
@@ -65,7 +66,7 @@ class NaturalDeductionParser(WhitespaceParserMixin[RuleToken], Parser[RuleToken]
         raise self.error('Unexpected token')
 
     def parse_negation_schema(self) -> NegationFormulaSchema:
-        assert self.peek() == MiscToken.negation
+        assert self.peek() == UnaryConnective.negation
         self.advance()
         return NegationFormulaSchema(self.parse_schema())
 
@@ -99,7 +100,7 @@ class NaturalDeductionParser(WhitespaceParserMixin[RuleToken], Parser[RuleToken]
             case MiscToken.left_parenthesis:
                 return self.parse_binary_schema()
 
-            case MiscToken.negation:
+            case UnaryConnective.negation:
                 return self.parse_negation_schema()
 
             case GreekIdentifier():
@@ -134,11 +135,14 @@ class NaturalDeductionParser(WhitespaceParserMixin[RuleToken], Parser[RuleToken]
         else:
             raise self.error('A rule must start with a parenthesized name')
 
-        if isinstance(head := self.peek(), LatinIdentifier):
-            name = head.value
+        name: str = ''
+
+        while isinstance(head := self.peek(), LatinIdentifier | PropConstant | UnaryConnective | BinaryConnective | Quantifier | SuperscriptToken):
+            name += head.value
             self.advance()
-        else:
-            raise self.error('The name of a rule must be a Latin identifier', i_first_token=start)
+
+        if name == '':
+            raise self.error('The name of a rule cannot be empty', i_first_token=start)
 
         if self.peek() == MiscToken.right_parenthesis:
             self.advance_and_skip_spaces()

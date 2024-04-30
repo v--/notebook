@@ -6,8 +6,8 @@ from ....parsing.identifiers import (
 from ....parsing.mixins.identifiers import IdentifierTokenizerMixin
 from ....parsing.tokenizer import Tokenizer
 from ....parsing.whitespace import Whitespace
-from ...fol.alphabet import BinaryConnective, PropConstant, Quantifier
-from .tokens import MiscToken, RuleToken
+from ...fol.alphabet import BinaryConnective, PropConstant, Quantifier, UnaryConnective
+from .tokens import MiscToken, RuleToken, SuperscriptToken
 
 
 class NaturalDeductionTokenizer(IdentifierTokenizerMixin[RuleToken], Tokenizer[RuleToken]):
@@ -15,7 +15,9 @@ class NaturalDeductionTokenizer(IdentifierTokenizerMixin[RuleToken], Tokenizer[R
         sym = PropConstant.try_match(head) or \
             BinaryConnective.try_match(head) or \
             Quantifier.try_match(head) or \
-            MiscToken.try_match(head)
+            UnaryConnective.try_match(head) or \
+            MiscToken.try_match(head) or \
+            SuperscriptToken.try_match(head)
 
         if sym is not None:
             self.advance()

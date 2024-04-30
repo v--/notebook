@@ -7,7 +7,7 @@ from ....parsing.identifiers import (
 from ....parsing.mixins.identifiers import IdentifierTokenizerMixin
 from ....parsing.tokenizer import Tokenizer
 from ....parsing.whitespace import Whitespace
-from ..alphabet import BinaryConnective, PropConstant, Quantifier
+from ..alphabet import BinaryConnective, PropConstant, Quantifier, UnaryConnective
 from ..signature import FOLSignature
 from .tokens import FOLToken, FunctionSymbolToken, MiscToken, PredicateSymbolToken
 
@@ -20,6 +20,7 @@ class FOLTokenizer(IdentifierTokenizerMixin[FOLToken], Tokenizer[FOLToken]):
         sym = PropConstant.try_match(head) or \
             BinaryConnective.try_match(head) or \
             Quantifier.try_match(head) or \
+            UnaryConnective.try_match(head) or \
             MiscToken.try_match(head)
 
         if sym is not None:

@@ -49,18 +49,19 @@ def test_derivation_to_proof_tree(propositional_signature: FOLSignature) -> None
     )
 
     assert t(['(p → q)', 'p', 'q']) == dedent('''\
-        (MP) q
-        ├── [(p → q)]ᵘ₁
-        └── [p]ᵘ₂
+        [(p → q)]ᵘ₁    [p]ᵘ₂
+        ____________________ MP
+                 q
         '''
     )
 
     assert t(get_identity_derivation_payload(parse_formula(propositional_signature, 'p'))) == dedent('''\
-        (MP) (p → p)
-        ├── (MP) ((p → (p → p)) → (p → p))
-        │   ├── (Ax) ((p → ((p → p) → p)) → ((p → (p → p)) → (p → p)))
-        │   └── (Ax) (p → ((p → p) → p))
-        └── (Ax) (p → (p → p))
+        _________________________________________________ Ax    ___________________ Ax
+        ((p → ((p → p) → p)) → ((p → (p → p)) → (p → p)))       (p → ((p → p) → p))
+        ______________________________________________________________________________ MP    _____________ Ax
+                                  ((p → (p → p)) → (p → p))                                  (p → (p → p))
+        _____________________________________________________________________________________________________ MP
+                                                       (p → p)
         '''
     )
 
