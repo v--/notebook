@@ -1,8 +1,7 @@
 from collections.abc import Sequence
 
 from ..fol.formulas import Formula
-from ..fol.parsing import parse_formula
-from ..fol.signature import FOLSignature
+from ..fol.parsing import parse_propositional_formula
 from .axiomatic_derivation import AxiomaticDerivation
 from .minimal_implicational_logic import (
     IMPLICATIONAL_AXIOMS,
@@ -11,11 +10,11 @@ from .minimal_implicational_logic import (
 )
 
 
-def test_minimal_implicational_derivation_premises(propositional_signature: FOLSignature) -> None:
+def test_minimal_implicational_derivation_premises() -> None:
     def t(payload: Sequence[str | Formula]) -> list[str]:
         derivation = AxiomaticDerivation(
             axiom_schemas=IMPLICATIONAL_AXIOMS,
-            payload=[parse_formula(propositional_signature, s) if isinstance(s, str) else s for s in payload]
+            payload=[parse_propositional_formula(s) if isinstance(s, str) else s for s in payload]
         )
 
         return [str(f) for f in derivation.iter_premises()]
@@ -25,22 +24,22 @@ def test_minimal_implicational_derivation_premises(propositional_signature: FOLS
 
     assert t(['p']) == ['p']
 
-    assert t(get_identity_derivation_payload(parse_formula(propositional_signature, 'p'))) == []
+    assert t(get_identity_derivation_payload(parse_propositional_formula('p'))) == []
 
 
-def test_introduce_conclusion_hypothesis(propositional_signature: FOLSignature) -> None:
+def test_introduce_conclusion_hypothesis() -> None:
     def t(seq: list[str], /, hypothesis: str) -> list[str]:
         derivation = AxiomaticDerivation(
             axiom_schemas=IMPLICATIONAL_AXIOMS,
-            payload=[parse_formula(propositional_signature, s) for s in seq]
+            payload=[parse_propositional_formula(s) for s in seq]
         )
 
-        hypothesis_formula = parse_formula(propositional_signature, hypothesis)
+        hypothesis_formula = parse_propositional_formula(hypothesis)
         relativized = introduce_conclusion_hypothesis(derivation, hypothesis_formula)
         return [str(formula) for formula in relativized.payload]
 
     assert t(['p'], hypothesis='p') == [
-        str(formula) for formula in get_identity_derivation_payload(parse_formula(propositional_signature, 'p'))
+        str(formula) for formula in get_identity_derivation_payload(parse_propositional_formula('p'))
     ]
 
     assert t(['q'], hypothesis='p') == [

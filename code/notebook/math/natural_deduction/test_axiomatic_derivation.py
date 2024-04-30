@@ -2,8 +2,7 @@ from collections.abc import Sequence
 from textwrap import dedent
 
 from ..fol.formulas import Formula
-from ..fol.parsing import parse_formula
-from ..fol.signature import FOLSignature
+from ..fol.parsing import parse_propositional_formula
 from .axiomatic_derivation import (
     AxiomaticDerivation,
     are_derivations_equivalent,
@@ -13,16 +12,16 @@ from .axiomatic_derivation import (
 from .minimal_implicational_logic import IMPLICATIONAL_AXIOMS, get_identity_derivation_payload
 
 
-def test_are_derivations_equivalent(propositional_signature: FOLSignature) -> None:
+def test_are_derivations_equivalent() -> None:
     def t(a_payload: Sequence[str | Formula], b_payload: Sequence[str | Formula]) -> bool:
         a = AxiomaticDerivation(
             axiom_schemas=IMPLICATIONAL_AXIOMS,
-            payload=[parse_formula(propositional_signature, s) if isinstance(s, str) else s for s in a_payload]
+            payload=[parse_propositional_formula(s) if isinstance(s, str) else s for s in a_payload]
         )
 
         b = AxiomaticDerivation(
             axiom_schemas=IMPLICATIONAL_AXIOMS,
-            payload=[parse_formula(propositional_signature, s) if isinstance(s, str) else s for s in b_payload]
+            payload=[parse_propositional_formula(s) if isinstance(s, str) else s for s in b_payload]
         )
 
         return are_derivations_equivalent(a, b)
@@ -34,11 +33,11 @@ def test_are_derivations_equivalent(propositional_signature: FOLSignature) -> No
     assert not t(['(p → q)', 'p', 'q'], ['(q → p)', 'q', 'p'])  # Distinct formulas with the same shape
 
 
-def test_derivation_to_proof_tree(propositional_signature: FOLSignature) -> None:
+def test_derivation_to_proof_tree() -> None:
     def t(payload: Sequence[str | Formula]) -> str:
         derivation = AxiomaticDerivation(
             axiom_schemas=IMPLICATIONAL_AXIOMS,
-            payload=[parse_formula(propositional_signature, s) if isinstance(s, str) else s for s in payload]
+            payload=[parse_propositional_formula(s) if isinstance(s, str) else s for s in payload]
         )
 
         return str(derivation_to_proof_tree(derivation))
@@ -55,7 +54,7 @@ def test_derivation_to_proof_tree(propositional_signature: FOLSignature) -> None
         '''
     )
 
-    assert t(get_identity_derivation_payload(parse_formula(propositional_signature, 'p'))) == dedent('''\
+    assert t(get_identity_derivation_payload(parse_propositional_formula('p'))) == dedent('''\
         _________________________________________________ Ax    ___________________ Ax
         ((p → ((p → p) → p)) → ((p → (p → p)) → (p → p)))       (p → ((p → p) → p))
         ______________________________________________________________________________ MP    _____________ Ax
@@ -66,11 +65,11 @@ def test_derivation_to_proof_tree(propositional_signature: FOLSignature) -> None
     )
 
 
-def test_proof_tree_to_derivation(propositional_signature: FOLSignature) -> None:
+def test_proof_tree_to_derivation() -> None:
     def t(payload: Sequence[str | Formula]) -> None:
         derivation = AxiomaticDerivation(
             axiom_schemas=IMPLICATIONAL_AXIOMS,
-            payload=[parse_formula(propositional_signature, s) if isinstance(s, str) else s for s in payload]
+            payload=[parse_propositional_formula(s) if isinstance(s, str) else s for s in payload]
         )
 
         tree = derivation_to_proof_tree(derivation)
@@ -78,4 +77,4 @@ def test_proof_tree_to_derivation(propositional_signature: FOLSignature) -> None
 
     t(['p'])
     t(['(p → q)', 'p', 'q'])
-    t(get_identity_derivation_payload(parse_formula(propositional_signature, 'p')))
+    t(get_identity_derivation_payload(parse_propositional_formula('p')))

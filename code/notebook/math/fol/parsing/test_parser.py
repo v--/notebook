@@ -6,7 +6,7 @@ from ....parsing.parser import ParsingError
 from ..formulas import EqualityFormula
 from ..signature import FOLSignature
 from ..terms import FunctionTerm, Variable
-from .parser import parse_formula, parse_term
+from .parser import parse_formula, parse_propositional_formula, parse_term
 
 
 def test_parsing_valid_variables(empty_signature: FOLSignature) -> None:
@@ -172,9 +172,9 @@ def test_parsing_invalid_equality(dummy_signature: FOLSignature) -> None:
     ''')
 
 
-def test_parsing_equality_with_formulas_inside(propositional_signature: FOLSignature) -> None:
+def test_parsing_equality_with_formulas_inside() -> None:
     with pytest.raises(ParsingError) as excinfo:
-        parse_formula(propositional_signature, '(¬p = η)')
+        parse_propositional_formula('(¬p = η)')
 
     assert str(excinfo.value) == 'The left side of an equality formula must be a term'
     assert excinfo.value.__notes__[0] == dedent('''\
@@ -198,9 +198,9 @@ def test_parsing_valid_formulas(dummy_signature: FOLSignature) -> None:
     is_formula_rebuilt('∀ζ.∃ζ.(¬r₁(η) ∧ ¬r₂(ζ, η))')
 
 
-def test_parsing_unclosed_conjunction_parentheses(propositional_signature: FOLSignature) -> None:
+def test_parsing_unclosed_conjunction_parentheses() -> None:
     with pytest.raises(ParsingError) as excinfo:
-        parse_formula(propositional_signature, '(p ∧ q ∧')
+        parse_propositional_formula('(p ∧ q ∧')
 
     assert str(excinfo.value) == 'Unclosed parentheses for binary formula'
     assert excinfo.value.__notes__[0] == dedent('''\
@@ -209,9 +209,9 @@ def test_parsing_unclosed_conjunction_parentheses(propositional_signature: FOLSi
     ''')
 
 
-def test_parsing_unclosed_conjunction_parentheses_truncated(propositional_signature: FOLSignature) -> None:
+def test_parsing_unclosed_conjunction_parentheses_truncated() -> None:
     with pytest.raises(ParsingError) as excinfo:
-        parse_formula(propositional_signature, '(p ∧ q')
+        parse_propositional_formula('(p ∧ q')
 
     assert str(excinfo.value) == 'Unclosed parentheses for binary formula'
     assert excinfo.value.__notes__[0] == dedent('''\
@@ -220,9 +220,9 @@ def test_parsing_unclosed_conjunction_parentheses_truncated(propositional_signat
     ''')
 
 
-def test_parsing_invalid_conjunction(propositional_signature: FOLSignature) -> None:
+def test_parsing_invalid_conjunction() -> None:
     with pytest.raises(ParsingError) as excinfo:
-        parse_formula(propositional_signature, '(p ∧ )')
+        parse_propositional_formula('(p ∧ )')
 
     assert str(excinfo.value) == 'Binary formulas must have a second subformula'
     assert excinfo.value.__notes__[0] == dedent('''\
@@ -231,9 +231,9 @@ def test_parsing_invalid_conjunction(propositional_signature: FOLSignature) -> N
     ''')
 
 
-def test_parsing_conjunction_with_formulas_inside(propositional_signature: FOLSignature) -> None:
+def test_parsing_conjunction_with_formulas_inside() -> None:
     with pytest.raises(ParsingError) as excinfo:
-        parse_formula(propositional_signature, '(ξ ∧ q)')
+        parse_propositional_formula('(ξ ∧ q)')
 
     assert str(excinfo.value) == 'The left side of a binary formula must be a formula'
     assert excinfo.value.__notes__[0] == dedent('''\

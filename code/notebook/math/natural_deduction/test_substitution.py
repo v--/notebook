@@ -2,18 +2,17 @@ from typing import cast
 
 import pytest
 
-from ..fol.parsing import parse_formula
-from ..fol.signature import FOLSignature
+from ..fol.parsing import parse_propositional_formula
 from .parsing import parse_schema
 from .schemas import FormulaPlaceholder
 from .substitution import SubstitutionError, UniformSubstitution, is_schema_instance
 
 
-def test_substitution_application(propositional_signature: FOLSignature) -> None:
+def test_substitution_application() -> None:
     def t(schema: str, mapping: dict[str, str]) -> str:
         parsed_schema = parse_schema(schema)
         substitution = UniformSubstitution({
-            cast(FormulaPlaceholder, parse_schema(src)): parse_formula(propositional_signature, dest)
+            cast(FormulaPlaceholder, parse_schema(src)): parse_propositional_formula(dest)
             for src, dest in mapping.items()
         })
 
@@ -32,10 +31,10 @@ def test_invalid_substitution_application() -> None:
         )
 
 
-def test_is_schema_instance_prop(propositional_signature: FOLSignature) -> None:
+def test_is_schema_instance_prop() -> None:
     def t(schema_string: str, formula_string: str) -> bool:
         schema = parse_schema(schema_string)
-        formula = parse_formula(propositional_signature, formula_string)
+        formula = parse_propositional_formula(formula_string)
         return is_schema_instance(schema, formula)
 
     # Atomic schemas

@@ -22,13 +22,3 @@ def dummy_signature(max_args: int = 10) -> FOLSignature:
             signature.add_predicate_symbol(l + itoa_subscripts(i), arity=i)
 
     return signature
-
-
-@pytest.fixture()
-def propositional_signature() -> FOLSignature:
-    signature = FOLSignature()
-
-    for l in 'abcdefghijklmnopqrstuvwxyz':
-        signature.add_predicate_symbol(l, arity=0)
-
-    return signature

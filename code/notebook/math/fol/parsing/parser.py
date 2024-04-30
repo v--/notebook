@@ -14,6 +14,7 @@ from ..formulas import (
     PredicateFormula,
     QuantifierFormula,
 )
+from ..propositional import propositional_signature
 from ..signature import FOLSignature
 from ..terms import FunctionTerm, Term, Variable
 from .tokenizer import tokenize_fol_string
@@ -214,3 +215,7 @@ def parse_formula(signature: FOLSignature, string: str) -> Formula:
 
     with FOLParser(tokens, signature) as parser:
         return parser.parse_formula()
+
+
+def parse_propositional_formula(string: str) -> Formula:
+    return parse_formula(propositional_signature, string)

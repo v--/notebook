@@ -1,7 +1,6 @@
 from textwrap import dedent
 
-from ..fol.parsing import parse_formula
-from ..fol.signature import FOLSignature
+from ..fol.parsing import parse_propositional_formula
 from .axiomatic_derivation import AxiomaticDerivation, derivation_to_proof_tree
 from .minimal_implicational_logic import IMPLICATIONAL_AXIOMS, get_identity_derivation_payload
 from .minimal_logic import minimal_nd_system
@@ -10,10 +9,10 @@ from .schemas import FormulaPlaceholder
 from .substitution import UniformSubstitution
 
 
-def test_assumption_tree_to_str(propositional_signature: FOLSignature) -> None:
+def test_assumption_tree_to_str() -> None:
     tree = AssumptionTree(
         minimal_nd_system,
-        parse_formula(propositional_signature, 'p'),
+        parse_propositional_formula('p'),
         marker='u'
     )
 
@@ -23,10 +22,10 @@ def test_assumption_tree_to_str(propositional_signature: FOLSignature) -> None:
     )
 
 
-def test_simple_rule_application_tree_to_str(propositional_signature: FOLSignature) -> None:
+def test_simple_rule_application_tree_to_str() -> None:
     substitution = UniformSubstitution({
-        FormulaPlaceholder('φ'): parse_formula(propositional_signature, 'p'),
-        FormulaPlaceholder('ψ'): parse_formula(propositional_signature, 'q')
+        FormulaPlaceholder('φ'): parse_propositional_formula('p'),
+        FormulaPlaceholder('ψ'): parse_propositional_formula('q')
     })
 
     tree = RuleApplicationTree(
@@ -41,12 +40,12 @@ def test_simple_rule_application_tree_to_str(propositional_signature: FOLSignatu
                 subtrees=[
                     AssumptionTree(
                         minimal_nd_system,
-                        parse_formula(propositional_signature, '(p → q)'),
+                        parse_propositional_formula('(p → q)'),
                         marker='u'
                     ),
                     AssumptionTree(
                         minimal_nd_system,
-                        parse_formula(propositional_signature, 'p'),
+                        parse_propositional_formula('p'),
                         marker='v'
                     )
                 ]
@@ -64,10 +63,10 @@ def test_simple_rule_application_tree_to_str(propositional_signature: FOLSignatu
     )
 
 
-def test_complex_rule_application_tree_to_str(propositional_signature: FOLSignature) -> None:
+def test_complex_rule_application_tree_to_str() -> None:
     derivation = AxiomaticDerivation(
         axiom_schemas=IMPLICATIONAL_AXIOMS,
-        payload=get_identity_derivation_payload(parse_formula(propositional_signature, 'p'))
+        payload=get_identity_derivation_payload(parse_propositional_formula('p'))
     )
 
     tree = derivation_to_proof_tree(derivation)
