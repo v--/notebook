@@ -66,4 +66,5 @@ class Parser(Generic[T_co]):
         exc_value: BaseException | None,
         traceback: TracebackType | None
      ) -> None:
-        self.assert_exhausted()
+        if exc_type is None:
+            self.assert_exhausted()

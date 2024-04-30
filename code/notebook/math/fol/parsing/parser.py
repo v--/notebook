@@ -60,15 +60,15 @@ class FOLParser(WhitespaceParserMixin[FOLToken], Parser[FOLToken]):
             else:
                 raise self.error('Unexpected token')
 
-    def _parse_function_like(self, arity: int) -> tuple[str, tuple[Term, ...]]:
+    def _parse_function_like(self, arity: int) -> tuple[str, list[Term]]:
         i_start = self.index
         name = self.peek().value
         self.advance()
 
-        arguments: tuple[Term, ...] = ()
+        arguments: list[Term] = []
 
         if not self.is_at_end() and self.peek() == MiscToken.left_parenthesis:
-            arguments = tuple(self.parse_args(arity, i_start))
+            arguments = list(self.parse_args(arity, i_start))
 
         if arity != len(arguments):
             raise self.error(f'Expected {arity} arguments for {name} but got {len(arguments)}', i_first_token=i_start)

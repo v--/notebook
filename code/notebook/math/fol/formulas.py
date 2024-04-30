@@ -28,6 +28,9 @@ class PredicateFormula(NamedTuple):
         args = ', '.join(str(arg) for arg in self.arguments)
         return f'{self.name}({args})' if len(args) > 0 else self.name
 
+    def __hash__(self) -> int:
+        return hash(self.name) ^ hash(tuple(self.arguments))
+
 
 class NegationFormula(NamedTuple):
     sub: 'Formula'
