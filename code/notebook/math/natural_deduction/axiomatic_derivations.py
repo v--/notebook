@@ -73,6 +73,41 @@ class AxiomaticDerivation:
         )
 
 
+def _are_derivations_equivalent_recurse(a: AxiomaticDerivation, b: AxiomaticDerivation) -> bool:
+    if a.get_conclusion() != b.get_conclusion():
+        return False
+
+    a_config = a.get_mp_config()
+    b_config = b.get_mp_config()
+
+    if a_config is None and b_config is None:
+        return True
+
+    if a_config is None or b_config is None:
+        return False
+
+    return _are_derivations_equivalent_recurse(
+        a.truncate(a_config.conditional_index),
+        b.truncate(b_config.conditional_index)
+    ) and _are_derivations_equivalent_recurse(
+        a.truncate(a_config.antecedent_index),
+        b.truncate(b_config.antecedent_index)
+    )
+
+
+def are_derivations_equivalent(a: AxiomaticDerivation, b: AxiomaticDerivation) -> bool:
+    if a.axiom_schemas != b.axiom_schemas:
+        return False
+
+    if a.get_conclusion() != b.get_conclusion():
+        return False
+
+    if set(a.iter_premises()) != set(b.iter_premises()):
+        return False
+
+    return _are_derivations_equivalent_recurse(a, b)
+
+
 def derivation_to_proof_tree(derivation: AxiomaticDerivation, used_markers: frozenset = frozenset()) -> ProofTree:
     conclusion = derivation.get_conclusion()
     system = NaturalDeductionSystem(

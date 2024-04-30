@@ -4,17 +4,11 @@ from ..fol.formulas import Formula
 from ..fol.parsing.parser import parse_formula
 from ..fol.signature import FOLSignature
 from .axiomatic_derivations import AxiomaticDerivation
-<<<<<<< Updated upstream
-from .minimal_implicational_logic import IMPLICATIONAL_AXIOMS, get_identity_derivation, introduce_conclusion_hypothesis
-||||||| Stash base
-from .minimal_implicational_logic import IMPLICATIONAL_AXIOMS, get_identity_derivation_payload, introduce_conclusion_hypothesis
-=======
 from .minimal_implicational_logic import (
     IMPLICATIONAL_AXIOMS,
     get_identity_derivation_payload,
     introduce_conclusion_hypothesis,
 )
->>>>>>> Stashed changes
 
 
 def test_minimal_implicational_derivation_premises(propositional_signature: FOLSignature) -> None:
@@ -31,7 +25,7 @@ def test_minimal_implicational_derivation_premises(propositional_signature: FOLS
 
     assert t(['p']) == ['p']
 
-    assert t(get_identity_derivation(parse_formula(propositional_signature, 'p'))) == []
+    assert t(get_identity_derivation_payload(parse_formula(propositional_signature, 'p'))) == []
 
 
 def test_introduce_conclusion_hypothesis(propositional_signature: FOLSignature) -> None:
@@ -46,7 +40,7 @@ def test_introduce_conclusion_hypothesis(propositional_signature: FOLSignature) 
         return [str(formula) for formula in relativized.payload]
 
     assert t(['p'], hypothesis='p') == [
-        str(formula) for formula in get_identity_derivation(parse_formula(propositional_signature, 'p'))
+        str(formula) for formula in get_identity_derivation_payload(parse_formula(propositional_signature, 'p'))
     ]
 
     assert t(['q'], hypothesis='p') == [

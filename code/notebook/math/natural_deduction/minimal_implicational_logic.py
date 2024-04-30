@@ -10,7 +10,7 @@ IMPLICATIONAL_AXIOMS = frozenset([
 ])
 
 
-def get_identity_derivation(formula: Formula) -> list[Formula]:
+def get_identity_derivation_payload(formula: Formula) -> list[Formula]:
     """Axiomatic derivation of (P → P)"""
     goal = ConnectiveFormula(BinaryConnective.conditional, formula, formula)
 
@@ -24,7 +24,7 @@ def get_identity_derivation(formula: Formula) -> list[Formula]:
     # This is an axiom from the second schema
     c = ConnectiveFormula(BinaryConnective.conditional, b, i)
 
-    return [c, b, i, a, goal]
+    return [a, b, c, i, goal]
 
 
 def introduce_conclusion_hypothesis(derivation: AxiomaticDerivation, hypothesis: Formula) -> AxiomaticDerivation:
@@ -44,7 +44,7 @@ def introduce_conclusion_hypothesis(derivation: AxiomaticDerivation, hypothesis:
     if conclusion == hypothesis:
         return AxiomaticDerivation(
             axiom_schemas=derivation.axiom_schemas,
-            payload=get_identity_derivation(conclusion)
+            payload=get_identity_derivation_payload(conclusion)
         )
 
     if derivation.is_axiom(conclusion) or derivation.is_premise(conclusion):
