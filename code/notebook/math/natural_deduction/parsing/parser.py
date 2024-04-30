@@ -3,15 +3,15 @@ from ....parsing.mixins.whitespace import WhitespaceParserMixin
 from ....parsing.parser import Parser
 from ...fol.alphabet import BinaryConnective, PropConstant, Quantifier
 from ...fol.terms import Variable
-from ..placeholders import (
-    AtomicFormulaPlaceholder,
-    ConnectiveFormulaPlaceholder,
-    ConstantFormulaPlaceholder,
-    FormulaPlaceholder,
-    NegationFormulaPlaceholder,
-    QuantifierFormulaPlaceholder,
-)
 from ..rules import Premise, Rule
+from ..schemas import (
+    ConnectiveFormulaSchema,
+    ConstantFormulaSchema,
+    FormulaPlaceholder,
+    FormulaSchema,
+    NegationFormulaSchema,
+    QuantifierFormulaSchema,
+)
 from .tokenizer import tokenize_nd_string
 from .tokens import MiscToken, RuleToken
 
@@ -23,25 +23,25 @@ class NaturalDeductionParser(WhitespaceParserMixin[RuleToken], Parser[RuleToken]
         self.advance()
         return Variable(head.value)
 
-    def parse_atomic_placeholder(self) -> AtomicFormulaPlaceholder:
+    def parse_atomic_schema(self) -> FormulaPlaceholder:
         head = self.peek()
         assert isinstance(head, GreekIdentifier)
         self.advance()
-        return AtomicFormulaPlaceholder(head.value)
+        return FormulaPlaceholder(head.value)
 
-    def parse_constant_placeholder(self) -> ConstantFormulaPlaceholder:
+    def parse_constant_schema(self) -> ConstantFormulaSchema:
         head = self.peek()
         assert isinstance(head, PropConstant)
         self.advance()
-        return ConstantFormulaPlaceholder(head)
+        return ConstantFormulaSchema(head)
 
-    def parse_binary_placeholder(self) -> ConnectiveFormulaPlaceholder:
+    def parse_binary_schema(self) -> ConnectiveFormulaSchema:
         start = self.index
 
         assert self.peek() == MiscToken.left_parenthesis
         self.advance()
 
-        a_form = self.parse_placeholder()
+        a_form = self.parse_schema()
         self.index - 1
         self.skip_spaces()
 
@@ -49,27 +49,27 @@ class NaturalDeductionParser(WhitespaceParserMixin[RuleToken], Parser[RuleToken]
             self.advance_and_skip_spaces()
 
             if not self.is_at_end() and self.peek() == MiscToken.right_parenthesis:
-                raise self.error('Binary placeholders must have a second sub-placeholder', i_first_token=start)
+                raise self.error('Binary schemas must have a second sub-schema', i_first_token=start)
             if self.is_at_end():
-                raise self.error('Unclosed parentheses for binary placeholder', i_first_token=start)
+                raise self.error('Unclosed parentheses for binary schema', i_first_token=start)
 
-            b_form = self.parse_placeholder()
+            b_form = self.parse_schema()
             self.index - 1
 
             if not self.is_at_end() and self.peek() == MiscToken.right_parenthesis:
                 self.advance()
-                return ConnectiveFormulaPlaceholder(connective, a_form, b_form)
+                return ConnectiveFormulaSchema(connective, a_form, b_form)
 
-            raise self.error('Unclosed parentheses for binary placeholder', i_first_token=start, i_last_token=self.index - 1)
+            raise self.error('Unclosed parentheses for binary schema', i_first_token=start, i_last_token=self.index - 1)
 
         raise self.error('Unexpected token')
 
-    def parse_negation_placeholder(self) -> NegationFormulaPlaceholder:
+    def parse_negation_schema(self) -> NegationFormulaSchema:
         assert self.peek() == MiscToken.negation
         self.advance()
-        return NegationFormulaPlaceholder(self.parse_placeholder())
+        return NegationFormulaSchema(self.parse_schema())
 
-    def parse_quantifier_placeholder(self) -> QuantifierFormulaPlaceholder:
+    def parse_quantifier_schema(self) -> QuantifierFormulaSchema:
         q = self.peek()
         assert isinstance(q, Quantifier)
 
@@ -86,43 +86,43 @@ class NaturalDeductionParser(WhitespaceParserMixin[RuleToken], Parser[RuleToken]
         else:
             raise self.error('Expected dot after variable', i_first_token=start)
 
-        return QuantifierFormulaPlaceholder(q, var, self.parse_placeholder())
+        return QuantifierFormulaSchema(q, var, self.parse_schema())
 
-    def parse_placeholder(self) -> FormulaPlaceholder:
+    def parse_schema(self) -> FormulaSchema:
         match self.peek():
             case PropConstant():
-                return self.parse_constant_placeholder()
+                return self.parse_constant_schema()
 
             case Quantifier():
-                return self.parse_quantifier_placeholder()
+                return self.parse_quantifier_schema()
 
             case MiscToken.left_parenthesis:
-                return self.parse_binary_placeholder()
+                return self.parse_binary_schema()
 
             case MiscToken.negation:
-                return self.parse_negation_placeholder()
+                return self.parse_negation_schema()
 
             case GreekIdentifier():
-                return self.parse_atomic_placeholder()
+                return self.parse_atomic_schema()
 
             case _:
                 raise self.error('Unexpected token')
 
     def parse_premise(self) -> Premise:
-        discharge: FormulaPlaceholder | None = None
+        discharge: FormulaSchema | None = None
         start = self.index
 
         if self.peek() == MiscToken.left_bracket:
             self.advance()
 
-            discharge = self.parse_placeholder()
+            discharge = self.parse_schema()
 
             if self.peek() == MiscToken.right_bracket:
                 self.advance_and_skip_spaces()
             else:
-                raise self.error('Unclosed brackets for discharge placeholders', i_first_token=start)
+                raise self.error('Unclosed brackets for discharge schemas', i_first_token=start)
 
-        main = self.parse_placeholder()
+        main = self.parse_schema()
         self.skip_spaces()
         return Premise(main, discharge)
 
@@ -156,7 +156,7 @@ class NaturalDeductionParser(WhitespaceParserMixin[RuleToken], Parser[RuleToken]
             if self.peek() == MiscToken.comma:
                 self.advance_and_skip_spaces()
             else:
-                raise self.error('Expected either a comma or a sequent symbol after a placeholder')
+                raise self.error('Expected either a comma or a sequent symbol after a schema')
 
         if self.is_at_end():
             raise self.error('Expected a sequent symbol')
@@ -166,16 +166,16 @@ class NaturalDeductionParser(WhitespaceParserMixin[RuleToken], Parser[RuleToken]
         conclusion = self.parse_premise()
 
         if conclusion.discharge is not None:
-            raise self.error('The conclusion cannot have a discharge placeholder', i_first_token=c_start)
+            raise self.error('The conclusion cannot have a discharge schema', i_first_token=c_start)
 
         return Rule(name, premises, conclusion.main)
 
 
-def parse_placeholder(string: str) -> FormulaPlaceholder:
+def parse_schema(string: str) -> FormulaSchema:
     tokens = tokenize_nd_string(string)
 
     with NaturalDeductionParser(tokens) as parser:
-        return parser.parse_placeholder()
+        return parser.parse_schema()
 
 
 def parse_rule(string: str) -> Rule:

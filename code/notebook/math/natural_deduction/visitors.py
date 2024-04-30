@@ -1,75 +1,75 @@
 from typing import Generic, TypeVar
 
-from .placeholders import (
-    AtomicFormulaPlaceholder,
-    ConnectiveFormulaPlaceholder,
-    ConstantFormulaPlaceholder,
+from .schemas import (
+    ConnectiveFormulaSchema,
+    ConstantFormulaSchema,
     FormulaPlaceholder,
-    NegationFormulaPlaceholder,
-    QuantifierFormulaPlaceholder,
+    FormulaSchema,
+    NegationFormulaSchema,
+    QuantifierFormulaSchema,
 )
 
 
 T = TypeVar('T')
 
 
-class FormulaPlaceholderVisitor(Generic[T]):
-    def visit(self, placeholder: FormulaPlaceholder) -> T:
-        match placeholder:
-            case ConstantFormulaPlaceholder():
-                return self.visit_constant(placeholder)
+class FormulaSchemaVisitor(Generic[T]):
+    def visit(self, schema: FormulaSchema) -> T:
+        match schema:
+            case ConstantFormulaSchema():
+                return self.visit_constant(schema)
 
-            case AtomicFormulaPlaceholder():
-                return self.visit_atomic(placeholder)
+            case FormulaPlaceholder():
+                return self.visit_atomic(schema)
 
-            case NegationFormulaPlaceholder():
-                return self.visit_negation(placeholder)
+            case NegationFormulaSchema():
+                return self.visit_negation(schema)
 
-            case ConnectiveFormulaPlaceholder():
-                return self.visit_connective(placeholder)
+            case ConnectiveFormulaSchema():
+                return self.visit_connective(schema)
 
-            case QuantifierFormulaPlaceholder():
-                return self.visit_quantifier(placeholder)
+            case QuantifierFormulaSchema():
+                return self.visit_quantifier(schema)
 
-    def visit_constant(self, placeholder: ConstantFormulaPlaceholder) -> T:
-        return self.generic_visit(placeholder)
+    def visit_constant(self, schema: ConstantFormulaSchema) -> T:
+        return self.generic_visit(schema)
 
-    def visit_atomic(self, placeholder: AtomicFormulaPlaceholder) -> T:
-        return self.generic_visit(placeholder)
+    def visit_atomic(self, schema: FormulaPlaceholder) -> T:
+        return self.generic_visit(schema)
 
-    def visit_negation(self, placeholder: NegationFormulaPlaceholder) -> T:
-        return self.generic_visit(placeholder)
+    def visit_negation(self, schema: NegationFormulaSchema) -> T:
+        return self.generic_visit(schema)
 
-    def visit_connective(self, placeholder: ConnectiveFormulaPlaceholder) -> T:
-        return self.generic_visit(placeholder)
+    def visit_connective(self, schema: ConnectiveFormulaSchema) -> T:
+        return self.generic_visit(schema)
 
-    def visit_quantifier(self, placeholder: QuantifierFormulaPlaceholder) -> T:
-        return self.generic_visit(placeholder)
+    def visit_quantifier(self, schema: QuantifierFormulaSchema) -> T:
+        return self.generic_visit(schema)
 
-    def generic_visit(self, placeholder: FormulaPlaceholder) -> T:
+    def generic_visit(self, schema: FormulaSchema) -> T:
         raise NotImplementedError
 
 
-class FormulaPlaceholderTransformationVisitor(FormulaPlaceholderVisitor[FormulaPlaceholder]):
-    def visit_constant(self, placeholder: ConstantFormulaPlaceholder) -> FormulaPlaceholder:
-        return placeholder
+class FormulaSchemaTransformationVisitor(FormulaSchemaVisitor[FormulaSchema]):
+    def visit_constant(self, schema: ConstantFormulaSchema) -> FormulaSchema:
+        return schema
 
-    def visit_atomic(self, placeholder: AtomicFormulaPlaceholder) -> FormulaPlaceholder:
-        return placeholder
+    def visit_atomic(self, schema: FormulaPlaceholder) -> FormulaSchema:
+        return schema
 
-    def visit_negation(self, placeholder: NegationFormulaPlaceholder) -> FormulaPlaceholder:
-        return NegationFormulaPlaceholder(self.visit(placeholder.sub))
+    def visit_negation(self, schema: NegationFormulaSchema) -> FormulaSchema:
+        return NegationFormulaSchema(self.visit(schema.sub))
 
-    def visit_connective(self, placeholder: ConnectiveFormulaPlaceholder) -> FormulaPlaceholder:
-        return ConnectiveFormulaPlaceholder(
-            placeholder.conn,
-            self.visit(placeholder.a),
-            self.visit(placeholder.b)
+    def visit_connective(self, schema: ConnectiveFormulaSchema) -> FormulaSchema:
+        return ConnectiveFormulaSchema(
+            schema.conn,
+            self.visit(schema.a),
+            self.visit(schema.b)
         )
 
-    def visit_quantifier(self, placeholder: QuantifierFormulaPlaceholder) -> FormulaPlaceholder:
-        return QuantifierFormulaPlaceholder(
-            placeholder.quantifier,
-            placeholder.variable,
-            self.visit(placeholder.sub)
+    def visit_quantifier(self, schema: QuantifierFormulaSchema) -> FormulaSchema:
+        return QuantifierFormulaSchema(
+            schema.quantifier,
+            schema.variable,
+            self.visit(schema.sub)
         )

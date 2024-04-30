@@ -1,11 +1,11 @@
 from typing import NamedTuple
 
-from .placeholders import FormulaPlaceholder
+from .schemas import FormulaSchema
 
 
 class Premise(NamedTuple):
-    main: FormulaPlaceholder
-    discharge: FormulaPlaceholder | None
+    main: FormulaSchema
+    discharge: FormulaSchema | None
 
     def __str__(self) -> str:
         if self.discharge is None:
@@ -17,7 +17,7 @@ class Premise(NamedTuple):
 class Rule(NamedTuple):
     name: str
     premises: list[Premise]
-    conclusion: FormulaPlaceholder
+    conclusion: FormulaSchema
 
     def __str__(self) -> str:
         if len(self.premises) > 0:

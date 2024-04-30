@@ -4,43 +4,43 @@ from ..fol.alphabet import BinaryConnective, PropConstant, Quantifier
 from ..fol.terms import Variable
 
 
-class AtomicFormulaPlaceholder(NamedTuple):
+class FormulaPlaceholder(NamedTuple):
     name: str
 
     def __str__(self) -> str:
         return self.name
 
 
-class ConstantFormulaPlaceholder(NamedTuple):
+class ConstantFormulaSchema(NamedTuple):
     value: PropConstant
 
     def __str__(self) -> str:
         return str(self.value)
 
 
-class NegationFormulaPlaceholder(NamedTuple):
-    sub: 'FormulaPlaceholder'
+class NegationFormulaSchema(NamedTuple):
+    sub: 'FormulaSchema'
 
     def __str__(self) -> str:
         return f'¬{self.sub}'
 
 
-class ConnectiveFormulaPlaceholder(NamedTuple):
+class ConnectiveFormulaSchema(NamedTuple):
     conn: BinaryConnective
-    a: 'FormulaPlaceholder'
-    b: 'FormulaPlaceholder'
+    a: 'FormulaSchema'
+    b: 'FormulaSchema'
 
     def __str__(self) -> str:
         return f'({self.a} {self.conn} {self.b})'
 
 
-class QuantifierFormulaPlaceholder(NamedTuple):
+class QuantifierFormulaSchema(NamedTuple):
     quantifier: Quantifier
     variable: Variable
-    sub: 'FormulaPlaceholder'
+    sub: 'FormulaSchema'
 
     def __str__(self) -> str:
         return f'{self.quantifier.value}{self.variable}.{self.sub}'
 
 
-FormulaPlaceholder = AtomicFormulaPlaceholder | ConstantFormulaPlaceholder | NegationFormulaPlaceholder | ConnectiveFormulaPlaceholder | QuantifierFormulaPlaceholder
+FormulaSchema = FormulaPlaceholder | ConstantFormulaSchema | NegationFormulaSchema | ConnectiveFormulaSchema | QuantifierFormulaSchema

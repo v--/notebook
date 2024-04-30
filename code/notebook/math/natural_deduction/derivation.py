@@ -7,9 +7,9 @@ from ...support.names import new_var_name
 from ..fol.alphabet import BinaryConnective
 from ..fol.formulas import ConnectiveFormula, Formula, is_conditional
 from .parsing.parser import parse_rule
-from .placeholders import AtomicFormulaPlaceholder, FormulaPlaceholder
 from .proof_trees import AssumptionTree, NaturalDeductionSystem, ProofTree, RuleApplicationTree
 from .rules import Rule
+from .schemas import FormulaPlaceholder, FormulaSchema
 from .substitutions import UniformSubstitution, build_substitution, is_schema_instance
 
 
@@ -32,7 +32,7 @@ class ModusPonensConfig(NamedTuple):
 
 @dataclass
 class AxiomaticDerivation:
-    axiom_schemas: frozenset[FormulaPlaceholder]
+    axiom_schemas: frozenset[FormulaSchema]
     payload: list[Formula]
 
     def __post_init__(self) -> None:
@@ -189,8 +189,8 @@ def derivation_to_proof_tree(derivation: AxiomaticDerivation, used_markers: froz
     markers = frozenset(ass.marker for ass in conditional_subtree.iter_open_assumptions())
     antecedent_subtree = derivation_to_proof_tree(derivation.truncate(mp_config.antecedent_index), used_markers | markers)
     substitution = UniformSubstitution({
-        AtomicFormulaPlaceholder('φ'): antecedent_subtree.conclusion,
-        AtomicFormulaPlaceholder('ψ'): conclusion
+        FormulaPlaceholder('φ'): antecedent_subtree.conclusion,
+        FormulaPlaceholder('ψ'): conclusion
     })
 
     return RuleApplicationTree(

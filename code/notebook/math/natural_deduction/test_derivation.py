@@ -11,10 +11,10 @@ from .derivation import (
     introduce_conclusion_hypothesis,
     proof_tree_to_derivation,
 )
-from .rules import FormulaPlaceholder
+from .rules import FormulaSchema
 
 
-def test_minimal_implicational_derivation_premises(propositional_signature: FOLSignature, implicational_axioms: frozenset[FormulaPlaceholder]) -> None:
+def test_minimal_implicational_derivation_premises(propositional_signature: FOLSignature, implicational_axioms: frozenset[FormulaSchema]) -> None:
     def t(payload: Sequence[str | Formula]) -> list[str]:
         derivation = AxiomaticDerivation(
             axiom_schemas=implicational_axioms,
@@ -31,7 +31,7 @@ def test_minimal_implicational_derivation_premises(propositional_signature: FOLS
     assert t(get_identity_derivation(parse_formula(propositional_signature, 'p'))) == []
 
 
-def test_introduce_conclusion_hypothesis(propositional_signature: FOLSignature, implicational_axioms: frozenset[FormulaPlaceholder]) -> None:
+def test_introduce_conclusion_hypothesis(propositional_signature: FOLSignature, implicational_axioms: frozenset[FormulaSchema]) -> None:
     def t(seq: list[str], /, hypothesis: str) -> list[str]:
         derivation = AxiomaticDerivation(
             axiom_schemas=implicational_axioms,
@@ -76,7 +76,7 @@ def test_introduce_conclusion_hypothesis(propositional_signature: FOLSignature, 
     ]
 
 
-def test_derivation_to_proof_tree(propositional_signature: FOLSignature, implicational_axioms: frozenset[FormulaPlaceholder]) -> None:
+def test_derivation_to_proof_tree(propositional_signature: FOLSignature, implicational_axioms: frozenset[FormulaSchema]) -> None:
     def t(payload: Sequence[str | Formula]) -> str:
         derivation = AxiomaticDerivation(
             axiom_schemas=implicational_axioms,
@@ -107,7 +107,7 @@ def test_derivation_to_proof_tree(propositional_signature: FOLSignature, implica
     )
 
 
-def test_proof_tree_to_derivation(propositional_signature: FOLSignature, implicational_axioms: frozenset[FormulaPlaceholder]) -> None:
+def test_proof_tree_to_derivation(propositional_signature: FOLSignature, implicational_axioms: frozenset[FormulaSchema]) -> None:
     def t(payload: Sequence[str | Formula]) -> None:
         derivation = AxiomaticDerivation(
             axiom_schemas=implicational_axioms,

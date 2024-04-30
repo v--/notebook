@@ -55,7 +55,7 @@ def test_parsing_rule_with_no_comma() -> None:
     with pytest.raises(ParsingError) as excinfo:
         parse_rule('(R) Φ₁ Φ₂ ⫢ Ψ')
 
-    assert str(excinfo.value) == 'Expected either a comma or a sequent symbol after a placeholder'
+    assert str(excinfo.value) == 'Expected either a comma or a sequent symbol after a schema'
     assert excinfo.value.__notes__[0] == dedent('''\
         1 │ (R) Φ₁ Φ₂ ⫢ Ψ
           │        ^^
@@ -75,14 +75,14 @@ def test_parsing_rule_with_no_conclusion() -> None:
     )
 
 
-def test_parsing_valid_discharge_placeholders() -> None:
+def test_parsing_valid_discharge_schemas() -> None:
     def assert_rule_rebuilt(string: str) -> None:
         assert str(parse_rule(string)) == string
 
     assert_rule_rebuilt('(R) [θ] Φ ⫢ Ψ')
 
 
-def test_parsing_discharge_placeholder_with_no_name() -> None:
+def test_parsing_discharge_schema_with_no_name() -> None:
     with pytest.raises(ParsingError) as excinfo:
         parse_rule('(R) [] Φ ⫢ Ψ')
 
@@ -94,11 +94,11 @@ def test_parsing_discharge_placeholder_with_no_name() -> None:
     )
 
 
-def test_parsing_discharge_placeholder_with_no_closing_bracket() -> None:
+def test_parsing_discharge_schema_with_no_closing_bracket() -> None:
     with pytest.raises(ParsingError) as excinfo:
         parse_rule('(R) [θ Φ ⫢ Ψ')
 
-    assert str(excinfo.value) == 'Unclosed brackets for discharge placeholders'
+    assert str(excinfo.value) == 'Unclosed brackets for discharge schemas'
     assert excinfo.value.__notes__[0] == dedent('''\
         1 │ (R) [θ Φ ⫢ Ψ
           │     ^^^
@@ -110,7 +110,7 @@ def test_parsing_discharge_in_conclusion() -> None:
     with pytest.raises(ParsingError) as excinfo:
         parse_rule('(R) ⫢ [Θ] Ψ')
 
-    assert str(excinfo.value) == 'The conclusion cannot have a discharge placeholder'
+    assert str(excinfo.value) == 'The conclusion cannot have a discharge schema'
     assert excinfo.value.__notes__[0] == dedent('''\
         1 │ (R) ⫢ [Θ] Ψ
           │       ^^^^^
@@ -118,7 +118,7 @@ def test_parsing_discharge_in_conclusion() -> None:
     )
 
 
-def test_parsing_complex_placeholders() -> None:
+def test_parsing_complex_schemas() -> None:
     def assert_rule_rebuilt(string: str) -> None:
         assert str(parse_rule(string)) == string
 
@@ -129,7 +129,7 @@ def test_parsing_complex_placeholders() -> None:
 
 
 # The quantifier parser is an almost literal copy of the one from the FOL parser, so we rely on the tests there
-def test_parsing_quantifier_placeholder_with_no_dot() -> None:
+def test_parsing_quantifier_schema_with_no_dot() -> None:
     with pytest.raises(ParsingError) as excinfo:
         parse_rule('(R) ⫢ ∀ξΨ')
 
@@ -140,12 +140,12 @@ def test_parsing_quantifier_placeholder_with_no_dot() -> None:
     ''')
 
 
-# The same goes for the binary placeholder parser
-def test_parsing_invalid_binary_placeholder() -> None:
+# The same goes for the binary schema parser
+def test_parsing_invalid_binary_schema() -> None:
     with pytest.raises(ParsingError) as excinfo:
         parse_rule('(R) ⫢ (Φ ∧ )')
 
-    assert str(excinfo.value) == 'Binary placeholders must have a second sub-placeholder'
+    assert str(excinfo.value) == 'Binary schemas must have a second sub-schema'
     assert excinfo.value.__notes__[0] == dedent('''\
         1 │ (R) ⫢ (Φ ∧ )
           │       ^^^^^^
