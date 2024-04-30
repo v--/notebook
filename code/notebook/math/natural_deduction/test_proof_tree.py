@@ -24,31 +24,42 @@ def test_assumption_tree_to_str(propositional_signature: FOLSignature) -> None:
 
 
 def test_simple_rule_application_tree_to_str(propositional_signature: FOLSignature) -> None:
+    substitution = UniformSubstitution({
+        FormulaPlaceholder('φ'): parse_formula(propositional_signature, 'p'),
+        FormulaPlaceholder('ψ'): parse_formula(propositional_signature, 'q')
+    })
+
     tree = RuleApplicationTree(
         minimal_nd_system,
         rule=minimal_nd_system['→⁺'],
-        substitution=UniformSubstitution({
-            FormulaPlaceholder('φ'): parse_formula(propositional_signature, 'p'),
-            FormulaPlaceholder('ψ'): parse_formula(propositional_signature, 'q')
-        }),
+        substitution=substitution,
         subtrees=[
-            AssumptionTree(
+            RuleApplicationTree(
                 minimal_nd_system,
-                parse_formula(propositional_signature, 'p'),
-                marker='u'
-            ),
-            AssumptionTree(
-                minimal_nd_system,
-                parse_formula(propositional_signature, 'q'),
-                marker='v'
+                rule=minimal_nd_system['→⁻'],
+                substitution=substitution,
+                subtrees=[
+                    AssumptionTree(
+                        minimal_nd_system,
+                        parse_formula(propositional_signature, '(p → q)'),
+                        marker='u'
+                    ),
+                    AssumptionTree(
+                        minimal_nd_system,
+                        parse_formula(propositional_signature, 'p'),
+                        marker='v'
+                    )
+                ]
             )
         ]
     )
 
     assert str(tree) == dedent('''\
-          [p]ᵘ    [q]ᵛ
-        u ____________ →⁺
-            (p → q)
+          [(p → q)]ᵘ    [p]ᵛ
+          __________________ →⁻
+                  q
+        v _____________________ →⁺
+                 (p → q)
         '''
     )
 

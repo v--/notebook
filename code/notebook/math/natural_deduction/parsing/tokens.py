@@ -18,6 +18,8 @@ class MiscToken(TokenEnum):
 class SuperscriptToken(TokenEnum):
     plus = '⁺'
     minus = '⁻'
+    left = 'ᴸ'
+    right = 'ᴿ'
 
 
 RuleToken = LatinIdentifier | GreekIdentifier | PropConstant | BinaryConnective | Quantifier | UnaryConnective | MiscToken | SuperscriptToken | Space
