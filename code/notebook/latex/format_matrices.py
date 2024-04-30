@@ -12,7 +12,7 @@ from .nodes import (
     SpecialNode,
     stringify_nodes,
 )
-from .parsing.parser import parse_latex
+from .parsing import parse_latex
 
 
 INDENT = 2

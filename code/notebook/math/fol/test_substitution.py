@@ -1,4 +1,4 @@
-from .parsing.parser import parse_formula, parse_term
+from .parsing import parse_formula, parse_term
 from .signature import FOLSignature
 from .substitution import substitute_in_formula, substitute_in_term
 

@@ -1,7 +1,7 @@
 from ..fol.alphabet import BinaryConnective
 from ..fol.formulas import ConnectiveFormula, Formula, is_conditional
 from .axiomatic_derivation import AxiomaticDerivation
-from .parsing.parser import parse_schema
+from .parsing import parse_schema
 
 
 IMPLICATIONAL_AXIOMS = frozenset([

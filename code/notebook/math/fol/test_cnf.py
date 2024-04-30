@@ -1,7 +1,7 @@
 from collections.abc import Callable
 
 from .cnf import function_to_cnf, is_formula_in_cnf, pull_conjunction, to_cnf
-from .parsing.parser import parse_formula
+from .parsing import parse_formula
 from .signature import FOLSignature
 
 

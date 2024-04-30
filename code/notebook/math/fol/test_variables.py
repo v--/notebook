@@ -1,4 +1,4 @@
-from .parsing.parser import parse_formula
+from .parsing import parse_formula
 from .signature import FOLSignature
 from .variables import get_free_variables
 

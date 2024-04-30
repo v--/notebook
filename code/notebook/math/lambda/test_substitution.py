@@ -1,4 +1,4 @@
-from .parsing.parser import parse_term
+from .parsing import parse_term
 from .substitution import substitute_in_term
 from .terms import Variable
 

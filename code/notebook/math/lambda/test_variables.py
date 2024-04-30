@@ -1,4 +1,4 @@
-from .parsing.parser import parse_term
+from .parsing import parse_term
 from .variables import get_free_variables
 
 

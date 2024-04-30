@@ -8,7 +8,7 @@ from .epsilon_rules import (
     is_essentially_epsilon_free,
     remove_epsilon_rules,
 )
-from .parsing.parser import parse_grammar_schema
+from .parsing import parse_grammar_schema
 
 
 # See ex:alg:epsilon_rule_removal/an in the text

@@ -1,6 +1,6 @@
 import pytest
 
-from .parsing.parser import parse_formula
+from .parsing import parse_formula
 from .pnf import (
     PNFError,
     is_formula_in_pnf,

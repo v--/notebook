@@ -2,9 +2,9 @@ from typing import cast
 
 import pytest
 
-from ..fol.parsing.parser import parse_formula
+from ..fol.parsing import parse_formula
 from ..fol.signature import FOLSignature
-from .parsing.parser import parse_schema
+from .parsing import parse_schema
 from .schemas import FormulaPlaceholder
 from .substitution import SubstitutionError, UniformSubstitution, is_schema_instance
 

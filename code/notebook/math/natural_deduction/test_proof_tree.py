@@ -1,6 +1,6 @@
 from textwrap import dedent
 
-from ..fol.parsing.parser import parse_formula
+from ..fol.parsing import parse_formula
 from ..fol.signature import FOLSignature
 from .axiomatic_derivation import AxiomaticDerivation, derivation_to_proof_tree
 from .minimal_implicational_logic import IMPLICATIONAL_AXIOMS, get_identity_derivation_payload

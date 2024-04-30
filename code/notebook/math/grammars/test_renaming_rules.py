@@ -2,7 +2,7 @@ from textwrap import dedent
 
 from .alphabet import NonTerminal
 from .brute_force_parse import derives
-from .parsing.parser import parse_grammar_schema
+from .parsing import parse_grammar_schema
 from .renaming_rules import collapse_renaming_rules, has_renaming_rules
 
 

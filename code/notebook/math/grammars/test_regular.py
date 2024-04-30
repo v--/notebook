@@ -4,7 +4,7 @@ from ..automata.finite import FiniteAutomaton
 from .alphabet import NonTerminal
 from .conftest import assert_an
 from .grammar import Grammar
-from .parsing.parser import parse_grammar_schema
+from .parsing import parse_grammar_schema
 from .regular import (
     from_finite_automaton,
     is_regular,

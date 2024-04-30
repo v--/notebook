@@ -1,7 +1,6 @@
 from ....parsing.identifiers import GreekIdentifier, LatinIdentifier
 from ....parsing.mixins.whitespace import WhitespaceParserMixin
 from ....parsing.parser import Parser
-from ....parsing.whitespace import Space
 from ...fol.alphabet import BinaryConnective, PropConstant, Quantifier, UnaryConnective
 from ...fol.terms import Variable
 from ..rules import Premise, Rule

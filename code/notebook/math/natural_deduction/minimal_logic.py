@@ -1,4 +1,4 @@
-from .parsing.parser import parse_rule
+from .parsing import parse_rule
 from .system import NaturalDeductionSystem
 
 
