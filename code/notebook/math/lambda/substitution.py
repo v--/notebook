@@ -3,7 +3,7 @@ from .variables import get_free_variables, new_variable
 from .visitors import TermTransformationVisitor
 
 
-# This is def:lambda_substitution in the text
+# This is def:lambda_substitution in the monograph
 class TermSubstitutionVisitor(TermTransformationVisitor):
     var: Variable
     rep: LambdaTerm

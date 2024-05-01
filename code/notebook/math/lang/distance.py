@@ -6,7 +6,7 @@ def hamming(v: str, w: str) -> int:
     return sum(a != b for a, b in zip(v, w))
 
 
-# This is alg:wagner_fisher in the text
+# This is alg:wagner_fisher in the monograph
 def fisher_wagner(v: str, w: str) -> int:
     mtx = zeros(len(v) + 1, len(w) + 1)
 

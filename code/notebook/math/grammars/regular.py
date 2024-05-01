@@ -28,7 +28,7 @@ def is_regular(grammar: Grammar) -> bool:
     return is_left_linear(grammar) or is_right_linear(grammar)
 
 
-# This is alg:regular_grammar_to_automaton in the text
+# This is alg:regular_grammar_to_automaton in the monograph
 def to_finite_automaton(grammar: Grammar) -> FiniteAutomaton:
     assert is_regular(grammar)
 

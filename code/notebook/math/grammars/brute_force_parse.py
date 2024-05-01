@@ -29,7 +29,7 @@ def generate_trees(sym: NonTerminal | Terminal, string: str, grammar: Grammar, t
         )
 
 
-# This is alg:brute_force_parsing in the text
+# This is alg:brute_force_parsing in the monograph
 def parse(grammar: Grammar, string: str, traversed: Optional[set[tuple[NonTerminal, str]]] = None) -> Iterator[ParseTree]:
     if traversed is None:
         traversed = set()

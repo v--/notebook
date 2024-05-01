@@ -115,13 +115,13 @@ def pull_conjunction(formula: Formula) -> Formula:
     return PullConjunctionVisitor().visit(formula)
 
 
-# This is alg:cnf_and_dnf in the text
+# This is alg:cnf_and_dnf in the monograph
 def to_cnf(formula: Formula) -> Formula:
     assert is_formula_quantifierless(formula)
     return pull_conjunction(push_negations(remove_conditionals(remove_constants(formula))))
 
 
-# This is alg:perfect_cnf_and_dnf in the text
+# This is alg:perfect_cnf_and_dnf in the monograph
 def function_to_cnf(fun: Callable[..., bool]) -> Formula:
     fun_params = inspect.signature(fun).parameters
 

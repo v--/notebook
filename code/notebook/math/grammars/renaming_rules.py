@@ -25,7 +25,7 @@ def iter_renamed_targets(grammar: Grammar, traversed: set[NonTerminal]) -> Itera
             yield rule.dest
 
 
-# This is alg:renaming_rule_collapse in the text
+# This is alg:renaming_rule_collapse in the monograph
 def collapse_renaming_rules(grammar: Grammar) -> Grammar:
     assert is_essentially_epsilon_free(grammar)
     new_schema = GrammarSchema()

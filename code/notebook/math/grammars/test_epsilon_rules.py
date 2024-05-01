@@ -11,7 +11,7 @@ from .epsilon_rules import (
 from .parsing import parse_grammar_schema
 
 
-# See ex:alg:epsilon_rule_removal/an in the text
+# See ex:alg:epsilon_rule_removal/an in the monograph
 def test_remove_epsilon_rules_simple() -> None:
     grammar = parse_grammar_schema(
         dedent('''\
@@ -29,7 +29,7 @@ def test_remove_epsilon_rules_simple() -> None:
     assert_an(new_grammar)
 
 
-# See ex:alg:epsilon_rule_removal/dead in the text
+# See ex:alg:epsilon_rule_removal/dead in the monograph
 def test_remove_epsilon_rules_terminal_rule() -> None:
     grammar = parse_grammar_schema(
         dedent('''\
@@ -56,7 +56,7 @@ def test_remove_epsilon_rules_terminal_rule() -> None:
     assert len(list(new_grammar.schema.instantiate(NonTerminal('B')).iter_starting_rules())) == 0
 
 
-# See ex:alg:epsilon_rule_removal/natural in the text
+# See ex:alg:epsilon_rule_removal/natural in the monograph
 def test_remove_epsilon_rules_natural() -> None:
     grammar = parse_grammar_schema(
         dedent('''\

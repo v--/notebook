@@ -60,7 +60,7 @@ def _insert_subtree_leftmost(tree: ParseTree, subtree: ParseTree) -> bool:
     return any(_insert_subtree_leftmost(child, subtree) for child in tree.children)
 
 
-# This is alg:parse_tree_to_leftmost_derivation in the text
+# This is alg:parse_tree_to_leftmost_derivation in the monograph
 def derivation_to_parse_tree(derivation: Derivation) -> ParseTree:
     tree = None
 
@@ -80,7 +80,7 @@ def derivation_to_parse_tree(derivation: Derivation) -> ParseTree:
     return cast(ParseTree, tree)
 
 
-# This is alg:derivation_to_parse_tree in the text
+# This is alg:derivation_to_parse_tree in the monograph
 def parse_tree_to_derivation(tree: ParseTree) -> Derivation:
     assert isinstance(tree.payload, NonTerminal)
     queue: SimpleQueue[ParseTree] = SimpleQueue()

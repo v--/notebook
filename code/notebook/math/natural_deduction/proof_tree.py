@@ -6,8 +6,10 @@ from typing import NamedTuple, override
 from ...support.iteration import string_accumulator
 from ...support.unicode import to_superscript
 from ..fol.formulas import Formula
+from .exceptions import NaturalDeductionError
 from .rules import Rule
-from .substitution import UniformSubstitution
+from .schemas import FormulaPlaceholder
+from .substitution import UniformSubstitution, build_substitution
 from .system import NaturalDeductionSystem
 
 
@@ -39,6 +41,10 @@ class AssumptionTree(ProofTree):
 
     def __str__(self) -> str:
         return f'[{self.conclusion}]{to_superscript(self.marker)}\n'
+
+
+def assume(system: NaturalDeductionSystem, assumption: Formula, marker: str) -> AssumptionTree:
+    return AssumptionTree(system, assumption, marker)
 
 
 class RuleApplicationTree(ProofTree):
@@ -77,7 +83,7 @@ class RuleApplicationTree(ProofTree):
     @string_accumulator()
     def __str__(self) -> Iterable[str]:
         subtree_strings = list(map(str, self.subtrees))
-        markers = [ass.marker for ass in self.iter_assumptions_closed_at_step()]
+        markers = [ass.marker for ass in set(self.iter_assumptions_closed_at_step())]
         conclusion_str = str(self.conclusion)
 
         subtree_matrix = list(reversed(list(
@@ -123,3 +129,26 @@ class RuleApplicationTree(ProofTree):
         yield ' ' * (marker_prefix + (line_length - len(conclusion_str)) // 2)
         yield conclusion_str
         yield '\n'
+
+
+def apply(system: NaturalDeductionSystem, rule_name: str, *args: ProofTree, **kwargs: Formula) -> RuleApplicationTree:
+    rule = system[rule_name]
+    assert len(args) == len(rule.premises)
+
+    substitution = UniformSubstitution({
+        FormulaPlaceholder(key): value for key, value in kwargs.items()
+    })
+
+    for subtree, premise in zip(args, rule.premises):
+        premise_substitution = build_substitution(premise.main, subtree.conclusion)
+        assert premise_substitution is not None
+        new_substitution = substitution & premise_substitution
+        assert new_substitution is not None
+        substitution = new_substitution
+
+    return RuleApplicationTree(
+        system,
+        rule=rule,
+        substitution=substitution,
+        subtrees=list(args)
+    )

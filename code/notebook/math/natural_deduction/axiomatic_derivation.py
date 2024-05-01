@@ -108,6 +108,7 @@ def are_derivations_equivalent(a: AxiomaticDerivation, b: AxiomaticDerivation) -
     return _are_derivations_equivalent_recurse(a, b)
 
 
+# This is alg:proof_tree_to_axiomatic_derivation in the monograph
 def derivation_to_proof_tree(derivation: AxiomaticDerivation, used_markers: frozenset = frozenset()) -> ProofTree:
     conclusion = derivation.get_conclusion()
     system = NaturalDeductionSystem(
@@ -164,6 +165,7 @@ def _proof_tree_to_derivation_payload(tree: ProofTree) -> Iterable[Formula]:
     yield tree.conclusion
 
 
+# This is alg:axiomatic_derivation_to_proof_tree in the monograph
 def proof_tree_to_derivation(tree: ProofTree) -> AxiomaticDerivation:
     return AxiomaticDerivation(
         axiom_schemas=frozenset(rule.conclusion for rule in tree.system.rules if rule is not MODUS_PONENS),
