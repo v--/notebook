@@ -1,12 +1,8 @@
-import abc
-import itertools
 from collections.abc import Iterable
-from typing import NamedTuple, override
+from typing import NamedTuple, Protocol, override
 
-from ...support.iteration import string_accumulator
-from ...support.unicode import to_superscript
 from ..fol.formulas import Formula
-from .exceptions import NaturalDeductionError
+from .proof_tree_renderer import AssumptionRenderer, ProofTreeRenderer, RuleApplicationRenderer
 from .rules import Rule
 from .schemas import FormulaPlaceholder
 from .substitution import UniformSubstitution, build_substitution
@@ -18,16 +14,20 @@ class MarkedFormula(NamedTuple):
     marker: str
 
 
-class ProofTree(abc.ABC):
+class ProofTree(Protocol):
     system: NaturalDeductionSystem
     conclusion: Formula
 
-    @abc.abstractmethod
-    def iter_open_assumptions(self) -> 'Iterable[MarkedFormula]':
+    def build_renderer(self) -> ProofTreeRenderer:
+        ...
+
+    def iter_open_assumptions(self) -> Iterable[MarkedFormula]:
         ...
 
 
 class AssumptionTree(ProofTree):
+    system: NaturalDeductionSystem
+    conclusion: Formula
     marker: str
 
     def __init__(self, system: NaturalDeductionSystem, assumption: Formula, marker: str) -> None:
@@ -39,8 +39,12 @@ class AssumptionTree(ProofTree):
     def iter_open_assumptions(self) -> Iterable[MarkedFormula]:
         yield MarkedFormula(self.conclusion, self.marker)
 
+    @override
+    def build_renderer(self) -> AssumptionRenderer:
+        return AssumptionRenderer(str(self.conclusion), self.marker)
+
     def __str__(self) -> str:
-        return f'[{self.conclusion}]{to_superscript(self.marker)}\n'
+        return self.build_renderer().render()
 
 
 def assume(system: NaturalDeductionSystem, assumption: Formula, marker: str) -> AssumptionTree:
@@ -48,11 +52,19 @@ def assume(system: NaturalDeductionSystem, assumption: Formula, marker: str) -> 
 
 
 class RuleApplicationTree(ProofTree):
+    system: NaturalDeductionSystem
+    conclusion: Formula
     rule: Rule
     substitution: UniformSubstitution
     subtrees: list[ProofTree]
 
-    def __init__(self, system: NaturalDeductionSystem, rule: Rule, substitution: UniformSubstitution, subtrees: list[ProofTree]) -> None:
+    def __init__(
+        self,
+        system: NaturalDeductionSystem,
+        rule: Rule,
+        substitution: UniformSubstitution,
+        subtrees: list[ProofTree]
+    ) -> None:
         assert len(rule.premises) == len(subtrees)
 
         for premise, subtree in zip(rule.premises, subtrees):
@@ -71,7 +83,7 @@ class RuleApplicationTree(ProofTree):
                 if premise.discharge is None or self.substitution.apply_to(premise.discharge) != open_assumption.formula:
                     yield open_assumption
 
-    def iter_assumptions_closed_at_step(self) -> Iterable[MarkedFormula]:
+    def _iter_assumptions_closed_at_step(self) -> Iterable[MarkedFormula]:
         for premise, subtree in zip(self.rule.premises, self.subtrees):
             if premise.discharge is None:
                 continue
@@ -80,55 +92,23 @@ class RuleApplicationTree(ProofTree):
                 if self.substitution.apply_to(premise.discharge) == open_assumption.formula:
                     yield open_assumption
 
-    @string_accumulator()
-    def __str__(self) -> Iterable[str]:
-        subtree_strings = list(map(str, self.subtrees))
-        markers = [ass.marker for ass in set(self.iter_assumptions_closed_at_step())]
-        conclusion_str = str(self.conclusion)
-
-        subtree_matrix = list(reversed(list(
-            itertools.zip_longest(
-                *(reversed(s.splitlines()) for s in subtree_strings),
-                fillvalue=''
-            )
-        )))
-
-        col_widths = [max(map(len, col)) for col in zip(*subtree_matrix)]
-
-        line_length = max(
-            sum(col_widths) + (len(col_widths) - 1) * 4,
-            len(conclusion_str)
+    def get_marker_context(self) -> Iterable[MarkedFormula]:
+        return sorted(
+            set(self._iter_assumptions_closed_at_step()),
+            key=lambda assumption: (str(assumption.formula), assumption.marker)
         )
 
-        marker_prefix = (1 + 3 * (len(markers) - 1) + 1) if len(markers) > 0 else 0
+    @override
+    def build_renderer(self) -> RuleApplicationRenderer:
+        return RuleApplicationRenderer(
+            str(self.conclusion),
+            [assumption.marker for assumption in self.get_marker_context()],
+            self.rule.name,
+            [subtree.build_renderer() for subtree in self.subtrees]
+        )
 
-        for line in subtree_matrix:
-            yield ' ' * marker_prefix
-
-            for j, cell in enumerate(line):
-                if j < len(col_widths) - 1 and any(c != '' for c in line[j + 1:]):
-                    yield cell.ljust(col_widths[j] + 4, ' ')
-                else:
-                    yield cell
-
-            yield '\n'
-
-        for i, marker in enumerate(markers):
-            if i > 0:
-                yield ', '
-
-            yield marker
-
-        if len(markers) > 0:
-            yield ' '
-
-        yield '_' * line_length
-        yield ' '
-        yield self.rule.name
-        yield '\n'
-        yield ' ' * (marker_prefix + (line_length - len(conclusion_str)) // 2)
-        yield conclusion_str
-        yield '\n'
+    def __str__(self) -> str:
+        return self.build_renderer().render()
 
 
 def apply(system: NaturalDeductionSystem, rule_name: str, *args: ProofTree, **kwargs: Formula) -> RuleApplicationTree:
