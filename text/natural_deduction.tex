@@ -64,7 +64,7 @@
   Rather than giving an all-encompassing formal definition for how such inference rules are interpreted, we will translate the aforementioned rules into an endofunction on \( M \to M \) suitable for \fullref{thm:knaster_tarski_theorem}:
   \begin{equation*}
     \begin{aligned}
-      T(r) \coloneqq \thickspace & r \thickspace {\cup} \\
+      R(r) \coloneqq \thickspace & r \thickspace {\cup} \\
                                  & \set{ (x, y) \given x \sim y } \thickspace {\cup} \\
                                  & \set{ (x, x) \given x \in M } \thickspace {\cup} \\
                                  & \set{ (y, x) \given (x, y) \in r } \thickspace {\cup} \\
@@ -72,9 +72,9 @@
     \end{aligned}
   \end{equation*}
 
-  The equivalence closure is simply the least fixed point of \( T \).
+  The equivalence closure is simply the least fixed point of \( R \).
 
-  A downside of this approach is that it may be difficult to determine whether \( T \) is \hyperref[def:scott_continuity]{Scott-continuous}, and thus whether the least fixed point can be reached by taking the union
+  A downside of this approach is that it may be difficult to determine whether \( R \) is \hyperref[def:scott_continuity]{Scott-continuous}, and thus whether the least fixed point can be reached by taking the union
   \begin{equation*}
     \bigcup_{k=0}^\infty T^k(\varnothing).
   \end{equation*}
@@ -230,9 +230,9 @@
       \end{prooftree}
     \end{equation*}
 
-    Fix a tuple \( (T_1, \ldots, T_n) \) of trees such that, for \( i = 1, \ldots, n \), the conclusion of \( T_i \) is \( \Phi_i[\sigma] \). We leave the constructor undefined for tuples that do not satisfy this condition.
+    Fix a tuple \( (P_1, \ldots, P_n) \) of trees such that, for \( i = 1, \ldots, n \), the conclusion of \( P_i \) is \( \Phi_i[\sigma] \). We leave the constructor undefined for tuples that do not satisfy this condition.
 
-    The delicate part of defining rule application trees is to choose a context \( \Gamma \) of assumptions \enquote{closed} at this step. We start with an empty context and use recursion on \( i = 1, \ldots, n \) to define \( \Gamma \). At step \( i \), if \( \Phi_i \) has a bracketed formula \( [\Theta_i] \) attached, if \( T_i \) contains an assumption node labeled by the formula \( \Theta_i[\sigma] \) and if the marker \( u \) of the assumption is not in the context of any rule application subtree of \( T_i \), we will close this assumption now by adding \( u: \Theta_i[\sigma] \) to \( \Gamma \).
+    The delicate part of defining rule application trees is to choose a context \( \Gamma \) of assumptions \enquote{closed} at this step. We start with an empty context and use recursion on \( i = 1, \ldots, n \) to define \( \Gamma \). At step \( i \), if \( \Phi_i \) has a bracketed formula \( [\Theta_i] \) attached, if \( P_i \) contains an assumption node labeled by the formula \( \Theta_i[\sigma] \) and if the marker \( u \) of the assumption is not in the context of any rule application subtree of \( P_i \), we will close this assumption now by adding \( u: \Theta_i[\sigma] \) to \( \Gamma \).
 
     We can now define a node value that will serve as the root of an application tree:
     \begin{itemize}
@@ -241,12 +241,12 @@
       \item The context is \( \Gamma \).
     \end{itemize}
 
-    Finally, we define a rule application tree, the value of our constructor, as the tree whose root has the aforementioned value and whose immediate subtrees are \( T_1, \ldots, T_n \). We draw this tree as follows (resembling stacked inference rules):
+    Finally, we define a rule application tree, the value of our constructor, as the tree whose root has the aforementioned value and whose immediate subtrees are \( P_1, \ldots, P_n \). We draw this tree as follows (resembling stacked inference rules):
     \begin{equation*}
       \begin{prooftree}
-        \hypo{ T_1 }
+        \hypo{ P_1 }
         \hypo{ \cdots }
-        \hypo{ T_n }
+        \hypo{ P_n }
         \infer[left label=\( \Gamma \)]3[\logic{R}]{ \Psi[\sigma] }
       \end{prooftree}
     \end{equation*}
@@ -262,7 +262,7 @@
 \end{comments}
 
 \begin{definition}\label{def:natural_deduction_open_assumptions}\mimprovised
-  We say that the formula \( \varphi \) is an \term{open assumption} of a \hyperref[def:natural_deduction_proof_tree]{natural deduction proof tree} \( T \) if there exists an assumption subtree \( [\varphi]^u \) in \( T \) and if \( u: \varphi \) is not closed by any rule application in \( T \).
+  We say that the formula \( \varphi \) is an \term{open assumption} of a \hyperref[def:natural_deduction_proof_tree]{natural deduction proof tree} \( P \) if there exists an assumption subtree \( [\varphi]^u \) in \( P \) and if \( u: \varphi \) is not closed by any rule application in \( P \).
 \end{definition}
 \begin{comments}
   \item By this definition, \( \varphi \) is an open assumption if, for distinct labels, \( [\varphi]^v \) is closed and \( [\varphi]^u \) is not. To avoid such situations, it is best to only have one marker per formula.
@@ -281,11 +281,11 @@
 
   \SubProofOf[def:consequence_relation/transitivity]{transitivity} Suppose that \( \Delta, \Epsilon \vdash \varphi \) and that, for every \( \psi \in \Delta \), we have \( \Gamma, \Epsilon \vdash \psi \).
 
-  Let \( T_\varphi \) be a proof tree of \( \varphi \) from \( \Delta \cup \Epsilon \) and let \( T_\psi \) be a proof tree of \( \psi \) from \( \Gamma \cup \Epsilon \).
+  Let \( P_\varphi \) be a proof tree of \( \varphi \) from \( \Delta \cup \Epsilon \) and let \( P_\psi \) be a proof tree of \( \psi \) from \( \Gamma \cup \Epsilon \).
 
-  Then, for any formula \( \psi \in \Delta \) and any marker \( u \), we can replace the assumption \( [\psi]^u \) in \( T_\varphi \) with \( T_\psi \) and remove \( u: \psi \) from the contexts of the rule applications in \( T_\varphi \).
+  Then, for any formula \( \psi \in \Delta \) and any marker \( u \), we can replace the assumption \( [\psi]^u \) in \( P_\varphi \) with \( P_\psi \) and remove \( u: \psi \) from the contexts of the rule applications in \( P_\varphi \).
 
-  The resulting tree will have the same conclusion as \( T_\varphi \) --- namely, \( \varphi \) --- but different open assumptions --- namely, members of \( \Gamma \cup \Epsilon \).
+  The resulting tree will have the same conclusion as \( P_\varphi \) --- namely, \( \varphi \) --- but different open assumptions --- namely, members of \( \Gamma \cup \Epsilon \).
 \end{defproof}
 
 \paragraph{Axiomatic derivations via natural deduction}
@@ -404,14 +404,14 @@
       \varphi_i = \varphi_j \synimplies \varphi_n.
     \end{equation*}
 
-    We assume that the algorithm already correctly produces results for derivations shorter than \( n \). Denote by \( T_i \) and \( T_j \) the proof trees corresponding to \( \varphi_i \) and \( \varphi_j \).
+    We assume that the algorithm already correctly produces results for derivations shorter than \( n \). Denote by \( P_i \) and \( P_j \) the proof trees corresponding to \( \varphi_i \) and \( \varphi_j \).
 
     We declare our result of the algorithm to be the tree
     \begin{equation*}
       \begin{prooftree}
-        \hypo{ T_i }
+        \hypo{ P_i }
         \ellipsis {} { \varphi_j \synimplies \varphi }
-        \hypo{ T_j }
+        \hypo{ P_j }
         \ellipsis {} { \varphi_j }
         \infer2[\logic{MP}]{ \varphi }
       \end{prooftree}
@@ -495,11 +495,11 @@
         \end{prooftree}
       \end{equation*}
     \BeginSecondColumn
-      \begin{equation*}\taglabel[\( \neg^+ \)]{eq:def:propositional_natural_deduction_systems/neg/elim}
+      \begin{equation*}\taglabel[\( \neg^- \)]{eq:def:propositional_natural_deduction_systems/neg/elim}
         \begin{prooftree}
           \hypo{ \neg \varphi }
           \hypo{ \varphi }
-          \infer2[\ref{eq:def:propositional_natural_deduction_systems/neg/intro}]{ \synbot }
+          \infer2[\ref{eq:def:propositional_natural_deduction_systems/neg/elim}]{ \synbot }
         \end{prooftree}
       \end{equation*}
     \end{TwoColumns}
@@ -545,14 +545,14 @@
       \begin{equation*}\taglabel[\( \wedge^{-_L} \)]{eq:def:propositional_natural_deduction_systems/and/elim_left}
         \begin{prooftree}
           \hypo{ \varphi \synwedge \psi }
-          \infer1[\ref{eq:def:propositional_natural_deduction_systems/and/elim_left}]{ \psi }
+          \infer1[\ref{eq:def:propositional_natural_deduction_systems/and/elim_left}]{ \varphi }
         \end{prooftree}
       \end{equation*}
     \BeginThirdColumn
       \begin{equation*}\taglabel[\( \wedge^{-_R} \)]{eq:def:propositional_natural_deduction_systems/and/elim_right}
         \begin{prooftree}
           \hypo{ \varphi \synwedge \psi }
-          \infer1[\ref{eq:def:propositional_natural_deduction_systems/and/elim_right}]{ \varphi }
+          \infer1[\ref{eq:def:propositional_natural_deduction_systems/and/elim_right}]{ \psi }
         \end{prooftree}
       \end{equation*}
     \end{ThreeColumns}
@@ -561,9 +561,9 @@
     \begin{TwoColumns}
       \begin{equation*}\taglabel[\( \rightarrow^+ \)]{eq:def:propositional_natural_deduction_systems/imp/intro}
         \begin{prooftree}
-          \hypo{ [\psi] }
-          \ellipsis {} { \varphi }
-          \infer1[\ref{eq:def:propositional_natural_deduction_systems/imp/intro}]{ \psi \synimplies \varphi }
+          \hypo{ [\varphi] }
+          \ellipsis {} { \psi }
+          \infer1[\ref{eq:def:propositional_natural_deduction_systems/imp/intro}]{ \varphi \synimplies \psi }
         \end{prooftree}
       \end{equation*}
     \BeginSecondColumn
@@ -607,7 +607,8 @@
   \end{thmenum}
 \end{definition}
 \begin{comments}
-  \item The system is mostly based on \cite[def. 2.1.1]{TroelstraSchwichtenberg2000}, but with additional rules for \( \syntop \), \( \synneg \) and \( \syniff \).
+  \item The systems are mostly based on \cite[def. 2.1.1]{TroelstraSchwichtenberg2000}, with additional rules for \( \syntop \), \( \synneg \) and \( \syniff \).
+  \item Although we have defined abstract natural deduction systems in great generality, we will refer to the above as \enquote{the} natural deduction systems.
 \end{comments}
 
 \begin{proposition}\label{thm:minimal_implicational_logic_axioms_nd_proof}
@@ -645,3 +646,252 @@
     \end{prooftree}
   \end{equation*}
 \end{proof}
+
+\begin{proposition}\label{thm:syntactic_minimal_tautologies}
+  The intuitionistic tautologies \eqref{eq:thm:intuitionistic_tautologies/dni} and \eqref{eq:thm:intuitionistic_tautologies/lnc} are derivable in the \hyperref[def:propositional_natural_deduction_systems]{minimal natural deduction system}.
+\end{proposition}
+\begin{proof}
+  \SubProofOf{eq:thm:intuitionistic_tautologies/dni}
+  \begin{equation*}
+    \begin{prooftree}
+      \hypo{ [\varphi]^u }
+      \hypo{ [\neg \varphi]^v }
+      \infer2[\ref{eq:def:propositional_natural_deduction_systems/neg/elim}]{ \bot }
+      \infer[left label=\( v \)]1[\ref{eq:def:propositional_natural_deduction_systems/neg/intro}]{ \neg \neg \varphi }
+    \end{prooftree}
+  \end{equation*}
+
+  \SubProofOf{eq:thm:intuitionistic_tautologies/lnc}
+  \begin{equation*}
+    \begin{prooftree}
+      \hypo{ [\varphi \synwedge \neg \varphi]^u }
+      \infer1[\ref{eq:def:propositional_natural_deduction_systems/and/elim_right}]{ \varphi }
+
+      \hypo{ [\varphi \synwedge \neg \varphi]^u }
+      \infer1[\ref{eq:def:propositional_natural_deduction_systems/and/elim_left}]{ \neg \varphi }
+
+      \infer2[\ref{eq:def:propositional_natural_deduction_systems/neg/elim}]{ \bot }
+
+      \infer[left label=\( u \)]1[\ref{eq:def:propositional_natural_deduction_systems/neg/intro}]{ \neg (\varphi \synwedge \neg \varphi) }
+    \end{prooftree}
+  \end{equation*}
+\end{proof}
+
+\begin{theorem}[Propositional syntactic deduction theorem]\label{thm:propositional_syntactic_deduction_theorem}
+  With respect to the \hyperref[def:propositional_natural_deduction_system]{propositional natural deduction system}, for arbitrary propositional formulas, we have
+  \begin{equation*}
+    \Gamma, \varphi \vdash \psi \T{if and only if} \Gamma \vdash \varphi \synimplies \psi.
+  \end{equation*}
+\end{theorem}
+\begin{comments}
+  \item See \fullref{rem:deduction_theorem_list} for a list of similar theorems.
+\end{comments}
+\begin{proof}
+  \SufficiencySubProof Let \( P \) be a \hyperref[def:natural_deduction_proof_tree]{proof tree} of \( \psi \) from \( \Gamma \cup \set{ \varphi } \). Then the following tree proves \( \varphi \synimplies \psi \) from \( \Gamma \):
+  \begin{equation*}
+    \begin{prooftree}
+      \hypo{ [\varphi]^u }
+      \ellipsis {} { G }
+      \infer[left label=\( u \)]1[\eqref{eq:def:propositional_natural_deduction_systems/imp/intro}]{ \varphi \synimplies \psi }
+    \end{prooftree}
+  \end{equation*}
+
+  \NecessitySubProof Let \( P \) be a proof tree of \( \varphi \synimplies \psi \) from \( \Gamma \). Then the following proves \( \psi \) from \( \Gamma \cup \set{ \varphi } \):
+  \begin{equation*}
+    \begin{prooftree}
+      \hypo { G }
+      \hypo { \varphi }
+      \infer[left label=\( u \)]2[\eqref{eq:def:propositional_natural_deduction_systems/imp/elim}]{ \psi }
+    \end{prooftree}
+  \end{equation*}
+\end{proof}
+
+\begin{proposition}\label{thm:minimal_propositional_negation_laws}
+  With respect to the \hyperref[def:propositional_natural_deduction_systems]{minimal natural deduction system}, we have the following strict derivability graph (\eqref{eq:thm:classical_tautologies/dne} being the most powerful):
+  \begin{center}
+    \begin{forest}
+      [
+        {\eqref{eq:thm:classical_tautologies/dne}}
+          [
+            {\eqref{eq:thm:classical_tautologies/pierce}}
+              [{\eqref{eq:thm:classical_tautologies/lem}}]
+          ]
+          [
+            {\eqref{eq:thm:intuitionistic_tautologies/efq}}
+              [{\eqref{eq:thm:intuitionistic_tautologies/lnc}}]
+          ]
+      ]
+    \end{forest}
+  \end{center}
+\end{proposition}
+\begin{proof}
+  Most proofs are given in \cite[prop. 3]{DienerMcKubreJordens2016} and \cite[prop. 13]{DienerMcKubreJordens2016}. We will only show that \eqref{eq:thm:intuitionistic_tautologies/lnc} is strictly weaker than \eqref{eq:thm:intuitionistic_tautologies/efq}.
+
+  For any formula \( \varphi \), we have the \hyperref[def:propositional_natural_deduction_systems]{natural deduction} proof that \( \eqref{eq:thm:intuitionistic_tautologies/lnc} \) is a tautology:
+  \begin{equation*}
+    \begin{prooftree}[separation=3em]
+      \hypo{ [\varphi \synwedge \synneg \varphi]^u }
+      \infer1[\ref{eq:def:propositional_natural_deduction_systems/and/elim_left}]{ \varphi }
+
+      \hypo{ [\varphi \synwedge \synneg \varphi]^u }
+      \infer1[\ref{eq:def:propositional_natural_deduction_systems/and/elim_right}]{ \synneg \varphi }
+
+      \infer2[\ref{eq:def:propositional_natural_deduction_systems/neg/elim}]{ \synbot }
+
+      \infer[left label=\( u \)]1[\ref{eq:def:propositional_natural_deduction_systems/neg/intro}]{ \synneg (\varphi \synwedge \synneg \varphi) }
+    \end{prooftree}
+  \end{equation*}
+
+  Hence, \eqref{eq:thm:intuitionistic_tautologies/lnc} is a theorem of \hyperref[def:minimal_logic]{minimal logic}. If it were to imply \eqref{eq:thm:intuitionistic_tautologies/efq}, then minimal and intuitionistic logic would be equivalent, which would contradict \cite[prop. 3]{DienerMcKubreJordens2016}. Therefore, \eqref{eq:thm:intuitionistic_tautologies/lnc} is indeed strictly weaker than \eqref{eq:thm:intuitionistic_tautologies/efq}.
+\end{proof}
+
+\begin{proposition}\label{thm:propositional_conjunction_of_premises}
+  With respect to the \hyperref[def:propositional_natural_deduction_systems]{minimal natural deduction system}, we have \( \varphi, \psi \vdash \theta \) if and only if \( (\varphi \synwedge \psi) \vdash \theta \).
+\end{proposition}
+\begin{proof}
+  \SufficiencySubProof If \( \varphi, \psi \vdash \theta \), then
+  \begin{equation*}
+    \begin{prooftree}
+      \hypo{ \varphi \synwedge \psi }
+      \infer1[\eqref{eq:def:propositional_natural_deduction_systems/and/elim_left}]{ \varphi }
+
+      \hypo{ \varphi \synwedge \psi }
+      \infer1[\eqref{eq:def:propositional_natural_deduction_systems/and/elim_right}]{ \psi }
+
+      \infer2{}
+
+      \ellipsis {} { \theta }
+    \end{prooftree}
+  \end{equation*}
+
+  \NecessitySubProof If \( (\varphi \synwedge \psi) \vdash \theta \), then
+  \begin{equation*}
+    \begin{prooftree}
+      \hypo{ \varphi }
+      \hypo{ \psi }
+      \infer2[\eqref{eq:def:propositional_natural_deduction_systems/and/intro}]{ \varphi \synwedge \psi }
+      \ellipsis{}{ \theta }
+    \end{prooftree}
+  \end{equation*}
+\end{proof}
+
+\begin{proposition}\label{thm:syntactic_contraposition}
+  In the \hyperref[def:propositional_natural_deduction_systems]{minimal natural deduction system}, we have
+  \begin{align}
+    (\varphi \synimplies \psi) &\vdash (\synneg \psi \synimplies \synneg \varphi) \label{eq:thm:syntactic_contraposition/straight} \\
+    \eqref{eq:thm:classical_tautologies/dne}, (\synneg \varphi \synimplies \synneg \psi) &\vdash (\psi \synimplies \varphi) \label{eq:thm:syntactic_contraposition/reverse}
+  \end{align}
+\end{proposition}
+\begin{proof}
+  We can easily derive \eqref{eq:thm:syntactic_contraposition/straight}:
+  \begin{equation*}
+    \begin{prooftree}
+      \hypo{ \varphi \synimplies \psi }
+      \hypo{ [\varphi]^u }
+      \infer2[\eqref{eq:def:propositional_natural_deduction_systems/imp/elim}]{ \psi }
+
+      \hypo{ [\synneg \psi]^v }
+      \infer2[\eqref{eq:def:propositional_natural_deduction_systems/neg/elim}]{ \synbot }
+
+      \infer[left label=\( u \)]1[\eqref{eq:def:propositional_natural_deduction_systems/neg/intro}]{ \synneg \varphi }
+      \infer[left label=\( v \)]1[\eqref{eq:def:propositional_natural_deduction_systems/imp/intro}]{ \synneg \psi \synimplies \synneg \varphi }
+    \end{prooftree}
+  \end{equation*}
+
+  We can similarly derive \eqref{eq:thm:syntactic_contraposition/reverse}, the only difference being in applying \eqref{eq:thm:classical_tautologies/dne}:
+  \begin{equation*}
+    \begin{prooftree}
+      \hypo{ \eqref{eq:thm:classical_tautologies/dne} }
+
+      \hypo{ \synneg \varphi \synimplies \synneg \psi }
+      \hypo{ [\synneg \varphi]^u }
+      \infer2[\eqref{eq:def:propositional_natural_deduction_systems/imp/elim}]{ \synneg \psi }
+
+      \hypo{ [\psi]^v }
+      \infer2[\eqref{eq:def:propositional_natural_deduction_systems/neg/elim}]{ \synbot }
+
+      \infer[left label=\( u \)]1[\eqref{eq:def:propositional_natural_deduction_systems/neg/intro}]{ \synneg \synneg \varphi }
+      \infer2[\eqref{eq:def:def:axiomatic_derivation_system/mp}]{ \varphi }
+      \infer[left label=\( v \)]1[\eqref{eq:def:propositional_natural_deduction_systems/imp/intro}]{ \psi \synimplies \varphi }
+    \end{prooftree}
+  \end{equation*}
+\end{proof}
+
+\begin{theorem}[Propositional natural deduction is sound]\label{thm:propositional_natural_deduction_is_sound}
+  The minimal, intuitionistic and classical \hyperref[def:propositional_natural_deduction_systems]{propositional natural deduction systems} are \hyperref[def:logical_framework/soundness]{sound} with respect to \hyperref[def:minimal_propositional_semantics]{minimal}, \hyperref[def:propositional_semantics]{intuitionistic} and \hyperref[def:propositional_semantics]{classical} semantics.
+\end{theorem}
+\begin{comments}
+  \item See \fullref{rem:soundness_and_completeness_theorem_list} for a list of soundness and completeness theorems.
+\end{comments}
+\begin{proof}
+  We justify the rules of \fullref{def:propositional_natural_deduction_systems} individually, utilizing \fullref{thm:propositional_syntactic_deduction_theorem} when necessary.
+
+  \SubProofOf{eq:def:propositional_natural_deduction_systems/top/intro} We define valuations of \( \syntop \) to be \( T \).
+
+  \SubProofOf{eq:def:propositional_natural_deduction_systems/top/elim} Justified by \eqref{eq:thm:intuitionistic_equivalences/top_elim}.
+
+  \SubProofOf{eq:def:propositional_natural_deduction_systems/bot/efq} Justified by \eqref{eq:thm:intuitionistic_tautologies/efq}.
+
+  \SubProofOf{eq:def:propositional_natural_deduction_systems/bot/dne} Justified by \eqref{eq:thm:classical_tautologies/dne} and \eqref{eq:thm:intuitionistic_equivalences/negation_bottom}.
+
+  \SubProofOf{eq:def:propositional_natural_deduction_systems/neg/intro} Justified by \eqref{eq:thm:intuitionistic_equivalences/negation_bottom}.
+
+  \SubProofOf{eq:def:propositional_natural_deduction_systems/neg/elim} Justified by \eqref{eq:thm:intuitionistic_equivalences/contradiction}.
+
+  \SubProofOf{eq:def:propositional_natural_deduction_systems/or/intro_left} If \( \Bracks{\varphi}_I = T \), then
+  \begin{equation*}
+    \Bracks{\varphi \synvee \psi}_I = T \vee \Bracks{\psi}_I = T.
+  \end{equation*}
+
+  \SubProofOf{eq:def:propositional_natural_deduction_systems/or/intro_right} Analogous.
+
+  \SubProofOf{eq:def:propositional_natural_deduction_systems/or/elim} If \( \varphi \vDash \theta \) and \( \psi \vDash \theta \), then
+  \begin{equation*}
+    \Bracks{(\varphi \synvee \psi) \synimplies \theta}_I
+    =
+    (\Bracks{\varphi}_I \vee \Bracks{\psi}_I) \rightarrow \Bracks{\theta}_I
+  \end{equation*}
+
+  \SubProofOf{eq:def:propositional_natural_deduction_systems/and/intro} If \( \Bracks{\varphi}_I = \Bracks{\psi}_I = T \), then
+  \begin{equation*}
+    \Bracks{\varphi \synwedge \psi}_I = T \wedge T = T.
+  \end{equation*}
+
+  \SubProofOf{eq:def:propositional_natural_deduction_systems/and/elim_left} If \( \Bracks{\varphi \synwedge \psi}_I = T \), then \( \Bracks{\varphi}_I = \Bracks{\psi}_I = T \).
+
+  \SubProofOf{eq:def:propositional_natural_deduction_systems/and/elim_right} Analogous.
+
+  \SubProofOf{eq:def:propositional_natural_deduction_systems/imp/intro} Justified by \fullref{thm:propositional_syntactic_deduction_theorem}.
+
+  \SubProofOf{eq:def:propositional_natural_deduction_systems/imp/elim} If \( \Bracks{\varphi \synimplies \psi}_I = T \) and \( \Bracks{\varphi}_I = T \), then
+  \begin{equation*}
+    \underbrace{\Bracks{\varphi \synimplies \psi}_I}_T
+    =
+    \underbrace{\Bracks{\varphi}_I}_T \rightarrow \Bracks{\psi}_I
+    \reloset {\ref{thm:def:heyting_algebra/top_left}} =
+    \Bracks{\psi}_I.
+  \end{equation*}
+
+  \SubProofOf{eq:def:propositional_natural_deduction_systems/iff/intro} Justified by \fullref{thm:propositional_syntactic_deduction_theorem}.
+
+  \SubProofOf{eq:def:propositional_natural_deduction_systems/iff/elim_left} If \( \Bracks{\varphi \syniff \psi}_I = T \) and \( \Bracks{\varphi}_I = T \), then
+  \begin{multline*}
+    \underbrace{\Bracks{\varphi \syniff \psi}_I}_T
+    =
+    \Bracks{\varphi}_I \leftrightarrow \Bracks{\psi}_I
+    =
+    (\underbrace{\Bracks{\varphi}_I}_T \rightarrow \Bracks{\psi}_I) \wedge (\Bracks{\psi}_I \rightarrow \underbrace{\Bracks{\varphi}_I}_T)
+    \reloset {\ref{thm:def:heyting_algebra/top_left}} = \\ =
+    \Bracks{\psi}_I \wedge (\Bracks{\psi}_I \rightarrow \underbrace{\Bracks{\varphi}_I}_T)
+    \reloset {\eqref{eq:def:heyting_algebra/axioms/modus_ponens}} =
+    \Bracks{\psi}_I \wedge \underbrace{\Bracks{\varphi}_I}_T
+    =
+    \Bracks{\psi}_I.
+  \end{multline*}
+
+  \SubProofOf{eq:def:propositional_natural_deduction_systems/iff/elim_right} Analogous.
+\end{proof}
+
+\begin{theorem}[Glivenko's double negation theorem]\label{thm:glivenkos_double_negation_theorem}\mcite[204]{CitkinMuravitsky2021}
+  A formula \( \varphi \) is derivable from \( \Gamma \) in the \hyperref[def:propositional_natural_deduction_systems]{classical propositional natural deduction system} if and only if it's double negation \( \synneg \synneg \varphi \) is derivable from \( \Gamma \) in the minimal natural deduction system.
+\end{theorem}
