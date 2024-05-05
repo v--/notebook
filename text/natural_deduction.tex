@@ -144,7 +144,7 @@
 
 \paragraph{Natural deduction systems}
 
-\begin{definition}\label{def:propositional_natural_deduction_systems}\mimprovised
+\begin{definition}\label{def:propositional_natural_deduction_system}\mimprovised
   Consider the grammar schema of propositional logic from \fullref{def:propositional_syntax} extended with \hyperref[def:propositional_formula_schema]{formula schemas}.
 
   A \term{propositional natural deduction system} consists of a nonempty collection of \hyperref[def:inference_rule]{inference rules}, implicitly assumed to have different names, whose entries can be either formula schemas or pairs of schemas:
@@ -182,7 +182,7 @@
 \end{comments}
 
 \begin{definition}\label{def:natural_deduction_proof_tree}\mimprovised
-  Fix a \hyperref[def:propositional_natural_deduction_systems]{propositional natural deduction system}. We will define a family of \hyperref[def:multiway_tree]{multiway trees}, which we will call \term{proof trees}.
+  Fix a \hyperref[def:propositional_natural_deduction_system]{propositional natural deduction system}. We will define a family of \hyperref[def:multiway_tree]{multiway trees}, which we will call \term{proof trees}.
 
   We will use \fullref{thm:least_fixed_point_recursion} on multiway trees whose values are triples consisting of the following objects:
   \begin{thmenum}[series=def:natural_deduction_proof_tree]
@@ -244,9 +244,13 @@
     Finally, we define a rule application tree, the value of our constructor, as the tree whose root has the aforementioned value and whose immediate subtrees are \( P_1, \ldots, P_n \). We draw this tree as follows (resembling stacked inference rules):
     \begin{equation*}
       \begin{prooftree}
-        \hypo{ P_1 }
+        \hypo{}
+        \ellipsis { \( P_1 \) } { \Phi_1[\sigma] }
+
         \hypo{ \cdots }
-        \hypo{ P_n }
+
+        \hypo{}
+        \ellipsis { \( P_n \) } { \Phi_n[\sigma] }
         \infer[left label=\( \Gamma \)]3[\logic{R}]{ \Psi[\sigma] }
       \end{prooftree}
     \end{equation*}
@@ -271,6 +275,8 @@
 
 \begin{definition}\label{def:natural_deduction_entailment}\mcite[205]{Hinman2005}
   For a \hyperref[def:natural_deduction_system]{natural deduction system}, we define a \hyperref[def:consequence_relation]{consequence relation} \( \Gamma \vdash \varphi \) that holds when there is a \hyperref[def:natural_deduction_proof_tree]{proof tree} with conclusion \( \varphi \) whose \hyperref[def:natural_deduction_open_assumptions]{open assumptions} are all in \( \Gamma \).
+
+  As per \fullref{def:logical_framework}, we say that \( \varphi \) is \term{derivable} from \( \Gamma \) if this relation holds.
 \end{definition}
 \begin{defproof}
   We must show that \( {\vdash} \) satisfies the conditions for being a consequence relation.
@@ -409,10 +415,12 @@
     We declare our result of the algorithm to be the tree
     \begin{equation*}
       \begin{prooftree}
-        \hypo{ P_i }
-        \ellipsis {} { \varphi_j \synimplies \varphi }
-        \hypo{ P_j }
-        \ellipsis {} { \varphi_j }
+        \hypo{}
+        \ellipsis { \( P_i \) } { \varphi_j \synimplies \varphi }
+
+        \hypo{}
+        \ellipsis { \( P_j \) } { \varphi_j }
+
         \infer2[\logic{MP}]{ \varphi }
       \end{prooftree}
     \end{equation*}
@@ -443,7 +451,7 @@
 \paragraph{Minimal, intuitionistic and classical logic}
 
 \begin{definition}\label{def:propositional_natural_deduction_systems}\mcite[def. 2.1.1]{TroelstraSchwichtenberg2000}
-  We will now describe several \hyperref[def:propositional_natural_deduction_systems]{propositional natural deduction systems}. The base set of rules describes \hyperref[def:minimal_logic]{minimal logic}, while \hyperref[def:intuitionistic_logic]{intuitionistic} and \hyperref[def:classical_logic]{classical logic} additionally require \eqref{eq:def:propositional_natural_deduction_systems/bot/efq} and \eqref{eq:def:propositional_natural_deduction_systems/bot/dne}, respectively.
+  We will now describe several \hyperref[def:propositional_natural_deduction_system]{propositional natural deduction systems}. The base set of rules describes \hyperref[def:minimal_logic]{minimal logic}, while \hyperref[def:intuitionistic_logic]{intuitionistic} and \hyperref[def:classical_logic]{classical logic} additionally require \eqref{eq:def:propositional_natural_deduction_systems/bot/efq} and \eqref{eq:def:propositional_natural_deduction_systems/bot/dne}, respectively.
 
   \begin{thmenum}
     \thmitem{def:propositional_natural_deduction_systems/top}\mimprovised Rules for introducing and eliminating \hyperref[def:propositional_alphabet/constants/verum]{verum}:
@@ -687,12 +695,21 @@
   \item See \fullref{rem:deduction_theorem_list} for a list of similar theorems.
 \end{comments}
 \begin{proof}
-  \SufficiencySubProof Let \( P \) be a \hyperref[def:natural_deduction_proof_tree]{proof tree} of \( \psi \) from \( \Gamma \cup \set{ \varphi } \). Then the following tree proves \( \varphi \synimplies \psi \) from \( \Gamma \):
+  \SufficiencySubProof Let \( P \) be a \hyperref[def:natural_deduction_proof_tree]{proof tree} of \( \psi \) from \( \Gamma \cup \set{ \varphi } \). If \( \varphi \) is marked with \( u \) in an open assumption in \( P \), the following tree proves \( \varphi \synimplies \psi \) from \( \Gamma \):
   \begin{equation*}
     \begin{prooftree}
       \hypo{ [\varphi]^u }
-      \ellipsis {} { G }
+      \ellipsis { \( P \) } { \psi }
       \infer[left label=\( u \)]1[\eqref{eq:def:propositional_natural_deduction_systems/imp/intro}]{ \varphi \synimplies \psi }
+    \end{prooftree}
+  \end{equation*}
+
+  Otherwise, we use the same rule but without closing any assumptions:
+  \begin{equation*}
+    \begin{prooftree}
+      \hypo{}
+      \ellipsis { \( P \) } { \psi }
+      \infer1[\eqref{eq:def:propositional_natural_deduction_systems/imp/intro}]{ \varphi \synimplies \psi }
     \end{prooftree}
   \end{equation*}
 

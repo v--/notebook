@@ -1,0 +1,149 @@
+\subsection{Propositional completeness}\label{subsec:propositional_completeness}
+
+\paragraph{Consistent theories}
+
+\begin{definition}\label{def:consistent_set_of_sentences}\mcite[def. III.3]{Woodger1983Tarski}
+  Fix a \hyperref[def:consequence_operator]{consequence operator} \( \op{Cn} \) on a set of sentences \( S \).
+
+  We say that the set of sentences \( \Gamma \) is \term[ru=противоречивое (множество формул) (\cite[def. 1.3.15]{Герасимов2011})]{inconsistent} with respect to this operator if \( \op{Cn}(\Gamma) \) coincides with \( S \). When \( \Gamma \) is not inconsistent, we say that it is \term{consistent}.
+\end{definition}
+\begin{comments}
+  \item Within a given \hyperref[def:logical_framework]{logical framework}, we will by default refer to syntactic consistency, as a counterpart to \hyperref[def:satisfiable_set_of_sentences]{satisfiable theories}.
+\end{comments}
+
+\begin{proposition}\label{thm:def:consistent_set_of_sentences}
+  \hyperref[def:consistent_set_of_sentences]{Consistent sets of sentences} have the following basic properties:
+  \begin{thmenum}
+    \thmitem{thm:def:consistent_set_of_sentences/subset} Every subset of a consistent set is consistent.
+    \thmitem{thm:def:consistent_set_of_sentences/superset} Every superset of an inconsistent set is inconsistent.
+    \thmitem{thm:def:consistent_set_of_sentences/entailment} If \( \Gamma \vdash \varphi \), then \( \Gamma \) is consistent if and only if \( \Gamma \cup \set{ \varphi } \) is.
+  \end{thmenum}
+\end{proposition}
+\begin{proof}
+  \SubProofOf{thm:def:consistent_set_of_sentences/subset} Straightforward since consequence operators preserve order.
+
+  \SubProofOf{thm:def:consistent_set_of_sentences/superset} Straightforward since consequence operators preserve order.
+
+  \SubProofOf{thm:def:consistent_set_of_sentences/entailment} Let \( \Gamma \vdash \varphi \). Then the theory axiomatized by \( \Gamma \cup \set{ \varphi } \) coincides with that of \( \Gamma \), and thus the two are equivalent. Then either both are inconsistent or consistent.
+\end{proof}
+
+\begin{proposition}\label{thm:propositional_consistent_set}
+  Within \hyperref[def:intuitionistic_logic]{intuitionistic logic}, the following conditions are equivalent for a set \( \Gamma \) of \hyperref[def:propositional_syntax/formula]{propositional formulas} to be \hyperref[def:consistent_set_of_sentences]{inconsistent}:
+  \begin{thmenum}
+    \thmitem{thm:propositional_consistent_set/bot} The falsum \( \synbot \) is derivable from \( \Gamma \).
+
+    \thmitem{thm:propositional_consistent_set/contradiction} For every formula \( \varphi \), both \( \varphi \) and \( \neg \varphi \) are derivable from \( \Gamma \).
+  \end{thmenum}
+\end{proposition}
+\begin{proof}
+  \SubProofOf{thm:propositional_consistent_set/bot}
+
+  \SufficiencySubProof* If \( \Gamma \) is inconsistent in the sense of \fullref{def:consistent_set_of_sentences}, then, as a propositional formula, \( \synbot \) is derivable from \( \Gamma \).
+
+  \NecessitySubProof* Let \( P \) be a \hyperref[def:natural_deduction_proof_tree]{proof tree} of \( \synbot \) from \( \Gamma \). Then, for any formula \( \varphi \), the following is a proof of \( \varphi \) from \( \Gamma \):
+  \begin{equation*}
+    \begin{prooftree}
+      \hypo{}
+      \ellipsis { \( P \) } { \synbot }
+      \infer1[\eqref{eq:def:propositional_natural_deduction_systems/bot/efq}]{ \varphi }.
+    \end{prooftree}
+  \end{equation*}
+
+  \SubProofOf{thm:propositional_consistent_set/contradiction}
+
+  \SufficiencySubProof* If \( \Gamma \) is inconsistent in the sense of \fullref{def:consistent_set_of_sentences}, then, for any formula \( \varphi \), both \( \varphi \) and \( \neg \varphi \) are derivable from \( \Gamma \).
+
+  \NecessitySubProof* Let \( P \) and \( N \) be proof trees of \( \varphi \) and \( \neg \varphi \) from \( \Gamma \), respectively. Let \( \psi \) be any formula. Then the following is a proof tree of \( \psi \) from \( \Gamma \):
+  \begin{equation*}
+    \begin{prooftree}
+      \hypo{}
+      \ellipsis { \( N \) } { \neg \varphi }
+
+      \hypo{}
+      \ellipsis { \( P \) } { \varphi }
+
+      \infer2[\eqref{eq:def:propositional_natural_deduction_systems/neg/elim}]{ \bot }.
+
+      \infer1[\eqref{eq:def:propositional_natural_deduction_systems/bot/efq}]{ \psi }.
+    \end{prooftree}
+  \end{equation*}
+\end{proof}
+
+\paragraph{Complete theories}
+
+\begin{definition}\label{def:complete_set_of_sentences}
+  Fix a \hyperref[def:consequence_operator]{consequence operator} \( \op{Cn} \) on a set of sentences \( S \), and let \( {\vdash} \) be the corresponding \hyperref[def:consequence_relation]{consequence relation}. We say that the set of sentences \( \Gamma \) is \term[ru=полное (множество формул) (\cite[def. 1.3.16]{Герасимов2011})]{complete} with respect to them if any of the following equivalent conditions hold:
+  \begin{thmenum}
+    \thmitem{def:complete_set_of_sentences/operator}\mcite[def. III.4]{Woodger1983Tarski} Whenever \( \Delta \) is a \hyperref[def:consistent_set_of_sentences]{consistent} set of sentences extending \( \Gamma \), it is \hyperref[def:logical_theory/equivalent]{equivalent} to \( \Gamma \).
+
+    \thmitem{def:complete_set_of_sentences/relation} For any formula \( \varphi \) for which \( \Gamma \cup \set{ \varphi } \) is consistent, we have \( \Gamma \vdash \varphi \).
+  \end{thmenum}
+\end{definition}
+\begin{proof}
+  \ImplicationSubProof{def:complete_set_of_sentences/operator}{def:complete_set_of_sentences/relation} Suppose that \( \Gamma \) is complete in the sense of \fullref{def:complete_set_of_sentences}. Fix a formula \( \varphi \) for which \( \Gamma \cup \set{ \varphi } \) is consistent. From \eqref{eq:def:consequence_relation/reflexivity} it follows that \( \Gamma, \varphi \vdash \varphi \) and, by assumption, \( \Gamma \vdash \varphi \).
+
+  \ImplicationSubProof{def:complete_set_of_sentences/relation}{def:complete_set_of_sentences/operator} Conversely, suppose that, whenever \( \Gamma \cup \set{ \varphi } \) is consistent, we have \( \Gamma \vdash \varphi \).
+
+  Let \( \Delta \) is a consistent theory extending \( \Gamma \). For every formula \( \varphi \) in \( \Delta \), by \fullref{thm:def:consistent_set_of_sentences/subset}, the theory \( \Gamma \cup \set{ \varphi } \) is consistent, and thus \( \Gamma \vdash \varphi \). Then \( \Delta \) is equivalent to \( \Gamma \).
+\end{proof}
+
+\begin{proposition}\label{thm:def:complete_set_of_sentences}
+  \hyperref[def:complete_set_of_sentences]{Complete sets of sentences} have the following basic properties:
+  \begin{thmenum}
+    \thmitem{thm:def:complete_set_of_sentences/inconsistent} An \hyperref[def:consistent_set_of_sentences]{inconsistent set} is vacuously complete.
+    \thmitem{thm:def:complete_set_of_sentences/superset} Every superset of a complete set is complete.
+    \thmitem{thm:def:complete_set_of_sentences/subset} Every subset of an incomplete set is incomplete.
+  \end{thmenum}
+\end{proposition}
+\begin{proof}
+  \SubProofOf{thm:def:consistent_set_of_sentences/inconsistent} Fix an inconsistent set \( \Gamma \). \Fullref{thm:def:consistent_set_of_sentences/superset} implies that, for every formula \( \varphi \), the set \( \Gamma \cup \set{ \varphi } \) is also inconsistent. Then \fullref{def:complete_set_of_sentences/relation} holds vacuously.
+
+  \SubProofOf{thm:def:consistent_set_of_sentences/superset} Let \( \Gamma \) be a complete set and fix a superset \( \Delta \) of \( \Gamma \).
+
+  Suppose that \( \Delta \cup \set{ \varphi } \) is consistent for some formula \( \varphi \). Then \( \Gamma \cup \set{ \varphi } \) is also consistent as a consequence of \fullref{thm:def:consistent_set_of_sentences/subset}. Since \( \Gamma \) is complete, we have \( \Gamma \vdash \varphi \), and, by \eqref{eq:def:consequence_relation/monotonicity}, \( \Delta \vdash \varphi \).
+
+  Generalizing on \( \varphi \), we conclude that \( \Delta \) is consistent.
+
+  \SubProofOf{thm:def:consistent_set_of_sentences/subset} Let \( \Gamma \) be an incomplete set and fix a subset \( \Delta \) of \( \Gamma \). Suppose that \( \Gamma \) is complete. By \fullref{thm:def:consistent_set_of_sentences/superset}, \( \Gamma \) is complete, which is a contradiction. Then \( \Delta \) is incomplete.
+\end{proof}
+
+\begin{proposition}\label{thm:propositional_complete_set}
+  Within \hyperref[def:intuitionistic_logic]{intuitionistic logic}, the set \( \Gamma \) of \hyperref[def:propositional_syntax/formula]{propositional formulas} is \hyperref[def:complete_set_of_sentences]{complete} if and only if, for any formula \( \varphi \), either \( \Gamma \vdash \varphi \) or \( \Gamma \vdash \neg \varphi \) (or possibly both, if \( \Gamma \) is \hyperref[def:consistent_set_of_sentences]{inconsistent}).
+\end{proposition}
+\begin{proof}
+  \SufficiencySubProof Suppose that \( \Gamma \) is complete in the sense of \fullref{def:complete_set_of_sentences/relation}. Fix an arbitrary formula \( \varphi \).
+
+  \begin{itemize}
+    \item Suppose that \( \Gamma \cup \set{ \varphi } \) is inconsistent. \Fullref{thm:propositional_consistent_set/bot} implies that there exists a proof \( P \) deriving \( \bot \) from \( \Gamma \cup \set{ \varphi } \).
+
+    \begin{itemize}
+      \item If \( \varphi \) is an open assumption in \( P \) with marker \( u \), the following is a proof tree of \( \neg \varphi \) from \( \Gamma \):
+      \begin{equation*}
+        \begin{prooftree}
+          \hypo{ [\varphi]^u }
+          \ellipsis { \( P \) } { \bot }
+          \infer1[\eqref{eq:def:propositional_natural_deduction_systems/neg/intro}]{ \neg \varphi }.
+        \end{prooftree}
+      \end{equation*}
+
+      \item Otherwise, \( P \) is a proof of \( \bot \) from \( \Gamma \), and \fullref{thm:propositional_consistent_set/bot} implies that \( \Gamma \) is inconsistent. \Fullref{thm:propositional_consistent_set/contradiction} then implies that both \( \varphi \) and \( \neg \varphi \) are derivable from \( \Gamma \).
+    \end{itemize}
+
+    \item If \( \Gamma \cup \set{ \varphi } \) is not inconsistent, by definition it is consistent, and, since \( \Gamma \) is complete, \( \Gamma \vdash \varphi \).
+  \end{itemize}
+
+  \NecessitySubProof Suppose that, for any formula \( \varphi \), we have \( \Gamma \vdash \varphi \) or \( \Gamma \vdash \neg \varphi \) (or both).
+
+  Fix a formula \( \varphi \) for which \( \Gamma \cup \set{ \varphi } \) is consistent. \Fullref{thm:def:consistent_set_of_sentences/subset} then implies that \( \Gamma \) is consistent.
+
+  \begin{itemize}
+    \item If \( \Gamma \vdash \neg \varphi \), \fullref{thm:propositional_consistent_set/contradiction} then implies that \( \Gamma \) is inconsistent, which is a contradiction.
+    \item It remains for \( \Gamma \vdash \varphi \) to hold.
+  \end{itemize}
+
+  Generalizing on \( \varphi \), we conclude that \( \Gamma \) satisfies \fullref{def:complete_set_of_sentences/relation}.
+\end{proof}
+
+\begin{proposition}\label{thm:extension_to_complete_consistent_set}
+  Within \hyperref[def:classical_logic]{classical logic}, every \hyperref[def:consistent_set_of_sentences]{consistent set} of \hyperref[def:propositional_syntax/formula]{propositional formulas} can be extended to a \hyperref[def:complete_set_of_sentences]{complete} consistent set.
+\end{proposition}
