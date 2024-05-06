@@ -280,10 +280,12 @@ Our purpose here is to study lattice ideals which we will use to define \hyperre
     \thmitem{thm:def:heyting_algebra/distributive} Every Heyting algebra is a \hyperref[def:distributive_lattice]{distributive lattice}.
     \thmitem{thm:def:heyting_algebra/leq} The inequality \( x \leq y \) holds if and only if \( x \rightarrow y = \top \).
     \thmitem{thm:def:heyting_algebra/leq_right} We always have \( y \leq (x \rightarrow y) \).
+    \thmitem{thm:def:heyting_algebra/semicomplement} We always have \( x \wedge \widetilde{x} = \bot \).
     \thmitem{thm:def:heyting_algebra/top_right} We always have \( x \rightarrow \top = \top \).
     \thmitem{thm:def:heyting_algebra/top_left} We can \enquote{eliminate} the top element: \( \top \rightarrow x = x \).
-    \thmitem{thm:def:heyting_algebra/monotone_left} If \( x \leq y \), then, for any \( z \), we have \( z \rightarrow x \leq z \rightarrow y \).
-    \thmitem{thm:def:heyting_algebra/monotone_right} If \( x \leq y \), then, for any \( z \), we have \( y \rightarrow z \leq x \rightarrow z \).
+    \thmitem{thm:def:heyting_algebra/extrema_complement} We have \( \widetilde{\bot} = \top \) and \( \widetilde{\top} = \bot \).
+    \thmitem{thm:def:heyting_algebra/add_antecedent} If \( x \leq y \), then, for any \( z \), we have \( z \rightarrow x \leq z \rightarrow y \).
+    \thmitem{thm:def:heyting_algebra/add_consequent} If \( x \leq y \), then, for any \( z \), we have \( y \rightarrow z \leq x \rightarrow z \).
     \thmitem{thm:def:heyting_algebra/dist} We always have \( x \rightarrow (y \rightarrow z) \leq (x \rightarrow y) \rightarrow (x \rightarrow z) \).
     \thmitem{thm:def:heyting_algebra/dni} We have \( x \leq \widetilde{\widetilde{x}} \)
   \end{thmenum}
@@ -301,11 +303,39 @@ Our purpose here is to study lattice ideals which we will use to define \hyperre
 
   \SubProofOf{thm:def:heyting_algebra/leq_right} Clearly \( y \in H_{x,y} \) because \( x \wedge y \leq y \).
 
+  \SubProofOf{thm:def:heyting_algebra/semicomplement}
+  \begin{equation*}
+    x \wedge \widetilde{x}
+    =
+    x \wedge (x \rightarrow \bot)
+    \reloset {\eqref{eq:def:heyting_algebra/axioms/modus_ponens}} =
+    x \wedge \bot
+    =
+    \bot.
+  \end{equation*}
+
   \SubProofOf{thm:def:heyting_algebra/top_right} \Fullref{thm:def:heyting_algebra/leq_right} implies that \( \top \leq (x \rightarrow \top) \).
 
   \SubProofOf{thm:def:heyting_algebra/top_left} Follows from \fullref{thm:def:heyting_algebra/leq}.
 
-  \SubProofOf{thm:def:heyting_algebra/monotone_left} Suppose that \( x \leq y \). Then \( z \rightarrow y \) is in \( H_{z,x} \) because
+  \SubProofOf{thm:def:heyting_algebra/extrema_complement} We have
+  \begin{equation*}
+    \widetilde{\bot}
+    =
+    \bot \rightarrow \bot
+    \reloset {\eqref{eq:def:heyting_algebra/axioms/self}} =
+    \top
+  \end{equation*}
+  and
+  \begin{equation*}
+    \widetilde{\top}
+    =
+    \top \rightarrow \bot
+    \reloset {\ref{thm:def:heyting_algebra/top_left}} =
+    \bot
+  \end{equation*}
+
+  \SubProofOf{thm:def:heyting_algebra/add_antecedent} Suppose that \( x \leq y \). Then \( z \rightarrow y \) is in \( H_{z,x} \) because
   \begin{equation*}
     z \wedge (z \rightarrow x)
     \reloset {\eqref{eq:def:heyting_algebra/axioms/modus_ponens}} =
@@ -318,7 +348,7 @@ Our purpose here is to study lattice ideals which we will use to define \hyperre
 
   Therefore, \( (z \rightarrow x) \leq (z \rightarrow y) \).
 
-  \SubProofOf{thm:def:heyting_algebra/monotone_right} Suppose that \( x \leq y \). Then \( y \rightarrow z \) is in \( H_{x,z} \) because
+  \SubProofOf{thm:def:heyting_algebra/add_consequent} Suppose that \( x \leq y \). Then \( y \rightarrow z \) is in \( H_{x,z} \) because
   \begin{equation*}
     x \wedge (y \rightarrow z)
     \reloset {\ref{thm:def:lattice/operations_preserve_order}} \leq
@@ -338,7 +368,7 @@ Our purpose here is to study lattice ideals which we will use to define \hyperre
     x \rightarrow (y \wedge (y \rightarrow z))
     \reloset {\eqref{eq:def:heyting_algebra/axioms/modus_ponens}} =
     x \rightarrow (y \wedge z)
-    \reloset {\ref{thm:def:heyting_algebra/monotone_right}} \leq
+    \reloset {\ref{thm:def:heyting_algebra/add_consequent}} \leq
     x \rightarrow z.
   \end{equation*}
 
@@ -372,9 +402,9 @@ Our purpose here is to study lattice ideals which we will use to define \hyperre
     x \wedge \parens[\Big]{ \bigvee_{k \in \mscrK} y_k } = \bigvee_{k \in \mscrK} (x \wedge y_k).
   \end{equation}
 
-   Furthermore, we have
+  Furthermore, we have
   \begin{equation}\label{eq:thm:complete_heyting_algebra/relative_pseudocomplement}
-    (x \rightarrow y) \coloneqq \bigvee\set{ c \in X \given x \wedge c \leq y }.
+    (x \rightarrow y) = \bigvee\set{ c \in X \given x \wedge c \leq y }.
   \end{equation}
 \end{proposition}
 \begin{proof}
@@ -448,7 +478,7 @@ Our purpose here is to study lattice ideals which we will use to define \hyperre
       \item For \( N \rightarrow F \) we have \( N \wedge x \leq F \) if and only if \( x = F \).
     \end{itemize}
 
-    \thmitem{ex:def:heyting_algebra/lindenbaum_tarski} As shown in \fullref{thm:intuitionistic_lindenbaum_tarski_algebra}, every \hyperref[def:lindenbaum_tarski_algebra]{Lindenbaum-Tarski algebra} for the \hyperref[def:intuitionistic_propositional_deduction_systems]{intuitionistic propositional deduction system} is a Heyting algebra.
+    \thmitem{ex:def:heyting_algebra/lindenbaum_tarski} As shown in \fullref{thm:lindenbaum_tarski_algebras}, every \hyperref[def:lindenbaum_tarski_algebra]{Lindenbaum-Tarski algebra} for the \hyperref[def:intuitionistic_propositional_deduction_systems]{intuitionistic propositional deduction system} is a Heyting algebra.
 
     \thmitem{ex:def:heyting_algebra/topology} The topology \( \mscrT \) of a \hyperref[def:topological_space]{topological space} \( (X, \mscrT) \) is a complete Heyting algebra.
 
@@ -477,3 +507,69 @@ Our purpose here is to study lattice ideals which we will use to define \hyperre
     This is actually used in topological semantics --- see \fullref{def:propositional_topological_semantics}.
   \end{thmenum}
 \end{example}
+
+\begin{theorem}[Heyting algebra De Morgan's laws]\label{thm:heyting_algebra_de_morgans_laws}
+  In a \hyperref[def:heyting_algebra]{Heyting algebra}, the following hold for any finite family \( \set{ x_k }_{k \in \mscrK} \):
+  \begin{subequations}
+    \begin{align}
+      \widetilde{\bigvee_{k \in \mscrK} x_k}   &=    \bigwedge_{k \in \mscrK} \widetilde{x_k}, \label{eq:thm:heyting_algebra_de_morgans_laws/complement_of_join} \\
+      \widetilde{\bigwedge_{k \in \mscrK} x_k} &\geq \bigvee_{k \in \mscrK} \widetilde{x_k}.   \label{eq:thm:heyting_algebra_de_morgans_laws/complement_of_meet}
+    \end{align}
+  \end{subequations}
+
+  If the algebra is a \hyperref[def:complete_lattice]{complete lattice}, \( \mscrK \) can be any family, not necessarily finite.
+\end{theorem}
+\begin{comments}
+  \item See \fullref{rem:de_morgans_laws} for a list of related theorems.
+\end{comments}
+\begin{proof}
+  \SubProof{Proof that \( y \leq \bigwedge_{m \in \mscrK} \widetilde{x_m} \) if and only if \( \parens*{ \bigvee_{k \in \mscrK} x_k } \wedge y = \bot \)}
+
+  \SufficiencySubProof* If \( y \leq \bigwedge_{m \in \mscrK} \widetilde{x_m} \), we have
+  \begin{align*}
+    y \wedge \parens*{ \bigvee_{k \in \mscrK} x_k }
+    &\reloset {\ref{thm:def:lattice/operations_preserve_order}} \leq
+    \parens*{ \bigwedge_{m \in \mscrK} \widetilde{x_m} } \wedge \parens*{ \bigvee_{k \in \mscrK} x_k }
+    \reloset {\eqref{eq:thm:complete_heyting_algebra/infinite_distributive}} = \\ &=
+    \bigvee_{k \in \mscrK} \parens*{ \parens*{ \bigwedge_{m \in \mscrK} x_m } \wedge x_k }
+    = \\ &=
+    \bigvee_{k \in \mscrK} \parens*{ \parens*{ \bigwedge_{m \neq k} x_m } \wedge \underbrace{\widetilde {x_k} \wedge x_k}_\bot }
+    = \\ &=
+    \bigvee_{k \in \mscrK} \bot
+    = \\ &=
+    \bot,
+  \end{align*}
+  where we have used \fullref{thm:def:heyting_algebra/semicomplement} to conclude that \( x_k \wedge \widetilde {x_k} = \bot \).
+
+  \NecessitySubProof* Conversely, suppose that \( \parens*{ \bigvee_{k \in \mscrK} x_k } \wedge y = \bot \). We have
+  \begin{equation*}
+    \parens*{ \bigvee_{k \in \mscrK} x_k } \wedge y
+    \reloset {\eqref{eq:thm:def:complete_lattice/distributive_inequality/meet_over_join}} \geq
+    \bigvee_{k \in \mscrK} (x_k \wedge y),
+  \end{equation*}
+  hence \( x_k \wedge y = \bot \) for every \( k \in \mscrK \). Then \( y \leq \widetilde{x_k} = (x_k \rightarrow \bot) \) for every \( k \in \mscrK \), implying that
+  \begin{equation*}
+    y \leq \bigwedge_{m \in \mscrK} \widetilde{x_m}.
+  \end{equation*}
+
+  \SubProof{Proof that \( \bigvee_{m \in \mscrK} \widetilde{x_m} \leq \widetilde{\bigwedge_{k \in \mscrK} x_k} \)} We have
+  \begin{equation*}
+    \parens*{ \bigvee_{m \in \mscrK} \widetilde{x_m} } \wedge \parens*{ \bigwedge_{k \in \mscrK} x_k }
+    \reloset {\eqref{eq:thm:complete_heyting_algebra/infinite_distributive}} =
+    \bigvee_{m \in \mscrK} \parens*{ \widetilde {x_m} \parens*{ \bigwedge_{m \in \mscrK} x_m } \wedge x_k }
+    =
+    \bigvee_{m \in \mscrK} \parens*{ \underbrace{\widetilde {x_m} \wedge x_m}_\bot \parens*{ \bigwedge_{m \neq k} x_m } }
+    =
+    \bot.
+  \end{equation*}
+\end{proof}
+
+\begin{remark}\label{rem:de_morgans_laws}
+  We prove in this monograph the following variation of De Morgan's laws:
+  \begin{itemize}
+    \item \Fullref{thm:heyting_algebra_de_morgans_laws}.
+    \item \Fullref{thm:de_morgans_laws}.
+    \item \Fullref{thm:de_morgans_laws_for_sets}.
+    \item \Fullref{thm:classical_equivalences/de_morgan}.
+  \end{itemize}
+\end{remark}
