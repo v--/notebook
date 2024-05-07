@@ -283,16 +283,26 @@
 
   \SubProofOf[def:consequence_relation/reflexivity]{reflexivity} If \( \varphi \in \Gamma \), then, for any marker \( u \), the tree \( [\varphi]^u \) proves \( \varphi \) from \( \Gamma \).
 
-  \SubProofOf[def:consequence_relation/monotonicity]{monotonicity} If \( \Gamma \vdash \varphi \), then there exists a proof tree of \( \varphi \) from \( \Gamma \). Such a tree also proves \( \varphi \) from any superset of \( \Gamma \).
+  \SubProofOf[def:consequence_relation/monotonicity]{monotonicity} If \( \Gamma \vdash \varphi \), then there exists a proof tree deriving \( \varphi \) from \( \Gamma \). Such a tree also proves \( \varphi \) from any superset of \( \Gamma \).
 
   \SubProofOf[def:consequence_relation/transitivity]{transitivity} Suppose that \( \Delta, \Epsilon \vdash \varphi \) and that, for every \( \psi \in \Delta \), we have \( \Gamma, \Epsilon \vdash \psi \).
 
-  Let \( P_\varphi \) be a proof tree of \( \varphi \) from \( \Delta \cup \Epsilon \) and let \( P_\psi \) be a proof tree of \( \psi \) from \( \Gamma \cup \Epsilon \).
+  Let \( P_\varphi \) be a proof tree deriving \( \varphi \) from \( \Delta \cup \Epsilon \) and let \( P_\psi \) be a proof tree deriving \( \psi \) from \( \Gamma \cup \Epsilon \).
 
   Then, for any formula \( \psi \in \Delta \) and any marker \( u \), we can replace the assumption \( [\psi]^u \) in \( P_\varphi \) with \( P_\psi \) and remove \( u: \psi \) from the contexts of the rule applications in \( P_\varphi \).
 
   The resulting tree will have the same conclusion as \( P_\varphi \) --- namely, \( \varphi \) --- but different open assumptions --- namely, members of \( \Gamma \cup \Epsilon \).
 \end{defproof}
+
+\begin{proposition}\label{thm:propositional_natural_deduction_entailment_compact}
+  Every \hyperref[def:natural_deduction_entailment]{natural deduction entailment relation} is \hyperref[def:consequence_relation/compactness]{compact}.
+\end{proposition}
+\begin{comments}
+  \item See \fullref{rem:logical_compactness_theorems} for a list of similar results.
+\end{comments}
+\begin{proof}
+  A proof tree is, by definition, a multiway tree, which has only finitely many nodes, only some of which are open assumptions. It is sufficient to only consider the open assumptions present in the proof tree.
+\end{proof}
 
 \paragraph{Axiomatic derivations via natural deduction}
 
@@ -311,11 +321,11 @@
     For convenience, here we must break our convention of rules having unique names.
 
     \thmitem{thm:axiomatic_derivation_as_natural_deduction/mp} For deducing proofs, we introduce the following rule, called \term{modus ponens}:
-    \begin{equation*}
+    \begin{equation*}\taglabel[\( \logic{MP} \)]{eq:thm:axiomatic_derivation_as_natural_deduction/mp}
       \begin{prooftree}
         \hypo{ \varphi \rightarrow \psi }
         \hypo{ \varphi }
-        \infer2[\logic{MP}]{ \psi }
+        \infer2[\ref{eq:thm:axiomatic_derivation_as_natural_deduction/mp}]{ \psi }
       \end{prooftree}
     \end{equation*}
 
@@ -366,7 +376,7 @@
           \synimplies ((\varphi \synimplies (\varphi \synimplies \varphi)) \synimplies (\varphi \synimplies \varphi))
         }
 
-      \infer2[\ref{eq:def:def:axiomatic_derivation_system/mp}]{(\varphi \synimplies (\varphi \synimplies \varphi)) \synimplies (\varphi \synimplies \varphi)}
+      \infer2[\ref{eq:thm:axiomatic_derivation_as_natural_deduction/mp}]{(\varphi \synimplies (\varphi \synimplies \varphi)) \synimplies (\varphi \synimplies \varphi)}
 
       \hypo
         {
@@ -381,7 +391,7 @@
           \varphi \synimplies (\varphi \synimplies \varphi)
         }
 
-      \infer2[\ref{eq:def:def:axiomatic_derivation_system/mp}]{\varphi \synimplies \varphi}
+      \infer2[\ref{eq:thm:axiomatic_derivation_as_natural_deduction/mp}]{\varphi \synimplies \varphi}
     \end{prooftree}
   \end{equation}
   where
@@ -484,7 +494,7 @@
     \BeginSecondColumn
       \begin{equation*}\taglabel[\logic{DNE}]{eq:def:propositional_natural_deduction_systems/bot/dne}
         \begin{prooftree}
-          \hypo{ [\neg \varphi] }
+          \hypo{ [\synneg \varphi] }
           \ellipsis {} { \synbot }
           \infer1[\ref{eq:def:propositional_natural_deduction_systems/bot/dne}]{ \varphi }
         \end{prooftree}
@@ -499,13 +509,13 @@
         \begin{prooftree}
           \hypo{ [\varphi] }
           \ellipsis {} { \synbot }
-          \infer1[\ref{eq:def:propositional_natural_deduction_systems/neg/intro}]{ \neg \varphi }
+          \infer1[\ref{eq:def:propositional_natural_deduction_systems/neg/intro}]{ \synneg \varphi }
         \end{prooftree}
       \end{equation*}
     \BeginSecondColumn
       \begin{equation*}\taglabel[\( \neg^- \)]{eq:def:propositional_natural_deduction_systems/neg/elim}
         \begin{prooftree}
-          \hypo{ \neg \varphi }
+          \hypo{ \synneg \varphi }
           \hypo{ \varphi }
           \infer2[\ref{eq:def:propositional_natural_deduction_systems/neg/elim}]{ \synbot }
         \end{prooftree}
@@ -663,24 +673,24 @@
   \begin{equation*}
     \begin{prooftree}
       \hypo{ [\varphi]^u }
-      \hypo{ [\neg \varphi]^v }
-      \infer2[\ref{eq:def:propositional_natural_deduction_systems/neg/elim}]{ \bot }
-      \infer[left label=\( v \)]1[\ref{eq:def:propositional_natural_deduction_systems/neg/intro}]{ \neg \neg \varphi }
+      \hypo{ [\synneg \varphi]^v }
+      \infer2[\ref{eq:def:propositional_natural_deduction_systems/neg/elim}]{ \synbot }
+      \infer[left label=\( v \)]1[\ref{eq:def:propositional_natural_deduction_systems/neg/intro}]{ \synneg \synneg \varphi }
     \end{prooftree}
   \end{equation*}
 
   \SubProofOf{eq:thm:intuitionistic_tautologies/lnc}
   \begin{equation*}
     \begin{prooftree}
-      \hypo{ [\varphi \synwedge \neg \varphi]^u }
+      \hypo{ [\varphi \synwedge \synneg \varphi]^u }
       \infer1[\ref{eq:def:propositional_natural_deduction_systems/and/elim_right}]{ \varphi }
 
-      \hypo{ [\varphi \synwedge \neg \varphi]^u }
-      \infer1[\ref{eq:def:propositional_natural_deduction_systems/and/elim_left}]{ \neg \varphi }
+      \hypo{ [\varphi \synwedge \synneg \varphi]^u }
+      \infer1[\ref{eq:def:propositional_natural_deduction_systems/and/elim_left}]{ \synneg \varphi }
 
-      \infer2[\ref{eq:def:propositional_natural_deduction_systems/neg/elim}]{ \bot }
+      \infer2[\ref{eq:def:propositional_natural_deduction_systems/neg/elim}]{ \synbot }
 
-      \infer[left label=\( u \)]1[\ref{eq:def:propositional_natural_deduction_systems/neg/intro}]{ \neg (\varphi \synwedge \neg \varphi) }
+      \infer[left label=\( u \)]1[\ref{eq:def:propositional_natural_deduction_systems/neg/intro}]{ \synneg (\varphi \synwedge \synneg \varphi) }
     \end{prooftree}
   \end{equation*}
 \end{proof}
@@ -713,12 +723,14 @@
     \end{prooftree}
   \end{equation*}
 
-  \NecessitySubProof Let \( P \) be a proof tree of \( \varphi \synimplies \psi \) from \( \Gamma \). Then the following proves \( \psi \) from \( \Gamma \cup \set{ \varphi } \):
+  \NecessitySubProof Let \( P \) be a proof tree deriving \( \varphi \synimplies \psi \) from \( \Gamma \). Then the following proves \( \psi \) from \( \Gamma \cup \set{ \varphi } \):
   \begin{equation*}
     \begin{prooftree}
-      \hypo { G }
-      \hypo { \varphi }
-      \infer[left label=\( u \)]2[\eqref{eq:def:propositional_natural_deduction_systems/imp/elim}]{ \psi }
+      \hypo {\Gamma}
+      \ellipsis { \( P \) } { \varphi \synimplies \psi }
+
+      \hypo { [\varphi]^u }
+      \infer2[\eqref{eq:def:propositional_natural_deduction_systems/imp/elim}]{ \psi }
     \end{prooftree}
   \end{equation*}
 \end{proof}
@@ -792,15 +804,114 @@
   \end{equation*}
 \end{proof}
 
-\begin{proposition}\label{thm:syntactic_contraposition}
-  In the \hyperref[def:propositional_natural_deduction_systems]{minimal natural deduction system}, we have
-  \begin{align}
-    (\varphi \synimplies \psi) &\vdash (\synneg \psi \synimplies \synneg \varphi) \label{eq:thm:syntactic_contraposition/straight} \\
-    \eqref{eq:thm:classical_tautologies/dne}, (\synneg \varphi \synimplies \synneg \psi) &\vdash (\psi \synimplies \varphi) \label{eq:thm:syntactic_contraposition/reverse}
-  \end{align}
+\begin{proposition}\label{thm:propositional_derivations}
+  We can construct the following proofs in the \hyperref[def:propositional_natural_deduction_systems]{minimal natural deduction system}:
+  \begin{thmenum}
+    \thmitem{thm:propositional_derivations/biconditional_as_conjunction} The biconditional is a conjunction of conditionals:
+    \begin{equation}\label{eq:thm:propositional_derivations/biconditional_as_conjunction}
+      \varphi \syniff \psi \vdash (\varphi \synimplies \psi) \synwedge  (\psi \synimplies \varphi)
+    \end{equation}
+
+    \thmitem{thm:propositional_derivations/conjunction_of_conditionals} Conversely, a conjunction of compatible conditionals is a biconditional:
+    \begin{equation}\label{eq:thm:propositional_derivations/conjunction_of_conditionals}
+      (\varphi \synimplies \psi) \synwedge (\psi \synimplies \varphi) \vdash \varphi \syniff \psi
+    \end{equation}
+
+    \thmitem{thm:propositional_derivations/conditional_as_conjunction} A conditional formula is the negation of a conjunction:
+    \begin{equation}\label{eq:thm:propositional_derivations/conditional_as_conjunction}
+      \varphi \synimplies \psi \vdash \neg(\varphi \synwedge \synneg \psi)
+    \end{equation}
+
+    \thmitem{thm:propositional_derivations/disjunction_as_conditional} When additionally assuming \eqref{eq:thm:intuitionistic_tautologies/efq}, a disjunction with the first subformula negated is a conditional:
+    \begin{equation}\label{eq:thm:propositional_derivations/disjunction_as_conditional}
+      \synneg \varphi \synvee \psi \vdash \varphi \synimplies \psi
+    \end{equation}
+
+    \thmitem{thm:propositional_derivations/contraposition} From a conditional we can derive its contraposition:
+    \begin{equation}\label{eq:thm:propositional_derivations/contraposition}
+      \varphi \synimplies \psi \vdash \synneg \psi \synimplies \synneg \varphi
+    \end{equation}
+
+    \thmitem{thm:propositional_derivations/contraposition_elim} From a contraposition we can derive a variation of the original:
+    \begin{equation}\label{eq:thm:propositional_derivations/contraposition_elim}
+      \synneg \psi \synimplies \synneg \varphi \vdash \varphi \synimplies \synneg \synneg \psi
+    \end{equation}
+  \end{thmenum}
 \end{proposition}
 \begin{proof}
-  We can easily derive \eqref{eq:thm:syntactic_contraposition/straight}:
+  \SubProofOf{thm:propositional_derivations/biconditional_as_conjunction}
+  \begin{equation*}
+    \begin{prooftree}
+      \hypo{ [\varphi \syniff \psi]^u }
+      \hypo{ [\varphi]^v }
+      \infer2[\ref{eq:def:propositional_natural_deduction_systems/iff/elim_left}]{ \psi }
+      \infer[left label=\( v \)]1[\ref{eq:def:propositional_natural_deduction_systems/imp/intro}]{ \varphi \synimplies \psi }
+
+      \hypo{ [\varphi \syniff \psi]^u }
+      \hypo{ [\psi]^w }
+      \infer2[\ref{eq:def:propositional_natural_deduction_systems/iff/elim_right}]{ \varphi }
+      \infer[left label=\( w \)]1[\ref{eq:def:propositional_natural_deduction_systems/imp/intro}]{ \psi \synimplies \varphi }
+
+      \infer2[\ref{eq:def:propositional_natural_deduction_systems/and/intro}]{ (\varphi \synimplies \psi) \synwedge (\psi \synimplies \varphi) }
+    \end{prooftree}
+  \end{equation*}
+
+  \SubProofOf{thm:propositional_derivations/conjunction_of_conditionals}
+  \begin{equation*}
+    \begin{prooftree}
+      \hypo{ [(\varphi \synimplies \psi) \synwedge (\psi \synimplies \varphi)]^u }
+      \infer1[\ref{eq:def:propositional_natural_deduction_systems/and/elim_right}]{ \varphi \synimplies \psi }
+      \hypo{ [\varphi]^v }
+      \infer2[\ref{eq:def:propositional_natural_deduction_systems/imp/elim}]{ \psi }
+
+      \hypo{ [(\varphi \synimplies \psi) \synwedge (\psi \synimplies \varphi)]^u }
+      \infer1[\ref{eq:def:propositional_natural_deduction_systems/and/elim_left}]{ \psi \synimplies \varphi }
+      \hypo{ [\psi]^w }
+      \infer2[\ref{eq:def:propositional_natural_deduction_systems/imp/elim}]{ \varphi }
+
+      \infer[left label={\( v, w \)}]2[\ref{eq:def:propositional_natural_deduction_systems/iff/intro}]{ \varphi \syniff \psi }
+    \end{prooftree}
+  \end{equation*}
+
+  \SubProofOf{thm:propositional_derivations/disjunction_as_conditional}
+  \begin{equation*}
+    \begin{prooftree}
+      \hypo{ [\synneg \varphi \synvee \psi]^w }
+
+      \hypo{ \eqref{eq:thm:intuitionistic_tautologies/efq} }
+      \ellipsis {} {\bot \synimplies \psi}
+
+      \hypo{ [\synneg \varphi]^{nu} }
+      \hypo{ [\varphi]^u }
+      \infer2[\ref{eq:def:propositional_natural_deduction_systems/neg/elim}]{ \bot }
+      \infer2[\ref{eq:def:propositional_natural_deduction_systems/imp/elim}]{ \psi }
+
+      \hypo{ [\psi]^v }
+      \infer[left label={\( nu, v \)}]3[\ref{eq:def:propositional_natural_deduction_systems/or/elim}]{ \psi }
+
+      \infer[left label=\( u \)]1[\ref{eq:def:propositional_natural_deduction_systems/imp/intro}]{ \varphi \synimplies \psi }
+    \end{prooftree}
+  \end{equation*}
+
+  \SubProofOf{thm:propositional_derivations/conditional_as_conjunction}
+  \begin{equation*}
+    \begin{prooftree}
+      \hypo{ [\varphi \synwedge \synneg \psi]^u}
+      \infer1[\ref{eq:def:propositional_natural_deduction_systems/and/elim_left}]{ \synneg \psi }
+
+      \hypo { [\varphi \rightarrow \psi]^v }
+
+      \hypo{ [\varphi \synwedge \synneg \psi]^u}
+      \infer1[\ref{eq:def:propositional_natural_deduction_systems/and/elim_right}]{ \varphi }
+
+      \infer2[\ref{eq:def:propositional_natural_deduction_systems/imp/elim}]{ \psi }
+      \infer2[\ref{eq:def:propositional_natural_deduction_systems/imp/elim}]{ \synbot }
+
+      \infer[left label=\( u \)]1[\ref{eq:def:propositional_natural_deduction_systems/neg/intro}]{ \neg(\varphi \synwedge \synneg \psi) }
+    \end{prooftree}
+  \end{equation*}
+
+  \SubProofOf{thm:propositional_derivations/contraposition}
   \begin{equation*}
     \begin{prooftree}
       \hypo{ \varphi \synimplies \psi }
@@ -815,21 +926,18 @@
     \end{prooftree}
   \end{equation*}
 
-  We can similarly derive \eqref{eq:thm:syntactic_contraposition/reverse}, the only difference being in applying \eqref{eq:thm:classical_tautologies/dne}:
+  \SubProofOf{thm:propositional_derivations/contraposition_elim}
   \begin{equation*}
     \begin{prooftree}
-      \hypo{ \eqref{eq:thm:classical_tautologies/dne} }
+      \hypo{ \synneg \psi \synimplies \synneg \varphi }
+      \hypo{ [\synneg \psi]^u }
+      \infer2[\eqref{eq:def:propositional_natural_deduction_systems/imp/elim}]{ \synneg \varphi }
 
-      \hypo{ \synneg \varphi \synimplies \synneg \psi }
-      \hypo{ [\synneg \varphi]^u }
-      \infer2[\eqref{eq:def:propositional_natural_deduction_systems/imp/elim}]{ \synneg \psi }
-
-      \hypo{ [\psi]^v }
+      \hypo{ [\varphi]^v }
       \infer2[\eqref{eq:def:propositional_natural_deduction_systems/neg/elim}]{ \synbot }
 
-      \infer[left label=\( u \)]1[\eqref{eq:def:propositional_natural_deduction_systems/neg/intro}]{ \synneg \synneg \varphi }
-      \infer2[\eqref{eq:def:def:axiomatic_derivation_system/mp}]{ \varphi }
-      \infer[left label=\( v \)]1[\eqref{eq:def:propositional_natural_deduction_systems/imp/intro}]{ \psi \synimplies \varphi }
+      \infer[left label=\( u \)]1[\eqref{eq:def:propositional_natural_deduction_systems/neg/intro}]{ \synneg \synneg \psi }
+      \infer[left label=\( v \)]1[\eqref{eq:def:propositional_natural_deduction_systems/imp/intro}]{ \varphi \synimplies \synneg \synneg \psi }
     \end{prooftree}
   \end{equation*}
 \end{proof}

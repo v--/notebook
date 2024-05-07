@@ -1,5 +1,9 @@
 \subsection{Propositional completeness}\label{subsec:propositional_completeness}
 
+\begin{remark}\label{rem:classical_metatheoretic_proofs}
+  In the proofs here we tend to avoid the metatheoretic counterparts of \eqref{eq:def:propositional_natural_deduction_systems/bot/efq} and \eqref{eq:def:propositional_natural_deduction_systems/bot/dne}, but the underlying notions are built in classical logic; thus, the proofs are still technically classical.
+\end{remark}
+
 \paragraph{Consistent theories}
 
 \begin{definition}\label{def:consistent_set_of_sentences}\mcite[def. III.3]{Woodger1983Tarski}
@@ -15,25 +19,29 @@
 \begin{proposition}\label{thm:def:consistent_set_of_sentences}
   \hyperref[def:consistent_set_of_sentences]{Consistent sets of sentences} have the following basic properties:
   \begin{thmenum}
-    \thmitem{thm:def:consistent_set_of_sentences/subset} Every subset of a consistent set is consistent.
     \thmitem{thm:def:consistent_set_of_sentences/superset} Every superset of an inconsistent set is inconsistent.
+    \thmitem{thm:def:consistent_set_of_sentences/subset} Every subset of a consistent set is consistent.
     \thmitem{thm:def:consistent_set_of_sentences/entailment} If \( \Gamma \vdash \varphi \), then \( \Gamma \) is consistent if and only if \( \Gamma \cup \set{ \varphi } \) is.
   \end{thmenum}
 \end{proposition}
 \begin{proof}
-  \SubProofOf{thm:def:consistent_set_of_sentences/subset} Straightforward since consequence operators preserve order.
+  \SubProofOf{thm:def:consistent_set_of_sentences/superset} Let \( \Gamma \) be an inconsistent set and let \( \Delta \) be a superset.
 
-  \SubProofOf{thm:def:consistent_set_of_sentences/superset} Straightforward since consequence operators preserve order.
+  Then \eqref{eq:def:consequence_relation/monotonicity} implies that every sentence derivable from \( \Gamma \) can be derived from \( \Delta \). But \( \Gamma \) can derive any sentence, thus \( \Delta \) also can. Then \( \Delta \) is inconsistent.
 
-  \SubProofOf{thm:def:consistent_set_of_sentences/entailment} Let \( \Gamma \vdash \varphi \). Then the theory axiomatized by \( \Gamma \cup \set{ \varphi } \) coincides with that of \( \Gamma \), and thus the two are equivalent. Then either both are inconsistent or consistent.
+  \SubProofOf{thm:def:consistent_set_of_sentences/subset} Let \( \Delta \) be a consistent set and let \( \Gamma \) be a subset.
+
+  If we suppose that \( \Gamma \) is inconsistent, \fullref{thm:def:consistent_set_of_sentences/superset} would imply that \( \Delta \) also is, which is a contradiction. Then \( \Gamma \) is not inconsistent, i.e. it is consistent.
+
+  \SubProofOf{thm:def:consistent_set_of_sentences/entailment} Let \( \Gamma \vdash \varphi \). Then every sentence derivable from \( \Gamma \cup \set{ \varphi } \) can be derived from \( \Gamma \), and thus the two are equivalent. Then either both are inconsistent or consistent.
 \end{proof}
 
 \begin{proposition}\label{thm:propositional_consistent_set}
-  Within \hyperref[def:intuitionistic_logic]{intuitionistic logic}, the following conditions are equivalent for a set \( \Gamma \) of \hyperref[def:propositional_syntax/formula]{propositional formulas} to be \hyperref[def:consistent_set_of_sentences]{inconsistent}:
+  With respect to the \hyperref[def:propositional_natural_deduction_systems]{intuitionistic natural deduction system}, following conditions are equivalent for a set \( \Gamma \) of \hyperref[def:propositional_syntax/formula]{propositional formulas} to be \hyperref[def:consistent_set_of_sentences]{inconsistent}:
   \begin{thmenum}
     \thmitem{thm:propositional_consistent_set/bot} The falsum \( \synbot \) is derivable from \( \Gamma \).
 
-    \thmitem{thm:propositional_consistent_set/contradiction} For every formula \( \varphi \), both \( \varphi \) and \( \neg \varphi \) are derivable from \( \Gamma \).
+    \thmitem{thm:propositional_consistent_set/contradiction} For every formula \( \varphi \), both \( \varphi \) and \( \synneg \varphi \) are derivable from \( \Gamma \).
   \end{thmenum}
 \end{proposition}
 \begin{proof}
@@ -52,18 +60,18 @@
 
   \SubProofOf{thm:propositional_consistent_set/contradiction}
 
-  \SufficiencySubProof* If \( \Gamma \) is inconsistent in the sense of \fullref{def:consistent_set_of_sentences}, then, for any formula \( \varphi \), both \( \varphi \) and \( \neg \varphi \) are derivable from \( \Gamma \).
+  \SufficiencySubProof* If \( \Gamma \) is inconsistent in the sense of \fullref{def:consistent_set_of_sentences}, then, for any formula \( \varphi \), both \( \varphi \) and \( \synneg \varphi \) are derivable from \( \Gamma \).
 
-  \NecessitySubProof* Let \( P \) and \( N \) be proof trees of \( \varphi \) and \( \neg \varphi \) from \( \Gamma \), respectively. Let \( \psi \) be any formula. Then the following is a proof tree of \( \psi \) from \( \Gamma \):
+  \NecessitySubProof* Let \( P \) and \( N \) be proof trees of \( \varphi \) and \( \synneg \varphi \) from \( \Gamma \), respectively. Let \( \psi \) be any formula. Then the following is a proof tree deriving \( \psi \) from \( \Gamma \):
   \begin{equation*}
     \begin{prooftree}
-      \hypo{}
-      \ellipsis { \( N \) } { \neg \varphi }
+      \hypo{ \Gamma }
+      \ellipsis { \( N \) } { \synneg \varphi }
 
-      \hypo{}
+      \hypo{ \Gamma }
       \ellipsis { \( P \) } { \varphi }
 
-      \infer2[\eqref{eq:def:propositional_natural_deduction_systems/neg/elim}]{ \bot }.
+      \infer2[\eqref{eq:def:propositional_natural_deduction_systems/neg/elim}]{ \synbot }.
 
       \infer1[\eqref{eq:def:propositional_natural_deduction_systems/bot/efq}]{ \psi }.
     \end{prooftree}
@@ -75,7 +83,7 @@
 \begin{definition}\label{def:lindenbaum_tarski_algebra}\mcite[27]{Эдельман1975}
   Fix a \hyperref[def:consequence_relation]{consequence relation} \( {\vdash} \) on a set of sentences \( S \).
 
-  For a set \( \Gamma \) of sentences, consider the \hyperref[def:binary_relation]{binary relation}
+  For some fixed subset \( \Gamma \) of sentences, consider the \hyperref[def:binary_relation]{binary relation}
   \begin{equation*}
     \varphi \leq_\Gamma \psi \T{if} \Gamma, \varphi \vdash \psi.
   \end{equation*}
@@ -86,13 +94,11 @@
   \item We will find useful the projection \( \pi_\Gamma: S \to Q \).
 \end{comments}
 
-\begin{proposition}\label{thm:lindenbaum_tarski_algebra_soundness}
-  Let \( L \) be the \hyperref[def:lindenbaum_tarski_algebra]{Lindenbaum-Tarski algebra} of \( \Gamma \) for the \hyperref[def:propositional_natural_deduction_systems]{minimal natural deduction system}. Finally, fix some \hyperref[def:truth_value_algebra]{truth value Heyting algebra} and let \( I \) be an interpretation satisfying \( \Gamma \).
-
-  Then \( \pi_\Gamma(\varphi) = \pi_\Gamma(\psi) \) implies \( \Bracks{\varphi}_I = \Bracks{\psi}_I \).
+\begin{proposition}\label{thm:inconsistent_lindenbaum_tarski_algebra}
+  A set of sentences is \hyperref[def:consistent_set_of_sentences]{inconsistent} if and only if its \hyperref[def:lindenbaum_tarski_algebra]{Lindenbaum-Tarski algebra} is trivial, i.e. \( T = F \).
 \end{proposition}
 \begin{proof}
-  Follows from \fullref{thm:propositional_natural_deduction_soundness}.
+  Any formula is derivable in an inconsistent theory.
 \end{proof}
 
 \begin{proposition}\label{thm:lindenbaum_tarski_algebras}
@@ -159,13 +165,13 @@
 
   \SubProof*{Proof that \( \theta \leq_\Gamma \varphi \synimplies \psi \) if and only if \( \varphi \synwedge \theta \leq_\Gamma \psi \)}
 
-  First, let \( F \) be a proof tree deriving \( \varphi \synimplies \psi \) from \( \Gamma \cup \set{ \theta } \). The following tree derives \( \psi \) from \( \Gamma \cup \set{ \varphi \synwedge \theta } \):
+  First, let \( T \) be a proof tree deriving \( \varphi \synimplies \psi \) from \( \Gamma \cup \set{ \theta } \). The following tree derives \( \psi \) from \( \Gamma \cup \set{ \varphi \synwedge \theta } \):
   \begin{equation*}
     \begin{prooftree}
       \hypo{ [\varphi \synwedge \theta]^v }
       \infer1[\ref{eq:def:propositional_natural_deduction_systems/and/elim_left}]{ \theta }
 
-      \ellipsis {\( F \)} {\varphi \synimplies \psi}
+      \ellipsis {\( T \)} {\varphi \synimplies \psi}
 
       \hypo{ [\varphi \synwedge \theta]^v }
       \infer1[\ref{eq:def:propositional_natural_deduction_systems/and/elim_right}]{ \varphi }
@@ -192,38 +198,7 @@
     \pi\parens[\Big]{ \varphi \syniff \psi } = \pi\parens[\Big]{ (\varphi \synimplies \psi) \synwedge (\psi \synimplies \varphi) }.
   \end{equation*}
 
-  Indeed, we have
-  \begin{equation*}
-    \begin{prooftree}
-      \hypo{ [\varphi \syniff \psi]^u }
-      \hypo{ [\varphi]^v }
-      \infer2[\ref{eq:def:propositional_natural_deduction_systems/iff/elim_left}]{ \psi }
-      \infer[left label=\( v \)]1[\ref{eq:def:propositional_natural_deduction_systems/imp/intro}]{ \varphi \synimplies \psi }
-
-      \hypo{ [\varphi \syniff \psi]^u }
-      \hypo{ [\psi]^w }
-      \infer2[\ref{eq:def:propositional_natural_deduction_systems/iff/elim_right}]{ \varphi }
-      \infer[left label=\( w \)]1[\ref{eq:def:propositional_natural_deduction_systems/imp/intro}]{ \psi \synimplies \varphi }
-
-      \infer2[\ref{eq:def:propositional_natural_deduction_systems/and/intro}]{ (\varphi \synimplies \psi) \synwedge (\psi \synimplies \varphi) }
-    \end{prooftree}
-  \end{equation*}
-  and
-  \begin{equation*}
-    \begin{prooftree}
-      \hypo{ [(\varphi \synimplies \psi) \synwedge (\psi \synimplies \varphi)]^u }
-      \infer1[\ref{eq:def:propositional_natural_deduction_systems/and/elim_right}]{ \varphi \synimplies \psi }
-      \hypo{ [\varphi]^v }
-      \infer2[\ref{eq:def:propositional_natural_deduction_systems/imp/elim}]{ \psi }
-
-      \hypo{ [(\varphi \synimplies \psi) \synwedge (\psi \synimplies \varphi)]^u }
-      \infer1[\ref{eq:def:propositional_natural_deduction_systems/and/elim_left}]{ \psi \synimplies \varphi }
-      \hypo{ [\psi]^w }
-      \infer2[\ref{eq:def:propositional_natural_deduction_systems/imp/elim}]{ \varphi }
-
-      \infer[left label={\( v, w \)}]2[\ref{eq:def:propositional_natural_deduction_systems/iff/intro}]{ \varphi \syniff \psi }
-    \end{prooftree}
-  \end{equation*}
+  Indeed, we have \eqref{eq:thm:propositional_derivations/biconditional_as_conjunction} in one direction and \eqref{eq:thm:propositional_derivations/conjunction_of_conditionals} in the other.
 
   \Fullref{thm:lindenbaum_tarski_algebras/conjunction} and \fullref{thm:lindenbaum_tarski_algebras/conditional} then imply that
   \begin{align*}
@@ -239,29 +214,36 @@
 
   \SubProofOf{thm:lindenbaum_tarski_algebras/classical} Finally, now that we have shown that \( L \) is a Heyting algebra, we must show that it is also a Boolean algebra when we consider the additional rule \eqref{eq:def:propositional_natural_deduction_systems/bot/dne}.
 
-  According to \fullref{thm:boolean_algebra_heyting_characterization}, we only need to derive \( \varphi \) from \( \neg \neg \varphi \); but this is precisely what \eqref{eq:def:propositional_natural_deduction_systems/bot/dne} allows us to do.
+  According to \fullref{thm:boolean_algebra_heyting_characterization}, we only need to derive \( \varphi \) from \( \synneg \synneg \varphi \); but this is precisely what \eqref{eq:def:propositional_natural_deduction_systems/bot/dne} allows us to do.
 \end{proof}
 
 \begin{theorem}[Intuitionistic propositional completeness]\label{thm:intuitionistic_propositional_completeness}
-  For any finite set \( \Gamma \) of \hyperref[def:propositional_syntax/formula]{propositional formulas}, there exists a \hyperref[def:heyting_algebra]{Heyting algebra} with respect to which \( \Gamma \vDash \varphi \) whenever \( \Gamma \vdash \varphi \) in the \hyperref[def:propositional_natural_deduction_systems]{intuitionistic natural deduction system}.
+  For any set \( \Gamma \) of \hyperref[def:propositional_syntax/formula]{propositional formulas}, there exists a \hyperref[def:heyting_algebra]{Heyting algebra} with respect to which \( \Gamma \vDash \varphi \) whenever \( \Gamma \vdash \varphi \) in the \hyperref[def:propositional_natural_deduction_systems]{intuitionistic natural deduction system}.
 \end{theorem}
+\begin{comments}
+  \item \Fullref{thm:inconsistent_lindenbaum_tarski_algebra} implies that we cannot get a much nicer result at this level of generality.
+\end{comments}
 \begin{proof}
-  \Fullref{thm:lindenbaum_tarski_algebras} implies that the \hyperref[def:lindenbaum_tarski_algebra]{Lindenbaum-Tarski algebra} \( \BbbH \) of \( \Gamma \) is a Heyting algebra.
+  Denote by \( L \) the \hyperref[def:lindenbaum_tarski_algebra]{Lindenbaum-Tarski algebra} of \( \Gamma \). \Fullref{thm:lindenbaum_tarski_algebras} implies that \( L \) is a Heyting algebra.
 
-  Consider the \hyperref[def:propositional_valuation/interpretation]{interpretation} \( I: \op*{Var} \to \BbbH \) obtained as a restriction of \( \BbbH \) to propositional variables. As a consequence of \fullref{thm:lindenbaum_tarski_algebras}, the corresponding \hyperref[def:propositional_valuation/formula_valuation]{valuation} is then simply the Lindenbaum-Tarski projection \( \pi: \op*{Prop} / {\sim_\Gamma} \to \BbbH \).
+  Consider the \hyperref[def:propositional_valuation/interpretation]{interpretation} \( I: \op*{Prop} \to L \) obtained as a restriction of \( \pi \) to propositional variables. As a consequence of \fullref{thm:lindenbaum_tarski_algebras}, the corresponding \hyperref[def:propositional_valuation/formula_valuation]{valuation} is then simply the Lindenbaum-Tarski projection \( \pi: \op*{Form} \to L \).
 
-  Suppose that \( \Gamma \vdash \varphi \). Let \( \psi_1, \ldots, \psi_n \) be an enumeration of \( \Gamma \). \Fullref{thm:syntactic_propositional_conjunction_of_premises} implies that \( \psi_1 \wedge \cdots \wedge \psi_n \vdash \varphi \).
+  Suppose that there exists a proof tree \( P \) deriving \( \varphi \) from \( \Gamma \). Let \( \psi_1, \ldots, \psi_n \) be an enumeration of the open premises of \( P \) (\fullref{thm:propositional_natural_deduction_entailment_compact} implies they are finitely many).
 
-  \Fullref{thm:lindenbaum_tarski_algebras/conjunction} implies that
+  \Fullref{thm:syntactic_propositional_conjunction_of_premises} implies that \( \psi_1 \wedge \cdots \wedge \psi_n \vdash \varphi \). \Fullref{thm:lindenbaum_tarski_algebras/conjunction} implies that
   \begin{equation*}
+    \Bracks{\psi_1}_I \wedge \cdots \wedge \Bracks{\psi_n}_I
+    =
     \pi(\psi_1) \wedge \cdots \wedge \pi(\psi_n)
     =
-    \pi(\psi_1 \wedge \cdots \wedge \psi_n)
-    \leq
-    \pi(\varphi).
+    \pi(\psi_1 \synwedge \cdots \synwedge \psi_n)
+    \leq_\Gamma
+    \pi(\varphi)
+    =
+    \Bracks{\varphi}_I.
   \end{equation*}
 
-  \Fullref{thm:def:heyting_algebra/leq} implies that \( \psi_1 \wedge \cdots \wedge \psi_n \vDash \varphi \). \Fullref{thm:semantic_propositional_conjunction_of_premises} then implies that \( \Gamma \vDash \varphi \).
+  \Fullref{thm:def:heyting_algebra/leq} implies that \( \psi_1 \synwedge \cdots \synwedge \psi_n \vDash \varphi \). \Fullref{thm:semantic_propositional_conjunction_of_premises} and \eqref{eq:def:consequence_relation/monotonicity} then imply that \( \Gamma \vDash \varphi \).
 \end{proof}
 
 \paragraph{Complete theories}
@@ -269,17 +251,19 @@
 \begin{definition}\label{def:complete_set_of_sentences}
   Fix a \hyperref[def:consequence_operator]{consequence operator} \( \op{Cn} \) on a set of sentences \( S \), and let \( {\vdash} \) be the corresponding \hyperref[def:consequence_relation]{consequence relation}. We say that the set of sentences \( \Gamma \) is \term[ru=полное (множество формул) (\cite[def. 1.3.16]{Герасимов2011})]{complete} with respect to them if any of the following equivalent conditions hold:
   \begin{thmenum}
-    \thmitem{def:complete_set_of_sentences/operator}\mcite[def. III.4]{Woodger1983Tarski} Whenever \( \Delta \) is a \hyperref[def:consistent_set_of_sentences]{consistent} set of sentences extending \( \Gamma \), it is \hyperref[def:logical_theory/equivalent]{equivalent} to \( \Gamma \).
+    \thmitem{def:complete_set_of_sentences/operator}\mcite[def. III.4]{Woodger1983Tarski} Every \hyperref[def:consistent_set_of_sentences]{consistent} superset of \( \Gamma \) is \hyperref[def:logical_theory/equivalent]{equivalent} to \( \Gamma \).
 
     \thmitem{def:complete_set_of_sentences/relation} For any formula \( \varphi \) for which \( \Gamma \cup \set{ \varphi } \) is consistent, we have \( \Gamma \vdash \varphi \).
   \end{thmenum}
 \end{definition}
 \begin{proof}
-  \ImplicationSubProof{def:complete_set_of_sentences/operator}{def:complete_set_of_sentences/relation} Suppose that \( \Gamma \) is complete in the sense of \fullref{def:complete_set_of_sentences}. Fix a formula \( \varphi \) for which \( \Gamma \cup \set{ \varphi } \) is consistent. From \eqref{eq:def:consequence_relation/reflexivity} it follows that \( \Gamma, \varphi \vdash \varphi \) and, by assumption, \( \Gamma \vdash \varphi \).
+  \ImplicationSubProof{def:complete_set_of_sentences/operator}{def:complete_set_of_sentences/relation} Suppose that every consistent superset of \( \Gamma \) is equivalent to \( \Gamma \). Fix a formula \( \varphi \) for which \( \Gamma \cup \set{ \varphi } \) is consistent. From \eqref{eq:def:consequence_relation/reflexivity} it follows that \( \Gamma, \varphi \vdash \varphi \) and, since \( \Gamma \cup \set{ \varphi } \) is a consistent superset of \( \Gamma \), we have \( \Gamma \vdash \varphi \).
 
   \ImplicationSubProof{def:complete_set_of_sentences/relation}{def:complete_set_of_sentences/operator} Conversely, suppose that, whenever \( \Gamma \cup \set{ \varphi } \) is consistent, we have \( \Gamma \vdash \varphi \).
 
-  Let \( \Delta \) is a consistent theory extending \( \Gamma \). For every formula \( \varphi \) in \( \Delta \), by \fullref{thm:def:consistent_set_of_sentences/subset}, the theory \( \Gamma \cup \set{ \varphi } \) is consistent, and thus \( \Gamma \vdash \varphi \). Then \( \Delta \) is equivalent to \( \Gamma \).
+  Let \( \Delta \) is a consistent theory extending \( \Gamma \). For every formula \( \varphi \) in \( \Delta \), by \fullref{thm:def:consistent_set_of_sentences/subset}, the theory \( \Gamma \cup \set{ \varphi } \) is consistent, and thus \( \Gamma \vdash \varphi \).
+
+  Due to \eqref{eq:def:consequence_relation/transitivity}, every formula derivable from \( \Delta \) is also derivable from \( \Gamma \), and thus \( \Gamma \) and \( \Delta \) are equivalent.
 \end{proof}
 
 \begin{proposition}\label{thm:def:complete_set_of_sentences}
@@ -297,44 +281,48 @@
 
   Suppose that \( \Delta \cup \set{ \varphi } \) is consistent for some formula \( \varphi \). Then \( \Gamma \cup \set{ \varphi } \) is also consistent as a consequence of \fullref{thm:def:consistent_set_of_sentences/subset}. Since \( \Gamma \) is complete, we have \( \Gamma \vdash \varphi \), and, by \eqref{eq:def:consequence_relation/monotonicity}, \( \Delta \vdash \varphi \).
 
-  Generalizing on \( \varphi \), we conclude that \( \Delta \) is consistent.
+  Generalizing on \( \varphi \), we conclude that \( \Delta \) is complete.
 
-  \SubProofOf{thm:def:complete_set_of_sentences/subset} Let \( \Gamma \) be an incomplete set and fix a subset \( \Delta \) of \( \Gamma \). Suppose that \( \Gamma \) is complete. By \fullref{thm:def:consistent_set_of_sentences/superset}, \( \Gamma \) is complete, which is a contradiction. Then \( \Delta \) is incomplete.
+  \SubProofOf{thm:def:complete_set_of_sentences/subset} Let \( \Gamma \) be an incomplete set and fix a subset \( \Delta \) of \( \Gamma \). If \( \Delta \) was complete, by \fullref{thm:def:complete_set_of_sentences/superset}, \( \Gamma \) would be complete, which is a contradiction. It remains for \( \Delta \) to be incomplete.
 \end{proof}
 
 \begin{proposition}\label{thm:propositional_complete_set}
-  With respect to the \hyperref[def:propositional_natural_deduction_systems]{intuitionistic natural deduction system}, the set \( \Gamma \) of \hyperref[def:propositional_syntax/formula]{propositional formulas} is \hyperref[def:complete_set_of_sentences]{complete} if and only if, for any formula \( \varphi \), either \( \Gamma \vdash \varphi \) or \( \Gamma \vdash \neg \varphi \) (or possibly both, if \( \Gamma \) is \hyperref[def:consistent_set_of_sentences]{inconsistent}).
+  With respect to the \hyperref[def:propositional_natural_deduction_systems]{classical natural deduction system}, the set \( \Gamma \) of \hyperref[def:propositional_syntax/formula]{propositional formulas} is \hyperref[def:complete_set_of_sentences]{complete} if and only if, for any formula \( \varphi \), either \( \Gamma \vdash \varphi \) or \( \Gamma \vdash \synneg \varphi \) (or possibly both, if \( \Gamma \) is \hyperref[def:consistent_set_of_sentences]{inconsistent}).
 \end{proposition}
+\begin{comments}
+  \item In intuitionistic logic, without double negation elimination, we can instead only conclude \( \Gamma \vdash \synneg \synneg \varphi \) from \( \Gamma \not\vdash \neg \varphi \) and \( \Gamma \not\vdash \varphi \).
+\end{comments}
 \begin{proof}
   \SufficiencySubProof Suppose that \( \Gamma \) is complete in the sense of \fullref{def:complete_set_of_sentences/relation}. Fix an arbitrary formula \( \varphi \).
 
   \begin{itemize}
-    \item Suppose that \( \Gamma \cup \set{ \varphi } \) is inconsistent. \Fullref{thm:propositional_consistent_set/bot} implies that there exists a proof \( P \) deriving \( \bot \) from \( \Gamma \cup \set{ \varphi } \).
+    \item Suppose that \( \Gamma \cup \set{ \varphi } \) is inconsistent. \Fullref{thm:propositional_consistent_set/bot} implies that there exists a proof \( P \) deriving \( \synbot \) from \( \Gamma \cup \set{ \varphi } \).
 
     \begin{itemize}
-      \item If \( \varphi \) is an open assumption in \( P \) with marker \( u \), the following is a proof tree of \( \neg \varphi \) from \( \Gamma \):
+      \item If \( \varphi \) is an open assumption in \( P \) with marker \( u \), the following is a proof tree deriving \( \synneg \varphi \) from \( \Gamma \):
       \begin{equation*}
         \begin{prooftree}
           \hypo{ [\varphi]^u }
-          \ellipsis { \( P \) } { \bot }
-          \infer1[\eqref{eq:def:propositional_natural_deduction_systems/neg/intro}]{ \neg \varphi }.
+          \ellipsis { \( P \) } { \synbot }
+          \infer1[\eqref{eq:def:propositional_natural_deduction_systems/neg/intro}]{ \synneg \varphi }.
         \end{prooftree}
       \end{equation*}
 
-      \item Otherwise, \( P \) is a proof of \( \bot \) from \( \Gamma \), and \fullref{thm:propositional_consistent_set/bot} implies that \( \Gamma \) is inconsistent. \Fullref{thm:propositional_consistent_set/contradiction} then implies that both \( \varphi \) and \( \neg \varphi \) are derivable from \( \Gamma \).
+      \item Otherwise, \( P \) is a proof of \( \synbot \) from \( \Gamma \), and \fullref{thm:propositional_consistent_set/bot} implies that \( \Gamma \) is inconsistent. \Fullref{thm:propositional_consistent_set/contradiction} then implies that both \( \varphi \) and \( \synneg \varphi \) are derivable from \( \Gamma \).
     \end{itemize}
 
-    \item If \( \Gamma \cup \set{ \varphi } \) is not inconsistent, by definition it is consistent, and, since \( \Gamma \) is complete, \( \Gamma \vdash \varphi \).
+    \item Otherwise, \( \Gamma \cup \set{ \varphi } \) is consistent, and, since \( \Gamma \) is complete, \( \Gamma \vdash \varphi \).
   \end{itemize}
 
-  \NecessitySubProof Suppose that, for any formula \( \varphi \), we have \( \Gamma \vdash \varphi \) or \( \Gamma \vdash \neg \varphi \) (or both).
+  \NecessitySubProof Suppose that, for any formula \( \varphi \), either \( \Gamma \vdash \varphi \) or \( \Gamma \vdash \synneg \varphi \) or both.
 
   Fix a formula \( \varphi \) for which \( \Gamma \cup \set{ \varphi } \) is consistent. \Fullref{thm:def:consistent_set_of_sentences/subset} then implies that \( \Gamma \) is consistent.
 
-  \begin{itemize}
-    \item If \( \Gamma \vdash \neg \varphi \), \fullref{thm:propositional_consistent_set/contradiction} implies that \( \Gamma \) is inconsistent, which is a contradiction.
-    \item It remains for \( \Gamma \vdash \varphi \) to hold.
-  \end{itemize}
+  Clearly \eqref{eq:def:consequence_relation/reflexivity} implies that \( \Gamma, \varphi \vdash \varphi \).
+
+  Aiming at a contradiction, suppose that \( \Gamma \not\vdash \varphi \). Then, by assumption, we have \( \Gamma \vdash \synneg \varphi \), and \eqref{eq:def:consequence_relation/monotonicity} implies that \( \Gamma, \varphi \vdash \synneg \varphi \). Then \( \Gamma \cup \set{ \varphi } \) must be inconsistent, but we have concluded that \( \Gamma \) is consistent.
+
+  The obtained contradiction implies that \( \Gamma \vdash \varphi \).
 
   Generalizing on \( \varphi \), we conclude that \( \Gamma \) satisfies \fullref{def:complete_set_of_sentences/relation}.
 \end{proof}
@@ -371,7 +359,7 @@
 \end{proof}
 
 \begin{lemma}[Lindenbaum's lemma]\label{thm:extension_to_complete_consistent_set}
-  Within the \hyperref[def:propositional_natural_deduction_system]{classical propositional natural deduction system}, every \hyperref[def:consistent_set_of_sentences]{consistent} \hyperref[def:logical_theory]{theory} can be extended to a \hyperref[def:complete_set_of_sentences]{complete} consistent theory.
+  Within the \hyperref[def:propositional_natural_deduction_system]{classical propositional natural deduction system}, every \hyperref[def:consistent_set_of_sentences]{consistent} set of sentences can be extended to a \hyperref[def:complete_set_of_sentences]{complete} consistent set.
 \end{lemma}
 \begin{comments}
   \item The name of the lemma is taken from \incite[lemma 1.3.12]{Герасимов2011}, but the proof is simplified.
@@ -384,4 +372,149 @@
   Let \( \Epsilon \) be the union of \( M \), that is, the set of all formulas \( \varphi \) for which \( \pi(\varphi) \) is in \( M \). We have \( \pi[\Epsilon] = M \).
 
   Then \( \Epsilon \) is a consistent due to \fullref{thm:lindenbaum_tarski_theories/consistent}, and complete due to \fullref{thm:lindenbaum_tarski_theories/complete}.
+\end{proof}
+
+\begin{proposition}\label{thm:consistent_implies_satisfiable}\mcite[thm. 1.3.19]{Герасимов2011}
+  With respect to the \hyperref[def:propositional_natural_deduction_system]{classical propositional natural deduction system}, for every \hyperref[def:complete_set_of_sentences]{complete} \hyperref[def:consistent_set_of_sentences]{consistent} set of formulas \( \Gamma \), there exists a \hyperref[def:classical_semantics]{classical} \hyperref[def:propositional_valuation/interpretation]{interpretation} \( I \) such that \( \Gamma \vdash \varphi \) if and only if \( I \vDash \varphi \).
+\end{proposition}
+\begin{proof}
+  Define the interpretation \( I(\upsilon) \) as \( T \) if \( \Gamma \vdash \upsilon \) and \( F \) otherwise.
+
+  We proceed via \fullref{thm:induction_on_syntax_trees} on \( \varphi \).
+
+  \SubProof{Proof when \( \varphi = \top \)} We always have \( \Bracks{\varphi} = T \)
+  \SubProof{Proof when \( \varphi = \synbot \)} Then \( \varphi \) is not derivable from \( \Gamma \) because the latter is consistent.
+  \SubProof{Proof when \( \varphi \) is a variable} By definition of \( I \), we have \( \Gamma \vdash \varphi \) if and only if \( \Bracks{\varphi}_I = T \).
+
+  \SubProof{Proof when \( \varphi = \synneg \psi \)} Suppose that the inductive hypothesis holds for \( \psi \).
+
+  \SufficiencySubProof* If \( \Gamma \vdash \varphi \), the formula \( \psi \) is not derivable from \( \Gamma \) because the latter is consistent. By the inductive hypothesis, \( \Bracks{\psi}_I = F \), and
+  \begin{equation*}
+    \Bracks{\synneg \psi}_I = \oline{\Bracks{\psi}} = T.
+  \end{equation*}
+
+  \NecessitySubProof* Conversely, if \( \Bracks{\synneg \psi}_I = T \), then \( \Bracks{\psi}_I = F \) and, by the inductive hypothesis, \( \Gamma \not\vdash \psi \). Since \( \Gamma \) is complete, it follows that \( \Gamma \vdash \synneg \psi \).
+
+  \SubProof{Proof when \( \varphi = \psi \synvee \theta \)} Suppose that the inductive hypothesis holds for both \( \psi \) and \( \theta \).
+
+  Note that we can derive \( \synneg (\psi \synvee \theta) \) from \( \synneg \psi \) and \( \synneg \theta \):
+  \begin{equation*}
+    \begin{prooftree}
+      \hypo{ [\psi \synvee \theta]^u }
+
+      \hypo{ [\synneg \psi]^{nv} }
+      \hypo{ [\psi]^v }
+      \infer2[\ref{eq:def:propositional_natural_deduction_systems/neg/elim}]{ \synbot }
+
+      \hypo{ [\synneg \theta]^{nw} }
+      \hypo{ [\theta]^w }
+      \infer2[\ref{eq:def:propositional_natural_deduction_systems/neg/elim}]{ \synbot }
+
+      \infer[left label={\( v, w \)}]3[\ref{eq:def:propositional_natural_deduction_systems/or/elim}]{ \synbot }
+      \infer[left label=\( u \)]1[\ref{eq:def:propositional_natural_deduction_systems/neg/intro}]{ \synneg (\varphi \synvee \psi) }
+    \end{prooftree}
+  \end{equation*}
+
+  Since \( \Gamma \) is consistent, we cannot derive both \( \psi \synvee \theta \) and \( \synneg (\psi \synvee \theta) \). Therefore, \( \Gamma \vdash \psi \synvee \theta \) if and only if either \( \Gamma \vdash \psi \) or \( \Gamma \vdash \theta \) or both.
+
+  By the inductive hypothesis, \( \Gamma \vdash \psi \synvee \theta \) if and only if \( \Bracks{\psi}_I = T \) or \( \Bracks{\theta}_I = T \), that is, if
+  \begin{equation*}
+    T
+    =
+    \Bracks{\psi}_I \synvee \Bracks{\theta}_I
+    =
+    \Bracks{\psi \synvee \theta}_I.
+  \end{equation*}
+
+  \SubProof{Proof when \( \varphi = \psi \synwedge \theta \)} Suppose that the inductive hypothesis holds for both \( \psi \) and \( \theta \).
+
+  \SufficiencySubProof* If there exists a proof tree \( P \) deriving \( \psi \synwedge \theta \) from \( \Gamma \), then the following is a proof of \( \psi \) from \( \Gamma \):
+  \begin{equation*}
+    \begin{prooftree}
+      \hypo{ \Gamma }
+      \ellipsis {\( P \)} { \psi \synwedge \theta }
+      \infer1[\ref{eq:def:propositional_natural_deduction_systems/and/elim_right}]{ \psi }
+    \end{prooftree}
+  \end{equation*}
+
+  We can analogously build a proof of \( \theta \). By the inductive hypothesis, we have \( \Bracks{\psi}_I = \Bracks{\theta}_I = T \), therefore
+  \begin{equation*}
+    \Bracks{\psi \synwedge \theta}_I
+    =
+    T \wedge T
+    =
+    T
+  \end{equation*}
+
+  \NecessitySubProof* Conversely, if \( \Bracks{\psi \synwedge \theta}_I = T \), then \( \Bracks{\psi}_I = \Bracks{\theta}_I = T \) and, by the inductive hypothesis, there exist proof trees \( P \) deriving \( \psi \) from \( \Gamma \) and \( R \) deriving \( \theta \) from \( \Gamma \). The following is then a proof of \( \psi \synwedge \theta \) from \( \Gamma \):
+  \begin{equation*}
+    \begin{prooftree}
+      \hypo{ \Gamma }
+      \ellipsis {\( P \)} { \psi }
+
+      \hypo{ \Gamma }
+      \ellipsis {\( R \)} { \theta }
+
+      \infer2[\ref{eq:def:propositional_natural_deduction_systems/and/intro}]{ \psi \synwedge \theta }
+    \end{prooftree}
+  \end{equation*}
+
+  \SubProof{Proof when \( \varphi = \psi \synimplies \theta \)} Suppose that the inductive hypothesis holds for both \( \psi \) and \( \theta \).
+
+  \SufficiencySubProof* If \( \Gamma \vdash \psi \synimplies \theta \), \eqref{thm:propositional_derivations/conditional_as_conjunction} implies that \( \Gamma \vdash \synneg(\psi \synwedge \synneg \theta) \).
+
+  We have already proved the inductive hypothesis for negations and conjunctions and, since by assumption it hold for \( \psi \) and \( \theta \), we can conclude that it holds for \( \synneg(\psi \synwedge \synneg \theta) \). Then
+  \begin{equation*}
+    T
+    =
+    \Bracks{\synneg(\psi \synwedge \synneg \theta)}_I
+    =
+    \oline{\Bracks{\psi}_I \wedge \oline{\Bracks{\theta}_I}},
+  \end{equation*}
+  hence
+  \begin{equation*}
+    F = \Bracks{\psi}_I \wedge \oline{\Bracks{\theta}_I},
+  \end{equation*}
+  hence either \( \Bracks{\psi}_I = F \) or \( \Bracks{\theta}_I = T \) or both. Thus,
+  \begin{equation*}
+    \Bracks{\psi \synimplies \theta}_I
+    \reloset {\eqref{eq:thm:classical_equivalences/conditional_as_disjunction}} =
+    \Bracks{\synneg \psi \synvee \theta}_I
+    =
+    \Bracks{\synneg \psi}_I \vee \Bracks{\theta}_I
+    =
+    T.
+  \end{equation*}
+
+  \NecessitySubProof* Suppose that \( \Bracks{\psi \synimplies \theta}_I = T \). From \eqref{eq:thm:classical_equivalences/conditional_as_disjunction} it follows that \( \Bracks{\synneg \psi}_I \vee \Bracks{\theta}_I = T \), thus either \( \Bracks{\psi}_I = F \) or \( \Bracks{\theta}_I = T \) or both.
+
+  \begin{itemize}
+    \item If \( \Bracks{\psi}_I = F \), by the inductive hypothesis we have \( \Gamma \not\vdash \psi \). Since \( \Gamma \) is complete, we conclude that \( \Gamma \vdash \synneg \psi \). Then \ref{eq:def:propositional_natural_deduction_systems/or/intro_left} allows us to derive \( \synneg \psi \synvee \theta \) from \( \Gamma \), and \eqref{eq:thm:propositional_derivations/disjunction_as_conditional} implies that \( \Gamma \vdash \psi \synimplies \theta \).
+
+    \item Otherwise, if \( \Bracks{\psi}_I = T \), we must have \( \Bracks{\theta}_I = T \). By the inductive hypothesis, we have \( \Gamma \vdash \theta \). Via \ref{eq:def:propositional_natural_deduction_systems/or/intro_right} we can derive \( \synneg \psi \synvee \theta \) from \( \Gamma \). Then, again, \eqref{eq:thm:propositional_derivations/disjunction_as_conditional} implies that \( \Gamma \vdash \psi \synimplies \theta \).
+  \end{itemize}
+
+  \SubProof{Proof when \( \varphi = \psi \syniff \theta \)} Via \eqref{eq:thm:propositional_derivations/biconditional_as_conjunction} and \eqref{eq:thm:propositional_derivations/conjunction_of_conditionals} we can reduce this case to the already proven cases for conjunctions and conditionals.
+\end{proof}
+
+\begin{corollary}\label{thm:consistent_implies_satisfiable}
+  If a set of sentences is \hyperref[def:consistent_set_of_sentences]{consistent} with respect to the \hyperref[def:propositional_natural_deduction_system]{classical propositional natural deduction system}, it is \hyperref[def:satisfiable_set_of_sentences]{satisfiable} with respect to \hyperref[def:classical_semantics]{classical semantics}.
+\end{corollary}
+\begin{proof}
+  Let \( \Gamma \) be a \hyperref[def:consistent_set_of_sentences]{consistent} set of formulas. Denote by \( \Delta \) the \hyperref[def:complete_set_of_sentences]{complete} consistent extension obtained from \fullref{thm:extension_to_complete_consistent_set}.
+
+  \Fullref{thm:consistent_implies_satisfiable} implies that there exists an interpretation \( I \) such that \( \Delta \vdash \varphi \) if and only if \( I \vDash \varphi \).
+
+  Then \( I \) is a model of \( \Delta \), and hence also of \( \Gamma \).
+\end{proof}
+
+\begin{theorem}[Classical propositional completeness]\label{thm:classical_propositional_completeness}\mcite[thm. 1.3.24]{Герасимов2011}
+  The \hyperref[def:propositional_natural_deduction_systems]{classical propositional natural deduction system} is \hyperref[def:logical_framework/completeness]{complete} with respect to \hyperref[def:classical_semantics]{classical semantics}.
+\end{theorem}
+\begin{proof}
+  Suppose that \( \Gamma \vDash \varphi \). Then the set \( \Gamma \cup \set{ \neg \varphi } \) is \hyperref[def:satisfiable_set_of_sentences]{unsatisfiable} because \( \Bracks{\neg \varphi}_I = F \) for every model \( I \) of \( \Gamma \).
+
+  Then \( \Gamma \cup \set{ \neg \varphi } \) must be \hyperref[def:consistent_set_of_sentences]{inconsistent} since otherwise \fullref{thm:consistent_implies_satisfiable} would imply that it is satisfiable.
+
+  Since it is inconsistent, there exists a proof tree deriving \( \bot \) from \( \Gamma \cup \set{ \neg \varphi } \). Then we can apply \ref{eq:def:propositional_natural_deduction_systems/bot/dne} and obtain a proof of \( \varphi \) from \( \Gamma \).
 \end{proof}
