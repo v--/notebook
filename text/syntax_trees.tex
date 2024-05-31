@@ -76,14 +76,14 @@
 
     \thmitem{ex:def:parse_tree/arithmetic} We continue the binary natural number grammar example from \fullref{ex:natural_number_arithmetic_grammar/schema} with the grammar \eqref{eq:ex:natural_number_arithmetic_grammar/schema/shorthand}.
 
-    The only possible parse tree for the expression \( (10 \times (1 + 10)) \) is
+    The only possible parse tree for the expression \( (\syn1 \syn0 \syntimes (\syn1 \synplus \syn1 \syn0)) \) is
     \begin{equation*}
       \includegraphics[page=4]{output/ex__def__parse_tree}
     \end{equation*}
 
     We will discuss abstract syntax trees in \fullref{con:abstract_syntax_tree}, which are notably tidier.
 
-    We can \hyperref[con:evaluation]{evaluate} this parse tree by substituting every binary number string (such as \( 10 \)) with its numeric value in \( \BbbN \) and then recursively applying the corresponding expressions. Evaluating the above parse tree results in \( 10 \times 11 = 110 \). More formal details on this evaluation are discussed in \fullref{ex:natural_number_arithmetic_grammar/evaluation}.
+    We can \hyperref[con:evaluation]{evaluate} this parse tree by substituting every binary number string (such as \( \syn1 \syn0 \)) with its numeric value in \( \BbbN \) and then recursively applying the corresponding expressions. Evaluating the above parse tree gives the same result, the decimal number \( 6 \), as evaluating \( \syn1 \syn 1 \syn0 \). More formal details on this evaluation are discussed in \fullref{ex:natural_number_arithmetic_grammar/evaluation}.
 
     Now consider instead the same grammar without parentheses, that is, replace the expression expansion rule
     \begin{equation*}
@@ -94,7 +94,7 @@
       E \to E O E.
     \end{equation*}
 
-    The corresponding expression \( 10 + 1 \times 10 \) has more than one parse tree:
+    The corresponding expression \( \syn1 \syn0 \synplus \syn1 \syntimes \syn1 \syn0 \) has more than one parse tree:
     \begin{equation*}
       \begin{aligned}
         \includegraphics[page=5]{output/ex__def__parse_tree}
@@ -103,7 +103,7 @@
       \end{aligned}
     \end{equation*}
 
-    If we evaluate the first parse tree, we obtain \( 10 \times (1 + 10) = 10 \times 11 = 110 \). If we evaluate the second one, we obtain \( (10 \times 1) + 10 = 10 + 10 = 100 \).\fnote{\( 10 \) in binary notation is \( 2 \) is decimal notation, \( 100 \) in binary is \( 4 \) in decimal and \( 110 \) in binary is \( 6 \) in decimal.}
+    The first tree corresponds to \( (10 \syntimes (1 \synplus 10)) \), which evaluates to \( 6 \), while the second one corresponds to \( ((\syn1 \syn0 \syntimes \syn1) \synplus 10) \), which evaluates to \( 4 \).\fnote{\( 10 \) in binary notation is \( 2 \) is decimal notation, \( 100 \) in binary is \( 4 \) in decimal and \( 110 \) in binary is \( 6 \) in decimal.}
 
     Thus, removing parentheses makes the grammar ambiguous in the sense of \fullref{def:grammar_ambiguity}. We will show in \fullref{ex:natural_number_arithmetic_grammar/unambiguous} that the parenthesized grammar is unambiguous.
   \end{thmenum}
@@ -121,7 +121,7 @@
 
   Suppose that we are given the rule \( A \to v_1 \cdots v_m \), where each \( v_k \) is a single symbol (either a terminal or nonterminal). The algorithm relies on partitioning \( w \) into \( m \) parts. Denote by \( S(w, m) \) the set of all partitions of \( w \) into \( m \) parts, that is, all \( m \)-tuples \( \vect w = (w_1, \ldots, w_m) \) such that
   \begin{equation*}
-    w = \underbrace{ r_1 \cdots r_{l_1} }_{w_1} \underbrace{ r_{l_1 + 1} \cdots r_{l_1 + l_2} }_{w_2} \cdots \underbrace{ r_{l_1 + \cdots + l_{m-1} + 1} \cdots r_{l_1 + \cdots + l_m} }_{w_m},
+    w = \underbrace{ r_1 \cdots r_{l_1} }_{w_1} \underbrace{ r_{l_1 \synplus 1} \cdots r_{l_1 \synplus l_2} }_{w_2} \cdots \underbrace{ r_{l_1 \synplus \cdots \synplus l_{m-1} \synplus 1} \cdots r_{l_1 \synplus \cdots \synplus l_m} }_{w_m},
   \end{equation*}
   where \( l_k \coloneqq \len(w_k) \).
 
@@ -173,7 +173,7 @@
           \includegraphics[page=2]{output/alg__brute_force_parsing}
         \end{aligned}
       \end{equation*}
-      where \( (T_1, \ldots, T_m) \) is a tuple in the Cartesian product \( \mscrT_1 \times \cdots \times \mscrT_m \).
+      where \( (T_1, \ldots, T_m) \) is a tuple in the Cartesian product \( \mscrT_1 \syntimes \cdots \syntimes \mscrT_m \).
     \end{itemize}
   \end{thmenum}
 \end{algorithm}
@@ -285,7 +285,7 @@
 
       \item Otherwise, let \( j \) be the smallest index such that the value \( u \) of \( r_j \) is a nonterminal, and let \( k_1, \cdots, k_{n_j} \) be the immediate children of \( r_j \). Then define
       \begin{equation*}
-        u_i \coloneqq r_1 \cdots r_{j-1} \underbrace{ k_1 \cdots k_{n_j} } r_{j+1} \cdots r_{n_j}
+        u_i \coloneqq r_1 \cdots r_{j-1} \underbrace{ k_1 \cdots k_{n_j} } r_{j\synplus1} \cdots r_{n_j}
       \end{equation*}
       and let \( w_i \) be the corresponding string of values.
 
@@ -349,7 +349,7 @@
   Let \( w \) be a string in \( \mscrL(G) \). We will build a derivation tree for \( w \) via \hyperref[rem:natural_number_recursion]{natural number recursion} on \( \len(w) \):
 
   \begin{itemize}
-    \item If \( \len(w) = 1 \), then \( w \) is either \enquote{\( 0 \)} or \enquote{\( 1 \)}, and the possible parse trees are
+    \item If \( \len(w) = 1 \), then \( w \) is either \enquote{\( \syn0 \)} or \enquote{\( \syn1 \)}, and the possible parse trees are
     \begin{equation*}
       \begin{aligned}
         \includegraphics[page=1]{output/ex__natural_number_arithmetic_grammar__unambiguous}
@@ -361,7 +361,7 @@
     \item Let \( w = r_1 \cdots r_n \) be a string of length \( n \) and suppose that every string shorter than \( w \) is unambiguous.
 
     \begin{itemize}
-      \item If \( r_1 \) is \enquote{\( ( \)}, then \( w \) is an expression. Hence, \( r_n \) is \enquote{\( ) \)} and there exists some index \( k \) such that \( r_k \) is either \enquote{\( + \)} or \enquote{\( \times \)}. The inductive hypothesis applies to \( r_2 \cdots r_{k-1} \) and  \( r_{k+1} \cdots r_{n-1} \), and gives us parse trees \( T_1 \) and \( T_2 \) whose roots are labeled with \( E \). Then the following is the unique parse tree of \( w \):
+      \item If \( r_1 \) is \enquote{\( ( \)}, then \( w \) is an expression. Hence, \( r_n \) is \enquote{\( ) \)} and there exists some index \( k \) such that \( r_k \) is either \enquote{\( \synplus \)} or \enquote{\( \syntimes \)}. The inductive hypothesis applies to \( r_2 \cdots r_{k-1} \) and  \( r_{k\synplus1} \cdots r_{n-1} \), and gives us parse trees \( T_1 \) and \( T_2 \) whose roots are labeled with \( E \). Then the following is the unique parse tree of \( w \):
       \begin{equation*}
         \begin{aligned}
           \includegraphics[page=3]{output/ex__natural_number_arithmetic_grammar__unambiguous}
@@ -385,10 +385,10 @@
   The right side of any rule contains at most one nonterminal, so there is only one possible derivation for every string.
 \end{proof}
 
-\paragraph{Translation and evaluation}
+\paragraph{Evaluation}
 
 \begin{concept}\label{con:evaluation}
-  \term{Evaluation}, also called \term{syntax-directed translation} by \incite[sec. 2.3]{Aho2006} in the context of programming language compilers, is the process of somehow \enquote{giving values} to \enquote{purely syntactic objects}, that is, transforming a string in some \hyperref[def:formal_grammar/language]{grammar's language} into some other object, perhaps even another string. This is easily achieved via partial definitions depending on the structure of the string.
+  We have briefly discussed \enquote{evaluation} in \fullref{con:syntax_and_semantics}. We will now describe it in more detail.
 
   Fix a grammar \( G = (V, \Sigma, \to, S) \) with nonterminals \( A_1, \cdots, A_n \). Then an example evaluation function has the form
   \begin{equation*}
@@ -404,7 +404,7 @@
   We use the convention from \fullref{rem:parse_tree_roots} regarding parse tree for different starting nodes over the same grammar schema. Of course, more granular rules are possible based on the structure of strings --- see \fullref{ex:natural_number_arithmetic_grammar/evaluation} for an example.
 \end{concept}
 \begin{comments}
-  \item If the grammar is not \hyperref[def:grammar_ambiguity]{unambiguous}, \( E \) may not be \hyperref[def:function]{single-valued} if we are not careful.
+  \item If the grammar is \hyperref[def:grammar_ambiguity]{ambiguous}, \( E \) may not be \hyperref[def:function]{single-valued} if we are not careful.
   \item We allow different starting nonterminals because, if \( F \) applies itself recursively, it must be able to process strings generated in different ways.
 \end{comments}
 
@@ -412,15 +412,15 @@
   We will define \hyperref[con:evaluation]{evaluation} for the binary natural number grammar \eqref{eq:ex:natural_number_arithmetic_grammar/schema/shorthand} from \fullref{ex:natural_number_arithmetic_grammar/schema}. Let
   \begin{equation*}
     F(w) \coloneqq \begin{cases}
-      \Bracks{0},                             &w = 0, \\
-      \Bracks{1},                             &w = 1, \\
-      \Bracks{2} F(w'),                       &w = w' 0, \\
-      \Bracks{2} F(w') \Bracks{+} \Bracks{1}, &w = w' 1, \\
-      F(u) \Bracks{+} F(v),                   &w = \mathtt{(} \thinspace u + v \thinspace \mathtt{)}, \\
-      F(u) \Bracks{\times} F(v),              &w = \mathtt{(} \thinspace u \times v \thinspace \mathtt{)},
+      0,                  &w = \syn0, \\
+      1,                  &w = \syn1, \\
+      2 \times F(w'),     &w = w' \syn0, \\
+      2 \times F(w') + 1, &w = w' \syn1, \\
+      F(u) + F(v),        &w = (u \synplus v), \\
+      F(u) \times F(v),   &w = (u \syntimes v),
     \end{cases}
   \end{equation*}
-  where \( + \) and \( 1 \) denote symbols in the abstract alphabet, while \( \Bracks{+} \) and \( \Bracks{1} \) denote their obvious interpretation.
+  where we have utilized the dot convention from \fullref{rem:object_language_dots/terminals} to unambiguously utilize metalingual numbers and operations.
 
   In this example, we do pattern matching on the string \( w \). This pattern matching depends on knowing the possible parse trees and knowing that the grammar is unambiguous. We use parse trees implicitly without recognizing it.
 
@@ -430,7 +430,7 @@
       \includegraphics[page=1]{output/ex__natural_number_arithmetic_grammar__evaluation}
     \end{aligned}
   \end{equation*}
-  evaluate as \( F(T_1) \Bracks{+} F(T_2) \).
+  evaluate as \( F(T_1) + F(T_2) \).
 \end{example}
 
 \paragraph{Abstract syntax trees}
@@ -450,9 +450,9 @@
     \thmitem{con:abstract_syntax_tree/lexical} The \term{lexical part}
     \begin{equation*}
       \begin{aligned}
-        N &\to 0 \mid 1 \mid 1 B \\
-        B &\to 0 \mid B 0 \mid 1 \mid B 1 \\
-        O &\to + \mid - \mid \times \mid +
+        N &\to \syn0 \mid \syn1 \mid \syn1 B \\
+        B &\to \syn0 \mid B \syn0 \mid \syn1 \mid B \syn1 \\
+        O &\to \synplus \mid \syntimes
       \end{aligned}
     \end{equation*}
 
@@ -484,7 +484,7 @@
     \end{aligned}
   \end{equation}
 
-  We can also remove unnecessarily long chains of nonterminals from \eqref{eq:con:abstract_syntax_tree/no_parens} where that would not be ambiguous (i.e. collapse \( E \to E \to 10 \) to \( E \to 10 \)):
+  We can also remove unnecessarily long chains of nonterminals from \eqref{eq:con:abstract_syntax_tree/no_parens} where that would not be ambiguous (i.e. collapse \( E \to E \to \syn1 \syn0 \) to \( E \to \syn1 \syn0 \)):
   \begin{equation}\label{eq:con:abstract_syntax_tree/collapsed}
     \begin{aligned}
       \includegraphics[page=4]{output/rem__abstract_syntax_tree}
@@ -523,9 +523,9 @@
   We want to prove that an expression without ones \hyperref[con:evaluation]{evaluates} to zero.
 
   \begin{itemize}
-    \item The simplest expressions we have are number \hyperref[con:abstract_syntax_tree/lexical]{lexemes}. The only one that does not contain ones is \( \mathtt{0} \), which evaluates to zero.
+    \item The simplest expressions we have are number \hyperref[con:abstract_syntax_tree/lexical]{lexemes}. The only one that does not contain ones is \( \syn0 \), which evaluates to zero.
 
-    \item Consider the expression \( (u + v) \).
+    \item Consider the expression \( (u \synplus v) \).
 
     We implicitly assume that existence of a unique parse tree
     \begin{equation*}
@@ -533,10 +533,10 @@
     \end{equation*}
     where \( T_u \) and \( T_v \) are the (unique) parse trees for \( u \) and \( v \).
 
-    Having assumed that both \( u \) and \( v \) don't contain ones and thus evaluate to zero, we conclude that their sum \( (u + v) \) should also evaluate to zero due to \ref{eq:def:peano_arithmetic/PA4}.
+    Having assumed that both \( u \) and \( v \) don't contain ones and thus evaluate to zero, we conclude that their sum \( (u \synplus v) \) should also evaluate to zero due to \ref{eq:def:peano_arithmetic/PA4}.
 
     It is easier for us to rely on \hyperref[con:evaluation]{pattern matching} than to explicitly construct the tree, and we have only done it for demonstrational purposes.
 
-    \item Analogously, the expression \( (u \times v) \) evaluates to zero due to \ref{eq:def:peano_arithmetic/PA6}.
+    \item Analogously, the expression \( (u \syntimes v) \) evaluates to zero due to \ref{eq:def:peano_arithmetic/PA6}.
   \end{itemize}
 \end{example}

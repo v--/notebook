@@ -13,7 +13,6 @@ def test_is_formula_in_cnf() -> None:
     assert t('(p ∧ (q ∨ r))')
 
     assert not t('(p ∨ (q ∧ r))')
-    assert not t('∀ξ.p')
 
 
 def test_pull_conjunction() -> None:
@@ -72,8 +71,8 @@ def test_function_to_cnf() -> None:
 
     assert t(lambda: True) == '(p ∨ ¬p)'
     assert t(lambda: False) == '(p ∧ ¬p)'
-    assert t(lambda a, b: True) == '(a ∨ ¬a)'  # noqa: ARG005
-    assert t(lambda a, b: a or b) == '(a ∨ b)'
-    assert t(lambda a, b: a) == '((a ∨ b) ∧ (a ∨ ¬b))'  # noqa: ARG005
-    assert t(lambda a, b: a and b) == '(((a ∨ b) ∧ (a ∨ ¬b)) ∧ (¬a ∨ b))'
-    assert t(lambda a, b: False) == '((((a ∨ b) ∧ (a ∨ ¬b)) ∧ (¬a ∨ b)) ∧ (¬a ∨ ¬b))'  # noqa: ARG005
+    assert t(lambda p, q: True) == '(p ∨ ¬p)'  # noqa: ARG005
+    assert t(lambda p, q: p or q) == '(p ∨ q)'
+    assert t(lambda p, q: p) == '((p ∨ q) ∧ (p ∨ ¬q))'  # noqa: ARG005
+    assert t(lambda p, q: p and q) == '(((p ∨ q) ∧ (p ∨ ¬q)) ∧ (¬p ∨ q))'
+    assert t(lambda p, q: False) == '((((p ∨ q) ∧ (p ∨ ¬q)) ∧ (¬p ∨ q)) ∧ (¬p ∨ ¬q))'  # noqa: ARG005

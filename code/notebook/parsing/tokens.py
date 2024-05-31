@@ -32,6 +32,10 @@ class TokenMixin(AbstractToken):
         return False
 
 
+class LiteralToken(TokenMixin):
+    pass
+
+
 TokenEnumT = TypeVar('TokenEnumT', bound='TokenEnum')
 
 

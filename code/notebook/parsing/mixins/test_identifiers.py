@@ -2,7 +2,8 @@ from dataclasses import dataclass
 
 import pytest
 
-from ..identifiers import Capitalization, GreekIdentifier, LatinIdentifier
+from ...support.unicode import Capitalization, is_greek_string, is_latin_string
+from ..identifiers import GreekIdentifier, LatinIdentifier
 from ..parser import ParsingError
 from ..tokenizer import Tokenizer
 from ..tokens import TokenEnum
@@ -19,9 +20,6 @@ TestToken = LatinIdentifier | GreekIdentifier | MiscToken
 
 @dataclass
 class TestTokenizer(IdentifierTokenizerMixin[TestToken], Tokenizer[TestToken]):
-    capitalization: Capitalization
-    short: bool
-
     def parse_step(self, head: str) -> TestToken:
         sym = MiscToken.try_match(head)
 
@@ -29,45 +27,38 @@ class TestTokenizer(IdentifierTokenizerMixin[TestToken], Tokenizer[TestToken]):
             self.advance()
             return sym
 
-        if self.is_at_alphabetic_string(LatinIdentifier, self.capitalization):
-            return self.parse_identifier(LatinIdentifier, self.capitalization, short=self.short)
+        if is_latin_string(head, Capitalization.small):
+            return self.parse_latin_identifier()
 
-        if self.is_at_alphabetic_string(GreekIdentifier, self.capitalization):
-            return self.parse_identifier(GreekIdentifier, self.capitalization, short=self.short)
+        if is_greek_string(head, Capitalization.small):
+            return self.parse_greek_identifier()
 
         raise self.error('Unexpected symbol')
 
 
-def tokenize(string: str, capitalization: Capitalization = Capitalization.mixed, *, short: bool = False) -> list[TestToken]:
-    with TestTokenizer(string, capitalization, short) as tokenizer:
+def tokenize(string: str) -> list[TestToken]:
+    with TestTokenizer(string) as tokenizer:
         return list(tokenizer.parse())
 
 
 def test_valid_latin_identifiers() -> None:
-    assert tokenize('Test') == [LatinIdentifier('Test')]
-    assert tokenize('Test', short=True) == [
-        LatinIdentifier('T', short=True),
-        LatinIdentifier('e', short=True),
-        LatinIdentifier('s', short=True),
-        LatinIdentifier('t', short=True)
-    ]
-
-    assert tokenize('T₀e₁s₂t₃') == [
-        LatinIdentifier('T₀'),
-        LatinIdentifier('e₁'),
-        LatinIdentifier('s₂'),
-        LatinIdentifier('t₃')
+    assert tokenize('t') == [LatinIdentifier('t')]
+    assert tokenize('t₀e₁s₂t₃') == [
+        LatinIdentifier('t', index=0),
+        LatinIdentifier('e', index=1),
+        LatinIdentifier('s', index=2),
+        LatinIdentifier('t', index=3)
     ]
 
 
 def test_invalid_latin_identifiers() -> None:
     # Fails to parse Cyrillic
     with pytest.raises(ParsingError):
-        tokenize('Тест')
+        tokenize('Т')
 
-    # Fails to parse capitalized identifiers when uncapitalized ones are expected
+    # Fails to parse capitalized identifiers
     with pytest.raises(ParsingError):
-        tokenize('TEST', Capitalization.small)
+        tokenize('T')
 
 
 def test_type_assignments() -> None:

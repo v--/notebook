@@ -5,8 +5,8 @@ from .parsing import parse_schema
 
 
 IMPLICATIONAL_AXIOMS = frozenset([
-    parse_schema('(Φ → (Ψ → Φ))'),
-    parse_schema('((Φ → (Ψ → Θ)) → ((Φ → Ψ) → (Φ → Θ)))'),
+    parse_schema('(φ → (ψ → φ))'),
+    parse_schema('((φ → (ψ → θ)) → ((φ → ψ) → (φ → θ)))'),
 ])
 
 

@@ -6,47 +6,6 @@ Propositional logic allows us to express basic relations between atomic proposit
 
 There are different approaches to formalizing the syntax of propositional logic. We use the theory of formal grammars that we have developed in \fullref{subsec:formal_languages} and \fullref{subsec:syntax_trees}. This requires specific adjustments related to other treatments of propositional logic --- e.g. \incite[ch. 1]{Hinman2005}, \incite[pt. I]{Smullyan1995} and \incite[ch. 1]{КолмогоровДрагалин2006} --- which rely on a more informal treatment of syntax more akin to what can be achieved via \fullref{thm:least_fixed_point_recursion}. Our approach allows us to use powerful tools while treating the object logic in complete formality. \incite[45]{Mimram2020} also describes syntax via formal grammars, but does not utilize the theory of formal languages.
 
-\begin{remark}\label{rem:grammar_rules_for_variables}
-  We need to introduce conventions for identifiers --- i.e. names of variables, functions and so forth --- in order to be able to be able to express infinitely many variables with finitely many grammar rules. The variable names that we will actually use will be a very specific subset of the ones we allow formally. Consider the following \hyperref[def:formal_grammar/schema]{grammar schema}:
-  \begin{bnf*}
-    \bnfprod{Latin letter}           {\bnftsq{A} \bnfor \bnftsq{B} \bnfor \cdots \bnfor \bnftsq{Z} \bnfor \bnftsq{a} \bnfor \bnftsq{b} \bnfor \cdots \bnfor \bnftsq{z}}, \\
-    \bnfprod{Latin string}           {\bnfpn{Latin letter} \bnfor \bnfpn{Latin letter} \bnfsp \bnfpn{Latin string}}, \\
-    \bnfprod{Latin identifier}       {\bnfpn{Latin string} \bnfor \bnfpn{Latin string} \bnfsp \bnfpn{natural number}},
-  \end{bnf*}
-  where grammar rules for natural numbers can be taken from \fullref{rem:decimal_notation_grammar}.
-
-  An identifier is a nonempty sequence of Latin letters, optionally followed by a number. Within the metalogic, we treat this number as a suffix and write it as a subscript, that is, we write \enquote{\( p_1 \)} instead of \enquote{\( p1 \)}.
-
-  We use a number of related rules defined in an obvious way:
-  \begin{itemize}
-    \item In \fullref{def:untyped_lambda_term}, we use the nonterminal \( \bnfpn{Short Latin identifier} \), which consists of a single Latin letter with a numeric subscript.
-    \item In \fullref{def:first_order_syntax} and \fullref{def:inference_rule}, we will use the nonterminal \( \bnfpn{Greek identifier} \) with analogous rules for denoting first-order variables.
-    \item In \fullref{def:logical_context}, we have used distinct rules for small and capital Greek letters.
-  \end{itemize}
-
-  A benefit of this naming schema is that we can introduce a \hyperref[thm:def:well_ordered_set/lexicographic]{lexicographic well-ordering} on the set of identifiers. This ordering can help reduce ambiguity in \fullref{def:propositional_valuation/valuation_function}, \fullref{def:uniform_lambda_substitution} and \fullref{def:first_order_substitution/term_in_formula} (although, in practice, we will prefer the ordering \( \xi < \eta < \zeta \) resembling \( x < y < z \)). We use the following conventions:
-  \begin{itemize}
-    \item Individual digits are ordered as they are listed in \fullref{rem:decimal_notation_grammar}, i.e.
-    \begin{equation*}
-      0 < 1 < \cdots < 9.
-    \end{equation*}
-
-    \item Individual letters are ordered as they are listed above, i.e.
-    \begin{equation*}
-      A < B < \cdots < Z < a < b < \cdots < z.
-    \end{equation*}
-
-    \item Digits are smaller than letters.
-
-    \item In the case of words of different lengths, if one word is a prefix of another, we assume that the shorter word is smaller, i.e.
-    \begin{equation*}
-      a < a_{13} < aa.
-    \end{equation*}
-
-    Comparing words of different lengths is discussed in \fullref{ex:def:lexicographic_order/heterogenous_words}.
-  \end{itemize}
-\end{remark}
-
 \begin{definition}\label{def:propositional_alphabet}\mcite[4; 5]{Smullyan1995}
   The \hyperref[def:formal_language/alphabet]{alphabet} of \term[ru=логика высказываний (\cite[43]{КолмогоровДрагалин2006})]{propositional logic} consists of:
 
@@ -75,21 +34,23 @@ There are different approaches to formalizing the syntax of propositional logic.
   \item We place dots over the various symbols in order to highlight that they are merely symbols without semantics --- see \fullref{rem:mathematical_logic_conventions/metavariable_syntax} for a general discussion.
 
   \item \enquote{Conjunctio} and \enquote{disjunctio} are Latin words for \enquote{union} and \enquote{separation}, respectively. \enquote{Implicatio} is Latin for \enquote{entangled}.
+
+  \item A popular alternative for the conditional symbol \enquote{\( \synimplies \)} is \enquote{\( \rightimply \)}. It is used by \incite[5]{Kleene2002Logic}, \incite[4]{Smullyan1995}, \incite[44]{КолмогоровДрагалин2006}, \incite[14]{Герасимов2011} and \incite[15]{Эдельман1975}.
 \end{comments}
 
 \begin{definition}\label{def:propositional_syntax}\mimprovised
-  We will introduce a \hyperref[def:formal_grammar/schema]{grammar schema} whose rules and generated languages we will collectively call the \term[en=syntax (\cite[8]{Hinman2005})]{syntax} of propositional logic:
+  We will introduce a \hyperref[def:formal_grammar/schema]{grammar schema} whose rules and generated languages we will collectively call the \enquote{\hyperref[con:syntax_and_semantics]{syntax} of propositional logic}:
   \begin{thmenum}
     \thmitem{def:propositional_syntax/schema} Consider the following \hyperref[def:formal_grammar/schema]{grammar schema}:
     \begin{bnf*}
-      \bnfprod{variable}    {\bnfpn{Latin identifier}} \\
+      \bnfprod{variable}    {\bnfpn{Small Latin identifier}} \\
       \bnfprod{connective}  {\bnftsq{\( \synvee \)} \bnfor \bnftsq{\( \synwedge \)} \bnfor \bnftsq{\( \synimplies \)}\bnfor \bnftsq{\( \syniff \)}} \\
       \bnfprod{formula}     {\bnftsq{\( \syntop \)} \bnfor \bnftsq{\( \synbot \)} \bnfor} \\
       \bnfmore              {\bnfpn{variable} \bnfor} \\
       \bnfmore              {\bnftsq{\( \synneg \)} \bnfsp \bnfpn{formula} \bnfor} \\
       \bnfmore              {\bnftsq{(} \bnfsp \bnfpn{formula} \bnfsp \bnfpn{connective} \bnfsp \bnfpn{formula} \bnfsp \bnftsq{)}}
     \end{bnf*}
-    where we use the identifiers discussed in \fullref{rem:grammar_rules_for_variables}.
+    where we have used variable identifier rules from \fullref{def:variable_identifier}.
 
     \thmitem{def:propositional_syntax/prop} We will denote by \( \op*{Prop} \) the set of all \term[ru=пропозициональные переменные (\cite[43]{КолмогоровДрагалин2006})]{propositional variables}, that is, all strings generated by the above grammar schema with starting nonterminal \( \bnfpn{variable} \).
 
@@ -111,16 +72,6 @@ There are different approaches to formalizing the syntax of propositional logic.
 
   \item If the root of the tree is a conjunction, we refer to the formula itself as a conjunction, and similarly for other propositional connectives.
 \end{comments}
-
-\begin{remark}\label{rem:object_language_dots}
-  In the metalanguage we distinguish between the numeral \enquote{\( 1 \)} and the abstract integer \enquote{\( n \)}. Similarly, we want to distinguish between a literal representing a propositional variable and a metalingual variable denoting an unspecified propositional variable. Following \incite{Hinman2005}, we resolve this via dots --- we will denote the literal strings \enquote{\( p \)} and \enquote{\( q \)} as \enquote{\( \synp \)} and \enquote{\( \syn q \)}, while reserving the corresponding un-dotted symbols \( p \) and \( q \) for metalingual variables.
-
-  A similar convention is used by \incite[rem. 2.1.3]{Hinman2005}.
-
-  We will follow this convention for first-order variables, although we will avoid it for predicate symbols and functional symbols since we will almost exclusively use unambiguous symbols, and adding dots can even introduce clashes (for example in for the formulas in \fullref{subsec:lattices}).
-
-  We will also follow it for the propositional alphabet, as well as for \hyperref[def:first_order_language/quantifiers]{first-order quantifiers} and \hyperref[def:first_order_language/equality]{first-order equality}, which helps us to distinguish the \hyperref[def:lattice/join]{join} \( x \vee y \) from the \hyperref[def:propositional_alphabet/connectives/conjunction]{conjunction} \( \syn p \synvee \syn q \) and the literal equality \( x = y \) from the atomic formula \( \syn x \syneq \syn y \).
-\end{remark}
 
 \begin{proposition}\label{thm:propositional_formulas_are_unambiguous}
   The \hyperref[def:formal_grammar]{grammar} of \hyperref[def:propositional_syntax/formula]{propositional formulas} is \hyperref[def:grammar_ambiguity]{unambiguous}.
@@ -182,7 +133,7 @@ There are different approaches to formalizing the syntax of propositional logic.
 
     \thmitem{ex:def:propositional_fomula_ast/associative_conjunction} We will define semantics for conjunction and disjunction so that they become associative Boolean operators. Following our general discussion of such binary operations in \fullref{rem:binary_operation_syntax_trees}, we will generally conflate the formula
     \begin{equation*}
-      ((\synp \synwedge \syn q) \synwedge \syn r)
+      ((\synp \synwedge \synq) \synwedge \syn r)
     \end{equation*}
     with AST
     \begin{equation*}
@@ -190,7 +141,7 @@ There are different approaches to formalizing the syntax of propositional logic.
     \end{equation*}
     and the formula
     \begin{equation*}
-      ((\synp \synwedge \syn q) \synwedge \syn r)
+      ((\synp \synwedge \synq) \synwedge \syn r)
     \end{equation*}
     with AST
     \begin{equation*}
@@ -247,6 +198,10 @@ There are different approaches to formalizing the syntax of propositional logic.
     This latter convention is more useful for quantifiers in \hyperref[def:first_order_syntax/formula]{first-order formulas}.
   \end{thmenum}
 \end{remark}
+
+\begin{definition}\label{def:propositional_variable_occurrence}\mimprovised
+  An \term[ru=вхождение (\cite[64]{Герасимов2011}), en=occurrence (\cite[9A2]{Hindley1997})]{occurrence} of a variable \( p \) in a propositional formula \( \varphi \) is a variable node with value \( p \) in the \hyperref[def:propositional_formula_ast]{abstract syntax tree} of \( \varphi \).
+\end{definition}
 
 \begin{definition}\label{def:propositional_subformula}\incite[8]{Smullyan1995}
   For every \hyperref[def:propositional_syntax/formula]{propositional formula}, we define the set of \term{subformulas} as follows:
@@ -353,7 +308,7 @@ There are different approaches to formalizing the syntax of propositional logic.
     \end{equation*}
     where \( I \) is any interpretation such that \( I(p_k) = x_k \) for \( k = 1, \ldots, n \).
 
-    Unless otherwise noted, we assume that \( p_1, \ldots, p_n \) are precisely the variables of \( \varphi \), ordered lexicographically as discussed in \fullref{rem:grammar_rules_for_variables}. We will call this the \term{valuation function} of \( \varphi \).
+    Unless otherwise noted, we assume that \( p_1, \ldots, p_n \) are precisely the variables of \( \varphi \), ordered lexicographically as discussed in \fullref{def:variable_identifier}. We will call this the \term{valuation function} of \( \varphi \).
   \end{thmenum}
 \end{definition}
 \begin{comments}
@@ -382,7 +337,7 @@ There are different approaches to formalizing the syntax of propositional logic.
 \end{defproof}
 
 \begin{definition}\label{def:propositional_semantics}\mimprovised
-  By the \term[ru=семантика (\cite[54]{КолмогоровДрагалин2006}), en=semantics (\cite[8]{Hinman2005})]{semantics} of propositional logic we mean the \hyperref[def:propositional_institution]{propositional institution} and all related notions like \hyperref[def:institution/models]{models}, \hyperref[def:institution/satisfaction]{satisfaction}, \hyperref[def:institutional_entailment]{semantic entailment} and \hyperref[def:semantic_equivalence]{semantic equivalence}. We will say that the semantics are \term{\hyperref[def:intuitionistic_logic]{intuitionistic}}, while in the special case where the \hyperref[def:truth_value_algebra]{truth value Heyting algebra} is the two-element Boolean algebra \( \set{ T, F } \), we will call them \term{\hyperref[def:classical_logic]{classical}} or \term{Boolean}.
+  By the \enquote{\hyperref[con:syntax_and_semantics]{semantics} of propositional logic} we mean the \hyperref[def:propositional_institution]{propositional institution} and all related notions like \hyperref[def:institution/models]{models}, \hyperref[def:institution/satisfaction]{satisfaction}, \hyperref[def:institutional_entailment]{semantic entailment} and \hyperref[def:semantic_equivalence]{semantic equivalence}. We will say that the semantics are \term{\hyperref[def:intuitionistic_logic]{intuitionistic}}, while in the special case where the \hyperref[def:truth_value_algebra]{truth value Heyting algebra} is the two-element Boolean algebra \( \set{ T, F } \), we will call them \term{\hyperref[def:classical_logic]{classical}} or \term{Boolean}.
 \end{definition}
 
 \begin{remark}\label{rem:classical_propositional_interpretations}

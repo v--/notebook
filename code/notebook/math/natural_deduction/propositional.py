@@ -2,7 +2,15 @@ from ..fol.formulas import Formula
 from ..fol.parsing import parse_propositional_formula
 from .parsing import parse_rule
 from .proof_tree import AssumptionTree, ProofTree, RuleApplicationTree, apply, assume
+from .substitution import substitute
 from .system import NaturalDeductionSystem
+
+
+def substitute_propositional_formulas(schema: str, **kwargs: str) -> Formula:
+    return substitute(
+        schema,
+        **{key: parse_propositional_formula(value) for key, value in kwargs.items()}
+    )
 
 
 propositional_natural_deduction_system = NaturalDeductionSystem(

@@ -1,12 +1,9 @@
 from dataclasses import dataclass
 
-from ....parsing.identifiers import (
-    Capitalization,
-    GreekIdentifier,
-)
 from ....parsing.mixins.identifiers import IdentifierTokenizerMixin
 from ....parsing.tokenizer import Tokenizer
 from ....parsing.whitespace import Whitespace
+from ....support.unicode import Capitalization, is_latin_string
 from ..alphabet import BinaryConnective, PropConstant, Quantifier, UnaryConnective
 from ..signature import FOLSignature
 from .tokens import FOLToken, FunctionSymbolToken, MiscToken, PredicateSymbolToken
@@ -41,8 +38,8 @@ class FOLTokenizer(IdentifierTokenizerMixin[FOLToken], Tokenizer[FOLToken]):
                 self.advance(len(ps))
                 return PredicateSymbolToken(ps)
 
-        if self.is_at_alphabetic_string(GreekIdentifier, Capitalization.mixed):
-            return self.parse_identifier(GreekIdentifier, Capitalization.mixed, short=False)
+        if is_latin_string(head, Capitalization.small):
+            return self.parse_latin_identifier()
 
         raise self.error('Unexpected symbol')
 

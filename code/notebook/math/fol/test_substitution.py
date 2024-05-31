@@ -13,10 +13,10 @@ def test_substitute_in_term(dummy_signature: FOLSignature) -> None:
             )
         )
 
-    assert t('ξ', 'ξ', 'η') == 'η'
-    assert t('η', 'ξ', 'ζ') == 'η'
-    assert t('f₁(ξ)', 'ξ', 'η') == 'f₁(η)'
-    assert t('f₂(g₁(ξ), h₁(g₁(ξ)))', 'g₁(ξ)', 'η') == 'f₂(η, h₁(η))'
+    assert t('x', 'x', 'y') == 'y'
+    assert t('y', 'x', 'z') == 'y'
+    assert t('F₁(x)', 'x', 'y') == 'F₁(y)'
+    assert t('F₂(G₁(x), H₁(G₁(x)))', 'G₁(x)', 'y') == 'F₂(y, H₁(y))'
 
 
 def test_substitute_in_formula(dummy_signature: FOLSignature) -> None:
@@ -30,15 +30,15 @@ def test_substitute_in_formula(dummy_signature: FOLSignature) -> None:
         )
 
     # Straighforward substitution
-    assert t('p₁(ξ)', 'ξ', 'η') == 'p₁(η)'
-    assert t('p₁(η)', 'ξ', 'ζ') == 'p₁(η)'
-    assert t('(g₁(ξ) = h₁(g₁(ξ)))', 'g₁(ξ)', 'η') == '(η = h₁(η))'
-    assert t('((∃ξ.¬p₁(ξ) → ¬q₁(ξ)) ∧ ∃ξ.r₁(ζ))', 'ξ', 'η') == '((∃ξ.¬p₁(ξ) → ¬q₁(η)) ∧ ∃ξ.r₁(ζ))'
+    assert t('P₁(x)', 'x', 'y') == 'P₁(y)'
+    assert t('P₁(y)', 'x', 'z') == 'P₁(y)'
+    assert t('(G₁(x) = H₁(G₁(x)))', 'G₁(x)', 'y') == '(y = H₁(y))'
+    assert t('((∃x.¬P₁(x) → ¬Q₁(x)) ∧ ∃x.R₁(z))', 'x', 'y') == '((∃x.¬P₁(x) → ¬Q₁(y)) ∧ ∃x.R₁(z))'
 
     # (Avoiding) capturing free variables
-    assert t('∀ξ.p₁(η)', 'η', 'ζ') == '∀ξ.p₁(ζ)'
-    assert t('∀ξ.p₁(η)', 'η', 'ξ') == '∀ξ₀.p₁(ξ)'
-    assert t('∀ξ.p₂(ξ, η)', 'η', 'ξ') == '∀ξ₀.p₂(ξ₀, ξ)'
+    assert t('∀x.P₁(y)', 'y', 'z') == '∀x.P₁(z)'
+    assert t('∀x.P₁(y)', 'y', 'x') == '∀a.P₁(x)'
+    assert t('∀x.P₂(x, y)', 'y', 'x') == '∀a.P₂(a, x)'
 
     # (Avoiding) colliding variables
-    assert t('∀ξ.p₁(η)', 'η', 'ξ') == '∀ξ₀.p₁(ξ)'
+    assert t('∀x.P₁(y)', 'y', 'x') == '∀a.P₁(x)'

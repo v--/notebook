@@ -18,33 +18,33 @@ def test_is_formula_quantifierless(dummy_signature: FOLSignature) -> None:
         return is_formula_quantifierless(parse_formula(dummy_signature, string))
 
     assert t('⊤')
-    assert t('(ξ = η)')
-    assert t('((ξ = η) ∨ ¬(ξ = η))')
-    assert not t('∀ξ.p₁(η)')
-    assert not t('¬∀ξ.p₁(η)')
+    assert t('(x = y)')
+    assert t('((x = y) ∨ ¬(x = y))')
+    assert not t('∀x.P₁(y)')
+    assert not t('¬∀x.P₁(y)')
 
 
 def test_is_formula_in_pnf(dummy_signature: FOLSignature) -> None:
     def t(string: str) -> bool:
         return is_formula_in_pnf(parse_formula(dummy_signature, string))
 
-    assert t('(ξ = η)')
-    assert t('∀ξ.p₁(η)')
-    assert t('∀ζ.∃ζ.(¬r₁(η) ∧ ¬r₂(ζ, η))')
-    assert not t('¬∀ξ.p₁(η)')
-    assert not t('∀η.∃ζ.(¬p₁(ζ) ∧ ∀ξ.(q₂(ζ, ξ) → ¬r₂(η, ξ)))')
+    assert t('(x = y)')
+    assert t('∀x.P₁(y)')
+    assert t('∀z.∃z.(¬R₁(y) ∧ ¬R₂(z, y))')
+    assert not t('¬∀x.P₁(y)')
+    assert not t('∀y.∃z.(¬P₁(z) ∧ ∀x.(Q₂(z, x) → ¬R₂(y, x)))')
 
 
 def test_remove_conditionals(dummy_signature: FOLSignature) -> None:
     def t(string: str) -> str:
         return str(remove_conditionals(parse_formula(dummy_signature, string)))
 
-    assert t('(ξ = η)') == '(ξ = η)'
-    assert t('(p₁(ξ) ∨ q₁(η))') == '(p₁(ξ) ∨ q₁(η))'
-    assert t('(p₁(ξ) → q₁(η))') == '(¬p₁(ξ) ∨ q₁(η))'
-    assert t('(p₁(ξ) ↔ q₁(η))') == '((¬p₁(ξ) ∨ q₁(η)) ∧ (p₁(ξ) ∨ ¬q₁(η)))'
-    assert t('¬(p₁(ξ) → q₁(η))') == '¬(¬p₁(ξ) ∨ q₁(η))'
-    assert t('∀η.∃ζ.¬(p₁(ξ) → q₁(η))') == '∀η.∃ζ.¬(¬p₁(ξ) ∨ q₁(η))'
+    assert t('(x = y)') == '(x = y)'
+    assert t('(P₁(x) ∨ Q₁(y))') == '(P₁(x) ∨ Q₁(y))'
+    assert t('(P₁(x) → Q₁(y))') == '(¬P₁(x) ∨ Q₁(y))'
+    assert t('(P₁(x) ↔ Q₁(y))') == '((¬P₁(x) ∨ Q₁(y)) ∧ (P₁(x) ∨ ¬Q₁(y)))'
+    assert t('¬(P₁(x) → Q₁(y))') == '¬(¬P₁(x) ∨ Q₁(y))'
+    assert t('∀y.∃z.¬(P₁(x) → Q₁(y))') == '∀y.∃z.¬(¬P₁(x) ∨ Q₁(y))'
 
 
 def test_move_negations(dummy_signature: FOLSignature) -> None:
@@ -52,17 +52,17 @@ def test_move_negations(dummy_signature: FOLSignature) -> None:
         return str(push_negations(parse_formula(dummy_signature, string)))
 
     with pytest.raises(PNFError):
-        t('¬(p₁(ξ) → p₁(η))')
+        t('¬(P₁(x) → P₁(y))')
 
     with pytest.raises(PNFError):
-        t('¬(p₁(ξ) ↔ p₁(η))')
+        t('¬(P₁(x) ↔ P₁(y))')
 
-    assert t('(ξ = η)') == '(ξ = η)'
-    assert t('¬(ξ = η)') == '¬(ξ = η)'
-    assert t('¬¬(ξ = η)') == '(ξ = η)'
-    assert t('¬(p₁(ξ) ∨ ¬q₁(η))') == '(¬p₁(ξ) ∧ q₁(η))'
-    assert t('¬∀η.∃ζ.(p₁(ξ) ∨ ¬q₁(η))') == '∃η.∀ζ.(¬p₁(ξ) ∧ q₁(η))'
-    assert t('¬(p₁(ξ) ∨ ¬(q₁(η) ∧ ¬(∃ζ.r₁(ζ) ∨ ¬s₁(τ))))') == '(¬p₁(ξ) ∧ (q₁(η) ∧ (∀ζ.¬r₁(ζ) ∧ s₁(τ))))'
+    assert t('(x = y)') == '(x = y)'
+    assert t('¬(x = y)') == '¬(x = y)'
+    assert t('¬¬(x = y)') == '(x = y)'
+    assert t('¬(P₁(x) ∨ ¬Q₁(y))') == '(¬P₁(x) ∧ Q₁(y))'
+    assert t('¬∀y.∃z.(P₁(x) ∨ ¬Q₁(y))') == '∃y.∀z.(¬P₁(x) ∧ Q₁(y))'
+    assert t('¬(P₁(x) ∨ ¬(Q₁(y) ∧ ¬(∃z.R₁(z) ∨ ¬S₀)))') == '(¬P₁(x) ∧ (Q₁(y) ∧ (∀z.¬R₁(z) ∧ S₀)))'
 
 
 def test_move_quantifiers(dummy_signature: FOLSignature) -> None:
@@ -70,24 +70,24 @@ def test_move_quantifiers(dummy_signature: FOLSignature) -> None:
         return str(move_quantifiers(parse_formula(dummy_signature, string)))
 
     with pytest.raises(PNFError):
-        t('¬(p₁(ξ) → p₁(η))')
+        t('¬(P₁(x) → P₁(y))')
 
     with pytest.raises(PNFError):
-        t('¬(p₁(ξ) ↔ p₁(η))')
+        t('¬(P₁(x) ↔ P₁(y))')
 
     # It is expected not to work on formulas where negations are not moved inwards.
-    assert t('¬∀η.p₁(ξ)') == '¬∀η.p₁(ξ)'
+    assert t('¬∀y.P₁(x)') == '¬∀y.P₁(x)'
 
-    assert t('(ξ = η)') == '(ξ = η)'
-    assert t('∀η.p₁(ξ)') == '∀η.p₁(ξ)'
-    assert t('∀η.∀η.p₁(ξ)') == '∀η.∀η.p₁(ξ)'
-    assert t('∀η.∀η.p₁(η)') == '∀η.∀η.p₁(η)'
-    assert t('(∀ξ.p₁(ξ) ∨ q₁(η))') == '∀ξ₀.(p₁(ξ₀) ∨ q₁(η))'
-    assert t('(∀ξ.p₁(ξ) ∨ q₁(ξ))') == '∀ξ₀.(p₁(ξ₀) ∨ q₁(ξ))'
-    assert t('(∀ξ.p₁(ξ) ∨ q₁(ξ₀))') == '∀ξ₁.(p₁(ξ₁) ∨ q₁(ξ₀))'
-    assert t('(∀ξ.p₁(ξ) ∨ ∀ξ.q₁(ξ))') == '∀ξ₀.∀ξ₁.(p₁(ξ₀) ∨ q₁(ξ₁))'
-    assert t('((∃ξ.p₁(ξ) ∧ ∃η.q₁(η)) ∨ (∃ξ.p₁(ξ) ∧ ∃η.q₁(η)))') == '∃ξ₁.∃η₁.∃ξ₂.∃η₂.((p₁(ξ₁) ∧ q₁(η₁)) ∨ (p₁(ξ₂) ∧ q₁(η₂)))'
-    assert t('((∀ξ.p₁(ξ) ∨ q₁(ξ)) ∧ ∃ξ₀.r₁(ξ₀))') == '∃ξ₁.∀ξ₂.((p₁(ξ₂) ∨ q₁(ξ)) ∧ r₁(ξ₁))'
+    assert t('(x = y)') == '(x = y)'
+    assert t('∀y.P₁(x)') == '∀y.P₁(x)'
+    assert t('∀y.∀y.P₁(x)') == '∀y.∀y.P₁(x)'
+    assert t('∀y.∀y.P₁(y)') == '∀y.∀y.P₁(y)'
+    assert t('(∀x.P₁(x) ∨ Q₁(y))') == '∀a.(P₁(a) ∨ Q₁(y))'
+    assert t('(∀x.P₁(x) ∨ Q₁(x))') == '∀a.(P₁(a) ∨ Q₁(x))'
+    assert t('(∀x.P₁(x) ∨ Q₁(a))') == '∀b.(P₁(b) ∨ Q₁(a))'
+    assert t('(∀x.P₁(x) ∨ ∀x.Q₁(x))') == '∀a.∀b.(P₁(a) ∨ Q₁(b))'
+    assert t('((∃x.P₁(x) ∧ ∃y.Q₁(y)) ∨ (∃x.P₁(x) ∧ ∃y.Q₁(y)))') == '∃b.∃a.∃c.∃d.((P₁(b) ∧ Q₁(a)) ∨ (P₁(c) ∧ Q₁(d)))'
+    assert t('((∀x.P₁(x) ∨ Q₁(x)) ∧ ∃a.R₁(a))') == '∃b.∀c.((P₁(c) ∨ Q₁(x)) ∧ R₁(b))'
 
 
 def test_to_pnf(dummy_signature: FOLSignature) -> None:
@@ -96,7 +96,7 @@ def test_to_pnf(dummy_signature: FOLSignature) -> None:
         assert is_formula_in_pnf(pnf)
         return str(pnf)
 
-    assert t('(ξ = η)') == '(ξ = η)'
-    assert t('¬∀η.p₁(ξ)') == '∃η.¬p₁(ξ)'
-    assert t('((∀ξ.p₁(ξ) ∨ q₁(ξ)) ∧ ∃ξ.¬¬r₁(ξ))') == '∃ξ₀.∀ξ₁.((p₁(ξ₁) ∨ q₁(ξ)) ∧ r₁(ξ₀))'
-    assert t('((∃ξ.¬p₁(ξ) → q₁(ξ)) ∧ ∃ξ.r₁(ξ₁))') == '∃ξ₀.∀ξ₂.((p₁(ξ₂) ∨ q₁(ξ)) ∧ r₁(ξ₁))'
+    assert t('(x = y)') == '(x = y)'
+    assert t('¬∀y.P₁(x)') == '∃y.¬P₁(x)'
+    assert t('((∀x.P₁(x) ∨ Q₁(x)) ∧ ∃x.¬¬R₁(x))') == '∃a.∀b.((P₁(b) ∨ Q₁(x)) ∧ R₁(a))'
+    assert t('((∃x.¬P₁(x) → Q₁(x)) ∧ ∃x.R₁(b))') == '∃a.∀c.((P₁(c) ∨ Q₁(x)) ∧ R₁(b))'

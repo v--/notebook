@@ -40,6 +40,14 @@ def list_accumulator(fun: Callable[P, Iterable[T]]) -> Callable[P, list[T]]:
     return wrapper
 
 
+def frozen_set_accumulator(fun: Callable[P, Iterable[T]]) -> Callable[P, frozenset[T]]:
+    @functools.wraps(fun)
+    def wrapper(*args: P.args, **kwargs: P.kwargs) -> frozenset[T]:
+        return frozenset(fun(*args, **kwargs))
+
+    return wrapper
+
+
 def string_accumulator(joiner: str = '') -> Callable[[Callable[P, Iterable[T]]], Callable[P, str]]:
     def decorator(fun: Callable[P, Iterable[T]]) -> Callable[P, str]:
         @functools.wraps(fun)

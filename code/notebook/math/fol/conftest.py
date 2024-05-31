@@ -13,11 +13,11 @@ def empty_signature() -> FOLSignature:
 def dummy_signature(max_args: int = 10) -> FOLSignature:
     signature = FOLSignature()
 
-    for l in ['f', 'g', 'h', 't']:
+    for l in ['F', 'G', 'H', 'T']:
         for i in range(max_args):
             signature.add_function_symbol(l + itoa_subscripts(i), arity=i)
 
-    for l in ['p', 'q', 'r', 's']:
+    for l in ['P', 'Q', 'R', 'S']:
         for i in range(max_args):
             signature.add_predicate_symbol(l + itoa_subscripts(i), arity=i)
 

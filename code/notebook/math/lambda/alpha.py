@@ -1,6 +1,4 @@
-from typing import Optional
-
-from .substitution import substitute_in_term
+from .substitution import Substitution, apply_substitution
 from .terms import Abstraction, Application, LambdaTerm, Variable
 from .variables import get_free_variables, new_variable
 
@@ -11,7 +9,7 @@ def are_terms_alpha_equivalent(m: LambdaTerm, n: LambdaTerm) -> bool:
         case (Variable(), Variable()):
             assert isinstance(m, Variable)
             assert isinstance(n, Variable)
-            return m.name == n.name
+            return m.identifier == n.identifier
 
         case (Application(), Application()):
             assert isinstance(m, Application)
@@ -21,19 +19,17 @@ def are_terms_alpha_equivalent(m: LambdaTerm, n: LambdaTerm) -> bool:
         case (Abstraction(), Abstraction()):
             assert isinstance(m, Abstraction)
             assert isinstance(n, Abstraction)
-            new_var = new_variable(m.var, get_free_variables(m.sub) | get_free_variables(n.sub))
+            new_var = new_variable(get_free_variables(m.sub) | get_free_variables(n.sub))
             return are_terms_alpha_equivalent(
-                substitute_in_term(m.sub, m.var, new_var),
-                substitute_in_term(n.sub, n.var, new_var)
+                apply_substitution(m.sub, Substitution({m.var: new_var})),
+                apply_substitution(n.sub, Substitution({n.var: new_var}))
             )
 
         case _:
             return False
 
 
-def disunify_free_bound_variables_impl(term: LambdaTerm, context: Optional[set[Variable]] = None) -> LambdaTerm:
-    if context is None:
-        context = set()
+def disunify_free_bound_variables_impl(term: LambdaTerm, context: frozenset[Variable] = frozenset()) -> LambdaTerm:
     match term:
         case Variable():
             return term
@@ -45,14 +41,13 @@ def disunify_free_bound_variables_impl(term: LambdaTerm, context: Optional[set[V
             )
 
         case Abstraction():
-            new_var = new_variable(term.var, context)
+            new_var = new_variable(context) if term.var in context else term.var
 
             return Abstraction(
                 new_var,
-                substitute_in_term(
+                apply_substitution(
                     disunify_free_bound_variables_impl(term.sub, context | {new_var}),
-                    term.var,
-                    new_var
+                    Substitution({term.var: new_var})
                 ),
             )
 

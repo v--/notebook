@@ -1,16 +1,22 @@
-from ....parsing.identifiers import (
-    Capitalization,
-    GreekIdentifier,
-    LatinIdentifier,
-)
 from ....parsing.mixins.identifiers import IdentifierTokenizerMixin
 from ....parsing.tokenizer import Tokenizer
 from ....parsing.whitespace import Whitespace
+from ....support.unicode import Capitalization, is_greek_string, is_latin_string
 from ...fol.alphabet import BinaryConnective, PropConstant, Quantifier, UnaryConnective
-from .tokens import MiscToken, RuleToken, SuperscriptToken
+from .tokens import CapitalLatinString, MiscToken, RuleToken, SuperscriptToken
 
 
 class NaturalDeductionTokenizer(IdentifierTokenizerMixin[RuleToken], Tokenizer[RuleToken]):
+    def _eagerly_parse_latin_string(self) -> CapitalLatinString:
+        assert is_latin_string(self.peek(), Capitalization.capital)
+        string = ''
+
+        while is_latin_string(self.peek(), Capitalization.capital):
+            string += self.peek()
+            self.advance()
+
+        return CapitalLatinString(string)
+
     def parse_step(self, head: str) -> RuleToken:
         sym = PropConstant.try_match(head) or \
             BinaryConnective.try_match(head) or \
@@ -27,11 +33,14 @@ class NaturalDeductionTokenizer(IdentifierTokenizerMixin[RuleToken], Tokenizer[R
             self.advance()
             return Whitespace.space
 
-        if self.is_at_alphabetic_string(LatinIdentifier, Capitalization.mixed):
-            return self.parse_identifier(LatinIdentifier, Capitalization.mixed, short=False)
+        if is_greek_string(head, Capitalization.small):
+            return self.parse_greek_identifier()
 
-        if self.is_at_alphabetic_string(GreekIdentifier, Capitalization.mixed):
-            return self.parse_identifier(GreekIdentifier, Capitalization.mixed, short=False)
+        if is_latin_string(head, Capitalization.small):
+            return self.parse_latin_identifier()
+
+        if is_latin_string(head, Capitalization.capital):
+            return self._eagerly_parse_latin_string()
 
         raise self.error('Unexpected symbol')
 

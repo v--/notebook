@@ -1,7 +1,7 @@
 from dataclasses import dataclass
 from typing import Iterable
 
-from ....parsing.identifiers import GreekIdentifier
+from ....parsing.identifiers import LatinIdentifier
 from ....parsing.mixins.whitespace import WhitespaceParserMixin
 from ....parsing.parser import Parser
 from ..alphabet import BinaryConnective, PropConstant, Quantifier, UnaryConnective
@@ -27,9 +27,9 @@ class FOLParser(WhitespaceParserMixin[FOLToken], Parser[FOLToken]):
 
     def parse_variable(self) -> Variable:
         head = self.peek()
-        assert isinstance(head, GreekIdentifier)
+        assert isinstance(head, LatinIdentifier)
         self.advance()
-        return Variable(head.value)
+        return Variable(head)
 
     def parse_args(self, arity: int, i_start: int) -> Iterable[Term]:
         assert self.peek() == MiscToken.left_parenthesis
@@ -78,7 +78,7 @@ class FOLParser(WhitespaceParserMixin[FOLToken], Parser[FOLToken]):
 
     def parse_term(self) -> Term:
         match self.peek():
-            case GreekIdentifier():
+            case LatinIdentifier():
                 return self.parse_variable()
 
             case FunctionSymbolToken():
@@ -103,7 +103,7 @@ class FOLParser(WhitespaceParserMixin[FOLToken], Parser[FOLToken]):
         a_term: Term | None = None
         a_form: Formula | None = None
 
-        if isinstance(self.peek(), (GreekIdentifier, FunctionSymbolToken)):
+        if isinstance(self.peek(), (LatinIdentifier, FunctionSymbolToken)):
             a_term = self.parse_term()
         else:
             a_form = self.parse_formula()
@@ -169,7 +169,7 @@ class FOLParser(WhitespaceParserMixin[FOLToken], Parser[FOLToken]):
         i_start = self.index
         self.advance()
 
-        if self.is_at_end() or not isinstance(self.peek(), GreekIdentifier):
+        if self.is_at_end() or not isinstance(self.peek(), LatinIdentifier):
             raise self.error('Expected a variable after the quantifier', i_first_token=i_start)
 
         var = self.parse_variable()

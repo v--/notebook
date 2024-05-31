@@ -34,10 +34,10 @@ def test_disunify_free_bound_variables() -> None:
     assert t('(λx.x)') == '(λx.x)'
 
     # Cases where renaming is needed
-    assert t('((λx.x)x)') == '((λx₀.x₀)x)'
-    assert t('((λx.(xy))x)') == '((λx₀.(x₀y))x)'
-    assert t('((λx.((λx.x)x))x)') == '((λx₀.((λx₁.x₁)x₀))x)'
-    assert t('((λx.(λy.(xy)))(xy))') == '((λx₀.(λy₀.(x₀y₀)))(xy))'
+    assert t('((λx.x)x)') == '((λa.a)x)'
+    assert t('((λx.(xy))x)') == '((λa.(ay))x)'
+    assert t('((λx.((λx.x)x))x)') == '((λa.((λb.b)a))x)'
+    assert t('((λx.(λy.(xy)))(xy))') == '((λa.(λb.(ab)))(xy))'
 
     # Verify that new variables don't shadow existing ones
-    assert t('((λx₀.(λx.(x₀x)))x)') == '((λx₀.(λx₁.(x₀x₁)))x)'
+    assert t('((λa.(λx.(ax)))x)') == '((λa.(λb.(ab)))x)'

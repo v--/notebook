@@ -1,7 +1,6 @@
 from collections.abc import Iterable
 
-from ...support.names import new_var_name
-from .alphabet import NonTerminal, Terminal
+from .alphabet import NonTerminal, Terminal, new_non_terminal
 from .grammar import Grammar, GrammarRule, GrammarSchema
 
 
@@ -58,11 +57,9 @@ def iter_rules_without_nullables(nullable: set[NonTerminal], dest: list[NonTermi
 
 def remove_epsilon_rules(grammar: Grammar) -> Grammar:
     nullable = identify_nullable_non_terminals(grammar)
-    new_start = NonTerminal(
-        new_var_name(
-            grammar.start.value,
-            {sym.value for sym in grammar.schema.get_non_terminals()}
-        )
+    new_start = new_non_terminal(
+        grammar.start.value,
+        frozenset(grammar.schema.get_non_terminals())
     )
 
     new_schema = GrammarSchema(rules=[GrammarRule(src=[new_start], dest=[grammar.start])])

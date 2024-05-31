@@ -30,7 +30,7 @@ def annotate_existing_tokens(seq: Sequence[T_co]) -> Iterable[AnnotatedToken[T_c
     lineno = 1
     column = 1
 
-    for _i, token in enumerate(seq):
+    for token in seq:
         start = SymbolPosition(lineno, column)
         end: SymbolPosition
 

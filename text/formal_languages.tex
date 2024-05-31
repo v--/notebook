@@ -78,7 +78,7 @@ Languages are used to define formulas for expressing the \hyperref[def:zfc]{axio
 
     \thmitem{ex:def:formal_language/even} Even numbers in binary notation are described by the language
     \begin{equation*}
-      \mscrL \coloneqq \set[\Big]{ w0 \given w \in \set{ 0, 1 }^* }.
+      \mscrL \coloneqq \set[\Big]{ w \syn0 \given w \in \set{ \syn0, \syn1 }^* }.
     \end{equation*}
 
     \thmitem{ex:def:formal_language/leucine}\mcite{codon_charts} The \term{Leucine} amino-acid is encoded by the language
@@ -276,23 +276,25 @@ Languages are used to define formulas for expressing the \hyperref[def:zfc]{axio
 \begin{example}\label{ex:natural_number_arithmetic_grammar/schema}
   We define a \hyperref[def:formal_grammar/schema]{grammar schema} for arithmetic of \hyperref[def:natural_numbers]{natural numbers}. We will use binary notation for simplicity.
 
-  Let \( V \coloneqq \set{ N, O, E } \) and \( \Sigma \coloneqq \set{ 0, 1, +, \times, (, ) } \). Consider the derivation rules
+  Let \( V \coloneqq \set{ N, O, E } \) and \( \Sigma \coloneqq \set{ \syn0, \syn1, \synplus, \syntimes, (,) } \). Consider the derivation rules
   \begin{equation}\label{eq:ex:natural_number_arithmetic_grammar/schema/simple}
     \begin{aligned}
-      N &\to 0   & \quad B &\to 0   & \quad O &\to +      & \quad E &\to N \\
-      N &\to 1   & \quad B &\to 0 B & \quad O &\to -      & \quad E &\to (E O E) \\
-      N &\to 1 B & \quad B &\to 1   & \quad   &           &         & \\
-        &        & \quad B &\to 1 B & \quad   &           &         & \\
+      N &\to \syn0   & \quad B &\to \syn0   & \quad O &\to \synplus  & \quad E &\to N       \\
+      N &\to \syn1   & \quad B &\to \syn0 B & \quad O &\to \syntimes & \quad E &\to (E O E) \\
+      N &\to \syn1 B & \quad B &\to \syn1   & \quad   &              &         &            \\
+        &            & \quad B &\to \syn1 B & \quad   &              &         &
     \end{aligned}
   \end{equation}
+
+  Following the convention from \fullref{rem:object_language_dots/ambiguity}, we have placed dots above the terminal symbols to avoid ambiguity, especially later in \fullref{ex:natural_number_arithmetic_grammar/evaluation} when we will discuss evaluation of these symbols.
 
   It is convenient to use the following shorthands:
   \begin{equation}\label{eq:ex:natural_number_arithmetic_grammar/schema/shorthand}
     \begin{aligned}
-      N &\to 0 \mid 1 \mid 1 B \\
-      B &\to 0 \mid B 0 \mid 1 \mid B 1 \\
-      O &\to + \mid \times \\
-      E &\to N \mid (E O E)
+      N &\to \syn0 \mid \syn1   \mid \syn1 B \\
+      B &\to \syn0 \mid B \syn0 \mid \syn1 \mid B \syn1 \\
+      O &\to \synplus \mid \times \\
+      E &\to N     \mid (E O E)
     \end{aligned}
   \end{equation}
 
@@ -669,16 +671,16 @@ Languages are used to define formulas for expressing the \hyperref[def:zfc]{axio
     \thmitem{ex:alg:epsilon_rule_removal/natural} Given the rules
     \begin{equation*}
       \begin{aligned}
-        N &\to 0 \mid 1 B, \\
-        B &\to \varepsilon \mid 0 B \mid 1 B
+        N &\to \syn0 \mid \syn1 B, \\
+        B &\to \varepsilon \mid \syn0 B \mid \syn1 B
       \end{aligned}
     \end{equation*}
     and starting nonterminal \( N \), the algorithm suggests instead
     \begin{equation*}
       \begin{aligned}
         S' &\to' N, \\
-        N  &\to' 0 \mid 1 \mid 1 B, \\
-        B  &\to' 0 \mid 0 B \mid 1 \mid 1 B.
+        N  &\to' \syn0 \mid \syn1 \mid \syn1 B, \\
+        B  &\to' \syn0 \mid \syn0 B \mid \syn1 \mid \syn1 B.
       \end{aligned}
     \end{equation*}
 
@@ -757,9 +759,9 @@ Languages are used to define formulas for expressing the \hyperref[def:zfc]{axio
   For \fullref{ex:natural_number_arithmetic_grammar/schema}, one possible BNF is
   \begin{bnf*}
     \bnfprod{expression}     {\bnfpn{number} \bnfor \bnftsq{(} \bnfsp \bnfpn{expression} \bnfsp \bnfpn{operation} \bnfsp \bnfpn{expression} \bnfsp \bnftsq{)}} \\
-    \bnfprod{operation}      {\bnftsq{\( + \)} \bnfor \bnftsq{\( \times \)}} \\
-    \bnfprod{natural number} {\bnftsq{\( 0 \)} \bnfor \bnftsq{\( 1 \)} \bnfor \bnftsq{\( 1 \)} \bnfsp \bnfpn{digit string}} \\
-    \bnfprod{digit string}   {\bnftsq{\( 0 \)} \bnfor \bnftsq{\( 0 \)} \bnfsp \bnfpn{digit string} \bnfor \bnftsq{\( 1 \)} \bnfor \bnftsq{\( 1 \)} \bnfsp \bnfpn{digit string}}
+    \bnfprod{operation}      {\bnftsq{\( \syntimes \)} \bnfor \bnftsq{\( \syntimes \)}} \\
+    \bnfprod{natural number} {\bnftsq{\( \syn0 \)} \bnfor \bnftsq{\( \syn1 \)} \bnfor \bnftsq{\( \syn1 \)} \bnfsp \bnfpn{digit string}} \\
+    \bnfprod{digit string}   {\bnftsq{\( \syn0 \)} \bnfor \bnftsq{\( \syn0 \)} \bnfsp \bnfpn{digit string} \bnfor \bnftsq{\( \syn1 \)} \bnfor \bnftsq{\( \syn1 \)} \bnfsp \bnfpn{digit string}}
   \end{bnf*}
 
   Compared to \eqref{eq:ex:natural_number_arithmetic_grammar/schema/simple}, some differences are:
@@ -779,8 +781,8 @@ Languages are used to define formulas for expressing the \hyperref[def:zfc]{axio
 \begin{remark}\label{rem:decimal_notation_grammar}
   Our series of examples ending with \fullref{con:backus_normal_form} describes natural number arithmetic in binary notation. We made the restriction because decimal notation requires more complicated rules. One such set of rules is
   \begin{bnf*}
-    \bnfprod{nonzero digit}  {\bnftsq{1} \bnfor \bnftsq{2} \bnfor \cdots \bnfor \bnftsq{9}} \\
-    \bnfprod{digit}          {\bnftsq{0} \bnfor \bnfpn{nonzero digit}} \\
+    \bnfprod{nonzero digit}  {\bnftsq{\( \syn1 \)} \bnfor \bnftsq{\( \syn2 \)} \bnfor \cdots \bnfor \bnftsq{\( \syn9 \)}} \\
+    \bnfprod{digit}          {\bnftsq{\( \syn0 \)} \bnfor \bnfpn{nonzero digit}} \\
     \bnfprod{digit string}   {\bnfpn{digit} \bnfor \bnfpn{digit} \bnfsp \bnfpn{digit string}} \\
     \bnfprod{natural number} {\bnfpn{digit} \bnfor \bnfpn{nonzero digit} \bnfsp \bnfpn{digit string}}
   \end{bnf*}

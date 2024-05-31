@@ -1,5 +1,6 @@
+
 from ....parsing.identifiers import GreekIdentifier, LatinIdentifier
-from ....parsing.tokens import TokenEnum
+from ....parsing.tokens import TokenEnum, TokenMixin
 from ....parsing.whitespace import Space
 from ...fol.alphabet import BinaryConnective, PropConstant, Quantifier, UnaryConnective
 
@@ -22,4 +23,8 @@ class SuperscriptToken(TokenEnum):
     right = 'ᴿ'
 
 
-RuleToken = LatinIdentifier | GreekIdentifier | PropConstant | BinaryConnective | Quantifier | UnaryConnective | MiscToken | SuperscriptToken | Space
+class CapitalLatinString(TokenMixin):
+    pass
+
+
+RuleToken = LatinIdentifier | GreekIdentifier | PropConstant | BinaryConnective | Quantifier | UnaryConnective | MiscToken | SuperscriptToken | CapitalLatinString | Space

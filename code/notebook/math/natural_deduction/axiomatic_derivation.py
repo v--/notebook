@@ -3,13 +3,13 @@ from dataclasses import dataclass
 from typing import NamedTuple
 
 from ...exceptions import NotebookCodeError
-from ...support.names import new_var_name
 from ..fol.formulas import Formula, is_conditional
-from .parsing import parse_rule
+from .markers import Marker, new_marker
+from .parsing import parse_placeholder, parse_rule
 from .proof_tree import AssumptionTree, NaturalDeductionSystem, ProofTree, RuleApplicationTree
 from .rules import Rule
-from .schemas import FormulaPlaceholder, FormulaSchema
-from .substitution import UniformSubstitution, build_substitution, is_schema_instance
+from .schemas import FormulaSchema
+from .substitution import Substitution, build_substitution, is_schema_instance
 
 
 class AxiomaticDerivationError(NotebookCodeError):
@@ -109,7 +109,7 @@ def are_derivations_equivalent(a: AxiomaticDerivation, b: AxiomaticDerivation) -
 
 
 # This is alg:proof_tree_to_axiomatic_derivation in the monograph
-def derivation_to_proof_tree(derivation: AxiomaticDerivation, used_markers: frozenset = frozenset()) -> ProofTree:
+def derivation_to_proof_tree(derivation: AxiomaticDerivation, used_markers: frozenset[Marker] = frozenset()) -> ProofTree:
     conclusion = derivation.get_conclusion()
     system = NaturalDeductionSystem(
         frozenset(
@@ -121,7 +121,7 @@ def derivation_to_proof_tree(derivation: AxiomaticDerivation, used_markers: froz
     )
 
     if derivation.is_premise(conclusion):
-        return AssumptionTree(system, conclusion, marker=new_var_name('u₁', used_markers))
+        return AssumptionTree(system, conclusion, marker=new_marker(used_markers))
 
     for rule in system.rules:
         if rule.name != 'Ax' or (substitution := build_substitution(rule.conclusion, conclusion)) is None:
@@ -144,9 +144,9 @@ def derivation_to_proof_tree(derivation: AxiomaticDerivation, used_markers: froz
     conditional_subtree = derivation_to_proof_tree(derivation.truncate(mp_config.conditional_index), used_markers)
     markers = frozenset(ass.marker for ass in conditional_subtree.iter_open_assumptions())
     antecedent_subtree = derivation_to_proof_tree(derivation.truncate(mp_config.antecedent_index), used_markers | markers)
-    substitution = UniformSubstitution({
-        FormulaPlaceholder('φ'): antecedent_subtree.conclusion,
-        FormulaPlaceholder('ψ'): conclusion
+    substitution = Substitution({
+        parse_placeholder('φ'): antecedent_subtree.conclusion,
+        parse_placeholder('ψ'): conclusion
     })
 
     return RuleApplicationTree(

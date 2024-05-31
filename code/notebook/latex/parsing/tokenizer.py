@@ -3,6 +3,7 @@ from collections.abc import Iterable
 from ...parsing.tokenizer import Tokenizer
 from ...parsing.whitespace import Whitespace
 from ...support.iteration import string_accumulator
+from ...support.unicode import Capitalization, is_latin_string
 from .tokens import EscapedWordToken, LaTeXToken, MiscToken, WordToken
 
 
@@ -15,7 +16,7 @@ class LaTeXTokenizer(Tokenizer[LaTeXToken]):
 
     @string_accumulator()
     def read_latin_string(self) -> Iterable[str]:
-        while not self.is_at_end() and ('a' <= self.peek() <= 'z' or 'A' <= self.peek() <= 'Z'):
+        while not self.is_at_end() and is_latin_string(self.peek(), capitalization=Capitalization.mixed):
             yield self.peek()
             self.advance()
 
@@ -35,7 +36,7 @@ class LaTeXTokenizer(Tokenizer[LaTeXToken]):
                 self.advance()
                 return token
 
-            if 'a' <= self.peek() <= 'z' or 'A' <= self.peek() <= 'Z':
+            if is_latin_string(self.peek(), capitalization=Capitalization.mixed):
                 return EscapedWordToken(self.read_latin_string())
 
             raise self.error('Unrecognized escape character', i_first_token=start)

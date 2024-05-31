@@ -3,6 +3,7 @@ from ....parsing.mixins.whitespace import WhitespaceParserMixin
 from ....parsing.parser import Parser
 from ...fol.alphabet import BinaryConnective, PropConstant, Quantifier, UnaryConnective
 from ...fol.terms import Variable
+from ..markers import Marker
 from ..rules import Premise, Rule
 from ..schemas import (
     ConnectiveFormulaSchema,
@@ -13,21 +14,27 @@ from ..schemas import (
     QuantifierFormulaSchema,
 )
 from .tokenizer import tokenize_nd_string
-from .tokens import MiscToken, RuleToken, SuperscriptToken
+from .tokens import CapitalLatinString, MiscToken, RuleToken, SuperscriptToken
 
 
 class NaturalDeductionParser(WhitespaceParserMixin[RuleToken], Parser[RuleToken]):
     def parse_variable(self) -> Variable:
         head = self.peek()
-        assert isinstance(head, GreekIdentifier)
+        assert isinstance(head, LatinIdentifier)
         self.advance()
-        return Variable(head.value)
+        return Variable(head)
 
-    def parse_atomic_schema(self) -> FormulaPlaceholder:
+    def parse_marker(self) -> Marker:
+        head = self.peek()
+        assert isinstance(head, LatinIdentifier)
+        self.advance()
+        return Marker(head)
+
+    def parse_placeholder(self) -> FormulaPlaceholder:
         head = self.peek()
         assert isinstance(head, GreekIdentifier)
         self.advance()
-        return FormulaPlaceholder(head.value)
+        return FormulaPlaceholder(head)
 
     def parse_constant_schema(self) -> ConstantFormulaSchema:
         head = self.peek()
@@ -103,7 +110,7 @@ class NaturalDeductionParser(WhitespaceParserMixin[RuleToken], Parser[RuleToken]
                 return self.parse_negation_schema()
 
             case GreekIdentifier():
-                return self.parse_atomic_schema()
+                return self.parse_placeholder()
 
             case _:
                 raise self.error('Unexpected token')
@@ -136,8 +143,8 @@ class NaturalDeductionParser(WhitespaceParserMixin[RuleToken], Parser[RuleToken]
 
         name: str = ''
 
-        while isinstance(head := self.peek(), LatinIdentifier | PropConstant | UnaryConnective | BinaryConnective | Quantifier | SuperscriptToken):
-            name += head.value
+        while isinstance(head := self.peek(), CapitalLatinString | PropConstant | UnaryConnective | BinaryConnective | Quantifier | SuperscriptToken):
+            name += str(head)
             self.advance()
 
         if name == '':
@@ -174,11 +181,25 @@ class NaturalDeductionParser(WhitespaceParserMixin[RuleToken], Parser[RuleToken]
         return Rule(name, premises, conclusion.main)
 
 
+def parse_placeholder(string: str) -> FormulaPlaceholder:
+    tokens = tokenize_nd_string(string)
+
+    with NaturalDeductionParser(tokens) as parser:
+        return parser.parse_placeholder()
+
+
 def parse_schema(string: str) -> FormulaSchema:
     tokens = tokenize_nd_string(string)
 
     with NaturalDeductionParser(tokens) as parser:
         return parser.parse_schema()
+
+
+def parse_marker(string: str) -> Marker:
+    tokens = tokenize_nd_string(string)
+
+    with NaturalDeductionParser(tokens) as parser:
+        return parser.parse_marker()
 
 
 def parse_rule(string: str) -> Rule:

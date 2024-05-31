@@ -1,42 +1,87 @@
 \subsection{Propositional normal forms}\label{subsec:propositional_normal_forms}
 
-\paragraph{Uniform substitution}\hfill
-
 We sometimes want to substitute a propositional variable with another variable or even with a formula. This is akin to applying a \hyperref[def:boolean_function]{Boolean function} like \( x \synvee y \) to different variables (e.g. to obtain \( x \synvee x \)) or even concrete values (e.g. \( F \synvee T \)), except that it is done on a purely syntactic level without involving any semantics involved.
 
-\begin{definition}\label{def:uniform_propositional_substitution}\mcite[def. 3.1.3]{CitkinMuravitsky2021}
-  A \term{uniform substitution} is a map \( \sigma: \op*{Form} \to \op*{Form} \) such that
-  \begin{align*}
-    \sigma(\synneg \varphi) = \synneg \sigma(\varphi) &&\T{and}&& \sigma(\varphi \syncirc \psi) = \sigma(\varphi) \syncirc \sigma(\psi).
-  \end{align*}
+\paragraph{Simultaneous substitution}\hfill
 
-  These conditions make it clear how to extend a substitution only defined for variables.
+\begin{definition}\label{def:propositional_substitution}\mimprovised
+  Consider a map \( \sigma: \op*{Prop} \to \op*{Form} \), which allows us to replace propositional variables with arbitrary propositional formulas. In the case where only finitely many variables are not \hyperref[def:fixed_point]{fixed points}, we call such a map a \term[ru=одновременная замена (\cite[23]{Герасимов2011})]{simultaneous substitution} or simply \term{substitution}.
+
+  Given a substitution \( \sigma \), we define via \hyperref[rem:straightforward_traversal]{straightforward traversal} the following operation on arbitrary formulas:
+  \begin{equation*}
+    \varphi[\sigma] \coloneqq \begin{cases}
+      \varphi,                              &\varphi \in \set{ \syntop, \synbot }, \\
+      \sigma(\varphi),                      &\varphi \in \op*{Prop}, \\
+      \neg \psi[\sigma],                    &\varphi = \neg \psi, \\
+      \psi[\sigma] \syncirc \theta[\sigma], &\varphi = \psi \syncirc \theta, {\syncirc} \in \op*{Conn}. \\
+    \end{cases}
+  \end{equation*}
 \end{definition}
+\begin{comments}
+  \item Our definition is based on \incite[def. 3.1.3]{CitkinMuravitsky2021}, with three notable differences:
+  \begin{itemize}
+    \item The authors define substitutions in the general setting of logical matrices, while we prefer to avoid them and instead specialize the definition to propositional logic.
 
-\begin{remark}\label{rem:uniform_substitution_notation}
-  For \hyperref[def:uniform_propositional_substitution]{uniform substitution}, instead of writing \( \sigma(\varphi) \), we may write \( \varphi[\sigma] \) or, in case only finitely many variables are not \hyperref[def:fixed_point]{fixed points},
+    \item The authors define substitutions to be maps from formulas to formulas satisfying additional recursive conditions, while we define substitutions to be maps from variables to formulas.
+
+    This allows us to stay consistent with \fullref{def:propositional_valuation}, where we make a distinction between interpretations and valuations
+
+    \item The requirement of only finitely many variables is inspired by \incite[222]{Mimram2020}.
+  \end{itemize}
+
+  \item We focus on simultaneous substitutions directly instead of defining substituting a single variable. The latter is often done similarly to \fullref{def:literal_propositional_substitution}. See \fullref{rem:simulating_simultaneous_substitution} for an alternative approach.
+\end{comments}
+
+\begin{remark}\label{rem:substitution_notation}
+  Suppose that the substitution \( \sigma \) replaces the variables \( p_1, \cdots, p_n \) with the formulas \( \omega_1, \ldots, \omega_n \), and fixes all other variables. This allows us to use the notation
   \begin{equation*}
-    \varphi[p_1 \mapsto \sigma(p_1), \cdots, p_n \mapsto \sigma(p_n)]
+    \varphi[p_1 \mapsto \omega_1, \ldots, p_n \mapsto \omega_n]
+  \end{equation*}
+  without referring to \( \sigma \) itself.
+
+  A popular alternative that we find less straightforward is
+  \begin{equation*}
+    \varphi[\omega_1 / p_1, \cdots, \omega_n / p_n].
   \end{equation*}
 
-  When the variables \( p_1, \ldots, p_n \) are clear from the context, we write
-  \begin{equation*}
-    \varphi[\omega_1, \cdots, \omega_n]
-  \end{equation*}
-  as a shorthand for
-  \begin{equation*}
-    \varphi[p_1 \to \omega_1, \cdots, p_n \to \omega_n].
-  \end{equation*}
+  It is used, among others, by \incite[1A7]{Hindley1997}, \incite[55]{Mimram2020}, \incite[23]{Герасимов2011} and \incite[161]{ШеньВерещагин2017Языки}.
 
-  This also applies to the different kinds of first-order substitution defined in \fullref{def:first_order_substitution}, where the notation also allows us to use predicate formulas discussed in \fullref{rem:uniform_substitution_notation}.
+  Other authors use more esoteric notations --- \incite[47]{КолмогоровДрагалин2006} use
+  \begin{equation*}
+    \varphi(p_1, \ldots, p_n \Vert \omega_1, \cdots, \omega_n),
+  \end{equation*}
+  while \incite[131]{Эдельман1975} uses
+  \begin{equation*}
+    S_{b_{p_1, \ldots, p_n}}(\varphi; \omega_1, \ldots, \omega_n).
+  \end{equation*}
 \end{remark}
 
-\paragraph{Literal substitution}\hfill
+\begin{remark}\label{rem:simulating_simultaneous_substitution}
+  Substitution as defined in \fullref{def:propositional_substitution} allows us to replace more than one variable at a time:
+  \begin{equation*}
+    (pqr)[p \mapsto r, r \mapsto p]
+    =
+    rqp.
+  \end{equation*}
 
-We will, however, find useful the ability to replace an entire subformula with another formula. We will use this, for example, to justify the substitutions in \fullref{alg:cnf_and_dnf}.
+  We can also simulate this via single-variable substitution with the help of temporary variables:
+  \begin{equation*}
+    (pqr)[p \mapsto t][r \mapsto p][t \mapsto r]
+    =
+    (tqr)[r \mapsto p][t \mapsto r]
+    =
+    (tqp)[t \mapsto r]
+    =
+    (rqp).
+  \end{equation*}
+\end{remark}
+
+\paragraph{Subformula substitution}\hfill
+
+For propositional logic, We will also find useful the ability to replace an entire subformula with another formula. We will use this, for example, to justify the substitutions in \fullref{alg:cnf_and_dnf}.
 
 \begin{definition}\label{def:literal_propositional_substitution}\mcite[def. 1.3.13]{Hinman2005}
-  We define the \term[ru=подстановка (\cite[66]{КолмогоровДрагалин2006}), en=substitution]{literal substitution} of the propositional formula \( \chi \) with \( \omega \) in \( \varphi \) as follows:
+  We define the \term[en=substitution]{subformula substitution} of the propositional formula \( \chi \) with \( \omega \) in \( \varphi \) as follows:
   \begin{equation}\label{eq:def:propositional_substitution/single}
     \varphi[\chi \mapsto \omega] \coloneqq \begin{cases}
       \omega,                                                         &\varphi = \chi \\
@@ -45,9 +90,11 @@ We will, however, find useful the ability to replace an entire subformula with a
       \psi[\chi \mapsto \omega] \syncirc \theta[\chi \mapsto \omega], &\varphi \neq \chi \T{and} \varphi = \psi \syncirc \theta, \circ \in \op*{Conn}.
     \end{cases}
   \end{equation}
-
-  Note that it is not necessary for \( \chi \) to be a subformula of \( \varphi \) --- the substitution simply does nothing otherwise.
 \end{definition}
+\begin{comments}
+  \item Note that it is not necessary for \( \chi \) to be a subformula of \( \varphi \) --- the substitution simply does nothing otherwise.
+  \item It is safe to reuse the notation for simultaneous substitutions because in the case where \( \chi \) is a variable, the two notions coincide.
+\end{comments}
 
 \begin{proposition}\label{thm:propositional_substitution_equivalence}
   If \( \chi \gleichstark \omega \), then
@@ -56,7 +103,7 @@ We will, however, find useful the ability to replace an entire subformula with a
   \end{equation*}
 \end{proposition}
 \begin{proof}
-  Suppose that \( \chi \gleichstark \omega \). We use \fullref{thm:induction_on_syntax_trees} on \( \varphi \) to show that
+  Suppose that \( \chi \gleichstark \omega \). We will use \fullref{thm:induction_on_syntax_trees} on \( \varphi \) to show that
   \begin{equation}\label{eq:thm:propositional_substitution_equivalence/proof}
     \varphi[\chi \mapsto \omega] \gleichstark \varphi.
   \end{equation}
@@ -439,7 +486,7 @@ We will, however, find useful the ability to replace an entire subformula with a
 \begin{definition}\label{def:perfect_cnf_and_dnf}\mimprovised
   We say that the \hyperref[def:cnf_and_dnf]{CNF} (resp. \hyperref[def:cnf_and_dnf]{DNF}) is \term[ru=совершенная (\cite[def. 6.3; def. 6.4]{Эдельман1975}), en=full (\cite[38]{Rosen1999}) / strict (\cite[def. 1.3.10]{Hinman2005})]{perfect} if the following hold:
   \begin{thmenum}
-    \thmitem{def:perfect_cnf_and_dnf/literals} Every elementary disjunction (resp. conjunction) contains exactly one literal for each variable encountered in the formula, and these variables are ordered as per \fullref{rem:grammar_rules_for_variables}.
+    \thmitem{def:perfect_cnf_and_dnf/literals} Every elementary disjunction (resp. conjunction) contains exactly one literal for each variable encountered in the formula, and these variables are ordered as per \fullref{def:variable_identifier}.
 
     More explicitly, if the variables are \( p_1, \ldots, p_n \), every elementary disjunction has the form
     \begin{equation*}

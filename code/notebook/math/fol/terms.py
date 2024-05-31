@@ -1,11 +1,13 @@
 from typing import NamedTuple
 
+from ...parsing.identifiers import LatinIdentifier
+
 
 class Variable(NamedTuple):
-    name: str
+    identifier: LatinIdentifier
 
     def __str__(self) -> str:
-        return self.name
+        return str(self.identifier)
 
 
 class FunctionTerm(NamedTuple):

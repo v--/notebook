@@ -58,7 +58,7 @@ class FormulaSubstitutionVisitor(FormulaTransformationVisitor):
                 self.visit(formula.sub)
             )
 
-        new_var = new_variable(formula.variable, free_from | free_to | get_free_variables(formula.sub))
+        new_var = new_variable(free_from | free_to | get_free_variables(formula.sub))
         sub_visitor = FormulaSubstitutionVisitor(formula.variable, new_var)
 
         return QuantifierFormula(

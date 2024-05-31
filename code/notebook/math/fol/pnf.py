@@ -134,7 +134,7 @@ class MoveQuantifiersVisitor(FormulaTransformationVisitor):
             raise PNFError(f'Unexpected connective {formula.conn}')
 
         if isinstance(formula.a, QuantifierFormula):
-            new_var = new_variable(formula.a.variable, get_free_variables(formula.a.sub) | get_free_variables(formula.b))
+            new_var = new_variable(get_free_variables(formula.a.sub) | get_free_variables(formula.b))
 
             return QuantifierFormula(
                 formula.a.quantifier,
@@ -149,7 +149,7 @@ class MoveQuantifiersVisitor(FormulaTransformationVisitor):
             )
 
         if isinstance(formula.b, QuantifierFormula):
-            new_var = new_variable(formula.b.variable, get_free_variables(formula.a) | get_free_variables(formula.b.sub))
+            new_var = new_variable(get_free_variables(formula.a) | get_free_variables(formula.b.sub))
 
             return QuantifierFormula(
                 formula.b.quantifier,

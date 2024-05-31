@@ -2,15 +2,16 @@ from textwrap import dedent
 
 import pytest
 
+from ....parsing.identifiers import LatinIdentifier
 from ....parsing.parser import ParsingError
 from ..terms import Variable
 from .parser import parse_term
 
 
 def test_parsing_valid_variables() -> None:
-    assert parse_term('x') == Variable('x')
-    assert parse_term('y') == Variable('y')
-    assert parse_term('z₁₂') == Variable('z₁₂')
+    assert parse_term('x') == Variable(LatinIdentifier('x'))
+    assert parse_term('y') == Variable(LatinIdentifier('y'))
+    assert parse_term('z₁₂') == Variable(LatinIdentifier('z', index=12))
 
 
 def test_parsing_long_variable_names() -> None:

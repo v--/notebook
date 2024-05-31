@@ -23,15 +23,15 @@ class GrammarRule:
     def __hash__(self) -> int:
         return hash(str(self))
 
-    def get_terminals(self) -> set[Terminal]:
-        return {
+    def get_terminals(self) -> frozenset[Terminal]:
+        return frozenset(
             sym for sym in itertools.chain(self.src, self.dest) if isinstance(sym, Terminal)
-        }
+        )
 
-    def get_non_terminals(self) -> set[NonTerminal]:
-        return {
+    def get_non_terminals(self) -> frozenset[NonTerminal]:
+        return frozenset(
             sym for sym in itertools.chain(self.src, self.dest) if isinstance(sym, NonTerminal)
-        }
+        )
 
 
 @dataclass

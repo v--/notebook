@@ -12,8 +12,6 @@ I tried putting citations on as many things as possible. The citations themselve
 
 Last but not least, some auxiliary programs are provided in the [code/](https://github.com/v--/notebook/tree/master/code) subdirectory within the monograph's source.
 
-See the remarks in the introduction of the sections on mathematical logic and set theory for clarification regarding seemingly arbitrary conventions.
-
 ## License
 
 This is a [public domain](https://en.wikipedia.org/wiki/Public_domain) project: it uses [CC0](https://spdx.org/licenses/CC0-1.0.html) for the text itself and the [Unlicense](https://spdx.org/licenses/Unlicense.html) for the Python code.

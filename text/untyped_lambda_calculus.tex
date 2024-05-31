@@ -5,11 +5,12 @@
 \begin{definition}\label{def:untyped_lambda_term}\mimprovised
   We introduce \enquote{\( \synlambda \)-terms}, \enquote{\( \synlambda \)-applications} and \enquote{\( \synlambda \)-abstractions} via the following \hyperref[def:formal_grammar/schema]{grammar schema}:
   \begin{bnf*}
-    \bnfprod{variable}    {\bnfpn{Short Latin identifier}} \\
+    \bnfprod{variable}    {\bnfpn{Small Latin identifier (no dots)}}, \\
     \bnfprod{application} {\bnftsq{\( ( \)} \bnfsp \bnfpn{term} \bnfsp \bnfpn{term} \bnfsp \bnftsq{\( ) \)}} \\
-    \bnfprod{abstraction} {\bnftsq{\( ( \)} \bnfsp \bnftsq{\( \synlambda \)} \bnfsp \bnfpn{variable} \bnfsp \bnftsq{.} \bnfsp \bnfpn{term} \bnfsp \bnftsq{\( ) \)}} \\
-    \bnfprod{term}        {\bnfpn{variable} \bnfor \bnfpn{application} \bnfor \bnfpn{abstraction}}
+    \bnfprod{abstraction} {\bnftsq{\( ( \)} \bnfsp \bnftsq{\( \synlambda \)} \bnfsp \bnfpn{variable} \bnfsp \bnftsq{.} \bnfsp \bnfpn{term} \bnfsp \bnftsq{\( ) \)}}, \\
+    \bnfprod{term}        {\bnfpn{variable} \bnfor \bnfpn{application} \bnfor \bnfpn{abstraction}},
   \end{bnf*}
+  where we have used variable identifier rules from \fullref{def:variable_identifier}, but replacing the dot convention with \fullref{rem:lambda_object_language}.
 
   \begin{thmenum}
     \thmitem{def:untyped_lambda_term/var} We will denote by \( \op*{Var} \) the set of all \( \synlambda \)-variables.
@@ -18,8 +19,6 @@
 \end{definition}
 \begin{comments}
   \item These notions are based on \cite[352]{Church1932}. It is not clear why has Church used \( \synlambda \) as part of the grammar.
-
-  \item We use the nonterminal \( \bnfpn{Short Latin identifier} \) rather than \( \bnfpn{Latin identifier} \) because otherwise it would be unclear how to parse applications --- in the term \( (xyz) \), are the variables \( xy \) and \( z \) or \( x \) and \( yz \)?. An alternative would be to introduce a separator for applications, but that would only make our notation more cumbersome.
 
   \item We need all the parentheses so that we can prove unambiguity in \fullref{thm:lambda_terms_are_unambiguous}. Informally, we will use the conventions from \fullref{rem:propositional_formula_parentheses} regarding parentheses.
 \end{comments}
@@ -136,9 +135,9 @@
 \end{definition}
 
 \begin{definition}\label{def:lambda_variable_occurrence}\mimprovised
-  An \term[ru=вхождение (\cite[64]{Герасимов2011})]{occurrence} of a variable \( u \) in a \( \synlambda \)-term \( M \) is a variable node with value \( u \) in the \hyperref[def:untyped_lambda_term_ast]{abstract syntax tree} of \( M \).
+  Similarly to \hyperref[def:propositional_variable_occurrence]{propositional variable occurrences}, we define aj \term{occurrence} of a variable \( u \) in a \( \synlambda \)-term \( M \) to be a variable node with value \( u \) in the \hyperref[def:untyped_lambda_term_ast]{abstract syntax tree} of \( M \).
 
-  We say that the occurrence is \term[ru=свободное (вхождение) (\cite[64]{Герасимов2011})]{free} in \( M \) if the root of the AST can be reached without passing through a corresponding abstractor. If a variable is not free, there exists an abstractor that binds it, and we say that the occurrence is \term[ru=связанное (вхождение) (\cite[64]{Герасимов2011})]{bound} in \( M \).
+  Unlike in propositional logic, variable occurrences in \( \synlambda \)-terms can be free and bound. We say that the occurrence is \term[ru=свободное (вхождение) (\cite[64]{Герасимов2011})]{free} in \( M \) if the root of the AST can be reached without passing through a corresponding abstractor. If a variable is not free, there exists an abstractor that binds it, and we say that the occurrence is \term[ru=связанное (вхождение) (\cite[64]{Герасимов2011})]{bound} in \( M \).
 \end{definition}
 
 \begin{definition}\label{def:lambda_variable_freeness}\mimprovised
@@ -194,270 +193,281 @@
   If a \( \synlambda \)-term has no \hyperref[def:lambda_variable_freeness]{free variables}, we say that it is \term{closed}. Closed terms are also called \term[ru=комбинаторы (\cite[188]{Герасимов2011})]{combinators}.
 \end{definition}
 
-\paragraph{Uniform substitution}
+\paragraph{Simultaneous substitution}
 
-\begin{definition}\label{def:uniform_lambda_substitution}\mimprovised
-  A \term{uniform substitution} of \( \synlambda \)-terms is a pair \( (\sigma, \sharp) \), where
-  \begin{thmenum}[series=def:uniform_lambda_substitution]
-    \thmitem{def:uniform_lambda_substitution/sigma} \( \sigma: \op*{Term} \to \op*{Term} \) substitutes terms with other terms.
-    \thmitem{def:uniform_lambda_substitution/sharp} \( \sharp: \set{ V \subseteq \op*{Var} \given V \T{is finite} } \to \op*{Var} \) provides us with a new variable identifier not present in some given finite set.
+\begin{definition}\label{def:lambda_substitution}\mimprovised
+  A \term{simultaneous substitution} of \( \synlambda \)-terms is a pair \( (\sigma, \sharp) \), where
+  \begin{thmenum}[series=def:lambda_substitution]
+    \thmitem{def:lambda_substitution/sigma} \( \sigma: \op*{Var} \to \op*{Term} \) is a function specifying how variables need to be replaced with terms. We allow only finitely many variables to not be fixed by \( \sigma \).
+    \thmitem{def:lambda_substitution/sharp} \( \sharp: F \to \op*{Var} \), where \( F \) is the family of all variable contexts (i.e. finite subsets of \( \op*{Var} \)), is a function providing us with a new variable identifier not present in some given context.
 
-    Considering \fullref{rem:grammar_rules_for_variables}, unless otherwise noted, will suppose that this function simply provides the smallest variable identifier with respect to the \hyperref[def:lexicographic_order]{lexicographic order}.
+    As discussed in \fullref{def:variable_identifier}, unless otherwise noted, will suppose that this function simply provides the smallest variable identifier with respect to the \hyperref[def:lexicographic_order]{reverse lexicographic order}.
   \end{thmenum}
 
-  We will use the notation conventions from \fullref{rem:uniform_substitution_notation}. In particular, this notation makes it convenient to specify \( \sigma \) by only how it acts on finitely many variables.
+  In order to be able to define substitutions for arbitrary terms, we will need the following auxiliary definition:
+  \begin{equation}\label{eq:def:lambda_substitution/free}
+    \op*{Free}_\sigma(M) \coloneqq \bigcup_{\mathclap{u \in \op*{Free}(M)}} \op*{Free}(\sigma(u)).
+  \end{equation}
 
-  In order to be able to state the restrictions we impose on \( \sigma \), we will need the following definitions:
-  \begin{align*}
-    \op*{Var}_\sigma &\coloneqq \set{ u \in \op*{Var} \given u \neq u[\sigma] }, \\
-    \op*{Free}_\sigma &\coloneqq \bigcup_{u \in \op*{Var}_\sigma} \op*{Free}(u[\sigma]).
-  \end{align*}
-
-  The restrictions go as follows:
+  For an arbitrary \( \synlambda \)-term \( M \), we define the following operation (for which will use the notational convention from \fullref{rem:substitution_notation}):
   \begin{subequations}
-    \begin{thmenum}[resume=def:uniform_lambda_substitution]
-      \thmitem{def:uniform_lambda_substitution/finite} Only finitely many variables must get substituted, that is, the set \( \op*{Var}_\sigma \) must be finite.
-
-      \thmitem{def:uniform_lambda_substitution/application} If \( M = NK \), then
-      \begin{equation}\label{eq:def:uniform_lambda_substitution/application}
-        M[\sigma] = N[\sigma] \thinspace K[\sigma]
-      \end{equation}
-
-      \thmitem{def:uniform_lambda_substitution/abstraction} If \( M = \qabs u N \), we have several possibilities:
-      \begin{thmenum}
-        \thmitem{def:uniform_lambda_substitution/abstraction/noop} If \( u \in \op*{Var}_\sigma \) or \( \op*{Var}_\sigma \cap \op*{Free}(N) = \varnothing \), then
-        \begin{equation}\label{eq:def:uniform_lambda_substitution/abstraction/noop}
-          M[\sigma] = \qabs u N = M
-        \end{equation}
-
-        When only a single variable \( w \) gets substituted, the condition reduces to \enquote{\( u = w \) or \( w \not\in \op*{Free}(N) \)}.
-
-        \thmitem{def:uniform_lambda_substitution/abstraction/direct} If \( u \not\in \op*{Var}_\sigma \) and \( \op*{Var}_\sigma \cap \op*{Free}(N) \neq \varnothing \) and \( u \not\in \op*{Free}_\sigma \), then
-        \begin{equation}\label{eq:def:uniform_lambda_substitution/abstraction/direct}
-          M[\sigma] = \qabs u N[\sigma]
-        \end{equation}
-
-        When only a single variable \( w \) gets substituted, the condition reduces to \enquote{\( u \neq w \) and \( w \in \op*{Free}(N) \) and \( w \not\in \op*{Free}(u[\sigma]) \)}.
-
-        \thmitem{def:uniform_lambda_substitution/abstraction/renaming} If \( u \not\in \op*{Var}_\sigma \) and \( \op*{Var}_\sigma \cap \op*{Free}(N) \neq \varnothing \) and \( u \in \op*{Free}_\sigma \), then
-        \begin{equation}\label{eq:def:uniform_lambda_substitution/abstraction/renaming}
-          M[\sigma] = \qabs v N[u \mapsto v][\sigma],
-        \end{equation}
-        where \( v = \sharp(\op*{Free}_\sigma \cup \op*{Free}(N)) \).
-
-        When only a single variable \( w \) gets substituted, the condition reduces to \enquote{\( u \neq w \) and \( w \in \op*{Free}(N) \) and \( w \in \op*{Free}(u[\sigma]) \)}.
-
-        We will call the general process of substituting a free variable with another one \term[ru=переименование переменной (\cite[71]{Герасимов2011})]{variable renaming}.
-      \end{thmenum}
-    \end{thmenum}
+    \begin{empheq}[left={M[\sigma]} \coloneqq \empheqlbrace]{align}
+      &\sigma(M),                      &&M \in \op*{Var},                                      \label{eq:def:lambda_substitution/var} \\
+      &N[\sigma] \thinspace K[\sigma], &&M = NK,                                               \label{eq:def:lambda_substitution/application} \\
+      &\qabs u N[\sigma, u \mapsto u], &&M = \qabs u N \T{and} u \not\in \op*{Free}_\sigma(M), \label{eq:def:lambda_substitution/abstraction/direct} \\
+      &\qabs n N[\sigma, u \mapsto n], &&M = \qabs u N \T{and} u \in \op*{Free}_\sigma(M),     \label{eq:def:lambda_substitution/abstraction/renaming}
+    \end{empheq}
+    where \( n = \sharp(\op*{Free}_\sigma(N) \cup \op*{Free}(N)) \).
   \end{subequations}
 \end{definition}
 \begin{comments}
-  \item The definition is based on \cite[def. 1A7]{Hindley1997}, but is presented in a more abstract manner.
-
-  \item Checking whether \( u \) belongs to \( \op*{Var}_\sigma \) in \fullref{def:uniform_lambda_substitution/abstraction} is not strictly necessary; see \fullref{ex:def:lambda_substitution/self} for a discussion.
-
-  \item The substitution rules for abstractions are adjusted so that \fullref{thm:lambda_substitution_free_variables} holds and the pitfalls of \fullref{ex:def:uniform_lambda_substitution} are avoided.
+  \item In \eqref{eq:def:lambda_substitution/abstraction/direct} we modify \( \sigma \) to fix \( u \), while in \eqref{eq:def:lambda_substitution/abstraction/renaming} we modify it to send \( u \) to \( n \). We will refer to the latter rule as \enquote{substitution with renaming}.
+  \item This definition is loosely based on \cite[def. 1A7]{Hindley1997}, but is modified to allow substituting multiple variables. This results in less rules since \eqref{eq:def:lambda_substitution/abstraction/direct} subsumes three of the four cases. Furthermore, our substitution rules also allow proving \fullref{thm:lambda_substitution_combinators}.
 \end{comments}
 
-\begin{proposition}\label{thm:lambda_substitution_free_variables}
-  For any \( \synlambda \)-terms \( M \) and \( L \) and any variable \( w \), we have
-  \begin{subequations}
-    \begin{equation}\label{eq:thm:lambda_substitution_free_variables/free}
-      \op*{Free}\parens[\Big]{ M[w \mapsto L] } = \parens[\Big]{ \op*{Free}(M) \setminus \set{ w } } \cup \op*{Free}(L)
-    \end{equation}
-    if \( w \) is free in \( M \) and
-    \begin{equation}\label{eq:thm:lambda_substitution_free_variables/not_free}
-      M[w \mapsto L] = M
-    \end{equation}
-    otherwise.
-  \end{subequations}
+\begin{remark}\label{rem:renaming_substitution_rules}
+  The substitution rules for abstractions from \fullref{def:lambda_substitution} are adjusted so that \fullref{thm:lambda_substitution_free_variables} and \fullref{thm:lambda_substitution_combinators} hold.
+
+  The bare minimum we need is to avoid \enquote{variable capturing} as discussed in \fullref{ex:def:lambda_substitution/capture}. As we can see in the proof of \fullref{thm:lambda_substitution_free_variables}, the renaming rule \eqref{eq:def:lambda_substitution/abstraction/renaming} is by itself sufficient for this. Thus, we may choose to always rename the abstractor variable.
+
+  In practice, however, we would prefer to not rename bound variables, especially in \hyperref[def:lambda_combinator]{combinators}; the rule \eqref{eq:def:lambda_substitution/abstraction/direct} allow us to prove \fullref{thm:lambda_substitution_combinators}.
+
+  See \fullref{ex:def:lambda_substitution/ignoring} for concrete examples of ignoring the latter rule.
+\end{remark}
+
+\begin{proposition}\label{thm:lambda_substitution_combinators}
+  For any \hyperref[def:lambda_combinator]{combinator} \( M \) and any substitution \( \sigma \), we have \( M[\sigma] = M \).
 \end{proposition}
 \begin{proof}
-  We will use \fullref{thm:induction_on_syntax_trees} on \( M \):
+  We will use \fullref{thm:induction_on_syntax_trees} on \( M \) simultaneously for all possible substitutions:
   \begin{itemize}
-    \item If \( M \) is a variable, we have the following possibilities:
+    \item \( M \) cannot be a variable because it is a combinator.
+    \item Suppose that \( M = NK \), where the inductive hypothesis holds for \( N \) and \( K \). The subterms \( N \) and \( K \) are necessarily combinators, hence
+    \begin{equation*}
+      M[\sigma]
+      \reloset {\eqref{eq:def:lambda_substitution/application}} =
+      N[\sigma] \thinspace K[\sigma]
+      \reloset {\T{ind.}} =
+      N K
+      =
+      M.
+    \end{equation*}
+
+    \item Suppose that \( M = \qabs u N \), where the inductive hypothesis holds for \( N \).
+
+    Since \( M \) has no free variables, \( \op*{Free}_\sigma(M) \), and we must use \eqref{eq:def:lambda_substitution/abstraction/direct}:
+    \begin{equation*}
+      M[\sigma] = \qabs u N[\sigma, u \mapsto u] = \qabs u N = M.
+    \end{equation*}
+  \end{itemize}
+\end{proof}
+
+\begin{proposition}\label{thm:lambda_substitution_free_variables}
+  For any \( \synlambda \)-term \( M \) and any substitution \( \sigma \), we have
+  \begin{equation}\label{eq:thm:lambda_substitution_free_variables}
+    \op*{Free}( M[\sigma] ) = \overbrace{\bigcup_{\mathclap{u \in \op*{Free}(M)}} \op*{Free}(\sigma(u))}^{\op*{Free}_\sigma(M)}.
+  \end{equation}
+
+  This also holds if we always use the renaming rule \eqref{eq:def:lambda_substitution/abstraction/renaming} and ignore the other abstraction substitution rules. It also holds if we ignore only \eqref{eq:def:lambda_substitution/abstraction/noop}.
+\end{proposition}
+\begin{proof}
+  We will use \fullref{thm:induction_on_syntax_trees} on \( M \) simultaneously for all possible substitutions:
+  \begin{itemize}
+    \item If \( M \) is a variable, say \( M = v \), then \( \op*{Free}(M) = \set{ v } \) and thus
+    \begin{equation*}
+      \op*{Free}(M[\sigma])
+      \reloset {\eqref{eq:def:lambda_substitution/var}} =
+      \op*{Free}(\sigma(v)).
+    \end{equation*}
+
+    Hence, \eqref{eq:thm:lambda_substitution_free_variables} is satisfied.
+
+    \item Suppose that \( M = NK \), where the inductive hypothesis holds for \( N \) and \( K \).
+
+    We have
+    \begin{equation*}
+      \op*{Free}(M[\sigma])
+      \reloset {\eqref{eq:def:lambda_substitution/application}} =
+      \op*{Free}(N[\sigma] \thinspace K[\sigma])
+      =
+      \op*{Free}(N[\sigma]) \cup \op*{Free}(K[\sigma]).
+    \end{equation*}
+
+    Since, by definition, \( \op*{Free}(M) = \op*{Free}(N) \cup \op*{Free}(K) \), from the inductive hypothesis it follows that \eqref{eq:thm:lambda_substitution_free_variables} holds.
+
+    \item Suppose that \( M = \qabs u N \) and that the inductive hypothesis holds for \( N \). We have the following possibilities:
     \begin{itemize}
-      \item If \( M = w \), then \( M[x \mapsto L] = L \) and hence
+      \item Suppose first that \( u \not\in \op*{Free}_\sigma(M) \). We must thus use \eqref{eq:def:lambda_substitution/abstraction/direct}.
+
+      Define the substitution
       \begin{equation*}
-        \op*{Free}\parens[\Big]{ M[w \mapsto L] }
-        =
-        \op*{Free}(L).
+        \rho(v) \coloneqq \begin{cases}
+          u,         &v = u, \\
+          \sigma(v), &\T{otherwise}
+        \end{cases}
       \end{equation*}
+      so that \( N[\sigma, u \mapsto u] = N[\rho] \). Then
+      \begin{align*}
+        \op*{Free}(M[\sigma])
+        &\reloset{\eqref{eq:def:lambda_substitution/abstraction/direct}} =
+        \op*{Free}(\qabs u N[\rho])
+        = \\ &=
+        \op*{Free}(N[\rho]) \setminus \set{ u }
+        \reloset{\T{ind.}} = \\ &=
+        \parens[\Big]{ \bigcup_{\mathclap{v \in \op*{Free}(N)}} \op*{Free}(\rho(v)) } \setminus \set{ u }
+        = \\ &=
+        \bigcup_{\mathclap{v \in \op*{Free}(N)}} \parens[\Big]{ \op*{Free}(\rho(v)) \setminus \set{ u } }
+        = \\ &=
+        \bigcup_{\mathclap{v \in \op*{Free}(N) \setminus \set{ u }}} \parens[\Big]{ \op*{Free}(\underbrace{\rho(v)}_{\sigma(v)}) \setminus \set{ u } } \cup \underbrace{\parens[\Big]{ \op*{Free}(\rho(u)) \setminus \set{ u } }}_\varnothing.
+        = \\ &=
+        \bigcup_{\mathclap{v \in \op*{Free}(N) \setminus \set{ u }}} \parens[\Big]{ \op*{Free}(\sigma(v)) },
+      \end{align*}
+      where at the last step we have used that, for \( v \in \op*{Free}(N) \), \( u \) is free in \( \sigma(v) \) only when \( v = u \).
 
-      Furthermore,
+      This demonstrates \eqref{eq:thm:lambda_substitution_free_variables}.
+
+      \item Otherwise, \( u \in \op*{Free}_\sigma(M) \), and we must use \eqref{eq:def:lambda_substitution/abstraction/renaming}. As discussed in \fullref{rem:renaming_substitution_rules}, the assumption itself is irrelevant for proving \eqref{eq:thm:lambda_substitution_free_variables}.
+
+      Let \( n \coloneqq \sharp(\op*{Free}_\sigma(N) \cup \op*{Free}(N)) \) and define the substitution
       \begin{equation*}
-        \parens[\Big]{ \underbrace{\op*{Free}(M)}_{\set{ w }} \setminus \set{ w } } \cup \op*{Free}(L)
-        =
-        \op*{Free}(L).
+        \rho(v) \coloneqq \begin{cases}
+          n,         &v = u, \\
+          \sigma(v), &\T{otherwise}
+        \end{cases}
       \end{equation*}
-
-      The two are equal, thus \eqref{eq:thm:lambda_substitution_free_variables/free} holds.
-
-      \item If \( M \neq w \), then \( M[w \mapsto L] = M \) and thus \eqref{eq:thm:lambda_substitution_free_variables/non_free} holds.
-    \end{itemize}
-
-    \item If \( M = NK \), where the inductive hypothesis holds for \( N \) and \( K \), then
-    \begin{align*}
-      \op*{Free}\parens[\Big]{ M[x \mapsto L] }
-      &\reloset {\eqref{eq:def:uniform_lambda_substitution/application}} =
-      \op*{Free}\parens[\Big]{ N[x \mapsto L] \thinspace K[x \mapsto L] }
-      = \\ &=
-      \op*{Free}\parens[\Big]{ N[x \mapsto L] } \cup \op*{Free}\parens[\Big]{ K[x \mapsto L] }.
-    \end{align*}
-
-    We have several possibilities:
-    \begin{itemize}
-      \item If \( w \) is free in both \( N \) and \( K \), then
-      \begin{balign*}
-        &\phantom{{}={}}
-        \op*{Free}\parens[\Big]{ N[x \mapsto L] } \cup \op*{Free}\parens[\Big]{ K[x \mapsto L] }
-        \reloset {\T{ind.}} = \\ &=
-        \parens[\bigg]{ \parens[\Big]{ \op*{Free}(N) \setminus \set{ w } } \cup \op*{Free}(L) }
-        \cup
-        \parens[\bigg]{ \parens[\Big]{ \op*{Free}(K) \setminus \set{ w } } \cup \op*{Free}(L) }
-        = \\ &=
-        \parens[\bigg]{ \parens[\Big]{ \op*{Free}(N) \cup \op*{Free}(K) } \setminus \set{ w } } \cup \op*{Free}(L)
-        = \\ &=
-        \parens[\Big]{ \op*{Free}(NK) \setminus \set{ w } } \cup \op*{Free}(L).
-      \end{balign*}
-
-      Then \eqref{eq:thm:lambda_substitution_free_variables/free} holds.
-
-      \item If \( w \) is free in \( N \) but not \( K \), then
-      \begin{balign*}
-        &\phantom{{}={}}
-        \op*{Free}\parens[\Big]{ N[x \mapsto L] } \cup \op*{Free}\parens[\Big]{ K[x \mapsto L] }
-        \reloset {\T{ind.}} = \\ &=
-        \parens[\bigg]{ \parens[\Big]{ \op*{Free}(N) \setminus \set{ w } } \cup \op*{Free}(L) } \cup \op*{Free}(K)
-        = \\ &=
-        \parens[\Big]{ \op*{Free}(N) \setminus \set{ w } } \cup \op*{Free}(L) \cup \op*{Free}(K)
-        = \\ &=
-        \parens[\Big]{ \op*{Free}(NK) \setminus \set{ w } } \cup \op*{Free}(L),
-      \end{balign*}
-      and again \eqref{eq:thm:lambda_substitution_free_variables/free} holds.
-
-      \item If \( w \) is free in \( K \) but not in \( N \), we obtain \eqref{eq:thm:lambda_substitution_free_variables/free} as in the preceding case.
-
-      \item If \( w \) is free in neither \( N \) nor \( K \), then
-      \begin{equation*}
-        \op*{Free}\parens[\Big]{ N[x \mapsto L] } \cup \op*{Free}\parens[\Big]{ K[x \mapsto L] }
-        \reloset {\T{ind.}} =
-        \op*{Free}(N) \cup \op*{Free}(K)
-        =
-        \op*{Free}(NK).
-      \end{equation*}
-
-      In this case, \eqref{eq:thm:lambda_substitution_free_variables/non_free} holds.
-    \end{itemize}
-
-    \item If \( M = \qabs u N \), where the inductive hypothesis holds for \( N \), we must again consider distinct cases.
-    \begin{itemize}
-      \item If \( u = w \), then \( M[x \mapsto L] \reloset {\eqref{eq:def:uniform_lambda_substitution/abstraction/noop}} = M \), and thus \eqref{eq:thm:lambda_substitution_free_variables/non_free} holds.
-
-      \item If \( u \neq w \) and \( w \) is not free in \( N \), then \( M[x \mapsto L] \reloset {\eqref{eq:def:uniform_lambda_substitution/abstraction/noop}} = M \), and again \eqref{eq:thm:lambda_substitution_free_variables/non_free} holds.
-
-      \item If \( u \neq w \), \( w \) is free in \( N \) and \( u \) is not free in \( L \), then
-      \begin{equation*}
-        M[x \mapsto L]
-        =
-        (\qabs u N)[x \mapsto L]
-        \reloset {\eqref{eq:def:uniform_lambda_substitution/abstraction/direct}} =
-        \qabs u N[x \mapsto L].
-      \end{equation*}
-
-      For the corresponding free variables, we have
-      \begin{balign*}
-        \op*{Free}\parens[\Big]{ M[x \mapsto L] }
+      so that \( N[\sigma, u \mapsto n] = N[\rho] \). Then
+      \begin{align*}
+        \op*{Free}(M[\sigma])
         &=
-        \op*{Free}\parens[\Big]{ \qabs u N[x \mapsto L] }
+        \op*{Free}(\qabs n N[u \mapsto n][\sigma])
         = \\ &=
-        \op*{Free}\parens[\Big]{ N[x \mapsto L] } \setminus \set{ u }
+        \op*{Free}(\qabs n N[\rho])
+        = \\ &=
+        \op*{Free}(N[\rho]) \setminus \set{ n }
         \reloset {\T{ind.}} = \\ &=
-        \parens[\bigg]{ \parens[\Big]{ \op*{Free}(N) \setminus \set{ w } } \cup \op*{Free}(L) } \setminus \set{ u }
+        \parens[\Big]{ \bigcup_{\mathclap{v \in \op*{Free}(N)}} \op*{Free}(\rho(v)) } \setminus \set{ n }
         = \\ &=
-        \parens[\Big]{ \op*{Free}(N) \setminus \set{ x, u } } \cup \op*{Free}(L)
+        \bigcup_{\mathclap{v \in \op*{Free}(N)}} \parens[\Big]{ \op*{Free}(\rho(v)) \setminus \set{ n } }
         = \\ &=
-        \parens[\Big]{ \op*{Free}(M) \setminus \set{ w } } \cup \op*{Free}(L),
-      \end{balign*}
-      hence \eqref{eq:thm:lambda_substitution_free_variables/free} holds.
+        \parens[\Big]{ \bigcup_{\mathclap{v \in \op*{Free}(N) \setminus \set{ u }}} \parens[\Big]{ \op*{Free}(\underbrace{\rho(v)}_{\sigma(v)}) \setminus \set{ n } } } \cup \parens[\Big]{ \underbrace{\op*{Free}(\rho(u)) \setminus \set{ n }}_\varnothing }
+        = \\ &=
+        \bigcup_{\mathclap{v \in \op*{Free}(N) \setminus \set{ u }}} \parens[\Big]{ \op*{Free}(\sigma(v)) \setminus \set{ u } },
+        = \\ &=
+        \bigcup_{\mathclap{v \in \op*{Free}(M) \setminus \set{ u }}} \op*{Free}(\sigma(v)),
+      \end{align*}
+      where in the last step we have used that \( n \) is not free in \( \sigma(v) \) because it does not, by definition, belong to \( \op*{Free}_\sigma(N) \).
 
-      \item Finally, if \( u \neq w \), \( w \) is free in \( N \) and \( u \) is free in \( L \), then, given a variable \( z \) not free in either, we have
-      \begin{equation*}
-        M[x \mapsto L]
-        =
-        (\qabs u N)[x \mapsto L]
-        \reloset {\eqref{eq:def:uniform_lambda_substitution/abstraction/renaming}} =
-        \qabs z N[y \mapsto z][x \mapsto L].
-      \end{equation*}
-
-      For the corresponding free variables, we have
-      \begin{balign*}
-        \op*{Free}\parens[\Big]{ M[x \mapsto L] }
-        &=
-        \op*{Free}\parens[\Big]{ \qabs z N[y \mapsto z][x \mapsto L] }
-        = \\ &=
-        \op*{Free}\parens[\Big]{ N[y \mapsto z][x \mapsto L] } \setminus \set{ z }
-        \reloset {\T{ind.}} = \\ &=
-        \parens[\bigg]{ \parens[\Big]{ \op*{Free}(N[y \mapsto z]) \setminus \set{ w } } \cup \op*{Free}(L) } \setminus \set{ z }
-        = \\ &=
-        \parens[\Big]{ \op*{Free}(N[y \mapsto z]) \setminus \set{ x, z } } \cup \op*{Free}(L)
-        \reloset {\T{ind.}} = \\ &=
-        \parens[\bigg]{ \parens[\bigg]{ \parens[\Big]{ \op*{Free}(N) \setminus \set{ u } } \cup \op*{Free}(z) } \setminus \set{ x, z } } \cup \op*{Free}(L)
-        = \\ &=
-        \parens[\Big]{ \op*{Free}(N) \setminus \set{ x, u } } \cup \op*{Free}(L)
-        = \\ &=
-        \parens[\Big]{ \op*{Free}(M) \setminus \set{ w } } \cup \op*{Free}(L)
-      \end{balign*}
-      hence \eqref{eq:thm:lambda_substitution_free_variables/free} holds.
+      This demonstrates \eqref{eq:thm:lambda_substitution_free_variables}.
     \end{itemize}
   \end{itemize}
 
-  We have obtained either \eqref{eq:thm:lambda_substitution_free_variables/free} or \eqref{eq:thm:lambda_substitution_free_variables/non_free} in any case of the induction, and have thus proven the proposition.
+  The induction is complete.
 \end{proof}
 
-\begin{example}\label{ex:def:uniform_lambda_substitution}
-  We list examples of \hyperref[def:uniform_lambda_substitution]{substitution} of \( \synlambda \)-terms:
+\begin{corollary}\label{thm:lambda_substitution_free_variables_single}
+  For any \( \synlambda \)-terms \( M \) and \( L \) and any variable \( v \), we have
+  \begin{equation}\label{eq:thm:lambda_substitution_free_variables_single}
+    \op*{Free}( M[v \mapsto L] ) = \begin{cases}
+      \parens[\Big]{ \op*{Free}(M) \setminus \set{ v } } \cup \op*{Free}(L), &v \T{is free in} M \\
+      \op*{Free}(M),                                                         &\T{otherwise.}
+    \end{cases}
+  \end{equation}
+\end{corollary}
+\begin{proof}
+  Denote by \( \sigma \) the substitution sending \( v \) to \( L \). If \( v \) is free in \( M \), then
+  \begin{equation*}
+    \op*{Free}(M[v \mapsto L])
+    \reloset{\eqref{eq:thm:lambda_substitution_free_variables}} =
+    \bigcup_{\mathclap{u \in \op*{Free}(M)}} \op*{Free}(\sigma(u))
+    =
+    \bigcup_{\mathclap{u \in \op*{Free}(M) \setminus \set{ v }}} \overbrace{\op*{Free}(\sigma(u))}^{\set{ u }} \cup \op*{Free}(\overbrace{\sigma(v)}^L).
+  \end{equation*}
+
+  Otherwise,
+  \begin{equation*}
+    \op*{Free}(M[v \mapsto L])
+    \reloset{\eqref{eq:thm:lambda_substitution_free_variables}} =
+    \bigcup_{\mathclap{u \in \op*{Free}(M)}} \overbrace{\op*{Free}(\sigma(u))}^{\set{ u }}
+    =
+    \op*{Free}(M).
+  \end{equation*}
+\end{proof}
+
+\begin{example}\label{ex:def:lambda_substitution}
+  We list examples of \hyperref[def:lambda_substitution]{substitution} of \( \synlambda \)-terms:
   \begin{thmenum}
-    \thmitem{ex:def:uniform_lambda_substitution/capture} The gist of \fullref{thm:lambda_substitution_free_variables} is that substitution avoids \enquote{capturing} free variables under the scope of some abstraction. Instead of \( (\qabs x y)[y \mapsto x] \) giving
+    \thmitem{ex:def:lambda_substitution/simultaneous} We start with an example where we analyze the abstraction rules in detail. Consider
     \begin{equation*}
-      \qabs x y[y \mapsto x] = \qabs x x,
-    \end{equation*}
-    which \enquote{captures} \( x \) under the scope of the closest abstraction, our definition of substitution gives
-    \begin{equation*}
-      (\qabs x y)[y \mapsto x] = \qabs z x
-    \end{equation*}
-    for some new variable \( z \).
-
-    \thmitem{ex:def:uniform_lambda_substitution/self} The rule \eqref{eq:def:uniform_lambda_substitution/abstraction/noop} is not strictly necessary. Without it, in the substitution \( (\qabs x x)[x \mapsto y] \), we would instead use \eqref{eq:def:uniform_lambda_substitution/abstraction/renaming} and rename \( x \) to \( z \) first:
-    \begin{equation*}
-      (\qabs x x)[x \mapsto y]
-      \reloset {\eqref{eq:def:uniform_lambda_substitution/abstraction/renaming}} =
-      \qabs z x[x \mapsto z][x \mapsto y]
-      =
-      \qabs z z[x \mapsto y]
-      =
-      \qabs z z.
+      \parens[\Big]{ \qabs x (xyz) }[x \mapsto a, y \mapsto b, z \mapsto c].
     \end{equation*}
 
-    One could argue that \eqref{eq:def:uniform_lambda_substitution/abstraction/noop} prevents unnecessary renaming, and this is true, but it doesn't help in \enquote{nested} cases like
+    We have \( \op*{Free}_\sigma(M) = \set{ b, c } \). Since \( x \) does not belong to this set, we must apply \eqref{eq:def:lambda_substitution/abstraction/direct}:
+    \begin{equation*}
+      \parens[\Big]{ \qabs x (xyz) }[x \mapsto a, y \mapsto b, z \mapsto c]
+      =
+      \qabs x \parens[\Big]{ (xyz)[y \mapsto b, z \mapsto c] }
+      =
+      \qabs x x b c.
+    \end{equation*}
+
+    \thmitem{ex:def:lambda_substitution/nested_noop} Consider the substitution \( \ref{eq:ex:def:untyped_lambda_term/combinator/k}[y \mapsto x] \). Since  \( K \) is a combinator, \fullref{thm:lambda_substitution_combinators} holds and \( K[y \mapsto x] = K \). We will show this explicitly:
     \begin{align*}
-      \ref{eq:ex:def:untyped_lambda_term/combinator/k}[y \mapsto x]
+      K[y \mapsto x]
       &=
       (\qabs x \qabs y yx)[y \mapsto x]
       = \\ &=
       (\qabs x \qabs y yx)[y \mapsto x]
-      \reloset {\eqref{eq:def:uniform_lambda_substitution/abstraction/renaming}} = \\ &=
-      \qabs z (\qabs y yx)[x \mapsto z][y \mapsto x]
-      \reloset {\eqref{eq:def:uniform_lambda_substitution/abstraction/direct}} = \\ &=
-      \qabs z (\qabs y yz)[y \mapsto x]
-      \reloset {\eqref{eq:def:uniform_lambda_substitution/abstraction/renaming}} = \\ &=
-      \qabs z \qabs t (yz)[y \mapsto t][y \mapsto x]
-       = \\ &=
-      \qabs z \qabs t tz.
+      \reloset {\eqref{eq:def:lambda_substitution/abstraction/direct}} = \\ &=
+      \qabs x \parens[\Big]{ (\qabs y yx)[y \mapsto x] }
+      \reloset {\eqref{eq:def:lambda_substitution/abstraction/direct}} = \\ &=
+      \underbrace{\qabs x (\qabs y y x)}_{K}.
     \end{align*}
 
-    We include the aforementioned substitution rule \eqref{eq:def:uniform_lambda_substitution/abstraction/noop} simply because it is simpler to work with during inductive proofs.
+    \thmitem{ex:def:lambda_substitution/capture} The gist of \fullref{thm:lambda_substitution_free_variables} is that substitution avoids \enquote{capturing} free variables under the scope of some abstraction.
+
+    Inappropriately using the rule \eqref{eq:def:lambda_substitution/abstraction/direct} in
+    \begin{equation*}
+      (\qabs x xy)[y \mapsto x]
+    \end{equation*}
+    would give
+    \begin{equation*}
+      \qabs x (xy[y \mapsto x]) = \qabs x x x,
+    \end{equation*}
+    which \enquote{captures} the corresponding occurrence of \( x \) in the scope of the closest abstractor.
+
+    The renaming rule \eqref{eq:def:lambda_substitution/abstraction/renaming} instead gives
+    \begin{equation*}
+      (\qabs x xy)[y \mapsto x] = \qabs a (xy[x \mapsto a][y \mapsto x]) = \qabs a ax,
+    \end{equation*}
+    where \( a \) is the smallest suitable identifier.
+
+    \thmitem{ex:def:lambda_substitution/ignoring} We discussed in \fullref{rem:renaming_substitution_rules} that we can ignore \eqref{eq:def:lambda_substitution/abstraction/direct} and always use the renaming rule \eqref{eq:def:lambda_substitution/abstraction/renaming}.
+
+    \Fullref{thm:lambda_substitution_combinators} would immediately fail:
+    \begin{equation*}
+      \ref{eq:ex:def:untyped_lambda_term/combinator/i}[y \mapsto z]
+      =
+      (\qabs x x)[y \mapsto z]
+      \reloset {\eqref{eq:def:lambda_substitution/abstraction/renaming}} =
+      \qabs a (x[x \mapsto a][y \mapsto z])
+      =
+      \qabs a a.
+    \end{equation*}
+
+    In a slightly more complicated example where substitution is actually performed, we would obtain
+    \begin{equation*}
+      (\qabs x xy)[y \mapsto z]
+      \reloset {\eqref{eq:def:lambda_substitution/abstraction/renaming}} =
+      \qabs a (xy[x \mapsto a][y \mapsto z])
+      =
+      \qabs a a z
+      =
+      \qabs a a z.
+    \end{equation*}
+    rather than
+    \begin{equation*}
+      \qabs x x z.
+    \end{equation*}
   \end{thmenum}
 \end{example}
 

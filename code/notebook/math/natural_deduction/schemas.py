@@ -1,14 +1,15 @@
 from typing import NamedTuple
 
+from ...parsing.identifiers import Identifier
 from ..fol.alphabet import BinaryConnective, PropConstant, Quantifier
 from ..fol.terms import Variable
 
 
 class FormulaPlaceholder(NamedTuple):
-    name: str
+    identifier: Identifier
 
     def __str__(self) -> str:
-        return self.name
+        return str(self.identifier)
 
 
 class ConstantFormulaSchema(NamedTuple):

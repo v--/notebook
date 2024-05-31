@@ -1,51 +1,58 @@
-from abc import ABC, abstractmethod
-from enum import Flag, auto
+import itertools
+from collections.abc import Iterable
+from typing import Self, TypeVar
 
+from ..support.unicode import itoa_subscripts
 from .tokens import TokenMixin
 
 
-class Capitalization(Flag):
-    small = auto()
-    capital = auto()
-    mixed = capital | small
+class Identifier(TokenMixin):
+    index: int | None
 
+    @classmethod
+    def build(cls: type[Self], value: str, index: int | None = None) -> Self:
+        return cls(value, index)
 
-
-class AlphabeticIdentifier(TokenMixin, ABC):
-    capitalization: Capitalization
-    short: bool
-
-    def __init__(self, value: str, capitalization: Capitalization = Capitalization.mixed, *, short: bool = False) -> None:
+    def __init__(self, value: str, index: int | None = None) -> None:
         super().__init__(value)
-        self.capitalization = capitalization
-        self.short = short
+        self.index = index
 
-    @classmethod
-    @abstractmethod
-    def is_capital_letter(cls, sym: str) -> bool:
-        ...
+    def __str__(self) -> str:
+        if self.index is None:
+            return self.value
 
-    @classmethod
-    @abstractmethod
-    def is_small_letter(cls, sym: str) -> bool:
-        ...
+        return self.value + itoa_subscripts(self.index)
 
-
-class LatinIdentifier(AlphabeticIdentifier):
-    @classmethod
-    def is_capital_letter(cls, sym: str) -> bool:
-        return 'A' <= sym <= 'Z'
-
-    @classmethod
-    def is_small_letter(cls, sym: str) -> bool:
-        return 'a' <= sym <= 'z'
+    def increment(self) -> Self:
+        return type(self).build(
+            self.value,
+            0 if self.index is None else self.index + 1
+        )
 
 
-class GreekIdentifier(AlphabeticIdentifier):
-    @classmethod
-    def is_capital_letter(cls, sym: str) -> bool:
-        return 'Α' <= sym <= 'Ω'
+IdentifierT = TypeVar('IdentifierT', bound=Identifier)
 
-    @classmethod
-    def is_small_letter(cls, sym: str) -> bool:
-        return 'α' <= sym <= 'ω'
+
+class LatinIdentifier(Identifier):
+    pass
+
+
+def iter_latin_identifiers() -> Iterable[LatinIdentifier]:
+    for j in range(ord('a'), ord('z') + 1):
+        yield LatinIdentifier(chr(j), index=None)
+
+    for i in itertools.count(start=0):
+        for j in range(ord('a'), ord('z') + 1):
+            yield LatinIdentifier(chr(j), index=i)
+
+
+def new_latin_identifier(context: frozenset[LatinIdentifier]) -> LatinIdentifier:
+    for identifier in iter_latin_identifiers():
+        if identifier not in context:
+            return identifier
+
+    raise AssertionError('This unreachable code is here to satisfy mypy and ruff')
+
+
+class GreekIdentifier(Identifier):
+    pass

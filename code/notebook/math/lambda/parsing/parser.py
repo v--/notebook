@@ -10,7 +10,7 @@ class LambdaParser(Parser[LambdaToken]):
         head = self.peek()
         assert isinstance(head, LatinIdentifier)
         self.advance()
-        return Variable(head.value)
+        return Variable(head)
 
     def parse_abstraction(self) -> Abstraction:
         assert self.peek_multiple(2) == [MiscToken.left_parenthesis, MiscToken.l]
@@ -69,6 +69,13 @@ class LambdaParser(Parser[LambdaToken]):
         raise self.error('Unexpected token')
 
     parse = parse_term
+
+
+def parse_variable(string: str) -> Variable:
+    tokens = list(LambdaTokenizer(string).parse())
+
+    with LambdaParser(tokens) as parser:
+        return parser.parse_variable()
 
 
 def parse_term(string: str) -> LambdaTerm:

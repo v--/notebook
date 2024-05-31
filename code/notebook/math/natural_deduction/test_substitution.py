@@ -1,34 +1,24 @@
-from typing import cast
-
 import pytest
 
 from ..fol.parsing import parse_propositional_formula
 from .parsing import parse_schema
-from .schemas import FormulaPlaceholder
-from .substitution import SubstitutionError, UniformSubstitution, is_schema_instance
+from .propositional import substitute_propositional_formulas
+from .substitution import SubstitutionError, is_schema_instance
 
 
 def test_substitution_application() -> None:
-    def t(schema: str, mapping: dict[str, str]) -> str:
-        parsed_schema = parse_schema(schema)
-        substitution = UniformSubstitution({
-            cast(FormulaPlaceholder, parse_schema(src)): parse_propositional_formula(dest)
-            for src, dest in mapping.items()
-        })
+    def t(schema: str, **kwargs: str) -> str:
+        return str(substitute_propositional_formulas(schema, **kwargs))
 
-        return str(substitution.apply_to(parsed_schema))
-
-    assert t('φ', {'φ': 'p'}) == 'p'
-    assert t('φ', {'φ': '(p ∧ q)'}) == '(p ∧ q)'
-    assert t('(φ ∧ φ)', {'φ': 'p'}) == '(p ∧ p)'
-    assert t('(φ ∧ ψ)', {'φ': 'p', 'ψ': 'q'}) == '(p ∧ q)'
+    assert t('φ', φ='p') == 'p'
+    assert t('φ', φ='(p ∧ q)') == '(p ∧ q)'
+    assert t('(φ ∧ φ)', φ='p') == '(p ∧ p)'
+    assert t('(φ ∧ ψ)', φ='p', ψ='q') == '(p ∧ q)'
 
 
 def test_invalid_substitution_application() -> None:
     with pytest.raises(SubstitutionError):
-        UniformSubstitution({}).apply_to(
-            parse_schema('φ')
-        )
+        substitute_propositional_formulas('φ')
 
 
 def test_is_schema_instance_prop() -> None:
