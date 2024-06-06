@@ -18,6 +18,10 @@ class AbstractSubstitution(abc.ABC):
     mapping: dict[Variable, LambdaTerm]
 
     @abc.abstractmethod
+    def get_non_fixed(self) -> frozenset[Variable]:
+        ...
+
+    @abc.abstractmethod
     def generate_new_variable(self, context: frozenset[Variable]) -> Variable:
         ...
 
@@ -26,6 +30,11 @@ class AbstractSubstitution(abc.ABC):
 class Substitution(AbstractSubstitution):
     mapping: dict[Variable, LambdaTerm]
 
+    @override
+    def get_non_fixed(self) -> frozenset[Variable]:
+        return frozenset(var for var, term in self.mapping.items() if var != term)
+
+    @override
     def generate_new_variable(self, context: frozenset[Variable]) -> Variable:
         return new_variable(context)
 
@@ -59,7 +68,7 @@ class SubstitutionApplicationVisitor(TermTransformationVisitor):
     @override
     def visit_abstraction(self, term: Abstraction) -> Abstraction:
         if term.var in self.substitution.get_free_in_substituted(term):
-            context = get_free_variables(term.sub) | self.substitution.get_free_in_substituted(term.sub)
+            context = get_free_variables(term.sub) | self.substitution.get_free_in_substituted(term.sub) | self.substitution.get_non_fixed()
             new_var = self.substitution.generate_new_variable(context)
         else:
             new_var = term.var

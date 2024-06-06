@@ -1,4 +1,4 @@
-from .alpha import are_terms_alpha_equivalent, disunify_free_bound_variables
+from .alpha import are_terms_alpha_equivalent, separate_free_and_bound_variables
 from .parsing import parse_term
 from .variables import get_bound_variables, get_free_variables
 
@@ -20,10 +20,10 @@ def test_substitute_in_term() -> None:
     assert not t('(xy)', '(xz)')
 
 
-def test_disunify_free_bound_variables() -> None:
+def test_separate_free_and_bound_variables() -> None:
     def t(string: str) -> str:
         old_term = parse_term(string)
-        new_term = disunify_free_bound_variables(old_term)
+        new_term = separate_free_and_bound_variables(old_term)
         assert are_terms_alpha_equivalent(old_term, new_term)
         assert get_free_variables(new_term).isdisjoint(get_bound_variables(new_term))
         return str(new_term)

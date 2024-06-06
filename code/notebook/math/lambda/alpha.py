@@ -19,38 +19,43 @@ def are_terms_alpha_equivalent(m: LambdaTerm, n: LambdaTerm) -> bool:
         case (Abstraction(), Abstraction()):
             assert isinstance(m, Abstraction)
             assert isinstance(n, Abstraction)
-            new_var = new_variable(get_free_variables(m.sub) | get_free_variables(n.sub))
-            return are_terms_alpha_equivalent(
-                apply_substitution(m.sub, Substitution({m.var: new_var})),
-                apply_substitution(n.sub, Substitution({n.var: new_var}))
-            )
+
+            if m.var == n.var:
+                return are_terms_alpha_equivalent(m.sub, n.sub)
+
+            return m.var not in get_free_variables(n.sub) and \
+                are_terms_alpha_equivalent(m.sub, apply_substitution(n.sub, Substitution({n.var: m.var})))
 
         case _:
             return False
 
 
-def disunify_free_bound_variables_impl(term: LambdaTerm, context: frozenset[Variable] = frozenset()) -> LambdaTerm:
+# This is alg:separation_of_free_and_bound_variables in the monograph
+def separate_free_and_bound_variables_impl(term: LambdaTerm, context: frozenset[Variable] = frozenset()) -> LambdaTerm:
     match term:
         case Variable():
             return term
 
         case Application():
             return Application(
-                disunify_free_bound_variables_impl(term.a, context),
-                disunify_free_bound_variables_impl(term.b, context)
+                separate_free_and_bound_variables_impl(term.a, context),
+                separate_free_and_bound_variables_impl(term.b, context)
             )
 
         case Abstraction():
-            new_var = new_variable(context) if term.var in context else term.var
+            if term.var not in context:
+                return Abstraction(term.var, separate_free_and_bound_variables_impl(term.sub, context | {term.var}))
+
+            new_var = new_variable(context)
 
             return Abstraction(
                 new_var,
                 apply_substitution(
-                    disunify_free_bound_variables_impl(term.sub, context | {new_var}),
+                    separate_free_and_bound_variables_impl(term.sub, context | {new_var}),
                     Substitution({term.var: new_var})
                 ),
             )
 
 
-def disunify_free_bound_variables(term: LambdaTerm) -> LambdaTerm:
-    return disunify_free_bound_variables_impl(term, get_free_variables(term))
+def separate_free_and_bound_variables(term: LambdaTerm) -> LambdaTerm:
+    return separate_free_and_bound_variables_impl(term, get_free_variables(term))
