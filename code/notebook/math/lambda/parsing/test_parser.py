@@ -4,7 +4,8 @@ import pytest
 
 from ....parsing.identifiers import LatinIdentifier
 from ....parsing.parser import ParsingError
-from ..terms import Variable
+from ..terms import Term, Variable
+from ..combinators import k, s, y
 from .parser import parse_term
 
 
@@ -114,9 +115,9 @@ def test_parsing_incomplete_application() -> None:
 
 
 def test_reparsing_terms() -> None:
-    def is_term_rebuilt(string: str) -> None:
-        assert str(parse_term(str(parse_term(string)))) == string
+    def is_term_rebuilt(term: Term) -> None:
+        return parse_term(str(term)) == term
 
-    is_term_rebuilt('(λx.(λy.x))') # K combinator
-    is_term_rebuilt('(λx.(λy.(λz.((xz)(yz)))))') # S combinator
-    is_term_rebuilt('(λf.((λx.(f(xx)))(λx.(f(xx)))))') # Y combinator
+    assert parse_term(str(k)) == k
+    assert parse_term(str(s)) == s
+    assert parse_term(str(y)) == y

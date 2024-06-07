@@ -1,0 +1,194 @@
+\subsection{Lambda calculus reductions}\label{subsec:lambda_calculus_reductions}
+
+\paragraph{\( \beta \) and \( \eta \)-reductions}
+
+\begin{definition}\label{def:beta_redex}\mcite[1B1]{Hindley1997}
+  A \( \beta \)-\term[ru=редекс (\cite[191]{Герасимов2011})]{redex} (\enquote{reducible expression}) is a \( \synlambda \)-application whose first term is a \( \synlambda \)-abstraction, that is, a \( \synlambda \)-term of the form \( (\qabs x M) N \). We call \( M[x \mapsto N] \) the \( \beta \)-\term{contractum} of \( (\qabs x M) N \).
+\end{definition}
+
+\begin{definition}\label{def:eta_redex}\mcite[1C1]{Hindley1997}
+  An \( \eta \)-\term{redex} is a \( \synlambda \)-abstraction of the form \( \qabs x M x \), where \( x \) is not free in \( M \). We call \( M \) the \( \eta \)-\term{contractum} of \( \qabs x M x \).
+\end{definition}
+
+\begin{definition}\label{def:beta_eta_reduction}\mimprovised
+  Consider the \hyperref[def:set_valued_map/partial]{partial function} that gives, for each \( \beta \)-\hyperref[def:beta_redex]{redex}, its contractum. When regarded as a binary relation on the set \( \op*{Term} \) of \( \synlambda \)-terms, we call it \( \beta \)-\term{contraction} and denote it by \( {\bred} \).
+
+  We similarly define the \( \eta \)-\term{contraction} relation \( {\ered} \) and introduce the \( \beta\eta \)-\term{contraction} relation \( {\bered} \) as the set-theoretic union of \( {\bred} \) and \( {\ered} \).
+
+  We define the \( \beta \)-\term{reduction} relation \( {\bred*} \) as the \hyperref[def:relation_closures/reflexive]{reflexive} and \hyperref[def:relation_closures/transitive]{transitive closure} of \( {\bred} \). If \( M \bred* N \), we say that \( N \) is a \( \beta \)-\term{reduct} of \( M \).
+
+  We similarly define \( \eta \)-\term{reduction} \( {\ered*} \) and \( \beta\eta \)-\term{reduction} \( {\bered*} \).
+\end{definition}
+\begin{comments}
+  \item The terminology is based on \cite[ch. 3]{Barendregt1984}, \cite[1B2]{Hindley1997} and \cite[191]{Герасимов2011}, but the formalisms are slightly different.
+
+  \item As a consequence of \fullref{thm:def:relation_closures/reflexive_and_transitive}, it does not matter whether \( {\bred*} \) is the reflexive closure of the transitive closure of \( {\bred} \) or vice versa --- the result is equivalent.
+\end{comments}
+
+\begin{example}\label{ex:def:beta_eta_reduction}
+  We list examples of \hyperref[def:beta_eta_reduction]{\( \beta \) and \( \eta \)-reductions}:
+  \begin{thmenum}
+    \thmitem{ex:def:beta_eta_reduction/i} Consider the combinator \( \ref{eq:ex:def:lambda_term/combinator/i} = \qabs \synx \synx \).
+
+    For every \( \synlambda \)-term \( A \) we have \( IA \bred A \). This explains the naming --- \( I \) stands for \enquote{identity}.
+
+    \thmitem{ex:def:beta_eta_reduction/k} Consider the combinator \( \ref{eq:ex:def:lambda_term/combinator/k} = \qabs \synx \qabs \syny \syny \synx \).
+
+    For every pair of combinators \( A \) and \( B \) where \( \syny \) is not free, we have
+    \begin{equation*}
+      KAB
+      =
+      (\qabs {\hi{\synx}} \qabs \syny \hi{\synx}) \hi{A} B
+      \bred
+      (\qabs {\hi{\syny}} A) \hi{B}
+      \bred
+      A.
+    \end{equation*}
+
+    \thmitem{ex:def:beta_eta_reduction/s} Consider the combinator \( \ref{eq:ex:def:lambda_term/combinator/s} = \qabs \synx \qabs \syny \qabs \synz \synx \synz (\syny \synz) \).
+
+    For every triple of \( \synlambda \)-terms \( A \), \( B \) and \( C \) where \( \syny \) and \( \synz \) are not free, we have
+    \begin{balign*}
+      SABC
+      &=
+      \parens[\Big]{ \qabs {\hi{\synx}} \qabs \syny \qabs \synz \hi{\synx} \synz (\syny \synz) } \hi{A}BC
+      \bred \\ &\bred
+      \parens[\Big]{ \qabs {\hi{\syny}} \qabs \synz A \synz (\hi{\syny} \synz) } \hi{B}C
+      \bred \\ &\bred
+      \parens[\Big]{ \qabs {\hi{\synz}} A \hi{\synz} (B \hi{\synz}) } \hi{C}
+      \bred \\ &\bred
+      A C (B C).
+    \end{balign*}
+
+    \thmitem{ex:def:beta_eta_reduction/skk} \Fullref{ex:def:beta_eta_reduction/k} and \fullref{ex:def:beta_eta_reduction/s} imply that
+    \begin{equation*}
+      SKK \bred* \qabs \synz K \synz (K \synz) \bred* \qabs \synz \synz \aequiv I.
+    \end{equation*}
+
+    \thmitem{ex:def:beta_eta_reduction/boolean}\mcite[6.2.2]{Barendregt1984} We can encode the \hyperref[con:boolean_value]{Boolean values} via the combinators
+    \begin{subequations}
+      \begin{align}
+        T \coloneqq \overbrace{\qabs \synx \qabs \syny \synx}^{\ref{eq:ex:def:lambda_term/combinator/k}} \label{ex:def:beta_eta_reduction/boolean/t}, \\
+        F \coloneqq \qabs \synx \qabs \syny \syny \label{ex:def:beta_eta_reduction/boolean/f}.
+      \end{align}
+    \end{subequations}
+
+    Fix \( \synlambda \)-terms \( A \) and \( B \) where \( \syny \) is not free. If the term \( C \) can be either \( T \) or \( F \), \( \beta \)-reduction allows us to \enquote{select} either \( A \) or \( B \) based on the value of \( C \):
+    \begin{equation*}
+      CAB \bred* \begin{cases}
+        A, &C = T, \\
+        B, &C = F.
+      \end{cases}
+    \end{equation*}
+
+    \thmitem{ex:def:beta_eta_reduction/numerals}\mcite[6.4.4]{Barendregt1984} For every natural number \( n \), we can define the \term{Church numeral}
+    \begin{equation}\label{eq:ex:def:beta_eta_reduction/numerals}
+      c_n \coloneqq \qabs \synx \qabs \syny \underbrace{\synx^n \syny}_{\mathclap{(\synx \cdots (\synx (\synx \syny)) \cdots)}}.
+    \end{equation}
+
+    Note that in this definition \( \synx^n \syny \) associates to the right, technically breaking our convention from \fullref{rem:lambda_term_parentheses/left_associative}.
+
+    For the base case we have \( c_0 = F \).
+
+    Consider the \term{successor} term
+    \begin{equation*}
+      S^+ \coloneqq \qabs \synx \qabs \syny \qabs \synz \syny (\synx \syny \synz).
+    \end{equation*}
+
+    Then
+    \begin{balign*}
+      S^+ c_n
+      &=
+      \parens[\Big]{ \qabs {\hi{\synx}} \qabs \syny \qabs \synz \syny (\hi{\synx} \syny \synz) } c_n
+      \bred \\ &\bred
+      \qabs \syny \qabs \synz \syny \parens[\Big]{ \parens[\Big]{ \qabs {\hi{\synx}} \qabs \syny \hi{\synx}^n \syny } \hi{\syny} \synz }
+      \bred \\ &\bred
+      \qabs \syny \qabs \synz \syny \parens[\Big]{ \parens[\Big]{ \qabs {\hi{\syna}} \syny^n \hi{\syna} } \hi{\synz} }
+      \bred \\ &\bred
+      \qabs \syny \qabs \synz \syny (\syny^n \synz)
+      \aequiv \\ &\aequiv
+      c_{n+1}.
+    \end{balign*}
+
+    \thmitem{ex:def:beta_eta_reduction/omega} Consider the combinator \( \ref{eq:ex:def:lambda_term/combinator/omega} = (\qabs \synx \synx \synx) (\qabs \synx \synx \synx) \).
+
+    We have
+    \begin{equation*}
+      \Omega
+      =
+      (\qabs {\hi{\synx}} \hi{\synx} \hi{\synx}) \hi{(\qabs \synx \synx \synx)}
+      \bred
+      (\qabs \synx \synx \synx) (\qabs \synx \synx \synx)
+      =
+      \Omega,
+    \end{equation*}
+    thus
+    \begin{equation*}
+      \Omega \bred \Omega \bred \Omega \bred \Omega \bred \cdots
+    \end{equation*}
+  \end{thmenum}
+\end{example}
+
+\begin{definition}\label{def:beta_eta_equivalence}\mcite[3.1.5]{Barendregt1984}
+  We define \( \beta \)-\term{equivalence} (resp. \( \eta \) or \( \beta\eta \)-equivalence) as the \hyperref[thm:equivalence_closure]{equivalence closure} of \( {\bred} \) (resp. \( {\ered} \) or \( {\bered} \)) and denote it via \( {\bequiv} \) (resp. \( {\eequiv} \) or \( {\beequiv} \)).
+
+  If we instead consider the equivalence closure of the union of \( {\bred} \) and \( {\aequiv} \), we obtain \( \alpha\beta \)-equivalence, and similarly for the others.
+\end{definition}
+\begin{comments}
+  \item Clearly \( M \bred* N \) implies \( M \bequiv N \), and similarly for the others.
+\end{comments}
+
+\paragraph{Fixed point combinators}
+
+\begin{definition}\label{def:fixed_point_combinator}\mimprovised
+  We say that the combinator \( M \) is a \term{fixed point combinator} if, for every \( \synlambda \)-term \( F \), we have \( MF \abeequiv F(MF) \).
+\end{definition}
+\begin{comments}
+  \item The definition is based on \cite[6.1.2]{Barendregt1984}, but is adapted to handle equivalences explicitly.
+\end{comments}
+
+\begin{proposition}\label{thm:y_is_a_fixed_point_combinator}
+  The term \( \ref{eq:ex:def:lambda_term/combinator/y} = \qabs \synx (\qabs \syny \synx \syny \syny) (\qabs \syny \synx \syny \syny) \) is a \hyperref[def:fixed_point_combinator]{fixed point combinator}.
+\end{proposition}
+\begin{proof}
+  Let \( F \) be a \( \synlambda \)-term where \( \synx \) and \( \syny \) are not free. We have
+  \begin{equation*}
+    YF
+    =
+    \parens[\Big]{ \qabs {\hi{\synx}} (\qabs \syny \hi{\synx} \syny \syny) (\qabs \syny \hi{\synx} \syny \syny) } \hi{F}
+    \bred
+    (\qabs v F v v) (\qabs v F v v),
+  \end{equation*}
+  where \( v = \syny \) if \( \syny \) is not free in \( F \) and is a fresh variable otherwise.
+
+  Denote this reduct by \( P \). Then
+  \begin{equation*}
+    P =
+    (\qabs {\hi{v}} F \hi{v} \hi{v}) \hi{(\qabs v F v v)}
+    \bred
+    F (\qabs v F v v) (\qabs v F v v)
+    =
+    FP.
+  \end{equation*}
+
+  Since \( YF \bequiv P \) and \( P \bequiv FP \), we conclude that \( YF \bequiv F(YF) \).
+\end{proof}
+
+\paragraph{The Church-Rosser theorem}
+
+\begin{theorem}[Church-Rosser theorem]\label{thm:church_rosser_theorem}
+  If both \( N \) and \( K \) are \( \beta \)-\hyperref[def:beta_eta_reduction]{reductions} of \( M \), then there exist \hyperref[def:lambda_term_alpha_equivalence]{\( \alpha \)-equivalent} terms \( L_N \) and \( L_K \) such that \( L_N \) is a reduction of \( N \) and \( L_K \) is a reduction of \( K \).
+
+  \begin{figure}[!ht]
+    \centering
+    \includegraphics[page=1]{output/thm__church_rosser_theorem}
+    \caption{An illustration of \fullref{thm:church_rosser_theorem}}\label{fig:thm:church_rosser_theorem}
+  \end{figure}
+\end{theorem}
+\begin{comments}
+  \item Authors who consider \( \synlambda \)-terms up to \( \alpha \)-equivalence state this as the existence of \( L \) to which both \( M \) and \( K \) reduce. This includes \cite[ch. 3]{Barendregt1984} and \cite[1B5]{Hindley1997}.
+
+  The aforementioned authors call this property \enquote{the Church-Rosser property}, while \incite[130]{Mimram2020} and \incite[14]{TroelstraSchwichtenberg2000} call it \enquote{confluence}.
+
+  We avoid this terminology since we prefer to distinguish terms that are \( \alpha \)-equivalent but distinct.
+\end{comments}

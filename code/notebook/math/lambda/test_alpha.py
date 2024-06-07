@@ -39,5 +39,5 @@ def test_separate_free_and_bound_variables() -> None:
     assert t('((λx.((λx.x)x))x)') == '((λa.((λb.b)a))x)'
     assert t('((λx.(λy.(xy)))(xy))') == '((λa.(λb.(ab)))(xy))'
 
-    # Verify that new variables don't shadow existing ones
+    # Verify that fresh variables don't shadow existing ones
     assert t('((λa.(λx.(ax)))x)') == '((λa.(λb.(ab)))x)'
