@@ -92,7 +92,7 @@
 \end{comments}
 
 \begin{proposition}\label{thm:lambda_subterm_characterization}
-  Suppose that the \hyperref[def:formal_language/substring]{substring} \( N \) of the \( \synlambda \)-term \( M \) is \hi{not a variable}. Then \( N \) is a \hyperref[def:lambda_subterm]{subterm} of \( M \) if and only if \( N \) is itself a \( \synlambda \)-term.
+  Suppose that the \hyperref[def:formal_language/occurrence]{substring} \( N \) of the \( \synlambda \)-term \( M \) is \hi{not a variable}. Then \( N \) is a \hyperref[def:lambda_subterm]{subterm} of \( M \) if and only if \( N \) is itself a \( \synlambda \)-term.
 \end{proposition}
 \begin{proof}
   We can give a proof similar to \fullref{thm:propositional_formula_characterization}.
@@ -103,7 +103,7 @@
   \begin{thmenum}
     \thmitem{ex:def:lambda_term/var} The simplest \( \synlambda \)-terms are the variables themselves, for example \( \synx \) or \( \syny \).
 
-    \thmitem{ex:def:lambda_term/naive_subterm} Suppose that, as in \fullref{def:propositional_subformula} for propositional subformulas, we say that \( N \) is a subterm of \( M \) if it is itself a \hyperref[def:formal_language/substring]{substring} of \( M \).
+    \thmitem{ex:def:lambda_term/naive_subterm} Suppose that, as in \fullref{def:propositional_subformula} for propositional subformulas, we say that \( N \) is a subterm of \( M \) if it is itself a \hyperref[def:formal_language/occurrence]{substring} of \( M \).
 
     Then the term \( \qabs \synx \syny \) would have both \( \synx \) and \( \syny \) as subterms, while according to \fullref{def:lambda_term/subterm}, only \( \syny \) is a subterm.
 
@@ -113,32 +113,32 @@
         &\qabs \synx \synx, \label{eq:ex:def:lambda_term/combinator/i}\tag{I} \\
         &\qabs \synx \qabs \syny \synx, \label{eq:ex:def:lambda_term/combinator/k}\tag{K} \\
         &\qabs \synx \qabs \syny \qabs \synz \synx \synz (\syny \synz), \label{eq:ex:def:lambda_term/combinator/s}\tag{S} \\
-        &\qabs \synx (\qabs \syny \synx \syny \syny) (\qabs \syny \synx \syny \syny), \label{eq:ex:def:lambda_term/combinator/y}\tag{Y} \\
-        &(\qabs \synx \synx \synx) (\qabs \synx \synx \synx). \label{eq:ex:def:lambda_term/combinator/omega}\tag{\ensuremath{ \Omega }}
+        &\qabs \synx (\qabs \syny \synx \syny \syny) (\qabs \syny \synx \syny \syny). \label{eq:ex:def:lambda_term/combinator/y}\tag{Y} \\
+      \end{align}
+
+      They are combinators in the sense that will be defined in \fullref{def:lambda_combinator}, and are referred to as such. We will further discuss them in \fullref{ex:def:beta_eta_reduction}.
+
+      Another useful family of combinators is the following, taken from \cite[3.1.21; 6.2.1]{Barendregt1984}:
+      \begin{align}
+        &\qabs \synx \synx^n, \label{eq:ex:def:lambda_term/combinator/omega_n}\tag{\ensuremath{ \omega_n }} \\
+        &\qabs \synx \synx \synx, \label{eq:ex:def:lambda_term/combinator/omega_small}\tag{\ensuremath{ \omega }} \\
+        &\omega \omega. \label{eq:ex:def:lambda_term/combinator/omega}\tag{\ensuremath{ \Omega }}
       \end{align}
     \end{subequations}
-
-    They are combinators in the sense that will be defined in \fullref{def:lambda_combinator}, and are referred to as such. We will further discuss them in \fullref{ex:def:beta_eta_reduction}.
-
-    \incite[def. 1A10.1]{Hindley1997} avoids the combinator \ref{eq:ex:def:lambda_term/combinator/omega}; it is discussed in \incite[3.2.6]{Mimram2020} and \incite[2.1.34]{Barendregt1984}.
   \end{thmenum}
 \end{example}
 
 \paragraph{Variable scope}
 
-\begin{definition}\label{def:lambda_abstractor}\mcite[def. 1A5]{Hindley1997}
-  Given an abstraction \( M = \qabs x N \), we call \( \qabs* x \) the \term{abstractor} and \( N \) --- the \term{body} of \( M \).
+\begin{definition}\label{def:lambda_variable_occurrence}\mcite[1A5; 16A]{Hindley1997}
+  If an \hyperref[def:formal_language/occurrence]{occurrence} of \( x \) in \( M \) is prefixed by \( \synlambda \), it is part of some abstraction \( N = (\qabs x K) \). We call \( \qabs* x \) the \term{abstractor} of \( N \) and \( K \) --- the \term{body} of \( N \) or the \term[ru=область действия (\cite[64]{Герасимов2011})]{scope} of \( \qabs* x \).
 
-  We say that the body \( N \) is the \term[ru=область действия (\cite[64]{Герасимов2011})]{scope} of the abstractor \( \quantifier* \synlambda \synx \) and that the abstractor \term{binds} the variable \( \synx \) in \( N \).
+  We divide non-abstractor occurrences of \( x \) into \term[ru=связанное (вхождение) (\cite[64]{Герасимов2011})]{bound occurrences}, which are in the scope of some abstractor \( \qabs* x \), and \term[ru=свободное (вхождение) (\cite[64]{Герасимов2011})]{free occurrences}, which are not.
+
+  If an occurrence of \( x \) is free in \( K \) but bound in \( N = (\qabs x K) \), we say that the abstractor of \( N \) \term{binds} it.
 \end{definition}
 
-\begin{definition}\label{def:lambda_variable_occurrence}\mimprovised
-  Similarly to \hyperref[def:propositional_variable_occurrence]{propositional variable occurrences}, we define aj \term{occurrence} of a variable \( x \) in a \( \synlambda \)-term \( M \) to be a variable node with value \( x \) in the \hyperref[def:lambda_term_ast]{abstract syntax tree} of \( M \).
-
-  Unlike in propositional logic, variable occurrences in \( \synlambda \)-terms can be free and bound. We say that the occurrence is \term[ru=свободное (вхождение) (\cite[64]{Герасимов2011})]{free} in \( M \) if the root of the AST can be reached without passing through a corresponding abstractor. If a variable is not free, there exists an abstractor that binds it, and we say that the occurrence is \term[ru=связанное (вхождение) (\cite[64]{Герасимов2011})]{bound} in \( M \).
-\end{definition}
-
-\begin{definition}\label{def:lambda_variable_freeness}\mimprovised
+\begin{definition}\label{def:lambda_variable_freeness}\mcite[16A]{Hindley1997}
   We say that a variable \( \synx \) is \term{free} in a \( \synlambda \)-term \( M \) if \( \synx \) has at least one \hyperref[def:lambda_variable_occurrence]{free occurrence} in \( M \) and \term{bound} if it has a \hyperref[def:lambda_variable_occurrence]{bound occurrence} in \( M \).
 \end{definition}
 \begin{comments}
@@ -161,6 +161,8 @@
     \end{equation*}
 
     One of the occurrences is free, which makes \( \synx \) a free variable of \( M \), and one of the occurrences if bound, which makes \( \synx \) a bound variable of \( M \).
+
+    \thmitem{ex:def:lambda_variable_freeness/binds} In the term \( \qabs \synx \qabs \synx \synx \), only the second abstractor is binding for \( \synx \).
   \end{thmenum}
 \end{example}
 
@@ -789,7 +791,7 @@
   \end{thmenum}
 \end{example}
 
-\paragraph{Invariance of \( \alpha \)-equivalent terms under substitution}
+\paragraph{Invariance of \( \alpha \)-equivalence under substitution}
 
 \begin{lemma}\label{thm:renaming_composition_is_alpha_equivalent}
   For the composite substitution \( \rho\sigma(u) \coloneqq \sigma(u)[\rho] \) of the \hyperref[def:lambda_renaming]{renaming substitutions} \( \sigma \) and \( \rho \), we have
@@ -1050,6 +1052,40 @@
   \end{itemize}
 \end{proof}
 
+\begin{corollary}\label{thm:alpha_conversion}
+  If \( y \) is not free in \( M \), then
+  \begin{equation}\label{eq:thm:alpha_conversion}
+    \qabs x M \aequiv \qabs y M[y \mapsto x]
+  \end{equation}
+\end{corollary}
+\begin{proof}
+  This is a restatement of \ref{thm:alpha_equivalence_simplified/ren}.
+\end{proof}
+
+\begin{corollary}\label{thm:alpha_conversion_modified}
+  If \( v \) is not free in \( M[\sigma_{x \mapsto u}] \), then
+  \begin{equation}\label{eq:thm:alpha_conversion_modified}
+    \qabs u M[\sigma_{x \mapsto u}] \aequiv \qabs v M[\sigma_{x \mapsto v}].
+  \end{equation}
+\end{corollary}
+\begin{proof}
+  \Fullref{thm:alpha_conversion} implies that
+  \begin{equation*}
+    \qabs v B[\rho_{x \mapsto v}]
+    \aequiv
+    \qabs u B[\rho_{x \mapsto v}][v \mapsto u].
+  \end{equation*}
+
+  Furthermore, \fullref{thm:substitution_chain_contraction/contraction} implies that
+  \begin{equation*}
+    B[\rho_{x \mapsto v}][v \mapsto u] \aequiv B[\rho_{x \mapsto u}]
+  \end{equation*}
+  and \ref{thm:alpha_equivalence_simplified/ren} implies that
+  \begin{equation*}
+    \qabs u B[\rho_{x \mapsto v}][v \mapsto u] \aequiv \qabs u B[\rho_{x \mapsto u}].
+  \end{equation*}
+\end{proof}
+
 \begin{algorithm}[Separation of free and bound variables]\label{alg:separation_of_free_and_bound_variables}
   Fix a \( \synlambda \)-term \( M \). We will build an \hyperref[def:lambda_term_alpha_equivalence]{\( \alpha \)-equivalent} term \( M' \) where the \hyperref[def:lambda_variable_freeness]{free and bound variables} are distinct.
 
@@ -1108,8 +1144,8 @@
 
       Let
       \begin{align*}
-        a &\coloneqq n && A &\coloneqq N'_{\Gamma,n}[x \mapsto n], \\
-        b &\coloneqq x && B &\coloneqq N.
+        a &\coloneqq n && A \coloneqq N'_{\Gamma,n}[x \mapsto n], \\
+        b &\coloneqq x && B \coloneqq N.
       \end{align*}
       so that, in the notation of \ref{thm:alpha_equivalence_simplified/ren},
       \begin{equation*}
