@@ -4,8 +4,7 @@ import pytest
 
 from ....parsing.identifiers import LatinIdentifier
 from ....parsing.parser import ParsingError
-from ..terms import Term, Variable
-from ..combinators import k, s, y
+from ..terms import LambdaTerm, Variable
 from .parser import parse_term
 
 
@@ -115,9 +114,11 @@ def test_parsing_incomplete_application() -> None:
 
 
 def test_reparsing_terms() -> None:
-    def is_term_rebuilt(term: Term) -> None:
+    from .. import combinators as comb
+
+    def is_term_rebuilt(term: LambdaTerm) -> None:
         return parse_term(str(term)) == term
 
-    assert parse_term(str(k)) == k
-    assert parse_term(str(s)) == s
-    assert parse_term(str(y)) == y
+    assert parse_term(str(comb.k)) == comb.k
+    assert parse_term(str(comb.s)) == comb.s
+    assert parse_term(str(comb.y)) == comb.y

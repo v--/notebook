@@ -1,7 +1,6 @@
-import abc
 from collections.abc import Iterable
 from dataclasses import dataclass
-from typing import override
+from typing import Protocol, override
 
 from ...support.iteration import frozen_set_accumulator
 from .exceptions import LambdaError
@@ -14,14 +13,10 @@ class SubstitutionError(LambdaError):
     pass
 
 
-class AbstractSubstitution(abc.ABC):
-    mapping: dict[Variable, LambdaTerm]
-
-    @abc.abstractmethod
+class AbstractSubstitution(Protocol):
     def get_non_fixed(self) -> frozenset[Variable]:
         ...
 
-    @abc.abstractmethod
     def generate_new_variable(self, context: frozenset[Variable]) -> Variable:
         ...
 

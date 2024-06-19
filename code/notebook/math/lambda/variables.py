@@ -1,6 +1,13 @@
 from ...parsing.identifiers import new_latin_identifier
+from .parsing import parse_variable
 from .terms import Abstraction, Application, LambdaTerm, Variable
 from .visitors import TermVisitor
+
+
+class common:  # noqa: N801
+    x = parse_variable('x')
+    y = parse_variable('y')
+    z = parse_variable('z')
 
 
 def new_variable(context: frozenset[Variable]) -> Variable:
