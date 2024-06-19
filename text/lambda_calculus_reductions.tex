@@ -291,9 +291,72 @@
   Since \( YF \bequiv P \) and \( P \bequiv FP \), we conclude that \( YF \bequiv F(YF) \).
 \end{proof}
 
-\paragraph{Parallel \( \beta \)-reductions}
+\paragraph{Confluence}
 
-We will introduce a definition that we will find useful mostly for proving \fullref{thm:church_rosser_theorem}.
+\begin{definition}\label{def:relation_confluence}\mimprovised
+  We say that the binary relation \( {\to} \) is (single-step) \term{confluent} if, whenever \( M \to N \) and \( M \to K \), there exists some \( L \) such that \( N \to L \) and \( K \to L \). We say that \( L \) is a \term{confluence point} of \( N \) and \( K \).
+
+  \begin{figure}[!ht]
+    \centering
+    \includegraphics[page=1]{output/def__relation_confluence}
+    \caption{\hyperref[def:relation_confluence]{Single-step confluence} as a \hyperref[def:hasse_diagram]{Hasse diagram}.}\label{fig:def:relation_confluence}
+  \end{figure}
+\end{definition}
+\begin{comments}
+  \item It is natural to define multi-step confluence of \( {\to} \) as single-step confluence of the reflexive and transitive closure of \( {\to} \). This makes little sense for reduction relations, since we would obtain \enquote{multi-step confluence of single-step reduction relations} and \enquote{single-step confluence of multi-step reduction relations}.
+
+  Furthermore, by having chosen to make \( \alpha \)-equivalence explicit, we must rely on the \hyperref[def:alpha_reflexive_closure]{\( \alpha \)-reflexive} closure instead of the reflexive closure, which forces us to restrict our attention to reduction relations rather than arbitrary relations.
+
+  Thus, we avoid defining multi-step confluence.
+
+  \item \incite[ch. 3]{Barendregt1984} uses the term \enquote{diamond property} for what we call \enquote{single-step confluence} and \enquote{Church-Rosser property} for what we would call \enquote{multi-step confluence}. \incite[3.4.1]{Mimram2020} uses \enquote{confluence} for what we would call \enquote{multi-step confluence}, while \incite[14]{TroelstraSchwichtenberg2000} use both \enquote{confluence} and \enquote{Church-Rosser property} for what we call \enquote{single-step confluence}.
+\end{comments}
+
+\begin{proposition}\label{thm:confluence_of_transitive_closure}
+  If a relation is \hyperref[def:relation_confluence]{single-step confluent}, so is its \hyperref[def:relation_closures/transitive]{transitive closure}.
+\end{proposition}
+\begin{proof}
+  Suppose that the relation \( {\to} \) is confluent. Denote its transitive closure by \( {\redrel*{}} \).
+
+  Suppose that \( M \redrel*{} N \) and \( M \redrel*{} K \). Then there exist sequences
+  \begin{equation*}
+    M = N_0 \to N_1 \to \cdots \to N_n = N
+  \end{equation*}
+  and
+  \begin{equation*}
+    M = K_0 \to K_1 \to \cdots \to K_k = K.
+  \end{equation*}
+
+  We will use induction on \( i = 0, \ldots, \min\set{ n, k } \) to show that there exists a \( {\redrel*{}} \)-confluence point \( L_i \) such that \( N_i \redrel*{} L_i \) and \( K_i \redrel*{} L_i \).
+
+  \begin{itemize}
+    \item In the base case \( i = 0 \), \( M = N_i = K_i \), thus we can take \( L_i \) to be \( M \) itself.
+    \item Suppose that the inductive hypothesis holds for \( i < \min\set{ n, k } \) and let \( L_i \) be the \( {\redrel*{}} \)-confluence point of \( N_i \) and \( K_i \).
+
+    We thus have \( N_i \to N_{i+1} \) and \( N_i \redrel*{} L_i \). Since \( \to \) is single-step confluent, there exists a \( {\to} \)-confluence point \( A \) such that \( N_{i+1} \to A \) and \( L_i \to A \). Let \( B \) be a \( {\to} \)-confluence point of \( K_{i+1} \) and \( L_i \).
+
+    Finally, let \( L_{i+1} \) be a \( {\to} \)-confluence point of \( A \) and \( B \). Then \( N_{i+1} \to A \to L_{i+1} \) and \( K_{i+1} \to B \to L_{i+1} \).
+
+    \begin{figure}[!ht]
+      \centering
+      \includegraphics[page=1]{output/fig__thm__single_step_confluent_implies_multi_step}
+      \caption{An illustration of the inductive step in the proof of \fullref{thm:confluence_of_transitive_closure}}\label{fig:thm:confluence_of_transitive_closure}
+    \end{figure}
+  \end{itemize}
+
+  We now have the following possibilities:
+  \begin{itemize}
+    \item If \( n = k \), let \( L \coloneqq L_n = L_k \).
+    \item If \( n > k \), for \( i > k \) let \( L_{i+1} \) be a \( {\to} \)-confluence point of \( N_{i+1} \) and \( L_i \), and let \( L \coloneqq L_n \).
+    \item If \( n < k \), for \( i > n \) let \( L_{i+1} \) be a \( {\to} \)-confluence point of \( K_{i+1} \) and \( L_i \), and let \( L \coloneqq L_k \).
+  \end{itemize}
+
+  In all cases, \( N \redrel*{} L \) and \( K \redrel*{} L \).
+\end{proof}
+
+\paragraph{Confluence of \( \beta \)-reduction}\hfill
+
+We will introduce a definition that we will find useful mostly for proving \fullref{thm:church_rosser_theorem_for_beta_reduction}.
 
 \begin{definition}\label{def:parallel_beta_reduction}
   We define \term{parallel \( \beta \)-reduction} via the following rules:
@@ -678,10 +741,10 @@ We will introduce a definition that we will find useful mostly for proving \full
 \end{proof}
 
 \begin{proposition}\label{thm:parallel_beta_church_rosser}
-  If \( M \pred N \) and \( M \pred K \), there exists a \( \synlambda \)-term \( L \) such that \( N \pred L \) and \( K \pred L \).
+  \hyperref[def:parallel_beta_reduction]{Parallel \( \beta \)-reduction} is \hyperref[def:relation_confluence]{confluent}.
 \end{proposition}
 \begin{proof}
-  Suppose that \( M \pred N \) and \( M \pred K \). We will use \fullref{thm:least_fixed_point_induction} on \( M \pred N \) simultaneously on all \( K \) to show the existence of the desired \( \synlambda \)-term \( L \):
+  Suppose that \( M \pred N \) and \( M \pred K \). We will use \fullref{thm:least_fixed_point_induction} on \( M \pred N \) simultaneously on all \( K \) to show the existence of the desired confluence point \( L \) such that \( N \pred L \) and \( N \pred L \):
   \begin{itemize}
     \item If \( M \pred N \) due to \ref{def:parallel_beta_reduction/var}, then \( M \) and \( N \) are identical variables. Furthermore, \ref{def:parallel_beta_reduction/var} is the only rule allowing to conclude \( M \pred K \), hence \( M = N = K \).
 
@@ -693,17 +756,17 @@ We will introduce a definition that we will find useful mostly for proving \full
     \begin{itemize}
       \item In the case \fullref{thm:parallel_beta_reduction_deconstruction/app/app}, we have \( K = EF \), where \( A \pred E \) and \( B \pred F \).
 
-      The inductive hypothesis implies the existence of \( \synlambda \)-terms \( G \) and \( H \) such that \( C \pred G \) and \( E \pred G \), and similarly \( D \pred H \) and \( F \pred H \).
+      The inductive hypothesis implies the existence of confluence points \( G \) of \( C \) and \( E \) and \( H \) of \( D \) and \( F \).
 
       Let \( L \) be \( GH \). Then \ref{def:parallel_beta_reduction/app} allows us to conclude that \( N \pred L \) and \( K \pred L \).
 
       \item In the case \fullref{thm:parallel_beta_reduction_deconstruction/app/red}, we have \( A = \qabs x E \) and \( K \aequiv F[x \mapsto G] \), where \( B \pred G \) and \( E \pred F \).
 
-      We have \( A = \qabs x E \pred \qabs x F \) due to \ref{def:parallel_beta_reduction/abs}. Then the inductive hypothesis on \( A \pred C \) implies that there exists a \( \synlambda \)-term \( P \) such that \( C \pred P \) and \( \qabs x F \pred P \).
+      We have \( A = \qabs x E \pred \qabs x F \) due to \ref{def:parallel_beta_reduction/abs}. By the inductive hypothesis on \( A \pred C \), there exists a confluence point \( P \) of \( C \) and \( \qabs x F \).
 
       \Fullref{thm:parallel_beta_reduction_deconstruction/abs} implies that \( P \aequiv \qabs x Q \), where \( F \pred Q \).
 
-      Furthermore, the inductive hypothesis on \( B \pred D \) implies that there exists a \( \synlambda \)-term \( R \) such that \( D \pred R \) and \( G \pred R \).
+      Furthermore, by the inductive hypothesis on \( B \pred D \), there exists a confluence point \( R \) of \( D \) and \( G \).
 
       Let \( L \coloneqq Q[x \mapsto R] \). We will show that this is the desired term.
       \begin{itemize}
@@ -722,7 +785,7 @@ We will introduce a definition that we will find useful mostly for proving \full
 
     \item If \( M \pred N \) due to \ref{def:parallel_beta_reduction/abs}, then \( M = \qabs x A \) and \( N = \qabs x B \), where \( A \pred B \) and the inductive hypothesis holds for the latter.
 
-    \Fullref{thm:parallel_beta_reduction_deconstruction/abs} implies that \( K \aequiv x C \), where \( A \pred C \). The inductive hypothesis implies that there exists a term \( D \) such that \( B \pred D \) and \( C \pred D \).
+    \Fullref{thm:parallel_beta_reduction_deconstruction/abs} implies that \( K \aequiv x C \), where \( A \pred C \). By the inductive hypothesis, there exists a confluence point \( D \) of \( B \) and \( C \)
 
     Let \( L \coloneqq \qabs x D \). Then \ref{def:parallel_beta_reduction/abs} implies that \( N \pred L \) and \( K \pred L \).
 
@@ -738,9 +801,7 @@ We will introduce a definition that we will find useful mostly for proving \full
     \begin{itemize}
       \item In the case \fullref{thm:parallel_beta_reduction_deconstruction/app/app}, we have \( K = EF \), where \( \qabs x A \pred E \) and \( B \pred F \).
 
-      \Fullref{thm:parallel_beta_reduction_deconstruction/abs} implies that \( E \aequiv \qabs x G \), where \( A \pred G \). The inductive hypothesis on \( A \pred C \) implies that there exists some \( \synlambda \)-term \( P \) such that \( C \pred P \) and \( G \pred P \).
-
-      The inductive hypothesis on \( B \pred D \) implies that there exists a \( \synlambda \)-term \( Q \) such that \( D \pred Q \) and \( F \pred Q \).
+      \Fullref{thm:parallel_beta_reduction_deconstruction/abs} implies that \( E \aequiv \qabs x G \), where \( A \pred G \). By the inductive hypothesis on \( A \pred C \), there exists a confluence point \( P \) of \( C \) and \( G \). By the inductive hypothesis on \( B \pred D \), there exists a confluence point \( Q \) of \( D \) and \( F \).
 
       Let \( L \coloneqq P[x \mapsto Q] \).
       \begin{itemize}
@@ -759,7 +820,7 @@ We will introduce a definition that we will find useful mostly for proving \full
 
       \item In the case \fullref{thm:parallel_beta_reduction_deconstruction/app/red}, we have \( K \aequiv F[x \mapsto G] \), where \( B \pred G \) and \( A \pred F \).
 
-      The inductive hypothesis on \( A \pred C \) implies that there exists a \( \synlambda \)-term \( P \) such that \( C \pred P \) and \( F \pred P \). Similarly, there exists a \( \synlambda \)-term \( Q \) such that \( D \pred Q \) and \( G \pred Q \).
+      By the inductive hypothesis on \( A \pred C \), there exists a confluence point \( P \) of \( C \) and \( F \) and a confluence point \( Q \) of \( D \) and \( G \).
 
       Let \( L \coloneqq P[x \mapsto Q] \). Then \fullref{thm:substitution_on_parallel_reduction} implies that
       \begin{equation*}
@@ -773,19 +834,11 @@ We will introduce a definition that we will find useful mostly for proving \full
   \end{itemize}
 \end{proof}
 
-\paragraph{The Church-Rosser theorem}
+\begin{theorem}[Church-Rosser theorem for beta reduction]\label{thm:church_rosser_theorem_for_beta_reduction}
+  \hyperref[def:beta_eta_reduction]{Multi-step \( \beta \)-reduction} is \hyperref[def:relation_confluence]{confluent}.
+  \end{theorem}
+\begin{proof}
+  By \fullref{thm:parallel_beta_church_rosser}, \hyperref[def:parallel_beta_reduction]{parallel \( \beta \)-reduction} is single-step confluent. By \fullref{thm:confluence_of_transitive_closure}, so is its transitive closure.
 
-\begin{theorem}[Church-Rosser theorem]\label{thm:church_rosser_theorem}
-  Let \enquote{\( \rho \)} be either \enquote{\( \beta \)}, \enquote{\( \eta \)} or \enquote{\( \beta\eta \)}.
-
-  If \( M \rred* N \) and \( M \rred* K \), then there exists a \( \synlambda \)-term \( L \) such that \( N \rred* L \) and \( K \rred* L \).
-
-  \begin{figure}[!ht]
-    \centering
-    \includegraphics[page=1]{output/thm__church_rosser_theorem}
-    \caption{An illustration of \fullref{thm:church_rosser_theorem}}\label{fig:thm:church_rosser_theorem}
-  \end{figure}
-\end{theorem}
-\begin{comments}
-  \item \incite[ch. 3]{Barendregt1984} and \incite[1B5]{Hindley1997} call this property \enquote{the Church-Rosser property}, while \incite[130]{Mimram2020} and \incite[14]{TroelstraSchwichtenberg2000} call it \enquote{confluence}.
-\end{comments}
+  By \fullref{thm:parallel_beta_reduction_transitive_closure}, the transitive closure of parallel \( \beta \)-reduction coincides with multi-step \( \beta \)-reduction; thus multi-step \( \beta \)-reduction is confluent.
+\end{proof}
