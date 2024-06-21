@@ -64,15 +64,16 @@
 \begin{definition}\label{def:beta_eta_reduction}\mcite[1B1; 1C1]{Hindley1997}
   Consider the following rules:
   \begin{TwoColumns}
-    \begin{equation*}\taglabel[\ensuremath{ \logic{Red}_\beta }]{def:lambda_reduction/beta}
+    \begin{equation*}\taglabel[\ensuremath{ \logic{Red}_\beta }]{def:beta_eta_reduction/beta}
       \begin{prooftree}
         \infer0[\ref{def:lambda_reduction/beta}]{ \underbrace{(\qabs x M) N}_{\T{\term{\( \beta \)-redex}}} \bred \underbrace{M[x \mapsto N]}_{\T{\term{\( \beta \)-contractum}}} }.
       \end{prooftree}
     \end{equation*}
   \BeginSecondColumn
-    \begin{equation*}\taglabel[\ensuremath{ \logic{Red}_\eta }]{def:lambda_reduction/eta}
+    \begin{equation*}\taglabel[\ensuremath{ \logic{Red}_\eta }]{def:beta_eta_reduction/eta}
       \begin{prooftree}
-        \infer0[\ref{def:lambda_reduction/eta}]{ \underbrace{\qabs x M x}_{\T{\term{\( \eta \)-redex}}} \ered \underbrace{M}_{\mathclap{\T{\term{\( \eta \)-contractum}}}} }.
+        \hypo{ x \not\in \op*{Free}(M) }
+        \infer1[\ref{def:lambda_reduction/eta}]{ \underbrace{\qabs x M x}_{\T{\term{\( \eta \)-redex}}} \ered \underbrace{M}_{\mathclap{\T{\term{\( \eta \)-contractum}}}} }.
       \end{prooftree}
     \end{equation*}
   \end{TwoColumns}
@@ -195,7 +196,7 @@
   \end{thmenum}
 \end{example}
 
-\begin{proposition}\label{thm:beta_reduction_free_variables}
+\begin{lemma}\label{thm:beta_reduction_free_variables}
   \begin{subequations}
     Let \( M = (\qabs x N) K \). Then
     \begin{equation}\label{eq:thm:beta_reduction_free_variables/equality}
@@ -210,7 +211,7 @@
       \op*{Free}(N[x \mapsto K]) \subseteq \op*{Free}(M).
     \end{equation}
   \end{subequations}
-\end{proposition}
+\end{lemma}
 \begin{proof}
   The equality \eqref{eq:thm:beta_reduction_free_variables/equality} follows from \eqref{eq:thm:lambda_substitution_free_variables_single} by noting that
   \begin{equation*}
@@ -224,11 +225,20 @@
   \end{equation*}
 \end{proof}
 
-\begin{corollary}\label{thm:beta_reduction_free_variables_contra}
-  If \( M \bred* N \), then \( \op*{Free}(N) \subseteq \op*{Free}(M) \).
-\end{corollary}
+\begin{proposition}\label{thm:eta_reduction_free_variables_equal}
+  If \( M \ered N \), then \( \op*{Free}(M) = \op*{Free}(N) \).
+\end{proposition}
 \begin{proof}
-  Follows from \fullref{thm:beta_reduction_free_variables} via induction.
+  Follows via \fullref{thm:least_fixed_point_induction} by noting that \( x \) is not free in \( M \) if and only if it is not free in \( \qabs x M x \).
+\end{proof}
+
+\begin{proposition}\label{thm:beta_eta_reduction_free_variables_contra}
+  Let \enquote{\( \rho \)} be \enquote{\( \beta \)}, \enquote{\( \eta \)} or \enquote{\( \beta\eta \)}.
+
+  If \( M \rred N \), then \( \op*{Free}(N) \subseteq \op*{Free}(M) \).
+\end{proposition}
+\begin{proof}
+  Follows from \fullref{thm:beta_reduction_free_variables} and \fullref{thm:eta_reduction_free_variables_equal}.
 \end{proof}
 
 \begin{example}\label{ex:thm:beta_reduction_free_variables}
@@ -239,6 +249,41 @@
     \thmitem{ex:thm:beta_reduction_free_variables/not_free} The \( \beta \)-contraction of \( (\qabs \synx \synz \syny) \synz \) is \( \synz \synz \). Both have \( \synz \) as a free variable, but the \( \beta \)-redex also has \( \syny \).
   \end{thmenum}
 \end{example}
+
+\begin{proposition}\label{thm:substitution_on_beta_eta_reduction}
+  Let \enquote{\( \rho \)} be \enquote{\( \beta \)}, \enquote{\( \eta \)} or \enquote{\( \beta\eta \)}.
+
+  Fix \( \synlambda \)-terms \( M \) and \( N \) such that \( M \rred N \). Then, for any substitution \( \sigma \), we have \( M[\sigma] \rred N[\sigma] \).
+\end{proposition}
+\begin{proof}
+  We will use \fullref{thm:least_fixed_point_induction} on \( M \rred N \) simultaneously on all substitutions to show that \( M[\sigma] \rred N[\sigma] \).
+  \begin{itemize}
+    \item If \( M \rred N \) due to \ref{def:lambda_reduction/app_left}, then \( M = AB \) and \( N = AD \), where \( B \rred D \) and the inductive hypothesis holds for the latter. Then
+    \begin{equation*}
+      M[\sigma]
+      =
+      A[\sigma] \thinspace B[\sigma]
+      \reloset {\T{ind.}} \rred
+      A[\sigma] \thinspace D[\sigma]
+      =
+      N[\sigma].
+    \end{equation*}
+
+    \item If \( M \rred N \) due to \ref{def:lambda_reduction/app_right}, we proceed analogously.
+
+    \item If \( M \rred N \) due to \ref{def:lambda_reduction/alpha}, we use \fullref{thm:substitution_on_alpha_equivalent_terms}.
+
+    \item If \( M \rred N \) due to \ref{def:lambda_reduction/abs}, we have \( M = \qabs x A \) and \( N = \qabs x B \), where \( A \rred B \) and the inductive hypothesis holds for the latter. \Fullref{thm:lambda_substitution_single_rule} implies that
+    \begin{align*}
+      M[\sigma] &= \qabs u A[\sigma_{x \mapsto u}], &&u \not\in \op*{Free}(M) \cup \op*{Free}(M[\sigma]), \\
+      N[\sigma] &= \qabs v B[\sigma_{x \mapsto v}], &&v \not\in \op*{Free}(N) \cup \op*{Free}(N[\sigma]).
+    \end{align*}
+
+    Furthermore, \fullref{thm:eta_reduction_free_variables_equal} implies that the free variables of \( M \) and \( N \) coincide, thus \( u = v \).
+
+    The inductive hypothesis implies that \( A[\sigma_{x \mapsto u}] \rred B[\sigma_{x \mapsto u}] \), hence we can apply \ref{def:lambda_reduction/alpha} to obtain \( M[\sigma] \rred N[\sigma] \).
+  \end{itemize}
+\end{proof}
 
 \paragraph{Fixed point combinators}
 
@@ -303,21 +348,23 @@
   \end{figure}
 \end{definition}
 \begin{comments}
-  \item It is natural to define multi-step confluence of \( {\to} \) as single-step confluence of the reflexive and transitive closure of \( {\to} \). This makes little sense for reduction relations, since we would obtain \enquote{multi-step confluence of single-step reduction relations} and \enquote{single-step confluence of multi-step reduction relations}.
+  \item It is natural to define multi-step confluence of \( {\to} \) as single-step confluence of the reflexive and transitive closure of \( {\to} \). This makes little sense for reduction relations, since it would leave us with \enquote{multi-step confluence of single-step reduction relations} and \enquote{single-step confluence of multi-step reduction relations}.
 
   Furthermore, by having chosen to make \( \alpha \)-equivalence explicit, we must rely on the \hyperref[def:alpha_reflexive_closure]{\( \alpha \)-reflexive} closure instead of the reflexive closure, which forces us to restrict our attention to reduction relations rather than arbitrary relations.
 
-  Thus, we avoid defining multi-step confluence.
+  We chose to not introduce multi-step confluence.
 
   \item \incite[ch. 3]{Barendregt1984} uses the term \enquote{diamond property} for what we call \enquote{single-step confluence} and \enquote{Church-Rosser property} for what we would call \enquote{multi-step confluence}. \incite[3.4.1]{Mimram2020} uses \enquote{confluence} for what we would call \enquote{multi-step confluence}, while \incite[14]{TroelstraSchwichtenberg2000} use both \enquote{confluence} and \enquote{Church-Rosser property} for what we call \enquote{single-step confluence}.
 \end{comments}
 
-\begin{proposition}\label{thm:confluence_of_transitive_closure}
-  If a relation is \hyperref[def:relation_confluence]{single-step confluent}, so is its \hyperref[def:relation_closures/transitive]{transitive closure}.
+\begin{proposition}\label{thm:confluence_of_reflexive_transitive_closure}
+  If a relation is \hyperref[def:relation_confluence]{single-step confluent}, so is its \hyperref[def:relation_closures/transitive]{reflexive} and \hyperref[def:relation_closures/transitive]{transitive closure}.
+
+  More generally, let \( {\to} \) be a relation and let \( {\redrel*{}} \) be its corresponding closure. Suppose that, whenever \( M \to N \) and \( M \to K \), there exists some \( L \) such \( N \redrel*{} L \) and \( K \redrel*{} L \).
+
+  Then \( {\redrel*{}} \) is confluent.
 \end{proposition}
 \begin{proof}
-  Suppose that the relation \( {\to} \) is confluent. Denote its transitive closure by \( {\redrel*{}} \).
-
   Suppose that \( M \redrel*{} N \) and \( M \redrel*{} K \). Then there exist sequences
   \begin{equation*}
     M = N_0 \to N_1 \to \cdots \to N_n = N
@@ -340,7 +387,7 @@
     \begin{figure}[!ht]
       \centering
       \includegraphics[page=1]{output/fig__thm__single_step_confluent_implies_multi_step}
-      \caption{An illustration of the inductive step in the proof of \fullref{thm:confluence_of_transitive_closure}}\label{fig:thm:confluence_of_transitive_closure}
+      \caption{An illustration of the inductive step in the proof of \fullref{thm:confluence_of_reflexive_transitive_closure}}\label{fig:thm:confluence_of_reflexive_transitive_closure}
     \end{figure}
   \end{itemize}
 
@@ -352,6 +399,36 @@
   \end{itemize}
 
   In all cases, \( N \redrel*{} L \) and \( K \redrel*{} L \).
+\end{proof}
+
+\begin{corollary}\label{thm:confluence_of_multi_step_reduction}
+  If a \hyperref[def:lambda_reduction]{single-step reduction relation} is \hyperref[def:relation_confluence]{confluent}, so is the corresponding multi-step reduction relation.
+
+  More generally, suppose that, whenever \( M \rred N \) and \( M \rred K \), there exists some \( \synlambda \)-term \( L \) such \( N \rred* L \) and \( K \rred* L \).
+
+  Then \( {\rred*} \) is confluent.
+\end{corollary}
+\begin{proof}
+  \Fullref{thm:confluence_of_reflexive_transitive_closure} implies that its reflexive and transitive closure \( {\rred*_R} \) of \( {\rred} \) is confluent.
+
+  But \( {\rred*} \) is the \( \alpha \)-reflexive and transitive closure of \( {\rred} \). Thus, we have the following possibilities:
+  \begin{itemize}
+    \item If \( M \aequiv N \) and \( M \aequiv K \), let \( L \coloneqq M \). Then \( N \rred* L \) and \( K \rred* L \).
+
+    \item If \( M \aequiv N \) and \( M \rred*_R K \), let \( L \coloneqq K \). Clearly \( K \rred* L \). To show that \( N \rred* L \), consider a concrete sequence
+    \begin{equation*}
+      M = K_0 \rred K_1 \rred \cdots \rred K_k = K.
+    \end{equation*}
+
+    \begin{itemize}
+      \item If \( k = 0 \), then \( M = K \), and \( N \aequiv L \).
+      \item If \( K > 0 \), then \( N \aequiv M \rred K_1 \), hence \ref{def:parallel_beta_reduction/alpha} allows us to conclude that \( N \rred K_1 \). By transitivity, \( N \rred* K = L \).
+    \end{itemize}
+
+    \item If \( M \rred*_R N \) and \( M \aequiv K \), we swap \( N \) and \( K \) and use the previous case.
+
+    \item If \( M \rred*_R N \) and \( M \rred*_R K \), let \( L \) be a \( {\rred*_R} \)-confluence point of \( N \) and \( K \).
+  \end{itemize}
 \end{proof}
 
 \paragraph{Confluence of \( \beta \)-reduction}\hfill
@@ -685,12 +762,13 @@ We will introduce a definition that we will find useful mostly for proving \full
 
     \item If \( AB \pred N \) due to \ref{def:parallel_beta_reduction/alpha}, then \( AB \aequiv A' B' \) and \( N \aequiv N' \), where \( A' B' \pred N' \) and the inductive hypothesis holds for the latter.
 
+    \Fullref{thm:parallel_beta_reduction_deconstruction/app} lists the following possibilities:
     \begin{itemize}
-      \item The possibility of \fullref{thm:parallel_beta_reduction_deconstruction/app/app} for \( A' B' \pred N' \) implies that \( N' = C' D' \), where \( A' \pred C' \) and \( B' \pred D' \). Furthermore, due to \ref{def:lambda_term_alpha_equivalence/app}, we conclude that \( N = CD \), where \( C \aequiv C' \) and \( D \aequiv D' \).
+      \item The possibility \fullref{thm:parallel_beta_reduction_deconstruction/app/app} for \( A' B' \pred N' \) implies that \( N' = C' D' \), where \( A' \pred C' \) and \( B' \pred D' \). Furthermore, due to \ref{def:lambda_term_alpha_equivalence/app}, we conclude that \( N = CD \), where \( C \aequiv C' \) and \( D \aequiv D' \).
 
       Then \ref{def:parallel_beta_reduction/alpha} implies that \( A \pred C \) and \( B \pred D \), which is the desired result.
 
-      \item The possibility of \fullref{thm:parallel_beta_reduction_deconstruction/app/red} for \( A' B' \pred N' \) implies that \( A' = \qabs y E' \) and \( N' = F'[y \mapsto G'] \), where \( B' \pred G' \) and \( E' \pred F' \).
+      \item The possibility \fullref{thm:parallel_beta_reduction_deconstruction/app/red} for \( A' B' \pred N' \) implies that \( A' = \qabs y E' \) and \( N' = F'[y \mapsto G'] \), where \( B' \pred G' \) and \( E' \pred F' \).
 
       \begin{itemize}
         \item If \( A \aequiv A' \) due to \ref{thm:alpha_equivalence_simplified/lift}, then \( A = \qabs y E \), where \( E \aequiv E' \). Via \ref{def:parallel_beta_reduction/alpha} we conclude that \( E \pred F' \).
@@ -836,9 +914,182 @@ We will introduce a definition that we will find useful mostly for proving \full
 
 \begin{theorem}[Church-Rosser theorem for beta reduction]\label{thm:church_rosser_theorem_for_beta_reduction}
   \hyperref[def:beta_eta_reduction]{Multi-step \( \beta \)-reduction} is \hyperref[def:relation_confluence]{confluent}.
-  \end{theorem}
+\end{theorem}
 \begin{proof}
-  By \fullref{thm:parallel_beta_church_rosser}, \hyperref[def:parallel_beta_reduction]{parallel \( \beta \)-reduction} is single-step confluent. By \fullref{thm:confluence_of_transitive_closure}, so is its transitive closure.
+  By \fullref{thm:parallel_beta_church_rosser}, \hyperref[def:parallel_beta_reduction]{parallel \( \beta \)-reduction} is single-step confluent. By \fullref{thm:confluence_of_reflexive_transitive_closure}, so is its reflexive and transitive closure. Since it is reflexive, it is invariant under the reflexive closure.
 
   By \fullref{thm:parallel_beta_reduction_transitive_closure}, the transitive closure of parallel \( \beta \)-reduction coincides with multi-step \( \beta \)-reduction; thus multi-step \( \beta \)-reduction is confluent.
+\end{proof}
+
+\paragraph{Confluence of \( \eta \)-reduction}
+
+\begin{lemma}\label{thm:eta_reduction_deconstruction}
+  If \( M \ered N \), depending on the structure of \( M \), we have the following possibilities:
+  \begin{thmenum}
+    \thmitem{thm:eta_reduction_deconstruction/app} If \( M = AB \), we have two possibilities:
+    \begin{thmenum}
+      \thmitem{thm:eta_reduction_deconstruction/app/app_left} \( N \aequiv AD \), where \( B \ered D \).
+
+      \thmitem{thm:eta_reduction_deconstruction/app/app_right} \( N \aequiv CB \), where \( A \ered C \).
+    \end{thmenum}
+
+    \thmitem{thm:eta_reduction_deconstruction/abs} If \( M = \qabs x A \), we also have two possibilities:
+    \begin{thmenum}
+      \thmitem{thm:eta_reduction_deconstruction/abs/lift} \( N \aequiv \qabs x B \), where \( A \ered B \).
+
+      \thmitem{thm:eta_reduction_deconstruction/abs/red} \( A \aequiv Nx \) and \( x \not\in \op*{Free}(N) \).
+    \end{thmenum}
+  \end{thmenum}
+\end{lemma}
+\begin{proof}
+  \SubProofOf{thm:eta_reduction_deconstruction/app} Let \( M = AB \). We will use \fullref{thm:least_fixed_point_induction} on \( AB \ered N \):
+  \begin{itemize}
+    \item If \( AB \ered N \) due to \ref{def:lambda_reduction/app_left}, then \fullref{thm:eta_reduction_deconstruction/app/app_left} holds.
+
+    \item If \( AB \ered N \) due to \ref{def:lambda_reduction/app_right}, then \fullref{thm:eta_reduction_deconstruction/app/app_right} holds.
+
+    \item If \( AB \ered N \) due to \ref{def:lambda_reduction/alpha}, then \( AB \aequiv A' B' \) and \( N \aequiv N' \), where \( A' B' \ered N' \) and the inductive hypothesis holds for the latter.
+
+    \Fullref{thm:eta_reduction_deconstruction/app} lists the following possibilities for \( A' B' \ered N' \):
+    \begin{itemize}
+      \item In the case \fullref{thm:eta_reduction_deconstruction/app/app_left}, we have \( N' \aequiv A' D' \), where \( B' \ered D' \).
+
+      Let \( D \coloneqq D' \). We have \( B \aequiv B' \ered D' = D \), hence \ref{def:parallel_beta_reduction/alpha} implies that \( B \ered D \).
+
+      Furthermore, since \( A \aequiv A' \), we have \( N \aequiv N' \aequiv A D \).
+
+      \item In the case \fullref{thm:eta_reduction_deconstruction/app/app_right}, we proceed analogously.
+    \end{itemize}
+  \end{itemize}
+
+  \SubProofOf{thm:eta_reduction_deconstruction/abs} Let \( M = \qabs x A \). We will use \fullref{thm:least_fixed_point_induction} on \( (\qabs x A) \ered N \):
+  \begin{itemize}
+    \item If \( (\qabs x A) \ered N \) due to \ref{def:lambda_reduction/abs}, then \fullref{thm:eta_reduction_deconstruction/abs/lift} holds.
+
+    \item If \( (\qabs x A) \ered N \) due to \ref{def:beta_eta_reduction/eta}, then \fullref{thm:eta_reduction_deconstruction/abs/red} holds.
+
+    \item If \( (\qabs x A) \ered N \) due to \ref{def:lambda_reduction/alpha}, then \( \qabs x A = M \aequiv M' \) and \( N \aequiv N' \), where \( M' \pred N' \) and the inductive hypothesis holds for the latter.
+
+    Furthermore, \ref{def:lambda_term_alpha_equivalence/abs} implies that \( M' = \qabs y A' \), where \( A[x \mapsto n] \aequiv A'[y \mapsto n] \) for every \( n \) not free in \( M \). In particular, \( A \aequiv A'[y \mapsto x] \).
+
+    \Fullref{thm:eta_reduction_deconstruction/abs} lists the following possibilities for \( (\qabs y A') \ered N' \):
+    \begin{itemize}
+      \item In the case \fullref{thm:eta_reduction_deconstruction/abs/lift}, we have \( N' \aequiv \qabs y B' \), where \( A' \ered B' \).
+
+      Let \( B \coloneqq B'[z \mapsto x] \). Then \fullref{thm:substitution_on_beta_eta_reduction} implies that \( A'[y \mapsto x] \ered B \) and \ref{def:parallel_beta_reduction/alpha} implies that \( A \ered B \).
+
+      Furthermore, we have
+      \begin{equation*}
+        N
+        \aequiv
+        N'
+        \aequiv
+        \qabs y B'
+        \reloset {\eqref{eq:thm:alpha_conversion}} \aequiv
+        \qabs x B.
+      \end{equation*}
+
+      We conclude that \fullref{thm:eta_reduction_deconstruction/abs/lift} holds.
+
+      \item In the case \fullref{thm:eta_reduction_deconstruction/abs/red}, we have \( A' \aequiv N'y \) and \( y \not\in \op*{Free}(N') \). Then, due to \fullref{thm:lambda_substitution_noop},
+      \begin{equation*}
+        \underbrace{A'[y \mapsto x]}_A
+        =
+        N'[y \mapsto x] x
+        =
+        N' x.
+      \end{equation*}
+
+      Applying \ref{def:lambda_term_alpha_equivalence/app}, we obtain \( N' x \aequiv N x \). Therefore,
+      \begin{equation*}
+        A \aequiv Nx.
+      \end{equation*}
+
+      Since \( y \) is not free in \( N' \), \fullref{thm:lambda_substitution_free_variables} implies that \( x \) is not free in \( N' = N'[y \mapsto x] \), and \fullref{thm:def:lambda_term_alpha_equivalence/free} implies that \( x \) is not free in \( N \).
+
+      Thus, \fullref{thm:eta_reduction_deconstruction/abs/red} follows.
+    \end{itemize}
+  \end{itemize}
+\end{proof}
+
+\begin{theorem}[Church-Rosser theorem for eta reduction]\label{thm:church_rosser_theorem_for_eta_reduction}
+  \hyperref[def:beta_eta_reduction]{Multi-step \( \eta \)-reduction} is \hyperref[def:relation_confluence]{confluent}.
+\end{theorem}
+\begin{proof}
+  \SubProof{Proof for one step} We will use \fullref{thm:least_fixed_point_induction} on \( M \ered N \) to show that \( M \ered K \) implies the existence of a multi-step confluence point \( L \) such that \( N \ered* L \) and \( K \ered* L \).
+
+  \begin{itemize}
+    \item If \( M \ered N \) due to \ref{def:lambda_reduction/app_left}, then \( M = PB \) and \( N = PD \), where \( B \ered D \) and the inductive hypothesis holds for the latter.
+
+    \Fullref{thm:eta_reduction_deconstruction/app} lists the following possibilities for \( PB \pred K \):
+    \begin{itemize}
+      \item The possibility \fullref{thm:eta_reduction_deconstruction/app/app_left} implies that \( K \aequiv PF \), where \( B \ered F \).
+
+      By the inductive hypothesis on \( B \ered D \), there exists a multi-step confluence point \( R \) of \( D \) and \( F \). Let \( L \coloneqq PR \). Then, due to \ref{def:lambda_reduction/app_left}, by induction on the number of steps in \( {\ered*} \) we obtain
+      \begin{equation*}
+        N = PD \ered* PR = L
+      \end{equation*}
+      and
+      \begin{equation*}
+        K \aequiv PF \ered* PR = L,
+      \end{equation*}
+      which due to \ref{def:lambda_reduction/alpha} implies \( K \ered* L \).
+
+      \item The possibility \fullref{thm:eta_reduction_deconstruction/app/app_right} implies that \( K \aequiv QB \), where \( P \ered* Q \). We proceed as follows:
+      \begin{equation*}
+        \includegraphics[page=1]{output/thm__church_rosser_theorem_for_eta_reduction}
+      \end{equation*}
+    \end{itemize}
+
+    \item If \( M \ered N \) due to \ref{def:lambda_reduction/app_right}, we proceed analogously.
+
+    \item If \( M \ered N \) due to \ref{def:lambda_reduction/abs}, then \( M = \qabs x A \) and \( N = \qabs x B \), where \( A \ered B \) and the inductive hypothesis holds for the latter.
+
+    \Fullref{thm:eta_reduction_deconstruction/abs} lists the following possibilities for \( (\qabs x A) \pred K \):
+    \begin{itemize}
+      \item The possibility \fullref{thm:eta_reduction_deconstruction/abs/lift} implies that \( K \aequiv \qabs x C \), where \( A \ered C \). The inductive hypothesis on \( A \ered B \) implies the existence of a multi-step confluence point \( P \) of \( B \) and \( C \). Let \( L \coloneqq \qabs x P \)
+
+      By induction on the number of steps in \( B \ered* P \), via \ref{def:lambda_reduction/abs} we obtain
+      \begin{equation*}
+        N = \qabs x B \ered* \qabs x P = L
+      \end{equation*}
+      and similarly
+      \begin{equation*}
+        K \aequiv \qabs x C \ered* \qabs x P = L,
+      \end{equation*}
+      which due to \ref{def:lambda_reduction/alpha} implies \( K \ered* L \).
+
+      \item The possibility \fullref{thm:eta_reduction_deconstruction/abs/red} implies that \( A \aequiv Kx \) and that \( x \) is not free in \( K \).
+
+      Then \( Kx \ered B \) and, by \ref{thm:eta_reduction_deconstruction/app}, there exists a term \( L \) such that \( B \aequiv Lx \) and \( K \ered L \). This is a single-step confluence point of \( K \) and \( N \) because
+      \begin{equation*}
+        N
+        =
+        \qabs x B
+        \aequiv
+        \qabs x L x
+        \ered
+        L.
+      \end{equation*}
+    \end{itemize}
+
+    \item If \( M \ered N \) due to \ref{def:lambda_reduction/alpha}, then \( M \aequiv M' \ered N' \aequiv N \), where \( M' \ered N' \) and the inductive hypothesis holds for the latter.
+
+    Then \ref{def:lambda_reduction/alpha} allows us to conclude that \( M' \ered K \), hence we can use the inductive hypothesis on \( M' \ered N' \) to obtain a multi-step confluence point \( L \) of \( N' \) and \( K \).
+
+    Again via \ref{def:lambda_reduction/alpha}, we conclude that \( N \ered* L \). Therefore, \( L \) is the desired confluence point.
+
+    \item If \( M \ered N \) due to \ref{def:beta_eta_reduction/eta}, then \( M = \qabs x N x \).
+
+    \Fullref{thm:eta_reduction_deconstruction/abs} lists the following possibilities for \( (\qabs x N x) \pred K \):
+    \begin{itemize}
+      \item The possibility \fullref{thm:eta_reduction_deconstruction/abs/lift} implies that \( K \aequiv \qabs x C \), where \( Nx \ered C \). \Fullref{thm:eta_reduction_deconstruction/app} implies that \( C \ered Lx \).
+
+      Then \( K \ered L \) and \( N \ered C \ered L \).
+
+      \item The possibility \fullref{thm:eta_reduction_deconstruction/abs/red} implies that \( N x \ered K x \), and \ref{def:beta_eta_reduction/app_right} implies that \( N \ered K \). Then \( K \) is a multi-step confluence point of \( N \) and \( K \).
+    \end{itemize}
+  \end{itemize}
+
+  \SubProof{Proof for multiple steps} If \( M \ered* N \) and \( M \ered* K \), \fullref{thm:confluence_of_multi_step_reduction} implies that we can use the one-step result to obtain a \( \synlambda \)-term \( L \) such that \( N \ered* L \) and \( K \ered* L \).
 \end{proof}
