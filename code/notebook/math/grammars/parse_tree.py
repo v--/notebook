@@ -30,10 +30,10 @@ class Derivation:
 @dataclass
 class ParseTree:
     payload: NonTerminal | Terminal | Empty
-    children: list['ParseTree'] = field(default_factory=list)
+    subtrees: list['ParseTree'] = field(default_factory=list)
 
     def is_leaf(self) -> bool:
-        return len(self.children) == 0
+        return len(self.subtrees) == 0
 
     def insert_subtree(self) -> None:
         pass
@@ -41,23 +41,23 @@ class ParseTree:
     def iter_symbols(self) -> Iterable[Terminal | NonTerminal | Empty]:
         yield self.payload
 
-        for node in self.children:
+        for node in self.subtrees:
             yield from node.iter_symbols()
 
     def yield_string(self) -> str:
         return ''.join(sym.value for sym in self.iter_symbols() if isinstance(sym, Terminal))
 
     def __hash__(self) -> int:
-        return hash(self.payload) + functools.reduce(operator.xor, map(hash, self.children), 0)
+        return hash(self.payload) ^ hash(tuple(self.subtrees))
 
 
 def _insert_subtree_leftmost(tree: ParseTree, subtree: ParseTree) -> bool:
-    for i, child in enumerate(tree.children):
+    for i, child in enumerate(tree.subtrees):
         if child.payload == subtree.payload and child.is_leaf():
-            tree.children[i] = subtree
+            tree.subtrees[i] = subtree
             return True
 
-    return any(_insert_subtree_leftmost(child, subtree) for child in tree.children)
+    return any(_insert_subtree_leftmost(child, subtree) for child in tree.subtrees)
 
 
 # This is alg:parse_tree_to_leftmost_derivation in the monograph
@@ -68,9 +68,9 @@ def derivation_to_parse_tree(derivation: Derivation) -> ParseTree:
         subtree = ParseTree(step.rule.src_symbol)
 
         if is_epsilon_rule(step.rule):
-            subtree.children.append(ParseTree(empty))
+            subtree.subtrees.append(ParseTree(empty))
         else:
-            subtree.children = [ParseTree(sym) for sym in step.rule.dest]
+            subtree.subtrees = [ParseTree(sym) for sym in step.rule.dest]
 
         if tree is None:
             tree = subtree
@@ -80,48 +80,35 @@ def derivation_to_parse_tree(derivation: Derivation) -> ParseTree:
     return cast(ParseTree, tree)
 
 
+def _iter_leftmost_parse_subtrees(tree: ParseTree) -> Iterable[ParseTree]:
+    yield tree
+
+    for subtree in tree.subtrees:
+        if isinstance(subtree.payload, NonTerminal):
+            yield from _iter_leftmost_parse_subtrees(subtree)
+
+
+def _iter_leftmost_derivation_steps(tree: ParseTree) -> Iterable[DerivationStep]:
+    last_step: DerivationStep | None = None
+
+    for subtree in _iter_leftmost_parse_subtrees(tree):
+        assert isinstance(subtree.payload, NonTerminal)
+        rule = GrammarRule(
+            [subtree.payload],
+            [sstree.payload for sstree in subtree.subtrees if isinstance(sstree.payload, Terminal | NonTerminal)]
+        )
+
+        if last_step is None:
+            new_step_payload = rule.dest
+        else:
+            index = last_step.payload.index(subtree.payload)
+            new_step_payload = last_step.payload[:index] + rule.dest + last_step.payload[index + 1:]
+
+        last_step = DerivationStep(new_step_payload, rule)
+        yield last_step
+
+
 # This is alg:derivation_to_parse_tree in the monograph
 def parse_tree_to_derivation(tree: ParseTree) -> Derivation:
     assert isinstance(tree.payload, NonTerminal)
-    queue: SimpleQueue[ParseTree] = SimpleQueue()
-
-    first_rule = GrammarRule(
-        [tree.payload],
-        [subtree.payload for subtree in tree.children if isinstance(subtree.payload, Terminal | NonTerminal)]
-    )
-
-    derivation = Derivation(
-        tree.payload,
-        [
-            DerivationStep(first_rule.dest, first_rule)
-        ]
-    )
-
-    for subtree in tree.children:
-        if isinstance(subtree.payload, NonTerminal):
-            queue.put(subtree)
-
-    while not queue.empty():
-        subtree = queue.get()
-        assert isinstance(subtree.payload, NonTerminal)
-        last_step = derivation.steps[-1]
-        index = last_step.payload.index(subtree.payload)
-        new_step_payload = last_step.payload[:index] + \
-            [subsubtree.payload for subsubtree in subtree.children if isinstance(subsubtree.payload, (Terminal, NonTerminal))] + \
-            last_step.payload[index + 1:]
-
-        new_step = DerivationStep(
-            new_step_payload,
-            GrammarRule(
-                [subtree.payload],
-                [subsubtree.payload for subsubtree in subtree.children if isinstance(subsubtree.payload, Terminal | NonTerminal)]
-            )
-        )
-
-        derivation.steps.append(new_step)
-
-        for subsubtree in subtree.children:
-            if isinstance(subsubtree.payload, NonTerminal):
-                queue.put(subsubtree)
-
-    return derivation
+    return Derivation(tree.payload, list(_iter_leftmost_derivation_steps(tree)))

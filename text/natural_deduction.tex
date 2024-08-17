@@ -33,79 +33,6 @@
   \item This definition is based on the one by \incite[291]{Szabo1964Gentzen}, but formalized via grammars and not tied to either formulas nor sequents.
 \end{comments}
 
-\begin{example}\label{ex:fixed_point_recursion_for_relations}
-  Among their other uses, \hyperref[def:inference_rule]{inference rules} are a convenient mechanism for defining relations. We will illustrate this with an example.
-
-  The following rules express how to construct the \hyperref[thm:equivalence_closure]{equivalence closure} \( {\congdot} \) of a binary relation \( {\dotsim} \):
-  \begin{align*}
-    \begin{prooftree}
-      \hypo{ \synx \dotsim \syny }
-      \infer1[\logic{I}]{ \synx \congdot \syny }
-    \end{prooftree}
-    &&
-    \begin{prooftree}
-      \infer0[\logic{R}]{ \synx \congdot \synx }
-    \end{prooftree}
-    \\\\
-    \begin{prooftree}
-      \hypo{ \synx \congdot \syny }
-      \infer1[\logic{S}]{ \syny \congdot \synx }
-    \end{prooftree}
-    &&
-    \begin{prooftree}
-      \hypo{ \synx \congdot \syny }
-      \hypo{ \syny \congdot \synz }
-      \infer2[\logic{T}]{ \synx \congdot \synz }
-    \end{prooftree}
-  \end{align*}
-
-  Note that we have used \( {\congdot} \) and \( {\dotsim} \) as our relation symbols to highlight that inference rules are syntactic constructions, and the relation symbols are merely schemas for actual relations.
-
-  Rather than giving an all-encompassing formal definition for how such inference rules are interpreted, we will translate the aforementioned rules into an endofunction on \( M \times M \) suitable for \fullref{thm:knaster_tarski_theorem}:
-  \begin{equation*}
-    \begin{aligned}
-      R(r) \coloneqq \thickspace & r \thickspace {\cup} \\
-                                 & \set{ (x, y) \given x \sim y } \thickspace {\cup} \\
-                                 & \set{ (x, x) \given x \in M } \thickspace {\cup} \\
-                                 & \set{ (y, x) \given (x, y) \in r } \thickspace {\cup} \\
-                                 & \set{ (x, z) \given (x, y) \in r \T{and} (y, z) \in r }.
-    \end{aligned}
-  \end{equation*}
-
-  The equivalence closure is simply the least fixed point of \( R \).
-
-  A downside of this approach is that it may be difficult to determine whether \( R \) is \hyperref[def:scott_continuity]{Scott-continuous}, and thus whether the least fixed point can be reached by taking the union
-  \begin{equation*}
-    \bigcup_{k=0}^\infty T^k(\varnothing).
-  \end{equation*}
-
-  An alternative is to use \fullref{thm:least_fixed_point_recursion}, which guarantees that the underlying operator is Scott-continuous, but has the downside of being more verbose in this particular case. Suppose that our domain of discourse is \( D \coloneqq M \times M \) and consider the following constructors:
-  \begin{itemize}
-    \item Corresponding to rule \( \logic{I} \), for each pair \( (x, y) \) in \( {\sim} \), the nullary constructor\fnote{This family of constructors could of course be replaced by choosing the set of base elements to be the underlying set of the relation \( {\sim} \), but our purpose is to illustrate how the particular inference rules can be translated into constructors.}
-    \begin{equation*}
-      i_{x,y} \coloneqq (x, y).
-    \end{equation*}
-
-    \item Corresponding to rule \( \logic{R} \), for each element \( x \) of \( M \), the nullary constructor
-    \begin{equation*}
-      r_x \coloneqq (x, x).
-    \end{equation*}
-
-    \item Corresponding to rule \( \logic{S} \), the unary constructor
-    \begin{equation*}
-      s((x, y)) \coloneqq (y, x).
-    \end{equation*}
-
-    \item Corresponding to rule \( \logic{T} \), the partial binary constructor
-    \begin{equation*}
-      t((x, y), (y', z)) \coloneqq \begin{cases}
-        (x, z),        &y = y', \\
-        \T{undefined}, &\T{otherwise.} \\
-      \end{cases}
-    \end{equation*}
-  \end{itemize}
-\end{example}
-
 \begin{remark}\label{rem:inference_rules_semantics}
   We have introduced inference rules in \fullref{def:inference_rule} as strings with the intention to use them in vastly differing situations:
   \begin{itemize}
@@ -191,9 +118,9 @@
 \end{comments}
 
 \begin{definition}\label{def:natural_deduction_proof_tree}\mimprovised
-  Fix a \hyperref[def:propositional_natural_deduction_system]{propositional natural deduction system}. We will define a family of \hyperref[def:multiway_tree]{multiway trees}, which we will call \term{proof trees}.
+  Fix a \hyperref[def:propositional_natural_deduction_system]{propositional natural deduction system}. We will define a family of \hyperref[def:ordered_tree]{ordered trees} with labeled nodes, which we will call \term{proof trees}.
 
-  We will use \fullref{thm:least_fixed_point_recursion} on multiway trees whose values are triples consisting of the following objects:
+  The labels of proof trees are triples consisting of the following objects:
   \begin{thmenum}[series=def:natural_deduction_proof_tree]
     \thmitem{def:natural_deduction_proof_tree/conclusion} A formula, called the \term[ru=conclusion (\cite[35]{TroelstraSchwichtenberg2000}), en=conclusion (\cite[36]{TroelstraSchwichtenberg2000})]{conclusion} of the proof.
 
@@ -206,13 +133,9 @@
     \end{bnf*}
   \end{thmenum}
 
-  We will define constructors on general multiway trees of this form, however by \enquote{proof tree} we will only mean those recursively obtained via \fullref{thm:least_fixed_point_recursion}.
-
-  We will define two kinds of trees:
+  We will define two kinds of proof trees:
   \begin{thmenum}[resume=def:natural_deduction_proof_tree]
-    \thmitem{def:natural_deduction_proof_tree/assumption} We will first define trees corresponding to assumptions, which will be the \hyperref[thm:least_fixed_point_recursion/base]{base elements} of the recursion.
-
-    An \term{assumption} for a propositional formula \( \varphi \) and marker \( u \) is the singleton tree with the following value:
+    \thmitem{def:natural_deduction_proof_tree/assumption} An \term{assumption} tree for a propositional formula \( \varphi \) and marker \( u \) is the singleton tree with the following label:
     \begin{itemize}
       \item The conclusion is, unsurprisingly, \( \varphi \).
       \item The rule name is empty (because the conclusion has not been obtained by an application of a rule).
@@ -224,7 +147,7 @@
       [\varphi]^u.
     \end{equation*}
 
-    \thmitem{def:natural_deduction_proof_tree/application} We will now define trees called \term{rule applications}. In terms of \fullref{thm:least_fixed_point_recursion}, we define an \( n \)-ary \hyperref[thm:least_fixed_point_recursion/base]{partial constructor} for every \( n \)-ary rule and every \hyperref[def:propositional_schema_substitution]{schema substitution} defined for all placeholders of that rule.
+    \thmitem{def:natural_deduction_proof_tree/application} We will now define \term{rule application} trees.
 
     Consider the substitution \( \sigma \) and the rule
     \begin{equation*}
@@ -239,18 +162,18 @@
       \end{prooftree}
     \end{equation*}
 
-    Fix a tuple \( (P_1, \ldots, P_n) \) of trees such that, for \( i = 1, \ldots, n \), the conclusion of \( P_i \) is \( \Phi_i[\sigma] \). We leave the constructor undefined for tuples that do not satisfy this condition.
+    Fix a list \( (P_1, \ldots, P_n) \) of proof trees such that, for \( i = 1, \ldots, n \), the conclusion of \( P_i \) is \( \Phi_i[\sigma] \).
 
-    The delicate part of defining rule application trees is to choose a context \( \Gamma \) of assumptions \enquote{closed} at this step. We start with an empty context and use recursion on \( i = 1, \ldots, n \) to define \( \Gamma \). At step \( i \), if \( \Phi_i \) has a bracketed formula \( [\Theta_i] \) attached, if \( P_i \) contains an assumption node labeled by the formula \( \Theta_i[\sigma] \) and if the marker \( u \) of the assumption is not in the context of any rule application subtree of \( P_i \), we will close this assumption now by adding \( u: \Theta_i[\sigma] \) to \( \Gamma \).
+    The delicate part of defining rule application trees is to choose a context \( \Gamma \) of assumptions \enquote{closed} at this step. We start with an empty context and use recursion on \( i = 1, \ldots, n \) to define \( \Gamma_i \) and then put \( \Gamma \coloneqq \Gamma_n \). At step \( i \), if \( \Phi_i \) has a bracketed formula \( [\Theta_i] \) attached, if \( P_i \) contains an assumption node labeled by the formula \( \Theta_i[\sigma] \), and if the marker \( u \) of the assumption is not in the context of any rule application subtree of \( P_i \), we will close this assumption now by adding \( u: \Theta_i[\sigma] \) to \( \Gamma_i \).
 
-    We can now define a node value that will serve as the root of an application tree:
+    Finally, we can now define the rule application tree by \hyperref[def:ordered_tree_grafting]{grafting} \( P_1, \ldots, P_n \) to a root with the following label:
     \begin{itemize}
       \item The conclusion is \( \Psi[\sigma] \).
       \item The rule name is \( \logic{R} \).
       \item The context is \( \Gamma \).
     \end{itemize}
 
-    Finally, we define a rule application tree, the value of our constructor, as the tree whose root has the aforementioned value and whose immediate subtrees are \( P_1, \ldots, P_n \). We draw this tree as follows (resembling stacked inference rules):
+    We draw this tree as follows (resembling stacked inference rules):
     \begin{equation*}
       \begin{prooftree}
         \hypo{}
@@ -267,6 +190,7 @@
 \end{definition}
 \begin{comments}
   \item This definition somewhat resembles \enquote{prooftrees} from \incite{TroelstraSchwichtenberg2000}, but is completely rigorous and explicitly encodes which inference rules have been used. The treatment of the rules is based on \incite[sec. 2.1]{TroelstraSchwichtenberg2000}.
+
   \item It is possible to avoid markers entirely and close assumptions independent of their label. \incite[subsec. 2.1.9]{TroelstraSchwichtenberg2000} call this the \enquote{complete discharge convention}. We prefer not to use this convention for two reasons:
   \begin{itemize}
     \item It is easier to track assumptions in proofs.
@@ -310,7 +234,7 @@
   \item See \fullref{rem:logical_compactness_theorems} for a list of similar results.
 \end{comments}
 \begin{proof}
-  A proof tree is, by definition, a multiway tree, which has only finitely many nodes, only some of which are open assumptions. It is sufficient to only consider the open assumptions present in the proof tree.
+  A proof tree is, by definition, finite, and only some of the leaves are open assumptions.
 \end{proof}
 
 \paragraph{Axiomatic derivations via natural deduction}
@@ -452,7 +376,7 @@
 \begin{algorithm}[Proof tree to axiomatic derivation]\label{alg:proof_tree_to_axiomatic_derivation}
   Again, fix an \hyperref[def:axiomatic_derivation_system]{axiomatic derivation system} and consider the corresponding \hyperref[def:propositional_natural_deduction_system]{natural deduction system} as described in \fullref{rem:axiomatic_derivation_system_as_natural_deduction_system}.
 
-  Then, given a \hyperref[def:natural_deduction_proof_tree]{proof tree}, enumerating its nodes' conclusions via \hyperref[def:traversal_ordering]{pre-order traversal}, we obtain an axiomatic derivation whose premises are the open assumptions of the tree, and whose conclusion coincides with that of the tree.
+  Then, given a \hyperref[def:natural_deduction_proof_tree]{proof tree}, enumerating its nodes' conclusions via \hyperref[def:ordered_tree_enumeration]{pre-order traversal}, we obtain an axiomatic derivation whose premises are the open assumptions of the tree, and whose conclusion coincides with that of the tree.
 \end{algorithm}
 \begin{comments}
   \item This algorithm can be found as \identifier{natural_deduction.axiomatic_derivation.proof_tree_to_derivation} in \cite{code}.

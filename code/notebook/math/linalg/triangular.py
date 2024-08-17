@@ -37,8 +37,8 @@ def lower_triangular_inv(l: Matrix[N], dtype: type[N] = int) -> Matrix:
         t[j, :] = t[j, :] / t[j, j]
 
         for i in range(j + 1, l.n):
-            r[i, :] -= r[j, :] * t[i, j]
-            t[i, :] -= t[j, :] * t[i, j]
+            r[i, :] -= t[i, j] * r[j, :]
+            t[i, :] -= t[i, j] * t[j, :]
 
     return r
 

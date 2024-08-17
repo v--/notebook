@@ -40,9 +40,7 @@ class NormalOrderStrategy(ReductionStrategy):
     reduction: Reduction
 
     def try_reduce(self, term: LambdaTerm) -> LambdaTerm | None:
-        contractum = self.reduction.try_contract_redex(term)
-
-        if contractum:
+        if contractum := self.reduction.try_contract_redex(term):
             return contractum
 
         if isinstance(term, Application):
@@ -54,5 +52,26 @@ class NormalOrderStrategy(ReductionStrategy):
 
         if isinstance(term, Abstraction) and (sub := self.try_reduce(term.sub)):
             return Abstraction(term.var, sub)
+
+        return None
+
+
+@dataclass
+class ApplicativeOrderStrategy(ReductionStrategy):
+    reduction: Reduction
+
+    def try_reduce(self, term: LambdaTerm) -> LambdaTerm | None:
+        if isinstance(term, Application):
+            if a := self.try_reduce(term.a):
+                return Application(a, term.b)
+
+            if b := self.try_reduce(term.b):
+                return Application(term.a, b)
+
+        if isinstance(term, Abstraction) and (sub := self.try_reduce(term.sub)):
+            return Abstraction(term.var, sub)
+
+        if contractum := self.reduction.try_contract_redex(term):
+            return contractum
 
         return None

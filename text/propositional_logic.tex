@@ -4,7 +4,7 @@ Propositional logic allows us to express basic relations between atomic proposit
 
 \paragraph{Syntax of propositional logic}\hfill
 
-There are different approaches to formalizing the syntax of propositional logic. We use the theory of formal grammars that we have developed in \fullref{subsec:formal_languages} and \fullref{subsec:syntax_trees}. This requires specific adjustments related to other treatments of propositional logic --- e.g. \incite[ch. 1]{Hinman2005}, \incite[pt. I]{Smullyan1995} and \incite[ch. 1]{КолмогоровДрагалин2006} --- which rely on a more informal treatment of syntax more akin to what can be achieved via \fullref{thm:least_fixed_point_recursion}. Our approach allows us to use powerful tools while treating the object logic in complete formality. \incite[45]{Mimram2020} also describes syntax via formal grammars, but does not utilize the theory of formal languages.
+There are different approaches to formalizing the syntax of propositional logic. We use the theory of formal grammars that we have developed in \fullref{subsec:formal_languages} and \fullref{subsec:syntax_trees}. This requires specific adjustments related to other treatments of propositional logic --- e.g. \incite[ch. 1]{Hinman2005}, \incite[pt. I]{Smullyan1995} and \incite[ch. 1]{КолмогоровДрагалин2006} --- which rely on a more informal treatment of syntax more akin to what can be achieved via \fullref{thm:knaster_tarski_iteration}. Our approach allows us to use powerful tools while treating the object logic in complete formality. \incite[45]{Mimram2020} also describes syntax via formal grammars, but does not utilize the theory of formal languages.
 
 \begin{definition}\label{def:propositional_alphabet}\mcite[4; 5]{Smullyan1995}
   The \hyperref[def:formal_language/alphabet]{alphabet} of \term[ru=логика высказываний (\cite[43]{КолмогоровДрагалин2006})]{propositional logic} consists of:
@@ -68,7 +68,7 @@ There are different approaches to formalizing the syntax of propositional logic.
 \begin{comments}
   \item Various authors refer to the \enquote{propositional language} --- for example \incite[13]{Hinman2005} --- in relation to various syntactic constructions. These authors do not formally define this language, however. Since we use the mechanism of \hyperref[def:formal_language]{formal languages}, we prefer being more concrete about which syntactic notions we refer to.
 
-  \item We implicitly associate with each propositional formula an \hyperref[con:abstract_syntax_tree]{abstract syntax tree} --- see \fullref{def:propositional_formula_ast}. The grammar of propositional formulas is unambiguous as shown via \fullref{thm:propositional_formulas_are_unambiguous}, which makes it possible to perform proofs via \fullref{thm:induction_on_syntax_trees}.
+  \item We implicitly associate with each propositional formula an \hyperref[con:abstract_syntax_tree]{abstract syntax tree} --- see \fullref{def:propositional_formula_ast}. The grammar of propositional formulas is unambiguous as shown via \fullref{thm:propositional_formulas_are_unambiguous}, which makes it possible to perform proofs via \fullref{thm:induction_on_rooted_trees}.
 
   \item If the root of the tree is a conjunction, we refer to the formula itself as a conjunction, and similarly for other propositional connectives.
 \end{comments}
@@ -103,16 +103,16 @@ There are different approaches to formalizing the syntax of propositional logic.
 \end{comments}
 
 \begin{definition}\label{def:propositional_formula_ast}\mimprovised
-  We implicitly associate with each propositional formula \( \varphi \) an \hyperref[con:abstract_syntax_tree]{abstract syntax tree} \( T(\varphi) \) defined as follows:
+  We implicitly associate with each propositional formula \( \varphi \) an \hyperref[con:abstract_syntax_tree]{abstract syntax tree} \( T(\varphi) \) as follows:
   \begin{thmenum}
-    \thmitem{def:propositional_formula_ast/atomic} If \( \varphi \) is a propositional constant or variable, let \( T(\varphi) \) be the singleton tree with value \( \varphi \).
+    \thmitem{def:propositional_formula_ast/atomic} If \( \varphi \) is a propositional constant or variable, we define \( T(\varphi) \) as the singleton \hyperref[def:labeled_tree]{labeled tree} with node \( 0 \) and label \( \varphi \).
 
-    \thmitem{def:propositional_formula_ast/negation} If \( \varphi = \synneg \psi \), assuming we have already built \( T(\psi) \), we obtain \( T(\varphi) \) by adding a new root with value \( \synneg \):
+    \thmitem{def:propositional_formula_ast/negation} If \( \varphi = \synneg \psi \), assuming we have already built \( T(\psi) \), we define \( T(\varphi) \) by \hyperref[def:ordered_tree_grafting]{grafting} \( T(\psi) \) to a root labeled with \( \synneg \):
     \begin{equation*}
       \includegraphics[page=1]{output/def__propositional_formula_ast}
     \end{equation*}
 
-    \thmitem{def:propositional_formula_ast/connective} If \( \varphi = \psi \syncirc \theta \), assuming we have built \( T(\psi) \) and \( T(\chi) \), we obtain \( T(\varphi) \) by joining them by a new root with value \( \syncirc \):
+    \thmitem{def:propositional_formula_ast/connective} If \( \varphi = \psi \syncirc \theta \), assuming we have built \( T(\psi) \) and \( T(\theta) \), we define \( T(\varphi) \) by \hyperref[def:ordered_tree_grafting]{grafting} \( T(\psi) \) and \( T(\theta) \) to a root labeled with \( \syncirc \):
     \begin{equation*}
       \includegraphics[page=2]{output/def__propositional_formula_ast}
     \end{equation*}
@@ -120,6 +120,7 @@ There are different approaches to formalizing the syntax of propositional logic.
 \end{definition}
 \begin{comments}
   \item This is similar to \enquote{formation trees} used by \incite[9]{Smullyan1995}, but drawn in reverse and having no excess information present.
+
   \item The \hyperref[def:rooted_tree/leaf]{leaves} of the tree are variables and constants, while every other node is either a binary connective or negation.
 \end{comments}
 
@@ -156,7 +157,7 @@ There are different approaches to formalizing the syntax of propositional logic.
 \begin{proof}
   Denote by \( l_\varphi \) and \( r_\varphi \) the number of left and right parentheses in the formula \( \varphi \).
 
-  We will use \fullref{thm:induction_on_syntax_trees} on \( \varphi \) to prove that \( l_\varphi = r_\varphi \).
+  We will use \fullref{thm:induction_on_rooted_trees} on \( \varphi \) to prove that \( l_\varphi = r_\varphi \).
   \begin{itemize}
     \item If \( \varphi \) is a constant or variable, there are no parentheses, and \( l_\varphi = r_\varphi = 0 \).
     \item If \( \varphi = \synneg \psi \) and if the inductive hypothesis holds for \( \psi \), then
@@ -213,7 +214,7 @@ There are different approaches to formalizing the syntax of propositional logic.
 \end{definition}
 
 \begin{lemma}\label{thm:propositional_subformula_lemma}
-  If the formula \( \psi \) is a \hyperref[def:formal_language/occurrence]{substring} of the formula \( \varphi \), we have the following possibilities:
+  If the formula \( \psi \) is a \hyperref[def:formal_language/subword]{substring} of the formula \( \varphi \), we have the following possibilities:
   \begin{thmenum}
     \thmitem{thm:propositional_subformula/variable} \( \varphi \) is a variable or constant and \( \psi = \varphi \).
     \thmitem{thm:propositional_subformula/negation_self} \( \varphi = \synneg \theta \) and \( \psi \) coincides with \( \varphi \).
@@ -224,7 +225,7 @@ There are different approaches to formalizing the syntax of propositional logic.
   \end{thmenum}
 \end{lemma}
 \begin{proof}
-  We use \fullref{thm:induction_on_syntax_trees} on \( \varphi \):
+  We use \fullref{thm:induction_on_rooted_trees} on \( \varphi \):
   \begin{itemize}
     \item If \( \varphi \) is a variable or constant, it is a single lexeme, and the only possible substring that is a formula is \( \varphi \) itself. This corresponds to \fullref{thm:propositional_subformula/variable}.
     \item If \( \varphi = \synneg \theta \) and if the inductive hypothesis holds for \( \theta \), we have the following possibilities:
@@ -247,11 +248,18 @@ There are different approaches to formalizing the syntax of propositional logic.
 \end{proof}
 
 \begin{proposition}\label{thm:propositional_formula_characterization}
-  The \hyperref[def:formal_language/occurrence]{substring} \( \psi \) of the formula \( \varphi \) is a \hyperref[def:propositional_subformula]{subformula} of \( \varphi \) if and only if \( \psi \) is itself a formula.
+  The \hyperref[def:formal_language/subword]{substring} \( \psi \) of the formula \( \varphi \) is a \hyperref[def:propositional_subformula]{subformula} of \( \varphi \) if and only if \( \psi \) is itself a formula.
 \end{proposition}
 \begin{proof}
   \SufficiencySubProof Straightforward.
   \NecessitySubProof Suppose that \( \psi \) is itself a formula. Then \fullref{thm:propositional_subformula_lemma} implies that it falls into one of the cases of \fullref{def:propositional_subformula}, and is thus a subformula of \( \varphi \).
+\end{proof}
+
+\begin{proposition}\label{thm:propositional_ast_subformula}
+  The formula \( \psi \) is a \hyperref[def:propositional_subformula]{subformula} of \( \varphi \) if and only if the \hyperref[def:propositional_formula_ast]{abstract syntax tree} \( T(\varphi) \) has a \hyperref[def:tree/subtree]{subtree} \hyperref[def:labeled_tree/homomorphism]{isomorphic} to \( T(\psi) \).
+\end{proposition}
+\begin{proof}
+  Trivial.
 \end{proof}
 
 \paragraph{Intuitionistic propositional semantics}

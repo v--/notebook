@@ -86,8 +86,7 @@ class LaTeXTask(WatcherTask):
         if self.get_bcf_hash() != self._bcf_file_hash:
             from .biber import BiberTask  # Avoid circular import
             runner.schedule(BiberTask(self.base_logger, self.get_aux_path('.bcf'), self.tex_path), str(self.tex_path))
-
-        if requires_rerun:
+        elif requires_rerun:
             runner.schedule(self, 'last build')
         else:
             self.sublogger.debug(f'No more passes required. Copying {self.get_aux_path(".pdf")} to {self.build_pdf_path}')

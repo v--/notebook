@@ -1,5 +1,84 @@
 \subsection{Lambda calculus reductions}\label{subsec:lambda_calculus_reductions}
 
+\paragraph{Subterm occurrences}
+
+\begin{definition}\label{def:lambda_subterm_occurrence}\mimprovised
+  An \term{occurrence} of a subterm \( N \) of \( M \) is a \hyperref[def:tree/subtree]{subtree} of the \hyperref[con:abstract_syntax_tree]{abstract syntax tree} \( T(M) \) of that is \hyperref[def:labeled_tree/homomorphism]{isomorphic} to \( T(N) \).
+\end{definition}
+\begin{comments}
+  \item From \fullref{thm:propositional_ast_subformula} we conclude that \( N \) is a subterm of \( M \) if and only if it has at least one occurrence in \( M \).
+\end{comments}
+
+\begin{definition}\label{def:subterm_occurrence_ordering}\mimprovised
+  We will introduce two \hyperref[def:partially_ordered_set]{partial orders} on the \hyperref[def:lambda_subterm_occurrence]{subterm occurrences} of \( M \).
+
+  Consider the occurrences \( R \) and \( S \) of (possibly different) subterms of \( T(M) \).
+
+  \begin{thmenum}
+    \thmitem{def:subterm_occurrence_ordering/vertical} Under the \term{vertical ordering}, \( R \leq S \) if \( R \) is a \hyperref[def:tree/subtree]{subtree} of \( S \).
+
+    We call the \hyperref[def:extremal_points/maximal_and_minimal_element]{maximal} occurrences under this ordering \term{outermost} and the minimal occurrences --- \term{innermost}. This terminology is useful mostly when restricted to certain kinds of subterms like \hyperref[def:beta_eta_reduction]{\( \beta \)-redexes}.
+
+    \thmitem{def:subterm_occurrence_ordering/horizontal} Under the \term{horizontal ordering}, \( R \leq S \) if there exist an application subtree
+    \begin{equation*}
+      \begin{aligned}
+        \includegraphics[page=1]{output/def__subterm_occurrence_ordering}
+      \end{aligned}
+    \end{equation*}
+    of \( T(M) \) where \( R \) is a subtree of \( A \) and \( S \) is a subtree of \( B \).
+
+    We call the maximal and minimal elements under this ordering \term{leftmost} and \term{rightmost}, respectively. Again, this terminology is useful mostly when restricted to certain kinds of subterms.
+  \end{thmenum}
+\end{definition}
+\begin{comments}
+  \item This definition is loosely based on \cite[138]{Mimram2020}, but differs in several aspects:
+  \begin{itemize}
+    \item We consider arbitrary subterm occurrences rather than redexes.
+    \item We use syntax trees for formalizing subterm occurrences.
+    \item We call \enquote{vertical order} what Mimram calls \enquote{imbrication order}.
+  \end{itemize}
+
+  Other authors like \incite[8.4.7]{Barendregt1984} only consider horizontal ordering.
+\end{comments}
+
+\begin{example}\label{ex:def:subterm_occurrence_ordering}
+  We list examples of \hyperref[def:subterm_occurrence_ordering]{subterm ordering}:
+  \begin{thmenum}
+    \thmitem{ex:def:subterm_occurrence_ordering/omega} Consider the term \( \ref{eq:ex:def:lambda_term/combinator/big_omega} = \omega \omega \), where \( \ref{eq:ex:def:lambda_term/combinator/omega} = \qabs \synx \synx \synx \).
+
+    It consists of two occurrences of \( \omega \), so naturally one of them is leftmost and one is rightmost.
+
+    On the other hand, two occurrences of the same subterm are not comparable with respect to vertical ordering. We can compare instead the leftmost occurrence of \( \omega \), which is an outermost occurrence of a proper subterm, and the leftmost occurrence of \( \synx \), which is instead an innermost occurrence.
+
+    \thmitem{ex:def:subterm_occurrence_ordering/foi} Consider the term
+    \begin{equation*}
+      \ref{ex:def:beta_eta_reduction/boolean/f} \ref{eq:ex:def:lambda_term/combinator/big_omega} \ref{eq:ex:def:lambda_term/combinator/i}
+      =
+      (F \Omega) I
+      =
+      \parens[\Bigg]{ \parens[\Big]{ \qabs \synx \syny \syny } \parens[\Big]{ (\qabs \synx \synx \synx) (\qabs \synx \synx \synx) } } \parens[\Bigg]{ \qabs \synx \synx }.
+    \end{equation*}
+
+    Its abstract syntax tree in given in \cref{fig:ex:def:subterm_occurrence_ordering/foi}.
+
+    \begin{figure}[!ht]
+      \hfill
+      \includegraphics[align=t, page=1]{output/ex__def__subterm_occurrence_ordering}
+      \hfill
+      \includegraphics[align=t, page=2]{output/ex__def__subterm_occurrence_ordering}
+      \hfill
+      \hfill
+      \caption{The abstract syntax tree of the \( \synlambda \)-term \( F \Omega I \) from \fullref{ex:def:subterm_occurrence_ordering/foi}.}\label{fig:ex:def:subterm_occurrence_ordering/foi}
+    \end{figure}
+
+    \begin{itemize}
+      \item As discussed in \fullref{ex:def:subterm_occurrence_ordering/omega}, \( \Omega \) has two occurrences of \( \omega \), and hence so does \( F \Omega I \).
+
+      \item \( F \Omega I \) has five occurrences of \( \synx \) --- the leftmost one is in the leftmost occurrence of \( \Omega \), while the rightmost one is in the (only) occurrence of \( I \).
+    \end{itemize}
+  \end{thmenum}
+\end{example}
+
 \paragraph{\( \beta \) and \( \eta \)-reductions}
 
 \begin{definition}\label{def:alpha_reflexive}\mimprovised
@@ -12,7 +91,7 @@
 \end{comments}
 
 \begin{definition}\label{def:lambda_reduction}\mcite[315]{Barendregt1984}
-  We will define different kinds of \enquote{\( {\anon} \)-reduction} relations simultaneously. The symbol \enquote{\( {\anon} \)} is inessential to the formalisms presented here; we use it as a placeholder for \enquote{\( \beta \)}, \enquote{\( \eta \)}, \enquote{\( \beta\eta \)} and potentially other kinds of reductions.
+  Via \fullref{thm:recursively_defined_relations}, we will define different kinds of \enquote{\( {\anon} \)-reduction} relations simultaneously. The symbol \enquote{\( {\anon} \)} is inessential to the formalisms presented here; we use it as a placeholder for \enquote{\( \beta \)}, \enquote{\( \eta \)}, \enquote{\( \beta\eta \)} and potentially other kinds of reductions.
 
   \begin{thmenum}
     \thmitem{def:lambda_reduction/single} A \term{single-step reduction} is a relation generated by or otherwise satisfying the following rules:
@@ -57,16 +136,13 @@
     \hyperref[def:relation_closures/transitive]{transitive} and \hyperref[def:alpha_reflexive]{\( \alpha \)-reflexive} closure of the \hyperref[def:relation_closures/symmetric]{symmetric closure} of \( \pred \), we obtain \term{\( {\anon} \)-equivalence}, which we denote by \( {\requiv} \).
   \end{thmenum}
 \end{definition}
-\begin{comments}
-  \item These relations can be obtained via \fullref{thm:least_fixed_point_recursion}, similarly to what is described in \fullref{ex:fixed_point_recursion_for_relations}.
-\end{comments}
 
 \begin{definition}\label{def:beta_eta_reduction}\mcite[1B1; 1C1]{Hindley1997}
   Consider the following rules:
   \begin{TwoColumns}
     \begin{equation*}\taglabel[\ensuremath{ \logic{Red}_\beta }]{inf:def:beta_eta_reduction/beta}
       \begin{prooftree}
-        \infer0[\ref{inf:def:beta_eta_reduction/beta}]{ \underbrace{(\qabs x M) N}_{\T{\term{\( \beta \)-redex}}} \bred \underbrace{M[x \mapsto N]}_{\T{\term{\( \beta \)-contractum}}} }.
+        \infer0[\ref{inf:def:beta_eta_reduction/beta}]{ \underbrace{(\qabs x M) N}_{\T{\term{\( \beta \)-redex}}} \bred \underbrace{M[x \mapsto N]}_{\T{\term{\( \beta \)-contractum}}} },
       \end{prooftree}
     \end{equation*}
   \BeginSecondColumn
@@ -77,6 +153,8 @@
       \end{prooftree}
     \end{equation*}
   \end{TwoColumns}
+
+  Here \( \beta \)-redexes and \( \eta \)-redexes are \hyperref[def:lambda_subterm_occurrence]{subterm occurrences} rather than subterms, so a single term may have isomorphic redexes.
 
   We define \term{\( \beta \)-reduction} \( {\bred} \) as the relation generated by the rules of \fullref{def:lambda_reduction/single} extended with \ref{inf:def:lambda_reduction/beta}. We similarly define \term{\( \eta \)-reduction} \( {\ered} \) based on \ref{inf:def:lambda_reduction/eta}. Combining both, we obtain \term{\( \beta\eta \)-reduction} \( {\bered} \).
 \end{definition}
@@ -127,8 +205,8 @@
     \thmitem{ex:def:beta_eta_reduction/boolean}\mcite[6.2.2]{Barendregt1984} We can encode the \hyperref[con:boolean_value]{Boolean values} via the combinators
     \begin{subequations}
       \begin{align}
-        T \coloneqq \overbrace{\qabs \synx \qabs \syny \synx}^{\ref{eq:ex:def:lambda_term/combinator/k}} \label{ex:def:beta_eta_reduction/boolean/t}, \\
-        F \coloneqq \qabs \synx \qabs \syny \syny \label{ex:def:beta_eta_reduction/boolean/f}.
+        T \coloneqq \overbrace{\qabs \synx \qabs \syny \synx}^{\ref{eq:ex:def:lambda_term/combinator/k}} \label{ex:def:beta_eta_reduction/boolean/t}\tag{\ensuremath{ T }}, \\
+        F \coloneqq \qabs \synx \qabs \syny \syny \label{ex:def:beta_eta_reduction/boolean/f}\tag{\ensuremath{ F }}.
       \end{align}
 
       Fix \( \synlambda \)-terms \( A \) and \( B \) where \( \syny \) is not free. If the term \( C \) can be either \( T \) or \( F \), \( \beta \)-reduction allows us to \enquote{select} either \( A \) or \( B \) based on the value of \( V \):
@@ -202,7 +280,7 @@
   If \( M \ered N \), then \( \op*{Free}(M) = \op*{Free}(N) \).
 \end{proposition}
 \begin{proof}
-  Follows via \fullref{thm:least_fixed_point_induction} by noting that \( x \) is not free in \( M \) if and only if it is not free in \( \qabs x M x \).
+  Follows via \fullref{thm:induction_on_recursively_defined_relations} by noting that \( x \) is not free in \( M \) if and only if it is not free in \( \qabs x M x \).
 \end{proof}
 
 \begin{lemma}\label{thm:beta_contractum_free_variables}
@@ -363,7 +441,7 @@
   \end{thmenum}
 \end{proposition}
 \begin{proof}
-  \SubProofOf{thm:def:parallel_reduction/alpha_reflexive} We will use \fullref{thm:least_fixed_point_induction} on \( M \aequiv N \) to show that \( M \ppred N \):
+  \SubProofOf{thm:def:parallel_reduction/alpha_reflexive} We will use \fullref{thm:induction_on_recursively_defined_relations} on \( M \aequiv N \) to show that \( M \ppred N \):
   \begin{itemize}
     \item If \( M \aequiv N \) due to \ref{inf:def:lambda_term_alpha_equivalence/var}, then \( M \) and \( N \) are equal variables. The rule \ref{inf:def:parallel_reduction/var} implies that \( M \ppred M \).
 
@@ -386,7 +464,7 @@
 
   \SubProofOf{thm:def:parallel_reduction/extends_single_step} Follows from \fullref{thm:def:parallel_reduction/alpha_reflexive}.
 
-  \SubProofOf{thm:def:parallel_reduction/extends_to_multi_step} We will use \fullref{thm:least_fixed_point_induction} on \( M \ppred N \) to show that \( M \pred* N \):
+  \SubProofOf{thm:def:parallel_reduction/extends_to_multi_step} We will use \fullref{thm:induction_on_recursively_defined_relations} on \( M \ppred N \) to show that \( M \pred* N \):
   \begin{itemize}
     \item If \( M \ppred N \) due to \ref{inf:def:parallel_reduction/var}, then \( M \) and \( N \) are equal variables, hence \( M \pred* N \) due to the latter being reflexive.
 
@@ -457,7 +535,7 @@
   Then \( M[\sigma] \ppred N[\rho] \).
 \end{proposition}
 \begin{proof}
-  We will use \fullref{thm:least_fixed_point_induction} on \( M \ppred N \) simultaneously on all compatible substitutions to show that \( M[\sigma] \pred N[\rho] \).
+  We will use \fullref{thm:induction_on_recursively_defined_relations} on \( M \ppred N \) simultaneously on all compatible substitutions to show that \( M[\sigma] \pred N[\rho] \).
   \begin{itemize}
     \item If \( M \ppred N \) due to \ref{inf:def:parallel_reduction/var}, then \( M \) and \( N \) are equal variables, thus
     \begin{equation*}
@@ -578,7 +656,7 @@
 \begin{proof}
   \SubProofOf{thm:parallel_reduction_deconstruction/var} The only rules applicable to \( x \ppred N \) are \ref{inf:def:parallel_reduction/var} and \ref{inf:def:lambda_reduction/alpha}, and both directly imply that \( N = x \).
 
-  \SubProofOf{thm:parallel_reduction_deconstruction/app} Let \( M = AB \). We will use \fullref{thm:least_fixed_point_induction} on \( AB \ppred N \):
+  \SubProofOf{thm:parallel_reduction_deconstruction/app} Let \( M = AB \). We will use \fullref{thm:induction_on_recursively_defined_relations} on \( AB \ppred N \):
   \begin{itemize}
     \item If \( AB \ppred N \) due to \ref{inf:def:parallel_reduction/app}, then \fullref{thm:parallel_reduction_deconstruction/app/direct} holds.
 
@@ -620,7 +698,7 @@
     \end{itemize}
   \end{itemize}
 
-  \SubProofOf{thm:parallel_reduction_deconstruction/abs} Let \( M = \qabs x A \). We will use \fullref{thm:least_fixed_point_induction} on \( (\qabs x A) \ppred N \):
+  \SubProofOf{thm:parallel_reduction_deconstruction/abs} Let \( M = \qabs x A \). We will use \fullref{thm:induction_on_recursively_defined_relations} on \( (\qabs x A) \ppred N \):
   \begin{itemize}
     \item If \( (\qabs x A) \ppred N \) due to \ref{inf:def:lambda_reduction/abs}, then \fullref{thm:parallel_reduction_deconstruction/abs/lift} holds.
 
@@ -767,7 +845,7 @@
   \end{thmenum}
 \end{theorem}
 \begin{proof}
-  \SubProofOf{thm:church_rosser_theorem/parallel} Suppose that \( M \ppred N \) and \( M \ppred K \). We will use \fullref{thm:least_fixed_point_induction} on \( M \ppred N \) simultaneously on all \( K \) to show the existence of the desired confluence point \( L \) such that \( N \ppred L \) and \( N \ppred L \):
+  \SubProofOf{thm:church_rosser_theorem/parallel} Suppose that \( M \ppred N \) and \( M \ppred K \). We will use \fullref{thm:induction_on_recursively_defined_relations} on \( M \ppred N \) simultaneously on all \( K \) to show the existence of the desired confluence point \( L \) such that \( N \ppred L \) and \( N \ppred L \):
   \begin{itemize}
     \item If \( M \ppred N \) due to \ref{inf:def:parallel_reduction/var}, then \( M \) and \( N \) are identical variables. Furthermore, \fullref{thm:parallel_reduction_deconstruction/var} implies the same for \( M \) and \( K \), hence \( M = N = K \).
 

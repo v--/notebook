@@ -37,7 +37,8 @@ async def setup_watchers(target: WatchTarget, base_logger: structlog.stdlib.Boun
 
     async for path in iter_file_changes(base_logger):
         if target == 'all' or target == 'figures':
-            if fnmatch(path, 'classes/tikzcd.cls') or fnmatch(path, 'classes/forest.cls') or fnmatch(path, 'packages/*.sty'):
+            if (fnmatch(path, 'classes/*.cls') and not fnmatch(path, 'classes/notebook.cls')) or \
+                fnmatch(path, 'packages/*.sty'):
                 for figure_path in FIGURES_PATH.glob('*.tex'):
                     runner.schedule(LaTeXTask(base_logger, figure_path), trigger=str(path))
 

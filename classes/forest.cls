@@ -3,6 +3,7 @@
 \LoadClass[tikz]{standalone}
 
 \RequirePackage{mathtools}
+\RequirePackage[altpo,epsilon]{backnaur}
 \RequirePackage{forest}
 
 \RequirePackage{packages/fonts}
@@ -12,15 +13,20 @@
 
 \usetikzlibrary{shapes.geometric}
 
-% Based on https://tex.stackexchange.com/a/208792
 \forestset{
   SubTree/.style={
-    isosceles triangle,
-    draw,
-    shape border rotate=90,
-    minimum size=3.5em,
     font=\scriptsize,
-    child anchor=north,
-    anchor=north
-  }
+    child anchor=parent,
+    draw,
+    isosceles triangle,
+    isosceles triangle apex angle=60,
+    shape border rotate=90,
+    inner sep=1pt,
+    outer sep=0,
+    text width={#1},
+    text centered,
+    text depth={#1 / 5}
+  },
+  SubTree/.default=1.5em,
+  SmallSubTree/.style={SubTree=1em}
 }

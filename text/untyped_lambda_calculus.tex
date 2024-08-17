@@ -33,16 +33,16 @@
 \end{proof}
 
 \begin{definition}\label{def:lambda_term_ast}
-  We implicitly associate with each \( \synlambda \)-term \( M \) an \hyperref[con:abstract_syntax_tree]{abstract syntax tree} \( T(M) \) defined as follows:
+  We implicitly associate with each \( \synlambda \)-term \( M \) an \hyperref[con:abstract_syntax_tree]{abstract syntax tree} \( T(M) \) as follows:
   \begin{thmenum}
-    \thmitem{def:lambda_term_ast/variable} If \( M \) is a variable, let \( T(M) \) be the singleton tree with value \( M \).
+    \thmitem{def:lambda_term_ast/variable} If \( M \) is a variable, we define \( T(M) \) as the singleton \hyperref[def:labeled_tree]{labeled tree} with node \( 0 \) and label \( M \).
 
-    \thmitem{def:lambda_term_ast/application} If \( M = NK \), assuming we have already built \( T(N) \) and \( T(K) \), we obtain \( T(M) \) by joining them by a new root with value \( \cdot \):
+    \thmitem{def:lambda_term_ast/application} If \( M = NK \), assuming we have already built \( T(N) \) and \( T(K) \), we define \( T(M) \) by \hyperref[def:ordered_tree_grafting]{grafting} \( T(N) \) and \( T(K) \) to a root labeled with \( \cdot \):
     \begin{equation*}
       \includegraphics[page=1]{output/def__lambda_term_ast}
     \end{equation*}
 
-    \thmitem{def:lambda_term_ast/abstraction} If \( \varphi = \qabs x N \), assuming we have already built \( T(N) \), we obtain \( T(M) \) by adding a new root with value \( \qabs* x \):
+    \thmitem{def:lambda_term_ast/abstraction} If \( \varphi = \qabs x N \), assuming we have already built \( T(N) \), we define \( T(M) \) by \hyperref[def:ordered_tree_grafting]{grafting} \( T(N) \) to a root labeled with \( \qabs* x \):
     \begin{equation*}
       \includegraphics[page=2]{output/def__lambda_term_ast}
     \end{equation*}
@@ -61,7 +61,7 @@
 
     Actually, it is not necessary to put parentheses around \( \synlambda \)-abstractions in order for the grammar to be unambiguous. Not requiring them, however, leads to the following unintuitive artifact.
 
-    Consider the term \( \qabs x y z \). If parentheses are required only for \( \synlambda \)-abstractions but not for \( \synlambda \)-applications, it would unambiguously correspond to the following \hyperref[rem:lambda_term_ast]{abstract syntax tree}:
+    Consider the term \( \qabs \synx \syny \synz \). If parentheses are required only for \( \synlambda \)-abstractions but not for \( \synlambda \)-applications, it would unambiguously correspond to the following \hyperref[rem:lambda_term_ast]{abstract syntax tree}:
     \begin{equation*}
       \includegraphics[page=1]{output/rem__lambda_term_parentheses}
     \end{equation*}
@@ -92,10 +92,17 @@
 \end{comments}
 
 \begin{proposition}\label{thm:lambda_subterm_characterization}
-  Suppose that the \hyperref[def:formal_language/occurrence]{substring} \( N \) of the \( \synlambda \)-term \( M \) is \hi{not a variable}. Then \( N \) is a \hyperref[def:lambda_subterm]{subterm} of \( M \) if and only if \( N \) is itself a \( \synlambda \)-term.
+  Suppose that the \hyperref[def:formal_language/subword]{substring} \( N \) of the \( \synlambda \)-term \( M \) is \hi{not a variable}. Then \( N \) is a \hyperref[def:lambda_subterm]{subterm} of \( M \) if and only if \( N \) is itself a \( \synlambda \)-term.
 \end{proposition}
 \begin{proof}
   We can give a proof similar to \fullref{thm:propositional_formula_characterization}.
+\end{proof}
+
+\begin{proposition}\label{thm:propositional_ast_subformula}
+  The \( \synlambda \)-term \( N \) is a \hyperref[def:lambda_subterm]{subterm} of \( M \) if and only if the \hyperref[def:lambda_term_ast]{abstract syntax tree} \( T(M) \) has a \hyperref[def:tree/subtree]{subtree} \hyperref[def:labeled_tree/homomorphism]{isomorphic} to \( T(N) \).
+\end{proposition}
+\begin{proof}
+  Trivial.
 \end{proof}
 
 \begin{example}\label{ex:def:lambda_term}
@@ -103,7 +110,7 @@
   \begin{thmenum}
     \thmitem{ex:def:lambda_term/var} The simplest \( \synlambda \)-terms are the variables themselves, for example \( \synx \) or \( \syny \).
 
-    \thmitem{ex:def:lambda_term/naive_subterm} Suppose that, as in \fullref{def:propositional_subformula} for propositional subformulas, we say that \( N \) is a subterm of \( M \) if it is itself a \hyperref[def:formal_language/occurrence]{substring} of \( M \).
+    \thmitem{ex:def:lambda_term/naive_subterm} Suppose that, as in \fullref{def:propositional_subformula} for propositional subformulas, we say that \( N \) is a subterm of \( M \) if it is itself a \hyperref[def:formal_language/subword]{substring} of \( M \).
 
     Then the term \( \qabs \synx \syny \) would have both \( \synx \) and \( \syny \) as subterms, while according to \fullref{def:lambda_term/subterm}, only \( \syny \) is a subterm.
 
@@ -121,8 +128,8 @@
       Another useful family of combinators is the following, taken from \cite[3.1.21; 6.2.1]{Barendregt1984}:
       \begin{align}
         &\qabs \synx \synx^n, \label{eq:ex:def:lambda_term/combinator/omega_n}\tag{\ensuremath{ \omega_n }} \\
-        &\qabs \synx \synx \synx, \label{eq:ex:def:lambda_term/combinator/omega_small}\tag{\ensuremath{ \omega }} \\
-        &\omega \omega. \label{eq:ex:def:lambda_term/combinator/omega}\tag{\ensuremath{ \Omega }}
+        &\qabs \synx \synx \synx, \label{eq:ex:def:lambda_term/combinator/omega}\tag{\ensuremath{ \omega }} \\
+        &\omega \omega. \label{eq:ex:def:lambda_term/combinator/big_omega}\tag{\ensuremath{ \Omega }}
       \end{align}
     \end{subequations}
   \end{thmenum}
@@ -130,12 +137,16 @@
 
 \paragraph{Variable scope}
 
-\begin{definition}\label{def:lambda_variable_occurrence}\mcite[1A5; 16A]{Hindley1997}
-  If an \hyperref[def:formal_language/occurrence]{occurrence} of \( x \) in \( M \) is prefixed by \( \synlambda \), it is part of some abstraction \( N = (\qabs x K) \). We call \( \qabs* x \) the \term{abstractor} of \( N \) and \( K \) --- the \term{body} of \( N \) or the \term[ru=область действия (\cite[64]{Герасимов2011})]{scope} of \( \qabs* x \).
+\begin{definition}\label{def:lambda_abstractor}\mcite[def. 1A5]{Hindley1997}
+  Given an abstraction \( M = \qabs x N \), we call \( \qabs* x \) the \term{abstractor} and \( N \) --- the \term{body} of \( M \).
 
-  We divide non-abstractor occurrences of \( x \) into \term[ru=связанное (вхождение) (\cite[64]{Герасимов2011})]{bound occurrences}, which are in the scope of some abstractor \( \qabs* x \), and \term[ru=свободное (вхождение) (\cite[64]{Герасимов2011})]{free occurrences}, which are not.
+  We say that the body \( N \) is the \term[ru=область действия (\cite[64]{Герасимов2011})]{scope} of the abstractor \( \quantifier* \synlambda \synx \) and that the abstractor \term{binds} the variable \( \synx \) in \( N \).
+\end{definition}
 
-  If an occurrence of \( x \) is free in \( K \) but bound in \( N = (\qabs x K) \), we say that the abstractor of \( N \) \term{binds} it.
+\begin{definition}\label{def:lambda_variable_occurrence}\mimprovised
+  An \term[ru=вхождение (\cite[64]{Герасимов2011}), en=occurrence (\cite[9A2]{Hindley1997})]{occurrence} of a variable \( x \) in a \( \synlambda \)-term \( M \) is a variable node with label \( x \) in the \hyperref[def:lambda_term_ast]{abstract syntax tree} of \( M \).
+
+  Variable occurrences in \( \synlambda \)-terms can be free and bound. We say that the occurrence is \term[ru=свободное (вхождение) (\cite[64]{Герасимов2011})]{free} in \( M \) if the root of the AST can be reached without passing through a corresponding abstractor. If a variable is not free, there exists an abstractor that binds it, and we say that the occurrence is \term[ru=связанное (вхождение) (\cite[64]{Герасимов2011})]{bound} in \( M \).
 \end{definition}
 
 \begin{definition}\label{def:lambda_variable_freeness}\mcite[16A]{Hindley1997}
@@ -263,7 +274,7 @@
   As long as the free variables of the \( \synlambda \)-term \( M \) are fixed by the substitution \( \sigma \), we have \( M[\sigma] = M \).
 \end{proposition}
 \begin{proof}
-  We will use \fullref{thm:induction_on_syntax_trees} on \( M \) simultaneously for all substitutions that fix the free variables of \( M \):
+  We will use \fullref{thm:induction_on_rooted_trees} on \( M \) simultaneously for all substitutions that fix the free variables of \( M \):
   \begin{itemize}
     \item If \( M \) is a variable, then \( M[\sigma] = \sigma(M) = M \) by assumption.
     \item If \( M = NK \) and the inductive hypothesis holds for \( N \) and \( K \), then
@@ -310,7 +321,7 @@
   This also holds if we always use the renaming rule \eqref{eq:def:lambda_substitution/abstraction/renaming}.
 \end{proposition}
 \begin{proof}
-  We will use \fullref{thm:induction_on_syntax_trees} on \( M \) simultaneously for all possible substitutions:
+  We will use \fullref{thm:induction_on_rooted_trees} on \( M \) simultaneously for all possible substitutions:
   \begin{itemize}
     \item If \( M \) is a variable, say \( M = x \), then \( \op*{Free}(M) = \set{ x } \) and thus
     \begin{equation*}
@@ -527,7 +538,7 @@
 \paragraph{\( \alpha \)-equivalence}
 
 \begin{definition}\label{def:lambda_term_alpha_equivalence}\mimprovised
-  We will define an equivalence relation between \( \synlambda \)-terms via metalingual \hyperref[def:inference_rule]{inference rules}:
+  Via \fullref{thm:recursively_defined_relations}, we will define an equivalence relation between \( \synlambda \)-terms:
 
   \begin{TwoColumns}
     \begin{equation*}\taglabel[\( \logic{Var}_\alpha \)]{inf:def:lambda_term_alpha_equivalence/var}
@@ -568,8 +579,6 @@
   Some authors like \incite[5]{Pollack1994} use \enquote{\( \alpha \)-conversion} and \enquote{\( \alpha \)-equivalence} interchangeably.
 
   We will avoid using the term \enquote{\( \alpha \)-conversion}.
-
-  \item The equivalence relation can be obtained via \fullref{thm:least_fixed_point_recursion}, similarly to what is described in \fullref{ex:fixed_point_recursion_for_relations}
 
   \item The rules themselves can be formalized by introducing \( \synlambda \)-term schemas and substitutions akin to how we have formalized the rules in \fullref{subsec:natural_deduction}, but we will find it unnecessarily complicated to do so.
 \end{comments}
@@ -618,7 +627,7 @@
 \begin{proof}
   \SubProofOf{thm:def:lambda_term_length/subterm} Trivial.
 
-  \SubProofOf{thm:def:lambda_term_length/substitution} We proceed via \fullref{thm:induction_on_syntax_trees} on \( M \), simultaneously on all substitutions.
+  \SubProofOf{thm:def:lambda_term_length/substitution} We proceed via \fullref{thm:induction_on_rooted_trees} on \( M \), simultaneously on all substitutions.
   \begin{itemize}
     \item If \( M \) is a variable, then
     \begin{equation*}
@@ -711,7 +720,7 @@
 
   \SubProofOf{thm:def:lambda_term_alpha_equivalence/equivalence}
 
-  \SubProofOf*[def:binary_relation/reflexivity]{reflexivity} We proceed via \fullref{thm:induction_on_syntax_trees} on the \( \synlambda \)-term \( M \) to show that \( M \aequiv N \) whenever \( M = N \).
+  \SubProofOf*[def:binary_relation/reflexivity]{reflexivity} We proceed via \fullref{thm:induction_on_rooted_trees} on the \( \synlambda \)-term \( M \) to show that \( M \aequiv N \) whenever \( M = N \).
   \begin{itemize}
     \item If \( M \) is a variable, the rule \ref{inf:def:lambda_term_alpha_equivalence/var} directly implies that \( M \aequiv M \).
     \item If \( M = AB \) and the inductive hypothesis holds for \( A \) and \( B \), then \( A \aequiv A \) and \( B \aequiv B \), and the rule \ref{inf:def:lambda_term_alpha_equivalence/app} implies that \( M \aequiv M \).
@@ -1106,7 +1115,7 @@
   \item This algorithm can be found as \identifier{lambda.alpha.separate_free_and_bound_variables} in \cite{code}.
 \end{comments}
 \begin{defproof}
-  We proceed via \fullref{thm:induction_on_syntax_trees} on \( M \) to show that, for any context \( \Gamma \), \( M \aequiv M'_\Gamma \) and the bound variables in \( M'_\Gamma \) are not in \( \Gamma \).
+  We proceed via \fullref{thm:induction_on_rooted_trees} on \( M \) to show that, for any context \( \Gamma \), \( M \aequiv M'_\Gamma \) and the bound variables in \( M'_\Gamma \) are not in \( \Gamma \).
 
   \begin{itemize}
     \item If \( M \) is a variable, then \( M = M'_\Gamma \), hence they are \( \alpha \)-equivalent by \fullref{thm:def:lambda_term_alpha_equivalence/reflexive}. Furthermore, \( M \) has no bound variables.

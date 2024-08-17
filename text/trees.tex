@@ -1,57 +1,84 @@
 \subsection{Trees}\label{subsec:trees}
 
-\begin{definition}\label{def:tree}
-  We call the possibly infinite \hyperref[def:undirected_graph]{simple undirected graph} \( T = (E, V) \) a \term{tree} if any of the following equivalent conditions hold:
-  \begin{thmenum}
+\begin{definition}\label{def:tree}\mcite[thm. 1.5.1]{Diestel2005}
+  We call the (possibly infinite) \hyperref[def:undirected_graph]{simple undirected graph} \( T = (E, V) \) a \term[bg=дърво (\cite[21]{Мирчев2001}), ru=дерево (\cite[159]{Зыков2004})]{tree} if any of the following equivalent conditions hold:
+  \begin{thmenum}[series=def:tree]
     \thmitem{def:tree/connected_acyclic} \( T \) is \hyperref[def:graph_connectedness/undirected]{connected} and \hyperref[def:acyclic_graph]{acyclic}.
-
-    \thmitem{def:tree/maximally_acyclic} \( T \) is \term{maximally acyclic}, meaning that adding an edge between existing vertices would create a \hyperref[def:graph_cycle]{cycle}.
 
     \thmitem{def:tree/minimally_connected} \( T \) is \term{minimally connected}, meaning that removing an edge will make the graph \hyperref[def:graph_connectedness/undirected]{disconnected}.
 
+    \thmitem{def:tree/maximally_acyclic} \( T \) is \term{maximally acyclic}, meaning that adding an edge between existing vertices would create a \hyperref[def:graph_cycle]{cycle}.
+
     \thmitem{def:tree/single_path} There exists a unique \hyperref[def:graph_walk/path]{path} connecting every pair of distinct vertices in \( T \).
+  \end{thmenum}
+
+  Trees inherit metamathematical properties from undirected graphs:
+  \begin{thmenum}[resume=def:tree]
+    \thmitem{def:tree/homomorphism}\mimprovised A \term{homomorphism} between trees is simply an undirected graph homomorphisms.
+
+    \thmitem{def:tree/category}\mimprovised Correspondingly, for a \hyperref[def:grothendieck_universe]{Grothendieck universe} \( \mscrU \), the category of trees is a \hyperref[def:subcategory/full]{full subcategory} of the category of undirected graphs.
+
+    \thmitem{def:tree/subtree}\mcite[649]{Rosen1999} We say that the tree \( R \) is a \term{subtree} of \( T \) if it is a \hyperref[def:undirected_graph/subgraph]{subgraph} of \( T \).
   \end{thmenum}
 \end{definition}
 \begin{comments}
-  \item We will refer to vertices in \hyperref[def:tree]{trees} as \term{nodes}.
+  \item We will refer to vertices in \hyperref[def:tree]{trees} as \term[en=node (\cite[190]{Erickson2019})]{nodes}.
 \end{comments}
-\begin{proof}
-  \ImplicationSubProof{def:tree/connected_acyclic}{def:tree/maximally_acyclic} Suppose that \( T \) is connected and acyclic.
+\begin{defproof}
+  \ImplicationSubProof{def:tree/connected_acyclic}{def:tree/minimally_connected} Let \( T \) be a connected acyclic graph.
 
-  \begin{itemize}
-    \item If \( T \) has a single node, it has no edges, there is nothing to prove.
-    \item If \( T \) has two nodes, it has an edge between them, and there is again nothing to prove.
-    \item Suppose that \( T \) has at least three nodes. Since \( T \) is connected, there must exist some path
-    \begin{equation*}
-      a \to b \to c
-    \end{equation*}
-    of length three. Since \( T \) is acyclic, there cannot be an edge between \( a \) and \( c \). Thus, it is always possible to add an edge to \( T \).
+  Let \( T' \) be the graph obtained from \( T \) by removing the edge \( \set{ u, v } \). Then \( T' \) is not connected because, if there is a path from \( u \) to \( v \) in \( T' \), it would extend to a cycle in \( T \), contradicting the acyclicity of \( T \).
 
-    Let \( T' \) be an arbitrary graph obtained by adjoining a single edge \( \set{ u, v } \) to \( T \). Since \( T \) is connected, there must exist a path from \( u \) to \( v \), and we can concatenate this new edge to obtain a cycle in \( T' \). Hence, \( T' \) is not acyclic.
+  Therefore, \( T \) is minimally connected.
 
-    Since \( \set{ u, v } \) was arbitrary, we conclude that \( T \) is maximally acyclic.
-  \end{itemize}
+  \ImplicationSubProof{def:tree/minimally_connected}{def:tree/maximally_acyclic} Let \( T \) be a minimally connected graph.
 
-  \ImplicationSubProof{def:tree/maximally_acyclic}{def:tree/minimally_connected} Suppose that \( T \) is maximally acyclic. We will show that it is minimally connected.
-
-  Suppose that \( T \) is not connected. Then there exist vertices \( a \) and \( b \) with no path between them. Let \( T' \) be the graph obtained by adjoining the edge \( \set{ a, b } \) to \( T \). Since \( T \) is acyclic, \( T' \) must also be acyclic. But this contradicts our assumption that \( T \) is maximally acyclic. Hence, \( T \) is connected.
-
-  Now let \( \set{ u, v } \) be an edge in \( T \) and let \( T^\dprime \) be the subgraph obtained by removing this edge. Suppose that \( T^\dprime \) is connected, i.e. there exists a path from \( u \) to \( v \). But then we can add \( \set{ u, v } \) to this path, hence \( T \) has a cycle, contradicting the assumption that \( T \) is acyclic. Hence, no proper subgraph of \( T \) is connected.
-
-  \ImplicationSubProof{def:tree/minimally_connected}{def:tree/single_path} Suppose that \( T \) is minimally connected.
-
-  Since \( T \) is connected, there exists at least one path between any pair of distinct vertices. If there is more than one path, then we can remove an edge without affecting connectivity. But \( T \) is minimally connected.
-
-  Hence, there exists exactly one path between any pair of distinct vertices
-
-  \ImplicationSubProof{def:tree/single_path}{def:tree/connected_acyclic} Suppose that there exists a unique path connecting every pair of distinct vertices in \( T \). It is clear that \( T \) is connected.
-
-  Aiming at a contradiction, suppose that \( T \) has a cycle
+  \SubProof*{Proof that \( T \) is acyclic} Suppose that there exists a cycle
   \begin{equation*}
-    v_0 \to v_1 \to \cdots \to v_{n-1} \to v_0.
+    v_0 \to v_1 \to \cdots \to v_n.
   \end{equation*}
 
-  Then
+  \Fullref{thm:connected_graph_cycles} implies that the graph obtained from \( T \) by removing the edge \( \set{ v_0, v_1 } \) is still connected, contradicting the assumption that \( T \) is minimally connected.
+
+  The obtained contradiction shows that no cycles can exist in \( T \).
+
+  \SubProof*{Proof that \( T \) is minimally acyclic} Let \( T' \) be the graph obtained from \( T \) by adding an edge between the vertices \( u \) and \( v \). Since \( T \) is connected, there exists a path from \( u \) to \( v \), which in \( T' \) can be extended to a cycle on \( u \). Thus, \( T' \) is not acyclic.
+
+  Therefore, \( T \) is maximally acyclic.
+
+  \ImplicationSubProof{def:tree/maximally_acyclic}{def:tree/single_path} Let \( T \) be a maximally acyclic graph.
+
+  Fix two vertices \( u \) and \( v \) and suppose that no walk exists between them. Let \( T' \) be the graph obtained by adding the edge \( \set{ u, v } \) to \( T \).
+
+  Suppose additionally that \( T' \) has a cycle, say
+  \begin{equation*}
+    w_0 \to w_1 \to \cdots \to w_n.
+  \end{equation*}
+
+  Since \( T \) is acyclic, \( \set{ u, v } \) must be an edge in this cycle.
+  \begin{itemize}
+    \item If, for some \( k = 0, \ldots, n - 1 \), we have \( u = w_k \) and \( v = w_{k+1} \), then the following is a walk in \( T \):
+    \begin{equation*}
+      u = w_k \to w_{k-1} \to \cdots \to w_0 \to w_{n-1} \to \cdots \to w_{k+1} = v.
+    \end{equation*}
+
+    \item Otherwise, for some \( k = 0, \ldots, n - 1 \), we must have \( u = w_{k+1} \) and \( v = w_k \). Then the following is a walk in \( T \):
+    \begin{equation*}
+      u = w_{k+1} \to w_{k+2} \to \cdots \to w_n \to w_1 \to \cdots \to w_k.
+    \end{equation*}
+  \end{itemize}
+
+  The existence of these walks contradict our assumption that there is no walk from \( u \) to \( v \) in \( T \). Thus, \( T' \) must also be acyclic, which in turn contradicts our main assumption --- that \( T \) is maximally acyclic.
+
+  Therefore, it remains for \( T \) to be connected. Furthermore, by \fullref{thm:acyclic_graph_paths}, there exists at most one path, and hence exactly one path between any set of vertices.
+
+  \ImplicationSubProof{def:tree/single_path}{def:tree/connected_acyclic} Let \( T \) be a graph in which every pair of vertices is connected by a unique path.
+
+  Then \( T \) is clearly connected. Furthermore, if \( T \) has some cycle
+  \begin{equation*}
+    v_0 \to v_1 \to \cdots \to v_{n-1} \to v_n,
+  \end{equation*}
+  then
   \begin{equation*}
     v_0 \to v_1 \to \cdots \to v_{n-1}
   \end{equation*}
@@ -62,148 +89,320 @@
 
   We thus obtain two distinct paths from \( v_0 \) to \( v_{n-1} \), contradicting out initial assumption.
 
-  Therefore, \( T \) is also acyclic in addition to being connected.
+  Therefore, \( T \) must be acyclic.
+\end{defproof}
+
+\begin{lemma}\label{thm:removing_node_from_tree}
+  If we remove any node from a \hyperref[def:tree]{tree} along with its incident edges, the \hyperref[def:graph_connected_component]{connected components} of the resulting graph are trees.
+
+  \begin{figure}[!ht]
+    \centering
+    \includegraphics[page=1]{output/thm__removing_node_from_tree}
+    \caption{An illustration of \fullref{thm:removing_node_from_tree}.}\label{fig:thm:removing_node_from_tree}
+  \end{figure}
+\end{lemma}
+\begin{proof}
+  Since the ambient graph is a tree, there exists at most one path between any pair of points. Within a connected component, there exists at least one path between any pair of points, hence exactly one path. Thus, every component is a tree.
 \end{proof}
 
+\begin{lemma}[K\"{o}nig's infinity lemma]\label{thm:konigs_infinity_lemma}
+  Every \hyperref[def:graph_cardinality/local]{locally finite} \hyperref[def:tree]{tree} of \hyperref[def:graph_cardinality/order]{infinite order} has an \hyperref[def:graph_walk/path]{infinite path}.
+\end{lemma}
+\begin{comments}
+  \item We use an explicit choice function here given by the \hyperref[def:zfc/choice]{axiom of choice}, but in special cases like \hyperref[def:ordered_tree]{ordered trees}, there are natural choice functions to consider.
+\end{comments}
+\begin{proof}
+  Let \( T = (V, E) \) be a locally finite infinite tree. Fix a \hyperref[def:choice_function]{choice function} \( c \) on all families of nodes of \( T \) and let \( v_0 \coloneqq c(V) \).
+
+  We will build in parallel an infinite path
+  \begin{equation*}
+    v_0 \to v_1 \to v_2 \cdots
+  \end{equation*}
+  and a sequence of trees \( T_0, T_1, \ldots \), each also locally finite of infinite order, such that \( T_{k+1} \) is a connected component of \( T_k \) with \( v_k \) removed (as in \fullref{thm:removing_node_from_tree}).
+
+  \begin{itemize}
+    \item For the base case, let \( T_0 \) be \( T \).
+
+    \item For the inductive case, suppose that we have already built \( T_k \) and
+    \begin{equation*}
+      v_0 \to v_1 \to \cdots \to v_k.
+    \end{equation*}
+
+    Denote by \( W \) the set of nodes adjacent to \( v_k \) in \( T_k \) and by \( \mscrR \) the family of trees obtained by removing \( v_k \) from \( T_k \).
+
+    Since \( \mscrR \) partitions the infinitely many nodes of \( T_k \) (excluding \( v_k \)), \fullref{thm:pigeonhole_principle} implies that at least one of the trees in \( \mscrR \) has infinite order. Denote by \( \mscrR_\infty \) be the set of all such trees.
+
+    Finally, let
+    \begin{equation*}
+      v_{k+1} \coloneqq c\parens[\Big]{ \set[\Big]{ w \in W \given \qexists* {R \in \mscrR_\infty} w \in R } }
+    \end{equation*}
+    and let \( T_{k+1} \) be the tree in \( \mscrR_\infty \) containing \( v_{k+1} \).
+  \end{itemize}
+
+  We have thus built an infinite path in \( T \) with the aid of a predetermined choice function.
+\end{proof}
+
+\paragraph{Rooted trees}
+
 \begin{definition}\label{def:rooted_tree}\mcite[15]{Diestel2005}
-  A \term[ru=корневое дерево (\cite[37]{Карпов2017})]{rooted tree} is a triple \( T = (V, E, r) \), where \( (V, E) \) is a \hyperref[def:tree]{tree} and \( r \) is a distinguished node, called the \term{root}.
+  A \term[ru=корневое дерево (\cite[\textnumero 9.2.1]{Новиков2013})]{rooted tree} is a triple \( T = (V, E, r) \), where \( (V, E) \) is a \hyperref[def:tree]{tree} and \( r \) is a distinguished node, called the \term{root}.
 
   As per \fullref{def:tree/single_path}, every node \( v \) has a unique path from \( r \).
 
   \begin{thmenum}
-    \thmitem{def:rooted_tree/order} We define the (nonstrict) \hyperref[def:partially_ordered_set]{partial order} \( u \leq v \) to hold if \( u \) lies on the path from \( r \) to \( v \). We call \( \leq \) the \term{tree order} of \( T \).
+    \thmitem{def:rooted_tree/order} We define the (nonstrict) \hyperref[def:partially_ordered_set]{partial order} \( u \leq v \) to hold if \( u \) lies on the path from \( r \) to \( v \). We call \( \leq \) the \term{ancestor order} or \term{vertical order} of \( T \) in order to distinguish it from the horizontal order in \hyperref[def:ordered_tree]{ordered trees}.
 
     \thmitem{def:rooted_tree/height} The \term{height} of a node \( v \) is the length of the unique path from \( r \). This is precisely the height of \( v \) in the sense of \fullref{def:partial_order_element_height}.
 
-    \thmitem{def:rooted_tree/ancestor_descendant}\mcite[637]{Rosen1999} If \( u \leq v \), we say that \( u \) is an \term{ancestor} of \( v \) and that \( v \) is a \term{descendant} of \( u \).
+    \thmitem{def:rooted_tree/ancestor_descendant}\mcite[637]{Rosen1999} If \( u \leq v \), we say that \( u \) is an \term[ru=предок (\cite[298]{БелоусовТкачёв2004})]{ancestor} of \( v \) and that \( v \) is a \term[ru=потомок (\cite[298]{БелоусовТкачёв2004})]{descendant} of \( u \).
 
-    \thmitem{def:rooted_tree/parent_child}\mcite[637; 639]{Rosen1999} If \( u \) is the penultimate element in the path from \( r \) to \( v \), we say that \( u \) is a \term{parent} of \( v \) and that \( v \) is a \term{child} of \( u \).
+    \thmitem{def:rooted_tree/parent_child}\mcite[637; 639]{Rosen1999} If \( u \) is the penultimate element in the path from \( r \) to \( v \), we say that \( u \) is a \term[ru=отец (\cite[298]{БелоусовТкачёв2004})]{parent} of \( v \) and that \( v \) is a \term[ru=сын (\cite[298]{БелоусовТкачёв2004})]{child} of \( u \).
 
-    \thmitem{def:rooted_tree/leaf}\mcite[638]{Rosen1999} If a node has no children, we call it a \term[ru=лист (\cite[25]{Карпов2017})]{leaf node}.
+    \thmitem{def:rooted_tree/leaf}\mcite[638]{Rosen1999} If a node has no children, we call it a \term[ru=лист (\cite[298]{БелоусовТкачёв2004})]{leaf node}.
 
     \thmitem{def:rooted_tree/siblings}\mcite[639]{Rosen1999} If \( u \) and \( v \) has the same parent, we call them \term{siblings}.
+
+    \thmitem{def:rooted_tree/immediate_subtree}\mimprovised An \term{immediate subtree} of \( T \) is a rooted tree that is a subtree of \( T \) and whose root is a child of \( r \).
   \end{thmenum}
-\end{definition}
 
-\paragraph{Multiway trees}
+  Rooted trees have the following metamathematical properties:
+  \begin{thmenum}[resume=def:rooted_tree]
+    \thmitem{def:rooted_tree/homomorphism}\mimprovised A \term{homomorphism} between rooted trees is a \hyperref[def:tree/homomorphism]{tree homomorphism} that preserves roots.
 
-\begin{remark}\label{rem:multiway_trees}
-  The term \enquote{tree} refers to slightly different concepts in graph theory, where \fullref{def:tree} is ubiquitous, and in informatics, where the approach we will present is more useful.
-
-  Consider the \hyperref[con:abstract_syntax_tree]{abstract syntax tree} of the axiom schema \eqref{eq:def:minimal_implication_logic/dist}:
-  \begin{equation}\label{eq:rem:multiway_trees/dist}
-    \begin{aligned}
-      \includegraphics[page=1]{output/rem__multiway_trees}
-    \end{aligned}
-  \end{equation}
-
-  Let us analyze the features that \fullref{def:tree} lacks in order to represent it:
-  \begin{itemize}
-    \item The above tree has a distinguished root and leaves marked with formula schemas. Graph-theoretic trees have no distinguished root, although this problem is easily solved by considering \hyperref[def:rooted_tree]{rooted trees} instead.
-    \item The nodes of every child are ordered by their horizontal position in the drawing. We can mitigate this for graph-theoretic trees by introducing an ordering that is total on the children of any node.
-    \item The same node cannot be a child of two distinct nodes because that would introduce a \hyperref[def:graph_cycle]{cycle}. This can be mitigated by instead considering trees whose nodes are natural numbers, and the actual values we are interested in representing are \hyperref[def:labeled_set]{labels}.
-  \end{itemize}
-
-  The first two points require some adjustments to the definition, but the third has an important consequence that is not easy to mitigate --- we lose uniqueness because multiple distinct trees may have the same labels, and we rely on such trees being identical.
-
-  Furthermore, the kinds of trees we are interested in representing in this way are built recursively, with a focus on inductive reasoning.
-
-  This leads to \fullref{def:multiway_tree}, which provides a very different outlook on trees, but also provides a simple reduction to graph-theoretic trees.
-\end{remark}
-
-\begin{definition}\label{def:multiway_tree}\mimprovised
-  Suppose that we are given a \hyperref[def:grothendieck_universe]{Grothendieck universe} \( \mscrU \), which is safe to assume to be the smallest suitable one as explained in \fullref{def:large_and_small_sets}.
-
-  Fix a set \( X \) in \( \mscrU \), whose elements we will call \term{values}, and consider the following operator:
-  \begin{equation*}
-    \begin{aligned}
-      &R: \mscrU \to \mscrU \\
-      &R(A) \coloneqq X \times A^*,
-    \end{aligned}
-  \end{equation*}
-  where \( A^* \) is the \hyperref[def:formal_language/kleene_star]{Kleene star} of \( A \).
-
-  A \term{multiway tree} over \( X \) is a member of the least fixed point, in the sense of \fullref{thm:knaster_tarski_iteration/continuous}, of \( R \). More concretely, a multiway tree is an \( (n + 1) \)-tuple \( T = (x, T_1, \ldots, T_n) \), where \( x \) is a value and \( T_1, \ldots, T_n \) are other (multiway) trees. We will refer to these trees as the \term{immediate subtrees} of \( T \).
-
-  \begin{thmenum}
-    \thmitem{def:multiway_tree/subtree} We will say that \( T' \) is a \term{subtree} of \( T \) if it is either \( T \) itself, an immediate subtree (i.e. a non-value tuple member) of \( T \), or, recursively, a subtree of an immediate subtree of \( T \).
-
-    \thmitem{def:multiway_tree/rooted} We can regard a multiway tree \( T \) as a graph-theoretic \hyperref[def:rooted_tree]{rooted tree} as follows:
-    \begin{itemize}
-      \item The set of nodes (vertices) is the set of subtrees of \( T \), the root being \( T \) itself.
-      \item Two nodes are connected by an edge if either is an immediate subtree of the other.
-    \end{itemize}
-
-    \thmitem{def:multiway_tree/occurrence} An \term{occurrence} of the value \( a \) in \( T \) is simply a node (subtree) of \( T \) whose value is \( v \).
+    \thmitem{def:rooted_tree/category}\mimprovised For a \hyperref[def:grothendieck_universe]{Grothendieck universe} \( \mscrU \), we can consider the category of \( \mscrU \)-small rooted trees with rooted tree homomorphisms. It is \hyperref[def:concrete_category]{concrete} over the category of trees.
   \end{thmenum}
 \end{definition}
 \begin{comments}
-  \item We use the adjective \enquote{multiway} to contrast with trees with an unrestricted number of immediate subtrees, similarly to \incite[561]{Savage1998}. We needed a specific adjective to distinguish multiway trees from graph-theoretic trees.
-
-  \item Although multiway trees have a very distinct definition from graph-theoretic trees, \fullref{def:multiway_tree/rooted} allows us to use the machinery of \fullref{subsec:trees} where appropriate. Of course, the definitions \fullref{def:multiway_tree/leaf} and \fullref{def:rooted_tree/leaf} for a leaf coincide.
+  \item \incite[\textnumero 9.2.1]{Новиков2013} calls a \enquote{rooted tree} (\enquote{корневое дерево}) what we call an \hyperref[def:oriented_tree]{oriented tree}. The difference is inessential due to \fullref{thm:oriented_and_rooted_trees}.
 \end{comments}
-\begin{defproof}
-  \SubProof{Proof that \( R \) is \hyperref[def:scott_continuity]{Scott-continuous}} We need this in order to justify our usage of \fullref{thm:knaster_tarski_iteration/continuous}.
 
-  Fix an upward-directed family \( \mscrA \) of sets in \( \mscrU \). If \( (r, T_1, \ldots, T_n) \in R(\bigcup \mscrA) \), then \( T_1, \ldots, T_n \) are elements of \( \bigcup \mscrA \). Denote by \( A_i \) the set towards which \( T_i \) belongs. Then, since \( \mscrA \) is upward-directed, there exists a set \( A \) containing \( A_1, \ldots, A_n \), and \( (r, T_1, \ldots, T_n) \in R(A) \).
+\begin{definition}\label{def:oriented_tree}\mimprovised
+  An \term[bg=ориентирано дърво (\cite[21]{Мирчев2001}), ru=ориентированное дерево (\cite[def. 5.6]{БелоусовТкачёв2004}), en=oriented tree (\cite[373]{Knuth1997Vol1})]{oriented tree} or \term[en=arborescence (\cite[\textnumero 3.1]{GondranMinoux1984Graphs})]{arborescence} is an \hyperref[def:well_founded_graph]{well-founded} \hyperref[def:directed_graph]{simple directed graph} \( T = (V, A) \) in which one distinguished vertex, called the \term{root}, has \hyperref[def:graph_cardinality/directed_degree]{in-degree} \( 0 \), and all other vertices have in-degree \( 1 \).
+\end{definition}
+\begin{comments}
+  \item The terminology from \fullref{def:rooted_tree} applies to oriented trees because of \fullref{thm:oriented_and_rooted_trees/orientation}.
 
-  \SubProof{Proof that the subtrees of \( T \) form a rooted tree} It is easiest to show \fullref{def:tree/single_path} --- there is indeed a unique path from the root to any node.
-\end{defproof}
+  \item \incite[def. 5.6]{БелоусовТкачёв2004} require oriented trees to be acyclic rather than well-founded, however that definition leads to pathological infinite oriented trees --- see \fullref{ex:infinite_oriented_tree}.
 
-\begin{definition}\label{def:traversal_ordering}\mcite[228]{Erickson2019}
-  Fix a finite \hyperref[def:multiway_tree]{multiway tree} \( T \) and let \( V \) be its family of nodes. We will define two \hyperref[def:well_ordered_set]{well-orderings} on \( V \) obtained by \enquote{traversing} \( T \).
+  \item Another possible convention for oriented trees is to place the same restrictions on out-degrees rather than in-degrees, which essentially reverses the directions of the arcs. This is the approach taken by \incite[373]{Knuth1997Vol1}.
+\end{comments}
 
-  A \term{pre-order traversal}\fnote{This concept is not related to \hyperref[def:preordered_set]{preordered sets}.} (see \ref{def:traversal_ordering/step/pre}) visits each root before the children, while a \term{post-order traversal} (see \ref{def:traversal_ordering/step/post}) visits the root after them.
+\begin{example}\label{ex:infinite_oriented_tree}
+  The requirement for well-foundedness in \fullref{def:oriented_tree} is essential. Consider the graph
+  \begin{equation}\label{eq:ex:infinite_oriented_tree}
+    \begin{aligned}
+      \includegraphics[page=1]{output/ex__infinite_oriented_tree}
+    \end{aligned}
+  \end{equation}
 
-  The relation \( \leq \) can be defined via recursion on the cardinality \( n \) of \( V \) as follows:
+  If we were to follow \incite[def. 5.6]{БелоусовТкачёв2004} and require oriented trees to be merely acyclic, then \eqref{eq:ex:infinite_oriented_tree} would satisfy the definition. For finite graphs acyclicity is sufficient due to \fullref{thm:def:well_founded_graph/finite_acyclic}.
+
+  Another option would be to require oriented trees to be acyclic, but forbid infinite paths.
+\end{example}
+
+\begin{lemma}\label{thm:tree_order_well_founded}
+  The \hyperref[def:tree/order]{tree order} of a rooted tree is \hyperref[def:well_founded_relation]{well-founded} as a binary relation.
+\end{lemma}
+\begin{proof}
+  Consider any descending sequence of nodes
+  \begin{equation*}
+    \cdots \leq v_n \leq v_{n-1} \leq \cdots \leq v_1 \leq v_0.
+  \end{equation*}
+
+  By definition, \( v_k \) lies on the path from \( r \) to \( v_0 \) for every \( k \geq 0 \). But the path is finite, thus, by \fullref{thm:pigeonhole_principle}, the sequence \hyperref[def:stabilizing_sequence]{stabilizes}.
+\end{proof}
+
+\begin{proposition}\label{thm:oriented_and_rooted_trees}
+  \hfill
   \begin{thmenum}
-    \thmitem{def:traversal_ordering/init} If \( n = 1 \), the ordering is trivial --- let \( v \leq v \).
-    \thmitem{def:traversal_ordering/step} Suppose that we have already built a well-ordering for trees with fewer than \( n \) nodes, and that \( T \) has exactly \( n \) nodes. Let \( r \) be the root and \( T_1, \ldots, T_m \) be the immediate descendants of \( T \), that is,
-    \begin{equation*}
-      \includegraphics[page=1]{output/def__traversal_ordering}
-    \end{equation*}
+    \thmitem{thm:oriented_and_rooted_trees/forgetful} For every \hyperref[def:oriented_tree]{oriented tree} \( T \), its underlying undirected graph \hyperref[def:graph_functors/simple_forgetful]{\( U_S \)}\( (T) \) is a \hyperref[def:tree]{tree}, and the root of \( T \) makes it a \hyperref[def:rooted_tree]{rooted tree}.
 
-    For \( k = 1, \ldots, m \) denote by \( \leq_i \) the recursively defined ordering on \( T_i \), and by \( V_i \) --- the set of nodes.
-
-    Define the relation \( v \leq w \) on \( V \) to hold in the following cases:
-    \begin{thmenum}
-      \thmitem{def:traversal_ordering/step/same} If both \( v \) and \( w \) belong to \( V_i \) and \( x \leq_i y \).
-      \thmitem{def:traversal_ordering/step/different} If \( v \in V_i \) and \( w \in V_j \) with \( i < j \).
-      \thmitem{def:traversal_ordering/step/root} If \( v = w = r \).
-      \thmitem{def:traversal_ordering/step/pre} If \( v = w \) in case we want a pre-order.
-      \thmitem{def:traversal_ordering/step/post} If \( v = r \) in case we want a post-order.
-    \end{thmenum}
+    \thmitem{thm:oriented_and_rooted_trees/orientation} Every rooted tree \( T \) is an oriented tree with respect to the \hyperref[def:multigraph_orientation]{orientation} in which \( u \to v \) if \( u \leq v \) with respect to the \hyperref[def:rooted_tree/order]{tree order}.
   \end{thmenum}
+\end{proposition}
+\begin{proof}
+  \SubProofOf{thm:oriented_and_rooted_trees/forgetful} Let \( T = (V, A) \) be an oriented tree with root \( r \).
+
+  \SubProof*{Proof of connectedness} Fix any vertex \( v \).
+
+  Let \( v_0 \coloneqq v \). We will build a path
+  \begin{equation*}
+    r = v_n \to \cdots \to v_1 \to v_0 = v.
+  \end{equation*}
+
+  At step \( k \), if \( v_k = r \), we are done. Otherwise, the in-degree of \( v_k \) is \( 1 \), and thus there exists exactly one vertex \( v_{k+1} \) such that \( (v_{k+1}, v_k) \) is an arc. Furthermore, \( v_{k+1} \) cannot be among \( v_k, \ldots, v_0 \) because \( T \) is acyclic, thus at every step
+  \begin{equation*}
+    v_{k+1} \to v_k \to \cdots \to v_1 \to v_0 = v
+  \end{equation*}
+  is a path.
+
+  Since \( T \) is well-founded, there exists an index \( n \) such that \( v_n \) has in-degree zero. But there is only one such vertex --- precisely \( r \).
+
+  \SubProof*{Proof of acyclicity} Since \( T \) is well-founded, \fullref{thm:def:well_founded_graph/acyclic} implies that it is also acyclic.
+
+  Suppose that the underlying undirected graph \( U_S(T) \) has an (undirected) cycle
+  \begin{equation*}
+    v_0, e_1, \ldots, e_n, v_n.
+  \end{equation*}
+
+  Then, since \( T \) is acyclic, at least one of the arcs \( e_1, \ldots, e_n \) in this (undirected) cycle must be negatively oriented. Furthermore, at least one of the arcs is positively oriented --- otherwise
+  \begin{equation*}
+    v_n, e_n, \cdots, e_1, v_0
+  \end{equation*}
+  would be a directed cycle in \( T \).
+
+  Let \( e_k \) be the last positively oriented arc.
+  \begin{itemize}
+    \item If \( k < n \), then \( e_{k+1} \) is negatively oriented. Thus, \( e_k \) connects \( v_{k-1} \) to \( v_k \), while \( e_{k+1} \) connects \( v_{k+1} \) to \( v_k \). Then \( v_k \) has in-degree at least \( 2 \), which contradicts our assumption that \( T \) is an oriented tree.
+
+    \item If \( k = n \), we can instead consider the last negatively oriented arc and similarly reach a contradiction.
+  \end{itemize}
+
+  From the assumption that \( U_S(T) \) has an undirected cycle, we have reached a contradiction, thus it remains for \( U_S(T) \) to be acyclic.
+
+  \SubProofOf{thm:oriented_and_rooted_trees/orientation} Let \( T = (V, E, r) \) be a rooted tree and let \( D \) be its orientation in which \( u \to v \) if \( u \leq v \).
+
+  \SubProof*{Proof of well-foundedness} By \fullref{thm:tree_order_well_founded}, the tree order is well-founded. \Fullref{thm:def:well_founded_graph/simple} implies that \( D \) it well-founded as a graph.
+
+  \SubProof*{Proof of degree conditions} The arcs ending at \( v \) are precisely those connecting the parent of \( v \) to \( v \) itself. There is one parent for every node except for the root, which has none. Thus, the root has in-degree \( 0 \), while the other vertices have in-degree \( 1 \).
+\end{proof}
+
+\begin{theorem}[Induction on rooted trees]\label{thm:induction_on_rooted_trees}\mimprovised
+  In order to prove a statement for every finite \hyperref[def:rooted_tree]{rooted tree}, it is sufficient to do the following:
+  \begin{displayquote}
+    Given a finite rooted tree \( T \), suppose that the statement holds for all its \hyperref[def:rooted_tree/immediate_subtree]{immediate subtrees} and prove the statement for \( T \) itself.
+  \end{displayquote}
+
+  Generalizing on \( T \), we can conclude that the statement holds for all finite rooted trees.
+\end{theorem}
+\begin{comments}
+  \item Unlike for most induction principles discussed in \fullref{con:induction}, we did not formulate this one via logical formulas since that would make the statement unnecessarily convoluted with little gain.
+
+  \item We will mostly use this for \hyperref[con:abstract_syntax_tree]{abstract syntax trees} or even rely on \hyperref[con:evaluation]{pattern matching} to avoid working with trees directly.
+
+  \item We will usually deal with only certain kinds of rooted trees, for example \hyperref[def:propositional_formula_ast]{propositional formula ASTs}. In this case the statement should be conditional on the tree \( T \) being a propositional AST.
+\end{comments}
+\begin{proof}
+  By \fullref{thm:tree_order_well_founded}, the \hyperref[def:rooted_tree]{tree order} is well-founded. This allows us to reduce the theorem to \fullref{thm:well_founded_induction}.
+\end{proof}
+
+\paragraph{Ordered trees}
+
+\begin{definition}\label{def:ordered_tree}\mimprovised
+  An \term[ru=упорядоченное дерево (\cite[\textnumero 9.3.5]{Новиков2013}), en=ordered tree (\cite[639]{Rosen1999})]{ordered tree} is a quadruple \( T = (V, E, r, \leq) \), where \( (V, E, r) \) is a \hyperref[def:rooted_tree]{rooted tree} and \( {\leq} \) is a \hyperref[def:partially_ordered_set]{partial order}, called the \term{sibling order} or \term{horizontal order}, such that the children of every node are \hyperref[def:totally_order_chain]{totally ordered}, while non-siblings are pairwise-incomparable.
+
+  \begin{thmenum}[series=def:ordered_tree]
+    \thmitem{def:ordered_tree/leftmost_rightmost} We say that the child \( v \) of \( u \) is \term{leftmost} (resp. \term{rightmost}) if it is minimal (resp. maximal) with respect to \( {\leq} \). If \( u \) has only two children, we call them \term{left} and \term{right}.
+  \end{thmenum}
+
+  Ordered trees have the following metamathematical properties:
+  \begin{thmenum}
+    \thmitem{def:ordered_tree/homomorphism} A \term{homomorphism} between ordered trees is a \hyperref[def:order_function/preserving]{strictly order-preserving} \hyperref[def:rooted_tree/homomorphism]{rooted tree homomorphism}.
+
+    \thmitem{def:ordered_tree/category} For a \hyperref[def:grothendieck_universe]{Grothendieck universe} \( \mscrU \), we consider the category of \( \mscrU \)-small ordered trees with ordered tree homomorphisms. It is \hyperref[def:concrete_category]{concrete} over both the category of rooted trees and the \hyperref[def:partially_ordered_set]{category of partially ordered sets}.
+  \end{thmenum}
+\end{definition}
+\begin{comments}
+  \item \incite[639]{Rosen1999} provides a similar definition, however he doesn't explicitly deal with non-sibling elements. We want to be explicit about this or order to strictly differentiate between vertical and horizontal ordering.
+
+  \item \incite[\textnumero 2.3]{Holtkamp2011} uses \enquote{planar rooted tree} as a synonym for \enquote{ordered tree}.
+\end{comments}
+
+\begin{definition}\label{def:ordered_tree_grafting}\mimprovised
+  For every \hyperref[def:totally_ordered_set]{totally ordered set} \( \mscrK \) and every \( \mscrK \)-indexed family \( \seq{ T_k }_{k \in \mscrK} \) of \hyperref[def:ordered_tree]{ordered trees} with roots \( \seq{ r_k }_{k \in \mscrK} \), we define the \term{grafting product} \( B_+(\seq{ T_k }_{k \in \mscrK}) \) as follows:
+  \begin{thmenum}
+    \thmitem{def:ordered_tree_grafting/union} Consider the \hyperref[def:graph_disjoint_union]{graph disjoint union} \( \coprod_{k \in \mscrK} T_k \), with the \hyperref[thm:order_category_isomorphism_properties/coproduct]{disjoint union partial order} on its nodes.
+
+    \thmitem{def:ordered_tree_grafting/root} Add a new node \( 0 \) and, for every \( k \in \mscrK \), an edge from \( 0 \) to \( \iota(r_k) \).
+
+    \thmitem{def:ordered_tree_grafting/order} Extend the sibling order so that \( \iota_k(r_k) < \iota_m(r_m) \) whenever \( k < m \).
+  \end{thmenum}
+\end{definition}
+\begin{comments}
+  \item We base our terminology on \cite[\textnumero 3.6]{Holtkamp2011} and our notation on the earlier \cite[9]{Hoffman2002}.
+
+  \item We will mostly be interested in grafting trees with \hyperref[def:labeled_set]{labeled nodes}, in which case we must also transfer the labels to the product.
+\end{comments}
+
+\begin{definition}\label{def:n_ary_tree}\mcite[642]{Rosen1999}
+  We say that the \hyperref[def:ordered_tree]{ordered tree} is \( n \)-\term{ary} if each node has \hi{at most} \( n \) children and \term{full \( n \)-ary} if each non-leaf node has \hi{exactly} \( n \) children.
+
+  For some small values of \( n \), we use the adjectives from \fullref{def:operation_arity} (e.g. unary trees, binary trees).
+\end{definition}
+
+\begin{definition}\label{def:ordered_tree_enumeration}
+  Fix a finite \hyperref[def:ordered_tree]{ordered tree} \( T = (V, E, r, \leq) \). Let \( R_1, \ldots, R_n \) be the immediate subtrees of \( T \). We will define two \hyperref[def:enumeration]{enumeration} of \( V \) --- the \term{pre-order enumeration}\fnote{This concept is not related to \hyperref[def:preordered_set]{preordered sets}.}
+  \begin{equation}\label{eq:def:ordered_tree_enumeration/pre}
+    \op{pre}(T) \coloneqq \parens[\Big]{ r, \op{pre}(R_1), \cdots, \op{pre}(R_n) }.
+  \end{equation}
+  visits each root before the children, while the \term{post-order enumeration}
+  \begin{equation}\label{eq:def:ordered_tree_enumeration/post}
+    \op{post}(T) \coloneqq \parens[\Big]{ \op{post}(R_1), \cdots, \op{post}(R_n), r }.
+  \end{equation}
+  visits the root after them.
+
+  Additionally, if \( T \) is a \hyperref[def:n_ary_tree]{full binary tree}, we can also define the \term{in-order enumeration}
+  \begin{equation}\label{eq:def:ordered_tree_enumeration/in}
+    \op{in}(T) \coloneqq \parens[\Big]{ \op{in}(R_1), r, \op{in}(R_2) }.
+  \end{equation}
 
   \begin{figure}[!ht]
     \centering
-    \includegraphics[page=2]{output/def__traversal_ordering}
-    \caption{An ordered tree whose \hyperref[def:traversal_ordering]{pre-order traversal} is \( abcde \) and whose \hyperref[def:traversal_ordering]{post-order traversal} is \( cdbea \).}
-    \label{fig:def:traversal_ordering}
+    \includegraphics[page=1]{output/def__ordered_tree_enumeration}
+    \caption{A full binary tree whose \hyperref[eq:def:ordered_tree_enumeration/pre]{pre-order enumeration} is \( abcde \), whose \hyperref[eq:def:ordered_tree_enumeration/post]{post-order enumeration} is \( cdbea \) and whose \hyperref[eq:def:ordered_tree_enumeration/in]{in-order enumeration} is \( cbdae \).}
+    \label{fig:def:ordered_tree_enumeration}
   \end{figure}
 \end{definition}
-\begin{defproof}
-  We will show via induction on \( n \) that \( \leq \) is a well-order. Since the trivial case \( n = 1 \) is vacuous, suppose that \( n > 1 \).
+\begin{comments}
+  \item We base our definition on \cite[228]{Erickson2019}, however instead of \enquote{pre-order traversal}, which has temporal connotations, we use \enquote{pre-order enumeration}.
+\end{comments}
 
-  \SubProofOf[def:binary_relation/reflexive]{reflexivity} Follows from \fullref{def:traversal_ordering/step/root}.
+\begin{algorithm}[Finite ordered tree to binary tree]\label{alg:finite_ordered_tree_to_binary_tree}
+  For every finite \hyperref[def:ordered_tree]{ordered tree} \( T \), we will build a \hyperref[def:n_ary_tree]{binary tree} \( B \) that has the same \hyperref[eq:def:ordered_tree_enumeration/pre]{pre-order enumeration}.
 
-  \SubProofOf[def:binary_relation/antisymmetric]{antisymmetry} Suppose that \( v \leq w \) and \( w \leq v \) with \( v \neq w \).
-  \begin{itemize}
-    \item If both \( v \) and \( w \) belong to \( V_i \), antisymmetry follows from the inductive hypothesis.
-    \item If \( v \in V_i \) and \( w \in V_j \) with \( i < j \), then we cannot possibly have \( v \geq_W w \).
-    \item If \( v = r \), then \( r \leq w \); this is pre-order traversal, hence we cannot have \( r \geq w \).
-    \item We handle post-order traversal similarly.
-  \end{itemize}
+  Let \( v_1, \ldots, v_n \) be the pre-order enumeration of \( T \). We will build via recursion on \( k = 1, 2, \ldots \) a binary tree \( B_k \) enumerating \( v_1, \ldots, v_{2k} \) if \( n = 2k \) and \( v_1, \ldots, v_{2k} v_{2k+1} \) otherwise.
 
-  \SubProofOf[def:binary_relation/transitive]{transitivity} Suppose that \( u \leq v \) and \( v \leq w \) with all three elements distinct.
-  \begin{itemize}
-    \item If all three belong to \( V_i \), antisymmetry follows from the inductive hypothesis.
-    \item If \( u = r \), then \( r \leq v \); this is pre-order traversal, hence by definition \( u \leq w \).
-    \item If \( w = r \), then \( v \leq w \); this is post-order traversal, hence by definition \( u \leq w \).
-    \item We cannot have \( v = r \).
-    \item If \( x, v \in V_i \) and \( w \in V_j \) with \( i < j \), then \( u \leq w \) by \ref{def:traversal_ordering/step/different}.
-    \item If \( u \in V_i \) and \( y, w \in V_j \) with \( i < j \), then also \( u \leq w \) by \ref{def:traversal_ordering/step/different}.
-  \end{itemize}
+  \begin{figure}[!ht]
+    \hfill
+    \includegraphics[page=1]{output/alg__finite_ordered_tree_to_binary_tree}
+    \hfill
+    \includegraphics[page=2]{output/alg__finite_ordered_tree_to_binary_tree}
+    \hfill
+    \hfill
+    \caption{The two possibilities in \fullref{alg:finite_ordered_tree_to_binary_tree/step}.}
+    \label{fig:alg:finite_ordered_tree_to_binary_tree}
+  \end{figure}
 
-  \SubProofOf[def:well_founded_relation]{well-foundedness} Follows from \fullref{thm:def:well_ordered_set/finite_chain}.
-\end{defproof}
+  \begin{thmenum}
+    \thmitem{alg:finite_ordered_tree_to_binary_tree/base} Define \( B_1 \) to be the singleton tree \( v_1 \). If \( n = 1 \), yield \( B_1 \) as the result of the algorithm.
+
+    \thmitem{alg:finite_ordered_tree_to_binary_tree/step} At step \( k > 1 \), having already constructed \( B_{k-1} \), we have two possibilities:
+    \begin{thmenum}
+      \thmitem{alg:finite_ordered_tree_to_binary_tree/even} If \( n = 2k \), define \( B_k \) by grafting \( v_n \) onto \( v_{2k-1} \) and yield \( B_k \) as the result of the algorithm.
+
+      \thmitem{alg:finite_ordered_tree_to_binary_tree/odd} Otherwise, \( n < 2k \), define \( B_k \) by grafting \( v_{2k} \) and \( v_{2k+1} \) onto \( v_{2k-1} \).
+
+      If \( n = 2k+1 \), yield \( B_k \) as the result of the algorithm.
+    \end{thmenum}
+  \end{thmenum}
+\end{algorithm}
+
+\paragraph{Labeled trees}
+
+\begin{definition}\label{def:labeled_tree}\mimprovised
+  An \( L \)-\term{labeled tree} is a quintuple \( T = (V, E, r, \leq, l) \), where \( (V, E, r, \leq) \) is an \hyperref[def:ordered_tree]{ordered tree} and \( l: V \to L \) is a \hyperref[def:labeled_set]{labeling} of the vertices.
+
+  Labeled trees have the following metamathematical properties:
+  \begin{thmenum}
+    \thmitem{def:labeled_tree/homomorphism} A \term{homomorphism} between \( L \)-labeled trees is an \hyperref[def:ordered_tree/homomorphism]{ordered tree homomorphism} that also preserves labels.
+
+    \thmitem{def:labeled_tree/category} For a \hyperref[def:grothendieck_universe]{Grothendieck universe} \( \mscrU \), we can consider the category of \( \mscrU \)-small \( L \)-labeled trees with \( L \)-labeled tree homomorphisms. It is \hyperref[def:concrete_category]{concrete} over the category of ordered trees.
+  \end{thmenum}
+\end{definition}
+\begin{comments}
+  \item We introduce this definition mostly for having an explicit concept for isomorphic \hyperref[con:abstract_syntax_tree]{abstract syntax tree}.
+
+  \item For \hyperref[rem:arbitrary_graph]{general graphs} and even \hyperref[def:tree]{general trees} we allow both vertices and arcs/edges to be labeled, however in the case of ordered trees we are mostly interested in the vertices.
+
+  We have chosen the term \enquote{labeled tree} for brevity; \incite[471]{Mimram2020} and \incite[655]{Rosen1999} use the same term for generic trees with labeled nodes, while \incite[\textnumero 2.8]{Holtkamp2011} uses it for rooted trees with labeled nodes.
+\end{comments}

@@ -59,7 +59,17 @@ SUPERSCRIPT_TABLE = str.maketrans({
     'T': 'ᵀ',
     'U': 'ᵁ',
     'V': 'ⱽ',
-    'W': 'ᵂ'
+    'W': 'ᵂ',
+    '0': '⁰',
+    '1': '¹',
+    '2': '²',
+    '3': '³',
+    '4': '⁴',
+    '5': '⁵',
+    '6': '⁶',
+    '7': '⁷',
+    '8': '⁸',
+    '9': '⁹'
 })
 
 
@@ -82,26 +92,8 @@ def atoi_subscripts(string: str) -> int:
     )
 
 
-def _iter_itoa_subscripts(value: int) -> Iterable[str]:
-    assert value > 0
-
-    while value > 0:
-        yield chr(ord('₀') + value % 10)
-
-        if value == 10:
-            yield '₀'
-
-        value //= 10
-
-
 def itoa_subscripts(value: int) -> str:
-    if value == 0:
-        return '₀'
-
-    if value < 0:
-        return '₋' + itoa_subscripts(-value)
-
-    return ''.join(reversed(list(_iter_itoa_subscripts(value))))
+    return to_superscript(str(value))
 
 
 def is_latin_string(string: str, capitalization: Capitalization) -> bool:

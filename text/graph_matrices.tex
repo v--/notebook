@@ -1,0 +1,320 @@
+\subsection{Graph matrices}\label{subsec:graph_matrices}
+
+\begin{remark}\label{rem:graphs_linear_algebra_and_topology}
+  As we shall see, the \hyperref[def:graph_adjacency]{adjacency} and \hyperref[def:graph_incidence]{incidence} of a directed multigraph can be studied using linear algebra via \hyperref[def:graph_adjacency_matrix]{adjacency} and \hyperref[def:directed_incidence_matrix]{incidence matrices}, while \hyperref[def:graph_connectedness]{connectedness} can be studied using \hyperref[def:graph_connectedness]{topology} via \hyperref[def:graph_geometric_realization/embedding]{graph embeddings}.
+\end{remark}
+
+\begin{remark}\label{rem:networks}
+  The term \enquote{network} is used for certain kinds of graphs describing electrical networks, transportation networks, social networks, etc.
+
+  \begin{itemize}
+    \item \incite[54]{Bollobas1998} defines an \enquote{electric network} as a simple undirected graph with weighted edges.
+    \item \incite[\textnumero 7.3.3]{Новиков2013} defines a \enquote{network} (\enquote{сеть}) as a simple directed graph with two distinguished vertices --- an initial and terminal vertex.
+    \item \incite[141]{Diestel2005} defines a \enquote{network} as a directed multigraph with weighted arcs and two distinguished vertices, with the intention of studying \enquote{flows} between these vertices.
+    \item \incite[def. 6.8.1]{Knauer2011} defines a \enquote{transportation network} as a simple directed weakly connected graph with two distinguished vertices and weighted arcs.
+    \item \incite[655]{Knuth1997Vol1} defines a \enquote{network} as a graph of arbitrary kind where either the vertices or arcs/edges are weighted. \incite[13]{Мирчев2001} follows the same practice, again with the term \enquote{network} (\enquote{мрежа}).
+    \item \incite[def. 5.17]{БелоусовТкачёв2004} define a \enquote{network} (\enquote{сеть}) as directed acyclic graphs and study distances from vertices with in-degree \( 0 \).
+  \end{itemize}
+
+  Due to the inherent ambiguity, we will avoid this terminology and instead prefer being more concrete.
+\end{remark}
+
+\paragraph{Adjacency matrices}
+
+\begin{definition}\label{def:graph_adjacency_matrix}\mimprovised
+  Let \( G = (V, A) \) be a finite \hyperref[def:directed_graph]{simple directed graph} with loops and let \( v_1, \ldots, v_n \) be an enumeration of its vertices. We define the \term{unweighted} \term[bg=матрица на съседство (\cite[52]{Мирчев2001}), ru=матрица смежностей (\cite[32]{Зыков2004}), en=adjacency matrix (\incite[28]{Diestel2005})]{adjacency matrix} (resp. \term{weighted} with respect to the \hyperref[def:weighted_set]{weight function} \( w: A \to R \)) as the matrix
+  \begin{equation*}
+    M = \seq{ m_{i,j} }_{i,j=1}^n
+  \end{equation*}
+  with elements
+  \begin{TwoColumns}
+    \begin{equation*}
+      m_{i,j} \coloneqq \begin{cases}
+        w(v_i, v_j), &(v_i, v_j) \in A \\
+        0_R,         &\T{otherwise.}
+      \end{cases}
+    \end{equation*}
+    \begin{center}
+      (weighted)
+    \end{center}
+  \BeginSecondColumn
+    \begin{equation*}
+      m_{i,j} \coloneqq \begin{cases}
+        1, &(v_i, v_j) \in A \\
+        0, &\T{otherwise.}
+      \end{cases}
+    \end{equation*}
+    \begin{center}
+      (unweighted)
+    \end{center}
+  \end{TwoColumns}
+\end{definition}
+\begin{comments}
+  \item The adjacency matrix is thus also defined for \hyperref[def:undirected_graph]{simple undirected graphs} due to the doubling functor \hyperref[def:graph_functors/simple_doubling]{\( D_S \)}. The matrix is \hyperref[def:transpose_matrix]{symmetric} in this case.
+
+  \item Only unweighted adjacency matrices are usually considered, for example by \incite[28]{Diestel2005}, \incite[54]{Bollobas1998}, \incite[195]{Erickson2019}, \incite[32]{Зыков2004}, \incite[\textnumero 7.4.2]{Новиков2013} and \incite[52]{Мирчев2001}. All of the aforementioned authors agree on the definition of unweighted adjacency matrix, and we simply extend that with weights.
+
+  \item Rather than considering explicit weights, \incite[552]{Rosen1999} and \incite[def. 2.1.1]{Knauer2011} define adjacency matrices for directed multigraphs as matrices of the underlying directed graph with loops \hyperref[def:graph_functors/directed_forgetful]{\( U_D(G) \)} weighted by the number of parallel arcs. We provide an example in \fullref{ex:def:graph_adjacency_matrix/multi}.
+\end{comments}
+
+\begin{proposition}\label{thm:def:graph_adjacency_matrix}
+  \hyperref[def:graph_adjacency_matrix]{Adjacency matrices} have the following basic properties:
+  \begin{thmenum}
+    \thmitem{thm:def:graph_adjacency_matrix/degree}\mcite[prop. 2.1.4]{Knauer2011} Let \( M = \seq{ m_{i,j} }_{i,j=1}^n \) be the unweighted adjacency matrix of \( G \). Then
+    \begin{align*}
+      \deg_{\op{in}}(v_j)  &= \sum_{k=1}^n m_{k,j}, \\
+      \deg_{\op{out}}(v_i) &= \sum_{k=1}^n m_{i,k}.
+    \end{align*}
+
+    \thmitem{thm:def:graph_adjacency_matrix/power} If \( M \) is the unweighted adjacency matrix of \( G \), then the \( (i, j) \)-th entry of \( M^l \), where \( l \geq 1 \), is the number of \hyperref[def:graph_walk]{walks} of length \( l \) in \( G \).
+
+    \thmitem{thm:def:graph_adjacency_matrix/tropical_power} Suppose that the arcs of \( G = (V, A) \) are weighted by \( w: A \to \BbbR \). Let \( M \) be the weighted adjacency matrix of \( G \).
+
+    Denote by \( R \) the \hyperref[def:tropical_semiring]{\( \min \)-plus semiring} over \( \BbbR \) and consider the power \( M^l \) over \( R \). Then the \( (i, j) \)-th entry of \( M^l \) is the length of the walk from \( v_i \) to \( v_j \) of length \( l \) with least weight.
+  \end{thmenum}
+\end{proposition}
+\begin{proof}
+  \SubProofOf{thm:def:graph_adjacency_matrix/degree} Trivial.
+
+  \SubProofOf{thm:def:graph_adjacency_matrix/power} Let \( n \) be the order of \( G \). We will use induction on \( l \).
+  \begin{itemize}
+    \item In the base case \( l = 1 \) the matrix \( M \) has \( 1 \) as its \( (i,j) \)-th entry whenever there is an arc (i.e. a walk of length \( 1 \)) from \( v_i \) to \( v_j \).
+
+    \item Suppose that the statement holds for \( l \). The \( (i, j) \)-th entry of \( M^{l+1} \) is
+    \begin{equation*}
+      m^{(l+1)}_{i,j} = \sum_{k=1}^n m^{(l)}_{i,k} \cdot m_{k,j}.
+    \end{equation*}
+
+    If there are \( m \) walks of length \( l \) from \( v_i \) to \( v_k \) and if there is an arc from \( v_k \) to \( v_j \), these walks can be extended to walks of length \( l + 1 \) from \( v_i \) to \( v_j \). Summing by all \( k \), we obtain \( m^{(l+1)}_{i,j} \).
+  \end{itemize}
+
+  \SubProofOf{thm:def:graph_adjacency_matrix/tropical_power} Analogous.
+\end{proof}
+
+\begin{example}\label{ex:def:graph_adjacency_matrix}
+  We will list some examples of \hyperref[def:graph_adjacency_matrix]{adjacency matrices}:
+  \begin{thmenum}
+    \thmitem{ex:def:graph_adjacency_matrix/triangle} The \hyperref[def:graph_adjacency_matrix]{adjacency matrix} of the graph
+    \begin{equation}\label{eq:ex:def:graph_adjacency_matrix/triangle/graph}
+      \begin{aligned}
+        \includegraphics[page=1]{output/ex__def__graph_adjacency_matrix}
+      \end{aligned}
+    \end{equation}
+    is
+    \begin{equation}\label{eq:ex:def:graph_adjacency_matrix/triangle/graph/matrix}
+      M =
+      \begin{blockarray}{cccc}
+        a & b & c & \\
+      \begin{block}{(ccc)c}
+        1 & 1 & 1 & a \\
+          &   & 1 & b \\
+          &   &   & c \\
+      \end{block}
+      \end{blockarray}
+    \end{equation}
+
+    \Fullref{thm:def:graph_adjacency_matrix/degree} implies that
+    \begin{itemize}
+      \item \( \deg_{\op{in}}(a) = \deg_{\op{in}}(b) = 1 \) and \( \deg_{\op{in}}(c) = 2 \).
+      \item \( \deg_{\op{out}}(a) = 3 \), \( \deg_{\op{in}}(b) = 1 \) and \( \deg_{\op{in}}(c) = 0 \).
+    \end{itemize}
+
+    To demonstrate \fullref{thm:def:graph_adjacency_matrix/power}, consider
+    \begin{equation*}
+      M^2 =
+      \begin{blockarray}{cccc}
+        a & b & c & \\
+      \begin{block}{(ccc)c}
+        1 & 1 & 2 & a \\
+          &   &   & b \\
+          &   &   & c \\
+      \end{block}
+      \end{blockarray}
+    \end{equation*}
+    which describes the following walks of length \( 2 \):
+    \begin{itemize}
+      \item \( a \to a \to a \),
+      \item \( a \to a \to b \),
+      \item \( a \to a \to c \),
+      \item \( a \to b \to c \).
+    \end{itemize}
+
+    Furthermore, we have \( M^3 = M^2 \), which corresponds to the following walks:
+    \begin{itemize}
+      \item \( a \to a \to a \) extends to
+      \begin{itemize}
+        \item \( a \to a \to a \to a \).
+        \item \( a \to a \to a \to b \).
+        \item \( a \to a \to a \to c \).
+      \end{itemize}
+      \item \( a \to a \to b \) extends to \( a \to a \to b \to c \).
+    \end{itemize}
+
+    For \( l > 3 \), the walks are analogous.
+
+    \thmitem{ex:def:graph_adjacency_matrix/square} The \hyperref[def:graph_adjacency_matrix]{weighted adjacency matrix} of the graph
+    \begin{equation}\label{eq:ex:def:graph_adjacency_matrix/square/graph}
+      \begin{aligned}
+        \includegraphics[page=2]{output/ex__def__graph_adjacency_matrix}
+      \end{aligned}
+    \end{equation}
+    is
+    \begin{equation}\label{eq:ex:def:graph_adjacency_matrix/square/graph/matrix}
+      M =
+      \begin{blockarray}{ccccc}
+        a & b & c & d & \\
+      \begin{block}{(cccc)c}
+          & 3 & 2 & 4 & a \\
+          &   &   & 1 & b \\
+          &   &   & 1 & c \\
+          &   &   &   & c \\
+      \end{block}
+      \end{blockarray}
+    \end{equation}
+
+    In the \hyperref[def:tropical_semiring]{\( \min \)-plus} semiring, the matrix above has \( \infty \) rather than \( 0 \). The \( (i, j) \)-th entry of \( M^2 \) in the \( \min \)-plus semiring is
+    \begin{equation*}
+      \min_{k=1}^n \parens[\Big]{ w(i,k) + w(k,j) }
+    \end{equation*}
+    and the matrix itself has values
+    \begin{equation*}
+      M^2 =
+      \begin{blockarray}{ccccc}
+        a & b & c & d & \\
+      \begin{block}{(cccc)c}
+          &   &   & 3 & a \\
+          &   &   &   & b \\
+          &   &   &   & c \\
+          &   &   &   & c \\
+      \end{block}
+      \end{blockarray}
+    \end{equation*}
+
+    Indeed, there are only two walks from \( a \) to \( d \) of length \( 2 \) and the shorter one has weight \( 3 \).
+
+    \thmitem{ex:def:graph_adjacency_matrix/multi} Following \incite[def. 2.1.1]{Knauer2011}, we can define the \hyperref[def:graph_adjacency_matrix]{adjacency matrix} of a \hyperref[def:directed_multigraph]{directed multigraph} \( G \) as the adjacency matrix of \hyperref[def:graph_functors/directed_forgetful]{\( U_D \)}\( (G) \) where the weights of an arc \( (u, v) \) in \( U_D(G) \) is the number of parallel arcs from \( u \) to \( v \) in \( G \).
+
+    For example, the adjacency matrix of \eqref{eq:fig:def:directed_multigraph} would become
+    \begin{equation}\label{ex:def:graph_adjacency_matrix/multi}
+      \begin{blockarray}{cccccccc}
+          & a        & b        & c        & d        & e        & f \\
+      \begin{block}{c(ccccccc)}
+        a &          & 1        & 1        &          &          &   \\
+        b &          &          &          & 1        &          &   \\
+        c &          &          &          & 1        & 1        &   \\
+        d &          &          &          &          &          & 1 \\
+        e &          &          &          &          &          & 1 \\
+        f &          &          &          &          &          &   \\
+      \end{block}
+      \end{blockarray}.
+    \end{equation}
+  \end{thmenum}
+\end{example}
+
+\begin{proposition}\label{thm:adjacency_matrix_components}\mcite[thm. 2.1.8; thm. 2.1.9]{Knauer2011}
+  Let \( G = (V, A) \) be a finite \hyperref[def:directed_graph]{simple directed graph} with loops. Let \( G_1, \ldots, G_s \) be an enumeration of its \hyperref[def:graph_connectedness/strong]{strongly connected components} such that there are no arcs from \( G_{k+1} \) to \( G_k \).
+
+  Let \( c_0 \coloneqq 1 \) and, for each \( k = 1, \ldots, s \), let
+  \begin{equation*}
+    v_{c_{k-1}}, \ldots, v_{c_k}
+  \end{equation*}
+  be an enumeration of the vertices of \( G_k \). Then
+  \begin{equation*}
+    1 = c_0 < c_1 < \ldots < c_s = n
+  \end{equation*}
+  and \( v_1, \ldots, v_n \) is an enumeration of \( V \).
+
+  Finally, let \( M \) be the (weighted or unweighted) \hyperref[def:graph_adjacency_matrix]{adjacency matrix} of \( G \) and let \( M_k \) be the adjacency matrix of \( G_k \). Then \( G \) is \hyperref[def:block_matrix]{block}-\hyperref[def:triangular_matrix]{upper triangular} with
+  \begin{equation}\label{eq:thm:adjacency_matrix_components}
+    M = \begin{pmatrix}
+      M_1    & R_{1,2} & \cdots & R_{1,s} & R_{1,s} \\
+      0      & M_2     & \cdots & R_{2,s} & R_{2,s} \\
+      \vdots & \vdots  & \ddots & \vdots  & \vdots  \\
+      0      & 0       & \cdots & M_{s-1} & R_{s-1,s} \\
+      0      & 0       & \cdots & 0       & M_s
+    \end{pmatrix}.
+  \end{equation}
+
+  If we consider the \hyperref[def:graph_connectedness/weak]{weak connected components}, each of the matrices \( R_{i,j} \) becomes zero.
+\end{proposition}
+\begin{proof}
+  We will use induction on the number \( s \) of strongly connected components.
+  \begin{itemize}
+    \item If \( s = 1 \), then \( M = M_1 \), which vacuously satisfies \eqref{eq:thm:adjacency_matrix_components}.
+    \item Suppose that the proposition holds for all matrices with \( s \) strongly connected components and let \( G \) be a graph with \( s + 1 \) strongly connected components.
+
+    Let \( G' \) be the graph with vertices \( v_1, \ldots, v_{c_s} \) and let \( M' \) be the matrix \( G' \). We must show that
+    \begin{equation*}
+      M = \begin{pmatrix}
+        M' & R_{1,s+1} \\
+        0  & M_{s+1}
+      \end{pmatrix},
+    \end{equation*}
+    that is, that \( M_{i,j} = 0 \) when \( i > c_s \) and \( j < c_s \).
+
+    In this case \( v_i \) is in \( G_{s+1} \), while \( v_j \) is in \( G_{k_0} \) for some \( k_0 \leq s \). We have assumed that there are no arcs from \( G_{s+1} \) to \( G_s \), hence also no arcs from \( G_{s+1} \) to \( G_{k_0} \). Thus, \( M_{i,j} = 0 \).
+  \end{itemize}
+\end{proof}
+
+\paragraph{Incidence matrices}
+
+\begin{definition}\label{def:directed_incidence_matrix}\mcite[def. 2.2.1]{Knauer2011}
+  Let \( G = (V, A, h, t) \) be a finite \hyperref[def:directed_multigraph]{directed multigraph}. Let \( v_1, \ldots, v_m \) and \( a_1, \ldots, a_n \) be enumerations of \( V \) and of \( A \), correspondingly.
+
+  We define the \term[bg=матрица на инцидентност (\cite[47]{Мирчев2001}), ru=матрица инцидентности (\cite[289]{БелоусовТкачёв2004})]{incidence matrix}
+  \begin{equation*}
+    M = \seq{ m_{i,j} }_{i,j=1}^{m,n}
+  \end{equation*}
+  of \( G \) with elements
+  \begin{equation*}
+    m_{i,j} \coloneqq \begin{cases}
+      1,  &v_i = h(e_j), \\
+      -1, &v_i = t(e_j), \\
+      0,  &\T{otherwise.}
+    \end{cases}
+  \end{equation*}
+\end{definition}
+\begin{comments}
+  \item Unlike for \hyperref[def:graph_adjacency_matrix]{adjacency matrices}, it is not clear how to handle weights in incidence matrices, so we avoid doing it altogether.
+  \item For undirected (multi)graphs we present a different definition; see \fullref{def:undirected_incidence_matrix}.
+\end{comments}
+
+\begin{definition}\label{def:undirected_incidence_matrix}\mcite[def. 2.2.1]{Knauer2011}
+  Let \( G = (V, E, \mscrE) \) be a finite \hyperref[def:directed_multigraph]{directed multigraph}. Let \( v_1, \ldots, v_m \) and \( e_1, \ldots, e_n \) be enumerations of \( V \) and of \( E \), correspondingly.
+
+  We define the \term[bg=матрица на инцидентност (\cite[47]{Мирчев2001}), ru=матрица инцидентности (\cite[288]{БелоусовТкачёв2004})]{incidence matrix}
+  \begin{equation*}
+    M = \seq{ m_{i,j} }_{i,j=1}^{m,n}
+  \end{equation*}
+  of \( G \) with elements
+  \begin{equation*}
+    m_{i,j} \coloneqq \begin{cases}
+      1,  &v_i \in \mscrE(e_j), \\
+      0,  &\T{otherwise.}
+    \end{cases}
+  \end{equation*}
+\end{definition}
+\begin{comments}
+  \item For directed (multi)graphs we present a different definition; see \fullref{def:undirected_incidence_matrix}.
+\end{comments}
+
+\begin{example}\label{ex:incidence_matrices}
+  The \hyperref[def:directed_incidence_matrix]{incidence matrix} of the simple directed graph \eqref{eq:fig:def:directed_multigraph} is
+  \begin{equation}\label{eq:ex:incidence_matrices/directed}
+    \begin{blockarray}{cccccccc}
+        & e_1       & e_2       & e_3       & e_4       & e_5       & e_6       & e_7       \\
+      \begin{block}{c(ccccccc)}
+      a & 1         & 1         &           &           &           &           &           \\
+      b & \fbox{-1} &           & 1         &           &           &           &           \\
+      c &           & \fbox{-1} &           & 1         & 1         &           &           \\
+      d &           &           & \fbox{-1} & \fbox{-1} &           & 1         &           \\
+      e &           &           &           &           & \fbox{-1} &           & 1         \\
+      f &           &           &           &           &           & \fbox{-1} & \fbox{-1} \\
+      \end{block}
+    \end{blockarray}
+  \end{equation}
+
+  It can be read column-by-column. Every column contains exactly two nonzero elements whose rows correspond to the initial (positive) and terminal (negative) vertex.
+
+  To obtain the \hyperref[def:undirected_incidence_matrix]{incidence matrix the undirected graph} \eqref{eq:fig:def:undirected_multigraph}, obtained via the forgetful functor \hyperref[def:graph_functors/multi_forgetful]{\( U_S \)}, we need to simply flip the sign of the boxed elements above.
+\end{example}

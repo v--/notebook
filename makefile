@@ -19,7 +19,7 @@ output/notebook.pdf: $(TEXT_SOURCE) | aux output
 	$(COMPILER) -output-directory=aux notebook.tex
 	cat aux/notebook.pdf > output/notebook.pdf
 
-output/%.pdf: classes/tikzcd.cls packages/*.sty figures/%.tex | aux output
+output/%.pdf: classes/*.cls packages/*.sty figures/%.tex | aux output
 	$(COMPILER) -output-directory=aux figures/$*.tex
 	cat aux/$*.pdf > output/$*.pdf
 

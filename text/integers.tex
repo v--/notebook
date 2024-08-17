@@ -3,7 +3,7 @@
 \paragraph{Ring of integers}
 
 \begin{definition}\label{def:integers}\mimprovised
-  We define the \hyperref[def:ring]{ring} \( \BbbZ \) of \term[bg=цели числа (\cite[374]{ГеновМиховскиМоллов1991}), ru=целые числа (\cite[sec. 15.1]{Тыртышников2007})]{integers} as the \hyperref[thm:grothendieck_semiring_completion]{Grothendieck completion} of the \hyperref[def:semiring/commutative]{commutative semiring} \( \BbbN \) of zero-based \hyperref[def:natural_numbers]{natural numbers}.
+  We define the \hyperref[def:ring]{ring} \( \BbbZ \) of \term[bg=цели числа (\cite[374]{ГеновМиховскиМоллов1991}), ru=целые числа (\cite[def. 20.1]{ЭнциклопедияЕлементарнойМатематикиТом1})]{integers} as the \hyperref[thm:grothendieck_semiring_completion]{Grothendieck completion} of the \hyperref[def:semiring/commutative]{commutative semiring} \( \BbbN \) of zero-based \hyperref[def:natural_numbers]{natural numbers}.
 \end{definition}
 \begin{comments}
   \item We consider the following an indispensable part of \( \BbbZ \):
@@ -151,7 +151,6 @@ Rather than defining an order from first principles and then using the signum fu
 \end{definition}
 \begin{comments}
   \item We will now use terms like \enquote{positive} and \enquote{negative} from \fullref{def:ordered_semiring}, although we are yet to prove that this ordering is compatible with the algebraic structure.
-  \item We are also free to use the general absolute value function defined in \fullref{def:totally_ordered_ring_absolute_value}.
 \end{comments}
 
 \begin{proposition}\label{thm:def:integer_ordering}
@@ -268,47 +267,295 @@ Rather than defining an order from first principles and then using the signum fu
 
 \paragraph{Integer division}
 
-\begin{algorithm}[Integer division]\label{alg:integer_division}
-  Fix two integers \( n \) and \( m \), and assume that \( m \) is nonzero. Define
-  \begin{align*}
-    q &\coloneqq \sgn(nm) \cdot \max\set{ y \geq 0 \colon y\abs{m} < \abs{n} } \\
-    r &\coloneqq n - mq
-  \end{align*}
-
-  Then \( q \) and \( r \) are the unique integers such that \( 0 \leq r < \abs{m} \) and
+\begin{definition}\label{def:integer_absolute_value}\mimprovised
+  We will define absolute values for general complex numbers in \fullref{def:absolute_value}, but we will find absolute values useful for proving some structural properties of the ring of integers. So, we will introduce the auxiliary definition
   \begin{equation*}
-    n = mq + r.
+    \begin{aligned}
+      &\abs{\anon}_\BbbZ: \BbbZ \to \BbbZ \\
+      &\abs{n}_\BbbZ \coloneqq \sgn(n) \cdot n.
+    \end{aligned}
+  \end{equation*}
+\end{definition}
+
+\begin{remark}\label{rem:integer_division_uniqueness}
+  Fix two integers \( n \) and \( m \), and assume that \( m \) is nonzero. There are multiple ways to define \hyperref[def:euclidean_domain]{Euclidean division} of \( n \) by \( m \), that is, an algorithm producing integers \( q \) and \( r \) such that
+  \begin{equation*}
+    n = mq + r
+  \end{equation*}
+  and
+  \begin{equation}\label{eq:rem:integer_division_uniqueness/rem_inequality}
+    0 \leq \abs{r}_\BbbZ < \abs{m}_\BbbZ.
+  \end{equation}
+
+  We have chosen the \hyperref[def:integer_absolute_value]{integer absolute value} as a Euclidean degree functions. We will not consider other possibilities.
+
+  Because of the restriction \eqref{eq:rem:integer_division_uniqueness/rem_inequality} on \( r \), we have two possibilities: \( r \geq 0 \) and \( r \leq 0 \).
+
+  \begin{thmenum}
+    \thmitem{rem:integer_division_uniqueness/max} \incite[23]{Jacobson1985Vol1}, \incite[23]{Rotman2010}, \incite[prop. 1.1]{Knapp2016BasicAlgebra}, \incite[83]{Aluffi2009}, \incite[258]{ЭнциклопедияЕлементарнойМатематикиТом1}, \incite[sec. 2.12]{Тыртышников2007} and \incite[255]{Rosen1999} assume that
+    \begin{equation*}
+      0 \leq r < \abs{m}_\BbbZ.
+    \end{equation*}
+
+    This is a commonly accepted convention among mathematicians, and this is the choice we make for \fullref{alg:integer_division} and \cite{code}.
+
+    Based on \cite[prop. 1.1]{Knapp2016BasicAlgebra}, we can define the quotient as
+    \begin{equation}\label{eq:rem:integer_division_uniqueness/max/q_cases}
+      q_{\max} \coloneqq \begin{cases}
+        \max\set{ k \in \BbbZ \given km \leq n }, &m > 0, \\
+        \min\set{ k \in \BbbZ \given km \leq n }, &m < 0
+      \end{cases}
+    \end{equation}
+    or, more succinctly,
+    \begin{equation}\label{eq:rem:integer_division_uniqueness/max/q}
+      q_{\max} \coloneqq \sgn(m) \cdot \max\set[\Big]{ \sgn(m) \cdot k \given* k \in \BbbZ \T{and} km \leq n }.
+    \end{equation}
+
+    Then \( m \cdot q_{\max} \leq n \), hence the remainder
+    \begin{equation*}
+      r_{\max} \coloneqq n - q_{\max} m
+    \end{equation*}
+    is nonnegative.
+
+    This definition handles different signs as follows:
+    \begin{center}
+      \begin{tabular}{c c c c}
+        \( n \)   & \( m \)  & \( q_{\max} \) & \( r_{\max} \) \\
+        \hline
+        \( 10 \)  & \( 3 \)  & \( 3 \)        & \( 1 \) \\
+        \( 10 \)  & \( -3 \) & \( -3 \)       & \( 1 \) \\
+        \( -10 \) & \( 3 \)  & \( -4 \)       & \( 2 \) \\
+        \( -10 \) & \( -3 \) & \( 4 \)        & \( 2 \)
+      \end{tabular}
+    \end{center}
+
+    \thmitem{rem:integer_division_uniqueness/trunc} The C programming language standard, \cite[66]{ISO:9899:2018}, suggests using \enquote{truncation towards zero}, which it describes as \enquote{the algebraic quotient with any fractional part discarded}.
+
+    The quotient can be defined as follows:
+    \begin{equation}\label{eq:rem:integer_division_uniqueness/trunc/q}
+      q_{\T{trunc}} \coloneqq \sgn(mn) \cdot \max\set[\Big]{ k \geq 0 \given* k \cdot \abs{m}_\BbbZ \leq \abs{n}_\BbbZ }.
+    \end{equation}
+
+    The sign of the remainder
+    \begin{equation*}
+      r_{\T{trunc}} \coloneqq n - q_{\T{trunc}} m
+    \end{equation*}
+    is either \( 0 \) or it matches the sign of \( n \). Indeed,
+    \begin{align*}
+      n - m \cdot q_{\T{trunc}}
+      &=
+      \sgn(n) \abs{n}_\BbbZ - \underbrace{\sgn(m) \abs{m}_\BbbZ \cdot \sgn(mn)}_{\sgn(n) \cdot \abs{m}_\BbbZ} \cdot \max\set{ k \geq 0 \given k \cdot \abs{m}_\BbbZ \leq \abs{n}_\BbbZ }
+      = \\ &=
+      \sgn(n) \parens[\Big]{ \abs{n}_\BbbZ - \underbrace{\abs{m}_\BbbZ \cdot \max\set{ k \geq 0 \given k \cdot \abs{m}_\BbbZ \leq \abs{n}_\BbbZ }}_{\leq \abs{n}_\BbbZ} },
+    \end{align*}
+
+    Division with truncation handles different signs as follows:
+    \begin{center}
+      \begin{tabular}{c c c c}
+        \( n \)   & \( m \)  & \( q_{\T{trunc}} \) & \( r_{\T{trunc}} \) \\
+        \hline
+        \( 10 \)  & \( 3 \)  & \( 3 \)             & \( 1 \) \\
+        \( 10 \)  & \( -3 \) & \( -3 \)            & \( 1 \) \\
+        \( -10 \) & \( 3 \)  & \( -3 \)            & \( -1 \) \\
+        \( -10 \) & \( -3 \) & \( 3 \)             & \( -1 \)
+      \end{tabular}
+    \end{center}
+
+    \thmitem{rem:integer_division_uniqueness/dist} The standard for floating-point arithmetic, \cite[31]{IEEE:754:2019}, defines the quotient of \( n \) and \( m \) as the integer \( q_{\T{dist}} \) minimizing
+    \begin{equation}\label{eq:rem:integer_division_uniqueness/dist/q}
+      \abs{n - m \cdot q_{\T{dist}}}_\BbbZ,
+    \end{equation}
+    with the special case that if two values are equally close, the even one must be chosen.
+
+    \begin{itemize}
+      \item It is sometimes the case that \eqref{eq:rem:integer_division_uniqueness/trunc/q} minimizes this distance, like above where \( \abs{n}_\BbbZ = 10 \) and \( \abs{3}_\BbbZ \). In general, we have
+      \begin{equation*}
+        \abs{ n - m \cdot q_{\T{trunc}} }_\BbbZ
+        =
+        \abs[\Big]{ \abs{n}_\BbbZ - \abs{m}_\BbbZ \cdot \max\set[\Big]{ k \geq 0 \given* k \cdot \abs{m}_\BbbZ \leq \abs{n}_\BbbZ } }_\BbbZ.
+      \end{equation*}
+
+      \item In other cases, like when the shortest distance is ambiguous, the two may differ:
+      \begin{center}
+        \begin{tabular}{c c | c c | c c}
+          \( n \)  & \( m \) & \( q_{\T{dist}} \) & \( r_{\T{dist}} \) & \( q_{\T{trunc}} \) & \( r_{\T{trunc}} \) \\
+          \hline
+          \( 1 \)  & \( 2 \) & \( 0 \)            & \( 1 \)            & \( 0 \)             & \( 1 \) \\
+          \( -1 \) & \( 2 \) & \( 0 \)            & \( -1 \)           & \( 0 \)             & \( -1 \) \\
+          \( 3 \)  & \( 2 \) & \( 2 \)            & \( -1 \)           & \( 1 \)             & \( 1 \) \\
+          \( -3 \) & \( 2 \) & \( -2 \)           & \( 1 \)            & \( -1 \)            & \( -1 \)
+        \end{tabular}
+      \end{center}
+
+      \item Even if the shortest distance is not ambiguous, the two may again differ:
+      \begin{center}
+        \begin{tabular}{c c | c c | c c}
+          \( n \)   & \( m \)   & \( q_{\T{dist}} \) & \( r_{\T{dist}} \) & \( q_{\T{trunc}} \) & \( r_{\T{trunc}} \) \\
+          \hline
+          \( 10 \)  & \( 12 \)  & \( 1 \)            & \( -2 \)           & \( 0 \)             & \( 10 \) \\
+          \( -10 \) & \( 12 \)  & \( -1 \)           & \( 2 \)            & \( 0 \)             & \( -10 \) \\
+          \( 10 \)  & \( -12 \) & \( -1 \)           & \( -2 \)           & \( 0 \)             & \( 10 \) \\
+          \( -10 \) & \( -12 \) & \( 1 \)            & \( 2 \)            & \( 0 \)             & \( -10 \)
+        \end{tabular}
+      \end{center}
+    \end{itemize}
+
+    The Python programming language uses \enquote{floor division}, discussed below, however it provides the function \identifier{math.remainder}, which computes \( r_{\T{dist}} \coloneqq n - q_{\T{dist}} m \). On the other hand, even though the ECMAScript standard \cite[\textnumero 6.1.6.1.5]{ECMA:262} dictates that remainders should follow the aforementioned \cite{IEEE:754:2019}, which defines quotients via \( q_{\T{dist}} \), actual ECMAScript implementations like V8 v12.9.43 and SpiderMonkey v115 use \( q_{\T{trunc}} \).
+
+    \thmitem{rem:integer_division_uniqueness/floor} Python uses \enquote{floor division}, where the quotient of \( n \) and \( m \) is defined as the \hyperref[def:real_floor_ceiling]{floor} of the \hyperref[def:rational_number]{rational number} \( n / m \). This is discussed in \cite{PEP:238}.
+
+    We can define floor division as follows:
+    \begin{equation}\label{eq:rem:integer_division_uniqueness/floor/q_cases}
+      q_{\floor} \coloneqq \begin{cases}
+        \max\set{ k \in \BbbZ \given km \leq n }, &m > 0, \\
+        \max\set{ k \in \BbbZ \given km \geq n }, &m < 0
+      \end{cases}
+    \end{equation}
+    or, more succinctly,
+    \begin{equation}\label{eq:rem:integer_division_uniqueness/floor/q}
+      q_{\floor} \coloneqq \max\set[\Big]{ k \in \BbbZ \given* k \cdot \abs{m}_\BbbZ \leq \sgn(m) \cdot n }.
+    \end{equation}
+
+    The sign of the remainder
+    \begin{equation*}
+      r_{\floor} \coloneqq n - q_{\floor} m
+    \end{equation*}
+    is either \( 0 \) or it matches the sign of \( m \). Indeed,
+    \begin{itemize}
+      \item \( m > 0 \) implies that
+      \begin{equation*}
+        n - m \cdot q_{\floor}
+        =
+        n - \underbrace{m \cdot \max\set{ k \in \BbbZ \given km \leq n }}_{\leq n}
+        \geq
+        0.
+      \end{equation*}
+
+      \item \( m < 0 \) implies that
+      \begin{equation*}
+        n - m \cdot q_{\floor}
+        =
+        n - \underbrace{m \cdot \max\set{ k \in \BbbZ \given km \geq n }}_{\geq n}
+        \leq
+        0.
+      \end{equation*}
+    \end{itemize}
+
+    Floor division handles different signs as follows:
+    \begin{center}
+      \begin{tabular}{c c c c}
+        \( n \)   & \( m \)  & \( q_{\floor} \) & \( r_{\floor} \) \\
+        \hline
+        \( 10 \)  & \( 3 \)  & \( 3 \)             & \( 1 \) \\
+        \( 10 \)  & \( -3 \) & \( -4 \)            & \( -2 \) \\
+        \( -10 \) & \( 3 \)  & \( -4 \)            & \( 2 \) \\
+        \( -10 \) & \( -3 \) & \( 3 \)             & \( -1 \).
+      \end{tabular}
+    \end{center}
+
+    Finally, we note that \( q_{\max} \) and \( q_{\floor} \) coincide for \( m > 0 \) and, if \( m < 0 \),
+    \begin{align*}
+      -q_{\max}
+      &=
+      -\min\set{ k \in \BbbZ \given km \leq n }
+      = \\ &=
+      -\min\set{ -(-k) \in \BbbZ \given -km \geq -n }
+      = \\ &=
+      \max\set{ -k \in \BbbZ \given (-k)m \geq -n }
+      = \\ &=
+      \max\set{ k \in \BbbZ \given km \geq -n },
+    \end{align*}
+    which is the floor quotient of \( -n \) and \( m \).
+  \end{thmenum}
+\end{remark}
+\begin{comments}
+  \item All these quotient algorithms can be found in \identifier{arithmetic.divisibility} in \cite{code}.
+\end{comments}
+
+\begin{algorithm}[Integer division]\label{alg:integer_division}
+  Fix two integers \( n \) and \( m \), and assume that \( m \) is nonzero. There exists a unique pair \( \quot(n, m) \) and \( \rem(n, m) \) of integers such that
+  \begin{equation}
+    n = m \cdot \quot(n, m) + \rem(n, m)
+  \end{equation}
+  and
+  \begin{equation*}
+    0 \leq \rem(n, m) < \abs{m}.
   \end{equation*}
 
-  We will use the notation \( \quot(n, m) \) and \( \rem(n, m) \) from \fullref{def:euclidean_domain}.
+  We simply define
+  \begin{equation}\label{eq:alg:integer_division/quot}
+    \quot(n, m) \coloneqq \begin{cases}
+      \max\set{ k \in \BbbZ \given km \leq n }, &m > 0, \\
+      \min\set{ k \in \BbbZ \given km \leq n }, &m < 0
+    \end{cases}
+  \end{equation}
+  and remainder
+  \begin{equation}\label{eq:alg:integer_division/rem}
+    \rem(n, m) \coloneqq n - m \cdot \quot(n, m).
+  \end{equation}
 \end{algorithm}
-\begin{proof}
-  \SubProof{Proof of correctness} The case \( n = 0 \) is trivial so assume that \( n \neq 0 \). We have
-  \begin{center}
-    \begin{tabular}{l | l | l}
-      \( n \)  & \( m \)  & \( q \) \\
-      positive & positive & \( \phantom{-}\max\set{ y \geq 0 \colon (n - m \leq) \thickspace y(+m) < +n } \) \\
-      positive & negative & \( -\max\set{ y \geq 0 \colon (n + m \leq) \thickspace y(-m) < +n } \) \\
-      negative & positive & \( -\max\set{ y \geq 0 \colon (m - n \leq) \thickspace y(+m) < -n } \) \\
-      negative & negative & \( \phantom{-}\max\set{ y \geq 0 \colon (n - m \leq) \thickspace y(-m) < -n } \)
-    \end{tabular}
-  \end{center}
-
-  It follows that \( \abs{n - mq} < \abs{m} \).
-
-  \UniquenessSubProof Suppose that \( n = mq + r = mq' + r' \), where \( 0 \leq r < \abs{m} \) and \( 0 \leq r' < \abs{m} \). Then
+\begin{comments}
+  \item We use the notation \( \quot(n, m) \) and \( \rem(n, m) \) from \fullref{def:euclidean_domain}.
+  \item This is \( q_{\max} \) and \( r_{\max} \) from \fullref{rem:integer_division_uniqueness}, where Euclidean division of integers is extensively discussed.
+\end{comments}
+\begin{defproof}
+  \UniquenessSubProof Suppose that \( n = mq + r = mq' + r' \), where \( 0 \leq r < \abs{m}_\BbbZ \) and \( 0 \leq r' < \abs{m}_\BbbZ \). Then
   \begin{equation*}
     m(q - q') = -(r - r').
   \end{equation*}
 
-  Thus, \( m \) divides \( r - r' \). Then \( m \) divides \( r \) and \( r' \) contradicting the assumption that \( \abs{r} < \abs{m} \).
-\end{proof}
+  Thus, \( m \) divides \( r - r' \). Then \( m \) divides \( r \) and \( r' \) contradicting the assumption that \( \abs{r}_\BbbZ < \abs{m}_\BbbZ \).
+\end{defproof}
 
 \begin{proposition}\label{thm:integers_are_euclidean_domain}
-  The \hyperref[def:integers]{ring of integers} is an \hyperref[def:euclidean_domain]{Euclidean domain} with division given by \fullref{alg:integer_division} and degree function \( \abs{\anon} \).
+  The \hyperref[def:integers]{ring of integers} is an \hyperref[def:euclidean_domain]{Euclidean domain} with division given by \fullref{alg:integer_division} and degree function \( \abs{\anon}_\BbbZ \).
 \end{proposition}
 \begin{proof}
   By \fullref{thm:integers_are_integral_domain}, \( \BbbZ \) is entire. The Euclidean domain structure is described by \fullref{alg:integer_division}.
+\end{proof}
+
+\begin{proposition}\label{thm:alg:integer_division}
+  \Fullref{alg:integer_division} has the following basic properties:
+  \begin{thmenum}
+    \thmitem{thm:alg:integer_division/nested_quot} For positive integers \( b \) and \( c \) and an arbitrary integer \( a \) we have
+    \begin{equation}\label{eq:thm:alg:integer_division/nested_quot}
+      \quot(\quot(a, b), c) = \quot(a, bc).
+    \end{equation}
+  \end{thmenum}
+\end{proposition}
+\begin{proof}
+  \SubProofOf{thm:alg:integer_division/nested_quot} We have
+  \begin{equation}\label{eq:thm:alg:integer_division/nested_quot/proof/simple}
+    a = bc \cdot \quot(a, bc) + \rem(a, bc).
+  \end{equation}
+
+  Also,
+  \begin{equation*}
+    a = b \cdot \quot(a, b) + \rem(a, b)
+  \end{equation*}
+  and
+  \begin{align*}
+    \quot(a, b) = c \cdot \quot(\quot(a, b), c) + \rem(\quot(a, b), c),
+  \end{align*}
+  thus
+  \begin{equation}\label{eq:thm:alg:integer_division/nested_quot/proof/nested}
+    a = bc \cdot \quot(\quot(a, b), c) + b \cdot \rem(\quot(a, b), c) + \rem(a, b).
+  \end{equation}
+
+  We have
+  \begin{equation*}
+    b \cdot \rem(\quot(a, b), c) + \rem(a, b)
+    \leq
+    b(c - 1) + (b - 1)
+    =
+    bc - 1,
+  \end{equation*}
+  hence, the sum of the remainders in \eqref{eq:thm:alg:integer_division/nested_quot/proof/nested} do not contribute to the quotient.
+
+  Because of the uniqueness in \fullref{alg:integer_division}, we conclude from \eqref{eq:thm:alg:integer_division/nested_quot/proof/simple} and \eqref{eq:thm:alg:integer_division/nested_quot/proof/nested} that
+  \begin{equation*}
+    \quot(a, bc) = \quot(\quot(a, b), c).
+  \end{equation*}
 \end{proof}
 
 \begin{lemma}[Bezout's lemma]\label{thm:bezout_lemma}
@@ -342,7 +589,7 @@ Rather than defining an order from first principles and then using the signum fu
 \paragraph{Prime numbers}
 
 \begin{definition}\label{def:prime_number}\mcite[2]{Knapp2016BasicAlgebra}
-  A \term[bg=просто число (\cite[10]{ДочевДимитровЧуканов1976}), ru=простое число (\cite[62]{Кострикин2004Том1})]{prime number} is an integer greater than \( 1 \) whose only proper \hyperref[def:divisibility]{divisor} is \( 1 \). Non-prime integers greater than \( 1 \) are called \term{composite numbers}.
+  A \term[ru=простое число (\cite[45]{Зорич2019Том1})]{prime number} is an integer greater than \( 1 \) whose only proper \hyperref[def:divisibility]{divisor} is \( 1 \). Non-prime integers greater than \( 1 \) are called \term{composite numbers}.
 \end{definition}
 
 \begin{remark}\label{rem:prime_numbers}
@@ -362,12 +609,59 @@ Rather than defining an order from first principles and then using the signum fu
   Since \( \BbbZ \) is a GCD domain, the lemma follows from \fullref{thm:def:gcd_domain/irreducible_is_prime}.
 \end{proof}
 
+\begin{algorithm}[Sieve of Eratosthenes]\label{alg:sieve_of_eratosthenes}\mcite[exer. 4.5.4.8]{Knuth1997Vol2}
+  We can construct approximations to the sequence
+  \begin{equation*}
+    s_k \coloneqq \begin{cases}
+      1, &k \T{is prime}, \\
+      0, &\T{otherwise}.
+    \end{cases}
+  \end{equation*}
+
+  Via recursion on \( n \), we will build the sequence \( \seq{ s_{n,k} }_{k=0}^\infty \) such that, for \( 0 \leq k < n \), \( s_{n,k} \) is \( 1 \) if \( k \) is prime and \( 0 \) otherwise.
+
+  \begin{thmenum}
+    \thmitem{alg:sieve_of_eratosthenes/base} We start with the constant sequence
+    \begin{equation*}
+      s_{0,k} \coloneqq 1.
+    \end{equation*}
+
+    \thmitem{alg:sieve_of_eratosthenes/one} We need to handle one special case: for \( n = 1 \) we also consider the same sequence.
+    \begin{equation*}
+      s_{1,k} \coloneqq 1.
+    \end{equation*}
+
+    \thmitem{alg:sieve_of_eratosthenes/recursive} For \( n > 1 \), let
+    \begin{equation*}
+      s_{n,k} \coloneqq \begin{cases}
+        0,         &n \T{divides} k \\
+        s_{n-1,k}, &\T{otherwise}.
+      \end{cases}
+    \end{equation*}
+  \end{thmenum}
+\end{algorithm}
+\begin{comments}
+  \item Rather than working with infinite sequences, we may restrict ourselves to lists of length \( n \) at step \( n \).
+  \item This algorithm can be found as \identifier{arithmetic.primes.build_erathostenes_sieve} in \cite{code}.
+\end{comments}
+
 \begin{theorem}[Fundamental theorem of arithmetic]\label{thm:fundamental_theorem_of_arithmetic}
   Every integer greater than \( 1 \) can be \hyperref[def:irreducible_factorization]{factored} into a product of \hyperref[def:prime_number]{prime} powers.
 \end{theorem}
+\begin{comments}
+  \item The factorization is unique when regarded as a \hyperref[def:multiset]{multiset} of prime numbers.
+\end{comments}
 \begin{proof}
   As discussed in \fullref{rem:integer_domain_chain}, \( \BbbZ \) is a factorial domain.
 \end{proof}
+
+\begin{definition}\label{def:coprime_numbers}
+  We say that the integers \( n \) and \( m \) are \term[ru=взаимно простые (числа) (\cite[45]{Зорич2019Том1}), en=]{coprime} if any of the following equivalent conditions hold:
+  \begin{thmenum}
+    \thmitem{def:coprime_numbers/abstract} They are \hyperref[def:coprime_elements]{coprime elements} of \( \BbbZ \).
+    \thmitem{def:coprime_numbers/concrete}\mcite[45]{Зорич2019Том1} Their only common divisors are \( 1 \) and \( -1 \).
+  \end{thmenum}
+\end{definition}
 
 \begin{proposition}\label{thm:n_plus_1_coprime}
   Given any integer greater \( n \) than \( 1 \), the numbers \( n \) and \( n + 1 \) are \hyperref[def:coprime_elements]{coprime}.
@@ -382,7 +676,7 @@ Rather than defining an order from first principles and then using the signum fu
   Therefore, \( m = 1 \).
 \end{proof}
 
-\paragraph{Euler's totient theorem}
+\paragraph{Euler's totient theorem}\hfill
 
 \begin{definition}\label{def:eulers_totient_function}\mcite[7]{Knapp2016BasicAlgebra}
   For any positive integer \( n \), denote by \( \varphi(n) \) the number of strictly smaller than \( n \) positive integers that are \hyperref[def:coprime_elements]{coprime} to \( n \). We call \( \varphi \) \term{Euler's totient function}.

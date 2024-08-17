@@ -1,0 +1,853 @@
+\subsection{Positional number systems}\label{subsec:positional_number_systems}
+
+We assume the availability of the tools of \fullref{sec:real_analysis}.
+
+\paragraph{Positional number systems}
+
+\begin{definition}\label{def:positional_number_system}\mimprovised
+  Fix a natural number \( b \geq 2 \) and a list \( s_0, s_1, \ldots, s_{b-1} \) that we will use as an \hyperref[def:formal_language/alphabet]{alphabet}. We can safely assume that these are Arabic numerals, possibly extended with capital Latin letters. We will call such an alphabet a \term[ru=позиционная/поместная система счисления (\cite[\textnumero 4]{ЭнциклопедияЕлементарнойМатематикиТом1}), ru=позиционная система записи (\cite[60]{Зорич2019Том1}), en=positional number system (\cite[195]{Knuth1997Vol2})]{positional number system} in \term[en=base (\cite[195]{Knuth1997Vol2})]{base} or \term[en=radix (\cite[195]{Knuth1997Vol2})]{radix} \( b \).
+
+  Consider the \hyperref[def:formal_grammar/schema]{grammar schema}:
+  \begin{bnf*}
+    \bnfprod{zero}                       {s_0} \\
+    \bnfprod{nonzero digit}              {s_1 \bnfor s_2 \bnfor \cdots \bnfor s_{b-1}} \\
+    \bnfprod{minus sign}                 {\bnftsq{\( - \)}} \\
+    \bnfprod{radix dot}                  {\bnftsq{\( . \)}} \\
+    \bnfprod{digit}                      {\bnfpn{zero} \bnfor \bnfpn{nonzero digit}} \\
+    \bnfprod{digit string}               {\bnfpn{digit} \bnfor \bnfpn{digit} \bnfsp \bnfpn{digit string}} \\
+    \bnfprod{periodic digit string}      {\bnftsq{\( ( \)} \bnfsp \bnfpn{digit string} \bnfsp \bnftsq{\( ) \)}} \\
+    \bnfprod{natural number}             {\bnfpn{digit} \bnfor \bnfpn{nonzero digit} \bnfsp \bnfpn{digit string}} \\
+    \bnfprod{integer}                    {\bnfpn{natural number} \bnfor \bnfpn{minus sign} \bnfsp \bnfpn{natural number}} \\
+    \bnfprod{finite fractional string}   {\bnfpn{integer} \bnfsp \bnfpn{radix dot} \bnfsp \bnfpn{digit string}} \\
+    \bnfprod{rational number}            {\bnfpn{finite fractional string} \bnfor} \\
+    \bnfmore                             {\bnfpn{finite fractional string} \bnfsp \bnfpn{periodic digit string}}
+  \end{bnf*}
+
+  For a rational number, we will call the prefix of the radix dot the \term{integral part} and the suffix --- \term[en=fractional part (\cite[214]{Knuth1997Vol2})]{fractional part} of the numeric string.
+
+  Enclosing periodic digit strings in brackets is necessary for the grammar, but in the metalanguage we will prefer the overline notation \( \oline{s_{i_0} \ldots s_{i_m}} \) to \( (s_{i_0} \ldots s_{i_m}) \).
+
+  We will list several established positional systems, out of which we will almost exclusively use decimal notation:
+  \begin{thmenum}
+    \thmitem{def:positional_number_system/binary}\mcite[256]{Rosen1999} The \term[ru=двоичная (система) (\cite[60]{Зорич2019Том1})]{binary} system with \( b = 2 \) and digits \( 0, 1 \). We also call binary digits \term{bits}.
+
+    \thmitem{def:positional_number_system/ternary}\mimprovised The \term[ru=троичная (система) (\cite[60]{Зорич2019Том1})]{ternary} system with \( b = 3 \) and digits \( 0, 1, 2 \).
+
+    \thmitem{def:positional_number_system/octal}\mcite[256]{Rosen1999} The \term[ru=восьмичная (система) (\cite[60]{Зорич2019Том1})]{octal} system with \( b = 8 \) and digits \( 0, 1, \ldots, 7 \).
+
+    \thmitem{def:positional_number_system/decimal}\mcite[256]{Rosen1999} The ubiquitous \term[ru=десетичная (система) (\cite[60]{Зорич2019Том1})]{decimal} system with \( b = 10 \) and digits \( 0, 1, \ldots, 9 \).
+
+    \thmitem{def:positional_number_system/hexadecimal}\mcite[256]{Rosen1999} The \term{hexadecimal} system with \( b = 16 \) and digits \( 0, 1, \ldots, 9, A, B, C, D, E, F \).
+  \end{thmenum}
+\end{definition}
+\begin{comments}
+  \item The adjective \enquote{positional} becomes relevant in the context of historical alternatives. Some of them are described in \cite[ch. 1]{ЭнциклопедияЕлементарнойМатематикиТом1} and \cite[sec. 4.1]{Knuth1997Vol2}.
+
+  \item Some countries have an established history of using commas rather than radix dots; this is again discussed in \cite[ch. 1]{ЭнциклопедияЕлементарнойМатематикиТом1} and \cite[sec. 4.1]{Knuth1997Vol2}.
+
+  \item This definition allows expressing every rational number via formal languages. This is unfortunately impossible for irrational numbers, for which reason we introduce \fullref{def:real_number_radix_expansion}.
+
+  \item Some authors like \incite[96]{БелоусовТкачёв2004} actually prefer the parenthesized notation for periodic digits strings, but others like \incite[257]{Rosen1999} prefer overlines.
+\end{comments}
+
+\paragraph{Real number radix expansion}
+
+\begin{definition}\label{def:real_number_radix_expansion}\mcite[60]{Зорич2019Том1}
+  Given a radix \( b \geq 2 \), an \term[en=expansion (\cite[256]{Rosen1999})]{expansion} of the \hyperref[def:real_numbers]{real number} \( x \) is a univariate \hyperref[def:formal_laurent_series]{Laurent series} such that
+  \begin{equation}\label{eq:def:positional_number_system/expansion}
+    x = \sgn(x) \cdot \sum_{k=-m}^\infty \frac {a_k} {b^k}
+  \end{equation}
+  and \( 0 \leq a_k < b \) for all \( k > -m \).
+\end{definition}
+\begin{comments}
+  \item Formally, in order to distinguish the numeric value from the sequence of coefficients, we must consider the formal Laurent series over the \hyperref[def:natural_number]{natural numbers}
+  \begin{equation*}
+    \sum_{k=-m}^\infty \frac {a_k} {X^k}
+  \end{equation*}
+  and only \hyperref[con:substitution_homomorphism]{evaluate} it at \( X = b \) over \( \BbbR \) when it is necessary to obtain a numeric value.
+
+  \item Unlike \fullref{def:positional_number_system}, this definition allows expressing irrational numbers. It is also more restricting, however, because we are dealing with infinite sequences and can no longer represent them as words in some formal language. Hence, the notion of digit becomes irrelevant, as we only care about coefficients that are actual numbers and not purely syntactic digits.
+
+  Nevertheless, we will use some terminology from \fullref{def:positional_number_system} like \enquote{binary} or \enquote{decimal} expansion.
+\end{comments}
+
+\begin{proposition}\label{thm:radix_expansion_converges}
+  Every radix expansion series converges absolutely.
+\end{proposition}
+\begin{proof}
+  Consider the series
+  \begin{equation}\label{eq:thm:radix_expansion_converges/general}
+    e \cdot \sum_{k=-m}^\infty \frac {a_k} {b^k},
+  \end{equation}
+  where \( e \in \set{ 1, -1 } \) and \( 0 \leq a_k < b \) for every \( k \). We will show that it converges absolutely. In order for it to converge absolutely, the series of absolute values must converge:
+  \begin{equation}\label{eq:thm:radix_expansion_converges/absolute}
+    \sum_{k=-m}^\infty \frac {\abs{e \cdot a_k}} {b^k} = \sum_{k=-m}^\infty \frac {a_k} {b^k}.
+  \end{equation}
+
+  We have
+  \begin{equation*}
+    \sum_{k=-m}^\infty \frac {a_k} {b^k}
+    <
+    \sum_{k=-m}^\infty \frac b {b^k}
+    =
+    \sum_{k=-m}^\infty b^{1-k}
+    =
+    \sum_{k=0}^\infty b^{1-m-k}
+    =
+    b^{1-m} \cdot \sum_{k=0}^\infty b^{-k}.
+  \end{equation*}
+
+  The latter is a \hyperref[eq:def:geometric_series]{geometric series} with quotient \( 1 / b \), which converges by \fullref{thm:def:geometric_series/series_sum_interior}. \Fullref{thm:positive_series_comparison/b_converges} implies that \eqref{eq:thm:radix_expansion_converges/series} also converges.
+\end{proof}
+
+\begin{example}\label{ex:def:real_number_radix_expansion}
+  We list some examples of \hyperref[def:real_number_radix_expansion]{radix expansions}:
+  \begin{thmenum}
+    \thmitem{ex:def:real_number_radix_expansion/zero} The only possible expansion for \( 0 \) in any base has only zero coefficients.
+
+    \thmitem{ex:def:real_number_radix_expansion/integer} The base \( n \) expansion of a positive integer \( k \) less than \( n \) has only one nonzero term, namely \( a_0 = k \). For \( n \) itself, we instead consider the expansion whose only nonzero term is \( a_1 = 1 \).
+
+    \thmitem{ex:def:real_number_radix_expansion/geometric} For any integer \( n \), the following \hyperref[eq:def:geometric_series]{geometric series} is a base \( n \) expansion of \( n \):
+    \begin{equation}\label{eq:ex:def:real_number_radix_expansion/geometric}
+      \sum_{k=0}^\infty \frac {n - 1} {n^k}
+      \reloset{\eqref{eq:thm:def:geometric_series/series_sum_interior}} =
+      (n - 1) \cdot \frac 1 {1 - n^{-1}}
+      =
+      (n - 1) \cdot \frac n {n - 1}
+      =
+      n.
+    \end{equation}
+
+    \Fullref{ex:def:real_number_radix_expansion/integer} gives us another expansion of \( n \). Thus, expansions are not unique in general, but these are largely the only possibility for non-uniqueness --- see \fullref{thm:radix_expansion_uniqueness} and \fullref{thm:radix_expansion_non_uniqueness}.
+  \end{thmenum}
+\end{example}
+
+\begin{definition}\label{def:positional_notation_as_radix_expansion}\mimprovised
+  We will show how to interpret strings from a \hyperref[def:positional_number_system]{positional number system} \( s_0 \ldots s_{b-1} \) as real number \hyperref[def:real_number_radix_expansion]{radix \( b \) expansions}.
+
+  \begin{thmenum}
+    \thmitem{def:positional_notation_as_radix_expansion/digit} We interpret the digit \( s_a \), where \( 0 \leq a < b \), as the number \( \Bracks{s_a} = a \).
+
+    \thmitem{def:positional_notation_as_radix_expansion/sign} If \( e \) is either empty or the minus sign \( \syn- \), we interpret it as follows:
+    \begin{equation*}
+      \Bracks{e} \coloneqq \begin{cases}
+        1,  &e = \bnfes, \\
+        -1, &e = \syn-.
+      \end{cases}
+    \end{equation*}
+
+    \thmitem{def:positional_notation_as_radix_expansion/natural_numbers} We interpret a natural number string as follows:
+    \begin{equation*}
+      \Bracks{s_{a_0} \ldots s_{a_m}} = \sum_{k=0}^m a_{m-k} b^k = \sum_{k=-m}^0 \frac {a_{m+k}} {b^k}.
+    \end{equation*}
+
+    \thmitem{def:positional_notation_as_radix_expansion/integers} We interpret the integer string as the product of the sign and the natural number parts.
+
+    \thmitem{def:positional_notation_as_radix_expansion/rational_numbers} We interpret a rational number string as follows:
+    \begin{equation*}
+      \Bracks{e s_{a_{-m}} \ldots s_{a_{-z}} \thinspace . \thinspace s_{a_{-z+1}} \ldots s_{a_0} \underbrace{\oline{s_{c_0} \ldots s_{c_{l-1}}}}_{\mathclap{\T{possibly empty string}}}} \coloneqq \Bracks{e} \cdot \parens[\Bigg]{ \sum_{k=-m-z}^{-z} \frac {a_{z+k}} {b^k} + \sum_{k=-z + 1}^\infty \frac {c_{\rem(k - (-z + 1), l)}} {b^k} }.
+    \end{equation*}
+
+    Here \( z \geq 0 \) is a \enquote{shift} parameter that determines how many non-periodic digits there are after the decimal dot. See \fullref{alg:rational_number_to_positional_string} for a broader discussion.
+  \end{thmenum}
+\end{definition}
+\begin{comments}
+  \item These interpretations are justified by \fullref{thm:integer_radix_expansion} and \fullref{thm:rational_number_radix_expansion}.
+\end{comments}
+
+\begin{proposition}\label{thm:removing_periodic_digit_string}
+  In any \hyperref[def:positional_number_system]{positional number system}, if the periodic string of a rational number contains only zeros, we can remove it without changing the \hyperref[def:positional_notation_as_radix_expansion/rational_numbers]{numeric value}.
+\end{proposition}
+\begin{proof}
+  Trivial.
+\end{proof}
+
+\paragraph{Existence of radix expansions}
+
+\begin{algorithm}[Real number radix expansion]\label{alg:real_number_radix_expansion}
+  We will provide an algorithm for building a \hyperref[def:real_number_radix_expansion]{radix \( b \) expansion} of any real number \( x \).
+
+  \begin{thmenum}
+    \thmitem{alg:real_number_radix_expansion/negative} If \( x < 0 \), we will build an expansion for \( -x \) instead and them multiply the series by \( -1 \). We will henceforth assume that \( x \) is nonnegative.
+
+    \thmitem{alg:real_number_radix_expansion/m} Let
+    \begin{equation}\label{eq:alg:real_number_radix_expansion/m}
+      m \coloneqq \begin{cases}
+        \max\set{ k = 0, 1, \ldots \given b^k \leq x }, &x \geq 1, \\
+        0,                                              &x \T{otherwise}.
+      \end{cases}
+    \end{equation}
+
+    The maximum is well-defined since \( \BbbR \) is \hyperref[def:archimedean_field]{Archimedean}.
+
+    \thmitem{alg:real_number_radix_expansion/direct} For \( k = -m, \ldots, -1, 0, 1, \ldots \) let
+    \begin{equation}\label{eq:alg:real_number_radix_expansion/direct}
+      a_k \coloneqq \begin{cases}
+        \rem(\floor(b^k x), b), &k \geq -m, \\
+        0,                      &k < -m.
+      \end{cases}
+    \end{equation}
+
+    \thmitem{alg:real_number_radix_expansion/recursive} Both for inductive proofs and for efficiency, we will define the sequence recursively instead:
+    \begin{equation}\label{eq:alg:real_number_radix_expansion/recursive}
+      a_k \coloneqq \begin{cases}
+        \floor(b^k x) - b^k S_{k - 1}, &k \geq -m, \\
+        0,                             &k < -m.
+      \end{cases}
+    \end{equation}
+    where we use the partial sums
+    \begin{equation*}
+      S_n
+      \coloneqq
+      \sum_{k=-\infty}^n \frac {a'_k} {b^k}
+      =
+      \begin{dcases}
+        \sum_{k=-m}^n \frac {a'_k} {b^k}, &n \geq -m, \\
+        0,                                &n < -m.
+      \end{dcases}
+    \end{equation*}
+  \end{thmenum}
+\end{algorithm}
+\begin{comments}
+  \item We can view this algorithm as a generator for digits rather than as a procedure that outputs all digits at once. If we only want to generate an approximation for \( x \) as a string of finite length, we should choose a criterion for termination, for example when \( n \) becomes large enough or when \( \abs(x - S_n) \) becomes small enough.
+
+  \item This algorithm can be found as \identifier{arithmetic.bases.get_number_expansion} in \cite{code}.
+\end{comments}
+\begin{defproof}
+  We will first show the inequality
+  \begin{equation}\label{eq:alg:real_number_radix_expansion/proof/inequality}
+    0 \leq x - S_n < b^{-n}
+  \end{equation}
+  that holds for any integer \( n \).
+
+  \SubProof{Proof of \eqref{eq:alg:real_number_radix_expansion/proof/inequality}} We have
+  \begin{balign*}
+    x - S_n
+    &=
+    x - S_{n-1} - b^{-n} a_n
+    = \\ &=
+    x - S_{n-1} - b^{-n} \parens[\Big]{ \floor(b^n x) - b^n S_{n-1} }
+    = \\ &=
+    x - S_{n-1} + S_{n-1} - b^{-n} \floor(b^n x)
+    = \\ &=
+    b^{-n} \underbrace{\parens[\Big]{ b^n x - \floor(b^n x) }}_{\in [0, 1)}.
+  \end{balign*}
+
+  \SubProof{Proof that the series converges to \( x \)} Fix \( \varepsilon > 0 \). \Fullref{thm:exp_archimedean} implies that there exists a positive integer \( n_0 \) such that \( b^n_0 > \varepsilon^{-1} \), thus \( b^{-n_0} < \varepsilon \).
+
+  Then, given \( k > n_0 \), we have
+  \begin{equation*}
+    x - S_k < b^{-k} < b^{-n_0} < \varepsilon.
+  \end{equation*}
+
+  Therefore, the series converges to \( x \).
+
+  \SubProof{Proof that \( 0 \leq a'_n < b \) for every integer \( n \)} This is a necessary condition for the series to be an expansion of \( x \). We will consider two cases:
+  \begin{itemize}
+    \item If \( n < -m \), then \( a'_n = 0 \) by definition.
+    \item Suppose that \( n \geq -m \). We have
+    \begin{equation*}
+      b^n S_{n-1}
+      =
+      b \sum_{k=-m}^{n-1} \frac {b^{n-1} a_k} {b^k}
+      =
+      b \underbrace{\sum_{k=-m}^{n-1} b^{n-k-1} a_k}_{\T{integer}},
+    \end{equation*}
+    hence \( b \) divides \( b^n S_{n-1} \) and
+    \begin{equation*}
+      a_n'
+      =
+      \floor(b^n x) - b^n S_{n-1}
+      =
+      \floor\parens[\Big]{ b^n (x - S_{n-1}) }.
+    \end{equation*}
+
+    From \eqref{eq:alg:real_number_radix_expansion/proof/inequality} it follows that
+    \begin{equation*}
+      0 \leq b^n (x - S_{n-1}) < b^n b^{-(n-1)} = b,
+    \end{equation*}
+    hence
+    \begin{equation*}
+      \underbrace{\floor(0)}_0 \leq \underbrace{\floor(b^n (x - S_{n-1}))}_{a_n'} < \underbrace{\floor(b)}_b.
+    \end{equation*}
+  \end{itemize}
+
+  \SubProof{Proof that \( a_k = a'_k \)} Since
+  \begin{equation*}
+    b^{n+1} S_n
+    =
+    b^{n+1} \sum_{k=-m}^n \frac {a_k} {b^k}
+    =
+    b \cdot \sum_{k=-m}^n b^{n-k} a_k,
+  \end{equation*}
+  we have
+  \begin{equation*}
+    \rem(a'_n, b)
+    =
+    \rem\parens[\Big]{ \floor(b^n x) - b^n S_{n-1}, b }
+    =
+    \rem(\floor(b^n x), b)
+    =
+    a_n.
+  \end{equation*}
+
+  But we have shown that \( 0 \leq a'_n < b \), hence \( \rem(a'_n, b) = a'_n \).
+\end{defproof}
+
+\begin{proposition}\label{thm:alg:real_number_radix_expansion}
+  \Fullref{alg:real_number_radix_expansion} has the following basic properties:
+  \begin{thmenum}
+    \thmitem{thm:alg:real_number_radix_expansion/estimate} For any nonnegative real number \( x \) and any integer \( n \) we have
+    \begin{equation}\label{eq:thm:alg:real_number_radix_expansion/estimate/nonnegative}
+      0 \leq x - S_n < b^{-n}.
+    \end{equation}
+
+    For general \( x \) we instead have
+    \begin{equation}\label{eq:thm:alg:real_number_radix_expansion/estimate/general}
+      \abs{x - S_n} < b^{-n}.
+    \end{equation}
+
+    \thmitem{thm:alg:real_number_radix_expansion/optimal} Given any expansion of \( x \) with partial sums denoted by \( R_n \), for any integer \( n \) we have
+    \begin{equation}\label{eq:thm:alg:real_number_radix_expansion/optimal/max}
+      \abs{R_n} \leq \abs{S_n} \leq \abs{x}.
+    \end{equation}
+    and
+    \begin{equation}\label{eq:thm:alg:real_number_radix_expansion/optimal/min}
+      \abs{x - S_n} \leq \abs{x - R_n}.
+    \end{equation}
+
+    \thmitem{thm:alg:real_number_radix_expansion/rational_coefficient} For a nonnegative rational number \( p / q \), the \( n \)-th \hi{nonnegative} coefficient in \fullref{alg:real_number_radix_expansion} is
+    \begin{equation}\label{eq:thm:alg:real_number_radix_expansion/rational_coefficient}
+      a_k
+      =
+      \rem(\quot(b^k p, q), b)
+      =
+      \quot(b^k p, q) - b \cdot \underbrace{\quot(b^k p, bq)}_{\mathclap{\quot(b^{k-1}, q) \T*{when} k > 0}}.
+    \end{equation}
+  \end{thmenum}
+\end{proposition}
+\begin{proof}
+  \SubProofOf{thm:alg:real_number_radix_expansion/estimate} This is shown for \( x \geq 0 \) in the proof of correctness of the algorithm; see \eqref{eq:alg:real_number_radix_expansion/proof/inequality}.
+
+  \SubProofOf{thm:alg:real_number_radix_expansion/optimal} Consider the expansions
+  \begin{equation*}
+    x = \sgn(x) \cdot \sum_{k=-m}^\infty \frac {a_k} {b^k} = \sgn(x) \cdot \sum_{k=-p}^\infty \frac {c_k} {b^k},
+  \end{equation*}
+  the first of which is given by \fullref{alg:real_number_radix_expansion}.
+
+  If the coefficients of the series are equal, there is nothing to prove. Suppose that they differ and let \( n_0 \) be the smallest index in which \( a_{n_0} \neq c_{n_0} \).
+
+  \SubProof*{Proof that \( a_{n_0} > c_{n_0} \)} Aiming at a contradiction, suppose that \( c_{n_0} > a_{n_0} \). Then
+  \begin{equation*}
+    \abs{R_{n_0} - S_{n_0}} = b^{-n_0} (c_{n_0} - a_{n_0}) > b^{-n_0}.
+  \end{equation*}
+
+  From \fullref{thm:alg:real_number_radix_expansion/estimate} it follows that
+  \begin{equation*}
+    b^{-n_0} < \abs{R_{n_0} - S_{n_0}} \leq \abs{R_{n_0} - x} + \abs{x - S_{n_0}} < \abs{R_{n_0} - x} + b^{-n_0}
+  \end{equation*}
+  and thus
+  \begin{equation*}
+    \abs{R_{n_0} - x} > 0.
+  \end{equation*}
+
+  But then \fullref{thm:nonnegative_series_inequality} implies that
+  \begin{equation*}
+    0 = \abs[\Big]{\sum_{k=-p}^\infty \frac {c_k} {b^k} - x} \geq \abs{R_{n_0} - x} > 0,
+  \end{equation*}
+  which is a contradiction.
+
+  Therefore, \( a_{n_0} > c_{n_0} \).
+
+  \SubProof*{Proof that \( R_n + b^{-n} \leq S_n \) when \( x \geq 0 \) and \( n \geq n_0 \)} We will use induction on \( n \geq n_0 \):
+  \begin{itemize}
+    \item For \( n_0 \) we have
+    \begin{equation*}
+      R_{n_0} + b^{-n_0}
+      =
+      \underbrace{R_{n_0-1}}_{\abs{S_{n_0-1}}} + b^{-n_0} (c_{n_0} + 1)
+      =
+      S_{n_0} + b^{-n_0} (\underbrace{-a_{n_0} + c_{n_0}}_{\leq 1} + 1)
+      \leq
+      S_{n_0}.
+    \end{equation*}
+
+    \item Suppose that \( R_n + b^{-n} < S_n \) for some \( n \geq n_0 \). Then
+    \begin{balign*}
+      R_{n+1} + b^{-n-1}
+      &=
+      R_n + b^{-n-1} (c_{n+1} + 1)
+      \reloset {\T{ind.}} \leq \\ &\leq
+      S_n - b^{-n} + b^{-n-1} (c_{n+1} + 1)
+      = \\ &=
+      S_n + b^{-n-1} (-b + c_{n+1} + 1)
+      = \\ &=
+      S_{n+1} + b^{-n-1} \parens[\Big]{ (c_{n+1} - a_{n+1}) - (b - 1) }
+      \leq \\ &\leq
+      S_{n+1}.
+    \end{balign*}
+  \end{itemize}
+
+  \SubProof*{Proof that \( \abs{R_n} \leq \abs{S_n} \)} The case where \( x \geq 0 \) is clear. If \( x < 0 \), we apply the previous subproof to \( -x \) to obtain \( -R_n \leq -S_n \), hence
+  \begin{equation*}
+    \abs{R_n} = -R_n \leq -S_n = \abs{S_n}.
+  \end{equation*}
+
+  \SubProof{Proof that \( \abs{x - S_n} \leq \abs{x - R_n} \)} From \( \abs{R_n} \leq \abs{S_n} \) we conclude that
+  \begin{equation*}
+    \abs{x} - \abs{S_n} \leq \abs{x} - \abs{R_n} \leq \abs{x - R_n}.
+  \end{equation*}
+
+  \SubProofOf{thm:alg:real_number_radix_expansion/rational_coefficient} Consider the expansion given by \fullref{alg:real_number_radix_expansion}:
+  \begin{equation*}
+    \frac p q = \sum_{k=-m}^\infty \frac {a_k} {b^k},
+  \end{equation*}
+  where, for \( k \geq -m \),
+  \begin{equation*}
+    a_k = \rem\parens[\Big]{ \floor\parens[\Big]{ b^k \frac p q }, b }.
+  \end{equation*}
+
+  For \( k \geq 0 \), \fullref{thm:rational_number_floor} implies that
+  \begin{equation*}
+    \floor\parens[\Big]{ b^k \frac p q }
+    =
+    \quot(b^k p, q)
+  \end{equation*}
+  and
+  \begin{equation*}
+    a_k = \rem(\quot(b^k p, q), b).
+  \end{equation*}
+
+  \Fullref{thm:alg:integer_division/nested_quot} implies that
+  \begin{equation*}
+    a_k
+    =
+    \quot(b^k p, q) - b \cdot \quot(\quot(b^k p, q), b)
+    =
+    \quot(b^k p, q) - b \cdot \quot(b^k p, qb).
+  \end{equation*}
+
+  For \( k > 0 \) this reduces to \eqref{eq:thm:alg:real_number_radix_expansion/rational_coefficient}.
+\end{proof}
+
+\paragraph{Uniqueness of radix expansions}
+
+\begin{lemma}\label{thm:radix_expansion_conversion_lemma}\mcite{MathSE:real_number_two_decimal_expansions}
+  Consider two \hyperref[def:real_number_radix_expansion]{radix \( b \) expansions} of the same real number \( x \):
+  \begin{equation*}
+    x = \sgn(x) \cdot \sum_{k=-m}^\infty \frac {a_k} {b^k} = \sgn(x) \cdot \sum_{k=-p}^\infty \frac {c_k} {b^k}.
+  \end{equation*}
+
+  We have the following possibilities:
+  \begin{thmenum}
+    \thmitem{thm:radix_expansion_conversion_lemma/equal} All coefficients coincide.
+
+    \thmitem{thm:radix_expansion_conversion_lemma/less} If \( a_k = c_k \) for \( k < n_0 \) and \( a_{n_0} < c_{n_0} \), then
+    \begin{thmenum}
+      \thmitem{thm:radix_expansion_conversion_lemma/less/succ} \( c_{n_0} = a_{n_0} + 1 \).
+      \thmitem{thm:radix_expansion_conversion_lemma/less/penultimate} \( a_k = b - 1 \) for \( k \geq 0 \).
+      \thmitem{thm:radix_expansion_conversion_lemma/less/zero} \( c_k = 0 \) for \( k \geq 0 \).
+    \end{thmenum}
+
+    \thmitem{thm:radix_expansion_conversion_lemma/greater} If \( a_k = c_k \) for \( k < n_0 \) and \( a_{n_0} > c_{n_0} \), then \fullref{thm:radix_expansion_conversion_lemma/less} hold with \( a_k \) and \( c_k \) swapped.
+  \end{thmenum}
+\end{lemma}
+\begin{comments}
+  \item Thus, for a fixed radix, any real number has at most two expansions, and the proposition provides a way to convert between them.
+\end{comments}
+\begin{proof}
+  The case when \( x < 0 \) follows from the case \( x > 0 \) by multiplying both series by \( -1 \). For simplicity, we will assume that \( x \geq 0 \).
+
+  \Fullref{thm:radix_expansion_conversion_lemma/equal} is clear. Suppose that the two series differ in their coefficients and let \( n_0 \geq \min\set{ -m, -p } \) be the smallest index such that \( a_{n_0} \neq c_{n_0} \). Now \( a_{n_0} < c_{n_0} \) will lead to \fullref{thm:radix_expansion_conversion_lemma/less}, while \( a_{n_0} > c_{n_0} \) will lead to \fullref{thm:radix_expansion_conversion_lemma/greater}.
+
+  Without loss of generality, suppose that \( a_{n_0} < c_{n_0} \). We have the following:
+  \begin{equation}\label{eq:thm:radix_expansion_conversion_lemma/proof/ineq/base}
+    x
+    =
+    \sum_{k=-m}^\infty \frac {a_k} {b^k}
+    =
+    \sum_{k=-m}^{n_0 - 1} \frac {a_k} {b^k} + \frac {a_{n_0}} {b^{n_0}} + \sum_{k=n_0+1}^\infty \frac {a_k} {b^k}.
+  \end{equation}
+
+  For the third term in \eqref{eq:thm:radix_expansion_conversion_lemma/proof/ineq/base} we have
+  \begin{equation}\label{eq:thm:radix_expansion_conversion_lemma/proof/third_term}
+    \sum_{k=n_0+1}^\infty \frac {a_k} {b^k}
+    \leq
+    \sum_{k=n_0+1}^\infty \frac {b - 1} {b^k}
+    \reloset {\eqref{eq:ex:def:real_number_radix_expansion/geometric}} =
+    b^{-n_0-1} b
+    =
+    b^{-n_0}.
+  \end{equation}
+
+  Thus,
+  \begin{equation}\label{eq:thm:radix_expansion_conversion_lemma/proof/ineq/intermediate}
+    x
+    \leq
+    \sum_{k=-m}^{n_0 - 1} \frac {a_k} {b^k} + b^{-n_0} (a_{n_0} + 1)
+    \leq
+    \sum_{k=-m}^{n_0 - 1} \frac {a_k} {b^k} + b^{-n_0} c_{n_0}.
+  \end{equation}
+
+  We can substitute the first term in \eqref{eq:thm:radix_expansion_conversion_lemma/proof/intermediate} as follows:
+  \begin{equation*}
+    x
+    \leq
+    \sum_{k=-m}^{n_0 - 1} \frac {a_k} {b^k} + b^{-n_0} c_{n_0}
+    =
+    \sum_{k=-p}^{n_0 - 1} \frac {c_k} {b^k} + b^{-n_0} c_{n_0}.
+  \end{equation*}
+
+  Then
+  \begin{equation}\label{eq:thm:radix_expansion_conversion_lemma/proof/ineq/final}
+    x
+    \leq
+    \sum_{k=-p}^{n_0 - 1} \frac {c_k} {b^k} + b^{-n_0} c_{n_0} + \sum_{k=n_0+1}^\infty \frac {c_k} {b^k}
+    =
+    \sum_{k=-p}^\infty \frac {c_k} {b^k}
+    =
+    x.
+  \end{equation}
+
+  Therefore, the inequalities in \eqref{eq:thm:radix_expansion_conversion_lemma/proof/third_term}, \eqref{eq:thm:radix_expansion_conversion_lemma/proof/ineq/intermediate} and \eqref{eq:thm:radix_expansion_conversion_lemma/proof/ineq/final} are actually equalities.
+
+  \begin{itemize}
+    \item Equality in \eqref{eq:thm:radix_expansion_conversion_lemma/proof/third_term} implies that
+    \begin{equation*}
+      \sum_{k=n_0+1}^\infty \frac {a_k} {b^k}
+      =
+      \sum_{k=n_0+1}^\infty \frac {b - 1} {b^k}.
+    \end{equation*}
+
+    Then
+    \begin{equation*}
+      \sum_{k=n_0+1}^\infty \frac {(b - 1) - a_k} {b^k}
+    \end{equation*}
+    is a sequence with nonnegative coefficients converging to zero. \Fullref{thm:absolute_convergence_to_zero} implies that \( c_k = b - 1 \) for \( k > n_0 \). Thus, \fullref{thm:radix_expansion_conversion_lemma/less/penultimate} holds.
+
+    \item Equality in \eqref{eq:thm:radix_expansion_conversion_lemma/proof/ineq/intermediate} implies \fullref{thm:radix_expansion_conversion_lemma/less/succ}.
+
+    \item Finally, equality in \eqref{eq:thm:radix_expansion_conversion_lemma/proof/ineq/final} implies that
+    \begin{equation*}
+      \sum_{k=n_0+1}^\infty \frac {c_k} {b^k} = 0.
+    \end{equation*}
+
+    \Fullref{thm:absolute_convergence_to_zero} implies that \( c_k = 0 \) for \( k > n_0 \). Thus, \fullref{thm:radix_expansion_conversion_lemma/less/zero} holds.
+  \end{itemize}
+\end{proof}
+
+\begin{proposition}\label{thm:radix_expansion_conversion}
+  Consider the \hyperref[def:real_number_radix_expansion]{radix \( b \) expansion}:
+  \begin{equation}\label{eq:thm:radix_expansion_conversion/base}
+    x = \sgn(x) \cdot \sum_{k=-m}^\infty \frac {a_k} {b^k}.
+  \end{equation}
+
+  \begin{thmenum}
+    \thmitem{thm:radix_expansion_conversion/zeros} If there exists an index \( n_0 \) such that \( a_{n_0} > 0 \) and \( a_k = 0 \) whenever \( k > n_0 \), then the following is the only other radix \( b \) expansion of \( x \):
+    \begin{equation}\label{eq:thm:radix_expansion_conversion/zeros}
+      \sgn(x) \cdot \parens[\Bigg]{ \sum_{k=-m}^{n_0 - 1} \frac {a_k} {b^k} + \frac {a_{n_0} - 1} {b^{n_0}} + \sum_{k=n_0 + 1}^\infty \frac {b - 1} {b^k} }.
+    \end{equation}
+
+    \thmitem{thm:radix_expansion_conversion/penultimate} If there exists an index \( n_0 \) such that \( a_{n_0} < b - 1 \) and \( a_k = b - 1 \) whenever \( k > n_0 \) then the following is the only other radix \( b \) expansion of \( x \):
+    \begin{equation}\label{eq:thm:radix_expansion_conversion/penultimate}
+      \sgn(x) \cdot \parens[\Bigg]{ \sum_{k=-m}^{n_0 - 1} \frac {a_k} {b^k} + \frac {a_{n_0} + 1} {b^{n_0}} + \sum_{k=n_0 + 1}^\infty \frac 0 {b^k} }.
+    \end{equation}
+
+    \thmitem{thm:radix_expansion_conversion/equal} Otherwise, no other radix \( b \) expansion of \( x \) exists.
+  \end{thmenum}
+\end{proposition}
+\begin{comments}
+  \item In \fullref{thm:radix_expansion_conversion/penultimate} it is possible to convert one of the zeros preceding \( a_{-m} \) to \( 1 \), for example in \( 0.\oline{9} \) or \( 99.\oline{9} \).
+\end{comments}
+\begin{proof}
+  Again, for simplicity, suppose that \( x > 0 \).
+
+  \SubProofOf{thm:radix_expansion_conversion/zeros}
+
+  \SubProof*{Proof that \eqref{eq:thm:radix_expansion_conversion/zeros} converges to \( x \)} We have
+  \begin{equation*}
+    \sum_{k=n_0 + 1}^\infty \frac {b - 1} {b^k}
+    \reloset {\eqref{eq:ex:def:real_number_radix_expansion/geometric}} =
+    b^{-n_0-1} \cdot b
+    =
+    b^{-n_0},
+  \end{equation*}
+  thus we can rewrite \eqref{eq:thm:radix_expansion_conversion/zeros} as
+  \begin{equation*}
+    \sum_{k=-m}^{n_0 - 1} \frac {a_k} {b^k} + \frac {a_{n_0} - 1} {b^{-n_0}} + b^{-n_0},
+  \end{equation*}
+  which equals \eqref{eq:thm:radix_expansion_conversion/base}.
+
+  \SubProof*{Proof that no other sequence converges to \( x \)} Since \( a_{n_0} - 1 < a_{n_0} \), we fall into case \fullref{thm:radix_expansion_conversion_lemma/less} of \fullref{thm:radix_expansion_conversion_lemma}, and no other expansions exist.
+
+  \SubProofOf{thm:radix_expansion_conversion/penultimate} We can use \fullref{thm:radix_expansion_conversion/zeros} to rewrite \eqref{eq:thm:radix_expansion_conversion/base} to \eqref{eq:thm:radix_expansion_conversion/penultimate}.
+
+  Of course, we fall instead into case \fullref{thm:radix_expansion_conversion_lemma/greater} of \fullref{thm:radix_expansion_conversion_lemma}.
+
+  \SubProofOf{thm:radix_expansion_conversion/equal} Here we fall into case \fullref{thm:radix_expansion_conversion_lemma/equal} of \fullref{thm:radix_expansion_conversion_lemma}.
+\end{proof}
+
+\begin{lemma}\label{thm:real_number_radix_expansion_zeros}
+  The \hyperref[def:real_number_radix_expansion]{radix expansions} produced by \fullref{alg:real_number_radix_expansion} never satisfy \fullref{thm:radix_expansion_conversion/penultimate}.
+\end{lemma}
+\begin{proof}
+  Consider the expansion
+  \begin{equation*}
+    x = \sgn(x) \cdot \sum_{k=-m}^\infty \frac {a_k} {b^k}
+  \end{equation*}
+  produced by \fullref{alg:real_number_radix_expansion}.
+
+  Suppose that \fullref{thm:radix_expansion_conversion/penultimate} holds. Then  in \eqref{eq:thm:radix_expansion_conversion/penultimate}, the \( n_0 \)-th coefficient is \( a_{n_0} + 1 \), and the corresponding partial sum is
+  \begin{equation*}
+    S_{n_0} + \frac 1 {b^{n_0}}.
+  \end{equation*}
+
+  Then \eqref{eq:thm:alg:real_number_radix_expansion/optimal/max} implies that
+  \begin{equation*}
+    S_{n_0} + \frac 1 {b^{n_0}} \leq S_{n_0},
+  \end{equation*}
+  which is a contradiction.
+
+  Therefore, \fullref{thm:radix_expansion_conversion/penultimate} does not hold.
+\end{proof}
+
+\begin{corollary}\label{thm:radix_expansion_non_uniqueness}
+  The following are equivalent for the \hyperref[def:real_number_radix_expansion]{radix \( b \) expansions} of a real number \( x \):
+  \begin{thmenum}
+    \thmitem{thm:radix_expansion_non_uniqueness/uniqueness} There are exactly two radix \( b \) expansions.
+    \thmitem{thm:radix_expansion_non_uniqueness/zeros} There exists an expansion satisfying \fullref{thm:radix_expansion_conversion/zeros}.
+    \thmitem{thm:radix_expansion_non_uniqueness/penultimate} There exists an expansion satisfying \fullref{thm:radix_expansion_conversion/penultimate}.
+    \thmitem{thm:radix_expansion_non_uniqueness/power} There exists a nonnegative integer \( n_0 \) such that \( b^{n_0} x \) is an integer.
+  \end{thmenum}
+
+  Furthermore, \( n_0 \) is the same across \fullref{thm:radix_expansion_non_uniqueness/power}, \fullref{thm:radix_expansion_conversion/zeros} and \fullref{thm:radix_expansion_conversion/penultimate}.
+\end{corollary}
+\begin{proof}
+  \ImplicationSubProof{thm:radix_expansion_non_uniqueness/uniqueness}{thm:radix_expansion_non_uniqueness/penultimate} Suppose that \( x \) has exactly two unique radix \( b \) expansions. Fix one of them.
+
+  If \fullref{thm:radix_expansion_conversion/penultimate} does not hold, then \fullref{thm:radix_expansion_conversion/zeros} holds, and \eqref{eq:thm:radix_expansion_conversion/zeros} is the other expansion. Then \eqref{eq:thm:radix_expansion_conversion/zeros} satisfies \fullref{thm:radix_expansion_conversion/penultimate}.
+
+  \ImplicationSubProof{thm:radix_expansion_non_uniqueness/penultimate}{thm:radix_expansion_non_uniqueness/zeros} Suppose that some expansion of \( x \) satisfies \fullref{thm:radix_expansion_conversion/penultimate}. Then \eqref{eq:thm:radix_expansion_conversion/penultimate} is another expansion of \( x \), and it satisfies \fullref{thm:radix_expansion_conversion/zeros}.
+
+  \ImplicationSubProof{thm:radix_expansion_non_uniqueness/zeros}{thm:radix_expansion_non_uniqueness/power} Suppose that \( x \) has a radix \( b \) expansion satisfying \fullref{thm:radix_expansion_conversion/zeros}. Then \eqref{eq:thm:radix_expansion_conversion/zeros} is another expansion, this time satisfying \fullref{thm:radix_expansion_conversion/penultimate}. At least one of them coincides with the expansion given by \fullref{alg:real_number_radix_expansion_zeros}.
+
+  \Fullref{thm:real_number_radix_expansion_zeros} implies that it coincides with the expansion given by \fullref{alg:real_number_radix_expansion}. Thus, for \( k > n_0 \), we have
+  \begin{equation*}
+    a_k = \rem(\floor(b^k x), b) = 0.
+  \end{equation*}
+
+  This implies that \( b \) divides \( \floor(b^k x) \), which in turn implies that \( b^k x \) is an integer.
+
+  \ImplicationSubProof{thm:radix_expansion_non_uniqueness/power}{thm:radix_expansion_non_uniqueness/uniqueness} Suppose that, for some positive integer \( n_0 \), \( b^{n_0} x \) is an integer. Suppose that \( n_0 \) is the smallest such integer.
+
+  In the expansion given by \fullref{alg:real_number_radix_expansion}, the \( k \)-th digit is
+  \begin{equation*}
+    a_k = \rem(\floor(b^k x), b).
+  \end{equation*}
+
+  By assumption, \( b^{n_0 - 1} x \) is not an integer, while \( b^{n_0} x \) is, thus \( b \) does not divide \( b^{n_0} x \). Then
+  \begin{equation*}
+    a_{n_0} = \rem(b^{n_0} x, b) > 0.
+  \end{equation*}
+
+  When \( k > n_0 \), however, \( b^k x \) is an integer dividing \( b \), thus
+  \begin{equation*}
+    a_k = \rem(\floor(b^k x), b) = \rem(b^k x, b) = 0.
+  \end{equation*}
+
+  Then \fullref{thm:radix_expansion_conversion/zeros} holds, giving us another radix \( b \) expansion of \( x \) and claiming that no other expansions exist.
+\end{proof}
+
+\begin{corollary}\label{thm:radix_expansion_uniqueness}
+  The following are equivalent for the \hyperref[def:real_number_radix_expansion]{radix \( b \) expansions} of a real number \( x \):
+  \begin{thmenum}
+    \thmitem{thm:radix_expansion_uniqueness/uniqueness} There is exactly one radix \( b \) expansion.
+    \thmitem{thm:radix_expansion_uniqueness/zeros} There exist no expansions satisfying \fullref{thm:radix_expansion_conversion/zeros}.
+    \thmitem{thm:radix_expansion_uniqueness/penultimate} There exist no expansions satisfying \fullref{thm:radix_expansion_conversion/penultimate}.
+    \thmitem{thm:radix_expansion_uniqueness/power} For any positive integer \( k \), \( b^k x \) is not an integer.
+  \end{thmenum}
+\end{corollary}
+\begin{proof}
+  Follows from \fullref{thm:radix_expansion_conversion} by negating \fullref{thm:radix_expansion_non_uniqueness}.
+\end{proof}
+
+\begin{proposition}\label{thm:integer_radix_expansion}
+  A real number is an integer if and only if, for every base \( b \) and any radix \( b \) expansion, the coefficients with positive index are either all \( 0 \) or all \( b - 1 \).
+\end{proposition}
+\begin{proof}
+  Follows from \fullref{thm:radix_expansion_non_uniqueness}.
+\end{proof}
+
+\begin{corollary}\label{thm:integer_radix_expansion_via_algorthm}
+  For any integer \( n \) and any radix \( b \), in the base \( b \) expansion of \( n \) obtained via \fullref{alg:real_number_radix_expansion} all coefficients with positive index are \( 0 \).
+\end{corollary}
+\begin{proof}
+  Follows from \fullref{thm:integer_radix_expansion} and \fullref{thm:real_number_radix_expansion_zeros}.
+\end{proof}
+
+\paragraph{Rational number strings}
+
+\begin{algorithm}[Rational number to positional string]\label{alg:rational_number_to_positional_string}
+  Fix a \hyperref[def:positional_number_system]{positional number system} \( s_0, s_1, \ldots, s_{b-1} \) and a rational number \( p / q \) \hyperref[def:lowest_terms]{in lowest terms} with a positive denominator. We will build a rational numeric string for \( p / q \).
+
+  \begin{thmenum}
+    \thmitem{alg:rational_number_to_positional_string/decomposition} Our first step is to decompose \( p \) and \( q \) into a fraction more suitable for our next steps.
+
+    \Fullref{thm:fundamental_theorem_of_arithmetic} implies that there exists some prime factorization \( q = u_1^{\alpha_1} \cdots u_n^{\alpha_n} \). Let
+    \begin{equation}\label{eq:thm:fundamental_theorem_of_arithmetic/decomposition/q_}
+      q' \coloneqq \prod \set{ r_i^{\alpha_i} \given r_i \T{divides} b }.
+    \end{equation}
+
+    Then \( q' \) divides \( q \), but is coprime to \( b \). Let \( r \) be the quotient of \( q \) and \( q' \) and define the \enquote{shift} value
+    \begin{equation}\label{eq:alg:rational_number_to_positional_string/decomposition/shift}
+      z \coloneqq \min\set{ k = 0, 1, \ldots \given r \T{divides} b^k }.
+    \end{equation}
+
+    By definition, all prime factors of \( r \) are factors of \( b \), so \( z \) is well-defined. Then
+    \begin{equation}\label{eq:alg:rational_number_to_positional_string/decomposition/pq}
+      \frac p q
+      =
+      \frac p {r \cdot q'}
+      =
+      \frac {b^z \cdot p} {b^z \cdot r \cdot q'}
+      =
+      \sgn(p) \cdot b^{-z} \cdot \frac {p'} {q'},
+    \end{equation}
+    where \( p' \coloneqq b^z \cdot r \cdot \abs{p} \).
+
+    By their construction, \( p' \) and \( q' \) are coprime. We will build a decomposition for \( p' / q' \), and then \enquote{shift} the radix dot by \( z \) places.
+
+    \thmitem{alg:rational_number_to_positional_string/int} Obtain a decomposition of \( \quot(p', q') \) from \fullref{alg:real_number_radix_expansion}:
+    \begin{equation}\label{eq:alg:rational_number_to_positional_string/int}
+      \quot(p', q') = \sum_{-m}^0 \frac {a_k} {b^k}.
+    \end{equation}
+
+    \thmitem{alg:rational_number_to_positional_string/periodic}\mcite[thm. 2.3]{Akula2022} Let \( l \coloneqq \varphi(q') \), where \( \varphi \) is \hyperref[def:eulers_totient_function]{Euler's totient function}, and let
+    \begin{equation}\label{eq:alg:rational_number_to_positional_string/periodic/c}
+      c \coloneqq \frac {b^l - 1} {q'},
+    \end{equation}
+
+    Since \( b \) and \( q' \) are coprime, from \fullref{thm:eulers_totient_theorem} it follows that
+    \begin{equation*}
+      b^l \cong 1 \pmod {q'},
+    \end{equation*}
+    hence \( c \) is an integer.
+
+    Note that
+    \begin{equation}\label{eq:alg:rational_number_to_positional_string/periodic/digit_inequality}
+      \rem(p', q') \cdot c < q' \cdot c = b^l - 1 < b^l,
+    \end{equation}
+    hence the maximal power of a radix decomposition of \( \rem(p', q') \cdot c \) is strictly less than \( l \). Let
+    \begin{equation}\label{eq:alg:rational_number_to_positional_string/periodic}
+      \rem(p', q') \cdot c = \sum_{k={-l+1}}^0 \frac {c_k} {b_k},
+    \end{equation}
+
+    \thmitem{alg:rational_number_to_positional_string/string} Finally, build the following string:
+    \begin{equation}\label{eq:alg:rational_number_to_positional_string/string}
+      e \underbrace{s_{a_{-m}} s_{a_{-m+1}} \cdots s_{a_{-z}}}_{\T{integer part}} \thinspace . \thinspace \underbrace{s_{a_{-z+1}} \cdots s_{a_0}}_{\T{possibly empty}} \underbrace{\oline{s_{c_{-l+1}} s_{c_{-l+2}} \cdots s_{c_0}}}_{\T{periodic digits}},
+    \end{equation}
+    where
+    \begin{equation*}
+      e = \begin{cases}
+        \bnfes, &p \geq 0 \\
+        -,      &p < 0.
+      \end{cases}
+    \end{equation*}
+
+    The radix expansion obtained via \fullref{def:positional_notation_as_radix_expansion/rational_numbers} converges to \( p / q \).
+  \end{thmenum}
+\end{algorithm}
+\begin{comments}
+  \item This algorithm can be found as \identifier{arithmetic.bases.get_rational_number_expansion} in \cite{code}.
+\end{comments}
+\begin{defproof}
+  We start by noting that
+  \begin{align*}
+    \frac p q
+    &\reloset {\eqref{eq:alg:rational_number_to_positional_string/decomposition/pq}} =
+    \sgn(p) \cdot b^{-z} \cdot \frac {p'} {q'}
+    = \\ &=
+    \sgn(p) \cdot b^{-z} \cdot \parens[\Big]{ \quot(p', q') + \frac {\rem(p', q')} {q'} }
+    \reloset {\eqref{eq:alg:rational_number_to_positional_string/int}} = \\ &=
+    \sgn(p) \cdot b^{-z} \cdot \parens[\Bigg]{ \sum_{-m}^0 \frac {a_k} {b^k} + \frac {\rem(p', q')} {q'} }.
+  \end{align*}
+
+  We must now investigate the second term:
+  \begin{balign*}
+    \frac {\rem(p', q')} {q'}
+    &\reloset {\eqref{eq:alg:rational_number_to_positional_string/periodic/c}} =
+    c \cdot \rem(p', q')
+    \cdot
+    \frac 1 {b^l - 1}
+    = \\ &=
+    c \cdot \rem(p', q') \cdot b^{-l}
+    \cdot
+    \frac 1 {1 - b^{-l}}
+    \reloset {\eqref{eq:thm:def:geometria_series/series_sum_interior}} = \\ &=
+    c \cdot \rem(p', q') \cdot b^{-l}
+    \cdot
+    \sum_{k=0}^\infty \frac 1 {{b^l}^k}
+    = \\ &=
+    \sum_{k=1}^\infty \frac {c \cdot \rem(p', q')} {{b^l}^k}.
+  \end{balign*}
+
+  From \eqref{eq:alg:rational_number_to_positional_string/periodic/digit_inequality} it follows that \( c \cdot \rem(p',q') < b^l \), thus we have obtained a radix \( b^l \) decomposition of \( \rem(p', q') / q' \). Combining this with \eqref{eq:alg:rational_number_to_positional_string/periodic}, we obtain
+  \begin{balign*}
+    \frac {\rem(p', q')} {q'}
+    &=
+    \sum_{i=1}^\infty \sum_{j=-l+1}^0 \frac {c_j} {b^{il + j}}
+    = \\ &=
+    \sum_{i=1}^\infty \sum_{j=0}^{l-1} \frac {c_{-l+1+j}} {b^{il + (-l+1+j)}}
+    = \\ &=
+    \sum_{i=1}^\infty \sum_{j=0}^{l-1} \frac {c_{-l+1+j}} {b^{(i-1)l + j+1}}
+    = \\ &=
+    \sum_{k=0}^\infty \frac {c_{-l+1+\rem(k, l)}} {b^{k+1}}
+    = \\ &=
+    \sum_{k=1}^\infty \frac {c_{-l+1+\rem(k-1, l)}} {b^k}.
+  \end{balign*}
+
+  Then
+  \begin{align*}
+    \frac p q
+    &=
+    \sgn(p) \cdot b^{-z} \cdot \parens[\Bigg]{ \sum_{-m}^0 \frac {a_k} {b^k} + \sum_{k=1}^\infty \frac {c_{-l+1+\rem(k-1, l)}} {b^k} }
+    = \\ &=
+    \sgn(p) \cdot \parens[\Bigg]{ \sum_{-m-z}^{-z} \frac {a_{z+k}} {b^k} + \sum_{k=1-z}^\infty \frac {c_{-l+1+\rem(k+z-1, l)}} {b^k} },
+  \end{align*}
+  which coincides with the interpretation of the string \eqref{eq:alg:rational_number_to_positional_string/string} as a series.
+\end{defproof}
+
+\begin{algorithm}[Positional string to rational number]\label{alg:positional_string_to_rational_number}
+  Fix a \hyperref[def:positional_number_system]{positional number system} \( s_0, s_1, \ldots, s_{b-1} \) and a rational number string
+  \begin{equation}\label{eq:alg:positional_string_to_rational_number/string}
+    e s_{a_{-m}} \ldots s_{a_{-z}} \thinspace . \thinspace s_{a_{-z+1}} \ldots s_{a_0} \oline{s_{c_0} \ldots s_{c_{l-1}}}
+  \end{equation}
+
+  Via \fullref{def:positional_notation_as_radix_expansion/rational_numbers}, \eqref{eq:alg:positional_string_to_rational_number/string} evaluates to
+  \begin{equation*}
+    x \coloneqq \Bracks{e} \cdot \parens[\Bigg]{ \sum_{k=-m-z}^{-z} \frac {a_{z+k}} {b^k} + \sum_{k=-z + 1}^\infty \frac {c_{\rem(k - (-z + 1), l)}} {b^k} }
+  \end{equation*}
+
+  We will find integers \( p \) and \( q \) such that \( x = p / q \).
+
+  Let
+  \begin{equation}\label{alg:positional_string_to_rational_number/q}
+    q \coloneqq (b^l - 1) b^z
+  \end{equation}
+  and
+  \begin{equation*}
+    p \coloneqq qx = \Bracks{e} \cdot \parens[\Bigg]{ \underbrace{(b^l - 1) \sum_{k=-m}^0 \frac {a_k} {b^k}}_{\T{integer}} + (b^l - 1) \sum_{k=1}^\infty \frac {c_{\rem(k - 1, l)}} {b^k} }
+  \end{equation*}
+
+  The second term is also an integer:
+  \begin{equation*}
+    (b^l - 1) \sum_{k=1}^\infty \frac {c_{\rem(k - 1, l)}} {b^k}
+    =
+    \underbrace{\sum_{k=1}^l \frac {c_{k - 1}} {b^{k-l}}}_{\T{integer}} + \underbrace{\sum_{k=l + 1}^\infty \frac {c_{\rem(k - 1, l)}} {b^{k-l}} - \sum_{k=1}^\infty \frac {c_{\rem(k - 1, l)}} {b^k}}_0
+  \end{equation*}
+
+  Therefore, both \( p \) and \( q \) are integers and \( p / q = x \).
+\end{algorithm}
+\begin{comments}
+  \item This algorithm can be found as \identifier{arithmetic.bases.get_fraction} in \cite{code}.
+\end{comments}

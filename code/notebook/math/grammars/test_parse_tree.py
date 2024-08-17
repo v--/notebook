@@ -20,7 +20,7 @@ def test_derivation_and_parse_tree_basic() -> None:
         ]
     )
 
-    tree = ParseTree(NonTerminal('S'), children=[ParseTree(Terminal('a'))])
+    tree = ParseTree(NonTerminal('S'), subtrees=[ParseTree(Terminal('a'))])
 
     assert derivation_to_parse_tree(derivation) == tree
     assert parse_tree_to_derivation(tree) == derivation
@@ -49,15 +49,15 @@ def test_derivation_and_parse_tree_branching() -> None:
 
     tree = ParseTree(
         NonTerminal('S'),
-        children=[
+        subtrees=[
             ParseTree(Terminal('a')),
             ParseTree(
                 NonTerminal('S'),
-                children=[
+                subtrees=[
                     ParseTree(Terminal('a')),
                     ParseTree(
                         NonTerminal('S'),
-                        children=[
+                        subtrees=[
                             ParseTree(Terminal('a')),
                             ParseTree(Terminal('b'))
                         ]
@@ -145,9 +145,9 @@ def test_derivation_and_parse_tree_epsilon() -> None:
 
     tree = ParseTree(
         NonTerminal('S'),
-        children=[
+        subtrees=[
             ParseTree(Terminal('a')),
-            ParseTree(NonTerminal('S'), children=[ParseTree(empty)]),
+            ParseTree(NonTerminal('S'), subtrees=[ParseTree(empty)]),
             ParseTree(Terminal('b'))
         ]
     )
@@ -179,13 +179,13 @@ def test_derivation_and_parse_tree_left_recursion() -> None:
 
     tree = ParseTree(
         NonTerminal('S'),
-        children=[
+        subtrees=[
             ParseTree(
                 NonTerminal('S'),
-                children=[
+                subtrees=[
                     ParseTree(
                         NonTerminal('S'),
-                        children=[
+                        subtrees=[
                             ParseTree(Terminal('a'))
                         ]
                     ),

@@ -3,17 +3,17 @@
 \paragraph{Parse trees}
 
 \begin{definition}\label{def:parse_tree}\mcite[81]{Aho2006}
-  A \term[ru=дерево вывода (\cite[81]{Гладкий1973Языки})]{parse tree} or \term{concrete syntax tree} for the \hyperref[def:chomsky_hierarchy/context_free]{context-free grammar} \( G = (V, \Sigma, \to, S) \) is a \hyperref[def:multiway_tree]{multiway tree} over \( V \cup \Sigma \cup \set{ \varepsilon } \) such that:
+  A \term[ru=дерево вывода (\cite[81]{Гладкий1973Языки})]{parse tree} or \term{concrete syntax tree} for the \hyperref[def:chomsky_hierarchy/context_free]{context-free grammar} \( G = (V, \Sigma, \to, S) \) is a \hyperref[def:ordered_tree]{ordered tree} with nodes labeled by \( V \cup \Sigma \cup \set{ \bnfes } \) such that:
   \begin{thmenum}
-    \thmitem{def:parse_tree/root} The root has value \( S \).
-    \thmitem{def:parse_tree/leaves} The values of the leaves are either terminals or \( \varepsilon \).
+    \thmitem{def:parse_tree/root} The root has label \( S \).
+    \thmitem{def:parse_tree/leaves} The labels of the leaves are either terminals or \( \bnfes \).
     \thmitem{def:parse_tree/children} There is a rule
     \begin{equation*}
       x \to y_1 \cdots y_n,
     \end{equation*}
-    where \( x \) is the value of the root of \( T \) and \( y_1, \ldots, y_n \) --- of the immediate children of \( T \).
+    where \( x \) is the label of the root of \( T \) and \( y_1, \ldots, y_n \) --- of the immediate children of \( T \).
 
-    In order to distinguish \( \varepsilon \) rules from \enquote{dangling} nonterminals, we handle the special case \( x \to \varepsilon \) by introducing a single subtree whose root has value \( \varepsilon \).
+    In order to distinguish \( \bnfes \) rules from \enquote{dangling} nonterminals, we handle the special case \( x \to \bnfes \) by introducing a single subtree whose root has label \( \bnfes \).
   \end{thmenum}
 \end{definition}
 \begin{comments}
@@ -21,11 +21,11 @@
 \end{comments}
 
 \begin{remark}\label{rem:parse_tree_roots}
-  In syntactic definitions and proofs, for example in relation to \hyperref[con:evaluation]{evaluation}, we usually consider \hyperref[def:formal_grammar/schema]{grammar schemas} and each subtree has a root with a different label. In this case, we work with parse trees for different grammars over the same grammar schema (differing by the start symbol). We also allow singleton trees consisting of a single terminal or \( \varepsilon \), acknowledging that these are not technically parse trees.
+  In syntactic definitions and proofs, for example in relation to \hyperref[con:evaluation]{evaluation}, we usually consider \hyperref[def:formal_grammar/schema]{grammar schemas} and each subtree has a root with a different label. In this case, we work with parse trees for different grammars over the same grammar schema (differing by the start symbol). We also allow singleton trees consisting of a single terminal or \( \bnfes \), acknowledging that these are not technically parse trees.
 \end{remark}
 
 \begin{definition}\label{def:parse_tree_string}\mcite[46]{Aho2006}
-  We say that the \hyperref[def:parse_tree]{parse tree} \( T \) \term{yields} the string \( x_1 \cdots x_n \) if, for \( k = 1, \ldots, n \), the \( k \)-th member in the \hyperref[def:traversal_ordering]{pre-order traversal} of \( T \) has value \( x_k \).
+  We say that the \hyperref[def:parse_tree]{parse tree} \( T \) \term{yields} the string \( x_1 \cdots x_n \) if, for \( k = 1, \ldots, n \), the \( k \)-th member in the \hyperref[def:ordered_tree_enumeration]{pre-order enumeration} of the vertices of \( T \) has label \( x_k \).
 \end{definition}
 \begin{comments}
   \item We implicitly associate this string with the parse tree.
@@ -38,7 +38,7 @@
     \thmitem{ex:def:parse_tree/an} Consider the grammar
     \begin{equation*}
       \begin{aligned}
-        S &\to A \mid \varepsilon, \\
+        S &\to A \mid \bnfes, \\
         A &\to aA \mid a.
       \end{aligned}
     \end{equation*}
@@ -53,9 +53,9 @@
 
     If we instead use the \enquote{simpler} grammar
     \begin{equation*}
-      S \to aS \mid \varepsilon,
+      S \to aS \mid \bnfes,
     \end{equation*}
-    then we would have an \( \varepsilon \)-labeled node in the parse tree:
+    then we would have an \( \bnfes \)-labeled node in the parse tree:
     \begin{equation*}
       \includegraphics[page=2]{output/ex__def__parse_tree}
     \end{equation*}
@@ -63,7 +63,7 @@
     \thmitem{ex:def:parse_tree/anbn} Consider the grammar
     \begin{equation*}
       \begin{aligned}
-        S &\to A \mid \varepsilon, \\
+        S &\to A \mid \bnfes, \\
         A &\to aAb \mid ab
       \end{aligned}
     \end{equation*}
@@ -121,7 +121,7 @@
 
   Suppose that we are given the rule \( A \to v_1 \cdots v_m \), where each \( v_k \) is a single symbol (either a terminal or nonterminal). The algorithm relies on partitioning \( w \) into \( m \) parts. Denote by \( S(w, m) \) the set of all partitions of \( w \) into \( m \) parts, that is, all \( m \)-tuples \( \vect w = (w_1, \ldots, w_m) \) such that
   \begin{equation*}
-    w = \underbrace{ r_1 \cdots r_{l_1} }_{w_1} \underbrace{ r_{l_1 \synplus 1} \cdots r_{l_1 \synplus l_2} }_{w_2} \cdots \underbrace{ r_{l_1 \synplus \cdots \synplus l_{m-1} \synplus 1} \cdots r_{l_1 \synplus \cdots \synplus l_m} }_{w_m},
+    w = \underbrace{ r_1 \cdots r_{l_1} }_{w_1} \underbrace{ r_{l_1 + 1} \cdots r_{l_1 + l_2} }_{w_2} \cdots \underbrace{ r_{l_1 + \cdots + l_{m-1} + 1} \cdots r_{l_1 + \cdots + l_m} }_{w_m},
   \end{equation*}
   where \( l_k \coloneqq \len(w_k) \).
 
@@ -139,7 +139,7 @@
   \begin{thmenum}
     \thmitem{alg:brute_force_parsing/tree_set} For each \( v_k \) in the rule \( A \to v_1 \cdots v_m \), construct a set \( \mscrT_k \) of parse trees as follows:
     \begin{itemize}
-      \item If \( v_k \) is a terminal, let \( \mscrT_k \) be a set with one element --- the singleton tree with value \( w_k \).
+      \item If \( v_k \) is a terminal, let \( \mscrT_k \) be a set with one element --- the singleton tree with label \( w_k \).
 
       \item If \( v_k \) is a nonterminal, let
       \begin{equation*}
@@ -152,7 +152,7 @@
 
     \thmitem{alg:brute_force_parsing/combine} Combine the above sets \( \mscrT_1, \cdots, \mscrT_m \) as follows:
     \begin{itemize}
-      \item If \( m = n = 0 \), i.e. if \( A \to \varepsilon \) and \( w = \varepsilon \), let
+      \item If \( m = n = 0 \), i.e. if \( A \to \bnfes \) and \( w = \bnfes \), let
       \begin{equation*}
         P^\dprime_A\parens[\Big]{ A \to v_1 \cdots v_m, \vect w, U }
       \end{equation*}
@@ -167,20 +167,20 @@
       \begin{equation*}
         P^\dprime_A\parens[\Big]{ A \to v_1 \cdots v_m, \vect w, U }
       \end{equation*}
-      consist of all trees of the form
+      consist of all \hyperref[def:ordered_tree_grafting]{grafted trees} of the form
       \begin{equation*}
         \begin{aligned}
           \includegraphics[page=2]{output/alg__brute_force_parsing}
         \end{aligned}
       \end{equation*}
-      where \( (T_1, \ldots, T_m) \) is a tuple in the Cartesian product \( \mscrT_1 \syntimes \cdots \syntimes \mscrT_m \).
+      where \( (T_1, \ldots, T_m) \) is a tuple in the Cartesian product \( \mscrT_1 \times \cdots \times \mscrT_m \).
     \end{itemize}
   \end{thmenum}
 \end{algorithm}
 \begin{comments}
   \item This is a variation of Stephen Unger's algorithm described in \cite{Unger1968}.
   \item This algorithm can be found as \identifier{grammars.brute_force_parse.parse} in \cite{code}.
-  \item We can avoid the auxiliary parameter \( U \) if the grammar has no \hyperref[def:epsilon_free_grammar]{\( \varepsilon \) rules} and no \hyperref[def:renaming_rule]{renaming rules}, but otherwise we can easily get stuck in a loop like \( A \Rightarrow B \Rightarrow A \) (if \( A \to B \) and \( B \to A \)) or \( A \Rightarrow AB \Rightarrow A \) (if \( B \to \varepsilon \)).
+  \item We can avoid the auxiliary parameter \( U \) if the grammar has no \hyperref[def:epsilon_free_grammar]{\( \bnfes \) rules} and no \hyperref[def:renaming_rule]{renaming rules}, but otherwise we can easily get stuck in a loop like \( A \Rightarrow B \Rightarrow A \) (if \( A \to B \) and \( B \to A \)) or \( A \Rightarrow AB \Rightarrow A \) (if \( B \to \bnfes \)).
 \end{comments}
 
 \paragraph{Leftmost and rightmost derivations}
@@ -232,25 +232,27 @@
     w = (r_1, \ldots, r_n).
   \end{equation*}
 
-  We will construct a parse tree recursively. At step \( i \), where \( i = 0, \ldots, m \), the leaves of the tree \( T_i \) (traversed via \hyperref[def:traversal_ordering]{pre-ordering}) should be the symbols of \( w_i \). Proceed as follows:
+  We will construct a parse tree recursively. At step \( k \), where \( k = 0, \ldots, m \), the leaves of the tree \( T_k \), enumerated by \hyperref[def:ordered_tree_enumeration]{pre-ordering}, should be the symbols of the string \( w_k \). Proceed as follows:
   \begin{thmenum}
-    \thmitem{alg:derivation_to_parse_tree/initial} Let \( T_0 \) be the singleton tree with value \( S \).
+    \thmitem{alg:derivation_to_parse_tree/initial} Let \( T_0 \) be the singleton tree with label \( S \).
 
-    \thmitem{alg:derivation_to_parse_tree/step} For every \( i > 0 \), suppose that we have already built \( T_{i-1} \) for \( w_{i-1} \). The tree \( T_{i-1} \) has the form
+    \thmitem{alg:derivation_to_parse_tree/step} At step \( k > 0 \), having already built \( T_{k-1} \) for \( w_{k-1} \), let \( v_0 \) be the first (with respect to pre-order enumeration) node labeled by \( A \) in \( T_{k-1} \).
+
+    Then the tree \( T_{k-1} \) has the form
     \begin{equation*}
       \includegraphics[page=1]{output/alg__parse_tree_from_derivation}
     \end{equation*}
-    where \( w_{i-1} = r_1 \cdots r_l \) are the symbols of \( w_{i-1} \), \( A \to s_1 \cdots s_{n_i} \) is the rule producing \( w_i \) from \( w_{i-1} \) and \( j_0 \) is the index of the first instance of \( A \) in \( w_{i-1} \).
+    where \( w_{k-1} = r_1 \cdots r_l \) are the symbols of \( w_{k-1} \), and \( j_0 \) is the index of the first instance of \( A \) in \( w_{k-1} \).
 
     \begin{itemize}
-      \item If \( l = 0 \), i.e. if \( w_i = \varepsilon \), let \( T_i \) be the tree
+      \item If \( l = 0 \), i.e. if \( w_i = \bnfes \), define \( T_k \) by \hyperref[def:ordered_tree_grafting]{grafting} \( \varepsilon \) to \( v_0 \):
       \begin{equation*}
         \begin{aligned}
           \includegraphics[page=2]{output/alg__parse_tree_from_derivation}
         \end{aligned}
       \end{equation*}
 
-      \item If \( l > 0 \), let \( T_i \) instead be the tree
+      \item Otherwise, there exists a rule \( A \to s_1 \cdots s_p \) producing \( w_i \) from \( w_{k-1} \), and we instead graft \( s_1, \ldots, s_p \) onto \( A \):
       \begin{equation*}
         \begin{aligned}
           \includegraphics[page=3]{output/alg__parse_tree_from_derivation}
@@ -266,44 +268,36 @@
 \end{comments}
 
 \begin{algorithm}[Parse tree to leftmost derivation]\label{alg:parse_tree_to_leftmost_derivation}
-  Let \( T \) be a parse tree for \( w = x_1 \cdots x_n \), let \( V \) be its set of nodes and let \( X \) be its underlying set of values.
-
-  We will construct a derivation recursively. We will actually construct a sequence
-  \begin{equation*}
-    u_0, u_1, u_2, \ldots
-  \end{equation*}
-  of strings over \( V \), i.e. sequences of nodes in \( T \), such that the ordering of the symbols of \( u_i \) agrees with the \hyperref[def:traversal_ordering]{pre-ordering traversal} in \( T \). Since there are only finitely many nodes in \( T \), this sequence \hyperref[def:stabilizing_sequence]{stabilizes} --- there exists some index \( m \) such that the values of \( u_m \) are terminals and \( u_i = u_m \) for any \( i > m \).
+  Let \( T \) be a parse tree for \( w = x_1 \cdots x_n \). We will explicitly construct a \hyperref[def:leftmost_derivation]{leftmost derivation} for \( w \).
 
   We proceed as follows:
   \begin{thmenum}
-    \thmitem{alg:parse_tree_to_leftmost_derivation/initial} Define \( u_0 \) to be the root of \( T \) and let \( w_0 \) be its value.
+    \thmitem{alg:parse_tree_to_leftmost_derivation/initial} Let \( v_0, v_1, \ldots, v_m \) be the \hyperref[def:ordered_tree_enumeration]{pre-order enumeration} of the nodes of \( T \) labeled by nonterminals. Denote by \( l_k \) the label of \( v_k \).
 
-    \thmitem{alg:parse_tree_to_leftmost_derivation/step} For every \( i > 0 \), let \( r_1 \cdots r_{n_{i-1}} \) be the elements of \( u_{i-1} \).
+    Define \( w_0 \coloneqq l_0 \). By assumption, the root label \( l_0 \) of \( T \) is \( S \).
 
-    \begin{itemize}
-      \item If the value of \( r_j \) is a terminal for each \( j = 1, \ldots, n_{i-1} \), let \( u_i \coloneqq u_{i-1} \). This will mean that the \enquote{stabilizing index} \( m \) is either \( i - 1 \) or some smaller index.
+    \thmitem{alg:parse_tree_to_leftmost_derivation/step} At step \( 0 < k \leq m \), the nonterminal \( l_{k-1} \) must occur in \( w_{k-1} \).
 
-      \item Otherwise, let \( j \) be the smallest index such that the value \( u \) of \( r_j \) is a nonterminal, and let \( k_1, \cdots, k_{n_j} \) be the immediate children of \( r_j \). Then define
-      \begin{equation*}
-        u_i \coloneqq r_1 \cdots r_{j-1} \underbrace{ k_1 \cdots k_{n_j} } r_{j\synplus1} \cdots r_{n_j}
-      \end{equation*}
-      and let \( w_i \) be the corresponding string of values.
-
-      Denote by \( v_1, \ldots, v_{n_j} \) the values of \( k_1, \cdots, k_{n_j} \). \Fullref{def:parse_tree/children} ensures that there exists a rule
-      \begin{equation*}
-        u \to v_1 \cdots v_{n_j}
-      \end{equation*}
-      that allows us to transition from \( w_{i-1} \) to \( w_i \).
-    \end{itemize}
-
-    \thmitem{alg:parse_tree_to_leftmost_derivation/down} The desired derivation is
+    Let \( s_1, \ldots, s_p \) be the labels of the children of \( v_k \). \Fullref{def:parse_tree/children} ensures that there exists a production rule
     \begin{equation*}
-      S = w_0 \Rightarrow w_1 \cdots w_{m-1} \Rightarrow w_m.
+      l_{k-1} \to s_1 \cdots s_p.
+    \end{equation*}
+
+    Given \( w_{k-1} = a l_{k-1} b \), where \( a \) and \( b \) are strings and \( a \) does not contain nonterminals, we define
+    \begin{equation*}
+      w_k \coloneqq a s_1 \cdots s_p b.
+    \end{equation*}
+
+    \thmitem{alg:parse_tree_to_leftmost_derivation/finish} At step \( k = m + 1 \), there are no more terminals in \( w_m \). Furthermore, the symbols of \( w_m \) are by construction a pre-order enumeration of \( T \), thus \( w_m = w \).
+
+    Therefore, we have the derivation
+    \begin{equation*}
+      S = w_0 \Rightarrow w_1 \Rightarrow \cdots \Rightarrow w_m = w.
     \end{equation*}
   \end{thmenum}
 \end{algorithm}
 \begin{comments}
-  \item This algorithm can be found as \identifier{grammars.parse_tree.derivation_to_parse_tree} in \cite{code}.
+  \item This algorithm can be found as \identifier{grammars.parse_tree.parse_tree_to_derivation} in \cite{code}.
 \end{comments}
 
 \begin{proposition}\label{thm:derivations_and_parse_trees}
@@ -443,7 +437,7 @@
     \end{aligned}
   \end{equation}
 
-  Most of the information in this tree is not necessary for \hyperref[con:evaluation]{evaluating} it. An \term[en=abstract syntax tree (\cite[41]{Aho2006})]{abstract syntax tree} (AST) is instead a \hyperref[def:multiway_tree]{multiway tree} that contains information that is necessary for evaluation, but not for yielding the source string. The possible abstract syntax trees for a language differ depending on their use, as we will show, and are often produced from parse trees (which we called \enquote{concrete syntax trees} in \fullref{def:parse_tree}). The only restriction we put on abstract syntax trees is that they should be in a bijective correspondence with parse trees.
+  Most of the information in this tree is not necessary for \hyperref[con:evaluation]{evaluating} it. An \term[en=abstract syntax tree (\cite[41]{Aho2006})]{abstract syntax tree} (AST) is instead an \hyperref[def:ordered_tree]{ordered tree} that contains information that is necessary for evaluation, but not for yielding the source string. The possible abstract syntax trees for a language differ depending on their use, as we will show, and are often produced from parse trees (which we called \enquote{concrete syntax trees} in \fullref{def:parse_tree}). The only restriction we put on abstract syntax trees is that they should be finite \hyperref[def:ordered_tree]{ordered trees} in a bijective correspondence with parse trees.
 
   First, we can vastly simplify the tree by splitting the grammar \eqref{eq:ex:natural_number_arithmetic_grammar/schema/shorthand} into two parts:
   \begin{thmenum}
@@ -501,24 +495,8 @@
   This last tree has only 5 nodes, compared to the original tree \eqref{eq:con:abstract_syntax_tree/base} with 21 nodes. Yet, we can recover \eqref{eq:con:abstract_syntax_tree/base} from \eqref{eq:con:abstract_syntax_tree/final}.
 \end{concept}
 
-\begin{theorem}[Induction on syntax trees]\label{thm:induction_on_syntax_trees}\mimprovised
-  Fix a \hyperref[def:chomsky_hierarchy/context_free]{context-free grammar} \( G = (V, \Sigma, \to, S) \). Suppose that we want to prove a statement for every string in \( \mscrL(G) \). Then it is sufficient to do the following for an arbitrary string \( w \):
-  \begin{displayquote}
-    Fix a \hyperref[def:parse_tree]{parse tree} \( T \) of \( w \), and let \( T_1, \ldots, T_n \) be the immediate subtrees of the root. Suppose that the statement holds for all \( T_k \), \( k = 1, \ldots, n \), and prove the statement for \( T \).
-  \end{displayquote}
-\end{theorem}
-\begin{comments}
-  \item It is beneficial, but not strictly necessary for the grammar to be \hyperref[def:grammar_ambiguity]{unambiguous}. If it is unambiguous, we only have to consider one parse tree for every string.
-  \item In practice, we skip the hairy part with building a parse tree and instead rely on \hyperref[con:evaluation]{pattern matching}.
-  \item Unlike for most induction principles in \fullref{con:induction}, we did not formulate this one via logical formulas. This would make the statement unnecessarily convoluted with no gains.
-  \item We may just as well use \hyperref[con:abstract_syntax_tree]{abstract syntax trees}.
-\end{comments}
-\begin{proof}
-  This is an instance of \fullref{thm:well_founded_induction} if we order the tree nodes according to their \hyperref[def:rooted_tree/height]{height}.
-\end{proof}
-
 \begin{example}\label{ex:natural_number_arithmetic_grammar/induction}
-  We will show how to use \fullref{thm:induction_on_syntax_trees} in the context of the binary natural number grammar \eqref{eq:ex:natural_number_arithmetic_grammar/schema/shorthand} from \fullref{ex:natural_number_arithmetic_grammar/schema}.
+  We will show how to use \fullref{thm:induction_on_rooted_trees} in the context of the binary natural number grammar \eqref{eq:ex:natural_number_arithmetic_grammar/schema/shorthand} from \fullref{ex:natural_number_arithmetic_grammar/schema}.
 
   We want to prove that an expression without ones \hyperref[con:evaluation]{evaluates} to zero.
 

@@ -1,3 +1,5 @@
+import functools
+import operator
 from collections.abc import Iterable
 from typing import Generic, TypeVar, overload
 
@@ -16,7 +18,7 @@ class Matrix(Generic[N]):
             assert len(row) == len(rows[0])
 
         self.m = len(rows)
-        self.n = len(rows[0])
+        self.n = len(rows[0]) if len(rows) > 0 else 0
         self.payload = [x for row in rows for x in row]
 
     def __i_range(self, i: int | slice) -> Iterable[int]:
@@ -230,18 +232,18 @@ class Matrix(Generic[N]):
         return self + (-other)
 
     @overload
-    def __mul__(self: 'Matrix[int]', other: 'int') -> 'Matrix[int]': ...
+    def __rmul__(self: 'Matrix[int]', other: 'int') -> 'Matrix[int]': ...
     @overload
-    def __mul__(self: 'Matrix[int]', other: 'float') -> 'Matrix[float]': ...
+    def __rmul__(self: 'Matrix[int]', other: 'float') -> 'Matrix[float]': ...
     @overload
-    def __mul__(self: 'Matrix[int]', other: 'complex') -> 'Matrix[complex]': ...
+    def __rmul__(self: 'Matrix[int]', other: 'complex') -> 'Matrix[complex]': ...
     @overload
-    def __mul__(self: 'Matrix[float]', other: 'float') -> 'Matrix[float]': ...
+    def __rmul__(self: 'Matrix[float]', other: 'float') -> 'Matrix[float]': ...
     @overload
-    def __mul__(self: 'Matrix[float]', other: 'complex') -> 'Matrix[complex]': ...
+    def __rmul__(self: 'Matrix[float]', other: 'complex') -> 'Matrix[complex]': ...
     @overload
-    def __mul__(self: 'Matrix[complex]', other: 'complex') -> 'Matrix[complex]': ...
-    def __mul__(self, other: 'M') -> 'Matrix':
+    def __rmul__(self: 'Matrix[complex]', other: 'complex') -> 'Matrix[complex]': ...
+    def __rmul__(self, other: 'M') -> 'Matrix':
         return Matrix([
             [other * x for x in row]
             for row in self.get_rows()
@@ -258,7 +260,7 @@ class Matrix(Generic[N]):
     @overload
     def __truediv__(self: 'Matrix[complex]', other: 'complex') -> 'Matrix[complex]': ...
     def __truediv__(self, other: 'M') -> 'Matrix':
-        return self * (1 / other)
+        return (1 / other) * self
 
     @overload
     def __matmul__(self: 'Matrix[int]', other: 'Matrix[int]') -> 'Matrix[int]': ...
@@ -284,38 +286,44 @@ class Matrix(Generic[N]):
 
         return Matrix([
             [
-                sum(x * y for x, y in zip(row, col))
+                # We avoid using sum since it starts at zero, perplexing tropical arithmetic
+                functools.reduce(operator.add, (x * y for x, y in zip(row, col)))
                 for col in other.get_cols()
             ]
             for row in self.get_rows()
         ])
 
 
-def eye(n: int, m: int | None = None, dtype: type[N] = int) -> Matrix[N]:
+def fill(n: int, m: int | None = None, dtype: type[N] = int, value: N = 0) -> Matrix[N]:
     assert n >= 0
 
     if m is not None:
         assert m >= 0
 
     return Matrix([
-        [dtype(1) if i == j else 0 for j in range(m or n)]
+        [dtype(value) for j in range(m or n)]
         for i in range(n)
     ])
 
 
-def zeros(n: int, m: int | None = None) -> Matrix[int]:
-    assert n >= 0
+def eye(n: int, m: int | None = None, dtype: type[N] = int, diag: N = 1, off_diag: N = 0) -> Matrix[N]:
+    result = fill(n, m, dtype, off_diag)
 
-    if m is not None:
-        assert m >= 0
+    for i in range(min(result.n, result.m)):
+        result[i, i] = dtype(diag)
 
-    return Matrix([
-        [0 for _ in range(m or n)]
-        for _ in range(n)
-    ])
+    return result
 
 
-def is_close(a: Matrix[N], b: Matrix[M], tolerance: float = 1e-3) -> bool:
+def ones(n: int, m: int | None = None, dtype: type[N] = int) -> Matrix[N]:
+    return fill(n, m, dtype, 1)
+
+
+def zeros(n: int, m: int | None = None, dtype: type[N] = int) -> Matrix[N]:
+    return fill(n, m, dtype, 0)
+
+
+def is_close(a: Matrix[N], b: Matrix[M], tolerance: float = 1e-10) -> bool:
     assert a.m == b.m
     assert a.n == b.n
 
