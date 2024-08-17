@@ -2,30 +2,29 @@
 
 \paragraph{Parse trees}
 
-\begin{definition}\label{def:parse_tree}\mcite[81]{Aho2006}
-  A \term[ru=дерево вывода (\cite[81]{Гладкий1973Языки})]{parse tree} or \term{concrete syntax tree} for the \hyperref[def:chomsky_hierarchy/context_free]{context-free grammar} \( G = (V, \Sigma, \to, S) \) is a \hyperref[def:ordered_tree]{ordered tree} with nodes labeled by \( V \cup \Sigma \cup \set{ \bnfes } \) such that:
+\begin{definition}\label{def:parse_tree}\mcite[\textnumero 2.2.3]{Aho2006}
+  A \term[ru=дерево вывода (\cite[81]{Гладкий1973Языки})]{parse tree} or \term{concrete syntax tree} for the \hyperref[def:chomsky_hierarchy/context_free]{context-free grammar} \( G = (V, \Sigma, \to, S) \) is a \hyperref[def:labeled_tree]{labeled tree} \( T \) with labels from \( V \cup \Sigma \) such that:
   \begin{thmenum}
     \thmitem{def:parse_tree/root} The root has label \( S \).
-    \thmitem{def:parse_tree/leaves} The labels of the leaves are either terminals or \( \bnfes \).
+    \thmitem{def:parse_tree/leaves} If a leaf is labeled by a nonterminal \( N \), there exists a rule \( N \to \bnfes \).
     \thmitem{def:parse_tree/children} There is a rule
     \begin{equation*}
       x \to y_1 \cdots y_n,
     \end{equation*}
     where \( x \) is the label of the root of \( T \) and \( y_1, \ldots, y_n \) --- of the immediate children of \( T \).
-
-    In order to distinguish \( \bnfes \) rules from \enquote{dangling} nonterminals, we handle the special case \( x \to \bnfes \) by introducing a single subtree whose root has label \( \bnfes \).
   \end{thmenum}
 \end{definition}
 \begin{comments}
   \item We associate with each parse tree a string as shown in \fullref{def:parse_tree_string}.
+  \item Although we generally follow the definition from \cite[\textnumero 2.2.3]{Aho2006}, we disallow parse trees for strings containing nonterminals, and thus we do not need to specially handle \( \bnfes \)-labeled nodes.
 \end{comments}
 
 \begin{remark}\label{rem:parse_tree_roots}
   In syntactic definitions and proofs, for example in relation to \hyperref[con:evaluation]{evaluation}, we usually consider \hyperref[def:formal_grammar/schema]{grammar schemas} and each subtree has a root with a different label. In this case, we work with parse trees for different grammars over the same grammar schema (differing by the start symbol). We also allow singleton trees consisting of a single terminal or \( \bnfes \), acknowledging that these are not technically parse trees.
 \end{remark}
 
-\begin{definition}\label{def:parse_tree_string}\mcite[46]{Aho2006}
-  We say that the \hyperref[def:parse_tree]{parse tree} \( T \) \term{yields} the string \( x_1 \cdots x_n \) if, for \( k = 1, \ldots, n \), the \( k \)-th member in the \hyperref[def:ordered_tree_enumeration]{pre-order enumeration} of the vertices of \( T \) has label \( x_k \).
+\begin{definition}\label{def:parse_tree_string}\mcite[\textnumero 2.2.3]{Aho2006}
+  We say that the \hyperref[def:parse_tree]{parse tree} \( T \) \term{yields} the string \( x_1 \cdots x_n \) if, for \( k = 1, \ldots, n \), the \( k \)-th member in the \hyperref[def:ordered_tree_enumeration]{pre-order enumeration} of the terminal-labeled nodes of \( T \) has label \( x_k \).
 \end{definition}
 \begin{comments}
   \item We implicitly associate this string with the parse tree.
@@ -139,7 +138,7 @@
   \begin{thmenum}
     \thmitem{alg:brute_force_parsing/tree_set} For each \( v_k \) in the rule \( A \to v_1 \cdots v_m \), construct a set \( \mscrT_k \) of parse trees as follows:
     \begin{itemize}
-      \item If \( v_k \) is a terminal, let \( \mscrT_k \) be a set with one element --- the singleton tree with label \( w_k \).
+      \item If \( v_k \) is a terminal, let \( \mscrT_k \) be a set with one element --- \hyperref[def:canonical_singleton_tree]{canonical singleton tree} with label \( w_k \).
 
       \item If \( v_k \) is a nonterminal, let
       \begin{equation*}
@@ -156,12 +155,7 @@
       \begin{equation*}
         P^\dprime_A\parens[\Big]{ A \to v_1 \cdots v_m, \vect w, U }
       \end{equation*}
-      consist of a single tree
-      \begin{equation*}
-        \begin{aligned}
-          \includegraphics[page=1]{output/alg__brute_force_parsing}
-        \end{aligned}
-      \end{equation*}
+      consist of the \hyperref[def:canonical_singleton_tree]{canonical singleton tree} with label \( A \).
 
       \item Otherwise, let
       \begin{equation*}
@@ -170,7 +164,7 @@
       consist of all \hyperref[def:ordered_tree_grafting_product]{grafted trees} of the form
       \begin{equation*}
         \begin{aligned}
-          \includegraphics[page=2]{output/alg__brute_force_parsing}
+          \includegraphics[page=1]{output/alg__brute_force_parsing}
         \end{aligned}
       \end{equation*}
       where \( (T_1, \ldots, T_m) \) is a tuple in the Cartesian product \( \mscrT_1 \times \cdots \times \mscrT_m \).
@@ -186,7 +180,7 @@
 \paragraph{Leftmost and rightmost derivations}
 
 \begin{definition}\label{def:leftmost_derivation}\mcite[53]{Salomaa1987}
-  In a context-free grammar, we say that the derivation
+  In a context-free grammar, we say that the \hyperref[def:formal_grammar/derivation]{derivation}
   \begin{equation*}
     S \Rightarrow w_1 \Rightarrow \cdots \Rightarrow w_m = w
   \end{equation*}
@@ -227,10 +221,7 @@
   \begin{equation*}
     S = w_0 \Rightarrow w_1 \Rightarrow \cdots \Rightarrow w_m = w
   \end{equation*}
-  of the string
-  \begin{equation*}
-    w = (r_1, \ldots, r_n).
-  \end{equation*}
+  of the terminal-only string \( w = r_1 \cdots r_n \).
 
   We will construct a parse tree recursively. At step \( k \), where \( k = 0, \ldots, m \), the leaves of the tree \( T_k \), enumerated by \hyperref[def:ordered_tree_enumeration]{pre-ordering}, should be the symbols of the string \( w_k \). Proceed as follows:
   \begin{thmenum}
@@ -245,17 +236,12 @@
     where \( w_{k-1} = r_1 \cdots r_l \) are the symbols of \( w_{k-1} \), and \( j_0 \) is the index of the first instance of \( A \) in \( w_{k-1} \).
 
     \begin{itemize}
-      \item If \( l = 0 \), i.e. if \( w_i = \bnfes \), define \( T_k \) by \hyperref[def:ordered_tree_grafting]{grafting} \( \varepsilon \) to \( v_0 \):
+      \item If \( l = 0 \), i.e. if \( w_i = \bnfes \), define \( T_k \coloneqq T_{k-1} \).
+
+      \item Otherwise, there exists a rule \( A \to s_1 \cdots s_p \) producing \( w_i \) from \( w_{k-1} \), and we instead define \( T_k \) by \hyperref[def:ordered_tree_grafting]{grafting} \( s_1, \ldots, s_p \) onto \( v_0 \):
       \begin{equation*}
         \begin{aligned}
           \includegraphics[page=2]{output/alg__parse_tree_from_derivation}
-        \end{aligned}
-      \end{equation*}
-
-      \item Otherwise, there exists a rule \( A \to s_1 \cdots s_p \) producing \( w_i \) from \( w_{k-1} \), and we instead graft \( s_1, \ldots, s_p \) onto \( A \):
-      \begin{equation*}
-        \begin{aligned}
-          \includegraphics[page=3]{output/alg__parse_tree_from_derivation}
         \end{aligned}
       \end{equation*}
     \end{itemize}
@@ -268,7 +254,7 @@
 \end{comments}
 
 \begin{algorithm}[Parse tree to leftmost derivation]\label{alg:parse_tree_to_leftmost_derivation}
-  Let \( T \) be a parse tree for \( w = x_1 \cdots x_n \). We will explicitly construct a \hyperref[def:leftmost_derivation]{leftmost derivation} for \( w \).
+  Let \( T \) be a parse tree for \( w = r_1 \cdots r_n \). We will explicitly construct a \hyperref[def:leftmost_derivation]{leftmost derivation} for \( w \).
 
   We proceed as follows:
   \begin{thmenum}
@@ -301,7 +287,7 @@
 \end{comments}
 
 \begin{proposition}\label{thm:derivations_and_parse_trees}
-  In a \hyperref[def:chomsky_hierarchy/context_free]{context-free grammar}, there is a bijective correspondence between \hyperref[def:leftmost_derivation]{leftmost derivations} and \hyperref[def:parse_tree]{parse trees}.
+  In a \hyperref[def:chomsky_hierarchy/context_free]{context-free grammar}, there is a bijective correspondence between \hyperref[def:parse_tree]{parse trees} and \hyperref[def:leftmost_derivation]{leftmost derivations} of terminal-only strings.
 \end{proposition}
 \begin{proof}
   \Fullref{alg:derivation_to_parse_tree} allows us to construct a parse tree from any derivation. Multiple derivations can lead to the same parse tree, but our choice of nonterminal in \fullref{alg:derivation_to_parse_tree/step} ensures that a leftmost derivation leads to a unique parse tree.
@@ -310,7 +296,7 @@
 \end{proof}
 
 \begin{corollary}\label{thm:parse_tree_existence}
-   A string over a context-free grammar's terminal symbols is derivable if and only if there exists a parse tree for it.
+  A string over a context-free grammar's terminal symbols is derivable if and only if there exists a parse tree for it.
 \end{corollary}
 \begin{proof}
   Follows from \fullref{thm:derivations_and_parse_trees} and \fullref{thm:leftmost_derivation_existence}.

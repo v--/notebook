@@ -1,11 +1,8 @@
-import functools
-import operator
 from collections.abc import Iterable
 from dataclasses import dataclass, field
-from queue import SimpleQueue
 from typing import cast
 
-from .alphabet import Empty, NonTerminal, Terminal, empty
+from .alphabet import NonTerminal, Terminal
 from .epsilon_rules import is_epsilon_rule
 from .grammar import GrammarRule
 
@@ -29,7 +26,7 @@ class Derivation:
 
 @dataclass
 class ParseTree:
-    payload: NonTerminal | Terminal | Empty
+    payload: NonTerminal | Terminal
     subtrees: list['ParseTree'] = field(default_factory=list)
 
     def is_leaf(self) -> bool:
@@ -38,7 +35,7 @@ class ParseTree:
     def insert_subtree(self) -> None:
         pass
 
-    def iter_symbols(self) -> Iterable[Terminal | NonTerminal | Empty]:
+    def iter_symbols(self) -> Iterable[Terminal | NonTerminal]:
         yield self.payload
 
         for node in self.subtrees:
@@ -67,9 +64,7 @@ def derivation_to_parse_tree(derivation: Derivation) -> ParseTree:
     for step in derivation.steps:
         subtree = ParseTree(step.rule.src_symbol)
 
-        if is_epsilon_rule(step.rule):
-            subtree.subtrees.append(ParseTree(empty))
-        else:
+        if not is_epsilon_rule(step.rule):
             subtree.subtrees = [ParseTree(sym) for sym in step.rule.dest]
 
         if tree is None:
@@ -95,7 +90,7 @@ def _iter_leftmost_derivation_steps(tree: ParseTree) -> Iterable[DerivationStep]
         assert isinstance(subtree.payload, NonTerminal)
         rule = GrammarRule(
             [subtree.payload],
-            [sstree.payload for sstree in subtree.subtrees if isinstance(sstree.payload, Terminal | NonTerminal)]
+            [sstree.payload for sstree in subtree.subtrees]
         )
 
         if last_step is None:

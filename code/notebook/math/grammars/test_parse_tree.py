@@ -1,4 +1,4 @@
-from .alphabet import NonTerminal, Terminal, empty
+from .alphabet import NonTerminal, Terminal
 from .grammar import GrammarRule
 from .parse_tree import (
     Derivation,
@@ -147,7 +147,7 @@ def test_derivation_and_parse_tree_epsilon() -> None:
         NonTerminal('S'),
         subtrees=[
             ParseTree(Terminal('a')),
-            ParseTree(NonTerminal('S'), subtrees=[ParseTree(empty)]),
+            ParseTree(NonTerminal('S'), subtrees=[]),
             ParseTree(Terminal('b'))
         ]
     )
