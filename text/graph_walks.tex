@@ -623,6 +623,19 @@
   \item A strongly connected graph is necessarily weakly connected, hence it makes sense to skip the adjective \enquote{weakly} in this context.
 \end{comments}
 
+\begin{proposition}\label{thm:connected_graph_edge_removal}
+  Fix a \hyperref[def:graph_connectedness/undirected]{connected} undirected multigraph \( G = (V, E, \mscrE) \). If one of the endpoints of an edge \( e \) has odd degree, then the graph
+  \begin{equation*}
+    G' = (V \setminus \set{ v \in \mscrE(e) \given \deg(v) = 1 }, E \setminus \set{ e }, \mscrE)
+  \end{equation*}
+  is also connected.
+\end{proposition}
+\begin{proof}
+  Let \( e \) be an edge with endpoints \( u \) and \( v \), and suppose that either \( u \) or \( v \) or both have odd degrees.
+
+  If \( e \)
+\end{proof}
+
 \begin{proposition}\label{thm:connected_graph_cycle_removal}
   Fix a \hyperref[def:graph_connectedness/undirected]{connected} undirected multigraph \( G = (V, E, \mscrE) \). Suppose that \( G \) has a cycle
   \begin{equation*}
@@ -745,4 +758,142 @@
   But since \eqref{eq:thm:graph_condensation_is_acyclic_dag/cycle} is a cycle, there also exists a path from \( v_n \) to \( v_0 \).
 
   Thus, the vertices \( v_0 \) and \( v_n \) are reachable from each other, implying that they should belong to the same strongly connected component. The obtained contradiction shows that \( \widetilde{G} \) should be acyclic.
+\end{proof}
+
+\paragraph{Eulerian walks}
+
+\begin{definition}\label{def:eulerian_walk}\mcite[16]{Bollobas1998}
+  We say that a \hyperref[def:graph_walk]{graph walk} is \term[bg=Ойлеров (цикыл) (\cite[110]{Мирчев2001}), ru=Ойлеров (цикл) (\cite[358]{Новиков2013})]{Eulerian} if each arc/edge in the graph occurs exactly once.
+\end{definition}
+
+\begin{theorem}[Euler's theorem for graphs]\label{thm:eulers_theorem_for_graphs}
+  Fix a nonempty \hyperref[def:graph_connectedness/undirected]{connected} \hyperref[def:undirected_multigraph]{undirected multigraph} \( G = (V, E, \mscrE) \) with finitely many edges.
+
+  There exists an \hyperref[def:eulerian_walk]{Eulerian walk} from \( s \) to \( f \) if and only if all other vertices have even degree.
+
+  Furthermore, either \( s = f \) coincide and they have an even common degree, or \( s \neq f \) and they both have odd degrees.
+\end{theorem}
+\begin{proof}
+  \SufficiencySubProof We will prove by induction on the number of edges that if an Eulerian walk exists, then all vertices have even degree, except for the endpoints in case they are distinct.
+
+  The base case with one edge is trivial. Suppose that the statement holds for all graphs with \( n \geq 1 \) edges. Let \( G \) be a graph with exactly \( n + 1 \) edges and consider the Eulerian walk
+  \begin{equation}\label{eq:thm:eulers_theorem_for_graphs/proof/sufficiency/walk}
+    v_0 \reloset {e_1} \to v_1 \reloset {e_2} \to \cdots \reloset {e_n} \to v_n \reloset {e_{n+1}} \to v_{n+1}.
+  \end{equation}
+
+  Consider the graph \( G' \coloneqq (V', E', \mscrE) \), where
+  \begin{equation*}
+    V' \coloneqq \begin{cases}
+      V \setminus \set{ v_{n+1} }, &\deg(v_{n+1}) = 1, \\
+      V,                           &\deg(v_{n+1}) > 1
+    \end{cases}
+  \end{equation*}
+  and
+  \begin{equation*}
+    E' \coloneqq E \setminus \set{ e_{n+1} }.
+  \end{equation*}
+
+  Then \( G' \) is again nonempty and connected, hence the inductive hypothesis holds. Hence, \( \deg'(v_k) \) is even for \( k = 1, \ldots, n - 1 \), where \( \deg'(v_k) \) the degree of \( v_k \) in \( G' \).
+
+  Note that, by construction,
+  \begin{equation}\label{eq:thm:eulers_theorem_for_graphs/proof/sufficiency/deg}
+    \deg(v_k) = \begin{cases}
+      \deg'(v_k) + 2, &n \leq k \leq n + 1 \T{and} e_{n+1} \T{is a loop}, \\
+      \deg'(v_k) + 1, &n \leq k \leq n + 1 \T{and} e_{n+1} \T{is not a loop}, \\
+      \deg'(v_k),     &\T{otherwise.}
+    \end{cases}
+  \end{equation}
+
+  Therefore, \( \deg(v_k) \) is even for \( k = 1, \ldots, n - 1 \).
+
+  We have the following possibilities:
+  \begin{itemize}
+    \item If \( v_0 = v_n \), then \( \deg'(v_n) \) is even by the inductive hypothesis.
+    \begin{itemize}
+      \item If \( e_{n+1} \) is a loop, then \( v_0 = v_n = v_{n+1} \), and, by \eqref{eq:thm:eulers_theorem_for_graphs/proof/sufficiency/deg}, their common degree is even.
+
+      \item Otherwise, \( \deg(v_0) = \deg(v_n) \) is odd. Since the degree of all other vertices are even, \fullref{thm:odd_degree_vertices} implies that \( \deg(v_{n+1}) \) must also be odd.
+    \end{itemize}
+
+    \item If \( v_0 \neq v_n \), then \( \deg(v_0) = \deg'(v_0) \) and \( \deg'(v_n) \) are odd by the inductive hypothesis.
+    \begin{itemize}
+      \item If \( e_{n+1} \) is a loop, then \( v_n = v_{n+1} \), and, by \eqref{eq:thm:eulers_theorem_for_graphs/proof/sufficiency/deg}, their common degree is odd.
+
+      \item Otherwise, \( \deg(v_n) \) is even. Since \( \deg(v_0) \) is odd while \( \deg(v_k) \) is even for \( 1 \leq k \leq n \), \fullref{thm:odd_degree_vertices} implies that \( \deg(v_{n+1}) \) must also be odd.
+    \end{itemize}
+  \end{itemize}
+
+  In all cases, we have obtained that \( \deg(v_k) \) is even when \( 1 \leq k \leq n \) and that either \( v_0 = v_{n+1} \), from which it follows that their common degree is even, or \( v_0 \neq v_{n+1} \), from which it follows that both \( \deg(v_0) \) and \( \deg(v_{n+1}) \) are odd.
+
+  \NecessitySubProof We will prove by induction on the number of edges that if all vertices in a graph except possibly \( s \) and \( f \) have even degree, then there exists an Eulerian walk from \( s \) to \( f \), and that \( s = f \) if and only if \( s \) and \( f \) have even degrees.
+
+  \SubProof*{Proof for one-edge graphs} If \( G \) has only one edge, it is by itself an Eulerian walk.
+
+  If the edge is a loop, then \( G \) has only one vertex, and it has degree \( 2 \). Otherwise, its endpoints are distinct, and both vertices have degree \( 1 \).
+
+  \SubProof*{Proof of inductive step} Suppose that the statement holds for all graphs with \( n \) edges, and let \( G \) be a graph with exactly \( n + 1 \) edges.
+
+  Fix two vertices \( s \) and \( f \), suppose that all others have even degree, and that \( s = f \) if and only if \( s \) and \( f \) have even degrees. Let \( v_{n+1} \coloneqq f \).
+  \begin{itemize}
+    \item If \( s \) and \( f \) have even degrees, all vertices of \( G \) have even degrees. Choose \( v_k \) arbitrarily from all vertices adjacent to \( f \).
+
+    \item Otherwise, \( s \) or \( f \) have odd degrees, and, by \fullref{thm:odd_degree_vertices}, both have.
+    \begin{itemize}
+      \item If \( f \) has a vertex of even degree adjacent to it (possibly \( f \) itself), let \( v_k \) be one of them.
+
+      This choice is essential because, if there is exactly one arc between \( v_k \) and \( f \), we would not be able to leave \( v_k \) by another edge once reached from \( f \). If \( v_k \) has even degree, then there is another edge incident with \( v_k \). More formally, this ensures that the graph \( G' \) defined next will be connected.
+
+      \item Otherwise, only \( s \) and possibly \( f \) are adjacent to \( f \). Let \( v_k \coloneqq s \).
+    \end{itemize}
+  \end{itemize}
+
+  Let \( e_{k+1} \) be any edge between them \( v_k \) and \( v_{k+1} \). As in the proof of sufficiency, consider the graph \( G' = (V', E', \mscrE) \) obtained by removing \( e_{n+1} \), and denote the degree of \( v \) in \( G' \) by \( \deg'(v) \). The graph \( G' \) is connected as can be seen from the remarks made earlier.
+
+  The following variation of \eqref{eq:thm:eulers_theorem_for_graphs/proof/sufficiency/deg} holds:
+  \begin{equation}\label{eq:thm:eulers_theorem_for_graphs/proof/necessity/deg}
+    \deg'(v) = \begin{cases}
+      \deg(v) - 2, &v = v_k \T{or} v = v_{k+1} \T{and} e_{n+1} \T{is a loop}, \\
+      \deg(v) - 1, &v = v_k \T{or} v = v_{k+1} \T{and} e_{n+1} \T{is not a loop}, \\
+      \deg(v),     &\T{otherwise.}
+    \end{cases}
+  \end{equation}
+
+  Note that \( \deg'(v) \) is even for all \( v \) except possibly \( s \), \( v_k \) and \( f = v_{k+1} \). We will show that either all vertices have even degree in \( G' \) or only \( s \) and \( v_n \) have odd degree:
+  \begin{itemize}
+    \item If \( \deg(s) \) or \( \deg(f) \) are even, all vertices have even degree in \( G \).
+    \begin{itemize}
+      \item If \( e_{n+1} \) is a loop, then, by \eqref{eq:thm:eulers_theorem_for_graphs/proof/sufficiency/deg}, \( \deg'(v_n) = \deg'(v_{n+1}) \) is again even.
+
+      \item Otherwise, again by \eqref{eq:thm:eulers_theorem_for_graphs/proof/sufficiency/deg}, \( \deg'(v_n) \) and \( \deg'(v_{n+1}) = \deg'(s) \) are odd.
+    \end{itemize}
+
+    \item If \( \deg(s) \) or \( \deg(f) \) is odd, by \fullref{thm:odd_degree_vertices} they both are, while all other vertices have even degree in \( G \).
+    \begin{itemize}
+      \item If \( e_{n+1} \) is a loop, then \( \deg'(v_n) = \deg'(v_{k+1}) \) is again odd, and, by \fullref{thm:odd_degree_vertices}, so is \( \deg'(s) \).
+
+      \item Otherwise, \( \deg'(v_{k+1}) \) is even.
+      \begin{itemize}
+        \item If \( \deg(v_n) \) is odd, by construction \( v_n = s \), and \( \deg'(s) = \deg'(v_n) \) is even.
+        \item If \( \deg(v_n) \) is even, then \( v_n \neq s \) by construction, however \( \deg'(v_n) \) is odd, and, by \fullref{thm:odd_degree_vertices}, so is \( \deg'(s) \).
+      \end{itemize}
+    \end{itemize}
+  \end{itemize}
+
+  In all cases, at most \( s \) and \( v_n \) have odd degree, therefore, we can apply the inductive hypothesis for \( G' \) to obtain an Eulerian walk
+  \begin{equation*}
+    s = v_0 \reloset {e_1} \to v_1 \reloset {e_2} \to \cdots \reloset {e_{n-1}} \to v_{n-1} \reloset {e_n} \to v_n.
+  \end{equation*}
+
+  We can now append \( e_{n+1} \) to obtain an Eulerian walk in \( G \). It remains to show that \( s = f \) if and only if \( \deg(s) \) and \( \deg(f) \) are even.
+
+  If \( s = f \), by \fullref{thm:odd_degree_vertices}, \( \deg(s) = \deg(f) \) must be even. Conversely, suppose that \( \deg(s) \) and \( \deg(f) \) are even.
+  \begin{itemize}
+    \item If \( e_{n+1} \) is a loop, then \( \deg'(v_n) \) is even, and hence so is \( \deg'(s) \). Then \( s = v_n \), hence \( s = f \).
+
+    \item Otherwise, \( \deg'(v_n) \) is odd and hence so is \( \deg'(s) \). By assumption, \( \deg(s) \) is even, which, due to \eqref{eq:thm:eulers_theorem_for_graphs/proof/necessity/deg}, is only possible if \( s = v_n \) or \( s = v_{n+1} \).
+
+    But, by the inductive hypothesis, since both \( \deg'(s) \) and \( \deg'(v_n) \) are odd, we have \( s \neq v_n \).
+
+    It remains for \( s = v_{n+1} \) to hold.
+  \end{itemize}
 \end{proof}
