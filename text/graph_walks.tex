@@ -623,17 +623,18 @@
   \item A strongly connected graph is necessarily weakly connected, hence it makes sense to skip the adjective \enquote{weakly} in this context.
 \end{comments}
 
-\begin{proposition}\label{thm:connected_graph_edge_removal}
-  Fix a \hyperref[def:graph_connectedness/undirected]{connected} undirected multigraph \( G = (V, E, \mscrE) \). If one of the endpoints of an edge \( e \) has odd degree, then the graph
-  \begin{equation*}
-    G' = (V \setminus \set{ v \in \mscrE(e) \given \deg(v) = 1 }, E \setminus \set{ e }, \mscrE)
-  \end{equation*}
-  is also connected.
+\begin{definition}\label{def:graph_connected_component}\mcite[def. 1.4.11]{Knauer2011}
+  A (weakly/strongly) \term[bg=компонента (\cite[15]{Мирчев2001}), ru=компонента связности (\cite[286]{БелоусовТкачёв2004})]{connected component} is a maximal subgraph that is (weakly/strongly) \hyperref[def:graph_connectedness]{connected}.
+\end{definition}
+\begin{comments}
+  \item \incite[425]{БелоусовТкачёв2004} and \incite[425]{Зыков2004} use the term \enquote{bicomponent} (\enquote{бикомпонента}) for strongly connected components. This is unrelated to \hyperref[def:r_partite_graph]{bipartite graphs}, which \incite[\textnumero 7.3.3]{Новиков2013} calls \enquote{bigraph} (\enquote{биграф}). \incite[\textnumero 8.5.2]{Новиков2013} prefers the term \enquote{strongly connected component} (\enquote{компоненты сильной связи}) to \enquote{bicomponent}.
+\end{comments}
+
+\begin{proposition}\label{thm:connected_components_partition_graph}
+  The (weak/strong) \hyperref[def:graph_connected_component]{connected components} of a \hyperref[rem:arbitrary_graph]{graph} \hyperref[def:set_partition]{partition} its vertices.
 \end{proposition}
 \begin{proof}
-  Let \( e \) be an edge with endpoints \( u \) and \( v \), and suppose that either \( u \) or \( v \) or both have odd degrees.
-
-  If \( e \)
+  Trivial.
 \end{proof}
 
 \begin{proposition}\label{thm:connected_graph_cycle_removal}
@@ -680,19 +681,32 @@
   \end{itemize}
 \end{proof}
 
-\begin{definition}\label{def:graph_connected_component}\mcite[def. 1.4.11]{Knauer2011}
-  A (weakly/strongly) \term[bg=компонента (\cite[15]{Мирчев2001}), ru=компонента связности (\cite[286]{БелоусовТкачёв2004})]{connected component} is a maximal subgraph that is (weakly/strongly) \hyperref[def:graph_connectedness]{connected}.
-\end{definition}
-\begin{comments}
-  \item \incite[425]{БелоусовТкачёв2004} and \incite[425]{Зыков2004} use the term \enquote{bicomponent} (\enquote{бикомпонента}) for strongly connected components. This is unrelated to \hyperref[def:r_partite_graph]{bipartite graphs}, which \incite[\textnumero 7.3.3]{Новиков2013} calls \enquote{bigraph} (\enquote{биграф}). \incite[\textnumero 8.5.2]{Новиков2013} prefers the term \enquote{strongly connected component} (\enquote{компоненты сильной связи}) to \enquote{bicomponent}.
-\end{comments}
+\begin{definition}\label{def:graph_bridge}
+  We say that an edge in an \hyperref[def:undirected_multigraph]{undirected multigraph} is a \term[bg=мост (\cite[134]{Мирчев2001}, ru=мост \cite[\textnumero 8.1.2]{Новиков2013}]{bridge} if it satisfies any of the following equivalent definitions:
+  \begin{thmenum}
+    \thmitem{def:graph_bridge/components}\mcite[6]{Bollobas1998} After removing it from its \hyperref[def:graph_connected_component]{connected component}, it is no longer connected.
 
-\begin{proposition}\label{thm:connected_components_partition_graph}
-  The (weak/strong) \hyperref[def:graph_connected_component]{connected components} of a \hyperref[rem:arbitrary_graph]{graph} \hyperref[def:set_partition]{partition} its vertices.
+    \thmitem{def:graph_bridge/cycle} No \hyperref[def:graph_cycle]{cycle} contains it.
+  \end{thmenum}
+\end{definition}
+\begin{defproof}
+  Fix an undirected multigraph \( G = (V, E, \mscrE) \) and an edge \( e \) of \( G \). Without loss of generality, suppose that \( G \) is connected --- otherwise we could consider the connected component of \( e \).
+
+  Define \( G' \coloneqq (V, E \setminus \set{ e }, \mscrE) \).
+
+  \ImplicationSubProof{def:graph_bridge/components}{def:graph_bridge/cycle} Suppose that \( G' \) is not connected. If \( e \) is contained in some cycle, by \fullref{thm:connected_graph_cycle_removal}, \( G' \) should be connected, hence \( e \) is not contained in a cycle.
+
+  \ImplicationSubProof{def:graph_bridge/cycle}{def:graph_bridge/components} Suppose that no cycle contains \( e \). Let \( u \) and \( v \) be the endpoints of \( e \). If \( G' \) is connected, any path from \( u \) to \( v \) in \( G' \) can be extended into a cycle in \( G \) by adding \( e \). Therefore, \( G' \) cannot be connected.
+\end{defproof}
+
+\begin{proposition}\label{thm:acyclic_bridges}
+  In an \hyperref[def:acyclic_graph]{acyclic} undirected multigraph, every edge is a \hyperref[def:graph_bridge]{bridge}.
 \end{proposition}
 \begin{proof}
   Trivial.
 \end{proof}
+
+\paragraph{Graph condensation}
 
 \begin{remark}\label{rem:graph_condensation}
   In the weak partition of a graph discussed in \fullref{thm:connected_components_partition_graph}, there is no arc or edge between vertices in different connected components. The same holds for partitioning an undirected graph into components.
@@ -784,8 +798,8 @@
   Consider the graph \( G' \coloneqq (V', E', \mscrE) \), where
   \begin{equation*}
     V' \coloneqq \begin{cases}
-      V \setminus \set{ v_{n+1} }, &\deg(v_{n+1}) = 1, \\
-      V,                           &\deg(v_{n+1}) > 1
+      V,                           &v_{n+1} \T{occurs among} v_0, \ldots, v_n, \\
+      V \setminus \set{ v_{n+1} }, &\T{otherwise}
     \end{cases}
   \end{equation*}
   and
@@ -793,7 +807,9 @@
     E' \coloneqq E \setminus \set{ e_{n+1} }.
   \end{equation*}
 
-  Then \( G' \) is again nonempty and connected, hence the inductive hypothesis holds. Hence, \( \deg'(v_k) \) is even for \( k = 1, \ldots, n - 1 \), where \( \deg'(v_k) \) the degree of \( v_k \) in \( G' \).
+  The graph \( G' \) is connected because \( v_0, \ldots, v_n \) can be reached from each other via segments of the walk \eqref{eq:thm:eulers_theorem_for_graphs/proof/sufficiency/walk}.
+
+  Hence, the inductive hypothesis holds and \( \deg'(v_k) \) is even for \( k = 1, \ldots, n - 1 \), where \( \deg'(v_k) \) the degree of \( v_k \) in \( G' \).
 
   Note that, by construction,
   \begin{equation}\label{eq:thm:eulers_theorem_for_graphs/proof/sufficiency/deg}
@@ -831,69 +847,65 @@
 
   If the edge is a loop, then \( G \) has only one vertex, and it has degree \( 2 \). Otherwise, its endpoints are distinct, and both vertices have degree \( 1 \).
 
-  \SubProof*{Proof of inductive step} Suppose that the statement holds for all graphs with \( n \) edges, and let \( G \) be a graph with exactly \( n + 1 \) edges.
+  \SubProof*{Proof of inductive step without bridges} Suppose that the statement holds for all graphs with \( n \) edges, and let \( G \) be a graph with exactly \( n + 1 \) edges. Fix two vertices \( s \) and \( f \) and suppose that all others have even degree.
 
-  Fix two vertices \( s \) and \( f \), suppose that all others have even degree, and that \( s = f \) if and only if \( s \) and \( f \) have even degrees. Let \( v_{n+1} \coloneqq f \).
-  \begin{itemize}
-    \item If \( s \) and \( f \) have even degrees, all vertices of \( G \) have even degrees. Choose \( v_k \) arbitrarily from all vertices adjacent to \( f \).
+  For this sub-case, suppose that every edge incident to \( f \) is a \hyperref[def:graph_bridge]{bridge}.
 
-    \item Otherwise, \( s \) or \( f \) have odd degrees, and, by \fullref{thm:odd_degree_vertices}, both have.
-    \begin{itemize}
-      \item If \( f \) has a vertex of even degree adjacent to it (possibly \( f \) itself), let \( v_k \) be one of them.
+  Let \( w \) be an arbitrary vertex adjacent to \( f \) and let \( e \) be an edge between them. We will first show that this choice is unique, that is, that \( f \) is incident to only one edge.
 
-      This choice is essential because, if there is exactly one arc between \( v_k \) and \( f \), we would not be able to leave \( v_k \) by another edge once reached from \( f \). If \( v_k \) has even degree, then there is another edge incident with \( v_k \). More formally, this ensures that the graph \( G' \) defined next will be connected.
+  After removing \( e \), \( G \) splits into two connected components. Let \( G' \) be the component containing \( w \) and \( G^\dprime \) --- the component containing \( f \). We will show that \( G^\dprime \) has no edges and no vertices except for \( f \).
 
-      \item Otherwise, only \( s \) and possibly \( f \) are adjacent to \( f \). Let \( v_k \coloneqq s \).
-    \end{itemize}
-  \end{itemize}
+  Denote by \( \deg'(v) \) the degree function in \( G' \) and by \( \deg^\dprime(v) \) --- in \( G^\dprime \). Since \( \deg(w) \) is even, necessarily \( \deg'(w) \) is odd. Since \( \deg(v) = \deg'(v) \) for all vertices in \( G' \) except \( w \), we conclude that \( \deg'(v) \) even except possibly for \( s \), in case \( s \) is in \( G' \) and is distinct from \( v_k \). \Fullref{thm:odd_degree_vertices} implies that \( G' \) must have at least two vertices of odd degree, hence \( s \) must belong to \( G' \), be distinct from \( v_k \) and have odd degree.
 
-  Let \( e_{k+1} \) be any edge between them \( v_k \) and \( v_{k+1} \). As in the proof of sufficiency, consider the graph \( G' = (V', E', \mscrE) \) obtained by removing \( e_{n+1} \), and denote the degree of \( v \) in \( G' \) by \( \deg'(v) \). The graph \( G' \) is connected as can be seen from the remarks made earlier.
+  Then \( s \) also has odd degree in \( G \), and so does \( f \).
 
-  The following variation of \eqref{eq:thm:eulers_theorem_for_graphs/proof/sufficiency/deg} holds:
+  Therefore, every vertex in \( G^\dprime \) has even degree, and we can apply the inductive hypothesis to \( G^\dprime \) and obtain a closed Eulerian walk starting and ending at \( f \). This is also a closed walk in \( G \).
+
+  Aiming at a contradiction, suppose that this walk is nontrivial. Then \fullref{alg:closed_walk_to_cycle} allows us to obtain a cycle at \( f \), which contains at least two non-bridge edges incident to \( f \). This contradicts our assumption that all edges incident to \( f \) are bridges.
+
+  The obtained contradiction demonstrates that we have a trivial Eulerian walk in \( G^\dprime \), implying that \( G^\dprime \) has no edges.
+
+  Therefore, \( e \) is the unique edge incident to \( f \), and thus \( G' \) is the graph
+  \begin{equation*}
+    (V \setminus \set{ f }, E \setminus \set{ e }, \mscrE).
+  \end{equation*}
+
+  We have already shown that \( s \) and \( w \) must have odd degrees in \( G' \), while all other vertices must have even degrees. Therefore, we can also apply the inductive hypothesis to \( G' \) to obtain an Eulerian walk from \( s \) to \( w \), and append \( e \) to obtain an Eulerian walk in \( G \).
+
+  Furthermore, we have also shown that \( s \) and \( f \) and distinct and have odd degrees in \( G \).
+
+  \SubProof*{Proof of inductive step with bridges} Again, suppose that the statement holds for all graphs with \( n \) edges, and let \( G \) be a graph with exactly \( n + 1 \) edges. Fix two vertices \( s \) and \( f \) and suppose that all others have even degree.
+
+  It remains to consider the sub-case where there exists a vertex \( w \) and an edge \( e \) between \( w \) and \( f \) that is not a bridge. Define the graph
+  \begin{equation*}
+    G' \coloneqq (V, E \setminus \set{ e }, \mscrE).
+  \end{equation*}
+
+  It is clearly connected.
+
+  Denote the degree of a vertex \( v \) in \( G' \) by \( \deg'(v) \). We have
   \begin{equation}\label{eq:thm:eulers_theorem_for_graphs/proof/necessity/deg}
     \deg'(v) = \begin{cases}
-      \deg(v) - 2, &v = v_k \T{or} v = v_{k+1} \T{and} e_{n+1} \T{is a loop}, \\
-      \deg(v) - 1, &v = v_k \T{or} v = v_{k+1} \T{and} e_{n+1} \T{is not a loop}, \\
+      \deg(v) - 2, &(v = w \T{or} v = f) \T{and} e \T{is a loop}, \\
+      \deg(v) - 1, &(v = w \T{or} v = f) \T{and} e \T{is not a loop}, \\
       \deg(v),     &\T{otherwise.}
     \end{cases}
   \end{equation}
 
-  Note that \( \deg'(v) \) is even for all \( v \) except possibly \( s \), \( v_k \) and \( f = v_{k+1} \). We will show that either all vertices have even degree in \( G' \) or only \( s \) and \( v_n \) have odd degree:
-  \begin{itemize}
-    \item If \( \deg(s) \) or \( \deg(f) \) are even, all vertices have even degree in \( G \).
-    \begin{itemize}
-      \item If \( e_{n+1} \) is a loop, then, by \eqref{eq:thm:eulers_theorem_for_graphs/proof/sufficiency/deg}, \( \deg'(v_n) = \deg'(v_{n+1}) \) is again even.
+  Then \( \deg'(v) \) is necessarily even unless \( v \) is \( s \), \( v_k \), or \( v_{k+1} = f \). \Fullref{thm:odd_degree_vertices} implies that all three cannot simultaneously have odd degrees in \( G' \) --- either all vertices in \( G' \) can have even degrees, or all except for two.
 
-      \item Otherwise, again by \eqref{eq:thm:eulers_theorem_for_graphs/proof/sufficiency/deg}, \( \deg'(v_n) \) and \( \deg'(v_{n+1}) = \deg'(s) \) are odd.
-    \end{itemize}
+  We can now apply the inductive hypothesis to \( G' \) to obtain an Eulerian walk in \( G' \) from \( s \) to \( w \) and append \( e \) to obtain an Eulerian walk in \( G \) from \( s \) to \( f \).
 
-    \item If \( \deg(s) \) or \( \deg(f) \) is odd, by \fullref{thm:odd_degree_vertices} they both are, while all other vertices have even degree in \( G \).
-    \begin{itemize}
-      \item If \( e_{n+1} \) is a loop, then \( \deg'(v_n) = \deg'(v_{k+1}) \) is again odd, and, by \fullref{thm:odd_degree_vertices}, so is \( \deg'(s) \).
-
-      \item Otherwise, \( \deg'(v_{k+1}) \) is even.
-      \begin{itemize}
-        \item If \( \deg(v_n) \) is odd, by construction \( v_n = s \), and \( \deg'(s) = \deg'(v_n) \) is even.
-        \item If \( \deg(v_n) \) is even, then \( v_n \neq s \) by construction, however \( \deg'(v_n) \) is odd, and, by \fullref{thm:odd_degree_vertices}, so is \( \deg'(s) \).
-      \end{itemize}
-    \end{itemize}
-  \end{itemize}
-
-  In all cases, at most \( s \) and \( v_n \) have odd degree, therefore, we can apply the inductive hypothesis for \( G' \) to obtain an Eulerian walk
-  \begin{equation*}
-    s = v_0 \reloset {e_1} \to v_1 \reloset {e_2} \to \cdots \reloset {e_{n-1}} \to v_{n-1} \reloset {e_n} \to v_n.
-  \end{equation*}
-
-  We can now append \( e_{n+1} \) to obtain an Eulerian walk in \( G \). It remains to show that \( s = f \) if and only if \( \deg(s) \) and \( \deg(f) \) are even.
+  It remains to show that \( s = f \) if and only if \( \deg(s) \) and \( \deg(f) \) are even.
 
   If \( s = f \), by \fullref{thm:odd_degree_vertices}, \( \deg(s) = \deg(f) \) must be even. Conversely, suppose that \( \deg(s) \) and \( \deg(f) \) are even.
   \begin{itemize}
-    \item If \( e_{n+1} \) is a loop, then \( \deg'(v_n) \) is even, and hence so is \( \deg'(s) \). Then \( s = v_n \), hence \( s = f \).
+    \item If \( e \) is a loop, then, by \eqref{eq:thm:eulers_theorem_for_graphs/proof/necessity/deg}, \( \deg'(f) = \deg(f) - 2 \) is even. The degree \( \deg'(s) \) is also even --- either because \( s = f \), or otherwise because \( \deg'(s) = \deg(s) \).
 
-    \item Otherwise, \( \deg'(v_n) \) is odd and hence so is \( \deg'(s) \). By assumption, \( \deg(s) \) is even, which, due to \eqref{eq:thm:eulers_theorem_for_graphs/proof/necessity/deg}, is only possible if \( s = v_n \) or \( s = v_{n+1} \).
+    Then, since both \( \deg'(w) \) and \( \deg'(s) \) are even, the inductive hypothesis implies that \( s = w \), hence also \( s = f \).
 
-    But, by the inductive hypothesis, since both \( \deg'(s) \) and \( \deg'(v_n) \) are odd, we have \( s \neq v_n \).
+    \item If \( e \) is not a loop, \( w \) and \( f \) are distinct, and, by \eqref{eq:thm:eulers_theorem_for_graphs/proof/necessity/deg}, both \( \deg'(w) \) and \( \deg'(f) \) are odd.
 
-    It remains for \( s = v_{n+1} \) to hold.
+    If \( s \neq f \), then a vertex other than \( s \) or \( w \) has odd degree in \( G' \), which contradicts the inductive hypothesis. Therefore, \( s = f \).
   \end{itemize}
 \end{proof}
