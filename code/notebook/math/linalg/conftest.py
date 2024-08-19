@@ -3,7 +3,7 @@ import pytest
 from .matrix import Matrix
 
 
-@pytest.fixture()
+@pytest.fixture
 def mat123() -> Matrix[int]:
     return Matrix([
         [1, 2, 3],
@@ -12,7 +12,7 @@ def mat123() -> Matrix[int]:
     ])
 
 
-@pytest.fixture()
+@pytest.fixture
 def mat123inv() -> Matrix[float]:
     return Matrix([
         [-2 / 3, -4 / 3,   1],
@@ -21,7 +21,7 @@ def mat123inv() -> Matrix[float]:
     ])
 
 
-@pytest.fixture()
+@pytest.fixture
 def lower_pascal3() -> Matrix[int]:
     return Matrix([
         [1, 0, 0],

@@ -1,7 +1,7 @@
 import pathlib
 
 
-ROOT_PATH = pathlib.Path().resolve()
+ROOT_PATH = pathlib.Path().cwd()
 
 
 while not (ROOT_PATH / 'notebook.tex').exists():

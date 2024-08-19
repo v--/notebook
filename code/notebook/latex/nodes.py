@@ -54,7 +54,7 @@ class Environment(Group):
     name: str
 
     def __str__(self) -> str:
-        return '\\begin{%s}' % self.name + super().__str__() + '\\end{%s}' % self.name
+        return '\\begin{%s}' % self.name + super().__str__() + '\\end{%s}' % self.name  # noqa: UP031
 
 
 LaTeXNode = Word | Command | SpecialNode | Whitespace | BraceGroup | BracketGroup | Environment

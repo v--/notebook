@@ -14,7 +14,7 @@ def field_of(dtype: type[float]) -> type[float]: ...
 @overload
 def field_of(dtype: type[complex]) -> type[complex]: ...
 def field_of(dtype: type[N]) -> type:
-    if dtype == int:
+    if dtype is int:
         return float
 
     return dtype

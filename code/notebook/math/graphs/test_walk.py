@@ -1,4 +1,3 @@
-import itertools
 
 from .walk import DirectedWalk, UndirectedWalk
 

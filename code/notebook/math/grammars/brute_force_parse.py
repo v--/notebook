@@ -1,7 +1,7 @@
 import itertools
 from typing import Iterator, Optional
 
-from .alphabet import NonTerminal, Terminal, empty
+from .alphabet import NonTerminal, Terminal
 from .context_free import is_context_free
 from .epsilon_rules import is_epsilon_rule
 from .grammar import Grammar
@@ -37,10 +37,7 @@ def parse(grammar: Grammar, string: str, traversed: Optional[set[tuple[NonTermin
     for rule in grammar.iter_starting_rules():
         if is_epsilon_rule(rule):
             if len(string) == 0:
-                yield ParseTree(
-                    rule.src_symbol,
-                    [ParseTree(empty)]
-                )
+                yield ParseTree(rule.src_symbol, [])
         else:
             for part in iter_partitions(string, len(rule.dest)):
                 for subtrees in itertools.product(

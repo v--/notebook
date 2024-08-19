@@ -2,7 +2,7 @@ from .multi import DirectedMultigraph, MultiArc, MultiEdge, UndirectedMultigraph
 
 
 def test_directed_arcs() -> None:
-    graph: DirectedMultigraph[str] = DirectedMultigraph()
+    graph: DirectedMultigraph[str, None, None] = DirectedMultigraph()
 
     arc1 = MultiArc('a', 'b')
     arc2 = MultiArc('a', 'b')
@@ -16,7 +16,7 @@ def test_directed_arcs() -> None:
 
 
 def test_undirected_arcs() -> None:
-    graph: UndirectedMultigraph[str] = UndirectedMultigraph()
+    graph: UndirectedMultigraph[str, None, None] = UndirectedMultigraph()
 
     edge1 = MultiEdge('a', 'b')
     edge2 = MultiEdge('a', 'b')

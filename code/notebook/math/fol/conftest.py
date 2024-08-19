@@ -4,12 +4,12 @@ from ...support.unicode import itoa_subscripts
 from .signature import FOLSignature
 
 
-@pytest.fixture()
+@pytest.fixture
 def empty_signature() -> FOLSignature:
     return FOLSignature()
 
 
-@pytest.fixture()
+@pytest.fixture
 def dummy_signature(max_args: int = 10) -> FOLSignature:
     signature = FOLSignature()
 

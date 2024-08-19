@@ -1,4 +1,4 @@
-from ..linalg.matrix import Matrix, eye, zeros
+from ..linalg.matrix import Matrix, zeros
 
 
 def choose(n: int, k: int) -> int:

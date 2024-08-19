@@ -1,4 +1,3 @@
-import itertools
 
 from .cycle import is_closed, is_cycle, remove_cycles
 from .multi import MultiEdge

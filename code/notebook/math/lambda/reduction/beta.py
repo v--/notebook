@@ -35,5 +35,5 @@ def to_function(term: LambdaTerm) -> Callable:
         return result
 
     parameters = [inspect.Parameter(name, inspect.Parameter.POSITIONAL_OR_KEYWORD) for name in arg_names]
-    fun.__signature__ = inspect.signature(fun).replace(parameters=parameters)  # noqa: attr-defined
+    fun.__signature__ = inspect.signature(fun).replace(parameters=parameters)  # type: ignore[attr-defined]
     return fun

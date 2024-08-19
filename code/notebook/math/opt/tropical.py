@@ -21,11 +21,11 @@ T = TypeVar('T', bound='TropicalMeta')
 
 class TropicalMeta(type):
     @staticmethod
-    def sub(self: T, other: T) -> Never:  # noqa: ARG004
+    def sub(a: T, b: T) -> Never:  # noqa: ARG004
         raise TropicalSubtractionError('Cannot subtract in tropical semirings')
 
     @staticmethod
-    def div(self: T, other: T) -> Never:  # noqa: ARG004
+    def div(a: T, b: T) -> Never:  # noqa: ARG004
         raise TropicalDivisionError('Cannot subtract in tropical semirings')
 
     def __new__(meta: 'type[TropicalMeta]', name: str, bases: tuple[type, ...], attrs: dict[str, Any], add: Callable[[T, T], T], mul: Callable[[T, T], T]) -> 'TropicalMeta':  # noqa: N804

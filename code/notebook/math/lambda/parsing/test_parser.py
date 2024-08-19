@@ -117,7 +117,7 @@ def test_reparsing_terms() -> None:
     from .. import combinators as comb
 
     def is_term_rebuilt(term: LambdaTerm) -> None:
-        return parse_term(str(term)) == term
+        assert parse_term(str(term)) == term
 
     assert parse_term(str(comb.k)) == comb.k
     assert parse_term(str(comb.s)) == comb.s

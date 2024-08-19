@@ -8,7 +8,7 @@ from .grammar import Grammar
 from .parsing import parse_grammar_schema
 
 
-@pytest.fixture()
+@pytest.fixture
 def an() -> Grammar:
     schema = parse_grammar_schema(
         dedent('''\
@@ -34,7 +34,7 @@ def assert_an(an: Grammar) -> None:
     assert not derives(an, 'ab')
 
 
-@pytest.fixture()
+@pytest.fixture
 def anbn() -> Grammar:
     schema = parse_grammar_schema(
         dedent('''\
@@ -58,7 +58,7 @@ def assert_anbn(anbn: Grammar) -> None:
     assert not derives(anbn, 'ba')
 
 
-@pytest.fixture()
+@pytest.fixture
 def s3() -> Grammar:
     schema = parse_grammar_schema(
         dedent('''\
@@ -82,7 +82,7 @@ def assert_s3(s3: Grammar) -> None:
     assert not derives(s3, 'b')
 
 
-@pytest.fixture()
+@pytest.fixture
 def binary() -> Grammar:
     schema = parse_grammar_schema(
         dedent('''\

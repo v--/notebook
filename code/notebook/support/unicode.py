@@ -1,6 +1,5 @@
 import unicodedata
 from enum import Flag, auto
-from typing import Iterable
 
 
 class Capitalization(Flag):

@@ -1,3 +1,4 @@
+import itertools
 from collections.abc import Iterable, Mapping, Sequence
 from dataclasses import dataclass
 from typing import Generic, TypeVar
@@ -37,10 +38,8 @@ class Permutation(Generic[T]):
         if len(cycle) == 0:
             return Permutation(domain, {})
 
-        mapping = {cycle[-1]: cycle[0]}
-
-        for src, dest in zip(cycle[:-1], cycle[1:]):
-            mapping[src] = dest
+        mapping = dict(itertools.pairwise(cycle))
+        mapping[cycle[-1]] = cycle[0]
 
         return Permutation(domain, mapping)
 
