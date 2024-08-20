@@ -1,11 +1,9 @@
 import functools
 import operator
 from collections.abc import Iterable
-from typing import Generic, TypeVar, overload
+from typing import Generic, overload
 
-
-N = TypeVar('N', int, float, complex)
-M = TypeVar('M', int, float, complex)
+from .dtypes import M, N
 
 
 class Matrix(Generic[N]):
@@ -292,6 +290,25 @@ class Matrix(Generic[N]):
             ]
             for row in self.get_rows()
         ])
+
+
+@overload
+def convert_dtype(src: Matrix[int], dtype: type[int]) -> Matrix[int]: ...
+@overload
+def convert_dtype(src: Matrix[int], dtype: type[float]) -> Matrix[float]: ...
+@overload
+def convert_dtype(src: Matrix[int], dtype: type[complex]) -> Matrix[complex]: ...
+@overload
+def convert_dtype(src: Matrix[float], dtype: type[float]) -> Matrix[float]: ...
+@overload
+def convert_dtype(src: Matrix[float], dtype: type[complex]) -> Matrix[complex]: ...
+@overload
+def convert_dtype(src: Matrix[complex], dtype: type[complex]) -> Matrix[complex]: ...
+def convert_dtype(src: Matrix[N], dtype: type[M]) -> Matrix[M]:
+    return Matrix([
+        [dtype(cell) for cell in row] # type: ignore[arg-type, call-overload]
+        for row in src.get_rows()
+    ])
 
 
 def fill(n: int, m: int | None = None, dtype: type[N] = int, value: N = 0) -> Matrix[N]:

@@ -1,5 +1,3 @@
-from typing import Generic, TypeVar
-
 from .formulas import (
     ConnectiveFormula,
     ConstantFormula,
@@ -12,10 +10,7 @@ from .formulas import (
 from .terms import FunctionTerm, Term, Variable
 
 
-T = TypeVar('T')
-
-
-class TermVisitor(Generic[T]):
+class TermVisitor[T]:
     def visit(self, term: Term) -> T:
         match term:
             case Variable():
@@ -45,7 +40,7 @@ class TermTransformationVisitor(TermVisitor[Term]):
         )
 
 
-class FormulaVisitor(Generic[T]):
+class FormulaVisitor[T]:
     def visit(self, formula: Formula) -> T:
         match formula:
             case ConstantFormula():

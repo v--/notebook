@@ -1,12 +1,7 @@
-from typing import Generic, TypeVar
-
 from .terms import Abstraction, Application, LambdaTerm, Variable
 
 
-T = TypeVar('T')
-
-
-class TermVisitor(Generic[T]):
+class TermVisitor[T]:
     def visit(self, term: LambdaTerm) -> T:
         match term:
             case Variable():

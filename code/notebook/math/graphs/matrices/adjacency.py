@@ -1,12 +1,7 @@
-from typing import TypeVar
-
 from ...linalg.matrix import Matrix, N, fill
 from ...opt.tropical import MinPlusFloat
 from ..generalized import VertLabelT
 from ..simple import DirectedGraph
-
-
-T = TypeVar('T')
 
 
 def get_adjacency_matrix(graph: DirectedGraph[int, VertLabelT, N], dtype: type[N] = int, blank: N = 0) -> Matrix[N]:

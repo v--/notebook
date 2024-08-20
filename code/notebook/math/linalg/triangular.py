@@ -1,11 +1,7 @@
-from typing import TypeVar, overload
+from typing import overload
 
-from .dtypes import convert_dtype, field_of
-from .matrix import Matrix, eye, is_close
-
-
-N = TypeVar('N', int, float, complex)
-F = TypeVar('F', float, complex)
+from .dtypes import F, N, field_of
+from .matrix import Matrix, convert_dtype, eye, is_close
 
 
 def is_orthogonal(l: Matrix[N]) -> bool:

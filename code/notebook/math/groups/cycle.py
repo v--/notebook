@@ -1,13 +1,10 @@
 from collections.abc import Iterable, Iterator, Sequence
 from dataclasses import dataclass
-from typing import Generic, TypeVar, overload
-
-
-T = TypeVar('T')
+from typing import overload
 
 
 @dataclass
-class Cycle(Generic[T]):
+class Cycle[T]:
     payload: Sequence[T]
 
     def __str__(self) -> str:
@@ -36,7 +33,7 @@ class Cycle(Generic[T]):
     def __getitem__(self, key: int | slice) -> T | Sequence[T]:
         return self.payload[key]
 
-    def iter_decomposed(self) -> 'Iterable[Cycle]':
+    def iter_decomposed(self) -> 'Iterable[Cycle[T]]':
         if len(self.payload) < 2:
             yield Cycle([])
             return

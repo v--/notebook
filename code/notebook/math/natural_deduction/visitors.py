@@ -1,5 +1,3 @@
-from typing import Generic, TypeVar
-
 from .schemas import (
     ConnectiveFormulaSchema,
     ConstantFormulaSchema,
@@ -10,10 +8,7 @@ from .schemas import (
 )
 
 
-T = TypeVar('T')
-
-
-class FormulaSchemaVisitor(Generic[T]):
+class FormulaSchemaVisitor[T]:
     def visit(self, schema: FormulaSchema) -> T:
         match schema:
             case ConstantFormulaSchema():

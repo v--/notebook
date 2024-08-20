@@ -1,14 +1,9 @@
 import functools
 import operator
-from typing import TypeVar
 
-from .dtypes import field_of
+from .dtypes import F, N, field_of
 from .matrix import Matrix, eye
 from .triangular import lower_triangular_inv, upper_triangular_inv
-
-
-N = TypeVar('N', int, float, complex)
-F = TypeVar('F', float, complex)
 
 
 def swapping_matrix(n: int, j: int, k: int, dtype: type[N] = int) -> Matrix[N]:

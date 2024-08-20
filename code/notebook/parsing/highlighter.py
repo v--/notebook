@@ -1,14 +1,10 @@
 from collections.abc import Iterable, Sequence
 from dataclasses import dataclass, field
 from enum import StrEnum
-from typing import Generic, TypeVar
 
 from ..support.iteration import string_accumulator
 from .annotation import AnnotatedToken, annotate_existing_tokens
 from .tokens import AbstractToken
-
-
-T_co = TypeVar('T_co', bound=AbstractToken, covariant=True)
 
 
 class SpecialChars(StrEnum):
@@ -18,7 +14,7 @@ class SpecialChars(StrEnum):
 
 
 @dataclass
-class ErrorHighlighter(Generic[T_co]):
+class ErrorHighlighter[T_co: AbstractToken]:
     seq: Sequence[T_co]
     i_first_token: int
     i_last_token: int

@@ -1,5 +1,4 @@
 from collections.abc import Iterable
-from typing import TypeVar
 
 from ...parsing.parser import Parser
 from ...parsing.whitespace import Whitespace
@@ -17,11 +16,8 @@ from .tokenizer import tokenize_latex
 from .tokens import EscapedWordToken, LaTeXToken, MiscToken, WordToken
 
 
-GroupT = TypeVar('GroupT', bound=Group)
-
-
 class LaTeXParser(Parser[LaTeXToken]):
-    def parse_brace(self, cls: type[GroupT], opening: LaTeXToken, closing: LaTeXToken) -> GroupT:
+    def parse_brace[GroupT: Group](self, cls: type[GroupT], opening: LaTeXToken, closing: LaTeXToken) -> GroupT:
         assert self.peek() == opening
         start_index = self.index
         self.advance()

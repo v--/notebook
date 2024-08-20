@@ -71,9 +71,43 @@ SUPERSCRIPT_TABLE = str.maketrans({
     '9': '⁹'
 })
 
+SUBSCRIPT_TABLE = str.maketrans({
+    'a': 'ₐ',
+    'e': 'ₑ',
+    'h': 'ₕ',
+    'i': 'ᵢ',
+    'j': 'ⱼ',
+    'k': 'ₖ',
+    'l': 'ₗ',
+    'm': 'ₘ',
+    'n': 'ₙ',
+    'o': 'ₒ',
+    'p': 'ₚ',
+    'r': 'ᵣ',
+    's': 'ₛ',
+    't': 'ₜ',
+    'u': 'ᵤ',
+    'v': 'ᵥ',
+    'x': 'ₓ',
+    '0': '₀',
+    '1': '₁',
+    '2': '₂',
+    '3': '₃',
+    '4': '₄',
+    '5': '₅',
+    '6': '₆',
+    '7': '₇',
+    '8': '₈',
+    '9': '₉',
+})
+
 
 def to_superscript(string: str) -> str:
     return string.translate(SUPERSCRIPT_TABLE)
+
+
+def to_subscript(string: str) -> str:
+    return string.translate(SUBSCRIPT_TABLE)
 
 
 def is_numeric_subscript(string: str) -> bool:
@@ -92,7 +126,10 @@ def atoi_subscripts(string: str) -> int:
 
 
 def itoa_subscripts(value: int) -> str:
-    return to_superscript(str(value))
+    if value < 0:
+        return '₋' + itoa_subscripts(-value)
+
+    return to_subscript(str(value))
 
 
 def is_latin_string(string: str, capitalization: Capitalization) -> bool:

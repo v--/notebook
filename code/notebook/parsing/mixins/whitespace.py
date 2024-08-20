@@ -1,14 +1,9 @@
-from typing import TypeVar
-
 from ..tokenizer import Parser
 from ..tokens import AbstractToken
 from ..whitespace import Whitespace
 
 
-T_co = TypeVar('T_co', bound=AbstractToken, covariant=True)
-
-
-class WhitespaceParserMixin(Parser[T_co]):
+class WhitespaceParserMixin[T_co: AbstractToken](Parser[T_co]):
     def skip_spaces(self) -> None:
         while not self.is_at_end() and self.peek() == Whitespace.space:
             self.advance()

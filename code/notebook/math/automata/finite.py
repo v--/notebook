@@ -1,9 +1,10 @@
+from collections.abc import Hashable
 from dataclasses import dataclass, field
 from typing import Generic, TypeVar
 
 
-StateT = TypeVar('StateT')
-LabelT = TypeVar('LabelT')
+StateT = TypeVar('StateT', bound=Hashable)
+LabelT = TypeVar('LabelT', bound=Hashable)
 
 
 FiniteAutomatonTransition = tuple[StateT, LabelT, StateT]

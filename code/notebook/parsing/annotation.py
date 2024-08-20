@@ -1,12 +1,8 @@
 from collections.abc import Iterable, Sequence
 from dataclasses import dataclass
-from typing import Generic, TypeVar
 
 from ..support.iteration import list_accumulator
 from .tokens import AbstractToken
-
-
-T_co = TypeVar('T_co', bound=AbstractToken, covariant=True)
 
 
 @dataclass
@@ -16,14 +12,14 @@ class SymbolPosition:
 
 
 @dataclass
-class AnnotatedToken(Generic[T_co]):
+class AnnotatedToken[T_co: AbstractToken]:
     token: T_co
     start: SymbolPosition
     end: SymbolPosition
 
 
 @list_accumulator
-def annotate_existing_tokens(seq: Sequence[T_co]) -> Iterable[AnnotatedToken[T_co]]:
+def annotate_existing_tokens[T_co: AbstractToken](seq: Sequence[T_co]) -> Iterable[AnnotatedToken[T_co]]:
     '''Take a sequence of tokens and add positional annotation.
     We assume that their string representation is accurate.'''
 

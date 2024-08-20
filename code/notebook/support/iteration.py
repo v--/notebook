@@ -1,13 +1,8 @@
 import functools
 from collections.abc import Callable, Iterable
-from typing import ParamSpec, TypeVar
 
 
-T = TypeVar('T')
-P = ParamSpec('P')
-
-
-def iter_common_prefix(a: Iterable[T], b: Iterable[T]) -> Iterable[T]:
+def iter_common_prefix[T](a: Iterable[T], b: Iterable[T]) -> Iterable[T]:
     for x, y in zip(a, b):
         if x == y:
             yield x
@@ -15,11 +10,11 @@ def iter_common_prefix(a: Iterable[T], b: Iterable[T]) -> Iterable[T]:
             return
 
 
-def find_common_prefix(a: Iterable[T], b: Iterable[T]) -> list[T]:
+def find_common_prefix[T](a: Iterable[T], b: Iterable[T]) -> list[T]:
     return list(iter_common_prefix(a, b))
 
 
-def find_common_suffix(a: Iterable[T], b: Iterable[T]) -> list[T]:
+def find_common_suffix[T](a: Iterable[T], b: Iterable[T]) -> list[T]:
     return list(
         reversed(
             list(
@@ -32,7 +27,7 @@ def find_common_suffix(a: Iterable[T], b: Iterable[T]) -> list[T]:
     )
 
 
-def list_accumulator(fun: Callable[P, Iterable[T]]) -> Callable[P, list[T]]:
+def list_accumulator[T, **P](fun: Callable[P, Iterable[T]]) -> Callable[P, list[T]]:
     @functools.wraps(fun)
     def wrapper(*args: P.args, **kwargs: P.kwargs) -> list[T]:
         return list(fun(*args, **kwargs))
@@ -40,7 +35,7 @@ def list_accumulator(fun: Callable[P, Iterable[T]]) -> Callable[P, list[T]]:
     return wrapper
 
 
-def frozen_set_accumulator(fun: Callable[P, Iterable[T]]) -> Callable[P, frozenset[T]]:
+def frozen_set_accumulator[T, **P](fun: Callable[P, Iterable[T]]) -> Callable[P, frozenset[T]]:
     @functools.wraps(fun)
     def wrapper(*args: P.args, **kwargs: P.kwargs) -> frozenset[T]:
         return frozenset(fun(*args, **kwargs))
@@ -48,7 +43,7 @@ def frozen_set_accumulator(fun: Callable[P, Iterable[T]]) -> Callable[P, frozens
     return wrapper
 
 
-def string_accumulator(joiner: str = '') -> Callable[[Callable[P, Iterable[T]]], Callable[P, str]]:
+def string_accumulator[T, **P](joiner: str = '') -> Callable[[Callable[P, Iterable[T]]], Callable[P, str]]:
     def decorator(fun: Callable[P, Iterable[T]]) -> Callable[P, str]:
         @functools.wraps(fun)
         def wrapper(*args: P.args, **kwargs: P.kwargs) -> str:

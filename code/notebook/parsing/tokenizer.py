@@ -1,14 +1,11 @@
 from abc import ABC, abstractmethod
-from typing import Generic, Iterable, TypeVar
+from typing import Iterable
 
 from .parser import Parser
 from .tokens import AbstractToken
 
 
-T_co = TypeVar('T_co', bound=AbstractToken, covariant=True)
-
-
-class Tokenizer(Generic[T_co], Parser[str], ABC):
+class Tokenizer[T_co: AbstractToken](Parser[str], ABC):
     def parse(self) -> Iterable[T_co]:
         while not self.is_at_end():
             yield self.parse_step(self.peek())

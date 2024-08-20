@@ -1,18 +1,15 @@
 from collections.abc import Sequence
 from dataclasses import dataclass, field
 from types import TracebackType
-from typing import Generic, Self, TypeVar
+from typing import Self
 
 from .exceptions import ParsingError
 from .highlighter import ErrorHighlighter
 from .tokens import AbstractToken
 
 
-T_co = TypeVar('T_co', bound=AbstractToken, covariant=True)
-
-
 @dataclass
-class Parser(Generic[T_co]):
+class Parser[T_co: AbstractToken]:
     seq: Sequence[T_co]
     index: int = field(default=0, init=False)
 

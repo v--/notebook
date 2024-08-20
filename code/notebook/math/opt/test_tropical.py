@@ -2,7 +2,7 @@ import random
 
 import pytest
 
-from ..linalg.matrix import eye, fill
+from ..linalg.matrix import eye
 from .tropical import MinPlusFloat, TropicalDivisionError, TropicalSubtractionError
 
 
@@ -33,4 +33,4 @@ def test_tropical_arithmetic(a: float, b: float) -> None:
 def test_matrix_arithmetic(n: int = 3) -> None:
     t = eye(n, dtype=MinPlusFloat, diag=0.0, off_diag=float('inf'))
     assert t + t == t
-    assert t @ t == fill(n, dtype=MinPlusFloat, value=float('inf'))
+    assert t @ t == t

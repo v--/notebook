@@ -1,15 +1,10 @@
-from typing import TypeVar
-
 from ...support.unicode import Capitalization, atoi_subscripts, is_greek_string, is_latin_string, is_numeric_subscript
 from ..identifiers import GreekIdentifier, LatinIdentifier
 from ..tokenizer import Tokenizer
 from ..tokens import AbstractToken
 
 
-T_co = TypeVar('T_co', bound=AbstractToken, covariant=True)
-
-
-class IdentifierTokenizerMixin(Tokenizer[T_co]):
+class IdentifierTokenizerMixin[T_co: AbstractToken](Tokenizer[T_co]):
     def _is_at_numeric_suffix(self) -> bool:
         if self.is_at_end():
             return False

@@ -1,23 +1,18 @@
 import itertools
 from collections.abc import Iterable, Mapping, Sequence
 from dataclasses import dataclass
-from typing import Generic, TypeVar
 
 from ...support.adt.comparable import Comparable
 from .cycle import Cycle
 
 
-T = TypeVar('T', bound=Comparable)
-PermutationT = TypeVar('PermutationT', bound='Permutation')
-
-
 @dataclass
-class Permutation(Generic[T]):
+class Permutation[T: Comparable]:
     domain: Sequence[T]
     _payload: Mapping[T, T]
 
     @classmethod
-    def from_incomplete_mapping(cls: type[PermutationT], domain: Sequence[T], incomplete: Mapping[T, T]) -> PermutationT:
+    def from_incomplete_mapping(cls: 'type[Permutation[T]]', domain: Sequence[T], incomplete: Mapping[T, T]) -> 'Permutation[T]':
         complete = {}
 
         for key in list(incomplete):
@@ -34,17 +29,16 @@ class Permutation(Generic[T]):
         return cls(domain, complete)
 
     @classmethod
-    def from_cycle(cls, domain: Sequence[T], cycle: Cycle[T]) -> 'Permutation[T]':
+    def from_cycle(cls: 'type[Permutation[T]]', domain: Sequence[T], cycle: Cycle[T]) -> 'Permutation[T]':
         if len(cycle) == 0:
             return Permutation(domain, {})
 
         mapping = dict(itertools.pairwise(cycle))
         mapping[cycle[-1]] = cycle[0]
-
         return Permutation(domain, mapping)
 
     @classmethod
-    def identity(cls, domain: Sequence[T]) -> 'Permutation[T]':
+    def identity(cls: 'type[Permutation[T]]', domain: Sequence[T]) -> 'Permutation[T]':
         return Permutation(domain, {})
 
     def __getitem__(self, key: T) -> T:

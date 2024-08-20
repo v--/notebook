@@ -1,6 +1,6 @@
 import itertools
 from collections.abc import Iterable
-from typing import Self, TypeVar
+from typing import Self
 
 from ..support.unicode import itoa_subscripts
 from .tokens import TokenMixin
@@ -10,7 +10,7 @@ class Identifier(TokenMixin):
     index: int | None
 
     @classmethod
-    def build(cls: type[Self], value: str, index: int | None = None) -> Self:
+    def build(cls, value: str, index: int | None = None) -> Self:
         return cls(value, index)
 
     def __init__(self, value: str, index: int | None = None) -> None:
@@ -28,9 +28,6 @@ class Identifier(TokenMixin):
             self.value,
             0 if self.index is None else self.index + 1
         )
-
-
-IdentifierT = TypeVar('IdentifierT', bound=Identifier)
 
 
 class LatinIdentifier(Identifier):

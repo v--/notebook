@@ -1,5 +1,5 @@
 from enum import Enum
-from typing import Protocol, TypeVar
+from typing import Protocol
 
 
 class AbstractToken(Protocol):
@@ -36,12 +36,9 @@ class LiteralToken(TokenMixin):
     pass
 
 
-TokenEnumT = TypeVar('TokenEnumT', bound='TokenEnum')
-
-
 class TokenEnum(str, Enum):
     @classmethod
-    def try_match(cls: type[TokenEnumT], value: str) -> TokenEnumT | None:
+    def try_match[T: 'TokenEnum'](cls: type[T], value: str) -> T | None:
         try:
             return cls(value)
         except ValueError:

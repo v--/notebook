@@ -1,10 +1,9 @@
 from typing import Literal, TypeVar, overload
 
-from .matrix import Matrix
-
 
 N = TypeVar('N', int, float, complex)
 M = TypeVar('M', int, float, complex)
+F = TypeVar('F', float, complex)
 
 
 @overload
@@ -40,22 +39,3 @@ def is_dtype_convertible(a: type[complex], b: type[float]) -> Literal[False]: ..
 def is_dtype_convertible(a: type[complex], b: type[complex]) -> Literal[True]: ...
 def is_dtype_convertible(a: type[N], b: type[M]) -> bool:
     return issubclass(a, b)
-
-
-@overload
-def convert_dtype(src: Matrix[int], dtype: type[int]) -> Matrix[int]: ...
-@overload
-def convert_dtype(src: Matrix[int], dtype: type[float]) -> Matrix[float]: ...
-@overload
-def convert_dtype(src: Matrix[int], dtype: type[complex]) -> Matrix[complex]: ...
-@overload
-def convert_dtype(src: Matrix[float], dtype: type[float]) -> Matrix[float]: ...
-@overload
-def convert_dtype(src: Matrix[float], dtype: type[complex]) -> Matrix[complex]: ...
-@overload
-def convert_dtype(src: Matrix[complex], dtype: type[complex]) -> Matrix[complex]: ...
-def convert_dtype(src: Matrix[N], dtype: type[M]) -> Matrix[M]:
-    return Matrix([
-        [dtype(cell) for cell in row] # type: ignore[arg-type, call-overload]
-        for row in src.get_rows()
-    ])

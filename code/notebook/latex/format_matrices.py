@@ -1,5 +1,5 @@
 from dataclasses import dataclass, field, replace
-from typing import Generic, Iterable, TypeVar
+from typing import Iterable
 
 from ..parsing.parser import Parser
 from ..parsing.whitespace import Whitespace
@@ -46,11 +46,8 @@ def strip_whitespace(contents: list[LaTeXNode]) -> list[LaTeXNode]:
     return contents[leading:-trailing]
 
 
-T = TypeVar('T')
-
-
 @dataclass
-class SparseMatrix(Generic[T]):
+class SparseMatrix[T]:
     default: T
     payload: dict[tuple[int, int], T] = field(default_factory=dict)
 
