@@ -1,23 +1,36 @@
 import functools
 import operator
 from collections.abc import Iterable
-from typing import Generic, overload
+from typing import cast, overload
 
-from .dtypes import M, N
+from .exceptions import LinAlgError
 
 
-class Matrix(Generic[N]):
+class MatrixError(LinAlgError):
+    pass
+
+
+class Matrix[N: (int, float, complex)]:
     m: int
     n: int
     payload: list[N]
+    dtype: type[N]
 
-    def __init__(self, rows: list[list[N]]) -> None:
+    def __init__(self, rows: list[list[N]], dtype: type[N] | None = None) -> None:
         for row in rows:
             assert len(row) == len(rows[0])
 
         self.m = len(rows)
         self.n = len(rows[0]) if len(rows) > 0 else 0
         self.payload = [x for row in rows for x in row]
+
+        if dtype is None:
+            if len(self.payload) == 0:
+                raise MatrixError('Cannot infer dtype without any data')
+
+            dtype = type(self.payload[0])
+
+        self.dtype = dtype
 
     def __i_range(self, i: int | slice) -> Iterable[int]:
         if isinstance(i, int):
@@ -119,7 +132,7 @@ class Matrix(Generic[N]):
                     self[i_, j_] = value
 
     @overload
-    def __setitem__(self, key: tuple[int, int], value: 'N') -> None: ...
+    def __setitem__(self, key: tuple[int, int], value: N) -> None: ...
     @overload
     def __setitem__(self, key: tuple[int, slice], value: 'N | list[N] | Matrix[N]') -> None: ...
     @overload
@@ -142,8 +155,7 @@ class Matrix(Generic[N]):
             if j >= self.n or j < -self.n:
                 raise IndexError(f'Attempted to access row {j}, but the matrix has only {self.n} rows')
 
-            assert isinstance(value, int | float | complex)
-            self.payload[(i % self.m) * self.n + (j % self.n)] = value
+            self.payload[(i % self.m) * self.n + (j % self.n)] = cast(N, value)
 
     def get_rows(self) -> list[list[N]]:
         return [
@@ -174,7 +186,7 @@ class Matrix(Generic[N]):
 
     def __neg__(self) -> 'Matrix[N]':
         return Matrix([
-            [-x for x in row]
+            [cast(N, -x) for x in row]
             for row in self.get_rows()
         ])
 
@@ -196,7 +208,7 @@ class Matrix(Generic[N]):
     def __add__(self: 'Matrix[complex]', other: 'Matrix[float]') -> 'Matrix[complex]': ...
     @overload
     def __add__(self: 'Matrix[complex]', other: 'Matrix[complex]') -> 'Matrix[complex]': ...
-    def __add__(self, other: 'Matrix') -> 'Matrix':
+    def __add__(self, other: object):
         if not isinstance(other, Matrix) or self.m != other.m or self.n != other.n:
             return NotImplemented
 
@@ -223,7 +235,7 @@ class Matrix(Generic[N]):
     def __sub__(self: 'Matrix[complex]', other: 'Matrix[float]') -> 'Matrix[complex]': ...
     @overload
     def __sub__(self: 'Matrix[complex]', other: 'Matrix[complex]') -> 'Matrix[complex]': ...
-    def __sub__(self, other: 'Matrix') -> 'Matrix':
+    def __sub__(self, other: object):
         if not isinstance(other, Matrix) or self.m != other.m or self.n != other.n:
             return NotImplemented
 
@@ -236,28 +248,48 @@ class Matrix(Generic[N]):
     @overload
     def __rmul__(self: 'Matrix[int]', other: 'complex') -> 'Matrix[complex]': ...
     @overload
+    def __rmul__(self: 'Matrix[float]', other: 'int') -> 'Matrix[float]': ...
+    @overload
     def __rmul__(self: 'Matrix[float]', other: 'float') -> 'Matrix[float]': ...
     @overload
     def __rmul__(self: 'Matrix[float]', other: 'complex') -> 'Matrix[complex]': ...
     @overload
+    def __rmul__(self: 'Matrix[complex]', other: 'int') -> 'Matrix[complex]': ...
+    @overload
+    def __rmul__(self: 'Matrix[complex]', other: 'float') -> 'Matrix[complex]': ...
+    @overload
     def __rmul__(self: 'Matrix[complex]', other: 'complex') -> 'Matrix[complex]': ...
-    def __rmul__(self, other: 'M') -> 'Matrix':
+    def __rmul__(self, other: object):
+        if not isinstance(other, int | float | complex):
+            return NotImplemented
+
         return Matrix([
             [other * x for x in row]
             for row in self.get_rows()
         ])
 
     @overload
+    def __truediv__(self: 'Matrix[int]', other: 'int') -> 'Matrix[float]': ...
+    @overload
     def __truediv__(self: 'Matrix[int]', other: 'float') -> 'Matrix[float]': ...
     @overload
     def __truediv__(self: 'Matrix[int]', other: 'complex') -> 'Matrix[complex]': ...
+    @overload
+    def __truediv__(self: 'Matrix[float]', other: 'int') -> 'Matrix[float]': ...
     @overload
     def __truediv__(self: 'Matrix[float]', other: 'float') -> 'Matrix[float]': ...
     @overload
     def __truediv__(self: 'Matrix[float]', other: 'complex') -> 'Matrix[complex]': ...
     @overload
+    def __truediv__(self: 'Matrix[complex]', other: 'int') -> 'Matrix[complex]': ...
+    @overload
+    def __truediv__(self: 'Matrix[complex]', other: 'float') -> 'Matrix[complex]': ...
+    @overload
     def __truediv__(self: 'Matrix[complex]', other: 'complex') -> 'Matrix[complex]': ...
-    def __truediv__(self, other: 'M') -> 'Matrix':
+    def __truediv__(self, other: object) -> 'Matrix':
+        if not isinstance(other, int | float | complex):
+            return NotImplemented
+
         return (1 / other) * self
 
     @overload
@@ -278,7 +310,7 @@ class Matrix(Generic[N]):
     def __matmul__(self: 'Matrix[complex]', other: 'Matrix[float]') -> 'Matrix[complex]': ...
     @overload
     def __matmul__(self: 'Matrix[complex]', other: 'Matrix[complex]') -> 'Matrix[complex]': ...
-    def __matmul__(self, other: 'Matrix') -> 'Matrix':
+    def __matmul__(self, other: object) -> 'Matrix':
         if not isinstance(other, Matrix) or self.n != other.m:
             return NotImplemented
 
@@ -295,23 +327,17 @@ class Matrix(Generic[N]):
 @overload
 def convert_dtype(src: Matrix[int], dtype: type[int]) -> Matrix[int]: ...
 @overload
-def convert_dtype(src: Matrix[int], dtype: type[float]) -> Matrix[float]: ...
-@overload
-def convert_dtype(src: Matrix[int], dtype: type[complex]) -> Matrix[complex]: ...
-@overload
 def convert_dtype(src: Matrix[float], dtype: type[float]) -> Matrix[float]: ...
 @overload
-def convert_dtype(src: Matrix[float], dtype: type[complex]) -> Matrix[complex]: ...
-@overload
 def convert_dtype(src: Matrix[complex], dtype: type[complex]) -> Matrix[complex]: ...
-def convert_dtype(src: Matrix[N], dtype: type[M]) -> Matrix[M]:
+def convert_dtype(src: Matrix, dtype: type) -> Matrix:
     return Matrix([
-        [dtype(cell) for cell in row] # type: ignore[arg-type, call-overload]
+        [dtype(cell) for cell in row]
         for row in src.get_rows()
     ])
 
 
-def fill(n: int, m: int | None = None, dtype: type[N] = int, value: N = 0) -> Matrix[N]:
+def fill[N: (int, float, complex)](n: int, m: int | None = None, dtype: type[N] = int, value: N = 0) -> Matrix[N]:
     assert n >= 0
 
     if m is not None:
@@ -323,7 +349,7 @@ def fill(n: int, m: int | None = None, dtype: type[N] = int, value: N = 0) -> Ma
     ])
 
 
-def eye(n: int, m: int | None = None, dtype: type[N] = int, diag: N = 1, off_diag: N = 0) -> Matrix[N]:
+def eye[N: (int, float, complex)](n: int, m: int | None = None, dtype: type[N] = int, diag: N = 1, off_diag: N = 0) -> Matrix[N]:
     result = fill(n, m, dtype, off_diag)
 
     for i in range(min(result.n, result.m)):
@@ -332,15 +358,15 @@ def eye(n: int, m: int | None = None, dtype: type[N] = int, diag: N = 1, off_dia
     return result
 
 
-def ones(n: int, m: int | None = None, dtype: type[N] = int) -> Matrix[N]:
+def ones[N: (int, float, complex)](n: int, m: int | None = None, dtype: type[N] = int) -> Matrix[N]:
     return fill(n, m, dtype, 1)
 
 
-def zeros(n: int, m: int | None = None, dtype: type[N] = int) -> Matrix[N]:
+def zeros[N: (int, float, complex)](n: int, m: int | None = None, dtype: type[N] = int) -> Matrix[N]:
     return fill(n, m, dtype, 0)
 
 
-def is_close(a: Matrix[N], b: Matrix[M], tolerance: float = 1e-10) -> bool:
+def is_close(a: Matrix, b: Matrix, tolerance: float = 1e-10) -> bool:
     assert a.m == b.m
     assert a.n == b.n
 

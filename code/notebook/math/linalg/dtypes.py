@@ -1,18 +1,11 @@
-from typing import Literal, TypeVar, overload
-
-
-N = TypeVar('N', int, float, complex)
-M = TypeVar('M', int, float, complex)
-F = TypeVar('F', float, complex)
+from typing import Literal, overload
 
 
 @overload
 def field_of(dtype: type[int]) -> type[float]: ...
 @overload
-def field_of(dtype: type[float]) -> type[float]: ...
-@overload
-def field_of(dtype: type[complex]) -> type[complex]: ...
-def field_of(dtype: type[N]) -> type:
+def field_of[N: (float, complex)](dtype: type[N]) -> type[N]: ...
+def field_of(dtype: type) -> type:
     if dtype is int:
         return float
 
@@ -37,5 +30,5 @@ def is_dtype_convertible(a: type[complex], b: type[int]) -> Literal[False]: ...
 def is_dtype_convertible(a: type[complex], b: type[float]) -> Literal[False]: ...
 @overload
 def is_dtype_convertible(a: type[complex], b: type[complex]) -> Literal[True]: ...
-def is_dtype_convertible(a: type[N], b: type[M]) -> bool:
+def is_dtype_convertible(a: type, b: type) -> bool:
     return issubclass(a, b)

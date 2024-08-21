@@ -1,10 +1,9 @@
-from ...linalg.matrix import Matrix, N, fill
+from ...linalg.matrix import Matrix, fill
 from ...opt.tropical import MinPlusFloat
-from ..generalized import VertLabelT
 from ..simple import DirectedGraph
 
 
-def get_adjacency_matrix(graph: DirectedGraph[int, VertLabelT, N], dtype: type[N] = int, blank: N = 0) -> Matrix[N]:
+def get_adjacency_matrix[N: (int, float, complex), VertLabelT](graph: DirectedGraph[int, VertLabelT, N], dtype: type[N] = int, blank: N = 0) -> Matrix[N]:
     n = len(graph.vertices)
     result = fill(n, dtype=dtype, value=blank)
 
@@ -15,7 +14,7 @@ def get_adjacency_matrix(graph: DirectedGraph[int, VertLabelT, N], dtype: type[N
     return result
 
 
-def get_min_walk_weights(graph: DirectedGraph[int, VertLabelT, float], max_length: int) -> Matrix[float]:
+def get_min_walk_weights[VertLabelT](graph: DirectedGraph[int, VertLabelT, float], max_length: int) -> Matrix[float]:
     assert max_length >= 1
     matrix = get_adjacency_matrix(graph, dtype=MinPlusFloat, blank=float('inf'))
     result = matrix
