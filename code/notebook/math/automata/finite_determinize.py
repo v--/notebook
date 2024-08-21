@@ -1,15 +1,15 @@
 import itertools
 
-from .finite import FiniteAutomaton, FiniteAutomatonTransition, LabelT, StateT
+from .finite import BaseLabelType, BaseStateType, FiniteAutomaton
 
 
-def determinize_recurse(
+def determinize_recurse[StateT: BaseStateType, LabelT: BaseLabelType](
     nondet: FiniteAutomaton[StateT, LabelT],
     visited: set[frozenset[StateT]],
     src_set: frozenset[StateT]
-) -> list[FiniteAutomatonTransition[frozenset[StateT], LabelT]]:
+) -> list[tuple[frozenset[StateT], LabelT, frozenset[StateT]]]:
     by_label: dict[LabelT, set[StateT]] = {}
-    triples: list[FiniteAutomatonTransition[frozenset[StateT], LabelT]] = []
+    triples: list[tuple[frozenset[StateT], LabelT, frozenset[StateT]]] = []
 
     for src, label, dest in nondet.triples:
         if src in src_set:
@@ -34,7 +34,7 @@ def determinize_recurse(
     )
 
 
-def determinize(nondet: FiniteAutomaton[StateT, LabelT]) -> FiniteAutomaton[frozenset[StateT], LabelT]:
+def determinize[StateT: BaseStateType, LabelT: BaseLabelType](nondet: FiniteAutomaton[StateT, LabelT]) -> FiniteAutomaton[frozenset[StateT], LabelT]:
     triples = determinize_recurse(
         nondet,
         set(),

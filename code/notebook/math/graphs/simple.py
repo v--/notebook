@@ -1,16 +1,9 @@
 from typing import cast, overload, override
 
-from .generalized import (
-    ArcLabelT,
-    GeneralizedArcView,
-    GeneralizedDirectedGraph,
-    GeneralizedUndirectedGraph,
-    VertLabelT,
-    VertT,
-)
+from .generalized import BaseVertType, GeneralizedArcView, GeneralizedDirectedGraph, GeneralizedUndirectedGraph
 
 
-class ArcView(GeneralizedArcView[VertT, tuple[VertT, VertT], VertLabelT, ArcLabelT]):
+class ArcView[VertT: BaseVertType, VertLabelT, ArcLabelT](GeneralizedArcView[VertT, tuple[VertT, VertT], VertLabelT, ArcLabelT]):
     def _add_arc(self, arc: tuple[VertT, VertT], label: ArcLabelT | None = None) -> None:
         super().add(arc, cast(ArcLabelT, label))
 
@@ -45,7 +38,7 @@ class ArcView(GeneralizedArcView[VertT, tuple[VertT, VertT], VertLabelT, ArcLabe
             super().remove((a__, b))
 
 
-class DirectedGraph(GeneralizedDirectedGraph[VertT, tuple[VertT, VertT], VertLabelT, ArcLabelT]):
+class DirectedGraph[VertT: BaseVertType, VertLabelT, ArcLabelT](GeneralizedDirectedGraph[VertT, tuple[VertT, VertT], VertLabelT, ArcLabelT]):
     arcs: ArcView[VertT, VertLabelT, ArcLabelT]
 
     @override
@@ -54,7 +47,7 @@ class DirectedGraph(GeneralizedDirectedGraph[VertT, tuple[VertT, VertT], VertLab
         return ArcView(vertex_map, arc_map)
 
 
-class EdgeView(GeneralizedArcView[VertT, frozenset[VertT], VertLabelT, ArcLabelT]):
+class EdgeView[VertT: BaseVertType, VertLabelT, ArcLabelT](GeneralizedArcView[VertT, frozenset[VertT], VertLabelT, ArcLabelT]):
     def _add_edge(self, edge: frozenset[VertT], label: ArcLabelT | None = None) -> None:
         super().add(edge, cast(ArcLabelT, label))
 
@@ -89,7 +82,7 @@ class EdgeView(GeneralizedArcView[VertT, frozenset[VertT], VertLabelT, ArcLabelT
             super().remove(frozenset([a__, b]))
 
 
-class UndirectedGraph(GeneralizedUndirectedGraph[VertT, frozenset[VertT], VertLabelT, ArcLabelT]):
+class UndirectedGraph[VertT: BaseVertType, VertLabelT, ArcLabelT](GeneralizedUndirectedGraph[VertT, frozenset[VertT], VertLabelT, ArcLabelT]):
     edges: EdgeView[VertT, VertLabelT, ArcLabelT]
 
     @override

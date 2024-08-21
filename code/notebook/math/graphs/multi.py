@@ -1,10 +1,10 @@
-from collections.abc import Collection, Hashable
-from typing import Generic, Iterator
+from collections.abc import Collection
+from typing import Iterator
 
-from .generalized import ArcLabelT, GeneralizedDirectedGraph, GeneralizedUndirectedGraph, VertLabelT, VertT
+from .generalized import BaseVertType, GeneralizedDirectedGraph, GeneralizedUndirectedGraph
 
 
-class MultiArc(Generic[VertT], Collection[Hashable]):
+class MultiArc[VertT: BaseVertType](Collection[VertT]):
     _counter: int = 0  # Static
 
     src: VertT
@@ -40,11 +40,11 @@ class MultiArc(Generic[VertT], Collection[Hashable]):
         return self._id
 
 
-class DirectedMultigraph(GeneralizedDirectedGraph[VertT, MultiArc[VertT], VertLabelT, ArcLabelT]):
+class DirectedMultigraph[VertT: BaseVertType, VertLabelT, ArcLabelT](GeneralizedDirectedGraph[VertT, MultiArc[VertT], VertLabelT, ArcLabelT]):
     pass
 
 
-class MultiEdge(MultiArc[VertT]):
+class MultiEdge[VertT](MultiArc[VertT]):
     def __len__(self) -> int:
         if self.src == self.dest:
             return 1
@@ -52,5 +52,5 @@ class MultiEdge(MultiArc[VertT]):
         return 2
 
 
-class UndirectedMultigraph(GeneralizedUndirectedGraph[VertT, MultiEdge[VertT], VertLabelT, ArcLabelT]):
+class UndirectedMultigraph[VertT: BaseVertType, VertLabelT, ArcLabelT](GeneralizedUndirectedGraph[VertT, MultiEdge[VertT], VertLabelT, ArcLabelT]):
     pass

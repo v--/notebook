@@ -1,7 +1,10 @@
 from collections.abc import Collection, Hashable, Iterator
-from typing import Generic, TypeVar, cast, overload
+from typing import cast, overload
 
 from .exceptions import GraphError
+
+
+BaseVertType = Hashable
 
 
 class ArcCardinalityError(GraphError):
@@ -16,22 +19,11 @@ class MissingArcError(GraphError):
     pass
 
 
-VertT = TypeVar('VertT', bound=Hashable)
-
-# In our "generalized graphs", we have "hyperarcs" (vertex iterables) that can be directed arcs or undirected edges.
-# GeneralizedArcT should ideally be parameterized on VertT, however mypy doesn't support this
-# See https://github.com/python/typing/issues/548
-GeneralizedArcT = TypeVar('GeneralizedArcT', bound=Collection[Hashable])
-
-VertLabelT = TypeVar('VertLabelT')
-ArcLabelT = TypeVar('ArcLabelT')
-
-
-class VertexView(Generic[VertT, GeneralizedArcT, VertLabelT, ArcLabelT]):
+class VertexView[VertT: BaseVertType, ArcT: Collection[BaseVertType], VertLabelT, ArcLabelT]:
     _vertex_map: dict[VertT, VertLabelT]
-    _arc_map: dict[GeneralizedArcT, ArcLabelT]
+    _arc_map: dict[ArcT, ArcLabelT]
 
-    def __init__(self, vertex_map: dict[VertT, VertLabelT], arc_map: dict[GeneralizedArcT, ArcLabelT]) -> None:
+    def __init__(self, vertex_map: dict[VertT, VertLabelT], arc_map: dict[ArcT, ArcLabelT]) -> None:
         self._vertex_map = vertex_map
         self._arc_map = arc_map
 
@@ -39,7 +31,7 @@ class VertexView(Generic[VertT, GeneralizedArcT, VertLabelT, ArcLabelT]):
         return vertex in self._vertex_map
 
     @overload
-    def add(self: 'VertexView[VertT, GeneralizedArcT, None, ArcLabelT]', vertex: VertT) -> None: ...
+    def add(self: 'VertexView[VertT, ArcT, None, ArcLabelT]', vertex: VertT) -> None: ...
     @overload
     def add(self, vertex: VertT, label: VertLabelT) -> None: ...
     def add(self, vertex: VertT, label: VertLabelT | None = None) -> None:
@@ -66,19 +58,19 @@ class VertexView(Generic[VertT, GeneralizedArcT, VertLabelT, ArcLabelT]):
         return iter(self._vertex_map)
 
 
-class GeneralizedArcView(Generic[VertT, GeneralizedArcT, VertLabelT, ArcLabelT]):
+class GeneralizedArcView[VertT: BaseVertType, ArcT: Collection[BaseVertType], VertLabelT, ArcLabelT]:
     _vertex_map: dict[VertT, VertLabelT]
-    _arc_map: dict[GeneralizedArcT, ArcLabelT]
+    _arc_map: dict[ArcT, ArcLabelT]
 
-    def __init__(self, vertex_map: dict[VertT, VertLabelT], arc_map: dict[GeneralizedArcT, ArcLabelT]) -> None:
+    def __init__(self, vertex_map: dict[VertT, VertLabelT], arc_map: dict[ArcT, ArcLabelT]) -> None:
         self._vertex_map = vertex_map
         self._arc_map = arc_map
 
     @overload
-    def add(self: 'GeneralizedArcView[VertT, GeneralizedArcT, VertLabelT, None]', arc: GeneralizedArcT) -> None: ...
+    def add(self: 'GeneralizedArcView[VertT, ArcT, VertLabelT, None]', arc: ArcT) -> None: ...
     @overload
-    def add(self, arc: GeneralizedArcT, label: ArcLabelT) -> None: ...
-    def add(self, arc: GeneralizedArcT, label: ArcLabelT | None = None) -> None:
+    def add(self, arc: ArcT, label: ArcLabelT) -> None: ...
+    def add(self, arc: ArcT, label: ArcLabelT | None = None) -> None:
         if len(arc) == 0:
             raise ArcCardinalityError(f'Too few endpoints in {arc!r}')
 
@@ -92,10 +84,10 @@ class GeneralizedArcView(Generic[VertT, GeneralizedArcT, VertLabelT, ArcLabelT])
 
         self._arc_map[arc] = cast(ArcLabelT, label)
 
-    def remove(self, arc: GeneralizedArcT) -> None:
+    def remove(self, arc: ArcT) -> None:
         del self._arc_map[arc]
 
-    def get_label(self, arc: GeneralizedArcT) -> ArcLabelT:
+    def get_label(self, arc: ArcT) -> ArcLabelT:
         if arc not in self:
             raise MissingArcError(f'No such arc {arc!r}')
 
@@ -104,43 +96,43 @@ class GeneralizedArcView(Generic[VertT, GeneralizedArcT, VertLabelT, ArcLabelT])
     def __len__(self) -> int:
         return len(self._arc_map)
 
-    def __iter__(self) -> Iterator[GeneralizedArcT]:
+    def __iter__(self) -> Iterator[ArcT]:
         return iter(self._arc_map)
 
 
-class GeneralizedDirectedGraph(Generic[VertT, GeneralizedArcT, VertLabelT, ArcLabelT]):
-    vertices: VertexView[VertT, GeneralizedArcT, VertLabelT, ArcLabelT]
-    arcs: GeneralizedArcView[VertT, GeneralizedArcT, VertLabelT, ArcLabelT]
+class GeneralizedDirectedGraph[VertT: BaseVertType, ArcT: Collection[BaseVertType], VertLabelT, ArcLabelT]:
+    vertices: VertexView[VertT, ArcT, VertLabelT, ArcLabelT]
+    arcs: GeneralizedArcView[VertT, ArcT, VertLabelT, ArcLabelT]
 
     @classmethod
-    def create_vertex_view(cls, vertex_map: dict[VertT, VertLabelT], arc_map: dict[GeneralizedArcT, ArcLabelT]) -> VertexView:
+    def create_vertex_view(cls, vertex_map: dict[VertT, VertLabelT], arc_map: dict[ArcT, ArcLabelT]) -> VertexView:
         return VertexView(vertex_map, arc_map)
 
     @classmethod
-    def create_arc_view(cls, vertex_map: dict[VertT, VertLabelT], arc_map: dict[GeneralizedArcT, ArcLabelT]) -> GeneralizedArcView:
+    def create_arc_view(cls, vertex_map: dict[VertT, VertLabelT], arc_map: dict[ArcT, ArcLabelT]) -> GeneralizedArcView:
         return GeneralizedArcView(vertex_map, arc_map)
 
     def __init__(self) -> None:
         vertex_map: dict[VertT, VertLabelT] = {}
-        arc_map: dict[GeneralizedArcT, ArcLabelT] = {}
+        arc_map: dict[ArcT, ArcLabelT] = {}
         self.vertices = self.create_vertex_view(vertex_map, arc_map)
         self.arcs = self.create_arc_view(vertex_map, arc_map)
 
 
-class GeneralizedUndirectedGraph(Generic[VertT, GeneralizedArcT, VertLabelT, ArcLabelT]):
-    vertices: VertexView[VertT, GeneralizedArcT, VertLabelT, ArcLabelT]
-    arcs: GeneralizedArcView[VertT, GeneralizedArcT, VertLabelT, ArcLabelT]
+class GeneralizedUndirectedGraph[VertT: BaseVertType, ArcT: Collection[BaseVertType], VertLabelT, ArcLabelT]:
+    vertices: VertexView[VertT, ArcT, VertLabelT, ArcLabelT]
+    arcs: GeneralizedArcView[VertT, ArcT, VertLabelT, ArcLabelT]
 
     @classmethod
-    def create_vertex_view(cls, vertex_map: dict[VertT, VertLabelT], edge_map: dict[GeneralizedArcT, ArcLabelT]) -> VertexView[VertT, GeneralizedArcT, VertLabelT, ArcLabelT]:
+    def create_vertex_view(cls, vertex_map: dict[VertT, VertLabelT], edge_map: dict[ArcT, ArcLabelT]) -> VertexView[VertT, ArcT, VertLabelT, ArcLabelT]:
         return VertexView(vertex_map, edge_map)
 
     @classmethod
-    def create_edge_view(cls, vertex_map: dict[VertT, VertLabelT], edge_map: dict[GeneralizedArcT, ArcLabelT]) -> GeneralizedArcView[VertT, GeneralizedArcT, VertLabelT, ArcLabelT]:
+    def create_edge_view(cls, vertex_map: dict[VertT, VertLabelT], edge_map: dict[ArcT, ArcLabelT]) -> GeneralizedArcView[VertT, ArcT, VertLabelT, ArcLabelT]:
         return GeneralizedArcView(vertex_map, edge_map)
 
     def __init__(self) -> None:
         vertex_map: dict[VertT, VertLabelT] = {}
-        edge_map: dict[GeneralizedArcT, ArcLabelT] = {}
+        edge_map: dict[ArcT, ArcLabelT] = {}
         self.vertices = self.create_vertex_view(vertex_map, edge_map)
         self.edges = self.create_edge_view(vertex_map, edge_map)

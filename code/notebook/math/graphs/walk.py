@@ -1,18 +1,18 @@
 import itertools
-from collections.abc import Iterable
+from collections.abc import Collection, Iterable
 from typing import Protocol, cast, override
 
 from .exceptions import GraphError
-from .generalized import GeneralizedArcT, VertT
+from .generalized import BaseVertType
 
 
 class GraphWalkError(GraphError):
     pass
 
 
-class GraphWalk(Protocol[VertT, GeneralizedArcT]):
+class GraphWalk[VertT: BaseVertType, ArcT: Collection[BaseVertType]](Protocol):
     origin: VertT
-    arcs: list[GeneralizedArcT]
+    arcs: list[ArcT]
 
     def __len__(self) -> int:
         ...
@@ -20,24 +20,24 @@ class GraphWalk(Protocol[VertT, GeneralizedArcT]):
     def iter_vertices(self) -> Iterable[VertT]:
         ...
 
-    def __add__(self, other: 'GraphWalk[VertT, GeneralizedArcT]') -> 'GraphWalk[VertT, GeneralizedArcT]':
+    def __add__(self, other: 'GraphWalk[VertT, ArcT]') -> 'GraphWalk[VertT, ArcT]':
         ...
 
 
-def get_tail(walk: GraphWalk[VertT, GeneralizedArcT]) -> VertT:
+def get_tail[VertT: BaseVertType, ArcT: Collection[BaseVertType]](walk: GraphWalk[VertT, ArcT]) -> VertT:
     *_, last = walk.iter_vertices()
     return last
 
 
-class DirectedWalk(GraphWalk[VertT, GeneralizedArcT]):
+class DirectedWalk[VertT: BaseVertType, ArcT: Collection[BaseVertType]](GraphWalk[VertT, ArcT]):
     origin: VertT
-    arcs: list[GeneralizedArcT]
+    arcs: list[ArcT]
 
     @classmethod
     def simple(cls, origin: VertT, *rest: VertT) -> 'DirectedWalk[VertT, tuple[VertT, VertT]]':
         return DirectedWalk(origin, list(itertools.pairwise([origin, *rest])))
 
-    def __init__(self, origin: VertT, arcs: list[GeneralizedArcT]) -> None:
+    def __init__(self, origin: VertT, arcs: list[ArcT]) -> None:
         current_tail = origin
 
         for arc in arcs:
@@ -64,7 +64,7 @@ class DirectedWalk(GraphWalk[VertT, GeneralizedArcT]):
     def __str__(self) -> str:
         return ' → '.join(str(v) for v in self.iter_vertices())
 
-    def __add__(self, other: object) -> 'DirectedWalk[VertT, GeneralizedArcT]':
+    def __add__(self, other: object) -> 'DirectedWalk[VertT, ArcT]':
         if not isinstance(other, DirectedWalk):
             return NotImplemented
 
@@ -83,15 +83,15 @@ class DirectedWalk(GraphWalk[VertT, GeneralizedArcT]):
         return self.origin == other.origin and self.arcs == other.arcs
 
 
-class UndirectedWalk(GraphWalk[VertT, GeneralizedArcT]):
+class UndirectedWalk[VertT: BaseVertType, ArcT: Collection[BaseVertType]](GraphWalk[VertT, ArcT]):
     origin: VertT
-    arcs: list[GeneralizedArcT]
+    arcs: list[ArcT]
 
     @classmethod
     def simple(cls, origin: VertT, *rest: VertT) -> 'UndirectedWalk[VertT, frozenset[VertT]]':
         return UndirectedWalk(origin, [frozenset(pair) for pair in itertools.pairwise([origin, *rest])])
 
-    def __init__(self, origin: VertT, arcs: list[GeneralizedArcT]) -> None:
+    def __init__(self, origin: VertT, arcs: list[ArcT]) -> None:
         current_tail = origin
 
         for edge in arcs:
@@ -121,7 +121,7 @@ class UndirectedWalk(GraphWalk[VertT, GeneralizedArcT]):
     def __str__(self) -> str:
         return ' → '.join(str(v) for v in self.iter_vertices())
 
-    def __add__(self, other: object) -> 'UndirectedWalk[VertT, GeneralizedArcT]':
+    def __add__(self, other: object) -> 'UndirectedWalk[VertT, ArcT]':
         if not isinstance(other, UndirectedWalk):
             return NotImplemented
 

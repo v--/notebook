@@ -1,18 +1,14 @@
 from collections.abc import Hashable
 from dataclasses import dataclass, field
-from typing import Generic, TypeVar
 
 
-StateT = TypeVar('StateT', bound=Hashable)
-LabelT = TypeVar('LabelT', bound=Hashable)
-
-
-FiniteAutomatonTransition = tuple[StateT, LabelT, StateT]
+BaseStateType = Hashable
+BaseLabelType = Hashable
 
 
 @dataclass
-class FiniteAutomaton(Generic[StateT, LabelT]):
-    triples: list[FiniteAutomatonTransition] = field(default_factory=list)
+class FiniteAutomaton[StateT: BaseStateType, LabelT: BaseLabelType]:
+    triples: list[tuple[StateT, LabelT, StateT]] = field(default_factory=list)
     initial: set[StateT] = field(default_factory=set)
     terminal: set[StateT] = field(default_factory=set)
 
@@ -56,7 +52,7 @@ class FiniteAutomaton(Generic[StateT, LabelT]):
         return f'Initial: \n\t{self.initial!s}\nTerminal: \n\t{self.terminal!s}\nTransitions: \n\t{transition_str}'
 
 
-def reverse_automaton(aut: FiniteAutomaton[StateT, LabelT]) -> FiniteAutomaton[StateT, LabelT]:
+def reverse_automaton[StateT: BaseStateType, LabelT: BaseLabelType](aut: FiniteAutomaton[StateT, LabelT]) -> FiniteAutomaton[StateT, LabelT]:
     return FiniteAutomaton(
         triples=[(dest, label, src) for (src, label, dest) in aut.triples],
         initial=aut.terminal,
