@@ -12,7 +12,7 @@ def choose(n: int, k: int) -> int:
 
 # This is def:pascal_matrix/lower in the monograph
 def pascals_lower_matrix(n: int) -> Matrix[int]:
-    matrix = zeros(n, dtype=int)
+    matrix = zeros(n)
 
     for i in range(n):
         matrix[i, 0] = 1
@@ -32,7 +32,7 @@ def pascals_upper_matrix(n: int) -> Matrix[int]:
 
 # This is def:pascal_matrix/symmetric in the monograph
 def pascals_symmetric_matrix(n: int) -> Matrix[int]:
-    matrix = zeros(n, dtype=int)
+    matrix = zeros(n)
 
     for i in range(n):
         matrix[i, 0] = 1

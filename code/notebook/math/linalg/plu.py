@@ -8,7 +8,7 @@ from .triangular import lower_triangular_inv, upper_triangular_inv
 
 
 def swapping_matrix(n: int, j: int, k: int) -> Matrix[int]:
-    perm = eye(n, dtype=int)
+    perm = eye(n)
     perm[j, j] = 0
     perm[k, k] = 0
     perm[j, k] = 1
@@ -38,7 +38,7 @@ def plu(a: Matrix) -> tuple[Matrix[int], Matrix, Matrix]:
     assert a.is_square()
 
     l = eye(a.n, dtype=field_of(a.dtype))
-    p = eye(a.n, dtype=int)
+    p = eye(a.n)
 
     for k in range(a.n - 1):
         u = l @ p @ a
