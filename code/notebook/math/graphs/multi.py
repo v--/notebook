@@ -1,5 +1,4 @@
-from collections.abc import Collection
-from typing import Iterator
+from collections.abc import Collection, Iterator
 
 from .generalized import BaseVertType, GeneralizedDirectedGraph, GeneralizedUndirectedGraph
 

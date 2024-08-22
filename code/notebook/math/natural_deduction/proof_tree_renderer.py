@@ -193,7 +193,7 @@ class RuleApplicationRenderer(ProofTreeRenderer):
 
         sublines = list(self.iter_sublines(i))
 
-        for j, (subtree, subline) in enumerate(zip(self.subtrees, sublines)):
+        for j, (subtree, subline) in enumerate(zip(self.subtrees, sublines, strict=True)):
             yield subline
 
             if sum(map(len, sublines[j + 1:])) > 0:

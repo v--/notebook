@@ -1,5 +1,5 @@
+from collections.abc import Iterable
 from dataclasses import dataclass, field, replace
-from typing import Iterable
 
 from ..parsing.parser import Parser
 from ..parsing.whitespace import Whitespace

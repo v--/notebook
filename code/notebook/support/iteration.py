@@ -3,7 +3,7 @@ from collections.abc import Callable, Iterable
 
 
 def iter_common_prefix[T](a: Iterable[T], b: Iterable[T]) -> Iterable[T]:
-    for x, y in zip(a, b):
+    for x, y in zip(a, b, strict=True):
         if x == y:
             yield x
         else:

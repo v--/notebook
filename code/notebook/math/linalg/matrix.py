@@ -205,8 +205,8 @@ class Matrix[N: (int, float, complex)]:
             return NotImplemented
 
         return Matrix([
-            [x + y for x, y in zip(row_a, row_b)]
-            for row_a, row_b in zip(self.get_rows(), other.get_rows())
+            [x + y for x, y in zip(row_a, row_b, strict=True)]
+            for row_a, row_b in zip(self.get_rows(), other.get_rows(), strict=True)
         ])
 
     @overload
@@ -269,7 +269,7 @@ class Matrix[N: (int, float, complex)]:
         return Matrix([
             [
                 # We avoid using sum since it starts at zero, perplexing tropical arithmetic
-                functools.reduce(operator.add, (x * y for x, y in zip(row, col)))
+                functools.reduce(operator.add, (x * y for x, y in zip(row, col, strict=True)))
                 for col in other.get_cols()
             ]
             for row in self.get_rows()

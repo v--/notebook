@@ -1,7 +1,6 @@
 import inspect
 import itertools
-from collections.abc import Callable
-from typing import Sequence
+from collections.abc import Callable, Sequence
 
 from .alphabet import BinaryConnective, PropConstant
 from .formulas import (
@@ -141,7 +140,7 @@ def function_to_cnf(fun: Callable[..., bool]) -> Formula:
     predicates = [PredicateFormula(param.name, ()) for param in fun_params.values()]
     disjuncts: list[Formula] = [
         connect_formulas(
-            [NegationFormula(p) if arg else p for p, arg in zip(predicates, arg_tuple)],
+            [NegationFormula(p) if arg else p for p, arg in zip(predicates, arg_tuple, strict=True)],
             BinaryConnective.disjunction
         )
         for arg_tuple in itertools.product([False, True], repeat=len(fun_params))

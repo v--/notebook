@@ -1,4 +1,4 @@
-from typing import Iterable
+from collections.abc import Iterable
 
 from ....parsing.mixins.whitespace import WhitespaceParserMixin
 from ....parsing.parser import Parser

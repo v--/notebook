@@ -3,7 +3,7 @@ from ..linalg.matrix import zeros
 
 def hamming(v: str, w: str) -> int:
     assert len(v) == len(w)
-    return sum(a != b for a, b in zip(v, w))
+    return sum(a != b for a, b in zip(v, w, strict=True))
 
 
 # This is alg:wagner_fisher in the monograph

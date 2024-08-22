@@ -1,7 +1,8 @@
 import asyncio
 import os.path
+from collections.abc import AsyncIterator
 from fnmatch import fnmatch
-from typing import AsyncIterator, Literal, get_args
+from typing import Literal, get_args
 
 import click
 import structlog

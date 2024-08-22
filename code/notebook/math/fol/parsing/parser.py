@@ -1,5 +1,5 @@
+from collections.abc import Iterable
 from dataclasses import dataclass
-from typing import Iterable
 
 from ....parsing.identifiers import LatinIdentifier
 from ....parsing.mixins.whitespace import WhitespaceParserMixin
@@ -103,7 +103,7 @@ class FOLParser(WhitespaceParserMixin[FOLToken], Parser[FOLToken]):
         a_term: Term | None = None
         a_form: Formula | None = None
 
-        if isinstance(self.peek(), (LatinIdentifier, FunctionSymbolToken)):
+        if isinstance(self.peek(), LatinIdentifier | FunctionSymbolToken):
             a_term = self.parse_term()
         else:
             a_form = self.parse_formula()

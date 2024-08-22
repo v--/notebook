@@ -63,7 +63,7 @@ class RuleApplicationTree(ProofTree):
     ) -> None:
         assert len(rule.premises) == len(subtrees)
 
-        for premise, subtree in zip(rule.premises, subtrees):
+        for premise, subtree in zip(rule.premises, subtrees, strict=True):
             assert apply_substitution(premise.main, substitution) == subtree.conclusion
 
         self.system = system
@@ -74,13 +74,13 @@ class RuleApplicationTree(ProofTree):
 
     @override
     def iter_open_assumptions(self) -> Iterable[MarkedFormula]:
-        for premise, subtree in zip(self.rule.premises, self.subtrees):
+        for premise, subtree in zip(self.rule.premises, self.subtrees, strict=True):
             for open_assumption in subtree.iter_open_assumptions():
                 if premise.discharge is None or apply_substitution(premise.discharge, self.substitution) != open_assumption.formula:
                     yield open_assumption
 
     def _iter_assumptions_closed_at_step(self) -> Iterable[MarkedFormula]:
-        for premise, subtree in zip(self.rule.premises, self.subtrees):
+        for premise, subtree in zip(self.rule.premises, self.subtrees, strict=True):
             if premise.discharge is None:
                 continue
 
@@ -115,7 +115,7 @@ def apply(system: NaturalDeductionSystem, rule_name: str, *args: ProofTree, **kw
         parse_placeholder(key): value for key, value in kwargs.items()
     })
 
-    for subtree, premise in zip(args, rule.premises):
+    for subtree, premise in zip(args, rule.premises, strict=True):
         premise_substitution = build_substitution(premise.main, subtree.conclusion)
         assert premise_substitution is not None
         new_substitution = substitution | premise_substitution

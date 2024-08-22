@@ -1,7 +1,7 @@
 import functools
 import operator
+from collections.abc import Iterable
 from dataclasses import dataclass
-from typing import Iterable
 
 from ..parsing.tokens import TokenEnum, TokenMixin
 from ..parsing.whitespace import Whitespace
@@ -34,7 +34,7 @@ class Group:
 
     def __eq__(self, other: object) -> bool:
         if isinstance(other, Group):
-            return all(a == b for a, b in zip(self.contents, other.contents))
+            return all(a == b for a, b in zip(self.contents, other.contents, strict=True))
 
         return False
 
