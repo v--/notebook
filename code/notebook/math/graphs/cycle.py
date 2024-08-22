@@ -33,9 +33,9 @@ def remove_cycles[VertT: BaseVertType, ArcT: Collection[BaseVertType]](walk: Dir
     if len(walk.arcs) == 0:
         return walk
 
-    new_walk: DirectedWalk[VertT, ArcT] = DirectedWalk(walk.origin, [])
     current_vertex = walk.origin
     last_compatible_index = 0
+    new_walk_arcs = list[ArcT]()
 
     while last_compatible_index + 1 < len(walk.arcs):
         for i, (src, _) in enumerate(walk.arcs):
@@ -43,9 +43,9 @@ def remove_cycles[VertT: BaseVertType, ArcT: Collection[BaseVertType]](walk: Dir
                 last_compatible_index = i
 
         arc = walk.arcs[last_compatible_index]
-        new_walk.arcs.append(arc)
+        new_walk_arcs.append(arc)
 
         _, dest = arc
         current_vertex = cast(VertT, dest)
 
-    return new_walk
+    return DirectedWalk[VertT, ArcT](walk.origin, new_walk_arcs)

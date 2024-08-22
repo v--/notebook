@@ -88,7 +88,7 @@ class MatrixEnvironmentParser(Parser[LaTeXNode]):
         self.skip_whitespace()
 
     def parse_cell(self) -> list[LaTeXNode]:
-        buffer: list[LaTeXNode] = []
+        buffer = list[LaTeXNode]()
 
         while not self.is_at_end() and self.peek() != SpecialNode.ampersand and self.peek() != line_break_command:
             buffer.append(self.peek())
@@ -158,48 +158,48 @@ def align_spaces_in_matrix(env: MatrixEnvironment) -> MatrixEnvironment:
 
 
 def matrix_to_environment(env: MatrixEnvironment) -> Environment:
-    result = Environment(name=env.name, contents=[])
+    contents = list[LaTeXNode]()
 
     if env.options is not None:
         # Put multi-line options on a new line
         if '\n' in str(env.options):
-            result.contents.append(Whitespace.line_break)
-            result.contents.extend([Whitespace.space] * (env.whitespace_prefix_length + INDENT))
+            contents.append(Whitespace.line_break)
+            contents.extend([Whitespace.space] * (env.whitespace_prefix_length + INDENT))
 
-        result.contents.append(env.options)
+        contents.append(env.options)
 
-    result.contents.append(Whitespace.line_break)
+    contents.append(Whitespace.line_break)
 
     w = env.matrix.get_width()
     h = env.matrix.get_height()
 
     if h == 0:
-        result.contents.extend([Whitespace.space] * env.whitespace_prefix_length)
+        contents.extend([Whitespace.space] * env.whitespace_prefix_length)
 
     for i in range(h):
         for j in range(w):
             if j == 0:
-                result.contents.extend([Whitespace.space] * (env.whitespace_prefix_length + INDENT))
+                contents.extend([Whitespace.space] * (env.whitespace_prefix_length + INDENT))
 
-            result.contents.extend(env.matrix[i, j])
+            contents.extend(env.matrix[i, j])
 
             if j < w - 1:
                 if len(stringify_nodes(env.matrix[i, j])) > 0:
-                    result.contents.append(Whitespace.space)
+                    contents.append(Whitespace.space)
 
-                result.contents.append(SpecialNode.ampersand)
+                contents.append(SpecialNode.ampersand)
 
                 if len(stringify_nodes(env.matrix[i, j + 1])) > 0:
-                    result.contents.append(Whitespace.space)
+                    contents.append(Whitespace.space)
             elif i < h - 1:
-                result.contents.append(Whitespace.space)
-                result.contents.append(line_break_command)
-                result.contents.append(Whitespace.line_break)
+                contents.append(Whitespace.space)
+                contents.append(line_break_command)
+                contents.append(Whitespace.line_break)
             else:
-                result.contents.append(Whitespace.line_break)
-                result.contents.extend([Whitespace.space] * env.whitespace_prefix_length)
+                contents.append(Whitespace.line_break)
+                contents.extend([Whitespace.space] * env.whitespace_prefix_length)
 
-    return result
+    return Environment(name=env.name, contents=contents)
 
 
 def format_recurse(nodes: Iterable[LaTeXNode], whitespace_prefix_length: int) -> Iterable[LaTeXNode]:

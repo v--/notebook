@@ -8,8 +8,8 @@ def determinize_recurse[StateT: BaseStateType, LabelT: BaseLabelType](
     visited: set[frozenset[StateT]],
     src_set: frozenset[StateT]
 ) -> list[tuple[frozenset[StateT], LabelT, frozenset[StateT]]]:
-    by_label: dict[LabelT, set[StateT]] = {}
-    triples: list[tuple[frozenset[StateT], LabelT, frozenset[StateT]]] = []
+    by_label = dict[LabelT, set[StateT]]()
+    triples = list[tuple[frozenset[StateT], LabelT, frozenset[StateT]]]()
 
     for src, label, dest in nondet.triples:
         if src in src_set:

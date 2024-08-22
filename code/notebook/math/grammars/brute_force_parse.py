@@ -1,5 +1,5 @@
 import itertools
-from collections.abc import Iterator
+from collections.abc import Iterator, Sequence
 
 from .alphabet import NonTerminal, Terminal
 from .context_free import is_context_free
@@ -8,7 +8,7 @@ from .grammar import Grammar
 from .parse_tree import ParseTree
 
 
-def iter_partitions(seq: str, m: int) -> Iterator[list[str]]:
+def iter_partitions(seq: str, m: int) -> Iterator[Sequence[str]]:
     if m == 1:
         yield [seq]
     else:

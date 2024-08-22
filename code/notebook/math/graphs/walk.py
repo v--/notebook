@@ -1,5 +1,5 @@
 import itertools
-from collections.abc import Collection, Iterable
+from collections.abc import Collection, Iterable, Sequence
 from typing import Protocol, cast, override
 
 from .exceptions import GraphError
@@ -12,7 +12,7 @@ class GraphWalkError(GraphError):
 
 class GraphWalk[VertT: BaseVertType, ArcT: Collection[BaseVertType]](Protocol):
     origin: VertT
-    arcs: list[ArcT]
+    arcs: Sequence[ArcT]
 
     def __len__(self) -> int:
         ...
@@ -31,13 +31,13 @@ def get_tail[VertT: BaseVertType, ArcT: Collection[BaseVertType]](walk: GraphWal
 
 class DirectedWalk[VertT: BaseVertType, ArcT: Collection[BaseVertType]](GraphWalk[VertT, ArcT]):
     origin: VertT
-    arcs: list[ArcT]
+    arcs: Sequence[ArcT]
 
     @classmethod
     def simple(cls, origin: VertT, *rest: VertT) -> 'DirectedWalk[VertT, tuple[VertT, VertT]]':
         return DirectedWalk(origin, list(itertools.pairwise([origin, *rest])))
 
-    def __init__(self, origin: VertT, arcs: list[ArcT]) -> None:
+    def __init__(self, origin: VertT, arcs: Sequence[ArcT]) -> None:
         current_tail = origin
 
         for arc in arcs:
@@ -73,7 +73,7 @@ class DirectedWalk[VertT: BaseVertType, ArcT: Collection[BaseVertType]](GraphWal
 
         return DirectedWalk(
             self.origin,
-            self.arcs + other.arcs
+            [*self.arcs, *other.arcs]
         )
 
     def __eq__(self, other: object) -> bool:
@@ -85,13 +85,13 @@ class DirectedWalk[VertT: BaseVertType, ArcT: Collection[BaseVertType]](GraphWal
 
 class UndirectedWalk[VertT: BaseVertType, ArcT: Collection[BaseVertType]](GraphWalk[VertT, ArcT]):
     origin: VertT
-    arcs: list[ArcT]
+    arcs: Sequence[ArcT]
 
     @classmethod
     def simple(cls, origin: VertT, *rest: VertT) -> 'UndirectedWalk[VertT, frozenset[VertT]]':
         return UndirectedWalk(origin, [frozenset(pair) for pair in itertools.pairwise([origin, *rest])])
 
-    def __init__(self, origin: VertT, arcs: list[ArcT]) -> None:
+    def __init__(self, origin: VertT, arcs: Sequence[ArcT]) -> None:
         current_tail = origin
 
         for edge in arcs:
@@ -130,7 +130,7 @@ class UndirectedWalk[VertT: BaseVertType, ArcT: Collection[BaseVertType]](GraphW
 
         return UndirectedWalk(
             self.origin,
-            self.arcs + other.arcs
+            [*self.arcs, *other.arcs]
         )
 
     def __eq__(self, other: object) -> bool:

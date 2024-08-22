@@ -34,7 +34,7 @@ class ProofTreeRenderer(Protocol):
         ...
 
 
-@dataclass
+@dataclass(frozen=True)
 class AssumptionRenderer(ProofTreeRenderer):
     conclusion: str
     marker: str
@@ -69,7 +69,7 @@ class AssumptionRenderer(ProofTreeRenderer):
         return self.render_line(0) + '\n'
 
 
-@dataclass
+@dataclass(frozen=True)
 class RuleApplicationRenderer(ProofTreeRenderer):
     conclusion: str
     markers: Sequence[str]

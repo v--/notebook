@@ -1,4 +1,4 @@
-from dataclasses import dataclass
+from collections.abc import Sequence
 
 import pytest
 
@@ -18,7 +18,6 @@ class MiscToken(TokenEnum):
 TestToken = LatinIdentifier | GreekIdentifier | MiscToken
 
 
-@dataclass
 class TestTokenizer(IdentifierTokenizerMixin[TestToken], Tokenizer[TestToken]):
     def parse_step(self, head: str) -> TestToken:
         sym = MiscToken.try_match(head)
@@ -36,7 +35,7 @@ class TestTokenizer(IdentifierTokenizerMixin[TestToken], Tokenizer[TestToken]):
         raise self.error('Unexpected symbol')
 
 
-def tokenize(string: str) -> list[TestToken]:
+def tokenize(string: str) -> Sequence[TestToken]:
     with TestTokenizer(string) as tokenizer:
         return list(tokenizer.parse())
 

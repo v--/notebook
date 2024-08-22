@@ -1,5 +1,5 @@
 import functools
-from collections.abc import Callable, Iterable
+from collections.abc import Callable, Iterable, Sequence
 
 
 def iter_common_prefix[T](a: Iterable[T], b: Iterable[T]) -> Iterable[T]:
@@ -10,11 +10,11 @@ def iter_common_prefix[T](a: Iterable[T], b: Iterable[T]) -> Iterable[T]:
             return
 
 
-def find_common_prefix[T](a: Iterable[T], b: Iterable[T]) -> list[T]:
+def find_common_prefix[T](a: Iterable[T], b: Iterable[T]) -> Sequence[T]:
     return list(iter_common_prefix(a, b))
 
 
-def find_common_suffix[T](a: Iterable[T], b: Iterable[T]) -> list[T]:
+def find_common_suffix[T](a: Iterable[T], b: Iterable[T]) -> Sequence[T]:
     return list(
         reversed(
             list(
@@ -27,9 +27,9 @@ def find_common_suffix[T](a: Iterable[T], b: Iterable[T]) -> list[T]:
     )
 
 
-def list_accumulator[T, **P](fun: Callable[P, Iterable[T]]) -> Callable[P, list[T]]:
+def list_accumulator[T, **P](fun: Callable[P, Iterable[T]]) -> Callable[P, Sequence[T]]:
     @functools.wraps(fun)
-    def wrapper(*args: P.args, **kwargs: P.kwargs) -> list[T]:
+    def wrapper(*args: P.args, **kwargs: P.kwargs) -> Sequence[T]:
         return list(fun(*args, **kwargs))
 
     return wrapper

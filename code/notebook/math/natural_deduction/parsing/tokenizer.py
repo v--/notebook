@@ -1,3 +1,5 @@
+from collections.abc import Sequence
+
 from ....parsing.mixins.identifiers import IdentifierTokenizerMixin
 from ....parsing.tokenizer import Tokenizer
 from ....parsing.whitespace import Whitespace
@@ -45,6 +47,6 @@ class NaturalDeductionTokenizer(IdentifierTokenizerMixin[RuleToken], Tokenizer[R
         raise self.error('Unexpected symbol')
 
 
-def tokenize_nd_string(string: str) -> list[RuleToken]:
+def tokenize_nd_string(string: str) -> Sequence[RuleToken]:
     with NaturalDeductionTokenizer(string) as tokenizer:
         return list(tokenizer.parse())

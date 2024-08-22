@@ -1,14 +1,14 @@
 import itertools
 import math
 from collections import Counter
-from collections.abc import Iterable
+from collections.abc import Iterable, Sequence
 from typing import NamedTuple
 
 from .divisibility import divides, gcd, quot
 from .support import SignT, sgn
 
 
-def build_erathostenes_sieve(ceiling: int) -> list[bool]:
+def build_erathostenes_sieve(ceiling: int) -> Sequence[bool]:
     assert ceiling > 0
 
     sieve = [True] * (ceiling + 1)
@@ -92,7 +92,7 @@ def are_coprime(n: int, m: int) -> bool:
     return gcd(n, m) == 1
 
 
-def build_coprimality_sieve(n: int) -> list[bool]:
+def build_coprimality_sieve(n: int) -> Sequence[bool]:
     assert n > 0
 
     factorization = factor(n)

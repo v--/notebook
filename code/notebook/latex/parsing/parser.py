@@ -1,4 +1,4 @@
-from collections.abc import Iterable
+from collections.abc import Iterable, Sequence
 
 from ...parsing.parser import Parser
 from ...parsing.whitespace import Whitespace
@@ -21,17 +21,17 @@ class LaTeXParser(Parser[LaTeXToken]):
         assert self.peek() == opening
         start_index = self.index
         self.advance()
-        group = cls(contents=[])
+        contents = list[LaTeXNode]()
         parsed_iter = iter(self.parse())
 
         while not self.is_at_end() and self.peek() != closing:
-            group.contents.append(next(parsed_iter))
+            contents.append(next(parsed_iter))
 
         if self.is_at_end() or self.peek() != closing:
             raise self.error(f'Unmatched {opening}', i_first_token=start_index)
 
         self.advance()
-        return group
+        return cls(contents)
 
     def parse_environment(self) -> Environment:
         assert isinstance(head := self.peek(), EscapedWordToken)
@@ -48,7 +48,8 @@ class LaTeXParser(Parser[LaTeXToken]):
             raise self.error('No environment name specified', i_first_token=env_start_index)
 
         name_start_index = self.index
-        environment = Environment(name=head.value, contents=[])
+        env_name = head.value
+        contents = list[LaTeXNode]()
         self.advance()
 
         if self.is_at_end() or self.peek() != MiscToken.closing_brace:
@@ -57,7 +58,7 @@ class LaTeXParser(Parser[LaTeXToken]):
         self.advance()
 
         if self.is_at_end():
-            raise self.error(f'Unmatched environment {environment.name!r}', i_first_token=env_start_index)
+            raise self.error(f'Unmatched environment {env_name!r}', i_first_token=env_start_index)
 
         parsed_iter = iter(self.parse())
 
@@ -69,14 +70,14 @@ class LaTeXParser(Parser[LaTeXToken]):
                 and isinstance(next_tokens[2], WordToken) \
                 and next_tokens[3] == MiscToken.closing_brace:
 
-                if next_tokens[2].value == environment.name:
+                if next_tokens[2].value == env_name:
                     self.advance(4)
-                    return environment
+                    return Environment(name=env_name, contents=contents)
 
                 self.advance(3)
-                raise self.error(f'Mismatched environment {environment.name!r}', i_first_token=env_start_index)
+                raise self.error(f'Mismatched environment {env_name!r}', i_first_token=env_start_index)
 
-            environment.contents.append(next(parsed_iter))
+            contents.append(next(parsed_iter))
 
         raise self.error(f'Unmatched {MiscToken.opening_brace}', i_first_token=env_start_index)
 
@@ -123,7 +124,7 @@ class LaTeXParser(Parser[LaTeXToken]):
             yield self.parse_step(self.peek())
 
 
-def parse_latex(string: str) -> list[LaTeXNode]:
+def parse_latex(string: str) -> Sequence[LaTeXNode]:
     tokens = tokenize_latex(string)
 
     with LaTeXParser(tokens) as parser:

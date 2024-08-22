@@ -6,7 +6,7 @@ from ...support.adt.comparable import Comparable
 from .cycle import Cycle
 
 
-@dataclass
+@dataclass(frozen=True)
 class Permutation[T: Comparable]:
     domain: Sequence[T]
     _payload: Mapping[T, T]

@@ -17,7 +17,7 @@ class BetaReduction(Reduction):
 
 def to_function(term: LambdaTerm) -> Callable:
     red = BetaReduction()
-    arg_names: list[str] = []
+    arg_names = list[str]()
 
     current = term
     while isinstance(current, Abstraction):

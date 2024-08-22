@@ -1,15 +1,15 @@
 import functools
 import itertools
-from collections.abc import Iterable
+from collections.abc import Iterable, Sequence
 from dataclasses import dataclass, field
+from typing import NamedTuple
 
 from .alphabet import NonTerminal, Terminal, empty
 
 
-@dataclass
-class GrammarRule:
-    src: list[Terminal | NonTerminal]
-    dest: list[Terminal | NonTerminal]
+class GrammarRule(NamedTuple):
+    src: Sequence[Terminal | NonTerminal]
+    dest: Sequence[Terminal | NonTerminal]
 
     @property
     def src_symbol(self) -> NonTerminal:
@@ -34,9 +34,8 @@ class GrammarRule:
         )
 
 
-@dataclass
-class GrammarSchema:
-    rules: list[GrammarRule] = field(default_factory=list)
+class GrammarSchema(NamedTuple):
+    rules: Sequence[GrammarRule] = field(default_factory=list)
 
     def __str__(self) -> str:
         return '\n'.join(str(rule) for rule in self.rules)
@@ -58,7 +57,7 @@ class GrammarSchema:
         return Grammar(self, start)
 
 
-@dataclass
+@dataclass(frozen=True)
 class Grammar:
     schema: GrammarSchema
     start: NonTerminal

@@ -11,7 +11,7 @@ from .minimal_implicational_logic import (
 
 
 def test_minimal_implicational_derivation_premises() -> None:
-    def t(payload: Sequence[str | Formula]) -> list[str]:
+    def t(payload: Sequence[str | Formula]) -> Sequence[str]:
         derivation = AxiomaticDerivation(
             axiom_schemas=IMPLICATIONAL_AXIOMS,
             payload=[parse_propositional_formula(s) if isinstance(s, str) else s for s in payload]
@@ -28,7 +28,7 @@ def test_minimal_implicational_derivation_premises() -> None:
 
 
 def test_introduce_conclusion_hypothesis() -> None:
-    def t(seq: list[str], /, hypothesis: str) -> list[str]:
+    def t(seq: Sequence[str], /, hypothesis: str) -> Sequence[str]:
         derivation = AxiomaticDerivation(
             axiom_schemas=IMPLICATIONAL_AXIOMS,
             payload=[parse_propositional_formula(s) for s in seq]

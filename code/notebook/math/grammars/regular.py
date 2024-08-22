@@ -35,13 +35,13 @@ def to_finite_automaton(grammar: Grammar) -> FiniteAutomaton:
 
     g2 = remove_epsilon_rules(g1)
     g3 = collapse_renaming_rules(g2)
-    g4_schema = GrammarSchema(rules=[])
+    g4_rules = list[GrammarRule]()
     new_names = set(g3.schema.get_non_terminals())
 
     for rule in g3.schema.rules:
         if is_epsilon_rule(rule):
             assert rule.src == [g3.start]
-            g4_schema.rules.append(rule)
+            g4_rules.append(rule)
             continue
 
         last = rule.src_symbol
@@ -50,10 +50,10 @@ def to_finite_automaton(grammar: Grammar) -> FiniteAutomaton:
         for sym in rule.dest[:last_index]:
             new_var = new_non_terminal(rule.src_symbol.value, frozenset(new_names))
             new_names.add(new_var)
-            g4_schema.rules.append(GrammarRule(src=[last], dest=[sym, new_var]))
+            g4_rules.append(GrammarRule(src=[last], dest=[sym, new_var]))
             last = new_var
 
-        g4_schema.rules.append(GrammarRule(src=[last], dest=rule.dest[last_index:]))
+        g4_rules.append(GrammarRule(src=[last], dest=rule.dest[last_index:]))
 
     final = new_non_terminal('F', frozenset(new_names))
     aut: FiniteAutomaton = FiniteAutomaton(
@@ -62,7 +62,7 @@ def to_finite_automaton(grammar: Grammar) -> FiniteAutomaton:
                 rule.src_symbol.value,
                 rule.dest[0].value,
                 rule.dest[1].value if len(rule.dest) == 2 else final
-            ) for rule in g4_schema.rules if not is_epsilon_rule(rule)
+            ) for rule in g4_rules if not is_epsilon_rule(rule)
         ],
         initial={g3.start.value},
         terminal={final} if is_epsilon_free(g3) else {final, g3.start.value}

@@ -35,7 +35,7 @@ def transitively_reduce_term(term: LambdaTerm, strategy: ReductionStrategy) -> L
     return reduction
 
 
-@dataclass
+@dataclass(frozen=True)
 class NormalOrderStrategy(ReductionStrategy):
     reduction: Reduction
 
@@ -56,7 +56,7 @@ class NormalOrderStrategy(ReductionStrategy):
         return None
 
 
-@dataclass
+@dataclass(frozen=True)
 class ApplicativeOrderStrategy(ReductionStrategy):
     reduction: Reduction
 

@@ -4,7 +4,7 @@ from .exceptions import NaturalDeductionError
 from .rules import Rule
 
 
-@dataclass
+@dataclass(frozen=True)
 class NaturalDeductionSystem:
     rules: frozenset[Rule]
 

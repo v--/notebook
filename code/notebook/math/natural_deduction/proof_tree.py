@@ -1,4 +1,4 @@
-from collections.abc import Iterable
+from collections.abc import Iterable, Sequence
 from typing import Protocol, override
 
 from ..fol.formulas import Formula
@@ -52,14 +52,14 @@ class RuleApplicationTree(ProofTree):
     conclusion: Formula
     rule: Rule
     substitution: Substitution
-    subtrees: list[ProofTree]
+    subtrees: Sequence[ProofTree]
 
     def __init__(
         self,
         system: NaturalDeductionSystem,
         rule: Rule,
         substitution: Substitution,
-        subtrees: list[ProofTree]
+        subtrees: Sequence[ProofTree]
     ) -> None:
         assert len(rule.premises) == len(subtrees)
 
@@ -126,5 +126,5 @@ def apply(system: NaturalDeductionSystem, rule_name: str, *args: ProofTree, **kw
         system,
         rule=rule,
         substitution=substitution,
-        subtrees=list(args)
+        subtrees=args
     )

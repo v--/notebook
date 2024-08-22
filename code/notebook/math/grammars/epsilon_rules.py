@@ -1,4 +1,4 @@
-from collections.abc import Iterable
+from collections.abc import Iterable, Sequence
 
 from .alphabet import NonTerminal, Terminal, new_non_terminal
 from .grammar import Grammar, GrammarRule, GrammarSchema
@@ -39,7 +39,7 @@ def identify_nullable_non_terminals(grammar: Grammar) -> set[NonTerminal]:
     return nullable
 
 
-def iter_rules_without_nullables(nullable: set[NonTerminal], dest: list[NonTerminal | Terminal]) -> Iterable[list[NonTerminal | Terminal]]:
+def iter_rules_without_nullables(nullable: set[NonTerminal], dest: Sequence[NonTerminal | Terminal]) -> Iterable[Sequence[NonTerminal | Terminal]]:
     assert len(dest) > 0
 
     if len(dest) == 1:
@@ -62,17 +62,20 @@ def remove_epsilon_rules(grammar: Grammar) -> Grammar:
         frozenset(grammar.schema.get_non_terminals())
     )
 
-    new_schema = GrammarSchema(rules=[GrammarRule(src=[new_start], dest=[grammar.start])])
+    new_rules = [GrammarRule(src=[new_start], dest=[grammar.start])]
 
     if grammar.start in nullable:
-        new_schema.rules.append(GrammarRule(src=[new_start], dest=[]))
+        new_rules.append(GrammarRule(src=[new_start], dest=[]))
 
     for rule in grammar.schema.rules:
         if is_epsilon_rule(rule):
             continue
 
-        for new_dest in iter_rules_without_nullables(nullable, rule.dest):
-            if len(new_dest) > 0:
-                new_schema.rules.append(GrammarRule(rule.src, new_dest))
+        new_rules.extend(
+            GrammarRule(rule.src, new_dest)
+            for new_dest in iter_rules_without_nullables(nullable, rule.dest)
+            if len(new_dest) > 0
+        )
 
+    new_schema = GrammarSchema(new_rules)
     return new_schema.instantiate(new_start)

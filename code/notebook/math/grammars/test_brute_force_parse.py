@@ -24,10 +24,10 @@ def assert_string_invalid(grammar: Grammar, string: str) -> None:
 
 
 def test_iter_partitions() -> None:
-    assert sorted(iter_partitions('asdf', 1)) == [['asdf']]
-    assert sorted(iter_partitions('asdf', 2)) == [['', 'asdf'], ['a', 'sdf'], ['as', 'df'], ['asd', 'f'], ['asdf', '']]
-    assert ['asdf', '', '', '', ''] in sorted(iter_partitions('asdf', 5))
-    assert ['', 'as', '', 'df', ''] in sorted(iter_partitions('asdf', 5))
+    assert list(iter_partitions('asdf', 1)) == [['asdf']]
+    assert list(iter_partitions('asdf', 2)) == [['', 'asdf'], ['a', 'sdf'], ['as', 'df'], ['asd', 'f'], ['asdf', '']]
+    assert ['asdf', '', '', '', ''] in list(iter_partitions('asdf', 5))
+    assert ['', 'as', '', 'df', ''] in list(iter_partitions('asdf', 5))
 
 
 def test_an_valid(an: Grammar) -> None:

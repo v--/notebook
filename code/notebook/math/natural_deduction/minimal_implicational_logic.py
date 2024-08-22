@@ -1,3 +1,5 @@
+from collections.abc import Sequence
+
 from ..fol.alphabet import BinaryConnective
 from ..fol.formulas import ConnectiveFormula, Formula, is_conditional
 from .axiomatic_derivation import AxiomaticDerivation
@@ -10,7 +12,7 @@ IMPLICATIONAL_AXIOMS = frozenset([
 ])
 
 
-def get_identity_derivation_payload(formula: Formula) -> list[Formula]:
+def get_identity_derivation_payload(formula: Formula) -> Sequence[Formula]:
     """Axiomatic derivation of (P → P)"""
     goal = ConnectiveFormula(BinaryConnective.conditional, formula, formula)
 

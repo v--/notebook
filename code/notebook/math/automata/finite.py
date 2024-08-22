@@ -1,4 +1,4 @@
-from collections.abc import Hashable
+from collections.abc import Hashable, Sequence
 from dataclasses import dataclass, field
 
 
@@ -6,7 +6,7 @@ BaseStateType = Hashable
 BaseLabelType = Hashable
 
 
-@dataclass
+@dataclass(frozen=True)
 class FiniteAutomaton[StateT: BaseStateType, LabelT: BaseLabelType]:
     triples: list[tuple[StateT, LabelT, StateT]] = field(default_factory=list)
     initial: set[StateT] = field(default_factory=set)
@@ -44,7 +44,7 @@ class FiniteAutomaton[StateT: BaseStateType, LabelT: BaseLabelType]:
 
         return True
 
-    def get_states(self) -> list[StateT]:
+    def get_states(self) -> Sequence[StateT]:
         return [src for src, _, _ in self.triples] + [dest for dest, _, _ in self.triples]
 
     def __str__(self) -> str:

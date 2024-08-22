@@ -1,3 +1,4 @@
+from collections.abc import Sequence
 from typing import NamedTuple
 
 from .schemas import FormulaSchema
@@ -16,7 +17,7 @@ class Premise(NamedTuple):
 
 class Rule(NamedTuple):
     name: str
-    premises: list[Premise]
+    premises: Sequence[Premise]
     conclusion: FormulaSchema
 
     def __str__(self) -> str:

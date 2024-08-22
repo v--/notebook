@@ -19,7 +19,7 @@ class SubstitutionError(NaturalDeductionError):
     pass
 
 
-@dataclass
+@dataclass(frozen=True)
 class Substitution:
     mapping: dict[FormulaPlaceholder, Formula]
 
@@ -40,7 +40,7 @@ class Substitution:
 EMPTY_SUBSTITUTION = Substitution({})
 
 
-@dataclass
+@dataclass(frozen=True)
 class SubstitutionApplicationVisitor(FormulaSchemaVisitor[Formula]):
     substitution: Substitution
 
@@ -85,7 +85,7 @@ def substitute(schema: str, **kwargs: Formula) -> Formula:
     return apply_substitution(parse_schema(schema), substitution)
 
 
-@dataclass
+@dataclass(frozen=True)
 class BuildSubstitutionVisitor(FormulaSchemaVisitor[Substitution | None]):
     formula: Formula
 

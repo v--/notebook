@@ -14,12 +14,12 @@ class SpecialChars(StrEnum):
 
 
 @dataclass
-class ErrorHighlighter[T_co: AbstractToken]:
-    seq: Sequence[T_co]
+class ErrorHighlighter[T: AbstractToken]:
+    seq: Sequence[T]
     i_first_token: int
     i_last_token: int
     special: type[SpecialChars] = SpecialChars
-    annotated: Sequence[AnnotatedToken[T_co]] = field(init=False)
+    annotated: Sequence[AnnotatedToken[T]] = field(init=False)
 
     def __post_init__(self) -> None:
         assert 0 <= self.i_first_token <= self.i_last_token < len(self.seq)
@@ -37,7 +37,7 @@ class ErrorHighlighter[T_co: AbstractToken]:
             default=len(self.annotated) - 1
         )
 
-    def _iter_tokens_in_range(self) -> Iterable[AnnotatedToken[T_co]]:
+    def _iter_tokens_in_range(self) -> Iterable[AnnotatedToken[T]]:
         for i in range(self.i_first_token, self.i_last_token + 1):
             yield self.annotated[i]
 

@@ -9,8 +9,8 @@ from .tokens import AbstractToken
 
 
 @dataclass
-class Parser[T_co: AbstractToken]:
-    seq: Sequence[T_co]
+class Parser[T: AbstractToken]:
+    seq: Sequence[T]
     index: int = field(default=0, init=False)
 
     def reset(self) -> None:
@@ -23,13 +23,13 @@ class Parser[T_co: AbstractToken]:
         assert 0 <= self.index + count <= len(self.seq)
         self.index += count
 
-    def peek(self) -> T_co:
+    def peek(self) -> T:
         if self.is_at_end():
             raise self.error('Unexpected end of input')
 
         return self.seq[self.index]
 
-    def peek_multiple(self, count: int) -> Sequence[T_co]:
+    def peek_multiple(self, count: int) -> Sequence[T]:
         return self.seq[self.index: self.index + count]
 
     def assert_exhausted(self) -> None:

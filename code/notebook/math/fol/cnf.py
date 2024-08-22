@@ -138,14 +138,14 @@ def function_to_cnf(fun: Callable[..., bool]) -> Formula:
 
     # These names will generate valid formulas only when they consist of Latin letters
     predicates = [PredicateFormula(param.name, ()) for param in fun_params.values()]
-    disjuncts: list[Formula] = [
+    disjuncts = list[Formula](
         connect_formulas(
             [NegationFormula(p) if arg else p for p, arg in zip(predicates, arg_tuple, strict=True)],
             BinaryConnective.disjunction
         )
         for arg_tuple in itertools.product([False, True], repeat=len(fun_params))
         if fun(*arg_tuple) is False
-    ]
+    )
 
     if len(disjuncts) == 0:  # fun is vacuously true
         p = predicates[0]

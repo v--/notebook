@@ -1,5 +1,5 @@
-from dataclasses import dataclass
 from textwrap import dedent
+from typing import NamedTuple
 
 from .highlighter import ErrorHighlighter
 
@@ -62,8 +62,7 @@ def test_error_multiline_succeed() -> None:
     )
 
 
-@dataclass
-class StringWrapper:
+class StringWrapper(NamedTuple):
     payload: str
 
     def __str__(self) -> str:

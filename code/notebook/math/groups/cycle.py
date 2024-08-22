@@ -3,7 +3,7 @@ from dataclasses import dataclass
 from typing import overload
 
 
-@dataclass
+@dataclass(frozen=True)
 class Cycle[T]:
     payload: Sequence[T]
 

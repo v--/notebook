@@ -1,4 +1,4 @@
-from collections.abc import Iterable
+from collections.abc import Iterable, Sequence
 from dataclasses import dataclass
 
 from ....parsing.identifiers import LatinIdentifier
@@ -61,12 +61,12 @@ class FOLParser(WhitespaceParserMixin[FOLToken], Parser[FOLToken]):
             else:
                 raise self.error('Unexpected token')
 
-    def _parse_function_like(self, arity: int) -> tuple[str, list[Term]]:
+    def _parse_function_like(self, arity: int) -> tuple[str, Sequence[Term]]:
         i_start = self.index
         name = self.peek().value
         self.advance()
 
-        arguments: list[Term] = []
+        arguments = list[Term]()
 
         if not self.is_at_end() and self.peek() == MiscToken.left_parenthesis:
             arguments = list(self.parse_args(arity, i_start))

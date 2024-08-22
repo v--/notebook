@@ -1,4 +1,4 @@
-from collections.abc import Iterable
+from collections.abc import Iterable, Sequence
 
 from .alphabet import NonTerminal, Terminal
 from .epsilon_rules import is_essentially_epsilon_free
@@ -13,7 +13,7 @@ def has_renaming_rules(grammar: Grammar) -> bool:
     return any(is_rule_renaming(rule) for rule in grammar.schema.rules)
 
 
-def iter_renamed_targets(grammar: Grammar, traversed: set[NonTerminal]) -> Iterable[list[NonTerminal | Terminal]]:
+def iter_renamed_targets(grammar: Grammar, traversed: set[NonTerminal]) -> Iterable[Sequence[NonTerminal | Terminal]]:
     if grammar.start in traversed:
         return
 
@@ -28,10 +28,10 @@ def iter_renamed_targets(grammar: Grammar, traversed: set[NonTerminal]) -> Itera
 # This is alg:renaming_rule_collapse in the monograph
 def collapse_renaming_rules(grammar: Grammar) -> Grammar:
     assert is_essentially_epsilon_free(grammar)
-    new_schema = GrammarSchema()
+    new_rules = list[GrammarRule]()
 
     for non_terminal in grammar.schema.get_non_terminals():
         for dest in iter_renamed_targets(grammar.schema.instantiate(non_terminal), set()):
-            new_schema.rules.append(GrammarRule([non_terminal], dest))
+            new_rules.append(GrammarRule([non_terminal], dest))
 
-    return new_schema.instantiate(grammar.start)
+    return GrammarSchema(new_rules).instantiate(grammar.start)

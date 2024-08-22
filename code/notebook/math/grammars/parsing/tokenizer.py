@@ -1,3 +1,5 @@
+from collections.abc import Sequence
+
 from ....parsing.tokenizer import Tokenizer
 from ....parsing.whitespace import Whitespace
 from ..alphabet import NonTerminal, Terminal
@@ -9,7 +11,7 @@ class GrammarTokenizer(Tokenizer[GrammarToken]):
         assert self.peek() == '<'
         start = self.index
         self.advance()
-        buffer: list[str] = []
+        buffer = list[str]()
 
         while self.peek() != '>':
             if self.peek() == '<':
@@ -74,6 +76,6 @@ class GrammarTokenizer(Tokenizer[GrammarToken]):
         raise self.error('Unexpected symbol')
 
 
-def tokenize_bnf(string: str) -> list[GrammarToken]:
+def tokenize_bnf(string: str) -> Sequence[GrammarToken]:
     with GrammarTokenizer(string) as tokenizer:
         return list(tokenizer.parse())

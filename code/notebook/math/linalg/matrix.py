@@ -1,9 +1,20 @@
 import functools
 import operator
-from collections.abc import Iterable
+from collections.abc import Iterable, Sequence
 from typing import cast, overload
 
 from .exceptions import LinAlgError
+
+
+def linearize_index(dimensions: Iterable[int], indices: Iterable[int]) -> int:
+    result = 0
+
+    for index, dim in zip(indices, dimensions, strict=True):
+        assert dim >= 0
+        result *= dim
+        result += index % dim  # We thus support negative indexing
+
+    return result
 
 
 class MatrixError(LinAlgError):
@@ -16,7 +27,7 @@ class Matrix[N: (int, float, complex)]:
     payload: list[N]
     dtype: type[N]
 
-    def __init__(self, rows: list[list[N]], dtype: type[N] | None = None) -> None:
+    def __init__(self, rows: Sequence[Sequence[N]], dtype: type[N] | None = None) -> None:
         for row in rows:
             assert len(row) == len(rows[0])
 
@@ -31,6 +42,10 @@ class Matrix[N: (int, float, complex)]:
             dtype = type(self.payload[0])
 
         self.dtype = dtype
+
+    @property
+    def dimensions(self) -> tuple[int, int]:
+        return (self.m, self.n)
 
     def __i_range(self, i: int | slice) -> Iterable[int]:
         if isinstance(i, int):
@@ -53,26 +68,28 @@ class Matrix[N: (int, float, complex)]:
     @overload
     def __getitem__(self, key: tuple[slice, slice]) -> 'Matrix[N]': ...
     def __getitem__(self, key: tuple[int | slice, int | slice]) -> 'N | Matrix[N]':
-        i, j = key
+        match key:
+            case int(), int():
+                i, j = key
 
-        if isinstance(i, int) and isinstance(j, int):
-            if i >= self.m or i < -self.m:
-                raise IndexError(f'Attempted to access row {i}, but the matrix has only {self.m} rows')
+                if i >= self.m or i < -self.m:
+                    raise IndexError(f'Attempted to access row {i}, but the matrix has only {self.m} rows')
 
-            if j >= self.n or j < -self.n:
-                raise IndexError(f'Attempted to access row {j}, but the matrix has only {self.n} rows')
+                if j >= self.n or j < -self.n:
+                    raise IndexError(f'Attempted to access row {j}, but the matrix has only {self.n} rows')
 
-            return self.payload[(i % self.m) * self.n + (j % self.n)]
+                return self.payload[linearize_index(self.dimensions, key)]
 
-        return Matrix([
-            [self[i_, j_] for j_ in self.__j_range(j)]
-            for i_ in self.__i_range(i)
-        ])
+            case _:
+                return Matrix([
+                    [self[i_, j_] for j_ in self.__j_range(key[1])]
+                    for i_ in self.__i_range(key[0])
+                ])
 
-    def __setitem_islice(self, i: slice, j: int, value: 'N | list[N] | Matrix[N]') -> None:
+    def __setitem_islice(self, i: slice, j: int, value: 'N | Sequence[N] | Matrix[N]') -> None:
         i_range = list(self.__i_range(i))
 
-        if isinstance(value, list):
+        if isinstance(value, Sequence):
             if len(value) == len(i_range):
                 for i_ in i_range:
                     self[i_, j] = value[i_]
@@ -90,10 +107,10 @@ class Matrix[N: (int, float, complex)]:
             for i_ in i_range:
                 self[i_, j] = value
 
-    def __setitem_jslice(self, i: int, j: slice, value: 'N | list[N] | Matrix[N]') -> None:
+    def __setitem_jslice(self, i: int, j: slice, value: 'N | Sequence[N] | Matrix[N]') -> None:
         j_range = list(self.__j_range(j))
 
-        if isinstance(value, list):
+        if isinstance(value, Sequence):
             if len(value) == len(j_range):
                 for j_ in j_range:
                     self[i, j_] = value[j_]
@@ -111,11 +128,11 @@ class Matrix[N: (int, float, complex)]:
             for j_ in j_range:
                 self[i, j_] = value
 
-    def __setitem_slices(self, i: slice, j: slice, value: 'N | list[N] | Matrix[N]') -> None:
+    def __setitem_slices(self, i: slice, j: slice, value: 'N | Sequence[N] | Matrix[N]') -> None:
         i_range = list(self.__i_range(i))
         j_range = list(self.__j_range(j))
 
-        if isinstance(value, list):
+        if isinstance(value, Sequence):
             raise TypeError('Cannot assign a list onto a matrix')
 
         if isinstance(value, Matrix):
@@ -134,28 +151,29 @@ class Matrix[N: (int, float, complex)]:
     @overload
     def __setitem__(self, key: tuple[int, int], value: N) -> None: ...
     @overload
-    def __setitem__(self, key: tuple[int, slice], value: 'N | list[N] | Matrix[N]') -> None: ...
+    def __setitem__(self, key: tuple[int, slice], value: 'N | Sequence[N] | Matrix[N]') -> None: ...
     @overload
-    def __setitem__(self, key: tuple[slice, int], value: 'N | list[N] | Matrix[N]') -> None: ...
+    def __setitem__(self, key: tuple[slice, int], value: 'N | Sequence[N] | Matrix[N]') -> None: ...
     @overload
     def __setitem__(self, key: tuple[slice, slice], value: 'N | Matrix[N]') -> None: ...
-    def __setitem__(self, key: tuple[int | slice, int | slice], value: 'N | list[N] | Matrix[N]') -> None:
-        i, j = key
+    def __setitem__(self, key: tuple[int | slice, int | slice], value: 'N | Sequence[N] | Matrix[N]') -> None:
+        match key:
+            case slice(), slice():
+                self.__setitem_slices(*key, value)
+            case slice(), int():
+                self.__setitem_islice(*key, value)
+            case int(), slice():
+                self.__setitem_jslice(*key, value)
+            case int(), int():
+                i, j = key
 
-        if isinstance(i, slice) and isinstance(j, slice):
-            self.__setitem_slices(i, j, value)
-        elif isinstance(i, slice) and isinstance(j, int):
-            self.__setitem_islice(i, j, value)
-        elif isinstance(i, int) and isinstance(j, slice):
-            self.__setitem_jslice(i, j, value)
-        elif isinstance(i, int) and isinstance(j, int):
-            if i >= self.m or i < -self.m:
-                raise IndexError(f'Attempted to access row {i}, but the matrix has only {self.m} rows')
+                if i >= self.m or i < -self.m:
+                    raise IndexError(f'Attempted to access row {i}, but the matrix has only {self.m} rows')
 
-            if j >= self.n or j < -self.n:
-                raise IndexError(f'Attempted to access row {j}, but the matrix has only {self.n} rows')
+                if j >= self.n or j < -self.n:
+                    raise IndexError(f'Attempted to access row {j}, but the matrix has only {self.n} rows')
 
-            self.payload[(i % self.m) * self.n + (j % self.n)] = cast(N, value)
+                self.payload[linearize_index(self.dimensions, key)] = cast(N, value)
 
     def get_rows(self) -> list[list[N]]:
         return [

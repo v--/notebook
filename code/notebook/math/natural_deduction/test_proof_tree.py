@@ -21,7 +21,7 @@ def test_assumption_tree() -> None:
     )
 
 
-def xtest_implication_introduction_axiom_tree() -> None:
+def test_implication_introduction_axiom_tree() -> None:
     tree = propositional_apply(
         '→⁺',
         propositional_apply(
@@ -43,7 +43,7 @@ def xtest_implication_introduction_axiom_tree() -> None:
     )
 
 
-def xtest_implication_distributivity_axiom_tree() -> None:
+def test_implication_distributivity_axiom_tree() -> None:
     tree = propositional_apply(
         '→⁺',
         propositional_apply(
@@ -87,7 +87,7 @@ def xtest_implication_distributivity_axiom_tree() -> None:
     )
 
 
-def xtest_implicational_identity_tree() -> None:
+def test_implicational_identity_tree() -> None:
     derivation = AxiomaticDerivation(
         axiom_schemas=IMPLICATIONAL_AXIOMS,
         payload=get_identity_derivation_payload(parse_propositional_formula('p'))

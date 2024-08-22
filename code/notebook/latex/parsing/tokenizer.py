@@ -1,4 +1,4 @@
-from collections.abc import Iterable
+from collections.abc import Iterable, Sequence
 
 from ...parsing.tokenizer import Tokenizer
 from ...parsing.whitespace import Whitespace
@@ -44,6 +44,6 @@ class LaTeXTokenizer(Tokenizer[LaTeXToken]):
         return WordToken(self.read_word())
 
 
-def tokenize_latex(string: str) -> list[LaTeXToken]:
+def tokenize_latex(string: str) -> Sequence[LaTeXToken]:
     with LaTeXTokenizer(string) as tokenizer:
         return list(tokenizer.parse())

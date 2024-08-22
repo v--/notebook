@@ -4,7 +4,7 @@ from ..tokenizer import Tokenizer
 from ..tokens import AbstractToken
 
 
-class IdentifierTokenizerMixin[T_co: AbstractToken](Tokenizer[T_co]):
+class IdentifierTokenizerMixin[T: AbstractToken](Tokenizer[T]):
     def _is_at_numeric_suffix(self) -> bool:
         if self.is_at_end():
             return False

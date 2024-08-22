@@ -1,3 +1,4 @@
+from collections.abc import Sequence
 from dataclasses import dataclass
 
 from ....parsing.mixins.identifiers import IdentifierTokenizerMixin
@@ -44,6 +45,6 @@ class FOLTokenizer(IdentifierTokenizerMixin[FOLToken], Tokenizer[FOLToken]):
         raise self.error('Unexpected symbol')
 
 
-def tokenize_fol_string(signature: FOLSignature, string: str) -> list[FOLToken]:
+def tokenize_fol_string(signature: FOLSignature, string: str) -> Sequence[FOLToken]:
     with FOLTokenizer(string, signature) as tokenizer:
         return list(tokenizer.parse())

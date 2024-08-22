@@ -1,22 +1,18 @@
-from collections.abc import Iterable
-from dataclasses import dataclass, field
-from typing import cast
+from collections.abc import Iterable, Sequence
+from typing import NamedTuple
 
 from .alphabet import NonTerminal, Terminal
-from .epsilon_rules import is_epsilon_rule
 from .grammar import GrammarRule
 
 
-@dataclass
-class DerivationStep:
-    payload: list[NonTerminal | Terminal]
+class DerivationStep(NamedTuple):
+    payload: Sequence[NonTerminal | Terminal]
     rule: GrammarRule
 
 
-@dataclass
-class Derivation:
+class Derivation(NamedTuple):
     start: NonTerminal
-    steps: list[DerivationStep]
+    steps: Sequence[DerivationStep]
 
     def __str__(self) -> str:
         return str(self.start) + ' ⟹ ' + ' ⟹ '.join(
@@ -24,10 +20,9 @@ class Derivation:
         )
 
 
-@dataclass
-class ParseTree:
+class ParseTree(NamedTuple):
     payload: NonTerminal | Terminal
-    subtrees: list['ParseTree'] = field(default_factory=list)
+    subtrees: Sequence['ParseTree'] = []
 
     def is_leaf(self) -> bool:
         return len(self.subtrees) == 0
@@ -48,31 +43,42 @@ class ParseTree:
         return hash(self.payload) ^ hash(tuple(self.subtrees))
 
 
-def _insert_subtree_leftmost(tree: ParseTree, subtree: ParseTree) -> bool:
-    for i, child in enumerate(tree.subtrees):
-        if child.payload == subtree.payload and child.is_leaf():
-            tree.subtrees[i] = subtree
-            return True
+def _insert_subtree_leftmost(tree: ParseTree, new_subtree: ParseTree) -> ParseTree | None:
+    subtrees = list(tree.subtrees)
 
-    return any(_insert_subtree_leftmost(child, subtree) for child in tree.subtrees)
+    for i, subtree in enumerate(tree.subtrees):
+        if subtree.payload == new_subtree.payload and subtree.is_leaf():
+            subtrees[i] = new_subtree
+            break
+
+        inserted = _insert_subtree_leftmost(subtree, new_subtree)
+
+        if inserted is not None:
+            subtrees[i] = inserted
+            break
+    else:
+        return None
+
+    return ParseTree(payload=tree.payload, subtrees=subtrees)
 
 
 # This is alg:parse_tree_to_leftmost_derivation in the monograph
 def derivation_to_parse_tree(derivation: Derivation) -> ParseTree:
-    tree = None
+    tree: ParseTree | None = None
 
     for step in derivation.steps:
-        subtree = ParseTree(step.rule.src_symbol)
+        new_subtree = ParseTree(
+            step.rule.src_symbol,
+            [ParseTree(sym) for sym in step.rule.dest]
+        )
 
-        if not is_epsilon_rule(step.rule):
-            subtree.subtrees = [ParseTree(sym) for sym in step.rule.dest]
-
-        if tree is None:
-            tree = subtree
+        if tree is None:  # noqa: SIM108
+            tree = new_subtree
         else:
-            assert _insert_subtree_leftmost(tree, subtree)
+            tree = _insert_subtree_leftmost(tree, new_subtree)
 
-    return cast(ParseTree, tree)
+    assert tree is not None
+    return tree
 
 
 def _iter_leftmost_parse_subtrees(tree: ParseTree) -> Iterable[ParseTree]:
@@ -97,7 +103,11 @@ def _iter_leftmost_derivation_steps(tree: ParseTree) -> Iterable[DerivationStep]
             new_step_payload = rule.dest
         else:
             index = last_step.payload.index(subtree.payload)
-            new_step_payload = last_step.payload[:index] + rule.dest + last_step.payload[index + 1:]
+            new_step_payload = [
+                *last_step.payload[:index],
+                *rule.dest,
+                *last_step.payload[index + 1:]
+            ]
 
         last_step = DerivationStep(new_step_payload, rule)
         yield last_step

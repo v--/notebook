@@ -1,6 +1,4 @@
-import functools
-import operator
-from collections.abc import Iterable
+from collections.abc import Iterable, Sequence
 from dataclasses import dataclass
 
 from ..parsing.tokens import TokenEnum, TokenMixin
@@ -22,15 +20,15 @@ class SpecialNode(TokenEnum):
     caret = '^'
 
 
-@dataclass
+@dataclass(frozen=True)
 class Group:
-    contents: 'list[LaTeXNode]'
+    contents: 'Sequence[LaTeXNode]'
 
     def __str__(self) -> str:
         return ''.join(str(node) for node in self.contents)
 
     def __hash__(self) -> int:
-        return functools.reduce(operator.xor, map(hash, self.contents), 0)
+        return hash(tuple(self.contents))
 
     def __eq__(self, other: object) -> bool:
         if isinstance(other, Group):
@@ -49,7 +47,7 @@ class BracketGroup(Group):
         return '[' + super().__str__() + ']'
 
 
-@dataclass
+@dataclass(frozen=True)
 class Environment(Group):
     name: str
 

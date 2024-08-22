@@ -1,3 +1,4 @@
+
 from ....parsing.identifiers import GreekIdentifier, LatinIdentifier
 from ....parsing.mixins.whitespace import WhitespaceParserMixin
 from ....parsing.parser import Parser
@@ -83,7 +84,7 @@ class NaturalDeductionParser(WhitespaceParserMixin[RuleToken], Parser[RuleToken]
         start = self.index
         self.advance()
 
-        if self.is_at_end() or not isinstance(self.peek(), GreekIdentifier):
+        if self.is_at_end() or not isinstance(self.peek(), LatinIdentifier):
             raise self.error('Expected a variable after the quantifier', i_first_token=start)
 
         var = self.parse_variable()
@@ -155,7 +156,7 @@ class NaturalDeductionParser(WhitespaceParserMixin[RuleToken], Parser[RuleToken]
         else:
             raise self.error('Unclosed parenthesis after rule name', i_first_token=start)
 
-        premises: list[Premise] = []
+        premises = list[Premise]()
 
         while not self.is_at_end() and self.peek() != MiscToken.sequent_relation:
             premises.append(self.parse_premise())

@@ -21,7 +21,7 @@ class AbstractSubstitution(Protocol):
         ...
 
 
-@dataclass
+@dataclass(frozen=True)
 class Substitution(AbstractSubstitution):
     mapping: dict[Variable, LambdaTerm]
 
@@ -48,7 +48,7 @@ class Substitution(AbstractSubstitution):
 EMPTY_SUBSTITUTION = Substitution({})
 
 
-@dataclass
+@dataclass(frozen=True)
 class SubstitutionApplicationVisitor(TermTransformationVisitor):
     substitution: Substitution
 

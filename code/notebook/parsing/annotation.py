@@ -1,25 +1,23 @@
 from collections.abc import Iterable, Sequence
-from dataclasses import dataclass
+from typing import NamedTuple
 
 from ..support.iteration import list_accumulator
 from .tokens import AbstractToken
 
 
-@dataclass
-class SymbolPosition:
+class SymbolPosition(NamedTuple):
     lineno: int
     column: int
 
 
-@dataclass
-class AnnotatedToken[T_co: AbstractToken]:
-    token: T_co
+class AnnotatedToken[T: AbstractToken](NamedTuple):
+    token: T
     start: SymbolPosition
     end: SymbolPosition
 
 
 @list_accumulator
-def annotate_existing_tokens[T_co: AbstractToken](seq: Sequence[T_co]) -> Iterable[AnnotatedToken[T_co]]:
+def annotate_existing_tokens[T: AbstractToken](seq: Sequence[T]) -> Iterable[AnnotatedToken[T]]:
     '''Take a sequence of tokens and add positional annotation.
     We assume that their string representation is accurate.'''
 

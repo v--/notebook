@@ -41,7 +41,7 @@ def number_to_digit(n: int) -> str:
     raise ValueError(f'What digit corresponds to {n}?')
 
 
-@dataclass
+@dataclass(frozen=True)
 class RadixExpansion:
     radix: int
     max_power: int
@@ -120,7 +120,7 @@ def get_number_expansion(x: int | float, radix: int) -> RadixExpansion:
     x_ = abs(x)
 
     max_power = max(itertools.takewhile(lambda k: radix ** k <= x_, itertools.count())) if x_ >= 1 else 0
-    digits: list[int] = []
+    digits = list[int]()
     s_k = 0  # s_{-m-1}
 
     for k in itertools.count(start=-max_power):

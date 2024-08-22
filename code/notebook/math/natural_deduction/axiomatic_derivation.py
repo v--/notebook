@@ -1,5 +1,4 @@
-from collections.abc import Iterable
-from dataclasses import dataclass
+from collections.abc import Iterable, Sequence
 from typing import NamedTuple
 
 from ...exceptions import NotebookCodeError
@@ -29,10 +28,9 @@ class ModusPonensConfig(NamedTuple):
     conclusion_index: int
 
 
-@dataclass
-class AxiomaticDerivation:
+class AxiomaticDerivation(NamedTuple):
     axiom_schemas: frozenset[FormulaSchema]
-    payload: list[Formula]
+    payload: Sequence[Formula]
 
     def __post_init__(self) -> None:
         assert len(self.payload) > 0
