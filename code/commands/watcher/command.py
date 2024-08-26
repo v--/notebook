@@ -22,6 +22,7 @@ async def iter_file_changes(logger: structlog.stdlib.BoundLogger) -> AsyncIterat
         inotify.add_watch(ROOT_PATH / 'text', Mask.MODIFY)
         inotify.add_watch(ROOT_PATH / 'packages', Mask.MODIFY)
         inotify.add_watch(ROOT_PATH / 'figures', Mask.MODIFY)
+        inotify.add_watch(ROOT_PATH / 'images', Mask.MODIFY)
         inotify.add_watch(ROOT_PATH / 'bibliography', Mask.MODIFY)
         inotify.add_watch(ROOT_PATH / 'asymptote', Mask.MODIFY)
         inotify.add_watch(ROOT_PATH / 'classes', Mask.MODIFY)
@@ -58,7 +59,8 @@ async def setup_watchers(target: WatchTarget, base_logger: structlog.stdlib.Boun
             fnmatch(path, 'classes/notebook.cls') or
             fnmatch(path, 'bibliography/*.bib') or
             fnmatch(path, 'text/*.tex') or
-            fnmatch(path, 'output/*.pdf') or
+            fnmatch(path, 'images/*') or
+            fnmatch(path, 'output/*') or
             fnmatch(path, 'packages/*.sty')
         ):
             runner.schedule(LaTeXTask(base_logger, ROOT_PATH / 'notebook.tex'), trigger=str(path))

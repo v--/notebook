@@ -35,6 +35,7 @@
 \RequirePackage[autostyle]{csquotes}
 
 % Misc nonmath packages
+\RequirePackage{subcaption}
 \RequirePackage{xspace}
 \RequirePackage{enumitem}
 \RequirePackage{graphicx}

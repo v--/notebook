@@ -12,7 +12,7 @@ aux:
 output:
 	mkdir --parents output
 
-output/notebook.pdf: $(TEXT_SOURCE) | aux output
+output/notebook.pdf: $(TEXT_SOURCE) images/*.png | aux output
 	$(COMPILER) -output-directory=aux -draftmode notebook.tex
 	biber --quiet aux/notebook.bcf
 	$(COMPILER) -output-directory=aux -draftmode notebook.tex
