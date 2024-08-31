@@ -26,23 +26,23 @@
   {
     \pgfmathsetmacro \correction {#1};
     \pgfmathsetmacro \n {#2};
+    \pgfmathsetmacro \limit {\n - 1};
     \pgfmathsetmacro \k {#3};
 
-    \foreach \i in { 1, ..., \n } {
-      % -7/4 is a correction so that the graph would "stand" upright.
+    \foreach \i in { 0, ..., \limit } {
       \pgfmathtruncatemacro \angle {(\i + \correction) * 360/\n};
       \node[dot] (\i_inner) at (\angle: 1) {};
       \node[dot] (\i_outer) at (\angle: 2) {};
     }
 
-    \foreach \i in { 1, ..., \n } {
-      \pgfmathtruncatemacro \j {Mod(\i + 1 - 1, \n) + 1};
+    \foreach \i in { 0, ..., \limit } {
+      \pgfmathtruncatemacro \j {Mod(\i + 1, \n)};
       \draw[edge] (\i_inner) edge (\i_outer);
       \draw[edge] (\i_outer) edge (\j_outer);
     }
 
-    \foreach \i in { 1, ..., \n } {
-      \pgfmathtruncatemacro \j {Mod(\i + \k - 1, \n) + 1};
+    \foreach \i in { 0, ..., \limit } {
+      \pgfmathtruncatemacro \j {Mod(\i + \k, \n)};
       \draw[edge] (\i_inner) edge (\j_inner);
     }
   }
