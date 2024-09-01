@@ -31,8 +31,8 @@
 
     \foreach \i in { 0, ..., \limit } {
       \pgfmathtruncatemacro \angle {(\i + \correction) * 360/\n};
-      \node[dot] (\i_inner) at (\angle: 1) {};
-      \node[dot] (\i_outer) at (\angle: 2) {};
+      \node[dot] (\i_inner) at (\angle: 0.75) {};
+      \node[dot] (\i_outer) at (\angle: 1.5) {};
     }
 
     \foreach \i in { 0, ..., \limit } {
