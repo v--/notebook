@@ -238,3 +238,207 @@
     Therefore, \( \chi(P_{5,2}) = 3 \).
   \end{thmenum}
 \end{example}
+
+\paragraph{Ramsey numbers}
+
+\begin{example}\label{ex:ramsey_party_problem}
+  Among every group of \( 6 \) people, there will either be \( 3 \) who know each other or \( 3 \) who don't, or even possibly both.
+
+  We can restate this in terms of \hyperref[def:graph_coloring]{graph coloring}. In the \hyperref[def:complete_graph]{complete graph} \( K_6 \), whose vertices we regard as people, color the edges in two colors depending on whether their endpoints know each other. Note that this coloring is not generally \hyperref[def:graph_coloring/proper]{proper}.
+
+  Then the statement is that \( K_6 \) has a \hyperref[def:set_coloring/monochrome]{monochrome} \hyperref[def:triangle_subgraph]{triangle subgraph}. This can be seen in \cref{fig:def:graph_coloring/triangle}.
+
+  This example is generalized by \fullref{thm:ramseys_theorem_single}, which is in turn a special case of \fullref{thm:ramseys_theorem}.
+\end{example}
+
+\begin{lemma}\label{thm:ramsey_number_lemma}
+  Fix positive integers \( s_1, \ldots, s_r \) and let \( A \) be a set with \( s_1 + \cdots + s_r \) elements. Then, for every \hyperref[def:set_partition]{partition} \( A_1, \ldots, A_r \) of \( A \) into \( r \) disjoint subsets, there exists an index \( k \) such that \( S_k \) has at least \( s_k \) elements.
+\end{lemma}
+\begin{proof}
+  Suppose that, for every \( i = 1, \ldots, k \), \( A_k \) has less than \( s_k \) elements. Then the union \( A \) of \( S_1, \ldots, S_m \) has at most
+  \begin{equation*}
+    (s_1 - 1) + (s_2 - 1) + \cdots (s_r - 1)
+  \end{equation*}
+  elements, which contradicts our choice of \( A \).
+
+  Therefore, there exists at least one index \( k \) such that \( A_k \) has at least \( s_k \) elements.
+\end{proof}
+
+\begin{theorem}[Ramsey's theorem]\label{thm:ramseys_theorem}
+  For any \( r \)-tuple of positive integers \( s_1, \ldots, s_r \), there exists a positive integer \( n \) such that, for every (possibly improper) \hyperref[def:graph_coloring]{edge coloring} of the \hyperref[def:complete_graph]{complete graph} \( K_n \) into \( r \) colors, there exists a color \( k \) and a \hyperref[def:complete_subgraph]{complete subgraph} of order \( s_k \) edge-colored with \( k \).
+\end{theorem}
+\begin{comments}
+  \item Frank Ramsey proved a theorem, \cite[thm. B]{Ramsey1930}, stated without using graphs or coloring, amounting to a generalization from edges with \( 2 \) endpoints to more general sets with \( s \geq 1 \) elements.
+
+  The theorem has later been restated and re-proved multiple times. We generalized the statement and proof from \incite[thm. VI.1]{Bollobas1998} to \( r \) colors rather than only \( 2 \).
+\end{comments}
+\begin{proof}
+  Let us denote by \( R(s_1, \ldots, s_r) \) the corresponding Ramsey number, defined in \fullref{def:ramsey_number} as the minimal positive integer \( n \) satisfying the theorem. Then our proof amounts to proving that \( R(s_1, \ldots, s_r) \) is well-defined. We will do this by induction on \( s_1 + \ldots + s_r \).
+
+  \begin{itemize}
+    \item If there exists some \( k \) for which \( s_k = 1 \), then vacuously there exists a complete subgraph of order \( s_k \), whose empty set of edges is vacuously colored by \( k \).
+
+    \item Suppose that the inductive hypothesis holds for \( s_1 + \ldots + s_r - 1 \). As per our base case, we can assume without loss of generality that \( s_k > 1 \) for every \( k = 1, \ldots, r \).
+
+    By the inductive hypothesis, for every \( k \), the Ramsey number
+    \begin{equation*}
+      r_k \coloneqq R(s_1, \ldots, s_k - 1, \ldots, s_r)
+    \end{equation*}
+    is well-defined. Denote their sum by \( n \) and consider any edge coloring \( c \) of \( K_n \).
+
+    Fix any vertex \( u \) of \( K_n \) and consider the partition of its other vertices into sets \( V_1, \ldots, V_r \), where \( v \) is in \( V_k \) if the edge from \( u \) to \( v \) has color \( k \). By \fullref{thm:ramsey_number_lemma}, there exists an index \( k_0 \) such that \( V_{k_0} \) has at least \( r_{k_0} \) elements.
+
+    Let \( V' \) be a subset of \( V_{k_0} \) of exactly \( r_{k_0} \) elements and consider the\hyperref[def:induced_subgraph]{induced subgraph} \( G[V] \). Note that \( G[V] \) is itself complete, and we can apply the theorem to \( G[V] \). By the property of Ramsey numbers, we have the following two possibilities:
+    \begin{itemize}
+      \item \( G[V] \) has a complete subgraph of order \( s_k \) edge-colored by \( k \). This is then also a subgraph of \( K_n \), which proves the inductive step.
+
+      \item Otherwise, \( G[V] \) has a complete subgraph \( H \) of order \( s_{k_0} - 1 \) edge-colored by \( k_0 \). Denote its vertices by \( U \). Then, since all vertices of \( G[V] \) (and hence of \( H \)) are connected to \( u \) by an edge with color \( k_0 \), the subgraph \( K_n[U \cup \set{ u }] \) is a complete subgraph of order \( s_{k_0} \) edge-colored by \( k_0 \).
+    \end{itemize}
+
+    Therefore, \( n \) satisfies the theorem, and \( R(s_1, \ldots, s_r) \) is well-defined since it is bounded from above by \( n \).
+  \end{itemize}
+\end{proof}
+
+\begin{corollary}\label{thm:ramseys_theorem_single}
+  For any positive integer \( s \), there exists a positive integer \( n \) such that, for every (possibly improper) binary \hyperref[def:graph_coloring]{edge coloring} of the \hyperref[def:complete_graph]{complete graph} \( K_n \), there exists a \hyperref[def:set_coloring/monochrome]{monochrome} \hyperref[def:complete_subgraph]{complete subgraph} of order \( s \).
+\end{corollary}
+\begin{proof}
+  Special case of \fullref{thm:ramseys_theorem} when \( r = 2 \) and \( s_1 = s_2 \).
+\end{proof}
+
+\begin{definition}\label{def:ramsey_number}\mcite[183]{Bollobas1998}
+  Given an \( r \)-tuple \( s_1, \ldots, s_r \), where \hi{\( r \geq 2 \)}, we define the \term{Ramsey number} \( R(s_1, \ldots, s_r) \) as the least positive integer for which \fullref{thm:ramseys_theorem} holds.
+\end{definition}
+\begin{comments}
+  \item We avoid defining Ramsey numbers for \( r = 1 \) due to possible ambiguity. \incite[183]{Bollobas1998} defines \( R(s) \) to be \( R(s, s) \), while our general definition would suggest that \( R(s) \) should instead be the degenerate case of monochromatic coloring.
+\end{comments}
+
+\begin{proposition}\label{thm:def:ramsey_number}
+  \hyperref[def:ramsey_number]{Ramsey numbers} have the following basic properties:
+  \begin{thmenum}
+    \thmitem{thm:def:ramsey_number/one} If at least one of \( s_1, \ldots, s_r \) is \( 1 \), then
+    \begin{equation}\label{eq:thm:def:ramsey_number/one}
+      R(s_1, \ldots, s_r) = 1
+    \end{equation}
+
+    \thmitem{thm:def:ramsey_number/symmetric} As a function, \( R(s_1, \ldots, s_r) \) is \hyperref[def:symmetric_function]{symmetric} --- for every permutation \( \sigma \) of \( \set{ 1, \ldots, r } \), we have
+    \begin{equation}\label{eq:thm:def:ramsey_number/symmetric}
+      R(s_1, \ldots, s_r) = R(s_{\sigma(1)}, \ldots, s_{\sigma(r)}).
+    \end{equation}
+
+    \thmitem{thm:def:ramsey_number/two} For \( s \geq 2 \), we have
+    \begin{equation}\label{eq:thm:def:ramsey_number/two}
+      R(s, 2) = R(2, s) = s.
+    \end{equation}
+
+    \thmitem{thm:def:ramsey_number/triangle} If all \( s_1, \ldots, s_r \) are greater than \( 1 \), then
+    \begin{equation}\label{eq:thm:def:ramsey_number/triangle}
+      R(s_1, \ldots, s_r) \leq \sum_{k=1}^r R(s_1, \ldots, s_k - 1, \ldots, s_r).
+    \end{equation}
+
+    \thmitem{thm:def:ramsey_number/superposition} For \( r > 2 \), we have
+    \begin{equation}\label{eq:thm:def:ramsey_number/superposition}
+      R(s_1, \ldots, s_k, s_{k+1}, \ldots, s_r) \leq R(s_1, \ldots, R(s_k, s_{k+1}), \ldots, s_r).
+    \end{equation}
+
+    \thmitem{thm:def:ramsey_number/binary_bound} We have
+    \begin{equation}\label{eq:thm:def:ramsey_number/binary_bound}
+      R(s, t) \leq \binom { (s - 1) + (t - 1) } { s - 1 }
+    \end{equation}
+  \end{thmenum}
+\end{proposition}
+\begin{proof}
+  \SubProofOf{thm:def:ramsey_number/one} There are no edges in the complete graph \( K_1 \), thus its edges are monochrome with respect to any possible edge coloring.
+
+  \SubProofOf{thm:def:ramsey_number/symmetric} The colors have no inherent ordering, so we can reorder them as needed.
+
+  \SubProofOf{thm:def:ramsey_number/two} For any binary edge coloring of \( K_s \), it is possible that one color is used for all edges, hence \( R(s, 2) \geq s \). On the other hand, if there is an edge with the other color, then \( K_s \) has the necessary complete subgraph of order \( 2 \leq s \). Therefore, \( R(s, 2) = s \).
+
+  The other case \( R(2, s) \) follows from \fullref{thm:def:ramsey_number/symmetric}.
+
+  \SubProofOf{thm:def:ramsey_number/triangle} This has been shown in our proof of \fullref{thm:ramseys_theorem}.
+
+  \SubProofOf{thm:def:ramsey_number/superposition} Fix \( r > 2 \) positive integers \( s_1, \ldots, s_r \). Let
+  \begin{equation*}
+    n \coloneqq R(s_1, \ldots, R(s_k, s_{k+1}), \ldots, s_r)
+  \end{equation*}
+  and consider the complete graph \( K_n \) colored by \( r \) colors.
+
+  \begin{itemize}
+    \item If \( K_n \) has a complete subgraph of order \( s_i \) and color \( i \) for \( i < k \) or \( i > k + 1 \), then naturally \eqref{eq:thm:def:ramsey_number/superposition} follows.
+
+    \item Otherwise, \( K_n \) has a complete subgraph of order \( R(s_k, s_{k+1}) \) whose edges may be colored by both \( k \) or \( k + 1 \). But this complete subgraph itself either has a complete subgraph of order \( s_k \) colored by \( k \), or of order \( s_{k+1} \) colored by \( k + 1 \).
+
+    Thus, again, \eqref{eq:thm:def:ramsey_number/superposition} follows.
+  \end{itemize}
+
+  \SubProofOf{thm:def:ramsey_number/binary_bound} We will use induction on \( s + t \) to show \eqref{eq:thm:def:ramsey_number/binary_bound}.
+  \begin{itemize}
+    \item If \( s = 1 \), \fullref{thm:def:ramsey_number/one} implies that \( R(s, t) = 1 \), while
+    \begin{equation*}
+      \binom { (s - 1) + (t - 1) } {t - 1} = \binom { t - 1 } { t - 1 } = 1,
+    \end{equation*}
+    hence the bound holds.
+
+    \item The case \( t = 1 \) follows by symmetry.
+
+    \item Suppose that the inequality holds for \( s + t - 1 \). Without loss of generality, suppose also that \( s > 1 \) and \( t > 1 \), since we have already covered the other cases. Then
+    \begin{balign*}
+      R(s, t)
+      &\reloset {\eqref{eq:thm:def:ramsey_number/triangle}} \leq
+      R(s - 1, t) + R(s, t - 1)
+      \reloset {\T{ind.}} \leq \\ &\leq
+      \binom { (s - 2) + (t - 1) } { t - 1 } + \binom { (s - 1) + (t - 2) } { t - 2 }
+      \reloset {\eqref{eq:thm:pascals_binomial_recurrence}} = \\ &=
+      \binom { (s - 1) + (t - 1) } { t - 1 }.
+    \end{balign*}
+  \end{itemize}
+\end{proof}
+
+\begin{remark}\label{rem:estimating_ramsey_numbers}
+  Providing a better estimate for \hyperref[def:ramsey_number]{Ramsey numbers} than the ones obtained via \fullref{thm:def:ramsey_number/binary_bound} and \fullref{thm:def:ramsey_number/superposition} can be cumbersome.
+
+  For example, by \eqref{eq:thm:def:ramsey_number/binary_bound}, we have \( R(3, 3) \leq 6 \). If we want to verify that equality holds by enumerating all possible binary colorings of smaller graphs and searching for triangle subgraphs, we would have to traverse all edge colorings of \( K_5 \), and, if that fails, of \( K_4 \).
+
+  By \fullref{thm:complete_graph_edge_count}, there are \( \binom n 2 \) edges in the complete graph \( K_n \), hence the number of \( r \)-colorings is
+  \begin{equation*}
+    r^{\binom n 2}.
+  \end{equation*}
+
+  For \( K_5 \), this number is \( 2^{10} = 1024 \).
+
+  Searching for a monochrome triangle may require enumerating all triangles; and there are \( \binom 5 3 = 10 \) triangles in \( K_5 \).
+
+  Thus, if we are to use na\"ive search, we need to perform thousands of checks to compute even the smallest Ramsey numbers.
+
+  Luckily, we know about an explicit edge coloring of \( K_5 \) without monochrome triangles --- see \cref{fig:thm:ramsey_number_33}. This allows us to conclude that \( R(3, 3) = 6 \).
+
+  For slightly larger numbers like \( R(5, 5) \), \eqref{eq:thm:def:ramsey_number/binary_bound} gives an upper bound of \( 70 \). In order to check whether some coloring of \( K_{69} \) has no monochromatic complete subgraphs of order \( 5 \), we need to inspect
+  \begin{equation*}
+    2^{\binom {69} 2} = 2^{2346}
+  \end{equation*}
+  binary edge colorings, and for each of them possibly check all \( \binom {69} 5 = \numprint{11 238 513} \) complete subgraphs of order \( 5 \).
+
+  Therefore, other techniques must be used to give more precise bounds. The survey article \cite[4]{Radziszowski2021} states that, while an exact value for \( R(5, 5) \) is now known, we have the inequalities
+  \begin{equation*}
+    43 \leq R(5, 5) \leq 48.
+  \end{equation*}
+
+  For larger numbers the lower and upper bounds can differ wildly, for example
+  \begin{equation*}
+    798 \leq R(10, 10) \leq \numprint{17 730}.
+  \end{equation*}
+\end{remark}
+
+\begin{proposition}\label{thm:ramsey_number_33}
+  The \hyperref[def:ramsey_number]{Ramsey number} \( R(3, 3) \) is \( 6 \).
+
+  \begin{figure}[!ht]
+    \centering
+    \includegraphics[page=1]{output/thm__ramsey_number_33}
+    \caption{An \hyperref[def:graph_coloring]{edge coloring} of \( K_5 \) with no monochromatic triangles.}\label{fig:thm:ramsey_number_33}
+  \end{figure}
+\end{proposition}
+\begin{proof}
+  \Cref{fig:thm:ramsey_number_33} illustrates an edge coloring of \( K_{5,5} \) without monochrome triangle subgraphs, thus \( R(3, 3) > 5 \). By \fullref{thm:def:ramsey_number/triangle}, we have \( R(3, 3) \leq 6 \).
+\end{proof}

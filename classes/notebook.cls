@@ -41,6 +41,7 @@
 \RequirePackage{graphicx}
 \RequirePackage{graphbox}
 \RequirePackage{csquotes}
+\RequirePackage{numprint}
 \RequirePackage{paracol}
 
 % Don't use separate footnotes in paracol environments
