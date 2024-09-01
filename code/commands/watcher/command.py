@@ -2,7 +2,7 @@ import asyncio
 import os.path
 from collections.abc import AsyncIterator
 from fnmatch import fnmatch
-from typing import Literal, get_args
+from typing import Literal
 
 import click
 import structlog
@@ -34,27 +34,29 @@ async def iter_file_changes(logger: structlog.stdlib.BoundLogger) -> AsyncIterat
                 yield os.path.relpath(event.path, ROOT_PATH)
 
 
-async def setup_watchers(target: WatchTarget, base_logger: structlog.stdlib.BoundLogger) -> None:
+async def setup_watchers(base_logger: structlog.stdlib.BoundLogger, *, no_aux: bool) -> None:
     runner = TaskRunner()
 
     async for path in iter_file_changes(base_logger):
-        if target == 'all' or target == 'figures':
-            if (fnmatch(path, 'classes/*.cls') and not fnmatch(path, 'classes/notebook.cls')) or \
-                fnmatch(path, 'packages/*.sty'):
-                for figure_path in FIGURES_PATH.glob('*.tex'):
-                    runner.schedule(LaTeXTask(base_logger, figure_path), trigger=str(path))
+        if no_aux and (fnmatch(path, '*.cls') or fnmatch(path, '*.sty')):
+            continue
 
-            if fnmatch(path, 'figures/*.tex'):
-                runner.schedule(LaTeXTask(base_logger, path), trigger=str(path))
+        if (fnmatch(path, 'classes/*.cls') and not fnmatch(path, 'classes/notebook.cls')) or \
+            fnmatch(path, 'packages/*.sty'):
+            for figure_path in FIGURES_PATH.glob('*.tex'):
+                runner.schedule(LaTeXTask(base_logger, figure_path), trigger=str(path))
 
-            if fnmatch(path, 'figures/*.asy'):
-                runner.schedule(AsymptoteTask(base_logger, path), trigger=str(path))
+        if fnmatch(path, 'figures/*.tex'):
+            runner.schedule(LaTeXTask(base_logger, path), trigger=str(path))
 
-            if fnmatch(path, 'asymptote/*.asy'):
-                for figure_path in FIGURES_PATH.glob('*.asy'):
-                    runner.schedule(AsymptoteTask(base_logger, figure_path), trigger=str(path))
+        if fnmatch(path, 'figures/*.asy'):
+            runner.schedule(AsymptoteTask(base_logger, path), trigger=str(path))
 
-        if (target == 'all' or target == 'notebook') and not fnmatch(path, 'output/notebook.pdf') and (
+        if fnmatch(path, 'asymptote/*.asy'):
+            for figure_path in FIGURES_PATH.glob('*.asy'):
+                runner.schedule(AsymptoteTask(base_logger, figure_path), trigger=str(path))
+
+        if not fnmatch(path, 'output/notebook.pdf') and (
             fnmatch(path, 'notebook.tex') or
             fnmatch(path, 'classes/notebook.cls') or
             fnmatch(path, 'bibliography/*.bib') or
@@ -67,11 +69,11 @@ async def setup_watchers(target: WatchTarget, base_logger: structlog.stdlib.Boun
 
 
 @click.command()
-@click.argument('target', type=click.Choice(get_args(WatchTarget)))
-def watch(target: WatchTarget) -> None:
+@click.option('--no-aux', is_flag=True)
+def watch(*, no_aux: bool) -> None:
     base_logger = structlog.get_logger().bind(logger='<system>')
 
     try:
-        asyncio.run(setup_watchers(target, base_logger))
+        asyncio.run(setup_watchers(base_logger, no_aux=no_aux))
     except KeyboardInterrupt:
         base_logger.info('Gracefully shutting down')
