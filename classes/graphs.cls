@@ -22,12 +22,12 @@
     \node[dot, label=below:\( f \)] (f) at (4, 0)  {};
   }
 
-\NewDocumentCommand \GeneralizedPetersen {O{0}mm}
+\NewDocumentCommand \GeneralizedPetersen {O{-3/4}mm}
   {
     \pgfmathsetmacro \correction {#1};
     \pgfmathsetmacro \n {#2};
     \pgfmathsetmacro \limit {\n - 1};
-    \pgfmathsetmacro \k {#3};
+    \pgfmathsetmacro \r {#3};
 
     \foreach \i in { 0, ..., \limit } {
       \pgfmathtruncatemacro \angle {(\i + \correction) * 360/\n};
@@ -42,7 +42,7 @@
     }
 
     \foreach \i in { 0, ..., \limit } {
-      \pgfmathtruncatemacro \j {Mod(\i + \k, \n)};
+      \pgfmathtruncatemacro \j {Mod(\i + \r, \n)};
       \draw[edge] (\i_inner) edge (\j_inner);
     }
   }
