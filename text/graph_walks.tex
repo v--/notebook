@@ -478,16 +478,34 @@
   We say that a \hyperref[rem:arbitrary_kind_graph]{graph} is \term[bg=ацикличен (ориентиран граф) (\cite[14]{Мирчев2001}), ru=ацикличный (неориентированный граф); безконтурный (ориентированный граф) (\cite[280]{БелоусовТкачёв2004})]{acyclic} if it satisfies any of the following equivalent properties:
   \begin{thmenum}
     \thmitem{def:acyclic_graph/cycles}\mcite[32]{Harary1969} It has no \hyperref[def:graph_cycle]{cycles}.
-    \thmitem{def:acyclic_graph/walks} It has no nontrivial closed walks.
+    \thmitem{def:acyclic_graph/closed_walks} It has no nontrivial closed walks.
+    \thmitem{def:acyclic_graph/walks} Every walk is a path.
   \end{thmenum}
 \end{definition}
 \begin{comments}
   \item Every acyclic graph is a union of \hyperref[def:tree]{trees}, for which reason acyclic graphs are also called \enquote{forests}. This usage is mentioned by \incite[13]{Diestel2005}, \incite[32]{Harary1969}, \incite[21]{Bollobas1998}, \incite[6]{Knauer2011}, \incite[191]{Erickson2019}, \incite[550]{Rosen1999}, \incite[53]{Емеличев1990} (as \enquote{лес}), \incite[\S 9.1.1]{Новиков2013} (as \enquote{лес}) and \incite[21]{Мирчев2001} (as \enquote{гора}).
+
+  \item Another characterization in the case of finite graphs is given in \fullref{thm:acyclic_graph_walk_length}.
 \end{comments}
 \begin{defproof}
-  \ImplicationSubProof{def:acyclic_graph/cycles}{def:acyclic_graph/walks} Suppose that \( G \) has no cycles. If \( G \) has a nontrivial closed walk, we obtain a cycle via \fullref{alg:closed_walk_to_cycle}, which is a contradiction. Hence, \( G \) has no nontrivial closed walks.
+  \ImplicationSubProof{def:acyclic_graph/cycles}{def:acyclic_graph/closed_walks} Suppose that \( G \) has no cycles. If \( G \) has a nontrivial closed walk, we obtain a cycle via \fullref{alg:closed_walk_to_cycle}, which is a contradiction. Hence, \( G \) has no nontrivial closed walks.
 
-  \ImplicationSubProof{def:acyclic_graph/walks}{def:acyclic_graph/cycles} Special case.
+  \ImplicationSubProof{def:acyclic_graph/closed_walks}{def:acyclic_graph/walk} Suppose that \( G \) has no nontrivial closed walks.
+
+  Consider an arbitrary walk
+  \begin{equation}\label{eq:def:acyclic_graph/closed_walks/proof}
+    v_0 \reloset {e_1} \to v_1 \reloset {e_2} \to \cdots
+  \end{equation}
+
+  If it is not a path, there exist indices \( i < j \) such that \( v_i = v_j \). But then
+  \begin{equation*}
+    v_i \reloset {e_{i+1}} \to v_{i+1} \reloset {e_{i+2}} \to \cdots \reloset {e_{j-1}} \to v_{j-1} \reloset {e_j} \to v_j
+  \end{equation*}
+  is a nontrivial closed walk, which cannot exist by our initial assumption.
+
+  Therefore, \eqref{eq:def:acyclic_graph/closed_walks/proof} is a path.
+
+  \ImplicationSubProof{def:acyclic_graph/walks}{def:acyclic_graph/cycles} Suppose that every walk in \( G \) is a path. Then no cycle can exist in \( G \) because its endpoints would coincide, making it a non-path walk.
 \end{defproof}
 
 \begin{example}\label{ex:def:acyclic_graph}
@@ -510,6 +528,26 @@
   \end{thmenum}
 \end{example}
 
+\begin{proposition}\label{thm:acyclic_graph_walk_length}
+  If the \hyperref[def:graph_walk]{walk} \hyperref[def:graph_walk/length]{lengths} of a graph are bounded, the graph is acyclic.
+
+  Conversely, if a graph of \hi{finite} order \( n \) is \hyperref[def:acyclic_graph]{acyclic}, it has no \hyperref[def:graph_walk]{walk} of length \( n \) or more.
+\end{proposition}
+\begin{proof}
+  \SufficiencySubProof Fix a graph \( G \) and an upper bound \( m \) on the walk lengths of \( G \).
+
+  Given any cycle of length \( l \), we can concatenate it with itself \( \quot(m, l) + 1 \) times to obtain a path of length
+  \begin{equation*}
+    l \cdot \quot(m, l) + l > l \cdot \quot(m, l) + \rem(m, l) = m.
+  \end{equation*}
+
+  Then \( G \) cannot have cycles.
+
+  \NecessitySubProof Conversely, suppose that the acyclic graph \( G \) has order \( n \). In a walk of length \( m \geq n \), there are \( m + 1 \) vertices, hence, by \fullref{thm:pigeonhole_principle}, at least one vertex must repeat. As per \fullref{def:acyclic_graph/walks}, every walk in \( G \) is a path, hence no walk can have repeated vertices.
+
+  Therefore, no walk of length \( m \geq n \) exists in \( G \).
+\end{proof}
+
 \begin{proposition}\label{thm:acyclic_undirected_graph_orientation}
   Any \hyperref[def:graph_orientation]{orientation} of an \hyperref[def:acyclic_graph]{acyclic} \hyperref[def:undirected_multigraph]{undirected multigraph} is also \hyperref[def:acyclic_graph]{acyclic}.
 \end{proposition}
@@ -520,7 +558,7 @@
   Let \( G \) be an acyclic undirected (multi)graph and let \( D \) be an orientation of \( G \). Every generalized walk in \( D \) is an undirected walk in \( G \), in particular every cycle in \( D \) is a cycle in \( G \). Therefore, \( D \) cannot have cycles because \( G \) does not.
 \end{proof}
 
-\begin{proposition}\label{thm:acyclic_undirected_multigraph}
+\begin{proposition}\label{thm:acyclic_directed_multigraph}
   An \hyperref[def:acyclic_graph]{acyclic} \hyperref[def:directed_multigraph]{directed multigraph} has no \hyperref[def:directed_multigraph/loop]{loops} or \hyperref[def:directed_multigraph/opposite]{oppositely directed arcs} (but may have \hyperref[def:directed_multigraph/parallel]{parallel arcs}).
 \end{proposition}
 \begin{proof}

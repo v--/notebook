@@ -68,26 +68,22 @@
   \item Rather than considering explicit weights, \incite[552]{Rosen1999} and \incite[def. 2.1.1]{Knauer2011} define adjacency matrices for directed multigraphs as matrices of the underlying directed graph \hyperref[def:graph_functors/directed_forgetful]{\( U_D(G) \)}, possibly with loops, weighted by the number of parallel arcs. We provide an example in \fullref{ex:def:graph_adjacency_matrix/multi}.
 \end{comments}
 
-\begin{proposition}\label{thm:def:graph_adjacency_matrix}
-  \hyperref[def:graph_adjacency_matrix]{Adjacency matrices} have the following basic properties:
-  \begin{thmenum}
-    \thmitem{thm:def:graph_adjacency_matrix/degree}\mcite[prop. 2.1.4]{Knauer2011} Let \( M = \seq{ m_{i,j} }_{i,j=1}^n \) be the unweighted adjacency matrix of \( G \). Then
-    \begin{align*}
-      \deg_{\op{in}}(v_j)  &= \sum_{k=1}^n m_{k,j}, \\
-      \deg_{\op{out}}(v_i) &= \sum_{k=1}^n m_{i,k}.
-    \end{align*}
-
-    \thmitem{thm:def:graph_adjacency_matrix/power} If \( M \) is the unweighted adjacency matrix of \( G \), then the \( (i, j) \)-th entry of \( M^l \), where \( l \geq 1 \), is the number of \hyperref[def:graph_walk]{walks} of length \( l \) in \( G \).
-
-    \thmitem{thm:def:graph_adjacency_matrix/tropical_power} Suppose that the arcs of \( G = (V, A) \) are weighted by \( w: A \to \BbbR \). Let \( M \) be the weighted adjacency matrix of \( G \).
-
-    Denote by \( R \) the \hyperref[def:tropical_semiring]{\( \min \)-plus semiring} over \( \BbbR \) and consider the power \( M^l \) over \( R \). Then the \( (i, j) \)-th entry of \( M^l \) is the length of the walk from \( v_i \) to \( v_j \) of length \( l \) with least weight.
-  \end{thmenum}
+\begin{proposition}\label{thm:adjacency_matrix_degree}\mcite[prop. 2.1.4]{Knauer2011}
+  Let \( M = \seq{ m_{i,j} }_{i,j=1}^n \) be the unweighted \hyperref[def:graph_adjacency_matrix]{adjacency matrix} of \( G \). Then
+  \begin{align*}
+    \deg_{\op{in}}(v_j)  &= \sum_{k=1}^n m_{k,j}, \\
+    \deg_{\op{out}}(v_i) &= \sum_{k=1}^n m_{i,k}.
+  \end{align*}
 \end{proposition}
 \begin{proof}
-  \SubProofOf{thm:def:graph_adjacency_matrix/degree} Trivial.
+  Trivial.
+\end{proof}
 
-  \SubProofOf{thm:def:graph_adjacency_matrix/power} Let \( n \) be the order of \( G \). We will use induction on \( l \).
+\begin{proposition}\label{thm:adjacency_matrix_power}
+  Let \( M \) be the unweighted \hyperref[def:graph_adjacency_matrix]{adjacency matrix} of \( G \). Then the \( (i, j) \)-th entry of \( M^l \), where \( l \geq 1 \), is the number of \hyperref[def:graph_walk]{walks} of length \( l \) in \( G \).
+\end{proposition}
+\begin{proof}
+  Let \( n \) be the order of \( G \). We will use induction on \( l \).
   \begin{itemize}
     \item In the base case \( l = 1 \) the matrix \( M \) has \( 1 \) as its \( (i,j) \)-th entry whenever there is an arc (i.e. a walk of length \( 1 \)) from \( v_i \) to \( v_j \).
 
@@ -98,8 +94,24 @@
 
     If there are \( m \) walks of length \( l \) from \( v_i \) to \( v_k \) and if there is an arc from \( v_k \) to \( v_j \), these walks can be extended to walks of length \( l + 1 \) from \( v_i \) to \( v_j \). Summing by all \( k \), we obtain \( m^{(l+1)}_{i,j} \).
   \end{itemize}
+\end{proof}
 
-  \SubProofOf{thm:def:graph_adjacency_matrix/tropical_power} Analogous.
+\begin{proposition}\label{thm:adjacency_matrix_tropical_power}
+  Suppose that the arcs of \( G = (V, A) \) are weighted by \( w: A \to \BbbR \). Let \( M \) be the weighted adjacency matrix of \( G \).
+
+  Denote by \( R \) the \hyperref[def:tropical_semiring]{\( \min \)-plus semiring} over \( \BbbR \) and consider the power \( M^l \) over \( R \). Then the \( (i, j) \)-th entry of \( M^l \) is the length of the walk from \( v_i \) to \( v_j \) of length \( l \) with least weight.
+\end{proposition}
+\begin{proof}
+  Analogous to \fullref{thm:adjacency_matrix_power}.
+\end{proof}
+
+\begin{proposition}\label{thm:nilpotent_adjacency_matrix}
+  Let \( M \) be the unweighted \hyperref[def:graph_adjacency_matrix]{adjacency matrix} of \( G \). Then \( G \) is \hyperref[def:acyclic_graph]{acyclic} if and only if \( M \) is \hyperref[def:nilpotent]{nilpotent}.
+\end{proposition}
+\begin{proof}
+  \SufficiencySubProof* Suppose that \( G \) is acyclic. Denote by \( n \) the order of \( G \). By \fullref{thm:acyclic_graph_walk_length}, it has no paths of length \( n \). \Fullref{thm:graph_adjacency_power} then implies that \( M^n = 0 \).
+
+  \NecessitySubProof* Suppose that \( M^k = 0 \) for some positive integer \( k \). By \fullref{thm:acyclic_graph_walk_length}, \( G \) has no paths of length \( k \). \Fullref{thm:acyclic_graph_walk_length} then implies that \( G \) is acyclic.
 \end{proof}
 
 \begin{example}\label{ex:def:graph_adjacency_matrix}
@@ -124,13 +136,13 @@
       \end{blockarray}
     \end{equation}
 
-    \Fullref{thm:def:graph_adjacency_matrix/degree} implies that
+    \Fullref{thm:graph_adjacency_degree} implies that
     \begin{itemize}
       \item \( \deg_{\op{in}}(a) = \deg_{\op{in}}(b) = 1 \) and \( \deg_{\op{in}}(c) = 2 \).
       \item \( \deg_{\op{out}}(a) = 3 \), \( \deg_{\op{in}}(b) = 1 \) and \( \deg_{\op{in}}(c) = 0 \).
     \end{itemize}
 
-    To demonstrate \fullref{thm:def:graph_adjacency_matrix/power}, consider
+    To demonstrate \fullref{thm:graph_adjacency_power}, consider
     \begin{equation*}
       M^2 =
       \begin{blockarray}{cccc}
@@ -235,7 +247,7 @@
   \end{equation*}
   and \( v_1, \ldots, v_n \) is an enumeration of \( V \).
 
-  Finally, let \( M \) be the (weighted or unweighted) \hyperref[def:graph_adjacency_matrix]{adjacency matrix} of \( G \) and let \( M_k \) be the adjacency matrix of \( G_k \). Then \( G \) is \hyperref[def:block_matrix]{block}-\hyperref[def:triangular_matrix]{upper triangular} with
+  Finally, let \( M \) be the (weighted or unweighted) \hyperref[def:graph_adjacency_matrix]{adjacency matrix} of \( G \) and let \( M_k \) be the adjacency matrix of \( G_k \). Then \( M \) is \hyperref[def:block_matrix]{block}-\hyperref[def:triangular_matrix]{upper triangular} with
   \begin{equation}\label{eq:thm:adjacency_matrix_components}
     M = \begin{pmatrix}
       M_1    & R_{1,2} & \cdots & R_{1,s} & R_{1,s} \\
