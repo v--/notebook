@@ -1,10 +1,13 @@
 import itertools
-from collections.abc import Collection, Iterable
+import random
+from collections.abc import Collection, Iterable, Mapping
+from datetime import datetime, timedelta
 from typing import NamedTuple
 
 from ...exceptions import UnreachableException
+from ..graphs.complete import max_edge_count
 from ..graphs.simple import UndirectedGraph
-from ..graphs.subgraphs import enumerate_fixed_order_subgraphs
+from ..graphs.subgraphs import enumerate_fixed_order_subgraphs, max_fixed_order_subgraph_count
 from .binomial import choose
 
 
@@ -45,30 +48,91 @@ def enumerate_sized_colored_subgraphs(graph: EdgeColoredGraph, sizes: Collection
             yield k, subgraph
 
 
-class RamseyNumberComputation(NamedTuple):
-    result: int
+class ExhaustiveRamseyComputationBounds(NamedTuple):
+    result_max: int
+    max_edge_count: int
+    max_subgraphs_per_coloring: Mapping[int, int]
+
+
+def naive_ramsey_computation_bounds(s: int, t: int, *rest: int) -> ExhaustiveRamseyComputationBounds:
+    result_bound = ramsey_upper_bound(s, t, *rest)
+    sizes = [s, t, *rest]
+
+    return ExhaustiveRamseyComputationBounds(
+        result_max=result_bound,
+        max_edge_count=max_edge_count(result_bound - 1),
+        max_subgraphs_per_coloring={s_k: max_fixed_order_subgraph_count(result_bound - 1, s_k) for s_k in sizes}
+    )
+
+
+class ExhaustiveRamseyComputationState(NamedTuple):
+    sizes: Collection[int]
+
+    run_time: timedelta
+
+    result: int | None
+    colorings_traversed: int
     subgraphs_traversed: int
-    args: Collection[int]
 
 
 # This approach is discussed in rem:estimating_ramsey_numbers in the monograph.
-def compute_ramsey_naive(s: int, t: int, *rest: int) -> RamseyNumberComputation:
-    bound = ramsey_upper_bound(s, t, *rest)
+def compute_ramsey_number_exhaustively_streaming(s: int, t: int, *rest: int, batch_size: int | None = None) -> Iterable[ExhaustiveRamseyComputationState]:
+    bounds = naive_ramsey_computation_bounds(s, t, *rest)
     sizes = [s, t, *rest]
 
-    if bound == 1:
-        return RamseyNumberComputation(args=sizes, result=1, subgraphs_traversed=0)
+    if bounds.result_max <= 2:
+        yield ExhaustiveRamseyComputationState(
+            sizes=sizes,
+            result=bounds.result_max,
+            run_time=timedelta(),
+            colorings_traversed=0,
+            subgraphs_traversed=0
+        )
 
-    traversed = 0
+        return
 
-    for n in range(bound - 1, min(sizes) - 1, -1):
+    start = datetime.now()
+    checkpoint = 0
+    subgraphs_traversed = 0
+    colorings_traversed = 0
+
+    for n in range(bounds.result_max - 1, min(sizes) - 1, -1):
         for colored_graph in enumerate_complete_graph_coloring(n=n, r=len(sizes)):
+            colorings_traversed += 1
+
             for k, subgraph in enumerate_sized_colored_subgraphs(colored_graph, sizes):
-                traversed += 1
+                subgraphs_traversed += 1
+
+                if batch_size is not None and subgraphs_traversed - checkpoint >= batch_size:
+                    checkpoint = subgraphs_traversed
+
+                    yield ExhaustiveRamseyComputationState(
+                        sizes=sizes,
+                        colorings_traversed=colorings_traversed,
+                        subgraphs_traversed=subgraphs_traversed,
+                        run_time=datetime.now() - start,
+                        result=None
+                    )
 
                 if all(subgraph.edges.get_label(edge) == k for edge in subgraph.edges):
                     break
             else:
-                return RamseyNumberComputation(args=sizes, result=n + 1, subgraphs_traversed=traversed)
+                yield ExhaustiveRamseyComputationState(
+                    sizes=sizes,
+                    colorings_traversed=colorings_traversed,
+                    subgraphs_traversed=subgraphs_traversed,
+                    run_time=datetime.now() - start,
+                    result=n + 1
+                )
+
+                return
+
+    raise UnreachableException
+
+
+def compute_ramsey_number_exhaustively(s: int, t: int, *rest: int) -> ExhaustiveRamseyComputationState:
+    for state in compute_ramsey_number_exhaustively_streaming(s, t, *rest, batch_size=None):
+        if state.result is not None:
+            return state
 
     raise UnreachableException

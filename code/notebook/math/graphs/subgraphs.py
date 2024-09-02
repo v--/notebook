@@ -14,7 +14,7 @@ def enumerate_fixed_order_subgraphs[VertT: BaseVertType, VertLabelT, ArcLabelT](
     graph: UndirectedGraph[VertT, VertLabelT, ArcLabelT],
     order: int,
 ) -> Iterable[UndirectedGraph[VertT, VertLabelT, ArcLabelT]]:
-    for subset in set(itertools.combinations(list(graph.vertices), order)):
+    for subset in itertools.combinations(graph.vertices, order):
         yield graph.induced(subset)
 
 
