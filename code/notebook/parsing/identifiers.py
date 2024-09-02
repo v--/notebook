@@ -2,6 +2,7 @@ import itertools
 from collections.abc import Iterable
 from typing import Self
 
+from ..exceptions import UnreachableException
 from ..support.unicode import itoa_subscripts
 from .tokens import TokenMixin
 
@@ -48,7 +49,7 @@ def new_latin_identifier(context: frozenset[LatinIdentifier]) -> LatinIdentifier
         if identifier not in context:
             return identifier
 
-    raise AssertionError('This unreachable code is here to satisfy mypy and ruff')
+    raise UnreachableException
 
 
 class GreekIdentifier(Identifier):

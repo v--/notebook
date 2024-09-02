@@ -1,5 +1,6 @@
 from collections.abc import Collection, Hashable, Iterator
-from typing import cast, overload
+from collections.abc import Set as AbstractSet
+from typing import Self, cast, overload
 
 from .exceptions import GraphError
 
@@ -57,6 +58,12 @@ class VertexView[VertT: BaseVertType, ArcT: Collection[BaseVertType], VertLabelT
     def __iter__(self) -> Iterator[VertT]:
         return iter(self._vertex_map)
 
+    def __eq__(self, other: object) -> bool:
+        if not isinstance(other, VertexView):
+            return NotImplemented
+
+        return self._vertex_map == other._vertex_map
+
 
 class GeneralizedArcView[VertT: BaseVertType, ArcT: Collection[BaseVertType], VertLabelT, ArcLabelT]:
     _vertex_map: dict[VertT, VertLabelT]
@@ -99,6 +106,12 @@ class GeneralizedArcView[VertT: BaseVertType, ArcT: Collection[BaseVertType], Ve
     def __iter__(self) -> Iterator[ArcT]:
         return iter(self._arc_map)
 
+    def __eq__(self, other: object) -> bool:
+        if not isinstance(other, GeneralizedArcView):
+            return NotImplemented
+
+        return self._arc_map == other._arc_map
+
 
 class GeneralizedDirectedGraph[VertT: BaseVertType, ArcT: Collection[BaseVertType], VertLabelT, ArcLabelT]:
     vertices: VertexView[VertT, ArcT, VertLabelT, ArcLabelT]
@@ -118,6 +131,20 @@ class GeneralizedDirectedGraph[VertT: BaseVertType, ArcT: Collection[BaseVertTyp
         self.vertices = self.create_vertex_view(vertex_map, arc_map)
         self.arcs = self.create_arc_view(vertex_map, arc_map)
 
+    def dup(self) -> Self:
+        result = type(self)()
+
+        for arc in self.arcs:
+            result.arcs.add(arc, self.arcs.get_label(arc))
+
+        return result
+
+    def __eq__(self, other: object) -> bool:
+        if not isinstance(other, GeneralizedDirectedGraph):
+            return NotImplemented
+
+        return self.vertices == other.vertices and self.arcs == other.arcs
+
 
 class GeneralizedUndirectedGraph[VertT: BaseVertType, ArcT: Collection[BaseVertType], VertLabelT, ArcLabelT]:
     vertices: VertexView[VertT, ArcT, VertLabelT, ArcLabelT]
@@ -136,3 +163,29 @@ class GeneralizedUndirectedGraph[VertT: BaseVertType, ArcT: Collection[BaseVertT
         edge_map: dict[ArcT, ArcLabelT] = {}
         self.vertices = self.create_vertex_view(vertex_map, edge_map)
         self.edges = self.create_edge_view(vertex_map, edge_map)
+
+    def induced(self, vertices: AbstractSet[VertT] | tuple[VertT, ...]) -> Self:
+        result = type(self)()
+
+        for vertex in vertices:
+            result.vertices.add(vertex, self.vertices.get_label(vertex))
+
+        for edge in self.edges:
+            if all(v in vertices for v in edge):
+                result.edges.add(edge, self.edges.get_label(edge))
+
+        return result
+
+    def dup(self) -> Self:
+        result = type(self)()
+
+        for edge in self.edges:
+            result.edges.add(edge, self.edges.get_label(edge))
+
+        return result
+
+    def __eq__(self, other: object) -> bool:
+        if not isinstance(other, GeneralizedUndirectedGraph):
+            return NotImplemented
+
+        return self.vertices == other.vertices and self.edges == other.edges

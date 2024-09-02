@@ -1,6 +1,7 @@
 import itertools
 from typing import Literal
 
+from ...exceptions import UnreachableException
 from ...parsing.tokens import TokenMixin
 from ...support.unicode import atoi_subscripts, is_numeric_subscript, itoa_subscripts
 
@@ -30,7 +31,7 @@ def new_non_terminal(base_name: str, context: frozenset[NonTerminal]) -> NonTerm
         if candidate not in context:
             return candidate
 
-    raise AssertionError('This unreachable code is here to satisfy mypy and ruff')
+    raise UnreachableException
 
 
 Empty = Literal['ε']

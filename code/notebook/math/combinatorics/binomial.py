@@ -2,7 +2,8 @@ from ..linalg.matrix import Matrix, zeros
 
 
 def choose(n: int, k: int) -> int:
-    assert k <= n
+    if k > n:
+        return 0
 
     if k == 0 or k == n:
         return 1
