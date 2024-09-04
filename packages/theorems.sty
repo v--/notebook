@@ -1,8 +1,14 @@
+\ExplSyntaxOn
+
 % Define a custom enum that can be used for obtaining "theorem 13 b)" instead of "item 13 b)" via cleveref
 % Inspired by https://tex.stackexchange.com/a/162905
-\newcounter{counters@theorem}
-\counterwithin{counters@theorem}{subsection}
+\newcounter{counters_theorem}
+\counterwithin{counters_theorem}{subsection}
+% Local equation numbering
 \counterwithin{equation}{subsection}
+% Force paracol to not use per-column counters
+\globalcounter{counters_theorem}
+\globalcounter{equation}
 
 \newlist{thmenum}{enumerate}{2}
 \setlist[thmenum]
@@ -13,16 +19,16 @@
 \setlist[thmenum, 1]
   {
     label=(\alph*),
-    ref=\thecounters@theorem~(\alph*)
+    ref=\thecounters_theorem~(\alph*)
   }
 
 \setlist[thmenum, 2]
   {
     label=(\roman*),
-    ref=\thecounters@theorem~(\alph{thmenumi} \roman*)
+    ref=\thecounters_theorem~(\alph{thmenumi} \roman*)
   }
 
-\declaretheorem[numberlike=counters@theorem, style=plain]
+\declaretheorem[numberlike=counters_theorem, style=plain]
   {
     theorem,
     proposition,
@@ -34,7 +40,7 @@
 % Otherwise there was a conflict on how \MakeUppercase is used.
 \declaretheorem
   [
-    numberlike=counters@theorem,
+    numberlike=counters_theorem,
     style=plain,
     refname={conjecture,conjectures},
     Refname={Conjecture,Conjectures}
@@ -43,26 +49,24 @@
 
 \declaretheorem
   [
-    numberlike=counters@theorem,
+    numberlike=counters_theorem,
     style=definition,
     refname={concept,concepts},
     Refname={Concept,Concepts}
   ]
   {concept}
 
-\declaretheorem[numberlike=counters@theorem, style=definition]
+\declaretheorem[numberlike=counters_theorem, style=definition]
   {
     definition,
     example,
     algorithm
   }
 
-\declaretheorem[numberlike=counters@theorem, style=remark]
+\declaretheorem[numberlike=counters_theorem, style=remark]
   {
     remark
   }
-
-\ExplSyntaxOn
 
 \seq_new:N \l_crefalias_seq
 \seq_set_from_clist:Nn \l_crefalias_seq
@@ -88,8 +92,6 @@
   }
 }
 
-\ExplSyntaxOff
-
 \NewDocumentEnvironment{defproof} {O{Proof of correctness.}}
   {
     \proof[#1]
@@ -107,3 +109,5 @@
   {
     \end{itemize}
   }
+
+\ExplSyntaxOff

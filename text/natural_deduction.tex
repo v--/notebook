@@ -37,8 +37,8 @@
   We have introduced inference rules in \fullref{def:inference_rule} as strings with the intention to use them in vastly differing situations:
   \begin{itemize}
     \item Expressing typing rules in \fullref{subsec:simple_type_theory}. This is done, among others, by \incite{Hindley1997} and \incite{Mimram2020}.
-    \item Succinctly defining relations as shown in \fullref{ex:fixed_point_recursion_for_relations}. This is done by \incite{Mimram2020}.
-    \item Expressing the possibilities of constructing proof trees in natural deduction systems. This is done by \incite{TroelstraSchwichtenberg2000}, \incite{КолмогоровДрагалин2006}, \incite{Герасимов2011} and \incite{Hindley1997}.
+    \item Succinctly defining relations via \fullref{thm:recursively_defined_relations} as shown in \fullref{ex:recursively_defined_relation}. This will be very useful in \fullref{subsec:lambda_calculus_reductions}. Among others, this is also done by \incite{Mimram2020}.
+    \item Expressing the possibilities of constructing proof trees in natural deduction systems. Among others, this is also done by \incite{TroelstraSchwichtenberg2000}, \incite{КолмогоровДрагалин2006}, \incite{Герасимов2011} and \incite{Hindley1997}.
   \end{itemize}
 
   Inference rules can easily be formalized as \hyperref[def:relation]{relations}, as is done by \incite[31]{Герасимов2011} and \incite[115]{CitkinMuravitsky2021}, but this makes it difficult to change the underlying semantics. Other authors only use the notion of inference rules informally.
@@ -118,7 +118,7 @@
 \end{comments}
 
 \begin{definition}\label{def:natural_deduction_proof_tree}\mimprovised
-  Fix a \hyperref[def:propositional_natural_deduction_system]{propositional natural deduction system}. We will define a family of \hyperref[def:ordered_tree]{ordered trees} with labeled nodes, which we will call \term{proof trees}.
+  Fix a \hyperref[def:propositional_natural_deduction_system]{propositional natural deduction system}. We will define a family of \hyperref[def:labeled_tree]{labeled trees}, which we will call \term{proof trees}.
 
   The labels of proof trees are triples consisting of the following objects:
   \begin{thmenum}[series=def:natural_deduction_proof_tree]
@@ -254,7 +254,7 @@
     For convenience, here we must break our convention of rules having unique names.
 
     \thmitem{thm:axiomatic_derivation_as_natural_deduction/mp} For deducing proofs, we introduce the following rule, called \term{modus ponens}:
-    \begin{equation*}\taglabel[\( \logic{MP} \)]{inf:thm:axiomatic_derivation_as_natural_deduction/mp}
+    \begin{equation*}\taglabel[\ensuremath{ \logic{MP} }]{inf:thm:axiomatic_derivation_as_natural_deduction/mp}
       \begin{prooftree}
         \hypo{ \syn\varphi \rightarrow \syn\psi }
         \hypo{ \syn\varphi }
@@ -272,7 +272,7 @@
   The two axiom schemas --- \eqref{eq:def:minimal_implication_logic/intro} and \eqref{eq:def:minimal_implication_logic/dist} --- become inference rules.
 
   Then the final derivation in \fullref{ex:minimal_implication_logic_identity/derivations} can be presented as follows:
-  \begin{equation}\label{eq:ex:minimal_implication_logic_identity/trees/derivation/proof}
+  \begin{equation*}
     \begin{prooftree}[separation=3em]
       \hypo
         {
@@ -281,14 +281,17 @@
 
       \ellipsis
         {
-          \( \begin{array}{l}
-            \psi \mapsto (\varphi \synimplies \varphi)
-            \\
-            \mbox{}
-          \end{array} \)
+          \(
+            \substack
+              {
+                \psi \mapsto (\varphi \synimplies \varphi)
+                \\
+                \mbox{}
+              }
+          \)
         }
         {
-          \eqref{ex:minimal_implication_logic_identity/trees/dagger}
+          \ref{ex:minimal_implication_logic_identity/trees/dagger}
         }
 
       \hypo
@@ -298,14 +301,17 @@
 
       \ellipsis
         {
-          \( \begin{array}{l}
-            \psi \mapsto (\varphi \synimplies \varphi)
-            \\
-            \theta \mapsto \varphi
-          \end{array} \)
+          \(
+            \substack
+              {
+                \psi \mapsto (\varphi \synimplies \varphi)
+                \\
+                \theta \mapsto \varphi
+              }
+          \)
         }
         {
-          \eqref{ex:minimal_implication_logic_identity/trees/dagger}
+          \ref{ex:minimal_implication_logic_identity/trees/dagger}
           \synimplies ((\varphi \synimplies (\varphi \synimplies \varphi)) \synimplies (\varphi \synimplies \varphi))
         }
 
@@ -326,10 +332,10 @@
 
       \infer2[\ref{inf:thm:axiomatic_derivation_as_natural_deduction/mp}]{\varphi \synimplies \varphi}
     \end{prooftree}
-  \end{equation}
+  \end{equation*}
   where
   \begin{equation}\label{ex:minimal_implication_logic_identity/trees/dagger}
-    \varphi \synimplies ((\varphi \synimplies \varphi) \synimplies \varphi).
+    \varphi \synimplies ((\varphi \synimplies \varphi) \synimplies \varphi). \tag{\ensuremath{ \dagger }}
   \end{equation}
 \end{example}
 
@@ -398,163 +404,212 @@
 
   \begin{thmenum}
     \thmitem{def:propositional_natural_deduction_systems/top}\mimprovised Rules for introducing and eliminating \hyperref[def:propositional_alphabet/constants/verum]{verum}:
-    \begin{TwoColumns}
-      \begin{equation*}\taglabel[\( \top^+ \)]{inf:def:propositional_natural_deduction_systems/top/intro}
-        \begin{prooftree}
-          \infer0[\ref{inf:def:propositional_natural_deduction_systems/top/intro}]{ \syntop }
-        \end{prooftree}
-      \end{equation*}
-    \BeginSecondColumn
-      \begin{equation*}\taglabel[\( \top^- \)]{inf:def:propositional_natural_deduction_systems/top/elim}
-        \begin{prooftree}
-          \hypo{ [\syntop] }
-          \ellipsis {} { \syn\varphi }
-          \infer1[\ref{inf:def:propositional_natural_deduction_systems/top/elim}]{ \syn\varphi }
-        \end{prooftree}
-      \end{equation*}
-    \end{TwoColumns}
+    \begin{paracol}{2}
+      \begin{leftcolumn}
+        \leavevmode\vfill
+        \begin{equation*}\taglabel[\ensuremath{ \top^+ }]{inf:def:propositional_natural_deduction_systems/top/intro}
+          \begin{prooftree}
+            \infer0[\ref{inf:def:propositional_natural_deduction_systems/top/intro}]{ \syntop }
+          \end{prooftree}
+        \end{equation*}
+      \end{leftcolumn}
+
+      \begin{rightcolumn}
+        \leavevmode\vfill
+        \begin{equation*}\taglabel[\ensuremath{ \top^- }]{inf:def:propositional_natural_deduction_systems/top/elim}
+          \begin{prooftree}
+            \hypo{ [\syntop] }
+            \ellipsis {} { \syn\varphi }
+            \infer1[\ref{inf:def:propositional_natural_deduction_systems/top/elim}]{ \syn\varphi }
+          \end{prooftree}
+        \end{equation*}
+      \end{rightcolumn}
+    \end{paracol}
 
     \thmitem{def:propositional_natural_deduction_systems/bot} Rules corresponding to \eqref{eq:thm:intuitionistic_tautologies/efq} and \eqref{eq:thm:classical_tautologies/dne}:
-    \begin{TwoColumns}
-      \begin{equation*}\taglabel[\logic{EFQ}]{inf:def:propositional_natural_deduction_systems/bot/efq}
-        \begin{prooftree}
-          \hypo{ \synbot }
-          \infer1[\ref{inf:def:propositional_natural_deduction_systems/bot/efq}]{ \syn\varphi }
-        \end{prooftree}
-      \end{equation*}
+    \begin{paracol}{2}
+      \begin{leftcolumn}
+        \leavevmode\vfill
+        \begin{equation*}\taglabel[\logic{EFQ}]{inf:def:propositional_natural_deduction_systems/bot/efq}
+          \begin{prooftree}
+            \hypo{ \synbot }
+            \infer1[\ref{inf:def:propositional_natural_deduction_systems/bot/efq}]{ \syn\varphi }
+          \end{prooftree}
+        \end{equation*}
+        We add this rule to the system only when working with \hyperref[def:intuitionistic_logic]{intuitionistic object logic}.
+      \end{leftcolumn}
 
-      We add this rule to the system only when working with \hyperref[def:intuitionistic_logic]{intuitionistic object logic}.
-    \BeginSecondColumn
-      \begin{equation*}\taglabel[\logic{DNE}]{inf:def:propositional_natural_deduction_systems/bot/dne}
-        \begin{prooftree}
-          \hypo{ [\synneg \syn\varphi] }
-          \ellipsis {} { \synbot }
-          \infer1[\ref{inf:def:propositional_natural_deduction_systems/bot/dne}]{ \syn\varphi }
-        \end{prooftree}
-      \end{equation*}
-
-      We add this rule to the system only when working with \hyperref[def:classical_logic]{classical object logic}.
-    \end{TwoColumns}
+      \begin{rightcolumn}
+        \leavevmode\vfill
+        \begin{equation*}\taglabel[\logic{DNE}]{inf:def:propositional_natural_deduction_systems/bot/dne}
+          \begin{prooftree}
+            \hypo{ [\synneg \syn\varphi] }
+            \ellipsis {} { \synbot }
+            \infer1[\ref{inf:def:propositional_natural_deduction_systems/bot/dne}]{ \syn\varphi }
+          \end{prooftree}
+        \end{equation*}
+        We add this rule to the system only when working with \hyperref[def:classical_logic]{classical object logic}.
+      \end{rightcolumn}
+    \end{paracol}
 
     \thmitem{def:propositional_natural_deduction_systems/negation}\mcite[46]{Mimram2020} Rules for expressing \hyperref[def:propositional_alphabet/negation]{negation} via the \hyperref[def:propositional_alphabet/constants/falsum]{falsum}:
-    \begin{TwoColumns}
-      \begin{equation*}\taglabel[\( \neg^+ \)]{inf:def:propositional_natural_deduction_systems/neg/intro}
-        \begin{prooftree}
-          \hypo{ [\syn\varphi] }
-          \ellipsis {} { \synbot }
-          \infer1[\ref{inf:def:propositional_natural_deduction_systems/neg/intro}]{ \synneg \syn\varphi }
-        \end{prooftree}
-      \end{equation*}
-    \BeginSecondColumn
-      \begin{equation*}\taglabel[\( \neg^- \)]{inf:def:propositional_natural_deduction_systems/neg/elim}
-        \begin{prooftree}
-          \hypo{ \synneg \syn\varphi }
-          \hypo{ \syn\varphi }
-          \infer2[\ref{inf:def:propositional_natural_deduction_systems/neg/elim}]{ \synbot }
-        \end{prooftree}
-      \end{equation*}
-    \end{TwoColumns}
+    \begin{paracol}{2}
+      \begin{leftcolumn}
+        \leavevmode\vfill
+        \begin{equation*}\taglabel[\ensuremath{ \neg^+ }]{inf:def:propositional_natural_deduction_systems/neg/intro}
+          \begin{prooftree}
+            \hypo{ [\syn\varphi] }
+            \ellipsis {} { \synbot }
+            \infer1[\ref{inf:def:propositional_natural_deduction_systems/neg/intro}]{ \synneg \syn\varphi }
+          \end{prooftree}
+        \end{equation*}
+      \end{leftcolumn}
+
+      \begin{rightcolumn}
+        \leavevmode\vfill
+        \begin{equation*}\taglabel[\ensuremath{ \neg^- }]{inf:def:propositional_natural_deduction_systems/neg/elim}
+          \begin{prooftree}
+            \hypo{ \synneg \syn\varphi }
+            \hypo{ \syn\varphi }
+            \infer2[\ref{inf:def:propositional_natural_deduction_systems/neg/elim}]{ \synbot }
+          \end{prooftree}
+        \end{equation*}
+      \end{rightcolumn}
+    \end{paracol}
 
     \thmitem{def:propositional_natural_deduction_systems/or} Rules for introducing and eliminating \hyperref[def:propositional_alphabet/connectives/disjunction]{disjunctions}:
-    \begin{ThreeColumns}
-      \begin{equation*}\taglabel[\( \vee^{+_L} \)]{inf:def:propositional_natural_deduction_systems/or/intro_left}
-        \begin{prooftree}
-          \hypo{ \syn\varphi }
-          \infer1[\ref{inf:def:propositional_natural_deduction_systems/or/intro_left}]{ \syn\varphi \synvee \syn\psi }
-        \end{prooftree}
-      \end{equation*}
-    \BeginSecondColumn
-      \begin{equation*}\taglabel[\( \vee^{+_R} \)]{inf:def:propositional_natural_deduction_systems/or/intro_right}
-        \begin{prooftree}
-          \hypo{ \syn\psi }
-          \infer1[\ref{inf:def:propositional_natural_deduction_systems/or/intro_right}]{ \syn\varphi \synvee \syn\psi }
-        \end{prooftree}
-      \end{equation*}
-    \BeginThirdColumn
-      \begin{equation*}\taglabel[\( \vee^- \)]{inf:def:propositional_natural_deduction_systems/or/elim}
-        \begin{prooftree}
-          \hypo{ \syn\varphi \synvee \syn\psi }
-          \hypo{ [\syn\varphi] }
-          \ellipsis {} { \syn\theta }
-          \hypo{ [\psi] }
-          \ellipsis {} { \syn\theta }
-          \infer3[\ref{inf:def:propositional_natural_deduction_systems/or/elim}]{ \syn\theta }
-        \end{prooftree}
-      \end{equation*}
-    \end{ThreeColumns}
+    \begin{paracol}{3}
+      \begin{nthcolumn}{0}
+        \leavevmode\vfill
+        \begin{equation*}\taglabel[\ensuremath{ \vee^{+_L} }]{inf:def:propositional_natural_deduction_systems/or/intro_left}
+          \begin{prooftree}
+            \hypo{ \syn\varphi }
+            \infer1[\ref{inf:def:propositional_natural_deduction_systems/or/intro_left}]{ \syn\varphi \synvee \syn\psi }
+          \end{prooftree}
+        \end{equation*}
+      \end{nthcolumn}
+
+      \begin{nthcolumn}{1}
+        \leavevmode\vfill
+        \begin{equation*}\taglabel[\ensuremath{ \vee^{+_R} }]{inf:def:propositional_natural_deduction_systems/or/intro_right}
+          \begin{prooftree}
+            \hypo{ \syn\psi }
+            \infer1[\ref{inf:def:propositional_natural_deduction_systems/or/intro_right}]{ \syn\varphi \synvee \syn\psi }
+          \end{prooftree}
+        \end{equation*}
+      \end{nthcolumn}
+
+      \begin{nthcolumn}{2}
+        \leavevmode\vfill
+        \begin{equation*}\taglabel[\ensuremath{ \vee^- }]{inf:def:propositional_natural_deduction_systems/or/elim}
+          \begin{prooftree}
+            \hypo{ \syn\varphi \synvee \syn\psi }
+            \hypo{ [\syn\varphi] }
+            \ellipsis {} { \syn\theta }
+            \hypo{ [\psi] }
+            \ellipsis {} { \syn\theta }
+            \infer3[\ref{inf:def:propositional_natural_deduction_systems/or/elim}]{ \syn\theta }
+          \end{prooftree}
+        \end{equation*}
+      \end{nthcolumn}
+    \end{paracol}
 
     \thmitem{def:propositional_natural_deduction_systems/and} Rules for introducing and eliminating \hyperref[def:propositional_alphabet/connectives/conjunction]{conjunctions}:
-    \begin{ThreeColumns}
-      \begin{equation*}\taglabel[\( \wedge^+ \)]{inf:def:propositional_natural_deduction_systems/and/intro}
-        \begin{prooftree}
-          \hypo{ \syn\varphi }
-          \hypo{ \syn\psi }
-          \infer2[\ref{inf:def:propositional_natural_deduction_systems/and/intro}]{ \syn\varphi \synwedge \syn\psi }
-        \end{prooftree}
-      \end{equation*}
-    \BeginSecondColumn
-      \begin{equation*}\taglabel[\( \wedge^{-_L} \)]{inf:def:propositional_natural_deduction_systems/and/elim_left}
-        \begin{prooftree}
-          \hypo{ \syn\varphi \synwedge \syn\psi }
-          \infer1[\ref{inf:def:propositional_natural_deduction_systems/and/elim_left}]{ \syn\varphi }
-        \end{prooftree}
-      \end{equation*}
-    \BeginThirdColumn
-      \begin{equation*}\taglabel[\( \wedge^{-_R} \)]{inf:def:propositional_natural_deduction_systems/and/elim_right}
-        \begin{prooftree}
-          \hypo{ \syn\varphi \synwedge \syn\psi }
-          \infer1[\ref{inf:def:propositional_natural_deduction_systems/and/elim_right}]{ \syn\psi }
-        \end{prooftree}
-      \end{equation*}
-    \end{ThreeColumns}
+    \begin{paracol}{3}
+      \begin{nthcolumn}{0}
+        \leavevmode\vfill
+        \begin{equation*}\taglabel[\ensuremath{ \wedge^+ }]{inf:def:propositional_natural_deduction_systems/and/intro}
+          \begin{prooftree}
+            \hypo{ \syn\varphi }
+            \hypo{ \syn\psi }
+            \infer2[\ref{inf:def:propositional_natural_deduction_systems/and/intro}]{ \syn\varphi \synwedge \syn\psi }
+          \end{prooftree}
+        \end{equation*}
+      \end{nthcolumn}
+
+      \begin{nthcolumn}{1}
+        \leavevmode\vfill
+        \begin{equation*}\taglabel[\ensuremath{ \wedge^{-_L} }]{inf:def:propositional_natural_deduction_systems/and/elim_left}
+          \begin{prooftree}
+            \hypo{ \syn\varphi \synwedge \syn\psi }
+            \infer1[\ref{inf:def:propositional_natural_deduction_systems/and/elim_left}]{ \syn\varphi }
+          \end{prooftree}
+        \end{equation*}
+      \end{nthcolumn}
+
+      \begin{nthcolumn}{2}
+        \leavevmode\vfill
+        \begin{equation*}\taglabel[\ensuremath{ \wedge^{-_R} }]{inf:def:propositional_natural_deduction_systems/and/elim_right}
+          \begin{prooftree}
+            \hypo{ \syn\varphi \synwedge \syn\psi }
+            \infer1[\ref{inf:def:propositional_natural_deduction_systems/and/elim_right}]{ \syn\psi }
+          \end{prooftree}
+        \end{equation*}
+      \end{nthcolumn}
+    \end{paracol}
 
     \thmitem{def:propositional_natural_deduction_systems/imp} Rules for introducing and eliminating \hyperref[def:propositional_alphabet/connectives/conditional]{conditionals}:
-    \begin{TwoColumns}
-      \begin{equation*}\taglabel[\( \rightarrow^+ \)]{inf:def:propositional_natural_deduction_systems/imp/intro}
-        \begin{prooftree}
-          \hypo{ [\syn\varphi] }
-          \ellipsis {} { \syn\psi }
-          \infer1[\ref{inf:def:propositional_natural_deduction_systems/imp/intro}]{ \syn\varphi \synimplies \syn\psi }
-        \end{prooftree}
-      \end{equation*}
-    \BeginSecondColumn
-      \begin{equation*}\taglabel[\( \rightarrow^- \)]{inf:def:propositional_natural_deduction_systems/imp/elim}
-        \begin{prooftree}
-          \hypo{ \syn\varphi \synimplies \syn\psi }
-          \hypo{ \syn\varphi }
-          \infer2[\ref{inf:def:propositional_natural_deduction_systems/imp/elim}]{ \syn\psi }
-        \end{prooftree}
-      \end{equation*}
-    \end{TwoColumns}
+    \begin{paracol}{2}
+      \begin{leftcolumn}
+        \leavevmode\vfill
+        \begin{equation*}\taglabel[\ensuremath{ \rightarrow^+ }]{inf:def:propositional_natural_deduction_systems/imp/intro}
+          \begin{prooftree}[center=false]
+            \hypo{ [\syn\varphi] }
+            \ellipsis {} { \syn\psi }
+            \infer1[\ref{inf:def:propositional_natural_deduction_systems/imp/intro}]{ \syn\varphi \synimplies \syn\psi }
+          \end{prooftree}
+        \end{equation*}
+      \end{leftcolumn}
+
+      \begin{rightcolumn}
+        \leavevmode\vfill
+        \begin{equation*}\taglabel[\ensuremath{ \rightarrow^- }]{inf:def:propositional_natural_deduction_systems/imp/elim}
+          \begin{prooftree}[center=false]
+            \hypo{ \syn\varphi \synimplies \syn\psi }
+            \hypo{ \syn\varphi }
+            \infer2[\ref{inf:def:propositional_natural_deduction_systems/imp/elim}]{ \syn\psi }
+          \end{prooftree}
+        \end{equation*}
+      \end{rightcolumn}
+    \end{paracol}
 
     \thmitem{def:propositional_natural_deduction_systems/iff}\mimprovised Rules for introducing and eliminating \hyperref[def:propositional_alphabet/connectives/biconditional]{biconditionals}:
-    \begin{ThreeColumns}
-      \begin{equation*}\taglabel[\( \leftrightarrow^+ \)]{inf:def:propositional_natural_deduction_systems/iff/intro}
-        \begin{prooftree}
-          \hypo{ [\syn\varphi] }
-          \ellipsis {} { \syn\psi }
-          \hypo{ [\syn\psi] }
-          \ellipsis {} { \syn\varphi }
-          \infer2[\ref{inf:def:propositional_natural_deduction_systems/iff/intro}]{ \syn\varphi \syniff \syn\psi }
-        \end{prooftree}
-      \end{equation*}
-    \BeginSecondColumn
-      \begin{equation*}\taglabel[\( \leftrightarrow^{-_L} \)]{inf:def:propositional_natural_deduction_systems/iff/elim_left}
-        \begin{prooftree}
-          \hypo{ \syn\varphi \syniff \syn\psi }
-          \hypo{ \syn\varphi }
-          \infer2[\ref{inf:def:propositional_natural_deduction_systems/iff/elim_left}]{ \syn\psi }
-        \end{prooftree}
-      \end{equation*}
-    \BeginThirdColumn
-      \begin{equation*}\taglabel[\( \leftrightarrow^{-_R} \)]{inf:def:propositional_natural_deduction_systems/iff/elim_right}
-        \begin{prooftree}
-          \hypo{ \syn\varphi \syniff \syn\psi }
-          \hypo{ \syn\psi }
-          \infer2[\ref{inf:def:propositional_natural_deduction_systems/iff/elim_right}]{ \syn\varphi }
-        \end{prooftree}
-      \end{equation*}
-    \end{ThreeColumns}
+    \begin{paracol}{3}
+      \begin{leftcolumn}
+        \leavevmode\vfill
+        \begin{equation*}\taglabel[\ensuremath{ \leftrightarrow^+ }]{inf:def:propositional_natural_deduction_systems/iff/intro}
+          \begin{prooftree}
+            \hypo{ [\syn\varphi] }
+            \ellipsis {} { \syn\psi }
+            \hypo{ [\syn\psi] }
+            \ellipsis {} { \syn\varphi }
+            \infer2[\ref{inf:def:propositional_natural_deduction_systems/iff/intro}]{ \syn\varphi \syniff \syn\psi }
+          \end{prooftree}
+        \end{equation*}
+      \end{leftcolumn}
+
+      \begin{nthcolumn}{1}
+        \leavevmode\vfill
+        \begin{equation*}\taglabel[\ensuremath{ \leftrightarrow^{-_L} }]{inf:def:propositional_natural_deduction_systems/iff/elim_left}
+          \begin{prooftree}
+            \hypo{ \syn\varphi \syniff \syn\psi }
+            \hypo{ \syn\varphi }
+            \infer2[\ref{inf:def:propositional_natural_deduction_systems/iff/elim_left}]{ \syn\psi }
+          \end{prooftree}
+        \end{equation*}
+      \end{nthcolumn}
+
+      \begin{nthcolumn}{2}
+        \leavevmode\vfill
+        \begin{equation*}\taglabel[\ensuremath{ \leftrightarrow^{-_R} }]{inf:def:propositional_natural_deduction_systems/iff/elim_right}
+          \begin{prooftree}
+            \hypo{ \syn\varphi \syniff \syn\psi }
+            \hypo{ \syn\psi }
+            \infer2[\ref{inf:def:propositional_natural_deduction_systems/iff/elim_right}]{ \syn\varphi }
+          \end{prooftree}
+        \end{equation*}
+      \end{nthcolumn}
+    \end{paracol}
   \end{thmenum}
 \end{definition}
 \begin{comments}
@@ -876,7 +931,7 @@
 \end{proof}
 
 \begin{theorem}[Propositional natural deduction soundness]\label{thm:propositional_natural_deduction_soundness}
-  The minimal, intuitionistic and classical \hyperref[def:propositional_natural_deduction_systems]{propositional natural deduction systems} are \hyperref[def:logical_framework/soundness]{sound} with respect to \hyperref[def:minimal_propositional_semantics]{minimal}, \hyperref[def:propositional_semantics]{intuitionistic} and \hyperref[def:propositional_semantics]{classical} semantics.
+  The minimal, intuitionistic and classical \hyperref[def:propositional_natural_deduction_systems]{propositional natural deduction systems} are \hyperref[def:logical_framework/soundness]{sound} with respect to \hyperref[def:minimal_propositional_semantics]{minimal}, \hyperref[def:propositional_semantics/intuitionistic]{intuitionistic} and \hyperref[def:propositional_semantics/classical]{classical} semantics.
 \end{theorem}
 \begin{comments}
   \item See \fullref{rem:soundness_and_completeness_theorem_list} for a list of soundness and completeness theorems.

@@ -1,4 +1,4 @@
-from .ramsey import compute_ramsey_number_exhaustively, naive_ramsey_computation_bounds, ramsey_upper_bound, compute_ramsey_number_exhaustively_streaming
+from .ramsey import compute_ramsey_number_exhaustively, naive_ramsey_computation_bounds, ramsey_upper_bound
 
 
 def test_ramsey_upper_bound() -> None:

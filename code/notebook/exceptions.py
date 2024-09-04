@@ -1,6 +1,10 @@
-class NotebookCodeError(Exception):
+class NotebookCodeException(Exception):  # noqa: N818
     pass
 
 
-class UnreachableException(NotebookCodeError):
+class NotebookCodeError(NotebookCodeException):
+    pass
+
+
+class UnreachableException(NotebookCodeException):
     pass

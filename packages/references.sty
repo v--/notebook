@@ -59,17 +59,16 @@
       }
   }
 
-\NewDocumentCommand \mnote {m}
+\NewDocumentCommand \mnote {sm}
   {
-    \leavevmode
+    \leavevmode@ifvmode
     \marginpar
       {
         \raggedleft
         \scriptsize
         % For some reason, the text is sometimes not black, e.g. has the color of a hyperlink
-        \textcolor {black} {#1}
+        \textcolor {black} {#2}
       }
-    \ignorespaces
   }
 
 \NewDocumentCommand \mimprovised {o}
@@ -80,19 +79,28 @@
       }
   }
 
-\NewDocumentCommand \mcite {om}
+\NewDocumentCommand \mcite {som}
   {
-    \mnote
+    \IfValueTF {#1}
       {
-        \IfValueTF {#1}
-          { \cite[#1]{#2} }
-          { \cite{#2} }
+        \mnote*
+          {
+            \IfValueTF {#2} { \cite[#2]{#3} } { \cite{#3} }
+          }
+      }
+      {
+        \mnote
+          {
+            \IfValueTF {#2} { \cite[#2]{#3} } { \cite{#3} }
+          }
       }
   }
 
-\NewDocumentCommand \incite {O{}m}
+\NewDocumentCommand \incite {sO{}m}
   {
-    \citeauthor{#2}~in~\cite[#1]{#2}
+    \IfValueTF {#1}
+      { \citeauthor{#3}~in~\cite[#2]{#3} }
+      { In~\cite[#2]{#3},~\citeauthor{#3} }
   }
 
 %
@@ -136,4 +144,3 @@
   }
 
 \ExplSyntaxOff
-

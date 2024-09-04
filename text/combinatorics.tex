@@ -4,52 +4,41 @@ Combinatorics originated as the study of problems related to counting. This stud
 
 Results in combinatorics are traditionally obtained for \hyperref[def:set_finiteness]{finite sets} and \hyperref[def:integer_signum]{positive integers}, however many of them can be easily generalized. For example, \fullref{thm:pigeonhole_principle} is stated in terms of cardinals rather than positive integers, and we generally impose no cardinality restriction on \hyperref[def:directed_graph]{graphs}.
 
-Some basic definitions and theorems are stated in \fullref{subsec:augmented_sets} and \fullref{subsec:enumerative_combinatorics}, however most of the section is concerned with graphs --- see \fullref{subsec:graphs}, \fullref{subsec:graph_walks}, \fullref{subsec:graph_martices}, \fullref{subsec:simple_undirected_graphs}, \fullref{subsec:graph_coloring}, \fullref{subsec:quotient_graphs}, \fullref{subsec:trees} and \fullref{subsec:graph_embeddings}.
-
-As usual, in this section \( \BbbK \) will refer to either the field \( \BbbR \) of \hyperref[def:real_numbers]{real numbers} or the field \( \BbbC \) of \hyperref[def:real_numbers]{complex numbers}. This restriction is justified by \fullref{rem:real_field_extensions}.
+Some basic definitions and theorems are stated in \fullref{subsec:augmented_sets} and \fullref{subsec:enumerative_combinatorics}, however most of the section is concerned with graphs --- \fullref{subsec:graphs}, \fullref{subsec:graph_walks}, \fullref{subsec:graph_matrices}, \fullref{subsec:simple_undirected_graphs}, \fullref{subsec:graph_coloring}, \fullref{subsec:quotient_graphs}, \fullref{subsec:trees} and \fullref{subsec:graph_embeddings}.
 
 \begin{example}\label{ex:fibonacci_rabbits}
-  A simple but nontrivial counting problem is due to Fibonacci, published in his book \enquote{Liber Abaci} in 1202. In \cite{MacTutor:fibonacci}, the problem is translated as follows:
+  Leonardo Pisano, known as Fibonacci, published a book on arithmetic named \enquote{Liber Abaci} in 1202. In \cite[54]{ЭнциклопедияЕлементарнойМатематикиТом1}, Bashmakova and Yushkevich claim that books is among the first books featuring decimal numerals. Despite being influential, the book lacks the clarity of exposition that we can afford now after centuries of polishing existing concepts.
+
+  The solution to one of the problems stated there later generalized to what is now known as the Fibonacci sequence. In an English translation of the book, \cite{Fibonacci2002Sigler}, the problem is formulated as follows:
   \begin{displayquote}
-    A certain man put a pair of rabbits in a place surrounded on all sides by a wall. How many pairs of rabbits can be produced from that pair in a year if it is supposed that every month each pair begets a new pair which from the second month on becomes productive?
+    A certain man had one pair of rabbits together in a certain enclosed place, and one wishes to know how many are created from the pair in one year when it is the nature of them in a single month to bear another pair, and in the second month those born to bear also.
   \end{displayquote}
 
-  The rabbit behavior described in ridiculously idealized. Pregnancy time, for example, seems to be nonexistent in this problem. We are interested in counting and not in biology, however the problem as it is stated is open to interpretations. To obtain Fibonacci's result, we must add some further assumptions:
+  More generally, we are interested in the number \( F_n \) of pairs of rabbits at month \( n \). If we set aside all physiological questions that may introduce ambiguity, there appears to be a canonical solution. We can conclude the following:
   \begin{itemize}
-    \item The goal is to find the cumulative rabbit count, including the first pair.
-    \item No crossbreeding is assumed --- each rabbit is monogamous and is part of a predefined pair.
-    \item The rabbits do not die, which is a realistic assumption for a short time period in case the rabbits are taken care of.
-    \item During the first two months, no rabbit is born. This means that original pair must also wait for two months prior to producing offspring.
-  \end{itemize}
+    \item At the zeroth month, there is only the initial pair, thus \( F_0 = 1 \).
 
-  Instead of trying to give a direct answer to the problem, the usual approach is to iteratively build a sequence \( \seq{ F_k }_{k=1}^\infty \), the \term{Fibonacci sequence}, indicating the cumulative number of pairs of rabbits each month.
+    \item At the first month, we also have the firstborn pair, thus \( F_1 = F_0 + 1 = 2 \).
 
-  As mentioned, during the first two months no offspring is produced, so we only have one pair of rabbits. Thus, \( F_1 = F_2 = 1 \). In general, the number of rabbits on month \( n \) is the sum of:
-  \begin{itemize}
-    \item The number of existing pairs on month \( n - 1 \), which is \( F_{n - 1} \).
-    \item The number of newborn pairs, which is precisely the number of mature pairs (those born at least two months ago). This is \( F_{n - 2} \).
+    \item At month \( n \geq 2 \), we have \( F_{n-1} \) pairs, \( F_{n-2} \) out of which are mature and produce offspring, thus \( F_n = F_{n-1} + F_{n-2} \).
   \end{itemize}
 
   The entire sequence can thus be built using the following recursive definition:
   \begin{equation*}
     F_k \coloneqq \begin{cases}
-      1,                &k = 1 \T{or} k = 2, \\
-      F_{k-1} + F_{k-2} &k > 2.
-    \end{cases}
-  \end{equation*}
-
-  Just to give an answer to Fibonacci's question, we will list the first 12 Fibonacci numbers:
-  \begin{equation*}
-    1, 1, 2, 3, 5, 8, 13, 21, 34, 55, 89, 144, 233
-  \end{equation*}
-
-  It should also be noted that outside the rabbit problem, the Fibonacci sequence is often defined to start at the zeroth month with a value of zero --- this is how it is defined in \fullref{rem:natural_number_recursion} actually. So
-  \begin{equation}\label{eq:ex:fibonacci_rabbits}
-    F_k \coloneqq \begin{cases}
-      0,                &k = 0, \\
       1,                &k = 1, \\
+      2,                &k = 2, \\
       F_{k-1} + F_{k-2} &k > 2.
     \end{cases}
-  \end{equation}
-  is actually a more conventional definition.
+  \end{equation*}
+
+  For the first \( 12 \) months, the number of rabbits is given in the following table:
+  \begin{equation*}
+    \begin{NiceArray}{r *{13}{c}}
+      \textbf{Month} & 0 & 1 & 2 & 3 & 4 & 5  & 6  & 7  & 8  & 9  & 10  & 11  & 12  \\
+      \textbf{Pairs} & 1 & 2 & 3 & 5 & 8 & 13 & 21 & 34 & 55 & 89 & 144 & 233 & 377 \\
+    \end{NiceArray}
+  \end{equation*}
+
+  It should also be noted that the Fibonacci sequence named after this problem is defined to start with \( F_0 = 0 \) and \( F_1 = 1 \) --- see \fullref{def:fibonacci_sequence}.
 \end{example}

@@ -36,13 +36,15 @@
 
 % Misc nonmath packages
 \RequirePackage{subcaption}
+\RequirePackage{booktabs}
+\RequirePackage{seqsplit}
 \RequirePackage{xspace}
 \RequirePackage{enumitem}
-\RequirePackage{graphicx}
-\RequirePackage{graphbox}
+\RequirePackage{graphbox} % \includegraphics[align=?]
 \RequirePackage{csquotes}
 \RequirePackage{numprint}
 \RequirePackage{paracol}
+\RequirePackage{forest}
 
 % Don't use separate footnotes in paracol environments
 \footnotelayout{m}
@@ -81,13 +83,16 @@
 % Misc math packages
 \RequirePackage[altpo,epsilon]{backnaur}
 \RequirePackage{diffcoeff}
-\RequirePackage{blkarray}
-\RequirePackage{seqsplit}
+\RequirePackage{nicematrix}
 \RequirePackage{ebproof}
 \RequirePackage{bigints}
-\RequirePackage{diagbox}
-\RequirePackage{forest}
 \RequirePackage{cancel}
+
+% Vertical space in matrices and other nicematrix array environments
+\NiceMatrixOptions
+  {
+    cell-space-limits=1pt
+  }
 
 % Custom code
 \RequirePackage{packages/fonts}
@@ -99,7 +104,10 @@
 \RequirePackage{packages/theorems}
 \RequirePackage{packages/git_commit_info}
 
-% Use the left margins rather than the right margins
+% All paracol margins will go to the right and then \reversemarginpar will put them on the left
+\marginparthreshold{0}
+
+% % Use the left margins rather than the right margins
 \reversemarginpar
 
 \ExplSyntaxOff
