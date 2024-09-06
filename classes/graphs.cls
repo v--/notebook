@@ -14,12 +14,12 @@
 
 \NewDocumentCommand \ExampleFlowGraph {}
   {
-    \node[dot, label=left: \( a \)] (a) at (0, 0)  {};
-    \node[dot, label=above:\( b \)] (b) at (1, 1)  {};
-    \node[dot, label=below:\( c \)] (c) at (1, -1) {};
-    \node[dot, label=above:\( d \)] (d) at (3, 1)  {};
-    \node[dot, label=below:\( e \)] (e) at (3, -1) {};
-    \node[dot, label=below:\( f \)] (f) at (4, 0)  {};
+    \node[dot, label=left: \( v_1 \)] (v_1) at (0, 0)  {};
+    \node[dot, label=above:\( v_2 \)] (v_2) at (1, 1)  {};
+    \node[dot, label=below:\( v_3 \)] (v_3) at (1, -1) {};
+    \node[dot, label=above:\( v_4 \)] (v_4) at (3, 1)  {};
+    \node[dot, label=below:\( v_5 \)] (v_5) at (3, -1) {};
+    \node[dot, label=below:\( v_6 \)] (v_6) at (4, 0)  {};
   }
 
 \NewDocumentCommand \GeneralizedPetersen {O{-3/4}mm}
