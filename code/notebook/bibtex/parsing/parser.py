@@ -79,8 +79,12 @@ class BibParser(WhitespaceParserMixin[BibToken], Parser[BibToken]):
 
         return key
 
-    def parse_braced_value(self, entry_start_i: int, value_start_i: int) -> PropertyValue:  # noqa: PLR0912
-        assert self.peek() == MiscToken.opening_brace
+    def parse_value(self, entry_start_i: int, value_start_i: int, *, quotes: bool) -> PropertyValue:  # noqa: PLR0912, PLR0915, C901
+        if quotes:
+            assert self.peek() == MiscToken.quotes
+        else:
+            assert self.peek() == MiscToken.opening_brace
+
         self.advance()
 
         builder = PropertyValueBuilder()
@@ -89,7 +93,16 @@ class BibParser(WhitespaceParserMixin[BibToken], Parser[BibToken]):
         while not self.is_at_end():
             match head := self.peek():
                 case CommentToken():
-                    raise self.error('Unexpected comment')
+                    raise self.error('Unexpected comment', i_first_visible_token=entry_start_i)
+
+                case Whitespace.line_break:
+                    raise self.error('Unexpected line break', i_first_visible_token=entry_start_i)
+
+                case MiscToken.quotes if quotes:
+                    if quotes:
+                        builder.flush()
+                        self.advance()
+                        return builder.get_value()
 
                 case MiscToken.closing_brace:
                     if verbatim:
@@ -97,30 +110,35 @@ class BibParser(WhitespaceParserMixin[BibToken], Parser[BibToken]):
                         builder.flush()
                         verbatim = False
                         self.advance()
+                    elif quotes:
+                        builder.append('}')
+                        self.advance()
                     else:
                         builder.flush()
                         self.advance()
                         return builder.get_value()
 
                 case MiscToken.opening_brace:
-                    builder.flush()
-                    builder.append('{')
-                    verbatim = True
-                    self.advance()
+                    lookahead = self.peek_multiple(3)
+
+                    if quotes and lookahead == [MiscToken.opening_brace, MiscToken.quotes, MiscToken.closing_brace]:
+                        builder.append('"')
+                        self.advance(3)
+                    else:
+                        verbatim = True
+                        builder.flush()
+                        builder.append('{')
+                        self.advance()
 
                 case MiscToken.backslash:
                     lookahead = self.peek_multiple(2)
 
-                    match lookahead:
-                        case [MiscToken.backslash]:
-                            raise self.error('Invalid escaped symbol')
+                    if len(lookahead) == 1:
+                        raise self.error('Invalid escaped symbol', i_first_visible_token=entry_start_i)
 
-                        case [MiscToken.backslash, MiscToken.opening_brace]:
-                            builder.append('{')
-                            self.advance(2)
-
-                        case [MiscToken.backslash, MiscToken.closing_brace]:
-                            builder.append('}')
+                    match lookahead[1]:
+                        case MiscToken.opening_brace | MiscToken.closing_brace | MiscToken.ampersand | MiscToken.backslash | MiscToken.at:
+                            builder.append(str(lookahead[1]))
                             self.advance(2)
 
                         case _:
@@ -141,64 +159,7 @@ class BibParser(WhitespaceParserMixin[BibToken], Parser[BibToken]):
                     builder.append(str(head))
                     self.advance()
 
-        raise self.error('Unclosed brace', i_first_token=value_start_i, i_first_visible_token=entry_start_i)
-
-    def parse_quoted_value(self, entry_start_i: int, value_start_i: int) -> PropertyValue:  # noqa: PLR0912
-        assert self.peek() == MiscToken.quotes
-        self.advance()
-
-        builder = PropertyValueBuilder()
-        verbatim = False
-
-        while not self.is_at_end():
-            match head := self.peek():
-                case CommentToken():
-                    raise self.error('Unexpected comment')
-
-                case MiscToken.quotes:
-                    builder.flush()
-                    self.advance()
-                    return builder.get_value()
-
-                case MiscToken.closing_brace:
-                    builder.append('}')
-
-                    if verbatim:
-                        builder.flush()
-                        verbatim = False
-                    else:
-                        builder.append('}')
-                        self.advance()
-
-                    self.advance()
-
-                case MiscToken.opening_brace:
-                    lookahead = self.peek_multiple(3)
-
-                    if lookahead == [MiscToken.opening_brace, MiscToken.quotes, MiscToken.closing_brace]:
-                        builder.append('"')
-                        self.advance(3)
-                    else:
-                        verbatim = True
-                        builder.flush()
-                        builder.append(str(head))
-                        self.advance()
-
-                case WordToken('and') | WordToken('AND'):
-                    if verbatim:
-                        builder.append(str(head))
-                    else:
-                        builder.flush()
-                        builder.append(str(head))
-                        builder.flush()
-
-                    self.advance()
-
-                case _:
-                    builder.append(str(head))
-                    self.advance()
-
-        raise self.error('Unclosed brace', i_first_token=value_start_i, i_first_visible_token=entry_start_i)
+        raise self.error('Unclosed delimiter', i_first_token=value_start_i, i_first_visible_token=entry_start_i)
 
     def parse_author_string(self, string: str, entry_start_i: int, value_start_i: int) -> BibAuthor:
         if string.startswith('{') and string.endswith('}'):
@@ -294,6 +255,7 @@ class BibParser(WhitespaceParserMixin[BibToken], Parser[BibToken]):
 
     def parse_entry_properties(self, entry_start_i: int) -> Iterable[tuple[str, PropertyValue]]:
         keys = set[str]()
+        last_comma_i: int | None = None
 
         while not self.is_at_end() and self.peek() != MiscToken.closing_brace:
             key_start_i = self.index
@@ -324,10 +286,10 @@ class BibParser(WhitespaceParserMixin[BibToken], Parser[BibToken]):
                     self.advance()
 
                 case MiscToken.opening_brace:
-                    value = self.parse_braced_value(entry_start_i, value_start_i)
+                    value = self.parse_value(entry_start_i, value_start_i, quotes=False)
 
                 case MiscToken.quotes:
-                    value = self.parse_quoted_value(entry_start_i, value_start_i)
+                    value = self.parse_value(entry_start_i, value_start_i, quotes=True)
 
                 case _:
                     raise self.error('Invalid entry value', i_first_visible_token=entry_start_i)
@@ -338,6 +300,7 @@ class BibParser(WhitespaceParserMixin[BibToken], Parser[BibToken]):
 
             match head := self.peek():
                 case MiscToken.comma:
+                    last_comma_i = self.index
                     self.advance()
 
                 case MiscToken.closing_brace:
@@ -348,6 +311,9 @@ class BibParser(WhitespaceParserMixin[BibToken], Parser[BibToken]):
                     raise self.error('Entry values must end with a comma or closing brace', i_first_visible_token=entry_start_i)
 
             self.skip_whitespace_and_comments()
+
+        if last_comma_i is not None:
+            raise self.error('Trailing commas are disallowed', i_first_visible_token=entry_start_i, i_first_token=last_comma_i, i_last_token=last_comma_i)
 
     def perform_global_validation(self, properties: dict[str, PropertyValue], entry_start_i: int) -> None:
         if 'title' not in properties:
@@ -361,11 +327,10 @@ class BibParser(WhitespaceParserMixin[BibToken], Parser[BibToken]):
 
     @list_accumulator
     def process_authors(self, properties: dict[str, PropertyValue], key: str, entry_start_i: int, display_names_key: str | None = None) -> Iterable[BibAuthor]:
-        value = properties.pop(key, None)
-
-        if value is None:
+        if key not in properties:
             return
 
+        value = properties.pop(key)
         error_message = f'Property {display_names_key!r} does not match the structure of {key!r}'
         error_kwargs = dict(
             i_first_token=entry_start_i,

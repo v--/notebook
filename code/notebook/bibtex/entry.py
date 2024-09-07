@@ -3,6 +3,7 @@ from typing import Annotated, Literal, NamedTuple, cast, get_args, get_type_hint
 
 from ..support.iteration import list_accumulator, string_accumulator
 from .author import BibAuthor
+from .escaping import escape
 
 
 TAB_SIZE = 2
@@ -44,6 +45,7 @@ BibLanguage = Literal[
 class BibFieldAnnotation(NamedTuple):
     meta: bool = False
     author: bool = False
+    verbatim: bool = False
     key_name: str | None = None
 
 
@@ -62,7 +64,7 @@ class BibEntry(NamedTuple):
     publisher:     Annotated[str | None, BibFieldAnnotation()] = None
     subtitle:      Annotated[str | None, BibFieldAnnotation()] = None
     date:          Annotated[str | None, BibFieldAnnotation()] = None
-    url:           Annotated[str | None, BibFieldAnnotation()] = None
+    url:           Annotated[str | None, BibFieldAnnotation(verbatim=True)] = None
     note:          Annotated[str | None, BibFieldAnnotation()] = None
     year:          Annotated[str | None, BibFieldAnnotation()] = None
     month:         Annotated[str | None, BibFieldAnnotation()] = None
@@ -125,8 +127,18 @@ class BibEntry(NamedTuple):
         for field_name, field_annotation in get_type_hints(cls, include_extras=True).items():
             _, annotation = get_args(field_annotation)
 
-            if key == (annotation.key_name or field_name):
+            if not annotation.meta and key == (annotation.key_name or field_name):
                 return True
+
+        return False
+
+    @classmethod
+    def is_key_value_verbatim(cls, key: str) -> bool:
+        for field_name, field_annotation in get_type_hints(cls, include_extras=True).items():
+            _, annotation = get_args(field_annotation)
+
+            if key == (annotation.key_name or field_name):
+                return annotation.verbatim
 
         return False
 
@@ -144,7 +156,7 @@ class BibEntry(NamedTuple):
             authors = properties.pop(field_name)
 
             if len(authors) > 0:
-                properties[key_name] = ' and '.join(map(str, self.authors))
+                properties[key_name] = ' and '.join(map(str, authors))
 
         if all(author.display_name for author in self.authors):
             properties['shortauthor'] = ' and '.join(cast(str, author.display_name) for author in self.authors)
@@ -158,11 +170,16 @@ class BibEntry(NamedTuple):
 
         yield f'@{self.entry_type}{{{self.entry_name},\n'
 
-        for i, (field, value) in enumerate(sorted(properties.items(), key=lambda x: x[0])):
+        for i, (key, value) in enumerate(sorted(properties.items(), key=lambda x: x[0])):
             yield ' ' * TAB_SIZE
-            yield field
+            yield key
             yield ' = {'
-            yield value
+
+            if self.is_key_value_verbatim(key):
+                yield value
+            else:
+                yield escape(value)
+
             yield '}'
 
             if i + 1 < total:
@@ -170,4 +187,4 @@ class BibEntry(NamedTuple):
 
             yield '\n'
 
-        yield '}'
+        yield '}\n'

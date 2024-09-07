@@ -18,7 +18,8 @@ def test_entry_stringify() -> None:
           author = {A, B and C, D},
           language = {english},
           title = {Test}
-        }'''[1:])
+        }
+        '''[1:])
 
 def test_entry_stringify_shortauthor() -> None:
     entry = BibEntry(
@@ -35,4 +36,5 @@ def test_entry_stringify_shortauthor() -> None:
           language = {russian},
           shortauthor = {A and B},
           title = {Тест}
-        }'''[1:])
+        }
+        '''[1:])

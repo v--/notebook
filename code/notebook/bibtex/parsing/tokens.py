@@ -20,6 +20,7 @@ class CommentToken(TokenMixin):
 
 class MiscToken(TokenEnum):
     at = '@'
+    ampersand = '&'
     opening_brace = '{'
     closing_brace = '}'
     backslash = '\\'
