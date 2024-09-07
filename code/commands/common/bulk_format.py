@@ -2,9 +2,9 @@ import pathlib
 
 import structlog
 
+from ..common.inflection import prefix_cardinal
 from .exceptions import NotebookCommandError
 from .formatting import Formatter
-from .inflection import prefix_cardinal
 from .paths import ROOT_PATH
 
 

@@ -1,4 +1,4 @@
-from collections.abc import Sequence
+from collections.abc import Callable, Iterable, Sequence
 from dataclasses import dataclass, field
 from types import TracebackType
 from typing import Self
@@ -12,6 +12,21 @@ from .tokens import AbstractToken
 class Parser[T: AbstractToken]:
     seq: Sequence[T]
     index: int = field(default=0, init=False)
+
+    def gobble_iter(self, predicate: Callable[[T], bool]) -> Iterable[T]:
+        while not self.is_at_end() and predicate(head := self.peek()):
+            yield head
+            self.advance()
+
+    def gobble_list(self, predicate: Callable[[T], bool]) -> Sequence[T]:
+        return list(self.gobble_iter(predicate))
+
+    def gobble_string(self, predicate: Callable[[T], bool]) -> str:
+        return ''.join(str(x) for x in self.gobble_iter(predicate))
+
+    def gobble_and_skip(self, predicate: Callable[[T], bool]) -> None:
+        for _ in self.gobble_iter(predicate):
+            pass
 
     def reset(self) -> None:
         self.index = 0
@@ -36,7 +51,14 @@ class Parser[T: AbstractToken]:
         if not self.is_at_end():
             raise self.error('Finished parsing but there is still input left')
 
-    def error(self, message: str, i_first_token: int | None = None, i_last_token: int | None = None) -> ParsingError:
+    def error(
+        self,
+        message: str,
+        i_first_token: int | None = None,
+        i_last_token: int | None = None,
+        i_first_visible_token: int | None = None,
+        i_last_visible_token: int | None = None
+    ) -> ParsingError:
         err = ParsingError(message)
 
         if len(self.seq) == 0:
@@ -45,10 +67,18 @@ class Parser[T: AbstractToken]:
         # It is possible that the index is past the end of the input
         adjusted_index = min(self.index, len(self.seq) - 1)
 
+        if i_first_token is None:
+            i_first_token = adjusted_index
+
+        if i_last_token is None:
+            i_last_token = adjusted_index
+
         highlighter = ErrorHighlighter(
             self.seq,
-            i_first_token if i_first_token is not None else adjusted_index,
-            i_last_token if i_last_token is not None else adjusted_index,
+            i_first_token,
+            i_last_token,
+            i_first_visible_token if i_first_visible_token is not None else i_first_token,
+            i_last_visible_token if i_last_visible_token is not None else i_last_token,
         )
 
         err.add_note(highlighter.highlight())

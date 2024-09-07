@@ -5,8 +5,7 @@ from ..whitespace import Whitespace
 
 class WhitespaceParserMixin[T: AbstractToken](Parser[T]):
     def skip_spaces(self) -> None:
-        while not self.is_at_end() and self.peek() == Whitespace.space:
-            self.advance()
+        self.gobble_and_skip(lambda token: token == Whitespace.space)
 
     def skip_empty_lines(self) -> None:
         while not self.is_at_end() and self.peek() == Whitespace.line_break:

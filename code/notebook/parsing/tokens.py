@@ -15,6 +15,7 @@ class AbstractToken(Protocol):
 
 class TokenMixin(AbstractToken):
     value: str
+    __match_args__ = ('value',)
 
     def __init__(self, value: str) -> None:
         self.value = value

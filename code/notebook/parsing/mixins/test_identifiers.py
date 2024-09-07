@@ -20,9 +20,7 @@ TestToken = LatinIdentifier | GreekIdentifier | MiscToken
 
 class TestTokenizer(IdentifierTokenizerMixin[TestToken], Tokenizer[TestToken]):
     def parse_step(self, head: str) -> TestToken:
-        sym = MiscToken.try_match(head)
-
-        if sym is not None:
+        if sym := MiscToken.try_match(head):
             self.advance()
             return sym
 

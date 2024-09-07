@@ -27,24 +27,24 @@ def find_common_suffix[T](a: Iterable[T], b: Iterable[T]) -> Sequence[T]:
     )
 
 
-def list_accumulator[T, **P](fun: Callable[P, Iterable[T]]) -> Callable[P, Sequence[T]]:
+def list_accumulator[R, **P](fun: Callable[P, Iterable[R]]) -> Callable[P, Sequence[R]]:
     @functools.wraps(fun)
-    def wrapper(*args: P.args, **kwargs: P.kwargs) -> Sequence[T]:
+    def wrapper(*args: P.args, **kwargs: P.kwargs) -> Sequence[R]:
         return list(fun(*args, **kwargs))
 
     return wrapper
 
 
-def frozen_set_accumulator[T, **P](fun: Callable[P, Iterable[T]]) -> Callable[P, frozenset[T]]:
+def frozen_set_accumulator[R, **P](fun: Callable[P, Iterable[R]]) -> Callable[P, frozenset[R]]:
     @functools.wraps(fun)
-    def wrapper(*args: P.args, **kwargs: P.kwargs) -> frozenset[T]:
+    def wrapper(*args: P.args, **kwargs: P.kwargs) -> frozenset[R]:
         return frozenset(fun(*args, **kwargs))
 
     return wrapper
 
 
-def string_accumulator[T, **P](joiner: str = '') -> Callable[[Callable[P, Iterable[T]]], Callable[P, str]]:
-    def decorator(fun: Callable[P, Iterable[T]]) -> Callable[P, str]:
+def string_accumulator[**P](joiner: str = '') -> Callable[[Callable[P, Iterable[str]]], Callable[P, str]]:
+    def decorator(fun: Callable[P, Iterable[str]]) -> Callable[P, str]:
         @functools.wraps(fun)
         def wrapper(*args: P.args, **kwargs: P.kwargs) -> str:
             return joiner.join(str(value) for value in fun(*args, **kwargs))

@@ -61,7 +61,9 @@ class GrammarTokenizer(Tokenizer[GrammarToken]):
         return Terminal(value)
 
     def parse_step(self, head: str) -> GrammarToken:
-        sym = MiscToken.try_match(head) or Whitespace.try_match(head)
+        if sym := (MiscToken.try_match(head) or Whitespace.try_match(head)):
+            self.advance()
+            return sym
 
         if sym is not None:
             self.advance()

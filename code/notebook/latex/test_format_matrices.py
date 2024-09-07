@@ -7,7 +7,7 @@ def test_empty_matrix() -> None:
     string = dedent(r'''
         \begin{pmatrix}
         \end{pmatrix}
-        '''
+        '''[1:]
     )
 
     formatted = format_tex_matrices(string)
@@ -20,7 +20,7 @@ def test_simple_formatted() -> None:
           1 & 0 \\
           0 & 1
         \end{pmatrix}
-        '''
+        '''[1:]
     )
 
     formatted = format_tex_matrices(string)

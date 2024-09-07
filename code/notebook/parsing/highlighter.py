@@ -18,22 +18,24 @@ class ErrorHighlighter[T: AbstractToken]:
     seq: Sequence[T]
     i_first_token: int
     i_last_token: int
+    i_first_visible_token: int
+    i_last_visible_token: int
     special: type[SpecialChars] = SpecialChars
     annotated: Sequence[AnnotatedToken[T]] = field(init=False)
 
     def __post_init__(self) -> None:
-        assert 0 <= self.i_first_token <= self.i_last_token < len(self.seq)
+        assert 0 <= self.i_first_visible_token <= self.i_first_token <= self.i_last_token <= self.i_last_visible_token < len(self.seq)
         self.annotated = annotate_existing_tokens(self.seq)
 
     def _get_i_first_drawn_token(self) -> int:
         return min(
-            (i for i, atoken in enumerate(self.annotated) if atoken.end.lineno == self.annotated[self.i_first_token].end.lineno),
+            (i for i, atoken in enumerate(self.annotated) if atoken.end.lineno == self.annotated[self.i_first_visible_token].end.lineno),
             default=0
         )
 
     def _get_i_last_drawn_token(self) -> int:
         return max(
-            (i for i, atoken in enumerate(self.annotated) if atoken.end.lineno == self.annotated[self.i_last_token].end.lineno),
+            (i for i, atoken in enumerate(self.annotated) if atoken.end.lineno == self.annotated[self.i_last_visible_token].end.lineno),
             default=len(self.annotated) - 1
         )
 
@@ -59,21 +61,21 @@ class ErrorHighlighter[T: AbstractToken]:
         yield '\n'
 
         # The columns are one-based, so we subtract 1
-        first_col = -1 + min(
-            (atoken.start.column for atoken in self._iter_tokens_in_range() if atoken.start.lineno == lineno),
-            default=1
-        )
+        try:
+            first_col = -1 + min(
+                atoken.start.column for atoken in self._iter_tokens_in_range() if atoken.start.lineno == lineno
+            )
+        except ValueError:
+            return
 
         last_col = -1 + max(
-            (atoken.end.column for atoken in self._iter_tokens_in_range() if atoken.end.lineno == lineno),
-            default=len(self.annotated)
+            atoken.end.column for atoken in self._iter_tokens_in_range() if atoken.end.lineno == lineno
         )
 
         yield ' ' * (lineno_prefix_length + 1)
         yield self.special.lineno_sep
         yield ' ' * (1 + first_col)
         yield self.special.marker * (last_col - first_col)
-
         yield '\n'
 
     @string_accumulator()

@@ -6,9 +6,14 @@ from ..common.bulk_format import bulk_format
 from .formatting import BibFormatter
 
 
-@click.command()
+@click.group()
+def bibtools() -> None:
+    pass
+
+
+@bibtools.command()
 @click.argument('path', type=str)
-def format_bibliography(path: str) -> None:
+def format(path: str) -> None:  # noqa: A001
     bulk_format(
         pathlib.Path(path),
         '**/*.bib',

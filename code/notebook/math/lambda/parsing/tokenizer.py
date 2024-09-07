@@ -7,9 +7,7 @@ from .tokens import LambdaToken, MiscToken
 
 class LambdaTokenizer(IdentifierTokenizerMixin[LambdaToken], Tokenizer[LambdaToken]):
     def parse_step(self, head: str) -> LambdaToken:
-        sym = MiscToken.try_match(head)
-
-        if sym is not None:
+        if sym := MiscToken.try_match(head):
             self.advance()
             return sym
 
