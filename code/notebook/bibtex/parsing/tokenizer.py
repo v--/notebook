@@ -34,7 +34,8 @@ class BibTokenizer(Tokenizer[BibToken]):
                 return WordToken(self.gobble_unicode('L', 'Mn'))
 
             case 'S.' | 'P.':
-                return SymbolToken(self.gobble_unicode('S', 'P'))
+                self.advance()
+                return SymbolToken(head)
 
             case 'N.':
                 return NumberToken(self.gobble_unicode('N'))

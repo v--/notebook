@@ -50,7 +50,9 @@ class BibFieldAnnotation(NamedTuple):
 
 
 class BibEntry(NamedTuple):
-    """Customized biblatex entry specific for the citations in this monograph."""
+    """Customized biblatex entry specific for the citations in this monograph.
+    Includes almost all fields from https://www.bibtex.com/format/fields/ (except type, annote and organization), but also a lot of other fields.
+    """
     entry_type:    Annotated[BibEntryType, BibFieldAnnotation(meta=True)]
     entry_name:    Annotated[str, BibFieldAnnotation(meta=True)]
     # Base fields
@@ -70,6 +72,7 @@ class BibEntry(NamedTuple):
     month:         Annotated[str | None, BibFieldAnnotation()] = None
     edition:       Annotated[str | None, BibFieldAnnotation()] = None
     volume:        Annotated[str | None, BibFieldAnnotation()] = None
+    institution:   Annotated[str | None, BibFieldAnnotation()] = None
     # Theses
     advisors:      Annotated[Sequence[BibAuthor], BibFieldAnnotation(author=True, key_name='advisor')] = []
     # Books

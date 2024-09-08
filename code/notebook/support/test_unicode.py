@@ -1,4 +1,13 @@
-from .unicode import Capitalization, atoi_subscripts, is_greek_string, is_latin_string, itoa_subscripts, to_superscript
+from .unicode import (
+    Capitalization,
+    atoi_subscripts,
+    is_greek_string,
+    is_latin_string,
+    itoa_subscripts,
+    normalize_whitespace,
+    remove_accents,
+    to_superscript,
+)
 
 
 def test_to_superscript() -> None:
@@ -46,3 +55,19 @@ def test_is_greek_string() -> None:
     assert not is_greek_string('αβγ', capitalization=Capitalization.capital)
     assert is_greek_string('ΑΒΓ', capitalization=Capitalization.capital)
     assert not is_greek_string('ΑβΓ', capitalization=Capitalization.capital)
+
+
+def test_remove_accents() -> None:
+    assert remove_accents('lorem') == 'lorem'
+    assert remove_accents('Йордан') == 'Йордан'
+
+    assert remove_accents('Fučík') == 'Fucik'
+    assert remove_accents('Marián') == 'Marian'
+    assert remove_accents('Łukasz') == 'Lukasz'
+
+
+def test_normalize_whitespace() -> None:
+    assert normalize_whitespace('a b c') == 'a b c'
+    assert normalize_whitespace('a  b c') == 'a b c'
+    assert normalize_whitespace('a\tb c') == 'a b c'
+    assert normalize_whitespace('a\nb c') == 'a b c'

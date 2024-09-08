@@ -52,3 +52,22 @@ def string_accumulator[**P](joiner: str = '') -> Callable[[Callable[P, Iterable[
         return wrapper
 
     return decorator
+
+
+def get_strip_slice[T](seq: Sequence[T], predicate: Callable[[T], bool]) -> slice:
+    leading = 0
+    trailing = 0
+
+    for item in seq:
+        if predicate(item):
+            leading += 1
+        else:
+            break
+
+    for item in reversed(seq):
+        if predicate(item):
+            trailing += 1
+        else:
+            break
+
+    return slice(leading, len(seq) - trailing)

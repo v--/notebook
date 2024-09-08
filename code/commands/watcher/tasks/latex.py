@@ -32,7 +32,7 @@ class LaTeXTask(WatcherTask):
 
     @property
     def command(self) -> str:
-        return r'pdflatex -interaction=batchmode -output-directory=%s %s' % (AUX_PATH, self.tex_path)  # noqa: UP031
+        return r'pdflatex -interaction=batchmode -output-directory=%s %s' % (AUX_PATH, self.tex_path)
 
     def get_aux_path(self, extension: str) -> pathlib.Path:
         return AUX_PATH / self.tex_path.with_suffix(extension).name
