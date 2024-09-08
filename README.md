@@ -21,3 +21,45 @@ This is a [public domain](https://en.wikipedia.org/wiki/Public_domain) project: 
 While I have put in a lot of effort into the project structure itself, I believe that, because of the nature of the project, it makes little sense to document it extensively. There is a GNU Make file specifying how to build the document. There are also several custom tools that can be found in the `code/commands` subdirectory - they are most easily activated via [poe](https://poethepoet.natn.io) (`poe --root code <command>`).
 
 If you happen to be interested in any aspect of the setup, feel free to [contact me](https://ivasilev.net).
+
+### Build system
+
+There are two build systems --- the [`makefile`](./makefile) and the [`code.commands.watcher`](./code/commands/watcher) (Usage: `poe --root code watcher [--no-aux]`) command. The first one is aimed at full builds, i.e. for continuous integration, while the second one is aimed at incremental builds, i.e. for development.
+
+There are externalized figures in the [`figures`](./figures) directory of the following kinds:
+* [Asymptote](https://github.com/vectorgraphics/asymptote) (`.asy`) files for 2D and 3D sketches and plots.
+* [tikz](https://github.com/pgf-tikz/pgf) (`.tex` with document class `classes/tikz` or `classes/graphs`) files for graphs.
+* [tikz-cd](https://ctan.org/pkg/tikz-cd) (`.tex` with document class `classes/tikzcd`) files for commutative and Hasse diagrams.
+* [forest](https://ctan.org/pkg/forest) (`.tex` with document class `classes/forest`) files for trees.
+
+### Parsers
+
+A lot of the monograph-related code, as well as some of the tools are based on a recursive descent [parser framework](./code/notebook/parsing) created specifically for various (micro)languages in the monograph:
+* [Natural deduction rules](./code/notebook/math/natural_deduction/parsing)
+* [Formal grammar schemas](./code/notebook/math/grammars/parsing)
+* [First-order logic terms and formulas](./code/notebook/math/fol/parsing)
+* [Untyped lambda calculus terms](./code/notebook/math/lambda/parsing)
+
+Two additional parsers are included:
+* (Limited) [LaTeX](./code/notebook/latex/parsing)
+* (Opinionated) [BibTeX](./code/notebook/bibtex/parsing)
+
+### LaTeX tools
+
+There is a tool, [`code.commands.format_matrices`](./code/commands/format_matrices) (Usage: `poe --root code format-matrices figures`), made specifically for formatting LaTeX arrays and similar environments.
+
+### BibTeX
+
+There is a set of tools, [`code.commands.bibtools`](./code/commands/bibtools) (Usage: `poe --root code bibtools`), consisting of:
+* A formatter (`... format bibliography`)
+* Several BibLaTeX entry fetch tools:
+  * `... fetch doi <id>`
+  * `... fetch isbn <id>`
+  * `... fetch arxiv <id>`.
+
+Some comments should be made about the parser. It was created specifically for maintaining my personal (digital) library and this monograph's sources in particular. In order to handle differing conventions, mistaken and alternative spelling, it is based on whitelisting:
+* The parser only allows several languages referenced in the [`BibLanguage`](./code/notebook/bibtex/entry.py) enum.
+* The parser allows the fields from the [`BibEntry`](./code/notebook/bibtex/entry.py) class. Because this tool was built upon years of maintaining references with other improvised tools, however, a lot of (standard and nonstandard) entry properties accumulated.
+* The parser auxiliary logic for handling author names via the [`BibAuthor`](./code/notebook/bibtex/author.py) class. This involves parsing and handling each author separately (with `and` acting as a separator). Names are assumed to be in the format `Last, Title, Other`, `Title` and `Other` being optional and `Other` containing first and middle names. For Cyrillic languages, Latin transliteration is enforced via the `BibAuthor.display_name` field that gets read and written to the `shortauthor` BibTeX field.
+* The parser tries to unescape certain characters like `&` and `@`, while `BibEntry` tries to escape them when serializing. Exceptions for this are the fields marked as "verbatim" such as `url`.
+* The parser also supports verbatim fields, i.e. fields with values enclosed in an additional pair of curly braces like `{{value}}` or `"{value}"`. The value inside does not get processed by the author processing mechanism, thus we can treat "corporate names" like `{{Springer Science and Business Media}}` as one.
