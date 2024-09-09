@@ -22,7 +22,7 @@ def extract_keyphrase(main_text: str, language: str, additional_text: str | None
 
 
 def mangle_string_for_entry_name(string: str) -> str:
-    return remove_whitespace(remove_symbols(remove_accents(string)).title())
+    return remove_whitespace(remove_symbols(remove_accents(string).title()))
 
 
 def generate_entry_name(author: BibAuthor, year: str, title: str, language: str, additional_text: str | None = None) -> str:

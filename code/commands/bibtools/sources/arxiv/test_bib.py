@@ -112,7 +112,7 @@ def test_parse_1010_0824v13_russian() -> None:
     )
 
 
-def test_parse_0903_0340v3_doi() -> None:
+def test_parse_0903_0340v3_doi_and_link_without_type() -> None:
     with get_arxiv_fixture_path('0903.0340v3').open() as file:
         xml_body = file.read()
 
@@ -162,4 +162,33 @@ def test_parse_2401_09270v1_title_line_break() -> None:
         eprint='2401.09270v1',
         year='2024',
         url='http://arxiv.org/abs/2401.09270v1'
+    )
+
+
+def test_parse_2403_06707v1_dashes_in_title() -> None:
+    with get_arxiv_fixture_path('2403.06707v1').open() as file:
+        xml_body = file.read()
+
+    feed = parse_arxiv_xml(xml_body)
+    assert len(feed.entries) == 1
+    entry = arxiv_entry_to_bib(feed.entries[0])
+
+    assert entry == BibEntry(
+        entry_type='article',
+        entry_name='Binder2024DerivingDependentlyTypedOop',
+        title='Deriving Dependently-Typed OOP from First Principles',
+        subtitle='Extended Version with Additional Appendices',
+        authors=[
+            BibAuthor(main_name='Binder', other_names='David'),
+            BibAuthor(main_name='Skupin', other_names='Ingo'),
+            BibAuthor(main_name='Süberkrüb', other_names='Tim'),
+            BibAuthor(main_name='Ostermann', other_names='Klaus')
+        ],
+        doi='10.1145/3649846',
+        language='english',
+        archiveprefix='arXiv',
+        primaryclass='cs.PL',
+        eprint='2403.06707v1',
+        year='2024',
+        url='http://arxiv.org/abs/2403.06707v1'
     )

@@ -49,16 +49,18 @@ class TokenSequence(Sequence[TextToken]):
     def strip(self) -> 'TokenSequence':
         return self[get_strip_slice(self, lambda token: isinstance(token, Whitespace))]
 
-    def split_by(self, predicate: Callable[[TextToken], bool], *, strip: bool = True) -> 'Iterable[TokenSequence]':
+    def split_by(self, predicate: Callable[[TextToken], bool], *, limit: int | None = None, strip: bool = True) -> 'Iterable[TokenSequence]':
         last_split = 0
+        split_count = 0
 
         for i, token in enumerate(self.tokens):
-            if predicate(token):
+            if predicate(token) and (limit is None or split_count + 1 < limit):
                 seq = TokenSequence(self.tokens[last_split:i])
                 adjusted = seq.strip() if strip else seq
 
                 if len(adjusted) > 0:
                     yield adjusted
+                    split_count += 1
 
                 last_split = i + 1
 

@@ -1,4 +1,3 @@
-import itertools
 
 from ...parsing.whitespace import Whitespace
 from .rake import generate_phrase_scores, iter_phrases
