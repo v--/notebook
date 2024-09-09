@@ -87,7 +87,7 @@ def test_parse_2011_00412v3() -> None:
     )
 
 
-def test_parse_1010_0824v13() -> None:
+def test_parse_1010_0824v13_russian() -> None:
     with get_arxiv_fixture_path('1010.0824v13').open() as file:
         xml_body = file.read()
 
@@ -112,7 +112,35 @@ def test_parse_1010_0824v13() -> None:
     )
 
 
-def test_parse_2401_09270v1_title_break_and_subtitle() -> None:
+def test_parse_0903_0340v3_doi() -> None:
+    with get_arxiv_fixture_path('0903.0340v3').open() as file:
+        xml_body = file.read()
+
+    feed = parse_arxiv_xml(xml_body)
+    assert len(feed.entries) == 1
+    entry = arxiv_entry_to_bib(feed.entries[0])
+
+    assert entry == BibEntry(
+        entry_type='article',
+        entry_name='Baez2009RosettaStone',
+        doi='10.1007/978-3-642-12821-9_2',
+        title='Physics, Topology, Logic and Computation',
+        subtitle='A Rosetta Stone',
+        authors=[
+            BibAuthor(main_name='Baez', other_names='John C.'),
+            BibAuthor(main_name='Stay', other_names='Mike')
+        ],
+        language='english',
+        archiveprefix='arXiv',
+        primaryclass='quant-ph',
+        eprint='0903.0340v3',
+        edition='3',
+        year='2009',
+        url='http://arxiv.org/abs/0903.0340v3'
+    )
+
+
+def test_parse_2401_09270v1_title_line_break() -> None:
     with get_arxiv_fixture_path('2401.09270v1').open() as file:
         xml_body = file.read()
 
@@ -123,7 +151,8 @@ def test_parse_2401_09270v1_title_break_and_subtitle() -> None:
     assert entry == BibEntry(
         entry_type='article',
         entry_name='Ambridge2024ExactRealSearch',
-        title='Exact Real Search: Formalised Optimisation and Regression in Constructive Univalent Mathematics',
+        title='Exact Real Search',
+        subtitle='Formalised Optimisation and Regression in Constructive Univalent Mathematics',
         authors=[
             BibAuthor(main_name='Ambridge', other_names='Todd Waugh')
         ],

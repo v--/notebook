@@ -6,6 +6,7 @@ from notebook.support.unicode import normalize_whitespace
 from ...exceptions import BibToolsParseError
 from ..common.keywords import generate_entry_name
 from ..common.names import name_to_bib_author
+from ..common.titles import split_title
 from .model import ArxivEntry
 
 
@@ -24,11 +25,15 @@ def arxiv_entry_to_bib(aentry: ArxivEntry) -> BibEntry:
     authors = [name_to_bib_author(aauthor.name) for aauthor in aentry.authors]
     year = str(aentry.updated.year)
 
+    title_string = normalize_whitespace(aentry.title.value)
+    titles = split_title(title_string)
+
     return BibEntry(
         entry_type='article',
-        entry_name=generate_entry_name(authors[0], year, aentry.title.value, 'en', aentry.summary),
+        entry_name=generate_entry_name(authors[0], year, title_string, 'en', aentry.summary),
         authors=authors,
-        title=normalize_whitespace(aentry.title.value),
+        title=titles.title,
+        subtitle=titles.subtitle,
         language='english',  # Some arXiv submissions are in other languages, but there is no general way to find out (see 1010.0824v13)
         archiveprefix='arXiv',
         primaryclass=aentry.primary_category.term,
@@ -37,6 +42,5 @@ def arxiv_entry_to_bib(aentry: ArxivEntry) -> BibEntry:
         url=main_url,
         edition=str(version) if (version or 0) > 1 else None,
         institution=aentry.affiliation,
-        journal=aentry.journal_ref,
         doi=aentry.doi
     )
