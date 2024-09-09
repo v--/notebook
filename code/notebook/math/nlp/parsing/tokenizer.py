@@ -19,7 +19,7 @@ class TextTokenizer(Tokenizer[TextToken]):
         return unicodedata.category(char).startswith('N')
 
     def parse_word(self) -> WordToken:
-        assert not self.is_at_end() and self.is_char_letter(self.peek())
+        assert self.is_char_letter(self.peek())
         first = self.peek()
         self.advance()
         buffer = first

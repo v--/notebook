@@ -8,8 +8,8 @@ def test_extract_keyphrase_1606_08092v1() -> None:
         xml_body = file.read()
 
     feed = parse_arxiv_xml(xml_body)
-    keyphrase = extract_keyphrase(feed.entries[0].summary, language='en')
-    assert keyphrase == 'minimal logic'
+    keyphrase = extract_keyphrase(feed.entries[0].title.value, language='en', additional_text=feed.entries[0].summary)
+    assert keyphrase == 'Minimal Logic'
 
 
 def test_extract_keyphrase_2011_00412v3() -> None:
@@ -17,8 +17,8 @@ def test_extract_keyphrase_2011_00412v3() -> None:
         xml_body = file.read()
 
     feed = parse_arxiv_xml(xml_body)
-    keyphrase = extract_keyphrase(feed.entries[0].summary, language='en')
-    assert keyphrase == 'universal properties'
+    keyphrase = extract_keyphrase(feed.entries[0].title.value, language='en', additional_text=feed.entries[0].summary)
+    assert keyphrase == 'Lebesgue integration'
 
 
 def test_extract_keyphrase_1010_0824v13() -> None:
@@ -26,5 +26,5 @@ def test_extract_keyphrase_1010_0824v13() -> None:
         xml_body = file.read()
 
     feed = parse_arxiv_xml(xml_body)
-    keyphrase = extract_keyphrase(feed.entries[0].summary, language='en')
-    assert keyphrase == 'existing textbooks'
+    keyphrase = extract_keyphrase(feed.entries[0].title.value, language='en', additional_text=feed.entries[0].summary)
+    assert keyphrase == 'Mathematical analysis'

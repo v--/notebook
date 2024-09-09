@@ -50,13 +50,13 @@ def arxiv(identifier: str, *, dump_as_fixture: bool) -> None:
     click.echo(str(entry), nl=False)
 
 
-@fetch.command()
-@click.argument('identifier', type=str)
-def doi(identifier: str) -> None:
-    pass
+# @fetch.command()
+# @click.argument('identifier', type=str)
+# def doi(identifier: str) -> None:
+#     pass
 
 
-@fetch.command()
-@click.argument('identifier', type=str)
-def isbn(identifier: str) -> None:
-    pass
+# @fetch.command()
+# @click.argument('identifier', type=str)
+# def isbn(identifier: str) -> None:
+#     pass

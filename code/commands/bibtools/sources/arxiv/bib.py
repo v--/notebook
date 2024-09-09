@@ -26,7 +26,7 @@ def arxiv_entry_to_bib(aentry: ArxivEntry) -> BibEntry:
 
     return BibEntry(
         entry_type='article',
-        entry_name=generate_entry_name(authors[0], year, aentry.title.value, 'en'),
+        entry_name=generate_entry_name(authors[0], year, aentry.title.value, 'en', aentry.summary),
         authors=authors,
         title=normalize_whitespace(aentry.title.value),
         language='english',  # Some arXiv submissions are in other languages, but there is no general way to find out (see 1010.0824v13)

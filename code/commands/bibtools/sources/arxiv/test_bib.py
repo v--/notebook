@@ -122,7 +122,7 @@ def test_parse_2401_09270v1_title_break_and_subtitle() -> None:
 
     assert entry == BibEntry(
         entry_type='article',
-        entry_name='Ambridge2024ExactReal',
+        entry_name='Ambridge2024ExactRealSearch',
         title='Exact Real Search: Formalised Optimisation and Regression in Constructive Univalent Mathematics',
         authors=[
             BibAuthor(main_name='Ambridge', other_names='Todd Waugh')

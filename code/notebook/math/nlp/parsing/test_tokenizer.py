@@ -1,6 +1,6 @@
 from ....parsing.whitespace import Whitespace
-from ..tokens import NumberToken, SymbolToken, WordToken
 from ..token_sequence import TokenSequence
+from ..tokens import NumberToken, SymbolToken, WordToken
 from .tokenizer import tokenize_text
 
 
