@@ -23,7 +23,7 @@ def fetch_isbn_json(identifier: str, *, dump_as_fixture: bool = False) -> str:
         {
             'q': 'isbn:' + identifier,
             'maxResults': 1,
-            'fields': f'items/volumeInfo({','.join(FIELDS)})'
+            'fields': f'items/volumeInfo({','.join(FIELDS)}),items/searchInfo(textSnippet)'
         },
         safe='(),/'
     )

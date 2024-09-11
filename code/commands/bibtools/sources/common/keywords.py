@@ -5,8 +5,7 @@ import stop_words
 from iso639 import Lang
 
 from notebook.math.nlp.parsing import tokenize_text
-from notebook.math.nlp.rake import generate_phrase_scores
-from notebook.support.unicode import normalize_whitespace
+from notebook.math.nlp.rake import PhraseScoreContext, generate_phrase_scores
 
 
 def get_stop_words(language: str) -> Sequence[str]:
@@ -23,16 +22,9 @@ def get_stop_words(language: str) -> Sequence[str]:
     return []
 
 
-def extract_keyphrase(main_text: str, language: str, *aux_texts: str) -> str:
-    scores = generate_phrase_scores(
+def generate_keyphrase_scores(main_text: str, language: str, *aux_texts: str) -> PhraseScoreContext:
+    return generate_phrase_scores(
         tokenize_text(main_text),
         get_stop_words(language),
         *map(tokenize_text, aux_texts)
     )
-
-    min_len_top_phrase = min(
-        (phrase for phrase in scores.iter_max_scoring() if any(len(str(token)) > 2 for token in phrase)),
-        key=lambda phrase: (len(phrase), len(str(phrase)))
-    )
-
-    return normalize_whitespace(str(min_len_top_phrase))

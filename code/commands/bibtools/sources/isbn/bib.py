@@ -13,6 +13,7 @@ from .model import GoogleBook
 
 def isbn_book_to_bib(book: GoogleBook, isbn: str) -> BibEntry:
     vi = book.volumeInfo
+    si = book.searchInfo
 
     language = Lang(vi.language).name.lower()
     authors = [name_to_bib_author(author) for author in vi.authors]
@@ -27,7 +28,7 @@ def isbn_book_to_bib(book: GoogleBook, isbn: str) -> BibEntry:
 
     return BibEntry(
         entry_type='book',
-        entry_name=generate_entry_name(authors[0], year, titles.main, language, titles.sub, vi.description),
+        entry_name=generate_entry_name(authors[0], year, titles, language, vi.description, si.textSnippet if si else None),
         authors=authors,
         title=titles.main,
         subtitle=titles.sub,

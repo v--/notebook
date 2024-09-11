@@ -24,8 +24,14 @@ class GoogleBookVolumeInfo:
 
 
 @dataclass
+class GoogleBookSearchInfo:
+    textSnippet: str
+
+
+@dataclass
 class GoogleBook:
     volumeInfo: GoogleBookVolumeInfo
+    searchInfo: GoogleBookSearchInfo | None = None
 
 
 @dataclass

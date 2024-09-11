@@ -7,6 +7,12 @@ class Titles(NamedTuple):
     main: str
     sub: str | None
 
+    def __str__(self) -> str:
+        if self.sub is None:
+            return self.main
+
+        return f'{self.main}. {self.sub}'
+
 
 def split_title(full_title: str) -> Titles:
     titles = iter(tokenize_text(full_title).split_by(lambda token: str(token) in '.:-', limit=2))

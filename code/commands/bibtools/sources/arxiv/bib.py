@@ -26,7 +26,7 @@ def arxiv_entry_to_bib(aentry: ArxivEntry, arxiv_id: str) -> BibEntry:
 
     return BibEntry(
         entry_type='article',
-        entry_name=generate_entry_name(authors[0], year, titles.main, language, titles.sub, aentry.summary),
+        entry_name=generate_entry_name(authors[0], year, titles, language, aentry.summary, aentry.journal_ref),
         authors=authors,
         title=titles.main,
         subtitle=titles.sub,

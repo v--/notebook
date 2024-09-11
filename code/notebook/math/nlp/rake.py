@@ -23,10 +23,14 @@ class WordScoreContext(NamedTuple):
 
     def get_score(self, word: WordToken) -> float:
         key = str(word).lower()
+
+        if key not in self.degree:
+            return 0
+
         return self.degree[key] / self.frequency[key]
 
 
-def generate_word_score(phrases: Iterable[TokenSequence], *aux_phrases: Iterable[TokenSequence]) -> WordScoreContext:
+def generate_word_score(phrases: Iterable[TokenSequence]) -> WordScoreContext:
     frequency = dict[str, int]()
     # The degree of a word is the sum of lengths of all phrases it occurs in minus the number of phrases.
     # This is the degree of the word in the adjacency graph if we count all words within a phrase as adjacent.
@@ -43,21 +47,14 @@ def generate_word_score(phrases: Iterable[TokenSequence], *aux_phrases: Iterable
             degree.setdefault(key, 0)
             degree[key] += len(words) - 1
 
-    for collection in aux_phrases:
-        for phrase in collection:
-            words = list(iter_words(phrase))
-
-            for word in words:
-                key = str(word).lower()
-
-                if key in degree:
-                    degree[key] += len(words) - 1
-
     return WordScoreContext(frequency, degree)
 
 
 class PhraseScoreContext(NamedTuple):
     scores: Mapping[TokenSequence, float]
+
+    def get_max_score(self) -> float:
+        return max(self.scores.values())
 
     def iter_sorted(self, limit: int | None = None) -> Iterable[tuple[TokenSequence, float]]:
         return itertools.islice(
@@ -66,15 +63,19 @@ class PhraseScoreContext(NamedTuple):
         )
 
     def iter_max_scoring(self, limit: int | None = None) -> Iterable[TokenSequence]:
-        max_score = 0.0
+        max_score = self.get_max_score()
 
         for phrase, score in self.iter_sorted(limit):
-            if max_score == 0:
-                max_score = score
-            elif score < max_score:
+            if score < max_score:
                 return
 
             yield phrase
+
+    def get_shortest_max_scoring(self) -> TokenSequence:
+        return min(
+            self.iter_max_scoring(),
+            key=lambda phrase: (len(phrase), len(str(phrase)))
+        )
 
 
 def generate_phrase_scores(
@@ -83,8 +84,11 @@ def generate_phrase_scores(
     *aux_seq: TokenSequence
 ) -> PhraseScoreContext:
     phrases = list(iter_phrases(seq, stop_words))
-    aux_phrases = [list(iter_phrases(aux, stop_words)) for aux in aux_seq]
-    word_score_context = generate_word_score(phrases, *aux_phrases)
+    word_scores = generate_word_score(phrases)
+
+    aux_phrases = itertools.chain(*(iter_phrases(aux, stop_words) for aux in aux_seq))
+    aux_word_scores = generate_word_score(aux_phrases)
+
     phrase_scores = dict[TokenSequence, float]()
 
     for phrase in phrases:
@@ -92,7 +96,7 @@ def generate_phrase_scores(
 
         for token in phrase:
             if isinstance(token, WordToken):
-                phrase_scores[phrase] += word_score_context.get_score(token)
+                phrase_scores[phrase] += word_scores.get_score(token) + aux_word_scores.get_score(token)
 
     return PhraseScoreContext(phrase_scores)
 
