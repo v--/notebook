@@ -13,7 +13,8 @@ ALLOWED_INTERWORD_SYMBOLS = frozenset(["'", '`', '-'])
 
 class TextTokenizer(Tokenizer[TextToken]):
     def is_char_letter(self, char: str) -> bool:
-        return unicodedata.category(char).startswith('L')
+        category = unicodedata.category(char)
+        return category.startswith('L') or category == 'Mn'
 
     def is_char_number(self, char: str) -> bool:
         return unicodedata.category(char).startswith('N')
@@ -44,8 +45,10 @@ class TextTokenizer(Tokenizer[TextToken]):
             self.advance()
             return Whitespace.line_break
 
-        match RegexEqual(unicodedata.category(head)):
-            case 'L.':
+        category = unicodedata.category(head)
+
+        match RegexEqual(category):
+            case 'L.' | 'Mn':
                 return self.parse_word()
 
             case 'S.' | 'P.':
@@ -63,7 +66,8 @@ class TextTokenizer(Tokenizer[TextToken]):
 
                 return NumberToken(num_string)
 
-        raise self.error('Unexpected symbol')
+            case _:
+                raise self.error(f'Unexpected symbol with category {category}')
 
 
 def tokenize_text(string: str) -> TokenSequence:

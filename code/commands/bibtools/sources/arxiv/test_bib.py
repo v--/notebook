@@ -5,8 +5,8 @@ from notebook.bibtex.author import BibAuthor
 from notebook.bibtex.entry import BibEntry
 
 from .bib import arxiv_entry_to_bib
+from .fixtures import get_arxiv_fixture_path
 from .model import parse_arxiv_xml
-from .paths import get_arxiv_fixture_path
 
 
 def test_parse_incompatible() -> None:
@@ -20,8 +20,8 @@ def test_parse_incompatible() -> None:
 
 # arXiv gives us invalid entries for future versions
 # At the time of writing this test, v4 did not exist (see v3 below), but we have an invalid entry cached here
-def test_parse_2011_00412v4() -> None:
-    with get_arxiv_fixture_path('2011.00412v4').open() as file:
+def test_parse_2011_00412v4(arxiv_id: str = '2011.00412v4') -> None:
+    with get_arxiv_fixture_path(arxiv_id).open() as file:
         xml_body = file.read()
 
     # It is only a type error in case of insufficiently many fields
@@ -37,13 +37,13 @@ def test_parse_no_entries() -> None:
     assert len(feed.entries) == 0
 
 
-def test_parse_1606_08092v1() -> None:
-    with get_arxiv_fixture_path('1606.08092v1').open() as file:
+def test_parse_1606_08092v1(arxiv_id: str = '1606.08092v1') -> None:
+    with get_arxiv_fixture_path(arxiv_id).open() as file:
         xml_body = file.read()
 
     feed = parse_arxiv_xml(xml_body)
     assert len(feed.entries) == 1
-    entry = arxiv_entry_to_bib(feed.entries[0])
+    entry = arxiv_entry_to_bib(feed.entries[0], arxiv_id)
 
     assert entry == BibEntry(
         entry_type='article',
@@ -56,19 +56,19 @@ def test_parse_1606_08092v1() -> None:
         language='english',
         archiveprefix='arXiv',
         primaryclass='math.LO',
-        eprint='1606.08092v1',
-        year='2016',
-        url='http://arxiv.org/abs/1606.08092v1'
+        eprint=arxiv_id,
+        date='2016-06-26',
+        url=f'http://arxiv.org/abs/{arxiv_id}'
     )
 
 
-def test_parse_2011_00412v3() -> None:
-    with get_arxiv_fixture_path('2011.00412v3').open() as file:
+def test_parse_2011_00412v3(arxiv_id: str = '2011.00412v3') -> None:
+    with get_arxiv_fixture_path(arxiv_id).open() as file:
         xml_body = file.read()
 
     feed = parse_arxiv_xml(xml_body)
     assert len(feed.entries) == 1
-    entry = arxiv_entry_to_bib(feed.entries[0])
+    entry = arxiv_entry_to_bib(feed.entries[0], arxiv_id)
 
     assert entry == BibEntry(
         entry_type='article',
@@ -81,19 +81,19 @@ def test_parse_2011_00412v3() -> None:
         language='english',
         archiveprefix='arXiv',
         primaryclass='math.FA',
-        eprint='2011.00412v3',
-        year='2023',
-        url='http://arxiv.org/abs/2011.00412v3'
+        eprint=arxiv_id,
+        date='2023-01-30',
+        url=f'http://arxiv.org/abs/{arxiv_id}'
     )
 
 
-def test_parse_1010_0824v13_russian() -> None:
-    with get_arxiv_fixture_path('1010.0824v13').open() as file:
+def test_parse_1010_0824v13_russian(arxiv_id: str = '1010.0824v13') -> None:
+    with get_arxiv_fixture_path(arxiv_id).open() as file:
         xml_body = file.read()
 
     feed = parse_arxiv_xml(xml_body)
     assert len(feed.entries) == 1
-    entry = arxiv_entry_to_bib(feed.entries[0])
+    entry = arxiv_entry_to_bib(feed.entries[0], arxiv_id)
 
     assert entry == BibEntry(
         entry_type='article',
@@ -105,24 +105,24 @@ def test_parse_1010_0824v13_russian() -> None:
         language='english',  # This is supposed to be "Russian", but the arXiv API does not give us this information
         archiveprefix='arXiv',
         primaryclass='math.CA',
-        eprint='1010.0824v13',
-        year='2024',
+        eprint=arxiv_id,
+        date='2024-06-14',
         edition='13',
-        url='http://arxiv.org/abs/1010.0824v13'
+        url=f'http://arxiv.org/abs/{arxiv_id}'
     )
 
 
-def test_parse_0903_0340v3_doi_and_link_without_type() -> None:
-    with get_arxiv_fixture_path('0903.0340v3').open() as file:
+def test_parse_0903_0340v3_doi_and_link_without_type(arxiv_id: str = '0903.0340v3') -> None:
+    with get_arxiv_fixture_path(arxiv_id).open() as file:
         xml_body = file.read()
 
     feed = parse_arxiv_xml(xml_body)
     assert len(feed.entries) == 1
-    entry = arxiv_entry_to_bib(feed.entries[0])
+    entry = arxiv_entry_to_bib(feed.entries[0], arxiv_id)
 
     assert entry == BibEntry(
         entry_type='article',
-        entry_name='Baez2009RosettaStone',
+        entry_name='Baez2009Physics',
         doi='10.1007/978-3-642-12821-9_2',
         title='Physics, Topology, Logic and Computation',
         subtitle='A Rosetta Stone',
@@ -133,20 +133,20 @@ def test_parse_0903_0340v3_doi_and_link_without_type() -> None:
         language='english',
         archiveprefix='arXiv',
         primaryclass='quant-ph',
-        eprint='0903.0340v3',
+        eprint=arxiv_id,
         edition='3',
-        year='2009',
-        url='http://arxiv.org/abs/0903.0340v3'
+        date='2009-06-06',
+        url=f'http://arxiv.org/abs/{arxiv_id}'
     )
 
 
-def test_parse_2401_09270v1_title_line_break() -> None:
-    with get_arxiv_fixture_path('2401.09270v1').open() as file:
+def test_parse_2401_09270v1_title_line_break(arxiv_id: str = '2401.09270v1') -> None:
+    with get_arxiv_fixture_path(arxiv_id).open() as file:
         xml_body = file.read()
 
     feed = parse_arxiv_xml(xml_body)
     assert len(feed.entries) == 1
-    entry = arxiv_entry_to_bib(feed.entries[0])
+    entry = arxiv_entry_to_bib(feed.entries[0], arxiv_id)
 
     assert entry == BibEntry(
         entry_type='article',
@@ -159,19 +159,19 @@ def test_parse_2401_09270v1_title_line_break() -> None:
         language='english',
         archiveprefix='arXiv',
         primaryclass='cs.LO',
-        eprint='2401.09270v1',
-        year='2024',
-        url='http://arxiv.org/abs/2401.09270v1'
+        eprint=arxiv_id,
+        date='2024-01-17',
+        url=f'http://arxiv.org/abs/{arxiv_id}'
     )
 
 
-def test_parse_2403_06707v1_dashes_in_title() -> None:
-    with get_arxiv_fixture_path('2403.06707v1').open() as file:
+def test_parse_2403_06707v1_dashes_in_title(arxiv_id: str = '2403.06707v1') -> None:
+    with get_arxiv_fixture_path(arxiv_id).open() as file:
         xml_body = file.read()
 
     feed = parse_arxiv_xml(xml_body)
     assert len(feed.entries) == 1
-    entry = arxiv_entry_to_bib(feed.entries[0])
+    entry = arxiv_entry_to_bib(feed.entries[0], arxiv_id)
 
     assert entry == BibEntry(
         entry_type='article',
@@ -188,7 +188,7 @@ def test_parse_2403_06707v1_dashes_in_title() -> None:
         language='english',
         archiveprefix='arXiv',
         primaryclass='cs.PL',
-        eprint='2403.06707v1',
-        year='2024',
-        url='http://arxiv.org/abs/2403.06707v1'
+        eprint=arxiv_id,
+        date='2024-03-11',
+        url=f'http://arxiv.org/abs/{arxiv_id}'
     )

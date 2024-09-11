@@ -29,7 +29,9 @@ class BibTokenizer(Tokenizer[BibToken]):
             self.advance()
             return CommentToken(self.gobble_line())
 
-        match RegexEqual(unicodedata.category(head)):
+        category = unicodedata.category(head)
+
+        match RegexEqual(category):
             case 'L.' | 'Mn':
                 return WordToken(self.gobble_unicode('L', 'Mn'))
 
@@ -40,7 +42,8 @@ class BibTokenizer(Tokenizer[BibToken]):
             case 'N.':
                 return NumberToken(self.gobble_unicode('N'))
 
-        raise self.error('Unexpected symbol')
+            case _:
+                raise self.error(f'Unexpected symbol with category {category}')
 
 
 def tokenize_bibtex(string: str) -> Sequence[BibToken]:

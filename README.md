@@ -49,7 +49,7 @@ Two additional parsers are included:
 
 There is a tool, [`code.commands.format_matrices`](./code/commands/format_matrices) (Usage: `poe --root code format-matrices figures`), made specifically for formatting LaTeX arrays and similar environments.
 
-### BibTeX
+### Bib(La)TeX tools
 
 There is a set of tools, [`code.commands.bibtools`](./code/commands/bibtools) (Usage: `poe --root code bibtools`), consisting of:
 * A formatter (`... format bibliography`)
@@ -58,9 +58,8 @@ There is a set of tools, [`code.commands.bibtools`](./code/commands/bibtools) (U
   * `... fetch isbn <id>`
   * `... fetch arxiv <id>`.
 
-Some comments should be made about the parser. It was created specifically for maintaining my personal (digital) library and this monograph's sources in particular. In order to handle differing conventions, mistaken and alternative spelling, it is based on whitelisting:
-* The parser only allows several languages referenced in the [`BibLanguage`](./code/notebook/bibtex/entry.py) enum.
-* The parser allows the fields from the [`BibEntry`](./code/notebook/bibtex/entry.py) class. Because this tool was built upon years of maintaining references with other improvised tools, however, a lot of (standard and nonstandard) entry properties accumulated.
+Some comments should be made about the parser. It was created specifically for maintaining my personal (digital) library and this monograph's sources in particular.
+* The parser only allows the fields from the [`BibEntry`](./code/notebook/bibtex/entry.py) class. Because this tool was built upon years of maintaining references with other improvised tools, however, a lot of (standard and nonstandard) entry properties accumulated.
 * The parser auxiliary logic for handling author names via the [`BibAuthor`](./code/notebook/bibtex/author.py) class. This involves parsing and handling each author separately (with `and` acting as a separator). Names are assumed to be in the format `Last, Title, Other`, `Title` and `Other` being optional and `Other` containing first and middle names. For Cyrillic languages, Latin transliteration is enforced via the `BibAuthor.display_name` field that gets read and written to the `shortauthor` BibTeX field.
 * The parser tries to unescape certain characters like `&` and `@`, while `BibEntry` tries to escape them when serializing. Exceptions for this are the fields marked as "verbatim" such as `url`.
 * The parser also supports verbatim fields, i.e. fields with values enclosed in an additional pair of curly braces like `{{value}}` or `"{value}"`. The value inside does not get processed by the author processing mechanism, thus we can treat "corporate names" like `{{Springer Science and Business Media}}` as one.

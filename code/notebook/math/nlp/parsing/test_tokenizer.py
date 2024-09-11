@@ -66,3 +66,13 @@ def test_cyrillic_word() -> None:
 
 def test_cyrillic_sentence() -> None:
     assert tokenize_text('Сморкалось.') == TokenSequence([WordToken('Сморкалось'), SymbolToken('.')])
+
+
+def test_unicode() -> None:
+    assert tokenize_text('Matrichnyĭ analiz i lineĭnai͡a algebra') == TokenSequence([
+        WordToken('Matrichnyĭ'), Whitespace.space,
+        WordToken('analiz'),     Whitespace.space,
+        WordToken('i'),          Whitespace.space,
+        WordToken('lineĭnai͡a'),  Whitespace.space,
+        WordToken('algebra')
+    ])

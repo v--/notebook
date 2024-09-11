@@ -164,30 +164,6 @@ def test_no_language() -> None:
     )
 
 
-def test_invalid_language() -> None:
-    string = dedent(r'''
-        @book{test,
-          title = {Test},
-          author = {A, B},
-          language = {engrish}
-        }
-        '''[1:]
-    )
-
-    with pytest.raises(ParsingError) as excinfo:
-        parse_bibtex(string)
-
-    assert str(excinfo.value) == 'Unrecognized language'
-    assert excinfo.value.__notes__[0] == dedent(r'''
-        1 │ @book{test,↵
-        2 │   title = {Test},↵
-        3 │   author = {A, B},↵
-        4 │   language = {engrish}↵
-          │              ^^^^^^^^^
-      '''[1:]
-    )
-
-
 def test_minimal_valid_entry() -> None:
     string = dedent(r'''
         @book{test,

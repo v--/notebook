@@ -10,6 +10,9 @@ from .formatting import BibFormatter
 from .sources.arxiv.bib import arxiv_entry_to_bib
 from .sources.arxiv.fetch import fetch_arxiv_xml
 from .sources.arxiv.model import parse_arxiv_xml
+from .sources.isbn.bib import isbn_book_to_bib
+from .sources.isbn.fetch import fetch_isbn_json
+from .sources.isbn.model import parse_isbn_json
 
 
 @click.group()
@@ -46,17 +49,29 @@ def arxiv(identifier: str, *, dump_as_fixture: bool) -> None:
     if len(feed.entries) > 1:
         raise BibToolsError('Too many entries')
 
-    entry = arxiv_entry_to_bib(feed.entries[0])
+    entry = arxiv_entry_to_bib(feed.entries[0], identifier)
+    click.echo(str(entry), nl=False)
+
+
+@fetch.command()
+@click.argument('identifier', type=str)
+@click.option('--dump-as-fixture', is_flag=True)
+@exit_gracefully_on_error
+def isbn(identifier: str, *, dump_as_fixture: bool) -> None:
+    json_body = fetch_isbn_json(identifier, dump_as_fixture=dump_as_fixture)
+    res = parse_isbn_json(json_body)
+
+    if len(res.items) == 0:
+        raise BibToolsError('No books found')
+
+    if len(res.items) > 1:
+        raise BibToolsError('Too many books found')
+
+    entry = isbn_book_to_bib(res.items[0], identifier)
     click.echo(str(entry), nl=False)
 
 
 # @fetch.command()
 # @click.argument('identifier', type=str)
 # def doi(identifier: str) -> None:
-#     pass
-
-
-# @fetch.command()
-# @click.argument('identifier', type=str)
-# def isbn(identifier: str) -> None:
 #     pass

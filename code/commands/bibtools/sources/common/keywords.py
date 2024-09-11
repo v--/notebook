@@ -1,32 +1,38 @@
-from many_stop_words import get_stop_words
+from collections.abc import Sequence
 
-from notebook.bibtex.author import BibAuthor
+import many_stop_words
+import stop_words
+from iso639 import Lang
+
 from notebook.math.nlp.parsing import tokenize_text
 from notebook.math.nlp.rake import generate_phrase_scores
-from notebook.support.unicode import normalize_whitespace, remove_accents, remove_symbols, remove_whitespace
+from notebook.support.unicode import normalize_whitespace
 
 
-def extract_keyphrase(main_text: str, language: str, additional_text: str | None = None) -> str:
+def get_stop_words(language: str) -> Sequence[str]:
+    lang = Lang(language.title())
+    # many_stop_words lists korean as 'kr' for some reason
+    lang_code = lang.pt1 if language != 'korean' else 'kr'
+
+    if lang_code in many_stop_words.available_languages:
+        return many_stop_words.get_stop_words(lang_code)
+
+    if language in stop_words.AVAILABLE_LANGUAGES:
+        return stop_words.get_stop_words(language)
+
+    return []
+
+
+def extract_keyphrase(main_text: str, language: str, *aux_texts: str) -> str:
     scores = generate_phrase_scores(
         tokenize_text(main_text),
         get_stop_words(language),
-        additional_training=tokenize_text(additional_text) if additional_text is not None else None
+        *map(tokenize_text, aux_texts)
     )
 
     min_len_top_phrase = min(
-        scores.iter_max_scoring(),
+        (phrase for phrase in scores.iter_max_scoring() if any(len(str(token)) > 2 for token in phrase)),
         key=lambda phrase: (len(phrase), len(str(phrase)))
     )
 
     return normalize_whitespace(str(min_len_top_phrase))
-
-
-def mangle_string_for_entry_name(string: str) -> str:
-    return remove_whitespace(remove_symbols(remove_accents(string).title()))
-
-
-def generate_entry_name(author: BibAuthor, year: str, title: str, language: str, additional_text: str | None = None) -> str:
-    keyphrase = extract_keyphrase(title, language, additional_text)
-    mangled_keyphrase = mangle_string_for_entry_name(keyphrase)
-    mangled_name = mangle_string_for_entry_name(author.main_name)
-    return f'{mangled_name}{year}{mangled_keyphrase}'

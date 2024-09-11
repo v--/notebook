@@ -28,20 +28,6 @@ BibEntryType = Literal[
 ]
 
 
-# Maintain a list of languages enforces no typos and alternative spelling
-BibLanguage = Literal[
-    # These are the main ones
-    'english',
-    'russian',
-    'bulgarian',
-    # These are the auxiliary, i.e. only present for the originals of some papers.
-    # We can add more aux languages if necessary.
-    'italian',
-    'german',
-    'latin'
-]
-
-
 class BibFieldAnnotation(NamedTuple):
     meta: bool = False
     author: bool = False
@@ -57,7 +43,7 @@ class BibEntry(NamedTuple):
     entry_name:    Annotated[str, BibFieldAnnotation(meta=True)]
     # Base fields
     title:         Annotated[str, BibFieldAnnotation()]
-    language:      Annotated[BibLanguage, BibFieldAnnotation()]
+    language:      Annotated[str, BibFieldAnnotation()]
     authors:       Annotated[Sequence[BibAuthor], BibFieldAnnotation(author=True, key_name='author')]
     # Optional
     translators:   Annotated[Sequence[BibAuthor], BibFieldAnnotation(author=True, key_name='translator')] = []

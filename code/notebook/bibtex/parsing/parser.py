@@ -6,7 +6,7 @@ from ...parsing.mixins.whitespace import WhitespaceParserMixin
 from ...parsing.parser import Parser
 from ...parsing.whitespace import Whitespace
 from ...support.iteration import list_accumulator
-from ..entry import BibAuthor, BibEntry, BibEntryType, BibLanguage
+from ..entry import BibAuthor, BibEntry, BibEntryType
 from .tokenizer import tokenize_bibtex
 from .tokens import BibToken, CommentToken, MiscToken, NumberToken, WordToken
 
@@ -234,9 +234,6 @@ class BibParser(WhitespaceParserMixin[BibToken], Parser[BibToken]):
             for _ in self.parse_authors(value, entry_start_i, value_start_i):
                 pass
 
-        if key == 'language' and value_str not in get_args(BibLanguage):
-            raise self.error('Unrecognized language', **error_kwargs)
-
         if key == 'isbn':
             no_dashes = value_str.replace('-', '')
 
@@ -398,7 +395,6 @@ class BibParser(WhitespaceParserMixin[BibToken], Parser[BibToken]):
                 translators=self.process_authors(properties, 'translator', entry_start_i),
                 advisors=self.process_authors(properties, 'advisor', entry_start_i),
                 editors=self.process_authors(properties, 'editor', entry_start_i),
-                language=cast(BibLanguage, str(properties.pop('language'))),
                 **{key: str(value) for key, value in properties.items()}
             )
 

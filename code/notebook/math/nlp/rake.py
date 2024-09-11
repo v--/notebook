@@ -26,7 +26,7 @@ class WordScoreContext(NamedTuple):
         return self.degree[key] / self.frequency[key]
 
 
-def generate_word_score(phrases: Iterable[TokenSequence], additional_phrases: Iterable[TokenSequence] | None = None) -> WordScoreContext:
+def generate_word_score(phrases: Iterable[TokenSequence], *aux_phrases: Iterable[TokenSequence]) -> WordScoreContext:
     frequency = dict[str, int]()
     # The degree of a word is the sum of lengths of all phrases it occurs in minus the number of phrases.
     # This is the degree of the word in the adjacency graph if we count all words within a phrase as adjacent.
@@ -43,8 +43,8 @@ def generate_word_score(phrases: Iterable[TokenSequence], additional_phrases: It
             degree.setdefault(key, 0)
             degree[key] += len(words) - 1
 
-    if additional_phrases:
-        for phrase in additional_phrases:
+    for collection in aux_phrases:
+        for phrase in collection:
             words = list(iter_words(phrase))
 
             for word in words:
@@ -80,11 +80,11 @@ class PhraseScoreContext(NamedTuple):
 def generate_phrase_scores(
     seq: TokenSequence,
     stop_words: Collection[str],
-    additional_training: TokenSequence | None = None
+    *aux_seq: TokenSequence
 ) -> PhraseScoreContext:
     phrases = list(iter_phrases(seq, stop_words))
-    additional_phrases = list(iter_phrases(additional_training, stop_words)) if additional_training else []
-    word_score_context = generate_word_score(phrases, additional_phrases=additional_phrases)
+    aux_phrases = [list(iter_phrases(aux, stop_words)) for aux in aux_seq]
+    word_score_context = generate_word_score(phrases, *aux_phrases)
     phrase_scores = dict[TokenSequence, float]()
 
     for phrase in phrases:

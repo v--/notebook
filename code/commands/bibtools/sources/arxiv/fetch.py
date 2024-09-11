@@ -3,7 +3,7 @@ from urllib.parse import urlencode
 from urllib.request import urlopen
 
 from ...exceptions import BibToolsNetworkError
-from .paths import get_arxiv_fixture_path
+from .fixtures import get_arxiv_fixture_path
 
 
 def fetch_arxiv_xml(identifier: str, *, dump_as_fixture: bool = False) -> str:

@@ -4,8 +4,8 @@ from notebook.math.nlp.parsing import tokenize_text
 
 
 class Titles(NamedTuple):
-    title: str
-    subtitle: str | None
+    main: str
+    sub: str | None
 
 
 def split_title(full_title: str) -> Titles:
