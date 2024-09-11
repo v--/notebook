@@ -10,6 +10,9 @@ from .formatting import BibFormatter
 from .sources.arxiv.bib import arxiv_entry_to_bib
 from .sources.arxiv.fetch import fetch_arxiv_xml
 from .sources.arxiv.model import parse_arxiv_xml
+from .sources.doi.bib import doi_data_to_bib
+from .sources.doi.fetch import fetch_doi_json
+from .sources.doi.model import parse_doi_json
 from .sources.isbn.bib import isbn_book_to_bib
 from .sources.isbn.fetch import fetch_isbn_json
 from .sources.isbn.model import parse_isbn_json
@@ -71,7 +74,13 @@ def isbn(identifier: str, *, dump_as_fixture: bool) -> None:
     click.echo(str(entry), nl=False)
 
 
-# @fetch.command()
-# @click.argument('identifier', type=str)
-# def doi(identifier: str) -> None:
-#     pass
+@fetch.command()
+@click.argument('identifier', type=str)
+@click.option('--print-edition', is_flag=True)
+@click.option('--dump-as-fixture', is_flag=True)
+@exit_gracefully_on_error
+def doi(identifier: str, *, print_edition: bool, dump_as_fixture: bool) -> None:
+    json_body = fetch_doi_json(identifier, dump_as_fixture=dump_as_fixture)
+    data = parse_doi_json(json_body)
+    entry = doi_data_to_bib(data, identifier, print_edition=print_edition)
+    click.echo(str(entry), nl=False)

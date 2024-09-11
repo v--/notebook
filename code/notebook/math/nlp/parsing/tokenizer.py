@@ -36,7 +36,7 @@ class TextTokenizer(Tokenizer[TextToken]):
 
         return WordToken(buffer)
 
-    def parse_step(self, head: str) -> TextToken:
+    def parse_step(self, head: str) -> TextToken:  # noqa: PLR0911
         if head == Whitespace.space.value:
             self.advance()
             return Whitespace.space
@@ -65,6 +65,14 @@ class TextTokenizer(Tokenizer[TextToken]):
                     return WordToken(num_string + '-' + str(word))
 
                 return NumberToken(num_string)
+
+            case 'Zs':
+                self.advance()
+                return Whitespace.space
+
+            case 'Zl' | 'Zp':
+                self.advance()
+                return Whitespace.line_break
 
             case _:
                 raise self.error(f'Unexpected symbol with category {category}')

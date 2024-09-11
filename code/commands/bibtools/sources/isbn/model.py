@@ -1,5 +1,6 @@
 from typing import Annotated
 
+from annotated_types import Len
 from pydantic import BaseModel, ConfigDict, Field, alias_generators
 
 
@@ -20,7 +21,7 @@ class GoogleBookVolumeInfo(GoogleBookBaseModel):
     industry_identifiers: list[GoogleBookIndustryIdentifier]
     title: str
     language: str
-    authors: Annotated[list[str], Field(default_factory=list)]
+    authors: Annotated[list[str], Field(default_factory=list), Len(min_length=1)]
     published_date: str | None = None
     subtitle: str | None = None
     publisher: str | None = None

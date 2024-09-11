@@ -76,3 +76,10 @@ def test_unicode() -> None:
         WordToken('lineĭnai͡a'),  Whitespace.space,
         WordToken('algebra')
     ])
+
+
+def test_space_separator() -> None:
+    assert tokenize_text('de Beer') == TokenSequence([
+        WordToken('de'),  Whitespace.space,
+        WordToken('Beer')
+    ])
