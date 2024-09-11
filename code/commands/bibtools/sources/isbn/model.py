@@ -1,44 +1,47 @@
-# ruff: noqa: N815
+from typing import Annotated
 
-from dataclasses import dataclass, field
-
-from xsdata.formats.dataclass.parsers import JsonParser
+from pydantic import BaseModel, ConfigDict, Field, alias_generators
 
 
-@dataclass
-class GoogleBookIndustryIdentifier:
+class GoogleBookBaseModel(BaseModel):
+    model_config = ConfigDict(
+        alias_generator=alias_generators.to_camel,
+        extra='forbid'
+    )
+
+
+class GoogleBookIndustryIdentifier(GoogleBookBaseModel):
     type: str
     identifier: str
 
 
-@dataclass
-class GoogleBookVolumeInfo:
-    industryIdentifiers: list[GoogleBookIndustryIdentifier]
+
+class GoogleBookVolumeInfo(GoogleBookBaseModel):
+    industry_identifiers: list[GoogleBookIndustryIdentifier]
     title: str
     language: str
-    authors: list[str] = field(default_factory=list)
-    publishedDate: str | None = None
+    authors: Annotated[list[str], Field(default_factory=list)]
+    published_date: str | None = None
     subtitle: str | None = None
     publisher: str | None = None
     description: str | None = None
 
 
-@dataclass
-class GoogleBookSearchInfo:
-    textSnippet: str
+
+class GoogleBookSearchInfo(GoogleBookBaseModel):
+    text_snippet: str
 
 
-@dataclass
-class GoogleBook:
-    volumeInfo: GoogleBookVolumeInfo
-    searchInfo: GoogleBookSearchInfo | None = None
+
+class GoogleBook(GoogleBookBaseModel):
+    volume_info: GoogleBookVolumeInfo
+    search_info: GoogleBookSearchInfo | None = None
 
 
-@dataclass
-class GoogleBooksResponse:
-    items: list[GoogleBook] = field(metadata=dict(type='Element'), default_factory=list)
+
+class GoogleBooksResponse(GoogleBookBaseModel):
+    items: Annotated[list[GoogleBook], Field(default_factory=list)]
 
 
 def parse_isbn_json(json_body: str) -> GoogleBooksResponse:
-    parser = JsonParser()
-    return parser.from_string(json_body, GoogleBooksResponse)
+    return GoogleBooksResponse.model_validate_json(json_body)

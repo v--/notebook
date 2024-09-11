@@ -12,13 +12,13 @@ from .model import GoogleBook
 
 
 def isbn_book_to_bib(book: GoogleBook, isbn: str) -> BibEntry:
-    vi = book.volumeInfo
-    si = book.searchInfo
+    vi = book.volume_info
+    si = book.search_info
 
     language = Lang(vi.language).name.lower()
     authors = [name_to_bib_author(author) for author in vi.authors]
 
-    year_match = vi.publishedDate and re.match(r'(?P<year>\d{4})', vi.publishedDate)
+    year_match = vi.published_date and re.match(r'(?P<year>\d{4})', vi.published_date)
     year = year_match.group('year') if year_match else ''
 
     if vi.subtitle is None or vi.subtitle == '':
@@ -28,11 +28,11 @@ def isbn_book_to_bib(book: GoogleBook, isbn: str) -> BibEntry:
 
     return BibEntry(
         entry_type='book',
-        entry_name=generate_entry_name(authors[0], year, titles, language, vi.description, si.textSnippet if si else None),
+        entry_name=generate_entry_name(authors[0], year, titles, language, vi.description, si.text_snippet if si else None),
         authors=authors,
         title=titles.main,
         subtitle=titles.sub,
         language=language,
-        date=vi.publishedDate,
+        date=vi.published_date,
         isbn=isbn.format(isbn)
     )
