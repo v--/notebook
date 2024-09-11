@@ -1,6 +1,6 @@
-from typing import TextIO
+from typing import Any, TextIO
 
-from titlecase import titlecase
+from stdnum import isbn, issn
 
 from notebook.bibtex.author import BibAuthor
 from notebook.bibtex.entry import BibEntry
@@ -9,13 +9,7 @@ from notebook.parsing.parser import ParsingError
 
 from ..common.formatting import Formatter
 from ..common.names import latinize_cyrillic_name
-
-
-def titlecase_bib_callback(string: str, all_caps: bool) -> str | None:  # noqa: FBT001
-    if all_caps or not string.isascii():
-        return string
-
-    return None
+from .sources.common.languages import normalize_language_name
 
 
 class BibFormatter(Formatter):
@@ -23,29 +17,33 @@ class BibFormatter(Formatter):
         adjusted = author
 
         if adjusted.display_name is None and (entry.language == 'russian' or entry.language == 'bulgarian'):
+            self.logger.info('Adding Latinized names')
             adjusted = adjusted._replace(display_name=latinize_cyrillic_name(adjusted.get_shortened_string()))
 
         return adjusted
+
+    def warn_of_blank_field(self, entry: BibEntry, field_name: str) -> None:
+        if getattr(entry, field_name) is None:
+            self.logger.warning(f'The field {field_name} is blank')
+
+    def adjust_field(self, entry: BibEntry, field_name: str, new_value: Any) -> BibEntry:  # noqa: ANN401
+        old_value = getattr(entry, field_name)
+
+        if old_value != new_value:
+            self.logger.info(f'Updating the {field_name} field from {old_value!r} to {new_value!r}')
+            return entry._replace(**{field_name: new_value})
+
+        return entry
 
     def adjust_entry(self, entry: BibEntry) -> BibEntry:
         adjusted = entry
         adjusted._replace(authors=[self.adjust_author(author, adjusted) for author in adjusted.authors])
 
-        if adjusted.entry_type == 'online':
-            return adjusted
+        adjusted = self.adjust_field(adjusted, 'language', normalize_language_name(adjusted.language))
+        adjusted = self.adjust_field(adjusted, 'isbn', isbn.format(adjusted.isbn) if adjusted.isbn else None)
+        adjusted = self.adjust_field(adjusted, 'issn', issn.format(adjusted.issn) if adjusted.issn else None)
 
-        title = titlecase(adjusted.title, callback=titlecase_bib_callback)
-
-        if title != adjusted.title:
-            self.logger.info(f'Capitalizing title {adjusted.title!r} to {title!r}')
-            adjusted = adjusted._replace(title=title)
-
-        if adjusted.subtitle:
-            subtitle = titlecase(adjusted.subtitle, callback=titlecase_bib_callback)
-
-            if subtitle != adjusted.subtitle:
-                self.logger.info(f'Capitalizing subtitle {adjusted.subtitle!r} to {subtitle!r}')
-                adjusted = adjusted._replace(subtitle=subtitle)
+        self.warn_of_blank_field(adjusted, 'date')
 
         return adjusted
 

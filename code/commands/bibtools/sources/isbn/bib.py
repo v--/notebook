@@ -1,11 +1,10 @@
 import re
 
-from iso639 import Lang
-
 from notebook.bibtex.entry import BibEntry
 from notebook.support.unicode import normalize_whitespace
 
 from ..common.entries import generate_entry_name
+from ..common.languages import normalize_language_name
 from ..common.names import name_to_bib_author
 from ..common.titles import Titles, split_title
 from .model import GoogleBook
@@ -15,7 +14,7 @@ def isbn_book_to_bib(book: GoogleBook, isbn: str) -> BibEntry:
     vi = book.volume_info
     si = book.search_info
 
-    language = Lang(vi.language).name.lower()
+    language = normalize_language_name(vi.language)
     authors = [name_to_bib_author(author) for author in vi.authors]
 
     year_match = vi.published_date and re.match(r'(?P<year>\d{4})', vi.published_date)

@@ -2,16 +2,19 @@ from collections.abc import Sequence
 
 import many_stop_words
 import stop_words
-from iso639 import Lang
 
 from notebook.math.nlp.parsing import tokenize_text
 from notebook.math.nlp.rake import PhraseScoreContext, generate_phrase_scores
 
+from .languages import get_language_code
+
 
 def get_stop_words(language: str) -> Sequence[str]:
-    lang = Lang(language.title())
+    lang_code = get_language_code(language)
+
     # many_stop_words lists korean as 'kr' for some reason
-    lang_code = lang.pt1 if language != 'korean' else 'kr'
+    if lang_code == 'ko':
+        lang_code = 'kr'
 
     if lang_code in many_stop_words.available_languages:
         return many_stop_words.get_stop_words(lang_code)

@@ -1,4 +1,3 @@
-from iso639 import Lang
 from stdnum import isbn, issn
 
 from notebook.bibtex.author import BibAuthor
@@ -7,6 +6,7 @@ from notebook.exceptions import UnreachableException
 from notebook.support.unicode import normalize_whitespace
 
 from ..common.entries import generate_entry_name
+from ..common.languages import normalize_language_name
 from ..common.titles import Titles, split_title
 from .model import DoiAuthor, DoiData, DoiDateTime, DoiIsbn
 
@@ -106,7 +106,7 @@ def doi_data_to_bib(data: DoiData, doi: str, *, print_edition: bool = False) -> 
     chosen_datetime = choose_doi_datetime(data, print_edition=print_edition)
     authors = [doi_author_to_bib(author) for author in data.author]
     year = doi_datetime_get_year(chosen_datetime) if chosen_datetime else None
-    language = Lang(data.language).name.lower() if data.language else 'english'
+    language = normalize_language_name(data.language) if data.language else 'english'
     entry_type = get_entry_type(data.type)
 
     if isinstance(data.container_title, list):

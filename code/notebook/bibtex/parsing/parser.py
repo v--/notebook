@@ -234,22 +234,6 @@ class BibParser(WhitespaceParserMixin[BibToken], Parser[BibToken]):
             for _ in self.parse_authors(value, entry_start_i, value_start_i):
                 pass
 
-        if key == 'isbn':
-            no_dashes = value_str.replace('-', '')
-
-            if (len(no_dashes) == 10 or len(no_dashes) == 13) and no_dashes[:-1].isdigit() and (no_dashes[-1].isdigit() or no_dashes[-1] == 'X'):
-                return
-
-            raise self.error('Invalid ISBN', **error_kwargs)
-
-        if key == 'issn':
-            no_dashes = value_str.replace('-', '')
-
-            if len(no_dashes) == 8 and no_dashes[:-1].isdigit() and (no_dashes[-1].isdigit() or no_dashes[-1] == 'X'):
-                return
-
-            raise self.error('Invalid ISSN', **error_kwargs)
-
     def parse_entry_properties(self, entry_start_i: int) -> Iterable[tuple[str, PropertyValue]]:
         keys = set[str]()
         last_comma_i: int | None = None
