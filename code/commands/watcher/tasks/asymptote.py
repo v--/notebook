@@ -1,7 +1,7 @@
 import pathlib
 import shutil
 
-import structlog
+import loguru
 
 from ...common.paths import AUX_PATH, OUTPUT_PATH
 from ..runner import TaskRunner
@@ -12,7 +12,7 @@ class AsymptoteTask(WatcherTask):
     src_path: pathlib.Path
     out_buffer: int | None = None
 
-    def __init__(self, base_logger: structlog.stdlib.BoundLogger, src_path: pathlib.Path | str) -> None:
+    def __init__(self, base_logger: 'loguru.Logger', src_path: pathlib.Path | str) -> None:
         self.src_path = pathlib.Path(src_path)
         self.base_logger = base_logger
         self.sublogger = base_logger.bind(logger=str(self.src_path))

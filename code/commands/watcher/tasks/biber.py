@@ -3,7 +3,7 @@ import os.path
 import pathlib
 import shutil
 
-import structlog
+import loguru
 
 from ...common.paths import AUX_PATH, OUTPUT_PATH, ROOT_PATH
 from ..runner import TaskRunner
@@ -12,12 +12,12 @@ from .latex import LaTeXTask
 
 
 class BiberTask(WatcherTask):
-    base_logger: structlog.stdlib.BoundLogger
+    base_logger: 'loguru.Logger'
     out_buffer: int | None = asyncio.subprocess.DEVNULL
     tex_path: pathlib.Path
     _bbl_hash: int | None
 
-    def __init__(self, base_logger: structlog.stdlib.BoundLogger, tex_path: pathlib.Path | str) -> None:
+    def __init__(self, base_logger: 'loguru.Logger', tex_path: pathlib.Path | str) -> None:
         self.tex_path = pathlib.Path(tex_path)
         self.base_logger = base_logger
         self.sublogger = base_logger.bind(logger=str(os.path.relpath(self.bcf_path, ROOT_PATH)))

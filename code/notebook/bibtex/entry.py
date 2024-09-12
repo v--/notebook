@@ -56,6 +56,7 @@ class BibEntry(NamedTuple):
     note:          Annotated[str | None, BibFieldAnnotation()] = None
     year:          Annotated[str | None, BibFieldAnnotation()] = None
     month:         Annotated[str | None, BibFieldAnnotation()] = None
+    day:           Annotated[str | None, BibFieldAnnotation()] = None
     edition:       Annotated[str | None, BibFieldAnnotation()] = None
     volume:        Annotated[str | None, BibFieldAnnotation()] = None
     institution:   Annotated[str | None, BibFieldAnnotation()] = None

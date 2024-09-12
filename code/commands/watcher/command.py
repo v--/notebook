@@ -5,9 +5,10 @@ from fnmatch import fnmatch
 from typing import Literal
 
 import click
-import structlog
+import loguru
 from asyncinotify import Inotify, Mask
 
+from ..common.logging import configure_loguru
 from ..common.paths import FIGURES_PATH, ROOT_PATH
 from .runner import TaskRunner
 from .tasks import AsymptoteTask, LaTeXTask
@@ -16,7 +17,7 @@ from .tasks import AsymptoteTask, LaTeXTask
 WatchTarget = Literal['all', 'notebook', 'figures']
 
 
-async def iter_file_changes(logger: structlog.stdlib.BoundLogger) -> AsyncIterator:
+async def iter_file_changes(logger: 'loguru.Logger') -> AsyncIterator:
     with Inotify() as inotify:
         inotify.add_watch(ROOT_PATH, Mask.MODIFY)
         inotify.add_watch(ROOT_PATH / 'text', Mask.MODIFY)
@@ -34,7 +35,7 @@ async def iter_file_changes(logger: structlog.stdlib.BoundLogger) -> AsyncIterat
                 yield os.path.relpath(event.path, ROOT_PATH)
 
 
-async def setup_watchers(base_logger: structlog.stdlib.BoundLogger, *, no_aux: bool) -> None:
+async def setup_watchers(base_logger: 'loguru.Logger', *, no_aux: bool) -> None:
     runner = TaskRunner()
 
     async for path in iter_file_changes(base_logger):
@@ -71,7 +72,8 @@ async def setup_watchers(base_logger: structlog.stdlib.BoundLogger, *, no_aux: b
 @click.command()
 @click.option('--no-aux', is_flag=True)
 def watch(*, no_aux: bool) -> None:
-    base_logger = structlog.get_logger().bind(logger='<system>')
+    configure_loguru(verbose=True)
+    base_logger = loguru.logger
 
     try:
         asyncio.run(setup_watchers(base_logger, no_aux=no_aux))

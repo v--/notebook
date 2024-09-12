@@ -1,7 +1,7 @@
 import abc
 from typing import TYPE_CHECKING
 
-import structlog
+import loguru
 
 
 if TYPE_CHECKING:
@@ -9,7 +9,7 @@ if TYPE_CHECKING:
 
 
 class WatcherTask(abc.ABC):
-    sublogger: structlog.stdlib.BoundLogger
+    sublogger: 'loguru.Logger'
     out_buffer: int | None
 
     def __eq__(self, other: object) -> bool:

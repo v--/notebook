@@ -7,12 +7,12 @@ from abc import ABC, abstractmethod
 from dataclasses import dataclass
 from typing import TextIO
 
-import structlog
+import loguru
 
 
 @dataclass
 class Formatter(ABC):
-    logger: structlog.stdlib.BoundLogger
+    logger: 'loguru.Logger'
     path: pathlib.Path
 
     @abstractmethod

@@ -47,12 +47,12 @@ Two additional parsers are included:
 
 ### LaTeX tools
 
-There is a tool, [`code.commands.format_matrices`](./code/commands/format_matrices) (Usage: `poe --root code format-matrices figures`), made specifically for formatting LaTeX arrays and similar environments.
+There is a tool, [`code.commands.format_matrices`](./code/commands/format_matrices) (Usage: `poe --root code format-matrices figures/*.tex`), made specifically for formatting LaTeX arrays and similar environments.
 
 ### Bib(La)TeX tools
 
 There is a set of tools, [`code.commands.bibtools`](./code/commands/bibtools) (Usage: `poe --root code bibtools`), consisting of:
-* A formatter (`... format bibliography`)
+* A formatter (`... format bibliography bibliography/*.bib`)
 * Several BibLaTeX entry fetch tools:
   * `... fetch doi <id>`
   * `... fetch isbn <id>`
