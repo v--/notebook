@@ -23,6 +23,7 @@ def test_parse_1023072266967(doi: str = '10.2307/2266967') -> None:
             BibAuthor(main_name='Henkin', other_names='Leon')
         ],
         doi=doi,
+        url=f'http://dx.doi.org/{doi}',
         language='english',
         date='1950-06',
         issn='1943-5886',
@@ -50,6 +51,7 @@ def test_parse_101215_ijm_1256049011_missing_fields(doi: str = '10.1215/ijm/1256
             BibAuthor(main_name='Haken', other_names='W.')
         ],
         doi=doi,
+        url=f'http://dx.doi.org/{doi}',
         language='english',
         date='1977-09-01',
         issn='0019-2082',
@@ -77,6 +79,7 @@ def test_parse_101215_ijm_1256049012_missing_fields(doi: str = '10.1215/ijm/1256
             BibAuthor(main_name='Koch', other_names='J.')
         ],
         doi=doi,
+        url=f'http://dx.doi.org/{doi}',
         language='english',
         date='1977-09-01',
         issn='0019-2082',
@@ -102,6 +105,7 @@ def test_parse_101134_s0081543815090023_references(doi: str = '10.1134/s00815438
             BibAuthor(main_name='Veliov', other_names='V. M.')
         ],
         doi=doi,
+        url=f'http://dx.doi.org/{doi}',
         language='english',
         date='2015-12-11',
         issn='0081-5438',
@@ -138,6 +142,7 @@ def test_parse_101016_jindag201901001_assertions(doi: str = '10.1016/j.indag.201
             BibAuthor(main_name='Holliday', other_names='Wesley H.')
         ],
         doi=doi,
+        url=f'http://dx.doi.org/{doi}',
         language='english',
         date='2019-05',
         issn='0019-3577',
@@ -164,6 +169,7 @@ def test_parse_101016_jjmaa2019123445_funder(doi: str = '10.1016/j.jmaa.2019.123
             BibAuthor(main_name='Ribarska', other_names='Nadezhda')
         ],
         doi=doi,
+        url=f'http://dx.doi.org/{doi}',
         language='english',
         journal='Journal of Mathematical Analysis and Applications',
         volume='481',
@@ -191,6 +197,7 @@ def test_parse_101145_13274521327492_assertion_order_and_group(doi: str = '10.11
             BibAuthor(main_name='Ghemawat', other_names='Sanjay')
         ],
         doi=doi,
+        url=f'http://dx.doi.org/{doi}',
         language='english',
         journal='Communications of the ACM',
         volume='51',
@@ -217,6 +224,7 @@ def test_parse_102307_4145127_reference_edition(doi: str = '10.2307/4145127') ->
             BibAuthor(main_name='Strang', other_names='Gilbert')
         ],
         doi=doi,
+        url='http://dx.doi.org/10.1080/00029890.2004.11920065',
         language='english',
         journal='The American Mathematical Monthly',
         volume='111',
@@ -242,6 +250,7 @@ def test_parse_101090_bull_1616_reference_issn(doi: str = '10.1090/bull/1616') -
             BibAuthor(main_name='Grayson', other_names='Daniel')
         ],
         doi=doi,
+        url=f'http://dx.doi.org/{doi}',
         language='english',
         journal='Bulletin of the American Mathematical Society',
         volume='55',
@@ -274,6 +283,7 @@ def test_parse_101007_s1065401601493_extended_funder(doi: str = '10.1007/s10654-
             BibAuthor(main_name='Altman', other_names='Douglas G.')
         ],
         doi=doi,
+        url=f'http://dx.doi.org/{doi}',
         language='english',
         journal='European Journal of Epidemiology',
         volume='31',
@@ -299,6 +309,7 @@ def test_parse_101016_jentcs200409017_special_numbering(doi: str = '10.1016/j.en
             BibAuthor(main_name='Escardó', other_names='Martín')
         ],
         doi=doi,
+        url=f'http://dx.doi.org/{doi}',
         language='english',
         journal='Electronic Notes in Theoretical Computer Science',
         volume='87',
@@ -327,6 +338,7 @@ def test_parse_101111_tops12019_updated_by(doi: str = '10.1111/tops.12019') -> N
             BibAuthor(main_name='Alcock', other_names='Lara')
         ],
         doi=doi,
+        url=f'http://dx.doi.org/{doi}',
         language='english',
         journal='Topics in Cognitive Science',
         volume='5',
@@ -354,6 +366,7 @@ def test_parse_101007_97836421282192_book(doi: str = '10.1007/978-3-642-66451-9'
             BibAuthor(main_name='Löfström', other_names='Jörgen')
         ],
         doi=doi,
+        url=f'http://dx.doi.org/{doi}',
         language='english',
         series='Grundlehren der mathematischen Wissenschaften',
         date='1976',
@@ -378,6 +391,7 @@ def test_parse_101007_9783319114781_book(doi: str = '10.1007/978-3-319-11478-1')
             BibAuthor(main_name='Bergman', other_names='George M.')
         ],
         doi=doi,
+        url=f'http://dx.doi.org/{doi}',
         language='english',
         series='Universitext',
         date='2015',
@@ -404,6 +418,7 @@ def test_parse_101007_97836421282192_book_chapter(doi: str = '10.1007/978-3-642-
             BibAuthor(main_name='Stay', other_names='M.')
         ],
         doi=doi,
+        url=f'http://dx.doi.org/{doi}',
         language='english',
         series='Lecture Notes in Physics',
         date='2010-07-05',
@@ -430,13 +445,14 @@ def test_parse_101007_9783642617010_container_empty_array(doi: str = '10.1007/97
             BibAuthor(main_name='Bourbaki', other_names='Nicolas')
         ],
         doi=doi,
+        url=f'http://dx.doi.org/{doi}',
         language='english',
         date='1995',
         isbn='978-3-642-61701-0'
     )
 
 
-def test_parse_101017_9781108583664_edition_and_no_links(doi: str = '10.1017_9781108583664') -> None:
+def test_parse_101017_9781108583664_edition_and_no_links(doi: str = '10.1017/9781108583664') -> None:
     with get_doi_fixture_path(doi).open() as file:
         json_body = file.read()
 
@@ -454,6 +470,7 @@ def test_parse_101017_9781108583664_edition_and_no_links(doi: str = '10.1017_978
             BibAuthor(main_name='Vandenberghe', other_names='Lieven')
         ],
         doi=doi,
+        url=f'http://dx.doi.org/{doi}',
         edition='1',
         language='english',
         date='2019-09-13',
@@ -477,6 +494,7 @@ def test_parse_101109_ieeestd20198766229_standard(doi: str = '10.1109/IEEESTD.20
             BibAuthor(main_name='IEEE')
         ],
         doi=doi,
+        url=f'http://dx.doi.org/{doi}',
         isbn='978-1-5044-5924-2',
         language='english',
     )

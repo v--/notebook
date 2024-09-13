@@ -156,5 +156,6 @@ def doi_data_to_bib(data: DoiData, doi: str, *, print_edition: bool = False) -> 
         isbn=get_isbn(data.isbn_type, data.isbn, print_edition=print_edition),
         issn=get_issn(data.issn, print_edition=print_edition),
         series=container_title if entry_type == 'book' or entry_type == 'inbook' else None,
-        journal=container_title if entry_type == 'article' else None
+        journal=container_title if entry_type == 'article' else None,
+        url=data.url
     )
