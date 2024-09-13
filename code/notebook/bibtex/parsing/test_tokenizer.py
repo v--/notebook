@@ -1,6 +1,6 @@
 from ...parsing.whitespace import Whitespace
 from .tokenizer import tokenize_bibtex
-from .tokens import CommentToken, NumberToken, WordToken
+from .tokens import NumberToken, WordToken
 
 
 def test_empty_string() -> None:
@@ -37,15 +37,3 @@ def test_number_token() -> None:
     string = '00'
     tokens = tokenize_bibtex(string)
     assert tokens == [NumberToken(string)]
-
-
-def test_comment_token() -> None:
-    string = '% asdf fdsa'
-    tokens = tokenize_bibtex(string)
-    assert tokens == [CommentToken(' asdf fdsa')]
-
-
-def test_comment_token_midline() -> None:
-    string = 'asdf % fdsa'
-    tokens = tokenize_bibtex(string)
-    assert tokens == [WordToken('asdf'), Whitespace.space, CommentToken(' fdsa')]

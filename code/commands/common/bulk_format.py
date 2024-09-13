@@ -1,5 +1,4 @@
 import pathlib
-from collections.abc import Sequence
 
 import loguru
 
@@ -7,7 +6,7 @@ from ..common.inflection import prefix_cardinal
 from .formatting import Formatter
 
 
-def bulk_format(paths: Sequence[pathlib.Path], formatter_cls: type[Formatter]) -> None:
+def bulk_format(formatter_cls: type[Formatter], *paths: pathlib.Path) -> None:
     base_logger = loguru.logger
 
     total_count = 0

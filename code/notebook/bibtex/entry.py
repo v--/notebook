@@ -63,6 +63,7 @@ class BibEntry(NamedTuple):
     # Theses
     advisors:      Annotated[Sequence[BibAuthor], BibFieldAnnotation(author=True, key_name='advisor')] = []
     # Books
+    chapter:       Annotated[str | None, BibFieldAnnotation()] = None
     series:        Annotated[str | None, BibFieldAnnotation()] = None
     isbn:          Annotated[str | None, BibFieldAnnotation()] = None
     # Russian books

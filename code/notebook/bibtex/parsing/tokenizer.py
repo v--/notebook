@@ -5,13 +5,10 @@ from notebook.support.regex import RegexEqual
 
 from ...parsing.tokenizer import Tokenizer
 from ...parsing.whitespace import Whitespace
-from .tokens import BibToken, CommentToken, MiscToken, NumberToken, SymbolToken, WordToken
+from .tokens import BibToken, MiscToken, NumberToken, SymbolToken, WordToken
 
 
 class BibTokenizer(Tokenizer[BibToken]):
-    def gobble_line(self) -> str:
-        return self.gobble_string(lambda token: token != '\n')
-
     def gobble_unicode(self, *codes: str) -> str:
         return self.gobble_string(
             lambda token:
@@ -24,10 +21,6 @@ class BibTokenizer(Tokenizer[BibToken]):
         if (token := MiscToken.try_match(head) or Whitespace.try_match(head)):
             self.advance()
             return token
-
-        if head == '%':
-            self.advance()
-            return CommentToken(self.gobble_line())
 
         category = unicodedata.category(head)
 

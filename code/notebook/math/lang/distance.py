@@ -7,7 +7,7 @@ def hamming(v: str, w: str) -> int:
 
 
 # This is alg:wagner_fisher in the monograph
-def fisher_wagner(v: str, w: str) -> int:
+def wagner_fisher(v: str, w: str) -> int:
     mtx = zeros(len(v) + 1, len(w) + 1)
 
     for i in range(len(v) + 1):

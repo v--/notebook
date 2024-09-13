@@ -8,7 +8,7 @@ from ...parsing.whitespace import Whitespace
 from ...support.iteration import list_accumulator
 from ..entry import BibAuthor, BibEntry, BibEntryType
 from .tokenizer import tokenize_bibtex
-from .tokens import BibToken, CommentToken, MiscToken, NumberToken, WordToken
+from .tokens import BibToken, MiscToken, NumberToken, WordToken
 
 
 AUTHOR_KEYS = {key_name for _, key_name in BibEntry.get_author_fields()} | {'shortauthor'}
@@ -43,7 +43,15 @@ class PropertyValueBuilder:
 
 class BibParser(WhitespaceParserMixin[BibToken], Parser[BibToken]):
     def skip_whitespace_and_comments(self) -> None:
-        self.gobble_and_skip(lambda token: isinstance(token, Whitespace | CommentToken))
+        while not self.is_at_end():
+            head = self.peek()
+
+            if isinstance(head, Whitespace):
+                self.advance()
+            elif head == MiscToken.percent:
+                self.gobble_and_skip(lambda token: token != '\n')
+            else:
+                break
 
     def parse_entry_type(self) -> BibEntryType:
         start_i = self.index
@@ -92,9 +100,6 @@ class BibParser(WhitespaceParserMixin[BibToken], Parser[BibToken]):
 
         while not self.is_at_end():
             match head := self.peek():
-                case CommentToken():
-                    raise self.error('Unexpected comment', i_first_visible_token=entry_start_i)
-
                 case Whitespace.line_break:
                     raise self.error('Unexpected line break', i_first_visible_token=entry_start_i)
 

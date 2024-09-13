@@ -1,5 +1,5 @@
 import functools
-from collections.abc import Callable, Iterable, Sequence
+from collections.abc import Callable, Hashable, Iterable, Sequence
 
 
 def iter_common_prefix[T](a: Iterable[T], b: Iterable[T]) -> Iterable[T]:
@@ -25,6 +25,17 @@ def find_common_suffix[T](a: Iterable[T], b: Iterable[T]) -> Sequence[T]:
             )
         )
     )
+
+
+def groupby_custom[K: Hashable, V](values: Iterable[V], by: Callable[[V], K]) -> Iterable[tuple[K, Sequence[V]]]:
+    result: dict[K, list[V]] = {}
+
+    for value in values:
+        key = by(value)
+        result.setdefault(key, [])
+        result[key].append(value)
+
+    return result.items()
 
 
 def list_accumulator[R, **P](fun: Callable[P, Iterable[R]]) -> Callable[P, Sequence[R]]:

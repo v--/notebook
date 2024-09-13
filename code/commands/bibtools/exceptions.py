@@ -9,7 +9,7 @@ class BibToolsNetworkError(NotebookCommandError):
     pass
 
 
-class BibToolsParseError(BibToolsError):
+class BibToolsParsingError(BibToolsError):
     pass
 
 

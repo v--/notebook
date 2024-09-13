@@ -71,3 +71,5 @@ def test_normalize_whitespace() -> None:
     assert normalize_whitespace('a  b c') == 'a b c'
     assert normalize_whitespace('a\tb c') == 'a b c'
     assert normalize_whitespace('a\nb c') == 'a b c'
+    assert normalize_whitespace('\na b c') == 'a b c'
+    assert normalize_whitespace('a b c\n') == 'a b c'

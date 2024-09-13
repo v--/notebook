@@ -12,9 +12,7 @@ class BibAuthor(NamedTuple):
 
     @string_accumulator(' ')
     def get_shortened_string(self) -> Iterable[str]:
-        if self.display_name:
-            yield self.display_name
-        elif self.other_names:
+        if self.other_names:
             yield self.other_names.split()[0]
             yield self.main_name
         else:

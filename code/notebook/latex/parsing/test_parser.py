@@ -267,7 +267,7 @@ def test_matrix_environment() -> None:
 
 
 def test_real() -> None:
-    with open('../figures/thm__natural_number_divisibility_order.tex') as file:  # noqa: PTH123
+    with open('../figures/thm__natural_number_divisibility_order.tex') as file:
         string = file.read()
         nodes = parse_latex(string)
         assert stringify_nodes(nodes) == string

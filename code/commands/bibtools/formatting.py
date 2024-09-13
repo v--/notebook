@@ -10,6 +10,7 @@ from notebook.parsing.parser import ParsingError
 
 from ..common.formatting import Formatter
 from ..common.names import latinize_cyrillic_name
+from .exceptions import BibToolsParsingError
 from .sources.common.languages import normalize_language_name
 
 
@@ -75,7 +76,7 @@ class BibFormatter(Formatter):
         try:
             entries = parse_bibtex(src.read())
         except ParsingError as err:
-            raise SystemExit(str(err) + '\n\n' + err.__notes__[0]) from err
+            raise BibToolsParsingError(str(err) + '\n\n' + err.__notes__[0]) from err
 
         for i, entry in enumerate(entries):
             adjusted = self.adjust_entry(entry)

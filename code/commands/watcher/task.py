@@ -23,11 +23,11 @@ class WatcherTask(abc.ABC):
     def command(self) -> str:
         pass
 
-    async def pre_process(self, runner: 'TaskRunner') -> None:  # noqa: B027
+    async def pre_process(self, runner: 'TaskRunner') -> None:
         pass
 
-    async def post_process(self, runner: 'TaskRunner') -> None:  # noqa: B027
+    async def post_process(self, runner: 'TaskRunner') -> None:
         pass
 
-    async def on_failure(self, runner: 'TaskRunner') -> None:  # noqa: B027
+    async def on_failure(self, runner: 'TaskRunner') -> None:
         pass

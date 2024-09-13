@@ -193,6 +193,7 @@ def remove_whitespace(string: str) -> Iterable[str]:
 @string_accumulator('')
 def normalize_whitespace(string: str) -> Iterable[str]:
     whitespace_run = 0
+    yielded = 0
 
     for char in string:
         match char:
@@ -202,6 +203,9 @@ def normalize_whitespace(string: str) -> Iterable[str]:
             case _:
                 if whitespace_run > 0:
                     whitespace_run = 0
-                    yield ' '
+
+                    if yielded > 0:
+                        yield ' '
 
                 yield char
+                yielded += 1

@@ -129,7 +129,7 @@ def test_command() -> None:
 
 
 def test_real() -> None:
-    with open('../figures/thm__natural_number_divisibility_order.tex') as file:  # noqa: PTH123
+    with open('../figures/thm__natural_number_divisibility_order.tex') as file:
         string = file.read()
         tokens = tokenize_latex(string)
         assert ''.join(str(t) for t in tokens) == string

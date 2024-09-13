@@ -183,12 +183,22 @@ def test_minimal_valid_entry() -> None:
         language='english'
     )
 
+
+def test_title_with_percent() -> None:
+    string = dedent(r'''
+        @book{test,
+          title = {Te%st},
+          author = {A, B},
+          language = {english}
+        }
+        '''[1:]
+    )
     entries = parse_bibtex(string)
     assert len(entries) == 1
     assert entries[0] == BibEntry(
         entry_type='book',
         entry_name='test',
-        title='Test',
+        title='Te%st',
         authors=[BibAuthor(main_name='A', other_names='B')],
         language='english'
     )

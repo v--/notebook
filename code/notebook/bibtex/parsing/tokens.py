@@ -14,12 +14,9 @@ class SymbolToken(TokenMixin):
     pass
 
 
-class CommentToken(TokenMixin):
-    pass
-
-
 class MiscToken(TokenEnum):
     at = '@'
+    percent = '%'
     ampersand = '&'
     opening_brace = '{'
     closing_brace = '}'
@@ -30,4 +27,4 @@ class MiscToken(TokenEnum):
     underscore = '_'
 
 
-BibToken = WordToken | NumberToken | SymbolToken | CommentToken | MiscToken | Whitespace
+BibToken = WordToken | NumberToken | SymbolToken | MiscToken | Whitespace

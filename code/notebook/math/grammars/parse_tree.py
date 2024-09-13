@@ -72,7 +72,7 @@ def derivation_to_parse_tree(derivation: Derivation) -> ParseTree:
             [ParseTree(sym) for sym in step.rule.dest]
         )
 
-        if tree is None:  # noqa: SIM108
+        if tree is None:
             tree = new_subtree
         else:
             tree = _insert_subtree_leftmost(tree, new_subtree)

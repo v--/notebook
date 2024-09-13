@@ -9,16 +9,6 @@ def test_author_get_shortened_string() -> None:
         display_name='Display'
     )
 
-    assert author.get_shortened_string() == 'Display'
-
-
-def test_author_get_shortened_string_no_display() -> None:
-    author = BibAuthor(
-        main_name='Main',
-        other_names='Other',
-        title='Title'
-    )
-
     assert author.get_shortened_string() == 'Other Main'
 
 
@@ -29,6 +19,15 @@ def test_author_get_shortened_string_only_main() -> None:
     )
 
     assert author.get_shortened_string() == 'Main'
+
+
+def test_author_get_shortened_string_multiple_names() -> None:
+    author = BibAuthor(
+        main_name='Main',
+        other_names='Other Another'
+    )
+
+    assert author.get_shortened_string() == 'Other Main'
 
 
 def test_author_get_full_string() -> None:

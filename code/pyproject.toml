@@ -5,6 +5,10 @@ version = "1.0.0"
 description = "Python code corresponding to my math notebook"
 authors = ["Ianis Vasilev <ianis@ivasilev.net>"]
 license = "Unlicense"
+packages = [
+  { include = "notebook" },
+  { include = "commands" }
+]
 
 [tool.poetry.dependencies]
 python = "^3.12"
@@ -17,18 +21,17 @@ ruff = "^0.6.1"
 coverage = "^7.4.4"
 
 [tool.poetry.group.commands.dependencies]
-texoutparse = {git = "https://github.com/v--/texoutparse.git"}
+texoutparse = { git = "https://github.com/v--/texoutparse.git" }
 asyncinotify = "^4.0.6"
 click = "^8.1.7"
-titlecase = "^2.4.1"
-nameparser = "^1.1.3"
-xsdata = "^24.7"
-stop-words = "^2018.7.23"
-many-stop-words = "^0.2.2"
 iso639-lang = "^2.3.0"
-python-stdnum = "^1.20"
-pydantic = "^2.9.1"
 loguru = "^0.7.2"
+many-stop-words = "^0.2.2"
+nameparser = "^1.1.3"
+pydantic = "^2.9.1"
+python-stdnum = "^1.20"
+stop-words = "^2018.7.23"
+xsdata = "^24.7"
 
 [build-system]
 requires = ["poetry-core"]
@@ -38,6 +41,25 @@ build-backend = "poetry.core.masonry.api"
 [tool.poe]
 include = "./poe.toml"
 
+[tool.poe.tasks.watcher]
+cmd = "python -m commands.watcher"
+cwd = ".."
+
+[tool.poe.tasks.format-matrices]
+cmd = "python -m commands.format_matrices"
+cwd = ".."
+
+[tool.poe.tasks.bibtools]
+cmd = "python -m commands.bibtools"
+cwd = ".."
+
+[tool.poe.tasks.find-obsolete-figures]
+cmd = "python -m commands.find_obsolete_figures"
+cwd = ".."
+
+[tool.poe.tasks.checkcites]
+shell = "cd ..; checkcites --backend biber --all aux/notebook.bcf"
+
 # pytest
 [tool.pytest.ini_options]
 addopts = "--capture tee-sys"
@@ -46,48 +68,7 @@ python_classes = "!Test"
 
 # ruff
 [tool.ruff]
-line-length = 120
-target-version = "py312"
-
-[tool.ruff.format]
-quote-style = "single"
-
-[tool.ruff.lint]
-select = ["ALL"]
-ignore = [
-  "D",
-  "E501", "E741",
-  "G004",
-  "ANN101", "ANN102",
-  "COM812",
-  "C408",
-  "FA100", "FA102",
-  "TID252",
-  "DTZ001", "DTZ005",
-  "EM",
-  "Q",
-  "TRY003",
-  "RET504",
-  "S101", "S105", "S311", "S314", "S324", "S310",
-  "PLR0913", "PLR1714", "PLR2004",
-  "PD",
-  "NPY",
-  "TCH002", "TCH003",
-  "PYI041",
-  "ERA001",
-  "UP031",
-  "RUF001", "RUF018"
-]
-
-[tool.ruff.lint.isort]
-lines-after-imports = 2
-
-[tool.ruff.lint.mccabe]
-max-complexity = 15
-
-[tool.ruff.lint.per-file-ignores]
-"__init__.py" = ["F401"]
-"conftest.py" = ["F401"]
+extend = "../code/ruff.toml"
 
 # mypy
 [tool.mypy]
@@ -101,7 +82,6 @@ module = [
   "nameparser.*",
   "stdnum.*",
   "stop_words.*",
-  "texoutparse.*",
-  "titlecase.*"
+  "texoutparse.*"
 ]
 ignore_missing_imports = true
