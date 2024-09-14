@@ -26,10 +26,21 @@ def test_parse_1023072266967(doi: str = '10.2307/2266967') -> None:
         url=f'http://dx.doi.org/{doi}',
         language='english',
         date='1950-06',
-        issn='1943-5886',
+        issn='0022-4812,1943-5886',
         volume='15',
         pages='81-91'
     )
+
+
+
+def test_parse_1023072266967_electronic_edition(doi: str = '10.2307/2266967') -> None:
+    with get_doi_fixture_path(doi).open() as file:
+        json_body = file.read()
+
+    data = parse_doi_json(json_body)
+    entry = doi_data_to_bib(data, doi, print_edition=False)
+
+    assert entry.date == '2014-03-12'
 
 
 def test_parse_101215_ijm_1256049011_missing_fields(doi: str = '10.1215/ijm/1256049011') -> None:
@@ -108,20 +119,10 @@ def test_parse_101134_s0081543815090023_references(doi: str = '10.1134/s00815438
         url=f'http://dx.doi.org/{doi}',
         language='english',
         date='2015-12-11',
-        issn='0081-5438',
+        issn='0081-5438,1531-8605',
         volume='291',
         pages='22-39'
     )
-
-
-def test_parse_101134_s0081543815090023_print_edition(doi: str = '10.1134/s0081543815090023') -> None:
-    with get_doi_fixture_path(doi).open() as file:
-        json_body = file.read()
-
-    data = parse_doi_json(json_body)
-    entry = doi_data_to_bib(data, doi, print_edition=True)
-
-    assert entry.issn == '1531-8605'
 
 
 def test_parse_101016_jindag201901001_assertions(doi: str = '10.1016/j.indag.2019.01.001') -> None:
@@ -203,7 +204,7 @@ def test_parse_101145_13274521327492_assertion_order_and_group(doi: str = '10.11
         volume='51',
         pages='107-113',
         date='2008-01',
-        issn='0001-0782'
+        issn='0001-0782,1557-7317'
     )
 
 
@@ -230,7 +231,7 @@ def test_parse_102307_4145127_reference_edition(doi: str = '10.2307/4145127') ->
         volume='111',
         pages='189-197',
         date='2004-03',
-        issn='1930-0972'
+        issn='0002-9890,1930-0972'
     )
 
 
@@ -256,7 +257,7 @@ def test_parse_101090_bull_1616_reference_issn(doi: str = '10.1090/bull/1616') -
         volume='55',
         pages='427-450',
         date='2018-03-05',
-        issn='0273-0979'
+        issn='0273-0979,1088-9485'
     )
 
 
@@ -289,7 +290,7 @@ def test_parse_101007_s1065401601493_extended_funder(doi: str = '10.1007/s10654-
         volume='31',
         pages='337-350',
         date='2016-05-21',
-        issn='0393-2990'
+        issn='0393-2990,1573-7284'
     )
 
 
@@ -344,7 +345,7 @@ def test_parse_101111_tops12019_updated_by(doi: str = '10.1111/tops.12019') -> N
         volume='5',
         pages='270-282',
         date='2013-04-11',
-        issn='1756-8757'
+        issn='1756-8757,1756-8765'
     )
 
 
@@ -395,7 +396,7 @@ def test_parse_101007_9783319114781_book(doi: str = '10.1007/978-3-319-11478-1')
         language='english',
         series='Universitext',
         date='2015',
-        issn='2191-6675',
+        issn='0172-5939,2191-6675',
         isbn='978-3-319-11477-4'
     )
 
@@ -422,7 +423,7 @@ def test_parse_101007_97836421282192_book_chapter(doi: str = '10.1007/978-3-642-
         language='english',
         series='Lecture Notes in Physics',
         date='2010-07-05',
-        issn='0075-8450',
+        issn='0075-8450,1616-6361',
         isbn='978-3-642-12821-9',
         pages='95-172'
     )

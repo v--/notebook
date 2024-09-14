@@ -68,15 +68,10 @@ def get_entry_type(doi_type: str) -> BibEntryType:
             return 'misc'
 
 
-# I don't know whether there is a guarantee that the first ISBN corresponds to electronic editions,
-# but I have experimentally confirmed that it is usually the case. Plus, this is how structured ISBN
-# is usually provided.
-def get_issn(choices: list[str], *, print_edition: bool) -> str | None:
-    if print_edition and len(choices) > 1:
-        return issn.format(choices[1])
-
+# We have no way of knowing whether an ISSN is digital or not, so we list them all
+def get_issn(choices: list[str]) -> str | None:
     if len(choices) > 0:
-        return issn.format(choices[0])
+        return ','.join(issn.format(sn) for sn in choices)
 
     return None
 
@@ -154,7 +149,7 @@ def doi_data_to_bib(data: DoiData, doi: str, *, print_edition: bool = False) -> 
         volume=data.volume,
         edition=data.edition_number,
         isbn=get_isbn(data.isbn_type, data.isbn, print_edition=print_edition),
-        issn=get_issn(data.issn, print_edition=print_edition),
+        issn=get_issn(data.issn),
         series=container_title if entry_type == 'book' or entry_type == 'inbook' else None,
         journal=container_title if entry_type == 'article' else None,
         url=data.url
