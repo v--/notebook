@@ -472,7 +472,6 @@ def test_parse_101017_9781108583664_edition_and_no_links(doi: str = '10.1017/978
         ],
         doi=doi,
         url=f'http://dx.doi.org/{doi}',
-        edition='1',
         language='english',
         date='2019-09-13',
         isbn='978-1-108-58366-4'

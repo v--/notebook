@@ -147,7 +147,7 @@ def doi_data_to_bib(data: DoiData, doi: str, *, print_edition: bool = False) -> 
         doi=doi,
         pages=data.page,
         volume=data.volume,
-        edition=data.edition_number,
+        edition=data.edition_number if data.edition_number != '1' else None,
         isbn=get_isbn(data.isbn_type, data.isbn, print_edition=print_edition),
         issn=get_issn(data.issn),
         series=container_title if entry_type == 'book' or entry_type == 'inbook' else None,
