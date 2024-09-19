@@ -1,7 +1,7 @@
 from ....parsing.identifiers import LatinIdentifier
 from ....parsing.parser import Parser
 from ..terms import Abstraction, Application, LambdaTerm, Variable
-from .tokenizer import LambdaTokenizer
+from .tokenizer import tokenize_lambda_term
 from .tokens import LambdaToken, MiscToken
 
 
@@ -72,14 +72,14 @@ class LambdaParser(Parser[LambdaToken]):
 
 
 def parse_variable(string: str) -> Variable:
-    tokens = list(LambdaTokenizer(string).parse())
+    tokens = tokenize_lambda_term(string)
 
     with LambdaParser(tokens) as parser:
         return parser.parse_variable()
 
 
 def parse_term(string: str) -> LambdaTerm:
-    tokens = list(LambdaTokenizer(string).parse())
+    tokens = tokenize_lambda_term(string)
 
     with LambdaParser(tokens) as parser:
         return parser.parse_term()

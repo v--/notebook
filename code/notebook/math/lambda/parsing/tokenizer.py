@@ -1,3 +1,5 @@
+from collections.abc import Sequence
+
 from ....parsing.mixins.identifiers import IdentifierTokenizerMixin
 from ....parsing.tokenizer import Tokenizer
 from ....parsing.whitespace import Whitespace
@@ -19,3 +21,8 @@ class LambdaTokenizer(IdentifierTokenizerMixin[LambdaToken], Tokenizer[LambdaTok
             return self.parse_latin_identifier()
 
         raise self.error('Unexpected symbol')
+
+
+def tokenize_lambda_term(string: str) -> Sequence[LambdaToken]:
+    with LambdaTokenizer(string) as tokenizer:
+        return list(tokenizer.parse())
