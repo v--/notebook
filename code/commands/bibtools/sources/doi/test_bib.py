@@ -349,6 +349,34 @@ def test_parse_101111_tops12019_updated_by(doi: str = '10.1111/tops.12019') -> N
     )
 
 
+def test_parse_101007_9783662074138_editor(doi: str = '10.1007/978-3-662-07413-8') -> None:
+    with get_doi_fixture_path(doi).open() as file:
+        json_body = file.read()
+
+    data = parse_doi_json(json_body)
+    entry = doi_data_to_bib(data, doi)
+
+    assert entry == BibEntry(
+        entry_type='book',
+        entry_name='ArhangelSkii1995GeneralTopologyIii',
+        title='General Topology III',
+        publisher='Springer Berlin Heidelberg',
+        authors=[
+            BibAuthor(main_name='Arhangel’skii', other_names='A. V.')
+        ],
+        editors=[
+            BibAuthor(main_name='Arhangel’skii', other_names='A. V.')
+        ],
+        doi=doi,
+        url=f'http://dx.doi.org/{doi}',
+        language='english',
+        date='1995',
+        series='Encyclopaedia of Mathematical Sciences',
+        isbn='978-3-662-07413-8',
+        issn='0938-0396'
+    )
+
+
 def test_parse_101007_97836421282192_book(doi: str = '10.1007/978-3-642-66451-9') -> None:
     with get_doi_fixture_path(doi).open() as file:
         json_body = file.read()

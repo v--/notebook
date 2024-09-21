@@ -100,6 +100,7 @@ def get_isbn(structured: list[DoiIsbn], unstructured: list[str], *, print_editio
 def doi_data_to_bib(data: DoiData, doi: str, *, print_edition: bool = False) -> BibEntry:
     chosen_datetime = choose_doi_datetime(data, print_edition=print_edition)
     authors = [doi_author_to_bib(author) for author in data.author]
+    editors = [doi_author_to_bib(author) for author in data.editor or []]
     year = doi_datetime_get_year(chosen_datetime) if chosen_datetime else None
     language = normalize_language_name(data.language) if data.language else 'english'
     entry_type = get_entry_type(data.type)
@@ -115,7 +116,9 @@ def doi_data_to_bib(data: DoiData, doi: str, *, print_edition: bool = False) -> 
         titles = Titles(data.title, data.subtitle[0])
 
     if len(authors) == 0:
-        if data.standards_body:
+        if editors:
+            authors = editors
+        elif data.standards_body:
             authors.append(BibAuthor(main_name=data.standards_body.acronym))
         else:
             authors.append(BibAuthor(main_name=data.publisher or 'Unknown'))
@@ -139,6 +142,7 @@ def doi_data_to_bib(data: DoiData, doi: str, *, print_edition: bool = False) -> 
         entry_type=entry_type,
         entry_name=entry_name,
         authors=authors,
+        editors=editors,
         title=titles.main,
         subtitle=titles.sub,
         publisher=data.publisher,

@@ -180,6 +180,7 @@ class DoiData(DoiBaseModel):
     subtitle: str | list[str]
 
     author: Annotated[list[DoiAuthor], Field(default_factory=list)]
+    editor: Annotated[list[DoiAuthor], Field(default_factory=list)]
     link: Annotated[list[DoiLink], Field(default_factory=list)]
     assertion: Annotated[list[DoiAssertion], Field(default_factory=list)]
     reference: Annotated[list[DoiReference], Field(default_factory=list)]
@@ -211,4 +212,4 @@ class DoiData(DoiBaseModel):
 
 
 def parse_doi_json(json_body: str) -> DoiData:
-    return DoiData.model_validate_json(json_body)
+    return DoiData.model_validate_json(json_body, strict=True)
