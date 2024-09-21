@@ -47,7 +47,7 @@ def test_parse_1606_08092v1(arxiv_id: str = '1606.08092v1') -> None:
 
     assert entry == BibEntry(
         entry_type='article',
-        entry_name='Diener2016ClassifyingMaterialImplications',
+        entry_name='DienerMcKubreJordens2016ClassifyingMaterialImplications',
         title='Classifying Material Implications over Minimal Logic',
         authors=[
             BibAuthor(main_name='Diener', other_names='Hannes'),
@@ -122,7 +122,7 @@ def test_parse_0903_0340v3_doi_and_link_without_type(arxiv_id: str = '0903.0340v
 
     assert entry == BibEntry(
         entry_type='article',
-        entry_name='Baez2009RosettaStone',
+        entry_name='BaezStay2009RosettaStone',
         doi='10.1007/978-3-642-12821-9_2',
         title='Physics, Topology, Logic and Computation',
         subtitle='A Rosetta Stone',
@@ -175,7 +175,7 @@ def test_parse_2403_06707v1_dashes_in_title(arxiv_id: str = '2403.06707v1') -> N
 
     assert entry == BibEntry(
         entry_type='article',
-        entry_name='Binder2024DerivingDependentlyTypedOop',
+        entry_name='BinderEtAl2024DerivingDependentlyTypedOOP',
         title='Deriving Dependently-Typed OOP from First Principles',
         subtitle='Extended Version with Additional Appendices',
         authors=[

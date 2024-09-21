@@ -1,16 +1,28 @@
+import re
+from collections.abc import Iterable, Sequence
+
 from notebook.bibtex.author import BibAuthor
 from notebook.bibtex.entry import BibEntry
 from notebook.math.nlp.rake import RakeNoPhrasesError
 from notebook.math.nlp.token_sequence import TokenSequence
-from notebook.support.unicode import remove_accents, remove_symbols, remove_whitespace
+from notebook.support.iteration import string_accumulator
+from notebook.support.unicode import remove_accents
 
 from .dates import extract_year
 from .keywords import generate_keyphrase_scores
 from .titles import Titles
 
 
+@string_accumulator()
+def capitalize_first(string: str) -> Iterable[str]:
+    for sub in re.split(r'[^\w]+', string):
+        if len(sub) > 0:
+            yield sub[0].upper()
+            yield sub[1:]
+
+
 def mangle_string_for_entry_name(string: str) -> str:
-    return remove_whitespace(remove_symbols(remove_accents(string).title()))
+    return remove_accents(capitalize_first(string))
 
 
 def generate_keyphrase(titles: Titles, language: str, *aux_texts: str | None) -> TokenSequence:
@@ -37,14 +49,23 @@ def generate_keyphrase(titles: Titles, language: str, *aux_texts: str | None) ->
     return title_keyphrase
 
 
-def generate_entry_name(author: BibAuthor, year: str | None, titles: Titles, language: str, *aux_texts: str | None) -> str:
+@string_accumulator()
+def generate_entry_name(authors: Sequence[BibAuthor], year: str | None, titles: Titles, language: str, *aux_texts: str | None) -> Iterable[str]:
+    yield mangle_string_for_entry_name(authors[0].main_name)
+
+    if len(authors) > 2:
+        yield 'ИПр' if language == 'russian' or language == 'bulgarian' else 'EtAl'
+    elif len(authors) > 1:
+        yield mangle_string_for_entry_name(authors[1].main_name)
+
+    if year:
+        yield year
+
     keyphrase = generate_keyphrase(titles, language, *aux_texts)
-    mangled_keyphrase = mangle_string_for_entry_name(str(keyphrase))
-    mangled_name = mangle_string_for_entry_name(author.main_name)
-    return f'{mangled_name}{year or ''}{mangled_keyphrase}'
+    yield mangle_string_for_entry_name(str(keyphrase))
 
 
 def regenerate_entry_name(entry: BibEntry, *aux_texts: str | None) -> str:
     titles = Titles(entry.title, entry.subtitle)
     year = extract_year(entry.date)
-    return generate_entry_name(entry.authors[0], year, titles, entry.language, *aux_texts)
+    return generate_entry_name(entry.authors, year, titles, entry.language, *aux_texts)

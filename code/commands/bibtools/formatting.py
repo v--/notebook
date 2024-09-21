@@ -95,7 +95,7 @@ class BibEntryAdjuster:
             subtitle=subtitle,
             language=normalize_language_name(self.adjusted.language),
             isbn=isbn.format(self.adjusted.isbn) if self.adjusted.isbn else None,
-            issn=issn.format(self.adjusted.issn) if self.adjusted.issn else None
+            issn=','.join(map(issn.format, self.adjusted.issn.split(','))) if self.adjusted.issn else None
         )
 
         self.adjust_entry_date()

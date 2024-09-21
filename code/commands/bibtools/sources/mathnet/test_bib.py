@@ -79,7 +79,7 @@ def test_parse_tm1095_rus_no_journal(identifier: str = 'tm1095') -> None:
     entry = mathnet_entry_to_bib(res, english=False)
     assert entry == BibEntry(
         entry_type='article',
-        entry_name='Александров1950КомпактныхТопологическихПространствах',
+        entry_name='АлександровУрысон1950КомпактныхТопологическихПространствах',
         title='О компактных топологических пространствах',
         authors=[BibAuthor(main_name='Александров', other_names='П. С.'), BibAuthor(main_name='Урысон', other_names='П. С.')],
         language='russian',
@@ -102,7 +102,7 @@ def test_parse_sm274_rus_modern(identifier: str = 'sm274') -> None:
     entry = mathnet_entry_to_bib(res, english=False)
     assert entry == BibEntry(
         entry_type='article',
-        entry_name='МагарилИльяев1997ПроизводныхКолмогоровскогоТипа',
+        entry_name='МагарилИльяевТихомиров1997ПроизводныхКолмогоровскогоТипа',
         title='О неравенствах для производных колмогоровского типа',
         authors=[BibAuthor(main_name='Магарил-Ильяев', other_names='Г. Г.'), BibAuthor(main_name='Тихомиров', other_names='В. М.')],
         language='russian',
@@ -126,7 +126,7 @@ def test_parse_sm274_eng_modern(identifier: str = 'sm274') -> None:
     entry = mathnet_entry_to_bib(res, english=True)
     assert entry == BibEntry(
         entry_type='article',
-        entry_name='MagarilIlYaev1997KolmogorovTypeInequalities',
+        entry_name='MagarilIlYaevTikhomirov1997KolmogorovTypeInequalities',
         title='Kolmogorov-type inequalities for derivatives',
         authors=[BibAuthor(main_name="Magaril-Il'yaev", other_names='G. G.'), BibAuthor(main_name='Tikhomirov', other_names='V. M.')],
         language='english',

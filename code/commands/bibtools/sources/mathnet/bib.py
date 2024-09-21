@@ -16,7 +16,7 @@ def mathnet_entry_to_bib(entry: MathNetEntry, *, english: bool) -> BibEntry:
 
     return BibEntry(
         entry_type='article',
-        entry_name=generate_entry_name(authors[0], year, titles, language),
+        entry_name=generate_entry_name(authors, year, titles, language),
         authors=authors,
         title=titles.main,
         subtitle=titles.sub,

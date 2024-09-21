@@ -124,7 +124,7 @@ def doi_data_to_bib(data: DoiData, doi: str, *, print_edition: bool = False) -> 
             authors.append(BibAuthor(main_name=data.publisher or 'Unknown'))
 
     entry_name = generate_entry_name(
-        authors[0],
+        authors,
         str(year) if year is not None else '',
         titles,
         language,

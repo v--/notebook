@@ -52,7 +52,7 @@ def test_parse_101215_ijm_1256049011_missing_fields(doi: str = '10.1215/ijm/1256
 
     assert entry == BibEntry(
         entry_type='article',
-        entry_name='Appel1977PlanarMap',
+        entry_name='AppelHaken1977PlanarMap',
         title='Every planar map is four colorable',
         subtitle='Part I: Discharging',
         publisher='Duke University Press',
@@ -79,7 +79,7 @@ def test_parse_101215_ijm_1256049012_missing_fields(doi: str = '10.1215/ijm/1256
 
     assert entry == BibEntry(
         entry_type='article',
-        entry_name='Appel1977PlanarMap',
+        entry_name='AppelEtAl1977PlanarMap',
         title='Every planar map is four colorable',
         subtitle='Part II: Reducibility',
         publisher='Duke University Press',
@@ -107,7 +107,7 @@ def test_parse_101134_s0081543815090023_references(doi: str = '10.1134/s00815438
 
     assert entry == BibEntry(
         entry_type='article',
-        entry_name='Aseev2015InfiniteHorizonOptimalControlProblems',
+        entry_name='AseevVeliov2015InfiniteHorizonOptimalControlProblems',
         title='Maximum principle for infinite-horizon optimal control problems under weak regularity assumptions',
         publisher='Pleiades Publishing Ltd',
         journal='Proceedings of the Steklov Institute of Mathematics',
@@ -134,7 +134,7 @@ def test_parse_101016_jindag201901001_assertions(doi: str = '10.1016/j.indag.201
 
     assert entry == BibEntry(
         entry_type='article',
-        entry_name='Bezhanishvili2019IntuitionisticLogic',
+        entry_name='BezhanishviliHolliday2019IntuitionisticLogic',
         title='A semantic hierarchy for intuitionistic logic',
         publisher='Elsevier BV',
         journal='Indagationes Mathematicae',
@@ -161,7 +161,7 @@ def test_parse_101016_jjmaa2019123445_funder(doi: str = '10.1016/j.jmaa.2019.123
 
     assert entry == BibEntry(
         entry_type='article',
-        entry_name='Bivas2020TangentialTransversality',
+        entry_name='BivasEtAl2020TangentialTransversality',
         title='On tangential transversality',
         publisher='Elsevier BV',
         authors=[
@@ -189,7 +189,7 @@ def test_parse_101145_13274521327492_assertion_order_and_group(doi: str = '10.11
 
     assert entry == BibEntry(
         entry_type='article',
-        entry_name='Dean2008SimplifiedDataProcessing',
+        entry_name='DeanGhemawat2008SimplifiedDataProcessing',
         title='MapReduce',
         subtitle='simplified data processing on large clusters',
         publisher='Association for Computing Machinery (ACM)',
@@ -217,7 +217,7 @@ def test_parse_102307_4145127_reference_edition(doi: str = '10.2307/4145127') ->
 
     assert entry == BibEntry(
         entry_type='article',
-        entry_name='Edelman2004PascalMatrices',
+        entry_name='EdelmanStrang2004PascalMatrices',
         title='Pascal Matrices',
         publisher='Informa UK Limited',
         authors=[
@@ -270,7 +270,7 @@ def test_parse_101007_s1065401601493_extended_funder(doi: str = '10.1007/s10654-
 
     assert entry == BibEntry(
         entry_type='article',
-        entry_name='Greenland2016StatisticalTests',
+        entry_name='GreenlandEtAl2016StatisticalTests',
         title='Statistical tests, P values, confidence intervals, and power',
         subtitle='a guide to misinterpretations',
         publisher='Springer Science and Business Media LLC',
@@ -329,7 +329,7 @@ def test_parse_101111_tops12019_updated_by(doi: str = '10.1111/tops.12019') -> N
 
     assert entry == BibEntry(
         entry_type='article',
-        entry_name='Inglis2013EvaluatingElementaryProofs',
+        entry_name='InglisEtAl2013EvaluatingElementaryProofs',
         title="On Mathematicians' Different Standards When Evaluating Elementary Proofs",
         publisher='Wiley',
         authors=[
@@ -358,7 +358,7 @@ def test_parse_101007_9783662074138_editor(doi: str = '10.1007/978-3-662-07413-8
 
     assert entry == BibEntry(
         entry_type='book',
-        entry_name='ArhangelSkii1995GeneralTopologyIii',
+        entry_name='ArhangelSkii1995GeneralTopologyIII',
         title='General Topology III',
         publisher='Springer Berlin Heidelberg',
         authors=[
@@ -386,7 +386,7 @@ def test_parse_101007_97836421282192_book(doi: str = '10.1007/978-3-642-66451-9'
 
     assert entry == BibEntry(
         entry_type='book',
-        entry_name='Bergh1976InterpolationSpaces',
+        entry_name='BerghLofstrom1976InterpolationSpaces',
         title='Interpolation Spaces',
         subtitle='An Introduction',
         publisher='Springer Berlin Heidelberg',
@@ -438,7 +438,7 @@ def test_parse_101007_97836421282192_book_chapter(doi: str = '10.1007/978-3-642-
 
     assert entry == BibEntry(
         entry_type='inbook',
-        entry_name='Baez2010RosettaStone',
+        entry_name='BaezStay2010RosettaStone',
         title='Physics, Topology, Logic and Computation',
         subtitle='A Rosetta Stone',
         publisher='Springer Berlin Heidelberg',
@@ -490,7 +490,7 @@ def test_parse_101017_9781108583664_edition_and_no_links(doi: str = '10.1017/978
 
     assert entry == BibEntry(
         entry_type='book',
-        entry_name='Boyd2019AppliedLinearAlgebra',
+        entry_name='BoydVandenberghe2019AppliedLinearAlgebra',
         title='Introduction to Applied Linear Algebra',
         subtitle='Vectors, Matrices, and Least Squares',
         publisher='Cambridge University Press & Assessment',
@@ -515,7 +515,7 @@ def test_parse_101109_ieeestd20198766229_standard(doi: str = '10.1109/IEEESTD.20
 
     assert entry == BibEntry(
         entry_type='misc',
-        entry_name='IeeeIeeeStandard',
+        entry_name='IEEEIEEEStandard',
         title='IEEE Standard for Floating-Point Arithmetic',
         publisher='IEEE',
         authors=[

@@ -152,7 +152,7 @@ def test_parse_9785922107785_bad_unicode(isbn: str = '978-5-9221-0778-5') -> Non
 
     assert entry == BibEntry(
         entry_type='book',
-        entry_name='Tyrtyshnikov2007MatrichnyiAnalizILineinaiaAlgebra',
+        entry_name='Tyrtyshnikov2007MatrichnyiAnalizILineinaiAAlgebra',
         title='Matrichnyĭ analiz i lineĭnai͡a algebra',
         authors=[
             BibAuthor(main_name='Tyrtyshnikov', other_names='Evgeniĭ Evgenʹevich')

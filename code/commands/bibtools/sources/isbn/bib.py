@@ -25,7 +25,7 @@ def isbn_book_to_bib(book: GoogleBook, isbn: str) -> BibEntry:
 
     return BibEntry(
         entry_type='book',
-        entry_name=generate_entry_name(authors[0], year, titles, language, vi.description, si.text_snippet if si else None),
+        entry_name=generate_entry_name(authors, year, titles, language, vi.description, si.text_snippet if si else None),
         authors=authors,
         title=titles.main,
         subtitle=titles.sub,
