@@ -5,7 +5,7 @@ from notebook.bibtex.author import BibAuthor
 
 def name_to_bib_author(full_name: str) -> BibAuthor:
     if full_name.startswith('{') and full_name.endswith('}'):
-        return BibAuthor(main_name=full_name, literal=True)
+        return BibAuthor(main_name=full_name, verbatim=True)
 
     names = HumanName(full_name)
 

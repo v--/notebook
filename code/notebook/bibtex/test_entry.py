@@ -19,7 +19,7 @@ def test_entry_stringify() -> None:
           language = {english},
           title = {Test}
         }
-        '''[:-1])
+        '''[1:])
 
 
 def test_entry_stringify_literal_author() -> None:
@@ -27,7 +27,7 @@ def test_entry_stringify_literal_author() -> None:
         entry_type='book',
         entry_name='test',
         title='Test',
-        authors=[BibAuthor(main_name='{A B}', verbatim=True)],
+        authors=[BibAuthor(main_name='A B', verbatim=True)],
         language='english'
     )
 
@@ -37,7 +37,7 @@ def test_entry_stringify_literal_author() -> None:
           language = {english},
           title = {Test}
         }
-        '''[:-1])
+        '''[1:])
 
 def test_entry_stringify_shortauthor() -> None:
     entry = BibEntry(
@@ -55,4 +55,4 @@ def test_entry_stringify_shortauthor() -> None:
           shortauthor = {A and B},
           title = {Тест}
         }
-        '''[:-1])
+        '''[1:])

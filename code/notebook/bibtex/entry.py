@@ -73,14 +73,16 @@ class BibEntry(NamedTuple):
     booktitle:     Annotated[str | None, BibFieldAnnotation()] = None
     issue:         Annotated[str | None, BibFieldAnnotation()] = None
     journal:       Annotated[str | None, BibFieldAnnotation()] = None
-    mathnet:       Annotated[str | None, BibFieldAnnotation()] = None
-    mathscinet:    Annotated[str | None, BibFieldAnnotation()] = None
-    zmath:         Annotated[str | None, BibFieldAnnotation()] = None
-    zbl:           Annotated[str | None, BibFieldAnnotation()] = None
     number:        Annotated[str | None, BibFieldAnnotation()] = None
     pages:         Annotated[str | None, BibFieldAnnotation()] = None
     issn:          Annotated[str | None, BibFieldAnnotation()] = None
     mrnumber:      Annotated[str | None, BibFieldAnnotation()] = None
+    mathnet:       Annotated[str | None, BibFieldAnnotation()] = None
+    mathscinet:    Annotated[str | None, BibFieldAnnotation()] = None
+    zmath:         Annotated[str | None, BibFieldAnnotation()] = None
+    zbl:           Annotated[str | None, BibFieldAnnotation()] = None
+    isi:           Annotated[str | None, BibFieldAnnotation()] = None
+    scopus:        Annotated[str | None, BibFieldAnnotation()] = None
     # HAL
     hal_id:        Annotated[str | None, BibFieldAnnotation()] = None
     hal_version:   Annotated[str | None, BibFieldAnnotation()] = None

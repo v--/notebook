@@ -1,4 +1,3 @@
-
 from notebook.bibtex.entry import BibEntry
 from notebook.support.unicode import normalize_whitespace
 
