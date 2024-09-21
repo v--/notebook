@@ -38,7 +38,7 @@ def test_author_get_full_string() -> None:
         display_name='Display'
     )
 
-    assert str(author) == 'Main, Title, Other'
+    assert author.get_full_string() == 'Main, Title, Other'
 
 
 def test_author_get_full_no_title() -> None:
@@ -48,4 +48,4 @@ def test_author_get_full_no_title() -> None:
         display_name='Display'
     )
 
-    assert str(author) == 'Main, Other'
+    assert author.get_full_string() == 'Main, Other'

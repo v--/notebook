@@ -3,8 +3,17 @@ from collections.abc import Collection, Iterable, Mapping
 from typing import NamedTuple
 
 from ...parsing.whitespace import Whitespace
+from .exceptions import NlpError
 from .token_sequence import TokenSequence
 from .tokens import WordToken
+
+
+class RakeError(NlpError):
+    pass
+
+
+class RakeNoPhrasesError(NlpError):
+    pass
 
 
 def iter_words(seq: TokenSequence) -> Iterable[WordToken]:
@@ -84,6 +93,10 @@ def generate_phrase_scores(
     *aux_seq: TokenSequence
 ) -> PhraseScoreContext:
     phrases = list(iter_phrases(seq, stop_words))
+
+    if len(phrases) == 0:
+        raise RakeNoPhrasesError(f'No phrases found in {str(seq)!r}')
+
     word_scores = generate_word_score(phrases)
 
     aux_phrases = itertools.chain(*(iter_phrases(aux, stop_words) for aux in aux_seq))

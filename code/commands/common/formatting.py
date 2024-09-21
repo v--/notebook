@@ -3,46 +3,64 @@ import io
 import pathlib
 import shutil
 import tempfile
-from abc import ABC, abstractmethod
-from dataclasses import dataclass
-from typing import TextIO
+from types import TracebackType
+from typing import NamedTuple, TextIO
 
 import loguru
 
 
-@dataclass
-class Formatter(ABC):
+class FormatterContext(NamedTuple):
+    src: TextIO
+    dest: TextIO
     logger: 'loguru.Logger'
+
+
+class FormatterContextManager:
     path: pathlib.Path
+    context: FormatterContext | None
 
-    @abstractmethod
-    def format(self, src: TextIO, dest: TextIO) -> None:
-        ...
+    def __init__(self, path: pathlib.Path) -> None:
+        self.path = path
+        self.context = None
 
-    def process(self) -> bool:
+    def __enter__(self) -> FormatterContext:
+        logger = loguru.logger.bind(logger=self.path.as_posix())
+
         file = self.path.open('r+')
-        old_hash = hashlib.sha1(file.read().encode('utf-8')).hexdigest()
-        bak_path = pathlib.Path(tempfile.gettempdir()) / (old_hash + '.bak')
-
-        file.seek(0)
-
         buffer = io.StringIO()
-        self.format(file, buffer)
-        buffer.seek(0)
 
-        new_hash = hashlib.sha1(buffer.read().encode('utf-8')).hexdigest()
+        self.context = FormatterContext(file, buffer, logger)
+        return self.context
+
+    def __exit__(
+        self,
+        exc_type: type[BaseException] | None,
+        exc_value: BaseException | None,
+        traceback: TracebackType | None
+     ) -> None:
+        if self.context is None:
+            return
+
+        src, dest, logger = self.context
+
+        src.seek(0)
+        dest.seek(0)
+
+        old_hash = hashlib.sha1(src.read().encode('utf-8')).hexdigest()
+        new_hash = hashlib.sha1(dest.read().encode('utf-8')).hexdigest()
 
         if new_hash != old_hash:
-            self.logger.info(f'Formatting and backing up into {bak_path}.')
+            bak_path = pathlib.Path(tempfile.gettempdir()) / (old_hash + '.bak')
+            logger.info(f'Formatting and backing up into {bak_path.as_posix()}.')
 
-            file.seek(0)
+            src.seek(0)
+
             with bak_path.open('w') as bak_file:
-                shutil.copyfileobj(file, bak_file)
+                shutil.copyfileobj(src, bak_file)
 
-            file.seek(0)
-            buffer.seek(0)
-            shutil.copyfileobj(buffer, file)
-            file.truncate()
+            src.seek(0)
+            dest.seek(0)
+            shutil.copyfileobj(dest, src)
+            src.truncate()
 
-        file.close()
-        return new_hash != old_hash
+        src.close()

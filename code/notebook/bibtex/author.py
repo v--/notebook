@@ -9,6 +9,7 @@ class BibAuthor(NamedTuple):
     other_names: str | None = None
     title: str | None = None
     display_name: str | None = None
+    verbatim: bool = False
 
     @string_accumulator(' ')
     def get_shortened_string(self) -> Iterable[str]:
@@ -19,7 +20,7 @@ class BibAuthor(NamedTuple):
             yield self.main_name
 
     @string_accumulator(', ')
-    def __str__(self) -> Iterable[str]:  # noqa: PLE0307
+    def get_full_string(self) -> Iterable[str]:
         yield self.main_name
 
         if self.title:
@@ -27,3 +28,6 @@ class BibAuthor(NamedTuple):
 
         if self.other_names:
             yield self.other_names
+
+    def __str__(self) -> str:
+        return self.get_full_string()

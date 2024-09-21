@@ -1,11 +1,17 @@
 from iso639 import Lang
+from iso639.exceptions import InvalidLanguageValue
+
+from ...exceptions import BibToolsParsingError
 
 
 def create_lang_object(language: str) -> Lang:
-    if len(language) == 2:
-        return Lang(language)
+    try:
+        if len(language) == 2:
+            return Lang(language)
 
-    return Lang(language.title())
+        return Lang(language.title())
+    except InvalidLanguageValue as err:
+        raise BibToolsParsingError(f'Unrecognized language {language!r}') from err
 
 
 def get_language_name(language: str) -> str:

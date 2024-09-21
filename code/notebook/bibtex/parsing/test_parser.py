@@ -377,7 +377,7 @@ def test_single_verbatim_author() -> None:
         entry_type='book',
         entry_name='test',
         title='Test',
-        authors=[BibAuthor(main_name='{Verbatim}')],
+        authors=[BibAuthor(main_name='Verbatim', verbatim=True)],
         language='english'
     )
 
@@ -398,7 +398,7 @@ def test_multiple_verbatim_authors() -> None:
         entry_type='book',
         entry_name='test',
         title='Test',
-        authors=[BibAuthor(main_name='{Verbatim}'), BibAuthor(main_name='{Verbatim 2}')],
+        authors=[BibAuthor(main_name='Verbatim', verbatim=True), BibAuthor(main_name='Verbatim 2', verbatim=True)],
         language='english'
     )
 
@@ -442,7 +442,7 @@ def test_one_verbatim_authors_with_and() -> None:
         entry_type='book',
         entry_name='test',
         title='Test',
-        authors=[BibAuthor(main_name='{Verbatim and Verbatim 2}')],
+        authors=[BibAuthor(main_name='Verbatim and Verbatim 2', verbatim=True)],
         language='english'
     )
 
@@ -463,7 +463,7 @@ def test_one_verbatim_authors_with_and_quotes() -> None:
         entry_type='book',
         entry_name='test',
         title='Test',
-        authors=[BibAuthor(main_name='{Verbatim and Verbatim 2}')],
+        authors=[BibAuthor(main_name='Verbatim and Verbatim 2', verbatim=True)],
         language='english'
     )
 

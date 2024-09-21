@@ -168,7 +168,7 @@ class BibParser(WhitespaceParserMixin[BibToken], Parser[BibToken]):
 
     def parse_author_string(self, string: str, entry_start_i: int, value_start_i: int) -> BibAuthor:
         if string.startswith('{') and string.endswith('}'):
-            return BibAuthor(main_name=string)
+            return BibAuthor(main_name=string[1:-1], verbatim=True)
 
         parts = [part.strip() for part in string.split(',')]
 

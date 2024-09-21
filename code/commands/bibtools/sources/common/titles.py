@@ -1,6 +1,5 @@
+import re
 from typing import NamedTuple
-
-from notebook.math.nlp.parsing import tokenize_text
 
 
 class Titles(NamedTuple):
@@ -15,11 +14,9 @@ class Titles(NamedTuple):
 
 
 def split_title(full_title: str) -> Titles:
-    titles = iter(tokenize_text(full_title).split_by(lambda token: str(token) in '.:-', limit=2))
-    title = next(titles)
+    titles = re.split(r'\. |: | -+ ', full_title, maxsplit=1)
 
-    try:
-        subtitle = next(titles)
-        return Titles(str(title), str(subtitle).lstrip('- '))
-    except StopIteration:
-        return Titles(str(title), None)
+    if len(titles) == 1:
+        return Titles(titles[0], None)
+
+    return Titles(titles[0], titles[1])

@@ -147,7 +147,7 @@ class BibEntry(NamedTuple):
             authors = properties.pop(field_name)
 
             if len(authors) > 0:
-                properties[key_name] = ' and '.join(map(str, authors))
+                properties[key_name] = ' and '.join('{' + author.main_name + '}' if author.verbatim else author.get_full_string() for author in authors)
 
         if all(author.display_name for author in self.authors):
             properties['shortauthor'] = ' and '.join(cast(str, author.display_name) for author in self.authors)

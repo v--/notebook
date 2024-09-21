@@ -1,3 +1,4 @@
+from collections.abc import Sequence
 from typing import Any, TextIO
 
 import loguru
@@ -8,79 +9,117 @@ from notebook.bibtex.entry import BibEntry
 from notebook.bibtex.parsing import parse_bibtex
 from notebook.parsing.parser import ParsingError
 
-from ..common.formatting import Formatter
 from ..common.names import latinize_cyrillic_name
 from .exceptions import BibToolsParsingError
 from .sources.common.languages import normalize_language_name
+from .sources.common.names import name_to_bib_author
+from .sources.common.titles import split_title
 
 
-class BibFormatter(Formatter):
-    def get_sublogger(self, entry: BibEntry) -> 'loguru.Logger':
-        return self.logger.bind(logger=self.path.name + ':' + entry.entry_name)
+class BibEntryAdjuster:
+    original: BibEntry
+    logger: 'loguru.Logger'
 
-    def adjust_author(self, author: BibAuthor, entry: BibEntry) -> BibAuthor:
-        adjusted = author
+    def __init__(self, entry: BibEntry, logger: 'loguru.Logger') -> None:
+        self.original = entry
+        self.adjusted = entry
+        self.logger = logger
 
-        if adjusted.display_name is None and (entry.language == 'russian' or entry.language == 'bulgarian'):
-            self.get_sublogger(entry).info('Adding Latinized names')
-            adjusted = adjusted._replace(display_name=latinize_cyrillic_name(adjusted.get_shortened_string()))
+    def update(self, **kwargs: Any) -> None:  # noqa: ANN401
+        for field_name, new_value in kwargs.items():
+            old_value = getattr(self.adjusted, field_name)
 
-        return adjusted
+            if old_value != new_value:
+                if new_value is None:
+                    self.logger.info(f'Removing the {field_name} field')
+                elif old_value is None:
+                    self.logger.info(f'Setting the {field_name} field to {new_value!r}')
+                else:
+                    self.logger.info(f'Updating the {field_name} field from {old_value!r} to {new_value!r}')
 
-    def warn_of_blank_field(self, entry: BibEntry, field_name: str) -> None:
-        if getattr(entry, field_name) is None:
-            self.logger.bind(logger=entry.entry_name).warning(f'The field {field_name} is blank')
+        self.adjusted = self.adjusted._replace(**kwargs)
 
-    def adjust_field(self, entry: BibEntry, field_name: str, new_value: Any) -> BibEntry:  # noqa: ANN401
-        old_value = getattr(entry, field_name)
+    def get_author_display_name(self, author: BibAuthor) -> str | None:
+        if author.display_name is None and (self.adjusted.language == 'russian' or self.adjusted.language == 'bulgarian'):
+            return latinize_cyrillic_name(author.main_name)
 
-        if old_value != new_value:
-            self.get_sublogger(entry).info(f'Updating the {field_name} field from {old_value!r} to {new_value!r}')
-            return entry._replace(**{field_name: new_value})
+        return author.display_name
 
-        return entry
+    def adjust_author(self, author: BibAuthor) -> BibAuthor:
+        if author.verbatim:
+            adjusted = author
+        else:
+            adjusted = name_to_bib_author(author.get_full_string())._replace(display_name=author.display_name)
 
-    def adjust_entry_date(self, entry: BibEntry) -> BibEntry:
-        if entry.date is not None:
-            return entry
+        if adjusted != author:
+            self.logger.info(f'Updating author name from {author.get_full_string()!r} to {adjusted.get_full_string()!r}')
 
-        if entry.year is None:
-            self.warn_of_blank_field(entry, 'date')
-            return entry
+        display_name = self.get_author_display_name(adjusted)
 
-        self.get_sublogger(entry).info("Moving the 'year' field to 'date'")
+        if author.display_name != display_name:
+            self.logger.info(f'Updating author display name from {adjusted.display_name!r} to {display_name!r}')
 
-        date = entry.year
-        entry = entry._replace(year=None)
+        return adjusted._replace(display_name=display_name)
 
-        if entry.month:
-            date += '-' + entry.month
+    def adjust_entry_date(self) -> None:
+        if self.adjusted.date is not None:
+            return
 
-        if entry.day:
-            date += '-' + entry.day
+        if self.adjusted.year is None:
+            self.logger.warning('The date field is blank')
+            return
 
-        return entry._replace(date=date, year=None, month=None, day=None)
+        date = self.adjusted.year
 
-    def adjust_entry(self, entry: BibEntry) -> BibEntry:
-        adjusted = entry
-        adjusted._replace(authors=[self.adjust_author(author, adjusted) for author in adjusted.authors])
+        if self.adjusted.month:
+            date += '-' + self.adjusted.month.rjust(2, '0')
 
-        adjusted = self.adjust_field(adjusted, 'language', normalize_language_name(adjusted.language))
-        adjusted = self.adjust_field(adjusted, 'isbn', isbn.format(adjusted.isbn) if adjusted.isbn else None)
-        adjusted = self.adjust_field(adjusted, 'issn', issn.format(adjusted.issn) if adjusted.issn else None)
-        adjusted = self.adjust_entry_date(adjusted)
+        if self.adjusted.day:
+            date += '-' + self.adjusted.day.rjust(2, '0')
 
-        return adjusted
+        self.update(date=date, year=None, month=None, day=None)
 
-    def format(self, src: TextIO, dest: TextIO) -> None:
-        try:
-            entries = parse_bibtex(src.read())
-        except ParsingError as err:
-            raise BibToolsParsingError(str(err) + '\n\n' + err.__notes__[0]) from err
+    def adjust(self) -> None:
+        self.adjusted = self.adjusted._replace(
+            authors=[self.adjust_author(author) for author in self.adjusted.authors]
+        )
 
-        for i, entry in enumerate(entries):
-            adjusted = self.adjust_entry(entry)
-            dest.write(str(adjusted))
+        title = self.adjusted.title
+        subtitle = self.adjusted.subtitle
 
-            if i + 1 < len(entries):
-                dest.write('\n')
+        if subtitle is None:
+            title, subtitle = split_title(title)
+
+        self.update(
+            title=title,
+            subtitle=subtitle,
+            language=normalize_language_name(self.adjusted.language),
+            isbn=isbn.format(self.adjusted.isbn) if self.adjusted.isbn else None,
+            issn=issn.format(self.adjusted.issn) if self.adjusted.issn else None
+        )
+
+        self.adjust_entry_date()
+
+        if self.adjusted.entry_type.endswith('thesis') and len(self.adjusted.advisors) == 0:
+            self.logger.warning('No advisors specified for a thesis entry')
+
+
+def adjust_entry(entry: BibEntry, logger: 'loguru.Logger') -> BibEntry:
+    adjuster = BibEntryAdjuster(entry, logger)
+    adjuster.adjust()
+    return adjuster.adjusted
+
+
+def read_entries(src: TextIO) -> Sequence[BibEntry]:
+    try:
+        return parse_bibtex(src.read())
+    except ParsingError as err:
+        raise BibToolsParsingError(str(err) + '\n\n' + err.__notes__[0]) from err
+
+
+def write_entries(entries: Sequence[BibEntry], dest: TextIO) -> None:
+    for i, entry in enumerate(entries):
+        dest.write(str(entry))
+
+        if i + 1 < len(entries):
+            dest.write('\n')

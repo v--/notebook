@@ -1,8 +1,8 @@
-import re
 
 from notebook.bibtex.entry import BibEntry
 from notebook.support.unicode import normalize_whitespace
 
+from ..common.dates import extract_year
 from ..common.entries import generate_entry_name
 from ..common.languages import normalize_language_name
 from ..common.names import name_to_bib_author
@@ -17,8 +17,7 @@ def isbn_book_to_bib(book: GoogleBook, isbn: str) -> BibEntry:
     language = normalize_language_name(vi.language)
     authors = [name_to_bib_author(author) for author in vi.authors]
 
-    year_match = vi.published_date and re.match(r'(?P<year>\d{4})', vi.published_date)
-    year = year_match.group('year') if year_match else ''
+    year = extract_year(vi.published_date)
 
     if vi.subtitle is None or vi.subtitle == '':
         titles = split_title(normalize_whitespace(vi.title))

@@ -5,10 +5,10 @@ import click
 
 from notebook.exceptions import NotebookCodeError
 
-from ..common.bulk_format import bulk_format
 from ..common.exceptions import exit_gracefully_on_exception
+from ..common.formatting import FormatterContextManager
 from ..common.logging import configure_loguru
-from .formatting import BibFormatter
+from .formatting import adjust_entry, read_entries, write_entries
 from .sources.arxiv import retrieve_arxiv_entry
 from .sources.doi import retrieve_doi_entry
 from .sources.isbn import retrieve_isbn_entry
@@ -23,7 +23,15 @@ def bibtools() -> None:
 @click.argument('paths', nargs=-1, type=click.Path(readable=True, dir_okay=False, path_type=pathlib.Path))
 @exit_gracefully_on_exception(NotebookCodeError)
 def format_(paths: Sequence[pathlib.Path]) -> None:
-    bulk_format(BibFormatter, *paths)
+    for path in paths:
+        with FormatterContextManager(path) as context:
+            entries = list(read_entries(context.src))
+
+            for i, entry in enumerate(entries):
+                logger = context.logger.bind(logger=path.stem + ':' + entry.entry_name)
+                entries[i] = adjust_entry(entry, logger)
+
+            write_entries(entries, context.dest)
 
 
 @bibtools.group()
