@@ -6,7 +6,6 @@ import pytest
 from notebook.bibtex.parsing import parse_bibtex
 
 from .formatting import adjust_entry
-from .sources.common.entries import regenerate_entry_name
 
 
 def test_author_name_reformatting() -> None:
@@ -222,23 +221,3 @@ def test_issn_formatting() -> None:
 
     adjusted = adjust_entry(entry, loguru.logger)
     assert adjusted.issn == '0002-9947'
-
-
-def test_missing_advisor_warning(caplog: pytest.LogCaptureFixture) -> None:
-    message = 'No advisors specified for a thesis entry'
-    entry, = parse_bibtex(
-        dedent('''\
-            @phdthesis{Economopoulos2006Parsing,
-              author = {Economopoulos, Giorgios Robert},
-              language = {english},
-              title = {Generalised LR Parsing Algorithms},
-              url = {https://ir.cwi.nl/pub/14233/14233B.pdf},
-              date = {2006}
-            }
-            '''
-        )
-    )
-
-    with caplog.at_level('WARNING'):
-        adjust_entry(entry, loguru.logger)
-        assert message in caplog.text

@@ -100,9 +100,6 @@ class BibEntryAdjuster:
 
         self.adjust_entry_date()
 
-        if self.adjusted.entry_type.endswith('thesis') and len(self.adjusted.advisors) == 0:
-            self.logger.warning('No advisors specified for a thesis entry')
-
 
 def adjust_entry(entry: BibEntry, logger: 'loguru.Logger') -> BibEntry:
     adjuster = BibEntryAdjuster(entry, logger)
