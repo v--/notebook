@@ -349,6 +349,82 @@ def test_parse_101111_tops12019_updated_by(doi: str = '10.1111/tops.12019') -> N
     )
 
 
+def test_parse_101145_3649846_orcid(doi: str = '10.1145/3649846') -> None:
+    with get_doi_fixture_path(doi).open() as file:
+        json_body = file.read()
+
+    data = parse_doi_json(json_body)
+    entry = doi_data_to_bib(data, doi)
+
+    assert entry == BibEntry(
+        entry_type='article',
+        entry_name='BinderEtAl2024DerivingDependentlyTypedOOP',
+        title='Deriving Dependently-Typed OOP from First Principles',
+        authors=[
+            BibAuthor(main_name='Binder', other_names='David'),
+            BibAuthor(main_name='Skupin', other_names='Ingo'),
+            BibAuthor(main_name='Süberkrüb', other_names='Tim'),
+            BibAuthor(main_name='Ostermann', other_names='Klaus'),
+        ],
+        doi=doi,
+        url=f'http://dx.doi.org/{doi}',
+        language='english',
+        publisher='Association for Computing Machinery (ACM)',
+        journal='Proceedings of the ACM on Programming Languages',
+        volume='8',
+        pages='983-1009',
+        date='2024-04-29',
+        issn='2475-1421'
+    )
+
+
+def test_parse_1048550_arxiv180905923(doi: str = '10.48550/arXiv.1809.05923') -> None:
+    with get_doi_fixture_path(doi).open() as file:
+        json_body = file.read()
+
+    data = parse_doi_json(json_body)
+    entry = doi_data_to_bib(data, doi)
+
+    assert entry == BibEntry(
+        entry_type='article',
+        entry_name='BradleyAppliedCategoryTheory',
+        title='What is Applied Category Theory?',
+        authors=[
+            BibAuthor(main_name='Bradley', other_names='Tai-Danae')
+        ],
+        doi=doi,
+        url='https://arxiv.org/abs/1809.05923',
+        language='english',
+        publisher='arXiv'
+    )
+
+
+def test_parse_101109_mc19871663532_no_given_name(doi: str = '10.1109/MC.1987.1663532') -> None:
+    with get_doi_fixture_path(doi).open() as file:
+        json_body = file.read()
+
+    data = parse_doi_json(json_body)
+    entry = doi_data_to_bib(data, doi)
+
+    assert entry == BibEntry(
+        entry_type='article',
+        entry_name='Brooks1987SilverBulletEssence',
+        title='No Silver Bullet Essence and Accidents of Software Engineering',
+        authors=[
+            BibAuthor(main_name='Brooks')
+        ],
+        doi=doi,
+        url=f'http://dx.doi.org/{doi}',
+        date='1987-04',
+        publisher='Institute of Electrical and Electronics Engineers (IEEE)',
+        language='english',
+        journal='Computer',
+        volume='20',
+        pages='10-19',
+        issn='0018-9162'
+    )
+
+
 def test_parse_101007_9783662074138_editor(doi: str = '10.1007/978-3-662-07413-8') -> None:
     with get_doi_fixture_path(doi).open() as file:
         json_body = file.read()

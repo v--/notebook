@@ -32,7 +32,10 @@ def format_(paths: Sequence[pathlib.Path]) -> None:
                 logger = context.logger.bind(logger=path.stem + ':' + entry.entry_name)
                 entries[i] = adjust_entry(entry, logger)
 
-            write_entries(entries, context.dest)
+            write_entries(
+                sorted(entries, key=lambda entry: entry.entry_name),
+                context.dest
+            )
 
 
 @bibtools.group()
@@ -60,11 +63,11 @@ def isbn(identifier: str, *, dump_as_fixture: bool) -> None:
 
 @fetch.command()
 @click.argument('identifier', type=str)
-@click.option('--print-edition', is_flag=True)
+@click.option('--print', is_flag=True)
 @click.option('--dump-as-fixture', is_flag=True)
 @exit_gracefully_on_exception(NotebookCodeError)
-def doi(identifier: str, *, print_edition: bool, dump_as_fixture: bool) -> None:
-    entry = retrieve_doi_entry(identifier, print_edition=print_edition, dump_as_fixture=dump_as_fixture)
+def doi(identifier: str, *, print: bool, dump_as_fixture: bool) -> None:
+    entry = retrieve_doi_entry(identifier, print_edition=print, dump_as_fixture=dump_as_fixture)
     click.echo(str(entry), nl=False)
 
 

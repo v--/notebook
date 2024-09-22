@@ -55,7 +55,7 @@ def doi_datetime_to_string(doi_datetime: DoiDateTime) -> str:
 
 def get_entry_type(doi_type: str) -> BibEntryType:
     match doi_type:
-        case 'journal-article':
+        case 'article' | 'journal-article':
             return 'article'
 
         case 'book' | 'monograph':
@@ -110,7 +110,7 @@ def doi_data_to_bib(data: DoiData, doi: str, *, print_edition: bool = False) -> 
     else:
         container_title = data.container_title
 
-    if len(data.subtitle) == 0:
+    if data.subtitle is None or len(data.subtitle) == 0:
         titles = split_title(normalize_whitespace(data.title))
     else:
         titles = Titles(data.title, data.subtitle[0])
@@ -129,8 +129,8 @@ def doi_data_to_bib(data: DoiData, doi: str, *, print_edition: bool = False) -> 
         titles,
         language,
         data.abstract,
-        *(data.container_title if isinstance(data.container_title, list) else [data.container_title]),
-        *data.subtitle,
+        *(data.container_title if isinstance(data.container_title, list) else [data.container_title] if data.container_title else []),
+        *(data.subtitle or []),
         *(ref.unstructured for ref in data.reference),
         *(ref.article_title for ref in data.reference),
         *(ref.journal_title for ref in data.reference),

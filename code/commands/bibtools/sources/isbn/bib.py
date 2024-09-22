@@ -1,3 +1,5 @@
+import stdnum
+
 from notebook.bibtex.entry import BibEntry
 from notebook.support.unicode import normalize_whitespace
 
@@ -31,5 +33,5 @@ def isbn_book_to_bib(book: GoogleBook, isbn: str) -> BibEntry:
         subtitle=titles.sub,
         language=language,
         date=vi.published_date,
-        isbn=isbn.format(isbn)
+        isbn=stdnum.isbn.format(isbn)
     )

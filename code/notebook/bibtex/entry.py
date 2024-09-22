@@ -81,7 +81,6 @@ class BibEntry(NamedTuple):
     mathscinet:    Annotated[str | None, BibFieldAnnotation()] = None
     zmath:         Annotated[str | None, BibFieldAnnotation()] = None
     zbl:           Annotated[str | None, BibFieldAnnotation()] = None
-    isi:           Annotated[str | None, BibFieldAnnotation()] = None
     scopus:        Annotated[str | None, BibFieldAnnotation()] = None
     # HAL
     hal_id:        Annotated[str | None, BibFieldAnnotation()] = None

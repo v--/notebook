@@ -5,7 +5,7 @@ from annotated_types import Len
 from pydantic import BaseModel, ConfigDict, Field
 
 
-FIELD_NAMES_TO_BE_CAPITALIZED = ['url', 'doi', 'issn', 'isbn']
+FIELD_NAMES_TO_BE_CAPITALIZED = ['url', 'doi', 'issn', 'isbn', 'orcid']
 
 
 class DoiBaseModel(BaseModel):
@@ -38,10 +38,12 @@ class DoiAffiliation(DoiBaseModel):
 
 
 class DoiAuthor(DoiBaseModel):
-    given: str
     family: str
-    sequence: str
-    affiliation: list[DoiAffiliation]
+    given: str | None = None
+    affiliation: list[DoiAffiliation] | None = None
+    sequence: str | None = None
+    authenticated_orcid: bool | None = None
+    orcid: str | None = None
 
 
 class DoiReference(DoiBaseModel):
@@ -146,38 +148,34 @@ class DoiUpdatedBy(DoiBaseModel):
 
 
 class DoiData(DoiBaseModel):
-    deposited: DoiDateTime
-    indexed: DoiDateTime
-    created: DoiDateTime
-    issued: DoiDateTime
-
-    resource: DoiResource
-    relation: DoiRelation
-
-    subject: list[DoiSubject]
-
-    is_referenced_by_count: int
-    references_count: int
-    reference_count: int
-    score: int
-
     publisher: str
-    source: str
-    prefix: str
     title: str
     type: str
     doi: str
     url: str
 
+    resource: DoiResource | None = None
+    relation: DoiRelation | None =None
+    subject: list[DoiSubject] | None = None
+
+    is_referenced_by_count: int | None = None
+    references_count: int | None = None
+    reference_count: int | None = None
+    score: int | None = None
+
+    issued: DoiDateTime
+    deposited: DoiDateTime | None = None
+    indexed: DoiDateTime | None = None
+    created: DoiDateTime | None = None
     published: DoiDateTime | None = None
     published_online: DoiDateTime | None = None
     published_print: DoiDateTime | None = None
     approved: DoiDateTime | None = None
 
-    container_title: str | list[str]
-    original_title: str | list[str]
-    short_title: str | list[str]
-    subtitle: str | list[str]
+    container_title: str | list[str] | None = None
+    original_title: str | list[str] | None = None
+    short_title: str | list[str] | None = None
+    subtitle: str | list[str] | None = None
 
     author: Annotated[list[DoiAuthor], Field(default_factory=list)]
     editor: Annotated[list[DoiAuthor], Field(default_factory=list)]
@@ -187,6 +185,14 @@ class DoiData(DoiBaseModel):
     license: Annotated[list[DoiLicense], Field(default_factory=list)]
     funder: Annotated[list[DoiFunder], Field(default_factory=list)]
     updated_by: Annotated[list[DoiUpdatedBy], Field(default_factory=list)]
+
+    # arXiv
+    categories: list[str] | None = None
+    copyright: str | None = None
+    version: str | None = None
+    prefix: str | None = None
+    source: str | None = None
+    id: str | None = None
 
     alternative_id: Annotated[list[str], Field(default_factory=list)]
     isbn_type: Annotated[list[DoiIsbn], Field(default_factory=list)]

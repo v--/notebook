@@ -1,10 +1,11 @@
 from nameparser import HumanName
 
 from notebook.bibtex.author import BibAuthor
+from notebook.bibtex.verbatim import is_verbatim_string
 
 
 def name_to_bib_author(full_name: str) -> BibAuthor:
-    if full_name.startswith('{') and full_name.endswith('}'):
+    if is_verbatim_string(full_name):
         return BibAuthor(main_name=full_name, verbatim=True)
 
     names = HumanName(full_name)

@@ -1,6 +1,8 @@
 import re
 from typing import NamedTuple
 
+from notebook.bibtex.verbatim import is_verbatim_string
+
 
 class Titles(NamedTuple):
     main: str
@@ -14,6 +16,9 @@ class Titles(NamedTuple):
 
 
 def split_title(full_title: str) -> Titles:
+    if is_verbatim_string(full_title):
+        return Titles(full_title, None)
+
     titles = re.split(r'\. |: | -+ ', full_title, maxsplit=1)
 
     if len(titles) == 1:
