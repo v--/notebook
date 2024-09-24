@@ -12,7 +12,7 @@ def test_author_name_reformatting() -> None:
     entry, = parse_bibtex(
         dedent('''\
             @article{Левенштейн1965ДвоичныеКоды,
-              author = {Владимир Левенштейн},
+              author = {Левенштейн, Владимир},
               language = {russian},
               title = {Двоичные коды с исправлением выпадений, вставок и замещений символов},
               date = {1965}
@@ -22,14 +22,14 @@ def test_author_name_reformatting() -> None:
     )
 
     adjusted = adjust_entry(entry, loguru.logger)
-    assert adjusted.authors[0].get_full_string() == 'Левенштейн, Владимир'
+    assert adjusted.authors[0].full_name == 'Владимир Левенштейн'
 
 
 def test_author_name_verbatim() -> None:
     entry, = parse_bibtex(
         dedent('''\
             @article{Левенштейн1965ДвоичныеКоды,
-              author = {{Владимир Левенштейн}},
+              author = {{Левенштейн, Владимир}},
               language = {russian},
               title = {Двоичные коды с исправлением выпадений, вставок и замещений символов},
               date = {1965}
@@ -39,10 +39,10 @@ def test_author_name_verbatim() -> None:
     )
 
     adjusted = adjust_entry(entry, loguru.logger)
-    assert adjusted.authors[0].get_full_string() == 'Владимир Левенштейн'
+    assert adjusted.authors[0].full_name == 'Левенштейн, Владимир'
 
 
-def test_author_display_name() -> None:
+def test_author_short() -> None:
     entry, = parse_bibtex(
         dedent('''\
             @article{Левенштейн1965ДвоичныеКоды,
@@ -56,10 +56,10 @@ def test_author_display_name() -> None:
     )
 
     adjusted = adjust_entry(entry, loguru.logger)
-    assert adjusted.authors[0].display_name == 'Levenshteyn'
+    assert adjusted.authors[0].short_name == 'Levenshteyn'
 
 
-def test_author_display_name_existing() -> None:
+def test_author_short_existing() -> None:
     entry, = parse_bibtex(
         dedent('''\
             @article{Левенштейн1965ДвоичныеКоды,
@@ -74,7 +74,7 @@ def test_author_display_name_existing() -> None:
     )
 
     adjusted = adjust_entry(entry, loguru.logger)
-    assert adjusted.authors[0].display_name == 'Levenshtein'
+    assert adjusted.authors[0].short_name == 'Levenshtein'
 
 
 def test_language_reformatting() -> None:
@@ -100,7 +100,7 @@ def test_missing_date(caplog: pytest.LogCaptureFixture) -> None:
         dedent('''\
             @article{Левенштейн1965ДвоичныеКоды,
               author = {Владимир Левенштейн},
-              language = {ru},
+              language = {russian},
               title = {Двоичные коды с исправлением выпадений, вставок и замещений символов}
             }
             '''
@@ -203,7 +203,7 @@ def test_issn_formatting() -> None:
     entry, = parse_bibtex(
         dedent('''\
             @article{Eilenberg1945Equivalences,
-              author = {Eilenberg, Samuel and MacLane, Saunders},
+              author = {Samuel Eilenberg and Saunders Mac Lane},
               date = {1945-09},
               doi = {10.2307/1990284},
               issn = {00029947},
@@ -221,3 +221,146 @@ def test_issn_formatting() -> None:
 
     adjusted = adjust_entry(entry, loguru.logger)
     assert adjusted.issn == '0002-9947'
+
+
+def test_missing_eprint_type_and_id(caplog: pytest.LogCaptureFixture) -> None:
+    message = "No eprint type or id specified for class 'math.HO'"
+    entry, = parse_bibtex(
+        dedent('''\
+            @article{GreshamEtAl2019Trigonometry,
+              author = {John Gresham and Bryant Wyatt and Jesse Crawford},
+              date = {2019-01-01},
+              eprintclass = {math.HO},
+              language = {english},
+              title = {Essential Trignometry Without Geometry}
+            }
+            '''
+        )
+    )
+
+    with caplog.at_level('WARNING'):
+        adjust_entry(entry, loguru.logger)
+        assert message in caplog.text
+
+
+def test_missing_eprint_type(caplog: pytest.LogCaptureFixture) -> None:
+    message = "No eprint type specified for '1906.07050v1'"
+    entry, = parse_bibtex(
+        dedent('''\
+            @article{GreshamEtAl2019Trigonometry,
+              author = {John Gresham and Bryant Wyatt and Jesse Crawford},
+              date = {2019-01-01},
+              eprint = {1906.07050v1},
+              language = {english},
+              title = {Essential Trignometry Without Geometry}
+            }
+            '''
+        )
+    )
+
+    with caplog.at_level('WARNING'):
+        adjust_entry(entry, loguru.logger)
+        assert message in caplog.text
+
+
+def test_missing_eprint(caplog: pytest.LogCaptureFixture) -> None:
+    message = "No eprint id specified for type 'arXiv'"
+    entry, = parse_bibtex(
+        dedent('''\
+            @article{GreshamEtAl2019Trigonometry,
+              author = {John Gresham and Bryant Wyatt and Jesse Crawford},
+              date = {2019-01-01},
+              eprintclass = {math.HO},
+              eprinttype = {arXiv},
+              language = {english},
+              title = {Essential Trignometry Without Geometry}
+            }
+            '''
+        )
+    )
+
+    with caplog.at_level('WARNING'):
+        adjust_entry(entry, loguru.logger)
+        assert message in caplog.text
+
+
+def test_missing_arxiv_class(caplog: pytest.LogCaptureFixture) -> None:
+    message = "No eprint class specified for arXiv entry '1906.07050v1'"
+    entry, = parse_bibtex(
+        dedent('''\
+            @article{GreshamEtAl2019Trigonometry,
+              author = {John Gresham and Bryant Wyatt and Jesse Crawford},
+              date = {2019-01-01},
+              eprint = {1906.07050v1},
+              eprinttype = {arXiv},
+              language = {english},
+              title = {Essential Trignometry Without Geometry}
+            }
+            '''
+        )
+    )
+
+    with caplog.at_level('WARNING'):
+        adjust_entry(entry, loguru.logger)
+        assert message in caplog.text
+
+
+def test_arxiv_entry_url() -> None:
+    entry, = parse_bibtex(
+        dedent('''\
+            @article{GreshamEtAl2019Trigonometry,
+              author = {John Gresham and Bryant Wyatt and Jesse Crawford},
+              date = {2019-01-01},
+              eprint = {http://arxiv.org/abs/1906.07050v1},
+              eprintclass = {math.HO},
+              eprinttype = {arXiv},
+              language = {english},
+              title = {Essential Trignometry Without Geometry}
+            }
+            '''
+        )
+    )
+
+    adjusted = adjust_entry(entry, loguru.logger)
+    assert adjusted.eprint == '1906.07050v1'
+
+
+def test_mathnet_url(caplog: pytest.LogCaptureFixture) -> None:
+    message = 'Extracting a mathnet identifier from the URL'
+    entry, = parse_bibtex(
+        dedent('''\
+            @article{Левенштейн1965,
+              author = {Владимир Левенштейн},
+              date = {1965},
+              language = {russian},
+              title = {Двоичные коды с исправлением выпадений, вставок и замещений символов},
+              url = {http://mi.mathnet.ru/tm1095}
+            }
+            '''
+        )
+    )
+
+    with caplog.at_level('INFO'):
+        adjust_entry(entry, loguru.logger)
+        assert message in caplog.text
+
+
+def test_redundant_mathnet_url(caplog: pytest.LogCaptureFixture) -> None:
+    message = 'Removing redundant mathnet URL'
+    entry, = parse_bibtex(
+        dedent('''\
+            @article{Левенштейн1965,
+              author = {Владимир Левенштейн},
+              date = {1965},
+              language = {russian},
+              title = {Двоичные коды с исправлением выпадений, вставок и замещений символов},
+              mathnet = {dan31411},
+              url = {http://mi.mathnet.ru/dan31411}
+            }
+            '''
+        )
+    )
+
+    with caplog.at_level('INFO'):
+        adjust_entry(entry, loguru.logger)
+        assert message in caplog.text

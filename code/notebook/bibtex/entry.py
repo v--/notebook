@@ -14,6 +14,7 @@ BibEntryType = Literal[
     'book',
     'booklet',
     'conference',
+    'collection',
     'inbook',
     'incollection',
     'inproceedings',
@@ -22,6 +23,7 @@ BibEntryType = Literal[
     'misc',
     'phdthesis',
     'proceedings',
+    'report',
     'techreport',
     'unpublished',
     'online'
@@ -46,9 +48,9 @@ class BibEntry(NamedTuple):
     language:      Annotated[str, BibFieldAnnotation()]
     authors:       Annotated[Sequence[BibAuthor], BibFieldAnnotation(author=True, key_name='author')]
     # Optional
-    translators:   Annotated[Sequence[BibAuthor], BibFieldAnnotation(author=True, key_name='translator')] = []
     editors:       Annotated[Sequence[BibAuthor], BibFieldAnnotation(author=True, key_name='editor')] = []
-    doi:           Annotated[str | None, BibFieldAnnotation()] = None
+    translators:   Annotated[Sequence[BibAuthor], BibFieldAnnotation(author=True, key_name='translator')] = []
+    origlanguage:  Annotated[str | None, BibFieldAnnotation()] = None
     publisher:     Annotated[str | None, BibFieldAnnotation()] = None
     subtitle:      Annotated[str | None, BibFieldAnnotation()] = None
     date:          Annotated[str | None, BibFieldAnnotation()] = None
@@ -59,6 +61,7 @@ class BibEntry(NamedTuple):
     day:           Annotated[str | None, BibFieldAnnotation()] = None
     edition:       Annotated[str | None, BibFieldAnnotation()] = None
     volume:        Annotated[str | None, BibFieldAnnotation()] = None
+    version:       Annotated[str | None, BibFieldAnnotation()] = None
     institution:   Annotated[str | None, BibFieldAnnotation()] = None
     # Theses
     advisors:      Annotated[Sequence[BibAuthor], BibFieldAnnotation(author=True, key_name='advisor')] = []
@@ -66,28 +69,33 @@ class BibEntry(NamedTuple):
     chapter:       Annotated[str | None, BibFieldAnnotation()] = None
     series:        Annotated[str | None, BibFieldAnnotation()] = None
     isbn:          Annotated[str | None, BibFieldAnnotation()] = None
+    # Book (and proceeding) chapters
+    booktitle:     Annotated[str | None, BibFieldAnnotation()] = None
+    booksubtitle:  Annotated[str | None, BibFieldAnnotation()] = None
     # Russian books
     udc:           Annotated[str | None, BibFieldAnnotation()] = None
     bbc:           Annotated[str | None, BibFieldAnnotation()] = None
     # Articles
-    booktitle:     Annotated[str | None, BibFieldAnnotation()] = None
     issue:         Annotated[str | None, BibFieldAnnotation()] = None
     journal:       Annotated[str | None, BibFieldAnnotation()] = None
     number:        Annotated[str | None, BibFieldAnnotation()] = None
     pages:         Annotated[str | None, BibFieldAnnotation()] = None
     issn:          Annotated[str | None, BibFieldAnnotation()] = None
-    mrnumber:      Annotated[str | None, BibFieldAnnotation()] = None
+    # Reports and manuals
+    type:          Annotated[str | None, BibFieldAnnotation()] = None
+    # References
+    doi:           Annotated[str | None, BibFieldAnnotation()] = None
+    eudml:         Annotated[str | None, BibFieldAnnotation()] = None
+    jstor:         Annotated[str | None, BibFieldAnnotation()] = None
+    handle:        Annotated[str | None, BibFieldAnnotation()] = None
     mathnet:       Annotated[str | None, BibFieldAnnotation()] = None
     mathscinet:    Annotated[str | None, BibFieldAnnotation()] = None
-    zmath:         Annotated[str | None, BibFieldAnnotation()] = None
-    zbl:           Annotated[str | None, BibFieldAnnotation()] = None
+    numdam:        Annotated[str | None, BibFieldAnnotation()] = None
     scopus:        Annotated[str | None, BibFieldAnnotation()] = None
-    # HAL
-    hal_id:        Annotated[str | None, BibFieldAnnotation()] = None
-    hal_version:   Annotated[str | None, BibFieldAnnotation()] = None
-    # arXiv
-    archiveprefix: Annotated[str | None, BibFieldAnnotation()] = None
-    primaryclass:  Annotated[str | None, BibFieldAnnotation()] = None
+    zbmath:        Annotated[str | None, BibFieldAnnotation()] = None
+    # eprints
+    eprinttype:    Annotated[str | None, BibFieldAnnotation()] = None
+    eprintclass:   Annotated[str | None, BibFieldAnnotation()] = None
     eprint:        Annotated[str | None, BibFieldAnnotation()] = None
     # Online
     howpublished:  Annotated[str | None, BibFieldAnnotation()] = None
@@ -104,23 +112,23 @@ class BibEntry(NamedTuple):
 
     @classmethod
     @list_accumulator
-    def get_author_fields(cls) -> Iterable[tuple[str, str]]:
+    def get_author_fields(cls) -> Iterable[tuple[str, str, str]]:
         for field_name, field_annotation in get_type_hints(cls, include_extras=True).items():
             _, annotation = get_args(field_annotation)
 
             if annotation.author:
-                yield field_name, annotation.key_name or field_name
+                yield field_name, annotation.key_name or field_name, f'short{annotation.key_name or field_name}'
 
     @classmethod
     def is_known_key(cls, key: str) -> bool:
-        if key == 'shortauthor':
-            return True
-
         for field_name, field_annotation in get_type_hints(cls, include_extras=True).items():
             _, annotation = get_args(field_annotation)
 
-            if not annotation.meta and key == (annotation.key_name or field_name):
-                return True
+            if not annotation.meta:
+                field_key = annotation.key_name or field_name
+
+                if key == field_key or (annotation.author and key == f'short{field_key}'):
+                    return True
 
         return False
 
@@ -144,14 +152,16 @@ class BibEntry(NamedTuple):
             if value is None:
                 properties.pop(key)
 
-        for field_name, key_name in self.get_author_fields():
+        for field_name, key_name, short_key_name in self.get_author_fields():
             authors = properties.pop(field_name)
 
-            if len(authors) > 0:
-                properties[key_name] = ' and '.join('{' + author.main_name + '}' if author.verbatim else author.get_full_string() for author in authors)
+            if len(authors) == 0:
+                continue
 
-        if all(author.display_name for author in self.authors):
-            properties['shortauthor'] = ' and '.join(cast(str, author.display_name) for author in self.authors)
+            properties[key_name] = ' and '.join('{' + author.full_name + '}' if author.verbatim else author.full_name for author in authors)
+
+            if all(author.short_name for author in authors):
+                properties[short_key_name] = ' and '.join(cast(str, author.short_name) for author in authors)
 
         return properties
 

@@ -1,6 +1,9 @@
+import pytest
+
 from notebook.bibtex.author import BibAuthor
 from notebook.bibtex.entry import BibEntry
 
+from ...exceptions import BibToolsParsingError
 from .bib import isbn_book_to_bib
 from .fixtures import get_isbn_fixture_path
 from .model import parse_isbn_json
@@ -27,7 +30,7 @@ def test_parse_9780821810255(isbn: str = '978-0-8218-1025-5') -> None:
         entry_name='Birkhoff1940LatticeTheory',
         title='Lattice Theory',
         authors=[
-            BibAuthor(main_name='Birkhoff', other_names='Garrett')
+            BibAuthor(full_name='Garrett Birkhoff')
         ],
         isbn=isbn,
         language='english',
@@ -49,7 +52,7 @@ def test_parse_9780821847817_subtitle(isbn: str = '978-0-8218-4781-7') -> None:
         title='Algebra',
         subtitle='Chapter 0',
         authors=[
-            BibAuthor(main_name='Aluffi', other_names='Paolo')
+            BibAuthor(full_name='Paolo Aluffi')
         ],
         isbn=isbn,
         language='english',
@@ -71,7 +74,7 @@ def test_parse_3885380064_limited_data(isbn: str = '3-88538-006-4') -> None:
         entry_name='Engelking1989GeneralTopology',
         title='General Topology',
         authors=[
-            BibAuthor(main_name='Engelking', other_names='Ryszard')
+            BibAuthor(full_name='Ryszard Engelking')
         ],
         language='english',
         date='1989',
@@ -93,7 +96,7 @@ def test_parse_9781071635971_subtitle_and_no_year(isbn: str = '978-1-0716-3597-1
         title='The New Mathematical Coloring Book',
         subtitle='Mathematics of Coloring and the Colorful Life of Its Creators',
         authors=[
-            BibAuthor(main_name='Soifer', other_names='Alexander')
+            BibAuthor(full_name='Alexander Soifer')
         ],
         language='english',
         isbn=isbn
@@ -113,7 +116,7 @@ def test_parse_5898060227_russian(isbn: str = '5-89806-022-7') -> None:
         entry_name='Шафаревич1999ОсновныеПонятияАлгебры',
         title='Основные понятия алгебры',
         authors=[
-            BibAuthor(main_name='Шафаревич', other_names='Игорь Ростиславович')
+            BibAuthor(full_name='Игорь Ростиславович Шафаревич')
         ],
         language='russian',
         date='1999',
@@ -134,7 +137,7 @@ def test_parse_9785922102667_empty_subtitle(isbn: str = '978-5-9221-0266-7') -> 
         entry_name='Колмогоров2004ФункциональногоАнализа',
         title='Элементы теории функций и функционального анализа',
         authors=[
-            BibAuthor(main_name='Колмогоров', other_names='Андрей Николаевич')
+            BibAuthor(full_name='Андрей Николаевич Колмогоров')
         ],
         language='russian',
         date='2004',
@@ -155,7 +158,7 @@ def test_parse_9785922107785_bad_unicode(isbn: str = '978-5-9221-0778-5') -> Non
         entry_name='Tyrtyshnikov2007MatrichnyiAnalizILineinaiAAlgebra',
         title='Matrichnyĭ analiz i lineĭnai͡a algebra',
         authors=[
-            BibAuthor(main_name='Tyrtyshnikov', other_names='Evgeniĭ Evgenʹevich')
+            BibAuthor(full_name='Evgeniĭ Evgenʹevich Tyrtyshnikov')
         ],
         language='russian',
         date='2007',
@@ -177,9 +180,22 @@ def test_parse_9548706733_bulgarian(isbn: str = '954-8706-73-3') -> None:
         title='Диференциална геометрия',
         subtitle='Учебник за студентите от СУ Св. Климент Охридски',
         authors=[
-            BibAuthor(main_name='Станилов', other_names='Грозяо')
+            BibAuthor(full_name='Грозяо Станилов')
         ],
         language='bulgarian',
         date='1997',
         isbn=isbn
     )
+
+
+def test_parse_5791300166_no_authors(isbn: str = '5-7913-0016-6') -> None:
+    with get_isbn_fixture_path(isbn).open() as file:
+        json_body = file.read()
+
+    res = parse_isbn_json(json_body)
+    assert len(res.items) == 1
+
+    with pytest.raises(BibToolsParsingError) as excinfo:
+        isbn_book_to_bib(res.items[0], isbn)
+
+    assert str(excinfo.value) == f'Could not determine authors for ISBN {isbn}'

@@ -9,13 +9,13 @@ def test_entry_stringify() -> None:
         entry_type='book',
         entry_name='test',
         title='Test',
-        authors=[BibAuthor(main_name='A', other_names='B'), BibAuthor(main_name='C', other_names='D')],
+        authors=[BibAuthor(full_name='A B'), BibAuthor(full_name='C D')],
         language='english'
     )
 
     assert str(entry) == dedent(r'''
         @book{test,
-          author = {A, B and C, D},
+          author = {A B and C D},
           language = {english},
           title = {Test}
         }
@@ -27,7 +27,7 @@ def test_entry_stringify_literal_author() -> None:
         entry_type='book',
         entry_name='test',
         title='Test',
-        authors=[BibAuthor(main_name='A B', verbatim=True)],
+        authors=[BibAuthor(full_name='A B', verbatim=True)],
         language='english'
     )
 
@@ -44,7 +44,7 @@ def test_entry_stringify_shortauthor() -> None:
         entry_type='book',
         entry_name='тест',
         title='Тест',
-        authors=[BibAuthor(main_name='А', display_name='A'), BibAuthor(main_name='Б', display_name='B')],
+        authors=[BibAuthor(full_name='А', short_name='A'), BibAuthor(full_name='Б', short_name='B')],
         language='russian'
     )
 

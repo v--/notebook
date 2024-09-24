@@ -54,7 +54,7 @@ def generate_word_score(phrases: Iterable[TokenSequence]) -> WordScoreContext:
             frequency.setdefault(key, 0)
             frequency[key] += 1
             degree.setdefault(key, 0)
-            degree[key] += len(words) - 1
+            degree[key] += (len(words) - 1)
 
     return WordScoreContext(frequency, degree)
 

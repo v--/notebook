@@ -1,6 +1,7 @@
 from notebook.bibtex.entry import BibEntry
 
 from ...exceptions import BibToolsError
+from ..common.url_template import UrlTemplate
 from .bib import arxiv_entry_to_bib
 from .fetch import fetch_arxiv_xml
 from .model import parse_arxiv_xml

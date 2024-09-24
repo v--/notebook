@@ -38,7 +38,8 @@ class DoiAffiliation(DoiBaseModel):
 
 
 class DoiAuthor(DoiBaseModel):
-    family: str
+    name: str | None = None
+    family: str | None = None
     given: str | None = None
     affiliation: list[DoiAffiliation] | None = None
     sequence: str | None = None
@@ -104,6 +105,7 @@ class DoiAssertion(DoiBaseModel):
     name: str
     label: str
     order: int | None = None
+    url: str | None = None
     group: DoiAssertionGroup | None = None
 
 

@@ -11,7 +11,7 @@ from .tokenizer import tokenize_bibtex
 from .tokens import BibToken, MiscToken, NumberToken, WordToken
 
 
-AUTHOR_KEYS = {key_name for _, key_name in BibEntry.get_author_fields()} | {'shortauthor'}
+AUTHOR_KEYS = {key_name for _, key_name, _ in BibEntry.get_author_fields()} | {short_key_name for _, _, short_key_name in BibEntry.get_author_fields()}
 
 
 class PropertyValue(NamedTuple):
@@ -80,7 +80,7 @@ class BibParser(WhitespaceParserMixin[BibToken], Parser[BibToken]):
         return entry_name
 
     def parse_property_key(self) -> str:
-        key = self.gobble_string(lambda token: isinstance(token, WordToken | NumberToken) or token == MiscToken.underscore)
+        key = self.gobble_string(lambda token: isinstance(token, WordToken))
 
         if len(key) == 0:
             raise self.error('Expected an entry key')
@@ -166,31 +166,11 @@ class BibParser(WhitespaceParserMixin[BibToken], Parser[BibToken]):
 
         raise self.error('Unclosed delimiter', i_first_token=value_start_i, i_first_visible_token=entry_start_i)
 
-    def parse_author_string(self, string: str, entry_start_i: int, value_start_i: int) -> BibAuthor:
+    def parse_author_string(self, string: str) -> BibAuthor:
         if string.startswith('{') and string.endswith('}'):
-            return BibAuthor(main_name=string[1:-1], verbatim=True)
+            return BibAuthor(full_name=string[1:-1], verbatim=True)
 
-        parts = [part.strip() for part in string.split(',')]
-
-        error_kwargs = dict(
-            i_first_token=value_start_i,
-            i_last_token=self.index - 1,
-            i_first_visible_token=entry_start_i
-        )
-
-        for part in parts:
-            if len(part) == 0:
-                raise self.error('Cannot parse author string', **error_kwargs)
-
-        match parts:
-            case [main_name]:
-                return BibAuthor(main_name=main_name)
-            case [main_name, other_names]:
-                return BibAuthor(main_name=main_name, other_names=other_names)
-            case [main_name, title, other_names]:
-                return BibAuthor(main_name=main_name, other_names=other_names, title=title)
-            case _:
-                raise self.error('Cannot parse author string', **error_kwargs)
+        return BibAuthor(full_name=string, verbatim=False)
 
     def parse_authors(self, value: PropertyValue, entry_start_i: int, value_start_i: int) -> Iterable[BibAuthor]:
         expecting_and = False
@@ -215,13 +195,12 @@ class BibParser(WhitespaceParserMixin[BibToken], Parser[BibToken]):
             if expecting_and:
                 raise self.error('Cannot parse author string', **error_kwargs)
 
-            yield self.parse_author_string(
-                segment,
-                entry_start_i=entry_start_i,
-                value_start_i=value_start_i
-            )
+            yield self.parse_author_string(segment.strip())
 
             expecting_and = True
+
+        if not expecting_and:
+            raise self.error('Cannot parse author string', **error_kwargs)
 
     def perform_inline_validation(self, key: str, value: PropertyValue, entry_start_i: int, value_start_i: int) -> None:
         error_kwargs = dict(
@@ -250,7 +229,7 @@ class BibParser(WhitespaceParserMixin[BibToken], Parser[BibToken]):
             if key in keys:
                 raise self.error('Duplicate key', i_first_token=key_start_i, i_first_visible_token=entry_start_i, i_last_token=self.index - 1)
 
-            if key != 'shortauthor' and not BibEntry.is_known_key(key):
+            if not BibEntry.is_known_key(key):
                 raise self.error('Unrecognized key', i_first_token=key_start_i, i_first_visible_token=entry_start_i, i_last_token=self.index - 1)
 
             keys.add(key)
@@ -312,36 +291,38 @@ class BibParser(WhitespaceParserMixin[BibToken], Parser[BibToken]):
             raise self.error('Entry without language', i_first_token=entry_start_i, i_last_token=self.index - 1)
 
     @list_accumulator
-    def process_authors(self, properties: dict[str, PropertyValue], key: str, entry_start_i: int, display_names_key: str | None = None) -> Iterable[BibAuthor]:
+    def process_authors(self, properties: dict[str, PropertyValue], key: str, entry_start_i: int) -> Iterable[BibAuthor]:
         if key not in properties:
             return
 
+        short_key = f'short{key}'
+
         value = properties.pop(key)
-        error_message = f'Property {display_names_key!r} does not match the structure of {key!r}'
+        error_message = f'Property {short_key!r} does not match the structure of {key!r}'
         error_kwargs = dict(
             i_first_token=entry_start_i,
             i_last_token=self.index - 1
         )
 
-        display_segments: deque[str] | None = None
+        short_segments: deque[str] | None = None
 
-        if display_names_key is not None and display_names_key in properties:
-            display_segments = deque()
+        if short_key is not None and short_key in properties:
+            short_segments = deque()
 
-            for author in self.parse_authors(properties.pop(display_names_key), entry_start_i, entry_start_i):
-                display_segments.append(str(author))
+            for author in self.parse_authors(properties.pop(short_key), entry_start_i, entry_start_i):
+                short_segments.append(author.full_name)
 
         for author in self.parse_authors(value, entry_start_i, entry_start_i):
-            if display_segments is None:
+            if short_segments is None:
                 yield author
                 continue
 
-            if len(display_segments) == 0:
+            if len(short_segments) == 0:
                 raise self.error(error_message, **error_kwargs)
 
-            yield author._replace(display_name=display_segments.popleft().strip())
+            yield author._replace(short_name=short_segments.popleft().strip())
 
-        if display_segments and len(display_segments) > 0:
+        if short_segments and len(short_segments) > 0:
             raise self.error(error_message, **error_kwargs)
 
 
@@ -380,7 +361,7 @@ class BibParser(WhitespaceParserMixin[BibToken], Parser[BibToken]):
                 entry_type=entry_type,
                 entry_name=entry_name,
                 title=str(properties.pop('title')),
-                authors=self.process_authors(properties, 'author', entry_start_i, display_names_key='shortauthor'),
+                authors=self.process_authors(properties, 'author', entry_start_i),
                 translators=self.process_authors(properties, 'translator', entry_start_i),
                 advisors=self.process_authors(properties, 'advisor', entry_start_i),
                 editors=self.process_authors(properties, 'editor', entry_start_i),

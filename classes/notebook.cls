@@ -24,9 +24,11 @@
 % Citations
 \RequirePackage
   [
+    block=ragged,
     backend=biber,
     style=alphabetic,
-    citestyle=alphabetic
+    citestyle=alphabetic,
+    datamodel=classes/bibmodel
   ]
   {biblatex}
 
@@ -99,6 +101,7 @@
 \RequirePackage{packages/math_macros}
 \RequirePackage{packages/math_environments}
 \RequirePackage{packages/paired_delimiters}
+\RequirePackage{packages/citations}
 \RequirePackage{packages/references}
 \RequirePackage{packages/subproofs}
 \RequirePackage{packages/theorems}

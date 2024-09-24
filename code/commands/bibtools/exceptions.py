@@ -5,7 +5,7 @@ class BibToolsError(NotebookCommandError):
     pass
 
 
-class BibToolsNetworkError(NotebookCommandError):
+class BibToolsNetworkError(BibToolsError):
     pass
 
 

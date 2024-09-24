@@ -10,6 +10,7 @@ from notebook.support.unicode import remove_accents
 
 from .dates import extract_year
 from .keywords import generate_keyphrase_scores
+from .names import get_main_author_name
 from .titles import Titles
 
 
@@ -51,12 +52,13 @@ def generate_keyphrase(titles: Titles, language: str, *aux_texts: str | None) ->
 
 @string_accumulator()
 def generate_entry_name(authors: Sequence[BibAuthor], year: str | None, titles: Titles, language: str, *aux_texts: str | None) -> Iterable[str]:
-    yield mangle_string_for_entry_name(authors[0].main_name)
+    if len(authors) > 0:
+        yield mangle_string_for_entry_name(get_main_author_name(authors[0]))
 
-    if len(authors) > 2:
+    if len(authors) > 2 or (len(authors) == 2 and authors[1] == BibAuthor(full_name='others')):
         yield 'ИПр' if language == 'russian' or language == 'bulgarian' else 'EtAl'
     elif len(authors) > 1:
-        yield mangle_string_for_entry_name(authors[1].main_name)
+        yield mangle_string_for_entry_name(get_main_author_name(authors[1]))
 
     if year:
         yield year

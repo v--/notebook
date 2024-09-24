@@ -2,6 +2,7 @@ import re
 from typing import NamedTuple
 
 from notebook.bibtex.verbatim import is_verbatim_string
+from notebook.support.unicode import normalize_whitespace
 
 
 class Titles(NamedTuple):
@@ -25,3 +26,18 @@ def split_title(full_title: str) -> Titles:
         return Titles(titles[0], None)
 
     return Titles(titles[0], titles[1])
+
+
+def construct_titles(title: str, subtitle: str | None = None) -> Titles:
+    if is_verbatim_string(title):
+        return Titles(title, subtitle)
+
+    if subtitle is None or subtitle == '':
+        return split_title(
+            normalize_whitespace(title)
+        )
+
+    return Titles(
+        normalize_whitespace(title),
+        normalize_whitespace(subtitle)
+    )

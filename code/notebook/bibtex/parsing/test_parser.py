@@ -142,7 +142,7 @@ def test_no_language() -> None:
     string = dedent(r'''
         @book{test,
           title = {Test},
-          author = {A, B}
+          author = {A B}
         }
         '''[1:]
     )
@@ -156,8 +156,8 @@ def test_no_language() -> None:
           │ ^^^^^^^^^^^^
         2 │   title = {Test},↵
           │ ^^^^^^^^^^^^^^^^^^
-        3 │   author = {A, B}↵
-          │ ^^^^^^^^^^^^^^^^^^
+        3 │   author = {A B}↵
+          │ ^^^^^^^^^^^^^^^^^
         4 │ }↵
           │ ^
       '''[1:]
@@ -168,7 +168,7 @@ def test_minimal_valid_entry() -> None:
     string = dedent(r'''
         @book{test,
           title = {Test},
-          author = {A, B},
+          author = {A B},
           language = {english}
         }
         '''[1:]
@@ -179,7 +179,7 @@ def test_minimal_valid_entry() -> None:
         entry_type='book',
         entry_name='test',
         title='Test',
-        authors=[BibAuthor(main_name='A', other_names='B')],
+        authors=[BibAuthor(full_name='A B')],
         language='english'
     )
 
@@ -188,7 +188,7 @@ def test_title_with_percent() -> None:
     string = dedent(r'''
         @book{test,
           title = {Te%st},
-          author = {A, B},
+          author = {A B},
           language = {english}
         }
         '''[1:]
@@ -199,7 +199,7 @@ def test_title_with_percent() -> None:
         entry_type='book',
         entry_name='test',
         title='Te%st',
-        authors=[BibAuthor(main_name='A', other_names='B')],
+        authors=[BibAuthor(full_name='A B')],
         language='english'
     )
 
@@ -208,7 +208,7 @@ def test_trailing_comma() -> None:
     string = dedent(r'''
         @book{test,
           title = {Test},
-          author = {A, B},
+          author = {A B},
           language = {english},
         }
         '''[1:]
@@ -221,7 +221,7 @@ def test_trailing_comma() -> None:
     assert excinfo.value.__notes__[0] == dedent(r'''
         1 │ @book{test,↵
         2 │   title = {Test},↵
-        3 │   author = {A, B},↵
+        3 │   author = {A B},↵
         4 │   language = {english},↵
           │                       ^
       '''[1:]
@@ -244,7 +244,7 @@ def test_author_with_and_in_name() -> None:
         entry_type='book',
         entry_name='test',
         title='Test',
-        authors=[BibAuthor(main_name='Randy')],
+        authors=[BibAuthor(full_name='Randy')],
         language='english'
     )
 
@@ -253,7 +253,7 @@ def test_multiple_authors() -> None:
     string = dedent(r'''
         @book{test,
           title = {Test},
-          author = {A, B and C, D},
+          author = {A B and C D},
           language = {english}
         }
         '''[1:]
@@ -265,7 +265,7 @@ def test_multiple_authors() -> None:
         entry_type='book',
         entry_name='test',
         title='Test',
-        authors=[BibAuthor(main_name='A', other_names='B'), BibAuthor(main_name='C', other_names='D')],
+        authors=[BibAuthor(full_name='A B'), BibAuthor(full_name='C D')],
         language='english'
     )
 
@@ -273,8 +273,8 @@ def test_translator() -> None:
     string = dedent(r'''
         @book{test,
           title = {Test},
-          author = {A, B},
-          translator = {C, D},
+          author = {A B},
+          translator = {C D},
           language = {english}
         }
         '''[1:]
@@ -286,8 +286,8 @@ def test_translator() -> None:
         entry_type='book',
         entry_name='test',
         title='Test',
-        authors=[BibAuthor(main_name='A', other_names='B')],
-        translators=[BibAuthor(main_name='C', other_names='D')],
+        authors=[BibAuthor(full_name='A B')],
+        translators=[BibAuthor(full_name='C D')],
         language='english'
     )
 
@@ -342,7 +342,7 @@ def test_authors_empty_name() -> None:
     string = dedent(r'''
         @book{test,
           title = {Test},
-          author = {A,},
+          author = {A and},
           language = {english}
         }
         '''[1:]
@@ -355,8 +355,8 @@ def test_authors_empty_name() -> None:
     assert excinfo.value.__notes__[0] == dedent(r'''
         1 │ @book{test,↵
         2 │   title = {Test},↵
-        3 │   author = {A,},↵
-          │            ^^^^
+        3 │   author = {A and},↵
+          │            ^^^^^^^
       '''[1:]
     )
 
@@ -377,7 +377,7 @@ def test_single_verbatim_author() -> None:
         entry_type='book',
         entry_name='test',
         title='Test',
-        authors=[BibAuthor(main_name='Verbatim', verbatim=True)],
+        authors=[BibAuthor(full_name='Verbatim', verbatim=True)],
         language='english'
     )
 
@@ -398,7 +398,7 @@ def test_multiple_verbatim_authors() -> None:
         entry_type='book',
         entry_name='test',
         title='Test',
-        authors=[BibAuthor(main_name='Verbatim', verbatim=True), BibAuthor(main_name='Verbatim 2', verbatim=True)],
+        authors=[BibAuthor(full_name='Verbatim', verbatim=True), BibAuthor(full_name='Verbatim 2', verbatim=True)],
         language='english'
     )
 
@@ -407,7 +407,7 @@ def test_mixed_verbatim_author() -> None:
     string = dedent(r'''
         @book{test,
           title = {Test},
-          author = {A, {B and C, D}},
+          author = {A, {B and C D}},
           language = {english}
         }
         '''[1:]
@@ -420,8 +420,8 @@ def test_mixed_verbatim_author() -> None:
     assert excinfo.value.__notes__[0] == dedent(r'''
         1 │ @book{test,↵
         2 │   title = {Test},↵
-        3 │   author = {A, {B and C, D}},↵
-          │            ^^^^^^^^^^^^^^^^^
+        3 │   author = {A, {B and C D}},↵
+          │            ^^^^^^^^^^^^^^^^
       '''[1:]
     )
 
@@ -442,7 +442,7 @@ def test_one_verbatim_authors_with_and() -> None:
         entry_type='book',
         entry_name='test',
         title='Test',
-        authors=[BibAuthor(main_name='Verbatim and Verbatim 2', verbatim=True)],
+        authors=[BibAuthor(full_name='Verbatim and Verbatim 2', verbatim=True)],
         language='english'
     )
 
@@ -463,7 +463,7 @@ def test_one_verbatim_authors_with_and_quotes() -> None:
         entry_type='book',
         entry_name='test',
         title='Test',
-        authors=[BibAuthor(main_name='Verbatim and Verbatim 2', verbatim=True)],
+        authors=[BibAuthor(full_name='Verbatim and Verbatim 2', verbatim=True)],
         language='english'
     )
 
@@ -472,7 +472,7 @@ def test_minimal_valid_entry_escape() -> None:
     string = dedent(r'''
         @book{test,
           title = {\{Test\}},
-          author = {A, B},
+          author = {A B},
           language = {english}
         }
         '''[1:]
@@ -484,7 +484,7 @@ def test_minimal_valid_entry_escape() -> None:
         entry_type='book',
         entry_name='test',
         title='{Test}',
-        authors=[BibAuthor(main_name='A', other_names='B')],
+        authors=[BibAuthor(full_name='A B')],
         language='english'
     )
 
@@ -493,7 +493,7 @@ def test_minimal_valid_entry_quotes() -> None:
     string = dedent(r'''
         @book{test,
           title = "Test",
-          author = "A, B",
+          author = "A B",
           language = "english"
         }
         '''[1:]
@@ -505,7 +505,7 @@ def test_minimal_valid_entry_quotes() -> None:
         entry_type='book',
         entry_name='test',
         title='Test',
-        authors=[BibAuthor(main_name='A', other_names='B')],
+        authors=[BibAuthor(full_name='A B')],
         language='english'
     )
 
@@ -514,7 +514,7 @@ def test_minimal_valid_entry_quote_escape() -> None:
     string = dedent(r'''
         @book{test,
           title = "Test {"}",
-          author = "A, B",
+          author = "A B",
           language = "english"
         }
         '''[1:]
@@ -526,7 +526,7 @@ def test_minimal_valid_entry_quote_escape() -> None:
         entry_type='book',
         entry_name='test',
         title='Test "',
-        authors=[BibAuthor(main_name='A', other_names='B')],
+        authors=[BibAuthor(full_name='A B')],
         language='english'
     )
 
@@ -571,7 +571,7 @@ def test_invalid_escape() -> None:
     string = dedent(r'''
         @book{test,
           title = {Test \},
-          author = {A, B},
+          author = {A B},
           language = {english}
         }
         '''[1:]
@@ -593,13 +593,13 @@ def test_two_valid_entries() -> None:
     string = dedent(r'''
         @book{test,
           title = {Test},
-          author = {A, B},
+          author = {A B},
           language = {english}
         }
 
         @book{тест,
           title = {Тест},
-          author = {А, Б},
+          author = {А Б},
           language = {russian}
         }
         '''[1:]
@@ -611,14 +611,14 @@ def test_two_valid_entries() -> None:
         entry_type='book',
         entry_name='test',
         title='Test',
-        authors=[BibAuthor(other_names='B', main_name='A')],
+        authors=[BibAuthor(full_name='A B')],
         language='english'
     )
     assert entries[1] == BibEntry(
         entry_type='book',
         entry_name='тест',
         title='Тест',
-        authors=[BibAuthor(main_name='А', other_names='Б')],
+        authors=[BibAuthor(full_name='А Б')],
         language='russian'
     )
 
@@ -627,13 +627,13 @@ def test_duplicate_name() -> None:
     string = dedent(r'''
         @book{test,
           title = {Test},
-          author = {A, B},
+          author = {A B},
           language = {english}
         }
 
         @book{test,
           title = {Test},
-          author = {A, B},
+          author = {A B},
           language = {english}
         }
         '''[1:]
@@ -654,7 +654,7 @@ def test_ampersand_removal() -> None:
     string = dedent(r'''
         @book{test,
           title = {Test},
-          author = {A, B},
+          author = {A B},
           language = {english},
           publisher = {Chapman \& Hall/CRC}
         }
@@ -667,7 +667,7 @@ def test_ampersand_removal() -> None:
         entry_type='book',
         entry_name='test',
         title='Test',
-        authors=[BibAuthor(main_name='A', other_names='B')],
+        authors=[BibAuthor(full_name='A B')],
         language='english',
         publisher='Chapman & Hall/CRC'
     )
@@ -677,7 +677,7 @@ def test_url_ampersand_removal() -> None:
     string = dedent(r'''
         @book{test,
           title = {Test},
-          author = {A, B},
+          author = {A B},
           language = {english},
           url = {http://api.com?a=1&b=2}
         }
@@ -690,7 +690,7 @@ def test_url_ampersand_removal() -> None:
         entry_type='book',
         entry_name='test',
         title='Test',
-        authors=[BibAuthor(main_name='A', other_names='B')],
+        authors=[BibAuthor(full_name='A B')],
         language='english',
         url='http://api.com?a=1&b=2'
     )
@@ -700,7 +700,7 @@ def test_empty_isbn() -> None:
     string = dedent(r'''
         @book{test,
           title = {Test},
-          author = {A, B},
+          author = {A B},
           language = {english},
           isbn = {}
         }
@@ -714,7 +714,7 @@ def test_empty_isbn() -> None:
     assert excinfo.value.__notes__[0] == dedent(r'''
         1 │ @book{test,↵
         2 │   title = {Test},↵
-        3 │   author = {A, B},↵
+        3 │   author = {A B},↵
         4 │   language = {english},↵
         5 │   isbn = {}↵
           │          ^^
@@ -726,7 +726,7 @@ def test_shortauthor_simple() -> None:
     string = dedent(r'''
         @book{тест,
           title = {Тест},
-          author = {А, Б},
+          author = {А Б},
           shortauthor = {A},
           language = {russian}
         }
@@ -739,7 +739,7 @@ def test_shortauthor_simple() -> None:
         entry_type='book',
         entry_name='тест',
         title='Тест',
-        authors=[BibAuthor(main_name='А', other_names='Б', display_name='A')],
+        authors=[BibAuthor(full_name='А Б', short_name='A')],
         language='russian'
     )
 
@@ -748,7 +748,7 @@ def test_shortauthor_two_names() -> None:
     string = dedent(r'''
         @book{тест,
           title = {Тест},
-          author = {А, Б and В, Г},
+          author = {А Б and В Г},
           shortauthor = {A and V},
           language = {russian}
         }
@@ -762,8 +762,8 @@ def test_shortauthor_two_names() -> None:
         entry_name='тест',
         title='Тест',
         authors=[
-            BibAuthor(main_name='А', other_names='Б', display_name='A'),
-            BibAuthor(main_name='В', other_names='Г', display_name='V')
+            BibAuthor(full_name='А Б', short_name='A'),
+            BibAuthor(full_name='В Г', short_name='V')
         ],
         language='russian'
     )
@@ -773,7 +773,7 @@ def test_shortauthor_insufficient() -> None:
     string = dedent(r'''
         @book{тест,
           title = {Тест},
-          author = {А, Б and В, Г},
+          author = {А Б and В Г},
           shortauthor = {A},
           language = {russian}
         }
@@ -789,8 +789,8 @@ def test_shortauthor_insufficient() -> None:
           │ ^^^^^^^^^^^^
         2 │   title = {Тест},↵
           │ ^^^^^^^^^^^^^^^^^^
-        3 │   author = {А, Б and В, Г},↵
-          │ ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+        3 │   author = {А Б and В Г},↵
+          │ ^^^^^^^^^^^^^^^^^^^^^^^^^^
         4 │   shortauthor = {A},↵
           │ ^^^^^^^^^^^^^^^^^^^^^
         5 │   language = {russian}↵
@@ -805,7 +805,7 @@ def test_shortauthor_verbatim_overfull() -> None:
     string = dedent(r'''
         @book{тест,
           title = {Тест},
-          author = {А, Б},
+          author = {А Б},
           shortauthor = {A and V},
           language = {russian}
         }
@@ -821,8 +821,8 @@ def test_shortauthor_verbatim_overfull() -> None:
           │ ^^^^^^^^^^^^
         2 │   title = {Тест},↵
           │ ^^^^^^^^^^^^^^^^^^
-        3 │   author = {А, Б},↵
-          │ ^^^^^^^^^^^^^^^^^^^
+        3 │   author = {А Б},↵
+          │ ^^^^^^^^^^^^^^^^^^
         4 │   shortauthor = {A and V},↵
           │ ^^^^^^^^^^^^^^^^^^^^^^^^^^^
         5 │   language = {russian}↵
@@ -835,15 +835,17 @@ def test_shortauthor_verbatim_overfull() -> None:
 
 def test_article_entry() -> None:
     string = dedent(r'''
-        @article{Blass1984AOC,
-          author = {Blass, Andreas},
+        @article{Blass1984BasesImplyAOC,
+          author = {Andreas Blass},
+          date = {1984},
+          doi = {10.1090/conm/031/763890},
+          issn = {1098-3627},
           journal = {Contemporary Mathematics},
           language = {english},
-          publisher = {American Mathematical Society (AMS)},
-          title = {Existence of Bases Implies the Axiom of Choice},
-          url = {http://www.math.lsa.umich.edu/ ablass/bases-AC.pdf},
-          volume = {31},
-          year = {1984}
+          pages = {31-33},
+          publisher = {American Mathematical Society},
+          title = {Existence of bases implies the axiom of choice},
+          volume = {31}
         }
         '''[1:]
     )
@@ -852,34 +854,33 @@ def test_article_entry() -> None:
     assert len(entries) == 1
     assert entries[0] == BibEntry(
         entry_type='article',
-        entry_name='Blass1984AOC',
-        title='Existence of Bases Implies the Axiom of Choice',
-        authors=[BibAuthor(main_name='Blass', other_names='Andreas')],
+        entry_name='Blass1984BasesImplyAOC',
+        title='Existence of bases implies the axiom of choice',
+        authors=[BibAuthor(full_name='Andreas Blass')],
         language='english',
+        doi='10.1090/conm/031/763890',
+        publisher='American Mathematical Society',
         journal='Contemporary Mathematics',
-        publisher='American Mathematical Society (AMS)',
-        url='http://www.math.lsa.umich.edu/ ablass/bases-AC.pdf',
-        volume='31',
-        year='1984'
+        date='1984',
+        pages='31-33',
+        issn='1098-3627',
+        volume='31'
     )
 
 
 def test_arxiv_entry() -> None:
     string = dedent(r'''
-        @article{Anderson1988NonEuclidean,
-          author = {Anderson, Donald D.},
+        @article{Anderson1988NonEuclideanPID,
+          author = {Donald D. Anderson},
+          date = {1988-01},
           doi = {10.1080/00927878808823628},
+          issn = {1532-4125},
           journal = {Communications in Algebra},
           language = {english},
-          month = {1},
-          number = {6},
           pages = {1221-1229},
-          primaryclass = {Algebra and Number Theory},
           publisher = {Informa UK Limited},
           title = {An Existence Theorem for Non-Euclidean PID's},
-          url = {http://dx.doi.org/10.1080/00927878808823628},
-          volume = {16},
-          year = {1988}
+          volume = {16}
         }
         '''[1:]
     )
@@ -888,18 +889,15 @@ def test_arxiv_entry() -> None:
     assert len(entries) == 1
     assert entries[0] == BibEntry(
         entry_type='article',
-        entry_name='Anderson1988NonEuclidean',
-        title='An Existence Theorem for Non-Euclidean PID\'s',
-        authors=[BibAuthor(main_name='Anderson', other_names='Donald D.')],
+        entry_name='Anderson1988NonEuclideanPID',
+        title="An Existence Theorem for Non-Euclidean PID's",
+        authors=[BibAuthor(full_name='Donald D. Anderson')],
         language='english',
         journal='Communications in Algebra',
         doi='10.1080/00927878808823628',
-        month='1',
-        number='6',
+        issn='1532-4125',
+        date='1988-01',
         pages='1221-1229',
-        primaryclass='Algebra and Number Theory',
         publisher='Informa UK Limited',
-        url='http://dx.doi.org/10.1080/00927878808823628',
         volume='16',
-        year='1988'
     )

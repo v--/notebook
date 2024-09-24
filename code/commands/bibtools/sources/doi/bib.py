@@ -1,18 +1,26 @@
+from collections.abc import Iterable, Sequence
+
+from nameparser import HumanName
 from stdnum import isbn, issn
 
 from notebook.bibtex.author import BibAuthor
 from notebook.bibtex.entry import BibEntry, BibEntryType
 from notebook.exceptions import UnreachableException
-from notebook.support.unicode import normalize_whitespace
 
+from ...exceptions import BibToolsParsingError
 from ..common.entries import generate_entry_name
 from ..common.languages import normalize_language_name
-from ..common.titles import Titles, split_title
+from ..common.pages import normalize_pages
+from ..common.titles import construct_titles
 from .model import DoiAuthor, DoiData, DoiDateTime, DoiIsbn
 
 
-def doi_author_to_bib(author: DoiAuthor) -> BibAuthor:
-    return BibAuthor(main_name=author.family, other_names=author.given)
+def doi_authors_to_bib(authors: Sequence[DoiAuthor]) -> Iterable[BibAuthor]:
+    for author in authors:
+        names = HumanName(first=author.given, last=author.family)
+
+        if len(str(names)) > 0:
+            yield BibAuthor(full_name=str(names))
 
 
 def choose_doi_datetime(data: DoiData, *, print_edition: bool) -> DoiDateTime | None:
@@ -99,29 +107,30 @@ def get_isbn(structured: list[DoiIsbn], unstructured: list[str], *, print_editio
 
 def doi_data_to_bib(data: DoiData, doi: str, *, print_edition: bool = False) -> BibEntry:
     chosen_datetime = choose_doi_datetime(data, print_edition=print_edition)
-    authors = [doi_author_to_bib(author) for author in data.author]
-    editors = [doi_author_to_bib(author) for author in data.editor or []]
     year = doi_datetime_get_year(chosen_datetime) if chosen_datetime else None
     language = normalize_language_name(data.language) if data.language else 'english'
     entry_type = get_entry_type(data.type)
+
+    authors = list(doi_authors_to_bib(data.author))
+    editors = list(doi_authors_to_bib(data.editor)) if data.editor else []
+
+    if len(authors) == 0:
+        if len(editors) > 0:
+            authors = editors
+        elif data.standards_body:
+            authors.append(BibAuthor(full_name=data.standards_body.acronym))
+        else:
+            raise BibToolsParsingError(f'Could not determine authors for DOI {doi}')
 
     if isinstance(data.container_title, list):
         container_title = data.container_title[0] if len(data.container_title) > 0 else None
     else:
         container_title = data.container_title
 
-    if data.subtitle is None or len(data.subtitle) == 0:
-        titles = split_title(normalize_whitespace(data.title))
-    else:
-        titles = Titles(data.title, data.subtitle[0])
-
-    if len(authors) == 0:
-        if editors:
-            authors = editors
-        elif data.standards_body:
-            authors.append(BibAuthor(main_name=data.standards_body.acronym))
-        else:
-            authors.append(BibAuthor(main_name=data.publisher or 'Unknown'))
+    titles = construct_titles(
+        data.title,
+        data.subtitle[0] if data.subtitle and len(data.subtitle) > 0 else None
+    )
 
     entry_name = generate_entry_name(
         authors,
@@ -149,12 +158,13 @@ def doi_data_to_bib(data: DoiData, doi: str, *, print_edition: bool = False) -> 
         language=language,
         date=doi_datetime_to_string(chosen_datetime) if chosen_datetime else None,
         doi=doi,
-        pages=data.page,
-        volume=data.volume,
+        pages=normalize_pages(data.page) if data.page else None,
+        volume=data.volume if entry_name != 'book' else None,
+        number=data.volume if entry_name == 'book' else data.article_number if entry_name == 'article' else None,
         edition=data.edition_number if data.edition_number != '1' else None,
         isbn=get_isbn(data.isbn_type, data.isbn, print_edition=print_edition),
         issn=get_issn(data.issn),
         series=container_title if entry_type == 'book' or entry_type == 'inbook' else None,
         journal=container_title if entry_type == 'article' else None,
-        url=data.url
+        url=data.url if data.url != f'http://dx.doi.org/{doi}' else None
     )

@@ -1,5 +1,6 @@
 from notebook.bibtex.entry import BibEntry
 
+from ..common.url_template import UrlTemplate
 from .bib import doi_data_to_bib
 from .fetch import fetch_doi_json
 from .model import parse_doi_json

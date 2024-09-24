@@ -1,23 +1,49 @@
 import pytest
 
-from notebook.bibtex.author import BibAuthor
-
-from .names import name_to_bib_author
+from .names import get_main_human_name, normalize_human_name
 
 
 @pytest.mark.parametrize(
-    'bib_author',
+    'full_name',
     [
-        BibAuthor(main_name='Колмогоров', other_names='Андрей Николаевич'),
-        BibAuthor(main_name='Магарил-Ильяев', other_names='Георгий Георгиевич'),
-        BibAuthor(main_name='Mac Lane', other_names='Saunders'),
-        BibAuthor(main_name='von Plato', other_names='Jan')
+        'Андрей Николаевич Колмогоров',
+        'Георгий Георгиевич Магарил-Ильяев',
+        'Saunders Mac Lane',
+        'Jan von Plato',
+        'J. Author Seebach Jr.',
+        'Charles Staats III',
+        'Euclid of Alexandria'
     ]
 )
-def test_name_to_bib_author(bib_author: BibAuthor) -> None:
-    assert name_to_bib_author(f'{bib_author.main_name}, {bib_author.other_names}') == bib_author
-    assert name_to_bib_author(f'{bib_author.other_names} {bib_author.main_name}') == bib_author
+def test_normalize_human_name_noop(full_name: str) -> None:
+    assert normalize_human_name(full_name) == full_name
 
 
-def test_name_to_bib_author_euclid() -> None:
-    assert name_to_bib_author('Euclid of Alexandria') == BibAuthor(main_name='Euclid of Alexandria')
+@pytest.mark.parametrize(
+    ('first', 'last'),
+    [
+        ('Колмогоров', 'Андрей Николаевич'),
+        ('Магарил-Ильяев', 'Георгий Георгиевич'),
+        ('Mac Lane', 'Saunders'),
+        ('von Plato', 'Jan')
+    ]
+)
+def test_normalize_human_name_last_first(first: str, last: str) -> None:
+    assert normalize_human_name(f'{first} {last}') == f'{first} {last}'
+    assert normalize_human_name(f'{last}, {first}') == f'{first} {last}'
+
+
+@pytest.mark.parametrize(
+    ('full_name', 'main'),
+    [
+        ('Андрей Николаевич Колмогоров', 'Колмогоров'),
+        ('Георгий Георгиевич Магарил-Ильяев', 'Магарил-Ильяев'),
+        ('Saunders Mac Lane', 'Mac Lane'),
+        ('Jan von Plato', 'von Plato'),
+        ('J. Author Seebach Jr.', 'Seebach'),
+        ('Charles Staats III', 'Staats'),
+        ('Euclid of Alexandria', 'Euclid of Alexandria')
+    ]
+)
+def test_get_main_human_name(full_name: str, main: str) -> None:
+    assert get_main_human_name(full_name) == main
