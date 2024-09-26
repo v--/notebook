@@ -746,6 +746,31 @@ def test_shortauthor_two_names() -> None:
     )
 
 
+def test_shortauthor_others() -> None:
+    string = dedent(r'''
+        @book{тест,
+          title = {Тест},
+          author = {А Б and others},
+          shortauthor = {A},
+          language = {russian}
+        }
+        '''[1:]
+    )
+
+    entries = parse_bibtex(string)
+    assert len(entries) == 1
+    assert entries[0] == BibEntry(
+        entry_type='book',
+        entry_name='тест',
+        title='Тест',
+        authors=[
+            BibAuthor(full_name='А Б', short_name='A'),
+            BibAuthor(full_name='others')
+        ],
+        language='russian'
+    )
+
+
 def test_shortauthor_insufficient() -> None:
     string = dedent(r'''
         @book{тест,

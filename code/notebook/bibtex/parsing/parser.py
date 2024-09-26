@@ -310,7 +310,7 @@ class BibParser(WhitespaceParserMixin[BibToken], Parser[BibToken]):
                 short_segments.append(author.full_name)
 
         for author in self.parse_authors(value, entry_start_i, entry_start_i):
-            if short_segments is None:
+            if short_segments is None or author.full_name == 'others':
                 yield author
                 continue
 
