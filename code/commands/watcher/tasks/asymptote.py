@@ -30,7 +30,7 @@ class AsymptoteTask(WatcherTask):
 
     @property
     def command(self) -> str:
-        return f'asy -quiet -render=0 -outname={self.aux_eps_path} {self.src_path}'
+        return f'asy -quiet -render=5 -outname={self.aux_eps_path.with_suffix('')} {self.src_path}'
 
     async def post_process(self, runner: TaskRunner) -> None:  # noqa: ARG002
         shutil.copyfile(self.aux_eps_path, self.build_eps_path)
