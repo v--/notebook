@@ -7,7 +7,6 @@ from notebook.bibtex.author import BibAuthor
 from notebook.bibtex.entry import BibEntry, BibEntryType
 from notebook.exceptions import UnreachableException
 
-from ...exceptions import BibToolsParsingError
 from ..common.entries import generate_entry_name
 from ..common.languages import normalize_language_name
 from ..common.pages import normalize_pages
@@ -114,13 +113,8 @@ def doi_data_to_bib(data: DoiData, doi: str, *, print_edition: bool = False) -> 
     authors = list(doi_authors_to_bib(data.author))
     editors = list(doi_authors_to_bib(data.editor)) if data.editor else []
 
-    if len(authors) == 0:
-        if len(editors) > 0:
-            authors = editors
-        elif data.standards_body:
-            authors.append(BibAuthor(full_name=data.standards_body.acronym))
-        else:
-            raise BibToolsParsingError(f'Could not determine authors for DOI {doi}')
+    if len(authors) == 0 and data.standards_body:
+        authors.append(BibAuthor(full_name=data.standards_body.acronym))
 
     if isinstance(data.container_title, list):
         container_title = data.container_title[0] if len(data.container_title) > 0 else None
@@ -133,7 +127,7 @@ def doi_data_to_bib(data: DoiData, doi: str, *, print_edition: bool = False) -> 
     )
 
     entry_name = generate_entry_name(
-        authors,
+        authors or editors,
         str(year) if year is not None else '',
         titles,
         language,

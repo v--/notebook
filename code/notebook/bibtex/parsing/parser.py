@@ -284,9 +284,6 @@ class BibParser(WhitespaceParserMixin[BibToken], Parser[BibToken]):
         if 'title' not in properties:
             raise self.error('Entry without title', i_first_token=entry_start_i, i_last_token=self.index - 1)
 
-        if 'author' not in properties:
-            raise self.error('Entry without authors', i_first_token=entry_start_i, i_last_token=self.index - 1)
-
         if 'language' not in properties:
             raise self.error('Entry without language', i_first_token=entry_start_i, i_last_token=self.index - 1)
 

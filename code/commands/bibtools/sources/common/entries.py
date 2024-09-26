@@ -70,4 +70,4 @@ def generate_entry_name(authors: Sequence[BibAuthor], year: str | None, titles: 
 def regenerate_entry_name(entry: BibEntry, *aux_texts: str | None) -> str:
     titles = Titles(entry.title, entry.subtitle)
     year = extract_year(entry.date)
-    return generate_entry_name(entry.authors, year, titles, entry.language, *aux_texts)
+    return generate_entry_name(entry.authors or entry.editors, year, titles, entry.language, *aux_texts)

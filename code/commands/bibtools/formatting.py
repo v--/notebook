@@ -211,6 +211,9 @@ class BibEntryAdjuster:
         self.check_missing_fields()
         self.adjust_entry_name()
 
+        if len(self.adjusted.authors) == 0 and len(self.adjusted.editors) == 0:
+            self.logger.warning('Entry has neither authors nor editors specified')
+
         self.adjusted = self.adjusted._replace(
             authors=[self.adjust_author(author) for author in self.adjusted.authors],
             editors=[self.adjust_author(author) for author in self.adjusted.editors],

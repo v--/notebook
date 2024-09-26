@@ -1,9 +1,7 @@
-import pytest
 
 from notebook.bibtex.author import BibAuthor
 from notebook.bibtex.entry import BibEntry
 
-from ...exceptions import BibToolsParsingError
 from .bib import isbn_book_to_bib
 from .fixtures import get_isbn_fixture_path
 from .model import parse_isbn_json
@@ -195,7 +193,13 @@ def test_parse_5791300166_no_authors(isbn: str = '5-7913-0016-6') -> None:
     res = parse_isbn_json(json_body)
     assert len(res.items) == 1
 
-    with pytest.raises(BibToolsParsingError) as excinfo:
-        isbn_book_to_bib(res.items[0], isbn)
-
-    assert str(excinfo.value) == f'Could not determine authors for ISBN {isbn}'
+    entry = isbn_book_to_bib(res.items[0], isbn)
+    assert entry == BibEntry(
+        entry_type='book',
+        entry_name='2000CambridgeCompanionToJung',
+        title='Cambridge companion to Jung',
+        authors=[],
+        language='russian',
+        date='2000',
+        isbn=isbn
+    )

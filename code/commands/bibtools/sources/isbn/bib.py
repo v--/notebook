@@ -2,7 +2,6 @@ import stdnum
 
 from notebook.bibtex.entry import BibEntry
 
-from ...exceptions import BibToolsParsingError
 from ..common.dates import extract_year
 from ..common.entries import generate_entry_name
 from ..common.languages import normalize_language_name
@@ -15,11 +14,8 @@ def isbn_book_to_bib(book: GoogleBook, isbn: str) -> BibEntry:
     vi = book.volume_info
     si = book.search_info
 
-    if vi.authors is None:
-        raise BibToolsParsingError(f'Could not determine authors for ISBN {isbn}')
-
     language = normalize_language_name(vi.language)
-    authors = [name_to_bib_author(author) for author in vi.authors]
+    authors = [name_to_bib_author(author) for author in vi.authors] if vi.authors else []
     year = extract_year(vi.published_date)
     titles = construct_titles(vi.title, vi.subtitle)
 

@@ -46,8 +46,8 @@ class BibEntry(NamedTuple):
     # Base fields
     title:         Annotated[str, BibFieldAnnotation()]
     language:      Annotated[str, BibFieldAnnotation()]
-    authors:       Annotated[Sequence[BibAuthor], BibFieldAnnotation(author=True, key_name='author')]
     # Optional
+    authors:       Annotated[Sequence[BibAuthor], BibFieldAnnotation(author=True, key_name='author')] = []
     editors:       Annotated[Sequence[BibAuthor], BibFieldAnnotation(author=True, key_name='editor')] = []
     translators:   Annotated[Sequence[BibAuthor], BibFieldAnnotation(author=True, key_name='translator')] = []
     origlanguage:  Annotated[str | None, BibFieldAnnotation()] = None

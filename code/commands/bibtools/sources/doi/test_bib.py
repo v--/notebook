@@ -473,9 +473,6 @@ def test_parse_101007_9783662074138_editor(doi: str = '10.1007/978-3-662-07413-8
         entry_name='ArhangelSkii1995GeneralTopologyIII',
         title='General Topology III',
         publisher='Springer Berlin Heidelberg',
-        authors=[
-            BibAuthor(full_name='A. V. Arhangel’skii')
-        ],
         editors=[
             BibAuthor(full_name='A. V. Arhangel’skii')
         ],

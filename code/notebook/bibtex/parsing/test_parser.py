@@ -115,29 +115,6 @@ def test_no_title() -> None:
     )
 
 
-def test_no_authors() -> None:
-    string = dedent(r'''
-        @book{test,
-          title = {Test}
-        }
-        '''[1:]
-    )
-
-    with pytest.raises(ParsingError) as excinfo:
-        parse_bibtex(string)
-
-    assert str(excinfo.value) == 'Entry without authors'
-    assert excinfo.value.__notes__[0] == dedent(r'''
-        1 │ @book{test,↵
-          │ ^^^^^^^^^^^^
-        2 │   title = {Test}↵
-          │ ^^^^^^^^^^^^^^^^^
-        3 │ }↵
-          │ ^
-      '''[1:]
-    )
-
-
 def test_no_language() -> None:
     string = dedent(r'''
         @book{test,
