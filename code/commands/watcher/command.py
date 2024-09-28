@@ -53,7 +53,7 @@ async def setup_watchers(base_logger: 'loguru.Logger', *, no_aux: bool) -> None:
         if fnmatch(path, 'figures/*.asy'):
             runner.schedule(AsymptoteTask(base_logger, path), trigger=str(path))
 
-        if fnmatch(path, 'asymptote/*.asy'):
+        if not no_aux and fnmatch(path, 'asymptote/*.asy'):
             for figure_path in FIGURES_PATH.glob('*.asy'):
                 runner.schedule(AsymptoteTask(base_logger, figure_path), trigger=str(path))
 
