@@ -21,16 +21,16 @@ class AsymptoteTask(WatcherTask):
         return f'AsymptoteTask({self.src_path!r})'
 
     @property
-    def aux_eps_path(self) -> pathlib.Path:
-        return AUX_PATH / self.src_path.with_suffix('.eps').name
+    def aux_pdf_path(self) -> pathlib.Path:
+        return AUX_PATH / self.src_path.with_suffix('.pdf').name
 
     @property
-    def build_eps_path(self) -> pathlib.Path:
-        return OUTPUT_PATH / self.src_path.with_suffix('.eps').name
+    def build_pdf_path(self) -> pathlib.Path:
+        return OUTPUT_PATH / self.src_path.with_suffix('.pdf').name
 
     @property
     def command(self) -> str:
-        return f'asy -quiet -render=5 -outname={self.aux_eps_path.with_suffix('')} {self.src_path}'
+        return f'asy -quiet -render=5 -outformat=pdf -outname={self.aux_pdf_path.with_suffix('')} {self.src_path}'
 
     async def post_process(self, runner: TaskRunner) -> None:  # noqa: ARG002
-        shutil.copyfile(self.aux_eps_path, self.build_eps_path)
+        shutil.copyfile(self.aux_pdf_path, self.build_pdf_path)

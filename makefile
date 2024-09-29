@@ -1,6 +1,6 @@
 COMPILER := pdflatex -interaction=batchmode
 FIGURES_TEX_PDF := $(patsubst figures/%.tex,output/%.pdf,$(wildcard figures/*.tex))
-FIGURES_ASY_PDF := $(patsubst figures/%.asy,output/%.eps,$(wildcard figures/*.asy))
+FIGURES_ASY_PDF := $(patsubst figures/%.asy,output/%.pdf,$(wildcard figures/*.asy))
 TEXT_SOURCE := notebook.tex classes/notebook.cls bibliography/*.bib packages/*.sty text/*.tex $(FIGURES_TEX_PDF) $(FIGURES_ASY_PDF)
 
 .PHONY: figures clean
@@ -23,9 +23,9 @@ output/%.pdf: classes/*.cls packages/*.sty figures/%.tex | aux output
 	$(COMPILER) -output-directory=aux figures/$*.tex
 	cat aux/$*.pdf > output/$*.pdf
 
-output/%.eps: figures/%.asy | aux output
-	asy -quiet -render=5 -outname=aux/$* figures/$*.asy
-	cat aux/$*.eps > output/$*.eps
+output/%.pdf: asymptote/*.asy figures/%.asy | aux output
+	asy -quiet -render=5 -outformat=pdf -outname=aux/$* figures/$*.asy
+	cat aux/$*.pdf > output/$*.pdf
 
 figures: $(FIGURES_TEX_PDF) $(FIGURES_ASY_PDF)
 

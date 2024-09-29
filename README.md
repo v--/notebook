@@ -27,9 +27,8 @@ If you happen to be interested in any aspect of the setup, feel free to [contact
 There are two build systems --- the [`makefile`](./makefile) and the [`code.commands.watcher`](./code/commands/watcher) (Usage: `poe --root code watcher [--no-aux]`) command. The first one is aimed at full builds, i.e. for continuous integration, while the second one is aimed at incremental builds, i.e. for development.
 
 There are externalized figures in the [`figures`](./figures) directory of the following kinds:
-* [Asymptote](https://github.com/vectorgraphics/asymptote) (`.asy`) files for 2D and 3D sketches and plots.
-* [tikz](https://github.com/pgf-tikz/pgf) (`.tex` with document class `classes/tikz` or `classes/graphs`) files for graphs.
-* [tikz-cd](https://ctan.org/pkg/tikz-cd) (`.tex` with document class `classes/tikzcd`) files for commutative and Hasse diagrams.
+* [Asymptote](https://github.com/vectorgraphics/asymptote) (`.asy`) files for 2D and 3D sketches and plots, as well as (graph-theoretic) graphs.
+* [tikz-cd](https://ctan.org/pkg/tikz-cd) (`.tex` with document class `classes/tikzcd`) files for commutative and Hasse diagrams and automata.
 * [forest](https://ctan.org/pkg/forest) (`.tex` with document class `classes/forest`) files for trees.
 
 ### Parsers
