@@ -46,6 +46,7 @@
 \RequirePackage{csquotes}
 \RequirePackage{numprint}
 \RequirePackage{blkarray}
+\RequirePackage{diagbox}
 \RequirePackage{paracol}
 \RequirePackage{forest}
 
@@ -86,16 +87,9 @@
 % Misc math packages
 \RequirePackage[altpo,epsilon]{backnaur}
 \RequirePackage{diffcoeff}
-\RequirePackage{nicematrix}
 \RequirePackage{ebproof}
 \RequirePackage{bigints}
 \RequirePackage{cancel}
-
-% Vertical space in matrices and other nicematrix array environments
-\NiceMatrixOptions
-  {
-    cell-space-limits=1pt
-  }
 
 % Custom code
 \RequirePackage{packages/fonts}
