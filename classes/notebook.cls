@@ -45,6 +45,7 @@
 \RequirePackage{graphbox} % \includegraphics[align=?]
 \RequirePackage{csquotes}
 \RequirePackage{numprint}
+\RequirePackage{blkarray}
 \RequirePackage{paracol}
 \RequirePackage{forest}
 
