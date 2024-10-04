@@ -120,7 +120,7 @@ def to_cnf(formula: Formula) -> Formula:
     return pull_conjunction(push_negations(remove_conditionals(remove_constants(formula))))
 
 
-# This is alg:perfect_cnf_and_dnf in the monograph
+# This is alg:full_cnf_and_dnf in the monograph
 def function_to_cnf(fun: Callable[..., bool]) -> Formula:
     fun_params = inspect.signature(fun).parameters
 
