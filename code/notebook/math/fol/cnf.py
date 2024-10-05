@@ -134,7 +134,7 @@ def function_to_cnf(fun: Callable[..., bool]) -> Formula:
 
     for param in fun_params.values():
         assert all('a' <= c <= 'z' for c in param.name), \
-            f'In order to become a valid predicate name, the parameter name {param.name} must consist only of small Latin characters.'
+            f'In order to become a valid predicate name, the parameter name {param.name!r} must consist only of small Latin characters.'
 
     # These names will generate valid formulas only when they consist of Latin letters
     predicates = [PredicateFormula(param.name, ()) for param in fun_params.values()]

@@ -1,6 +1,6 @@
 \subsection{Boolean functions}\label{subsec:boolean_functions}
 
-\paragraph{Boolean values and operators}
+\paragraph{Boolean values and functions}
 
 \begin{proposition}\label{thm:two_element_lattice}
   Any two-element \hyperref[def:lattice]{lattice} is \hyperref[def:lattice/homomorphism]{isomorphic} to the \hyperref[def:finite_field]{finite field} \( \BbbF_2 = \set{ 0, 1 } \).
@@ -39,22 +39,22 @@
   and vice versa.
 \end{remark}
 
-\begin{definition}\label{def:boolean_closure}
+\begin{definition}\label{def:boolean_closure}\mcite[30; 33]{Яблонский2003ДискретнаяМатематика}
   Consider the set of all Boolean functions
   \begin{equation*}
     \mscrB \coloneqq \set[\Big]{ f \given* f \colon \set{ T, F }^n \to \set{ T, F } \T{for some nonnegative integer} n }.
   \end{equation*}
 
   \begin{thmenum}
-    \thmitem{def:boolean_closure/closed}\mcite[33]{Яблонский2003ДискретнаяМатематика} We say that a subset \( B \) of \( \mscrB \) is \term{closed} if, whenever \( g(x_1, \ldots, x_m) \) is in \( B \) and \( f_k(x_1, \ldots, x_n) \) is in \( B \) for \( k = 1, \ldots, m \), then their \hyperref[con:function_superposition]{superposition}
+    \thmitem{def:boolean_closure/closed} We say that a subset \( B \) of \( \mscrB \) is \term{closed} if, whenever \( g(x_1, \ldots, x_m) \) is in \( B \) and \( f_k(x_1, \ldots, x_n) \) is in \( B \) for \( k = 1, \ldots, m \), then their \hyperref[con:function_superposition]{superposition}
     \begin{equation*}
       h(x_1, \ldots, x_n) \coloneqq g(f_1(x_1, \ldots, x_n), \ldots, f_m(x_1, \ldots, x_n))
     \end{equation*}
     is also in \( B \).
 
-    \thmitem{def:boolean_closure/closure}\mcite[33]{Яблонский2003ДискретнаяМатематика} We define the \hyperref[def:moore_closure_operator]{Moore closure operator} \( \cl \) on \( \pow(\mscrB) \) by assigning to every set \( B \) the smallest closed set containing \( B \).
+    \thmitem{def:boolean_closure/closure} We define the \hyperref[def:moore_closure_operator]{Moore closure operator} \( \cl \) on \( \pow(\mscrB) \) by assigning to every set \( B \) the smallest closed set containing \( B \).
 
-    \thmitem{def:boolean_closure/complete}\mcite[30]{Яблонский2003ДискретнаяМатематика} If the closure \( \cl{B} \) is the entire set \( \mscrB \), we say that \( B \) is \term[ru=полная система, en=functionally complete (\cite[857]{Rosen2019DiscreteMathematics})]{complete}.
+    \thmitem{def:boolean_closure/complete} If the closure \( \cl{B} \) is the entire set \( \mscrB \), we say that \( B \) is \term[ru=полная система, en=functionally complete (\cite[857]{Rosen2019DiscreteMathematics})]{complete}.
   \end{thmenum}
 \end{definition}
 \begin{comments}
@@ -66,6 +66,8 @@
   The conditions for closure operator from \fullref{def:moore_closure_operator} are trivial to verify.
 \end{defproof}
 
+\paragraph{Zhegalkin polynomials}
+
 \begin{definition}\label{def:square_free_element}\mcite[79]{JedrzejewiczEtAl2017SquareFree}
   We say that an element \( x \) if a \hyperref[def:semiring]{semiring} is \term{square-free} if there exists no element \( y \) such that \( y^2 \) divides \( x \).
 \end{definition}
@@ -74,17 +76,96 @@
   A \term[ru=полином Жегалкина]{Zhegalkin polynomial} is a \hyperref[def:polynomial_algebra/polynomials]{polynomial} in the \hyperref[def:finite_field]{finite field} \( \BbbF_2 \).
 \end{definition}
 \begin{comments}
-  \item \Fullref{thm:functions_over_prime_fields} implies that to every Boolean function there corresponds exactly one \hyperref[def:square_free_element]{square-free} Zhegalkin polynomial.
-
-  For example, for every binary Boolean function there exist coefficients \( a, b, c, d \in \BbbF_2 \) such that
-  \begin{equation}\label{eq:def:zhegalkin_polynomial/binary_polynomial}
-    f(x, y) = axy \oplus bx \oplus cy \oplus d.
-  \end{equation}
+  \item \hyperref[def:square_free_element]{Square-free} Zhegalkin polynomials are unique --- see \fullref{thm:zhegalkin_polynomial_uniqueness}.
 \end{comments}
 
+\begin{algorithm}\label{alg:infer_zhegalkin_polynomial}
+  Given a \hyperref[def:boolean_function]{Boolean function} \( f(x_1, \ldots, x_n) \), we can recursively build a square-free \hyperref[def:zhegalkin_polynomial]{Zhegalkin polynomial} \( p(X_1, \ldots, X_n) \) that \hyperref[con:substitution_homomorphism]{evaluates} to \( f(x_1, \ldots, x_n) \).
+
+  \begin{thmenum}
+    \thmitem{alg:infer_zhegalkin_polynomial/base} If \( n = 0 \), then \( f \) is a constant; Let \( p \coloneqq f \).
+    \thmitem{alg:infer_zhegalkin_polynomial/step} If \( n > 0 \), we can recursively apply the algorithm to obtain polynomials \( p_T(X_2, \ldots, X_n) \) and \( p_F(X_2, \ldots, X_n) \) corresponding to \( f(T, X_2, \ldots, X_n) \) and \( f(F, X_2, \ldots, X_n) \).
+
+    We then define
+    \begin{equation}\label{eq:alg:infer_zhegalkin_polynomial/step}
+      p(X_1, \ldots, X_n) = X_1 \cdot \parens[\Big]{ p_T(X_2, \ldots, X_n) \oplus p_F(X_2, \ldots, X_n) } \oplus p_F(X_2, \ldots, X_n).
+    \end{equation}
+  \end{thmenum}
+\end{algorithm}
+\begin{comments}
+  \item This algorithm can be found as \identifier{rings.zhegalkin.infer_zhegalkin} in \cite{notebook:code}.
+\end{comments}
+\begin{defproof}
+  We will prove correctness by induction. The base case \( n = 0 \) is vacuous, so suppose that \( n > 0 \) and that the algorithm is correct for less than \( n \) variables.
+
+  Fix a Boolean function \( f(X_1, \ldots, X_n) \) and let \( p_T \) and \( p_F \) be as in \fullref{alg:infer_zhegalkin_polynomial/step}.
+
+  Both are elements of the ring \( \BbbF_2[X_2, \ldots, X_n] \). The polynomial \( p \) as defined by \eqref{eq:alg:infer_zhegalkin_polynomial/step} is a linear polynomial in \( X_1 \) over this ring.
+  \begin{itemize}
+    \item Evaluating \( p \) with \( X_1 \mapsto F \) yields the constant coefficient, which by definition is \( p_F \).
+    \item Evaluating \( p \) with \( X_1 \mapsto T \) yields a value that is the sum of the linear and constant coefficient. Thus, the linear coefficient itself is \( p_T \ominus p_F = p_T \oplus p_F \).
+  \end{itemize}
+
+  By the inductive hypothesis, evaluating \( p \) over \( \BbbF_2 \) gives \( f \).
+\end{defproof}
+
+\begin{proposition}\label{thm:zhegalkin_polynomial_uniqueness}
+  To every Boolean function in \( n \) variables there corresponds a unique square-free Zhegalkin polynomial in \( n \) indeterminates.
+\end{proposition}
+\begin{proof}
+  Existence is provided by \fullref{alg:infer_zhegalkin_polynomial}, while uniqueness is provided by \fullref{thm:functions_over_prime_fields}.
+\end{proof}
+
+\begin{lemma}\label{thm:f2_sum_parity}
+  In the \hyperref[def:finite_field]{finite field} \( \BbbF_2 \), the sum \( a_1 \oplus \cdots \oplus a_n \) is \( T \) if and only if there is an odd amount of summands with value \( T \).
+\end{lemma}
+\begin{proof}
+  Trivial.
+\end{proof}
+
+\begin{proposition}\label{thm:unary_boolean_function_zhegalkin_polynomial}
+  For a unary \hyperref[def:boolean_function]{Boolean function} \( f(x) \), the unique square-free Zhegalkin polynomial
+  \begin{equation}\label{eq:thm:unary_boolean_function_zhegalkin_polynomial}
+    p(x) = ax \oplus b
+  \end{equation}
+  has coefficients
+  \begin{align*}
+    b &\coloneqq f(F) \\
+    a &\coloneqq f(T) \oplus f(F).
+  \end{align*}
+\end{proposition}
+\begin{proof}
+  This is simply a restatement of \eqref{eq:alg:infer_zhegalkin_polynomial/step}.
+\end{proof}
+
+\begin{proposition}\label{thm:binary_boolean_function_zhegalkin_polynomial}
+  For a binary \hyperref[def:boolean_function]{Boolean function} \( f(x, y) \), the unique square-free Zhegalkin polynomial
+  \begin{equation}\label{eq:thm:binary_boolean_function_zhegalkin_polynomial}
+    p(x, y) = axy \oplus bx \oplus cy \oplus d
+  \end{equation}
+  has coefficients
+  \begin{align*}
+    d &\coloneqq f(F, F) \\
+    c &\coloneqq f(F, T) \oplus f(F, F) \\
+    b &\coloneqq f(T, F) \oplus f(F, F) \\
+    a &\coloneqq \underbrace{f(T, T) \oplus f(T, F) \oplus f(T, F) \oplus f(F, F)}_{T \T*{if} 1 \T*{or} 3 \T*{of the values are} T}.
+  \end{align*}
+\end{proposition}
+\begin{proof}
+  \Fullref{alg:infer_zhegalkin_polynomial}
+  \begin{equation*}
+    f(x, y) = x(ay \oplus b) \oplus (cy \oplus d).
+  \end{equation*}
+
+  The expressions for the concrete values for the coefficients follow from \fullref{thm:unary_boolean_function_zhegalkin_polynomial} and \eqref{eq:alg:infer_zhegalkin_polynomial/step}.
+\end{proof}
+
+\paragraph{Concrete Boolean functions}
+
 \begin{proposition}\label{thm:standard_boolean_functions}\mcite[sec. 1.1]{Rosen2019DiscreteMathematics}
-  The following \hyperref[def:boolean_algebra]{Boolean algebra} operations only have several possible values that can easily be enumerated:
+  The following \hyperref[def:boolean_function]{Boolean functions} are well-established:
   \columnratio{0.15}
+  \small
   \begin{paracol}{2}
     \begin{leftcolumn}
       \begin{equation*}
@@ -94,10 +175,10 @@
           \midrule
             & \T{not} x  \\
           \midrule
-          T & F          \\
           F & T          \\
+          T & F          \\
           \midrule
-            & x \oplus 1 \\
+            & x \oplus T \\
           \bottomrule
         \end{array}
       \end{equation*}
@@ -105,29 +186,35 @@
 
     \begin{rightcolumn}
       \begin{equation*}
-        \begin{array}{*{7}{c}}
+        \begin{array}{*{8}{c}}
           \toprule
-          x & y & x \vee y             & x \oplus y  & x \wedge y  & x \rightarrow y      & x \leftrightarrow y \\
+          x & y & x \vee y             & x \oplus y  & x \wedge y  & x \uparrow y & x \rightarrow y      & x \leftrightarrow y \\
           \midrule
-            &   & x \T{or} y           & x \T{xor} y & x \T{and} y & x \T{implies} y      & x \T{iff} y         \\
+            &   & x \T{or} y           & x \T{xor} y & x \T{and} y & x \T{nand} y & x \T{implies} y      & x \T{iff} y         \\
           \midrule
-          T & T & T                    & F           & T           & T                    & T                   \\
-          T & F & F                    & T           & F           & F                    & F                   \\
-          F & T & F                    & T           & F           & T                    & F                   \\
-          F & F & F                    & F           & F           & T                    & T                   \\
+          F & F & F                    & F           & F           & T            & T                    & T                   \\
+          T & F & T                    & T           & F           & T            & F                    & F                   \\
+          F & T & T                    & T           & F           & T            & T                    & F                   \\
+          T & T & T                    & F           & T           & F            & T                    & T                   \\
           \midrule
-            &   & xy \oplus x \oplus y & x \oplus y  & xy          & xy \oplus x \oplus 1 & x \oplus y \oplus 1 \\
+            &   & xy \oplus x \oplus y & x \oplus y  & xy          & xy \oplus T  & xy \oplus x \oplus T & x \oplus y \oplus T \\
           \bottomrule
         \end{array}
       \end{equation*}
     \end{rightcolumn}
   \end{paracol}
+  \normalsize
   \columnratio{}
+
+  The following abbreviations have been used:
+  \begin{itemize}
+    \item \term{xor} for \enquote{exclusive or}.
+    \item \term[en=nand (\cite[40]{Hinman2005Logic})]{nand} for \enquote{not and}, also known as \term[ru=штрих Шеффера (\cite[29]{Эдельман1975Логика}), en=Sheffer's stroke (\cite[40]{Hinman2005Logic})]{Sheffer's stroke}.
+    \item \term{iff} for \enquote{if and only if}.
+  \end{itemize}
 \end{proposition}
 \begin{comments}
-  \item \enquote{XOR} is an abbreviation for \enquote{exclusive or}, while \enquote{iff} is an abbreviation for \enquote{if and only if}.
-
-  \item The operations \( \oplus \) and \( \wedge \) form the \hyperref[def:field]{field} structure on \( \BbbF_2 \).
+  \item The last rows of the two tables contain \hyperref[def:zhegalkin_polynomial]{Zhegalkin polynomials} of the corresponding functions. \Fullref{thm:unary_boolean_function_zhegalkin_polynomial} and \fullref{thm:binary_boolean_function_zhegalkin_polynomial} were used to determine the coefficients.
 
   \item See \fullref{ex:def:heyting_algebra/three_valued} for how \( {\rightarrow} \) becomes more complicated in three-valued logic.
 
@@ -140,19 +227,19 @@
     \thmitem{thm:complete_sets_of_boolean_functions/zhegalkin} \( \set{ \oplus, \wedge, F, T } \).
     \thmitem{thm:complete_sets_of_boolean_functions/or_not} \( \set{ \vee, \oline{\anon} } \).
     \thmitem{thm:complete_sets_of_boolean_functions/and_not} \( \set{ \wedge, \oline{\anon} } \).
-    \thmitem{thm:complete_sets_of_boolean_functions/nand} \( \set{ \uparrow } \), where \( (x \uparrow y) \coloneqq \oline{x \wedge y} \) is called \term[ru=штрих Шеффера (\cite[29]{Эдельман1975Логика}), en=Sheffer's stroke (\cite[40]{Hinman2005Logic})]{Sheffer's stroke} or \term[en=nand (\cite[40]{Hinman2005Logic})]{nand} (\enquote{not and}).
+    \thmitem{thm:complete_sets_of_boolean_functions/nand} \( \set{ \uparrow } \).
     \thmitem{thm:complete_sets_of_boolean_functions/conditional_falsum} \( \set{ \rightarrow, F } \).
   \end{thmenum}
 \end{proposition}
 \begin{proof}
-  \SubProofOf{thm:complete_sets_of_boolean_functions/zhegalkin} \Fullref{thm:finite_field_lagrange_interpolation} implies that every Boolean function has a corresponding Zhegalkin polynomial. The polynomial's constant term is either \( 0 \) or \( 1 \); \( \wedge \) is used when evaluating monomials, and \( \oplus \) is used when summing the values of the monomials.
+  \SubProofOf{thm:complete_sets_of_boolean_functions/zhegalkin} \Fullref{alg:infer_zhegalkin_polynomial} gives an explicit Zhegalkin polynomial for every Boolean function. The polynomial's constant coefficient is either \( F \) or \( T \); \( \wedge \) is used when evaluating monomials, and \( \oplus \) is used when summing the values of the monomials.
 
   \SubProofOf{thm:complete_sets_of_boolean_functions/or_not} By inspecting \fullref{thm:standard_boolean_functions}, we can conclude that we can express the operators from \fullref{thm:complete_sets_of_boolean_functions/zhegalkin} via \( \vee \) and \( \oline{\anon} \):
   \begin{itemize}
     \item \( T = x \vee \oline{x} \),
     \item \( F = \oline{T} \),
     \item \( x \wedge y = \oline*{\oline{x} \vee \oline{y}} \),
-    \item \( x \oplus y = (x \vee y) \wedge \oline{(x \vee y)} \).
+    \item \( x \oplus y = (x \vee y) \wedge (\oline{x} \vee \oline{y}) \).
   \end{itemize}
 
   Since the former operators are a complete set, the latter are also a complete set.
