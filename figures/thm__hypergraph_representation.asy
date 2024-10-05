@@ -37,9 +37,9 @@ draw_vertex(v3, L=Label('$v_3$', align=2W));
 draw_vertex(v4, L=Label('$v_4$', align=2W));
 draw_vertex(v5, L=Label('$v_5$', align=2W));
 
-draw_vertex(e1, L=Label('$e_1$', align=2E), color=mediumgray);
-draw_vertex(e2, L=Label('$e_2$', align=2E), color=mediumgray);
-draw_vertex(e3, L=Label('$e_3$', align=2E), color=mediumgray);
+draw_vertex(e1, L=Label('$e_1$', align=2E));
+draw_vertex(e2, L=Label('$e_2$', align=2E));
+draw_vertex(e3, L=Label('$e_3$', align=2E));
 
 draw_edge(v1, e1);
 draw_edge(v2, e1);

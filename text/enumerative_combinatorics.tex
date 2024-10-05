@@ -4,15 +4,132 @@ This subsection lists several results of various importance that don't really be
 
 \paragraph{Pigeonhole principle}
 
+\begin{remark}\label{rem:pigeonhole_principle}
+  The \enquote{Pigeonhole principle} refers to the following statement:
+  \begin{displayquote}
+    If we are given more pigeons than pigeonholes, then at least one pigeonhole must contain multiple pigeons in it.
+  \end{displayquote}
+
+  \incite[sec. 6.2]{Rosen2019DiscreteMathematics} dedicates entire sections to nontrivial applications of this principle.
+
+  The Pigeonhole principle is attributed to Dirichlet, and variations of it are stated in the literature under different names:
+  \begin{itemize}
+    \item The \enquote{pigeonhole principle} is used, among others, by \incite[289]{Knuth1997ArtVol2}, \incite[sec. 6.2]{Rosen2019DiscreteMathematics}, \incite[66]{HopcroftEtAl2001Computability}, \incite[exer. A-4.1]{Rotman2015AlgebraVol1}, \incite[134]{Enderton1977Sets} and \incite[16]{Savage1998Computability}.
+    \item The \enquote{drawer principle} is used by \incite[222]{Арнольд2014ОДУ} (as \enquote{принцип ящиков Дирихле}), Goncharov in \cite[156]{АлександровМаркушевичХинчин1952ЭнциклопедияТом3}, \incite[224]{Проданов1982ФункАнализТом1} (as \enquote{принцип за чекмеджетата}).
+    \item \enquote{Dirichlet's principle} is used by \incite[64]{Гуров2013Решётки} (as \enquote{принцип Дирихле}), \incite[9]{Мирчев2001Графи} (as \enquote{принцип на Дирихле}).
+  \end{itemize}
+\end{remark}
+
 \begin{theorem}[Dirichlet's pigeonhole principle]\label{thm:pigeonhole_principle}
-  If \( \card(A) > \card(B) \), then there exists no injective function from \( A \) to \( B \).
+  We give several statements of the \hyperref[rem:pigeonhole_principle]{pigeonhole principle} in a differing levels of generality.
+
+  \begin{thmenum}
+    \thmitem{thm:pigeonhole_principle/simple} For every function \( f: A \to B \), if \( A \) has greater cardinality, at least two members of \( A \) map to the same value in \( B \).
+
+    \thmitem{thm:pigeonhole_principle/general} For every function \( f: A \to B \) between nonempty sets we have
+    \begin{equation}\label{eq:thm:pigeonhole_principle/general}
+      \sup\set[\Big]{ \card(f^{-1}(b)) \given* b \in B } \cdot \card(\img f) \geq \card(A).
+    \end{equation}
+
+    \thmitem{thm:pigeonhole_principle/finitary} Fix nonempty \hi{finite} sets \( A \) with \( n \) elements and \( B \) with \( m \) elements. For every function \( f: A \to B \) between them, there exists some \( b \) in \( B \) such that \( f(a) = b \) for at least \( n / m \) elements \( a \) of \( A \).
+
+    \thmitem{thm:pigeonhole_principle/infinitary} Fix two nonempty sets \( A \) and \( B \) such that \( A \) is infinite and \( \card(A) > \card(B) \). Then, for every function \( f: A \to B \), we have
+    \begin{equation}\label{eq:thm:pigeonhole_principle/infinitary}
+      \sup\set[\Big]{ \card(f^{-1}(b)) \given* b \in B } = \card(A).
+    \end{equation}
+
+    In particular, if the supremum above is attained for \( b_0 \), then \( f^{-1}(b_0) \) and \( A \) are equinumerous.
+  \end{thmenum}
 \end{theorem}
-\begin{comments}
-  \item The name of the theorem comes from the observation that if we are given more pigeons than pigeonholes, then at least one pigeonhole must contain multiple pigeons in it.
-\end{comments}
 \begin{proof}
-  This is a corollary of \fullref{thm:set_domination_relation_trichotomy}.
+  \SubProofOf{thm:pigeonhole_principle/simple} It is sufficient to show that \( f: A \to B \) cannot be injective if \( \card(A) > \card(B) \). This follows easily from \fullref{thm:set_domination_relation_trichotomy}.
+
+  \SubProofOf{thm:pigeonhole_principle/general} Denote by \( \mu \) the supremum in \eqref{eq:thm:pigeonhole_principle/general}.
+
+  For every \( b \) in \( B \), since \( \card(f^{-1}(b)) \leq \mu \) there exists an injective function
+  \begin{equation*}
+    m_b: f^{-1}(b) \to \mu
+  \end{equation*}
+
+  Then we can define
+  \begin{equation*}
+    \begin{aligned}
+      &g: A \to \mu \times \img f, \\
+      &g(a) \coloneqq (m_b(a), f(a)).
+    \end{aligned}
+  \end{equation*}
+
+  It is injective by construction, hence
+  \begin{equation*}
+    \card(A) \leq \card(\mu \times \img f) = \mu \cdot \card(\img f).
+  \end{equation*}
+
+  \SubProofOf{thm:pigeonhole_principle/finitary} \Fullref{thm:pigeonhole_principle/general} implies that
+  \begin{equation*}
+    \max\set[\Big]{ \card(f^{-1}(b)) \given* b \in B } \geq \frac n m.
+  \end{equation*}
+
+  Since \( B \) is finite, there exists a member attaining the maximum above.
+
+  \SubProofOf{thm:pigeonhole_principle/infinitary} Again denote by \( \mu \) the supremum in \eqref{eq:thm:pigeonhole_principle/general}. Then
+  \begin{equation*}
+    \mu \cdot \card(\img f) \geq \card(A).
+  \end{equation*}
+
+  \Fullref{thm:simplified_cardinal_arithmetic/infinite} implies that
+  \begin{equation*}
+    \mu \cdot \card(\img f) = \max\set{ \mu, \card(\img f) }.
+  \end{equation*}
+
+  We have \( \mu > \card(\img f) \) since otherwise we would obtain
+  \begin{equation*}
+    \card(B) \geq \card(\img f) \geq \card(A) > \card(B),
+  \end{equation*}
+  which is a contradiction. Thus,
+  \begin{equation*}
+    \mu \geq \card(A).
+  \end{equation*}
+
+  Furthermore, since \( f^{-1}(b) \subseteq A \) for every \( b \in B \), the supremum \( \mu \) of their cardinals cannot exceed \( \card(A) \). Therefore,
+  \begin{equation*}
+    \card(A) = \mu.
+  \end{equation*}
 \end{proof}
+
+\begin{example}\label{ex:thm:pigeonhole_principle}
+  We list examples related to \fullref{thm:pigeonhole_principle}:
+  \begin{thmenum}
+    \thmitem{ex:thm:pigeonhole_principle/lagrange} Given a \hyperref[def:group/homomorphism]{group homomorphism} \( \varphi: G \to H \), by \fullref{thm:group_zero_morphisms/isomorphism},
+    \begin{equation*}
+      G / \ker \varphi \cong \img \varphi.
+    \end{equation*}
+
+    \Fullref{thm:lagranges_subgroup_theorem} then implies that
+    \begin{equation*}
+      \card(\ker \varphi) \cdot \card(\img \varphi) = \card(G).
+    \end{equation*}
+
+    All cosets are equinumerous by \fullref{thm:subgroup_cosets/equinumerous}, so we can restate the above as
+    \begin{equation*}
+      \sup\set[\Big]{ \card(\varphi^{-h}) \given* h \in H } \cdot \card(\img \varphi) = \card(G).
+    \end{equation*}
+
+    We have thus obtained a special case of \fullref{thm:pigeonhole_principle/general} in which equality holds due to group homomorphisms being well-behaved structurally.
+
+    \thmitem{ex:thm:pigeonhole_principle/birthdays} \Fullref{thm:pigeonhole_principle/finitary} allows us to conclude that, among \( 1000 \) people,
+    \begin{itemize}
+      \item At least \( 3 = \ceil(1000 / 365) \) were born on the same day.
+      \item At least \( 20 = \ceil(1000 / 52) \) were born in the same week.
+      \item At least \( 84 = \ceil(1000 / 12) \) were born in the same month.
+    \end{itemize}
+
+    \thmitem{ex:thm:pigeonhole_principle/boolean} Again via \fullref{thm:pigeonhole_principle/finitary} we conclude that, for every \hyperref[def:boolean_function]{predicate} \( f: A \to \set{ T, F } \) on a finite set \( A \) with \( n \) elements, either \( f \) holds for at least \( n / 2 \) members of \( A \) or \( f \) doesn't hold for (at least) \( n / 2 \) members.
+
+    \thmitem{ex:thm:pigeonhole_principle/party} As a consequence of \fullref{ex:thm:pigeonhole_principle/boolean}, in a group of \( 6 \) people, either \( 3 \) know everybody else or \( 3 \) do not.
+
+    Compare this example to \fullref{ex:ramsey_party_problem}, where we are interested how many people know \hi{each other}. This leads to the considerably harder problem of estimating \hyperref[def:ramsey_number]{Ramsey numbers}.
+  \end{thmenum}
+\end{example}
 
 \paragraph{Factorial}
 
