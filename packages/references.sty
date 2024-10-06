@@ -59,7 +59,7 @@
       }
   }
 
-\NewDocumentCommand \mnote {sm}
+\NewDocumentCommand \mnote {m}
   {
     \leavevmode@ifvmode
     \marginpar
@@ -67,7 +67,7 @@
         \raggedleft
         \scriptsize
         % For some reason, the text is sometimes not black, e.g. has the color of a hyperlink
-        \textcolor {black} {#2}
+        \textcolor {black} {#1}
       }
   }
 
@@ -79,28 +79,21 @@
       }
   }
 
-\NewDocumentCommand \mcite {som}
+\NewDocumentCommand \mcite {om}
   {
-    \IfValueTF {#1}
+    \mnote
       {
-        \mnote*
-          {
-            \IfValueTF {#2} { \cite[#2]{#3} } { \cite{#3} }
-          }
-      }
-      {
-        \mnote
-          {
-            \IfValueTF {#2} { \cite[#2]{#3} } { \cite{#3} }
-          }
+        \IfValueTF {#1} { \cite[#1]{#2} } { \cite{#2} }
       }
   }
 
-\NewDocumentCommand \incite {sO{}m}
+\tl_new:N \l_inset_tl
+\NewDocumentCommand \incite {som}
   {
-    \IfValueTF {#1}
-      { In~\cite[#2]{#3},~\citeauthor{#3} }
-      { \citeauthor{#3}~in~\cite[#2]{#3} }
+    \tl_set:Nn \l_inset_tl { \IfValueTF {#2} { \cite[#2]{#3} } { \cite{#3} } }
+    \IfBooleanTF {#1}
+      { In~{\tl_use:N \l_inset_tl},~\citeauthor{#3} }
+      { \citeauthor{#3}~in~{\tl_use:N \l_inset_tl} }
   }
 
 %
