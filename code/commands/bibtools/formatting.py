@@ -104,7 +104,20 @@ class BibEntryAdjuster:
                 self.logger.warning('No journal specified for article')
 
             case 'inbook' | 'incollection' | 'inproceedincs' if not self.adjusted.booktitle:
-                self.logger.warning(f'No book title specified for entry type {self.adjusted.entry_type}')
+                self.logger.warning(f'No book title specified for entry type {self.adjusted.entry_type!r}')
+
+            case 'book' | 'article' if not self.adjusted.publisher:
+                self.logger.warning(f'No publisher specified for entry type {self.adjusted.entry_type!r}')
+
+            case 'article' if not self.adjusted.journal:
+                self.logger.warning(f'No journal specified for entry type {self.adjusted.entry_type!r}')
+
+        if len(self.adjusted.translators) > 0 and not self.adjusted.origlanguage:
+            self.logger.warning('Specified the translators, but not the original language')
+
+        if self.adjusted.origlanguage and len(self.adjusted.translators) == 0:
+            self.logger.warning('Specified the original language, but not the translators')
+
 
     def adjust_entry_name(self) -> None:
         name = self.adjusted.entry_name

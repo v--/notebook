@@ -77,6 +77,7 @@ class BibEntry(NamedTuple):
     bbc:           Annotated[str | None, BibFieldAnnotation()] = None
     # Articles
     issue:         Annotated[str | None, BibFieldAnnotation()] = None
+    issuetitle:    Annotated[str | None, BibFieldAnnotation()] = None
     journal:       Annotated[str | None, BibFieldAnnotation()] = None
     number:        Annotated[str | None, BibFieldAnnotation()] = None
     pages:         Annotated[str | None, BibFieldAnnotation()] = None

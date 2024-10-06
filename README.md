@@ -60,6 +60,7 @@ There is a set of tools, [`code.commands.bibtools`](./code/commands/bibtools) (U
   * `... fetch mathnet <id>`.
 
 Some comments should be made about the parser. It was created specifically for maintaining my personal (digital) library and this monograph's sources in particular.
+* The rules for entry fields are based on those of BibLaTeX with some additions (e.g. mathnet, zbMATH, jstor).
 * The parser only allows the fields from the [`BibEntry`](./code/notebook/bibtex/entry.py) class. Because this tool was built upon years of maintaining references with other improvised tools, however, a lot of (standard and nonstandard) entry properties accumulated.
 * The parser auxiliary logic for handling author names via the [`BibAuthor`](./code/notebook/bibtex/author.py) class. This involves parsing and handling each author separately (with `and` acting as a separator). For Cyrillic languages, Latin transliteration is enforced via the `BibAuthor.short` field that gets read and written to the `shortauthor` BibTeX field.
 * The parser tries to unescape certain characters like `&` and `@`, while `BibEntry` tries to escape them when serializing. Exceptions for this are the fields marked as "verbatim" such as `url`.
