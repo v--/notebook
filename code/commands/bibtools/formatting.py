@@ -112,6 +112,9 @@ class BibEntryAdjuster:
             case 'article' if not self.adjusted.journal:
                 self.logger.warning(f'No journal specified for entry type {self.adjusted.entry_type!r}')
 
+            case 'online' if not self.adjusted.urldate:
+                self.logger.warning(f'No URL date specified for entry type {self.adjusted.entry_type!r}')
+
         if len(self.adjusted.translators) > 0 and not self.adjusted.origlanguage:
             self.logger.warning('Specified the translators, but not the original language')
 
