@@ -53,6 +53,11 @@
     type=online
   }
 
+\defbibfilter{standards}
+  {
+    type=report
+  }
+
 \defbibfilter{misc}
   {
     not~type=book~and~
@@ -62,7 +67,8 @@
     not~type=inproceedings~and~
     not~type=unpublished~and~
     not~type=thesis~and~
-    not~type=online
+    not~type=online~and~
+    not~type=report
   }
 
 % Internationalization
