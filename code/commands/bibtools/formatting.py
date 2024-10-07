@@ -7,6 +7,7 @@ from stdnum import isbn, issn
 from notebook.bibtex.author import BibAuthor
 from notebook.bibtex.entry import BibEntry
 from notebook.bibtex.parsing import parse_bibtex
+from notebook.bibtex.string import BibString
 from notebook.parsing.parser import ParsingError
 
 from ..common.names import latinize_cyrillic_name
@@ -15,7 +16,7 @@ from .exceptions import BibToolsParsingError
 from .sources.common.dates import extract_year
 from .sources.common.entries import regenerate_entry_name
 from .sources.common.languages import normalize_language_name
-from .sources.common.names import get_main_author_name, normalize_author_name
+from .sources.common.names import get_main_human_name, normalize_human_name
 from .sources.common.pages import normalize_pages
 from .sources.common.titles import split_title
 from .sources.common.url_template import UrlTemplate
@@ -48,27 +49,33 @@ class BibEntryAdjuster:
 
         self.adjusted = self.adjusted._replace(**kwargs)
 
-    def get_author_short_name(self, author: BibAuthor) -> str | None:
-        if author.short_name is None and author.full_name != 'others' and (self.adjusted.language == 'russian' or self.adjusted.language == 'bulgarian'):
-            return latinize_cyrillic_name(get_main_author_name(author))
+    def get_author_short_name(self, author: BibAuthor) -> BibString | None:
+        if (
+            author.short_name is None and \
+            author.full_name != 'others' and \
+            (self.adjusted.language == 'russian' or self.adjusted.language == 'bulgarian')
+        ):
+            main_name = get_main_human_name(author.full_name)
+
+            if isinstance(main_name, str):
+                return latinize_cyrillic_name(main_name)
 
         return author.short_name
 
     def adjust_author(self, author: BibAuthor) -> BibAuthor:
-        if author.verbatim:
-            full_name = author.full_name
-        else:
-            full_name = normalize_author_name(author)
+        full_name = author.full_name
+
+        if isinstance(full_name, str):
+            full_name = normalize_human_name(full_name)
 
         self.log_update('name', author.full_name, full_name)
-
         short_name = self.get_author_short_name(author)
         self.log_update('short name', author.short_name, short_name)
         return author._replace(full_name=full_name, short_name=short_name)
 
     def adjust_entry_date(self) -> None:
         if self.adjusted.date:
-            year = extract_year(self.adjusted.date)
+            year = extract_year(str(self.adjusted.date))
 
             if year is None:
                 self.logger.warning(f'Could not extract year from {self.adjusted.date}')
@@ -88,12 +95,12 @@ class BibEntryAdjuster:
             self.logger.warning('The date field is blank')
             return
 
-        date = self.adjusted.year
+        date = str(self.adjusted.year)
 
-        if self.adjusted.month:
+        if isinstance(self.adjusted.month, str):
             date += '-' + self.adjusted.month.rjust(2, '0')
 
-        if self.adjusted.day:
+        if isinstance(self.adjusted.day, str):
             date += '-' + self.adjusted.day.rjust(2, '0')
 
         self.update(date=date, year=None, month=None, day=None)
@@ -130,7 +137,7 @@ class BibEntryAdjuster:
             return
 
         name_year = extract_year(name)
-        date_year = extract_year(self.adjusted.date)
+        date_year = extract_year(str(self.adjusted.date))
 
         if name_year and date_year and name_year != date_year:
             self.logger.info('Year mismatch between the entry name and date; using the year from the date')
@@ -149,7 +156,6 @@ class BibEntryAdjuster:
         suggestion = regenerate_entry_name(self.adjusted)
         self.logger.warning(f'Consider the entry name {suggestion}')
 
-
     def adjust_url_identifier(self, field_name: str, url_template: UrlTemplate | None = None) -> None:
         if url_template is None:
             url_template = getattr(url_templates, field_name)
@@ -159,10 +165,10 @@ class BibEntryAdjuster:
             if url_data := url_template.extract(identifier):
                 self.update(**{field_name: url_data['identifier']})
 
-            if self.adjusted.url and url_templates.clean_identifier(self.adjusted.url, url_template) == identifier:
+            if isinstance(self.adjusted.url, str) and url_templates.clean_identifier(self.adjusted.url, url_template) == identifier:
                 self.logger.info(f'Removing redundant {field_name} URL')
                 self.update(url=None)
-        elif self.adjusted.url and (url_data := url_template.extract(self.adjusted.url)):
+        elif isinstance(self.adjusted.url, str) and (url_data := url_template.extract(self.adjusted.url)):
             self.logger.info(f'Extracting a {field_name} identifier from the URL')
             self.update(**{field_name: url_data['identifier'], 'url': None})
 
@@ -210,7 +216,7 @@ class BibEntryAdjuster:
     def adjust_url(self) -> None:
         url = self.adjusted.url
 
-        if url is None:
+        if not isinstance(url, str):
             return
 
         match self.adjusted.eprinttype:
@@ -240,20 +246,20 @@ class BibEntryAdjuster:
         title = self.adjusted.title
         subtitle = self.adjusted.subtitle
 
-        if subtitle is None:
+        if isinstance(title, str) and subtitle is None:
             title, subtitle = split_title(title)
 
         self.update(
             title=title,
             subtitle=subtitle,
-            pages=normalize_pages(self.adjusted.pages) if self.adjusted.pages else None,
+            pages=normalize_pages(self.adjusted.pages) if isinstance(self.adjusted.pages, str) else self.adjusted.pages,
             language=normalize_language_name(self.adjusted.language),
             origlanguage=normalize_language_name(self.adjusted.origlanguage) if self.adjusted.origlanguage else None,
             isbn=isbn.format(self.adjusted.isbn) if self.adjusted.isbn else None,
-            issn=','.join(map(issn.format, self.adjusted.issn.split(','))) if self.adjusted.issn else None
+            issn=','.join(map(issn.format, self.adjusted.issn.split(','))) if isinstance(self.adjusted.issn, str) else self.adjusted.issn
         )
 
-        if self.adjusted.issn and ',' in self.adjusted.issn:
+        if isinstance(self.adjusted.issn, str) and ',' in self.adjusted.issn:
             self.logger.warning('Multiple ISSN numbers specified')
 
         self.adjust_identifiers()

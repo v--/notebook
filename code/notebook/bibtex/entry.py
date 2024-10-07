@@ -1,9 +1,10 @@
 from collections.abc import Iterable, Sequence
-from typing import Annotated, Literal, NamedTuple, cast, get_args, get_type_hints
+from typing import Annotated, Literal, NamedTuple, get_args, get_type_hints
 
 from ..support.iteration import list_accumulator, string_accumulator
 from .author import BibAuthor
 from .escaping import escape
+from .string import BibString
 
 
 TAB_SIZE = 2
@@ -45,66 +46,66 @@ class BibEntry(NamedTuple):
     entry_type:    Annotated[BibEntryType, BibFieldAnnotation(meta=True)]
     entry_name:    Annotated[str, BibFieldAnnotation(meta=True)]
     # Base fields
-    title:         Annotated[str, BibFieldAnnotation()]
+    title:         Annotated[BibString, BibFieldAnnotation()]
     language:      Annotated[str, BibFieldAnnotation()]
     # Optional
     authors:       Annotated[Sequence[BibAuthor], BibFieldAnnotation(author=True, key_name='author')] = []
     editors:       Annotated[Sequence[BibAuthor], BibFieldAnnotation(author=True, key_name='editor')] = []
     translators:   Annotated[Sequence[BibAuthor], BibFieldAnnotation(author=True, key_name='translator')] = []
     origlanguage:  Annotated[str | None, BibFieldAnnotation()] = None
-    publisher:     Annotated[str | None, BibFieldAnnotation()] = None
-    pubstate:      Annotated[str | None, BibFieldAnnotation()] = None
-    titleaddon:    Annotated[str | None, BibFieldAnnotation()] = None
-    subtitle:      Annotated[str | None, BibFieldAnnotation()] = None
-    subtitleaddon: Annotated[str | None, BibFieldAnnotation()] = None
-    date:          Annotated[str | None, BibFieldAnnotation()] = None
-    url:           Annotated[str | None, BibFieldAnnotation(verbatim=True)] = None
-    note:          Annotated[str | None, BibFieldAnnotation()] = None
-    year:          Annotated[str | None, BibFieldAnnotation()] = None
-    month:         Annotated[str | None, BibFieldAnnotation()] = None
-    day:           Annotated[str | None, BibFieldAnnotation()] = None
-    edition:       Annotated[str | None, BibFieldAnnotation()] = None
-    volume:        Annotated[str | None, BibFieldAnnotation()] = None
-    version:       Annotated[str | None, BibFieldAnnotation()] = None
-    institution:   Annotated[str | None, BibFieldAnnotation()] = None
+    publisher:     Annotated[BibString | None, BibFieldAnnotation()] = None
+    pubstate:      Annotated[BibString | None, BibFieldAnnotation()] = None
+    titleaddon:    Annotated[BibString | None, BibFieldAnnotation()] = None
+    subtitle:      Annotated[BibString | None, BibFieldAnnotation()] = None
+    subtitleaddon: Annotated[BibString | None, BibFieldAnnotation()] = None
+    date:          Annotated[BibString | None, BibFieldAnnotation()] = None
+    url:           Annotated[BibString | None, BibFieldAnnotation(verbatim=True)] = None
+    note:          Annotated[BibString | None, BibFieldAnnotation()] = None
+    year:          Annotated[BibString | None, BibFieldAnnotation()] = None
+    month:         Annotated[BibString | None, BibFieldAnnotation()] = None
+    day:           Annotated[BibString | None, BibFieldAnnotation()] = None
+    edition:       Annotated[BibString | None, BibFieldAnnotation()] = None
+    volume:        Annotated[BibString | None, BibFieldAnnotation()] = None
+    version:       Annotated[BibString | None, BibFieldAnnotation()] = None
+    institution:   Annotated[BibString | None, BibFieldAnnotation()] = None
     # Theses
     advisors:      Annotated[Sequence[BibAuthor], BibFieldAnnotation(author=True, key_name='advisor')] = []
     # Books
-    chapter:       Annotated[str | None, BibFieldAnnotation()] = None
-    series:        Annotated[str | None, BibFieldAnnotation()] = None
-    isbn:          Annotated[str | None, BibFieldAnnotation()] = None
+    chapter:       Annotated[BibString | None, BibFieldAnnotation()] = None
+    series:        Annotated[BibString | None, BibFieldAnnotation()] = None
+    isbn:          Annotated[BibString | None, BibFieldAnnotation()] = None
     # Book (and proceeding) chapters
-    booktitle:     Annotated[str | None, BibFieldAnnotation()] = None
-    booksubtitle:  Annotated[str | None, BibFieldAnnotation()] = None
+    booktitle:     Annotated[BibString | None, BibFieldAnnotation()] = None
+    booksubtitle:  Annotated[BibString | None, BibFieldAnnotation()] = None
     # Russian books
-    udc:           Annotated[str | None, BibFieldAnnotation()] = None
-    bbc:           Annotated[str | None, BibFieldAnnotation()] = None
+    udc:           Annotated[BibString | None, BibFieldAnnotation()] = None
+    bbc:           Annotated[BibString | None, BibFieldAnnotation()] = None
     # Articles
-    issue:         Annotated[str | None, BibFieldAnnotation()] = None
-    issuetitle:    Annotated[str | None, BibFieldAnnotation()] = None
-    journal:       Annotated[str | None, BibFieldAnnotation()] = None
-    number:        Annotated[str | None, BibFieldAnnotation()] = None
-    pages:         Annotated[str | None, BibFieldAnnotation()] = None
-    issn:          Annotated[str | None, BibFieldAnnotation()] = None
+    issue:         Annotated[BibString | None, BibFieldAnnotation()] = None
+    issuetitle:    Annotated[BibString | None, BibFieldAnnotation()] = None
+    journal:       Annotated[BibString | None, BibFieldAnnotation()] = None
+    number:        Annotated[BibString | None, BibFieldAnnotation()] = None
+    pages:         Annotated[BibString | None, BibFieldAnnotation()] = None
+    issn:          Annotated[BibString | None, BibFieldAnnotation()] = None
     # Reports and manuals
-    type:          Annotated[str | None, BibFieldAnnotation()] = None
+    type:          Annotated[BibString | None, BibFieldAnnotation()] = None
     # References
-    doi:           Annotated[str | None, BibFieldAnnotation()] = None
-    eudml:         Annotated[str | None, BibFieldAnnotation()] = None
-    jstor:         Annotated[str | None, BibFieldAnnotation()] = None
-    handle:        Annotated[str | None, BibFieldAnnotation()] = None
-    mathnet:       Annotated[str | None, BibFieldAnnotation()] = None
-    mathscinet:    Annotated[str | None, BibFieldAnnotation()] = None
-    numdam:        Annotated[str | None, BibFieldAnnotation()] = None
-    scopus:        Annotated[str | None, BibFieldAnnotation()] = None
-    zbmath:        Annotated[str | None, BibFieldAnnotation()] = None
+    doi:           Annotated[BibString | None, BibFieldAnnotation()] = None
+    eudml:         Annotated[BibString | None, BibFieldAnnotation()] = None
+    jstor:         Annotated[BibString | None, BibFieldAnnotation()] = None
+    handle:        Annotated[BibString | None, BibFieldAnnotation()] = None
+    mathnet:       Annotated[BibString | None, BibFieldAnnotation()] = None
+    mathscinet:    Annotated[BibString | None, BibFieldAnnotation()] = None
+    numdam:        Annotated[BibString | None, BibFieldAnnotation()] = None
+    scopus:        Annotated[BibString | None, BibFieldAnnotation()] = None
+    zbmath:        Annotated[BibString | None, BibFieldAnnotation()] = None
     # eprints
-    eprinttype:    Annotated[str | None, BibFieldAnnotation()] = None
-    eprintclass:   Annotated[str | None, BibFieldAnnotation()] = None
-    eprint:        Annotated[str | None, BibFieldAnnotation()] = None
+    eprinttype:    Annotated[BibString | None, BibFieldAnnotation()] = None
+    eprintclass:   Annotated[BibString | None, BibFieldAnnotation()] = None
+    eprint:        Annotated[BibString | None, BibFieldAnnotation()] = None
     # Online
-    howpublished:  Annotated[str | None, BibFieldAnnotation()] = None
-    urldate:       Annotated[str | None, BibFieldAnnotation()] = None
+    howpublished:  Annotated[BibString | None, BibFieldAnnotation()] = None
+    urldate:       Annotated[BibString | None, BibFieldAnnotation()] = None
 
     @classmethod
     @list_accumulator
@@ -114,6 +115,15 @@ class BibEntry(NamedTuple):
 
             if annotation.meta:
                 yield field_name
+
+    @classmethod
+    @list_accumulator
+    def get_plain_fields(cls) -> Iterable[tuple[str, str]]:
+        for field_name, field_annotation in get_type_hints(cls, include_extras=True).items():
+            type_, annotation = get_args(field_annotation)
+
+            if type_ is str:
+                yield field_name, annotation.key_name or field_name
 
     @classmethod
     @list_accumulator
@@ -147,7 +157,7 @@ class BibEntry(NamedTuple):
 
         return False
 
-    def _string_properties(self) -> dict[str, str]:
+    def _string_properties(self) -> dict[str, BibString]:
         properties = self._asdict()
 
         for field_name in self.get_meta_fields():
@@ -163,10 +173,10 @@ class BibEntry(NamedTuple):
             if len(authors) == 0:
                 continue
 
-            properties[key_name] = ' and '.join('{' + author.full_name + '}' if author.verbatim else author.full_name for author in authors)
+            properties[key_name] = ' and '.join(str(author.full_name) for author in authors)
 
             if all(author.short_name for author in authors):
-                properties[short_key_name] = ' and '.join(cast(str, author.short_name) for author in authors)
+                properties[short_key_name] = ' and '.join(str(author.short_name) for author in authors)
 
         return properties
 
@@ -183,7 +193,7 @@ class BibEntry(NamedTuple):
             yield ' = {'
 
             if self.is_key_value_verbatim(key):
-                yield value
+                yield str(value)
             else:
                 yield escape(value)
 

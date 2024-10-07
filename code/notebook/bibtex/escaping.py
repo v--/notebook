@@ -1,13 +1,14 @@
 from collections.abc import Iterable
 
 from ..support.iteration import string_accumulator
+from .string import BibString
 
 
 @string_accumulator('')
-def escape(string: str) -> Iterable[str]:
+def escape(string: BibString) -> Iterable[str]:
     escaping = False
 
-    for char in string:
+    for char in str(string):
         match char:
             case '\\':
                 escaping = not escaping

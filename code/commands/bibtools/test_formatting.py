@@ -4,6 +4,7 @@ import loguru
 import pytest
 
 from notebook.bibtex.parsing import parse_bibtex
+from notebook.bibtex.string import VerbatimString
 
 from .formatting import adjust_entry
 
@@ -39,7 +40,7 @@ def test_author_name_verbatim() -> None:
     )
 
     adjusted = adjust_entry(entry, loguru.logger)
-    assert adjusted.authors[0].full_name == 'Левенштейн, Владимир'
+    assert adjusted.authors[0].full_name == VerbatimString('Левенштейн, Владимир')
 
 
 def test_author_short() -> None:
@@ -142,7 +143,7 @@ def test_title_splitting() -> None:
     entry, = parse_bibtex(
         dedent('''\
             @book{Barendregt1984LambdaCalculus,
-              author = {Barendregt, Henk},
+              author = {Henk Barendregt},
               isbn = {0-444-86748-1},
               language = {english},
               publisher = {North-Holland},
@@ -162,7 +163,7 @@ def test_title_splitting_with_subtitle() -> None:
     entry, = parse_bibtex(
         dedent('''\
             @book{Barendregt1984LambdaCalculus,
-              author = {Barendregt, Henk},
+              author = {Henk Barendregt},
               isbn = {0-444-86748-1},
               language = {english},
               publisher = {North-Holland},
@@ -183,7 +184,7 @@ def test_isbn_formatting() -> None:
     entry, = parse_bibtex(
         dedent('''\
             @book{Barendregt1984LambdaCalculus,
-              author = {Barendregt, Henk},
+              author = {Henk Barendregt},
               isbn = {0444867481},
               language = {english},
               publisher = {North-Holland},

@@ -4,6 +4,7 @@ import pytest
 
 from ...parsing.parser import ParsingError
 from ..entry import BibAuthor, BibEntry
+from ..string import VerbatimString
 from .parser import parse_bibtex
 
 
@@ -246,6 +247,7 @@ def test_multiple_authors() -> None:
         language='english'
     )
 
+
 def test_translator() -> None:
     string = dedent(r'''
         @book{test,
@@ -354,7 +356,7 @@ def test_single_verbatim_author() -> None:
         entry_type='book',
         entry_name='test',
         title='Test',
-        authors=[BibAuthor(full_name='Verbatim', verbatim=True)],
+        authors=[BibAuthor(full_name=VerbatimString('Verbatim'))],
         language='english'
     )
 
@@ -375,8 +377,11 @@ def test_multiple_verbatim_authors() -> None:
         entry_type='book',
         entry_name='test',
         title='Test',
-        authors=[BibAuthor(full_name='Verbatim', verbatim=True), BibAuthor(full_name='Verbatim 2', verbatim=True)],
-        language='english'
+        language='english',
+        authors=[
+            BibAuthor(full_name=VerbatimString('Verbatim')),
+            BibAuthor(full_name=VerbatimString('Verbatim 2'))
+        ]
     )
 
 
@@ -419,12 +424,12 @@ def test_one_verbatim_authors_with_and() -> None:
         entry_type='book',
         entry_name='test',
         title='Test',
-        authors=[BibAuthor(full_name='Verbatim and Verbatim 2', verbatim=True)],
+        authors=[BibAuthor(full_name=VerbatimString('Verbatim and Verbatim 2'))],
         language='english'
     )
 
 
-def test_one_verbatim_authors_with_and_quotes() -> None:
+def test_one_verbatim_authors_with_quotes() -> None:
     string = dedent(r'''
         @book{test,
           title = {Test},
@@ -440,7 +445,7 @@ def test_one_verbatim_authors_with_and_quotes() -> None:
         entry_type='book',
         entry_name='test',
         title='Test',
-        authors=[BibAuthor(full_name='Verbatim and Verbatim 2', verbatim=True)],
+        authors=[BibAuthor(full_name=VerbatimString('Verbatim and Verbatim 2'))],
         language='english'
     )
 
@@ -535,7 +540,7 @@ def test_escape_truncated() -> None:
     with pytest.raises(ParsingError) as excinfo:
         parse_bibtex(string)
 
-    assert str(excinfo.value) == 'Invalid escaped symbol'
+    assert str(excinfo.value) == 'No symbol to escape'
     assert excinfo.value.__notes__[0] == dedent(r'''
         1 │ @book{test,↵
         2 │   title = {Test \

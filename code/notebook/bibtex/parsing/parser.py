@@ -1,44 +1,19 @@
 from collections import deque
 from collections.abc import Iterable, Sequence
-from typing import NamedTuple, cast, get_args
+from typing import Literal, cast, get_args, overload
 
 from ...parsing.mixins.whitespace import WhitespaceParserMixin
 from ...parsing.parser import Parser
 from ...parsing.whitespace import Whitespace
 from ...support.iteration import list_accumulator
 from ..entry import BibAuthor, BibEntry, BibEntryType
+from ..string import BibString, CompositeString, CompositeStringBuilder
 from .tokenizer import tokenize_bibtex
 from .tokens import BibToken, MiscToken, NumberToken, WordToken
 
 
 AUTHOR_KEYS = {key_name for _, key_name, _ in BibEntry.get_author_fields()} | {short_key_name for _, _, short_key_name in BibEntry.get_author_fields()}
-
-
-class PropertyValue(NamedTuple):
-    segments: Sequence[str]
-
-    def __str__(self) -> str:
-        return ''.join(self.segments)
-
-
-class PropertyValueBuilder:
-    segments: list[str]
-    buffer: str
-
-    def __init__(self) -> None:
-        self.segments = []
-        self.buffer = ''
-
-    def append(self, string: str) -> None:
-        self.buffer += string
-
-    def flush(self) -> None:
-        if len(self.buffer) > 0:
-            self.segments.append(self.buffer)
-            self.buffer = ''
-
-    def get_value(self) -> PropertyValue:
-        return PropertyValue(self.segments)
+PLAIN_KEYS = {key_name for _, key_name in BibEntry.get_plain_fields()}
 
 
 class BibParser(WhitespaceParserMixin[BibToken], Parser[BibToken]):
@@ -87,7 +62,23 @@ class BibParser(WhitespaceParserMixin[BibToken], Parser[BibToken]):
 
         return key
 
-    def parse_value(self, entry_start_i: int, value_start_i: int, *, quotes: bool) -> PropertyValue:  # noqa: PLR0912, PLR0915, C901
+    def parse_escape_sequence(self, i_start: int) -> str:
+        lookahead = self.peek_multiple(2)
+        assert lookahead[0] == MiscToken.backslash
+
+        if len(lookahead) == 1:
+            raise self.error('No symbol to escape', i_first_visible_token=i_start)
+
+        self.advance(2)
+
+        match lookahead[1]:
+            case MiscToken.opening_brace | MiscToken.closing_brace | MiscToken.ampersand | MiscToken.backslash | MiscToken.at:
+                return str(lookahead[1])
+
+            case _:
+                return str(lookahead[0]) + str(lookahead[1])
+
+    def parse_value(self, key: str, entry_start_i: int, value_start_i: int, *, quotes: bool) -> BibString:  # noqa: PLR0912
         if quotes:
             assert self.peek() == MiscToken.quotes
         else:
@@ -95,7 +86,7 @@ class BibParser(WhitespaceParserMixin[BibToken], Parser[BibToken]):
 
         self.advance()
 
-        builder = PropertyValueBuilder()
+        builder = CompositeStringBuilder()
         verbatim = False
 
         while not self.is_at_end():
@@ -105,21 +96,20 @@ class BibParser(WhitespaceParserMixin[BibToken], Parser[BibToken]):
 
                 case MiscToken.quotes if quotes:
                     if quotes:
-                        builder.flush()
+                        builder.flush(verbatim=verbatim)
                         self.advance()
                         return builder.get_value()
 
                 case MiscToken.closing_brace:
                     if verbatim:
-                        builder.append('}')
-                        builder.flush()
+                        builder.flush(verbatim=True)
                         verbatim = False
                         self.advance()
                     elif quotes:
                         builder.append('}')
                         self.advance()
                     else:
-                        builder.flush()
+                        builder.flush(verbatim=False)
                         self.advance()
                         return builder.get_value()
 
@@ -130,33 +120,20 @@ class BibParser(WhitespaceParserMixin[BibToken], Parser[BibToken]):
                         builder.append('"')
                         self.advance(3)
                     else:
+                        builder.flush(verbatim=verbatim)
                         verbatim = True
-                        builder.flush()
-                        builder.append('{')
                         self.advance()
 
                 case MiscToken.backslash:
-                    lookahead = self.peek_multiple(2)
+                    builder.append(self.parse_escape_sequence(i_start=entry_start_i))
 
-                    if len(lookahead) == 1:
-                        raise self.error('Invalid escaped symbol', i_first_visible_token=entry_start_i)
-
-                    match lookahead[1]:
-                        case MiscToken.opening_brace | MiscToken.closing_brace | MiscToken.ampersand | MiscToken.backslash | MiscToken.at:
-                            builder.append(str(lookahead[1]))
-                            self.advance(2)
-
-                        case _:
-                            builder.append(str(head))
-                            self.advance()
-
-                case WordToken('and') | WordToken('AND'):
+                case WordToken('and') | WordToken('AND') if key in AUTHOR_KEYS:
                     if verbatim:
                         builder.append(str(head))
                     else:
-                        builder.flush()
+                        builder.flush(verbatim=False)
                         builder.append(str(head))
-                        builder.flush()
+                        builder.flush(verbatim=False)
 
                     self.advance()
 
@@ -166,43 +143,83 @@ class BibParser(WhitespaceParserMixin[BibToken], Parser[BibToken]):
 
         raise self.error('Unclosed delimiter', i_first_token=value_start_i, i_first_visible_token=entry_start_i)
 
-    def parse_author_string(self, string: str) -> BibAuthor:
-        if string.startswith('{') and string.endswith('}'):
-            return BibAuthor(full_name=string[1:-1], verbatim=True)
+    def parse_raw_value(self) -> BibString:
+        builder = CompositeStringBuilder()
+        verbatim = False
+        i_start = self.index
 
-        return BibAuthor(full_name=string, verbatim=False)
+        while not self.is_at_end():
+            match head := self.peek():
+                case Whitespace.line_break:
+                    raise self.error('Unexpected line break', i_first_visible_token=i_start)
 
-    def parse_authors(self, value: PropertyValue, entry_start_i: int, value_start_i: int) -> Iterable[BibAuthor]:
+                case MiscToken.closing_brace:
+                    if verbatim:
+                        builder.flush(verbatim=verbatim)
+                        verbatim = False
+                        self.advance()
+                    else:
+                        builder.flush(verbatim=verbatim)
+                        self.advance()
+
+                case MiscToken.opening_brace:
+                    builder.flush(verbatim=verbatim)
+                    verbatim = True
+                    self.advance()
+
+                case MiscToken.backslash:
+                    builder.append(self.parse_escape_sequence(i_start=i_start))
+
+                case _:
+                    builder.append(str(head))
+                    self.advance()
+
+        builder.flush(verbatim=verbatim)
+        return builder.get_value()
+
+    def parse_author_string(self, string: BibString) -> BibAuthor:
+        return BibAuthor(full_name=string.strip())
+
+    def parse_authors(self, value: BibString, entry_start_i: int, value_start_i: int) -> Iterable[BibAuthor]:
         expecting_and = False
 
+        error_message = 'Cannot parse author string'
         error_kwargs = dict(
             i_first_token=value_start_i,
             i_last_token=self.index - 1,
             i_first_visible_token=entry_start_i
         )
 
-        for segment in value.segments:
+        buffer = list[BibString]()
+
+        for segment in value.segments if isinstance(value, CompositeString) else [value]:
             if segment == 'and' or segment == 'AND':
                 if expecting_and:
+                    if len(buffer) > 0:
+                        yield self.parse_author_string(CompositeString(buffer) if len(buffer) > 1 else buffer[0])
+                        buffer = []
+
                     expecting_and = False
                     continue
                 else:
-                    raise self.error('Cannot parse author string', **error_kwargs)
+                    raise self.error(error_message, **error_kwargs)
 
             if segment.isspace():
                 continue
 
             if expecting_and:
-                raise self.error('Cannot parse author string', **error_kwargs)
+                raise self.error(error_message, **error_kwargs)
 
-            yield self.parse_author_string(segment.strip())
-
+            buffer.append(segment)
             expecting_and = True
 
         if not expecting_and:
-            raise self.error('Cannot parse author string', **error_kwargs)
+            raise self.error(error_message, **error_kwargs)
 
-    def perform_inline_validation(self, key: str, value: PropertyValue, entry_start_i: int, value_start_i: int) -> None:
+        if len(buffer) > 0:
+            yield self.parse_author_string(CompositeString(buffer) if len(buffer) > 1 else buffer[0])
+
+    def perform_inline_validation(self, key: str, value: BibString, entry_start_i: int, value_start_i: int) -> None:
         error_kwargs = dict(
             i_first_token=value_start_i,
             i_last_token=self.index - 1,
@@ -214,11 +231,14 @@ class BibParser(WhitespaceParserMixin[BibToken], Parser[BibToken]):
         if len(value_str) == 0 or value_str.isspace():
             raise self.error('Empty value', **error_kwargs)
 
+        if key in PLAIN_KEYS and not isinstance(value, str):
+            raise self.error('Invalid value', **error_kwargs)
+
         if key in AUTHOR_KEYS:
             for _ in self.parse_authors(value, entry_start_i, value_start_i):
                 pass
 
-    def parse_entry_properties(self, entry_start_i: int) -> Iterable[tuple[str, PropertyValue]]:
+    def parse_entry_properties(self, entry_start_i: int) -> Iterable[tuple[str, BibString]]:
         keys = set[str]()
         last_comma_i: int | None = None
 
@@ -243,18 +263,18 @@ class BibParser(WhitespaceParserMixin[BibToken], Parser[BibToken]):
             self.skip_spaces()
 
             value_start_i = self.index
-            value: PropertyValue
+            value: BibString
 
             match head := self.peek():
                 case NumberToken():
-                    value = PropertyValue([str(head)])
+                    value = str(head)
                     self.advance()
 
                 case MiscToken.opening_brace:
-                    value = self.parse_value(entry_start_i, value_start_i, quotes=False)
+                    value = self.parse_value(key, entry_start_i, value_start_i, quotes=False)
 
                 case MiscToken.quotes:
-                    value = self.parse_value(entry_start_i, value_start_i, quotes=True)
+                    value = self.parse_value(key, entry_start_i, value_start_i, quotes=True)
 
                 case _:
                     raise self.error('Invalid entry value', i_first_visible_token=entry_start_i)
@@ -280,7 +300,7 @@ class BibParser(WhitespaceParserMixin[BibToken], Parser[BibToken]):
         if last_comma_i is not None:
             raise self.error('Trailing commas are disallowed', i_first_visible_token=entry_start_i, i_first_token=last_comma_i, i_last_token=last_comma_i)
 
-    def perform_global_validation(self, properties: dict[str, PropertyValue], entry_start_i: int) -> None:
+    def perform_global_validation(self, properties: dict[str, BibString], entry_start_i: int) -> None:
         if 'title' not in properties:
             raise self.error('Entry without title', i_first_token=entry_start_i, i_last_token=self.index - 1)
 
@@ -288,7 +308,7 @@ class BibParser(WhitespaceParserMixin[BibToken], Parser[BibToken]):
             raise self.error('Entry without language', i_first_token=entry_start_i, i_last_token=self.index - 1)
 
     @list_accumulator
-    def process_authors(self, properties: dict[str, PropertyValue], key: str, entry_start_i: int) -> Iterable[BibAuthor]:
+    def process_authors(self, properties: dict[str, BibString], key: str, entry_start_i: int) -> Iterable[BibAuthor]:
         if key not in properties:
             return
 
@@ -301,7 +321,7 @@ class BibParser(WhitespaceParserMixin[BibToken], Parser[BibToken]):
             i_last_token=self.index - 1
         )
 
-        short_segments: deque[str] | None = None
+        short_segments: deque[BibString] | None = None
 
         if short_key is not None and short_key in properties:
             short_segments = deque()
@@ -322,8 +342,22 @@ class BibParser(WhitespaceParserMixin[BibToken], Parser[BibToken]):
         if short_segments and len(short_segments) > 0:
             raise self.error(error_message, **error_kwargs)
 
+    @overload
+    def process_plain_field(self, properties: dict[str, BibString], key: str, entry_start_i: int, *, mandatory: Literal[True]) -> str: ...
+    @overload
+    def process_plain_field(self, properties: dict[str, BibString], key: str, entry_start_i: int, *, mandatory: Literal[False]) -> str | None: ...
+    def process_plain_field(self, properties: dict[str, BibString], key: str, entry_start_i: int, *, mandatory: bool) -> str | None:
+        value = properties.pop(key, None)
 
-    def parse(self) -> Iterable[BibEntry]:
+        if value is not None and not isinstance(value, str):
+            raise self.error(f'Invalid value {str(value)!r} for field {key}', i_first_token=entry_start_i)
+
+        if mandatory and value is None:
+            raise self.error(f'Missing value for mandatory field {key}', i_first_token=entry_start_i)
+
+        return value
+
+    def parse_entries(self) -> Iterable[BibEntry]:
         entry_names = set[str]()
         self.skip_whitespace_and_comments()
 
@@ -357,15 +391,18 @@ class BibParser(WhitespaceParserMixin[BibToken], Parser[BibToken]):
             yield BibEntry(
                 entry_type=entry_type,
                 entry_name=entry_name,
-                title=str(properties.pop('title')),
+                language=self.process_plain_field(properties, 'language', entry_start_i, mandatory=True),
+                origlanguage=self.process_plain_field(properties, 'origlanguage', entry_start_i, mandatory=False),
                 authors=self.process_authors(properties, 'author', entry_start_i),
                 translators=self.process_authors(properties, 'translator', entry_start_i),
                 advisors=self.process_authors(properties, 'advisor', entry_start_i),
                 editors=self.process_authors(properties, 'editor', entry_start_i),
-                **{key: str(value) for key, value in properties.items()}
+                **properties
             )
 
             self.skip_whitespace_and_comments()
+
+    parse = parse_entries
 
 
 def parse_bibtex(string: str) -> Sequence[BibEntry]:
@@ -373,3 +410,10 @@ def parse_bibtex(string: str) -> Sequence[BibEntry]:
 
     with BibParser(tokens) as parser:
         return list(parser.parse())
+
+
+def parse_value(string: str) -> BibString:
+    tokens = tokenize_bibtex(string)
+
+    with BibParser(tokens) as parser:
+        return parser.parse_raw_value()
