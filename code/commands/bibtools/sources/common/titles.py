@@ -1,6 +1,7 @@
 import re
 from typing import NamedTuple
 
+from notebook.bibtex.parsing import parse_value
 from notebook.bibtex.string import BibString
 from notebook.support.unicode import normalize_whitespace
 
@@ -28,19 +29,14 @@ def split_title(full_title: BibString) -> Titles:
     return Titles(titles[0], titles[1])
 
 
-def construct_titles(title: BibString, subtitle: BibString | None = None) -> Titles:
-    if not isinstance(title, str):
-        return Titles(
-            title,
-            normalize_whitespace(subtitle) if isinstance(subtitle, str) else subtitle
-        )
+def construct_titles(title: str, subtitle: str | None = None) -> Titles:
+    parsed_title = parse_value(normalize_whitespace(title))
+    parsed_subtitle = parse_value(normalize_whitespace(subtitle)) if subtitle else None
 
-    if subtitle is None or subtitle == '':
-        return split_title(
-            normalize_whitespace(title)
-        )
+    if parsed_subtitle is None:
+        return split_title(parsed_title)
 
     return Titles(
-        normalize_whitespace(title),
-        normalize_whitespace(subtitle) if isinstance(subtitle, str) else subtitle
+        parsed_title,
+        parsed_subtitle
     )

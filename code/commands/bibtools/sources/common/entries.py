@@ -3,6 +3,7 @@ from collections.abc import Iterable, Sequence
 
 from notebook.bibtex.author import BibAuthor
 from notebook.bibtex.entry import BibEntry
+from notebook.bibtex.string import strip_braces
 from notebook.math.nlp.rake import RakeNoPhrasesError
 from notebook.math.nlp.token_sequence import TokenSequence
 from notebook.support.iteration import string_accumulator
@@ -30,7 +31,7 @@ def generate_keyphrase(titles: Titles, language: str, *aux_texts: str | None) ->
     non_null_aux = [aux for aux in aux_texts if aux]
 
     try:
-        title_scores = generate_keyphrase_scores(titles.main, language, *non_null_aux)
+        title_scores = generate_keyphrase_scores(strip_braces(titles.main), language, *non_null_aux)
     except RakeNoPhrasesError:
         return TokenSequence([])
 
@@ -40,7 +41,7 @@ def generate_keyphrase(titles: Titles, language: str, *aux_texts: str | None) ->
         return title_keyphrase
 
     try:
-        subtitle_scores = generate_keyphrase_scores(titles.sub, language, *non_null_aux)
+        subtitle_scores = generate_keyphrase_scores(strip_braces(titles.sub), language, *non_null_aux)
     except RakeNoPhrasesError:
         return title_keyphrase
 
@@ -53,12 +54,12 @@ def generate_keyphrase(titles: Titles, language: str, *aux_texts: str | None) ->
 @string_accumulator()
 def generate_entry_name(authors: Sequence[BibAuthor], year: str | None, titles: Titles, language: str, *aux_texts: str | None) -> Iterable[str]:
     if len(authors) > 0:
-        yield mangle_string_for_entry_name(get_main_human_name(authors[0].full_name))
+        yield mangle_string_for_entry_name(strip_braces(get_main_human_name(authors[0].full_name)))
 
     if len(authors) > 2 or (len(authors) == 2 and authors[1] == BibAuthor(full_name='others')):
         yield 'ИПр' if language == 'russian' or language == 'bulgarian' else 'EtAl'
     elif len(authors) > 1:
-        yield mangle_string_for_entry_name(get_main_human_name(authors[1].full_name))
+        yield mangle_string_for_entry_name(strip_braces(get_main_human_name(authors[1].full_name)))
 
     if year:
         yield year
@@ -69,5 +70,5 @@ def generate_entry_name(authors: Sequence[BibAuthor], year: str | None, titles: 
 
 def regenerate_entry_name(entry: BibEntry, *aux_texts: str | None) -> str:
     titles = Titles(entry.title, entry.subtitle)
-    year = extract_year(entry.date)
+    year = extract_year(strip_braces(entry.date)) if entry.date else None
     return generate_entry_name(entry.authors or entry.editors, year, titles, entry.language, *aux_texts)

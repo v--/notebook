@@ -90,3 +90,15 @@ class CompositeStringBuilder:
 
             case _:
                 return CompositeString(self.segments)
+
+
+def strip_braces(string: BibString) -> str:
+    match string:
+        case CompositeString():
+            return ''.join(map(strip_braces, string.segments))
+
+        case VerbatimString():
+            return string.value
+
+        case str():
+            return string
