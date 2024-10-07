@@ -1,4 +1,4 @@
-from collections.abc import Iterable, Sequence
+from collections.abc import Collection, Iterable, Sequence
 from typing import NamedTuple
 
 from ...exceptions import NotebookCodeError
@@ -29,7 +29,7 @@ class ModusPonensConfig(NamedTuple):
 
 
 class AxiomaticDerivation(NamedTuple):
-    axiom_schemas: frozenset[FormulaSchema]
+    axiom_schemas: Collection[FormulaSchema]
     payload: Sequence[Formula]
 
     def __post_init__(self) -> None:
@@ -107,15 +107,13 @@ def are_derivations_equivalent(a: AxiomaticDerivation, b: AxiomaticDerivation) -
 
 
 # This is alg:proof_tree_to_axiomatic_derivation in the monograph
-def derivation_to_proof_tree(derivation: AxiomaticDerivation, used_markers: frozenset[Marker] = frozenset()) -> ProofTree:
+def derivation_to_proof_tree(derivation: AxiomaticDerivation, used_markers: Collection[Marker] = set()) -> ProofTree:
     conclusion = derivation.get_conclusion()
     system = NaturalDeductionSystem(
-        frozenset(
-            [MODUS_PONENS] + [
-                Rule(name='Ax', premises=[], conclusion=axiom_schema)
-                for axiom_schema in derivation.axiom_schemas
-            ]
-        )
+        {
+            Rule(name='Ax', premises=[], conclusion=axiom_schema)
+            for axiom_schema in derivation.axiom_schemas
+        } | {MODUS_PONENS}
     )
 
     if derivation.is_premise(conclusion):
@@ -140,8 +138,8 @@ def derivation_to_proof_tree(derivation: AxiomaticDerivation, used_markers: froz
     cond = derivation.payload[mp_config.conditional_index]
     assert is_conditional(cond)
     conditional_subtree = derivation_to_proof_tree(derivation.truncate(mp_config.conditional_index), used_markers)
-    markers = frozenset(ass.marker for ass in conditional_subtree.iter_open_assumptions())
-    antecedent_subtree = derivation_to_proof_tree(derivation.truncate(mp_config.antecedent_index), used_markers | markers)
+    markers = {ass.marker for ass in conditional_subtree.iter_open_assumptions()}
+    antecedent_subtree = derivation_to_proof_tree(derivation.truncate(mp_config.antecedent_index), {*used_markers, *markers})
     substitution = Substitution({
         parse_placeholder('φ'): antecedent_subtree.conclusion,
         parse_placeholder('ψ'): conclusion
@@ -166,6 +164,6 @@ def _proof_tree_to_derivation_payload(tree: ProofTree) -> Iterable[Formula]:
 # This is alg:axiomatic_derivation_to_proof_tree in the monograph
 def proof_tree_to_derivation(tree: ProofTree) -> AxiomaticDerivation:
     return AxiomaticDerivation(
-        axiom_schemas=frozenset(rule.conclusion for rule in tree.system.rules if rule is not MODUS_PONENS),
+        axiom_schemas={rule.conclusion for rule in tree.system.rules if rule is not MODUS_PONENS},
         payload=list(_proof_tree_to_derivation_payload(tree))
     )

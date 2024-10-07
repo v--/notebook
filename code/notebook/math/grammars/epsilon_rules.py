@@ -1,4 +1,4 @@
-from collections.abc import Iterable, Sequence
+from collections.abc import Collection, Iterable, Sequence
 
 from .alphabet import NonTerminal, Terminal, new_non_terminal
 from .grammar import Grammar, GrammarRule, GrammarSchema
@@ -20,7 +20,7 @@ def is_essentially_epsilon_free(grammar: Grammar) -> bool:
     return True
 
 
-def identify_nullable_non_terminals(grammar: Grammar) -> set[NonTerminal]:
+def identify_nullable_non_terminals(grammar: Grammar) -> Collection[NonTerminal]:
     nullable: set[NonTerminal] = set()
     added_during_iteration = False
 
@@ -39,7 +39,7 @@ def identify_nullable_non_terminals(grammar: Grammar) -> set[NonTerminal]:
     return nullable
 
 
-def iter_rules_without_nullables(nullable: set[NonTerminal], dest: Sequence[NonTerminal | Terminal]) -> Iterable[Sequence[NonTerminal | Terminal]]:
+def iter_rules_without_nullables(nullable: Collection[NonTerminal], dest: Sequence[NonTerminal | Terminal]) -> Iterable[Sequence[NonTerminal | Terminal]]:
     assert len(dest) > 0
 
     if len(dest) == 1:
@@ -59,7 +59,7 @@ def remove_epsilon_rules(grammar: Grammar) -> Grammar:
     nullable = identify_nullable_non_terminals(grammar)
     new_start = new_non_terminal(
         grammar.start.value,
-        frozenset(grammar.schema.get_non_terminals())
+        grammar.schema.get_non_terminals()
     )
 
     new_rules = [GrammarRule(src=[new_start], dest=[grammar.start])]

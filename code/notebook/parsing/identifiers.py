@@ -1,5 +1,5 @@
 import itertools
-from collections.abc import Iterable
+from collections.abc import Collection, Iterable
 from typing import Self
 
 from ..exceptions import UnreachableException
@@ -44,7 +44,7 @@ def iter_latin_identifiers() -> Iterable[LatinIdentifier]:
             yield LatinIdentifier(chr(j), index=i)
 
 
-def new_latin_identifier(context: frozenset[LatinIdentifier]) -> LatinIdentifier:
+def new_latin_identifier(context: Collection[LatinIdentifier]) -> LatinIdentifier:
     for identifier in iter_latin_identifiers():
         if identifier not in context:
             return identifier

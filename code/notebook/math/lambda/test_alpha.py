@@ -69,5 +69,8 @@ def test_separate_free_and_bound_variables(term: str, expected: str) -> None:
     old_term = parse_term(term)
     new_term = separate_free_and_bound_variables(old_term)
     assert are_terms_alpha_equivalent(old_term, new_term)
-    assert get_free_variables(new_term).isdisjoint(get_bound_variables(new_term))
+
+    free = set(get_free_variables(new_term))
+    bound = set(get_bound_variables(new_term))
+    assert free.isdisjoint(bound)
     assert str(new_term) == expected

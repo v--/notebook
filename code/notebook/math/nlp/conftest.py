@@ -1,3 +1,4 @@
+from collections.abc import Collection
 from textwrap import dedent
 
 import pytest
@@ -20,5 +21,5 @@ def fifth_postulate() -> TokenSequence:
 
 
 @pytest.fixture
-def fifth_postulate_stop_words() -> frozenset[str]:
-    return frozenset('a across and being do if is itself less makes not of on other same than that the then to two whose'.split())
+def fifth_postulate_stop_words() -> Collection[str]:
+    return 'a across and being do if is itself less makes not of on other same than that the then to two whose'.split()

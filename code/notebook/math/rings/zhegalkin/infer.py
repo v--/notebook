@@ -18,7 +18,7 @@ def infer_zhegalkin(fun: Callable[..., bool]) -> ZhegalkinPolynomial:
         return var.T if fun() else var.F
 
     first = next(param.name for param in fun_params.values())
-    first_var = ZhegalkinPolynomial(payload=frozenset([frozenset(first)]), free=False)
+    first_var = ZhegalkinPolynomial(payload=[frozenset(first)], free=False)
 
     sub_t = infer_zhegalkin(functools.partial(fun, True))  # noqa: FBT003
     sub_f = infer_zhegalkin(functools.partial(fun, False))  # noqa: FBT003

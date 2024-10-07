@@ -1,5 +1,5 @@
 from collections import deque
-from collections.abc import Iterable, Sequence
+from collections.abc import Collection, Iterable, Sequence
 from typing import Literal, cast, get_args, overload
 
 from ...parsing.mixins.whitespace import WhitespaceParserMixin
@@ -40,7 +40,7 @@ class BibParser(WhitespaceParserMixin[BibToken], Parser[BibToken]):
 
         return cast(BibEntryType, entry_type)
 
-    def parse_entry_name(self, existing: set[str]) -> str:
+    def parse_entry_name(self, existing: Collection[str]) -> str:
         start_i = self.index
 
         # Entry names may even contain %, which is otherwise used for comments

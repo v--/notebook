@@ -1,3 +1,4 @@
+from collections.abc import Collection
 
 from ...parsing.whitespace import Whitespace
 from .rake import generate_phrase_scores, iter_phrases
@@ -15,7 +16,7 @@ def test_iter_phrases(quick_fox: TokenSequence) -> None:
     ]
 
 
-def test_generate_phrase_scores(fifth_postulate: TokenSequence, fifth_postulate_stop_words: frozenset[str]) -> None:
+def test_generate_phrase_scores(fifth_postulate: TokenSequence, fifth_postulate_stop_words: Collection[str]) -> None:
     scores = generate_phrase_scores(
         fifth_postulate,
         stop_words=fifth_postulate_stop_words

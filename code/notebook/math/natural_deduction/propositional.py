@@ -13,33 +13,31 @@ def substitute_propositional_formulas(schema: str, **kwargs: str) -> Formula:
     )
 
 
-propositional_natural_deduction_system = NaturalDeductionSystem(
-    frozenset([
-        parse_rule('(⊤⁺) ⫢ ⊤'),
-        parse_rule('(⊤⁻) [⊤] φ ⫢ φ'),
+propositional_natural_deduction_system = NaturalDeductionSystem([
+    parse_rule('(⊤⁺) ⫢ ⊤'),
+    parse_rule('(⊤⁻) [⊤] φ ⫢ φ'),
 
-        parse_rule('(EFQ) ⊥ ⫢ φ'),
-        parse_rule('(DNE) [¬φ] ⊥ ⫢ φ'),
+    parse_rule('(EFQ) ⊥ ⫢ φ'),
+    parse_rule('(DNE) [¬φ] ⊥ ⫢ φ'),
 
-        parse_rule('(¬⁺) [φ] ⊥ ⫢ ¬φ'),
-        parse_rule('(¬⁻) ¬φ, φ ⫢ ⊥'),
+    parse_rule('(¬⁺) [φ] ⊥ ⫢ ¬φ'),
+    parse_rule('(¬⁻) ¬φ, φ ⫢ ⊥'),
 
-        parse_rule('(∨⁺ᴸ) φ ⫢ (φ ∨ ψ)'),
-        parse_rule('(∨⁺ᴿ) ψ ⫢ (φ ∨ ψ)'),
-        parse_rule('(∨⁻) (φ ∨ ψ), [φ] θ, [ψ] θ ⫢ θ'),
+    parse_rule('(∨⁺ᴸ) φ ⫢ (φ ∨ ψ)'),
+    parse_rule('(∨⁺ᴿ) ψ ⫢ (φ ∨ ψ)'),
+    parse_rule('(∨⁻) (φ ∨ ψ), [φ] θ, [ψ] θ ⫢ θ'),
 
-        parse_rule('(∧⁺) φ, ψ ⫢ (φ ∧ ψ)'),
-        parse_rule('(∧⁻ᴸ) (φ ∧ ψ) ⫢ φ'),
-        parse_rule('(∧⁻ᴿ) (φ ∧ ψ) ⫢ ψ'),
+    parse_rule('(∧⁺) φ, ψ ⫢ (φ ∧ ψ)'),
+    parse_rule('(∧⁻ᴸ) (φ ∧ ψ) ⫢ φ'),
+    parse_rule('(∧⁻ᴿ) (φ ∧ ψ) ⫢ ψ'),
 
-        parse_rule('(→⁺) [φ] ψ ⫢ (φ → ψ)'),
-        parse_rule('(→⁻) (φ → ψ), φ ⫢ ψ'),
+    parse_rule('(→⁺) [φ] ψ ⫢ (φ → ψ)'),
+    parse_rule('(→⁻) (φ → ψ), φ ⫢ ψ'),
 
-        parse_rule('(↔⁺) [φ] ψ, [ψ] φ ⫢ (φ ↔ ψ)'),
-        parse_rule('(↔⁻ᴸ) (φ ↔ ψ), φ ⫢ ψ'),
-        parse_rule('(↔⁻ᴿ) (φ ↔ ψ), ψ ⫢ φ')
-    ])
-)
+    parse_rule('(↔⁺) [φ] ψ, [ψ] φ ⫢ (φ ↔ ψ)'),
+    parse_rule('(↔⁻ᴸ) (φ ↔ ψ), φ ⫢ ψ'),
+    parse_rule('(↔⁻ᴿ) (φ ↔ ψ), ψ ⫢ φ')
+])
 
 
 def propositional_assume(formula: Formula | str, marker: str) -> AssumptionTree:

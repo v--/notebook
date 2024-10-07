@@ -1,11 +1,12 @@
 import functools
 import operator
+from collections.abc import Collection
 from dataclasses import dataclass
 
 
 @dataclass
 class ZhegalkinPolynomial:
-    payload: frozenset[frozenset[str]]
+    payload: Collection[frozenset[str]]
     free: bool
 
     def __call__(self, **kwargs: bool) -> bool:
@@ -22,9 +23,15 @@ class ZhegalkinPolynomial:
 
         return ' + '.join(''.join(variables) for variables in self.payload) + (' + T' if self.free else '')
 
+    def __eq__(self, other: object) -> bool:
+        if not isinstance(other, ZhegalkinPolynomial):
+            return NotImplemented
+
+        return set(self.payload) == set(other.payload) and self.free == other.free
+
     def __add__(self, other: 'ZhegalkinPolynomial') -> 'ZhegalkinPolynomial':
         return ZhegalkinPolynomial(
-            payload=frozenset(self.payload.symmetric_difference(other.payload)),
+            payload=frozenset(self.payload).symmetric_difference(other.payload),
             free=self.free ^ other.free
         )
 

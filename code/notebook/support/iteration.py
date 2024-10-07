@@ -38,20 +38,18 @@ def groupby_custom[K: Hashable, V](values: Iterable[V], by: Callable[[V], K]) ->
     return result.items()
 
 
-def list_accumulator[R, **P](fun: Callable[P, Iterable[R]]) -> Callable[P, Sequence[R]]:
-    @functools.wraps(fun)
-    def wrapper(*args: P.args, **kwargs: P.kwargs) -> Sequence[R]:
-        return list(fun(*args, **kwargs))
+def iter_accumulator[T, R, **P](collector: Callable[[Iterable[T]], R]) -> Callable[[Callable[P, Iterable[T]]], Callable[P, R]]:
+    def decorator(fun: Callable[P, Iterable[T]]) -> Callable[P, R]:
+        @functools.wraps(fun)
+        def wrapper(*args: P.args, **kwargs: P.kwargs) -> R:
+            return collector(fun(*args, **kwargs))
 
-    return wrapper
+        return wrapper
+
+    return decorator
 
 
-def frozen_set_accumulator[R, **P](fun: Callable[P, Iterable[R]]) -> Callable[P, frozenset[R]]:
-    @functools.wraps(fun)
-    def wrapper(*args: P.args, **kwargs: P.kwargs) -> frozenset[R]:
-        return frozenset(fun(*args, **kwargs))
-
-    return wrapper
+list_accumulator = iter_accumulator(list)
 
 
 def string_accumulator[**P](joiner: str = '') -> Callable[[Callable[P, Iterable[str]]], Callable[P, str]]:

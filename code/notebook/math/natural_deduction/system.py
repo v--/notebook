@@ -1,3 +1,4 @@
+from collections.abc import Collection
 from dataclasses import dataclass
 
 from .exceptions import NaturalDeductionError
@@ -6,7 +7,7 @@ from .rules import Rule
 
 @dataclass(frozen=True)
 class NaturalDeductionSystem:
-    rules: frozenset[Rule]
+    rules: Collection[Rule]
 
     def __getitem__(self, rule_name: str) -> Rule:
         # We don't enforce the rule names to be distinct, but we hope they are when this method is used

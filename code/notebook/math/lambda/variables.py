@@ -1,3 +1,5 @@
+from collections.abc import Collection
+
 from ...parsing.identifiers import new_latin_identifier
 from .parsing import parse_variable
 from .terms import Abstraction, Application, LambdaTerm, Variable
@@ -10,39 +12,39 @@ class common:  # noqa: N801
     z = parse_variable('z')
 
 
-def new_variable(context: frozenset[Variable]) -> Variable:
-    return Variable(new_latin_identifier(frozenset(var.identifier for var in context)))
+def new_variable(context: Collection[Variable]) -> Variable:
+    return Variable(new_latin_identifier({var.identifier for var in context}))
 
 
-class FreeVariableVisitor(TermVisitor[frozenset[Variable]]):
-    def visit_variable(self, term: Variable) -> frozenset[Variable]:
-        return frozenset([term])
+class FreeVariableVisitor(TermVisitor[Collection[Variable]]):
+    def visit_variable(self, term: Variable) -> Collection[Variable]:
+        return {term}
 
-    def visit_application(self, term: Application) -> frozenset[Variable]:
-        return self.visit(term.a) | self.visit(term.b)
+    def visit_application(self, term: Application) -> Collection[Variable]:
+        return {*self.visit(term.a), *self.visit(term.b)}
 
-    def visit_abstraction(self, term: Abstraction) -> frozenset[Variable]:
-        return self.visit(term.sub) - {term.var}
+    def visit_abstraction(self, term: Abstraction) -> Collection[Variable]:
+        return {var for var in self.visit(term.sub) if var != term.var}
 
 
-def get_free_variables(term: LambdaTerm) -> frozenset[Variable]:
+def get_free_variables(term: LambdaTerm) -> Collection[Variable]:
     return FreeVariableVisitor().visit(term)
 
 
-class BoundVariableVisitor(TermVisitor[frozenset[Variable]]):
-    def visit_variable(self, term: Variable) -> frozenset[Variable]:  # noqa: ARG002
-        return frozenset()
+class BoundVariableVisitor(TermVisitor[Collection[Variable]]):
+    def visit_variable(self, term: Variable) -> Collection[Variable]:  # noqa: ARG002
+        return set()
 
-    def visit_application(self, term: Application) -> frozenset[Variable]:
-        return self.visit(term.a) | self.visit(term.b)
+    def visit_application(self, term: Application) -> Collection[Variable]:
+        return {*self.visit(term.a), *self.visit(term.b)}
 
-    def visit_abstraction(self, term: Abstraction) -> frozenset[Variable]:
-        return self.visit(term.sub) | {term.var}
+    def visit_abstraction(self, term: Abstraction) -> Collection[Variable]:
+        return {*self.visit(term.sub), term.var}
 
 
-def get_bound_variables(term: LambdaTerm) -> frozenset[Variable]:
+def get_bound_variables(term: LambdaTerm) -> Collection[Variable]:
     return BoundVariableVisitor().visit(term)
 
 
-def get_formula_variables(term: LambdaTerm) -> frozenset[Variable]:
-    return get_free_variables(term) | get_bound_variables(term)
+def get_formula_variables(term: LambdaTerm) -> Collection[Variable]:
+    return {*get_free_variables(term), *get_bound_variables(term)}

@@ -1,6 +1,6 @@
 import functools
 import itertools
-from collections.abc import Iterable, Sequence
+from collections.abc import Collection, Iterable, Sequence
 from dataclasses import dataclass, field
 from typing import NamedTuple
 
@@ -28,15 +28,15 @@ class GrammarRule(NamedTuple):
     def __hash__(self) -> int:
         return hash(str(self))
 
-    def get_terminals(self) -> frozenset[Terminal]:
-        return frozenset(
+    def get_terminals(self) -> Collection[Terminal]:
+        return {
             sym for sym in itertools.chain(self.src, self.dest) if isinstance(sym, Terminal)
-        )
+        }
 
-    def get_non_terminals(self) -> frozenset[NonTerminal]:
-        return frozenset(
+    def get_non_terminals(self) -> Collection[NonTerminal]:
+        return {
             sym for sym in itertools.chain(self.src, self.dest) if isinstance(sym, NonTerminal)
-        )
+        }
 
 
 class GrammarSchema(NamedTuple):

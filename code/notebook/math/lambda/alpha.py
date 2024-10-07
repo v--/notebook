@@ -1,3 +1,5 @@
+from collections.abc import Collection
+
 from .substitution import Substitution, apply_substitution
 from .terms import Abstraction, Application, LambdaTerm, Variable
 from .variables import get_free_variables, new_variable
@@ -31,7 +33,7 @@ def are_terms_alpha_equivalent(m: LambdaTerm, n: LambdaTerm) -> bool:
 
 
 # This is alg:separation_of_free_and_bound_variables in the monograph
-def separate_free_and_bound_variables_impl(term: LambdaTerm, context: frozenset[Variable] = frozenset()) -> LambdaTerm:
+def separate_free_and_bound_variables_impl(term: LambdaTerm, context: Collection[Variable] = set()) -> LambdaTerm:
     match term:
         case Variable():
             return term
@@ -44,14 +46,14 @@ def separate_free_and_bound_variables_impl(term: LambdaTerm, context: frozenset[
 
         case Abstraction():
             if term.var not in context:
-                return Abstraction(term.var, separate_free_and_bound_variables_impl(term.sub, context | {term.var}))
+                return Abstraction(term.var, separate_free_and_bound_variables_impl(term.sub, {*context, term.var}))
 
             new_var = new_variable(context)
 
             return Abstraction(
                 new_var,
                 apply_substitution(
-                    separate_free_and_bound_variables_impl(term.sub, context | {new_var}),
+                    separate_free_and_bound_variables_impl(term.sub, {*context, new_var}),
                     Substitution({term.var: new_var})
                 ),
             )

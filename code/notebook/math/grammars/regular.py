@@ -48,14 +48,14 @@ def to_finite_automaton(grammar: Grammar) -> FiniteAutomaton:
         last_index = -1 if isinstance(rule.dest[-1], Terminal) else -2
 
         for sym in rule.dest[:last_index]:
-            new_var = new_non_terminal(rule.src_symbol.value, frozenset(new_names))
+            new_var = new_non_terminal(rule.src_symbol.value, new_names)
             new_names.add(new_var)
             g4_rules.append(GrammarRule(src=[last], dest=[sym, new_var]))
             last = new_var
 
         g4_rules.append(GrammarRule(src=[last], dest=rule.dest[last_index:]))
 
-    final = new_non_terminal('F', frozenset(new_names))
+    final = new_non_terminal('F', new_names)
     aut: FiniteAutomaton = FiniteAutomaton(
         triples=[
             (

@@ -1,4 +1,5 @@
 import itertools
+from collections.abc import Collection
 from typing import Literal
 
 from ...exceptions import UnreachableException
@@ -16,7 +17,7 @@ class NonTerminal(TokenMixin):
         return f'<{self.value}>'
 
 
-def new_non_terminal(base_name: str, context: frozenset[NonTerminal]) -> NonTerminal:
+def new_non_terminal(base_name: str, context: Collection[NonTerminal]) -> NonTerminal:
     numeric_subscript = ''.join(itertools.takewhile(is_numeric_subscript, reversed(base_name)))
     index: int = -1
 

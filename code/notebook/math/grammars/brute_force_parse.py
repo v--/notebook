@@ -1,5 +1,5 @@
 import itertools
-from collections.abc import Iterable, Sequence
+from collections.abc import Collection, Iterable, Sequence
 
 from .alphabet import NonTerminal, Terminal
 from .context_free import is_context_free
@@ -26,7 +26,7 @@ def iter_partitions(seq: str, m: int) -> Iterable[Sequence[str]]:
                 yield [seq[:i], *part]
 
 
-def generate_trees(sym: NonTerminal | Terminal, string: str, grammar: Grammar, traversed: set[tuple[NonTerminal, str]]) -> Iterable[ParseTree]:
+def generate_trees(sym: NonTerminal | Terminal, string: str, grammar: Grammar, traversed: Collection[tuple[NonTerminal, str]]) -> Iterable[ParseTree]:
     if isinstance(sym, Terminal) and sym.value == string:
         yield ParseTree(sym)
 
@@ -38,9 +38,9 @@ def generate_trees(sym: NonTerminal | Terminal, string: str, grammar: Grammar, t
         )
 
 
-def parse_impl(grammar: Grammar, string: str, traversed: set[tuple[NonTerminal, str]]) -> Iterable[ParseTree]:
+def parse_impl(grammar: Grammar, string: str, traversed: Collection[tuple[NonTerminal, str]]) -> Iterable[ParseTree]:
     if traversed is None:
-        traversed = set()
+        traversed = Collection()
     assert is_context_free(grammar), 'Brute force parsing algorithm only works on context-free grammars'
     for rule in grammar.iter_starting_rules():
         if is_epsilon_rule(rule):

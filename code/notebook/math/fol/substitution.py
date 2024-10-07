@@ -51,14 +51,14 @@ class FormulaSubstitutionVisitor(FormulaTransformationVisitor):
         if formula.variable in free_from:
             return formula
 
-        if formula.variable not in free_from | free_to:
+        if formula.variable not in {*free_from, *free_to}:
             return QuantifierFormula(
                 formula.quantifier,
                 formula.variable,
                 self.visit(formula.sub)
             )
 
-        new_var = new_variable(free_from | free_to | get_free_variables(formula.sub))
+        new_var = new_variable({*free_from, *free_to, *get_free_variables(formula.sub)})
         sub_visitor = FormulaSubstitutionVisitor(formula.variable, new_var)
 
         return QuantifierFormula(
