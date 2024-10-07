@@ -1,18 +1,26 @@
+from collections.abc import Sequence
+
+from ....support.pytest import pytest_parametrize_kwargs
 from .. import boolean
 from .. import combinators as comb
 from ..arithmetic import church_numeral, church_numeral_to_int, succ
 from ..parsing import parse_term
-from ..terms import Application
+from ..terms import Application, LambdaTerm
 from ..variables import common as var
 from .beta import BetaReduction, to_function
 from .strategies import ApplicativeOrderStrategy, NormalOrderStrategy, reduce_term_once, transitively_reduce_term
 
 
-def test_applicative_beta() -> None:
+@pytest_parametrize_kwargs(
+    dict(term=var.x, expected=None),
+    dict(
+        term=Application(comb.i, var.x),
+        expected=var.x
+    )
+)
+def test_applicative_beta(term: LambdaTerm, expected: LambdaTerm | None) -> None:
     strategy = ApplicativeOrderStrategy(BetaReduction())
-
-    assert strategy.try_reduce(var.x) is None
-    assert strategy.try_reduce(Application(comb.i, var.x)) == var.x
+    assert strategy.try_reduce(term) == expected
 
 
 def test_applicative_beta_numerals() -> None:
@@ -43,10 +51,27 @@ def test_beta_foi() -> None:
     assert transitively_reduce_term(foi, normal) == comb.i
 
 
-def test_to_function() -> None:
-    assert to_function(comb.i)(var.x) == var.x
-
-    assert to_function(boolean.t)(var.x, var.y) == var.x
-    assert to_function(boolean.f)(var.x, var.y) == var.y
-
-    assert to_function(comb.s)(var.x, var.y, var.z) == parse_term('((xz)(yz))')
+@pytest_parametrize_kwargs(
+    dict(
+        term=comb.i,
+        params=[var.x],
+        expected=var.x
+    ),
+    dict(
+        term=boolean.t,
+        params=[var.x, var.y],
+        expected=var.x
+    ),
+    dict(
+        term=boolean.f,
+        params=[var.x, var.y],
+        expected=var.y
+    ),
+    dict(
+        term=comb.s,
+        params=[var.x, var.y, var.z],
+        expected=parse_term('((xz)(yz))')
+    )
+)
+def test_to_function(term: LambdaTerm, params: Sequence[LambdaTerm], expected: LambdaTerm) -> None:
+    assert to_function(term)(*params) == expected

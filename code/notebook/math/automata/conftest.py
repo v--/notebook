@@ -1,10 +1,26 @@
+from collections.abc import Iterable, Sequence
+from typing import NamedTuple
+
 import pytest
 
 from .finite import FiniteAutomaton
 
 
+class FiniteAutomatonFixture(NamedTuple):
+    aut: FiniteAutomaton
+    whitelist: Sequence[str]
+    blacklist: Sequence[str]
+
+    def assert_equivalent(self, other: FiniteAutomaton) -> None:
+        for string in self.whitelist:
+            assert other.recognize(string)
+
+        for string in self.blacklist:
+            assert not other.recognize(string)
+
+
 @pytest.fixture
-def aabn() -> FiniteAutomaton:
+def aabn() -> FiniteAutomatonFixture:
     aut: FiniteAutomaton = FiniteAutomaton()
     aut.add_transition(1, 'a', 2)
     aut.add_transition(1, 'b', 3)
@@ -18,34 +34,24 @@ def aabn() -> FiniteAutomaton:
     aut.terminal.add(2)
     aut.terminal.add(5)
 
-    return aut
-
-
-def assert_aabn(aut: FiniteAutomaton) -> None:
-    assert not aut.recognize('')
-    assert not aut.recognize('ab')
-    assert not aut.recognize('abb')
-    assert not aut.recognize('ba')
-
-    assert aut.recognize('a')
-    assert aut.recognize('b')
-    assert aut.recognize('bb')
-    assert aut.recognize('bbb')
-    assert aut.recognize('bbbbbbbbbbbb')
-    assert aut.recognize('aab')
+    return FiniteAutomatonFixture(
+        aut=aut,
+        whitelist=['a', 'b', 'bb', 'bbb', 'bbbbbbbbbbbb'],
+        blacklist=['', 'ab', 'abb', 'ba']
+    )
 
 
 @pytest.fixture
-def leucine() -> FiniteAutomaton:
+def leucine() -> FiniteAutomatonFixture:
     aut: FiniteAutomaton = FiniteAutomaton()
     aut.add_transition(1, 'C', 2)
-    aut.add_transition(2, 'U', 3)
+    aut.add_transition(2, 'T', 3)
     aut.add_transition(3, 'C', 4)
-    aut.add_transition(3, 'U', 5)
-    aut.add_transition(2, 'U', 6)
-    aut.add_transition(1, 'U', 7)
+    aut.add_transition(3, 'T', 5)
+    aut.add_transition(2, 'T', 6)
+    aut.add_transition(1, 'T', 7)
     aut.add_transition(6, 'A', 5)
-    aut.add_transition(7, 'U', 6)
+    aut.add_transition(7, 'T', 6)
     aut.add_transition(6, 'G', 8)
 
     aut.initial.add(1)
@@ -53,19 +59,8 @@ def leucine() -> FiniteAutomaton:
     aut.terminal.add(5)
     aut.terminal.add(8)
 
-    return aut
-
-
-def assert_leucine(aut: FiniteAutomaton) -> None:
-    assert not aut.recognize('')
-    assert not aut.recognize('U')
-    assert not aut.recognize('UU')
-    assert not aut.recognize('UUU')
-    assert not aut.recognize('UUAU')
-
-    assert aut.recognize('UUA')
-    assert aut.recognize('UUG')
-    assert aut.recognize('CUU')
-    assert aut.recognize('CUC')
-    assert aut.recognize('CUA')
-    assert aut.recognize('CUG')
+    return FiniteAutomatonFixture(
+        aut=aut,
+        whitelist=['TTA', 'TTG', 'CTT', 'CTC', 'CTA', 'CTG'],
+        blacklist=['', 'T', 'TT', 'TTT', 'TTAT']
+    )

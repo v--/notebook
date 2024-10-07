@@ -15,7 +15,7 @@ from ..formulas import (
     QuantifierFormula,
 )
 from ..propositional import propositional_signature
-from ..signature import FOLSignature
+from ..signature import EMPTY_SIGNATURE, FOLSignature
 from ..terms import FunctionTerm, Term, Variable
 from .tokenizer import tokenize_fol_string
 from .tokens import FOLToken, FunctionSymbolToken, MiscToken, PredicateSymbolToken
@@ -201,6 +201,13 @@ class FOLParser(WhitespaceParserMixin[FOLToken], Parser[FOLToken]):
 
             case _:
                 raise self.error('Unexpected token')
+
+
+def parse_variable(string: str) -> Variable:
+    tokens = tokenize_fol_string(EMPTY_SIGNATURE, string)
+
+    with FOLParser(tokens, EMPTY_SIGNATURE) as parser:
+        return parser.parse_variable()
 
 
 def parse_term(signature: FOLSignature, string: str) -> Term:

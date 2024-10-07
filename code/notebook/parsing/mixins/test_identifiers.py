@@ -2,6 +2,7 @@ from collections.abc import Sequence
 
 import pytest
 
+from ...support.pytest import pytest_parametrize_kwargs
 from ...support.unicode import Capitalization, is_greek_string, is_latin_string
 from ..identifiers import GreekIdentifier, LatinIdentifier
 from ..parser import ParsingError
@@ -24,10 +25,10 @@ class TestTokenizer(IdentifierTokenizerMixin[TestToken], Tokenizer[TestToken]):
             self.advance()
             return sym
 
-        if is_latin_string(head, Capitalization.small):
+        if is_latin_string(head, Capitalization.lower):
             return self.parse_latin_identifier()
 
-        if is_greek_string(head, Capitalization.small):
+        if is_greek_string(head, Capitalization.lower):
             return self.parse_greek_identifier()
 
         raise self.error('Unexpected symbol')
@@ -38,24 +39,34 @@ def tokenize(string: str) -> Sequence[TestToken]:
         return list(tokenizer.parse())
 
 
-def test_valid_latin_identifiers() -> None:
-    assert tokenize('t') == [LatinIdentifier('t')]
-    assert tokenize('t₀e₁s₂t₃') == [
-        LatinIdentifier('t', index=0),
-        LatinIdentifier('e', index=1),
-        LatinIdentifier('s', index=2),
-        LatinIdentifier('t', index=3)
-    ]
+@pytest_parametrize_kwargs(
+    dict(string='t',   expected=[LatinIdentifier('t')]),
+    dict(
+        string='t₀e₁s₂t₃',
+        expected=[
+            LatinIdentifier('t', index=0),
+            LatinIdentifier('e', index=1),
+            LatinIdentifier('s', index=2),
+            LatinIdentifier('t', index=3)
+        ]
+    ),
+)
+def test_valid_latin_identifiers(string: str, expected: Sequence[str]) -> None:
+    assert tokenize(string) == expected
 
 
-def test_invalid_latin_identifiers() -> None:
-    # Fails to parse Cyrillic
-    with pytest.raises(ParsingError):
+def test_cyrillic_identifier() -> None:
+    with pytest.raises(ParsingError) as excinfo:
         tokenize('Т')
 
-    # Fails to parse capitalized identifiers
-    with pytest.raises(ParsingError):
+    assert str(excinfo.value) == 'Unexpected symbol'
+
+
+def test_capitalized_identifiers() -> None:
+    with pytest.raises(ParsingError) as excinfo:
         tokenize('T')
+
+    assert str(excinfo.value) == 'Unexpected symbol'
 
 
 def test_type_assignments() -> None:

@@ -1,17 +1,24 @@
+from ..support.pytest import pytest_parametrize_kwargs, pytest_parametrize_lists
 from .escaping import escape
 
 
-def test_escape_noop() -> None:
-    def t(string: str) -> bool:
-        return string == escape(string)
+@pytest_parametrize_lists(
+    string=[
+        '',
+        'test',
+        'test test',
+        '\\\\',
+        '\\&'
+    ]
+)
+def test_escape_noop(string: str) -> None:
+    assert string == escape(string)
 
-    assert t('')
-    assert t('test')
-    assert t('test test')
-    assert t('\\\\')
-    assert t('\\&')
 
-
-def test_escape() -> None:
-    assert escape('&') == '\\&'
-    assert escape('test & test') == 'test \\& test'
+@pytest_parametrize_kwargs(
+    dict(string='&',           expected='\\&'),
+    dict(string='@',           expected='\\@'),
+    dict(string='test & test', expected='test \\& test')
+)
+def test_escape(string: str, expected: str) -> None:
+    assert escape(string) == expected

@@ -2,7 +2,7 @@ from textwrap import dedent
 
 from .alphabet import NonTerminal
 from .brute_force_parse import derives
-from .conftest import assert_an, assert_binary
+from .conftest import GrammarFixture
 from .epsilon_rules import (
     is_epsilon_free,
     is_essentially_epsilon_free,
@@ -12,7 +12,7 @@ from .parsing import parse_grammar_schema
 
 
 # See ex:alg:epsilon_rule_removal/an in the monograph
-def test_remove_epsilon_rules_simple() -> None:
+def test_remove_epsilon_rules_simple(an: GrammarFixture) -> None:
     grammar = parse_grammar_schema(
         dedent('''\
             <S> → ε | "a" <S>
@@ -20,13 +20,13 @@ def test_remove_epsilon_rules_simple() -> None:
         )
     ).instantiate(NonTerminal('S'))
 
-    assert_an(grammar)
+    an.assert_equivalent(grammar)
     assert not is_essentially_epsilon_free(grammar)
 
     new_grammar = remove_epsilon_rules(grammar)
 
     assert is_essentially_epsilon_free(new_grammar)
-    assert_an(new_grammar)
+    an.assert_equivalent(new_grammar)
 
 
 # See ex:alg:epsilon_rule_removal/dead in the monograph
@@ -57,7 +57,7 @@ def test_remove_epsilon_rules_terminal_rule() -> None:
 
 
 # See ex:alg:epsilon_rule_removal/natural in the monograph
-def test_remove_epsilon_rules_natural() -> None:
+def test_remove_epsilon_rules_natural(binary: GrammarFixture) -> None:
     grammar = parse_grammar_schema(
         dedent('''\
             <N> → "0" | "1" <B>
@@ -66,11 +66,11 @@ def test_remove_epsilon_rules_natural() -> None:
         )
     ).instantiate(NonTerminal('N'))
 
-    assert_binary(grammar)
+    binary.assert_equivalent(grammar)
     assert not is_essentially_epsilon_free(grammar)
 
     new_grammar = remove_epsilon_rules(grammar)
 
     assert is_essentially_epsilon_free(new_grammar)
     assert is_epsilon_free(new_grammar)
-    assert_binary(new_grammar)
+    binary.assert_equivalent(new_grammar)

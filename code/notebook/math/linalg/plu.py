@@ -6,6 +6,7 @@ from .dtypes import field_of
 from .matrix import Matrix, eye
 from .triangular import lower_triangular_inv, upper_triangular_inv
 
+
 a: int = 3
 
 def swapping_matrix(n: int, j: int, k: int) -> Matrix[int]:

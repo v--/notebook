@@ -1,4 +1,4 @@
-from .conftest import assert_aabn, assert_leucine
+from .conftest import FiniteAutomatonFixture
 from .finite import FiniteAutomaton
 from .finite_determinize import determinize
 
@@ -17,17 +17,6 @@ def test_finite_automaton_recognizes_an() -> None:
     assert aut.recognize('aaaaaaaaaaaaaaaaaaaa')
     assert not aut.recognize('b')
     assert not aut.recognize('ab')
-
-
-# fig:def:finite_automaton
-def test_finite_automaton_recognizes_aabn(aabn: FiniteAutomaton) -> None:
-    assert not aabn.is_deterministic()
-    assert_aabn(aabn)
-
-
-def test_finite_automaton_recognizes_leucine(leucine: FiniteAutomaton) -> None:
-    assert not leucine.is_deterministic()
-    assert_leucine(leucine)
 
 
 # fig:def:finite_automaton
@@ -51,15 +40,15 @@ def test_determinize_preserves_parallel_arcs() -> None:
 
 
 # fig:def:finite_automaton
-def test_determinize_aabn(aabn: FiniteAutomaton) -> None:
-    det = determinize(aabn)
+def test_determinize_aabn(aabn: FiniteAutomatonFixture) -> None:
+    det = determinize(aabn.aut)
     assert det.is_deterministic()
-    assert_aabn(det)
+    aabn.assert_equivalent(det)
 
 
 # ex:def:formal_language/leucine
-def test_determinize_leucine(leucine: FiniteAutomaton) -> None:
-    det = determinize(leucine)
+def test_determinize_leucine(leucine: FiniteAutomatonFixture) -> None:
+    det = determinize(leucine.aut)
     assert det.is_deterministic()
     assert frozenset({3, 6}) in det.get_states()
-    assert_leucine(det)
+    leucine.assert_equivalent(det)

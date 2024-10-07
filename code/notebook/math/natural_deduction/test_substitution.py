@@ -1,19 +1,36 @@
 import pytest
 
+from ...support.pytest import pytest_parametrize_kwargs
 from ..fol.parsing import parse_propositional_formula
 from .parsing import parse_schema
 from .propositional import substitute_propositional_formulas
 from .substitution import SubstitutionError, is_schema_instance
 
 
-def test_substitution_application() -> None:
-    def t(schema: str, **kwargs: str) -> str:
-        return str(substitute_propositional_formulas(schema, **kwargs))
-
-    assert t('φ', φ='p') == 'p'
-    assert t('φ', φ='(p ∧ q)') == '(p ∧ q)'
-    assert t('(φ ∧ φ)', φ='p') == '(p ∧ p)'
-    assert t('(φ ∧ ψ)', φ='p', ψ='q') == '(p ∧ q)'
+@pytest_parametrize_kwargs(
+    dict(
+        schema='φ',
+        mapping=dict(φ='p'),
+        expected='p'
+    ),
+    dict(
+        schema='φ',
+        mapping=dict(φ='(p ∧ q)'),
+        expected='(p ∧ q)'
+    ),
+    dict(
+        schema='(φ ∧ φ)',
+        mapping=dict(φ='p'),
+        expected='(p ∧ p)'
+    ),
+    dict(
+        schema='(φ ∧ ψ)',
+        mapping=dict(φ='p', ψ='q'),
+        expected='(p ∧ q)'
+    )
+)
+def test_substitution_application(schema: str, mapping: dict[str, str], expected: str) -> None:
+    assert substitute_propositional_formulas(schema, **mapping) == parse_propositional_formula(expected)
 
 
 def test_invalid_substitution_application() -> None:
@@ -21,41 +38,53 @@ def test_invalid_substitution_application() -> None:
         substitute_propositional_formulas('φ')
 
 
-def test_is_schema_instance_prop() -> None:
-    def t(schema_string: str, formula_string: str) -> bool:
-        schema = parse_schema(schema_string)
-        formula = parse_propositional_formula(formula_string)
-        return is_schema_instance(schema, formula)
-
+@pytest_parametrize_kwargs(
     # Atomic schemas
-    assert t('φ', '⊤')
-    assert t('φ', 'p')
-    assert t('φ', '¬p')
-    assert t('φ', '(p → q)')
+    dict(schema='φ', formula='⊤'),
+    dict(schema='φ', formula='p'),
+    dict(schema='φ', formula='¬p'),
+    dict(schema='φ', formula='(p → q)'),
 
     # Constant schemas
-    assert t('⊤', '⊤')
-    assert not t('⊤', '⊥')
-    assert not t('⊤', 'p')
+    dict(schema='⊤', formula='⊤'),
 
     # Negation schemas
-    assert not t('¬φ', '⊤')
-    assert not t('¬φ', 'p')
-    assert t('¬φ', '¬p')
-    assert t('¬φ', '¬¬p')
-    assert t('¬¬φ', '¬¬p')
-    assert not t('¬¬φ', '¬p')
+    dict(schema='¬φ', formula='¬p'),
+    dict(schema='¬φ', formula='¬¬p'),
+    dict(schema='¬¬φ', formula='¬¬p'),
 
     # Connective schemas
-    assert not t('(φ → ψ)', '¬p')
-    assert t('(φ → ψ)', '(p → q)')
-    assert t('(φ → ψ)', '(p → (q → r))')
-    assert not t('(φ → ψ)', '(p ∧ q)')
+    dict(schema='(φ → ψ)', formula='(p → q)'),
+    dict(schema='(φ → ψ)', formula='(p → (q → r))'),
+    dict(schema='(φ → φ)', formula='(p → p)'),
+    dict(schema='(φ → (ψ → φ))', formula='(p → (q → p))'),
+    dict(schema='(φ → (ψ → φ))', formula='(p → ((p → p) → p))')
+)
+def test_is_schema_instance_success(schema: str, formula: str) -> None:
+    assert is_schema_instance(
+        parse_schema(schema),
+        parse_propositional_formula(formula)
+    )
 
-    assert t('(φ → φ)', '(p → p)')
-    assert not t('(φ → φ)', '(p → q)')
 
-    assert t('(φ → (ψ → φ))', '(p → (q → p))')
-    assert not t('(φ → (ψ → φ))', '(p → (q → r))')
+@pytest_parametrize_kwargs(
+    # Constant schemas
+    dict(schema='⊤', formula='⊥'),
+    dict(schema='⊤', formula='p'),
 
-    assert t('(φ → (ψ → φ))', '(p → ((p → p) → p))')
+    # Negation schemas
+    dict(schema='¬φ', formula='⊤'),
+    dict(schema='¬φ', formula='p'),
+    dict(schema='¬¬φ', formula='¬p'),
+
+    # Connective schemas
+    dict(schema='(φ → ψ)', formula='¬p'),
+    dict(schema='(φ → ψ)', formula='(p ∧ q)'),
+    dict(schema='(φ → φ)', formula='(p → q)'),
+    dict(schema='(φ → (ψ → φ))', formula='(p → (q → r))'),
+)
+def test_is_schema_instance_failure(schema: str, formula: str) -> None:
+    assert not is_schema_instance(
+        parse_schema(schema),
+        parse_propositional_formula(formula)
+    )

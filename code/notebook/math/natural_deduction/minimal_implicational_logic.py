@@ -13,7 +13,7 @@ IMPLICATIONAL_AXIOMS = frozenset([
 
 
 def get_identity_derivation_payload(formula: Formula) -> Sequence[Formula]:
-    """Axiomatic derivation of (P → P)"""
+    """Axiomatic derivation of (p → p)"""
     goal = ConnectiveFormula(BinaryConnective.conditional, formula, formula)
 
     # The first two are axioms from the first schema

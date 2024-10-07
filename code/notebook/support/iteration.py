@@ -82,3 +82,9 @@ def get_strip_slice[T](seq: Sequence[T], predicate: Callable[[T], bool]) -> slic
             break
 
     return slice(leading, len(seq) - trailing)
+
+
+def repeat[**P, R](n: int, fun: Callable[P, R], *args: P.args, **kwargs: P.kwargs) -> Iterable[R]:
+    for _ in range(n):
+        yield fun(*args, **kwargs)
+

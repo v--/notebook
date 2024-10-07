@@ -1,4 +1,6 @@
+from collections.abc import Sequence
 from textwrap import dedent
+from typing import NamedTuple
 
 import pytest
 
@@ -8,8 +10,21 @@ from .grammar import Grammar
 from .parsing import parse_grammar_schema
 
 
+class GrammarFixture(NamedTuple):
+    grammar: Grammar
+    whitelist: Sequence[str]
+    blacklist: Sequence[str]
+
+    def assert_equivalent(self, other: Grammar) -> None:
+        for string in self.whitelist:
+            assert derives(other, string)
+
+        for string in self.blacklist:
+            assert not derives(other, string)
+
+
 @pytest.fixture
-def an() -> Grammar:
+def an() -> GrammarFixture:
     schema = parse_grammar_schema(
         dedent('''\
             <S> → ε
@@ -20,22 +35,15 @@ def an() -> Grammar:
         )
     )
 
-    return schema.instantiate(NonTerminal('S'))
-
-
-def assert_an(an: Grammar) -> None:
-    assert derives(an, '')
-    assert derives(an, 'a')
-    assert derives(an, 'aaa')
-    assert derives(an, 'aaaaaa')
-
-    assert not derives(an, 'b')
-    assert not derives(an, 'ba')
-    assert not derives(an, 'ab')
+    return GrammarFixture(
+        grammar=schema.instantiate(NonTerminal('S')),
+        whitelist=['', 'a', 'aaa', 'aaaaaa'],
+        blacklist=['b', 'ba', 'ab']
+    )
 
 
 @pytest.fixture
-def anbn() -> Grammar:
+def anbn() -> GrammarFixture:
     schema = parse_grammar_schema(
         dedent('''\
             <S> → ε
@@ -46,20 +54,15 @@ def anbn() -> Grammar:
         )
     )
 
-    return schema.instantiate(NonTerminal('S'))
-
-
-def assert_anbn(anbn: Grammar) -> None:
-    assert derives(anbn, '')
-    assert derives(anbn, 'ab')
-    assert derives(anbn, 'aaabbb')
-
-    assert not derives(anbn, 'a')
-    assert not derives(anbn, 'ba')
+    return GrammarFixture(
+        grammar=schema.instantiate(NonTerminal('S')),
+        whitelist=['', 'ab', 'aaabbb'],
+        blacklist=['a', 'ba']
+    )
 
 
 @pytest.fixture
-def s3() -> Grammar:
+def s3() -> GrammarFixture:
     schema = parse_grammar_schema(
         dedent('''\
             <S> → ε
@@ -69,21 +72,15 @@ def s3() -> Grammar:
         )
     )
 
-    return schema.instantiate(NonTerminal('S'))
-
-
-def assert_s3(s3: Grammar) -> None:
-    assert derives(s3, '')
-    assert derives(s3, 'a')
-    assert derives(s3, 'aa')
-    assert derives(s3, 'aaa')
-    assert derives(s3, 'aaaa')
-
-    assert not derives(s3, 'b')
+    return GrammarFixture(
+        grammar=schema.instantiate(NonTerminal('S')),
+        whitelist=['a', 'aa', 'aaa', 'aaaa'],
+        blacklist=['b']
+    )
 
 
 @pytest.fixture
-def binary() -> Grammar:
+def binary() -> GrammarFixture:
     schema = parse_grammar_schema(
         dedent('''\
             <N> → "0" | "1" | "1" <B>
@@ -92,16 +89,8 @@ def binary() -> Grammar:
         )
     )
 
-    return schema.instantiate(NonTerminal('N'))
-
-
-def assert_binary(binary: Grammar) -> None:
-    assert derives(binary, '0')
-    assert derives(binary, '1')
-    assert derives(binary, '10')
-    assert derives(binary, '11')
-    assert derives(binary, '100')
-    assert derives(binary, '101')
-
-    assert not derives(binary, '')
-    assert not derives(binary, '01')
+    return GrammarFixture(
+        grammar=schema.instantiate(NonTerminal('N')),
+        whitelist=['0', '1', '10', '11', '100', '101'],
+        blacklist=['', '01']
+    )

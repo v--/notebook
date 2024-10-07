@@ -26,7 +26,7 @@ class IdentifierTokenizerMixin[T: AbstractToken](Tokenizer[T]):
         return atoi_subscripts(digits)
 
     def parse_latin_identifier(self) -> LatinIdentifier:
-        assert is_latin_string(self.peek(), Capitalization.small)
+        assert is_latin_string(self.peek(), Capitalization.lower)
         letter = self.peek()
         self.advance()
 
@@ -36,7 +36,7 @@ class IdentifierTokenizerMixin[T: AbstractToken](Tokenizer[T]):
         )
 
     def parse_greek_identifier(self) -> GreekIdentifier:
-        assert is_greek_string(self.peek(), Capitalization.small)
+        assert is_greek_string(self.peek(), Capitalization.lower)
         letter = self.peek()
         self.advance()
 

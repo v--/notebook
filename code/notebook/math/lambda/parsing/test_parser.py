@@ -4,14 +4,27 @@ import pytest
 
 from ....parsing.identifiers import LatinIdentifier
 from ....parsing.parser import ParsingError
-from ..terms import LambdaTerm, Variable
+from ....support.pytest import pytest_parametrize_kwargs, pytest_parametrize_lists
+from ..terms import Variable
 from .parser import parse_term
 
 
-def test_parsing_valid_variables() -> None:
-    assert parse_term('x') == Variable(LatinIdentifier('x'))
-    assert parse_term('y') == Variable(LatinIdentifier('y'))
-    assert parse_term('z₁₂') == Variable(LatinIdentifier('z', index=12))
+@pytest_parametrize_kwargs(
+    dict(
+        term='x',
+        expected=Variable(LatinIdentifier('x'))
+    ),
+    dict(
+        term='y',
+        expected=Variable(LatinIdentifier('y'))
+    ),
+    dict(
+        term='y₁₂',
+        expected=Variable(LatinIdentifier('y', index=12))
+    )
+)
+def test_parsing_valid_variables(term: str, expected: Variable) -> None:
+    assert parse_term(term) == expected
 
 
 def test_parsing_long_variable_names() -> None:
@@ -38,19 +51,20 @@ def test_parsing_invalid_variable_suffix() -> None:
     )
 
 
-def test_parsing_valid_terms() -> None:
-    def is_term_rebuilt(string: str) -> None:
-        assert str(parse_term(string)) == string
-
-    is_term_rebuilt('x')
-    is_term_rebuilt('(xy)')
-    is_term_rebuilt('(x₁y₂)')
-    is_term_rebuilt('(λx.x)') # I combinator
-    is_term_rebuilt('(λx.y)')
-
-    is_term_rebuilt('(λx.(λy.x))') # K combinator
-    is_term_rebuilt('(λx.(λy.(λz.((xz)(yz)))))') # S combinator
-    is_term_rebuilt('(λf.((λx.(f(xx)))(λx.(f(xx)))))') # Y combinator
+@pytest_parametrize_lists(
+    term=[
+        'x',
+        '(xy)',
+        '(x₁y₂)',
+        '(λx.x)', # I combinator
+        '(λx.y)',
+        '(λx.(λy.x))', # K combinator
+        '(λx.(λy.(λz.((xz)(yz)))))', # S combinator
+        '(λf.((λx.(f(xx)))(λx.(f(xx)))))', # Y combinator
+    ]
+)
+def test_rebuilding_terms(term: str) -> None:
+    assert str(parse_term(term)) == term
 
 
 def test_parsing_abstraction_with_unclosed_parens() -> None:
@@ -113,12 +127,12 @@ def test_parsing_incomplete_application() -> None:
     )
 
 
-def test_reparsing_terms() -> None:
-    from .. import combinators as comb
-
-    def is_term_rebuilt(term: LambdaTerm) -> None:
-        assert parse_term(str(term)) == term
-
-    assert parse_term(str(comb.k)) == comb.k
-    assert parse_term(str(comb.s)) == comb.s
-    assert parse_term(str(comb.y)) == comb.y
+@pytest_parametrize_lists(
+    term=[
+        '(λx.(λy.x))', # K combinator
+        '(λx.(λy.(λz.((xz)(yz)))))', # S combinator
+        '(λf.((λx.(f(xx)))(λx.(f(xx)))))', # Y combinator
+    ]
+)
+def test_reparsing_terms(term: str) -> None:
+    assert str(parse_term(str(parse_term(term)))) == term

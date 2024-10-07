@@ -4,7 +4,7 @@ import pytest
 
 from ...parsing.parser import ParsingError
 from ..entry import BibAuthor, BibEntry
-from ..string import VerbatimString, CompositeString
+from ..string import CompositeString, VerbatimString
 from .parser import parse_bibtex
 
 

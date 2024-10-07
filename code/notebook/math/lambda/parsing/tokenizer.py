@@ -17,7 +17,7 @@ class LambdaTokenizer(IdentifierTokenizerMixin[LambdaToken], Tokenizer[LambdaTok
             self.advance()
             return Whitespace.space
 
-        if is_latin_string(head, Capitalization.small):
+        if is_latin_string(head, Capitalization.lower):
             return self.parse_latin_identifier()
 
         raise self.error('Unexpected symbol')

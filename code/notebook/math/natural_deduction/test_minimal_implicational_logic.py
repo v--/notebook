@@ -1,72 +1,108 @@
-from collections.abc import Sequence
+from collections.abc import Collection, Sequence
 
-from ..fol.formulas import Formula
+from ...support.pytest import pytest_parametrize_kwargs
 from ..fol.parsing import parse_propositional_formula
 from .axiomatic_derivation import AxiomaticDerivation
+from .conftest import IDENTITY_DERIVATION
 from .minimal_implicational_logic import (
     IMPLICATIONAL_AXIOMS,
-    get_identity_derivation_payload,
     introduce_conclusion_hypothesis,
 )
 
 
-def test_minimal_implicational_derivation_premises() -> None:
-    def t(payload: Sequence[str | Formula]) -> Sequence[str]:
-        derivation = AxiomaticDerivation(
-            axiom_schemas=IMPLICATIONAL_AXIOMS,
-            payload=[parse_propositional_formula(s) if isinstance(s, str) else s for s in payload]
-        )
+@pytest_parametrize_kwargs(
+    dict(
+        payload=[],
+        expected=set()
+    ),
 
-        return [str(f) for f in derivation.iter_premises()]
+    dict(
+        payload=['(p → (q → p))'],
+        expected=set()
+    ),
 
-    assert t(['(p → (q → p))']) == []
-    assert t(['(p → (p → p))']) == []
+    dict(
+        payload=['p'],
+        expected={'p'}
+    ),
 
-    assert t(['p']) == ['p']
+    dict(
+        payload=IDENTITY_DERIVATION,
+        expected=set()
+    ),
+)
+def test_minimal_implicational_derivation_premises(payload: Sequence[str], expected: Collection[str]) -> None:
+    derivation = AxiomaticDerivation(
+        axiom_schemas=IMPLICATIONAL_AXIOMS,
+        payload=[parse_propositional_formula(s) for s in payload]
+    )
 
-    assert t(get_identity_derivation_payload(parse_propositional_formula('p'))) == []
+    assert set(map(str, derivation.iter_premises())) == expected
 
 
-def test_introduce_conclusion_hypothesis() -> None:
-    def t(seq: Sequence[str], /, hypothesis: str) -> Sequence[str]:
-        derivation = AxiomaticDerivation(
-            axiom_schemas=IMPLICATIONAL_AXIOMS,
-            payload=[parse_propositional_formula(s) for s in seq]
-        )
+@pytest_parametrize_kwargs(
+    dict(
+        payload=['p'],
+        hypothesis='p',
+        expected=IDENTITY_DERIVATION
+    ),
 
-        hypothesis_formula = parse_propositional_formula(hypothesis)
-        relativized = introduce_conclusion_hypothesis(derivation, hypothesis_formula)
-        return [str(formula) for formula in relativized.payload]
+    dict(
+        payload=['q'],
+        hypothesis='p',
+        expected=[
+            '(q → (p → q))',
+            'q',
+            '(p → q)'
+        ]
+    ),
 
-    assert t(['p'], hypothesis='p') == [
-        str(formula) for formula in get_identity_derivation_payload(parse_propositional_formula('p'))
-    ]
+    dict(
+        payload=['p', '(p → q)', 'q'],
+        hypothesis='p',
+        expected=['(p → q)']
+    ),
 
-    assert t(['q'], hypothesis='p') == [
-        '(q → (p → q))',
-        'q',
-        '(p → q)'
-    ]
+    dict(
+        payload=['(p → q)', 'p', 'q'],
+        hypothesis='p',
+        expected=['(p → q)']
+    ),
 
-    assert t(['p', '(p → q)', 'q'], hypothesis='p') == ['(p → q)']
-    assert t(['(p → q)', 'p', 'q'], hypothesis='p') == ['(p → q)']
+    dict(
+        payload=['(p → q)', '(q → r)', 'p', 'q', 'r'],
+        hypothesis='p',
+        expected=[
+            '((q → r) → (p → (q → r)))',
+            '(q → r)',
+            '(p → (q → r))',
+            '((p → (q → r)) → ((p → q) → (p → r)))',
+            '((p → q) → (p → r))',
+            '(p → q)',
+            '(p → r)'
+        ]
+    ),
 
-    assert t(['(p → q)', '(q → r)', 'p', 'q', 'r'], hypothesis='p') == [
-        '((q → r) → (p → (q → r)))',
-        '(q → r)',
-        '(p → (q → r))',
-        '((p → (q → r)) → ((p → q) → (p → r)))',
-        '((p → q) → (p → r))',
-        '(p → q)',
-        '(p → r)'
-    ]
+    dict(
+        payload=['(p → (q → r))', 'p', '(q → r)', 'q', 'r'],
+        hypothesis='p',
+        expected=[
+            '(p → (q → r))',
+            '((p → (q → r)) → ((p → q) → (p → r)))',
+            '((p → q) → (p → r))',
+            '(q → (p → q))',
+            'q',
+            '(p → q)',
+            '(p → r)'
+        ]
+    )
+)
+def test_introduce_conclusion_hypothesis(payload: Sequence[str], hypothesis: str, expected: Sequence[str]) -> None:
+    derivation = AxiomaticDerivation(
+        axiom_schemas=IMPLICATIONAL_AXIOMS,
+        payload=[parse_propositional_formula(s) for s in payload]
+    )
 
-    assert t(['(p → (q → r))', 'p', '(q → r)', 'q', 'r'], hypothesis='p') == [
-        '(p → (q → r))',
-        '((p → (q → r)) → ((p → q) → (p → r)))',
-        '((p → q) → (p → r))',
-        '(q → (p → q))',
-        'q',
-        '(p → q)',
-        '(p → r)'
-    ]
+    hypothesis_formula = parse_propositional_formula(hypothesis)
+    relativized = introduce_conclusion_hypothesis(derivation, hypothesis_formula)
+    assert [str(f) for f in relativized.payload] == expected

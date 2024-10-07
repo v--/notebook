@@ -1,15 +1,24 @@
+from collections.abc import Collection
+
+from ...support.pytest import pytest_parametrize_kwargs
 from .parsing import parse_formula
 from .signature import FOLSignature
 from .variables import get_free_variables
 
 
-def test_get_free_variables(dummy_signature: FOLSignature) -> None:
-    def t(string: str) -> set[str]:
-        return set(map(str, get_free_variables(parse_formula(dummy_signature, string))))
+@pytest_parametrize_kwargs(
+    dict(formula='(x = y)',   expected={'x', 'y'}),
+    dict(formula='(x = y)',   expected={'x', 'y'}),
+    dict(formula='(x₁ = y₂)', expected={'x₁', 'y₂'}),
+    dict(formula='p₂(x, y)',  expected={'x', 'y'}),
+    dict(formula='∀y.p₁(x)',  expected={'x'}),
+    dict(formula='∀x.p₁(x)',  expected=set()),
+    dict(
+        formula='((∀y.p₁(y) ∨ q₁(x)) ∧ ∃y.r₁(y))',
+        expected={'x'}
+    ),
+)
+def test_get_free_variables(formula: str, expected: Collection[str], dummy_signature: FOLSignature) -> None:
+    actual = set(map(str, get_free_variables(parse_formula(dummy_signature, formula))))
+    assert actual == expected
 
-    assert t('(x = y)') == {'x', 'y'}
-    assert t('(x₁ = y₂)') == {'x₁', 'y₂'}
-    assert t('P₂(x, y)') == {'x', 'y'}
-    assert t('∀y.P₁(x)') == {'x'}
-    assert t('∀x.P₁(x)') == set()
-    assert t('((∀y.P₁(y) ∨ Q₁(x)) ∧ ∃y.R₁(y))') == {'x'}

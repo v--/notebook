@@ -1,4 +1,4 @@
-from .conftest import assert_aabn, assert_leucine
+from .conftest import FiniteAutomatonFixture
 from .finite import FiniteAutomaton
 
 
@@ -19,11 +19,11 @@ def test_finite_automaton_recognizes_an() -> None:
 
 
 # fig:def:finite_automaton
-def test_finite_automaton_recognizes_aabn(aabn: FiniteAutomaton) -> None:
-    assert not aabn.is_deterministic()
-    assert_aabn(aabn)
+def test_finite_automaton_recognizes_aabn(aabn: FiniteAutomatonFixture) -> None:
+    assert not aabn.aut.is_deterministic()
+    aabn.assert_equivalent(aabn.aut)
 
 
-def test_finite_automaton_recognizes_leucine(leucine: FiniteAutomaton) -> None:
-    assert not leucine.is_deterministic()
-    assert_leucine(leucine)
+def test_finite_automaton_recognizes_leucine(leucine: FiniteAutomatonFixture) -> None:
+    assert not leucine.aut.is_deterministic()
+    leucine.assert_equivalent(leucine.aut)

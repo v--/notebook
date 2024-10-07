@@ -5,6 +5,11 @@ from dataclasses import dataclass, field
 from typing import NamedTuple
 
 from .alphabet import NonTerminal, Terminal, empty
+from .exceptions import GrammarError
+
+
+class UnknownSymbolError(GrammarError):
+    pass
 
 
 class GrammarRule(NamedTuple):
@@ -53,7 +58,6 @@ class GrammarSchema(NamedTuple):
         )
 
     def instantiate(self, start: NonTerminal) -> 'Grammar':
-        assert start in self.get_non_terminals()
         return Grammar(self, start)
 
 
@@ -63,7 +67,8 @@ class Grammar:
     start: NonTerminal
 
     def __post_init__(self) -> None:
-        assert self.start in self.schema.get_non_terminals(), f'The starting symbol {self.start} must be a nonterminal in {self.schema}'
+        if self.start not in self.schema.get_non_terminals():
+            raise UnknownSymbolError(f'The grammar schema does not contain {self.start}')
 
     def iter_starting_rules(self) -> Iterable[GrammarRule]:
         for rule in self.schema.rules:

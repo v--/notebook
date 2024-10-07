@@ -3,16 +3,19 @@ from textwrap import dedent
 import pytest
 
 from ....parsing.parser import ParsingError
+from ....support.pytest import pytest_parametrize_lists
 from .parser import parse_rule
 
 
-def test_parsing_atomic_valid() -> None:
-    def assert_rule_rebuilt(string: str) -> None:
-        assert str(parse_rule(string)) == string
-
-    assert_rule_rebuilt('(R) ⫢ ψ')
-    assert_rule_rebuilt('(R) φ ⫢ ψ')
-    assert_rule_rebuilt('(R) φ₁, φ₂ ⫢ ψ')
+@pytest_parametrize_lists(
+    rule=[
+        '(R) ⫢ ψ',
+        '(R) φ ⫢ ψ',
+        '(R) φ₁, φ₂ ⫢ ψ'
+    ]
+)
+def test_rebuilding_rules(rule: str) -> None:
+    assert str(parse_rule(rule)) == rule
 
 
 def test_parsing_without_rule_name() -> None:
@@ -118,14 +121,16 @@ def test_parsing_discharge_in_conclusion() -> None:
     )
 
 
-def test_parsing_complex_schemas() -> None:
-    def assert_rule_rebuilt(string: str) -> None:
-        assert str(parse_rule(string)) == string
-
-    assert_rule_rebuilt('(R) ⫢ ⊥')
-    assert_rule_rebuilt('(R) ⫢ ¬ψ')
-    assert_rule_rebuilt('(R) ⫢ (ψ₁ ∧ ψ₂)')
-    assert_rule_rebuilt('(R) ⫢ ∀x.ψ')
+@pytest_parametrize_lists(
+    rule=[
+        '(R) ⫢ ⊥',
+        '(R) φ ⫢ ¬ψ',
+        '(R) ⫢ (ψ₁ ∧ ψ₂)',
+        '(R) ⫢ ∀x.ψ'
+    ]
+)
+def test_rebuilding_complex_rules(rule: str) -> None:
+    assert str(parse_rule(rule)) == rule
 
 
 # The quantifier parser is an almost literal copy of the one from the FOL parser, so we rely on the tests there

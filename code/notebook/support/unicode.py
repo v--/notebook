@@ -6,9 +6,9 @@ from .iteration import string_accumulator
 
 
 class Capitalization(Flag):
-    small = auto()
-    capital = auto()
-    mixed = capital | small
+    lower = auto()
+    upper = auto()
+    mixed = upper | lower
 
 
 # The superscripts do not have adjacent codes, so we resort to using a table
@@ -137,16 +137,16 @@ def itoa_subscripts(value: int) -> str:
 
 def is_latin_string(string: str, capitalization: Capitalization) -> bool:
     return all(
-        ('A' <= c <= 'Z' if Capitalization.capital in capitalization else False) or
-        ('a' <= c <= 'z' if Capitalization.small in capitalization else False)
+        ('A' <= c <= 'Z' if Capitalization.upper in capitalization else False) or
+        ('a' <= c <= 'z' if Capitalization.lower in capitalization else False)
         for c in string
     )
 
 
 def is_greek_string(string: str, capitalization: Capitalization) -> bool:
     return all(
-        ('Α' <= c <= 'Ω' if Capitalization.capital in capitalization else False) or
-        ('α' <= c <= 'ω' if Capitalization.small in capitalization else False)
+        ('Α' <= c <= 'Ω' if Capitalization.upper in capitalization else False) or
+        ('α' <= c <= 'ω' if Capitalization.lower in capitalization else False)
         for c in string
     )
 

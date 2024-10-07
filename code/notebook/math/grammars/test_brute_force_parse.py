@@ -1,77 +1,59 @@
-from .brute_force_parse import iter_partitions, parse
-from .grammar import Grammar
+from collections.abc import Iterable, Sequence
+
+import pytest
+
+from ...support.pytest import pytest_parametrize_kwargs, pytest_parametrize_lists
+from .brute_force_parse import derives, iter_partitions, parse
 
 
-def assert_string_rebuilt(grammar: Grammar, string: str) -> None:
-    trees = list(parse(grammar, string))
-    assert len(trees) > 0
-
-    for tree in trees:
-        if tree.yield_string() != string:
-            pass
-
-        assert tree.yield_string() == string
-
-
-def assert_string_invalid(grammar: Grammar, string: str) -> None:
-    trees = list(parse(grammar, string))
-
-    if len(trees) > 0:
-        for _tree in trees:
-            pass
-
-    assert len(trees) == 0
+@pytest_parametrize_kwargs(
+    dict(
+        string='asdf',
+        m=1,
+        expected=[['asdf']]
+    ),
+    dict(
+        string='asdf',
+        m=2,
+        expected=[['', 'asdf'], ['a', 'sdf'], ['as', 'df'], ['asd', 'f'], ['asdf', '']]
+    )
+)
+def test_iter_partitions_match(string: str, m: int, expected: Iterable[Sequence[str]]) -> None:
+    assert list(iter_partitions(string, m)) == expected
 
 
-def test_iter_partitions() -> None:
-    assert list(iter_partitions('asdf', 1)) == [['asdf']]
-    assert list(iter_partitions('asdf', 2)) == [['', 'asdf'], ['a', 'sdf'], ['as', 'df'], ['asd', 'f'], ['asdf', '']]
-    assert ['asdf', '', '', '', ''] in list(iter_partitions('asdf', 5))
-    assert ['', 'as', '', 'df', ''] in list(iter_partitions('asdf', 5))
+@pytest_parametrize_kwargs(
+    dict(
+        string='asdf',
+        m=5,
+        sublist=['asdf', '', '', '', '']
+    ),
+    dict(
+        string='asdf',
+        m=5,
+        sublist=['', 'as', '', 'df', '']
+    )
+)
+def test_iter_partitions_sublist(string: str, m: int, sublist: Iterable[Sequence[str]]) -> None:
+    assert sublist in list(iter_partitions(string, m))
 
 
-def test_an_valid(an: Grammar) -> None:
-    assert_string_rebuilt(an, '')
-    assert_string_rebuilt(an, 'a')
-    assert_string_rebuilt(an, 'aaa')
+@pytest_parametrize_lists(
+    grammar_name=['an', 'anbn', 's3', 'binary']
+)
+def test_parsing_valid(grammar_name: str, request: pytest.FixtureRequest) -> None:
+    grammar, whitelist, _ = request.getfixturevalue(grammar_name)
+
+    for string in whitelist:
+        for tree in parse(grammar, string):
+            assert tree.yield_string() == string
 
 
-def test_an_invalid(an: Grammar) -> None:
-    assert_string_invalid(an, 'b')
-    assert_string_invalid(an, 'ab')
+@pytest_parametrize_lists(
+    grammar_name=['an', 'anbn', 's3', 'binary']
+)
+def test_parsing_invalid(grammar_name: str, request: pytest.FixtureRequest) -> None:
+    grammar, _, blacklist = request.getfixturevalue(grammar_name)
 
-
-def test_anbn_valid(anbn: Grammar) -> None:
-    assert_string_rebuilt(anbn, '')
-    assert_string_rebuilt(anbn, 'ab')
-    assert_string_rebuilt(anbn, 'aaabbb')
-
-
-def test_anbn_invalid(anbn: Grammar) -> None:
-    assert_string_invalid(anbn, 'a')
-    assert_string_invalid(anbn, 'ba')
-
-
-def test_epsilon_rules_valid(s3: Grammar) -> None:
-    assert_string_rebuilt(s3, '')
-    assert_string_rebuilt(s3, 'a')
-    assert_string_rebuilt(s3, 'aa')
-    assert_string_rebuilt(s3, 'aaa')
-
-
-def test_epsilon_rules_invalid(s3: Grammar) -> None:
-    assert_string_invalid(s3, 'b')
-
-
-def test_binary_numbers_valid(binary: Grammar) -> None:
-    assert_string_rebuilt(binary, '0')
-    assert_string_rebuilt(binary, '1')
-    assert_string_rebuilt(binary, '10')
-    assert_string_rebuilt(binary, '11')
-    assert_string_rebuilt(binary, '100')
-    assert_string_rebuilt(binary, '101')
-
-
-def test_binary_numbers_invalid(binary: Grammar) -> None:
-    assert_string_invalid(binary, '')
-    assert_string_invalid(binary, '01')
+    for string in blacklist:
+        not derives(grammar, string)

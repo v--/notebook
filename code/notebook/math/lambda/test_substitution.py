@@ -1,35 +1,68 @@
+from ...support.pytest import pytest_parametrize_kwargs
 from .parsing import parse_term, parse_variable
 from .substitution import Substitution, apply_substitution
 
 
-def test_substitute_in_term() -> None:
-    def t(term: str, **kwargs: str) -> str:
-        return str(
-            apply_substitution(
-                parse_term(term),
-                Substitution({ parse_variable(key): parse_term(value) for key, value in kwargs.items() })
-            )
-        )
-
+@pytest_parametrize_kwargs(
     # Variables and applications
-    assert t('x', x='y') == 'y'
-    assert t('z', x='y') == 'z'
-    assert t('(xy)', x='y') == '(yy)'
+    dict(
+        term='x',
+        mapping=dict(x='y'),
+        expected='y'
+    ),
+    dict(
+        term='z',
+        mapping=dict(x='y'),
+        expected='z'
+    ),
+    dict(
+        term='(xy)',
+        mapping=dict(x='y'),
+        expected='(yy)'
+    ),
 
     # Multiple replacements in abstractions
     ## ex:def:lambda_substitution/simultaneous
-    assert t('(λx.((xy)z))', x='a', y='b', z='c') == '(λx.((xb)c))'
+    dict(
+        term='(λx.((xy)z))',
+        mapping=dict(x='a', y='b', z='c'),
+        expected='(λx.((xb)c))'
+    ),
 
     # Combinators should remain unchanged
     ## ex:def:lambda_substitution/nested_noop
-    i = '(λx.x)'
-    assert t(i, y='x') == i
-
-    k = '(λx.(λy.(yx)))'
-    assert t(k, y='x') == k
+    dict(
+        term='(λx.x)',
+        mapping=dict(y='x'),
+        expected='(λx.x)'
+    ),
+    dict(
+        term='(λx.(λy.(yx)))',
+        mapping=dict(y='x'),
+        expected='(λx.(λy.(yx)))'
+    ),
 
     # Renaming
     ## ex:def:lambda_substitution/capture
-    assert t('(λx.(xy))', y='x') == '(λa.(ax))'
+    dict(
+        term='(λx.(xy))',
+        mapping=dict(y='x'),
+        expected='(λa.(ax))'
+    ),
     ## ex:def:lambda_substitution/ignoring
-    assert t('(λx.(xy))', y='z') == '(λx.(xz))'
+    dict(
+        term='(λx.(xy))',
+        mapping=dict(y='z'),
+        expected='(λx.(xz))'
+    ),
+)
+def test_substitute_in_term(term: str,
+    mapping: dict[str, str],
+    expected: str) -> None:
+    sub = apply_substitution(
+        parse_term(term),
+        Substitution({ parse_variable(key): parse_term(value) for key, value in
+            mapping.items() })
+    )
+
+    assert str(sub) == expected

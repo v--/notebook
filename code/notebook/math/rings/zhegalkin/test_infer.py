@@ -1,60 +1,56 @@
 from collections.abc import Callable
 
-import pytest
-
+from ....support.pytest import pytest_parametrize_kwargs
 from . import common as var
 from .infer import infer_zhegalkin
 from .polynomial import ZhegalkinPolynomial
 
 
-@pytest.mark.parametrize(
-    ('predicate', 'polynomial'),
-    [
-        (
-            lambda: True,
-            var.T
-        ),
+@pytest_parametrize_kwargs(
+    dict(
+        predicate=lambda: True,
+        polynomial=var.T
+    ),
 
-        (
-            lambda: False,
-            var.F
-        ),
+    dict(
+        predicate=lambda: False,
+        polynomial=var.F
+    ),
 
-        (
-            lambda x: False,  # noqa: ARG005
-            var.F
-        ),
+    dict(
+        predicate=lambda x: False,  # noqa: ARG005
+        polynomial=var.F
+    ),
 
-        (
-            lambda x: x,
-            var.x
-        ),
+    dict(
+        predicate=lambda x: x,
+        polynomial=var.x
+    ),
 
-        (
-            lambda x: not x,
-            var.x + var.T
-        ),
+    dict(
+        predicate=lambda x: not x,
+        polynomial=var.x + var.T
+    ),
 
-        (
-            lambda x, y: x or y,
-            var.x * var.y + var.x + var.y
-        ),
+    dict(
+        predicate=lambda x, y: x or y,
+        polynomial=var.x * var.y + var.x + var.y
+    ),
 
-        (
-            lambda x, y: x and y,
-            var.x * var.y
-        ),
+    dict(
+        predicate=lambda x, y: x and y,
+        polynomial=var.x * var.y
+    ),
 
-        (
-            lambda x, y: (not x) or y,
-            var.x * var.y + var.x + var.T
-        ),
+    dict(
+        predicate=lambda x, y: (not x) or y,
+        polynomial=var.x * var.y + var.x + var.T
+    ),
 
-        (
-            lambda x, y: (x and y) or (not x and not y),
-            var.x + var.y + var.T
-        ),
-    ]
+    dict(
+        predicate=lambda x, y: (x and y) or (not x and not y),
+        polynomial=var.x + var.y + var.T
+    )
 )
 def test_infer_zhegalkin(predicate: Callable[..., bool], polynomial: ZhegalkinPolynomial) -> None:
     assert infer_zhegalkin(predicate) == polynomial

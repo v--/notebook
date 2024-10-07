@@ -7,8 +7,15 @@ from .formulas import (
     PredicateFormula,
     QuantifierFormula,
 )
+from .parsing import parse_variable
 from .terms import FunctionTerm, Term, Variable
 from .visitors import FormulaVisitor, TermVisitor
+
+
+class common:  # noqa: N801
+    x = parse_variable('x')
+    y = parse_variable('y')
+    z = parse_variable('z')
 
 
 def new_variable(context: frozenset[Variable]) -> Variable:

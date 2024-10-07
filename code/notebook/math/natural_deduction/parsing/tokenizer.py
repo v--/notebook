@@ -10,10 +10,10 @@ from .tokens import CapitalLatinString, MiscToken, RuleToken, SuperscriptToken
 
 class NaturalDeductionTokenizer(IdentifierTokenizerMixin[RuleToken], Tokenizer[RuleToken]):
     def _eagerly_parse_latin_string(self) -> CapitalLatinString:
-        assert is_latin_string(self.peek(), Capitalization.capital)
+        assert is_latin_string(self.peek(), Capitalization.upper)
         string = ''
 
-        while is_latin_string(self.peek(), Capitalization.capital):
+        while is_latin_string(self.peek(), Capitalization.upper):
             string += self.peek()
             self.advance()
 
@@ -35,13 +35,13 @@ class NaturalDeductionTokenizer(IdentifierTokenizerMixin[RuleToken], Tokenizer[R
             self.advance()
             return Whitespace.space
 
-        if is_greek_string(head, Capitalization.small):
+        if is_greek_string(head, Capitalization.lower):
             return self.parse_greek_identifier()
 
-        if is_latin_string(head, Capitalization.small):
+        if is_latin_string(head, Capitalization.lower):
             return self.parse_latin_identifier()
 
-        if is_latin_string(head, Capitalization.capital):
+        if is_latin_string(head, Capitalization.upper):
             return self._eagerly_parse_latin_string()
 
         raise self.error('Unexpected symbol')

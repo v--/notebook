@@ -1,6 +1,5 @@
 import inspect
 from collections.abc import Callable
-from typing import cast
 
 from ..substitution import Substitution, apply_substitution
 from ..terms import Abstraction, Application, LambdaTerm
@@ -29,7 +28,9 @@ def to_function(term: LambdaTerm) -> Callable:
         i = 0
 
         while isinstance(result, Abstraction):
-            result = cast(LambdaTerm, red.try_contract_redex(Application(result, args[i])))
+            reduced = red.try_contract_redex(Application(result, args[i]))
+            assert reduced
+            result = reduced
             i += 1
 
         return result

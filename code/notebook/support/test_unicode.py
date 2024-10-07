@@ -1,3 +1,5 @@
+from notebook.support.pytest import pytest_parametrize_kwargs
+
 from .unicode import (
     Capitalization,
     atoi_subscripts,
@@ -6,70 +8,93 @@ from .unicode import (
     itoa_subscripts,
     normalize_whitespace,
     remove_accents,
+    remove_symbols,
     to_superscript,
 )
 
 
-def test_to_superscript() -> None:
-    assert to_superscript('abc') == 'ᵃᵇᶜ'
-    assert to_superscript('ABC') == 'ᴬᴮꟲ'
-    assert to_superscript('AbC') == 'ᴬᵇꟲ'
-    assert to_superscript('абв') == 'абв'
+@pytest_parametrize_kwargs(
+    dict(string='abc', expected='ᵃᵇᶜ'),
+    dict(string='ABC', expected='ᴬᴮꟲ'),
+    dict(string='AbC', expected='ᴬᵇꟲ'),
+    dict(string='абв', expected='абв'),
+)
+def test_to_superscript(string: str, expected: str) -> None:
+    assert to_superscript(string) == expected
 
 
-def test_atoi_subscripts() -> None:
-    assert atoi_subscripts('₀') == 0
-    assert atoi_subscripts('₁₂₃₄') == 1234
-    assert atoi_subscripts('₋₁₂₃₄') == -1234
+@pytest_parametrize_kwargs(
+    dict(string='₀',     expected=0),
+    dict(string='₁₂₃₄',  expected=1234),
+    dict(string='₋₁₂₃₄', expected=-1234),
+)
+def test_atoi_subscripts(string: str, expected: int) -> None:
+    assert atoi_subscripts(string) == expected
 
 
-def test_itoa_subscripts() -> None:
-    assert itoa_subscripts(0) == '₀'
-    assert itoa_subscripts(-1234) == '₋₁₂₃₄'
-    assert itoa_subscripts(1234) == '₁₂₃₄'
+@pytest_parametrize_kwargs(
+    dict(value=0,     expected='₀'),
+    dict(value=1234,  expected='₁₂₃₄'),
+    dict(value=-1234, expected='₋₁₂₃₄'),
+)
+def test_itoa_subscripts(value: int, expected: str) -> None:
+    assert itoa_subscripts(value) == expected
 
 
-def test_is_latin_string() -> None:
-    assert is_latin_string('abc', capitalization=Capitalization.mixed)
-    assert is_latin_string('ABC', capitalization=Capitalization.mixed)
-    assert is_latin_string('AbC', capitalization=Capitalization.mixed)
-
-    assert is_latin_string('abc', capitalization=Capitalization.small)
-    assert not is_latin_string('ABC', capitalization=Capitalization.small)
-    assert not is_latin_string('AbC', capitalization=Capitalization.small)
-
-    assert not is_latin_string('abc', capitalization=Capitalization.capital)
-    assert is_latin_string('ABC', capitalization=Capitalization.capital)
-    assert not is_latin_string('AbC', capitalization=Capitalization.capital)
+def xnor(a: bool, b: bool) -> bool:  # noqa: FBT001
+    return a == b
 
 
-def test_is_greek_string() -> None:
-    assert is_greek_string('αβγ', capitalization=Capitalization.mixed)
-    assert is_greek_string('ΑΒΓ', capitalization=Capitalization.mixed)
-    assert is_greek_string('ΑβΓ', capitalization=Capitalization.mixed)
+def test_is_latin_string_capitaliation(string: str = 'abc') -> None:
+    lower = string.lower()
+    upper = string.upper()
+    mixed = string.title()
 
-    assert is_greek_string('αβγ', capitalization=Capitalization.small)
-    assert not is_greek_string('ΑΒΓ', capitalization=Capitalization.small)
-    assert not is_greek_string('ΑβΓ', capitalization=Capitalization.small)
-
-    assert not is_greek_string('αβγ', capitalization=Capitalization.capital)
-    assert is_greek_string('ΑΒΓ', capitalization=Capitalization.capital)
-    assert not is_greek_string('ΑβΓ', capitalization=Capitalization.capital)
+    for cap in Capitalization:
+        assert xnor(Capitalization.lower in cap, is_latin_string(lower, capitalization=cap))
+        assert xnor(Capitalization.upper in cap, is_latin_string(upper, capitalization=cap))
+        assert xnor(Capitalization.mixed in cap, is_latin_string(mixed, capitalization=cap))
 
 
-def test_remove_accents() -> None:
-    assert remove_accents('lorem') == 'lorem'
-    assert remove_accents('Йордан') == 'Йордан'
+def test_is_greek_string_capitaliation(string: str = 'αβγ') -> None:
+    lower = string.lower()
+    upper = string.upper()
+    mixed = string.title()
 
-    assert remove_accents('Fučík') == 'Fucik'
-    assert remove_accents('Marián') == 'Marian'
-    assert remove_accents('Łukasz') == 'Lukasz'
+    for cap in Capitalization:
+        assert xnor(Capitalization.lower in cap, is_greek_string(lower, capitalization=cap))
+        assert xnor(Capitalization.upper in cap, is_greek_string(upper, capitalization=cap))
+        assert xnor(Capitalization.mixed in cap, is_greek_string(mixed, capitalization=cap))
 
 
-def test_normalize_whitespace() -> None:
-    assert normalize_whitespace('a b c') == 'a b c'
-    assert normalize_whitespace('a  b c') == 'a b c'
-    assert normalize_whitespace('a\tb c') == 'a b c'
-    assert normalize_whitespace('a\nb c') == 'a b c'
-    assert normalize_whitespace('\na b c') == 'a b c'
-    assert normalize_whitespace('a b c\n') == 'a b c'
+@pytest_parametrize_kwargs(
+    dict(string='lorem',  expected='lorem'),
+    dict(string='Йордан', expected='Йордан'),
+    dict(string='Fučík',  expected='Fucik'),
+    dict(string='Marián', expected='Marian'),
+    dict(string='Łukasz', expected='Lukasz'),
+)
+def test_remove_accents(string: str, expected: str) -> None:
+    assert remove_accents(string) == expected
+
+
+@pytest_parametrize_kwargs(
+    dict(string='lorem',  expected='lorem'),
+    dict(string='Fučík',  expected='Fučík'),
+    dict(string='l_o.r!e⧦m',  expected='lorem'),
+    dict(string='l o r e m',  expected='l o r e m'),
+)
+def test_remove_symbols(string: str, expected: str) -> None:
+    assert remove_symbols(string) == expected
+
+
+@pytest_parametrize_kwargs(
+    dict(string='a b c',  expected='a b c'),
+    dict(string='a  b c', expected='a b c'),
+    dict(string='a\tb c', expected='a b c'),
+    dict(string='a\nb c', expected='a b c'),
+    dict(string='\na b c', expected='a b c'),
+    dict(string='a b c\n', expected='a b c'),
+)
+def test_normalize_whitespace(string: str, expected: str) -> None:
+    assert normalize_whitespace(string) == expected

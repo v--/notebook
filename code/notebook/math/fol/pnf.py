@@ -124,7 +124,7 @@ class MoveNegationsVisitor(FormulaTransformationVisitor):
         return super().visit_connective(formula)
 
 
-def push_negations(formula: Formula) -> Formula:
+def move_negations(formula: Formula) -> Formula:
     return MoveNegationsVisitor().visit(formula)
 
 
@@ -181,4 +181,4 @@ def move_quantifiers(formula: Formula) -> Formula:
 
 # This is alg:prenex_normal_form_conversion in the monograph
 def to_pnf(formula: Formula) -> Formula:
-    return move_quantifiers(push_negations(remove_conditionals(formula)))
+    return move_quantifiers(move_negations(remove_conditionals(formula)))

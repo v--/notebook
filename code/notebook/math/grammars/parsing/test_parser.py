@@ -3,41 +3,48 @@ from textwrap import dedent
 import pytest
 
 from ....parsing.parser import ParsingError
+from ....support.pytest import pytest_parametrize_kwargs
 from ..alphabet import NonTerminal, Terminal
 from ..grammar import GrammarRule, GrammarSchema
 from .parser import parse_grammar_schema
 
 
-def test_valid_schemas() -> None:
-    assert parse_grammar_schema(
-        dedent('''\
+@pytest_parametrize_kwargs(
+    dict(
+        schema=dedent('''\
             <S> → <S>
             '''
-        )
-    ) == GrammarSchema([
-        GrammarRule([NonTerminal('S')], [NonTerminal('S')])
-    ])
+        ),
+        expected=GrammarSchema([
+            GrammarRule([NonTerminal('S')], [NonTerminal('S')])
+        ])
+    ),
 
-    assert parse_grammar_schema(
-        dedent('''\
+    dict(
+        schema=dedent('''\
             <S> → ε | "a" <S>
             '''
-        )
-    ) == GrammarSchema([
-        GrammarRule([NonTerminal('S')], []),
-        GrammarRule([NonTerminal('S')], [Terminal('a'), NonTerminal('S')]),
-    ])
+        ),
+        expected=GrammarSchema([
+            GrammarRule([NonTerminal('S')], []),
+            GrammarRule([NonTerminal('S')], [Terminal('a'), NonTerminal('S')]),
+        ])
+    ),
 
-    assert parse_grammar_schema(
-        dedent('''\
+    dict(
+        schema=dedent('''\
             <S> → ε
             <S> → "a" <S>
             '''
-        )
-    ) == GrammarSchema([
-        GrammarRule([NonTerminal('S')], []),
-        GrammarRule([NonTerminal('S')], [Terminal('a'), NonTerminal('S')]),
-    ])
+        ),
+        expected=GrammarSchema([
+            GrammarRule([NonTerminal('S')], []),
+            GrammarRule([NonTerminal('S')], [Terminal('a'), NonTerminal('S')]),
+        ])
+    ),
+)
+def test_parse_schema_success(schema: str, expected: GrammarSchema) -> None:
+    assert parse_grammar_schema(schema) == expected
 
 
 def test_parsing_empty_schema() -> None:

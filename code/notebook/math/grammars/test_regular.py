@@ -2,8 +2,7 @@ from textwrap import dedent
 
 from ..automata.finite import FiniteAutomaton
 from .alphabet import NonTerminal
-from .conftest import assert_an
-from .grammar import Grammar
+from .conftest import GrammarFixture
 from .parsing import parse_grammar_schema
 from .regular import (
     from_finite_automaton,
@@ -13,17 +12,18 @@ from .regular import (
 )
 
 
-def test_to_finite_automaton_an(an: Grammar) -> None:
-    assert is_regular(an)
-    aut = to_finite_automaton(an)
+def test_to_finite_automaton_an(an: GrammarFixture) -> None:
+    assert is_regular(an.grammar)
+    aut = to_finite_automaton(an.grammar)
 
-    assert aut.recognize('')
-    assert aut.recognize('a')
-    assert aut.recognize('aaaaa')
-    assert aut.recognize('aaaaaaaaaa')
+    for string in an.whitelist:
+        assert aut.recognize(string)
+
+    for string in an.blacklist:
+        assert not aut.recognize(string)
 
 
-def test_from_finite_automaton_an() -> None:
+def test_from_finite_automaton_an(an: GrammarFixture) -> None:
     aut: FiniteAutomaton = FiniteAutomaton()
     aut.add_transition(1, 'a', 1)
     aut.initial.add(1)
@@ -31,7 +31,8 @@ def test_from_finite_automaton_an() -> None:
 
     grammar = from_finite_automaton(aut)
     assert is_right_linear(grammar)
-    assert_an(grammar)
+    an.assert_equivalent(grammar)
+
 
 
 def test_to_finite_automaton_complex() -> None:

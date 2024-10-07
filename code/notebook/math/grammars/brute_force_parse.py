@@ -1,14 +1,23 @@
 import itertools
-from collections.abc import Iterator, Sequence
+from collections.abc import Iterable, Sequence
 
 from .alphabet import NonTerminal, Terminal
 from .context_free import is_context_free
 from .epsilon_rules import is_epsilon_rule
+from .exceptions import GrammarError
 from .grammar import Grammar
 from .parse_tree import ParseTree
 
 
-def iter_partitions(seq: str, m: int) -> Iterator[Sequence[str]]:
+class BruteForceParseError(GrammarError):
+    pass
+
+
+class NoParseTreeError(BruteForceParseError):
+    pass
+
+
+def iter_partitions(seq: str, m: int) -> Iterable[Sequence[str]]:
     if m == 1:
         yield [seq]
     else:
@@ -17,20 +26,19 @@ def iter_partitions(seq: str, m: int) -> Iterator[Sequence[str]]:
                 yield [seq[:i], *part]
 
 
-def generate_trees(sym: NonTerminal | Terminal, string: str, grammar: Grammar, traversed: set[tuple[NonTerminal, str]]) -> Iterator[ParseTree]:
+def generate_trees(sym: NonTerminal | Terminal, string: str, grammar: Grammar, traversed: set[tuple[NonTerminal, str]]) -> Iterable[ParseTree]:
     if isinstance(sym, Terminal) and sym.value == string:
         yield ParseTree(sym)
 
     elif isinstance(sym, NonTerminal) and (sym, string) not in traversed:
-        yield from parse(
+        yield from parse_impl(
             grammar.schema.instantiate(sym),
             string,
             {(grammar.start, string), *traversed}
         )
 
 
-# This is alg:brute_force_parsing in the monograph
-def parse(grammar: Grammar, string: str, traversed: set[tuple[NonTerminal, str]] | None = None) -> Iterator[ParseTree]:
+def parse_impl(grammar: Grammar, string: str, traversed: set[tuple[NonTerminal, str]]) -> Iterable[ParseTree]:
     if traversed is None:
         traversed = set()
     assert is_context_free(grammar), 'Brute force parsing algorithm only works on context-free grammars'
@@ -49,8 +57,21 @@ def parse(grammar: Grammar, string: str, traversed: set[tuple[NonTerminal, str]]
                     yield ParseTree(grammar.start, list(subtrees))
 
 
-def derives(grammar: Grammar, string: str) -> bool:
-    for _tree in parse(grammar, string):
-        return True
+# This is alg:brute_force_parsing in the monograph
+def parse(grammar: Grammar, string: str) -> Iterable[ParseTree]:
+    trees = list(parse_impl(grammar, string, set()))
 
-    return False
+    if len(trees) == 0:
+        raise NoParseTreeError(f'No parse trees generated for {string!r}')
+
+    return trees
+
+
+def derives(grammar: Grammar, string: str) -> bool:
+    try:
+        for _ in parse(grammar, string):
+            pass
+    except NoParseTreeError:
+        return False
+    else:
+        return True

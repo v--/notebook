@@ -2,7 +2,7 @@ from textwrap import dedent
 
 from .author import BibAuthor
 from .entry import BibEntry
-from .string import VerbatimString, CompositeString
+from .string import CompositeString, VerbatimString
 
 
 def test_entry_stringify() -> None:

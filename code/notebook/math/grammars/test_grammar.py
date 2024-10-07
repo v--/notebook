@@ -1,14 +1,17 @@
 from .alphabet import NonTerminal, Terminal
-from .grammar import Grammar, GrammarRule
+from .conftest import GrammarFixture
+from .grammar import GrammarRule
 
 
-def test_an(an: Grammar) -> None:
-    assert an.schema.rules == [
+def test_an(an: GrammarFixture) -> None:
+    schema = an.grammar.schema
+
+    assert schema.rules == [
         GrammarRule([NonTerminal('S')], []),
         GrammarRule([NonTerminal('S')], [NonTerminal('A')]),
         GrammarRule([NonTerminal('A')], [NonTerminal('A'), Terminal('a')]),
         GrammarRule([NonTerminal('A')], [Terminal('a')]),
     ]
 
-    assert an.schema.get_terminals() == {Terminal('a')}
-    assert an.schema.get_non_terminals() == {NonTerminal('S'), NonTerminal('A')}
+    assert schema.get_terminals() == {Terminal('a')}
+    assert schema.get_non_terminals() == {NonTerminal('S'), NonTerminal('A')}

@@ -1,8 +1,5 @@
 import functools
-import inspect
-import itertools
 import operator
-from collections.abc import Callable
 from dataclasses import dataclass
 
 

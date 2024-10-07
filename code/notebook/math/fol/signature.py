@@ -39,3 +39,6 @@ class FOLSignature:
 
     def iter_predicate_symbols(self) -> Iterable[str]:
         return sorted(sym for sym, arity in self._payload.items() if arity < 0)
+
+
+EMPTY_SIGNATURE = FOLSignature()

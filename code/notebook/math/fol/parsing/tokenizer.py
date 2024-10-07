@@ -39,7 +39,7 @@ class FOLTokenizer(IdentifierTokenizerMixin[FOLToken], Tokenizer[FOLToken]):
                 self.advance(len(ps))
                 return PredicateSymbolToken(ps)
 
-        if is_latin_string(head, Capitalization.small):
+        if is_latin_string(head, Capitalization.lower):
             return self.parse_latin_identifier()
 
         raise self.error('Unexpected symbol')

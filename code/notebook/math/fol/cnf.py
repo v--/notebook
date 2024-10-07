@@ -14,7 +14,7 @@ from .formulas import (
     is_conjunction,
     is_disjunction,
 )
-from .pnf import is_formula_quantifierless, push_negations, remove_conditionals
+from .pnf import is_formula_quantifierless, move_negations, remove_conditionals
 from .visitors import FormulaTransformationVisitor, FormulaVisitor
 
 
@@ -117,7 +117,7 @@ def pull_conjunction(formula: Formula) -> Formula:
 # This is alg:cnf_and_dnf in the monograph
 def to_cnf(formula: Formula) -> Formula:
     assert is_formula_quantifierless(formula)
-    return pull_conjunction(push_negations(remove_conditionals(remove_constants(formula))))
+    return pull_conjunction(move_negations(remove_conditionals(remove_constants(formula))))
 
 
 # This is alg:full_cnf_and_dnf in the monograph

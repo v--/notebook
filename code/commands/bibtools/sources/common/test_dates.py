@@ -1,16 +1,25 @@
-import pytest
+from notebook.support.pytest import pytest_parametrize_kwargs
 
 from .dates import extract_year
 
 
-@pytest.mark.parametrize(
-    ('string', 'year'),
-    [
-        ('2000', '2000'),
-        ('Левенштейн1965', '1965'),
-        ('Левенштейн1965ДвоичныеКоды', '1965'),
-        ('0149.15905', '0149')
-    ]
+@pytest_parametrize_kwargs(
+    dict(
+        string='2000',
+        year='2000'
+    ),
+    dict(
+        string='Левенштейн1965',
+        year='1965'
+    ),
+    dict(
+        string='Левенштейн1965ДвоичныеКоды',
+        year='1965'
+    ),
+    dict(
+        string='0149.15905',
+        year='0149'
+    )
 )
 def test_extract_year(string: str, year: str) -> None:
     assert extract_year(string) == year

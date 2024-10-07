@@ -2,13 +2,14 @@ import random
 
 import pytest
 
+from ...support.pytest import pytest_parametrize_lists, repeat5
 from ..linalg.matrix import eye
 from .tropical import MinPlusFloat, TropicalDivisionError, TropicalSubtractionError
 
 
-@pytest.mark.parametrize(
-    ('a', 'b'),
-    [(random.uniform(-100, 100), random.uniform(-100, 100)) for _ in range(5)]
+@pytest_parametrize_lists(
+    a=repeat5(random.uniform, -100, 100),
+    b=repeat5(random.uniform, -100, 100),
 )
 def test_tropical_arithmetic(a: float, b: float) -> None:
     assert MinPlusFloat(a) + b == min(a, b)
