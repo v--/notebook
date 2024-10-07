@@ -207,9 +207,6 @@ class BibParser(WhitespaceParserMixin[BibToken], Parser[BibToken]):
             if segment.isspace():
                 continue
 
-            if expecting_and:
-                raise self.error(error_message, **error_kwargs)
-
             buffer.append(segment)
             expecting_and = True
 

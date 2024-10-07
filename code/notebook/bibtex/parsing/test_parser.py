@@ -4,7 +4,7 @@ import pytest
 
 from ...parsing.parser import ParsingError
 from ..entry import BibAuthor, BibEntry
-from ..string import VerbatimString
+from ..string import VerbatimString, CompositeString
 from .parser import parse_bibtex
 
 
@@ -395,16 +395,16 @@ def test_mixed_verbatim_author() -> None:
         '''[1:]
     )
 
-    with pytest.raises(ParsingError) as excinfo:
-        parse_bibtex(string)
-
-    assert str(excinfo.value) == 'Cannot parse author string'
-    assert excinfo.value.__notes__[0] == dedent(r'''
-        1 │ @book{test,↵
-        2 │   title = {Test},↵
-        3 │   author = {A, {B and C D}},↵
-          │            ^^^^^^^^^^^^^^^^
-      '''[1:]
+    entries = parse_bibtex(string)
+    assert len(entries) == 1
+    assert entries[0] == BibEntry(
+        entry_type='book',
+        entry_name='test',
+        title='Test',
+        language='english',
+        authors=[
+            BibAuthor(full_name=CompositeString(['A, ', VerbatimString('B and C D')])),
+        ]
     )
 
 
