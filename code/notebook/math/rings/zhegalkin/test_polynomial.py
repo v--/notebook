@@ -12,7 +12,7 @@ from .polynomial import ZhegalkinPolynomial
         (var.F + var.x, var.x),
         (var.F * var.x, var.F),
         (var.T * var.x, var.x),
-        ((var.x + var.T) * var.y, var.x + var.x * var.y),
+        ((var.x + var.T) * var.y, var.y + var.x * var.y),
         (var.x * (var.y + var.T), var.x * var.y + var.x),
         (var.x + var.x, var.F),
         (var.x * var.x, var.F),
