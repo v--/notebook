@@ -42,7 +42,14 @@
     type=article~or~
     type=inbook~or~
     type=inproceedings~or~
-    type=unpublished
+    type=unpublished~or~
+    type=mastersthesis~or~
+    type=phdthesis
+  }
+
+\defbibfilter{online}
+  {
+    type=online
   }
 
 \defbibfilter{misc}
@@ -52,7 +59,10 @@
     not~type=article~and~
     not~type=inbook~and~
     not~type=inproceedings~and~
-    not~type=unpublished
+    not~type=unpublished~and~
+    not~type=mastersthesis~and~
+    not~type=phdthesis~and~
+    not~type=online
   }
 
 % Internationalization

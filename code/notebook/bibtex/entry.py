@@ -53,7 +53,9 @@ class BibEntry(NamedTuple):
     origlanguage:  Annotated[str | None, BibFieldAnnotation()] = None
     publisher:     Annotated[str | None, BibFieldAnnotation()] = None
     pubstate:      Annotated[str | None, BibFieldAnnotation()] = None
+    titleaddon:    Annotated[str | None, BibFieldAnnotation()] = None
     subtitle:      Annotated[str | None, BibFieldAnnotation()] = None
+    subtitleaddon: Annotated[str | None, BibFieldAnnotation()] = None
     date:          Annotated[str | None, BibFieldAnnotation()] = None
     url:           Annotated[str | None, BibFieldAnnotation(verbatim=True)] = None
     note:          Annotated[str | None, BibFieldAnnotation()] = None
