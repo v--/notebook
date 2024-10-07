@@ -1,0 +1,52 @@
+\ExplSyntaxOn
+
+\keys_define:nn { metadata }
+  {
+    author   .tl_set:N =  \l_nb_metadata_author_tl,
+    title    .tl_set:N =  \l_nb_metadata_title_tl,
+    subtitle .tl_set:N =  \l_nb_metadata_subtitle_tl,
+    url      .tl_set:N =  \l_nb_metadata_url_tl,
+    commit   .tl_set:N =  \l_nb_metadata_commit_tl,
+    date     .tl_set:N =  \l_nb_metadata_date_tl,
+    pdfdate  .tl_set:N =  \l_nb_metadata_pdfdate_tl
+  }
+
+\ior_new:N \l_nb_metadata_file_stream
+\tl_new:N \l_nb_file_stream_tl
+
+\NewDocumentCommand \SetMetadata {m}
+  {
+    \keys_set:nn { metadata } {#1}
+  }
+
+% hypersetup doesn't play nice with \NewDocumentCommand
+\def \GetMetadata #1
+  {
+    \tl_use:c { l_nb_metadata_#1_tl }
+  }
+
+\NewDocumentCommand \TryReadMetadataFile {O{metadata}}
+  {
+    \file_if_exist:nT {#1}
+      {
+        \ior_open:Nn \l_nb_metadata_file_stream {#1}
+        \ior_get:NN  \l_nb_metadata_file_stream \l_nb_file_stream_tl
+        \ior_close:N \l_nb_metadata_file_stream
+
+        \keys_set:nV {metadata} \l_nb_file_stream_tl
+      }
+  }
+
+\NewDocumentCommand \SetupPdfMetadata {m}
+  {
+    \hypersetup
+      {
+        pdfinfo={
+          Title={\GetMetadata{title}},
+          Author={\GetMetadata{author}},
+          CreationDate={\GetMetadata{pdfdate}}
+        }
+      }
+  }
+
+\ExplSyntaxOff

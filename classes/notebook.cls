@@ -5,21 +5,20 @@
 
 \LoadClass
   [
+    bibliography=totocnumbered,
     numbers=endperiod,
-    bibliography=totocnumbered
+    twoside=false
   ]
-  {scrartcl}
+  {scrbook}
+
+\RequirePackage{typearea}
+\RedeclareSectionCommand[tocnumwidth=3em]{section}
 
 % Generic math packages (load first to avoid misbehaving macros later)
 \RequirePackage{mathtools} % Loads amsmath
 \RequirePackage{empheq}
 \RequirePackage{amsthm}
 \RequirePackage{thmtools}
-
-\RedeclareSectionCommand[tocnumwidth=2.2em]{section}
-\RedeclareSectionCommand[tocnumwidth=2.9em]{subsection}
-\addtokomafont{section}{\clearpage}
-\addtokomafont{subsection}{\clearpage}
 
 % Citations
 \RequirePackage
@@ -31,6 +30,30 @@
     datamodel=classes/bibmodel
   ]
   {biblatex}
+
+\defbibfilter{books}
+  {
+    type=book~or~
+    type=booklet~
+  }
+
+\defbibfilter{papers}
+  {
+    type=article~or~
+    type=inbook~or~
+    type=inproceedings~or~
+    type=unpublished
+  }
+
+\defbibfilter{misc}
+  {
+    not~type=book~and~
+    not~type=booklet~and~
+    not~type=article~and~
+    not~type=inbook~and~
+    not~type=inproceedings~and~
+    not~type=unpublished
+  }
 
 % Internationalization
 \RequirePackage[english]{babel}
@@ -65,21 +88,22 @@
   ]
   {hyperref}
 
-%% Based on https://tex.stackexchange.com/a/525297
-\RequirePackage{xcolor}
-
-\cs_new_protected:Nn \nb_set_hyperref_color:nn
+\RequirePackage[x11names]{xcolor}
+\hypersetup
   {
-    \definecolor{Hy#1color}{HTML}{#2}
-    \hypersetup{#1color=Hy#1color}
+    linkcolor=DeepSkyBlue3,
+    citecolor=DeepSkyBlue3,
+    urlcolor=DeepSkyBlue3,
+    filecolor=Coral4,
+    menucolor=Coral4,
+    runcolor=Coral4,
+    linkbordercolor=DeepSkyBlue3,
+    citebordercolor=DeepSkyBlue3,
+    urlbordercolor=DeepSkyBlue3,
+    filebordercolor=Coral4,
+    menubordercolor=Coral4,
+    runbordercolor=Coral4
   }
-
-\nb_set_hyperref_color:nn {link} {800006}
-\nb_set_hyperref_color:nn {cite} {2E7E2A}
-\nb_set_hyperref_color:nn {file} {131877}
-\nb_set_hyperref_color:nn {url}  {8A0087}
-\nb_set_hyperref_color:nn {menu} {727500}
-\nb_set_hyperref_color:nn {run}  {137776}
 
 \RequirePackage[nameinlink]{cleveref}
 \RequirePackage{crossreftools}
@@ -100,7 +124,7 @@
 \RequirePackage{packages/references}
 \RequirePackage{packages/subproofs}
 \RequirePackage{packages/theorems}
-\RequirePackage{packages/git_commit_info}
+\RequirePackage{packages/metadata}
 
 % All paracol margins will go to the right and then \reversemarginpar will put them on the left
 \marginparthreshold{0}

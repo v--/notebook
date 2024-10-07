@@ -29,8 +29,9 @@ output/%.pdf: asymptote/*.asy figures/%.asy | aux output
 
 figures: $(FIGURES_TEX_PDF) $(FIGURES_ASY_PDF)
 
-git-commit-info: .git/refs/heads/master
-	LC_ALL=en_US.UTF-8 git log --max-count 1 --format=format:'hash={%h},date={%cd}' --date='format:%d %B %Y' HEAD > git-commit-info
+metadata: .git/refs/heads/master
+	LC_ALL=en_US.UTF-8 git log --max-count 1 --format=format:'commit={%h},date={%cd}' --date='format:%d %B %Y' HEAD > metadata
+	LC_ALL=en_US.UTF-8 git log --max-count 1 --format=format:',pdfdate={%cd}' --date='format:D:%Y%m%d%H%M%S' HEAD >> metadata
 
 clean:
 	rm --recursive --force aux output

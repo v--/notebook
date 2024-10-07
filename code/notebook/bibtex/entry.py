@@ -52,6 +52,7 @@ class BibEntry(NamedTuple):
     translators:   Annotated[Sequence[BibAuthor], BibFieldAnnotation(author=True, key_name='translator')] = []
     origlanguage:  Annotated[str | None, BibFieldAnnotation()] = None
     publisher:     Annotated[str | None, BibFieldAnnotation()] = None
+    pubstate:      Annotated[str | None, BibFieldAnnotation()] = None
     subtitle:      Annotated[str | None, BibFieldAnnotation()] = None
     date:          Annotated[str | None, BibFieldAnnotation()] = None
     url:           Annotated[str | None, BibFieldAnnotation(verbatim=True)] = None

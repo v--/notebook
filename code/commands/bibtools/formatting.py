@@ -106,7 +106,7 @@ class BibEntryAdjuster:
             case 'inbook' | 'incollection' | 'inproceedincs' if not self.adjusted.booktitle:
                 self.logger.warning(f'No book title specified for entry type {self.adjusted.entry_type!r}')
 
-            case 'book' | 'article' if not self.adjusted.publisher:
+            case 'book' | 'article' if not self.adjusted.publisher and not self.adjusted.pubstate:
                 self.logger.warning(f'No publisher specified for entry type {self.adjusted.entry_type!r}')
 
             case 'article' if not self.adjusted.journal:
