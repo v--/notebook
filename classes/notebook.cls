@@ -43,8 +43,9 @@
     type=inbook~or~
     type=inproceedings~or~
     type=unpublished~or~
-    type=mastersthesis~or~
-    type=phdthesis
+    % BibLaTeX maps mastersthesis and phdthesis to thesis and techreport to report;
+    % Search for \DeclareDriverSourcemap in the documentation
+    type=thesis
   }
 
 \defbibfilter{online}
@@ -60,8 +61,7 @@
     not~type=inbook~and~
     not~type=inproceedings~and~
     not~type=unpublished~and~
-    not~type=mastersthesis~and~
-    not~type=phdthesis~and~
+    not~type=thesis~and~
     not~type=online
   }
 

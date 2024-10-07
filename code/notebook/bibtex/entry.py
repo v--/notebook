@@ -13,20 +13,21 @@ BibEntryType = Literal[
     'article',
     'book',
     'booklet',
-    'conference',
     'collection',
+    'conference',
     'inbook',
     'incollection',
     'inproceedings',
     'manual',
     'mastersthesis',
     'misc',
+    'online',
     'phdthesis',
     'proceedings',
     'report',
     'techreport',
+    'thesis',
     'unpublished',
-    'online'
 ]
 
 
