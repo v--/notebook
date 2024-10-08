@@ -106,17 +106,16 @@ class BibEntryAdjuster:
         self.update(date=date, year=None, month=None, day=None)
 
     def check_missing_fields(self) -> None:
-        match self.adjusted.entry_type:
-            case 'article' if not self.adjusted.journal:
-                self.logger.warning('No journal specified for article')
+        possibly_reprinted = self.adjusted.pubstate is not None or self.adjusted.relatedtype == 'origpubas'
 
+        match self.adjusted.entry_type:
             case 'inbook' | 'incollection' | 'inproceedincs' if not self.adjusted.booktitle:
                 self.logger.warning(f'No book title specified for entry type {self.adjusted.entry_type!r}')
 
-            case 'book' | 'article' if not self.adjusted.publisher and not self.adjusted.pubstate:
+            case 'book' | 'article' if not self.adjusted.publisher and not possibly_reprinted:
                 self.logger.warning(f'No publisher specified for entry type {self.adjusted.entry_type!r}')
 
-            case 'article' if not self.adjusted.journal:
+            case 'article' if not self.adjusted.journal and not possibly_reprinted:
                 self.logger.warning(f'No journal specified for entry type {self.adjusted.entry_type!r}')
 
             case 'online' if not self.adjusted.urldate:

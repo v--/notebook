@@ -14,6 +14,7 @@ from .tokens import BibToken, MiscToken, NumberToken, WordToken
 
 AUTHOR_KEYS = {key_name for _, key_name, _ in BibEntry.get_author_fields()} | {short_key_name for _, _, short_key_name in BibEntry.get_author_fields()}
 PLAIN_KEYS = {key_name for _, key_name in BibEntry.get_plain_fields()}
+BOOL_KEYS = {key_name for _, key_name in BibEntry.get_bool_fields()}
 
 
 class BibParser(WhitespaceParserMixin[BibToken], Parser[BibToken]):
@@ -228,6 +229,9 @@ class BibParser(WhitespaceParserMixin[BibToken], Parser[BibToken]):
         if len(value_str) == 0 or value_str.isspace():
             raise self.error('Empty value', **error_kwargs)
 
+        if key in BOOL_KEYS and value != 'true' and value != 'false':
+            raise self.error('Invalid boolean value', **error_kwargs)
+
         if key in PLAIN_KEYS and not isinstance(value, str):
             raise self.error('Invalid value', **error_kwargs)
 
@@ -263,7 +267,7 @@ class BibParser(WhitespaceParserMixin[BibToken], Parser[BibToken]):
             value: BibString
 
             match head := self.peek():
-                case NumberToken():
+                case NumberToken() | WordToken('true') | WordToken('false'):
                     value = str(head)
                     self.advance()
 
@@ -394,6 +398,7 @@ class BibParser(WhitespaceParserMixin[BibToken], Parser[BibToken]):
                 translators=self.process_authors(properties, 'translator', entry_start_i),
                 advisors=self.process_authors(properties, 'advisor', entry_start_i),
                 editors=self.process_authors(properties, 'editor', entry_start_i),
+                dataonly=properties.pop('dataonly', None) == 'true',
                 **properties
             )
 

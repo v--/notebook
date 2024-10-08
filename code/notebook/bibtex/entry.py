@@ -53,6 +53,9 @@ class BibEntry(NamedTuple):
     editors:       Annotated[Sequence[BibAuthor], BibFieldAnnotation(author=True, key_name='editor')] = []
     translators:   Annotated[Sequence[BibAuthor], BibFieldAnnotation(author=True, key_name='translator')] = []
     origlanguage:  Annotated[str | None, BibFieldAnnotation()] = None
+    dataonly:      Annotated[bool, BibFieldAnnotation()] = False
+    related:       Annotated[BibString | None, BibFieldAnnotation()] = None
+    relatedtype:   Annotated[BibString | None, BibFieldAnnotation()] = None
     publisher:     Annotated[BibString | None, BibFieldAnnotation()] = None
     pubstate:      Annotated[BibString | None, BibFieldAnnotation()] = None
     titleaddon:    Annotated[BibString | None, BibFieldAnnotation()] = None
@@ -127,6 +130,15 @@ class BibEntry(NamedTuple):
 
     @classmethod
     @list_accumulator
+    def get_bool_fields(cls) -> Iterable[tuple[str, str]]:
+        for field_name, field_annotation in get_type_hints(cls, include_extras=True).items():
+            type_, annotation = get_args(field_annotation)
+
+            if type_ is bool:
+                yield field_name, annotation.key_name or field_name
+
+    @classmethod
+    @list_accumulator
     def get_author_fields(cls) -> Iterable[tuple[str, str, str]]:
         for field_name, field_annotation in get_type_hints(cls, include_extras=True).items():
             _, annotation = get_args(field_annotation)
@@ -164,7 +176,7 @@ class BibEntry(NamedTuple):
             properties.pop(field_name)
 
         for key, value in list(properties.items()):
-            if value is None:
+            if value is None or value is False:
                 properties.pop(key)
 
         for field_name, key_name, short_key_name in self.get_author_fields():
@@ -190,14 +202,14 @@ class BibEntry(NamedTuple):
         for i, (key, value) in enumerate(sorted(properties.items(), key=lambda x: x[0])):
             yield ' ' * TAB_SIZE
             yield key
-            yield ' = {'
+            yield ' = '
 
-            if self.is_key_value_verbatim(key):
-                yield str(value)
+            if value is True:
+                yield 'true'
+            elif self.is_key_value_verbatim(key):
+                yield '{' + str(value) + '}'
             else:
-                yield escape(value)
-
-            yield '}'
+                yield '{' + escape(value) + '}'
 
             if i + 1 < total:
                 yield ','

@@ -840,6 +840,28 @@ def test_shortauthor_verbatim_overfull() -> None:
     )
 
 
+def test_dataonly() -> None:
+    string = dedent(r'''
+        @book{test,
+          title = {Test},
+          author = {A B},
+          language = {english},
+          dataonly = true
+        }
+        '''[1:]
+    )
+    entries = parse_bibtex(string)
+    assert len(entries) == 1
+    assert entries[0] == BibEntry(
+        entry_type='book',
+        entry_name='test',
+        title='Test',
+        authors=[BibAuthor(full_name='A B')],
+        language='english',
+        dataonly=True
+    )
+
+
 def test_article_entry() -> None:
     string = dedent(r'''
         @article{Blass1984BasesImplyAOC,
