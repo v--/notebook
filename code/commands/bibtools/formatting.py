@@ -106,23 +106,26 @@ class BibEntryAdjuster:
         self.update(date=date, year=None, month=None, day=None)
 
     def check_missing_fields(self) -> None:
-        possibly_reprinted = self.adjusted.pubstate is not None or self.adjusted.relatedtype == 'origpubas'
+        possibly_reprinted = self.adjusted.pubstate is not None or self.adjusted.relatedtype == 'origpubas' or self.adjusted.relatedtype == 'origpubin'
 
         match self.adjusted.entry_type:
             case 'inbook' | 'incollection' | 'inproceedincs' if not self.adjusted.booktitle:
                 self.logger.warning(f'No book title specified for entry type {self.adjusted.entry_type!r}')
 
             case 'book' | 'article' if not self.adjusted.publisher and not possibly_reprinted:
-                self.logger.warning(f'No publisher specified for entry type {self.adjusted.entry_type!r}')
+                self.logger.warning(f'No publisher and no original publication specified for entry type {self.adjusted.entry_type!r}')
 
             case 'article' if not self.adjusted.journal and not possibly_reprinted:
-                self.logger.warning(f'No journal specified for entry type {self.adjusted.entry_type!r}')
+                self.logger.warning(f'No journal and no original publication specified for entry type {self.adjusted.entry_type!r}')
 
             case 'online' if not self.adjusted.urldate:
                 self.logger.warning(f'No URL date specified for entry type {self.adjusted.entry_type!r}')
 
-        if len(self.adjusted.translators) > 0 and not self.adjusted.origlanguage:
-            self.logger.warning('Specified the translators, but not the original language')
+        if self.adjusted.relatedtype == 'translationof' and self.adjusted.origlanguage:
+            self.logger.warning('Specified both an original publication and an original language')
+
+        if len(self.adjusted.translators) > 0 and self.adjusted.relatedtype != 'translationof' and not self.adjusted.origlanguage:
+            self.logger.warning('Specified the translators, but not the original publication nor the original language')
 
         if self.adjusted.origlanguage and len(self.adjusted.translators) == 0:
             self.logger.warning('Specified the original language, but not the translators')

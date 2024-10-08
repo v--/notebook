@@ -77,22 +77,3 @@ def test_entry_stringify_shortauthor() -> None:
         }
         '''[1:])
 
-
-def test_entry_stringify_dataonly() -> None:
-    entry = BibEntry(
-        entry_type='book',
-        entry_name='test',
-        title='Test',
-        language='english',
-        authors=[BibAuthor(full_name='A B')],
-        dataonly=True
-    )
-
-    assert str(entry) == dedent(r'''
-        @book{test,
-          author = {A B},
-          dataonly = true,
-          language = {english},
-          title = {Test}
-        }
-        '''[1:])

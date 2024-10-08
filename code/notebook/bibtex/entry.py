@@ -53,7 +53,7 @@ class BibEntry(NamedTuple):
     editors:       Annotated[Sequence[BibAuthor], BibFieldAnnotation(author=True, key_name='editor')] = []
     translators:   Annotated[Sequence[BibAuthor], BibFieldAnnotation(author=True, key_name='translator')] = []
     origlanguage:  Annotated[str | None, BibFieldAnnotation()] = None
-    dataonly:      Annotated[bool, BibFieldAnnotation()] = False
+    options:       Annotated[BibString | None, BibFieldAnnotation()] = None
     related:       Annotated[BibString | None, BibFieldAnnotation()] = None
     relatedtype:   Annotated[BibString | None, BibFieldAnnotation()] = None
     publisher:     Annotated[BibString | None, BibFieldAnnotation()] = None
@@ -130,15 +130,6 @@ class BibEntry(NamedTuple):
 
     @classmethod
     @list_accumulator
-    def get_bool_fields(cls) -> Iterable[tuple[str, str]]:
-        for field_name, field_annotation in get_type_hints(cls, include_extras=True).items():
-            type_, annotation = get_args(field_annotation)
-
-            if type_ is bool:
-                yield field_name, annotation.key_name or field_name
-
-    @classmethod
-    @list_accumulator
     def get_author_fields(cls) -> Iterable[tuple[str, str, str]]:
         for field_name, field_annotation in get_type_hints(cls, include_extras=True).items():
             _, annotation = get_args(field_annotation)
@@ -204,9 +195,7 @@ class BibEntry(NamedTuple):
             yield key
             yield ' = '
 
-            if value is True:
-                yield 'true'
-            elif self.is_key_value_verbatim(key):
+            if self.is_key_value_verbatim(key):
                 yield '{' + str(value) + '}'
             else:
                 yield '{' + escape(value) + '}'
