@@ -31,46 +31,6 @@
   ]
   {biblatex}
 
-\defbibfilter{books}
-  {
-    type=book~or~
-    type=booklet~
-  }
-
-\defbibfilter{papers}
-  {
-    type=article~or~
-    type=inbook~or~
-    type=inproceedings~or~
-    type=unpublished~or~
-    % BibLaTeX maps mastersthesis and phdthesis to thesis and techreport to report;
-    % Search for \DeclareDriverSourcemap in the documentation
-    type=thesis
-  }
-
-\defbibfilter{online}
-  {
-    type=online
-  }
-
-\defbibfilter{standards}
-  {
-    type=report
-  }
-
-\defbibfilter{misc}
-  {
-    not~type=book~and~
-    not~type=booklet~and~
-    not~type=article~and~
-    not~type=inbook~and~
-    not~type=inproceedings~and~
-    not~type=unpublished~and~
-    not~type=thesis~and~
-    not~type=online~and~
-    not~type=report
-  }
-
 % Internationalization
 \RequirePackage[english]{babel}
 \RequirePackage[autostyle]{csquotes}
@@ -136,7 +96,7 @@
 \RequirePackage{packages/math_macros}
 \RequirePackage{packages/math_environments}
 \RequirePackage{packages/paired_delimiters}
-\RequirePackage{packages/citations}
+\RequirePackage{packages/bibliography}
 \RequirePackage{packages/references}
 \RequirePackage{packages/subproofs}
 \RequirePackage{packages/theorems}

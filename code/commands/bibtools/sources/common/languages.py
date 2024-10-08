@@ -19,6 +19,10 @@ def create_lang_object(language: str) -> Lang:
 
 
 def get_language_name(language: BibString) -> BibString:
+    # We handle greek specially because iso639 and biblatex have differing opinions on handling it
+    if isinstance(language, str) and language.strip().lower() == 'greek':
+        return 'greek'
+
     if isinstance(language, str):
         return create_lang_object(language).name.lower()
 
@@ -29,10 +33,17 @@ normalize_language_name = get_language_name
 
 
 def get_language_code(language: BibString) -> BibString:
-    if isinstance(language, str):
-        return create_lang_object(language).pt1
+    normalized = get_language_name(language)
 
-    return language
+    if normalized == 'greek':
+        # In iso639, grc is ancient Greek, gre is modern Greek
+        # Ancient greek does not have two-letter code
+        return 'el'
+
+    if isinstance(normalized, str):
+        return create_lang_object(normalized).pt1
+
+    return normalized
 
 
 def get_main_entry_language(entry: BibEntry) -> str:
