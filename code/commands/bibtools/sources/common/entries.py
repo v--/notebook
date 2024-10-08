@@ -52,23 +52,23 @@ def generate_keyphrase(titles: Titles, language: str, *aux_texts: str | None) ->
 
 
 @string_accumulator()
-def generate_entry_name(authors: Sequence[BibAuthor], year: str | None, titles: Titles, language: str, *aux_texts: str | None) -> Iterable[str]:
+def generate_entry_name(authors: Sequence[BibAuthor], year: str | None, titles: Titles, main_language: str, *aux_texts: str | None) -> Iterable[str]:
     if len(authors) > 0:
         yield mangle_string_for_entry_name(strip_braces(get_main_human_name(authors[0].full_name)))
 
     if len(authors) > 2 or (len(authors) == 2 and authors[1] == BibAuthor(full_name='others')):
-        yield 'ИПр' if language == 'russian' or language == 'bulgarian' else 'EtAl'
+        yield 'ИПр' if main_language == 'russian' or main_language == 'bulgarian' else 'EtAl'
     elif len(authors) > 1:
         yield mangle_string_for_entry_name(strip_braces(get_main_human_name(authors[1].full_name)))
 
     if year:
         yield year
 
-    keyphrase = generate_keyphrase(titles, language, *aux_texts)
+    keyphrase = generate_keyphrase(titles, main_language, *aux_texts)
     yield mangle_string_for_entry_name(str(keyphrase))
 
 
-def regenerate_entry_name(entry: BibEntry, *aux_texts: str | None) -> str:
+def regenerate_entry_name(entry: BibEntry, main_language: str, *aux_texts: str | None) -> str:
     titles = Titles(entry.title, entry.subtitle)
     year = extract_year(strip_braces(entry.date)) if entry.date else None
-    return generate_entry_name(entry.authors or entry.editors, year, titles, entry.language, *aux_texts)
+    return generate_entry_name(entry.authors or entry.editors, year, titles, main_language, *aux_texts)

@@ -21,7 +21,7 @@ def mathnet_entry_to_bib(entry: MathNetEntry, identifier: str, *, english: bool)
         authors=authors,
         title=titles.main,
         subtitle=titles.sub,
-        language=language,
+        languages=[language],
         date=year,
         journal=entry.jour,
         series=entry.serial,

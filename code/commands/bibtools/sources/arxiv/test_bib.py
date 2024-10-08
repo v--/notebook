@@ -53,7 +53,7 @@ def test_parse_1606_08092v1(arxiv_id: str = '1606.08092v1') -> None:
             BibAuthor(full_name='Hannes Diener'),
             BibAuthor(full_name='Maarten McKubre-Jordens')
         ],
-        language='english',
+        languages=['english'],
         eprinttype='arXiv',
         eprintclass='math.LO',
         eprint=arxiv_id,
@@ -77,7 +77,7 @@ def test_parse_2011_00412v3(arxiv_id: str = '2011.00412v3') -> None:
             BibAuthor(full_name='Tom Leinster')
         ],
         edition='3',
-        language='english',
+        languages=['english'],
         eprinttype='arXiv',
         eprintclass='math.FA',
         eprint=arxiv_id,
@@ -100,7 +100,7 @@ def test_parse_1010_0824v13_russian(arxiv_id: str = '1010.0824v13') -> None:
         authors=[
             BibAuthor(full_name='Sergei Akbarov')
         ],
-        language='english',  # This is supposed to be "Russian", but the arXiv API does not give us this information
+        languages=['english'],  # This is supposed to be "Russian", but the arXiv API does not give us this information
         eprinttype='arXiv',
         eprintclass='math.CA',
         eprint=arxiv_id,
@@ -127,7 +127,7 @@ def test_parse_0903_0340v3_doi_and_link_without_type(arxiv_id: str = '0903.0340v
             BibAuthor(full_name='John C. Baez'),
             BibAuthor(full_name='Mike Stay')
         ],
-        language='english',
+        languages=['english'],
         eprinttype='arXiv',
         eprintclass='quant-ph',
         eprint=arxiv_id,
@@ -152,7 +152,7 @@ def test_parse_2401_09270v1_title_line_break(arxiv_id: str = '2401.09270v1') -> 
         authors=[
             BibAuthor(full_name='Todd Waugh Ambridge')
         ],
-        language='english',
+        languages=['english'],
         eprinttype='arXiv',
         eprintclass='cs.LO',
         eprint=arxiv_id,
@@ -180,7 +180,7 @@ def test_parse_2403_06707v1_dashes_in_title(arxiv_id: str = '2403.06707v1') -> N
             BibAuthor(full_name='Klaus Ostermann')
         ],
         doi='10.1145/3649846',
-        language='english',
+        languages=['english'],
         eprinttype='arXiv',
         eprintclass='cs.PL',
         eprint=arxiv_id,

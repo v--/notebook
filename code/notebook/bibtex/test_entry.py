@@ -11,7 +11,7 @@ def test_entry_stringify() -> None:
         entry_name='test',
         title='Test',
         authors=[BibAuthor(full_name='A B'), BibAuthor(full_name='C D')],
-        language='english'
+        languages=['english']
     )
 
     assert str(entry) == dedent(r'''
@@ -23,13 +23,31 @@ def test_entry_stringify() -> None:
         '''[1:])
 
 
+def test_entry_stringify_multilang() -> None:
+    entry = BibEntry(
+        entry_type='book',
+        entry_name='test',
+        title='Test',
+        authors=[BibAuthor(full_name='A B')],
+        languages=['english', 'russian']
+    )
+
+    assert str(entry) == dedent(r'''
+        @book{test,
+          author = {A B},
+          language = {english and russian},
+          title = {Test}
+        }
+        '''[1:])
+
+
 def test_entry_stringify_verbatim_author() -> None:
     entry = BibEntry(
         entry_type='book',
         entry_name='test',
         title='Test',
         authors=[BibAuthor(full_name=VerbatimString('A B'))],
-        language='english'
+        languages=['english']
     )
 
     assert str(entry) == dedent(r'''
@@ -47,7 +65,7 @@ def test_entry_stringify_partially_verbatim_author() -> None:
         entry_name='test',
         title='Test',
         authors=[BibAuthor(full_name=CompositeString(['The ', VerbatimString('A B')]))],
-        language='english'
+        languages=['english']
     )
 
     assert str(entry) == dedent(r'''
@@ -65,7 +83,7 @@ def test_entry_stringify_shortauthor() -> None:
         entry_name='тест',
         title='Тест',
         authors=[BibAuthor(full_name='А', short_name='A'), BibAuthor(full_name='Б', short_name='B')],
-        language='russian'
+        languages=['russian']
     )
 
     assert str(entry) == dedent(r'''

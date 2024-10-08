@@ -1,6 +1,6 @@
 from collections import deque
 from collections.abc import Collection, Iterable, Sequence
-from typing import Literal, cast, get_args, overload
+from typing import cast, get_args
 
 from ...parsing.mixins.whitespace import WhitespaceParserMixin
 from ...parsing.parser import Parser
@@ -12,8 +12,8 @@ from .tokenizer import tokenize_bibtex
 from .tokens import BibToken, MiscToken, NumberToken, WordToken
 
 
-AUTHOR_KEYS = {key_name for _, key_name, _ in BibEntry.get_author_fields()} | {short_key_name for _, _, short_key_name in BibEntry.get_author_fields()}
-PLAIN_KEYS = {key_name for _, key_name in BibEntry.get_plain_fields()}
+AUTHOR_KEYS = frozenset(key_name for _, key_name, _ in BibEntry.get_author_fields()) | frozenset(short_key_name for _, _, short_key_name in BibEntry.get_author_fields())
+LIST_KEYS = AUTHOR_KEYS | frozenset(key_name for _, key_name in BibEntry.get_list_fields())
 
 
 class BibParser(WhitespaceParserMixin[BibToken], Parser[BibToken]):
@@ -127,7 +127,7 @@ class BibParser(WhitespaceParserMixin[BibToken], Parser[BibToken]):
                 case MiscToken.backslash:
                     builder.append(self.parse_escape_sequence(i_start=entry_start_i))
 
-                case WordToken('and') | WordToken('AND') if key in AUTHOR_KEYS:
+                case WordToken('and') | WordToken('AND') if key in LIST_KEYS:
                     if verbatim:
                         builder.append(str(head))
                     else:
@@ -180,10 +180,10 @@ class BibParser(WhitespaceParserMixin[BibToken], Parser[BibToken]):
     def parse_author_string(self, string: BibString) -> BibAuthor:
         return BibAuthor(full_name=string.strip())
 
-    def parse_authors(self, value: BibString, entry_start_i: int, value_start_i: int) -> Iterable[BibAuthor]:
+    def parse_list(self, value: BibString, entry_start_i: int, value_start_i: int) -> Iterable[BibString]:
         expecting_and = False
 
-        error_message = 'Cannot parse author string'
+        error_message = 'Cannot parse list'
         error_kwargs = dict(
             i_first_token=value_start_i,
             i_last_token=self.index - 1,
@@ -196,25 +196,26 @@ class BibParser(WhitespaceParserMixin[BibToken], Parser[BibToken]):
             if segment == 'and' or segment == 'AND':
                 if expecting_and:
                     if len(buffer) > 0:
-                        yield self.parse_author_string(CompositeString(buffer) if len(buffer) > 1 else buffer[0])
+                        yield CompositeString(buffer) if len(buffer) > 1 else buffer[0].strip()
                         buffer = []
 
                     expecting_and = False
                     continue
                 else:
                     raise self.error(error_message, **error_kwargs)
-
-            if segment.isspace():
-                continue
-
-            buffer.append(segment)
-            expecting_and = True
+            elif not segment.isspace():
+                buffer.append(segment)
+                expecting_and = True
 
         if not expecting_and:
             raise self.error(error_message, **error_kwargs)
 
         if len(buffer) > 0:
-            yield self.parse_author_string(CompositeString(buffer) if len(buffer) > 1 else buffer[0])
+            yield CompositeString(buffer) if len(buffer) > 1 else buffer[0].strip()
+
+    def parse_authors(self, value: BibString, entry_start_i: int, value_start_i: int) -> Iterable[BibAuthor]:
+        for entry in self.parse_list(value, entry_start_i, value_start_i):
+            yield self.parse_author_string(entry)
 
     def perform_inline_validation(self, key: str, value: BibString, entry_start_i: int, value_start_i: int) -> None:
         error_kwargs = dict(
@@ -227,9 +228,6 @@ class BibParser(WhitespaceParserMixin[BibToken], Parser[BibToken]):
 
         if len(value_str) == 0 or value_str.isspace():
             raise self.error('Empty value', **error_kwargs)
-
-        if key in PLAIN_KEYS and not isinstance(value, str):
-            raise self.error('Invalid value', **error_kwargs)
 
         if key in AUTHOR_KEYS:
             for _ in self.parse_authors(value, entry_start_i, value_start_i):
@@ -301,9 +299,6 @@ class BibParser(WhitespaceParserMixin[BibToken], Parser[BibToken]):
         if 'title' not in properties:
             raise self.error('Entry without title', i_first_token=entry_start_i, i_last_token=self.index - 1)
 
-        if 'language' not in properties:
-            raise self.error('Entry without language', i_first_token=entry_start_i, i_last_token=self.index - 1)
-
     @list_accumulator
     def process_authors(self, properties: dict[str, BibString], key: str, entry_start_i: int) -> Iterable[BibAuthor]:
         if key not in properties:
@@ -334,25 +329,18 @@ class BibParser(WhitespaceParserMixin[BibToken], Parser[BibToken]):
             if len(short_segments) == 0:
                 raise self.error(error_message, **error_kwargs)
 
-            yield author._replace(short_name=short_segments.popleft().strip())
+            yield author._replace(short_name=short_segments.popleft())
 
         if short_segments and len(short_segments) > 0:
             raise self.error(error_message, **error_kwargs)
 
-    @overload
-    def process_plain_field(self, properties: dict[str, BibString], key: str, entry_start_i: int, *, mandatory: Literal[True]) -> str: ...
-    @overload
-    def process_plain_field(self, properties: dict[str, BibString], key: str, entry_start_i: int, *, mandatory: Literal[False]) -> str | None: ...
-    def process_plain_field(self, properties: dict[str, BibString], key: str, entry_start_i: int, *, mandatory: bool) -> str | None:
+    def process_language(self, properties: dict[str, BibString], key: str, entry_start_i: int) -> Sequence[BibString]:
         value = properties.pop(key, None)
 
-        if value is not None and not isinstance(value, str):
-            raise self.error(f'Invalid value {str(value)!r} for field {key}', i_first_token=entry_start_i)
+        if value is None:
+            return []
 
-        if mandatory and value is None:
-            raise self.error(f'Missing value for mandatory field {key}', i_first_token=entry_start_i)
-
-        return value
+        return list(self.parse_list(value, entry_start_i, entry_start_i))
 
     def parse_entries(self) -> Iterable[BibEntry]:
         entry_names = set[str]()
@@ -388,8 +376,8 @@ class BibParser(WhitespaceParserMixin[BibToken], Parser[BibToken]):
             yield BibEntry(
                 entry_type=entry_type,
                 entry_name=entry_name,
-                language=self.process_plain_field(properties, 'language', entry_start_i, mandatory=True),
-                origlanguage=self.process_plain_field(properties, 'origlanguage', entry_start_i, mandatory=False),
+                languages=self.process_language(properties, 'language', entry_start_i),
+                origlanguages=self.process_language(properties, 'origlanguage', entry_start_i),
                 authors=self.process_authors(properties, 'author', entry_start_i),
                 translators=self.process_authors(properties, 'translator', entry_start_i),
                 advisors=self.process_authors(properties, 'advisor', entry_start_i),

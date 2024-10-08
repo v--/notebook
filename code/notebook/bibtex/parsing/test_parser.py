@@ -116,32 +116,6 @@ def test_no_title() -> None:
     )
 
 
-def test_no_language() -> None:
-    string = dedent(r'''
-        @book{test,
-          title = {Test},
-          author = {A B}
-        }
-        '''[1:]
-    )
-
-    with pytest.raises(ParsingError) as excinfo:
-        parse_bibtex(string)
-
-    assert str(excinfo.value) == 'Entry without language'
-    assert excinfo.value.__notes__[0] == dedent(r'''
-        1 │ @book{test,↵
-          │ ^^^^^^^^^^^^
-        2 │   title = {Test},↵
-          │ ^^^^^^^^^^^^^^^^^^
-        3 │   author = {A B}↵
-          │ ^^^^^^^^^^^^^^^^^
-        4 │ }↵
-          │ ^
-      '''[1:]
-    )
-
-
 def test_minimal_valid_entry() -> None:
     string = dedent(r'''
         @book{test,
@@ -158,7 +132,27 @@ def test_minimal_valid_entry() -> None:
         entry_name='test',
         title='Test',
         authors=[BibAuthor(full_name='A B')],
-        language='english'
+        languages=['english']
+    )
+
+
+def test_multiple_languages() -> None:
+    string = dedent(r'''
+        @book{test,
+          title = {Test},
+          author = {A B},
+          language = {english and russian}
+        }
+        '''[1:]
+    )
+    entries = parse_bibtex(string)
+    assert len(entries) == 1
+    assert entries[0] == BibEntry(
+        entry_type='book',
+        entry_name='test',
+        title='Test',
+        authors=[BibAuthor(full_name='A B')],
+        languages=['english', 'russian']
     )
 
 
@@ -178,7 +172,7 @@ def test_title_with_percent() -> None:
         entry_name='test',
         title='Te%st',
         authors=[BibAuthor(full_name='A B')],
-        language='english'
+        languages=['english']
     )
 
 
@@ -223,7 +217,7 @@ def test_author_with_and_in_name() -> None:
         entry_name='test',
         title='Test',
         authors=[BibAuthor(full_name='Randy')],
-        language='english'
+        languages=['english']
     )
 
 
@@ -244,7 +238,7 @@ def test_multiple_authors() -> None:
         entry_name='test',
         title='Test',
         authors=[BibAuthor(full_name='A B'), BibAuthor(full_name='C D')],
-        language='english'
+        languages=['english']
     )
 
 
@@ -267,7 +261,7 @@ def test_translator() -> None:
         title='Test',
         authors=[BibAuthor(full_name='A B')],
         translators=[BibAuthor(full_name='C D')],
-        language='english'
+        languages=['english']
     )
 
 
@@ -284,7 +278,7 @@ def test_authors_only_and() -> None:
     with pytest.raises(ParsingError) as excinfo:
         parse_bibtex(string)
 
-    assert str(excinfo.value) == 'Cannot parse author string'
+    assert str(excinfo.value) == 'Cannot parse list'
     assert excinfo.value.__notes__[0] == dedent(r'''
         1 │ @book{test,↵
         2 │   title = {Test},↵
@@ -307,7 +301,7 @@ def test_authors_double_and() -> None:
     with pytest.raises(ParsingError) as excinfo:
         parse_bibtex(string)
 
-    assert str(excinfo.value) == 'Cannot parse author string'
+    assert str(excinfo.value) == 'Cannot parse list'
     assert excinfo.value.__notes__[0] == dedent(r'''
         1 │ @book{test,↵
         2 │   title = {Test},↵
@@ -330,7 +324,7 @@ def test_authors_empty_name() -> None:
     with pytest.raises(ParsingError) as excinfo:
         parse_bibtex(string)
 
-    assert str(excinfo.value) == 'Cannot parse author string'
+    assert str(excinfo.value) == 'Cannot parse list'
     assert excinfo.value.__notes__[0] == dedent(r'''
         1 │ @book{test,↵
         2 │   title = {Test},↵
@@ -357,7 +351,7 @@ def test_single_verbatim_author() -> None:
         entry_name='test',
         title='Test',
         authors=[BibAuthor(full_name=VerbatimString('Verbatim'))],
-        language='english'
+        languages=['english']
     )
 
 
@@ -377,7 +371,7 @@ def test_multiple_verbatim_authors() -> None:
         entry_type='book',
         entry_name='test',
         title='Test',
-        language='english',
+        languages=['english'],
         authors=[
             BibAuthor(full_name=VerbatimString('Verbatim')),
             BibAuthor(full_name=VerbatimString('Verbatim 2'))
@@ -401,7 +395,7 @@ def test_mixed_verbatim_author() -> None:
         entry_type='book',
         entry_name='test',
         title='Test',
-        language='english',
+        languages=['english'],
         authors=[
             BibAuthor(full_name=CompositeString(['A, ', VerbatimString('B and C D')])),
         ]
@@ -425,7 +419,7 @@ def test_one_verbatim_authors_with_and() -> None:
         entry_name='test',
         title='Test',
         authors=[BibAuthor(full_name=VerbatimString('Verbatim and Verbatim 2'))],
-        language='english'
+        languages=['english']
     )
 
 
@@ -446,7 +440,7 @@ def test_one_verbatim_authors_with_quotes() -> None:
         entry_name='test',
         title='Test',
         authors=[BibAuthor(full_name=VerbatimString('Verbatim and Verbatim 2'))],
-        language='english'
+        languages=['english']
     )
 
 
@@ -467,7 +461,7 @@ def test_minimal_valid_entry_escape() -> None:
         entry_name='test',
         title='{Test}',
         authors=[BibAuthor(full_name='A B')],
-        language='english'
+        languages=['english']
     )
 
 
@@ -488,7 +482,7 @@ def test_minimal_valid_entry_quotes() -> None:
         entry_name='test',
         title='Test',
         authors=[BibAuthor(full_name='A B')],
-        language='english'
+        languages=['english']
     )
 
 
@@ -509,7 +503,7 @@ def test_minimal_valid_entry_quote_escape() -> None:
         entry_name='test',
         title='Test "',
         authors=[BibAuthor(full_name='A B')],
-        language='english'
+        languages=['english']
     )
 
 
@@ -594,14 +588,14 @@ def test_two_valid_entries() -> None:
         entry_name='test',
         title='Test',
         authors=[BibAuthor(full_name='A B')],
-        language='english'
+        languages=['english']
     )
     assert entries[1] == BibEntry(
         entry_type='book',
         entry_name='тест',
         title='Тест',
         authors=[BibAuthor(full_name='А Б')],
-        language='russian'
+        languages=['russian']
     )
 
 
@@ -650,7 +644,7 @@ def test_ampersand_removal() -> None:
         entry_name='test',
         title='Test',
         authors=[BibAuthor(full_name='A B')],
-        language='english',
+        languages=['english'],
         publisher='Chapman & Hall/CRC'
     )
 
@@ -673,7 +667,7 @@ def test_url_ampersand_removal() -> None:
         entry_name='test',
         title='Test',
         authors=[BibAuthor(full_name='A B')],
-        language='english',
+        languages=['english'],
         url='http://api.com?a=1&b=2'
     )
 
@@ -722,7 +716,7 @@ def test_shortauthor_simple() -> None:
         entry_name='тест',
         title='Тест',
         authors=[BibAuthor(full_name='А Б', short_name='A')],
-        language='russian'
+        languages=['russian']
     )
 
 
@@ -747,7 +741,7 @@ def test_shortauthor_two_names() -> None:
             BibAuthor(full_name='А Б', short_name='A'),
             BibAuthor(full_name='В Г', short_name='V')
         ],
-        language='russian'
+        languages=['russian']
     )
 
 
@@ -772,7 +766,7 @@ def test_shortauthor_others() -> None:
             BibAuthor(full_name='А Б', short_name='A'),
             BibAuthor(full_name='others')
         ],
-        language='russian'
+        languages=['russian']
     )
 
 
@@ -864,7 +858,7 @@ def test_article_entry() -> None:
         entry_name='Blass1984BasesImplyAOC',
         title='Existence of bases implies the axiom of choice',
         authors=[BibAuthor(full_name='Andreas Blass')],
-        language='english',
+        languages=['english'],
         doi='10.1090/conm/031/763890',
         publisher='American Mathematical Society',
         journal='Contemporary Mathematics',
@@ -899,7 +893,7 @@ def test_arxiv_entry() -> None:
         entry_name='Anderson1988NonEuclideanPID',
         title="An Existence Theorem for Non-Euclidean PID's",
         authors=[BibAuthor(full_name='Donald D. Anderson')],
-        language='english',
+        languages=['english'],
         journal='Communications in Algebra',
         doi='10.1080/00927878808823628',
         issn='1532-4125',

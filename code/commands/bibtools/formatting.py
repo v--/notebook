@@ -15,7 +15,7 @@ from . import url_templates
 from .exceptions import BibToolsParsingError
 from .sources.common.dates import extract_year
 from .sources.common.entries import regenerate_entry_name
-from .sources.common.languages import normalize_language_name
+from .sources.common.languages import get_main_entry_language, normalize_language_name
 from .sources.common.names import get_main_human_name, normalize_human_name
 from .sources.common.pages import normalize_pages
 from .sources.common.titles import split_title
@@ -50,10 +50,12 @@ class BibEntryAdjuster:
         self.adjusted = self.adjusted._replace(**kwargs)
 
     def get_author_short_name(self, author: BibAuthor) -> BibString | None:
+        main_language = get_main_entry_language(self.adjusted)
+
         if (
             author.short_name is None and \
             author.full_name != 'others' and \
-            (self.adjusted.language == 'russian' or self.adjusted.language == 'bulgarian')
+            (main_language == 'russian' or main_language == 'bulgarian')
         ):
             main_name = get_main_human_name(author.full_name)
 
@@ -72,6 +74,11 @@ class BibEntryAdjuster:
         short_name = self.get_author_short_name(author)
         self.log_update('short name', author.short_name, short_name)
         return author._replace(full_name=full_name, short_name=short_name)
+
+    def adjust_language(self, language: BibString) -> BibString:
+        normalized = normalize_language_name(language)
+        self.log_update('language', language, normalized)
+        return normalized
 
     def adjust_entry_date(self) -> None:
         if self.adjusted.date:
@@ -121,13 +128,13 @@ class BibEntryAdjuster:
             case 'online' if not self.adjusted.urldate:
                 self.logger.warning(f'No URL date specified for entry type {self.adjusted.entry_type!r}')
 
-        if self.adjusted.relatedtype == 'translationof' and self.adjusted.origlanguage:
+        if self.adjusted.relatedtype == 'translationof' and len(self.adjusted.origlanguages) > 0:
             self.logger.warning('Specified both an original publication and an original language')
 
-        if len(self.adjusted.translators) > 0 and self.adjusted.relatedtype != 'translationof' and not self.adjusted.origlanguage:
+        if len(self.adjusted.translators) > 0 and self.adjusted.relatedtype != 'translationof' and len(self.adjusted.origlanguages) == 0:
             self.logger.warning('Specified the translators, but not the original publication nor the original language')
 
-        if self.adjusted.origlanguage and len(self.adjusted.translators) == 0:
+        if len(self.adjusted.origlanguages) > 0 and len(self.adjusted.translators) == 0:
             self.logger.warning('Specified the original language, but not the translators')
 
 
@@ -155,7 +162,7 @@ class BibEntryAdjuster:
         else:
             return
 
-        suggestion = regenerate_entry_name(self.adjusted)
+        suggestion = regenerate_entry_name(self.adjusted, get_main_entry_language(self.adjusted))
         self.logger.warning(f'Consider the entry name {suggestion}')
 
     def adjust_url_identifier(self, field_name: str, url_template: UrlTemplate | None = None) -> None:
@@ -230,7 +237,6 @@ class BibEntryAdjuster:
                 self.logger.info('Redundant HAL URL')
                 self.update(url=None)
 
-
     def adjust(self) -> None:
         self.check_missing_fields()
         self.adjust_entry_name()
@@ -245,6 +251,11 @@ class BibEntryAdjuster:
             advisors=[self.adjust_author(author) for author in self.adjusted.advisors]
         )
 
+        self.adjusted = self.adjusted._replace(
+            languages=[self.adjust_language(author) for author in self.adjusted.languages],
+            origlanguages=[self.adjust_language(author) for author in self.adjusted.origlanguages],
+        )
+
         title = self.adjusted.title
         subtitle = self.adjusted.subtitle
 
@@ -255,8 +266,6 @@ class BibEntryAdjuster:
             title=title,
             subtitle=subtitle,
             pages=normalize_pages(self.adjusted.pages) if isinstance(self.adjusted.pages, str) else self.adjusted.pages,
-            language=normalize_language_name(self.adjusted.language),
-            origlanguage=normalize_language_name(self.adjusted.origlanguage) if self.adjusted.origlanguage else None,
             isbn=isbn.format(self.adjusted.isbn) if self.adjusted.isbn else None,
             issn=','.join(map(issn.format, self.adjusted.issn.split(','))) if isinstance(self.adjusted.issn, str) else self.adjusted.issn
         )

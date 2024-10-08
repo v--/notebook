@@ -25,7 +25,7 @@ def isbn_book_to_bib(book: GoogleBook, isbn: str) -> BibEntry:
         authors=authors,
         title=titles.main,
         subtitle=titles.sub,
-        language=language,
+        languages=[language],
         date=vi.published_date,
         isbn=stdnum.isbn.format(isbn)
     )

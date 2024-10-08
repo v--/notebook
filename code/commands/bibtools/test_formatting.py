@@ -92,7 +92,7 @@ def test_language_reformatting() -> None:
     )
 
     adjusted = adjust_entry(entry, loguru.logger)
-    assert adjusted.language == 'russian'
+    assert adjusted.languages == ['russian']
 
 
 def test_missing_date(caplog: pytest.LogCaptureFixture) -> None:

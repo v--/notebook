@@ -36,6 +36,7 @@ class BibFieldAnnotation(NamedTuple):
     meta: bool = False
     author: bool = False
     verbatim: bool = False
+    list: bool = False
     key_name: str | None = None
 
 
@@ -47,12 +48,12 @@ class BibEntry(NamedTuple):
     entry_name:    Annotated[str, BibFieldAnnotation(meta=True)]
     # Base fields
     title:         Annotated[BibString, BibFieldAnnotation()]
-    language:      Annotated[str, BibFieldAnnotation()]
     # Optional
     authors:       Annotated[Sequence[BibAuthor], BibFieldAnnotation(author=True, key_name='author')] = []
     editors:       Annotated[Sequence[BibAuthor], BibFieldAnnotation(author=True, key_name='editor')] = []
     translators:   Annotated[Sequence[BibAuthor], BibFieldAnnotation(author=True, key_name='translator')] = []
-    origlanguage:  Annotated[str | None, BibFieldAnnotation()] = None
+    languages:     Annotated[Sequence[BibString], BibFieldAnnotation(list=True, key_name='language')] = []
+    origlanguages: Annotated[Sequence[BibString], BibFieldAnnotation(list=True, key_name='origlanguage')] = []
     options:       Annotated[BibString | None, BibFieldAnnotation()] = None
     related:       Annotated[BibString | None, BibFieldAnnotation()] = None
     relatedtype:   Annotated[BibString | None, BibFieldAnnotation()] = None
@@ -121,11 +122,11 @@ class BibEntry(NamedTuple):
 
     @classmethod
     @list_accumulator
-    def get_plain_fields(cls) -> Iterable[tuple[str, str]]:
+    def get_list_fields(cls) -> Iterable[tuple[str, str]]:
         for field_name, field_annotation in get_type_hints(cls, include_extras=True).items():
-            type_, annotation = get_args(field_annotation)
+            _, annotation = get_args(field_annotation)
 
-            if type_ is str:
+            if annotation.list or annotation.author:
                 yield field_name, annotation.key_name or field_name
 
     @classmethod
@@ -180,6 +181,14 @@ class BibEntry(NamedTuple):
 
             if all(author.short_name for author in authors):
                 properties[short_key_name] = ' and '.join(str(author.short_name) for author in authors)
+
+        for field_name, key_name in self.get_list_fields():
+            list_field = properties.pop(field_name, [])
+
+            if len(list_field) == 0:
+                continue
+
+            properties[key_name] = ' and '.join(map(str, list_field))
 
         return properties
 

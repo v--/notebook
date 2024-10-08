@@ -27,7 +27,7 @@ def arxiv_entry_to_bib(aentry: ArxivEntry, arxiv_id: str) -> BibEntry:
         authors=authors,
         title=titles.main,
         subtitle=titles.sub,
-        language=language,
+        languages=[language],
         eprinttype='arXiv',
         eprintclass=aentry.primary_category.term,
         eprint=arxiv_id,

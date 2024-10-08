@@ -23,7 +23,7 @@ def test_parse_1023072266967(doi: str = '10.2307/2266967') -> None:
             BibAuthor(full_name='Leon Henkin')
         ],
         doi=doi,
-        language='english',
+        languages=['english'],
         date='1950-06',
         issn='0022-4812,1943-5886',
         volume='15',
@@ -60,7 +60,7 @@ def test_parse_101215_ijm_1256049011_missing_fields(doi: str = '10.1215/ijm/1256
             BibAuthor(full_name='W. Haken')
         ],
         doi=doi,
-        language='english',
+        languages=['english'],
         date='1977-09-01',
         issn='0019-2082',
         volume='21'
@@ -87,7 +87,7 @@ def test_parse_101215_ijm_1256049012_missing_fields(doi: str = '10.1215/ijm/1256
             BibAuthor(full_name='J. Koch')
         ],
         doi=doi,
-        language='english',
+        languages=['english'],
         date='1977-09-01',
         issn='0019-2082',
         volume='21'
@@ -112,7 +112,7 @@ def test_parse_101134_s0081543815090023_references(doi: str = '10.1134/s00815438
             BibAuthor(full_name='V. M. Veliov')
         ],
         doi=doi,
-        language='english',
+        languages=['english'],
         date='2015-12-11',
         issn='0081-5438,1531-8605',
         volume='291',
@@ -138,7 +138,7 @@ def test_parse_101016_jindag201901001_assertions(doi: str = '10.1016/j.indag.201
             BibAuthor(full_name='Wesley H. Holliday')
         ],
         doi=doi,
-        language='english',
+        languages=['english'],
         date='2019-05',
         issn='0019-3577',
         volume='30',
@@ -164,7 +164,7 @@ def test_parse_101016_jjmaa2019123445_funder(doi: str = '10.1016/j.jmaa.2019.123
             BibAuthor(full_name='Nadezhda Ribarska')
         ],
         doi=doi,
-        language='english',
+        languages=['english'],
         journal='Journal of Mathematical Analysis and Applications',
         volume='481',
         date='2020-01',
@@ -191,7 +191,7 @@ def test_parse_101145_13274521327492_assertion_order_and_group(doi: str = '10.11
             BibAuthor(full_name='Sanjay Ghemawat')
         ],
         doi=doi,
-        language='english',
+        languages=['english'],
         journal='Communications of the ACM',
         volume='51',
         pages='107-113',
@@ -218,7 +218,7 @@ def test_parse_102307_4145127_reference_edition(doi: str = '10.2307/4145127') ->
         ],
         doi=doi,
         url='http://dx.doi.org/10.1080/00029890.2004.11920065',
-        language='english',
+        languages=['english'],
         journal='The American Mathematical Monthly',
         volume='111',
         pages='189-197',
@@ -243,7 +243,7 @@ def test_parse_101090_bull_1616_reference_issn(doi: str = '10.1090/bull/1616') -
             BibAuthor(full_name='Daniel Grayson')
         ],
         doi=doi,
-        language='english',
+        languages=['english'],
         journal='Bulletin of the American Mathematical Society',
         volume='55',
         pages='427-450',
@@ -275,7 +275,7 @@ def test_parse_101007_s1065401601493_extended_funder(doi: str = '10.1007/s10654-
             BibAuthor(full_name='Douglas G. Altman')
         ],
         doi=doi,
-        language='english',
+        languages=['english'],
         journal='European Journal of Epidemiology',
         volume='31',
         pages='337-350',
@@ -300,7 +300,7 @@ def test_parse_101016_jentcs200409017_special_numbering(doi: str = '10.1016/j.en
             BibAuthor(full_name='Martín Escardó')
         ],
         doi=doi,
-        language='english',
+        languages=['english'],
         journal='Electronic Notes in Theoretical Computer Science',
         volume='87',
         pages='21-156',
@@ -328,7 +328,7 @@ def test_parse_101111_tops12019_updated_by(doi: str = '10.1111/tops.12019') -> N
             BibAuthor(full_name='Lara Alcock')
         ],
         doi=doi,
-        language='english',
+        languages=['english'],
         journal='Topics in Cognitive Science',
         volume='5',
         pages='270-282',
@@ -355,7 +355,7 @@ def test_parse_101145_3649846_orcid(doi: str = '10.1145/3649846') -> None:
             BibAuthor(full_name='Klaus Ostermann'),
         ],
         doi=doi,
-        language='english',
+        languages=['english'],
         publisher='Association for Computing Machinery (ACM)',
         journal='Proceedings of the ACM on Programming Languages',
         volume='8',
@@ -381,7 +381,7 @@ def test_parse_1048550_arxiv180905923(doi: str = '10.48550/arXiv.1809.05923') ->
         ],
         doi=doi,
         url='https://arxiv.org/abs/1809.05923',
-        language='english',
+        languages=['english'],
         publisher='arXiv'
     )
 
@@ -403,7 +403,7 @@ def test_parse_101109_mc19871663532_no_given_name(doi: str = '10.1109/MC.1987.16
         doi=doi,
         date='1987-04',
         publisher='Institute of Electrical and Electronics Engineers (IEEE)',
-        language='english',
+        languages=['english'],
         journal='Computer',
         volume='20',
         pages='10-19',
@@ -428,7 +428,7 @@ def test_parse_104169_collegemathj475322_assertion_url(doi: str = '10.4169/colle
         doi=doi,
         date='2017-11-27',
         publisher='Informa UK Limited',
-        language='english',
+        languages=['english'],
         journal='The College Mathematics Journal',
         volume='47',
         pages='322-332',
@@ -453,7 +453,7 @@ def test_parse_103934_dcdsb2018020_no_family_name(doi: str = '10.3934/dcdsb.2018
         doi=doi,
         date='2018',
         publisher='American Institute of Mathematical Sciences (AIMS)',
-        language='english',
+        languages=['english'],
         journal='Discrete &amp; Continuous Dynamical Systems - B',
         volume='23',
         pages='283-294',
@@ -477,7 +477,7 @@ def test_parse_101007_9783662074138_editor(doi: str = '10.1007/978-3-662-07413-8
             BibAuthor(full_name='A. V. Arhangel’skii')
         ],
         doi=doi,
-        language='english',
+        languages=['english'],
         date='1995',
         series='Encyclopaedia of Mathematical Sciences',
         isbn='978-3-662-07413-8',
@@ -503,7 +503,7 @@ def test_parse_101007_97836421282192_book(doi: str = '10.1007/978-3-642-66451-9'
             BibAuthor(full_name='Jörgen Löfström')
         ],
         doi=doi,
-        language='english',
+        languages=['english'],
         series='Grundlehren der mathematischen Wissenschaften',
         date='1976',
         issn='0072-7830',
@@ -527,7 +527,7 @@ def test_parse_101007_9783319114781_book(doi: str = '10.1007/978-3-319-11478-1')
             BibAuthor(full_name='George M. Bergman')
         ],
         doi=doi,
-        language='english',
+        languages=['english'],
         series='Universitext',
         date='2015',
         issn='0172-5939,2191-6675',
@@ -553,7 +553,7 @@ def test_parse_101007_97836421282192_book_chapter(doi: str = '10.1007/978-3-642-
             BibAuthor(full_name='M. Stay')
         ],
         doi=doi,
-        language='english',
+        languages=['english'],
         series='Lecture Notes in Physics',
         date='2010-07-05',
         issn='0075-8450,1616-6361',
@@ -579,7 +579,7 @@ def test_parse_101007_9783642617010_container_empty_array(doi: str = '10.1007/97
             BibAuthor(full_name='Nicolas Bourbaki')
         ],
         doi=doi,
-        language='english',
+        languages=['english'],
         date='1995',
         isbn='978-3-642-61701-0'
     )
@@ -603,7 +603,7 @@ def test_parse_101017_9781108583664_edition_and_no_links(doi: str = '10.1017/978
             BibAuthor(full_name='Lieven Vandenberghe')
         ],
         doi=doi,
-        language='english',
+        languages=['english'],
         date='2019-09-13',
         isbn='978-1-108-58366-4'
     )
@@ -626,5 +626,5 @@ def test_parse_101109_ieeestd20198766229_standard(doi: str = '10.1109/IEEESTD.20
         ],
         doi=doi,
         isbn='978-1-5044-5924-2',
-        language='english',
+        languages=['english'],
     )
