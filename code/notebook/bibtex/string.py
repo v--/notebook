@@ -1,3 +1,4 @@
+import io
 from collections.abc import Sequence
 
 
@@ -60,22 +61,25 @@ BibString = str | VerbatimString | CompositeString
 
 class CompositeStringBuilder:
     segments: list[BibString]
-    buffer: str
+    buffer: io.StringIO
 
     def __init__(self) -> None:
         self.reset()
 
     def append(self, string: str) -> None:
-        self.buffer += string
+        self.buffer.write(string)
 
     def reset(self) -> None:
-        self.buffer = ''
+        self.buffer = io.StringIO(newline='')
         self.segments = []
 
     def flush(self, *, verbatim: bool) -> None:
-        if len(self.buffer) > 0:
-            self.segments.append(VerbatimString(self.buffer) if verbatim else self.buffer)
-            self.buffer = ''
+        if value := self.buffer.getvalue():
+            self.buffer.truncate(0)
+            self.buffer.seek(0)
+            self.segments.append(
+                VerbatimString(value) if verbatim else value
+            )
 
     def is_empty(self) -> bool:
         return len(self.segments) == 0

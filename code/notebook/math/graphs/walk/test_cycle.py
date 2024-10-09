@@ -1,20 +1,20 @@
 from .cycle import is_closed, is_cycle, remove_cycles
-from .multi import MultiEdge
-from .walk import DirectedWalk, UndirectedWalk
+from .directed import DirectedWalk
+from .undirected import UndirectedWalk
 
 
 def test_is_cycle_trivial() -> None:
-    walk = DirectedWalk.simple('a')
+    walk = DirectedWalk.path('a')
     assert not is_cycle(walk)
 
 
 def test_is_cycle_loop() -> None:
-    walk = DirectedWalk.simple('a', 'a')
+    walk = DirectedWalk.path('a', 'a')
     assert is_cycle(walk)
 
 
 def test_is_cycle_directed_opposite() -> None:
-    walk = DirectedWalk.simple('a', 'b', 'a')
+    walk = DirectedWalk.path('a', 'b', 'a')
     assert is_cycle(walk)
 
 
@@ -24,44 +24,37 @@ def test_is_cycle_undirected_opposite() -> None:
     assert not is_cycle(walk)
 
 
-def test_is_cycle_multi_undirected_opposite() -> None:
-    edge1 = MultiEdge('a', 'b')
-    edge2 = MultiEdge('a', 'b')
-    walk = UndirectedWalk('a', [edge1, edge2])
-    assert is_cycle(walk)
-
-
 def test_is_cycle_repeated() -> None:
-    walk = DirectedWalk.simple('a', 'b', 'c', 'a', 'd', 'c', 'a')
+    walk = DirectedWalk.path('a', 'b', 'c', 'a', 'd', 'c', 'a')
     assert is_closed(walk)
     assert not is_cycle(walk)
 
 
 def test_cycle_removal_trivial() -> None:
-    source = DirectedWalk.simple('a')
+    source = DirectedWalk.path('a')
     expected = source
     assert remove_cycles(source) == expected
 
 
 def test_cycle_removal_noop() -> None:
-    source = DirectedWalk.simple('a', 'b', 'c')
+    source = DirectedWalk.path('a', 'b', 'c')
     expected = source
     assert remove_cycles(source) == expected
 
 
 def test_cycle_removal_loop() -> None:
-    source = DirectedWalk.simple('a', 'a')
-    expected = DirectedWalk.simple('a')
+    source = DirectedWalk.path('a', 'a')
+    expected = DirectedWalk.path('a')
     assert remove_cycles(source) == expected
 
 
 def test_cycle_removal_single_cycle() -> None:
-    source = DirectedWalk.simple('a', 'b', 'c', 'a', 'd', 'c')
-    expected = DirectedWalk.simple('a', 'd', 'c')
+    source = DirectedWalk.path('a', 'b', 'c', 'a', 'd', 'c')
+    expected = DirectedWalk.path('a', 'd', 'c')
     assert remove_cycles(source) == expected
 
 
 def test_cycle_removal_multiple_cycles() -> None:
-    source = DirectedWalk.simple('a', 'b', 'c', 'a', 'd', 'c', 'd', 'e')
-    expected = DirectedWalk.simple('a', 'd', 'e')
+    source = DirectedWalk.path('a', 'b', 'c', 'a', 'd', 'c', 'd', 'e')
+    expected = DirectedWalk.path('a', 'd', 'e')
     assert remove_cycles(source) == expected

@@ -1,15 +1,14 @@
 from ...linalg.matrix import Matrix, fill
 from ...opt.tropical import MinPlusFloat
-from ..simple import DirectedGraph
+from ..graph import DirectedGraph
 
 
 def get_adjacency_matrix[N: (int, float, complex), VertLabelT](graph: DirectedGraph[int, VertLabelT, N], dtype: type[N] = int, blank: N = 0) -> Matrix[N]:
     n = len(graph.vertices)
     result = fill(n, dtype=dtype, value=blank)
 
-    for arc in graph.arcs:
-        src, dest = arc
-        result[src, dest] = dtype(graph.arcs.get_label(arc))
+    for edge, label in graph.edges.get_labeled():
+        result[edge] = dtype(label)
 
     return result
 

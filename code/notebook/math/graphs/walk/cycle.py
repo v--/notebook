@@ -1,11 +1,11 @@
 from collections.abc import Collection
 from typing import cast
 
-from .generalized import BaseVertType
-from .walk import DirectedWalk, GraphWalk
+from .base import GraphWalkType
+from .directed import DirectedWalk
 
 
-def is_closed[VertT: BaseVertType, ArcT: Collection[BaseVertType]](walk: GraphWalk[VertT, ArcT]) -> bool:
+def is_closed[VertT, EdgeT: Collection](walk: GraphWalkType[VertT, EdgeT]) -> bool:
     vertices = list(walk.iter_vertices())
 
     if len(vertices) == 0:
@@ -14,7 +14,7 @@ def is_closed[VertT: BaseVertType, ArcT: Collection[BaseVertType]](walk: GraphWa
     return walk.origin == vertices[-1]
 
 
-def is_cycle[VertT: BaseVertType, ArcT: Collection[BaseVertType]](walk: GraphWalk[VertT, ArcT]) -> bool:
+def is_cycle[VertT, EdgeT: Collection](walk: GraphWalkType[VertT, EdgeT]) -> bool:
     it = iter(walk.iter_vertices())
     next(it)
     rest = list(it)
@@ -29,13 +29,13 @@ def is_cycle[VertT: BaseVertType, ArcT: Collection[BaseVertType]](walk: GraphWal
 
 
 # This is alg:cycle_removal in the monograph
-def remove_cycles[VertT: BaseVertType, ArcT: Collection[BaseVertType]](walk: DirectedWalk[VertT, ArcT]) -> DirectedWalk[VertT, ArcT]:
+def remove_cycles[VertT, EdgeT: Collection](walk: DirectedWalk[VertT, EdgeT]) -> DirectedWalk[VertT, EdgeT]:
     if len(walk.arcs) == 0:
         return walk
 
     current_vertex = walk.origin
     last_compatible_index = 0
-    new_walk_arcs = list[ArcT]()
+    new_walk_arcs = list[EdgeT]()
 
     while last_compatible_index + 1 < len(walk.arcs):
         for i, (src, _) in enumerate(walk.arcs):
@@ -48,4 +48,4 @@ def remove_cycles[VertT: BaseVertType, ArcT: Collection[BaseVertType]](walk: Dir
         _, dest = arc
         current_vertex = cast(VertT, dest)
 
-    return DirectedWalk[VertT, ArcT](walk.origin, new_walk_arcs)
+    return DirectedWalk[VertT, EdgeT](walk.origin, new_walk_arcs)

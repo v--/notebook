@@ -5,7 +5,7 @@ from typing import NamedTuple
 
 from ...exceptions import UnreachableException
 from ..graphs.complete import max_edge_count
-from ..graphs.simple import UndirectedGraph
+from ..graphs.graph import UndirectedGraph
 from ..graphs.subgraphs import enumerate_fixed_order_subgraphs, max_fixed_order_subgraph_count
 from .binomial import choose
 
@@ -35,8 +35,10 @@ def enumerate_complete_graph_coloring(n: int, r: int) -> Iterable[EdgeColoredGra
         it = iter(coloring)
 
         for i in range(n):
+            colored_graph.vertices.add(i)
+
             for j in range(i):
-                colored_graph.edges.add(i, j, next(it))
+                colored_graph.edges[i, j] = next(it)
 
         yield colored_graph
 
@@ -113,7 +115,7 @@ def compute_ramsey_number_exhaustively_streaming(s: int, t: int, *rest: int, bat
                         result=None
                     )
 
-                if all(subgraph.edges.get_label(edge) == k for edge in subgraph.edges):
+                if all(label == k for _, label in subgraph.edges.get_labeled()):
                     break
             else:
                 yield ExhaustiveRamseyComputationState(
