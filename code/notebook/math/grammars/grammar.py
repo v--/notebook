@@ -1,15 +1,11 @@
-import functools
 import itertools
 from collections.abc import Collection, Iterable, Sequence
-from dataclasses import dataclass, field
+from dataclasses import field
 from typing import NamedTuple
 
-from .alphabet import NonTerminal, Terminal, empty
-from .exceptions import GrammarError
-
-
-class UnknownSymbolError(GrammarError):
-    pass
+from ...support.iteration import string_accumulator
+from .alphabet import NonTerminal, Terminal
+from .exceptions import UnknownSymbolError
 
 
 class GrammarRule(NamedTuple):
@@ -22,8 +18,23 @@ class GrammarRule(NamedTuple):
         assert isinstance(self.src[0], NonTerminal)
         return self.src[0]
 
-    def __str__(self) -> str:
-        return ' '.join(str(sym) for sym in self.src) + ' → ' + (' '.join(str(sym) for sym in self.dest) if len(self.dest) > 0 else empty)
+    @string_accumulator()
+    def __str__(self) -> Iterable[str]:  # noqa: PLE0307
+        from .parsing.tokens import MiscToken
+
+        for sym in self.src:
+            yield str(sym)
+            yield ' '
+
+        yield MiscToken.right_arrow
+
+        if len(self.dest) == 0:
+            yield ' '
+            yield MiscToken.epsilon
+        else:
+            for sym in self.dest:
+                yield ' '
+                yield str(sym)
 
     def __hash__(self) -> int:
         return hash(str(self))
@@ -43,26 +54,31 @@ class GrammarSchema(NamedTuple):
     rules: Sequence[GrammarRule] = field(default_factory=list)
 
     def __str__(self) -> str:
-        return '\n'.join(str(rule) for rule in self.rules)
+        return '\n'.join(str(rule) for rule in self.rules) + '\n'
 
-    def get_terminals(self) -> set[Terminal]:
-        return functools.reduce(
-            set.union,
-            (set(rule.get_terminals()) for rule in self.rules)
-        )
+    def get_terminals(self) -> Collection[Terminal]:
+        result = set[Terminal]()
 
-    def get_non_terminals(self) -> set[NonTerminal]:
-        return functools.reduce(
-            set.union,
-            (set(rule.get_non_terminals()) for rule in self.rules)
-        )
+        for rule in self.rules:
+            for symbol in rule.get_terminals():
+                result.add(symbol)
+
+        return result
+
+    def get_non_terminals(self) -> Collection[NonTerminal]:
+        result = set[NonTerminal]()
+
+        for rule in self.rules:
+            for symbol in rule.get_non_terminals():
+                result.add(symbol)
+
+        return result
 
     def instantiate(self, start: NonTerminal) -> 'Grammar':
         return Grammar(self, start)
 
 
-@dataclass(frozen=True)
-class Grammar:
+class Grammar(NamedTuple):
     schema: GrammarSchema
     start: NonTerminal
 

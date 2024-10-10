@@ -25,14 +25,13 @@ def test_to_finite_automaton_an(an: GrammarFixture) -> None:
 
 def test_from_finite_automaton_an(an: GrammarFixture) -> None:
     aut: FiniteAutomaton = FiniteAutomaton()
-    aut.add_transition(1, 'a', 1)
+    aut.add_transition(src=1, dest=1, symbol='a')
     aut.initial.add(1)
     aut.terminal.add(1)
 
     grammar = from_finite_automaton(aut)
     assert is_right_linear(grammar)
     an.assert_equivalent(grammar)
-
 
 
 def test_to_finite_automaton_complex() -> None:

@@ -1,18 +1,7 @@
-from collections.abc import ItemsView, Iterator, KeysView, MutableMapping, ValuesView
+from collections.abc import ItemsView, Iterable, Iterator, KeysView, Mapping, MutableMapping, ValuesView
 
-from ..exceptions import NotebookCodeError
-
-
-class SequentialMappingError(NotebookCodeError):
-    pass
-
-
-class MissingKeyError(SequentialMappingError, KeyError):
-    pass
-
-
-class KeyExistsError(SequentialMappingError, KeyError):
-    pass
+from ..iteration import string_accumulator
+from .exceptions import MissingKeyError
 
 
 class SequentialMappingItem[K, V]:
@@ -29,8 +18,27 @@ class SequentialMappingItem[K, V]:
 class SequentialMapping[K, V](MutableMapping[K, V]):
     payload: SequentialMappingItem[K, V] | None
 
-    def __init__(self) -> None:
+    def __init__(self, items: Mapping[K, V] | Iterable[tuple[K, V]] | None = None) -> None:
         self.payload = None
+
+        if items is None:
+            return
+
+        it = iter(items.items() if isinstance(items, Mapping) else items)
+
+        try:
+            first = next(it)
+        except StopIteration:
+            return
+        else:
+            self.payload = SequentialMappingItem(*first)
+
+        item = self.payload
+
+        for pair in it:
+            item.next = SequentialMappingItem(*pair)
+            item = item.next
+
 
     def _iter_items(self) -> Iterator[SequentialMappingItem[K, V]]:
         current = self.payload
@@ -56,26 +64,17 @@ class SequentialMapping[K, V](MutableMapping[K, V]):
     def __contains__(self, key: object) -> bool:
         return any(item.key == key for item in self._iter_items())
 
-    def set(self, key: K, value: V, *, exists_ok: bool = True) -> None:
-        if not exists_ok and self.payload and self.payload.key == key:
-            raise KeyExistsError(key)
-
+    def __setitem__(self, key: K, value: V) -> None:
         for item in self._iter_items():
             if item.next and item.next.key == key:
-                if exists_ok:
-                    item.value = value
-                    return
-
-                raise KeyExistsError(key)
+                item.value = value
+                return
 
             if item.next is None:
                 item.next = SequentialMappingItem(key, value)
                 return
 
         self.payload = SequentialMappingItem(key, value)
-
-    def __setitem__(self, key: K, value: V) -> None:
-        self.set(key, value, exists_ok=True)
 
     def __delitem__(self, key: K) -> None:
         if self.payload and self.payload.key == key:
@@ -88,6 +87,22 @@ class SequentialMapping[K, V](MutableMapping[K, V]):
                 return
 
         raise MissingKeyError(key)
+
+    @string_accumulator()
+    def __repr__(self) -> Iterable[str]:
+        yield 'SequentialMapping(['
+
+        for i, item in enumerate(self._iter_items()):
+            if i > 0:
+                yield ', '
+
+            yield '('
+            yield repr(item.key)
+            yield ', '
+            yield repr(item.value)
+            yield ')'
+
+        yield '])'
 
     def keys(self) -> KeysView[K]:
         return KeysView(self)

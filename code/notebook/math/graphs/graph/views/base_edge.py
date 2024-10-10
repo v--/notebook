@@ -3,29 +3,33 @@ from collections.abc import Collection, Iterator
 from ..payload import GraphPayload, LabeledEdge
 
 
-class BaseEdgeView[VertT, EdgeT: Collection, VertLabelT, EdgeLabelT]:
-    payload: GraphPayload[VertT, EdgeT, VertLabelT, EdgeLabelT]
+class BaseEdgeView[VertT, EdgeT: Collection, VertLabelT, EdgeSymbolT]:
+    payload: GraphPayload[VertT, EdgeT, VertLabelT, EdgeSymbolT]
 
-    def __init__(self, payload: GraphPayload) -> None:
+    def __init__(self, payload: GraphPayload[VertT, EdgeT, VertLabelT, EdgeSymbolT]) -> None:
         self.payload = payload
 
-    def add(self: 'BaseEdgeView[VertT, EdgeT, VertLabelT, None]', edge: EdgeT) -> None:
-        self.payload.add_edge(edge)  # type: ignore[call-overload]
+    @property
+    def default_label(self) -> EdgeSymbolT:
+        return self.payload.default_edge_label
+
+    def add(self, edge: EdgeT) -> None:
+        self.payload.set_edge(edge)
 
     def remove(self, edge: EdgeT) -> None:
         self.payload.remove_edge(edge)
 
-    def get_labeled(self) -> Collection[LabeledEdge[EdgeT, EdgeLabelT]]:
+    def get_labeled(self) -> Collection[LabeledEdge[EdgeT, EdgeSymbolT]]:
         return self.payload.get_labeled_edges()
 
     def __contains__(self, edge: EdgeT) -> bool:
         return self.payload.has_edge(edge)
 
-    def __getitem__(self, edge: EdgeT) -> EdgeLabelT:
+    def __getitem__(self, edge: EdgeT) -> EdgeSymbolT:
         return self.payload.get_edge_label(edge)
 
-    def __setitem__(self, edge: EdgeT, label: EdgeLabelT) -> None:
-        self.payload.add_edge(edge, label)
+    def __setitem__(self, edge: EdgeT, label: EdgeSymbolT) -> None:
+        self.payload.set_edge(edge, label)
 
     def __delitem__(self, edge: EdgeT) -> None:
         self.payload.remove_edge(edge)

@@ -1,51 +1,67 @@
-import itertools
+from collections.abc import Collection
 
-from .finite import BaseLabelType, BaseStateType, FiniteAutomaton
+from ...support.collections.sequential_mapping import SequentialMapping
+from ...support.collections.sequential_set import SequentialSet
+from .finite import FiniteAutomaton
 
 
-def determinize_recurse[StateT: BaseStateType, LabelT: BaseLabelType](
-    nondet: FiniteAutomaton[StateT, LabelT],
-    visited: set[frozenset[StateT]],
-    src_set: frozenset[StateT]
-) -> list[tuple[frozenset[StateT], LabelT, frozenset[StateT]]]:
-    by_label = dict[LabelT, set[StateT]]()
-    triples = list[tuple[frozenset[StateT], LabelT, frozenset[StateT]]]()
+def is_automata_deterministic[StateT, SymbolT](aut: FiniteAutomaton[StateT, SymbolT]) -> bool:
+    if len(aut.initial) != 1:
+        return False
 
-    for src, label, dest in nondet.triples:
+    used_symbols = SequentialMapping[StateT, SequentialSet[SymbolT]]()
+
+    for src, _, symbol in aut.transitions:
+        used_symbols.setdefault(src, SequentialSet())
+
+        if symbol in used_symbols[src]:
+            return False
+
+        used_symbols[src].add(symbol)
+
+    return True
+
+
+def _determinize_recurse[StateT, SymbolT](
+    nondet: FiniteAutomaton[StateT, SymbolT],
+    det: FiniteAutomaton[Collection[StateT], SymbolT],
+    visited: Collection[Collection[StateT]],
+    src_set: Collection[StateT],
+) -> None:
+    by_symbol = SequentialMapping[SymbolT, SequentialSet[StateT]]()
+
+    for src, dest, symbol in nondet.transitions:
         if src in src_set:
-            by_label[label] = by_label.get(label, set())
-            by_label[label].add(dest)
+            by_symbol.setdefault(symbol, SequentialSet())
+            by_symbol[symbol].add(dest)
 
-    for label, dest_set_mut in by_label.items():
-        dest_set = frozenset(dest_set_mut)
-        triples.append((src_set, label, dest_set))
+    for symbol, dest_set in by_symbol.items():
+        det.add_transition(src_set, dest_set, symbol)
 
-    return list(
-        set(
-            itertools.chain(
-                triples,
-                *(
-                    determinize_recurse(nondet, visited | {src_set}, frozenset(dest_set_mut))
-                    for dest_set_mut in by_label.values()
-                    if frozenset(dest_set_mut) not in visited
-                )
-            )
-        )
-    )
+    new_visited = SequentialSet(visited)
+    new_visited.add(src_set)
+
+    for dest_set in by_symbol.values():
+        if dest_set not in visited:
+            _determinize_recurse(nondet, det, new_visited, dest_set)
 
 
-def determinize[StateT: BaseStateType, LabelT: BaseLabelType](nondet: FiniteAutomaton[StateT, LabelT]) -> FiniteAutomaton[frozenset[StateT], LabelT]:
-    triples = determinize_recurse(
+def determinize[StateT, SymbolT](nondet: FiniteAutomaton[StateT, SymbolT]) -> FiniteAutomaton[Collection[StateT], SymbolT]:
+    det = FiniteAutomaton[Collection[StateT], SymbolT]()
+    det.initial.add(nondet.initial)
+
+    _determinize_recurse(
         nondet,
-        set(),
-        frozenset(nondet.initial)
+        det,
+        visited=SequentialSet(),
+        src_set=nondet.initial
     )
 
-    return FiniteAutomaton(
-        triples,
-        initial={frozenset(nondet.initial)},
-        terminal=(
-            {src for src, _, _ in triples if len(src & nondet.terminal) > 0} |
-            {dest for _, _, dest in triples if len(dest & nondet.terminal) > 0}
-        ),
-    )
+    for src, dest, _ in det.transitions:
+        if any(state in nondet.terminal for state in src):
+            det.terminal.add(src)
+
+        if any(state in nondet.terminal for state in dest):
+            det.terminal.add(dest)
+
+    return det

@@ -1,6 +1,6 @@
 import itertools
 from collections.abc import Collection, Iterable, Sequence
-from typing import cast, override
+from typing import override
 
 from ..exceptions import GraphWalkError
 from .base import GraphWalkType, get_tail
@@ -22,7 +22,7 @@ class UndirectedWalk[VertT, EdgeT: Collection](GraphWalkType[VertT, EdgeT]):
                 raise GraphWalkError(f'Invalid arc {edge} after {current_tail} in walk')
 
             current_tail = next(
-                (cast(VertT, v) for v in edge if v != current_tail),
+                (v for v in edge if v != current_tail),
                 current_tail
             )
 
@@ -38,7 +38,7 @@ class UndirectedWalk[VertT, EdgeT: Collection](GraphWalkType[VertT, EdgeT]):
         current_tail = self.origin
 
         for v1, v2 in self.arcs:
-            current_tail = cast(VertT, v2 if v1 == current_tail else v1)
+            current_tail = v2 if v1 == current_tail else v1
             yield current_tail
 
     def __str__(self) -> str:

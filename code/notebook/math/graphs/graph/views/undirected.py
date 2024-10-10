@@ -14,5 +14,5 @@ class UndirectedEdge[VertT](NamedTuple):
         return (self.src == other.src and self.dest == other.dest) or (self.src == other.dest and self.dest == other.src)
 
 
-class UndirectedEdgeView[VertT, VertLabelT, EdgeLabelT](BinaryEdgeView[VertT, UndirectedEdge[VertT], VertLabelT, EdgeLabelT], edge_class=UndirectedEdge):
+class UndirectedEdgeView[VertT, VertLabelT, EdgeSymbolT](BinaryEdgeView[VertT, UndirectedEdge[VertT], VertLabelT, EdgeSymbolT], edge_class=UndirectedEdge):
     pass

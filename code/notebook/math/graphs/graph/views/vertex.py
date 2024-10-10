@@ -3,17 +3,21 @@ from collections.abc import Collection, Iterator
 from ..payload import GraphPayload, LabeledVertex
 
 
-class VertexView[VertT, EdgeT: Collection, VertLabelT, EdgeLabelT]:
-    payload: GraphPayload[VertT, EdgeT, VertLabelT, EdgeLabelT]
+class VertexView[VertT, EdgeT: Collection, VertLabelT, EdgeSymbolT]:
+    payload: GraphPayload[VertT, EdgeT, VertLabelT, EdgeSymbolT]
 
-    def __init__(self, payload: GraphPayload) -> None:
+    def __init__(self, payload: GraphPayload[VertT, EdgeT, VertLabelT, EdgeSymbolT]) -> None:
         self.payload = payload
 
-    def add(self: 'VertexView[VertT, EdgeT, None, EdgeLabelT]', vertex: VertT) -> None:
-        self.payload.add_vertex(vertex)
+    @property
+    def default_label(self) -> VertLabelT:
+        return self.payload.default_vertex_label
 
-    def remove(self, vertex: VertT, *, remove_edges: bool = False) -> None:
-        self.payload.remove_vertex(vertex, remove_edges=remove_edges)
+    def add(self, vertex: VertT) -> None:
+        self.payload.set_vertex(vertex)
+
+    def remove(self, vertex: VertT) -> None:
+        self.payload.remove_vertex(vertex)
 
     def get_labeled(self) -> Collection[LabeledVertex[VertT, VertLabelT]]:
         return self.payload.get_labeled_vertices()
@@ -25,7 +29,7 @@ class VertexView[VertT, EdgeT: Collection, VertLabelT, EdgeLabelT]:
         return self.payload.get_vertex_label(vertex)
 
     def __setitem__(self, vertex: VertT, label: VertLabelT) -> None:
-        self.payload.add_vertex(vertex, label)
+        self.payload.set_vertex(vertex, label)
 
     def __delitem__(self, vertex: VertT) -> None:
         self.payload.remove_vertex(vertex)

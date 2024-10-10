@@ -72,10 +72,7 @@ def derivation_to_parse_tree(derivation: Derivation) -> ParseTree:
             [ParseTree(sym) for sym in step.rule.dest]
         )
 
-        if tree is None:
-            tree = new_subtree
-        else:
-            tree = _insert_subtree_leftmost(tree, new_subtree)
+        tree = new_subtree if tree is None else _insert_subtree_leftmost(tree, new_subtree)
 
     assert tree is not None
     return tree

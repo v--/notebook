@@ -8,7 +8,10 @@ from .renaming_rules import collapse_renaming_rules
 
 
 def is_left_linear_rule(rule: GrammarRule) -> bool:
-    return all(not (isinstance(sym, NonTerminal) and i > 0) for i, sym in enumerate(rule.dest))
+    if is_epsilon_rule(rule):
+        return True
+
+    return all(isinstance(sym, Terminal) for sym in rule.dest[1:])
 
 
 def is_left_linear(grammar: Grammar) -> bool:
@@ -16,7 +19,10 @@ def is_left_linear(grammar: Grammar) -> bool:
 
 
 def is_right_linear_rule(rule: GrammarRule) -> bool:
-    return all(not (isinstance(sym, NonTerminal) and i < len(rule.dest) - 1) for i, sym in enumerate(rule.dest))
+    if is_epsilon_rule(rule):
+        return True
+
+    return all(isinstance(sym, Terminal) for sym in rule.dest[:-1])
 
 
 def is_right_linear(grammar: Grammar) -> bool:
@@ -28,7 +34,7 @@ def is_regular(grammar: Grammar) -> bool:
 
 
 # This is alg:regular_grammar_to_automaton in the monograph
-def to_finite_automaton(grammar: Grammar) -> FiniteAutomaton:
+def to_finite_automaton(grammar: Grammar) -> FiniteAutomaton[str, str]:
     assert is_regular(grammar)
 
     g1 = grammar if is_right_linear(grammar) else reverse_grammar(grammar)
@@ -56,17 +62,21 @@ def to_finite_automaton(grammar: Grammar) -> FiniteAutomaton:
         g4_rules.append(GrammarRule(src=[last], dest=rule.dest[last_index:]))
 
     final = new_non_terminal('F', new_names)
-    aut: FiniteAutomaton = FiniteAutomaton(
-        triples=[
-            (
-                rule.src_symbol.value,
-                rule.dest[0].value,
-                rule.dest[1].value if len(rule.dest) == 2 else final
-            ) for rule in g4_rules if not is_epsilon_rule(rule)
-        ],
-        initial={g3.start.value},
-        terminal={final} if is_epsilon_free(g3) else {final, g3.start.value}
-    )
+    aut = FiniteAutomaton[str, str]()
+
+    aut.initial.add(g3.start.value)
+    aut.terminal.add(final.value)
+
+    if not is_epsilon_free(g3):
+        aut.terminal.add(g3.start.value)
+
+    for rule in g4_rules:
+        if not is_epsilon_rule(rule):
+            aut.add_transition(
+                src=rule.src_symbol.value,
+                dest=rule.dest[1].value if len(rule.dest) > 1 else final.value,
+                symbol=rule.dest[0].value
+            )
 
     if is_right_linear(grammar):
         return aut
@@ -75,11 +85,11 @@ def to_finite_automaton(grammar: Grammar) -> FiniteAutomaton:
 
 
 # This is alg:finite_automaton_to_right_linear_grammar from the text
-def from_finite_automaton(aut: FiniteAutomaton) -> Grammar:
+def from_finite_automaton[StateT, SymbolT](aut: FiniteAutomaton[StateT, SymbolT]) -> Grammar:
     det = determinize(aut)
     schema = GrammarSchema([
         GrammarRule([NonTerminal(str(src))], [Terminal(str(label)), NonTerminal(str(dest))])
-        for (src, label, dest) in det.triples
+        for (src, dest, label) in det.transitions
     ] + [
         GrammarRule([NonTerminal(str(src))], []) for src in det.terminal
     ])

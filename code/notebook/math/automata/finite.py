@@ -1,19 +1,52 @@
-from collections.abc import Hashable, Sequence
-from dataclasses import dataclass, field
+from collections.abc import Iterable, MutableSet, Sequence
+from typing import NamedTuple, overload
+
+from ...support.collections.sequential_set import SequentialSet
 
 
-BaseStateType = Hashable
-BaseLabelType = Hashable
+class FiniteAutomatonTransition[StateT, SymbolT](NamedTuple):
+    src: StateT
+    dest: StateT
+    symbol: SymbolT
 
 
-@dataclass(frozen=True)
-class FiniteAutomaton[StateT: BaseStateType, LabelT: BaseLabelType]:
-    triples: list[tuple[StateT, LabelT, StateT]] = field(default_factory=list)
-    initial: set[StateT] = field(default_factory=set)
-    terminal: set[StateT] = field(default_factory=set)
+class FiniteAutomaton[StateT, SymbolT]:
+    transitions: MutableSet[FiniteAutomatonTransition]
+    initial: MutableSet[StateT]
+    terminal: MutableSet[StateT]
 
-    def add_transition(self, src: StateT, label: LabelT, dest: StateT) -> None:
-        self.triples.append((src, label, dest))
+    def __init__(
+        self, *,
+        transitions: Iterable[FiniteAutomatonTransition[StateT, SymbolT] | tuple[StateT, StateT, SymbolT]] | None = None,
+        initial: Iterable[StateT] | None = None,
+        terminal: Iterable[StateT] | None = None
+    ) -> None:
+        self.transitions = SequentialSet()
+        self.initial = SequentialSet(initial) if initial else SequentialSet()
+        self.terminal = SequentialSet(terminal) if terminal else SequentialSet()
+
+        if transitions:
+            for transition in transitions:
+                self._add_transition_entire(transition)
+
+    def _add_transition_entire(self, transition: FiniteAutomatonTransition | tuple[StateT, StateT, SymbolT]) -> None:
+        if isinstance(transition, FiniteAutomatonTransition):
+            self.transitions.add(transition)
+        else:
+            self.transitions.add(FiniteAutomatonTransition(*transition))
+
+    def _add_transition_components(self, src: StateT, dest: StateT, symbol: SymbolT) -> None:
+        self.transitions.add(FiniteAutomatonTransition(src, dest, symbol))
+
+    @overload
+    def add_transition(self, src: StateT, dest: StateT, symbol: SymbolT) -> None: ...
+    @overload
+    def add_transition(self, transition: FiniteAutomatonTransition | tuple[StateT, StateT, SymbolT]) -> None: ...
+    def add_transition(self, *args, **kwargs) -> None:
+        if len(args) + len(kwargs) == 1:
+            self._add_transition_entire(*args, **kwargs)
+        else:
+            self._add_transition_components(*args, **kwargs)
 
     def _recognize_recurse(self, string: str, initial: StateT) -> bool:
         if len(string) == 0:
@@ -21,40 +54,26 @@ class FiniteAutomaton[StateT: BaseStateType, LabelT: BaseLabelType]:
 
         return any(
             self._recognize_recurse(string[1:], dest)
-            for src, label, dest in self.triples
-            if src == initial and label == string[0]
+            for src, dest, symbol in self.transitions
+            if src == initial and symbol == string[0]
         )
 
     def recognize(self, string: str) -> bool:
         return any(self._recognize_recurse(string, i) for i in self.initial)
 
-    def is_deterministic(self) -> bool:
-        if len(self.initial) != 1:
-            return False
-
-        used_labels: dict[StateT, set[LabelT]] = {}
-
-        for src, label, _ in self.triples:
-            used_labels[src] = used_labels.get(src, set())
-
-            if label in used_labels[src]:
-                return False
-
-            used_labels[src].add(label)
-
-        return True
-
     def get_states(self) -> Sequence[StateT]:
-        return [src for src, _, _ in self.triples] + [dest for dest, _, _ in self.triples]
+        result = SequentialSet[StateT]()
 
-    def __str__(self) -> str:
-        transition_str = '\n\t'.join(f'{src} -{label}-> {dest}' for src, label, dest in self.triples)
-        return f'Initial: \n\t{self.initial!s}\nTerminal: \n\t{self.terminal!s}\nTransitions: \n\t{transition_str}'
+        for src, dest, _ in self.transitions:
+            result.add(src)
+            result.add(dest)
+
+        return list(result)
 
 
-def reverse_automaton[StateT: BaseStateType, LabelT: BaseLabelType](aut: FiniteAutomaton[StateT, LabelT]) -> FiniteAutomaton[StateT, LabelT]:
+def reverse_automaton[StateT, SymbolT](aut: FiniteAutomaton[StateT, SymbolT]) -> FiniteAutomaton[StateT, SymbolT]:
     return FiniteAutomaton(
-        triples=[(dest, label, src) for (src, label, dest) in aut.triples],
         initial=aut.terminal,
-        terminal=aut.initial
+        terminal=aut.initial,
+        transitions=[(dest, src, symbol) for (src, dest, symbol) in aut.transitions]
     )

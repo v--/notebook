@@ -8,5 +8,5 @@ class DirectedEdge[VertT](NamedTuple):
     dest: VertT
 
 
-class DirectedEdgeView[VertT, VertLabelT, EdgeLabelT](BinaryEdgeView[VertT, DirectedEdge[VertT], VertLabelT, EdgeLabelT], edge_class=DirectedEdge):
+class DirectedEdgeView[VertT, VertLabelT, EdgeSymbolT](BinaryEdgeView[VertT, DirectedEdge[VertT], VertLabelT, EdgeSymbolT], edge_class=DirectedEdge):
     pass

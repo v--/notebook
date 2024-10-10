@@ -6,9 +6,6 @@ from .adjacency import get_adjacency_matrix, get_min_walk_weights
 def test_get_adjacency_matrix() -> None:
     graph: DirectedGraph[int, None, int] = DirectedGraph()
 
-    for i in range(4):
-        graph.vertices.add(i)
-
     graph.edges[0, 1] = 3
     graph.edges[0, 2] = 2
     graph.edges[0, 3] = 4
@@ -25,9 +22,6 @@ def test_get_adjacency_matrix() -> None:
 
 def test_get_min_walk_weight() -> None:
     graph: DirectedGraph[int, None, float] = DirectedGraph()
-
-    for i in range(4):
-        graph.vertices.add(i)
 
     graph.edges[0, 1] = 3.0
     graph.edges[0, 2] = 2.0

@@ -1,9 +1,9 @@
 from dataclasses import dataclass
-from typing import cast, override
+from typing import override
 
 from ..fol.formulas import ConnectiveFormula, ConstantFormula, Formula, NegationFormula, QuantifierFormula
 from .exceptions import NaturalDeductionError
-from .parsing.parser import parse_schema
+from .parsing.parser import parse_placeholder, parse_schema
 from .schemas import (
     ConnectiveFormulaSchema,
     ConstantFormulaSchema,
@@ -81,7 +81,7 @@ def apply_substitution(schema: FormulaSchema, substitution: Substitution) -> For
 
 
 def substitute(schema: str, **kwargs: Formula) -> Formula:
-    substitution = Substitution({ cast(FormulaPlaceholder, parse_schema(key)): value for key, value in kwargs.items() })
+    substitution = Substitution({ parse_placeholder(key): value for key, value in kwargs.items() })
     return apply_substitution(parse_schema(schema), substitution)
 
 

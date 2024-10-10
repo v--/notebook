@@ -35,8 +35,6 @@ def enumerate_complete_graph_coloring(n: int, r: int) -> Iterable[EdgeColoredGra
         it = iter(coloring)
 
         for i in range(n):
-            colored_graph.vertices.add(i)
-
             for j in range(i):
                 colored_graph.edges[i, j] = next(it)
 

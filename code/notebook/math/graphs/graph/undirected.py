@@ -3,6 +3,6 @@ from .views.undirected import UndirectedEdge, UndirectedEdgeView
 from .views.vertex import VertexView
 
 
-class UndirectedGraph[VertT, VertLabelT, EdgeLabelT](BaseGraph[VertT, UndirectedEdge[VertT], VertLabelT, EdgeLabelT], edge_view=UndirectedEdgeView):
-    vertices: VertexView[VertT, UndirectedEdge[VertT], VertLabelT, EdgeLabelT]
-    edges: UndirectedEdgeView[VertT, VertLabelT, EdgeLabelT]
+class UndirectedGraph[VertT, VertLabelT, EdgeSymbolT](BaseGraph[VertT, UndirectedEdge[VertT], VertLabelT, EdgeSymbolT], edge_view=UndirectedEdgeView):
+    vertices: VertexView[VertT, UndirectedEdge[VertT], VertLabelT, EdgeSymbolT]
+    edges: UndirectedEdgeView[VertT, VertLabelT, EdgeSymbolT]

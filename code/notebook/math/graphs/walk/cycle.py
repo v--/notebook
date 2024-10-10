@@ -1,5 +1,4 @@
 from collections.abc import Collection
-from typing import cast
 
 from .base import GraphWalkType
 from .directed import DirectedWalk
@@ -46,6 +45,6 @@ def remove_cycles[VertT, EdgeT: Collection](walk: DirectedWalk[VertT, EdgeT]) ->
         new_walk_arcs.append(arc)
 
         _, dest = arc
-        current_vertex = cast(VertT, dest)
+        current_vertex = dest
 
     return DirectedWalk[VertT, EdgeT](walk.origin, new_walk_arcs)

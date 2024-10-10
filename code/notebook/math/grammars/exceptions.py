@@ -5,6 +5,10 @@ class GrammarError(NotebookCodeError):
     pass
 
 
+class UnknownSymbolError(GrammarError):
+    pass
+
+
 class TokenizationError(GrammarError):
     pass
 

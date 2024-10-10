@@ -73,7 +73,7 @@ def test_naive_ramsey_computation_bounds(
     dict(sizes=[1, 3], result=1, colorings_traversed=0,   subgraphs_traversed=0),
     dict(sizes=[2, 2], result=2, colorings_traversed=0,   subgraphs_traversed=0),
     dict(sizes=[2, 3], result=3, colorings_traversed=2,   subgraphs_traversed=2),
-    dict(sizes=[3, 3], result=6, colorings_traversed=221, subgraphs_traversed=729),
+    dict(sizes=[3, 3], result=6, colorings_traversed=221, subgraphs_traversed=746),
 )
 def test_compute_ramsey_number_exhaustively(
     sizes: Sequence[int],

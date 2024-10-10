@@ -11,5 +11,5 @@ class DirectedMultiedge[VertT](NamedTuple):
         return id(self) == id(other)
 
 
-class DirectedMultiedgeView[VertT, VertLabelT, EdgeLabelT](BinaryEdgeView[VertT, DirectedMultiedge[VertT], VertLabelT, EdgeLabelT], edge_class=DirectedMultiedge):
+class DirectedMultiedgeView[VertT, VertLabelT, EdgeSymbolT](BinaryEdgeView[VertT, DirectedMultiedge[VertT], VertLabelT, EdgeSymbolT], edge_class=DirectedMultiedge):
     pass

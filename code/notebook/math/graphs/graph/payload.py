@@ -1,8 +1,9 @@
-from collections.abc import Collection
-from typing import NamedTuple, cast, overload
+from collections.abc import Collection, MutableMapping
+from typing import NamedTuple, overload
 
-from ....support.sequential_mapping import KeyExistsError, MissingKeyError, SequentialMapping
-from ..exceptions import EdgeExistsError, MissingEdgeError, MissingVertexError, VertexExistsError
+from ....support.collections.sequential_mapping import SequentialMapping
+from ....support.typing import typesup
+from ..exceptions import MissingEdgeError, MissingVertexError
 
 
 class LabeledVertex[VertT, VertLabelT](NamedTuple):
@@ -10,49 +11,51 @@ class LabeledVertex[VertT, VertLabelT](NamedTuple):
     label: VertLabelT
 
 
-class LabeledEdge[EdgeT: Collection, EdgeLabelT](NamedTuple):
+class LabeledEdge[EdgeT: Collection, EdgeSymbolT](NamedTuple):
     vertex: EdgeT
-    label: EdgeLabelT
+    label: EdgeSymbolT
 
 
-class GraphPayload[VertT, EdgeT: Collection, VertLabelT, EdgeLabelT]:
-    _vertex_map: SequentialMapping[VertT, VertLabelT]
-    _edge_map: SequentialMapping[EdgeT, EdgeLabelT]
+class GraphPayload[VertT, EdgeT: Collection, VertLabelT, EdgeSymbolT]:
+    _vertex_map: MutableMapping[VertT, VertLabelT]
+    _edge_map: MutableMapping[EdgeT, EdgeSymbolT]
+    default_vertex_label: VertLabelT
+    default_edge_label: EdgeSymbolT
 
-    def __init__(self) -> None:
+    @overload
+    def __init__(self, *, default_vertex_label: VertLabelT, default_edge_label: EdgeSymbolT) -> None: ...
+    @overload
+    def __init__(self: 'GraphPayload[VertT, EdgeT, VertLabelT, None]', *, default_vertex_label: VertLabelT) -> None: ...
+    @overload
+    def __init__(self: 'GraphPayload[VertT, EdgeT, None, EdgeSymbolT]', *, default_edge_label: EdgeSymbolT) -> None: ...
+    @overload
+    def __init__(self: 'GraphPayload[VertT, EdgeT, None, None]') -> None: ...
+    def __init__(self, *, default_vertex_label: VertLabelT | None = None, default_edge_label: EdgeSymbolT | None = None) -> None:
         self._vertex_map = SequentialMapping()
         self._edge_map = SequentialMapping()
+        self.default_vertex_label = typesup(default_vertex_label)
+        self.default_edge_label = typesup(default_edge_label)
 
     def has_vertex(self, vertex: VertT) -> bool:
         return vertex in self._vertex_map
 
-    @overload
-    def add_vertex(self: 'GraphPayload[VertT, EdgeT, None, EdgeLabelT]', vertex: VertT) -> None: ...
-    @overload
-    def add_vertex(self, vertex: VertT, label: VertLabelT) -> None: ...
-    def add_vertex(self, vertex: VertT, label: VertLabelT | None = None) -> None:
-        try:
-            self._vertex_map.set(vertex, cast(VertLabelT, label), exists_ok=False)
-        except KeyExistsError:
-            raise VertexExistsError(f'The vertex {vertex!r} is already in the graph') from None
+    def set_vertex(self, vertex: VertT, label: VertLabelT | None = None) -> None:
+        self._vertex_map[vertex] = label if label is not None else self.default_vertex_label
 
-    def remove_vertex(self, vertex: VertT, *, remove_edges: bool = False) -> None:
+    def remove_vertex(self, vertex: VertT) -> None:
         try:
             del self._vertex_map[vertex]
-        except MissingKeyError:
+        except KeyError:
             raise MissingVertexError(f'The vertex {vertex!r} is in not in the graph') from None
 
         for edge in self._edge_map.keys():
             if vertex in edge:
-                if remove_edges:
-                    del self._edge_map[edge]
-                else:
-                    raise EdgeExistsError(f'Cannot delete vertex {vertex!r} while {edge!r} is in the graph') from None
+                del self._edge_map[edge]
 
     def get_vertex_label(self, vertex: VertT) -> VertLabelT:
         try:
             return self._vertex_map[vertex]
-        except MissingKeyError:
+        except KeyError:
             raise MissingVertexError(f'The vertex {vertex!r} is in not in the graph') from None
 
     def get_vertices(self) -> Collection[VertT]:
@@ -67,36 +70,29 @@ class GraphPayload[VertT, EdgeT: Collection, VertLabelT, EdgeLabelT]:
     def has_edge(self, edge: EdgeT) -> bool:
         return edge in self._edge_map
 
-    @overload
-    def add_edge(self: 'GraphPayload[VertT, EdgeT, VertLabelT, None]', edge: EdgeT) -> None: ...
-    @overload
-    def add_edge(self, edge: EdgeT, label: EdgeLabelT) -> None: ...
-    def add_edge(self, edge: EdgeT, label: EdgeLabelT | None = None) -> None:
+    def set_edge(self, edge: EdgeT, label: EdgeSymbolT | None = None) -> None:
         for vertex in edge:
             if vertex not in self._vertex_map:
-                raise MissingVertexError(f'The endpoint {vertex!r} of {edge!r} in not in the graph')
+                self._vertex_map[vertex] = self.default_vertex_label
 
-        try:
-            self._edge_map.set(edge, cast(EdgeLabelT, label), exists_ok=False)
-        except KeyExistsError:
-            raise EdgeExistsError(f'The edge {edge!r} is already in the graph') from None
+        self._edge_map[edge] = label if label is not None else self.default_edge_label
 
     def remove_edge(self, edge: EdgeT) -> None:
         try:
             del self._edge_map[edge]
-        except KeyExistsError:
+        except KeyError:
             raise MissingEdgeError(f'The edge {edge!r} is in not in the graph') from None
 
-    def get_edge_label(self, edge: EdgeT) -> EdgeLabelT:
+    def get_edge_label(self, edge: EdgeT) -> EdgeSymbolT:
         try:
             return self._edge_map[edge]
-        except MissingKeyError:
+        except KeyError:
             raise MissingVertexError(f'The vertex {edge!r} is in not in the graph') from None
 
     def get_edges(self) -> Collection[EdgeT]:
         return self._edge_map.keys()
 
-    def get_labeled_edges(self) -> Collection[LabeledEdge[EdgeT, EdgeLabelT]]:
+    def get_labeled_edges(self) -> Collection[LabeledEdge[EdgeT, EdgeSymbolT]]:
         return [LabeledEdge(*t) for t in self._edge_map.items()]
 
     def get_edge_count(self) -> int:

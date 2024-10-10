@@ -22,12 +22,12 @@ class FiniteAutomatonFixture(NamedTuple):
 @pytest.fixture
 def aabn() -> FiniteAutomatonFixture:
     aut: FiniteAutomaton = FiniteAutomaton()
-    aut.add_transition(1, 'a', 2)
-    aut.add_transition(1, 'b', 3)
-    aut.add_transition(1, 'a', 4)
-    aut.add_transition(3, 'b', 3)
-    aut.add_transition(4, 'a', 3)
-    aut.add_transition(3, 'b', 5)
+    aut.add_transition(src=1, dest=2, symbol='a')
+    aut.add_transition(src=1, dest=3, symbol='b')
+    aut.add_transition(src=1, dest=4, symbol='a')
+    aut.add_transition(src=3, dest=3, symbol='b')
+    aut.add_transition(src=4, dest=3, symbol='a')
+    aut.add_transition(src=3, dest=5, symbol='b')
 
     aut.initial.add(1)
     aut.initial.add(3)
@@ -44,15 +44,15 @@ def aabn() -> FiniteAutomatonFixture:
 @pytest.fixture
 def leucine() -> FiniteAutomatonFixture:
     aut: FiniteAutomaton = FiniteAutomaton()
-    aut.add_transition(1, 'C', 2)
-    aut.add_transition(2, 'T', 3)
-    aut.add_transition(3, 'C', 4)
-    aut.add_transition(3, 'T', 5)
-    aut.add_transition(2, 'T', 6)
-    aut.add_transition(1, 'T', 7)
-    aut.add_transition(6, 'A', 5)
-    aut.add_transition(7, 'T', 6)
-    aut.add_transition(6, 'G', 8)
+    aut.add_transition(src=1, dest=2, symbol='C')
+    aut.add_transition(src=2, dest=3, symbol='T')
+    aut.add_transition(src=3, dest=4, symbol='C')
+    aut.add_transition(src=3, dest=5, symbol='T')
+    aut.add_transition(src=2, dest=6, symbol='T')
+    aut.add_transition(src=1, dest=7, symbol='T')
+    aut.add_transition(src=6, dest=5, symbol='A')
+    aut.add_transition(src=7, dest=6, symbol='T')
+    aut.add_transition(src=6, dest=8, symbol='G')
 
     aut.initial.add(1)
     aut.terminal.add(4)

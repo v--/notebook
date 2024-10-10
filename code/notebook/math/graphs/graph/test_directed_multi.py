@@ -3,8 +3,6 @@ from .directed_multi import DirectedMultiedge, DirectedMultigraph
 
 def test_add_parallel_edges() -> None:
     graph = DirectedMultigraph[int, None, None]()
-    graph.vertices.add(3)
-    graph.vertices.add(4)
 
     e1 = DirectedMultiedge(3, 4)
     e2 = DirectedMultiedge(3, 4)

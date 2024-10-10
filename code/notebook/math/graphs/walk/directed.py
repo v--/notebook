@@ -1,6 +1,6 @@
 import itertools
 from collections.abc import Collection, Iterable, Sequence
-from typing import cast, override
+from typing import override
 
 from ..exceptions import GraphWalkError
 from .base import GraphWalkType, get_tail
@@ -23,7 +23,7 @@ class DirectedWalk[VertT, EdgeT: Collection](GraphWalkType[VertT, EdgeT]):
             if src != current_tail:
                 raise GraphWalkError(f'Invalid arc {arc} after {current_tail}')
 
-            current_tail = cast(VertT, dest)
+            current_tail = dest
 
         self.origin = origin
         self.arcs = arcs
@@ -36,7 +36,7 @@ class DirectedWalk[VertT, EdgeT: Collection](GraphWalkType[VertT, EdgeT]):
         yield self.origin
 
         for _, dest in self.arcs:
-            yield cast(VertT, dest)
+            yield dest
 
     def __str__(self) -> str:
         return ' → '.join(str(v) for v in self.iter_vertices())
