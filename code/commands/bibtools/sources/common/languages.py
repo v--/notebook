@@ -1,4 +1,3 @@
-
 from iso639 import Lang
 from iso639.exceptions import InvalidLanguageValue
 
@@ -18,7 +17,7 @@ def create_lang_object(language: str) -> Lang:
         raise BibToolsParsingError(f'Unrecognized language {language!r}') from err
 
 
-def get_language_name(language: BibString) -> BibString:
+def get_language_name(language: BibString) -> str:
     # We handle greek specially because iso639 and biblatex have differing opinions on handling it
     if isinstance(language, str) and language.strip().lower() == 'greek':
         return 'greek'
@@ -26,7 +25,7 @@ def get_language_name(language: BibString) -> BibString:
     if isinstance(language, str):
         return create_lang_object(language).name.lower()
 
-    return language
+    return strip_braces(language)
 
 
 normalize_language_name = get_language_name
@@ -40,14 +39,11 @@ def get_language_code(language: BibString) -> BibString:
         # Ancient greek does not have two-letter code
         return 'el'
 
-    if isinstance(normalized, str):
-        return create_lang_object(normalized).pt1
-
-    return normalized
+    return create_lang_object(normalized).pt1
 
 
 def get_main_entry_language(entry: BibEntry) -> str:
     if len(entry.languages) == 0:
         return 'english'
 
-    return strip_braces(entry.languages[0])
+    return normalize_language_name(entry.languages[0])
