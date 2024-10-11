@@ -1,60 +1,34 @@
-import itertools
-from collections.abc import Collection, Iterable, Sequence
-from typing import override
+from typing import overload
 
-from ..exceptions import GraphWalkError
-from .base import GraphWalkType, get_tail
+from ..graph import DirectedEdge
+from .base import BaseGraphWalk, GraphWalkSegment
 
 
-class DirectedWalk[VertT, EdgeT: Collection](GraphWalkType[VertT, EdgeT]):
-    origin: VertT
-    arcs: Sequence[EdgeT]
-
+class DirectedWalk[VertT](BaseGraphWalk[VertT, DirectedEdge[VertT]]):
     @classmethod
-    def path(cls, origin: VertT, *rest: VertT) -> 'DirectedWalk[VertT, tuple[VertT, VertT]]':
-        return DirectedWalk(origin, list(itertools.pairwise([origin, *rest])))
+    def from_vertex_list(cls, origin: VertT, *rest: VertT) -> 'DirectedWalk[VertT]':
+        walk = cls(origin)
 
-    def __init__(self, origin: VertT, arcs: Sequence[EdgeT]) -> None:
-        current_tail = origin
+        for vertex in rest:
+            walk.append(vertex)
 
-        for arc in arcs:
-            src, dest = arc
+        return walk
 
-            if src != current_tail:
-                raise GraphWalkError(f'Invalid arc {arc} after {current_tail}')
+    def is_appendable(self, segment: GraphWalkSegment[VertT, DirectedEdge[VertT]]) -> bool:
+        return self.tail == segment.edge.src
 
-            current_tail = dest
+    @overload
+    def append(self, vertex: VertT) -> None: ...
+    @overload
+    def append(self, segment: GraphWalkSegment[VertT, DirectedEdge[VertT]]) -> None: ...
+    def append(self, *args, **kwargs) -> None:
+        segment: GraphWalkSegment[VertT, DirectedEdge[VertT]] | None = kwargs.get('segment', None)
 
-        self.origin = origin
-        self.arcs = arcs
+        if segment is None and len(args) > 0 and isinstance(args[0], GraphWalkSegment):
+            segment = args[0]
 
-    def __len__(self) -> int:
-        return len(self.arcs)
+        if segment is None:
+            vertex: VertT = args[0]
+            segment = GraphWalkSegment(DirectedEdge(self.tail, vertex), vertex)
 
-    @override
-    def iter_vertices(self) -> Iterable[VertT]:
-        yield self.origin
-
-        for _, dest in self.arcs:
-            yield dest
-
-    def __str__(self) -> str:
-        return ' → '.join(str(v) for v in self.iter_vertices())
-
-    def __add__(self, other: object) -> 'DirectedWalk[VertT, EdgeT]':
-        if not isinstance(other, DirectedWalk):
-            return NotImplemented
-
-        if get_tail(self) != other.origin:
-            return NotImplemented
-
-        return DirectedWalk(
-            self.origin,
-            [*self.arcs, *other.arcs]
-        )
-
-    def __eq__(self, other: object) -> bool:
-        if not isinstance(other, DirectedWalk):
-            return NotImplemented
-
-        return self.origin == other.origin and self.arcs == other.arcs
+        super().append(segment)

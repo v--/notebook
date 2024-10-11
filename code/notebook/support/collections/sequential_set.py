@@ -22,20 +22,8 @@ class SequentialSet[T](MutableSet[T]):
         if values is None:
             return
 
-        it = iter(values)
-
-        try:
-            first = next(it)
-        except StopIteration:
-            return
-        else:
-            self.payload = SequentialSetItem(first)
-
-        item = self.payload
-
-        for value in it:
-            item.next = SequentialSetItem(value)
-            item = item.next
+        for value in values:
+            self.add(value)
 
     def _iter_items(self) -> Iterator[SequentialSetItem[T]]:
         item = self.payload

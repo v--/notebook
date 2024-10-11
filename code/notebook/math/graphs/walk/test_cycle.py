@@ -4,57 +4,56 @@ from .undirected import UndirectedWalk
 
 
 def test_is_cycle_trivial() -> None:
-    walk = DirectedWalk.path('a')
+    walk = DirectedWalk.from_vertex_list('a')
     assert not is_cycle(walk)
 
 
 def test_is_cycle_loop() -> None:
-    walk = DirectedWalk.path('a', 'a')
+    walk = DirectedWalk.from_vertex_list('a', 'a')
     assert is_cycle(walk)
 
 
 def test_is_cycle_directed_opposite() -> None:
-    walk = DirectedWalk.path('a', 'b', 'a')
+    walk = DirectedWalk.from_vertex_list('a', 'b', 'a')
     assert is_cycle(walk)
 
 
 def test_is_cycle_undirected_opposite() -> None:
-    edge = frozenset(['a', 'b'])
-    walk = UndirectedWalk('a', [edge, edge])
+    walk = UndirectedWalk.from_vertex_list('a', 'b', 'a')
     assert not is_cycle(walk)
 
 
 def test_is_cycle_repeated() -> None:
-    walk = DirectedWalk.path('a', 'b', 'c', 'a', 'd', 'c', 'a')
+    walk = DirectedWalk.from_vertex_list('a', 'b', 'c', 'a', 'd', 'c', 'a')
     assert is_closed(walk)
     assert not is_cycle(walk)
 
 
 def test_cycle_removal_trivial() -> None:
-    source = DirectedWalk.path('a')
+    source = DirectedWalk.from_vertex_list('a')
     expected = source
     assert remove_cycles(source) == expected
 
 
 def test_cycle_removal_noop() -> None:
-    source = DirectedWalk.path('a', 'b', 'c')
+    source = DirectedWalk.from_vertex_list('a', 'b', 'c')
     expected = source
     assert remove_cycles(source) == expected
 
 
 def test_cycle_removal_loop() -> None:
-    source = DirectedWalk.path('a', 'a')
-    expected = DirectedWalk.path('a')
+    source = DirectedWalk.from_vertex_list('a', 'a')
+    expected = DirectedWalk.from_vertex_list('a')
     assert remove_cycles(source) == expected
 
 
 def test_cycle_removal_single_cycle() -> None:
-    source = DirectedWalk.path('a', 'b', 'c', 'a', 'd', 'c')
-    expected = DirectedWalk.path('a', 'd', 'c')
+    source = DirectedWalk.from_vertex_list('a', 'b', 'c', 'a', 'd', 'c')
+    expected = DirectedWalk.from_vertex_list('a', 'd', 'c')
     assert remove_cycles(source) == expected
 
 
 def test_cycle_removal_multiple_cycles() -> None:
-    source = DirectedWalk.path('a', 'b', 'c', 'a', 'd', 'c', 'd', 'e')
-    expected = DirectedWalk.path('a', 'd', 'e')
+    source = DirectedWalk.from_vertex_list('a', 'b', 'c', 'a', 'd', 'c', 'd', 'e')
+    expected = DirectedWalk.from_vertex_list('a', 'd', 'e')
     assert remove_cycles(source) == expected

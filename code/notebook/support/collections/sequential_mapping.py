@@ -24,21 +24,12 @@ class SequentialMapping[K, V](MutableMapping[K, V]):
         if items is None:
             return
 
-        it = iter(items.items() if isinstance(items, Mapping) else items)
-
-        try:
-            first = next(it)
-        except StopIteration:
-            return
+        if isinstance(items, Mapping):
+            for key, value in items.items():
+                self[key] = value
         else:
-            self.payload = SequentialMappingItem(*first)
-
-        item = self.payload
-
-        for pair in it:
-            item.next = SequentialMappingItem(*pair)
-            item = item.next
-
+            for key, value in items:
+                self[key] = value
 
     def _iter_items(self) -> Iterator[SequentialMappingItem[K, V]]:
         current = self.payload

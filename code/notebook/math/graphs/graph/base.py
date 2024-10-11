@@ -26,16 +26,16 @@ class GraphMeta[VertT, EdgeT: Collection, VertLabelT, EdgeSymbolT](type):
         attrs['edge_view_class'] = edge_view
         return type.__new__(meta, name, bases, attrs)
 
-    def __call__[T: GraphMeta](cls: T, *args: Any, **kwargs: Any) -> Any:  # noqa: ANN401
+    def __call__(cls, *args: Any, **kwargs: Any) -> Any:  # noqa: ANN401
         result = super().__call__(*args, **kwargs)
         result.clone_initial = functools.partial(cls.__call__, *args, **kwargs)
         return result
 
 
 class BaseGraph[VertT, EdgeT: Collection, VertLabelT, EdgeSymbolT](metaclass=GraphMeta):
+    clone_initial: Callable[[], Self]
     vertices: VertexView
     edges: BaseEdgeView
-    clone_initial: Callable[[], Self]
 
     @overload
     def __init__(self, *, default_vertex_label: VertLabelT, default_edge_label: EdgeSymbolT) -> None: ...

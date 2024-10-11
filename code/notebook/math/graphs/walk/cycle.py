@@ -1,50 +1,40 @@
 from collections.abc import Collection
 
-from .base import GraphWalkType
+from ....support.collections.sequential_set import SequentialSet
+from .base import BaseGraphWalk
 from .directed import DirectedWalk
 
 
-def is_closed[VertT, EdgeT: Collection](walk: GraphWalkType[VertT, EdgeT]) -> bool:
-    vertices = list(walk.iter_vertices())
-
-    if len(vertices) == 0:
-        return True
-
-    return walk.origin == vertices[-1]
+def is_closed[VertT, EdgeT: Collection](walk: BaseGraphWalk[VertT, EdgeT]) -> bool:
+    return walk.head == walk.tail
 
 
-def is_cycle[VertT, EdgeT: Collection](walk: GraphWalkType[VertT, EdgeT]) -> bool:
-    it = iter(walk.iter_vertices())
-    next(it)
-    rest = list(it)
-
-    if len(rest) == 0:
-        return False
-
-    if len(list(set(rest))) < len(walk) or len(set(walk.arcs)) < len(walk):
-        return False
-
-    return walk.origin == rest[-1]
+def is_cycle[VertT, EdgeT: Collection](walk: BaseGraphWalk[VertT, EdgeT]) -> bool:
+    return (
+        len(walk) > 0 and \
+        is_closed(walk) and \
+        len(SequentialSet(walk.iter_vertices())) == len(walk) and \
+        not (len(walk.segments) == 2 and walk.segments[0].edge == walk.segments[1].edge)
+    )
 
 
 # This is alg:cycle_removal in the monograph
-def remove_cycles[VertT, EdgeT: Collection](walk: DirectedWalk[VertT, EdgeT]) -> DirectedWalk[VertT, EdgeT]:
-    if len(walk.arcs) == 0:
+def remove_cycles[VertT](walk: DirectedWalk[VertT]) -> DirectedWalk[VertT]:
+    if len(walk.segments) == 0:
         return walk
 
-    current_vertex = walk.origin
-    last_compatible_index = 0
-    new_walk_arcs = list[EdgeT]()
+    result = walk.clone_initial()
 
-    while last_compatible_index + 1 < len(walk.arcs):
-        for i, (src, _) in enumerate(walk.arcs):
-            if src == current_vertex:
+    current_vertex = walk.head
+    last_compatible_index = 0
+
+    while last_compatible_index + 1 < len(walk.segments):
+        for i, segment in enumerate(walk.segments):
+            if segment.edge.src == current_vertex:
                 last_compatible_index = i
 
-        arc = walk.arcs[last_compatible_index]
-        new_walk_arcs.append(arc)
+        segment = walk.segments[last_compatible_index]
+        result.append(segment)
+        current_vertex = segment.tail
 
-        _, dest = arc
-        current_vertex = dest
-
-    return DirectedWalk[VertT, EdgeT](walk.origin, new_walk_arcs)
+    return result
