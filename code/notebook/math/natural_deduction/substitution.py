@@ -1,3 +1,4 @@
+from collections.abc import Mapping
 from dataclasses import dataclass
 from typing import override
 
@@ -21,7 +22,7 @@ class SubstitutionError(NaturalDeductionError):
 
 @dataclass(frozen=True)
 class Substitution:
-    mapping: dict[FormulaPlaceholder, Formula]
+    mapping: Mapping[FormulaPlaceholder, Formula]
 
     def __or__(self, other: object) -> 'Substitution | None':
         if not isinstance(other, Substitution):

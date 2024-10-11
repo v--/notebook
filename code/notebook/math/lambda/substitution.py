@@ -1,4 +1,4 @@
-from collections.abc import Collection, Iterable
+from collections.abc import Collection, Iterable, Mapping
 from dataclasses import dataclass
 from typing import Protocol, override
 
@@ -23,7 +23,7 @@ class AbstractSubstitution(Protocol):
 
 @dataclass(frozen=True)
 class Substitution(AbstractSubstitution):
-    mapping: dict[Variable, LambdaTerm]
+    mapping: Mapping[Variable, LambdaTerm]
 
     @override
     def get_non_fixed(self) -> Collection[Variable]:
@@ -42,7 +42,7 @@ class Substitution(AbstractSubstitution):
             yield from get_free_variables(self.substitute_variable(var))
 
     def modify_at(self, var: Variable, replacement: LambdaTerm) -> 'Substitution':
-        return Substitution(self.mapping | { var: replacement })
+        return Substitution({**self.mapping, var: replacement})
 
 
 EMPTY_SUBSTITUTION = Substitution({})

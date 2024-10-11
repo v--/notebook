@@ -6,10 +6,10 @@ from .axiomatic_derivation import AxiomaticDerivation
 from .parsing import parse_schema
 
 
-IMPLICATIONAL_AXIOMS = frozenset([
+IMPLICATIONAL_AXIOMS = [
     parse_schema('(φ → (ψ → φ))'),
     parse_schema('((φ → (ψ → θ)) → ((φ → ψ) → (φ → θ)))'),
-])
+]
 
 
 def get_identity_derivation_payload(formula: Formula) -> Sequence[Formula]:

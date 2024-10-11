@@ -94,7 +94,7 @@ def _are_derivations_equivalent_recurse(a: AxiomaticDerivation, b: AxiomaticDeri
 
 
 def are_derivations_equivalent(a: AxiomaticDerivation, b: AxiomaticDerivation) -> bool:
-    if a.axiom_schemas != b.axiom_schemas:
+    if set(a.axiom_schemas) != set(b.axiom_schemas):
         return False
 
     if a.get_conclusion() != b.get_conclusion():

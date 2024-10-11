@@ -27,8 +27,8 @@ def iter_phrases(seq: TokenSequence, stop_words: Collection[str]) -> Iterable[To
 
 
 class WordScoreContext(NamedTuple):
-    frequency: dict[str, int]
-    degree: dict[str, int]
+    frequency: Mapping[str, int]
+    degree: Mapping[str, int]
 
     def get_score(self, word: WordToken) -> float:
         key = str(word).lower()

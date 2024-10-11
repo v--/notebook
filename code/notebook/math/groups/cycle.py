@@ -23,13 +23,9 @@ class Cycle[T]:
         return iter(self.payload)
 
     @overload
-    def __getitem__(self, key: int) -> T:
-        ...
-
+    def __getitem__(self, key: int) -> T: ...
     @overload
-    def __getitem__(self, key: slice) -> Sequence[T]:
-        ...
-
+    def __getitem__(self, key: slice) -> Sequence[T]: ...
     def __getitem__(self, key: int | slice) -> T | Sequence[T]:
         return self.payload[key]
 

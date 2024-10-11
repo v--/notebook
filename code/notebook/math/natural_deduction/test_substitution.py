@@ -1,3 +1,5 @@
+from collections.abc import Mapping
+
 import pytest
 
 from ...support.pytest import pytest_parametrize_kwargs
@@ -29,7 +31,7 @@ from .substitution import SubstitutionError, is_schema_instance
         expected='(p ∧ q)'
     )
 )
-def test_substitution_application(schema: str, mapping: dict[str, str], expected: str) -> None:
+def test_substitution_application(schema: str, mapping: Mapping[str, str], expected: str) -> None:
     assert substitute_propositional_formulas(schema, **mapping) == parse_propositional_formula(expected)
 
 

@@ -1,3 +1,5 @@
+from collections.abc import Mapping
+
 from ...support.pytest import pytest_parametrize_kwargs
 from .parsing import parse_term, parse_variable
 from .substitution import Substitution, apply_substitution
@@ -57,8 +59,9 @@ from .substitution import Substitution, apply_substitution
     ),
 )
 def test_substitute_in_term(term: str,
-    mapping: dict[str, str],
-    expected: str) -> None:
+    mapping: Mapping[str, str],
+    expected: str
+) -> None:
     sub = apply_substitution(
         parse_term(term),
         Substitution({ parse_variable(key): parse_term(value) for key, value in
