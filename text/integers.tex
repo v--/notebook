@@ -580,7 +580,7 @@ Rather than defining an order from first principles and then using the signum fu
   Since \( \BbbZ \) is a principal ideal domain, it is also a Bezout domain by \fullref{def:principal_ideal_domain/bezout}.
 \end{proof}
 
-\begin{remark}\label{rem:integer_domain_chain}\hfill
+\begin{remark}\label{rem:integer_domain_chain}
   We have the following hierarchy:
   \begin{itemize}
     \item \( \BbbZ \) is a \hyperref[def:euclidean_domain]{Euclidean domain} as shown in \fullref{thm:integers_are_euclidean_domain}.
@@ -600,8 +600,8 @@ Rather than defining an order from first principles and then using the signum fu
 
 \paragraph{Prime numbers}
 
-\begin{definition}\label{def:prime_number}\mcite[2]{Knapp2016BasicAlgebra}
-  A \term[ru=простое число (\cite[45]{Зорич2019АнализТом1})]{prime number} is an integer greater than \( 1 \) whose only proper \hyperref[def:divisibility]{divisor} is \( 1 \). Non-prime integers greater than \( 1 \) are called \term{composite numbers}.
+\begin{definition}\label{def:prime_number}\mcite[2]{Apostol1976AnalyticNumberTheory}
+  A \term[ru=простое число (\cite[45]{Зорич2019АнализТом1})]{prime number} is an integer greater than \( 1 \) whose only \hi{positive} proper \hyperref[def:divisibility]{divisors} is \( 1 \). Non-prime integers greater than \( 1 \) are called \term{composite numbers}.
 \end{definition}
 
 \begin{remark}\label{rem:prime_numbers}
@@ -621,42 +621,6 @@ Rather than defining an order from first principles and then using the signum fu
   Since \( \BbbZ \) is a GCD domain, the lemma follows from \fullref{thm:def:gcd_domain/irreducible_is_prime}.
 \end{proof}
 
-\begin{algorithm}[Sieve of Eratosthenes]\label{alg:sieve_of_eratosthenes}\mcite[exer. 4.5.4.8]{Knuth1997ArtVol2}
-  We can construct approximations to the sequence
-  \begin{equation*}
-    s_k \coloneqq \begin{cases}
-      1, &k \T{is prime}, \\
-      0, &\T{otherwise}.
-    \end{cases}
-  \end{equation*}
-
-  Via recursion on \( n \), we will build the sequence \( \seq{ s_{n,k} }_{k=0}^\infty \) such that, for \( 0 \leq k < n \), \( s_{n,k} \) is \( 1 \) if \( k \) is prime and \( 0 \) otherwise.
-
-  \begin{thmenum}
-    \thmitem{alg:sieve_of_eratosthenes/base} We start with the constant sequence
-    \begin{equation*}
-      s_{0,k} \coloneqq 1.
-    \end{equation*}
-
-    \thmitem{alg:sieve_of_eratosthenes/one} We need to handle one special case: for \( n = 1 \) we also consider the same sequence.
-    \begin{equation*}
-      s_{1,k} \coloneqq 1.
-    \end{equation*}
-
-    \thmitem{alg:sieve_of_eratosthenes/recursive} For \( n > 1 \), let
-    \begin{equation*}
-      s_{n,k} \coloneqq \begin{cases}
-        0,         &n \T{divides} k \\
-        s_{n-1,k}, &\T{otherwise}.
-      \end{cases}
-    \end{equation*}
-  \end{thmenum}
-\end{algorithm}
-\begin{comments}
-  \item Rather than working with infinite sequences, we may restrict ourselves to lists of length \( n \) at step \( n \).
-  \item This algorithm can be found as \identifier{arithmetic.primes.build_erathostenes_sieve} in \cite{notebook:code}.
-\end{comments}
-
 \begin{theorem}[Fundamental theorem of arithmetic]\label{thm:fundamental_theorem_of_arithmetic}
   Every integer greater than \( 1 \) can be \hyperref[def:irreducible_factorization]{factored} into a product of \hyperref[def:prime_number]{prime} powers.
 \end{theorem}
@@ -671,7 +635,7 @@ Rather than defining an order from first principles and then using the signum fu
   We say that the integers \( n \) and \( m \) are \term[ru=взаимно простые (числа) (\cite[45]{Зорич2019АнализТом1}), en=coprime / relatively prime (\cite[231]{Rosen2018DiscreteHandbook})]{coprime} if any of the following equivalent conditions hold:
   \begin{thmenum}
     \thmitem{def:coprime_numbers/abstract} They are \hyperref[def:coprime_elements]{coprime elements} of \( \BbbZ \).
-    \thmitem{def:coprime_numbers/concrete}\mcite[45]{Зорич2019АнализТом1} Their only common divisors are \( 1 \) and \( -1 \).
+    \thmitem{def:coprime_numbers/concrete}\mcite[45]{Зорич2019АнализТом1} Their only \hi{positive} common divisor is \( 1 \).
   \end{thmenum}
 \end{definition}
 
@@ -688,11 +652,147 @@ Rather than defining an order from first principles and then using the signum fu
   Therefore, \( m = 1 \).
 \end{proof}
 
-\paragraph{Euler's totient theorem}\hfill
+\begin{proposition}\label{thm:primality_via_coprimality}
+  The (positive) integer \( n \) is \hyperref[def:prime_number]{prime} if and only if \( n \) is \hyperref[def:coprime_numbers]{coprime} with every \( m < n \).
+\end{proposition}
+\begin{proof}
+  \SufficiencySubProof Trivial.
+  \NecessitySubProof If \( m \mid n \), then \( \gcd(m, n) = 1 \), hence \( m = 1 \).
+\end{proof}
 
-\begin{definition}\label{def:eulers_totient_function}\mcite[7]{Knapp2016BasicAlgebra}
-  For any positive integer \( n \), denote by \( \varphi(n) \) the number of strictly smaller than \( n \) positive integers that are \hyperref[def:coprime_elements]{coprime} to \( n \). We call \( \varphi \) \term{Euler's totient function}.
+\paragraph{Prime counting}
+
+\begin{definition}\label{def:arithmetic_function}\mcite[24]{Apostol1976AnalyticNumberTheory}
+  We say that a \hyperref[def:function]{function} is \term[en=arithmetical function (\cite[24]{Apostol1976AnalyticNumberTheory})]{arithmetic} if its domain is the set of positive integers.
 \end{definition}
+
+\begin{definition}\label{def:int_sqrt}\mimprovised
+  Based on \cite{PythonDocs:3.12:math}, we will introduce an \term{integer square root} \hyperref[def:arithmetic_function]{arithmetic function}
+  \begin{equation*}
+    \op{isqrt}(n) \coloneqq \min\set{ k = 1, 2, \ldots \given k^2 \leq n }.
+  \end{equation*}
+
+  If \( n = \op{isqrt}(n)^2 \), we call \( n \) a \term[en=perfect square (\cite[example 1.7.1]{Rosen2019DiscreteMathematics})]{perfect square}.
+\end{definition}
+\begin{comments}
+  \item In terms of the real number \( n \)-th root function, which we will discuss in \fullref{def:nth_root}, we can define the integer square root as
+  \begin{equation*}
+    \op{isqrt}(n) \coloneqq \floor\parens[\Big]{ \sqrt{n} }.
+  \end{equation*}
+\end{comments}
+
+\begin{proposition}\label{thm:int_sqrt_leq}
+  If for some positive integers we have \( n = ab \), we have the following possibilities:
+  \begin{thmenum}
+    \thmitem{thm:int_sqrt_leq/equal} \( a = \op{isqrt}(n) = b \).
+    \thmitem{thm:int_sqrt_leq/a_leq} \( a \leq \op{isqrt}(n) < b \).
+    \thmitem{thm:int_sqrt_leq/b_leq} \( a > \op{isqrt}(n) \geq b \).
+  \end{thmenum}
+\end{proposition}
+\begin{proof}
+  We have the following options in general for \( n = ab \):
+  \begin{itemize}
+    \item If \( a = b \), then \( n \) is a perfect square, hence \fullref{thm:int_sqrt_leq/equal} holds.
+    \item If \( a < b \), then we must investigate how they are related to \( \op{isqrt}(n) \).
+
+    If we suppose that \( b \leq \op{isqrt}(n) \), then \( ab < b^2 \leq \op{isqrt}(n)^2 \leq n \), which is a contradiction.
+
+    Similarly, if we suppose that \( a > \op{isqrt}(n) \), then both \( a \geq \op{isqrt}(n) + 1 \), hence
+    \begin{equation*}
+      (\op{isqrt}(n) + 1)^2 < ab = n,
+    \end{equation*}
+    which contradicts the maximality of \( \op{isqrt}(n) \).
+
+    This leads to \fullref{thm:int_sqrt_leq/a_leq}.
+
+    \item If \( a > b \), we can argue by \fullref{thm:preorder_duality} to conclude that \fullref{thm:int_sqrt_leq/b_leq} holds.
+  \end{itemize}
+\end{proof}
+
+\begin{proposition}\label{thm:prime_number_sqrt}
+  An integer \( n > 1 \) is \hyperref[def:prime_number]{prime} if and only if no integer \( k \) with \( 1 < k \leq \op{isqrt}(n) \) divides \( n \).
+\end{proposition}
+\begin{comments}
+  \item A consequence of this is that a brute-force primality check, in which we check whether \( k \) divides \( n \) for all \( k < n \), the condition on \( k \) can be simplified to \( k \leq \op{isqrt}(n) \).
+\end{comments}
+\begin{proof}
+  \SufficiencySubProof Suppose that \( n \) is prime. Since \( n > 1 \), then \( \op{isqrt}(n) < n \), and thus \( 1 < k \leq \op{isqrt}(n) \) implies \( k < n \). Then, since \( n \) is prime, no such \( k \) can divide \( n \) since its only positive divisors are \( 1 \) and \( n \) itself.
+
+  \NecessitySubProof Suppose that, for some \( n > 1 \), from \( 1 < k \leq \op{isqrt}(n) \) it follows that \( k \) does not divide \( n \).
+
+  Let \( n = ab \). \Fullref{thm:int_sqrt_leq} implies that either \( a \leq \op{isqrt}(n) \), in which case \( a = 1 \) and \( b = n \), or \( b \leq \op{isqrt}(n) \), in which case \( b = 1 \) and \( a = n \).
+
+  Therefore, we conclude that \( n \) is prime.
+\end{proof}
+
+\begin{corollary}\label{thm:prime_number_sqrt_prime}
+  An integer \( n > 1 \) is \hyperref[def:prime_number]{prime} if and only if no \hi{prime} \( p \) with \( 1 < p \leq \op{isqrt}(n) \) divides \( n \).
+\end{corollary}
+\begin{proof}
+  Follows from \fullref{thm:prime_number_sqrt} by noticing that \( k \) divides \( n \) whenever the prime factors of \( p \) do.
+\end{proof}
+
+\begin{definition}\label{def:prime_counting_function}\mcite[8]{Apostol1976AnalyticNumberTheory}
+  Denote by \( \pi(n) \) the \hyperref[def:arithmetic_function]{arithmetic function} giving the number of primes less than or equal to \( n \).
+\end{definition}
+
+\begin{algorithm}[Sieve of Eratosthenes]\label{alg:sieve_of_eratosthenes}\mcite[exer. 4.5.4.8]{Knuth1997ArtVol2}
+  We can construct approximations to the sequence
+  \begin{equation*}
+    s_k \coloneqq \begin{cases}
+      1, &k \T{is prime}, \\
+      0, &\T{otherwise}.
+    \end{cases}
+  \end{equation*}
+
+  Via recursion on \( n \), we will build the sequence \( \seq{ s_{n,k} }_{k=1}^\infty \) such that, for \( 1 \leq k \leq n^2 \), \( s_{n,k} \) is \( 1 \) if \( k \) is prime and \( 0 \) otherwise.
+
+  \begin{thmenum}
+    \thmitem{alg:sieve_of_eratosthenes/one} We start with the sequence
+    \begin{equation*}
+      s_{1,k} \coloneqq \begin{cases}
+        0, &k = 1, \\
+        1, &\T{otherwise.}
+      \end{cases}
+    \end{equation*}
+
+    \thmitem{alg:sieve_of_eratosthenes/recursive} For \( n > 1 \), let \( s_{n,k} = s_{n-1,k} \) if \( s_{n-1,n} = 0 \) and otherwise let
+    \begin{equation*}
+      s_{n,k} \coloneqq \begin{cases}
+        0,         &k > n \T{and} n \T{divides} k \\
+        s_{n-1,k}, &\T{otherwise.}
+      \end{cases}
+    \end{equation*}
+  \end{thmenum}
+\end{algorithm}
+\begin{comments}
+  \item This algorithm can be found as \identifier{arithmetic.primes.build_erathostenes_sieve} in \cite{notebook:code}.
+\end{comments}
+\begin{proof}
+  Correctness follows from \fullref{thm:prime_number_sqrt_prime}.
+\end{proof}
+
+\begin{proposition}\label{thm:prime_counting_sieve}
+  We can use \fullref{alg:sieve_of_eratosthenes} to compute the \hyperref[def:prime_counting_function]{prime counting function}:
+  \begin{equation*}
+    \pi(n) \coloneqq \sum_{k=1}^n s_{\op{isqrt}(n),k}
+  \end{equation*}
+\end{proposition}
+\begin{comments}
+  \item We can use \fullref{thm:inclusion_exclusion_principle} to compute \( \pi(n) \) --- see \fullref{ex:thm:inclusion_exclusion_principle/eratosthenes}.
+\end{comments}
+\begin{proof}
+  Trivial.
+\end{proof}
+
+\paragraph{Euler's totient theorem}
+
+\begin{definition}\label{def:eulers_totient_function}\mcite[25]{Apostol1976AnalyticNumberTheory}
+  Denote by \( \varphi(n) \) the \hyperref[def:arithmetic_function]{arithmetic function} giving the number of strictly smaller than \( n \) positive integers that are \hyperref[def:coprime_elements]{coprime} to \( n \). We call \( \varphi \) \term{Euler's totient function}.
+\end{definition}
+\begin{comments}
+  \item \Fullref{thm:inclusion_exclusion_totient} provides a useful expression in terms of prime factors.
+\end{comments}
 
 \begin{proposition}\label{thm:def:eulers_totient_function}
   \hyperref[def:eulers_totient_function]{Euler's totient function} \( \varphi \) has the following basic properties:
@@ -760,7 +860,7 @@ Rather than defining an order from first principles and then using the signum fu
 \begin{example}\label{ex:division_modulo}
   The integers \( 9 \) and \( 10 \) are coprime. We have \( \varphi(9) = 6 \) and \( 1000 = 166 \cdot 6 + 4 \). By \fullref{thm:division_modulo},
   \begin{equation*}
-    9^{1000} \cong 9^4 \cong 6561 \cong 1 \pmod {10}.
+    9^{1000} \cong 9^4 = 6561 \cong 1 \pmod {10}.
   \end{equation*}
 
   We can thus vastly simplify finding the last digit of the decimal representation of \( 9^{1000} \).
