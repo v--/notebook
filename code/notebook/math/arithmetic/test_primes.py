@@ -2,7 +2,7 @@ import itertools
 import random
 
 from ...support.pytest import pytest_parametrize_lists, repeat5
-from .primes import are_coprime, factor, is_prime, iter_primes, num_primes, totient
+from .primes import are_coprime, factor, is_prime, iter_primes, num_primes, num_primes_inclusion_exclusion, totient
 
 
 def test_iterate_primes(ceiling: int = 10 ** 3) -> None:
@@ -16,6 +16,11 @@ def test_iterate_primes(ceiling: int = 10 ** 3) -> None:
 @pytest_parametrize_lists(n=repeat5(random.randint, 1, 100))
 def test_num_primes(n: int) -> None:
     assert num_primes(n) == sum(1 for k in iter_primes(ceiling=n))
+
+
+@pytest_parametrize_lists(n=repeat5(random.randint, 1, 500))
+def test_num_primes_inclusion_exclusion(n: int) -> None:
+    assert num_primes_inclusion_exclusion(n) == num_primes(n)
 
 
 @pytest_parametrize_lists(n=[-1, 0, 1])

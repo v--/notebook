@@ -10,11 +10,15 @@ from .support import SignT, sgn
 
 def build_erathostenes_sieve(ceiling: int) -> Sequence[bool]:
     assert ceiling > 0
+    ceil_sqrt = math.isqrt(ceiling)
 
     sieve = [True] * (ceiling + 1)
     sieve[0] = sieve[1] = False
 
-    for k in range(2, ceiling + 1):
+    for k in range(2, ceil_sqrt + 1):
+        if not sieve[k]:
+            continue
+
         for m in itertools.count(2):
             if k * m > ceiling:
                 break
@@ -47,6 +51,19 @@ def is_prime(n: int) -> bool:
 def num_primes(n: int) -> int:
     assert n > 0
     return sum(build_erathostenes_sieve(ceiling=n))
+
+
+# thm:inclusion_exclusion_eratosthenes
+def num_primes_inclusion_exclusion(n: int) -> int:
+    assert n > 0
+    p = list(iter_primes(math.isqrt(n)))
+    result = (n - 1) + len(p)
+
+    for m in range(1, len(p) + 1):
+        for c in itertools.combinations(p, m):
+            result += (-1) ** len(c) * (n // math.prod(c))
+
+    return result
 
 
 class PrimeFactorization(NamedTuple):
