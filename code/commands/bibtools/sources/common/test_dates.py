@@ -19,6 +19,10 @@ from .dates import extract_year
     dict(
         string='0149.15905',
         year='0149'
+    ),
+    dict(
+        string='Основы теории меры. Том 1-РХД (2003)',
+        year='2003'
     )
 )
 def test_extract_year(string: str, year: str) -> None:

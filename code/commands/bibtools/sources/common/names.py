@@ -20,5 +20,8 @@ def get_main_human_name(full_name: BibString) -> BibString:
     return full_name
 
 
-def name_to_bib_author(full_name: str) -> BibAuthor:
-    return BibAuthor(full_name=parse_value(full_name))
+def name_to_bib_author(full_name: BibString) -> BibAuthor:
+    if isinstance(full_name, str):
+        return BibAuthor(full_name=parse_value(full_name))
+
+    return BibAuthor(full_name=full_name)
