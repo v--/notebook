@@ -12,7 +12,7 @@ class Terminal(TokenMixin):
         return f'"{self.value}"'
 
     def __repr__(self) -> str:
-        return f"Terminal({self.value!r})"
+        return f'Terminal({self.value!r})'
 
 
 class NonTerminal(TokenMixin):
@@ -20,7 +20,7 @@ class NonTerminal(TokenMixin):
         return f'<{self.value}>'
 
     def __repr__(self) -> str:
-        return f"NonTerminal({self.value!r})"
+        return f'NonTerminal({self.value!r})'
 
 
 def new_non_terminal(base_name: str, context: Collection[NonTerminal]) -> NonTerminal:

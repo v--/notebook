@@ -18,8 +18,8 @@ class AnnotatedToken[T: AbstractToken](NamedTuple):
 
 @list_accumulator
 def annotate_existing_tokens[T: AbstractToken](seq: Sequence[T]) -> Iterable[AnnotatedToken[T]]:
-    '''Take a sequence of tokens and add positional annotation.
-    We assume that their string representation is accurate.'''
+    """Take a sequence of tokens and add positional annotation.
+    We assume that their string representation is accurate."""
 
     lineno = 1
     column = 1

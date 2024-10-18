@@ -17,7 +17,7 @@ def test_english_word_with_apostrophe() -> None:
 
 
 def test_standalone_dash() -> None:
-    assert tokenize_text("-") == TokenSequence([SymbolToken("-")])
+    assert tokenize_text('-') == TokenSequence([SymbolToken('-')])
 
 
 def test_english_word_with_dash() -> None:
