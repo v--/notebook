@@ -1,5 +1,8 @@
 import asyncio
-from datetime import datetime, timedelta
+import functools
+from collections import deque
+from dataclasses import dataclass
+from datetime import datetime
 from timeit import default_timer as timer
 from typing import ClassVar
 
@@ -7,16 +10,19 @@ from ..common.paths import ROOT_PATH
 from .task import WatcherTask
 
 
-DEBOUNCE_THRESHOLD = timedelta(seconds=1)
+@dataclass
+class TimedTask:
+    task: WatcherTask
+    queued_at: datetime
+    trigger: str | None
 
 
 class TaskRunner:
-    active_aio_tasks: ClassVar[set[asyncio.Task]] = set()
-    active_tasks: ClassVar[set[WatcherTask]] = set()
-    last_run_attempt: ClassVar[dict[WatcherTask, datetime]] = {}
+    running_tasks: ClassVar[set[WatcherTask]]= set()
+    running_aio_tasks: ClassVar[set[asyncio.Task]]= set()
+    queued_tasks: ClassVar[deque[TimedTask]] = deque()
 
     async def run_task(self, task: WatcherTask, trigger: str | None = None) -> None:
-        self.active_tasks.add(task)
         await task.pre_process(self)
         start = timer()
 
@@ -44,28 +50,34 @@ class TaskRunner:
             ms = round(1000 * (timer() - start))
             task.sublogger.error(f'Failed in {ms}ms with exit code {exit_code}')
 
-        self.active_tasks.remove(task)
+    def run_queued(self) -> None:
+        for timed_task in list(self.queued_tasks):
+            if timed_task.task not in self.running_tasks:
+                self.queued_tasks.remove(timed_task)
+                self.schedule(timed_task.task, timed_task.trigger)
 
-    async def run_task_debounced(self, task: WatcherTask, trigger: str | None = None) -> None:
-        # This means that the task has already been scheduled
-        if task in self.last_run_attempt:
-            self.last_run_attempt[task] = datetime.now()
-            return
+    def ensure_in_queue(self, task: WatcherTask, trigger: str | None = None) -> None:
+        now = datetime.now()
 
-        # Loop asynchronously until enough time has passed since the last scheduling
-        while (
-            len(self.active_tasks) >= 5 or
-            task in self.active_tasks or
-            task not in self.last_run_attempt or
-            datetime.now() - self.last_run_attempt[task] < DEBOUNCE_THRESHOLD
-        ):
-            self.last_run_attempt[task] = datetime.now()
-            await asyncio.sleep(DEBOUNCE_THRESHOLD.seconds)
+        for timed_task in list(self.queued_tasks):
+            if timed_task.task == task:
+                timed_task.queued_at = now
+                timed_task.trigger = trigger
+                break
+        else:
+            self.queued_tasks.append(TimedTask(task, now, trigger))
 
-        del self.last_run_attempt[task]
-        await self.run_task(task, trigger)
+    def on_finish(self, task: WatcherTask, aio_task: asyncio.Task) -> None:
+        self.running_aio_tasks.discard(aio_task)
+        self.running_tasks.discard(task)
+        self.run_queued()
 
     def schedule(self, task: WatcherTask, trigger: str | None = None) -> None:
-        aio_task = asyncio.create_task(self.run_task_debounced(task, trigger))
-        self.active_aio_tasks.add(aio_task)
-        aio_task.add_done_callback(self.active_aio_tasks.discard)
+        if task in self.running_tasks:
+            self.ensure_in_queue(task, trigger)
+            return
+
+        self.running_tasks.add(task)
+        aio_task = asyncio.create_task(self.run_task(task, trigger))
+        self.running_aio_tasks.add(aio_task)
+        aio_task.add_done_callback(functools.partial(self.on_finish, task))
