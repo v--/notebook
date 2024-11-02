@@ -81,9 +81,6 @@ class BibEntry(NamedTuple):
     # Book (and proceeding) chapters
     booktitle:     Annotated[BibString | None, BibFieldAnnotation()] = None
     booksubtitle:  Annotated[BibString | None, BibFieldAnnotation()] = None
-    # Russian books
-    udc:           Annotated[BibString | None, BibFieldAnnotation()] = None
-    bbc:           Annotated[BibString | None, BibFieldAnnotation()] = None
     # Articles
     issue:         Annotated[BibString | None, BibFieldAnnotation()] = None
     issuetitle:    Annotated[BibString | None, BibFieldAnnotation()] = None
