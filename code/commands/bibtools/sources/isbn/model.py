@@ -15,9 +15,8 @@ class GoogleBookIndustryIdentifier(GoogleBookBaseModel):
     identifier: str
 
 
-
 class GoogleBookVolumeInfo(GoogleBookBaseModel):
-    industry_identifiers: list[GoogleBookIndustryIdentifier]
+    industry_identifiers: Annotated[list[GoogleBookIndustryIdentifier], Field(default_factory=list)]
     title: str
     language: str
     authors: list[str] | None = None

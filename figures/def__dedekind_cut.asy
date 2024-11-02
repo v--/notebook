@@ -1,23 +1,86 @@
 usepackage('stix2');
-unitsize(1cm);
+unitsize(1.5cm);
 
-import graph;
+import roundedpath;
 
-label(Label('$r \leq 2$', align=N), (0.5, 2));
-draw((-1, 2) -- (2, 2), linecap(0));
-label(Label('$r > 2$', align=N), (3.5, 2), gray);
-draw((2, 2) -- (5, 2), gray + linecap(0));
-label((2, 2), Label('$2$', align=N));
-dot((2, 2));
+draw((0, 0) -- (3, 0));
 
-label(Label('$r < 2$', align=N), (0.5, 1));
-draw((-1, 1) -- (2, 1), linecap(0));
-label(Label('$r \geq 2$', align=N), (3.5, 1), gray);
-draw((2, 1) -- (5, 1), gray + linecap(0));
-label((2, 1), Label('$2$', align=N), gray);
-dot((2, 1), gray);
+for (int i = 0; i <= 3; ++i) {
+  dot((i, 0), L=Label('$' + string(i) + '$', align=S));
+}
 
-label(Label('$r^2 < 2$', align=N), ((-1 + sqrt(2)) / 2, 0));
-draw((-1, 0) -- (sqrt(2), 0), linecap(0));
-label(Label('$r^2 > 2$', align=N), ((sqrt(2) + 5) / 2, 0), gray);
-draw((sqrt(2), 0) -- (5, 0), gray + linecap(0));
+draw(
+  (0, 0.5) -- (2, 0.5) -- (2, 0)
+);
+
+label(
+  '$\{ a \in \mathbb{Q} | a \leq 2 \}$',
+  (1, 0.25),
+  fontsize(8)
+);
+
+draw(
+  roundedpath((2, 0) -- (2, 0.5) -- (3, 0.5), 0.2)
+);
+
+label(
+  '$\{ a \in \mathbb{Q} | a > 2 \}$',
+  (2.6, 0.25),
+  fontsize(8)
+);
+
+newpage();
+
+draw((0, 0) -- (3, 0));
+
+for (int i = 0; i <= 3; ++i) {
+  dot((i, 0), L=Label('$' + string(i) + '$', align=S));
+}
+
+draw(
+  roundedpath((0, 0.5) -- (2, 0.5) -- (2, 0), 0.2)
+);
+
+label(
+  '$\{ a \in \mathbb{Q} | a < 2 \}$',
+  (1, 0.25),
+  fontsize(8)
+);
+
+draw(
+  (2, 0) -- (2, 0.5) -- (3, 0.5)
+);
+
+label(
+  '$\{ a \in \mathbb{Q} | a \geq 2 \}$',
+  (2.6, 0.25),
+  fontsize(8)
+);
+
+newpage();
+
+draw((0, 0) -- (3, 0));
+
+for (int i = 0; i <= 3; ++i) {
+  dot((i, 0), L=Label('$' + string(i) + '$', align=S));
+}
+
+draw(
+  roundedpath((0, 0.5) -- (sqrt(2), 0.5) -- (sqrt(2), 0), 0.2)
+);
+
+label(
+  '$\{ a \in \mathbb{Q} | a^2 \leq 2 \}$',
+  (0.65, 0.25),
+  fontsize(8)
+);
+
+draw(
+  roundedpath((sqrt(2), 0) -- (sqrt(2), 0.5) -- (3, 0.5), 0.2)
+);
+
+label(
+  '$\{ a \in \mathbb{Q} | a^2 \geq 2 \}$',
+  (2.2, 0.25),
+  fontsize(8)
+);

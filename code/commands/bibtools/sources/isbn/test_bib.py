@@ -203,3 +203,22 @@ def test_parse_5791300166_no_authors(isbn: str = '5-7913-0016-6') -> None:
         date='2000',
         isbn=isbn
     )
+
+
+def test_parse_5791300166_no_industry_identifiers(isbn: str = '0-471-43334-9') -> None:
+    with get_isbn_fixture_path(isbn).open() as file:
+        json_body = file.read()
+
+    res = parse_isbn_json(json_body)
+    assert len(res.items) == 1
+
+    entry = isbn_book_to_bib(res.items[0], isbn)
+    assert entry == BibEntry(
+        entry_type='book',
+        entry_name='DummitFoote2003AbstractAlgebra',
+        title='Abstract Algebra',
+        authors=[BibAuthor(full_name='David S. Dummit'), BibAuthor(full_name='Richard M. Foote')],
+        languages=['english'],
+        date='2003-07-14',
+        isbn=isbn
+    )

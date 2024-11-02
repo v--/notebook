@@ -1,4 +1,3 @@
-import itertools
 from collections.abc import Callable, Iterable, Mapping
 from typing import Any
 
@@ -22,4 +21,4 @@ def pytest_parametrize_kwargs[**P](*args: Mapping[str, Any]) -> Callable[[Callab
 
 
 def repeat5[**P, R](fun: Callable[P, R], *args: P.args, **kwargs: P.kwargs) -> Iterable[R]:
-    return itertools.islice(repeat(5, fun, *args, **kwargs), 5)
+    return repeat(5, fun, *args, **kwargs)

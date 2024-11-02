@@ -1,5 +1,6 @@
 import patterns;
 import 'asymptote/polar.asy' as polar;
+import 'asymptote/pens.asy' as pens;
 
 pen densely_dashed = linetype(new real[] { 2, 2 });
 pen vert_label = fontsize(10);

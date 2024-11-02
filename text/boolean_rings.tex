@@ -1,0 +1,457 @@
+\section{Boolean rings}\label{sec:boolean_rings}
+
+\paragraph{Symmetric difference}
+
+\begin{definition}\label{def:boolean_algebra_difference}\mcite[\S 2.1.5]{КусраевКутателадзе2005БулевозначныйАнализ}
+  We define the \term{difference} operation in a \hyperref[def:boolean_algebra]{Boolean algebra} as
+  \begin{equation}\label{eq:def:boolean_algebra_difference}
+    x \setminus y \coloneqq x \wedge \oline y = \oline{x \rightarrow y}.
+  \end{equation}
+
+  In case of ambiguity, following \incite[20]{Halmos1976MeasureTheory}, we will refer to them as \term{proper differences}.
+\end{definition}
+\begin{comments}
+  \item The concept is a generalization of set differences as defined in \fullref{def:basic_set_operations/difference}. \incite[\S 2.1.5]{КусраевКутателадзе2005БулевозначныйАнализ} give a symbolic definition and denote the operation via the minus sign, but introduce no term for the operation. We prefer the set-theoretic difference notation to the minus sign - this should prevent confusion with subtraction in \hyperref[def:boolean_ring]{Boolean rings}.
+\end{comments}
+
+\begin{definition}\label{def:symmetric_difference}\mcite[47]{Birkhoff1967Lattices}
+  We define the \term[ru=симметрическая разность (\cite[\S 2.1.5]{КусраевКутателадзе2005БулевозначныйАнализ})]{symmetric difference} operation in a \hyperref[def:boolean_algebra]{Boolean algebra} as
+  \begin{equation}\label{eq:def:symmetric_difference}
+    x \symdiff y \coloneqq \underbrace{(x \wedge \oline y)}_{x \setminus y} \vee \underbrace{(\oline x \wedge y)}_{y \setminus x}.
+  \end{equation}
+\end{definition}
+\begin{comments}
+  \item This is incidentally a generalization of both the set-theoretic symmetric difference defined in \fullref{def:boolean_algebra_difference} and the exclusive or Boolean function defined in \fullref{def:standard_boolean_functions}.
+\end{comments}
+
+\begin{lemma}\label{thm:symmetric_difference_outer_meet}
+  For the \hyperref[def:symmetric_difference]{symmetric difference} we have
+  \begin{equation}\label{eq:thm:symmetric_difference_outer_meet}
+    x \symdiff y = \underbrace{(x \vee y) \wedge \oline{(x \wedge y)}}_{(x \vee y) \setminus (x \wedge y)} = (x \vee y) \wedge (\oline x \vee \oline y).
+  \end{equation}
+\end{lemma}
+\begin{proof}
+  \begin{equation*}
+    x \symdiff y
+    =
+    (x \wedge \oline y) \vee (\oline x \wedge y)
+    =
+    (\underbrace{x \vee \oline x}_\top) \wedge (x \vee y) \wedge (\oline x \vee \oline y) \wedge (\underbrace{\oline y \vee y}_\top)
+    =
+    (x \vee y) \wedge (\oline x \vee \oline y).
+  \end{equation*}
+\end{proof}
+
+\begin{proposition}\label{thm:symmetric_difference_abelian_group}
+  Every \hyperref[def:boolean_algebra]{Boolean algebra} is an \hyperref[def:abelian_group]{abelian group} with respect to the \hyperref[def:symmetric_difference]{symmetric difference} operation.
+
+  Explicitly:
+  \begin{thmenum}
+    \thmitem{thm:symmetric_difference_abelian_group/associative} The symmetric difference is \hyperref[def:binary_operation/associative]{associative}.
+    \thmitem{thm:symmetric_difference_abelian_group/commutative} The symmetric difference is \hyperref[def:binary_operation/commutative]{commutative}.
+    \thmitem{thm:symmetric_difference_abelian_group/neutral} The bottom acts as a \hyperref[def:monoid]{neutral element}.
+    \thmitem{thm:symmetric_difference_abelian_group/inverse} Every element is its own inverse with respect to the bottom.
+  \end{thmenum}
+\end{proposition}
+\begin{proof}
+  \SubProofOf{thm:symmetric_difference_abelian_group/associative} We have, due to \fullref{thm:def:boolean_algebra/distributive}:
+  \begin{equation*}
+    (x \symdiff y) \symdiff z
+    =
+    \underbrace{ \parens[\Big]{\parens[\Big]{ (x \wedge \oline y) \vee (\oline x \wedge y) } \wedge \oline z } }_a
+    \vee
+    \underbrace{ \parens[\Big]{\parens[\Big]{ \oline{(x \vee y) \wedge (\oline x \vee \oline y)} } \wedge z } }_b.
+  \end{equation*}
+
+  Distributivity allows us to further expand the terms:
+  \begin{align*}
+    a
+    &=
+    \parens[\Big]{ (x \wedge \oline y) \vee (\oline x \wedge y) } \wedge \oline z
+    = \\ &=
+    \underbrace{(x \wedge \oline y \wedge \oline z)}_\alpha \vee \underbrace{(\oline x \wedge y \wedge \oline z)}_\beta
+  \end{align*}
+  and
+  \begin{align*}
+    b
+    &=
+    \parens[\Big]{ \oline{(x \vee y) \wedge (\oline x \vee \oline y)} } \wedge z
+    = \\ &=
+    \parens[\Big]{ (\oline x \wedge \oline y) \vee (x \wedge y) } \wedge z
+    = \\ &=
+    \underbrace{(\oline x \wedge \oline y \wedge z)}_\gamma \vee \underbrace{(x \wedge y \wedge z)}_\delta.
+  \end{align*}
+
+  On the other hand, we have
+  \begin{equation*}
+    x \symdiff (y \symdiff z)
+    =
+    \underbrace{ \parens[\Big]{ x \wedge \parens[\Big]{ \oline{(y \vee z) \wedge (\oline y \vee \oline z)} } } }_c.
+    \vee
+    \underbrace{ \parens[\Big]{ \oline x \wedge \parens[\Big]{ (y \wedge \oline z) \vee (\oline y \wedge z) } } }_d.
+  \end{equation*}
+
+  Thus,
+  \begin{align*}
+    c
+    &=
+    x \wedge \parens[\Big]{ \oline{(y \vee z) \wedge (\oline y \vee \oline z)} }
+    = \\ &=
+    x \wedge \parens[\Big]{ (\oline y \wedge \oline z) \vee (y \wedge z)}
+    = \\ &=
+    \underbrace{(x \wedge \oline y \wedge \oline z)}_\alpha \vee \underbrace{(x \wedge y \wedge z)}_\delta
+  \end{align*}
+  and
+  \begin{align*}
+    d
+    &=
+    \oline x \wedge \parens[\Big]{ (y \wedge \oline z) \vee (\oline y \wedge z) }
+    = \\ &=
+    \underbrace{(\oline x \wedge y \wedge \oline z)}_\beta \vee \underbrace{(\oline x \wedge \oline y \wedge z)}_\gamma.
+  \end{align*}
+
+  Due to commutativity both \( \vee \), we can conclude that
+  \begin{equation*}
+    (x \symdiff y) \symdiff z
+    =
+    a \vee b
+    =
+    \alpha \vee \beta \vee \gamma \vee \delta
+    =
+    \alpha \vee \delta \vee \beta \vee \gamma
+    =
+    c \vee d
+    =
+    x \symdiff (y \symdiff z).
+  \end{equation*}
+
+  \SubProofOf{thm:symmetric_difference_abelian_group/commutative} Since both \( \vee \) and \( \wedge \) are commutative, we have
+  \begin{equation*}
+    x \symdiff y = (x \wedge \oline y) \vee (\oline x \wedge y) = (y \wedge \oline x) \vee (\oline y \wedge x) = y \symdiff x.
+  \end{equation*}
+
+  \SubProofOf{thm:symmetric_difference_abelian_group/neutral} We have
+  \begin{equation*}
+    x \symdiff \bot = (x \wedge \top) \vee (\oline x \wedge \bot) = x.
+  \end{equation*}
+
+  \SubProofOf{thm:symmetric_difference_abelian_group/inverse} We have
+  \begin{equation*}
+    x \symdiff x = (x \wedge \oline x) \vee (\oline x \wedge x) = \bot \vee \bot = \bot.
+  \end{equation*}
+\end{proof}
+
+\paragraph{Boolean rings}
+
+\begin{definition}\label{def:boolean_ring}\mcite[47]{Birkhoff1967Lattices}
+  We say that a \hyperref[def:ring]{ring} is \term[ru=Булево (кольцо) (\cite[75]{Владимиров1969БулевыАлгебры})]{Boolean} if all of its elements are \hyperref[def:semiring_idempotent]{multiplicatively idempotent}.
+\end{definition}
+
+\begin{proposition}\label{thm:def:boolean_ring}
+  \hyperref[def:boolean_ring]{Boolean rings} have the following basic properties:
+  \begin{thmenum}
+    \thmitem{thm:def:boolean_ring/involution} Addition is \hyperref[def:morphism_invertibility/involution]{involutive}, that is, \( x + x = 0 \) for every element \( x \).
+
+    \thmitem{thm:def:boolean_ring/additive_inverse} The additive inverse of \( x \) is \( x \) itself.
+
+    \thmitem{thm:def:boolean_ring/quotient} The \hyperref[def:ring/quotient]{quotient} of a Boolean ring is also Boolean.
+  \end{thmenum}
+\end{proposition}
+\begin{proof}
+  \SubProofOf{thm:def:boolean_ring/involution} We have
+  \begin{equation*}
+    x + x
+    =
+    4x - 2x
+    =
+    4x^2 - 2x
+    =
+    (2x)^2 - 2x
+    =
+    2x - 2x
+    =
+    0.
+  \end{equation*}
+
+  \SubProofOf{thm:def:boolean_ring/additive_inverse} We have
+  \begin{equation*}
+    x - x = 0 = x + x.
+  \end{equation*}
+
+  Cancelling \( x \) on the left, we obtain
+  \begin{equation*}
+    -x = x.
+  \end{equation*}
+
+  \SubProofOf{thm:def:boolean_ring/quotient} If \( I \) is an ideal of a Boolean ring \( R \), then
+  \begin{equation*}
+    (x + I)(x + I) = x^2 + I = x + I.
+  \end{equation*}
+
+  Therefore, \( R / I \) is also multiplicatively idempotent, i.e. Boolean.
+\end{proof}
+
+\begin{proposition}\label{thm:boolean_ring_f2_algebra}
+  The \hyperref[def:finite_field]{finite field} \( \BbbF_2 \) embeds into any \hyperref[def:boolean_ring]{Boolean ring}, thus making it an \( \BbbF_2 \)-\hyperref[def:algebra_over_ring]{algebra}.
+\end{proposition}
+\begin{proof}
+  Fix a Boolean ring \( R \). Let us denote the elements of \( \BbbF_2 \) by \( T \) and \( F \). We must show that mapping \( F \) to \( 0 \) and \( T \) to \( 1 \) is compatible with addition and multiplication.
+
+  Considering \fullref{thm:def:boolean_ring/involution}, the operations in \( R \) can be described as follows (where \( x \) is arbitrary):
+  \begin{equation}\label{eq:thm:boolean_ring_f2_algebra/proof/r_tables}
+    \begin{array}{c !{\quad} cc}
+      \toprule
+      + & 0 & x \\
+      \midrule
+      0 & 0 & x \\
+      x & x & 0 \\
+      \bottomrule
+    \end{array}
+    \qquad
+    \begin{array}{c !{\quad} cc}
+      \toprule
+      \cdot & 0 & x \\
+      \midrule
+      0     & 0 & 0 \\
+      x     & 0 & x \\
+      \bottomrule
+    \end{array}
+  \end{equation}
+
+  For the operations in \( \BbbF_2 \), we have
+  \begin{equation}\label{eq:thm:boolean_ring_f2_algebra/proof/f2_tables}
+    \begin{array}{c !{\quad} cc}
+      \toprule
+      \oplus & F & T \\
+      \midrule
+      F      & F & T \\
+      T      & T & F \\
+      \bottomrule
+    \end{array}
+    \qquad
+    \begin{array}{c !{\quad} cc}
+      \toprule
+      \cdot & F & T \\
+      \midrule
+      F     & F & F \\
+      T     & F & T \\
+      \bottomrule
+    \end{array}
+  \end{equation}
+
+  Comparing \eqref{eq:thm:boolean_ring_f2_algebra/proof/r_tables} and \eqref{eq:thm:boolean_ring_f2_algebra/proof/r_tables}, we conclude that the operations in \( R \) and in \( \BbbF_2 \) are compatible.
+\end{proof}
+
+\begin{corollary}\label{thm:finite_boolean_ring_cardinality}
+  The \hyperref[thm:cardinality_existence]{cardinality} of a finite \hyperref[def:boolean_ring]{Boolean ring} is a power of \( 2 \).
+\end{corollary}
+\begin{proof}
+  Fix a finite Boolean ring \( R \). \Fullref{thm:boolean_ring_f2_algebra} implies that \( \BbbF_2 \) embeds as a subring. Since \( R \) is finite, applying \fullref{thm:lagranges_subgroup_theorem} to the additive group, we conclude that \( 2 \) divides the cardinality of \( R \).
+
+  \Fullref{thm:def:boolean_ring/quotient} then implies that \( R / \BbbF_2 \) is also a Boolean ring. The proposition follows by induction.
+\end{proof}
+
+\paragraph{Relation to Boolean algebras}
+
+\begin{proposition}\label{thm:symmetric_algebra_as_ring}
+  Every \hyperref[def:boolean_algebra]{Boolean algebra} is a \hyperref[def:boolean_ring]{Boolean ring} with \hyperref[def:symmetric_difference]{symmetric difference} as addition and meet as multiplication.
+\end{proposition}
+\begin{proof}
+  Fix a Boolean algebra \( X \). We have already shown in \fullref{thm:symmetric_difference_abelian_group} that \( (X, \symdiff) \) is an abelian group. Furthermore, meets are associative as a consequence of \fullref{thm:lattice_operation_characterization/operations} and idempotent as a consequence of \fullref{thm:def:lattice/idempotent}. \Fullref{def:bounded_lattice/neutral} then implies that \( (X, \wedge) \) is an idempotent monoid with neutral element \( \top \).
+
+  To conclude that \( X \) is a Boolean ring, it remains to show that the symmetric difference distributes over meets.
+
+  Indeed,
+  \begin{balign*}
+    (x \wedge z) \symdiff (y \wedge z)
+    &=
+    \parens[\Big]{ (x \wedge z) \wedge \oline{(y \wedge z)} } \vee \parens[\Big]{ \oline{(x \wedge z)} \wedge (y \wedge z) }
+    = \\ &=
+    \parens[\Big]{ x \wedge z \wedge (\oline y \vee \oline z) } \vee \parens[\Big]{ (\oline x \vee \oline z) \wedge y \wedge z }
+    = \\ &=
+    (x \wedge z \wedge \oline y) \wedge \underbrace{(x \wedge z \wedge \oline z)}_\bot \vee (\oline x \wedge y \wedge z) \wedge \underbrace{(\oline z \wedge y \wedge z)}_\bot
+    = \\ &=
+    \parens[\Big]{ (x \wedge \oline y) \vee (x \wedge \oline y) } \wedge z
+    = \\ &=
+    (x \symdiff y) \wedge z.
+  \end{balign*}
+\end{proof}
+
+\begin{proposition}\label{thm:boolean_ring_as_algebra}
+  Every \hyperref[def:boolean_ring]{Boolean ring} is a \hyperref[def:boolean_algebra]{Boolean algebra} with
+  \begin{align}
+    x \wedge y &\coloneqq xy         \label{eq:thm:boolean_ring_as_algebra/meet} \\
+    x \vee y   &\coloneqq xy + x + y \label{eq:thm:boolean_ring_as_algebra/join} \\
+    \top       &\coloneqq 1          \label{eq:thm:boolean_ring_as_algebra/top} \\
+    \bot       &\coloneqq 0          \label{eq:thm:boolean_ring_as_algebra/bot} \\
+    \oline{x}  &\coloneqq 1 - x      \label{eq:thm:boolean_ring_as_algebra/complement}.
+  \end{align}
+\end{proposition}
+\begin{proof}
+  Fix a Boolean ring \( R \).
+
+  \SubProof{Proof that \( (R, \vee, \wedge) \) is a lattice} We will use \fullref{thm:lattice_from_binary_operations}, for which we must show that \( {\vee} \) and \( {\wedge} \) are both associative and commutative and satisfy the absorption properties from \fullref{thm:lattice_operation_characterization/absorption}.
+
+  Since \( {\wedge} \) acts as the multiplication in a ring, it is by associative and commutative. The join \( {\vee} \) is also obviously commutative, and is associative since
+  \begin{equation*}
+    (x \vee y) \vee z
+    =
+    (\hi{xy} + \hi{x} + y)z + (\hi{xy} + x + y) + z
+    =
+    x(\hi{yz} + \hi{y} + \hi{z}) + (yz + y + z) + x
+    =
+    x \vee (y \vee z).
+  \end{equation*}
+
+  To conclude that \( (R, \vee, \wedge) \) is a \hyperref[def:lattice]{lattice}, we must show that the absorption laws \eqref{eq:thm:lattice_operation_characterization/absorption/join} and \eqref{eq:thm:lattice_operation_characterization/absorption/meet} hold.
+
+  Indeed, from \fullref{thm:def:boolean_ring/involution} it follows that
+  \begin{equation*}
+    x \vee (x \wedge y)
+    =
+    x \vee xy
+    =
+    \cancel{x^2 y} + x + \cancel{xy}
+    =
+    x
+  \end{equation*}
+  and
+  \begin{equation*}
+    x \wedge (x \vee y)
+    =
+    x(xy + x + y)
+    =
+    \cancel{x^2 y} + x^2 + \cancel{xy}
+    =
+    x.
+  \end{equation*}
+
+  \SubProof{Proof that the lattice is \hyperref[def:bounded_lattice]{bounded}} The condition \eqref{def:bounded_lattice/theory/top} holds because
+  \begin{equation*}
+    x \vee \top
+    =
+    \cancel{x \cdot 1} + \cancel{x} + 1
+    =
+    1
+    =
+    \top.
+  \end{equation*}
+
+  The dual condition \eqref{def:bounded_lattice/theory/bot} can be proven identically.
+
+  \SubProof{Proof that the lattice is \hyperref[def:distributive_lattice]{distributive}} We have
+  \begin{equation*}
+    (x \wedge z) \vee (y \wedge z)
+    =
+    xz \vee yz
+    =
+    xyz^2 + xz + yz
+    =
+    (xy + x + y)z
+    =
+    (x \vee y) \wedge z
+  \end{equation*}
+  and
+  \begin{align*}
+    (x \vee z) \wedge (y \vee z)
+    &=
+    (xz + x + z)(yz + y + z)
+    = \\ &=
+    xyz^2 + xzy + xz^2 + \hi{xyz} + \hi{xy} + xz + z^2y + zy + \hi{z^2}
+    = \\ &=
+    xyz + xy + z
+    = \\ &=
+    (x \wedge y) \vee z.
+  \end{align*}
+
+  \SubProof{Proof that \( {\oline \anon} \) is a complement} We have
+  \begin{equation*}
+    x \vee \oline x
+    =
+    x \vee (1 - x)
+    =
+    x(1 - x) + \cancel{x} + 1 - \cancel{x}
+    =
+    \cancel{x^2} - \cancel{x} + 1
+    =
+    1
+    =
+    \top
+  \end{equation*}
+  and
+  \begin{equation*}
+    x \wedge \oline x
+    =
+    x(1 - x)
+    =
+    x^2 - x
+    =
+    0
+    =
+    \bot.
+  \end{equation*}
+\end{proof}
+
+\begin{proposition}\label{thm:categories_of_boolean_algebras_and_ring}
+  The \hyperref[def:category]{categories} of Boolean algebras and Boolean rings are \hyperref[rem:category_similarity/isomorphism]{isomorphic}.
+\end{proposition}
+\begin{proof}
+  Denote the category of Boolean rings by \( \cat{BRing} \). \Fullref{thm:symmetric_algebra_as_ring} provides a functor \( F: \cat{Bool} \to \cat{BRing} \), while \fullref{thm:boolean_ring_as_algebra} provides a functor \( G: \cat{BRing} \to \cat{Bool} \).
+
+  These are indeed functors --- the symmetric difference is defined via Boolean algebra operations, which Boolean algebra homomorphisms must preserve; hence, for every Boolean algebra homomorphism \( f: X \to Y \), \( F(f) \) is a ring homomorphism. Conversely, for every ring homomorphism \( g \) between Boolean rings, \( G(g) \) is a Boolean algebra homomorphism.
+
+  We must thus show that \( F \) and \( G \) are inverses. The underlying sets do not change, so we must show that the operations are preserved by \( G \bincirc F \) and \( F \bincirc G \).
+
+  \SubProof{Proof that \( G(F(X)) = X \)} Obviously \( \top \) and \( 1 \) map to each other, as well as \( \bot \) and \( 0 \).
+
+  Denote by \( \curlyvee \) and \( \curlywedge \) the lattice operations in \( G(F(X)) \) and by \( \widetilde{\anon} \) --- the negation.
+
+  Clearly
+  \begin{equation*}
+    x \curlywedge y = xy = x \wedge y.
+  \end{equation*}
+
+  Slightly less obvious is the fact that
+  \begin{equation*}
+    \widetilde{x}
+    =
+    1 - x
+    \reloset {\ref{thm:def:boolean_ring/additive_inverse}}
+    =
+    1 + x
+    =
+    (\top \wedge \oline{x}) \vee \underbrace{(\bot \wedge x)}_\bot
+    =
+    \oline{x}.
+  \end{equation*}
+
+  The above allow us to conclude that
+  \begin{equation*}
+    x \curlyvee y
+    \reloset {\eqref{eq:thm:de_morgans_laws/complement_of_meet}} =
+    \widetilde{ \widetilde x \curlywedge \widetilde y }
+    =
+    \oline{ \oline x \wedge \oline y }
+    \reloset {\eqref{eq:thm:de_morgans_laws/complement_of_meet}} =
+    x \vee y.
+  \end{equation*}
+
+  Therefore, the lattice structures on \( G(F(X)) \) and \( X \) coincide.
+
+  \SubProof{Proof that \( F(G(R)) = R \)} Multiplication is obviously preserved. Denote by \( \oplus \) addition in \( F(G(R)) \). Then
+  \begin{align*}
+    x \oplus y
+    &=
+    (x \wedge \oline y) \vee (\oline x \wedge y)
+    = \\ &=
+    \parens[\Big]{ x (1 - y) } \vee \parens[\Big]{ (1 - x) y }
+    = \\ &=
+    x (1 - y) (1 - x) y + x (1 - y) + (1 - x) y
+    = \\ &=
+    \underbrace{(xy - x^2y - x y^2 + x^2 y^2)}_0 + (x - \cancel{xy}) + (y - \cancel{xy})
+    = \\ &=
+    x + y.
+  \end{align*}
+
+  Therefore, the algebraic structures on \( F(G(R)) \) and \( R \) coincide.
+\end{proof}

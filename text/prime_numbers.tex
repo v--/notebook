@@ -1,0 +1,599 @@
+\section{Prime numbers}\label{sec:prime_numbers}
+
+\paragraph{Prime numbers}
+
+\begin{definition}\label{def:prime_number}\mcite[2]{Apostol1976AnalyticNumberTheory}
+  A \term[ru=простое число (\cite[45]{Зорич2019АнализТом1})]{prime number} is an integer greater than \( 1 \) whose only \hi{positive} proper \hyperref[def:divisibility]{divisors} is \( 1 \). Non-prime integers greater than \( 1 \) are called \term{composite numbers}.
+\end{definition}
+
+\begin{remark}\label{rem:prime_numbers_and_prime_elements}
+  The definition of a prime number given in \fullref{def:prime_number} is standard, however it seems inconsistent with \fullref{sec:integral_domains}.
+
+  First, \fullref{sec:integral_domains} actually defines \hyperref[def:domain_divisibility/irreducible]{irreducible elements} rather than \hyperref[def:domain_divisibility/prime]{prime elements} of the domain \( \BbbZ \). Second, if \( p \) is a prime number, \( -p \) is also a prime number.
+
+  Fortunately, prime and irreducible elements coincide in \hyperref[def:gcd_domain]{GCD domains} due to \fullref{thm:def:gcd_domain/irreducible_is_prime} and \fullref{thm:def:gcd_domain/irreducible_is_prime}. Unfortunately, calling negative prime elements of \( \BbbZ \) \enquote{prime numbers} is not accepted.
+
+  Coprime integers are, fortunately, defined as in general GCD domains via \fullref{def:coprime_elements}.
+\end{remark}
+
+\begin{lemma}[Euclid's lemma]\label{thm:euclids_lemma}
+  If \( p \) is a \hyperref[def:prime_number]{prime number}, then \( p \mid nm \) implies \( p \mid n \) or \( p \mid m \).
+\end{lemma}
+\begin{proof}
+  Since \( \BbbZ \) is a GCD domain, the lemma follows from \fullref{thm:def:gcd_domain/irreducible_is_prime}.
+\end{proof}
+
+\begin{theorem}[Euclid's prime infinitude theorem]\label{thm:euclids_prime_infinitude_theorem}\mcite[62]{Кострикин2000АлгебраТом1}
+  There exist infinitely many \hyperref[def:prime_number]{prime number}.
+\end{theorem}
+\begin{comments}
+  \item Thus, we can recursively construct a sequence of all prime numbers.
+\end{comments}
+\begin{proof}
+  Suppose that \( p_1, \ldots, p_n \) is an enumeration of all prime numbers and consider the number
+  \begin{equation*}
+    m \coloneqq p_1 \cdots p_n + 1.
+  \end{equation*}
+
+  \begin{itemize}
+    \item If \( m \) is prime, then there exists a prime not in the list \( p_1, \ldots, p_n \), contradicting our assumption.
+
+    \item If \( m \) is not prime, then one of the primes, say \( p_k \), divides \( m \). Let \( q \) be their quotient.
+
+    Then
+    \begin{equation*}
+      1 = m - (m - 1) = p_k \parens[\Big]{ q - \prod_{i \neq k}^n p_i }.
+    \end{equation*}
+
+    It follows that \( p_k \) is invertible in \( \BbbZ \), which is a contradiction.
+  \end{itemize}
+
+  Obtaining a contradiction in both cases, we conclude that there is no finite list of prime numbers.
+\end{proof}
+
+\paragraph{Valuations}
+
+\incite*[255]{Aluffi2009Algebra} remarks that \enquote{Entire libraries have been written on the subject of valuations}. We provide \fullref{def:exponential_valuation} and otherwise try to avoid the term as much as possible.
+
+\begin{definition}\label{def:non_archimedean_absolute_value}\mcite[561]{Jacobson1989AlgebraPart2}
+  If an \hyperref[def:absolute_value]{absolute value} function \( \norm{\anon}: \BbbK \to \BbbR \) satisfies
+  \begin{equation}\label{eq:def:non_archimedean_absolute_value}
+    \norm{x + y} \leq \max\set{ \norm{x}, \norm{y} }.
+  \end{equation}
+  we say that it is a \term{non-Archimedean}.
+\end{definition}
+\begin{comments}
+  \item \incite[465]{Lang2002Algebra} calls such functions \enquote{valuations}, while \cite[def. 9.4']{Jacobson1989AlgebraPart2} generalizes them to Abelian groups and calls them \enquote{additive valuations}.
+\end{comments}
+
+\begin{definition}\label{def:exponential_valuation}
+  An \term[ru=нормирование (\cite[437]{Винберг2014Алгебра}), en=exponential valuation (\cite[def. 9.4']{Jacobson1989AlgebraPart2})]{exponential valuation} on an \hyperref[def:integral_domain]{integral domain} \( D \) is a map \( v: D \setminus \set{ 0 } \to \BbbZ_{>0} \) that satisfies the following properties:
+  \begin{thmenum}
+    \thmitem{def:exponential_valuation/homomorphism} \( v(x \cdot y) = v(x) + v(y) \).
+    \thmitem{def:exponential_valuation/min} \( v(x + y) \geq \min\set{ v(x), v(y) } \).
+  \end{thmenum}
+\end{definition}
+\begin{comments}
+  \item Our definition is based the following:
+  \begin{itemize}
+    \item \incite[def. 9.4']{Jacobson1989AlgebraPart2}, where Jacobson defines an \enquote{exponential valuation} on fields with values in an abelian group having an additional value adjoined, \( \infty \), such that \( v(x) = \infty \) if and only if \( x = 0 \).
+
+    \item \incite[437]{Винберг2014Алгебра}, where Vinberg defines an \enquote{нормирование} (\enquote{norming}) on integral domains as surjective functions with positive integer values.
+  \end{itemize}
+\end{comments}
+
+\begin{proposition}\label{thm:exponential_and_additive_valuations}
+  Fix a \hyperref[def:field]{field} \( \BbbK \) and two functions, \( \norm{\anon}: \BbbK \to \BbbR \) and \( v: \BbbK \setminus \set{ 0 } \to \BbbR \). Suppose that there exists a constant \( 0 < c < 1 \) such that, for nonzero \( x \) in \( \BbbK \), we have
+  \begin{equation}\label{eq:thm:exponential_and_additive_valuations}
+    \norm{x} = c^{v(x)}
+  \end{equation}
+
+  Then \( \norm{\anon} \) is a \hyperref[def:non_archimedean_absolute_value]{non-Archimedean} \hyperref[def:absolute_value]{absolute value} if and only if \( v \) is an \hyperref[def:exponential_valuation]{exponential valuation}.
+\end{proposition}
+\begin{proof}
+  Follows from our definition of the \hyperref[def:logarithm]{natural logarithm} as a (selection of the) inverse of the \hyperref[def:exponential_function]{exponential function}.
+\end{proof}
+
+\begin{definition}\label{def:padic_valuation}\mcite[437]{Винберг2014Алгебра}
+  For every \hyperref[def:domain_divisibility/prime]{prime element} \( p \) in an \hyperref[def:integral_domain]{integral domain} \( D \), we define the \( p \)-adic \hyperref[def:exponential_valuation]{exponential valuation} on \( D \) as
+  \begin{equation}\label{eq:def:padic_valuation}
+    v_p(x) \coloneqq \max\set{ k = 0, 1, 2, \ldots \given p^k \mid x }.
+  \end{equation}
+\end{definition}
+\begin{comments}
+  \item We define \( v_p \) only for nonzero elements of \( D \).
+\end{comments}
+\begin{defproof}
+  We must verify that \( v_p \) really is an exponential valuation. If \( p^k \) divides \( x \) and \( p^m \) divides \( y \), then \( p^k p^m \) divides \( xy \), thus
+  \begin{equation*}
+    v_p(x \cdot y)
+    =
+    p^k p^m
+    \reloset {\eqref{eq:thm:semigroup_exponentiation_properties/distributive}} =
+    p^{k + m}
+    =
+    v_p(x) + v_p(y).
+  \end{equation*}
+
+  This verifies \fullref{def:exponential_valuation/homomorphism}.
+
+  Furthermore, if \( p^k \) divides \( x \) and \( p^m \) divides \( y \), then \( p^{\min\set{ k, m }} \) divides \( x + y \), although it is possible that a larger power of \( p \) divides \( x + y \) (e.g. \( 2^3 \div 3 + 5 \)). Then
+  \begin{equation*}
+    v_p(x + y)
+    \geq
+    \min\set{ k, m }
+    =
+    \min\set{ v_p(x), v_p(y) }.
+  \end{equation*}
+
+  This verifies \fullref{def:exponential_valuation/min} and completes the proof.
+\end{defproof}
+
+\begin{theorem}[Fundamental theorem of arithmetic]\label{thm:fundamental_theorem_of_arithmetic}
+  We can use the \hyperref[def:padic_valuation]{\( p \)-adic valuations} to decompose a positive integer \( n \) as follows:
+  \begin{equation}\label{thm:fundamental_theorem_of_arithmetic}
+    n = \prod_{p \T{is prime}} p^{v_p(n)}.
+  \end{equation}
+
+  Furthermore, only finitely many of the valuations have positive values.
+\end{theorem}
+\begin{comments}
+  \item Consequentially, every integer greater than \( 1 \) can be \hyperref[def:irreducible_factorization]{factored} uniquely into a product of prime powers.
+
+  \item The valuations with positive values give us an \hyperref[def:irreducible_factorization]{irreducible factorization} of \( n \) that is unique. As discussed in \fullref{rem:integer_domain_chain}, \( \BbbZ \) is a factorial domain, so existence and uniqueness up to an equivalence of factorizations is automatic. Using prime numbers, however, allows stating a more powerful uniqueness result.
+
+  \item The factorization can also unique when regarded as a \hyperref[def:multiset]{multiset} of prime numbers.
+
+  \item As in \cite[18]{Apostol1976AnalyticNumberTheory}, we will sometimes find it convenient to use the increasing sequence of all prime numbers.
+\end{comments}
+\begin{proof}
+  Let \( u r_1 \cdots r_m \) be an irreducible factorization of \( n \). All irreducible factors are either prime numbers or additive inverses of prime numbers, thus, without loss of generality, we can assume that \( u = 1 \) and that all irreducible factors are prime numbers.
+
+  Furthermore, every irreducible factorization of \( n \) is simply a permutation of this one.
+
+  Then \( v_p(n) \) is the number of occurrences of \( p \) among \( r_1, \ldots, r_m \).
+
+  This concludes the proof.
+\end{proof}
+
+\paragraph{Prime counting}
+
+\begin{proposition}\label{thm:prime_number_sqrt}
+  An integer \( n > 1 \) is \hyperref[def:prime_number]{prime} if and only if no integer \( k \) with \( 1 < k \leq \op{isqrt}(n) \) divides \( n \).
+\end{proposition}
+\begin{comments}
+  \item A consequence of this is that a brute-force primality check, in which we check whether \( k \) divides \( n \) for all \( k < n \), the condition on \( k \) can be simplified to \( k \leq \op{isqrt}(n) \).
+\end{comments}
+\begin{proof}
+  \SufficiencySubProof Suppose that \( n \) is prime. Since \( n > 1 \), then \( \op{isqrt}(n) < n \), and thus \( 1 < k \leq \op{isqrt}(n) \) implies \( k < n \). Then, since \( n \) is prime, no such \( k \) can divide \( n \) since its only positive divisors are \( 1 \) and \( n \) itself.
+
+  \NecessitySubProof Suppose that, for some \( n > 1 \), from \( 1 < k \leq \op{isqrt}(n) \) it follows that \( k \) does not divide \( n \).
+
+  Let \( n = ab \). \Fullref{thm:int_sqrt_leq} implies that either \( a \leq \op{isqrt}(n) \), in which case \( a = 1 \) and \( b = n \), or \( b \leq \op{isqrt}(n) \), in which case \( b = 1 \) and \( a = n \).
+
+  Therefore, we conclude that \( n \) is prime.
+\end{proof}
+
+\begin{definition}\label{def:int_sqrt}\mimprovised
+  Based on \cite{PythonDocs:3.12:math}, we will introduce an \term{integer square root} \hyperref[def:arithmetic_function]{arithmetic function}
+  \begin{equation*}
+    \op{isqrt}(n) \coloneqq \min\set{ k = 1, 2, \ldots \given k^2 \leq n }.
+  \end{equation*}
+
+  If \( n = \op{isqrt}(n)^2 \), we call \( n \) a \term[en=perfect square (\cite[example 1.7.1]{Rosen2019DiscreteMathematics})]{perfect square}.
+\end{definition}
+\begin{comments}
+  \item In terms of the real number \( n \)-th root function, which we will discuss in \fullref{def:real_nth_root}, we can define the integer square root as
+  \begin{equation*}
+    \op{isqrt}(n) \coloneqq \floor\parens[\Big]{ \sqrt{n} }.
+  \end{equation*}
+\end{comments}
+
+\begin{proposition}\label{thm:int_sqrt_leq}
+  If for some positive integers we have \( n = ab \), we have the following possibilities:
+  \begin{thmenum}
+    \thmitem{thm:int_sqrt_leq/equal} \( a = \op{isqrt}(n) = b \).
+    \thmitem{thm:int_sqrt_leq/a_leq} \( a \leq \op{isqrt}(n) < b \).
+    \thmitem{thm:int_sqrt_leq/b_leq} \( a > \op{isqrt}(n) \geq b \).
+  \end{thmenum}
+\end{proposition}
+\begin{proof}
+  We have the following options in general for \( n = ab \):
+  \begin{itemize}
+    \item If \( a = b \), then \( n \) is a perfect square, hence \fullref{thm:int_sqrt_leq/equal} holds.
+    \item If \( a < b \), then we must investigate how they are related to \( \op{isqrt}(n) \).
+
+    If we suppose that \( b \leq \op{isqrt}(n) \), then \( ab < b^2 \leq \op{isqrt}(n)^2 \leq n \), which is a contradiction.
+
+    Similarly, if we suppose that \( a > \op{isqrt}(n) \), then both \( a \geq \op{isqrt}(n) + 1 \), hence
+    \begin{equation*}
+      (\op{isqrt}(n) + 1)^2 < ab = n,
+    \end{equation*}
+    which contradicts the maximality of \( \op{isqrt}(n) \).
+
+    This leads to \fullref{thm:int_sqrt_leq/a_leq}.
+
+    \item If \( a > b \), we can argue by \fullref{thm:preorder_duality} to conclude that \fullref{thm:int_sqrt_leq/b_leq} holds.
+  \end{itemize}
+\end{proof}
+
+\begin{corollary}\label{thm:prime_number_sqrt_prime}
+  An integer \( n > 1 \) is \hyperref[def:prime_number]{prime} if and only if no \hi{prime} \( p \) with \( 1 < p \leq \op{isqrt}(n) \) divides \( n \).
+\end{corollary}
+\begin{proof}
+  Follows from \fullref{thm:prime_number_sqrt} by noticing that \( k \) divides \( n \) whenever the prime factors of \( p \) do.
+\end{proof}
+
+\begin{algorithm}[Sieve of Eratosthenes]\label{alg:sieve_of_eratosthenes}\mcite[exer. 4.5.4.8]{Knuth1997ArtVol2}
+  We can construct approximations to the sequence
+  \begin{equation*}
+    s_k \coloneqq \begin{cases}
+      1, &k \T{is prime}, \\
+      0, &\T{otherwise}.
+    \end{cases}
+  \end{equation*}
+
+  Via recursion on \( n \), we will build the sequence \( \seq{ s_{n,k} }_{k=1}^\infty \) such that, for \( 1 \leq k \leq n^2 \), \( s_{n,k} \) is \( 1 \) if \( k \) is prime and \( 0 \) otherwise.
+
+  \begin{thmenum}
+    \thmitem{alg:sieve_of_eratosthenes/one} We start with the sequence
+    \begin{equation*}
+      s_{1,k} \coloneqq \begin{cases}
+        0, &k = 1, \\
+        1, &\T{otherwise.}
+      \end{cases}
+    \end{equation*}
+
+    \thmitem{alg:sieve_of_eratosthenes/recursive} For \( n > 1 \), let \( s_{n,k} = s_{n-1,k} \) if \( s_{n-1,n} = 0 \) and otherwise let
+    \begin{equation*}
+      s_{n,k} \coloneqq \begin{cases}
+        0,         &k > n \T{and} n \T{divides} k \\
+        s_{n-1,k}, &\T{otherwise.}
+      \end{cases}
+    \end{equation*}
+  \end{thmenum}
+\end{algorithm}
+\begin{comments}
+  \item This algorithm can be found as \identifier{arithmetic.primes.build_erathostenes_sieve} in \cite{notebook:code}.
+\end{comments}
+\begin{proof}
+  Correctness follows from \fullref{thm:prime_number_sqrt_prime}.
+\end{proof}
+
+\begin{definition}\label{def:arithmetic_function}\mcite[24]{Apostol1976AnalyticNumberTheory}
+  We use the term \term[en=arithmetical function (\cite[24]{Apostol1976AnalyticNumberTheory})]{arithmetic function} to refer to complex-valued functions defined on the positive integers.
+\end{definition}
+
+\begin{definition}\label{def:prime_counting_function}\mcite[8]{Apostol1976AnalyticNumberTheory}
+  Denote by \( \pi(n) \) the \hyperref[def:arithmetic_function]{arithmetic function} giving the number of primes less than or equal to \( n \).
+\end{definition}
+
+\begin{proposition}\label{thm:prime_counting_sieve}
+  We can use \fullref{alg:sieve_of_eratosthenes} to compute the \hyperref[def:prime_counting_function]{prime counting function}:
+  \begin{equation*}
+    \pi(n) \coloneqq \sum_{k=1}^n s_{\op{isqrt}(n),k}
+  \end{equation*}
+\end{proposition}
+\begin{comments}
+  \item We can use \fullref{thm:inclusion_exclusion_principle} to compute \( \pi(n) \) --- see \fullref{ex:thm:inclusion_exclusion_principle/eratosthenes}.
+\end{comments}
+\begin{proof}
+  Trivial.
+\end{proof}
+
+\begin{proposition}\label{thm:inclusion_exclusion_eratosthenes}\mcite[\S 8.6.3]{Rosen2019DiscreteMathematics}
+  Denote by \( p_1, p_2, \ldots \) the sequence of all \hyperref[def:prime_number]{prime numbers}. Then the \hyperref[def:prime_counting_function]{prime counting function} can be expressed as
+  \begin{equation}\label{eq:thm:inclusion_exclusion_eratosthenes}
+    \pi(n) = (n - 1) + \sum_{m=1}^{\mathclap{\pi(\op{isqrt}(n))}} (-1)^m \sum_{\mathclap{i_1 < \cdots < i_m}} \floor\parens[\Big]{ \frac n {p_{i_1} \cdots p_{i_m}} } + \pi(\op{isqrt}(n)).
+  \end{equation}
+\end{proposition}
+\begin{proof}
+  We will adapt the reasoning of \fullref{alg:sieve_of_eratosthenes} so that it can be used with \fullref{thm:inclusion_exclusion_principle}.
+
+  Fix a positive integer \( n \), let \( N \coloneqq \set{ 1, 2, \ldots, n } \) and, for a positive integer \( k \), let \( A_k \coloneqq k\BbbZ \cap N \) be the subset of multiples of \( k \). Finally, let \( P \) be the set of prime numbers less than or equal to \( \op{isqrt}(n) \).
+
+  \Fullref{thm:prime_number_sqrt_prime} implies that \( m \in N \setminus \set{ 1 } \) is composite if and only if there exists some prime \( p \leq \op{isqrt}(m) \) such that \( m \in A_p \). We can extend \( p \) to range up to \( \op{isqrt}(n) \), however we must then exclude the possibility that \( m \) is itself prime, in which case \( m \in A_m \) without \( m \) being composite.
+
+  Thus, the composite numbers in \( N \) are
+  \begin{equation*}
+    C \coloneqq \parens[\Big]{ \parens[\Big]{ \bigcup_{p \in P} A_p } \setminus P }.
+  \end{equation*}
+
+  Then
+  \begin{equation*}
+    \pi(n) = \card(N \setminus (C \cup \set{ 1 })).
+  \end{equation*}
+
+  From \fullref{thm:inclusion_exclusion_principle_lemma} it follows that
+  \begin{equation}\label{eq:thm:inclusion_exclusion_eratosthenes/sets}
+    \pi(n) = \underbrace{\card N}_n - 1 - \card\parens[\Big]{ \bigcup_{p \in P} A_p } + \underbrace{\card P}_{\pi(\op{isqrt}(n))}.
+  \end{equation}
+
+  It remains to apply \fullref{thm:inclusion_exclusion_principle}. \Fullref{thm:natural_number_divisibility_lattice/join} implies that
+  \begin{equation*}
+    A_{k_1} \cap \cdots \cap A_{k_m} = A_{\lcm(k_1, \ldots,k_m)},
+  \end{equation*}
+  which for prime numbers becomes
+  \begin{equation*}
+    A_{p_1} \cap \cdots \cap A_{p_m} = A_{p_1 \cdots p_m}.
+  \end{equation*}
+
+  Finally, note that
+  \begin{equation*}
+    \card(A_k) = \floor\parens[\Big]{ \frac n k }.
+  \end{equation*}
+
+  Then
+  \begin{equation*}
+    \card\parens[\Big]{ \bigcup_{p \in P} A_p } = \sum_{m=1}^{\mathclap{\pi(\op{isqrt}(n))}} (-1)^m \sum_{\mathclap{i_1 < \cdots < i_m}} \floor\parens[\Big]{ \frac n {p_{i_1} \cdots p_{i_m}} }
+  \end{equation*}
+  and, after substituting in \eqref{eq:thm:inclusion_exclusion_eratosthenes/sets}, we obtain \eqref{eq:thm:inclusion_exclusion_eratosthenes}.
+\end{proof}
+
+\begin{example}\label{ex:thm:inclusion_exclusion_eratosthenes}.
+  As discussed in \fullref{thm:inclusion_exclusion_eratosthenes}, we can count the number of primes less than or equal to \( n \) using only our knowledge of much smaller primes.
+
+  For example, let \( n = 25 \). The primes less than or equal to \( \op{isqrt}(n) = 5 \) are \( 2 \), \( 3 \) and \( 5 \), and thus
+  \begin{align*}
+    \pi(25) &= 25 - 1 - \parens[\Big]{ \floor\parens[\Big]{ \frac 2 {25} } - \floor\parens[\Big]{ \frac 3 {25} } - \floor\parens[\Big]{ \frac 5 {25} } } + \\
+            &+ \parens[\Big]{ \floor\parens[\Big]{ \frac 6 {25} } - \floor\parens[\Big]{ \frac {10} {25} } - \floor\parens[\Big]{ \frac {15} {25} } } + \\
+            &- \floor\parens[\Big]{ \frac {30} {25} } - 3
+            = \\ &= 25 - 1 - (12 + 8 + 5) + (4 + 2 + 1) - 0 + 3
+            = \\ &= 9
+  \end{align*}
+
+  Indeed,
+  \begin{equation*}
+    \begin{array}{r *{23}{c}}
+      1  & \hi{2} & \hi{3} & 4       & \hi{5} & 6       & \hi{7} & 8  & 9  & 10      & \hi{11} & 12 & \hi{13} \\
+      14 & 15     & 16     & \hi{17} & 18     & \hi{19} & 20     & 21 & 22 & \hi{23} & 24      & 25 &
+    \end{array}
+  \end{equation*}
+\end{example}
+
+\paragraph{Coprime numbers}
+
+\begin{definition}\label{def:coprime_numbers}
+  We say that the integers \( n \) and \( m \) are \term[ru=взаимно простые (числа) (\cite[45]{Зорич2019АнализТом1}), en=coprime / relatively prime (\cite[231]{Rosen2018DiscreteHandbook})]{coprime} if any of the following equivalent conditions hold:
+  \begin{thmenum}
+    \thmitem{def:coprime_numbers/abstract}\mimprovised They are \hyperref[def:coprime_elements]{coprime elements} of \( \BbbZ \), that is, they satisfy any of the equivalent definitions in \fullref{def:coprime_elements}.
+
+    \thmitem{def:coprime_numbers/concrete}\mcite[45]{Зорич2019АнализТом1} Their only \hi{positive} common divisor is \( 1 \).
+
+    \thmitem{def:coprime_numbers/prime}\mimprovised No \hyperref[def:prime_number]{prime number} divides both \( n \) and \( m \).
+  \end{thmenum}
+\end{definition}
+\begin{defproof}
+  \ImplicationSubProof{def:coprime_numbers/abstract}{def:coprime_numbers/concrete} If \( n \) and \( m \) are coprime elements of \( \BbbZ \), they satisfy \fullref{def:coprime_elements/greatest}, thus every common divisor is invertible. The only invertible positive element of \( \BbbZ \) is \( 1 \), thus the only positive common divisor of \( n \) and \( m \) is \( 1 \).
+
+  \ImplicationSubProof{def:coprime_numbers/concrete}{def:coprime_numbers/prime} Suppose that the only positive common divisor of \( n \) and \( m \) is \( 1 \). We have purposely excluded \( 1 \) from the list of prime numbers, thus no prime number divides both \( n \) and \( m \).
+
+  \ImplicationSubProof{def:coprime_numbers/prime}{def:coprime_numbers/abstract} Suppose that no prime number divides both \( n \) and \( m \).
+
+  Suppose that \( d \) is a common divisor of \( n \) and \( m \).
+
+  \begin{itemize}
+    \item If \( d > 0 \), \fullref{thm:fundamental_theorem_of_arithmetic} implies that \( d \) has a prime factorization; thus, if \( d > 1 \), then some prime number divides both \( n \) and \( m \), which is a contradiction. So \( d = 1 \) is the only positive common divisor.
+
+    \item If \( d < 0 \), then \( -d \) is a positive common divisor, and we conclude that \( d = -1 \).
+  \end{itemize}
+
+  Therefore, the only common divisors of \( n \) and \( m \) are invertible elements of \( \BbbZ \). Then \( n \) and \( m \) satisfy \fullref{def:coprime_elements/divisors}.
+\end{defproof}
+
+\begin{proposition}\label{thm:n_plus_1_coprime}
+  Given any integer greater \( n \) than \( 1 \), the numbers \( n \) and \( n + 1 \) are \hyperref[def:coprime_elements]{coprime}.
+\end{proposition}
+\begin{proof}
+  Let \( m \) be a common divisor of \( n \) and \( n + 1 \). Then there exists some integer \( k \) such that \( n = km \) and some integer \( l \) such that \( n + 1 = lm \). Then
+  \begin{equation*}
+    n + 1 = lm = km + 1,
+  \end{equation*}
+  thus \( m \) divides \( 1 \).
+
+  Therefore, \( m = 1 \).
+\end{proof}
+
+\begin{proposition}\label{thm:primality_via_coprimality}
+  The (positive) integer \( n \) is \hyperref[def:prime_number]{prime} if and only if \( n \) is \hyperref[def:coprime_numbers]{coprime} with every \( m < n \).
+\end{proposition}
+\begin{proof}
+  \SufficiencySubProof Trivial.
+  \NecessitySubProof If \( m \mid n \), then \( \gcd(m, n) = 1 \), hence \( m = 1 \).
+\end{proof}
+
+\paragraph{Euler's totient theorem}
+
+\begin{definition}\label{def:eulers_totient_function}\mcite[25]{Apostol1976AnalyticNumberTheory}
+  Denote by \( \varphi(n) \) the \hyperref[def:arithmetic_function]{arithmetic function} giving the number of positive integers smaller than or equal to \( n \) that are \hyperref[def:coprime_elements]{coprime} to \( n \). We call \( \varphi \) \term{Euler's totient function}.
+\end{definition}
+\begin{comments}
+  \item In particular, we have \( \varphi(n) = 1 \). It is for this reason that we count integers smaller than \hi{or equal to} \( n \).
+  \item \Fullref{thm:totient_function_product_formula} provides a useful expression in terms of prime factors.
+\end{comments}
+
+\begin{proposition}\label{thm:division_by_three_digits}
+  A positive integer is divisible by \( 3 \) if and only if the sum of its \hyperref[def:positional_number_system/decimal]{decimal digits} is divisible by \( 3 \).
+\end{proposition}
+\begin{comments}
+  \item We will discuss decimal expansions in \fullref{sec:positional_number_systems}. For the purpose of this proposition, a decimal expansion of the positive integer \( n \) is a list \( a_0, \cdots, a_m \) of nonnegative integers less than \( 10 \) such that \( a_m \neq 0 \) and
+  \begin{equation*}
+    n = \sum_{k=0}^m a_0 10^k.
+  \end{equation*}
+\end{comments}
+\begin{proof}
+  For any positive integer \( k \), \fullref{thm:xn_minus_yn_factorization} implies that
+  \begin{equation*}
+    10^k - 1 = 9 \cdot \sum_{i=0}^{k-1} 10^i,
+  \end{equation*}
+  hence
+  \begin{equation*}
+    10^k = 1 \mod 3.
+  \end{equation*}
+
+  Given the decimal expansion
+  \begin{equation*}
+    n = \sum_{k=0}^m a_0 10^k
+  \end{equation*}
+  we thus have
+  \begin{equation*}
+    n = \sum_{k=0}^m a_0 10^k = \sum_{k=0}^m a_0 \mod 3.
+  \end{equation*}
+\end{proof}
+
+\begin{proposition}\label{thm:def:eulers_totient_function}
+  \hyperref[def:eulers_totient_function]{Euler's totient function} \( \varphi \) has the following basic properties:
+  \begin{thmenum}
+    \thmitem{thm:def:eulers_totient_function/one} \( \varphi(1) = 0 \).
+    \thmitem{thm:def:eulers_totient_function/prime} \( p \) is \hyperref[def:prime_number]{prime} if and only if \( \varphi(p) = p - 1 \).
+    \thmitem{thm:def:eulers_totient_function/zn} The \hyperref[def:semiring]{multiplicative group} \( \BbbZ_n^\times \) of the ring \hyperref[def:ring_of_integers_modulo]{\( \BbbZ_n \)} of integers modulo \( n > 1 \) has order \( \varphi(n) \).
+  \end{thmenum}
+\end{proposition}
+\begin{proof}
+  \SubProofOf{thm:def:eulers_totient_function/one} There are no positive integers smaller than \( 1 \).
+
+  \SubProofOf{thm:def:eulers_totient_function/prime}
+  \SufficiencySubProof* Every positive integer smaller than \( p \) is coprime to \( p \), and there are exactly \( p - 1 \) positive integers smaller than \( p \) --- \( 1, 2, \ldots, p - 1 \).
+  \NecessitySubProof*
+
+  \SubProofOf{thm:def:eulers_totient_function/zn} Follows from \fullref{thm:multiplicative_group_of_integers_modulo}.
+\end{proof}
+
+\begin{theorem}[Totient function product formula]\label{thm:totient_function_product_formula}
+  Let \( n = p_1^{a_1} \cdots p_r^{a_r} \) be a prime factorization of \( n \). Then \hyperref[def:eulers_totient_function]{Euler's totient function} can be expressed as
+  \begin{equation}\label{eq:thm:totient_function_product_formula}
+    \varphi(n) = n \cdot \prod_{k=1}^r \parens[\Big]{ 1 - \frac 1 {p_k} }.
+  \end{equation}
+\end{theorem}
+\begin{comments}
+  \item Since we want to cover the case \( n = 1 \), where \( \varphi(1) = 1 \), we must allow \( r = 0 \) and agree that the empty product has value \( 1 \).
+\end{comments}
+\begin{proof}
+  Let \( N \) and \( A_k \) be defined as in \fullref{thm:inclusion_exclusion_eratosthenes}. Then
+  \begin{equation*}
+    \varphi(n) = \card N - \card\parens[\Big]{ \bigcup_{k=1}^r A_{p_k} }.
+  \end{equation*}
+
+  \Fullref{thm:inclusion_exclusion_principle} implies that
+  \begin{equation}\label{eq:thm:totient_function_product_formula/intermediate}
+    \varphi(n) = n + \sum_{m=1}^r (-1)^m \sum_{i_1 < \cdots < i_m} \frac n {p_{i_1} \cdots p_{i_m}}.
+  \end{equation}
+
+  We now use induction on \( r \).
+  \begin{itemize}
+    \item If \( r = 0 \), since we have agreed on \( 1 \) as the product of the empty set, \( \varphi(1) = 1 \).
+    \item If \( r = 1 \), then
+    \begin{equation*}
+      \varphi(n) = n + (-1) \frac n {p_1} = n \parens[\Big]{ 1 - \frac 1 {p_1} }.
+    \end{equation*}
+
+    \item Suppose that \eqref{eq:thm:totient_function_product_formula} holds for all positive integers whose prime factorization has \( r \) terms. Let \( n = p_1^{a_1} \cdots p_r^{a_r} p_{r+1}^{a_{r+1}} \). Then
+    \begin{align*}
+      \varphi(n)
+      &\reloset{\eqref{eq:thm:totient_function_product_formula/intermediate}} =
+      n + \sum_{m=1}^{r+1} (-1)^m \sum_{i_1 < \cdots < i_m} \frac n {p_{i_1} \cdots p_{i_m}}
+      = \\ &=
+      n + \sum_{m=1}^r \underbrace{(-1)^m} \sum_{i_1 < \cdots < i_m \leq r} \frac n {p_{i_1} \cdots p_{i_m}} + \\ &\quad\quad + \frac n {p_{r+1}} + \sum_{m=1}^r \underbrace{(-1)^{m+1}} \sum_{i_1 < \cdots < i_m \leq r} \frac n {p_{i_1} \cdots p_{i_m}} \cdot \frac 1 {p_{r+1}}
+      = \\ &=
+      \parens[\Big]{ 1 - \frac 1 {p_{r+1}} } \cdot \parens[\Big]{ n + \sum_{m=1}^r (-1)^m \sum_{i_1 < \cdots < i_m \leq r} \frac n {p_{i_1} \cdots p_{i_m}} }
+      \reloset {\T{ind.}} = \\ &=
+      \parens[\Big]{ 1 - \frac 1 {p_{r+1}} } \cdot n \cdot \prod_{k=1}^r \parens[\Big]{ 1 - \frac 1 {p_k} }.
+    \end{align*}
+  \end{itemize}
+\end{proof}
+
+\begin{example}\label{ex:thm:totient_function_product_formula} We can use \fullref{thm:totient_function_product_formula} to compute the totient function of a number if we know its prime factors. For example,
+  \begin{equation*}
+    \varphi(25) = 25 \cdot \parens[\Big]{ 1 - \frac 1 5 } = \frac {25 \cdot 4} 5 = 20.
+  \end{equation*}
+\end{example}
+
+\begin{definition}\label{def:multiplicative_arithmetic_function}\mcite[33]{Apostol1976AnalyticNumberTheory}
+  If an \hyperref[def:arithmetic_function]{arithmetic function} \( f \) satisfies
+  \begin{equation}\label{eq:def:multiplicative_arithmetic_function}
+    f(nm) = f(n) \cdot f(m)
+  \end{equation}
+  whenever \( n \) and \( m \) are \hyperref[def:coprime_numbers]{coprime}, we say that \( f \) is \term[ru=мультипликативная (функция) (\cite[def. 36]{Бухштаб1966ТеорияЧисел})]{multiplicative}.
+
+  If \eqref{eq:def:multiplicative_arithmetic_function} is satisfied for all positive integers \( n \) and \( m \), we say that \( f \) is \term[ru=вполне мультипликативная (функция) (\cite[def. 37]{Бухштаб1966ТеорияЧисел})]{completely multiplicative}.
+\end{definition}
+\begin{comments}
+  \item There is a clash in terminology. \Fullref{def:multiplicative_function} generalizes completely multiplicative arithmetic functions, but refers to them simply as \enquote{multiplicative}. Thus, a function may be multiplicative in the sense of \fullref{def:multiplicative_arithmetic_function} but not \fullref{def:multiplicative_function}.
+
+  To resolve this issue, we use \enquote{completely multiplicative} whenever confusion is possible.
+\end{comments}
+
+\begin{proposition}\label{thm:totient_function_multiplicative}
+  The \hyperref[def:eulers_totient_function]{Euler's totient function} is \hyperref[def:multiplicative_arithmetic_function]{multiplicative}.
+\end{proposition}
+\begin{proof}
+  Follows from \fullref{thm:totient_function_product_formula}.
+\end{proof}
+
+\begin{theorem}[Euler's totient theorem]\label{thm:eulers_totient_theorem}
+  For positive coprime integers \( n \) and \( x \), we have
+  \begin{equation*}
+    x^{\varphi(n)} \cong 1 \pmod n,
+  \end{equation*}
+  where \( \varphi \) is \hyperref[def:eulers_totient_function]{Euler's totient function}.
+\end{theorem}
+\begin{proof}
+  This is vacuous for \( n = 1 \) since all integers are equal modulo \( 1 \).
+
+  Suppose that \( n > 1 \). First, use \fullref{alg:integer_division} to obtain integers \( q \) and \( y < n \) such that
+  \begin{equation*}
+    x = nq + y.
+  \end{equation*}
+
+  Since \( x \) is, by assumption, coprime with \( n \), then \( y \) is also coprime with \( n \). Indeed, every common divisor \( d \) of \( y \) and \( n \) is also a common divisor \( x \), and the largest such possible value is \( \gcd(n, x) = 1 \).
+
+  Now consider the \hyperref[def:semiring]{multiplicative group} \( \BbbZ_n^\times \) of the ring \hyperref[def:ring_of_integers_modulo]{\( \BbbZ_n \)} of integers modulo \( n \) and the \hyperref[def:cyclic_group]{cyclic subgroup} \( \set{ 1, y, y^2, \ldots } \) (modulo \( n \)). It is necessarily finite as a subgroup of \( \BbbZ_n^\times \). Furthermore, by \fullref{thm:lagranges_subgroup_theorem}, its order \( k \) divides the order of \( \BbbZ_n^\times \). By \fullref{thm:def:eulers_totient_function/zn}, the order of \( \BbbZ_n^\times \) is \( \varphi(n) \).
+
+  We have \( y^k \cong 1 \pmod n \) since \( k \) is the order of a cyclic group. If \( \varphi(n) = km \), then
+  \begin{equation*}
+    y^{\varphi(n)}
+    =
+    y^{km}
+    \reloset {\eqref{eq:thm:semigroup_exponentiation_properties/repeated}} =
+    (y^k)^m
+    \cong
+    1^m
+    \pmod n.
+  \end{equation*}
+\end{proof}
+
+\begin{corollary}\label{thm:division_modulo}
+  Given positive integers \( n \) and \( m \), we can apply \fullref{alg:integer_division} to obtain \( n = q \cdot \varphi(m) + r \), where \( \varphi \) is \hyperref[def:eulers_totient_function]{Euler's totient function}.
+
+  Then, for a positive integer \( x \) coprime to \( m \), we have
+  \begin{equation*}
+    x^n \cong x^r \pmod m,
+  \end{equation*}
+\end{corollary}
+\begin{proof}
+  By \fullref{thm:eulers_totient_theorem}, \( x^{\varphi(m)} \cong 1 \pmod m \). Then
+  \begin{equation*}
+    x^n = (x^{\varphi(m)})^q x^r \cong x^r \pmod m.
+  \end{equation*}
+\end{proof}
+
+\begin{example}\label{ex:thm:division_modulo}
+  The integers \( 9 \) and \( 10 \) are coprime. We have \( \varphi(10) = 4 \) and \( 1000 = 250 \cdot 4 \). By \fullref{thm:division_modulo},
+  \begin{equation*}
+    9^{1000} \cong 9^0 = 1 \pmod {10}.
+  \end{equation*}
+
+  We can thus sometimes vastly simplify finding the last digit of the \hyperref[def:positional_number_system/decimal]{decimal expansion} of \( 9^{1000} \).
+\end{example}
+
+\begin{theorem}[Fermat's little theorem]\label{thm:fermats_little_theorem}
+  For a \hyperref[def:prime_number]{prime number} \( p \) and for any positive integer \( x \), we have
+  \begin{equation*}
+    x^p \cong x \pmod p.
+  \end{equation*}
+\end{theorem}
+\begin{proof}
+  If \( p \mid x \), then both \( x^p \) and \( x \) and congruent to \( 0 \) modulo \( p \).
+
+  Otherwise, by \fullref{thm:eulers_totient_theorem}, we have \( x^{\varphi(p) + 1} \cong x \pmod p \), and by \fullref{thm:def:eulers_totient_function/prime}, we have \( \varphi(p) + 1 = p \).
+\end{proof}

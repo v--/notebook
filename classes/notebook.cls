@@ -38,6 +38,7 @@
 % Misc nonmath packages
 \RequirePackage{subcaption}
 \RequirePackage{booktabs}
+\RequirePackage{tabularx}
 \RequirePackage{seqsplit}
 \RequirePackage{xspace}
 \RequirePackage{enumitem}
