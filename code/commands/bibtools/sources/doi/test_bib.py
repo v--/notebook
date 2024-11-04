@@ -51,8 +51,7 @@ def test_parse_101215_ijm_1256049011_missing_fields(doi: str = '10.1215/ijm/1256
     assert entry == BibEntry(
         entry_type='article',
         entry_name='AppelHaken1977PlanarMap',
-        title='Every planar map is four colorable',
-        subtitle='Part I: Discharging',
+        title='Every planar map is four colorable. Part I: Discharging',
         publisher='Duke University Press',
         journal='Illinois Journal of Mathematics',
         authors=[
@@ -77,8 +76,7 @@ def test_parse_101215_ijm_1256049012_missing_fields(doi: str = '10.1215/ijm/1256
     assert entry == BibEntry(
         entry_type='article',
         entry_name='AppelEtAl1977PlanarMap',
-        title='Every planar map is four colorable',
-        subtitle='Part II: Reducibility',
+        title='Every planar map is four colorable. Part II: Reducibility',
         publisher='Duke University Press',
         journal='Illinois Journal of Mathematics',
         authors=[
@@ -262,8 +260,7 @@ def test_parse_101007_s1065401601493_extended_funder(doi: str = '10.1007/s10654-
     assert entry == BibEntry(
         entry_type='article',
         entry_name='GreenlandEtAl2016StatisticalTests',
-        title='Statistical tests, P values, confidence intervals, and power',
-        subtitle='a guide to misinterpretations',
+        title='Statistical tests, P values, confidence intervals, and power: a guide to misinterpretations',
         publisher='Springer Science and Business Media LLC',
         authors=[
             BibAuthor(full_name='Sander Greenland'),
@@ -545,8 +542,7 @@ def test_parse_101007_97836421282192_book_chapter(doi: str = '10.1007/978-3-642-
     assert entry == BibEntry(
         entry_type='inbook',
         entry_name='BaezStay2010RosettaStone',
-        title='Physics, Topology, Logic and Computation',
-        subtitle='A Rosetta Stone',
+        title='Physics, Topology, Logic and Computation: A Rosetta Stone',
         publisher='Springer Berlin Heidelberg',
         authors=[
             BibAuthor(full_name='J. Baez'),

@@ -36,7 +36,7 @@ def test_parse_9780821810255(isbn: str = '978-0-8218-1025-5') -> None:
     )
 
 
-def test_parse_9780821847817_subtitle(isbn: str = '978-0-8218-4781-7') -> None:
+def test_parse_9780821847817(isbn: str = '978-0-8218-4781-7') -> None:
     with get_isbn_fixture_path(isbn).open() as file:
         json_body = file.read()
 
@@ -47,8 +47,7 @@ def test_parse_9780821847817_subtitle(isbn: str = '978-0-8218-4781-7') -> None:
     assert entry == BibEntry(
         entry_type='book',
         entry_name='Aluffi2009Algebra',
-        title='Algebra',
-        subtitle='Chapter 0',
+        title='Algebra: Chapter 0',
         authors=[
             BibAuthor(full_name='Paolo Aluffi')
         ],

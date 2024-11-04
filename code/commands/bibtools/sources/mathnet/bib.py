@@ -1,11 +1,11 @@
 from notebook.bibtex.entry import BibEntry
+from notebook.support.unicode import normalize_whitespace
 
 from ... import url_templates
 from ..common.dates import extract_year
 from ..common.entries import generate_entry_name
 from ..common.names import name_to_bib_author
 from ..common.pages import normalize_pages
-from ..common.titles import construct_titles
 from .model import MathNetEntry
 
 
@@ -13,14 +13,13 @@ def mathnet_entry_to_bib(entry: MathNetEntry, identifier: str, *, english: bool)
     language = 'english' if english else 'russian'
     authors = [name_to_bib_author(author.strip()) for author in entry.by.split(',')]
     year = extract_year(entry.yr)
-    titles = construct_titles(entry.paper)
+    title = normalize_whitespace(entry.paper)
 
     return BibEntry(
         entry_type='article',
-        entry_name=generate_entry_name(authors, year, titles, language),
+        entry_name=generate_entry_name(authors, year, title, language),
         authors=authors,
-        title=titles.main,
-        subtitle=titles.sub,
+        title=title,
         languages=[language],
         date=year,
         journal=entry.jour,

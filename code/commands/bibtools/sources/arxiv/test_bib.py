@@ -121,8 +121,7 @@ def test_parse_0903_0340v3_doi_and_link_without_type(arxiv_id: str = '0903.0340v
         entry_type='misc',
         entry_name='BaezStay2009RosettaStone',
         doi='10.1007/978-3-642-12821-9_2',
-        title='Physics, Topology, Logic and Computation',
-        subtitle='A Rosetta Stone',
+        title='Physics, Topology, Logic and Computation: A Rosetta Stone',
         authors=[
             BibAuthor(full_name='John C. Baez'),
             BibAuthor(full_name='Mike Stay')
@@ -147,8 +146,7 @@ def test_parse_2401_09270v1_title_line_break(arxiv_id: str = '2401.09270v1') -> 
     assert entry == BibEntry(
         entry_type='misc',
         entry_name='Ambridge2024ExactRealSearch',
-        title='Exact Real Search',
-        subtitle='Formalised Optimisation and Regression in Constructive Univalent Mathematics',
+        title='Exact Real Search: Formalised Optimisation and Regression in Constructive Univalent Mathematics',
         authors=[
             BibAuthor(full_name='Todd Waugh Ambridge')
         ],
@@ -160,7 +158,7 @@ def test_parse_2401_09270v1_title_line_break(arxiv_id: str = '2401.09270v1') -> 
     )
 
 
-def test_parse_2403_06707v1_dashes_in_title(arxiv_id: str = '2403.06707v1') -> None:
+def test_parse_2403_06707v1_dashes_and_line_break_in_title(arxiv_id: str = '2403.06707v1') -> None:
     with get_arxiv_fixture_path(arxiv_id).open() as file:
         xml_body = file.read()
 
@@ -171,8 +169,7 @@ def test_parse_2403_06707v1_dashes_in_title(arxiv_id: str = '2403.06707v1') -> N
     assert entry == BibEntry(
         entry_type='misc',
         entry_name='BinderEtAl2024DerivingDependentlyTypedOOP',
-        title='Deriving Dependently-Typed OOP from First Principles',
-        subtitle='Extended Version with Additional Appendices',
+        title='Deriving Dependently-Typed OOP from First Principles -- Extended Version with Additional Appendices',
         authors=[
             BibAuthor(full_name='David Binder'),
             BibAuthor(full_name='Ingo Skupin'),

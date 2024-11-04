@@ -18,7 +18,6 @@ from .sources.common.entries import regenerate_entry_name
 from .sources.common.languages import get_main_entry_language, normalize_language_name
 from .sources.common.names import get_main_human_name, normalize_human_name
 from .sources.common.pages import normalize_pages
-from .sources.common.titles import split_title
 from .sources.common.url_template import UrlTemplate
 
 
@@ -256,15 +255,7 @@ class BibEntryAdjuster:
             origlanguages=[self.adjust_language(author) for author in self.adjusted.origlanguages],
         )
 
-        title = self.adjusted.title
-        subtitle = self.adjusted.subtitle
-
-        if isinstance(title, str) and subtitle is None:
-            title, subtitle = split_title(title)
-
         self.update(
-            title=title,
-            subtitle=subtitle,
             pages=normalize_pages(self.adjusted.pages) if isinstance(self.adjusted.pages, str) else self.adjusted.pages,
             isbn=isbn.format(self.adjusted.isbn) if self.adjusted.isbn else None,
             issn=','.join(map(issn.format, self.adjusted.issn.split(','))) if isinstance(self.adjusted.issn, str) else self.adjusted.issn

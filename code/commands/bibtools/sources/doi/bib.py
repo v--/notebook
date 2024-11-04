@@ -6,11 +6,11 @@ from stdnum import isbn, issn
 from notebook.bibtex.author import BibAuthor
 from notebook.bibtex.entry import BibEntry, BibEntryType
 from notebook.exceptions import UnreachableException
+from notebook.support.unicode import normalize_whitespace
 
 from ..common.entries import generate_entry_name
 from ..common.languages import normalize_language_name
 from ..common.pages import normalize_pages
-from ..common.titles import construct_titles
 from .model import DoiAuthor, DoiData, DoiDateTime, DoiIsbn
 
 
@@ -121,15 +121,13 @@ def doi_data_to_bib(data: DoiData, doi: str, *, print_edition: bool = False) -> 
     else:
         container_title = data.container_title
 
-    titles = construct_titles(
-        data.title,
-        data.subtitle[0] if data.subtitle and len(data.subtitle) > 0 else None
-    )
+    title = normalize_whitespace(data.title)
+    subtitle = normalize_whitespace(data.subtitle[0]) if data.subtitle and len(data.subtitle) > 0 else None
 
     entry_name = generate_entry_name(
         authors or editors,
         str(year) if year is not None else '',
-        titles,
+        title,
         language,
         data.abstract,
         *(data.container_title if isinstance(data.container_title, list) else [data.container_title] if data.container_title else []),
@@ -138,7 +136,8 @@ def doi_data_to_bib(data: DoiData, doi: str, *, print_edition: bool = False) -> 
         *(ref.article_title for ref in data.reference),
         *(ref.journal_title for ref in data.reference),
         *(ref.volume_title for ref in data.reference),
-        *(ref.series_title for ref in data.reference)
+        *(ref.series_title for ref in data.reference),
+        subtitle=subtitle
     )
 
     return BibEntry(
@@ -146,8 +145,8 @@ def doi_data_to_bib(data: DoiData, doi: str, *, print_edition: bool = False) -> 
         entry_name=entry_name,
         authors=authors,
         editors=editors,
-        title=titles.main,
-        subtitle=titles.sub,
+        title=title,
+        subtitle=subtitle,
         publisher=data.publisher,
         languages=[language],
         date=doi_datetime_to_string(chosen_datetime) if chosen_datetime else None,

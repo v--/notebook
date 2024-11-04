@@ -139,26 +139,6 @@ def test_piecewise_date(caplog: pytest.LogCaptureFixture) -> None:
     assert adjusted.day is None
 
 
-def test_title_splitting() -> None:
-    entry, = parse_bibtex(
-        dedent('''\
-            @book{Barendregt1984LambdaCalculus,
-              author = {Henk Barendregt},
-              isbn = {0-444-86748-1},
-              language = {english},
-              publisher = {North-Holland},
-              title = {The Lambda Calculus - Its Syntax and Semantics},
-              date = {1984}
-            }
-            '''
-        )
-    )
-
-    adjusted = adjust_entry(entry, loguru.logger)
-    assert adjusted.title == 'The Lambda Calculus'
-    assert adjusted.subtitle == 'Its Syntax and Semantics'
-
-
 def test_title_splitting_with_subtitle() -> None:
     entry, = parse_bibtex(
         dedent('''\
