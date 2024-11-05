@@ -10,8 +10,18 @@ from .primes import factor, totient
 from .support import SignT, sgn
 
 
+# # This is alg:integer_radix_expansion in the monograph
+# def get_integer_expansion(n: int, radix: int) -> int:
+#     assert radix >= 2
+
+#     if n < 0:
+#         return -get_integer_expansion(-n, radix)
+
+
 # This is eq:alg:real_number_radix_expansion/direct in the monograph
 def get_digit(x: float, radix: int, index: int) -> int:
+    assert radix >= 2
+
     if x < 0:
         return -get_digit(-x, radix, index)
 
@@ -20,6 +30,7 @@ def get_digit(x: float, radix: int, index: int) -> int:
 
 # This is eq:thm:alg:real_number_radix_expansion/rational_coefficient in the monograph
 def get_digit_rational(p: int, q: int, radix: int, index: int) -> int:
+    assert radix >= 2
     assert index > 0
     assert q > 0
 
@@ -117,6 +128,7 @@ class RadixExpansion:
 
 # This is alg:real_number_radix_expansion in the monograph
 def get_number_expansion(x: int | float, radix: int) -> RadixExpansion:
+    assert radix >= 2
     x_ = abs(x)
 
     max_power = max(itertools.takewhile(lambda k: radix ** k <= x_, itertools.count())) if x_ >= 1 else 0
@@ -138,6 +150,7 @@ def get_number_expansion(x: int | float, radix: int) -> RadixExpansion:
 
 # This is alg:rational_number_to_positional_string in the monograph
 def get_rational_number_expansion(frac: Fraction, radix: int) -> RadixExpansion:
+    assert radix >= 2
     p, q = frac.as_integer_ratio()
     q_factorization = factor(q)
 

@@ -1,55 +1,54 @@
 from collections.abc import Callable
 
 from ....support.pytest import pytest_parametrize_kwargs
-from . import common as var
-from .infer import infer_zhegalkin
-from .polynomial import ZhegalkinPolynomial
+from . import zhegalkin as z
+from .zhegalkin import ZhegalkinPolynomial, infer_zhegalkin
 
 
 @pytest_parametrize_kwargs(
     dict(
         predicate=lambda: True,
-        polynomial=var.T
+        polynomial=z.t
     ),
 
     dict(
         predicate=lambda: False,
-        polynomial=var.F
+        polynomial=z.f
     ),
 
     dict(
         predicate=lambda x: False,  # noqa: ARG005
-        polynomial=var.F
+        polynomial=z.f
     ),
 
     dict(
         predicate=lambda x: x,
-        polynomial=var.x
+        polynomial=z.x
     ),
 
     dict(
         predicate=lambda x: not x,
-        polynomial=var.x + var.T
+        polynomial=z.x + z.t
     ),
 
     dict(
         predicate=lambda x, y: x or y,
-        polynomial=var.x * var.y + var.x + var.y
+        polynomial=z.x * z.y + z.x + z.y
     ),
 
     dict(
         predicate=lambda x, y: x and y,
-        polynomial=var.x * var.y
+        polynomial=z.x * z.y
     ),
 
     dict(
         predicate=lambda x, y: (not x) or y,
-        polynomial=var.x * var.y + var.x + var.T
+        polynomial=z.x * z.y + z.x + z.t
     ),
 
     dict(
         predicate=lambda x, y: (x and y) or (not x and not y),
-        polynomial=var.x + var.y + var.T
+        polynomial=z.x + z.y + z.t
     )
 )
 def test_infer_zhegalkin(predicate: Callable[..., bool], polynomial: ZhegalkinPolynomial) -> None:

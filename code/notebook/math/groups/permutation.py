@@ -2,12 +2,12 @@ import itertools
 from collections.abc import Iterable, Mapping, Sequence
 from dataclasses import dataclass
 
-from ...support.adt.comparable import Comparable
+from ...support.adt.comparable import IComparable
 from .cycle import Cycle
 
 
 @dataclass(frozen=True)
-class Permutation[T: Comparable]:
+class Permutation[T: IComparable]:
     domain: Sequence[T]
     _payload: Mapping[T, T]
 

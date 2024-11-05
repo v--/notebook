@@ -2,7 +2,7 @@ from typing import Protocol
 
 
 # Based on https://github.com/python/typing/issues/59#issuecomment-353878355
-class Comparable(Protocol):
+class IComparable(Protocol):
     def __eq__(self, other: object) -> bool:
         ...
 
