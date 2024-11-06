@@ -5,8 +5,8 @@ from enum import StrEnum
 from typing import Any, Self, cast, overload
 
 from ....support.iteration import string_accumulator
-from ...rings.arithmetic import IField, IRing, ISemiring
-from .exceptions import MatrixIndexError, MatrixValueError
+from ...rings.types import IField, IRing, ISemiring
+from ..exceptions import MatrixIndexError, MatrixValueError
 
 
 class SpecialChars(StrEnum):

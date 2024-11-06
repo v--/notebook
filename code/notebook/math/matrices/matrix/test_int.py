@@ -2,7 +2,7 @@ from textwrap import dedent
 
 import pytest
 
-from .exceptions import MatrixIndexError, MatrixValueError
+from ..exceptions import MatrixIndexError, MatrixValueError
 from .float import FloatMatrix
 from .int import IntMatrix
 

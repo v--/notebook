@@ -1,7 +1,6 @@
-import random
 
-from ...support.pytest import pytest_parametrize_kwargs, pytest_parametrize_lists, repeat5
-from .divisibility import extended_gcd, gcd, quot_dist, quot_floor, quot_max, quot_trunc
+from ...support.pytest import pytest_parametrize_kwargs
+from .divisibility import quot_dist, quot_floor, quot_max, quot_trunc
 
 
 @pytest_parametrize_kwargs(
@@ -34,21 +33,3 @@ def test_quot_basic(n: int, m: int, max_: int, dist: int, trunc: int, floor: int
 def test_quot_dist(n: int, m: int, dist: int, trunc: int) -> None:
     assert quot_dist(n, m) == dist
     assert quot_trunc(n, m) == trunc
-
-
-@pytest_parametrize_lists(
-    n=repeat5(random.randint, -100, 100),
-    m=repeat5(random.randint, -100, 100),
-)
-def test_gcd(n: int, m: int) -> None:
-    g = max(k for k in range(1, max(abs(n), abs(m)) + 1) if n % k == 0 and m % k == 0)
-    assert gcd(n, m) == g
-
-
-@pytest_parametrize_lists(
-    n=repeat5(random.randint, -100, 100),
-    m=repeat5(random.randint, -100, 100),
-)
-def test_extended_gcd(n: int, m: int) -> None:
-    g = max(k for k in range(1, max(abs(n), abs(m)) + 1) if n % k == 0 and m % k == 0)
-    assert extended_gcd(n, m).gcd == g

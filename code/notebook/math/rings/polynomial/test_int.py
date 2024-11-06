@@ -1,20 +1,25 @@
+from collections.abc import Mapping
+
+import pytest
+
 from ....support.pytest import pytest_parametrize_kwargs
 from . import monomial
+from .exceptions import PolynomialEvaluationError
 from .int import IntPolynomial, const, x, y, z, zero
 
 
 @pytest_parametrize_kwargs(
-    dict(p=zero,            degree=None),
-    dict(p=const,           degree=0),
-    dict(p=0 * const,       degree=None),
-    dict(p=0 * x,           degree=None),
-    dict(p=x * y,           degree=2),
-    dict(p=2 * x ** 2,      degree=2),
-    dict(p=x * y * z,       degree=3),
-    dict(p=x * y * z ** 2,  degree=4),
+    dict(pol=zero,            degree=None),
+    dict(pol=const,           degree=0),
+    dict(pol=0 * const,       degree=None),
+    dict(pol=0 * x,           degree=None),
+    dict(pol=x * y,           degree=2),
+    dict(pol=2 * x ** 2,      degree=2),
+    dict(pol=x * y * z,       degree=3),
+    dict(pol=x * y * z ** 2,  degree=4),
 )
-def test_total_degree(p: IntPolynomial, degree: int) -> None:
-    assert p.total_degree == degree
+def test_total_degree(pol: IntPolynomial, degree: int) -> None:
+    assert pol.total_degree == degree
 
 
 @pytest_parametrize_kwargs(
@@ -28,14 +33,30 @@ def test_add(a: IntPolynomial, b: IntPolynomial, c: IntPolynomial) -> None:
 
 
 @pytest_parametrize_kwargs(
-    dict(p=zero,              expected='0'),
-    dict(p=0 * const,         expected='0'),
-    dict(p=const,             expected='1'),
-    dict(p=2 * x,             expected='2x'),
-    dict(p=-x,                expected='-x'),
-    dict(p=-2 * x,            expected='-2x'),
-    dict(p=x - y,             expected='x - y'),
-    dict(p=x ** 2 - const,    expected='x² - 1'),
+    dict(pol=zero,              expected='0'),
+    dict(pol=0 * const,         expected='0'),
+    dict(pol=const,             expected='1'),
+    dict(pol=2 * x,             expected='2x'),
+    dict(pol=-x,                expected='-x'),
+    dict(pol=-2 * x,            expected='-2x'),
+    dict(pol=x - y,             expected='x - y'),
+    dict(pol=x ** 2 - const,    expected='x² - 1'),
 )
-def test_str(p: IntPolynomial, expected: str) -> None:
-    assert str(p) == expected
+def test_str(pol: IntPolynomial, expected: str) -> None:
+    assert str(pol) == expected
+
+
+@pytest_parametrize_kwargs(
+    dict(pol=zero,       e=dict(),         expected=0),
+    dict(pol=0 * const,  e=dict(),         expected=0),
+    dict(pol=x,          e=dict(x=3),      expected=3),
+    dict(pol=2 * x ** 2, e=dict(x=3),      expected=18),
+    dict(pol=2 * x * y,  e=dict(x=3, y=2), expected=12),
+)
+def test_call(pol: IntPolynomial, e: Mapping[str, int], expected: int) -> None:
+    assert pol(**e) == expected
+
+
+def test_call_failure() -> None:
+    with pytest.raises(PolynomialEvaluationError):
+        assert x(y=2)

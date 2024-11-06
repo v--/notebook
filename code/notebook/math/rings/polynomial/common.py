@@ -1,4 +1,4 @@
-from ...rings.arithmetic import IRing, ISemiring
+from ...rings.types import IRing, ISemiring
 from .base import BasePolynomial, PolynomialSubtractionMixin
 from .constructor import PolynomialConstructorMixin
 

@@ -1,5 +1,5 @@
 import functools
-from collections.abc import Hashable, Iterable, Iterator, Mapping
+from collections.abc import Hashable, Iterable, Iterator, Mapping, Sequence
 from typing import Self
 
 from ....support.iteration import string_accumulator
@@ -21,8 +21,8 @@ class Monomial(Mapping[str, int], Hashable):
     def total_degree(self) -> int:
         return sum(self.payload.values())
 
-    def get_indeterminates(self) -> Iterable[str]:
-        return self.payload.keys()
+    def get_indeterminates(self) -> Sequence[str]:
+        return list(self.payload.keys())
 
     def __len__(self) -> int:
         return len(self.payload)

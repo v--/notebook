@@ -1,6 +1,6 @@
 from ...matrices.matrix import ISemiringMatrix, MinPlusMatrix
-from ...rings.arithmetic import ISemiring
 from ...rings.tropical import MinPlusFloat
+from ...rings.types import ISemiring
 from ..graph import DirectedGraph
 
 

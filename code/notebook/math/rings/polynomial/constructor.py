@@ -2,7 +2,7 @@ from collections.abc import Iterable, Mapping
 from typing import Self, cast
 
 from ....support.iteration import list_accumulator
-from ..arithmetic import ISemiring
+from ..types import ISemiring
 from .base import BasePolynomial
 from .monomial import Monomial, const
 

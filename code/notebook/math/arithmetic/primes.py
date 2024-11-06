@@ -4,7 +4,8 @@ from collections import Counter
 from collections.abc import Iterable, Sequence
 from typing import NamedTuple
 
-from .divisibility import divides, gcd, quot
+from .divisibility import divides, quot
+from .gcd import gcd
 from .support import SignT, sgn
 
 

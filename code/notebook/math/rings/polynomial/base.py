@@ -1,11 +1,11 @@
 import contextlib
-import functools
 import itertools
-from collections.abc import Callable, Iterable, MutableMapping
-from typing import Any, Self, override
+from collections.abc import Iterable, MutableMapping
+from typing import Any, Self, cast, override
 
 from ....support.iteration import string_accumulator
-from ...rings.arithmetic import IRing, ISemiring
+from ..types import IRing, ISemiring
+from .exceptions import PolynomialEvaluationError
 from .monomial import Monomial
 
 
@@ -22,17 +22,17 @@ class PolynomialMeta(type):
         attrs['semiring'] = semiring
         return type.__new__(meta, name, bases, attrs)
 
-    def __call__(cls, *args: Any, **kwargs: Any) -> Any:  # noqa: ANN401
-        result = super().__call__(*args, **kwargs)
-        result.new_zero = functools.partial(cls.__call__, *args, **kwargs)
-        result.lift_to_scalar = cls.semiring
-        return result
-
 
 class BasePolynomial[N: ISemiring](metaclass=PolynomialMeta):
-    new_zero: Callable[[], Self]
-    lift_to_scalar: Callable[[int], N]
     coefficients: MutableMapping[Monomial, N]
+
+    @classmethod
+    def lift_to_scalar(cls, value: int) -> N:
+        return cast(N, cls.semiring(value))
+
+    @classmethod
+    def new_zero(cls) -> Self:
+        return cls()
 
     def __init__(self) -> None:
         self.coefficients = {}
@@ -126,6 +126,22 @@ class BasePolynomial[N: ISemiring](metaclass=PolynomialMeta):
 
     def __repr__(self) -> str:
         return str(self)
+
+    def __call__(self, **kwargs: N) -> N:
+        result = self.lift_to_scalar(0)
+
+        for mon, c in self.coefficients.items():
+            term = c
+
+            for indeterminate in mon.get_indeterminates():
+                if indeterminate not in kwargs:
+                    raise PolynomialEvaluationError(f'No value provided for indeterminate {indeterminate!r}')
+
+                term *= kwargs[indeterminate] ** mon[indeterminate]
+
+            result += term
+
+        return result
 
 
 class PolynomialSubtractionMixin[N: IRing](BasePolynomial[N]):

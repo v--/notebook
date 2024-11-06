@@ -1,4 +1,4 @@
-from ...rings.arithmetic import IField, INormedField, IRing, ISemiring
+from ...rings.types import IField, INormedField, IRing, ISemiring
 from .base import BaseMatrix, MatrixDivisionMixin, MatrixSubtractionMixin
 from .constructor import MatrixConstructorMixin
 

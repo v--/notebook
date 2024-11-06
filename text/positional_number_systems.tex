@@ -51,11 +51,14 @@ We assume the availability of the tools of \fullref{ch:real_analysis}.
 \paragraph{Real number radix expansion}
 
 \begin{definition}\label{def:real_number_radix_expansion}\mcite[60]{Зорич2019АнализТом1}
-  Given a radix \( b \geq 2 \), an \term[en=expansion (\cite[260]{Rosen2019DiscreteMathematics})]{expansion} of the \hyperref[def:real_numbers]{real number} \( x \) is a univariate \hyperref[def:formal_laurent_series]{Laurent series} such that
+  A radix \( b \geq 2 \) \term[en=expansion (\cite[260]{Rosen2019DiscreteMathematics})]{expansion} of the \hyperref[def:real_numbers]{real number} \( x \) is a univariate \hyperref[def:formal_laurent_series]{Laurent series}
   \begin{equation}\label{eq:def:positional_number_system/expansion}
-    x = \sgn(x) \cdot \sum_{k=-m}^\infty \frac {a_k} {b^k}
+    l(X) = \sum_{k=-m}^\infty \frac {a_k} {X^k}
   \end{equation}
-  and \( 0 \leq a_k < b \) for all \( k > -m \).
+  such that \( 0 \leq a_k < b \) for all \( a_k \) and
+  \begin{equation*}
+    x = \sgn(x) \cdot l(x).
+  \end{equation*}
 \end{definition}
 \begin{comments}
   \item Formally, in order to distinguish the numeric value from the sequence of coefficients, we must consider the formal Laurent series over the \hyperref[def:natural_numbers]{natural numbers}
@@ -67,6 +70,8 @@ We assume the availability of the tools of \fullref{ch:real_analysis}.
   \item Unlike \fullref{def:positional_number_system}, this definition allows expressing irrational numbers. It is also more restricting, however, because we are dealing with infinite sequences and can no longer represent them as words in some formal language. Hence, the notion of digit becomes irrelevant, as we only care about coefficients that are actual numbers and not purely syntactic digits.
 
   Nevertheless, we will use some terminology from \fullref{def:positional_number_system} like \enquote{binary} or \enquote{decimal} expansion.
+
+  \item Although integers are (embedded into) real numbers, we will sometimes find it convenient to handle them separately --- see \fullref{def:integer_radix_expansion}.
 \end{comments}
 
 \begin{proposition}\label{thm:radix_expansion_converges}
@@ -848,4 +853,54 @@ We assume the availability of the tools of \fullref{ch:real_analysis}.
 \end{algorithm}
 \begin{comments}
   \item This algorithm can be found as \identifier{arithmetic.bases.get_fraction} in \cite{notebook:code}.
+\end{comments}
+
+\paragraph{Integer radix expansions}
+
+\begin{definition}\label{def:integer_radix_expansion}
+  Similarly to how we have defined real number radix expansions in \fullref{def:real_number_radix_expansion}, we define a radix \( b \) expansion for the nonnegative integer \( n \) as an univariate \hyperref[def:polynomial]{polynomials}
+  \begin{equation*}
+    p(X) = \sum_{k=0}^m a_k X^k,
+  \end{equation*}
+  where \( 0 \leq a_k < b \) for all \( a_k \) and
+  \begin{equation*}
+    n = \sgn(n) \cdot p(b).
+  \end{equation*}
+\end{definition}
+\begin{comments}
+  \item Introducing this notion is not strictly necessary, however we find it more convenient than real number radix expansions as defined in \fullref{def:real_number_radix_expansion}.
+\end{comments}
+
+\begin{proposition}\label{thm:integer_and_real_radix_expansions}
+  For an integer \( n \), the \hyperref[def:formal_laurent_series]{Laurent series}
+  \begin{equation}\label{eq:thm:integer_and_real_radix_expansions/series}
+    \sum_{k=-m}^0 \frac {a_k} {b^k}
+  \end{equation}
+  is a radix \( b \) \hyperref[def:real_number_radix_expansion]{real number expansion} of \( n \) if and only if
+  \begin{equation}\label{eq:thm:integer_and_real_radix_expansions/polynomial}
+    \sum_{k=m}^0 a_k b^k
+  \end{equation}
+  is an \hyperref[def:integer_radix_expansion]{integer radix expansion}.
+\end{proposition}
+\begin{proof}
+  Trivial.
+\end{proof}
+
+\begin{algorithm}[Integer radix expansion]\label{alg:integer_radix_expansion}
+  We will give a simplified form of \fullref{alg:real_number_radix_expansion} for \hyperref[def:integer_radix_expansion]{integer radix expansions}. Fix an integer \( n \) and a radix \( b \geq 2 \).
+
+  \begin{thmenum}
+    \thmitem{alg:integer_radix_expansion/negative} As in \fullref{alg:real_number_radix_expansion/negative}, if \( n < 0 \) we build an expansion for \( -n \) and then multiply it by \( -1 \).
+
+    \thmitem{alg:integer_radix_expansion/base} If \( 0 \leq n < b \), halt the algorithm with \( n \) regarded as a constant polynomial.
+
+    \thmitem{alg:integer_radix_expansion/recursive} Finally, if \( n > b \), let \( n = bq + r \) be the result of \fullref{alg:integer_division} and let \( p(X) \) be the expansion of \( q \). Then
+    \begin{equation*}
+      X \cdot p(X) + r
+    \end{equation*}
+    is an expansion of \( n \).
+  \end{thmenum}
+\end{algorithm}
+\begin{comments}
+  \item This algorithm can be found as \identifier{arithmetic.bases.get_integer_expansion} in \cite{notebook:code}.
 \end{comments}

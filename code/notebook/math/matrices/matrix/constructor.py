@@ -1,9 +1,9 @@
 from collections.abc import Sequence
 from typing import Self
 
-from ...rings.arithmetic import ISemiring
+from ...rings.types import ISemiring
+from ..exceptions import MatrixIndexError
 from .base import BaseMatrix
-from .exceptions import MatrixIndexError
 
 
 class MatrixConstructorMixin[N: ISemiring](BaseMatrix[N]):

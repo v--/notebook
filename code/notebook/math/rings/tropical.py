@@ -1,7 +1,7 @@
 from collections.abc import Callable
 from typing import Any, Self
 
-from .arithmetic import ISemiring
+from .types import ISemiring
 
 
 class TropicalMeta(type):
