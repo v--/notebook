@@ -1,4 +1,4 @@
-from .cycle import is_closed, is_cycle, remove_cycles
+from .cycle import are_closed, is_cycle, remove_cycles
 from .directed import DirectedWalk
 from .undirected import UndirectedWalk
 
@@ -25,7 +25,7 @@ def test_is_cycle_undirected_opposite() -> None:
 
 def test_is_cycle_repeated() -> None:
     walk = DirectedWalk.from_vertex_list('a', 'b', 'c', 'a', 'd', 'c', 'a')
-    assert is_closed(walk)
+    assert are_closed(walk)
     assert not is_cycle(walk)
 
 

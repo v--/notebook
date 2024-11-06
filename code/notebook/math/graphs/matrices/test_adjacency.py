@@ -1,4 +1,5 @@
-from ...linalg.matrix import Matrix, fill
+from ...matrices.matrix import IntMatrix, MinPlusMatrix
+from ...rings.tropical import MinPlusFloat
 from ..graph import DirectedGraph
 from .adjacency import get_adjacency_matrix, get_min_walk_weights
 
@@ -12,7 +13,7 @@ def test_get_adjacency_matrix() -> None:
     graph.edges[1, 3] = 1
     graph.edges[2, 3] = 1
 
-    assert get_adjacency_matrix(graph) == Matrix([
+    assert get_adjacency_matrix(IntMatrix, graph) == IntMatrix.from_rows([
         [0, 3, 2, 4],
         [0, 0, 0, 1],
         [0, 0, 0, 1],
@@ -29,7 +30,7 @@ def test_get_min_walk_weight() -> None:
     graph.edges[1, 3] = 1.0
     graph.edges[2, 3] = 1.0
 
-    min_walk_weights = fill(len(graph.vertices), dtype=float, value=float('inf'))
-    min_walk_weights[0, 3] = 3.0
+    min_walk_weights = MinPlusMatrix.zeros(len(graph.vertices))
+    min_walk_weights[0, 3] = MinPlusFloat(3.0)
 
     assert get_min_walk_weights(graph, max_length=2) == min_walk_weights

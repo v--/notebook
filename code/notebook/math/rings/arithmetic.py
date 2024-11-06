@@ -1,9 +1,9 @@
-from typing import Literal, Protocol, Self, runtime_checkable
+from typing import Protocol, Self, runtime_checkable
 
 
 @runtime_checkable
 class ISemiring(Protocol):
-    def __init__(self, value: Literal[0, 1]) -> None:
+    def __init__(self, value: int) -> None:
         ...
 
     def __add__(self, other: Self) -> Self:
@@ -27,5 +27,11 @@ class IRing(ISemiring, Protocol):
 
 @runtime_checkable
 class IField(IRing, Protocol):
-    def __div__(self, other: Self) -> Self:
+    def __truediv__(self, other: Self) -> Self:
+        ...
+
+
+@runtime_checkable
+class INormedField(IField, Protocol):
+    def __abs__(self) -> float:
         ...

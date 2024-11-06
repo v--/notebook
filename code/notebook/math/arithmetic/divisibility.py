@@ -1,6 +1,6 @@
 from typing import NamedTuple
 
-from ..linalg.matrix import Matrix
+from ..matrices.matrix import IntMatrix
 from .support import sgn
 
 
@@ -93,7 +93,7 @@ def extended_gcd(n: int, m: int) -> ExtendedGcdResult:
     i_a = 1
     i_b = 2
 
-    state = Matrix([
+    state = IntMatrix.from_rows([
         [n, m],  # r
         [1, 0],  # a
         [0, 1],  # b

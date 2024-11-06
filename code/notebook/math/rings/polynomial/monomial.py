@@ -39,10 +39,10 @@ class Monomial(Mapping[str, int], Hashable):
             for indeterminate in {*self.get_indeterminates(), *other.get_indeterminates()}
         })
 
-    def __pow__(self, n: int) -> 'Monomial':
+    def __pow__(self, power: int) -> 'Monomial':
         return Monomial(**{
-            indeterminate: power * n
-            for indeterminate, power in self.payload.items()
+            indeterminate: p * power
+            for indeterminate, p in self.payload.items()
         })
 
     def __eq__(self, other: 'object') -> bool:

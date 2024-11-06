@@ -19,7 +19,7 @@ class MiscToken(TokenEnum):
 TestToken = LatinIdentifier | GreekIdentifier | MiscToken
 
 
-class TestTokenizer(IdentifierTokenizerMixin[TestToken], Tokenizer[TestToken]):
+class SimpleTokenizer(IdentifierTokenizerMixin[TestToken], Tokenizer[TestToken]):
     def parse_step(self, head: str) -> TestToken:
         if sym := MiscToken.try_match(head):
             self.advance()
@@ -35,7 +35,7 @@ class TestTokenizer(IdentifierTokenizerMixin[TestToken], Tokenizer[TestToken]):
 
 
 def tokenize(string: str) -> Sequence[TestToken]:
-    with TestTokenizer(string) as tokenizer:
+    with SimpleTokenizer(string) as tokenizer:
         return list(tokenizer.parse())
 
 

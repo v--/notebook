@@ -1,8 +1,8 @@
 from . import monomial
-from .base import BasePolynomial, PolynomialSubtractionMixin
+from .common import IRingPolynomial
 
 
-class IntPolynomial(PolynomialSubtractionMixin[int], BasePolynomial[int], semiring=int):
+class IntPolynomial(IRingPolynomial[int], semiring=int):
     pass
 
 

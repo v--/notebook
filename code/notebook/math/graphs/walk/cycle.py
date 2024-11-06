@@ -5,14 +5,14 @@ from .base import BaseGraphWalk
 from .directed import DirectedWalk
 
 
-def is_closed[VertT, EdgeT: Collection](walk: BaseGraphWalk[VertT, EdgeT]) -> bool:
+def are_closed[VertT, EdgeT: Collection](walk: BaseGraphWalk[VertT, EdgeT]) -> bool:
     return walk.head == walk.tail
 
 
 def is_cycle[VertT, EdgeT: Collection](walk: BaseGraphWalk[VertT, EdgeT]) -> bool:
     return (
         len(walk) > 0 and \
-        is_closed(walk) and \
+        are_closed(walk) and \
         len(SequentialSet(walk.iter_vertices())) == len(walk) and \
         not (len(walk.segments) == 2 and walk.segments[0].edge == walk.segments[1].edge)
     )

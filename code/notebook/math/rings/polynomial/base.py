@@ -4,8 +4,8 @@ import itertools
 from collections.abc import Callable, Iterable, Mapping, MutableMapping
 from typing import Any, Self, override
 
-from ....support.adt.arithmetic import IRing, ISemiring
 from ....support.iteration import list_accumulator, string_accumulator
+from ...rings.arithmetic import IRing, ISemiring
 from .monomial import Monomial
 
 
@@ -30,14 +30,14 @@ class PolynomialMeta(type):
         return result
 
 
-class BasePolynomial[T: ISemiring](metaclass=PolynomialMeta):
-    coefficients: MutableMapping[Monomial, T]
+class BasePolynomial[N: ISemiring](metaclass=PolynomialMeta):
+    coefficients: MutableMapping[Monomial, N]
     clone_zero: Callable[[], Self]
-    scalar_zero: T
-    scalar_one: T
+    scalar_zero: N
+    scalar_one: N
 
     @classmethod
-    def from_mapping(cls, coefficients: Mapping[Monomial, T] = {}) -> Self:
+    def from_mapping(cls, coefficients: Mapping[Monomial, N] = {}) -> Self:
         result = cls()
 
         for mon, c in coefficients.items():
@@ -64,10 +64,10 @@ class BasePolynomial[T: ISemiring](metaclass=PolynomialMeta):
     def total_degree(self) -> int | None:
         return max((mon.total_degree for mon in self.coefficients.keys()), default=None)
 
-    def __getitem__(self, key: Monomial) -> T:
+    def __getitem__(self, key: Monomial) -> N:
         return self.coefficients.get(key, self.scalar_zero)
 
-    def __setitem__(self, key: Monomial, value: T) -> None:
+    def __setitem__(self, key: Monomial, value: N) -> None:
         if value == self.scalar_zero:
             with contextlib.suppress(KeyError):
                 del self.coefficients[key]
@@ -99,7 +99,7 @@ class BasePolynomial[T: ISemiring](metaclass=PolynomialMeta):
 
         return result
 
-    def __rmul__(self, other: T) -> Self:
+    def __rmul__(self, other: N) -> Self:
         result = self.clone_zero()
 
         for mon, c in self.coefficients.items():
@@ -107,19 +107,19 @@ class BasePolynomial[T: ISemiring](metaclass=PolynomialMeta):
 
         return result
 
-    def __pow__(self, n: int) -> Self:
+    def __pow__(self, power: int) -> Self:
         result = self.clone_zero()
 
         for mon, c in self.coefficients.items():
-            result[mon ** n] = c ** n
+            result[mon ** power] = c ** power
 
         for mon, c in self.coefficients.items():
-            result[mon ** n] = c ** n
+            result[mon ** power] = c ** power
 
         return result
 
     @string_accumulator()
-    def stringify_term_with_prefix(self, monomial: Monomial, coefficient: T, *, is_first: bool) -> Iterable[str]:
+    def stringify_term_with_prefix(self, monomial: Monomial, coefficient: N, *, is_first: bool) -> Iterable[str]:
         if coefficient == 0:
             return
 
@@ -151,10 +151,10 @@ class BasePolynomial[T: ISemiring](metaclass=PolynomialMeta):
         return str(self)
 
 
-class PolynomialSubtractionMixin[T: IRing](BasePolynomial[T]):
+class PolynomialSubtractionMixin[N: IRing](BasePolynomial[N]):
     @override
     @string_accumulator()
-    def stringify_term_with_prefix(self, monomial: Monomial, coefficient: T, *, is_first: bool) -> Iterable[str]:
+    def stringify_term_with_prefix(self, monomial: Monomial, coefficient: N, *, is_first: bool) -> Iterable[str]:
         if coefficient == 0:
             return
 
@@ -192,10 +192,7 @@ class PolynomialSubtractionMixin[T: IRing](BasePolynomial[T]):
         result = self.clone_zero()
 
         for mon, c in self.coefficients.items():
-            try:
-                result[mon] = -c
-            except TypeError:
-                return NotImplemented
+            result[mon] = -c
 
         return result
 

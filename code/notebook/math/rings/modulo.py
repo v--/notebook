@@ -1,7 +1,6 @@
 from collections.abc import Callable
 from typing import Any, Self
 
-from ...support.adt.arithmetic import ISemiring
 from ..arithmetic.divisibility import rem
 
 
@@ -58,8 +57,8 @@ class BaseIntModulo(metaclass=IntModuloMeta):
 
         return self.new(self.value * other)
 
-    def __pow__(self, other: int) -> Self:
-        return self.new(self.value ** other)
+    def __pow__(self, power: int) -> Self:
+        return self.new(self.value ** power)
 
     def __str__(self) -> str:
         return str(self.value)

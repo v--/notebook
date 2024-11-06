@@ -1,4 +1,4 @@
-from ..linalg.matrix import Matrix, zeros
+from ..matrices.matrix import IntMatrix
 
 
 def choose(n: int, k: int) -> int:
@@ -12,8 +12,8 @@ def choose(n: int, k: int) -> int:
 
 
 # This is def:pascal_matrix/lower in the monograph
-def pascals_lower_matrix(n: int) -> Matrix[int]:
-    matrix = zeros(n)
+def pascals_lower_matrix(n: int) -> IntMatrix:
+    matrix = IntMatrix.zeros(n)
 
     for i in range(n):
         matrix[i, 0] = 1
@@ -27,13 +27,13 @@ def pascals_lower_matrix(n: int) -> Matrix[int]:
 
 
 # This is def:pascal_matrix/upper in the monograph
-def pascals_upper_matrix(n: int) -> Matrix[int]:
+def pascals_upper_matrix(n: int) -> IntMatrix:
     return pascals_lower_matrix(n).transpose()
 
 
 # This is def:pascal_matrix/symmetric in the monograph
-def pascals_symmetric_matrix(n: int) -> Matrix[int]:
-    matrix = zeros(n)
+def pascals_symmetric_matrix(n: int) -> IntMatrix:
+    matrix = IntMatrix.zeros(n)
 
     for i in range(n):
         matrix[i, 0] = 1

@@ -4,11 +4,11 @@ from collections.abc import Callable
 
 from ..modulo import Z2
 from . import monomial
-from .base import BasePolynomial, PolynomialSubtractionMixin
+from .common import IRingPolynomial
 from .monomial import Monomial
 
 
-class ZhegalkinPolynomial(PolynomialSubtractionMixin[Z2], BasePolynomial[Z2], semiring=Z2):
+class ZhegalkinPolynomial(IRingPolynomial[Z2], semiring=Z2):
     pass
 
 
