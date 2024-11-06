@@ -624,3 +624,29 @@ def test_parse_101109_ieeestd20198766229_standard(doi: str = '10.1109/IEEESTD.20
         isbn='978-1-5044-5924-2',
         languages=['english'],
     )
+
+
+def test_parse_101023_a_1011497229317_no_title(doi: str = '10.1023/A:1011497229317') -> None:
+    with get_doi_fixture_path(doi).open() as file:
+        json_body = file.read()
+
+    data = parse_doi_json(json_body)
+    entry = doi_data_to_bib(data, doi)
+
+    assert entry == BibEntry(
+        entry_type='article',
+        entry_name='BorweinBorwein2001Untitled',
+        title='Untitled',
+        publisher='Springer Science and Business Media LLC',
+        authors=[
+            BibAuthor(full_name='David Borwein'),
+            BibAuthor(full_name='Jonathan M. Borwein')
+        ],
+        doi=doi,
+        date='2001',
+        journal='The Ramanujan Journal',
+        volume='5',
+        pages='73-89',
+        issn='1382-4090',
+        languages=['english'],
+    )

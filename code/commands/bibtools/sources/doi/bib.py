@@ -121,7 +121,7 @@ def doi_data_to_bib(data: DoiData, doi: str, *, print_edition: bool = False) -> 
     else:
         container_title = data.container_title
 
-    title = normalize_whitespace(data.title)
+    title = normalize_whitespace(data.title if isinstance(data.title, str) else data.title[0] if len(data.title) > 0 else 'Untitled')
     subtitle = normalize_whitespace(data.subtitle[0]) if data.subtitle and len(data.subtitle) > 0 else None
 
     entry_name = generate_entry_name(

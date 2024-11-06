@@ -151,7 +151,6 @@ class DoiUpdatedBy(DoiBaseModel):
 
 class DoiData(DoiBaseModel):
     publisher: str
-    title: str
     type: str
     doi: str
     url: str
@@ -174,6 +173,7 @@ class DoiData(DoiBaseModel):
     published_print: DoiDateTime | None = None
     approved: DoiDateTime | None = None
 
+    title: str | list[str]
     container_title: str | list[str] | None = None
     original_title: str | list[str] | None = None
     short_title: str | list[str] | None = None
