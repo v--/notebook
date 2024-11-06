@@ -1,10 +1,10 @@
 import contextlib
 import functools
 import itertools
-from collections.abc import Callable, Iterable, Mapping, MutableMapping
+from collections.abc import Callable, Iterable, MutableMapping
 from typing import Any, Self, override
 
-from ....support.iteration import list_accumulator, string_accumulator
+from ....support.iteration import string_accumulator
 from ...rings.arithmetic import IRing, ISemiring
 from .monomial import Monomial
 
@@ -24,38 +24,15 @@ class PolynomialMeta(type):
 
     def __call__(cls, *args: Any, **kwargs: Any) -> Any:  # noqa: ANN401
         result = super().__call__(*args, **kwargs)
-        result.clone_zero = functools.partial(cls.__call__, *args, **kwargs)
-        result.scalar_zero = cls.semiring(0)
-        result.scalar_one = cls.semiring(1)
+        result.new_zero = functools.partial(cls.__call__, *args, **kwargs)
+        result.lift_to_scalar = cls.semiring
         return result
 
 
 class BasePolynomial[N: ISemiring](metaclass=PolynomialMeta):
+    new_zero: Callable[[], Self]
+    lift_to_scalar: Callable[[int], N]
     coefficients: MutableMapping[Monomial, N]
-    clone_zero: Callable[[], Self]
-    scalar_zero: N
-    scalar_one: N
-
-    @classmethod
-    def from_mapping(cls, coefficients: Mapping[Monomial, N] = {}) -> Self:
-        result = cls()
-
-        for mon, c in coefficients.items():
-            result[mon] = c
-
-        return result
-
-    @classmethod
-    def from_monomial(cls, monomial: Monomial) -> Self:
-        result = cls()
-        result[monomial] = result.scalar_one
-        return result
-
-    @classmethod
-    @list_accumulator
-    def from_monomials(cls, *monomials: Monomial) -> Iterable[Self]:
-        for monomial in monomials:
-            yield cls.from_monomial(monomial)
 
     def __init__(self) -> None:
         self.coefficients = {}
@@ -65,10 +42,10 @@ class BasePolynomial[N: ISemiring](metaclass=PolynomialMeta):
         return max((mon.total_degree for mon in self.coefficients.keys()), default=None)
 
     def __getitem__(self, key: Monomial) -> N:
-        return self.coefficients.get(key, self.scalar_zero)
+        return self.coefficients.get(key, self.lift_to_scalar(0))
 
     def __setitem__(self, key: Monomial, value: N) -> None:
-        if value == self.scalar_zero:
+        if value == self.lift_to_scalar(0):
             with contextlib.suppress(KeyError):
                 del self.coefficients[key]
         else:
@@ -81,42 +58,42 @@ class BasePolynomial[N: ISemiring](metaclass=PolynomialMeta):
         return self.coefficients == other.coefficients
 
     def __add__(self, other: Self) -> Self:
-        result = self.clone_zero()
+        pol = self.new_zero()
 
         for mon, c in self.coefficients.items():
-            result[mon] = c
+            pol[mon] = c
 
         for mon, c in other.coefficients.items():
-            result[mon] += c
+            pol[mon] += c
 
-        return result
+        return pol
 
     def __mul__(self, other: Self) -> Self:
-        result = self.clone_zero()
+        pol = self.new_zero()
 
         for a, b in itertools.product(self.coefficients.keys(), other.coefficients.keys()):
-            result[a * b] += self[a] * other[b]
+            pol[a * b] += self[a] * other[b]
 
-        return result
+        return pol
 
     def __rmul__(self, other: N) -> Self:
-        result = self.clone_zero()
+        pol = self.new_zero()
 
         for mon, c in self.coefficients.items():
-            result[mon] = c * other
+            pol[mon] = c * other
 
-        return result
+        return pol
 
     def __pow__(self, power: int) -> Self:
-        result = self.clone_zero()
+        pol = self.new_zero()
 
         for mon, c in self.coefficients.items():
-            result[mon ** power] = c ** power
+            pol[mon ** power] = c ** power
 
         for mon, c in self.coefficients.items():
-            result[mon ** power] = c ** power
+            pol[mon ** power] = c ** power
 
-        return result
+        return pol
 
     @string_accumulator()
     def stringify_term_with_prefix(self, monomial: Monomial, coefficient: N, *, is_first: bool) -> Iterable[str]:
@@ -126,7 +103,7 @@ class BasePolynomial[N: ISemiring](metaclass=PolynomialMeta):
         if not is_first:
             yield ' + '
 
-        if monomial.total_degree == 0 or coefficient != self.scalar_one:
+        if monomial.total_degree == 0 or coefficient != self.lift_to_scalar(1):
             yield str(coefficient)
 
         if monomial.total_degree > 0:
@@ -139,7 +116,7 @@ class BasePolynomial[N: ISemiring](metaclass=PolynomialMeta):
         try:
             monomial, coefficient = next(it)
         except StopIteration:
-            yield str(self.scalar_zero)
+            yield str(self.lift_to_scalar(0))
             return  # noqa: PLE0307
         else:
             yield self.stringify_term_with_prefix(monomial, coefficient, is_first=True)
@@ -161,9 +138,9 @@ class PolynomialSubtractionMixin[N: IRing](BasePolynomial[N]):
         if is_first:
             if monomial.total_degree == 0:
                 yield str(coefficient)
-            elif coefficient == self.scalar_one:
+            elif coefficient == self.lift_to_scalar(1):
                 yield str(monomial)
-            elif -coefficient == self.scalar_one:
+            elif -coefficient == self.lift_to_scalar(1):
                 yield '-'
                 yield str(monomial)
             else:
@@ -177,24 +154,24 @@ class PolynomialSubtractionMixin[N: IRing](BasePolynomial[N]):
         if using_negation:
             yield ' - '
 
-            if monomial.total_degree == 0 or -coefficient != self.scalar_one:
+            if monomial.total_degree == 0 or -coefficient != self.lift_to_scalar(1):
                 yield str(-coefficient)
         else:
             yield ' + '
 
-            if monomial.total_degree == 0 or coefficient != self.scalar_one:
+            if monomial.total_degree == 0 or coefficient != self.lift_to_scalar(1):
                 yield str(coefficient)
 
         if monomial.total_degree > 0:
             yield str(monomial)
 
     def __neg__(self: Self) -> Self:
-        result = self.clone_zero()
+        pol = self.new_zero()
 
         for mon, c in self.coefficients.items():
-            result[mon] = -c
+            pol[mon] = -c
 
-        return result
+        return pol
 
     def __sub__(self, other: Self) -> Self:
         return self + (-other)

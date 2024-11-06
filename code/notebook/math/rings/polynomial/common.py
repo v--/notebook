@@ -1,8 +1,9 @@
 from ...rings.arithmetic import IRing, ISemiring
 from .base import BasePolynomial, PolynomialSubtractionMixin
+from .constructor import PolynomialConstructorMixin
 
 
-class ISemiringPolynomial[N: ISemiring](BasePolynomial[N]):
+class ISemiringPolynomial[N: ISemiring](PolynomialConstructorMixin[N], BasePolynomial[N]):
     pass
 
 

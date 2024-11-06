@@ -1,36 +1,52 @@
+from collections.abc import Sequence
 from typing import Self
 
 from ...rings.arithmetic import ISemiring
 from .base import BaseMatrix
+from .exceptions import MatrixIndexError
 
 
 class MatrixConstructorMixin[N: ISemiring](BaseMatrix[N]):
     @classmethod
-    def fill(cls, n: int, m: int | None = None, *, value: N) -> Self:
-        if m is None:
-            m = n
+    def from_rows(cls, rows: Sequence[Sequence[N]]) -> Self:
+        if len(rows) == 0:
+            raise MatrixIndexError('Cannot determine matrix dimensions from empty list')
 
-        if n == 0 or m == 0:
-            return cls(n, m)
+        m = len(rows)
+        n = len(rows[0])
 
-        return cls.from_rows([
-            [value for j in range(n)]
-            for i in range(m)
-        ])
+        for i, row in enumerate(rows):
+            if len(row) != n:
+                raise MatrixIndexError(f'Row with index {i} has {len(row)} elements, but first row has {m} elements')
 
-    @classmethod
-    def zeros(cls, n: int, m: int | None = None) -> Self:
-        return cls.fill(n, m, value=cls.lift(0))
+        return cls.from_factory(m, n, lambda i, j: rows[i][j])
 
     @classmethod
-    def ones(cls, n: int, m: int | None = None) -> Self:
-        return cls.fill(n, m, value=cls.lift(1))
+    def lift_matrix(cls, mat: 'BaseMatrix[int]') -> Self:
+        return cls.from_factory(
+            mat.m,
+            mat.n,
+            lambda i, j: cls.lift_to_scalar(mat[i, j])
+        )
 
     @classmethod
-    def eye(cls, n: int, m: int | None = None) -> Self:
-        result = cls.zeros(n, m)
+    def fill(cls, m: int, n: int | None = None, *, value: N) -> Self:
+        if n is None:
+            n = m
 
-        for i in range(min(n, m) if m is not None else n):
-            result[i, i] = cls.lift(1)
+        return cls.from_factory(m, n, lambda i, j: value)  # noqa: ARG005
 
-        return result
+    @classmethod
+    def zeros(cls, m: int, n: int | None = None) -> Self:
+        return cls.fill(m, n, value=cls.lift_to_scalar(0))
+
+    @classmethod
+    def ones(cls, m: int, n: int | None = None) -> Self:
+        return cls.fill(m, n, value=cls.lift_to_scalar(1))
+
+    @classmethod
+    def eye(cls, m: int, n: int | None = None) -> Self:
+        if n is None:
+            n = m
+
+        return cls.from_factory(n, m, lambda i, j: cls.lift_to_scalar(int(i == j)))

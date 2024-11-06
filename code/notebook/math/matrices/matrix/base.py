@@ -1,12 +1,22 @@
 import functools
 import operator
-from collections.abc import Iterable, Iterator, Sequence
+from collections.abc import Callable, Iterable, Iterator, Sequence
 from enum import StrEnum
 from typing import Any, Self, cast, overload
 
 from ....support.iteration import string_accumulator
 from ...rings.arithmetic import IField, IRing, ISemiring
 from .exceptions import MatrixIndexError, MatrixValueError
+
+
+class SpecialChars(StrEnum):
+    single_left = '('
+    single_right = ')'
+    upper_left = '⎛'
+    lower_left = '⎝'
+    upper_right = '⎞'
+    lower_right = '⎠'
+    pipe = '⎜'
 
 
 def linearize_index(dimensions: Iterable[int], indices: Iterable[int]) -> int:
@@ -34,56 +44,29 @@ class MatrixMeta(type):
         return type.__new__(meta, name, bases, attrs)
 
 
-class SpecialChars(StrEnum):
-    single_left = '('
-    single_right = ')'
-    upper_left = '⎛'
-    lower_left = '⎝'
-    upper_right = '⎞'
-    lower_right = '⎠'
-    pipe = '⎜'
-
-
 class BaseMatrix[N: ISemiring](metaclass=MatrixMeta):
     m: int
     n: int
     payload: list[N]
 
     @classmethod
-    def lift(cls, value: int) -> N:
+    def lift_to_scalar(cls, value: int) -> N:
         return cast(N, cls.semiring(value))
 
     @classmethod
-    def from_rows(cls, rows: Sequence[Sequence[N]]) -> Self:
-        if len(rows) == 0:
-            raise MatrixIndexError('Cannot determine matrix dimensions from empty list')
+    def from_factory(cls, m: int, n: int, factory: Callable[[int, int], N]) -> Self:
+        return cls(m, n, factory)
 
-        m = len(rows)
-        n = len(rows[0])
-
-        result = cls(m, n)
-
-        for i, row in enumerate(rows):
-            if len(row) != n:
-                raise MatrixIndexError(f'Row with index {i} has {len(row)} elements, but first row has {m}')
-
-            result[i, :] = row
-
-        return result
-
-    @classmethod
-    def from_int_matrix(cls, mat: 'BaseMatrix[int]') -> Self:
-        return cls.from_rows([
-            [cls.lift(value) for value in row]
-            for row in mat.get_rows()
-        ])
-
-    def __init__(self, m: int, n: int) -> None:
+    def __init__(self, m: int, n: int, factory: Callable[[int, int], N] | None = None) -> None:
         assert m >= 0
         assert n >= 0
         self.m = m
         self.n = n
-        self.payload = [self.lift(0) for _ in range(m * n)]
+        self.payload = [
+            factory(i, j) if factory else self.lift_to_scalar(0)
+            for i in range(m)
+            for j in range(n)
+        ]
 
     @property
     def dimensions(self) -> tuple[int, int]:
@@ -123,10 +106,14 @@ class BaseMatrix[N: ISemiring](metaclass=MatrixMeta):
                 return self.payload[linearize_index(self.dimensions, key)]
 
             case _:
-                return self.from_rows([
-                    [self[i_, j_] for j_ in self.__j_range(key[1])]
-                    for i_ in self.__i_range(key[0])
-                ])
+                i_range = list(self.__i_range(key[0]))
+                j_range = list(self.__j_range(key[1]))
+
+                return self.from_factory(
+                    len(i_range),
+                    len(j_range),
+                    lambda i, j: self[i_range[i], j_range[j]]
+                )
 
     def __setitem_islice(self, i: slice, j: int, value: N | Sequence[N] | Self) -> None:
         i_range = list(self.__i_range(i))
@@ -219,13 +206,13 @@ class BaseMatrix[N: ISemiring](metaclass=MatrixMeta):
 
     def get_rows(self) -> Sequence[Sequence[N]]:
         return [
-            [self[i, j] for j in range(self.n)]
+            list(self[i, :])
             for i in range(self.m)
         ]
 
     def get_cols(self) -> Sequence[Sequence[N]]:
         return [
-            [self[i, j] for i in range(self.m)]
+            list(self[:, j])
             for j in range(self.n)
         ]
 
@@ -233,7 +220,11 @@ class BaseMatrix[N: ISemiring](metaclass=MatrixMeta):
         return self.m == self.n
 
     def transpose(self) -> Self:
-        return self.from_rows(self.get_cols())
+        return self.from_factory(
+            self.n,
+            self.m,
+            lambda i, j: self[j, i]
+        )
 
     def stringify_value(self, value: N) -> str:
         return str(value)
@@ -301,37 +292,34 @@ class BaseMatrix[N: ISemiring](metaclass=MatrixMeta):
         if self.m != other.m or self.n != other.n:
             return NotImplemented
 
-        return self.from_rows([
-            [x + y for x, y in zip(row_a, row_b, strict=True)]
-            for row_a, row_b in zip(self.get_rows(), other.get_rows(), strict=True)
-        ])
+        return self.from_factory(
+            self.m,
+            self.n,
+            lambda i, j: self[i, j] + other[i, j]
+        )
 
-    def __rmul__(self, other: N) -> Self:
-        return self.from_rows([
-            [other * x for x in row]
-            for row in self.get_rows()
-        ])
+    def __rmul__(self, c: N) -> Self:
+        return self.from_factory(
+            self.m,
+            self.n,
+            lambda i, j: c * self[i, j]
+        )
 
     def __matmul__(self, other: Self) -> Self:
         if self.n != other.m:
             return NotImplemented
 
-        return self.from_rows([
-            [
-                # We avoid using sum since it starts at zero, perplexing tropical arithmetic
-                functools.reduce(operator.add, (x * y for x, y in zip(row, col, strict=True)))
-                for col in other.get_cols()
-            ]
-            for row in self.get_rows()
-        ])
+        return self.from_factory(
+            self.m,
+            self.n,
+            # We avoid using sum since it starts at zero, perplexing tropical arithmetic
+            lambda i, j: functools.reduce(operator.add, (x * y for x, y in zip(self[i, :], other[:, j], strict=True)))
+        )
 
 
 class MatrixSubtractionMixin[N: IRing](BaseMatrix[N]):
     def __neg__(self) -> Self:
-        return self.from_rows([
-            [-x for x in row]
-            for row in self.get_rows()
-        ])
+        return self.lift_to_scalar(-1) * self
 
     def __sub__(self, other: Self) -> Self:
         if self.m != other.m or self.n != other.n:
@@ -342,4 +330,4 @@ class MatrixSubtractionMixin[N: IRing](BaseMatrix[N]):
 
 class MatrixDivisionMixin[N: IField](BaseMatrix[N]):
     def __truediv__(self, other: N) -> Self:
-        return (self.lift(1) / other) * self
+        return (self.lift_to_scalar(1) / other) * self
