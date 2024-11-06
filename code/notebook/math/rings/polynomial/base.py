@@ -1,6 +1,6 @@
 import contextlib
 import itertools
-from collections.abc import Iterable, MutableMapping
+from collections.abc import Iterable, MutableMapping, Sequence
 from typing import Any, Self, cast, override
 
 from ....support.iteration import string_accumulator
@@ -24,7 +24,7 @@ class PolynomialMeta(type):
 
 
 class BasePolynomial[N: ISemiring](metaclass=PolynomialMeta):
-    coefficients: MutableMapping[Monomial, N]
+    _coefficients: MutableMapping[Monomial, N]
 
     @classmethod
     def lift_to_scalar(cls, value: int) -> N:
@@ -35,35 +35,42 @@ class BasePolynomial[N: ISemiring](metaclass=PolynomialMeta):
         return cls()
 
     def __init__(self) -> None:
-        self.coefficients = {}
+        self._coefficients = {}
 
     @property
     def total_degree(self) -> int | None:
-        return max((mon.total_degree for mon in self.coefficients.keys()), default=None)
+        return max((mon.total_degree for mon in self._coefficients.keys()), default=None)
+
+    @property
+    def is_zero(self) -> bool:
+        return len(self._coefficients) == 0
+
+    def get_monomials(self) -> Sequence[Monomial]:
+        return list(self._coefficients.keys())
 
     def __getitem__(self, key: Monomial) -> N:
-        return self.coefficients.get(key, self.lift_to_scalar(0))
+        return self._coefficients.get(key, self.lift_to_scalar(0))
 
     def __setitem__(self, key: Monomial, value: N) -> None:
         if value == self.lift_to_scalar(0):
             with contextlib.suppress(KeyError):
-                del self.coefficients[key]
+                del self._coefficients[key]
         else:
-            self.coefficients[key] = value
+            self._coefficients[key] = value
 
     def __eq__(self, other: object) -> bool:
         if not isinstance(other, BasePolynomial):
             return NotImplemented
 
-        return self.coefficients == other.coefficients
+        return self._coefficients == other._coefficients
 
     def __add__(self, other: Self) -> Self:
         pol = self.new_zero()
 
-        for mon, c in self.coefficients.items():
+        for mon, c in self._coefficients.items():
             pol[mon] = c
 
-        for mon, c in other.coefficients.items():
+        for mon, c in other._coefficients.items():
             pol[mon] += c
 
         return pol
@@ -71,7 +78,7 @@ class BasePolynomial[N: ISemiring](metaclass=PolynomialMeta):
     def __mul__(self, other: Self) -> Self:
         pol = self.new_zero()
 
-        for a, b in itertools.product(self.coefficients.keys(), other.coefficients.keys()):
+        for a, b in itertools.product(self._coefficients.keys(), other._coefficients.keys()):
             pol[a * b] += self[a] * other[b]
 
         return pol
@@ -79,7 +86,7 @@ class BasePolynomial[N: ISemiring](metaclass=PolynomialMeta):
     def __rmul__(self, other: N) -> Self:
         pol = self.new_zero()
 
-        for mon, c in self.coefficients.items():
+        for mon, c in self._coefficients.items():
             pol[mon] = c * other
 
         return pol
@@ -87,10 +94,10 @@ class BasePolynomial[N: ISemiring](metaclass=PolynomialMeta):
     def __pow__(self, power: int) -> Self:
         pol = self.new_zero()
 
-        for mon, c in self.coefficients.items():
+        for mon, c in self._coefficients.items():
             pol[mon ** power] = c ** power
 
-        for mon, c in self.coefficients.items():
+        for mon, c in self._coefficients.items():
             pol[mon ** power] = c ** power
 
         return pol
@@ -111,7 +118,7 @@ class BasePolynomial[N: ISemiring](metaclass=PolynomialMeta):
 
     @string_accumulator()
     def __str__(self) -> Iterable[str]:
-        it = iter(self.coefficients.items())
+        it = iter(self._coefficients.items())
 
         try:
             monomial, coefficient = next(it)
@@ -130,7 +137,7 @@ class BasePolynomial[N: ISemiring](metaclass=PolynomialMeta):
     def __call__(self, **kwargs: N) -> N:
         result = self.lift_to_scalar(0)
 
-        for mon, c in self.coefficients.items():
+        for mon, c in self._coefficients.items():
             term = c
 
             for indeterminate in mon.get_indeterminates():
@@ -184,7 +191,7 @@ class PolynomialSubtractionMixin[N: IRing](BasePolynomial[N]):
     def __neg__(self: Self) -> Self:
         pol = self.new_zero()
 
-        for mon, c in self.coefficients.items():
+        for mon, c in self._coefficients.items():
             pol[mon] = -c
 
         return pol

@@ -1,7 +1,7 @@
 from dataclasses import dataclass
 
 from ...rings.polynomial.int import IntPolynomial, const, x
-from ..divisibility import divmod
+from ..divisibility import int_divmod
 
 
 @dataclass(frozen=True)
@@ -26,6 +26,6 @@ def get_integer_expansion(n: int, radix: int) -> IntRadixExpansion:
     if n < radix:
         return IntRadixExpansion(radix, n * const)
 
-    q, r = divmod(n, radix)
+    q, r = int_divmod(n, radix)
     pol = get_integer_expansion(q, radix).polynomial
     return IntRadixExpansion(radix, pol * x + r * const)

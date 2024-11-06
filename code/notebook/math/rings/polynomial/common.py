@@ -1,4 +1,4 @@
-from ...rings.types import IRing, ISemiring
+from ...rings.types import IField, IRing, ISemiring
 from .base import BasePolynomial, PolynomialSubtractionMixin
 from .constructor import PolynomialConstructorMixin
 
@@ -8,4 +8,8 @@ class ISemiringPolynomial[N: ISemiring](PolynomialConstructorMixin[N], BasePolyn
 
 
 class IRingPolynomial[N: IRing](PolynomialSubtractionMixin[N], ISemiringPolynomial[N]):
+    pass
+
+
+class IFieldPolynomial[N: IField](IRingPolynomial[N]):
     pass

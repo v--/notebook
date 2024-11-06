@@ -1,5 +1,6 @@
-from .support import sgn
 from typing import NamedTuple
+
+from .support import sgn
 
 
 # This is eq:rem:integer_division_uniqueness/max/q in the monograph
@@ -63,7 +64,7 @@ class DivMod(NamedTuple):
     rem: int
 
 
-def divmod(n: int, m: int) -> DivMod:
+def int_divmod(n: int, m: int) -> DivMod:
     q = quot(n, m)
     return DivMod(q, n - m * q)
 

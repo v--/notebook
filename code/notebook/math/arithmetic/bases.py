@@ -10,14 +10,6 @@ from .primes import factor, totient
 from .support import SignT, sgn
 
 
-# # This is alg:integer_radix_expansion in the monograph
-# def get_integer_expansion(n: int, radix: int) -> int:
-#     assert radix >= 2
-
-#     if n < 0:
-#         return -get_integer_expansion(-n, radix)
-
-
 # This is eq:alg:real_number_radix_expansion/direct in the monograph
 def get_digit(x: float, radix: int, index: int) -> int:
     assert radix >= 2
