@@ -2,9 +2,9 @@ from collections.abc import Iterable, Mapping
 from typing import Self, cast
 
 from ....support.iteration import list_accumulator
-from ..types import ISemiring
+from ...rings.types import ISemiring
+from ..monomial import Monomial, const
 from .base import BasePolynomial
-from .monomial import Monomial, const
 
 
 class PolynomialConstructorMixin[N: ISemiring](BasePolynomial[N]):

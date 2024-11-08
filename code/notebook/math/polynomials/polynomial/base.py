@@ -4,9 +4,9 @@ from collections.abc import Iterable, MutableMapping, Sequence
 from typing import Any, Self, cast, override
 
 from ....support.iteration import string_accumulator
-from ..types import IRing, ISemiring
-from .exceptions import PolynomialEvaluationError
-from .monomial import Monomial
+from ...rings.types import IRing, ISemiring
+from ..exceptions import PolynomialEvaluationError
+from ..monomial import Monomial
 
 
 class PolynomialMeta(type):

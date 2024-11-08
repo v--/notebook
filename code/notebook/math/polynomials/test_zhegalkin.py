@@ -1,8 +1,9 @@
 from collections.abc import Callable
 
-from ....support.pytest import pytest_parametrize_kwargs
-from . import zhegalkin as z
-from .zhegalkin import ZhegalkinPolynomial, infer_zhegalkin
+from ...support.pytest import pytest_parametrize_kwargs
+from .polynomial import ZhegalkinPolynomial
+from .polynomial import zhegalkin as z
+from .zhegalkin import infer_zhegalkin
 
 
 @pytest_parametrize_kwargs(

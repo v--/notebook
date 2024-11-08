@@ -3,8 +3,8 @@ from collections.abc import Mapping
 import pytest
 
 from ....support.pytest import pytest_parametrize_kwargs
-from . import monomial
-from .exceptions import PolynomialEvaluationError
+from .. import monomial
+from ..exceptions import PolynomialEvaluationError
 from .int import IntPolynomial, const, x, y, z, zero
 
 

@@ -1,6 +1,6 @@
 from dataclasses import dataclass
 
-from ...rings.polynomial.int import IntPolynomial, const, x
+from ...polynomials.polynomial.int import IntPolynomial, const, x
 from ..divisibility import int_divmod
 
 

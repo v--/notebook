@@ -1,5 +1,5 @@
 from ....support.pytest import pytest_parametrize_kwargs
-from ...rings.polynomial.int import IntPolynomial, const, x, zero
+from ...polynomials.polynomial.int import IntPolynomial, const, x, zero
 from .int import get_integer_expansion
 
 

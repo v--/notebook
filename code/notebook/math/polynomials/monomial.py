@@ -2,8 +2,8 @@ import functools
 from collections.abc import Hashable, Iterable, Iterator, Mapping, Sequence
 from typing import Self
 
-from ....support.iteration import string_accumulator
-from ....support.unicode import to_superscript
+from ...support.iteration import string_accumulator
+from ...support.unicode import to_superscript
 
 
 @functools.total_ordering

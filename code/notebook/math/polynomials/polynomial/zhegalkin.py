@@ -2,10 +2,10 @@ import functools
 import inspect
 from collections.abc import Callable
 
-from ..modulo import Z2
-from . import monomial
+from ...rings.modulo import Z2
+from .. import monomial
+from ..monomial import Monomial
 from .common import IRingPolynomial
-from .monomial import Monomial
 
 
 class ZhegalkinPolynomial(IRingPolynomial[Z2], semiring=Z2):

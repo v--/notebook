@@ -1,4 +1,4 @@
-from . import monomial
+from .. import monomial
 from .common import IRingPolynomial
 
 
