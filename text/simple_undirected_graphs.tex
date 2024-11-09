@@ -174,7 +174,7 @@
 \end{definition}
 \begin{comments}
   \item This definition can be adjusted straightforwardly to other kinds of graphs, however we will not make use of that.
-  \item \incite[21]{Harary1969Graphs}, \incite[def. 4.1.1]{Knauer2019AlgGraphTheory} and \incite[def. 10.2.9]{Rosen2019DiscreteMathematics} use ordinary unions with the convention that the vertex sets and edge sets are disjoint. \incite[19]{ЕмеличевИПр1990Графы} also use regular unions, however they explicitly refer to unions as \enquote{disjoint} (\enquote{дизъюнктное объединение}) if the vertex sets and edge sets are disjoint.
+  \item \incite[21]{Harary1969Graphs}, \incite[def. 4.1.1]{Knauer2019AlgGraphTheory}, \incite[def. 10.2.9]{Rosen2019DiscreteMathematics} and \incite[23]{Зыков2004Графы} use ordinary unions with the convention that the vertex sets and edge sets are disjoint. \incite[19]{ЕмеличевИПр1990Графы} also use regular unions, however they explicitly refer to unions as \enquote{disjoint} (\enquote{дизъюнктное объединение}) if the vertex sets and edge sets are disjoint.
 \end{comments}
 
 \begin{proposition}\label{thm:undirected_graph_coproduct}
@@ -196,10 +196,111 @@
   We define the \term[ru=соединение (графов) (\cite[265]{Новиков2013ДискретнаяМатематика})]{graph join} \( G \Ast H \) of the \hyperref[def:undirected_graph]{simple undirected graphs} \( G \) and \( H \) as the \hyperref[def:graph_disjoint_union]{disjoint union} \( G \coprod H \) with an additional edge between every vertex from \( G \) and every vertex from \( H \).
 \end{definition}
 \begin{comments}
-  \item \incite[21]{Harary1969Graphs} attributes the introduction of graph joins to \cite[164]{Зыков1949СоединенияГрафов}. Zykov calls them \enquote{products} and denotes them via juxtaposition, however his paper generally uses arcane terminology like \enquote{complex} instead of \enquote{graph}.
+  \item \incite[21]{Harary1969Graphs} attributes the introduction of graph joins to \cite[164]{Зыков1949СоединенияГрафов}. Zykov calls them \enquote{произведения} (\enquote{products}) and denotes them via juxtaposition, however his paper generally uses arcane terminology like \enquote{complex} instead of \enquote{graph}. In a later book, \cite[23]{Зыков2004Графы}, Zykov uses the same term, but translates it as \enquote{join}.
 
   \incite[def. 4.1.4]{Knauer2019AlgGraphTheory} uses both our terminology and our notation. \incite[4]{Diestel2017Graphs} uses \enquote{\( \Ast \)}, however avoids introducing a special term. The term \enquote{term} is used by \incite[21]{Harary1969Graphs} and \incite[\S 7.3.1]{Новиков2013ДискретнаяМатематика} (as \enquote{соединение}), however the latter two authors denote this operation by \enquote{\( + \)}.
 \end{comments}
+
+\begin{definition}\label{def:wheel_graph}\mcite[65]{Diestel2017Graphs}
+  For a positive integer \( n \), we define the \term{wheel graph} \( W_n \) as the \hyperref[def:graph_join]{join} of the \hyperref[def:cycle_graph]{cycle graph} \( C_n \) and the single-point graph \( K_1 \).
+
+  \begin{figure}[!ht]
+    \begin{equation}\label{eq:fig:def:wheel_graph/w12}
+      \begin{aligned}
+        \includegraphics[page=1]{output/def__wheel_graph}
+      \end{aligned}
+    \end{equation}
+    \caption{The \hyperref[def:wheel_graph]{wheel graph} \( W_{12} \).}\label{fig:def:wheel_graph/c12}
+  \end{figure}
+\end{definition}
+
+\begin{definition}\label{def:graph_box_product}\mcite[def. 4.3.1]{Knauer2019AlgGraphTheory}
+  We define the \term{box product} \( G \boxprod H \) of two \hyperref[def:simple_undirected_graph]{simple undirected graphs} \( G \) and \( H \) as the graph whose vertex set is the \hyperref[def:cartesian_product/product]{Cartesian product} \( V_G \times V_H \) and whose edge set is
+  \begin{equation}\label{eq:def:graph_box_product/edges}
+    \set[\Big]{ \set{ (u, v), (u, v') } \given \set{ v, v' } \in E_H } \cup \set[\Big]{ \set{ (u, v), (u', v) } \given \set{ u, u' } \in E_G }.
+  \end{equation}
+
+  We can recursively extend this to form \( n \)-fold box products:
+  \begin{equation}\label{eq:def:graph_box_product/recursive}
+    G^{\boxprod n} \coloneqq \begin{cases}
+      K_1                           &n = 0 \\
+      G^{\boxprod n - 1} \boxprod G &n > 1.
+    \end{cases}
+  \end{equation}
+\end{definition}
+\begin{comments}
+  \item For complete graphs \eqref{eq:def:graph_box_product/edges} simplifies considerably --- see \fullref{thm:box_product_of_complete_graphs}.
+\end{comments}
+
+\begin{proposition}\label{thm:box_product_of_complete_graphs}
+  In the case of \hyperref[def:complete_graph]{complete graphs} \( K_A \) and \( K_B \), two vertices in their \hyperref[def:graph_box_product]{box product} \( K_A \boxprod K_B \) are adjacent if and only if either their first or second components match (but not both).
+\end{proposition}
+\begin{proof}
+  We simply have to note that the condition for \( v \) and \( w \) to be adjacent in \( K_A \) is equivalent to \( v \neq w \), which simplifies \eqref{eq:def:graph_box_product/edges} to
+  \begin{equation*}
+    \set[\Big]{ \set{ (u, v), (u, v) } \given v \neq v' } \cup \set[\Big]{ \set{ (u, v), (u', v) } \given u \neq u' }.
+  \end{equation*}
+\end{proof}
+
+\begin{definition}\label{def:hypercube_graph}\mcite[def. 4.3.4]{Knauer2019AlgGraphTheory}
+  We define the \term[en=hypercube (\cite[example 10.2.8]{Rosen2019DiscreteMathematics}) / cube (\cite[def. 4.3.4]{Knauer2019AlgGraphTheory})]{hypercube graph} \( Q_n \) as the \( n \)-fold \hyperref[def:graph_box_product]{box product} of \( K_2 \).
+
+  We refer to \( Q_2 \) as a \term{square} and to \( Q_3 \) as a \term{cube}.
+
+  \begin{figure}[!ht]
+    \begin{equation}\label{eq:fig:def:hypercube_graph/q3}
+      \begin{aligned}
+        \includegraphics[page=1]{output/def__hypercube_graph}
+      \end{aligned}
+    \end{equation}
+    \caption{The \hyperref[def:hypercube_graph]{cube graph} \( Q_3 \) labeled as per \fullref{thm:hypercube_graphs_as_strings}.}\label{fig:def:hypercube_graph/q3}
+  \end{figure}
+\end{definition}
+\begin{comments}
+  \item Other graphs isomorphic to \( Q_2 \) are also referred to as \enquote{square graphs} --- see \fullref{thm:square_graphs}.
+  \item We can characterize \( Q_n \) via bit strings --- see \fullref{thm:hypercube_graphs_as_strings}.
+\end{comments}
+
+\begin{proposition}\label{thm:hypercube_graphs_as_strings}
+  The \hyperref[def:hypercube_graph]{hypercube graph} \( Q_n \) is \hyperref[def:undirected_graph/homomorphism]{isomorphic} to the graph whose vertices are \hyperref[def:positional_number_system/binary]{bit} strings of length \( n \), with two strings adjacent if their \hyperref[def:hamming_distance]{Hamming distance} is \( 1 \).
+\end{proposition}
+\begin{proof}
+  Denote by \( B_n \) the bit string graph described above.
+
+  We will use induction on \( n \) to show that \( Q_n \) and \( B_n \) are isomorphic. The base case \( n = 0 \) is obvious --- there is only one string of length zero, and it is not connected to itself.
+
+  Suppose that the proposition holds for \( n - 1 \) and consider \( Q_n \), which is, by definition, \( Q_{n-1} \boxprod K_2 \).
+
+  By the inductive hypothesis, there exists an isomorphism \( f: V_{Q_{n-1}} \to V_{B_{n-1}} \). Since the vertices of \( K_2 \) are \( 0 \) and \( 1 \), we can extend \( f \) by concatenation:
+  \begin{equation*}
+    \begin{aligned}
+      &\widehat f: V_{Q_n} \to V_{B_n}, \\
+      &\widehat f(v, k) \coloneqq f(v) \cdot k.
+    \end{aligned}
+  \end{equation*}
+
+  We must now show that \( \widehat f \) is an isomorphism.
+
+  \begin{itemize}
+    \item First suppose that there is an edge in \( Q_n \) between \( (v, k) \) and \( (w, m) \).
+    \begin{itemize}
+      \item If \( v = w \), then \( f(v) = f(w) \) and thus \( k \neq m \), implying that the Hamming distance of \( \widehat f(v, k) \) and \( \widehat f(w, m) \) is exactly \( 1 \).
+
+      \item Otherwise, \( k = m \), and the inductive hypothesis implies that the Hamming distance of \( f(v) \) and \( f(w) \) is \( 1 \).
+    \end{itemize}
+
+    In both cases we obtain that \( \widehat f(v, n) \) and \( \widehat f(w, m) \) are adjacent in \( B_n \).
+
+    \item Conversely, suppose that there is an edge in \( B_n \) between \( \widehat f(v, n) \) and \( \widehat f(w, m) \).
+    \begin{itemize}
+      \item If \( k = m \), then \( f(v) \) and \( f(w) \) have Hamming distance \( 1 \), thus they are adjacent in \( B_{n-1} \). By the inductive hypothesis, \( v \) and \( w \) are adjacent in \( Q_{n-1} \), and hence \( (v, k) \) and \( (w, m) \) are adjacent in \( Q_n \).
+
+      \item Otherwise, \( f(v) = f(w) \), and \( v = w \) since \( f \) is injective. Then \( (v, k) \) and \( (w, m) \) are adjacent in \( Q_{n-1} \).
+    \end{itemize}
+  \end{itemize}
+
+  This completes the proof.
+\end{proof}
 
 \paragraph{Generalized Petersen graphs}
 
@@ -386,7 +487,7 @@
 \begin{example}\label{ex:thm:multipartite_graph_complete_subgraph}
   We list several examples related to \fullref{thm:multipartite_graph_complete_subgraph}:
   \begin{thmenum}
-    \thmitem{ex:thm:multipartite_graph_complete_subgraph/triangle} The graph \( C_4 \) is bipartite, as can be seen in \cref{fig:thm:square_graph}.
+    \thmitem{ex:thm:multipartite_graph_complete_subgraph/triangle} The graph \( C_4 \) is bipartite, as can be seen in \cref{fig:thm:square_graphs}.
 
     Consider the following supergraph of \( C_4 \):
     \begin{equation}\label{eq:ex:thm:multipartite_graph_complete_subgraph/triangle}
@@ -458,26 +559,33 @@
   \end{equation*}
 \end{proof}
 
-\begin{proposition}\label{thm:square_graph}
-  The \hyperref[def:cycle_graph]{cycle graph} \( C_4 \) is \hyperref[def:undirected_graph/homomorphism]{isomorphic} to the \hyperref[def:complete_multipartite_graph]{complete bipartite graph} \( K_{2,2} \).
+\begin{proposition}\label{thm:square_graphs}
+  The \hyperref[def:cycle_graph]{cycle graph} \( C_4 \) and the \hyperref[def:complete_multipartite_graph]{complete bipartite graph} \( K_{2,2} \) are \hyperref[def:undirected_graph/homomorphism]{isomorphic} to the \hyperref[def:hypercube_graph]{square graph} \( Q_2 \)
+
 
   \begin{figure}[!ht]
-    \begin{subcaptionblock}{\textwidth/2}
+    \begin{subcaptionblock}{\textwidth/4}
       \centering
-      \includegraphics[page=1]{output/thm__square_graph__c4}
-      \caption{\( C_4 \)}\label{fig:thm:square_graph/c4}
+      \includegraphics[page=1]{output/thm__square_graph__q2}
+      \caption{\( Q_2 \)}\label{fig:thm:square_graphs/q2}
     \end{subcaptionblock}
     \hfill
-    \begin{subcaptionblock}{\textwidth/2}
+    \begin{subcaptionblock}{\textwidth/3}
+      \centering
+      \includegraphics[page=1]{output/thm__square_graph__c4}
+      \caption{\( C_4 \)}\label{fig:thm:square_graphs/c4}
+    \end{subcaptionblock}
+    \hfill
+    \begin{subcaptionblock}{\textwidth/3}
       \centering
       \includegraphics[page=1]{output/thm__square_graph__k22}
-      \caption{\( K_{2,2} \)}\label{fig:thm:square_graph/k22}
+      \caption{\( K_{2,2} \)}\label{fig:thm:square_graphs/k22}
     \end{subcaptionblock}
-    \caption{An explicit isomorphism for the graphs in \fullref{thm:square_graph}.}\label{fig:thm:square_graph}
+    \caption{An explicit isomorphism for the graphs in \fullref{thm:square_graphs}.}\label{fig:thm:square_graphs}
   \end{figure}
 \end{proposition}
 \begin{proof}
-  An explicit isomorphism is illustrated in \cref{fig:thm:square_graph}.
+  An explicit isomorphism is illustrated in \cref{fig:thm:square_graphs}.
 \end{proof}
 
 \paragraph{Turan's theorem}
