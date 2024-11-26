@@ -1,8 +1,7 @@
-usepackage('stix2');
 unitsize(2cm);
 
 import three;
-import 'asymptote/trajectories.asy' as trajectories;
+from 'asymptote/trajectories.asy' access trajectory;
 
 currentprojection = orthographic(camera=(-0.2, 0.3, 0.2));
 
@@ -13,8 +12,12 @@ transform3 T = {
   {0, 0, 0, 1}
 };
 
+path plane_path = (-1 / 2, -1) -- (-1 / 2, 3 / 2) -- (3 / 2, 3 / 2) -- (3 / 2, -1) -- cycle;
+path plane_hole = (0, -1 / 2) -- (0, 1) -- (1, 1) -- (1, -1 / 2) -- cycle;
+
 draw(T * unitcube, mediumgray);
-draw(surface(T * (-1 / 2, -1, 0) -- T * (-1 / 2, 3 / 2, 0) -- T * (3 / 2, 3 / 2, 0) -- T * (3 / 2, -1, 0) -- cycle), white);
+draw(T * surface(reverse(plane_hole) ^^ plane_path), white);
+
 draw(unitcube, gray);
 
 trajectory(T, (0, 0, 0));

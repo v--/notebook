@@ -2,6 +2,7 @@ import asyncio
 import os.path
 import pathlib
 import shutil
+from typing import override
 
 import loguru
 import texoutparse
@@ -31,12 +32,14 @@ class LaTeXTask(WatcherTask):
         return OUTPUT_PATH / self.tex_path.with_suffix('.pdf').name
 
     @property
+    @override
     def command(self) -> str:
         return r'pdflatex -interaction=batchmode -output-directory=%s %s' % (AUX_PATH, self.tex_path)
 
     def get_aux_path(self, extension: str) -> pathlib.Path:
         return AUX_PATH / self.tex_path.with_suffix(extension).name
 
+    @override
     async def post_process(self, runner: TaskRunner) -> None:  # noqa: PLR0912
         parser = texoutparse.LatexLogParser()
         requires_rerun = False

@@ -1,6 +1,7 @@
 import asyncio
 import os.path
 import pathlib
+from typing import override
 
 import loguru
 
@@ -23,6 +24,7 @@ class BiberTask(WatcherTask):
     def __repr__(self) -> str:
         return f'BiberTask({self.bcf_path!r})'
 
+    @override
     @property
     def command(self) -> str:
         return f'biber {self.bcf_path}'
@@ -38,5 +40,6 @@ class BiberTask(WatcherTask):
     def bcf_path(self) -> pathlib.Path:
         return self.get_aux_path('.bcf')
 
+    @override
     async def post_process(self, runner: TaskRunner) -> None:
         runner.schedule(LaTeXTask(self.base_logger, self.tex_path), str(self.bcf_path))

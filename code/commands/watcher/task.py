@@ -1,4 +1,5 @@
 import abc
+from collections.abc import Mapping
 from typing import TYPE_CHECKING
 
 import loguru
@@ -21,7 +22,11 @@ class WatcherTask(abc.ABC):
     @property
     @abc.abstractmethod
     def command(self) -> str:
-        pass
+        ...
+
+    @property
+    def env(self) -> Mapping[str, str] | None:
+        return None
 
     async def pre_process(self, runner: 'TaskRunner') -> None:
         pass

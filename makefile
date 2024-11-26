@@ -24,7 +24,7 @@ output/%.pdf: classes/*.cls packages/*.sty figures/%.tex | aux output
 	cat aux/$*.pdf > output/$*.pdf
 
 output/%.pdf: asymptote/*.asy figures/%.asy | aux output
-	asy -quiet -render=5 -outformat=pdf -outname=aux/$* figures/$*.asy
+	xvfb-run --auto-servernum asy -outname=aux/$* figures/$*.asy
 	cat aux/$*.pdf > output/$*.pdf
 
 figures: $(FIGURES_TEX_PDF) $(FIGURES_ASY_PDF)

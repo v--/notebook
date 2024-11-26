@@ -7,6 +7,7 @@ from typing import Literal
 import click
 import loguru
 from asyncinotify import Inotify, Mask
+from xvfbwrapper import Xvfb
 
 from ..common.logging import configure_loguru
 from ..common.paths import FIGURES_PATH, ROOT_PATH
@@ -75,7 +76,11 @@ def watch(*, no_aux: bool) -> None:
     configure_loguru(verbose=True)
     base_logger = loguru.logger
 
+    vdisplay = Xvfb()
+    vdisplay.start()
+
     try:
         asyncio.run(setup_watchers(base_logger, no_aux=no_aux))
     except KeyboardInterrupt:
         base_logger.info('Gracefully shutting down')
+        vdisplay.stop()

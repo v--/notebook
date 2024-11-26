@@ -1,5 +1,6 @@
 import pathlib
 import shutil
+from typing import override
 
 import loguru
 
@@ -28,9 +29,19 @@ class AsymptoteTask(WatcherTask):
     def build_pdf_path(self) -> pathlib.Path:
         return OUTPUT_PATH / self.src_path.with_suffix('.pdf').name
 
+    @override
     @property
     def command(self) -> str:
-        return f'asy -quiet -render=5 -outformat=pdf -outname={self.aux_pdf_path.with_suffix('')} {self.src_path}'
+        return f'asy -outname={self.aux_pdf_path.with_suffix('')} {self.src_path}'
 
-    async def post_process(self, runner: TaskRunner) -> None:  # noqa: ARG002
+    @override
+    async def pre_process(self, runner: TaskRunner) -> None:
+        self.aux_pdf_path.unlink()
+
+    @override
+    async def post_process(self, runner: TaskRunner) -> None:
+        if not self.aux_pdf_path.exists():
+            self.sublogger.error('No output file')
+            return
+
         shutil.copyfile(self.aux_pdf_path, self.build_pdf_path)

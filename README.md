@@ -27,7 +27,7 @@ If you happen to be interested in any aspect of the setup, feel free to [contact
 There are two build systems --- the [`makefile`](./makefile) and the [`code.commands.watcher`](./code/commands/watcher) (Usage: `poe --root code watcher [--no-aux]`) command. The first one is aimed at full builds, i.e. for continuous integration, while the second one is aimed at incremental builds, i.e. for development.
 
 There are externalized figures in the [`figures`](./figures) directory of the following kinds:
-* [Asymptote](https://github.com/vectorgraphics/asymptote) (`.asy`) files for 2D and 3D sketches and plots, as well as (graph-theoretic) graphs.
+* [Asymptote](https://github.com/vectorgraphics/asymptote) (`.asy`) files for 2D and 3D sketches and plots, as well as (graph-theoretic) graphs. `xvfb` is used by default for 3D rendering (freeglut doesn't work on headless environments nor on Wayland).
 * [tikz-cd](https://ctan.org/pkg/tikz-cd) (`.tex` with document class `classes/tikzcd`) files for commutative and Hasse diagrams and automata.
 * [forest](https://ctan.org/pkg/forest) (`.tex` with document class `classes/forest`) files for trees.
 
