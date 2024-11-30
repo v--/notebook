@@ -38,14 +38,14 @@ def iter_primes(ceiling: int) -> Iterable[int]:
             yield k
 
 
-def is_prime(n: int) -> bool:
+def is_prime_naive(n: int) -> bool:
     assert n > 0
 
     if n == 1:
         return False
 
     return all(
-        divides(n, k) for k in range(2, math.isqrt(n) + 1)
+        not divides(k, n) for k in range(2, math.isqrt(n) + 1)
     )
 
 

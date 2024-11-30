@@ -14,6 +14,9 @@
 \RequirePackage{typearea}
 \RedeclareSectionCommand[tocnumwidth=3em]{section}
 
+% Report errors verbosely
+\setcounter{errorcontextlines}{100}
+
 % Generic math packages (load first to avoid misbehaving macros later)
 \RequirePackage{mathtools} % Loads amsmath
 \RequirePackage{empheq}

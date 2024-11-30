@@ -1,24 +1,22 @@
 usepackage('stix2');
-unitsize(2cm);
+unitsize(1cm);
 
 import geometry;
-import 'asymptote/angles.asy' as angles;
+import 'asymptote/labels.asy' as labels;
+import 'asymptote/geom/tri.asy' as tri;
+import 'asymptote/geom/segment.asy' as segment;
 
-pair A = (0, 0);
-pair B = (3, 0);
-pair C = (2, 2);
+triangle tri = triangleabc(3, 4, 5);
 
-dot(A, L=Label('$A$', align=SW));
-dot(B, L=Label('$B$', align=SE));
-dot(C, L=Label('$C$', align=N));
-dot((A + B) / 2, L=Label('$M_C$', align=SE));
-dot((A + C) / 2, L=Label('$M_B$', align=NW));
-dot((B + C) / 2, L=Label('$M_A$', align=NE));
-dot((A + B + C) / 3, L=shift(3, 14) * Label('$M$'));
+segment ma = median(tri.VA);
+segment mb = median(tri.VB);
+segment mc = median(tri.VC);
 
-draw(A -- B);
-draw(A -- C);
-draw(B -- C);
-draw(C -- (A + B) / 2);
-draw(A -- (B + C) / 2);
-draw(B -- (A + C) / 2);
+point M = intersectionpoint(mc, mb);
+
+draw(tri);
+draw_segment(ma, LA='$A$', LB='$M_A$');
+draw_segment(mb, LA='$B$', LB='$M_B$');
+draw_segment(mc, LA='$C$', LB='$M_C$');
+
+dot(M, L=Label('$M$', align=rotate(50) * 2E));

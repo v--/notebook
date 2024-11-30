@@ -338,20 +338,10 @@ Semimodules are generalizations of monoid actions. Notation and terminology-wise
     R^{\oplus A} \coloneqq \bigoplus_{x \in A} R = \set{ t: A \to R \given t \T{has finite \hyperref[def:function_support]{support}} }.
   \end{equation*}
 
-  We can regard the function \( t \) as an indexed family \( \seq{ t_x }_{x \in A} \).
-
   \begin{thmenum}
-    \thmitem{def:free_semimodule/operations} \Fullref{thm:functions_over_model_form_model} implies that \( R^{\oplus A} \) inherits addition and multiplication from \( R \) and is actually a semiring. Scalar multiplication can be defined as
-    \begin{equation*}
-      \begin{aligned}
-        &\cdot: R \times R^{\oplus A} \to R^{\oplus A}, \\
-        &r \cdot \seq{ t_x }_{x \in A} \coloneqq \seq{ r \cdot t_x }_{x \in A}.
-      \end{aligned}
-    \end{equation*}
+    \thmitem{def:free_semimodule/operations} \Fullref{thm:functions_over_model_form_model} implies that \( R^{\oplus A} \) is a semiring with the elementwise addition and multiplication inherited from \( R \). Scalar multiplication by \( r \in R \) can be defined as multiplication by the \hyperref[def:constant_function]{constant function} at \( r \).
 
-    Free right semimodules require trivial adjustments here.
-
-    \thmitem{def:free_semimodule/inclusion} We also define the \term{canonical inclusion} function
+    \thmitem{def:free_semimodule/inclusion} We start with the canonical inclusion
     \begin{equation*}
       \begin{aligned}
         &\iota_A: A \to R^{\oplus A}, \\
@@ -369,8 +359,42 @@ Semimodules are generalizations of monoid actions. Notation and terminology-wise
   \end{thmenum}
 \end{definition}
 \begin{comments}
+  \item We will use the notation \fullref{rem:free_semimodule_notation} for semimodules.
+
   \item In the case when \( R \) is the semiring \( \BbbN \) of natural numbers, \( \BbbN^{\oplus A} \) is the set of finite \hyperref[def:multiset]{multisets} over \( S \).
 \end{comments}
+
+\begin{remark}\label{rem:free_semimodule_notation}
+  We can use the inclusion \fullref{def:free_semimodule/inclusion} of \( A \) into its \hyperref[def:free_semimodule]{free semimodule} \( R^{\oplus A} \) to introduce a simpler notation.
+
+  For any \( t: A \to R^{\oplus A} \) and any \( a \in A \), denote by \( t_a \) the constant function taking the value \( t(a) \)\fnote{In \fullref{def:free_semimodule/operations} we defined scalar multiplication by \( t(a) \) as multiplication with \( t_a \). Having a clear distinction between functions and scalars makes the derivation of \eqref{eq:def:free_semimodule/sum} clearer}.
+
+  Then
+  \begin{equation*}
+    t_a(x) \cdot \iota_A(a)(x)
+    =
+    \begin{cases}
+      t(a) \cdot_R 0_R, &a \neq x, \\
+      t(a) \cdot_R 1_R, &a = x
+    \end{cases}
+  \end{equation*}
+
+  On other words, the product \( t_a(x) \cdot \iota_A(a)(x) \) is zero for every \( x \neq a \) and coincides with \( t(x) \) when \( x = a \).  As discussed in \fullref{rem:binary_operation_syntax_trees/infinite/direct_sum}, an infinite sum is well-defined if only finitely many summands are nonzero, thus
+  \begin{equation*}
+    t(x) = \sum_{a \in A} t_a(x) \cdot_R \iota_A(a)(x),
+  \end{equation*}
+  which can also be written more succinctly as
+  \begin{equation*}
+    t = \sum_{a \in A} t_a \cdot \iota_A(a).
+  \end{equation*}
+
+  To make the notation simpler, we can write \( a \) instead of \( \iota_A(a) \):
+  \begin{equation}\label{eq:def:free_semimodule/sum}
+    t = \sum_{a \in A} t_a \cdot a.
+  \end{equation}
+
+  Outside this remark, we will regard \( t_a \) as a scalar and \( a \) as a vector.
+\end{remark}
 
 \begin{theorem}[Free semimodule universal property]\label{thm:free_semimodule_universal_property}
   Fix a semiring \( R \) and a set \( A \). The \hyperref[def:free_semimodule]{free \( R \)-semimodule} \( R^{\oplus A} \) over \( R \) is the unique up to a unique isomorphism semimodule that satisfies the following \hyperref[rem:universal_mapping_property]{universal mapping property}:
@@ -388,55 +412,85 @@ Semimodules are generalizations of monoid actions. Notation and terminology-wise
   \begin{equation*}
     U: \cat{SMod}_R \to \cat{Set}.
   \end{equation*}
+
+  \item \hyperref[con:evaluation_homomorphism]{Evaluation homomorphisms} for polynomials are actually defined via the map \( \Phi_e \) discussed here. We thus refer to \( \Phi_e \) as an evaluation homomorphism.
 \end{comments}
 \begin{proof}
-  For every function \( e: A \to M \), we want
+  \ExistenceSubProof For every function \( e: A \to M \), we want
   \begin{equation*}
     \Phi_e(\iota(x)) = e(x).
   \end{equation*}
 
   This suggests the definition
   \begin{equation*}
-    \Phi_e(\seq{ t_x }_{x \in A}) \coloneqq \sum_{x \in A}^n t_x \cdot e(x).
+    \Phi_e(\sum_{a \in A} t_a \cdot a) \coloneqq \sum_{x \in A} \sum_{a \in A} t_a \cdot e(a).
   \end{equation*}
 
-  We discuss well-definedness of infinitary operations in direct sums in \fullref{rem:binary_operation_syntax_trees/infinite/direct_sum}.
+  \UniquenessSubProof Fix a linear map \( \Psi_e: R^{\oplus A} \to M \) such that
+  \begin{equation*}
+    \Psi_e(\iota(x)) = e(x).
+  \end{equation*}
+
+  We will use induction on the number of nonzero entries in \( \seq{ t_x }_{x \in A} \) to show that \( \Phi_e \) and \( \Psi_e \) coincide. The base case where all entries are zero is obvious since
+  \begin{equation*}
+    \Psi_e(\iota(0_R)) = e(0_r) = \Phi_e(\iota(0_R)).
+  \end{equation*}
+
+  Now suppose that
+  \begin{equation*}
+    \Psi_e(\iota(x)) = e(x),
+  \end{equation*}
+  and that \( \Psi_e \) coincides with \( \Phi_e \) for every element of \( R^{\oplus A} \) with \( n - 1 \) entries. Given \( \seq{ t_x }_{x \in A} \) with \( n \) nonzero entries, fix a nonzero \( t_{x_0} \) and define
+  \begin{equation}
+    t'_x \coloneqq \begin{cases}
+      0,   &x = x_0, \\
+      t_x, &\T{otherwise.}
+    \end{cases}
+  \end{equation}
+
+  Then
+  \begin{balign*}
+    \Psi_e(\seq{ t_x }_{x \in A})
+    &=
+    \sum_{x \neq x_0} t_x \cdot e(x) + t_{x_0} \cdot e(x_0)
+    = \\ &=
+    \Psi_e(\seq{ t'_x }_{x \in A}) + t_{x_0} \cdot e(x_0)
+    \reloset {\T{ind.}} = \\ &=
+    \Phi_e(\seq{ t'_x }_{x \in A})
+    = \\ &=
+    \Phi_e(\seq{ t_x }_{x \in A}).
+  \end{balign*}
+
+  This concludes the proof.
 \end{proof}
 
 \begin{definition}\label{def:linear_combination}\mimprovised
-  Fix a \hyperref[def:semiring]{(semi)ring} \( R \) and an \hyperref[def:semimodule]{\( R \)-semimodule} \( M \).
+  Fix some list of \hyperref[def:formal_language/symbol]{symbols} \( X_1, \ldots, X_n \), which we will call \term{indeterminates}.
 
-  The \hyperref[def:free_semimodule]{free semimodule} \( R^{\oplus M} \) consists of indexed families \( \seq{ t_x }_{x \in M} \), where only finitely many nonzero entries. We call such an entry a \term[ru=линейная комбинация (\cite[\S 3.2]{Тыртышников2007ЛинейнаяАлгебра}), en=linear combination (\cite[6]{Treil2017LinearAlgebra})]{linear combination}.
+  A \term[ru=линейная комбинация (\cite[\S 3.2]{Тыртышников2007ЛинейнаяАлгебра}), en=linear combination (\cite[6]{Treil2017LinearAlgebra})]{linear combination} in \( X_1, \ldots, X_n \) is simply an element of the \hyperref[def:free_semimodule]{free semimodule} over the set of indeterminates.
 
-  We refer to the entries of a linear combination as \term[ru=коэффициенты (линейной комбинации) (\cite[\S 3.2]{Тыртышников2007ЛинейнаяАлгебра})]{coefficients} and to the pairs \( (t_x, x) \) as \term{terms}.
+  For every linear combination \( t \), we can adapt the notation from \fullref{rem:free_semimodule_notation} to write
+  \begin{equation}\label{eq:def:linear_combination}
+    \sum_{k=1}^n t_k \cdot X_k.
+  \end{equation}
+
+  We refer to the scalars \( t_k \) in \eqref{eq:def:linear_combination} as \term[ru=коэффициенты (линейной комбинации) (\cite[\S 3.2]{Тыртышников2007ЛинейнаяАлгебра})]{coefficients} and to the products \( t_k \cdot X_k \) as \term{terms}.
 
   \begin{thmenum}
     \thmitem{def:linear_combination/trivial} If all coefficients are zero, we say that the linear combination is \term[ru=тривиальная (линейная комбинация) (\cite[\S 3.3]{Тыртышников2007ЛинейнаяАлгебра}), en=trivial (linear combination) (\cite[8]{Treil2017LinearAlgebra})]{trivial}.
 
-    \thmitem{def:linear_combination/sum} \Fullref{thm:free_semimodule_universal_property} suggests evaluating \( \seq{ t_x }_{x \in M} \) as
+    \thmitem{def:linear_combination/sum} For every \( R \)-semimodule \( M \) and every list \( m_1, \ldots, m_n \) of vectors in \( M \), \fullref{thm:free_semimodule_universal_property} allows us to evaluate \eqref{eq:def:linear_combination} to obtain a vector in \( M \):
     \begin{equation}\label{eq:def:linear_combination/sum}
-      \sum_{x \in M} t_x \cdot x.
+      \sum_{k=1}^n t_k \cdot m_k.
     \end{equation}
 
-    We call \eqref{eq:def:linear_combination/sum} the \term{sum} of the linear combination.
-
-    \thmitem{def:linear_combination/of} A linear combination \hi{of the vectors} \( x_1, \ldots, x_n \) is simply a linear combination \( \seq{ t_x }_{x \in M} \) such that \( t_x = 0 \) for every \( x \) outside \( x_1, \ldots, x_n \).
-
-    To be precise, we allow the possibility that \( t_{x_k} = 0 \) for \( k = 1, \ldots, n \).
-
-    We then use the notation
-    \begin{equation}\label{eq:def:linear_combination/of}
-      \sum_{k=1}^n t_k \cdot x_k
-    \end{equation}
-    ambiguously both for the combination itself and for its sum.
+    We will refer to \eqref{eq:def:linear_combination/sum} as a \enquote{linear combination \hi{of the vectors}} \( m_1, \ldots, m_n \).
   \end{thmenum}
 \end{definition}
 \begin{comments}
-  \item Linear combinations are assumed knowledge and even informal definitions can rarely be found. Even those authors like \incite[\S 3.2]{Тыртышников2007ЛинейнаяАлгебра} and \incite[6]{Treil2017LinearAlgebra} that give definitions do it informally, without distinguishing between the syntax-semantics distinction.
+  \item Linear combinations and their sums are thus an instance of the \hyperref[con:syntax_semantics_duality]{syntax-semantics duality}. We base our presentation on \hyperref[def:polynomial_algebra]{polynomials}, where this distinction is made clear.
 
-  \item Linear combinations and their sums are thus an instance of the \hyperref[con:syntax_semantics_duality]{syntax-semantics duality}.
-
-  \item This issue of finiteness is discussed in more generality in \fullref{rem:binary_operation_syntax_trees/infinite/direct_sum}.
+  Unfortunately, it is not established practice to distinguish between a linear combination and its sum, which formally renders the discussions of coefficients and terms nonsensical. Linear combinations are assumed knowledge and even informal definitions can rarely be found. Even those authors like \incite[\S 3.2]{Тыртышников2007ЛинейнаяАлгебра} and \incite[6]{Treil2017LinearAlgebra} that give definitions do it informally, without delving into the syntax-semantics distinction.
 \end{comments}
 
 \begin{proposition}\label{thm:span_via_linear_combinations}

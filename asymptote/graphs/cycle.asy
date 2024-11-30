@@ -1,4 +1,3 @@
-import 'asymptote/polar.asy' as polar;
 import 'asymptote/graphs.asy' as graphs;
 
 struct CycleGraph {
@@ -15,7 +14,7 @@ struct CycleGraph {
 
     for (int i = 0; i < n; ++i) {
       real angle = base_angle + correction + (3 / 4 + i / n) * 2 * pi;
-      this.vert[i] = radius * polar(angle);
+      this.vert[i] = polar(radius, angle);
     }
   }
 

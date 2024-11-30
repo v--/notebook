@@ -1,7 +1,7 @@
 COMPILER := pdflatex -interaction=batchmode
 FIGURES_TEX_PDF := $(patsubst figures/%.tex,output/%.pdf,$(wildcard figures/*.tex))
 FIGURES_ASY_PDF := $(patsubst figures/%.asy,output/%.pdf,$(wildcard figures/*.asy))
-TEXT_SOURCE := notebook.tex classes/notebook.cls bibliography/*.bib packages/*.sty text/*.tex $(FIGURES_TEX_PDF) $(FIGURES_ASY_PDF)
+TEXT_SOURCE := notebook.tex classes/notebook.cls bibliography/*.bib asymptote/*.asy packages/*.sty text/*.tex $(FIGURES_TEX_PDF) $(FIGURES_ASY_PDF)
 
 .PHONY: figures clean
 .DEFAULT_GOAL := output/notebook.pdf
@@ -19,11 +19,11 @@ output/notebook.pdf: $(TEXT_SOURCE) images/*.png | aux output
 	$(COMPILER) -output-directory=aux notebook.tex
 	cat aux/notebook.pdf > output/notebook.pdf
 
-output/%.pdf: classes/*.cls packages/*.sty figures/%.tex | aux output
+output/%.pdf: figures/%.tex classes/*.cls packages/*.sty | aux output
 	$(COMPILER) -output-directory=aux figures/$*.tex
 	cat aux/$*.pdf > output/$*.pdf
 
-output/%.pdf: asymptote/*.asy figures/%.asy | aux output
+output/%.pdf: figures/%.asy asymptote/*.asy | aux output
 	xvfb-run --auto-servernum asy -outname=aux/$* figures/$*.asy
 	cat aux/$*.pdf > output/$*.pdf
 

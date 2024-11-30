@@ -78,6 +78,7 @@ class BibEntry(NamedTuple):
     chapter:       Annotated[BibString | None, BibFieldAnnotation()] = None
     series:        Annotated[BibString | None, BibFieldAnnotation()] = None
     isbn:          Annotated[BibString | None, BibFieldAnnotation()] = None
+    part:          Annotated[BibString | None, BibFieldAnnotation()] = None
     # Book (and proceeding) chapters
     booktitle:     Annotated[BibString | None, BibFieldAnnotation()] = None
     booksubtitle:  Annotated[BibString | None, BibFieldAnnotation()] = None

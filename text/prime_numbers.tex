@@ -147,13 +147,54 @@
   \item As in \cite[18]{Apostol1976AnalyticNumberTheory}, we will sometimes find it convenient to use the increasing sequence of all prime numbers.
 \end{comments}
 \begin{proof}
-  Let \( u r_1 \cdots r_m \) be an irreducible factorization of \( n \). All irreducible factors are either prime numbers or additive inverses of prime numbers, thus, without loss of generality, we can assume that \( u = 1 \) and that all irreducible factors are prime numbers.
+  Let \( u p_1 \cdots p_r \) be an irreducible factorization of \( n \). All irreducible factors are either prime numbers or additive inverses of prime numbers, thus, without loss of generality, we can assume that \( u = 1 \) and that all irreducible factors are prime numbers.
 
   Furthermore, every irreducible factorization of \( n \) is simply a permutation of this one.
 
-  Then \( v_p(n) \) is the number of occurrences of \( p \) among \( r_1, \ldots, r_m \).
+  Then \( v_p(n) \) is simply the number of occurrences of \( p \) among \( p_1, \ldots, p_r \).
 
   This concludes the proof.
+\end{proof}
+
+\begin{corollary}\label{thm:integer_divisibility_via_primes}
+  For positive integers \( n \) and \( m \), \( n \) divides \( m \) if and only if for every \hyperref[def:padic_valuation]{\( p \)-adic valuation} we have \( v_p(n) \leq v_p(m) \).
+\end{corollary}
+\begin{proof}
+  \SufficiencySubProof Suppose that \( n \) divides \( m \). Suppose that, for some prime number \( p \), we have \( v_p(n) > v_p(m) \). Then \( p^{v_p(n)} \) divides \( n \) but not \( m \), which contradicts the transitivity of divisibility shown in \fullref{thm:semiring_divisibility_order}.
+
+  Then \( v_p(n) \leq v_p(m) \) for every prime number \( p \).
+
+  \NecessitySubProof Suppose that \( v_p(n) \leq v_p(m) \) for every prime number \( p \).
+
+  \Fullref{thm:fundamental_theorem_of_arithmetic} implies that \( v_p(n) \) is nonzero for only finitely many primes, say \( p_1, \ldots, p_r \). Then
+  \begin{equation}\label{eq:thm:integer_divisibility_via_primes/proof/decomposition}
+    n = p_1^{v_{p_1}(n)} \cdots p_r^{v_{p_r}(n)}.
+  \end{equation}
+
+  Via induction on \( r \) it follows that
+  \begin{equation*}
+    n = p_1^{v_{p_1}(n)} \cdots p_{r-1}^{v_{p_r}(n)}
+  \end{equation*}
+  divides
+  \begin{equation*}
+    p_1^{v_{p_1}(m)} \cdots p_{r-1}^{v_{p_r}(m)}.
+  \end{equation*}
+
+  The latter divides \( m \), hence \( n \) divides \( m \).
+\end{proof}
+
+\begin{corollary}\label{thm:integer_gcd_lcm_via_primes}
+  For positive integers \( n \) and \( m \), we have
+  \begin{equation*}
+    \gcd(n, m) = \prod_{p \T{is prime}} p^{\min\set{ v_p(n), v_p(m) }}
+  \end{equation*}
+  and
+  \begin{equation*}
+    \lcm(n, m) = \prod_{p \T{is prime}} p^{\max\set{ v_p(n), v_p(m) }}.
+  \end{equation*}
+\end{corollary}
+\begin{proof}
+  Follows from \fullref{thm:integer_divisibility_via_primes}.
 \end{proof}
 
 \paragraph{Prime counting}
@@ -183,7 +224,7 @@
   If \( n = \op{isqrt}(n)^2 \), we call \( n \) a \term[en=perfect square (\cite[example 1.7.1]{Rosen2019DiscreteMathematics})]{perfect square}.
 \end{definition}
 \begin{comments}
-  \item In terms of the real number \( n \)-th root function, which we will discuss in \fullref{def:real_nth_root}, we can define the integer square root as
+  \item In terms of the real number \( n \)-th root function, which we will discuss in \fullref{def:principal_nonnegative_nth_root}, we can define the integer square root as
   \begin{equation*}
     \op{isqrt}(n) \coloneqq \floor\parens[\Big]{ \sqrt{n} }.
   \end{equation*}
@@ -408,7 +449,7 @@
   Denote by \( \varphi(n) \) the \hyperref[def:arithmetic_function]{arithmetic function} giving the number of positive integers smaller than or equal to \( n \) that are \hyperref[def:coprime_elements]{coprime} to \( n \). We call \( \varphi \) \term{Euler's totient function}.
 \end{definition}
 \begin{comments}
-  \item In particular, we have \( \varphi(n) = 1 \). It is for this reason that we count integers smaller than \hi{or equal to} \( n \).
+  \item In particular, we have \( \varphi(1) = 1 \). It is for this reason that we count integers smaller than \hi{or equal to} \( n \).
   \item \Fullref{thm:totient_function_product_formula} provides a useful expression in terms of prime factors.
 \end{comments}
 
@@ -450,22 +491,47 @@
   \SubProofOf{thm:def:eulers_totient_function/one} There are no positive integers smaller than \( 1 \).
 
   \SubProofOf{thm:def:eulers_totient_function/prime}
+
   \SufficiencySubProof* Every positive integer smaller than \( p \) is coprime to \( p \), and there are exactly \( p - 1 \) positive integers smaller than \( p \) --- \( 1, 2, \ldots, p - 1 \).
-  \NecessitySubProof*
+
+  \NecessitySubProof* If \( \varphi(p) = p - 1 \), the \( p \) is coprime to every positive integer smaller than \( p \). \Fullref{thm:primality_via_coprimality} implies that \( p \) is prime.
 
   \SubProofOf{thm:def:eulers_totient_function/zn} Follows from \fullref{thm:multiplicative_group_of_integers_modulo}.
 \end{proof}
 
+\begin{theorem}[Totient divisor sum]\label{thm:totient_divisor_sum}
+  For any positive integer \( n \), we have
+  \begin{equation}\label{eq:thm:totient_divisor_sum}
+    n = \sum_{d \mid n} \varphi(d),
+  \end{equation}
+  where \( \varphi \) \hyperref[def:eulers_totient_function]{Euler's totient function}.
+\end{theorem}
+\begin{proof}
+  Consider the \hyperref[def:cyclic_group]{cyclic group} \( C_n \).
+
+  Every element \( x \) of \( C_n \) generates a cyclic group. \Fullref{thm:cyclic_subgroup_classification/finite} implies that all elements of order \( d \) generate the same subgroup, \( H_d \), and \fullref{thm:def:group_element_order/group_order} implies that \( d \) divides \( n \).
+
+  Denote by \( G_d \) the set of generators of \( H_d \), i.e. the set of elements of order \( d \). Then we have the partition
+  \begin{equation*}
+    C_n = \bigcup \set{ G_d \given d \mid n },
+  \end{equation*}
+  and thus the cardinality \( n \) of \( C_n \) is the sum of the cardinalities of \( G_d \).
+
+  \Fullref{thm:def:cyclic_group/generators_cardinality} implies that \( H_d \) has \( \varphi(d) \) generators, hence \eqref{eq:thm:totient_divisor_sum} follows.
+\end{proof}
+
 \begin{theorem}[Totient function product formula]\label{thm:totient_function_product_formula}
-  Let \( n = p_1^{a_1} \cdots p_r^{a_r} \) be a prime factorization of \( n \). Then \hyperref[def:eulers_totient_function]{Euler's totient function} can be expressed as
+  For every positive integer \( n \), \hyperref[def:eulers_totient_function]{Euler's totient function} can be expressed as
   \begin{equation}\label{eq:thm:totient_function_product_formula}
-    \varphi(n) = n \cdot \prod_{k=1}^r \parens[\Big]{ 1 - \frac 1 {p_k} }.
+    \varphi(n) = n \cdot \prod_{v_p(n) > 0} \parens[\Big]{ 1 - \frac 1 p }.
   \end{equation}
 \end{theorem}
 \begin{comments}
   \item Since we want to cover the case \( n = 1 \), where \( \varphi(1) = 1 \), we must allow \( r = 0 \) and agree that the empty product has value \( 1 \).
 \end{comments}
 \begin{proof}
+  It will be simpler for us to work with an prime factorization \( n = p_1^{a_1} \cdots p_r^{a_r} \).
+
   Let \( N \) and \( A_k \) be defined as in \fullref{thm:inclusion_exclusion_eratosthenes}. Then
   \begin{equation*}
     \varphi(n) = \card N - \card\parens[\Big]{ \bigcup_{k=1}^r A_{p_k} }.
@@ -517,11 +583,11 @@
 \begin{comments}
   \item There is a clash in terminology. \Fullref{def:multiplicative_function} generalizes completely multiplicative arithmetic functions, but refers to them simply as \enquote{multiplicative}. Thus, a function may be multiplicative in the sense of \fullref{def:multiplicative_arithmetic_function} but not \fullref{def:multiplicative_function}.
 
-  To resolve this issue, we use \enquote{completely multiplicative} whenever confusion is possible.
+  To resolve this issue, we use \enquote{multiplicative on coprimes} and \enquote{completely multiplicative} whenever confusion is possible.
 \end{comments}
 
 \begin{proposition}\label{thm:totient_function_multiplicative}
-  The \hyperref[def:eulers_totient_function]{Euler's totient function} is \hyperref[def:multiplicative_arithmetic_function]{multiplicative}.
+  \hyperref[def:eulers_totient_function]{Euler's totient function} is \hyperref[def:multiplicative_arithmetic_function]{multiplicative on coprimes}.
 \end{proposition}
 \begin{proof}
   Follows from \fullref{thm:totient_function_product_formula}.

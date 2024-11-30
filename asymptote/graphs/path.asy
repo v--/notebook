@@ -1,4 +1,3 @@
-import 'asymptote/polar.asy' as polar;
 import 'asymptote/graphs.asy' as graphs;
 
 struct PathGraph {
@@ -8,7 +7,7 @@ struct PathGraph {
   void operator init(int n, real dist = 0.75, real angle = 0) {
     this.n = n;
 
-    pair d = polar(angle);
+    pair d = polar(1, angle);
 
     for (int i = 0; i < n; ++i) {
       this.vert[i] = i * dist * d;

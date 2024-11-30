@@ -1,8 +1,9 @@
 import patterns;
-import 'asymptote/polar.asy' as polar;
+
+import graph;
+
 import 'asymptote/pens.asy' as pens;
 
-pen densely_dashed = linetype(new real[] { 2, 2 });
 pen vert_label = fontsize(10);
 pen edge_label = fontsize(9);
 pen regular_edge = linewidth(0.5);
@@ -87,7 +88,7 @@ void draw_loop(
   bool bold = false,
   bool is_arc = false
 ) {
-  pair m = v + 0.4 * polar(angle);
+  pair m = v + polar(0.4, angle);
   pair v_ = v + _shift_for_dot(v, m);
 
   _draw_edge_impl(
@@ -122,7 +123,7 @@ void draw_hyperedge(
   filldraw(
     outline,
     drawpen=(dash ? densely_dashed : currentpen) + (bold ? bold_edge : regular_edge),
-    fillpen=pattern('hyperedge_pattern') + red
+    fillpen=pattern('hyperedge_pattern')
   );
 
   if (L != '') {

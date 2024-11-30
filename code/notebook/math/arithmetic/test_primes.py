@@ -2,14 +2,22 @@ import itertools
 import random
 
 from ...support.pytest import pytest_parametrize_lists, repeat5
-from .primes import are_coprime, factor, is_prime, iter_primes, num_primes, num_primes_inclusion_exclusion, totient
+from .primes import (
+    are_coprime,
+    factor,
+    is_prime_naive,
+    iter_primes,
+    num_primes,
+    num_primes_inclusion_exclusion,
+    totient,
+)
 
 
 def test_iterate_primes(ceiling: int = 10 ** 3) -> None:
     it = iter(iter_primes(ceiling=ceiling))
 
     for n in range(1, ceiling):
-        if is_prime(n):
+        if is_prime_naive(n):
             assert n == next(it)
 
 

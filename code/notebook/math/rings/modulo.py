@@ -60,6 +60,9 @@ class BaseIntModulo(metaclass=IntModuloMeta):
     def __pow__(self, power: int) -> Self:
         return self.new(self.value ** power)
 
+    def __int__(self) -> int:
+        return self.value
+
     def __str__(self) -> str:
         return str(self.value)
 
@@ -72,4 +75,20 @@ class Z2(BaseIntModulo, modulus=2):
 
 
 class Z3(BaseIntModulo, modulus=3):
+    pass
+
+
+class Z4(BaseIntModulo, modulus=4):
+    pass
+
+
+class Z5(BaseIntModulo, modulus=5):
+    pass
+
+
+class Z6(BaseIntModulo, modulus=6):
+    pass
+
+
+class Z7(BaseIntModulo, modulus=7):
     pass

@@ -41,6 +41,7 @@ class DoiAuthor(DoiBaseModel):
     name: str | None = None
     family: str | None = None
     given: str | None = None
+    suffix: str | None = None
     affiliation: list[DoiAffiliation] | None = None
     sequence: str | None = None
     authenticated_orcid: bool | None = None

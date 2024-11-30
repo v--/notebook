@@ -1,4 +1,3 @@
-import 'asymptote/polar.asy' as polar;
 import 'asymptote/graphs.asy' as graphs;
 
 struct BipartiteGraph {
