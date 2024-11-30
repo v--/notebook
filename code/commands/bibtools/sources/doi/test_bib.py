@@ -491,7 +491,7 @@ def test_parse_101007_97836421282192_book(doi: str = '10.1007/978-3-642-66451-9'
 
     assert entry == BibEntry(
         entry_type='book',
-        entry_name='BerghLofstrom1976InterpolationSpaces',
+        entry_name='BerghLöfstrom1976InterpolationSpaces',
         title='Interpolation Spaces',
         subtitle='An Introduction',
         publisher='Springer Berlin Heidelberg',

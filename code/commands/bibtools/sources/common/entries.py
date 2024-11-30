@@ -7,7 +7,6 @@ from notebook.bibtex.string import strip_braces
 from notebook.math.nlp.rake import RakeNoPhrasesError
 from notebook.math.nlp.token_sequence import TokenSequence
 from notebook.support.iteration import string_accumulator
-from notebook.support.unicode import remove_accents
 
 from .dates import extract_year
 from .keywords import generate_keyphrase_scores
@@ -23,7 +22,7 @@ def capitalize_first(string: str) -> Iterable[str]:
 
 
 def mangle_string_for_entry_name(string: str) -> str:
-    return remove_accents(capitalize_first(string))
+    return capitalize_first(string)
 
 
 def generate_keyphrase(title: str, subtitle: str | None, language: str, *aux_texts: str | None) -> TokenSequence:
