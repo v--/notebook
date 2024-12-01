@@ -1,12 +1,18 @@
 \NeedsTeXFormat{LaTeX2e}
-\ProvidesClass{classes/tikzcd}
-\LoadClass{classes/tikz}
+\ProvidesClass{classes/tikz}
+\LoadClass[tikz]{standalone}
+
+\RequirePackage{mathtools}
+
+\RequirePackage{packages/fonts}
+\RequirePackage{packages/math_macros}
+\RequirePackage{packages/math_environments}
+\RequirePackage{packages/paired_delimiters}
 
 \usetikzlibrary{cd,shapes.geometric,fit,automata}
 
 \tikzcdset{arrow style=math font}
 \tikzset{
-  >=stix,
   NatTrans/.style=
     {
       commutative diagrams/.cd,
