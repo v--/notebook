@@ -1,8 +1,7 @@
-usepackage('stix2');
 unitsize(1.5cm);
 
-import 'asymptote/graphs/bipartite.asy' as BipartiteGraph;
+from notebook access BipartiteGraph;
 
 BipartiteGraph bg = BipartiteGraph(3, 2, xdist=1);
 bg.draw_vertices();
-bg.draw_edges_complete();
+bg.draw_edge_complete();

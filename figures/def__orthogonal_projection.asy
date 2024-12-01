@@ -1,7 +1,8 @@
 unitsize(2cm);
 
 import three;
-from 'asymptote/trajectories.asy' access trajectory;
+
+from notebook access trj;
 
 currentprojection = orthographic(camera=(-0.2, 0.3, 0.2));
 
@@ -20,7 +21,7 @@ draw(T * surface(reverse(plane_hole) ^^ plane_path), white);
 
 draw(unitcube, gray);
 
-trajectory(T, (0, 0, 0));
-trajectory(T, (0, 1, 0));
-trajectory(T, (1, 1, 0));
-trajectory(T, (0, 0, 1));
+trj.trajectory(T, (0, 0, 0));
+trj.trajectory(T, (0, 1, 0));
+trj.trajectory(T, (1, 1, 0));
+trj.trajectory(T, (0, 0, 1));

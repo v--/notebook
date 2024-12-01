@@ -1,5 +1,5 @@
-import 'asymptote/graphs.asy' as graphs;
-import 'asymptote/graphs/cycle.asy' as CycleGraph;
+access 'asymptote/graphs/grdraw.asy' as grdraw;
+from 'asymptote/graphs/cycle.asy' access CycleGraph;
 
 struct TriangleGraph {
   pair a;
@@ -15,12 +15,12 @@ struct TriangleGraph {
   }
 
   void draw_vertices(string a = '', string b = '', string c = '') {
-    draw_vertex(this.a, L=a == '' ? '' : Label(a, align=2W));
-    draw_vertex(this.b, L=b == '' ? '' : Label(b, align=2E));
-    draw_vertex(this.c, L=c == '' ? '' : Label(c, align=2N));
+    grdraw.vert(this.a, L=a == '' ? '' : Label(a, align=2W));
+    grdraw.vert(this.b, L=b == '' ? '' : Label(b, align=2E));
+    grdraw.vert(this.c, L=c == '' ? '' : Label(c, align=2N));
   }
 
-  void draw_edges(
+  void draw_edge(
     string ab = '',
     string ba = '',
     string bc = '',
@@ -30,21 +30,21 @@ struct TriangleGraph {
     bool oriented = false
   ) {
     if (ba == '') {
-      draw_edge(this.a, this.b, L=ab == '' ? '' : Label(ab, align=2S), is_arc=oriented);
+      grdraw.edge(this.a, this.b, L=ab == '' ? '' : Label(ab, align=2S), is_arc=oriented);
     } else {
-      draw_edge(this.b, this.a, L=Label(ba, align=2S), is_arc=oriented);
+      grdraw.edge(this.b, this.a, L=Label(ba, align=2S), is_arc=oriented);
     }
 
     if (cb == '') {
-      draw_edge(this.b, this.c, L=bc == '' ? '' : Label(bc, align=2E), is_arc=oriented);
+      grdraw.edge(this.b, this.c, L=bc == '' ? '' : Label(bc, align=2E), is_arc=oriented);
     } else {
-      draw_edge(this.c, this.b, L=Label(cb, align=2E), is_arc=oriented);
+      grdraw.edge(this.c, this.b, L=Label(cb, align=2E), is_arc=oriented);
     }
 
     if (ac == '') {
-      draw_edge(this.c, this.a, L=ca == '' ? '' : Label(ca, align=2W), is_arc=oriented);
+      grdraw.edge(this.c, this.a, L=ca == '' ? '' : Label(ca, align=2W), is_arc=oriented);
     } else {
-      draw_edge(this.a, this.c, L=Label(ac, align=2W), is_arc=oriented);
+      grdraw.edge(this.a, this.c, L=Label(ac, align=2W), is_arc=oriented);
     }
   }
 }

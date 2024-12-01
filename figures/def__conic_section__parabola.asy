@@ -1,8 +1,8 @@
-usepackage('stix2');
 unitsize(1cm);
 
 import graph;
-import 'asymptote/plotting.asy' as plotting;
+
+from notebook access plt;
 
 pair f(real t) {
   return (t, sqrt(t));
@@ -12,8 +12,8 @@ pair g(real t) {
   return (t, -sqrt(t));
 }
 
-draw(graph(f, 0, 2 / 3 * pi), marker=arrow_marker(2));
-draw(graph(g, 0, 2 / 3 * pi), marker=arrow_marker(2));
+draw(graph(f, 0, 2 / 3 * pi), marker=plt.arrow_marker(2));
+draw(graph(g, 0, 2 / 3 * pi), marker=plt.arrow_marker(2));
 dot((0, 0));
 
 xaxis(

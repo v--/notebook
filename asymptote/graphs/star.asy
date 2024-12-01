@@ -1,5 +1,5 @@
-import 'asymptote/graphs.asy' as graphs;
-import 'asymptote/graphs/cycle.asy' as CycleGraph;
+access 'asymptote/graphs/grdraw.asy' as grdraw;
+from 'asymptote/graphs/cycle.asy' access CycleGraph;
 
 struct StarGraph {
   int n;
@@ -13,14 +13,14 @@ struct StarGraph {
   }
 
   void draw_vertices() {
-    draw_vertex(this.origin);
+    grdraw.vert(this.origin);
 
     for (int i = 0; i < this.n; ++i)
-      draw_vertex(this.vert[i]);
+      grdraw.vert(this.vert[i]);
   }
 
-  void draw_edges() {
+  void draw_edge() {
     for (int i = 0; i < this.n; ++i)
-      draw_edge(this.origin, this.vert[i]);
+      grdraw.edge(this.origin, this.vert[i]);
   }
 }

@@ -1,11 +1,11 @@
-usepackage('stix2');
 unitsize(1cm);
 
 import geometry;
-import 'asymptote/geom/tri.asy' as tri;
 
-triangle tri = triangleabc(3, 4, 5);
+from notebook access geom;
+
+triangle tri = triangleabc(3, 4, 4.5);
 
 draw(tri);
-draw_vertices(tri);
-draw_angles(tri);
+geom.draw_vertices(tri);
+geom.mark_angles(tri);

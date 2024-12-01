@@ -1,9 +1,6 @@
-usepackage('stix2');
 unitsize(1.5cm);
 
-import 'asymptote/point_lattices.asy' as point_lattices;
-import 'asymptote/polygons.asy' as polygons;
-import 'asymptote/pens.asy' as pens;
+from notebook access geom, pens, PointLattice;
 
 void draw_tiling(pair u) {
   pair v = rotate(60) * u;
@@ -11,7 +8,7 @@ void draw_tiling(pair u) {
 
   PointLattice lat = PointLattice(u=u, v=v, n=3, unit_size=1cm);
 
-  path pol = rot * regular_polygon(6, 1 / sqrt(3));
+  path pol = rot * geom.regular_polygon(6, 1 / sqrt(3));
 
   lat.draw_on_subpic(draw_dots=true, pth_fillpen=nullpen, pth=pol);
 

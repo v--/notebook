@@ -1,24 +1,17 @@
-usepackage('stix2');
 unitsize(1.5cm);
 
 import geometry;
-import 'asymptote/angles.asy' as angles;
 
-pair A = (1, 0);
-pair B = (3, 0);
-pair C = (1, sqrt(2));
-pair Ap = (3, sqrt(2));
+from notebook access geom;
 
-dot(A, L=Label('$A$', align=SW));
-dot(B, L=Label('$B$', align=SE));
-dot(C, L=Label('$C$', align=N));
-dot(Ap, L=Label('$A\'$', align=N));
+triangle tri = triangleabc(sqrt(6), sqrt(2), 2);
+point A_ = tri.B + tri.C - tri.A;
 
-draw(A -- B);
-draw(A -- C);
-draw(B -- C);
-draw(Ap -- B, dashed);
-draw(Ap -- C, dashed);
+draw(tri);
+geom.draw_vertices(tri);
 
-markangle(B, A, C, radius=10, L=Label('$\\alpha$'));
-angle_dot(B, A, C, radius=10);
+dot(A_, L=Label("$A'$", align=N));
+draw(A_ -- tri.B, dashed);
+draw(A_ -- tri.C, dashed);
+
+geom.mark_angle(tri.B, tri.A, tri.C, L=Label('$\\alpha$'));

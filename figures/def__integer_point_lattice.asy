@@ -1,7 +1,6 @@
-usepackage('stix2');
 unitsize(1.5cm);
 
-import 'asymptote/point_lattices.asy' as point_lattices;
+from notebook access PointLattice;
 
 PointLattice lat = PointLattice(
   u=(1, 0),

@@ -1,9 +1,8 @@
-usepackage('stix2');
 unitsize(1.5cm);
 
 import graph;
-import 'asymptote/polygons.asy' as polygons;
-import 'asymptote/point_lattices.asy' as point_lattices;
+
+from notebook access geom, PointLattice;
 
 int n = 6;
 

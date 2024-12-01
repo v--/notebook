@@ -1,4 +1,4 @@
-import 'asymptote/graphs.asy' as graphs;
+access 'asymptote/graphs/grdraw.asy' as grdraw;
 
 struct BipartiteGraph {
   int n;
@@ -21,15 +21,15 @@ struct BipartiteGraph {
 
   void draw_vertices() {
     for (int i = 0; i < this.n; ++i)
-      draw_vertex(this.left[i]);
+      grdraw.vert(this.left[i]);
 
     for (int j = 0; j < this.m; ++j)
-      draw_vertex(this.right[j]);
+      grdraw.vert(this.right[j]);
   }
 
-  void draw_edges_complete() {
+  void draw_edge_complete() {
     for (int i = 0; i < this.n; ++i)
       for (int j = 0; j < this.m; ++j)
-        draw_edge(this.left[i], this.right[j]);
+        grdraw.edge(this.left[i], this.right[j]);
   }
 }

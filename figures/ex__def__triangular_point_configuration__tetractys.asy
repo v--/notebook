@@ -1,8 +1,6 @@
-usepackage('stix2');
 unitsize(1.3cm);
 
-import 'asymptote/graphs.asy' as graphs;
-import 'asymptote/point_lattices.asy' as point_lattices;
+from notebook access PointLattice;
 
 pair o = (0, 0);
 pair u = (1, 0) / 2;

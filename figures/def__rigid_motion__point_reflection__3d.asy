@@ -1,8 +1,7 @@
-usepackage('stix2');
 unitsize(1.5cm);
 
 import three;
-import 'asymptote/trajectories.asy' as trajectories;
+from notebook access trj;
 
 currentprojection = orthographic(camera=(-0.2, 0.1, 0.1));
 
@@ -18,6 +17,6 @@ draw(T * unitcube, white);
 draw(unitcube, gray);
 
 dot(o);
-trajectory(T, (0, 0, 0));
-trajectory(T, (0, 1, 0));
-trajectory(T, (0, 0, 1));
+trj.trajectory(T, (0, 0, 0));
+trj.trajectory(T, (0, 1, 0));
+trj.trajectory(T, (0, 0, 1));

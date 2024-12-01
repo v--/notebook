@@ -1,33 +1,36 @@
-usepackage('stix2');
 unitsize(1.5cm);
 
 import geometry;
-import 'asymptote/angles.asy' as angles;
 
-pair A = (0, 0);
-pair B = (3, 0);
-pair C = (2, 2);
+from notebook access geom, lab;
 
-dot(A, L=Label('$A$', align=SW));
-dot(B, L=Label('$B$', align=SE));
-dot(C, L=Label('$C$', align=N));
-dot(orth_proj(C, A, B - A), L=Label('$O_C$', align=SE));
-dot(orth_proj(B, A, C - A), L=Label('$O_B$', align=NW));
-dot(orth_proj(A, B, C - B), L=Label('$O_A$', align=NE));
-dot((2, 1), L=shift(-18, 1) * Label('$O$'));
+point A = (0, 0);
+point B = (3, 0);
+point C = (2, 2);
 
-draw(A -- B);
-draw(A -- C);
-draw(B -- C);
-draw(C -- orth_proj(C, A, B - A));
-draw(A -- orth_proj(A, B, C - B));
-draw(B -- orth_proj(B, A, C - A));
+triangle tri = triangleabc(sqrt(5), 2sqrt(2), 3);
 
-markangle(B, orth_proj(C, A, B - A), C, radius=7);
-angle_dot(B, orth_proj(C, A, B - A), C, radius=7);
+segment oa = altitude(tri.VA);
+segment ob = altitude(tri.VB);
+segment oc = altitude(tri.VC);
 
-markangle(C, orth_proj(A, B, C - B), A, radius=7);
-angle_dot(C, orth_proj(A, B, C - B), A, radius=7);
+point OA = foot(tri.VA);
+point OB = foot(tri.VB);
+point OC = foot(tri.VC);
 
-markangle(A, orth_proj(B, A, C - A), B, radius=7);
-angle_dot(A, orth_proj(B, A, C - A), B, radius=7);
+point O = orthocenter(tri);
+
+draw(tri);
+draw(oa);
+draw(ob);
+draw(oc);
+geom.draw_vertices(tri);
+
+dot(OA, L=Label('$O_A$', align=lab.align_oppose(OA, O)));
+dot(OB, L=Label('$O_B$', align=lab.align_oppose(OB, O)));
+dot(OC, L=Label('$O_C$', align=lab.align_oppose(OC, O)));
+dot(O, L=Label('$O$', align=1W + 1.5S));
+
+geom.mark_angle(B, OB, C, radius=7);
+geom.mark_angle(C, OA, A, radius=7);
+geom.mark_angle(C, OC, A, radius=7);

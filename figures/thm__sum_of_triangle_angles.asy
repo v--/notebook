@@ -1,54 +1,52 @@
-usepackage('stix2');
 unitsize(1cm);
 
 import geometry;
 
-pair A = (0, 0);
-pair B = (3, 0);
-pair C = (2, 2);
-pair Ap = (A.x, C.y);
-pair Bp = (B.x, C.y);
+from notebook access geom;
 
-dot(A, L=Label('$A$', align=SW));
-dot(Ap, L=Label('$A\'$', align=N));
-dot(B, L=Label('$B$', align=SE));
-dot(Bp, L=Label('$B\'$', align=N));
-dot(C, L=Label('$C$', align=N));
+triangle tri = triangleabc(2.5, 3.5, 4);
 
-draw(A -- C);
-draw(A -- Ap, dotted);
-draw(B -- C);
-draw(B -- Bp, dotted);
+line g = tri.AB;
+line h = g + (tri.C - tri.B);
 
-draw((-2, 0) -- (5, 0), L=Label('$g$', align=S, position=0.1));
-draw((-2, 2) -- (5, 2), L=Label('$h$', align=N, position=0.1));
+draw(tri);
+geom.mark_angles(tri);
 
-markangle(
-  B, A, C,
-  radius=10,
+point A_ = projection(h) * tri.A;
+point B_ = projection(h) * tri.B;
+
+dot(tri.A, L=Label('$A$', align=S));
+dot(tri.B, L=Label('$B$', align=S));
+dot(tri.C, L=Label('$C$', align=N));
+
+dot(A_, L=Label("$A'$", align=N));
+dot(B_, L=Label("$B'$", align=N));
+
+draw(tri.A -- A_, dotted);
+draw(tri.B -- B_, dotted);
+
+draw(g, L=Label('$g$', align=S, position=0.05));
+draw(h, L=Label('$h$', align=N, position=0.05));
+
+geom.mark_angle(
+  A_, tri.C, tri.A,
   L=Label('$\\alpha$')
 );
 
-markangle(
-  Ap, C, A,
-  radius=10,
-  L=Label('$\\alpha$')
-);
-
-markangle(
-  C, B, A,
-  radius=10,
+geom.mark_angle(
+  tri.B, tri.C, B_,
   L=Label('$\\beta$')
 );
 
-markangle(
-  B, C, Bp,
-  radius=10,
-  L=Label('$\\beta$')
-);
-
-markangle(
-  A, C, B,
-  radius=10,
+geom.mark_angle(
+  tri.A, tri.C, tri.B,
   L=Label('$\\gamma$')
+);
+
+draw(
+  box(
+    tri.A - (tri.B - tri.A) / 3,
+    B_ + (B_ - A_) / 3
+  ),
+  invisible
 );

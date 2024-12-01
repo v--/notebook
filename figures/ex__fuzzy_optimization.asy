@@ -1,9 +1,9 @@
-usepackage('stix2');
 unitsize(1cm);
 size(10cm, 5cm, keepAspect=false);
 
 import graph;
-import 'asymptote/plotting.asy' as plotting;
+
+from notebook access pens;
 
 real e = exp(1);
 
@@ -23,17 +23,25 @@ real f_b(real x) {
   return f_mn(x, 100);
 }
 
-draw(graph(f_a, -10, 110, n=1000), L=Label('$f_A$', position=700, align=2N));
-draw(graph(f_b, -10, 110, n=1000), dashed, L=Label('$f_B$', position=300, align=2N));
+draw(
+  graph(f_a, -10, 110, n=1000),
+  L=Label('$f_A$', position=700, align=2N)
+);
+
+draw(
+  graph(f_b, -10, 110, n=1000),
+  L=Label('$f_B$', position=300, align=2N),
+  dashed
+);
 
 xaxis(
   axis=Bottom,
-  p=thin,
-  ticks=Ticks(pTick=thin)
+  p=pens.thin,
+  ticks=Ticks(pTick=pens.thin)
 );
 
 yaxis(
   axis=Left,
-  p=thin,
-  ticks=Ticks(pTick=thin)
+  p=pens.thin,
+  ticks=Ticks(pTick=pens.thin)
 );

@@ -1,8 +1,8 @@
-usepackage('stix2');
 unitsize(1.5cm);
 
 import graph;
-import 'asymptote/plotting.asy' as plotting;
+
+from notebook access plt;
 
 int n = 5;
 
@@ -13,7 +13,7 @@ pair f(real t) {
 draw(
   graph(f, 0, 2pi),
   dotted,
-  marker=arrow_marker(n)
+  marker=plt.arrow_marker(n)
 );
 
 

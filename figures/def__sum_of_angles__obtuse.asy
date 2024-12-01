@@ -1,7 +1,8 @@
-usepackage('stix2');
 unitsize(1cm);
 
 import geometry;
+
+from notebook access geom;
 
 pair O = (0, 0);
 pair P = (9 / 4, 9 / 8);
@@ -14,21 +15,21 @@ draw(O -- Q, arrow=Arrow(TeXHead), L=Label('$s$', position=EndPoint));
 draw(O -- R, arrow=Arrow(TeXHead), L=Label('$r$', position=EndPoint));
 dot(O, L=Label('$O$', align=S));
 
-markangle(
+geom.mark_angle(
   R, O, Q,
   radius=45,
   L=Label('$\\alpha + \\beta$', position=0.9),
   arrow=Arrow(TeXHead)
 );
 
-markangle(
+geom.mark_angle(
   P, O, Q,
   radius=30,
   L=Label('$\\alpha$'),
   arrow=Arrow(TeXHead)
 );
 
-markangle(
+geom.mark_angle(
   R, O, P,
   radius=20,
   L=Label('$\\beta$'),

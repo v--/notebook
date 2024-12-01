@@ -1,5 +1,5 @@
-import 'asymptote/graphs.asy' as graphs;
-import 'asymptote/graphs/cycle.asy' as CycleGraph;
+access 'asymptote/graphs/grdraw.asy' as grdraw;
+from 'asymptote/graphs/cycle.asy' access CycleGraph;
 
 struct PetersenGraph {
   int n;
@@ -33,14 +33,14 @@ struct PetersenGraph {
 
   void draw() {
     for (int i = 0; i < this.n; ++i) {
-      draw_vertex(this.outer[i]);
-      draw_vertex(this.inner[i]);
+      grdraw.vert(this.outer[i]);
+      grdraw.vert(this.inner[i]);
     }
 
     for (int i = 0; i < this.n; ++i) {
-      draw_edge(this.outer[i], this.outer[(i + 1) % this.n]);
-      draw_edge(this.outer[i], this.inner[i % this.n]);
-      draw_edge(this.inner[i], this.inner[(i + this.m) % this.n]);
+      grdraw.edge(this.outer[i], this.outer[(i + 1) % this.n]);
+      grdraw.edge(this.outer[i], this.inner[i % this.n]);
+      grdraw.edge(this.inner[i], this.inner[(i + this.m) % this.n]);
     }
   }
 }

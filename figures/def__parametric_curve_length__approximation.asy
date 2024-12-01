@@ -1,6 +1,5 @@
 import graph;
 
-usepackage('stix2');
 unitsize(0.75cm);
 
 import graph;

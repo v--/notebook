@@ -1,8 +1,9 @@
-size(15, 7, keepAspect=false);
-usepackage('stix2');
+size(15cm, 7cm, keepAspect=false);
 unitsize(1cm);
 
 import graph;
+
+from notebook access pens;
 
 real a = 0.9;
 real b = 7;
@@ -20,14 +21,12 @@ real f(real x) {
 
 draw(graph(f, -pi/8, pi/8, n=2500));
 
-pen thin=linewidth(0.1 * linewidth());
-
 xaxis(
   axis=BottomTop,
-  ticks=Ticks(pTick=thin, extend=true)
+  ticks=Ticks(pTick=pens.thin, extend=true)
 );
 
 yaxis(
   axis=LeftRight,
-  ticks=Ticks(pTick=thin, extend=true)
+  ticks=Ticks(pTick=pens.thin, extend=true)
 );

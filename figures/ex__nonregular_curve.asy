@@ -1,8 +1,8 @@
-usepackage('stix2');
 unitsize(1.5cm);
 
 import graph;
-import 'asymptote/plotting.asy' as plotting;
+
+from notebook access plt;
 
 pair f(real t) {
   return (t^3, t^2);
@@ -11,6 +11,6 @@ pair f(real t) {
 dot(f(-1));
 draw(
   graph(f, -1, 1),
-  marker=arrow_marker(2),
+  marker=plt.arrow_marker(2),
   arrow=Arrow(TeXHead)
 );

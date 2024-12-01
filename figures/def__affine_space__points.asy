@@ -1,7 +1,4 @@
-usepackage('stix2');
 unitsize(1cm);
-
-import graph;
 
 pair O = (0, 0);
 pair u = (2, 1);

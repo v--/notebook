@@ -1,9 +1,9 @@
 usepackage('amsmath');
-usepackage('stix2');
 unitsize(1.5cm);
 
 import graph;
-import 'asymptote/plotting.asy' as plotting;
+
+from notebook access plt;
 
 pair f(real t) {
   return (sin(2t), cos(3t));
@@ -11,12 +11,12 @@ pair f(real t) {
 
 draw(
   graph(f, pi/2 - 1/2, pi/2 + 1/2),
-  marker=arrow_marker(4)
+  marker=plt.arrow_marker(4)
 );
 
 draw(
   graph(f, 3pi/2 - 1/2, 3pi/2 + 1/2),
-  marker=arrow_marker(4)
+  marker=plt.arrow_marker(4)
 );
 
 dot(f(pi/2 - 1/2),  align=SE, L=Label('$0 < t < \\dfrac \\pi 2$'));

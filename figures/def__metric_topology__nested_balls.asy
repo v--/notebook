@@ -1,4 +1,3 @@
-usepackage('stix2');
 unitsize(1cm);
 
 pair origin = (0, 0);

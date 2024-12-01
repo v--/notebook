@@ -1,4 +1,3 @@
-usepackage('stix2');
 unitsize(1cm);
 
 path l = (-1.5, -1) -- (3, 2);

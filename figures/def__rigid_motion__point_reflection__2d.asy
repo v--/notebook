@@ -1,7 +1,6 @@
-usepackage('stix2');
 unitsize(1.5cm);
 
-import 'asymptote/trajectories.asy' as trajectories;
+from notebook access trj;
 
 real angle = 4;
 pair O = -0.3 * (1, 1);
@@ -16,6 +15,6 @@ fill(T * unitsquare, mediumgray);
 
 dot(O);
 
-trajectory(T, (0, 0));
-trajectory(T, (1, 0));
-trajectory(T, (0, 1));
+trj.trajectory(T, (0, 0));
+trj.trajectory(T, (1, 0));
+trj.trajectory(T, (0, 1));

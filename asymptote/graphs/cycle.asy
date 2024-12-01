@@ -1,4 +1,6 @@
-import 'asymptote/graphs.asy' as graphs;
+from geometry access defaultcoordsys;
+
+access 'asymptote/graphs/grdraw.asy' as grdraw;
 
 struct CycleGraph {
   int n;
@@ -14,22 +16,22 @@ struct CycleGraph {
 
     for (int i = 0; i < n; ++i) {
       real angle = base_angle + correction + (3 / 4 + i / n) * 2 * pi;
-      this.vert[i] = polar(radius, angle);
+      this.vert[i] = defaultcoordsys.polar(radius, angle);
     }
   }
 
   void draw_vertices() {
     for (int i = 0; i < this.n; ++i)
-      draw_vertex(this.vert[i]);
+      grdraw.vert(this.vert[i]);
   }
 
-  void draw_edges() {
+  void draw_edge() {
     for (int i = 0; i < this.n; ++i)
-      draw_edge(this.vert[i], this.vert[(i + 1) % this.n]);
+      grdraw.edge(this.vert[i], this.vert[(i + 1) % this.n]);
   }
 
   void draw() {
     this.draw_vertices();
-    this.draw_edges();
+    this.draw_edge();
   }
 }

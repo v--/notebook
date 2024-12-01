@@ -1,20 +1,14 @@
-usepackage('stix2');
 unitsize(1cm);
 
 import geometry;
 
-pair A = (0, 0);
-pair B = (3, 0);
-pair C = (2, 1.5);
-pair D = A + (C - B);
+from notebook access geom;
 
-dot(A, L=Label('$A$', align=2SW));
-dot(B, L=Label('$B$', align=2SE));
-dot(C, L=Label('$C$', align=2NE));
-dot(D, L=Label('$D$', align=2NW));
+triangle tri = triangleabc(3, 4.5, 5);
+triangle rfl = triangle(tri.A, tri.A + tri.C - tri.B, tri.C);
 
-draw(A -- B);
-draw(A -- C);
-draw(B -- C);
-draw(A -- D, dashed);
-draw(C -- D, dashed);
+draw(tri);
+geom.draw_vertices(tri);
+
+draw(rfl, dashed);
+dot(rfl.B, L=Label('$D$', align=W));

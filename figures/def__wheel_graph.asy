@@ -1,15 +1,13 @@
-usepackage('stix2');
 unitsize(1.5cm);
 
-import 'asymptote/graphs/cycle.asy' as cycle_graph;
-import 'asymptote/graphs.asy' as graphs;
+from notebook access grdraw, CycleGraph;
 
 pair O = (0, 0);
 CycleGraph cg = CycleGraph(12);
 
 cg.draw();
-draw_vertex(O);
+grdraw.vert(O);
 
 for (int i = 0; i < cg.vert.length; ++i) {
-  draw_edge(O, cg.vert[i]);
+  grdraw.edge(O, cg.vert[i]);
 }

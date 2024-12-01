@@ -1,6 +1,6 @@
 import geometry;
 
-import 'asymptote/labels.asy' as labels;
+access 'asymptote/lab.asy' as lab;
 
 void draw_segment(segment seg, string LA = '', string LB = '') {
   draw(seg);
@@ -8,13 +8,13 @@ void draw_segment(segment seg, string LA = '', string LB = '') {
   if (LA == '') {
     dot(seg.A);
   } else {
-    dot(seg.A, L=Label(LA, align=-align_oppose(seg)));
+    dot(seg.A, L=Label(LA, align=-lab.align_oppose(seg)));
   }
 
   if (LB == '') {
     dot(seg.B);
   } else {
-    dot(seg.B, L=Label(LB, align=align_oppose(seg)));
+    dot(seg.B, L=Label(LB, align=lab.align_oppose(seg)));
   }
 
 }

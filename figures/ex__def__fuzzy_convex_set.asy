@@ -1,8 +1,8 @@
-usepackage('stix2');
 unitsize(1cm);
 
 import graph;
-import 'asymptote/plotting.asy' as plotting;
+
+from notebook access pens;
 
 real f(real t) {
   if (t < -1 || t > 1) {
@@ -16,12 +16,12 @@ draw(graph(f, -2, 2, n=1000));
 
 xaxis(
   axis=Bottom,
-  p=thin,
-  ticks=Ticks(pTick=thin)
+  p=pens.thin,
+  ticks=Ticks(pTick=pens.thin)
 );
 
 yaxis(
   axis=Left,
-  p=thin,
-  ticks=Ticks(pTick=thin)
+  p=pens.thin,
+  ticks=Ticks(pTick=pens.thin)
 );

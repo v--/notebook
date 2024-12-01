@@ -1,4 +1,3 @@
-usepackage('stix2');
 unitsize(1cm);
 
 draw(unitcircle, L=Label('$A$', align=S, position=1));

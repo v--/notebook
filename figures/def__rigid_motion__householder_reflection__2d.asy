@@ -1,7 +1,6 @@
-usepackage('stix2');
 unitsize(1.5cm);
 
-import 'asymptote/trajectories.asy' as trajectories;
+from notebook access trj;
 
 pair O = -1 / 10 * (1, 1);
 pair v = sqrt(2) / 2 * (1, 1);
@@ -22,6 +21,6 @@ fill(unitsquare, gray);
 fill(T * unitsquare, mediumgray);
 draw((O.x + v.y, O.y - v.x) -- (O.x - v.y, O.y + v.x), gray + dashed);
 
-trajectory(T, (0, 0));
-trajectory(T, (1, 0));
-trajectory(T, (0, 1));
+trj.trajectory(T, (0, 0));
+trj.trajectory(T, (1, 0));
+trj.trajectory(T, (0, 1));

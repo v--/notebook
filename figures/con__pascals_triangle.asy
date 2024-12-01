@@ -1,4 +1,3 @@
-usepackage('stix2');
 unitsize(3.5cm);
 
 pair A = (1, sqrt(3));

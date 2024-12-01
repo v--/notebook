@@ -1,9 +1,8 @@
-usepackage('stix2');
 unitsize(1.5cm);
 
 import graph;
-import 'asymptote/pens.asy' as pens;
-import 'asymptote/polygons.asy' as polygons;
+
+from notebook access geom, pens;
 
 int n = 6;
 pair o = (0, 0);
@@ -23,8 +22,8 @@ for (int k = 0; k < 2; ++k) {
   pair m = vert[k] / 2;
   pair d = 4norm[k];
   pair m_ = -4m;
-  pen p = k % 2 == 0 ? left_hatch : right_hatch;
-  fill(m - d -- m + d -- m_ + d -- m_ - d -- cycle, p + opacity(0.3));
+  pen p = k % 2 == 0 ? pens.ne_hatch : pens.nw_hatch;
+  fill(m - d -- m + d -- m_ + d -- m_ - d -- cycle, p);
 }
 
 dot(o, L=Label('$A$'), align=-(vert[0] + vert[1]));
@@ -66,7 +65,7 @@ for (int k = 0; k < n; ++k) {
   dot(vert[k]);
 }
 
-draw(rotate(30) * regular_polygon(6, 1 / sqrt(3)), densely_dashed + darkgray);
+draw(rotate(30) * geom.regular_polygon(6, 1 / sqrt(3)), pens.densely_dashed + darkgray);
 
 draw((-lim, -lim) -- (-lim, lim) -- (lim, lim) -- (lim, -lim) -- cycle);
 limits(min=(-lim, -lim), max=(lim, lim), crop=Crop);

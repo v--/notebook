@@ -1,4 +1,4 @@
-import 'asymptote/graphs.asy' as graphs;
+access 'asymptote/graphs/grdraw.asy' as grdraw;
 
 struct ExampleFlowGraph {
   pair v1;
@@ -18,11 +18,11 @@ struct ExampleFlowGraph {
   }
 
   void draw_vertices(bool shift_v6) {
-    draw_vertex(this.v1, L=Label('$v_1$', align=2W));
-    draw_vertex(this.v2, L=Label('$v_2$', align=2N));
-    draw_vertex(this.v3, L=Label('$v_3$', align=2S));
-    draw_vertex(this.v4, L=Label('$v_4$', align=2N));
-    draw_vertex(this.v5, L=Label('$v_5$', align=2S));
-    draw_vertex(this.v6, L=Label('$v_6$', align=shift_v6 ? 2S : 2E));
+    grdraw.vert(this.v1, L=Label('$v_1$', align=2W));
+    grdraw.vert(this.v2, L=Label('$v_2$', align=2N));
+    grdraw.vert(this.v3, L=Label('$v_3$', align=2S));
+    grdraw.vert(this.v4, L=Label('$v_4$', align=2N));
+    grdraw.vert(this.v5, L=Label('$v_5$', align=2S));
+    grdraw.vert(this.v6, L=Label('$v_6$', align=shift_v6 ? 2S : 2E));
   }
 }

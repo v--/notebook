@@ -1,4 +1,6 @@
-import 'asymptote/graphs.asy' as graphs;
+from geometry access defaultcoordsys;
+
+access 'asymptote/graphs/grdraw.asy' as grdraw;
 
 struct PathGraph {
   int n;
@@ -7,7 +9,7 @@ struct PathGraph {
   void operator init(int n, real dist = 0.75, real angle = 0) {
     this.n = n;
 
-    pair d = polar(1, angle);
+    pair d = defaultcoordsys.polar(1, angle);
 
     for (int i = 0; i < n; ++i) {
       this.vert[i] = i * dist * d;
@@ -16,9 +18,9 @@ struct PathGraph {
 
   void draw() {
     for (int i = 0; i < this.n; ++i)
-      draw_vertex(this.vert[i]);
+      grdraw.vert(this.vert[i]);
 
     for (int i = 0; i < this.n - 1; ++i)
-      draw_edge(this.vert[i], this.vert[i + 1]);
+      grdraw.edge(this.vert[i], this.vert[i + 1]);
   }
 }

@@ -1,6 +1,4 @@
-usepackage('stix2');
-
-import 'asymptote/random.asy' as random;
+from notebook access CongGenerator;
 
 real width = 21cm;
 real height = -29.7cm;

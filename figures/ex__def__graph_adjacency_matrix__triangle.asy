@@ -1,11 +1,10 @@
-usepackage('stix2');
 unitsize(1.5cm);
 
-import 'asymptote/graphs/triangle.asy' as triangle_graph;
+from notebook access grdraw, TriangleGraph;
 
 TriangleGraph tg = TriangleGraph();
 tg.draw_vertices(b='$b$', c='$c$');
-tg.draw_edges(oriented=true);
+tg.draw_edge(oriented=true);
 
 label(tg.a, '$a$', align=NW);
-draw_loop(tg.a, angle=5 / 4 * pi, is_arc=true);
+grdraw.loop(tg.a, angle=5 / 4 * pi, is_arc=true);

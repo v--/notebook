@@ -1,8 +1,8 @@
-usepackage('stix2');
 unitsize(1.5cm);
 
 import graph;
-import 'asymptote/plotting.asy' as plotting;
+
+from notebook access plt;
 
 pair x = (0, 0);
 pair y = (4, 1);
@@ -28,13 +28,13 @@ draw(graph(f, 0, 1));
 draw(
   graph(fp, 0, 1),
   dotted,
-  marker=arrow_marker(1),
+  marker=plt.arrow_marker(1),
   arrow=Arrow(TeXHead)
 );
 
 draw(
   graph(fm, 1, 2),
   dotted,
-  marker=arrow_marker(1),
+  marker=plt.arrow_marker(1),
   arrow=Arrow(TeXHead)
 );

@@ -1,8 +1,8 @@
-usepackage('stix2');
 unitsize(1.5cm);
 
 import graph;
-import 'asymptote/plotting.asy' as plotting;
+
+from notebook access plt;
 
 pair g(real t) {
   return (cos(3t) * cos(t), cos(3t) * sin(t));
@@ -15,5 +15,5 @@ pair f(real t) {
 dot(f(0));
 draw(
   graph(f, 0, pi),
-  marker=arrow_marker(8)
+  marker=plt.arrow_marker(8)
 );

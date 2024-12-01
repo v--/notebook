@@ -1,7 +1,6 @@
-usepackage('stix2');
 unitsize(1.5cm);
 
-import 'asymptote/trajectories.asy' as trajectories;
+from notebook access trj;
 
 transform T = (
   1.5, 0.5,
@@ -12,7 +11,7 @@ transform T = (
 fill(unitsquare, gray);
 fill(T * unitsquare, mediumgray);
 
-trajectory(T, (0, 0));
-trajectory(T, (1, 0));
-trajectory(T, (0, 1));
-trajectory(T, (1, 1));
+trj.trajectory(T, (0, 0));
+trj.trajectory(T, (1, 0));
+trj.trajectory(T, (0, 1));
+trj.trajectory(T, (1, 1));

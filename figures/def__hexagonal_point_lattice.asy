@@ -1,8 +1,6 @@
-usepackage('stix2');
 unitsize(1.5cm);
 
-import 'asymptote/point_lattices.asy' as point_lattices;
-import 'asymptote/polygons.asy' as polygons;
+from notebook access geom, PointLattice;
 
 PointLattice lat = PointLattice(
   u=(1, 0),
@@ -16,6 +14,6 @@ newpage();
 lat.draw(
   draw_grid=true,
   draw_basis=true,
-  pth=rotate(30) * regular_polygon(6, 1 / sqrt(3)),
+  pth=rotate(30) * geom.regular_polygon(6, 1 / sqrt(3)),
   pth_fillpen=nullpen
 );

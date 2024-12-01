@@ -1,7 +1,6 @@
-usepackage('stix2');
 unitsize(6cm);
 
-import 'asymptote/pens.asy' as pens;
+from notebook access pens;
 
 real offset = 0.1;
 
@@ -22,14 +21,14 @@ void draw_diagram(real l, real u, int step) {
   dot((c / d, 0), L=Label('$c/d$', align=abs(a/b - l) < 0.1 ? S : N));
 
   draw((l, offset) -- (u, offset));
-  draw((l, 0) -- (l, offset), densely_dashed);
-  draw((u, offset) -- (u, 0), densely_dashed);
+  draw((l, 0) -- (l, offset), pens.densely_dashed);
+  draw((u, offset) -- (u, 0), pens.densely_dashed);
 
   draw((l ** n, -offset) -- (u ** n, -offset));
-  draw((l ** n, 0) -- (l ** n, -offset), densely_dashed);
-  draw((u ** n, -offset) -- (u ** n, 0), densely_dashed);
+  draw((l ** n, 0) -- (l ** n, -offset), pens.densely_dashed);
+  draw((u ** n, -offset) -- (u ** n, 0), pens.densely_dashed);
 
-  draw((m ** n, -offset) -- (m ** n, 0), densely_dashed);
+  draw((m ** n, -offset) -- (m ** n, 0), pens.densely_dashed);
 
   dot((l ** n, -offset), L=Label('$l_' + string(step) + '^n$', align=S));
   dot((m ** n, -offset), L=Label('$m_' + string(step) + '^n$', align=S));

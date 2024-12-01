@@ -24,10 +24,6 @@ class WatcherTask(abc.ABC):
     def command(self) -> str:
         ...
 
-    @property
-    def env(self) -> Mapping[str, str] | None:
-        return None
-
     async def pre_process(self, runner: 'TaskRunner') -> None:
         pass
 

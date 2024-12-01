@@ -1,8 +1,7 @@
-usepackage('stix2');
 unitsize(1.5cm);
 
 import graph;
-import 'asymptote/trajectories.asy' as trajectories;
+from notebook access trj;
 
 real final_angle = 2.5;
 
@@ -17,5 +16,5 @@ transform rot(real angle) {
 fill(unitsquare, gray);
 fill(rot(final_angle) * unitsquare, mediumgray);
 
-trajectory(rot, 0, final_angle, (1, 1));
-trajectory(rot, 0, final_angle, (0, 1));
+trj.trajectory(rot, 0, final_angle, (1, 1));
+trj.trajectory(rot, 0, final_angle, (0, 1));

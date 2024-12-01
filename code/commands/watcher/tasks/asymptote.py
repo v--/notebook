@@ -36,7 +36,8 @@ class AsymptoteTask(WatcherTask):
 
     @override
     async def pre_process(self, runner: TaskRunner) -> None:
-        self.aux_pdf_path.unlink()
+        if self.aux_pdf_path.exists():
+            self.aux_pdf_path.unlink()
 
     @override
     async def post_process(self, runner: TaskRunner) -> None:

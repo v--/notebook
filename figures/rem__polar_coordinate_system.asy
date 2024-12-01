@@ -1,25 +1,30 @@
-usepackage('stix2');
 usepackage('mathtools');
 unitsize(1cm);
 
 import geometry;
-import 'asymptote/angles.asy' as angles;
 
-pair O = (0, 0);
-pair A = (4, -0.5);
-pair B = (0.5, 4);
-pair P = (2, 2);
+from notebook access geom;
+
+currentcoordsys = scale(4) * rotate(5) * defaultcoordsys;
+
+point O = (0, 0);
+point A = (1, 0);
+point B = (0, 1);
+point P = unit((1, 1));
+
+point A_ = projection(Ox(currentcoordsys)) * P;
+point B_ = projection(Oy(currentcoordsys)) * P;
 
 draw(O -- A, arrow=Arrow(TeXHead), L=Label('$r$', position=EndPoint));
 draw(O -- B, arrow=Arrow(TeXHead));
 draw(O -- P, L=Label('$l$', align=NW));
-draw(P -- orth_proj(P, O, A), dashed, L=Label('$l \\cdot \\cos(\\rho)$', position=1), align=S);
-draw(P -- orth_proj(P, O, B), dashed, L=Label('$l \\cdot \\sin(\\rho)$', position=1), align=W);
+draw(P -- A_, dashed, L=Label('$l \\cdot \\cos(\\rho)$', position=1), align=S);
+draw(P -- B_, dashed, L=Label('$l \\cdot \\sin(\\rho)$', position=1), align=W);
 
 dot(O, L=Label('$O$'), align=S);
 dot(P, L=Label('$P$'), align=NE);
-dot(orth_proj(P, O, A));
-dot(orth_proj(P, O, B));
+dot(A_);
+dot(B_);
 
 draw(
   arc(
@@ -31,13 +36,7 @@ draw(
   dotted
 );
 
-markangle(A, O, P, radius=20, L=Label('$\\rho$'), arrow=Arrow(TeXHead));
-
-markangle(A, O, B, radius=10);
-angle_dot(A, O, P, radius=10);
-
-markangle(P, orth_proj(P, O, A), O, radius=10);
-angle_dot(P, orth_proj(P, O, A), O, radius=10);
-
-markangle(O, orth_proj(P, O, B), P, radius=10);
-angle_dot(O, orth_proj(P, O, B), P, radius=10);
+geom.mark_angle(A, O, P, radius=20, L=Label('$\\rho$'), arrow=Arrow(TeXHead));
+geom.mark_angle(A, O, B, orth_dot=false);
+geom.mark_angle(P, A_, O);
+geom.mark_angle(O, B_, P);
