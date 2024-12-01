@@ -4,12 +4,10 @@ import geometry;
 
 from notebook access geom;
 
+// Reflect around O, but shorten the distance. We use is used for visually shortening distance.
 point refl(point A, point O, real coeff = 1 / 2) {
   return O - coeff * (A - O);
 }
-
-// Extender coefficient
-real e = 0.8;
 
 line g = line((-4, 0), (4, 0));
 line h = line((-4, 2.5), (4, 2));
@@ -33,6 +31,7 @@ line l_end =   line(refl(P, O=Q), refl(P, O=Q, coeff=1), extendA=false);
 
 draw(l, L=Label('$l$', position=0.5), dotted);
 draw(P -- Q);
+draw(l_start);
 draw(l_end);
 
 draw(g, L=Label('$g$', position=0.98, align=S), dotted);
