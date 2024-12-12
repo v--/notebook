@@ -1,5 +1,123 @@
 \section{Enumerative combinatorics}\label{sec:enumerative_combinatorics}
 
+\paragraph{Cardinality arithmetic}
+
+\begin{theorem}[Cardinality sum rule]\label{thm:cardinality_sum_rule}
+  The \hyperref[thm:cardinality_existence]{cardinality} of the union of finitely many \hi{\hyperref[def:subset_ordering]{disjoint}} \hyperref[def:set]{sets} is the sum of their individual cardinalities.
+\end{theorem}
+\begin{comments}
+  \item Although this result is elementary, it is ubiquitous and giving it a name helps to justify steps in proofs whose justification may otherwise be unclear. See, for example, our proof of \fullref{thm:roots_of_unity_cyclic_group}.
+
+  \item The generalization of this property is called \hyperref[def:boolean_algebra_additive_function/finite]{finite additivity}, and is required to hold for all \hyperref[def:measure]{measures}. In particular, it holds for the \hyperref[def:counting_measure]{counting measure}, which is also based on cardinalities.
+
+  \item If the sets are not disjoint (but are finite), we can instead use \fullref{thm:inclusion_exclusion_principle}.
+\end{comments}
+\begin{proof}
+  Fix a family \( A_1, \ldots, A_n \) of disjoint sets. We will use induction on \( n \). The base case \( n = 0 \) is vacuous, so suppose that the rule holds for families of \( n - 1 \) sets. Then
+  \begin{equation*}
+    \sum_{k=1}^n \card A_k
+    =
+    \sum_{k=1}^{n-1} \card A_k + \card A_n
+    \reloset {\T{ind.}} =
+    \card\parens[\Big]{ \bigcup_{k=1}^{n-1} A_k } + \card A_n.
+  \end{equation*}
+
+  Denote the union \( \bigcup_{k=1}^{n-1} A_k \) by \( B \). \Fullref{def:cardinal_arithmetic/addition} defines the sum above as the cardinality of the disjoint union \( B \amalg A_n \). However, since \( B \) and \( A_n \) are disjoint, \fullref{thm:disjoint_union_of_disjoint_sets} implies that \( B \amalg A_n \) is equinumerous with \( B \cup A_n \). Therefore, as desired,
+  \begin{equation*}
+    \sum_{k=1}^n \card A_k = \card\parens[\Big]{ \bigcup_{k=1}^n A_k }.
+  \end{equation*}
+\end{proof}
+
+\begin{theorem}[Cardinality product rule]\label{thm:cardinality_product_rule}
+  The \hyperref[thm:cardinality_existence]{cardinality} of the \hyperref[def:cartesian_product]{Cartesian product} of finitely many sets is the product of their individual cardinalities.
+\end{theorem}
+\begin{proof}
+  \Fullref{def:cardinal_arithmetic/multiplication} defines the product of two cardinal numbers as the cardinality of their Cartesian product. The proposition follows by induction similarly to \fullref{thm:cardinality_sum_rule}.
+\end{proof}
+
+\paragraph{Inclusion-exclusion principle}
+
+\begin{theorem}[Binary inclusion-exclusion principle]\label{thm:binary_inclusion_exclusion_principle}
+  For any two sets \( A \) and \( B \) we have
+  \begin{equation}\label{eq:thm:binary_inclusion_exclusion_principle/general}
+    \card(A \cup B) + \card(A \cap B) = \card(A) + \card(B).
+  \end{equation}
+
+  If both are finite, then
+  \begin{equation}\label{eq:thm:binary_inclusion_exclusion_principle/finite}
+    \card(A \cup B) = \card(A) + \card(B) - \card(A \cap B).
+  \end{equation}
+\end{theorem}
+\begin{proof}
+  Consider the disjoint union
+  \begin{equation*}
+    U \coloneqq (A \cup B) \amalg (A \cap B)
+  \end{equation*}
+  and the (injective) functions
+  \begin{equation*}
+    \begin{aligned}
+      &f_A: A \to U, \\
+      &f_A(x) \coloneqq \iota_{A \cup B}(x).
+    \end{aligned}
+  \end{equation*}
+  and
+  \begin{equation*}
+    \begin{aligned}
+      &f_B: B \to U, \\
+      &f_B(x) \coloneqq \begin{cases}
+        \iota_{A \cap B}(x), &x \in A, \\
+        \iota_{A \cup B}(x), &x \not\in A.
+      \end{cases}
+    \end{aligned}
+  \end{equation*}
+
+  \begin{figure}[!ht]
+    \centering
+    \includegraphics[align=c]{output/thm__binary_inclusion_exclusion_principle}
+    \caption{The functions from our proof of \fullref{thm:binary_inclusion_exclusion_principle}}\label{fig:thm:binary_inclusion_exclusion_principle}
+  \end{figure}
+
+  We can now easily combine \( f_A \) and \( f_B \) into a bijective function from \( A \amalg B \) to \( U \), thus
+  \begin{equation*}
+    \card(A \amalg B) = \card(U).
+  \end{equation*}
+
+  As per our definition of cardinal addition in \fullref{def:cardinal_arithmetic/addition}, the cardinality of a disjoint union is the sum of the individual cardinalities; thus, \eqref{eq:thm:binary_inclusion_exclusion_principle/general} follows.
+\end{proof}
+
+\begin{theorem}[Inclusion-exclusion principle]\label{thm:inclusion_exclusion_principle}
+  Fix a nonempty \( \Omega \) and consider a \hyperref[def:measure/positive]{finitely-additive positive measure} \( \mu \) on an \hyperref[def:algebra_of_subsets]{algebra of subsets} \( \mscrA \) of \( \Omega \). As usually stated, the principle applies to the \hyperref[def:counting_measure]{counting measure} on \( \Omega \).
+
+  For every finite family \( A_1, \ldots, A_n \) in \( \mscrA \) of sets of finite measure, we have
+  \begin{equation}\label{eq:thm:inclusion_exclusion_principle}
+    \mu(A_1 \cup \cdots \cup A_n) = \sum_{k=1}^n (-1)^{k - 1} \sum_{\mathclap{i_1 < \cdots < i_k}} \mu(A_{i_1} \cap \cdots \cap A_{i_k}).
+  \end{equation}
+\end{theorem}
+\begin{comments}
+  \item We can generally regard \fullref{thm:binary_inclusion_exclusion_principle} as a special case, however it also handles the case of infinite sets.
+
+  \item \Fullref{thm:inclusion_exclusion_eratosthenes} and \fullref{thm:totient_function_product_formula} are corollaries of this principle.
+
+  \item \incite*[195]{Stanley2012EnumCombinatoricsVol1} uses a linear-algebraic generalization of this theorem to handle integer-valued functions other than the cardinality. Our statement makes use only of the finite additivity of \( \mu \).
+\end{comments}
+\begin{proof}
+  We will use induction on \( n \). The base case \( n = 1 \) is trivial. Suppose \eqref{eq:thm:inclusion_exclusion_principle} holds for all families of \( n \) sets of finite measure. For the family \( A_1, \ldots, A_n, A_{n+1} \) we thus have
+  \begin{align*}
+    &\phantom{{}={}}
+    \mu(A_1 \cup \cdots \cup A_n)
+    = \\ &=
+    \mu\parens[\Big]{ (A_1 \setminus A_{n+1}) \cup \cdots \cup (A_n \setminus A_{n+1}) \cup A_{n+1} }
+    \reloset {\eqref{eq:def:boolean_algebra_additive_function/finite}} = \\ &=
+    \mu\parens[\Big]{ (A_1 \setminus A_{n+1}) \cup \cdots \cup (A_n \setminus A_{n+1}) } + \mu(A_{n+1})
+    \reloset {\T{ind.}} = \\ &=
+    \sum_{k=1}^n (-1)^{k - 1} \sum_{\mathclap{i_1 < \cdots < i_k \leq n}} \mu( (A_{i_1} \cap \cdots \cap A_{i_k}) \setminus A_{n+1}) + \mu(A_{n+1})
+    \reloset {\eqref{eq:def:boolean_algebra_additive_function/finite}} = \\ &=
+    \sum_{k=1}^n (-1)^{k - 1} \sum_{\mathclap{i_1 < \cdots < i_k \leq n}} \parens[\Big]{ \mu(A_{i_1} \cap \cdots \cap A_{i_k}) - \mu(A_{i_1} \cap \cdots \cap A_{i_k} \cap A_{n+1}) } + \mu(A_{n+1})
+    = \\ &=
+    \sum_{k=1}^{n + 1} (-1)^{k - 1} \sum_{\mathclap{i_1 < \cdots < i_k \leq n + 1}} \mu(A_{i_1} \cap \cdots \cap A_{i_k}).
+  \end{align*}
+\end{proof}
+
 \paragraph{Pigeonhole principle}
 
 \begin{concept}\label{con:pigeonhole_principle}
@@ -130,89 +248,6 @@
     Compare this example to \fullref{ex:ramsey_party_problem}, where we are interested how many people know \hi{each other}. This leads to the considerably harder problem of estimating \hyperref[def:ramsey_number]{Ramsey numbers}.
   \end{thmenum}
 \end{example}
-
-\paragraph{Inclusion-exclusion principle}
-
-\begin{theorem}[Binary inclusion-exclusion principle]\label{thm:binary_inclusion_exclusion_principle}
-  For any two sets \( A \) and \( B \) we have
-  \begin{equation}\label{eq:thm:binary_inclusion_exclusion_principle/general}
-    \card(A \cup B) + \card(A \cap B) = \card(A) + \card(B).
-  \end{equation}
-
-  If both are finite, then
-  \begin{equation}\label{eq:thm:binary_inclusion_exclusion_principle/finite}
-    \card(A \cup B) = \card(A) + \card(B) - \card(A \cap B).
-  \end{equation}
-\end{theorem}
-\begin{proof}
-  Consider the disjoint union
-  \begin{equation*}
-    U \coloneqq (A \cup B) \amalg (A \cap B)
-  \end{equation*}
-  and the (injective) functions
-  \begin{equation*}
-    \begin{aligned}
-      &f_A: A \to U, \\
-      &f_A(x) \coloneqq \iota_{A \cup B}(x).
-    \end{aligned}
-  \end{equation*}
-  and
-  \begin{equation*}
-    \begin{aligned}
-      &f_B: B \to U, \\
-      &f_B(x) \coloneqq \begin{cases}
-        \iota_{A \cap B}(x), &x \in A, \\
-        \iota_{A \cup B}(x), &x \not\in A.
-      \end{cases}
-    \end{aligned}
-  \end{equation*}
-
-  \begin{figure}[!ht]
-    \centering
-    \includegraphics[align=c]{output/thm__binary_inclusion_exclusion_principle}
-    \caption{The functions from our proof of \fullref{thm:binary_inclusion_exclusion_principle}}\label{fig:thm:binary_inclusion_exclusion_principle}
-  \end{figure}
-
-  We can now easily combine \( f_A \) and \( f_B \) into a bijective function from \( A \amalg B \) to \( U \), thus
-  \begin{equation*}
-    \card(A \amalg B) = \card(U).
-  \end{equation*}
-
-  As per our definition of cardinal addition in \fullref{def:cardinal_arithmetic/addition}, the cardinality of a disjoint union is the sum of the individual cardinalities; thus, \eqref{eq:thm:binary_inclusion_exclusion_principle/general} follows.
-\end{proof}
-
-\begin{theorem}[Inclusion-exclusion principle]\label{thm:inclusion_exclusion_principle}
-  Fix a nonempty \( \Omega \) and consider a \hyperref[def:measure/positive]{finitely-additive positive measure} \( \mu \) on an \hyperref[def:algebra_of_subsets]{algebra of subsets} \( \mscrA \) of \( \Omega \). As usually stated, the principle applies to the \hyperref[def:counting_measure]{counting measure} on \( \Omega \).
-
-  For every finite family \( A_1, \ldots, A_n \) in \( \mscrA \) of sets of finite measure, we have
-  \begin{equation}\label{eq:thm:inclusion_exclusion_principle}
-    \mu(A_1 \cup \cdots \cup A_n) = \sum_{k=1}^n (-1)^{k - 1} \sum_{\mathclap{i_1 < \cdots < i_k}} \mu(A_{i_1} \cap \cdots \cap A_{i_k}).
-  \end{equation}
-\end{theorem}
-\begin{comments}
-  \item We can generally regard \fullref{thm:binary_inclusion_exclusion_principle} as a special case, however it also handles the case of infinite sets.
-
-  \item \Fullref{thm:inclusion_exclusion_eratosthenes} and \fullref{thm:totient_function_product_formula} are corollaries of this principle.
-
-  \item \incite*[195]{Stanley2012EnumCombinatoricsVol1} uses a linear-algebraic generalization of this theorem to handle integer-valued functions other than the cardinality. Our statement makes use only of the finite additivity of \( \mu \).
-\end{comments}
-\begin{proof}
-  We will use induction on \( n \). The base case \( n = 1 \) is trivial. Suppose \eqref{eq:thm:inclusion_exclusion_principle} holds for all families of \( n \) sets of finite measure. For the family \( A_1, \ldots, A_n, A_{n+1} \) we thus have
-  \begin{align*}
-    &\phantom{{}={}}
-    \mu(A_1 \cup \cdots \cup A_n)
-    = \\ &=
-    \mu\parens[\Big]{ (A_1 \setminus A_{n+1}) \cup \cdots \cup (A_n \setminus A_{n+1}) \cup A_{n+1} }
-    \reloset {\eqref{eq:def:boolean_algebra_additive_function/finite}} = \\ &=
-    \mu\parens[\Big]{ (A_1 \setminus A_{n+1}) \cup \cdots \cup (A_n \setminus A_{n+1}) } + \mu(A_{n+1})
-    \reloset {\T{ind.}} = \\ &=
-    \sum_{k=1}^n (-1)^{k - 1} \sum_{\mathclap{i_1 < \cdots < i_k \leq n}} \mu( (A_{i_1} \cap \cdots \cap A_{i_k}) \setminus A_{n+1}) + \mu(A_{n+1})
-    \reloset {\eqref{eq:def:boolean_algebra_additive_function/finite}} = \\ &=
-    \sum_{k=1}^n (-1)^{k - 1} \sum_{\mathclap{i_1 < \cdots < i_k \leq n}} \parens[\Big]{ \mu(A_{i_1} \cap \cdots \cap A_{i_k}) - \mu(A_{i_1} \cap \cdots \cap A_{i_k} \cap A_{n+1}) } + \mu(A_{n+1})
-    = \\ &=
-    \sum_{k=1}^{n + 1} (-1)^{k - 1} \sum_{\mathclap{i_1 < \cdots < i_k \leq n + 1}} \mu(A_{i_1} \cap \cdots \cap A_{i_k}).
-  \end{align*}
-\end{proof}
 
 \paragraph{Factorial}
 

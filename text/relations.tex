@@ -1,103 +1,322 @@
 \section{Relations}\label{sec:relations}
 
-\begin{definition}\label{def:cartesian_product}
-  We are now in a vicious cycle where we need binary Cartesian products in order to define arbitrary Cartesian products. We will do this as quickly as possible, prior to introducing relations and functions.
+\begin{remark}\label{rem:cartesian_products_and_functions}
+  In the literature, with slight variations, a Cartesian product of a family of sets is defined the set of all \hyperref[def:choce_function]{choice functions}, while a function is defined as a binary relation -- a subset of the binary Cartesian product. Thus, it is common to have two distinct definitions for Cartesian products.
 
-  \begin{thmenum}
-    \thmitem{def:cartesian_product/kuratowski_pair}\mcite[36]{Enderton1977Sets} We define the \term{Kuratowski pair} or simply \term{ordered pair} \( \braket{ x, y } \) of the sets \( x \) and \( y \) as
-    \begin{equation*}
-      \braket{ x, y } \coloneqq \set{ \set{ x }, \set{ x, y } }.
-    \end{equation*}
-
-    This is a simple and widespread definition that encodes the order of \( x \) and \( y \), unlike, for example, the set \( \set{ x, y } \).
-
-    We will later use the notation \( (x, y) \), but until \fullref{rem:kuratowski_pairs_and_tuples}, we want to distinguish between Kuratowski pairs and \( 2 \)-tuples.
-
-    The following \hyperref[con:predicate_formula]{predicate formula} encodes this notion and will be used in \( \ref{eq:def:function/predicate}[\rho, \sigma, \tau] \):
-    \begin{equation*}\taglabel[\op{IsPair}]{eq:def:cartesian_product/kuratowski_pair_predicate}
-      \ref{eq:def:cartesian_product/kuratowski_pair_predicate}[\rho, \sigma, \tau] \coloneqq \qforall \synx \parens[\Bigg]{ \synx \in \rho \syniff \parens[\Big]{ \parens[\Big]{ \qforall {\syny \in \synx} \syny \syneq \sigma } \synvee \parens[\Big]{ \qforall {\syny \in \synx} (\syny \syneq \sigma \synvee \syny \syneq \tau) } } }
-    \end{equation*}
-
-    \thmitem{def:cartesian_product/indexed_family}\mimprovised We define an \term{indexed family} as a set \( i \) of Kuratowski pairs where \( \braket{ k, A } \in i \) and \( \braket{ k, B } \in i \) together imply \( A = B \). It is conventional to denote this unique set corresponding to \( k \) as \( A_k \) without an explicit reference to \( i \).
-
-    We define the underlying \term{index set} of the family as
-    \begin{equation*}
-      \mscrK \coloneqq \set{ k \given \qexists A \braket{ k, A } \in i }.
-    \end{equation*}
-
-    The family itself can then be denoted as
-    \begin{equation*}
-      \seq{ A_k }_{k \in \mscrK}.
-    \end{equation*}
-
-    If \( A_k \in \mscrA \) for every \( k \in \mscrK \), we sometimes write
-    \begin{equation*}
-      \seq{ A_k }_{k \in \mscrK} \subseteq \mscrA,
-    \end{equation*}
-    although the latter is an embedding rather than set inclusion.
-
-    \thmitem{def:cartesian_product/tuple}\mimprovised We say that the indexed family \( \seq{ x_k }_{k \in \mscrK} \) is a \term{tuple} from the indexed family \( \seq{ A_k }_{k \in \mscrK} \) if both have the same index set and if, for every \( k \in \mscrK \), the value \( x_k \) belongs to \( A_k \).
-
-    We will later see that this is precisely a \hyperref[def:choice_function]{choice function}.
-
-    \thmitem{def:cartesian_product/product}\mcite[54]{Enderton1977Sets} Finally, we define the \term[bg=Декартово произведение (\cite[368]{ГеновМиховскиМоллов1991Алгебра}), ru=Декартово произведение (\cite[26]{Гуров2013Решётки})]{Cartesian product} of an indexed family \( \seq{ A_k }_{k \in \mscrK} \) is the set of all tuples from this family. We denote the Cartesian product by
-    \begin{equation*}
-      \prod_{k \in \mscrK} A_k.
-    \end{equation*}
-
-    With the availability of \hyperref[def:function]{functions} in \fullref{sec:functions}, we will be able to redefine the Cartesian product as the set
-    \begin{equation*}
-      \prod_{k \in \mscrK} A_k = \set*{ f: A \to \bigcup_{k \in \mscrK} A_k \given* \qforall {k \in \mscrK} k \in A_k }.
-    \end{equation*}
-  \end{thmenum}
-\end{definition}
-
-\begin{definition}\label{def:sequence}\mimprovised
-  We will call families indexed by \( \omega \) \term{infinite sequences} or simply \term{sequences}. We will start indexing at \( 1 \) rather than \( 0 \); this issue is discussed in \fullref{rem:peano_arithmetic_zero}.
-
-  We will use several notations, depending on the context:
+  We will instead proceed as follows:
   \begin{itemize}
-    \item \( \seq{ A_k }_{k \in \BbbN} \), which is the notation for general indexed families from \fullref{def:cartesian_product/indexed_family}.
-    \item \( \seq{ A_k }_{k=1}^\infty \), which easily extends to cases such as \( \seq{ A_k }_{k=m}^n \) when the index set is \( \set{ m, \ldots, n } \).
-    \item \( (A_1, A_2, \ldots) \), which is used when explicitly enumerating members of the sequence.
+    \item First, in \fullref{def:kuratowski_pair}, we will explicitly construct a Kuratowski pair \( \braket{ a, b } \) of two sets \( a \) and \( b \). We will only use it as an auxiliary definition satisfying \fullref{thm:kuratowski_pair_extensionality}, needed for defining indexed families.
+
+    \item In \fullref{def:indexed_family}, we will define an indexed family \( \seq{ a_k }_{k \in \mscrK} \) of sets as a set of Kuratowski pairs.
+
+    \item In \fullref{def:cartesian_product}, we will define Cartesian products as sets of indexed families. Later, we will prove \fullref{thm:cartesian_product_universal_property}, which will allow us to regard elements of a Cartesian product as \hyperref[def:choice_function]{choice functions}.
+
+    \item In \fullref{def:ordered_tuple} and \fullref{def:sequence}, we will define ordered tuples and sequences as certain indexed families, which will allow us to regard elements of certain Cartesian products as ordered tuples.
+
+    \item In \fullref{def:function}, we defined functions as indexed families with a fixed domain and codomain (whereas we do not generally care about the codomain of an indexed family). As discussed in \fullref{rem:function_definition}, functions are often defined as sets of Kuratowski pairs, without any regard to their codomain, thus our notion of indexed family coincides with some authors' notion of a function.
   \end{itemize}
 
-  It is conventional to write a family \( \seq{ A_k }_{k \in n} \) indexed by a natural number \( n \) using the notation \( (A_1, \cdots, A_n) \), with or without the outer parentheses. A family indexed by \( n \) is called a \term{finite sequence} of \term{length} \( n \), although \enquote{\( n \)-tuple} is often used.
-
-  Some common terms regarding the length of sequences:
+  As mentioned in the beginning, this approach differs from what is established in the literature. We will list approaches used in different sources.
   \begin{itemize}
-    \item \term{Singletons} for \( n = 1 \) (distinct from \hyperref[rem:singleton_sets]{singleton sets}, but the two notions can be conflated).
-    \item \term{Pairs} for \( n = 2 \) (distinct from \hyperref[def:cartesian_product/kuratowski_pair]{Kuratowski pairs}, as explained in \fullref{rem:kuratowski_pairs_and_tuples}, but also conflated).
-    \item \term{Triples} for \( n = 3 \).
-    \item \term{Quadruples} for \( n = 4 \).
+    \item First, a Kuratowski pair \( \braket{ a, b } \) of \( a \) and \( b \) is explicitly constructed.
+
+    The approach of constructing functions using Kuratowski pairs is done, among others, by
+    \incite[def. 6.2.1]{Hinman2005Logic},
+    \incite[def. I.4.11]{Kunen2013Sets},
+    \incite[235]{Mendelson2015Logic},
+    \incite[36]{Enderton1977Sets},
+    \incite[23]{Halmos1960Sets},
+    \incite[1]{Engelking1989Topology},
+    \incite[139]{КолмогоровДрагалин2006Логика},
+    \incite[127]{Герасимов2011Вычислимость},
+    \incite[thm. 9]{ШеньВерещагин2020Множества},
+    \incite[\S 1.2.3]{КусраевКутателадзе2005БулевозначныйАнализ}.
+
+    \incite[72]{Bourbaki2004Sets} instead introduce an axiom that guarantees the existence of an ordered pair satisfying \fullref{thm:kuratowski_pair_extensionality}.
+
+    \incite{Архангельский1988Множества} defines the other concepts leading to general Cartesian products without a formal definition of ordered pairs.
+
+    \item A binary Cartesian product \( A \times B \) is defined as sets of all Kuratowski pairs \( \braket{ a, b } \), where \( a \) is in \( A \) and \( b \) is in \( B \).
+
+    All aforementioned authors construct binary Cartesian products in this way ---
+    \incite[def. 6.2.3]{Hinman2005Logic},
+    \incite[def. I.6.5]{Kunen2013Sets},
+    \incite[240]{Mendelson2015Logic},
+    \incite[37]{Enderton1977Sets},
+    \incite[24]{Halmos1960Sets},
+    \incite[1]{Engelking1989Topology},
+    \incite[def. I.5.2.1]{Bourbaki2004Sets},
+    \incite[141]{КолмогоровДрагалин2006Логика},
+    \incite[132]{Герасимов2011Вычислимость},
+    \incite[9]{Архангельский1988Множества} and
+    \incite[\S 1.2.3]{КусраевКутателадзе2005БулевозначныйАнализ}.
+
+    \incite[32]{ШеньВерещагин2020Множества}, when defining Cartesian products, defer the definition of Kuratowski pairs for a few pages, instead relying on an intuitive definition of ordered pairs.
+
+    \item A function from \( A \) to \( B \) is then defined via its graph as any subset of \( A \times B \) that contains exactly one pair \( (a, b) \) for every \( a \) in \( A \)\fnote{We discuss in \fullref{rem:function_definition} that the definition of a function must also explicitly specify its domain and codomain, not only its graph.}.
+
+    Out of the aforementioned authors, \incite[def. I.3.1]{Bourbaki2004Sets} and \incite[9]{Архангельский1988Множества} define function graphs as subsets of the Cartesian product after discussing functions. Arhangelskii does not define functions formally.
+
+    Most other authors define functions as subsets of Cartesian products ---
+    \incite[def. 6.2.8]{Hinman2005Logic},
+    \incite[42]{Enderton1977Sets},
+    \incite[30]{Halmos1960Sets},
+    \incite[1]{Engelking1989Topology},
+    \incite[143]{КолмогоровДрагалин2006Логика},
+    \incite[133]{Герасимов2011Вычислимость} and
+    \incite[32]{ШеньВерещагин2020Множества}.
+
+    \incite[def. I.6.3]{Kunen2013Sets}, \incite[240]{Mendelson2015Logic} and \incite[\S 1.2.4]{КусраевКутателадзе2005БулевозначныйАнализ} define functions as sets of tuples, without referencing Cartesian products.
+
+    \item A \hyperref[def:choice_function]{choice function} \( f \) for a family of nonempty sets \( \mscrA \) is defined as a function from \( \mscrA \) to the union \( \bigcup \mscrA \) such that, for every \( A \) in \( \mscrA \), the value \( f(A) \) belongs to \( A \).
+
+    Both choice functions and general products are explicitly discussed by \incite[60]{Halmos1960Sets}. \incite[prop. 4.42(a)]{Mendelson2015Logic} and \incite[thm. 6M(3)]{Enderton1977Sets} only briefly mention choice functions, but discuss general products.
+
+    \incite[def. 6.4.1]{Hinman2005Logic}, \incite[def. I.12.2]{Kunen2013Sets} and \incite[136]{Герасимов2011Вычислимость} discuss choice functions, but not general Cartesian products.
+
+    \item The Cartesian product \( \prod \mscrA \) of the family \( \mscrA \) is then defined as the set of all choice functions on \( \mscrA \). The \hyperref[def:zfc/choice]{axiom of choice} is required to show that arbitrary products are well-defined.
+
+    \incite[131]{Mendelson2015Logic} and \incite[54]{Enderton1977Sets} define general Cartesian products and later mention choice functions without even stating a connection.
+
+    \incite[def. I.5.3.1]{Bourbaki2004Sets},
+    \incite[2]{Engelking1989Topology},
+    \incite[146]{КолмогоровДрагалин2006Логика} and
+    \incite[41]{ШеньВерещагин2020Множества}
+    define arbitrary products without stating and discussing choice functions separately, even when discussing the axiom of choice.
+
+    \incite[36]{Halmos1960Sets}, prior to discussing choice functions, defines the Cartesian product of the family \( \seq{ A_k }_{k \in \mscrK} \)  as the set of all indexed families \( \seq{ a_k }_{k \in \mscrK} \) such that \( a_k \) belongs to \( A_k \) for every \( k \) in \( \mscrK \). \incite[11]{Архангельский1988Множества} proceeds similarly.
+  \end{itemize}
+\end{remark}
+
+\paragraph{Kuratowski pairs}
+
+\begin{definition}\label{def:kuratowski_pair}\mcite[thm. 9]{ШеньВерещагин2020Множества}
+  A \term[ru=упорядоченная пара по Куратовскому (\cite[thm. 9]{ШеньВерещагин2020Множества})]{Kuratowski pair} consisting of the sets \( a \) and \( b \) is the set
+  \begin{equation}\label{eq:def:kuratowski_pair}
+    \braket{ a, b } \coloneqq \set{ \set{ a }, \set{ a, b } }.
+  \end{equation}
+
+  The following \hyperref[con:formula_defined_predicate]{formula-defined predicate} encodes this notion and will be used in \fullref{def:indexed_family} to define \( \ref{eq:def:indexed_family/predicate}[\synf, \syna, \synb] \):
+  \begin{equation*}\taglabel[\op{IsPair}]{eq:def:kuratowski_pair/predicate}
+    \ref{eq:def:kuratowski_pair/predicate}[\synp, \syna, \synb] \coloneqq \qforall \synx \parens[\Big]{ \synx \in \synp \syniff \parens[\Big]{ \parens[\Big]{ \qforall {\syny \in \synx} \syny \syneq \syna } \synvee \parens[\Big]{ \qforall {\syny \in \synx} (\syny \syneq \syna \synvee \syny \syneq \synb) } } }.
+  \end{equation*}
+\end{definition}
+\begin{comments}
+  \item We will use this definition only as a technical step for defining indexed families. What matters to us is the property \fullref{thm:kuratowski_pair_extensionality}, which is also satisfied by ordered pairs as defined in \fullref{def:ordered_tuple}. We will use the angle bracket notation only in the few places where we will explicitly rely on ordered pairs being defined by \eqref{eq:def:kuratowski_pair}.
+
+  \item For unordered pairs, we have the weaker statement \fullref{thm:unordered_pair_extensionality}. For indexed families, we have the more general statement \fullref{thm:indexed_family_extensionality}.
+\end{comments}
+
+\begin{proposition}\label{thm:kuratowski_pair_extensionality}
+  For \hyperref[def:kuratowski_pair]{Kuratowski pairs} the following property holds:
+  \begin{equation}\label{eq:thm:kuratowski_pair_extensionality}
+    \braket{ a, b } = \braket{ c, d } \T{if and only if} a = c \T{and} b = d.
+  \end{equation}
+\end{proposition}
+\begin{comments}
+  \item \incite[72]{Bourbaki2004Sets} introduce an axiom for the existence of ordered pairs satisfying \eqref{eq:thm:kuratowski_pair_extensionality}. See \fullref{rem:cartesian_products_and_functions} for a broader discussion.
+\end{comments}
+\begin{proof}
+  \SufficiencySubProof Suppose that
+  \begin{equation*}
+    \set{ \set{ a }, \set{ a, b } }
+    =
+    \braket{ a, b }
+    =
+    \braket{ c, d }
+    =
+    \set{ \set{ c }, \set{ c, d } }.
+  \end{equation*}
+
+  \Fullref{thm:unordered_pair_extensionality} implies that there are only two cases:
+  \begin{itemize}
+    \item If \( \set{ a } = \set{ c, d } \) and \( \set{ a, b } = \set{ c } \), then, by the \hyperref[def:naive_set_theory/extensionality]{axiom of extensionality}, the equalities imply \( a = c = d \) and \( a = b = c \), correspondingly. Hence, \( a = b = c = d \).
+
+    \item If \( \set{ a } = \set{ c } \) and \( \set{ a, b } = \set{ c, d } \), then \( a = c \) from the first equality, and \fullref{thm:unordered_pair_extensionality} applied to the second equality gives us two cases:
+    \begin{itemize}
+      \item If \( a = c \) and \( b = d \), we are done.
+      \item If \( a = d \) and \( b = c \), since \( a = c \), it follows that \( a = b = c = d \).
+    \end{itemize}
+  \end{itemize}
+
+  \NecessitySubProof If \( a = c \) and \( b = d \), extensionality implies that \( \set{ a } = \set{ c } \), and \fullref{thm:unordered_pair_extensionality} implies that \( \set{ a, c } = \set{ b, d } \). We can again use \fullref{thm:unordered_pair_extensionality} to conclude that
+  \begin{equation*}
+    \braket{ a, b }
+    =
+    \set{ \set{ a }, \set{ a, b } }
+    =
+    \set{ \set{ c }, \set{ c, d } }
+    =
+    \braket{ c, d }.
+  \end{equation*}
+\end{proof}
+
+\paragraph{Indexed families}
+
+\begin{definition}\label{def:indexed_family}
+  Fix a set \( \mscrK \), which we will call the \term[en=index set (\cite[34]{Halmos1960Sets})]{index set}. A \( \mscrK \)-\term[ru=индексированное семейство (\cite[8]{Архангельский1988Множества}), en=indexed family (\cite[2]{Engelking1989Topology}); family (\cite[34]{Halmos1960Sets})]{indexed family} is simply a set \( \mscrA \) of \hyperref[def:kuratowski_pair]{Kuratowski pairs} such that:
+  \begin{thmenum}
+    \thmitem{def:indexed_family/minimality} For every pair \( \braket{ k, a_k } \) in \( \mscrA \), \( k \) is a member of \( \mscrK \).
+    \thmitem{def:indexed_family/existence} For every \( k \) in \( \mscrK \), there exists a pair \( \braket{ k, a_k } \) in \( \mscrK \).
+    \thmitem{def:indexed_family/uniqueness} For every \( k \) in \( \mscrK \),  if \( \braket{ k, a_k } \) and \( \braket{ k, b_k } \) are both pairs in \( \mscrA \), then \( a_k = b_k \).
+  \end{thmenum}
+
+  Thus, for every \( k \) in \( \mscrK \), there corresponds a unique \( a_k \) in \( \mscrA \), and \( \mscrA \) contains no other pairs. We call \( k \) the \term[en=index (\cite[36]{Halmos1960Sets})]{index} of \( a_k \), and \( a_k \) --- the \( k \)-th \term[ru=координата (\cite[11]{Архангельский1988Множества}), en=coordinate (\cite[36]{Halmos1960Sets})]{coordinate}, \term[bg=компонента (\cite[367]{ГеновМиховскиМоллов1991Алгебра}), en=component (\cite[35]{Enderton1977Sets})]{component} or \term[ru=терм (\cite[11]{Архангельский1988Множества}), en=term (\cite[34]{Halmos1960Sets})]{term} of \( \mscrA \). This motivates the notation \( \seq{ a_k }_{k \in \mscrK} \) for \( \mscrA \).
+
+  We will make use of the following \hyperref[con:formula_defined_predicate]{formula-defined predicate}, which states that \( \synf \) is a family indexed by \( \syna \) whose values are in \( \synb \):
+  \begin{equation*}\taglabel[\op{IsFamily}]{eq:def:indexed_family/predicate}
+    \begin{aligned}
+      \ref{eq:def:indexed_family/predicate}[\synf, \syna, \synb]
+      \coloneqq
+      &\overbrace
+        {
+          \parens[\Big]
+            {
+              \qforall {\synx \in \syna} \qExists {\syny \in \synb} \qforall \synp (\ref{eq:def:kuratowski_pair/predicate}[\synp, \synx, \syny] \syniff \synp \in \synf)
+            }
+        }^{\mathclap{\T*{For every index} \synx \T*{in} \syna, \T*{there exists a unique} \syny \T*{in} \synb \T*{such that the pair} (\synx, \syny) \T*{belongs to} \synf}}
+      \synwedge \\
+      &\underbrace
+        {
+          \parens[\Big]{
+            \qforall {\synp \in \synf} \qexists {\synx \in \syna} \qexists {\syny \in \synb} \ref{eq:def:kuratowski_pair/predicate}[\synp, \synx, \syny]
+          }
+        }_{\mathclap{\T*{For every pair} \synp \T*{in} \synf, \T*{there exists an index} \synx \T*{in} \syna \T*{and a member} \syny \T*{of} \synb \T*{such that} \synp = (\synx, \syny)}}
+    \end{aligned}
+  \end{equation*}
+\end{definition}
+\begin{comments}
+  \item In accordance with \fullref{rem:cartesian_products_and_functions}, we define indexed families as sets of pairs, and then proceed to define Cartesian products in terms of indexed families. In \fullref{def:function}, we will define functions via indexed families, unlike, for example, \incite[ch. 9]{Halmos1960Sets} and \incite[2]{Engelking1989Topology}, who formalize indexed families via functions.
+
+  Nevertheless, after we prove \fullref{thm:cartesian_product_universal_property}, we will regard indexed families as functions whenever we will find it convenient.
+
+  An extensive discussion of indexed families (which Halmos simply calls \enquote{families}) can be found in \cite[ch. 9]{Halmos1960Sets}.
+
+  \item In \fullref{def:indexed_family/uniqueness} we can instead require \( \braket{ k, a_k } \) and \( \braket{ k, b_k } \) to be equal, and \fullref{thm:kuratowski_pair_extensionality} would still imply that \( a_k = b_k \).
+
+  \item As discussed in \fullref{rem:family_to_indexed_family}, we can regard any non-indexed family of sets as an indexed family.
+\end{comments}
+
+\begin{proposition}\label{thm:indexed_family_extensionality}
+  For \( \mscrK \)-\hyperref[def:indexed_family]{indexed families} the following property holds:
+  \begin{equation}\label{eq:thm:indexed_family_extensionality}
+    \seq{ a_k }_{k \in \mscrK} = \seq{ b_k }_{k \in \mscrK} \T{if and only if} a_k = b_k \T{for every} k \T{in} \mscrK.
+  \end{equation}
+\end{proposition}
+\begin{comments}
+  \item We have a similar statement for \hyperref[def:kuratowski_pair]{Kuratowski pairs} --- \fullref{thm:kuratowski_pair_extensionality}.
+\end{comments}
+\begin{proof}
+  When justifying the notation \( \seq{ a_k }_{k \in \mscrK} \) in \fullref{def:indexed_family}, we have already noted that the coordinates of an indexed family completely determine it. This statement is then a trivial corollary.
+\end{proof}
+
+\begin{definition}\label{def:ordered_tuple}
+  Fix a natural number \( n \) --- more explicitly, a member of the \hyperref[thm:smallest_inductive_set_existence]{smallest inductive set} \( \omega \).
+
+  An \term[ru=кортеж (\cite[def. 1.2]{БелоусовТкачёв2004ДискретнаяМатематика})]{ordered tuple} of \term{length} \( n \) is a \hyperref[def:indexed_family]{family} indexed by \( n \). Other terms in use are \term[ru=упорядоченная \( n \)-ка (\cite[9]{Архангельский1988Множества}), en=\( n \)-tuple (\cite[51]{Enderton1977Sets})]{\( n \)-tuple}, \term[en=finite sequence (\cite[9]{Halmos1960Sets})]{finite sequence} and, in some contexts, \term[en=list (\cite{Savage2008Computability})]{list}.
+
+  Rather than using \( \seq{ a_k }_{k \in n} \), we will prefer the notation
+  \begin{equation*}
+    (a_1, \ldots, a_n),
+  \end{equation*}
+  where, in accordance with \fullref{rem:peano_arithmetic_zero}, for convenience we start indexing at \( 1 \).
+
+  When we are not interested in the tuple itself as a set, we will skip the parentheses and instead use the notation
+  \begin{equation*}
+    a_1, \ldots, a_n.
+  \end{equation*}
+\end{definition}
+\begin{comments}
+  \item Both ordered tuples and \hyperref[def:sequence]{sequence} are instances of transfinite sequences, which we will define in \fullref{def:transfinite_sequence}.
+\end{comments}
+
+\begin{definition}\label{def:ordered_tuple_length_terminology}
+  We will use the following terms for \hyperref[def:ordered_tuple]{\( n \)-tuples} of certain lengths:
+  \begin{itemize}
+    \item \term[en=singleton (\cite[example 3.5.10]{Tao2022AnalysisI})]{Empty tuple} when \( n = 0 \),
+    \item \term{Singleton tuple} when \( n = 1 \),
+    \item \term[bg=наредена двойка (\cite[367]{ГеновМиховскиМоллов1991Алгебра}), ru=(упорядоченная) пара (\cite[38]{БелоусовТкачёв2004ДискретнаяМатематика}), en=(ordered) pair (\cite[23]{Halmos1960Sets})]{Pair} when \( n = 2 \),
+    \item \term[ru=(упорядоченная) тройка (\cite[39]{БелоусовТкачёв2004ДискретнаяМатематика}), en=(ordered) triple (\cite[42]{Enderton1977Sets})]{Triple} when \( n = 3 \),
+    \item \term[ru=(упорядоченная) четвёрка (\cite[39]{БелоусовТкачёв2004ДискретнаяМатематика}), en=(ordered) quadruple (\cite[42]{Enderton1977Sets})]{Quadruple} when \( n = 4 \),
+    \item \term[ru=(упорядоченная) пятёрка (\cite[39]{БелоусовТкачёв2004ДискретнаяМатематика}), en=(ordered) quintuple (\cite[42]{Enderton1977Sets})]{Quintuple} when \( n = 5 \),
   \end{itemize}
 \end{definition}
 
 \begin{remark}\label{rem:kuratowski_pairs_and_tuples}
-  Note that the \enquote{\hyperref[def:sequence]{sequence} tuple} \( (A, B) \)
+  The \hyperref[def:ordered_tuple]{ordered pair} \( (a, b) \) has elements
   \begin{equation*}
-    (A, B) = \set[\Bigg]{ \set[\Big]{ \set{ 0 }, \set{ 0, A } }, \set[\Big]{ \set{ 1 }, \set{ 1, B } } }
+    (a, b) = \set[\Big]{ \set{ \set{ 0 }, \set{ 0, a } }, \set{ \set{ 1 }, \set{ 1, b } } }
   \end{equation*}
-  is formally different from the \hyperref[def:cartesian_product/kuratowski_pair]{Kuratowski pair}
+  is formally different from the \hyperref[def:kuratowski_pair]{Kuratowski pair}
   \begin{equation*}
-    \braket{ A, B } = \set[\Big]{ \set{ A }, \set{ A, B } }.
+    \braket{ a, b } = \set[\Big]{ \set{ a }, \set{ a, b } }.
   \end{equation*}
 
-  This is one reason we hurried to define general Cartesian products --- we wanted to avoid working with tuples defined in terms of Kuratowski pairs. We even introduced a special notation for them, just so we can avoid any confusion. Nevertheless, it is conventional to conflate Kuratowski pairs with \( \set{ 0, 1 } \)-indexed tuples.
+  We could define an ordered triple as \( \braket{ \braket{ a, b }, c } \), like many of the authors discussed in \fullref{rem:cartesian_products_and_functions}.
 
-  We similarly conflate the tuples \( (A, (B, C)) \), \( ((A, B), C) \) and \( (A, B, C) \).
+  For the sake of consistency in our definitions, we wanted to avoid working with tuples defined in terms of iterated Kuratowski pairs. We even introduced a special notation for Kuratowski pairs, just so we can avoid any confusion.
+
+  Nevertheless, it is occasionally conventional to conflate \( (a, b) \) with \( \braket{ a, b } \), as well as the ordered pairs \( (a, (b, c)) \) and \( ((a, b), c) \) and the triple \( (a, b, c) \). \Fullref{thm:cartesian_product_universal_property} will justify using any definition of ordered tuple, as long as its usage is consistent.
 \end{remark}
 
-\begin{definition}\label{def:enumeration}\mimprovised
-  An \term[en=enumeration (\cite[190]{Kleene2002Logic})]{enumeration} of a set \( A \) is an \hyperref[def:function_invertibility/bijective]{bijective} \hyperref[def:sequence]{sequence} with range \( A \).
+\begin{definition}\label{def:sequence}\mcite[45]{Halmos1960Sets}
+  An \term{infinite sequence} or simply \term[ru=последовательность (\cite[10]{Архангельский1988Множества})]{sequence} is a \hyperref[def:indexed_family]{families} indexed by the \hyperref[thm:smallest_inductive_set_existence]{smallest inductive set} \( \omega \).
+
+  Rather than using \( \seq{ a_k }_{k \in \omega} \), we will prefer the notation
+  \begin{equation*}
+    \seq{ a_k }_{k=1}^\infty,
+  \end{equation*}
+  where, in accordance with \fullref{rem:peano_arithmetic_zero}, for convenience we start indexing at \( 1 \).
 \end{definition}
+\begin{comments}
+  \item Both sequences and \hyperref[def:ordered_tuple]{ordered tuples} are instances of transfinite sequences, which we will define in \fullref{def:transfinite_sequence}.
+\end{comments}
+
+\begin{definition}\label{def:enumeration}\mimprovised
+  An \term[en=enumeration (\cite[190]{Kleene2002Logic})]{enumeration} of a set \( A \) is an \hyperref[def:ordered_tuple]{ordered tuple} or \hyperref[def:sequence]{infinite sequence} which has a unique term for every member of \( A \), and has no other terms.
+\end{definition}
+\begin{comments}
+  \item If we regard indexed families as functions, then an enumeration is a tuple or sequence that is also \hyperref[def:function_invertibility/bijective]{bijective} as a function.
+\end{comments}
+
+\paragraph{Cartesian products}
+
+\begin{definition}\label{def:cartesian_product}\mimprovised
+  For an \hyperref[def:indexed_family]{indexed family} \( \seq{ A_k }_{k \in \mscrK} \), we define the \term[bg=Декартово произведение (\cite[367]{ГеновМиховскиМоллов1991Алгебра}), ru=Декартово произведение (\cite[11]{Архангельский1988Множества}), en=Cartesian product (\cite[36]{Halmos1960Sets})]{Cartesian product} \( \prod_{k \in \mscrK} A_k \) as the set of all \( \mscrK \)-\hyperref[def:indexed_family]{indexed families} \( \seq{ a_k }_{k \in \mscrK} \) such that, for every index \( k \) in \( \mscrK \), \( a_k \) belongs to \( A_k \).
+
+  For a \hyperref[def:ordered_tuple]{list} \( A_1, \ldots, A_n \) of sets, we often prefer the notation
+  \begin{equation*}
+    A_1 \times \cdots \times A_n.
+  \end{equation*}
+\end{definition}
+\begin{comments}
+  \item We base this definition on \cite[36]{Halmos1960Sets} and \cite[11]{Архангельский1988Множества}, but we avoid defining binary Cartesian products and functions beforehand. See \fullref{rem:cartesian_products_and_functions} for a discussion of how Cartesian products are defined across the literature and why we chose this particular definition.
+
+  \item After we prove \fullref{thm:cartesian_product_universal_property}, we will be able to regard the Cartesian product as a set of \hyperref[def:choice_function]{choice functions}.
+
+  \item Taking the \( k \)-th coordinate of every indexed family in the product \( \prod_{k \in \mscrK} A_k \), we obtain a function from \( \prod_{k \in \mscrK} A_k \) to \( A_k \). This is defined as discussed in \fullref{def:cartesian_product_projection}.
+\end{comments}
+
+\begin{remark}\label{rem:family_to_indexed_family}
+  As discussed in \fullref{rem:family_of_sets}, we can regard a set \( \mscrA \) as a container for other sets of interest, in which case we call \( \mscrA \) a \enquote{family of sets}.
+
+  For every such family \( \mscrA \), we can define the \hyperref[def:indexed_family]{indexed family} \( \seq{ A }_{A \in \mscrA} \). This allows extending definitions like Cartesian products, as defined in \fullref{def:cartesian_product}, to non-indexed families.
+
+  In fact, we can define the Cartesian product of the non-indexed family \( \mscrA \) of nonempty sets as the set of all \( \mscrA \)-indexed families \( \seq{ a_A }_{A \in \mscrA} \) such that \( a_A \) is in \( A \) for every set \( A \) in \( \mscrA \).
+
+  Since we regard \( \mscrA \) as an index set anyway, we find it more convenient to give a definition in terms of indexed families directly. This allows us being explicit about the indices.
+
+  On the other hand, in \fullref{def:choice_function} we define a choice function as a function \( f \) from a non-indexed family \( \mscrA \) of nonempty sets to the union \( \bigcup \mscrA \) such that \( f(A) \) is in \( A \) for every \( A \) in \( \mscrA \). This is the usage we will find convenient, for example, when working with \hyperref[def:equivalence_relation/quotient]{quotients} --- for example in our proof of \fullref{thm:category_skeleton_existence}.
+\end{remark}
+
+\paragraph{Relations}
 
 \begin{definition}\label{def:relation}\mcite[41]{Enderton1977Sets}
   Let \( A_1, \ldots, A_n \) be a \hyperref[def:sequence]{finite sequence} of sets. We call any subset
   \begin{equation*}
     R \subseteq A_1 \times \cdots \times A_n
   \end{equation*}
-  of their \hyperref[def:cartesian_product/product]{Cartesian product} an \( n \)-ary \term[bg=релация (\cite[367]{ГеновМиховскиМоллов1991Алгебра}), ru=отношение (\cite[25]{КолмогоровДрагалин2006Логика})]{relation}.
+  of their \hyperref[def:cartesian_product]{Cartesian product} an \( n \)-ary \term[bg=релация (\cite[367]{ГеновМиховскиМоллов1991Алгебра}), ru=отношение (\cite[25]{КолмогоровДрагалин2006Логика})]{relation}.
 
   We say that the values
   \begin{equation*}
@@ -108,7 +327,7 @@
   Relations are sometimes implicitly assumed to be binary (i.e. \( n = 2 \)), for example by \incite[7]{Kelley1975Topology} or by \incite[1]{Engelking1989Topology}. Herbert Enderton initially defines them as binary in \mcite[40]{Enderton1977Sets}, but gives a more general definition one page later. We discuss binary relations specifically in \fullref{def:binary_relation}, and give here definitions that hold more generally.
 
   \begin{thmenum}[series=def:relation]
-    \thmitem{def:relation/arity} For some small values of \( n \), we use the adjectives from \fullref{def:operation_arity} for describing the relation arity (e.g. unary, binary).
+    \thmitem{def:relation/arity} For some small values of \( n \), we use the adjectives from \fullref{def:operation_arity_terminology} for describing the relation arity (e.g. unary, binary).
 
     \thmitem{def:relation/single_set} If all \( A_k \) for \( k = 1, \ldots, n \) are equal to the set \( A \), we say that \( R \subseteq A^n \) is a relation \hi{on \( A \)}.
 
@@ -247,7 +466,7 @@
 \begin{example}\label{ex:def:equivalence_relation}
   We list examples of \hyperref[def:equivalence_relation]{equivalence relations}:
   \begin{thmenum}
-    \thmitem{ex:def:equivalence_relation/tuple} Given a \hyperref[def:cartesian_product/product]{Cartesian product} \( \prod_{k \in \mscrK} A_k \), for every \( m \in \mscrK \) we can define the equivalence relation
+    \thmitem{ex:def:equivalence_relation/tuple} Given a \hyperref[def:cartesian_product]{Cartesian product} \( \prod_{k \in \mscrK} A_k \), for every \( m \in \mscrK \) we can define the equivalence relation
     \begin{equation*}
        \seq{ x_k }_{k \in \mscrK} \sim_m \seq{ y_k }_{k \in \mscrK} \T{if} x_m = y_m.
     \end{equation*}
@@ -272,7 +491,7 @@
 \end{definition}
 
 \begin{definition}\label{def:set_partition}\mcite[57]{Enderton1977Sets}
-  A \term{partition} of \( A \) is a pairwise \hyperref[def:subset]{disjoint} \hyperref[def:set_cover]{cover}. In other words, the cover \( \mscrA \) is a partition if and only if each element of \( A \) belong to exactly one set in \( \mscrA \).
+  A \term{partition} of \( A \) is a pairwise \hyperref[def:subset_ordering]{disjoint} \hyperref[def:set_cover]{cover}. In other words, the cover \( \mscrA \) is a partition if and only if each element of \( A \) belong to exactly one set in \( \mscrA \).
 \end{definition}
 
 \begin{proposition}\label{thm:equivalence_partition}

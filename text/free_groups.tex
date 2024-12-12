@@ -7,6 +7,9 @@
 
   Denote by \( \iota_A: A \to A^* \) the canonical inclusion function, which sends every member of \( A \) into the corresponding single-symbol string in the \hyperref[def:free_monoid]{free monoid} \( A^* \).
 \end{definition}
+\begin{comments}
+  \item Free monoids allow describing the possible operations performed in a monoid, and \fullref{thm:free_monoid_universal_property} allows to actually perform these operations in some monoid. Thus, free monoids are an instance of the \hyperref[con:syntax_semantics_duality]{syntax-semantics duality}.
+\end{comments}
 \begin{defproof}
   Concatenation is clearly associative and the empty string \( \bnfes \) is an \hyperref[def:monoid]{neutral element} under concatenation.
 \end{defproof}
@@ -43,6 +46,115 @@
       f(a) \cdot \widetilde{f}(w') &w = a \cdot w'.
     \end{cases}
   \end{equation*}
+\end{proof}
+
+\begin{proposition}\label{thm:def:free_monoid}
+  \hyperref[def:free_monoid]{Free monoids} have the following basic properties:
+  \begin{thmenum}
+    \thmitem{thm:def:free_monoid/cancellative} Every free monoid is \hyperref[def:binary_operation/cancellative]{cancellative}.
+  \end{thmenum}
+\end{proposition}
+\begin{proof}
+  \SubProofOf{thm:def:free_monoid/cancellative} Consider the free monoid \( F(A) \) and suppose that \( uw = vw \) for some words in \( F(A) \). We will use induction on the length of \( w \), simultaneously for all \( u \) and \( v \), to show that we can cancel \( w \).
+  \begin{itemize}
+    \item If \( w \) is the empty string, clearly \( u = v \).
+    \item Suppose that we can cancel strings of length \( n - 1 \), and that \( w \) has length \( n \). Let \( w = ps \), where both \( p \) and \( s \) are nonempty. Then both have length less than \( n \), hence we can cancel \( s \) in \( ups = vps \), and then cancel \( p \) in \( up = vp \).
+  \end{itemize}
+
+  We can similarly show that \( wu = wv \) implies \( u = v \).
+\end{proof}
+
+\paragraph{Free products}
+
+\begin{definition}\label{def:monoid_free_product}\mimprovised
+  Fix a family \( \seq{ M_k }_{k \in \mscrK} \) of \hyperref[def:monoid]{monoids}. We will construct a monoid \( \Ast_{k \in \mscrK} M_k \), which we will call the \term[ru=свободное произведение (\cite[def. X.5.2]{Ляпин1960Полугруппы}), en=free product (\cite[323]{Knapp2016BasicAlgebra})]{free product}, based on the (set-theoretic) \hyperref[def:disjoint_union]{disjoint union} of the individual monoids. In \fullref{thm:monoid_coproduct}, we will show that it is their \hyperref[def:discrete_category_limits]{categorical coproduct}.
+
+  For each \( k \) in \( \mscrK \), denote by \( \delta_k \) the inclusion of \( M_k \) into the disjoint union \( \coprod_{k \in \mscrK} M_k \) and by \( \varphi_k \) --- the inclusion into \( F(M_k) \). Similarly, denote by \( \varphi \) the inclusion of \( \coprod_{k \in \mscrK} M_k \) into its \hyperref[def:free_monoid]{free monoid}.
+
+  \Fullref{thm:free_monoid_universal_property} applied to \( \varphi \bincirc \delta_k \) gives us a homomorphism \( \zeta_k \), and applied to \( \id_{M_k} \) gives us a homomorphism \( \psi_k \) such that the following diagram commutes:
+  \begin{equation*}
+    \begin{aligned}
+      \includegraphics[page=1]{output/def__monoid_free_product}
+    \end{aligned}
+  \end{equation*}
+
+  Define the relation \( {\sim} \) on \( F(\coprod_{k \in \mscrK} M_k) \) via the following rules (one rule for each \( k \) in \( \mscrK \)):
+  \begin{equation*}\taglabel[\ensuremath{ \logic{FreeProd}_k }]{inf:def:monoid_free_product}
+    \begin{prooftree}
+      \hypo{ v \in F(M_k) }
+      \hypo{ w \in F(M_k) }
+      \hypo{ \psi_k(v) = \psi_k(w) }
+      \infer3[\ref{inf:def:monoid_free_product}]{ \zeta_k(v) \sim \zeta_k(w) }.
+    \end{prooftree}
+  \end{equation*}
+
+  Thus, if the strings \( v \) and \( w \) from \( F(M_k) \) evaluate to the same value in \( M_k \), we want their embeddings into \( F(\coprod_{k \in \mscrK} M_k) \) to also evaluate to the same value.
+
+  Finally, we define the free product itself as the \hyperref[def:monoid/quotient]{quotient}
+  \begin{equation}\label{eq:def:monoid_free_product/product}
+    \Ast_{k \in \mscrK} M_k \coloneqq F\parens[\Big]{ \coprod_{k \in \mscrK} A_k } / {\cong},
+  \end{equation}
+  where \( {\cong} \) is the congruence \hyperref[def:first_order_generated_congruence]{generated} by \( {\sim} \).
+
+  For every index \( k \) in \( \mscrK \), we define the canonical embedding \( \iota: M_k \to \Ast_{k \in \mscrK} M_k \) as the composition
+  \begin{equation}\label{eq:def:monoid_free_product/embedding}
+    \begin{aligned}
+      \includegraphics[page=2]{output/def__monoid_free_product}
+    \end{aligned}
+  \end{equation}
+\end{definition}
+\begin{comments}
+  \item We base our construction on \enquote{free semimonoid products} discussed by \incite[def. X.5.2]{Ляпин1960Полугруппы}, but with many formal details added.
+\end{comments}
+
+\begin{proposition}\label{thm:monoid_coproduct}
+  The \hyperref[def:discrete_category_limits]{categorical coproduct} of the family \( \seq{ M_k }_{k \in \mscrK} \) in the category \hyperref[def:monoid/category]{\( \cat{Mon} \)} of monoids is their \hyperref[def:monoid_free_product]{free product} \( \Ast_{k \in \mscrK} M_k \).
+\end{proposition}
+\begin{proof}
+  Let \( (H, \alpha) \) be a \hyperref[def:category_of_cones/cocone]{cocone} for the discrete diagram \( \seq{ M_k }_{k \in \mscrK} \). We need to define a homomorphism \( l_H: \Ast_{k \in \mscrK} M_k \to H \) such that the following diagram commutes:
+  \begin{equation*}
+    \begin{aligned}
+      \includegraphics[page=1]{output/thm__monoid_coproduct}
+    \end{aligned}
+  \end{equation*}
+
+  Starting with \( \varphi_k \), we use \fullref{thm:free_monoid_universal_property} to obtain a homomorphism \( \chi_k \), from it again via \fullref{thm:free_monoid_universal_property} --- a homomorphism \( \chi \), and, finally, via \fullref{thm:quotient_structure_universal_property} --- a homomorphism \( l_H \) such that the following diagram commutes:
+  \begin{equation*}
+    \begin{aligned}
+      \includegraphics[page=2]{output/thm__monoid_coproduct}
+    \end{aligned}
+  \end{equation*}
+
+  We have obtained the desired homomorphism \( l_H \), however we need to justify our application of \fullref{thm:quotient_structure_universal_property} --- to show that \( v \cong w \) implies \( \chi(v) = \chi(w) \).
+
+  To prove this, we will use \fullref{thm:induction_on_recursively_defined_relations} on \( v \cong w \):
+  \begin{itemize}
+    \item If \( v \cong w \) due to \ref{inf:def:first_order_generated_congruence/base}, then \( v \sim w \), and \ref{inf:def:monoid_free_product} implies that there exist strings \( v' \) and \( w' \) in \( F(M_k) \)  such that \( v = \zeta_k(v') \), \( w = \zeta_k(w') \) and \( \psi_k(v') = \psi_k(w') \), where \( \psi_k \) is the left inverse of \( \varphi_k \) built in \fullref{def:monoid_free_product}.
+
+    Then
+    \begin{equation*}
+      \chi(v)
+      =
+      \chi(\zeta_k(v'))
+      =
+      \chi_k(v')
+      =
+      \alpha_k(\psi_k(v')).
+    \end{equation*}
+
+    The gist of this equality is that the string \( v' \) of members of \( G_k \), when evaluated by \( \chi_k \), gives the same result as evaluating the symbols in \( G_k \) and then mapping them via \( \alpha_k \). The string \( v \) is simply an inclusion of \( v' \) into the free monoid of the disjoint union of the individual monoids.
+
+    Since \( \psi_k(v') = \psi_k(w') \), this allows us to conclude that \( \chi(v) = \chi(w) \).
+
+    \item Otherwise, if \( v \cong w \) due to \ref{inf:def:first_order_generated_congruence/rec}, and there exist elements \( v_1 \), \( v_2 \), \( w_1 \) and \( w_2 \) of \( F(\coprod_{k \in \mscrK} M_k) \) such that \( v = v_1 \cdot v_2 \) and \( v_1 \cong v_2 \), and similarly \( w = w_1 \cdot w_2 \) and \( w_1 \cong w_2 \).
+
+    Suppose that the inductive hypothesis holds for \( v_1 \cong v_2 \) and \( w_1 \cong w_2 \). Then
+    \begin{equation*}
+      \chi(v) = \chi(v_1) \cdot \chi(v_2) = \chi(w_1) \cdot \chi(w_2) = \chi(w).
+    \end{equation*}
+  \end{itemize}
+
+  Finally, uniqueness of \( l_H \) follows from uniqueness given by \fullref{thm:quotient_structure_universal_property}. This concludes the proof.
 \end{proof}
 
 \paragraph{Free groups}
@@ -124,22 +236,8 @@
   Follows from \fullref{thm:free_group_universal_property} and \fullref{thm:first_order_categorical_invertibility/injective}.
 \end{proof}
 
-\paragraph{Free products}
-
-\begin{remark}\label{rem:group_presentation_syntax}
-  \hyperref[def:object_presentation/cardinality]{Finitely-presented} groups have a special syntax: a group with generators \( a_1, \ldots, a_n \) and relators \( a_{i_1} \sim a_{j_1}, \ldots, a_{i_m} \sim a_{j_m} \) can be written in a syntax resembling that of \hyperref[def:group/generated]{generated subgroups}:
-  \begin{equation*}
-    \braket{ a_1, \ldots, a_n \given a_{i_1} = a_{j_1}, \ldots, a_{i_m} = a_{j_m} }.
-  \end{equation*}
-
-  We simply list the elements we want to see and which of them we want to be equal.
-\end{remark}
-
 \begin{example}\label{ex:free_group_with_uncountably_many_subgroups}\mcite{MathSE:countable_group_uncountably_many_distinct_subgroup}
-  Consider some sequence \( x_1, x_2, \ldots \), as well as the \hyperref[def:free_group]{free group} with \hyperref[rem:group_presentation_syntax]{presentation}
-  \begin{equation*}
-    F_\infty = \braket{ x_1, x_2, x_3, \ldots }.
-  \end{equation*}
+  Consider some sequence \( x_1, x_2, \ldots \), and denote by \( F_\infty \) the \hyperref[def:free_group]{free group} generated by it.
 
   For any set \( N \) of indices, we also have the subgroup
   \begin{equation*}
@@ -151,77 +249,233 @@
   Therefore, \( F_\infty \) is a countable group with uncountably many subgroups.
 \end{example}
 
-\begin{definition}\label{def:group_free_product}\mcite[323]{Knapp2016BasicAlgebra}
-  We define the \term{free product} of a nonempty pairwise disjoint family of groups \( \seq{ \braket{S_k \mid R_k} }_{k \in \mscrK} \) as the group with presentation
-  \begin{equation*}
-    \Ast_{k \in \mscrK} X_k \coloneqq \braket*{ \bigcup_{k \in \mscrK} S_k \given* \bigcup_{k \in \mscrK} R_k }.
-  \end{equation*}
-
-  If the constituent groups are not disjoint, we may instead use \hyperref[def:disjoint_union]{disjoint unions} as
-  \small
-  \begin{equation*}
-    \Ast_{k \in \mscrK} X_k \coloneqq \braket*{ \coprod_{k \in \mscrK} S_k \given* \set[\Big]{ (k, x_1) (k, x_2) \ldots (k, x_n) \given x_1 x_2 \ldots x_n \in R_k } }.
-  \end{equation*}
-  \normalsize
-
-  For every index \( m \in \mscrK \), we define the canonical embedding
-  \begin{equation*}
-    \begin{aligned}
-       &\iota_m: X_m \to \Ast_{k \in \mscrK} X_k \\
-       &\iota_m(x) \coloneqq (m, x).
-    \end{aligned}
-  \end{equation*}
-\end{definition}
-
 \begin{proposition}\label{thm:group_coproduct}
   The \hyperref[def:discrete_category_limits]{categorical coproduct} of the family \( \seq{ G_k }_{k \in \mscrK} \) in the category \hyperref[def:group/category]{\( \cat{Grp} \)} of groups is their \hyperref[def:group_free_product]{free product} \( \Ast_{k \in \mscrK} G_k \).
 \end{proposition}
 \begin{proof}
-  Let \( (A, \alpha) \) be a \hyperref[def:category_of_cones/cocone]{cocone} for the discrete diagram \( \seq{ G_k }_{k \in \mscrK} \). We want to define a group homomorphism \( l: \Ast_{k \in \mscrK} G_k \to A \) such that, for every \( m \in \mscrK \),
+  Our proof of \fullref{thm:monoid_coproduct} can be reused, but with \fullref{thm:free_group_universal_property} instead of \fullref{thm:free_monoid_universal_property}.
+\end{proof}
+
+\paragraph{Group presentations}
+
+\begin{definition}\label{def:group_presentation}
+  Let \( G \) be a \hyperref[def:group]{group}. Let \( A \) be a \hyperref[def:set]{plain set} and let \( {\sim} \) be a binary relation on the \hyperref[def:free_group]{free group} \( F(A) \).
+
+  If \( G \) is isomorphic to the \hyperref[def:group/quotient]{quotient} \( F(A) / {\cong} \), where \( {\cong} \) is the \hyperref[def:first_order_congruence]{congruence} \hyperref[def:first_order_generated_congruence]{generated} by \( {\sim} \), we call the pair \( (A, {\sim}) \) a \term[en=(group) presentation (\cite[90]{Bourbaki1998Algebra1to3})]{presentation} of \( G \).
+
+  If there exists a presentation \( (A, {\sim}) \) of \( G \) such that \( A \) is finite, we say that \( G \) is \term[en=finitely generated (\cite[90]{Bourbaki1998Algebra1to3})]{finitely generated}\fnote{There is no terminology clash for \enquote{finitely generated group} --- a group \( G \) has a presentation with finitely many generators if and only if it has a finite subset whose \hyperref[def:group/generated]{generated subgroup} is \( G \).}. If there exists a presentation \( (A, \sim) \) where both \( A \) and \( {\sim} \) are finite, we say that the group is \term[en=finitely presented (\cite[90]{Bourbaki1998Algebra1to3})]{finitely presented}.
+
+  Following \incite[90]{Bourbaki1998Algebra1to3}, for finite presentations we will introduce a notation similar to that for \hyperref[def:group/generated]{generated subgroups} --- if \( a_1, \ldots, a_n \) is an enumeration of \( A \) and \( (a_{i_1}, a_{j_1}), \ldots, (a_{i_m}, a_{j_m}) \) be is an enumeration of \( {\sim} \), we denote the presentation by
+  \begin{equation}\label{eq:def:group_presentation/finite}
+    \braket{ a_1, \ldots, a_n \given a_{i_1} = a_{j_1}, \ldots, a_{i_m} = a_{j_m} }.
+  \end{equation}
+\end{definition}
+\begin{comments}
+  \item We base our notation on and terminology \cite[90]{Bourbaki1998Algebra1to3}, but for the quotient we use a congruence relation instead of a set generating a normal subgroup.
+
+  \item Even though we have defined presentations in the context of an existing group, the notation \eqref{eq:def:group_presentation/finite} makes it easy to create groups \enquote{from scratch} based on a set of symbols and desired relations between them. We will use this, for example, in \fullref{thm:cyclic_monoid_classification}.
+\end{comments}
+
+\begin{proposition}\label{thm:group_presentation_existence}
+  Every \hyperref[def:group]{group} has at least one \hyperref[def:group_presentation]{presentation}.
+\end{proposition}
+\begin{proof}
+  Fix a group \( G \). Consider the embedding \( \iota: G \to F(G) \) into the \hyperref[def:free_group]{free group} of \( G \).
+
+  \Fullref{thm:free_group_universal_property} implies that the identity \( {\id_G: G \to G} \) extends to a unique homomorphism \( \varphi: F(G) \to G \) such that the following diagram commutes:
   \begin{equation*}
-    \alpha_m(x) = l_A(\iota_m(x)).
+    \begin{aligned}
+      \includegraphics[page=1]{output/thm__group_presentation_existence}
+    \end{aligned}
   \end{equation*}
 
-  This suggests the definition
+  The homomorphism \( \varphi \) \hyperref[con:evaluation_homomorphism]{evaluates} each string in \( F(G) \) to an actual value in \( G \).
+
+  \Fullref{thm:group_zero_morphisms/isomorphism} implies that the quotient of \( F(G) / \ker \varphi \) is isomorphic to \( G \). \Fullref{thm:normal_subgroups_and_congruences} implies that the relation \( {\cong} \) defined as
   \begin{equation*}
-    l_A\parens[\Big]{ \iota_{k_1}(x_1) \iota_{k_2}(x_2) \ldots \iota_{k_n}(x_n) } \coloneqq \alpha_{k_1}(x_1) \cdot \alpha_{k_2}(x_k) \cdot \ldots \cdot \alpha_{k_n}(x_n).
+    x \cong y \T{when} xy^{-1} \in \ker \varphi
   \end{equation*}
+  is a \hyperref[def:first_order_congruence]{congruence}.
+
+  Therefore, \( (G, \cong) \) is a presentation of \( G \).
 \end{proof}
 
 \paragraph{Cyclic groups}
 
 \begin{definition}\label{def:cyclic_group}\mcite[43]{Jacobson1985AlgebraI}
-  We say that a \hyperref[def:group]{group} is \term[ru=циклическая группа (\cite[97]{Тыртышников2017Алгебра})]{cyclic} if it can be \hyperref[def:object_presentation]{generated} by a single element.
+  We say that a \hyperref[def:group]{group} is \term[ru=циклична группа (\cite[379]{Обрешков1962ВисшаАлгебра}), ru=циклическая группа (\cite[97]{Тыртышников2017Алгебра})]{cyclic} if it can be \hyperref[def:object_presentation]{generated} by a single element.
 
-  \Fullref{thm:cyclic_group_classification} implies that, up to an isomorphism, there is only one cyclic group for every possible order. When referring to an abstract cyclic group, we will use the notation \( C_n \) for groups of finite cardinality \( n \) or \( C_\infty \) for (countably) infinite groups.
+  \Fullref{thm:cyclic_monoid_classification} implies that, up to an isomorphism, there is only one cyclic group for every possible order. When referring to an abstract cyclic group, we will use the notation \( C_n \) for groups of finite cardinality \( n \) or \( C_\infty \) for (countably) infinite groups.
+\end{definition}
+
+\begin{definition}\label{def:cyclic_monoid}\mcite[exerc. II.4.6]{MacLane1998Categories}
+  In analogy with \hyperref[def:cyclic_group]{cyclic groups}, we say that a \hyperref[def:monoid]{monoid} is \term{cyclic} if it can be \hyperref[def:object_presentation]{generated} by a single element.
 \end{definition}
 \begin{comments}
-  \item Given an ambient group \( G \) and some element \( g \in G \), the \term{cyclic subgroup} of \( g \) is the cyclic group isomorphic to the \hyperref[def:group/submodel]{generated subgroup} of \( G \).
-
-  \item As shown in \fullref{thm:cyclic_group_isomorphic_to_integers_modulo_n}, cyclic groups are isomorphic to certain groups of integers, however it is still useful to have cyclic groups as a separate concept.
+  \item As we will see in \fullref{thm:cyclic_monoid_classification}, all cyclic monoids are groups, and there is only one, up to an isomorphism, infinite cyclic monoid. This explains why cyclic monoids are rarely discussed.
 \end{comments}
 
-\begin{proposition}\label{thm:cyclic_group_classification}
-  Fix a \hyperref[def:cyclic_group]{cyclic group} \( G \) and a symbol \( a \) not in \( G \).
+\begin{lemma}\label{thm:cyclic_monoid_cancellative}
+  Every \hyperref[def:cyclic_monoid]{cyclic monoid} is \hyperref[def:binary_operation/cancellative]{cancellative}.
+\end{lemma}
+\begin{proof}
+  Let \( M \) be a cyclic monoid generated by \( a \). By induction on \( k \), we will show that \( a^k a^m = a^k a^l \) implies \( a^m = a^l \).
+  \begin{itemize}
+    \item The case \( k = 0 \) is trivial.
+    \item If \( k > 1 \) and if the inductive hypothesis holds for \( s < k \), then
+    \begin{equation*}
+      a^k \cdot a^m = a^k \cdot a^l
+    \end{equation*}
+    is equivalent to
+    \begin{equation*}
+      a^{k - 1} \cdot a \cdot a^m = a^{k - 1} \cdot a \cdot a^l.
+    \end{equation*}
+
+    The inductive hypothesis for \( s = k - 1 \) implies that
+    \begin{equation*}
+      a \cdot a^m = a \cdot a^l
+    \end{equation*}
+    and the hypothesis for \( s = 1 \) implies that
+    \begin{equation*}
+      a^m = a^l.
+    \end{equation*}
+  \end{itemize}
+\end{proof}
+
+\begin{lemma}\label{thm:cyclic_group_generator_order}
+  A group with \( n \) elements is \hyperref[def:cyclic_group]{cyclic} if and only if it contains an element of \hyperref[def:group_element_order]{order} \( n \).
+\end{lemma}
+\begin{comments}
+  \item By \fullref{thm:def:group_element_order/group_order}, such an element is necessarily a generator.
+\end{comments}
+\begin{proof}
+  \SufficiencySubProof Let \( G \) be a cyclic group with \( n \) elements generated by \( a \). We will show that \( a \) has order \( n \).
+
+  Since \( G \) has \( n \) elements, by \fullref{thm:def:group_element_order/group_order}, the order of \( a \) divides \( n \).
+
+  Suppose that \( a^m = a^n \) for some \( m < n \). Without loss of generality, let \( m \) be the smallest such value.
+
+  If \( m > 0 \), \fullref{alg:integer_division} gives us nonnegative integers \( q \) and \( r \) such that \( n = qm + r \) and \( 0 \leq r < m \). Then
+  \begin{equation*}
+    a^n
+    \reloset {\eqref{eq:thm:semigroup_exponentiation_properties/multiplication}} =
+    a^{qm} \cdot a^r
+    \reloset {\eqref{eq:thm:semigroup_exponentiation_properties/repeated}} =
+    (a^m)^q \cdot a^r
+    =
+    e^q \cdot a^r
+    =
+    e \cdot a^r
+    =
+    a^r.
+  \end{equation*}
+
+  Since \( r < m \), this contradicts the minimality of \( m \). It remains for \( m \) to be \( 0 \).
+
+  It follows that the order of \( a \) is \( n \).
+
+  \NecessitySubProof Let \( a \) be an element of \( G \) of order \( n \). \Fullref{thm:def:group_element_order/group_order} implies that the order of \( a \) divides \( n \). Then \( G \) coincides with the subgroup generated by \( a \).
+\end{proof}
+
+\begin{proposition}\label{thm:cyclic_monoid_classification}
+  We will classify \hyperref[def:cyclic_group]{cyclic groups} and \hyperref[def:cyclic_monoid]{cyclic monoids}.
+
+  Fix a set \( a \), which we will use as a \hyperref[def:formal_language/symbol]{formal symbol}.
 
   \begin{thmenum}
-    \thmitem{thm:cyclic_group_classification/finite} If \( G \) has finite cardinality \( n \), it is isomorphic to the \hyperref[def:free_group]{free group}
-    \begin{equation}\label{eq:thm:cyclic_group_classification/finite}
-      \braket{ a \given a^n = 1 }.
+    \thmitem{thm:cyclic_monoid_classification/finite_monoid} A cyclic \hi{monoid} is a cyclic \hi{group} if and only if it is finite.
+
+    \thmitem{thm:cyclic_monoid_classification/finite_group} A finite group \( G \) with \( n \) elements is cyclic if and only if the following is a \hyperref[def:group_presentation]{presentation} of \( G \)\fnote{As per \fullref{def:formal_language/empty_string}, we denote the empty string by \( \bnfes \)}:
+    \begin{equation}\label{eq:thm:cyclic_monoid_classification/finite_group}
+      \braket{ a \given a^n = \bnfes }.
     \end{equation}
 
-    \thmitem{thm:cyclic_group_classification/infinite} If \( G \) has infinite cardinality \( \infty \), it is isomorphic to
-    \begin{equation}\label{eq:thm:cyclic_group_classification/infinite}
-      \braket{ a }.
-    \end{equation}
+    \thmitem{thm:cyclic_monoid_classification/infinite_monoid} An infinite monoid is cyclic if and only if it is isomorphic to the \hyperref[def:free_monoid]{free monoid} \( F(\set{ a }) \).
+
+    \thmitem{thm:cyclic_monoid_classification/infinite_group} An infinite group is cyclic if and only if it is isomorphic to the \hyperref[def:free_group]{free group} \( \braket{ a } \)\fnote{As stated, the proposition conflates the free group \( F(\set{ a }) \) and the group with presentation \( \braket{ a } = F(\set{ a }) / {=} \), but they are clearly isomorphic}.
   \end{thmenum}
 \end{proposition}
+\begin{comments}
+  \item As shown in \fullref{thm:cyclic_group_isomorphic_to_integers_modulo_n}, cyclic groups are also isomorphic to either all integers to the integers modulo some fixed \( n \).
+\end{comments}
 \begin{proof}
-  Let \( G \) be a cyclic group with generator \( b \).
+  \SubProofOf{thm:cyclic_monoid_classification/finite_monoid}
 
-  \SubProofOf{thm:cyclic_group_classification/finite} If \( G \) has \( n \) elements, then \( b^n = 1 \), and thus \( a \mapsto b \) is a group isomorphism of \( \braket{ a \given a^n = 1 } \) and \( G \).
+  \SufficiencySubProof* Let \( M \) be a cyclic monoid. Suppose that it is a cyclic group. We will show that it is finite.
 
-  \SubProofOf{thm:cyclic_group_classification/infinite} Suppose that \( G \) is infinite. There are only countably many powers of \( b \), one for each integer, so the cardinality of \( G \) is \( \aleph_0 \). The map \( a \mapsto b \) is an isomorphism of \( \braket{ a } \) and \( G \).
+  Fix elements \( b \) and \( c \), where \( b \) generates \( M \) as a monoid and \( c \) that generates \( M \) as a group.
+
+  Every element of \( M \) is a nonnegative integer power of \( b \). Let \( m \) be the smallest integer such that \( b^m = c^{-1} \) and let \( k \) be the smallest integer such that \( c^k = b \). Then
+  \begin{equation*}
+    b^{mk + 1} = (b^m)^k \cdot b = (c^{-1})^k \cdot b = c^{-k} \cdot b = c^{-k} \cdot c^k = e_M.
+  \end{equation*}
+
+  Then \( M \) has at most \( n \coloneqq mk + 1 \) elements. Indeed, for every positive integer \( s \), \fullref{alg:integer_division} gives us nonnegative integers \( q \) and \( r \) such that \( s = qn + r \) and \( 0 \leq r < n \), where
+  \begin{equation*}
+    b^s
+    =
+    (b^n)^q \cdot b^r
+    =
+    e^q \cdot b^r
+    =
+    b^r.
+  \end{equation*}
+
+  Thus, for every \( s > n \), \( b^s = b^r \) for the remainder \( r < n \).
+
+  \NecessitySubProof* Let \( M \) be a finite cyclic monoid. Since it is cyclic, \fullref{thm:cyclic_monoid_cancellative} implies that it is cancellative. Then \fullref{thm:monoid_inverse_unique} implies that it is a group. If \( b \) generates \( M \) as a monoid, it also generates it as a group, so \( M \) is a cyclic group.
+
+  \SubProofOf{thm:cyclic_monoid_classification/finite_group} Denote the group \eqref{eq:thm:cyclic_monoid_classification/finite} by \( C_n \).
+
+  We will show that \( G \) is cyclic if and only if it is isomorphic to \( C_n \). First, however, we need to show that \( C_n \) is a cyclic group with \( n \) elements.
+
+  \SubProof*{Proof that \( C_n \) is cyclic of order \( n \)} Every element of \( C_n \) is a power of \( a \), hence \( C_n \) is cyclic. We will show that it has \( n \) elements.
+
+  Denote by \( \psi \) the right inverse of the projection map \( \pi: F(\set{ a }) \to C_n \). Then \( {\cong} \) is the congruence generated by the relation \( {\sim} \) whose only ordered pair is \( (\psi(a)^n, \psi(a)^0) \).
+
+  We will show via \fullref{thm:induction_on_recursively_defined_relations} on \( \psi(a)^{m + k} \cong \psi(a)^m \) that \( n \) divides \( k \).
+  \begin{itemize}
+    \item If \( \psi(a)^{m + k} \cong \psi(a)^m \) due to \ref{inf:def:first_order_generated_congruence/base}, then \( \psi(a)^{m + k} \sim \psi(a)^m \), which implies that \( m + k = n \) and \( m = 0 \), hence \( k = n \).
+
+    \item Otherwise, \( \psi(a)^{m + k} \cong \psi(a)^m \) due to \ref{inf:def:first_order_generated_congruence/rec}, and there exists positive integers \( s \) and \( r \) such the inductive hypothesis holds for \( \psi(a)^s \cong \psi(a)^r \) and \( \psi(a)^{m + k - s} \cong \psi(a)^{m - r} \).
+
+    Then \( n \) divides \( s - r \) and \( (m + k - s) - (m - r) = k - (s - r) \), hence also their sum \( k \).
+  \end{itemize}
+
+  Thus, \( a^{m + k} = a^m \) implies that \( k \) divides \( n \). In particular, if \( a^n = a^m \) for some nonnegative integer \( m < n \), their difference \( n - m \) divides \( n \), hence \( m = 0 \).
+
+  Therefore, \( e, a, a^2, \ldots, a^{n - 1} \) are distinct elements of \( C_n \). But \( a^n = e_{C_n} \), and hence \( a^{n+k} = a^k \), implying that \( C_n \) has at most \( n \) elements.
+
+  Therefore, \( C_n \) is a cyclic group generated by \( a \) with exactly \( n \) elements.
+
+  \SufficiencySubProof* Suppose that \( G \) is cyclic with generator \( b \). We will show that it is isomorphic to \( C_n \).
+
+  Consider the homomorphism
+  \begin{equation*}
+    \begin{aligned}
+      &\varphi: C_n \to G \\
+      &\varphi(a^k) \coloneqq b^k.
+    \end{aligned}
+  \end{equation*}
+
+  To see that it is injective, suppose that \( \varphi(a^k) = \varphi(a^m) \). Then \( b^k = b^m \), and hence \( b^{k-m} = e_G \). \Fullref{thm:def:group_element_order/neutral} implies that \( n \) divides \( k - m \). We can then use \fullref{thm:def:group_element_order/neutral} again to conclude that \( a^k = a^m \).
+
+  To see that it is surjective, simply observe that \( a^k \) is in the preimage of \( b^k \).
+
+  Therefore, \( \varphi \) is an isomorphism.
+
+  \NecessitySubProof* Suppose that \( G \) is isomorphic to \( C_n \), and let \( \varphi: C_n \to G \) be an isomorphism. We claim that \( \varphi(a) \) generates \( G \).
+
+  Indeed, for every element \( g \) of \( G \), let \( k \) be the smallest nonnegative integer such that \( a^k = \varphi^{-1}(g) \). Then
+  \begin{equation*}
+    g = \varphi(a^k) = \varphi(a)^k.
+  \end{equation*}
+
+  Therefore, \( G \) is cyclic with generator \( \varphi(a) \).
+
+  \SubProofOf{thm:cyclic_monoid_classification/infinite_monoid} Similar to \fullref{thm:cyclic_monoid_classification/finite_group}, but simpler since there is no factorization of the free monoid.
+
+  \SubProofOf{thm:cyclic_monoid_classification/infinite_group} Similar to \fullref{thm:cyclic_monoid_classification/finite_group}, but simpler since there is no factorization of the gree group.
 \end{proof}
 
 \begin{proposition}\label{thm:cyclic_subgroup_classification}

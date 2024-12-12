@@ -1,5 +1,5 @@
 \NeedsTeXFormat{LaTeX2e}
-\ProvidesClass{classes/tikz}
+\ProvidesClass{classes/tikzcd}
 \LoadClass[tikz]{standalone}
 
 \RequirePackage{mathtools}

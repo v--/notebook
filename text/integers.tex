@@ -279,6 +279,29 @@ Rather than defining an order from first principles and then using the signum fu
   \end{equation*}
 \end{definition}
 
+\begin{lemma}\label{thm:integer_division_boundedness_lemma}
+  Fix two integers \( n \) and \( m \). If \( m \) is positive (resp. negative), then the set
+  \begin{equation}\label{eq:thm:integer_division_boundedness_lemma}
+    K_{n,m} \coloneqq \set{ k \in \BbbZ \given km \leq n }
+  \end{equation}
+  is bounded from above (resp. from below).
+\end{lemma}
+\begin{proof}
+  \SubProof{Proof when \( m > 0 \)} If \( n \leq 0 \), then \( K \) is bounded from above by \( 0 \).
+
+  Otherwise, we have \( n > 0 \), and \fullref{thm:integers_archimedean} implies that there exists some positive integer \( l \) such that \( n < lm \). Since the positive integers are well-founded, we can take \( l \) to be minimal, and then \( n \geq (l - 1)m \).
+
+  This integer \( l - 1 \) is then the maximum of \( K_{n,m} \).
+
+  \SubProof{Proof when \( m < 0 \)} If \( m \) is negative, \( -m \) is positive, and we have already shown that \( K_{n,-m} \) is bounded from above.
+
+  Let \( l \) be an upper bound for \( K_{n,-m} \). We claim that \( -l \) is a lower bound for \( K_{n,m} \).
+
+  Indeed, suppose that \( km \leq n \). Since \( km = (-k)(-m) \), we conclude that \( l \geq -k \). \Fullref{thm:ordered_ring/additive_inversion} implies that \( -l \leq k \).
+
+  This concludes the proof.
+\end{proof}
+
 \begin{remark}\label{rem:integer_division_uniqueness}
   Fix two integers \( n \) and \( m \), and assume that \( m \) is nonzero. There are multiple ways to define \hyperref[def:euclidean_domain]{Euclidean division} of \( n \) by \( m \), that is, an algorithm producing integers \( q \) and \( r \) such that
   \begin{equation*}
@@ -312,6 +335,8 @@ Rather than defining an order from first principles and then using the signum fu
     \begin{equation}\label{eq:rem:integer_division_uniqueness/max/q}
       q_{\max} \coloneqq \sgn(m) \cdot \max\set[\Big]{ \sgn(m) \cdot k \given* k \in \BbbZ \T{and} km \leq n }.
     \end{equation}
+
+    Note that \eqref{eq:rem:integer_division_uniqueness/max/q_cases} is well-defined due to \fullref{thm:integer_division_boundedness_lemma}.
 
     Then \( m \cdot q_{\max} \leq n \), hence the remainder
     \begin{equation*}
@@ -484,33 +509,45 @@ Rather than defining an order from first principles and then using the signum fu
   \item All these quotient algorithms can be found in \identifier{arithmetic.divisibility} in \cite{notebook:code}.
 \end{comments}
 
+\begin{proposition}\label{thm:integers_archimedean}
+  The ring of integers is \hyperref[def:archimedean_semiring]{Archimedean}.
+\end{proposition}
+\begin{proof}
+  Since positive integers are embeddings of natural numbers, the property follows from \fullref{thm:natural_number_archimedean}.
+\end{proof}
+
 \begin{algorithm}[Integer division]\label{alg:integer_division}
-  Fix two integers \( n \) and \( m \), and assume that \( m \) is nonzero. There exists a unique pair \( \quot(n, m) \) and \( \rem(n, m) \) of integers such that
-  \begin{equation}
-    n = m \cdot \quot(n, m) + \rem(n, m)
-  \end{equation}
+  Fix two integers \( n \) and \( m \), and assume that \( m \) is nonzero. There exists a unique pair \( q \) and \( r \) of integers such that
+  \begin{equation*}
+    n = m \cdot q + r
+  \end{equation*}
   and
   \begin{equation*}
-    0 \leq \rem(n, m) < \abs{m}.
+    0 \leq r < \abs{m}_\BbbZ.
   \end{equation*}
 
-  We simply define
+  We can explicitly define \( q \) by
   \begin{equation}\label{eq:alg:integer_division/quot}
     \quot(n, m) \coloneqq \begin{cases}
       \max\set{ k \in \BbbZ \given km \leq n }, &m > 0, \\
       \min\set{ k \in \BbbZ \given km \leq n }, &m < 0
     \end{cases}
   \end{equation}
-  and remainder
+  and \( r \) by
   \begin{equation}\label{eq:alg:integer_division/rem}
     \rem(n, m) \coloneqq n - m \cdot \quot(n, m).
   \end{equation}
 \end{algorithm}
 \begin{comments}
+  \item We can safely use this algorithm when restricted to nonnegative integers since, by \fullref{thm:alg:integer_division/quot_positivity}, the quotient of nonnegative integers is nonnegative.
+
   \item We use the notation \( \quot(n, m) \) and \( \rem(n, m) \) from \fullref{def:euclidean_domain}.
-  \item This is \( q_{\max} \) and \( r_{\max} \) from \fullref{rem:integer_division_uniqueness}, where Euclidean division of integers is extensively discussed.
+
+  \item The quotient and remainder are \( q_{\max} \) and \( r_{\max} \) from \fullref{rem:integer_division_uniqueness/max}, where Euclidean division of integers is extensively discussed.
 \end{comments}
 \begin{defproof}
+  \ExistenceSubProof We must show that the maximum and minimum in \eqref{eq:alg:integer_division/quot} are attained. Both follow from \fullref{thm:integer_division_boundedness_lemma}.
+
   \UniquenessSubProof Suppose that \( n = mq + r = mq' + r' \), where \( 0 \leq r < \abs{m}_\BbbZ \) and \( 0 \leq r' < \abs{m}_\BbbZ \). Then
   \begin{equation*}
     m(q - q') = -(r - r').
@@ -529,44 +566,69 @@ Rather than defining an order from first principles and then using the signum fu
 \begin{proposition}\label{thm:alg:integer_division}
   \Fullref{alg:integer_division} has the following basic properties:
   \begin{thmenum}
-    \thmitem{thm:alg:integer_division/nested_quot} For positive integers \( b \) and \( c \) and an arbitrary integer \( a \) we have
+    \thmitem{thm:alg:integer_division/minus_m} We have \( \quot(n, -m) = -\quot(n, m) \) and \( \rem(n, -m) = \rem(n, m) \).
+
+    \thmitem{thm:alg:integer_division/quot_positivity} If both \( n \) and \( m \) are positive, then \( \quot(n, m) \) is nonnegative.
+
+    \thmitem{thm:alg:integer_division/nested_quot} For positive integers \( n \) and \( m \) and an arbitrary integer \( k \) we have
     \begin{equation}\label{eq:thm:alg:integer_division/nested_quot}
-      \quot(\quot(a, b), c) = \quot(a, bc).
+      \quot(\quot(k, n), m) = \quot(k, nm).
     \end{equation}
   \end{thmenum}
 \end{proposition}
 \begin{proof}
+  \SubProofOf{thm:alg:integer_division/minus_m} We can simply use the uniqueness shown in \fullref{alg:integer_division} since
+  \begin{equation*}
+    n = -\quot(n, m) \cdot m + \rem(n, m) = (-\quot(n, m)) \cdot (-m) + \rem(n, m).
+  \end{equation*}
+
+  \SubProofOf{thm:alg:integer_division/quot_positivity} Suppose that \( n > 0 \) and \( m > 0 \).
+
+  \Fullref{thm:integer_division_boundedness_lemma} implies that there exists a largest integer \( k \) such that
+  \begin{equation*}
+    km \leq n.
+  \end{equation*}
+
+  Then \( 0 \leq n - km < m \) and obviously
+  \begin{equation*}
+    n = km + (n - km).
+  \end{equation*}
+
+  If \( k < 0 \), then \fullref{thm:ordered_ring/strict_prod} implies that \( km < 0 \cdot m = 0 \) and \( 0 < n \). Thus, if \( k \) is negative, then \( 0 \) is a larger integer satisfying \( 0 \cdot m \leq n \), which contradicts the maximality of \( k \). Then \( k \) must be nonnegative.
+
+  Due to the uniqueness of \( \quot(n, m) \) and \( \rem(n, m) \) discussed in \fullref{alg:integer_division}, it follows that \( \quot(n, m) = k \).
+
   \SubProofOf{thm:alg:integer_division/nested_quot} We have
   \begin{equation}\label{eq:thm:alg:integer_division/nested_quot/proof/simple}
-    a = bc \cdot \quot(a, bc) + \rem(a, bc).
+    k = mc \cdot \quot(k, nm) + \rem(k, nm).
   \end{equation}
 
   Also,
   \begin{equation*}
-    a = b \cdot \quot(a, b) + \rem(a, b)
+    k = m \cdot \quot(k, m) + \rem(k, m)
   \end{equation*}
   and
   \begin{align*}
-    \quot(a, b) = c \cdot \quot(\quot(a, b), c) + \rem(\quot(a, b), c),
+    \quot(k, n) = m \cdot \quot(\quot(k, n), m) + \rem(\quot(k, n), m),
   \end{align*}
   thus
   \begin{equation}\label{eq:thm:alg:integer_division/nested_quot/proof/nested}
-    a = bc \cdot \quot(\quot(a, b), c) + b \cdot \rem(\quot(a, b), c) + \rem(a, b).
+    k = nm \cdot \quot(\quot(k, n), m) + n \cdot \rem(\quot(k, n), m) + \rem(k, n).
   \end{equation}
 
   We have
   \begin{equation*}
-    b \cdot \rem(\quot(a, b), c) + \rem(a, b)
+    n \cdot \rem(\quot(k, n), m) + \rem(k, n)
     \leq
-    b(c - 1) + (b - 1)
+    n(m - 1) + (n - 1)
     =
-    bc - 1,
+    nm - 1,
   \end{equation*}
   hence, the sum of the remainders in \eqref{eq:thm:alg:integer_division/nested_quot/proof/nested} do not contribute to the quotient.
 
   Because of the uniqueness in \fullref{alg:integer_division}, we conclude from \eqref{eq:thm:alg:integer_division/nested_quot/proof/simple} and \eqref{eq:thm:alg:integer_division/nested_quot/proof/nested} that
   \begin{equation*}
-    \quot(a, bc) = \quot(\quot(a, b), c).
+    \quot(k, nm) = \quot(\quot(k, n), m).
   \end{equation*}
 \end{proof}
 

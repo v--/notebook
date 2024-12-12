@@ -6,8 +6,9 @@
 \LoadClass
   [
     bibliography=totocnumbered,
+    footnotes=multiple, % Put a comma between multiple adjacent footnote marks.
     numbers=endperiod,
-    twoside=false
+    twoside=false,
   ]
   {scrbook}
 

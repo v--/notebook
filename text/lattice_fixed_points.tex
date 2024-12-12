@@ -1,17 +1,30 @@
 \section{Lattice fixed points}\label{sec:lattice_fixed_points}
 
-\paragraph{Knaster-Tarski theorem}
+\paragraph{Fixed points}
 
 \begin{definition}\label{def:fixed_point}\mcite[286]{Golan1999Semirings}
   Given an \hyperref[def:function/endofunction]{endofunction} \( f: A \to A \) on an arbitrary \hyperref[def:set]{set} \( A \), we call \( x \in A \) a \term[bg=неподвижна точка (\cite[138]{Боянов2008ЧислениМетоди}), ru=неподвижная точка (\cite[\S 1.8.6]{Новиков2013ДискретнаяМатематика})]{fixed point} of \( f \) if \( f(x) = x \).
 \end{definition}
+
+\begin{theorem}[Fixed point existence]\label{thm:fixed_point_existence}
+  We list some sufficient conditions for an \hyperref[def:function/endofunction]{endofunction} to have a \hyperref[def:fixed_point]{fixed point}:
+  \begin{thmenum}
+    \thmitem{thm:fixed_point_existence/knaster_tarski} \fullref{thm:knaster_tarski_theorem}: Every \hyperref[def:order_function]{order-preserving} endofunction on a \hyperref[def:complete_lattice]{complete lattice} has a fixed point.
+
+    \thmitem{thm:fixed_point_existence/banach} \fullref{thm:banach_fixed_point_theorem}: Every \hyperref[def:lipschitz_continuity/contraction]{contraction mapping} in a \hyperref[def:complete_metric_space]{complete metric space} has a unique fixed \hyperref[def:fixed_point]{point}.
+  \end{thmenum}
+\end{theorem}
+
+\paragraph{Knaster-Tarski theorem}
 
 \begin{theorem}[Knaster-Tarski theorem]\label{thm:knaster_tarski_theorem}\mcite[thm. 1]{Tarski1955FixedPoint}
   The \hyperref[def:fixed_point]{fixed points} of an \hyperref[def:order_function]{order-preserving} \hyperref[def:function/endofunction]{endofunction} in a \hyperref[def:complete_lattice]{complete lattice} form a complete lattice.
 \end{theorem}
 \begin{comments}
   \item The lattice of fixed points may have different operations, so it is not in general a sublattice.
-  \item In particular, the function has at least one fixed point.
+
+  \item In particular, the function has at least one fixed point. This is part of our collection of fixed point theorems --- see \fullref{thm:fixed_point_existence}.
+
   \item This particular name for the theorem is used by \incite[50]{DaveyPriestley2002Lattices} and \incite[321]{PicadoPultr2012Frames}, although only special cases are stated.
 \end{comments}
 \begin{proof}
@@ -245,14 +258,18 @@
       \hypo{ \varphi_1 }
       \hypo{ \cdots }
       \hypo{ \varphi_{m_k} }
-      \infer3[\( R_k \)]{ x_{k,i_k} \mathrel{\rho} x_{k,j_k} },
+      \infer3[\( R_k \)]{ x_k \mathrel{\rho} y_k },
     \end{prooftree}
   \end{equation*}
-  where \( 1 \leq i_k \leq 2m_k \) and \( 1 \leq j_k \leq 2m_k \) and, for every \( l = 1, \ldots, m_k \), \( \varphi_l \) is a formula over \( \Sigma' \) whose free variables are among \( x_{k,1}, \ldots, x_{k,2m_k} \).
+  where \( x_k \) and \( y_k \) are variables and \( \varphi_1, \ldots, \varphi_{m_k} \) are formulas over \( \Sigma' \) whose free variables are among \( x_1, \ldots, x_n \) and \( y_1, \ldots, y_n \). We do not require the variables to be distinct.
 
   Then, for any structure \( \mscrD = (D, I) \) over \( \Sigma \), there exists a \hyperref[def:binary_relation]{binary relation} \( \Rho \) on \( D \) such that:
   \begin{thmenum}
-    \thmitem{thm:recursively_defined_relations/closed} \( \Rho \) is closed with respect to the rules --- for every rule \( R_k \), if both \( (a_{2s - 1}, a_{2s}) \in \Rho \) and \( \Bracks{\varphi_s}(a_1, \ldots, a_{2m_k}) = T \) for every \( s = 1, \ldots, m_k \), then \( (a_{i_k}, a_{j_k}) \in \Rho \).
+    \thmitem{thm:recursively_defined_relations/closed} \( \Rho \) is closed with respect to the rules --- for every rule \( R_k \), we have \( (a_k, b_k) \in \Rho \) if, for every \( s = 1, \ldots, m_k \),
+    \begin{equation*}
+      \Bracks{\varphi_s}(a_1, \ldots, a_n, b_1, \ldots, b_n) = T
+    \end{equation*}
+    and, whenever \( x_i \mathrel{\rho} y_j \) is a subformula of \( \varphi_s \), then \( (a_i, b_j) \in \Rho \).
 
     \thmitem{thm:recursively_defined_relations/minimal} \( \Rho \) is minimal --- every pair of elements of \( D \) related by \( \Rho \) is the conclusion of some rule, the premises of which are either conclusions of rules or are not atomic formulas for \( \rho \).
   \end{thmenum}
@@ -262,26 +279,39 @@
 
   \item For the premises we allow general first-order formulas because, in practice, rules can involve arbitrarily complicated judgments, like in the rules \ref{inf:def:lambda_term_alpha_equivalence/abs} and \ref{inf:def:beta_eta_reduction/eta}.
 
-  \item The syntax-semantics duality is easily visible here --- \( x_{k,m} \) are syntactic variables, while \( a_m \) are concrete elements of \( D \). Similarly, \( \rho \) is simply a symbol, while \( \Rho \) is an actual relation.
+  \item The syntax-semantics duality is easily visible here --- \( x_k \) and \( y_k \) are syntactic variables, while \( a_k \) and \( b_k \) are concrete elements of \( D \). Similarly, \( \rho \) is simply a symbol, while \( \Rho \) is an actual relation.
 \end{comments}
 \begin{proof}
   \Fullref{thm:boolean_algebra_of_subsets} implies that \( \pow(D^2) \) is a complete lattice, so we will use \fullref{thm:knaster_tarski_iteration/continuous}.
 
-  Consider the operator
+  Consider the operator \( E: D^2 \to D^2 \) that extends a relation \( r \) with \( (a_k, b_k) \) if there exists a rule
   \begin{equation*}
-    \begin{aligned}
-      &E: D^2 \to D^2, \\
-      &E(r) \coloneqq r \cup \set[\Big]{ (a_{i_k}, a_{j_k}) \given* \qexists* {R_k} \qforall* {s = 1, \ldots, m_k} (a_{2s - 1}, a_{2s}) \in r \T{and} \Bracks{\varphi_s}(a_1, \ldots, a_{2m_k}) = T }.
-    \end{aligned}
+    \begin{prooftree}
+      \hypo{ \varphi_1 }
+      \hypo{ \cdots }
+      \hypo{ \varphi_{m_k} }
+      \infer3[\( R_k \)]{ x_k \mathrel{\rho} y_k },
+    \end{prooftree}
   \end{equation*}
+  such that, for every \( s = 1, \ldots, m_k \),
+  \begin{equation*}
+    \Bracks{\varphi_s}(a_1, \ldots, a_n, b_1, \ldots, b_n) = T
+  \end{equation*}
+  and, whenever \( x_i \mathrel{\rho} y_j \) is a subformula of \( \varphi_s \), \( (a_i, b_j) \in R \).
 
-  This operator is obviously \hyperref[def:extensive_function]{extensive} and preserves order. We will now show that it is Scott-continuous because it satisfies \fullref{thm:def:scott_continuity/lattice_of_subsets}. Indeed, if the family \( \mscrA \) of subsets of \( D \) is upward-directed and if \( (b, c) \in E(\bigcup \mscrA) \), we have the following possibilities:
+  This operator is obviously \hyperref[def:extensive_function]{extensive} and preserves order. We will now show that it is Scott-continuous because it satisfies \fullref{thm:def:scott_continuity/lattice_of_subsets}. Indeed, if the family \( \mscrA \) of subsets of \( D \) is upward-directed and if \( (c, d) \in E(\bigcup \mscrA) \), we have the following possibilities:
   \begin{itemize}
-    \item If \( (b, c) \in \bigcup \mscrA \), then necessarily there exists a set \( A_0 \in \mscrA \) such that \( (b, c) \in A_0 \) and thus \( (b, c) \in E(A_0) \).
+    \item If \( (c, d) \in \bigcup \mscrA \), then there exists a set \( A_0 \in \mscrA \) such that \( (c, d) \in A_0 \) and thus \( (c, d) \in E(A_0) \).
 
-    \item Otherwise, \( b = a_{i_k} \) and \( c = a_{j_k} \) for some rule \( R_k \), in which case, for every \( s = 1, \ldots, m_k \), there exists a set \( A_s \) from \( \mscrA \) such that \( (a_{2s - 1}, a_{2s}) \in A_i \) and \( \Bracks{\varphi_s}(a_1, \ldots, a_{2m_k}) = T \).
+    \item Otherwise, \( c = a_k \) and \( d = b_k \) for some rule \( R_k \), in which case, for every \( s = 1, \ldots, m_k \), there exists a set \( A_s \) from \( \mscrA \) such that
+    \begin{equation*}
+      \Bracks{\varphi_s}(a_1, \ldots, a_n, b_1, \ldots, b_n) = T
+    \end{equation*}
+    and \( (a_i, b_j) \in \bigcup \mscrA \), whenever \( x_i \mathrel{\rho} y_j \) is a subformula of \( \varphi_s \).
 
-    Since the family \( \mscrA \) is directed, it contains an upper limit \( A_0 \) for \( A_1, \ldots, A_{m_k} \). Then \( (a_{2s-1}, a_{2s})\) belongs to \( A_0 \) for every \( i = 1, \ldots, m_k \), and thus \( (b, c) \in E(A_0) \).
+    There are finitely many subformulas in \( \varphi_s \), so, since the family \( \mscrA \) is directed, there exists an upper limit \( A_0 \) that contains \( (a_i, b_j) \) whenever \( x_i \mathrel{\rho} y_j \) is a subformula of \( \varphi_s \).
+
+    Then, by construction, \( (c, d) \) must belong to \( E(A_0) \).
   \end{itemize}
 
   \Fullref{thm:knaster_tarski_iteration/continuous} then implies that
