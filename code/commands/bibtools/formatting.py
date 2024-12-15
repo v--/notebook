@@ -183,6 +183,7 @@ class BibEntryAdjuster:
     def adjust_identifiers(self) -> None:
         self.adjust_url_identifier('doi')
         self.adjust_url_identifier('eudml')
+        self.adjust_url_identifier('gutenberg')
         self.adjust_url_identifier('handle')
         self.adjust_url_identifier('jstor')
         self.adjust_url_identifier('mathnet')

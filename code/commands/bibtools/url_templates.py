@@ -6,6 +6,7 @@ arxiv =      UrlTemplate('arxiv.org/abs/{identifier}')
 hal =        UrlTemplate('hal.archives-ouvertes.fr/{identifier}')
 
 eudml =      UrlTemplate('eudml.org/doc/{identifier}')
+gutenberg =  UrlTemplate('www.gutenberg.org/ebooks/{identifier}')
 jstor =      UrlTemplate('www.jstor.org/stable/{identifier}')
 handle =     UrlTemplate('hdl.handle.net/{identifier}')
 mathnet =    UrlTemplate('mi.mathnet.ru/{identifier}')

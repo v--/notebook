@@ -94,6 +94,7 @@ class BibEntry(NamedTuple):
     # References
     doi:           Annotated[BibString | None, BibFieldAnnotation()] = None
     eudml:         Annotated[BibString | None, BibFieldAnnotation()] = None
+    gutenberg:     Annotated[BibString | None, BibFieldAnnotation()] = None
     jstor:         Annotated[BibString | None, BibFieldAnnotation()] = None
     handle:        Annotated[BibString | None, BibFieldAnnotation()] = None
     mathnet:       Annotated[BibString | None, BibFieldAnnotation()] = None
