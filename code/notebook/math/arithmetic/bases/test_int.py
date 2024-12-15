@@ -1,6 +1,6 @@
 from ....support.pytest import pytest_parametrize_kwargs
 from ...polynomials.polynomial.int import IntPolynomial, const, x, zero
-from .int import get_integer_expansion
+from .int import add_with_carrying, get_integer_expansion
 
 
 @pytest_parametrize_kwargs(
@@ -15,3 +15,21 @@ from .int import get_integer_expansion
 )
 def test_integer_expansion(n: int, radix: int, pol: IntPolynomial) -> None:
     assert get_integer_expansion(n, radix).polynomial == pol
+
+
+@pytest_parametrize_kwargs(
+    dict(n=0, m=0, radix=10),
+    dict(n=3, m=0, radix=2),
+    dict(n=3, m=5, radix=2),
+    dict(n=3, m=5, radix=10),
+    dict(n=3, m=-5, radix=10),
+    dict(n=-3, m=5, radix=10),
+    dict(n=-3, m=-5, radix=10),
+    dict(n=1, m=-9, radix=10),
+    # dict(n=343, m=50315, radix=3),
+    # dict(n=343, m=-50315, radix=3),
+    # dict(n=-343, m=50315, radix=3),
+    # dict(n=-343, m=-50315, radix=3),
+)
+def test_add_with_carrying(n: int, m: int, radix: int) -> None:
+    assert add_with_carrying(n, m, radix) == n + m
