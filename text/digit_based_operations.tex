@@ -1,0 +1,640 @@
+\section{Digit-based operations}\label{sec:digit_based_operations}
+
+\paragraph{Integer radix expansions}
+
+\begin{definition}\label{def:integer_radix_expansion}
+  Similarly to how we have defined real number radix expansions in \fullref{def:real_number_radix_expansion}, we define a radix \( b \) expansion for the integer \( n \) as a \hyperref[def:univariate_polynomial]{univariate polynomial}
+  \begin{equation*}
+    p(X) = \sgn(n) \cdot \sum_{k=0}^m a_k X^k,
+  \end{equation*}
+  where \( 0 \leq a_k < b \) for all \( a_k \) and \( n = p(b) \).
+\end{definition}
+\begin{comments}
+  \item Introducing this notion is not strictly necessary, however we find it more convenient than real number radix expansions as defined in \fullref{def:real_number_radix_expansion}.
+
+  \item Due to compatibility with real number radix expansions shown in \fullref{thm:integer_and_real_radix_expansions}, \fullref{thm:radix_expansion_non_uniqueness} implies that integer expansions are unique.
+\end{comments}
+
+\begin{proposition}\label{thm:integer_and_real_radix_expansions}
+  For an integer \( n \), the \hyperref[def:formal_laurent_series]{Laurent series}
+  \begin{equation}\label{eq:thm:integer_and_real_radix_expansions/series}
+    \sgn(n) \cdot \sum_{k=-m}^0 \frac {a_k} {b^k}
+  \end{equation}
+  is a radix \( b \) \hyperref[def:real_number_radix_expansion]{real number expansion} of \( n \) if and only if
+  \begin{equation}\label{eq:thm:integer_and_real_radix_expansions/polynomial}
+    \sgn(n) \cdot \sum_{k=0}^m a_k b^k
+  \end{equation}
+  is an \hyperref[def:integer_radix_expansion]{integer radix expansion}.
+\end{proposition}
+\begin{comments}
+  \item The gist here, discussed in \fullref{def:endianness_and_numbers}, is that the real number expansion gives the \hyperref[def:endianness_and_numbers]{little-endian order} of the coefficients while integer expansion \hyperref[def:endianness_and_numbers]{big-endian order}.
+\end{comments}
+\begin{proof}
+  Trivial.
+\end{proof}
+
+\begin{algorithm}[Integer radix expansion]\label{alg:integer_radix_expansion}
+  We will give a simplified form of \fullref{alg:real_number_radix_expansion} for \hyperref[def:integer_radix_expansion]{integer radix expansions}. Fix an integer \( n \) and a radix \( b \geq 2 \).
+
+  \begin{thmenum}
+    \thmitem{alg:integer_radix_expansion/negative} As in \fullref{alg:real_number_radix_expansion/negative}, if \( n < 0 \) we build an expansion for \( -n \) and then multiply it by \( -1 \).
+
+    \thmitem{alg:integer_radix_expansion/base} If \( 0 \leq n < b \), halt the algorithm with \( n \) regarded as a constant polynomial.
+
+    \thmitem{alg:integer_radix_expansion/recursive} Finally, if \( n > b \), let \( n = bq + r \) be the result of \fullref{alg:integer_division} and let \( p(X) \) be the expansion of \( q \). Then
+    \begin{equation*}
+      X \cdot p(X) + r
+    \end{equation*}
+    is an expansion of \( n \).
+  \end{thmenum}
+\end{algorithm}
+\begin{comments}
+  \item This algorithm can be found as \identifier{arithmetic.bases.get_integer_expansion} in \cite{notebook:code}.
+\end{comments}
+
+\paragraph{Digit-based integer arithmetic}\hfill
+
+We will present several algorithms which allow performing integer arithmetic using radix \( b \) expansions knowing only how the operations behave for positive integers smaller than \( b \). This is especially convenient for binary arithmetic, and is the basis upon which computer arithmetic is implemented.
+
+\begin{algorithm}[Addition with carrying]\label{alg:addition_with_carrying}
+  Fix a radix \( b \) and consider the \hyperref[def:integer_radix_expansion]{integer expansions}
+  \begin{equation*}
+    n = \sgn(n) \cdot \sum_{k=0}^p a_k b^k
+  \end{equation*}
+  and
+  \begin{equation*}
+    m = \sgn(m) \cdot \sum_{k=0}^l c_k b^k.
+  \end{equation*}
+
+  We will find the digits of the expansion
+  \begin{equation*}
+    n + m = \sgn(n + m) \cdot \sum_{k=0}^{\max\set{ p, l } + 1} d_k b^k.
+  \end{equation*}
+
+  \begin{thmenum}
+    \thmitem{alg:addition_with_carrying/n_guard} If \( n < 0 \), we can apply the algorithm to \( -n \) and \( -m \) since
+    \begin{equation*}
+      n + m = -(-n - m).
+    \end{equation*}
+
+    Thus, we can suppose that \( n \geq 0 \).
+
+    \thmitem{alg:addition_with_carrying/m_guard} If \( m < 0 \) and \( \abs{m} > \abs{n} \), we instead apply the algorithm to \( -m \) and \( -n \).
+
+    Thus, we can suppose that \( \abs{m} \leq \abs{n} \) and \( r \leq p \).
+
+    Along with \( n \geq 0 \), this ensures that \( n + m \) is nonnegative.
+
+    \thmitem{alg:addition_with_carrying/init} We start with \( r_{-1} \coloneqq 0 \).
+
+    \thmitem{alg:addition_with_carrying/step} At step \( k = 0, 1, \ldots \), let \( q_k \) and \( d_k \) be the quotient and remainder of dividing via \fullref{alg:integer_division} the integer
+    \begin{equation}\label{eq:alg:addition_with_carrying/step/quot}
+      a_k + \sgn(m) \cdot c_k + q_{k - 1}
+    \end{equation}
+    by \( b \).
+
+    We will show that \( q_k \) is either \( -1 \), \( 0 \) or \( 1 \), so, instead of relying on \fullref{alg:integer_division}, we can compute \( q_k \) by simply checking whether \( a_k + \sgn(m) \cdot c_k + q_{k - 1} \) is larger than \( q - 1 \) or smaller than \( 0 \).
+  \end{thmenum}
+\end{algorithm}
+\begin{comments}
+  \item The term \( q_k \) \enquote{carries} either \( -1 \), \( 0 \) or \( 1 \) to be used in the next step.
+  \item This algorithm can be found as \identifier{arithmetic.bases.add_with_carrying} in \cite{notebook:code}.
+\end{comments}
+\begin{defproof}
+  \SubProof{Proof that \( q_k \) is either \( -1 \), \( 0 \) or \( 1 \)} We will show by induction on \( k \) that \( q_k \) is either \( -1 \), \( 0 \) or \( 1 \). Note that, since \( b \geq 2 \), we have
+  \begin{equation*}
+    a_k + \sgn(m) \cdot c_k \leq (b - 1) + (b - 1) = 2b - 2 \leq b^2 - 2
+  \end{equation*}
+  and
+  \begin{equation*}
+    a_k + \sgn(m) \cdot c_k \geq 0 - (b - 1) = 1 - b.
+  \end{equation*}
+
+  \begin{itemize}
+    \item In the base case \( k = 0 \), we divide \( a_0 + \sgn(m) \cdot c_0 \) by \( b \).
+    \begin{itemize}
+      \item If \( m \geq 0 \), we use that \( 0 \leq a_0 + c_0 < b^2 \) to conclude that \( q_0 \) is either \( 0 \) or \( 1 \).
+      \item If \( m < 0 \), we use that \( a_k - c_k > 1 - b \) to conclude that \( q_0 \) is \( 0 \) if \( a_k \geq \abs{c_k} \) or \( -1 \) if \( a_k < \abs{c_k} \).
+    \end{itemize}
+
+    \item For \( k > 0 \), we must divide \( a_k + \sgn(m) \cdot c_k + q_{k-1} \).
+    \begin{itemize}
+      \item If \( m \geq 0 \), we use the inductive hypothesis on \( q_{k-1} \) to obtain
+      \begin{equation*}
+        -b < -1 \leq a_k + c_k + q_{k-1} \leq b^2 - 2 + q_{k-1} \leq b^2 - 1 < b^2
+      \end{equation*}
+      and conclude that \( q_k \) is either \( -1 \), \( 0 \) or \( 1 \).
+
+      \item If \( m < 0 \), we instead have
+      \begin{equation*}
+        -b \leq -b + 1 + q_{k-1} \leq a_k - c_k + q_{k-1} \leq (b - 1) + (-1) + q_{k-1} \leq b - 1,
+      \end{equation*}
+      hence \( q_k \) is either \( -1 \) or \( 0 \).
+    \end{itemize}
+  \end{itemize}
+
+  \SubProof{Proof that the expansion polynomial degree is at most \( \max\set{ p, l } + 1 \)} \Fullref{alg:addition_with_carrying/m_guard} ensures that \( l \leq p \), thus \( \max\set{ p, l } = p \). We must show that \( d_k = 0 \) when \( k > p + 1 \).
+
+  Since \( n \geq \abs{m} \), we have \( a_p \geq c_p \) with equality holding if \( q_{p - 1} = 0 \) --- we easily obtain a contradiction otherwise.
+
+  \begin{itemize}
+    \item If \( a_p > c_p \), then \( a_p + \sgn(p) \cdot c_p \geq 1 \), and, since \( q_{p - 1} \geq -1 \),
+    \begin{equation*}
+      a_p + \sgn(p) \cdot c_p + q_{p - 1} \geq 0.
+    \end{equation*}
+
+    \item If \( a_p = c_p \), then \( q_{p - 1} = 0 \) as discussed, and again
+    \begin{equation*}
+      a_p + \sgn(p) \cdot c_p + q_{p - 1} \geq 0.
+    \end{equation*}
+  \end{itemize}
+
+  In both case, we have excluded the possibility that \( q_p = -1 \), hence \( q_p = 0 \) or \( q_p = 1 \).
+
+  We have
+  \begin{equation*}
+    b \cdot q_{p + 1} = (\underbrace{a_{p + 1} + \sgn(m) \cdot c_{p + 1}}_0 + q_p) - d_{p + 1},
+  \end{equation*}
+
+  Since \( 0 \leq d_{p + 1} \leq b - 1 \), it follows that
+  \begin{equation*}
+    q_p - (b - 1) \leq b \cdot q_{p + 1} \leq q_p,
+  \end{equation*}
+  and, since \( q_p \) is either \( 0 \) or \( 1 \),
+  \begin{equation*}
+    -(b - 1) \leq b \cdot q_{p + 1} \leq 1.
+  \end{equation*}
+
+  It remains for \( q_{p + 1} \) to be \( 0 \). Then
+  \begin{equation*}
+    d_{p + 2} = \underbrace{q_{p + 1}}_{0} - b \cdot q_{p + 2},
+  \end{equation*}
+  which is only possible if \( d_{p + 2} = q_{p + 2} = 0 \).
+
+  For \( k > p + 1 \), we can analogously show that \( d_k = 0 \).
+
+  \SubProof{Proof that \( d_k \) are the coefficients of the expansion of \( n + m \)} Let \( n \geq 0 \) and \( \abs{m} \leq n \).
+
+  We will use induction on \( s \) to show that
+  \begin{equation*}
+    \sum_{k=0}^s a_k b^k + \sgn(m) \cdot \sum_{k=0}^s c_k b^k = \sum_{k=0}^s d_k b^k + q_s b^{s+1}.
+  \end{equation*}
+
+  \begin{itemize}
+    \item The base case \( s = 0 \) requires us to show that
+    \begin{equation*}
+      a_0 + \sgn(m) \cdot c_0 = d_0 + q_0 \cdot b,
+    \end{equation*}
+    which holds by definition.
+
+    \item Suppose that the inductive hypothesis holds for \( s - 1 \). Then
+    \begin{align*}
+      \sum_{k=0}^s d_k b^k + q_s b^{s+1}
+      &=
+      \sum_{k=0}^{s-1} d_k b^k + \underbrace{d_k b^s + q_s b^{s+1}}_{b^s(a_s + \sgn(m) \cdot c_s)}
+      \reloset{\T{ind.}} = \\ &=
+      \parens[\Big]{ \sum_{k=0}^{s-1} a_k b^k + \sgn(m) \cdot \sum_{k=0}^{s-1} c_k b^k } + \parens[\Big]{ a_s b^s + \sgn(m) \cdot c_s b^s }.
+    \end{align*}
+  \end{itemize}
+
+  We have already shown that \( d_k = q_k = 0 \) for \( k > p + 1 \), and clearly \( a_k = 0 \) for \( k > p \) and \( c_k = 0 \) for \( k > s \), thus
+  \begin{equation*}
+    \sum_{k=0}^p a_k b^k + \sgn(m) \cdot \sum_{k=0}^r c_k b^k = \sum_{k=0}^{p + 1} d_k b^k.
+  \end{equation*}
+\end{defproof}
+
+\begin{algorithm}[Single-digit multiplication with carrying]\label{alg:single_digit_multiplication_with_carrying}
+  Fix a radix \( b \) and consider the \hyperref[def:integer_radix_expansion]{integer expansion}
+  \begin{equation*}
+    n = \sgn(n) \cdot \sum_{k=0}^p a_k b^k.
+  \end{equation*}
+
+  Let \( m \) be any integer whose absolute value is smaller than \( b \).
+
+  We will find the digits of the expansion
+  \begin{equation*}
+    nm = \sgn(nm) \cdot \sum_{k=0}^{p + 1} d_k b^k.
+  \end{equation*}
+
+  \begin{thmenum}
+    \thmitem{alg:single_digit_multiplication_with_carrying/double_neg_guard} If \( n < 0 \) and \( m < 0 \), we can apply the algorithm to \( -n \) and \( -m \) since
+    \begin{equation*}
+      nm = (-n) \cdot (-m).
+    \end{equation*}
+
+    We have thus reduced this case to nonnegative \( n \) and \( m \).
+
+    \thmitem{alg:single_digit_multiplication_with_carrying/single_neg_guard} If \( n \) and \( m \) have different \hi{nonzero} signs, we can apply the algorithm to \( \abs{n} \) and \( \abs{m} \) since
+    \begin{equation*}
+      nm = -\abs{n} \cdot \abs{m}.
+    \end{equation*}
+
+    We have thus reduced this case to nonnegative \( n \) and \( m \).
+
+    \thmitem{alg:single_digit_multiplication_with_carrying/init} If both \( n \) and \( m \) are nonnegative, we start with \( r_{-1} \coloneqq 0 \), similarly to \fullref{alg:addition_with_carrying/init}.
+
+    \thmitem{alg:single_digit_multiplication_with_carrying/step} At step \( k = 0, 1, \ldots \), let \( q_k \) and \( d_k \) be the quotient and remainder of dividing via \fullref{alg:integer_division} the integer
+    \begin{equation}\label{eq:alg:single_digit_multiplication_with_carrying/step/quot}
+      m \cdot a_k + q_{k - 1}
+    \end{equation}
+    by \( b \).
+
+    We will show that \( 0 \leq q_k < m \). Then \( d_k \) and \( q_k \) are the first two coefficients in the radix \( b \) expansion of \( m \cdot a_k + q_{k-1} \). Thus, if we have the expansion available, we can take \( d_k \) and \( q_k \) from there instead of relying on \fullref{alg:integer_division}.
+  \end{thmenum}
+\end{algorithm}
+\begin{comments}
+  \item This algorithm can be found as \identifier{arithmetic.bases.single_digit_mult_with_carrying} in \cite{notebook:code}.
+\end{comments}
+\begin{defproof}
+  The proof of correctness is similar, but much simpler than that of \fullref{alg:integer_radix_expansion}.
+
+  The guard steps \fullref{alg:single_digit_multiplication_with_carrying/double_neg_guard} and \fullref{alg:single_digit_multiplication_with_carrying/single_neg_guard} allow us to assume that \( n \geq 0 \) and \( m \geq 0 \).
+
+  \SubProof{Proof that \( 0 \leq q_k < m \)} Since \( 0 \leq a_k \leq b - 1 \) and \( 0 \leq m \leq b - 1 \), we have
+  \begin{equation*}
+    m \cdot a_k \leq (b - 1) \cdot m = bm - m.
+  \end{equation*}
+
+  \begin{itemize}
+    \item In the base case \( k = 0 \), the quotient of dividing \( m \cdot a_0 \) by \( b \) is thus strictly less than \( m \) because \( m < b \).
+
+    \item For \( k > 0 \), we must divide \( m \cdot a_k + q_{k-1} \) by \( b \). By the inductive hypothesis we have \( 0 \leq q_{k-1} < m \), thus
+    \begin{equation*}
+      m \cdot a_k + q_{k-1} \leq (b - 1) \cdot m + (m - 1) = bm - 1.
+    \end{equation*}
+
+    It follows that the quotient \( q_k \) is at most \( m - 1 \).
+  \end{itemize}
+
+  \SubProof{Proof that the expansion polynomial degree is at most \( p + 1 \)} We will show that \( d_k = 0 \) when \( k > p + 1 \).
+
+  For \( k = p + 1 \), since \( a_{p + 1} = 0 \), to obtain \( q_{p + 1} \) we divide \( q_p \) by \( b \). But \( q_p < m < b \), thus \( q_{p + 1} = 0 \).
+
+  Then \( d_{p + 2} \) is the remainder of dividing \( q_{p + 1} = 0 \) by \( b \), that is, \( d_{p + 2} = 0 \). This also holds for all \( k > p + 1 \).
+
+  \SubProof{Proof that \( d_k \) are the coefficients of the expansion of \( nm \)}
+
+  We will use induction on \( s \) to show that
+  \begin{equation*}
+    m \cdot \sum_{k=0}^s a_k b^k = \sum_{k=0}^s d_k b^k + q_s b^{s+1}.
+  \end{equation*}
+
+  \begin{itemize}
+    \item The base case \( s = 0 \) requires us to show that
+    \begin{equation*}
+      m \cdot a_0 = d_0 + q_0 \cdot b,
+    \end{equation*}
+    which holds by definition.
+
+    \item Suppose that the inductive hypothesis holds for \( s - 1 \). Then
+    \begin{equation*}
+      \sum_{k=0}^s d_k b^k + q_s b^{s+1}
+      =
+      \sum_{k=0}^{s-1} d_k b^k + \underbrace{d_k b^s + q_s b^{s+1}}_{b^s(m \cdot a_s)}
+      \reloset{\T{ind.}} =
+      (m \cdot \sum_{k=0}^{s-1} a_k b^k) + m \cdot a_s b^s.
+    \end{equation*}
+  \end{itemize}
+
+  We have already shown that \( d_k = q_k = 0 \) for \( k > p + 1 \), and clearly \( a_k = 0 \) for \( k > p \), thus
+  \begin{equation*}
+    m \cdot \sum_{k=0}^p a_k b^k = \sum_{k=0}^{p + 1} d_k b^k.
+  \end{equation*}
+\end{defproof}
+
+\begin{algorithm}[Multi-digit multiplication with carrying]\label{alg:multi_digit_mult_with_carrying}
+  Fix a radix \( b \) and consider the \hyperref[def:integer_radix_expansion]{integer expansions}
+  \begin{equation*}
+    n = \sgn(n) \cdot \sum_{k=0}^p a_k b^k
+  \end{equation*}
+  and
+  \begin{equation*}
+    m = \sgn(m) \cdot \sum_{k=0}^l c_k b^k.
+  \end{equation*}
+
+  We will only use the power \( p \) in the expansion of \( n \), not its coefficients.
+
+  Rather than finding the individual digits of \( nm \), we will use a combination of \fullref{alg:addition_with_carrying} and \fullref{alg:single_digit_multiplication_with_carrying}.
+
+  We start with the observation that
+  \begin{equation*}
+    nm = \sgn(m) \cdot \sum_{k=0}^l (n \cdot c_k) b^k.
+  \end{equation*}
+
+  We will construct a sequence \( f_{-1}, f_0, \ldots \) of integer expansion polynomials such that
+  \begin{equation*}
+    f_s(b) = \sgn(m) \cdot \sum_{k=0}^s (n \cdot c_k) b^k,
+  \end{equation*}
+  where \( f_s \) is either zero or its polynomial degree is at most \( p + s + 2 \).
+
+  Then \( nm = f_l(b) \).
+
+  \begin{thmenum}
+    \thmitem{alg:multi_digit_multiplication_with_carrying/init} Start with the expansion \( f_{-1} = 0 \).
+
+    \thmitem{alg:multi_digit_multiplication_with_carrying/step} At step \( s = 0, 1, \ldots \), use \fullref{alg:single_digit_multiplication_with_carrying} to obtain the expansion
+    \begin{equation*}
+      n \cdot c_s = \sgn(n) \cdot \sum_{k=0}^{p + 1} d_k b^k.
+    \end{equation*}
+
+    Define \( f_s \) to be the sum of \( f_{s-1} \) with
+    \begin{equation*}
+      n \cdot c_s \cdot b^s = \sgn(n) \cdot \sum_{k=s}^{s + p + 1} d_{k - s} b^k
+    \end{equation*}
+    obtained via \fullref{alg:addition_with_carrying}.
+
+    Then \( f_s \) is an expansion of
+    \begin{equation*}
+      \sgn(m) \cdot \sum_{k=0}^s (n \cdot c_k) b^k.
+    \end{equation*}
+
+    If \( f_{s-1} \) is zero of if the polynomial degree of \( f_{s-1} \) is at most \( p + s \), \fullref{alg:addition_with_carrying} implies that the degree of \( f_s \) is at most
+    \begin{equation*}
+      \max\set{ p + s, s + p + 1 } + 1 = p + s + 2.
+    \end{equation*}
+  \end{thmenum}
+\end{algorithm}
+\begin{comments}
+  \item This algorithm can be found as \identifier{arithmetic.bases.multi_digit_mult_with_carrying} in \cite{notebook:code}.
+\end{comments}
+
+\begin{algorithm}[Long division]\label{alg:long_division}
+  Fix a radix \( b \) and consider the \hyperref[def:integer_radix_expansion]{integer expansions}
+  \begin{equation*}
+    n = \sgn(n) \cdot \sum_{k=0}^p a_k b^k
+  \end{equation*}
+  and
+  \begin{equation*}
+    m = \sgn(m) \cdot \sum_{k=0}^l c_k b^k.
+  \end{equation*}
+
+  We will only use the powers \( p \) and \( l \) of the expansions of \( n \) and \( m \), not their coefficients.
+
+  \Fullref{alg:integer_division} gives us integers \( q \) and \( r \) such that \( 0 \leq r < m \) and
+  \begin{equation*}
+    n = qm + r.
+  \end{equation*}
+
+  We will find the digits of the expansions
+  \begin{equation*}
+    q = \sgn(q) \cdot \sum_{k=0}^{p - l} d_k b^k
+  \end{equation*}
+  and
+  \begin{equation*}
+    r = \sum_{k=0}^l e_k b^k.
+  \end{equation*}
+
+  \begin{thmenum}
+    \thmitem{alg:long_division/n_guard} If \( n < 0 \), let \( q \) and \( r \) be the quotient and remainder of the division of \( \abs{n} \) by \( \abs{m} \). We have
+    \begin{equation*}
+      n = -\abs{n} = -(q \cdot \abs{m} + r) = q \cdot (-\abs{m}) - r = (q + 1) \cdot (-\abs{m}) + (\abs{m} - r).
+    \end{equation*}
+
+    Then \( -\sgn(m) * (q + 1) \) is the quotient and \( \abs{m} - r \) is the remainder of dividing \( n \) by \( m \).
+
+    We have thus reduced this case to nonnegative \( n \) and \( m \).
+
+    \thmitem{alg:long_division/m_guard} If \( n \geq 0 \) and \( m < 0 \), let \( q \) and \( r \) be the quotient and remainder of the division of \( n \) by \( -m \). We have
+    \begin{equation*}
+      n = q \cdot (-m) + r = (-q) \cdot m + r.
+    \end{equation*}
+
+    Then \( -q \) is the quotient and \( r \) is the remainder of dividing \( n \) by \( m \).
+
+    We have thus reduced this case to nonnegative \( n \) and \( m \).
+
+    \thmitem{alg:long_division/init} Finally, if \( n \geq 0 \) and \( m \geq 0 \), let \( r_{-1} \coloneqq n \) and \( q_{-1} \coloneqq 0 \).
+
+    \thmitem{alg:long_division/step} At step \( s = 0, 1, \ldots \), let \( k \coloneqq p - r - s \) and define
+    \begin{equation*}
+      d_k \coloneqq \max\set{ d \leq b - 1 \given d m b^k \leq r_{s - 1} }.
+    \end{equation*}
+
+    Let \( r_s \) be the sum of \( r_{s - 1} \) and \( -d_k m b^k \). The sum can be obtained via \fullref{alg:addition_with_carrying}, while multiplying \( m b^k \) by \( -d_k \) can be achieved via \fullref{alg:single_digit_multiplication_with_carrying}.
+
+    \thmitem{alg:long_division/finish} Finally, at step \( p - l \), the remainder is \( r = r_{p - l} \), as we will show, and we have used \fullref{alg:addition_with_carrying} and \fullref{alg:single_digit_multiplication_with_carrying} to explicitly compute its expansion at every step.
+
+    We have also constructed all coefficients of the expansion of \( q \).
+  \end{thmenum}
+\end{algorithm}
+\begin{comments}
+  \item This algorithm can be found as \identifier{arithmetic.bases.long_integer_division} in \cite{notebook:code}.
+\end{comments}
+\begin{defproof}
+  The guard steps \fullref{alg:long_division/n_guard} and \fullref{alg:long_division/m_guard} allow us to assume that \( n \geq 0 \) and \( m \geq 0 \).
+
+  \SubProof{Proof that \( r_{s - p} \) is the remainder} By construction, we have
+  \begin{equation*}
+    d_k m b^k \leq r_{s - 1},
+  \end{equation*}
+  and we can add \( -d_k m b^k \) to both sides to conclude that
+  \begin{equation*}
+    0 \leq r_{s - 1} - d_k m b^k = r_s.
+  \end{equation*}
+
+  Then \( r_s \) is a nonnegative integer at every step \( s \). We must also show that \( r_s < m b^{p - l - s} \). If \( r_s \geq m b^{p - l - s} \), then
+  \begin{equation*}
+    r_{s-1} - d_{p - l - s} \cdot m \cdot b^{p - l - s} \geq m \cdot b^{p - l - s}
+  \end{equation*}
+  and thus
+  \begin{equation*}
+    r_{s-1} - (d_{p - l - s} - 1) \cdot m \cdot b^{p - l - s} \geq 0,
+  \end{equation*}
+  which contradicts the maximality of \( d_{p - l - s} \)
+
+  Therefore, \( r_s < m b^{p - l - s} \), which implies that \( r_{p - l} < m \). Then \( r = r_{p - l} \) is the remainder of dividing \( n \) by \( m \).
+
+  \SubProof{Proof that \( d_k \) are the coefficients of \( q \)}
+  We will use induction on \( s \) to show that
+  \begin{equation}\label{eq:alg:long_division/proof/hypothesis}
+    r_s = n - m \cdot \sum_{k=p-l-s}^{p-l} d_k b^k.
+  \end{equation}
+
+  \begin{itemize}
+    \item In the base case \( s = 0 \), we have
+    \begin{equation*}
+      r_0 = \underbrace{r_{-1}}_n - d_{p-l} \cdot m \cdot b^{p-l},
+    \end{equation*}
+    hence \eqref{eq:alg:long_division/proof/hypothesis} holds.
+
+    \item For \( s > 0 \), we have
+    \begin{equation*}
+      r_s
+      =
+      r_{s-1} - d_{p-l-s} \cdot m \cdot b^{p-l}
+      \reloset{\T{ind.}} =
+      n - m \cdot \sum_{k=p-l-s+1}^{p-l} d_k b^k - d_{p-l-s} \cdot m \cdot b^{p-l}
+      =
+      n - m \cdot \sum_{k=p-l-s}^{p-l} d_k b^k.
+    \end{equation*}
+  \end{itemize}
+
+  Then
+  \begin{equation*}
+    r_{p-l} = n - m \cdot \sum_{k=0}^{p-l} d_k b^k.
+  \end{equation*}
+
+  Since \( r_{p-l} < m \), we have obtained the unique quotient and remainder of dividing \( n \) by \( m \). Since \( 0 \leq d_k < b \), we conclude that these are the coefficients of the radix \( b \) expansion of \( q \).
+\end{defproof}
+
+\paragraph{Fixed-length integer encoding}
+
+\begin{definition}\label{def:endianness}\mimprovised
+  To any \hyperref[def:positional_number_system]{digit string} \( d_0 \ldots d_{m-1} \) over a fixed \hyperref[def:positional_number_system]{positional number system}, we assign two total orders:
+
+  \begin{thmenum}
+    \thmitem{def:endianness/big} The \term{big-endian} order is based on the implicit \hyperref[def:enumeration]{enumerations} \( d_0, \ldots, d_{m-1} \).
+
+    We say that the digit \( d_i \) is \term[en=more significant (\cite[195]{Knuth1997ArtVol2})]{more significant} than \( d_j \) if \( i < j \). Correspondingly, \( d_0 \) is the most significant digit, while \( d_{m-1} \) --- the least significant.
+
+    \thmitem{def:endianness/little} The \term{little-endian} order instead uses the reverse enumeration \( d_{m-1}, \ldots, d_0 \).
+
+    In this case, \( d_i \) is more significant than \( d_j \) if \( i < j \). Thus, \( d_{m-1} \) is the most significant digit, while \( d_0 \) --- the least significant.
+  \end{thmenum}
+\end{definition}
+\begin{comments}
+  \item Endianness is useful in the context of memory likes --- see the discussion in \fullref{ex:little_endian_motivation}.
+
+  \item Digit significance allows us to work with both big-endian and little-endian orders simultaneously by abstracting away the implicit order of a string. This is illustrated in \fullref{thm:nonnegative_integer_expansion_divisibility}.
+
+  \item This endianness terminology is based on Danny Cohen's article \cite{Cohen1981Endianness} on the order in which computers and communication protocols handle \hyperref[def:bit_string]{bit strings}. Cohen in turn based his terms on Jonathan Swift's \cite{Swift2005GulliverTravels}, where Lilliputs fight wars for which end the eggs should be broken at.
+
+  The following quote from the book first refers to \enquote{endianness} (orthography is preserved):
+  \begin{displayquote}
+    It is computed, that eleven Thousand Persons have, at several Times, suffered Death, rather than submit to break their Eggs at the smaller End. Many hundred large Volumes have been published upon this Controversy: But the Books of the Big-Endians have been long forbidden, and the whole Party rendred incapable by Law of holding Employments.
+  \end{displayquote}
+\end{comments}
+
+\begin{definition}\label{def:fixed_length_nonnegative_integer_encoding}\mimprovised
+  Fix a \hyperref[def:positional_number_system]{positional number system} \( s_0 \ldots s_{b-1} \) and \hyperref[def:endianness]{endianness}.
+
+  We say that the string \( s_{a_0} \ldots s_{a_{m-1}} \) \term{encodes} the nonnegative integer \( n \) if
+  \begin{equation*}
+    n = \sum_{k=0}^{m-1} a_k b^{e(k)},
+  \end{equation*}
+  where \( e(k) = k \) in case of little-endian ordering and \( e(k) = m - 1 - k \) in case of big-endian ordering.
+\end{definition}
+\begin{comments}
+  \item This is an extension of the positional natural number strings whose connection to real number expansions is discussed in \fullref{def:positional_notation_as_radix_expansion/natural_numbers}. It allows both varying endianness and relaxes the requirement that the most significant digit must be nonzero. The global uniqueness lost from this is brought back by using fixed-length strings --- see \fullref{thm:def:fixed_length_nonnegative_integer_encoding}.
+\end{comments}
+
+\begin{proposition}\label{thm:def:fixed_length_nonnegative_integer_encoding}
+  In a radix \( b \) \hyperref[def:positional_number_system]{positional number system}, there are \( b^m \) \hyperref[def:positional_number_system]{digit string} of length \( m \), and they \hyperref[def:fixed_length_nonnegative_integer_encoding]{encode} the integers \( 0, \ldots, b^m - 1 \).
+\end{proposition}
+\begin{comments}
+  \item This result allows working with fixed-length encoding like with abstract integer expansions. It holds independently of endianness.
+\end{comments}
+\begin{proof}
+  Fix a positional number system \( s_0, \ldots, s_{b-1} \).
+
+  For a nonnegative integer \( n < b^m \), \fullref{alg:integer_radix_expansion} gives us the radix \( b \) expansion
+  \begin{equation*}
+    p(X) = \sum_{k=0}^r a_k X^k.
+  \end{equation*}
+
+  If \( r \geq m \), then \( a_r b^r \geq b^r \geq b^m \), and thus \( n = p(b) \geq b^m \), which is a contradiction. It remains for \( r \) to be less than \( m \).
+
+  If \( r < m - 1 \), we simply define \( a_k = 0 \) for \( k > r \) to obtain the digit string
+  \begin{equation*}
+    s_{a_0} s_{a_1} \cdots s_{a_{m-1}}
+  \end{equation*}
+  encoding \( n \) via big-endian ordering.
+
+  For little-endian ordering, we can simply reverse the string.
+
+  We have thus constructed a digit string for each nonnegative integer \( n < b^m \). Each nonnegative integer has a unique radix \( b \) expansion, thus the numbers \( 0, \ldots, b^m - 1 \) correspond to \( b^m \) digit strings of length \( m \).
+
+  \Fullref{thm:cardinality_product_rule} implies that there is a total of \( b^m \) digit strings of length \( m \), hence we have described all of them.
+\end{proof}
+
+\begin{proposition}\label{thm:nonnegative_integer_expansion_divisibility}
+  Fix a radix \( b \geq 2 \) and a divisor \( d \) of \( b \). Let \( m \) and \( n \) be nonnegative integers satisfying \( n < b^m \).
+
+  Then \( d \) divides \( n \) if and only if \( d \) divides the \hyperref[def:endianness]{least significant digit} of the \hyperref[def:fixed_length_nonnegative_integer_encoding]{\( m \)-digit} encoding of \( n \).
+\end{proposition}
+\begin{proof}
+  Consider the encoding \( s_{a_0} \ldots s_{a_{m-1}} \).
+
+  In the case of big-endian ordering, we have
+  \begin{equation*}
+    n = \sum_{k=0}^m a_k b^k.
+  \end{equation*}
+
+  Since \( d \) divides \( b \), it divides \( b^k \) for \( k > 1 \), and thus also \( a_k b^k \). Therefore, in order to divide \( n \), \( d \) must divide the least significant digit \( a_0 = a_0 \cdot b^0 \), and vice versa.
+
+  In the case of little-endian ordering, we have
+  \begin{equation*}
+    n = \sum_{k=0}^m a_k b^{m-k},
+  \end{equation*}
+  and thus \( d \) divides \( n \) if and only if \( d \) divides the least significant digit \( a_m \).
+\end{proof}
+
+\begin{corollary}\label{thm:nonnegative_integer_decimal_expansion_parity}
+  The \hyperref[def:integers]{positive integer} \( n \) is \hyperref[def:integer_parity]{even} if and only if the \hyperref[def:endianness]{least significant digit} of any \hyperref[def:fixed_length_nonnegative_integer_encoding]{decimal encoding} of \( n \) is even.
+\end{corollary}
+\begin{proof}
+  Follows from \fullref{thm:nonnegative_integer_expansion_divisibility} since \( 2 \) divides \( 10 \).
+\end{proof}
+
+\begin{corollary}\label{thm:nonnegative_integer_binary_expansion_parity}
+  The \hyperref[def:integers]{positive integer} \( n \) is \hyperref[def:integer_parity]{even} if and only if the \hyperref[def:endianness]{least significant digit} of any \hyperref[def:fixed_length_nonnegative_integer_encoding]{binary encoding} of \( n \) is zero.
+\end{corollary}
+\begin{proof}
+  Follows from \fullref{thm:nonnegative_integer_expansion_divisibility} since \( 2 \) obviously divides \( 2 \).
+\end{proof}
+
+\begin{example}\label{ex:little_endian_motivation}
+  In this example, we will regard \hyperref[def:positional_number_system]{digit string} as lines of \enquote{memory cells}, like those of a physical computer or a \hyperref[def:turing_machine]{Turing machine's tape}.
+
+  \hyperref[def:endianness/little]{Big-endian} ordering corresponds to how digits are encoded in the familiar decimal system --- the number \( 234 \) is \hyperref[def:fixed_length_nonnegative_integer_encoding]{encoded} by the decimal digit string
+  \begin{MemoryLine}{3}
+    4 & 3 & 2
+  \end{MemoryLine}
+
+  \hyperref[def:endianness/little]{Little-endian} ordering, on the other hand, would encode the same number as
+  \begin{MemoryLine}{3}
+    2 & 3 & 4
+  \end{MemoryLine}
+
+  At first little-endianness seems ridiculous, but it allows certain algorithmic patterns that big-endianness does not. Some of them are discussed in \cite{SESE:little_endianness}.
+
+  For example, consider a long memory line with segments of cells, each segment having the same endianness. The unique \( 8 \)-digit big-endian decimal encoding of \( 234 \) corresponds to the segment
+  \begin{MemoryLine}{12}
+    \anon & \anon & \MemoryLineArrow 0 & 0 & 0 & 0 & 0 & 4 & 3 & 2 & \anon & \anon
+  \end{MemoryLine}
+
+  We have denoted the beginning of the segment with an arrow pointer. Clearly \( 234 \) can be encoded via smaller \( 4 \)-digit segments.
+
+  If we depend on reading the memory line sequentially, we need to scan the entire segment to determine the least significant digit. For algorithms that depend on reading the least significant bit first, like \fullref{alg:addition_with_carrying} or even the evenness check \fullref{thm:nonnegative_integer_binary_expansion_parity}, this requires scanning the whole segment and then possibly going backwards.
+
+  To convert the \( 8 \)-digit segment above to a \( 4 \)-digit segment, one option is to move the pointer and discard the first \( 4 \) digits of the \( 8 \)-digit segment:
+  \begin{MemoryLine}{12}
+    \anon & \anon & \anon & \anon & \anon & \anon & \MemoryLineArrow 0 & 4 & 3 & 2 & \anon & \anon
+  \end{MemoryLine}
+
+  Another option is to move the least significant \( 4 \) digits and discard the rest:
+  \begin{MemoryLine}{12}
+    \anon & \anon & \MemoryLineArrow 0 & 4 & 3 & 2 & \anon & \anon & \anon & \anon & \anon & \anon
+  \end{MemoryLine}
+
+  With little-endian order, this operation is instead \enquote{free}. The original \( 8 \)-digit segment is
+  \begin{MemoryLine}{12}
+    \anon & \anon & \MemoryLineArrow 4 & 3 & 2 & 0 & 0 & 0 & 0 & 0 & \anon & \anon
+  \end{MemoryLine}
+
+  To obtain a \( 4 \)-digit segment, we simply discard the most significant digits:
+  \begin{MemoryLine}{12}
+    \anon & \anon & \MemoryLineArrow 4 & 3 & 2 & 0 & \anon & \anon & \anon & \anon & \anon & \anon
+  \end{MemoryLine}
+
+  This has impact on arithmetic, for example. Adding the above to the segment
+  \begin{MemoryLine}{12}
+    \anon & \anon & \MemoryLineArrow 6 & 6 & 7 & 9 & \anon & \anon & \anon & \anon & \anon & \anon
+  \end{MemoryLine}
+  results in the \( 5 \)-digit segment
+  \begin{MemoryLine}{12}
+    \anon & \anon & \MemoryLineArrow 0 & 0 & 0 & 0 & 1 & \anon & \anon & \anon & \anon & \anon
+  \end{MemoryLine}
+
+  We can start summing via \fullref{alg:addition_with_carrying} from the least significant bits. The algorithm states that the sum has at most one digit more than the summands. If we pre-allocate one spare digit to the right, we are guaranteed for the sum to fit, and we can trivially discard unused digits later. Such discarding is not possible with big-endian ordering.
+\end{example}
