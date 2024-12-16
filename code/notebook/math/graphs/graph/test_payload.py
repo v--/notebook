@@ -47,7 +47,7 @@ def test_remove_vertex_of_edge() -> None:
     assert not payload.has_edge({3, 4})
 
 
-def xtest_get_labeled_edges() -> None:
+def test_get_labeled_edges() -> None:
     payload = GraphPayload[int, set[int], None, str](default_edge_label='')
     payload.set_vertex(3)
     payload.set_vertex(4)
