@@ -1,9 +1,7 @@
 from dataclasses import dataclass
-import itertools
-
 from typing import NamedTuple
+
 from ...polynomials import monomial
-from ...polynomials.division import DivMod
 from ...polynomials.polynomial.int import IntPolynomial, const, x
 from ..divisibility import int_divmod
 from ..support import SignT, sgn

@@ -1,7 +1,6 @@
-from ...exceptions import UnreachableException
 from ..rings.modulo import BaseIntModulo
 from .exceptions import NotebookArithmeticError
-from .primes import are_coprime, is_prime_naive
+from .primes import is_prime_naive
 
 
 class DiscreteLogarithmError(NotebookArithmeticError):

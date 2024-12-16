@@ -290,7 +290,7 @@ def test_parse_101016_jentcs200409017_special_numbering(doi: str = '10.1016/j.en
 
     assert entry == BibEntry(
         entry_type='article',
-        entry_name='Escardo2004SyntheticTopology',
+        entry_name='Escardó2004SyntheticTopology',
         title='Synthetic Topology',
         publisher='Elsevier BV',
         authors=[
@@ -491,7 +491,7 @@ def test_parse_101007_97836421282192_book(doi: str = '10.1007/978-3-642-66451-9'
 
     assert entry == BibEntry(
         entry_type='book',
-        entry_name='BerghLöfstrom1976InterpolationSpaces',
+        entry_name='BerghLöfström1976InterpolationSpaces',
         title='Interpolation Spaces',
         subtitle='An Introduction',
         publisher='Springer Berlin Heidelberg',

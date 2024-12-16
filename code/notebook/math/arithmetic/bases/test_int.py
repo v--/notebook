@@ -1,7 +1,7 @@
 from ....support.pytest import pytest_parametrize_kwargs
 from ...polynomials.polynomial.int import IntPolynomial, const, x, zero
-from ..support import sgn
 from ..divisibility import quot, rem
+from ..support import sgn
 from .int import (
     IntRadixExpansion,
     add_with_carrying,
