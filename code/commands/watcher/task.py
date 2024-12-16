@@ -1,5 +1,4 @@
 import abc
-from collections.abc import Mapping
 from typing import TYPE_CHECKING
 
 import loguru
