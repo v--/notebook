@@ -1,7 +1,5 @@
 unitsize(1.3cm);
 
-from notebook access PointLattice;
-
 pair o = (0, 0);
 pair u = (1, 0) / 2;
 pair v = (1, -sqrt(3)) / 4;
