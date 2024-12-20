@@ -1,0 +1,572 @@
+\section{Binomial coefficients}\label{sec:binomial_coefficients}
+
+We present here several numeric functions that are extensively used across mathematics. Motivation is provided in \fullref{sec:enumerative_combinatorics}.
+
+\paragraph{Factorial}
+
+\begin{definition}\label{def:factorial}\mcite[46]{Knuth1997ArtVol1}
+  We define the \term[bg=факториел (\cite[129]{Тагамлицки1971Диф}), ru=факториал (\cite[145]{АлександровМаркушевичХинчин1952ЭнциклопедияТом3})]{factorial} of a \hyperref[def:integer_signum]{nonnegative integer} \( n \) recursively as follows:
+  \begin{equation}\label{eq:def:factorial}
+    n! \coloneqq \begin{cases}
+      1,                &n = 0, \\
+      (n - 1)! \cdot n, &n > 0.
+    \end{cases}
+  \end{equation}
+\end{definition}
+\begin{comments}
+  \item For \( n > 0 \), this is simply the product of all smaller positive integers. The base case \( n = 0 \) is justified by \fullref{thm:symmetric_group_cardinality}.
+\end{comments}
+
+\begin{theorem}[Stirling's factorial approximation]\label{thm:stirlings_factorial_approximation}
+  For the factorial function we have
+  \begin{equation*}
+    n! = \sqrt{2 \pi n} \cdot \parens*{ \frac n e }^n \cdot e^{\mu(n)},
+  \end{equation*}
+  where \( \mu \), defined by \eqref{eq:thm:stirlings_gamma_approximation/mu}, satisfies
+  \begin{equation*}
+    0 < \mu(n) < \frac 1 {12n}.
+  \end{equation*}
+\end{theorem}
+\begin{proof}
+  Follows from \fullref{thm:stirlings_gamma_approximation}.
+\end{proof}
+
+\paragraph{Binomial coefficients}
+
+\begin{definition}\label{def:binomial_coefficient}\mimprovised
+  Fix a ring element \( \alpha \) and a nonnegative integer \( k \). We define their \term[ru=биномиальный коеффициент (\cite[100]{БелоусовТкачёв2004ДискретнаяМатематика}), en=binomial coefficient (\cite[53]{Knuth1997ArtVol1})]{binomial coefficient} as
+  \begin{equation}\label{eq:def:binomial_coefficient}
+    \binom \alpha k \coloneqq \prod_{m=0}^{k - 1} \frac {\alpha - m} {k - m}.
+  \end{equation}
+
+  \begin{paracol}{2}
+    \begin{leftcolumn}
+      Empty products evaluate to \( 1 \), hence
+      \begin{equation}\label{eq:def:binomial_coefficient/zero}
+        \binom \alpha 0 = 1
+      \end{equation}
+    \end{leftcolumn}
+
+    \begin{rightcolumn}
+      Another trivial case is
+      \begin{equation}\label{eq:def:binomial_coefficient/one}
+        \binom \alpha 1 = \alpha
+      \end{equation}
+    \end{rightcolumn}
+  \end{paracol}
+
+  Instead of an abstract ring element \( \alpha \), we will almost exclusively consider a nonnegative integer \( n \). In fact, we will refer to the general case as a \term{generalized binomial coefficient}.
+
+  As we will show in \fullref{thm:binomial_coefficient_is_integer}, the binomial coefficient for a nonnegative integer is itself a nonnegative integer; thus, it is well-defined over any semiring.
+
+  When \( \alpha \) is a negative integer \( -n \), we refer to the \term{negative binomial coefficient}. As we will show in \fullref{thm:negative_binomial_coefficient}, negative binomial coefficients can be expressed via nonnegative coefficients, and are sometimes also well-defined over semirings.
+\end{definition}
+\begin{comments}
+  \item We base our definition on \cite[53]{Knuth1997ArtVol1}, where Knuth considers \( \alpha \) to be an arbitrary real number. We will need to use complex numbers in \fullref{thm:binomial_series}.
+
+  \item Binomial coefficients notably arise when counting the number of \hyperref[def:combinatorial_combination]{combinatorial combinations}, that is, subsets of cardinality \( k \) of a set of cardinality \( n \). This is discussed in \fullref{thm:combinatorial_combination_count}. For this reason, they are sometimes denoted using variants of the letter \enquote{C}, for example \( C_k^n \). \incite[432]{Rosen2019DiscreteMathematics} and \incite[100]{БелоусовТкачёв2004ДискретнаяМатематика} use such notation in addition to \( \binom n k \) when they want to distinguish between \enquote{the number of combinations} and \eqref{eq:def:binomial_coefficient}.
+  .
+
+  \item The name \enquote{binomial coefficient} comes from \fullref{thm:binomial_theorem}, where they represent the number of times the same monomial occurs when using distributivity to expand the binomial power \( (X + Y)^n \).
+\end{comments}
+
+\begin{proposition}\label{thm:def:binomial_coefficient}
+  \hyperref[def:binomial_coefficient]{Binomial coefficients} have the following basic properties:
+  \begin{thmenum}
+    \thmitem{thm:def:binomial_coefficient/plus_one}
+    \begin{equation}\label{eq:thm:def:binomial_coefficient/plus_one}
+      \binom {\alpha + 1} {k + 1} = \frac \alpha k \cdot \binom \alpha k.
+    \end{equation}
+
+    \thmitem{thm:def:binomial_coefficient/negative}
+    \begin{equation}\label{eq:thm:def:binomial_coefficient/negative}
+      \binom {-\alpha} k = (-1)^k \cdot \binom {\alpha + k - 1} k.
+    \end{equation}
+
+    \thmitem{thm:def:binomial_coefficient/factorials}
+    \begin{equation}\label{eq:thm:def:binomial_coefficient/factorials}
+      \binom n k = \begin{dcases}
+        \frac {n!} {k!(n-k)!}, &k \leq n, \\
+        0,                     &k > n.
+      \end{dcases}
+    \end{equation}
+
+    \thmitem{thm:def:binomial_coefficient/symmetry} If \( k \leq n \), we have
+    \begin{equation}\label{eq:thm:def:binomial_coefficient/symmetry}
+      \binom n k = \binom n {n - k}.
+    \end{equation}
+  \end{thmenum}
+\end{proposition}
+\begin{comments}
+  \item In particular, negative binomial coefficients can be expressed via positive coefficients.
+\end{comments}
+\begin{proof}
+  \SubProofOf{thm:def:binomial_coefficient/plus_one}
+  \begin{equation*}
+    \binom {\alpha + 1} {k + 1}
+    =
+    \prod_{m=0}^k \frac {\alpha + 1 - m} {k + 1 - m}.
+    =
+    \frac {\alpha + 1} {k + 1} \cdot \prod_{m=1}^k \frac {\alpha + 1 - m} {k + 1 - m}.
+    =
+    \frac {\alpha + 1} {k + 1} \cdot \binom \alpha k.
+  \end{equation*}
+
+  \SubProofOf{thm:def:binomial_coefficient/negative} Due to commutativity of multiplication, we have
+  \begin{equation*}
+    \prod_{m=0}^{k - 1} (\alpha + m)
+    =
+    \prod_{m=0}^{k - 1} (\alpha + k - 1 - m).
+  \end{equation*}
+
+  Then
+  \begin{equation*}
+    \binom {-\alpha} k
+    =
+    \prod_{m=0}^{k - 1} \frac {-\alpha - m} {k - m}
+    =
+    (-1)^k \cdot \prod_{m=0}^{k - 1} \frac {\alpha + m} {k - m}
+    =
+    (-1)^k \cdot \binom {\alpha + k - 1} k.
+  \end{equation*}
+
+  \SubProofOf{thm:def:binomial_coefficient/factorials} If \( k \leq n \), then \( n - m \) is a positive integer for every \( m = 0, \ldots, k - 1 \), thus
+  \begin{equation*}
+    \binom n k
+    =
+    \prod_{m=0}^{k - 1} \frac {n - m} {k - m}
+    =
+    \parens[\Bigg]{ \prod_{m=0}^{k - 1} (n - m) } \cdot \parens[\Bigg]{ \prod_{m=0}^{k - 1} \frac 1 {k - m} }
+    =
+    \parens[\Bigg]{ \frac {n!} {(n - k)!} } \cdot \frac 1 {k!}.
+  \end{equation*}
+
+  If \( k > n \), then
+  \begin{equation*}
+    \binom n k
+    =
+    \prod_{m=0}^{k - 1} \frac {n - m} {k - m}
+    =
+    \frac {n - n} {k - n} \cdot \parens[\Bigg]{ \prod_{m \neq n}^{k - 1} \frac {n - m} {k - m} }
+    =
+    0.
+  \end{equation*}
+
+  \SubProofOf{thm:def:binomial_coefficient/symmetry} Since \( k \) is nonnegative, we can add \( n \) to both sides of \( -k \leq 0 \) to conclude that \( n - k \leq n \). Then, since \( k \leq n \), \( n - k \) is nonnegative, and \fullref{thm:def:binomial_coefficient/factorials} implies that
+  \begin{equation*}
+    \binom n {n - k} = \frac {n!} {k!(n - k)!} = \binom n k.
+  \end{equation*}
+\end{proof}
+
+\begin{theorem}[Pascal's binomial recurrence]\label{thm:pascals_binomial_recurrence}
+  The \hyperref[def:binomial_coefficient]{binomial coefficient} satisfy the following recurrence:
+  \begin{equation}\label{eq:thm:pascals_binomial_recurrence}
+    \binom {n + 1} {k + 1} = \binom n {k + 1} + \binom n k.
+  \end{equation}
+\end{theorem}
+\begin{comments}
+  \item \incite[thm. 6.4.2]{Rosen2019DiscreteMathematics} calls this recurrence \enquote{Pascal's identity} after Pascal because of its relation to \hyperref[con:pascals_triangle]{Pascal's triangle}. \incite[56]{Knuth1997ArtVol1} calls it the \enquote{addition formula for binomial coefficients}.
+
+  \item This recurrence is useful for inductive proofs on \( n \).
+\end{comments}
+\begin{proof}
+  We will use the representation \fullref{thm:def:binomial_coefficient/factorials}.
+
+  \SubProof{Proof when \( k < n \)} We have
+  \begin{balign*}
+    \binom n {k + 1} + \binom n k
+    &=
+    \frac {n!} {(k + 1)! (n - k - 1)!} + \frac {n!} {k! (n - k)!}
+    = \\ &=
+    \frac {n!} {k! (n - k - 1)!} \bracks*{ \frac 1 {k + 1} + \frac 1 {n - k} }
+    = \\ &=
+    \frac {n!} {k! (n - k - 1)!} \frac {n + 1} {(k + 1)(n - k)}
+    = \\ &=
+    \frac {(n + 1)!} {(k + 1)! (n - k)!}
+    = \\ &=
+    \binom {n + 1} {k + 1}.
+  \end{balign*}
+
+  \SubProof{Proof when \( k = n \)} In this case
+  \begin{equation*}
+    \binom {n + 1} {k + 1}
+    =
+    \binom {n + 1} {n + 1}
+    \reloset {\eqref{eq:def:binomial_coefficient/zero}} =
+    1
+  \end{equation*}
+  and
+  \begin{equation*}
+    \binom n k = \binom n n = 1,
+  \end{equation*}
+  however
+  \begin{equation*}
+    \binom n {k + 1} = \binom n {n + 1} = 0.
+  \end{equation*}
+
+  We again conclude that \eqref{eq:thm:pascals_binomial_recurrence} holds.
+
+  \SubProof{Proof when \( k > n \)} In this case
+  \begin{equation*}
+    \binom {n + 1} {k + 1} = \binom n {k + 1} = \binom n {k + 1} = 0.
+  \end{equation*}
+\end{proof}
+
+\begin{corollary}\label{thm:binomial_coefficient_is_integer}
+  The \hyperref[def:binomial_coefficient]{binomial coefficient} with nonnegative integer arguments is itself a nonnegative integer.
+\end{corollary}
+\begin{proof}
+  We can use induction on \( n \) to show that \( \binom n k \) is a nonnegative integer for any nonnegative integer \( k \).
+  \begin{itemize}
+    \item In the case \( n = 0 \), by \fullref{thm:def:binomial_coefficient/factorials},
+    \begin{equation*}
+      \binom 0 k = \begin{cases}
+        1, k = 0, \\
+        0, k > 0.
+      \end{cases}
+    \end{equation*}
+
+    \item In the case \( n > 0 \), either \( k = 0 \) and
+    \begin{equation*}
+      \binom n 0 \reloset {\eqref{eq:def:binomial_coefficient/zero}} = 1
+    \end{equation*}
+    or \( k > 0 \) and \fullref{thm:pascals_binomial_recurrence} implies that
+    \begin{equation*}
+      \binom n k
+      =
+      \binom {n - 1} k + \binom {n - 1} {k - 1}.
+    \end{equation*}
+
+    By the inductive hypothesis, both summands are nonnegative integers, hence so is their sum.
+  \end{itemize}
+\end{proof}
+
+\paragraph{Binomial theorem}
+
+\begin{theorem}[Newton's binomial theorem]\label{thm:binomial_theorem}
+  In any \hyperref[def:semiring/commutative]{commutative semiring}, we have the polynomial factorization
+  \begin{equation}\label{eq:thm:binomial_theorem}
+    (X + Y)^n = \sum_{k=0}^n \binom n k X^k Y^{n-k}.
+  \end{equation}
+\end{theorem}
+\begin{comments}
+  \item This theorem generalizes to \fullref{thm:multinomial_theorem}.
+\end{comments}
+\begin{proof}
+  We will use induction on \( n \). The case \( n = 0 \) is trivial, so suppose that the theorem holds for \( n \).
+
+  Then the inductive hypothesis implies that
+  \begin{equation*}
+    Y(X + Y)^n
+    =
+    \sum_{k=0}^n \binom n k X^k Y^{n-(k-1)}
+    =
+    Y^{n+1} + \sum_{k=0}^{n-1} \binom n {k+1} X^{k+1} Y^{n-k}.
+  \end{equation*}
+
+  \Fullref{thm:def:binomial_coefficient/factorials} implies that,for \( k = n \), we have \( \binom n {k+1} = 0 \), thus
+  \begin{equation*}
+    Y(X + Y)^n
+    =
+    Y^{n+1} + \sum_{k=0}^n \binom n {k+1} X^{k+1} Y^{n-k}.
+  \end{equation*}
+
+  Again, by the inductive hypothesis, we have
+  \begin{equation*}
+    X(X + Y)^n = \sum_{k=0}^n \binom n k X^{k+1} Y^{n-k}
+  \end{equation*}
+
+  We can thus use \fullref{thm:pascals_binomial_recurrence} to conclude that
+  \begin{balign*}
+    (X + Y)^{n+1}
+    &=
+    X(X + Y)^n + Y(X + Y)^n
+    = \\ &=
+    \sum_{k=0}^n \bracks[\Big]{ \binom n k + \binom n {k+1} } X^{k+1} Y^{n-k} + Y^{n+1}
+    = \\ &=
+    \sum_{k=0}^n \binom {n+1} {k+1} X^{k+1} Y^{n-k} + Y^{n+1}
+    = \\ &=
+    \sum_{k=0}^{n+1} \binom {n+1} k X^k Y^{n+1-k}.
+  \end{balign*}
+\end{proof}
+
+\begin{corollary}[Binomial theorem for positive characteristic]\label{thm:binomial_theorem_positive_characteristic}
+  In a \hyperref[def:ring]{ring} of \hyperref[def:ring_characteristic]{characteristic} \( p \), if \( q = p^n \) for any nonnegative integer \( n \), \fullref{thm:binomial_theorem} reduces to
+  \begin{equation}\label{eq:thm:binomial_theorem_positive_characteristic}
+    (X + Y)^q = X^q + Y^q.
+  \end{equation}
+\end{corollary}
+\begin{comments}
+  \item A memorable name for this theorem is \enquote{Freshman's dream}, based on a poem with subtitle \enquote{The Freshman's Dream}, published by \incite{Gleason1938FreshmansDream}. The following two verses seem most relevant:
+  \begin{displayquote}
+    Remove the brackets, radicals, \\
+    And do so with discretion.
+  \end{displayquote}
+\end{comments}
+\begin{proof}
+  If \( k > 0 \), \fullref{thm:def:binomial_coefficient/plus_one} implies that
+  \begin{equation*}
+    \binom p k = \frac p k \cdot \binom {p - 1} {k - 1}.
+  \end{equation*}
+
+  If \( k < p \), since \( p \) is prime, \( k \) does not divide \( p \). Furthermore, \( k - 1 - m \) does not divide \( p \) for any \( m = 0, \ldots, k - 2 \).
+
+  Therefore, if \( 0 < k < p \), \( p \) divides \( \binom p k \). \Fullref{thm:binomial_theorem} then implies that
+  \begin{equation}\label{eq:thm:binomial_theorem_positive_characteristic/proof/prime}
+    (X + Y)^p = X^p + Y^p.
+  \end{equation}
+
+  We can now use induction on \( n \) to show \eqref{eq:thm:binomial_theorem_positive_characteristic}. The case \( n = 0 \) is clear, and for \( n > 1 \) we have
+  \begin{equation*}
+    (X + Y)^q
+    =
+    \parens[\Big]{ (X + Y)^{p^{n-1}} }^p
+    \reloset {\T{ind.}} =
+    (X^{p^{n-1}} + Y^{p^{n-1}})^p
+    \reloset {\eqref{eq:thm:binomial_theorem_positive_characteristic/proof/prime}} =
+    X^q + Y^q.
+  \end{equation*}
+\end{proof}
+
+\begin{theorem}[Binomial theorem for complex exponent]\label{thm:binomial_theorem_for_complex_exponent}\mcite[302]{Маркушевич1967АналитическиеФункцииТом1}
+  For \hyperref[def:complex_numbers]{complex numbers} \( z \) and \( \alpha \), where \( \abs{z} < 1 \), we have
+  \begin{equation}\label{eq:thm:binomial_theorem_for_complex_exponent}
+    (z + 1)^\alpha = \sum_{k=0}^\infty \binom \alpha k z^k.
+  \end{equation}
+\end{theorem}
+\begin{comments}
+  \item We can make \eqref{eq:thm:binomial_theorem_for_complex_exponent} look closer to \fullref{thm:binomial_theorem} by multiplying with \( w^\alpha \) for some complex number \( w \):
+  \begin{equation*}
+    ({wz} + w)^\alpha = \sum_{k=0}^\infty \binom \alpha k (wz)^k w^{\alpha - k}.
+  \end{equation*}
+\end{comments}
+\begin{proof}
+  We will show by induction on \( k \) that the \( k \)-th derivative of \( (z + 1)^\alpha \) is
+  \begin{equation}\label{eq:thm:binomial_theorem_for_complex_exponent/proof/derivative}
+    \prod_{m=0}^{k-1} (\alpha - k) \cdot (z + 1)^{\alpha - k}.
+  \end{equation}
+
+  Then \eqref{eq:thm:binomial_theorem_for_complex_exponent} will follow since as the Taylor series of \( (z + 1)^\alpha \).
+
+  The base case \( k = 0 \) for \eqref{eq:thm:binomial_theorem_for_complex_exponent/proof/derivative} is vacuous, so suppose that the inductive hypothesis holds for \( k \).
+
+  Note that
+  \begin{equation*}
+    (z + 1)^{\alpha - k} = e^{(\alpha - k) \cdot \ln(z + 1)}
+  \end{equation*}
+  and differentiating gives us
+  \begin{equation*}
+    (\alpha - k) \cdot \underbrace{\frac 1 {z + 1}}_{(z + 1)^{-1}} \cdot e^{(\alpha - k) \cdot \ln(z + 1)}
+    =
+    (\alpha - k) \cdot e^{(\alpha - (k + 1)) \cdot \ln(z + 1)}.
+  \end{equation*}
+
+  Then \eqref{eq:thm:binomial_theorem_for_complex_exponent/proof/derivative} follows.
+\end{proof}
+
+\begin{theorem}[Vandermonde convolution]\label{thm:vandermonde_convolution}\mcite[59]{Knuth1997ArtVol1}
+  \hyperref[def:binomial_coefficient]{Binomial coefficients} satisfy
+  \begin{equation}\label{eq:thm:vandermonde_convolution}
+    \binom {n + m} k = \sum_{i+j=k} \binom n i \cdot \binom m j.
+  \end{equation}
+\end{theorem}
+\begin{proof}
+  Consider the polynomial \( X + 1 \) over any commutative semiring.
+
+  By \fullref{thm:binomial_theorem}, we have
+  \begin{equation*}
+    (X + 1)^{n+m} = \sum_{k=0}^{n+m} \binom {n+m} k X^k 1^{n+m-k}.
+  \end{equation*}
+
+  Using the \hyperref[def:semigroup_algebra]{convolution product} instead, we obtain
+  \begin{equation*}
+    (X + 1)^n \cdot (X + 1)^m = \sum_{k=0}^{n+m} \parens*{ \sum_{i+j=k} \binom n i \cdot \binom m j } X^k.
+  \end{equation*}
+
+  Since the two are equal, we obtain \eqref{eq:thm:vandermonde_convolution}.
+\end{proof}
+
+\paragraph{Pascal's triangle}
+
+\begin{concept}\label{con:pascals_triangle}\mcite[fig. 6.4.1]{Rosen2019DiscreteMathematics}
+  \term[ru=треугольник Паскаля (\cite[\S 5.3.4]{Новиков2013ДискретнаяМатематика})]{Pascal's triangle} is a colloquial name for schematic \hyperref[def:triangle]{triangles} and \hyperref[def:triangular_point_configuration]{triangular point configurations} a-la \cref{fig:con:pascals_triangle}, in which every number is the sum of the two numbers above, with ones on the boundary.
+
+  \begin{figure}[!ht]
+    \centering
+    \includegraphics[page=1]{output/con__pascals_triangle}
+    \caption{\hyperref[con:pascals_triangle]{Pascal's triangle}.}\label{fig:con:pascals_triangle}
+  \end{figure}
+
+  By \enquote{schematic triangle} we mean that every object showing the same recurrence can again be called \enquote{Pascal's triangle}. For example, \incite[54]{Knuth1997ArtVol1} and \incite[179]{Яблонский2003ДискретнаяМатематика} use the term to refer to \hyperref[def:pascal_matrix/lower]{lower triangular Pascal matrices}.
+\end{concept}
+
+\begin{definition}\label{def:pascal_matrix}\mcite[1]{EdelmanStrang2018PascalMatrices}
+  We will define three families of square matrices, which we will collectively call \term{Pascal matrices}.
+  \begin{thmenum}
+    \thmitem{def:pascal_matrix/lower} The \hyperref[def:triangular_matrix]{lower triangular} matrix \( L_n = \seq{ l_{i,j} }_{i,j=1}^n \), where
+    \begin{equation*}
+      l_{i,j} \coloneqq \begin{cases}
+        0,                       &j > i, \\
+        1,                       &j = 1, \\
+        1,                       &j = i, \\
+        l_{i-1,j} + l_{i-1,j-1}, &1 < j < i.
+      \end{cases}
+    \end{equation*}
+
+    \thmitem{def:pascal_matrix/upper} Its \hyperref[def:transpose_matrix]{transpose}, the \hyperref[def:triangular_matrix]{upper triangular} matrix \( U_n = \seq{ u_{i,j} }_{i,j=1}^n \).
+
+    \thmitem{def:pascal_matrix/symmetric} The symmetric matrix \( S_n = \seq{ s_{i,j} }_{i,j=1}^n \), where
+    \begin{equation*}
+      s_{i,j} \coloneqq \begin{cases}
+        1,                     &i = 1, \\
+        1,                     &j = 1, \\
+        s_{i-1,j} + s_{i,j-1}, &i > 1 \T{and} j > 1.
+      \end{cases}
+    \end{equation*}
+  \end{thmenum}
+\end{definition}
+\begin{comments}
+  \item These matrices in \identifier{combinatorics.binomial} in \cite{notebook:code}.
+\end{comments}
+
+\begin{example}\label{ex:con:pascals_triangle}
+  We give examples of \hyperref[def:pascal_matrix]{Pascal matrices}:
+  \begin{equation*}
+    L_7
+    =
+    \begin{pmatrix}
+      1        &          &           &        &        &      &   \\
+      \fbox{1} & \fbox{1} &           &        &        &      &   \\
+      1        & \fbox{2} & 1         &        &        &      &   \\
+      1        & 3        & 3         & 1      &        &      &   \\
+      1        & 4        & 6         & 4      & 1      &      &   \\
+      1        & \fbox{5} & \fbox{10} & 10     & 5      & 1    &   \\
+      1        & 6        & \fbox{15} & 20     & 15     & 6    & 1
+    \end{pmatrix}
+  \end{equation*}
+  \begin{equation*}
+    U_7
+    =
+    \begin{pmatrix}
+      1        & \fbox{1} & 1         & 1      & 1      & 1         & 1         \\
+               & \fbox{1} & \fbox{2}  & 3      & 4      & \fbox{5}  & 6         \\
+               &          & 1         & 3      & 6      & \fbox{10} & \fbox{15} \\
+               &          &           & 1      & 4      & 10        & 20        \\
+               &          &           &        & 1      & 5         & 15        \\
+               &          &           &        &        & 1         & 6         \\
+               &          &           &        &        &           & 1
+    \end{pmatrix}
+  \end{equation*}
+  \begin{equation*}
+    S_7
+    =
+    \begin{pmatrix}
+      1        & \fbox{1} & 1         & 1      & 1      & 1      & 1   \\
+      \fbox{1} & \fbox{2} & 3         & 4      & 5      & 6      & 7   \\
+      1        & 3        & 6         & 10     & 15     & 21     & 28  \\
+      1        & 4        & \fbox{10} & 20     & 35     & 56     & 84  \\
+      1        & \fbox{5} & \fbox{15} & 35     & 70     & 126    & 210 \\
+      1        & 6        & 21        & 56     & 126    & 252    & 462 \\
+      1        & 7        & 28        & 84     & 210    & 462    & 924
+    \end{pmatrix}
+  \end{equation*}
+\end{example}
+
+\begin{proposition}\label{thm:pascal_matrix_binomial}
+  We have the following relation between \hyperref[def:binomial_coefficient]{Binomial coefficients} and elements of \hyperref[def:pascal_matrix]{Pascal matrices}:
+  \begin{align*}
+    l_{i,j} &= \binom i j \thickspace\T{if}\thickspace i \leq j, \\
+    u_{i,j} &= \binom j i \thickspace\T{if}\thickspace i \geq j, \\
+    s_{i,j} &= \binom {i + j} j = \binom {i + j} i = \frac {(i + j)!} {i! j!}. \\
+  \end{align*}
+\end{proposition}
+\begin{proof}
+  Follows from \fullref{thm:pascals_binomial_recurrence}.
+\end{proof}
+
+\begin{proposition}\label{thm:pascal_matrix_product}
+  For \hyperref[def:pascal_matrix]{Pascal matrices}, we have \( S_n = L_n \cdot U_n \).
+\end{proposition}
+\begin{proof}
+  The \( (i, j) \)-th entry of \( L_n \cdot U_n \) is
+  \begin{equation*}
+    \sum_{k=1}^n l_{i,k} \cdot u_{k,j}
+    =
+    \sum_{k=1}^n l_{i,k} \cdot l_{j,k}
+    =
+    \sum_{k=1}^{\min\set{ i, j }} \binom i k \cdot \binom j k
+    \reloset {\eqref{eq:thm:vandermonde_convolution}} =
+    \binom {i + j} i
+    =
+    s_{i,j}.
+  \end{equation*}
+\end{proof}
+
+\paragraph{Multinomial coefficients}
+
+\begin{definition}\label{def:multinomial_coefficient}\mcite[65]{Knuth1997ArtVol1}
+  As a generalization of \hyperref[def:binomial_coefficient]{binomial coefficients}, for nonnegative integers \( k_1, \ldots, k_m \) summing to \( n \), we define the \term[ru=мультиномный коэффициент (\cite[\S 5.3.7]{Новиков2013ДискретнаяМатематика})]{multinomial coefficient}
+  \begin{equation}\label{eq:def:multinomial_coefficient}
+    \binom n {k_1, \ldots, k_m} \coloneqq \frac {n!} {k_1! \cdots k_m!}.
+  \end{equation}
+\end{definition}
+
+\begin{proposition}\label{thm:def:multinomial_coefficient}
+  \hyperref[def:multinomial_coefficient]{Multinomial coefficients} have the following basic properties:
+  \begin{thmenum}
+    \thmitem{thm:def:multinomial_coefficient/reduction} When \( m > 1 \), for any \( i = 1, \ldots, m \) we have
+    \begin{equation}\label{eq:thm:def:multinomial_coefficient/reduction}
+      \binom n {k_1, \ldots, k_m} = \binom n {k_i} \cdot \binom {n - k_i} {k_1, \ldots, k_{i-1}, k_{i+1}, \ldots, k_m}.
+    \end{equation}
+  \end{thmenum}
+\end{proposition}
+\begin{proof}
+  \SubProofOf{thm:def:multinomial_coefficient/reduction}
+  \begin{equation*}
+    \binom n {k_i} \cdot \binom {n - k_i} {k_1, \ldots, k_{i-1}, k_{i+1}, \ldots, k_m}
+    =
+    \frac {n!} {k_i! \cancel{(n - k_i)!}} \cdot \frac {\cancel{(n - k_i)!}} {k_1, \ldots, k_{i-1}, k_{i+1}, \ldots, k_m}
+    =
+    \binom n {k_1,\ldots,k_m}.
+  \end{equation*}
+\end{proof}
+
+\begin{theorem}[Multinomial theorem]\label{thm:multinomial_theorem}
+  \Fullref{thm:binomial_theorem} generalizes via \hyperref[def:multinomial_coefficient]{multinomial coefficients}:
+  \begin{equation}\label{eq:thm:multinomial_theorem}
+    (X_1 + \cdots + X_m)^n = \sum_{k_1 + \cdots + k_m = n} \binom n {k_1,\ldots,k_m} X_1^{k_1} \cdots X_m^{k_m}.
+  \end{equation}
+\end{theorem}
+\begin{proof}
+  We will use induction on \( m \). The case \( m = 1 \) is trivial. Suppose that the inductive hypothesis holds for \( m - 1 \).
+
+  \Fullref{thm:binomial_theorem} implies that
+  \begin{equation*}
+    (X_1 + \cdots + X_{m-1} + X_m)^n
+    =
+    \sum_{k_m=0}^n \binom n {k_m} (X_1 + \cdots + X_{m-1})^{n - k_m} X_m^{k_m}
+  \end{equation*}
+
+  By the inductive hypothesis,
+  \begin{equation*}
+    (X_1 + \cdots + X_{m-1})^{n - k_m}
+    =
+    \sum_{k_1 + \cdots + k_{m-1} = n - k_m} \binom {n - k_m} {k_1,\ldots,k_{m-1}} X_1^{k_1} \cdots X_{m-1}^{k_{m-1}}.
+  \end{equation*}
+
+  For the coefficients, we have
+  \begin{equation*}
+    \binom n {k_m} \cdot \binom {n - k_m} {k_1,\ldots,k_{m-1}}
+    =
+    \frac {n!} {k_m! \cancel{(n - k_m)!}} \cdot \frac {\cancel{(n - k_m)!}} {k_1! \cdots k_{m-1}!}
+    =
+    \binom n {k_1,\ldots,k_m}.
+  \end{equation*}
+
+  Therefore,
+  \begin{equation*}
+    (X_1 + \cdots + X_{m-1} + X_m)^n
+    =
+    \sum_{k_m=0}^n \thickspace \sum_{k_1 + \cdots + k_{m-1} = n - k_m} \binom n {k_1,\ldots,k_m} X_1^{k_1} \cdots X_{m-1}^{k_{m-1}} X_m^{k_m}.
+  \end{equation*}
+\end{proof}
