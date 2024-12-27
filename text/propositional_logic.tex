@@ -68,17 +68,56 @@ There are different approaches to formalizing the syntax of propositional logic.
 \begin{comments}
   \item Various authors refer to the \enquote{propositional language} --- for example \incite[13]{Hinman2005Logic} --- in relation to various syntactic constructions. These authors do not formally define this language, however. Since we use the mechanism of \hyperref[def:formal_language]{formal languages}, we prefer being more concrete about which syntactic notions we refer to.
 
-  \item We implicitly associate with each propositional formula an \hyperref[con:abstract_syntax_tree]{abstract syntax tree} --- see \fullref{def:propositional_formula_ast}. The grammar of propositional formulas is unambiguous as shown via \fullref{thm:propositional_formulas_are_unambiguous}, which makes it possible to perform proofs via \fullref{thm:induction_on_rooted_trees}.
+  \item We implicitly associate with each propositional formula an \hyperref[con:abstract_syntax_tree]{abstract syntax tree} --- see \fullref{def:propositional_formula_ast}. The grammar of propositional formulas is unambiguous as shown via \fullref{thm:propositional_formula_grammar/unambiguous}, which makes it possible to perform proofs via \fullref{thm:induction_on_rooted_trees}.
 
   \item If the root of the tree is a conjunction, we refer to the formula itself as a conjunction, and similarly for other propositional connectives.
 \end{comments}
 
-\begin{proposition}\label{thm:propositional_formulas_are_unambiguous}
-  The \hyperref[def:formal_grammar]{grammar} of \hyperref[def:propositional_syntax/formula]{propositional formulas} is \hyperref[def:grammar_ambiguity]{unambiguous}.
+\begin{proposition}\label{thm:propositional_formula_grammar}
+  The \hyperref[def:formal_grammar]{grammar} of \hyperref[def:propositional_syntax/formula]{propositional formulas} has the following basic properties:
+  \begin{thmenum}
+    \thmitem{thm:propositional_formula_grammar/unambiguous} It is \hyperref[def:grammar_ambiguity]{unambiguous}.
+
+    \thmitem{thm:propositional_formula_grammar/balanced} The \hyperref[def:formal_grammar/language]{generated language} has \hyperref[def:paired_delimiters]{balanced parentheses}.
+
+    \thmitem{thm:propositional_formula_grammar/not_regular} The grammar is not \hyperref[def:formal_grammar/regular]{regular}.
+  \end{thmenum}
 \end{proposition}
 \begin{proof}
-  It is straightforward to adapt the proof from \fullref{ex:natural_number_arithmetic_grammar/unambiguous}.
+  \SubProofOf{thm:propositional_formula_grammar/unambiguous} The proof in \fullref{ex:natural_number_arithmetic_grammar/unambiguous} can be adapted straightforwardly.
+
+  \SubProofOf{thm:propositional_formula_grammar/balanced} The proof in \fullref{thm:dyck_language_balanced} can be adapted straightforwardly.
+
+  \SubProofOf{thm:propositional_formula_grammar/not_regular} Follows from \fullref{thm:propositional_formula_grammar/balanced} and \fullref{thm:paired_delimiters_not_regular}.
 \end{proof}
+
+\begin{remark}\label{rem:propositional_formula_parentheses}
+  We use several following \enquote{abuse-of-notation} conventions regarding parentheses. These are only notations shortcuts in the \hyperref[con:metalogic]{metalanguage} and the formulas themselves (as abstract mathematical objects) are still assumed to contain parentheses that help them avoid syntactic ambiguity.
+
+  \begin{thmenum}
+    \thmitem{rem:propositional_formula_parentheses/outermost} We may skip the outermost parentheses in formulas with top-level \hyperref[def:propositional_alphabet/connectives]{connectives}, e.g. we may write \( \varphi \synwedge \psi \) rather than \( (\varphi \synwedge \psi) \).
+
+    \thmitem{rem:propositional_formula_parentheses/associative} Because of the associativity of \( \synwedge \) and \( \synvee \), which is implied by \fullref{def:propositional_valuation/valuation_function} and \fullref{def:standard_boolean_functions}, we may skip the parentheses in chains like
+    \begin{equation*}
+      ( \ldots ((\varphi_1 \synwedge \varphi_2) \synwedge \varphi_3) \synwedge \ldots \synwedge \varphi_{n-1} ) \synwedge \varphi_n.
+    \end{equation*}
+    and instead write
+    \begin{equation*}
+      \varphi_1 \synwedge \varphi_2 \synwedge \ldots \synwedge \varphi_{n-1} \synwedge \varphi_n.
+    \end{equation*}
+
+    \thmitem{rem:propositional_formula_parentheses/additional} Although not formally necessary, for the sake of readability we may choose to add parentheses around certain formulas like
+    \begin{equation*}
+      \synneg \varphi \synvee \synneg \psi.
+    \end{equation*}
+    and instead write
+    \begin{equation*}
+      (\synneg \varphi) \synvee (\synneg \psi).
+    \end{equation*}
+
+    This latter convention is more useful for quantifiers in \hyperref[def:first_order_syntax/formula]{first-order formulas}.
+  \end{thmenum}
+\end{remark}
 
 \begin{definition}\label{def:conditional_formula}
   For a given \hyperref[def:propositional_syntax/formula]{conditional formula} \( \varphi \synimplies \psi \), we introduce the following terminology:
@@ -151,55 +190,6 @@ There are different approaches to formalizing the syntax of propositional logic.
   \end{thmenum}
 \end{example}
 
-\begin{proposition}\label{thm:propositional_formula_balanced_parentheses}
-  Propositional formulas have \hyperref[ex:thm:regular_pumping_lemma/balanced_parentheses]{balanced parentheses}, that is, for any formula there are as many left parentheses as there are right parentheses.
-\end{proposition}
-\begin{proof}
-  Denote by \( l_\varphi \) and \( r_\varphi \) the number of left and right parentheses in the formula \( \varphi \).
-
-  We will use \fullref{thm:induction_on_rooted_trees} on \( \varphi \) to prove that \( l_\varphi = r_\varphi \).
-  \begin{itemize}
-    \item If \( \varphi \) is a constant or variable, there are no parentheses, and \( l_\varphi = r_\varphi = 0 \).
-    \item If \( \varphi = \synneg \psi \) and if the inductive hypothesis holds for \( \psi \), then
-    \begin{equation*}
-      l_\varphi = l_\psi \reloset{\T{ind.}} = r_\psi = r_\varphi
-    \end{equation*}
-
-    \item If \( \varphi = (\psi \syncirc \theta) \) and if the hypothesis holds for \( \psi \) and \( \theta \), then
-    \begin{equation*}
-      l_\varphi = l_\psi + l_\theta + 1 \reloset{\T{ind.}} = r_\psi + r_\theta + 1 = r_\varphi.
-    \end{equation*}
-  \end{itemize}
-\end{proof}
-
-\begin{remark}\label{rem:propositional_formula_parentheses}
-  We use several following \enquote{abuse-of-notation} conventions regarding parentheses. These are only notations shortcuts in the \hyperref[con:metalogic]{metalanguage} and the formulas themselves (as abstract mathematical objects) are still assumed to contain parentheses that help them avoid syntactic ambiguity.
-
-  \begin{thmenum}
-    \thmitem{rem:propositional_formula_parentheses/outermost} We may skip the outermost parentheses in formulas with top-level \hyperref[def:propositional_alphabet/connectives]{connectives}, e.g. we may write \( \varphi \synwedge \psi \) rather than \( (\varphi \synwedge \psi) \).
-
-    \thmitem{rem:propositional_formula_parentheses/associative} Because of the associativity of \( \synwedge \) and \( \synvee \), which is implied by \fullref{def:propositional_valuation/valuation_function} and \fullref{def:standard_boolean_functions}, we may skip the parentheses in chains like
-    \begin{equation*}
-      ( \ldots ((\varphi_1 \synwedge \varphi_2) \synwedge \varphi_3) \synwedge \ldots \synwedge \varphi_{n-1} ) \synwedge \varphi_n.
-    \end{equation*}
-    and instead write
-    \begin{equation*}
-      \varphi_1 \synwedge \varphi_2 \synwedge \ldots \synwedge \varphi_{n-1} \synwedge \varphi_n.
-    \end{equation*}
-
-    \thmitem{rem:propositional_formula_parentheses/additional} Although not formally necessary, for the sake of readability we may choose to add parentheses around certain formulas like
-    \begin{equation*}
-      \synneg \varphi \synvee \synneg \psi.
-    \end{equation*}
-    and instead write
-    \begin{equation*}
-      (\synneg \varphi) \synvee (\synneg \psi).
-    \end{equation*}
-
-    This latter convention is more useful for quantifiers in \hyperref[def:first_order_syntax/formula]{first-order formulas}.
-  \end{thmenum}
-\end{remark}
-
 \paragraph{Subformulas}
 
 \begin{definition}\label{def:propositional_subformula}\mcite[8]{Smullyan1995FOL}
@@ -240,7 +230,7 @@ There are different approaches to formalizing the syntax of propositional logic.
       \item If \( \psi = \varphi \), then \fullref{thm:propositional_subformula/connective_self} holds.
       \item If \( \psi \) is a substring of \( \theta \), then \fullref{thm:propositional_subformula/connective_left} holds.
       \item If \( \psi \) is a substring of \( \chi \) but not of \( \theta \), then \fullref{thm:propositional_subformula/connective_right} holds.
-      \item If \( \psi = (\theta \syncirc \psi_\chi \), where \( \psi_\chi \) is a prefix of \( \chi \), then \( \psi \) has unbalanced parentheses, which contradicts \fullref{thm:propositional_formula_balanced_parentheses}, and thus \( \psi \) is not a formula.
+      \item If \( \psi = (\theta \syncirc \psi_\chi \), where \( \psi_\chi \) is a prefix of \( \chi \), then \( \psi \) has unbalanced parentheses, which contradicts \fullref{thm:propositional_formula_grammar/balanced}, and thus \( \psi \) is not a formula.
       \item Similarly, if \( \psi = \psi_\theta \syncirc \chi) \), where \( \psi_\theta \) is a suffix of \( \theta \), then again \( \psi \) has unbalanced parentheses.
       \item If \( \psi = \psi_\theta \syncirc \psi_\chi \), where \( \psi_\theta \) is a suffix of \( \theta \) and \( \psi_\chi \) is a prefix of \( \chi \), then \( \psi \) is again not a formula because it is not wrapped in parentheses.
     \end{itemize}

@@ -481,26 +481,108 @@
   This last tree has only 5 nodes, compared to the original tree \eqref{eq:con:abstract_syntax_tree/base} with 21 nodes. Yet, we can recover \eqref{eq:con:abstract_syntax_tree/base} from \eqref{eq:con:abstract_syntax_tree/final}.
 \end{concept}
 
-\begin{example}\label{ex:natural_number_arithmetic_grammar/induction}
-  We will show how to use \fullref{thm:induction_on_rooted_trees} in the context of the binary natural number grammar \eqref{eq:ex:natural_number_arithmetic_grammar/schema/shorthand} from \fullref{ex:natural_number_arithmetic_grammar/schema}.
+\paragraph{Paired delimiters}
 
-  We want to prove that an expression without ones \hyperref[con:evaluation]{evaluates} to zero.
+\begin{definition}\label{def:paired_delimiters}\mimprovised
+  Fix a \hyperref[def:formal_language/language]{formal language} \( \mscrL \) over the \hyperref[def:formal_language/alphabet]{alphabet} \( \mscrA \). Fix also symbols \( l \) and \( r \) in \( \mscrA \), which we will call \term{paired delimiters}. We call \( l \) and \( r \) the \term{left} and \term{right} delimiters, or, in analogy with parentheses and brackets, \term{opening} and \term{closing} delimiters.
+
+  We say that the delimiters \( l \) and \( r \) are \term{balanced} in the string \( w \) if it has an equal amount of occurrences of \( l \) and \( r \), and every prefix of \( w \) has at least as many occurrences of \( l \) as there are of \( r \).
+
+  If every string in \( \mscrL \) has balanced delimiters, we say that \( \mscrL \) itself has balanced delimiters.
+\end{definition}
+\begin{comments}
+  \item The term \enquote{paired delimiter} is based on \identifier{DeclarePairedDelimiter} command from the \identifier{mathtools} \LaTeX{} package. The command is used in this monograph to define convenience macros for different kinds of parentheses and brackets.
+
+  \item The condition for balanced delimiters is based on the discussion of \hyperref[def:dyck_language]{Dyck languages} by \incite[example 6.6.6]{Stanley2023EnumCombinatoricsVol2}.
+
+  \item It is not formally necessary for \( l \) and \( r \) to be distinct --- for example, \hyperref[def:absolute_value]{absolute values} and \hyperref[def:norm]{norms} have identical opening and closing delimiters.
+\end{comments}
+
+\begin{example}\label{ex:def:paired_delimiters}
+  We list examples of \hyperref[def:paired_delimiters]{paired delimiters}:
+  \begin{thmenum}
+    \thmitem{ex:def:paired_delimiters/none} Of course, if neither delimiter occurs in a word, it vacuously has balanced delimiters.
+
+    \thmitem{ex:def:paired_delimiters/anbn} Consider the language
+    \begin{equation*}
+      \mscrL \coloneqq \set{ a^n b^n \given n \geq 0 }
+    \end{equation*}
+    from \fullref{ex:def:formal_language/anbn}.
+
+    Regarded as delimiters, \( a \) and \( b \) are balanced in \( \mscrL \). Indeed, for every prefix \( p \) of \( a^n b^n \), there exists some \( m \leq n \) such that either \( p = a^m \) or \( p = a^n b^m \). In both cases \( p \) has at least as many occurrences of \( a \) as there are of \( b \).
+
+    \thmitem{ex:def:paired_delimiters/lambda} \hyperref[def:lambda_term]{\( \synlambda \)-terms} have balanced parentheses.
+
+    For example, in the term \( (\synx \synx) \), every nonempty prefix has one opening parenthesis, and only the entire word has a closing parenthesis. Thus, the word has balanced parentheses.
+
+    This is straightforward to verify in more complicated terms like
+    \begin{equation*}
+      \ref{eq:ex:def:lambda_term/combinator/big_omega} = ((\qabs \synx (\synx \synx)) (\qabs \synx (\synx \synx))).
+    \end{equation*}
+
+    \thmitem{ex:def:paired_delimiters/unbalanced} On the other hand, the word \( )( \) has unbalanced delimiters because the prefix \( ) \) has more closing than opening parentheses.
+  \end{thmenum}
+\end{example}
+
+\begin{proposition}\label{thm:paired_delimiters_not_regular}
+  If a formal language with \hi{distinct} \hyperref[def:paired_delimiters]{balanced delimiters} has, for every positive integer \( p \), a word whose first \( p \) symbols are left delimiters, it is not a \hyperref[def:chomsky_hierarchy/regular]{regular language}.
+\end{proposition}
+\begin{proof}
+  Fix such a language \( \mscrL \) and a positive integer \( p \). By assumption, there exists a word \( w \) in \( \mscrL \) whose first \( p \) symbols are left delimiters.
+
+  Let \( w = x y z \) be a decomposition of \( w \) such that \( y \) is nonempty and \( \len(xy) \leq p \). Then \( xy \) consist only of left delimiters.
+
+  For any integer \( n \geq 2 \), the word \( x y^n z \) then has more left than right delimiters. Thus, \( x y^n z \) has unbalanced delimiters, and hence does not belong to \( \mscrL \).
+
+  By the contraposition to \fullref{thm:regular_pumping_lemma}, \( \mscrL \) is not regular.
+\end{proof}
+
+\begin{example}\label{ex:thm:paired_delimiters_not_regular}
+  In \fullref{thm:paired_delimiters_not_regular} the condition for arbitrarily many left delimiters is important.
+
+  Consider, for example, the language
+  \begin{equation*}
+    \mscrL \coloneqq \set{ (ab)^n \given n \geq 0 },
+  \end{equation*}
+  where we regard \( a \) and \( b \) as paired delimiters.
+
+  We can decompose the word \( abab \) as \( x = y = ab \) and \( z = \bnfes \), and then \( xy^n z \) is again in \( \mscrL \) for any positive integer \( n \).
+
+  We can also decompose it as \( x = a \), \( y = ba \) and \( z = b \), and again \( xy^n z \) is in \( \mscrL \).
+
+  Any longer word in \( \mscrL \) has \( abab \) as a prefix, thus we cannot obtain a contradiction with \fullref{thm:regular_pumping_lemma}.
+\end{example}
+
+\begin{definition}\label{def:dyck_language}\mcite[example 6.6.6]{Stanley2023EnumCombinatoricsVol2}
+  The \term[ru=язык Дика (\cite[213]{Гладкий1973Языки})]{Dyck language} is the language \hyperref[def:formal_grammar/language]{generates} by the \hyperref[def:formal_grammar]{grammar}
+  \begin{bnf*}
+    \bnfprod{expr} \bnfor \bnftsq{(} \bnfsp \bnfpn{expr} \bnfsp \bnftsq{(} \bnfor \bnfpn{expr} \bnfpn{expr} \bnfor \varepsilon
+  \end{bnf*}
+\end{definition}
+
+\begin{proposition}\label{thm:dyck_language_balanced}
+  The \hyperref[def:dyck_language]{Dyck language} has \hyperref[def:paired_delimiters]{balanced parentheses}.
+\end{proposition}
+\begin{proof}
+  Let \( w \) be a word in the Dyck language. We will use \fullref{thm:induction_on_rooted_trees} on the \hyperref[def:parse_tree]{parse tree} of \( w \).
 
   \begin{itemize}
-    \item The simplest expressions we have are number \hyperref[con:abstract_syntax_tree/lexical]{lexemes}. The only one that does not contain ones is \( \syn0 \), which evaluates to zero.
+    \item If \( w \) is the empty word, its parentheses are vacuously balanced.
+    \item If \( w = (w') \) and \( w' \) has balanced parentheses, then, for every prefix \( p \) of \( w \), either
+    \begin{itemize}
+      \item \( p = ( \), in which case \( p \) has more left parentheses than right.
+      \item \( p = (p' \), where \( p' \) is a prefix of \( w' \), in which case again \( p \) has more parentheses than right.
+      \item \( p = w = (w') \), then \( p \) has as an equal amount of left and right parentheses.
+    \end{itemize}
 
-    \item Consider the expression \( (u \synplus v) \).
+    \item If \( w = w_1 w_2 \) and both \( w_1 \) and \( w_2 \) have balanced parentheses, then, for every prefix \( p \) of \( w \), either
+    \begin{itemize}
+      \item \( p = p_1 \), where \( p_1 \) is a prefix of \( w_1 \).
+      \item \( p = w_1 p_2 \), where \( p_2 \) is a prefix of \( w_2 \).
+    \end{itemize}
 
-    We implicitly assume that existence of a unique parse tree
-    \begin{equation*}
-      \includegraphics[page=1]{output/ex__natural_number_arithmetic_grammar__induction}
-    \end{equation*}
-    where \( T_u \) and \( T_v \) are the (unique) parse trees for \( u \) and \( v \).
-
-    Having assumed that both \( u \) and \( v \) don't contain ones and thus evaluate to zero, we conclude that their sum \( (u \synplus v) \) should also evaluate to zero due to \ref{eq:def:peano_arithmetic/PA4}.
-
-    It is easier for us to rely on \hyperref[con:evaluation]{pattern matching} than to explicitly construct the tree, and we have only done it for demonstrational purposes.
-
-    \item Analogously, the expression \( (u \syntimes v) \) evaluates to zero due to \ref{eq:def:peano_arithmetic/PA6}.
+    In both cases, \( p \) has at least as many left parentheses as right parentheses.
   \end{itemize}
-\end{example}
+
+  In all cases, \( w \) has balanced parentheses.
+\end{proof}
