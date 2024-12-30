@@ -8,7 +8,7 @@
     x_k = F(x_{k-1}, \ldots, x_{k-n}).
   \end{equation}
 
-  With fixed initial values \( x_1, \ldots, x_n \), we call \eqref{eq:def:recurrence_relation} a \term[en=recurrence relation (\cite[def. 2.4.4]{Rosen2019DiscreteMathematics})]{recurrence relation} of \term[en=order (of linear recurring sequence) (\cite[395]{LidlNiederreiter1997FiniteFields})]{order} \( n \).
+  With fixed initial values \( x_1, \ldots, x_n \), we call \eqref{eq:def:recurrence_relation} a \term[en=recurrence relation (\cite[def. 2.4.4]{Rosen2019DiscreteMathematics})]{recurrence relation} or simply \term{recurrence} of \term[en=order (of linear recurring sequence) (\cite[395]{LidlNiederreiter1997FiniteFields})]{order} \( n \).
 
   \begin{thmenum}
     \thmitem{def:recurrence_relation/solution} We call the uniquely determined sequence \( \seq{ x_k }_{k=1}^\infty \) the \term{solution} of the recurrence. If convenient, we may also refer to the solution itself as a \enquote{recurrence relation}.
@@ -25,11 +25,40 @@
 \begin{comments}
   \item The general definition is a formalization of \cite[def. 2.4.4]{Rosen2019DiscreteMathematics}.
 
-  \item If \( F \) can be expressed as a \hyperref[def:first_order_syntax/term]{first-order term} \( \tau \), we can regard \eqref{eq:def:recurrence_relation} as the \hyperref[def:first_order_equation]{first-order equation} \( x \doteq \tau \) (where we suppose that \( x \) is not a variable in \( \tau \)). The solutions to \( x \doteq \tau \) in the sense of \fullref{def:first_order_equation} are \( (n + 1) \)-tuples, however, which only determine an initial segment of the sequences that we call solutions to \eqref{eq:def:recurrence_relation}.
+  \item If \( F \) can be expressed as a \hyperref[def:first_order_syntax/term]{first-order term} \( \tau \), we can regard \eqref{eq:def:recurrence_relation} as the \hyperref[def:first_order_equation]{first-order equation} \( x \doteq \tau \) (where we suppose that \( x \) is not a variable in \( \tau \)). The solutions to \( x \doteq \tau \) in the sense of \fullref{def:first_order_equation} are \( (n + 1) \)-tuples, however, which only determine a \hyperref[def:truncated_sequence]{truncation} of the sequences that we call solutions to \eqref{eq:def:recurrence_relation}.
 \end{comments}
 
+\begin{proposition}\label{thm:linear_recurrence_relation_homogenization}
+  The \hyperref[def:recurrence_relation/linear]{inhomogeneous linear} \hyperref[def:recurrence_relation]{recurrence relation}
+  \begin{equation*}
+    x_k = \sum_{i=1}^n a_i x_{k-i} + a_0
+  \end{equation*}
+  can be rewritten as the homogeneous recurrence relation
+  \begin{equation}\label{eq:thm:linear_recurrence_relation_homogenization}
+    x_{k+1}
+    =
+    (1 + a_1) x_k + \sum_{i=1}^{n-1} (a_{i+1} - a_i) x_{k-i} - a_n x_{k-n}.
+  \end{equation}
+\end{proposition}
+\begin{proof}
+  We have
+  \begin{equation*}
+    x_{k-1}
+    =
+    \sum_{i=1}^n a_i x_{k-(i-1)} + a_0
+    =
+    \sum_{i=0}^{n-1} a_{i+1} x_{k-i} + a_0.
+  \end{equation*}
+
+  Then
+  \begin{equation*}
+    x_{k+1} - x_k = a_1 x_k +\sum_{i=1}^{n-1} (a_{i+1} - a_i) x_{k-i} - a_n x_{k-n}
+  \end{equation*}
+  and \eqref{eq:thm:linear_recurrence_relation_homogenization} follows.
+\end{proof}
+
 \begin{proposition}\label{thm:linear_recurrence_relation}
-  Consider the \hyperref[def:recurrence_relation/linear]{inhomogeneous linear} \hyperref[def:recurrence_relation]{recurrence relation}
+  Consider the \hyperref[def:recurrence_relation/linear]{homogeneous linear} \hyperref[def:recurrence_relation]{recurrence relation}
   \begin{equation*}
     x_k = \sum_{i=1}^n a_i x_{k-i}.
   \end{equation*}
@@ -64,6 +93,50 @@
   Straightforward induction on \( m \).
 \end{proof}
 
+\paragraph{Characteristic polynomials}
+
+\begin{definition}\label{def:characteristic_polynomial_of_linear_recurrence}\mcite[404]{LidlNiederreiter1997FiniteFields}
+  We define the \term{characteristic polynomial} of the \hyperref[def:recurrence_relation/linear]{homogeneous linear} \hyperref[def:recurrence_relation]{recurrence relation}
+  \begin{equation*}
+    x_k = \sum_{i=1}^n a_i x_{k-i}
+  \end{equation*}
+  as
+  \begin{equation}\label{eq:def:characteristic_polynomial_of_linear_recurrence}
+    f(X) = X^n - \sum_{i=1}^n a_i X^{n-i}.
+  \end{equation}
+\end{definition}
+
+\begin{proposition}\label{thm:maximal_period_linear_recurrence}
+  Consider the \hyperref[def:recurrence_relation/linear]{homogeneous linear} \hyperref[def:recurrence_relation]{recurrence relation}
+  \begin{equation}\label{eq:thm:maximal_period_linear_recurrence}
+    x_k = \sum_{i=1}^n a_i x_{k-i}
+  \end{equation}
+  in the \hyperref[def:finite_field]{finite field} \( \BbbF_q \) and suppose that its \hyperref[def:characteristic_polynomial_of_linear_recurrence]{characteristic polynomial}
+  \begin{equation*}
+    f(X) = X^n - \sum_{i=1}^n a_i X^{n-i}
+  \end{equation*}
+  is a \hyperref[def:finite_field_primitive_polynomial]{primitive polynomial}.
+
+  Let \( \alpha \) be a root of \( f(X) \). Then the sequence \( \seq{ \alpha^k }_{k=0}^\infty \) satisfies \eqref{eq:thm:maximal_period_linear_recurrence} and is \hyperref[def:periodic_function]{periodic} with base period \( q^n - 1 \).
+\end{proposition}
+\begin{proof}
+  Since \( \alpha \) is a root of \( f(X) \), we have
+  \begin{equation*}
+    \alpha^n = \sum_{i=1}^n a_i \alpha^{n-i}.
+  \end{equation*}
+
+  Multiplying by \( \alpha^{k-n} \), where \( k \geq n \), we obtain
+  \begin{equation*}
+    \alpha^k
+    =
+    \sum_{i=1}^n a_i \alpha^{(k-n)+(n-i)}
+    =
+    \sum_{i=1}^n a_i \alpha^{k-i}.
+  \end{equation*}
+
+  By definition, \( \alpha \) generates the multiplicative group of \( \BbbF_q^n \). Then \( q^n - 1 \) is the order of \( \alpha \), and thus the sequence \( \seq{ \alpha^k }_{k=0}^\infty \) is periodic with base period \( q^n - 1 \).
+\end{proof}
+
 \paragraph{Progressions}\hfill
 
 The \( n \)-th term of a \hyperref[def:recurrence_relation]{recurrence relation} can sometimes be computed directly. We call some of these recurrences \enquote{progressions}.
@@ -76,31 +149,59 @@ The \( n \)-th term of a \hyperref[def:recurrence_relation]{recurrence relation}
   an \term[ru=арифметическая прогрессия (\cite[143]{АлександровМаркушевичХинчин1952ЭнциклопедияТом3}), en=arithmetic progression (\cite[def. 2.4.3]{Rosen2019DiscreteMathematics})]{arithmetic progression} with \term[en=common difference (\cite[def. 2.4.3]{Rosen2019DiscreteMathematics})]{difference} \( d \).
 \end{definition}
 
+\begin{proposition}\label{thm:arithmetic_progression_homogeneization}
+  Every \hyperref[def:arithmetic_progression]{arithmetic progression}
+  \begin{equation*}
+    x_k = x_{k-1} + d
+  \end{equation*}
+  can be homogenized as
+  \begin{equation}\label{eq:thm:arithmetic_progression_homogeneization}
+    x_{k+1} = 2 x_k - x_{k-1}.
+  \end{equation}
+\end{proposition}
+\begin{comments}
+  \item The difference \( d \) is then determined by the difference \( x_1 - x_0 \).
+\end{comments}
+\begin{proof}
+  Directly application of \fullref{thm:linear_recurrence_relation_homogenization}.
+\end{proof}
+
 \begin{proposition}\label{thm:arithmetic_progression_common_term}
-  The \( n \)-th term of the \hyperref[def:arithmetic_progression]{arithmetic progression} with difference \( d \) is
+  The \( n \)-th term of the \hyperref[def:arithmetic_progression]{arithmetic progression}
+  \begin{equation*}
+    x_k = x_{k-1} + d
+  \end{equation*}
+  is
   \begin{equation*}
     x_n = a_0 + nd,
   \end{equation*}
   where \( kd \) is \hyperref[con:additive_semigroup/multiplication]{iterated semigroup addition}.
 \end{proposition}
+\begin{proof}
+  Easily follows by induction on \( n \) from either \eqref{eq:def:arithmetic_progression} or \eqref{eq:thm:arithmetic_progression_homogeneization}.
+\end{proof}
 
 \begin{proposition}\label{thm:arithmetic_progression_partial_sums}
-  The \hyperref[def:convergent_series]{series} constructed from the arithmetic progression \( \seq{ a_0 + kd }_{k=0}^\infty \) has partial sums
+  The \hyperref[def:convergent_series]{series} constructed from the \hyperref[def:arithmetic_progression]{arithmetic progression}
+  \begin{equation*}
+    x_k = x_{k-1} + d
+  \end{equation*}
+  has partial sums
   \begin{equation}\label{eq:thm:arithmetic_progression_partial_sums}
-    2 \sum_{k=0}^n a_k = (n + 1) (a_n - a_0).
+    2 \sum_{k=0}^n x_k = (n + 1) (x_0 + x_n).
   \end{equation}
 \end{proposition}
 \begin{proof}
   \begin{balign*}
-    2 \sum_{k=0}^n a_k
+    2 \sum_{k=0}^n x_k
      & =
-    2 \sum_{k=0}^n (a_0 + kd)
+    2 \sum_{k=0}^n (x_0 + kd)
     =    \\ &=
-    \sum_{k=0}^n (a_0 + kd) + \sum_{k=0}^n (a_0 + (n-k)d)
+    \sum_{k=0}^n (x_0 + kd) + \sum_{k=0}^n (x_0 + (n-k)d)
     =    \\ &=
-    \sum_{k=0}^n (2 a_0 + nd)
+    \sum_{k=0}^n (2 x_0 + nd)
     =    \\ &=
-    (n + 1) (a_0 + a_n).
+    (n + 1) (x_0 + x_n).
   \end{balign*}
 \end{proof}
 
