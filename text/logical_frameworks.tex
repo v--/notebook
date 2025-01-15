@@ -2,6 +2,25 @@
 
 We introduce several notions that are common for different flavors of logic we will consider in this monograph.
 
+\begin{concept}\label{con:logical_system}
+  The phrases \term{formal system} and \term{logical system} may refer to a \hyperref[def:consequence_relation]{consequence relation} (or the less practical \hyperref[def:consequence_operator]{consequence operators}), \hyperref[def:entailment_system]{entailment system}, \hyperref[def:institution]{institution}, \hyperref[def:logical_framework]{logical framework} or another notion which allows performing deductive reasoning. This may include some \hyperref[def:rewriting_system]{rewriting systems} for \hyperref[sec:untyped_lambda_calculus]{untyped lambda calculus}, which Church introduces in \cite{Church1932Untyped} with the intention to improve first-order logic.
+
+  Entailment systems and logical frameworks are not established concepts and the usage that we will present is an attempt to systemize different logical systems.
+\end{concept}
+
+\begin{remark}\label{rem:named_logical_systems}
+  Several \hyperref[con:logical_system]{logical systems} have established names:
+  \begin{itemize}
+    \thmitem{rem:named_logical_systems/gentzen} \incite*[176]{Gentzen1935LogischeSchließen} introduced \hyperref[def:abstract_propositional_natural_deduction_system]{natural deduction systems} (which he called \enquote{Kalk\"ul des nat\"urlichen Schliessens}), and called the corresponding \hyperref[con:intuitionistic_logic]{intuitionistic} and \hyperref[con:classical_logic]{classical} variants \logic{NJ} and \logic{NK}.
+
+    In the same paper he also introduced \hyperref[con:sequent_calculus]{sequent calculus}, whose variants he called \logic{LJ} (\enquote{Intuitionistische Pr\"adikatenlogik}) and \logic{LK} (\enquote{Klassik Pr\"adikatenlogik}).
+
+    \thmitem{rem:named_logical_systems/q0} \incite*[\S 51]{Andrews2002STT} introduced the system \( \logic{Q}_0 \), upon which we base our \hyperref[def:simple_type_system]{simple type systems}.
+
+    \thmitem{rem:named_logical_systems/peano_robinson} \incite*[def. 4.1.1]{Hinman2005Logic} calls \hyperref[def:peano_arithmetic]{Peano arithmetic} \( \logic{P} \) (which we prefer to abbreviate as \logic{PA}), and its weaker form, the \hyperref[def:peano_arithmetic]{Robinson arithmetic}, \( \logic{Q} \).
+  \end{itemize}
+\end{remark}
+
 \paragraph{Consequence operators and relations}
 
 \begin{definition}\label{def:consequence_operator}\mimprovised
@@ -69,29 +88,28 @@ We introduce several notions that are common for different flavors of logic we w
   \item We have purposely not specified rules for the nonterminal \( \bnfpn{entry} \) in order to encompass entries with different syntax like \hyperref[def:first_order_syntax/var]{first-order variables} and \hyperref[def:type_assignments]{type assignments}. We assume that, whenever this definition is used, the syntax for entries is understood from the setting.
   \item The indented semantics for placeholders is to refer to other contexts.
   \item Identifier rules are motivated and discussed in \fullref{def:variable_identifier}.
-  \item This definition is based on the ones given by \cite[45; 159]{Mimram2020Types}, but formalized via grammars and not tied to variables.
-  \item Contexts purposely have ambiguous semantics --- we can use different interpretations, as discussed in \fullref{rem:logical_context_semantics}.
+  \item This definition generalizes propositional contexts from \cite[45]{Mimram2020Types} and \hyperref[def:simple_type_system/context]{type contexts} from \cite[159]{Mimram2020Types} and \cite[def. 2A5]{Hindley1997STT}, but formalized via grammars and not tied to variables.
+  \item Contexts purposely have ambiguous semantics --- we can use different interpretations, as discussed in \fullref{def:logical_context_semantics}.
 \end{comments}
 
-\begin{remark}\label{rem:logical_context_semantics}
+\begin{definition}\label{def:logical_context_semantics}
   \hyperref[def:logical_context]{Logical contexts} can be studied as standalone objects, but we will mostly use them as \enquote{syntax sugar} in the \hyperref[con:metalogic]{metalanguage}.
 
-  We may, depending on the application, choose to interpret contexts as either sets of entries or as lists of entries. Both possibilities are discussed in \incite[rem. 4.1.7.2]{Mimram2020Types} in the context of sequent calculus.
+  We may, depending on the application, choose to interpret contexts as either sets of entries or as lists of entries. Both possibilities are discussed in \incite[rem. 4.1.7.2]{Mimram2020Types} in the context of \hyperref[rem:sequent_calculus]{sequent calculus}.
 
-  An \enquote{entry} in a sequent can be a variable, sentence, type assignment or basically anything that holds additional information that we need to somehow use. For simplicity, let \( S \) be a nonempty set whose elements we will call entries. To formalize semantics, suppose we are given interpretation functions:
-  \begin{itemize}
-    \item For each entry \( \varphi \), let \( I_s(\varphi) \) be an element of \( S \).
-    \item For each placeholder \( \Gamma \), let \( I_c(\Gamma) \) be a finite set (resp. list) of elements of \( S \), that is, an element of \( \pow(S) \) (resp. of the Kleene star \( S^* \)).
-  \end{itemize}
+  An \enquote{entry} in a sequent can be a variable, sentence, type assertion or basically anything that holds additional information that we need to somehow use. For simplicity, let \( S \) be a nonempty set whose elements we will call entries. To formalize semantics, suppose we are given interpretation functions:
+  \begin{thmenum}[series=def:logical_context_semantics]
+    \thmitem{def:logical_context_semantics/int/entry} For each entry \( \varphi \), let \( I_s(\varphi) \) be an element of \( S \).
+    \thmitem{def:logical_context_semantics/int/placeholder} For each placeholder \( \Gamma \), let \( I_c(\Gamma) \) be a finite set (resp. list) of elements of \( S \), that is, an element of \( \pow(S) \) (resp. of the Kleene star \( S^* \)).
+  \end{thmenum}
 
-  We can now define valuations for contexts as follows:
-  \begin{itemize}
-    \item For each placeholder \( \Gamma \), let \( \Bracks{\Gamma} \) be \( I_c(\Gamma) \).
-    \item For each entry \( \varphi \), let \( \Bracks{\varphi} \) be the singleton set (resp. singleton list) with element \( I_s(\varphi) \).
-    \item For each context of the form \( \Gamma, \Delta \), let \( \Bracks{\Gamma, \Delta} \) be the union (resp. concatenation) of \( \Bracks{\Gamma} \) and \( \Bracks{\Delta} \).
-    \item For each empty context \( \bnfes \), let \( \Bracks{\bnfes} \) be the empty set (resp. empty list).
-  \end{itemize}
-\end{remark}
+  \begin{thmenum}[series=def:logical_context_semantics]
+    \thmitem{def:logical_context_semantics/var/entry} For each placeholder \( \Gamma \), let \( \Bracks{\Gamma} \) be \( I_c(\Gamma) \).
+    \thmitem{def:logical_context_semantics/var/placeholder} For each entry \( \varphi \), let \( \Bracks{\varphi} \) be the singleton set (resp. singleton list) with element \( I_s(\varphi) \).
+    \thmitem{def:logical_context_semantics/var/pair} For each context of the form \( \Gamma, \Delta \), let \( \Bracks{\Gamma, \Delta} \) be the union (resp. concatenation) of \( \Bracks{\Gamma} \) and \( \Bracks{\Delta} \).
+    \thmitem{def:logical_context_semantics/var/empty} For each empty context \( \bnfes \), let \( \Bracks{\bnfes} \) be the empty set (resp. empty list).
+  \end{thmenum}
+\end{definition}
 
 \begin{definition}\label{def:sequent}\mimprovised
   A \term[ru=секвенция (\cite[49]{Герасимов2011Вычислимость})]{sequent} is a string consisting of two \hyperref[def:logical_context]{contexts} joined by some infix relational symbol. They can be described by the \hyperref[def:formal_grammar]{grammar}
@@ -391,7 +409,7 @@ We introduce several notions that are common for different flavors of logic we w
 \end{definition}
 \begin{comments}
   \item Our definition is based in the notion of \enquote{logic} from \cite[def. 6]{Meseguer1989GeneralLogics}, but with a different name and without soundness being mandatory. The same paper introduces \enquote{proof calculi} and \enquote{logical systems}, however these definitions are unnecessarily technical for our purposes.
-  \item We will later describe several frameworks --- \hyperref[def:intuitionistic_logic]{intuitionistic} and \hyperref[def:classical_logic]{classical logic} differ in their behavior, while \hyperref[sec:propositional_logic]{propositional} and \hyperref[sec:first_order_logic]{first-order logic} differ in what they can describe. We will almost exclusively use classical first-order logic.
+  \item We will later describe several frameworks --- \hyperref[con:intuitionistic_logic]{intuitionistic} and \hyperref[con:classical_logic]{classical logic} differ in their behavior, while \hyperref[sec:propositional_logic]{propositional} and \hyperref[sec:first_order_logic]{first-order logic} differ in what they can describe. We will almost exclusively use classical first-order logic.
 \end{comments}
 
 \begin{remark}\label{rem:soundness_and_completeness_theorem_list}
@@ -404,25 +422,25 @@ We introduce several notions that are common for different flavors of logic we w
   \end{itemize}
 \end{remark}
 
-\begin{definition}\label{def:classical_logic}\mimprovised
+\begin{concept}\label{con:classical_logic}\mimprovised
   By \term[ru=классическая логика (\cite[58]{ШеньВерещагин2017Логика}), en=classical logic (\cite[8]{TroelstraSchwichtenberg2000Proofs})]{classical logic} we will mean either the \hyperref[def:logical_framework]{logical framework} of \hyperref[def:propositional_syntax/formula]{propositional formulas}, \hyperref[def:propositional_semantics/classical]{Boolean models} and the \hyperref[def:propositional_natural_deduction_systems]{classical propositional natural deduction system}, or to the framework of \hyperref[def:first_order_syntax/formula]{first-order formulas}, \hyperref[def:first_order_model]{classical first-order models} and the \hyperref[def:first_order_natural_deduction_system]{classical first-order natural deduction system}.
-\end{definition}
+\end{concept}
 \begin{comments}
   \item Classical logic is characterized by the ability to use the law of double negation elimination \eqref{eq:thm:classical_tautologies/dne}. A more popular (but less accurate due to \fullref{thm:minimal_propositional_negation_laws}) characterization is that the law of the excluded middle \eqref{eq:thm:classical_tautologies/lem} holds.
   \item Within the metalogic, the law of the excluded middle states that either a \hyperref[con:judgment]{judgment} or its negation holds.
 \end{comments}
 
-\begin{definition}\label{def:intuitionistic_logic}\mimprovised
-  By \term[ru=интуиционисткая логика (\cite[58]{ШеньВерещагин2017Логика}), en=intuitionistic logic (\cite[8]{TroelstraSchwichtenberg2000Proofs})]{intuitionistic logic} we will mean the generalization of \hyperref[def:classical_logic]{classical logic} where instead of the law of the excluded middle \eqref{eq:thm:classical_tautologies/lem}, we have the strictly weaker principle of explosion \eqref{eq:thm:intuitionistic_tautologies/efq} stating that everything can be proven from a contradiction.
+\begin{concept}\label{con:intuitionistic_logic}\mimprovised
+  By \term[ru=интуиционисткая логика (\cite[58]{ШеньВерещагин2017Логика}), en=intuitionistic logic (\cite[8]{TroelstraSchwichtenberg2000Proofs})]{intuitionistic logic} we will mean the generalization of \hyperref[con:classical_logic]{classical logic} where instead of the law of the excluded middle \eqref{eq:thm:classical_tautologies/lem}, we have the strictly weaker principle of explosion \eqref{eq:thm:intuitionistic_tautologies/efq} stating that everything can be proven from a contradiction.
 
   We will only discuss one logical framework --- that of \hyperref[def:propositional_syntax/formula]{propositional formulas}, \hyperref[def:propositional_semantics/intuitionistic]{Heyting algebra semantics} and the \hyperref[def:propositional_natural_deduction_systems]{intuitionistic propositional natural deduction system}.
-\end{definition}
+\end{concept}
 \begin{comments}
   \item Intuitionistic logic can also be called \enquote{constructive logic} due to the \hyperref[con:brouwer_heyting_kolmogorov_interpretation]{Brouwer-Heyting-Kolmogorov interpretation}.
 \end{comments}
 
-\begin{definition}\label{def:minimal_logic}\mimprovised
-  By (Johansson's) \term[en=minimal logic (\cite[1]{VanDerMolen2016MinimalLogic}]{minimal logic} we will mean the generalization of \hyperref[def:intuitionistic_logic]{intuitionistic logic} where we reject both the law of the excluded middle \eqref{eq:thm:classical_tautologies/lem} and the strictly weaker principle of explosion \eqref{eq:thm:intuitionistic_tautologies/efq}.
+\begin{concept}\label{con:minimal_logic}\mimprovised
+  By (Johansson's) \term[en=minimal logic (\cite[1]{VanDerMolen2016MinimalLogic}]{minimal logic} we will mean the generalization of \hyperref[con:intuitionistic_logic]{intuitionistic logic} where we reject both the law of the excluded middle \eqref{eq:thm:classical_tautologies/lem} and the strictly weaker principle of explosion \eqref{eq:thm:intuitionistic_tautologies/efq}.
 
   As in the case of intuitionistic logic, we will only discuss one logical framework --- that of \hyperref[def:propositional_syntax/formula]{propositional formulas}, \hyperref[def:minimal_propositional_semantics]{minimal Heyting algebra semantics} and the \hyperref[def:propositional_natural_deduction_systems]{minimal propositional natural deduction system}.
-\end{definition}
+\end{concept}

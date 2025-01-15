@@ -255,24 +255,21 @@
 \begin{theorem}[Recursively defined relations]\label{thm:recursively_defined_relations}
   Consider some \hyperref[def:first_order_signature]{first-order signature} \( \Sigma \) and let \( \Sigma' \) be an extension with a binary relation symbol \( \rho \).
 
-  Suppose that, for each \( k = 1, \ldots, n \), we have an \hyperref[def:inference_rule]{inference rule}
+  Suppose that we have \( n \) we have an \hyperref[def:inference_rule]{inference rules} \( R_1, \ldots, R_n \), where, for \( k = 1, \ldots, n \),
   \begin{equation*}
     \begin{prooftree}
       \hypo{ \varphi_1 }
       \hypo{ \cdots }
       \hypo{ \varphi_{m_k} }
-      \infer3[\( R_k \)]{ x_k \mathrel{\rho} y_k },
+      \infer3[\( R_k \)]{ \tau_k \mathrel{\rho} \sigma_k }.
     \end{prooftree}
   \end{equation*}
-  where \( x_k \) and \( y_k \) are variables and \( \varphi_1, \ldots, \varphi_{m_k} \) are formulas over \( \Sigma' \) whose free variables are among \( x_1, \ldots, x_n \) and \( y_1, \ldots, y_n \). We do not require the variables to be distinct.
+
+  Here \( \tau_k \) and \( \sigma_k \) are terms over \( \Sigma \), while \( \varphi_1, \ldots, \varphi_{m_k} \) are general formulas over \( \Sigma' \) (usually also atomic formulas for \( \rho \)).
 
   Then, for any structure \( \mscrD = (D, I) \) over \( \Sigma \), there exists a \hyperref[def:binary_relation]{binary relation} \( \Rho \) on \( D \) such that:
   \begin{thmenum}
-    \thmitem{thm:recursively_defined_relations/closed} \( \Rho \) is closed with respect to the rules --- for every rule \( R_k \), we have \( (a_k, b_k) \in \Rho \) if, for every \( s = 1, \ldots, m_k \),
-    \begin{equation*}
-      \Bracks{\varphi_s}(a_1, \ldots, a_n, b_1, \ldots, b_n) = T
-    \end{equation*}
-    and, whenever \( x_i \mathrel{\rho} y_j \) is a subformula of \( \varphi_s \), then \( (a_i, b_j) \in \Rho \).
+    \thmitem{thm:recursively_defined_relations/closed} \( \Rho \) is closed with respect to the rules --- for every rule \( R_k \), we have \( (\Bracks{\tau_k}_v, \Bracks{\sigma_k}_v) \in \Rho \) whenever \( v \) is a \hyperref[def:first_order_valuation/variable_assignment]{variable assignment} such that, for every \( s = 1, \ldots, m_k \), we have \( \Bracks{\varphi_s}_v = T \) and \( (\Bracks{\tau'}_v, \Bracks{\sigma'}_v) \in \Rho \) whenever \( \tau' \mathrel{\rho} \sigma' \) is a subformula of \( \varphi_s \).
 
     \thmitem{thm:recursively_defined_relations/minimal} \( \Rho \) is minimal --- every pair of elements of \( D \) related by \( \Rho \) is the conclusion of some rule, the premises of which are either conclusions of rules or are not atomic formulas for \( \rho \).
   \end{thmenum}
@@ -287,7 +284,7 @@
 \begin{proof}
   \Fullref{thm:boolean_algebra_of_subsets} implies that \( \pow(D^2) \) is a complete lattice, so we will use \fullref{thm:knaster_tarski_iteration/continuous}.
 
-  Consider the operator \( E: D^2 \to D^2 \) that extends a relation \( r \) with \( (a_k, b_k) \) if there exists a rule
+  Consider the operator \( E: D^2 \to D^2 \) that extends a relation \( r \) with \( (\Bracks{\tau_k}_v, \Bracks{\sigma_k}_v) \in \Rho \) if there exists a rule
   \begin{equation*}
     \begin{prooftree}
       \hypo{ \varphi_1 }
@@ -296,23 +293,17 @@
       \infer3[\( R_k \)]{ x_k \mathrel{\rho} y_k },
     \end{prooftree}
   \end{equation*}
-  such that, for every \( s = 1, \ldots, m_k \),
-  \begin{equation*}
-    \Bracks{\varphi_s}(a_1, \ldots, a_n, b_1, \ldots, b_n) = T
-  \end{equation*}
-  and, whenever \( x_i \mathrel{\rho} y_j \) is a subformula of \( \varphi_s \), \( (a_i, b_j) \in R \).
+  such that, for every \( s = 1, \ldots, m_k \), we have \( \Bracks{\varphi_s}_v = T \) and \( (\Bracks{\tau'}_v, \Bracks{\sigma'}_v) \in \Rho \) whenever \( \tau' \mathrel{\rho} \sigma' \) is a subformula of \( \varphi_s \).
 
   This operator is obviously \hyperref[def:extensive_function]{extensive} and preserves order. We will now show that it is Scott-continuous because it satisfies \fullref{thm:def:scott_continuity/lattice_of_subsets}. Indeed, if the family \( \mscrA \) of subsets of \( D \) is upward-directed and if \( (c, d) \in E(\bigcup \mscrA) \), we have the following possibilities:
   \begin{itemize}
-    \item If \( (c, d) \in \bigcup \mscrA \), then there exists a set \( A_0 \in \mscrA \) such that \( (c, d) \in A_0 \) and thus \( (c, d) \in E(A_0) \).
+    \item If \( (c, d) \in \bigcup \mscrA \), then there exists a set \( A_0 \in \mscrA \) such that \( (c, d) \in A_0 \).
 
-    \item Otherwise, \( c = a_k \) and \( d = b_k \) for some rule \( R_k \), in which case, for every \( s = 1, \ldots, m_k \), there exists a set \( A_s \) from \( \mscrA \) such that
-    \begin{equation*}
-      \Bracks{\varphi_s}(a_1, \ldots, a_n, b_1, \ldots, b_n) = T
-    \end{equation*}
-    and \( (a_i, b_j) \in \bigcup \mscrA \), whenever \( x_i \mathrel{\rho} y_j \) is a subformula of \( \varphi_s \).
+    Then, as desired, \( (c, d) \in E(A_0) \).
 
-    There are finitely many subformulas in \( \varphi_s \), so, since the family \( \mscrA \) is directed, there exists an upper limit \( A_0 \) that contains \( (a_i, b_j) \) whenever \( x_i \mathrel{\rho} y_j \) is a subformula of \( \varphi_s \).
+    \item Otherwise, \( c = \Bracks{\tau_k}_v \) and \( d = \Bracks{\sigma_k}_v \) for some rule \( R_k \), in which case, for every \( s = 1, \ldots, m_k \), we have \( \Bracks{\varphi_s}_v = T \) and, whenever \( \tau' \mathrel{\rho} \sigma' \) is a subformula of \( \varphi_s \), there exists a set \( A_s \) from \( \mscrA \) such that \( (\Bracks{\tau'}_v, \Bracks{\sigma'}_v) \in A_s \).
+
+    There are finitely many subformulas in \( \varphi_s \), so, since the family \( \mscrA \) is directed, there exists an upper limit \( A_0 \) that contains \( (\Bracks{\tau'}_v, \Bracks{\sigma'}_v) \) whenever \( \tau' \mathrel{\rho} \sigma' \) is a subformula of \( \varphi_s \) for some \( s = 1, \ldots, m_k \).
 
     Then, by construction, \( (c, d) \) must belong to \( E(A_0) \).
   \end{itemize}
@@ -371,12 +362,12 @@
 \end{example}
 
 \begin{theorem}[Induction on recursively defined relations]\label{thm:induction_on_recursively_defined_relations}
-  In the setting of \fullref{thm:recursively_defined_relations}, in order to prove a statement for a specific pair \( (b, c) \in \Rho \), it is sufficient to do the following:
+  In the setting of \fullref{thm:recursively_defined_relations}, in order to prove a statement for a specific pair \( (a, b) \in \Rho \), it is sufficient to do the following:
   \begin{displayquote}
-    If \( (b, c) \in \Rho \) due to \( R_k \), suppose that the statement holds for all premises of \( R_k \) that are atomic formulas for \( \rho \), and prove the statement for the conclusion \( (b, c) \).
+    If \( (a, b) \in \Rho \) due to \( R_k \), suppose that the statement holds for all premises of \( R_k \) that are atomic formulas for \( \rho \), and prove the statement for the conclusion \( (a, b) \).
   \end{displayquote}
 
-  Generalizing on \( (b, c) \), we can prove the statement for the entire relation \( \Rho \).
+  Generalizing on \( (a, b) \), we can prove the statement for the entire relation \( \Rho \).
 \end{theorem}
 \begin{comments}
   \item Unlike for most induction principles discussed in \fullref{con:induction}, we did not formulate this one via logical formulas since that would make the statement unnecessarily convoluted with little gain.

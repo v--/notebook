@@ -1,4 +1,4 @@
-from ..tokenizer import Parser
+from ..parser import Parser
 from ..tokens import AbstractToken
 from ..whitespace import Whitespace
 

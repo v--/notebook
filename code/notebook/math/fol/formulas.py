@@ -1,8 +1,8 @@
-from collections.abc import Sequence
 from typing import NamedTuple, TypeGuard
 
-from .alphabet import BinaryConnective, PropConstant, Quantifier
-from .terms import Term, Variable
+from ...parsing.identifiers import GreekIdentifier
+from .alphabet import BinaryConnective, PropConstant, Quantifier, SchemaConnective, UnaryConnective
+from .terms import FunctionLikeTerm, Term, TermSchema, Variable, VariablePlaceholder
 
 
 class ConstantFormula(NamedTuple):
@@ -20,23 +20,15 @@ class EqualityFormula(NamedTuple):
         return f'({self.a} = {self.b})'
 
 
-class PredicateFormula(NamedTuple):
-    name: str
-    arguments: Sequence[Term]
-
-    def __str__(self) -> str:
-        args = ', '.join(str(arg) for arg in self.arguments)
-        return f'{self.name}({args})' if len(args) > 0 else self.name
-
-    def __hash__(self) -> int:
-        return hash(self.name) ^ hash(tuple(self.arguments))
+class PredicateFormula(FunctionLikeTerm['Term']):
+    pass
 
 
 class NegationFormula(NamedTuple):
     sub: 'Formula'
 
     def __str__(self) -> str:
-        return f'¬{self.sub}'
+        return f'{UnaryConnective.negation}{self.sub}'
 
 
 class ConnectiveFormula(NamedTuple):
@@ -95,3 +87,65 @@ def is_subformula(formula: Formula, subformula: Formula) -> bool:
             return is_subformula(formula.sub, subformula)
 
     return False
+
+
+class FormulaPlaceholder(NamedTuple):
+    identifier: GreekIdentifier
+
+    def __str__(self) -> str:
+        return str(self.identifier)
+
+
+class EqualityFormulaSchema(NamedTuple):
+    a: TermSchema
+    b: TermSchema
+
+    def __str__(self) -> str:
+        return f'({self.a} = {self.b})'
+
+
+class NegationFormulaSchema(NamedTuple):
+    sub: 'FormulaSchema'
+
+    def __str__(self) -> str:
+        return f'{UnaryConnective.negation}{self.sub}'
+
+
+class ConnectiveFormulaSchema(NamedTuple):
+    conn: BinaryConnective
+    a: 'FormulaSchema'
+    b: 'FormulaSchema'
+
+    def __str__(self) -> str:
+        return f'({self.a} {self.conn} {self.b})'
+
+
+class QuantifierFormulaSchema(NamedTuple):
+    quantifier: Quantifier
+    variable: VariablePlaceholder
+    sub: 'FormulaSchema'
+
+    def __str__(self) -> str:
+        return f'{self.quantifier.value}{self.variable}.{self.sub}'
+
+
+FormulaSchema = FormulaPlaceholder | ConstantFormula | EqualityFormulaSchema | NegationFormulaSchema | ConnectiveFormulaSchema | QuantifierFormulaSchema
+
+
+class StarredTermSchema(NamedTuple):
+    term: TermSchema
+
+    def __str__(self) -> str:
+        return f'{self.term}*'
+
+
+class SubstitutionSchema(NamedTuple):
+    formula: FormulaSchema
+    var: VariablePlaceholder
+    dest: StarredTermSchema
+
+    def __str__(self) -> str:
+        return f'{self.formula}[{self.var} {SchemaConnective.substitution} {self.dest}]'
+
+
+ExtendedFormulaSchema = FormulaSchema | SubstitutionSchema

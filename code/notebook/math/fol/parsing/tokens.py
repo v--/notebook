@@ -1,7 +1,12 @@
-from ....parsing.identifiers import LatinIdentifier
+from ....parsing.identifiers import GreekIdentifier, LatinIdentifier
 from ....parsing.tokens import TokenEnum, TokenMixin
 from ....parsing.whitespace import Space
+from ...stt.alphabet import RuleConnective
 from ..alphabet import BinaryConnective, PropConstant, Quantifier, UnaryConnective
+
+
+class CapitalizedLatinString(TokenMixin):
+    pass
 
 
 class FunctionSymbolToken(TokenMixin):
@@ -15,11 +20,25 @@ class PredicateSymbolToken(TokenMixin):
 class MiscToken(TokenEnum):
     left_parenthesis = '('
     right_parenthesis = ')'
+    left_bracket = '['
+    right_bracket = ']'
     comma = ','
     dot = '.'
-
+    star = '*'
     equality = '='
-    negation = '¬'
 
 
-FOLToken = FunctionSymbolToken | PredicateSymbolToken | LatinIdentifier | PropConstant | BinaryConnective | Quantifier | UnaryConnective | MiscToken | Space
+class SuperscriptToken(TokenEnum):
+    plus = '⁺'
+    minus = '⁻'
+    left = 'ᴸ'
+    right = 'ᴿ'
+
+
+FOLTermToken = FunctionSymbolToken | Space | MiscToken | LatinIdentifier
+FOLFormulaToken = PredicateSymbolToken | Space | MiscToken | PropConstant | UnaryConnective | BinaryConnective | Quantifier | GreekIdentifier
+
+FOLRuleNameToken = SuperscriptToken | CapitalizedLatinString
+FOLRuleToken = FOLRuleNameToken | RuleConnective
+
+FOLToken = FOLTermToken | FOLFormulaToken | FOLRuleToken

@@ -1,13 +1,21 @@
 from .formulas import (
     ConnectiveFormula,
+    ConnectiveFormulaSchema,
     ConstantFormula,
     EqualityFormula,
+    EqualityFormulaSchema,
+    ExtendedFormulaSchema,
     Formula,
+    FormulaPlaceholder,
+    FormulaSchema,
     NegationFormula,
+    NegationFormulaSchema,
     PredicateFormula,
     QuantifierFormula,
+    QuantifierFormulaSchema,
+    SubstitutionSchema,
 )
-from .terms import FunctionTerm, Term, Variable
+from .terms import FunctionTerm, FunctionTermSchema, Term, TermPlaceholder, TermSchema, Variable, VariablePlaceholder
 
 
 class TermVisitor[T]:
@@ -109,3 +117,74 @@ class FormulaTransformationVisitor(FormulaVisitor[Formula]):
             formula.variable,
             self.visit(formula.sub)
         )
+
+
+class TermSchemaVisitor[T]:
+    def visit(self, schema: TermSchema) -> T:
+        match schema:
+            case VariablePlaceholder():
+                return self.visit_variable_placeholder(schema)
+
+            case TermPlaceholder():
+                return self.visit_term_placeholder(schema)
+
+            case FunctionTermSchema():
+                return self.visit_function(schema)
+
+    def visit_variable_placeholder(self, schema: VariablePlaceholder) -> T:
+        return self.generic_visit(schema)
+
+    def visit_term_placeholder(self, schema: TermPlaceholder) -> T:
+        return self.generic_visit(schema)
+
+    def visit_function(self, schema: FunctionTermSchema) -> T:
+        return self.generic_visit(schema)
+
+    def generic_visit(self, schema: TermSchema) -> T:
+        raise NotImplementedError
+
+
+class FormulaSchemaVisitor[T]:
+    def visit(self, schema: ExtendedFormulaSchema) -> T:  # noqa: PLR0911
+        match schema:
+            case ConstantFormula():
+                return self.visit_constant(schema)
+
+            case EqualityFormulaSchema():
+                return self.visit_equality(schema)
+
+            case FormulaPlaceholder():
+                return self.visit_formula_placeholder(schema)
+
+            case NegationFormulaSchema():
+                return self.visit_negation(schema)
+
+            case ConnectiveFormulaSchema():
+                return self.visit_connective(schema)
+
+            case QuantifierFormulaSchema():
+                return self.visit_quantifier(schema)
+
+            case SubstitutionSchema():
+                return self.visit(schema.formula)
+
+    def visit_constant(self, schema: ConstantFormula) -> T:
+        return self.generic_visit(schema)
+
+    def visit_equality(self, schema: EqualityFormulaSchema) -> T:
+        return self.generic_visit(schema)
+
+    def visit_formula_placeholder(self, schema: FormulaPlaceholder) -> T:
+        return self.generic_visit(schema)
+
+    def visit_negation(self, schema: NegationFormulaSchema) -> T:
+        return self.generic_visit(schema)
+
+    def visit_connective(self, schema: ConnectiveFormulaSchema) -> T:
+        return self.generic_visit(schema)
+
+    def visit_quantifier(self, schema: QuantifierFormulaSchema) -> T:
+        return self.generic_visit(schema)
+
+    def generic_visit(self, schema: FormulaSchema) -> T:
+        raise NotImplementedError

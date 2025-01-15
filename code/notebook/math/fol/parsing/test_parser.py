@@ -9,7 +9,7 @@ from ..formulas import EqualityFormula
 from ..signature import EMPTY_SIGNATURE, FOLSignature
 from ..terms import FunctionTerm, Variable
 from ..variables import common as var
-from .parser import parse_formula, parse_term
+from .parser import parse_formula, parse_formula_schema, parse_natural_deduction_rule, parse_term
 
 
 @pytest_parametrize_kwargs(
@@ -89,11 +89,11 @@ def test_parsing_valid_functions(term: str, expected: FunctionTerm, dummy_signat
 
 def test_parsing_functions_with_unrecognized_names(dummy_signature: FOLSignature) -> None:
     with pytest.raises(ParsingError) as excinfo:
-        parse_term(dummy_signature, 'F')
+        parse_term(dummy_signature, 'Ḟ')
 
     assert str(excinfo.value) == 'Unexpected symbol'
     assert excinfo.value.__notes__[0] == dedent('''\
-        1 │ F
+        1 │ Ḟ
           │ ^
     ''')
 
@@ -341,7 +341,6 @@ def test_quantifier_with_no_subformula(dummy_signature: FOLSignature) -> None:
     ''')
 
 
-
 @pytest_parametrize_lists(
     formula=[
         '∀y.∃z.(¬p₁(z) ∧ ∀x.(q₂(z, x) → ¬r₂(y, x)))',
@@ -353,3 +352,61 @@ def test_quantifier_with_no_subformula(dummy_signature: FOLSignature) -> None:
 def test_reparsing_formulas(formula: str, dummy_signature: FOLSignature) -> None:
     assert str(parse_formula(dummy_signature, str(parse_formula(dummy_signature, formula)))) == formula
 
+
+@pytest_parametrize_lists(
+    schema=[
+        'φ',
+        '(φ → ψ)',
+        '(φ ∧ ψ)',
+        '∀x.(φ ∧ ψ)'
+    ]
+)
+def test_rebuild_schemas(schema: str) -> None:
+    assert str(parse_formula_schema(schema)) == schema
+
+
+def test_parsing_formula_placeholder_with_regular_parser() -> None:
+    with pytest.raises(ParsingError) as excinfo:
+        parse_formula(EMPTY_SIGNATURE, 'φ')
+
+    assert str(excinfo.value) == 'Formula placeholders are only allowed in schemas'
+    assert excinfo.value.__notes__[0] == dedent('''\
+        1 │ φ
+          │ ^
+    ''')
+
+
+@pytest_parametrize_lists(
+    rule=[
+        '(R) ⫢ ψ',
+        '(R) φ ⫢ ψ',
+        '(R) φ₁, φ₂ ⫢ ψ',
+        '(R) [θ] φ ⫢ ψ'
+    ]
+)
+def test_rebuilding_type_rules(rule: str) -> None:
+    assert str(parse_natural_deduction_rule(rule)) == rule
+
+
+def test_parsing_discharge_schema_with_no_name() -> None:
+    with pytest.raises(ParsingError) as excinfo:
+        parse_natural_deduction_rule('(R) [] φ ⫢ ψ')
+
+    assert str(excinfo.value) == 'Unexpected token'
+    assert excinfo.value.__notes__[0] == dedent('''\
+        1 │ (R) [] φ ⫢ ψ
+          │      ^
+        '''
+    )
+
+
+def test_parsing_discharge_schema_with_no_closing_bracket() -> None:
+    with pytest.raises(ParsingError) as excinfo:
+        parse_natural_deduction_rule('(R) [θ φ ⫢ ψ')
+
+    assert str(excinfo.value) == 'Unclosed brackets for discharge schemas'
+    assert excinfo.value.__notes__[0] == dedent('''\
+        1 │ (R) [θ φ ⫢ ψ
+          │     ^^^
+        '''
+    )

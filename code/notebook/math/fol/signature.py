@@ -1,4 +1,4 @@
-from collections.abc import Iterable
+from collections.abc import Iterable, MutableMapping
 
 
 class FOLSignature:
@@ -7,7 +7,7 @@ class FOLSignature:
     This makes it more convenient to use at the cost of possibly confusing terminology.
     Calling them "symbols" corresponds to their usage in the literature, where Unicode is not involved.'''
 
-    _payload: dict[str, int]
+    _payload: MutableMapping[str, int]
 
     def __init__(self) -> None:
         self._payload = {}

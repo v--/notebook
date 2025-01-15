@@ -1,7 +1,7 @@
 from collections.abc import Sequence
 from typing import NamedTuple
 
-from ...parsing.identifiers import LatinIdentifier
+from ...parsing.identifiers import GreekIdentifier, LatinIdentifier
 
 
 class Variable(NamedTuple):
@@ -11,9 +11,9 @@ class Variable(NamedTuple):
         return str(self.identifier)
 
 
-class FunctionTerm(NamedTuple):
+class FunctionLikeTerm[ArgT](NamedTuple):
     name: str
-    arguments: 'Sequence[Term]'
+    arguments: 'Sequence[ArgT]'
 
     def __str__(self) -> str:
         args = ', '.join(str(arg) for arg in self.arguments)
@@ -23,4 +23,29 @@ class FunctionTerm(NamedTuple):
         return hash(self.name) ^ hash(tuple(self.arguments))
 
 
+class FunctionTerm(FunctionLikeTerm['Term']):
+    pass
+
+
 Term = Variable | FunctionTerm
+
+
+class VariablePlaceholder(NamedTuple):
+    identifier: LatinIdentifier
+
+    def __str__(self) -> str:
+        return str(self.identifier)
+
+
+class TermPlaceholder(NamedTuple):
+    identifier: GreekIdentifier
+
+    def __str__(self) -> str:
+        return str(self.identifier)
+
+
+class FunctionTermSchema(FunctionLikeTerm['TermSchema']):
+    pass
+
+
+TermSchema = VariablePlaceholder | TermPlaceholder | FunctionTermSchema

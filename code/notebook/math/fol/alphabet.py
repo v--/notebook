@@ -20,3 +20,7 @@ class BinaryConnective(TokenEnum):
 class Quantifier(TokenEnum):
     universal = '∀'
     existential = '∃'
+
+
+class SchemaConnective(TokenEnum):
+    substitution = '↦'

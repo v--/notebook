@@ -3,26 +3,48 @@
 \paragraph{Untyped \( \synlambda \)-terms}
 
 \begin{definition}\label{def:lambda_term}\mimprovised
-  We introduce \enquote{\( \synlambda \)-terms}, \enquote{\( \synlambda \)-applications} and \enquote{\( \synlambda \)-abstractions} via the following \hyperref[def:formal_grammar/schema]{grammar schema}:
+  Fix a (finite) \hyperref[def:formal_language/alphabet]{alphabet} \( \op*{Const} \), whose elements we will call \term[en=constant (\cite[202]{Andrews2002STT})]{constant terms}.
+
+  We will introduce a \hyperref[def:formal_grammar/schema]{grammar schema} whose rules and generated languages we will collectively call the \enquote{\hyperref[con:syntax_semantics_duality]{syntax} of untyped lambda calculus}:
   \begin{bnf*}
     \bnfprod{variable}    {\bnfpn{Small Latin identifier}}, \\
+    \bnfprod{atom}        {\bnfpn{variable} \bnfor \bnfpn{constant}}, \\
     \bnfprod{application} {\bnftsq{\( ( \)} \bnfsp \bnfpn{term} \bnfsp \bnfpn{term} \bnfsp \bnftsq{\( ) \)}}, \\
     \bnfprod{abstraction} {\bnftsq{\( ( \)} \bnfsp \bnftsq{\( \synlambda \)} \bnfsp \bnfpn{variable} \bnfsp \bnftsq{.} \bnfsp \bnfpn{term} \bnfsp \bnftsq{\( ) \)}}, \\
-    \bnfprod{term}        {\bnfpn{variable} \bnfor \bnfpn{application} \bnfor \bnfpn{abstraction}},
+    \bnfprod{term}        {\bnfpn{atom} \bnfor \bnfpn{application} \bnfor \bnfpn{abstraction}}.
   \end{bnf*}
-  where we have used variable identifier rules from \fullref{def:variable_identifier}.
+
+  We have used variable identifier rules from \fullref{def:variable_identifier}.
+
+  To distinguish constants from the other symbols used in the grammar schema, we will call the latter \term[en=logical symbol (\cite[2]{Hinman2005Logic})]{logical symbols}. We require the logical and nonlogical symbols to be distinct.
 
   \begin{thmenum}
-    \thmitem{def:lambda_term/var} We will denote by \( \op*{Var} \) the set of all \( \synlambda \)-variables.
+    \thmitem{def:lambda_term/const} Technically, the definition of \( \synlambda \)-term depends on the set of constants. Constants are an important part of type systems, where they are treated as part of the type system. In general untyped lambda calculus, we will not need them.
+
+    Thus, unless explicitly noted otherwise, we will not consider constant terms, i.e. we will suppose that \( \op*{Const} \) is empty. Still, we want to explicitly handle constants in our definitions and proofs, so that they hold without modification in typed lambda calculus.
+
+    If disambiguation is needed, we will refer to \( \synlambda \)-terms with no constants as \enquote{pure}.
+
+    \thmitem{def:lambda_term/var} We will denote by \( \op*{Var} \) the set of all variables.
+
+    \thmitem{def:lambda_term/atom} We will denote by \( \op*{Atom} \) the set of all atomic formulas, i.e.
+    \begin{equation*}
+      \op*{Atom} \coloneqq \op*{Const} \cup \op*{Var}.
+    \end{equation*}
+
     \thmitem{def:lambda_term/term} Similarly, we will denote by \( \op*{Term} \) the set of all \( \synlambda \)-terms.
   \end{thmenum}
 \end{definition}
 \begin{comments}
-  \item These notions are based on \cite[352]{Church1932Untyped}. It is not clear why has Church used \( \synlambda \) as part of the grammar.
+  \item Except for constant terms, these notions mostly coincide with their original definition in \cite[352]{Church1932Untyped}. It is not clear why has Church used \( \synlambda \) as a logical symbol.
+
+  Later, in \cite[56]{Church1940STT}, Church extends the syntax with constant terms and type annotations for what we now call \enquote{simply typed lambda calculus}, discussed in \fullref{sec:simple_type_theory}.
+
+  The terminology itself is based on \cite[def. 1A1]{Hindley1997STT}, with the necessary changes made in order to accommodate constants.
 
   \item We need all the parentheses so that we can prove unambiguity in \fullref{thm:lambda_term_grammar/unambiguous}. Informally, we will use the conventions from \fullref{rem:propositional_formula_parentheses} regarding parentheses.
 
-  \item The dot is not strictly necessary, and was in fact not used in \incite{Church1932Untyped} where \( \synlambda \)-calculus was introduced. It later became standard to include it. Our main references --- \incite[1A1]{Hindley1997STT}, \incite[22]{Barendregt1984LambdaCalculus} and \incite[188]{Герасимов2011Вычислимость} --- all use it.
+  \item The dot is not strictly necessary, and was in fact not used in \incite{Church1932Untyped} where \( \synlambda \)-calculus was introduced. It later became standard to include it. Our main references --- \incite[def. 1A1]{Hindley1997STT}, \incite[22]{Barendregt1984LambdaCalculus} and \incite[188]{Герасимов2011Вычислимость} --- all use it.
 \end{comments}
 
 \begin{proposition}\label{thm:lambda_term_grammar}
@@ -32,7 +54,7 @@
 
     \thmitem{thm:lambda_term_grammar/balanced} The \hyperref[def:formal_grammar/language]{generated language} has \hyperref[def:paired_delimiters]{balanced parentheses}.
 
-    \thmitem{thm:lambda_term_grammar/not_regular} The grammar is not \hyperref[def:formal_grammar/regular]{regular}.
+    \thmitem{thm:lambda_term_grammar/not_regular} The grammar is not \hyperref[def:chomsky_hierarchy/regular]{regular}.
   \end{thmenum}
 \end{proposition}
 \begin{proof}
@@ -42,7 +64,7 @@
 \begin{definition}\label{def:lambda_term_ast}
   We implicitly associate with each \( \synlambda \)-term \( M \) an \hyperref[con:abstract_syntax_tree]{abstract syntax tree} \( T(M) \) as follows:
   \begin{thmenum}
-    \thmitem{def:lambda_term_ast/variable} If \( M \) is a variable, we define \( T(M) \) as the \hyperref[def:canonical_singleton_tree]{canonical singleton tree} with label \( M \).
+    \thmitem{def:lambda_term_ast/variable} If \( M \) is a variable or constant, we define \( T(M) \) as the \hyperref[def:canonical_singleton_tree]{canonical singleton tree} with label \( M \).
 
     \thmitem{def:lambda_term_ast/application} If \( M = NK \), assuming we have already built \( T(N) \) and \( T(K) \), we define \( T(M) \) by \hyperref[def:ordered_tree_grafting_product]{grafting} \( T(N) \) and \( T(K) \) to a new root labeled with \( \cdot \):
     \begin{equation*}
@@ -88,7 +110,7 @@
   We define the set of all \term[ru=подтерм (\cite[189]{Герасимов2011Вычислимость})]{subterms} of a term \( M \) as follows:
   \begin{equation*}
     \op*{Subterm}(M) \coloneqq \begin{cases}
-      \set{ M },                                             &M \in \op*{Var}, \\
+      \set{ M },                                             &M \in \op*{Atom}, \\
       \set{ M } \cup \op*{Subterm}(N) \cup \op*{Subterm}(K), &M = N K, \\
       \set{ M } \cup \op*{Subterm}(N),                       &M = \qabs x N.
     \end{cases}
@@ -115,7 +137,7 @@
 \begin{example}\label{ex:def:lambda_term}
   We list examples of \hyperref[def:lambda_term]{\( \synlambda \)-terms}:
   \begin{thmenum}
-    \thmitem{ex:def:lambda_term/var} The simplest \( \synlambda \)-terms are the variables themselves, for example \( \synx \) or \( \syny \).
+    \thmitem{ex:def:lambda_term/var} The simplest \( \synlambda \)-terms are the constants and variables.
 
     \thmitem{ex:def:lambda_term/naive_subterm} Suppose that, as in \fullref{def:propositional_subformula} for propositional subformulas, we say that \( N \) is a subterm of \( M \) if it is itself a \hyperref[def:formal_language/substring]{substring} of \( M \).
 
@@ -126,12 +148,12 @@
       &\qabs \synx \synx, \label{eq:ex:def:lambda_term/combinator/i}\tag{I} \\
       &\qabs \synx \qabs \syny \synx, \label{eq:ex:def:lambda_term/combinator/k}\tag{K} \\
       &\qabs \synx \qabs \syny \qabs \synz \synx \synz (\syny \synz), \label{eq:ex:def:lambda_term/combinator/s}\tag{S} \\
-      &\qabs \synx (\qabs \syny \synx \syny \syny) (\qabs \syny \synx \syny \syny). \label{eq:ex:def:lambda_term/combinator/y}\tag{Y} \\
+      &\qabs \synx (\qabs \syny \synx \syny \syny) (\qabs \syny \synx \syny \syny). \label{eq:ex:def:lambda_term/combinator/y}\tag{Y}
     \end{align}
 
     They are combinators in the sense that will be defined in \fullref{def:lambda_combinator}, and are referred to as such. We will further discuss them in \fullref{ex:def:beta_eta_reduction}.
 
-    Another useful family of combinators is the following, taken from \cite[3.1.21; 6.2.1]{Barendregt1984LambdaCalculus}:
+    Another useful family of combinators is the following, taken from \cite[\S 3.1.21; \S 6.2.1]{Barendregt1984LambdaCalculus}:
     \begin{align}
       &\qabs \synx \synx^n, \label{eq:ex:def:lambda_term/combinator/omega_n}\tag{\ensuremath{ \omega_n }} \\
       &\qabs \synx \synx \synx, \label{eq:ex:def:lambda_term/combinator/omega}\tag{\ensuremath{ \omega }} \\
@@ -183,13 +205,14 @@
 \end{example}
 
 \begin{remark}\label{rem:barendregt_convention}\mcite[148]{Mimram2020Types}
-  Although a variable can be both free and bound, we will avoid such cases as much as possible. This is called the \term{Barendregt convention} because it is stated by \incite[2.1.12]{Barendregt1984LambdaCalculus}.
+  Although a variable can be both free and bound, we will avoid such cases as much as possible. This is called the \term{Barendregt convention} because it is stated by \incite[\S 2.1.12]{Barendregt1984LambdaCalculus}.
 \end{remark}
 
 \begin{proposition}\label{thm:lambda_variable_freeness_characterization}
   The set of all \hyperref[def:lambda_variable_freeness]{free variables} of a \( \synlambda \)-term can be characterized as follows:
   \begin{equation*}
     \op*{Free}(M) \coloneqq \begin{cases}
+      \varnothing,                       &M \in \op*{Const}, \\
       \set{ M },                         &M \in \op*{Var}, \\
       \op*{Free}(N) \cup \op*{Free}(K),  &M = N K, \\
       \op*{Free}(N) \setminus \set{ x }, &M = \qabs x N. \\
@@ -199,6 +222,7 @@
   Similarly, the bound variables can be characterized via
   \begin{equation*}
     \op*{Bound}(M) \coloneqq \begin{cases}
+      \varnothing,                        &M \in \op*{Const}, \\
       \varnothing,                        &M \in \op*{Var}, \\
       \op*{Bound}(N) \cup \op*{Bound}(K), &M = N K, \\
       \op*{Bound}(N) \cup \set{ x },      &M = \qabs x N. \\
@@ -214,6 +238,19 @@
 \end{definition}
 
 \paragraph{Simultaneous substitution}
+
+\begin{concept}\label{con:lambda_conversion}
+  A fundamental feature of \hyperref[def:lambda_term]{\( \synlambda \)-terms} is \enquote{conversion} --- the ability to transform terms into other terms with simpler syntax and similar semantics. Thus, \enquote{conversion} is synonymous with \enquote{rewriting} in the \hyperref[def:rewriting_system]{rewriting systems} for \( \synlambda \)-terms that we will discuss.
+
+  This usage originates from Alonzo Church himself. When introducing \( \lambda \)-calculus in \cite[357]{Church1932Untyped}, he defines \hyperref[def:lambda_substitution]{single-variable substitution} as the first three of five postulates, and later states
+  \begin{displayquote}
+    If \( M \) and \( N \) are well-formed and if \( N \) can be derived from \( M \) by successive applications of the rules of procedure \logic{I}, \logic{II}, and \logic{III}, then \( M \) is said to be convertible into \( N \), and the process is spoken of as a conversion of \( M \) into \( N \).
+  \end{displayquote}
+
+  Later, different authors introduced \hyperref[def:lambda_term_alpha_equivalence]{\( \alpha \)-equivalence}, \hyperref[def:beta_eta_reduction]{\( \beta \)-reduction} and \hyperref[def:beta_eta_reduction]{\( \eta \)-reduction}. This lead to variations of the term \enquote{conversion} which refer to other rewriting systems and not only substitution. For example, the term \enquote{\( \alpha \)-conversion} is used by \incite[\S 2.1.11]{Barendregt1984LambdaCalculus}, \incite[def. 1A8]{Hindley1997STT}, \incite[114]{Mimram2020Types} and \incite[5]{Pollack2005AlphaConversion} (with subtle differences as discussed in \fullref{def:lambda_term_alpha_equivalence}).
+
+  When the intention of a conversion procedure is for terms to become shorter, we call the procedure a \enquote{reduction}, and we call the reverse procedure an \enquote{expansion}. If both are possible, we call the procedure an \enquote{equivalence}.
+\end{concept}
 
 \begin{definition}\label{def:lambda_substitution}\mimprovised
   A \term{simultaneous substitution} of \( \synlambda \)-terms is a pair \( (\sigma, \sharp) \), where
@@ -242,9 +279,10 @@
 
     \thmitem{def:lambda_substitution/operation} Finally, for an arbitrary \( \synlambda \)-term \( M \), we define the following operation (for which will use the notational convention from \fullref{rem:substitution_notation}):
     \begin{empheq}[left={M[\sigma]} \coloneqq \empheqlbrace]{align}
-      &\sigma(M),                       &&M \in \op*{Var},                                      \label{eq:def:lambda_substitution/var} \\
-      &N[\sigma] \thinspace K[\sigma],  &&M = NK,                                               \label{eq:def:lambda_substitution/application} \\
-      &\qabs x N[\sigma_{x \mapsto x}], &&M = \qabs x N \T{and} x \not\in \op*{Free}_\sigma(M), \label{eq:def:lambda_substitution/abstraction/direct} \\
+      &M,                               &&M \in \op*{Const},                                    \label{eq:def:lambda_substitution/const}               \\
+      &\sigma(M),                       &&M \in \op*{Var},                                      \label{eq:def:lambda_substitution/var}                 \\
+      &N[\sigma] \thinspace K[\sigma],  &&M = NK,                                               \label{eq:def:lambda_substitution/application}         \\
+      &\qabs x N[\sigma_{x \mapsto x}], &&M = \qabs x N \T{and} x \not\in \op*{Free}_\sigma(M), \label{eq:def:lambda_substitution/abstraction/direct}  \\
       &\qabs n N[\sigma_{x \mapsto n}], &&M = \qabs x N \T{and} x \in \op*{Free}_\sigma(M),     \label{eq:def:lambda_substitution/abstraction/renaming}
     \end{empheq}
     where \( n = \sharp(\op*{Free}(N) \cup \op*{Free}_\sigma(N)) \).
@@ -253,7 +291,7 @@
 \begin{comments}
   \item In \eqref{eq:def:lambda_substitution/abstraction/direct} we modify \( \sigma \) to fix \( x \), while in \eqref{eq:def:lambda_substitution/abstraction/renaming} we modify it to send \( x \) to \( n \). We will refer to the latter rule as \enquote{substitution with renaming}. Whenever it will be sufficient, \fullref{thm:lambda_substitution_single_rule} will allow us to compress them into one rule with a looser condition.
 
-  \item This definition is loosely based on \cite[def. 1A7]{Hindley1997STT}, but is modified to allow substituting multiple variables. This results in less rules since \eqref{eq:def:lambda_substitution/abstraction/direct} subsumes three of the four cases. Furthermore, our substitution rules also allow proving \fullref{thm:lambda_substitution_noop}.
+  \item This definition is loosely based on \cite[def. 1A7]{Hindley1997STT}, but is modified to allow substituting multiple variables simultaneously, as well as to handle constants. This results in less rules since \eqref{eq:def:lambda_substitution/abstraction/direct} subsumes three of the four cases. Furthermore, our substitution rules also allow proving \fullref{thm:lambda_substitution_noop}.
 \end{comments}
 
 \begin{remark}\label{rem:renaming_substitution_rules}
@@ -279,6 +317,7 @@
 \begin{proof}
   We will use \fullref{thm:induction_on_rooted_trees} on \( M \) simultaneously for all substitutions that fix the free variables of \( M \):
   \begin{itemize}
+    \item If \( M \) is a constant, then \( M[\sigma] = M \) by definition.
     \item If \( M \) is a variable, then \( M[\sigma] = \sigma(M) = M \) by assumption.
     \item If \( M = NK \) and the inductive hypothesis holds for \( N \) and \( K \), then
     \begin{equation*}
@@ -293,9 +332,9 @@
 
     \item Suppose that \( M = \qabs x N \) and the inductive hypothesis holds for \( N \).
 
-    Aiming at a contradiction, suppose that \( x \) is in \( \op*{Free}_\sigma(M) \), that is, there exists a free variable \( y \) of \( M \) such that \( x \) is free in \( \sigma(y) \). But \( \sigma(v) = y \) by assumption, hence \( x = y \), which cannot be free in \( M \).
+    Aiming at a contradiction, suppose that \( x \) is in \( \op*{Free}_\sigma(M) \), that is, there exists a free variable \( y \) of \( M \) such that \( x \) is free in \( \sigma(y) \). We have assumed that \( \sigma \) fixes the free variables of \( M \), thus \( y = \sigma(y) \), and we thus conclude that \( x = y \). In particular, \( x \) is free in \( M \). But, by \fullref{thm:lambda_variable_freeness_characterization}, \( x \) cannot be free in \( M \).
 
-    Therefore, \( x \) is not in \( \op*{Free}_\sigma(M) \), and we must use the rule \eqref{eq:def:lambda_substitution/abstraction/direct}. The free variables of \( N \) are those of \( N \) with the eventual addition of \( x \), all of which are fixed by \( \sigma_{x \mapsto x} \). Hence,
+    Therefore, \( x \) cannot be in \( \op*{Free}_\sigma(M) \), and we must use the rule \eqref{eq:def:lambda_substitution/abstraction/direct}. The free variables of \( N \) are those of \( N \) with the eventual addition of \( x \), all of which are fixed by \( \sigma_{x \mapsto x} \). Hence,
     \begin{equation*}
       M[\sigma]
       =
@@ -326,6 +365,8 @@
 \begin{proof}
   We will use \fullref{thm:induction_on_rooted_trees} on \( M \) simultaneously for all possible substitutions:
   \begin{itemize}
+    \item If \( M \) is a constant, then both sides of \eqref{eq:thm:lambda_substitution_free_variables} are the empty set.
+
     \item If \( M \) is a variable, say \( M = x \), then \( \op*{Free}(M) = \set{ x } \) and thus
     \begin{equation*}
       \op*{Free}(M[\sigma])
@@ -386,7 +427,7 @@
         = \\ &=
         \bigcup_{\mathclap{v \in \op*{Free}(N)}} \parens[\Big]{ \op*{Free}(\sigma_{x \mapsto n}(v)) \setminus \set{ n } }
         = \\ &=
-        \parens[\Big]{ \bigcup_{\mathclap{v \in \op*{Free}(N) \setminus \set{ x }}} \parens[\Big]{ \op*{Free}(\underbrace{\sigma_{x \mapsto n}(v)}_{\sigma(v)}) \setminus \set{ n } } } \cup \parens[\Big]{ \underbrace{\op*{Free}(\sigma_{x \mapsto n}(x)) \setminus \set{ n }}_\varnothing }
+        \parens[\Big]{ \bigcup_{\mathclap{v \in \op*{Free}(N) \setminus \set{ x }}} \parens[\Big]{ \op*{Free}(\sigma_{x \mapsto n}(v)) \setminus \set{ n } } } \cup \parens[\Big]{ \underbrace{\op*{Free}(\sigma_{x \mapsto n}(x)) \setminus \set{ n }}_\varnothing }
         = \\ &=
         \bigcup_{\mathclap{v \in \op*{Free}(N) \setminus \set{ x }}} \parens[\Big]{ \op*{Free}(\sigma(v)) \setminus \set{ x } },
         = \\ &=
@@ -402,10 +443,10 @@
 \end{proof}
 
 \begin{corollary}\label{thm:lambda_substitution_free_variables_single}
-  For any \( \synlambda \)-terms \( M \) and \( L \) and any variable \( u \), we have
+  For any two \( \synlambda \)-terms \( M \) and \( L \) and any variable \( u \), we have
   \begin{equation}\label{eq:thm:lambda_substitution_free_variables_single}
     \op*{Free}( M[u \mapsto L] ) = \begin{cases}
-      \parens[\Big]{ \op*{Free}(M) \setminus \set{ u } } \cup \op*{Free}(L), &u \T{is free in} M \\
+      \parens[\Big]{ \op*{Free}(M) \setminus \set{ u } } \cup \op*{Free}(L), &u \in \op*{Free}(M) \\
       \op*{Free}(M),                                                         &\T{otherwise.}
     \end{cases}
   \end{equation}
@@ -422,7 +463,7 @@
     \reloset{\eqref{eq:thm:lambda_substitution_free_variables}} =
     \bigcup_{\mathclap{v \in \op*{Free}(M)}} \op*{Free}(\sigma(v))
     =
-    \bigcup_{\mathclap{v \in \op*{Free}(M) \setminus \set{ v }}} \overbrace{\op*{Free}(\sigma(v))}^{\set{ v }} \cup \op*{Free}(\overbrace{\sigma(v)}^L).
+    \op*{Free}(\overbrace{\sigma(u)}^L) \cup \bigcup_{\mathclap{v \in \op*{Free}(M) \setminus \set{ u }}} \overbrace{\op*{Free}(\sigma(v))}^{\set{ v }}.
   \end{equation*}
 
   Otherwise,
@@ -511,11 +552,10 @@
 \end{example}
 
 \begin{proposition}\label{thm:lambda_substitution_single_rule}
-  For any abstraction \( M = \qabs x N \) and substitution \( \sigma \), we have
+  For any abstraction \( M = \qabs x N \) and substitution \( \sigma \), there exists a variable \( v \not\in \op*{Free}(M) \cup \op*{Free}(M[\sigma]) \) such that
   \begin{equation}\label{eq:thm:lambda_substitution_single_rule}
-    M[\sigma] = \qabs v N[\sigma_{x \mapsto v}],
+    M[\sigma] = \qabs v N[\sigma_{x \mapsto v}.
   \end{equation}
-  where \( v \not\in \op*{Free}(M) \cup \op*{Free}(M[\sigma]) \).
 \end{proposition}
 \begin{proof}
   We have two cases to consider:
@@ -545,9 +585,10 @@
 
   \begin{paracol}{2}
     \begin{leftcolumn}
-      \begin{equation*}\taglabel[\ensuremath{ \logic{Var}_\alpha }]{inf:def:lambda_term_alpha_equivalence/var}
+      \begin{equation*}\taglabel[\ensuremath{ \logic{Atom}_\alpha }]{inf:def:lambda_term_alpha_equivalence/atom}
         \begin{prooftree}
-          \infer0[\ref{inf:def:lambda_term_alpha_equivalence/var}]{ x \aequiv x }
+          \hypo{ M \in \op*{Atom} }
+          \infer1[\ref{inf:def:lambda_term_alpha_equivalence/atom}]{ M \aequiv M }
         \end{prooftree}
       \end{equation*}
     \end{leftcolumn}
@@ -575,37 +616,36 @@
 
   The assumption in the premise will help us immensely in inductive proofs, but it is impossible to mechanize. We will be able to split it into two simplified rules in \fullref{thm:alpha_equivalence_simplified}.
 
-  \item Our rules resemble those in \cite[5]{Pollack2005AlphaConversion}, with two notable differences, both of which allow us to simplify inductive proofs:
+  \item Except for the explicit rule for constant terms, our rules resemble those in \cite[5]{Pollack2005AlphaConversion}, with two notable differences, both of which allow us to simplify inductive proofs:
   \begin{itemize}
-    \item We have restricted \ref{inf:def:lambda_term_alpha_equivalence/var} to variables only, while Pollack states the rule for general terms.
+    \item We have restricted \ref{inf:def:lambda_term_alpha_equivalence/atom} to atomic terms only, while Pollack states the rule for general terms.
     \item We have generalized the premise in \ref{inf:def:lambda_term_alpha_equivalence/abs} to hold for all suitable variables simultaneously, and have allowed this variable to be \( a \) or \( b \).
   \end{itemize}
 
-  \item \incite[2.1.11]{Barendregt1984LambdaCalculus} and \incite[1A8]{Hindley1997STT} call the successive renaming of bound variables \enquote{\( \alpha \)-conversion} and consider \( \synlambda \)-terms \enquote{up to \( \alpha \)-conversion}. Barendregt calls \enquote{\( \alpha \)-congruence} for what we call \( \alpha \)-equivalence, while Hindley says that \enquote{\( M \) \( \alpha \)-converts to \( N \)}.
+  \item \incite[\S 2.1.11]{Barendregt1984LambdaCalculus} and \incite[def. 1A8]{Hindley1997STT} call the successive renaming of bound variables \enquote{\( \alpha \)-conversion} and consider \( \synlambda \)-terms \enquote{up to \( \alpha \)-conversion}. Barendregt calls \enquote{\( \alpha \)-congruence} for what we call \( \alpha \)-equivalence, while Hindley says that \enquote{\( M \) \( \alpha \)-converts to \( N \)}.
 
-  Some authors like \incite[5]{Pollack2005AlphaConversion} use \enquote{\( \alpha \)-conversion} and \enquote{\( \alpha \)-equivalence} interchangeably.
+  \incite[5]{Pollack2005AlphaConversion} use \enquote{\( \alpha \)-conversion} and \enquote{\( \alpha \)-equivalence} interchangeably, while \incite[114]{Mimram2020Types} uses \enquote{\( \alpha \)-conversion} for what we call \( \alpha \)-equivalence.
 
   We will avoid using the term \enquote{\( \alpha \)-conversion}.
 
-  \item The rules themselves can be formalized by introducing \( \synlambda \)-term schemas and substitutions akin to how we have formalized the rules in \fullref{sec:natural_deduction}, but we will find it unnecessarily complicated to do so.
+  \item The rules themselves can be formalized using \( \synlambda \)-term schemas and instantiations akin to how we have formalized the rules in \fullref{sec:natural_deduction}. We will introduce schemas for \( \synlambda \)-terms in \fullref{sec:simple_type_theory}, however they will be more limited than what we need here and in \fullref{sec:lambda_calculus_reductions}.
 \end{comments}
 
-\begin{definition}\label{def:lambda_term_length}
-  We give equivalent definitions of the \term{length} of a \( \synlambda \)-term:
-  \begin{thmenum}
-    \thmitem{def:lambda_term_length/string}\mcite[2.1.3]{Barendregt1984LambdaCalculus} We define \( \len(M) \) to be the \hyperref[def:formal_language/string_length]{string length} of \( M \).
-    \thmitem{def:lambda_term_length/recursive} We recursively define
-    \begin{equation*}
-      \len(M) \coloneqq \begin{cases}
-        1,                     &M \in \op*{Var}, \\
-        2 + \len(N) + \len(K), &M = (NK), \\
-        5 + \len(N),           &M = (\qabs x N). \\
-      \end{cases}
-    \end{equation*}
-  \end{thmenum}
+\begin{definition}\label{def:lambda_term_length}\mimprovised
+  For inductive proofs, we will find useful to recursively define the \term{length} of a \( \synlambda \)-term as
+  \begin{equation*}
+    \len(M) \coloneqq \begin{cases}
+      1,                     &M \in \op*{Atom}, \\
+      2 + \len(N) + \len(K), &M = (NK), \\
+      5 + \len(N),           &M = (\qabs x N). \\
+    \end{cases}
+  \end{equation*}
 \end{definition}
 \begin{comments}
-  \item The recursive definition resembles that by \incite[1A2]{Hindley1997STT}, but we also account for parentheses, dots and \( \synlambda \) itself.
+  \item If the variable names in \( M \) are single-symbol strings, then \( \len(M) \) is exactly the \hyperref[def:formal_language/string_length]{string length} of \( M \). The string length is the definition of term length given by \incite[\S 2.1.3]{Barendregt1984LambdaCalculus}.
+
+  Our definition instead resembles that by \incite[def. 1A2]{Hindley1997STT}, but we also account for parentheses, dots and \( \synlambda \) itself.
+
   \item We have introduced this concept mostly for proofs like that of \fullref{thm:def:lambda_term_alpha_equivalence/equivalence} so that the inductive hypothesis holds simultaneously for all terms of the same length.
 \end{comments}
 
@@ -636,6 +676,8 @@
 
   \SubProofOf{thm:def:lambda_term_length/substitution} We proceed via \fullref{thm:induction_on_rooted_trees} on \( M \), simultaneously on all substitutions.
   \begin{itemize}
+    \item If \( M \) is a constant, then \( M \) has no free variables, thus \eqref{eq:thm:def:lambda_term_length/substitution} holds vacuously.
+
     \item If \( M \) is a variable, then
     \begin{equation*}
       \len(M[\sigma]) = \len(\sigma(M)) = \len(M) + (\len(\sigma(M)) - \underbrace{\len(M)}_1).
@@ -694,7 +736,7 @@
 
   \SubProofOf{thm:def:lambda_term_alpha_equivalence/free} We proceed via induction on the length of \( M \) to show that, if \( M \aequiv N \), then the free variables of \( M \) and \( N \) coincide.
 
-  No term has length \( 0 \). If \( M \) has length \( 1 \), it is necessarily a variable, and, the only rule that allows us to conclude that \( M \aequiv N \) is \ref{inf:def:lambda_term_alpha_equivalence/var}, and it is satisfied only if \( M = N \). Then \( \op*{Free}(M) = \set{ M } = \set{ N } = \op*{Free}(N) \).
+  No term has length \( 0 \). If \( M \) has length \( 1 \), it is necessarily an atom, and the only rule that allow us to conclude that \( M \aequiv N \) is \ref{inf:def:lambda_term_alpha_equivalence/atom}. It is satisfied only if \( M = N \). Thus, \( \op*{Free}(M) = \op*{Free}(N) \).
 
   If the length of \( M \) is strictly greater than \( 1 \), we have the following possibilities:
   \begin{itemize}
@@ -729,14 +771,14 @@
 
   \SubProofOf*[def:binary_relation/reflexive]{reflexivity} We proceed via \fullref{thm:induction_on_rooted_trees} on the \( \synlambda \)-term \( M \) to show that \( M \aequiv N \) whenever \( M = N \).
   \begin{itemize}
-    \item If \( M \) is a variable, the rule \ref{inf:def:lambda_term_alpha_equivalence/var} directly implies that \( M \aequiv M \).
+    \item If \( M \) is an atomic term, the rule \ref{inf:def:lambda_term_alpha_equivalence/atom} directly implies that \( M \aequiv M \).
     \item If \( M = AB \) and the inductive hypothesis holds for \( A \) and \( B \), then \( A \aequiv A \) and \( B \aequiv B \), and the rule \ref{inf:def:lambda_term_alpha_equivalence/app} implies that \( M \aequiv M \).
     \item If \( M = \qabs x N \) and if the inductive hypothesis holds for \( N \), then \( N \aequiv N \). The rule \ref{inf:def:lambda_term_alpha_equivalence/abs} implies that \( M \aequiv M \).
   \end{itemize}
 
   \SubProofOf*[def:binary_relation/symmetric]{symmetry} We will use induction on the length of \( M \) to show that \( M \aequiv N \) implies \( N \aequiv M \).
 
-  There are no terms of length \( 0 \), so symmetry holds vacuously. A term of length \( 1 \) is necessarily a variable, and the rule \ref{inf:def:lambda_term_alpha_equivalence/var} implies that \( \alpha \)-equivalent variables are equal. Hence, symmetry holds for terms of length \( 1 \).
+  There are no terms of length \( 0 \), so in this case symmetry holds vacuously. A term of length \( 1 \) is atomic, and the rule \ref{inf:def:lambda_term_alpha_equivalence/atom} implies that \( \alpha \)-equivalent atomic terms are equal. Hence, symmetry holds for terms of length \( 1 \).
 
   For terms strictly longer than \( 1 \) symbol, we have two possibilities:
   \begin{itemize}
@@ -744,14 +786,14 @@
 
     By the inductive hypothesis, \( C \aequiv A \) and \( D \aequiv B \). Applying \ref{inf:def:lambda_term_alpha_equivalence/app}, we conclude that \( N \aequiv M \).
 
-    \item Otherwise, we have \( M = \qabs a A \). The rule \ref{inf:def:lambda_term_alpha_equivalence/abs} implies that \( N = \qabs b B \) and, for every variable not in \( M \), \( A[a \mapsto n] \aequiv B[b \mapsto n] \).
+    \item Otherwise, we have \( M = \qabs a A \). The rule \ref{inf:def:lambda_term_alpha_equivalence/abs} implies that \( N = \qabs b B \) and, for every variable \( n \) not in \( M \), \( A[a \mapsto n] \aequiv B[b \mapsto n] \).
 
     By \fullref{thm:def:lambda_term_length/substitution}, \( A[a \mapsto n] \) has the same length as \( A \), thus the inductive hypothesis holds for the former. Then \( B[b \mapsto n] \aequiv A[a \mapsto n] \).
 
     Furthermore, \fullref{thm:def:lambda_term_alpha_equivalence/free} implies that \( n \) is not free in \( N \), so we can apply \ref{inf:def:lambda_term_alpha_equivalence/abs} to obtain \( N \aequiv M \).
   \end{itemize}
 
-  \SubProofOf*[def:binary_relation/transitive]{transitivity} We will use induction on the length of \( M \) that \( M \aequiv N \) and \( N \aequiv K \) imply \( M \aequiv K \).
+  \SubProofOf*[def:binary_relation/transitive]{transitivity} We will again use induction on the length of \( M \) that \( M \aequiv N \) and \( N \aequiv K \) imply \( M \aequiv K \).
 
   The base case and the case where \( M \) is an application are straightforward. For the remaining case, suppose that \( M = \qabs a A \), so that \( N = \qabs b B \) and \( K = \qabs c C \).
 
@@ -794,7 +836,7 @@
       \qabs {\underbrace{\syna}_d} \underbrace{n \syna}_D.
     \end{equation*}
 
-    We further reduce our check to \( C[\syna \mapsto m] = nm \) and \( D[\syna \mapsto m] = nm \). The rule \ref{inf:def:lambda_term_alpha_equivalence/app} allows us to reduce this problem to checking whether \( n \aequiv n \) and \( m \aequiv m \), while \ref{inf:def:lambda_term_alpha_equivalence/var} confirms that the latter equivalences hold. Therefore, our entire verification is correct and
+    We further reduce our check to \( C[\syna \mapsto m] = nm \) and \( D[\syna \mapsto m] = nm \). The rule \ref{inf:def:lambda_term_alpha_equivalence/app} allows us to reduce this problem to checking whether \( n \aequiv n \) and \( m \aequiv m \), while \ref{inf:def:lambda_term_alpha_equivalence/atom} confirms that the latter equivalences hold. Therefore, our entire verification is correct and
     \begin{equation*}
       \qabs \synx \qabs \syny \synx \syny \aequiv \qabs \syny \qabs \synx \syny \synx.
     \end{equation*}
@@ -810,7 +852,7 @@
 \paragraph{Invariance of \( \alpha \)-equivalence under substitution}
 
 \begin{lemma}\label{thm:renaming_composition_is_alpha_equivalent}
-  For the composite substitution \( \rho\sigma(u) \coloneqq \sigma(u)[\rho] \) of the \hyperref[def:lambda_renaming]{renaming substitutions} \( \sigma \) and \( \rho \), we have
+  For the composite substitution \( \rho\sigma(u) \coloneqq \sigma(u)[\rho] \) of the \hyperref[def:lambda_renaming]{\hi{renaming substitutions}} \( \sigma \) and \( \rho \), we have
   \begin{equation}\label{eq:thm:renaming_composition_is_alpha_equivalent}
     M[\rho\sigma] \aequiv M[\sigma][\rho].
   \end{equation}
@@ -856,10 +898,10 @@
 \end{proof}
 
 \begin{lemma}\label{thm:renaming_on_alpha_equivalent_terms}
-  If \( M \aequiv N \), for any \hyperref[def:lambda_renaming]{renaming substitution} \( \sigma \), we have \( M[\sigma] \aequiv N[\sigma] \).
+  If \( M \aequiv N \), for any \hyperref[def:lambda_renaming]{\hi{renaming substitution}} \( \sigma \), we have \( M[\sigma] \aequiv N[\sigma] \).
 \end{lemma}
 \begin{comments}
-  \item We will use this to prove \fullref{thm:renaming_on_alpha_equivalent_terms}, which will later be used to prove the generalization \fullref{thm:substitution_on_alpha_equivalent_terms} to non-renaming substitutions.
+  \item We will use this to prove \fullref{thm:substitution_composition_is_alpha_equivalent}, which will later be used to prove the generalization \fullref{thm:substitution_on_alpha_equivalent_terms} to non-renaming substitutions.
 \end{comments}
 \begin{proof}
   We will use induction on the length of \( M \) simultaneously on all substitutions.
@@ -886,26 +928,28 @@
     B[\sigma_{b \mapsto u}] \aequiv B[\sigma_{b \mapsto v}][v \mapsto u].
   \end{equation*}
 
-  Fix a variable \( n \) not free in \( M[\sigma] \). Since \( \sigma \) is a renaming, the inductive hypothesis holds for \( A[\sigma_{a \mapsto u}] \). Then
+  Fix a variable \( n \) not free in \( M[\sigma] \). Since \( \sigma \) is a renaming, the inductive hypothesis holds for \( A[\sigma_{a \mapsto u}] \). Then, by the inductive hypothesis,
   \begin{equation*}
     A[\sigma_{a \mapsto u}][u \mapsto n]
-    \reloset {\T{ind.}} \aequiv
+    \aequiv
     B[\sigma_{b \mapsto v}][v \mapsto u][u \mapsto n].
   \end{equation*}
 
-  If \( u = v \), \fullref{thm:lambda_substitution_restriction} implies that
-  \begin{equation*}
-    B[\sigma_{b \mapsto v}][v \mapsto u] = B[\sigma_{b \mapsto u}],
-  \end{equation*}
-  thus \fullref{thm:renaming_composition_is_alpha_equivalent} implies that
-  \begin{equation*}
-    \underbrace{B[\sigma_{b \mapsto v}][v \mapsto u]}_{B[\sigma_{b \mapsto u}]}[u \mapsto n] = B[\sigma_{b \mapsto v}][v \mapsto n].
-  \end{equation*}
+  \begin{itemize}
+    \item If \( u = v \), \fullref{thm:lambda_substitution_restriction} implies that
+    \begin{equation*}
+      B[\sigma_{b \mapsto v}][v \mapsto u] = B[\sigma_{b \mapsto u}],
+    \end{equation*}
+    thus \fullref{thm:renaming_composition_is_alpha_equivalent} implies that
+    \begin{equation*}
+      \underbrace{B[\sigma_{b \mapsto v}][v \mapsto u]}_{B[\sigma_{b \mapsto u}]}[u \mapsto n] = B[\sigma_{b \mapsto v}][v \mapsto n].
+    \end{equation*}
 
-  Otherwise, the same conclusion follows from \fullref{thm:renaming_composition_is_alpha_equivalent} directly:
-  \begin{equation*}
-    B[\sigma_{b \mapsto v}]\underbrace{[v \mapsto u][u \mapsto n]}_{[v \mapsto n]} = B[\sigma_{b \mapsto v}][v \mapsto n].
-  \end{equation*}
+    \item Otherwise, the same conclusion follows from \fullref{thm:renaming_composition_is_alpha_equivalent} directly:
+    \begin{equation*}
+      B[\sigma_{b \mapsto v}]\underbrace{[v \mapsto u][u \mapsto n]}_{[v \mapsto n]} = B[\sigma_{b \mapsto v}][v \mapsto n].
+    \end{equation*}
+  \end{itemize}
 
   Therefore,
   \begin{equation*}
@@ -968,14 +1012,14 @@
   \end{equation}
 \end{corollary}
 \begin{comments}
-  \item We have already used a similar argument, but not we can state it in our desired generality.
+  \item We have already used a similar argument, but now we can state it in our desired generality.
 \end{comments}
 \begin{proof}
-  Follows from \fullref{thm:substitution_composition_is_alpha_equivalent} by noting that \( y \) is not free in \( M \).
+  Follows from \fullref{thm:substitution_composition_is_alpha_equivalent} since, by assumption, \( y \) is not free in \( M \).
 \end{proof}
 
 \begin{proposition}\label{thm:substitution_on_alpha_equivalent_terms}
-  If \( M \aequiv N \), for an \hyperref[def:lambda_substitution]{arbitrary substitution} \( \sigma \), we have \( M[\sigma] \aequiv N[\sigma] \).
+  If \( M \aequiv N \), for an \hyperref[def:lambda_substitution]{\hi{arbitrary substitution}} \( \sigma \), we have \( M[\sigma] \aequiv N[\sigma] \).
 \end{proposition}
 \begin{comments}
   \item This result generalizes \fullref{thm:renaming_on_alpha_equivalent_terms} to arbitrary substitutions.
@@ -1010,7 +1054,7 @@
     A[\sigma_{a \mapsto u}][u \mapsto n] \aequiv B[\sigma_{b \mapsto v}][v \mapsto n].
   \end{equation*}
 
-  Therefore, via \ref{inf:def:lambda_term_alpha_equivalence/abs} we can conclude that \( M[\sigma] \aequiv N[\sigma] \).
+  Therefore, \ref{inf:def:lambda_term_alpha_equivalence/abs} allows us to conclude that \( M[\sigma] \aequiv N[\sigma] \).
 \end{proof}
 
 \paragraph{Mechanizing \( \alpha \)-equivalence}
@@ -1042,7 +1086,7 @@
 
   Thus, \ref{inf:thm:alpha_equivalence_simplified/lift} is admissible.
 
-  \SubProof*{Proof that \ref{inf:thm:alpha_equivalence_simplified/ren} is admissible} Fix variables \( a \equiv b \) and terms \( A \) and \( B \) such that \( a \) is not free in \( B \) and \( A \aequiv B[b \mapsto a] \).
+  \SubProof*{Proof that \ref{inf:thm:alpha_equivalence_simplified/ren} is admissible} Fix variables \( a \neq b \) and terms \( A \) and \( B \) such that \( a \) is not free in \( B \) and \( A \aequiv B[b \mapsto a] \).
 
   Let \( n \) be any variable not free in \( \qabs a A \). \Fullref{thm:substitution_on_alpha_equivalent_terms} implies that
   \begin{equation*}
@@ -1064,7 +1108,7 @@
 
     \item Otherwise, \( A \aequiv B[b \mapsto a] \), and to use \ref{inf:thm:alpha_equivalence_simplified/ren} we must only verify that \( a \) is not free in \( B \).
 
-    If we suppose that \( a \) is free in \( B \), this will contradict \fullref{thm:def:lambda_term_alpha_equivalence/free} since \( A[a \mapsto b] \aequiv B \). Thus, \( a \) is indeed not free in \( B \), and we can use \ref{inf:thm:alpha_equivalence_simplified/ren} to conclude that \( \qabs A \aequiv \qabs b B \).
+    If we suppose that \( a \) is free in \( B \), this will contradict \fullref{thm:def:lambda_term_alpha_equivalence/free} since \( A[a \mapsto b] \aequiv B \). Thus, \( a \) is indeed not free in \( B \), and we can use \ref{inf:thm:alpha_equivalence_simplified/ren} to conclude that \( \qabs a A \aequiv \qabs b B \).
   \end{itemize}
 \end{proof}
 
@@ -1074,47 +1118,57 @@
     \qabs x M \aequiv \qabs y M[y \mapsto x]
   \end{equation}
 \end{corollary}
+\begin{comments}
+  \item \incite[\S 2.1.11]{Barendregt1984LambdaCalculus} calls this property \enquote{\( \alpha \)-conversion} and uses it as a definition, while \incite[def. 1A8]{Hindley1997STT} calls it \enquote{change of bound variables} and calls \enquote{\( \alpha \)-conversion} the transitive closure of the relation obtained.
+\end{comments}
 \begin{proof}
   This is a restatement of \ref{inf:thm:alpha_equivalence_simplified/ren}.
 \end{proof}
 
 \begin{corollary}\label{thm:alpha_conversion_modified}
-  If \( v \) is not free in \( M[\sigma_{x \mapsto u}] \), then
+  If \( u \) and \( v \) are not free in \( M \), then, for any substitution \( \sigma \),
   \begin{equation}\label{eq:thm:alpha_conversion_modified}
     \qabs u M[\sigma_{x \mapsto u}] \aequiv \qabs v M[\sigma_{x \mapsto v}].
   \end{equation}
 \end{corollary}
 \begin{proof}
-  \Fullref{thm:alpha_conversion} implies that
+  \Fullref{thm:def:lambda_term_alpha_equivalence/equivalence} implies that
   \begin{equation*}
-    \qabs v B[\rho_{x \mapsto v}]
-    \aequiv
-    \qabs u B[\rho_{x \mapsto v}][v \mapsto u].
+    M[\sigma_{x \mapsto v}] \aequiv M[\sigma_{x \mapsto v}].
   \end{equation*}
+
+  % \Fullref{thm:alpha_conversion} implies that
+  % \begin{equation*}
+  %   \qabs v B[\sigma_{x \mapsto v}]
+  %   \aequiv
+  %   \qabs u B[\sigma_{x \mapsto v}][v \mapsto u].
+  % \end{equation*}
 
   Furthermore, \fullref{thm:substitution_chain_contraction} implies that
   \begin{equation*}
-    B[\rho_{x \mapsto v}][v \mapsto u] \aequiv B[\rho_{x \mapsto u}]
+    M[\sigma_{x \mapsto v}][v \mapsto u] \aequiv M[\sigma_{x \mapsto u}]
   \end{equation*}
   and \ref{inf:thm:alpha_equivalence_simplified/ren} implies that
   \begin{equation*}
-    \qabs u B[\rho_{x \mapsto v}][v \mapsto u] \aequiv \qabs u B[\rho_{x \mapsto u}].
+    \qabs v M[\sigma_{x \mapsto v}] \aequiv \qabs u M[\rho_{x \mapsto u}].
   \end{equation*}
 \end{proof}
 
 \begin{algorithm}[Separation of free and bound variables]\label{alg:separation_of_free_and_bound_variables}
   Fix a \( \synlambda \)-term \( M \). We will build an \hyperref[def:lambda_term_alpha_equivalence]{\( \alpha \)-equivalent} term \( M' \) where the \hyperref[def:lambda_variable_freeness]{free and bound variables} are distinct.
 
-  We will use the auxiliary operation, in which \( \Gamma \) is a context of variables that should be avoided:
+  Fix a map \( \sharp \) as in \fullref{def:lambda_substitution} for generating fresh variable identifiers.
+
+  We will use the following auxiliary operation, in which \( \Gamma \) is a context of variables that should be avoided:
   \begin{equation*}
     M'_\Gamma \coloneqq \begin{cases}
-      M,                                 &M \in \op*{Var}, \\
+      M,                                 &M \in \op*{Atom}, \\
       N'_\Gamma \thinspace K'_\Gamma,    &M = NK, \\
       \qabs x N'_{\Gamma,x}              &M = \qabs x N \T{and} x \not\in \Gamma, \\
       \qabs n N'_{\Gamma,n}[x \mapsto n] &M = \qabs x N \T{and} x \in \Gamma,
     \end{cases}
   \end{equation*}
-  where \( n \) is the smallest variable not in \( \op*{Free}(N) \cup \Gamma \). We claim that \( M \aequiv M'_\Gamma \) and that the bound variables in \( M'_\Gamma \) are disjoint from \( \Gamma \).
+  where \( n \coloneqq \sharp(\op*{Free}(N) \cup \Gamma) \). We claim that \( M \aequiv M'_\Gamma \) and that the bound variables in \( M'_\Gamma \) are disjoint from \( \Gamma \).
 
   To obtain the desired \( \synlambda \)-term \( M' \), we simply take \( M'_\Gamma \) with \( \Gamma = \op*{Free}(M) \).
 \end{algorithm}
@@ -1125,7 +1179,7 @@
   We proceed via \fullref{thm:induction_on_rooted_trees} on \( M \) to show that, for any context \( \Gamma \), \( M \aequiv M'_\Gamma \) and the bound variables in \( M'_\Gamma \) are not in \( \Gamma \).
 
   \begin{itemize}
-    \item If \( M \) is a variable, then \( M = M'_\Gamma \), hence they are \( \alpha \)-equivalent by \fullref{thm:def:lambda_term_alpha_equivalence/equivalence}. Furthermore, \( M \) has no bound variables.
+    \item If \( M \) is an atomic term, then \( M = M'_\Gamma \), hence they are \( \alpha \)-equivalent by \fullref{thm:def:lambda_term_alpha_equivalence/equivalence}. Furthermore, \( M \) has no bound variables.
 
     \item If \( M = NK \) and if the inductive hypothesis holds for both \( N \) and \( K \), then the rule \ref{inf:def:lambda_term_alpha_equivalence/app} allows us to conclude that \( M \aequiv M'_\Gamma \) and the inductive hypothesis allows us to conclude that the bound variables of \( M'_\Gamma \) are disjoint from \( \Gamma \).
 
@@ -1151,24 +1205,24 @@
         \parens[\Big]{ \underbrace{\op*{Bound}(N'_{\Gamma,x}) \cap \Gamma }_\varnothing } \cup \parens[\Big]{ \underbrace{\set{ x } \cap \Gamma}_\varnothing }
       \end{align*}
 
-      \item If \( x \in \Gamma \), then \( M' = \qabs n N'_{\Gamma,n}[x \mapsto n] \), where \( n \) is the smallest variable not in \( \op*{Free}(N) \cup \Gamma \).
+      \item If \( x \in \Gamma \), then \( M' = \qabs n N'_{\Gamma,n}[x \mapsto n] \), where \( n = \sharp(\op*{Free}(N) \cup \Gamma) \).
 
       By the inductive hypothesis, we have \( N \aequiv N'_{\Gamma,n} \). \Fullref{thm:substitution_on_alpha_equivalent_terms} implies that
-      \begin{equation*}
+      \begin{equation}\label{eq:alg:separation_of_free_and_bound_variables/proof/final_ind}
         N[x \mapsto n] \aequiv N'_{\Gamma,n}[x \mapsto n].
-      \end{equation*}
+      \end{equation}
 
       Let
       \begin{align*}
         a &\coloneqq n && A \coloneqq N'_{\Gamma,n}[x \mapsto n], \\
         b &\coloneqq x && B \coloneqq N.
       \end{align*}
-      so that, in the notation of \ref{inf:thm:alpha_equivalence_simplified/ren},
+      so that, in the notation of \ref{inf:thm:alpha_equivalence_simplified/ren}, \eqref{eq:alg:separation_of_free_and_bound_variables/proof/final_ind} becomes
       \begin{equation*}
         A \aequiv B[b \mapsto a].
       \end{equation*}
 
-      By definition, \( a = n \) is not free in \( B = N \). Thus, we can apply \ref{inf:thm:alpha_equivalence_simplified/ren} and obtain \( M \ M' \).
+      By definition, \( a = n \) is not free in \( B = N \). Thus, we can apply \ref{inf:thm:alpha_equivalence_simplified/ren} and obtain \( M \aequiv M'_\Gamma \).
 
       Furthermore, by the inductive hypothesis,
       \begin{equation*}

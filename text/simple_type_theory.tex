@@ -1,1 +1,121 @@
 \section{Simple type theory}\label{sec:simple_type_theory}
+
+Unlike untyped lambda calculus, whose presentation is mostly uniform across authors, type theory has many incompatible flavors. We restrict ourselves to simple types with only function type constructors (the adjective \enquote{simple} is discussed in \fullref{rem:dependent_types}) and we introduce support for different type systems through signatures as defined in \fullref{def:simple_type_system}.
+
+\paragraph{Term schemas}\hfill
+
+We begin by presenting a basis for \hyperref[def:simple_type_system]{type rules}.
+
+\begin{definition}\label{def:lambda_term_schema}
+  Similarly to \hyperref[def:propositional_formula_schema]{propositional formula schemas}, we define schemas for \hyperref[def:lambda_term]{\( \synlambda \)-terms}:
+  \begin{bnf*}
+    \bnfprod{variable placeholder} {\bnfpn{Small Latin identifier}}, \\
+    \bnfprod{atom schema}          {\bnfpn{variable placeholder} \bnfor \bnfpn{constant}}, \\
+    \bnfprod{term placeholder}     {\bnfpn{Capital Latin identifier}}, \\
+    \bnfprod{application schema}   {\bnftsq{\( ( \)} \bnfsp \bnfpn{term schema} \bnfsp \bnfpn{term schema} \bnfsp \bnftsq{\( ) \)}}, \\
+    \bnfprod{abstraction schema}   {\bnftsq{\( ( \)} \bnfsp \bnftsq{\( \synlambda \)} \bnfsp \bnfpn{variable schema} \bnfsp \bnftsq{.} \bnfsp \bnfpn{term schema} \bnfsp \bnftsq{\( ) \)}}, \\
+    \bnfprod{term schema}          {\bnfpn{atom schema} \bnfor \bnfpn{application schema} \bnfor} \\
+    \bnfmore                       {\bnfpn{abstraction schema}}.
+  \end{bnf*}
+\end{definition}
+\begin{comments}
+  \item See \fullref{con:schemas_and_instances} for a discussion of schemas in general.
+
+  \item This syntax does not allow us to distinguish between variables and variable placeholders, however the distinction should be quite clear from the context.
+
+  \item Similarly to propositional formula schemas, we will denote arbitrary schemas via capital Greek identifiers like \( \Phi \).
+\end{comments}
+
+\begin{definition}\label{def:lambda_term_schema_instantiation}
+  We will define instantiations for \hyperref[def:lambda_term_schema]{\( \synlambda \)-term schemas} similarly to \hyperref[def:propositional_schema_instantiation]{propositional schema substitutions}, as a \hyperref[def:set_valued_map/partial]{partial map} \( \sigma \) from \hyperref[def:lambda_term_schema]{variable placeholders} to \hyperref[def:lambda_term]{variables} and from \hyperref[def:lambda_term_schema]{\( \synlambda \)-term placeholders} to \hyperref[def:lambda_term]{\( \synlambda \)-terms}.
+
+  We will not concern ourselves with \hyperref[def:lambda_variable_occurrence]{free and bound occurrence} of variables as for \hyperref[def:lambda_term_schema_substitution]{substitution}, but extend this map to arbitrary \( \synlambda \)-term schemas straightforwardly:
+  \begin{equation*}
+    \Phi[\sigma] \coloneqq \begin{cases}
+      M,                               &M \T{is a constant}, \\
+      \sigma(M),                       &M \T{is a variable}, \\
+      \sigma(M),                       &M \T{is a placeholder}, \\
+      N[\sigma] \thinspace K[\sigma],  &M = NK,              \\
+      \qabs {\sigma(x)} N[\sigma],       &M = \qabs x N.       \\
+    \end{cases}
+  \end{equation*}
+
+  Of course, \( \Phi[\sigma] \) is only valid if the variables and placeholders of \( \Phi \) are in the domain of \( \sigma \).
+\end{definition}
+
+\paragraph{Simple type systems}\hfill
+
+\begin{definition}\label{def:simple_type_system}\mimprovised
+  We will define several concepts, which we will collectively call a \term{simple type system} based on a \term{signature} \( \Sigma \). We will be able to formally define a signature in \fullref{def:simple_type_system/signature}.
+
+  \begin{thmenum}[resume=def:simple_type_system]
+    \thmitem{def:simple_type_system/base} Fix a (finite) nonempty \hyperref[def:formal_language/alphabet]{alphabet} \( \op*{Base}_\Sigma \), whose elements we will call \term{base types}. Without further context, we may assume that \( \op*{Base}_\Sigma \) contains only the following:
+    \begin{thmenum}[series=def:simple_type_system/base]
+      \thmitem{def:simple_type_system/base/propositions}\mcite[57]{Church1940STT} The \term{type of propositions} \( \synomicron \).
+      \thmitem{def:simple_type_system/base/iota}\mcite[57]{Church1940STT} The \term{type of individuals} \( \syniota \) (Small Greek iota \( \iota \) with a dot).
+    \end{thmenum}
+
+    Note that, in accordance with \fullref{rem:object_language_dots/terminals}, we place dots over symbols in the object logic.
+
+    Other useful base types include:
+    \begin{thmenum}[resume=def:simple_type_system/base]
+      \thmitem{def:simple_type_system/base/empty}\mcite[\S 4.3.4]{Mimram2020Types} The \term{empty type} \( \syn\Bbbzero \).
+      \thmitem{def:simple_type_system/base/unit}\mcite[\S 4.3.2]{Mimram2020Types} The \term{unit type} \( \syn\Bbbone \).
+    \end{thmenum}
+
+    \thmitem{def:simple_type_system/const} Fix another, possibly empty, alphabet \( \op*{Const}_\Sigma \), whose entries we will use as \hyperref[def:lambda_term/const]{constant \( \synlambda \)-terms}.
+
+    We will need the following constants based on Andrews' system \( \logic{Q}_0 \):
+    \begin{thmenum}
+      \thmitem{def:simple_type_system/const/equality}\mcite[208]{Andrews2002STT} The \term{equality term} \( \synQ \).
+      \thmitem{def:simple_type_system/const/description}\mcite[208]{Andrews2002STT} The \term{definite description term} \( \synI \).
+    \end{thmenum}
+
+    \thmitem{def:simple_type_system/grammar} We will introduce a \hyperref[def:formal_grammar/schema]{grammar schema} whose rules and generated languages we will collectively call the \enquote{\hyperref[con:syntax_semantics_duality]{syntax} of simple type theory}.
+
+    The basic syntax is quite simple:
+    \begin{bnf*}
+      \bnfprod{arrow type}     {\bnfpn{type} \bnfsp \bnftsq{\( \synimplies \)} \bnfsp \bnfpn{type}} \\
+      \bnfprod{type}           {\bnfpn{base type} \bnfor \bnfpn{arrow type}} \\
+      \bnfprod{type assertion} {\bnfpn{term} \bnfsp \bnftsq{\( : \)} \bnfsp \bnfpn{type}}
+    \end{bnf*}
+
+    Additionally, we will need schemas for the above, based on \hyperref[def:lambda_term_schema]{\( \synlambda \)-term schemas}:
+    \begin{bnf*}
+      \bnfprod{type placeholder}      {\bnfpn{Small Greek identifier}} \\
+      \bnfprod{arrow type schema}     {\bnfpn{type schema} \bnfsp \bnftsq{\( \synimplies \)} \bnfsp \bnfpn{type schema}} \\
+      \bnfprod{type schema}           {\bnfpn{base type} \bnfor \bnfpn{type placeholder} \bnfor \bnfpn{arrow type schema}} \\
+      \bnfprod{type assertion schema} {\bnfpn{term schema} \bnfsp \bnftsq{\( : \)} \bnfsp \bnfpn{type schema}}
+    \end{bnf*}
+
+    \thmitem{def:simple_type_system/rules} We define a \term{type rule} as an \hyperref[def:inference_rule]{inference rule} whose entries are type assertion schemas with auxiliary dischargeable assertion schemas allowed on the premises. We can formalize these auxiliary assertions just like how we allowed formula schemas to be attached to natural deduction rules --- see \fullref{def:abstract_propositional_natural_deduction_system}
+
+    \thmitem{def:simple_type_system/types} We will denote by \( \op*{Types}_\Sigma \) the set of all simple types generated from \( \op*{Base}_\Sigma \).
+
+    \thmitem{def:simple_type_system/context}\mcite[def. 2A5]{Hindley1997STT} A \term[en=type-context (\cite[def. 2A5]{Hindley1997STT})]{type context} is a \hyperref[def:logical_context]{logical context} whose entries are type assertions for \hi{distinct} \hi{variables}.
+
+    We say that the assertion \( x: \tau \) is \term{consistent} with the context \( \Gamma \) if \( \Gamma \) contains no type assertion for \( x \).
+
+    \thmitem{def:simple_type_system/signature} We can now define a \term{signature} \( \Sigma \) as a triple \( (\op*{Base}_\Sigma, \op*{Const}_\Sigma, \op*{Rules}_\Sigma) \), where \( \op*{Rules}_\Sigma \) is a set of type rules.
+  \end{thmenum}
+\end{definition}
+\begin{comments}
+  \item Of course, we usually skip subscripts since the signature is clear from the context.
+
+  \item The overall idea of simply typed \( \synlambda \)-calculus with constants comes from \cite{Church1940STT} by Alonzo Church, who previously developed untyped \( \synlambda \)-calculus in \cite{Church1932Untyped}. There are substantial differences, however.
+
+  Our definition is an amalgamation of the above with the following:
+  \begin{itemize}
+    \item Type assertions and contexts are based on \cite[def. 2A4]{Hindley1997STT}. We prefer \enquote{type assertion} to Hindley's \enquote{type assignment}.
+
+    \incite[159]{Mimram2020Types} allows contexts to contain more than one type assertion per term and only considers the last assertion.
+
+    \item Different languages based on the constants used are based on \cite[5]{Farmer2008STTVirtues}. We extend this by also including the base types in the language's signature.
+
+    \item We prefer the term \enquote{arrow type} used by \incite[\S 4.1.1]{Mimram2020Types} to \enquote{function type} used by \incite[10]{TroelstraSchwichtenberg2000Proofs}.
+  \end{itemize}
+\end{comments}
+
+\begin{remark}\label{rem:dependent_types}
+  \todo{Discuss dependent types}
+\end{remark}
