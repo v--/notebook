@@ -40,7 +40,7 @@ class LaTeXTask(WatcherTask):
         return AUX_PATH / self.tex_path.with_suffix(extension).name
 
     @override
-    async def post_process(self, runner: TaskRunner) -> None:  # noqa: PLR0912
+    async def post_process(self, runner: TaskRunner) -> None:
         parser = texoutparse.LatexLogParser()
         requires_rerun = False
         requires_biber_rerun = False

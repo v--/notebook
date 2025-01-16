@@ -145,7 +145,7 @@ class TermSchemaVisitor[T]:
 
 
 class FormulaSchemaVisitor[T]:
-    def visit(self, schema: ExtendedFormulaSchema) -> T:  # noqa: PLR0911
+    def visit(self, schema: ExtendedFormulaSchema) -> T:
         match schema:
             case ConstantFormula():
                 return self.visit_constant(schema)

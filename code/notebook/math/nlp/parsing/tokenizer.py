@@ -36,7 +36,7 @@ class TextTokenizer(Tokenizer[TextToken]):
 
         return WordToken(buffer)
 
-    def parse_step(self, head: str) -> TextToken:  # noqa: PLR0911
+    def parse_step(self, head: str) -> TextToken:
         if head == Whitespace.space.value:
             self.advance()
             return Whitespace.space

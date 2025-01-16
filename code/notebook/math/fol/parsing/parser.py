@@ -159,7 +159,7 @@ class FOLParser(InferenceRuleParserMixin[FOLToken], WhitespaceParserMixin[FOLTok
     def parse_binary_formula(self, *, parse_schema: Literal[True]) -> EqualityFormulaSchema | ConnectiveFormulaSchema: ...
     @overload
     def parse_binary_formula(self, *, parse_schema: bool) -> EqualityFormula | EqualityFormulaSchema | ConnectiveFormula | ConnectiveFormulaSchema: ...
-    def parse_binary_formula(self, *, parse_schema: bool) -> EqualityFormula | EqualityFormulaSchema | ConnectiveFormula | ConnectiveFormulaSchema:  # noqa: PLR0912
+    def parse_binary_formula(self, *, parse_schema: bool) -> EqualityFormula | EqualityFormulaSchema | ConnectiveFormula | ConnectiveFormulaSchema:
         i_start = self.index
 
         assert self.peek() == MiscToken.left_parenthesis

@@ -22,7 +22,7 @@ from .tokens import (
 class FOLTokenizer(IdentifierTokenizerMixin[FOLToken], Tokenizer[FOLToken]):
     signature: FOLSignature
 
-    def parse_step(self, head: str) -> FOLToken:  # noqa: PLR0911
+    def parse_step(self, head: str) -> FOLToken:
         sym = PropConstant.try_match(head) or \
             BinaryConnective.try_match(head) or \
             Quantifier.try_match(head) or \

@@ -78,7 +78,7 @@ class BibParser(WhitespaceParserMixin[BibToken], Parser[BibToken]):
             case _:
                 return str(lookahead[0]) + str(lookahead[1])
 
-    def parse_value(self, key: str, entry_start_i: int, value_start_i: int, *, quotes: bool) -> BibString:  # noqa: PLR0912
+    def parse_value(self, key: str, entry_start_i: int, value_start_i: int, *, quotes: bool) -> BibString:
         if quotes:
             assert self.peek() == MiscToken.quotes
         else:

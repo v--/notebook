@@ -81,7 +81,7 @@ class LaTeXParser(Parser[LaTeXToken]):
 
         raise self.error(f'Unmatched {MiscToken.opening_brace}', i_first_token=env_start_index)
 
-    def parse_step(self, head: LaTeXToken) -> LaTeXNode:  # noqa: PLR0911
+    def parse_step(self, head: LaTeXToken) -> LaTeXNode:
         match head:
             case WordToken():
                 self.advance()

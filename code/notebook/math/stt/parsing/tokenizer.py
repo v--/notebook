@@ -14,7 +14,7 @@ from .tokens import BaseTypeToken, ConstantTermToken, MiscToken, STTToken
 class STTTokenizer(IdentifierTokenizerMixin[STTToken], Tokenizer[STTToken]):
     signature: STTSignature
 
-    def parse_step(self, head: str) -> STTToken:  # noqa: PLR0911
+    def parse_step(self, head: str) -> STTToken:
         if sym := LambdaTermConnective.try_match(head) or \
             SimpleTypeConnective.try_match(head) or \
             TypeAssertionConnective.try_match(head) or \
