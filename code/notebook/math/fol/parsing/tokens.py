@@ -2,7 +2,7 @@ from ....parsing.identifiers import GreekIdentifier, LatinIdentifier
 from ....parsing.tokens import TokenEnum, TokenMixin
 from ....parsing.whitespace import Space
 from ...stt.alphabet import RuleConnective
-from ..alphabet import BinaryConnective, PropConstant, Quantifier, UnaryConnective
+from ..alphabet import BinaryConnective, PropConstant, Quantifier, SchemaConnective, UnaryConnective
 
 
 class CapitalizedLatinString(TokenMixin):
@@ -36,7 +36,7 @@ class SuperscriptToken(TokenEnum):
 
 
 FOLTermToken = FunctionSymbolToken | Space | MiscToken | LatinIdentifier
-FOLFormulaToken = PredicateSymbolToken | Space | MiscToken | PropConstant | UnaryConnective | BinaryConnective | Quantifier | GreekIdentifier
+FOLFormulaToken = PredicateSymbolToken | Space | MiscToken | PropConstant | UnaryConnective | BinaryConnective | Quantifier | GreekIdentifier | SchemaConnective
 
 FOLRuleNameToken = SuperscriptToken | CapitalizedLatinString
 FOLRuleToken = FOLRuleNameToken | RuleConnective

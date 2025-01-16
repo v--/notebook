@@ -6,7 +6,7 @@ from ....parsing.tokenizer import Tokenizer
 from ....parsing.whitespace import Whitespace
 from ....support.unicode import Capitalization, is_greek_string, is_latin_string
 from ...stt.alphabet import RuleConnective
-from ..alphabet import BinaryConnective, PropConstant, Quantifier, UnaryConnective
+from ..alphabet import BinaryConnective, PropConstant, Quantifier, SchemaConnective, UnaryConnective
 from ..signature import FOLSignature
 from .tokens import (
     CapitalizedLatinString,
@@ -28,6 +28,7 @@ class FOLTokenizer(IdentifierTokenizerMixin[FOLToken], Tokenizer[FOLToken]):
             Quantifier.try_match(head) or \
             UnaryConnective.try_match(head) or \
             RuleConnective.try_match(head) or \
+            SchemaConnective.try_match(head) or \
             MiscToken.try_match(head) or \
             SuperscriptToken.try_match(head)
 

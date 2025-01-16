@@ -2,13 +2,13 @@ from collections.abc import Sequence
 
 from ..alphabet import BinaryConnective
 from ..formulas import ConnectiveFormula, Formula, is_conditional
-from ..parsing import parse_formula_schema
+from ..parsing import parse_general_formula_schema
 from .axiomatic_derivation import AxiomaticDerivation
 
 
 IMPLICATIONAL_AXIOMS = [
-    parse_formula_schema('(φ → (ψ → φ))'),
-    parse_formula_schema('((φ → (ψ → θ)) → ((φ → ψ) → (φ → θ)))'),
+    parse_general_formula_schema('(φ → (ψ → φ))'),
+    parse_general_formula_schema('((φ → (ψ → θ)) → ((φ → ψ) → (φ → θ)))'),
 ]
 
 

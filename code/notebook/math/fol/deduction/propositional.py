@@ -1,33 +1,33 @@
 from ..formulas import Formula
-from ..parsing import parse_natural_deduction_rule, parse_propositional_formula
+from ..parsing import parse_general_natural_deduction_rule, parse_propositional_formula
 from .proof_tree import AssumptionTree, ProofTree, RuleApplicationTree, apply, assume
 from .system import NaturalDeductionSystem
 
 
 propositional_natural_deduction_system = NaturalDeductionSystem([
-    parse_natural_deduction_rule('(⊤⁺) ⫢ ⊤'),
-    parse_natural_deduction_rule('(⊤⁻) [⊤] φ ⫢ φ'),
+    parse_general_natural_deduction_rule('(⊤⁺) ⫢ ⊤'),
+    parse_general_natural_deduction_rule('(⊤⁻) [⊤] φ ⫢ φ'),
 
-    parse_natural_deduction_rule('(EFQ) ⊥ ⫢ φ'),
-    parse_natural_deduction_rule('(DNE) [¬φ] ⊥ ⫢ φ'),
+    parse_general_natural_deduction_rule('(EFQ) ⊥ ⫢ φ'),
+    parse_general_natural_deduction_rule('(DNE) [¬φ] ⊥ ⫢ φ'),
 
-    parse_natural_deduction_rule('(¬⁺) [φ] ⊥ ⫢ ¬φ'),
-    parse_natural_deduction_rule('(¬⁻) ¬φ, φ ⫢ ⊥'),
+    parse_general_natural_deduction_rule('(¬⁺) [φ] ⊥ ⫢ ¬φ'),
+    parse_general_natural_deduction_rule('(¬⁻) ¬φ, φ ⫢ ⊥'),
 
-    parse_natural_deduction_rule('(∨⁺ᴸ) φ ⫢ (φ ∨ ψ)'),
-    parse_natural_deduction_rule('(∨⁺ᴿ) ψ ⫢ (φ ∨ ψ)'),
-    parse_natural_deduction_rule('(∨⁻) (φ ∨ ψ), [φ] θ, [ψ] θ ⫢ θ'),
+    parse_general_natural_deduction_rule('(∨⁺ᴸ) φ ⫢ (φ ∨ ψ)'),
+    parse_general_natural_deduction_rule('(∨⁺ᴿ) ψ ⫢ (φ ∨ ψ)'),
+    parse_general_natural_deduction_rule('(∨⁻) (φ ∨ ψ), [φ] θ, [ψ] θ ⫢ θ'),
 
-    parse_natural_deduction_rule('(∧⁺) φ, ψ ⫢ (φ ∧ ψ)'),
-    parse_natural_deduction_rule('(∧⁻ᴸ) (φ ∧ ψ) ⫢ φ'),
-    parse_natural_deduction_rule('(∧⁻ᴿ) (φ ∧ ψ) ⫢ ψ'),
+    parse_general_natural_deduction_rule('(∧⁺) φ, ψ ⫢ (φ ∧ ψ)'),
+    parse_general_natural_deduction_rule('(∧⁻ᴸ) (φ ∧ ψ) ⫢ φ'),
+    parse_general_natural_deduction_rule('(∧⁻ᴿ) (φ ∧ ψ) ⫢ ψ'),
 
-    parse_natural_deduction_rule('(→⁺) [φ] ψ ⫢ (φ → ψ)'),
-    parse_natural_deduction_rule('(→⁻) (φ → ψ), φ ⫢ ψ'),
+    parse_general_natural_deduction_rule('(→⁺) [φ] ψ ⫢ (φ → ψ)'),
+    parse_general_natural_deduction_rule('(→⁻) (φ → ψ), φ ⫢ ψ'),
 
-    parse_natural_deduction_rule('(↔⁺) [φ] ψ, [ψ] φ ⫢ (φ ↔ ψ)'),
-    parse_natural_deduction_rule('(↔⁻ᴸ) (φ ↔ ψ), φ ⫢ ψ'),
-    parse_natural_deduction_rule('(↔⁻ᴿ) (φ ↔ ψ), ψ ⫢ φ')
+    parse_general_natural_deduction_rule('(↔⁺) [φ] ψ, [ψ] φ ⫢ (φ ↔ ψ)'),
+    parse_general_natural_deduction_rule('(↔⁻ᴸ) (φ ↔ ψ), φ ⫢ ψ'),
+    parse_general_natural_deduction_rule('(↔⁻ᴿ) (φ ↔ ψ), ψ ⫢ φ')
 ])
 
 

@@ -111,9 +111,11 @@ def apply(system: NaturalDeductionSystem, rule_name: str, *args: ProofTree, **kw
     rule = system[rule_name]
     assert len(args) == len(rule.premises)
 
-    instantiation = SchemaInstantiation({
-        parse_formula_placeholder(key): value for key, value in kwargs.items()
-    })
+    instantiation = SchemaInstantiation(
+        formula_mapping={
+            parse_formula_placeholder(key): value for key, value in kwargs.items()
+        }
+    )
 
     for subtree, premise in zip(args, rule.premises, strict=True):
         premise_substitution = build_instantiation(premise.main, subtree.conclusion)

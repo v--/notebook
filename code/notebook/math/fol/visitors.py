@@ -7,15 +7,24 @@ from .formulas import (
     ExtendedFormulaSchema,
     Formula,
     FormulaPlaceholder,
-    FormulaSchema,
     NegationFormula,
     NegationFormulaSchema,
     PredicateFormula,
+    PredicateFormulaSchema,
     QuantifierFormula,
     QuantifierFormulaSchema,
     SubstitutionSchema,
 )
-from .terms import FunctionTerm, FunctionTermSchema, Term, TermPlaceholder, TermSchema, Variable, VariablePlaceholder
+from .terms import (
+    ExtendedTermSchema,
+    FunctionTerm,
+    FunctionTermSchema,
+    StarredTermSchema,
+    Term,
+    TermPlaceholder,
+    Variable,
+    VariablePlaceholder,
+)
 
 
 class TermVisitor[T]:
@@ -120,7 +129,7 @@ class FormulaTransformationVisitor(FormulaVisitor[Formula]):
 
 
 class TermSchemaVisitor[T]:
-    def visit(self, schema: TermSchema) -> T:
+    def visit(self, schema: ExtendedTermSchema) -> T:
         match schema:
             case VariablePlaceholder():
                 return self.visit_variable_placeholder(schema)
@@ -131,6 +140,9 @@ class TermSchemaVisitor[T]:
             case FunctionTermSchema():
                 return self.visit_function(schema)
 
+            case StarredTermSchema():
+                return self.visit_starred_schema(schema)
+
     def visit_variable_placeholder(self, schema: VariablePlaceholder) -> T:
         return self.generic_visit(schema)
 
@@ -140,7 +152,10 @@ class TermSchemaVisitor[T]:
     def visit_function(self, schema: FunctionTermSchema) -> T:
         return self.generic_visit(schema)
 
-    def generic_visit(self, schema: TermSchema) -> T:
+    def visit_starred_schema(self, schema: StarredTermSchema) -> T:
+        return self.generic_visit(schema)
+
+    def generic_visit(self, schema: ExtendedTermSchema) -> T:
         raise NotImplementedError
 
 
@@ -152,6 +167,9 @@ class FormulaSchemaVisitor[T]:
 
             case EqualityFormulaSchema():
                 return self.visit_equality(schema)
+
+            case PredicateFormulaSchema():
+                return self.visit_predicate(schema)
 
             case FormulaPlaceholder():
                 return self.visit_formula_placeholder(schema)
@@ -166,12 +184,15 @@ class FormulaSchemaVisitor[T]:
                 return self.visit_quantifier(schema)
 
             case SubstitutionSchema():
-                return self.visit(schema.formula)
+                return self.visit_substitution(schema)
 
     def visit_constant(self, schema: ConstantFormula) -> T:
         return self.generic_visit(schema)
 
     def visit_equality(self, schema: EqualityFormulaSchema) -> T:
+        return self.generic_visit(schema)
+
+    def visit_predicate(self, schema: PredicateFormulaSchema) -> T:
         return self.generic_visit(schema)
 
     def visit_formula_placeholder(self, schema: FormulaPlaceholder) -> T:
@@ -186,5 +207,8 @@ class FormulaSchemaVisitor[T]:
     def visit_quantifier(self, schema: QuantifierFormulaSchema) -> T:
         return self.generic_visit(schema)
 
-    def generic_visit(self, schema: FormulaSchema) -> T:
+    def visit_substitution(self, schema: SubstitutionSchema) -> T:
+        return self.generic_visit(schema)
+
+    def generic_visit(self, schema: ExtendedFormulaSchema) -> T:
         raise NotImplementedError

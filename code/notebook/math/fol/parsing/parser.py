@@ -7,7 +7,7 @@ from ....parsing.mixins.inference_rules import InferenceRuleParserMixin
 from ....parsing.mixins.whitespace import WhitespaceParserMixin
 from ....parsing.parser import Parser
 from ...stt.alphabet import RuleConnective
-from ..alphabet import BinaryConnective, PropConstant, Quantifier, UnaryConnective
+from ..alphabet import BinaryConnective, PropConstant, Quantifier, SchemaConnective, UnaryConnective
 from ..deduction import Marker, NaturalDeductionPremise, NaturalDeductionRule
 from ..formulas import (
     ConnectiveFormula,
@@ -15,18 +15,31 @@ from ..formulas import (
     ConstantFormula,
     EqualityFormula,
     EqualityFormulaSchema,
+    ExtendedFormulaSchema,
     Formula,
     FormulaPlaceholder,
     FormulaSchema,
     NegationFormula,
     NegationFormulaSchema,
     PredicateFormula,
+    PredicateFormulaSchema,
     QuantifierFormula,
     QuantifierFormulaSchema,
+    SubstitutionSchema,
 )
-from ..propositional import propositional_signature
+from ..propositional import PROPOSITIONAL_SIGNATURE
 from ..signature import EMPTY_SIGNATURE, FOLSignature
-from ..terms import FunctionTerm, Term, TermPlaceholder, TermSchema, Variable, VariablePlaceholder
+from ..terms import (
+    ExtendedTermSchema,
+    FunctionTerm,
+    FunctionTermSchema,
+    StarredTermSchema,
+    Term,
+    TermPlaceholder,
+    TermSchema,
+    Variable,
+    VariablePlaceholder,
+)
 from .tokenizer import tokenize_fol_string
 from .tokens import FOLToken, FunctionSymbolToken, MiscToken, PredicateSymbolToken
 
@@ -141,11 +154,27 @@ class FOLParser(InferenceRuleParserMixin[FOLToken], WhitespaceParserMixin[FOLTok
             case LatinIdentifier():
                 return self.parse_variable(parse_schema=parse_schema)
 
+            case GreekIdentifier():
+                return self.parse_term_placeholder()
+
             case FunctionSymbolToken():
                 arity = self.signature.get_function_arity(str(self.peek()))
-                return FunctionTerm(*self._parse_function_like(arity, parse_schema=parse_schema))
+
+                if parse_schema:
+                    return FunctionTermSchema(*self._parse_function_like(arity, parse_schema=True))
+
+                return FunctionTerm(*self._parse_function_like(arity, parse_schema=False))
 
         raise self.error('Unexpected token')
+
+    def parse_extended_term_schema(self) -> ExtendedTermSchema:
+        base_schema = self.parse_term(parse_schema=True)
+
+        if self.is_at_end() or self.peek() != MiscToken.star:
+            return base_schema
+
+        self.advance()
+        return StarredTermSchema(base_schema)
 
     def parse_constant_formula(self) -> ConstantFormula:
         head = self.peek()
@@ -305,11 +334,12 @@ class FOLParser(InferenceRuleParserMixin[FOLToken], WhitespaceParserMixin[FOLTok
                 return self.parse_negation_formula(parse_schema=parse_schema)
 
             case PredicateSymbolToken():
-                if parse_schema:
-                    self.error('No predicate formulas allowed in schemas')
-
                 arity = self.signature.get_predicate_arity(str(self.peek()))
-                return PredicateFormula(*self._parse_function_like(arity, parse_schema=parse_schema))
+
+                if parse_schema:
+                    return PredicateFormulaSchema(*self._parse_function_like(arity, parse_schema=True))
+
+                return PredicateFormula(*self._parse_function_like(arity, parse_schema=False))
 
             case GreekIdentifier():
                 if parse_schema:
@@ -320,9 +350,32 @@ class FOLParser(InferenceRuleParserMixin[FOLToken], WhitespaceParserMixin[FOLTok
             case _:
                 raise self.error('Unexpected token')
 
+    def parse_extended_schema(self) -> ExtendedFormulaSchema:
+        base_schema = self.parse_formula(parse_schema=True)
+
+        if self.is_at_end() or self.peek() != MiscToken.left_bracket:
+            return base_schema
+
+        start_i = self.index
+        self.advance_and_skip_spaces()
+        var = self.parse_variable(parse_schema=True)
+        self.skip_spaces()
+
+        if self.is_at_end() or self.peek() != SchemaConnective.substitution:
+            raise self.error(f'Expected {SchemaConnective.substitution} in a substitution specification', i_first_token=start_i)
+
+        self.advance_and_skip_spaces()
+        dest = self.parse_extended_term_schema()
+
+        if self.is_at_end() or self.peek() != MiscToken.right_bracket:
+            raise self.error('Unclosed substitution specification', i_first_token=start_i)
+
+        self.advance()
+        return SubstitutionSchema(base_schema, var=var, dest=dest)
+
     def parse_premise(self) -> NaturalDeductionPremise:
         discharge: FormulaSchema | None = None
-        start = self.index
+        start_i = self.index
 
         if self.peek() == MiscToken.left_bracket:
             self.advance()
@@ -331,7 +384,7 @@ class FOLParser(InferenceRuleParserMixin[FOLToken], WhitespaceParserMixin[FOLTok
             if self.peek() == MiscToken.right_bracket:
                 self.advance_and_skip_spaces()
             else:
-                raise self.error('Unclosed brackets for discharge schemas', i_first_token=start)
+                raise self.error('Unclosed brackets for discharge schemas', i_first_token=start_i)
 
         main = self.parse_formula(parse_schema=True)
         self.skip_spaces()
@@ -372,15 +425,15 @@ def parse_formula(signature: FOLSignature, string: str) -> Formula:
         return parser.parse_formula(parse_schema=False)
 
 
-def parse_formula_schema(string: str) -> FormulaSchema:
-    tokens = tokenize_fol_string(EMPTY_SIGNATURE, string)
-
-    with FOLParser(tokens, EMPTY_SIGNATURE) as parser:
-        return parser.parse_formula(parse_schema=True)
-
-
 def parse_propositional_formula(string: str) -> Formula:
-    return parse_formula(propositional_signature, string)
+    return parse_formula(PROPOSITIONAL_SIGNATURE, string)
+
+
+def parse_formula_schema(signature: FOLSignature, string: str) -> ExtendedFormulaSchema:
+    tokens = tokenize_fol_string(signature, string)
+
+    with FOLParser(tokens, signature) as parser:
+        return parser.parse_extended_schema()
 
 
 def parse_formula_placeholder(string: str) -> FormulaPlaceholder:
@@ -390,6 +443,10 @@ def parse_formula_placeholder(string: str) -> FormulaPlaceholder:
         return parser.parse_formula_placeholder()
 
 
+def parse_general_formula_schema(string: str) -> ExtendedFormulaSchema:
+    return parse_formula_schema(EMPTY_SIGNATURE, string)
+
+
 def parse_marker(string: str) -> Marker:
     tokens = tokenize_fol_string(EMPTY_SIGNATURE, string)
 
@@ -397,8 +454,12 @@ def parse_marker(string: str) -> Marker:
         return parser.parse_marker()
 
 
-def parse_natural_deduction_rule(string: str) -> NaturalDeductionRule:
-    tokens = tokenize_fol_string(EMPTY_SIGNATURE, string)
+def parse_natural_deduction_rule(signature: FOLSignature, string: str) -> NaturalDeductionRule:
+    tokens = tokenize_fol_string(signature, string)
 
-    with FOLParser(tokens, EMPTY_SIGNATURE) as parser:
+    with FOLParser(tokens, signature) as parser:
         return parser.parse_rule()
+
+
+def parse_general_natural_deduction_rule(string: str) -> NaturalDeductionRule:
+    return parse_natural_deduction_rule(EMPTY_SIGNATURE, string)

@@ -2,7 +2,7 @@ from typing import NamedTuple, TypeGuard
 
 from ...parsing.identifiers import GreekIdentifier
 from .alphabet import BinaryConnective, PropConstant, Quantifier, SchemaConnective, UnaryConnective
-from .terms import FunctionLikeTerm, Term, TermSchema, Variable, VariablePlaceholder
+from .terms import ExtendedTermSchema, FunctionLikeTerm, Term, TermSchema, Variable, VariablePlaceholder
 
 
 class ConstantFormula(NamedTuple):
@@ -20,7 +20,7 @@ class EqualityFormula(NamedTuple):
         return f'({self.a} = {self.b})'
 
 
-class PredicateFormula(FunctionLikeTerm['Term']):
+class PredicateFormula(FunctionLikeTerm[Term]):
     pass
 
 
@@ -104,6 +104,10 @@ class EqualityFormulaSchema(NamedTuple):
         return f'({self.a} = {self.b})'
 
 
+class PredicateFormulaSchema(FunctionLikeTerm[TermSchema]):
+    pass
+
+
 class NegationFormulaSchema(NamedTuple):
     sub: 'FormulaSchema'
 
@@ -129,20 +133,13 @@ class QuantifierFormulaSchema(NamedTuple):
         return f'{self.quantifier.value}{self.variable}.{self.sub}'
 
 
-FormulaSchema = FormulaPlaceholder | ConstantFormula | EqualityFormulaSchema | NegationFormulaSchema | ConnectiveFormulaSchema | QuantifierFormulaSchema
-
-
-class StarredTermSchema(NamedTuple):
-    term: TermSchema
-
-    def __str__(self) -> str:
-        return f'{self.term}*'
+FormulaSchema = FormulaPlaceholder | ConstantFormula | EqualityFormulaSchema | PredicateFormulaSchema | NegationFormulaSchema | ConnectiveFormulaSchema | QuantifierFormulaSchema
 
 
 class SubstitutionSchema(NamedTuple):
     formula: FormulaSchema
     var: VariablePlaceholder
-    dest: StarredTermSchema
+    dest: ExtendedTermSchema
 
     def __str__(self) -> str:
         return f'{self.formula}[{self.var} {SchemaConnective.substitution} {self.dest}]'

@@ -7,57 +7,122 @@ from .formulas import (
     ConnectiveFormula,
     ConnectiveFormulaSchema,
     ConstantFormula,
+    EqualityFormula,
+    EqualityFormulaSchema,
     ExtendedFormulaSchema,
     Formula,
     FormulaPlaceholder,
     NegationFormula,
     NegationFormulaSchema,
+    PredicateFormula,
+    PredicateFormulaSchema,
     QuantifierFormula,
     QuantifierFormulaSchema,
+    SubstitutionSchema,
 )
-from .terms import Variable
-from .visitors import FormulaSchemaVisitor
+from .substitution import substitute_in_formula
+from .terms import FunctionTerm, FunctionTermSchema, Term, TermPlaceholder, Variable, VariablePlaceholder
+from .visitors import FormulaSchemaVisitor, TermSchemaVisitor
 
 
 class SchemaInstantiationError(FOLError):
     pass
 
 
-@dataclass(frozen=True)
+def coincide_on_common_keys[T, S](a: Mapping[T, S], b: Mapping[T, S]) -> bool:
+    common_keys = set(set(a.keys()) & set(b.keys()))
+    return all(a[pl] == b[pl] for pl in common_keys)
+
+
 class SchemaInstantiation:
-    mapping: Mapping[FormulaPlaceholder, Formula]
+    formula_mapping: Mapping[FormulaPlaceholder, Formula]
+    variable_mapping: Mapping[VariablePlaceholder, Variable]
+    term_mapping: Mapping[TermPlaceholder, Term]
+
+    def __init__(
+        self,
+        *,
+        formula_mapping: Mapping[FormulaPlaceholder, Formula] | None = None,
+        variable_mapping: Mapping[VariablePlaceholder, Variable] | None = None,
+        term_mapping: Mapping[TermPlaceholder, Term] | None = None
+    ) -> None:
+        self.formula_mapping = formula_mapping or {}
+        self.variable_mapping = variable_mapping or {}
+        self.term_mapping = term_mapping or {}
+
+    def is_instantiation_compatible(self, other: 'SchemaInstantiation') -> bool:
+        return coincide_on_common_keys(self.formula_mapping, other.formula_mapping) and \
+            coincide_on_common_keys(self.variable_mapping, other.variable_mapping) and \
+            coincide_on_common_keys(self.term_mapping, other.term_mapping)
 
     def __or__(self, other: object) -> 'SchemaInstantiation | None':
         if not isinstance(other, SchemaInstantiation):
             return NotImplemented
 
-        a = self.mapping
-        b = other.mapping
-        common_keys = set(set(a.keys()) & set(b.keys()))
+        if not self.is_instantiation_compatible(other):
+            return None
 
-        if all(a[pl] == b[pl] for pl in common_keys):
-            return SchemaInstantiation({**a, **b})
-
-        return None
-
-
-EMPTY_SUBSTITUTION = SchemaInstantiation({})
+        return SchemaInstantiation(
+            formula_mapping={**self.formula_mapping, **other.formula_mapping},
+            variable_mapping={**self.variable_mapping, **other.variable_mapping},
+            term_mapping={**self.term_mapping, **other.term_mapping}
+        )
 
 
-@dataclass(frozen=True)
+EMPTY_SUBSTITUTION = SchemaInstantiation()
+
+
+class TermInstantiationVisitor(TermSchemaVisitor[Term]):
+    instantiation: SchemaInstantiation
+
+    def __init__(self, instantiation: SchemaInstantiation) -> None:
+        self.instantiation = instantiation
+
+    @override
+    def visit_variable_placeholder(self, schema: VariablePlaceholder) -> Variable:
+        if schema not in self.instantiation.variable_mapping:
+            raise SchemaInstantiationError(f'No specification of how to instantiate the variable placeholder {schema}')
+
+        return self.instantiation.variable_mapping[schema]
+
+    @override
+    def visit_term_placeholder(self, schema: TermPlaceholder) -> Term:
+        if schema not in self.instantiation.term_mapping:
+            raise SchemaInstantiationError(f'No specification of how to instantiate the term placeholder {schema}')
+
+        return self.instantiation.term_mapping[schema]
+
+    @override
+    def visit_function(self, schema: FunctionTermSchema) -> FunctionTerm:
+        return FunctionTerm(schema.name, [self.visit(arg) for arg in schema.arguments])
+
+
 class InstantiationVisitor(FormulaSchemaVisitor[Formula]):
     instantiation: SchemaInstantiation
+    term_visitor: TermInstantiationVisitor
+
+    def __init__(self, instantiation: SchemaInstantiation) -> None:
+        self.instantiation = instantiation
+        self.term_visitor = TermInstantiationVisitor(instantiation)
 
     @override
     def visit_constant(self, schema: ConstantFormula) -> ConstantFormula:
         return ConstantFormula(schema.value)
 
     @override
-    def visit_formula_placeholder(self, schema: FormulaPlaceholder) -> Formula:
-        if schema not in self.instantiation.mapping:
-            raise SchemaInstantiationError(f'No specification of how to interpret {schema}')
+    def visit_equality(self, schema: EqualityFormulaSchema) -> EqualityFormula:
+        return EqualityFormula(self.term_visitor.visit(schema.a), self.term_visitor.visit(schema.b))
 
-        return self.instantiation.mapping[schema]
+    @override
+    def visit_predicate(self, schema: PredicateFormulaSchema) -> PredicateFormula:
+        return PredicateFormula(schema.name, [self.term_visitor.visit(arg) for arg in schema.arguments])
+
+    @override
+    def visit_formula_placeholder(self, schema: FormulaPlaceholder) -> Formula:
+        if schema not in self.instantiation.formula_mapping:
+            raise SchemaInstantiationError(f'No specification of how to instantiate the formula placeholder {schema}')
+
+        return self.instantiation.formula_mapping[schema]
 
     @override
     def visit_negation(self, schema: NegationFormulaSchema) -> NegationFormula:
@@ -79,6 +144,13 @@ class InstantiationVisitor(FormulaSchemaVisitor[Formula]):
             self.visit(schema.sub)
         )
 
+    @override
+    def visit_substitution(self, schema: SubstitutionSchema) -> Formula:
+        formula = self.visit(schema.formula)
+        var = self.term_visitor.visit_variable_placeholder(schema.var)
+        dest = self.term_visitor.visit(schema.dest)
+        return substitute_in_formula(formula, var, dest)
+
 
 def instantiate_schema(schema: ExtendedFormulaSchema, instantiation: SchemaInstantiation) -> Formula:
     return InstantiationVisitor(instantiation).visit(schema)
@@ -91,13 +163,13 @@ class BuildInterpretationVisitor(FormulaSchemaVisitor[SchemaInstantiation | None
     @override
     def visit_constant(self, schema: ConstantFormula) -> SchemaInstantiation | None:
         if isinstance(self.formula, ConstantFormula) and self.formula.value == schema.value:
-            return SchemaInstantiation({})
+            return SchemaInstantiation()
 
         return None
 
     @override
     def visit_formula_placeholder(self, schema: FormulaPlaceholder) -> SchemaInstantiation:
-        return SchemaInstantiation({schema: self.formula})
+        return SchemaInstantiation(formula_mapping={schema: self.formula})
 
     @override
     def visit_negation(self, schema: NegationFormulaSchema) -> SchemaInstantiation | None:

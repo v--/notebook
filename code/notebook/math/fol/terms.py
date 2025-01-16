@@ -49,3 +49,13 @@ class FunctionTermSchema(FunctionLikeTerm['TermSchema']):
 
 
 TermSchema = VariablePlaceholder | TermPlaceholder | FunctionTermSchema
+
+
+class StarredTermSchema(NamedTuple):
+    term: TermSchema
+
+    def __str__(self) -> str:
+        return f'{self.term}*'
+
+
+ExtendedTermSchema = TermSchema | StarredTermSchema

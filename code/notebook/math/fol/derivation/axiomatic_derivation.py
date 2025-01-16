@@ -6,11 +6,11 @@ from ..deduction.proof_tree import AssumptionTree, NaturalDeductionSystem, Proof
 from ..deduction.rules import NaturalDeductionRule
 from ..formulas import ExtendedFormulaSchema, Formula, is_conditional
 from ..instantiation import SchemaInstantiation, build_instantiation, is_schema_instance
-from ..parsing import parse_formula_placeholder, parse_natural_deduction_rule
+from ..parsing import parse_formula_placeholder, parse_general_natural_deduction_rule
 from .exceptions import AxiomaticDerivationError
 
 
-MODUS_PONENS = parse_natural_deduction_rule('(MP) (φ → ψ), φ ⫢ ψ')
+MODUS_PONENS = parse_general_natural_deduction_rule('(MP) (φ → ψ), φ ⫢ ψ')
 
 
 class ModusPonensConfig(NamedTuple):
@@ -131,10 +131,12 @@ def derivation_to_proof_tree(derivation: AxiomaticDerivation, used_markers: Coll
     conditional_subtree = derivation_to_proof_tree(derivation.truncate(mp_config.conditional_index), used_markers)
     markers = {ass.marker for ass in conditional_subtree.iter_open_assumptions()}
     antecedent_subtree = derivation_to_proof_tree(derivation.truncate(mp_config.antecedent_index), {*used_markers, *markers})
-    instantiation = SchemaInstantiation({
-        parse_formula_placeholder('φ'): antecedent_subtree.conclusion,
-        parse_formula_placeholder('ψ'): conclusion
-    })
+    instantiation = SchemaInstantiation(
+        formula_mapping={
+            parse_formula_placeholder('φ'): antecedent_subtree.conclusion,
+            parse_formula_placeholder('ψ'): conclusion
+        }
+    )
 
     return RuleApplicationTree(
         system=system,
