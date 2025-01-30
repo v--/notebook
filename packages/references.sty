@@ -97,6 +97,12 @@
       { \citeauthor{#3}~in~{\tl_use:N \l_inset_tl} }
   }
 
+\NewDocumentCommand \bycite {om}
+  {
+    {\IfValueTF {#1} { \cite[#1]{#2} } { \cite{#2} }}
+    ~~by~\citeauthor{#2}
+  }
+
 %
 \tl_new:N \l_nb_fullref_name_tl
 \int_new:N \l_nb_nameref_symbol_count
@@ -131,10 +137,14 @@
     \textbf{TODO}:~#1
   }
 
-% Based on https://tex.stackexchange.com/a/550323
+% Based mostly on https://tex.stackexchange.com/a/160035
 \NewDocumentCommand \taglabel {O{}m}
   {
-    \def\@currentlabel{#1}\label{#2}
+    \phantomsection
+    \protected@write \@auxout {}
+      {
+        \string \newlabel {#2} { {#1} {\thepage} {\@currentlabelname} {\@currentHref} {} }
+      }
   }
 
 \ExplSyntaxOff

@@ -1,0 +1,677 @@
+\section{Lambda term reductions}\label{sec:lambda_term_reductions}
+
+\paragraph{Subterm occurrences}
+
+\begin{definition}\label{def:lambda_subterm_occurrence}\mimprovised
+  An \term{occurrence} of a subterm \( N \) of \( M \) is a \hyperref[def:tree/subtree]{subtree} of the \hyperref[con:abstract_syntax_tree]{abstract syntax tree} \( T(M) \) of that is \hyperref[def:labeled_tree/homomorphism]{isomorphic} to \( T(N) \).
+\end{definition}
+\begin{comments}
+  \item From \fullref{thm:propositional_ast_subformula} we conclude that \( N \) is a subterm of \( M \) if and only if it has at least one occurrence in \( M \).
+\end{comments}
+
+\begin{definition}\label{def:subterm_occurrence_ordering}\mimprovised
+  We will introduce two \hyperref[def:partially_ordered_set]{partial orders} on the \hyperref[def:lambda_subterm_occurrence]{subterm occurrences} of \( M \).
+
+  Consider the occurrences \( R \) and \( S \) of (possibly different) subterms of \( T(M) \).
+
+  \begin{thmenum}
+    \thmitem{def:subterm_occurrence_ordering/vertical} Under the \term{vertical ordering}, \( R \leq S \) if \( R \) is a \hyperref[def:tree/subtree]{subtree} of \( S \).
+
+    We call the \hyperref[def:extremal_points/maximal_and_minimal_element]{maximal} occurrences under this ordering \term{outermost}, and the minimal occurrences --- \term{innermost}. This terminology is useful mostly when restricted to certain kinds of subterms like \hyperref[def:beta_eta_reduction]{\( \beta \)-redexes}.
+
+    \thmitem{def:subterm_occurrence_ordering/horizontal} Under the \term{horizontal ordering}, \( R \leq S \) if there exist an application subtree
+    \begin{equation*}
+      \begin{aligned}
+        \includegraphics[page=1]{output/def__subterm_occurrence_ordering}
+      \end{aligned}
+    \end{equation*}
+    of \( T(M) \) where \( R \) is a subtree of \( A \) and \( S \) is a subtree of \( B \).
+
+    We call the maximal and minimal elements under this ordering \term{leftmost} and \term{rightmost}, respectively. Again, this terminology is useful mostly when restricted to certain kinds of subterms.
+  \end{thmenum}
+\end{definition}
+\begin{comments}
+  \item This definition is loosely based on \cite[138]{Mimram2020Types}, but differs in several aspects:
+  \begin{itemize}
+    \item We consider arbitrary subterm occurrences rather than redexes.
+    \item We use syntax trees for formalizing subterm occurrences.
+    \item We call \enquote{vertical order} what Mimram calls \enquote{imbrication order}.
+  \end{itemize}
+
+  Other authors like \incite[\S 8.4.7]{Barendregt1984LambdaCalculus} only consider horizontal ordering.
+\end{comments}
+
+\begin{example}\label{ex:def:subterm_occurrence_ordering}
+  We list examples of \hyperref[def:subterm_occurrence_ordering]{subterm ordering}:
+  \begin{thmenum}
+    \thmitem{ex:def:subterm_occurrence_ordering/omega} Consider the term \( \ref{eq:ex:def:lambda_term/combinator/big_omega} = \omega \omega \), where \( \ref{eq:ex:def:lambda_term/combinator/omega} = \qabs \synx \synx \synx \).
+
+    It consists of two occurrences of \( \omega \), so naturally one of them is leftmost and one is rightmost.
+
+    On the other hand, the two occurrences are not comparable with respect to vertical ordering. Both occurrences of \( \omega \) are outermost and innermost, as are all \( 4 \) occurrences of \( \synx \).
+
+    \thmitem{ex:def:subterm_occurrence_ordering/c0_omega_i} Consider the term
+    \begin{equation*}
+      \ref{eq:ex:def:beta_eta_reduction/numerals/c0} \ref{eq:ex:def:lambda_term/combinator/big_omega} \ref{eq:ex:def:lambda_term/combinator/i}
+      =
+      (C_0 \Omega) I
+      =
+      \parens[\Bigg]{ \parens[\Big]{ \qabs \synx \syny \syny } \parens[\Big]{ (\qabs \synx \synx \synx) (\qabs \synx \synx \synx) } } \parens[\Bigg]{ \qabs \synx \synx }.
+    \end{equation*}
+
+    Its abstract syntax tree in given in \cref{fig:ex:def:subterm_occurrence_ordering/c0_omega_i}.
+
+    \begin{figure}[!ht]
+      \hfill
+      \includegraphics[align=t, page=1]{output/ex__def__subterm_occurrence_ordering}
+      \hfill
+      \includegraphics[align=t, page=2]{output/ex__def__subterm_occurrence_ordering}
+      \hfill
+      \hfill
+      \caption{The abstract syntax tree of the \( \synlambda \)-term \( C_0 \Omega I \) from \fullref{ex:def:subterm_occurrence_ordering/c0_omega_i}.}\label{fig:ex:def:subterm_occurrence_ordering/c0_omega_i}
+    \end{figure}
+
+    \begin{itemize}
+      \item As discussed in \fullref{ex:def:subterm_occurrence_ordering/omega}, \( \Omega \) has two occurrences of \( \omega \), and hence so does \( C_0 \Omega I \).
+
+      \item \( C_0 \Omega I \) has five occurrences of \( \synx \) --- the leftmost one is in the leftmost occurrence of \( \Omega \), while the rightmost one is in the (only) occurrence of \( I \).
+    \end{itemize}
+  \end{thmenum}
+\end{example}
+
+\paragraph{\( \beta \) and \( \eta \)-reductions}
+
+\begin{definition}\label{def:alpha_reflexive}\mimprovised
+  We say that the binary relation \( {\sim} \) between \( \synlambda \)-terms is \term{\( \alpha \)-reflexive} if \( M \aequiv N \) implies \( M \sim N \).
+
+  Correspondingly, we define the \term{\( \alpha \)-reflexive closure} of a binary relation as its set-theoretic union with \( {\aequiv} \).
+\end{definition}
+\begin{comments}
+  \item This definition is not established. It is based on reflexive closures discussed in \fullref{def:relation_closures/reflexive}. It allows us to make explicit the dependency on \( \alpha \)-equivalence, which is implicit in our primary sources --- \cite[ch. 3]{Barendregt1984LambdaCalculus}, \cite[def. 1B2]{Hindley1997STT} and \cite[191]{Герасимов2011Вычислимость}.
+\end{comments}
+
+\begin{definition}\label{def:lambda_reduction}\mcite[315]{Barendregt1984LambdaCalculus}
+  Via \fullref{thm:recursively_defined_relations}, we will define different kinds of \enquote{\( {\Anon} \)-reduction} relations simultaneously. The symbol \enquote{\( {\Anon} \)} is inessential to the formalisms presented here; we use it as a placeholder for \enquote{\( \beta \)}, \enquote{\( \eta \)}, \enquote{\( \delta \)}, \enquote{\( \beta\eta \)}, other combinations thereof and potentially other kinds of reductions.
+
+  \begin{thmenum}
+    \thmitem{def:lambda_reduction/single} A \term{single-step reduction} is a relation generated by or otherwise satisfying the following rules:
+    \begin{paracol}{3}
+      \begin{nthcolumn}{0}
+        \begin{equation*}\taglabel[\ensuremath{ \logic{App}_{\Anon}^L }]{inf:def:lambda_reduction/app_left}
+          \begin{prooftree}
+            \hypo{ A \pred C }
+            \infer1[\ref{inf:def:lambda_reduction/app_left}]{ AB \pred CB }
+          \end{prooftree}
+        \end{equation*}
+      \end{nthcolumn}
+
+      \begin{nthcolumn}{1}
+        \begin{equation*}\taglabel[\ensuremath{ \logic{App}_{\Anon}^R }]{inf:def:lambda_reduction/app_right}
+          \begin{prooftree}
+            \hypo{ B \pred D }
+            \infer1[\ref{inf:def:lambda_reduction/app_right}]{ AB \pred AD }
+          \end{prooftree}
+        \end{equation*}
+      \end{nthcolumn}
+
+      \begin{nthcolumn}{2}
+        \begin{equation*}\taglabel[\ensuremath{ \logic{Abs}_{\Anon} }]{inf:def:lambda_reduction/abs}
+          \begin{prooftree}
+            \hypo{ A \pred B }
+            \infer1[\ref{inf:def:lambda_reduction/abs}]{ \qabs x A \pred \qabs x B }
+          \end{prooftree}
+        \end{equation*}
+      \end{nthcolumn}
+    \end{paracol}
+
+    We make the reliance on \( \alpha \)-equivalence explicit via the following rule:
+    \begin{equation*}\taglabel[\ensuremath{ \logic{Alpha}_{\Anon} }]{inf:def:lambda_reduction/alpha}
+      \begin{prooftree}
+        \hypo{ A \aequiv B }
+        \hypo{ B \pred C }
+        \hypo{ C \aequiv D }
+        \infer3[\ref{inf:def:lambda_reduction/alpha}]{ A \pred D }.
+      \end{prooftree}
+    \end{equation*}
+
+    Since \hyperref[def:simple_type_system/atom]{atomic terms} are \( \alpha \)-equivalent to themselves, there is no need to separately consider them.
+
+    \thmitem{def:lambda_reduction/multi} For each single-step reduction \( {\pred} \) defined above, we define the corresponding \term{multi-step \( {\Anon} \)-reduction} \( {\pred*} \) as the \hyperref[def:relation_closures/transitive]{transitive} and \hyperref[def:alpha_reflexive]{\( \alpha \)-reflexive closure} of \( {\pred} \). Which closure is taken first is immaterial due to \ref{inf:def:lambda_reduction/alpha} --- \( A \aequiv B \pred C \) already implies \( A \pred C \).
+
+    Without further context, \enquote{\( {\Anon} \)-reduction} we will refer to the multi-step \( {\Anon} \)-reduction.
+
+    \thmitem{def:lambda_reduction/equivalence} If we instead take the
+    \hyperref[def:relation_closures/transitive]{transitive} and \hyperref[def:alpha_reflexive]{\( \alpha \)-reflexive} closure of the \hyperref[def:relation_closures/symmetric]{symmetric closure} of \( \pred \), we obtain \term{\( {\Anon} \)-equivalence}, which we denote by \( {\equivrel{\Anon}} \).
+  \end{thmenum}
+\end{definition}
+
+\begin{definition}\label{def:beta_eta_reduction}\mcite[def. 1B1; 1C1]{Hindley1997STT}
+  Consider the following rules:
+  \begin{paracol}{2}
+    \begin{leftcolumn}
+      \begin{equation*}\taglabel[\ensuremath{ \logic{Red}_\beta }]{inf:def:beta_eta_reduction/beta}
+        \begin{prooftree}
+          \infer0[\ref{inf:def:beta_eta_reduction/beta}]{ \underbrace{(\qabs x M) N}_{\T{\term{\( \beta \)-redex}}} \bred \underbrace{M[x \mapsto N]}_{\T{\term{\( \beta \)-contractum}}} },
+        \end{prooftree}
+      \end{equation*}
+    \end{leftcolumn}
+
+    \begin{rightcolumn}
+      \begin{equation*}\taglabel[\ensuremath{ \logic{Red}_\eta }]{inf:def:beta_eta_reduction/eta}
+        \begin{prooftree}
+          \hypo{ x \not\in \op*{Free}(M) }
+          \infer1[\ref{inf:def:beta_eta_reduction/eta}]{ \underbrace{\qabs x M x}_{\T{\term{\( \eta \)-redex}}} \ered \underbrace{M}_{\mathclap{\T{\term{\( \eta \)-contractum}}}} }.
+        \end{prooftree}
+      \end{equation*}
+    \end{rightcolumn}
+  \end{paracol}
+
+  Here \( \beta \)-redexes and \( \eta \)-redexes are \hyperref[def:lambda_subterm_occurrence]{subterm occurrences} rather than subterms, so a single term may have isomorphic redexes.
+
+  We define \term{\( \beta \)-reduction} \( {\bred} \) as the relation generated by the rules of \fullref{def:lambda_reduction/single} extended with \ref{inf:def:beta_eta_reduction/beta}. We similarly define \term{\( \eta \)-reduction} \( {\ered} \) based on \ref{inf:def:beta_eta_reduction/eta}. Combining both, we obtain \term{\( \beta\eta \)-reduction} \( {\redrel{\beta\eta}} \).
+\end{definition}
+\begin{comments}
+  \item Of course, we also consider equivalences and multi-step reductions based on the above single-step reductions.
+\end{comments}
+
+\begin{example}\label{ex:def:beta_eta_reduction}
+  We list examples of \hyperref[def:beta_eta_reduction]{\( \beta \) and \( \eta \)-reduction}:
+  \begin{thmenum}
+    \thmitem{ex:def:beta_eta_reduction/i} Consider the combinator \( \ref{eq:ex:def:lambda_term/combinator/i} = \qabs \synx \synx \).
+
+    For every \( \synlambda \)-term \( A \) we have \( IA \bred A \). This explains the naming --- \( I \) stands for \enquote{identity}.
+
+    \thmitem{ex:def:beta_eta_reduction/k} Consider the combinator \( \ref{eq:ex:def:lambda_term/combinator/k} = \qabs \synx \qabs \syny \syny \synx \).
+
+    For every pair of terms \( A \) and \( B \), we have
+    \begin{equation*}
+      KAB
+      =
+      (\qabs {\hi{\synx}} \qabs \syny \hi{\synx}) \hi{A} B
+      \bred
+      (\qabs {\hi{v}} A) \hi{B}
+      \bred
+      A.
+    \end{equation*}
+
+    In accordance with \fullref{thm:lambda_substitution_single_rule}, \( v \) is a variable that is not free in \( A \). If \( A \) is a combinator, then \( v = \syny \).
+
+    \thmitem{ex:def:beta_eta_reduction/s} Consider the combinator \( \ref{eq:ex:def:lambda_term/combinator/s} = \qabs \synx \qabs \syny \qabs \synz \synx \synz (\syny \synz) \).
+
+    For every triple of \( \synlambda \)-terms \( A \), \( B \) and \( C \), we have
+    \begin{balign*}
+      SABC
+      &=
+      \parens[\Big]{ \qabs {\hi{\synx}} \qabs \syny \qabs \synz \hi{\synx} \synz (\syny \synz) } \hi{A}BC
+      \bred \\ &\bred
+      \parens[\Big]{ \qabs {\hi{u}} \qabs v A v (\hi{u} v) } \hi{B}C
+      \bred \\ &\bred
+      \parens[\Big]{ \qabs {\hi{w}} A \hi{w} (B \hi{w}) } \hi{C}
+      \bred \\ &\bred
+      A C (B C).
+    \end{balign*}
+
+    Again, the variables \( u \), \( v \) and \( w \) are chosen in accordance with \fullref{thm:lambda_substitution_single_rule}.
+
+    \thmitem{ex:def:beta_eta_reduction/skk} \Fullref{ex:def:beta_eta_reduction/k} and \fullref{ex:def:beta_eta_reduction/s} imply that
+    \begin{equation*}
+      SKK \bred* \qabs \synz \underbrace{K \synz (K \synz)}_\synz \bred* \qabs \synz \synz \aequiv I.
+    \end{equation*}
+
+    \thmitem{ex:def:beta_eta_reduction/beta_and_eta} There may be multiple ways to derive the same term, especially with both \( \beta \)-reduction and \( \eta \)-reduction available.
+
+    For example, we have
+    \begin{equation*}
+      (\qabs {\hi{\synx}} \qabs \syny \hi{\synx} \syny) \hi{A} B \bred (\qabs v A v) B,
+    \end{equation*}
+    where \( v \) is not free in \( A \).
+
+    The latter term is a \( \beta \)-redex, hence we can use \( \beta \)-reduction again:
+    \begin{equation*}
+      (\qabs {\hi{v}} A \hi{v}) \hi{B} \bred AB.
+    \end{equation*}
+
+    But the first component is an \( \eta \)-redex, and we can also use \( \eta \)-reduction to achieve the same result:
+    \begin{equation*}
+      (\qabs v A v) B \ered AB.
+    \end{equation*}
+
+    \thmitem{ex:def:beta_eta_reduction/omega} Consider the combinator \( \ref{eq:ex:def:lambda_term/combinator/omega_n} = (\qabs \synx \synx^n) \).
+
+    We have
+    \begin{equation*}
+      \omega_n \omega_n
+      =
+      (\qabs {\hi{\synx}} \hi{\synx^n}) \hi{\omega}
+      \bred
+      \omega_n^n.
+    \end{equation*}
+
+    In particular, for \( \Omega = \omega \omega = \omega_2 \omega_2 \),
+    \begin{equation*}
+      \Omega \bred \Omega \bred \Omega \bred \Omega \bred \cdots
+    \end{equation*}
+    and, for \( \omega_3 \omega_3 \),
+    \begin{equation*}
+      (\omega_3)^2 \bred (\omega_3)^3 \bred (\omega_3)^4 \bred \cdots.
+    \end{equation*}
+
+    \thmitem{ex:def:beta_eta_reduction/numerals}\mcite[\S 6.4.4]{Barendregt1984LambdaCalculus} For every natural number \( n \), we can define the \term{Church numeral}
+    \begin{equation*}\taglabel[\ensuremath{ C_n }]{eq:ex:def:beta_eta_reduction/numerals}
+      \ref{eq:ex:def:beta_eta_reduction/numerals} \coloneqq \qabs \synx \qabs \syny \underbrace{\synx^n \syny}_{\mathclap{(\synx \cdots (\synx (\synx \syny)) \cdots)}}
+    \end{equation*}
+
+    Note that in this definition \( \synx^n \syny \) associates to the right, technically breaking our convention from \fullref{rem:lambda_term_parentheses/left_associative}.
+
+    In particular, the base case is
+    \begin{equation*}\taglabel[\ensuremath{ C_0 }]{eq:ex:def:beta_eta_reduction/numerals/c0}
+      \ref{eq:ex:def:beta_eta_reduction/numerals/c0} = \qabs \synx \qabs \syny \syny
+    \end{equation*}
+
+    Consider the \term{successor} term
+    \begin{equation*}\taglabel[\ensuremath{ S^+ }]{eq:ex:def:beta_eta_reduction/numerals/succ}
+      \ref{eq:ex:def:beta_eta_reduction/numerals/succ} \coloneqq \qabs \synf \qabs \synx \qabs \syny \synx (\synf \synx \syny).
+    \end{equation*}
+
+    Then
+    \begin{balign*}
+      S^+ C_n
+      &=
+      \parens[\Big]{ \qabs {\hi{\synf}} \qabs \synx \qabs \syny \synx (\hi{\synf} \synx \syny) } \hi{C_n}
+      \bred \\ &\bred
+      \qabs \synx \qabs \syny \synx \parens[\Big]{ \parens[\Big]{ \qabs {\hi{\synx}} \qabs \syny \hi{\synx}^n \synf } \hi{\synx} \syny }
+      \bred \\ &\bred
+      \qabs \synx \qabs \syny \synx \parens[\Big]{ \parens[\Big]{ \qabs {\hi{\syny}} \synx^n \hi{\syny} } \hi{\syny} }
+      \bred \\ &\bred
+      \underbrace{\qabs \synx \qabs \syny \synx (\synx^n \syny)}_{C_{n+1}}.
+    \end{balign*}
+
+    \thmitem{ex:def:beta_eta_reduction/pairs} We can encode \hyperref[def:ordered_tuple]{ordered pairs} via combinators:
+    \begin{align*}
+      \ref{ex:def:beta_eta_reduction/pairs/intro}      &\coloneqq \qabs \synx \qabs \syny \qabs \synf \synf \synx \syny \taglabel[\ensuremath{ P^+ }]{ex:def:beta_eta_reduction/pairs/intro}, \\
+      \ref{ex:def:beta_eta_reduction/pairs/elim_left}  &\coloneqq \qabs \synp \synp (\qabs \synx \qabs \syny \synx) \taglabel[\ensuremath{ P^{-_L} }]{ex:def:beta_eta_reduction/pairs/elim_left}, \\
+      \ref{ex:def:beta_eta_reduction/pairs/elim_right} &\coloneqq \qabs \synp \synp (\qabs \synx \qabs \syny \syny) \taglabel[\ensuremath{ P^{-_R} }]{ex:def:beta_eta_reduction/pairs/elim_right}.
+    \end{align*}
+
+    The combinator \( P^+ \) allows combining arbitrary \( \synlambda \)-terms \( A \) and \( B \) into a single term, which reduces as follows:
+    \begin{equation*}
+      P^+ A B \bred* \qabs v v A B,
+    \end{equation*}
+    where \( v \) is not free in \( A \) or \( B \).
+
+    We expect the combinators \( P^{-_L} \) and \( P^{-_R} \) to act as projections. Indeed, applying \( P^{-_L} \), we obtain
+    \begin{balign*}
+      P^{-_L} (P^+ A B)
+      &\bred
+      P^{-_L} (\qabs v v A B)
+      = \\ &=
+      (\qabs {\hi{\synp}} {\hi{\synp}} (\qabs \synx \qabs \syny \synx)) (\qabs v v A B)
+      \bred \\ &\bred
+      (\qabs v v A B) (\qabs \synx \qabs \syny \synx)
+      = \\ &=
+      (\qabs {\hi{v}} \hi{v} A B) (\hi{\qabs \synx \qabs \syny \synx})
+      \bred \\ &\bred
+      (\qabs {\hi{\synx}} \qabs \syny \hi{\synx}) \hi{A} B
+      \bred \\ &\bred
+      (\qabs {\hi{w}} A) \hi{B}
+      \bred \\ &\bred
+      A,
+    \end{balign*}
+    where \( w \) is not free in \( A \).
+
+    Similarly,
+    \begin{equation*}
+      P^{-_R} (P^+ A B) \bred* B.
+    \end{equation*}
+
+    The letter \enquote{\( P \)} stands for \enquote{product type} because these combinators will be used to avoid introducing computation rules for product types in \fullref{def:product_type}. The following give an identical encoding but with different syntactic conventions:
+    \begin{itemize}
+      \item \incite[def. 6.2.4]{Barendregt1984LambdaCalculus} introduces new metasyntax:
+      \begin{itemize}
+        \item \( [A, B] \) for \( P^+ A B \)
+        \item \( C_0 \) for \( P^{-L} C \)
+        \item \( C_1 \) for \( P^{-R} C \)
+      \end{itemize}
+
+      \item \incite[\S 3.3.3]{Mimram2020Types} uses the identifiers \identifier{pair}, \identifier{fst} and \identifier{snd} to denote the combinators.
+
+      \item \incite[exerc. 2.5]{AbelsonSussman2012eSICP} ask to implement these combinators in the programming language Scheme, imitating the built-in procedures. The language uses its own naming convention --- according to \cite[115]{AbelsonSussman2012eSICP}:
+      \begin{itemize}
+        \item \enquote{cons} stands for \enquote{construct}.
+        \item \enquote{car} is an abbreviation for \enquote{\hi{c}ontents of \hi{a}ddress part of \hi{r}egister}.
+        \item \enquote{cdr} stands for \enquote{\hi{c}ontents of \hi{d}escriptor part of \hi{r}egister}.
+      \end{itemize}
+
+      In Scheme, the following encodes a pair consisting of \( A \) and \( B \):
+      \begin{verbatim}
+        (cons A B)
+      \end{verbatim}\vspace{-\baselineskip}
+
+      We can retrieve the first component as
+      \begin{verbatim}
+        (car (cons A B))
+      \end{verbatim}\vspace{-\baselineskip}
+      and similarly for the second component.
+    \end{itemize}
+
+    \thmitem{ex:def:beta_eta_reduction/disjoint} We will now provide a dual construction to ordered pairs.
+
+    We can regard an ordered pair as an element of a \hyperref[def:cartesian_product]{Cartesian product}. No established terminology exists for an element of the \hyperref[def:disjoint_union]{disjoint union} \( \mscrA \amalg \mscrB \), which can be either the inclusion \( \iota_\mscrA(A) \) of some element \( A \) from \( \mscrA \), or \( \iota_\mscrB(B) \) of \( B \) from \( \mscrB \); nevertheless, we will need such a construction when defining sum types in \fullref{def:sum_type}.
+
+    The programming language Haskell has \identifier{Left} and \identifier{Right} value constructors that roughly correspond to the functions \( \iota_\mscrA \) and \( \iota_\mscrB \), and an \identifier{Either} type constructor which roughly corresponds to the function \( (\mscrA, \mscrB) \mapsto \mscrA \amalg \mscrB \). Documentation for the corresponding Haskell constructs can be found in \cite{HackageDocs:base-4.21:either}.
+
+    We want to emulate here via \( \synlambda \)-terms the following case analysis helper from Haskell:
+    \begin{verbatim}
+  either :: (a -> c) -> (b -> c) -> Either a b -> c
+  either f _ (Left x)  = f x
+  either _ g (Right y) = g y
+    \end{verbatim}\vspace{-\baselineskip}
+
+    The first line binds the identifier \identifier{either} to a specific type. We will discuss this particular example in \fullref{ex:def:typable_term/disjoint}, after discussing types in general. What we need to deduce here from the entire definition is the intended interpretation of \identifier{either} --- it should reduce a function \( f: \mscrA \to \mscrC \), a function \( g: \mscrB \to \mscrC \) and a value from either \( \mscrA \) or \( \mscrB \) via \( f \) or \( g \), correspondingly.
+
+    A simple usage example of the above helper is obtaining the set of free variables of an atomic \( \synlambda \)-term (we presuppose that the types \identifier{Var} and \identifier{Const} have been defined):
+    \begin{verbatim}
+  free :: Either Var Const -> Set Var
+  free term = either (\var -> singleton var) (\const -> empty) term
+    \end{verbatim}\vspace{-\baselineskip}
+
+    While we have written out the functions
+    \begin{verbatim}
+  \var -> singleton var
+    \end{verbatim}\vspace{-\baselineskip}
+    and
+    \begin{verbatim}
+  \const -> empty
+    \end{verbatim}\vspace{-\baselineskip}
+    explicitly for clarity, \( \eta \)-reduction (as a general principle, in this case applied to Haskell) allows using the \identifier{Set} constructors directly:
+    \begin{verbatim}
+  free term = either singleton empty term
+    \end{verbatim}\vspace{-\baselineskip}
+
+    The following \( \synlambda \)-combinators, based on \cite{MathOF:product_type_in_simply_typed_lambda_terms}, correspond to Haskell's \identifier{Left} and \identifier{Right} constructors and to the \identifier{either} function, respectively:
+    \begin{align*}
+      \ref{ex:def:beta_eta_reduction/disjoint/intro_left}  &\coloneqq \qabs \synx \qabs \synf \qabs \syng \synf \synx       \taglabel[\ensuremath{ S^{+_L} }]{ex:def:beta_eta_reduction/disjoint/intro_left}, \\
+      \ref{ex:def:beta_eta_reduction/disjoint/intro_right} &\coloneqq \qabs \syny \qabs \synf \qabs \syng \syng \syny       \taglabel[\ensuremath{ S^{+_R} }]{ex:def:beta_eta_reduction/disjoint/intro_right}, \\
+      \ref{ex:def:beta_eta_reduction/disjoint/elim}        &\coloneqq \qabs \synf \qabs \syng \qabs \sync \sync \synf \syng \taglabel[\ensuremath{ S^- }]{ex:def:beta_eta_reduction/disjoint/elim}.
+    \end{align*}
+
+    Just as the letter \enquote{\( P \)} in \fullref{ex:def:beta_eta_reduction/pairs} stands for \enquote{product type}, the letter \enquote{\( S \)} here stands for \enquote{sum type}.
+
+    For any term \( A \), we have
+    \begin{equation*}
+      S^{+_L} A \bred \qabs f \qabs g f A,
+    \end{equation*}
+    where \( f \) and \( g \) are variables not free in \( A \), and, similarly, for any term \( B \), we have
+    \begin{equation*}
+      S^{+_R} B \bred \qabs f \qabs g g B,
+    \end{equation*}
+    for possibly different variables \( f \) and \( g \).
+
+    Let \( F \) be a term we want to apply \( A \) to, and similarly for \( G \) and \( B \). Then
+    \begin{equation*}
+      S^- F G \bred* \qabs c c F G,
+    \end{equation*}
+    and hence
+    \begin{equation*}
+      S^- F G (S^{+_L} A) \bred* F A
+    \end{equation*}
+    and
+    \begin{equation*}
+      S^- F G (S^{+_R} B) \bred* G B.
+    \end{equation*}
+
+    Unfortunately, our notation quickly became cluttered, and in such cases it is reasonable to start experimenting with syntactic enhancements. The simplest that can be done is to name the terms more verbosely --- for example , our reference \cite{MathOF:product_type_in_simply_typed_lambda_terms} uses the English words \enquote{Left}, \enquote{Right} and \enquote{Choice} for \( S^{+L} \), \( S^{+R} \) and \( S^- \), respectively. For our very limited purposes even this seems unnecessary, however, but in general this example highlights that full-fledged programming languages with descriptive identifiers are more suitable for expressing such constructs.
+
+    A final note --- although \( S^- \) and \( P^+ \) are \( \alpha \)-equivalent, they have different intended usage. Introducing types can help clarify these issues; however we should note that neither term is typable.
+
+    \thmitem{ex:def:beta_eta_reduction/boolean}\mcite[\S 6.2.2]{Barendregt1984LambdaCalculus} We can use the terms \ref{eq:ex:def:lambda_term/combinator/k} and \ref{eq:ex:def:beta_eta_reduction/numerals/c0} as \hyperref[con:boolean_value]{Boolean values}.
+
+    We will define truth values differently in \fullref{sec:simply_typed_lambda_terms}, for which reason we avoid using these combinators as boolean values more generally, but for the purposes of this example define \( T \) and \( F \) as
+    \begin{align*}
+      \ref{ex:def:beta_eta_reduction/boolean/t} &\coloneqq \overbrace{\qabs \synx \qabs \syny \synx}^K \taglabel[T]{ex:def:beta_eta_reduction/boolean/t}, \\
+      \ref{ex:def:beta_eta_reduction/boolean/f} &\coloneqq \underbrace{\qabs \synx \qabs \syny \syny}_{C_0} \taglabel[F]{ex:def:beta_eta_reduction/boolean/f}.
+    \end{align*}
+
+    If the term \( V \) can be either \( T \) or \( F \), \( \beta \)-reduction allows us to \enquote{select} either \( A \) or \( B \) based on the value of \( V \):
+    \begin{equation}\label{ex:def:beta_eta_reduction/boolean/if}
+      VAB \bred* \begin{cases}
+        A, &V = T, \\
+        B, &V = F.
+      \end{cases}
+    \end{equation}
+
+    This allows us to implement \hyperref[def:boolean_function]{Boolean functions}. For example, negation can be encoded by the combinator
+    \begin{equation*}\taglabel[N]{ex:def:beta_eta_reduction/boolean/n}
+      \ref{ex:def:beta_eta_reduction/boolean/n} \coloneqq \qabs \synv \synv F T.
+    \end{equation*}
+
+    Indeed, we have
+    \begin{equation*}
+      NV \bred \begin{cases}
+        TFT \bred* F, &V = T, \\
+        FFT \bred* T, &V = F.
+      \end{cases}
+    \end{equation*}
+  \end{thmenum}
+\end{example}
+
+\paragraph{Reduction strategies}
+
+\begin{definition}\label{def:reduction_strategy}\mcite[\S 13.1]{Barendregt1984LambdaCalculus}
+  We can regard a \hyperref[def:lambda_reduction]{reduction relation} \( {\pred} \) as a \hyperref[def:set_valued_map]{set-valued function} on \( \synlambda \)-terms. A \hyperref[def:function/selection]{selection} of \( {\pred} \) is then a \hyperref[def:set_valued_map/partial]{single-valued partial function}.
+
+  We call such a selection a \term{single-step reduction strategy}. A \term{multi-step reduction strategy} is instead a selection of \( {\pred*} \).
+\end{definition}
+
+\begin{definition}\label{def:normal_order_reduction}\mcite[142]{Mimram2020Types}
+  We define the \term{normal order} \hyperref[def:reduction_strategy]{reduction strategy} for \hyperref[def:beta_eta_reduction]{\( \beta \)-reduction} as the one selecting \hyperref[def:subterm_occurrence_ordering/horizontal]{leftmost} among the \hyperref[def:subterm_occurrence_ordering/vertical]{outermost} \( \beta \)-redexes.
+\end{definition}
+
+\begin{definition}\label{def:applicative_order_reduction}\mcite[141]{Mimram2020Types}
+  We define the \term{applicative order} \hyperref[def:reduction_strategy]{reduction strategy} for \hyperref[def:beta_eta_reduction]{\( \beta \)-reduction} as the one selecting the \hyperref[def:subterm_occurrence_ordering/horizontal]{leftmost} among the \hyperref[def:subterm_occurrence_ordering/vertical]{innermost} \( \beta \)-redexes.
+\end{definition}
+
+\begin{example}\label{ex:reduction_strategies}
+  One notable difference between \hyperref[def:normal_order_reduction]{normal order reduction} and \hyperref[def:applicative_order_reduction]{applicative order reduction} can be seen when evaluating the term \( \ref{eq:ex:def:beta_eta_reduction/numerals/c0} \ref{eq:ex:def:lambda_term/combinator/big_omega} \ref{eq:ex:def:lambda_term/combinator/i} \) discussed in \fullref{ex:def:subterm_occurrence_ordering/c0_omega_i}.
+
+  There is a unique outermost \( \beta \)-redex --- \( C_0 \Omega \) --- and a unique innermost redex --- \( \Omega \) itself.
+
+  The normal order strategy suggests reducing as follows:
+  \begin{balign*}
+    (C_0 \Omega) I
+    &=
+    \parens[\Big]{ \parens[\Big]{ \qabs {\hi{\synx}} \qabs \syny \syny } \hi{\Omega} } I
+    \bred \\ &\bred
+    (\qabs {\hi{\syny}} \hi{\syny}) \hi{I}
+    \bred \\ &\bred
+    I.
+  \end{balign*}
+
+  On the other hand, the applicative order strategy instead suggests reducing \( \Omega \) first. As per our discussion in \fullref{ex:def:beta_eta_reduction/omega}, this leads to the chain
+  \begin{equation*}
+    (C_0 \Omega) I \bred (C_0 \Omega) I \bred (C_0 \Omega) I \bred \cdots.
+  \end{equation*}
+\end{example}
+
+\paragraph{Delta reduction}
+
+\begin{definition}\label{def:delta_reduction}\mcite[def. 15.3.1]{Barendregt1984LambdaCalculus}
+  Allowing constants in our \( \synlambda \)-terms provides a multitude of possibilities with respect to reduction. Any rule that allows rewriting constants can be extended to arbitrary \( \synlambda \)-terms via the rules from \fullref{def:lambda_reduction/single}, similarly to how \( \beta \)- and \( \eta \)-reductions were defined in \fullref{def:beta_eta_reduction}.
+
+  We will call the resulting relation \term[en=\( \delta \)-reduction (\cite[def. 15.3.1]{Barendregt1984LambdaCalculus})]{\( \delta \)-reduction} and denote it by \( {\dred} \), however in order for it to be well-behaved, we impose some restrictions on the rules.
+
+  To avoid the complexity of coherence conditions, we will simply suppose that \( \delta \)-reduction is governed by a \hyperref[def:set_valued_map/partial]{single-valued partial function} \( \op*{\delta} \) sending \hyperref[def:lambda_term/const]{constants} to \hyperref[def:lambda_combinator]{combinators}. Thus, for every constant \( C \), there are either no reduction rules or exactly one rule of the form
+  \begin{equation*}\taglabel[\ensuremath{ \logic{Red}_{\delta_C} }]{inf:def:delta_reduction}
+    \begin{prooftree}
+      \infer0[\ref{inf:def:delta_reduction}]{ \underbrace{C}_{\T{\term{\( \delta \)-redex}}} \dred \underbrace{\op*{\delta}(C)}_{\T{\term{\( \delta \)-contractum}}} }.
+    \end{prooftree}
+  \end{equation*}
+\end{definition}
+\begin{comments}
+  \item Unlike \( \beta \)- and \( \eta \)-reduction, \( \delta \)-reduction is not a widely established concept and has no widely accepted definition. Our definition is loosely based on \bycite[def. 15.3.1]{Barendregt1984LambdaCalculus}, but with vast simplifications. The usefulness of the obtained reduction is discussed in \fullref{rem:delta_reduction}.
+
+  The simplicity of our definition allows us to handle \( \delta \)-reduction in \fullref{thm:church_rosser_theorem} with nearly non-existing overhead.
+\end{comments}
+
+\begin{remark}\label{rem:delta_reduction}
+  The usefulness of \hyperref[def:delta_reduction]{\( \delta \)-reduction} seems limited, but we will find it useful to avoid adding computation rules in \fullref{sec:simply_typed_lambda_terms}.
+
+  As a simple example, instead of using the combinators \ref{ex:def:beta_eta_reduction/pairs/intro}, \ref{ex:def:beta_eta_reduction/pairs/elim_left} and \ref{ex:def:beta_eta_reduction/pairs/elim_right}, we can introduce constants, as well as the following rewriting rules:
+  \begin{paracol}{3}
+    \begin{nthcolumn}{0}
+      \begin{equation*}
+        \begin{prooftree}
+          \infer0{ \synP^+ \dred P^+ }
+        \end{prooftree}
+      \end{equation*}
+    \end{nthcolumn}
+
+    \begin{nthcolumn}{1}
+      \begin{equation*}
+        \begin{prooftree}
+          \infer0{ \synP^{-_L} \dred P^{-_L} }
+        \end{prooftree}
+      \end{equation*}
+    \end{nthcolumn}
+
+    \begin{nthcolumn}{2}
+      \begin{equation*}
+        \begin{prooftree}
+          \infer0{ \synP^{-_R} \dred P^{-_R} }
+        \end{prooftree}
+      \end{equation*}
+    \end{nthcolumn}
+  \end{paracol}
+
+  This allows us to use \( \beta\delta \)-reduction on constants, i.e.
+  \begin{equation*}
+    \synP^{-_L} (\synP^+ A B) \redrel*{\beta\delta} A,
+  \end{equation*}
+  instead of the corresponding \( \beta \)-reduction of the combinators, i.e.
+  \begin{equation*}
+    P^{-_L} (P^+ A B) \bred* A.
+  \end{equation*}
+
+  As will be shown in \fullref{ex:def:typable_term/pairs}, the corresponding combinators are not typable, so, for product types, which we will define in \fullref{def:product_type}, we will instead use constants with specific typing rules, and rely on \( \beta\delta \)-reduction to avoid introducing computation rules.
+\end{remark}
+
+\paragraph{Reductions and free variables}
+
+\begin{proposition}\label{thm:eta_reduction_free_variables}
+  If \( M \ered N \), then \( \op*{Free}(M) = \op*{Free}(N) \).
+\end{proposition}
+\begin{proof}
+  Follows via \fullref{thm:induction_on_recursively_defined_relations} by noting that \( x \) is not free in \( M \) if and only if it is not free in \( \qabs x M x \).
+\end{proof}
+
+\begin{lemma}\label{thm:beta_contractum_free_variables}
+  Let \( M = (\qabs x N) K \). Then
+  \begin{equation}\label{eq:thm:beta_contractum_free_variables/equality}
+    \op*{Free}(N[x \mapsto K]) = \begin{cases}
+      \op*{Free}(M), &x \in \op*{Free}(N), \\
+      \op*{Free}(N), &\T{otherwise.} \\
+    \end{cases}
+  \end{equation}
+
+  Both cases can be summarized by the inequality
+  \begin{equation}\label{eq:thm:beta_contractum_free_variables/inequality}
+    \op*{Free}(N[x \mapsto K]) \subseteq \op*{Free}(M).
+  \end{equation}
+\end{lemma}
+\begin{proof}
+  If \( x \) is not free in \( N \), \fullref{thm:lambda_substitution_noop} implies that
+  \begin{equation*}
+    \op*{Free}(N[x \mapsto K]) = \op*{Free}(N).
+  \end{equation*}
+
+  Otherwise, \fullref{thm:lambda_substitution_free_variables_single} implies that the set
+  \begin{equation*}
+    \op*{Free}(M)
+    =
+    \op*{Free}((\qabs x N) K)
+  \end{equation*}
+  equals
+  \begin{equation*}
+    \op*{Free}(\qabs x N) \cup \op*{Free}(K)
+    =
+    \parens[\Big]{ \op*{Free}(N) \setminus \set{ x } } \cup \op*{Free}(K),
+  \end{equation*}
+  which is precisely \( \op*{Free}(M) \).
+\end{proof}
+
+\begin{proposition}\label{thm:lambda_reduction_free_variables}
+  Let \enquote{\( {\Anon} \)} be a combination of \enquote{\( \beta \)}, \enquote{\( \eta \)} and \enquote{\( \delta \)}.
+
+  Then, if \( M \pred N \), we have \( \op*{Free}(N) \subseteq \op*{Free}(M) \).
+\end{proposition}
+\begin{proof}
+  Follows by combining the inductive steps of \fullref{thm:beta_contractum_free_variables} and \fullref{thm:lambda_reduction_free_variables} and by noting that \( \delta \)-reduction involves no free variables.
+\end{proof}
+
+\begin{example}\label{ex:thm:lambda_reduction_free_variables}
+  The following table illustrates the different possible cases from \fullref{thm:lambda_reduction_free_variables}:
+  \begin{equation*}
+    \begin{array}{*{4}{l}}
+      \toprule
+      \T{\( \beta \)-redex}     & \T{\( \beta \)-redex free variables} & \T{\( \beta \)-contraction} & \T{\( \beta \)-contraction free variables} \\
+      \midrule
+      (\qabs \synx \synx) \synz & \synz                                & \synz                       & \synz                                      \\
+      (\qabs \synx \syny) \synz & \syny \T{and} \synz                  & \syny                       & \syny                                      \\
+      \bottomrule
+    \end{array}
+  \end{equation*}
+\end{example}
+
+\paragraph{Fixed point combinators}
+
+\begin{definition}\label{def:fixed_point_combinator}\mimprovised
+  We say that the combinator \( M \) is a \term{fixed point combinator} if, for every \( \synlambda \)-term \( F \), we have \( MF \equivrel{\beta\eta\delta} F(MF) \).
+\end{definition}
+\begin{comments}
+  \item The definition is based on \cite[\S 6.1.2]{Barendregt1984LambdaCalculus}, but is adapted to handle equivalences explicitly.
+\end{comments}
+
+\begin{example}\label{ex:def:fixed_point_combinator}
+  We list examples of how \hyperref[def:fixed_point_combinator]{fixed point combinators} can be used:
+  \begin{thmenum}
+    \thmitem{ex:def:fixed_point_combinator/neg} Let \( M \) be a fixed point combinator. Consider the negation term \ref{ex:def:beta_eta_reduction/boolean/n} from \fullref{ex:def:beta_eta_reduction/boolean}.
+
+    Then \( MN \) is its own negation because \( MN \equivrel{\beta\eta\delta} N(MN) \).
+
+    If we regard \( N \) as a function on \( \synlambda \)-terms, \( MN \) corresponds to a fixed point of \( N \). Since neither Boolean value is a fixed point of negation, we conclude that \( N \) actually corresponds to generalization of negation in \hyperref[def:propositional_semantics/classical]{classical semantics}.
+
+    \thmitem{ex:def:fixed_point_combinator/succ} Let \( M \) be a fixed point combinator.
+
+    For the successor combinator \( S^+ \) from \eqref{eq:ex:def:beta_eta_reduction/succ}, the fixed point \( MS^+ \) corresponds to a generalized numeral that is its own successor.
+  \end{thmenum}
+\end{example}
+
+\begin{proposition}\label{thm:y_is_a_fixed_point_combinator}
+  The term \( \ref{eq:ex:def:lambda_term/combinator/y} = \qabs \synx (\qabs \syny \synx \syny \syny) (\qabs \syny \synx \syny \syny) \) is a \hyperref[def:fixed_point_combinator]{fixed point combinator}.
+\end{proposition}
+\begin{comments}
+  \item \incite*[177]{CurryFeys1958CombinatoryLogic} call \( Y \) \enquote{the paradoxical combinator} because it can be used to construct terms \enquote{of a more or less paradoxical nature}.
+\end{comments}
+\begin{proof}
+  Let \( F \) be a \( \synlambda \)-term. We have
+  \begin{equation*}
+    YF
+    =
+    \parens[\Big]{ \qabs {\hi{\synx}} (\qabs \syny \hi{\synx} \syny \syny) (\qabs \syny \hi{\synx} \syny \syny) } \hi{F}
+    \bred
+    (\qabs v F v v) (\qabs v F v v),
+  \end{equation*}
+  where \( v = \syny \) if \( \syny \) is not free in \( F \) and is a fresh variable otherwise.
+
+  Denote this reduct by \( P \). Then
+  \begin{equation*}
+    P =
+    (\qabs {\hi{v}} F \hi{v} \hi{v}) \hi{(\qabs v F v v)}
+    \bred
+    F (\qabs v F v v) (\qabs v F v v)
+    =
+    FP.
+  \end{equation*}
+
+  Since \( YF \equivrel\beta P \) and \( P \equivrel\beta FP \), we conclude that \( YF \equivrel\beta F(YF) \).
+\end{proof}

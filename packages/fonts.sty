@@ -1,5 +1,17 @@
 \ExplSyntaxOn
 
+% Based on https://tex.stackexchange.com/a/564222
+\cs_new_protected:Nn \nb_define_alphabet:Nnnn
+  {% #1 = command, #2 = prefix, #3 = start, #4 = end
+    \int_step_inline:nnn { `#3 } { `#4 }
+      {
+        \cs_new_protected:cpx { #2 \char_generate:nn { ##1 }{ 11 } }
+          {{
+            \exp_not:N #1 { \char_generate:nn { ##1 } { 11 } }
+          }}
+      }
+  }
+
 \bool_if:nTF
   { \sys_if_engine_xetex_p: || \sys_if_engine_luatex_p: }
   {
@@ -29,11 +41,6 @@
         \__recode:cn { u8: \tl_to_str:n { #1 } } { OT2 }
       }
 
-    \DeclareUnicodeCharacter {2264} {\ensuremath{\leq}}
-    \DeclareUnicodeCharacter {2013} {--}
-    \DeclareUnicodeCharacter {2014} {---}
-    \DeclareUnicodeCharacter {03C3} {\( \sigma \)}
-
     % Imitate some macros from unicode-math
     \cs_new_protected:Npx \Alpha   {{A}}
     \cs_new_protected:Npx \Beta    {{B}}
@@ -48,18 +55,6 @@
     \cs_new_protected:Npx \Rho     {{P}}
     \cs_new_protected:Npx \Tau     {{T}}
     \cs_new_protected:Npx \Chi     {{X}}
-
-    % Based on https://tex.stackexchange.com/a/564222
-    \cs_new_protected:Nn \nb_define_alphabet:Nnnn
-      {% #1 = command, #2 = prefix, #3 = start, #4 = end
-        \int_step_inline:nnn { `#3 } { `#4 }
-          {
-            \cs_new_protected:cpx { #2 \char_generate:nn { ##1 }{ 11 } }
-              {
-                \exp_not:N #1 { \char_generate:nn { ##1 } { 11 } }
-              }
-          }
-      }
 
     \let\Bbbk\relax
 

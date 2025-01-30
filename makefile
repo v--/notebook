@@ -24,7 +24,7 @@ output/%.pdf: figures/%.tex classes/*.cls packages/*.sty | aux output
 	cat aux/$*.pdf > output/$*.pdf
 
 output/%.pdf: figures/%.asy asymptote/*.asy | aux output
-	xvfb-run --auto-servernum asy -outname=aux/$* figures/$*.asy
+	$(if $(shell grep 'import three' figures/$*.asy),xvfb-run --auto-servernum,) asy -outname=aux/$* figures/$*.asy
 	cat aux/$*.pdf > output/$*.pdf
 
 figures: $(FIGURES_TEX_PDF) $(FIGURES_ASY_PDF)
