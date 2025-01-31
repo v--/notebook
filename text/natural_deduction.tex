@@ -192,7 +192,15 @@
 
     Fix a list \( (P_1, \ldots, P_n) \) of proof trees such that, for \( i = 1, \ldots, n \), the conclusion of \( P_i \) is \( \Phi_i[\sigma] \).
 
-    The delicate part of defining rule application trees is to build a context \( \Gamma \) of open assumption. We define \( \Gamma \) as the union of the contexts for \( P_1, \ldots, P_n \), but with some of the assumptions potentially removed. We will call these removed formulas \term{discharged} or \term{closed}. The closure candidates are assumptions \( \varphi \) open in the subtrees for which there is a premise \( \Phi_i \) with a bracketed formula \( [\Theta_i] \) attached such that \( \varphi = \Theta_i[\sigma] \). There generally is nondeterminism involved in the choice of marker, so we simply disallow multiple formulas with the same marker\fnote{It is possible to have multiple formulas with the same marker, which makes little sense to support. In such case it is possible to avoid markers entirely and close assumptions independent of their label. \incite[\S 2.1.9]{TroelstraSchwichtenberg2000Proofs} call this the \enquote{complete discharge convention}. We prefer to use markers because it makes the relationship to \( \synlambda \)-terms via the \hyperref[con:curry_howard_correspondence]{Curry-Howard correspondence} apparent}. In particular, we consider \( \varphi \) closed if it is open in one subtree and closed in another.
+    The delicate part of defining rule application trees is to build a context \( \Gamma \) of open assumption. We define \( \Gamma \) as the union of the contexts for \( P_1, \ldots, P_n \), but with some of the assumptions possibly removed. We say that these removed formulas have been \term{discharged} or \term{closed}. The formula \( \varphi \) is a discharge candidate if it there exists an index \( i = 1, \ldots, n \) such that \( \varphi \) is open in the context of \( P_i \) and the rule premise \( \Phi_i \) has a bracketed formula \( [\Theta_i] \) attached such that \( \varphi = \Theta_i[\sigma] \).
+
+    Some notes regarding discharging:
+    \begin{itemize}
+      \item Since open assumptions have markers attached, there generally is nondeterminism involved in the choice of marker, and we build a different tree for each possibility.
+      \item If the rule allows discharging an assumption but no such assumption is open, we simply do nothing.
+      \item It is possible to avoid markers entirely and close assumptions independent of their label. \incite[\S 2.1.9]{TroelstraSchwichtenberg2000Proofs} call this the \enquote{complete discharge convention}. We prefer to use markers because it makes the relationship to \( \synlambda \)-terms via the \hyperref[con:curry_howard_correspondence]{Curry-Howard correspondence} apparent.
+      \item On the other hand, we disallow multiple formulas with the same marker because that would break \fullref{alg:proof_tree_to_type_derivation}.
+    \end{itemize}
 
     Finally, we can define the rule application tree by \hyperref[def:ordered_tree_grafting_product]{grafting} \( P_1, \ldots, P_n \) to a new root with the following label:
     \begin{itemize}

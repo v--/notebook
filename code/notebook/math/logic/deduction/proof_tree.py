@@ -10,7 +10,7 @@ from ..instantiation import (
     merge_instantiations,
 )
 from .exceptions import NaturalDeductionError
-from .markers import MarkedFormula
+from .markers import MarkedFormula, Marker
 from .rules import NaturalDeductionRule
 
 
@@ -48,28 +48,37 @@ def assume(marked_assumption: MarkedFormula) -> AssumptionTree:
     return AssumptionTree(marked_assumption)
 
 
+class RuleApplicationPremise(NamedTuple):
+    tree: ProofTree
+    discharge: Formula | None = None
+    marker: Marker | None = None
+
+
 class RuleApplicationTree(ProofTree):
     conclusion: Formula
     rule: NaturalDeductionRule
     instantiation: FormalLogicSchemaInstantiation
-    subtrees: Sequence[ProofTree]
+    premises: Sequence[RuleApplicationPremise]
 
     def __init__(
         self,
         rule: NaturalDeductionRule,
         instantiation: FormalLogicSchemaInstantiation,
-        subtrees: Sequence[ProofTree]
+        premises: Sequence[RuleApplicationPremise]
     ) -> None:
         self.conclusion = instantiate_formula_schema(rule.conclusion, instantiation)
         self.rule = rule
         self.instantiation = instantiation
-        self.subtrees = subtrees
+        self.premises = premises
 
     def _filter_assumptions(self, *, closed_at_current_step: bool) -> Iterable[MarkedFormula]:
-        for premise, subtree in zip(self.rule.premises, self.subtrees, strict=True):
-            for marked_assumption in subtree.get_context():
-                is_closed_at_current_step = premise.discharge is not None and \
-                    instantiate_formula_schema(premise.discharge, self.instantiation) == marked_assumption.formula
+        for rule_premise, application_premise in zip(self.rule.premises, self.premises, strict=True):
+            if rule_premise is None:
+                continue
+
+            for marked_assumption in application_premise.tree.get_context():
+                is_closed_at_current_step = application_premise.discharge == marked_assumption.formula and \
+                    (application_premise.marker is None or application_premise.marker == marked_assumption.marker)
 
                 if closed_at_current_step == is_closed_at_current_step:
                     yield marked_assumption
@@ -90,16 +99,11 @@ class RuleApplicationTree(ProofTree):
             str(self.conclusion),
             [str(marked_assumption.marker) for marked_assumption in self.get_marker_context()],
             self.rule.name,
-            [subtree.build_renderer() for subtree in self.subtrees]
+            [premise.tree.build_renderer() for premise in self.premises]
         )
 
     def __str__(self) -> str:
         return self.build_renderer().render()
-
-
-class RuleApplicationPremise(NamedTuple):
-    subtree: ProofTree
-    discharge: Formula | None
 
 
 def apply(rule: NaturalDeductionRule, *premises: RuleApplicationPremise) -> RuleApplicationTree:
@@ -108,10 +112,10 @@ def apply(rule: NaturalDeductionRule, *premises: RuleApplicationPremise) -> Rule
 
     instantiation = FormalLogicSchemaInstantiation()
 
-    for i, (rule_premise, (subtree, discharge)) in enumerate(zip(rule.premises, premises, strict=True), start=1):
+    for i, (rule_premise, (subtree, discharge, _)) in enumerate(zip(rule.premises, premises, strict=True), start=1):
         if rule_premise.discharge is not None:
             if discharge is None:
-                raise NaturalDeductionError(f'The rule {rule.name!r} requires a discharge formula for premise number {i}')
+                raise NaturalDeductionError(f'The rule {rule.name} requires a discharge formula for premise number {i}')
 
             instantiation = merge_instantiations(instantiation, infer_instantiation_from_formula(rule_premise.discharge, discharge))
 
@@ -119,6 +123,6 @@ def apply(rule: NaturalDeductionRule, *premises: RuleApplicationPremise) -> Rule
 
     return RuleApplicationTree(
         rule=rule,
-        subtrees=[subtree for subtree, discharge in premises],
+        premises=premises,
         instantiation=instantiation
     )

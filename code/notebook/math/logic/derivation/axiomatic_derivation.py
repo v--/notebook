@@ -3,7 +3,7 @@ from typing import NamedTuple
 
 from ....support.schemas import SchemaInferenceError
 from ..deduction.markers import MarkedFormula, Marker, new_marker
-from ..deduction.proof_tree import AssumptionTree, ProofTree, RuleApplicationTree
+from ..deduction.proof_tree import AssumptionTree, ProofTree, RuleApplicationPremise, RuleApplicationTree
 from ..deduction.rules import NaturalDeductionRule, NaturalDeductionSystem
 from ..formulas import Formula, is_conditional
 from ..instantiation import FormalLogicSchemaInstantiation, infer_instantiation_from_formula
@@ -108,7 +108,7 @@ def derivation_to_proof_tree(ad_system: AxiomaticDerivationSystem, derivation: A
             return RuleApplicationTree(
                 rule=rule,
                 instantiation=instantiation,
-                subtrees=[]
+                premises=[]
             )
 
     mp_config = derivation.get_mp_config()
@@ -118,12 +118,20 @@ def derivation_to_proof_tree(ad_system: AxiomaticDerivationSystem, derivation: A
 
     cond = derivation.payload[mp_config.conditional_index]
     assert is_conditional(cond)
-    conditional_subtree = derivation_to_proof_tree(ad_system, derivation.truncate(mp_config.conditional_index), used_markers)
-    markers = {ass.marker for ass in conditional_subtree.get_context()}
-    antecedent_subtree = derivation_to_proof_tree(ad_system, derivation.truncate(mp_config.antecedent_index), {*used_markers, *markers})
+
+    conditional_premise = RuleApplicationPremise(
+        derivation_to_proof_tree(ad_system, derivation.truncate(mp_config.conditional_index), used_markers),
+    )
+
+    markers = {ass.marker for ass in conditional_premise.tree.get_context()}
+
+    antecedent_premise = RuleApplicationPremise(
+        derivation_to_proof_tree(ad_system, derivation.truncate(mp_config.antecedent_index), {*used_markers, *markers})
+    )
+
     instantiation = FormalLogicSchemaInstantiation(
         formula_mapping={
-            parse_formula_placeholder('φ'): antecedent_subtree.conclusion,
+            parse_formula_placeholder('φ'): antecedent_premise.tree.conclusion,
             parse_formula_placeholder('ψ'): conclusion
         }
     )
@@ -131,14 +139,14 @@ def derivation_to_proof_tree(ad_system: AxiomaticDerivationSystem, derivation: A
     return RuleApplicationTree(
         rule=MODUS_PONENS_RULE,
         instantiation=instantiation,
-        subtrees=[conditional_subtree, antecedent_subtree]
+        premises=[conditional_premise, antecedent_premise]
     )
 
 
 def _proof_tree_to_derivation_payload(tree: ProofTree) -> Iterable[Formula]:
     if isinstance(tree, RuleApplicationTree):
-        for subtree in tree.subtrees:
-            yield from _proof_tree_to_derivation_payload(subtree)
+        for premise in tree.premises:
+            yield from _proof_tree_to_derivation_payload(premise.tree)
 
     yield tree.conclusion
 
