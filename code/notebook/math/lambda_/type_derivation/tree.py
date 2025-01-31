@@ -67,24 +67,25 @@ class RuleApplicationTree(TypeDerivationTree):
         self.instantiation = instantiation
         self.premises = premises
 
-    def _filter_assumptions(self, *, closed_at_current_step: bool) -> Iterable[TypeAssertion]:
+    def _filter_assumptions(self, *, discharged_at_current_step: bool) -> Iterable[TypeAssertion]:
         for rule_premise, application_premise in zip(self.rule.premises, self.premises, strict=True):
             if rule_premise is None:
                 continue
 
             for assumption in application_premise.tree.get_context():
-                is_closed_at_current_step = application_premise.discharge == assumption
+                is_discharged_at_current_step = application_premise.discharge == assumption
 
-                if closed_at_current_step == is_closed_at_current_step:
+                if discharged_at_current_step == is_discharged_at_current_step:
                     yield assumption
 
     @override
     def get_context(self) -> Collection[TypeAssertion]:
-        return set(self._filter_assumptions(closed_at_current_step=False))
+        return set(self._filter_assumptions(discharged_at_current_step=False))
 
     def get_marker_context(self) -> Iterable[TypeAssertion]:
+        # Unlike for natural deduction, we list even dischargeable assumptions that have not been discharged
         return sorted(
-            set(self._filter_assumptions(closed_at_current_step=True)),
+            {premise.discharge for premise in self.premises if premise.discharge},
             key=str
         )
 
@@ -92,7 +93,7 @@ class RuleApplicationTree(TypeDerivationTree):
     def build_renderer(self) -> RuleApplicationRenderer:
         return RuleApplicationRenderer(
             str(self.conclusion),
-            [f'({assumption})' for assumption in self.get_marker_context()],
+            [f'[{assumption}]' for assumption in self.get_marker_context()],
             self.rule.name,
             [premise.tree.build_renderer() for premise in self.premises]
         )

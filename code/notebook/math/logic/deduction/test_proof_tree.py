@@ -1,9 +1,11 @@
 from textwrap import dedent
+import pytest
 
 from ..parsing import parse_marker, parse_propositional_formula
 from .classical_logic import classical_natural_deduction_system
 from .markers import MarkedFormula
 from .proof_tree import ProofTree, RuleApplicationPremise, apply, assume
+from .exceptions import RuleApplicationError
 
 
 def marked_prop_formula(formula: str, marker: str) -> MarkedFormula:
@@ -137,3 +139,37 @@ def test_implication_distributivity_axiom_tree() -> None:
                 ((p → (q → r)) → ((p → q) → (p → r)))
         '''
     )
+
+
+def test_invalid_application_arity() -> None:
+    with pytest.raises(RuleApplicationError, match='The rule ∧⁺ has 2 premises, but the application has 1'):
+        apply(
+            classical_natural_deduction_system['∧⁺'],
+            prop_rule_premise(
+                subtree=assume(marked_prop_formula('p', 'u'))
+            ),
+            # Should have one more premise
+        )
+
+
+def test_invalid_application_duplicate_marker() -> None:
+    with pytest.raises(RuleApplicationError, match='Multiple assumptions cannot have the same marker'):
+        apply(
+            classical_natural_deduction_system['∧⁺'],
+            prop_rule_premise(
+                subtree=assume(marked_prop_formula('p', 'u'))
+            ),
+            prop_rule_premise(
+                subtree=assume(marked_prop_formula('q', 'u'))
+            )
+        )
+
+
+def test_invalid_application_missing_discharge() -> None:
+    with pytest.raises(RuleApplicationError, match='The rule →⁺ requires a discharge formula for premise number 1'):
+        apply(
+            classical_natural_deduction_system['→⁺'],
+            prop_rule_premise(
+                subtree=assume(marked_prop_formula('p', 'u'))
+            )
+        )

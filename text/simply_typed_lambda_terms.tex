@@ -1,6 +1,6 @@
 \section{Simply typed lambda terms}\label{sec:simply_typed_lambda_terms}
 
-Unlike untyped lambda calculus, whose presentation is mostly uniform across authors, type theory has many incompatible flavors. A concise history is described in \fullref{rem:type_theory}. We will only consider so-called \enquote{simple types}.
+Unlike untyped lambda calculus, whose presentation is mostly uniform across authors, type theory has many incompatible flavors. A concise history is described in \fullref{rem:type_theory}. We will only consider so-called \enquote{simple types}. We base the exposition here on \fullref{sec:natural_deduction}.
 
 \paragraph{Type systems}
 
@@ -80,28 +80,58 @@ Unlike untyped lambda calculus, whose presentation is mostly uniform across auth
   Martin-L\"of himself uses \hyperref[def:inference_rule]{inference rules} to specify definitional equality, which on a metatheoretic level amounts to using \fullref{thm:recursively_defined_relations}.
 \end{definition}
 
-\begin{remark}\label{rem:type_theory_judgments}
+\begin{remark}\label{rem:type_judgments}
   Martin-L\"of builds his type theory on several kinds of \hyperref[con:judgment]{judgments}. \cite[19]{UnivalentProject2024OctoberHoTT} classifies these as either \hyperref[def:type_assertion]{type assertion} judgment or \hyperref[con:definitional_equality]{definitional equality} judgments.
 
   \incite*[14]{MartinLöf1984IntTypeTheory} distinguishes between the judgments \enquote{\( \alpha \) is a type} and \enquote{\( x \) is an object of type \( \alpha \)}\fnote{To be precise, these aren't exact quotes because Martin-L\"of refers to types as \enquote{sets} in this concrete work, and uses set-membership notation, which is a deviation from his other, even earlier, works.}, and similarly between \enquote{\( \alpha \) and \( \beta \) are equal sets} and \enquote{\( x \) and \( y \) are equal objects of type \( \alpha \)}. As discussed in \fullref{rem:type_universes}, however, these amount to the same judgment since we can regard types as objects of a \enquote{type universe}.
 \end{remark}
 
+\begin{definition}\label{def:type_context}\mcite[def. 2A5]{Hindley1997STT}
+  A \term[en=type-context (\cite[def. 2A5]{Hindley1997STT})]{type context} a (set-based) \hyperref[def:logical_context]{logical context} whose entries are \hyperref[def:type_assertion]{type assertion} for \hi{distinct variables}. We have purposely specified no syntax for neither the terms nor types, and we simply assume that the terms contain a subset consisting of variables.
+
+  We say that the assertion \( x: \tau \) is \term{consistent} with the context \( \Gamma \) if \( \Gamma \) contains no type assertion for \( x \).
+\end{definition}
+\begin{comments}
+  \item We generalize the definition from the case of \hyperref[def:simple_type]{simple types} considered by Hindley.
+
+  \item The decision to restrict ourselves to variables comes is discussed in \fullref{rem:type_context_only_variables}.
+
+  \item Another possibility, instead of requiring the variables to be distinct, is, as in \cite[159]{Mimram2020Types}, to allow contexts to contain more than one type assertion per variable and only consider the last assertion.
+\end{comments}
+
+\begin{definition}\label{def:abstract_type_system}\mimprovised
+  A \term{abstract type system} is, roughly, a systematic way of evaluating \hyperref[def:type_assertion]{type assertions}, usually via a collection of \hyperref[con:typing_rule]{typing rules}.
+
+  Such a system must feature a \hyperref[def:consequence_relation]{consequence relation} on \hyperref[def:type_assertion]{type assertions} whose contexts must be \hyperref[def:type_context]{type contexts}, i.e. contain type assertions for distinct variables.
+\end{definition}
+\begin{comments}
+  \item A very general definition is given by \incite[def. 5.2.1]{Barendregt1992Types}, who considers \enquote{pure type systems} with a concrete common syntax for both terms and types, but with only an informal notion of typing rules. Here we abstract away both the syntax and the way of obtaining a consequence relation.
+\end{comments}
+
 \paragraph{Simple types}
 
-\begin{definition}\label{def:simple_type}
+\begin{definition}\label{def:simple_type}\mimprovised
   Fix a nonempty finite \hyperref[def:formal_language/alphabet]{alphabet} \( \op*{Base} \), whose elements we will call \term{base types}. We introduce \term{simple types} based on the following \hyperref[def:formal_grammar/schema]{grammar schema}:
   \begin{bnf*}
     \bnfprod{arrow type}   {\bnftsq{(} \bnfsp \bnfpn{type} \bnfsp \bnftsq{\( \synimplies \)} \bnfsp \bnfpn{type} \bnfsp \bnftsq{)}} \\
-    \bnfprod{type}         {\bnfpn{base type} \bnfor \bnfpn{arrow type} \bnfor \bnfpn{product type} \bnfor \bnfpn{sum type}}
+    \bnfprod{type}         {\bnfpn{base type} \bnfor \bnfpn{arrow type}}
   \end{bnf*}
+
+  We will also find useful the following extensions:
+  \begin{bnf*}
+    \bnfprod{product type} {\bnftsq{(} \bnfsp \bnfpn{type} \bnfsp \bnftsq{\( \syntimes \)} \bnfsp \bnfpn{type} \bnfsp \bnftsq{)}} \\
+    \bnfprod{sum type}     {\bnftsq{(} \bnfsp \bnfpn{type} \bnfsp \bnftsq{\( \synplus \)} \bnfsp \bnfpn{type} \bnfsp \bnftsq{)}}
+  \end{bnf*}
+
+  We handle product types in \fullref{def:product_type} and sum types in \fullref{def:sum_type}, and use both in \fullref{alg:proof_tree_to_type_derivation} and \fullref{alg:type_derivation_to_proof_tree}, but avoid them otherwise. In order to be explicit about specifying these and possibly other extensions, we introduce simple type systems in \fullref{def:simple_type_system}.
 \end{definition}
 \begin{comments}
-  \item As it often happens, usage in the literature is not consistent. We discuss this in \fullref{rem:simple_type_etymology}. To avoid ambiguity, we will be explicit about which types we allow in our applications.
+  \item As it often happens, usage in the literature is not consistent. We discuss this in \fullref{rem:simple_type_terminology_and_notation}. To avoid ambiguity, we will be explicit about which types we allow in our applications.
 
-  \item Type theory is by its nature extensible. We will introduce several extensions like product types in \fullref{def:product_type} and sum types in \fullref{def:sum_type}. Handling each extension requires additional work, however, so we follow the tradition of only allowing arrow types for presenting the base theory.
+  \item We will mostly restrict ourselves to arrow types because handling each extension requires additional work. The literature listed in \fullref{rem:simple_type_terminology_and_notation} avoids extensions unless necessary.
 \end{comments}
 
-\begin{remark}\label{rem:simple_type_etymology}
+\begin{remark}\label{rem:simple_type_terminology_and_notation}
   \hyperref[def:simple_type]{Simple types} are unfortunately not standardized, and naturally, allow variations in their definition.
 
   For example, the following authors consider arrow types (but not e.g. product types), however their definitions differ by their handling of base types:
@@ -164,6 +194,8 @@ To formalize typing rules in \fullref{def:simple_typing_rule}, we first need to 
     \bnfprod{arrow type schema}   {\bnftsq{(} \bnfsp \bnfpn{type schema} \bnfsp \bnftsq{\( \synimplies \)} \bnfsp \bnfpn{type schema} \bnfsp \bnftsq{)}} \\
     \bnfprod{type schema}         {\bnfpn{base type} \bnfor \bnfpn{type placeholder} \bnfor \bnfpn{arrow type schema}}
   \end{bnf*}
+
+  Product and sum types are handled similarly.
 \end{definition}
 \begin{comments}
   \item See \fullref{con:schemas_and_instances} for a discussion of schemas in general.
@@ -186,7 +218,7 @@ To formalize typing rules in \fullref{def:simple_typing_rule}, we first need to 
     \end{equation}
 
     \thmitem{def:lambda_schema_instantiation/types} For simple types we also extend the instantiation straightforwardly:
-    \begin{equation}\label{def:lambda_schema_instantiation}
+    \begin{equation}\label{eq:def:lambda_schema_instantiation/types}
       \Phi[\sigma] \coloneqq \begin{cases}
         \alpha,                                   &\alpha \T{is a base type},   \\
         \sigma(\alpha),                           &\alpha \T{is a placeholder}, \\
@@ -208,26 +240,31 @@ To formalize typing rules in \fullref{def:simple_typing_rule}, we first need to 
 
 \paragraph{Typing rules}
 
+\begin{concept}\label{con:typing_rule}
+  A \term{typing rule} is an \hyperref[def:inference_rule]{inference rule} whose entries are \hyperref[rem:type_judgments]{typing judgments}, possibly for \hyperref[con:schemas_and_instances]{schemas} rather than terms and types.
+\end{concept}
+\begin{comments}
+  \item We base this informal definition on Martin-L\"of discussion in \cite{MartinLöf1984IntTypeTheory} of rules for his type theory consisting of \hyperref[def:type_assertion]{type assertion} and \hyperref[con:definitional_equality]{definitional equality} judgments.
+\end{comments}
+
 \begin{definition}\label{def:simple_typing_rule}\mimprovised
-  A \term{simple typing rule} is an \hyperref[def:inference_rule]{inference rule} whose entries are \hyperref[def:type_assertion]{type assertions} for \hyperref[def:lambda_term_schema]{\( \synlambda \)-term schemas} and \hyperref[def:simple_type_schema]{simple type schemas}.
+  A \term{simple typing rule} is a \hyperref[con:typing_rule]{typing rule} whose entries are \hyperref[def:type_assertion]{type assertions} for \hyperref[def:lambda_term_schema]{\( \synlambda \)-term schemas} and \hyperref[def:simple_type_schema]{simple type schemas}.
 
   As in the case of natural deduction rules defined in \fullref{def:natural_deduction_rule}, and using the same formalism, we allow dischargeable type assertions to be attached to the premises.
 \end{definition}
 \begin{comments}
-  \item This definition is very restrictive compared to what is envisioned by Martin-L\"of in \cite{MartinLöf1984IntTypeTheory}, where typing rules are based on very permissive \hyperref[def:type_assertion]{type assertion} and \hyperref[con:definitional_equality]{definitional equality} judgments.
+  \item This precise definition will allow us to mechanize the \hyperref[con:curry_howard_correspondence]{Curry-Howard correspondence} for simple types.
 
-  We will not need this level of generality, however, and using this precise definition will allow us to mechanize the \hyperref[con:curry_howard_correspondence]{Curry-Howard correspondence} for simple types.
-
-  \item Typing rules are often presented in another form that resembles \hyperref[rem:sequent_calculus]{sequent calculus} --- see \fullref{rem:typing_rule_style}.
+  \item Typing rules are often presented in another form that resembles sequent calculus rather than natural deduction --- see \fullref{rem:typing_rule_style}.
 \end{comments}
 
 \begin{definition}\label{def:base_typing_rules}\mcite[26]{TroelstraSchwichtenberg2000Proofs}
-  The two fundamental \hyperref[def:type_derivation_tree]{typing rules} are as follows:
+  The fundamental \hyperref[def:type_derivation_tree]{typing rules} for \hyperref[def:simple_type]{simple types} are:
   \begin{paracol}{2}
     \begin{leftcolumn}
       \begin{equation*}\taglabel[\ensuremath{ \logic{App} }]{inf:def:base_typing_rules/app}
         \begin{prooftree}
-          \hypo{ \synM: (\syn\alpha \synimplies \syn\beta) }
+          \hypo{ \synM: \syn\alpha \synimplies \syn\beta }
           \hypo{ \synN: \syn\alpha }
           \infer2[\ref{inf:def:base_typing_rules/app}]{ \synM \synN: \syn\beta }
         \end{prooftree}
@@ -245,6 +282,9 @@ To formalize typing rules in \fullref{def:simple_typing_rule}, we first need to 
     \end{rightcolumn}
   \end{paracol}
 \end{definition}
+\begin{comments}
+  \item These are the base type rules present in this or a more general form in all our cited works of type theory --- see \fullref{rem:typing_rule_style}. We will require them to be a part of every \hyperref[def:simple_type_system]{simple type system}.
+\end{comments}
 
 \begin{remark}\label{rem:typing_rule_style}
   Consider the \hyperref[def:simple_typing_rule]{typing rule}
@@ -260,28 +300,86 @@ To formalize typing rules in \fullref{def:simple_typing_rule}, we first need to 
   \begin{equation*}
     \begin{prooftree}
       \hypo{ \syn\Gamma, x: \syn\alpha \synvdash \synM: \syn\beta }
-      \infer1[\ref{inf:def:base_typing_rules/left}]{ \syn\Gamma \syn\vdash \qabs \synx \synM: \syn\alpha \synimplies \syn\beta }
+      \infer1{ \syn\Gamma \synvdash \qabs \synx \synM: \syn\alpha \synimplies \syn\beta }
     \end{prooftree}
   \end{equation*}
 
-  For expressing their more complicated type systems, the sequent calculus style is used by \incite{CoquandHuet1986CoC}, \incite{AwodeyWarren2009HoTT}, \incite{Voevodski2006HoTT}.
+  For expressing a generalization of this rule in their more complicated type systems, the sequent calculus style is used by \incite{CoquandHuet1986CoC}, \incite{AwodeyWarren2009HoTT}, \incite{Voevodski2006HoTT}.
+
+  Barendregt uses sequent calculus style rules in \cite[def. 3.1.3]{Barendregt1992Types}, however presents the proof trees with discharging in the style of natural deduction.
 
   We prefer the natural deduction style rules since we find them easier to define formally, analyze and mechanize. This convention is used by Martin-L\"of, for example in \cite{MartinLöf1984IntTypeTheory}, and sometimes also by other authors like \incite[26]{TroelstraSchwichtenberg2000Proofs}.
 \end{remark}
 
 \paragraph{Type derivations}
 
-\begin{definition}\label{def:type_context}\mcite[def. 2A5]{Hindley1997STT}
-  A \term[en=type-context (\cite[def. 2A5]{Hindley1997STT})]{type context} is a \hyperref[def:logical_context]{logical context} whose entries are \hyperref[def:type_assertion]{type assertion} for \hi{distinct variables}.
+\begin{definition}\label{def:simple_type_signature}\mimprovised
+  A \term{simple type signature} \( \Sigma \) is a specification of the following:
+  \begin{itemize}
+    \item A possibly empty set \( \op*{Const}_\Sigma \) of \hyperref[def:lambda_term]{\( \synlambda \)-term} \hyperref[def:lambda_term/const]{constants}, along with a subset \( \op*{Term}_\Sigma \) of \( \synlambda \)-terms we wish to restrict ourselves to.
 
-  We say that the assertion \( x: \tau \) is \term{consistent} with the context \( \Gamma \) if \( \Gamma \) contains no type assertion for \( x \).
+    \item A nonempty set \( \op*{Base}_\Sigma \) of \hyperref[def:simple_type]{base types}, along with a subset \( \op*{Types}_\Sigma \) of simple types we wish to restrict ourselves to.
+  \end{itemize}
+\end{definition}
+
+\begin{definition}\label{def:simple_type_system}\mimprovised
+  A \term{simple type system} over a \hyperref[def:simple_type_signature]{simple type signature} is, unsurprisingly, a collection of \hyperref[def:simple_typing_rule]{simple typing rules}. We will suppose that every such system includes the two rules from \fullref{def:base_typing_rules}.
+
+  We will associate with each simple type system its derivability relation, which we will define via type derivation trees in \fullref{def:simple_type_derivability}.
 \end{definition}
 \begin{comments}
-  \item Another possibility, instead of requiring the variables to be distinct, is, as in \cite[159]{Mimram2020Types}, to allow contexts to contain more than one type assertion per variable and only consider the last assertion.
+  \item Even though we will not require this, for the concrete systems we will make sure that the properties in \fullref{thm:def:simple_type_derivability} hold.
+\end{comments}
+
+\begin{definition}\label{def:type_derivation_tree}\mimprovised
+  In analogy with natural deduction proof trees, which we define in \fullref{def:natural_deduction_proof_tree}, we will define here a family of \hyperref[def:labeled_tree]{labeled trees}, which we will call \term{type derivation trees}. Although we will be working in \hyperref[def:simple_type_system]{simple type systems}, the definition easily extends to more complicated systems.
+
+  A fundamental difference compared to proof trees is that type derivations allow deriving the type of an arbitrarily complex \( \synlambda \)-term a \hyperref[def:type_context]{type context} specifying only the types of variables. This is justified in \fullref{rem:type_context_only_variables}.
+
+  As in the case of natural deduction proof trees, the labels of type derivations are triples:
+  \begin{thmenum}[series=def:type_derivation_tree]
+    \thmitem{def:type_derivation_tree/conclusion} A \hyperref[def:type_assertion]{type assertion}, which we call the \term{conclusion}.
+    \thmitem{def:type_derivation_tree/rule_name} An empty string or the name of a \hyperref[def:simple_typing_rule]{typing rule}.
+    \thmitem{def:type_derivation_tree/context} A \hyperref[def:type_context]{type context}, whose entries we will call \term{open assumptions}.
+  \end{thmenum}
+
+  We define two kinds of derivation trees:
+  \begin{thmenum}[resume=def:type_derivation_tree]
+    \thmitem{def:type_derivation_tree/assumption} We define \term{assumption} trees similarly to natural deduction assumptions, but only for variable type assertions. For the assertion \( x: \tau \), we define assumption tree as the \hyperref[def:canonical_singleton_tree]{canonical singleton tree} with the following label:
+    \begin{itemize}
+      \item The conclusion is \( x: \tau \).
+      \item The rule name is empty.
+      \item The context is the singleton set with entry \( x: \tau \).
+    \end{itemize}
+
+    We will not need to annotate terms with markers --- the variable plays the role of a marker for the type.
+
+    \thmitem{def:type_derivation_tree/application} We define \term{rule application} trees based on a straightforward adaptation of \fullref{def:natural_deduction_proof_tree/application} for natural deduction rule applications, with schema instantiation based on \fullref{def:lambda_schema_instantiation}.
+
+    Again, some assumptions of the subtrees can be \term{discharged} if the rule allows it. The important difference is that we have no markers, so there is a unique choice of type assertion that can be discharged. For clarity, we denote the dischargeable assumptions used, even if there are no matching open assumptions to discharge --- see \fullref{ex:def:type_derivation_tree/k}.
+
+    Of course, we must only allow rule applications whose context of open assumptions satisfies \fullref{def:type_context} --- each variable must have at most one assertion.
+  \end{thmenum}
+\end{definition}
+\begin{comments}
+  \item Rule application is implemented programmatically as \identifier{lambda_.type_derivation.tree.apply} in \cite{notebook:code}.
+\end{comments}
+
+\begin{definition}\label{def:simple_type_derivability}\mimprovised
+  In a fixed \hyperref[def:simple_type_system]{simple type system} (specifying terms, types and rules), we define a \hyperref[def:consequence_relation]{consequence relation} on type assertions as follows: for a \hyperref[def:logical_context]{logical context} \( \Gamma \) and a \hyperref[def:type_assertion]{type assertion} \( M: \alpha \), we let \( \Gamma \vdash M: \alpha \) if there exists a \hyperref[def:type_derivation_tree]{type derivation tree} with conclusion \( M: \alpha \) whose \hyperref[def:natural_deduction_proof_tree/context]{open assumptions} are all in \( \Gamma \).
+
+  As per \fullref{def:logical_framework}, we say that the type assertion \( M: \alpha \) is \term[en=derivable (\cite[def. 3.1.4]{Barendregt1992Types})]{derivable} from \( \Gamma \) if this relation holds.
+\end{definition}
+\begin{comments}
+  \item We can prove that \( {\vdash} \) is indeed a consequence relation analogously to \fullref{def:natural_deduction_entailment}.
+
+  \item We introduce additional terminology in \fullref{def:typability} and \fullref{def:type_habitance}.
+
+  \item Note that \( \Gamma \) by definition consists of type assertions for variables and not for more general \( \synlambda \)-terms. This is discussed in \fullref{rem:type_context_only_variables}.
 \end{comments}
 
 \begin{remark}\label{rem:type_context_only_variables}
-  We will define in \fullref{def:type_derivation_tree_entailment} a \hyperref[def:consequence_relation]{consequence relation} such that \( \Gamma \vdash M: \alpha \) for an arbitrarily complex term \( M \) and a \hyperref[def:type_context]{type context} \( \Gamma \) consisting only of variable type assertions. The types in both the context and the consequence are allowed to be arbitrarily complex.
+  In \fullref{def:simple_type_derivability} we have only defined a \hyperref[def:consequence_relation]{consequence relation} for \hyperref[def:type_context]{type context} consisting of type assertions for variables, i.e. \( \Gamma \vdash M: \alpha \) can hold for an arbitrarily complex term \( M \), however the context \( \Gamma \) must have only variable type assertions. The types in both the context and the consequence are allowed to be arbitrarily complex.
 
   This is seemingly different from, for example, natural deduction proofs, where the context may consist of arbitrarily complex formulas. We would like to point out the following:
   \begin{itemize}
@@ -299,34 +397,148 @@ To formalize typing rules in \fullref{def:simple_typing_rule}, we first need to 
   \incite[\S 4.1]{Mimram2020Types}.
 \end{remark}
 
-\begin{definition}\label{def:type_derivation_tree}\mimprovised
-  In analogy with natural deduction proof trees, which we define in \fullref{def:natural_deduction_proof_tree}, we will define here a family of \hyperref[def:labeled_tree]{labeled trees}, which we will call \term{type derivation trees}. We purposely keep the definitions as loose as possible to allow extending the basic structure of simple types from \fullref{def:simple_type}.
+\begin{proposition}\label{thm:def:simple_type_derivability}
+  \hyperref[def:simple_type_derivability]{Type derivability} for \hyperref[def:simple_type_system]{simple type systems} only featuring the rules \ref{inf:def:base_typing_rules/abs} and \ref{inf:def:base_typing_rules/app} has the following basic properties:
+  \begin{thmenum}
+    \thmitem{thm:def:simple_type_derivability/free} If \( \Gamma, x: \alpha \vdash M: \beta \), then \( x \) is not free in \( M \) if and only if \( \Gamma \vdash M: \beta \).
 
-  A fundamental difference compared to proof trees is that type derivations allow deriving the type of an arbitrarily complex \( \synlambda \)-term a \hyperref[def:type_context]{type context} specifying only the types of variables. This is justified in \fullref{rem:type_context_only_variables}.
+    \thmitem{thm:def:simple_type_derivability/combinator} If \( {}\vdash M: \beta \), then \( M \) is a \hyperref[def:lambda_combinator]{combinator}.
 
-  As in the case of natural deduction proof trees, the labels of type derivations are triples:
-  \begin{thmenum}[series=def:type_derivation_tree]
-    \thmitem{def:type_derivation_tree/conclusion} A \hyperref[def:type_assertion]{type assertion}, which we call the \term{conclusion}.
-    \thmitem{def:type_derivation_tree/rule_name} An empty string or the name of a \hyperref[def:simple_typing_rule]{typing rule}.
-    \thmitem{def:type_derivation_tree/context} A \hyperref[def:type_context]{type context}, whose entries we will call \term{open assumptions}.
+    \thmitem{thm:def:simple_type_derivability/assumption_removal} We have \( \Gamma, x: \alpha \vdash M: \beta \) if and only if \( \Gamma \vdash \qabs x M: \alpha \to \beta \).
   \end{thmenum}
+\end{proposition}
+\begin{comments}
+  \item Of course, systems may feature other rules, but we must explicitly prove the proposition for each of them.
 
-  We define two kinds of derivation trees:
-  \begin{thmenum}[resume=def:type_derivation_tree]
-    \thmitem{def:type_derivation_tree/assumption} We define \term{assumption} trees similarly to natural deduction assumptions, but only for variable type assertions. For the assertion \( x: \tau \), we define assumption tree as the \hyperref[def:canonical_singleton_tree]{canonical singleton tree} with the following label:
+  \item \Fullref{thm:def:simple_type_derivability/assumption_removal} demonstrates the \hyperref[con:inference_rule_admissibility]{admissible} of the \hyperref[rem:sequent_calculus]{sequent calculus} style variation of the rule \ref{inf:def:base_typing_rules/abs} described in \fullref{rem:typing_rule_style}.
+
+  \item \Fullref{thm:def:simple_type_derivability/assumption_removal} shows that we can remove assumptions by prefixing a term with abstractions.
+\end{comments}
+\begin{proof}
+  \SubProofOf{thm:def:simple_type_derivability/free} Let \( T \) be a tree deriving \( M: \beta \) from the set of assumptions \( \Gamma \cup \set{ x: \alpha } \).
+
+  We will use \fullref{thm:induction_on_rooted_trees} on \( T \):
+  \begin{itemize}
+    \item If \( T \) is an assumption tree, then \( M \) must be a variable, and thus \( x: \alpha \) is an open assumption in \( T \) if and only if \( M = x \).
+
+    \item If \( T \) is an application of \ref{inf:def:base_typing_rules/app}, then \( M = NK \) and \( T \) has a subtree \( T_L \) deriving \( N: \gamma \to \beta \) for some type \( \gamma \), and a subtree \( T_R \) deriving \( K: \gamma \). We suppose that the inductive hypothesis holds for \( T_L \) and \( T_R \).
+
     \begin{itemize}
-      \item The conclusion is \( x: \tau \).
-      \item The rule name is empty.
-      \item The context is the singleton list with entry \( x: \tau \).
+      \item If \( x \) is not free in \( M \), it is not free in \( N \) nor \( K \). Since nothing is discharged by this rule application, we have \( \Gamma, x: \alpha \vdash N \) and \( \Gamma, x: \alpha \vdash K \). The inductive hypothesis implies that \( x: \alpha \) is not an open assumption in \( T_L \) nor \( T_R \), and hence also not in \( T \). Hence, \( \Gamma \vdash M \).
+
+      \item Conversely, if \( \Gamma \vdash M \), then \( \Gamma \vdash N \) and \( \Gamma \vdash K \), and the inductive hypothesis implies that \( x \) is not free in either \( N \) nor \( K \). Hence, \( x \) is not free in \( M \).
     \end{itemize}
 
-    We will not need to annotate terms with markers --- the variable plays the role of a marker for the type.
+    \item If \( T \) is an application of \ref{inf:def:base_typing_rules/abs}, \( M = \qabs y N \), \( \beta = \gamma \synimplies \delta \), and \( T \) has a subtree \( T' \) deriving \( N: \delta \) from \( \Gamma \setminus \set{ y: \gamma } \). Again, we suppose that the inductive hypothesis holds for \( T' \).
 
-    \thmitem{def:type_derivation_tree/application} We define \term{rule application} trees based on a straightforward adaptation of \fullref{def:natural_deduction_proof_Tree/application} for natural deduction rule applications.
+    \begin{itemize}
+      \item If \( x = y \), uniqueness of the variables in the context implies that \( \alpha = \gamma \), and \( x: \alpha \) gets discharged, and hence \( \Gamma \vdash M \). Furthermore, in this case \( x \) is not free in \( M \).
 
-    Again, some assumptions of the subtrees can be \term{discharged} or \term{closed} if the rule allows it. The important difference is that we have no markers, so there is a unique choice of type assertion that can be discharged.
-  \end{thmenum}
+      \item Otherwise, we have \( x \neq y \), and thus also \( \alpha \neq \gamma \).
+
+      \begin{itemize}
+        \item If \( x \) is not free in \( M \), it is also not free in \( N \), and the inductive hypothesis implies that \( \Gamma \vdash N: \delta \), from where it follows that
+        \begin{equation*}
+          \Gamma \vdash \underbrace{\qabs y N}_M: \underbrace{\gamma \synimplies \delta}_\beta.
+        \end{equation*}
+
+        \item Conversely, if \( \Gamma \vdash M: \beta \), then \( \Gamma, y: \gamma \vdash N: \delta \), and the inductive hypothesis implies that \( x \) is not free in \( N \). Then \( x \) is also not free in \( M \).
+      \end{itemize}
+    \end{itemize}
+  \end{itemize}
+
+  \SubProofOf{thm:def:simple_type_derivability/combinator} It follows from \fullref{thm:def:simple_type_derivability/free} that \( x: \alpha \) is an open assumption for a derivation of \( M: \beta \) if and only if \( x \) is not free in \( M \). If \( M \) is a combinator, it has no free variables, hence derivations of \( M \) have no open assumptions.
+
+  \SubProofOf{thm:def:simple_type_derivability/assumption_removal}
+
+  \SufficiencySubProof* Let \( P \) be a derivation tree for \( M: \beta \) from \( \Gamma, x: \alpha \). We will build a tree deriving \( \qabs x M: \alpha \to \beta \) from \( \Gamma \).
+
+  \begin{itemize}
+    \item If \( x: \alpha \) is an open assumption, it is discharged during a simple application of \ref{inf:def:base_typing_rules/abs}:
+    \begin{equation*}
+      \begin{prooftree}
+        \hypo{ x: \alpha }
+        \ellipsis { \( P \) } { M: \beta }
+        \infer[left label=\( [x: \alpha] \)]1[\ref{inf:def:base_typing_rules/abs}]{ \qabs x M: \alpha \synimplies \beta }
+      \end{prooftree}
+    \end{equation*}
+
+    Discharging \( x: \alpha \) leaves us with \( \Gamma \vdash \qabs x M: \alpha \synimplies \beta \).
+
+    \item Otherwise, if \( x: \alpha \) is not an open assumption in \( P \), then \( \Gamma \vdash P \) by \fullref{def:simple_type_derivability}. During application of \ref{inf:def:base_typing_rules/abs} nothing is discharged, and we again obtain \( \Gamma \vdash \qabs x M: \alpha \synimplies \beta \).
+  \end{itemize}
+
+  \NecessitySubProof* Conversely, if \( P \) is a derivation tree of \( \qabs x M: \alpha \to \beta \) from \( \Gamma \), it must be an application tree for \ref{inf:def:base_typing_rules/abs}, and hence \( x: \alpha \) is either discharged during the application, or it is not and the derivation of \( M: \beta \) does not depend on it. In both cases, we conclude that \( \Gamma, x: \alpha \vdash M \).
+\end{proof}
+
+\begin{definition}\label{def:typability}\mcite[def. 2D1]{Hindley1997STT}
+  For a fixed \hyperref[def:abstract_type_system]{abstract type system}, we say that the term \( M \) is \term{typable} in the \hyperref[def:type_context]{type context} \( \Gamma \) if there exists a type \( \alpha \) such that \( \Gamma \vdash M: \alpha \).
 \end{definition}
+\begin{comments}
+  \item We will often be interested in \hyperref[def:lambda_combinator]{combinators}, in which case, due to \fullref{thm:def:simple_type_derivability/combinator}, we may restrict ourselves to empty contexts: a combinator is typable if and only if there exists a type \( \alpha \) such that \( {}\vdash M: \alpha \).
+
+  \item We generalize Hindley's definition for simple types to our notion of abstract type systems.
+\end{comments}
+
+\begin{definition}\label{def:type_habitance}\mcite[8A1]{Hindley1997STT}
+  For a fixed \hyperref[def:abstract_type_system]{abstract type system}, if \( {}\vdash M: \alpha \), we say that \( M \) is an \term[en=untyped inhabitant (\cite[8A1]{Hindley1997STT})]{inhabitant} of \( \alpha \). If the type \( \alpha \) has at least one habitant, we say that it is \term{inhabited}.
+\end{definition}
+\begin{comments}
+  \item We base our definition of habitant on the notion of \enquote{untyped inhabitants} for \hyperref[def:simple_type]{simple type} from \cite[def. 8A1]{Hindley1997STT}. Hindley also defines \enquote{typed habitants} for valid \hyperref[def:pseudoterm]{pseudoterms} and \enquote{\( \beta \)-normal habitants} for terms in \hyperref[def:lambda_reduction_normal_form]{\( \beta \)-normal form}.
+
+  \item Unlike for \hyperref[def:typability]{typability}, this definition only applies to derivations from the empty context. This restricts us to inhabitants without free variables.
+\end{comments}
+
+\begin{example}\label{ex:def:type_derivation_tree}
+  We list examples of \hyperref[def:type_derivation_tree]{type derivation trees} for \hyperref[def:simple_type_system]{simple type systems}:
+  \begin{thmenum}
+    \thmitem{ex:def:type_derivation_tree/var} Given a variable \( x \), it is typable in any \hyperref[def:type_context]{type context} containing \( x \). Due to \fullref{thm:def:simple_type_derivability/free}, it is not typable without a context unless we introduce a special rule for this.
+
+    \thmitem{ex:def:type_derivation_tree/i} The combinator \( \ref{eq:ex:def:lambda_term/combinator/i} = \qabs \synx \synx \) inhabits \( \alpha \synimplies \alpha \) for any type \( \alpha \):
+    \begin{equation*}
+      \begin{prooftree}
+        \hypo{ \synx: \alpha }
+        \infer[left label=\( [\synx: \alpha] \)]1[\ref{inf:def:base_typing_rules/abs}]{ \qabs \synx \synx: \alpha \synimplies \alpha }
+      \end{prooftree}
+    \end{equation*}
+
+    \thmitem{ex:def:type_derivation_tree/k} The combinator \( \ref{eq:ex:def:lambda_term/combinator/k} = \qabs \synx \qabs \syny \synx \) inhabits \( \alpha \synimplies (\beta \synimplies \alpha) \) for any pair of types \( \alpha \) and \( \beta \):
+    \begin{equation*}
+      \begin{prooftree}
+        \hypo{ \synx: \alpha }
+        \infer[left label=\( [\syny: \beta] \)]1[\ref{inf:def:base_typing_rules/abs}]{ \qabs \syny \synx: \beta \synimplies \alpha }
+        \infer[left label=\( [\synx: \alpha] \)]1[\ref{inf:def:base_typing_rules/abs}]{ \qabs \synx \qabs \syny \synx: \alpha \synimplies (\beta \synimplies \alpha) }
+      \end{prooftree}
+    \end{equation*}
+
+    During the first rule application, we do not discharge any assumptions since there are no compatible assumptions to discharge.
+
+    Via the \hyperref[con:curry_howard_correspondence]{Curry-Howard correspondence}, this type corresponds to the \hyperref[def:minimal_implication_logic]{minimal implicational logic} axiom \eqref{eq:def:minimal_implication_logic/intro} --- see \fullref{ex:con:curry_howard_correspondence/minimal_implicational}.
+
+    \thmitem{ex:def:type_derivation_tree/s} The combinator \( \ref{eq:ex:def:lambda_term/combinator/s} = \qabs \synx \qabs \syny \qabs \synz \synx \synz (\syny \synz) \) is a little more complicated:
+    \begin{equation*}
+      \begin{prooftree}
+        \hypo{ \synx: \alpha \synimplies (\beta \synimplies \gamma) }
+        \hypo{ \synz: \alpha }
+        \infer2[\ref{inf:def:base_typing_rules/app}]{ \synx \synz: \beta \synimplies \gamma }
+
+        \hypo{ \syny: \alpha \synimplies \beta }
+        \hypo{ \synz: \alpha }
+        \infer2[\ref{inf:def:base_typing_rules/app}]{ \syny \synz: \beta }
+
+        \infer2[\ref{inf:def:base_typing_rules/app}]{ (\synx \synz) (\syny \synz): \gamma }
+        \infer[left label=\( [\synz: \alpha] \)]1[\ref{inf:def:base_typing_rules/abs}]{ \qabs \synz \synx \synz (\syny \synz): \alpha \synimplies \gamma }
+        \infer[left label=\( [\syny: \alpha \synimplies \beta] \)]1[\ref{inf:def:base_typing_rules/abs}]{ \qabs \syny \qabs \synz \synx \synz (\syny \synz): (\alpha \synimplies \beta) \synimplies (\alpha \synimplies \gamma) }
+        \infer[left label=\( [\synx: \alpha \synimplies (\beta \synimplies \gamma)] \)]1[\ref{inf:def:base_typing_rules/abs}]{ S: \parens[\Big]{ \alpha \synimplies (\beta \synimplies \gamma) } \synimplies \parens[\Big]{ (\alpha \synimplies \beta) \synimplies (\alpha \synimplies \gamma) } }
+      \end{prooftree}
+    \end{equation*}
+
+    Via the Curry-Howard correspondence, this type corresponds to the axiom \eqref{eq:def:minimal_implication_logic/dist} --- see \fullref{ex:con:curry_howard_correspondence/minimal_implicational}.
+  \end{thmenum}
+\end{example}
+\begin{comments}
+  \item Many of these examples are verified programmatically in the module \identifier{lambda_.type_derivation.test_tree} in \cite{notebook:code}.
+\end{comments}
 
 \paragraph{Explicit typing}
 
@@ -372,3 +584,10 @@ To formalize typing rules in \fullref{def:simple_typing_rule}, we first need to 
 \begin{comments}
   \item From the perspective of first-order logic, the correspondence is described in \incite[def. 5.1.11]{Mimram2020Types}.
 \end{comments}
+
+\begin{example}\label{ex:con:curry_howard_correspondence}
+  We list examples related to the \hyperref[con:curry_howard_correspondence]{Curry-Howard correspondence}:
+  \begin{thmenum}
+    \thmitem{ex:con:curry_howard_correspondence/minimal_implicational}
+  \end{thmenum}
+\end{example}
