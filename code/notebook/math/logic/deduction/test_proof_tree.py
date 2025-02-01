@@ -1,11 +1,12 @@
 from textwrap import dedent
+
 import pytest
 
 from ..parsing import parse_marker, parse_propositional_formula
 from .classical_logic import classical_natural_deduction_system
+from .exceptions import RuleApplicationError
 from .markers import MarkedFormula
 from .proof_tree import ProofTree, RuleApplicationPremise, apply, assume
-from .exceptions import RuleApplicationError
 
 
 def marked_prop_formula(formula: str, marker: str) -> MarkedFormula:

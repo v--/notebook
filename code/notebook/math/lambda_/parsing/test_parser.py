@@ -6,8 +6,8 @@ from ....parsing.identifiers import LatinIdentifier
 from ....parsing.parser import ParsingError
 from ....support.pytest import pytest_parametrize_kwargs, pytest_parametrize_lists
 from ..assertions import TypeAssertion
-from ..hol import ANDREWS_HOL_SIGNATURE
 from ..terms import Application, Constant, Variable
+from ..type_systems import ANDREWS_HOL_SIGNATURE
 from .parser import (
     parse_pure_term,
     parse_term,

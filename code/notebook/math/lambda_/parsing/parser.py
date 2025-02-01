@@ -270,7 +270,7 @@ class LambdaParser(InferenceRuleParserMixin[LambdaToken], WhitespaceParserMixin[
 
             if variable_assertion:
                 assert isinstance(var, VariablePlaceholder)
-                return VariableTypeAssertionSchema(term, type_)
+                return VariableTypeAssertionSchema(var, type_)
 
             assert isinstance(term, TermSchema)
             return TypeAssertionSchema(term, type_)

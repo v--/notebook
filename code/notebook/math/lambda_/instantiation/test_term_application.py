@@ -4,7 +4,6 @@ import pytest
 
 from ....support.pytest import pytest_parametrize_kwargs
 from ....support.schemas import SchemaInstantiationError
-from ..hol import ANDREWS_HOL_SIGNATURE
 from ..parsing import (
     parse_pure_term,
     parse_pure_term_schema,
@@ -13,6 +12,7 @@ from ..parsing import (
     parse_variable,
     parse_variable_placeholder,
 )
+from ..type_systems import ANDREWS_HOL_SIGNATURE
 from .base import LambdaSchemaInstantiation
 from .term_application import (
     instantiate_term_schema,
