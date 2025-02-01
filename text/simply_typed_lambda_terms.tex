@@ -356,7 +356,7 @@ To formalize typing rules in \fullref{def:simple_typing_rule}, we first need to 
 
     \thmitem{def:type_derivation_tree/application} We define \term{rule application} trees based on a straightforward adaptation of \fullref{def:natural_deduction_proof_tree/application} for natural deduction rule applications, with schema instantiation based on \fullref{def:lambda_schema_instantiation}.
 
-    Again, some assumptions of the subtrees can be \term{discharged} if the rule allows it. The important difference is that we have no markers, so there is a unique choice of type assertion that can be discharged. For clarity, we denote the dischargeable assumptions used, even if there are no matching open assumptions to discharge --- see \fullref{ex:def:type_derivation_tree/k}. \incite[note 2A8.1]{Hindley1997STT} calls the latter case \enquote{discharging \( x \) vacuously}.
+    Again, some assumptions of the subtrees can be \term{discharged} if the rule allows it. The important difference is that we have no markers, so there is a unique choice of type assertion that can be discharged.
 
     Of course, we must only allow rule applications whose context of open assumptions satisfies \fullref{def:type_context} --- each variable must have at most one assertion.
   \end{thmenum}
@@ -460,7 +460,7 @@ To formalize typing rules in \fullref{def:simple_typing_rule}, we first need to 
       \begin{prooftree}
         \hypo{ x: \alpha }
         \ellipsis { \( P \) } { M: \beta }
-        \infer[left label=\( [x: \alpha] \)]1[\ref{inf:def:base_typing_rules/abs}]{ \qabs x M: \alpha \synimplies \beta }
+        \infer[left label=\( x \)]1[\ref{inf:def:base_typing_rules/abs}]{ \qabs x M: \alpha \synimplies \beta }
       \end{prooftree}
     \end{equation*}
 
@@ -499,7 +499,7 @@ To formalize typing rules in \fullref{def:simple_typing_rule}, we first need to 
     \begin{equation*}
       \begin{prooftree}
         \hypo{ \synx: \alpha }
-        \infer[left label=\( [\synx: \alpha] \)]1[\ref{inf:def:base_typing_rules/abs}]{ \qabs \synx \synx: \alpha \synimplies \alpha }
+        \infer[left label=\( \synx \)]1[\ref{inf:def:base_typing_rules/abs}]{ \qabs \synx \synx: \alpha \synimplies \alpha }
       \end{prooftree}
     \end{equation*}
 
@@ -509,8 +509,8 @@ To formalize typing rules in \fullref{def:simple_typing_rule}, we first need to 
     \begin{equation*}
       \begin{prooftree}
         \hypo{ \synx: \alpha }
-        \infer[left label=\( [\syny: \beta] \)]1[\ref{inf:def:base_typing_rules/abs}]{ \qabs \syny \synx: \beta \synimplies \alpha }
-        \infer[left label=\( [\synx: \alpha] \)]1[\ref{inf:def:base_typing_rules/abs}]{ \qabs \synx \qabs \syny \synx: \alpha \synimplies (\beta \synimplies \alpha) }
+        \infer1[\ref{inf:def:base_typing_rules/abs}]{ \qabs \syny \synx: \beta \synimplies \alpha }
+        \infer[left label=\( \synx \)]1[\ref{inf:def:base_typing_rules/abs}]{ \qabs \synx \qabs \syny \synx: \alpha \synimplies (\beta \synimplies \alpha) }
       \end{prooftree}
     \end{equation*}
 
@@ -530,13 +530,145 @@ To formalize typing rules in \fullref{def:simple_typing_rule}, we first need to 
         \infer2[\ref{inf:def:base_typing_rules/app}]{ \syny \synz: \beta }
 
         \infer2[\ref{inf:def:base_typing_rules/app}]{ (\synx \synz) (\syny \synz): \gamma }
-        \infer[left label=\( [\synz: \alpha] \)]1[\ref{inf:def:base_typing_rules/abs}]{ \qabs \synz \synx \synz (\syny \synz): \alpha \synimplies \gamma }
-        \infer[left label=\( [\syny: \alpha \synimplies \beta] \)]1[\ref{inf:def:base_typing_rules/abs}]{ \qabs \syny \qabs \synz \synx \synz (\syny \synz): (\alpha \synimplies \beta) \synimplies (\alpha \synimplies \gamma) }
-        \infer[left label=\( [\synx: \alpha \synimplies (\beta \synimplies \gamma)] \)]1[\ref{inf:def:base_typing_rules/abs}]{ S: \parens[\Big]{ \alpha \synimplies (\beta \synimplies \gamma) } \synimplies \parens[\Big]{ (\alpha \synimplies \beta) \synimplies (\alpha \synimplies \gamma) } }
+        \infer[left label=\( \synz \)]1[\ref{inf:def:base_typing_rules/abs}]{ \qabs \synz \synx \synz (\syny \synz): \alpha \synimplies \gamma }
+        \infer[left label=\( \syny \)]1[\ref{inf:def:base_typing_rules/abs}]{ \qabs \syny \qabs \synz \synx \synz (\syny \synz): (\alpha \synimplies \beta) \synimplies (\alpha \synimplies \gamma) }
+        \infer[left label=\( \synx \)]1[\ref{inf:def:base_typing_rules/abs}]{ S: (\alpha \synimplies (\beta \synimplies \gamma)) \synimplies ((\alpha \synimplies \beta) \synimplies (\alpha \synimplies \gamma)) }
       \end{prooftree}
     \end{equation*}
 
     Via the Curry-Howard correspondence, this type corresponds to the axiom \eqref{eq:def:minimal_implication_logic/dist} --- see \fullref{ex:con:curry_howard_correspondence/minimal_implicational}.
+
+    \thmitem{ex:def:type_derivation_tree/pairs} Consider the \hyperref[def:ordered_tuple]{ordered pair} combinators \ref{ex:def:beta_eta_reduction/pairs/intro}, \ref{ex:def:beta_eta_reduction/pairs/elim_left} and \ref{ex:def:beta_eta_reduction/pairs/elim_right} from \fullref{ex:def:beta_eta_reduction/pairs}.
+
+    We have shown that, for arbitrary terms \( A \) and \( B \), we have
+    \begin{align*}
+      P_{-L} (P_+ A B) \bred* A
+      &&
+      P_{-R} (P_+ A B) \bred* B.
+    \end{align*}
+
+    Similarly to the previous cases, we can find a type for
+    \begin{equation*}
+      \ref{ex:def:beta_eta_reduction/pairs/intro} = \qabs \synx \qabs \syny \qabs \synf \synf \synx \syny
+    \end{equation*}
+    by fixing types \( \alpha \), \( \beta \), \( \gamma \) and matching them to obtain the following derivation:
+    \begin{equation*}
+      \begin{prooftree}
+        \hypo{ \synf: \alpha \synimplies (\beta \synimplies \gamma) }
+        \hypo{ \synx: \alpha }
+        \infer2[\ref{inf:def:base_typing_rules/app}]{ \synf \synx: \beta \synimplies \gamma }
+
+        \hypo{ \syny: \beta }
+        \infer2[\ref{inf:def:base_typing_rules/app}]{ \synf \synx \syny: \gamma }
+        \infer[left label=\( \synf \)]1[\ref{inf:def:base_typing_rules/abs}]{ \qabs \synf \synf \synx \syny: (\alpha \synimplies (\beta \synimplies \gamma)) \synimplies \gamma }
+        \infer[left label=\( \syny \)]1[\ref{inf:def:base_typing_rules/abs}]{ \qabs \syny \qabs \synf \synf \synx \syny: \beta \synimplies ((\alpha \synimplies (\beta \synimplies \gamma)) \synimplies \gamma) }
+        \infer[left label=\( \synx \)]1[\ref{inf:def:base_typing_rules/abs}]{ P_+: \alpha \synimplies (\beta \synimplies ((\alpha \synimplies (\beta \synimplies \gamma)) \synimplies \gamma)) }
+      \end{prooftree}
+    \end{equation*}
+
+    If \( A: \alpha \) and \( B: \beta \), after two applications of \ref{inf:def:base_typing_rules/app} we obtain
+    \begin{equation*}
+      P_+ A B: (\alpha \synimplies (\beta \synimplies \gamma)) \synimplies \gamma.
+    \end{equation*}
+
+    Similarly, for
+    \begin{equation*}
+      \ref{ex:def:beta_eta_reduction/pairs/elim_left} = \qabs \synp \synp (\qabs \synx \qabs \syny \synx)
+    \end{equation*}
+    we have
+    \begin{equation*}
+      \begin{prooftree}
+        \hypo{ \synp: (\alpha \synimplies (\beta \synimplies \alpha)) \synimplies \gamma }
+
+        \hypo{ \synx: \alpha }
+        \infer1[\ref{inf:def:base_typing_rules/abs}]{ \qabs \syny \synx: \beta \synimplies \alpha }
+        \infer[left label=\( \synx \)]1[\ref{inf:def:base_typing_rules/abs}]{ \qabs \synx \qabs \syny \synx: \alpha \synimplies (\beta \synimplies \alpha) }
+
+        \infer2[\ref{inf:def:base_typing_rules/app}]{ \synp (\qabs \synx \qabs \syny \synx): \gamma }
+        \infer[left label=\( \synp \)]1[\ref{inf:def:base_typing_rules/abs}]{ P_{-L}: ((\alpha \synimplies (\beta \synimplies \alpha)) \synimplies \gamma) \synimplies \gamma }
+      \end{prooftree}
+    \end{equation*}
+
+    We have derived types for both \( P_+ A B \) and \( P_{-L} \), and can conclude that the rule \ref{inf:def:base_typing_rules/app} is only applicable to \( P_{-L} (P_+ A B) \) if \( \gamma = \alpha \), in which case \( P_{-L} (P_+ A B): \alpha \), as expected.
+
+    On the other hand, for
+    \begin{equation*}
+      \ref{ex:def:beta_eta_reduction/pairs/elim_right} = \qabs \synp \synp (\qabs \synx \qabs \syny \syny)
+    \end{equation*}
+    we can similarly derive
+    \begin{equation*}
+      \begin{prooftree}
+        \hypo{ \synp: (\alpha \synimplies (\beta \synimplies \beta)) \synimplies \gamma }
+
+        \hypo{ \syny: \beta }
+        \infer[left label=\( \syny \)]1[\ref{inf:def:base_typing_rules/abs}]{ \qabs \syny \syny: \beta \synimplies \beta }
+        \infer1[\ref{inf:def:base_typing_rules/abs}]{ \qabs \synx \qabs \syny \syny: \alpha \synimplies (\beta \synimplies \beta) }
+
+        \infer2[\ref{inf:def:base_typing_rules/app}]{ \synp (\qabs \synx \qabs \syny \syny): \gamma }
+        \infer[left label=\( \synp \)]1[\ref{inf:def:base_typing_rules/abs}]{ P_{-R}: ((\alpha \synimplies (\beta \synimplies \beta)) \synimplies \gamma) \synimplies \gamma }
+      \end{prooftree}
+    \end{equation*}
+
+    The rule \ref{inf:def:base_typing_rules/app} is only applicable to \( P_{-R} (P_+ A B) \) if \( \gamma = \beta \), in which case \( P_{-R} (P_+ A B): \beta \).
+
+    We see here how the ability to derive multiple types for \( P_+ \) is actually beneficial --- we can use the same combinator in different situations.
+
+    On the other hand, if \( P_+ \) has a unique type, perhaps hinted by a \hyperref[con:type_annotation]{type annotation}, then either \( P_{-L} (P_+ A B) \) or \( P_{-R} (P_+ A B) \) is \hyperref[def:typability]{untypable} in general (unless \( \alpha = \beta \)). This is discussed in \cite{MathOF:product_type_in_simply_typed_lambda_terms}, where it is also proven that no other such triple of combinators exist.
+
+    \thmitem{ex:def:type_derivation_tree/disjoint} Consider the combinators \ref{eq:ex:def:beta_eta_reduction/disjoint/intro_left}, \ref{eq:ex:def:beta_eta_reduction/disjoint/intro_right} and \ref{eq:ex:def:beta_eta_reduction/disjoint/elim} from \fullref{ex:def:beta_eta_reduction/disjoint}.
+
+    Since \( S_- \) and \( P_+ \) are \hyperref[def:lambda_term_alpha_equivalence]{\( \alpha \)-equivalent}, we conclude that they can be assigned the same types\fnote{This will be proven formally in \fullref{thm:lambda_equivalence_typing}.}.
+
+    On the other hand, for
+    \begin{equation*}
+      S_{+L} = \qabs \synx \qabs \synf \qabs \syng \synf \synx
+    \end{equation*}
+    we have
+    \begin{equation*}
+      \begin{prooftree}
+        \hypo{ \synf: \alpha \synimplies \gamma }
+        \hypo{ \synx: \alpha }
+        \infer2[\ref{inf:def:base_typing_rules/app}]{ \synf \synx: \gamma }
+        \infer1[\ref{inf:def:base_typing_rules/abs}]{ \qabs \syng \synf \synx: (\beta \synimplies \gamma) \synimplies \gamma }
+        \infer[left label=\( \synf \)]1[\ref{inf:def:base_typing_rules/abs}]{ \qabs \synf \qabs \syng \synf \synx: (\alpha \synimplies \beta) \synimplies ((\beta \synimplies \gamma) \synimplies \gamma) }
+        \infer[left label=\( \synx \)]1[\ref{inf:def:base_typing_rules/abs}]{ S_{+L}: \alpha \synimplies ((\alpha \synimplies \beta) \synimplies ((\beta \synimplies \gamma) \synimplies \gamma)) }
+      \end{prooftree}
+    \end{equation*}
+
+    Similarly, we can derive
+    \begin{equation*}
+      S_{+R}: \beta \synimplies ((\alpha \synimplies \beta) \synimplies ((\beta \synimplies \gamma) \synimplies \gamma)).
+    \end{equation*}
+
+    Suppose that \( A: \alpha \), \( F: \alpha \synimplies \gamma \) and \( G: \beta \synimplies \gamma \). Then, in order for \ref{inf:def:base_typing_rules/app} to be applicable to
+    \begin{equation*}
+      S_- F G (S_{+L} A),
+    \end{equation*}
+    the combinator \( S_- \) must inhabit
+    \begin{equation*}
+      (\alpha \synimplies \gamma) \synimplies ((\beta \synimplies \gamma) \synimplies (((\alpha \synimplies \beta) \synimplies ((\beta \synimplies \gamma) \synimplies \gamma)) \synimplies \delta))
+    \end{equation*}
+    for some type \( \delta \).
+
+    According to \fullref{ex:def:type_derivation_tree/pairs}, such a derivation is possible if \( \delta = \gamma \). This type corresponds to Haskell's
+    \begin{verbatim}
+      either :: (a -> c) -> (b -> c) -> Either a b -> c,
+    \end{verbatim}\vspace{-\baselineskip}
+    as long as we identify \identifier{Either a b} with
+    \begin{equation*}
+      (\alpha \synimplies \beta) \synimplies ((\beta \synimplies \gamma) \synimplies \gamma).
+    \end{equation*}
+
+    Hence, as expected
+    \begin{equation*}
+      S_- F G (S_{+L} A): \gamma
+    \end{equation*}
+    and
+    \begin{equation*}
+      S_- F G (S_{+R} B): \gamma
+    \end{equation*}
+
+    As long as \( F \) and \( G \) are fixed, we do not need different type derivations for handling \( S_{+L} A \) and \( S_{+R} B \).
   \end{thmenum}
 \end{example}
 \begin{comments}
@@ -607,6 +739,8 @@ To formalize typing rules in \fullref{def:simple_typing_rule}, we first need to 
 \begin{comments}
   \item In particular, a pseudoterm combinator can \hyperref[def:type_habitation]{inhabit} at most one \hyperref[def:simple_type]{simple type}.
 
+  \item We can also interpret this result as a statement for untyped \( \synlambda \)-terms --- each of them can be typed uniquely \enquote{up to a choice of types for bound variables}.
+
   \item This result depends on the typing rules; we will prove it assuming \ref{inf:def:base_typing_rules/app} and \ref{inf:def:pseudoterm_abstraction_rule}. This also excludes constants since special rules must be introduced for them.
 \end{comments}
 \begin{proof}
@@ -644,16 +778,16 @@ To formalize typing rules in \fullref{def:simple_typing_rule}, we first need to 
     (\qabs {\synx^\alpha} (\qabs {\syny^\beta} \synx^\alpha)^{\beta \synimplies \alpha})^{\alpha \synimplies (\beta \synimplies \alpha)}.
   \end{equation*}
 
-  The second convention is referred to as \enquote{Church-style typing}, for example by \cite[ch. 5]{Hindley1997STT}. Even though it is not as historically accurate, the convention of using pseudoterms is also referred to as \enquote{Church-style}, for example by \incite[ch. 4]{Mimram2020Types}.
+  The second convention is referred to as \enquote{Church style typing}, for example by \cite[ch. 5]{Hindley1997STT}. Even though it is not as historically accurate, the convention of using pseudoterms is also referred to as \enquote{Church style}, for example by \incite[ch. 4]{Mimram2020Types}.
 
-  As a contradistinction, type systems for untyped \( \synlambda \)-terms are referred to by both the aforementioned authors as \enquote{Curry-style} in honor of Haskell Curry for his work \cite{Curry1934CombinatoryLogic}. Curry did not consider \( \synlambda \)-terms nor types, but worked with abstract combinators applied to each other in what he called \enquote{combinatory logic}. We can deduce a relation to typing systems from the following quote:
+  As a contradistinction, type systems for untyped \( \synlambda \)-terms are referred to by both the aforementioned authors as \enquote{Curry style} in honor of Haskell Curry for his work \cite{Curry1934CombinatoryLogic}. Curry did not consider \( \synlambda \)-terms nor types, but worked with abstract combinators applied to each other in what he called \enquote{combinatory logic}. We can deduce a relation to typing systems from the following quote:
   \begin{displayquote}
     Let \( F \) denote an entity whose interpretation is such that \( FXY \) represents, in the notation of combinatory logic, the category of functions on \( X \) to \( Y \), while the formula \( \vdash FXYf \) represents the statement that \( f \) belongs to that category.
   \end{displayquote}
 
   Here \( f \) is merely a symbol, while \( \vdash FXYf \) translates into the type assertion \( f: X \synimplies Y \). Since the type \( X \synimplies Y \) is not attached to \( f \), the latter is also allowed to inhabit another type, which contrasts with Church's usage mentioned earlier.
 
-  Ironically, the programming language Haskell, also named after Haskell Curry, requires type annotations. Unlike a true Church-style type system, however, Haskell's allows not annotating terms for which the types can be inferred.
+  Ironically, the programming language Haskell, also named after Haskell Curry, requires type annotations. Unlike a true Church style type system, however, Haskell's allows not annotating terms for which the types can be inferred.
 
   We will refer to the two aforementioned extremes as explicit and implicit typing, correspondingly --- see \fullref{con:explicit_and_implicit_typing}.
 \end{remark}
@@ -664,7 +798,9 @@ To formalize typing rules in \fullref{def:simple_typing_rule}, we first need to 
   If the terms have no type annotations, we say that the system uses \term{implicit typing}. If the type annotations are optional, we speak of \term{gradual typing}.
 \end{concept}
 \begin{comments}
-  \item The phrases \enquote{explicit typing} and \enquote{implicit typing} are used by \incite[119]{Barendregt1992Types}, while \enquote{gradual typing} is used in \cite{TypeScript:5.7:handbook}.
+  \item The phrases \enquote{explicit typing} and \enquote{implicit typing} are used by \incite[119]{Barendregt1992Types} as alternatives for what we described in \fullref{rem:explicit_and_implicit_typing} as Church and Curry style typing, correspondingly.
+
+  \item Some programming languages allow but do not enforce type annotations. One such language is Python. Another one is TypeScript, which adds optional type annotations to JavaScript. TypeScript's documentation, \cite{TypeScript:5.7:handbook}, describes this approach as \enquote{gradual typing}.
 \end{comments}
 
 \paragraph{Dependent types}

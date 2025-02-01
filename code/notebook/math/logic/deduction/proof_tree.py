@@ -90,7 +90,7 @@ class RuleApplicationTree(ProofTree):
     def get_marker_context(self) -> Iterable[MarkedFormula]:
         return sorted(
             set(self._filter_assumptions(discharged_at_current_step=True)),
-            key=lambda marked_assumption: (str(marked_assumption.formula), marked_assumption.marker)
+            key=str
         )
 
     @override

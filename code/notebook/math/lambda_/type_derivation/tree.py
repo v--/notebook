@@ -2,13 +2,14 @@ from collections.abc import Collection, Iterable, Sequence
 from typing import NamedTuple, Protocol, override
 
 from ....support.inference.rendering import AssumptionRenderer, InferenceTreeRenderer, RuleApplicationRenderer
-from ..assertions import TypeAssertion
+from ..assertions import TypeAssertion, VariableTypeAssertion
 from ..instantiation import (
     LambdaSchemaInstantiation,
     infer_instantiation_from_assertion,
     instantiate_assertion_schema,
     merge_instantiations,
 )
+from ..terms import Variable
 from ..typing_rules import TypingRule
 from .exceptions import TypeDerivationError
 
@@ -16,7 +17,7 @@ from .exceptions import TypeDerivationError
 class TypeDerivationTree(Protocol):
     conclusion: TypeAssertion
 
-    def get_context(self) -> Collection[TypeAssertion]:
+    def get_context(self) -> Collection[VariableTypeAssertion]:
         ...
 
     def build_renderer(self) -> InferenceTreeRenderer:
@@ -24,13 +25,13 @@ class TypeDerivationTree(Protocol):
 
 
 class AssumptionTree(TypeDerivationTree):
-    conclusion: TypeAssertion
+    conclusion: VariableTypeAssertion
 
-    def __init__(self, assumption: TypeAssertion) -> None:
+    def __init__(self, assumption: VariableTypeAssertion) -> None:
         self.conclusion = assumption
 
     @override
-    def get_context(self) -> Collection[TypeAssertion]:
+    def get_context(self) -> Collection[VariableTypeAssertion]:
         return {self.conclusion}
 
     @override
@@ -41,13 +42,13 @@ class AssumptionTree(TypeDerivationTree):
         return self.build_renderer().render()
 
 
-def assume(assertion: TypeAssertion) -> AssumptionTree:
+def assume(assertion: VariableTypeAssertion) -> AssumptionTree:
     return AssumptionTree(assertion)
 
 
 class RuleApplicationPremise(NamedTuple):
     tree: TypeDerivationTree
-    discharge: TypeAssertion | None
+    discharge: VariableTypeAssertion | None = None
 
 
 class RuleApplicationTree(TypeDerivationTree):
@@ -67,7 +68,7 @@ class RuleApplicationTree(TypeDerivationTree):
         self.instantiation = instantiation
         self.premises = premises
 
-    def _filter_assumptions(self, *, discharged_at_current_step: bool) -> Iterable[TypeAssertion]:
+    def _filter_assumptions(self, *, discharged_at_current_step: bool) -> Iterable[VariableTypeAssertion]:
         for rule_premise, application_premise in zip(self.rule.premises, self.premises, strict=True):
             if rule_premise is None:
                 continue
@@ -79,13 +80,12 @@ class RuleApplicationTree(TypeDerivationTree):
                     yield assumption
 
     @override
-    def get_context(self) -> Collection[TypeAssertion]:
+    def get_context(self) -> Collection[VariableTypeAssertion]:
         return set(self._filter_assumptions(discharged_at_current_step=False))
 
-    def get_marker_context(self) -> Iterable[TypeAssertion]:
-        # Unlike for natural deduction, we list even dischargeable assumptions that have not been discharged
+    def get_marker_context(self) -> Iterable[Variable]:
         return sorted(
-            {premise.discharge for premise in self.premises if premise.discharge},
+            {assertion.term for assertion in self._filter_assumptions(discharged_at_current_step=True)},
             key=str
         )
 
@@ -93,7 +93,7 @@ class RuleApplicationTree(TypeDerivationTree):
     def build_renderer(self) -> RuleApplicationRenderer:
         return RuleApplicationRenderer(
             str(self.conclusion),
-            [f'[{assumption}]' for assumption in self.get_marker_context()],
+            list(map(str, self.get_marker_context())),
             self.rule.name,
             [premise.tree.build_renderer() for premise in self.premises]
         )

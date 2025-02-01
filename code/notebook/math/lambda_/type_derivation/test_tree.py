@@ -1,28 +1,30 @@
 from textwrap import dedent
 
-from ..hol import ANDREWS_HOL, ANDREWS_HOL_SIGNATURE
-from ..parsing import (
-    parse_type_assertion,
-)
+from ..common import combinators, pairs
+from ..parsing import parse_variable_assertion
+from ..signature import LambdaSignature
+from ..type_systems import BASE_SYSTEM
 from .tree import RuleApplicationPremise, apply, assume
-from ..common import combinators
+
+
+TEST_SIGNATURE = LambdaSignature(base_types={'α', 'β', 'γ'}, constant_terms=set())
 
 
 def test_assumption_tree() -> None:
-    assumption = parse_type_assertion(ANDREWS_HOL_SIGNATURE, 'x: ι')
+    assumption = parse_variable_assertion(TEST_SIGNATURE, 'x: α')
     tree = assume(assumption)
     assert tree.get_context() == {assumption}
     assert str(tree) == dedent('''\
-        x: ι
+        x: α
         '''
     )
 
 
 # ex:def:type_derivation_tree/i
 def test_abs_application() -> None:
-    assumption = parse_type_assertion(ANDREWS_HOL_SIGNATURE, 'x: ι')
+    assumption = parse_variable_assertion(TEST_SIGNATURE, 'x: α')
     tree = apply(
-        ANDREWS_HOL['Abs'],
+        BASE_SYSTEM['Abs'],
         RuleApplicationPremise(
             assume(assumption),
             discharge=assumption
@@ -32,23 +34,23 @@ def test_abs_application() -> None:
     assert tree.get_context() == set()
     assert tree.conclusion.term == combinators.i
     assert str(tree) == dedent('''\
-                   x: ι
-        [x: ι] _______________ Abs
-               (λx.x): (ι → ι)
+              x: α
+        x _______________ Abs
+          (λx.x): (α → α)
         '''
     )
 
 
 # ex:def:type_derivation_tree/k
 def test_nested_abs_application() -> None:
-    assumption_x = parse_type_assertion(ANDREWS_HOL_SIGNATURE, 'x: ι')
-    assumption_y = parse_type_assertion(ANDREWS_HOL_SIGNATURE, 'y: o')
+    assumption_x = parse_variable_assertion(TEST_SIGNATURE, 'x: α')
+    assumption_y = parse_variable_assertion(TEST_SIGNATURE, 'y: β')
     tree = apply(
-        ANDREWS_HOL['Abs'],
+        BASE_SYSTEM['Abs'],
         RuleApplicationPremise(
             discharge=assumption_x,
             tree=apply(
-                ANDREWS_HOL['Abs'],
+                BASE_SYSTEM['Abs'],
                 RuleApplicationPremise(
                     discharge=assumption_y,
                     tree=assume(assumption_x)
@@ -60,10 +62,63 @@ def test_nested_abs_application() -> None:
     assert tree.get_context() == set()
     assert tree.conclusion.term == combinators.k
     assert str(tree) == dedent('''\
-                        x: ι
-             [y: o] _______________ Abs
-                    (λy.x): (o → ι)
-        [x: ι] __________________________ Abs
-               (λx.(λy.x)): (ι → (o → ι))
+                   x: α
+               _______________ Abs
+               (λy.x): (β → α)
+        x __________________________ Abs
+          (λx.(λy.x)): (α → (β → α))
+        '''
+    )
+
+
+# ex:def:type_derivation_tree/pairs
+def test_cons() -> None:
+    assumption_f = parse_variable_assertion(TEST_SIGNATURE, 'f: (α → (β → γ))')
+    assumption_x = parse_variable_assertion(TEST_SIGNATURE, 'x: α')
+    assumption_y = parse_variable_assertion(TEST_SIGNATURE, 'y: β')
+    tree = apply(
+        BASE_SYSTEM['Abs'],
+        RuleApplicationPremise(
+            discharge=assumption_x,
+            tree=apply(
+                BASE_SYSTEM['Abs'],
+                RuleApplicationPremise(
+                    discharge=assumption_y,
+                    tree=apply(
+                        BASE_SYSTEM['Abs'],
+                        RuleApplicationPremise(
+                            discharge=assumption_f,
+                            tree=apply(
+                                BASE_SYSTEM['App'],
+                                RuleApplicationPremise(
+                                    tree=apply(
+                                        BASE_SYSTEM['App'],
+                                        RuleApplicationPremise(tree=assume(assumption_f)),
+                                        RuleApplicationPremise(tree=assume(assumption_x))
+                                    )
+                                ),
+                                RuleApplicationPremise(tree=assume(assumption_y))
+                            )
+                        )
+                    )
+                )
+            )
+        )
+    )
+
+    assert tree.get_context() == set()
+    assert tree.conclusion.term == pairs.cons
+    assert str(tree) == dedent('''\
+                f: (α → (β → γ))      x: α
+                ____________________________ App
+                       (fx): (β → γ)                y: β
+                __________________________________________ App
+                                ((fx)y): γ
+              f __________________________________________ Abs
+                    (λf.((fx)y)): ((α → (β → γ)) → γ)
+             y ____________________________________________ Abs
+               (λy.(λf.((fx)y))): (β → ((α → (β → γ)) → γ))
+        x _______________________________________________________ Abs
+          (λx.(λy.(λf.((fx)y)))): (α → (β → ((α → (β → γ)) → γ)))
         '''
     )

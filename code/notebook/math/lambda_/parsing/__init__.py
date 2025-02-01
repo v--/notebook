@@ -1,6 +1,7 @@
 from .parser import (
     parse_pure_term,
     parse_pure_term_schema,
+    parse_pure_typing_rule,
     parse_term,
     parse_term_placeholder,
     parse_term_schema,
@@ -10,5 +11,6 @@ from .parser import (
     parse_type_schema,
     parse_typing_rule,
     parse_variable,
+    parse_variable_assertion,
     parse_variable_placeholder,
 )

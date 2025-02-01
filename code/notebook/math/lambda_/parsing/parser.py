@@ -9,7 +9,7 @@ from ....parsing.parser import Parser
 from ....support.inference.rules import InferenceRuleConnective
 from ....support.unicode import Capitalization, is_latin_string
 from ..alphabet import BinaryTypeConnective, TermConnective, TypeAssertionConnective
-from ..assertions import TypeAssertion, TypeAssertionSchema
+from ..assertions import TypeAssertion, TypeAssertionSchema, VariableTypeAssertion, VariableTypeAssertionSchema
 from ..signature import EMPTY_SIGNATURE, LambdaSignature
 from ..terms import (
     Abstraction,
@@ -241,14 +241,22 @@ class LambdaParser(InferenceRuleParserMixin[LambdaToken], WhitespaceParserMixin[
         raise self.error('Unexpected token')
 
     @overload
-    def parse_type_assertion(self, *, parse_schema: Literal[False]) -> TypeAssertion: ...
+    def parse_type_assertion(self, *, parse_schema: Literal[False], variable_assertion: Literal[True]) -> VariableTypeAssertion: ...
     @overload
-    def parse_type_assertion(self, *, parse_schema: Literal[True]) -> TypeAssertionSchema: ...
+    def parse_type_assertion(self, *, parse_schema: Literal[True], variable_assertion: Literal[True]) -> VariableTypeAssertionSchema: ...
     @overload
-    def parse_type_assertion(self, *, parse_schema: bool) -> TypeAssertion | TypeAssertionSchema: ...
-    def parse_type_assertion(self, *, parse_schema: bool) -> TypeAssertion | TypeAssertionSchema:
+    def parse_type_assertion(self, *, parse_schema: Literal[False], variable_assertion: Literal[False]) -> TypeAssertion: ...
+    @overload
+    def parse_type_assertion(self, *, parse_schema: Literal[True], variable_assertion: Literal[False]) -> TypeAssertionSchema: ...
+    @overload
+    def parse_type_assertion(self, *, parse_schema: bool, variable_assertion: bool) -> TypeAssertion | TypeAssertionSchema: ...
+    def parse_type_assertion(self, *, parse_schema: bool, variable_assertion: bool) -> TypeAssertion | TypeAssertionSchema:
         start_i = self.index
-        term = self.parse_term(parse_schema=parse_schema)
+
+        if variable_assertion:
+            var = self.parse_variable(parse_schema=parse_schema)
+        else:
+            term = self.parse_term(parse_schema=parse_schema)
 
         if self.peek() == TypeAssertionConnective.colon:
             self.advance_and_skip_spaces()
@@ -258,13 +266,36 @@ class LambdaParser(InferenceRuleParserMixin[LambdaToken], WhitespaceParserMixin[
         type_ = self.parse_type(parse_schema=parse_schema)
 
         if parse_schema:
-            assert isinstance(term, TermSchema)
             assert isinstance(type_, SimpleTypeSchema)
+
+            if variable_assertion:
+                assert isinstance(var, VariablePlaceholder)
+                return VariableTypeAssertionSchema(term, type_)
+
+            assert isinstance(term, TermSchema)
             return TypeAssertionSchema(term, type_)
 
-        assert isinstance(term, Term)
         assert isinstance(type_, SimpleType)
+
+        if variable_assertion:
+            assert isinstance(var, Variable)
+            return VariableTypeAssertion(var, type_)
+
+        assert isinstance(term, Term)
         return TypeAssertion(term, type_)
+
+    def parse_variable_assertion(self) -> VariableTypeAssertion:
+        start_i = self.index
+        var = self.parse_variable(parse_schema=False)
+
+        if self.peek() == TypeAssertionConnective.colon:
+            self.advance_and_skip_spaces()
+        else:
+            raise self.error('Expected a colon after the variable in a variable type specification', i_first_token=start_i)
+
+        type_ = self.parse_type(parse_schema=False)
+
+        return VariableTypeAssertion(var, type_)
 
     def parse_typing_rule_premise(self) -> TypingRulePremise:
         discharge: TypeAssertionSchema | None = None
@@ -273,14 +304,14 @@ class LambdaParser(InferenceRuleParserMixin[LambdaToken], WhitespaceParserMixin[
         if self.peek() == MiscToken.left_bracket:
             self.advance()
 
-            discharge = self.parse_type_assertion(parse_schema=True)
+            discharge = self.parse_type_assertion(parse_schema=True, variable_assertion=False)
 
             if self.peek() == MiscToken.right_bracket:
                 self.advance_and_skip_spaces()
             else:
                 raise self.error('Unclosed bracket for discharge schema', i_first_token=start)
 
-        main = self.parse_type_assertion(parse_schema=True)
+        main = self.parse_type_assertion(parse_schema=True, variable_assertion=False)
         self.skip_spaces()
         return TypingRulePremise(main, discharge)
 
@@ -294,7 +325,7 @@ class LambdaParser(InferenceRuleParserMixin[LambdaToken], WhitespaceParserMixin[
         self.advance_and_skip_spaces()
         premises = list(self.iter_typing_rule_premise())
         self.advance_and_skip_spaces()
-        return TypingRule(name, premises, self.parse_type_assertion(parse_schema=True))
+        return TypingRule(name, premises, self.parse_type_assertion(parse_schema=True, variable_assertion=False))
 
     parse = parse_term
 
@@ -367,7 +398,14 @@ def parse_type_assertion(signature: LambdaSignature, string: str) -> TypeAsserti
     tokens = tokenize_lambda_string(signature, string)
 
     with LambdaParser(tokens, signature) as parser:
-        return parser.parse_type_assertion(parse_schema=False)
+        return parser.parse_type_assertion(parse_schema=False, variable_assertion=False)
+
+
+def parse_variable_assertion(signature: LambdaSignature, string: str) -> VariableTypeAssertion:
+    tokens = tokenize_lambda_string(signature, string)
+
+    with LambdaParser(tokens, signature) as parser:
+        return parser.parse_type_assertion(parse_schema=False, variable_assertion=True)
 
 
 def parse_typing_rule(signature: LambdaSignature, string: str) -> TypingRule:
@@ -375,3 +413,7 @@ def parse_typing_rule(signature: LambdaSignature, string: str) -> TypingRule:
 
     with LambdaParser(tokens, signature) as parser:
         return parser.parse_typing_rule()
+
+
+def parse_pure_typing_rule(string: str) -> TypingRule:
+    return parse_typing_rule(EMPTY_SIGNATURE, string)
