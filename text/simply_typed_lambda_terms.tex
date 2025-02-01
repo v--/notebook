@@ -129,6 +129,8 @@ Unlike untyped lambda calculus, whose presentation is mostly uniform across auth
   \item As it often happens, usage in the literature is not consistent. We discuss this in \fullref{rem:simple_type_terminology_and_notation}. To avoid ambiguity, we will be explicit about which types we allow in our applications.
 
   \item We will mostly restrict ourselves to arrow types because handling each extension requires additional work. The literature listed in \fullref{rem:simple_type_terminology_and_notation} avoids extensions unless necessary.
+
+  \item \fullref{rem:simple_type_parentheses}.
 \end{comments}
 
 \begin{remark}\label{rem:simple_type_terminology_and_notation}
@@ -161,6 +163,31 @@ Unlike untyped lambda calculus, whose presentation is mostly uniform across auth
 
     \item \incite[def. 3.2.2]{Barendregt1992Types} use the arrow notation but introduces no special term.
   \end{itemize}
+\end{remark}
+
+\begin{proposition}\label{thm:simple_type_grammar}
+  The full \hyperref[def:formal_grammar]{grammar} of \hyperref[def:simple_type]{simple types} has the following basic properties:
+  \begin{thmenum}
+    \thmitem{thm:simple_type_grammar/unambiguous} It is \hyperref[def:grammar_ambiguity]{unambiguous}.
+
+    \thmitem{thm:simple_type_grammar/balanced} The \hyperref[def:formal_grammar/language]{generated language} has \hyperref[def:paired_delimiters]{balanced parentheses}.
+
+    \thmitem{thm:simple_type_grammar/not_regular} The grammar is not \hyperref[def:chomsky_hierarchy/regular]{regular}.
+  \end{thmenum}
+\end{proposition}
+\begin{proof}
+  Similar to \fullref{thm:propositional_formula_grammar}.
+\end{proof}
+
+\begin{remark}\label{rem:simple_type_parentheses}
+  We use some \enquote{abuse-of-notation} \hyperref[con:metalogic]{metalingual} syntactic conventions:
+  \begin{thmenum}
+    \thmitem{rem:simple_type_parentheses/outermost} As in \fullref{rem:propositional_formula_parentheses/outermost} and \fullref{rem:lambda_term_parentheses/outermost}, we avoid writing the outermost parentheses in types.
+
+    \thmitem{rem:simple_type_parentheses/arrow} We suppose that the arrow in arrow types is \hyperref[rem:binary_operation_syntax_trees/associativity]{right-associative}, which allows us to vastly simplify notation in some cases. This helps highlight the types of terms than can be \enquote{applied} to abstractions. See \fullref{ex:def:type_derivation_tree/pairs} and \fullref{ex:def:type_derivation_tree/disjoint} for examples.
+
+    This convention is used by our main sources --- \incite[2A1.1]{Hindley1997STT}, \incite[notation 3.1.2]{Barendregt1992Types} and \incite[\S 4.1.1]{Mimram2020Types}.
+  \end{thmenum}
 \end{remark}
 
 \paragraph{Schemas for simply typed \( \synlambda \)-terms}\hfill
@@ -203,7 +230,7 @@ To formalize typing rules in \fullref{def:simple_typing_rule}, we first need to 
 \end{comments}
 
 \begin{definition}\label{def:lambda_schema_instantiation}
-  In analogy with \hyperref[def:propositional_schema_instantiation]{schema instantiations} for \hyperref[def:propositional_formula_schema]{propositional formula schemas}, we define instantiations for \hyperref[def:type_assertion]{type assertions} for \hyperref[def:lambda_term_schema]{\( \synlambda \)-term schemas} and \hyperref[def:simple_type_schema]{simple type schemas} as \hyperref[def:set_valued_map/partial]{partial maps} sending \hyperref[def:lambda_term_schema]{variable placeholders} to \hyperref[def:lambda_term]{variables} and \hyperref[def:lambda_term_schema]{\( \synlambda \)-term placeholders} to \hyperref[def:lambda_term]{\( \synlambda \)-terms} and \hyperref[def:simple_type_schema]{type placeholders} to \hyperref[def:simple_type]{simple types}.
+  In analogy with \hyperref[def:propositional_schema_instantiation]{schema instantiations} for \hyperref[def:propositional_formula_schema]{propositional formula schemas}, we define instantiations for \hyperref[def:type_assertion]{type assertions} for \hyperref[def:lambda_term_schema]{\( \synlambda \)-term schemas} and \hyperref[def:simple_type_schema]{simple type schemas} as \hyperref[def:set_valued_map/partial]{partial maps} sending \hyperref[def:lambda_term_schema]{variable placeholders} to \hyperref[def:lambda_term]{variables}, \hyperref[def:lambda_term_schema]{\( \synlambda \)-term placeholders} to \hyperref[def:lambda_term]{\( \synlambda \)-terms} and \hyperref[def:simple_type_schema]{type placeholders} to \hyperref[def:simple_type]{simple types}.
 
   \begin{thmenum}
     \thmitem{def:lambda_schema_instantiation/terms} We will not concern ourselves with \hyperref[def:lambda_variable_occurrence]{free and bound occurrence} of variables as for \hyperref[def:lambda_term_schema_substitution]{substitution}, but extend an instantiation \( \sigma \) to arbitrary \( \synlambda \)-term schemas straightforwardly:
@@ -505,12 +532,12 @@ To formalize typing rules in \fullref{def:simple_typing_rule}, we first need to 
 
     \hyperref[rem:explicit_and_implicit_typing]{Explicit typing} can restrict each term to at most one type --- see \fullref{thm:pseudoterm_uniqueness}.
 
-    \thmitem{ex:def:type_derivation_tree/k} The combinator \( \ref{eq:ex:def:lambda_term/combinator/k} = \qabs \synx \qabs \syny \synx \) inhabits \( \alpha \synimplies (\beta \synimplies \alpha) \) for any pair of types \( \alpha \) and \( \beta \):
+    \thmitem{ex:def:type_derivation_tree/k} The combinator \( \ref{eq:ex:def:lambda_term/combinator/k} = \qabs \synx \qabs \syny \synx \) inhabits \( \alpha \synimplies \beta \synimplies \alpha \) for any pair of types \( \alpha \) and \( \beta \):
     \begin{equation*}
       \begin{prooftree}
         \hypo{ \synx: \alpha }
         \infer1[\ref{inf:def:base_typing_rules/abs}]{ \qabs \syny \synx: \beta \synimplies \alpha }
-        \infer[left label=\( \synx \)]1[\ref{inf:def:base_typing_rules/abs}]{ \qabs \synx \qabs \syny \synx: \alpha \synimplies (\beta \synimplies \alpha) }
+        \infer[left label=\( \synx \)]1[\ref{inf:def:base_typing_rules/abs}]{ \qabs \synx \qabs \syny \synx: \alpha \synimplies \beta \synimplies \alpha }
       \end{prooftree}
     \end{equation*}
 
@@ -529,7 +556,7 @@ To formalize typing rules in \fullref{def:simple_typing_rule}, we first need to 
         \hypo{ \synz: \alpha }
         \infer2[\ref{inf:def:base_typing_rules/app}]{ \syny \synz: \beta }
 
-        \infer2[\ref{inf:def:base_typing_rules/app}]{ (\synx \synz) (\syny \synz): \gamma }
+        \infer2[\ref{inf:def:base_typing_rules/app}]{ \synx \synz (\syny \synz): \gamma }
         \infer[left label=\( \synz \)]1[\ref{inf:def:base_typing_rules/abs}]{ \qabs \synz \synx \synz (\syny \synz): \alpha \synimplies \gamma }
         \infer[left label=\( \syny \)]1[\ref{inf:def:base_typing_rules/abs}]{ \qabs \syny \qabs \synz \synx \synz (\syny \synz): (\alpha \synimplies \beta) \synimplies (\alpha \synimplies \gamma) }
         \infer[left label=\( \synx \)]1[\ref{inf:def:base_typing_rules/abs}]{ S: (\alpha \synimplies (\beta \synimplies \gamma)) \synimplies ((\alpha \synimplies \beta) \synimplies (\alpha \synimplies \gamma)) }
@@ -566,26 +593,35 @@ To formalize typing rules in \fullref{def:simple_typing_rule}, we first need to 
       \end{prooftree}
     \end{equation*}
 
-    If \( A: \alpha \) and \( B: \beta \), after two applications of \ref{inf:def:base_typing_rules/app} we obtain
+    The convention of \( \synimplies \) being right-associative discussed in \fullref{rem:simple_type_parentheses/arrow} allows us to simplify the assertion
     \begin{equation*}
-      P_+ A B: (\alpha \synimplies (\beta \synimplies \gamma)) \synimplies \gamma.
+      P_+: \alpha \synimplies (\beta \synimplies ((\alpha \synimplies (\beta \synimplies \gamma)) \synimplies \gamma))
+    \end{equation*}
+    to
+    \begin{equation*}
+      P_+: \alpha \synimplies \beta \synimplies (\alpha \synimplies \beta \synimplies \gamma) \synimplies \gamma.
     \end{equation*}
 
-    Similarly, for
+    If \( A: \alpha \) and \( B: \beta \), after two applications of \ref{inf:def:base_typing_rules/app} we obtain
+    \begin{equation*}
+      P_+ A B: (\alpha \synimplies \beta \synimplies \gamma) \synimplies \gamma.
+    \end{equation*}
+
+    For the combinator
     \begin{equation*}
       \ref{ex:def:beta_eta_reduction/pairs/elim_left} = \qabs \synp \synp (\qabs \synx \qabs \syny \synx)
     \end{equation*}
     we have
     \begin{equation*}
       \begin{prooftree}
-        \hypo{ \synp: (\alpha \synimplies (\beta \synimplies \alpha)) \synimplies \gamma }
+        \hypo{ \synp: (\alpha \synimplies \beta \synimplies \alpha) \synimplies \gamma }
 
         \hypo{ \synx: \alpha }
         \infer1[\ref{inf:def:base_typing_rules/abs}]{ \qabs \syny \synx: \beta \synimplies \alpha }
-        \infer[left label=\( \synx \)]1[\ref{inf:def:base_typing_rules/abs}]{ \qabs \synx \qabs \syny \synx: \alpha \synimplies (\beta \synimplies \alpha) }
+        \infer[left label=\( \synx \)]1[\ref{inf:def:base_typing_rules/abs}]{ \qabs \synx \qabs \syny \synx: \alpha \synimplies \beta \synimplies \alpha }
 
         \infer2[\ref{inf:def:base_typing_rules/app}]{ \synp (\qabs \synx \qabs \syny \synx): \gamma }
-        \infer[left label=\( \synp \)]1[\ref{inf:def:base_typing_rules/abs}]{ P_{-L}: ((\alpha \synimplies (\beta \synimplies \alpha)) \synimplies \gamma) \synimplies \gamma }
+        \infer[left label=\( \synp \)]1[\ref{inf:def:base_typing_rules/abs}]{ P_{-L}: ((\alpha \synimplies \beta \synimplies \alpha) \synimplies \gamma) \synimplies \gamma }
       \end{prooftree}
     \end{equation*}
 
@@ -598,14 +634,14 @@ To formalize typing rules in \fullref{def:simple_typing_rule}, we first need to 
     we can similarly derive
     \begin{equation*}
       \begin{prooftree}
-        \hypo{ \synp: (\alpha \synimplies (\beta \synimplies \beta)) \synimplies \gamma }
+        \hypo{ \synp: (\alpha \synimplies \beta \synimplies \beta) \synimplies \gamma }
 
         \hypo{ \syny: \beta }
         \infer[left label=\( \syny \)]1[\ref{inf:def:base_typing_rules/abs}]{ \qabs \syny \syny: \beta \synimplies \beta }
-        \infer1[\ref{inf:def:base_typing_rules/abs}]{ \qabs \synx \qabs \syny \syny: \alpha \synimplies (\beta \synimplies \beta) }
+        \infer1[\ref{inf:def:base_typing_rules/abs}]{ \qabs \synx \qabs \syny \syny: \alpha \synimplies \beta \synimplies \beta }
 
         \infer2[\ref{inf:def:base_typing_rules/app}]{ \synp (\qabs \synx \qabs \syny \syny): \gamma }
-        \infer[left label=\( \synp \)]1[\ref{inf:def:base_typing_rules/abs}]{ P_{-R}: ((\alpha \synimplies (\beta \synimplies \beta)) \synimplies \gamma) \synimplies \gamma }
+        \infer[left label=\( \synp \)]1[\ref{inf:def:base_typing_rules/abs}]{ P_{-R}: ((\alpha \synimplies \beta \synimplies \beta) \synimplies \gamma) \synimplies \gamma }
       \end{prooftree}
     \end{equation*}
 
@@ -614,6 +650,8 @@ To formalize typing rules in \fullref{def:simple_typing_rule}, we first need to 
     We see here how the ability to derive multiple types for \( P_+ \) is actually beneficial --- we can use the same combinator in different situations.
 
     On the other hand, if \( P_+ \) has a unique type, perhaps hinted by a \hyperref[con:type_annotation]{type annotation}, then either \( P_{-L} (P_+ A B) \) or \( P_{-R} (P_+ A B) \) is \hyperref[def:typability]{untypable} in general (unless \( \alpha = \beta \)). This is discussed in \cite{MathOF:product_type_in_simply_typed_lambda_terms}, where it is also proven that no other such triple of combinators exist.
+
+    We will find it more convenient to have a constant term \( \synP_+ \) such that \( \synP_+ A B \) to has a dedicated type --- namely, the product type \( \alpha \syntimes \beta \), which we will introduce in \fullref{def:product_type}.
 
     \thmitem{ex:def:type_derivation_tree/disjoint} Consider the combinators \ref{eq:ex:def:beta_eta_reduction/disjoint/intro_left}, \ref{eq:ex:def:beta_eta_reduction/disjoint/intro_right} and \ref{eq:ex:def:beta_eta_reduction/disjoint/elim} from \fullref{ex:def:beta_eta_reduction/disjoint}.
 
@@ -630,14 +668,14 @@ To formalize typing rules in \fullref{def:simple_typing_rule}, we first need to 
         \hypo{ \synx: \alpha }
         \infer2[\ref{inf:def:base_typing_rules/app}]{ \synf \synx: \gamma }
         \infer1[\ref{inf:def:base_typing_rules/abs}]{ \qabs \syng \synf \synx: (\beta \synimplies \gamma) \synimplies \gamma }
-        \infer[left label=\( \synf \)]1[\ref{inf:def:base_typing_rules/abs}]{ \qabs \synf \qabs \syng \synf \synx: (\alpha \synimplies \beta) \synimplies ((\beta \synimplies \gamma) \synimplies \gamma) }
-        \infer[left label=\( \synx \)]1[\ref{inf:def:base_typing_rules/abs}]{ S_{+L}: \alpha \synimplies ((\alpha \synimplies \beta) \synimplies ((\beta \synimplies \gamma) \synimplies \gamma)) }
+        \infer[left label=\( \synf \)]1[\ref{inf:def:base_typing_rules/abs}]{ \qabs \synf \qabs \syng \synf \synx: (\alpha \synimplies \beta) \synimplies (\beta \synimplies \gamma \synimplies \gamma) }
+        \infer[left label=\( \synx \)]1[\ref{inf:def:base_typing_rules/abs}]{ S_{+L}: \alpha \synimplies (\alpha \synimplies \beta) \synimplies (\beta \synimplies \gamma) \synimplies \gamma }
       \end{prooftree}
     \end{equation*}
 
     Similarly, we can derive
     \begin{equation*}
-      S_{+R}: \beta \synimplies ((\alpha \synimplies \beta) \synimplies ((\beta \synimplies \gamma) \synimplies \gamma)).
+      S_{+R}: \beta \synimplies (\alpha \synimplies \beta) \synimplies (\beta \synimplies \gamma) \synimplies \gamma.
     \end{equation*}
 
     Suppose that \( A: \alpha \), \( F: \alpha \synimplies \gamma \) and \( G: \beta \synimplies \gamma \). Then, in order for \ref{inf:def:base_typing_rules/app} to be applicable to
@@ -646,7 +684,7 @@ To formalize typing rules in \fullref{def:simple_typing_rule}, we first need to 
     \end{equation*}
     the combinator \( S_- \) must inhabit
     \begin{equation*}
-      (\alpha \synimplies \gamma) \synimplies ((\beta \synimplies \gamma) \synimplies (((\alpha \synimplies \beta) \synimplies ((\beta \synimplies \gamma) \synimplies \gamma)) \synimplies \delta))
+      (\alpha \synimplies \gamma) \synimplies (\beta \synimplies \gamma) \synimplies ((\alpha \synimplies \beta) \synimplies (\beta \synimplies \gamma) \synimplies \gamma) \synimplies \delta
     \end{equation*}
     for some type \( \delta \).
 
@@ -656,10 +694,12 @@ To formalize typing rules in \fullref{def:simple_typing_rule}, we first need to 
     \end{verbatim}\vspace{-\baselineskip}
     as long as we identify \verb|Either a b| with
     \begin{equation*}
-      (\alpha \synimplies \beta) \synimplies ((\beta \synimplies \gamma) \synimplies \gamma).
+      (\alpha \synimplies \beta) \synimplies (\beta \synimplies \gamma) \synimplies \gamma.
     \end{equation*}
 
-    Hence, as expected
+    This identification is not particularly apt because \verb|Either a b| must depend on \( \gamma \). One solution to this is to introduce sum types, which we will define in \fullref{def:sum_type}.
+
+    As expected, we have
     \begin{equation*}
       S_- F G (S_{+L} A): \gamma
     \end{equation*}
