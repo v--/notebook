@@ -1,23 +1,23 @@
 from dataclasses import dataclass
 from typing import Protocol
 
-from ..terms import Abstraction, Application, Term
+from ..terms import UntypedAbstraction, UntypedApplication, UntypedTerm
 from .exceptions import ReductionError
 
 
 class Reduction(Protocol):
-    def try_contract_redex(self, term: Term) -> Term | None:
+    def try_contract_redex(self, term: UntypedTerm) -> UntypedTerm | None:
         ...
 
 
 class ReductionStrategy(Protocol):
     reduction: Reduction
 
-    def try_reduce(self, term: Term) -> Term | None:
+    def try_reduce(self, term: UntypedTerm) -> UntypedTerm | None:
         ...
 
 
-def reduce_term_once(term: Term, strategy: ReductionStrategy) -> Term:
+def reduce_term_once(term: UntypedTerm, strategy: ReductionStrategy) -> UntypedTerm:
     reduction = strategy.try_reduce(term)
 
     if reduction is None:
@@ -26,7 +26,7 @@ def reduce_term_once(term: Term, strategy: ReductionStrategy) -> Term:
     return reduction
 
 
-def transitively_reduce_term(term: Term, strategy: ReductionStrategy) -> Term:
+def transitively_reduce_term(term: UntypedTerm, strategy: ReductionStrategy) -> UntypedTerm:
     reduction = term
 
     while next_reduction := strategy.try_reduce(reduction):
@@ -39,19 +39,19 @@ def transitively_reduce_term(term: Term, strategy: ReductionStrategy) -> Term:
 class NormalOrderStrategy(ReductionStrategy):
     reduction: Reduction
 
-    def try_reduce(self, term: Term) -> Term | None:
+    def try_reduce(self, term: UntypedTerm) -> UntypedTerm | None:
         if contractum := self.reduction.try_contract_redex(term):
             return contractum
 
-        if isinstance(term, Application):
+        if isinstance(term, UntypedApplication):
             if a := self.try_reduce(term.a):
-                return Application(a, term.b)
+                return UntypedApplication(a, term.b)
 
             if b := self.try_reduce(term.b):
-                return Application(term.a, b)
+                return UntypedApplication(term.a, b)
 
-        if isinstance(term, Abstraction) and (sub := self.try_reduce(term.sub)):
-            return Abstraction(term.var, sub)
+        if isinstance(term, UntypedAbstraction) and (sub := self.try_reduce(term.sub)):
+            return UntypedAbstraction(term.var, sub)
 
         return None
 
@@ -60,16 +60,16 @@ class NormalOrderStrategy(ReductionStrategy):
 class ApplicativeOrderStrategy(ReductionStrategy):
     reduction: Reduction
 
-    def try_reduce(self, term: Term) -> Term | None:
-        if isinstance(term, Application):
+    def try_reduce(self, term: UntypedTerm) -> UntypedTerm | None:
+        if isinstance(term, UntypedApplication):
             if a := self.try_reduce(term.a):
-                return Application(a, term.b)
+                return UntypedApplication(a, term.b)
 
             if b := self.try_reduce(term.b):
-                return Application(term.a, b)
+                return UntypedApplication(term.a, b)
 
-        if isinstance(term, Abstraction) and (sub := self.try_reduce(term.sub)):
-            return Abstraction(term.var, sub)
+        if isinstance(term, UntypedAbstraction) and (sub := self.try_reduce(term.sub)):
+            return UntypedAbstraction(term.var, sub)
 
         if contractum := self.reduction.try_contract_redex(term):
             return contractum

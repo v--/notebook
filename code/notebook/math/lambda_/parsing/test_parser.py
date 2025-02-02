@@ -5,9 +5,11 @@ import pytest
 from ....parsing.identifiers import LatinIdentifier
 from ....parsing.parser import ParsingError
 from ....support.pytest import pytest_parametrize_kwargs, pytest_parametrize_lists
+from ..alphabet import BinaryTypeConnective
 from ..assertions import TypeAssertion
-from ..terms import Application, Constant, Variable
+from ..terms import AnnotatedConstant, PlainConstant, TypedAbstraction, UntypedApplication, Variable
 from ..type_systems import ANDREWS_HOL_SIGNATURE
+from ..types import BaseType, SimpleConnectiveType
 from .parser import (
     parse_pure_term,
     parse_term,
@@ -64,15 +66,18 @@ def test_parsing_invalid_variable_suffix() -> None:
 @pytest_parametrize_kwargs(
     dict(
         term='Q',
-        expected=Constant('Q')
+        expected=PlainConstant('Q')
     ),
     dict(
         term='(I(Qx))',
-        expected=Application(Constant('I'), Application(Constant('Q'), Variable(LatinIdentifier('x'))))
+        expected=UntypedApplication(
+            PlainConstant('I'),
+            UntypedApplication(PlainConstant('Q'), Variable(LatinIdentifier('x')))
+        )
     )
 )
-def test_parsing_constants(term: str, expected: Variable) -> None:
-    assert parse_term(ANDREWS_HOL_SIGNATURE, term) == expected
+def test_parsing_constants(term: str, expected: PlainConstant) -> None:
+    assert parse_term(ANDREWS_HOL_SIGNATURE, term, only_untyped=True) == expected
 
 
 @pytest_parametrize_lists(
@@ -177,7 +182,7 @@ def test_rebuilding_term_with_constants(term: str) -> None:
 @pytest_parametrize_lists(
     schema=[
         'x',
-        'Q', # Constant
+        'Q', # PlainConstant
         'M', # Placeholder
         '(QM)',
         '(λx.(QM))',
@@ -230,10 +235,82 @@ def test_parsing_type_assertion_missing_arrow() -> None:
     with pytest.raises(ParsingError) as excinfo:
         parse_type(ANDREWS_HOL_SIGNATURE, '(ι o)')
 
-    assert str(excinfo.value) == 'Expected an arrow connecting type specifications'
+    assert str(excinfo.value) == 'Binary types must have a connective after the first subtype'
     assert excinfo.value.__notes__[0] == dedent('''\
         1 │ (ι o)
           │ ^^^^
+        '''
+    )
+
+
+def test_parsing_annotated_constant() -> None:
+    expected = AnnotatedConstant(
+        'Q',
+        SimpleConnectiveType(
+            BinaryTypeConnective.arrow,
+            BaseType('ι'),
+            SimpleConnectiveType(
+                BinaryTypeConnective.arrow,
+                BaseType('ι'),
+                BaseType('o')
+            )
+        )
+    )
+
+    assert parse_term(ANDREWS_HOL_SIGNATURE, 'Q:(ι→(ι→o))', only_typed=True) == expected
+
+
+def test_parsing_annotated_constant_with_untyped_parser() -> None:
+    with pytest.raises(ParsingError) as excinfo:
+        parse_term(ANDREWS_HOL_SIGNATURE, 'Q:(ι→(ι→o))', only_untyped=True)
+
+    assert str(excinfo.value) == 'Unexpected type annotation for an untyped constant'
+    assert excinfo.value.__notes__[0] == dedent('''\
+        1 │ Q:(ι→(ι→o))
+          │  ^
+        '''
+    )
+
+
+def test_parsing_unannotated_constant_with_typed_parser() -> None:
+    with pytest.raises(ParsingError) as excinfo:
+        parse_term(ANDREWS_HOL_SIGNATURE, 'Q', only_typed=True)
+
+    assert str(excinfo.value) == 'Expected a type annotation for a typed constant'
+    assert excinfo.value.__notes__[0] == dedent('''\
+        1 │ Q
+          │ ^
+        '''
+    )
+
+
+def test_parsing_typed_abstraction() -> None:
+    var = Variable(LatinIdentifier('x'))
+    var_type = BaseType('ι')
+    expected = TypedAbstraction(var, var, var_type)
+    assert parse_term(ANDREWS_HOL_SIGNATURE, '(λx:ι.x)', only_typed=True) == expected
+
+
+def test_parsing_typed_abstraction_with_untyped_parser() -> None:
+    with pytest.raises(ParsingError) as excinfo:
+        parse_term(ANDREWS_HOL_SIGNATURE, '(λx:ι.x)', only_untyped=True)
+
+    assert str(excinfo.value) == 'Unexpected type annotation for the abstractor variable in an untyped abstraction'
+    assert excinfo.value.__notes__[0] == dedent('''\
+        1 │ (λx:ι.x)
+          │    ^
+        '''
+    )
+
+
+def test_parsing_untyped_abstraction_with_typed_parser() -> None:
+    with pytest.raises(ParsingError) as excinfo:
+        parse_term(ANDREWS_HOL_SIGNATURE, '(λx.x)', only_typed=True)
+
+    assert str(excinfo.value) == 'Expected a type annotation for the abstractor variable in a typed abstraction'
+    assert excinfo.value.__notes__[0] == dedent('''\
+        1 │ (λx.x)
+          │    ^
         '''
     )
 

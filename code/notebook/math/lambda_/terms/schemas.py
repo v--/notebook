@@ -2,6 +2,7 @@ from typing import NamedTuple
 
 from ....parsing.identifiers import LatinIdentifier
 from ..alphabet import TermConnective
+from ..types import SimpleTypeSchema
 from .terms import Constant
 
 
@@ -28,8 +29,9 @@ class ApplicationSchema(NamedTuple):
 
 
 class AbstractionSchema(NamedTuple):
-    var: VariablePlaceholder
     sub: 'TermSchema'
+    var: VariablePlaceholder
+    var_type: SimpleTypeSchema | None
 
     def __str__(self) -> str:
         return f'({TermConnective.l}{self.var}.{self.sub})'

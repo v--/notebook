@@ -1,23 +1,23 @@
 from ..exceptions import LambdaCalculusError
 from ..parsing import parse_pure_term
-from ..terms import Abstraction, Application, Term
+from ..terms import Application, UntypedAbstraction, UntypedTerm
 from .variables import x, y
 
 
-def church_numeral(n: int) -> Term:
+def church_numeral(n: int) -> UntypedTerm:
     assert n >= 0
 
-    content: Term = y
+    content: UntypedTerm = y
 
     for _ in range(n):
-        content = Abstraction(x, content)
+        content = UntypedAbstraction(x, content)
 
-    return Abstraction(x, Abstraction(y, content))
+    return UntypedAbstraction(x, UntypedAbstraction(y, content))
 
 
-def church_numeral_to_int(term: Term) -> int:
-    assert isinstance(term, Abstraction)
-    assert isinstance(term.sub, Abstraction)
+def church_numeral_to_int(term: UntypedTerm) -> int:
+    assert isinstance(term, UntypedAbstraction)
+    assert isinstance(term.sub, UntypedAbstraction)
 
     current = term.sub.sub
     n = 0

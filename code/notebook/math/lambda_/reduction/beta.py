@@ -2,33 +2,33 @@ import inspect
 from collections.abc import Callable
 
 from ..substitution import TermSubstitution, apply_term_substitution
-from ..terms import Abstraction, Application, Term
+from ..terms import UntypedAbstraction, UntypedApplication, UntypedTerm
 from .strategies import Reduction
 
 
 class BetaReduction(Reduction):
-    def try_contract_redex(self, term: Term) -> Term | None:
-        if isinstance(term, Application) and isinstance(term.a, Abstraction):
+    def try_contract_redex(self, term: UntypedTerm) -> UntypedTerm | None:
+        if isinstance(term, UntypedApplication) and isinstance(term.a, UntypedAbstraction):
             return apply_term_substitution(term.a.sub, TermSubstitution(variable_mapping={ term.a.var: term.b }))
 
         return None
 
 
-def to_function(term: Term) -> Callable:
+def to_function(term: UntypedTerm) -> Callable:
     red = BetaReduction()
     arg_names = list[str]()
 
     current = term
-    while isinstance(current, Abstraction):
+    while isinstance(current, UntypedAbstraction):
         arg_names.append(str(current.var.identifier))
         current = current.sub
 
-    def fun(*args: Term) -> Term:
+    def fun(*args: UntypedTerm) -> UntypedTerm:
         result = term
         i = 0
 
-        while isinstance(result, Abstraction):
-            reduced = red.try_contract_redex(Application(result, args[i]))
+        while isinstance(result, UntypedAbstraction):
+            reduced = red.try_contract_redex(UntypedApplication(result, args[i]))
             assert reduced
             result = reduced
             i += 1

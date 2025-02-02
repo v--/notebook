@@ -266,7 +266,7 @@ class FormalLogicParser(InferenceRuleParserMixin[LogicToken], WhitespaceParserMi
 
             raise self.error('Unclosed parentheses for binary formula', i_first_token=i_start, i_last_token=self.index - 1)
 
-        raise self.error('Unexpected token')
+        raise self.error('Binary formulas must have a connective after the first subformula', i_first_token=i_start)
 
     @overload
     def parse_negation_formula(self, *, parse_schema: Literal[False]) -> NegationFormula: ...

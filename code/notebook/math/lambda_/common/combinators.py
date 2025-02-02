@@ -1,5 +1,5 @@
 from ..parsing import parse_pure_term
-from ..terms import Abstraction, Application, Term
+from ..terms import UntypedAbstraction, UntypedApplication, UntypedTerm
 from .variables import x
 
 
@@ -9,17 +9,17 @@ s = parse_pure_term('(λx.(λy.(λz.((xz)(yz)))))')
 y = parse_pure_term('(λf.((λx.(f(xx)))(λx.(f(xx)))))')
 
 
-def get_omega(n: int) -> Term:
+def get_omega(n: int) -> UntypedTerm:
     assert n >= 1
 
-    content: Term = x
+    content: UntypedTerm = x
 
     for _ in range(1, n):
-        content = Application(content, x)
+        content = UntypedApplication(content, x)
 
-    return Abstraction(x, content)
+    return UntypedAbstraction(x, content)
 
 
 omega2 = get_omega(2)
 omega3 = get_omega(3)
-big_omega = Application(omega2, omega2)
+big_omega = UntypedApplication(omega2, omega2)
