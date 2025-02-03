@@ -15,7 +15,10 @@ from ..terms import (
     Variable,
     VariablePlaceholder,
 )
-from .base import LambdaSchemaInstantiation, merge_instantiations
+from .base import (
+    LambdaSchemaInstantiation,
+    merge_instantiations,
+)
 from .type_inference import infer_instantiation_from_type
 
 

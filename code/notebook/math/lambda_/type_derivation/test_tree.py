@@ -3,7 +3,7 @@ from textwrap import dedent
 from ..common import combinators, pairs
 from ..parsing import parse_variable_assertion
 from ..signature import LambdaSignature
-from ..type_systems import ABS_RULE_IMPLICIT, APP_RULE_IMPLICIT
+from ..type_systems import ABS_RULE_EXPLICIT, ABS_RULE_IMPLICIT, APP_RULE_IMPLICIT
 from .tree import RuleApplicationPremise, apply, assume
 
 
@@ -21,7 +21,7 @@ def test_assumption_tree() -> None:
 
 
 # ex:def:type_derivation_tree/i
-def test_abs_application() -> None:
+def test_abs_application_untyped() -> None:
     assumption = parse_variable_assertion(TEST_SIGNATURE, 'x: α')
     tree = apply(
         ABS_RULE_IMPLICIT,
@@ -37,6 +37,26 @@ def test_abs_application() -> None:
               x: α
         x _______________ Abs
           (λx.x): (α → α)
+        '''
+    )
+
+
+# ex:def:type_derivation_tree/i
+def test_abs_application_typed() -> None:
+    assumption = parse_variable_assertion(TEST_SIGNATURE, 'x: α')
+    tree = apply(
+        ABS_RULE_EXPLICIT,
+        RuleApplicationPremise(
+            assume(assumption),
+            discharge=assumption
+        )
+    )
+
+    assert tree.get_context() == set()
+    assert str(tree) == dedent('''\
+               x: α
+        x _________________ Abs
+          (λx:α.x): (α → α)
         '''
     )
 
