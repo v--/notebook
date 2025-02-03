@@ -13,7 +13,7 @@ from ..parsing import (
     parse_variable,
     parse_variable_placeholder,
 )
-from ..type_systems import ANDREWS_HOL_SIGNATURE
+from ..type_systems import HOL_SIGNATURE
 from .base import LambdaSchemaInstantiation
 from .term_inference import (
     infer_instantiation_from_term,
@@ -68,14 +68,14 @@ def test_build_success(
 
 
 def test_constant_build_success() -> None:
-    schema = parse_term_schema(ANDREWS_HOL_SIGNATURE, 'Q')
-    term = parse_term(ANDREWS_HOL_SIGNATURE, 'Q')
+    schema = parse_term_schema(HOL_SIGNATURE, 'Q')
+    term = parse_term(HOL_SIGNATURE, 'Q')
     assert infer_instantiation_from_term(schema, term) == LambdaSchemaInstantiation()
 
 
 def test_constant_instantiation_failure() -> None:
     with pytest.raises(SchemaInferenceError, match='Cannot match constant Q to x'):
-        infer_instantiation_from_term(parse_term_schema(ANDREWS_HOL_SIGNATURE, 'Q'), parse_term(ANDREWS_HOL_SIGNATURE, 'x'))
+        infer_instantiation_from_term(parse_term_schema(HOL_SIGNATURE, 'Q'), parse_term(HOL_SIGNATURE, 'x'))
 
 
 def test_variable_instantiation_failure() -> None:

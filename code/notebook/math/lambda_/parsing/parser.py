@@ -9,25 +9,38 @@ from ....parsing.parser import Parser
 from ....support.inference.rules import InferenceRuleConnective
 from ....support.unicode import Capitalization, is_latin_string
 from ..alphabet import BinaryTypeConnective, TermConnective, TypeAssertionConnective
-from ..assertions import TypeAssertion, TypeAssertionSchema, VariableTypeAssertion, VariableTypeAssertionSchema
+from ..assertions import (
+    TypeAssertion,
+    TypeAssertionSchema,
+    TypeAssertionSchemaTyped,
+    TypeAssertionSchemaUntyped,
+    TypeAssertionTyped,
+    TypeAssertionUntyped,
+    VariableTypeAssertion,
+    VariableTypeAssertionSchema,
+)
 from ..signature import EMPTY_SIGNATURE, LambdaSignature
 from ..terms import (
     Abstraction,
     AbstractionSchema,
-    AnnotatedConstant,
     Application,
     ApplicationSchema,
     Constant,
-    PlainConstant,
     Term,
     TermPlaceholder,
     TermSchema,
     TypedAbstraction,
+    TypedAbstractionSchema,
     TypedApplication,
+    TypedApplicationSchema,
     TypedTerm,
+    TypedTermSchema,
     UntypedAbstraction,
+    UntypedAbstractionSchema,
     UntypedApplication,
+    UntypedApplicationSchema,
     UntypedTerm,
+    UntypedTermSchema,
     Variable,
     VariablePlaceholder,
 )
@@ -39,7 +52,14 @@ from ..types import (
     SimpleTypeSchema,
     TypePlaceholder,
 )
-from ..typing_rules import TypingRule, TypingRulePremise
+from ..typing_rules import (
+    TypingRule,
+    TypingRulePremise,
+    TypingRulePremiseTyped,
+    TypingRulePremiseUntyped,
+    TypingRuleTyped,
+    TypingRuleUntyped,
+)
 from .tokenizer import tokenize_lambda_string
 from .tokens import BaseTypeToken, ConstantTermToken, LambdaToken, MiscToken
 
@@ -119,31 +139,11 @@ class LambdaParser(InferenceRuleParserMixin[LambdaToken], WhitespaceParserMixin[
 
         raise self.error('Unexpected token')
 
-    @overload
-    def parse_constant(self, *, only_untyped: Literal[False] = False, only_typed: Literal[False] = False) -> AnnotatedConstant | PlainConstant: ...
-    @overload
-    def parse_constant(self, *, only_untyped: Literal[True], only_typed: Literal[False] = False) -> PlainConstant: ...
-    @overload
-    def parse_constant(self, *, only_untyped: Literal[False] = False, only_typed: Literal[True]) -> AnnotatedConstant: ...
-    @overload
-    def parse_constant(self, *, only_untyped: bool, only_typed: bool) -> Constant: ...
-    def parse_constant(self, *, only_untyped: bool = False, only_typed: bool = False) -> Constant:
+    def parse_constant(self) -> Constant:
         head = self.peek()
         assert isinstance(head, ConstantTermToken)
         self.advance()
-
-        if not self.is_at_end() and self.peek() == TypeAssertionConnective.colon:
-            if only_untyped:
-                raise self.error('Unexpected type annotation for an untyped constant')
-
-            self.advance_and_skip_spaces()
-            type_ = self.parse_type(parse_schema=False)
-            return AnnotatedConstant(str(head), type_)
-
-        if only_typed:
-            raise self.error('Expected a type annotation for a typed constant')
-
-        return PlainConstant(str(head))
+        return Constant(str(head))
 
     def parse_term_placeholder(self) -> TermPlaceholder:
         head = self.peek()
@@ -170,13 +170,17 @@ class LambdaParser(InferenceRuleParserMixin[LambdaToken], WhitespaceParserMixin[
         return Variable(head)
 
     @overload
-    def parse_abstraction(self, *, parse_schema: Literal[True]) -> AbstractionSchema: ...
+    def parse_abstraction(self, *, parse_schema: Literal[True], only_untyped: Literal[True], only_typed: Literal[False] = False) -> UntypedAbstractionSchema: ...
     @overload
-    def parse_abstraction(self, *, parse_schema: Literal[False], only_untyped: Literal[False] = False, only_typed: Literal[False] = False) -> Abstraction: ...
+    def parse_abstraction(self, *, parse_schema: Literal[True], only_untyped: Literal[False] = False, only_typed: Literal[True]) -> TypedAbstractionSchema: ...
+    @overload
+    def parse_abstraction(self, *, parse_schema: Literal[True], only_untyped: bool = False, only_typed: bool = False) -> AbstractionSchema: ...
     @overload
     def parse_abstraction(self, *, parse_schema: Literal[False], only_untyped: Literal[True], only_typed: Literal[False] = False) -> UntypedAbstraction: ...
     @overload
     def parse_abstraction(self, *, parse_schema: Literal[False], only_untyped: Literal[False] = False, only_typed: Literal[True]) -> TypedAbstraction: ...
+    @overload
+    def parse_abstraction(self, *, parse_schema: Literal[False], only_untyped: bool = False, only_typed: bool = False) -> Abstraction: ...
     @overload
     def parse_abstraction(self, *, parse_schema: bool, only_untyped: bool, only_typed: bool) -> Abstraction | AbstractionSchema: ...
     def parse_abstraction(self, *, parse_schema: bool, only_untyped: bool = False, only_typed: bool = False) -> Abstraction | AbstractionSchema:
@@ -212,13 +216,23 @@ class LambdaParser(InferenceRuleParserMixin[LambdaToken], WhitespaceParserMixin[
         self.advance()
 
         if parse_schema:
-            assert isinstance(sub, TermSchema)
             assert isinstance(var, VariablePlaceholder)
 
             if var_type:
                 assert isinstance(var_type, SimpleTypeSchema)
 
-            return AbstractionSchema(sub, var, var_type)
+            if only_typed:
+                assert isinstance(sub, TypedTermSchema)
+                assert var_type is not None
+                return TypedAbstractionSchema(var, sub, var_type)
+
+            if only_untyped:
+                assert isinstance(sub, UntypedTermSchema)
+                assert var_type is None
+                return UntypedAbstractionSchema(var, sub, var_type)
+
+            assert isinstance(sub, TermSchema)
+            return AbstractionSchema(var, sub, var_type)
 
         assert isinstance(var, Variable)
 
@@ -239,13 +253,17 @@ class LambdaParser(InferenceRuleParserMixin[LambdaToken], WhitespaceParserMixin[
         return Abstraction(var, sub, var_type)
 
     @overload
-    def parse_application(self, *, parse_schema: Literal[True]) -> ApplicationSchema: ...
+    def parse_application(self, *, parse_schema: Literal[True], only_untyped: Literal[True], only_typed: Literal[False] = False) -> UntypedApplicationSchema: ...
     @overload
-    def parse_application(self, *, parse_schema: Literal[False], only_untyped: Literal[False] = False, only_typed: Literal[False] = False) -> Application: ...
+    def parse_application(self, *, parse_schema: Literal[True], only_untyped: Literal[False] = False, only_typed: Literal[True]) -> TypedApplicationSchema: ...
+    @overload
+    def parse_application(self, *, parse_schema: Literal[True], only_untyped: bool = False, only_typed: bool = False) -> ApplicationSchema: ...
     @overload
     def parse_application(self, *, parse_schema: Literal[False], only_untyped: Literal[True], only_typed: Literal[False] = False) -> UntypedApplication: ...
     @overload
     def parse_application(self, *, parse_schema: Literal[False], only_untyped: Literal[False] = False, only_typed: Literal[True]) -> TypedApplication: ...
+    @overload
+    def parse_application(self, *, parse_schema: Literal[False], only_untyped: bool = False, only_typed: bool = False) -> Application: ...
     @overload
     def parse_application(self, *, parse_schema: bool, only_untyped: bool, only_typed: bool) -> Application | ApplicationSchema: ...
     def parse_application(self, *, parse_schema: bool, only_untyped: bool = False, only_typed: bool = False) -> Application | ApplicationSchema:
@@ -264,6 +282,16 @@ class LambdaParser(InferenceRuleParserMixin[LambdaToken], WhitespaceParserMixin[
             raise self.error(f'Unclosed parentheses for {'application schema' if parse_schema else 'application'}', i_first_token=start_i)
 
         self.advance()
+
+        if parse_schema and only_untyped:
+            assert isinstance(a, UntypedTermSchema)
+            assert isinstance(b, UntypedTermSchema)
+            return UntypedApplicationSchema(a, b)
+
+        if parse_schema and only_typed:
+            assert isinstance(a, TypedTermSchema)
+            assert isinstance(b, TypedTermSchema)
+            return TypedApplicationSchema(a, b)
 
         if parse_schema:
             assert isinstance(a, TermSchema)
@@ -285,20 +313,22 @@ class LambdaParser(InferenceRuleParserMixin[LambdaToken], WhitespaceParserMixin[
         return Application(a, b)
 
     @overload
-    def parse_term(self, *, parse_schema: Literal[True]) -> TermSchema: ...
+    def parse_term(self, *, parse_schema: Literal[True], only_untyped: Literal[True], only_typed: Literal[False] = False) -> UntypedTermSchema: ...
     @overload
-    def parse_term(self, *, parse_schema: Literal[False], only_untyped: Literal[False] = False, only_typed: Literal[False] = False) -> Term: ...
+    def parse_term(self, *, parse_schema: Literal[True], only_untyped: Literal[False] = False, only_typed: Literal[True]) -> TypedTermSchema: ...
+    @overload
+    def parse_term(self, *, parse_schema: Literal[True], only_untyped: bool = False, only_typed: bool = False) -> TermSchema: ...
     @overload
     def parse_term(self, *, parse_schema: Literal[False], only_untyped: Literal[True], only_typed: Literal[False] = False) -> UntypedTerm: ...
     @overload
     def parse_term(self, *, parse_schema: Literal[False], only_untyped: Literal[False] = False, only_typed: Literal[True]) -> TypedTerm: ...
     @overload
-    def parse_term(self, *, parse_schema: Literal[False], only_untyped: bool, only_typed: bool) -> Term: ...
+    def parse_term(self, *, parse_schema: Literal[False], only_untyped: bool = False, only_typed: bool = False) -> Term: ...
     @overload
     def parse_term(self, *, parse_schema: bool, only_untyped: bool, only_typed: bool) -> Term | TermSchema: ...
     def parse_term(self, *, parse_schema: bool, only_untyped: bool = False, only_typed: bool = False) -> Term | TermSchema:
         if isinstance(self.peek(), ConstantTermToken):
-            return self.parse_constant(only_typed=only_typed, only_untyped=only_untyped)
+            return self.parse_constant()
 
         if isinstance(head := self.peek(), LatinIdentifier):
             if is_latin_string(head.value, Capitalization.lower):
@@ -321,16 +351,24 @@ class LambdaParser(InferenceRuleParserMixin[LambdaToken], WhitespaceParserMixin[
         raise self.error('Unexpected token')
 
     @overload
+    def parse_type_assertion(self, *, parse_schema: Literal[True], variable_assertion: Literal[False], only_untyped: Literal[True], only_typed: Literal[False] = False) -> TypeAssertionSchemaTyped: ...
+    @overload
+    def parse_type_assertion(self, *, parse_schema: Literal[True], variable_assertion: Literal[False], only_untyped: Literal[False] = False, only_typed: Literal[True]) -> TypeAssertionSchemaUntyped: ...
+    @overload
+    def parse_type_assertion(self, *, parse_schema: Literal[True], variable_assertion: Literal[False], only_untyped: bool = False, only_typed: bool = False) -> TypeAssertionSchema: ...
+    @overload
+    def parse_type_assertion(self, *, parse_schema: Literal[False], variable_assertion: Literal[False], only_untyped: Literal[True], only_typed: Literal[False] = False) -> TypeAssertionTyped: ...
+    @overload
+    def parse_type_assertion(self, *, parse_schema: Literal[False], variable_assertion: Literal[False], only_untyped: Literal[False] = False, only_typed: Literal[True]) -> TypeAssertionUntyped: ...
+    @overload
+    def parse_type_assertion(self, *, parse_schema: Literal[False], variable_assertion: Literal[False], only_untyped: bool = False, only_typed: bool = False) -> TypeAssertion: ...
+    @overload
     def parse_type_assertion(self, *, parse_schema: Literal[False], variable_assertion: Literal[True]) -> VariableTypeAssertion: ...
     @overload
     def parse_type_assertion(self, *, parse_schema: Literal[True], variable_assertion: Literal[True]) -> VariableTypeAssertionSchema: ...
     @overload
-    def parse_type_assertion(self, *, parse_schema: Literal[False], variable_assertion: Literal[False]) -> TypeAssertion: ...
-    @overload
-    def parse_type_assertion(self, *, parse_schema: Literal[True], variable_assertion: Literal[False]) -> TypeAssertionSchema: ...
-    @overload
-    def parse_type_assertion(self, *, parse_schema: bool, variable_assertion: bool) -> TypeAssertion | TypeAssertionSchema: ...
-    def parse_type_assertion(self, *, parse_schema: bool, variable_assertion: bool) -> TypeAssertion | TypeAssertionSchema:
+    def parse_type_assertion(self, *, parse_schema: bool, variable_assertion: bool, only_untyped: bool, only_typed: bool) -> TypeAssertion | TypeAssertionSchema: ...
+    def parse_type_assertion(self, *, parse_schema: bool, variable_assertion: bool, only_untyped: bool = False, only_typed: bool = False) -> TypeAssertion | TypeAssertionSchema:
         start_i = self.index
 
         if variable_assertion:
@@ -352,6 +390,14 @@ class LambdaParser(InferenceRuleParserMixin[LambdaToken], WhitespaceParserMixin[
                 assert isinstance(var, VariablePlaceholder)
                 return VariableTypeAssertionSchema(var, type_)
 
+            if only_untyped:
+                assert isinstance(term, UntypedTermSchema)
+                return TypeAssertionSchemaUntyped(term, type_)
+
+            if only_typed:
+                assert isinstance(term, TypedTermSchema)
+                return TypeAssertionSchemaTyped(term, type_)
+
             assert isinstance(term, TermSchema)
             return TypeAssertionSchema(term, type_)
 
@@ -361,49 +407,77 @@ class LambdaParser(InferenceRuleParserMixin[LambdaToken], WhitespaceParserMixin[
             assert isinstance(var, Variable)
             return VariableTypeAssertion(var, type_)
 
+        if only_untyped:
+            assert isinstance(term, UntypedTerm)
+            return TypeAssertionUntyped(term, type_)
+
+        if only_typed:
+            assert isinstance(term, TypedTerm)
+            return TypeAssertionTyped(term, type_)
+
         assert isinstance(term, Term)
         return TypeAssertion(term, type_)
 
-    def parse_variable_assertion(self) -> VariableTypeAssertion:
-        start_i = self.index
-        var = self.parse_variable(parse_schema=False)
-
-        if self.peek() == TypeAssertionConnective.colon:
-            self.advance_and_skip_spaces()
-        else:
-            raise self.error('Expected a colon after the variable in a variable type specification', i_first_token=start_i)
-
-        type_ = self.parse_type(parse_schema=False)
-
-        return VariableTypeAssertion(var, type_)
-
-    def parse_typing_rule_premise(self) -> TypingRulePremise:
+    @overload
+    def parse_typing_rule_premise(self, *, only_untyped: Literal[True], only_typed: Literal[False] = False) -> TypingRulePremiseUntyped: ...
+    @overload
+    def parse_typing_rule_premise(self, *, only_untyped: Literal[False] = False, only_typed: Literal[True]) -> TypingRulePremiseTyped: ...
+    @overload
+    def parse_typing_rule_premise(self, *, only_untyped: bool, only_typed: bool) -> TypingRulePremise: ...
+    def parse_typing_rule_premise(self, *, only_untyped: bool = False, only_typed: bool = False) -> TypingRulePremise:
         discharge: TypeAssertionSchema | None = None
         start = self.index
 
         if self.peek() == MiscToken.left_bracket:
             self.advance()
 
-            discharge = self.parse_type_assertion(parse_schema=True, variable_assertion=False)
+            discharge = self.parse_type_assertion(parse_schema=True, variable_assertion=False, only_untyped=only_untyped, only_typed=only_typed)
 
             if self.peek() == MiscToken.right_bracket:
                 self.advance_and_skip_spaces()
             else:
                 raise self.error('Unclosed bracket for discharge schema', i_first_token=start)
 
-        main = self.parse_type_assertion(parse_schema=True, variable_assertion=False)
+        main = self.parse_type_assertion(parse_schema=True, variable_assertion=False, only_untyped=only_untyped, only_typed=only_typed)
         self.skip_spaces()
+
+        if only_untyped:
+            if discharge:
+                assert isinstance(discharge, TypeAssertionSchemaUntyped)
+
+            assert isinstance(main, TypeAssertionSchemaUntyped)
+            return TypingRulePremiseUntyped(main, discharge)
+
+        if only_typed:
+            if discharge:
+                assert isinstance(discharge, TypeAssertionSchemaTyped)
+
+            assert isinstance(main, TypeAssertionSchemaTyped)
+            return TypingRulePremiseTyped(main, discharge)
+
         return TypingRulePremise(main, discharge)
 
-    def iter_typing_rule_premise(self) -> Iterable[TypingRulePremise]:
+    @overload
+    def iter_typing_rule_premise(self, *, only_untyped: Literal[True], only_typed: Literal[False] = False) -> Iterable[TypingRulePremiseUntyped]: ...
+    @overload
+    def iter_typing_rule_premise(self, *, only_untyped: Literal[False] = False, only_typed: Literal[True]) -> Iterable[TypingRulePremiseTyped]: ...
+    @overload
+    def iter_typing_rule_premise(self, *, only_untyped: bool, only_typed: bool) -> Iterable[TypingRulePremise]: ...
+    def iter_typing_rule_premise(self, *, only_untyped: bool = False, only_typed: bool = False) -> Iterable[TypingRulePremise]:
         for _ in self.iter_parse_premise_positions(InferenceRuleConnective.sequent, MiscToken.comma):
             self.skip_spaces()
-            yield self.parse_typing_rule_premise()
+            yield self.parse_typing_rule_premise(only_untyped=only_untyped, only_typed=only_typed)
 
-    def parse_typing_rule(self) -> TypingRule:
+    @overload
+    def parse_typing_rule(self, *, only_untyped: Literal[True], only_typed: Literal[False] = False) -> TypingRuleUntyped: ...
+    @overload
+    def parse_typing_rule(self, *, only_untyped: Literal[False] = False, only_typed: Literal[True]) -> TypingRuleTyped: ...
+    @overload
+    def parse_typing_rule(self, *, only_untyped: bool, only_typed: bool) -> TypingRule: ...
+    def parse_typing_rule(self, *, only_untyped: bool = False, only_typed: bool = False) -> TypingRule:
         name = self.parse_rule_name(MiscToken.left_parenthesis, MiscToken.right_parenthesis)
         self.advance_and_skip_spaces()
-        premises = list(self.iter_typing_rule_premise())
+        premises = list(self.iter_typing_rule_premise(only_untyped=only_untyped, only_typed=only_typed))
         self.advance_and_skip_spaces()
         return TypingRule(name, premises, self.parse_type_assertion(parse_schema=True, variable_assertion=False))
 
@@ -500,7 +574,7 @@ def parse_typing_rule(signature: LambdaSignature, string: str) -> TypingRule:
     tokens = tokenize_lambda_string(signature, string)
 
     with LambdaParser(tokens, signature) as parser:
-        return parser.parse_typing_rule()
+        return parser.parse_typing_rule(only_untyped=False, only_typed=False)
 
 
 def parse_pure_typing_rule(string: str) -> TypingRule:

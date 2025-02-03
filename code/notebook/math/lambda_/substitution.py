@@ -4,7 +4,7 @@ from typing import Protocol, override
 
 from ...support.iteration import iter_accumulator
 from .exceptions import LambdaCalculusError
-from .terms import PlainConstant, UntypedAbstraction, UntypedApplication, UntypedTerm, UntypedTermVisitor, Variable
+from .terms import Constant, UntypedAbstraction, UntypedApplication, UntypedTerm, UntypedTermVisitor, Variable
 from .variables import get_free_variables, new_variable
 
 
@@ -54,7 +54,7 @@ class TermSubstitutionApplicationVisitor(UntypedTermVisitor[UntypedTerm]):
     substitution: TermSubstitution
 
     @override
-    def visit_constant(self, term: PlainConstant) -> PlainConstant:
+    def visit_constant(self, term: Constant) -> Constant:
         return term
 
     @override

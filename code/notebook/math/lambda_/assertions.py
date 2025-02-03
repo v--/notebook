@@ -1,7 +1,16 @@
 from typing import NamedTuple
 
 from .alphabet import TypeAssertionConnective
-from .terms import Term, TermSchema, Variable, VariablePlaceholder
+from .terms import (
+    Term,
+    TermSchema,
+    TypedTerm,
+    TypedTermSchema,
+    UntypedTerm,
+    UntypedTermSchema,
+    Variable,
+    VariablePlaceholder,
+)
 from .types import SimpleType, SimpleTypeSchema
 
 
@@ -11,6 +20,14 @@ class TypeAssertion(NamedTuple):
 
     def __str__(self) -> str:
         return f'{self.term}{TypeAssertionConnective.colon} {self.type}'
+
+
+class TypeAssertionTyped(TypeAssertion):
+    term: TypedTerm
+
+
+class TypeAssertionUntyped(TypeAssertion):
+    term: UntypedTerm
 
 
 class VariableTypeAssertion(TypeAssertion):
@@ -24,6 +41,14 @@ class TypeAssertionSchema(NamedTuple):
 
     def __str__(self) -> str:
         return f'{self.term}{TypeAssertionConnective.colon} {self.type}'
+
+
+class TypeAssertionSchemaTyped(TypeAssertionSchema):
+    term: TypedTermSchema
+
+
+class TypeAssertionSchemaUntyped(TypeAssertionSchema):
+    term: UntypedTermSchema
 
 
 class VariableTypeAssertionSchema(TypeAssertionSchema):

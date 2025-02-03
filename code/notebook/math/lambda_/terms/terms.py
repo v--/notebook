@@ -7,18 +7,9 @@ from ..types import SimpleType
 
 class Constant(NamedTuple):
     name: str
-    type: SimpleType | None = None
 
     def __str__(self) -> str:
         return str(self.name)
-
-
-class PlainConstant(Constant):
-    type: None
-
-
-class AnnotatedConstant(Constant):
-    type: SimpleType
 
 
 class Variable(NamedTuple):
@@ -56,15 +47,15 @@ class Abstraction(NamedTuple):
 
 
 class UntypedAbstraction(Abstraction):
-    var_type: None
     sub: 'UntypedTerm'
+    var_type: None
 
 
 class TypedAbstraction(Abstraction):
-    var_type: SimpleType
     sub: 'TypedTerm'
+    var_type: SimpleType
 
 
 Term = Constant | Variable | Application | Abstraction
-UntypedTerm = PlainConstant | Variable | UntypedApplication | UntypedAbstraction
-TypedTerm = AnnotatedConstant | Variable | TypedApplication | TypedAbstraction
+UntypedTerm = Constant | Variable | UntypedApplication | UntypedAbstraction
+TypedTerm = Constant | Variable | TypedApplication | TypedAbstraction

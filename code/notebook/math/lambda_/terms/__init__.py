@@ -1,12 +1,22 @@
 from .schema_visitors import TermSchemaVisitor
-from .schemas import AbstractionSchema, ApplicationSchema, TermPlaceholder, TermSchema, VariablePlaceholder
+from .schemas import (
+    AbstractionSchema,
+    ApplicationSchema,
+    TermPlaceholder,
+    TermSchema,
+    TypedAbstractionSchema,
+    TypedApplicationSchema,
+    TypedTermSchema,
+    UntypedAbstractionSchema,
+    UntypedApplicationSchema,
+    UntypedTermSchema,
+    VariablePlaceholder,
+)
 from .term_visitors import TermVisitor, TypedTermVisitor, UntypedTermVisitor
 from .terms import (
     Abstraction,
-    AnnotatedConstant,
     Application,
     Constant,
-    PlainConstant,
     Term,
     TypedAbstraction,
     TypedApplication,

@@ -1,9 +1,7 @@
 from .terms import (
     Abstraction,
-    AnnotatedConstant,
     Application,
     Constant,
-    PlainConstant,
     Term,
     TypedAbstraction,
     TypedApplication,
@@ -50,7 +48,7 @@ class TermVisitor[T]:
 class UntypedTermVisitor[T]:
     def visit(self, term: UntypedTerm) -> T:
         match term:
-            case PlainConstant():
+            case Constant():
                 return self.visit_constant(term)
 
             case Variable():
@@ -62,7 +60,7 @@ class UntypedTermVisitor[T]:
             case UntypedAbstraction():
                 return self.visit_abstraction(term)
 
-    def visit_constant(self, term: PlainConstant) -> T:
+    def visit_constant(self, term: Constant) -> T:
         return self.generic_visit(term)
 
     def visit_variable(self, term: Variable) -> T:
@@ -81,7 +79,7 @@ class UntypedTermVisitor[T]:
 class TypedTermVisitor[T]:
     def visit(self, term: TypedTerm) -> T:
         match term:
-            case AnnotatedConstant():
+            case Constant():
                 return self.visit_constant(term)
 
             case Variable():
@@ -93,7 +91,7 @@ class TypedTermVisitor[T]:
             case TypedAbstraction():
                 return self.visit_abstraction(term)
 
-    def visit_constant(self, term: AnnotatedConstant) -> T:
+    def visit_constant(self, term: Constant) -> T:
         return self.generic_visit(term)
 
     def visit_variable(self, term: Variable) -> T:

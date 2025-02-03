@@ -12,7 +12,7 @@ from ..parsing import (
     parse_variable,
     parse_variable_placeholder,
 )
-from ..type_systems import ANDREWS_HOL_SIGNATURE
+from ..type_systems import HOL_SIGNATURE
 from .base import LambdaSchemaInstantiation
 from .term_application import (
     instantiate_term_schema,
@@ -55,7 +55,7 @@ def test_instantiation_success(
 
 def test_constant_instantiation_success() -> None:
     instantiation = LambdaSchemaInstantiation()
-    q = parse_term_schema(ANDREWS_HOL_SIGNATURE, 'Q')
+    q = parse_term_schema(HOL_SIGNATURE, 'Q')
     assert instantiate_term_schema(q, instantiation) == q
 
 
