@@ -43,7 +43,10 @@ class Abstraction(NamedTuple):
     var_type: SimpleType | None = None
 
     def __str__(self) -> str:
-        return f'({TermConnective.l}{self.var}.{self.sub})'
+        if self.var_type is None:
+            return f'({TermConnective.l}{self.var}.{self.sub})'
+
+        return f'({TermConnective.l}{self.var}:{self.var_type}.{self.sub})'
 
 
 class UntypedAbstraction(Abstraction):

@@ -5,6 +5,7 @@ import pytest
 from ....support.pytest import pytest_parametrize_kwargs
 from ....support.schemas import SchemaInstantiationError
 from ..parsing import (
+    TypingStyle,
     parse_pure_term,
     parse_pure_term_schema,
     parse_term_placeholder,
@@ -50,12 +51,12 @@ def test_instantiation_success(
         term_mapping={parse_term_placeholder(placeholder): parse_pure_term(value) for placeholder, value in term_mapping.items()}
     )
 
-    assert instantiate_term_schema(parse_pure_term_schema(schema), instantiation) == parse_pure_term(expected)
+    assert instantiate_term_schema(parse_pure_term_schema(schema, typing=TypingStyle.implicit), instantiation) == parse_pure_term(expected)
 
 
 def test_constant_instantiation_success() -> None:
     instantiation = LambdaSchemaInstantiation()
-    q = parse_term_schema(HOL_SIGNATURE, 'Q')
+    q = parse_term_schema(HOL_SIGNATURE, 'Q', typing=TypingStyle.explicit)
     assert instantiate_term_schema(q, instantiation) == q
 
 
@@ -63,11 +64,11 @@ def test_variable_instantiation_failure() -> None:
     instantiation = LambdaSchemaInstantiation()
 
     with pytest.raises(SchemaInstantiationError, match='No specification of how to instantiate the variable placeholder x'):
-        instantiate_term_schema(parse_pure_term_schema('x'), instantiation)
+        instantiate_term_schema(parse_pure_term_schema('x', typing=TypingStyle.implicit), instantiation)
 
 
 def test_term_instantiation_failure() -> None:
     instantiation = LambdaSchemaInstantiation()
 
     with pytest.raises(SchemaInstantiationError, match='No specification of how to instantiate the term placeholder M'):
-        instantiate_term_schema(parse_pure_term_schema('M'), instantiation)
+        instantiate_term_schema(parse_pure_term_schema('M', typing=TypingStyle.implicit), instantiation)

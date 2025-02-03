@@ -7,10 +7,12 @@ from ....parsing.parser import ParsingError
 from ....support.pytest import pytest_parametrize_kwargs, pytest_parametrize_lists
 from ..alphabet import BinaryTypeConnective
 from ..assertions import TypeAssertion
+from ..signature import EMPTY_SIGNATURE
 from ..terms import Constant, TypedAbstraction, UntypedApplication, Variable
 from ..type_systems import HOL_SIGNATURE
 from ..types import BaseType, SimpleConnectiveType, SimpleType
 from .parser import (
+    TypingStyle,
     parse_pure_term,
     parse_term,
     parse_term_schema,
@@ -77,7 +79,7 @@ def test_parsing_invalid_variable_suffix() -> None:
     )
 )
 def test_parsing_constants(term: str, expected: Constant) -> None:
-    assert parse_term(HOL_SIGNATURE, term, only_untyped=True) == expected
+    assert parse_term(HOL_SIGNATURE, term, typing=TypingStyle.explicit) == expected
 
 
 @pytest_parametrize_lists(
@@ -172,11 +174,11 @@ def test_reparsing_terms(term: str) -> None:
         'x',
         'Q',
         '(Qx)',
-        '(λx.(Qx))',
+        '(λx:ι.(Qx))',
     ]
 )
 def test_rebuilding_term_with_constants(term: str) -> None:
-    assert str(parse_term(HOL_SIGNATURE, term)) == term
+    assert str(parse_term(HOL_SIGNATURE, term, typing=TypingStyle.explicit)) == term
 
 
 @pytest_parametrize_lists(
@@ -189,7 +191,7 @@ def test_rebuilding_term_with_constants(term: str) -> None:
     ]
 )
 def test_rebuilding_schema(schema: str) -> None:
-    assert str(parse_term_schema(HOL_SIGNATURE, schema)) == schema
+    assert str(parse_term_schema(HOL_SIGNATURE, schema, typing=TypingStyle.implicit)) == schema
 
 
 def test_parsing_term_schema_with_regular_parser() -> None:
@@ -240,9 +242,9 @@ def test_parsing_valid_type(type_: str, expected: SimpleType) -> None:
         'ι',
         '(ι → o)',
         'α',
-        '(α → β)',
-        '(o → (α → β))',
-        '((o → α) → β)',
+        '(β → β)',
+        '(ι → (α → β))',
+        '((ι → α) → β)'
     ]
 )
 def test_rebuilding_type_schema(schema: str) -> None:
@@ -277,12 +279,12 @@ def test_parsing_typed_abstraction() -> None:
     var = Variable(LatinIdentifier('x'))
     var_type = BaseType('ι')
     expected = TypedAbstraction(var, var, var_type)
-    assert parse_term(HOL_SIGNATURE, '(λx:ι.x)', only_typed=True) == expected
+    assert parse_term(HOL_SIGNATURE, '(λx:ι.x)', typing=TypingStyle.explicit) == expected
 
 
 def test_parsing_typed_abstraction_with_untyped_parser() -> None:
     with pytest.raises(ParsingError) as excinfo:
-        parse_term(HOL_SIGNATURE, '(λx:ι.x)', only_untyped=True)
+        parse_term(HOL_SIGNATURE, '(λx:ι.x)', typing=TypingStyle.implicit)
 
     assert str(excinfo.value) == 'Unexpected type annotation for the abstractor variable in an untyped abstraction'
     assert excinfo.value.__notes__[0] == dedent('''\
@@ -294,7 +296,7 @@ def test_parsing_typed_abstraction_with_untyped_parser() -> None:
 
 def test_parsing_untyped_abstraction_with_typed_parser() -> None:
     with pytest.raises(ParsingError) as excinfo:
-        parse_term(HOL_SIGNATURE, '(λx.x)', only_typed=True)
+        parse_term(HOL_SIGNATURE, '(λx.x)', typing=TypingStyle.explicit)
 
     assert str(excinfo.value) == 'Expected a type annotation for the abstractor variable in a typed abstraction'
     assert excinfo.value.__notes__[0] == dedent('''\
@@ -314,16 +316,16 @@ def test_parsing_untyped_abstraction_with_typed_parser() -> None:
 def test_parsing_type_assertion(assertion: str) -> None:
     term, type_ = assertion.split(': ', maxsplit=2)
     expected = TypeAssertion(
-        parse_term(HOL_SIGNATURE, term),
+        parse_term(HOL_SIGNATURE, term, typing=TypingStyle.explicit),
         parse_type(HOL_SIGNATURE, type_)
     )
 
-    assert parse_type_assertion(HOL_SIGNATURE, assertion) == expected
+    assert parse_type_assertion(HOL_SIGNATURE, assertion, typing=TypingStyle.explicit) == expected
 
 
 def test_parsing_type_assertion_missing_colon() -> None:
     with pytest.raises(ParsingError) as excinfo:
-        parse_type_assertion(HOL_SIGNATURE, 'x ι')
+        parse_type_assertion(HOL_SIGNATURE, 'x ι', typing=TypingStyle.explicit)
 
     assert str(excinfo.value) == 'Expected a colon after the term in a type specification'
     assert excinfo.value.__notes__[0] == dedent('''\
@@ -335,22 +337,22 @@ def test_parsing_type_assertion_missing_colon() -> None:
 
 @pytest_parametrize_lists(
     rule=[
-        '(R) ⫢ x: ι',
+        '(R) ⫢ x: α',
         '(R) M: (α → β), N: α ⫢ (MN): β',
         '(R) [x: α] M: β ⫢ (λx.M): (α → β)'
     ]
 )
 def test_rebuilding_typing_rules(rule: str) -> None:
-    assert str(parse_typing_rule(HOL_SIGNATURE, rule)) == rule
+    assert str(parse_typing_rule(EMPTY_SIGNATURE, rule)) == rule
 
 
 def test_parsing_discharge_schema_with_no_name() -> None:
     with pytest.raises(ParsingError) as excinfo:
-        parse_typing_rule(HOL_SIGNATURE, '(R) [] x: ι ⫢ y: ι')
+        parse_typing_rule(EMPTY_SIGNATURE, '(R) [] x: α ⫢ y: α')
 
     assert str(excinfo.value) == 'Unexpected token'
     assert excinfo.value.__notes__[0] == dedent('''\
-        1 │ (R) [] x: ι ⫢ y: ι
+        1 │ (R) [] x: α ⫢ y: α
           │      ^
         '''
     )
@@ -358,11 +360,11 @@ def test_parsing_discharge_schema_with_no_name() -> None:
 
 def test_parsing_discharge_schema_with_no_closing_bracket() -> None:
     with pytest.raises(ParsingError) as excinfo:
-        parse_typing_rule(HOL_SIGNATURE, '(R) [x: ι y: ι ⫢ z: ι')
+        parse_typing_rule(EMPTY_SIGNATURE, '(R) [x: α y: α ⫢ z: α')
 
     assert str(excinfo.value) == 'Unclosed bracket for discharge schema'
     assert excinfo.value.__notes__[0] == dedent('''\
-        1 │ (R) [x: ι y: ι ⫢ z: ι
+        1 │ (R) [x: α y: α ⫢ z: α
           │     ^^^^^^
         '''
     )
