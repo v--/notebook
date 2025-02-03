@@ -1,10 +1,12 @@
 from collections.abc import Mapping
-from typing import Any
+from typing import Any, overload
 
 from ....support.schemas import SchemaInferenceError, iter_mapping_discrepancy
 from ..terms import (
     Term,
     TermPlaceholder,
+    TypedTerm,
+    UntypedTerm,
     Variable,
     VariablePlaceholder,
 )
@@ -39,9 +41,20 @@ class LambdaSchemaInstantiation:
             self.type_mapping == other.type_mapping
 
 
-EMPTY_INSTANTIATION = LambdaSchemaInstantiation()
+class TypedLambdaSchemaInstantiation(LambdaSchemaInstantiation):
+    term_mapping: Mapping[TermPlaceholder, TypedTerm]
 
 
+class UntypedLambdaSchemaInstantiation(LambdaSchemaInstantiation):
+    term_mapping: Mapping[TermPlaceholder, UntypedTerm]
+
+
+@overload
+def merge_instantiations(left: TypedLambdaSchemaInstantiation, right: TypedLambdaSchemaInstantiation) -> TypedLambdaSchemaInstantiation: ...
+@overload
+def merge_instantiations(left: UntypedLambdaSchemaInstantiation, right: UntypedLambdaSchemaInstantiation) -> UntypedLambdaSchemaInstantiation: ...
+@overload
+def merge_instantiations(left: LambdaSchemaInstantiation, right: LambdaSchemaInstantiation) -> LambdaSchemaInstantiation: ...
 def merge_instantiations(left: LambdaSchemaInstantiation, right: LambdaSchemaInstantiation) -> LambdaSchemaInstantiation:
     schema: Any
     a: Any
@@ -56,7 +69,16 @@ def merge_instantiations(left: LambdaSchemaInstantiation, right: LambdaSchemaIns
     for schema, (a, b) in iter_mapping_discrepancy(left.type_mapping, right.type_mapping):
         raise SchemaInferenceError(f'Cannot instantiate type placeholder {schema} to both {a} and {b}')
 
-    return LambdaSchemaInstantiation(
+    class_ = LambdaSchemaInstantiation
+
+    match (left, right):
+        case (TypedLambdaSchemaInstantiation(), TypedLambdaSchemaInstantiation()):
+            class_ = TypedLambdaSchemaInstantiation
+
+        case (UntypedLambdaSchemaInstantiation(), UntypedLambdaSchemaInstantiation()):
+            class_ = UntypedLambdaSchemaInstantiation
+
+    return class_(
         variable_mapping={**left.variable_mapping, **right.variable_mapping},
         term_mapping={**left.term_mapping, **right.term_mapping},
         type_mapping={**left.type_mapping, **right.type_mapping}

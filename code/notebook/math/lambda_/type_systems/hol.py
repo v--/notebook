@@ -1,12 +1,12 @@
 from ..signature import LambdaSignature
-from ..typing_rules import GradualTypingSystem
-from .base import BASE_SYSTEM
+from .base import ABS_RULE_EXPLICIT, APP_RULE_EXPLICIT
+from .systems import ExplicitTypingSystem
 
 
 HOL_SIGNATURE = LambdaSignature(base_types={'o', 'ι'}, constant_terms={'Q', 'I'})
-HOL = GradualTypingSystem(
+HOL = ExplicitTypingSystem(
     rules=[
-        BASE_SYSTEM['App'],
-        BASE_SYSTEM['Abs']
+        APP_RULE_EXPLICIT,
+        ABS_RULE_EXPLICIT
     ]
 )

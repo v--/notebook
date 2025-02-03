@@ -79,7 +79,7 @@ def test_parsing_invalid_variable_suffix() -> None:
     )
 )
 def test_parsing_constants(term: str, expected: Constant) -> None:
-    assert parse_term(HOL_SIGNATURE, term, typing=TypingStyle.explicit) == expected
+    assert parse_term(HOL_SIGNATURE, term, TypingStyle.explicit) == expected
 
 
 @pytest_parametrize_lists(
@@ -178,7 +178,7 @@ def test_reparsing_terms(term: str) -> None:
     ]
 )
 def test_rebuilding_term_with_constants(term: str) -> None:
-    assert str(parse_term(HOL_SIGNATURE, term, typing=TypingStyle.explicit)) == term
+    assert str(parse_term(HOL_SIGNATURE, term, TypingStyle.explicit)) == term
 
 
 @pytest_parametrize_lists(
@@ -191,7 +191,7 @@ def test_rebuilding_term_with_constants(term: str) -> None:
     ]
 )
 def test_rebuilding_schema(schema: str) -> None:
-    assert str(parse_term_schema(HOL_SIGNATURE, schema, typing=TypingStyle.implicit)) == schema
+    assert str(parse_term_schema(HOL_SIGNATURE, schema, TypingStyle.implicit)) == schema
 
 
 def test_parsing_term_schema_with_regular_parser() -> None:
@@ -279,12 +279,12 @@ def test_parsing_typed_abstraction() -> None:
     var = Variable(LatinIdentifier('x'))
     var_type = BaseType('ι')
     expected = TypedAbstraction(var, var, var_type)
-    assert parse_term(HOL_SIGNATURE, '(λx:ι.x)', typing=TypingStyle.explicit) == expected
+    assert parse_term(HOL_SIGNATURE, '(λx:ι.x)', TypingStyle.explicit) == expected
 
 
 def test_parsing_typed_abstraction_with_untyped_parser() -> None:
     with pytest.raises(ParsingError) as excinfo:
-        parse_term(HOL_SIGNATURE, '(λx:ι.x)', typing=TypingStyle.implicit)
+        parse_term(HOL_SIGNATURE, '(λx:ι.x)', TypingStyle.implicit)
 
     assert str(excinfo.value) == 'Unexpected type annotation for the abstractor variable in an untyped abstraction'
     assert excinfo.value.__notes__[0] == dedent('''\
@@ -296,7 +296,7 @@ def test_parsing_typed_abstraction_with_untyped_parser() -> None:
 
 def test_parsing_untyped_abstraction_with_typed_parser() -> None:
     with pytest.raises(ParsingError) as excinfo:
-        parse_term(HOL_SIGNATURE, '(λx.x)', typing=TypingStyle.explicit)
+        parse_term(HOL_SIGNATURE, '(λx.x)', TypingStyle.explicit)
 
     assert str(excinfo.value) == 'Expected a type annotation for the abstractor variable in a typed abstraction'
     assert excinfo.value.__notes__[0] == dedent('''\
@@ -316,16 +316,16 @@ def test_parsing_untyped_abstraction_with_typed_parser() -> None:
 def test_parsing_type_assertion(assertion: str) -> None:
     term, type_ = assertion.split(': ', maxsplit=2)
     expected = TypeAssertion(
-        parse_term(HOL_SIGNATURE, term, typing=TypingStyle.explicit),
+        parse_term(HOL_SIGNATURE, term, TypingStyle.explicit),
         parse_type(HOL_SIGNATURE, type_)
     )
 
-    assert parse_type_assertion(HOL_SIGNATURE, assertion, typing=TypingStyle.explicit) == expected
+    assert parse_type_assertion(HOL_SIGNATURE, assertion, TypingStyle.explicit) == expected
 
 
 def test_parsing_type_assertion_missing_colon() -> None:
     with pytest.raises(ParsingError) as excinfo:
-        parse_type_assertion(HOL_SIGNATURE, 'x ι', typing=TypingStyle.explicit)
+        parse_type_assertion(HOL_SIGNATURE, 'x ι', TypingStyle.explicit)
 
     assert str(excinfo.value) == 'Expected a colon after the term in a type specification'
     assert excinfo.value.__notes__[0] == dedent('''\
@@ -339,16 +339,17 @@ def test_parsing_type_assertion_missing_colon() -> None:
     rule=[
         '(R) ⫢ x: α',
         '(R) M: (α → β), N: α ⫢ (MN): β',
-        '(R) [x: α] M: β ⫢ (λx.M): (α → β)'
+        '(R) [x: α] M: β ⫢ (λx.M): (α → β)',
+        '(R) [x: α] M: β ⫢ (λx:α.M): (α → β)'
     ]
 )
 def test_rebuilding_typing_rules(rule: str) -> None:
-    assert str(parse_typing_rule(EMPTY_SIGNATURE, rule)) == rule
+    assert str(parse_typing_rule(EMPTY_SIGNATURE, rule, TypingStyle.gradual)) == rule
 
 
 def test_parsing_discharge_schema_with_no_name() -> None:
     with pytest.raises(ParsingError) as excinfo:
-        parse_typing_rule(EMPTY_SIGNATURE, '(R) [] x: α ⫢ y: α')
+        parse_typing_rule(EMPTY_SIGNATURE, '(R) [] x: α ⫢ y: α', TypingStyle.implicit)
 
     assert str(excinfo.value) == 'Unexpected token'
     assert excinfo.value.__notes__[0] == dedent('''\
@@ -360,7 +361,7 @@ def test_parsing_discharge_schema_with_no_name() -> None:
 
 def test_parsing_discharge_schema_with_no_closing_bracket() -> None:
     with pytest.raises(ParsingError) as excinfo:
-        parse_typing_rule(EMPTY_SIGNATURE, '(R) [x: α y: α ⫢ z: α')
+        parse_typing_rule(EMPTY_SIGNATURE, '(R) [x: α y: α ⫢ z: α', TypingStyle.implicit)
 
     assert str(excinfo.value) == 'Unclosed bracket for discharge schema'
     assert excinfo.value.__notes__[0] == dedent('''\

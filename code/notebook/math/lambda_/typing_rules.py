@@ -1,6 +1,4 @@
-from collections.abc import Collection
-
-from ...support.inference.rules import InferenceRule, InferenceRulePremise, InferenceRuleSystem
+from ...support.inference.rules import InferenceRule, InferenceRulePremise
 from .assertions import TypeAssertionSchema, TypeAssertionSchemaTyped, TypeAssertionSchemaUntyped
 
 
@@ -26,15 +24,3 @@ class TypingRuleUntyped(TypingRule[TypeAssertionSchemaUntyped, TypingRulePremise
 
 class TypingRuleTyped(TypingRule[TypeAssertionSchemaTyped, TypingRulePremiseTyped]):
     pass
-
-
-class GradualTypingSystem[RuleT: TypingRule](InferenceRuleSystem[RuleT]):
-    pass
-
-
-class ImplicitTypingSystem(GradualTypingSystem[TypingRuleUntyped]):
-    rules: Collection[TypingRuleUntyped]
-
-
-class ExplicitTypingSystem(GradualTypingSystem[TypingRuleTyped]):
-    rules: Collection[TypingRuleTyped]

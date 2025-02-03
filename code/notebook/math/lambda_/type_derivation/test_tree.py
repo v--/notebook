@@ -3,7 +3,7 @@ from textwrap import dedent
 from ..common import combinators, pairs
 from ..parsing import parse_variable_assertion
 from ..signature import LambdaSignature
-from ..type_systems import BASE_SYSTEM
+from ..type_systems import ABS_RULE_IMPLICIT, APP_RULE_IMPLICIT
 from .tree import RuleApplicationPremise, apply, assume
 
 
@@ -24,7 +24,7 @@ def test_assumption_tree() -> None:
 def test_abs_application() -> None:
     assumption = parse_variable_assertion(TEST_SIGNATURE, 'x: α')
     tree = apply(
-        BASE_SYSTEM['Abs'],
+        ABS_RULE_IMPLICIT,
         RuleApplicationPremise(
             assume(assumption),
             discharge=assumption
@@ -46,11 +46,11 @@ def test_nested_abs_application() -> None:
     assumption_x = parse_variable_assertion(TEST_SIGNATURE, 'x: α')
     assumption_y = parse_variable_assertion(TEST_SIGNATURE, 'y: β')
     tree = apply(
-        BASE_SYSTEM['Abs'],
+        ABS_RULE_IMPLICIT,
         RuleApplicationPremise(
             discharge=assumption_x,
             tree=apply(
-                BASE_SYSTEM['Abs'],
+                ABS_RULE_IMPLICIT,
                 RuleApplicationPremise(
                     discharge=assumption_y,
                     tree=assume(assumption_x)
@@ -77,22 +77,22 @@ def test_cons() -> None:
     assumption_x = parse_variable_assertion(TEST_SIGNATURE, 'x: α')
     assumption_y = parse_variable_assertion(TEST_SIGNATURE, 'y: β')
     tree = apply(
-        BASE_SYSTEM['Abs'],
+        ABS_RULE_IMPLICIT,
         RuleApplicationPremise(
             discharge=assumption_x,
             tree=apply(
-                BASE_SYSTEM['Abs'],
+                ABS_RULE_IMPLICIT,
                 RuleApplicationPremise(
                     discharge=assumption_y,
                     tree=apply(
-                        BASE_SYSTEM['Abs'],
+                        ABS_RULE_IMPLICIT,
                         RuleApplicationPremise(
                             discharge=assumption_f,
                             tree=apply(
-                                BASE_SYSTEM['App'],
+                                APP_RULE_IMPLICIT,
                                 RuleApplicationPremise(
                                     tree=apply(
-                                        BASE_SYSTEM['App'],
+                                        APP_RULE_IMPLICIT,
                                         RuleApplicationPremise(tree=assume(assumption_f)),
                                         RuleApplicationPremise(tree=assume(assumption_x))
                                     )

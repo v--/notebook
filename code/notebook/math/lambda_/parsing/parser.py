@@ -1,6 +1,5 @@
 from collections.abc import Iterable
 from dataclasses import dataclass
-from enum import Flag, auto
 from typing import Literal, overload
 
 from ....parsing.identifiers import GreekIdentifier, LatinIdentifier
@@ -53,6 +52,7 @@ from ..types import (
     SimpleTypeSchema,
     TypePlaceholder,
 )
+from ..typing import TypingStyle
 from ..typing_rules import (
     TypingRule,
     TypingRulePremise,
@@ -63,12 +63,6 @@ from ..typing_rules import (
 )
 from .tokenizer import tokenize_lambda_string
 from .tokens import BaseTypeToken, ConstantTermToken, LambdaToken, MiscToken
-
-
-class TypingStyle(Flag):
-    implicit = auto()
-    explicit = auto()
-    gradual = implicit | explicit
 
 
 @dataclass
@@ -527,7 +521,7 @@ def parse_term(signature: LambdaSignature, string: str, typing: TypingStyle) -> 
 
 
 def parse_pure_term(string: str) -> UntypedTerm:
-    return parse_term(EMPTY_SIGNATURE, string, typing=TypingStyle.implicit)
+    return parse_term(EMPTY_SIGNATURE, string, TypingStyle.implicit)
 
 
 def parse_variable_placeholder(string: str) -> VariablePlaceholder:
@@ -608,12 +602,14 @@ def parse_variable_assertion(signature: LambdaSignature, string: str) -> Variabl
         return parser.parse_type_assertion(parse_schema=False, variable_assertion=True)
 
 
-def parse_typing_rule(signature: LambdaSignature, string: str) -> TypingRule:
+@overload
+def parse_typing_rule(signature: LambdaSignature, string: str, typing: Literal[TypingStyle.implicit]) -> TypingRuleUntyped: ...
+@overload
+def parse_typing_rule(signature: LambdaSignature, string: str, typing: Literal[TypingStyle.explicit]) -> TypingRuleTyped: ...
+@overload
+def parse_typing_rule(signature: LambdaSignature, string: str, typing: TypingStyle) -> TypingRule: ...
+def parse_typing_rule(signature: LambdaSignature, string: str, typing: TypingStyle) -> TypingRule:
     tokens = tokenize_lambda_string(signature, string)
 
     with LambdaParser(tokens, signature) as parser:
-        return parser.parse_typing_rule(typing=TypingStyle.gradual)
-
-
-def parse_pure_typing_rule(string: str) -> TypingRule:
-    return parse_typing_rule(EMPTY_SIGNATURE, string)
+        return parser.parse_typing_rule(typing=typing)

@@ -1,5 +1,5 @@
 from dataclasses import dataclass
-from typing import override
+from typing import overload, override
 
 from ....support.schemas import SchemaInstantiationError
 from ..terms import (
@@ -12,10 +12,21 @@ from ..terms import (
     TermPlaceholder,
     TermSchema,
     TermSchemaVisitor,
+    TypedAbstraction,
+    TypedApplication,
+    TypedApplicationSchema,
+    TypedTerm,
+    TypedTermSchema,
+    UntypedAbstraction,
+    UntypedApplication,
+    UntypedApplicationSchema,
+    UntypedTerm,
+    UntypedTermSchema,
     Variable,
     VariablePlaceholder,
 )
-from .base import LambdaSchemaInstantiation
+from .base import LambdaSchemaInstantiation, TypedLambdaSchemaInstantiation, UntypedLambdaSchemaInstantiation
+from .type_application import instantiate_type_schema
 
 
 @dataclass(frozen=True)
@@ -42,12 +53,42 @@ class InstantiationApplicationVisitor(TermSchemaVisitor[Term]):
 
     @override
     def visit_application(self, schema: ApplicationSchema) -> Application:
-        return Application(self.visit(schema.a), self.visit(schema.b))
+        match (schema, self.instantiation):
+            case (UntypedApplicationSchema(), UntypedLambdaSchemaInstantiation()):
+                return UntypedApplication(self.visit(schema.a), self.visit(schema.b))
+
+            case (TypedApplicationSchema(), TypedLambdaSchemaInstantiation()):
+                return TypedApplication(self.visit(schema.a), self.visit(schema.b))
+
+            case _:
+                return Application(self.visit(schema.a), self.visit(schema.b))
 
     @override
     def visit_abstraction(self, schema: AbstractionSchema) -> Abstraction:
-        return Abstraction(self.visit_variable_placeholder(schema.var), self.visit(schema.sub))
+        match (schema, self.instantiation):
+            case (UntypedApplicationSchema(), UntypedLambdaSchemaInstantiation()):
+                return UntypedAbstraction(self.visit_variable_placeholder(schema.var), self.visit(schema.sub))
+
+            case (TypedApplicationSchema(), TypedLambdaSchemaInstantiation()):
+                return TypedAbstraction(
+                    self.visit_variable_placeholder(schema.var),
+                    self.visit(schema.sub),
+                    instantiate_type_schema(schema.var_type, self.instantiation)
+                )
+
+            case _:
+                return Abstraction(
+                    self.visit_variable_placeholder(schema.var),
+                    self.visit(schema.sub),
+                    instantiate_type_schema(schema.var_type, self.instantiation) if schema.var_type else None
+                )
 
 
+@overload
+def instantiate_term_schema(schema: UntypedTermSchema, instantiation: UntypedLambdaSchemaInstantiation) -> UntypedTerm: ...
+@overload
+def instantiate_term_schema(schema: TypedTermSchema, instantiation: TypedLambdaSchemaInstantiation) -> TypedTerm: ...
+@overload
+def instantiate_term_schema(schema: TermSchema, instantiation: LambdaSchemaInstantiation) -> Term: ...
 def instantiate_term_schema(schema: TermSchema, instantiation: LambdaSchemaInstantiation) -> Term:
     return InstantiationApplicationVisitor(instantiation).visit(schema)

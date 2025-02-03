@@ -1,8 +1,6 @@
 from .parser import (
-    TypingStyle,
     parse_pure_term,
     parse_pure_term_schema,
-    parse_pure_typing_rule,
     parse_term,
     parse_term_placeholder,
     parse_term_schema,

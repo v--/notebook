@@ -16,6 +16,7 @@ from ..terms import (
     VariablePlaceholder,
 )
 from .base import LambdaSchemaInstantiation, merge_instantiations
+from .type_inference import infer_instantiation_from_type
 
 
 @dataclass(frozen=True)
@@ -54,9 +55,21 @@ class InferInstantiationVisitor(TermSchemaVisitor[LambdaSchemaInstantiation]):
         if not isinstance(self.term, Abstraction):
             raise SchemaInferenceError(f'Cannot match abstraction schema {schema} to {self.term}')
 
-        var = LambdaSchemaInstantiation(variable_mapping={schema.var: self.term.var})
-        sub = infer_instantiation_from_term(schema.sub, self.term.sub)
-        return merge_instantiations(var, sub)
+        instantiation = LambdaSchemaInstantiation(variable_mapping={schema.var: self.term.var})
+
+        if schema.var_type is not None:
+            if self.term.var_type is None:
+                raise SchemaInferenceError(f'The schema {schema} has a type annotation on its abstractor, but the term {self.term} does not')
+
+            instantiation = merge_instantiations(
+                instantiation,
+                infer_instantiation_from_type(schema.var_type, self.term.var_type)
+            )
+
+        return merge_instantiations(
+            instantiation,
+            infer_instantiation_from_term(schema.sub, self.term.sub)
+        )
 
 
 def infer_instantiation_from_term(schema: TermSchema, term: Term) -> LambdaSchemaInstantiation:

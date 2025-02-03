@@ -5,15 +5,18 @@ import pytest
 from ....support.pytest import pytest_parametrize_kwargs
 from ....support.schemas import SchemaInstantiationError
 from ..parsing import (
-    TypingStyle,
     parse_pure_term,
     parse_pure_term_schema,
+    parse_term,
     parse_term_placeholder,
     parse_term_schema,
+    parse_type,
+    parse_type_placeholder,
     parse_variable,
     parse_variable_placeholder,
 )
 from ..type_systems import HOL_SIGNATURE
+from ..typing import TypingStyle
 from .base import LambdaSchemaInstantiation
 from .term_application import (
     instantiate_term_schema,
@@ -51,12 +54,12 @@ def test_instantiation_success(
         term_mapping={parse_term_placeholder(placeholder): parse_pure_term(value) for placeholder, value in term_mapping.items()}
     )
 
-    assert instantiate_term_schema(parse_pure_term_schema(schema, typing=TypingStyle.implicit), instantiation) == parse_pure_term(expected)
+    assert instantiate_term_schema(parse_pure_term_schema(schema, TypingStyle.implicit), instantiation) == parse_pure_term(expected)
 
 
 def test_constant_instantiation_success() -> None:
     instantiation = LambdaSchemaInstantiation()
-    q = parse_term_schema(HOL_SIGNATURE, 'Q', typing=TypingStyle.explicit)
+    q = parse_term_schema(HOL_SIGNATURE, 'Q', TypingStyle.explicit)
     assert instantiate_term_schema(q, instantiation) == q
 
 
@@ -64,11 +67,33 @@ def test_variable_instantiation_failure() -> None:
     instantiation = LambdaSchemaInstantiation()
 
     with pytest.raises(SchemaInstantiationError, match='No specification of how to instantiate the variable placeholder x'):
-        instantiate_term_schema(parse_pure_term_schema('x', typing=TypingStyle.implicit), instantiation)
+        instantiate_term_schema(parse_pure_term_schema('x', TypingStyle.implicit), instantiation)
 
 
 def test_term_instantiation_failure() -> None:
     instantiation = LambdaSchemaInstantiation()
 
     with pytest.raises(SchemaInstantiationError, match='No specification of how to instantiate the term placeholder M'):
-        instantiate_term_schema(parse_pure_term_schema('M', typing=TypingStyle.implicit), instantiation)
+        instantiate_term_schema(parse_pure_term_schema('M', TypingStyle.implicit), instantiation)
+
+
+def test_abstraction_annotation_success() -> None:
+    schema = parse_pure_term_schema('(λx:α.x)', TypingStyle.explicit)
+    instantiation = LambdaSchemaInstantiation(
+        variable_mapping={parse_variable_placeholder('x'): parse_variable('x')},
+        type_mapping={parse_type_placeholder('α'): parse_type(HOL_SIGNATURE, 'ι')}
+    )
+
+    expected = parse_term(HOL_SIGNATURE, '(λx:ι.x)', TypingStyle.explicit)
+    assert instantiate_term_schema(schema, instantiation) == expected
+
+
+def test_abstraction_annotation_failure() -> None:
+    with pytest.raises(SchemaInstantiationError, match=r'No specification of how to instantiate the type placeholder α'):
+        schema = parse_pure_term_schema('(λx:α.x)', TypingStyle.explicit)
+        instantiation = LambdaSchemaInstantiation(
+            variable_mapping={parse_variable_placeholder('x'): parse_variable('x')},
+        )
+
+        instantiate_term_schema(schema, instantiation)
+

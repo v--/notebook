@@ -1,10 +1,9 @@
-from ..parsing import parse_pure_typing_rule
-from ..typing_rules import GradualTypingSystem
+from ..parsing import parse_typing_rule
+from ..signature import EMPTY_SIGNATURE
+from ..typing import TypingStyle
 
 
-BASE_SYSTEM = GradualTypingSystem(
-    rules=[
-        parse_pure_typing_rule('(App) M: (α → β), N: α ⫢ (MN): β'),
-        parse_pure_typing_rule('(Abs) [x: α] M: β ⫢ (λx.M): (α → β)'),
-    ]
-)
+APP_RULE_IMPLICIT = parse_typing_rule(EMPTY_SIGNATURE, '(App) M: (α → β), N: α ⫢ (MN): β', TypingStyle.implicit)
+APP_RULE_EXPLICIT = parse_typing_rule(EMPTY_SIGNATURE, '(App) M: (α → β), N: α ⫢ (MN): β', TypingStyle.explicit)
+ABS_RULE_IMPLICIT = parse_typing_rule(EMPTY_SIGNATURE, '(Abs) [x: α] M: β ⫢ (λx.M): (α → β)', TypingStyle.implicit)
+ABS_RULE_EXPLICIT = parse_typing_rule(EMPTY_SIGNATURE, '(Abs) [x: α] M: β ⫢ (λx:α.M): (α → β)', TypingStyle.explicit)

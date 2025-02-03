@@ -31,9 +31,6 @@ class FormalLogicSchemaInstantiation:
             self.formula_mapping == other.formula_mapping
 
 
-EMPTY_INSTANTIATION = FormalLogicSchemaInstantiation()
-
-
 def merge_instantiations(left: FormalLogicSchemaInstantiation, right: FormalLogicSchemaInstantiation) -> FormalLogicSchemaInstantiation:
     schema: Any
     a: Any
