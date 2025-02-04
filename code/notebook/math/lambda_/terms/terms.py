@@ -1,25 +1,28 @@
-from typing import NamedTuple
+from dataclasses import dataclass
 
 from ....parsing.identifiers import LatinIdentifier
 from ..alphabet import TermConnective
 from ..types import SimpleType
 
 
-class Constant(NamedTuple):
+@dataclass(frozen=True)
+class Constant:
     name: str
 
     def __str__(self) -> str:
         return str(self.name)
 
 
-class Variable(NamedTuple):
+@dataclass(frozen=True)
+class Variable:
     identifier: LatinIdentifier
 
     def __str__(self) -> str:
         return str(self.identifier)
 
 
-class Application(NamedTuple):
+@dataclass(frozen=True)
+class Application:
     a: 'Term'
     b: 'Term'
 
@@ -37,7 +40,8 @@ class TypedApplication(Application):
     b: 'TypedTerm'
 
 
-class Abstraction(NamedTuple):
+@dataclass(frozen=True)
+class Abstraction:
     var: Variable
     sub: 'Term'
     var_type: SimpleType | None = None

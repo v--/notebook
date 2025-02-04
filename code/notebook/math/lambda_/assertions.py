@@ -1,4 +1,4 @@
-from typing import NamedTuple
+from dataclasses import dataclass
 
 from .alphabet import TypeAssertionConnective
 from .terms import (
@@ -14,7 +14,8 @@ from .terms import (
 from .types import SimpleType, SimpleTypeSchema
 
 
-class GradualTypeAssertion(NamedTuple):
+@dataclass(frozen=True)
+class GradualTypeAssertion:
     term: Term
     type: SimpleType
 
@@ -35,7 +36,8 @@ class VariableTypeAssertion(GradualTypeAssertion):
     type: SimpleType
 
 
-class GradualTypeAssertionSchema(NamedTuple):
+@dataclass(frozen=True)
+class GradualTypeAssertionSchema:
     term: TermSchema
     type: SimpleTypeSchema
 

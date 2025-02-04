@@ -41,7 +41,7 @@ class TypedApplicationSchema(ApplicationSchema):
 class AbstractionSchema(NamedTuple):
     var: VariablePlaceholder
     sub: 'TermSchema'
-    var_type: SimpleTypeSchema | None
+    var_type: SimpleTypeSchema | None = None
 
     def __str__(self) -> str:
         if self.var_type is None:

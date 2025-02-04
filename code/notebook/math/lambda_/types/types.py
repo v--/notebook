@@ -1,16 +1,18 @@
-from typing import NamedTuple
+from dataclasses import dataclass
 
 from ..alphabet import BinaryTypeConnective
 
 
-class BaseType(NamedTuple):
+@dataclass(frozen=True)
+class BaseType:
     name: str
 
     def __str__(self) -> str:
         return str(self.name)
 
 
-class SimpleConnectiveType(NamedTuple):
+@dataclass(frozen=True)
+class SimpleConnectiveType:
     conn: BinaryTypeConnective
     a: 'SimpleType'
     b: 'SimpleType'

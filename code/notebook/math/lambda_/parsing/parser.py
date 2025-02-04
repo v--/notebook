@@ -219,22 +219,24 @@ class LambdaParser(InferenceRuleParserMixin[LambdaToken], WhitespaceParserMixin[
         if parse_schema:
             assert isinstance(var, VariablePlaceholder)
 
-            if var_type:
-                assert isinstance(var_type, SimpleTypeSchema)
-
             match typing:
                 case TypingStyle.gradual:
                     assert isinstance(sub, TermSchema)
-                    return AbstractionSchema(var, sub, var_type)
+
+                    if var_type:
+                        assert isinstance(var_type, SimpleTypeSchema)
+                        return AbstractionSchema(var, sub, var_type)
+
+                    return AbstractionSchema(var, sub)
 
                 case TypingStyle.implicit:
                     assert isinstance(sub, UntypedTermSchema)
                     assert var_type is None
-                    return UntypedAbstractionSchema(var, sub, var_type)
+                    return UntypedAbstractionSchema(var, sub)
 
                 case TypingStyle.explicit:
                     assert isinstance(sub, TypedTermSchema)
-                    assert var_type is not None
+                    assert isinstance(var_type, SimpleTypeSchema)
                     return TypedAbstractionSchema(var, sub, var_type)
 
         assert isinstance(var, Variable)
@@ -437,7 +439,7 @@ class LambdaParser(InferenceRuleParserMixin[LambdaToken], WhitespaceParserMixin[
     def parse_typing_rule_premise(self, typing: Literal[TypingStyle.explicit]) -> ExplicitTypingRulePremise: ...
     @overload
     def parse_typing_rule_premise(self, typing: TypingStyle) -> GradualTypingRulePremise: ...
-    def parse_typing_rule_premise(self, typing: TypingStyle = TypingStyle.gradual) -> GradualTypingRulePremise:
+    def parse_typing_rule_premise(self, typing: TypingStyle) -> GradualTypingRulePremise:
         discharge: GradualTypeAssertionSchema | None = None
         start = self.index
 
@@ -459,17 +461,21 @@ class LambdaParser(InferenceRuleParserMixin[LambdaToken], WhitespaceParserMixin[
                 return GradualTypingRulePremise(main, discharge)
 
             case TypingStyle.implicit:
-                if discharge:
-                    assert isinstance(discharge, ImplicitTypeAssertionSchema)
-
                 assert isinstance(main, ImplicitTypeAssertionSchema)
+
+                if discharge is None:
+                    return ImplicitTypingRulePremise(main, discharge=None)
+
+                assert isinstance(discharge, ImplicitTypeAssertionSchema)
                 return ImplicitTypingRulePremise(main, discharge)
 
             case TypingStyle.explicit:
-                if discharge:
-                    assert isinstance(discharge, ExplicitTypeAssertionSchema)
-
                 assert isinstance(main, ExplicitTypeAssertionSchema)
+
+                if discharge is None:
+                    return ExplicitTypingRulePremise(main, discharge=None)
+
+                assert isinstance(discharge, ExplicitTypeAssertionSchema)
                 return ExplicitTypingRulePremise(main, discharge)
 
 

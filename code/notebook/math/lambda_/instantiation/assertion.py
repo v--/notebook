@@ -1,8 +1,12 @@
+from typing import overload
+
 from ..assertions import (
     ExplicitTypeAssertion,
+    ExplicitTypeAssertionSchema,
     GradualTypeAssertion,
     GradualTypeAssertionSchema,
     ImplicitTypeAssertion,
+    ImplicitTypeAssertionSchema,
 )
 from .base import LambdaSchemaInstantiation, merge_instantiations
 from .term_application import instantiate_term_schema
@@ -11,15 +15,12 @@ from .type_application import instantiate_type_schema
 from .type_inference import infer_instantiation_from_type
 
 
-# A bug in mypy prevents from properly typing this function
-# See https://github.com/python/mypy/issues/18562
-#
-# @overload
-# def instantiate_assertion_schema(schema: ImplicitTypeAssertionSchema, instantiation: LambdaSchemaInstantiation) -> ImplicitTypeAssertion: ...
-# @overload
-# def instantiate_assertion_schema(schema: ExplicitTypeAssertionSchema, instantiation: LambdaSchemaInstantiation) -> ExplicitTypeAssertion: ...
-# @overload
-# def instantiate_assertion_schema(schema: GradualTypeAssertionSchema, instantiation: LambdaSchemaInstantiation) -> GradualTypeAssertion: ...
+@overload
+def instantiate_assertion_schema(schema: ImplicitTypeAssertionSchema, instantiation: LambdaSchemaInstantiation) -> ImplicitTypeAssertion: ...
+@overload
+def instantiate_assertion_schema(schema: ExplicitTypeAssertionSchema, instantiation: LambdaSchemaInstantiation) -> ExplicitTypeAssertion: ...
+@overload
+def instantiate_assertion_schema(schema: GradualTypeAssertionSchema, instantiation: LambdaSchemaInstantiation) -> GradualTypeAssertion: ...
 def instantiate_assertion_schema(schema: GradualTypeAssertionSchema, instantiation: LambdaSchemaInstantiation) -> GradualTypeAssertion:
     term = instantiate_term_schema(schema.term, instantiation)
     type_ = instantiate_type_schema(schema.type, instantiation)

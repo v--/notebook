@@ -6,9 +6,9 @@ from ....parsing.identifiers import LatinIdentifier
 from ....parsing.parser import ParsingError
 from ....support.pytest import pytest_parametrize_kwargs, pytest_parametrize_lists
 from ..alphabet import BinaryTypeConnective
-from ..assertions import GradualTypeAssertion
+from ..assertions import ExplicitTypeAssertion
 from ..signature import EMPTY_SIGNATURE
-from ..terms import Constant, TypedAbstraction, UntypedApplication, Variable
+from ..terms import Constant, TypedAbstraction, TypedApplication, Variable
 from ..type_systems import HOL_SIGNATURE
 from ..types import BaseType, SimpleConnectiveType, SimpleType
 from .parser import (
@@ -72,9 +72,9 @@ def test_parsing_invalid_variable_suffix() -> None:
     ),
     dict(
         term='(I(Qx))',
-        expected=UntypedApplication(
+        expected=TypedApplication(
             Constant('I'),
-            UntypedApplication(Constant('Q'), Variable(LatinIdentifier('x')))
+            TypedApplication(Constant('Q'), Variable(LatinIdentifier('x')))
         )
     )
 )
@@ -315,7 +315,7 @@ def test_parsing_untyped_abstraction_with_typed_parser() -> None:
 )
 def test_parsing_type_assertion(assertion: str) -> None:
     term, type_ = assertion.split(': ', maxsplit=2)
-    expected = GradualTypeAssertion(
+    expected = ExplicitTypeAssertion(
         parse_term(HOL_SIGNATURE, term, TypingStyle.explicit),
         parse_type(HOL_SIGNATURE, type_)
     )
@@ -343,7 +343,7 @@ def test_parsing_type_assertion_missing_colon() -> None:
         '(R) [x: α] M: β ⫢ (λx:α.M): (α → β)'
     ]
 )
-def test_rebuilding_typing(rule: str) -> None:
+def test_rebuilding_typing_rules(rule: str) -> None:
     assert str(parse_typing_rule(EMPTY_SIGNATURE, rule, TypingStyle.gradual)) == rule
 
 
