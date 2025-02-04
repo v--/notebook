@@ -97,3 +97,26 @@ def test_abstraction_annotation_failure() -> None:
 
         instantiate_term_schema(schema, instantiation)
 
+
+def test_typed_instantiation_on_untyped_schema() -> None:
+    with pytest.raises(SchemaInstantiationError, match='An untyped schema was provided, but the instantiation features typed terms'):
+        schema = parse_pure_term_schema('(λx.M)', TypingStyle.implicit)
+        instantiation = LambdaSchemaInstantiation(
+            variable_mapping={parse_variable_placeholder('x'): parse_variable('x')},
+            term_mapping={parse_term_placeholder('M'): parse_term(HOL_SIGNATURE, '(λy:ι.y)', TypingStyle.explicit)},
+            type_mapping={parse_type_placeholder('α'): parse_type(HOL_SIGNATURE, 'ι')}
+        )
+
+        instantiate_term_schema(schema, instantiation)
+
+
+def test_untyped_instantiation_on_typed_schema() -> None:
+    with pytest.raises(SchemaInstantiationError, match='A typed schema was provided, but the instantiation features untyped terms'):
+        schema = parse_pure_term_schema('(λx:α.M)', TypingStyle.explicit)
+        instantiation = LambdaSchemaInstantiation(
+            variable_mapping={parse_variable_placeholder('x'): parse_variable('x')},
+            term_mapping={parse_term_placeholder('M'): parse_term(HOL_SIGNATURE, '(λy.y)', TypingStyle.implicit)},
+            type_mapping={parse_type_placeholder('α'): parse_type(HOL_SIGNATURE, 'ι')}
+        )
+
+        instantiate_term_schema(schema, instantiation)

@@ -8,7 +8,7 @@ from ....support.inference.rules import InferenceRuleConnective
 from ....support.unicode import Capitalization, is_greek_string, is_latin_string
 from ..alphabet import BinaryTypeConnective, TermConnective, TypeAssertionConnective
 from ..signature import LambdaSignature
-from .tokens import BaseTypeToken, ConstantTermToken, LambdaToken, MiscToken
+from .tokens import BaseTypeToken, ConstantTermToken, LambdaToken, MiscToken, SuperscriptToken
 
 
 @dataclass
@@ -20,6 +20,7 @@ class LambdaTokenizer(IdentifierTokenizerMixin[LambdaToken], Tokenizer[LambdaTok
             BinaryTypeConnective.try_match(head) or \
             TypeAssertionConnective.try_match(head) or \
             InferenceRuleConnective.try_match(head) or \
+            SuperscriptToken.try_match(head) or \
             MiscToken.try_match(head):
             self.advance()
             return sym

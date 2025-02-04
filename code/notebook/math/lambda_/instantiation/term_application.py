@@ -1,5 +1,5 @@
 from dataclasses import dataclass
-from typing import override
+from typing import overload, override
 
 from ....support.schemas import SchemaInstantiationError
 from ..terms import (
@@ -16,10 +16,14 @@ from ..terms import (
     TypedAbstractionSchema,
     TypedApplication,
     TypedApplicationSchema,
+    TypedTerm,
+    TypedTermSchema,
     UntypedAbstraction,
     UntypedAbstractionSchema,
     UntypedApplication,
     UntypedApplicationSchema,
+    UntypedTerm,
+    UntypedTermSchema,
     Variable,
     VariablePlaceholder,
 )
@@ -52,10 +56,10 @@ class InstantiationApplicationVisitor(TermSchemaVisitor[Term]):
     @override
     def visit_application(self, schema: ApplicationSchema) -> Application:
         match schema:
-            case UntypedApplicationSchema() if is_instantiation_implicitly_typed(self.instantiation):
+            case UntypedApplicationSchema():
                 return UntypedApplication(self.visit(schema.a), self.visit(schema.b))
 
-            case TypedApplicationSchema() if is_instantiation_explicitly_typed(self.instantiation):
+            case TypedApplicationSchema():
                 return TypedApplication(self.visit(schema.a), self.visit(schema.b))
 
             case _:
@@ -64,10 +68,10 @@ class InstantiationApplicationVisitor(TermSchemaVisitor[Term]):
     @override
     def visit_abstraction(self, schema: AbstractionSchema) -> Abstraction:
         match schema:
-            case UntypedAbstractionSchema() if is_instantiation_implicitly_typed(self.instantiation):
+            case UntypedAbstractionSchema():
                 return UntypedAbstraction(self.visit_variable_placeholder(schema.var), self.visit(schema.sub))
 
-            case TypedAbstractionSchema() if is_instantiation_explicitly_typed(self.instantiation):
+            case TypedAbstractionSchema():
                 return TypedAbstraction(
                     self.visit_variable_placeholder(schema.var),
                     self.visit(schema.sub),
@@ -82,5 +86,20 @@ class InstantiationApplicationVisitor(TermSchemaVisitor[Term]):
                 )
 
 
+# mypy doesn't recognize that UntypedTermSchema and TypedTermSchema are distinct, so we mute its error
+@overload
+def instantiate_term_schema(schema: UntypedTermSchema, instantiation: LambdaSchemaInstantiation) -> UntypedTerm: ...  # type: ignore[overload-overlap]
+@overload
+def instantiate_term_schema(schema: TypedTermSchema, instantiation: LambdaSchemaInstantiation) -> TypedTerm: ...
+@overload
+def instantiate_term_schema(schema: TermSchema, instantiation: LambdaSchemaInstantiation) -> Term: ...
 def instantiate_term_schema(schema: TermSchema, instantiation: LambdaSchemaInstantiation) -> Term:
-    return InstantiationApplicationVisitor(instantiation).visit(schema)
+    match schema:
+        case UntypedAbstractionSchema() if not is_instantiation_implicitly_typed(instantiation):
+            raise SchemaInstantiationError('An untyped schema was provided, but the instantiation features typed terms')
+
+        case TypedAbstractionSchema() if not is_instantiation_explicitly_typed(instantiation):
+            raise SchemaInstantiationError('A typed schema was provided, but the instantiation features untyped terms')
+
+        case _:
+            return InstantiationApplicationVisitor(instantiation).visit(schema)

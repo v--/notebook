@@ -3,7 +3,10 @@ from ..signature import EMPTY_SIGNATURE
 from ..typing import TypingStyle
 
 
-APP_RULE_IMPLICIT = parse_typing_rule(EMPTY_SIGNATURE, '(App) M: (α → β), N: α ⫢ (MN): β', TypingStyle.implicit)
-APP_RULE_EXPLICIT = parse_typing_rule(EMPTY_SIGNATURE, '(App) M: (α → β), N: α ⫢ (MN): β', TypingStyle.explicit)
-ABS_RULE_IMPLICIT = parse_typing_rule(EMPTY_SIGNATURE, '(Abs) [x: α] M: β ⫢ (λx.M): (α → β)', TypingStyle.implicit)
-ABS_RULE_EXPLICIT = parse_typing_rule(EMPTY_SIGNATURE, '(Abs) [x: α] M: β ⫢ (λx:α.M): (α → β)', TypingStyle.explicit)
+# These rules are distinct
+ARROW_INT_RULE_IMPLICIT = parse_typing_rule(EMPTY_SIGNATURE, '(→⁺) [x: α] M: β ⫢ (λx.M): (α → β)', TypingStyle.implicit)
+ARROW_INT_RULE_EXPLICIT = parse_typing_rule(EMPTY_SIGNATURE, '(→⁺) [x: α] M: β ⫢ (λx:α.M): (α → β)', TypingStyle.explicit)
+
+# These rules are identical, but belong to different classes
+ARROW_ELIM_RULE_IMPLICIT = parse_typing_rule(EMPTY_SIGNATURE, '(→⁻) M: (α → β), N: α ⫢ (MN): β', TypingStyle.implicit)
+ARROW_ELIM_RULE_EXPLICIT = parse_typing_rule(EMPTY_SIGNATURE, '(→⁻) M: (α → β), N: α ⫢ (MN): β', TypingStyle.explicit)

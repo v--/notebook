@@ -26,8 +26,15 @@ class MiscToken(TokenEnum):
     comma = ','
 
 
+class SuperscriptToken(TokenEnum):
+    plus = '⁺'
+    minus = '⁻'
+    left = 'ᴸ'
+    right = 'ᴿ'
+
+
 TermToken = ConstantTermToken | LatinIdentifier | MiscToken | TermConnective
 SimpleTypeToken = BaseTypeToken | GreekIdentifier | MiscToken | Space | BinaryTypeConnective
 TypeAssertionToken = Space | TypeAssertionConnective
-TypingRuleToken = MiscToken | Space | InferenceRuleConnective
+TypingRuleToken = MiscToken | SuperscriptToken | Space | InferenceRuleConnective
 LambdaToken = TermToken | SimpleTypeToken | TypeAssertionToken | TypingRuleToken

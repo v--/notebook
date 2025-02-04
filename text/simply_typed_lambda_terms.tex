@@ -23,7 +23,7 @@ Unlike untyped lambda calculus, whose presentation is mostly uniform across auth
 
   Subsequent works by Curry and Howard lead to the Curry-Howard correspondence discussed in \fullref{con:curry_howard_correspondence}. This in turn lead Martin-Löf to introduce \hyperref[rem:dependent_type]{dependent types} and systemize the presentation of type theory via \hyperref[def:typing_rule]{typing rules}.
 
-  At this point, notation started unifying across authors, ultimately leading to \enquote{\( M: \alpha \)} rather than \enquote{\( M_\alpha \)} or \enquote{\( M^\alpha \)} for \hyperref[def:type_assertion]{type assertions} postulating that the term \( M \) has type \( \alpha \), and to \( \alpha \synimplies \beta \) for \enquote{function types}, replacing Church's equivalent \( (\beta\alpha) \) (and swapping \( \alpha \) and \( \beta \)). As we will see in \fullref{con:type_annotation} and \fullref{def:pseudoterm}, superscript notation is still convenient for type annotation.
+  At this point, notation started unifying across authors, ultimately leading to \enquote{\( M: \alpha \)} rather than \enquote{\( M_\alpha \)} or \enquote{\( M^\alpha \)} for \hyperref[def:type_assertion]{type assertions} postulating that the term \( M \) has type \( \alpha \), and to \( \alpha \synimplies \beta \) for \enquote{function types}, replacing Church's equivalent \( (\beta\alpha) \) (and swapping \( \alpha \) and \( \beta \)). As we will see in \fullref{con:type_annotation} and \fullref{def:typed_lambda_term}, superscript notation is still convenient for type annotation.
 
   These conventions were already present in \bycite{CoquandHuet1986CoC}. His paper introduces the \enquote{calculus of constructions} in which functions can be defined from terms to types, from types to terms and from types to types. This generalizes Martin-L\"of's dependent products, which can be regarded as functions from terms to types. \incite[192]{Barendregt1992Types} places simple type theory and the calculus of constructions as the least and most powerful type systems in his \enquote{\( \synlambda \)-cube}, where the axes correspond to the aforementioned three kinds of functions. These are further generalized by \enquote{pure type systems}, again discussed in the same article. As types become more complicated, they require flexible syntax, and the line between types and terms starts blurring.
 
@@ -190,66 +190,115 @@ Unlike untyped lambda calculus, whose presentation is mostly uniform across auth
   \end{thmenum}
 \end{remark}
 
+\paragraph{Type annotations}
+
+\begin{concept}\label{con:type_annotation}
+  The \hyperref[def:type_assertion]{type assertion} \( M: \alpha \) is a syntactic construction, and it is possible to assign different meanings to it. The obvious one is to perceive it as a \hyperref[rem:typing_judgments]{typing judgment} expressing that the term \( M \) has type \( \alpha \).
+
+  Another possibility, used across programming languages, is merely to highlight intention. In this case we call \( \alpha \) a \term{type annotation} for \( M \) --- it is part of the language's syntax, and it merely expresses the intended type of \( M \). Whether or not \( M \) will have type \( \alpha \) depends on how the language is interpreted. We will make this precise when discussing typed terms in \fullref{ex:def:type_derivation_tree}.
+
+  For convenience, we follow Howard's convention from \cite{Howard1980FormulasAsTypes} of denoting type annotations by superscripts, i.e. \( M^\alpha \) rather than \( M: \alpha \). Not only is it the notation more concise, it also allows us to distinguish annotations from assertions. Superscripts are also used in \cite{Mimram2020Types} and \cite[ch. 5]{Hindley1997STT}. On the other hand, \incite{Barendregt1992Types} uses colons for both annotations and assertions.
+\end{concept}
+\begin{comments}
+  \item The phrase \enquote{type annotation} is used, for example, in TypeScript's handbook, \cite{TypeScript:5.7:handbook}, as well as in Python's documentation, \cite{PythonDocs:3.13:typing} (the latter also call annotations \enquote{type hints}).
+
+  \incite[186]{Mimram2020Types} also uses \enquote{type annotation} when discussing Church style typing.
+\end{comments}
+
+\begin{definition}\label{def:typed_lambda_term}\mimprovised
+  We consider the following extension of the grammar schema of untyped \( \synlambda \)-term from \fullref{def:lambda_term} in which \hyperref[def:lambda_abstractor]{abstractor variables} have \hyperref[con:type_annotation]{type annotations} attached. Note that annotated variables are not by themselves considered terms --- variable annotations are only used in the abstractor.
+
+  More precisely, we have the following grammar based on that of untyped \( \synlambda \)-terms from \fullref{def:lambda_term}:
+  \begin{bnf*}
+    \bnfprod{annotated variable} {\bnfpn{variable} \bnfsp \bnftsq{:} \bnfsp \bnfpn{type}}, \\
+    \bnfprod{typed application}  {\bnftsq{\( ( \)} \bnfsp \bnfpn{typed term} \bnfsp \bnfpn{typed term} \bnfsp \bnftsq{\( ) \)}}, \\
+    \bnfprod{typed abstraction}  {\bnftsq{\( ( \)} \bnfsp \bnftsq{\( \synlambda \)} \bnfsp \bnfpn{annotated variable} \bnfsp \bnftsq{.} \bnfsp \bnfpn{typed term} \bnfsp \bnftsq{\( ) \)}}, \\
+    \bnfprod{typed term}         {\bnfpn{constant} \bnfor \bnfpn{variable} \bnfor} \\
+    \bnfmore                     {\bnfpn{typed application} \bnfor \bnfpn{typed abstraction}.}
+  \end{bnf*}
+
+  Following \fullref{con:type_annotation}, in the \hyperref[con:metalanguage]{metalanguage}, we will use the notation \( \qabs {x^\alpha} M \) rather than \( \qabs {x: \alpha} M \).
+\end{definition}
+\begin{comments}
+  \item This definition is dependent on our choice for the syntax of types; unless noted otherwise, we suppose we are dealing with \hyperref[def:simple_type]{simple types}.
+
+  \item Even though most concepts from untyped terms transfer via \fullref{alg:type_erasure}, some like \hyperref[def:lambda_term_alpha_equivalence]{\( \alpha \)-equivalence} must be restricted to only \hyperref[def:typability]{typable} terms.
+
+  \item Our definition is based on \bycite[def. 3.2.1]{Barendregt1992Types}, who prefers calling such terms \enquote{pseudoterms} because the grammar may produce \enquote{ill-typed} terms that are not \hyperref[def:typability]{typable} according to the rules in \fullref{def:base_typing_rules}.
+
+  We borrow the phrase \enquote{typed term} from \incite[ch. 5]{Hindley1997STT}, who however follows Church in annotating every term. Our variant, also used by \incite[\S 4.1.3]{Mimram2020Types}, only guarantees uniqueness (but not existence) of a type for each term; this is shown in \fullref{thm:typed_term_habitation_uniqueness}.
+\end{comments}
+
+\begin{algorithm}[Type erasure]\label{alg:type_erasure}
+  To each \hyperref[def:typed_lambda_term]{typed \( \synlambda \)-terms} there corresponds an \hyperref[def:lambda_term]{untyped \( \synlambda \)-term} obtained by removing the type annotations from all abstractor variables.
+\end{algorithm}
+\begin{comments}
+  \item The phrase \enquote{type erasure} is used for \( \synlambda \)-terms by \incite[def. 5A2]{Hindley1997STT}.
+  \item Erasure naturally extends to \hyperref[def:simple_type_schema]{\( \synlambda \)-term schemas}.
+  \item This algorithm can be found as \identifier{lambda_.erasure.erase_annotations} in \cite{notebook:code}.
+\end{comments}
+
 \paragraph{Schemas for simply typed \( \synlambda \)-terms}\hfill
 
-To formalize typing rules in \fullref{def:simple_typing_rule}, we first need to introduce schemas for \( \synlambda \)-terms and simple types.
+To formalize typing rules in \fullref{def:simple_typing_rule}, we first need to introduce schemas for simple types and \( \synlambda \)-terms.
+
+\begin{definition}\label{def:simple_type_schema}
+  We define \hyperref[con:schemas_and_instances]{schemas} for \hyperref[def:simple_type]{simple types} in an obvious way:
+  \begin{bnf*}
+    \bnfprod{type placeholder}    {\bnfpn{Small Greek identifier}} \\
+    \bnfprod{arrow type schema}   {\bnftsq{(} \bnfsp \bnfpn{type schema} \bnfsp \bnftsq{\( \synimplies \)} \bnfsp \bnfpn{type schema} \bnfsp \bnftsq{)}} \\
+    \bnfprod{type schema}         {\bnfpn{base type} \bnfor \bnfpn{type placeholder} \bnfor \bnfpn{arrow type schema}},
+  \end{bnf*}
+  where we have used variable identifier rules from \fullref{def:variable_identifier}.
+
+  Product and sum types are handled similarly.
+\end{definition}
+\begin{comments}
+  \item To distinguish type schemas from term schemas, which we also denote via capital Greek identifiers, for types we will prefer letters from the start of the alphabet. Thus, \( \Psi: \Alpha \) is a type assertion for term and type schemas.
+\end{comments}
 
 \begin{definition}\label{def:lambda_term_schema}
-  Similarly to \hyperref[def:propositional_formula_schema]{propositional formula schemas}, we define schemas for \hyperref[def:lambda_term]{\( \synlambda \)-terms}:
+  We define \hyperref[con:schemas_and_instances]{schemas} for \hyperref[def:lambda_term]{\( \synlambda \)-terms}:
   \begin{bnf*}
     \bnfprod{variable placeholder} {\bnfpn{Small Latin identifier}}, \\
     \bnfprod{term placeholder}     {\bnfpn{Capital Latin identifier}}, \\
-    \bnfprod{atom schema}          {\bnfpn{variable placeholder} \bnfor \bnfpn{constant}}, \\
     \bnfprod{application schema}   {\bnftsq{\( ( \)} \bnfsp \bnfpn{term schema} \bnfsp \bnfpn{term schema} \bnfsp \bnftsq{\( ) \)}}, \\
-    \bnfprod{abstraction schema}   {\bnftsq{\( ( \)} \bnfsp \bnftsq{\( \synlambda \)} \bnfsp \bnfpn{variable schema} \bnfsp \bnftsq{.} \bnfsp \bnfpn{term schema} \bnfsp \bnftsq{\( ) \)}}, \\
-    \bnfprod{term schema}          {\bnfpn{atom schema} \bnfor \bnfpn{term placeholder} \bnfor} \\
+    \bnfprod{abstraction schema}   {\bnftsq{\( ( \)} \bnfsp \bnftsq{\( \synlambda \)} \bnfsp \bnfpn{variable placeholder} \bnfsp \bnftsq{.} \bnfsp \bnfpn{term schema} \bnfsp \bnftsq{\( ) \)}}, \\
+    \bnfprod{term schema}          {\bnfpn{constant} \bnfor \bnfpn{variable placeholder} \bnfor \bnfpn{term placeholder} \bnfor} \\
     \bnfmore                       {\bnfpn{application schema} \bnfor \bnfpn{abstraction schema}}.
   \end{bnf*}
+  and also extend this to \hyperref[def:typed_lambda_term]{typed \( \synlambda \)-terms} by allowing annotations to variable placeholders in abstractor schemas.
 \end{definition}
 \begin{comments}
-  \item See \fullref{con:schemas_and_instances} for a discussion of schemas in general.
-
   \item This syntax does not allow us to distinguish between variables and variable placeholders, however the distinction should be quite clear from the context.
 
   \item Similarly to propositional formula schemas, we will denote arbitrary schemas via capital Greek identifiers like \( \Phi \).
 \end{comments}
 
-\begin{definition}\label{def:simple_type_schema}
-  We define schemas for \hyperref[def:simple_type]{simple types} in an obvious way:
-  \begin{bnf*}
-    \bnfprod{type placeholder}    {\bnfpn{Small Greek identifier}} \\
-    \bnfprod{arrow type schema}   {\bnftsq{(} \bnfsp \bnfpn{type schema} \bnfsp \bnftsq{\( \synimplies \)} \bnfsp \bnfpn{type schema} \bnfsp \bnftsq{)}} \\
-    \bnfprod{type schema}         {\bnfpn{base type} \bnfor \bnfpn{type placeholder} \bnfor \bnfpn{arrow type schema}}
-  \end{bnf*}
-
-  Product and sum types are handled similarly.
-\end{definition}
-\begin{comments}
-  \item See \fullref{con:schemas_and_instances} for a discussion of schemas in general.
-  \item To distinguish type schemas from term schemas, which we also denote via capital Greek identifiers, for types we will prefer letters from the start of the alphabet. Thus, \( \Psi: \Alpha \) is a type assertion for term and type schemas.
-\end{comments}
-
 \begin{definition}\label{def:lambda_schema_instantiation}
-  In analogy with \hyperref[def:propositional_schema_instantiation]{schema instantiations} for \hyperref[def:propositional_formula_schema]{propositional formula schemas}, we define instantiations for \hyperref[def:type_assertion]{type assertions} for \hyperref[def:lambda_term_schema]{\( \synlambda \)-term schemas} and \hyperref[def:simple_type_schema]{simple type schemas} as \hyperref[def:set_valued_map/partial]{partial maps} sending \hyperref[def:lambda_term_schema]{variable placeholders} to \hyperref[def:lambda_term]{variables}, \hyperref[def:lambda_term_schema]{\( \synlambda \)-term placeholders} to \hyperref[def:lambda_term]{\( \synlambda \)-terms} and \hyperref[def:simple_type_schema]{type placeholders} to \hyperref[def:simple_type]{simple types}.
+  We define \hyperref[con:schemas_and_instances]{schema instantiations} for \hyperref[def:type_assertion]{type assertions} for \hyperref[def:lambda_term_schema]{\( \synlambda \)-term schemas} and \hyperref[def:simple_type_schema]{simple type schemas} as \hyperref[def:set_valued_map/partial]{partial maps} sending \hyperref[def:lambda_term_schema]{variable placeholders} to \hyperref[def:lambda_term]{variables}, \hyperref[def:lambda_term_schema]{\( \synlambda \)-term placeholders} to \hyperref[def:lambda_term]{\( \synlambda \)-terms} and \hyperref[def:simple_type_schema]{type placeholders} to \hyperref[def:simple_type]{simple types}.
 
   \begin{thmenum}
-    \thmitem{def:lambda_schema_instantiation/terms} We will not concern ourselves with \hyperref[def:lambda_variable_occurrence]{free and bound occurrence} of variables as for \hyperref[def:lambda_term_schema_substitution]{substitution}, but extend an instantiation \( \sigma \) to arbitrary \( \synlambda \)-term schemas straightforwardly:
-    \begin{equation}\label{eq:def:lambda_schema_instantiation/terms}
-      \Phi[\sigma] \coloneqq \begin{cases}
-        M,                               &M \T{is a constant}, \\
-        \sigma(M),                       &M \T{is a variable}, \\
-        \sigma(M),                       &M \T{is a placeholder}, \\
-        N[\sigma] \thinspace K[\sigma],  &M = NK,              \\
-        \qabs {\sigma(x)} N[\sigma],     &M = \qabs x N.       \\
-      \end{cases}
-    \end{equation}
-
-    \thmitem{def:lambda_schema_instantiation/types} For simple types we also extend the instantiation straightforwardly:
+    \thmitem{def:lambda_schema_instantiation/types} We extend the instantiation \( \sigma \) to compound simple types straightforwardly:
     \begin{equation}\label{eq:def:lambda_schema_instantiation/types}
       \Phi[\sigma] \coloneqq \begin{cases}
         \alpha,                                   &\alpha \T{is a base type},   \\
         \sigma(\alpha),                           &\alpha \T{is a placeholder}, \\
         \beta[\sigma] \synimplies \gamma[\sigma], &\alpha = \beta \synimplies \gamma,  \\
+      \end{cases}
+    \end{equation}
+
+    \thmitem{def:lambda_schema_instantiation/terms} For terms, we will not concern ourselves with \hyperref[def:lambda_variable_occurrence]{free and bound occurrence} of variables as in the case of \hyperref[def:lambda_term_schema_substitution]{substitution} --- schemas are not meant for that. We suppose that all occurrences of the same variable placeholder refer to the same variable.
+
+    Thus, we extend \( \sigma \) to compound \( \synlambda \)-term schemas as follows:
+    \begin{equation}\label{eq:def:lambda_schema_instantiation/terms}
+      \Phi[\sigma] \coloneqq \begin{cases}
+        M,                                            &M \T{is a constant},         \\
+        \sigma(M),                                    &M \T{is a variable},         \\
+        \sigma(M),                                    &M \T{is a term placeholder}, \\
+        N[\sigma] \thinspace K[\sigma],               &M = NK,                      \\
+        \qabs {\sigma(x)} N[\sigma],                  &M = \qabs x N,               \\
+        \qabs {\sigma(x)^{\sigma(\alpha)}} N[\sigma], &M = \qabs x^\alpha N.        \\
       \end{cases}
     \end{equation}
 
@@ -260,9 +309,9 @@ To formalize typing rules in \fullref{def:simple_typing_rule}, we first need to 
   \end{thmenum}
 \end{definition}
 \begin{comments}
-  \item Of course, an application of an instantiation is only valid if the variables and placeholders of are in its domain.
+  \item Of course, an application of an instantiation is only valid if the placeholders are in its domain.
 
-  \item Another possibility is to keep instantiations for term and type schemas distinct, however our main use case is to instantiate type assertions and that would complicate us unnecessarily.
+  \item Another possibility is to keep instantiations for term and type schemas distinct. However, that would complicate handling typed terms and type assertions unnecessarily.
 \end{comments}
 
 \paragraph{Typing rules}
@@ -275,7 +324,7 @@ To formalize typing rules in \fullref{def:simple_typing_rule}, we first need to 
 \end{comments}
 
 \begin{definition}\label{def:simple_typing_rule}\mimprovised
-  A \term{simple typing rule} is a \hyperref[con:typing_rule]{typing rule} whose entries are \hyperref[def:type_assertion]{type assertions} for \hyperref[def:lambda_term_schema]{\( \synlambda \)-term schemas} and \hyperref[def:simple_type_schema]{simple type schemas}.
+  A \term{simple typing rule} is an \hyperref[def:inference_rule]{inference rule} whose entries are \hyperref[def:type_assertion]{type assertions} for \hyperref[def:lambda_term_schema]{\( \synlambda \)-term schemas} and \hyperref[def:simple_type_schema]{simple type schemas}.
 
   As in the case of natural deduction rules defined in \fullref{def:natural_deduction_rule}, and using the same formalism, we allow dischargeable type assertions to be attached to the premises.
 \end{definition}
@@ -287,25 +336,36 @@ To formalize typing rules in \fullref{def:simple_typing_rule}, we first need to 
 
 \begin{definition}\label{def:base_typing_rules}\mcite[26]{TroelstraSchwichtenberg2000Proofs}
   The fundamental \hyperref[def:type_derivation_tree]{typing rules} for \hyperref[def:simple_type]{simple types} are:
+  \begin{equation*}\taglabel[\ensuremath{ \rightarrow^- }]{inf:def:base_typing_rules/arrow/elim}
+    \begin{prooftree}
+      \hypo{ \synM: \syn\alpha \synimplies \syn\beta }
+      \hypo{ \synN: \syn\alpha }
+      \infer2[\ref{inf:def:base_typing_rules/arrow/elim}]{ \synM \synN: \syn\beta }
+    \end{prooftree}
+  \end{equation*}
   \begin{paracol}{2}
     \begin{leftcolumn}
-      \begin{equation*}\taglabel[\ensuremath{ \logic{App}_\tau }]{inf:def:base_typing_rules/app}
-        \begin{prooftree}
-          \hypo{ \synM: \syn\alpha \synimplies \syn\beta }
-          \hypo{ \synN: \syn\alpha }
-          \infer2[\ref{inf:def:base_typing_rules/app}]{ \synM \synN: \syn\beta }
-        \end{prooftree}
-      \end{equation*}
-    \end{leftcolumn}
-
-    \begin{rightcolumn}
-      \begin{equation*}\taglabel[\ensuremath{ \logic{Abs}_\tau }]{inf:def:base_typing_rules/abs}
+      \centering
+      \begin{equation*}\taglabel[\ensuremath{ \rightarrow^+ }]{inf:def:base_typing_rules/arrow/intro/imp}
         \begin{prooftree}
           \hypo{ [\synx: \syn\alpha] }
           \ellipsis {} { \synM: \syn\beta }
-          \infer1[\ref{inf:def:base_typing_rules/abs}]{ \qabs \synx \synM: \syn\alpha \synimplies \syn\beta }
+          \infer1[\ref{inf:def:base_typing_rules/arrow/intro/imp}]{ \qabs \synx \synM: \syn\alpha \synimplies \syn\beta }
         \end{prooftree}
       \end{equation*}
+      (for \hyperref[def:lambda_term]{untyped terms})\phantom{\( \rightarrow^+ \)}
+    \end{leftcolumn}
+
+    \begin{rightcolumn}
+      \centering
+      \begin{equation*}\taglabel[\ensuremath{ \rightarrow_\tau^+ }]{inf:def:base_typing_rules/arrow/intro/exp}
+        \begin{prooftree}
+          \hypo{ [\synx: \syn\alpha] }
+          \ellipsis {} { \synM: \syn\beta }
+          \infer1[\ref{inf:def:base_typing_rules/arrow/intro/exp}]{ \qabs \synx \synM^{\syn\alpha}: \syn\alpha \synimplies \syn\beta }
+        \end{prooftree}
+      \end{equation*}
+      (for \hyperref[def:typed_lambda_term]{typed terms})\phantom{\( \rightarrow_\tau^+ \)}
     \end{rightcolumn}
   \end{paracol}
 \end{definition}
@@ -319,7 +379,7 @@ To formalize typing rules in \fullref{def:simple_typing_rule}, we first need to 
     \begin{prooftree}
       \hypo{ [\synx: \syn\alpha] }
       \ellipsis {} { \synM: \syn\beta }
-      \infer1[\ref{inf:def:base_typing_rules/abs}]{ \qabs \synx \synM: \syn\alpha \synimplies \syn\beta }
+      \infer1[\ref{inf:def:base_typing_rules/arrow/intro/imp}]{ \qabs \synx \synM: \syn\alpha \synimplies \syn\beta }
     \end{prooftree}
   \end{equation*}
 
@@ -350,18 +410,35 @@ To formalize typing rules in \fullref{def:simple_typing_rule}, we first need to 
 \end{definition}
 
 \begin{definition}\label{def:simple_type_system}\mimprovised
-  A \term{simple type system} over a \hyperref[def:simple_type_signature]{simple type signature} is, unsurprisingly, a collection of \hyperref[def:simple_typing_rule]{simple typing rules}. We will suppose that every such system includes the two rules from \fullref{def:base_typing_rules}.
+  A \term{simple type system} over a \hyperref[def:simple_type_signature]{simple type signature} is, unsurprisingly, a collection of \hyperref[def:simple_typing_rule]{simple typing rules}.
 
-  We will associate with each simple type system its derivability relation, which we will define via type derivation trees in \fullref{def:simple_type_derivability}.
+  Will presuppose that such a system includes the rule \ref{inf:def:base_typing_rules/arrow/elim} and either \ref{inf:def:base_typing_rules/arrow/intro/untyped} or \ref{inf:def:base_typing_rules/arrow/intro/typed} (or even possibly both).
 \end{definition}
 \begin{comments}
-  \item Even though we will not require this, for the concrete systems we will make sure that the properties in \fullref{thm:def:simple_type_derivability} hold.
+  \item With every type system we will associate its typing style, defined in \fullref{def:simple_type_system_style}, and its derivability relation, defined in \fullref{def:simple_type_derivability}.
+
+  \item We do not enforce this, but for the concrete systems we will make sure that the properties in \fullref{thm:def:simple_type_derivability} and \fullref{thm:typed_term_habitation_uniqueness} hold.
+\end{comments}
+
+\begin{definition}\label{def:simple_type_system_style}\mimprovised
+  If all rules of a \hyperref[def:simple_type_system]{simple type system} contain typed schemas, we will call the system \term{explicitly typed}, while if all schemas are untyped, we will call it \term{implicitly typed}. If the rules contain both typed and untyped schemas, we will call the system \term{gradually typed}.
+
+  We will call this property the \term{typing style} of the system.
+\end{definition}
+\begin{comments}
+  \item If none of the rules contain abstraction schemas, it may be impossible to determine the typing style of the system. Since our systems necessarily include \ref{inf:def:base_typing_rules/arrow/intro/untyped} or \ref{inf:def:base_typing_rules/arrow/intro/typed}, we can always determine that.
+
+  \item The importance of the typing style of a system is discussed in \fullref{rem:typing_style}.
+
+  \item The phrases \enquote{explicit typing} and \enquote{implicit typing} are used by \incite[119]{Barendregt1992Types} as alternatives for what we described in \fullref{rem:typing_style} as Church and Curry style typing, correspondingly.
+
+  \item Some programming languages allow but do not enforce type annotations. One such language is Python. Another one is TypeScript, which adds optional type annotations to JavaScript. TypeScript's documentation, \cite{TypeScript:5.7:handbook}, describes this approach as \enquote{gradual typing}.
 \end{comments}
 
 \begin{definition}\label{def:type_derivation_tree}\mimprovised
   In analogy with natural deduction proof trees, which we define in \fullref{def:natural_deduction_proof_tree}, we will define here a family of \hyperref[def:labeled_tree]{labeled trees}, which we will call \term{type derivation trees}. Although we will be working in \hyperref[def:simple_type_system]{simple type systems}, the definition easily extends to more complicated systems.
 
-  A fundamental difference compared to proof trees is that type derivations allow deriving the type of an arbitrarily complex \( \synlambda \)-term a \hyperref[def:type_context]{type context} specifying only the types of variables. This is justified in \fullref{rem:type_context_only_variables}.
+  A fundamental difference compared to proof trees is that type derivations allow deriving the type of an arbitrarily complex \( \synlambda \)-term from a \hyperref[def:type_context]{type context} restricted to only variables. This is justified in \fullref{rem:type_context_only_variables}.
 
   As in the case of natural deduction proof trees, the labels of type derivations are triples:
   \begin{thmenum}[series=def:type_derivation_tree]
@@ -426,7 +503,7 @@ To formalize typing rules in \fullref{def:simple_typing_rule}, we first need to 
 \end{remark}
 
 \begin{proposition}\label{thm:def:simple_type_derivability}
-  \hyperref[def:simple_type_derivability]{Type derivability} for \hyperref[def:simple_type_system]{simple type systems} only featuring the rules \ref{inf:def:base_typing_rules/abs} and \ref{inf:def:base_typing_rules/app} has the following basic properties:
+  \hyperref[def:simple_type_derivability]{Type derivability} for \hyperref[def:simple_type_system]{simple type systems} only featuring the base rules from \fullref{def:base_typing_rules}\fnote{Of course, systems may feature other rules, but we must explicitly prove the corresponding statement for each of them.} has the following basic properties:
   \begin{thmenum}
     \thmitem{thm:def:simple_type_derivability/free} If \( \Gamma, x: \alpha \vdash M: \beta \), then \( x \) is not free in \( M \) if and only if \( \Gamma \vdash M: \beta \).
 
@@ -436,11 +513,7 @@ To formalize typing rules in \fullref{def:simple_typing_rule}, we first need to 
   \end{thmenum}
 \end{proposition}
 \begin{comments}
-  \item Of course, systems may feature other rules, but we must explicitly prove the proposition for each of them.
-
-  \item \Fullref{thm:def:simple_type_derivability/assumption_removal} demonstrates the \hyperref[con:inference_rule_admissibility]{admissible} of the \hyperref[rem:sequent_calculus]{sequent calculus} style variation of the rule \ref{inf:def:base_typing_rules/abs} described in \fullref{rem:typing_rule_style}.
-
-  \item \Fullref{thm:def:simple_type_derivability/assumption_removal} shows that we can remove assumptions by prefixing a term with abstractions.
+  \item \Fullref{thm:def:simple_type_derivability/assumption_removal} allows us to remove assumptions by prefixing the term with an abstractor. It also demonstrates the \hyperref[con:inference_rule_admissibility]{admissible} of the \hyperref[rem:sequent_calculus]{sequent calculus} style variation of the rule \ref{inf:def:base_typing_rules/arrow/intro/imp} described in \fullref{rem:typing_rule_style}.
 \end{comments}
 \begin{proof}
   \SubProofOf{thm:def:simple_type_derivability/free} Let \( T \) be a tree deriving \( M: \beta \) from the type context \( \Gamma, x: \alpha \) (as usually, regarded as a set).
@@ -449,7 +522,7 @@ To formalize typing rules in \fullref{def:simple_typing_rule}, we first need to 
   \begin{itemize}
     \item If \( T \) is an assumption tree, then \( M \) must be a variable, and thus \( x: \alpha \) is an open assumption in \( T \) if and only if \( M = x \).
 
-    \item If \( T \) is an application of \ref{inf:def:base_typing_rules/app}, then \( M = NK \) and \( T \) has a subtree \( T_L \) deriving \( N: \gamma \to \beta \) for some type \( \gamma \), and a subtree \( T_R \) deriving \( K: \gamma \). We suppose that the inductive hypothesis holds for \( T_L \) and \( T_R \).
+    \item If \( T \) is an application of \ref{inf:def:base_typing_rules/arrow/elim}, then \( M = NK \) and \( T \) has a subtree \( T_L \) deriving \( N: \gamma \to \beta \) for some type \( \gamma \), and a subtree \( T_R \) deriving \( K: \gamma \). We suppose that the inductive hypothesis holds for \( T_L \) and \( T_R \).
 
     \begin{itemize}
       \item If \( x \) is not free in \( M \), it is not free in \( N \) nor \( K \). Since nothing is discharged by this rule application, we have \( \Gamma, x: \alpha \vdash N \) and \( \Gamma, x: \alpha \vdash K \). The inductive hypothesis implies that \( x: \alpha \) is not an open assumption in \( T_L \) nor \( T_R \), and hence also not in \( T \). Hence, \( \Gamma \vdash M \).
@@ -457,7 +530,7 @@ To formalize typing rules in \fullref{def:simple_typing_rule}, we first need to 
       \item Conversely, if \( \Gamma \vdash M \), then \( \Gamma \vdash N \) and \( \Gamma \vdash K \), and the inductive hypothesis implies that \( x \) is not free in either \( N \) nor \( K \). Hence, \( x \) is not free in \( M \).
     \end{itemize}
 
-    \item If \( T \) is an application of \ref{inf:def:base_typing_rules/abs}, \( M = \qabs y N \), \( \beta = \gamma \synimplies \delta \), and \( T \) has a subtree \( T' \) deriving \( N: \delta \) from \( \Gamma \setminus \set{ y: \gamma } \). Again, we suppose that the inductive hypothesis holds for \( T' \).
+    \item If \( T \) is an application of \ref{inf:def:base_typing_rules/arrow/intro/imp}, \( M = \qabs y N \), \( \beta = \gamma \synimplies \delta \), and \( T \) has a subtree \( T' \) deriving \( N: \delta \) from \( \Gamma \setminus \set{ y: \gamma } \). Again, we suppose that the inductive hypothesis holds for \( T' \).
 
     \begin{itemize}
       \item If \( x = y \), uniqueness of the variables in the context implies that \( \alpha = \gamma \), and \( x: \alpha \) gets discharged, and hence \( \Gamma \vdash M \). Furthermore, in this case \( x \) is not free in \( M \).
@@ -472,6 +545,8 @@ To formalize typing rules in \fullref{def:simple_typing_rule}, we first need to 
 
         \item Conversely, if \( \Gamma \vdash M: \beta \), then \( \Gamma, y: \gamma \vdash N: \delta \), and the inductive hypothesis implies that \( x \) is not free in \( N \). Then \( x \) is also not free in \( M \).
       \end{itemize}
+
+      \item If \( T \) is an application of \ref{inf:def:base_typing_rules/arrow/intro/exp}, we proceed identically.
     \end{itemize}
   \end{itemize}
 
@@ -482,21 +557,21 @@ To formalize typing rules in \fullref{def:simple_typing_rule}, we first need to 
   \SufficiencySubProof* Let \( P \) be a derivation tree for \( M: \beta \) from \( \Gamma, x: \alpha \). We will build a tree deriving \( \qabs x M: \alpha \to \beta \) from \( \Gamma \).
 
   \begin{itemize}
-    \item If \( x: \alpha \) is an open assumption, it is discharged during a simple application of \ref{inf:def:base_typing_rules/abs}:
+    \item If \( x: \alpha \) is an open assumption, it is discharged during a simple application of \ref{inf:def:base_typing_rules/arrow/intro/imp}:
     \begin{equation*}
       \begin{prooftree}
         \hypo{ x: \alpha }
         \ellipsis { \( P \) } { M: \beta }
-        \infer[left label=\( x \)]1[\ref{inf:def:base_typing_rules/abs}]{ \qabs x M: \alpha \synimplies \beta }
+        \infer[left label=\( x \)]1[\ref{inf:def:base_typing_rules/arrow/intro/imp}]{ \qabs x M: \alpha \synimplies \beta }
       \end{prooftree}
     \end{equation*}
 
     Discharging \( x: \alpha \) leaves us with \( \Gamma \vdash \qabs x M: \alpha \synimplies \beta \).
 
-    \item Otherwise, if \( x: \alpha \) is not an open assumption in \( P \), then \( \Gamma \vdash P \) by \fullref{def:simple_type_derivability}. During application of \ref{inf:def:base_typing_rules/abs} nothing is discharged, and we again obtain \( \Gamma \vdash \qabs x M: \alpha \synimplies \beta \).
+    \item Otherwise, if \( x: \alpha \) is not an open assumption in \( P \), then \( \Gamma \vdash P \) by \fullref{def:simple_type_derivability}. During application of \ref{inf:def:base_typing_rules/arrow/intro/imp} nothing is discharged, and we again obtain \( \Gamma \vdash \qabs x M: \alpha \synimplies \beta \).
   \end{itemize}
 
-  \NecessitySubProof* Conversely, if \( P \) is a derivation tree of \( \qabs x M: \alpha \to \beta \) from \( \Gamma \), it must be an application tree for \ref{inf:def:base_typing_rules/abs}, and hence \( x: \alpha \) is either discharged during the application, or it is not and the derivation of \( M: \beta \) does not depend on it. In both cases, we conclude that \( \Gamma, x: \alpha \vdash M \).
+  \NecessitySubProof* Conversely, if \( P \) is a derivation tree of \( \qabs x M: \alpha \to \beta \) from \( \Gamma \), it must be an application tree for \ref{inf:def:base_typing_rules/arrow/intro/imp}, and hence \( x: \alpha \) is either discharged during the application, or it is not and the derivation of \( M: \beta \) does not depend on it. In both cases, we conclude that \( \Gamma, x: \alpha \vdash M \).
 \end{proof}
 
 \begin{definition}\label{def:typability}\mcite[def. 2D1]{Hindley1997STT}
@@ -512,10 +587,43 @@ To formalize typing rules in \fullref{def:simple_typing_rule}, we first need to 
   For a fixed \hyperref[def:abstract_type_system]{abstract type system}, if \( {}\vdash M: \alpha \), we say that \( M \) is an \term[en=untyped inhabitant (\cite[8A1]{Hindley1997STT})]{inhabitant} of \( \alpha \). If the type \( \alpha \) has at least one habitant, we say that it is \term{inhabited}.
 \end{definition}
 \begin{comments}
-  \item We base our definition of habitant on the notion of \enquote{untyped inhabitants} for \hyperref[def:simple_type]{simple type} from \cite[def. 8A1]{Hindley1997STT}. Hindley also defines \enquote{typed habitants} for valid \hyperref[def:pseudoterm]{pseudoterms} and \enquote{\( \beta \)-normal habitants} for terms in \hyperref[def:lambda_reduction_normal_form]{\( \beta \)-normal form}.
+  \item We base our definition of habitant on the notion of \enquote{untyped inhabitants} for \hyperref[def:simple_type]{simple type} from \cite[def. 8A1]{Hindley1997STT}. Hindley also defines \enquote{typed habitants} for valid \hyperref[def:typed_lambda_term]{typed terms} and \enquote{\( \beta \)-normal habitants} for terms in \hyperref[def:lambda_reduction_normal_form]{\( \beta \)-normal form}.
 
   \item Unlike for \hyperref[def:typability]{typability}, this definition only applies to derivations from the empty context. This restricts us to inhabitants without free variables.
 \end{comments}
+
+\begin{proposition}\label{thm:typed_term_habitation_uniqueness}
+  In the \hyperref[def:simple_type_system_style]{explicitly typed} \hyperref[def:simple_type_system]{simple type system} featuring only \ref{inf:def:base_typing_rules/arrow/elim} and \ref{inf:def:base_typing_rules/arrow/intro/exp}, we can \hyperref[def:simple_type_derivability]{derive} at most one type for any \hyperref[def:typed_lambda_term]{typed term} from a fixed \hyperref[def:type_context]{type context}.
+\end{proposition}
+\begin{comments}
+  \item In particular, a typed combinator can \hyperref[def:type_habitation]{inhabit} at most one type.
+
+  We can also interpret this result as a statement for untyped combinators --- each of them can be typed uniquely \enquote{up to a choice of types for bound variables}.
+
+  \item As in \fullref{thm:def:simple_type_derivability}, we can allow other rules, but we must prove the proposition for each of them.
+\end{comments}
+\begin{proof}
+  Let \( T \) be a tree deriving \( M: \alpha \) from the type context \( \Gamma \).
+
+  We will use \fullref{thm:induction_on_rooted_trees} on \( T \) to show that if \( T' \) derives \( M: \alpha' \) from \( \Gamma \), the trees are equal and \( \alpha = \alpha' \):
+  \begin{itemize}
+    \item If \( T \) is an assumption tree, then \( M \) must be a variable, and \( \Gamma \vdash M \) only if \( \Gamma \) contains a type assertion for \( M \). Since type contexts have at most one type assertion per variable, it follows that the type \( \alpha \) of \( M \) is uniquely determined.
+
+    \item If \( T \) is an application of \ref{inf:def:base_typing_rules/arrow/elim}, then \( M = NK \) and \( T \) has a subtree \( T_L \) deriving \( N: \beta \to \alpha \) for some type \( \beta \), and a subtree \( T_R \) deriving \( K: \beta \). We suppose that the inductive hypothesis holds for \( T_L \) and \( T_R \).
+
+    Let \( T' \) be a tree deriving \( M: \alpha' \) from \( \Gamma \). Since \( M = NK \), \( T' \) must be an application tree of \ref{inf:def:base_typing/app}, with subtrees \( T_L' \) and \( T_R' \) deriving \( N: \beta' \to \alpha' \) and \( K: \beta' \) from the assumptions in \( \Gamma \).
+
+    The inductive hypothesis on \( T_L \) implies that the types \( \beta' \to \alpha' \) and \( \beta \to \alpha \) are equal, and thus so are \( \alpha' \) and \( \alpha \).
+
+    \item If \( T \) is an application of \ref{inf:def:base_typing_rules/arrow/intro/exp}, then \( M = \qabs {x^\beta} N \), \( \alpha = \beta \synimplies \gamma \) and \( T \) has a subtree \( S \) deriving \( N: \gamma \) from \( \Gamma, x: \beta \).
+
+    Let \( T' \) be a tree deriving \( M: \alpha' \) from \( \Gamma \). Then \( \alpha' = \beta \synimplies \gamma' \) \( T' \) is an application of \ref{inf:def:base_typing_rules/arrow/intro/exp}, and we have a subtree \( S' \) deriving \( N: \gamma' \) from \( \Gamma, x: \beta \).
+
+    It is extremely important here that \( \beta \) and \( \beta' \) are equal, which is only possible due to the annotation of \( x \).
+
+    The inductive hypothesis implies that \( S \) and \( S' \) are equal, and that \( \gamma = \gamma' \). Then also \( \alpha = \alpha' \).
+  \end{itemize}
+\end{proof}
 
 \begin{example}\label{ex:def:type_derivation_tree}
   We list examples of \hyperref[def:type_derivation_tree]{type derivation trees} for \hyperref[def:simple_type_system]{simple type systems}:
@@ -526,18 +634,26 @@ To formalize typing rules in \fullref{def:simple_typing_rule}, we first need to 
     \begin{equation*}
       \begin{prooftree}
         \hypo{ \synx: \alpha }
-        \infer[left label=\( \synx \)]1[\ref{inf:def:base_typing_rules/abs}]{ \qabs \synx \synx: \alpha \synimplies \alpha }
+        \infer[left label=\( \synx \)]1[\ref{inf:def:base_typing_rules/arrow/intro/imp}]{ \qabs \synx \synx: \alpha \synimplies \alpha }
       \end{prooftree}
     \end{equation*}
 
-    \hyperref[rem:explicit_and_implicit_typing]{Explicit typing} can restrict each term to at most one type --- see \fullref{thm:pseudoterm_uniqueness}.
+    \hyperref[def:simple_type_system_style]{Explicit typing} can restrict each term to at most one type --- the rule \ref{inf:def:base_typing_rules/arrow/intro/exp} is only applicable if \( x \) is annotated with the same type it has in the context:
+    \begin{equation*}
+      \begin{prooftree}
+        \hypo{ \synx: \alpha }
+        \infer[left label=\( \synx \)]1[\ref{inf:def:base_typing_rules/arrow/intro/exp}]{ \qabs {\synx^\alpha} \synx: \alpha \synimplies \alpha }
+      \end{prooftree}
+    \end{equation*}
+
+    However, instead of having one term \( I \), we obtain one term \( I_\alpha \) for each type \( \alpha \).
 
     \thmitem{ex:def:type_derivation_tree/k} The combinator \( \ref{eq:ex:def:lambda_term/combinator/k} = \qabs \synx \qabs \syny \synx \) inhabits \( \alpha \synimplies \beta \synimplies \alpha \) for any pair of types \( \alpha \) and \( \beta \):
     \begin{equation*}
       \begin{prooftree}
         \hypo{ \synx: \alpha }
-        \infer1[\ref{inf:def:base_typing_rules/abs}]{ \qabs \syny \synx: \beta \synimplies \alpha }
-        \infer[left label=\( \synx \)]1[\ref{inf:def:base_typing_rules/abs}]{ \qabs \synx \qabs \syny \synx: \alpha \synimplies \beta \synimplies \alpha }
+        \infer1[\ref{inf:def:base_typing_rules/arrow/intro/imp}]{ \qabs \syny \synx: \beta \synimplies \alpha }
+        \infer[left label=\( \synx \)]1[\ref{inf:def:base_typing_rules/arrow/intro/imp}]{ \qabs \synx \qabs \syny \synx: \alpha \synimplies \beta \synimplies \alpha }
       \end{prooftree}
     \end{equation*}
 
@@ -550,16 +666,16 @@ To formalize typing rules in \fullref{def:simple_typing_rule}, we first need to 
       \begin{prooftree}
         \hypo{ \synx: \alpha \synimplies (\beta \synimplies \gamma) }
         \hypo{ \synz: \alpha }
-        \infer2[\ref{inf:def:base_typing_rules/app}]{ \synx \synz: \beta \synimplies \gamma }
+        \infer2[\ref{inf:def:base_typing_rules/arrow/elim}]{ \synx \synz: \beta \synimplies \gamma }
 
         \hypo{ \syny: \alpha \synimplies \beta }
         \hypo{ \synz: \alpha }
-        \infer2[\ref{inf:def:base_typing_rules/app}]{ \syny \synz: \beta }
+        \infer2[\ref{inf:def:base_typing_rules/arrow/elim}]{ \syny \synz: \beta }
 
-        \infer2[\ref{inf:def:base_typing_rules/app}]{ \synx \synz (\syny \synz): \gamma }
-        \infer[left label=\( \synz \)]1[\ref{inf:def:base_typing_rules/abs}]{ \qabs \synz \synx \synz (\syny \synz): \alpha \synimplies \gamma }
-        \infer[left label=\( \syny \)]1[\ref{inf:def:base_typing_rules/abs}]{ \qabs \syny \qabs \synz \synx \synz (\syny \synz): (\alpha \synimplies \beta) \synimplies (\alpha \synimplies \gamma) }
-        \infer[left label=\( \synx \)]1[\ref{inf:def:base_typing_rules/abs}]{ S: (\alpha \synimplies (\beta \synimplies \gamma)) \synimplies ((\alpha \synimplies \beta) \synimplies (\alpha \synimplies \gamma)) }
+        \infer2[\ref{inf:def:base_typing_rules/arrow/elim}]{ \synx \synz (\syny \synz): \gamma }
+        \infer[left label=\( \synz \)]1[\ref{inf:def:base_typing_rules/arrow/intro/imp}]{ \qabs \synz \synx \synz (\syny \synz): \alpha \synimplies \gamma }
+        \infer[left label=\( \syny \)]1[\ref{inf:def:base_typing_rules/arrow/intro/imp}]{ \qabs \syny \qabs \synz \synx \synz (\syny \synz): (\alpha \synimplies \beta) \synimplies (\alpha \synimplies \gamma) }
+        \infer[left label=\( \synx \)]1[\ref{inf:def:base_typing_rules/arrow/intro/imp}]{ S: (\alpha \synimplies (\beta \synimplies \gamma)) \synimplies ((\alpha \synimplies \beta) \synimplies (\alpha \synimplies \gamma)) }
       \end{prooftree}
     \end{equation*}
 
@@ -583,13 +699,13 @@ To formalize typing rules in \fullref{def:simple_typing_rule}, we first need to 
       \begin{prooftree}
         \hypo{ \synf: \alpha \synimplies (\beta \synimplies \gamma) }
         \hypo{ \synx: \alpha }
-        \infer2[\ref{inf:def:base_typing_rules/app}]{ \synf \synx: \beta \synimplies \gamma }
+        \infer2[\ref{inf:def:base_typing_rules/arrow/elim}]{ \synf \synx: \beta \synimplies \gamma }
 
         \hypo{ \syny: \beta }
-        \infer2[\ref{inf:def:base_typing_rules/app}]{ \synf \synx \syny: \gamma }
-        \infer[left label=\( \synf \)]1[\ref{inf:def:base_typing_rules/abs}]{ \qabs \synf \synf \synx \syny: (\alpha \synimplies (\beta \synimplies \gamma)) \synimplies \gamma }
-        \infer[left label=\( \syny \)]1[\ref{inf:def:base_typing_rules/abs}]{ \qabs \syny \qabs \synf \synf \synx \syny: \beta \synimplies ((\alpha \synimplies (\beta \synimplies \gamma)) \synimplies \gamma) }
-        \infer[left label=\( \synx \)]1[\ref{inf:def:base_typing_rules/abs}]{ P_+: \alpha \synimplies (\beta \synimplies ((\alpha \synimplies (\beta \synimplies \gamma)) \synimplies \gamma)) }
+        \infer2[\ref{inf:def:base_typing_rules/arrow/elim}]{ \synf \synx \syny: \gamma }
+        \infer[left label=\( \synf \)]1[\ref{inf:def:base_typing_rules/arrow/intro/imp}]{ \qabs \synf \synf \synx \syny: (\alpha \synimplies (\beta \synimplies \gamma)) \synimplies \gamma }
+        \infer[left label=\( \syny \)]1[\ref{inf:def:base_typing_rules/arrow/intro/imp}]{ \qabs \syny \qabs \synf \synf \synx \syny: \beta \synimplies ((\alpha \synimplies (\beta \synimplies \gamma)) \synimplies \gamma) }
+        \infer[left label=\( \synx \)]1[\ref{inf:def:base_typing_rules/arrow/intro/imp}]{ P_+: \alpha \synimplies (\beta \synimplies ((\alpha \synimplies (\beta \synimplies \gamma)) \synimplies \gamma)) }
       \end{prooftree}
     \end{equation*}
 
@@ -602,7 +718,7 @@ To formalize typing rules in \fullref{def:simple_typing_rule}, we first need to 
       P_+: \alpha \synimplies \beta \synimplies (\alpha \synimplies \beta \synimplies \gamma) \synimplies \gamma.
     \end{equation*}
 
-    If \( A: \alpha \) and \( B: \beta \), after two applications of \ref{inf:def:base_typing_rules/app} we obtain
+    If \( A: \alpha \) and \( B: \beta \), after two applications of \ref{inf:def:base_typing_rules/arrow/elim} we obtain
     \begin{equation*}
       P_+ A B: (\alpha \synimplies \beta \synimplies \gamma) \synimplies \gamma.
     \end{equation*}
@@ -617,15 +733,15 @@ To formalize typing rules in \fullref{def:simple_typing_rule}, we first need to 
         \hypo{ \synp: (\alpha \synimplies \beta \synimplies \alpha) \synimplies \gamma }
 
         \hypo{ \synx: \alpha }
-        \infer1[\ref{inf:def:base_typing_rules/abs}]{ \qabs \syny \synx: \beta \synimplies \alpha }
-        \infer[left label=\( \synx \)]1[\ref{inf:def:base_typing_rules/abs}]{ \qabs \synx \qabs \syny \synx: \alpha \synimplies \beta \synimplies \alpha }
+        \infer1[\ref{inf:def:base_typing_rules/arrow/intro/imp}]{ \qabs \syny \synx: \beta \synimplies \alpha }
+        \infer[left label=\( \synx \)]1[\ref{inf:def:base_typing_rules/arrow/intro/imp}]{ \qabs \synx \qabs \syny \synx: \alpha \synimplies \beta \synimplies \alpha }
 
-        \infer2[\ref{inf:def:base_typing_rules/app}]{ \synp (\qabs \synx \qabs \syny \synx): \gamma }
-        \infer[left label=\( \synp \)]1[\ref{inf:def:base_typing_rules/abs}]{ P_{-L}: ((\alpha \synimplies \beta \synimplies \alpha) \synimplies \gamma) \synimplies \gamma }
+        \infer2[\ref{inf:def:base_typing_rules/arrow/elim}]{ \synp (\qabs \synx \qabs \syny \synx): \gamma }
+        \infer[left label=\( \synp \)]1[\ref{inf:def:base_typing_rules/arrow/intro/imp}]{ P_{-L}: ((\alpha \synimplies \beta \synimplies \alpha) \synimplies \gamma) \synimplies \gamma }
       \end{prooftree}
     \end{equation*}
 
-    We have derived types for both \( P_+ A B \) and \( P_{-L} \), and can conclude that the rule \ref{inf:def:base_typing_rules/app} is only applicable to \( P_{-L} (P_+ A B) \) if \( \gamma = \alpha \), in which case \( P_{-L} (P_+ A B): \alpha \), as expected.
+    We have derived types for both \( P_+ A B \) and \( P_{-L} \), and can conclude that the rule \ref{inf:def:base_typing_rules/arrow/elim} is only applicable to \( P_{-L} (P_+ A B) \) if \( \gamma = \alpha \), in which case \( P_{-L} (P_+ A B): \alpha \), as expected.
 
     On the other hand, for
     \begin{equation*}
@@ -637,21 +753,33 @@ To formalize typing rules in \fullref{def:simple_typing_rule}, we first need to 
         \hypo{ \synp: (\alpha \synimplies \beta \synimplies \beta) \synimplies \gamma }
 
         \hypo{ \syny: \beta }
-        \infer[left label=\( \syny \)]1[\ref{inf:def:base_typing_rules/abs}]{ \qabs \syny \syny: \beta \synimplies \beta }
-        \infer1[\ref{inf:def:base_typing_rules/abs}]{ \qabs \synx \qabs \syny \syny: \alpha \synimplies \beta \synimplies \beta }
+        \infer[left label=\( \syny \)]1[\ref{inf:def:base_typing_rules/arrow/intro/imp}]{ \qabs \syny \syny: \beta \synimplies \beta }
+        \infer1[\ref{inf:def:base_typing_rules/arrow/intro/imp}]{ \qabs \synx \qabs \syny \syny: \alpha \synimplies \beta \synimplies \beta }
 
-        \infer2[\ref{inf:def:base_typing_rules/app}]{ \synp (\qabs \synx \qabs \syny \syny): \gamma }
-        \infer[left label=\( \synp \)]1[\ref{inf:def:base_typing_rules/abs}]{ P_{-R}: ((\alpha \synimplies \beta \synimplies \beta) \synimplies \gamma) \synimplies \gamma }
+        \infer2[\ref{inf:def:base_typing_rules/arrow/elim}]{ \synp (\qabs \synx \qabs \syny \syny): \gamma }
+        \infer[left label=\( \synp \)]1[\ref{inf:def:base_typing_rules/arrow/intro/imp}]{ P_{-R}: ((\alpha \synimplies \beta \synimplies \beta) \synimplies \gamma) \synimplies \gamma }
       \end{prooftree}
     \end{equation*}
 
-    The rule \ref{inf:def:base_typing_rules/app} is only applicable to \( P_{-R} (P_+ A B) \) if \( \gamma = \beta \), in which case \( P_{-R} (P_+ A B): \beta \).
+    The rule \ref{inf:def:base_typing_rules/arrow/elim} is only applicable to \( P_{-R} (P_+ A B) \) if \( \gamma = \beta \), in which case \( P_{-R} (P_+ A B): \beta \).
 
     We see here how the ability to derive multiple types for \( P_+ \) is actually beneficial --- we can use the same combinator in different situations.
 
-    On the other hand, if \( P_+ \) has a unique type, perhaps hinted by a \hyperref[con:type_annotation]{type annotation}, then either \( P_{-L} (P_+ A B) \) or \( P_{-R} (P_+ A B) \) is \hyperref[def:typability]{untypable} in general (unless \( \alpha = \beta \)). This is discussed in \cite{MathOF:product_type_in_simply_typed_lambda_terms}, where it is also proven that no other such triple of combinators exist.
+    Now consider the \hyperref[def:typed_lambda_term]{typed term} corresponding to \( P_+ \):
+    \begin{equation*}
+      P_+^{\alpha,\beta,\gamma} \coloneqq \qabs {\synx^\alpha} \qabs {\syny^\beta} \qabs {\synf^{\alpha \synimplies \beta \synimplies \gamma}} \synf \synx \syny
+    \end{equation*}
 
-    We will find it more convenient to have a constant term \( \synP_+ \) such that \( \synP_+ A B \) to has a dedicated type --- namely, the product type \( \alpha \syntimes \beta \), which we will introduce in \fullref{def:product_type}.
+    We must have \( \gamma = \alpha \) if we want to be able to apply \( P_{-R} \) and \( \gamma = \beta \) if we want to apply \( P_{+R} \). Thus, unless \( \alpha = \beta \), at least one of the following is not \hyperref[def:typability]{typable}:
+    \begin{align*}
+      P_{-L} (P_+^{\alpha,\beta,\gamma} A B)
+      &&
+      P_{-R} (P_+^{\alpha,\beta,\gamma} A B)
+    \end{align*}
+
+    The latter issue is discussed in \cite{MathOF:product_type_in_simply_typed_lambda_terms}, where it is also proven that no such explicitly typed triple of combinators exist.
+
+    We will find it convenient to have a dedicated constant term \( \synP_+ \) such that \( \synP_+ A B \) has a dedicated type --- namely, the product type \( \alpha \syntimes \beta \), which we will introduce in \fullref{def:product_type}.
 
     \thmitem{ex:def:type_derivation_tree/disjoint} Consider the combinators \ref{eq:ex:def:beta_eta_reduction/disjoint/intro_left}, \ref{eq:ex:def:beta_eta_reduction/disjoint/intro_right} and \ref{eq:ex:def:beta_eta_reduction/disjoint/elim} from \fullref{ex:def:beta_eta_reduction/disjoint}.
 
@@ -666,10 +794,10 @@ To formalize typing rules in \fullref{def:simple_typing_rule}, we first need to 
       \begin{prooftree}
         \hypo{ \synf: \alpha \synimplies \gamma }
         \hypo{ \synx: \alpha }
-        \infer2[\ref{inf:def:base_typing_rules/app}]{ \synf \synx: \gamma }
-        \infer1[\ref{inf:def:base_typing_rules/abs}]{ \qabs \syng \synf \synx: (\beta \synimplies \gamma) \synimplies \gamma }
-        \infer[left label=\( \synf \)]1[\ref{inf:def:base_typing_rules/abs}]{ \qabs \synf \qabs \syng \synf \synx: (\alpha \synimplies \beta) \synimplies (\beta \synimplies \gamma \synimplies \gamma) }
-        \infer[left label=\( \synx \)]1[\ref{inf:def:base_typing_rules/abs}]{ S_{+L}: \alpha \synimplies (\alpha \synimplies \beta) \synimplies (\beta \synimplies \gamma) \synimplies \gamma }
+        \infer2[\ref{inf:def:base_typing_rules/arrow/elim}]{ \synf \synx: \gamma }
+        \infer1[\ref{inf:def:base_typing_rules/arrow/intro/imp}]{ \qabs \syng \synf \synx: (\beta \synimplies \gamma) \synimplies \gamma }
+        \infer[left label=\( \synf \)]1[\ref{inf:def:base_typing_rules/arrow/intro/imp}]{ \qabs \synf \qabs \syng \synf \synx: (\alpha \synimplies \beta) \synimplies (\beta \synimplies \gamma \synimplies \gamma) }
+        \infer[left label=\( \synx \)]1[\ref{inf:def:base_typing_rules/arrow/intro/imp}]{ S_{+L}: \alpha \synimplies (\alpha \synimplies \beta) \synimplies (\beta \synimplies \gamma) \synimplies \gamma }
       \end{prooftree}
     \end{equation*}
 
@@ -678,7 +806,7 @@ To formalize typing rules in \fullref{def:simple_typing_rule}, we first need to 
       S_{+R}: \beta \synimplies (\alpha \synimplies \beta) \synimplies (\beta \synimplies \gamma) \synimplies \gamma.
     \end{equation*}
 
-    Suppose that \( A: \alpha \), \( F: \alpha \synimplies \gamma \) and \( G: \beta \synimplies \gamma \). Then, in order for \ref{inf:def:base_typing_rules/app} to be applicable to
+    Suppose that \( A: \alpha \), \( F: \alpha \synimplies \gamma \) and \( G: \beta \synimplies \gamma \). Then, in order for \ref{inf:def:base_typing_rules/arrow/elim} to be applicable to
     \begin{equation*}
       S_- F G (S_{+L} A),
     \end{equation*}
@@ -697,9 +825,9 @@ To formalize typing rules in \fullref{def:simple_typing_rule}, we first need to 
       (\alpha \synimplies \beta) \synimplies (\beta \synimplies \gamma) \synimplies \gamma.
     \end{equation*}
 
-    This identification is not particularly apt because \verb|Either a b| must depend on \( \gamma \). One solution to this is to introduce sum types, which we will define in \fullref{def:sum_type}.
+    This works even with explicit typing, but the identification is not particularly apt because \verb|Either a b| must depend on \( \gamma \). One solution to this is to introduce sum types, which we will define in \fullref{def:sum_type}.
 
-    As expected, we have
+    As long as \( F \) and \( G \) are fixed, however, they determine \( \gamma \), and we have
     \begin{equation*}
       S_- F G (S_{+L} A): \gamma
     \end{equation*}
@@ -707,138 +835,34 @@ To formalize typing rules in \fullref{def:simple_typing_rule}, we first need to 
     \begin{equation*}
       S_- F G (S_{+R} B): \gamma
     \end{equation*}
-
-    As long as \( F \) and \( G \) are fixed, we do not need different type derivations for handling \( S_{+L} A \) and \( S_{+R} B \).
   \end{thmenum}
 \end{example}
 \begin{comments}
   \item Many of these examples are verified programmatically in the module \identifier{lambda_.type_derivation.test_tree} in \cite{notebook:code}.
 \end{comments}
 
-\paragraph{Explicit typing}
+\begin{remark}\label{rem:typing_style}
+  \Fullref{ex:def:type_derivation_tree} highlights how the \hyperref[def:simple_type_system_style]{typing style} of a system can drastically affect its \hyperref[def:typability]{typability}. The rule \ref{inf:def:base_typing_rules/arrow/intro/exp} itself demonstrates how \hyperref[con:type_annotation]{type annotations} help guide us during type derivation.
 
-\begin{concept}\label{con:type_annotation}
-  The \hyperref[def:type_assertion]{type assertion} \( M: \alpha \) is a syntactic construction, and it is possible to assign different meanings to it. The obvious one is to perceive it as a \hyperref[rem:typing_judgments]{typing judgment} expressing that the term \( M \) has type \( \alpha \).
+  \Fullref{thm:typed_term_habitation_uniqueness} shows how this tackles the non-uniqueness of type derivations for \hyperref[def:lambda_combinator]{combinators} shown in \fullref{ex:def:type_derivation_tree/i} --- the combinator \( \ref{eq:ex:def:lambda_term/combinator/i} = \qabs \synx \synx \) inhabits \( \alpha \synimplies \alpha \) for any type \( \alpha \), however, when \( \alpha \) is fixed, \ref{inf:def:base_typing_rules/arrow/intro/exp} uniquely determines \hi{the} type of \( I_\alpha = \qabs {\synx^\alpha} \synx \) as \( \alpha \synimplies \alpha \) at the cost of introducing a distinct abstraction term for every possible annotation of the abstractor variable.
 
-  Another possibility, used across programming languages, is merely to highlight intention. In this case we call \( \alpha \) a \term{type annotation} for \( M \) --- it is part of the language's syntax, and it merely expresses the intended type of \( M \). Whether or not \( M \) will have type \( \alpha \) depends on how the language is interpreted. We will make this precise in \fullref{def:pseudoterm_abstraction_rule} after introducing \hyperref[def:pseudoterm]{pseudoterms}.
-
-  For convenience, we follow Howard's convention from \cite{Howard1980FormulasAsTypes} of denoting type annotations by superscripts, i.e. \( M^\alpha \) rather than \( M: \alpha \). Not only is it the notation more concise, it also allows us to distinguish annotations from assertions. Superscripts are also used in \cite{Mimram2020Types} and \cite[ch. 5]{Hindley1997STT}. On the other hand, \incite{Barendregt1992Types} uses colons for both annotations and assertions.
-
-  We call \term[en=type-erasure (\cite[def. 5A2]{Hindley1997STT})]{type erasure} the procedure \( M^\alpha \mapsto M \) of removing the annotations of terms. If erasure is performed, verifying that \( M \) has type \( \alpha \) has to be done before that.
-\end{concept}
-\begin{comments}
-  \item The phrase \enquote{type annotation} is used, for example, in TypeScript's handbook, \cite{TypeScript:5.7:handbook}, as well as in Python's documentation, \cite{PythonDocs:3.13:typing} (the latter also call annotations \enquote{type hints}).
-
-  \incite[186]{Mimram2020Types} also uses \enquote{type annotation} when discussing Church style typing.
-
-  \item This definition for type erasure is used by \bycite[def. 5A2]{Hindley1997STT} in the context of annotated \( \synlambda \)-terms.
-\end{comments}
-
-\begin{definition}\label{def:pseudoterm}\mimprovised
-  We consider the following extension of the grammar schema of untyped \( \synlambda \)-term from \fullref{def:lambda_term} in which \hyperref[def:lambda_term/const]{constants} and \hyperref[def:lambda_abstractor]{abstractor variables} have \hyperref[con:type_annotation]{type annotations} attached. We call them \term[en=pseudoterm (\cite[def. 3.2.1]{Barendregt1992Types})]{pseudoterms}.
-
-  Note that annotated variables are not by themselves considered pseudoterms --- variable annotations are only used in the abstractor.
-
-  More precisely, we have the following grammar based on that of untyped \( \synlambda \)-terms from \fullref{def:lambda_term}:
-  \begin{bnf*}
-    \bnfprod{annotated variable}     {\bnfpn{variable} \bnfsp \bnftsq{:} \bnfsp \bnfpn{type}}, \\
-    \bnfprod{annotated constant}     {\bnfpn{constant} \bnfsp \bnftsq{:} \bnfsp \bnfpn{type}}, \\
-    \bnfprod{application pseudoterm} {\bnftsq{\( ( \)} \bnfsp \bnfpn{pseudoterm} \bnfsp \bnfpn{pseudoterm} \bnfsp \bnftsq{\( ) \)}}, \\
-    \bnfprod{abstraction pseudoterm} {\bnftsq{\( ( \)} \bnfsp \bnftsq{\( \synlambda \)} \bnfsp \bnfpn{annotated variable} \bnfsp \bnftsq{.} \bnfsp \bnfpn{pseudoterm} \bnfsp \bnftsq{\( ) \)}}, \\
-    \bnfprod{pseudoterm}             {\bnfpn{annotated constant} \bnfor \bnfpn{variable} \bnfor} \\
-    \bnfmore                         {\bnfpn{application pseudoterm} \bnfor \bnfpn{abstraction pseudoterm}.}
-  \end{bnf*}
-
-  Following \fullref{con:type_annotation}, in the \hyperref[con:metalanguage]{metalanguage}, we will use the notation \( \qabs {x^\alpha} M \) rather than \( \qabs {x: \alpha} M \).
-\end{definition}
-\begin{comments}
-  \item This definition is dependent on our choice for the syntax of types; unless noted otherwise, we suppose we are dealing with \hyperref[def:simple_type]{simple types}.
-
-  \item We base our definition on \bycite[def. 3.2.1]{Barendregt1992Types}, but also adapt it to constants and make the syntax explicit.
-
-  We can see in \fullref{def:pseudoterm_typing_rules} how type annotations help guide us.
-\end{comments}
-
-\begin{definition}\label{def:pseudoterm_abstraction_rule}\mcite[def. 3.2.3]{Barendregt1992Types}
-  The typing rule \ref{inf:def:base_typing_rules/app} adapts straightforwardly for \hyperref[def:pseudoterm]{pseudoterms}, however \ref{inf:def:base_typing_rules/abs} must be adapted to only apply when \( \synx \) is annotated correctly:
-  \begin{equation*}\taglabel[\ensuremath{ \logic{PsAbs}_\tau }]{inf:def:pseudoterm_abstraction_rule}
-    \begin{prooftree}
-      \hypo{ [\synx: \syn\alpha] }
-      \ellipsis {} { \synM: \syn\beta }
-      \infer1[\ref{inf:def:pseudoterm_abstraction_rule}]{ \qabs {\synx^{\syn\alpha}} \synM: \syn\alpha \synimplies \syn\beta }
-    \end{prooftree}
-  \end{equation*}
-\end{definition}
-\begin{comments}
-  \item Of course, actually using this rule also requires introducing pseudoterm schemas. Fortunately, the formalisms are straightforward.
-\end{comments}
-
-\begin{proposition}\label{thm:pseudoterm_uniqueness}
-  We can \hyperref[def:simple_type_derivability]{derive} at most one \hyperref[def:simple_type]{simple type} for any \hyperref[def:pseudoterm]{pseudoterm} from a fixed \hyperref[def:type_context]{type context}.
-\end{proposition}
-\begin{comments}
-  \item In particular, a pseudoterm combinator can \hyperref[def:type_habitation]{inhabit} at most one \hyperref[def:simple_type]{simple type}.
-
-  \item We can also interpret this result as a statement for untyped \( \synlambda \)-terms --- each of them can be typed uniquely \enquote{up to a choice of types for bound variables}.
-
-  \item This result depends on the typing rules; we will prove it assuming \ref{inf:def:base_typing_rules/app} and \ref{inf:def:pseudoterm_abstraction_rule}. This also excludes constants since special rules must be introduced for them.
-\end{comments}
-\begin{proof}
-  Let \( T \) be a tree deriving \( M: \alpha \) from the type context \( \Gamma \).
-
-  We will use \fullref{thm:induction_on_rooted_trees} on \( T \) to show that if \( T' \) derives \( M: \alpha' \) from \( \Gamma \), the trees are equal and \( \alpha = \alpha' \):
-  \begin{itemize}
-    \item If \( T \) is an assumption tree, then \( M \) must be a variable, and \( \Gamma \vdash M \) only if \( \Gamma \) contains a type assertion for \( M \). Since type contexts have at most one type assertion per variable, it follows that the type \( \alpha \) of \( M \) is uniquely determined.
-
-    \item If \( T \) is an application of \ref{inf:def:base_typing_rules/app}, then \( M = NK \) and \( T \) has a subtree \( T_L \) deriving \( N: \beta \to \alpha \) for some type \( \beta \), and a subtree \( T_R \) deriving \( K: \beta \). We suppose that the inductive hypothesis holds for \( T_L \) and \( T_R \).
-
-    Let \( T' \) be a tree deriving \( M: \alpha' \) from \( \Gamma \). Since \( M = NK \), \( T' \) must be an application tree of \ref{inf:def:base_typing_rules/app}, with subtrees \( T_L' \) and \( T_R' \) deriving \( N: \beta' \to \alpha' \) and \( K: \beta' \) from the assumptions in \( \Gamma \).
-
-    The inductive hypothesis on \( T_L \) implies that the types \( \beta' \to \alpha' \) and \( \beta \to \alpha \) are equal, and thus so are \( \alpha' \) and \( \alpha \).
-
-    \item If \( T \) is an application of \ref{inf:def:pseudoterm_abstraction_rule}, then \( \alpha = \beta \synimplies \gamma \), \( M = \qabs {x^\beta} N \) and \( T \) has a subtree \( S \) deriving \( N: \gamma \) from \( \Gamma, x: \beta \).
-
-    Let \( T' \) be a tree deriving \( M: \alpha' \) from \( \Gamma \). Then \( \alpha' = \beta \synimplies \gamma' \) \( T' \) is an application of \ref{inf:def:pseudoterm_abstraction_rule}, and we have a subtree \( S' \) deriving \( N: \gamma' \) from \( \Gamma, x: \beta \).
-
-    The inductive hypothesis implies that \( S \) and \( S' \) are equal, and that \( \gamma = \gamma' \). Then also \( \alpha = \alpha' \).
-  \end{itemize}
-\end{proof}
-
-\begin{remark}\label{rem:explicit_and_implicit_typing}
-  The rule \ref{inf:def:pseudoterm_abstraction_rule} demonstrates how \hyperref[con:type_annotation]{type annotations} help guide us during type derivation.
-
-  \Fullref{thm:pseudoterm_uniqueness} shows how this tackles the non-uniqueness of type derivations for \hyperref[def:lambda_combinator]{combinators} shown in \fullref{ex:def:type_derivation_tree/i}. For example, the combinator \( \ref{eq:ex:def:lambda_term/combinator/i} = \qabs \synx \synx \) inhabits \( \alpha \synimplies \alpha \) for any type \( \alpha \), however, when \( \alpha \) is fixed, \ref{inf:def:pseudoterm_abstraction_rule} uniquely determines \hi{the} type of \( I_\alpha \coloneqq \qabs {\synx^\alpha} \synx \) as \( \alpha \synimplies \alpha \) at the cost of introducing a distinct abstraction term for every possible annotation of the abstractor variable.
-
-  Another possibility is to annotate every term like Church originally did in \cite{Church1940STT}. In this case type contexts become obsolete. The notation becomes much more verbose, however, and, in light of \fullref{thm:pseudoterm_uniqueness}, there is little gain. Compare the following typed variations of the combinator \ref{eq:ex:def:lambda_term/combinator/k}:
+  Another possibility is to annotate every term like Church originally did in \cite{Church1940STT}. In this case type contexts become obsolete. The notation becomes much more verbose, however, and, in light of \fullref{thm:typed_term_habitation_uniqueness}, there is little gain. Compare the following typed variations of the combinator \ref{eq:ex:def:lambda_term/combinator/k}:
   \begin{equation*}
     \qabs {\synx^\alpha} \qabs {\syny^\beta} \synx
   \end{equation*}
   and
   \begin{equation*}
-    (\qabs {\synx^\alpha} (\qabs {\syny^\beta} \synx^\alpha)^{\beta \synimplies \alpha})^{\alpha \synimplies (\beta \synimplies \alpha)}.
+    (\qabs {\synx^\alpha} (\qabs {\syny^\beta} \synx^\alpha)^{\beta \synimplies \alpha})^{\alpha \synimplies \beta \synimplies \alpha}.
   \end{equation*}
 
-  The second convention is referred to as \enquote{Church style typing}, for example by \cite[ch. 5]{Hindley1997STT}. Even though it is not as historically accurate, the convention of using pseudoterms is also referred to as \enquote{Church style}, for example by \incite[ch. 4]{Mimram2020Types}.
+  The second convention is referred to as \enquote{Church style typing}, for example by \cite[ch. 5]{Hindley1997STT}. Even though it is not as historically accurate, the first convention, i.e. what we call explicit typing, is also referred to as \enquote{Church style}, for example by \incite[ch. 4]{Mimram2020Types}.
 
-  As a contradistinction, type systems for untyped \( \synlambda \)-terms are referred to by both the aforementioned authors as \enquote{Curry style} in honor of Haskell Curry for his work \cite{Curry1934CombinatoryLogic}. Curry did not consider \( \synlambda \)-terms nor types, but worked with abstract combinators applied to each other in what he called \enquote{combinatory logic}. We can deduce a relation to typing systems from the following quote:
+  As a contradistinction, implicitly typed systems are referred to by both the aforementioned authors as \enquote{Curry style} in honor of Haskell Curry for his work \cite{Curry1934CombinatoryLogic}. Curry did not consider \( \synlambda \)-terms nor types, but worked with abstract combinators applied to each other in what he called \enquote{combinatory logic}. We can deduce a relation to typing systems from the following quote:
   \begin{displayquote}
     Let \( F \) denote an entity whose interpretation is such that \( FXY \) represents, in the notation of combinatory logic, the category of functions on \( X \) to \( Y \), while the formula \( \vdash FXYf \) represents the statement that \( f \) belongs to that category.
   \end{displayquote}
 
   Here \( f \) is merely a symbol, while \( \vdash FXYf \) translates into the type assertion \( f: X \synimplies Y \). Since the type \( X \synimplies Y \) is not attached to \( f \), the latter is also allowed to inhabit another type, which contrasts with Church's usage mentioned earlier.
 
-  Ironically, the programming language Haskell, also named after Haskell Curry, requires type annotations. Unlike a true Church style type system, however, Haskell's allows not annotating terms for which the types can be inferred.
-
-  We will refer to the two aforementioned extremes as explicit and implicit typing, correspondingly --- see \fullref{con:explicit_and_implicit_typing}.
+  Ironically, the programming language Haskell, also named after Haskell Curry, is explicitly typed and thus not Curry style. Unlike a true Church style type system, however, Haskell's allows not annotating terms for which the types can be inferred.
 \end{remark}
-
-\begin{concept}\label{con:explicit_and_implicit_typing}\mcite[119]{Barendregt1992Types}
-  We say that an \hyperref[def:abstract_type_system]{(abstract) type system} uses \term{explicit typing} if its terms have \hyperref[con:type_annotation]{type annotations} as part of their syntax --- perhaps only for some of the constructions, like in the case of \hyperref[def:pseudoterm]{pseudoterms}.
-
-  If the terms have no type annotations, we say that the system uses \term{implicit typing}. If the type annotations are optional, we speak of \term{gradual typing}.
-\end{concept}
-\begin{comments}
-  \item The phrases \enquote{explicit typing} and \enquote{implicit typing} are used by \incite[119]{Barendregt1992Types} as alternatives for what we described in \fullref{rem:explicit_and_implicit_typing} as Church and Curry style typing, correspondingly.
-
-  \item Some programming languages allow but do not enforce type annotations. One such language is Python. Another one is TypeScript, which adds optional type annotations to JavaScript. TypeScript's documentation, \cite{TypeScript:5.7:handbook}, describes this approach as \enquote{gradual typing}.
-\end{comments}
