@@ -421,7 +421,7 @@ def test_parsing_unclosed_substitution() -> None:
         '(R) [θ] φ ⫢ ψ'
     ]
 )
-def test_rebuilding_typing_rules(rule: str) -> None:
+def test_rebuilding_rules(rule: str) -> None:
     assert str(parse_signatureless_natural_deduction_rule(rule)) == rule
 
 

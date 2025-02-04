@@ -14,7 +14,7 @@ from .terms import (
 from .types import SimpleType, SimpleTypeSchema
 
 
-class TypeAssertion(NamedTuple):
+class GradualTypeAssertion(NamedTuple):
     term: Term
     type: SimpleType
 
@@ -22,20 +22,20 @@ class TypeAssertion(NamedTuple):
         return f'{self.term}{TypeAssertionConnective.colon} {self.type}'
 
 
-class TypeAssertionTyped(TypeAssertion):
-    term: TypedTerm
-
-
-class TypeAssertionUntyped(TypeAssertion):
+class ImplicitTypeAssertion(GradualTypeAssertion):
     term: UntypedTerm
 
 
-class VariableTypeAssertion(TypeAssertion):
+class ExplicitTypeAssertion(GradualTypeAssertion):
+    term: TypedTerm
+
+
+class VariableTypeAssertion(GradualTypeAssertion):
     term: Variable
     type: SimpleType
 
 
-class TypeAssertionSchema(NamedTuple):
+class GradualTypeAssertionSchema(NamedTuple):
     term: TermSchema
     type: SimpleTypeSchema
 
@@ -43,14 +43,14 @@ class TypeAssertionSchema(NamedTuple):
         return f'{self.term}{TypeAssertionConnective.colon} {self.type}'
 
 
-class TypeAssertionSchemaTyped(TypeAssertionSchema):
-    term: TypedTermSchema
-
-
-class TypeAssertionSchemaUntyped(TypeAssertionSchema):
+class ImplicitTypeAssertionSchema(GradualTypeAssertionSchema):
     term: UntypedTermSchema
 
 
-class VariableTypeAssertionSchema(TypeAssertionSchema):
+class ExplicitTypeAssertionSchema(GradualTypeAssertionSchema):
+    term: TypedTermSchema
+
+
+class VariableTypeAssertionSchema(GradualTypeAssertionSchema):
     term: VariablePlaceholder
     type: SimpleTypeSchema

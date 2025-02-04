@@ -1,16 +1,16 @@
 from collections.abc import Collection
 
 from ....support.inference.rules import InferenceRuleSystem
-from ..typing_rules import TypingRule, TypingRuleTyped, TypingRuleUntyped
+from ..typing import ExplicitTypingRule, GradualTypingRule, ImplicitTypingRule
 
 
-class GradualTypingSystem[RuleT: TypingRule](InferenceRuleSystem[RuleT]):
+class GradualTypingSystem[RuleT: GradualTypingRule](InferenceRuleSystem[RuleT]):
     pass
 
 
-class ImplicitTypingSystem(GradualTypingSystem[TypingRuleUntyped]):
-    rules: Collection[TypingRuleUntyped]
+class ImplicitTypingSystem(GradualTypingSystem[ImplicitTypingRule]):
+    rules: Collection[ImplicitTypingRule]
 
 
-class ExplicitTypingSystem(GradualTypingSystem[TypingRuleTyped]):
-    rules: Collection[TypingRuleTyped]
+class ExplicitTypingSystem(GradualTypingSystem[ExplicitTypingRule]):
+    rules: Collection[ExplicitTypingRule]

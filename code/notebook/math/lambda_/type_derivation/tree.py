@@ -2,7 +2,7 @@ from collections.abc import Collection, Iterable, Sequence
 from typing import NamedTuple, Protocol, override
 
 from ....support.inference.rendering import AssumptionRenderer, InferenceTreeRenderer, RuleApplicationRenderer
-from ..assertions import TypeAssertion, VariableTypeAssertion
+from ..assertions import GradualTypeAssertion, VariableTypeAssertion
 from ..instantiation import (
     LambdaSchemaInstantiation,
     infer_instantiation_from_assertion,
@@ -10,12 +10,12 @@ from ..instantiation import (
     merge_instantiations,
 )
 from ..terms import Variable
-from ..typing_rules import TypingRule
+from ..typing import GradualTypingRule
 from .exceptions import TypeDerivationError
 
 
 class TypeDerivationTree(Protocol):
-    conclusion: TypeAssertion
+    conclusion: GradualTypeAssertion
 
     def get_context(self) -> Collection[VariableTypeAssertion]:
         ...
@@ -52,14 +52,14 @@ class RuleApplicationPremise(NamedTuple):
 
 
 class RuleApplicationTree(TypeDerivationTree):
-    conclusion: TypeAssertion
-    rule: TypingRule
+    conclusion: GradualTypeAssertion
+    rule: GradualTypingRule
     instantiation: LambdaSchemaInstantiation
     premises: Sequence[RuleApplicationPremise]
 
     def __init__(
         self,
-        rule: TypingRule,
+        rule: GradualTypingRule,
         instantiation: LambdaSchemaInstantiation,
         premises: Sequence[RuleApplicationPremise]
     ) -> None:
@@ -102,7 +102,7 @@ class RuleApplicationTree(TypeDerivationTree):
         return self.build_renderer().render()
 
 
-def apply(rule: TypingRule, *premises: RuleApplicationPremise) -> RuleApplicationTree:
+def apply(rule: GradualTypingRule, *premises: RuleApplicationPremise) -> RuleApplicationTree:
     if len(premises) != len(rule.premises):
         raise TypeDerivationError(f'The rule {rule.name} has {len(rule.premises)} premises, but the application has {len(premises)}')
 
