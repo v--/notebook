@@ -1,17 +1,20 @@
-from typing import NamedTuple, TypeGuard
+from dataclasses import dataclass
+from typing import TypeGuard
 
 from ..alphabet import BinaryConnective, PropConstant, Quantifier, UnaryConnective
 from ..terms import FunctionLikeTerm, Term, Variable
 
 
-class ConstantFormula(NamedTuple):
+@dataclass(frozen=True)
+class ConstantFormula:
     value: PropConstant
 
     def __str__(self) -> str:
         return str(self.value)
 
 
-class EqualityFormula(NamedTuple):
+@dataclass(frozen=True)
+class EqualityFormula:
     a: Term
     b: Term
 
@@ -23,14 +26,16 @@ class PredicateFormula(FunctionLikeTerm[Term]):
     pass
 
 
-class NegationFormula(NamedTuple):
+@dataclass(frozen=True)
+class NegationFormula:
     sub: 'Formula'
 
     def __str__(self) -> str:
         return f'{UnaryConnective.negation}{self.sub}'
 
 
-class ConnectiveFormula(NamedTuple):
+@dataclass(frozen=True)
+class ConnectiveFormula:
     conn: BinaryConnective
     a: 'Formula'
     b: 'Formula'
@@ -39,7 +44,8 @@ class ConnectiveFormula(NamedTuple):
         return f'({self.a} {self.conn} {self.b})'
 
 
-class QuantifierFormula(NamedTuple):
+@dataclass(frozen=True)
+class QuantifierFormula:
     quantifier: Quantifier
     var: Variable
     sub: 'Formula'

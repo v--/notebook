@@ -1,4 +1,4 @@
-from typing import NamedTuple
+from dataclasses import dataclass
 
 from ..matrices.matrix import IntMatrix
 from .support import sgn
@@ -12,7 +12,8 @@ def gcd(n: int, m: int) -> int:
     return abs(n)
 
 
-class ExtendedGcdResult(NamedTuple):
+@dataclass(frozen=True)
+class ExtendedGcdResult:
     n: int
     m: int
     a: int

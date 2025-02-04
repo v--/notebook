@@ -1,6 +1,6 @@
 from collections.abc import Iterable, Sequence
+from dataclasses import dataclass
 from textwrap import dedent
-from typing import NamedTuple
 
 import pytest
 
@@ -41,14 +41,16 @@ class SimpleTokenizer(IdentifierTokenizerMixin[SimpleToken]):
         raise self.error('Unexpected symbol')
 
 
-class SimpleSentence(NamedTuple):
+@dataclass(frozen=True)
+class SimpleSentence:
     id: LatinIdentifier
 
     def __str__(self) -> str:
         return str(self.id)
 
 
-class SimpleRule(NamedTuple):
+@dataclass(frozen=True)
+class SimpleRule:
     name: str
     premises: Sequence[SimpleSentence]
     conclusion: SimpleSentence

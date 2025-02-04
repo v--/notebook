@@ -1,17 +1,19 @@
-from typing import NamedTuple
+from dataclasses import dataclass
 
 from ....parsing.identifiers import GreekIdentifier, LatinIdentifier
 from .terms import FunctionLikeTerm
 
 
-class VariablePlaceholder(NamedTuple):
+@dataclass(frozen=True)
+class VariablePlaceholder:
     identifier: LatinIdentifier
 
     def __str__(self) -> str:
         return str(self.identifier)
 
 
-class TermPlaceholder(NamedTuple):
+@dataclass(frozen=True)
+class TermPlaceholder:
     identifier: GreekIdentifier
 
     def __str__(self) -> str:
@@ -25,7 +27,8 @@ class FunctionTermSchema(FunctionLikeTerm['TermSchema']):
 TermSchema = VariablePlaceholder | TermPlaceholder | FunctionTermSchema
 
 
-class StarredTermSchema(NamedTuple):
+@dataclass(frozen=True)
+class StarredTermSchema:
     term: TermSchema
 
     def __str__(self) -> str:

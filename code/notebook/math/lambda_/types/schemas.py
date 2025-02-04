@@ -1,18 +1,20 @@
-from typing import NamedTuple
+from dataclasses import dataclass
 
 from ....parsing.identifiers import GreekIdentifier
 from ..alphabet import BinaryTypeConnective
 from .types import BaseType
 
 
-class TypePlaceholder(NamedTuple):
+@dataclass(frozen=True)
+class TypePlaceholder:
     identifier: GreekIdentifier
 
     def __str__(self) -> str:
         return str(self.identifier)
 
 
-class SimpleConnectiveTypeSchema(NamedTuple):
+@dataclass(frozen=True)
+class SimpleConnectiveTypeSchema:
     conn: BinaryTypeConnective
     a: 'SimpleTypeSchema'
     b: 'SimpleTypeSchema'

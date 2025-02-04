@@ -1,11 +1,13 @@
 import functools
 from collections.abc import Callable, Collection, Iterable, Sequence
-from typing import Any, NamedTuple, Self
+from dataclasses import dataclass
+from typing import Any, Self
 
 from ..exceptions import GraphWalkError
 
 
-class GraphWalkSegment[VertT, EdgeT: Collection](NamedTuple):
+@dataclass(frozen=True)
+class GraphWalkSegment[VertT, EdgeT: Collection]:
     edge: EdgeT
     tail: VertT
 

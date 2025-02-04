@@ -1,6 +1,6 @@
 import itertools
 from collections.abc import Collection, Iterable, Mapping
-from typing import NamedTuple
+from dataclasses import dataclass
 
 from ...parsing.whitespace import Whitespace
 from .exceptions import NlpError
@@ -26,7 +26,8 @@ def iter_phrases(seq: TokenSequence, stop_words: Collection[str]) -> Iterable[To
     yield from seq.split_by(lambda token: not isinstance(token, WordToken | Whitespace) or str(token).lower() in stop_words)
 
 
-class WordScoreContext(NamedTuple):
+@dataclass(frozen=True)
+class WordScoreContext:
     frequency: Mapping[str, int]
     degree: Mapping[str, int]
 
@@ -59,7 +60,8 @@ def generate_word_score(phrases: Iterable[TokenSequence]) -> WordScoreContext:
     return WordScoreContext(frequency, degree)
 
 
-class PhraseScoreContext(NamedTuple):
+@dataclass(frozen=True)
+class PhraseScoreContext:
     scores: Mapping[TokenSequence, float]
 
     def get_max_score(self) -> float:

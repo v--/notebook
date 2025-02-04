@@ -1,17 +1,19 @@
 from collections.abc import Sequence
-from typing import NamedTuple
+from dataclasses import dataclass
 
 from ....parsing.identifiers import LatinIdentifier
 
 
-class Variable(NamedTuple):
+@dataclass(frozen=True)
+class Variable:
     identifier: LatinIdentifier
 
     def __str__(self) -> str:
         return str(self.identifier)
 
 
-class FunctionLikeTerm[ArgT](NamedTuple):
+@dataclass(frozen=True)
+class FunctionLikeTerm[ArgT]:
     name: str
     arguments: 'Sequence[ArgT]'
 

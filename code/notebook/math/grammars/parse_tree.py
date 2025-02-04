@@ -1,16 +1,18 @@
 from collections.abc import Iterable, Sequence
-from typing import NamedTuple
+from dataclasses import dataclass, field
 
 from .alphabet import NonTerminal, Terminal
 from .grammar import GrammarRule
 
 
-class DerivationStep(NamedTuple):
+@dataclass(frozen=True)
+class DerivationStep:
     payload: Sequence[NonTerminal | Terminal]
     rule: GrammarRule
 
 
-class Derivation(NamedTuple):
+@dataclass(frozen=True)
+class Derivation:
     start: NonTerminal
     steps: Sequence[DerivationStep]
 
@@ -20,9 +22,10 @@ class Derivation(NamedTuple):
         )
 
 
-class ParseTree(NamedTuple):
+@dataclass(frozen=True)
+class ParseTree:
     payload: NonTerminal | Terminal
-    subtrees: Sequence['ParseTree'] = []
+    subtrees: Sequence['ParseTree'] = field(default_factory=list)
 
     def is_leaf(self) -> bool:
         return len(self.subtrees) == 0

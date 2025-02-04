@@ -1,4 +1,5 @@
 from collections.abc import Sequence
+from dataclasses import replace
 from typing import Any, TextIO
 
 import loguru
@@ -46,7 +47,7 @@ class BibEntryAdjuster:
             old_value = getattr(self.adjusted, field_name)
             self.log_update(f'the {field_name} field', old_value, new_value)
 
-        self.adjusted = self.adjusted._replace(**kwargs)
+        self.adjusted = replace(self.adjusted, **kwargs)
 
     def get_author_short_name(self, author: BibAuthor) -> BibString | None:
         main_language = get_main_entry_language(self.adjusted)
@@ -72,7 +73,7 @@ class BibEntryAdjuster:
         self.log_update('name', author.full_name, full_name)
         short_name = self.get_author_short_name(author)
         self.log_update('short name', author.short_name, short_name)
-        return author._replace(full_name=full_name, short_name=short_name)
+        return replace(author, full_name=full_name, short_name=short_name)
 
     def adjust_language(self, language: BibString) -> BibString:
         normalized = normalize_language_name(language)
@@ -243,14 +244,14 @@ class BibEntryAdjuster:
         if len(self.adjusted.authors) == 0 and len(self.adjusted.editors) == 0:
             self.logger.warning('Entry has neither authors nor editors specified')
 
-        self.adjusted = self.adjusted._replace(
+        self.adjusted = replace(self.adjusted,
             authors=[self.adjust_author(author) for author in self.adjusted.authors],
             editors=[self.adjust_author(author) for author in self.adjusted.editors],
             translators=[self.adjust_author(author) for author in self.adjusted.translators],
             advisors=[self.adjust_author(author) for author in self.adjusted.advisors]
         )
 
-        self.adjusted = self.adjusted._replace(
+        self.adjusted = replace(self.adjusted,
             languages=[self.adjust_language(author) for author in self.adjusted.languages],
             origlanguages=[self.adjust_language(author) for author in self.adjusted.origlanguages],
         )

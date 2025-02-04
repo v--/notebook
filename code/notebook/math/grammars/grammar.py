@@ -1,14 +1,14 @@
 import itertools
 from collections.abc import Collection, Iterable, Sequence
-from dataclasses import field
-from typing import NamedTuple
+from dataclasses import dataclass, field
 
 from ...support.iteration import string_accumulator
 from .alphabet import NonTerminal, Terminal
 from .exceptions import UnknownSymbolError
 
 
-class GrammarRule(NamedTuple):
+@dataclass(frozen=True)
+class GrammarRule:
     src: Sequence[Terminal | NonTerminal]
     dest: Sequence[Terminal | NonTerminal]
 
@@ -50,7 +50,8 @@ class GrammarRule(NamedTuple):
         }
 
 
-class GrammarSchema(NamedTuple):
+@dataclass(frozen=True)
+class GrammarSchema:
     rules: Sequence[GrammarRule] = field(default_factory=list)
 
     def __str__(self) -> str:
@@ -78,7 +79,8 @@ class GrammarSchema(NamedTuple):
         return Grammar(self, start)
 
 
-class Grammar(NamedTuple):
+@dataclass(frozen=True)
+class Grammar:
     schema: GrammarSchema
     start: NonTerminal
 

@@ -1,11 +1,12 @@
 from collections.abc import Collection
-from typing import NamedTuple
+from dataclasses import dataclass
 
 from ....parsing.identifiers import LatinIdentifier, new_latin_identifier
 from ..formulas import Formula
 
 
-class Marker(NamedTuple):
+@dataclass(frozen=True)
+class Marker:
     identifier: LatinIdentifier
 
     def __str__(self) -> str:
@@ -16,7 +17,8 @@ def new_marker(context: Collection[Marker]) -> Marker:
     return Marker(new_latin_identifier({var.identifier for var in context}))
 
 
-class MarkedFormula(NamedTuple):
+@dataclass(frozen=True)
+class MarkedFormula:
     formula: Formula
     marker: Marker
 

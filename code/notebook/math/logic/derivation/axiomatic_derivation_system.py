@@ -1,5 +1,5 @@
 from collections.abc import Collection
-from typing import NamedTuple
+from dataclasses import dataclass
 
 from ..deduction.rules import NaturalDeductionRule, NaturalDeductionSystem
 from ..formulas import ExtendedFormulaSchema, Formula
@@ -10,7 +10,8 @@ from ..parsing import parse_signatureless_natural_deduction_rule
 MODUS_PONENS_RULE = parse_signatureless_natural_deduction_rule('(MP) (φ → ψ), φ ⫢ ψ')
 
 
-class AxiomaticDerivationSystem(NamedTuple):
+@dataclass(frozen=True)
+class AxiomaticDerivationSystem:
     axiom_schemas: Collection[ExtendedFormulaSchema]
 
 

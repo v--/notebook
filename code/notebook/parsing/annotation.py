@@ -1,16 +1,18 @@
 from collections.abc import Iterable, Sequence
-from typing import NamedTuple
+from dataclasses import dataclass
 
 from ..support.iteration import list_accumulator
 from .tokens import AbstractToken
 
 
-class SymbolPosition(NamedTuple):
+@dataclass(frozen=True)
+class SymbolPosition:
     lineno: int
     column: int
 
 
-class AnnotatedToken[T: AbstractToken](NamedTuple):
+@dataclass(frozen=True)
+class AnnotatedToken[T: AbstractToken]:
     token: T
     start: SymbolPosition
     end: SymbolPosition

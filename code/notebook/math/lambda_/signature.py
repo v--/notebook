@@ -1,8 +1,9 @@
 from collections.abc import Collection
-from typing import NamedTuple
+from dataclasses import dataclass
 
 
-class LambdaSignature(NamedTuple):
+@dataclass(frozen=True)
+class LambdaSignature:
     base_types: Collection[str]
     constant_terms: Collection[str]
 

@@ -1,4 +1,4 @@
-from typing import NamedTuple
+from dataclasses import dataclass
 
 from ....parsing.identifiers import GreekIdentifier
 from ..alphabet import BinaryConnective, Quantifier, SchemaConnective, UnaryConnective
@@ -6,14 +6,16 @@ from ..terms import ExtendedTermSchema, FunctionLikeTerm, TermSchema, VariablePl
 from .formulas import ConstantFormula
 
 
-class FormulaPlaceholder(NamedTuple):
+@dataclass(frozen=True)
+class FormulaPlaceholder:
     identifier: GreekIdentifier
 
     def __str__(self) -> str:
         return str(self.identifier)
 
 
-class EqualityFormulaSchema(NamedTuple):
+@dataclass(frozen=True)
+class EqualityFormulaSchema:
     a: TermSchema
     b: TermSchema
 
@@ -25,14 +27,16 @@ class PredicateFormulaSchema(FunctionLikeTerm[TermSchema]):
     pass
 
 
-class NegationFormulaSchema(NamedTuple):
+@dataclass(frozen=True)
+class NegationFormulaSchema:
     sub: 'FormulaSchema'
 
     def __str__(self) -> str:
         return f'{UnaryConnective.negation}{self.sub}'
 
 
-class ConnectiveFormulaSchema(NamedTuple):
+@dataclass(frozen=True)
+class ConnectiveFormulaSchema:
     conn: BinaryConnective
     a: 'FormulaSchema'
     b: 'FormulaSchema'
@@ -41,7 +45,8 @@ class ConnectiveFormulaSchema(NamedTuple):
         return f'({self.a} {self.conn} {self.b})'
 
 
-class QuantifierFormulaSchema(NamedTuple):
+@dataclass(frozen=True)
+class QuantifierFormulaSchema:
     quantifier: Quantifier
     variable: VariablePlaceholder
     sub: 'FormulaSchema'
@@ -53,7 +58,8 @@ class QuantifierFormulaSchema(NamedTuple):
 FormulaSchema = FormulaPlaceholder | ConstantFormula | EqualityFormulaSchema | PredicateFormulaSchema | NegationFormulaSchema | ConnectiveFormulaSchema | QuantifierFormulaSchema
 
 
-class SubstitutionSchema(NamedTuple):
+@dataclass(frozen=True)
+class SubstitutionSchema:
     formula: FormulaSchema
     var: VariablePlaceholder
     dest: ExtendedTermSchema

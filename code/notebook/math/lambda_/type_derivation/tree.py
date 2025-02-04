@@ -1,5 +1,6 @@
 from collections.abc import Collection, Iterable, Sequence
-from typing import NamedTuple, Protocol, override
+from dataclasses import dataclass
+from typing import Protocol, override
 
 from ....support.inference.rendering import AssumptionRenderer, InferenceTreeRenderer, RuleApplicationRenderer
 from ..assertions import GradualTypeAssertion, VariableTypeAssertion
@@ -46,7 +47,8 @@ def assume(assertion: VariableTypeAssertion) -> AssumptionTree:
     return AssumptionTree(assertion)
 
 
-class RuleApplicationPremise(NamedTuple):
+@dataclass(frozen=True)
+class RuleApplicationPremise:
     tree: TypeDerivationTree
     discharge: VariableTypeAssertion | None = None
 
@@ -108,14 +110,20 @@ def apply(rule: GradualTypingRule, *premises: RuleApplicationPremise) -> RuleApp
 
     instantiation = LambdaSchemaInstantiation()
 
-    for i, (rule_premise, (subtree, discharge)) in enumerate(zip(rule.premises, premises, strict=True), start=1):
+    for i, (rule_premise, application_premise) in enumerate(zip(rule.premises, premises, strict=True), start=1):
         if rule_premise.discharge is not None:
-            if discharge is None:
+            if application_premise.discharge is None:
                 raise TypeDerivationError(f'The rule {rule.name} requires a discharge type assertion for premise number {i}')
 
-            instantiation = merge_instantiations(instantiation, infer_instantiation_from_assertion(rule_premise.discharge, discharge))
+            instantiation = merge_instantiations(
+                instantiation,
+                infer_instantiation_from_assertion(rule_premise.discharge, application_premise.discharge)
+            )
 
-        instantiation = merge_instantiations(instantiation, infer_instantiation_from_assertion(rule_premise.main, subtree.conclusion))
+        instantiation = merge_instantiations(
+            instantiation,
+            infer_instantiation_from_assertion(rule_premise.main, application_premise.tree.conclusion)
+        )
 
     return RuleApplicationTree(
         rule=rule,

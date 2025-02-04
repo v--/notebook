@@ -1,12 +1,13 @@
 from collections.abc import Iterable, Sequence
-from typing import NamedTuple
+from dataclasses import dataclass
 
 import pytest
 
 from .finite import FiniteAutomaton
 
 
-class FiniteAutomatonFixture(NamedTuple):
+@dataclass(frozen=True)
+class FiniteAutomatonFixture:
     aut: FiniteAutomaton
     whitelist: Sequence[str]
     blacklist: Sequence[str]

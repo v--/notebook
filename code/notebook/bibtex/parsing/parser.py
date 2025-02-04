@@ -1,5 +1,6 @@
 from collections import deque
 from collections.abc import Collection, Iterable, Sequence
+from dataclasses import replace
 from typing import cast, get_args
 
 from ...parsing.mixins.whitespace import WhitespaceParserMixin
@@ -329,7 +330,7 @@ class BibParser(WhitespaceParserMixin[BibToken], Parser[BibToken]):
             if len(short_segments) == 0:
                 raise self.error(error_message, **error_kwargs)
 
-            yield author._replace(short_name=short_segments.popleft())
+            yield replace(author, short_name=short_segments.popleft())
 
         if short_segments and len(short_segments) > 0:
             raise self.error(error_message, **error_kwargs)

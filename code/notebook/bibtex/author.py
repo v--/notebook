@@ -1,8 +1,9 @@
-from typing import NamedTuple
+from dataclasses import dataclass
 
 from .string import BibString
 
 
-class BibAuthor(NamedTuple):
+@dataclass(frozen=True)
+class BibAuthor:
     full_name: BibString
     short_name: BibString | None = None

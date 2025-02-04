@@ -2,7 +2,7 @@ import itertools
 import math
 from collections import Counter
 from collections.abc import Iterable, Sequence
-from typing import NamedTuple
+from dataclasses import dataclass
 
 from .divisibility import divides, quot
 from .gcd import gcd
@@ -67,7 +67,8 @@ def num_primes_inclusion_exclusion(n: int) -> int:
     return result
 
 
-class PrimeFactorization(NamedTuple):
+@dataclass(frozen=True)
+class PrimeFactorization:
     multiset: Counter[int]
     sign: SignT
 

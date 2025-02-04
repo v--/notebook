@@ -1,7 +1,7 @@
 import itertools
 from collections.abc import Collection, Iterable, Mapping
+from dataclasses import dataclass
 from datetime import datetime, timedelta
-from typing import NamedTuple
 
 from ...exceptions import UnreachableException
 from ..graphs.complete import max_edge_count
@@ -47,7 +47,8 @@ def enumerate_sized_colored_subgraphs(graph: EdgeColoredGraph, sizes: Collection
             yield k, subgraph
 
 
-class ExhaustiveRamseyComputationBounds(NamedTuple):
+@dataclass(frozen=True)
+class ExhaustiveRamseyComputationBounds:
     result_max: int
     max_edge_count: int
     max_subgraphs_per_coloring: Mapping[int, int]
@@ -64,7 +65,8 @@ def naive_ramsey_computation_bounds(s: int, t: int, *rest: int) -> ExhaustiveRam
     )
 
 
-class ExhaustiveRamseyComputationState(NamedTuple):
+@dataclass(frozen=True)
+class ExhaustiveRamseyComputationState:
     sizes: Collection[int]
 
     run_time: timedelta

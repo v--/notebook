@@ -1,5 +1,6 @@
 from collections.abc import Collection, Iterable, Sequence
-from typing import NamedTuple, Protocol, override
+from dataclasses import dataclass
+from typing import Protocol, override
 
 from ....support.inference.rendering import AssumptionRenderer, InferenceTreeRenderer, RuleApplicationRenderer
 from ..formulas import Formula
@@ -48,7 +49,8 @@ def assume(marked_assumption: MarkedFormula) -> AssumptionTree:
     return AssumptionTree(marked_assumption)
 
 
-class RuleApplicationPremise(NamedTuple):
+@dataclass(frozen=True)
+class RuleApplicationPremise:
     tree: ProofTree
     discharge: Formula | None = None
     marker: Marker | None = None
@@ -113,20 +115,26 @@ def apply(rule: NaturalDeductionRule, *premises: RuleApplicationPremise) -> Rule
     instantiation = FormalLogicSchemaInstantiation()
     marker_map = dict[Marker, Formula]()
 
-    for i, (rule_premise, (subtree, discharge, _)) in enumerate(zip(rule.premises, premises, strict=True), start=1):
-        for assumption, marker in subtree.get_context():
-            if marker in marker_map and marker_map[marker] != assumption:
+    for i, (rule_premise, application_premise) in enumerate(zip(rule.premises, premises, strict=True), start=1):
+        for marked_assumption in application_premise.tree.get_context():
+            if marked_assumption.marker in marker_map and marker_map[marked_assumption.marker] != marked_assumption.formula:
                 raise RuleApplicationError('Multiple assumptions cannot have the same marker')
 
-            marker_map[marker] = assumption
+            marker_map[marked_assumption.marker] = marked_assumption.formula
 
         if rule_premise.discharge is not None:
-            if discharge is None:
+            if application_premise.discharge is None:
                 raise RuleApplicationError(f'The rule {rule.name} requires a discharge formula for premise number {i}')
 
-            instantiation = merge_instantiations(instantiation, infer_instantiation_from_formula(rule_premise.discharge, discharge))
+            instantiation = merge_instantiations(
+                instantiation,
+                infer_instantiation_from_formula(rule_premise.discharge, application_premise.discharge)
+            )
 
-        instantiation = merge_instantiations(instantiation, infer_instantiation_from_formula(rule_premise.main, subtree.conclusion))
+        instantiation = merge_instantiations(
+            instantiation,
+            infer_instantiation_from_formula(rule_premise.main, application_premise.tree.conclusion)
+        )
 
     return RuleApplicationTree(
         rule=rule,

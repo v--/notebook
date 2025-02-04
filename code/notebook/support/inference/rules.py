@@ -1,5 +1,5 @@
 from collections.abc import Collection, Sequence
-from typing import NamedTuple
+from dataclasses import dataclass
 
 from ...parsing.tokens import TokenEnum
 from .exceptions import InferenceRuleError
@@ -9,7 +9,8 @@ class InferenceRuleConnective(TokenEnum):
     sequent = '⫢'
 
 
-class InferenceRulePremise[EntryT](NamedTuple):
+@dataclass(frozen=True)
+class InferenceRulePremise[EntryT]:
     main: EntryT
     discharge: EntryT | None
 
@@ -20,7 +21,8 @@ class InferenceRulePremise[EntryT](NamedTuple):
         return f'[{self.discharge}] {self.main}'
 
 
-class InferenceRule[ConclusionT, PremiseT](NamedTuple):
+@dataclass(frozen=True)
+class InferenceRule[ConclusionT, PremiseT]:
     name: str
     premises: Sequence[PremiseT]
     conclusion: ConclusionT

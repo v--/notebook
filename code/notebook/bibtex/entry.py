@@ -1,5 +1,6 @@
 from collections.abc import Iterable, Sequence
-from typing import Annotated, Literal, NamedTuple, get_args, get_type_hints
+from dataclasses import dataclass, field, fields
+from typing import Annotated, Literal, get_args, get_type_hints
 
 from ..support.iteration import list_accumulator, string_accumulator
 from .author import BibAuthor
@@ -32,7 +33,8 @@ BibEntryType = Literal[
 ]
 
 
-class BibFieldAnnotation(NamedTuple):
+@dataclass(frozen=True)
+class BibFieldAnnotation:
     meta: bool = False
     author: bool = False
     verbatim: bool = False
@@ -40,7 +42,8 @@ class BibFieldAnnotation(NamedTuple):
     key_name: str | None = None
 
 
-class BibEntry(NamedTuple):
+@dataclass(frozen=True)
+class BibEntry:
     """Customized biblatex entry specific for the citations in this monograph.
     Includes almost all fields from https://www.bibtex.com/format/fields/ (except type, annote and organization), but also a lot of other fields.
     """
@@ -49,11 +52,11 @@ class BibEntry(NamedTuple):
     # Base fields
     title:         Annotated[BibString, BibFieldAnnotation()]
     # Optional
-    authors:       Annotated[Sequence[BibAuthor], BibFieldAnnotation(author=True, key_name='author')] = []
-    editors:       Annotated[Sequence[BibAuthor], BibFieldAnnotation(author=True, key_name='editor')] = []
-    translators:   Annotated[Sequence[BibAuthor], BibFieldAnnotation(author=True, key_name='translator')] = []
-    languages:     Annotated[Sequence[BibString], BibFieldAnnotation(list=True, key_name='language')] = []
-    origlanguages: Annotated[Sequence[BibString], BibFieldAnnotation(list=True, key_name='origlanguage')] = []
+    authors:       Annotated[Sequence[BibAuthor], BibFieldAnnotation(author=True, key_name='author')] = field(default_factory=list)
+    editors:       Annotated[Sequence[BibAuthor], BibFieldAnnotation(author=True, key_name='editor')] = field(default_factory=list)
+    translators:   Annotated[Sequence[BibAuthor], BibFieldAnnotation(author=True, key_name='translator')] = field(default_factory=list)
+    languages:     Annotated[Sequence[BibString], BibFieldAnnotation(list=True, key_name='language')] = field(default_factory=list)
+    origlanguages: Annotated[Sequence[BibString], BibFieldAnnotation(list=True, key_name='origlanguage')] = field(default_factory=list)
     options:       Annotated[BibString | None, BibFieldAnnotation()] = None
     related:       Annotated[BibString | None, BibFieldAnnotation()] = None
     relatedtype:   Annotated[BibString | None, BibFieldAnnotation()] = None
@@ -74,7 +77,7 @@ class BibEntry(NamedTuple):
     version:       Annotated[BibString | None, BibFieldAnnotation()] = None
     institution:   Annotated[BibString | None, BibFieldAnnotation()] = None
     # Theses
-    advisors:      Annotated[Sequence[BibAuthor], BibFieldAnnotation(author=True, key_name='advisor')] = []
+    advisors:      Annotated[Sequence[BibAuthor], BibFieldAnnotation(author=True, key_name='advisor')] = field(default_factory=list)
     # Books
     chapter:       Annotated[BibString | None, BibFieldAnnotation()] = None
     series:        Annotated[BibString | None, BibFieldAnnotation()] = None
@@ -161,7 +164,7 @@ class BibEntry(NamedTuple):
         return False
 
     def _string_properties(self) -> dict[str, BibString]:
-        properties = self._asdict()
+        properties = {field.name: getattr(self, field.name) for field in fields(self)}
 
         for field_name in self.get_meta_fields():
             properties.pop(field_name)

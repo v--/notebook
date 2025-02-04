@@ -1,5 +1,5 @@
 from collections.abc import Collection, Iterable, Sequence
-from typing import NamedTuple
+from dataclasses import dataclass
 
 from ....support.schemas import SchemaInferenceError
 from ..deduction.markers import MarkedFormula, Marker, new_marker
@@ -16,17 +16,16 @@ from .axiomatic_derivation_system import (
 from .exceptions import AxiomaticDerivationError
 
 
-class ModusPonensConfig(NamedTuple):
+@dataclass(frozen=True)
+class ModusPonensConfig:
     conditional_index: int
     antecedent_index: int
     conclusion_index: int
 
 
-class AxiomaticDerivation(NamedTuple):
+@dataclass(frozen=True)
+class AxiomaticDerivation:
     payload: Sequence[Formula]
-
-    def __post_init__(self) -> None:
-        assert len(self.payload) > 0
 
     def get_conclusion(self) -> Formula:
         return self.payload[-1]

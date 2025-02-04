@@ -1,4 +1,4 @@
-from typing import NamedTuple
+from dataclasses import dataclass
 
 from ....parsing.identifiers import LatinIdentifier
 from ..alphabet import TermConnective
@@ -6,21 +6,24 @@ from ..types import SimpleTypeSchema
 from .terms import Constant
 
 
-class VariablePlaceholder(NamedTuple):
+@dataclass(frozen=True)
+class VariablePlaceholder:
     identifier: LatinIdentifier
 
     def __str__(self) -> str:
         return str(self.identifier)
 
 
-class TermPlaceholder(NamedTuple):
+@dataclass(frozen=True)
+class TermPlaceholder:
     identifier: LatinIdentifier
 
     def __str__(self) -> str:
         return str(self.identifier)
 
 
-class ApplicationSchema(NamedTuple):
+@dataclass(frozen=True)
+class ApplicationSchema:
     a: 'TermSchema'
     b: 'TermSchema'
 
@@ -38,7 +41,8 @@ class TypedApplicationSchema(ApplicationSchema):
     b: 'TypedTermSchema'
 
 
-class AbstractionSchema(NamedTuple):
+@dataclass(frozen=True)
+class AbstractionSchema:
     var: VariablePlaceholder
     sub: 'TermSchema'
     var_type: SimpleTypeSchema | None = None

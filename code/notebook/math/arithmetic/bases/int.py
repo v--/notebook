@@ -7,7 +7,7 @@ from ..divisibility import int_divmod
 from ..support import SignT, sgn
 
 
-@dataclass
+@dataclass(frozen=True)
 class IntRadixExpansion:
     radix: int
     polynomial: IntPolynomial

@@ -247,16 +247,21 @@ class LambdaParser(InferenceRuleParserMixin[LambdaToken], WhitespaceParserMixin[
         match typing:
             case TypingStyle.gradual:
                 assert isinstance(sub, Term)
-                return Abstraction(var, sub, var_type)
+
+                if var_type:
+                    assert isinstance(var_type, SimpleType)
+                    return Abstraction(var, sub, var_type)
+
+                return Abstraction(var, sub)
 
             case TypingStyle.implicit:
                 assert isinstance(sub, UntypedTerm)
                 assert var_type is None
-                return UntypedAbstraction(var, sub, var_type)
+                return UntypedAbstraction(var, sub)
 
             case TypingStyle.explicit:
                 assert isinstance(sub, TypedTerm)
-                assert var_type is not None
+                assert isinstance(var_type, SimpleType)
                 return TypedAbstraction(var, sub, var_type)
 
     @overload
