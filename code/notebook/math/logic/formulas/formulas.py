@@ -75,20 +75,3 @@ def is_conditional(formula: Formula) -> TypeGuard[ConnectiveFormula]:
 
 def is_biconditional(formula: Formula) -> TypeGuard[ConnectiveFormula]:
     return isinstance(formula, ConnectiveFormula) and formula.conn == BinaryConnective.biconditional
-
-
-def is_subformula(formula: Formula, subformula: Formula) -> bool:
-    if formula == subformula:
-        return True
-
-    match formula:
-        case NegationFormula():
-            return is_subformula(formula.sub, subformula)
-
-        case ConnectiveFormula():
-            return is_subformula(formula.a, subformula) or is_subformula(formula.b, subformula)
-
-        case QuantifierFormula():
-            return is_subformula(formula.sub, subformula)
-
-    return False

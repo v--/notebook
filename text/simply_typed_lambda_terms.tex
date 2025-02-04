@@ -222,7 +222,7 @@ Unlike untyped lambda calculus, whose presentation is mostly uniform across auth
 \begin{comments}
   \item This definition is dependent on our choice for the syntax of types; unless noted otherwise, we suppose we are dealing with \hyperref[def:simple_type]{simple types}.
 
-  \item Even though most concepts from untyped terms transfer via \fullref{alg:type_erasure}, some like \hyperref[def:lambda_term_alpha_equivalence]{\( \alpha \)-equivalence} must be restricted to only \hyperref[def:typability]{typable} terms.
+  \item Even though most concepts from untyped terms transfer via \fullref{alg:type_erasure}, some like \hyperref[def:lambda_term_alpha_equivalence]{\( \alpha \)-equivalence} require modification --- see \fullref{def:typed_term_alpha_equivalence}.
 
   \item Our definition is based on \bycite[def. 3.2.1]{Barendregt1992Types}, who prefers calling such terms \enquote{pseudoterms} because the grammar may produce \enquote{ill-typed} terms that are not \hyperref[def:typability]{typable} according to the rules in \fullref{def:base_typing_rules}.
 
@@ -592,39 +592,6 @@ To formalize typing rules in \fullref{def:simple_typing_rule}, we first need to 
   \item Unlike for \hyperref[def:typability]{typability}, this definition only applies to derivations from the empty context. This restricts us to inhabitants without free variables.
 \end{comments}
 
-\begin{proposition}\label{thm:typed_term_habitation_uniqueness}
-  In the \hyperref[def:simple_type_system_style]{explicitly typed} \hyperref[def:simple_type_system]{simple type system} featuring only \ref{inf:def:base_typing_rules/arrow/elim} and \ref{inf:def:base_typing_rules/arrow/intro/exp}, we can \hyperref[def:simple_type_derivability]{derive} at most one type for any \hyperref[def:typed_lambda_term]{typed term} from a fixed \hyperref[def:type_context]{type context}.
-\end{proposition}
-\begin{comments}
-  \item In particular, a typed combinator can \hyperref[def:type_habitation]{inhabit} at most one type.
-
-  We can also interpret this result as a statement for untyped combinators --- each of them can be typed uniquely \enquote{up to a choice of types for bound variables}.
-
-  \item As in \fullref{thm:def:simple_type_derivability}, we can allow other rules, but we must prove the proposition for each of them.
-\end{comments}
-\begin{proof}
-  Let \( T \) be a tree deriving \( M: \alpha \) from the type context \( \Gamma \).
-
-  We will use \fullref{thm:induction_on_rooted_trees} on \( T \) to show that if \( T' \) derives \( M: \alpha' \) from \( \Gamma \), the trees are equal and \( \alpha = \alpha' \):
-  \begin{itemize}
-    \item If \( T \) is an assumption tree, then \( M \) must be a variable, and \( \Gamma \vdash M \) only if \( \Gamma \) contains a type assertion for \( M \). Since type contexts have at most one type assertion per variable, it follows that the type \( \alpha \) of \( M \) is uniquely determined.
-
-    \item If \( T \) is an application of \ref{inf:def:base_typing_rules/arrow/elim}, then \( M = NK \) and \( T \) has a subtree \( T_L \) deriving \( N: \beta \to \alpha \) for some type \( \beta \), and a subtree \( T_R \) deriving \( K: \beta \). We suppose that the inductive hypothesis holds for \( T_L \) and \( T_R \).
-
-    Let \( T' \) be a tree deriving \( M: \alpha' \) from \( \Gamma \). Since \( M = NK \), \( T' \) must be an application tree of \ref{inf:def:base_typing/app}, with subtrees \( T_L' \) and \( T_R' \) deriving \( N: \beta' \to \alpha' \) and \( K: \beta' \) from the assumptions in \( \Gamma \).
-
-    The inductive hypothesis on \( T_L \) implies that the types \( \beta' \to \alpha' \) and \( \beta \to \alpha \) are equal, and thus so are \( \alpha' \) and \( \alpha \).
-
-    \item If \( T \) is an application of \ref{inf:def:base_typing_rules/arrow/intro/exp}, then \( M = \qabs {x^\beta} N \), \( \alpha = \beta \synimplies \gamma \) and \( T \) has a subtree \( S \) deriving \( N: \gamma \) from \( \Gamma, x: \beta \).
-
-    Let \( T' \) be a tree deriving \( M: \alpha' \) from \( \Gamma \). Then \( \alpha' = \beta \synimplies \gamma' \) \( T' \) is an application of \ref{inf:def:base_typing_rules/arrow/intro/exp}, and we have a subtree \( S' \) deriving \( N: \gamma' \) from \( \Gamma, x: \beta \).
-
-    It is extremely important here that \( \beta \) and \( \beta' \) are equal, which is only possible due to the annotation of \( x \).
-
-    The inductive hypothesis implies that \( S \) and \( S' \) are equal, and that \( \gamma = \gamma' \). Then also \( \alpha = \alpha' \).
-  \end{itemize}
-\end{proof}
-
 \begin{example}\label{ex:def:type_derivation_tree}
   We list examples of \hyperref[def:type_derivation_tree]{type derivation trees} for \hyperref[def:simple_type_system]{simple type systems}:
   \begin{thmenum}
@@ -838,13 +805,13 @@ To formalize typing rules in \fullref{def:simple_typing_rule}, we first need to 
   \end{thmenum}
 \end{example}
 \begin{comments}
-  \item Many of these examples are verified programmatically in the module \identifier{lambda_.type_derivation.test_tree} in \cite{notebook:code}.
+  \item Many of these examples are verified programmatically in the modules \identifier{lambda_.type_derivation.test_tree} and \identifier{lambda_.type_derivation.test_inference} in \cite{notebook:code}.
 \end{comments}
 
 \begin{remark}\label{rem:typing_style}
   \Fullref{ex:def:type_derivation_tree} highlights how the \hyperref[def:simple_type_system_style]{typing style} of a system can drastically affect its \hyperref[def:typability]{typability}. The rule \ref{inf:def:base_typing_rules/arrow/intro/exp} itself demonstrates how \hyperref[con:type_annotation]{type annotations} help guide us during type derivation.
 
-  \Fullref{thm:typed_term_habitation_uniqueness} shows how this tackles the non-uniqueness of type derivations for \hyperref[def:lambda_combinator]{combinators} shown in \fullref{ex:def:type_derivation_tree/i} --- the combinator \( \ref{eq:ex:def:lambda_term/combinator/i} = \qabs \synx \synx \) inhabits \( \alpha \synimplies \alpha \) for any type \( \alpha \), however, when \( \alpha \) is fixed, \ref{inf:def:base_typing_rules/arrow/intro/exp} uniquely determines \hi{the} type of \( I_\alpha = \qabs {\synx^\alpha} \synx \) as \( \alpha \synimplies \alpha \) at the cost of introducing a distinct abstraction term for every possible annotation of the abstractor variable.
+  \Fullref{thm:typed_term_habitation_uniqueness} proves that this tackles the non-uniqueness of type derivations for \hyperref[def:lambda_combinator]{combinators} shown in \fullref{ex:def:type_derivation_tree/i} --- the combinator \( \ref{eq:ex:def:lambda_term/combinator/i} = \qabs \synx \synx \) inhabits \( \alpha \synimplies \alpha \) for any type \( \alpha \), however, when \( \alpha \) is fixed, \ref{inf:def:base_typing_rules/arrow/intro/exp} uniquely determines \hi{the} type of \( I_\alpha = \qabs {\synx^\alpha} \synx \) as \( \alpha \synimplies \alpha \) at the cost of introducing a distinct abstraction term for every possible annotation of the abstractor variable.
 
   Another possibility is to annotate every term like Church originally did in \cite{Church1940STT}. In this case type contexts become obsolete. The notation becomes much more verbose, however, and, in light of \fullref{thm:typed_term_habitation_uniqueness}, there is little gain. Compare the following typed variations of the combinator \ref{eq:ex:def:lambda_term/combinator/k}:
   \begin{equation*}
@@ -866,3 +833,68 @@ To formalize typing rules in \fullref{def:simple_typing_rule}, we first need to 
 
   Ironically, the programming language Haskell, also named after Haskell Curry, is explicitly typed and thus not Curry style. Unlike a true Church style type system, however, Haskell's allows not annotating terms for which the types can be inferred.
 \end{remark}
+
+\paragraph{Type inference}
+
+\begin{proposition}\label{thm:typed_term_habitation_uniqueness}
+  In the \hyperref[def:simple_type_system_style]{explicitly typed} \hyperref[def:simple_type_system]{simple type system} featuring only \ref{inf:def:base_typing_rules/arrow/elim} and \ref{inf:def:base_typing_rules/arrow/intro/exp}, we can \hyperref[def:simple_type_derivability]{derive} at most one type for any \hyperref[def:typed_lambda_term]{typed term} from a fixed \hyperref[def:type_context]{type context}.
+\end{proposition}
+\begin{comments}
+  \item In particular, a typed combinator can \hyperref[def:type_habitation]{inhabit} at most one type.
+
+  We can also interpret this result as a statement for untyped combinators --- each of them can be typed uniquely \enquote{up to a choice of types for bound variables}.
+
+  \item As in \fullref{thm:def:simple_type_derivability}, we can allow other rules, but we must prove the proposition for each of them.
+\end{comments}
+\begin{proof}
+  Let \( T \) be a tree deriving \( M: \alpha \) from the type context \( \Gamma \).
+
+  We will use \fullref{thm:induction_on_rooted_trees} on \( T \) to show that if \( T' \) derives \( M: \alpha' \) from \( \Gamma \), the trees are equal and \( \alpha = \alpha' \):
+  \begin{itemize}
+    \item If \( T \) is an assumption tree, then \( M \) must be a variable, and \( \Gamma \vdash M \) only if \( \Gamma \) contains a type assertion for \( M \). Since type contexts have at most one type assertion per variable, it follows that the type \( \alpha \) of \( M \) is uniquely determined.
+
+    \item If \( T \) is an application of \ref{inf:def:base_typing_rules/arrow/elim}, then \( M = NK \) and \( T \) has a subtree \( T_L \) deriving \( N: \beta \to \alpha \) for some type \( \beta \), and a subtree \( T_R \) deriving \( K: \beta \). We suppose that the inductive hypothesis holds for \( T_L \) and \( T_R \).
+
+    Let \( T' \) be a tree deriving \( M: \alpha' \) from \( \Gamma \). Since \( M = NK \), \( T' \) must be an application tree of \ref{inf:def:base_typing/app}, with subtrees \( T_L' \) and \( T_R' \) deriving \( N: \beta' \to \alpha' \) and \( K: \beta' \) from the assumptions in \( \Gamma \).
+
+    The inductive hypothesis on \( T_L \) implies that the types \( \beta' \to \alpha' \) and \( \beta \to \alpha \) are equal, and thus so are \( \alpha' \) and \( \alpha \).
+
+    \item If \( T \) is an application of \ref{inf:def:base_typing_rules/arrow/intro/exp}, then \( M = \qabs {x^\beta} N \), \( \alpha = \beta \synimplies \gamma \) and \( T \) has a subtree \( S \) deriving \( N: \gamma \) from \( \Gamma, x: \beta \).
+
+    Let \( T' \) be a tree deriving \( M: \alpha' \) from \( \Gamma \). Then \( \alpha' = \beta \synimplies \gamma' \) \( T' \) is an application of \ref{inf:def:base_typing_rules/arrow/intro/exp}, and we have a subtree \( S' \) deriving \( N: \gamma' \) from \( \Gamma, x: \beta \).
+
+    It is extremely important here that \( \beta \) and \( \beta' \) are equal, which is only possible due to the annotation of \( x \).
+
+    The inductive hypothesis implies that \( S \) and \( S' \) are equal, and that \( \gamma = \gamma' \). Then also \( \alpha = \alpha' \).
+  \end{itemize}
+\end{proof}
+
+\begin{algorithm}[Typed term type derivation]\label{alg:typed_term_type_derivation}
+  Fix an \hyperref[def:simple_type_system_style]{explicitly typed} \hyperref[def:simple_type_system]{simple type system} and a \hyperref[def:typed_lambda_term]{typed \( \synlambda \)-term} \( M \). We will try to construct a \hyperref[def:type_derivation_tree]{type derivation tree} for \( M \).
+
+  At each step, we will maintain a \hyperref[def:type_context]{type context} \( \Gamma \) built from variable annotations in \( M \). Thus, the algorithm will construct a derivation tree for a term \( M \) and a context \( \Gamma \), and start with an empty context.
+
+  \begin{thmenum}
+    \thmitem{alg:typed_combinator_type_derivation/const} If \( M \) is a constant, we halt the algorithm since handling constants depends on the particular type system.
+
+    \thmitem{alg:typed_combinator_type_derivation/var} If \( M \) is a variable, we have two possibilities:
+    \begin{thmenum}
+      \thmitem{alg:typed_combinator_type_derivation/var/assumption} If \( \Gamma \) contains an assertion \( M: \alpha \) for some type \( \alpha \), we use this to construct an \hyperref[def:type_derivation_tree/assumption]{assumption tree}.
+
+      \thmitem{alg:typed_combinator_type_derivation/var/no_assumption} Otherwise, we again halt the algorithm since, as shown in \fullref{thm:def:simple_type_derivability/free}, free variables require a choice of type.
+    \end{thmenum}
+
+    \thmitem{alg:typed_combinator_type_derivation/app} If \( M = NK \), we apply the algorithm to \( N \) and \( K \) with the same context to obtain derivation trees \( T_N \) and \( T_K \).
+
+    If their types are compatible, i.e. if \( T_N \) derives \( \alpha \synimplies \beta \) for \( N \) and \( T_K \) derives \( \alpha \) for \( K \), we apply \ref{inf:def:base_typing_rules/arrow/elim} to obtain a tree deriving \( M: \beta \).
+
+    \thmitem{alg:typed_combinator_type_derivation/abs} Finally, if \( M = \qabs x^\alpha N \), we apply the algorithm to \( N \) with context \( \Gamma, x: \alpha \) to obtain a derivation tree \( T_N \) deriving some type \( \beta \) for \( N \).
+
+    Then we simply apply \ref{inf:def:base_typing_rules/arrow/intro/exp} to obtain a tree deriving \( M: \alpha \to \beta \).
+  \end{thmenum}
+\end{algorithm}
+\begin{comments}
+  \item Note that, unlike in \fullref{thm:typed_term_habitation_uniqueness}, we have not restricted which rules can be used, so it is possible that the obtained type is not unique.
+
+  \item This algorithm can be found as \identifier{lambda_.type_derivation.inference.derive_type} in \cite{notebook:code}.
+\end{comments}

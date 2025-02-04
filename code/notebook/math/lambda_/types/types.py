@@ -1,4 +1,5 @@
 from dataclasses import dataclass
+from typing import TypeGuard
 
 from ..alphabet import BinaryTypeConnective
 
@@ -22,3 +23,15 @@ class SimpleConnectiveType:
 
 
 SimpleType = BaseType | SimpleConnectiveType
+
+
+def is_arrow_type(type_: SimpleType) -> TypeGuard[SimpleConnectiveType]:
+    return isinstance(type_, SimpleConnectiveType) and type_.conn == BinaryTypeConnective.arrow
+
+
+def is_product_type(type_: SimpleType) -> TypeGuard[SimpleConnectiveType]:
+    return isinstance(type_, SimpleConnectiveType) and type_.conn == BinaryTypeConnective.arrow
+
+
+def is_sum_type(type_: SimpleType) -> TypeGuard[SimpleConnectiveType]:
+    return isinstance(type_, SimpleConnectiveType) and type_.conn == BinaryTypeConnective.arrow

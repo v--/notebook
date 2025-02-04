@@ -12,7 +12,6 @@ from .formulas import (
     is_conditional,
     is_conjunction,
     is_disjunction,
-    is_subformula,
 )
 from .schema_visitors import FormulaSchemaVisitor
 from .schemas import (

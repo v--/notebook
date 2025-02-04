@@ -3,15 +3,12 @@ from textwrap import dedent
 from ..common import combinators, pairs
 from ..parsing import parse_variable_assertion
 from ..signature import LambdaSignature
-from ..type_systems import ARROW_ELIM_RULE_IMPLICIT, ARROW_INT_RULE_EXPLICIT, ARROW_INT_RULE_IMPLICIT
+from ..type_systems import ARROW_ELIM_RULE_IMPLICIT, ARROW_INTRO_RULE_EXPLICIT, ARROW_INTRO_RULE_IMPLICIT
 from .tree import RuleApplicationPremise, apply, assume
 
 
-TEST_SIGNATURE = LambdaSignature(base_types={'α', 'β', 'γ'}, constant_terms=set())
-
-
-def test_assumption_tree() -> None:
-    assumption = parse_variable_assertion(TEST_SIGNATURE, 'x: α')
+def test_assumption_tree(dummy_signature: LambdaSignature) -> None:
+    assumption = parse_variable_assertion(dummy_signature, 'x: α')
     tree = assume(assumption)
     assert tree.get_context() == {assumption}
     assert str(tree) == dedent('''\
@@ -21,10 +18,10 @@ def test_assumption_tree() -> None:
 
 
 # ex:def:type_derivation_tree/i
-def test_abs_application_untyped() -> None:
-    assumption = parse_variable_assertion(TEST_SIGNATURE, 'x: α')
+def test_arrow_intro_untyped(dummy_signature: LambdaSignature) -> None:
+    assumption = parse_variable_assertion(dummy_signature, 'x: α')
     tree = apply(
-        ARROW_INT_RULE_IMPLICIT,
+        ARROW_INTRO_RULE_IMPLICIT,
         RuleApplicationPremise(
             assume(assumption),
             discharge=assumption
@@ -42,10 +39,10 @@ def test_abs_application_untyped() -> None:
 
 
 # ex:def:type_derivation_tree/i
-def test_abs_application_typed() -> None:
-    assumption = parse_variable_assertion(TEST_SIGNATURE, 'x: α')
+def test_arrow_intro_typed(dummy_signature: LambdaSignature) -> None:
+    assumption = parse_variable_assertion(dummy_signature, 'x: α')
     tree = apply(
-        ARROW_INT_RULE_EXPLICIT,
+        ARROW_INTRO_RULE_EXPLICIT,
         RuleApplicationPremise(
             assume(assumption),
             discharge=assumption
@@ -62,15 +59,15 @@ def test_abs_application_typed() -> None:
 
 
 # ex:def:type_derivation_tree/k
-def test_nested_abs_application() -> None:
-    assumption_x = parse_variable_assertion(TEST_SIGNATURE, 'x: α')
-    assumption_y = parse_variable_assertion(TEST_SIGNATURE, 'y: β')
+def test_nested_arrow_intro(dummy_signature: LambdaSignature) -> None:
+    assumption_x = parse_variable_assertion(dummy_signature, 'x: α')
+    assumption_y = parse_variable_assertion(dummy_signature, 'y: β')
     tree = apply(
-        ARROW_INT_RULE_IMPLICIT,
+        ARROW_INTRO_RULE_IMPLICIT,
         RuleApplicationPremise(
             discharge=assumption_x,
             tree=apply(
-                ARROW_INT_RULE_IMPLICIT,
+                ARROW_INTRO_RULE_IMPLICIT,
                 RuleApplicationPremise(
                     discharge=assumption_y,
                     tree=assume(assumption_x)
@@ -92,20 +89,20 @@ def test_nested_abs_application() -> None:
 
 
 # ex:def:type_derivation_tree/pairs
-def test_cons() -> None:
-    assumption_f = parse_variable_assertion(TEST_SIGNATURE, 'f: (α → (β → γ))')
-    assumption_x = parse_variable_assertion(TEST_SIGNATURE, 'x: α')
-    assumption_y = parse_variable_assertion(TEST_SIGNATURE, 'y: β')
+def test_cons(dummy_signature: LambdaSignature) -> None:
+    assumption_f = parse_variable_assertion(dummy_signature, 'f: (α → (β → γ))')
+    assumption_x = parse_variable_assertion(dummy_signature, 'x: α')
+    assumption_y = parse_variable_assertion(dummy_signature, 'y: β')
     tree = apply(
-        ARROW_INT_RULE_IMPLICIT,
+        ARROW_INTRO_RULE_IMPLICIT,
         RuleApplicationPremise(
             discharge=assumption_x,
             tree=apply(
-                ARROW_INT_RULE_IMPLICIT,
+                ARROW_INTRO_RULE_IMPLICIT,
                 RuleApplicationPremise(
                     discharge=assumption_y,
                     tree=apply(
-                        ARROW_INT_RULE_IMPLICIT,
+                        ARROW_INTRO_RULE_IMPLICIT,
                         RuleApplicationPremise(
                             discharge=assumption_f,
                             tree=apply(
