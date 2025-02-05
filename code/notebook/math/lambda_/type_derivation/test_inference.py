@@ -8,41 +8,41 @@ from .inference import derive_type
 
 # ex:def:type_derivation_tree/i
 def test_arrow_intro(dummy_signature: LambdaSignature) -> None:
-    term = parse_term(dummy_signature, '(λx:α.x)', TypingStyle.explicit)
+    term = parse_term(dummy_signature, '(λx:τ.x)', TypingStyle.explicit)
     assert str(derive_type(term)) == dedent('''\
-               x: α
+               x: τ
         x _________________ →⁺
-          (λx:α.x): (α → α)
+          (λx:τ.x): (τ → τ)
         '''
     )
 
 
 def test_nested_arrow_intro(dummy_signature: LambdaSignature) -> None:
-    term = parse_term(dummy_signature, '(λx:α.(λy:β.x))', TypingStyle.explicit)
+    term = parse_term(dummy_signature, '(λx:τ.(λy:σ.x))', TypingStyle.explicit)
     assert str(derive_type(term)) == dedent('''\
-                     x: α
+                     x: τ
                 _________________ →⁺
-                (λy:β.x): (β → α)
+                (λy:σ.x): (σ → τ)
         x ______________________________ →⁺
-          (λx:α.(λy:β.x)): (α → (β → α))
+          (λx:τ.(λy:σ.x)): (τ → (σ → τ))
         '''
     )
 
 
 # ex:def:type_derivation_tree/pairs
 def test_cons(dummy_signature: LambdaSignature) -> None:
-    term = parse_term(dummy_signature, '(λx:α.(λy:β.(λf:(α→(β→γ)).((fx)y))))', TypingStyle.explicit)
+    term = parse_term(dummy_signature, '(λx:τ.(λy:σ.(λf:(τ→(σ→ρ)).((fx)y))))', TypingStyle.explicit)
     assert str(derive_type(term)) == dedent('''\
-                         f: (α → (β → γ))      x: α
+                         f: (τ → (σ → ρ))      x: τ
                          ____________________________ →⁻
-                                (fx): (β → γ)               y: β
+                                (fx): (σ → ρ)               y: σ
                          _________________________________________ →⁻
-                                        ((fx)y): γ
+                                        ((fx)y): ρ
                     f _______________________________________________ →⁺
-                      (λf:(α → (β → γ)).((fx)y)): ((α → (β → γ)) → γ)
+                      (λf:(τ → (σ → ρ)).((fx)y)): ((τ → (σ → ρ)) → ρ)
               y ____________________________________________________________ →⁺
-                (λy:β.(λf:(α → (β → γ)).((fx)y))): (β → ((α → (β → γ)) → γ))
+                (λy:σ.(λf:(τ → (σ → ρ)).((fx)y))): (σ → ((τ → (σ → ρ)) → ρ))
         x _________________________________________________________________________ →⁺
-          (λx:α.(λy:β.(λf:(α → (β → γ)).((fx)y)))): (α → (β → ((α → (β → γ)) → γ)))
+          (λx:τ.(λy:σ.(λf:(τ → (σ → ρ)).((fx)y)))): (τ → (σ → ((τ → (σ → ρ)) → ρ)))
         '''
     )

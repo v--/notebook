@@ -56,7 +56,7 @@ def test_is_latin_string_capitaliation(string: str = 'abc') -> None:
         assert xnor(Capitalization.mixed in cap, is_latin_string(mixed, capitalization=cap))
 
 
-def test_is_greek_string_capitaliation(string: str = 'αβγ') -> None:
+def test_is_greek_string_capitaliation(string: str = 'τσρ') -> None:
     lower = string.lower()
     upper = string.upper()
     mixed = string.title()

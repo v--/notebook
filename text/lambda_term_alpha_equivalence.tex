@@ -38,6 +38,8 @@
 
   The assumption in the premise will help us immensely in inductive proofs, but it is impossible to mechanize. We will be able to split it into two simplified rules in \fullref{thm:alpha_equivalence_simplified}.
 
+  \item \hyperref[def:typed_lambda_term]{Typed \( \synlambda \)-terms} require modified rules for abstraction --- see \fullref{def:typed_term_alpha_equivalence}.
+
   \item Except for the explicit rule for constant terms, our rules resemble those in \cite[5]{Pollack2005AlphaConversion}, with two notable differences, both of which allow us to simplify inductive proofs:
   \begin{itemize}
     \item We have restricted \ref{inf:def:lambda_term_alpha_equivalence/atom} to atomic terms only, while Pollack states the rule for general terms.
@@ -72,7 +74,7 @@
 \end{comments}
 
 \begin{definition}\label{def:lambda_renaming}
-  We say that the \hyperref[def:lambda_substitution]{substitution} \( \sigma \) is a \term{renaming substitution} if \( \sigma(x) \) is a variable for every \( x \).
+  We say that the \hyperref[def:lambda_substitution]{substitution} \( \Bbbs \) is a \term{renaming substitution} if \( \Bbbs(x) \) is a variable for every \( x \).
 \end{definition}
 \begin{comments}
   \item The definition is based on \cite[252]{Mimram2020Types}, but restated for \( \synlambda \)-terms.
@@ -83,12 +85,12 @@
   \begin{thmenum}
     \thmitem{thm:def:lambda_term_length/subterm} Every strict subterm of a \( \synlambda \)-term is strictly shorter.
 
-    \thmitem{thm:def:lambda_term_length/substitution} For any substitution \( \sigma \) and \( \synlambda \)-term \( M \), we have
+    \thmitem{thm:def:lambda_term_length/substitution} For any substitution \( \Bbbs \) and \( \synlambda \)-term \( M \), we have
     \begin{equation}\label{eq:thm:def:lambda_term_length/substitution}
-      \len(M[\sigma]) = \len(M) + \sum_{\mathclap{u \in \op*{Free}(M)}} (\len(\sigma(u)) - 1).
+      \len(M[\Bbbs]) = \len(M) + \sum_{\mathclap{u \in \op*{Free}(M)}} (\len(\Bbbs(u)) - 1).
     \end{equation}
 
-    In particular, if \( \sigma \) is a \hyperref[def:lambda_renaming]{renaming substitution}, then \( \len(M[\sigma]) = \len(M) \).
+    In particular, if \( \Bbbs \) is a \hyperref[def:lambda_renaming]{renaming substitution}, then \( \len(M[\Bbbs]) = \len(M) \).
 
     \thmitem{thm:def:lambda_term_length/equivalent} \hyperref[def:lambda_term_alpha_equivalence]{\( \alpha \)-equivalent}  \( \synlambda \)-terms have the same length.
   \end{thmenum}
@@ -102,41 +104,41 @@
 
     \item If \( M \) is a variable, then
     \begin{equation*}
-      \len(M[\sigma]) = \len(\sigma(M)) = \len(M) + (\len(\sigma(M)) - \underbrace{\len(M)}_1).
+      \len(M[\Bbbs]) = \len(\Bbbs(M)) = \len(M) + (\len(\Bbbs(M)) - \underbrace{\len(M)}_1).
     \end{equation*}
 
     \item If \( M = NK \), where the inductive hypothesis holds for \( N \) and \( K \), we have
     \begin{balign*}
-      \len(M[\sigma])
+      \len(M[\Bbbs])
       &=
-      \len(N[\sigma] K[\sigma])
+      \len(N[\Bbbs] K[\Bbbs])
       = \\ &=
-      2 + \len(N[\sigma]) + \len(K[\sigma])
+      2 + \len(N[\Bbbs]) + \len(K[\Bbbs])
       \reloset {\T{ind.}} = \\ &=
-      2 + \len(N) + \sum_{\mathclap{u \in \op*{Free}(N)}} (\len(\sigma(u)) - 1) + \len(K) + \sum_{\mathclap{u \in \op*{Free}(K)}} (\len(\sigma(u)) - 1)
+      2 + \len(N) + \sum_{\mathclap{u \in \op*{Free}(N)}} (\len(\Bbbs(u)) - 1) + \len(K) + \sum_{\mathclap{u \in \op*{Free}(K)}} (\len(\Bbbs(u)) - 1)
       = \\ &=
-      2 + \len(N) + \len(K) + \sum_{\mathclap{u \in \op*{Free}(NK)}} (\len(\sigma(u)) - 1)
+      2 + \len(N) + \len(K) + \sum_{\mathclap{u \in \op*{Free}(NK)}} (\len(\Bbbs(u)) - 1)
       = \\ &=
-      \len(NK) + \sum_{\mathclap{u \in \op*{Free}(NK)}} (\len(\sigma(u)) - 1).
+      \len(NK) + \sum_{\mathclap{u \in \op*{Free}(NK)}} (\len(\Bbbs(u)) - 1).
     \end{balign*}
 
     \item Finally, if \( M = \qabs x N \), where the inductive hypothesis holds for \( N \), \fullref{thm:lambda_substitution_single_rule} implies that
     \begin{equation*}
-      M[\sigma] = \qabs v N[\sigma_{x \mapsto v}],
+      M[\Bbbs] = \qabs v N[\Bbbs_{x \mapsto v}],
     \end{equation*}
-    where \( v \not\in \op*{Free}(N) \cup \op*{Free}(N[\sigma]) \).
+    where \( v \not\in \op*{Free}(N) \cup \op*{Free}(N[\Bbbs]) \).
 
     Then
     \begin{balign*}
-      \len(M[\sigma])
+      \len(M[\Bbbs])
       &=
-      5 + \len(N[\sigma_{x \mapsto u}])
+      5 + \len(N[\Bbbs_{x \mapsto u}])
       \reloset {\T{ind.}} = \\ &=
-      5 + \len(N) + \sum_{\mathclap{u \in \op*{Free}(N)}} (\len(\sigma_{x \mapsto v}(u)) - 1)
+      5 + \len(N) + \sum_{\mathclap{u \in \op*{Free}(N)}} (\len(\Bbbs_{x \mapsto v}(u)) - 1)
       = \\ &=
-      5 + \len(N) + \sum_{\mathclap{u \in \op*{Free}(N) \setminus \set{ x }}} (\len(\sigma(u)) - 1) + (\len(v) - 1)
+      5 + \len(N) + \sum_{\mathclap{u \in \op*{Free}(N) \setminus \set{ x }}} (\len(\Bbbs(u)) - 1) + (\len(v) - 1)
       = \\ &=
-      \len(M) + \sum_{\mathclap{u \in \op*{Free}(M)}} (\len(\sigma(u)) - 1).
+      \len(M) + \sum_{\mathclap{u \in \op*{Free}(M)}} (\len(\Bbbs(u)) - 1).
     \end{balign*}
   \end{itemize}
 
@@ -274,9 +276,9 @@
 \paragraph{Invariance of \( \alpha \)-equivalence under substitution}
 
 \begin{lemma}\label{thm:renaming_composition_is_alpha_equivalent}
-  For the composite substitution \( \rho\sigma(u) \coloneqq \sigma(u)[\rho] \) of the \hyperref[def:lambda_renaming]{\hi{renaming substitutions}} \( \sigma \) and \( \rho \), we have
+  For the composite substitution \( \Bbbt\Bbbs(u) \coloneqq \Bbbs(u)[\Bbbt] \) of the \hyperref[def:lambda_renaming]{\hi{renaming substitutions}} \( \Bbbs \) and \( \Bbbt \), we have
   \begin{equation}\label{eq:thm:renaming_composition_is_alpha_equivalent}
-    M[\rho\sigma] \aequiv M[\sigma][\rho].
+    M[\Bbbt\Bbbs] \aequiv M[\Bbbs][\Bbbt].
   \end{equation}
 \end{lemma}
 \begin{comments}
@@ -287,40 +289,40 @@
 
   The base case and the case where \( M \) is an application are straightforward. For the remaining case, suppose that \( M = \qabs x N \). We will utilize \fullref{thm:lambda_substitution_single_rule} thrice:
   \begin{align*}
-    M[\rho\sigma]   &= \qabs u N[\rho\sigma_{x \mapsto u}],                 &&u \not\in \op*{Free}(M) \cup \op*{Free}(M[\rho\sigma]), \\
-    M[\sigma]       &= \qabs v N[\sigma_{x \mapsto v}],                     &&v \not\in \op*{Free}(M) \cup \op*{Free}(M[\sigma]), \\
-    M[\sigma][\rho] &= \qabs w N[\sigma_{x \mapsto v}][\rho_{v \mapsto w}], &&w \not\in \op*{Free}(M[\sigma]) \cup \op*{Free}(M[\sigma][\rho]).
+    M[\Bbbt\Bbbs]   &= \qabs u N[\Bbbt\Bbbs_{x \mapsto u}],                 &&u \not\in \op*{Free}(M) \cup \op*{Free}(M[\Bbbt\Bbbs]), \\
+    M[\Bbbs]        &= \qabs v N[\Bbbs_{x \mapsto v}],                      &&v \not\in \op*{Free}(M) \cup \op*{Free}(M[\Bbbs]), \\
+    M[\Bbbs][\Bbbt] &= \qabs w N[\Bbbs_{x \mapsto v}][\Bbbt_{v \mapsto w}], &&w \not\in \op*{Free}(M[\Bbbs]) \cup \op*{Free}(M[\Bbbs][\Bbbt]).
   \end{align*}
 
-  Fix a variable \( n \) not free in \( M[\rho\sigma] \) and denote by \( \pi \) the composite of \( \rho\sigma_{x \mapsto u} \) and \( u \mapsto n \). The inductive hypothesis gives us
+  Fix a variable \( n \) not free in \( M[\Bbbt\Bbbs] \) and denote by \( \pi \) the composite of \( \Bbbt\Bbbs_{x \mapsto u} \) and \( u \mapsto n \). The inductive hypothesis gives us
   \begin{equation*}
-    N[\rho\sigma_{x \mapsto u}][u \mapsto n] \aequiv N[\pi].
+    N[\Bbbt\Bbbs_{x \mapsto u}][u \mapsto n] \aequiv N[\pi].
   \end{equation*}
 
-  Since \( u \) is not free in \( M \) nor in \( M[\rho\sigma] \), its only occurrences in \( N[\rho\sigma_{x \mapsto u}] \) are those where \( x \) has been substituted for it. \Fullref{thm:lambda_substitution_restriction} then implies that
+  Since \( u \) is not free in \( M \) nor in \( M[\Bbbt\Bbbs] \), its only occurrences in \( N[\Bbbt\Bbbs_{x \mapsto u}] \) are those where \( x \) has been substituted for it. \Fullref{thm:lambda_substitution_restriction} then implies that
   \begin{equation*}
-    N[\pi] = N[\rho\sigma_{x \mapsto n}],
+    N[\pi] = N[\Bbbt\Bbbs_{x \mapsto n}],
   \end{equation*}
   and the inductive hypothesis on \( N \) allows us to conclude that
   \begin{equation}\label{eq:thm:renaming_composition_is_alpha_equivalent/proof/composite}
-    N[\rho\sigma_{x \mapsto u}][u \mapsto n] \aequiv N[\rho\sigma_{x \mapsto n}].
+    N[\Bbbt\Bbbs_{x \mapsto u}][u \mapsto n] \aequiv N[\Bbbt\Bbbs_{x \mapsto n}].
   \end{equation}
 
-  Since \( \sigma \) is a renaming, \fullref{thm:def:lambda_term_length/substitution} implies that \( N[\sigma_{x \mapsto v}] \) has the same length as \( N \), thus the inductive hypothesis holds for the former. Then
+  Since \( \Bbbs \) is a renaming, \fullref{thm:def:lambda_term_length/substitution} implies that \( N[\Bbbs_{x \mapsto v}] \) has the same length as \( N \), thus the inductive hypothesis holds for the former. Then
   \begin{equation*}
-    N[\sigma_{x \mapsto v}][\rho_{v \mapsto w}][w \mapsto n] \aequiv N[\sigma_{x \mapsto v}][\rho_{v \mapsto n}].
+    N[\Bbbs_{x \mapsto v}][\Bbbt_{v \mapsto w}][w \mapsto n] \aequiv N[\Bbbs_{x \mapsto v}][\Bbbt_{v \mapsto n}].
   \end{equation*}
 
   Via the inductive hypothesis on \( N \), we can further simplify this and obtain
   \begin{equation}\label{eq:thm:renaming_composition_is_alpha_equivalent/proof/repeated}
-    N[\sigma_{x \mapsto v}][\rho_{v \mapsto w}][w \mapsto n] \aequiv N[\rho\sigma_{x \mapsto n}].
+    N[\Bbbs_{x \mapsto v}][\Bbbt_{v \mapsto w}][w \mapsto n] \aequiv N[\Bbbt\Bbbs_{x \mapsto n}].
   \end{equation}
 
-  Combining \eqref{eq:thm:renaming_composition_is_alpha_equivalent/proof/composite} and \eqref{eq:thm:renaming_composition_is_alpha_equivalent/proof/repeated} allows us to conclude that \( M[\rho\sigma] \aequiv M[\sigma][\rho] \).
+  Combining \eqref{eq:thm:renaming_composition_is_alpha_equivalent/proof/composite} and \eqref{eq:thm:renaming_composition_is_alpha_equivalent/proof/repeated} allows us to conclude that \( M[\Bbbt\Bbbs] \aequiv M[\Bbbs][\Bbbt] \).
 \end{proof}
 
 \begin{lemma}\label{thm:renaming_on_alpha_equivalent_terms}
-  If \( M \aequiv N \), for any \hyperref[def:lambda_renaming]{\hi{renaming substitution}} \( \sigma \), we have \( M[\sigma] \aequiv N[\sigma] \).
+  If \( M \aequiv N \), for any \hyperref[def:lambda_renaming]{\hi{renaming substitution}} \( \Bbbs \), we have \( M[\Bbbs] \aequiv N[\Bbbs] \).
 \end{lemma}
 \begin{comments}
   \item We will use this to prove \fullref{thm:substitution_composition_is_alpha_equivalent}, which will later be used to prove the generalization \fullref{thm:substitution_on_alpha_equivalent_terms} to non-renaming substitutions.
@@ -330,107 +332,107 @@
 
   Again, the base case and the case where \( M \) is an application are straightforward. For the remaining case, suppose that \( M = \qabs a A \), so that \( N = \qabs b B \). We will utilize \fullref{thm:lambda_substitution_single_rule} twice:
   \begin{align*}
-    M[\sigma] &= \qabs u A[\sigma_{a \mapsto u}], &&u \not\in \op*{Free}(M) \cup \op*{Free}(M[\sigma]), \\
-    N[\sigma] &= \qabs v B[\sigma_{b \mapsto v}], &&v \not\in \op*{Free}(N) \cup \op*{Free}(N[\sigma]).
+    M[\Bbbs] &= \qabs u A[\Bbbs_{a \mapsto u}], &&u \not\in \op*{Free}(M) \cup \op*{Free}(M[\Bbbs]), \\
+    N[\Bbbs] &= \qabs v B[\Bbbs_{b \mapsto v}], &&v \not\in \op*{Free}(N) \cup \op*{Free}(N[\Bbbs]).
   \end{align*}
 
   Since \( a \) is not free in \( M \), from \( M \aequiv N \) we conclude that \( A[a \mapsto a] \aequiv B[a \mapsto b] \), where \( A[a \mapsto a] = A \) as a consequence of \fullref{thm:lambda_substitution_noop}.
 
   Applying the inductive hypothesis to \( A \), we can conclude that
   \begin{equation*}
-    A[\sigma_{a \mapsto u}] \aequiv B[b \mapsto a][\sigma_{a \mapsto u}].
+    A[\Bbbs_{a \mapsto u}] \aequiv B[b \mapsto a][\Bbbs_{a \mapsto u}].
   \end{equation*}
 
   Furthermore, from \fullref{thm:renaming_composition_is_alpha_equivalent} it follows that
   \begin{equation*}
-    B[b \mapsto a][\sigma_{a \mapsto u}] \aequiv B[\sigma_{b \mapsto u}]
+    B[b \mapsto a][\Bbbs_{a \mapsto u}] \aequiv B[\Bbbs_{b \mapsto u}]
   \end{equation*}
   and
   \begin{equation*}
-    B[\sigma_{b \mapsto u}] \aequiv B[\sigma_{b \mapsto v}][v \mapsto u].
+    B[\Bbbs_{b \mapsto u}] \aequiv B[\Bbbs_{b \mapsto v}][v \mapsto u].
   \end{equation*}
 
-  Fix a variable \( n \) not free in \( M[\sigma] \). Since \( \sigma \) is a renaming, the inductive hypothesis holds for \( A[\sigma_{a \mapsto u}] \). Then, by the inductive hypothesis,
+  Fix a variable \( n \) not free in \( M[\Bbbs] \). Since \( \Bbbs \) is a renaming, the inductive hypothesis holds for \( A[\Bbbs_{a \mapsto u}] \). Then, by the inductive hypothesis,
   \begin{equation*}
-    A[\sigma_{a \mapsto u}][u \mapsto n]
+    A[\Bbbs_{a \mapsto u}][u \mapsto n]
     \aequiv
-    B[\sigma_{b \mapsto v}][v \mapsto u][u \mapsto n].
+    B[\Bbbs_{b \mapsto v}][v \mapsto u][u \mapsto n].
   \end{equation*}
 
   \begin{itemize}
     \item If \( u = v \), \fullref{thm:lambda_substitution_restriction} implies that
     \begin{equation*}
-      B[\sigma_{b \mapsto v}][v \mapsto u] = B[\sigma_{b \mapsto u}],
+      B[\Bbbs_{b \mapsto v}][v \mapsto u] = B[\Bbbs_{b \mapsto u}],
     \end{equation*}
     thus \fullref{thm:renaming_composition_is_alpha_equivalent} implies that
     \begin{equation*}
-      \underbrace{B[\sigma_{b \mapsto v}][v \mapsto u]}_{B[\sigma_{b \mapsto u}]}[u \mapsto n] = B[\sigma_{b \mapsto v}][v \mapsto n].
+      \underbrace{B[\Bbbs_{b \mapsto v}][v \mapsto u]}_{B[\Bbbs_{b \mapsto u}]}[u \mapsto n] = B[\Bbbs_{b \mapsto v}][v \mapsto n].
     \end{equation*}
 
     \item Otherwise, the same conclusion follows from \fullref{thm:renaming_composition_is_alpha_equivalent} directly:
     \begin{equation*}
-      B[\sigma_{b \mapsto v}]\underbrace{[v \mapsto u][u \mapsto n]}_{[v \mapsto n]} = B[\sigma_{b \mapsto v}][v \mapsto n].
+      B[\Bbbs_{b \mapsto v}]\underbrace{[v \mapsto u][u \mapsto n]}_{[v \mapsto n]} = B[\Bbbs_{b \mapsto v}][v \mapsto n].
     \end{equation*}
   \end{itemize}
 
   Therefore,
   \begin{equation*}
-    A[\sigma_{a \mapsto u}][u \mapsto n]
+    A[\Bbbs_{a \mapsto u}][u \mapsto n]
     \aequiv
-    B[\sigma_{a \mapsto v}][v \mapsto n]
+    B[\Bbbs_{a \mapsto v}][v \mapsto n]
   \end{equation*}
-  and \ref{inf:def:lambda_term_alpha_equivalence/abs} allows us to conclude that \( M[\sigma] \aequiv N[\sigma] \).
+  and \ref{inf:def:lambda_term_alpha_equivalence/abs} allows us to conclude that \( M[\Bbbs] \aequiv N[\Bbbs] \).
 \end{proof}
 
 \begin{proposition}\label{thm:substitution_composition_is_alpha_equivalent}
-  For the composite substitution \( \rho\sigma(u) \coloneqq \sigma(u)[\rho] \), we have
+  For the composite substitution \( \Bbbt\Bbbs(u) \coloneqq \Bbbs(u)[\Bbbt] \), we have
   \begin{equation}\label{eq:thm:substitution_composition_is_alpha_equivalent}
-    M[\rho\sigma] \aequiv M[\sigma][\rho].
+    M[\Bbbt\Bbbs] \aequiv M[\Bbbs][\Bbbt].
   \end{equation}
 \end{proposition}
 \begin{comments}
   \item This result generalizes \fullref{thm:renaming_composition_is_alpha_equivalent} to arbitrary substitutions.
 \end{comments}
 \begin{proof}
-  We can follow the proof of \fullref{thm:renaming_composition_is_alpha_equivalent} until the point where we use that \( \sigma \) and \( \rho \) are renaming substitutions.
+  We can follow the proof of \fullref{thm:renaming_composition_is_alpha_equivalent} until the point where we use that \( \Bbbs \) and \( \Bbbt \) are renaming substitutions.
 
   In short, we are following induction on the length of \( M \), and in the case where \( M = \qabs x N \) we have
   \begin{align*}
-    M[\rho\sigma]   &= \qabs u N[\rho\sigma_{x \mapsto u}],                 &&u \not\in \op*{Free}(M) \cup \op*{Free}(M[\rho\sigma]), \\
-    M[\sigma]       &= \qabs v N[\sigma_{x \mapsto v}],                     &&v \not\in \op*{Free}(M) \cup \op*{Free}(M[\sigma]), \\
-    M[\sigma][\rho] &= \qabs w N[\sigma_{x \mapsto v}][\rho_{v \mapsto w}], &&w \not\in \op*{Free}(M[\sigma]) \cup \op*{Free}(M[\sigma][\rho]).
+    M[\Bbbt\Bbbs]   &= \qabs u N[\Bbbt\Bbbs_{x \mapsto u}],                 &&u \not\in \op*{Free}(M) \cup \op*{Free}(M[\Bbbt\Bbbs]), \\
+    M[\Bbbs]        &= \qabs v N[\Bbbs_{x \mapsto v}],                      &&v \not\in \op*{Free}(M) \cup \op*{Free}(M[\Bbbs]), \\
+    M[\Bbbs][\Bbbt] &= \qabs w N[\Bbbs_{x \mapsto v}][\Bbbt_{v \mapsto w}], &&w \not\in \op*{Free}(M[\Bbbs]) \cup \op*{Free}(M[\Bbbs][\Bbbt]).
   \end{align*}
 
-  Fix again a variable \( n \) not free in \( M[\rho\sigma] \). In \fullref{thm:substitution_composition_is_alpha_equivalent} we have used the inductive hypothesis on \( N \) directly to conclude \eqref{eq:thm:renaming_composition_is_alpha_equivalent/proof/composite}, which we will restate here for convenience:
+  Fix again a variable \( n \) not free in \( M[\Bbbt\Bbbs] \). In \fullref{thm:substitution_composition_is_alpha_equivalent} we have used the inductive hypothesis on \( N \) directly to conclude \eqref{eq:thm:renaming_composition_is_alpha_equivalent/proof/composite}, which we will restate here for convenience:
   \begin{equation}\label{eq:thm:substitution_composition_is_alpha_equivalent/proof/composite}
-    N[\rho\sigma_{x \mapsto u}][u \mapsto n] \aequiv N[\rho\sigma_{x \mapsto n}].
+    N[\Bbbt\Bbbs_{x \mapsto u}][u \mapsto n] \aequiv N[\Bbbt\Bbbs_{x \mapsto n}].
   \end{equation}
 
-  On the other hand, we can no longer apply the inductive hypothesis to \( N[\sigma_{x \mapsto v}] \) to conclude \eqref{eq:thm:renaming_composition_is_alpha_equivalent/proof/repeated}. Instead, we will start by applying the hypothesis to \( N \) to obtain
+  On the other hand, we can no longer apply the inductive hypothesis to \( N[\Bbbs_{x \mapsto v}] \) to conclude \eqref{eq:thm:renaming_composition_is_alpha_equivalent/proof/repeated}. Instead, we will start by applying the hypothesis to \( N \) to obtain
   \begin{equation*}
-    N[\sigma_{x \mapsto v}][\rho_{v \mapsto w}] \aequiv N[\rho\sigma_{x \mapsto w}]
+    N[\Bbbs_{x \mapsto v}][\Bbbt_{v \mapsto w}] \aequiv N[\Bbbt\Bbbs_{x \mapsto w}]
   \end{equation*}
   and then \fullref{thm:renaming_on_alpha_equivalent_terms} to obtain
   \begin{equation*}
-    N[\sigma_{x \mapsto v}][\rho_{v \mapsto w}][w \mapsto n] \aequiv N[\rho\sigma_{x \mapsto w}][w \mapsto n].
+    N[\Bbbs_{x \mapsto v}][\Bbbt_{v \mapsto w}][w \mapsto n] \aequiv N[\Bbbt\Bbbs_{x \mapsto w}][w \mapsto n].
   \end{equation*}
 
   We can now apply the inductive hypothesis to \( N \) for the third time to simplify the right-hand side and obtain
   \begin{equation}\label{eq:thm:substitution_composition_is_alpha_equivalent/proof/repeated}
-    N[\sigma_{x \mapsto v}][\rho_{v \mapsto w}][w \mapsto n] \aequiv N[\rho\sigma_{x \mapsto n}].
+    N[\Bbbs_{x \mapsto v}][\Bbbt_{v \mapsto w}][w \mapsto n] \aequiv N[\Bbbt\Bbbs_{x \mapsto n}].
   \end{equation}
 
-  Finally, we can combine \eqref{eq:thm:substitution_composition_is_alpha_equivalent/proof/composite} and \eqref{eq:thm:substitution_composition_is_alpha_equivalent/proof/repeated} to conclude that \( M[\rho\sigma] \aequiv M[\sigma][\rho] \) via \ref{inf:def:lambda_term_alpha_equivalence/abs}.
+  Finally, we can combine \eqref{eq:thm:substitution_composition_is_alpha_equivalent/proof/composite} and \eqref{eq:thm:substitution_composition_is_alpha_equivalent/proof/repeated} to conclude that \( M[\Bbbt\Bbbs] \aequiv M[\Bbbs][\Bbbt] \) via \ref{inf:def:lambda_term_alpha_equivalence/abs}.
 \end{proof}
 
 \begin{corollary}\label{thm:substitution_chain_contraction}
-  If \( y \) is not free in \( M \), then, for any substitution \( \sigma \), we have
+  If \( y \) is not free in \( M \), then, for any substitution \( \Bbbs \), we have
   \begin{equation}\label{eq:thm:substitution_chain_contraction/contraction}
-    M[x \mapsto y][\sigma_{y \mapsto z}]
+    M[x \mapsto y][\Bbbs_{y \mapsto z}]
     \aequiv
-    M[\sigma_{x \mapsto z}]
+    M[\Bbbs_{x \mapsto z}]
     \aequiv
-    M[\sigma_{x \mapsto y}][y \mapsto z].
+    M[\Bbbs_{x \mapsto y}][y \mapsto z].
   \end{equation}
 \end{corollary}
 \begin{comments}
@@ -441,18 +443,18 @@
 \end{proof}
 
 \begin{proposition}\label{thm:substitution_on_alpha_equivalent_terms}
-  If \( M \aequiv N \), for an \hyperref[def:lambda_substitution]{\hi{arbitrary substitution}} \( \sigma \), we have \( M[\sigma] \aequiv N[\sigma] \).
+  If \( M \aequiv N \), for an \hyperref[def:lambda_substitution]{\hi{arbitrary substitution}} \( \Bbbs \), we have \( M[\Bbbs] \aequiv N[\Bbbs] \).
 \end{proposition}
 \begin{comments}
   \item This result generalizes \fullref{thm:renaming_on_alpha_equivalent_terms} to arbitrary substitutions.
 \end{comments}
 \begin{proof}
-  We can follow the proof of \fullref{thm:renaming_on_alpha_equivalent_terms} until the point where we use that \( \sigma \) and \( \rho \) are renaming substitutions.
+  We can follow the proof of \fullref{thm:renaming_on_alpha_equivalent_terms} until the point where we use that \( \Bbbs \) and \( \Bbbt \) are renaming substitutions.
 
   In short, we are following induction on the length of \( M \), and in the case where \( M = \qabs a A \) and \( N = \qabs b B \) and
   \begin{align*}
-    M[\sigma] &= \qabs u A[\sigma_{a \mapsto u}], &&u \not\in \op*{Free}(M) \cup \op*{Free}(M[\sigma]), \\
-    N[\sigma] &= \qabs v B[\sigma_{b \mapsto v}], &&v \not\in \op*{Free}(N) \cup \op*{Free}(N[\sigma]).
+    M[\Bbbs] &= \qabs u A[\Bbbs_{a \mapsto u}], &&u \not\in \op*{Free}(M) \cup \op*{Free}(M[\Bbbs]), \\
+    N[\Bbbs] &= \qabs v B[\Bbbs_{b \mapsto v}], &&v \not\in \op*{Free}(N) \cup \op*{Free}(N[\Bbbs]).
   \end{align*}
 
   Since \( M \aequiv N \), we can conclude, as in our proof of \fullref{thm:renaming_on_alpha_equivalent_terms}, that
@@ -460,44 +462,49 @@
     A \aequiv B[b \mapsto a].
   \end{equation*}
 
-  Again, fix a variable \( n \) not free in \( M[\sigma] \). We can use the inductive hypothesis that
+  Again, fix a variable \( n \) not free in \( M[\Bbbs] \). We can use the inductive hypothesis that
   \begin{equation*}
-    A[\sigma_{a \mapsto n}] \aequiv B[b \mapsto a][\sigma_{a \mapsto n}].
+    A[\Bbbs_{a \mapsto n}] \aequiv B[b \mapsto a][\Bbbs_{a \mapsto n}].
   \end{equation*}
 
-  This already differs from our proof of \fullref{thm:renaming_on_alpha_equivalent_terms} in that we modify \( \sigma \) via \( a \mapsto n \) rather than \( a \mapsto u \).
+  This already differs from our proof of \fullref{thm:renaming_on_alpha_equivalent_terms} in that we modify \( \Bbbs \) via \( a \mapsto n \) rather than \( a \mapsto u \).
 
   We can use \fullref{thm:substitution_chain_contraction} to simplify the right-hand side and obtain
   \begin{equation*}
-    A[\sigma_{a \mapsto n}] \aequiv B[\sigma_{b \mapsto n}]
+    A[\Bbbs_{a \mapsto n}] \aequiv B[\Bbbs_{b \mapsto n}]
   \end{equation*}
   and then again to expand both sides:
   \begin{equation*}
-    A[\sigma_{a \mapsto u}][u \mapsto n] \aequiv B[\sigma_{b \mapsto v}][v \mapsto n].
+    A[\Bbbs_{a \mapsto u}][u \mapsto n] \aequiv B[\Bbbs_{b \mapsto v}][v \mapsto n].
   \end{equation*}
 
-  Therefore, \ref{inf:def:lambda_term_alpha_equivalence/abs} allows us to conclude that \( M[\sigma] \aequiv N[\sigma] \).
+  Therefore, \ref{inf:def:lambda_term_alpha_equivalence/abs} allows us to conclude that \( M[\Bbbs] \aequiv N[\Bbbs] \).
 \end{proof}
 
 \paragraph{Mechanizing \( \alpha \)-equivalence}
 
 \begin{proposition}\label{thm:alpha_equivalence_simplified}
   The rule \ref{inf:def:lambda_term_alpha_equivalence/abs}, specifying when two abstractions are \( \alpha \)-equivalent, is equivalent to the following pair of rules:
-  \begin{equation*}\taglabel[\ensuremath{ \logic{Lift}_\alpha }]{inf:thm:alpha_equivalence_simplified/lift}
-    \begin{prooftree}
-      \hypo{ A \aequiv B }
-      \infer1[\ref{inf:thm:alpha_equivalence_simplified/lift}]{ \qabs x A \aequiv \qabs x B }
-    \end{prooftree}
-  \end{equation*}
-
-  \begin{equation*}\taglabel[\ensuremath{ \logic{Ren}_\alpha }]{inf:thm:alpha_equivalence_simplified/ren}
-    \begin{prooftree}
-      \hypo{ a \neq b }
-      \hypo{ a \not\in \op*{Free}(B) }
-      \hypo{ A \aequiv B[b \mapsto a] }
-      \infer3[\ref{inf:thm:alpha_equivalence_simplified/ren}]{ \qabs a A \aequiv \qabs b B }
-    \end{prooftree}
-  \end{equation*}
+  \begin{paracol}{2}
+    \begin{leftcolumn}
+      \begin{equation*}\taglabel[\ensuremath{ \logic{Lift}_\alpha }]{inf:thm:alpha_equivalence_simplified/lift}
+        \begin{prooftree}
+          \hypo{ A \aequiv B }
+          \infer1[\ref{inf:thm:alpha_equivalence_simplified/lift}]{ \qabs x A \aequiv \qabs x B }
+        \end{prooftree}
+      \end{equation*}
+    \end{leftcolumn}
+    \begin{rightcolumn}
+      \begin{equation*}\taglabel[\ensuremath{ \logic{Ren}_\alpha }]{inf:thm:alpha_equivalence_simplified/ren}
+        \begin{prooftree}
+          \hypo{ a \neq b }
+          \hypo{ a \not\in \op*{Free}(B) }
+          \hypo{ A \aequiv B[b \mapsto a] }
+          \infer3[\ref{inf:thm:alpha_equivalence_simplified/ren}]{ \qabs a A \aequiv \qabs b B }
+        \end{prooftree}
+      \end{equation*}
+    \end{rightcolumn}
+  \end{paracol}
 \end{proposition}
 \begin{comments}
   \item This check can be found as \identifier{lambda_.alpha.are_terms_alpha_equivalent} in \cite{notebook:code}.
@@ -551,24 +558,24 @@
 \end{proof}
 
 \begin{corollary}\label{thm:alpha_conversion_modified}
-  If \( u \) and \( v \) are not free in \( M \), then, for any substitution \( \sigma \),
+  If \( u \) and \( v \) are not free in \( M \), then, for any substitution \( \Bbbs \),
   \begin{equation}\label{eq:thm:alpha_conversion_modified}
-    \qabs u M[\sigma_{x \mapsto u}] \aequiv \qabs v M[\sigma_{x \mapsto v}].
+    \qabs u M[\Bbbs_{x \mapsto u}] \aequiv \qabs v M[\Bbbs_{x \mapsto v}].
   \end{equation}
 \end{corollary}
 \begin{proof}
   \Fullref{thm:def:lambda_term_alpha_equivalence/equivalence} implies that
   \begin{equation*}
-    M[\sigma_{x \mapsto v}] \aequiv M[\sigma_{x \mapsto v}].
+    M[\Bbbs_{x \mapsto v}] \aequiv M[\Bbbs_{x \mapsto v}].
   \end{equation*}
 
   Furthermore, \fullref{thm:substitution_chain_contraction} implies that
   \begin{equation*}
-    M[\sigma_{x \mapsto v}][v \mapsto u] \aequiv M[\sigma_{x \mapsto u}]
+    M[\Bbbs_{x \mapsto v}][v \mapsto u] \aequiv M[\Bbbs_{x \mapsto u}]
   \end{equation*}
   and \ref{inf:thm:alpha_equivalence_simplified/ren} implies that
   \begin{equation*}
-    \qabs v M[\sigma_{x \mapsto v}] \aequiv \qabs u M[\rho_{x \mapsto u}].
+    \qabs v M[\Bbbs_{x \mapsto v}] \aequiv \qabs u M[\Bbbt_{x \mapsto u}].
   \end{equation*}
 \end{proof}
 

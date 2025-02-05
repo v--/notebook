@@ -257,9 +257,9 @@
 \end{concept}
 
 \begin{definition}\label{def:lambda_substitution}\mimprovised
-  A \term{simultaneous substitution} of \( \synlambda \)-terms is a pair \( (\sigma, \sharp) \), where
+  A \term{simultaneous substitution} of \( \synlambda \)-terms is a pair \( (\Bbbs, \sharp) \), where
   \begin{thmenum}[series=def:lambda_substitution]
-    \thmitem{def:lambda_substitution/sigma} \( \sigma: \op*{Var} \to \op*{Term} \) is a function specifying how variables need to be replaced with terms. We allow only finitely many variables to not be fixed by \( \sigma \).
+    \thmitem{def:lambda_substitution/sigma} \( \Bbbs: \op*{Var} \to \op*{Term} \) is a function specifying how variables need to be replaced with terms. We allow only finitely many variables to not be fixed by \( \Bbbs \).
 
     \thmitem{def:lambda_substitution/sharp} \( \sharp: F \to \op*{Var} \), where \( F \) is the family of all variable contexts (i.e. finite subsets of \( \op*{Var} \)), is a function providing us with a fresh variable identifier not present in some given context.
 
@@ -268,32 +268,32 @@
 
   We will now use substitutions to define operations on all \( \synlambda \)-terms, but we will first need several auxiliary definitions:
   \begin{thmenum}[resume=def:lambda_substitution]
-    \thmitem{def:lambda_substitution/modified} We will find useful the concept of \term{modifying} \( \sigma \) at \( x \) with \( y \):
+    \thmitem{def:lambda_substitution/modified} We will find useful the concept of \term{modifying} \( \Bbbs \) at \( x \) with \( y \):
     \begin{equation}\label{eq:def:lambda_substitution/modified}
-      \sigma_{x \mapsto y}(u) \coloneqq \begin{cases}
+      \Bbbs_{x \mapsto y}(u) \coloneqq \begin{cases}
         y,         &u = x, \\
-        \sigma(u), &u \neq x.
+        \Bbbs(u), &u \neq x.
       \end{cases}
     \end{equation}
 
     \thmitem{def:lambda_substitution/free} In order to be able to define substitutions for arbitrary terms, we will also need the following auxiliary definition:
     \begin{equation}\label{eq:def:lambda_substitution/free}
-      \op*{Free}_\sigma(M) \coloneqq \bigcup_{\mathclap{v \in \op*{Free}(M)}} \op*{Free}(\sigma(v)).
+      \op*{Free}_\Bbbs(M) \coloneqq \bigcup_{\mathclap{v \in \op*{Free}(M)}} \op*{Free}(\Bbbs(v)).
     \end{equation}
 
     \thmitem{def:lambda_substitution/operation} Finally, for an arbitrary \( \synlambda \)-term \( M \), we define the following operation (for which will use the notational convention from \fullref{rem:substitution_notation}):
-    \begin{empheq}[left={M[\sigma]} \coloneqq \empheqlbrace]{align}
-      &M,                               &&M \in \op*{Const},                                    \label{eq:def:lambda_substitution/const}               \\
-      &\sigma(M),                       &&M \in \op*{Var},                                      \label{eq:def:lambda_substitution/var}                 \\
-      &N[\sigma] \thinspace K[\sigma],  &&M = NK,                                               \label{eq:def:lambda_substitution/application}         \\
-      &\qabs x N[\sigma_{x \mapsto x}], &&M = \qabs x N \T{and} x \not\in \op*{Free}_\sigma(M), \label{eq:def:lambda_substitution/abstraction/direct}  \\
-      &\qabs n N[\sigma_{x \mapsto n}], &&M = \qabs x N \T{and} x \in \op*{Free}_\sigma(M),     \label{eq:def:lambda_substitution/abstraction/renaming}
+    \begin{empheq}[left={M[\Bbbs]} \coloneqq \empheqlbrace]{align}
+      &M,                              &&M \in \op*{Const},                                    \label{eq:def:lambda_substitution/const}               \\
+      &\Bbbs(M),                       &&M \in \op*{Var},                                      \label{eq:def:lambda_substitution/var}                 \\
+      &N[\Bbbs] \thinspace K[\Bbbs],   &&M = NK,                                               \label{eq:def:lambda_substitution/application}         \\
+      &\qabs x N[\Bbbs_{x \mapsto x}], &&M = \qabs x N \T{and} x \not\in \op*{Free}_\Bbbs(M), \label{eq:def:lambda_substitution/abstraction/direct}  \\
+      &\qabs n N[\Bbbs_{x \mapsto n}], &&M = \qabs x N \T{and} x \in \op*{Free}_\Bbbs(M),     \label{eq:def:lambda_substitution/abstraction/renaming}
     \end{empheq}
-    where \( n = \sharp(\op*{Free}(N) \cup \op*{Free}_\sigma(N)) \).
+    where \( n = \sharp(\op*{Free}(N) \cup \op*{Free}_\Bbbs(N)) \).
   \end{thmenum}
 \end{definition}
 \begin{comments}
-  \item In \eqref{eq:def:lambda_substitution/abstraction/direct} we modify \( \sigma \) to fix \( x \), while in \eqref{eq:def:lambda_substitution/abstraction/renaming} we modify it to send \( x \) to \( n \). We will refer to the latter rule as \enquote{substitution with renaming}. Whenever it will be sufficient, \fullref{thm:lambda_substitution_single_rule} will allow us to compress them into one rule with a looser condition.
+  \item In \eqref{eq:def:lambda_substitution/abstraction/direct} we modify \( \Bbbs \) to fix \( x \), while in \eqref{eq:def:lambda_substitution/abstraction/renaming} we modify it to send \( x \) to \( n \). We will refer to the latter rule as \enquote{substitution with renaming}. Whenever it will be sufficient, \fullref{thm:lambda_substitution_single_rule} will allow us to compress them into one rule with a looser condition.
 
   \item This definition is loosely based on \cite[def. 1A7]{Hindley1997STT}, but is modified to allow substituting multiple variables simultaneously, as well as to handle constants. This results in less rules since \eqref{eq:def:lambda_substitution/abstraction/direct} subsumes three of the four cases. Furthermore, our substitution rules also allow proving \fullref{thm:lambda_substitution_noop}.
 \end{comments}
@@ -309,54 +309,54 @@
 \end{remark}
 
 \begin{proposition}\label{thm:lambda_substitution_restriction}
-  For any \( \synlambda \)-term \( M \), if the substitutions \( \sigma \) and \( \rho \) agree on the free variables on \( M \), then \( M[\sigma] = M[\rho] \).
+  For any \( \synlambda \)-term \( M \), if the substitutions \( \Bbbs \) and \( \Bbbt \) agree on the free variables on \( M \), then \( M[\Bbbs] = M[\Bbbt] \).
 \end{proposition}
 \begin{proof}
   Straightforward.
 \end{proof}
 
 \begin{proposition}\label{thm:lambda_substitution_noop}
-  We have \( M[\sigma] = M \) if and only if the free variables of \( M \) are fixed by the substitution \( \sigma \).
+  We have \( M[\Bbbs] = M \) if and only if the free variables of \( M \) are fixed by the substitution \( \Bbbs \).
 \end{proposition}
 \begin{proof}
-  \SufficiencySubProof Suppose that \( M[\sigma] = M \). We will use \fullref{thm:induction_on_rooted_trees} on \( M \) to show that \( \sigma(x) = x \) whenever \( x \) is free in \( M \):
+  \SufficiencySubProof Suppose that \( M[\Bbbs] = M \). We will use \fullref{thm:induction_on_rooted_trees} on \( M \) to show that \( \Bbbs(x) = x \) whenever \( x \) is free in \( M \):
   \begin{itemize}
     \item If \( M \) is a constant, it has no free variables, so the statement vacuously holds.
-    \item If \( M \) is a variable, then \( \sigma(M) = M[\sigma] = M \), proving the statement.
+    \item If \( M \) is a variable, then \( \Bbbs(M) = M[\Bbbs] = M \), proving the statement.
     \item If \( M = NK \) and if the inductive hypothesis holds for \( N \) and \( K \), then
     \begin{equation*}
-      N[\sigma] \thinspace K[\sigma]
+      N[\Bbbs] \thinspace K[\Bbbs]
       =
-      M[\sigma]
+      M[\Bbbs]
       =
       M
       =
       N \thinspace K.
     \end{equation*}
 
-    Thus, \( N[\sigma] = N \) and \( K[\sigma] = K \). Applying the inductive hypothesis, we conclude that \( \sigma \) fixes the free variables of both \( N \) and \( K \), and hence of \( M \).
+    Thus, \( N[\Bbbs] = N \) and \( K[\Bbbs] = K \). Applying the inductive hypothesis, we conclude that \( \Bbbs \) fixes the free variables of both \( N \) and \( K \), and hence of \( M \).
 
     \item Suppose that \( M = \qabs x N \) and the inductive hypothesis holds for \( N \).
 
-    \Fullref{thm:lambda_substitution_single_rule} implies that, for some variable \( v \) not free in \( M \) or \( M[\sigma] \), we have
+    \Fullref{thm:lambda_substitution_single_rule} implies that, for some variable \( v \) not free in \( M \) or \( M[\Bbbs] \), we have
     \begin{equation*}
-      M[\sigma] = \qabs v N[\sigma_{x \mapsto v}].
+      M[\Bbbs] = \qabs v N[\Bbbs_{x \mapsto v}].
     \end{equation*}
 
-    Since \( M = M[\sigma] \), however, \( v \) must be equal to \( x \) and \( N[\sigma_{x \mapsto x}] \) to \( N \).
+    Since \( M = M[\Bbbs] \), however, \( v \) must be equal to \( x \) and \( N[\Bbbs_{x \mapsto x}] \) to \( N \).
 
-    The inductive hypothesis on \( N \) implies that \( \sigma_{x \mapsto x} \) fixes all free variables of \( N \). Then \( \sigma \) fixes all free variables of \( M \).
+    The inductive hypothesis on \( N \) implies that \( \Bbbs_{x \mapsto x} \) fixes all free variables of \( N \). Then \( \Bbbs \) fixes all free variables of \( M \).
   \end{itemize}
 
-  \NecessitySubProof We will use \fullref{thm:induction_on_rooted_trees} on \( M \) to show that \( M[\sigma] = M \) for all \( \sigma \) that fix the free variables of \( M \):
+  \NecessitySubProof We will use \fullref{thm:induction_on_rooted_trees} on \( M \) to show that \( M[\Bbbs] = M \) for all \( \Bbbs \) that fix the free variables of \( M \):
   \begin{itemize}
-    \item If \( M \) is a constant, then \( M[\sigma] = M \) by definition.
-    \item If \( M \) is a variable, then \( M[\sigma] = \sigma(M) = M \) by assumption.
+    \item If \( M \) is a constant, then \( M[\Bbbs] = M \) by definition.
+    \item If \( M \) is a variable, then \( M[\Bbbs] = \Bbbs(M) = M \) by assumption.
     \item If \( M = NK \) and if the inductive hypothesis holds for \( N \) and \( K \), then
     \begin{equation*}
-      M[\sigma]
+      M[\Bbbs]
       \reloset {\eqref{eq:def:lambda_substitution/application}} =
-      N[\sigma] \thinspace K[\sigma]
+      N[\Bbbs] \thinspace K[\Bbbs]
       \reloset {\T{ind.}} =
       N K
       =
@@ -365,13 +365,13 @@
 
     \item Suppose that \( M = \qabs x N \) and the inductive hypothesis holds for \( N \).
 
-    Aiming at a contradiction, suppose that \( x \) is in \( \op*{Free}_\sigma(M) \), that is, there exists a free variable \( y \) of \( M \) such that \( x \) is free in \( \sigma(y) \). We have assumed that \( \sigma \) fixes the free variables of \( M \), thus \( y = \sigma(y) \), and we thus conclude that \( x = y \). In particular, \( x \) is free in \( M \). But, by \fullref{thm:lambda_variable_freeness_characterization}, \( x \) cannot be free in \( M \).
+    Aiming at a contradiction, suppose that \( x \) is in \( \op*{Free}_\Bbbs(M) \), that is, there exists a free variable \( y \) of \( M \) such that \( x \) is free in \( \Bbbs(y) \). We have assumed that \( \Bbbs \) fixes the free variables of \( M \), thus \( y = \Bbbs(y) \), and we thus conclude that \( x = y \). In particular, \( x \) is free in \( M \). But, by \fullref{thm:lambda_variable_freeness_characterization}, \( x \) cannot be free in \( M \).
 
-    Therefore, \( x \) cannot be in \( \op*{Free}_\sigma(M) \), and we must use the rule \eqref{eq:def:lambda_substitution/abstraction/direct}. The free variables of \( N \) are those of \( N \) with the eventual addition of \( x \), all of which are fixed by \( \sigma_{x \mapsto x} \). Hence,
+    Therefore, \( x \) cannot be in \( \op*{Free}_\Bbbs(M) \), and we must use the rule \eqref{eq:def:lambda_substitution/abstraction/direct}. The free variables of \( N \) are those of \( N \) with the eventual addition of \( x \), all of which are fixed by \( \Bbbs_{x \mapsto x} \). Hence,
     \begin{equation*}
-      M[\sigma]
+      M[\Bbbs]
       =
-      \qabs x N[\sigma_{x \mapsto x}]
+      \qabs x N[\Bbbs_{x \mapsto x}]
       \reloset {\T{ind.}} =
       \qabs x N
       =
@@ -381,16 +381,16 @@
 \end{proof}
 
 \begin{corollary}\label{thm:lambda_substitution_combinators}
-  For any \hyperref[def:lambda_combinator]{combinator} \( M \) and any substitution \( \sigma \), we have \( M[\sigma] = M \).
+  For any \hyperref[def:lambda_combinator]{combinator} \( M \) and any substitution \( \Bbbs \), we have \( M[\Bbbs] = M \).
 \end{corollary}
 \begin{proof}
   Vacuously follows from \fullref{thm:lambda_substitution_noop} since combinators simply have no free variables.
 \end{proof}
 
 \begin{proposition}\label{thm:lambda_substitution_free_variables}
-  For any \( \synlambda \)-term \( M \) and any substitution \( \sigma \), we have
+  For any \( \synlambda \)-term \( M \) and any substitution \( \Bbbs \), we have
   \begin{equation}\label{eq:thm:lambda_substitution_free_variables}
-    \op*{Free}( M[\sigma] ) = \overbrace{\bigcup_{\mathclap{v \in \op*{Free}(M)}} \op*{Free}(\sigma(v))}^{\op*{Free}_\sigma(M)}.
+    \op*{Free}( M[\Bbbs] ) = \overbrace{\bigcup_{\mathclap{v \in \op*{Free}(M)}} \op*{Free}(\Bbbs(v))}^{\op*{Free}_\Bbbs(M)}.
   \end{equation}
 
   This also holds if we always use the renaming rule \eqref{eq:def:lambda_substitution/abstraction/renaming}.
@@ -402,9 +402,9 @@
 
     \item If \( M \) is a variable, say \( M = x \), then \( \op*{Free}(M) = \set{ x } \) and thus
     \begin{equation*}
-      \op*{Free}(M[\sigma])
+      \op*{Free}(M[\Bbbs])
       \reloset {\eqref{eq:def:lambda_substitution/var}} =
-      \op*{Free}(\sigma(x)).
+      \op*{Free}(\Bbbs(x)).
     \end{equation*}
 
     Hence, \eqref{eq:thm:lambda_substitution_free_variables} is satisfied.
@@ -413,60 +413,60 @@
 
     We have
     \begin{equation*}
-      \op*{Free}(M[\sigma])
+      \op*{Free}(M[\Bbbs])
       \reloset {\eqref{eq:def:lambda_substitution/application}} =
-      \op*{Free}(N[\sigma] \thinspace K[\sigma])
+      \op*{Free}(N[\Bbbs] \thinspace K[\Bbbs])
       =
-      \op*{Free}(N[\sigma]) \cup \op*{Free}(K[\sigma]).
+      \op*{Free}(N[\Bbbs]) \cup \op*{Free}(K[\Bbbs]).
     \end{equation*}
 
     Since, by definition, \( \op*{Free}(M) = \op*{Free}(N) \cup \op*{Free}(K) \), from the inductive hypothesis it follows that \eqref{eq:thm:lambda_substitution_free_variables} holds.
 
     \item Suppose that \( M = \qabs x N \) and that the inductive hypothesis holds for \( N \). We have the following possibilities:
     \begin{itemize}
-      \item Suppose first that \( x \not\in \op*{Free}_\sigma(M) \). We must thus use \eqref{eq:def:lambda_substitution/abstraction/direct}. We have
+      \item Suppose first that \( x \not\in \op*{Free}_\Bbbs(M) \). We must thus use \eqref{eq:def:lambda_substitution/abstraction/direct}. We have
       \begin{align*}
-        \op*{Free}(M[\sigma])
+        \op*{Free}(M[\Bbbs])
         &\reloset{\eqref{eq:def:lambda_substitution/abstraction/direct}} =
-        \op*{Free}(\qabs x N[\sigma_{x \mapsto x}])
+        \op*{Free}(\qabs x N[\Bbbs_{x \mapsto x}])
         = \\ &=
-        \op*{Free}(N[\sigma_{x \mapsto x}]) \setminus \set{ x }
+        \op*{Free}(N[\Bbbs_{x \mapsto x}]) \setminus \set{ x }
         \reloset{\T{ind.}} = \\ &=
-        \parens[\Big]{ \bigcup_{\mathclap{v \in \op*{Free}(N)}} \op*{Free}(\sigma_{x \mapsto x}(v)) } \setminus \set{ x }
+        \parens[\Big]{ \bigcup_{\mathclap{v \in \op*{Free}(N)}} \op*{Free}(\Bbbs_{x \mapsto x}(v)) } \setminus \set{ x }
         = \\ &=
-        \bigcup_{\mathclap{v \in \op*{Free}(N)}} \parens[\Big]{ \op*{Free}(\sigma_{x \mapsto x}(v)) \setminus \set{ x } }
+        \bigcup_{\mathclap{v \in \op*{Free}(N)}} \parens[\Big]{ \op*{Free}(\Bbbs_{x \mapsto x}(v)) \setminus \set{ x } }
         = \\ &=
-        \bigcup_{\mathclap{v \in \op*{Free}(N) \setminus \set{ x }}} \parens[\Big]{ \op*{Free}(\underbrace{\sigma_{x \mapsto x}(v)}_{\sigma(v)}) \setminus \set{ x } } \cup \underbrace{\parens[\Big]{ \op*{Free}(\sigma_{x \mapsto x}(x)) \setminus \set{ x } }}_\varnothing.
+        \bigcup_{\mathclap{v \in \op*{Free}(N) \setminus \set{ x }}} \parens[\Big]{ \op*{Free}(\underbrace{\Bbbs_{x \mapsto x}(v)}_{\Bbbs(v)}) \setminus \set{ x } } \cup \underbrace{\parens[\Big]{ \op*{Free}(\Bbbs_{x \mapsto x}(x)) \setminus \set{ x } }}_\varnothing.
         = \\ &=
-        \bigcup_{\mathclap{v \in \op*{Free}(N) \setminus \set{ x }}} \parens[\Big]{ \op*{Free}(\sigma(v)) },
+        \bigcup_{\mathclap{v \in \op*{Free}(N) \setminus \set{ x }}} \parens[\Big]{ \op*{Free}(\Bbbs(v)) },
       \end{align*}
-      where at the last step we have used that, for \( v \in \op*{Free}(N) \), \( x \) is free in \( \sigma(v) \) only when \( v = x \).
+      where at the last step we have used that, for \( v \in \op*{Free}(N) \), \( x \) is free in \( \Bbbs(v) \) only when \( v = x \).
 
       This demonstrates \eqref{eq:thm:lambda_substitution_free_variables}.
 
-      \item Otherwise, \( x \in \op*{Free}_\sigma(M) \), and we must use \eqref{eq:def:lambda_substitution/abstraction/renaming}. As discussed in \fullref{rem:renaming_substitution_rules}, the assumption itself is irrelevant for proving \eqref{eq:thm:lambda_substitution_free_variables}.
+      \item Otherwise, \( x \in \op*{Free}_\Bbbs(M) \), and we must use \eqref{eq:def:lambda_substitution/abstraction/renaming}. As discussed in \fullref{rem:renaming_substitution_rules}, the assumption itself is irrelevant for proving \eqref{eq:thm:lambda_substitution_free_variables}.
 
       Let \( n \) be the renamed abstractor variable. Then
       \begin{align*}
-        \op*{Free}(M[\sigma])
+        \op*{Free}(M[\Bbbs])
         &=
-        \op*{Free}(\qabs n N[x \mapsto n][\sigma])
+        \op*{Free}(\qabs n N[x \mapsto n][\Bbbs])
         = \\ &=
-        \op*{Free}(\qabs n N[\sigma_{x \mapsto n}])
+        \op*{Free}(\qabs n N[\Bbbs_{x \mapsto n}])
         = \\ &=
-        \op*{Free}(N[\sigma_{x \mapsto n}]) \setminus \set{ n }
+        \op*{Free}(N[\Bbbs_{x \mapsto n}]) \setminus \set{ n }
         \reloset {\T{ind.}} = \\ &=
-        \parens[\Big]{ \bigcup_{\mathclap{v \in \op*{Free}(N)}} \op*{Free}(\sigma_{x \mapsto n}(v)) } \setminus \set{ n }
+        \parens[\Big]{ \bigcup_{\mathclap{v \in \op*{Free}(N)}} \op*{Free}(\Bbbs_{x \mapsto n}(v)) } \setminus \set{ n }
         = \\ &=
-        \bigcup_{\mathclap{v \in \op*{Free}(N)}} \parens[\Big]{ \op*{Free}(\sigma_{x \mapsto n}(v)) \setminus \set{ n } }
+        \bigcup_{\mathclap{v \in \op*{Free}(N)}} \parens[\Big]{ \op*{Free}(\Bbbs_{x \mapsto n}(v)) \setminus \set{ n } }
         = \\ &=
-        \parens[\Big]{ \bigcup_{\mathclap{v \in \op*{Free}(N) \setminus \set{ x }}} \parens[\Big]{ \op*{Free}(\sigma_{x \mapsto n}(v)) \setminus \set{ n } } } \cup \parens[\Big]{ \underbrace{\op*{Free}(\sigma_{x \mapsto n}(x)) \setminus \set{ n }}_\varnothing }
+        \parens[\Big]{ \bigcup_{\mathclap{v \in \op*{Free}(N) \setminus \set{ x }}} \parens[\Big]{ \op*{Free}(\Bbbs_{x \mapsto n}(v)) \setminus \set{ n } } } \cup \parens[\Big]{ \underbrace{\op*{Free}(\Bbbs_{x \mapsto n}(x)) \setminus \set{ n }}_\varnothing }
         = \\ &=
-        \bigcup_{\mathclap{v \in \op*{Free}(N) \setminus \set{ x }}} \parens[\Big]{ \op*{Free}(\sigma(v)) \setminus \set{ x } },
+        \bigcup_{\mathclap{v \in \op*{Free}(N) \setminus \set{ x }}} \parens[\Big]{ \op*{Free}(\Bbbs(v)) \setminus \set{ x } },
         = \\ &=
-        \bigcup_{\mathclap{v \in \op*{Free}(M) \setminus \set{ x }}} \op*{Free}(\sigma(v)),
+        \bigcup_{\mathclap{v \in \op*{Free}(M) \setminus \set{ x }}} \op*{Free}(\Bbbs(v)),
       \end{align*}
-      where in the last step we have used that \( n \) is not free in \( \sigma(v) \) because it does not, by definition, belong to \( \op*{Free}_\sigma(N) \).
+      where in the last step we have used that \( n \) is not free in \( \Bbbs(v) \) because it does not, by definition, belong to \( \op*{Free}_\Bbbs(N) \).
 
       This demonstrates \eqref{eq:thm:lambda_substitution_free_variables}.
     \end{itemize}
@@ -490,20 +490,20 @@
   \end{equation}
 \end{corollary}
 \begin{proof}
-  Denote by \( \sigma \) the substitution sending \( u \) to \( L \). If \( u \) is free in \( M \), then
+  Denote by \( \Bbbs \) the substitution sending \( u \) to \( L \). If \( u \) is free in \( M \), then
   \begin{equation*}
     \op*{Free}(M[u \mapsto L])
     \reloset{\eqref{eq:thm:lambda_substitution_free_variables}} =
-    \bigcup_{\mathclap{v \in \op*{Free}(M)}} \op*{Free}(\sigma(v))
+    \bigcup_{\mathclap{v \in \op*{Free}(M)}} \op*{Free}(\Bbbs(v))
     =
-    \op*{Free}(\overbrace{\sigma(u)}^L) \cup \bigcup_{\mathclap{v \in \op*{Free}(M) \setminus \set{ u }}} \overbrace{\op*{Free}(\sigma(v))}^{\set{ v }}.
+    \op*{Free}(\overbrace{\Bbbs(u)}^L) \cup \bigcup_{\mathclap{v \in \op*{Free}(M) \setminus \set{ u }}} \overbrace{\op*{Free}(\Bbbs(v))}^{\set{ v }}.
   \end{equation*}
 
   Otherwise,
   \begin{equation*}
     \op*{Free}(M[v \mapsto L])
     \reloset{\eqref{eq:thm:lambda_substitution_free_variables}} =
-    \bigcup_{\mathclap{v \in \op*{Free}(M)}} \overbrace{\op*{Free}(\sigma(v))}^{\set{ v }}
+    \bigcup_{\mathclap{v \in \op*{Free}(M)}} \overbrace{\op*{Free}(\Bbbs(v))}^{\set{ v }}
     =
     \op*{Free}(M).
   \end{equation*}
@@ -517,7 +517,7 @@
       \parens[\Big]{ \qabs \synx (xyz) }[\synx \mapsto \syna, \syny \mapsto \synb, \synz \mapsto \sync].
     \end{equation*}
 
-    We have \( \op*{Free}_\sigma(M) = \set{ b, c } \). Since \( \synx \) does not belong to this set, we must apply \eqref{eq:def:lambda_substitution/abstraction/direct}:
+    We have \( \op*{Free}_\Bbbs(M) = \set{ b, c } \). Since \( \synx \) does not belong to this set, we must apply \eqref{eq:def:lambda_substitution/abstraction/direct}:
     \begin{equation*}
       \parens[\Big]{ \qabs \synx (xyz) }[\synx \mapsto \syna, \syny \mapsto \synb, \synz \mapsto \sync]
       =
@@ -585,28 +585,28 @@
 \end{example}
 
 \begin{proposition}\label{thm:lambda_substitution_single_rule}
-  For any abstraction \( M = \qabs x N \) and substitution \( \sigma \), there exists a variable \( v \not\in \op*{Free}(M) \cup \op*{Free}(M[\sigma]) \) such that
+  For any abstraction \( M = \qabs x N \) and substitution \( \Bbbs \), there exists a variable \( v \not\in \op*{Free}(M) \cup \op*{Free}(M[\Bbbs]) \) such that
   \begin{equation}\label{eq:thm:lambda_substitution_single_rule}
-    M[\sigma] = \qabs v N[\sigma_{x \mapsto v}].
+    M[\Bbbs] = \qabs v N[\Bbbs_{x \mapsto v}].
   \end{equation}
 \end{proposition}
 \begin{proof}
   We have two cases to consider:
   \begin{itemize}
-    \item If \( x \in \op*{Free}_\sigma(M) \), we must use the renaming rule \eqref{eq:def:lambda_substitution/abstraction/renaming}. Let \( n \) be the renamed abstractor variable. Then
+    \item If \( x \in \op*{Free}_\Bbbs(M) \), we must use the renaming rule \eqref{eq:def:lambda_substitution/abstraction/renaming}. Let \( n \) be the renamed abstractor variable. Then
     \begin{equation*}
-      M[\sigma] = \qabs n N[\sigma_{x \mapsto n}].
+      M[\Bbbs] = \qabs n N[\Bbbs_{x \mapsto n}].
     \end{equation*}
 
-    Furthermore, \( n \) is not in \( \op*{Free}(N) \cup \op*{Free}_\sigma(N) \) --- the first is a superset of \( \op*{Free}(M) \), and the second --- of \( \op*{Free}_\sigma(M) \).
+    Furthermore, \( n \) is not in \( \op*{Free}(N) \cup \op*{Free}_\Bbbs(N) \) --- the first is a superset of \( \op*{Free}(M) \), and the second --- of \( \op*{Free}_\Bbbs(M) \).
 
     \item Otherwise, we must use \eqref{eq:def:lambda_substitution/abstraction/direct}:
     \begin{equation*}
-      M[\sigma] = \qabs x N[\sigma_{x \mapsto x}].
+      M[\Bbbs] = \qabs x N[\Bbbs_{x \mapsto x}].
     \end{equation*}
 
-    The variable \( x \) is clearly not free in \( M \). Furthermore, we have assumed that \( x \not\in \op*{Free}_\sigma(M) \).
+    The variable \( x \) is clearly not free in \( M \). Furthermore, we have assumed that \( x \not\in \op*{Free}_\Bbbs(M) \).
   \end{itemize}
 
-  Finally, \fullref{thm:lambda_substitution_free_variables} implies that \( \op*{Free}_\sigma(M) = \op*{Free}(M[\sigma]) \).
+  Finally, \fullref{thm:lambda_substitution_free_variables} implies that \( \op*{Free}_\Bbbs(M) = \op*{Free}(M[\Bbbs]) \).
 \end{proof}

@@ -109,18 +109,18 @@ def test_abstraction_instantiation_failure() -> None:
 
 
 def test_abstraction_annotation_success() -> None:
-    schema = parse_pure_term_schema('(λx:α.x)', TypingStyle.explicit)
+    schema = parse_pure_term_schema('(λx:τ.x)', TypingStyle.explicit)
     term = parse_term(HOL_SIGNATURE, '(λx:ι.x)', TypingStyle.explicit)
     assert infer_instantiation_from_term(schema, term) == LambdaSchemaInstantiation(
         variable_mapping={parse_variable_placeholder('x'): parse_variable('x')},
-        type_mapping={parse_type_placeholder('α'): parse_type(HOL_SIGNATURE, 'ι')}
+        type_mapping={parse_type_placeholder('τ'): parse_type(HOL_SIGNATURE, 'ι')}
     )
 
 
 def test_abstraction_annotation_failure() -> None:
-    with pytest.raises(SchemaInferenceError, match=r'The schema \(λx:α.x\) has a type annotation on its abstractor, but the term \(λx.x\) does not'):
+    with pytest.raises(SchemaInferenceError, match=r'The schema \(λx:τ.x\) has a type annotation on its abstractor, but the term \(λx.x\) does not'):
         infer_instantiation_from_term(
-            parse_pure_term_schema('(λx:α.x)', TypingStyle.explicit),
+            parse_pure_term_schema('(λx:τ.x)', TypingStyle.explicit),
             parse_pure_term('(λx.x)')
         )
 

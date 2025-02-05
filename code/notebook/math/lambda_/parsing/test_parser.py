@@ -241,10 +241,10 @@ def test_parsing_valid_type(type_: str, expected: SimpleType) -> None:
     schema=[
         'ι',
         '(ι → o)',
-        'α',
-        '(β → β)',
-        '(ι → (α → β))',
-        '((ι → α) → β)'
+        'τ',
+        '(σ → σ)',
+        '(ι → (τ → σ))',
+        '((ι → τ) → σ)'
     ]
 )
 def test_rebuilding_type_schema(schema: str) -> None:
@@ -253,11 +253,11 @@ def test_rebuilding_type_schema(schema: str) -> None:
 
 def test_parsing_type_schema_with_regular_parser() -> None:
     with pytest.raises(ParsingError) as excinfo:
-        parse_type(HOL_SIGNATURE, 'α')
+        parse_type(HOL_SIGNATURE, 'τ')
 
     assert str(excinfo.value) == 'Type placeholders are only allowed in schemas'
     assert excinfo.value.__notes__[0] == dedent('''\
-        1 │ α
+        1 │ τ
           │ ^
         '''
     )
@@ -337,10 +337,10 @@ def test_parsing_type_assertion_missing_colon() -> None:
 
 @pytest_parametrize_lists(
     rule=[
-        '(R) ⫢ x: α',
-        '(R) M: (α → β), N: α ⫢ (MN): β',
-        '(R) [x: α] M: β ⫢ (λx.M): (α → β)',
-        '(R) [x: α] M: β ⫢ (λx:α.M): (α → β)'
+        '(R) ⫢ x: τ',
+        '(R) M: (τ → σ), N: τ ⫢ (MN): σ',
+        '(R) [x: τ] M: σ ⫢ (λx.M): (τ → σ)',
+        '(R) [x: τ] M: σ ⫢ (λx:τ.M): (τ → σ)'
     ]
 )
 def test_rebuilding_typing_rules(rule: str) -> None:
@@ -349,11 +349,11 @@ def test_rebuilding_typing_rules(rule: str) -> None:
 
 def test_parsing_discharge_schema_with_no_name() -> None:
     with pytest.raises(ParsingError) as excinfo:
-        parse_typing_rule(EMPTY_SIGNATURE, '(R) [] x: α ⫢ y: α', TypingStyle.implicit)
+        parse_typing_rule(EMPTY_SIGNATURE, '(R) [] x: τ ⫢ y: τ', TypingStyle.implicit)
 
     assert str(excinfo.value) == 'Unexpected token'
     assert excinfo.value.__notes__[0] == dedent('''\
-        1 │ (R) [] x: α ⫢ y: α
+        1 │ (R) [] x: τ ⫢ y: τ
           │      ^
         '''
     )
@@ -361,11 +361,11 @@ def test_parsing_discharge_schema_with_no_name() -> None:
 
 def test_parsing_discharge_schema_with_no_closing_bracket() -> None:
     with pytest.raises(ParsingError) as excinfo:
-        parse_typing_rule(EMPTY_SIGNATURE, '(R) [x: α y: α ⫢ z: α', TypingStyle.implicit)
+        parse_typing_rule(EMPTY_SIGNATURE, '(R) [x: τ y: τ ⫢ z: τ', TypingStyle.implicit)
 
     assert str(excinfo.value) == 'Unclosed bracket for discharge schema'
     assert excinfo.value.__notes__[0] == dedent('''\
-        1 │ (R) [x: α y: α ⫢ z: α
+        1 │ (R) [x: τ y: τ ⫢ z: τ
           │     ^^^^^^
         '''
     )
