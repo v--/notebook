@@ -1,15 +1,13 @@
 \section{Lambda term normalization}\label{sec:lambda_term_normalization}
 
+Unless explicitly noted otherwise, we will follow \fullref{rem:base_typing_rules}, that is, we will restrict ourselves to explicitly typed terms and to derivation trees constructed using the two base rules from \fullref{def:base_typing_rules}. In particular, we will not consider constants.
+
 \paragraph{Typed substitution}
 
 \begin{algorithm}[Typed substitution]\label{alg:typed_substitution}
-  Suppose that the terms are either all \hyperref[def:lambda_term]{untyped} or \hyperref[def:typed_lambda_term]{typed}. As usual, we will presuppose only the base rules from \fullref{def:base_typing_rules} (which in particular means that we will not consider constants).
-
   Fix a \hyperref[def:lambda_substitution]{substitution} \( \Bbbs \) and a \hyperref[def:type_derivation_tree]{type derivation tree} \( T \) for \( M: \tau \). For every assumption \( v: \sigma \) of \( T \), suppose we are given a derivation tree \( T_v \) for \( \Bbbs(v): \sigma \).
 
   We will build a derivation tree \( T' \) for \( M[\Bbbs]: \tau \).
-
-  Since every variable in a \( T \) has a fixed type, we may just as well assume that all terms are explicitly typed.
 
   \begin{thmenum}
     \thmitem{alg:typed_substitution/var} If \( T \) is an assumption tree, then \( M \) is a variable. The assertion \( M: \tau \) is then an assumption of \( T \), and we have supposed that there exists a corresponding tree \( T_M \) deriving \( M[\Bbbs]: \tau \).
@@ -126,32 +124,28 @@
   If we were instead to rely on \hyperref[alg:type_erasure]{type erasure}, we would conclude that \( \qabs {x^\tau} x \) and \( \qabs {y^\sigma} y \) are \( \tau \)-equivalent even when their type annotations are distinct.
 \end{example}
 
-\begin{algorithm}[Type derivation of alpha-equivalent term]\label{alg:alpha_equivalent_type_derivation}
-  As usual, we will presuppose only the base rules from \fullref{def:base_typing_rules}.
-
+\begin{algorithm}[Typed alpha-conversion]\label{alg:typed_alpha_conversion}
   Fix a \hyperref[def:type_derivation_tree]{type derivation tree} \( T \) for \( M: \tau \) and a term \( N \) \hyperref[def:typed_term_alpha_equivalence]{\( \alpha \)-equivalent} to \( M \).
 
   We will build a derivation tree \( T_N \) for \( N: \tau \).
 
-  Since every variable in a \( T \) has a fixed type, we may just as well assume that all terms are explicitly typed.
-
   \begin{thmenum}
-    \thmitem{alg:alpha_equivalent_type_derivation/var} If \( T \) is an assumption tree, then \( M \) is a variable, and hence \( M = N \). Then \( T \) itself is a derivation tree for \( N: \tau \).
+    \thmitem{alg:typed_alpha_conversion/var} If \( T \) is an assumption tree, then \( M \) is a variable, and hence \( M = N \). Then \( T \) itself is a derivation tree for \( N: \tau \).
 
-    \thmitem{alg:alpha_equivalent_type_derivation/app} If \( M = AB \), then \( N = CD \), where \( A \aequiv C \) and \( B \aequiv D \), and \( T \) is an application tree for the rule \ref{inf:def:base_typing_rules/arrow/elim}; thus, \( T \) has subtrees \( T_A \) and \( T_B \) deriving \( A: \sigma \synimplies \tau \) and \( B: \sigma \) for some type \( \sigma \).
+    \thmitem{alg:typed_alpha_conversion/app} If \( M = AB \), then \( N = CD \), where \( A \aequiv C \) and \( B \aequiv D \), and \( T \) is an application tree for the rule \ref{inf:def:base_typing_rules/arrow/elim}; thus, \( T \) has subtrees \( T_A \) and \( T_B \) deriving \( A: \sigma \synimplies \tau \) and \( B: \sigma \) for some type \( \sigma \).
 
     We apply the algorithm to these subtrees to obtain \( T_C \) and \( T_D \) deriving \( C: \sigma \synimplies \tau \) and \( D: \sigma \).
 
     Then we use \ref{inf:def:base_typing_rules/arrow/elim} to combine \( T_C \) and \( T_D \), obtaining a derivation of \( N: \sigma \).
 
-    \thmitem{alg:alpha_equivalent_type_derivation/abs} If \( M = \qabs {a^\sigma} A \) then \( N = \qabs {b^\sigma} B \) and \( \tau = \sigma \synimplies \rho \) for some type \( \rho \), and \( T \) is an application tree for \ref{inf:def:base_typing_rules/arrow/intro/exp} with discharge assertion \( x: \sigma \) and subtree \( T_A \) deriving \( A: \rho \).
+    \thmitem{alg:typed_alpha_conversion/abs} If \( M = \qabs {a^\sigma} A \) then \( N = \qabs {b^\sigma} B \) and \( \tau = \sigma \synimplies \rho \) for some type \( \rho \), and \( T \) is an application tree for \ref{inf:def:base_typing_rules/arrow/intro/exp} with discharge assertion \( x: \sigma \) and subtree \( T_A \) deriving \( A: \rho \).
 
     \begin{thmenum}
-      \thmitem{alg:alpha_equivalent_type_derivation/lift} If \( a = b \), then \( M \aequiv N \) due to \ref{inf:def:typed_term_alpha_equivalence/lift}, hence \( A \aequiv B \).
+      \thmitem{alg:typed_alpha_conversion/lift} If \( a = b \), then \( M \aequiv N \) due to \ref{inf:def:typed_term_alpha_equivalence/lift}, hence \( A \aequiv B \).
 
       We apply the algorithm to \( T_A \) to obtain a tree \( T_A' \) deriving \( B: \rho \), and then use \ref{inf:def:base_typing_rules/arrow/intro/exp} with discharge assertion \( x: \sigma \) to construct a tree deriving \( N: \tau \).
 
-      \thmitem{alg:alpha_equivalent_type_derivation/ren} Otherwise, if \( a \neq b \), then \( M \aequiv N \) due to \ref{inf:def:typed_term_alpha_equivalence/ren}, hence \( a \) is not free in \( B \) and we have \( A \aequiv B[b \mapsto a] \).
+      \thmitem{alg:typed_alpha_conversion/ren} Otherwise, if \( a \neq b \), then \( M \aequiv N \) due to \ref{inf:def:typed_term_alpha_equivalence/ren}, hence \( a \) is not free in \( B \) and we have \( A \aequiv B[b \mapsto a] \).
 
       \Fullref{thm:substitution_composition_is_alpha_equivalent} implies that \( A[a \mapsto b] \aequiv B[b \mapsto a][a \mapsto b] \), and \fullref{thm:substitution_composition_is_alpha_equivalent} implies that \( B[b \mapsto a][a \mapsto b] \aequiv B \).
 
@@ -168,11 +162,11 @@
 \begin{proposition}\label{thm:alpha_equivalent_term_typing}
   If \( \Gamma \vdash M: \tau \) and if \( M \aequiv N \), then \( \Gamma \vdash N: \tau \).
 \end{proposition}
-\begin{comments}
-  \Fullref{alg:alpha_equivalent_type_derivation} allows us to construct a derivation tree for \( N: \tau \) from any tree for \( M: \tau \).
+\begin{proof}
+  \Fullref{alg:typed_alpha_conversion} allows us to construct a derivation tree for \( N: \tau \) from any tree for \( M: \tau \).
 
   \Fullref{thm:assumptions_and_free_variables} implies that the assumptions in both trees coincide since, by \fullref{thm:def:lambda_term_alpha_equivalence/free}, the free variables of \( M \) and \( N \) coincide.
-\end{comments}
+\end{proof}
 
 \paragraph{Reduction}
 

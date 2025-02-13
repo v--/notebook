@@ -464,11 +464,37 @@ To formalize typing rules in \fullref{def:simple_typing_rule}, we first need to 
   \item Rule application is implemented programmatically as \identifier{lambda_.type_derivation.tree.apply} in \cite{notebook:code}.
 \end{comments}
 
+\begin{remark}\label{rem:base_typing_rules}
+  Rather than working with \hyperref[def:lambda_term]{\( \synlambda \)-terms}, as in the case of untyped \( \synlambda \)-calculus, we will work here with \hyperref[def:type_derivation_tree]{type derivation trees}. Thus, the assertion \( M: \alpha \) will presuppose the existence of a tree \( T \)deriving it, and proving other assertions will be based mostly on transforming \( T \).
+
+  Although we allow general type systems with many rules, for proving properties of these systems we will only use \ref{inf:def:base_typing_rules/arrow/elim} and either \ref{inf:def:base_typing_rules/arrow/intro/int} or \ref{inf:def:base_typing_rules/arrow/intro/exp}. Any other additional rules must be handled separately, which complicates the proofs by requiring additional cases to be verified. We will suppose that any additional rules are compatible with the theorems we will prove, however we will not prove that explicitly.
+
+  Another nuance of working with derivation trees is that variable has a fixed type, so we may just as well assume that the terms are explicitly typed. Thus, most of the time we will not need the rule \ref{inf:def:base_typing_rules/arrow/intro/int} for untyped terms.
+
+  The following is a list of results relying only on only \ref{inf:def:base_typing_rules/arrow/elim} and \ref{inf:def:base_typing_rules/arrow/intro/exp}:
+  \begin{thmenum}
+    \thmitem{rem:base_typing_rules/assumptions_and_free_variables} Correspondence of free variables and assumption contexts: \fullref{thm:assumptions_and_free_variables}.
+
+    \thmitem{rem:base_typing_rules/derivability} Base properties of derivability: \fullref{thm:def:simple_type_derivability}.
+
+    \thmitem{rem:base_typing_rules/type_uniqueness} Type uniqueness for typed term: \fullref{thm:typed_term_habitation_uniqueness}.
+
+    \thmitem{rem:base_typing_rules/type_inference} Type inference: \fullref{alg:typed_term_type_derivation}.
+
+    \thmitem{rem:base_typing_rules/substitution} Typed substitution: \fullref{alg:typed_substitution} and \fullref{thm:typed_substitution_assertions}.
+
+    \thmitem{rem:base_typing_rules/alpha_equivalence} Typed \( \alpha \)-equivalence: \fullref{alg:typed_alpha_conversion} and \fullref{thm:alpha_equivalent_term_typing}.
+  \end{thmenum}
+\end{remark}
+
 \begin{proposition}\label{thm:assumptions_and_free_variables}
   Let \( T \) be a \hyperref[def:type_derivation_tree]{type derivation tree} with conclusion \( M: \tau \).
 
   Then the variables having \hyperref[def:type_derivation_tree/context]{open assumptions} in \( T \) are precisely the free variable of \( M \).
 \end{proposition}
+\begin{comments}
+  \item As discussed in \fullref{rem:base_typing_rules}, we restrict ourselves to the two base typing rules from \fullref{def:base_typing_rules}.
+\end{comments}
 \begin{proof}
   We will use simple case analysis on the structure of \( T \):
   \begin{itemize}
@@ -522,7 +548,7 @@ To formalize typing rules in \fullref{def:simple_typing_rule}, we first need to 
 \end{remark}
 
 \begin{proposition}\label{thm:def:simple_type_derivability}
-  \hyperref[def:simple_type_derivability]{Type derivability} for \hyperref[def:simple_type_system]{simple type systems} only featuring the base rules from \fullref{def:base_typing_rules}\fnote{Of course, systems may feature other rules, but we must explicitly prove the corresponding statement for each of them.} has the following basic properties:
+  \hyperref[def:simple_type_derivability]{Type derivability} for \hyperref[def:simple_type_system]{simple type systems} only featuring the base rules from \fullref{def:base_typing_rules} has the following basic properties:
   \begin{thmenum}
     \thmitem{thm:def:simple_type_derivability/combinator} If \( {}\vdash M: \sigma \), then \( M \) is a \hyperref[def:lambda_combinator]{combinator}.
 
@@ -530,7 +556,9 @@ To formalize typing rules in \fullref{def:simple_typing_rule}, we first need to 
   \end{thmenum}
 \end{proposition}
 \begin{comments}
-  \item \Fullref{thm:def:simple_type_derivability/assumption_removal} allows us to remove assumptions by prefixing the term with an abstractor. It also demonstrates the \hyperref[con:inference_rule_admissibility]{admissible} of the \hyperref[rem:sequent_calculus]{sequent calculus} style variation of the rule \ref{inf:def:base_typing_rules/arrow/intro/imp} described in \fullref{rem:typing_rule_style}.
+  \item \Fullref{thm:def:simple_type_derivability/assumption_removal} allows us to remove assumptions by prefixing the term with an abstractor. It also demonstrates the \hyperref[con:inference_rule_admissibility]{admissibility} of the \hyperref[rem:sequent_calculus]{sequent calculus} style variation of the rule \ref{inf:def:base_typing_rules/arrow/intro/imp} described in \fullref{rem:typing_rule_style}.
+
+  \item The restriction to only the base rules is discussed in \fullref{rem:base_typing_rules}.
 \end{comments}
 \begin{proof}
   \SubProofOf{thm:def:simple_type_derivability/combinator} It follows from \fullref{thm:assumptions_and_free_variables} that \( x: \tau \) is an open assumption for a derivation of \( M: \sigma \) if and only if \( x \) is not free in \( M \). If \( M \) is a combinator, it has no free variables, hence derivations of \( M \) have no open assumptions.
@@ -845,7 +873,7 @@ To formalize typing rules in \fullref{def:simple_typing_rule}, we first need to 
 
   \item We can also interpret this result as a statement for untyped combinators --- each of them can be typed uniquely \enquote{up to a choice of types for bound variables}.
 
-  \item As in \fullref{thm:def:simple_type_derivability}, we can allow other typing rules, but we must prove the proposition for each of them.
+  \item The restriction to only the base rules is discussed in \fullref{rem:base_typing_rules}.
 \end{comments}
 \begin{proof}
   Let \( T \) be a tree deriving \( M: \tau \) from the type context \( \Gamma \).
@@ -893,7 +921,7 @@ To formalize typing rules in \fullref{def:simple_typing_rule}, we first need to 
   \end{thmenum}
 \end{algorithm}
 \begin{comments}
-  \item Note that, unlike in \fullref{thm:typed_term_habitation_uniqueness}, we have not restricted which rules can be used, so it is possible that the obtained type is not unique.
+  \item Note that, unlike in \fullref{thm:typed_term_habitation_uniqueness}, we have not restricted which rules can be used, so it is possible that the obtained type is not unique. The restriction to only the base rules is discussed in \fullref{rem:base_typing_rules}.
 
   \item This algorithm can be found as \identifier{lambda_.type_derivation.inference.derive_type} in \cite{notebook:code}.
 \end{comments}

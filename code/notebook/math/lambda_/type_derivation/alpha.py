@@ -70,7 +70,7 @@ def transform_derivation_impl(tree: TypeDerivationTree, equivalent_term: TypedTe
     raise UnreachableException
 
 
-# This is alg:alpha_equivalent_type_derivation in the monograph
+# This is alg:typed_alpha_conversion in the monograph
 def transform_derivation(tree: TypeDerivationTree, equivalent_term: TypedTerm) -> TypeDerivationTree:
     try:
         return transform_derivation_impl(tree, equivalent_term)
