@@ -26,7 +26,7 @@ def are_terms_alpha_equivalent(m: UntypedTerm, n: UntypedTerm) -> bool:
                 return are_terms_alpha_equivalent(m.sub, n.sub)
 
             return m.var not in get_free_variables(n.sub) and \
-                are_terms_alpha_equivalent(m.sub, substitute(n.sub, variable_mapping={n.var: m.var}))
+                are_terms_alpha_equivalent(m.sub, substitute(n.sub, {n.var: m.var}))
 
         case _:
             return False

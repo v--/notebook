@@ -53,5 +53,5 @@ def get_bound_variables(term: Term) -> Collection[Variable]:
     return BoundVariableVisitor().visit(term)
 
 
-def get_formula_variables(term: Term) -> Collection[Variable]:
+def get_term_variables(term: Term) -> Collection[Variable]:
     return {*get_free_variables(term), *get_bound_variables(term)}

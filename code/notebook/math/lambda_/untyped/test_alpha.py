@@ -17,7 +17,7 @@ from .alpha import are_terms_alpha_equivalent, separate_free_and_bound_variables
         n='((λa.(λb.(ab)))x)'
     ),
 )
-def test_substitute_in_term_success(m: str, n: str) -> None:
+def test_are_terms_alpha_equivalent_true(m: str, n: str) -> None:
     assert are_terms_alpha_equivalent(
         parse_pure_term(m),
         parse_pure_term(n)
@@ -27,8 +27,12 @@ def test_substitute_in_term_success(m: str, n: str) -> None:
 @pytest_parametrize_kwargs(
     dict(m='x',    n='y'),
     dict(m='(xy)', n='(xz)'),
+    dict(
+        m='(λx.(λy.(xy)))',
+        n='(λa.(λa.(aa)))'
+    ),
 )
-def test_substitute_in_term_failure(m: str, n: str) -> None:
+def test_are_terms_alpha_equivalent_false(m: str, n: str) -> None:
     assert not are_terms_alpha_equivalent(
         parse_pure_term(m),
         parse_pure_term(n)
