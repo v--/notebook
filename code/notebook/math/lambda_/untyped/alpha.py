@@ -1,8 +1,8 @@
 from collections.abc import Collection
 
-from .substitution import TermSubstitution, apply_term_substitution
-from .terms import Constant, UntypedAbstraction, UntypedApplication, UntypedTerm, Variable
-from .variables import get_free_variables, new_variable
+from ..terms import Constant, UntypedAbstraction, UntypedApplication, UntypedTerm, Variable
+from ..variables import get_free_variables, new_variable
+from .substitution import substitute
 
 
 # The assertions are needed because mypy doesn't handle such complicated type narrowing
@@ -26,7 +26,7 @@ def are_terms_alpha_equivalent(m: UntypedTerm, n: UntypedTerm) -> bool:
                 return are_terms_alpha_equivalent(m.sub, n.sub)
 
             return m.var not in get_free_variables(n.sub) and \
-                are_terms_alpha_equivalent(m.sub, apply_term_substitution(n.sub, TermSubstitution(variable_mapping={n.var: m.var})))
+                are_terms_alpha_equivalent(m.sub, substitute(n.sub, variable_mapping={n.var: m.var}))
 
         case _:
             return False
@@ -55,9 +55,9 @@ def separate_free_and_bound_variables_impl(term: UntypedTerm, context: Collectio
 
             return UntypedAbstraction(
                 new_var,
-                apply_term_substitution(
+                substitute(
                     separate_free_and_bound_variables_impl(term.sub, {*context, new_var}),
-                    TermSubstitution(variable_mapping={term.var: new_var})
+                    {term.var: new_var}
                 ),
             )
 

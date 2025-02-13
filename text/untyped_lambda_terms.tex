@@ -271,7 +271,7 @@
     \thmitem{def:lambda_substitution/modified} We will find useful the concept of \term{modifying} \( \Bbbs \) at \( x \) with \( y \):
     \begin{equation}\label{eq:def:lambda_substitution/modified}
       \Bbbs_{x \mapsto y}(u) \coloneqq \begin{cases}
-        y,         &u = x, \\
+        y,        &u = x, \\
         \Bbbs(u), &u \neq x.
       \end{cases}
     \end{equation}
@@ -295,7 +295,13 @@
 \begin{comments}
   \item In \eqref{eq:def:lambda_substitution/abstraction/direct} we modify \( \Bbbs \) to fix \( x \), while in \eqref{eq:def:lambda_substitution/abstraction/renaming} we modify it to send \( x \) to \( n \). We will refer to the latter rule as \enquote{substitution with renaming}. Whenever it will be sufficient, \fullref{thm:lambda_substitution_single_rule} will allow us to compress them into one rule with a looser condition.
 
-  \item This definition is loosely based on \cite[def. 1A7]{Hindley1997STT}, but is modified to allow substituting multiple variables simultaneously, as well as to handle constants. This results in less rules since \eqref{eq:def:lambda_substitution/abstraction/direct} subsumes three of the four cases. Furthermore, our substitution rules also allow proving \fullref{thm:lambda_substitution_noop}.
+  \item This definition is loosely based on \cite[def. 1A7]{Hindley1997STT}, but is modified to allow substituting multiple variables simultaneously, as well as to handle constants. This results in less rules since \eqref{eq:def:lambda_substitution/abstraction/direct} subsumes three of the four cases.
+
+  \item Due to how fresh variables are chosen, the simultaneous substitution \( M[x \mapsto N, y \mapsto K] \) cannot be properly emulated by iterated substitution as in \fullref{rem:simulating_simultaneous_substitution} --- this can only be done \enquote{up to \( \alpha \)-equivalence}, as shown in \fullref{thm:substitution_composition_is_alpha_equivalent}. \Fullref{ex:def:lambda_substitution/composed_vs_iterated} demonstrates subtleties that arise.
+
+  \item In \fullref{alg:typed_substitution} we will show how \hyperref[def:type_derivation_tree]{type derivation trees} for \( M \) and \( L \) can be used to build a derivation tree for \( M[x \mapsto L] \) .
+
+  \item This is implemented as an algorithm as \identifier{lambda_.untyped.substitution.apply_term_substitution} in \cite{notebook:code}.
 \end{comments}
 
 \begin{remark}\label{rem:renaming_substitution_rules}
@@ -476,32 +482,32 @@
 \end{proof}
 
 \begin{corollary}\label{thm:lambda_substitution_free_variables_single}
-  For any two \( \synlambda \)-terms \( M \) and \( L \) and any variable \( u \), we have
+  For any two \( \synlambda \)-terms \( M \) and \( N \) and any variable \( x \), we have
   \begin{equation}\label{eq:thm:lambda_substitution_free_variables_single}
-    \op*{Free}( M[u \mapsto L] ) = \begin{cases}
-      \parens[\Big]{ \op*{Free}(M) \setminus \set{ u } } \cup \op*{Free}(L), &u \in \op*{Free}(M) \\
+    \op*{Free}( M[x \mapsto N] ) = \begin{cases}
+      \parens[\Big]{ \op*{Free}(M) \setminus \set{ x } } \cup \op*{Free}(N), &x \in \op*{Free}(M) \\
       \op*{Free}(M),                                                         &\T{otherwise.}
     \end{cases}
   \end{equation}
 
   In both cases,
   \begin{equation}\label{eq:thm:lambda_substitution_free_variables_single/subset}
-    \op*{Free}( M[u \mapsto L] ) \subseteq \parens[\Big]{ \op*{Free}(M) \setminus \set{ u } } \cup \op*{Free}(L).
+    \op*{Free}( M[x \mapsto N] ) \subseteq \parens[\Big]{ \op*{Free}(M) \setminus \set{ x } } \cup \op*{Free}(N).
   \end{equation}
 \end{corollary}
 \begin{proof}
-  Denote by \( \Bbbs \) the substitution sending \( u \) to \( L \). If \( u \) is free in \( M \), then
+  Denote by \( \Bbbs \) the substitution sending \( x \) to \( N \). If \( x \) is free in \( M \), then
   \begin{equation*}
-    \op*{Free}(M[u \mapsto L])
+    \op*{Free}(M[x \mapsto N])
     \reloset{\eqref{eq:thm:lambda_substitution_free_variables}} =
     \bigcup_{\mathclap{v \in \op*{Free}(M)}} \op*{Free}(\Bbbs(v))
     =
-    \op*{Free}(\overbrace{\Bbbs(u)}^L) \cup \bigcup_{\mathclap{v \in \op*{Free}(M) \setminus \set{ u }}} \overbrace{\op*{Free}(\Bbbs(v))}^{\set{ v }}.
+    \op*{Free}(\overbrace{\Bbbs(x)}^N) \cup \bigcup_{\mathclap{v \in \op*{Free}(M) \setminus \set{ x }}} \overbrace{\op*{Free}(\Bbbs(v))}^{\set{ v }}.
   \end{equation*}
 
   Otherwise,
   \begin{equation*}
-    \op*{Free}(M[v \mapsto L])
+    \op*{Free}(M[v \mapsto N])
     \reloset{\eqref{eq:thm:lambda_substitution_free_variables}} =
     \bigcup_{\mathclap{v \in \op*{Free}(M)}} \overbrace{\op*{Free}(\Bbbs(v))}^{\set{ v }}
     =
@@ -514,28 +520,62 @@
   \begin{thmenum}
     \thmitem{ex:def:lambda_substitution/simultaneous} We start with an example where we analyze the abstraction rules in detail. Consider
     \begin{equation*}
-      \parens[\Big]{ \qabs \synx (xyz) }[\synx \mapsto \syna, \syny \mapsto \synb, \synz \mapsto \sync].
+      \parens[\Big]{ \underbrace{\qabs \synx (xyz)}_M }[\synx \mapsto \syna, \syny \mapsto \synb, \synz \mapsto \sync].
     \end{equation*}
 
     We have \( \op*{Free}_\Bbbs(M) = \set{ b, c } \). Since \( \synx \) does not belong to this set, we must apply \eqref{eq:def:lambda_substitution/abstraction/direct}:
     \begin{equation*}
       \parens[\Big]{ \qabs \synx (xyz) }[\synx \mapsto \syna, \syny \mapsto \synb, \synz \mapsto \sync]
       =
-      \qabs \synx \parens[\Big]{ (xyz)[\syny \mapsto \synb, \synz \mapsto \sync] }
+      \qabs \synx \parens[\Big]{ (xyz)[\synx \mapsto \synx, \syny \mapsto \synb, \synz \mapsto \sync] }
       =
       \qabs \synx \synx \synb \sync.
     \end{equation*}
 
-    \thmitem{ex:def:lambda_substitution/nested_noop} Consider the substitution \( \ref{eq:ex:def:lambda_term/combinator/k}[\syny \mapsto \synx] \). Since \( K \) is a combinator, \fullref{thm:lambda_substitution_combinators} holds and \( K[\syny \mapsto \synx] = K \). We will show this explicitly:
-    \begin{align*}
+    \thmitem{ex:def:lambda_substitution/nested_noop} Consider the substitution \( \ref{eq:ex:def:lambda_term/combinator/k}[\syny \mapsto \synx] \). Since \( K \) is a combinator, \fullref{thm:lambda_substitution_combinators} holds and \( K[\syny \mapsto \synx] = K \).
+
+    We will show this explicitly. Denote the substitution \( \syny \mapsto \synx \) by \( \sigma \). Then
+    \begin{equation*}
+      \op*{Free}_\sigma(K)
+      =
+      \bigcup_{v \in \varnothing} \op*{Free}(\sigma(v))
+      =
+      \varnothing,
+    \end{equation*}
+    thus we must use \eqref{eq:def:lambda_substitution/abstraction/direct}:
+    \begin{equation*}
       K[\syny \mapsto \synx]
-      &=
+      =
       (\qabs \synx \qabs \syny \synx)[\syny \mapsto \synx]
-      \reloset {\eqref{eq:def:lambda_substitution/abstraction/direct}} = \\ &=
-      \qabs \synx \parens[\Big]{ (\qabs \syny \synx)[\syny \mapsto \synx] }
-      \reloset {\eqref{eq:def:lambda_substitution/abstraction/direct}} = \\ &=
-      \underbrace{\qabs \synx (\qabs \syny \synx)}_{K}.
+      =
+      \qabs \synx \parens[\Big]{ (\qabs \syny \synx)[\syny \mapsto \synx] }.
+    \end{equation*}
+
+    We have
+    \begin{equation*}
+      \op*{Free}_\sigma(\qabs \syny \synx)
+      =
+      \op*{Free}(\sigma(\synx))
+      =
+      \op*{Free}(\synx)
+      =
+      \set{ \synx },
+    \end{equation*}
+    hence
+    \begin{align*}
+      (\qabs \syny \synx)[\syny \mapsto \synx]
+      =
+      \qabs \syny (\synx[\syny \mapsto \synx])
+      =
+      \qabs \syny \synx.
     \end{align*}
+
+    Therefore,
+    \begin{equation*}
+      K[\syny \mapsto \synx] = K.
+    \end{equation*}
+
+    We will show in \fullref{ex:def:lambda_substitution/composed_vs_iterated} how this becomes more subtle when two variables are substituted simultaneously.
 
     \thmitem{ex:def:lambda_substitution/capture} The gist of \fullref{thm:lambda_substitution_free_variables} is that substitution avoids \enquote{capturing} free variables under the scope of some abstraction.
 
@@ -581,6 +621,41 @@
     \begin{equation*}
       \qabs \synx \synx \synz.
     \end{equation*}
+
+    \thmitem{ex:def:lambda_substitution/composed_vs_iterated} We will show some subtleties of renaming during simultaneous substitution. Consider
+    \begin{equation*}
+      (\underbrace{\qabs \syna \synx \synb}_M)[\underbrace{\synx \mapsto \syna, \synb \mapsto \synx}_\Bbbs].
+    \end{equation*}
+
+    The free variables of both \( M \) and its abstractor's body are \( b \) and \( x \), hence
+    \begin{equation*}
+      \op*{Free}_\Bbbs(M) = \set{ \syna, \synx }.
+    \end{equation*}
+
+    The abstractor variable \( \syna \) is in \( \op*{Free}_\Bbbs(M) \), thus we must use the renaming rule \eqref{eq:def:lambda_substitution/abstraction/renaming}. This new variable must be \( \sharp(\set{ \syna, \synx }) \), which per our remarks in \fullref{def:lambda_substitution/sharp} must be \( \synb \). Then
+    \begin{equation*}
+      M[\Bbbs] = \qabs \synb \syna \synx.
+    \end{equation*}
+
+    Note how \( \synx \) got renamed to \( \syna \) and \( \synb \) got renamed to \( \synx \) simultaneously, without any collision.
+
+    We could try emulating this substitution as in \fullref{rem:simulating_simultaneous_substitution}:
+    \begin{equation*}
+      M[\synx \mapsto \syna][\synb \mapsto \synx].
+    \end{equation*}
+
+    In this case the fresh variable in the first substitution would be \( \sharp(\set{ \syna, \synb }) = \sync \), hence
+    \begin{equation*}
+      M[\synx \mapsto \syna][\synb \mapsto \synx]
+      =
+      (\qabs \sync \syna \synb)[\synb \mapsto \synx]
+      =
+      \qabs \sync \syna \synx.
+    \end{equation*}
+
+    This differs from \( M[\synx \mapsto \syna, \synb \mapsto \synx] \) by the choice of bound variable. This similarity is called \hyperref[def:lambda_term_alpha_equivalence]{\( \alpha \)-equivalence}.
+
+    We will generalize this observation to arbitrary substitutions in \fullref{thm:substitution_composition_is_alpha_equivalent}.
   \end{thmenum}
 \end{example}
 

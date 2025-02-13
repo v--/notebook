@@ -1,7 +1,7 @@
-from ...support.pytest import pytest_parametrize_kwargs
+from ....support.pytest import pytest_parametrize_kwargs
+from ..parsing import parse_pure_term
+from ..variables import get_bound_variables, get_free_variables
 from .alpha import are_terms_alpha_equivalent, separate_free_and_bound_variables
-from .parsing import parse_pure_term
-from .variables import get_bound_variables, get_free_variables
 
 
 @pytest_parametrize_kwargs(

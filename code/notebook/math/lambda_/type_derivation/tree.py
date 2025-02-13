@@ -1,6 +1,6 @@
-from collections.abc import Collection, Iterable, Sequence
+from collections.abc import Iterable, Mapping, Sequence
 from dataclasses import dataclass
-from typing import Protocol, override
+from typing import Protocol, override, runtime_checkable
 
 from ....support.inference.rendering import AssumptionRenderer, InferenceTreeRenderer, RuleApplicationRenderer
 from ..assertions import GradualTypeAssertion, VariableTypeAssertion
@@ -11,29 +11,35 @@ from ..instantiation import (
     merge_instantiations,
 )
 from ..terms import Variable
+from ..types import SimpleType
 from ..typing import GradualTypingRule
 from .exceptions import TypeDerivationError
 
 
+@runtime_checkable
 class TypeDerivationTree(Protocol):
     conclusion: GradualTypeAssertion
 
-    def get_context(self) -> Collection[VariableTypeAssertion]:
+    def get_context(self) -> Mapping[Variable, SimpleType]:
         ...
 
     def build_renderer(self) -> InferenceTreeRenderer:
         ...
 
 
+@dataclass(frozen=True)
 class AssumptionTree(TypeDerivationTree):
     conclusion: VariableTypeAssertion
 
-    def __init__(self, assumption: VariableTypeAssertion) -> None:
-        self.conclusion = assumption
+    def __eq__(self, other: object) -> bool:
+        if not isinstance(other, TypeDerivationTree):
+            return NotImplemented
+
+        return self.conclusion == other.conclusion
 
     @override
-    def get_context(self) -> Collection[VariableTypeAssertion]:
-        return {self.conclusion}
+    def get_context(self) -> Mapping[Variable, SimpleType]:
+        return {self.conclusion.term: self.conclusion.type}
 
     @override
     def build_renderer(self) -> AssumptionRenderer:
@@ -53,41 +59,38 @@ class RuleApplicationPremise:
     discharge: VariableTypeAssertion | None = None
 
 
+def premise(*, tree: TypeDerivationTree, discharge: VariableTypeAssertion | None = None) -> RuleApplicationPremise:
+    return RuleApplicationPremise(tree, discharge)
+
+
+@dataclass(frozen=True)
 class RuleApplicationTree(TypeDerivationTree):
     conclusion: GradualTypeAssertion
     rule: GradualTypingRule
     instantiation: LambdaSchemaInstantiation
     premises: Sequence[RuleApplicationPremise]
 
-    def __init__(
-        self,
-        rule: GradualTypingRule,
-        instantiation: LambdaSchemaInstantiation,
-        premises: Sequence[RuleApplicationPremise]
-    ) -> None:
-        self.conclusion = instantiate_assertion_schema(rule.conclusion, instantiation)
-        self.rule = rule
-        self.instantiation = instantiation
-        self.premises = premises
-
-    def _filter_assumptions(self, *, discharged_at_current_step: bool) -> Iterable[VariableTypeAssertion]:
+    def _filter_assumptions(self, *, discharged_at_current_step: bool) -> Iterable[tuple[Variable, SimpleType]]:
         for rule_premise, application_premise in zip(self.rule.premises, self.premises, strict=True):
             if rule_premise is None:
                 continue
 
-            for assumption in application_premise.tree.get_context():
-                is_discharged_at_current_step = application_premise.discharge == assumption
+            for var, type_ in application_premise.tree.get_context().items():
+                if application_premise.discharge is None:
+                    continue
+
+                is_discharged_at_current_step = application_premise.discharge.term == var and application_premise.discharge.type == type_
 
                 if discharged_at_current_step == is_discharged_at_current_step:
-                    yield assumption
+                    yield var, type_
 
     @override
-    def get_context(self) -> Collection[VariableTypeAssertion]:
-        return set(self._filter_assumptions(discharged_at_current_step=False))
+    def get_context(self) -> Mapping[Variable, SimpleType]:
+        return dict(self._filter_assumptions(discharged_at_current_step=False))
 
     def get_marker_context(self) -> Iterable[Variable]:
         return sorted(
-            {assertion.term for assertion in self._filter_assumptions(discharged_at_current_step=True)},
+            {var for var, type_ in self._filter_assumptions(discharged_at_current_step=True)},
             key=str
         )
 
@@ -104,13 +107,17 @@ class RuleApplicationTree(TypeDerivationTree):
         return self.build_renderer().render()
 
 
-def apply(rule: GradualTypingRule, *premises: RuleApplicationPremise) -> RuleApplicationTree:
-    if len(premises) != len(rule.premises):
-        raise TypeDerivationError(f'The rule {rule.name} has {len(rule.premises)} premises, but the application has {len(premises)}')
+def apply(rule: GradualTypingRule, *args: TypeDerivationTree | RuleApplicationPremise) -> RuleApplicationTree:
+    if len(args) != len(rule.premises):
+        raise TypeDerivationError(f'The rule {rule.name} has {len(rule.premises)} premises, but the application has {len(args)}')
 
     instantiation = LambdaSchemaInstantiation()
+    application_premises = [
+        premise(tree=premise_arg) if isinstance(premise_arg, TypeDerivationTree) else premise_arg
+        for premise_arg in args
+    ]
 
-    for i, (rule_premise, application_premise) in enumerate(zip(rule.premises, premises, strict=True), start=1):
+    for i, (rule_premise, application_premise) in enumerate(zip(rule.premises, application_premises, strict=True), start=1):
         if rule_premise.discharge is not None:
             if application_premise.discharge is None:
                 raise TypeDerivationError(f'The rule {rule.name} requires a discharge type assertion for premise number {i}')
@@ -126,7 +133,8 @@ def apply(rule: GradualTypingRule, *premises: RuleApplicationPremise) -> RuleApp
         )
 
     return RuleApplicationTree(
+        conclusion=instantiate_assertion_schema(rule.conclusion, instantiation),
         rule=rule,
-        premises=premises,
+        premises=application_premises,
         instantiation=instantiation
     )

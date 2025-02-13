@@ -1,11 +1,11 @@
 from collections.abc import Sequence
 
-from ....support.pytest import pytest_parametrize_kwargs
+from .....support.pytest import pytest_parametrize_kwargs
+from ...common import big_omega, church_numeral, church_numeral_to_int, combinators, omega3, pairs, succ
+from ...common import variables as var
+from ...parsing import parse_pure_term
+from ...terms import UntypedAbstraction, UntypedApplication, UntypedTerm
 from ..alpha import are_terms_alpha_equivalent
-from ..common import big_omega, church_numeral, church_numeral_to_int, combinators, omega3, pairs, succ
-from ..common import variables as var
-from ..parsing import parse_pure_term
-from ..terms import UntypedAbstraction, UntypedApplication, UntypedTerm
 from .beta import BetaReduction, to_function
 from .strategies import ApplicativeOrderStrategy, NormalOrderStrategy, reduce_term_once, transitively_reduce_term
 

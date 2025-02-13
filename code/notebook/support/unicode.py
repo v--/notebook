@@ -146,7 +146,7 @@ def is_latin_string(string: str, capitalization: Capitalization) -> bool:
 def is_greek_string(string: str, capitalization: Capitalization) -> bool:
     return all(
         ('Α' <= c <= 'Ω' if Capitalization.upper in capitalization else False) or
-        ('τ' <= c <= 'ω' if Capitalization.lower in capitalization else False)
+        ('α' <= c <= 'ω' if Capitalization.lower in capitalization else False)
         for c in string
     )
 

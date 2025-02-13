@@ -1,4 +1,4 @@
-from ..exceptions import LambdaCalculusError
+from ...exceptions import LambdaCalculusError
 
 
 class ReductionError(LambdaCalculusError):

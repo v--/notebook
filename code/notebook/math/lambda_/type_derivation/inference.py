@@ -1,4 +1,4 @@
-from collections.abc import Collection
+from collections.abc import Mapping
 from dataclasses import dataclass
 from typing import Never, override
 
@@ -14,13 +14,13 @@ from ..terms import (
 from ..type_systems import ARROW_ELIM_RULE_EXPLICIT, ARROW_INTRO_RULE_EXPLICIT
 from ..types import SimpleType, is_arrow_type
 from .exceptions import TypeInferenceError
-from .tree import RuleApplicationPremise, TypeDerivationTree, apply, assume
+from .tree import TypeDerivationTree, apply, assume, premise
 
 
 # This is alg:typed_term_type_derivation in the monograph
 @dataclass(frozen=True)
 class TypeInferenceVisitor(TypedTermVisitor[TypeDerivationTree]):
-    context: Collection[VariableTypeAssertion]
+    context: Mapping[Variable, SimpleType]
 
     @override
     def visit_constant(self, term: Constant) -> Never:
@@ -28,9 +28,8 @@ class TypeInferenceVisitor(TypedTermVisitor[TypeDerivationTree]):
 
     @override
     def visit_variable(self, term: Variable) -> TypeDerivationTree:
-        for assertion in self.context:
-            if assertion.term == term:
-                return assume(assertion)
+        if term in self.context:
+            return assume(VariableTypeAssertion(term, self.context[term]))
 
         raise TypeInferenceError(f'No type specified for variable {term}')
 
@@ -44,24 +43,23 @@ class TypeInferenceVisitor(TypedTermVisitor[TypeDerivationTree]):
 
         return apply(
             ARROW_ELIM_RULE_EXPLICIT,
-            RuleApplicationPremise(tree=subtree_a),
-            RuleApplicationPremise(tree=subtree_b)
+            premise(tree=subtree_a),
+            premise(tree=subtree_b)
         )
 
     @override
     def visit_abstraction(self, term: TypedAbstraction) -> TypeDerivationTree:
-        assertion = VariableTypeAssertion(term.var, term.var_type)
-        subtree = TypeInferenceVisitor({*self.context, assertion}).visit(term.sub)
+        subtree = TypeInferenceVisitor({**self.context, term.var: term.var_type}).visit(term.sub)
 
         return apply(
             ARROW_INTRO_RULE_EXPLICIT,
-            RuleApplicationPremise(tree=subtree, discharge=assertion)
+            premise(tree=subtree, discharge=VariableTypeAssertion(term.var, term.var_type))
         )
 
 
-def derive_type(term: TypedTerm) -> TypeDerivationTree:
-    return TypeInferenceVisitor(context=set()).visit(term)
+def derive_type(term: TypedTerm, context: Mapping[Variable, SimpleType] = {}) -> TypeDerivationTree:
+    return TypeInferenceVisitor(context=context).visit(term)
 
 
-def infer_type(term: TypedTerm) -> SimpleType:
-    return derive_type(term).conclusion.type
+def infer_type(term: TypedTerm, context: Mapping[Variable, SimpleType]) -> SimpleType:
+    return derive_type(term, context).conclusion.type

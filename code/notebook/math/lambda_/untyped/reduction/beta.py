@@ -1,15 +1,15 @@
 import inspect
 from collections.abc import Callable
 
-from ..substitution import TermSubstitution, apply_term_substitution
-from ..terms import UntypedAbstraction, UntypedApplication, UntypedTerm
+from ...terms import UntypedAbstraction, UntypedApplication, UntypedTerm
+from ..substitution import substitute
 from .strategies import Reduction
 
 
 class BetaReduction(Reduction):
     def try_contract_redex(self, term: UntypedTerm) -> UntypedTerm | None:
         if isinstance(term, UntypedApplication) and isinstance(term.a, UntypedAbstraction):
-            return apply_term_substitution(term.a.sub, TermSubstitution(variable_mapping={ term.a.var: term.b }))
+            return substitute(term.a.sub, { term.a.var: term.b })
 
         return None
 

@@ -32,7 +32,7 @@ class BuildInstantiationVisitor(TypeSchemaVisitor[LambdaSchemaInstantiation]):
     @override
     def visit_connective(self, schema: SimpleConnectiveTypeSchema) -> LambdaSchemaInstantiation:
         if not isinstance(self.type, SimpleConnectiveType) or self.type.conn != schema.conn:
-            raise SchemaInferenceError(f'Cannot match application schema {schema} to {self.type}')
+            raise SchemaInferenceError(f'Cannot match type schema {schema} to {self.type}')
 
         a = infer_instantiation_from_type(schema.a, self.type.a)
         b = infer_instantiation_from_type(schema.b, self.type.b)

@@ -1,8 +1,9 @@
 from collections.abc import Collection, Iterable, Sequence
 from dataclasses import dataclass
+from typing import NamedTuple
 
 from ....support.schemas import SchemaInferenceError
-from ..deduction.markers import MarkedFormula, Marker, new_marker
+from ..deduction.markers import Marker, new_marker
 from ..deduction.proof_tree import AssumptionTree, ProofTree, RuleApplicationPremise, RuleApplicationTree
 from ..deduction.rules import NaturalDeductionRule, NaturalDeductionSystem
 from ..formulas import Formula, is_conditional
@@ -16,8 +17,7 @@ from .axiomatic_derivation_system import (
 from .exceptions import AxiomaticDerivationError
 
 
-@dataclass(frozen=True)
-class ModusPonensConfig:
+class ModusPonensConfig(NamedTuple):
     conditional_index: int
     antecedent_index: int
     conclusion_index: int
@@ -94,7 +94,7 @@ def derivation_to_proof_tree(ad_system: AxiomaticDerivationSystem, derivation: A
     conclusion = derivation.get_conclusion()
 
     if conclusion in get_premises(ad_system, derivation):
-        return AssumptionTree(MarkedFormula(conclusion, new_marker(used_markers)))
+        return AssumptionTree(conclusion, new_marker(used_markers))
 
     for axiom_schema in ad_system.axiom_schemas:
         try:
@@ -122,8 +122,7 @@ def derivation_to_proof_tree(ad_system: AxiomaticDerivationSystem, derivation: A
         derivation_to_proof_tree(ad_system, derivation.truncate(mp_config.conditional_index), used_markers),
     )
 
-    markers = {ass.marker for ass in conditional_premise.tree.get_context()}
-
+    markers = set(conditional_premise.tree.get_context().keys())
     antecedent_premise = RuleApplicationPremise(
         derivation_to_proof_tree(ad_system, derivation.truncate(mp_config.antecedent_index), {*used_markers, *markers})
     )

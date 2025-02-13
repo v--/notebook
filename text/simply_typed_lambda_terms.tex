@@ -1,6 +1,6 @@
 \section{Simply typed lambda terms}\label{sec:simply_typed_lambda_terms}
 
-Unlike untyped lambda calculus, whose presentation is mostly uniform across authors, type theory has many incompatible flavors. A concise history is described in \fullref{rem:type_theory}. We will only consider so-called \enquote{simple types}. We base the exposition here on \fullref{sec:natural_deduction}.
+Unlike untyped lambda calculus, whose presentation is mostly uniform across authors, type theory has many incompatible flavors. A concise history is described in \fullref{rem:type_theory}. We will only consider so-called \enquote{simple types}. We will see that typed \( \lambda \)-calculus focuses not only on terms, but on type derivations themselves. We base the latter on \fullref{sec:natural_deduction}.
 
 \paragraph{Type systems}
 
@@ -21,7 +21,7 @@ Unlike untyped lambda calculus, whose presentation is mostly uniform across auth
 
   Thus, he used two \enquote{base types} and one \enquote{type constructor}, resulting in infinitely many types. He assigned to each \( \synlambda \)-term a subscript indicating its type, with certain coherence conditions that we will discuss in \fullref{def:simple_type_theory}. The term \( x_\omicron \) would thus correspond to our notion of propositional formula, while the term \( x_\iota \) --- to a first-order variable.
 
-  Subsequent works by Curry and Howard lead to the Curry-Howard correspondence discussed in \fullref{con:curry_howard_correspondence}. This in turn lead Martin-Löf to introduce \hyperref[rem:dependent_type]{dependent types} and systemize the presentation of type theory via \hyperref[def:typing_rule]{typing rules}.
+  Subsequent works by Curry and Howard lead to the Curry-Howard correspondence discussed in \fullref{con:curry_howard_correspondence}. This in turn lead Martin-Löf to introduce \hyperref[rem:dependent_type]{dependent types} and systemize the presentation of type theory via \hyperref[con:typing_rule]{typing rules}.
 
   At this point, notation started unifying across authors, ultimately leading to \enquote{\( M: \tau \)} rather than \enquote{\( M_\tau \)} or \enquote{\( M^\tau \)} for \hyperref[def:type_assertion]{type assertions} postulating that the term \( M \) has type \( \tau \), and to \( \tau \synimplies \sigma \) for \enquote{function types}, replacing Church's equivalent \( (\sigma\tau) \) (and swapping \( \tau \) and \( \sigma \)). As we will see in \fullref{con:type_annotation} and \fullref{def:typed_lambda_term}, superscript notation is still convenient for type annotation.
 
@@ -321,7 +321,7 @@ To formalize typing rules in \fullref{def:simple_typing_rule}, we first need to 
 \begin{definition}\label{def:simple_typing_rule}\mimprovised
   A \term{simple typing rule} is an \hyperref[def:inference_rule]{inference rule} whose entries are \hyperref[def:type_assertion]{type assertions} for \hyperref[def:lambda_term_schema]{\( \synlambda \)-term schemas} and \hyperref[def:simple_type_schema]{simple type schemas}.
 
-  As in the case of natural deduction rules defined in \fullref{def:natural_deduction_rule}, and using the same formalism, we allow dischargeable type assertions to be attached to the premises.
+  As in the case of natural deduction rules defined in \fullref{def:natural_deduction_rule}, and using the same formalism, we allow dischargeable type assertions to be attached to the premises. In light of \fullref{rem:type_context_only_variables}, we allow only variable assertions to be discharged.
 \end{definition}
 \begin{comments}
   \item This precise definition will allow us to mechanize the \hyperref[con:curry_howard_correspondence]{Curry-Howard correspondence} for simple types.
@@ -464,6 +464,30 @@ To formalize typing rules in \fullref{def:simple_typing_rule}, we first need to 
   \item Rule application is implemented programmatically as \identifier{lambda_.type_derivation.tree.apply} in \cite{notebook:code}.
 \end{comments}
 
+\begin{proposition}\label{thm:assumptions_and_free_variables}
+  Let \( T \) be a \hyperref[def:type_derivation_tree]{type derivation tree} with conclusion \( M: \tau \).
+
+  Then the variables having \hyperref[def:type_derivation_tree/context]{open assumptions} in \( T \) are precisely the free variable of \( M \).
+\end{proposition}
+\begin{proof}
+  We will use simple case analysis on the structure of \( T \):
+  \begin{itemize}
+    \item If \( T \) is an assumption tree, then \( M \) must be a variable, and thus \( x: \tau \) is an open assumption in \( T \) if and only if \( M = x \).
+
+    \item If \( T \) is an application of \ref{inf:def:base_typing_rules/arrow/elim}, then \( M = NK \) and \( T \) has subtrees deriving \( N: \rho \to \sigma \) and \( K: \rho \) for some type \( \rho \). We suppose that the inductive hypothesis holds for \( T_N \) and \( T_K \).
+
+    Since nothing is discharged by this rule application, the open assumptions of \( M \) are the union of those of \( N \) and \( K \). The same holds for free variables.
+
+    \item If \( T \) is an application of \ref{inf:def:base_typing_rules/arrow/intro/imp}, \( M = \qabs y N \), \( \sigma = \rho \synimplies \delta \), and \( T \) has a subtree deriving \( N: \delta \) with the additional assumption \( y: \rho \). But this is precisely the additional free variable compared to those of \( M \).
+
+    \begin{itemize}
+      \item If \( x = y \), uniqueness of the variables in the context implies that \( \tau = \rho \), and \( x: \tau \) gets discharged, and hence \( \Gamma \vdash M \). Furthermore, in this case \( x \) is not free in \( M \).
+
+      \item If \( T \) is an application of \ref{inf:def:base_typing_rules/arrow/intro/exp}, we proceed identically.
+    \end{itemize}
+  \end{itemize}
+\end{proof}
+
 \begin{definition}\label{def:simple_type_derivability}\mimprovised
   In a fixed \hyperref[def:simple_type_system]{simple type system} (specifying terms, types and rules), we define a \hyperref[def:consequence_relation]{consequence relation} on type assertions as follows: for a \hyperref[def:logical_context]{logical context} \( \Gamma \) and a \hyperref[def:type_assertion]{type assertion} \( M: \tau \), we let \( \Gamma \vdash M: \tau \) if there exists a \hyperref[def:type_derivation_tree]{type derivation tree} with conclusion \( M: \tau \) whose \hyperref[def:natural_deduction_proof_tree/context]{open assumptions} are all in \( \Gamma \).
 
@@ -500,8 +524,6 @@ To formalize typing rules in \fullref{def:simple_typing_rule}, we first need to 
 \begin{proposition}\label{thm:def:simple_type_derivability}
   \hyperref[def:simple_type_derivability]{Type derivability} for \hyperref[def:simple_type_system]{simple type systems} only featuring the base rules from \fullref{def:base_typing_rules}\fnote{Of course, systems may feature other rules, but we must explicitly prove the corresponding statement for each of them.} has the following basic properties:
   \begin{thmenum}
-    \thmitem{thm:def:simple_type_derivability/free} If \( \Gamma, x: \tau \vdash M: \sigma \), then \( x \) is not free in \( M \) if and only if \( \Gamma \vdash M: \sigma \).
-
     \thmitem{thm:def:simple_type_derivability/combinator} If \( {}\vdash M: \sigma \), then \( M \) is a \hyperref[def:lambda_combinator]{combinator}.
 
     \thmitem{thm:def:simple_type_derivability/assumption_removal} We have \( \Gamma, x: \tau \vdash M: \sigma \) if and only if \( \Gamma \vdash \qabs x M: \tau \to \sigma \).
@@ -511,41 +533,7 @@ To formalize typing rules in \fullref{def:simple_typing_rule}, we first need to 
   \item \Fullref{thm:def:simple_type_derivability/assumption_removal} allows us to remove assumptions by prefixing the term with an abstractor. It also demonstrates the \hyperref[con:inference_rule_admissibility]{admissible} of the \hyperref[rem:sequent_calculus]{sequent calculus} style variation of the rule \ref{inf:def:base_typing_rules/arrow/intro/imp} described in \fullref{rem:typing_rule_style}.
 \end{comments}
 \begin{proof}
-  \SubProofOf{thm:def:simple_type_derivability/free} Let \( T \) be a tree deriving \( M: \sigma \) from the type context \( \Gamma, x: \tau \) (as usually, regarded as a set).
-
-  We will use \fullref{thm:induction_on_rooted_trees} on \( T \):
-  \begin{itemize}
-    \item If \( T \) is an assumption tree, then \( M \) must be a variable, and thus \( x: \tau \) is an open assumption in \( T \) if and only if \( M = x \).
-
-    \item If \( T \) is an application of \ref{inf:def:base_typing_rules/arrow/elim}, then \( M = NK \) and \( T \) has a subtree \( T_L \) deriving \( N: \rho \to \sigma \) for some type \( \rho \), and a subtree \( T_R \) deriving \( K: \rho \). We suppose that the inductive hypothesis holds for \( T_L \) and \( T_R \).
-
-    \begin{itemize}
-      \item If \( x \) is not free in \( M \), it is not free in \( N \) nor \( K \). Since nothing is discharged by this rule application, we have \( \Gamma, x: \tau \vdash N \) and \( \Gamma, x: \tau \vdash K \). The inductive hypothesis implies that \( x: \tau \) is not an open assumption in \( T_L \) nor \( T_R \), and hence also not in \( T \). Hence, \( \Gamma \vdash M \).
-
-      \item Conversely, if \( \Gamma \vdash M \), then \( \Gamma \vdash N \) and \( \Gamma \vdash K \), and the inductive hypothesis implies that \( x \) is not free in either \( N \) nor \( K \). Hence, \( x \) is not free in \( M \).
-    \end{itemize}
-
-    \item If \( T \) is an application of \ref{inf:def:base_typing_rules/arrow/intro/imp}, \( M = \qabs y N \), \( \sigma = \rho \synimplies \delta \), and \( T \) has a subtree \( T' \) deriving \( N: \delta \) from \( \Gamma \setminus \set{ y: \rho } \). Again, we suppose that the inductive hypothesis holds for \( T' \).
-
-    \begin{itemize}
-      \item If \( x = y \), uniqueness of the variables in the context implies that \( \tau = \rho \), and \( x: \tau \) gets discharged, and hence \( \Gamma \vdash M \). Furthermore, in this case \( x \) is not free in \( M \).
-
-      \item Otherwise, we have \( x \neq y \), and thus also \( \tau \neq \rho \).
-
-      \begin{itemize}
-        \item If \( x \) is not free in \( M \), it is also not free in \( N \), and the inductive hypothesis implies that \( \Gamma \vdash N: \delta \), from where it follows that
-        \begin{equation*}
-          \Gamma \vdash \underbrace{\qabs y N}_M: \underbrace{\rho \synimplies \delta}_\sigma.
-        \end{equation*}
-
-        \item Conversely, if \( \Gamma \vdash M: \sigma \), then \( \Gamma, y: \rho \vdash N: \delta \), and the inductive hypothesis implies that \( x \) is not free in \( N \). Then \( x \) is also not free in \( M \).
-      \end{itemize}
-
-      \item If \( T \) is an application of \ref{inf:def:base_typing_rules/arrow/intro/exp}, we proceed identically.
-    \end{itemize}
-  \end{itemize}
-
-  \SubProofOf{thm:def:simple_type_derivability/combinator} It follows from \fullref{thm:def:simple_type_derivability/free} that \( x: \tau \) is an open assumption for a derivation of \( M: \sigma \) if and only if \( x \) is not free in \( M \). If \( M \) is a combinator, it has no free variables, hence derivations of \( M \) have no open assumptions.
+  \SubProofOf{thm:def:simple_type_derivability/combinator} It follows from \fullref{thm:assumptions_and_free_variables} that \( x: \tau \) is an open assumption for a derivation of \( M: \sigma \) if and only if \( x \) is not free in \( M \). If \( M \) is a combinator, it has no free variables, hence derivations of \( M \) have no open assumptions.
 
   \SubProofOf{thm:def:simple_type_derivability/assumption_removal}
 
@@ -571,6 +559,8 @@ To formalize typing rules in \fullref{def:simple_typing_rule}, we first need to 
 
 \begin{definition}\label{def:typability}\mcite[def. 2D1]{Hindley1997STT}
   For a fixed \hyperref[def:abstract_type_system]{abstract type system}, we say that the term \( M \) is \term{typable} in the \hyperref[def:type_context]{type context} \( \Gamma \) if there exists a type \( \tau \) such that \( \Gamma \vdash M: \tau \).
+
+  We say that \( M \) is \term{typable} (without a context specified) if there exists a context in which it is typable.
 \end{definition}
 \begin{comments}
   \item We will often be interested in \hyperref[def:lambda_combinator]{combinators}, in which case, due to \fullref{thm:def:simple_type_derivability/combinator}, we may restrict ourselves to empty contexts: a combinator is typable if and only if there exists a type \( \tau \) such that \( {}\vdash M: \tau \).
@@ -590,7 +580,7 @@ To formalize typing rules in \fullref{def:simple_typing_rule}, we first need to 
 \begin{example}\label{ex:def:type_derivation_tree}
   We list examples of \hyperref[def:type_derivation_tree]{type derivation trees} for \hyperref[def:simple_type_system]{simple type systems}:
   \begin{thmenum}
-    \thmitem{ex:def:type_derivation_tree/var} A variable \( x \) is typable in any \hyperref[def:type_context]{type context} containing \( x \). Due to \fullref{thm:def:simple_type_derivability/free}, it is not typable without a context unless we introduce a special rule for this.
+    \thmitem{ex:def:type_derivation_tree/var} A variable \( x \) is typable in any \hyperref[def:type_context]{type context} containing \( x \). Due to \fullref{thm:assumptions_and_free_variables}, it is not typable without a context unless we introduce a special rule for this.
 
     \thmitem{ex:def:type_derivation_tree/const} The typability of constants depends on special rules introduced for them.
 
@@ -644,6 +634,12 @@ To formalize typing rules in \fullref{def:simple_typing_rule}, we first need to 
     \end{equation*}
 
     Via the Curry-Howard correspondence, this type corresponds to the axiom \eqref{eq:def:minimal_implication_logic/dist} --- see \fullref{ex:con:curry_howard_correspondence/minimal_implicational}.
+
+    \thmitem{ex:def:type_derivation_tree/typed_incompatible} The typed term
+    \begin{equation*}
+      I_\alpha I_\beta = (\qabs {\synx^\alpha} \synx) (\qabs {\synx^\beta} \synx)
+    \end{equation*}
+    is not generally \hyperref[def:typability]{typable} unless \( \alpha = \beta \synimplies \beta \) (or unless the type system contains a special typing rule).
 
     \thmitem{ex:def:type_derivation_tree/self_application} The term \( xx \) is not typable because \ref{inf:def:base_typing_rules/arrow/elim} requires the existence of types \( \tau \) and \( \sigma \) so that \( x \) inhibits \( x: \tau \to \sigma \) and \( x: \tau \) simultaneously. This is not possible because type contexts disallow variables to have more than one type assigned.
 
@@ -755,7 +751,7 @@ To formalize typing rules in \fullref{def:simple_typing_rule}, we first need to 
 
     \thmitem{ex:def:type_derivation_tree/disjoint} Consider the combinators \ref{eq:ex:def:beta_eta_reduction/disjoint/intro_left}, \ref{eq:ex:def:beta_eta_reduction/disjoint/intro_right} and \ref{eq:ex:def:beta_eta_reduction/disjoint/elim} from \fullref{ex:def:beta_eta_reduction/disjoint}.
 
-    Since \( S_- \) and \( P_+ \) are \hyperref[def:lambda_term_alpha_equivalence]{\( \tau \)-equivalent}, we conclude that they can be assigned the same types\fnote{This will be proven formally in \fullref{thm:alpha_equivalent_term_typing}.}.
+    Since \( S_- \) and \( P_+ \) are \hyperref[def:lambda_term_alpha_equivalence]{\( \alpha \)-equivalent}, we conclude that they can be assigned the same types\fnote{This will be proven formally in \fullref{thm:alpha_equivalent_term_typing}.}.
 
     On the other hand, for
     \begin{equation*}
@@ -858,11 +854,11 @@ To formalize typing rules in \fullref{def:simple_typing_rule}, we first need to 
   \begin{itemize}
     \item If \( T \) is an assumption tree, then \( M \) must be a variable, and \( \Gamma \vdash M \) only if \( \Gamma \) contains a type assertion for \( M \). Since type contexts have at most one type assertion per variable, it follows that the type \( \tau \) of \( M \) is uniquely determined.
 
-    \item If \( T \) is an application of \ref{inf:def:base_typing_rules/arrow/elim}, then \( M = NK \) and \( T \) has a subtree \( T_L \) deriving \( N: \sigma \to \tau \) for some type \( \sigma \), and a subtree \( T_R \) deriving \( K: \sigma \). We suppose that the inductive hypothesis holds for \( T_L \) and \( T_R \).
+    \item If \( T \) is an application of \ref{inf:def:base_typing_rules/arrow/elim}, then \( M = NK \) and \( T \) has a subtree \( T_N \) deriving \( N: \sigma \to \tau \) for some type \( \sigma \), and a subtree \( T_K \) deriving \( K: \sigma \). We suppose that the inductive hypothesis holds for \( T_N \) and \( T_K \).
 
-    Let \( T' \) be a tree deriving \( M: \tau' \) from \( \Gamma \). Since \( M = NK \), \( T' \) must be an application tree of \ref{inf:def:base_typing/app}, with subtrees \( T_L' \) and \( T_R' \) deriving \( N: \sigma' \to \tau' \) and \( K: \sigma' \) from the assumptions in \( \Gamma \).
+    Let \( T' \) be a tree deriving \( M: \tau' \) from \( \Gamma \). Since \( M = NK \), \( T' \) must be an application tree of \ref{inf:def:base_typing/app}, with subtrees \( T_N' \) and \( T_K' \) deriving \( N: \sigma' \to \tau' \) and \( K: \sigma' \) from the assumptions in \( \Gamma \).
 
-    The inductive hypothesis on \( T_L \) implies that the types \( \sigma' \to \tau' \) and \( \sigma \to \tau \) are equal, and thus so are \( \tau' \) and \( \tau \).
+    The inductive hypothesis on \( T_N \) implies that the types \( \sigma' \to \tau' \) and \( \sigma \to \tau \) are equal, and thus so are \( \tau' \) and \( \tau \).
 
     \item If \( T \) is an application of \ref{inf:def:base_typing_rules/arrow/intro/exp}, then \( M = \qabs {x^\sigma} N \), \( \tau = \sigma \synimplies \rho \) and \( T \) has a subtree \( S \) deriving \( N: \rho \) from \( \Gamma, x: \sigma \).
 
@@ -875,18 +871,16 @@ To formalize typing rules in \fullref{def:simple_typing_rule}, we first need to 
 \end{proof}
 
 \begin{algorithm}[Typed term type derivation]\label{alg:typed_term_type_derivation}
-  Fix an \hyperref[def:simple_type_system_style]{explicitly typed} \hyperref[def:simple_type_system]{simple type system} and a \hyperref[def:typed_lambda_term]{typed \( \synlambda \)-term} \( M \). We will try to construct a \hyperref[def:type_derivation_tree]{type derivation tree} for \( M \).
-
-  At each step, we will maintain a \hyperref[def:type_context]{type context} \( \Gamma \) built from annotations for variables in the scope of some enclosing abstractors. Thus, the algorithm will construct a derivation tree for a term \( M \) and a context \( \Gamma \), and start with an empty context.
+  Fix an \hyperref[def:simple_type_system_style]{explicitly typed} \hyperref[def:simple_type_system]{simple type system} and a \hyperref[def:typed_lambda_term]{typed \( \synlambda \)-term} \( M \). Fix also a \hyperref[def:type_context]{type context} \( \Gamma \) containing the free variables of \( M \). We will try (and sometimes fail) to construct a \hyperref[def:type_derivation_tree]{type derivation tree} for \( M \) recursively.
 
   \begin{thmenum}
-    \thmitem{alg:typed_combinator_type_derivation/const} If \( M \) is a constant, we halt the algorithm since handling constants depends on the particular type system.
+    \thmitem{alg:typed_combinator_type_derivation/const} If \( M \) is a constant, we halt the algorithm with no result since handling constants depends on the particular type system.
 
     \thmitem{alg:typed_combinator_type_derivation/var} If \( M \) is a variable, we have two possibilities:
     \begin{thmenum}
       \thmitem{alg:typed_combinator_type_derivation/var/assumption} If \( \Gamma \) contains an assertion \( M: \tau \) for some type \( \tau \), we use this to construct an \hyperref[def:type_derivation_tree/assumption]{assumption tree}.
 
-      \thmitem{alg:typed_combinator_type_derivation/var/no_assumption} Otherwise, we again halt the algorithm since, as shown in \fullref{thm:def:simple_type_derivability/free}, free variables require a choice of type.
+      \thmitem{alg:typed_combinator_type_derivation/var/no_assumption} Otherwise, we again halt the algorithm with no result since, as shown in \fullref{thm:assumptions_and_free_variables}, free variables require a choice of type.
     \end{thmenum}
 
     \thmitem{alg:typed_combinator_type_derivation/app} If \( M = NK \), we use the algorithm on \( N \) and \( K \) with the same context to obtain derivation trees \( T_N \) and \( T_K \).

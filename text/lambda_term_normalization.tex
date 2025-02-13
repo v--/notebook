@@ -1,10 +1,98 @@
 \section{Lambda term normalization}\label{sec:lambda_term_normalization}
 
+\paragraph{Typed substitution}
+
+\begin{algorithm}[Typed substitution]\label{alg:typed_substitution}
+  Suppose that the terms are either all \hyperref[def:lambda_term]{untyped} or \hyperref[def:typed_lambda_term]{typed}. As usual, we will presuppose only the base rules from \fullref{def:base_typing_rules} (which in particular means that we will not consider constants).
+
+  Fix a \hyperref[def:lambda_substitution]{substitution} \( \Bbbs \) and a \hyperref[def:type_derivation_tree]{type derivation tree} \( T \) for \( M: \tau \). For every assumption \( v: \sigma \) of \( T \), suppose we are given a derivation tree \( T_v \) for \( \Bbbs(v): \sigma \).
+
+  We will build a derivation tree \( T' \) for \( M[\Bbbs]: \tau \).
+
+  Since every variable in a \hyperref[def:type_derivation_tree]{type derivation tree} has a fixed type, we may just as well assume that all terms are explicitly typed.
+
+  \begin{thmenum}
+    \thmitem{alg:typed_substitution/var} If \( T \) is an assumption tree, then \( M \) is a variable. The assertion \( M: \tau \) is then an assumption of \( T \), and we have supposed that there exists a corresponding tree \( T_M \) deriving \( M[\Bbbs]: \tau \).
+
+    This demonstrates invariance for terms of length \( 1 \).
+
+    \thmitem{alg:typed_substitution/app} If \( M = NK \), then \( T \) is an application tree for the rule \ref{inf:def:base_typing_rules/arrow/elim}; thus, \( T \) has subtrees \( T_N \) and \( T_K \) deriving \( N: \sigma \synimplies \tau \) and \( K: \sigma \) for some type \( \sigma \).
+
+    We apply the algorithm to these subtrees to obtain \( T_N' \) and \( T_K' \) deriving \( N[\Bbbs]: \sigma \synimplies \tau \) and \( K[\Bbbs]: \sigma \).
+
+    Then we use \ref{inf:def:base_typing_rules/arrow/elim} to combine \( T_N' \) and \( T_K' \), obtaining a derivation of \( M[\Bbbs]: \sigma \).
+
+    \thmitem{alg:typed_substitution/abs} If \( M = \qabs {x^\sigma} N \), then \( \tau = \sigma \synimplies \rho \) for some type \( \rho \), and \( T \) is an application tree for \ref{inf:def:base_typing_rules/arrow/intro/exp} with discharge assertion \( x: \sigma \) and subtree \( T_N \) deriving \( N: \rho \).
+
+    We must consider two possibilities:
+    \begin{thmenum}
+      \thmitem{alg:typed_substitution/abs/renaming} If \( x \) is in \( \op*{Free}_\Bbbs(M) \), then substitution uses the renaming rule \eqref{eq:def:lambda_substitution/abstraction/renaming}:
+      \begin{equation*}
+        M[\Bbbs] = \qabs {n^\sigma} N[\Bbbs_{x \mapsto n}],
+      \end{equation*}
+      where \( n = \sharp(\op*{Free}(N) \cup \op*{Free}_\Bbbs(N)) \).
+
+      We can use the algorithm on the modified substitution \( \Bbbs_{x \mapsto n} \) to obtain a tree \( S \) deriving \( N[\Bbbs_{x \mapsto n}]: \rho \). Applying \ref{inf:def:base_typing_rules/arrow/intro/exp} to \( S \) with discharge assertion \( n: \sigma \), we obtain a derivation tree for \( M[\Bbbs]: \tau \).
+
+      \thmitem{alg:typed_substitution/abs/direct} If \( x \) is instead not in \( \op*{Free}_\Bbbs(M) \), then substitution uses the non-renaming rule renaming rule \eqref{eq:def:lambda_substitution/abstraction/direct}:
+      \begin{equation*}
+        M[\Bbbs] = \qabs {x^\sigma} N[\Bbbs_{x \mapsto x}].
+      \end{equation*}
+
+      We proceed analogously to the previous case to construct a derivation of \( M[\Bbbs]: \tau \).
+    \end{thmenum}
+  \end{thmenum}
+\end{algorithm}
+\begin{comments}
+  \item This algorithm can be found as \identifier{lambda_.type_derivation.substitution.apply_tree_substitution} in \cite{notebook:code}.
+\end{comments}
+
+\begin{proposition}\label{thm:typed_substitution_assertions}
+  The following \hyperref[def:simple_typing_rule]{simple typing rule} is \hyperref[con:inference_rule_admissibility]{admissible} with respect to \ref{inf:def:base_typing_rules/arrow/elim} and \ref{inf:def:base_typing_rules/arrow/intro/exp}:
+  \begin{equation*}\taglabel[\ensuremath{ Subst }]{inf:thm:typed_substitution_assertions}
+    \begin{prooftree}
+      \hypo{ [\synx: \syn\sigma] }
+      \ellipsis {} { \synM: \syn\tau }
+
+      \hypo{ \synN: \syn\sigma }
+      \infer2[\ref{inf:thm:typed_substitution_assertions}]{ \synM[\synx \synsubst \synN]: \syn\tau }.
+    \end{prooftree}
+  \end{equation*}
+\end{proposition}
+\begin{comments}
+  \item When defining term schemas in \fullref{def:lambda_term_schema}, we have not defined schemas for substitution. This will be done for first-order formulas in \fullref{def:first_order_formula_schema}, but here the complexity of such a definition will not pay off --- our goal is merely to illustrate a possible typing rule.
+
+  \item We can also express this via the following \hyperref[rem:sequent_calculus]{sequent calculus} style rule:
+  \begin{equation*}
+    \begin{prooftree}
+      \hypo{ \syn\Gamma, \synx: \syn\sigma \synvdash \synM: \syn\tau }
+      \hypo{ \syn\Delta \synvdash \synN: \syn\sigma }
+      \infer2{ \syn\Gamma, \syn\Delta \synvdash \synM[\synx \synsubst \synN]: \syn\tau }.
+    \end{prooftree}
+  \end{equation*}
+\end{comments}
+\begin{proof}
+  Let \( T_M \) and \( T_N \) be derivation trees for \( M: \tau \) and \( N: \sigma \), respectively. \Fullref{alg:typed_substitution} allows us to build a derivation tree \( T'_M \) for \( M[x \mapsto N]: \tau \).
+
+  Suppose that the open assumptions of \( T_M \) are among \( \Gamma, x: \sigma \), and those of \( T_N \) --- among \( \Delta \).
+
+  \Fullref{thm:lambda_substitution_free_variables_single} implies that
+  \begin{equation*}
+    \op*{Free}(M[x \mapsto N]) \subseteq \parens[\Big]{ \op*{Free}(M) \setminus \set{ x } } \cup \op*{Free}(N).
+  \end{equation*}
+
+  \Fullref{thm:assumptions_and_free_variables} implies that the open assumptions of \( T'_M \) are a subset of those of \( T_M \) with \( x: \sigma \) removed and with the open assumptions of \( T_N \) added.
+
+  Therefore, the open assumptions of \( T'_M \) are among \( \Gamma, \Delta \).
+\end{proof}
+
+\paragraph{\( \alpha \)-equivalence}
+
 \begin{definition}\label{def:typed_term_alpha_equivalence}
-  \hyperref[def:typed_lambda_term]{Typed \( \synlambda \)-terms} require adapting \hyperref[def:lambda_term_alpha_equivalence]{\( \alpha \)-equivalence} by replacing the rules \ref{inf:thm:alpha_equivalence_simplified/lift} and \ref{inf:thm:alpha_equivalence_simplified/ren} with the following:
+  \hyperref[def:typed_lambda_term]{Typed \( \synlambda \)-terms} require adapting \hyperref[def:lambda_term_alpha_equivalence]{\( \tau \)-equivalence} by replacing the rules \ref{inf:thm:alpha_equivalence_simplified/lift} and \ref{inf:thm:alpha_equivalence_simplified/ren} with the following:
   \begin{paracol}{2}
     \begin{leftcolumn}
-      \begin{equation*}\taglabel[\ensuremath{ \logic{Lift}_\alpha^{\T{tt}} }]{inf:def:typed_term_alpha_equivalence/lift}
+      \begin{equation*}\taglabel[\ensuremath{ \logic{Lift}_\tau^{\T{tt}} }]{inf:def:typed_term_alpha_equivalence/lift}
         \begin{prooftree}
           \hypo{ A \aequiv B }
           \infer1[\ref{inf:def:typed_term_alpha_equivalence/lift}]{ \qabs {x^\tau} A \aequiv \qabs {x^\tau} B }
@@ -13,7 +101,7 @@
     \end{leftcolumn}
 
     \begin{rightcolumn}
-      \begin{equation*}\taglabel[\ensuremath{ \logic{Ren}_\alpha^{\T{tt}} }]{inf:def:typed_term_alpha_equivalence/ren}
+      \begin{equation*}\taglabel[\ensuremath{ \logic{Ren}_\tau^{\T{tt}} }]{inf:def:typed_term_alpha_equivalence/ren}
         \begin{prooftree}
           \hypo{ a \neq b }
           \hypo{ a \not\in \op*{Free}(B) }
@@ -25,19 +113,19 @@
   \end{paracol}
 \end{definition}
 \begin{comments}
-  \item Here \( \alpha \) is an arbitrary type, just like \( A \) and \( B \) are arbitrary terms.
+  \item Here \( \tau \) is an arbitrary type, just like \( A \) and \( B \) are arbitrary terms.
 
   \item Note that these are not typing rules and are thus not stated in terms of schemas. Introducing schemas for capturing the complexity of these rules would require much additional work.
 
-  \item This limits the scope of \( \alpha \)-equivalence considerably compared to relying on \( \alpha \)-equivalence on untyped terms via \hyperref[alg:type_erasure]{type erasure} --- see \fullref{ex:def:typed_term_alpha_equivalence}.
+  \item This limits the scope of \( \tau \)-equivalence considerably compared to relying on \( \tau \)-equivalence on untyped terms via \hyperref[alg:type_erasure]{type erasure} --- see \fullref{ex:def:typed_term_alpha_equivalence}.
 \end{comments}
 
 \begin{example}\label{ex:def:typed_term_alpha_equivalence}
-  The rule \ref{inf:thm:alpha_equivalence_simplified/ren} for untyped terms ensures that \( \qabs x x \) and \( \qabs y y \) are \( \alpha \)-equivalent irrespective of the choice of \( x \) and \( y \).
+  The rule \ref{inf:thm:alpha_equivalence_simplified/ren} for untyped terms ensures that \( \qabs x x \) and \( \qabs y y \) are \( \tau \)-equivalent irrespective of the choice of \( x \) and \( y \).
 
-  The corresponding rule \ref{inf:def:typed_term_alpha_equivalence/ren} for typed terms however ensures that \( \qabs {x^\tau} x \) and \( \qabs {y^\beta} y \) are \( \alpha \)-equivalent only if \( \alpha = \beta \).
+  The corresponding rule \ref{inf:def:typed_term_alpha_equivalence/ren} for typed terms however ensures that \( \qabs {x^\tau} x \) and \( \qabs {y^\sigma} y \) are \( \tau \)-equivalent only if \( \tau = \sigma \).
 
-  If we were instead to rely on \hyperref[alg:type_erasure]{type erasure}, we would conclude that \( \qabs {x^\tau} x \) and \( \qabs {y^\beta} y \) are \( \alpha \)-equivalent even when their type annotations are distinct.
+  If we were instead to rely on \hyperref[alg:type_erasure]{type erasure}, we would conclude that \( \qabs {x^\tau} x \) and \( \qabs {y^\sigma} y \) are \( \tau \)-equivalent even when their type annotations are distinct.
 \end{example}
 
 \begin{proposition}\label{thm:alpha_equivalent_term_typing}

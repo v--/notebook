@@ -1,8 +1,8 @@
 from collections.abc import Mapping
 
-from ...support.pytest import pytest_parametrize_kwargs
-from .parsing import parse_pure_term, parse_variable
-from .substitution import TermSubstitution, apply_term_substitution
+from ....support.pytest import pytest_parametrize_kwargs
+from ..parsing import parse_pure_term, parse_variable
+from .substitution import UntypedTermSubstitution, apply_term_substitution
 
 
 @pytest_parametrize_kwargs(
@@ -57,6 +57,17 @@ from .substitution import TermSubstitution, apply_term_substitution
         mapping=dict(y='z'),
         expected='(λx.(xz))'
     ),
+    ## ex:def:lambda_substitution/composed_vs_iterated
+    dict(
+        term='(λa.(xb))',
+        mapping=dict(x='a', b='x'),
+        expected='(λb.(ax))'
+    ),
+    dict(
+        term='(λa.(xb))',
+        mapping=dict(x='a'),
+        expected='(λc.(ab))'
+    )
 )
 def test_substitute_in_term(term: str,
     mapping: Mapping[str, str],
@@ -64,7 +75,7 @@ def test_substitute_in_term(term: str,
 ) -> None:
     sub = apply_term_substitution(
         parse_pure_term(term),
-        TermSubstitution(
+        UntypedTermSubstitution(
             variable_mapping={
                 parse_variable(key): parse_pure_term(value) for key, value in mapping.items()
             }

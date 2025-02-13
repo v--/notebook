@@ -24,6 +24,9 @@ class Identifier(TokenMixin):
 
         return self.value + itoa_subscripts(self.index)
 
+    def __repr__(self) -> str:
+        return f'{type(self).__name__}({self.value!r}, {self.index})'
+
     def increment(self) -> Self:
         return type(self).build(
             self.value,
@@ -44,9 +47,9 @@ def iter_latin_identifiers() -> Iterable[LatinIdentifier]:
             yield LatinIdentifier(chr(j), index=i)
 
 
-def new_latin_identifier(context: Collection[LatinIdentifier]) -> LatinIdentifier:
+def new_latin_identifier(blacklist: Collection[LatinIdentifier]) -> LatinIdentifier:
     for identifier in iter_latin_identifiers():
-        if identifier not in context:
+        if identifier not in blacklist:
             return identifier
 
     raise UnreachableException
