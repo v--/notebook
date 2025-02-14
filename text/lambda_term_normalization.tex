@@ -1,6 +1,6 @@
 \section{Lambda term normalization}\label{sec:lambda_term_normalization}
 
-Unless explicitly noted otherwise, we will follow \fullref{rem:base_typing_rules}, that is, we will restrict ourselves to explicitly typed terms and to derivation trees constructed using the two base rules from \fullref{def:base_typing_rules}. In particular, we will not consider constants.
+Unless explicitly noted otherwise, we will follow \fullref{rem:base_typing_rules}, that is, we will restrict ourselves to explicitly typed terms and to derivation trees constructed using the two base rules from \fullref{def:base_typing_rules}. In particular, we will not consider constant terms.
 
 \paragraph{Typed substitution}
 
@@ -39,6 +39,9 @@ Unless explicitly noted otherwise, we will follow \fullref{rem:base_typing_rules
     \end{thmenum}
   \end{thmenum}
 \end{algorithm}
+\begin{defproof}
+  The algorithm halts as can be easily proven using induction on the length of terms.
+\end{defproof}
 \begin{comments}
   \item This algorithm can be found as \identifier{lambda_.type_derivation.substitution.apply_tree_substitution} in \cite{notebook:code}.
 \end{comments}
@@ -155,8 +158,11 @@ Unless explicitly noted otherwise, we will follow \fullref{rem:base_typing_rules
     \end{thmenum}
   \end{thmenum}
 \end{algorithm}
+\begin{defproof}
+  The algorithm halts as can be easily proven using induction on the length of terms.
+\end{defproof}
 \begin{comments}
-  \item This algorithm can be found as \identifier{lambda_.type_derivation.alpha.transform_derivation} in \cite{notebook:code}.
+  \item This algorithm can be found as \identifier{lambda_.type_derivation.alpha.alpha_convert_derivation} in \cite{notebook:code}.
 \end{comments}
 
 \begin{proposition}\label{thm:alpha_equivalent_term_typing}
@@ -169,6 +175,129 @@ Unless explicitly noted otherwise, we will follow \fullref{rem:base_typing_rules
 \end{proof}
 
 \paragraph{Reduction}
+
+\begin{definition}\label{def:typed_reduction_rules}
+  Analogously to \fullref{def:typed_term_alpha_equivalence}, some rules for reductions from \fullref{def:lambda_reduction} and \fullref{def:beta_eta_reduction} require adaptations for \hyperref[def:typed_lambda_term]{typed \( \synlambda \)-terms}. We will see a better justified adaptation in \fullref{thm:reduction_typing_rules}; reduction rules in type theory are discussed in \fullref{rem:type_theory_rule_classification}.
+
+  Of these, adapting \ref{inf:def:lambda_reduction/abs} puts restrictions on the abstractor variables:
+  \begin{equation*}\taglabel[\ensuremath{ \logic{Abs}_{\Anon}^{\T{tt}} }]{inf:def:typed_reduction_rules/abs}
+    \begin{prooftree}
+      \hypo{ M \pred N }
+      \infer1[\ref{inf:def:typed_reduction_rules/abs}]{ \qabs {x^\tau} M \pred \qabs {x^\tau} N }.
+    \end{prooftree}
+  \end{equation*}
+
+  The adaptations of \ref{inf:def:beta_eta_reduction/beta} and \ref{inf:def:beta_eta_reduction/eta} instead do not make use of this annotation without type assertions on other terms:
+  \begin{paracol}{2}
+    \begin{leftcolumn}
+      \begin{equation*}\taglabel[\ensuremath{ \logic{Red}_\beta^{\T{tt}} }]{inf:def:typed_reduction_rules/beta}
+        \begin{prooftree}
+          \infer0[\ref{inf:def:typed_reduction_rules/beta}]{ (\qabs {x^\tau} M) N \bred M[x \mapsto N] }.
+        \end{prooftree}
+      \end{equation*}
+    \end{leftcolumn}
+
+    \begin{rightcolumn}
+      \begin{equation*}\taglabel[\ensuremath{ \logic{Par}_\eta^{\T{tt}} }]{inf:def:typed_reduction_rules/eta}
+        \begin{prooftree}
+          \infer0[\ref{inf:def:typed_reduction_rules/eta}]{ \qabs {x^\tau} M x \ered M }.
+        \end{prooftree}
+      \end{equation*}
+    \end{rightcolumn}
+  \end{paracol}
+\end{definition}
+
+\begin{algorithm}[Typed reduction]\label{alg:typed_reduction}
+  As in \fullref{sec:lambda_term_reductions}, let \enquote{\( {\Anon} \)} be a combination of \enquote{\( \beta \)} and \enquote{\( \eta \)}.
+
+  Fix a \hyperref[def:type_derivation_tree]{type derivation tree} \( T \) for \( M: \tau \) and a term \( N \) such that \( M \pred N \). We will build a tree deriving \( N: \tau \).
+
+  We proceed recursively on \( M \pred N \):
+  \begin{thmenum}
+    \thmitem{alg:typed_reduction/app_left} If \( M \pred N \) due to \ref{inf:def:lambda_reduction/app_left}, then \( M = AB \) and \( N = CB \), where \( A \pred C \).
+
+    In this case \( T \) is an application tree for \ref{inf:def:base_typing_rules/arrow/elim}, and its subtrees \( T_A \) and \( T_B \) derive \( A: \sigma \synimplies \tau \) and \( B: \sigma \), correspondingly.
+
+    We apply the algorithm to \( T_A \) to obtain a tree \( T_C \) deriving \( C: \sigma \synimplies \tau \), and then construct a tree for \( N: \tau \) using \ref{inf:def:base_typing_rules/arrow/elim}.
+
+    \thmitem{alg:typed_reduction/app_right} If \( M \pred N \) due to \ref{inf:def:lambda_reduction/app_right}, we proceed analogously.
+
+    \thmitem{alg:typed_reduction/abs} If \( M \pred N \) due to \ref{inf:def:typed_reduction_rules/abs}, then \( M = \qabs {x^\sigma} A \) and \( N = \qabs {x^\sigma} B \), where \( A \pred B \). In this case \( \tau = \sigma \synimplies \rho \) for some type \( \rho \).
+
+    Then \( T \) is an application tree for \ref{inf:def:base_typing_rules/arrow/intro/imp} with a subtree \( T_A \) for \( A: \rho \) and discharged assumption \( x: \sigma \).
+
+    We apply the algorithm to \( T_A \) to obtain a tree \( T_B \) deriving \( B: \rho \), and then construct a tree for \( N: \tau \) using \ref{inf:def:base_typing_rules/arrow/intro/imp}.
+
+    \thmitem{alg:typed_reduction/alpha} If \( M \pred N \) due to \ref{inf:def:lambda_reduction/alpha}, then \( M \aequiv A \) and \( N \aequiv B \), where \( A \pred B \).
+
+    We use \fullref{alg:typed_alpha_conversion} to construct a tree \( T_A \) deriving \( A: \tau \), and then apply the current algorithm to obtain a tree \( T_B \) deriving \( B: \tau \). Finally, we use \fullref{alg:typed_alpha_conversion} again to construct a tree \( T_N \) for \( N: \tau \).
+
+    \thmitem{alg:typed_reduction/beta} If \( M \pred N \) due to \ref{inf:def:typed_reduction_rules/beta}, then \( M = (\qabs x A)B \) and \( N = A[x \mapsto B] \).
+
+    In this case \( T \) is an application tree for \ref{inf:def:base_typing_rules/arrow/elim}, and its subtrees \( T_X \) and \( T_B \) derive \( \qabs x A: \sigma \synimplies \tau \) and \( B: \sigma \), correspondingly. Furthermore, \( T_X \) is an application tree for \ref{inf:def:base_typing_rules/arrow/intro/imp} with a subtree \( T_A \) for \( A: \tau \) and discharged assumption \( x: \sigma \).
+
+    We have a derivation tree \( T_B \) for \( B: \sigma \) corresponding to the assumption \( x: \sigma \) for \( T_A \). We can thus apply \fullref{alg:typed_substitution} to obtain from \( T_A \) a derivation tree for \( A[x \mapsto B]: \tau \).
+
+    \thmitem{alg:typed_reduction/eta} Finally, if \( M \pred N \) due to \ref{inf:def:typed_reduction_rules/eta}, then \( M = \qabs x N x \), where \( x \) is a variable not free in \( N \).
+
+    In this case \( T \) is an application tree for \ref{inf:def:base_typing_rules/arrow/intro/imp} with a subtree \( T_N \) for \( N: \tau \) and discharged assumption \( x: \sigma \).
+
+    This subtree \( T_N \) is the desired derivation tree for \( N: \tau \).
+  \end{thmenum}
+\end{algorithm}
+\begin{comments}
+  \item This algorithm can be found as \identifier{lambda_.type_derivation.reduction.reduce_derivation} in \cite{notebook:code}.
+\end{comments}
+\begin{defproof}
+  It follows via \fullref{thm:induction_on_recursively_defined_relations} on \( M \pred N \) that the algorithm halts --- we only use it on relation instances for which we assume the inductive hypothesis.
+\end{defproof}
+
+\begin{proposition}\label{thm:reduction_typing_rules}
+  The following \hyperref[def:simple_typing_rule]{simple typing rules} are \hyperref[con:inference_rule_admissibility]{admissible} with respect to \ref{inf:def:base_typing_rules/arrow/elim} and \ref{inf:def:base_typing_rules/arrow/intro/exp}:
+  \begin{paracol}{2}
+    \begin{leftcolumn}
+      \begin{equation*}\taglabel[\ensuremath{ \rightarrow_\beta }]{inf:thm:typed_beta_reduction/beta}
+        \begin{prooftree}
+          \hypo{ (\qabs {\synx^{\syn\sigma}} \synM) \synN: \syn\tau }
+          \hypo{ \synN: \syn\sigma }
+          \infer2[\ref{inf:thm:typed_beta_reduction/beta}]{ \synM[\synx \synsubst \synN]: \syn\tau }.
+        \end{prooftree}
+      \end{equation*}
+    \end{leftcolumn}
+
+    \begin{rightcolumn}
+      \begin{equation*}\taglabel[\ensuremath{ \leftarrow_\eta }]{inf:thm:typed_eta_reduction/eta}
+        \begin{prooftree}
+          \hypo{ \synM: \syn\tau \synimplies \syn\sigma }
+          \infer1[\ref{inf:thm:typed_eta_reduction/eta}]{ \qabs {\synx^{\syn\tau}} \synM \synx: \syn\tau \synimplies \syn\sigma }.
+        \end{prooftree}
+      \end{equation*}
+    \end{rightcolumn}
+  \end{paracol}
+\end{proposition}
+\begin{comments}
+  \item Even though \ref{inf:thm:typed_beta_reduction/beta} effectively replaces \ref{inf:def:typed_reduction_rules/beta}, \ref{inf:def:typed_reduction_rules/eta} corresponds to \( \eta \)-expansion rather than \( \eta \)-reduction and is thus inverse to \ref{inf:def:typed_reduction_rules/eta}.
+
+  \item Per the classification of type theory rules described in \fullref{rem:type_theory_rule_classification/computation}, these are computation and uniqueness rules, respectively.
+
+  \item As in \fullref{thm:typed_substitution_assertions}, we note that we have avoided defining schemas for substitutions. We simply state the rules without the ability to completely formalize them since that would complicate us unnecessarily.
+\end{comments}
+\begin{proof}
+  Given a type derivation tree for \( (\qabs {x^\sigma} M) N: \tau \), we can apply \fullref{alg:typed_reduction/beta} to obtain a tree for \( M[x \mapsto N]: \tau \). The assertion \( N: \sigma \) is not necessary; it simply makes explicit that the types of \( x \) and \( N \) coincide.
+
+  The rule \ref{inf:thm:typed_eta_reduction} is more subtle since it corresponds to \( \eta \)-expansion rather than \( \eta \)-reduction. Thus, we cannot use \fullref{alg:typed_reduction}. Fortunately, admissibility can easily be proven directly:
+  \begin{equation*}
+    \begin{prooftree}
+      \hypo{}
+      \ellipsis {} { M: \tau \synimplies \sigma }
+      \hypo{ x: \sigma }
+
+      \infer2[\ref{inf:def:base_typing_rules/arrow/elim}]{ Mx: \tau }
+
+      \infer[left label=\( x \)]1[\ref{inf:def:base_typing_rules/arrow/intro/exp}]{ \qabs {x^\sigma} Mx: \tau \synimplies \sigma }
+    \end{prooftree}
+  \end{equation*}
+\end{proof}
 
 \paragraph{Normalization}
 
