@@ -174,6 +174,78 @@
   \item Of course, we also consider equivalences and multi-step reductions based on the above single-step reductions.
 \end{comments}
 
+\begin{lemma}\label{thm:beta_eta_redex_alpha_equivalence}
+  Let \enquote{\( {\Anon} \)} be a combination of \enquote{\( \beta \)} and \enquote{\( \eta \)}. If \( M \aequiv N \) and \( M \) contains a redex of the corresponding kinds, then \( N \) also does.
+
+  Furthermore, if \( M \) is itself a redex, so is \( N \).
+\end{lemma}
+\begin{proof}
+  We use \fullref{thm:induction_on_recursively_defined_relations} on \( M \aequiv N \) simultaneously for all \( N \):
+  \begin{itemize}
+    \item If \( M \aequiv N \) due to \ref{inf:def:lambda_term_alpha_equivalence/atom}, then \( M \) and \( N \) are identical atomic terms, which cannot contain \( \beta \) or \( \eta \) redexes.
+
+    \item If \( M \aequiv N \) due to \ref{inf:def:lambda_term_alpha_equivalence/app}, then \( M = AB \) and \( N = CD \), where \( A \aequiv C \) and \( B \aequiv D \) and the inductive hypothesis holds for the latter two.
+
+    We have the following possibilities:
+    \begin{itemize}
+      \item If \( A = (\qabs x E) \), \( M \) itself is a redex. In this case \( C \) is also an abstraction since \( A \aequiv C \) due to either \ref{inf:thm:alpha_equivalence_simplified/lift} or \ref{inf:thm:alpha_equivalence_simplified/ren}. Then \( N \) is also a redex.
+
+      \item Otherwise, either \( A \) or \( B \) or possibly both contain a redex, and the inductive hypothesis allows us to conclude the same for \( C \) and/or \( D \).
+    \end{itemize}
+
+    \item If \( M \aequiv N \) due to \ref{inf:def:lambda_term_alpha_equivalence/abs}, then \( M = \qabs a A \) and \( N = \qabs b B \) and \( A[a \mapsto n] \aequiv B[b \mapsto n] \) for every \( n \) not free in \( M \), where the inductive hypothesis holds for the latter.
+
+    We have the following possibilities:
+    \begin{itemize}
+      \item If \( A = Ea \), then \( A[a \mapsto n] = E[a \mapsto n] n \), hence \( B[b \mapsto n] \) is also an application term whose second subterm is \( n \). It follows that \( B = Fb \), and hence both \( M \) and \( N \) are \( \eta \)-redexes.
+
+      \item Otherwise, \( A \) must contain a redex. Since \( b \) is not free in \( A \), we can show by case analysis that \( A[a \mapsto b] \) also contains a redex. But \( A[a \mapsto b] \aequiv B \), and, by the inductive hypothesis, \( B \) also contains a redex.
+
+      It follows that \( N \) contains a redex.
+    \end{itemize}
+  \end{itemize}
+\end{proof}
+
+\begin{proposition}\label{thm:beta_eta_reducible_iff_redex}
+  Let \enquote{\( {\Anon} \)} be a combination of \enquote{\( \beta \)} and \enquote{\( \eta \)}. Fix a term \( M \). Then there exists a term \( N \) such that \( M \pred N \) if and only if \( M \) contains a redex of the corresponding kinds.
+\end{proposition}
+\begin{proof}
+  \SufficiencySubProof We will use \fullref{thm:induction_on_recursively_defined_relations} on \( M \pred N \) to show that \( M \) contains a redex.
+
+  \begin{itemize}
+    \item If \( M \pred N \) due to \ref{inf:def:lambda_reduction/app_left}, then \( M = AB \) and \( N = CB \) with \( A \pred C \), where the inductive hypothesis holds for the latter.
+
+    Then \( A \) contains a redex, and so does \( M \).
+
+    \item If \( M \pred N \) due to \ref{inf:def:lambda_reduction/app_right}, we proceed analogously.
+
+    \item If \( M \pred N \) due to \ref{inf:def:lambda_reduction/abs}, then \( M = \qabs x A \) and \( \qabs x B  \) with \( A \pred B \). Via the inductive hypothesis, we conclude that \( A \), and hence also \( M \), contain a redex.
+
+    \item If \( M \pred N \) due to \ref{inf:def:lambda_reduction/alpha}, then \( M \aequiv A \) and \( B \aequiv N \), where \( A \pred B \). \Fullref{thm:beta_eta_redex_alpha_equivalence} implies that \( A \) contains a redex. Via the inductive hypothesis, we conclude that \( B \) also contains a redex, and then via \Fullref{thm:beta_eta_redex_alpha_equivalence} again we conclude that \( N \) contains a redex.
+
+    \item If \( M \pred N \) due to \ref{inf:def:beta_eta_reduction/beta} or \ref{inf:def:beta_eta_reduction/eta} \( M \) itself is a redex.
+  \end{itemize}
+
+  \NecessitySubProof We will use \fullref{thm:induction_on_rooted_trees} on \( M \) to show that, if \( M \) contains a redex, then there exists a term \( N \) such that \( M \pred N \).
+
+  \begin{itemize}
+    \item If \( M \) is atomic, it cannot contain a \( \beta \) or \( \eta \) redex.
+
+    \item If \( M = AB \) where the inductive hypothesis holds for \( A \) and \( B \), we have two possibilities:
+    \begin{itemize}
+      \item If \( A = \qabs x E \), then \( M \) is itself a \( \beta \)-redex, and \( M \pred E[x \mapsto B] \) due to \ref{inf:def:beta_eta_reduction/beta}.
+      \item Otherwise, either \( A \) or \( B \) contain a redex. If \( A \) does, there exists a term \( C \) such that \( A \pred C \), and then \( M \pred CB \) due to \ref{inf:def:lambda_reduction/app_left}. If \( A \) contains no redex, we proceed similarly with \( B \) and \ref{inf:def:lambda_reduction/app_right}.
+    \end{itemize}
+
+    \item If \( M = \qabs a A \), where the inductive hypothesis holds for \( A \), we again have two possibilities:
+    \begin{itemize}
+      \item If \( A = Ex \) and \( x \) is not free in \( E \), the \( M \) is itself an \( \eta \)-redex, and \( M \pred E \) due to \ref{inf:def:beta_eta_reduction/eta}.
+
+      \item Otherwise, \( A \) must contain a redex, and thus there exists a term \( B \) such that \( A \pred B \). Then \( M \pred \qabs a B \) due to \ref{inf:thm:alpha_equivalence_simplified/lift}.
+    \end{itemize}
+  \end{itemize}
+\end{proof}
+
 \begin{example}\label{ex:def:beta_eta_reduction}
   We list examples of \hyperref[def:beta_eta_reduction]{\( \beta \) and \( \eta \)-reduction}:
   \begin{thmenum}
