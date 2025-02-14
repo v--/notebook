@@ -79,7 +79,7 @@ class AlphaConversionVisitor(BasicDerivationTreeVisitor[TypeDerivationTree]):
             )
         )
 
-# This is alg:typed_reduction in the monograph
+# This is alg:simply_typed_reduction in the monograph
 def alpha_convert_derivation(tree: TypeDerivationTree, other: TypedTerm) -> TypeDerivationTree:
     try:
         return AlphaConversionVisitor(other).visit(tree)

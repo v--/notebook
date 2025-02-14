@@ -70,7 +70,7 @@ class UntypedSubstitutionApplicationVisitor(UntypedTermVisitor[UntypedTerm]):
         )
 
 
-# This is alg:typed_substitution in the monograph
+# This is alg:simply_typed_substitution in the monograph
 def apply_term_substitution(term: UntypedTerm, substitution: UntypedTermSubstitution) -> UntypedTerm:
     return UntypedSubstitutionApplicationVisitor(substitution).visit(term)
 

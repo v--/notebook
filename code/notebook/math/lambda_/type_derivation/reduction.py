@@ -119,7 +119,7 @@ class ReductionVisitor(BasicDerivationTreeVisitor[TypeDerivationTree]):
         raise NotReducible
 
 
-# This is alg:typed_reduction in the monograph
+# This is alg:simply_typed_reduction in the monograph
 def reduce_derivation(tree: TypeDerivationTree, reduct: TypedTerm) -> TypeDerivationTree:
     try:
         return ReductionVisitor(reduct).visit(tree)

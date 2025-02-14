@@ -17,7 +17,7 @@ from .exceptions import TypeInferenceError
 from .tree import TypeDerivationTree, apply, assume, premise
 
 
-# This is alg:typed_term_type_derivation in the monograph
+# This is alg:simply_typed_term_type_derivation in the monograph
 @dataclass(frozen=True)
 class TypeInferenceVisitor(TypedTermVisitor[TypeDerivationTree]):
     context: Mapping[Variable, SimpleType]
