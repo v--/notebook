@@ -1,16 +1,19 @@
-from collections.abc import Collection, Iterable, Mapping
+from collections.abc import Collection, Iterable, Mapping  # noqa: I001
+from dataclasses import dataclass
 from typing import override
 
 from ....support.substitution import AbstractSubstitution, UnspecifiedReplacementError
 from ..assertions import VariableTypeAssertion
 from ..terms import (
+    TypedApplication,
     TypedAbstraction,
     Variable,
 )
 from ..type_systems import ARROW_ELIM_RULE_EXPLICIT, ARROW_INTRO_RULE_EXPLICIT
 from ..variables import get_free_variables, new_variable
-from .exceptions import TypeDerivationError, UnknownDerivationRuleError
+from .exceptions import TypeDerivationError
 from .tree import AssumptionTree, RuleApplicationTree, TypeDerivationTree, apply, assume, premise
+from .visitors import BasicDerivationTreeVisitor
 
 
 class TypeDerivationSubstitution(AbstractSubstitution[Variable, TypeDerivationTree]):
@@ -44,11 +47,14 @@ class TypeDerivationSubstitution(AbstractSubstitution[Variable, TypeDerivationTr
         return TypeDerivationSubstitution(variable_mapping={**self.variable_mapping, var: replacement})
 
 
-# This is def:lambda_substitution in the monograph
-def apply_tree_substitution(tree: TypeDerivationTree, substitution: TypeDerivationSubstitution) -> TypeDerivationTree:
-    if isinstance(tree, AssumptionTree):
+@dataclass
+class TreeSubstitutionVisitor(BasicDerivationTreeVisitor[TypeDerivationTree]):
+    substitution: TypeDerivationSubstitution
+
+    @override
+    def visit_assumption(self, tree: AssumptionTree) -> TypeDerivationTree:
         try:
-            dest = substitution.substitute_variable(tree.conclusion.term)
+            dest = self.substitution.substitute_variable(tree.conclusion.term)
         except UnspecifiedReplacementError:
             return tree
 
@@ -57,40 +63,49 @@ def apply_tree_substitution(tree: TypeDerivationTree, substitution: TypeDerivati
 
         return dest
 
-    if isinstance(tree, RuleApplicationTree):
-        if tree.rule == ARROW_ELIM_RULE_EXPLICIT:
-            return apply(
-                ARROW_ELIM_RULE_EXPLICIT,
-                apply_tree_substitution(tree.premises[0].tree, substitution),
-                apply_tree_substitution(tree.premises[1].tree, substitution)
+    @override
+    def visit_arrow_elim(
+        self,
+        tree: RuleApplicationTree,
+        subtree_left: TypeDerivationTree,
+        subtree_right: TypeDerivationTree,
+        term: TypedApplication
+    ) -> RuleApplicationTree:
+        return apply(
+            ARROW_ELIM_RULE_EXPLICIT,
+            self.visit(subtree_left),
+            self.visit(subtree_right)
+        )
+
+    @override
+    def visit_arrow_intro(
+        self,
+        tree: RuleApplicationTree,
+        subtree: TypeDerivationTree,
+        discharge: VariableTypeAssertion,
+        term: TypedAbstraction
+    ) -> RuleApplicationTree:
+        if term.var in self.substitution.iter_free_in_substituted(tree):
+            new_var = self.substitution.generate_fresh_variable(
+                set(self.substitution.iter_free_in_substituted(subtree))
             )
+        else:
+            new_var = term.var
 
-        if tree.rule == ARROW_INTRO_RULE_EXPLICIT:
-            term = tree.conclusion.term
-            assert isinstance(term, TypedAbstraction)
+        new_var_tree = assume(VariableTypeAssertion(new_var, term.var_type))
 
-            application_premise = tree.premises[0]
-
-            if term.var in substitution.iter_free_in_substituted(tree):
-                new_var = substitution.generate_fresh_variable(
-                    set(substitution.iter_free_in_substituted(application_premise.tree))
-                )
-            else:
-                new_var = term.var
-
-            new_var_tree = assume(VariableTypeAssertion(new_var, term.var_type))
-
-            return apply(
-                ARROW_INTRO_RULE_EXPLICIT,
-                premise(
-                    tree=apply_tree_substitution(application_premise.tree, substitution.modify_at(term.var, new_var_tree)),
-                    discharge=new_var_tree.conclusion
-                )
+        return apply(
+            ARROW_INTRO_RULE_EXPLICIT,
+            premise(
+                tree=apply_tree_substitution(subtree, self.substitution.modify_at(term.var, new_var_tree)),
+                discharge=new_var_tree.conclusion
             )
+        )
 
-        raise UnknownDerivationRuleError(f'Unknown rule {tree.rule.name}')
 
-    return tree
+# This is def:lambda_substitution in the monograph
+def apply_tree_substitution(tree: TypeDerivationTree, substitution: TypeDerivationSubstitution) -> TypeDerivationTree:
+    return TreeSubstitutionVisitor(substitution).visit(tree)
 
 
 def substitute(tree: TypeDerivationTree, variable_mapping: Mapping[Variable, TypeDerivationTree]) -> TypeDerivationTree:
