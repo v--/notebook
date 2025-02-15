@@ -21,7 +21,7 @@ def reduce_term_once(term: UntypedTerm, strategy: ReductionStrategy) -> UntypedT
     reduction = strategy.try_reduce(term)
 
     if reduction is None:
-        raise ReductionError(f'Cannot σ-reduce {reduction}')
+        raise ReductionError(f'Cannot reduce {reduction}')
 
     return reduction
 

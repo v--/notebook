@@ -185,6 +185,21 @@ Unlike untyped lambda calculus, whose presentation is mostly uniform across auth
   \end{thmenum}
 \end{remark}
 
+\begin{definition}\label{def:simple_type_ast}\mimprovised
+  We implicitly associate with each \hyperref[def:simple_type]{simple type} \( \tau \) an \hyperref[con:abstract_syntax_tree]{abstract syntax tree} \( T(\tau) \) as follows:
+  \begin{thmenum}
+    \thmitem{def:simple_type_ast/atom} If \( \tau \) is a base type, we define \( T(\tau) \) as the \hyperref[def:canonical_singleton_tree]{canonical singleton tree} with label \( \tau \).
+
+    \thmitem{def:simple_type_ast/application} If \( \tau = \sigma \syncirc \rho \), where \( {\syncirc} \in \set{ \synimplies, \synplus, \syntimes } \), assuming we have already built \( T(\sigma) \) and \( T(\rho) \), we define \( T(\tau) \) by \hyperref[def:ordered_tree_grafting_product]{grafting} \( T(\sigma) \) and \( T(\rho) \) to a new root labeled with \( \syncirc \):
+    \begin{equation*}
+      \includegraphics[page=1]{output/def__simple_type_ast}
+    \end{equation*}
+  \end{thmenum}
+\end{definition}
+\begin{comments}
+  \item Formally our ASTs for abstractions are not ideal because we need to \enquote{parse} the string at the root. They are, however, convenient for defining variable occurrences in \fullref{def:lambda_variable_occurrence}, and are also easier to parse visually.
+\end{comments}
+
 \paragraph{Type annotations}
 
 \begin{concept}\label{con:type_annotation}
@@ -223,6 +238,16 @@ Unlike untyped lambda calculus, whose presentation is mostly uniform across auth
 
   We borrow the phrase \enquote{typed term} from \incite[ch. 5]{Hindley1997STT}, who however follows Church in annotating every term. Our variant, also used by \incite[\S 4.1.3]{Mimram2020Types}, only guarantees uniqueness (but not existence) of a type for each term; this is shown in \fullref{thm:typed_term_habitation_uniqueness}.
 \end{comments}
+
+\begin{remark}\label{rem:gradually_typed_terms}
+  It is possible to consider \enquote{mixed terms}, where some subterms are untyped while others are typed. We allow such terms in the program code for this chapter --- the module \identifier{lambda_.terms.terms} in \cite{notebook:code} --- however the reason for this is mostly technical as it allows us to simplify several constructs. Typed and untyped terms generally require different approaches.
+
+  Some programming languages allow but do not enforce type annotations on terms. One such language is Python. Another one is TypeScript, which adds optional type annotations to JavaScript. TypeScript's documentation, \cite{TypeScript:5.7:handbook}, describes this approach as \enquote{gradual typing}.
+
+  We will use the phrase \enquote{gradual typing} in \fullref{def:simple_type_system_style} when discussing the typing style of \hyperref[def:simple_type_system]{simple type systems}. The distinction between the typing style of terms and type systems is discussed in \fullref{rem:typing_style_of_terms_vs_systems}. In this monograph, we avoid mixed terms.
+
+  See also the discussion of Church and Curry style typing in \fullref{rem:typing_style}.
+\end{remark}
 
 \begin{algorithm}[Type erasure]\label{alg:type_erasure}
   To each \hyperref[def:typed_lambda_term]{typed \( \synlambda \)-terms} there corresponds an \hyperref[def:lambda_term]{untyped \( \synlambda \)-term} obtained by removing the type annotations from all abstractor variables.
@@ -428,9 +453,13 @@ To formalize typing rules in \fullref{def:simple_typing_rule}, we first need to 
   \item The importance of the typing style of a system is discussed in \fullref{rem:typing_style}.
 
   \item The phrases \enquote{explicit typing} and \enquote{implicit typing} are used by \incite[119]{Barendregt1992Types} as alternatives for what we described in \fullref{rem:typing_style} as Church and Curry style typing, correspondingly.
-
-  \item Some programming languages allow but do not enforce type annotations. One such language is Python. Another one is TypeScript, which adds optional type annotations to JavaScript. TypeScript's documentation, \cite{TypeScript:5.7:handbook}, describes this approach as \enquote{gradual typing}.
 \end{comments}
+
+\begin{remark}\label{rem:typing_style_of_terms_vs_systems}
+  We should distinguish between the typing style of a type system, as defined in \fullref{def:simple_type_system_style}, and the typing style of individual terms, discussed in \fullref{rem:gradually_typed_terms}.
+
+  Explicitly (resp. implicitly) typed systems require typed (resp. untyped) terms, but not vice versa --- gradually typed systems can operate on both, and even on the \enquote{mixed terms} discussed in \fullref{rem:gradually_typed_terms}.
+\end{remark}
 
 \begin{definition}\label{def:type_derivation_tree}\mimprovised
   In analogy with natural deduction proof trees, which we define in \fullref{def:natural_deduction_proof_tree}, we will define here a family of \hyperref[def:labeled_tree]{labeled trees}, which we will call \term{type derivation trees}. Although we will be working in \hyperref[def:simple_type_system]{simple type systems}, the definition easily extends to more complicated systems.
@@ -677,7 +706,7 @@ To formalize typing rules in \fullref{def:simple_typing_rule}, we first need to 
 
     We have shown in \fullref{ex:def:beta_eta_reduction/omega} that some terms like \( \ref{eq:ex:def:lambda_term/combinator/big_omega} = (\qabs \synx \synx \synx) (\qabs \synx \synx \synx) \) containing self-application lead to infinite chains of \hyperref[def:beta_eta_reduction]{\( \sigma \)-reductions}.
 
-    The impossibility of infinite chains of reduction leads to a precise formulation of predicativity --- strong normalization, defined in \fullref{def:strong_normalization}.
+    The impossibility of infinite sequences of reduction leads is captured by the concept of strong normalization defined in \fullref{def:strong_normalization}.
 
     \thmitem{ex:def:type_derivation_tree/pairs} Consider the \hyperref[def:ordered_tuple]{ordered pair} combinators \ref{ex:def:beta_eta_reduction/pairs/intro}, \ref{ex:def:beta_eta_reduction/pairs/elim_left} and \ref{ex:def:beta_eta_reduction/pairs/elim_right} from \fullref{ex:def:beta_eta_reduction/pairs}.
 
@@ -853,7 +882,7 @@ To formalize typing rules in \fullref{def:simple_typing_rule}, we first need to 
     (\qabs {\synx^\tau} (\qabs {\syny^\sigma} \synx^\tau)^{\sigma \synimplies \tau})^{\tau \synimplies \sigma \synimplies \tau}.
   \end{equation*}
 
-  The second convention is referred to as \enquote{Church style typing}, for example by \cite[ch. 5]{Hindley1997STT}. Even though it is not as historically accurate, the first convention, i.e. what we call explicit typing, is also referred to as \enquote{Church style}, for example by \incite[ch. 4]{Mimram2020Types}.
+  The second convention is referred to as \enquote{Church style typing}, for example by \cite[ch. 5]{Hindley1997STT}. Even though it is not as historically accurate, the first convention, is also referred to as \enquote{Church style}, for example by \incite[ch. 4]{Mimram2020Types}. This relates to explicitly typed systems, where the rules have type annotations, however we should distinguish between the typing style of rules and the typing style of terms. This is discussed in \fullref{rem:typing_style_of_terms_vs_systems}. Explicitly typed systems require typed terms, but not vice versa.
 
   As a contradistinction, implicitly typed systems are referred to by both the aforementioned authors as \enquote{Curry style} in honor of Haskell Curry for his work \cite{Curry1934CombinatoryLogic}. Curry did not consider \( \synlambda \)-terms nor types, but worked with abstract combinators applied to each other in what he called \enquote{combinatory logic}. We can deduce a relation to typing systems from the following quote:
   \begin{displayquote}
@@ -862,7 +891,7 @@ To formalize typing rules in \fullref{def:simple_typing_rule}, we first need to 
 
   Here \( f \) is merely a symbol, while \( \vdash FXYf \) translates into the type assertion \( f: X \synimplies Y \). Since the type \( X \synimplies Y \) is not attached to \( f \), the latter is also allowed to inhabit another type, which contrasts with Church's usage mentioned earlier.
 
-  Ironically, the programming language Haskell, also named after Haskell Curry, is explicitly typed and thus not Curry style. Unlike a true Church style type system, however, Haskell's allows not annotating terms for which the types can be inferred.
+  Ironically, the programming language Haskell, also named after Haskell Curry, uses type annotations and is thus not Curry style. Unlike a true Church style type system, however, Haskell's allows not annotating terms for which the types can be inferred.
 \end{remark}
 
 \paragraph{Type inference}

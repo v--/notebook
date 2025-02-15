@@ -5,9 +5,9 @@ Unless explicitly noted otherwise, we will follow \fullref{rem:base_typing_rules
 \paragraph{Simply typed substitution}
 
 \begin{algorithm}[Simply typed substitution]\label{alg:simply_typed_substitution}
-  Fix a \hyperref[def:lambda_substitution]{substitution} \( \Bbbs \) and a \hyperref[def:type_derivation_tree]{type derivation tree} \( T \) for \( M: \tau \). For every assumption \( v: \sigma \) of \( T \), suppose we are given a derivation tree \( T_v \) for \( \Bbbs(v): \sigma \).
+  Fix a \hyperref[def:lambda_substitution]{substitution} \( \Bbbs \) and a \hyperref[def:type_derivation_tree]{type derivation tree} \( T \) for \( M: \tau \). For every assumption \( v: \sigma \) of \( T \), suppose we are given a derivation tree \( T_v \) for \( \Bbbs(v): \sigma \) (which can be the assumption tree \( v: \sigma \) itself).
 
-  We will build a derivation tree \( T' \) for \( M[\Bbbs]: \tau \) with no additional assumptions.
+  We will build a derivation tree \( T' \) for \( M[\Bbbs]: \tau \) with the combined assumptions of the replacement trees \( T_v \).
 
   \begin{thmenum}
     \thmitem{alg:simply_typed_substitution/var} If \( T \) is an assumption tree, then \( M \) is a variable. The assertion \( M: \tau \) is then an assumption of \( T \), and we have supposed that there exists a corresponding tree \( T_M \) deriving \( M[\Bbbs]: \tau \).
@@ -207,6 +207,45 @@ Unless explicitly noted otherwise, we will follow \fullref{rem:base_typing_rules
   \end{paracol}
 \end{definition}
 
+\begin{lemma}\label{thm:single_step_reduction_deconstruction}
+  Let \enquote{\( {\Anon} \)} be a combination of \enquote{\( \beta \)}, \enquote{\( \eta \)} and \enquote{\( \delta \)}.
+
+  If \( M \pred N \), depending on the structure of \( M \), we have the following possibilities:
+  \begin{thmenum}
+    \thmitem{thm:single_step_reduction_deconstruction/atom} \( M \) is a constant, there is a \( \delta \)-reduction rule such that \( N \aequiv \op*{\delta}(M) \), where \( \op*{\delta}(M) \) is the \( \delta \)-contractum of \( M \).
+
+    \thmitem{thm:single_step_reduction_deconstruction/var} \( M \) cannot be a variable.
+
+    \thmitem{thm:single_step_reduction_deconstruction/app} If \( M = AB \), we have three possibilities:
+    \begin{thmenum}
+      \thmitem{thm:single_step_reduction_deconstruction/app/left} \( N = CD \), where \( A \pred C \) and \( B \aequiv D \).
+
+      \thmitem{thm:single_step_reduction_deconstruction/app/right} \( N = CD \), where \( A \aequiv C \) and \( B \pred D \).
+
+      \thmitem{thm:single_step_reduction_deconstruction/app/beta} If \( \beta \)-reduction is allowed, it is possible that \( A = \qabs {x^\tau} E \) and \( N \aequiv E[x \mapsto B] \).
+    \end{thmenum}
+
+    \thmitem{thm:single_step_reduction_deconstruction/abs} If \( M = \qabs {x^\tau} A \), we have two possibilities:
+    \begin{thmenum}
+      \thmitem{thm:single_step_reduction_deconstruction/abs/lift} \( N \aequiv \qabs {x^\tau} B \), where \( A \pred B \).
+
+      \thmitem{thm:single_step_reduction_deconstruction/abs/eta} If \( \eta \)-reduction is allowed, it is possible that \( A \aequiv Nx \) and \( x \not\in \op*{Free}(N) \).
+    \end{thmenum}
+  \end{thmenum}
+\end{lemma}
+\begin{proof}
+  Similar to \fullref{thm:parallel_reduction_deconstruction}, but with the following differences:
+  \begin{itemize}
+    \item No variables can be reduced.
+    \item \ref{inf:def:lambda_reduction/app_left} and \ref{inf:def:lambda_reduction/app_right} are handled separately.
+    \item Handling \ref{inf:def:typed_reduction_rules/beta} is simplified.
+  \end{itemize}
+\end{proof}
+
+\begin{proposition}\label{thm:}
+
+\end{proposition}
+
 \begin{algorithm}[Simply typed reduction]\label{alg:simply_typed_reduction}
   As in \fullref{sec:lambda_term_reductions}, let \enquote{\( {\Anon} \)} be a combination of \enquote{\( \beta \)} and \enquote{\( \eta \)}.
 
@@ -217,26 +256,30 @@ Unless explicitly noted otherwise, we will follow \fullref{rem:base_typing_rules
 
     \thmitem{alg:simply_typed_reduction/app} If \( M = AB \), then \( T \) is an application tree for \ref{inf:def:base_typing_rules/arrow/elim}, and, for some type \( \sigma \), its subtrees \( T_A \) and \( T_B \) derive \( A: \sigma \synimplies \tau \) and \( B: \sigma \), correspondingly.
 
-    We have the following possibilities:
+    \Fullref{thm:single_step_reduction_deconstruction/app} lists the following possibilities for \( A B \pred N \):
     \begin{thmenum}
-      \thmitem{alg:simply_typed_reduction/app/beta} If \( A = \qabs {x^\sigma} E \), then \( T_A \) is an application tree for \ref{inf:def:base_typing_rules/arrow/intro/exp} with discharge assertion \( x: \sigma \) and subtree \( T_E \) deriving \( E: \tau \).
+      \thmitem{alg:simply_typed_reduction/app/beta} In the case \fullref{thm:single_step_reduction_deconstruction/app/beta} for \( A B \pred N \), we have \( A = \qabs {x^\tau} E \) and \( N \aequiv E[x \mapsto B] \).
 
-      In this case it is possible that \( M \pred N \) due to \ref{inf:def:typed_reduction_rules/beta}, hence \( N = E[x \mapsto B] \). It is also possible that \ref{inf:def:lambda_reduction/alpha} has been applied to \( M \) and \( E[x \mapsto B] \). In both cases \( N \aequiv E[x \mapsto B] \).
+      Then \( T_A \) is an application tree for \ref{inf:def:base_typing_rules/arrow/intro/exp} with discharge assertion \( x: \sigma \) and subtree \( T_E \) deriving \( E: \tau \).
 
-      If the above hold, since we have a derivation tree \( T_B \) for \( B: \sigma \) corresponding to the assumption \( x: \sigma \) for \( T_A \), we can apply \fullref{alg:simply_typed_substitution} to obtain from \( T_A \) a derivation tree for \( E[x \mapsto B]: \tau \), and then \fullref{alg:simply_typed_alpha_conversion} to obtain a derivation tree for \( N: \tau \).
+      Since we have a derivation tree \( T_B \) for \( B: \sigma \) corresponding to the assumption \( x: \sigma \) for \( T_A \), we can apply \fullref{alg:simply_typed_substitution} to obtain from \( T_A \) a derivation tree for \( E[x \mapsto B]: \tau \), and then \fullref{alg:simply_typed_alpha_conversion} to obtain a derivation tree for \( N: \tau \).
 
-      \thmitem{alg:simply_typed_reduction/app/direct} Otherwise, if \( \beta \)-reduction has not been applied to \( M \), we must have \( N = CD \), hence \( M \pred N \) must hold due to either \ref{inf:def:lambda_reduction/app_left}, \ref{inf:def:lambda_reduction/app_right} or \ref{inf:def:lambda_reduction/alpha}. In all cases either \( A \aequiv C \) and \( B \pred D \) or \( A \pred C \) and \( B \aequiv D \).
+      \thmitem{alg:simply_typed_reduction/app/left} In the case \fullref{thm:single_step_reduction_deconstruction/app/left} for \( A B \pred N \), we have \( N = CD \), where \( A \pred C \) and \( B \aequiv D \).
 
-      If \( A \aequiv C \) and \( B \aequiv D \), we apply the current algorithm recursively to \( T_B \) to obtain a tree \( T_D \) deriving \( D: \sigma \). We use \fullref{alg:simply_typed_alpha_conversion} to construct from \( T_A \) a tree \( T_C \) deriving \( C: \sigma \synimplies \tau \). Finally, we use \ref{inf:def:base_typing_rules/arrow/elim} to combine \( T_C \) and \( T_D \) into a derivation tree for \( N: \tau \).
+      We apply the current algorithm recursively to \( T_A \) to obtain a tree \( T_C \) deriving \( C: \sigma \synimplies \tau \). We use \fullref{alg:simply_typed_alpha_conversion} to construct from \( T_B \) a tree \( T_D \) deriving \( D: \sigma \). Finally, we use \ref{inf:def:base_typing_rules/arrow/elim} to combine \( T_C \) and \( T_D \) into a derivation tree for \( N: \tau \).
 
-      If \( A \pred C \) and \( B \aequiv D \), we proceed analogously.
+      \thmitem{alg:simply_typed_reduction/app/right} In the case \fullref{thm:single_step_reduction_deconstruction/app/right} for \( A B \pred N \), we have \( N = CD \), where \( A \aequiv C \) and \( B \pred D \).
+
+      In this case we proceed analogously.
     \end{thmenum}
 
     \thmitem{alg:simply_typed_reduction/abs} If \( M = \qabs {x^\sigma} A \), then \( \tau = \sigma \synimplies \rho \) for some type \( \rho \), and \( T \) is an application tree for \ref{inf:def:base_typing_rules/arrow/intro/exp} with discharge assertion \( x: \sigma \) and subtree \( T_A \) deriving \( A: \rho \).
 
-    We have the following possibilities:
+    \Fullref{thm:single_step_reduction_deconstruction/abs} lists the following possibilities for \( \qabs {x^\sigma} A \pred N \):
     \begin{thmenum}
-      \thmitem{alg:simply_typed_reduction/abs/eta} If \( A = Ex \), then \( T_A \) is an application tree for \ref{inf:def:base_typing_rules/arrow/elim}, and its subtrees \( T_E \) and \( T_X \) derive \( E: \sigma \synimplies \rho \) and \( x: \sigma \), correspondingly.
+      \thmitem{alg:simply_typed_reduction/abs/eta} In the case \fullref{thm:single_step_reduction_deconstruction/abs/eta} for \( \qabs {x^\sigma} A \pred N \), we have \( A \aequiv Nx \) and \( x \not\in \op*{Free}(N) \).
+
+      Then \( T_A \) is an application tree for \ref{inf:def:base_typing_rules/arrow/elim}, and its subtrees \( T_E \) and \( T_X \) derive \( E: \sigma \synimplies \rho \) and \( x: \sigma \), correspondingly.
 
       If \( x \) is not free in \( E \), it is possible that \( M \pred N \) due to \ref{inf:def:typed_reduction_rules/eta}, and thus \( N = E \). As in the case of \( \beta \)-reduction above, it is also possible that \ref{inf:def:lambda_reduction/alpha} has been applied afterward, resulting in \( N \aequiv E \).
 
@@ -244,13 +287,11 @@ Unless explicitly noted otherwise, we will follow \fullref{rem:base_typing_rules
 
       Since \( x \) is not free in \( N \), \fullref{thm:assumptions_and_free_variables} implies that this tree does not require the assumption \( x: \sigma \); thus, no additional assumptions have been made compared to those of \( T \).
 
-      \thmitem{alg:simply_typed_reduction/abs/direct} Otherwise, we have \( N = \qabs {y^\rho} B \), and \( M \pred N \) holds due to either \ref{inf:def:typed_reduction_rules/abs} or \ref{inf:def:lambda_reduction/alpha}.
+      \thmitem{alg:simply_typed_reduction/abs/lift} In the case \fullref{thm:single_step_reduction_deconstruction/abs/lift} for \( \qabs {x^\sigma} A \pred N \), we have \( N \aequiv \qabs {x^\sigma} B \), where \( A \pred B \). We will show in the proof of correctness that \( N = \qabs {y^\sigma} C \), where \( A[x \mapsto y] \pred C \).
 
-      In both cases \( \sigma \) and \( \rho \) must coincide, however \( x \) and \( y \) may differ. In both cases we have \( A[x \mapsto y] \pred B \).
+      We use \fullref{alg:simply_typed_substitution} to construct from \( T_A \) a tree \( S \) deriving \( A[x \mapsto y]: \rho \), and then we use the current algorithm recursively to obtain from \( S \) a tree deriving \( C: \rho \).
 
-      We use \fullref{alg:simply_typed_substitution} to construct from \( T_A \) a tree \( S \) deriving \( A[x \mapsto y]: \rho \), and then we use the current algorithm recursively to obtain from \( S \) a tree deriving \( B: \rho \).
-
-      Finally, we apply  \ref{inf:def:base_typing_rules/arrow/intro/exp} to \( S \) with discharge assumption \( y: \rho \) to obtain a tree deriving \( N: \tau \).
+      Finally, we apply \ref{inf:def:base_typing_rules/arrow/intro/exp} to \( S \) with discharge assumption \( y: \sigma \) to obtain a tree deriving \( N: \tau \).
     \end{thmenum}
   \end{thmenum}
 \end{algorithm}
@@ -259,6 +300,25 @@ Unless explicitly noted otherwise, we will follow \fullref{rem:base_typing_rules
 \end{comments}
 \begin{defproof}
   The algorithm halts as can be easily proven using induction on the length of terms.
+
+  We will only prove correctness of \fullref{alg:simply_typed_reduction/abs/lift}. This requires showing that, if \( \qabs {x^\sigma} A \pred N \) and \( N \aequiv \qabs {x^\sigma} B \), where \( A \pred B \), then \( N = \qabs {y^\sigma} C \) and \( A[x \mapsto y] \pred C \).
+
+  \begin{itemize}
+    \item If \( N \aequiv \qabs {x^\sigma} B \) due to \ref{inf:def:typed_term_alpha_equivalence/lift}, then \( N = \qabs {x^\sigma} C \), where \( B \aequiv C \).
+
+    We apply \ref{inf:def:lambda_reduction/alpha} to conclude that \( A \pred C \). In this case \( x = y \), thus \( A[y \mapsto x] = A[\id] = A \).
+
+    \item If \( N \aequiv \qabs {x^\sigma} B \) due to \ref{inf:def:typed_term_alpha_equivalence/ren}, then \( N = \qabs {y^\sigma} C \), where \( B \aequiv C[y \mapsto x] \) and \( y \not\in \op*{Free}(C) \).
+
+    We apply \ref{inf:def:lambda_reduction/alpha} to conclude that \( A \pred C[y \mapsto x] \), and \fullref{thm:substitution_on_single_step_reduction} to conclude that
+    \begin{equation*}
+      A[x \mapsto y] \pred C[y \mapsto x][x \mapsto y].
+    \end{equation*}
+
+    Since \( x \) is free in \( C \), \fullref{thm:substitution_chain_contraction} implies that \( C[y \mapsto x][x \mapsto y] \aequiv C[\id] = C \).
+
+    Applying \ref{inf:def:lambda_reduction/alpha} again, we obtain that \( A[x \mapsto y] \pred C \).
+  \end{itemize}
 \end{defproof}
 
 \begin{proposition}\label{thm:reduction_typing_rules}
@@ -332,12 +392,166 @@ Unless explicitly noted otherwise, we will follow \fullref{rem:base_typing_rules
 
 \paragraph{Normalization}
 
+\begin{proposition}\label{thm:beta_eta_redexes}
+  Let \enquote{\( {\Anon} \)} be a combination of \enquote{\( \beta \)}, \enquote{\( \eta \)} and possibly \enquote{\( \delta \)}. We will be interested in how redexes of the corresponding kinds behave under \hyperref[con:lambda_conversion]{conversion}.
+
+  \begin{thmenum}
+    \thmitem{thm:beta_eta_redexes/substitution} If \( M \) contains a redex, so does \( M[\Bbbs] \) for any substitution \( \Bbbs \).
+
+    Furthermore, if \( M \) is itself a redex, so is \( M[\Bbbs] \).
+
+    \thmitem{thm:beta_eta_redexes/alpha} If \( M \) contains a redex, so does \( N \) whenever \( M \aequiv N \).
+
+    Furthermore, if \( M \) is itself a redex, so is \( N \).
+
+    \thmitem{thm:beta_eta_redexes/reducibility} For a fixed term \( M \), there exists a term \( N \) such that \( M \pred N \) if and only if \( M \) contains a redex of the corresponding kind.
+  \end{thmenum}
+\end{proposition}
+\begin{proof}
+  \SubProofOf{thm:beta_eta_redexes/substitution} We will use \fullref{thm:induction_on_rooted_trees} on \( M \) to show, simultaneously on all substitutions \( \Bbbs \), that, if \( M \) contains a redex, so does \( M[\Bbbs] \), and that if \( M \) has a redex, so does \( M[\Bbbs] \).
+
+  \begin{itemize}
+    \item If \( M \) is atomic, we have several possibilities:
+    \begin{itemize}
+      \item If \( M \) is a \( \delta \)-redex, so is \( M[\Bbbs] \) because constants are invariant under substitution.
+
+      \item Otherwise, if \( M \) is a constant, then \( M = M[\Bbbs] \) and neither are \( \beta \)- nor \( \eta \)-redexes.
+
+      \item If \( M \) is a variable, then \( M[\Bbbs] \) can be any term, including a redex, however \( M \) is not a redex and so the proposition holds.
+    \end{itemize}
+
+    \item If \( M = AB \), where the inductive hypothesis holds for \( A \) and \( B \), we have several possibilities:
+    \begin{itemize}
+      \item If \( A = \qabs {x^\sigma} E \), then \( M \) itself is a \( \beta \)-redex.
+
+      \Fullref{thm:lambda_substitution_single_rule} implies that
+      \begin{equation*}
+        A[\Bbbs] = \qabs {v^\sigma} E[\Bbbs_{x \mapsto v}]
+      \end{equation*}
+      for some variable \( v \) such that \( v \not\in \op*{Free}(A) \cup \op*{Free}(A[\Bbbs]) \).
+
+      Then \( M[\Bbbs] = A[\Bbbs] B[\Bbbs] \) is also a \( \beta \)-redex.
+
+      \item Otherwise, if \( A \) contains a redex, by the inductive hypothesis, so does \( A[\Bbbs] \), and thus so does \( M[\Bbbs] \).
+
+      \item Otherwise, \( B \) must contain a redex, and hence so do \( B[\Bbbs] \) and \( M[\Bbbs] \).
+    \end{itemize}
+
+    \item If \( M = \qabs {a^\sigma} A \), where the inductive hypothesis holds for \( A \), we again have several possibilities.
+
+    We start by noting that
+    \begin{equation*}
+      M[\Bbbs] = \qabs {v^\sigma} A[\Bbbs_{a \mapsto v}]
+    \end{equation*}
+    for some variable \( v \) such that \( v \not\in \op*{Free}(M) \cup \op*{Free}(M[\Bbbs]) \).
+
+    \begin{itemize}
+      \item If \( A = Ea \) and \( a \) is not free in \( E \), then \( M \) is an \( \eta \)-redex.
+
+      \Fullref{thm:lambda_substitution_free_variables} implies that \( v \) is not free in \( E[\Bbbs_{a \mapsto v}] \), thus \( M[\Bbbs] \) is also an \( \eta \)-redex.
+
+      \item Otherwise, \( A \) must contain a redex. By the inductive hypothesis, so does \( A[\Bbbs_{a \mapsto v}] \), and hence also \( M[\Bbbs] \).
+    \end{itemize}
+  \end{itemize}
+
+  \SubProofOf{thm:beta_eta_redexes/alpha} We use \fullref{thm:induction_on_recursively_defined_relations} on \( M \aequiv N \) simultaneously for all \( N \):
+  \begin{itemize}
+    \item If \( M \aequiv N \) due to \ref{inf:def:lambda_term_alpha_equivalence/atom}, then \( M \) and \( N \) are identical atomic terms, which cannot contain \( \beta \)- or \( \eta \)-redexes.
+
+    If \( M \) is a \( \delta \)-redex, so is \( N \).
+
+    \item If \( M \aequiv N \) due to \ref{inf:def:lambda_term_alpha_equivalence/app}, then \( M = AB \) and \( N = CD \), where \( A \aequiv C \) and \( B \aequiv D \) and the inductive hypothesis holds for the latter two.
+
+    We have the following possibilities:
+    \begin{itemize}
+      \item If \( A = (\qabs {x^\sigma} E) \), \( M \) itself is a redex. In this case \( C \) is also an abstraction since \( A \aequiv C \) due to either \ref{inf:def:typed_term_alpha_equivalence/lift} or \ref{inf:def:typed_term_alpha_equivalence/ren}. Then \( N \) is also a redex.
+
+      \item Otherwise, either \( A \) or \( B \) or possibly both contain a redex, and the inductive hypothesis allows us to conclude the same for \( C \) and/or \( D \).
+    \end{itemize}
+
+    \item If \( M \aequiv N \) due to \ref{inf:def:typed_term_alpha_equivalence/lift}, then \( M = \qabs {x^\sigma} A \) and \( N = \qabs {x^\sigma} B \) and \( A \aequiv B \), where the inductive hypothesis holds for the latter.
+
+    We have the following possibilities:
+    \begin{itemize}
+      \item If \( A = Ea \) with \( a \) not free in \( E \), then \( B \) is also an application term whose second subterm is \( a \). It follows that \( B = Fa \) for some term \( F \). \Fullref{thm:def:lambda_term_alpha_equivalence/free} implies that \( a \) is not free in \( F \), hence both \( M \) and \( N \) are \( \eta \)-redexes.
+
+      \item Otherwise, \( A \) must contain a redex and, by the inductive hypothesis, so does \( B \).
+    \end{itemize}
+
+    On both cases it follows that \( N \) contains a redex.
+
+    \item If \( M \aequiv N \) due to \ref{inf:def:typed_term_alpha_equivalence/ren}, then \( M = \qabs {a^\sigma} A \) and \( N = \qabs {b^\sigma} B \), where \( a \) is not free in \( B \) and \( A \aequiv B[b \mapsto a] \). We suppose that the inductive hypothesis holds for the latter.
+
+    We have the following possibilities:
+    \begin{itemize}
+      \item If \( A = Ea \), then \( B[b \mapsto a] \) is an application term whose second subterm is \( a \). It follows that \( B = Fb \) for some term \( F \). \Fullref{thm:def:lambda_term_alpha_equivalence/free} implies that \( a \) is not free in \( B[b \mapsto a] \), and \fullref{thm:lambda_substitution_free_variables_single} implies that \( b \) is not free in \( B \).
+
+      Then both \( M \) and \( N \) are \( \eta \)-redexes.
+
+      \item Otherwise, \( A \) must contain a redex.
+
+      \Fullref{thm:substitution_on_alpha_equivalent_terms} implies that
+      \begin{equation*}
+        A[a \mapsto b] \aequiv B[b \mapsto a][a \mapsto b]
+      \end{equation*}
+      and \fullref{thm:substitution_chain_contraction} implies that, since \( b \) is not free in \( B[b \mapsto a] \) (due to \fullref{thm:def:lambda_term_alpha_equivalence/free}),
+      \begin{equation*}
+        B[b \mapsto a][a \mapsto b] \aequiv B[\id] = B.
+      \end{equation*}
+
+      \Fullref{thm:beta_eta_redexes/substitution} implies that, since \( A \) contains a redex, so does \( A[a \mapsto b] \). The inductive hypothesis implies that \( B \) also does.
+    \end{itemize}
+
+    Again, in both cases it follows that \( N \) contains a redex.
+  \end{itemize}
+
+  \SubProofOf{thm:beta_eta_redexes/reducibility}
+
+  \SufficiencySubProof* We will use \fullref{thm:induction_on_recursively_defined_relations} on \( M \pred N \) to show that \( M \) contains a redex.
+
+  \begin{itemize}
+    \item If \( M \pred N \) due to \ref{inf:def:lambda_reduction/app_left}, then \( M = AB \) and \( N = CB \) with \( A \pred C \), where the inductive hypothesis holds for the latter.
+
+    Then \( A \) contains a redex, and so does \( M \).
+
+    \item If \( M \pred N \) due to \ref{inf:def:lambda_reduction/app_right}, we proceed analogously.
+
+    \item If \( M \pred N \) due to \ref{inf:def:typed_reduction_rules/abs}, then \( M = \qabs {x^\sigma} A \) and \( \qabs {x^\sigma} B  \) with \( A \pred B \). Via the inductive hypothesis, we conclude that \( A \), and hence also \( M \), contain a redex.
+
+    \item If \( M \pred N \) due to \ref{inf:def:lambda_reduction/alpha}, then \( M \aequiv A \) and \( B \aequiv N \), where \( A \pred B \). \Fullref{thm:beta_eta_redex_alpha_equivalence} implies that \( A \) contains a redex. Via the inductive hypothesis, we conclude that \( B \) also contains a redex, and then via \Fullref{thm:beta_eta_redex_alpha_equivalence} again we conclude that \( N \) contains a redex.
+
+    \item If \( M \pred N \) due to \ref{inf:def:typed_reduction_rules/beta}, \ref{inf:def:typed_reduction_rules/eta} or \ref{inf:def:delta_reduction}, \( M \) itself is a redex.
+  \end{itemize}
+
+  \NecessitySubProof* We will use \fullref{thm:induction_on_rooted_trees} on \( M \) to show that, if \( M \) contains a redex, then there exists a term \( N \) such that \( M \pred N \).
+
+  \begin{itemize}
+    \item If \( M \) is atomic, it cannot contain a \( \beta \)- or \( \eta \)-redex.
+
+    If \( M \) is a \( \delta \)-redex, \( M \) reduces to the corresponding \( \delta \)-contractum.
+
+    \item If \( M = AB \) where the inductive hypothesis holds for \( A \) and \( B \), we have two possibilities:
+    \begin{itemize}
+      \item If \( A = \qabs {x^\sigma} E \), then \( M \) is itself a \( \beta \)-redex, and \( M \pred E[x \mapsto B] \) due to \ref{inf:def:beta_eta_reduction/beta}.
+      \item Otherwise, either \( A \) or \( B \) contain a redex. If \( A \) does, there exists a term \( C \) such that \( A \pred C \), and then \( M \pred CB \) due to \ref{inf:def:lambda_reduction/app_left}. If \( A \) contains no redex, we proceed similarly with \( B \) and \ref{inf:def:lambda_reduction/app_right}.
+    \end{itemize}
+
+    \item If \( M = \qabs {a^\sigma} A \), where the inductive hypothesis holds for \( A \), we again have two possibilities:
+    \begin{itemize}
+      \item If \( A = Ex \) and \( x \) is not free in \( E \), the \( M \) is itself an \( \eta \)-redex, and \( M \pred E \) due to \ref{inf:def:beta_eta_reduction/eta}.
+
+      \item Otherwise, \( A \) must contain a redex, and thus there exists a term \( B \) such that \( A \pred B \). Then \( M \pred \qabs {a^\sigma} B \) due to \ref{inf:def:typed_term_alpha_equivalence/lift}.
+    \end{itemize}
+  \end{itemize}
+\end{proof}
+
 \begin{definition}\label{def:lambda_reduction_normal_form}\mimprovised
   Let \enquote{\( {\Anon} \)} be a combination of \enquote{\( \beta \)}, \enquote{\( \eta \)} and possibly \enquote{\( \delta \)}.
 
   We say that the term \( N \) is a \term{\( \Anon \)-normal form} if it satisfies any of the following equivalent conditions:
   \begin{thmenum}
-    \thmitem{def:lambda_reduction_normal_form/redex} \( N \) contains no redexes of the corresponding kinds.
+    \thmitem{def:lambda_reduction_normal_form/redex}\mcite[def. 2.1.34]{Barendregt1984LambdaCalculus} \( N \) contains no redexes of the corresponding kinds.
+
     \thmitem{def:lambda_reduction_normal_form/irreducible} There exists no term \( K \) such that \( N \pred K \).
   \end{thmenum}
 
@@ -349,8 +563,17 @@ Unless explicitly noted otherwise, we will follow \fullref{rem:base_typing_rules
   \item \Fullref{def:lambda_reduction_normal_form/irreducible} generalizes easily to \hyperref[def:rewriting_system]{abstract rewriting systems}, at which level of generality no concept of redex exists.
 \end{comments}
 \begin{defproof}
-  The equivalence of the definition follows from \fullref{thm:beta_eta_reducible_iff_redex} for \( \beta \) and \( \eta \) redexes. For \( \delta \) redexes, we must add two simple cases to the inductive proof --- one in each direction.
+  The equivalence of the definition follows from \fullref{thm:beta_eta_redexes/reducibility}.
 \end{defproof}
+
+\begin{proposition}\label{thm:strong_normalization_of_alpha_equivalent_term}
+  If \( M \) is \hyperref[def:lambda_term_normal_form]{normalizing} and if \( M \aequiv N \), then \( N \) is also normalizing.
+\end{proposition}
+\begin{proof}
+  If \( N \) is not normalizing, it contains a redex, and, by \fullref{thm:beta_eta_redexes/alpha}, so does \( M \). But we have assumed that \( M \) is normalizing.
+
+  The obtained contradiction shows that \( N \) is normalizing.
+\end{proof}
 
 \begin{proposition}\label{thm:lambda_reduction_normal_form_uniqueness}
   If \( M \) is \hyperref[def:lambda_reduction_normal_form]{\( \Anon \)-normalizing}, all its normal forms are \hyperref[def:lambda_term_alpha_equivalence]{\( \alpha \)-equivalent}.
@@ -362,10 +585,299 @@ Unless explicitly noted otherwise, we will follow \fullref{rem:base_typing_rules
 
   But \( N \) is a normal form, hence it cannot reduce via the single-step reduction relation \( {\pred} \). We have required the multi-step relation \( {\pred*} \) to be \hyperref[def:alpha_reflexive]{\( \alpha \)-reflexive}, hence it remains for \( N \) and \( K \) to be \hyperref[def:lambda_term_alpha_equivalence]{\( \alpha \)-equivalent} to \( L \).
 
-  It follows that \( N \aequiv K \) due to the transitivity of \( {\aequiv} \).
+  It follows that \( N \aequiv K \) due to the transitivity and symmetry of \( {\aequiv} \).
 \end{proof}
 
 \paragraph{Strong normalization}
 
-\begin{definition}\label{def:lambda_term_strong_normalization}\mimprovised
+\begin{definition}\label{def:lambda_term_reduction_graph}\mimprovised
+  Fix a \hyperref[def:lambda_reduction]{reduction relation} \( {\pred} \) for \( \synlambda \)-terms (with the modified rules from \fullref{def:typed_reduction_rules} in case the terms are typed).
+
+  We define the \term{reduction graph} \( G_{\Anon}(M) \) of the \( \synlambda \)-term \( M \) as the \hyperref[def:directed_graph]{directed graph} \hyperref[def:directed_graph_induced_by_relation]{induced} by the relation \( {\pred} \).
+
+  We call \hyperref[def:graph_walk/walk]{walks} in this graph starting from \( M \) \term{reduction chains}.
 \end{definition}
+\begin{comments}
+  \item The definition and terminology is based on \bycite[def. 2.3.18]{Barendregt1992Types}, however Barendregt distinguishes between reductions obtained using different strategies, even if their result coincides. Such a distinction will complicate us, for which reason we will avoid it.
+\end{comments}
+
+\begin{proposition}\label{thm:term_normalizing_iff_exists_finite_reduction_chain}
+  A \( \synlambda \)-term is \hyperref[def:lambda_reduction_normal_form]{\( \Anon \)-normalizing} if and only if it has a (possibly empty) \hyperref[def:lambda_term_reduction_graph]{reduction chain} whose tail is a \( \Anon \)-normal form.
+\end{proposition}
+\begin{proof}
+  This is simply a reformulation of \fullref{def:lambda_reduction_normal_form}.
+\end{proof}
+
+\begin{definition}\label{def:strongly_normalizing_lambda_term}\mimprovised
+  Let \enquote{\( {\Anon} \)} be a combination of \enquote{\( \beta \)}, \enquote{\( \eta \)} and possibly \enquote{\( \delta \)}.
+
+  We say that the \( \synlambda \)-term \( M \) is \term{strongly \( \Anon \)-normalizing} if the following equivalent conditions hold:
+  \begin{thmenum}
+    \thmitem{def:strongly_normalizing_lambda_term/chains} All \hyperref[def:lambda_term_reduction_graph]{reduction chains} starting at \( M \) are finite.
+
+    \thmitem{def:strongly_normalizing_lambda_term/graph} The \hyperref[def:lambda_term_reduction_graph]{reduction graph} \( G_{\Anon}(M) \) is finite and \hyperref[def:acyclic_graph]{acyclic}.
+  \end{thmenum}
+\end{definition}
+\begin{comments}
+  \item \Fullref{def:strongly_normalizing_lambda_term/chains} is based on \bycite[\S 4.3]{Barendregt1992Types} and \bycite[\S 4.2]{Mimram2020Types}, both of whom provide no formal definition.
+\end{comments}
+\begin{defproof}
+  The graph \( G_{\Anon}(M) \) is necessarily (weakly) connected, hence, if no infinite walk exists, the graph must be finite. The equivalence then follows from \fullref{thm:acyclic_graph_walk_length}.
+\end{defproof}
+
+\begin{proposition}\label{thm:strongly_normalizing_term_is_normalizing}
+  Every \hyperref[def:strongly_normalizing_lambda_term]{strongly normalizing} \( \synlambda \)-term is also \hyperref[def:lambda_term_normalization]{normalizing}.
+\end{proposition}
+\begin{proof}
+  Follows from \fullref{thm:term_normalizing_iff_exists_finite_reduction_chain}.
+\end{proof}
+
+\begin{proposition}\label{thm:strong_normalization_of_alpha_equivalent_term}
+  If \( M \) is \hyperref[def:strongly_normalizing_lambda_term]{strongly normalizing} and if \( M \aequiv N \), then \( N \) is also strongly normalizing.
+\end{proposition}
+\begin{proof}
+  Suppose that \( N \) has an infinite \hyperref[def:lambda_term_reduction_graph]{reduction chain}
+  \begin{equation*}
+    N = N_0 \pred N_1 \pred N_2 \pred \cdots
+  \end{equation*}
+
+  Due to \ref{inf:def:lambda_reduction/alpha}, it follows that
+  \begin{equation*}
+    M \pred N_1 \pred N_2 \pred \cdots
+  \end{equation*}
+
+  But \( M \) is strongly normalizing, contradicting the existence of such an infinite chain. Therefore, \( N \) must be strongly normalizing.
+\end{proof}
+
+\begin{definition}\label{def:strong_normalization_reducibility_candidate}\mcite[172]{Mimram2020Types}
+  Let \enquote{\( {\Anon} \)} be a combination of \enquote{\( \beta \)} and \enquote{\( \eta \)}.
+
+  To prove strong normalization in \fullref{thm:simply_typable_terms_are_strongly_normalizing}, we will need to define, for every \hyperref[def:simple_type]{simple type} \( \tau \), a set \( R_\tau \) whose elements we will call \term{\( \Anon \)-reducibility candidates}.
+
+  \begin{thmenum}
+    \thmitem{def:strong_normalization_reducibility_candidate/base} For every base type \( \tau \), we define \( R_\tau \) as the set of all \hyperref[def:strongly_normalizing_lambda_term]{strongly \( \Anon \)-normalizing} terms.
+
+    \thmitem{def:strong_normalization_reducibility_candidate/arrow} For every arrow type \( \tau \synimplies \sigma \) , we define \( R_{\tau \synimplies \sigma} \) as the set of all terms \( M \) such that \( MN \) is in \( R_\sigma \) whenever \( N \) is in \( R_\tau \).
+  \end{thmenum}
+\end{definition}
+\begin{comments}
+  \item This definition is based on \bycite[172]{Mimram2020Types}, which in turn refines \bycite[49]{GirardEtAl1989Types}. In our definition we allow not only \( \beta \)-, but also \( \eta \)- and \( \beta\eta \)-reduction.
+\end{comments}
+
+\begin{lemma}\label{thm:alpha_equivalent_reducibility_candidates}
+  \hyperref[def:strong_normalization_reducibility_candidate]{\( \Anon \)-reducibility candidate} sets are closed under \hyperref[def:lambda_term_alpha_equivalence]{\( \alpha \)-equivalence}: if \( M \) belongs to \( R_\tau \) and if \( M \aequiv N \), then \( N \) also belongs to \( R_\tau \).
+\end{lemma}
+\begin{proof}
+  We will use \fullref{thm:induction_on_rooted_trees} on \( \tau \):
+  \begin{itemize}
+    \item If \( \tau \) is a base type, \( R_\tau \) contains all strongly \( \Anon \)-normalizing terms. If \( M \) is in \( R_\tau \) and \( M \aequiv N \), \fullref{thm:strongly_normalizing_term_is_normalizing} implies that \( N \) is also in \( R_\tau \).
+
+    \item Suppose that \( \tau = \sigma \synimplies \rho \) and that the inductive hypothesis holds for \( \sigma \) and \( \rho \).
+
+    Fix some \( M \) in \( R_{\sigma \synimplies \rho} \) and \( K \) in \( R_\sigma \). By definition, \( MK \) is in \( R_\rho \).
+
+    Suppose that \( M \aequiv N \). We can apply \ref{inf:def:lambda_term_alpha_equivalence/app} to conclude that \( MK \aequiv NK \). By the inductive hypothesis on \( \rho \), we conclude that \( NK \) is also in \( R_\rho \).
+
+    Generalizing on \( K \), we conclude that the condition for \( N \) to belong to \( R_{\sigma \synimplies \rho} \) is satisfied.
+  \end{itemize}
+\end{proof}
+
+\begin{proposition}\label{thm:def:strong_normalization_reducibility_candidate}\mcite[prop. 4.2.2.1]{Mimram2020Types}
+  \hyperref[def:strong_normalization_reducibility_candidate]{\( \Anon \)-reducibility candidates} have the following basic properties:
+  \begin{thmenum}
+    \thmitem[thm:def:strong_normalization_reducibility_candidate/normalizing]{CR1} Every term in \( R_\tau \) is \hyperref[def:strongly_normalizing_lambda_term]{strongly normalizing}.
+
+    \thmitem[thm:def:strong_normalization_reducibility_candidate/reduction]{CR2} For every term \( M \) from \( R_\tau \), if \( M \pred N \), then \( N \) is also in \( R_\tau \).
+
+    \thmitem[thm:def:strong_normalization_reducibility_candidate/reduction_reflection]{CR3} If \( M \) is not an abstraction and if \( N \) is in \( R_\tau \) whenever \( M \pred N \), then \( M \) is also in \( R_\tau \).
+
+    In case \( M \) is a normal form, for example a variable, the condition is vacuous, and the conclusion is simply that \( M \) belongs to \( R_\tau \).
+  \end{thmenum}
+\end{proposition}
+\begin{proof}
+  We will use \fullref{thm:induction_on_rooted_trees} on \( \tau \) to prove the statements simultaneously.
+
+  \SubProof{Proof of base case} Suppose that \( \tau \) is a base type.
+
+  \SubProofOf*{thm:def:strong_normalization_reducibility_candidate/normalizing} By definition, \( R_\tau \) is the set of all strongly normalizing terms.
+
+  \SubProofOf*{thm:def:strong_normalization_reducibility_candidate/reduction} Suppose that \( M \) is in \( R_\tau \) and that \( M \pred N \).
+
+  Suppose that there exists an infinite reduction chain
+  \begin{equation*}
+    N = N_0 \pred N_1 \pred N_2 \pred \cdots
+  \end{equation*}
+
+  If we prepend \( M \), we obtain a reduction chain starting at \( M \). But \( M \) is, by \ref{thm:def:strong_normalization_reducibility_candidate/normalizing}, strongly normalizing, hence it cannot have an infinite reduction chain.
+
+  The obtain contradiction implies that \( N \) is also strongly normalizing, i.e. \( N \) is in \( R_\tau \).
+
+  \SubProofOf*{thm:def:strong_normalization_reducibility_candidate/reduction_reflection} Suppose that \( M \) is not an abstraction term (we will not need this assumption how, but will find it very useful when proving the inductive step). Suppose that \( K \) is in \( R_{\sigma \synimplies \rho} \) whenever \( M \pred K \).
+
+  Suppose that there exists an infinite reduction chain
+  \begin{equation}\label{eq:thm:def:strong_normalization_reducibility_candidate/proof/base/reduction_reflection}
+    M = M_0 \pred M_1 \pred M_2 \pred \cdots
+  \end{equation}
+
+  The term \( M_1 \) is in \( R_\tau \) and, by \ref{thm:def:strong_normalization_reducibility_candidate/normalizing}, it is strongly normalizing. This contradicts the existence of \eqref{eq:thm:def:strong_normalization_reducibility_candidate/proof/base/reduction_reflection} since the subchain starting at \( M_1 \) is again infinite.
+
+  The obtained contradiction demonstrates that \( M \) is strongly normalizing.
+
+  \SubProof{Proof of inductive step} Suppose that \( \tau = \sigma \synimplies \rho \), where the inductive hypothesis holds for \( \sigma \) and \( \rho \).
+
+  \SubProofOf*{thm:def:strong_normalization_reducibility_candidate/normalizing} Fix a term \( M \) from \( R_{\sigma \synimplies \rho} \). By definition, \( MK \) belongs to \( R_\rho \) whenever \( K \) is in \( R_\sigma \).
+
+  Fix some variable \( x \). \ref{thm:def:strong_normalization_reducibility_candidate/reduction_reflection} on \( \sigma \), for which the inductive hypothesis holds, implies that \( x \) is in \( R_\sigma \). Then \( Mx \) belongs to \( R_\rho \).
+
+  Suppose that \( M \) has an infinite reduction chain
+  \begin{equation*}
+    M = M_0 \pred M_1 \pred M_2 \pred \cdots
+  \end{equation*}
+
+  Applying \ref{inf:def:lambda_reduction/app_left}, we obtain
+  \begin{equation*}
+    Mx = M_0 x \pred M_1 x \pred M_2 x \pred \cdots
+  \end{equation*}
+
+  But, via the inductive hypothesis on \( \rho \), \ref{thm:def:strong_normalization_reducibility_candidate/normalizing} implies that \( Mx \) is strongly normalizing, contradicting the existence of the latter reduction chain.
+
+  It remains for \( M \) to be strongly normalizing.
+
+  \SubProofOf*{thm:def:strong_normalization_reducibility_candidate/reduction} Suppose that \( M \) is in \( R_{\sigma \synimplies \rho} \) and that \( M \pred N \).
+
+  Fix a term \( K \) from \( R_\sigma \). By definition of \( R_{\sigma \synimplies \rho} \), \( MK \) must be in \( R_\rho \).
+
+  We can apply \ref{inf:def:lambda_reduction/app_left} to conclude that \( MK \pred NK \). By the inductive hypothesis on \( \rho \), \ref{thm:def:strong_normalization_reducibility_candidate/reduction} allows us to conclude that \( NK \) is also in \( R_\rho \).
+
+  Generalizing on \( K \), we conclude that the condition for \( N \) to belongs to \( R_{\sigma \synimplies \rho} \) is satisfied.
+
+  \SubProofOf*{thm:def:strong_normalization_reducibility_candidate/reduction_reflection} Let \( M \) be a variable or application term. Suppose that \( K \) is in \( R_{\sigma \synimplies \rho} \) whenever \( M \pred K \).
+
+  We must show that \( M \) also belongs to \( R_{\sigma \synimplies \rho} \). For this, we need to show that \( MN \) is in \( R_\rho \) whenever \( N \) is in \( R_\sigma \).
+
+  Fix a term \( N \). At this point it is important that \( M \) is not an abstraction because \( MN \) cannot be a \( \beta \)-redex. If \( MN \pred P \), \fullref{thm:single_step_reduction_deconstruction/app} implies that \( P = KL \) and either \( M \pred K \) and \( N \aequiv L \) or \( M \aequiv K \) and \( N \pred L \).
+
+  Suppose that \( N \) belongs to \( R_\sigma \). By the inductive hypothesis on \( \sigma \), \ref{thm:def:strong_normalization_reducibility_candidate/normalizing} implies that \( N \) is strongly normalizing. Then there exists a maximal length \( n \) of reduction chains starting at \( N \). We will use induction on \( n \) in a subtle way to show that \( KL \) belongs to \( R_\rho \).
+
+  \begin{itemize}
+    \item Both in the base case \( n = 0 \) and in the inductive step, we will need to handle the following possibility:
+
+    If \( M \pred K \) and \( N \aequiv L \), by assumption, \( K \) is in \( R_{\sigma \synimplies \rho} \). Since we have chosen \( N \) to belong to \( R_\sigma \), by \fullref{thm:alpha_equivalent_reducibility_candidates}, so does \( L \).
+
+    Then \( KL \) must belong to \( R_\rho \) by definition of \( R_{\sigma \synimplies \rho} \).
+
+    \item If \( n > 0 \), it is also possible that \( M \aequiv K \) and \( N \pred L \). We suppose that the inductive hypothesis holds for choices of \( N \) with a maximum reduction chain length shorter than \( n \) --- such a term is \( L \).
+
+    \ref{thm:def:strong_normalization_reducibility_candidate/reduction} on \( \sigma \) implies that \( L \) is in \( R_\sigma \). We can apply \ref{inf:def:lambda_reduction/app_left} to conclude that \( ML \pred KL \). The inductive hypothesis on \( L \) then implies that \( ML \) belongs to \( R_\rho \).
+
+    Since \( M \aequiv K \), applying \ref{inf:def:lambda_term_alpha_equivalence/app}, we get \( ML \aequiv KL \). \Fullref{thm:alpha_equivalent_reducibility_candidates} then implies that \( KL \) belongs to \( R_\rho \).
+  \end{itemize}
+
+  With this the induction on \( n \) is complete. At this point we have concluded that \( P = KL \) belongs to \( R_\rho \) whenever \( MN \pred P \). By the inductive hypothesis on \( \rho \), \ref{thm:def:strong_normalization_reducibility_candidate/reduction_reflection} implies that, since \( KL \) was arbitrary, \( MN \) also belongs to \( R_\rho \).
+
+  Generalizing on \( N \), we conclude that the condition for \( M \) to belongs to \( R_{\sigma \synimplies \rho} \) is satisfied.
+\end{proof}
+
+\begin{lemma}\label{thm:reducibility_candidate_abstraction}\mcite[lemma 4.2.2.2]{Mimram2020Types}
+  Fix a term \( M \) and a variable \( x \).
+
+  If \( M[x \mapsto N] \) belongs to \( R_\sigma \) for every term \( N \) in \( R_\tau \), then \( \qabs {x^\tau} M \) belongs to \( R_{\tau \synimplies \sigma} \).
+\end{lemma}
+\begin{comments}
+  \item Unlike \incite[thm. 4.2.2.5]{Mimram2020Types}, we handle \( \eta \)- and \( \beta\eta \)-reduction.
+\end{comments}
+\begin{proof}
+  Denote \( \qabs {x^\tau} M \) by \( P \). To show that \( P \) belongs to \( R_{\tau \synimplies \sigma} \), we must show that \( P N \) belongs to \( R_\sigma \) for every term \( N \) in \( R_\tau \).
+
+  By \ref{thm:def:strong_normalization_reducibility_candidate/normalizing}, both \( M \) and \( N \) are strongly normalizing. Let \( m \) be the maximum reduction chain length for \( M \), and similarly let \( n \) be the length for \( N \). We will use induction on \( m + n \) to show that, if \( P N \pred S \), then \( P N \) is in \( R_\sigma \).
+
+  In the base case \( m + n = 0 \), \( P N \) must be a normal form. \ref{thm:def:strong_normalization_reducibility_candidate/reduction_reflection} then implies that \( P N \) is in \( R_\sigma \).
+
+  If \( m + n > 0 \), we must consider several cases. \Fullref{thm:single_step_reduction_deconstruction/app} lists the following possibilities for \( P N \pred S \):
+  \begin{itemize}
+    \item In the case \fullref{thm:single_step_reduction_deconstruction/app/beta} for \( P N \pred S \), we have \( S \aequiv M[x \mapsto N] \).
+
+    Since \( M[x \mapsto N] \) is in \( R_\sigma \) by supposition, \fullref{thm:alpha_equivalent_reducibility_candidates} implies that \( S \) is also in \( R_\sigma \).
+
+    \item In the case \fullref{thm:single_step_reduction_deconstruction/app/left} for \( P N \pred S \), we have \( S = Q L \), where \( P \pred Q \) and \( N \aequiv L \).
+
+    \Fullref{thm:single_step_reduction_deconstruction/abs} lists the following possibilities for \( P \pred Q \):
+    \begin{itemize}
+      \item In the case \fullref{thm:single_step_reduction_deconstruction/abs/eta} for \( P \pred Q \), we have \( M \aequiv Qx \) and \( x \not\in \op*{Free}(Q) \), i.e. we have \( P \aequiv \qabs {x^\tau} Qx \).
+
+      By supposition, \( M[x \mapsto N] = QN \) belongs to \( R_\sigma \), and \fullref{thm:alpha_equivalent_reducibility_candidates} implies that \( S = Q L \) is also in \( R_\sigma \).
+
+      \item In the case \fullref{thm:single_step_reduction_deconstruction/abs/lift} for \( P \pred Q \), we have \( Q \aequiv \qabs {x^\sigma} T \), where \( M \pred T \).
+
+      By the inductive hypothesis on (the maximal lengths of reduction chains on) \( T \) and \( N \), we conclude that \( Q N \) is in \( R_\sigma \).
+
+      Then \fullref{thm:alpha_equivalent_reducibility_candidates} implies that \( S = Q L \) is also in \( R_\sigma \).
+    \end{itemize}
+
+    \item In the case \fullref{thm:single_step_reduction_deconstruction/app/right} for \( P N \pred S \), we have \( S = Q L \), where \( P \aequiv Q \) and \( N \pred L \).
+
+    By the inductive hypothesis on \( M \) and \( L \), \( P L \) is in \( R_\sigma \). \Fullref{thm:alpha_equivalent_reducibility_candidates} then implies that \( S = Q L \) is also in \( R_\sigma \).
+  \end{itemize}
+\end{proof}
+
+\begin{lemma}\label{thm:reducibility_candidate_substitution}\mcite[lemma 4.2.2.3]{Mimram2020Types}
+  Suppose we are given the \hyperref[def:simple_type_derivability]{derivation} \( \Gamma \vdash M: \tau \).
+
+  For every \hyperref[def:lambda_substitution]{substitution} \( \Bbbs \) such that \( \Bbbs(v) \) is in \( R_\sigma \) for every assumption \( v: \sigma \) in \( \Gamma \), the term \( M[\Bbbs] \) belongs to \( R_\tau \).
+\end{lemma}
+\begin{proof}
+  Let \( T \) be a \hyperref[def:type_derivation_tree]{derivation tree} for \( M: \tau \) from \( \Gamma \). Fix a substitution \( \Bbbs \) such that, whenever \( v: \sigma \), \( \Bbbs(v) \) belongs to \( R_\sigma \).
+
+  Note that we say nothing about the type of \( \Bbbs(v) \). Thus, \Fullref{alg:simply_typed_substitution} is inapplicable.
+
+  We will use \fullref{thm:induction_on_rooted_trees} on \( T \), simultaneously on all substitutions, to conclude that \( M[\Bbbs] \) belongs to \( R_\tau \).
+  \begin{itemize}
+    \item If \( T \) is an assumption tree, \( M \) is a variable, and \( M[\Bbbs] = \Bbbs(M) \) belongs to \( R_\tau \) by supposition.
+
+    \item If \( T \) is an application tree for \ref{inf:def:base_typing_rules/arrow/elim}, then \( M = NK \) and \( T \) has subtrees \( T_N \) and \( T_K \) deriving \( N: \sigma \synimplies \tau \) and \( K: \sigma \) for some type \( \sigma \). We suppose that the inductive hypothesis holds for \( T_N \) and \( T_K \).
+
+    Since \( M[\Bbbs] = N[\Bbbs] \thinspace K[\Bbbs] \), the inductive hypothesis implies that \( N[\Bbbs] \) is in \( R_{\sigma \synimplies \tau} \) and \( K[\Bbbs] \) is in \( R_\sigma \).
+
+    By definition of \( R_{\sigma \synimplies \tau} \), \( M[\Bbbs] \) must belong to \( R_\tau \).
+
+    \item If \( T \) is an assumption tree for \ref{inf:def:base_typing_rules/arrow/intro/exp}, then \( \tau = \sigma \synimplies \rho \) and \( M = \qabs {x^\sigma} N \). The tree \( T \) must have a discharge assertion \( x: \sigma \) and subtree \( T_N \) deriving \( N: \rho \).
+
+    \Fullref{thm:lambda_substitution_single_rule} implies that
+    \begin{equation*}
+      M[\Bbbs] = \qabs {v^\sigma} N[\Bbbs_{x \mapsto v}]
+    \end{equation*}
+    for some variable \( v \) such that \( v \not\in \op*{Free}(M) \cup \op*{Free}(M[\Bbbs]) \).
+
+    The inductive hypothesis on \( T_N \) implies that \( N[\Bbbs_{x \mapsto K}] \) belongs to \( R_\rho \) whenever \( K \) belongs to \( R_\sigma \) (in particular, if \( K = v \)).
+
+    We use \fullref{alg:simply_typed_substitution} to construct a tree \( S \) for \( N[\Bbbs_{x \mapsto v}] \). Compared to \( T_N \), in \( S \) the assumption \( x: \sigma \) gets replaced with \( v: \sigma \). Since \( v \) is free in \( N \), \fullref{thm:substitution_chain_contraction} implies that
+    \begin{equation*}
+      N[\Bbbs_{x \mapsto K}] \aequiv N[\Bbbs_{x \mapsto v}][v \mapsto K].
+    \end{equation*}
+
+    Thus, for any term \( K \) in \( R_\sigma \), \fullref{thm:alpha_equivalent_reducibility_candidates} implies that \( N[\Bbbs_{x \mapsto v}][v \mapsto K] \) belongs to \( R_\rho \).
+
+    We can then use \fullref{thm:reducibility_candidate_abstraction} to conclude that \( M[\Bbbs] \) is in \( R_{\sigma \synimplies \tau} \), as desired.
+  \end{itemize}
+\end{proof}
+
+\begin{proposition}\label{thm:reducibility_candidate_adequacy}\mcite[prop. 4.2.2.4]{Mimram2020Types}
+  If \( \Gamma \vdash M: \tau \), then \( M \) belongs to the set of \hyperref[thm:def:strong_normalization_reducibility_candidate]{reducibility candidates} \( R_\tau \).
+\end{proposition}
+\begin{proof}
+  \ref{thm:def:strong_normalization_reducibility_candidate/reduction_reflection} implies that, for every assumption \( v: \sigma \) in \( \Gamma \), \( v \) belongs to \( R_\sigma \).
+
+  \Fullref{thm:reducibility_candidate_substitution} then implies that \( M = M[\id] \) belongs to \( R_\tau \).
+\end{proof}
+
+\begin{theorem}[Simply typable terms are strongly normalizing]\label{thm:simply_typable_terms_are_strongly_normalizing}\mcite[thm. 4.2.2.5]{Mimram2020Types}
+  Let \enquote{\( {\Anon} \)} be a combination of \enquote{\( \beta \)} and \enquote{\( \eta \)}.
+
+  Then every (\hyperref[def:typed_lambda_term]{typed} or \hyperref[def:lambda_term]{untyped}) \( \synlambda \)-term \hyperref[def:typability]{typable} via the base typing rules from \fullref{def:base_typing_rules} is \hyperref[def:strongly_normalizing_lambda_term]{\( \Anon \)-strongly normalizing}.
+\end{theorem}
+\begin{comments}
+  \item Unlike \incite[thm. 4.2.2.5]{Mimram2020Types}, we handle \( \eta \)- and \( \beta\eta \)-reduction. This is done in \fullref{thm:reducibility_candidate_abstraction}.
+\end{comments}
+\begin{proof}
+  If \( \Gamma \vdash M: \tau \), \fullref{thm:reducibility_candidate_adequacy} implies that \( M \) belongs to \( R_\tau \). \Fullref{thm:def:strong_normalization_reducibility_candidate/normalizing} then implies that \( M \) is strongly normalizing.
+\end{proof}
