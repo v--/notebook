@@ -19,6 +19,7 @@ class DoiDateTime(DoiBaseModel):
     date_parts: Annotated[list[list[int] | list[None]], Len(min_length=1)]
     date_time: datetime | None = None
     timestamp: int | None = None
+    version: str | None = None
 
 
 class DoiLicense(DoiBaseModel):

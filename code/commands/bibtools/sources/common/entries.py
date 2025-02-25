@@ -50,14 +50,24 @@ def generate_keyphrase(title: str, subtitle: str | None, language: str, *aux_tex
 
 
 @string_accumulator()
-def generate_entry_name(authors: Sequence[BibAuthor], year: str | None, title: str, main_language: str, *aux_texts: str | None, subtitle: str | None = None) -> Iterable[str]:
-    if len(authors) > 0:
-        yield mangle_string_for_entry_name(strip_braces(get_main_human_name(authors[0].full_name)))
+def generate_entry_name(
+    authors: Sequence[BibAuthor],
+    year: str | None,
+    title: str,
+    main_language: str,
+    *aux_texts: str | None,
+    subtitle: str | None = None,
+    editors: Sequence[BibAuthor] = [],
+) -> Iterable[str]:
+    visible_authors = authors or editors
 
-    if len(authors) > 2 or (len(authors) == 2 and authors[1] == BibAuthor(full_name='others')):
+    if len(visible_authors) > 0:
+        yield mangle_string_for_entry_name(strip_braces(get_main_human_name(visible_authors[0].full_name)))
+
+    if (len(authors) == 0 and len(editors) > 0) or len(visible_authors) > 2 or (len(visible_authors) == 2 and visible_authors[1] == BibAuthor(full_name='others')):
         yield 'ИПр' if main_language == 'russian' or main_language == 'bulgarian' else 'EtAl'
     elif len(authors) > 1:
-        yield mangle_string_for_entry_name(strip_braces(get_main_human_name(authors[1].full_name)))
+        yield mangle_string_for_entry_name(strip_braces(get_main_human_name(visible_authors[1].full_name)))
 
     if year:
         yield year
@@ -69,10 +79,11 @@ def generate_entry_name(authors: Sequence[BibAuthor], year: str | None, title: s
 def regenerate_entry_name(entry: BibEntry, main_language: str, *aux_texts: str | None) -> str:
     year = extract_year(strip_braces(entry.date)) if entry.date else None
     return generate_entry_name(
-        entry.authors or entry.editors,
+        entry.authors,
         year,
         strip_braces(entry.title),
         main_language,
         *aux_texts,
+        editors=entry.editors,
         subtitle=strip_braces(entry.subtitle) if entry.subtitle else None
     )

@@ -5,7 +5,7 @@ We will assume that all matrices have entries from some fixed \hyperref[def:fiel
 The definitions of \hyperref[def:triangular_matrix]{triangular} and \hyperref[def:triangular_matrix]{elementary matrices} make sense over more general rings, however we introduce them because of \fullref{alg:plu_decomposition}, which has no direct generalization.
 
 \begin{definition}\label{def:triangular_matrix}
-  An \term{upper triangular matrix} is one with zeros below its \hyperref[def:matrix_diagonal]{main diagonal}. More precisely, \( U = \seq{ u_{i,j} }_{i,j=1}^{m,n} \) is an upper triangular matrix if \( u_{i,j} = 0 \) when \( i > j \).
+  An \term{upper triangular matrix} is one with zeros below its \hyperref[def:matrix_diagonal]{main diagonal}. More precisely, \( U = \seq{ u_{i,j} }_{i,j=1}^{m,n} \) is an upper triangular matrix if \( u_{i,j} = 0 \) when \( i > j \). We call it \term{unitriangular} if the diagonal entries are ones.
 
   Similarly, a \term{lower triangular matrix} is one with zeros above its main diagonal.
 
@@ -174,9 +174,7 @@ The definitions of \hyperref[def:triangular_matrix]{triangular} and \hyperref[de
 \end{proof}
 
 \begin{algorithm}[PLU decomposition]\label{alg:plu_decomposition}
-  Fix an \( n \times n \) matrix \( A \). We will build a \hyperref[def:triangular_matrix]{lower triangular matrix} \( L \), \hyperref[def:triangular_matrix]{upper triangular matrix} \( U \) and a \hyperref[def:elementary_matrix/permutation]{permutation matrix} \( P \) such that \( A = PLU \).
-
-  The algorithm itself is also called \term{Gaussian elimination} and \( U \) is said to be a \term{row-echelon form} of \( A \), although both terms may have different meanings depending on the context.
+  Fix an \( n \times n \) matrix \( A \). We will build a \hyperref[def:triangular_matrix]{lower \hi{unitriangular} matrix} \( L \), \hyperref[def:upper_row_echelon_form]{upper row echelon form} \( U \) and a \hyperref[def:elementary_matrix/permutation]{permutation matrix} \( P \) such that \( A = PLU \).
 
   We will proceed via \hyperref[thm:bounded_transfinite_recursion]{bounded recursion} on \( n \). After the \( k \)-th step, for \( k = 1, \ldots, n - 1 \), we will have built a lower triangular matrix \( L_k \) and a permutation matrix \( P_k \) such that for \( i > k \), \( (i, k) \)-th entry of \( L_k P_k A \) is zero.
 
@@ -188,7 +186,7 @@ The definitions of \hyperref[def:triangular_matrix]{triangular} and \hyperref[de
   \end{equation*}
 
   \begin{thmenum}
-    \thmitem{alg:plu_decomposition/initialization} As an initial condition, put \( L_0 \coloneqq I_n \) and \( P_0 \coloneqq I_n \) as identity matrices.
+    \thmitem{alg:plu_decomposition/init} As an initial condition, put \( L_0 \coloneqq I_n \) and \( P_0 \coloneqq I_n \) as identity matrices.
 
     \thmitem{alg:plu_decomposition/step} Suppose that we have already built \( L_{k-1} \) and \( P_{k-1} \). Let \( U_{k-1} \coloneqq L_{k-1} P_{k-1} A \). We will describe step \( k \) of the algorithm.
 
@@ -218,6 +216,11 @@ The definitions of \hyperref[def:triangular_matrix]{triangular} and \hyperref[de
     By \fullref{thm:def:elementary_matrix/transvection_product}, \( L_k \) adds nonzero entries to \( \widehat{L}_{k-1} \) only below the main diagonal. Since \( \widehat{L}_{k-1} \) is lower triangular, so is \( L_k \). Furthermore, for \( j > k \), the coefficient \( \upsilon_j \) is chosen so that the \( (k, j) \)-th entry of \( L_k P_k A \) of zero, which ensures that the latter matrix will be upper triangular when \( k = n - 1 \).
   \end{thmenum}
 \end{algorithm}
+\begin{comments}
+  \item \todo{Compare with Gaussian elimination}
+  \item \todo{Handle non-square matrices}
+  \item \todo{Ensure that \( U \) is in row echelon form}.
+\end{comments}
 
 \begin{proposition}\label{thm:alg:plu_decomposition}
   Let \( A = PLU \) be the decomposition of some matrix \( A \) obtained via \fullref{alg:plu_decomposition}.
@@ -343,102 +346,189 @@ The definitions of \hyperref[def:triangular_matrix]{triangular} and \hyperref[de
   Hence, the determinant is nonzero if and only if all of \( r_0, \ldots, r_n \) are distinct.
 \end{example}
 
-\begin{definition}\label{def:column_and_row_spaces}
-  The \term{column space} of the \( m \times n \) matrix \( A \) is the \hyperref[def:module/submodel]{linear span} of the columns vectors of \( A \), regarded as a subspace of \( \BbbK^n \). It is precisely the image of \( A \) regarded as a linear operator. Its dimension is the rank of \( A \) as per \fullref{thm:rank_nullity_theorem}.
+\paragraph{Row and column spaces}
 
-  Analogously, the \term{row space} is the span of the row vectors, regarded as a subspace of \( \BbbK^m \). It is the image of \( A^T \) regarded as a linear operator.
+\begin{definition}\label{def:column_and_row_spaces}\mcite[39; 41]{Knapp2016BasicAlgebra}
+  The \term{column space} of the \( m \times n \) matrix \( A \) is the \hyperref[def:module/submodel]{linear span} of the columns of \( A \), regarded as a subspace of \( R^n \).
 
-  We will see in \fullref{thm:image_of_adjoint} that the column and row space are isomorphic.
+  Analogously, the \term{row space} is the span of the rows, regarded as a subspace of \( R^m \).
+
+  We define the \term{column rank} (resp. \term{row rank}) of \( A \) as the dimension of the column space (resp. row space).
 \end{definition}
+\begin{comments}
+  \item The column space is the image of \( A \) when regarded as a linear operator, while the row space is the image of \( A^T \).
 
-\begin{remark}\label{rem:system_of_equations}
-  Given any map \( T: \BbbK^n \to \BbbK^m \) and an \( m \)-dimensional column vector \( b \), consider the \term{system of equations}
-  \begin{equation}\label{eq:rem:system_of_equations/vector_form}
-    T(x) = b.
-  \end{equation}
+  \item In accordance with \fullref{def:rank_and_nullity}, we should refer to the column rank as \enquote{the rank}. We make a distinction between column and row ranks because the two are not in general equal. \Fullref{thm:matrix_ranks_over_field_coincide} implies that over field they coincide, however, and in that case it makes sense to conflate them.
+\end{comments}
 
-  The function \( T \) corresponds to an \( n \)-dimensional \hyperref[def:array/column_vector]{column vector} of functions
+\begin{lemma}\label{thm:matrix_product_column_space_subspace}
+  The column space of \( AB \) is a subspace of the column space of \( A \). If \( B \) is invertible, the column spaces coincide.
+\end{lemma}
+\begin{proof}
+  Let
+  \begin{align*}
+    A = \seq{ a_{i,j=1}^{m,n} }
+    &&
+    B = \seq{ a_{i,j=1}^{n,k} }
+    &&
+    AB = \seq{ c_{i,j=1}^{m,k} }.
+  \end{align*}
+
+  Then, by definition of multiplication,
+  \begin{equation*}
+    c_{i,j} = \sum_{s=1}^n a_{i,s} \cdot b_{s,j}.
+  \end{equation*}
+
+  The \( j \)-th column of \( AB \) is thus
   \begin{equation*}
     \begin{pmatrix}
-      T_1 & \cdots & T_n
-    \end{pmatrix}^T
+      c_{1,j} \\
+      \vdots \\
+      c_{m,j}
+    \end{pmatrix}
+    =
+    \begin{pmatrix}
+      \sum_{s=1}^n a_{1,s} \cdot b_{s,j} \\
+      \vdots \\
+      \sum_{s=1}^n a_{m,s} \cdot b_{s,j}
+    \end{pmatrix}
+    =
+    \sum_{s=1}^n b_{s,j}
+    \begin{pmatrix}
+      a_{1,s} \\
+      \vdots \\
+      a_{m,s}
+    \end{pmatrix}
+    =
+    \sum_{s=1}^n b_{s,j} A_{\Anon*,s}.
   \end{equation*}
-  where \( T_k: \BbbK^n \to \BbbK \) is the \hyperref[def:basis_decomposition]{projection} along the \( k \)-th coordinate axis.
 
-  When regarding \( x \) as a free variable in the sense of \fullref{def:first_order_equation}, the entries of \( x \) are themselves called the \term{variables} of the system. When regarding \( x \) as a bound variable, it is called a \term{solution} if \eqref{eq:rem:system_of_equations/vector_form} is satisfied.
+  It is thus a linear combination of the columns of \( A \), hence it belongs to the column space of \( A \). Therefore, the entire column space of \( AB \) is a subspace of the column space of \( A \).
 
-  We can write the system \eqref{eq:rem:system_of_equations/vector_form} in scalar form as
-  \begin{equation}\label{eq:rem:system_of_equations/nonlinear_scalar_form}
-    \begin{cases}
-      \begin{array}{ccc}
-        T_1(x_1, \ldots, x_n) & =      & b_1    \\
-        \vdots                & \vdots &        \\
-        T_2(x_1, \ldots, x_n) & =      & b_m
-      \end{array}
-    \end{cases}
-  \end{equation}
+  If \( B \) is invertible, we can apply the proposition to \( AB \) and \( B^{-1} \) to conclude that the column space of \( ABB^{-1} = A \) is a subspace of that of \( AB \).
+\end{proof}
 
-  Each individual row is called an \term{equation} of the system. The above is thus a system with \( n \) variables and \( m \) equations.
+\begin{proposition}\label{thm:matrix_ranks_over_field_coincide}
+  The row and column ranks of a matrix over a field coincide.
+\end{proposition}
+\begin{proof}
+  \todo{Prove}.
+\end{proof}
 
-  In the case where \( T \) is a \hyperref[def:linear_function]{linear function}, we say that the system itself is linear. We can, in that case, rewrite the system via the matrix of \( T \) with respect to the canonical bases. A linear system is often written in \term{scalar form} as
-  \begin{equation}\label{eq:rem:system_of_equations/scalar_form}
+\paragraph{Systems of linear equations}
+
+\begin{definition}\label{def:matrix_equation}\mimprovised
+  A fundamental aspect of linear algebra are \term{matrix equations} --- \hyperref[def:equation]{equation} whose sides are \hyperref[def:array/matrix]{matrices} of identical dimensions.
+\end{definition}
+
+\begin{definition}\label{def:system_of_linear_equations}\mimprovised
+  \hyperref[def:equation/system]{Systems} of \hyperref[def:polynomial_degree_terminology]{linear} \hyperref[def:algebraic_equation]{algebraic equation} have an intimate connection to a kind of \hyperref[def:matrix_equation]{matrix equations}.
+
+  Consider the system
+  \begin{equation}\label{eq:def:system_of_linear_equations/scalar_form}
     \begin{cases}
       \begin{array}{ccccccc}
         a_{1,1} x_1 & +      & \cdots & +      & a_{1,n} x_n & =      & b_1 \\
                     & \vdots &        & \vdots &             & \vdots &     \\
-        a_{m,1} x_1 & +      & \cdots & +      & a_{m,n} x_n & =      & b_m.
+        a_{m,1} x_1 & +      & \cdots & +      & a_{m,n} x_n & =      & b_m
       \end{array}
     \end{cases}
   \end{equation}
+  with coefficients over the \hyperref[def:semiring]{(semi)ring} \( r \).
 
-  The linear system \( Ax = b \) is said to be \term{homogeneous} if \( b \) is the zero vector. To every non-homogeneous system, there corresponds a homogeneous system
-  \begin{equation}\label{eq:rem:system_of_equations/homogeneous}
-    Ax = \vect 0.
+  We can arrange the coefficients into matrices:
+  \begin{align*}
+    A \coloneqq \begin{pmatrix}
+      a_{1,1} & \cdots & a_{1,n} \\
+      \vdots  & \ddots & \vdots  \\
+      a_{m,1} & \cdots & a_{m,n}
+    \end{pmatrix}
+    &&
+    b \coloneqq \begin{pmatrix}
+      b_1 \\ \cdots \\ b_m
+    \end{pmatrix}
+  \end{align*}
+
+  Despite both containing coefficients of algebraic equations, we call \( A \) the \term[ru=матрица коеффициентов (\cite[\S 3.1]{Тыртышников2007ЛинейнаяАлгебра})]{coefficient matrix} and refer to \( b \) simply as the \term[ru=правая часть (\cite[\S 3.1]{Тыртышников2007ЛинейнаяАлгебра})]{right side}. These matrices allow us to express \eqref{eq:def:system_of_linear_equations/scalar_form} succinctly in matrix form:
+  \begin{equation}\label{eq:def:system_of_linear_equations/matrix_form}
+    Ax = b,
   \end{equation}
+  where \( x \) is an indeterminate \hyperref[def:array/column_vector]{column vector} form \( R^m \).
 
-  If \( x \) is a solution to a non-homogeneous linear system \( Ax = b \) and if \( y \) is a solution to the homogeneous system \( Ax = \vect 0 \), then \( x + y \) is also a solution to the non-homogeneous system. The proof is trivial:
-  \begin{equation*}
-    A(x + y) = Ax + Ay = Ax.
-  \end{equation*}
+  \begin{thmenum}
+    \thmitem{def:system_of_linear_equations/homogeneous} If all linear equations are \hyperref[def:homogeneous_equation]{homogeneous}, we refer to the system itself as \term[ru=однородная (система алгебраических уравнений) (\cite[\S 7.7]{Тыртышников2007ЛинейнаяАлгебра})]{homogeneous}.
 
-  Solutions are further discussed in \fullref{def:affine_space_of_solutions}.
+    \Fullref{thm:homogeneous_linear_equation} implies that, equivalently, a system is homogeneous if \( b \) is the zero vector.
 
-  The theory of systems of linear equations precedes matrix theory. In applications, this is often a more convenient framework than the one provided (only) by matrices.
-\end{remark}
+    To every inhomogeneous system there corresponds a homogeneous system --- this is used when characterizing solutions in \fullref{thm:linear_system_solutions}.
 
-\begin{proposition}\label{thm:degrees_of_freedom}
-  The solutions of the \hyperref[rem:system_of_equations]{homogeneous linear system}
-  \begin{equation*}
-    Ax = \vect 0
-  \end{equation*}
-  of \( n \) variables and \( m \) equations form a subspace of the column space of dimension
-  \begin{equation*}
-    d \coloneqq \dim \ker A = n - \underbrace{ \rank A }_{ \dim \img A }
-  \end{equation*}
+    \thmitem{def:system_of_linear_equations/solution_space} We call the \hyperref[def:equation/solution]{solution set} of a linear system a \term{solution space} --- as we shall see in \fullref{thm:linear_system_solution_space}, it is in fact an \hyperref[def:affine_subspace]{affine subspace} of \( R^m \).
+  \end{thmenum}
+\end{definition}
 
-  We say that there are \( d \) \term{degrees of freedom} in this system.
+\begin{definition}\label{def:minkowski_sum}\mcite[\S 11.1.3]{Berger1987GeometryI}
+  The \term{Minkowski sum} of two sets \( A \) and \( B \) in a \hyperref[def:module]{module} is simply their sum in the additive \hyperref[def:power_semigroup]{power group}:
+  \begin{equation}\label{eq:def:minkowski_sum}
+    A + B \coloneqq \set{ a + b \given a \in A \T{and} b \in B }.
+  \end{equation}
+\end{definition}
+
+\begin{proposition}\label{thm:linear_system_solutions}
+  Let \( x_0 \) be a \hyperref[def:equation/solution]{solution} of the \hyperref[def:system_of_linear_equations]{system of linear equations} \( Ax = b \) over a ring \( R \).
+
+  Then the entire set of solutions is the \hyperref[def:minkowski_sum]{Minkowski sum} of \( x_0 \) with the \hyperref[def:module/kernel]{null space} of \( A \).
 \end{proposition}
+\begin{comments}
+  \item The theorem can be restated as follows: every solution of an inhomogeneous system is a sum of one fixed solution and some solution of the corresponding homogeneous system.
+
+  \item In particular, if the system is homogeneous, the null space is the solution set.
+\end{comments}
 \begin{proof}
-  Follows from \fullref{thm:rank_nullity_theorem}.
+  All elements of \( x_0 + \ker A \) are solutions to \( Ax = b \). Indeed, if \( x = x_0 + y \), where \( Ay = \vect 0 \), then \( Ax = Ax_0 + Ay = Ax_0 \).
+
+  Conversely, if \( x \) is a solution, then \( A(x - x_0) = \vect 0 \), and thus \( x - x_0 \) is in the null space. Then \( x \) is the sum of \( x_0 \) and the element \( x - x_0 \) of \( \ker A \).
 \end{proof}
 
 \begin{corollary}\label{thm:homogeneous_linear_equations_solutions}
-  The square \hyperref[rem:system_of_equations]{homogeneous linear system}
+  The \( n \times n \) square \hyperref[def:system_of_linear_equations/homogeneous]{homogeneous linear system}
   \begin{equation*}
     Ax = \vect 0
   \end{equation*}
-  of \( n \) variables and \( n \) equations has a nontrivial solution if and only if \( A \) is \hi{not} \hyperref[def:inverse_matrix]{invertible}.
+  has a nontrivial solution if and only if \( A \) is \hi{not} \hyperref[def:inverse_matrix]{invertible}.
 \end{corollary}
 \begin{proof}
-  Follows from \fullref{thm:degrees_of_freedom} and \fullref{thm:matrix_invertibility_via_determinants}.
+  Due to \fullref{thm:group_homomorphism_trivial_kernel}, \( A \) is invertible if and only if the null space of \( A \) is trivial.
+\end{proof}
+
+\begin{corollary}\label{thm:system_of_equations_unique_solution}
+  The \hyperref[def:system_of_linear_equations]{system of linear equations} \( Ax = b \) has a unique solution if and only if \( A \) is invertible.
+\end{corollary}
+\begin{proof}
+  \SufficiencySubProof If \( Ax = b \) has a unique solution, then the solution space has dimension zero, the kernel of \( A \) is empty, and, by \fullref{thm:group_homomorphism_trivial_kernel}, \( A \) is invertible.
+
+  \NecessitySubProof If \( A \) is invertible, then \( x = A^{-1} b \) is a solution.
+\end{proof}
+
+\begin{corollary}\label{thm:linear_system_solution_space}
+  The \hyperref[def:system_of_linear_equations/solution_space]{solution space} of the \( m \times n \) \hyperref[def:system_of_linear_equations]{system of linear equations} \( Ax = b \) is either empty or an \hyperref[def:affine_subspace]{affine subspace} of \( R^m \) of dimension \( m - \rank A \).
+
+  If the system is homogeneous, the solution set is a \hyperref[def:module/submodel]{linear subspace}.
+\end{corollary}
+\begin{proof}
+  Fix a solution \( x_0 \). From \fullref{thm:linear_system_solutions} it follows that the solution space is \( x_0 + \ker A \). It thus satisfies the definition of affine subspace in \fullref{def:affine_subspace}.
+
+  Finally, \fullref{thm:rank_nullity_theorem} implies that
+  \begin{equation*}
+    m = \dim \ker \varphi + \underbrace{ \rank A }_{ \dim \img A }.
+  \end{equation*}
 \end{proof}
 
 \begin{theorem}[Kroneker-Capelli theorem]\label{thm:kroneker_capelli}
-  The \hyperref[rem:system_of_equations]{linear system}
+  The \( m \times n \) \hyperref[def:system_of_linear_equations]{linear system}
   \begin{equation*}
     Ax = b
   \end{equation*}
-  of \( n \) variables and \( m \) equations has a solution if and only if the \hyperref[def:column_and_row_spaces]{rank} of its coefficient matrix \( A \) is equal to the rank of its augmented matrix
+  has a solution if and only if the \hyperref[def:rank_and_nullity]{rank} of its coefficient matrix \( A \) is equal to the rank of the augmented matrix
   \begin{equation*}
     \parens*
     {
@@ -448,6 +538,9 @@ The definitions of \hyperref[def:triangular_matrix]{triangular} and \hyperref[de
     }.
   \end{equation*}
 \end{theorem}
+\begin{comments}
+  \item The names of Kroneker and Capelli are associated with this theorem in Russophone literature --- for example \incite[\S 7.8]{Тыртышников2007ЛинейнаяАлгебра}, \incite[thm. 2.3.1]{Винберг2014Алгебра}, \incite[thm. IV.4.4]{Фаддеев1984Алгебра} and \incite[thm. 2.2.2]{Кострикин2000АлгебраЧасть1}.
+\end{comments}
 \begin{proof}
-  If both matrices have the same rank, \( b \) belongs to the column space of \( A \). Then there exists some linear combination of the columns of \( A \) the equal \( b \). The coefficients of every such linear combination form a solution to the system.
+  If both matrices have the same rank, \( b \) belongs to the column space of \( A \). Then there exists some linear combination of the columns of \( A \) that equals \( b \). The coefficients of every such linear combination form a solution to the system.
 \end{proof}

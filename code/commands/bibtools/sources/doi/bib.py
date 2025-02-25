@@ -125,7 +125,7 @@ def doi_data_to_bib(data: DoiData, doi: str, *, print_edition: bool = False) -> 
     subtitle = normalize_whitespace(data.subtitle[0]) if data.subtitle and len(data.subtitle) > 0 else None
 
     entry_name = generate_entry_name(
-        authors or editors,
+        authors,
         str(year) if year is not None else '',
         title,
         language,
@@ -137,6 +137,7 @@ def doi_data_to_bib(data: DoiData, doi: str, *, print_edition: bool = False) -> 
         *(ref.journal_title for ref in data.reference),
         *(ref.volume_title for ref in data.reference),
         *(ref.series_title for ref in data.reference),
+        editors=editors,
         subtitle=subtitle
     )
 

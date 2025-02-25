@@ -2,18 +2,23 @@
 
 In this subsection, we restrict ourselves to fields rather than arbitrary rings.
 
-\begin{definition}\label{def:eigenpair}\mcite[def. 4.17]{Rudin1991FunctionalAnalysis}
+\begin{definition}\label{def:eigenpair}\mcite[def. VI.6.13]{Aluffi2009Algebra}
   Let \( T: V \to V \) be a \hyperref[def:linear_function]{linear endomorphism} over the \hyperref[def:vector_space]{vector space} \( V \) over \( \BbbK \).
 
-  An \term{eigenpair} \( (\lambda, x) \) consists of an \term{eigenvalue} \( \lambda \in \BbbK \) and a \hi{nonzero} \term{eigenvector} \( x \in V \) such that
-  \begin{equation*}
-    Tx = \lambda x.
-  \end{equation*}
+  An \term[ru=собственная пара (\cite[\S 29.2]{Тыртышников2007ЛинейнаяАлгебра}), en=(right) eigenpair (\cite[def. 1.1]{Stewart2001MatrixAlgorithms})]{eigenpair} \( (\lambda, e) \) of \( T \) consists of an \term[bg=собствена стойност (\cite[256]{ГеновМиховскиМоллов1991Алгебра}), ru=собственное значение (\cite[\S 29.2]{Тыртышников2007ЛинейнаяАлгебра})]{eigenvalue} \( \lambda \in \BbbK \) and a \hi{nonzero} \term[bg=собствен вектор (\cite[256]{ГеновМиховскиМоллов1991Алгебра}), ru=собственный вектор (\cite[\S 29.2]{Тыртышников2007ЛинейнаяАлгебра})]{eigenvector} \( e \in V \) such that
+  \begin{equation}\label{eq:def:eigenpair}
+    Te = \lambda e.
+  \end{equation}
 
-  We say that \( \lambda \) is an eigenvalue of \( T \) if it is part of at least one eigenpair; analogously, we say that \( x \) is an eigenvector if it is part of at least one eigenpair.
+  We say that \( \lambda \) is an eigenvalue of \( T \) if it is part of at least one eigenpair; analogously, we say that \( e \) is an eigenvector if it is part of at least one eigenpair.
 
-  In function spaces, the term \enquote{eigenfunction} is sometimes used instead of \enquote{eigenvector}.
+  In function spaces, the term \term[en=eigenfunction (\cite[169]{Evans2010PDE})]{eigenfunction} is sometimes used instead of \enquote{eigenvector}.
 \end{definition}
+\begin{comments}
+  \item We only consider \enquote{right eigenvectors} satisfying \eqref{eq:def:eigenpair}, however it is also possible to consider \enquote{left eigenvectors} that satisfy \( x T = \lambda T \).
+
+  \item If \( e \) is an eigenvector, so is \( te \) for any nonzero scalar \( t \). To ensure uniqueness, we often restrict ourselves to \hyperref[def:normed_vector]{normed} eigenvectors.
+\end{comments}
 
 \begin{example}\label{ex:def:eigenpair}
   We list some examples of \hyperref[def:eigenpair]{eigenpairs}:
@@ -73,6 +78,75 @@ In this subsection, we restrict ourselves to fields rather than arbitrary rings.
   \end{thmenum}
 \end{example}
 
+\begin{proposition}\label{thm:def:eigenpair}
+  \hyperref[def:eigenpair]{Eigenpairs} have the following basic properties:
+  \begin{thmenum}
+    \thmitem{thm:def:eigenpair/independent} The eigenvectors corresponding to different eigenvalues are linearly independent.
+    \thmitem{thm:def:eigenpair/power} If \( (\lambda, e) \) is an eigenpair for \( A \), then \( (\lambda^k, e) \) is an eigenpair for \( A^k \).
+  \end{thmenum}
+\end{proposition}
+\begin{proof}
+  \SubProofOf{thm:def:eigenpair/independent}\mcite{MathSE:eigenvectors_are_linearly_independent} Let \( e_1, \ldots, e_n \) be eigenvectors of \( T \) corresponding to \( \lambda_1, \ldots, \lambda_n \).
+
+  We will use induction on \( n \) to show that \( e_1, \ldots, e_n \) are linearly independent.
+
+  \Fullref{thm:def:linear_dependence/empty} implies that the empty family of vectors is linearly independent, which covers the base case \( n = 0 \).
+
+  Suppose that the inductive hypothesis holds for families of \( n - 1 \) vectors. Suppose that there exist coefficients \( a_1, \ldots, a_n \) such that
+  \begin{equation*}
+    \sum_{k=1}^n a_k e_k = \vect 0.
+  \end{equation*}
+
+  Clearly we can multiply with \( \lambda_n \):
+  \begin{equation*}
+    \sum_{k=1}^n a_k \lambda_n e_k = \vect 0.
+  \end{equation*}
+
+  Furthermore, by linearity of \( T \), we have
+  \begin{equation*}
+    \vect 0
+    =
+    T(\vect 0)
+    =
+    T\parens[\Big]{ \sum_{k=1}^n a_k e_k }
+    =
+    \sum_{k=1}^n a_k T e_k
+    =
+    \sum_{k=1}^n a_k \lambda_k e_k.
+  \end{equation*}
+
+  Taking the difference of the above, we obtain
+  \begin{equation*}
+    \sum_{k=1}^{n-1} a_k (\lambda_n - \lambda_k) e_k = \vect 0.
+  \end{equation*}
+
+  This is a linear combination of \( n - 1 \) vectors that sums to zero. By the inductive hypothesis, the corresponding vectors are linearly independent, so the combination must be trivial. Thus, for every \( k < n \), since \( \lambda_k \neq \lambda_n \), it remains for \( a_k \) to be zero.
+
+  Then \( a_1 = \ldots = a_{n-1} = 0 \) and
+  \begin{equation*}
+    \sum_{k=1}^n a_k e_k = \underbrace{\sum_{k=1}^{n-1} a_k e_k}_{\vect 0} + a_n e_n = \vect 0,
+  \end{equation*}
+  which implies that \( a_n = 0 \) also.
+
+  Since the linear combination was arbitrary, we conclude that \( e_1, \ldots, e_n \) are linearly independent.
+
+  \SubProofOf{thm:def:eigenpair/power} We can use induction to show that \( Ae = \lambda e \) implies \( A^k e = \lambda ^k e \).
+
+  The base case \( k = 0 \) is vacuous, and the inductive case is simple:
+  \begin{equation*}
+    A^{k+1} e
+    =
+    A (A^k e)
+    \reloset {\T{ind.}} =
+    =
+    A (\lambda^k e)
+    =
+    \lambda^k (Ae)
+    =
+    \lambda^{k+1} e.
+  \end{equation*}
+\end{proof}
+
 \begin{remark}\label{rem:eigenpairs_via_invertibility}
   The \hyperref[def:eigenpair]{eigenpair equation}
   \begin{equation*}
@@ -83,7 +157,7 @@ In this subsection, we restrict ourselves to fields rather than arbitrary rings.
     (T - \lambda \cdot \id) x = \vect 0.
   \end{equation*}
 
-  We can regard the above as a \hyperref[rem:system_of_equations]{system of equations}. By \fullref{thm:homogeneous_linear_equations_solutions}, there exists a nonzero solution, i.e. an eigenvector corresponding to \( \lambda \), if and only if the map
+  We can regard the above as a \hyperref[def:system_of_linear_equations]{system of equations}. By \fullref{thm:homogeneous_linear_equations_solutions}, there exists a nonzero solution, i.e. an eigenvector corresponding to \( \lambda \), if and only if the map
   \begin{equation*}
     T - \lambda \cdot \id
   \end{equation*}
@@ -92,9 +166,16 @@ In this subsection, we restrict ourselves to fields rather than arbitrary rings.
   If \( V \) is finite-dimensional, by \fullref{thm:square_matrix_left_invertible_iff_right_invertible}, this map is injective if and only if it is surjective. Otherwise, it may fail to be either injective or surjective.
 \end{remark}
 
-\begin{definition}\label{def:eigenspace}\mcite[sec. 31.2]{Тыртышников2007ЛинейнаяАлгебра}
-  The \term{eigenspace} of an \hyperref[def:eigenpair]{eigenvalue} of \( T: V \to V \) is the set of all corresponding \hyperref[def:eigenpair]{eigenvectors}, along with the zero vector. It is a vector subspace of \( V \) as a consequence of \fullref{thm:degrees_of_freedom}. The \hyperref[thm:vector_space_dimension]{dimension} of the eigenspace is called the \term{geometric multiplicity} of the eigenvalue.
+\begin{definition}\label{def:eigenspace}\mcite[\S 30.2]{Тыртышников2007ЛинейнаяАлгебра}
+  The \term[ru=собственное подпространство, en=eigenspace (\cite[265]{FriedbergInselSpence2018LinearAlgebra})]{eigenspace} of an \hyperref[def:eigenpair]{eigenvalue} is the set of all corresponding \hyperref[def:eigenpair]{eigenvectors}, along with the zero vector.
 \end{definition}
+\begin{comments}
+  \item It is a vector (sub)space as a consequence of \fullref{thm:linear_system_solution_space}.
+
+  \item In Russian, the phrase \enquote{собственное подпространство} (\enquote{proper space}) is used for eigenspaces, for example by \incite[\S 30.2]{Тыртышников2007ЛинейнаяАлгебра} and \incite[def. II.3]{Курош1968ВысшаяАлгебра}. The phrase is however ambiguous because \enquote{собственный} (\enquote{proper}) is generally used for proper substructures the sense of \fullref{thm:substructures_form_complete_lattice/top}.
+
+  In Bulgarian, \incite[101]{Обрешков1962ВисшаАлгебра} uses \enquote{собствено подпространство} (\enquote{proper subspace}) in the latter sense.
+\end{comments}
 
 \begin{example}\label{ex:def:eigenspace}
   We list some examples of \hyperref[def:eigenspace]{eigenspaces}:
@@ -125,7 +206,7 @@ In this subsection, we restrict ourselves to fields rather than arbitrary rings.
       \set{ (t, 0) \given t \in \BbbK }.
     \end{equation*}
 
-    We will show in \fullref{ex:def:characteristic_polynomial/1101} that this is the only eigenvalue of the matrix.
+    We will show in \fullref{ex:def:linear_operator_characteristic_polynomial/1101} that this is the only eigenvalue of the matrix.
 
     \thmitem{ex:def:eigenspace/exponent} The eigenspace of \( \lambda \) with respect to differentiation is
     \begin{equation*}
@@ -136,45 +217,64 @@ In this subsection, we restrict ourselves to fields rather than arbitrary rings.
   \end{thmenum}
 \end{example}
 
-\begin{definition}\label{def:characteristic_polynomial}\mimprovised
-  Let \( T: V \to V \) be a linear endomorphism over the \( n \)-dimensional vector space \( V \) over \( \BbbK \). Regard \( T \) as an endomorphism over the module \( \BbbK[\Lambda]^n \) over the \hyperref[def:polynomial_algebra]{polynomial ring} \( \BbbK[\Lambda] \). The \term{characteristic polynomial} of \( T \) is defined as
+\begin{definition}\label{def:linear_operator_characteristic_polynomial}\mcite[def. VI.6.8]{Aluffi2009Algebra}
+  Let \( T: V \to V \) be a linear endomorphism over the \( n \)-dimensional vector space \( V \) over \( \BbbK \). Regard \( T \) as an endomorphism over the module \( \BbbK[\Lambda]^n \) over the \hyperref[def:polynomial_algebra]{polynomial ring} \( \BbbK[\Lambda] \). The \term[bg=характеристичен полином (\cite[77]{Обрешков1962ВисшаАлгебра}), ru=характеристический многочлен (\cite[def. 6.2.2]{Винберг2014Алгебра})]{characteristic polynomial} of \( T \) is defined as
   \begin{equation*}
-    p_T(\Lambda) \coloneqq \det(T - \Lambda \id).
+    \chi(\Lambda) \coloneqq \det(\Lambda \id - T).
   \end{equation*}
+\end{definition}
+\begin{comments}
+  \item We could define the characteristic polynomial as \( \det(T - \Lambda \id) \) instead. See \fullref{rem:linear_operator_characteristic_polynomial_convensions} for a broader discussion.
+\end{comments}
 
-  The \term{algebraic multiplicity} of \( \lambda \in \BbbK \) is the \hyperref[def:multiple_root]{root multiplicity} of \( \lambda \) in \( p_A \).
+\begin{remark}\label{rem:linear_operator_characteristic_polynomial_convensions}
+  There are two conventions for \hyperref[def:linear_operator_characteristic_polynomial]{characteristic polynomials}: \( \det(\Lambda \id - T) \) and \( \det(T - \Lambda \id) \). Since we are interested mostly in the roots of this polynomial, the choice is not significant; yet, we prefer the former because it makes the polynomial monic.
+
+  \begin{itemize}
+    \item \( \det(\Lambda \id - T) \) is used by
+    \incite[74]{Knapp2016BasicAlgebra}
+    \incite[def. VI.6.8]{Aluffi2009Algebra}
+    \incite[196]{Jacobson1985AlgebraI}
+    \incite[561]{Lang2002Algebra}
+    \incite[390]{Rotman2015AlgebraPart1}
+    \incite[148]{Bourbaki1972CommAlgebra}
+    \incite[154]{Roman2005LinearAlgebra}
+    \incite[499]{Knuth1997ArtVol1}
+    \incite[def. 6.2.2]{Винберг2014Алгебра}
+    \incite[77]{Обрешков1962ВисшаАлгебра}
+
+    \item \( \det(T - \Lambda \id) \) is used by
+    \incite[101]{Halmos1974FinDimVectorSpaces}
+    \incite[\S 1.2]{Treil2017LinearAlgebra}
+    \incite[248]{FriedbergInselSpence2018LinearAlgebra}
+    \incite[\S 29.4]{Тыртышников2007ЛинейнаяАлгебра}
+    \incite[207]{Курош1968ВысшаяАлгебра}
+    \incite[78]{Кострикин2000АлгебраЧасть2}
+    \incite[255]{ГеновМиховскиМоллов1991Алгебра}
+  \end{itemize}
+\end{remark}
+
+\begin{definition}\label{def:eigenvalue_multiplicity}\mcite[\S 29.5; \S 30.2]{Тыртышников2007ЛинейнаяАлгебра}
+  We define the \term[ru=алгебраическая кратность, en=algebraic multiplicity (\cite[def. VI.6.17]{Aluffi2009Algebra})]{algebraic multiplicity} of an \hyperref[def:eigenvalue]{eigenvalue} as its \hyperref[def:multiple_root]{root multiplicity} in the \hyperref[def:linear_operator_characteristic_polynomial]{characteristic polynomial}.
+
+  We define the \term[ru=геометрическая кратность, en=geometric multiplicity (\cite[def. VI.6.20]{Aluffi2009Algebra})]{geometric multiplicity} of an eigenvalue as the dimension of its \hyperref[def:eigenspace]{eigenspace}.
 \end{definition}
 
 \begin{proposition}\label{thm:eigenvalues_and_characteristic_polynomials}
-  The \hyperref[def:eigenpair]{eigenvalues} of a square matrix are precisely the \hyperref[def:multiple_root]{roots} of its \hyperref[def:characteristic_polynomial]{characteristic polynomial}.
+  The \hyperref[def:eigenpair]{eigenvalues} of a square matrix are precisely the \hyperref[def:multiple_root]{roots} of its \hyperref[def:linear_operator_characteristic_polynomial]{characteristic polynomial}.
 \end{proposition}
 \begin{proof}
   Follows from \fullref{rem:eigenpairs_via_invertibility}.
 \end{proof}
 
-\begin{remark}\label{rem:characteristic_polynomial}
-  We are, for the most part, only interested in the roots of a \hyperref[def:characteristic_polynomial]{characteristic polynomial}. For this reason, it is sometimes alternatively defined as
-  \begin{equation*}
-    \det(\Lambda \id - T).
-  \end{equation*}
-
-  This definition is used, for example, in \cite[74]{Knapp2016BasicAlgebra}. This ensures that the polynomial is \hyperref[def:monic_polynomial]{monic}.
-
-  We prefer
-  \begin{equation*}
-    \det(T - \Lambda \id)
-  \end{equation*}
-  because it is the more popular definition and because it directly generalizes the determinant of \( A \).
-\end{remark}
-
-\begin{example}\label{ex:def:characteristic_polynomial}
-  We list some examples of \hyperref[def:characteristic_polynomial]{characteristic polynomials}:
+\begin{example}\label{ex:def:linear_operator_characteristic_polynomial}
+  We list some examples of \hyperref[def:linear_operator_characteristic_polynomial]{characteristic polynomials}:
   \begin{thmenum}
-    \thmitem{ex:def:characteristic_polynomial/zero} The characteristic polynomial of the \( n \times n \) zero matrix is \( (-\Lambda)^n \). Its only root is \( 0 \). Both the geometric and the algebraic multiplicities of \( 0 \) are \( n \).
+    \thmitem{ex:def:linear_operator_characteristic_polynomial/zero} The characteristic polynomial of the \( n \times n \) zero matrix is \( \Lambda^n \). Its only root is \( 0 \). Both the geometric and the algebraic multiplicities of \( 0 \) are \( n \).
 
-    \thmitem{ex:def:characteristic_polynomial/identity} Similarly, the characteristic polynomial of the identity matrix \( I_n \) is \( (1 - \Lambda)^n \). Hence, the only eigenvalue of \( I_n \) is \( 1 \) and both of its multiplicities are \( n \).
+    \thmitem{ex:def:linear_operator_characteristic_polynomial/identity} Similarly, the characteristic polynomial of the identity matrix \( I_n \) is \( (\Lambda - 1)^n \). Hence, the only eigenvalue of \( I_n \) is \( 1 \) and both of its multiplicities are \( n \).
 
-    \thmitem{ex:def:characteristic_polynomial/2112} We continue \fullref{ex:def:eigenspace/2112}. The matrix
+    \thmitem{ex:def:linear_operator_characteristic_polynomial/2112} We continue \fullref{ex:def:eigenspace/2112}. The matrix
     \begin{equation*}
       \begin{pmatrix}
         2 & 1 \\
@@ -183,7 +283,7 @@ In this subsection, we restrict ourselves to fields rather than arbitrary rings.
     \end{equation*}
     has characteristic polynomial
     \begin{equation*}
-      (2 - \Lambda)^2 - 1 = \Lambda^2 - 4\Lambda + 3.
+      (\Lambda - 2)^2 - 1 = \Lambda^2 - 4\Lambda + 3.
     \end{equation*}
 
     Its roots are
@@ -193,7 +293,7 @@ In this subsection, we restrict ourselves to fields rather than arbitrary rings.
 
     Both roots have geometric and algebraic multiplicities \( 1 \).
 
-    \thmitem{ex:def:characteristic_polynomial/1101} The matrix
+    \thmitem{ex:def:linear_operator_characteristic_polynomial/1101} The matrix
     \begin{equation*}
       \begin{pmatrix}
         1 & 1 \\
@@ -202,7 +302,7 @@ In this subsection, we restrict ourselves to fields rather than arbitrary rings.
     \end{equation*}
     has characteristic polynomial
     \begin{equation*}
-      (1 - \Lambda)^2.
+      (\Lambda - 1)^2.
     \end{equation*}
 
     The only eigenvalue is hence \( 1 \), and it has algebraic multiplicity \( 2 \). We discussed in \fullref{ex:def:eigenspace/1101} that the corresponding geometric multiplicity is \( 1 \).
@@ -210,7 +310,7 @@ In this subsection, we restrict ourselves to fields rather than arbitrary rings.
 \end{example}
 
 \begin{proposition}\label{thm:geometric_vs_algebraic_multiplicity}\mcite{MathSE:geometric_multiplicity_is_bounded_by_algebraic}
-  The \hyperref[def:characteristic_polynomial]{geometric multiplicity} of an eigenvalue does not exceed its \hyperref[def:characteristic_polynomial]{algebraic multiplicity}.
+  The \hyperref[def:eigenvalue_multiplicity]{geometric multiplicity} of an eigenvalue does not exceed its \hyperref[def:eigenvalue_multiplicity]{algebraic multiplicity}.
 \end{proposition}
 \begin{proof}
   Suppose that the geometric multiplicity of \( \lambda \) with respect to \( T \) is \( m \). Then there exist linearly independent eigenvalues \( x_1, \ldots, x_m \) such that, for \( k = 1, \ldots, m \),
@@ -229,13 +329,13 @@ In this subsection, we restrict ourselves to fields rather than arbitrary rings.
 
   The characteristic polynomial of this matrix is
   \begin{equation*}
-    p_A(\Lambda) = (\lambda - \Lambda)^k p_C(\Lambda).
+    \chi_A(\Lambda) = (\Lambda - \lambda)^k \chi_C(\Lambda).
   \end{equation*}
 
   Therefore, the algebraic multiplicity of \( A \) is at least \( k \).
 \end{proof}
 
-\begin{definition}\label{def:point_spectrum}\mcite[10.32]{Rudin1991FunctionalAnalysis}
+\begin{definition}\label{def:point_spectrum}\mcite[def. 10.32]{Rudin1991FunctionalAnalysis}
   The set of all \hyperref[def:eigenpair]{eigenvalues} of a linear endomorphism is called its \term{point spectrum}.
 \end{definition}
 
@@ -278,7 +378,7 @@ In this subsection, we restrict ourselves to fields rather than arbitrary rings.
 
     \thmitem{thm:operator_diagonalizability/direct_sum} There exist eigenvalues \( \lambda_1, \ldots, \lambda_m \) such that
     \begin{equation*}
-      V \cong \ker(T - \lambda_1) \oplus \cdots \oplus \ker(T - \lambda_m).
+      V \cong \ker(\lambda_1 \id - T) \oplus \cdots \oplus \ker(\lambda_m \id - T).
     \end{equation*}
   \end{thmenum}
 \end{proposition}
@@ -355,21 +455,21 @@ In this subsection, we restrict ourselves to fields rather than arbitrary rings.
 
   \ImplicationSubProof{thm:operator_diagonalizability/multiplicities}{thm:operator_diagonalizability/direct_sum} Suppose that \( \lambda_1, \ldots, \lambda_m \) are the distinct eigenvalues of \( T \) and that their algebraic and geometric multiplicities coincide and sum to \( n \).
 
-  For \( i \neq j \), the eigenvectors corresponding to \( \lambda_i \) are linearly independent from those corresponding to \( \lambda_j \) by \fullref{thm:eigenvectors_are_linearly_independent}. Thus, the union of some bases of \( \ker(T - \lambda_k) \) for all \( k = 1, \ldots, m \) is a basis of \( V \).
+  For \( i \neq j \), the eigenvectors corresponding to \( \lambda_i \) are linearly independent from those corresponding to \( \lambda_j \) by \fullref{thm:eigenvectors_are_linearly_independent}. Thus, the union of some bases of \( \ker(\lambda_k \id - T) \) for all \( k = 1, \ldots, m \) is a basis of \( V \).
 
   By \fullref{thm:basis_of_direct_sum}, the union is also a basis of the direct sum
   \begin{equation*}
-    \ker(T - \lambda_1) \oplus \cdots \oplus \ker(T - \lambda_m).
+    \ker(\lambda_1 \id - T) \oplus \cdots \oplus \ker(\lambda_m \id - T).
   \end{equation*}
 
   Therefore, this is an \hyperref[def:semimodule_direct_sum]{internal direct sum} giving \( V \).
 
   \ImplicationSubProof{thm:operator_diagonalizability/direct_sum}{thm:operator_diagonalizability/basis} Suppose that
   \begin{equation*}
-    V \cong \ker(T - \lambda_1) \oplus \cdots \oplus \ker(T - \lambda_m).
+    V \cong \ker(\lambda_1 \id - T) \oplus \cdots \oplus \ker(\lambda_m \id - T).
   \end{equation*}
 
-  Construct a basis of \( V \) by taking bases of the eigenspaces \( \ker(T - \lambda_k \id) \) together. This will be a basis of eigenvectors by \fullref{thm:basis_of_direct_sum}.
+  Construct a basis of \( V \) by taking bases of the eigenspaces \( \ker(\lambda_k \id - T) \) together. This will be a basis of eigenvectors by \fullref{thm:basis_of_direct_sum}.
 \end{proof}
 
 \begin{definition}\label{def:diagonalizable_matrix}\mimprovised
@@ -382,6 +482,22 @@ In this subsection, we restrict ourselves to fields rather than arbitrary rings.
 
   It is thus necessary and sufficient for \( A \) to be \hyperref[def:similar_matrices]{similar} to a diagonal matrix. This is often taken as \enquote{the} definition of diagonalizability, however it hides the relationship with the theory of eigenvalues and eigenspaces presented in \fullref{thm:operator_diagonalizability}. That is, the \( k \)-th diagonal entry of \( D \) is an eigenvalue of \( A \) for which the \( k \)-th column of \( P \) is an eigenvector.
 \end{definition}
+
+\begin{example}\label{ex:def:diagonalizable_matrix}
+  We list examples of \hyperref[def:diagonalizable_matrix]{matrix diagonalization}:
+  \begin{thmenum}
+    \thmitem{ex:def:diagonalizable_matrix/01-12} The matrix
+    \begin{equation*}
+      A = \begin{pmatrix}
+        0  & 1 \\
+        -1 & 2.
+      \end{pmatrix}
+    \end{equation*}
+    is not diagonalizable.
+
+    \todo{Prove}.
+  \end{thmenum}
+\end{example}
 
 \begin{definition}\label{def:adjoint_operator}\mcite[sec. 38.1]{Тыртышников2007ЛинейнаяАлгебра}
   We say that the linear operator \( T^*: V \to U \) between \hyperref[def:inner_product_space]{inner product spaces} is \term{adjoint} to \( T: U \to V \) if for every \( x \in U \) and \( y \in V \) we have
@@ -411,8 +527,6 @@ In this subsection, we restrict ourselves to fields rather than arbitrary rings.
 
 \begin{proposition}\label{thm:image_of_adjoint}
   A linear operator \( T: U \to V \) and its \hyperref[def:adjoint_operator]{adjoint} \( T^*: V \to U \) have isomorphic images.
-
-  In particular, the \hyperref[def:column_and_row_spaces]{column and row spaces} of a matrix are isomorphic.
 \end{proposition}
 \begin{proof}
   By \fullref{thm:quotient_structure_universal_property}, \( T \) \hyperref[def:factors_through]{factors through}
@@ -639,7 +753,7 @@ In this subsection, we restrict ourselves to fields rather than arbitrary rings.
 
   Since inner products are positive definite, \( \inprod x x \) is a positive real number and hence we can cancel it to obtain the equality \( \lambda = \oline \lambda \). Hence, if \( \lambda \) is an eigenvalue, it is a real number.
 
-  \SubProof*{Proof for real numbers} If \( V \) is instead a real vector space, the characteristic polynomial \( p_T(\Lambda) \) of \( T \) belongs to \( \BbbR[\Lambda] \). It can be \hyperref[thm:polynomial_algebra_universal_property]{evaluated} over \( \BbbC \), which will give us \( n \) roots over \( \BbbC \). But these roots are real, hence \( p_T(\Lambda) \) has \( n \) roots over \( \BbbR \). These are the eigenvalues of \( T \).
+  \SubProof*{Proof for real numbers} If \( V \) is instead a real vector space, the characteristic polynomial \( \chi(\Lambda) \) of \( T \) belongs to \( \BbbR[\Lambda] \). It can be \hyperref[thm:polynomial_algebra_universal_property]{evaluated} over \( \BbbC \), which will give us \( n \) roots over \( \BbbC \). But these roots are real, hence \( \chi(\Lambda) \) has \( n \) roots over \( \BbbR \). These are the eigenvalues of \( T \).
 
   \SubProofOf{thm:finite_dimensional_spectral_theorem/matrix} Follows from \fullref{thm:finite_dimensional_spectral_theorem/basis}, \fullref{thm:finite_dimensional_spectral_theorem/eigenvalues} and \fullref{thm:operator_diagonalizability}.
 \end{proof}

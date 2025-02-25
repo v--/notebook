@@ -37,7 +37,7 @@ class TextTokenizer(Tokenizer[TextToken]):
         return WordToken(buffer)
 
     def parse_step(self, head: str) -> TextToken:
-        if head == Whitespace.space.value:
+        if head == Whitespace.space.value or head == Whitespace.tab.value:
             self.advance()
             return Whitespace.space
 
@@ -75,7 +75,7 @@ class TextTokenizer(Tokenizer[TextToken]):
                 return Whitespace.line_break
 
             case _:
-                raise self.error(f'Unexpected symbol with category {category}')
+                raise self.error(f'Unexpected symbol {head!r} with category {category}')
 
 
 def tokenize_text(string: str) -> TokenSequence:

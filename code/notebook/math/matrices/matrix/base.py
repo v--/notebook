@@ -39,7 +39,7 @@ class MatrixMeta(type):
         bases: tuple[type, ...],
         attrs: dict[str, Any],
         semiring: type[ISemiring] = ISemiring,
-    ) -> M:  # noqa: PYI019
+    ) -> M:
         attrs['semiring'] = semiring
         return type.__new__(meta, name, bases, attrs)
 

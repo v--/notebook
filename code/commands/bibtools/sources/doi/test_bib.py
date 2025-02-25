@@ -458,6 +458,55 @@ def test_parse_103934_dcdsb2018020_no_family_name(doi: str = '10.3934/dcdsb.2018
     )
 
 
+def test_parse_101017_fmp20228_xml_abstract(doi: str = '10.1017/fmp.2022.8') -> None:
+    with get_doi_fixture_path(doi).open() as file:
+        json_body = file.read()
+
+    data = parse_doi_json(json_body)
+    entry = doi_data_to_bib(data, doi)
+
+    assert entry == BibEntry(
+        entry_type='article',
+        entry_name='Tao2022CollatzMapAttain',
+        title='Almost all orbits of the Collatz map attain almost bounded values',
+        authors=[
+            BibAuthor(full_name='Terence Tao')
+        ],
+        doi=doi,
+        date='2022-05-20',
+        publisher='Cambridge University Press (CUP)',
+        languages=['english'],
+        journal='Forum of Mathematics, Pi',
+        volume='10',
+        issn='2050-5086'
+    )
+
+
+def test_parse_101090_gsm_250_datetime_version(doi: str = '10.1090/gsm/250') -> None:
+    with get_doi_fixture_path(doi).open() as file:
+        json_body = file.read()
+
+    data = parse_doi_json(json_body)
+    entry = doi_data_to_bib(data, doi)
+
+    assert entry == BibEntry(
+        entry_type='book',
+        entry_name='EisenbudHarris2024AlgebraicCurves',
+        title='The Practice of Algebraic Curves',
+        series='Graduate Studies in Mathematics',
+        authors=[
+            BibAuthor(full_name='David Eisenbud'),
+            BibAuthor(full_name='Joe Harris')
+        ],
+        doi=doi,
+        date='2024',
+        issn='1065-7339',
+        isbn='978-1-4704-7944-2',
+        publisher='American Mathematical Society',
+        languages=['english']
+    )
+
+
 def test_parse_101007_9783662074138_editor(doi: str = '10.1007/978-3-662-07413-8') -> None:
     with get_doi_fixture_path(doi).open() as file:
         json_body = file.read()
@@ -467,7 +516,7 @@ def test_parse_101007_9783662074138_editor(doi: str = '10.1007/978-3-662-07413-8
 
     assert entry == BibEntry(
         entry_type='book',
-        entry_name='ArhangelSkii1995GeneralTopologyIII',
+        entry_name='ArhangelSkiiEtAl1995GeneralTopologyIII',
         title='General Topology III',
         publisher='Springer Berlin Heidelberg',
         editors=[

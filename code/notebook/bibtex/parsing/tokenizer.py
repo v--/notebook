@@ -36,7 +36,7 @@ class BibTokenizer(Tokenizer[BibToken]):
                 return NumberToken(self.gobble_unicode('N'))
 
             case _:
-                raise self.error(f'Unexpected symbol with category {category}')
+                raise self.error(f'Unexpected symbol {head!r} test with category {category}')
 
 
 def tokenize_bibtex(string: str) -> Sequence[BibToken]:

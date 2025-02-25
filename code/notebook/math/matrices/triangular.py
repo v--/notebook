@@ -7,11 +7,13 @@ def is_orthogonal(mat: FloatMatrix) -> bool:
     return is_unit(mat @ mat.transpose()) and is_unit(mat.transpose() @ mat)
 
 
-def is_lower_triangular[M: ISemiringMatrix](mat: M) -> bool:
+def is_lower_triangular[M: ISemiringMatrix](mat: M, *, unitriangular: bool = False) -> bool:
     return all(
         mat[i, j] == 0
         for i in range(1, mat.m)
         for j in range(min(i, mat.n) + 1, mat.n)
+    ) and (
+        not unitriangular or all(mat[i, i] == 1 for i in range(min(mat.m, mat.n)))
     )
 
 
@@ -33,11 +35,13 @@ def lower_triangular_inv[M: IFieldMatrix](mat: M) -> M:
     return r
 
 
-def is_upper_triangular[M: ISemiringMatrix](mat: M) -> bool:
+def is_upper_triangular[M: ISemiringMatrix](mat: M, *, unitriangular: bool = False) -> bool:
     return all(
         mat[i, j] == 0
         for i in range(1, mat.m)
         for j in range(min(i, mat.n))
+    ) and (
+        not unitriangular or all(mat[i, i] == 1 for i in range(min(mat.m, mat.n)))
     )
 
 
