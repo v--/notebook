@@ -36,6 +36,7 @@ class DoiContentDomain(DoiBaseModel):
 
 class DoiAffiliation(DoiBaseModel):
     name: str
+    place: Annotated[list[str], Field(default_factory=list)]
 
 
 class DoiAuthor(DoiBaseModel):
