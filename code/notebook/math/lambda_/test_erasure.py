@@ -6,9 +6,9 @@ from .typing import TypingStyle
 
 
 @pytest_parametrize_kwargs(
-    dict(typed='Q',      untyped='Q'),
-    dict(typed='x',      untyped='x'),
-    dict(typed='(xy)',   untyped='(xy)'),
+    dict(typed='Q',        untyped='Q'),
+    dict(typed='x',        untyped='x'),
+    dict(typed='(xy)',     untyped='(xy)'),
     dict(typed='(λx:ι.x)', untyped='(λx.x)'),
     dict(
         typed='(λx:o.(λy:ι.(xy)))',

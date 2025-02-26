@@ -87,7 +87,7 @@ def test_substitute_abstraction_renaming(dummy_signature: LambdaSignature) -> No
     assert substitute(tree, variable_mapping={src: dest}) == expected
 
 
-# ex:def:lambda_substitution/composed_vs_iterated
+# ex:def:lambda_term_substitution/composed_vs_iterated
 def test_substitute_abstraction_renaming_simultaneous(dummy_signature: LambdaSignature) -> None:
     tree = derive_type(
         parse_term(dummy_signature, '(λa:(τ → σ).(xb))', TypingStyle.explicit),

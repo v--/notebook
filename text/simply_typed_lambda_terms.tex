@@ -19,9 +19,9 @@ Unlike untyped lambda calculus, whose presentation is mostly uniform across auth
     \textellipsis the type of functions of one variable for which the range of the independent variable comprises the type \( \beta \) and the range of the dependent variable is contained in the type \( \alpha \).
   \end{displayquote}
 
-  Thus, he used two \enquote{base types} and one \enquote{type constructor}, resulting in infinitely many types. He assigned to each \( \synlambda \)-term a subscript indicating its type, with certain coherence conditions that we will discuss in \fullref{def:simple_type_theory}. The term \( x_\omicron \) would thus correspond to our notion of propositional formula, while the term \( x_\iota \) --- to a first-order variable.
+  Thus, he used two \enquote{base types} and one \enquote{type constructor}, resulting in infinitely many types. He assigned to each \( \synlambda \)-term a subscript indicating its type, with certain coherence conditions that exclude \hyperref[def:typability]{untypable terms}. The term \( x_\omicron \) would thus correspond to our notion of propositional formula, while the term \( x_\iota \) --- to a first-order variable.
 
-  Subsequent works by Curry and Howard lead to the Curry-Howard correspondence discussed in \fullref{con:curry_howard_correspondence}. This in turn lead Martin-Löf to introduce \hyperref[rem:dependent_type]{dependent types} and systemize the presentation of type theory via \hyperref[con:typing_rule]{typing rules}.
+  Subsequent works by Curry and Howard lead to the Curry-Howard correspondence discussed in \fullref{con:curry_howard_correspondence}. This in turn lead Martin-Löf to introduce \hyperref[con:dependent_types]{dependent types} and systemize the presentation of type theory via \hyperref[con:typing_rule]{typing rules}.
 
   At this point, notation started unifying across authors, ultimately leading to \enquote{\( M: \tau \)} rather than \enquote{\( M_\tau \)} or \enquote{\( M^\tau \)} for \hyperref[def:type_assertion]{type assertions} postulating that the term \( M \) has type \( \tau \), and to \( \tau \synimplies \sigma \) for \enquote{function types}, replacing Church's equivalent \( (\sigma\tau) \) (and swapping \( \tau \) and \( \sigma \)). As we will see in \fullref{con:type_annotation} and \fullref{def:typed_lambda_term}, superscript notation is still convenient for type annotation.
 
@@ -234,7 +234,7 @@ Unlike untyped lambda calculus, whose presentation is mostly uniform across auth
 
   \item Even though most concepts from untyped terms transfer via \fullref{alg:type_erasure}, some like \hyperref[def:lambda_term_alpha_equivalence]{\( \alpha \)-equivalence} require modification --- see \fullref{def:typed_term_alpha_equivalence}.
 
-  \item Our definition is based on \bycite[def. 3.2.1]{Barendregt1992LambdaCalculiWithTypes}, who prefers calling such terms \enquote{pseudoterms} because the grammar may produce \enquote{ill-typed} terms that are not \hyperref[def:typability]{typable} according to the rules in \fullref{def:base_typing_rules}.
+  \item Our definition is based on \bycite[def. 3.2.1]{Barendregt1992LambdaCalculiWithTypes}, who prefers calling such terms \enquote{pseudoterms} because the grammar may produce \enquote{ill-typed} terms that are not \hyperref[def:typability]{typable} according to the rules in \fullref{def:arrow_typing_rules}.
 
   We borrow the phrase \enquote{typed term} from \incite[ch. 5]{Hindley1997BasicSTT}, who however follows Church in annotating every term. Our variant, also used by \incite[\S 4.1.3]{Mimram2020ProgramEqualsProof}, only guarantees uniqueness (but not existence) of a type for each term; this is shown in \fullref{thm:typed_term_habitation_uniqueness}.
 \end{comments}
@@ -308,7 +308,7 @@ To formalize typing rules in \fullref{def:simple_typing_rule}, we first need to 
       \end{cases}
     \end{equation}
 
-    \thmitem{def:lambda_schema_instantiation/terms} For terms, we will not concern ourselves with \hyperref[def:lambda_variable_occurrence]{free and bound occurrence} of variables as in the case of \hyperref[def:lambda_term_schema_substitution]{substitution} --- schemas are not meant for that. We suppose that all occurrences of the same variable placeholder refer to the same variable.
+    \thmitem{def:lambda_schema_instantiation/terms} For terms, we will not concern ourselves with \hyperref[def:lambda_variable_occurrence]{free and bound occurrence} of variables as in the case of \hyperref[def:lambda_term_substitution]{substitution} --- schemas are not meant for that. We suppose that all occurrences of the same variable placeholder refer to the same variable.
 
     Thus, we extend \( \Bbbs \) to compound \( \synlambda \)-term schemas as follows:
     \begin{equation}\label{eq:def:lambda_schema_instantiation/terms}
@@ -356,23 +356,23 @@ To formalize typing rules in \fullref{def:simple_typing_rule}, we first need to 
   \item Typing rules are often presented in another form that resembles sequent calculus rather than natural deduction --- see \fullref{rem:typing_rule_style}.
 \end{comments}
 
-\begin{definition}\label{def:base_typing_rules}\mcite[26]{TroelstraSchwichtenberg2000BasicProofTheory}
-  The fundamental \hyperref[def:type_derivation_tree]{typing rules} for \hyperref[def:simple_type]{simple types} are:
-  \begin{equation*}\taglabel[\ensuremath{ \rightarrow^- }]{inf:def:base_typing_rules/arrow/elim}
+\begin{definition}\label{def:arrow_typing_rules}\mcite[26]{TroelstraSchwichtenberg2000BasicProofTheory}
+  The fundamental \hyperref[def:type_derivation_tree]{typing rules} for \hyperref[def:simple_type]{simple types} only concern arrow types:
+  \begin{equation*}\taglabel[\ensuremath{ \rightarrow^- }]{inf:def:arrow_typing_rules/elim}
     \begin{prooftree}
       \hypo{ \synM: \syn\tau \synimplies \syn\sigma }
       \hypo{ \synN: \syn\tau }
-      \infer2[\ref{inf:def:base_typing_rules/arrow/elim}]{ \synM \synN: \syn\sigma }
+      \infer2[\ref{inf:def:arrow_typing_rules/elim}]{ \synM \synN: \syn\sigma }
     \end{prooftree}
   \end{equation*}
   \begin{paracol}{2}
     \begin{leftcolumn}
       \centering
-      \begin{equation*}\taglabel[\ensuremath{ \rightarrow^+ }]{inf:def:base_typing_rules/arrow/intro/imp}
+      \begin{equation*}\taglabel[\ensuremath{ \rightarrow^+ }]{inf:def:arrow_typing_rules/intro/implicit}
         \begin{prooftree}
           \hypo{ [\synx: \syn\tau] }
           \ellipsis {} { \synM: \syn\sigma }
-          \infer1[\ref{inf:def:base_typing_rules/arrow/intro/imp}]{ \qabs \synx \synM: \syn\tau \synimplies \syn\sigma }
+          \infer1[\ref{inf:def:arrow_typing_rules/intro/implicit}]{ \qabs \synx \synM: \syn\tau \synimplies \syn\sigma }
         \end{prooftree}
       \end{equation*}
       (for \hyperref[def:lambda_term]{untyped terms})\phantom{\( \rightarrow^+ \)}
@@ -380,11 +380,11 @@ To formalize typing rules in \fullref{def:simple_typing_rule}, we first need to 
 
     \begin{rightcolumn}
       \centering
-      \begin{equation*}\taglabel[\ensuremath{ \rightarrow_{\T{tt}}^+ }]{inf:def:base_typing_rules/arrow/intro/exp}
+      \begin{equation*}\taglabel[\ensuremath{ \rightarrow_{\T{tt}}^+ }]{inf:def:arrow_typing_rules/intro/explicit}
         \begin{prooftree}
           \hypo{ [\synx: \syn\tau] }
           \ellipsis {} { \synM: \syn\sigma }
-          \infer1[\ref{inf:def:base_typing_rules/arrow/intro/exp}]{ \qabs \synx \synM^{\syn\tau}: \syn\tau \synimplies \syn\sigma }
+          \infer1[\ref{inf:def:arrow_typing_rules/intro/explicit}]{ \qabs \synx \synM^{\syn\tau}: \syn\tau \synimplies \syn\sigma }
         \end{prooftree}
       \end{equation*}
       (for \hyperref[def:typed_lambda_term]{typed terms})\phantom{\( \rightarrow_\tau^+ \)}
@@ -401,7 +401,7 @@ To formalize typing rules in \fullref{def:simple_typing_rule}, we first need to 
     \begin{prooftree}
       \hypo{ [\synx: \syn\tau] }
       \ellipsis {} { \synM: \syn\sigma }
-      \infer1[\ref{inf:def:base_typing_rules/arrow/intro/imp}]{ \qabs \synx \synM: \syn\tau \synimplies \syn\sigma }
+      \infer1[\ref{inf:def:arrow_typing_rules/intro/implicit}]{ \qabs \synx \synM: \syn\tau \synimplies \syn\sigma }
     \end{prooftree}
   \end{equation*}
 
@@ -434,7 +434,7 @@ To formalize typing rules in \fullref{def:simple_typing_rule}, we first need to 
 \begin{definition}\label{def:simple_type_system}\mimprovised
   A \term{simple type system} over a \hyperref[def:simple_type_signature]{simple type signature} is, unsurprisingly, a collection of \hyperref[def:simple_typing_rule]{simple typing rules}.
 
-  Will presuppose that such a system includes the rule \ref{inf:def:base_typing_rules/arrow/elim} and either \ref{inf:def:base_typing_rules/arrow/intro/untyped} or \ref{inf:def:base_typing_rules/arrow/intro/typed} (or even possibly both).
+  Will presuppose that such a system includes the rule \ref{inf:def:arrow_typing_rules/elim} and either \ref{inf:def:arrow_typing_rules/intro/implicit} or \ref{inf:def:arrow_typing_rules/intro/explicit} (or even possibly both).
 \end{definition}
 \begin{comments}
   \item With every type system we will associate its typing style, defined in \fullref{def:simple_type_system_style}, and its derivability relation, defined in \fullref{def:simple_type_derivability}.
@@ -448,7 +448,7 @@ To formalize typing rules in \fullref{def:simple_typing_rule}, we first need to 
   We will call this property the \term{typing style} of the system.
 \end{definition}
 \begin{comments}
-  \item If none of the rules contain abstraction schemas, it may be impossible to determine the typing style of the system. Since our systems necessarily include \ref{inf:def:base_typing_rules/arrow/intro/untyped} or \ref{inf:def:base_typing_rules/arrow/intro/typed}, we can always determine that.
+  \item If none of the rules contain abstraction schemas, it may be impossible to determine the typing style of the system. Since our systems necessarily include \ref{inf:def:arrow_typing_rules/intro/implicit} or \ref{inf:def:arrow_typing_rules/intro/explicit}, we can always determine that.
 
   \item The importance of the typing style of a system is discussed in \fullref{rem:typing_style}.
 
@@ -495,26 +495,26 @@ To formalize typing rules in \fullref{def:simple_typing_rule}, we first need to 
   \item Rule application is implemented programmatically as \identifier{lambda_.type_derivation.tree.apply} in \cite{notebook:code}.
 \end{comments}
 
-\begin{remark}\label{rem:base_typing_rules}
+\begin{remark}\label{rem:arrow_typing_rules_only}
   Rather than working with \hyperref[def:lambda_term]{\( \synlambda \)-terms}, as in the case of untyped \( \synlambda \)-calculus, we will work here with \hyperref[def:type_derivation_tree]{type derivation trees}. Thus, the assertion \( M: \alpha \) will presuppose the existence of a tree \( T \)deriving it, and proving other assertions will be based mostly on transforming \( T \).
 
-  Although we allow general type systems with many rules, for proving properties of these systems we will only use \ref{inf:def:base_typing_rules/arrow/elim} and either \ref{inf:def:base_typing_rules/arrow/intro/int} or \ref{inf:def:base_typing_rules/arrow/intro/exp}. Any other additional rules must be handled separately, which complicates the proofs by requiring additional cases to be verified. We will suppose that any additional rules are compatible with the theorems we will prove, however we will not prove that explicitly. The rules that we will consider will concern specific constant terms, so these theorems will hold for all terms not containing constants.
+  Although we allow general type systems with many rules, for proving properties of these systems we will only use \ref{inf:def:arrow_typing_rules/elim} and either \ref{inf:def:arrow_typing_rules/intro/int} or \ref{inf:def:arrow_typing_rules/intro/explicit}. Any other additional rules must be handled separately, which complicates the proofs by requiring additional cases to be verified. We will suppose that any additional rules are compatible with the theorems we will prove, however we will not prove that explicitly. The rules that we will consider will concern specific constant terms, so these theorems will hold for all terms not containing constants.
 
-  Another nuance of working with derivation trees is that variable has a fixed type, so we may just as well assume that the terms are explicitly typed. Thus, most of the time we will not need the rule \ref{inf:def:base_typing_rules/arrow/intro/int} for untyped terms.
+  Another nuance of working with derivation trees is that variable has a fixed type, so we may just as well assume that the terms are explicitly typed. Thus, most of the time we will not need the rule \ref{inf:def:arrow_typing_rules/intro/int} for untyped terms.
 
-  The following is a list of results relying only on only \ref{inf:def:base_typing_rules/arrow/elim} and \ref{inf:def:base_typing_rules/arrow/intro/exp}:
+  The following is a list of results relying only on only \ref{inf:def:arrow_typing_rules/elim} and \ref{inf:def:arrow_typing_rules/intro/explicit}:
   \begin{thmenum}
-    \thmitem{rem:base_typing_rules/assumptions_and_free_variables} Correspondence of free variables and assumption contexts: \fullref{thm:assumptions_and_free_variables}.
+    \thmitem{rem:arrow_typing_rules_only/assumptions_and_free_variables} Correspondence of free variables and assumption contexts: \fullref{thm:assumptions_and_free_variables}.
 
-    \thmitem{rem:base_typing_rules/derivability} Base properties of derivability: \fullref{thm:def:simple_type_derivability}.
+    \thmitem{rem:arrow_typing_rules_only/derivability} Base properties of derivability: \fullref{thm:def:simple_type_derivability}.
 
-    \thmitem{rem:base_typing_rules/type_uniqueness} Type uniqueness for typed term: \fullref{thm:typed_term_habitation_uniqueness}.
+    \thmitem{rem:arrow_typing_rules_only/type_uniqueness} Type uniqueness for typed term: \fullref{thm:typed_term_habitation_uniqueness}.
 
-    \thmitem{rem:base_typing_rules/type_inference} Type inference: \fullref{alg:simply_typed_term_type_derivation}.
+    \thmitem{rem:arrow_typing_rules_only/type_inference} Type inference: \fullref{alg:simply_typed_term_type_derivation}.
 
-    \thmitem{rem:base_typing_rules/substitution} Typed substitution: \fullref{alg:simply_typed_substitution} and \fullref{thm:typed_substitution_assertions}.
+    \thmitem{rem:arrow_typing_rules_only/substitution} Typed substitution: \fullref{alg:simply_typed_substitution} and \fullref{thm:typed_substitution_assertions}.
 
-    \thmitem{rem:base_typing_rules/alpha_equivalence} Typed \( \alpha \)-equivalence: \fullref{alg:simply_typed_alpha_conversion} and \fullref{thm:alpha_equivalent_term_typing}.
+    \thmitem{rem:arrow_typing_rules_only/alpha_equivalence} Typed \( \alpha \)-equivalence: \fullref{alg:simply_typed_alpha_conversion} and \fullref{thm:alpha_equivalent_term_typing}.
   \end{thmenum}
 \end{remark}
 
@@ -524,23 +524,23 @@ To formalize typing rules in \fullref{def:simple_typing_rule}, we first need to 
   Then the variables having \hyperref[def:type_derivation_tree/context]{open assumptions} in \( T \) are precisely the free variable of \( M \).
 \end{proposition}
 \begin{comments}
-  \item As discussed in \fullref{rem:base_typing_rules}, we restrict ourselves to the two base typing rules from \fullref{def:base_typing_rules}.
+  \item As discussed in \fullref{rem:arrow_typing_rules_only}, we restrict ourselves to the two arrow typing rules from \fullref{def:arrow_typing_rules}.
 \end{comments}
 \begin{proof}
   We will use simple case analysis on the structure of \( T \):
   \begin{itemize}
     \item If \( T \) is an assumption tree, then \( M \) must be a variable, and thus \( x: \tau \) is an open assumption in \( T \) if and only if \( M = x \).
 
-    \item If \( T \) is an application of \ref{inf:def:base_typing_rules/arrow/elim}, then \( M = NK \) and \( T \) has subtrees deriving \( N: \rho \to \sigma \) and \( K: \rho \) for some type \( \rho \). We suppose that the inductive hypothesis holds for \( T_N \) and \( T_K \).
+    \item If \( T \) is an application of \ref{inf:def:arrow_typing_rules/elim}, then \( M = NK \) and \( T \) has subtrees deriving \( N: \rho \to \sigma \) and \( K: \rho \) for some type \( \rho \). We suppose that the inductive hypothesis holds for \( T_N \) and \( T_K \).
 
     Since nothing is discharged by this rule application, the open assumptions of \( M \) are the union of those of \( N \) and \( K \). The same holds for free variables.
 
-    \item If \( T \) is an application of \ref{inf:def:base_typing_rules/arrow/intro/imp}, \( M = \qabs y N \), \( \sigma = \rho \synimplies \delta \), and \( T \) has a subtree deriving \( N: \delta \) with the additional assumption \( y: \rho \). But this is precisely the additional free variable compared to those of \( M \).
+    \item If \( T \) is an application of \ref{inf:def:arrow_typing_rules/intro/implicit}, \( M = \qabs y N \), \( \sigma = \rho \synimplies \delta \), and \( T \) has a subtree deriving \( N: \delta \) with the additional assumption \( y: \rho \). But this is precisely the additional free variable compared to those of \( M \).
 
     \begin{itemize}
       \item If \( x = y \), uniqueness of the variables in the context implies that \( \tau = \rho \), and \( x: \tau \) gets discharged, and hence \( \Gamma \vdash M \). Furthermore, in this case \( x \) is not free in \( M \).
 
-      \item If \( T \) is an application of \ref{inf:def:base_typing_rules/arrow/intro/exp}, we proceed identically.
+      \item If \( T \) is an application of \ref{inf:def:arrow_typing_rules/intro/explicit}, we proceed identically.
     \end{itemize}
   \end{itemize}
 \end{proof}
@@ -579,7 +579,7 @@ To formalize typing rules in \fullref{def:simple_typing_rule}, we first need to 
 \end{remark}
 
 \begin{proposition}\label{thm:def:simple_type_derivability}
-  \hyperref[def:simple_type_derivability]{Type derivability} for \hyperref[def:simple_type_system]{simple type systems} only featuring the base rules from \fullref{def:base_typing_rules} has the following basic properties:
+  \hyperref[def:simple_type_derivability]{Type derivability} for \hyperref[def:simple_type_system]{simple type systems} only featuring the base rules from \fullref{def:arrow_typing_rules} has the following basic properties:
   \begin{thmenum}
     \thmitem{thm:def:simple_type_derivability/combinator} If \( {}\vdash M: \sigma \), then \( M \) is a \hyperref[def:lambda_combinator]{combinator}.
 
@@ -587,9 +587,9 @@ To formalize typing rules in \fullref{def:simple_typing_rule}, we first need to 
   \end{thmenum}
 \end{proposition}
 \begin{comments}
-  \item \Fullref{thm:def:simple_type_derivability/assumption_removal} allows us to remove assumptions by prefixing the term with an abstractor. It also demonstrates the \hyperref[con:inference_rule_admissibility]{admissibility} of the \hyperref[rem:sequent_calculus]{sequent calculus} style variation of the rule \ref{inf:def:base_typing_rules/arrow/intro/imp} described in \fullref{rem:typing_rule_style}.
+  \item \Fullref{thm:def:simple_type_derivability/assumption_removal} allows us to remove assumptions by prefixing the term with an abstractor. It also demonstrates the \hyperref[con:inference_rule_admissibility]{admissibility} of the \hyperref[rem:sequent_calculus]{sequent calculus} style variation of the rule \ref{inf:def:arrow_typing_rules/intro/implicit} described in \fullref{rem:typing_rule_style}.
 
-  \item The restriction to only the base rules is discussed in \fullref{rem:base_typing_rules}.
+  \item The restriction to only the base rules is discussed in \fullref{rem:arrow_typing_rules_only}.
 \end{comments}
 \begin{proof}
   \SubProofOf{thm:def:simple_type_derivability/combinator} It follows from \fullref{thm:assumptions_and_free_variables} that \( x: \tau \) is an open assumption for a derivation of \( M: \sigma \) if and only if \( x \) is not free in \( M \). If \( M \) is a combinator, it has no free variables, hence derivations of \( M \) have no open assumptions.
@@ -599,21 +599,21 @@ To formalize typing rules in \fullref{def:simple_typing_rule}, we first need to 
   \SufficiencySubProof* Let \( P \) be a derivation tree for \( M: \sigma \) from \( \Gamma, x: \tau \). We will build a tree deriving \( \qabs x M: \tau \to \sigma \) from \( \Gamma \).
 
   \begin{itemize}
-    \item If \( x: \tau \) is an open assumption, it is discharged during a simple application of \ref{inf:def:base_typing_rules/arrow/intro/imp}:
+    \item If \( x: \tau \) is an open assumption, it is discharged during a simple application of \ref{inf:def:arrow_typing_rules/intro/implicit}:
     \begin{equation*}
       \begin{prooftree}
         \hypo{ x: \tau }
         \ellipsis { \( P \) } { M: \sigma }
-        \infer[left label=\( x \)]1[\ref{inf:def:base_typing_rules/arrow/intro/imp}]{ \qabs x M: \tau \synimplies \sigma }
+        \infer[left label=\( x \)]1[\ref{inf:def:arrow_typing_rules/intro/implicit}]{ \qabs x M: \tau \synimplies \sigma }
       \end{prooftree}
     \end{equation*}
 
     Discharging \( x: \tau \) leaves us with \( \Gamma \vdash \qabs x M: \tau \synimplies \sigma \).
 
-    \item Otherwise, if \( x: \tau \) is not an open assumption in \( P \), then \( \Gamma \vdash P \) by \fullref{def:simple_type_derivability}. During application of \ref{inf:def:base_typing_rules/arrow/intro/imp} nothing is discharged, and we again obtain \( \Gamma \vdash \qabs x M: \tau \synimplies \sigma \).
+    \item Otherwise, if \( x: \tau \) is not an open assumption in \( P \), then \( \Gamma \vdash P \) by \fullref{def:simple_type_derivability}. During application of \ref{inf:def:arrow_typing_rules/intro/implicit} nothing is discharged, and we again obtain \( \Gamma \vdash \qabs x M: \tau \synimplies \sigma \).
   \end{itemize}
 
-  \NecessitySubProof* Conversely, if \( P \) is a derivation tree of \( \qabs x M: \tau \to \sigma \) from \( \Gamma \), it must be an application tree for \ref{inf:def:base_typing_rules/arrow/intro/imp}, and hence \( x: \tau \) is either discharged during the application, or it is not and the derivation of \( M: \sigma \) does not depend on it. In both cases, we conclude that \( \Gamma, x: \tau \vdash M \).
+  \NecessitySubProof* Conversely, if \( P \) is a derivation tree of \( \qabs x M: \tau \to \sigma \) from \( \Gamma \), it must be an application tree for \ref{inf:def:arrow_typing_rules/intro/implicit}, and hence \( x: \tau \) is either discharged during the application, or it is not and the derivation of \( M: \sigma \) does not depend on it. In both cases, we conclude that \( \Gamma, x: \tau \vdash M \).
 \end{proof}
 
 \begin{definition}\label{def:typability}\mcite[def. 2D1]{Hindley1997BasicSTT}
@@ -631,7 +631,7 @@ To formalize typing rules in \fullref{def:simple_typing_rule}, we first need to 
   For a fixed \hyperref[def:abstract_type_system]{abstract type system}, if \( {}\vdash M: \tau \), we say that \( M \) is an \term[en=untyped inhabitant (\cite[8A1]{Hindley1997BasicSTT})]{inhabitant} of \( \tau \). If the type \( \tau \) has at least one habitant, we say that it is \term{inhabited}.
 \end{definition}
 \begin{comments}
-  \item We base our definition of habitant on the notion of \enquote{untyped inhabitants} for \hyperref[def:simple_type]{simple type} from \cite[def. 8A1]{Hindley1997BasicSTT}. Hindley also defines \enquote{typed habitants} for valid \hyperref[def:typed_lambda_term]{typed terms} and \enquote{\( \sigma \)-normal habitants} for terms in \hyperref[def:lambda_reduction_normal_form]{\( \sigma \)-normal form}.
+  \item We base our definition of habitant on the notion of \enquote{untyped inhabitants} for \hyperref[def:simple_type]{simple type} from \cite[def. 8A1]{Hindley1997BasicSTT}. Hindley also defines \enquote{typed habitants} for valid \hyperref[def:typed_lambda_term]{typed terms} and \enquote{\( \sigma \)-normal habitants} for terms in \hyperref[def:lambda_term_normal_form]{\( \sigma \)-normal form}.
 
   \item Unlike for \hyperref[def:typability]{typability}, this definition only applies to derivations from the empty context. This restricts us to inhabitants without free variables.
 \end{comments}
@@ -647,15 +647,15 @@ To formalize typing rules in \fullref{def:simple_typing_rule}, we first need to 
     \begin{equation*}
       \begin{prooftree}
         \hypo{ \synx: \tau }
-        \infer[left label=\( \synx \)]1[\ref{inf:def:base_typing_rules/arrow/intro/imp}]{ \qabs \synx \synx: \tau \synimplies \tau }
+        \infer[left label=\( \synx \)]1[\ref{inf:def:arrow_typing_rules/intro/implicit}]{ \qabs \synx \synx: \tau \synimplies \tau }
       \end{prooftree}
     \end{equation*}
 
-    \hyperref[def:simple_type_system_style]{Explicit typing} can restrict each term to at most one type --- the rule \ref{inf:def:base_typing_rules/arrow/intro/exp} is only applicable if \( x \) is annotated with the same type it has in the context:
+    \hyperref[def:simple_type_system_style]{Explicit typing} can restrict each term to at most one type --- the rule \ref{inf:def:arrow_typing_rules/intro/explicit} is only applicable if \( x \) is annotated with the same type it has in the context:
     \begin{equation*}
       \begin{prooftree}
         \hypo{ \synx: \tau }
-        \infer[left label=\( \synx \)]1[\ref{inf:def:base_typing_rules/arrow/intro/exp}]{ \qabs {\synx^\tau} \synx: \tau \synimplies \tau }
+        \infer[left label=\( \synx \)]1[\ref{inf:def:arrow_typing_rules/intro/explicit}]{ \qabs {\synx^\tau} \synx: \tau \synimplies \tau }
       \end{prooftree}
     \end{equation*}
 
@@ -665,8 +665,8 @@ To formalize typing rules in \fullref{def:simple_typing_rule}, we first need to 
     \begin{equation*}
       \begin{prooftree}
         \hypo{ \synx: \tau }
-        \infer1[\ref{inf:def:base_typing_rules/arrow/intro/imp}]{ \qabs \syny \synx: \sigma \synimplies \tau }
-        \infer[left label=\( \synx \)]1[\ref{inf:def:base_typing_rules/arrow/intro/imp}]{ \qabs \synx \qabs \syny \synx: \tau \synimplies \sigma \synimplies \tau }
+        \infer1[\ref{inf:def:arrow_typing_rules/intro/implicit}]{ \qabs \syny \synx: \sigma \synimplies \tau }
+        \infer[left label=\( \synx \)]1[\ref{inf:def:arrow_typing_rules/intro/implicit}]{ \qabs \synx \qabs \syny \synx: \tau \synimplies \sigma \synimplies \tau }
       \end{prooftree}
     \end{equation*}
 
@@ -679,16 +679,16 @@ To formalize typing rules in \fullref{def:simple_typing_rule}, we first need to 
       \begin{prooftree}
         \hypo{ \synx: \tau \synimplies (\sigma \synimplies \rho) }
         \hypo{ \synz: \tau }
-        \infer2[\ref{inf:def:base_typing_rules/arrow/elim}]{ \synx \synz: \sigma \synimplies \rho }
+        \infer2[\ref{inf:def:arrow_typing_rules/elim}]{ \synx \synz: \sigma \synimplies \rho }
 
         \hypo{ \syny: \tau \synimplies \sigma }
         \hypo{ \synz: \tau }
-        \infer2[\ref{inf:def:base_typing_rules/arrow/elim}]{ \syny \synz: \sigma }
+        \infer2[\ref{inf:def:arrow_typing_rules/elim}]{ \syny \synz: \sigma }
 
-        \infer2[\ref{inf:def:base_typing_rules/arrow/elim}]{ \synx \synz (\syny \synz): \rho }
-        \infer[left label=\( \synz \)]1[\ref{inf:def:base_typing_rules/arrow/intro/imp}]{ \qabs \synz \synx \synz (\syny \synz): \tau \synimplies \rho }
-        \infer[left label=\( \syny \)]1[\ref{inf:def:base_typing_rules/arrow/intro/imp}]{ \qabs \syny \qabs \synz \synx \synz (\syny \synz): (\tau \synimplies \sigma) \synimplies (\tau \synimplies \rho) }
-        \infer[left label=\( \synx \)]1[\ref{inf:def:base_typing_rules/arrow/intro/imp}]{ S: (\tau \synimplies (\sigma \synimplies \rho)) \synimplies ((\tau \synimplies \sigma) \synimplies (\tau \synimplies \rho)) }
+        \infer2[\ref{inf:def:arrow_typing_rules/elim}]{ \synx \synz (\syny \synz): \rho }
+        \infer[left label=\( \synz \)]1[\ref{inf:def:arrow_typing_rules/intro/implicit}]{ \qabs \synz \synx \synz (\syny \synz): \tau \synimplies \rho }
+        \infer[left label=\( \syny \)]1[\ref{inf:def:arrow_typing_rules/intro/implicit}]{ \qabs \syny \qabs \synz \synx \synz (\syny \synz): (\tau \synimplies \sigma) \synimplies (\tau \synimplies \rho) }
+        \infer[left label=\( \synx \)]1[\ref{inf:def:arrow_typing_rules/intro/implicit}]{ S: (\tau \synimplies (\sigma \synimplies \rho)) \synimplies ((\tau \synimplies \sigma) \synimplies (\tau \synimplies \rho)) }
       \end{prooftree}
     \end{equation*}
 
@@ -700,7 +700,7 @@ To formalize typing rules in \fullref{def:simple_typing_rule}, we first need to 
     \end{equation*}
     is not generally \hyperref[def:typability]{typable} unless \( \alpha = \beta \synimplies \beta \) (or unless the type system contains a special typing rule).
 
-    \thmitem{ex:def:type_derivation_tree/self_application} The term \( xx \) is not typable because \ref{inf:def:base_typing_rules/arrow/elim} requires the existence of types \( \tau \) and \( \sigma \) so that \( x \) inhibits \( x: \tau \to \sigma \) and \( x: \tau \) simultaneously. This is not possible because type contexts disallow variables to have more than one type assigned.
+    \thmitem{ex:def:type_derivation_tree/self_application} The term \( xx \) is not typable because \ref{inf:def:arrow_typing_rules/elim} requires the existence of types \( \tau \) and \( \sigma \) so that \( x \) inhibits \( x: \tau \to \sigma \) and \( x: \tau \) simultaneously. This is not possible because type contexts disallow variables to have more than one type assigned.
 
     We can regard \( xx \) as an instance of \hyperref[con:impredicativity]{impredicativity} --- namely, function self-application, in which a function applies to itself.
 
@@ -726,13 +726,13 @@ To formalize typing rules in \fullref{def:simple_typing_rule}, we first need to 
       \begin{prooftree}
         \hypo{ \synf: \tau \synimplies (\sigma \synimplies \rho) }
         \hypo{ \synx: \tau }
-        \infer2[\ref{inf:def:base_typing_rules/arrow/elim}]{ \synf \synx: \sigma \synimplies \rho }
+        \infer2[\ref{inf:def:arrow_typing_rules/elim}]{ \synf \synx: \sigma \synimplies \rho }
 
         \hypo{ \syny: \sigma }
-        \infer2[\ref{inf:def:base_typing_rules/arrow/elim}]{ \synf \synx \syny: \rho }
-        \infer[left label=\( \synf \)]1[\ref{inf:def:base_typing_rules/arrow/intro/imp}]{ \qabs \synf \synf \synx \syny: (\tau \synimplies (\sigma \synimplies \rho)) \synimplies \rho }
-        \infer[left label=\( \syny \)]1[\ref{inf:def:base_typing_rules/arrow/intro/imp}]{ \qabs \syny \qabs \synf \synf \synx \syny: \sigma \synimplies ((\tau \synimplies (\sigma \synimplies \rho)) \synimplies \rho) }
-        \infer[left label=\( \synx \)]1[\ref{inf:def:base_typing_rules/arrow/intro/imp}]{ P_+: \tau \synimplies (\sigma \synimplies ((\tau \synimplies (\sigma \synimplies \rho)) \synimplies \rho)) }
+        \infer2[\ref{inf:def:arrow_typing_rules/elim}]{ \synf \synx \syny: \rho }
+        \infer[left label=\( \synf \)]1[\ref{inf:def:arrow_typing_rules/intro/implicit}]{ \qabs \synf \synf \synx \syny: (\tau \synimplies (\sigma \synimplies \rho)) \synimplies \rho }
+        \infer[left label=\( \syny \)]1[\ref{inf:def:arrow_typing_rules/intro/implicit}]{ \qabs \syny \qabs \synf \synf \synx \syny: \sigma \synimplies ((\tau \synimplies (\sigma \synimplies \rho)) \synimplies \rho) }
+        \infer[left label=\( \synx \)]1[\ref{inf:def:arrow_typing_rules/intro/implicit}]{ P_+: \tau \synimplies (\sigma \synimplies ((\tau \synimplies (\sigma \synimplies \rho)) \synimplies \rho)) }
       \end{prooftree}
     \end{equation*}
 
@@ -745,7 +745,7 @@ To formalize typing rules in \fullref{def:simple_typing_rule}, we first need to 
       P_+: \tau \synimplies \sigma \synimplies (\tau \synimplies \sigma \synimplies \rho) \synimplies \rho.
     \end{equation*}
 
-    If \( A: \tau \) and \( B: \sigma \), after two applications of \ref{inf:def:base_typing_rules/arrow/elim} we obtain
+    If \( A: \tau \) and \( B: \sigma \), after two applications of \ref{inf:def:arrow_typing_rules/elim} we obtain
     \begin{equation*}
       P_+ A B: (\tau \synimplies \sigma \synimplies \rho) \synimplies \rho.
     \end{equation*}
@@ -760,15 +760,15 @@ To formalize typing rules in \fullref{def:simple_typing_rule}, we first need to 
         \hypo{ \synp: (\tau \synimplies \sigma \synimplies \tau) \synimplies \rho }
 
         \hypo{ \synx: \tau }
-        \infer1[\ref{inf:def:base_typing_rules/arrow/intro/imp}]{ \qabs \syny \synx: \sigma \synimplies \tau }
-        \infer[left label=\( \synx \)]1[\ref{inf:def:base_typing_rules/arrow/intro/imp}]{ \qabs \synx \qabs \syny \synx: \tau \synimplies \sigma \synimplies \tau }
+        \infer1[\ref{inf:def:arrow_typing_rules/intro/implicit}]{ \qabs \syny \synx: \sigma \synimplies \tau }
+        \infer[left label=\( \synx \)]1[\ref{inf:def:arrow_typing_rules/intro/implicit}]{ \qabs \synx \qabs \syny \synx: \tau \synimplies \sigma \synimplies \tau }
 
-        \infer2[\ref{inf:def:base_typing_rules/arrow/elim}]{ \synp (\qabs \synx \qabs \syny \synx): \rho }
-        \infer[left label=\( \synp \)]1[\ref{inf:def:base_typing_rules/arrow/intro/imp}]{ P_{-L}: ((\tau \synimplies \sigma \synimplies \tau) \synimplies \rho) \synimplies \rho }
+        \infer2[\ref{inf:def:arrow_typing_rules/elim}]{ \synp (\qabs \synx \qabs \syny \synx): \rho }
+        \infer[left label=\( \synp \)]1[\ref{inf:def:arrow_typing_rules/intro/implicit}]{ P_{-L}: ((\tau \synimplies \sigma \synimplies \tau) \synimplies \rho) \synimplies \rho }
       \end{prooftree}
     \end{equation*}
 
-    We have derived types for both \( P_+ A B \) and \( P_{-L} \), and can conclude that the rule \ref{inf:def:base_typing_rules/arrow/elim} is only applicable to \( P_{-L} (P_+ A B) \) if \( \rho = \tau \), in which case \( P_{-L} (P_+ A B): \tau \), as expected.
+    We have derived types for both \( P_+ A B \) and \( P_{-L} \), and can conclude that the rule \ref{inf:def:arrow_typing_rules/elim} is only applicable to \( P_{-L} (P_+ A B) \) if \( \rho = \tau \), in which case \( P_{-L} (P_+ A B): \tau \), as expected.
 
     On the other hand, for
     \begin{equation*}
@@ -780,15 +780,15 @@ To formalize typing rules in \fullref{def:simple_typing_rule}, we first need to 
         \hypo{ \synp: (\tau \synimplies \sigma \synimplies \sigma) \synimplies \rho }
 
         \hypo{ \syny: \sigma }
-        \infer[left label=\( \syny \)]1[\ref{inf:def:base_typing_rules/arrow/intro/imp}]{ \qabs \syny \syny: \sigma \synimplies \sigma }
-        \infer1[\ref{inf:def:base_typing_rules/arrow/intro/imp}]{ \qabs \synx \qabs \syny \syny: \tau \synimplies \sigma \synimplies \sigma }
+        \infer[left label=\( \syny \)]1[\ref{inf:def:arrow_typing_rules/intro/implicit}]{ \qabs \syny \syny: \sigma \synimplies \sigma }
+        \infer1[\ref{inf:def:arrow_typing_rules/intro/implicit}]{ \qabs \synx \qabs \syny \syny: \tau \synimplies \sigma \synimplies \sigma }
 
-        \infer2[\ref{inf:def:base_typing_rules/arrow/elim}]{ \synp (\qabs \synx \qabs \syny \syny): \rho }
-        \infer[left label=\( \synp \)]1[\ref{inf:def:base_typing_rules/arrow/intro/imp}]{ P_{-R}: ((\tau \synimplies \sigma \synimplies \sigma) \synimplies \rho) \synimplies \rho }
+        \infer2[\ref{inf:def:arrow_typing_rules/elim}]{ \synp (\qabs \synx \qabs \syny \syny): \rho }
+        \infer[left label=\( \synp \)]1[\ref{inf:def:arrow_typing_rules/intro/implicit}]{ P_{-R}: ((\tau \synimplies \sigma \synimplies \sigma) \synimplies \rho) \synimplies \rho }
       \end{prooftree}
     \end{equation*}
 
-    The rule \ref{inf:def:base_typing_rules/arrow/elim} is only applicable to \( P_{-R} (P_+ A B) \) if \( \rho = \sigma \), in which case \( P_{-R} (P_+ A B): \sigma \).
+    The rule \ref{inf:def:arrow_typing_rules/elim} is only applicable to \( P_{-R} (P_+ A B) \) if \( \rho = \sigma \), in which case \( P_{-R} (P_+ A B): \sigma \).
 
     We see here how the ability to derive multiple types for \( P_+ \) is actually beneficial --- we can use the same combinator in different situations.
 
@@ -821,10 +821,10 @@ To formalize typing rules in \fullref{def:simple_typing_rule}, we first need to 
       \begin{prooftree}
         \hypo{ \synf: \tau \synimplies \rho }
         \hypo{ \synx: \tau }
-        \infer2[\ref{inf:def:base_typing_rules/arrow/elim}]{ \synf \synx: \rho }
-        \infer1[\ref{inf:def:base_typing_rules/arrow/intro/imp}]{ \qabs \syng \synf \synx: (\sigma \synimplies \rho) \synimplies \rho }
-        \infer[left label=\( \synf \)]1[\ref{inf:def:base_typing_rules/arrow/intro/imp}]{ \qabs \synf \qabs \syng \synf \synx: (\tau \synimplies \sigma) \synimplies (\sigma \synimplies \rho \synimplies \rho) }
-        \infer[left label=\( \synx \)]1[\ref{inf:def:base_typing_rules/arrow/intro/imp}]{ S_{+L}: \tau \synimplies (\tau \synimplies \sigma) \synimplies (\sigma \synimplies \rho) \synimplies \rho }
+        \infer2[\ref{inf:def:arrow_typing_rules/elim}]{ \synf \synx: \rho }
+        \infer1[\ref{inf:def:arrow_typing_rules/intro/implicit}]{ \qabs \syng \synf \synx: (\sigma \synimplies \rho) \synimplies \rho }
+        \infer[left label=\( \synf \)]1[\ref{inf:def:arrow_typing_rules/intro/implicit}]{ \qabs \synf \qabs \syng \synf \synx: (\tau \synimplies \sigma) \synimplies (\sigma \synimplies \rho \synimplies \rho) }
+        \infer[left label=\( \synx \)]1[\ref{inf:def:arrow_typing_rules/intro/implicit}]{ S_{+L}: \tau \synimplies (\tau \synimplies \sigma) \synimplies (\sigma \synimplies \rho) \synimplies \rho }
       \end{prooftree}
     \end{equation*}
 
@@ -833,7 +833,7 @@ To formalize typing rules in \fullref{def:simple_typing_rule}, we first need to 
       S_{+R}: \sigma \synimplies (\tau \synimplies \sigma) \synimplies (\sigma \synimplies \rho) \synimplies \rho.
     \end{equation*}
 
-    Suppose that \( A: \tau \), \( F: \tau \synimplies \rho \) and \( G: \sigma \synimplies \rho \). Then, in order for \ref{inf:def:base_typing_rules/arrow/elim} to be applicable to
+    Suppose that \( A: \tau \), \( F: \tau \synimplies \rho \) and \( G: \sigma \synimplies \rho \). Then, in order for \ref{inf:def:arrow_typing_rules/elim} to be applicable to
     \begin{equation*}
       S_- F G (S_{+L} A),
     \end{equation*}
@@ -869,9 +869,9 @@ To formalize typing rules in \fullref{def:simple_typing_rule}, we first need to 
 \end{comments}
 
 \begin{remark}\label{rem:typing_style}
-  \Fullref{ex:def:type_derivation_tree} highlights how the \hyperref[def:simple_type_system_style]{typing style} of a system can drastically affect its \hyperref[def:typability]{typability}. The rule \ref{inf:def:base_typing_rules/arrow/intro/exp} itself demonstrates how \hyperref[con:type_annotation]{type annotations} help guide us during type derivation.
+  \Fullref{ex:def:type_derivation_tree} highlights how the \hyperref[def:simple_type_system_style]{typing style} of a system can drastically affect its \hyperref[def:typability]{typability}. The rule \ref{inf:def:arrow_typing_rules/intro/explicit} itself demonstrates how \hyperref[con:type_annotation]{type annotations} help guide us during type derivation.
 
-  \Fullref{thm:typed_term_habitation_uniqueness} proves that this tackles the non-uniqueness of type derivations for \hyperref[def:lambda_combinator]{combinators} shown in \fullref{ex:def:type_derivation_tree/i} --- the combinator \( \ref{eq:ex:def:lambda_term/combinator/i} = \qabs \synx \synx \) inhabits \( \tau \synimplies \tau \) for any type \( \tau \), however, when \( \tau \) is fixed, \ref{inf:def:base_typing_rules/arrow/intro/exp} uniquely determines \hi{the} type of \( I_\tau = \qabs {\synx^\tau} \synx \) as \( \tau \synimplies \tau \) at the cost of introducing a distinct abstraction term for every possible annotation of the abstractor variable.
+  \Fullref{thm:typed_term_habitation_uniqueness} proves that this tackles the non-uniqueness of type derivations for \hyperref[def:lambda_combinator]{combinators} shown in \fullref{ex:def:type_derivation_tree/i} --- the combinator \( \ref{eq:ex:def:lambda_term/combinator/i} = \qabs \synx \synx \) inhabits \( \tau \synimplies \tau \) for any type \( \tau \), however, when \( \tau \) is fixed, \ref{inf:def:arrow_typing_rules/intro/explicit} uniquely determines \hi{the} type of \( I_\tau = \qabs {\synx^\tau} \synx \) as \( \tau \synimplies \tau \) at the cost of introducing a distinct abstraction term for every possible annotation of the abstractor variable.
 
   Another possibility is to annotate every term like Church originally did in \cite{Church1940STT}. In this case type contexts become obsolete. The notation becomes much more verbose, however, and, in light of \fullref{thm:typed_term_habitation_uniqueness}, there is little gain. Compare the following typed variations of the combinator \ref{eq:ex:def:lambda_term/combinator/k}:
   \begin{equation*}
@@ -895,14 +895,14 @@ To formalize typing rules in \fullref{def:simple_typing_rule}, we first need to 
 \end{remark}
 
 \begin{proposition}\label{thm:typed_term_habitation_uniqueness}
-  In the \hyperref[def:simple_type_system_style]{explicitly typed} \hyperref[def:simple_type_system]{simple type system} featuring only \ref{inf:def:base_typing_rules/arrow/elim} and \ref{inf:def:base_typing_rules/arrow/intro/exp}, we can \hyperref[def:simple_type_derivability]{derive} at most one type for any \hyperref[def:typed_lambda_term]{typed term} from a fixed \hyperref[def:type_context]{type context}.
+  In the \hyperref[def:simple_type_system_style]{explicitly typed} \hyperref[def:simple_type_system]{simple type system} featuring only the arrow typing rules \ref{inf:def:arrow_typing_rules/elim} and \ref{inf:def:arrow_typing_rules/intro/explicit}, we can \hyperref[def:simple_type_derivability]{derive} at most one type for any \hyperref[def:typed_lambda_term]{typed term} from a fixed \hyperref[def:type_context]{type context}.
 \end{proposition}
 \begin{comments}
   \item In particular, a typed combinator can \hyperref[def:type_habitation]{inhabit} at most one type.
 
   \item We can also interpret this result as a statement for untyped combinators --- each of them can be typed uniquely \enquote{up to a choice of types for bound variables}.
 
-  \item The restriction to only the base rules is discussed in \fullref{rem:base_typing_rules}.
+  \item The restriction to only the base rules is discussed in \fullref{rem:arrow_typing_rules_only}.
 \end{comments}
 \begin{proof}
   Let \( T \) be a tree deriving \( M: \tau \) from the type context \( \Gamma \).
@@ -911,15 +911,15 @@ To formalize typing rules in \fullref{def:simple_typing_rule}, we first need to 
   \begin{itemize}
     \item If \( T \) is an assumption tree, then \( M \) must be a variable, and \( \Gamma \vdash M \) only if \( \Gamma \) contains a type assertion for \( M \). Since type contexts have at most one type assertion per variable, it follows that the type \( \tau \) of \( M \) is uniquely determined.
 
-    \item If \( T \) is an application of \ref{inf:def:base_typing_rules/arrow/elim}, then \( M = NK \) and \( T \) has a subtree \( T_N \) deriving \( N: \sigma \to \tau \) for some type \( \sigma \), and a subtree \( T_K \) deriving \( K: \sigma \). We suppose that the inductive hypothesis holds for \( T_N \) and \( T_K \).
+    \item If \( T \) is an application of \ref{inf:def:arrow_typing_rules/elim}, then \( M = NK \) and \( T \) has a subtree \( T_N \) deriving \( N: \sigma \to \tau \) for some type \( \sigma \), and a subtree \( T_K \) deriving \( K: \sigma \). We suppose that the inductive hypothesis holds for \( T_N \) and \( T_K \).
 
     Let \( T' \) be a tree deriving \( M: \tau' \) from \( \Gamma \). Since \( M = NK \), \( T' \) must be an application tree of \ref{inf:def:base_typing/app}, with subtrees \( T_N' \) and \( T_K' \) deriving \( N: \sigma' \to \tau' \) and \( K: \sigma' \) from the assumptions in \( \Gamma \).
 
     The inductive hypothesis on \( T_N \) implies that the types \( \sigma' \to \tau' \) and \( \sigma \to \tau \) are equal, and thus so are \( \tau' \) and \( \tau \).
 
-    \item If \( T \) is an application of \ref{inf:def:base_typing_rules/arrow/intro/exp}, then \( M = \qabs {x^\sigma} N \), \( \tau = \sigma \synimplies \rho \) and \( T \) has a subtree \( S \) deriving \( N: \rho \) from \( \Gamma, x: \sigma \).
+    \item If \( T \) is an application of \ref{inf:def:arrow_typing_rules/intro/explicit}, then \( M = \qabs {x^\sigma} N \), \( \tau = \sigma \synimplies \rho \) and \( T \) has a subtree \( S \) deriving \( N: \rho \) from \( \Gamma, x: \sigma \).
 
-    Let \( T' \) be a tree deriving \( M: \tau' \) from \( \Gamma \). Then \( \tau' = \sigma \synimplies \rho' \) \( T' \) is an application of \ref{inf:def:base_typing_rules/arrow/intro/exp}, and we have a subtree \( S' \) deriving \( N: \rho' \) from \( \Gamma, x: \sigma \).
+    Let \( T' \) be a tree deriving \( M: \tau' \) from \( \Gamma \). Then \( \tau' = \sigma \synimplies \rho' \) \( T' \) is an application of \ref{inf:def:arrow_typing_rules/intro/explicit}, and we have a subtree \( S' \) deriving \( N: \rho' \) from \( \Gamma, x: \sigma \).
 
     It is extremely important here that \( \sigma \) and \( \sigma' \) are equal, which is only possible due to the annotation of \( x \).
 

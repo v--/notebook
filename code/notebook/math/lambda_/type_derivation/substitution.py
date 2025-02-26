@@ -103,7 +103,7 @@ class TreeSubstitutionVisitor(BasicDerivationTreeVisitor[TypeDerivationTree]):
         )
 
 
-# This is def:lambda_substitution in the monograph
+# This is def:lambda_term_substitution in the monograph
 def apply_tree_substitution(tree: TypeDerivationTree, substitution: TypeDerivationSubstitution) -> TypeDerivationTree:
     return TreeSubstitutionVisitor(substitution).visit(tree)
 

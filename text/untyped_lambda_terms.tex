@@ -262,7 +262,7 @@
 \begin{concept}\label{con:lambda_conversion}
   A fundamental feature of \hyperref[def:lambda_term]{\( \synlambda \)-terms} is \enquote{conversion} --- the ability to transform terms into other terms with simpler syntax and similar semantics. Thus, \enquote{conversion} is synonymous with \enquote{rewriting} in the \hyperref[def:rewriting_system]{rewriting systems} for \( \synlambda \)-terms that we will discuss.
 
-  This usage originates from Alonzo Church himself. When introducing \( \lambda \)-calculus in \cite[357]{Church1932LambdaCalculus}, he defines \hyperref[def:lambda_substitution]{single-variable substitution} as the first three of five postulates, and later states
+  This usage originates from Alonzo Church himself. When introducing \( \lambda \)-calculus in \cite[357]{Church1932LambdaCalculus}, he defines \hyperref[def:lambda_term_substitution]{single-variable substitution} as the first three of five postulates, and later states
   \begin{displayquote}
     If \( M \) and \( N \) are well-formed and if \( N \) can be derived from \( M \) by successive applications of the rules of procedure \logic{I}, \logic{II}, and \logic{III}, then \( M \) is said to be convertible into \( N \), and the process is spoken of as a conversion of \( M \) into \( N \).
   \end{displayquote}
@@ -272,48 +272,48 @@
   When the intention of a conversion procedure is for terms to become shorter, we call the procedure a \enquote{reduction}, and we call the reverse procedure an \enquote{expansion}. If both are possible, we call the procedure an \enquote{equivalence}.
 \end{concept}
 
-\begin{definition}\label{def:lambda_substitution}\mimprovised
+\begin{definition}\label{def:lambda_term_substitution}\mimprovised
   A \term{simultaneous substitution} of \( \synlambda \)-terms is a pair \( (\Bbbs, \sharp) \), where
-  \begin{thmenum}[series=def:lambda_substitution]
-    \thmitem{def:lambda_substitution/sigma} \( \Bbbs: \op*{Var} \to \op*{Term} \) is a function specifying how variables need to be replaced with terms. We allow only finitely many variables to not be fixed by \( \Bbbs \).
+  \begin{thmenum}[series=def:lambda_term_substitution]
+    \thmitem{def:lambda_term_substitution/sigma} \( \Bbbs: \op*{Var} \to \op*{Term} \) is a function specifying how variables need to be replaced with terms. We allow only finitely many variables to not be fixed by \( \Bbbs \).
 
-    \thmitem{def:lambda_substitution/sharp} \( \sharp: F \to \op*{Var} \), where \( F \) is the family of all variable contexts (i.e. finite subsets of \( \op*{Var} \)), is a function providing us with a fresh variable identifier not present in some given context.
+    \thmitem{def:lambda_term_substitution/sharp} \( \sharp: F \to \op*{Var} \), where \( F \) is the family of all variable contexts (i.e. finite subsets of \( \op*{Var} \)), is a function providing us with a fresh variable identifier not present in some given context.
 
     As discussed in \fullref{def:variable_identifier}, unless otherwise noted, will suppose that this function simply provides the smallest variable identifier with respect to the \hyperref[def:lexicographic_order]{reverse lexicographic order}.
   \end{thmenum}
 
   We will now use substitutions to define operations on all \( \synlambda \)-terms, but we will first need several auxiliary definitions:
-  \begin{thmenum}[resume=def:lambda_substitution]
-    \thmitem{def:lambda_substitution/modified} We will find useful the concept of \term{modifying} \( \Bbbs \) at \( x \) with \( y \):
-    \begin{equation}\label{eq:def:lambda_substitution/modified}
+  \begin{thmenum}[resume=def:lambda_term_substitution]
+    \thmitem{def:lambda_term_substitution/modified} We will find useful the concept of \term{modifying} \( \Bbbs \) at \( x \) with \( y \):
+    \begin{equation}\label{eq:def:lambda_term_substitution/modified}
       \Bbbs_{x \mapsto y}(u) \coloneqq \begin{cases}
         y,        &u = x, \\
         \Bbbs(u), &u \neq x.
       \end{cases}
     \end{equation}
 
-    \thmitem{def:lambda_substitution/free} In order to be able to define substitutions for arbitrary terms, we will also need the following auxiliary definition:
-    \begin{equation}\label{eq:def:lambda_substitution/free}
+    \thmitem{def:lambda_term_substitution/free} In order to be able to define substitutions for arbitrary terms, we will also need the following auxiliary definition:
+    \begin{equation}\label{eq:def:lambda_term_substitution/free}
       \op*{Free}_\Bbbs(M) \coloneqq \bigcup_{\mathclap{v \in \op*{Free}(M)}} \op*{Free}(\Bbbs(v)).
     \end{equation}
 
-    \thmitem{def:lambda_substitution/operation} Finally, for an arbitrary \( \synlambda \)-term \( M \), we define the following operation (for which will use the notational convention from \fullref{rem:substitution_notation}):
+    \thmitem{def:lambda_term_substitution/operation} Finally, for an arbitrary \( \synlambda \)-term \( M \), we define the following operation (for which will use the notational convention from \fullref{rem:substitution_notation}):
     \begin{empheq}[left={M[\Bbbs]} \coloneqq \empheqlbrace]{align}
-      &M,                              &&M \in \op*{Const},                                    \label{eq:def:lambda_substitution/const}               \\
-      &\Bbbs(M),                       &&M \in \op*{Var},                                      \label{eq:def:lambda_substitution/var}                 \\
-      &N[\Bbbs] \thinspace K[\Bbbs],   &&M = NK,                                               \label{eq:def:lambda_substitution/application}         \\
-      &\qabs x N[\Bbbs_{x \mapsto x}], &&M = \qabs x N \T{and} x \not\in \op*{Free}_\Bbbs(M), \label{eq:def:lambda_substitution/abstraction/direct}  \\
-      &\qabs n N[\Bbbs_{x \mapsto n}], &&M = \qabs x N \T{and} x \in \op*{Free}_\Bbbs(M),     \label{eq:def:lambda_substitution/abstraction/renaming}
+      &M,                              &&M \in \op*{Const},                                    \label{eq:def:lambda_term_substitution/const}               \\
+      &\Bbbs(M),                       &&M \in \op*{Var},                                      \label{eq:def:lambda_term_substitution/var}                 \\
+      &N[\Bbbs] \thinspace K[\Bbbs],   &&M = NK,                                               \label{eq:def:lambda_term_substitution/application}         \\
+      &\qabs x N[\Bbbs_{x \mapsto x}], &&M = \qabs x N \T{and} x \not\in \op*{Free}_\Bbbs(M), \label{eq:def:lambda_term_substitution/abstraction/direct}  \\
+      &\qabs n N[\Bbbs_{x \mapsto n}], &&M = \qabs x N \T{and} x \in \op*{Free}_\Bbbs(M),     \label{eq:def:lambda_term_substitution/abstraction/renaming}
     \end{empheq}
     where \( n = \sharp(\op*{Free}(N) \cup \op*{Free}_\Bbbs(N)) \).
   \end{thmenum}
 \end{definition}
 \begin{comments}
-  \item In \eqref{eq:def:lambda_substitution/abstraction/direct} we modify \( \Bbbs \) to fix \( x \), while in \eqref{eq:def:lambda_substitution/abstraction/renaming} we modify it to send \( x \) to \( n \). We will refer to the latter rule as \enquote{substitution with renaming}. Whenever it will be sufficient, \fullref{thm:lambda_substitution_single_rule} will allow us to compress them into one rule with a looser condition.
+  \item In \eqref{eq:def:lambda_term_substitution/abstraction/direct} we modify \( \Bbbs \) to fix \( x \), while in \eqref{eq:def:lambda_term_substitution/abstraction/renaming} we modify it to send \( x \) to \( n \). We will refer to the latter rule as \enquote{substitution with renaming}. Whenever it will be sufficient, \fullref{thm:lambda_substitution_single_rule} will allow us to compress them into one rule with a looser condition.
 
-  \item This definition is loosely based on \cite[def. 1A7]{Hindley1997BasicSTT}, but is modified to allow substituting multiple variables simultaneously, as well as to handle constants. This results in less rules since \eqref{eq:def:lambda_substitution/abstraction/direct} subsumes three of the four cases.
+  \item This definition is loosely based on \cite[def. 1A7]{Hindley1997BasicSTT}, but is modified to allow substituting multiple variables simultaneously, as well as to handle constants. This results in less rules since \eqref{eq:def:lambda_term_substitution/abstraction/direct} subsumes three of the four cases.
 
-  \item Due to how fresh variables are chosen, the simultaneous substitution \( M[x \mapsto N, y \mapsto K] \) cannot be properly emulated by iterated substitution as in \fullref{rem:simulating_simultaneous_substitution} --- this can only be done \enquote{up to \( \alpha \)-equivalence}, as shown in \fullref{thm:substitution_composition_is_alpha_equivalent}. \Fullref{ex:def:lambda_substitution/composed_vs_iterated} demonstrates subtleties that arise.
+  \item Due to how fresh variables are chosen, the simultaneous substitution \( M[x \mapsto N, y \mapsto K] \) cannot be properly emulated by iterated substitution as in \fullref{rem:simulating_simultaneous_substitution} --- this can only be done \enquote{up to \( \alpha \)-equivalence}, as shown in \fullref{thm:substitution_composition_is_alpha_equivalent}. \Fullref{ex:def:lambda_term_substitution/composed_vs_iterated} demonstrates subtleties that arise.
 
   \item In \fullref{alg:simply_typed_substitution} we will show how \hyperref[def:type_derivation_tree]{type derivation trees} for \( M \) and \( L \) can be used to build a derivation tree for \( M[x \mapsto L] \) .
 
@@ -321,13 +321,13 @@
 \end{comments}
 
 \begin{remark}\label{rem:renaming_substitution_rules}
-  The substitution rules for abstractions from \fullref{def:lambda_substitution} are adjusted so that \fullref{thm:lambda_substitution_free_variables} and \fullref{thm:lambda_substitution_noop} hold.
+  The substitution rules for abstractions from \fullref{def:lambda_term_substitution} are adjusted so that \fullref{thm:lambda_substitution_free_variables} and \fullref{thm:lambda_substitution_noop} hold.
 
-  The bare minimum we need is to avoid \enquote{variable capturing} as discussed in \fullref{ex:def:lambda_substitution/capture}. As we can see in the proof of \fullref{thm:lambda_substitution_free_variables}, the renaming rule \eqref{eq:def:lambda_substitution/abstraction/renaming} is by itself sufficient for this. Thus, we may choose to always rename the abstractor variable.
+  The bare minimum we need is to avoid \enquote{variable capturing} as discussed in \fullref{ex:def:lambda_term_substitution/capture}. As we can see in the proof of \fullref{thm:lambda_substitution_free_variables}, the renaming rule \eqref{eq:def:lambda_term_substitution/abstraction/renaming} is by itself sufficient for this. Thus, we may choose to always rename the abstractor variable.
 
-  In practice, however, we would prefer to not rename bound variables, especially in \hyperref[def:lambda_combinator]{combinators}; the rule \eqref{eq:def:lambda_substitution/abstraction/direct} allow us to prove \fullref{thm:lambda_substitution_noop}.
+  In practice, however, we would prefer to not rename bound variables, especially in \hyperref[def:lambda_combinator]{combinators}; the rule \eqref{eq:def:lambda_term_substitution/abstraction/direct} allow us to prove \fullref{thm:lambda_substitution_noop}.
 
-  See \fullref{ex:def:lambda_substitution/ignoring} for concrete examples of ignoring the latter rule.
+  See \fullref{ex:def:lambda_term_substitution/ignoring} for concrete examples of ignoring the latter rule.
 \end{remark}
 
 \begin{proposition}\label{thm:lambda_substitution_restriction}
@@ -377,7 +377,7 @@
     \item If \( M = NK \) and if the inductive hypothesis holds for \( N \) and \( K \), then
     \begin{equation*}
       M[\Bbbs]
-      \reloset {\eqref{eq:def:lambda_substitution/application}} =
+      \reloset {\eqref{eq:def:lambda_term_substitution/application}} =
       N[\Bbbs] \thinspace K[\Bbbs]
       \reloset {\T{ind.}} =
       N K
@@ -389,7 +389,7 @@
 
     Aiming at a contradiction, suppose that \( x \) is in \( \op*{Free}_\Bbbs(M) \), that is, there exists a free variable \( y \) of \( M \) such that \( x \) is free in \( \Bbbs(y) \). We have assumed that \( \Bbbs \) fixes the free variables of \( M \), thus \( y = \Bbbs(y) \), and we thus conclude that \( x = y \). In particular, \( x \) is free in \( M \). But, by \fullref{thm:lambda_variable_freeness_characterization}, \( x \) cannot be free in \( M \).
 
-    Therefore, \( x \) cannot be in \( \op*{Free}_\Bbbs(M) \), and we must use the rule \eqref{eq:def:lambda_substitution/abstraction/direct}. The free variables of \( N \) are those of \( N \) with the eventual addition of \( x \), all of which are fixed by \( \Bbbs_{x \mapsto x} \). Hence,
+    Therefore, \( x \) cannot be in \( \op*{Free}_\Bbbs(M) \), and we must use the rule \eqref{eq:def:lambda_term_substitution/abstraction/direct}. The free variables of \( N \) are those of \( N \) with the eventual addition of \( x \), all of which are fixed by \( \Bbbs_{x \mapsto x} \). Hence,
     \begin{equation*}
       M[\Bbbs]
       =
@@ -415,7 +415,7 @@
     \op*{Free}( M[\Bbbs] ) = \overbrace{\bigcup_{\mathclap{v \in \op*{Free}(M)}} \op*{Free}(\Bbbs(v))}^{\op*{Free}_\Bbbs(M)}.
   \end{equation}
 
-  This also holds if we always use the renaming rule \eqref{eq:def:lambda_substitution/abstraction/renaming}.
+  This also holds if we always use the renaming rule \eqref{eq:def:lambda_term_substitution/abstraction/renaming}.
 \end{proposition}
 \begin{proof}
   We will use \fullref{thm:induction_on_rooted_trees} on \( M \) simultaneously for all possible substitutions:
@@ -425,7 +425,7 @@
     \item If \( M \) is a variable, say \( M = x \), then \( \op*{Free}(M) = \set{ x } \) and thus
     \begin{equation*}
       \op*{Free}(M[\Bbbs])
-      \reloset {\eqref{eq:def:lambda_substitution/var}} =
+      \reloset {\eqref{eq:def:lambda_term_substitution/var}} =
       \op*{Free}(\Bbbs(x)).
     \end{equation*}
 
@@ -436,7 +436,7 @@
     We have
     \begin{equation*}
       \op*{Free}(M[\Bbbs])
-      \reloset {\eqref{eq:def:lambda_substitution/application}} =
+      \reloset {\eqref{eq:def:lambda_term_substitution/application}} =
       \op*{Free}(N[\Bbbs] \thinspace K[\Bbbs])
       =
       \op*{Free}(N[\Bbbs]) \cup \op*{Free}(K[\Bbbs]).
@@ -446,10 +446,10 @@
 
     \item Suppose that \( M = \qabs x N \) and that the inductive hypothesis holds for \( N \). We have the following possibilities:
     \begin{itemize}
-      \item Suppose first that \( x \not\in \op*{Free}_\Bbbs(M) \). We must thus use \eqref{eq:def:lambda_substitution/abstraction/direct}. We have
+      \item Suppose first that \( x \not\in \op*{Free}_\Bbbs(M) \). We must thus use \eqref{eq:def:lambda_term_substitution/abstraction/direct}. We have
       \begin{align*}
         \op*{Free}(M[\Bbbs])
-        &\reloset{\eqref{eq:def:lambda_substitution/abstraction/direct}} =
+        &\reloset{\eqref{eq:def:lambda_term_substitution/abstraction/direct}} =
         \op*{Free}(\qabs x N[\Bbbs_{x \mapsto x}])
         = \\ &=
         \op*{Free}(N[\Bbbs_{x \mapsto x}]) \setminus \set{ x }
@@ -466,7 +466,7 @@
 
       This demonstrates \eqref{eq:thm:lambda_substitution_free_variables}.
 
-      \item Otherwise, \( x \in \op*{Free}_\Bbbs(M) \), and we must use \eqref{eq:def:lambda_substitution/abstraction/renaming}. As discussed in \fullref{rem:renaming_substitution_rules}, the assumption itself is irrelevant for proving \eqref{eq:thm:lambda_substitution_free_variables}.
+      \item Otherwise, \( x \in \op*{Free}_\Bbbs(M) \), and we must use \eqref{eq:def:lambda_term_substitution/abstraction/renaming}. As discussed in \fullref{rem:renaming_substitution_rules}, the assumption itself is irrelevant for proving \eqref{eq:thm:lambda_substitution_free_variables}.
 
       Let \( n \) be the renamed abstractor variable. Then
       \begin{align*}
@@ -529,15 +529,15 @@
   \end{equation*}
 \end{proof}
 
-\begin{example}\label{ex:def:lambda_substitution}
-  We list examples of \hyperref[def:lambda_substitution]{substitution} of \( \synlambda \)-terms:
+\begin{example}\label{ex:def:lambda_term_substitution}
+  We list examples of \hyperref[def:lambda_term_substitution]{substitution} of \( \synlambda \)-terms:
   \begin{thmenum}
-    \thmitem{ex:def:lambda_substitution/simultaneous} We start with an example where we analyze the abstraction rules in detail. Consider
+    \thmitem{ex:def:lambda_term_substitution/simultaneous} We start with an example where we analyze the abstraction rules in detail. Consider
     \begin{equation*}
       \parens[\Big]{ \underbrace{\qabs \synx (xyz)}_M }[\synx \mapsto \syna, \syny \mapsto \synb, \synz \mapsto \sync].
     \end{equation*}
 
-    We have \( \op*{Free}_\Bbbs(M) = \set{ b, c } \). Since \( \synx \) does not belong to this set, we must apply \eqref{eq:def:lambda_substitution/abstraction/direct}:
+    We have \( \op*{Free}_\Bbbs(M) = \set{ b, c } \). Since \( \synx \) does not belong to this set, we must apply \eqref{eq:def:lambda_term_substitution/abstraction/direct}:
     \begin{equation*}
       \parens[\Big]{ \qabs \synx (xyz) }[\synx \mapsto \syna, \syny \mapsto \synb, \synz \mapsto \sync]
       =
@@ -546,7 +546,7 @@
       \qabs \synx \synx \synb \sync.
     \end{equation*}
 
-    \thmitem{ex:def:lambda_substitution/nested_noop} Consider the substitution \( \ref{eq:ex:def:lambda_term/combinator/k}[\syny \mapsto \synx] \). Since \( K \) is a combinator, \fullref{thm:lambda_substitution_combinators} holds and \( K[\syny \mapsto \synx] = K \).
+    \thmitem{ex:def:lambda_term_substitution/nested_noop} Consider the substitution \( \ref{eq:ex:def:lambda_term/combinator/k}[\syny \mapsto \synx] \). Since \( K \) is a combinator, \fullref{thm:lambda_substitution_combinators} holds and \( K[\syny \mapsto \synx] = K \).
 
     We will show this explicitly. Denote the substitution \( \syny \mapsto \synx \) by \( \sigma \). Then
     \begin{equation*}
@@ -556,7 +556,7 @@
       =
       \varnothing,
     \end{equation*}
-    thus we must use \eqref{eq:def:lambda_substitution/abstraction/direct}:
+    thus we must use \eqref{eq:def:lambda_term_substitution/abstraction/direct}:
     \begin{equation*}
       K[\syny \mapsto \synx]
       =
@@ -589,11 +589,11 @@
       K[\syny \mapsto \synx] = K.
     \end{equation*}
 
-    We will show in \fullref{ex:def:lambda_substitution/composed_vs_iterated} how this becomes more subtle when two variables are substituted simultaneously.
+    We will show in \fullref{ex:def:lambda_term_substitution/composed_vs_iterated} how this becomes more subtle when two variables are substituted simultaneously.
 
-    \thmitem{ex:def:lambda_substitution/capture} The gist of \fullref{thm:lambda_substitution_free_variables} is that substitution avoids \enquote{capturing} free variables under the scope of some abstraction.
+    \thmitem{ex:def:lambda_term_substitution/capture} The gist of \fullref{thm:lambda_substitution_free_variables} is that substitution avoids \enquote{capturing} free variables under the scope of some abstraction.
 
-    Inappropriately using the rule \eqref{eq:def:lambda_substitution/abstraction/direct} in
+    Inappropriately using the rule \eqref{eq:def:lambda_term_substitution/abstraction/direct} in
     \begin{equation*}
       (\qabs \synx \synx \syny)[\syny \mapsto \synx]
     \end{equation*}
@@ -603,19 +603,19 @@
     \end{equation*}
     which \enquote{captures} the corresponding occurrence of \( \synx \) in the scope of the closest abstractor.
 
-    The renaming rule \eqref{eq:def:lambda_substitution/abstraction/renaming} instead gives
+    The renaming rule \eqref{eq:def:lambda_term_substitution/abstraction/renaming} instead gives
     \begin{equation*}
       (\qabs \synx \synx \syny)[\syny \mapsto \synx] = \qabs \syna ((\synx \syny)[\syny \mapsto \synx, \synx \mapsto \syna]) = \qabs \syna \syna \synx.
     \end{equation*}
 
-    \thmitem{ex:def:lambda_substitution/ignoring} We discussed in \fullref{rem:renaming_substitution_rules} that we can ignore \eqref{eq:def:lambda_substitution/abstraction/direct} and always use the renaming rule \eqref{eq:def:lambda_substitution/abstraction/renaming}.
+    \thmitem{ex:def:lambda_term_substitution/ignoring} We discussed in \fullref{rem:renaming_substitution_rules} that we can ignore \eqref{eq:def:lambda_term_substitution/abstraction/direct} and always use the renaming rule \eqref{eq:def:lambda_term_substitution/abstraction/renaming}.
 
     \Fullref{thm:lambda_substitution_combinators} would immediately fail:
     \begin{equation*}
       \ref{eq:ex:def:lambda_term/combinator/i}[\syny \mapsto \synz]
       =
       (\qabs \synx \synx)[\syny \mapsto \synz]
-      \reloset {\eqref{eq:def:lambda_substitution/abstraction/renaming}} =
+      \reloset {\eqref{eq:def:lambda_term_substitution/abstraction/renaming}} =
       \qabs \syna (\synx[\syny \mapsto \synz, \synx \mapsto \syna])
       =
       \qabs \syna \syna.
@@ -624,7 +624,7 @@
     In a slightly more complicated example where substitution is actually performed, we would obtain
     \begin{equation*}
       (\qabs \synx \synx \syny)[\syny \mapsto \synz]
-      \reloset {\eqref{eq:def:lambda_substitution/abstraction/renaming}} =
+      \reloset {\eqref{eq:def:lambda_term_substitution/abstraction/renaming}} =
       \qabs \syna (\synx \syny[\syny \mapsto \synz, \synx \mapsto a])
       =
       \qabs \syna \syna \synz
@@ -636,7 +636,7 @@
       \qabs \synx \synx \synz.
     \end{equation*}
 
-    \thmitem{ex:def:lambda_substitution/composed_vs_iterated} We will show some subtleties of renaming during simultaneous substitution. Consider
+    \thmitem{ex:def:lambda_term_substitution/composed_vs_iterated} We will show some subtleties of renaming during simultaneous substitution. Consider
     \begin{equation*}
       (\underbrace{\qabs \syna \synx \synb}_M)[\underbrace{\synx \mapsto \syna, \synb \mapsto \synx}_\Bbbs].
     \end{equation*}
@@ -646,7 +646,7 @@
       \op*{Free}_\Bbbs(M) = \set{ \syna, \synx }.
     \end{equation*}
 
-    The abstractor variable \( \syna \) is in \( \op*{Free}_\Bbbs(M) \), thus we must use the renaming rule \eqref{eq:def:lambda_substitution/abstraction/renaming}. This new variable must be \( \sharp(\set{ \syna, \synx }) \), which per our remarks in \fullref{def:lambda_substitution/sharp} must be \( \synb \). Then
+    The abstractor variable \( \syna \) is in \( \op*{Free}_\Bbbs(M) \), thus we must use the renaming rule \eqref{eq:def:lambda_term_substitution/abstraction/renaming}. This new variable must be \( \sharp(\set{ \syna, \synx }) \), which per our remarks in \fullref{def:lambda_term_substitution/sharp} must be \( \synb \). Then
     \begin{equation*}
       M[\Bbbs] = \qabs \synb \syna \synx.
     \end{equation*}
@@ -682,14 +682,14 @@
 \begin{proof}
   We have two cases to consider:
   \begin{itemize}
-    \item If \( x \in \op*{Free}_\Bbbs(M) \), we must use the renaming rule \eqref{eq:def:lambda_substitution/abstraction/renaming}. Let \( n \) be the renamed abstractor variable. Then
+    \item If \( x \in \op*{Free}_\Bbbs(M) \), we must use the renaming rule \eqref{eq:def:lambda_term_substitution/abstraction/renaming}. Let \( n \) be the renamed abstractor variable. Then
     \begin{equation*}
       M[\Bbbs] = \qabs n N[\Bbbs_{x \mapsto n}].
     \end{equation*}
 
     Furthermore, \( n \) is not in \( \op*{Free}(N) \cup \op*{Free}_\Bbbs(N) \) --- the first is a superset of \( \op*{Free}(M) \), and the second --- of \( \op*{Free}_\Bbbs(M) \).
 
-    \item Otherwise, we must use \eqref{eq:def:lambda_substitution/abstraction/direct}:
+    \item Otherwise, we must use \eqref{eq:def:lambda_term_substitution/abstraction/direct}:
     \begin{equation*}
       M[\Bbbs] = \qabs x N[\Bbbs_{x \mapsto x}].
     \end{equation*}

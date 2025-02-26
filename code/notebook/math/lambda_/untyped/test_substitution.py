@@ -24,7 +24,7 @@ from .substitution import UntypedTermSubstitution, apply_term_substitution
     ),
 
     # Multiple replacements in abstractions
-    ## ex:def:lambda_substitution/simultaneous
+    ## ex:def:lambda_term_substitution/simultaneous
     dict(
         term='(λx.((xy)z))',
         mapping=dict(x='a', y='b', z='c'),
@@ -32,7 +32,7 @@ from .substitution import UntypedTermSubstitution, apply_term_substitution
     ),
 
     # Combinators should remain unchanged
-    ## ex:def:lambda_substitution/nested_noop
+    ## ex:def:lambda_term_substitution/nested_noop
     dict(
         term='(λx.x)',
         mapping=dict(y='x'),
@@ -45,19 +45,19 @@ from .substitution import UntypedTermSubstitution, apply_term_substitution
     ),
 
     # Renaming
-    ## ex:def:lambda_substitution/capture
+    ## ex:def:lambda_term_substitution/capture
     dict(
         term='(λx.(xy))',
         mapping=dict(y='x'),
         expected='(λa.(ax))'
     ),
-    ## ex:def:lambda_substitution/ignoring
+    ## ex:def:lambda_term_substitution/ignoring
     dict(
         term='(λx.(xy))',
         mapping=dict(y='z'),
         expected='(λx.(xz))'
     ),
-    ## ex:def:lambda_substitution/composed_vs_iterated
+    ## ex:def:lambda_term_substitution/composed_vs_iterated
     dict(
         term='(λa.(xb))',
         mapping=dict(x='a', b='x'),
