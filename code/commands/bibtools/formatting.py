@@ -113,7 +113,7 @@ class BibEntryAdjuster:
         self.update(date=date, year=None, month=None, day=None)
 
     def check_missing_fields(self) -> None:
-        possibly_reprinted = self.adjusted.pubstate is not None or self.adjusted.relatedtype == 'origpubas' or self.adjusted.relatedtype == 'origpubin'
+        possibly_reprinted = self.adjusted.pubstate is not None or self.adjusted.relatedtype == 'origpubas' or self.adjusted.relatedtype == 'origpubin' or self.adjusted.origpublisher is not None
 
         match self.adjusted.entry_type:
             case 'inbook' | 'incollection' | 'inproceedincs' if not self.adjusted.booktitle:

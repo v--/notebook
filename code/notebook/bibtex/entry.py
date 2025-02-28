@@ -66,6 +66,7 @@ class BibEntry:
     subtitle:      Annotated[BibString | None, BibFieldAnnotation()] = None
     subtitleaddon: Annotated[BibString | None, BibFieldAnnotation()] = None
     origdate:      Annotated[BibString | None, BibFieldAnnotation()] = None
+    origpublisher: Annotated[BibString | None, BibFieldAnnotation()] = None
     date:          Annotated[BibString | None, BibFieldAnnotation()] = None
     url:           Annotated[BibString | None, BibFieldAnnotation(verbatim=True)] = None
     note:          Annotated[BibString | None, BibFieldAnnotation()] = None
