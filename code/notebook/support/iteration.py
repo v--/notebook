@@ -1,5 +1,5 @@
 import functools
-from collections.abc import Callable, Hashable, Iterable, Sequence
+from collections.abc import Callable, Hashable, Iterable, Sequence, Collection
 
 
 def groupby_custom[K: Hashable, V](values: Iterable[V], by: Callable[[V], K]) -> Iterable[tuple[K, Sequence[V]]]:
@@ -13,21 +13,7 @@ def groupby_custom[K: Hashable, V](values: Iterable[V], by: Callable[[V], K]) ->
     return result.items()
 
 
-def iter_accumulator[T, R, **P](collector: Callable[[Iterable[T]], R]) -> Callable[[Callable[P, Iterable[T]]], Callable[P, R]]:
-    def decorator(fun: Callable[P, Iterable[T]]) -> Callable[P, R]:
-        @functools.wraps(fun)
-        def wrapper(*args: P.args, **kwargs: P.kwargs) -> R:
-            return collector(fun(*args, **kwargs))
-
-        return wrapper
-
-    return decorator
-
-
-list_accumulator = iter_accumulator(list)
-
-
-def sequence_accumulator[T, **P](fun: Callable[P, Iterable[T]]) -> Callable[P, Sequence[T]]:
+def list_accumulator[T, **P](fun: Callable[P, Iterable[T]]) -> Callable[P, Sequence[T]]:
     @functools.wraps(fun)
     def wrapper(*args: P.args, **kwargs: P.kwargs) -> Sequence[T]:
         return list(fun(*args, **kwargs))
@@ -35,8 +21,23 @@ def sequence_accumulator[T, **P](fun: Callable[P, Iterable[T]]) -> Callable[P, S
     return wrapper
 
 
+def set_accumulator[T, **P](fun: Callable[P, Iterable[T]]) -> Callable[P, Collection[T]]:
+    @functools.wraps(fun)
+    def wrapper(*args: P.args, **kwargs: P.kwargs) -> Collection[T]:
+        return set(fun(*args, **kwargs))
+
+    return wrapper
+
+
 def string_accumulator[**P](joiner: str = '') -> Callable[[Callable[P, Iterable[str]]], Callable[P, str]]:
-    return iter_accumulator(lambda values: joiner.join(values))
+    def decorator(fun: Callable[P, Iterable[str]]) -> Callable[P, str]:
+        @functools.wraps(fun)
+        def wrapper(*args: P.args, **kwargs: P.kwargs) -> str:
+            return joiner.join(fun(*args, **kwargs))
+
+        return wrapper
+
+    return decorator
 
 
 def get_strip_slice[T](seq: Sequence[T], predicate: Callable[[T], bool]) -> slice:

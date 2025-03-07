@@ -6,7 +6,7 @@ from typing import cast, get_args, override
 from ...parsing.exceptions import ParsingError
 from ...parsing.highlighter import ErrorHighlighter
 from ...parsing.parser import Parser, ParserTokenContext
-from ...support.iteration import sequence_accumulator
+from ...support.iteration import list_accumulator
 from ..entry import BibAuthor, BibEntry, BibEntryType
 from ..string import BibString, CompositeString, CompositeStringBuilder
 from .tokenizer import tokenize_bibtex
@@ -315,7 +315,7 @@ class BibParser(Parser[BibTokenKind]):
         if 'title' not in properties:
             raise entry_context.annotate_context_error('Entry without title')
 
-    @sequence_accumulator
+    @list_accumulator
     def process_authors(self, properties: dict[str, 'BibValueContext'], key: str) -> Iterable[BibAuthor]:
         if key not in properties:
             return
