@@ -1,5 +1,5 @@
 import functools
-from collections.abc import Callable, Hashable, Iterable, Sequence, Collection
+from collections.abc import Callable, Collection, Hashable, Iterable, Sequence
 
 
 def groupby_custom[K: Hashable, V](values: Iterable[V], by: Callable[[V], K]) -> Iterable[tuple[K, Sequence[V]]]:
