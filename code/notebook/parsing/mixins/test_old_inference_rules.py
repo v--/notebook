@@ -8,10 +8,10 @@ from ...support.pytest import pytest_parametrize_lists
 from ...support.unicode import Capitalization, is_latin_string
 from ..exceptions import ParsingError
 from ..identifiers import LatinIdentifier
-from ..tokens import TokenEnum
+from ..old_tokens import TokenEnum
 from ..whitespace import Space, Whitespace
-from .identifiers import IdentifierTokenizerMixin
-from .inference_rules import InferenceRuleParserMixin
+from .old_identifiers import IdentifierTokenizerMixin
+from .old_inference_rules import InferenceRuleParserMixin
 from .whitespace import WhitespaceParserMixin
 
 

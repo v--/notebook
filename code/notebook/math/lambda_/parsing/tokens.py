@@ -1,5 +1,5 @@
 from ....parsing.identifiers import GreekIdentifier, LatinIdentifier
-from ....parsing.tokens import TokenEnum, TokenMixin
+from ....parsing.old_tokens import TokenEnum, TokenMixin
 from ....parsing.whitespace import Space
 from ....support.inference.rules import InferenceRuleConnective
 from ..alphabet import BinaryTypeConnective, TermConnective, TypeAssertionConnective

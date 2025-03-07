@@ -1,7 +1,7 @@
 from collections.abc import Iterable, Sequence
 from dataclasses import dataclass
 
-from ..parsing.tokens import TokenEnum, TokenMixin
+from ..parsing.old_tokens import TokenEnum, TokenMixin
 from ..parsing.whitespace import Whitespace
 
 

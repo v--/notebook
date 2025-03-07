@@ -1,8 +1,8 @@
 from collections.abc import Sequence
 from dataclasses import dataclass
 
-from ....parsing.mixins.identifiers import IdentifierTokenizerMixin
-from ....parsing.tokenizer import Tokenizer
+from ....parsing.mixins.old_identifiers import IdentifierTokenizerMixin
+from ....parsing.old_tokenizer import Tokenizer
 from ....parsing.whitespace import Whitespace
 from ....support.inference.rules import InferenceRuleConnective
 from ....support.unicode import Capitalization, is_greek_string, is_latin_string

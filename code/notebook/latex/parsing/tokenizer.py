@@ -1,6 +1,6 @@
 from collections.abc import Iterable, Sequence
 
-from ...parsing.tokenizer import Tokenizer
+from ...parsing.old_tokenizer import Tokenizer
 from ...parsing.whitespace import Whitespace
 from ...support.iteration import string_accumulator
 from ...support.unicode import Capitalization, is_latin_string

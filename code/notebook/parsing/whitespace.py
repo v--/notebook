@@ -1,6 +1,6 @@
 from typing import Literal
 
-from .tokens import TokenEnum
+from .old_tokens import TokenEnum
 
 
 class Whitespace(TokenEnum):

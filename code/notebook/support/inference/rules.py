@@ -1,7 +1,7 @@
 from collections.abc import Collection, Sequence
 from dataclasses import dataclass
 
-from ...parsing.tokens import TokenEnum
+from ...parsing.old_tokens import TokenEnum
 from .exceptions import InferenceRuleError
 
 

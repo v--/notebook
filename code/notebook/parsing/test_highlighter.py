@@ -1,4 +1,3 @@
-from dataclasses import dataclass
 from textwrap import dedent
 
 from .highlighter import ErrorHighlighter
@@ -7,10 +6,8 @@ from .highlighter import ErrorHighlighter
 def test_error_basic() -> None:
     highlighter = ErrorHighlighter(
         'test',
-        i_first_visible_token=1,
-        i_last_visible_token=1,
-        i_first_token=1,
-        i_last_token=1
+        offset_hi_start=1,
+        offset_hi_end=1
     )
 
     assert highlighter.highlight() == dedent('''\
@@ -23,10 +20,8 @@ def test_error_basic() -> None:
 def test_error_on_end() -> None:
     highlighter = ErrorHighlighter(
         'test\n',
-        i_first_visible_token=4,
-        i_last_visible_token=4,
-        i_first_token=4,
-        i_last_token=4
+        offset_hi_start=4,
+        offset_hi_end=4
     )
 
     assert highlighter.highlight() == dedent('''\
@@ -36,13 +31,11 @@ def test_error_on_end() -> None:
     )
 
 
-def test_error_multiline_basic() -> None:
+def test_error_multiline_excerpt() -> None:
     highlighter = ErrorHighlighter(
         'test1\ntest2\ntest3',
-        i_first_visible_token=7,
-        i_last_visible_token=7,
-        i_first_token=7,
-        i_last_token=7
+        offset_hi_start=7,
+        offset_hi_end=7
     )
 
     assert highlighter.highlight() == dedent('''\
@@ -52,13 +45,11 @@ def test_error_multiline_basic() -> None:
     )
 
 
-def test_error_multiline_succeed() -> None:
+def test_error_multiline() -> None:
     highlighter = ErrorHighlighter(
         'test1\ntest2\ntest3',
-        i_first_visible_token=7,
-        i_last_visible_token=15,
-        i_first_token=7,
-        i_last_token=15
+        offset_hi_start=7,
+        offset_hi_end=15
     )
 
     assert highlighter.highlight() == dedent('''\
@@ -73,10 +64,10 @@ def test_error_multiline_succeed() -> None:
 def test_error_multiline_wide_visibility() -> None:
     highlighter = ErrorHighlighter(
         'test1\ntest2\ntest3\ntest4\ntest5',
-        i_first_visible_token=0,
-        i_last_visible_token=25,
-        i_first_token=7,
-        i_last_token=15
+        offset_hi_start=7,
+        offset_hi_end=15,
+        offset_shown_start=0,
+        offset_shown_end=25,
     )
 
     assert highlighter.highlight() == dedent('''\
@@ -87,49 +78,5 @@ def test_error_multiline_wide_visibility() -> None:
           │ ^^^^
         4 │ test4↵
         5 │ test5
-        '''
-    )
-
-
-@dataclass(frozen=True)
-class StringWrapper:
-    payload: str
-
-    def __str__(self) -> str:
-        return self.payload
-
-
-def test_string_wrapper_basic() -> None:
-    highlighter = ErrorHighlighter(
-        [StringWrapper('test1')],
-        i_first_visible_token=0,
-        i_last_visible_token=0,
-        i_first_token=0,
-        i_last_token=0
-    )
-
-    assert highlighter.highlight() == dedent('''\
-        1 │ test1
-          │ ^^^^^
-        '''
-    )
-
-
-def test_string_wrapper_with_line_break() -> None:
-    highlighter = ErrorHighlighter(
-        [
-            StringWrapper('test1\n'),
-            StringWrapper('test2\n'),
-            StringWrapper('test3')
-        ],
-        i_first_visible_token=1,
-        i_last_visible_token=1,
-        i_first_token=1,
-        i_last_token=1
-    )
-
-    assert highlighter.highlight() == dedent('''\
-        2 │ test2↵
-          │ ^^^^^^
         '''
     )

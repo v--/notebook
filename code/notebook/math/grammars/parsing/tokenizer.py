@@ -1,6 +1,6 @@
 from collections.abc import Sequence
 
-from ....parsing.tokenizer import Tokenizer
+from ....parsing.old_tokenizer import Tokenizer
 from ....parsing.whitespace import Whitespace
 from ..alphabet import NonTerminal, Terminal
 from .tokens import GrammarToken, MiscToken

@@ -5,10 +5,10 @@ import pytest
 from ...support.pytest import pytest_parametrize_kwargs
 from ...support.unicode import Capitalization, is_greek_string, is_latin_string
 from ..identifiers import GreekIdentifier, LatinIdentifier
+from ..old_tokenizer import Tokenizer
+from ..old_tokens import TokenEnum
 from ..parser import ParsingError
-from ..tokenizer import Tokenizer
-from ..tokens import TokenEnum
-from .identifiers import IdentifierTokenizerMixin
+from .old_identifiers import IdentifierTokenizerMixin
 
 
 class MiscToken(TokenEnum):

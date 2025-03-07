@@ -1,7 +1,7 @@
 from collections.abc import Iterable
 from dataclasses import dataclass, field, replace
 
-from ..parsing.parser import Parser
+from ..parsing.old_parser import Parser
 from ..parsing.whitespace import Whitespace
 from .nodes import (
     BracketGroup,

@@ -1,4 +1,4 @@
-from ....parsing.tokens import TokenEnum
+from ....parsing.old_tokens import TokenEnum
 from ....parsing.whitespace import Whitespace
 from ..alphabet import NonTerminal, Terminal
 

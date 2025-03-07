@@ -27,6 +27,14 @@ def iter_accumulator[T, R, **P](collector: Callable[[Iterable[T]], R]) -> Callab
 list_accumulator = iter_accumulator(list)
 
 
+def sequence_accumulator[T, **P](fun: Callable[P, Iterable[T]]) -> Callable[P, Sequence[T]]:
+    @functools.wraps(fun)
+    def wrapper(*args: P.args, **kwargs: P.kwargs) -> Sequence[T]:
+        return list(fun(*args, **kwargs))
+
+    return wrapper
+
+
 def string_accumulator[**P](joiner: str = '') -> Callable[[Callable[P, Iterable[str]]], Callable[P, str]]:
     return iter_accumulator(lambda values: joiner.join(values))
 

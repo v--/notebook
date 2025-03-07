@@ -2,7 +2,7 @@ import unicodedata
 
 from notebook.support.regex import RegexEqual
 
-from ....parsing.tokenizer import Tokenizer
+from ....parsing.old_tokenizer import Tokenizer
 from ....parsing.whitespace import Whitespace
 from ..token_sequence import TokenSequence
 from ..tokens import NumberToken, SymbolToken, TextToken, WordToken

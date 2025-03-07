@@ -1,30 +1,43 @@
-from ...parsing.tokens import TokenEnum, TokenMixin
-from ...parsing.whitespace import Whitespace
+from typing import Literal
+
+from ...parsing.tokens import Token
 
 
-class WordToken(TokenMixin):
-    pass
+BibTokenKind = Literal[
+    'WORD',
+    'NUMBER',
+    'SYMBOL',
+    'SPACE',
+
+    'AT',
+    'PERCENT',
+    'AMPERSAND',
+    'OPENING_BRACE',
+    'CLOSING_BRACE',
+    'DOUBLE_QUOTES',
+    'EQUALS',
+    'COMMA',
+    'UNDERSCORE',
+    'BACKSLASH',
+    'LINE_BREAK',
+    'TAB',
+]
 
 
-class NumberToken(TokenMixin):
-    pass
+bib_token_map: dict[str, BibTokenKind] = {
+    '@': 'AT',
+    '%': 'PERCENT',
+    '&': 'AMPERSAND',
+    '{': 'OPENING_BRACE',
+    '}': 'CLOSING_BRACE',
+    '"': 'DOUBLE_QUOTES',
+    '=': 'EQUALS',
+    ',': 'COMMA',
+    '_': 'UNDERSCORE',
+    '\\': 'BACKSLASH',
+    '\n': 'LINE_BREAK',
+    '\t': 'TAB',
+}
 
 
-class SymbolToken(TokenMixin):
-    pass
-
-
-class MiscToken(TokenEnum):
-    at = '@'
-    percent = '%'
-    ampersand = '&'
-    opening_brace = '{'
-    closing_brace = '}'
-    backslash = '\\'
-    quotes = '"'
-    equals = '='
-    comma = ','
-    underscore = '_'
-
-
-BibToken = WordToken | NumberToken | SymbolToken | MiscToken | Whitespace
+BibToken = Token[BibTokenKind]

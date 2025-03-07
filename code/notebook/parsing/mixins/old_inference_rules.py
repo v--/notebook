@@ -1,8 +1,7 @@
 from collections.abc import Iterable
 
-# from .whitespace import WhitespaceParserMixin
-from ..parser import Parser
-from ..tokens import AbstractToken
+from ..old_parser import Parser
+from ..old_tokens import AbstractToken
 
 
 class InferenceRuleParserMixin[T: AbstractToken](Parser[T]):

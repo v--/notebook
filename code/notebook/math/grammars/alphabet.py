@@ -3,7 +3,7 @@ from collections.abc import Collection
 from typing import Literal
 
 from ...exceptions import UnreachableException
-from ...parsing.tokens import TokenMixin
+from ...parsing.old_tokens import TokenMixin
 from ...support.unicode import atoi_subscripts, is_numeric_subscript, itoa_subscripts
 
 

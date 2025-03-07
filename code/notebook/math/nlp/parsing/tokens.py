@@ -1,4 +1,4 @@
-from ....parsing.tokens import TokenMixin
+from ....parsing.old_tokens import TokenMixin
 from ....parsing.whitespace import Whitespace
 
 

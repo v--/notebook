@@ -64,7 +64,7 @@ def test_unknown_entry_type() -> None:
     )
 
 
-def test_invalid_entry_name() -> None:
+def test_entry_name_string_end() -> None:
     with pytest.raises(ParsingError) as excinfo:
         parse_bibtex('@book{')
 
@@ -72,6 +72,18 @@ def test_invalid_entry_name() -> None:
     assert excinfo.value.__notes__[0] == dedent(r'''
         1 │ @book{
           │      ^
+        '''[1:]
+    )
+
+
+def test_empty_entry_name() -> None:
+    with pytest.raises(ParsingError) as excinfo:
+        parse_bibtex('@book{}')
+
+    assert str(excinfo.value) == 'Expected an entry name'
+    assert excinfo.value.__notes__[0] == dedent(r'''
+        1 │ @book{}
+          │       ^
         '''[1:]
     )
 
@@ -89,6 +101,25 @@ def test_no_properties() -> None:
     assert excinfo.value.__notes__[0] == dedent(r'''
         1 │ @book{test}↵
           │ ^^^^^^^^^^^
+      '''[1:]
+    )
+
+
+def test_no_closing_brace() -> None:
+    string = dedent(r'''
+        @book{test,
+          title = "title"
+        '''[1:]
+    )
+
+    with pytest.raises(ParsingError) as excinfo:
+        parse_bibtex(string)
+
+    assert str(excinfo.value) == 'Expected a closing brace'
+    assert excinfo.value.__notes__[0] == dedent(r'''
+        1 │ @book{test,↵
+        2 │   title = "title"↵
+          │                  ^
       '''[1:]
     )
 
@@ -196,6 +227,7 @@ def test_trailing_comma() -> None:
         3 │   author = {A B},↵
         4 │   language = {english},↵
           │                       ^
+        5 │ }↵
       '''[1:]
     )
 
@@ -427,7 +459,7 @@ def test_one_verbatim_authors_with_quotes() -> None:
     string = dedent(r'''
         @book{test,
           title = {Test},
-          author = "{Verbatim and Verbatim 2}",
+          author = "{Long verbatim name}",
           language = {english}
         }
         '''[1:]
@@ -439,7 +471,7 @@ def test_one_verbatim_authors_with_quotes() -> None:
         entry_type='book',
         entry_name='test',
         title='Test',
-        authors=[BibAuthor(full_name=VerbatimString('Verbatim and Verbatim 2'))],
+        authors=[BibAuthor(full_name=VerbatimString('Long verbatim name'))],
         languages=['english']
     )
 
@@ -787,17 +819,12 @@ def test_shortauthor_insufficient() -> None:
     assert str(excinfo.value) == "Property 'shortauthor' does not match the structure of 'author'"
     assert excinfo.value.__notes__[0] == dedent(r'''
         1 │ @book{тест,↵
-          │ ^^^^^^^^^^^^
         2 │   title = {Тест},↵
-          │ ^^^^^^^^^^^^^^^^^^
         3 │   author = {А Б and В Г},↵
-          │ ^^^^^^^^^^^^^^^^^^^^^^^^^^
         4 │   shortauthor = {A},↵
-          │ ^^^^^^^^^^^^^^^^^^^^^
+          │                 ^^^
         5 │   language = {russian}↵
-          │ ^^^^^^^^^^^^^^^^^^^^^^^
         6 │ }↵
-          │ ^
       '''[1:]
     )
 
@@ -819,17 +846,12 @@ def test_shortauthor_verbatim_overfull() -> None:
     assert str(excinfo.value) == "Property 'shortauthor' does not match the structure of 'author'"
     assert excinfo.value.__notes__[0] == dedent(r'''
         1 │ @book{тест,↵
-          │ ^^^^^^^^^^^^
         2 │   title = {Тест},↵
-          │ ^^^^^^^^^^^^^^^^^^
         3 │   author = {А Б},↵
-          │ ^^^^^^^^^^^^^^^^^^
         4 │   shortauthor = {A and V},↵
-          │ ^^^^^^^^^^^^^^^^^^^^^^^^^^^
+          │                 ^^^^^^^^^
         5 │   language = {russian}↵
-          │ ^^^^^^^^^^^^^^^^^^^^^^^
         6 │ }↵
-          │ ^
       '''[1:]
     )
 

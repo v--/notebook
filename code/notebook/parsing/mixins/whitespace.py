@@ -1,5 +1,5 @@
-from ..parser import Parser
-from ..tokens import AbstractToken
+from ..old_parser import Parser
+from ..old_tokens import AbstractToken
 from ..whitespace import Whitespace
 
 

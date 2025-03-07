@@ -1,7 +1,7 @@
 from collections.abc import Iterable
 
 from ....parsing.mixins.whitespace import WhitespaceParserMixin
-from ....parsing.parser import Parser
+from ....parsing.old_parser import Parser
 from ....parsing.whitespace import Whitespace
 from ..alphabet import NonTerminal, Terminal
 from ..grammar import GrammarRule, GrammarSchema

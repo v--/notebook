@@ -3,9 +3,9 @@ from dataclasses import dataclass
 from typing import Literal, cast, overload
 
 from ....parsing.identifiers import GreekIdentifier, LatinIdentifier
-from ....parsing.mixins.inference_rules import InferenceRuleParserMixin
+from ....parsing.mixins.old_inference_rules import InferenceRuleParserMixin
 from ....parsing.mixins.whitespace import WhitespaceParserMixin
-from ....parsing.parser import Parser
+from ....parsing.old_parser import Parser
 from ....support.inference.rules import InferenceRuleConnective
 from ..alphabet import BinaryConnective, PropConstant, Quantifier, SchemaConnective, UnaryConnective
 from ..deduction import Marker, NaturalDeductionPremise, NaturalDeductionRule

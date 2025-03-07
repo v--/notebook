@@ -1,7 +1,7 @@
 from ...support.unicode import Capitalization, atoi_subscripts, is_greek_string, is_latin_string, is_numeric_subscript
 from ..identifiers import GreekIdentifier, LatinIdentifier
-from ..tokenizer import Tokenizer
-from ..tokens import AbstractToken
+from ..old_tokenizer import Tokenizer
+from ..old_tokens import AbstractToken
 
 
 class IdentifierTokenizerMixin[T: AbstractToken](Tokenizer[T]):

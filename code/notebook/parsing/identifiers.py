@@ -4,7 +4,7 @@ from typing import Self
 
 from ..exceptions import UnreachableException
 from ..support.unicode import itoa_subscripts
-from .tokens import TokenMixin
+from .old_tokens import TokenMixin
 
 
 class Identifier(TokenMixin):

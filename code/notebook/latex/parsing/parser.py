@@ -1,6 +1,6 @@
 from collections.abc import Iterable, Sequence
 
-from ...parsing.parser import Parser
+from ...parsing.old_parser import Parser
 from ...parsing.whitespace import Whitespace
 from ..nodes import (
     BraceGroup,

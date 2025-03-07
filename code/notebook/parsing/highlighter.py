@@ -1,10 +1,14 @@
 from collections.abc import Iterable, Sequence
-from dataclasses import dataclass, field
+from dataclasses import dataclass
 from enum import StrEnum
+from typing import NamedTuple
 
-from ..support.iteration import string_accumulator
-from .annotation import AnnotatedToken, annotate_existing_tokens
-from .tokens import AbstractToken
+
+class SourcePosition(NamedTuple):
+    # The offset is zero-based, the rest are one-based
+    offset: int
+    lineno: int
+    column: int
 
 
 class SpecialChars(StrEnum):
@@ -14,76 +18,97 @@ class SpecialChars(StrEnum):
 
 
 @dataclass
-class ErrorHighlighter[T: AbstractToken]:
-    seq: Sequence[T]
-    i_first_token: int
-    i_last_token: int
-    i_first_visible_token: int
-    i_last_visible_token: int
-    special: type[SpecialChars] = SpecialChars
-    annotated: Sequence[AnnotatedToken[T]] = field(init=False)
+class ErrorHighlighter:
+    pos_hi_start: SourcePosition
+    pos_hi_end: SourcePosition
 
-    def __post_init__(self) -> None:
-        assert 0 <= self.i_first_visible_token <= self.i_first_token <= self.i_last_token <= self.i_last_visible_token < len(self.seq)
-        self.annotated = annotate_existing_tokens(self.seq)
+    pos_shown_start: SourcePosition
+    pos_shown_end: SourcePosition
 
-    def _get_i_first_drawn_token(self) -> int:
-        return min(
-            (i for i, atoken in enumerate(self.annotated) if atoken.end.lineno == self.annotated[self.i_first_visible_token].end.lineno),
-            default=0
-        )
+    lines_shown: Sequence[str]
 
-    def _get_i_last_drawn_token(self) -> int:
-        return max(
-            (i for i, atoken in enumerate(self.annotated) if atoken.end.lineno == self.annotated[self.i_last_visible_token].end.lineno),
-            default=len(self.annotated) - 1
-        )
+    def __init__(
+        self,
+        source: str,
+        offset_hi_start: int,
+        offset_hi_end: int,
+        offset_shown_start: int | None = None,
+        offset_shown_end: int | None = None
+    ) -> None:
+        if offset_shown_start is None:
+            offset_shown_start = offset_hi_start
 
-    def _iter_tokens_in_range(self) -> Iterable[AnnotatedToken[T]]:
-        for i in range(self.i_first_token, self.i_last_token + 1):
-            yield self.annotated[i]
+        if offset_shown_end is None:
+            offset_shown_end = offset_hi_end
 
-    def _highlight_line(self, lineno: int, lineno_prefix_length: int) -> Iterable[str]:
-        yield str(lineno).ljust(lineno_prefix_length)
-        yield ' ' + self.special.lineno_sep + ' '
+        assert offset_shown_start <= offset_hi_start <= offset_hi_end <= offset_shown_end < len(source)
 
-        for _i, atoken in enumerate(self.annotated):
-            if atoken.end.lineno == lineno:
-                value = str(atoken.token)
-                lines = value.splitlines(keepends=True)
-                yield lines[-1].replace('\n', self.special.line_break)
+        lineno = 1
+        column = 1
+        line_start_offset = 0
 
-            elif atoken.start.lineno == lineno:
-                value = str(atoken.token)
-                lines = value.splitlines(keepends=True)
-                yield lines[0].replace('\n', self.special.line_break)
+        self.lines_shown = lines_shown = list[str]()
 
-        yield '\n'
+        self.pos_hi_start = SourcePosition(0, 1, 1)
+        self.pos_hi_end   = SourcePosition(0, 1, 1)
+        self.pos_shown_start = SourcePosition(0, 1, 1)
+        self.pos_shown_end   = SourcePosition(0, 1, 1)
 
-        # The columns are one-based, so we subtract 1
-        try:
-            first_col = -1 + min(
-                atoken.start.column for atoken in self._iter_tokens_in_range() if atoken.start.lineno == lineno
-            )
-        except ValueError:
-            return
+        for offset, char in enumerate(source):
+            if offset == offset_hi_start:
+                self.pos_hi_start = SourcePosition(offset, lineno, column)
 
-        last_col = -1 + max(
-            atoken.end.column for atoken in self._iter_tokens_in_range() if atoken.end.lineno == lineno
-        )
+            if offset == offset_hi_end:
+                self.pos_hi_end = SourcePosition(offset, lineno, column)
 
-        yield ' ' * (lineno_prefix_length + 1)
-        yield self.special.lineno_sep
-        yield ' ' * (1 + first_col)
-        yield self.special.marker * (last_col - first_col)
-        yield '\n'
+            if offset == offset_shown_start:
+                self.pos_shown_start = SourcePosition(offset, lineno, column)
 
-    @string_accumulator()
-    def highlight(self) -> Iterable[str]:
-        first_lineno = self.annotated[self._get_i_first_drawn_token()].start.lineno
-        last_lineno = self.annotated[self._get_i_last_drawn_token()].end.lineno
+            if offset == offset_shown_end:
+                self.pos_shown_end = SourcePosition(offset, lineno, column)
 
-        lineno_prefix_length = len(str(last_lineno))
+            if char == '\n':
+                if offset >= offset_shown_start:
+                    lines_shown.append(source[line_start_offset:offset + 1])
 
-        for lineno in range(first_lineno, last_lineno + 1):
-            yield from self._highlight_line(lineno, lineno_prefix_length)
+                lineno += 1
+                column = 1
+                line_start_offset = offset + 1
+
+                if offset >= offset_shown_end and lineno > self.pos_shown_end.lineno:
+                    break
+            else:
+                column += 1
+
+        if lineno <= self.pos_shown_end.lineno:
+            lines_shown.append(source[line_start_offset:])
+
+    def _iter_highlighted(self) -> Iterable[str]:
+        lineno = self.pos_shown_start.lineno
+        lineno_prefix_length = len(str(self.pos_shown_end.lineno))
+
+        for line in self.lines_shown:
+            yield str(lineno).ljust(lineno_prefix_length)
+            yield ' ' + SpecialChars.lineno_sep + ' '
+
+            if line[-1] == '\n':
+                yield line[:-1] + SpecialChars.line_break
+            else:
+                yield line
+
+            yield '\n'
+
+            if self.pos_hi_start.lineno <= lineno <= self.pos_hi_end.lineno:
+                col = self.pos_hi_start.column if lineno == self.pos_hi_start.lineno else 1
+                last_col = self.pos_hi_end.column if lineno == self.pos_hi_end.lineno else len(line)
+
+                yield ' ' * (lineno_prefix_length + 1)
+                yield SpecialChars.lineno_sep
+                yield ' ' * col # We must have at least one space and must subtract one from the column one-based index
+                yield SpecialChars.marker * (1 + (last_col - col))
+                yield '\n'
+
+            lineno += 1
+
+    def highlight(self) -> str:
+        return ''.join(self._iter_highlighted())
