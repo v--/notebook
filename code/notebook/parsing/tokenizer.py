@@ -19,6 +19,9 @@ class Tokenizer[TokenKindT](ABC):
 
     def __init__(self, source: str) -> None:
         self.source = source
+        self.reset()
+
+    def reset(self) -> None:
         self.offset = 0
 
         try:
@@ -66,7 +69,7 @@ class Tokenizer[TokenKindT](ABC):
         if self.head:
             raise self.annotate_char_error('Finished tokenizing but there is still input left')
 
-    def iterate_tokens(self) -> Iterable[Token[TokenKindT]]:
+    def iter_tokens(self) -> Iterable[Token[TokenKindT]]:
         from .tokenizer_context import TokenizerContext
         context = TokenizerContext(self)
 

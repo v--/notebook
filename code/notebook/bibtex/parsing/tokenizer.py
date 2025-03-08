@@ -45,4 +45,4 @@ class BibTokenizer(Tokenizer[BibTokenKind]):
 
 def tokenize_bibtex(source: str) -> Sequence[BibToken]:
     with BibTokenizer(source) as self:
-        return list(self.iterate_tokens())
+        return list(self.iter_tokens())

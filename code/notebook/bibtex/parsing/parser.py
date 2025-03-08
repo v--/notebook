@@ -355,7 +355,7 @@ class BibParser(Parser[BibTokenKind]):
 
         return list(self.parse_list(value_context))
 
-    def parse_entries(self) -> Iterable[BibEntry]:
+    def iter_entries(self) -> Iterable[BibEntry]:
         entry_names = set[str]()
         self.skip_whitespace_and_comments()
 
@@ -407,14 +407,12 @@ class BibParser(Parser[BibTokenKind]):
 
             self.skip_whitespace_and_comments()
 
-    parse = parse_entries
-
 
 def parse_bibtex(source: str) -> Sequence[BibEntry]:
     tokens = tokenize_bibtex(source)
 
     with BibParser(source, tokens) as parser:
-        return list(parser.parse())
+        return list(parser.iter_entries())
 
 
 def parse_value(source: str) -> BibString:
