@@ -1,6 +1,12 @@
+from typing import TYPE_CHECKING
+
 from .exceptions import TokenizationError
 from .highlighter import ErrorHighlighter
-from .tokenizer import Tokenizer
+from .tokens import Token
+
+
+if TYPE_CHECKING:
+    from .tokenizer import Tokenizer
 
 
 class TokenizerContext[TokenKindT]:
@@ -10,6 +16,9 @@ class TokenizerContext[TokenKindT]:
 
     def __init__(self, tokenizer: 'Tokenizer[TokenKindT]') -> None:
         self.tokenizer = tokenizer
+        self.reset()
+
+    def reset(self) -> None:
         self.offset_start = self.tokenizer.offset
         self.offset_end = None
 
@@ -20,10 +29,20 @@ class TokenizerContext[TokenKindT]:
         self.offset_end = self.tokenizer.offset - 1
 
     def get_offset_end_safe(self) -> int:
-        return self.offset_end or self.tokenizer.get_safe_offset()
+        if self.offset_end is None:
+            return self.tokenizer.get_safe_offset()
+
+        return self.offset_end
 
     def get_context_string(self) -> str:
         return self.tokenizer.source[self.offset_start: self.get_offset_end_safe() + 1]
+
+    def extract_token(self, token_kind: TokenKindT) -> Token[TokenKindT]:
+        return Token(
+            kind=token_kind,
+            offset=self.offset_start,
+            value=self.get_context_string()
+        )
 
     def annotate_char_error(self, message: str, offset: int | None = None) -> TokenizationError:
         err = TokenizationError(message)

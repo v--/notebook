@@ -2,47 +2,47 @@ import unicodedata
 from collections.abc import Sequence
 from typing import override
 
-from ...parsing.tokenizer import Tokenizer
+from ...parsing import Tokenizer, TokenizerContext
 from .tokens import BibToken, BibTokenKind, bib_token_map
 
 
 class BibTokenizer(Tokenizer[BibTokenKind]):
     @override
-    def get_token(self) -> BibToken | None:
-        self.mark_token_start()
-        head = self.peek()
-
-        if head == ' ':
-            while not self.is_at_end() and self.peek() == ' ':
-                self.advance()
-
-            return self.produce_token('SPACE', include_current=False)
-
-        if token_type := bib_token_map.get(head):
+    def produce_token(self, context: TokenizerContext[BibTokenKind]) -> BibToken:
+        if (head := self.head) and (token_type := bib_token_map.get(head)):
             self.advance()
-            return self.produce_token(token_type, include_current=False)
+            context.close_at_previous_token()
+            return context.extract_token(token_type)
 
-        if head.isdigit():
-            while not self.is_at_end() and self.peek().isdigit():
-                self.advance()
-
-            return self.produce_token('NUMBER', include_current=False)
-
-        category = unicodedata.category(head)
-
-        if category.startswith(('S', 'P')):
+        while self.head == ' ':
             self.advance()
-            return self.produce_token('SYMBOL', include_current=False)
 
-        if category.startswith('L') or category == 'Mn':
-            while not self.is_at_end() and unicodedata.category(self.peek()).startswith(('L', 'Mn')):
-                self.advance()
+        if self.offset > context.offset_start:
+            context.close_at_previous_token()
+            return context.extract_token('SPACE')
 
-            return self.produce_token('WORD', include_current=False)
+        while (head := self.head) and head.isdigit():
+            self.advance()
 
-        raise self.annotate_char_error(f'Unexpected symbol with Unicode category {category}')
+        if self.offset > context.offset_start:
+            context.close_at_previous_token()
+            return context.extract_token('NUMBER')
+
+        while (head := self.head) and unicodedata.category(head).startswith(('L', 'Mn')):
+            self.advance()
+
+        if self.offset > context.offset_start:
+            context.close_at_previous_token()
+            return context.extract_token('WORD')
+
+        if (head := self.head) and unicodedata.category(head).startswith(('S', 'P')):
+            self.advance()
+            context.close_at_previous_token()
+            return context.extract_token('SYMBOL')
+
+        raise self.annotate_char_error('Unexpected symbol')
 
 
 def tokenize_bibtex(source: str) -> Sequence[BibToken]:
-    with BibTokenizer(source) as tokenizer:
-        return list(tokenizer.iterate_tokens())
+    with BibTokenizer(source) as self:
+        return list(self.iterate_tokens())
