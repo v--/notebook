@@ -1,11 +1,11 @@
 from collections import deque
 from collections.abc import Collection, Iterable, Sequence
 from dataclasses import replace
-from typing import cast, get_args
+from typing import cast
 
 from ...parsing.parser import Parser
 from ...support.iteration import list_accumulator
-from ..entry import BibAuthor, BibEntry, BibEntryType
+from ..entry import ENTRY_TYPE_LIST, BibAuthor, BibEntry, BibEntryType
 from ..string import BibString, CompositeString, CompositeStringBuilder
 from .parser_context import BibEntryContext, BibValueContext
 from .tokenizer import tokenize_bibtex
@@ -50,30 +50,28 @@ class BibParser(Parser[BibTokenKind]):
         assert head.kind == 'WORD'
         entry_type = head.value
 
-        if entry_type not in get_args(BibEntryType):
+        if entry_type not in ENTRY_TYPE_LIST:
             raise entry_context.annotate_token_error('Unrecognized entry type')
 
         self.advance()
         return cast(BibEntryType, entry_type)
 
-    def parse_entry_name(self, entry_context: 'BibEntryContext', existing_names: Collection[str]) -> str:
+    def parse_entry_name(self, name_context: 'BibValueContext', existing_names: Collection[str]) -> str:
         if self.head is None or self.head.kind in ['CLOSING_BRACE', 'COMMA', 'LINE_BREAK']:
-            raise entry_context.annotate_token_error('Expected an entry name')
-
-        value_context = BibValueContext(self, entry_context)
+            raise name_context.annotate_token_error('Expected an entry name')
 
         # Entry names may even contain %, which is otherwise used for comments
         while self.head and self.head.kind not in ['CLOSING_BRACE', 'COMMA', 'LINE_BREAK']:
             self.advance()
 
-        value_context.close_at_previous_token()
-        entry_name = value_context.get_context_string()
+        name_context.close_at_previous_token()
+        entry_name = name_context.get_context_string()
 
         if len(entry_name) == 0:
-            raise value_context.annotate_context_error('Expected an entry name')
+            raise name_context.annotate_context_error('Expected an entry name')
 
         if entry_name in existing_names:
-            raise value_context.annotate_context_error('Duplicate entry name')
+            raise name_context.annotate_context_error('Duplicate entry name')
 
         return entry_name
 
@@ -358,9 +356,11 @@ class BibParser(Parser[BibTokenKind]):
     def iter_entries(self) -> Iterable[BibEntry]:
         entry_names = set[str]()
         self.skip_whitespace_and_comments()
+        entry_context = BibEntryContext(self)
+        name_context = BibValueContext(self, entry_context)
 
         while self.head:
-            entry_context = BibEntryContext(self)
+            entry_context.reset()
 
             if self.head.kind != 'AT':
                 raise entry_context.annotate_token_error('A bibtex entry must start with @')
@@ -376,7 +376,8 @@ class BibParser(Parser[BibTokenKind]):
                 raise entry_context.annotate_token_error('An opening brace must follow a bibtex entry type')
 
             self.advance()
-            entry_name = self.parse_entry_name(entry_context, entry_names)
+            name_context.reset()
+            entry_name = self.parse_entry_name(name_context, entry_names)
             entry_names.add(entry_name)
 
             if self.head.kind == 'CLOSING_BRACE':

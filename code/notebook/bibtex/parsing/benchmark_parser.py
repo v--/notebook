@@ -23,5 +23,5 @@ def test_parser(benchmark: BenchmarkFixture) -> None:
         lambda: list(parser.iter_entries()),
         setup=parser.reset,
         warmup_rounds=5,
-        rounds=25
+        rounds=50
     )

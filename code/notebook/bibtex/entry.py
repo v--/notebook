@@ -33,6 +33,9 @@ BibEntryType = Literal[
 ]
 
 
+ENTRY_TYPE_LIST: Sequence[BibEntryType] = get_args(BibEntryType)
+
+
 @dataclass(frozen=True)
 class BibFieldAnnotation:
     meta: bool = False
