@@ -48,5 +48,5 @@ def test_number_token() -> None:
     string = '00'
     tokens = tokenize_bibtex(string)
     assert tokens == [
-        BibToken('NUMBER', '00', 0),
+        BibToken('DECIMAL', '00', 0),
     ]

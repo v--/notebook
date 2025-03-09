@@ -13,3 +13,5 @@ class Tokenizer[T: AbstractToken](Parser[str], ABC):
     @abstractmethod
     def parse_step(self, head: str) -> T:
         ...
+
+    iter_tokens = parse

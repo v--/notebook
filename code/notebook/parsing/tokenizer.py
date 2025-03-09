@@ -11,7 +11,6 @@ from .tokens import Token
 
 class Tokenizer[TokenKindT](ABC):
     source: str
-    head: str | None
     offset: int
 
     token_start_offset: int
@@ -24,24 +23,20 @@ class Tokenizer[TokenKindT](ABC):
     def reset(self) -> None:
         self.offset = 0
 
-        try:
-            self.head = self.source[self.offset]
-        except IndexError:
-            self.head = None
-
     def get_safe_offset(self) -> int:
         if len(self.source) == 0:
             raise TokenizationError('Empty source')
 
         return min(self.offset, len(self.source) - 1)
 
+    def peek(self) -> str | None:
+        try:
+            return self.source[self.offset]
+        except IndexError:
+            return None
+
     def advance(self, count: int = 1) -> None:
         self.offset += count
-
-        try:
-            self.head = self.source[self.offset]
-        except IndexError:
-            self.head = None
 
     def annotate_char_error(self, message: str, offset: int | None = None) -> TokenizationError:
         err = TokenizationError(message)
@@ -66,17 +61,16 @@ class Tokenizer[TokenKindT](ABC):
             self.assert_exhausted()
 
     def assert_exhausted(self) -> None:
-        if self.head:
+        if self.peek():
             raise self.annotate_char_error('Finished tokenizing but there is still input left')
 
     def iter_tokens(self) -> Iterable[Token[TokenKindT]]:
-        from .tokenizer_context import TokenizerContext
         context = TokenizerContext(self)
 
-        while self.head:
+        while self.peek():
             context.reset()
-            yield self.produce_token(context)
+            yield self.read_token(context)
 
     @abstractmethod
-    def produce_token(self, context: 'TokenizerContext[TokenKindT]') -> Token[TokenKindT]:
+    def read_token(self, context: 'TokenizerContext[TokenKindT]') -> Token[TokenKindT]:
         ...

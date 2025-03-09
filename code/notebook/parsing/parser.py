@@ -11,7 +11,6 @@ class Parser[TokenKindT]:
     source: str
     tokens: Sequence[Token[TokenKindT]]
     token_index: int
-    head: Token[TokenKindT] | None
 
     def __init__(self, source: str, tokens: Sequence[Token[TokenKindT]]) -> None:
         self.source = source
@@ -21,10 +20,11 @@ class Parser[TokenKindT]:
     def reset(self) -> None:
         self.token_index = 0
 
+    def peek(self) -> Token[TokenKindT] | None:
         try:
-            self.head = self.tokens[self.token_index]
+            return self.tokens[self.token_index]
         except IndexError:
-            self.head = None
+            return None
 
     def peek_safe(self) -> Token[TokenKindT]:
         if len(self.tokens) == 0:
@@ -38,10 +38,9 @@ class Parser[TokenKindT]:
     def advance(self, count: int = 1) -> None:
         self.token_index += count
 
-        try:
-            self.head = self.tokens[self.token_index]
-        except IndexError:
-            self.head = None
+    def advance_and_peek(self, count: int = 1) -> Token[TokenKindT] | None:
+        self.advance(count)
+        return self.peek()
 
     def annotate_token_error(self, message: str, token: Token[TokenKindT] | None = None) -> ParsingError:
         err = ParsingError(message)
@@ -71,5 +70,5 @@ class Parser[TokenKindT]:
             self.assert_exhausted()
 
     def assert_exhausted(self) -> None:
-        if self.head:
+        if self.peek():
             raise self.annotate_token_error('Finished parsing but there is still input left')

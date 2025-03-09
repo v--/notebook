@@ -1,13 +1,12 @@
-from typing import Literal
+from typing import Literal, get_args
 
 from ...parsing.tokens import Token
 
 
 BibTokenKind = Literal[
     'WORD',
-    'NUMBER',
+    'DECIMAL',
     'SYMBOL',
-    'SPACE',
 
     'AT',
     'PERCENT',
@@ -19,12 +18,14 @@ BibTokenKind = Literal[
     'COMMA',
     'UNDERSCORE',
     'BACKSLASH',
+    'SPACE',
     'LINE_BREAK',
     'TAB',
 ]
 
 
-bib_token_map: dict[str, BibTokenKind] = {
+TOKEN_KIND_LIST = get_args(BibTokenKind)
+SINGLETON_TOKEN_MAP: dict[str, BibTokenKind] = {
     '@': 'AT',
     '%': 'PERCENT',
     '&': 'AMPERSAND',
@@ -35,6 +36,7 @@ bib_token_map: dict[str, BibTokenKind] = {
     ',': 'COMMA',
     '_': 'UNDERSCORE',
     '\\': 'BACKSLASH',
+    ' ': 'SPACE',
     '\n': 'LINE_BREAK',
     '\t': 'TAB',
 }

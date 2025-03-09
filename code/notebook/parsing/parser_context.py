@@ -14,7 +14,7 @@ class ParserContext[TokenKindT]:
         self.reset()
 
     def reset(self) -> None:
-        if head := self.parser.head:
+        if head := self.parser.peek():
             self.first_token = head
         else:
             raise ParsingError('Context can be entered before end of input')
@@ -22,10 +22,16 @@ class ParserContext[TokenKindT]:
         self.last_token = None
 
     def close_at_current_token(self) -> None:
-        self.last_token = self.parser.head
+        try:
+            self.last_token = self.parser.tokens[self.parser.token_index]
+        except IndexError:
+            raise ParsingError('Context can be closed before end of input') from None
 
     def close_at_previous_token(self) -> None:
-        self.last_token = self.parser.tokens[self.parser.token_index - 1]
+        try:
+            self.last_token = self.parser.tokens[self.parser.token_index - 1]
+        except IndexError:
+            raise ParsingError('Context can be closed before end of input') from None
 
     def get_last_token_safe(self) -> Token[TokenKindT]:
         return self.last_token or self.parser.peek_safe()

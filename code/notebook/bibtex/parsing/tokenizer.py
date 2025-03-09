@@ -3,39 +3,32 @@ from collections.abc import Sequence
 from typing import override
 
 from ...parsing import Tokenizer, TokenizerContext
-from .tokens import BibToken, BibTokenKind, bib_token_map
+from .tokens import SINGLETON_TOKEN_MAP, BibToken, BibTokenKind
 
 
 class BibTokenizer(Tokenizer[BibTokenKind]):
     @override
-    def produce_token(self, context: TokenizerContext[BibTokenKind]) -> BibToken:
-        if (head := self.head) and (token_type := bib_token_map.get(head)):
+    def read_token(self, context: TokenizerContext[BibTokenKind]) -> BibToken:
+        if (head := self.peek()) and (token_type := SINGLETON_TOKEN_MAP.get(head)):
             self.advance()
             context.close_at_previous_token()
             return context.extract_token(token_type)
 
-        while self.head == ' ':
+        while (head := self.peek()) and head.isdigit():
             self.advance()
 
         if self.offset > context.offset_start:
             context.close_at_previous_token()
-            return context.extract_token('SPACE')
+            return context.extract_token('DECIMAL')
 
-        while (head := self.head) and head.isdigit():
-            self.advance()
-
-        if self.offset > context.offset_start:
-            context.close_at_previous_token()
-            return context.extract_token('NUMBER')
-
-        while (head := self.head) and unicodedata.category(head).startswith(('L', 'Mn')):
+        while (head := self.peek()) and unicodedata.category(head).startswith(('L', 'Mn')):
             self.advance()
 
         if self.offset > context.offset_start:
             context.close_at_previous_token()
             return context.extract_token('WORD')
 
-        if (head := self.head) and unicodedata.category(head).startswith(('S', 'P')):
+        if (head := self.peek()) and unicodedata.category(head).startswith(('S', 'P')):
             self.advance()
             context.close_at_previous_token()
             return context.extract_token('SYMBOL')
@@ -44,5 +37,5 @@ class BibTokenizer(Tokenizer[BibTokenKind]):
 
 
 def tokenize_bibtex(source: str) -> Sequence[BibToken]:
-    with BibTokenizer(source) as self:
-        return list(self.iter_tokens())
+    with BibTokenizer(source) as tokenizer:
+        return list(tokenizer.iter_tokens())

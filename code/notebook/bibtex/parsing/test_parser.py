@@ -105,6 +105,43 @@ def test_no_properties() -> None:
     )
 
 
+def test_value_without_equality() -> None:
+    string = dedent(r'''
+        @book{test,
+          title < "title"
+        '''[1:]
+    )
+
+    with pytest.raises(ParsingError) as excinfo:
+        parse_bibtex(string)
+
+    assert str(excinfo.value) == 'Expected an equality sign'
+    assert excinfo.value.__notes__[0] == dedent(r'''
+        1 │ @book{test,↵
+        2 │   title < "title"↵
+          │         ^
+      '''[1:]
+    )
+
+
+def test_key_without_value() -> None:
+    string = dedent(r'''
+        @book{test,
+          title ='''[1:]
+    )
+
+    with pytest.raises(ParsingError) as excinfo:
+        parse_bibtex(string)
+
+    assert str(excinfo.value) == 'Expected a value'
+    assert excinfo.value.__notes__[0] == dedent(r'''
+        1 │ @book{test,↵
+        2 │   title =
+          │         ^
+      '''[1:]
+    )
+
+
 def test_no_closing_brace() -> None:
     string = dedent(r'''
         @book{test,
