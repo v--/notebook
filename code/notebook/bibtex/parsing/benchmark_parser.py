@@ -13,7 +13,7 @@ BIB_ROOT = pathlib.Path(__file__).parent.parent.parent.parent.parent / 'bibliogr
 @pytest.mark.benchmark(
     group='bib-parser'
 )
-def test_parser(benchmark: BenchmarkFixture) -> None:
+def benchmark_parser(benchmark: BenchmarkFixture) -> None:
     with open(BIB_ROOT / 'books.bib') as file:
         source = file.read()
         tokens = tokenize_bibtex(source)

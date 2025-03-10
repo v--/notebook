@@ -5,15 +5,11 @@ from typing import cast
 
 from ...parsing.parser import Parser
 from ...support.iteration import list_accumulator
-from ..entry import ENTRY_TYPE_LIST, BibAuthor, BibEntry, BibEntryType
+from ..entry import ENTRY_KEYS, ENTRY_TYPE_LIST, BibAuthor, BibEntry, BibEntryType
 from ..string import BibString, CompositeString, CompositeStringBuilder
 from .parser_context import BibEntryContext, BibValueContext
 from .tokenizer import tokenize_bibtex
 from .tokens import BibToken, BibTokenKind
-
-
-AUTHOR_KEYS = frozenset(key_name for _, key_name, _ in BibEntry.get_author_fields()) | frozenset(short_key_name for _, _, short_key_name in BibEntry.get_author_fields())
-LIST_KEYS = AUTHOR_KEYS | frozenset(key_name for _, key_name in BibEntry.get_list_fields())
 
 
 class BibParser(Parser[BibTokenKind]):
@@ -86,7 +82,7 @@ class BibParser(Parser[BibTokenKind]):
         if head.value in existing_keys:
             raise entry_context.annotate_token_error('Duplicate key')
 
-        if not BibEntry.is_known_key(head.value):
+        if head.value not in ENTRY_KEYS.known:
             raise entry_context.annotate_token_error('Unrecognized key')
 
         self.advance()
@@ -158,7 +154,7 @@ class BibParser(Parser[BibTokenKind]):
                 case 'BACKSLASH':
                     builder.append(self.parse_escape_sequence(value_context))
 
-                case 'WORD' if key in LIST_KEYS and (head.value == 'AND' or head.value == 'and'):
+                case 'WORD' if key in ENTRY_KEYS.list and (head.value == 'AND' or head.value == 'and'):
                     if verbatim:
                         builder.append(head.value)
                     else:
@@ -247,7 +243,7 @@ class BibParser(Parser[BibTokenKind]):
         if len(value_str) == 0 or value_str.isspace():
             raise value_context.annotate_context_error('Empty value')
 
-        if key in AUTHOR_KEYS:
+        if key in ENTRY_KEYS.author:
             for _ in self.parse_authors(value_context):
                 pass
 

@@ -1,8 +1,8 @@
-from collections.abc import Iterable, Sequence
-from dataclasses import dataclass, field, fields
+from collections.abc import Collection, Iterable, Mapping, Sequence
+from dataclasses import dataclass, field
 from typing import Annotated, Literal, get_args, get_type_hints
 
-from ..support.iteration import list_accumulator, string_accumulator
+from ..support.iteration import string_accumulator
 from .author import BibAuthor
 from .escaping import escape
 from .string import BibString
@@ -45,7 +45,7 @@ class BibFieldAnnotation:
     key_name: str | None = None
 
 
-@dataclass(frozen=True)
+@dataclass()
 class BibEntry:
     """Customized biblatex entry specific for the citations in this monograph.
     Includes almost all fields from https://www.bibtex.com/format/fields/ (except type, annote and organization), but also a lot of other fields.
@@ -117,100 +117,40 @@ class BibEntry:
     howpublished:  Annotated[BibString | None, BibFieldAnnotation()] = None
     urldate:       Annotated[BibString | None, BibFieldAnnotation()] = None
 
-    @classmethod
-    @list_accumulator
-    def get_meta_fields(cls) -> Iterable[str]:
-        for field_name, field_annotation in get_type_hints(cls, include_extras=True).items():
-            _, annotation = get_args(field_annotation)
-
-            if annotation.meta:
-                yield field_name
-
-    @classmethod
-    @list_accumulator
-    def get_list_fields(cls) -> Iterable[tuple[str, str]]:
-        for field_name, field_annotation in get_type_hints(cls, include_extras=True).items():
-            _, annotation = get_args(field_annotation)
-
-            if annotation.list or annotation.author:
-                yield field_name, annotation.key_name or field_name
-
-    @classmethod
-    @list_accumulator
-    def get_author_fields(cls) -> Iterable[tuple[str, str, str]]:
-        for field_name, field_annotation in get_type_hints(cls, include_extras=True).items():
-            _, annotation = get_args(field_annotation)
-
-            if annotation.author:
-                yield field_name, annotation.key_name or field_name, f'short{annotation.key_name or field_name}'
-
-    @classmethod
-    def is_known_key(cls, key: str) -> bool:
-        for field_name, field_annotation in get_type_hints(cls, include_extras=True).items():
-            _, annotation = get_args(field_annotation)
-
-            if not annotation.meta:
-                field_key = annotation.key_name or field_name
-
-                if key == field_key or (annotation.author and key == f'short{field_key}'):
-                    return True
-
-        return False
-
-    @classmethod
-    def is_key_value_verbatim(cls, key: str) -> bool:
-        for field_name, field_annotation in get_type_hints(cls, include_extras=True).items():
-            _, annotation = get_args(field_annotation)
-
-            if key == (annotation.key_name or field_name):
-                return annotation.verbatim
-
-        return False
-
-    def _string_properties(self) -> dict[str, BibString]:
-        properties = {field.name: getattr(self, field.name) for field in fields(self)}
-
-        for field_name in self.get_meta_fields():
-            properties.pop(field_name)
-
-        for key, value in list(properties.items()):
-            if value is None or value is False:
-                properties.pop(key)
-
-        for field_name, key_name, short_key_name in self.get_author_fields():
-            authors = properties.pop(field_name)
-
-            if len(authors) == 0:
+    def _string_properties(self) -> Iterable[tuple[str, BibString]]:
+        for key in sorted(ENTRY_KEYS.known):
+            if key in ENTRY_KEYS.meta:
                 continue
 
-            properties[key_name] = ' and '.join(str(author.full_name) for author in authors)
+            value = getattr(self, ENTRY_KEYS.field_name_map[key])
 
-            if all(author.short_name for author in authors):
-                properties[short_key_name] = ' and '.join(str(author.short_name) for author in authors)
+            if key in ENTRY_KEYS.author:
+                if key.startswith('short'):
+                    author_string = ' and '.join(str(author.short_name) for author in value if author.short_name)
 
-        for field_name, key_name in self.get_list_fields():
-            list_field = properties.pop(field_name, [])
-
-            if len(list_field) == 0:
-                continue
-
-            properties[key_name] = ' and '.join(map(str, list_field))
-
-        return properties
+                    if author_string:
+                        yield key, author_string
+                elif len(value) > 0:
+                    yield key, ' and '.join(str(author.full_name) for author in value)
+            elif isinstance(value, list):
+                if len(value) > 0:
+                    yield key, ' and '.join(value)
+            elif value is not None:
+                yield key, value
 
     @string_accumulator('')
     def __str__(self) -> Iterable[str]:  # noqa: PLE0307
-        properties = self._string_properties()
+        properties = dict(self._string_properties())
         total = len(properties)
 
         yield f'@{self.entry_type}{{{self.entry_name},\n'
 
-        for i, (key, value) in enumerate(sorted(properties.items(), key=lambda x: x[0])):
+        for i, (key, value) in enumerate(properties.items()):
             yield ' ' * TAB_SIZE
             yield key
             yield ' = '
 
-            if self.is_key_value_verbatim(key):
+            if key in ENTRY_KEYS.verbatim:
                 yield '{' + str(value) + '}'
             else:
                 yield '{' + escape(value) + '}'
@@ -221,3 +161,57 @@ class BibEntry:
             yield '\n'
 
         yield '}\n'
+
+
+
+@dataclass(frozen=True)
+class KeyConfiguration:
+    field_name_map: Mapping[str, str]
+    known: Collection[str]
+    meta: Collection[str]
+    list: Collection[str]
+    author: Collection[str]
+    verbatim: Collection[str]
+
+
+def infer_key_configuration(cls: type) -> KeyConfiguration:
+    field_name_map = dict[str, str]()
+    known_keys = set[str]()
+    meta_keys = set[str]()
+    list_keys = set[str]()
+    author_keys = set[str]()
+    verbatim_keys = set[str]()
+
+    for field_key, field_annotation in get_type_hints(cls, include_extras=True).items():
+        _, annotation = get_args(field_annotation)
+
+        if not isinstance(annotation, BibFieldAnnotation):
+            continue
+
+        bib_key = annotation.key_name or field_key
+        known_keys.add(bib_key)
+        field_name_map[bib_key] = field_key
+
+        if annotation.author:
+            author_keys.add(bib_key)
+            list_keys.add(bib_key)
+
+            short_key = f'short{bib_key}'
+            field_name_map[short_key] = field_key
+            known_keys.add(short_key)
+            author_keys.add(short_key)
+            list_keys.add(short_key)
+
+        if annotation.meta:
+            meta_keys.add(bib_key)
+
+        if annotation.list:
+            list_keys.add(bib_key)
+
+        if annotation.verbatim:
+            verbatim_keys.add(bib_key)
+
+    return KeyConfiguration(field_name_map, known_keys, meta_keys, list_keys, author_keys, verbatim_keys)
+
+
+ENTRY_KEYS = infer_key_configuration(BibEntry)

@@ -12,7 +12,7 @@ BIB_ROOT = pathlib.Path(__file__).parent.parent.parent.parent.parent / 'bibliogr
 @pytest.mark.benchmark(
     group='bib-tokenizer'
 )
-def test_tokenizer(benchmark: BenchmarkFixture) -> None:
+def benchmark_tokenizer(benchmark: BenchmarkFixture) -> None:
     with open(BIB_ROOT / 'books.bib') as file:
         source = file.read()
         tokenizer = BibTokenizer(source)

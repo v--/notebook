@@ -24,11 +24,12 @@ from .sources.common.url_template import UrlTemplate
 
 class BibEntryAdjuster:
     original: BibEntry
+    adjusted: BibEntry
     logger: 'loguru.Logger'
 
     def __init__(self, entry: BibEntry, logger: 'loguru.Logger') -> None:
         self.original = entry
-        self.adjusted = entry
+        self.adjusted = replace(entry)
         self.logger = logger
 
     def log_update[T](self, what: str, old_value: T, new_value: T) -> None:
@@ -45,9 +46,10 @@ class BibEntryAdjuster:
     def update(self, **kwargs: Any) -> None:  # noqa: ANN401
         for field_name, new_value in kwargs.items():
             old_value = getattr(self.adjusted, field_name)
-            self.log_update(f'the {field_name} field', old_value, new_value)
 
-        self.adjusted = replace(self.adjusted, **kwargs)
+            if old_value != new_value:
+                self.log_update(f'the {field_name} field', old_value, new_value)
+                setattr(self.adjusted, field_name, new_value)
 
     def get_author_short_name(self, author: BibAuthor) -> BibString | None:
         main_language = get_main_entry_language(self.adjusted)
@@ -70,14 +72,11 @@ class BibEntryAdjuster:
         if isinstance(full_name, str):
             full_name = normalize_human_name(full_name)
 
-        self.log_update('name', author.full_name, full_name)
         short_name = self.get_author_short_name(author)
-        self.log_update('short name', author.short_name, short_name)
-        return replace(author, full_name=full_name, short_name=short_name)
+        return BibAuthor(full_name=full_name, short_name=short_name)
 
     def adjust_language(self, language: BibString) -> BibString:
         normalized = normalize_language_name(language)
-        self.log_update('language', language, normalized)
         return normalized
 
     def adjust_entry_date(self) -> None:
@@ -98,8 +97,10 @@ class BibEntryAdjuster:
 
             return
 
-        if self.adjusted.year is None and self.adjusted.entry_type != 'mvcollection':
-            self.logger.warning('The date field is blank')
+        if self.adjusted.year is None:
+            if self.adjusted.urldate is None and self.adjusted.entry_type != 'mvcollection':
+                self.logger.warning('The date field is blank')
+
             return
 
         date = str(self.adjusted.year)
@@ -244,19 +245,16 @@ class BibEntryAdjuster:
         if len(self.adjusted.authors) == 0 and len(self.adjusted.editors) == 0:
             self.logger.warning('Entry has neither authors nor editors specified')
 
-        self.adjusted = replace(self.adjusted,
+        self.update(
+            # authors
             authors=[self.adjust_author(author) for author in self.adjusted.authors],
             editors=[self.adjust_author(author) for author in self.adjusted.editors],
             translators=[self.adjust_author(author) for author in self.adjusted.translators],
-            advisors=[self.adjust_author(author) for author in self.adjusted.advisors]
-        )
-
-        self.adjusted = replace(self.adjusted,
+            advisors=[self.adjust_author(author) for author in self.adjusted.advisors],
+            # # languages
             languages=[self.adjust_language(author) for author in self.adjusted.languages],
             origlanguages=[self.adjust_language(author) for author in self.adjusted.origlanguages],
-        )
-
-        self.update(
+            # other
             pages=normalize_pages(self.adjusted.pages) if isinstance(self.adjusted.pages, str) else self.adjusted.pages,
             isbn=isbn.format(self.adjusted.isbn) if self.adjusted.isbn else None,
             issn=','.join(map(issn.format, self.adjusted.issn.split(','))) if isinstance(self.adjusted.issn, str) else self.adjusted.issn
