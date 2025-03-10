@@ -1,17 +1,18 @@
-from ....parsing.old_tokens import TokenMixin
-from ....parsing.whitespace import Whitespace
+from typing import Literal, get_args
+
+from ....parsing.tokens import Token
 
 
-class WordToken(TokenMixin):
-    pass
+TextTokenKind = Literal[
+    'WORD',
+    'DECIMAL',
+    'SYMBOL',
+    'WHITESPACE',
+    'LINE_BREAK',
+]
 
 
-class NumberToken(TokenMixin):
-    pass
+TOKEN_KIND_LIST = get_args(TextTokenKind)
 
 
-class SymbolToken(TokenMixin):
-    pass
-
-
-TextToken = WordToken | NumberToken | SymbolToken | Whitespace
+TextToken = Token[TextTokenKind]

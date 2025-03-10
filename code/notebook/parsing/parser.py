@@ -26,11 +26,14 @@ class Parser[TokenKindT]:
         except IndexError:
             return None
 
-    def peek_safe(self) -> Token[TokenKindT]:
+    def get_safe_token_index(self) -> int:
         if len(self.tokens) == 0:
             raise ParsingError('Empty token list')
 
-        return self.tokens[min(self.token_index, len(self.tokens) - 1)]
+        return min(self.token_index, len(self.tokens) - 1)
+
+    def peek_safe(self) -> Token[TokenKindT]:
+        return self.tokens[self.get_safe_token_index()]
 
     def peek_multiple(self, count: int) -> Sequence[Token[TokenKindT]]:
         return self.tokens[self.token_index: self.token_index + count]

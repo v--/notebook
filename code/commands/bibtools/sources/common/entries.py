@@ -4,8 +4,8 @@ from collections.abc import Iterable, Sequence
 from notebook.bibtex.author import BibAuthor
 from notebook.bibtex.entry import BibEntry
 from notebook.bibtex.string import strip_braces
+from notebook.math.nlp.phrases import Phrase
 from notebook.math.nlp.rake import RakeNoPhrasesError
-from notebook.math.nlp.token_sequence import TokenSequence
 from notebook.support.iteration import string_accumulator
 
 from .dates import extract_year
@@ -25,13 +25,13 @@ def mangle_string_for_entry_name(string: str) -> str:
     return capitalize_first(string)
 
 
-def generate_keyphrase(title: str, subtitle: str | None, language: str, *aux_texts: str | None) -> TokenSequence:
+def generate_keyphrase(title: str, subtitle: str | None, language: str, *aux_texts: str | None) -> Phrase:
     non_null_aux = [aux for aux in aux_texts if aux]
 
     try:
         title_scores = generate_keyphrase_scores(strip_braces(title), language, *non_null_aux)
     except RakeNoPhrasesError:
-        return TokenSequence([])
+        return Phrase([])
 
     title_keyphrase = title_scores.get_shortest_max_scoring()
 

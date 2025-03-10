@@ -19,8 +19,8 @@ BibTokenKind = Literal[
     'UNDERSCORE',
     'BACKSLASH',
     'SPACE',
-    'LINE_BREAK',
     'TAB',
+    'LINE_BREAK',
 ]
 
 
@@ -37,8 +37,8 @@ SINGLETON_TOKEN_MAP: dict[str, BibTokenKind] = {
     '_': 'UNDERSCORE',
     '\\': 'BACKSLASH',
     ' ': 'SPACE',
-    '\n': 'LINE_BREAK',
     '\t': 'TAB',
+    '\n': 'LINE_BREAK',
 }
 
 

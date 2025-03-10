@@ -1,1 +1,1 @@
-from .tokenizer import tokenize_text
+from .parser import extract_phrases

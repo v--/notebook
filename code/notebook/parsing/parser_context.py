@@ -1,3 +1,5 @@
+from collections.abc import Sequence
+
 from .exceptions import ParsingError
 from .highlighter import ErrorHighlighter
 from .parser import Parser
@@ -6,38 +8,63 @@ from .tokens import Token
 
 class ParserContext[TokenKindT]:
     parser: 'Parser[TokenKindT]'
-    first_token: Token[TokenKindT]
-    last_token: Token[TokenKindT] | None
+    index_start: int
+    index_end: int | None
 
     def __init__(self, parser: 'Parser[TokenKindT]') -> None:
         self.parser = parser
         self.reset()
 
     def reset(self) -> None:
-        if head := self.parser.peek():
-            self.first_token = head
-        else:
-            raise ParsingError('Context can be entered before end of input')
+        self.index_start = self.parser.token_index
+        self.index_end = None
 
-        self.last_token = None
+        try:
+            self.parser.tokens[self.index_start]
+        except IndexError:
+            raise ParsingError('Context can be entered before end of input') from None
+
+    def is_closed(self) -> bool:
+        return self.index_end is not None
 
     def close_at_current_token(self) -> None:
+        self.index_end = self.parser.token_index
+
         try:
-            self.last_token = self.parser.tokens[self.parser.token_index]
+            self.parser.tokens[self.index_end]
         except IndexError:
             raise ParsingError('Context can be closed before end of input') from None
 
     def close_at_previous_token(self) -> None:
+        self.index_end = self.parser.token_index - 1
+
         try:
-            self.last_token = self.parser.tokens[self.parser.token_index - 1]
+            self.parser.tokens[self.index_end]
         except IndexError:
             raise ParsingError('Context can be closed before end of input') from None
 
+    def get_index_end_safe(self) -> int:
+        if self.index_end is None:
+            return self.parser.get_safe_token_index()
+
+        return self.index_end
+
+    def is_empty(self) -> bool:
+        return self.index_start == self.get_index_end_safe()
+
+    def get_first_token(self) -> Token[TokenKindT]:
+        return self.parser.tokens[self.index_start]
+
     def get_last_token_safe(self) -> Token[TokenKindT]:
-        return self.last_token or self.parser.peek_safe()
+        return self.parser.tokens[self.get_index_end_safe()]
+
+    def get_context_tokens(self) -> Sequence[Token[TokenKindT]]:
+        start = self.index_start
+        end = self.get_index_end_safe()
+        return self.parser.tokens[start: end + 1]
 
     def get_context_string(self) -> str:
-        start = self.first_token
+        start = self.get_first_token()
         end = self.get_last_token_safe()
         return self.parser.source[start.offset: end.end_offset]
 
@@ -51,7 +78,7 @@ class ParserContext[TokenKindT]:
             self.parser.source,
             token.offset,
             token.end_offset - 1,
-            self.first_token.offset,
+            self.get_first_token().offset,
             self.get_last_token_safe().end_offset - 1
         )
 
@@ -63,7 +90,7 @@ class ParserContext[TokenKindT]:
 
         highlighter = ErrorHighlighter(
             self.parser.source,
-            self.first_token.offset,
+            self.get_first_token().offset,
             self.get_last_token_safe().end_offset - 1
         )
 

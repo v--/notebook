@@ -21,11 +21,11 @@ class BibValueContext(ParserContext[BibTokenKind]):
     def annotate_context_error(self, message: str) -> ParsingError:
         err = ParsingError(message)
 
-        first_token = self.first_token
+        first_token = self.get_first_token()
         last_token = self.get_last_token_safe()
 
         if self.entry_context:
-            first_shown_token = self.entry_context.first_token
+            first_shown_token = self.entry_context.get_first_token()
             last_shown_token = self.entry_context.get_last_token_safe()
         else:
             first_shown_token = first_token

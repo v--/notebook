@@ -1,83 +1,82 @@
 import unicodedata
+from collections.abc import Collection, Sequence
+from typing import override
 
-from notebook.support.regex import RegexEqual
-
-from ....parsing.old_tokenizer import Tokenizer
-from ....parsing.whitespace import Whitespace
-from ..token_sequence import TokenSequence
-from ..tokens import NumberToken, SymbolToken, TextToken, WordToken
+from ....parsing import Tokenizer, TokenizerContext
+from .tokens import TextToken, TextTokenKind
 
 
-ALLOWED_INTERWORD_SYMBOLS = frozenset(["'", '`', '-'])
+ALLOWED_INTERWORD_SYMBOLS: Collection[str] = {"'", '`', '-'}
 
 
-class TextTokenizer(Tokenizer[TextToken]):
-    def is_char_letter(self, char: str) -> bool:
-        category = unicodedata.category(char)
-        return category.startswith('L') or category == 'Mn'
-
-    def is_char_number(self, char: str) -> bool:
-        return unicodedata.category(char).startswith('N')
-
-    def parse_word(self) -> WordToken:
-        assert self.is_char_letter(self.peek())
-        first = self.peek()
+class TextTokenizer(Tokenizer[TextTokenKind]):
+    def _read_word_token(self, context: TokenizerContext[TextTokenKind]) -> TextToken:
         self.advance()
-        buffer = first
 
-        while not self.is_at_end():
-            head = self.peek()
-
-            if self.is_char_letter(head) or head in ALLOWED_INTERWORD_SYMBOLS:
-                buffer += head
-                self.advance()
-            else:
-                break
-
-        return WordToken(buffer)
-
-    def parse_step(self, head: str) -> TextToken:
-        if head == Whitespace.space.value or head == Whitespace.tab.value:
+        while (head := self.peek()) and (
+            head in ALLOWED_INTERWORD_SYMBOLS or
+            unicodedata.category(head).startswith(('L', 'Mn'))
+        ):
             self.advance()
-            return Whitespace.space
 
-        if head == Whitespace.line_break.value:
+        context.close_at_previous_token()
+        return context.extract_token('WORD')
+
+    def _read_decimal_token(self, context: TokenizerContext[TextTokenKind]) -> TextToken:
+        self.advance()
+
+        while (head := self.peek()) and unicodedata.category(head).startswith('N'):
             self.advance()
-            return Whitespace.line_break
 
+        context.close_at_previous_token()
+        return context.extract_token('DECIMAL')
+
+    @override
+    def read_token(self, context: TokenizerContext[TextTokenKind]) -> TextToken | None:
+        # Whitespace
+        while (head := self.peek()) and (head == '\t' or unicodedata.category(head).startswith('Z')):
+            self.advance()
+
+        head = self.peek()
+
+        if head is None:
+            return None
+
+        context.reset()
         category = unicodedata.category(head)
 
-        match RegexEqual(category):
-            case 'L.' | 'Mn':
-                return self.parse_word()
+        if category.startswith(('L', 'Mn')):
+            return self._read_word_token(context)
 
-            case 'S.' | 'P.':
+        if category.startswith('N'):
+            num_token = self._read_decimal_token(context)
+            lookahead = self.peek_multiple(2)
+
+            if len(lookahead) > 0 and lookahead[0] == '-' and unicodedata.category(lookahead[1]).startswith(('L', 'Mn')):
                 self.advance()
-                return SymbolToken(head)
+                context.reset()
+                word_token = self._read_word_token(context)
+                return TextToken(
+                    kind='WORD',
+                    offset=num_token.offset,
+                    value=num_token.value + '-' + word_token.value
+                )
 
-            case 'N.':
-                num_string = self.gobble_string(self.is_char_number)
-                lookahead = self.peek_multiple(2)
+            return num_token
 
-                if len(lookahead) > 0 and lookahead[0] == '-' and self.is_char_letter(lookahead[1]):
-                    self.advance()
-                    word = self.parse_word()
-                    return WordToken(num_string + '-' + str(word))
+        if category.startswith(('S', 'P')):
+            self.advance()
+            context.close_at_previous_token()
+            return context.extract_token('SYMBOL')
 
-                return NumberToken(num_string)
+        if head == '\n':
+            self.advance()
+            context.close_at_previous_token()
+            return context.extract_token('LINE_BREAK')
 
-            case 'Zs':
-                self.advance()
-                return Whitespace.space
-
-            case 'Zl' | 'Zp':
-                self.advance()
-                return Whitespace.line_break
-
-            case _:
-                raise self.error(f'Unexpected symbol {head!r} with category {category}')
+        raise self.annotate_char_error('Unexpected symbol')
 
 
-def tokenize_text(string: str) -> TokenSequence:
-    with TextTokenizer(string) as tokenizer:
-        return TokenSequence(tokenizer.parse())
+def tokenize_text(source: str) -> Sequence[TextToken]:
+    with TextTokenizer(source) as tokenizer:
+        return list(tokenizer.iter_tokens())

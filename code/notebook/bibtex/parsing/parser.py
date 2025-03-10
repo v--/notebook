@@ -62,7 +62,7 @@ class BibParser(Parser[BibTokenKind]):
         while (head := self.peek()) and head.kind not in ['CLOSING_BRACE', 'COMMA', 'LINE_BREAK']:
             self.advance()
 
-        if head == name_context.first_token:
+        if name_context.is_empty():
             raise name_context.annotate_token_error('Expected an entry name')
 
         name_context.close_at_previous_token()
