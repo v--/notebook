@@ -17,14 +17,14 @@ class BibTokenizer(Tokenizer[BibTokenKind]):
         while (head := self.peek()) and head.isdigit():
             self.advance()
 
-        if self.offset > context.offset_start:
+        if not context.is_empty():
             context.close_at_previous_token()
             return context.extract_token('DECIMAL')
 
         while (head := self.peek()) and unicodedata.category(head).startswith(('L', 'Mn')):
             self.advance()
 
-        if self.offset > context.offset_start:
+        if not context.is_empty():
             context.close_at_previous_token()
             return context.extract_token('WORD')
 

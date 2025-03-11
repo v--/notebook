@@ -13,9 +13,6 @@ class Tokenizer[TokenKindT](abc.ABC):
     source: str
     offset: int
 
-    token_start_offset: int
-    token_end_offset: int
-
     def __init__(self, source: str) -> None:
         self.source = source
         self.reset()

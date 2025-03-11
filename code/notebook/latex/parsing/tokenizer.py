@@ -1,49 +1,38 @@
-from collections.abc import Iterable, Sequence
+import unicodedata
+from collections.abc import Sequence
+from typing import override
 
-from ...parsing.old_tokenizer import Tokenizer
-from ...parsing.whitespace import Whitespace
-from ...support.iteration import string_accumulator
-from ...support.unicode import Capitalization, is_latin_string
-from .tokens import EscapedWordToken, LaTeXToken, MiscToken, WordToken
+from ...parsing import Tokenizer, TokenizerContext
+from .tokens import SINGLETON_TOKEN_MAP, LaTeXToken, LaTeXTokenKind
 
 
-class LaTeXTokenizer(Tokenizer[LaTeXToken]):
-    @string_accumulator()
-    def read_word(self) -> Iterable[str]:
-        while not self.is_at_end() and not (MiscToken.try_match(self.peek()) or Whitespace.try_match(self.peek())):
-            yield self.peek()
+class LaTeXTokenizer(Tokenizer[LaTeXTokenKind]):
+    @override
+    def read_token(self, context: TokenizerContext[LaTeXTokenKind]) -> LaTeXToken:
+        if (head := self.peek()) and (token_type := SINGLETON_TOKEN_MAP.get(head)):
+            self.advance()
+            context.close_at_previous_token()
+            return context.extract_token(token_type)
+
+        while (head := self.peek()) and (head == ' ' or head == '\t'):
             self.advance()
 
-    @string_accumulator()
-    def read_latin_string(self) -> Iterable[str]:
-        while not self.is_at_end() and is_latin_string(self.peek(), capitalization=Capitalization.mixed):
-            yield self.peek()
+        if not context.is_empty():
+            context.close_at_previous_token()
+            return context.extract_token('WHITESPACE')
+
+        while (head := self.peek()) and \
+            head not in SINGLETON_TOKEN_MAP and \
+            unicodedata.category(head).startswith(('L', 'Mn', 'N', 'S', 'P')):
             self.advance()
 
-    def parse_step(self, head: str) -> LaTeXToken:
-        token: LaTeXToken | None
+        if not context.is_empty():
+            context.close_at_previous_token()
+            return context.extract_token('TEXT')
 
-        if (token := MiscToken.try_match(head) or Whitespace.try_match(head)):
-            self.advance()
-            return token
-
-        if head == '\\':
-            start = self.index
-            self.advance()
-
-            if self.peek() in (' ', '\\', '(', ')', '{', '}'):
-                token = EscapedWordToken(self.peek())
-                self.advance()
-                return token
-
-            if is_latin_string(self.peek(), capitalization=Capitalization.mixed):
-                return EscapedWordToken(self.read_latin_string())
-
-            raise self.error('Unrecognized escape character', i_first_token=start)
-
-        return WordToken(self.read_word())
+        raise self.annotate_char_error('Unexpected symbol')
 
 
-def tokenize_latex(string: str) -> Sequence[LaTeXToken]:
-    with LaTeXTokenizer(string) as tokenizer:
-        return list(tokenizer.parse())
+def tokenize_latex(source: str) -> Sequence[LaTeXToken]:
+    with LaTeXTokenizer(source) as tokenizer:
+        return list(tokenizer.iter_tokens())

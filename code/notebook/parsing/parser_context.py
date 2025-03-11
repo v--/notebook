@@ -33,7 +33,7 @@ class ParserContext[TokenKindT]:
         try:
             self.parser.tokens[self.index_end]
         except IndexError:
-            raise ParsingError('Context can be closed before end of input') from None
+            raise ParsingError('Context must be closed before end of input') from None
 
     def close_at_previous_token(self) -> None:
         self.index_end = self.parser.token_index - 1
@@ -41,7 +41,7 @@ class ParserContext[TokenKindT]:
         try:
             self.parser.tokens[self.index_end]
         except IndexError:
-            raise ParsingError('Context can be closed before end of input') from None
+            raise ParsingError('Context must be closed before end of input') from None
 
     def get_index_end_safe(self) -> int:
         if self.index_end is None:
@@ -50,7 +50,7 @@ class ParserContext[TokenKindT]:
         return self.index_end
 
     def is_empty(self) -> bool:
-        return self.index_start == self.get_index_end_safe()
+        return self.parser.token_index == self.index_start
 
     def get_first_token(self) -> Token[TokenKindT]:
         return self.parser.tokens[self.index_start]

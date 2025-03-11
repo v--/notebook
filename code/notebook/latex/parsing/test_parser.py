@@ -3,13 +3,14 @@ from textwrap import dedent
 import pytest
 
 from ...parsing.parser import ParsingError
-from ...parsing.whitespace import Whitespace
 from ..nodes import (
     BraceGroup,
     BracketGroup,
     Command,
     Environment,
-    Word,
+    SpecialNode,
+    Text,
+    Whitespace,
     stringify_nodes,
 )
 from .parser import parse_latex
@@ -24,19 +25,25 @@ def test_empty_string() -> None:
 def test_tab() -> None:
     string = '\t'
     nodes = parse_latex(string)
-    assert nodes == [Whitespace.tab]
+    assert nodes == [Whitespace('\t')]
 
 
 def test_line_break() -> None:
     string = '\n'
     nodes = parse_latex(string)
-    assert nodes == [Whitespace.line_break]
+    assert nodes == [SpecialNode.line_break]
+
+
+def test_line_break_command() -> None:
+    string = '\\\\'
+    nodes = parse_latex(string)
+    assert nodes == [Command('\\')]
 
 
 def test_word() -> None:
     string = 'test'
     nodes = parse_latex(string)
-    assert nodes == [Word(value='test')]
+    assert nodes == [Text('test')]
 
 
 def test_command_without_args() -> None:
@@ -50,7 +57,7 @@ def test_command_with_space() -> None:
     nodes = parse_latex(string)
     assert nodes == [
         Command('test'),
-        Whitespace.space
+        Whitespace(' ')
     ]
 
 
@@ -59,7 +66,7 @@ def test_command_with_brace_arg() -> None:
     nodes = parse_latex(string)
     assert nodes == [
         Command('test'),
-        BraceGroup([Word('a')])
+        BraceGroup([Text('a')])
     ]
 
 
@@ -81,7 +88,7 @@ def test_command_with_bracket_arg() -> None:
     nodes = parse_latex(string)
     assert nodes == [
         Command('test'),
-        BracketGroup([Word('a')])
+        BracketGroup([Text('a')])
     ]
 
 
@@ -102,17 +109,17 @@ def test_command_with_mixed_args() -> None:
     nodes = parse_latex(string)
     assert nodes == [
         Command('test'),
-        Whitespace.tab,
-        BracketGroup([Word('a')]),
-        BraceGroup([Word('b')]),
-        Whitespace.space,
+        Whitespace('\t'),
+        BracketGroup([Text('a')]),
+        BraceGroup([Text('b')]),
+        Whitespace(' '),
         BracketGroup([
-            Word('c'),
-            Whitespace.space
+            Text('c'),
+            Whitespace(' ')
         ]),
-        Whitespace.space,
-        Whitespace.line_break,
-        BraceGroup([Word('d')]),
+        Whitespace(' '),
+        SpecialNode.line_break,
+        BraceGroup([Text('d')]),
     ]
 
 
@@ -124,7 +131,7 @@ def test_basic_environment() -> None:
     assert nodes[0] == Environment(
         name='test',
         contents=[
-            Whitespace.space
+            Whitespace(' ')
         ]
     )
 
@@ -133,7 +140,7 @@ def test_unmatched_environment() -> None:
     with pytest.raises(ParsingError) as excinfo:
         parse_latex(r'\begin{test}')
 
-    assert str(excinfo.value) == "Unmatched environment 'test'"
+    assert str(excinfo.value) == "Unclosed environment 'test'"
     assert excinfo.value.__notes__[0] == dedent(r'''
         1 │ \begin{test}
           │ ^^^^^^^^^^^^
@@ -217,16 +224,16 @@ def test_different_nested_environments() -> None:
     assert nodes[0] == Environment(
         name='test',
         contents=[
-            Whitespace.space,
+            Whitespace(' '),
             Environment(
                 name='test2',
                 contents=[
-                    Whitespace.space,
-                    Word('inner'),
-                    Whitespace.space
+                    Whitespace(' '),
+                    Text('inner'),
+                    Whitespace(' ')
                 ]
             ),
-            Whitespace.space
+            Whitespace(' ')
         ]
     )
 
@@ -239,16 +246,16 @@ def test_same_nested_environment() -> None:
     assert nodes[0] == Environment(
         name='test',
         contents=[
-            Whitespace.space,
+            Whitespace(' '),
             Environment(
                 name='test',
                 contents=[
-                    Whitespace.space,
-                    Word('inner'),
-                    Whitespace.space
+                    Whitespace(' '),
+                    Text('inner'),
+                    Whitespace(' ')
                 ]
             ),
-            Whitespace.space
+            Whitespace(' ')
         ]
     )
 

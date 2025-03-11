@@ -1,28 +1,55 @@
 from collections.abc import Iterable, Sequence
-from dataclasses import dataclass
-
-from ..parsing.old_tokens import TokenEnum, TokenMixin
-from ..parsing.whitespace import Whitespace
+from enum import Enum
 
 
-class Word(TokenMixin):
+class StringNode:
+    def __init__(self, value: str) -> None:
+        self.value = value
+
+    def __str__(self) -> str:
+        return self.value
+
+    def __hash__(self) -> int:
+        return hash(self.value)
+
+    def __eq__(self, other: object) -> bool:
+        if isinstance(other, StringNode):
+            return type(self) is type(other) and self.value == other.value
+
+        return False
+
+
+class Text(StringNode):
     pass
 
 
-class Command(TokenMixin):
+class Whitespace(StringNode):
+    pass
+
+
+class Command(StringNode):
     def __str__(self) -> str:
         return '\\' + self.value
 
 
-class SpecialNode(TokenEnum):
+class SpecialNode(str, Enum):
+    at = '@'
+    caret = '^'
+    percent = '%'
     ampersand = '&'
     underscore = '_'
-    caret = '^'
+    dollar = '$'
+    line_break = '\n'
+
+    def __str__(self) -> str:
+        return self.value
 
 
-@dataclass(frozen=True)
 class Group:
     contents: 'Sequence[LaTeXNode]'
+
+    def __init__(self, contents: 'Sequence[LaTeXNode]') -> None:
+        self.contents = contents
 
     def __str__(self) -> str:
         return ''.join(str(node) for node in self.contents)
@@ -47,15 +74,18 @@ class BracketGroup(Group):
         return '[' + super().__str__() + ']'
 
 
-@dataclass(frozen=True)
 class Environment(Group):
     name: str
+
+    def __init__(self, name: str, contents: 'Sequence[LaTeXNode]') -> None:
+        self.name = name
+        super().__init__(contents)
 
     def __str__(self) -> str:
         return '\\begin{%s}' % self.name + super().__str__() + '\\end{%s}' % self.name
 
 
-LaTeXNode = Word | Command | SpecialNode | Whitespace | BraceGroup | BracketGroup | Environment
+LaTeXNode = Text | Command | SpecialNode | Whitespace | BraceGroup | BracketGroup | Environment
 
 
 def stringify_nodes(nodes: Iterable[LaTeXNode]) -> str:

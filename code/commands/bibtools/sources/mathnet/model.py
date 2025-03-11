@@ -3,7 +3,7 @@ from collections.abc import Iterable
 import bs4
 from pydantic import BaseModel
 
-from notebook.latex.nodes import BraceGroup, Command, LaTeXNode, SpecialNode, Whitespace, Word
+from notebook.latex.nodes import BraceGroup, Command, LaTeXNode, SpecialNode, Text, Whitespace
 from notebook.latex.parsing import parse_latex
 from notebook.support.iteration import get_strip_slice, string_accumulator
 
@@ -53,7 +53,7 @@ def read_amsbib_value(nodes: Iterable[LaTeXNode]) -> Iterable[str]:
 
     for node in nodes:
         match node:
-            case Word() | SpecialNode():
+            case Text() | SpecialNode():
                 is_in_prefix = False
                 yield str(node).replace('~', ' ')
 
@@ -66,22 +66,23 @@ def read_amsbib_value(nodes: Iterable[LaTeXNode]) -> Iterable[str]:
                     yield str(node)
 
             case _:
+                # print(node)
                 raise BibToolsParsingError(f'Unexpected LaTeX node of type {type(node).__name__}')
 
 
 def parse_amsbib_entry_string(string: str) -> tuple[str, str]:
     tokens = parse_latex(string)
-    tokens = tokens[get_strip_slice(tokens, lambda token: isinstance(token, Whitespace))]
+    tokens = tokens[get_strip_slice(tokens, lambda token: isinstance(token, Whitespace) or token == SpecialNode.line_break)]
 
     if len(tokens) == 0:
         raise BibToolsParsingError(f'Cannot parse AMSTEX entry line {string!r}')
 
     command, *rest = tokens
 
-    if not isinstance(command, Command):
-        raise BibToolsParsingError(f'Expected a TeX command, got {str(command)!r}')
+    if isinstance(command, Command):
+        return command.value, read_amsbib_value(rest)
 
-    return command.value, read_amsbib_value(rest)
+    raise BibToolsParsingError(f'Expected a TeX command or newline, got {str(command)!r}')
 
 
 def parse_mathnet_html(html: str, *, english: bool) -> MathNetEntry:

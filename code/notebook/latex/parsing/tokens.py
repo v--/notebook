@@ -1,24 +1,42 @@
-from ...parsing.old_tokens import TokenEnum, TokenMixin
-from ...parsing.whitespace import Whitespace
+from typing import Literal, get_args
+
+from ...parsing.tokens import Token
 
 
-class WordToken(TokenMixin):
-    pass
+LaTeXTokenKind = Literal[
+    'TEXT',
+    'WHITESPACE',
+
+    'AT',
+    'CARET',
+    'PERCENT',
+    'AMPERSAND',
+    'UNDERSCORE',
+    'DOLLAR',
+    'OPENING_BRACE',
+    'CLOSING_BRACE',
+    'OPENING_BRACKET',
+    'CLOSING_BRACKET',
+    'BACKSLASH',
+    'LINE_BREAK',
+]
 
 
-class EscapedWordToken(TokenMixin):
-    def __str__(self) -> str:
-        return '\\' + self.value
+TOKEN_KIND_LIST = get_args(LaTeXTokenKind)
+SINGLETON_TOKEN_MAP: dict[str, LaTeXTokenKind] = {
+    '@': 'AT',
+    '^': 'CARET',
+    '%': 'PERCENT',
+    '&': 'AMPERSAND',
+    '_': 'UNDERSCORE',
+    '$': 'DOLLAR',
+    '{': 'OPENING_BRACE',
+    '}': 'CLOSING_BRACE',
+    '[': 'OPENING_BRACKET',
+    ']': 'CLOSING_BRACKET',
+    '\\': 'BACKSLASH',
+    '\n': 'LINE_BREAK',
+}
 
 
-class MiscToken(TokenEnum):
-    ampersand = '&'
-    underscore = '_'
-    caret = '^'
-    opening_brace = '{'
-    closing_brace = '}'
-    opening_bracket = '['
-    closing_bracket = ']'
-
-
-LaTeXToken = WordToken | EscapedWordToken | Whitespace | MiscToken
+LaTeXToken = Token[LaTeXTokenKind]

@@ -1,7 +1,7 @@
 from collections.abc import Iterable, Sequence
 
-from ...parsing.old_parser import Parser
-from ...parsing.whitespace import Whitespace
+from ...parsing import Parser
+from ...support.unicode import Capitalization, is_latin_string
 from ..nodes import (
     BraceGroup,
     BracketGroup,
@@ -10,122 +10,141 @@ from ..nodes import (
     Group,
     LaTeXNode,
     SpecialNode,
-    Word,
+    Text,
+    Whitespace,
 )
+from .parser_context import LaTeXGroupContext
 from .tokenizer import tokenize_latex
-from .tokens import EscapedWordToken, LaTeXToken, MiscToken, WordToken
+from .tokens import LaTeXTokenKind
 
 
-class LaTeXParser(Parser[LaTeXToken]):
-    def parse_brace[GroupT: Group](self, cls: type[GroupT], opening: LaTeXToken, closing: LaTeXToken) -> GroupT:
-        assert self.peek() == opening
-        start_index = self.index
+class LaTeXParser(Parser[LaTeXTokenKind]):
+    def _parse_brace[GroupT: Group](self, cls: type[GroupT], closing_kind: LaTeXTokenKind) -> GroupT:
+        brace_context = LaTeXGroupContext(self)
         self.advance()
+
         contents = list[LaTeXNode]()
-        parsed_iter = iter(self.parse())
 
-        while not self.is_at_end() and self.peek() != closing:
-            contents.append(next(parsed_iter))
+        while (head := self.peek()) and head.kind != closing_kind:
+            contents.append(self.parse_node())
 
-        if self.is_at_end() or self.peek() != closing:
-            raise self.error(f'Unmatched {opening}', i_first_token=start_index)
+        if (head := self.peek()) is None or head.kind != closing_kind:
+            raise brace_context.annotate_context_error(f'Unmatched {brace_context.get_first_token().value}')
 
         self.advance()
         return cls(contents)
 
-    def parse_environment(self) -> Environment:
-        assert isinstance(head := self.peek(), EscapedWordToken)
-        assert head.value == 'begin'
-        env_start_index = self.index
-        self.advance()
+    def _parse_environment(self) -> Environment:
+        env_context = LaTeXGroupContext(self)
+        env_context.index_start -= 1
+        head = self.advance_and_peek()
 
-        if self.is_at_end() or self.peek() != MiscToken.opening_brace:
-            raise self.error('No environment name specified', i_first_token=env_start_index)
+        if not head or head.kind != 'OPENING_BRACE':
+            raise env_context.annotate_context_error('No environment name specified')
 
-        self.advance()
+        head = self.advance_and_peek()
 
-        if self.is_at_end() or not isinstance(head := self.peek(), WordToken):
-            raise self.error('No environment name specified', i_first_token=env_start_index)
+        if not head or head.kind != 'TEXT':
+            raise env_context.annotate_context_error('No environment name specified')
 
-        name_start_index = self.index
-        env_name = head.value
+        env_name_token = head
+        head = self.advance_and_peek()
+
+        if not head or head.kind != 'CLOSING_BRACE':
+            raise env_context.annotate_token_error('Unclosed brace when specifying environment name', token=env_name_token)
+
+        head = self.advance_and_peek()
+
+        if not head:
+            raise env_context.annotate_context_error(f'Unclosed environment {env_name_token.value!r}')
+
         contents = list[LaTeXNode]()
-        self.advance()
 
-        if self.is_at_end() or self.peek() != MiscToken.closing_brace:
-            raise self.error('Unclosed brace when specifying environment name', i_first_token=name_start_index)
+        while head := self.peek():
+            next_tokens = self.peek_multiple(5)
 
-        self.advance()
+            if len(next_tokens) == 5 and \
+                next_tokens[0].kind == 'BACKSLASH' and \
+                next_tokens[1].kind == 'TEXT' and next_tokens[1].value == 'end' and \
+                next_tokens[2].kind == 'OPENING_BRACE' and \
+                next_tokens[3].kind == 'TEXT' and \
+                next_tokens[4].kind == 'CLOSING_BRACE':
+                self.advance(5)
 
-        if self.is_at_end():
-            raise self.error(f'Unmatched environment {env_name!r}', i_first_token=env_start_index)
+                if next_tokens[3].value == env_name_token.value:
+                    return Environment(name=env_name_token.value, contents=contents)
 
-        parsed_iter = iter(self.parse())
+                env_context.close_at_previous_token()
+                raise env_context.annotate_context_error(f'Mismatched environment {env_name_token.value!r}')
 
-        while not self.is_at_end():
-            next_tokens = self.peek_multiple(4)
+            contents.append(self.parse_node())
 
-            if len(next_tokens) == 4 and \
-                next_tokens[:2] == [EscapedWordToken('end'), MiscToken.opening_brace] \
-                and isinstance(next_tokens[2], WordToken) \
-                and next_tokens[3] == MiscToken.closing_brace:
+        raise env_context.annotate_context_error(f'Unclosed environment {env_name_token.value!r}')
 
-                if next_tokens[2].value == env_name:
-                    self.advance(4)
-                    return Environment(name=env_name, contents=contents)
+    def parse_node(self) -> LaTeXNode:  # noqa: PLR0911
+        head = self.peek()
 
-                self.advance(3)
-                raise self.error(f'Mismatched environment {env_name!r}', i_first_token=env_start_index)
+        if not head:
+            raise self.annotate_token_error('Unexpected end of input')
 
-            contents.append(next(parsed_iter))
-
-        raise self.error(f'Unmatched {MiscToken.opening_brace}', i_first_token=env_start_index)
-
-    def parse_step(self, head: LaTeXToken) -> LaTeXNode:
-        match head:
-            case WordToken():
+        match head.kind:
+            case 'TEXT':
                 self.advance()
-                return Word(head.value)
+                return Text(head.value)
 
-            case EscapedWordToken():
+            case 'BACKSLASH':
+                head = self.advance_and_peek()
+
+                if not head:
+                    raise self.annotate_token_error('Unexpected end of input after backslash')
+
                 if head.value == 'begin':
-                    return self.parse_environment()
+                    return self._parse_environment()
 
                 self.advance()
-                return Command(head.value)
 
-            case Whitespace():
+                match head.kind:
+                    case 'TEXT' if is_latin_string(head.value, Capitalization.mixed):
+                        return Command(head.value)
+
+                    case 'BACKSLASH':
+                        return Command('\\')
+
+                    case _:
+                        return Text('\\' + head.value)
+
+            case 'WHITESPACE':
                 self.advance()
-                return head
+                return Whitespace(head.value)
 
-            case MiscToken.opening_brace:
-                return self.parse_brace(BraceGroup, MiscToken.opening_brace, MiscToken.closing_brace)
+            case 'OPENING_BRACE':
+                return self._parse_brace(BraceGroup, 'CLOSING_BRACE')
 
-            case MiscToken.opening_bracket:
-                return self.parse_brace(BracketGroup, MiscToken.opening_bracket, MiscToken.closing_bracket)
+            case 'OPENING_BRACKET':
+                return self._parse_brace(BracketGroup, 'CLOSING_BRACKET')
 
-            case MiscToken.closing_brace:
+            case 'CLOSING_BRACE':
                 self.advance()
-                return Word(head.value)
+                return Text(head.value)
 
-            case MiscToken.closing_bracket:
+            case 'CLOSING_BRACKET':
                 self.advance()
-                return Word(head.value)
+                return Text(head.value)
 
-            case MiscToken.ampersand | MiscToken.underscore | MiscToken.caret:
+            case 'AT' | 'CARET' | 'PERCENT' | 'AMPERSAND' | 'UNDERSCORE' | 'DOLLAR' | 'LINE_BREAK':
                 self.advance()
-                return getattr(SpecialNode, MiscToken(head).name)
+                return getattr(SpecialNode, head.kind.lower())
 
             case _:
-                raise self.error('Unexpected token')
+                raise self.annotate_token_error('Unexpected token')
 
-    def parse(self) -> Iterable[LaTeXNode]:
-        while not self.is_at_end():
-            yield self.parse_step(self.peek())
+    def iter_nodes(self) -> Iterable[LaTeXNode]:
+        while self.peek():
+            yield self.parse_node()
 
 
-def parse_latex(string: str) -> Sequence[LaTeXNode]:
-    tokens = tokenize_latex(string)
+def parse_latex(source: str) -> Sequence[LaTeXNode]:
+    tokens = tokenize_latex(source)
 
-    with LaTeXParser(tokens) as parser:
-        return list(parser.parse())
+    with LaTeXParser(source, tokens) as parser:
+        return list(parser.iter_nodes())

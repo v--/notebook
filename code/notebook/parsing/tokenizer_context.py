@@ -36,7 +36,7 @@ class TokenizerContext[TokenKindT]:
         try:
             self.tokenizer.source[self.offset_end]
         except IndexError:
-            raise TokenizationError('Context can be closed before end of input') from None
+            raise TokenizationError('Context must be closed before end of input') from None
 
     def close_at_previous_token(self) -> None:
         self.offset_end = self.tokenizer.offset - 1
@@ -44,13 +44,16 @@ class TokenizerContext[TokenKindT]:
         try:
             self.tokenizer.source[self.offset_end]
         except IndexError:
-            raise TokenizationError('Context can be closed before end of input') from None
+            raise TokenizationError('Context must be closed before end of input') from None
 
     def get_offset_end_safe(self) -> int:
         if self.offset_end is None:
             return self.tokenizer.get_safe_offset()
 
         return self.offset_end
+
+    def is_empty(self) -> bool:
+        return self.tokenizer.offset == self.offset_start
 
     def get_context_string(self) -> str:
         return self.tokenizer.source[self.offset_start: self.get_offset_end_safe() + 1]

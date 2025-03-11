@@ -1,11 +1,7 @@
-from textwrap import dedent
 
-import pytest
 
-from ...parsing.parser import ParsingError
-from ...parsing.whitespace import Whitespace
 from .tokenizer import tokenize_latex
-from .tokens import EscapedWordToken, MiscToken, WordToken
+from .tokens import LaTeXToken
 
 
 def test_empty_string() -> None:
@@ -17,114 +13,128 @@ def test_empty_string() -> None:
 def test_latin_string() -> None:
     string = 'test'
     tokens = tokenize_latex(string)
-    assert tokens == [WordToken('test')]
+    assert tokens == [
+        LaTeXToken('TEXT', 'test', 0)
+    ]
 
 
 def test_cyrillic_string() -> None:
     string = 'тест'
     tokens = tokenize_latex(string)
-    assert tokens == [WordToken('тест')]
+    assert tokens == [
+        LaTeXToken('TEXT', 'тест', 0)
+    ]
 
 
 def test_numeric_string() -> None:
     string = '1153'
     tokens = tokenize_latex(string)
-    assert tokens == [WordToken('1153')]
-
-
-def test_empty_escaped() -> None:
-    with pytest.raises(ParsingError) as excinfo:
-        tokenize_latex('\\')
-
-    assert str(excinfo.value) == 'Unexpected end of input'
-    assert excinfo.value.__notes__[0] == dedent(r'''
-        1 │ \
-          │ ^
-        '''[1:]
-    )
-
-
-def test_invalid_escaped() -> None:
-    with pytest.raises(ParsingError) as excinfo:
-        tokenize_latex('\\3')
-
-    assert str(excinfo.value) == 'Unrecognized escape character'
-    assert excinfo.value.__notes__[0] == dedent(r'''
-        1 │ \3
-          │ ^^
-        '''[1:]
-    )
+    assert tokens == [
+        LaTeXToken('TEXT', '1153', 0)
+    ]
 
 
 def test_latin_escaped() -> None:
-    assert tokenize_latex('\\test') == [EscapedWordToken('test')]
+    string = '\\test'
+    tokens = tokenize_latex(string)
+    assert tokens == [
+        LaTeXToken('BACKSLASH', '\\', 0),
+        LaTeXToken('TEXT', 'test', 1)
+    ]
 
 
 def test_escaped_with_underscore() -> None:
-    assert tokenize_latex('\\test_test') == [EscapedWordToken('test'), MiscToken.underscore, WordToken('test')]
+    string = '\\test_test'
+    tokens = tokenize_latex(string)
+    assert tokens == [
+        LaTeXToken('BACKSLASH', '\\', 0),
+        LaTeXToken('TEXT', 'test', 1),
+        LaTeXToken('UNDERSCORE', '_', 5),
+        LaTeXToken('TEXT', 'test', 6)
+    ]
 
 
 def test_escaped_whitespace() -> None:
     string = '\\ '
     tokens = tokenize_latex(string)
-    assert tokens == [EscapedWordToken(' ')]
+    assert tokens == [
+        LaTeXToken('BACKSLASH', '\\', 0),
+        LaTeXToken('WHITESPACE', ' ', 1)
+    ]
 
 
 def test_single_space() -> None:
     string = ' '
     tokens = tokenize_latex(string)
-    assert tokens == [Whitespace.space]
+    assert tokens == [
+        LaTeXToken('WHITESPACE', ' ', 0)
+    ]
 
 
 def test_multiple_spaces() -> None:
-    string = ' ' * 3
+    string = '   '
     tokens = tokenize_latex(string)
-    assert tokens == [Whitespace.space] * 3
+    assert tokens == [
+        LaTeXToken('WHITESPACE', '   ', 0)
+    ]
 
 
 def test_tab() -> None:
     string = '\t'
     tokens = tokenize_latex(string)
-    assert tokens == [Whitespace.tab]
+    assert tokens == [
+        LaTeXToken('WHITESPACE', '\t', 0)
+    ]
 
 
 def test_line_break() -> None:
     string = '\n'
     tokens = tokenize_latex(string)
-    assert tokens == [Whitespace.line_break]
+    assert tokens == [
+        LaTeXToken('LINE_BREAK', '\n', 0)
+    ]
 
 
 def test_ampersand() -> None:
     string = '&'
     tokens = tokenize_latex(string)
-    assert tokens == [MiscToken.ampersand]
+    assert tokens == [
+        LaTeXToken('AMPERSAND', '&', 0)
+    ]
 
 
 def test_caret() -> None:
     string = '^'
     tokens = tokenize_latex(string)
-    assert tokens == [MiscToken.caret]
+    assert tokens == [
+        LaTeXToken('CARET', '^', 0)
+    ]
 
 
 def test_underscore() -> None:
     string = '_'
     tokens = tokenize_latex(string)
-    assert tokens == [MiscToken.underscore]
+    assert tokens == [
+        LaTeXToken('UNDERSCORE', '_', 0)
+    ]
 
 
 def test_command() -> None:
     string = '\\sum_{k \\in \\mscrK}'
     tokens = tokenize_latex(string)
     assert tokens == [
-        EscapedWordToken('sum'),
-        MiscToken.underscore,
-        MiscToken.opening_brace,
-        WordToken('k'),
-        Whitespace.space,
-        EscapedWordToken('in'),
-        Whitespace.space,
-        EscapedWordToken('mscrK'),
-        MiscToken.closing_brace
+        LaTeXToken('BACKSLASH', '\\', 0),
+        LaTeXToken('TEXT', 'sum', 1),
+        LaTeXToken('UNDERSCORE', '_', 4),
+        LaTeXToken('OPENING_BRACE', '{', 5),
+        LaTeXToken('TEXT', 'k', 6),
+        LaTeXToken('WHITESPACE', ' ', 7),
+        LaTeXToken('BACKSLASH', '\\', 8),
+        LaTeXToken('TEXT', 'in', 9),
+        LaTeXToken('WHITESPACE', ' ', 11),
+        LaTeXToken('BACKSLASH', '\\', 12),
+        LaTeXToken('TEXT', 'mscrK', 13),
+        LaTeXToken('CLOSING_BRACE', '}', 18),
     ]
 
 
@@ -132,4 +142,4 @@ def test_real() -> None:
     with open('../figures/thm__natural_number_divisibility_order.tex') as file:
         string = file.read()
         tokens = tokenize_latex(string)
-        assert ''.join(str(t) for t in tokens) == string
+        assert ''.join(t.value for t in tokens) == string
