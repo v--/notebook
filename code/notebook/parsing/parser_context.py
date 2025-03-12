@@ -6,12 +6,12 @@ from .parser import Parser
 from .tokens import Token
 
 
-class ParserContext[TokenKindT]:
-    parser: 'Parser[TokenKindT]'
+class ParserContext[TokenT: Token]:
+    parser: 'Parser[TokenT]'
     index_start: int
     index_end: int | None
 
-    def __init__(self, parser: 'Parser[TokenKindT]') -> None:
+    def __init__(self, parser: 'Parser[TokenT]') -> None:
         self.parser = parser
         self.reset()
 
@@ -52,13 +52,13 @@ class ParserContext[TokenKindT]:
     def is_empty(self) -> bool:
         return self.parser.token_index == self.index_start
 
-    def get_first_token(self) -> Token[TokenKindT]:
+    def get_first_token(self) -> TokenT:
         return self.parser.tokens[self.index_start]
 
-    def get_last_token_safe(self) -> Token[TokenKindT]:
+    def get_last_token_safe(self) -> TokenT:
         return self.parser.tokens[self.get_index_end_safe()]
 
-    def get_context_tokens(self) -> Sequence[Token[TokenKindT]]:
+    def get_context_tokens(self) -> Sequence[TokenT]:
         start = self.index_start
         end = self.get_index_end_safe()
         return self.parser.tokens[start: end + 1]
@@ -68,7 +68,7 @@ class ParserContext[TokenKindT]:
         end = self.get_last_token_safe()
         return self.parser.source[start.offset: end.end_offset]
 
-    def annotate_token_error(self, message: str, token: Token[TokenKindT] | None = None) -> ParsingError:
+    def annotate_token_error(self, message: str, token: TokenT | None = None) -> ParsingError:
         err = ParsingError(message)
 
         if token is None:

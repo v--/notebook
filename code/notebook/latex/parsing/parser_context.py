@@ -1,6 +1,6 @@
 from ...parsing import ParserContext
-from .tokens import LaTeXTokenKind
+from .tokens import LaTeXToken
 
 
-class LaTeXGroupContext(ParserContext[LaTeXTokenKind]):
+class LaTeXGroupContext(ParserContext[LaTeXToken]):
     pass

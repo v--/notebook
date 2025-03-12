@@ -2,17 +2,17 @@ from typing import override
 
 from ...parsing import ErrorHighlighter, Parser, ParserContext, ParsingError
 from ..string import CompositeStringBuilder
-from .tokens import BibToken, BibTokenKind
+from .tokens import BibToken
 
 
-class BibEntryContext(ParserContext[BibTokenKind]):
+class BibEntryContext(ParserContext[BibToken]):
     pass
 
 
-class BibValueContext(ParserContext[BibTokenKind]):
+class BibValueContext(ParserContext[BibToken]):
     entry_context: BibEntryContext | None
 
-    def __init__(self, parser: Parser[BibTokenKind], entry_context: BibEntryContext | None) -> None:
+    def __init__(self, parser: Parser[BibToken], entry_context: BibEntryContext | None) -> None:
         super().__init__(parser)
         self.entry_context = entry_context
         self.string_builder = CompositeStringBuilder()

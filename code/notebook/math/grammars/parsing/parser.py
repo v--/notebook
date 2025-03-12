@@ -5,10 +5,10 @@ from ..alphabet import NonTerminal, Terminal
 from ..grammar import GrammarRule, GrammarSchema
 from .parser_context import GrammarNonterminalContext, GrammarSymbolRunContext, GrammarTerminalContext
 from .tokenizer import tokenize_grammar
-from .tokens import GrammarToken, GrammarTokenKind
+from .tokens import GrammarToken
 
 
-class GrammarParser(Parser[GrammarTokenKind]):
+class GrammarParser(Parser[GrammarToken]):
     def _skip_spaces(self) -> GrammarToken | None:
         while (head := self.peek()) and head.kind == 'SPACE':
             self.advance()

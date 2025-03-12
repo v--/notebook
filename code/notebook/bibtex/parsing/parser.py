@@ -9,10 +9,10 @@ from ..entry import ENTRY_KEYS, ENTRY_TYPE_LIST, BibAuthor, BibEntry, BibEntryTy
 from ..string import BibString, CompositeString, CompositeStringBuilder
 from .parser_context import BibEntryContext, BibValueContext
 from .tokenizer import tokenize_bibtex
-from .tokens import BibToken, BibTokenKind
+from .tokens import BibToken
 
 
-class BibParser(Parser[BibTokenKind]):
+class BibParser(Parser[BibToken]):
     def skip_spaces(self) -> BibToken | None:
         while head := self.peek():
             match head.kind:

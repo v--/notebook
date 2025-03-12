@@ -4,10 +4,10 @@ from ....parsing.parser import Parser
 from ..phrases import Phrase
 from .parser_context import PhraseContext
 from .tokenizer import tokenize_text
-from .tokens import TextTokenKind
+from .tokens import TextToken
 
 
-class TextParser(Parser[TextTokenKind]):
+class TextParser(Parser[TextToken]):
     def iter_phrases(self, stop_words: Collection[str]) -> Iterable[Phrase]:
         if self.peek() is None:
             return

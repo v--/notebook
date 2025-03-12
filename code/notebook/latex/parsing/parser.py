@@ -15,10 +15,10 @@ from ..nodes import (
 )
 from .parser_context import LaTeXGroupContext
 from .tokenizer import tokenize_latex
-from .tokens import LaTeXTokenKind
+from .tokens import LaTeXToken, LaTeXTokenKind
 
 
-class LaTeXParser(Parser[LaTeXTokenKind]):
+class LaTeXParser(Parser[LaTeXToken]):
     def _parse_brace[GroupT: Group](self, cls: type[GroupT], closing_kind: LaTeXTokenKind) -> GroupT:
         brace_context = LaTeXGroupContext(self)
         self.advance()

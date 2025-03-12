@@ -7,12 +7,12 @@ from .highlighter import ErrorHighlighter
 from .tokens import Token
 
 
-class Parser[TokenKindT]:
+class Parser[TokenT: Token]:
     source: str
-    tokens: Sequence[Token[TokenKindT]]
+    tokens: Sequence[TokenT]
     token_index: int
 
-    def __init__(self, source: str, tokens: Sequence[Token[TokenKindT]]) -> None:
+    def __init__(self, source: str, tokens: Sequence[TokenT]) -> None:
         self.source = source
         self.tokens = tokens
         self.reset()
@@ -20,7 +20,7 @@ class Parser[TokenKindT]:
     def reset(self) -> None:
         self.token_index = 0
 
-    def peek(self) -> Token[TokenKindT] | None:
+    def peek(self) -> TokenT | None:
         try:
             return self.tokens[self.token_index]
         except IndexError:
@@ -32,20 +32,20 @@ class Parser[TokenKindT]:
 
         return min(self.token_index, len(self.tokens) - 1)
 
-    def peek_safe(self) -> Token[TokenKindT]:
+    def peek_safe(self) -> TokenT:
         return self.tokens[self.get_safe_token_index()]
 
-    def peek_multiple(self, count: int) -> Sequence[Token[TokenKindT]]:
+    def peek_multiple(self, count: int) -> Sequence[TokenT]:
         return self.tokens[self.token_index: self.token_index + count]
 
     def advance(self, count: int = 1) -> None:
         self.token_index += count
 
-    def advance_and_peek(self, count: int = 1) -> Token[TokenKindT] | None:
+    def advance_and_peek(self, count: int = 1) -> TokenT | None:
         self.advance(count)
         return self.peek()
 
-    def annotate_token_error(self, message: str, token: Token[TokenKindT] | None = None) -> ParsingError:
+    def annotate_token_error(self, message: str, token: TokenT | None = None) -> ParsingError:
         err = ParsingError(message)
 
         if token is None:

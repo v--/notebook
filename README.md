@@ -37,7 +37,7 @@ A lot of the monograph-related code, as well as some of the tools are based on a
 * [Natural deduction rules](./code/notebook/math/natural_deduction/parsing)
 * [Formal grammar schemas](./code/notebook/math/grammars/parsing)
 * [First-order logic terms and formulas](./code/notebook/math/fol/parsing)
-* [Untyped lambda calculus terms](./code/notebook/math/lambda/parsing)
+* [Lambda calculus terms](./code/notebook/math/lambda/parsing)
 * [Plain text](./code/notebook/math/nlp/parsing)
 
 Two additional parsers are included:
