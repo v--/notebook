@@ -1,38 +1,23 @@
 from collections.abc import Iterable, Sequence
-from enum import Enum
+from enum import StrEnum
+
+from ..parsing import StringContainer
 
 
-class StringNode:
-    def __init__(self, value: str) -> None:
-        self.value = value
-
-    def __str__(self) -> str:
-        return self.value
-
-    def __hash__(self) -> int:
-        return hash(self.value)
-
-    def __eq__(self, other: object) -> bool:
-        if isinstance(other, StringNode):
-            return type(self) is type(other) and self.value == other.value
-
-        return False
-
-
-class Text(StringNode):
+class Text(StringContainer):
     pass
 
 
-class Whitespace(StringNode):
+class Whitespace(StringContainer):
     pass
 
 
-class Command(StringNode):
+class Command(StringContainer):
     def __str__(self) -> str:
         return '\\' + self.value
 
 
-class SpecialNode(str, Enum):
+class SpecialNode(StrEnum):
     at = '@'
     caret = '^'
     percent = '%'
@@ -40,9 +25,6 @@ class SpecialNode(str, Enum):
     underscore = '_'
     dollar = '$'
     line_break = '\n'
-
-    def __str__(self) -> str:
-        return self.value
 
 
 class Group:

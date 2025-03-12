@@ -1,6 +1,7 @@
+from collections.abc import Mapping
 from typing import Literal, get_args
 
-from ...parsing.tokens import Token
+from ...parsing import Token
 
 
 LaTeXTokenKind = Literal[
@@ -23,7 +24,7 @@ LaTeXTokenKind = Literal[
 
 
 TOKEN_KIND_LIST = get_args(LaTeXTokenKind)
-SINGLETON_TOKEN_MAP: dict[str, LaTeXTokenKind] = {
+SINGLETON_TOKEN_MAP: Mapping[str, LaTeXTokenKind] = {
     '@': 'AT',
     '^': 'CARET',
     '%': 'PERCENT',

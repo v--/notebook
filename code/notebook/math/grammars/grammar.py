@@ -3,8 +3,8 @@ from collections.abc import Collection, Iterable, Sequence
 from dataclasses import dataclass, field
 
 from ...support.iteration import string_accumulator
-from .alphabet import NonTerminal, Terminal
-from .exceptions import UnknownSymbolError
+from .alphabet import NonTerminal, Terminal, empty
+from .exceptions import GrammarError, UnknownSymbolError
 
 
 @dataclass(frozen=True)
@@ -14,23 +14,24 @@ class GrammarRule:
 
     @property
     def src_symbol(self) -> NonTerminal:
-        assert len(self.src) == 1
-        assert isinstance(self.src[0], NonTerminal)
-        return self.src[0]
+        if len(self.src) != 1:
+            raise GrammarError('Only context-free rules have a source symbol')
+
+        value = self.src[0]
+        assert isinstance(value, NonTerminal)
+        return value
 
     @string_accumulator()
     def __str__(self) -> Iterable[str]:  # noqa: PLE0307
-        from .parsing.tokens import MiscToken
-
         for sym in self.src:
             yield str(sym)
             yield ' '
 
-        yield MiscToken.right_arrow
+        yield '→'
 
         if len(self.dest) == 0:
             yield ' '
-            yield MiscToken.epsilon
+            yield empty
         else:
             for sym in self.dest:
                 yield ' '

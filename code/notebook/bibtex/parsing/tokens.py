@@ -1,6 +1,7 @@
+from collections.abc import Mapping
 from typing import Literal, get_args
 
-from ...parsing.tokens import Token
+from ...parsing import Token
 
 
 BibTokenKind = Literal[
@@ -25,7 +26,7 @@ BibTokenKind = Literal[
 
 
 TOKEN_KIND_LIST = get_args(BibTokenKind)
-SINGLETON_TOKEN_MAP: dict[str, BibTokenKind] = {
+SINGLETON_TOKEN_MAP: Mapping[str, BibTokenKind] = {
     '@': 'AT',
     '%': 'PERCENT',
     '&': 'AMPERSAND',

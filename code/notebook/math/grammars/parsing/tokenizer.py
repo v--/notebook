@@ -1,83 +1,31 @@
+import unicodedata
 from collections.abc import Sequence
+from typing import override
 
-from ....parsing.old_tokenizer import Tokenizer
-from ....parsing.whitespace import Whitespace
-from ..alphabet import NonTerminal, Terminal
-from .tokens import GrammarToken, MiscToken
-
-
-class GrammarTokenizer(Tokenizer[GrammarToken]):
-    def parse_non_terminal(self) -> NonTerminal:
-        assert self.peek() == '<'
-        start = self.index
-        self.advance()
-        buffer = list[str]()
-
-        while self.peek() != '>':
-            if self.peek() == '<':
-                raise self.error('Nonterminal names cannot be nested', i_first_token=start)
-
-            if self.peek() == '\\':
-                self.advance()
-
-                if self.peek() in ('<', '>', '\\'):
-                    buffer.append(self.peek())
-                else:
-                    raise self.error('Invalid escape code', i_first_token=self.index - 1)
-
-                self.advance()
-            else:
-                buffer.append(self.peek())
-                self.advance()
-
-            if self.is_at_end():
-                raise self.error('Nonterminal has no matching end bracket', i_first_token=start)
+from ....parsing import Tokenizer, TokenizerContext
+from .tokens import SINGLETON_TOKEN_MAP, GrammarToken, GrammarTokenKind
 
 
-        if len(buffer) == 0:
-            raise self.error('Empty nonterminals are disallowed', i_first_token=start)
-
-        self.advance()
-        return NonTerminal(''.join(buffer))
-
-    def parse_terminal(self) -> Terminal:
-        assert self.peek() == '"'
-        start = self.index
-        self.advance()
-        value = self.peek()
-
-        if value == '"':
-            raise self.error('Empty terminals are disallowed', i_first_token=start)
-
-        self.advance()
-
-        if self.is_at_end():
-            raise self.error('Terminal has no matching end quote', i_first_token=start)
-
-        if not self.is_at_end() and self.peek() != '"':
-            raise self.error('Multi-symbol terminals are disallowed', i_first_token=start)
-
-        self.advance()
-        return Terminal(value)
-
-    def parse_step(self, head: str) -> GrammarToken:
-        if sym := (MiscToken.try_match(head) or Whitespace.try_match(head)):
+class GrammarTokenizer(Tokenizer[GrammarTokenKind]):
+    @override
+    def read_token(self, context: TokenizerContext[GrammarTokenKind]) -> GrammarToken | None:
+        if (head := self.peek()) and (token_type := SINGLETON_TOKEN_MAP.get(head)):
             self.advance()
-            return sym
+            context.close_at_previous_token()
+            return context.extract_token(token_type)
 
-        if sym is not None:
+        while (head := self.peek()) and \
+            head not in SINGLETON_TOKEN_MAP and \
+            unicodedata.category(head).startswith(('L', 'Mn', 'N', 'S', 'P')):
             self.advance()
-            return sym
 
-        if head == '<':
-            return self.parse_non_terminal()
+        if not context.is_empty():
+            context.close_at_previous_token()
+            return context.extract_token('TEXT')
 
-        if head == '"':
-            return self.parse_terminal()
-
-        raise self.error('Unexpected symbol')
+        raise self.annotate_char_error('Unexpected symbol')
 
 
-def tokenize_bnf(string: str) -> Sequence[GrammarToken]:
+def tokenize_grammar(string: str) -> Sequence[GrammarToken]:
     with GrammarTokenizer(string) as tokenizer:
-        return list(tokenizer.parse())
+        return list(tokenizer.iter_tokens())

@@ -3,11 +3,11 @@ from collections.abc import Collection
 from typing import Literal
 
 from ...exceptions import UnreachableException
-from ...parsing.old_tokens import TokenMixin
+from ...parsing import StringContainer
 from ...support.unicode import atoi_subscripts, is_numeric_subscript, itoa_subscripts
 
 
-class Terminal(TokenMixin):
+class Terminal(StringContainer):
     def __str__(self) -> str:
         return f'"{self.value}"'
 
@@ -15,7 +15,7 @@ class Terminal(TokenMixin):
         return f'Terminal({self.value!r})'
 
 
-class NonTerminal(TokenMixin):
+class NonTerminal(StringContainer):
     def __str__(self) -> str:
         return f'<{self.value}>'
 

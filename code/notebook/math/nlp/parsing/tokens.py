@@ -1,6 +1,6 @@
 from typing import Literal, get_args
 
-from ....parsing.tokens import Token
+from ....parsing import Token
 
 
 TextTokenKind = Literal[
