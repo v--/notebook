@@ -41,18 +41,6 @@ class BibParser(Parser[BibToken]):
 
         return None
 
-    def parse_entry_type(self, entry_context: 'BibEntryContext') -> BibEntryType:
-        head = self.peek()
-        assert head
-        assert head.kind == 'WORD'
-        entry_type = head.value
-
-        if entry_type not in ENTRY_TYPE_LIST:
-            raise entry_context.annotate_token_error('Unrecognized entry type')
-
-        self.advance()
-        return cast(BibEntryType, entry_type)
-
     def parse_entry_name(self, name_context: 'BibValueContext', existing_names: Collection[str]) -> str:
         # Entry names may even contain %, which is otherwise used for comments
         while (head := self.peek()) and head.kind not in ['CLOSING_BRACE', 'COMMA', 'LINE_BREAK']:
@@ -73,8 +61,7 @@ class BibParser(Parser[BibToken]):
         return entry_name
 
     def parse_property_key(self, entry_context: 'BibEntryContext', existing_keys: Collection[str]) -> str:
-        head = self.peek()
-        assert head
+        head = self.peek_unsafe()
 
         if head.kind != 'WORD':
             raise entry_context.annotate_token_error('Expected an entry key')
@@ -88,9 +75,8 @@ class BibParser(Parser[BibToken]):
         self.advance()
         return head.value
 
-    def parse_escape_sequence(self, value_context: 'BibValueContext') -> str:
+    def _parse_escape_sequence(self, value_context: 'BibValueContext') -> str:
         lookahead = self.peek_multiple(2)
-        assert lookahead[0].kind == 'BACKSLASH'
 
         if len(lookahead) == 1:
             raise value_context.annotate_token_error('No symbol to escape')
@@ -105,9 +91,6 @@ class BibParser(Parser[BibToken]):
                 return '\\' + lookahead[1].value
 
     def parse_value_in_context(self, value_context: 'BibValueContext', key: str, *, quotes: bool) -> None:
-        head = self.peek()
-        assert head
-        assert head.kind == ('DOUBLE_QUOTES' if quotes else 'OPENING_BRACE')
         self.advance()
 
         builder = value_context.string_builder
@@ -152,7 +135,7 @@ class BibParser(Parser[BibToken]):
                         self.advance()
 
                 case 'BACKSLASH':
-                    builder.append(self.parse_escape_sequence(value_context))
+                    builder.append(self._parse_escape_sequence(value_context))
 
                 case 'WORD' if key in ENTRY_KEYS.list and (head.value == 'AND' or head.value == 'and'):
                     if verbatim:
@@ -195,7 +178,7 @@ class BibParser(Parser[BibToken]):
                     self.advance()
 
                 case 'BACKSLASH':
-                    builder.append(self.parse_escape_sequence(value_context))
+                    builder.append(self._parse_escape_sequence(value_context))
 
                 case _:
                     builder.append(head.value)
@@ -263,7 +246,7 @@ class BibParser(Parser[BibToken]):
             self.advance()
             head = self.skip_spaces()
 
-            if head is None:
+            if not head:
                 raise entry_context.annotate_token_error('Expected a value')
 
             value_context = BibValueContext(self, entry_context)
@@ -289,7 +272,7 @@ class BibParser(Parser[BibToken]):
 
             head = self.skip_whitespace_and_comments()
 
-            if head is None:
+            if not head:
                 raise entry_context.annotate_token_error('Expected a closing brace')
 
             match head.kind:
@@ -354,7 +337,7 @@ class BibParser(Parser[BibToken]):
     def iter_entries(self) -> Iterable[BibEntry]:
         head = self.skip_whitespace_and_comments()
 
-        if head is None:
+        if not head:
             return
 
         entry_names = set[str]()
@@ -369,7 +352,7 @@ class BibParser(Parser[BibToken]):
 
             head = self.advance_and_peek()
 
-            if head is None or head.kind != 'WORD':
+            if not head or head.kind != 'WORD':
                 raise entry_context.annotate_token_error('Expected an entry type')
 
             entry_type = head.value
@@ -384,7 +367,7 @@ class BibParser(Parser[BibToken]):
 
             head = self.advance_and_peek()
 
-            if head is None:
+            if not head:
                 raise name_context.annotate_token_error('Expected an entry name')
 
             name_context.reset()
@@ -393,7 +376,7 @@ class BibParser(Parser[BibToken]):
 
             head = self.peek()
 
-            if head is None or head.kind == 'CLOSING_BRACE':
+            if not head or head.kind == 'CLOSING_BRACE':
                 raise entry_context.annotate_context_error('Entry without properties')
 
             if head.kind != 'COMMA':

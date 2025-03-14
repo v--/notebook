@@ -11,14 +11,14 @@ class LaTeXTokenizer(Tokenizer[LaTeXTokenKind]):
     def read_token(self, context: TokenizerContext[LaTeXTokenKind]) -> LaTeXToken:
         if (head := self.peek()) and (token_type := SINGLETON_TOKEN_MAP.get(head)):
             self.advance()
-            context.close_at_previous_token()
+            context.close_at_previous_char()
             return context.extract_token(token_type)
 
         while (head := self.peek()) and (head == ' ' or head == '\t'):
             self.advance()
 
         if not context.is_empty():
-            context.close_at_previous_token()
+            context.close_at_previous_char()
             return context.extract_token('WHITESPACE')
 
         while (head := self.peek()) and \
@@ -27,7 +27,7 @@ class LaTeXTokenizer(Tokenizer[LaTeXTokenKind]):
             self.advance()
 
         if not context.is_empty():
-            context.close_at_previous_token()
+            context.close_at_previous_char()
             return context.extract_token('TEXT')
 
         raise self.annotate_char_error('Unexpected symbol')

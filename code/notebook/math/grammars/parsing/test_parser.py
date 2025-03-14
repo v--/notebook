@@ -2,7 +2,7 @@ from textwrap import dedent
 
 import pytest
 
-from ....parsing import ParsingError
+from ....parsing import ParserError
 from ....support.pytest import pytest_parametrize_kwargs, pytest_parametrize_lists
 from ..alphabet import NonTerminal, Terminal
 from ..grammar import GrammarRule, GrammarSchema
@@ -25,14 +25,14 @@ def test_parsing_double_quote_terminal() -> None:
 
 
 def test_parsing_terminal_empty_input() -> None:
-    with pytest.raises(ParsingError) as excinfo:
+    with pytest.raises(ParserError) as excinfo:
         assert parse_terminal('')
 
     assert str(excinfo.value) == 'Empty input'
 
 
 def test_parsing_terminal_with_only_opening_quotes() -> None:
-    with pytest.raises(ParsingError) as excinfo:
+    with pytest.raises(ParserError) as excinfo:
         assert parse_terminal('"')
 
     assert str(excinfo.value) == 'Expected a terminal'
@@ -44,7 +44,7 @@ def test_parsing_terminal_with_only_opening_quotes() -> None:
 
 
 def test_parsing_empty_terminal() -> None:
-    with pytest.raises(ParsingError) as excinfo:
+    with pytest.raises(ParserError) as excinfo:
         assert parse_terminal('""')
 
     assert str(excinfo.value) == 'Empty terminals are disallowed'
@@ -56,7 +56,7 @@ def test_parsing_empty_terminal() -> None:
 
 
 def test_parsing_terminal_with_no_closing_quotes() -> None:
-    with pytest.raises(ParsingError) as excinfo:
+    with pytest.raises(ParserError) as excinfo:
         assert parse_terminal('"T')
 
     assert str(excinfo.value) == 'Terminal has no matching closing quotes'
@@ -68,7 +68,7 @@ def test_parsing_terminal_with_no_closing_quotes() -> None:
 
 
 def test_parsing_two_symbol_terminal() -> None:
-    with pytest.raises(ParsingError) as excinfo:
+    with pytest.raises(ParserError) as excinfo:
         assert parse_terminal('"TT"')
 
     assert str(excinfo.value) == 'Multi-symbol terminals are disallowed'
@@ -80,7 +80,7 @@ def test_parsing_two_symbol_terminal() -> None:
 
 
 def test_parsing_two_symbol_non_text_terminal() -> None:
-    with pytest.raises(ParsingError) as excinfo:
+    with pytest.raises(ParserError) as excinfo:
         assert parse_terminal('"T<"')
 
     assert str(excinfo.value) == 'Multi-symbol terminals are disallowed'
@@ -112,14 +112,14 @@ def test_parsing_closing_chevron_nonterminal() -> None:
 
 
 def test_parsing_nonterminal_empty_input() -> None:
-    with pytest.raises(ParsingError) as excinfo:
+    with pytest.raises(ParserError) as excinfo:
         assert parse_nonterminal('')
 
     assert str(excinfo.value) == 'Empty input'
 
 
 def test_parsing_nonterminal_with_only_opening_chevron() -> None:
-    with pytest.raises(ParsingError) as excinfo:
+    with pytest.raises(ParserError) as excinfo:
         assert parse_nonterminal('<')
 
     assert str(excinfo.value) == 'Expected a nonterminal'
@@ -131,7 +131,7 @@ def test_parsing_nonterminal_with_only_opening_chevron() -> None:
 
 
 def test_parsing_empty_nonterminal() -> None:
-    with pytest.raises(ParsingError) as excinfo:
+    with pytest.raises(ParserError) as excinfo:
         assert parse_nonterminal('<>')
 
     assert str(excinfo.value) == 'Empty nonterminals are disallowed'
@@ -143,7 +143,7 @@ def test_parsing_empty_nonterminal() -> None:
 
 
 def test_parsing_nonterminal_with_no_closing_chevron() -> None:
-    with pytest.raises(ParsingError) as excinfo:
+    with pytest.raises(ParserError) as excinfo:
         assert parse_nonterminal('<N')
 
     assert str(excinfo.value) == 'Nonterminal has no matching closing chevron'
@@ -155,7 +155,7 @@ def test_parsing_nonterminal_with_no_closing_chevron() -> None:
 
 
 def test_parsing_nested_nonterminal() -> None:
-    with pytest.raises(ParsingError) as excinfo:
+    with pytest.raises(ParserError) as excinfo:
         assert parse_nonterminal('<N<N>>')
 
     assert str(excinfo.value) == 'Nested nonterminals are disallowed'
@@ -167,14 +167,14 @@ def test_parsing_nested_nonterminal() -> None:
 
 
 def test_parsing_empty_rule() -> None:
-    with pytest.raises(ParsingError) as excinfo:
+    with pytest.raises(ParserError) as excinfo:
         parse_grammar_rule_line('')
 
     assert str(excinfo.value) == 'Expected a rule'
 
 
 def test_parsing_rule_with_empty_left_side() -> None:
-    with pytest.raises(ParsingError) as excinfo:
+    with pytest.raises(ParserError) as excinfo:
         parse_grammar_rule_line('→ ε')
 
     assert str(excinfo.value) == 'The left side of a rule must be nonempty'
@@ -186,7 +186,7 @@ def test_parsing_rule_with_empty_left_side() -> None:
 
 
 def test_parsing_rule_with_lone_terminal_on_left() -> None:
-    with pytest.raises(ParsingError) as excinfo:
+    with pytest.raises(ParserError) as excinfo:
         parse_grammar_schema('"a" → ε')
 
     assert str(excinfo.value) == 'The left side of a rule must contain at least one nonterminal'
@@ -198,7 +198,7 @@ def test_parsing_rule_with_lone_terminal_on_left() -> None:
 
 
 def test_parsing_rule_with_epsilon_on_left() -> None:
-    with pytest.raises(ParsingError) as excinfo:
+    with pytest.raises(ParserError) as excinfo:
         parse_grammar_schema('ε → ε')
 
     assert str(excinfo.value) == 'ε is disallowed on the left side of a rule'
@@ -210,7 +210,7 @@ def test_parsing_rule_with_epsilon_on_left() -> None:
 
 
 def test_parsing_rule_with_no_arrow() -> None:
-    with pytest.raises(ParsingError) as excinfo:
+    with pytest.raises(ParserError) as excinfo:
         parse_grammar_schema('<S>')
 
     assert str(excinfo.value) == 'Expected an arrow after the left side of a rule'
@@ -222,7 +222,7 @@ def test_parsing_rule_with_no_arrow() -> None:
 
 
 def test_parsing_rule_with_empty_right_side() -> None:
-    with pytest.raises(ParsingError) as excinfo:
+    with pytest.raises(ParserError) as excinfo:
         parse_grammar_schema('<S> →')
 
     assert str(excinfo.value) == 'The right side of a rule must contain a pipe between runs of terminals, nonterminals and ε'
@@ -234,7 +234,7 @@ def test_parsing_rule_with_empty_right_side() -> None:
 
 
 def test_parsing_rule_with_epsilon_and_nonterminal() -> None:
-    with pytest.raises(ParsingError) as excinfo:
+    with pytest.raises(ParserError) as excinfo:
         parse_grammar_schema('<S> → ε <S>')
 
     assert str(excinfo.value) == 'The right side of a rule must contain terminals and nonterminals and at most a single ε'
@@ -246,7 +246,7 @@ def test_parsing_rule_with_epsilon_and_nonterminal() -> None:
 
 
 def test_parsing_line_break_inside_rule() -> None:
-    with pytest.raises(ParsingError) as excinfo:
+    with pytest.raises(ParserError) as excinfo:
         parse_grammar_schema(
             dedent('''\
                 <S>
@@ -264,7 +264,7 @@ def test_parsing_line_break_inside_rule() -> None:
 
 
 def test_parsing_rule_with_two_right_sides() -> None:
-    with pytest.raises(ParsingError) as excinfo:
+    with pytest.raises(ParserError) as excinfo:
         parse_grammar_schema(
             dedent('<S> → →')
         )
@@ -278,7 +278,7 @@ def test_parsing_rule_with_two_right_sides() -> None:
 
 
 def test_parsing_rule_with_two_nonempty_right_sides() -> None:
-    with pytest.raises(ParsingError) as excinfo:
+    with pytest.raises(ParserError) as excinfo:
         parse_grammar_schema(
             dedent('<S> → "A" → "A"')
         )
@@ -330,7 +330,7 @@ def test_parse_schema_success(schema: str, expected: GrammarSchema) -> None:
 
 
 def test_parsing_empty_schema() -> None:
-    with pytest.raises(ParsingError) as excinfo:
+    with pytest.raises(ParserError) as excinfo:
         parse_grammar_schema('')
 
     assert str(excinfo.value) == 'Expected at least one grammar rule'

@@ -1,6 +1,6 @@
 from typing import TYPE_CHECKING
 
-from .exceptions import TokenizationError
+from .exceptions import TokenizerError
 from .highlighter import ErrorHighlighter
 from .tokens import Token
 
@@ -25,26 +25,26 @@ class TokenizerContext[TokenKindT]:
         try:
             self.tokenizer.source[self.offset_start]
         except IndexError:
-            raise TokenizationError('Context can be entered before end of input') from None
+            raise TokenizerError('Context can be entered before end of input') from None
 
     def is_closed(self) -> bool:
         return self.offset_end is not None
 
-    def close_at_current_token(self) -> None:
+    def close_at_current_char(self) -> None:
         self.offset_end = self.tokenizer.offset
 
         try:
             self.tokenizer.source[self.offset_end]
         except IndexError:
-            raise TokenizationError('Context must be closed before end of input') from None
+            raise TokenizerError('Context must be closed before end of input') from None
 
-    def close_at_previous_token(self) -> None:
+    def close_at_previous_char(self) -> None:
         self.offset_end = self.tokenizer.offset - 1
 
         try:
             self.tokenizer.source[self.offset_end]
         except IndexError:
-            raise TokenizationError('Context must be closed before end of input') from None
+            raise TokenizerError('Context must be closed before end of input') from None
 
     def get_offset_end_safe(self) -> int:
         if self.offset_end is None:
@@ -65,8 +65,8 @@ class TokenizerContext[TokenKindT]:
             value=self.get_context_string()
         )
 
-    def annotate_char_error(self, message: str, offset: int | None = None) -> TokenizationError:
-        err = TokenizationError(message)
+    def annotate_char_error(self, message: str, offset: int | None = None) -> TokenizerError:
+        err = TokenizerError(message)
 
         if offset is None:
             offset = self.get_offset_end_safe()
@@ -82,8 +82,8 @@ class TokenizerContext[TokenKindT]:
         err.add_note(highlighter.highlight())
         return err
 
-    def annotate_context_error(self, message: str) -> TokenizationError:
-        err = TokenizationError(message)
+    def annotate_context_error(self, message: str) -> TokenizerError:
+        err = TokenizerError(message)
 
         highlighter = ErrorHighlighter(
             self.tokenizer.source,

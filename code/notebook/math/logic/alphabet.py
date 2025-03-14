@@ -1,26 +1,26 @@
-from ...parsing.old_tokens import TokenEnum
+from enum import StrEnum
 
 
-class PropConstant(TokenEnum):
-    verum = '⊤'
-    falsum = '⊥'
+class PropConstant(StrEnum):
+    VERUM = '⊤'
+    FALSUM = '⊥'
 
 
-class UnaryConnective(TokenEnum):
-    negation = '¬'
+class UnaryConnective(StrEnum):
+    NEGATION = '¬'
 
 
-class BinaryConnective(TokenEnum):
-    disjunction = '∨'
-    conjunction = '∧'
-    conditional = '→'
-    biconditional = '↔'
+class BinaryConnective(StrEnum):
+    DISJUNCTION = '∨'
+    CONJUNCTION = '∧'
+    CONDITIONAL = '→'
+    BICONDITIONAL = '↔'
 
 
-class Quantifier(TokenEnum):
-    universal = '∀'
-    existential = '∃'
+class Quantifier(StrEnum):
+    UNIVERSAL = '∀'
+    EXISTENTIAL = '∃'
 
 
-class SchemaConnective(TokenEnum):
-    substitution = '↦'
+class SchemaConnective(StrEnum):
+    SUBSTITUTION = '↦'

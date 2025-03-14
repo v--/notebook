@@ -3,7 +3,7 @@ from typing import Any
 
 from ....support.schemas import SchemaInferenceError, iter_mapping_discrepancy
 from ..terms import (
-    Term,
+    MixedTerm,
     TermPlaceholder,
     TypedTerm,
     UntypedTerm,
@@ -18,14 +18,14 @@ from ..types import (
 
 class LambdaSchemaInstantiation:
     variable_mapping: Mapping[VariablePlaceholder, Variable]
-    term_mapping: Mapping[TermPlaceholder, Term]
+    term_mapping: Mapping[TermPlaceholder, MixedTerm]
     type_mapping: Mapping[TypePlaceholder, SimpleType]
 
     def __init__(
         self,
         *,
         variable_mapping: Mapping[VariablePlaceholder, Variable] | None = None,
-        term_mapping: Mapping[TermPlaceholder, Term] | None = None,
+        term_mapping: Mapping[TermPlaceholder, MixedTerm] | None = None,
         type_mapping: Mapping[TypePlaceholder, SimpleType] | None = None
     ) -> None:
         self.variable_mapping = variable_mapping or {}

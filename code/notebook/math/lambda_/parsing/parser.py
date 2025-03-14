@@ -1,14 +1,8 @@
-from collections.abc import Iterable
-from dataclasses import dataclass
+from collections.abc import Iterable, Sequence
 from typing import Literal, overload
 
-from ....parsing.identifiers import GreekIdentifier, LatinIdentifier
-from ....parsing.mixins.old_inference_rules import InferenceRuleParserMixin
-from ....parsing.mixins.whitespace import WhitespaceParserMixin
-from ....parsing.old_parser import Parser
-from ....support.inference.rules import InferenceRuleConnective
-from ....support.unicode import Capitalization, is_latin_string
-from ..alphabet import BinaryTypeConnective, TermConnective, TypeAssertionConnective
+from ....parsing import IdentifierParserMixin, Parser
+from ..alphabet import BinaryTypeConnective, TermConnective
 from ..assertions import (
     ExplicitTypeAssertion,
     ExplicitTypeAssertionSchema,
@@ -21,14 +15,14 @@ from ..assertions import (
 )
 from ..signature import EMPTY_SIGNATURE, LambdaSignature
 from ..terms import (
-    Abstraction,
-    AbstractionSchema,
-    Application,
-    ApplicationSchema,
     Constant,
-    Term,
+    MixedAbstraction,
+    MixedAbstractionSchema,
+    MixedApplication,
+    MixedApplicationSchema,
+    MixedTerm,
+    MixedTermSchema,
     TermPlaceholder,
-    TermSchema,
     TypedAbstraction,
     TypedAbstractionSchema,
     TypedApplication,
@@ -61,50 +55,53 @@ from ..typing import (
     ImplicitTypingRulePremise,
     TypingStyle,
 )
+from .parser_context import LambdaParserContext
 from .tokenizer import tokenize_lambda_string
-from .tokens import BaseTypeToken, ConstantTermToken, LambdaToken, MiscToken
+from .tokens import LambdaToken, LambdaTokenKind
 
 
-@dataclass
-class LambdaParser(InferenceRuleParserMixin[LambdaToken], WhitespaceParserMixin[LambdaToken], Parser[LambdaToken]):
+class LambdaParser(IdentifierParserMixin[LambdaTokenKind, LambdaToken], Parser[LambdaToken]):
     signature: LambdaSignature
 
-    def parse_base_type(self) -> BaseType:
-        head = self.peek()
-        assert isinstance(head, BaseTypeToken)
+    def __init__(self, signature: LambdaSignature, source: str, tokens: Sequence[LambdaToken]) -> None:
+        super().__init__(source, tokens)
+        self.signature = signature
+
+    def _parse_base_type(self) -> BaseType:
+        head = self.peek_unsafe()
         self.advance()
-        return BaseType(str(head))
+        return BaseType(head.value)
 
     def parse_type_placeholder(self) -> TypePlaceholder:
-        head = self.peek()
-        assert isinstance(head, GreekIdentifier)
-        self.advance()
-        return TypePlaceholder(head)
+        identifier = self.parse_greek_identifier('GREEK_IDENTIFIER')
+        return TypePlaceholder(identifier)
 
     @overload
-    def parse_arrow_type(self, *, parse_schema: Literal[False]) -> SimpleConnectiveType: ...
+    def _parse_arrow_type(self, context: LambdaParserContext, *, parse_schema: Literal[False]) -> SimpleConnectiveType: ...
     @overload
-    def parse_arrow_type(self, *, parse_schema: Literal[True]) -> SimpleConnectiveTypeSchema: ...
+    def _parse_arrow_type(self, context: LambdaParserContext, *, parse_schema: Literal[True]) -> SimpleConnectiveTypeSchema: ...
     @overload
-    def parse_arrow_type(self, *, parse_schema: bool) -> SimpleConnectiveType | SimpleConnectiveTypeSchema: ...
-    def parse_arrow_type(self, *, parse_schema: bool) -> SimpleConnectiveType | SimpleConnectiveTypeSchema:
-        assert self.peek() == MiscToken.left_parenthesis
-        start_i = self.index
-        self.advance()
+    def _parse_arrow_type(self, context: LambdaParserContext, *, parse_schema: bool) -> SimpleConnectiveType | SimpleConnectiveTypeSchema: ...
+    def _parse_arrow_type(self, context: LambdaParserContext, *, parse_schema: bool) -> SimpleConnectiveType | SimpleConnectiveTypeSchema:
+        head = self.advance_and_peek()
+
+        if not head:
+            raise self.annotate_unexpected_end_of_input()
 
         a = self.parse_type(parse_schema=parse_schema)
-        self.skip_spaces()
+        head = self.peek()
 
-        if self.is_at_end() or self.peek() == MiscToken.right_parenthesis:
-            raise self.error(f'{'Binary type schemas' if parse_schema else 'Binary types'} must have a second subtype', i_first_token=start_i)
+        if not head or head.kind == 'RIGHT_PARENTHESIS':
+            raise context.annotate_context_error(f'Binary {'type schemas' if parse_schema else 'types'} must have a second subtype')
 
-        if isinstance(connective := self.peek(), BinaryTypeConnective):
-            self.advance_and_skip_spaces()
-
+        if head.kind == 'BINARY_TYPE_CONNECTIVE':
+            connective = BinaryTypeConnective(head.value)
+            self.advance()
             b = self.parse_type(parse_schema=parse_schema)
+            head = self.peek()
 
-            if self.is_at_end() or self.peek() != MiscToken.right_parenthesis:
-                raise self.error(f'Unclosed parentheses for {'binary type schema' if parse_schema else 'binary type'}', i_first_token=start_i)
+            if not head or head.kind != 'RIGHT_PARENTHESIS':
+                raise context.annotate_context_error(f'Unclosed parentheses for binary {'type schema' if parse_schema else 'type'}')
 
             self.advance()
 
@@ -117,7 +114,7 @@ class LambdaParser(InferenceRuleParserMixin[LambdaToken], WhitespaceParserMixin[
             assert isinstance(b, SimpleType)
             return SimpleConnectiveType(connective, a, b)
 
-        raise self.error('Binary types must have a connective after the first subtype', i_first_token=start_i)
+        raise context.annotate_context_error('Binary types must have a connective after the first subtype')
 
     @overload
     def parse_type(self, *, parse_schema: Literal[False]) -> SimpleType: ...
@@ -126,32 +123,45 @@ class LambdaParser(InferenceRuleParserMixin[LambdaToken], WhitespaceParserMixin[
     @overload
     def parse_type(self, *, parse_schema: bool) -> SimpleType | SimpleTypeSchema: ...
     def parse_type(self, *, parse_schema: bool) -> SimpleType | SimpleTypeSchema:
-        if isinstance(self.peek(), BaseTypeToken):
-            return self.parse_base_type()
-
-        if isinstance(self.peek(), GreekIdentifier):
-            if parse_schema:
-                return self.parse_type_placeholder()
-
-            raise self.error('Type placeholders are only allowed in schemas')
-
-        if self.peek() == MiscToken.left_parenthesis:
-            return self.parse_arrow_type(parse_schema=parse_schema)
-
-        raise self.error('Unexpected token')
-
-    def parse_constant(self) -> Constant:
         head = self.peek()
-        assert isinstance(head, ConstantTermToken)
+
+        if not head:
+            raise self.annotate_unexpected_end_of_input()
+
+        match head.kind:
+            case 'SIGNATURE_SYMBOL':
+                symbol = self.signature.get_symbol(head.value)
+
+                if symbol.kind == 'CONSTANT_TERM':
+                    raise self.annotate_token_error('Unexpected constant term symbol while parsing type')
+
+                return self._parse_base_type()
+
+            case 'GREEK_IDENTIFIER':
+                if parse_schema:
+                    return self.parse_type_placeholder()
+
+                raise self.annotate_token_error('Type placeholders are only allowed in schemas')
+
+            case 'LEFT_PARENTHESIS':
+                context = LambdaParserContext(self)
+                return self._parse_arrow_type(context, parse_schema=parse_schema)
+
+            case _:
+                raise self.annotate_token_error('Unexpected token')
+
+    def _parse_constant(self) -> Constant:
+        head = self.peek_unsafe()
         self.advance()
-        return Constant(str(head))
+        return Constant(head.value)
 
     def parse_term_placeholder(self) -> TermPlaceholder:
-        head = self.peek()
-        assert isinstance(head, LatinIdentifier)
-        assert is_latin_string(head.value, Capitalization.upper)
-        self.advance()
-        return TermPlaceholder(head)
+        identifier = self.parse_latin_identifier('LATIN_IDENTIFIER')
+
+        if identifier.value.islower():
+            raise self.annotate_token_error('Expected a capital Latin identifier')
+
+        return TermPlaceholder(identifier)
 
     @overload
     def parse_variable(self, *, parse_schema: Literal[True]) -> VariablePlaceholder: ...
@@ -160,59 +170,57 @@ class LambdaParser(InferenceRuleParserMixin[LambdaToken], WhitespaceParserMixin[
     @overload
     def parse_variable(self, *, parse_schema: bool) -> VariablePlaceholder | Variable: ...
     def parse_variable(self, *, parse_schema: bool) -> VariablePlaceholder | Variable:
-        head = self.peek()
-        assert isinstance(head, LatinIdentifier)
-        assert is_latin_string(head.value, Capitalization.lower)
-        self.advance()
+        identifier = self.parse_latin_identifier('LATIN_IDENTIFIER')
 
         if parse_schema:
-            return VariablePlaceholder(head)
+            return VariablePlaceholder(identifier)
 
-        return Variable(head)
+        return Variable(identifier)
 
     @overload
-    def parse_abstraction(self, *, parse_schema: Literal[True], typing: Literal[TypingStyle.implicit]) -> UntypedAbstractionSchema: ...
+    def _parse_abstraction(self, context: LambdaParserContext, *, parse_schema: Literal[True], typing: Literal[TypingStyle.IMPLICIT]) -> UntypedAbstractionSchema: ...
     @overload
-    def parse_abstraction(self, *, parse_schema: Literal[True], typing: Literal[TypingStyle.explicit]) -> TypedAbstractionSchema: ...
+    def _parse_abstraction(self, context: LambdaParserContext, *, parse_schema: Literal[True], typing: Literal[TypingStyle.EXPLICIT]) -> TypedAbstractionSchema: ...
     @overload
-    def parse_abstraction(self, *, parse_schema: Literal[True], typing: TypingStyle) -> AbstractionSchema: ...
+    def _parse_abstraction(self, context: LambdaParserContext, *, parse_schema: Literal[True], typing: TypingStyle) -> MixedAbstractionSchema: ...
     @overload
-    def parse_abstraction(self, *, parse_schema: Literal[False], typing: Literal[TypingStyle.implicit]) -> UntypedAbstraction: ...
+    def _parse_abstraction(self, context: LambdaParserContext, *, parse_schema: Literal[False], typing: Literal[TypingStyle.IMPLICIT]) -> UntypedAbstraction: ...
     @overload
-    def parse_abstraction(self, *, parse_schema: Literal[False], typing: Literal[TypingStyle.explicit]) -> TypedAbstraction: ...
+    def _parse_abstraction(self, context: LambdaParserContext, *, parse_schema: Literal[False], typing: Literal[TypingStyle.EXPLICIT]) -> TypedAbstraction: ...
     @overload
-    def parse_abstraction(self, *, parse_schema: Literal[False], typing: TypingStyle) -> Abstraction: ...
+    def _parse_abstraction(self, context: LambdaParserContext, *, parse_schema: Literal[False], typing: TypingStyle) -> MixedAbstraction: ...
     @overload
-    def parse_abstraction(self, *, parse_schema: bool, typing: TypingStyle) -> Abstraction | AbstractionSchema: ...
-    def parse_abstraction(self, *, parse_schema: bool, typing: TypingStyle) -> Abstraction | AbstractionSchema:  # noqa: C901
-        assert self.peek_multiple(2) == [MiscToken.left_parenthesis, TermConnective.l]
-        start_i = self.index
-        self.advance(2)
+    def _parse_abstraction(self, context: LambdaParserContext, *, parse_schema: bool, typing: TypingStyle) -> MixedAbstraction | MixedAbstractionSchema: ...
+    def _parse_abstraction(self, context: LambdaParserContext, *, parse_schema: bool, typing: TypingStyle) -> MixedAbstraction | MixedAbstractionSchema:  # noqa: C901
+        head = self.advance_and_peek(2)
 
-        if self.is_at_end() or not isinstance(self.peek(), LatinIdentifier):
-            raise self.error(f'Expected a variable name after {TermConnective.l}', i_first_token=start_i)
+        if not head or head.kind != 'LATIN_IDENTIFIER' or head.value[0].isupper():
+            raise context.annotate_context_error(f'Expected a variable name after {TermConnective.LAMBDA}')
 
         var = self.parse_variable(parse_schema=parse_schema)
         var_type: SimpleType | SimpleTypeSchema | None = None
+        head = self.peek()
 
-        if not self.is_at_end() and self.peek() == TypeAssertionConnective.colon:
-            if TypingStyle.explicit not in typing:
-                raise self.error('Unexpected type annotation for the abstractor variable in an untyped abstraction')
+        if head and head.kind == 'COLON':
+            if TypingStyle.EXPLICIT not in typing:
+                raise context.annotate_context_error(f'Unexpected type annotation for the abstractor variable in an untyped {'abstraction schema' if parse_schema else 'abstraction'}')
 
-            self.advance_and_skip_spaces()
+            self.advance()
             var_type = self.parse_type(parse_schema=parse_schema)
-        elif TypingStyle.implicit not in typing:
-            raise self.error('Expected a type annotation for the abstractor variable in a typed abstraction')
+        elif TypingStyle.IMPLICIT not in typing:
+            raise context.annotate_context_error(f'Expected a type annotation for the abstractor variable in a typed {'abstraction schema' if parse_schema else 'abstraction'}')
 
-        if self.is_at_end() or self.peek() != MiscToken.dot:
-            raise self.error('Expected a dot after an abstraction variable', i_first_token=start_i)
+        head = self.peek()
+
+        if not head or head.kind != 'DOT':
+            raise context.annotate_context_error(f'Expected a dot after an {'abstraction variable schema' if parse_schema else 'abstraction variable'}')
 
         self.advance()
-
         sub = self.parse_term(parse_schema=parse_schema, typing=typing)
+        head = self.peek()
 
-        if self.is_at_end() or self.peek() != MiscToken.right_parenthesis:
-            raise self.error('Unclosed parentheses for abstraction', i_first_token=start_i)
+        if not head or head.kind != 'RIGHT_PARENTHESIS':
+            raise context.annotate_context_error(f'Unclosed parentheses for {'abstraction schema' if parse_schema else 'abstraction'}')
 
         self.advance()
 
@@ -220,21 +228,21 @@ class LambdaParser(InferenceRuleParserMixin[LambdaToken], WhitespaceParserMixin[
             assert isinstance(var, VariablePlaceholder)
 
             match typing:
-                case TypingStyle.gradual:
-                    assert isinstance(sub, TermSchema)
+                case TypingStyle.GRADUAL:
+                    assert isinstance(sub, MixedTermSchema)
 
                     if var_type:
                         assert isinstance(var_type, SimpleTypeSchema)
-                        return AbstractionSchema(var, sub, var_type)
+                        return MixedAbstractionSchema(var, sub, var_type)
 
-                    return AbstractionSchema(var, sub)
+                    return MixedAbstractionSchema(var, sub)
 
-                case TypingStyle.implicit:
+                case TypingStyle.IMPLICIT:
                     assert isinstance(sub, UntypedTermSchema)
                     assert var_type is None
                     return UntypedAbstractionSchema(var, sub)
 
-                case TypingStyle.explicit:
+                case TypingStyle.EXPLICIT:
                     assert isinstance(sub, TypedTermSchema)
                     assert isinstance(var_type, SimpleTypeSchema)
                     return TypedAbstractionSchema(var, sub, var_type)
@@ -245,137 +253,159 @@ class LambdaParser(InferenceRuleParserMixin[LambdaToken], WhitespaceParserMixin[
             assert isinstance(var_type, SimpleType)
 
         match typing:
-            case TypingStyle.gradual:
-                assert isinstance(sub, Term)
+            case TypingStyle.GRADUAL:
+                assert isinstance(sub, MixedTerm)
 
                 if var_type:
                     assert isinstance(var_type, SimpleType)
-                    return Abstraction(var, sub, var_type)
+                    return MixedAbstraction(var, sub, var_type)
 
-                return Abstraction(var, sub)
+                return MixedAbstraction(var, sub)
 
-            case TypingStyle.implicit:
+            case TypingStyle.IMPLICIT:
                 assert isinstance(sub, UntypedTerm)
                 assert var_type is None
                 return UntypedAbstraction(var, sub)
 
-            case TypingStyle.explicit:
+            case TypingStyle.EXPLICIT:
                 assert isinstance(sub, TypedTerm)
                 assert isinstance(var_type, SimpleType)
                 return TypedAbstraction(var, sub, var_type)
 
     @overload
-    def parse_application(self, *, parse_schema: Literal[True], typing: Literal[TypingStyle.implicit]) -> UntypedApplicationSchema: ...
+    def _parse_application(self, context: LambdaParserContext, *, parse_schema: Literal[True], typing: Literal[TypingStyle.IMPLICIT]) -> UntypedApplicationSchema: ...
     @overload
-    def parse_application(self, *, parse_schema: Literal[True], typing: Literal[TypingStyle.explicit]) -> TypedApplicationSchema: ...
+    def _parse_application(self, context: LambdaParserContext, *, parse_schema: Literal[True], typing: Literal[TypingStyle.EXPLICIT]) -> TypedApplicationSchema: ...
     @overload
-    def parse_application(self, *, parse_schema: Literal[True], typing: TypingStyle) -> ApplicationSchema: ...
+    def _parse_application(self, context: LambdaParserContext, *, parse_schema: Literal[True], typing: TypingStyle) -> MixedApplicationSchema: ...
     @overload
-    def parse_application(self, *, parse_schema: Literal[False], typing: Literal[TypingStyle.implicit]) -> UntypedApplication: ...
+    def _parse_application(self, context: LambdaParserContext, *, parse_schema: Literal[False], typing: Literal[TypingStyle.IMPLICIT]) -> UntypedApplication: ...
     @overload
-    def parse_application(self, *, parse_schema: Literal[False], typing: Literal[TypingStyle.explicit]) -> TypedApplication: ...
+    def _parse_application(self, context: LambdaParserContext, *, parse_schema: Literal[False], typing: Literal[TypingStyle.EXPLICIT]) -> TypedApplication: ...
     @overload
-    def parse_application(self, *, parse_schema: Literal[False], typing: TypingStyle) -> Application: ...
+    def _parse_application(self, context: LambdaParserContext, *, parse_schema: Literal[False], typing: TypingStyle) -> MixedApplication: ...
     @overload
-    def parse_application(self, *, parse_schema: bool, typing: TypingStyle) -> Application | ApplicationSchema: ...
-    def parse_application(self, *, parse_schema: bool, typing: TypingStyle) -> Application | ApplicationSchema:
-        assert self.peek() == MiscToken.left_parenthesis
-        start_i = self.index
+    def _parse_application(self, context: LambdaParserContext, *, parse_schema: bool, typing: TypingStyle) -> MixedApplication | MixedApplicationSchema: ...
+    def _parse_application(self, context: LambdaParserContext, *, parse_schema: bool, typing: TypingStyle) -> MixedApplication | MixedApplicationSchema:
         self.advance()
 
         a = self.parse_term(parse_schema=parse_schema, typing=typing)
+        head = self.peek()
 
-        if self.is_at_end() or self.peek() == MiscToken.right_parenthesis:
-            raise self.error(f'{'Application schemas' if parse_schema else 'Applications'} must have a second subterm', i_first_token=start_i)
+        if not head or head.kind == 'RIGHT_PARENTHESIS':
+            raise context.annotate_context_error(f'{'MixedApplication schemas' if parse_schema else 'Applications'} must have a second subterm')
 
         b = self.parse_term(parse_schema=parse_schema, typing=typing)
+        head = self.peek()
 
-        if self.is_at_end() or self.peek() != MiscToken.right_parenthesis:
-            raise self.error(f'Unclosed parentheses for {'application schema' if parse_schema else 'application'}', i_first_token=start_i)
+        if not head or head.kind != 'RIGHT_PARENTHESIS':
+            raise context.annotate_context_error(f'Unclosed parentheses for {'application schema' if parse_schema else 'application'}')
 
         self.advance()
 
         if parse_schema:
             match typing:
-                case TypingStyle.gradual:
-                    assert isinstance(a, TermSchema)
-                    assert isinstance(b, TermSchema)
-                    return ApplicationSchema(a, b)
+                case TypingStyle.GRADUAL:
+                    assert isinstance(a, MixedTermSchema)
+                    assert isinstance(b, MixedTermSchema)
+                    return MixedApplicationSchema(a, b)
 
-                case TypingStyle.implicit:
+                case TypingStyle.IMPLICIT:
                     assert isinstance(a, UntypedTermSchema)
                     assert isinstance(b, UntypedTermSchema)
                     return UntypedApplicationSchema(a, b)
 
-                case TypingStyle.explicit:
+                case TypingStyle.EXPLICIT:
                     assert isinstance(a, TypedTermSchema)
                     assert isinstance(b, TypedTermSchema)
                     return TypedApplicationSchema(a, b)
 
         match typing:
-            case TypingStyle.gradual:
-                assert isinstance(a, Term)
-                assert isinstance(b, Term)
-                return Application(a, b)
+            case TypingStyle.GRADUAL:
+                assert isinstance(a, MixedTerm)
+                assert isinstance(b, MixedTerm)
+                return MixedApplication(a, b)
 
-            case TypingStyle.implicit:
+            case TypingStyle.IMPLICIT:
                 assert isinstance(a, UntypedTerm)
                 assert isinstance(b, UntypedTerm)
                 return UntypedApplication(a, b)
 
-            case TypingStyle.explicit:
+            case TypingStyle.EXPLICIT:
                 assert isinstance(a, TypedTerm)
                 assert isinstance(b, TypedTerm)
                 return TypedApplication(a, b)
 
     @overload
-    def parse_term(self, *, parse_schema: Literal[True], typing: Literal[TypingStyle.implicit]) -> UntypedTermSchema: ...
+    def parse_term(self, *, parse_schema: Literal[True], typing: Literal[TypingStyle.IMPLICIT]) -> UntypedTermSchema: ...
     @overload
-    def parse_term(self, *, parse_schema: Literal[True], typing: Literal[TypingStyle.explicit]) -> TypedTermSchema: ...
+    def parse_term(self, *, parse_schema: Literal[True], typing: Literal[TypingStyle.EXPLICIT]) -> TypedTermSchema: ...
     @overload
-    def parse_term(self, *, parse_schema: Literal[True], typing: TypingStyle) -> TermSchema: ...
+    def parse_term(self, *, parse_schema: Literal[True], typing: TypingStyle) -> MixedTermSchema: ...
     @overload
-    def parse_term(self, *, parse_schema: Literal[False], typing: Literal[TypingStyle.implicit]) -> UntypedTerm: ...
+    def parse_term(self, *, parse_schema: Literal[False], typing: Literal[TypingStyle.IMPLICIT]) -> UntypedTerm: ...
     @overload
-    def parse_term(self, *, parse_schema: Literal[False], typing: Literal[TypingStyle.explicit]) -> TypedTerm: ...
+    def parse_term(self, *, parse_schema: Literal[False], typing: Literal[TypingStyle.EXPLICIT]) -> TypedTerm: ...
     @overload
-    def parse_term(self, *, parse_schema: Literal[False], typing: TypingStyle) -> Term: ...
+    def parse_term(self, *, parse_schema: Literal[False], typing: TypingStyle) -> MixedTerm: ...
     @overload
-    def parse_term(self, *, parse_schema: bool, typing: TypingStyle) -> Term | TermSchema: ...
-    def parse_term(self, *, parse_schema: bool, typing: TypingStyle) -> Term | TermSchema:
-        if isinstance(self.peek(), ConstantTermToken):
-            return self.parse_constant()
+    def parse_term(self, *, parse_schema: bool, typing: TypingStyle) -> MixedTerm | MixedTermSchema: ...
+    def parse_term(self, *, parse_schema: bool, typing: TypingStyle) -> MixedTerm | MixedTermSchema:
+        head = self.peek()
 
-        if isinstance(head := self.peek(), LatinIdentifier):
-            if is_latin_string(head.value, Capitalization.lower):
-                return self.parse_variable(parse_schema=parse_schema)
+        if not head:
+            raise self.annotate_unexpected_end_of_input()
 
-            if parse_schema:
-                return self.parse_term_placeholder()
+        match head.kind:
+            case 'SIGNATURE_SYMBOL':
+                symbol = self.signature.get_symbol(head.value)
 
-            raise self.error('Term placeholders are only allowed in schemas')
+                if symbol.kind == 'BASE_TYPE':
+                    raise self.annotate_token_error('Unexpected base type symbol while parsing term')
 
-        if self.peek_multiple(2) == [MiscToken.left_parenthesis, MiscToken.right_parenthesis]:
-            raise self.error(f'{'Application schemas' if parse_schema else 'Applications'} must have two terms, while abstractions must begin with λ', i_last_token=self.index + 1)
+                return self._parse_constant()
 
-        if self.peek_multiple(2) == [MiscToken.left_parenthesis, TermConnective.l]:
-            return self.parse_abstraction(parse_schema=parse_schema, typing=typing)
+            case 'LATIN_IDENTIFIER':
+                if head.value[0].islower():
+                    return self.parse_variable(parse_schema=parse_schema)
 
-        if self.peek() == MiscToken.left_parenthesis:
-            return self.parse_application(parse_schema=parse_schema, typing=typing)
+                if parse_schema:
+                    return self.parse_term_placeholder()
 
-        raise self.error('Unexpected token')
+                raise self.annotate_token_error('Term placeholders are only allowed in schemas')
+
+            case 'LEFT_PARENTHESIS':
+                try:
+                    _, next_head = self.peek_multiple(2)
+                except ValueError:
+                    raise self.annotate_unexpected_end_of_input() from None
+
+                context = LambdaParserContext(self)
+
+                match next_head.kind:
+                    case 'RIGHT_PARENTHESIS':
+                        self.advance()
+                        raise context.annotate_context_error(f'{'MixedApplication schemas' if parse_schema else 'Applications'} must have two terms, while {'Abstractions schemas' if parse_schema else 'abstractions'} must begin with {TermConnective.LAMBDA}')
+
+                    case 'LAMBDA':
+                        return self._parse_abstraction(context, parse_schema=parse_schema, typing=typing)
+
+                    case _:
+                        return self._parse_application(context, parse_schema=parse_schema, typing=typing)
+
+            case _:
+                raise self.annotate_token_error('Unexpected token')
 
     @overload
-    def parse_type_assertion(self, *, parse_schema: Literal[True], variable_assertion: Literal[False], typing: Literal[TypingStyle.implicit]) -> ExplicitTypeAssertionSchema: ...
+    def parse_type_assertion(self, *, parse_schema: Literal[True], variable_assertion: Literal[False], typing: Literal[TypingStyle.IMPLICIT]) -> ImplicitTypeAssertionSchema: ...
     @overload
-    def parse_type_assertion(self, *, parse_schema: Literal[True], variable_assertion: Literal[False], typing: Literal[TypingStyle.explicit]) -> ImplicitTypeAssertionSchema: ...
+    def parse_type_assertion(self, *, parse_schema: Literal[True], variable_assertion: Literal[False], typing: Literal[TypingStyle.EXPLICIT]) -> ExplicitTypeAssertionSchema: ...
     @overload
     def parse_type_assertion(self, *, parse_schema: Literal[True], variable_assertion: Literal[False], typing: TypingStyle) -> GradualTypeAssertionSchema: ...
     @overload
-    def parse_type_assertion(self, *, parse_schema: Literal[False], variable_assertion: Literal[False], typing: Literal[TypingStyle.implicit]) -> ExplicitTypeAssertion: ...
+    def parse_type_assertion(self, *, parse_schema: Literal[False], variable_assertion: Literal[False], typing: Literal[TypingStyle.IMPLICIT]) -> ImplicitTypeAssertion: ...
     @overload
-    def parse_type_assertion(self, *, parse_schema: Literal[False], variable_assertion: Literal[False], typing: Literal[TypingStyle.explicit]) -> ImplicitTypeAssertion: ...
+    def parse_type_assertion(self, *, parse_schema: Literal[False], variable_assertion: Literal[False], typing: Literal[TypingStyle.EXPLICIT]) -> ExplicitTypeAssertion: ...
     @overload
     def parse_type_assertion(self, *, parse_schema: Literal[False], variable_assertion: Literal[False], typing: TypingStyle) -> GradualTypeAssertion: ...
     @overload
@@ -384,18 +414,23 @@ class LambdaParser(InferenceRuleParserMixin[LambdaToken], WhitespaceParserMixin[
     def parse_type_assertion(self, *, parse_schema: Literal[True], variable_assertion: Literal[True]) -> VariableTypeAssertionSchema: ...
     @overload
     def parse_type_assertion(self, *, parse_schema: bool, variable_assertion: bool, typing: TypingStyle) -> GradualTypeAssertion | GradualTypeAssertionSchema: ...
-    def parse_type_assertion(self, *, parse_schema: bool, variable_assertion: bool, typing: TypingStyle = TypingStyle.gradual) -> GradualTypeAssertion | GradualTypeAssertionSchema:
-        start_i = self.index
+    def parse_type_assertion(self, *, parse_schema: bool, variable_assertion: bool, typing: TypingStyle = TypingStyle.GRADUAL) -> GradualTypeAssertion | GradualTypeAssertionSchema:
+        head = self.peek()
+
+        if not head:
+            raise self.annotate_unexpected_end_of_input()
+
+        context = LambdaParserContext(self)
 
         if variable_assertion:
             var = self.parse_variable(parse_schema=parse_schema)
         else:
             term = self.parse_term(parse_schema=parse_schema, typing=typing)
 
-        if self.peek() == TypeAssertionConnective.colon:
-            self.advance_and_skip_spaces()
+        if (head := self.peek()) and head.kind == 'COLON':
+            self.advance()
         else:
-            raise self.error('Expected a colon after the term in a type specification', i_first_token=start_i)
+            raise context.annotate_context_error('Expected a colon after the term in a type specification')
 
         type_ = self.parse_type(parse_schema=parse_schema)
 
@@ -407,15 +442,15 @@ class LambdaParser(InferenceRuleParserMixin[LambdaToken], WhitespaceParserMixin[
                 return VariableTypeAssertionSchema(var, type_)
 
             match typing:
-                case TypingStyle.gradual:
-                    assert isinstance(term, TermSchema)
+                case TypingStyle.GRADUAL:
+                    assert isinstance(term, MixedTermSchema)
                     return GradualTypeAssertionSchema(term, type_)
 
-                case TypingStyle.implicit:
+                case TypingStyle.IMPLICIT:
                     assert isinstance(term, UntypedTermSchema)
                     return ImplicitTypeAssertionSchema(term, type_)
 
-                case TypingStyle.explicit:
+                case TypingStyle.EXPLICIT:
                     assert isinstance(term, TypedTermSchema)
                     return ExplicitTypeAssertionSchema(term, type_)
 
@@ -426,46 +461,49 @@ class LambdaParser(InferenceRuleParserMixin[LambdaToken], WhitespaceParserMixin[
             return VariableTypeAssertion(var, type_)
 
         match typing:
-            case TypingStyle.gradual:
-                assert isinstance(term, Term)
+            case TypingStyle.GRADUAL:
+                assert isinstance(term, MixedTerm)
                 return GradualTypeAssertion(term, type_)
 
-            case TypingStyle.implicit:
+            case TypingStyle.IMPLICIT:
                 assert isinstance(term, UntypedTerm)
                 return ImplicitTypeAssertion(term, type_)
 
-            case TypingStyle.explicit:
+            case TypingStyle.EXPLICIT:
                 assert isinstance(term, TypedTerm)
                 return ExplicitTypeAssertion(term, type_)
 
     @overload
-    def parse_typing_rule_premise(self, typing: Literal[TypingStyle.implicit]) -> ImplicitTypingRulePremise: ...
+    def _parse_typing_rule_premise(self, premise_context: LambdaParserContext, typing: Literal[TypingStyle.IMPLICIT]) -> ImplicitTypingRulePremise: ...
     @overload
-    def parse_typing_rule_premise(self, typing: Literal[TypingStyle.explicit]) -> ExplicitTypingRulePremise: ...
+    def _parse_typing_rule_premise(self, premise_context: LambdaParserContext, typing: Literal[TypingStyle.EXPLICIT]) -> ExplicitTypingRulePremise: ...
     @overload
-    def parse_typing_rule_premise(self, typing: TypingStyle) -> GradualTypingRulePremise: ...
-    def parse_typing_rule_premise(self, typing: TypingStyle) -> GradualTypingRulePremise:
+    def _parse_typing_rule_premise(self, premise_context: LambdaParserContext, typing: TypingStyle) -> GradualTypingRulePremise: ...
+    def _parse_typing_rule_premise(self, premise_context: LambdaParserContext, typing: TypingStyle) -> GradualTypingRulePremise:
         discharge: GradualTypeAssertionSchema | None = None
-        start = self.index
 
-        if self.peek() == MiscToken.left_bracket:
-            self.advance()
+        if (head := self.peek()) and head.kind == 'LEFT_BRACKET':
+            head = self.advance_and_peek()
+
+            if head and head.kind == 'RIGHT_BRACKET':
+                raise premise_context.annotate_context_error('Empty discharge assumptions are disallowed')
 
             discharge = self.parse_type_assertion(parse_schema=True, variable_assertion=False, typing=typing)
+            head = self.peek()
 
-            if self.peek() == MiscToken.right_bracket:
-                self.advance_and_skip_spaces()
+            if not head or head.kind == 'RIGHT_BRACKET':
+                self.advance()
             else:
-                raise self.error('Unclosed bracket for discharge schema', i_first_token=start)
+                premise_context.close_at_previous_token()
+                raise premise_context.annotate_context_error('Unclosed bracket for discharge schema')
 
         main = self.parse_type_assertion(parse_schema=True, variable_assertion=False, typing=typing)
-        self.skip_spaces()
 
         match typing:
-            case TypingStyle.gradual:
+            case TypingStyle.GRADUAL:
                 return GradualTypingRulePremise(main, discharge)
 
-            case TypingStyle.implicit:
+            case TypingStyle.IMPLICIT:
                 assert isinstance(main, ImplicitTypeAssertionSchema)
 
                 if discharge is None:
@@ -474,7 +512,7 @@ class LambdaParser(InferenceRuleParserMixin[LambdaToken], WhitespaceParserMixin[
                 assert isinstance(discharge, ImplicitTypeAssertionSchema)
                 return ImplicitTypingRulePremise(main, discharge)
 
-            case TypingStyle.explicit:
+            case TypingStyle.EXPLICIT:
                 assert isinstance(main, ExplicitTypeAssertionSchema)
 
                 if discharge is None:
@@ -485,142 +523,172 @@ class LambdaParser(InferenceRuleParserMixin[LambdaToken], WhitespaceParserMixin[
 
 
     @overload
-    def iter_typing_rule_premise(self, typing: Literal[TypingStyle.implicit]) -> Iterable[ImplicitTypingRulePremise]: ...
+    def _iter_typing_rule_premise(self, rule_context: LambdaParserContext, typing: Literal[TypingStyle.IMPLICIT]) -> Iterable[ImplicitTypingRulePremise]: ...
     @overload
-    def iter_typing_rule_premise(self, typing: Literal[TypingStyle.explicit]) -> Iterable[ExplicitTypingRulePremise]: ...
+    def _iter_typing_rule_premise(self, rule_context: LambdaParserContext, typing: Literal[TypingStyle.EXPLICIT]) -> Iterable[ExplicitTypingRulePremise]: ...
     @overload
-    def iter_typing_rule_premise(self, typing: TypingStyle) -> Iterable[GradualTypingRulePremise]: ...
-    def iter_typing_rule_premise(self, typing: TypingStyle) -> Iterable[GradualTypingRulePremise]:
-        for _ in self.iter_parse_premise_positions(InferenceRuleConnective.sequent, MiscToken.comma):
-            self.skip_spaces()
-            yield self.parse_typing_rule_premise(typing=typing)
+    def _iter_typing_rule_premise(self, rule_context: LambdaParserContext, typing: TypingStyle) -> Iterable[GradualTypingRulePremise]: ...
+    def _iter_typing_rule_premise(self, rule_context: LambdaParserContext, typing: TypingStyle) -> Iterable[GradualTypingRulePremise]:
+        premise_context = LambdaParserContext(self)
+
+        while (head := self.peek()) and head.kind != 'INFERENCE_RULE_SEQUENT':
+            premise_context.reset()
+            yield self._parse_typing_rule_premise(premise_context, typing=typing)
+            head = self.peek()
+
+            if not head or head.kind == 'INFERENCE_RULE_SEQUENT':
+                break
+
+            if head.kind == 'COMMA':
+                self.advance()
+            else:
+                raise rule_context.annotate_context_error('Expected either a separator or a sequent symbol')
+
+        if not self.peek():
+            raise rule_context.annotate_context_error('Expected a sequent symbol')
 
     @overload
-    def parse_typing_rule(self, typing: Literal[TypingStyle.implicit]) -> ImplicitTypingRule: ...
+    def parse_typing_rule(self, typing: Literal[TypingStyle.IMPLICIT]) -> ImplicitTypingRule: ...
     @overload
-    def parse_typing_rule(self, typing: Literal[TypingStyle.explicit]) -> ExplicitTypingRule: ...
+    def parse_typing_rule(self, typing: Literal[TypingStyle.EXPLICIT]) -> ExplicitTypingRule: ...
     @overload
     def parse_typing_rule(self, typing: TypingStyle) -> GradualTypingRule: ...
     def parse_typing_rule(self, typing: TypingStyle) -> GradualTypingRule:
-        name = self.parse_rule_name(MiscToken.left_parenthesis, MiscToken.right_parenthesis)
-        self.advance_and_skip_spaces()
-        premises = list(self.iter_typing_rule_premise(typing=typing))
-        self.advance_and_skip_spaces()
-        return GradualTypingRule(name, premises, self.parse_type_assertion(parse_schema=True, variable_assertion=False, typing=typing))
+        if self.peek() is None:
+            raise self.annotate_unexpected_end_of_input()
 
-    parse = parse_term
+        rule_context = LambdaParserContext(self)
+
+        match typing:
+            case TypingStyle.GRADUAL:
+                premises = list(self._iter_typing_rule_premise(rule_context, typing=TypingStyle.GRADUAL))
+                self.advance()
+                assertion = self.parse_type_assertion(parse_schema=True, variable_assertion=False, typing=TypingStyle.GRADUAL)
+                return GradualTypingRule(premises, assertion)
+
+            case TypingStyle.IMPLICIT:
+                premises_imp = list(self._iter_typing_rule_premise(rule_context, typing=TypingStyle.IMPLICIT))
+                self.advance()
+                assertion = self.parse_type_assertion(parse_schema=True, variable_assertion=False, typing=TypingStyle.IMPLICIT)
+                return ImplicitTypingRule(premises_imp, assertion)
+
+            case TypingStyle.EXPLICIT:
+                premises_exp = list(self._iter_typing_rule_premise(rule_context, typing=TypingStyle.EXPLICIT))
+                self.advance()
+                assertion = self.parse_type_assertion(parse_schema=True, variable_assertion=False, typing=TypingStyle.EXPLICIT)
+                return ExplicitTypingRule(premises_exp, assertion)
 
 
-def parse_variable(string: str) -> Variable:
-    tokens = tokenize_lambda_string(EMPTY_SIGNATURE, string)
+def parse_variable(source: str) -> Variable:
+    tokens = tokenize_lambda_string(EMPTY_SIGNATURE, source)
 
-    with LambdaParser(tokens, EMPTY_SIGNATURE) as parser:
+    with LambdaParser(EMPTY_SIGNATURE, source, tokens) as parser:
         return parser.parse_variable(parse_schema=False)
 
 
 @overload
-def parse_term(signature: LambdaSignature, string: str, typing: Literal[TypingStyle.implicit]) -> UntypedTerm: ...
+def parse_term(signature: LambdaSignature, source: str, typing: Literal[TypingStyle.IMPLICIT]) -> UntypedTerm: ...
 @overload
-def parse_term(signature: LambdaSignature, string: str, typing: Literal[TypingStyle.explicit]) -> TypedTerm: ...
+def parse_term(signature: LambdaSignature, source: str, typing: Literal[TypingStyle.EXPLICIT]) -> TypedTerm: ...
 @overload
-def parse_term(signature: LambdaSignature, string: str, typing: TypingStyle) -> Term: ...
-def parse_term(signature: LambdaSignature, string: str, typing: TypingStyle) -> Term:
-    tokens = tokenize_lambda_string(signature, string)
+def parse_term(signature: LambdaSignature, source: str, typing: TypingStyle) -> MixedTerm: ...
+def parse_term(signature: LambdaSignature, source: str, typing: TypingStyle) -> MixedTerm:
+    tokens = tokenize_lambda_string(signature, source)
 
-    with LambdaParser(tokens, signature) as parser:
+    with LambdaParser(signature, source, tokens) as parser:
         return parser.parse_term(parse_schema=False, typing=typing)
 
 
-def parse_pure_term(string: str) -> UntypedTerm:
-    return parse_term(EMPTY_SIGNATURE, string, TypingStyle.implicit)
+def parse_pure_term(source: str) -> UntypedTerm:
+    return parse_term(EMPTY_SIGNATURE, source, TypingStyle.IMPLICIT)
 
 
-def parse_variable_placeholder(string: str) -> VariablePlaceholder:
-    tokens = tokenize_lambda_string(EMPTY_SIGNATURE, string)
+def parse_variable_placeholder(source: str) -> VariablePlaceholder:
+    tokens = tokenize_lambda_string(EMPTY_SIGNATURE, source)
 
-    with LambdaParser(tokens, EMPTY_SIGNATURE) as parser:
+    with LambdaParser(EMPTY_SIGNATURE, source, tokens) as parser:
         return parser.parse_variable(parse_schema=True)
 
 
-def parse_term_placeholder(string: str) -> TermPlaceholder:
-    tokens = tokenize_lambda_string(EMPTY_SIGNATURE, string)
+def parse_term_placeholder(source: str) -> TermPlaceholder:
+    tokens = tokenize_lambda_string(EMPTY_SIGNATURE, source)
 
-    with LambdaParser(tokens, EMPTY_SIGNATURE) as parser:
+    with LambdaParser(EMPTY_SIGNATURE, source, tokens) as parser:
         return parser.parse_term_placeholder()
 
 
 @overload
-def parse_term_schema(signature: LambdaSignature, string: str, typing: Literal[TypingStyle.implicit]) -> UntypedTermSchema: ...
+def parse_term_schema(signature: LambdaSignature, source: str, typing: Literal[TypingStyle.IMPLICIT]) -> UntypedTermSchema: ...
 @overload
-def parse_term_schema(signature: LambdaSignature, string: str, typing: Literal[TypingStyle.explicit]) -> TypedTermSchema: ...
+def parse_term_schema(signature: LambdaSignature, source: str, typing: Literal[TypingStyle.EXPLICIT]) -> TypedTermSchema: ...
 @overload
-def parse_term_schema(signature: LambdaSignature, string: str, typing: TypingStyle) -> TermSchema: ...
-def parse_term_schema(signature: LambdaSignature, string: str, typing: TypingStyle) -> TermSchema:
-    tokens = tokenize_lambda_string(signature, string)
+def parse_term_schema(signature: LambdaSignature, source: str, typing: TypingStyle) -> MixedTermSchema: ...
+def parse_term_schema(signature: LambdaSignature, source: str, typing: TypingStyle) -> MixedTermSchema:
+    tokens = tokenize_lambda_string(signature, source)
 
-    with LambdaParser(tokens, signature) as parser:
+    with LambdaParser(signature, source, tokens) as parser:
         return parser.parse_term(parse_schema=True, typing=typing)
 
 
 @overload
-def parse_pure_term_schema(string: str, typing: Literal[TypingStyle.implicit]) -> UntypedTermSchema: ...
+def parse_pure_term_schema(source: str, typing: Literal[TypingStyle.IMPLICIT]) -> UntypedTermSchema: ...
 @overload
-def parse_pure_term_schema(string: str, typing: Literal[TypingStyle.explicit]) -> TypedTermSchema: ...
+def parse_pure_term_schema(source: str, typing: Literal[TypingStyle.EXPLICIT]) -> TypedTermSchema: ...
 @overload
-def parse_pure_term_schema(string: str, typing: TypingStyle) -> TermSchema: ...
-def parse_pure_term_schema(string: str, typing: TypingStyle) -> TermSchema:
-    return parse_term_schema(EMPTY_SIGNATURE, string, typing=typing)
+def parse_pure_term_schema(source: str, typing: TypingStyle) -> MixedTermSchema: ...
+def parse_pure_term_schema(source: str, typing: TypingStyle) -> MixedTermSchema:
+    return parse_term_schema(EMPTY_SIGNATURE, source, typing=typing)
 
 
-def parse_type(signature: LambdaSignature, string: str) -> SimpleType:
-    tokens = tokenize_lambda_string(signature, string)
+def parse_type(signature: LambdaSignature, source: str) -> SimpleType:
+    tokens = tokenize_lambda_string(signature, source)
 
-    with LambdaParser(tokens, signature) as parser:
+    with LambdaParser(signature, source, tokens) as parser:
         return parser.parse_type(parse_schema=False)
 
 
-def parse_type_placeholder(string: str) -> TypePlaceholder:
-    tokens = tokenize_lambda_string(EMPTY_SIGNATURE, string)
+def parse_type_placeholder(source: str) -> TypePlaceholder:
+    tokens = tokenize_lambda_string(EMPTY_SIGNATURE, source)
 
-    with LambdaParser(tokens, EMPTY_SIGNATURE) as parser:
+    with LambdaParser(EMPTY_SIGNATURE, source, tokens) as parser:
         return parser.parse_type_placeholder()
 
 
-def parse_type_schema(signature: LambdaSignature, string: str) -> SimpleTypeSchema:
-    tokens = tokenize_lambda_string(signature, string)
+def parse_type_schema(signature: LambdaSignature, source: str) -> SimpleTypeSchema:
+    tokens = tokenize_lambda_string(signature, source)
 
-    with LambdaParser(tokens, signature) as parser:
+    with LambdaParser(signature, source, tokens) as parser:
         return parser.parse_type(parse_schema=True)
 
 
 @overload
-def parse_type_assertion(signature: LambdaSignature, string: str, typing: Literal[TypingStyle.implicit]) -> ImplicitTypeAssertion: ...
+def parse_type_assertion(signature: LambdaSignature, source: str, typing: Literal[TypingStyle.IMPLICIT]) -> ImplicitTypeAssertion: ...
 @overload
-def parse_type_assertion(signature: LambdaSignature, string: str, typing: Literal[TypingStyle.explicit]) -> ExplicitTypeAssertion: ...
+def parse_type_assertion(signature: LambdaSignature, source: str, typing: Literal[TypingStyle.EXPLICIT]) -> ExplicitTypeAssertion: ...
 @overload
-def parse_type_assertion(signature: LambdaSignature, string: str, typing: TypingStyle) -> GradualTypeAssertion: ...
-def parse_type_assertion(signature: LambdaSignature, string: str, typing: TypingStyle) -> GradualTypeAssertion:
-    tokens = tokenize_lambda_string(signature, string)
+def parse_type_assertion(signature: LambdaSignature, source: str, typing: TypingStyle) -> GradualTypeAssertion: ...
+def parse_type_assertion(signature: LambdaSignature, source: str, typing: TypingStyle) -> GradualTypeAssertion:
+    tokens = tokenize_lambda_string(signature, source)
 
-    with LambdaParser(tokens, signature) as parser:
+    with LambdaParser(signature, source, tokens) as parser:
         return parser.parse_type_assertion(parse_schema=False, variable_assertion=False, typing=typing)
 
 
-def parse_variable_assertion(signature: LambdaSignature, string: str) -> VariableTypeAssertion:
-    tokens = tokenize_lambda_string(signature, string)
+def parse_variable_assertion(signature: LambdaSignature, source: str) -> VariableTypeAssertion:
+    tokens = tokenize_lambda_string(signature, source)
 
-    with LambdaParser(tokens, signature) as parser:
+    with LambdaParser(signature, source, tokens) as parser:
         return parser.parse_type_assertion(parse_schema=False, variable_assertion=True)
 
 
 @overload
-def parse_typing_rule(signature: LambdaSignature, string: str, typing: Literal[TypingStyle.implicit]) -> ImplicitTypingRule: ...
+def parse_typing_rule(signature: LambdaSignature, source: str, typing: Literal[TypingStyle.IMPLICIT]) -> ImplicitTypingRule: ...
 @overload
-def parse_typing_rule(signature: LambdaSignature, string: str, typing: Literal[TypingStyle.explicit]) -> ExplicitTypingRule: ...
+def parse_typing_rule(signature: LambdaSignature, source: str, typing: Literal[TypingStyle.EXPLICIT]) -> ExplicitTypingRule: ...
 @overload
-def parse_typing_rule(signature: LambdaSignature, string: str, typing: TypingStyle) -> GradualTypingRule: ...
-def parse_typing_rule(signature: LambdaSignature, string: str, typing: TypingStyle) -> GradualTypingRule:
-    tokens = tokenize_lambda_string(signature, string)
+def parse_typing_rule(signature: LambdaSignature, source: str, typing: TypingStyle) -> GradualTypingRule: ...
+def parse_typing_rule(signature: LambdaSignature, source: str, typing: TypingStyle) -> GradualTypingRule:
+    tokens = tokenize_lambda_string(signature, source)
 
-    with LambdaParser(tokens, signature) as parser:
+    with LambdaParser(signature, source, tokens) as parser:
         return parser.parse_typing_rule(typing=typing)

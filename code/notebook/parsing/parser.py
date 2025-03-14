@@ -2,7 +2,7 @@ from collections.abc import Sequence
 from types import TracebackType
 from typing import Self
 
-from .exceptions import ParsingError
+from .exceptions import ParserError
 from .highlighter import ErrorHighlighter
 from .tokens import Token
 
@@ -28,9 +28,21 @@ class Parser[TokenT: Token]:
 
     def get_safe_token_index(self) -> int:
         if len(self.tokens) == 0:
-            raise ParsingError('Empty token list')
+            raise ParserError('Empty token list')
 
         return min(self.token_index, len(self.tokens) - 1)
+
+    def annotate_unexpected_end_of_input(self) -> ParserError:
+        if self.source == '':
+            return ParserError('Empty input')
+
+        return self.annotate_token_error('Unexpected end of input')
+
+    def peek_unsafe(self) -> TokenT:
+        try:
+            return self.tokens[self.token_index]
+        except IndexError:
+            raise self.annotate_unexpected_end_of_input() from None
 
     def peek_safe(self) -> TokenT:
         return self.tokens[self.get_safe_token_index()]
@@ -45,8 +57,8 @@ class Parser[TokenT: Token]:
         self.advance(count)
         return self.peek()
 
-    def annotate_token_error(self, message: str, token: TokenT | None = None) -> ParsingError:
-        err = ParsingError(message)
+    def annotate_token_error(self, message: str, token: TokenT | None = None) -> ParserError:
+        err = ParserError(message)
 
         if token is None:
             token = self.peek_safe()

@@ -2,18 +2,18 @@ from textwrap import dedent
 
 import pytest
 
-from ....parsing.identifiers import LatinIdentifier
-from ....parsing.parser import ParsingError
+from ....parsing import LatinIdentifier, ParserError, TokenizerError
 from ....support.pytest import pytest_parametrize_kwargs, pytest_parametrize_lists
+from ..common import variables as var
 from ..formulas import EqualityFormula
 from ..signature import EMPTY_SIGNATURE, FormalLogicSignature
 from ..terms import FunctionTerm, Variable
-from ..variables import common as var
 from .parser import (
     parse_formula,
     parse_signatureless_formula_schema,
     parse_signatureless_natural_deduction_rule,
     parse_term,
+    parse_variable,
 )
 
 
@@ -32,42 +32,7 @@ from .parser import (
     )
 )
 def test_parsing_valid_variables(term: str, expected: Variable) -> None:
-    assert parse_term(EMPTY_SIGNATURE, term) == expected
-
-
-def test_parsing_invalid_variable_suffix() -> None:
-    with pytest.raises(ParsingError) as excinfo:
-        parse_term(EMPTY_SIGNATURE, 'x₀₁')
-
-    assert str(excinfo.value) == 'Nonzero natural numbers cannot start with zero'
-    assert excinfo.value.__notes__[0] == dedent('''\
-        1 │ x₀₁
-          │  ^^
-        '''
-    )
-
-
-def test_parsing_accented_variable_name() -> None:
-    with pytest.raises(ParsingError) as excinfo:
-        parse_term(EMPTY_SIGNATURE, 'ä')
-
-    assert str(excinfo.value) == 'Unexpected symbol'
-    assert excinfo.value.__notes__[0] == dedent('''\
-        1 │ ä
-          │ ^
-        '''
-    )
-
-
-def test_space_after_variable_name() -> None:
-    with pytest.raises(ParsingError) as excinfo:
-        parse_term(EMPTY_SIGNATURE, 'x ')
-
-    assert str(excinfo.value) == 'Finished parsing but there is still input left'
-    assert excinfo.value.__notes__[0] == (
-        '1 │ x \n'
-        '  │  ^\n'
-    )
+    assert parse_variable(term) == expected
 
 
 @pytest_parametrize_kwargs(
@@ -93,7 +58,7 @@ def test_parsing_valid_functions(term: str, expected: FunctionTerm, dummy_signat
 
 
 def test_parsing_functions_with_unrecognized_names(dummy_signature: FormalLogicSignature) -> None:
-    with pytest.raises(ParsingError) as excinfo:
+    with pytest.raises(TokenizerError) as excinfo:
         parse_term(dummy_signature, 'Ḟ')
 
     assert str(excinfo.value) == 'Unexpected symbol'
@@ -103,8 +68,19 @@ def test_parsing_functions_with_unrecognized_names(dummy_signature: FormalLogicS
     ''')
 
 
+def test_parsing_predicate_as_term(dummy_signature: FormalLogicSignature) -> None:
+    with pytest.raises(ParserError) as excinfo:
+        parse_term(dummy_signature, 'p₀')
+
+    assert str(excinfo.value) == 'Unexpected predicate symbol while parsing term'
+    assert excinfo.value.__notes__[0] == dedent('''\
+        1 │ p₀
+          │ ^^
+    ''')
+
+
 def test_parsing_zero_arity_function_with_empty_arg_list(dummy_signature: FormalLogicSignature) -> None:
-    with pytest.raises(ParsingError) as excinfo:
+    with pytest.raises(ParserError) as excinfo:
         parse_term(dummy_signature, 'f₀()')
 
     assert str(excinfo.value) == 'Avoid the argument list at all when zero arguments are expected'
@@ -115,7 +91,7 @@ def test_parsing_zero_arity_function_with_empty_arg_list(dummy_signature: Formal
 
 
 def test_parsing_nonzero_arity_function_with_empty_arg_list(dummy_signature: FormalLogicSignature) -> None:
-    with pytest.raises(ParsingError) as excinfo:
+    with pytest.raises(ParserError) as excinfo:
         parse_term(dummy_signature, 'f₁()')
 
     assert str(excinfo.value) == 'Empty argument lists are disallowed'
@@ -126,7 +102,7 @@ def test_parsing_nonzero_arity_function_with_empty_arg_list(dummy_signature: For
 
 
 def test_parsing_function_with_only_open_paren(dummy_signature: FormalLogicSignature) -> None:
-    with pytest.raises(ParsingError) as excinfo:
+    with pytest.raises(ParserError) as excinfo:
         parse_term(dummy_signature, 'f₁(')
 
     assert str(excinfo.value) == 'Unclosed argument list'
@@ -137,7 +113,7 @@ def test_parsing_function_with_only_open_paren(dummy_signature: FormalLogicSigna
 
 
 def test_parsing_function_with_unclosed_arg_list(dummy_signature: FormalLogicSignature) -> None:
-    with pytest.raises(ParsingError) as excinfo:
+    with pytest.raises(ParserError) as excinfo:
         parse_term(dummy_signature, 'f₂(x,y')
 
     assert str(excinfo.value) == 'Unclosed argument list'
@@ -148,7 +124,7 @@ def test_parsing_function_with_unclosed_arg_list(dummy_signature: FormalLogicSig
 
 
 def test_parsing_function_with_missing_arg(dummy_signature: FormalLogicSignature) -> None:
-    with pytest.raises(ParsingError) as excinfo:
+    with pytest.raises(ParserError) as excinfo:
         parse_term(dummy_signature, 'f₂(x,)')
 
     assert str(excinfo.value) == 'Unexpected closing parenthesis for argument list'
@@ -159,7 +135,7 @@ def test_parsing_function_with_missing_arg(dummy_signature: FormalLogicSignature
 
 
 def test_parsing_function_with_wrong_arity(dummy_signature: FormalLogicSignature) -> None:
-    with pytest.raises(ParsingError) as excinfo:
+    with pytest.raises(ParserError) as excinfo:
         parse_term(dummy_signature, 'f₂(x)')
 
     assert str(excinfo.value) == 'Expected 2 arguments for f₂ but got 1'
@@ -187,7 +163,7 @@ def test_parsing_valid_equalities(term: str, expected: EqualityFormula, dummy_si
 
 
 def test_parsing_unclosed_equality_parentheses(dummy_signature: FormalLogicSignature) -> None:
-    with pytest.raises(ParsingError) as excinfo:
+    with pytest.raises(ParserError) as excinfo:
         parse_formula(dummy_signature, '(x = y =')
 
     assert str(excinfo.value) == 'Unclosed parentheses for equality formula'
@@ -198,7 +174,7 @@ def test_parsing_unclosed_equality_parentheses(dummy_signature: FormalLogicSigna
 
 
 def test_parsing_unclosed_equality_parentheses_truncated(dummy_signature: FormalLogicSignature) -> None:
-    with pytest.raises(ParsingError) as excinfo:
+    with pytest.raises(ParserError) as excinfo:
         parse_formula(dummy_signature, '(x = y')
 
     assert str(excinfo.value) == 'Unclosed parentheses for equality formula'
@@ -209,7 +185,7 @@ def test_parsing_unclosed_equality_parentheses_truncated(dummy_signature: Formal
 
 
 def test_parsing_invalid_equality(dummy_signature: FormalLogicSignature) -> None:
-    with pytest.raises(ParsingError) as excinfo:
+    with pytest.raises(ParserError) as excinfo:
         parse_formula(dummy_signature, '(x = )')
 
     assert str(excinfo.value) == 'Equality formulas must have a second term'
@@ -220,7 +196,7 @@ def test_parsing_invalid_equality(dummy_signature: FormalLogicSignature) -> None
 
 
 def test_parsing_equality_with_formulas_inside(dummy_signature: FormalLogicSignature) -> None:
-    with pytest.raises(ParsingError) as excinfo:
+    with pytest.raises(ParserError) as excinfo:
         parse_formula(dummy_signature, '(¬p₀ = y)')
 
     assert str(excinfo.value) == 'The left side of an equality formula must be a term'
@@ -248,7 +224,7 @@ def test_rebuilding_formulas(formula: str, dummy_signature: FormalLogicSignature
 
 
 def test_parsing_unclosed_conjunction_parentheses(dummy_signature: FormalLogicSignature) -> None:
-    with pytest.raises(ParsingError) as excinfo:
+    with pytest.raises(ParserError) as excinfo:
         parse_formula(dummy_signature, '(p₀ ∧ q₀ ∧')
 
     assert str(excinfo.value) == 'Unclosed parentheses for binary formula'
@@ -259,7 +235,7 @@ def test_parsing_unclosed_conjunction_parentheses(dummy_signature: FormalLogicSi
 
 
 def test_parsing_unclosed_conjunction_parentheses_truncated(dummy_signature: FormalLogicSignature) -> None:
-    with pytest.raises(ParsingError) as excinfo:
+    with pytest.raises(ParserError) as excinfo:
         parse_formula(dummy_signature, '(p₀ ∧ q₀')
 
     assert str(excinfo.value) == 'Unclosed parentheses for binary formula'
@@ -270,7 +246,7 @@ def test_parsing_unclosed_conjunction_parentheses_truncated(dummy_signature: For
 
 
 def test_parsing_invalid_conjunction(dummy_signature: FormalLogicSignature) -> None:
-    with pytest.raises(ParsingError) as excinfo:
+    with pytest.raises(ParserError) as excinfo:
         parse_formula(dummy_signature, '(p₀ ∧ )')
 
     assert str(excinfo.value) == 'Binary formulas must have a second subformula'
@@ -281,7 +257,7 @@ def test_parsing_invalid_conjunction(dummy_signature: FormalLogicSignature) -> N
 
 
 def test_parsing_conjunction_with_formulas_inside(dummy_signature: FormalLogicSignature) -> None:
-    with pytest.raises(ParsingError) as excinfo:
+    with pytest.raises(ParserError) as excinfo:
         parse_formula(dummy_signature, '(x ∧ q₀)')
 
     assert str(excinfo.value) == 'The left side of a binary formula must be a formula'
@@ -292,7 +268,7 @@ def test_parsing_conjunction_with_formulas_inside(dummy_signature: FormalLogicSi
 
 
 def test_complex_unbalanced_formula(dummy_signature: FormalLogicSignature) -> None:
-    with pytest.raises(ParsingError) as excinfo:
+    with pytest.raises(ParserError) as excinfo:
         parse_formula(dummy_signature, '(∀x.(q₂(z, x) → ¬r₂(y, x) ∧ ¬p₁(z))')
 
     assert str(excinfo.value) == 'Unclosed parentheses for binary formula'
@@ -303,7 +279,7 @@ def test_complex_unbalanced_formula(dummy_signature: FormalLogicSignature) -> No
 
 
 def test_lone_quantifier(dummy_signature: FormalLogicSignature) -> None:
-    with pytest.raises(ParsingError) as excinfo:
+    with pytest.raises(ParserError) as excinfo:
         parse_formula(dummy_signature, '∀')
 
     assert str(excinfo.value) == 'Expected a variable after the quantifier'
@@ -314,7 +290,7 @@ def test_lone_quantifier(dummy_signature: FormalLogicSignature) -> None:
 
 
 def test_quantifier_with_invalid_variable(dummy_signature: FormalLogicSignature) -> None:
-    with pytest.raises(ParsingError) as excinfo:
+    with pytest.raises(ParserError) as excinfo:
         parse_formula(dummy_signature, '∀p₀.p₀')
 
     assert str(excinfo.value) == 'Expected a variable after the quantifier'
@@ -325,18 +301,18 @@ def test_quantifier_with_invalid_variable(dummy_signature: FormalLogicSignature)
 
 
 def test_quantifier_with_no_dot(dummy_signature: FormalLogicSignature) -> None:
-    with pytest.raises(ParsingError) as excinfo:
+    with pytest.raises(ParserError) as excinfo:
         parse_formula(dummy_signature, '∀xp₀')
 
     assert str(excinfo.value) == 'Expected dot after variable'
     assert excinfo.value.__notes__[0] == dedent('''\
         1 │ ∀xp₀
-          │ ^^^^
+          │ ^^
     ''')
 
 
 def test_quantifier_with_no_subformula(dummy_signature: FormalLogicSignature) -> None:
-    with pytest.raises(ParsingError) as excinfo:
+    with pytest.raises(ParserError) as excinfo:
         parse_formula(dummy_signature, '∀x.')
 
     assert str(excinfo.value) == 'Unexpected end of input'
@@ -381,7 +357,7 @@ def test_rebuild_substitution_schemas(schema: str) -> None:
 
 
 def test_parsing_formula_placeholder_with_regular_parser() -> None:
-    with pytest.raises(ParsingError) as excinfo:
+    with pytest.raises(ParserError) as excinfo:
         parse_formula(EMPTY_SIGNATURE, 'φ')
 
     assert str(excinfo.value) == 'Formula placeholders are only allowed in schemas'
@@ -392,10 +368,10 @@ def test_parsing_formula_placeholder_with_regular_parser() -> None:
 
 
 def test_parsing_substitution_with_wrong_arrow() -> None:
-    with pytest.raises(ParsingError) as excinfo:
+    with pytest.raises(ParserError) as excinfo:
         parse_signatureless_formula_schema('φ[x → τ]')
 
-    assert str(excinfo.value) == 'Expected ↦ in a substitution specification'
+    assert str(excinfo.value) == 'Expected an arrow in a substitution specification'
     assert excinfo.value.__notes__[0] == dedent('''\
         1 │ φ[x → τ]
           │  ^^^^
@@ -403,7 +379,7 @@ def test_parsing_substitution_with_wrong_arrow() -> None:
 
 
 def test_parsing_unclosed_substitution() -> None:
-    with pytest.raises(ParsingError) as excinfo:
+    with pytest.raises(ParserError) as excinfo:
         parse_signatureless_formula_schema('φ[x ↦ τ')
 
     assert str(excinfo.value) == 'Unclosed substitution specification'
@@ -415,35 +391,35 @@ def test_parsing_unclosed_substitution() -> None:
 
 @pytest_parametrize_lists(
     rule=[
-        '(R) ⫢ ψ',
-        '(R) φ ⫢ ψ',
-        '(R) φ₁, φ₂ ⫢ ψ',
-        '(R) [θ] φ ⫢ ψ'
+        '⫢ ψ',
+        'φ ⫢ ψ',
+        'φ₁, φ₂ ⫢ ψ',
+        '[θ] φ ⫢ ψ'
     ]
 )
 def test_rebuilding_rules(rule: str) -> None:
     assert str(parse_signatureless_natural_deduction_rule(rule)) == rule
 
 
-def test_parsing_discharge_schema_with_no_name() -> None:
-    with pytest.raises(ParsingError) as excinfo:
-        parse_signatureless_natural_deduction_rule('(R) [] φ ⫢ ψ')
+def test_parsing_empty_discharge_schema() -> None:
+    with pytest.raises(ParserError) as excinfo:
+        parse_signatureless_natural_deduction_rule('[] φ ⫢ ψ')
 
-    assert str(excinfo.value) == 'Unexpected token'
+    assert str(excinfo.value) == 'Empty discharge assumptions are disallowed'
     assert excinfo.value.__notes__[0] == dedent('''\
-        1 │ (R) [] φ ⫢ ψ
-          │      ^
+        1 │ [] φ ⫢ ψ
+          │ ^^
         '''
     )
 
 
 def test_parsing_discharge_schema_with_no_closing_bracket() -> None:
-    with pytest.raises(ParsingError) as excinfo:
-        parse_signatureless_natural_deduction_rule('(R) [θ φ ⫢ ψ')
+    with pytest.raises(ParserError) as excinfo:
+        parse_signatureless_natural_deduction_rule('[θ φ ⫢ ψ')
 
     assert str(excinfo.value) == 'Unclosed brackets for discharge schemas'
     assert excinfo.value.__notes__[0] == dedent('''\
-        1 │ (R) [θ φ ⫢ ψ
-          │     ^^^
+        1 │ [θ φ ⫢ ψ
+          │ ^^
         '''
     )

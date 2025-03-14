@@ -5,6 +5,10 @@ class CollectionError(NotebookCodeError):
     pass
 
 
+class UnsupportedItemError(CollectionError, ValueError):
+    pass
+
+
 class MissingKeyError(CollectionError, KeyError):
     pass
 

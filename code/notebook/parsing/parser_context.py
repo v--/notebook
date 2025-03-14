@@ -1,6 +1,6 @@
 from collections.abc import Sequence
 
-from .exceptions import ParsingError
+from .exceptions import ParserError
 from .highlighter import ErrorHighlighter
 from .parser import Parser
 from .tokens import Token
@@ -22,7 +22,7 @@ class ParserContext[TokenT: Token]:
         try:
             self.parser.tokens[self.index_start]
         except IndexError:
-            raise ParsingError('Context can be entered before end of input') from None
+            raise ParserError('Context can be entered before end of input') from None
 
     def is_closed(self) -> bool:
         return self.index_end is not None
@@ -33,7 +33,7 @@ class ParserContext[TokenT: Token]:
         try:
             self.parser.tokens[self.index_end]
         except IndexError:
-            raise ParsingError('Context must be closed before end of input') from None
+            raise ParserError('Context must be closed before end of input') from None
 
     def close_at_previous_token(self) -> None:
         self.index_end = self.parser.token_index - 1
@@ -41,7 +41,7 @@ class ParserContext[TokenT: Token]:
         try:
             self.parser.tokens[self.index_end]
         except IndexError:
-            raise ParsingError('Context must be closed before end of input') from None
+            raise ParserError('Context must be closed before end of input') from None
 
     def get_index_end_safe(self) -> int:
         if self.index_end is None:
@@ -68,8 +68,8 @@ class ParserContext[TokenT: Token]:
         end = self.get_last_token_safe()
         return self.parser.source[start.offset: end.end_offset]
 
-    def annotate_token_error(self, message: str, token: TokenT | None = None) -> ParsingError:
-        err = ParsingError(message)
+    def annotate_token_error(self, message: str, token: TokenT | None = None) -> ParserError:
+        err = ParserError(message)
 
         if token is None:
             token = self.parser.peek_safe()
@@ -85,8 +85,8 @@ class ParserContext[TokenT: Token]:
         err.add_note(highlighter.highlight())
         return err
 
-    def annotate_context_error(self, message: str) -> ParsingError:
-        err = ParsingError(message)
+    def annotate_context_error(self, message: str) -> ParserError:
+        err = ParserError(message)
 
         highlighter = ErrorHighlighter(
             self.parser.source,

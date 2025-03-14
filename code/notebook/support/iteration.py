@@ -1,5 +1,5 @@
 import functools
-from collections.abc import Callable, Collection, Hashable, Iterable, Sequence
+from collections.abc import Callable, Collection, Hashable, Iterable, Mapping, Sequence
 
 
 def groupby_custom[K: Hashable, V](values: Iterable[V], by: Callable[[V], K]) -> Iterable[tuple[K, Sequence[V]]]:
@@ -17,6 +17,14 @@ def list_accumulator[T, **P](fun: Callable[P, Iterable[T]]) -> Callable[P, Seque
     @functools.wraps(fun)
     def wrapper(*args: P.args, **kwargs: P.kwargs) -> Sequence[T]:
         return list(fun(*args, **kwargs))
+
+    return wrapper
+
+
+def dict_accumulator[K: Hashable, V, **P](fun: Callable[P, Iterable[tuple[K, V]]]) -> Callable[P, Mapping[K, V]]:
+    @functools.wraps(fun)
+    def wrapper(*args: P.args, **kwargs: P.kwargs) -> Mapping[K, V]:
+        return dict(fun(*args, **kwargs))
 
     return wrapper
 

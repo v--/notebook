@@ -9,8 +9,8 @@ from .axiomatic_derivation import (
     derivation_to_proof_tree,
     proof_tree_to_derivation,
 )
-from .axiomatic_derivation_system import derivation_system_to_natural_deduction_system
 from .minimal_implicational_logic import IMPLICATIONAL_AXIOMS, get_identity_derivation_payload
+from .system import derivation_system_to_natural_deduction_system
 
 
 IDENTITY_DERIVATION = [
@@ -97,12 +97,12 @@ def test_are_derivations_equivalent_failure(a_payload: Sequence[str], b_payload:
     dict(
         payload=IDENTITY_DERIVATION,
         expected=dedent('''\
-            _________________________________________________ Ax    ___________________ Ax
-            ((p → ((p → p) → p)) → ((p → (p → p)) → (p → p)))       (p → ((p → p) → p))
-            ___________________________________________________________________________ MP    _____________ Ax
-                                     ((p → (p → p)) → (p → p))                                (p → (p → p))
-            _______________________________________________________________________________________________ MP
-                                                        (p → p)
+            _________________________________________________ ↠    ___________________ →⁺
+            ((p → ((p → p) → p)) → ((p → (p → p)) → (p → p)))      (p → ((p → p) → p))
+            __________________________________________________________________________ MP    _____________ →⁺
+                                    ((p → (p → p)) → (p → p))                                (p → (p → p))
+            ______________________________________________________________________________________________ MP
+                                                       (p → p)
             '''
         )
     )

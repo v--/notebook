@@ -9,7 +9,7 @@ from notebook.bibtex.author import BibAuthor
 from notebook.bibtex.entry import BibEntry
 from notebook.bibtex.parsing import parse_bibtex
 from notebook.bibtex.string import BibString
-from notebook.parsing.parser import ParsingError
+from notebook.parsing.parser import ParserError
 
 from ..common.names import latinize_cyrillic_name
 from . import url_templates
@@ -278,7 +278,7 @@ def adjust_entry(entry: BibEntry, logger: 'loguru.Logger') -> BibEntry:
 def read_entries(src: TextIO) -> Sequence[BibEntry]:
     try:
         return parse_bibtex(src.read())
-    except ParsingError as err:
+    except ParserError as err:
         raise BibToolsParsingError(str(err) + '\n\n' + err.__notes__[0]) from err
 
 

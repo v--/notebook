@@ -3,7 +3,7 @@ from collections.abc import Iterable, Sequence
 from types import TracebackType
 from typing import Self
 
-from .exceptions import TokenizationError
+from .exceptions import TokenizerError
 from .highlighter import ErrorHighlighter
 from .tokenizer_context import TokenizerContext
 from .tokens import Token
@@ -22,7 +22,7 @@ class Tokenizer[TokenKindT](abc.ABC):
 
     def get_safe_offset(self) -> int:
         if len(self.source) == 0:
-            raise TokenizationError('Empty source')
+            raise TokenizerError('Empty source')
 
         return min(self.offset, len(self.source) - 1)
 
@@ -42,8 +42,8 @@ class Tokenizer[TokenKindT](abc.ABC):
         self.advance(count)
         return self.peek()
 
-    def annotate_char_error(self, message: str, offset: int | None = None) -> TokenizationError:
-        err = TokenizationError(message)
+    def annotate_char_error(self, message: str, offset: int | None = None) -> TokenizerError:
+        err = TokenizerError(message)
 
         if offset is None:
             offset = self.get_safe_offset()

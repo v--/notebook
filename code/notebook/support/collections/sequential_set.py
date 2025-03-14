@@ -14,10 +14,10 @@ class SequentialSetItem[T]:
 
 
 class SequentialSet[T](MutableSet[T]):
-    payload: SequentialSetItem[T] | None
+    _payload: SequentialSetItem[T] | None
 
     def __init__(self, values: Iterable[T] | None = None) -> None:
-        self.payload = None
+        self._payload = None
 
         if values is None:
             return
@@ -26,7 +26,7 @@ class SequentialSet[T](MutableSet[T]):
             self.add(value)
 
     def _iter_items(self) -> Iterator[SequentialSetItem[T]]:
-        item = self.payload
+        item = self._payload
 
         while item:
             yield item
@@ -43,8 +43,8 @@ class SequentialSet[T](MutableSet[T]):
         return any(item.value == value for item in self._iter_items())
 
     def __delitem__(self, value: T) -> None:
-        if self.payload and self.payload.value == value:
-            self.payload = self.payload.next
+        if self._payload and self._payload.value == value:
+            self._payload = self._payload.next
             return
 
         for item in self._iter_items():
@@ -67,8 +67,8 @@ class SequentialSet[T](MutableSet[T]):
         yield '])'
 
     def add(self, value: T) -> None:
-        if self.payload is None:
-            self.payload = SequentialSetItem(value)
+        if self._payload is None:
+            self._payload = SequentialSetItem(value)
             return
 
         for item in self._iter_items():

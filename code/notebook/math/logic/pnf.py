@@ -75,17 +75,17 @@ class ConditionalRemovalVisitor(FormulaTransformationVisitor):
         b = self.visit(formula.b)
 
         match formula.conn:
-            case BinaryConnective.disjunction | BinaryConnective.conjunction:
+            case BinaryConnective.DISJUNCTION | BinaryConnective.CONJUNCTION:
                 return ConnectiveFormula(formula.conn, a, b)
 
-            case BinaryConnective.conditional:
-                return ConnectiveFormula(BinaryConnective.disjunction, NegationFormula(a), b)
+            case BinaryConnective.CONDITIONAL:
+                return ConnectiveFormula(BinaryConnective.DISJUNCTION, NegationFormula(a), b)
 
-            case BinaryConnective.biconditional:
+            case BinaryConnective.BICONDITIONAL:
                 return ConnectiveFormula(
-                    BinaryConnective.conjunction,
-                    ConnectiveFormula(BinaryConnective.disjunction, NegationFormula(a), b),
-                    ConnectiveFormula(BinaryConnective.disjunction, a, NegationFormula(b))
+                    BinaryConnective.CONJUNCTION,
+                    ConnectiveFormula(BinaryConnective.DISJUNCTION, NegationFormula(a), b),
+                    ConnectiveFormula(BinaryConnective.DISJUNCTION, a, NegationFormula(b))
                 )
 
 
@@ -100,10 +100,10 @@ class MoveNegationsVisitor(FormulaTransformationVisitor):
             new_conn: BinaryConnective
 
             match formula.sub.conn:
-                case BinaryConnective.disjunction:
-                    new_conn = BinaryConnective.conjunction
-                case BinaryConnective.conjunction:
-                    new_conn = BinaryConnective.disjunction
+                case BinaryConnective.DISJUNCTION:
+                    new_conn = BinaryConnective.CONJUNCTION
+                case BinaryConnective.CONJUNCTION:
+                    new_conn = BinaryConnective.DISJUNCTION
                 case _:
                     raise PNFError(f'Unexpected connective {formula.sub.conn}')
 
@@ -117,10 +117,10 @@ class MoveNegationsVisitor(FormulaTransformationVisitor):
             new_quantifier: Quantifier
 
             match formula.sub.quantifier:
-                case Quantifier.universal:
-                    new_quantifier = Quantifier.existential
-                case Quantifier.existential:
-                    new_quantifier = Quantifier.universal
+                case Quantifier.UNIVERSAL:
+                    new_quantifier = Quantifier.EXISTENTIAL
+                case Quantifier.EXISTENTIAL:
+                    new_quantifier = Quantifier.UNIVERSAL
                 case _:
                     raise PNFError(f'Unexpected quantifier {formula.sub.quantifier}')
 
@@ -137,7 +137,7 @@ class MoveNegationsVisitor(FormulaTransformationVisitor):
 
     @override
     def visit_connective(self, formula: ConnectiveFormula) -> Formula:
-        if formula.conn not in (BinaryConnective.disjunction, BinaryConnective.conjunction):
+        if formula.conn not in (BinaryConnective.DISJUNCTION, BinaryConnective.CONJUNCTION):
             raise PNFError(f'Unexpected connective {formula.conn}')
 
         return super().visit_connective(formula)
@@ -150,7 +150,7 @@ def move_negations(formula: Formula) -> Formula:
 class MoveQuantifiersVisitor(FormulaTransformationVisitor):
     @override
     def visit_connective(self, formula: ConnectiveFormula) -> Formula:
-        if formula.conn not in (BinaryConnective.disjunction, BinaryConnective.conjunction):
+        if formula.conn not in (BinaryConnective.DISJUNCTION, BinaryConnective.CONJUNCTION):
             raise PNFError(f'Unexpected connective {formula.conn}')
 
         if isinstance(formula.a, QuantifierFormula):

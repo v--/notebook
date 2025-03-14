@@ -1,10 +1,6 @@
 from typing import override
 
-from .terms import (
-    FunctionTerm,
-    Term,
-    Variable,
-)
+from .terms import FunctionTerm, Term, Variable
 
 
 class TermVisitor[T]:

@@ -1,8 +1,8 @@
 from .terms import (
-    Abstraction,
-    Application,
     Constant,
-    Term,
+    MixedAbstraction,
+    MixedApplication,
+    MixedTerm,
     TypedAbstraction,
     TypedApplication,
     TypedTerm,
@@ -14,7 +14,7 @@ from .terms import (
 
 
 class TermVisitor[T]:
-    def visit(self, term: Term) -> T:
+    def visit(self, term: MixedTerm) -> T:
         match term:
             case Constant():
                 return self.visit_constant(term)
@@ -22,10 +22,10 @@ class TermVisitor[T]:
             case Variable():
                 return self.visit_variable(term)
 
-            case Application():
+            case MixedApplication():
                 return self.visit_application(term)
 
-            case Abstraction():
+            case MixedAbstraction():
                 return self.visit_abstraction(term)
 
     def visit_constant(self, term: Constant) -> T:
@@ -35,13 +35,13 @@ class TermVisitor[T]:
     def visit_variable(self, term: Variable) -> T:
         return self.generic_visit(term)
 
-    def visit_application(self, term: Application) -> T:
+    def visit_application(self, term: MixedApplication) -> T:
         return self.generic_visit(term)
 
-    def visit_abstraction(self, term: Abstraction) -> T:
+    def visit_abstraction(self, term: MixedAbstraction) -> T:
         return self.generic_visit(term)
 
-    def generic_visit(self, term: Term) -> T:
+    def generic_visit(self, term: MixedTerm) -> T:
         raise NotImplementedError
 
 

@@ -3,14 +3,14 @@ from typing import override
 
 from ....support.schemas import SchemaInferenceError
 from ..terms import (
-    Abstraction,
-    AbstractionSchema,
-    Application,
-    ApplicationSchema,
     Constant,
-    Term,
+    MixedAbstraction,
+    MixedAbstractionSchema,
+    MixedApplication,
+    MixedApplicationSchema,
+    MixedTerm,
+    MixedTermSchema,
     TermPlaceholder,
-    TermSchema,
     TermSchemaVisitor,
     Variable,
     VariablePlaceholder,
@@ -24,7 +24,7 @@ from .type_inference import infer_instantiation_from_type
 
 @dataclass(frozen=True)
 class InferInstantiationVisitor(TermSchemaVisitor[LambdaSchemaInstantiation]):
-    term: Term
+    term: MixedTerm
 
     @override
     def visit_constant(self, schema: Constant) -> LambdaSchemaInstantiation:
@@ -45,8 +45,8 @@ class InferInstantiationVisitor(TermSchemaVisitor[LambdaSchemaInstantiation]):
         return LambdaSchemaInstantiation(term_mapping={schema: self.term})
 
     @override
-    def visit_application(self, schema: ApplicationSchema) -> LambdaSchemaInstantiation:
-        if not isinstance(self.term, Application):
+    def visit_application(self, schema: MixedApplicationSchema) -> LambdaSchemaInstantiation:
+        if not isinstance(self.term, MixedApplication):
             raise SchemaInferenceError(f'Cannot match application schema {schema} to {self.term}')
 
         a = infer_instantiation_from_term(schema.a, self.term.a)
@@ -54,8 +54,8 @@ class InferInstantiationVisitor(TermSchemaVisitor[LambdaSchemaInstantiation]):
         return merge_instantiations(a, b)
 
     @override
-    def visit_abstraction(self, schema: AbstractionSchema) -> LambdaSchemaInstantiation:
-        if not isinstance(self.term, Abstraction):
+    def visit_abstraction(self, schema: MixedAbstractionSchema) -> LambdaSchemaInstantiation:
+        if not isinstance(self.term, MixedAbstraction):
             raise SchemaInferenceError(f'Cannot match abstraction schema {schema} to {self.term}')
 
         instantiation = LambdaSchemaInstantiation(variable_mapping={schema.var: self.term.var})
@@ -75,11 +75,11 @@ class InferInstantiationVisitor(TermSchemaVisitor[LambdaSchemaInstantiation]):
         )
 
 
-def infer_instantiation_from_term(schema: TermSchema, term: Term) -> LambdaSchemaInstantiation:
+def infer_instantiation_from_term(schema: MixedTermSchema, term: MixedTerm) -> LambdaSchemaInstantiation:
     return InferInstantiationVisitor(term).visit(schema)
 
 
-def is_term_schema_instance(schema: TermSchema, term: Term) -> bool:
+def is_term_schema_instance(schema: MixedTermSchema, term: MixedTerm) -> bool:
     try:
         infer_instantiation_from_term(schema, term)
     except SchemaInferenceError:

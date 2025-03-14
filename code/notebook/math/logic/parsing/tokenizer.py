@@ -1,69 +1,46 @@
 from collections.abc import Sequence
-from dataclasses import dataclass
+from typing import override
 
-from ....parsing.mixins.old_identifiers import IdentifierTokenizerMixin
-from ....parsing.old_tokenizer import Tokenizer
-from ....parsing.whitespace import Whitespace
-from ....support.inference.rules import InferenceRuleConnective
-from ....support.unicode import Capitalization, is_greek_string, is_latin_string
-from ..alphabet import BinaryConnective, PropConstant, Quantifier, SchemaConnective, UnaryConnective
-from ..signature import FormalLogicSignature
-from .tokens import (
-    CapitalizedLatinString,
-    FunctionSymbolToken,
-    LogicToken,
-    MiscToken,
-    PredicateSymbolToken,
-    SuperscriptToken,
-)
+from ....parsing import IdentifierTokenizerMixin, Tokenizer, TokenizerContext, TrieTokenizerMixin
+from ....support.unicode import Capitalization
+from ..signature import FormalLogicSignature, SignatureSymbol
+from .tokens import SINGLETON_TOKEN_MAP, LogicToken, LogicTokenKind
 
 
-@dataclass
-class FormalLogicTokenizer(IdentifierTokenizerMixin[LogicToken], Tokenizer[LogicToken]):
+class FormalLogicTokenizer(IdentifierTokenizerMixin[LogicTokenKind], TrieTokenizerMixin[LogicTokenKind, SignatureSymbol], Tokenizer[LogicTokenKind]):
     signature: FormalLogicSignature
 
-    def parse_step(self, head: str) -> LogicToken:
-        sym = PropConstant.try_match(head) or \
-            BinaryConnective.try_match(head) or \
-            Quantifier.try_match(head) or \
-            UnaryConnective.try_match(head) or \
-            InferenceRuleConnective.try_match(head) or \
-            SchemaConnective.try_match(head) or \
-            MiscToken.try_match(head) or \
-            SuperscriptToken.try_match(head)
+    def __init__(self, source: str, signature: FormalLogicSignature) -> None:
+        super().__init__(source)
+        self.signature = signature
 
-        if sym is not None:
+    @override
+    def read_token(self, context: TokenizerContext[LogicTokenKind]) -> LogicToken | None:
+        while (head := self.peek()) and (head == ' '):
             self.advance()
-            return sym
 
-        if head == Whitespace.space.value:
+        if not head:
+            return None
+
+        context.reset()
+
+        if token_type := SINGLETON_TOKEN_MAP.get(head):
             self.advance()
-            return Whitespace.space
+            context.close_at_previous_char()
+            return context.extract_token(token_type)
 
-        for fs in self.signature.iter_function_symbols():
-            if self.peek_multiple(len(fs)) == fs:
-                self.advance(len(fs))
-                return FunctionSymbolToken(fs)
+        if token := self.read_token_if_trie_matches(context, 'SIGNATURE_SYMBOL', self.signature.trie):
+            return token
 
-        for ps in self.signature.iter_predicate_symbols():
-            if self.peek_multiple(len(ps)) == ps:
-                self.advance(len(ps))
-                return PredicateSymbolToken(ps)
+        if token := self.read_latin_identifier(context, 'LATIN_IDENTIFIER', Capitalization.LOWER):
+            return token
 
-        if is_latin_string(head, Capitalization.lower):
-            return self.parse_latin_identifier()
+        if token := self.read_greek_identifier(context, 'GREEK_IDENTIFIER', Capitalization.LOWER):
+            return token
 
-        if is_latin_string(head, Capitalization.upper):
-            return CapitalizedLatinString(
-                self.gobble_string(lambda sym: is_latin_string(sym, Capitalization.mixed))
-            )
-
-        if is_greek_string(head, Capitalization.lower):
-            return self.parse_greek_identifier(Capitalization.lower)
-
-        raise self.error('Unexpected symbol')
+        raise self.annotate_char_error('Unexpected symbol')
 
 
-def tokenize_formal_logic_string(signature: FormalLogicSignature, string: str) -> Sequence[LogicToken]:
-    with FormalLogicTokenizer(string, signature) as tokenizer:
-        return list(tokenizer.parse())
+def tokenize_formal_logic_string(signature: FormalLogicSignature, source: str) -> Sequence[LogicToken]:
+    with FormalLogicTokenizer(source, signature) as tokenizer:
+        return list(tokenizer.iter_tokens())

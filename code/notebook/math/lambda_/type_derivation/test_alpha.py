@@ -25,14 +25,14 @@ from .inference import derive_type
 )
 def test_alpha_convert_derivation_success(m: str, n: str, context: Mapping[str, str], dummy_signature: LambdaSignature) -> None:
     tree = derive_type(
-        parse_term(dummy_signature, m, TypingStyle.explicit),
+        parse_term(dummy_signature, m, TypingStyle.EXPLICIT),
         {
             parse_variable(var): parse_type(dummy_signature, type_)
             for var, type_ in context.items()
         }
     )
 
-    equivalent_term = parse_term(dummy_signature, n, TypingStyle.explicit)
+    equivalent_term = parse_term(dummy_signature, n, TypingStyle.EXPLICIT)
     assert alpha_convert_derivation(tree, equivalent_term).conclusion.term == equivalent_term
 
 
@@ -48,14 +48,14 @@ def test_alpha_convert_derivation_success(m: str, n: str, context: Mapping[str, 
 )
 def test_alpha_convert_derivation_failure(m: str, n: str, context: Mapping[str, str], dummy_signature: LambdaSignature) -> None:
     tree = derive_type(
-        parse_term(dummy_signature, m, TypingStyle.explicit),
+        parse_term(dummy_signature, m, TypingStyle.EXPLICIT),
         {
             parse_variable(var): parse_type(dummy_signature, type_)
             for var, type_ in context.items()
         }
     )
 
-    equivalent_term = parse_term(dummy_signature, n, TypingStyle.explicit)
+    equivalent_term = parse_term(dummy_signature, n, TypingStyle.EXPLICIT)
 
     with pytest.raises(TypeDerivationError, match=f'The terms {re.escape(m)} and {re.escape(n)} are not α-equivalent'):
         alpha_convert_derivation(tree, equivalent_term)

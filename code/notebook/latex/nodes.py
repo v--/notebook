@@ -18,13 +18,13 @@ class Command(StringContainer):
 
 
 class SpecialNode(StrEnum):
-    at = '@'
-    caret = '^'
-    percent = '%'
-    ampersand = '&'
-    underscore = '_'
-    dollar = '$'
-    line_break = '\n'
+    AT = '@'
+    CARET = '^'
+    PERCENT = '%'
+    AMPERSAND = '&'
+    UNDERSCORE = '_'
+    DOLLAR = '$'
+    LINE_BREAK = '\n'
 
 
 class Group:

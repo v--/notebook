@@ -19,7 +19,7 @@ class TextTokenizer(Tokenizer[TextTokenKind]):
         ):
             self.advance()
 
-        context.close_at_previous_token()
+        context.close_at_previous_char()
         return context.extract_token('WORD')
 
     def _read_decimal_token(self, context: TokenizerContext[TextTokenKind]) -> TextToken:
@@ -28,7 +28,7 @@ class TextTokenizer(Tokenizer[TextTokenKind]):
         while (head := self.peek()) and unicodedata.category(head).startswith('N'):
             self.advance()
 
-        context.close_at_previous_token()
+        context.close_at_previous_char()
         return context.extract_token('DECIMAL')
 
     @override
@@ -39,7 +39,7 @@ class TextTokenizer(Tokenizer[TextTokenKind]):
 
         head = self.peek()
 
-        if head is None:
+        if not head:
             return None
 
         context.reset()
@@ -66,12 +66,12 @@ class TextTokenizer(Tokenizer[TextTokenKind]):
 
         if category.startswith(('S', 'P')):
             self.advance()
-            context.close_at_previous_token()
+            context.close_at_previous_char()
             return context.extract_token('SYMBOL')
 
         if head == '\n':
             self.advance()
-            context.close_at_previous_token()
+            context.close_at_previous_char()
             return context.extract_token('LINE_BREAK')
 
         raise self.annotate_char_error('Unexpected symbol')

@@ -32,7 +32,7 @@ class NegationFormulaSchema:
     sub: 'FormulaSchema'
 
     def __str__(self) -> str:
-        return f'{UnaryConnective.negation}{self.sub}'
+        return f'{UnaryConnective.NEGATION}{self.sub}'
 
 
 @dataclass(frozen=True)
@@ -65,7 +65,7 @@ class SubstitutionSchema:
     dest: ExtendedTermSchema
 
     def __str__(self) -> str:
-        return f'{self.formula}[{self.var} {SchemaConnective.substitution} {self.dest}]'
+        return f'{self.formula}[{self.var} {SchemaConnective.SUBSTITUTION} {self.dest}]'
 
 
 ExtendedFormulaSchema = FormulaSchema | SubstitutionSchema

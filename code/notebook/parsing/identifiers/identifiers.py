@@ -2,17 +2,13 @@ import itertools
 from collections.abc import Collection, Iterable
 from typing import Self
 
-from ..exceptions import UnreachableException
-from ..support.unicode import itoa_subscripts
-from .old_tokens import TokenMixin
+from ...exceptions import UnreachableException
+from ...support.unicode import itoa_subscripts
+from ..strings import StringContainer
 
 
-class Identifier(TokenMixin):
+class BaseIdentifier(StringContainer):
     index: int | None
-
-    @classmethod
-    def build(cls, value: str, index: int | None = None) -> Self:
-        return cls(value, index)
 
     def __init__(self, value: str, index: int | None = None) -> None:
         super().__init__(value)
@@ -28,13 +24,13 @@ class Identifier(TokenMixin):
         return f'{type(self).__name__}({self.value!r}, {self.index})'
 
     def increment(self) -> Self:
-        return type(self).build(
+        return type(self)(
             self.value,
             0 if self.index is None else self.index + 1
         )
 
 
-class LatinIdentifier(Identifier):
+class LatinIdentifier(BaseIdentifier):
     pass
 
 
@@ -55,5 +51,5 @@ def new_latin_identifier(blacklist: Collection[LatinIdentifier]) -> LatinIdentif
     raise UnreachableException
 
 
-class GreekIdentifier(Identifier):
+class GreekIdentifier(BaseIdentifier):
     pass

@@ -57,14 +57,14 @@ from .reduction import reduce_derivation
 )
 def test_reduce_derivation_success(m: str, n: str, context: Mapping[str, str], dummy_signature: LambdaSignature) -> None:
     tree = derive_type(
-        parse_term(dummy_signature, m, TypingStyle.explicit),
+        parse_term(dummy_signature, m, TypingStyle.EXPLICIT),
         {
             parse_variable(var): parse_type(dummy_signature, type_)
             for var, type_ in context.items()
         }
     )
 
-    reduct = parse_term(dummy_signature, n, TypingStyle.explicit)
+    reduct = parse_term(dummy_signature, n, TypingStyle.EXPLICIT)
     assert reduce_derivation(tree, reduct).conclusion.term == reduct
 
 
@@ -87,14 +87,14 @@ def test_reduce_derivation_success(m: str, n: str, context: Mapping[str, str], d
 )
 def test_reduce_derivation_failure(m: str, n: str, context: Mapping[str, str], dummy_signature: LambdaSignature) -> None:
     tree = derive_type(
-        parse_term(dummy_signature, m, TypingStyle.explicit),
+        parse_term(dummy_signature, m, TypingStyle.EXPLICIT),
         {
             parse_variable(var): parse_type(dummy_signature, type_)
             for var, type_ in context.items()
         }
     )
 
-    reduct = parse_term(dummy_signature, n, TypingStyle.explicit)
+    reduct = parse_term(dummy_signature, n, TypingStyle.EXPLICIT)
 
     with pytest.raises(TypeDerivationError, match=f'The term {re.escape(m)} is not βη-reducible to {re.escape(n)} in one step'):
         reduce_derivation(tree, reduct)

@@ -16,23 +16,21 @@ class SequentialMappingItem[K, V]:
 
 
 class SequentialMapping[K, V](MutableMapping[K, V]):
-    payload: SequentialMappingItem[K, V] | None
+    _payload: SequentialMappingItem[K, V] | None
 
     def __init__(self, items: Mapping[K, V] | Iterable[tuple[K, V]] | None = None) -> None:
-        self.payload = None
+        self._payload = None
 
         if items is None:
             return
 
-        if isinstance(items, Mapping):
-            for key, value in items.items():
-                self[key] = value
-        else:
-            for key, value in items:
-                self[key] = value
+        items_iter = items.items() if isinstance(items, Mapping) else items
+
+        for key, value in items_iter:
+            self[key] = value
 
     def _iter_items(self) -> Iterator[SequentialMappingItem[K, V]]:
-        current = self.payload
+        current = self._payload
 
         while current:
             yield current
@@ -65,11 +63,11 @@ class SequentialMapping[K, V](MutableMapping[K, V]):
                 item.next = SequentialMappingItem(key, value)
                 return
 
-        self.payload = SequentialMappingItem(key, value)
+        self._payload = SequentialMappingItem(key, value)
 
     def __delitem__(self, key: K) -> None:
-        if self.payload and self.payload.key == key:
-            self.payload = self.payload.next
+        if self._payload and self._payload.key == key:
+            self._payload = self._payload.next
             return
 
         for item in self._iter_items():

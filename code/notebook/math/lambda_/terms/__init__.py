@@ -1,9 +1,9 @@
 from .schema_visitors import TermSchemaVisitor
 from .schemas import (
-    AbstractionSchema,
-    ApplicationSchema,
+    MixedAbstractionSchema,
+    MixedApplicationSchema,
+    MixedTermSchema,
     TermPlaceholder,
-    TermSchema,
     TypedAbstractionSchema,
     TypedApplicationSchema,
     TypedTermSchema,
@@ -14,10 +14,10 @@ from .schemas import (
 )
 from .term_visitors import TermVisitor, TypedTermVisitor, UntypedTermVisitor
 from .terms import (
-    Abstraction,
-    Application,
     Constant,
-    Term,
+    MixedAbstraction,
+    MixedApplication,
+    MixedTerm,
     TypedAbstraction,
     TypedApplication,
     TypedTerm,

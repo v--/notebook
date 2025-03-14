@@ -26,12 +26,12 @@ SimpleType = BaseType | SimpleConnectiveType
 
 
 def is_arrow_type(type_: SimpleType) -> TypeGuard[SimpleConnectiveType]:
-    return isinstance(type_, SimpleConnectiveType) and type_.conn == BinaryTypeConnective.arrow
+    return isinstance(type_, SimpleConnectiveType) and type_.conn == BinaryTypeConnective.ARROW
 
 
 def is_product_type(type_: SimpleType) -> TypeGuard[SimpleConnectiveType]:
-    return isinstance(type_, SimpleConnectiveType) and type_.conn == BinaryTypeConnective.arrow
+    return isinstance(type_, SimpleConnectiveType) and type_.conn == BinaryTypeConnective.PROD
 
 
 def is_sum_type(type_: SimpleType) -> TypeGuard[SimpleConnectiveType]:
-    return isinstance(type_, SimpleConnectiveType) and type_.conn == BinaryTypeConnective.arrow
+    return isinstance(type_, SimpleConnectiveType) and type_.conn == BinaryTypeConnective.SUM

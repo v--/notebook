@@ -31,7 +31,7 @@ class NegationFormula:
     sub: 'Formula'
 
     def __str__(self) -> str:
-        return f'{UnaryConnective.negation}{self.sub}'
+        return f'{UnaryConnective.NEGATION}{self.sub}'
 
 
 @dataclass(frozen=True)
@@ -62,16 +62,16 @@ def is_atomic(formula: Formula) -> TypeGuard[ConstantFormula | EqualityFormula |
 
 
 def is_disjunction(formula: Formula) -> TypeGuard[ConnectiveFormula]:
-    return isinstance(formula, ConnectiveFormula) and formula.conn == BinaryConnective.disjunction
+    return isinstance(formula, ConnectiveFormula) and formula.conn == BinaryConnective.DISJUNCTION
 
 
 def is_conjunction(formula: Formula) -> TypeGuard[ConnectiveFormula]:
-    return isinstance(formula, ConnectiveFormula) and formula.conn == BinaryConnective.conjunction
+    return isinstance(formula, ConnectiveFormula) and formula.conn == BinaryConnective.CONJUNCTION
 
 
 def is_conditional(formula: Formula) -> TypeGuard[ConnectiveFormula]:
-    return isinstance(formula, ConnectiveFormula) and formula.conn == BinaryConnective.conditional
+    return isinstance(formula, ConnectiveFormula) and formula.conn == BinaryConnective.CONDITIONAL
 
 
 def is_biconditional(formula: Formula) -> TypeGuard[ConnectiveFormula]:
-    return isinstance(formula, ConnectiveFormula) and formula.conn == BinaryConnective.biconditional
+    return isinstance(formula, ConnectiveFormula) and formula.conn == BinaryConnective.BICONDITIONAL

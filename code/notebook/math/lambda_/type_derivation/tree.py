@@ -2,7 +2,7 @@ from collections.abc import Iterable, Mapping, Sequence
 from dataclasses import dataclass
 from typing import Protocol, override, runtime_checkable
 
-from ....support.inference.rendering import AssumptionRenderer, InferenceTreeRenderer, RuleApplicationRenderer
+from ....support.inference import AssumptionRenderer, InferenceTreeRenderer, RuleApplicationRenderer
 from ..assertions import GradualTypeAssertion, VariableTypeAssertion
 from ..instantiation import (
     LambdaSchemaInstantiation,
@@ -11,6 +11,7 @@ from ..instantiation import (
     merge_instantiations,
 )
 from ..terms import Variable
+from ..type_system import GradualTypeSystem
 from ..types import SimpleType
 from ..typing import GradualTypingRule
 from .exceptions import TypeDerivationError
@@ -65,13 +66,17 @@ def premise(*, tree: TypeDerivationTree, discharge: VariableTypeAssertion | None
 
 @dataclass(frozen=True)
 class RuleApplicationTree(TypeDerivationTree):
-    conclusion: GradualTypeAssertion
-    rule: GradualTypingRule
+    system: GradualTypeSystem
+    rule_name: str
     instantiation: LambdaSchemaInstantiation
     premises: Sequence[RuleApplicationPremise]
+    conclusion: GradualTypeAssertion
+
+    def get_rule(self) -> GradualTypingRule:
+        return self.system[self.rule_name]
 
     def _filter_assumptions(self, *, discharged_at_current_step: bool) -> Iterable[tuple[Variable, SimpleType]]:
-        for rule_premise, application_premise in zip(self.rule.premises, self.premises, strict=True):
+        for rule_premise, application_premise in zip(self.get_rule().premises, self.premises, strict=True):
             if rule_premise is None:
                 continue
 
@@ -99,7 +104,7 @@ class RuleApplicationTree(TypeDerivationTree):
         return RuleApplicationRenderer(
             str(self.conclusion),
             list(map(str, self.get_marker_context())),
-            self.rule.name,
+            self.rule_name,
             [premise.tree.build_renderer() for premise in self.premises]
         )
 
@@ -107,9 +112,11 @@ class RuleApplicationTree(TypeDerivationTree):
         return self.build_renderer().render()
 
 
-def apply(rule: GradualTypingRule, *args: TypeDerivationTree | RuleApplicationPremise) -> RuleApplicationTree:
+def apply(system: GradualTypeSystem, rule_name: str, *args: TypeDerivationTree | RuleApplicationPremise) -> RuleApplicationTree:
+    rule = system[rule_name]
+
     if len(args) != len(rule.premises):
-        raise TypeDerivationError(f'The rule {rule.name} has {len(rule.premises)} premises, but the application has {len(args)}')
+        raise TypeDerivationError(f'The rule {rule_name} has {len(rule.premises)} premises, but the application has {len(args)}')
 
     instantiation = LambdaSchemaInstantiation()
     application_premises = [
@@ -120,7 +127,7 @@ def apply(rule: GradualTypingRule, *args: TypeDerivationTree | RuleApplicationPr
     for i, (rule_premise, application_premise) in enumerate(zip(rule.premises, application_premises, strict=True), start=1):
         if rule_premise.discharge is not None:
             if application_premise.discharge is None:
-                raise TypeDerivationError(f'The rule {rule.name} requires a discharge type assertion for premise number {i}')
+                raise TypeDerivationError(f'The rule {rule_name} requires a discharge type assertion for premise number {i}')
 
             instantiation = merge_instantiations(
                 instantiation,
@@ -133,8 +140,9 @@ def apply(rule: GradualTypingRule, *args: TypeDerivationTree | RuleApplicationPr
         )
 
     return RuleApplicationTree(
-        conclusion=instantiate_assertion_schema(rule.conclusion, instantiation),
-        rule=rule,
-        premises=application_premises,
-        instantiation=instantiation
+        system,
+        rule_name,
+        instantiation,
+        application_premises,
+        instantiate_assertion_schema(rule.conclusion, instantiation)
     )

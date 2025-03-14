@@ -1,4 +1,4 @@
-from ....support.inference.rules import InferenceRule, InferenceRulePremise, InferenceRuleSystem
+from ....support.inference import InferenceRule, InferenceRulePremise
 from ..formulas import ExtendedFormulaSchema
 
 
@@ -7,8 +7,4 @@ class NaturalDeductionPremise(InferenceRulePremise[ExtendedFormulaSchema]):
 
 
 class NaturalDeductionRule(InferenceRule[ExtendedFormulaSchema, NaturalDeductionPremise]):
-    pass
-
-
-class NaturalDeductionSystem(InferenceRuleSystem[NaturalDeductionRule]):
     pass

@@ -10,13 +10,13 @@ from ..exceptions import MatrixIndexError, MatrixValueError
 
 
 class SpecialChars(StrEnum):
-    single_left = '('
-    single_right = ')'
-    upper_left = '⎛'
-    lower_left = '⎝'
-    upper_right = '⎞'
-    lower_right = '⎠'
-    pipe = '⎜'
+    SINGLE_LEFT = '('
+    SINGLE_RIGHT = ')'
+    UPPER_LEFT = '⎛'
+    LOWER_LEFT = '⎝'
+    UPPER_RIGHT = '⎞'
+    LOWER_RIGHT = '⎠'
+    PIPE = '⎜'
 
 
 def linearize_index(dimensions: Iterable[int], indices: Iterable[int]) -> int:
@@ -253,13 +253,13 @@ class BaseMatrix[N: ISemiring](metaclass=MatrixMeta):
 
         for i, row in enumerate(items):
             if self.m == 1:
-                yield SpecialChars.single_left
+                yield SpecialChars.SINGLE_LEFT
             elif i == 0:
-                yield SpecialChars.upper_left
+                yield SpecialChars.UPPER_LEFT
             elif i == self.m - 1:
-                yield SpecialChars.lower_left
+                yield SpecialChars.LOWER_LEFT
             else:
-                yield SpecialChars.pipe
+                yield SpecialChars.PIPE
 
             yield ' '
 
@@ -269,13 +269,13 @@ class BaseMatrix[N: ISemiring](metaclass=MatrixMeta):
             yield ' '
 
             if self.n == 1:
-                yield SpecialChars.single_right
+                yield SpecialChars.SINGLE_RIGHT
             elif i == 0:
-                yield SpecialChars.upper_right
+                yield SpecialChars.UPPER_RIGHT
             elif i == self.m - 1:
-                yield SpecialChars.lower_right
+                yield SpecialChars.LOWER_RIGHT
             else:
-                yield SpecialChars.pipe
+                yield SpecialChars.PIPE
 
             yield '\n'
 

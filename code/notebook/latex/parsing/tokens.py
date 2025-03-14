@@ -1,13 +1,16 @@
-from collections.abc import Mapping
+from collections.abc import Mapping, Sequence
 from typing import Literal, get_args
 
-from ...parsing import Token
+from ...parsing import Token, map_of_str_enum_to_tokens
+from ..nodes import SpecialNode
 
 
 LaTeXTokenKind = Literal[
+    # Value-dependent
     'TEXT',
     'WHITESPACE',
 
+    # Singletons
     'AT',
     'CARET',
     'PERCENT',
@@ -23,20 +26,14 @@ LaTeXTokenKind = Literal[
 ]
 
 
-TOKEN_KIND_LIST = get_args(LaTeXTokenKind)
+TOKEN_KIND_LIST: Sequence[LaTeXTokenKind] = get_args(LaTeXTokenKind)
 SINGLETON_TOKEN_MAP: Mapping[str, LaTeXTokenKind] = {
-    '@': 'AT',
-    '^': 'CARET',
-    '%': 'PERCENT',
-    '&': 'AMPERSAND',
-    '_': 'UNDERSCORE',
-    '$': 'DOLLAR',
+    **map_of_str_enum_to_tokens(TOKEN_KIND_LIST, SpecialNode),
     '{': 'OPENING_BRACE',
     '}': 'CLOSING_BRACE',
     '[': 'OPENING_BRACKET',
     ']': 'CLOSING_BRACKET',
     '\\': 'BACKSLASH',
-    '\n': 'LINE_BREAK',
 }
 
 

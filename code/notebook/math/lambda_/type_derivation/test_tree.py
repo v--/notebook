@@ -3,7 +3,7 @@ from textwrap import dedent
 from ..common import combinators, pairs
 from ..parsing import parse_variable_assertion
 from ..signature import LambdaSignature
-from ..type_systems import ARROW_ELIM_RULE_IMPLICIT, ARROW_INTRO_RULE_EXPLICIT, ARROW_INTRO_RULE_IMPLICIT
+from ..type_system import BASE_EXPLICIT_TYPE_SYSTEM, BASE_IMPLICIT_TYPE_SYSTEM
 from .tree import apply, assume, premise
 
 
@@ -21,7 +21,7 @@ def test_assumption_tree(dummy_signature: LambdaSignature) -> None:
 def test_arrow_intro_untyped(dummy_signature: LambdaSignature) -> None:
     assumption = parse_variable_assertion(dummy_signature, 'x: τ')
     tree = apply(
-        ARROW_INTRO_RULE_IMPLICIT,
+        BASE_IMPLICIT_TYPE_SYSTEM, '→⁺',
         premise(
             tree=assume(assumption),
             discharge=assumption
@@ -42,7 +42,7 @@ def test_arrow_intro_untyped(dummy_signature: LambdaSignature) -> None:
 def test_arrow_intro_typed(dummy_signature: LambdaSignature) -> None:
     assumption = parse_variable_assertion(dummy_signature, 'x: τ')
     tree = apply(
-        ARROW_INTRO_RULE_EXPLICIT,
+        BASE_EXPLICIT_TYPE_SYSTEM, '→⁺',
         premise(
             tree=assume(assumption),
             discharge=assumption
@@ -63,11 +63,11 @@ def test_nested_arrow_intro(dummy_signature: LambdaSignature) -> None:
     assumption_x = parse_variable_assertion(dummy_signature, 'x: τ')
     assumption_y = parse_variable_assertion(dummy_signature, 'y: σ')
     tree = apply(
-        ARROW_INTRO_RULE_IMPLICIT,
+        BASE_IMPLICIT_TYPE_SYSTEM, '→⁺',
         premise(
             discharge=assumption_x,
             tree=apply(
-                ARROW_INTRO_RULE_IMPLICIT,
+                BASE_IMPLICIT_TYPE_SYSTEM, '→⁺',
                 premise(
                     discharge=assumption_y,
                     tree=assume(assumption_x)
@@ -94,21 +94,21 @@ def test_cons(dummy_signature: LambdaSignature) -> None:
     assumption_x = parse_variable_assertion(dummy_signature, 'x: τ')
     assumption_y = parse_variable_assertion(dummy_signature, 'y: σ')
     tree = apply(
-        ARROW_INTRO_RULE_IMPLICIT,
+        BASE_IMPLICIT_TYPE_SYSTEM, '→⁺',
         premise(
             discharge=assumption_x,
             tree=apply(
-                ARROW_INTRO_RULE_IMPLICIT,
+                BASE_IMPLICIT_TYPE_SYSTEM, '→⁺',
                 premise(
                     discharge=assumption_y,
                     tree=apply(
-                        ARROW_INTRO_RULE_IMPLICIT,
+                        BASE_IMPLICIT_TYPE_SYSTEM, '→⁺',
                         premise(
                             discharge=assumption_f,
                             tree=apply(
-                                ARROW_ELIM_RULE_IMPLICIT,
+                                BASE_IMPLICIT_TYPE_SYSTEM, '→⁻',
                                 apply(
-                                    ARROW_ELIM_RULE_IMPLICIT,
+                                    BASE_IMPLICIT_TYPE_SYSTEM, '→⁻',
                                     assume(assumption_f),
                                     assume(assumption_x)
                                 ),

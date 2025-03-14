@@ -4,30 +4,28 @@ from ..alphabet import BinaryConnective
 from ..formulas import ConnectiveFormula, Formula, is_conditional
 from ..parsing import parse_signatureless_formula_schema
 from .axiomatic_derivation import AxiomaticDerivation, get_premises
-from .axiomatic_derivation_system import AxiomaticDerivationSystem, is_axiom
+from .system import AxiomaticDerivationSystem
 
 
-IMPLICATIONAL_AXIOMS = AxiomaticDerivationSystem(
-    axiom_schemas=[
-        parse_signatureless_formula_schema('(φ → (ψ → φ))'),
-        parse_signatureless_formula_schema('((φ → (ψ → θ)) → ((φ → ψ) → (φ → θ)))'),
-    ]
-)
+IMPLICATIONAL_AXIOMS = AxiomaticDerivationSystem({
+    '→⁺': parse_signatureless_formula_schema('(φ → (ψ → φ))'),
+    '↠': parse_signatureless_formula_schema('((φ → (ψ → θ)) → ((φ → ψ) → (φ → θ)))'),
+})
 
 
 def get_identity_derivation_payload(formula: Formula) -> Sequence[Formula]:
     """Axiomatic derivation of (p → p)"""
-    goal = ConnectiveFormula(BinaryConnective.conditional, formula, formula)
+    goal = ConnectiveFormula(BinaryConnective.CONDITIONAL, formula, formula)
 
     # The first two are axioms from the first schema
-    a = ConnectiveFormula(BinaryConnective.conditional, formula, goal)
-    b = ConnectiveFormula(BinaryConnective.conditional, formula, ConnectiveFormula(BinaryConnective.conditional, goal, formula))
+    a = ConnectiveFormula(BinaryConnective.CONDITIONAL, formula, goal)
+    b = ConnectiveFormula(BinaryConnective.CONDITIONAL, formula, ConnectiveFormula(BinaryConnective.CONDITIONAL, goal, formula))
 
     # This is an intermediate step obtained from axioms
-    i = ConnectiveFormula(BinaryConnective.conditional, a, goal)
+    i = ConnectiveFormula(BinaryConnective.CONDITIONAL, a, goal)
 
     # This is an axiom from the second schema
-    c = ConnectiveFormula(BinaryConnective.conditional, b, i)
+    c = ConnectiveFormula(BinaryConnective.CONDITIONAL, b, i)
 
     return [a, b, c, i, goal]
 
@@ -38,21 +36,21 @@ def introduce_conclusion_hypothesis(system: AxiomaticDerivationSystem, derivatio
 
     *rest, conclusion = derivation.payload
 
-    goal = ConnectiveFormula(BinaryConnective.conditional, hypothesis, conclusion)
+    goal = ConnectiveFormula(BinaryConnective.CONDITIONAL, hypothesis, conclusion)
 
-    if is_axiom(system, goal) or goal in get_premises(system, derivation):
+    if system.is_axiom(goal) or goal in get_premises(system, derivation):
         return AxiomaticDerivation(payload=[goal])
 
     if conclusion == hypothesis:
         return AxiomaticDerivation(payload=get_identity_derivation_payload(conclusion))
 
-    if is_axiom(system, conclusion) or conclusion in get_premises(system, derivation):
+    if system.is_axiom(conclusion) or conclusion in get_premises(system, derivation):
         return AxiomaticDerivation(
             payload=[
                 ConnectiveFormula(
-                    BinaryConnective.conditional,
+                    BinaryConnective.CONDITIONAL,
                     conclusion,
-                    ConnectiveFormula(BinaryConnective.conditional, hypothesis, conclusion)
+                    ConnectiveFormula(BinaryConnective.CONDITIONAL, hypothesis, conclusion)
                 ),
                 conclusion,
                 goal
@@ -70,15 +68,15 @@ def introduce_conclusion_hypothesis(system: AxiomaticDerivationSystem, derivatio
     antecetent_deriv = introduce_conclusion_hypothesis(system, derivation.truncate(mp_config.antecedent_index), hypothesis)
 
     dist = ConnectiveFormula(
-        BinaryConnective.conditional,
-        ConnectiveFormula(BinaryConnective.conditional, hypothesis, cond.a),
-        ConnectiveFormula(BinaryConnective.conditional, hypothesis, cond.b)
+        BinaryConnective.CONDITIONAL,
+        ConnectiveFormula(BinaryConnective.CONDITIONAL, hypothesis, cond.a),
+        ConnectiveFormula(BinaryConnective.CONDITIONAL, hypothesis, cond.b)
     )
 
     return AxiomaticDerivation(
         payload=[
             *cond_deriv.payload,
-            ConnectiveFormula(BinaryConnective.conditional, cond_deriv.get_conclusion(), dist),
+            ConnectiveFormula(BinaryConnective.CONDITIONAL, cond_deriv.get_conclusion(), dist),
             dist,
             *antecetent_deriv.payload,
             goal

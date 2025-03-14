@@ -1,6 +1,6 @@
 from collections.abc import Iterable
 
-from ....parsing import Parser, ParsingError
+from ....parsing import Parser, ParserError
 from ..alphabet import NonTerminal, Terminal
 from ..grammar import GrammarRule, GrammarSchema
 from .parser_context import GrammarNonterminalContext, GrammarSymbolRunContext, GrammarTerminalContext
@@ -23,8 +23,10 @@ class GrammarParser(Parser[GrammarToken]):
         return head
 
     def parse_terminal(self) -> Terminal:
-        if (head := self.peek()) is None:
-            raise ParsingError('Empty input')
+        head = self.peek()
+
+        if not head:
+            raise self.annotate_unexpected_end_of_input()
 
         context = GrammarTerminalContext(self)
 
@@ -33,7 +35,7 @@ class GrammarParser(Parser[GrammarToken]):
 
         head = self.advance_and_peek()
 
-        if head is None:
+        if not head:
             raise self.annotate_token_error('Expected a terminal')
 
         if head.kind == 'DOUBLE_QUOTES':
@@ -47,7 +49,7 @@ class GrammarParser(Parser[GrammarToken]):
             else:
                 self.advance()
 
-        if head is None:
+        if not head:
             raise context.annotate_context_error('Terminal has no matching closing quotes')
 
         self.advance()
@@ -60,8 +62,10 @@ class GrammarParser(Parser[GrammarToken]):
         return Terminal(value)
 
     def parse_nonterminal(self) -> NonTerminal:
-        if (head := self.peek()) is None:
-            raise ParsingError('Empty input')
+        head = self.peek()
+
+        if not head:
+            raise self.annotate_unexpected_end_of_input()
 
         context = GrammarNonterminalContext(self)
 
@@ -70,7 +74,7 @@ class GrammarParser(Parser[GrammarToken]):
 
         head = self.advance_and_peek()
 
-        if head is None:
+        if not head:
             raise self.annotate_token_error('Expected a nonterminal')
 
         if head.kind == 'CLOSING_CHEVRON':
@@ -88,7 +92,7 @@ class GrammarParser(Parser[GrammarToken]):
             else:
                 self.advance()
 
-        if head is None:
+        if not head:
             raise context.annotate_context_error('Nonterminal has no matching closing chevron')
 
         self.advance()
@@ -153,8 +157,8 @@ class GrammarParser(Parser[GrammarToken]):
     def iter_rules_on_line(self) -> Iterable[GrammarRule]:
         head = self._skip_spaces()
 
-        if head is None:
-            raise ParsingError('Expected a rule')
+        if not head:
+            raise ParserError('Expected a rule')
 
         if head.kind == 'RIGHT_ARROW':
             raise self.annotate_token_error('The left side of a rule must be nonempty')
@@ -164,7 +168,7 @@ class GrammarParser(Parser[GrammarToken]):
 
         head = self.peek()
 
-        if head is None or head.kind != 'RIGHT_ARROW':
+        if not head or head.kind != 'RIGHT_ARROW':
             raise context.annotate_context_error('Expected an arrow after the left side of a rule')
 
         self.advance()
@@ -184,7 +188,7 @@ class GrammarParser(Parser[GrammarToken]):
                 if head.kind == 'LINE_BREAK':
                     return
 
-            if head is None or head.kind != 'PIPE':
+            if not head or head.kind != 'PIPE':
                 break
 
         while (head := self.peek()) and head.kind != 'LINE_BREAK':
@@ -204,7 +208,7 @@ class GrammarParser(Parser[GrammarToken]):
         rules = list(self.iter_rules())
 
         if len(rules) == 0:
-            raise ParsingError('Expected at least one grammar rule')
+            raise ParserError('Expected at least one grammar rule')
 
         return GrammarSchema(rules)
 

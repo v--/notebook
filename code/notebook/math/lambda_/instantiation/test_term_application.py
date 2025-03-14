@@ -15,7 +15,7 @@ from ..parsing import (
     parse_variable,
     parse_variable_placeholder,
 )
-from ..type_systems import HOL_SIGNATURE
+from ..type_system import HOL_SIGNATURE
 from ..typing import TypingStyle
 from .base import LambdaSchemaInstantiation
 from .term_application import (
@@ -54,12 +54,12 @@ def test_instantiation_success(
         term_mapping={parse_term_placeholder(placeholder): parse_pure_term(value) for placeholder, value in term_mapping.items()}
     )
 
-    assert instantiate_term_schema(parse_pure_term_schema(schema, TypingStyle.implicit), instantiation) == parse_pure_term(expected)
+    assert instantiate_term_schema(parse_pure_term_schema(schema, TypingStyle.IMPLICIT), instantiation) == parse_pure_term(expected)
 
 
 def test_constant_instantiation_success() -> None:
     instantiation = LambdaSchemaInstantiation()
-    q = parse_term_schema(HOL_SIGNATURE, 'Q', TypingStyle.explicit)
+    q = parse_term_schema(HOL_SIGNATURE, 'Q', TypingStyle.EXPLICIT)
     assert instantiate_term_schema(q, instantiation) == q
 
 
@@ -67,30 +67,30 @@ def test_variable_instantiation_failure() -> None:
     instantiation = LambdaSchemaInstantiation()
 
     with pytest.raises(SchemaInstantiationError, match='No specification of how to instantiate the variable placeholder x'):
-        instantiate_term_schema(parse_pure_term_schema('x', TypingStyle.implicit), instantiation)
+        instantiate_term_schema(parse_pure_term_schema('x', TypingStyle.IMPLICIT), instantiation)
 
 
 def test_term_instantiation_failure() -> None:
     instantiation = LambdaSchemaInstantiation()
 
     with pytest.raises(SchemaInstantiationError, match='No specification of how to instantiate the term placeholder M'):
-        instantiate_term_schema(parse_pure_term_schema('M', TypingStyle.implicit), instantiation)
+        instantiate_term_schema(parse_pure_term_schema('M', TypingStyle.IMPLICIT), instantiation)
 
 
 def test_abstraction_annotation_success() -> None:
-    schema = parse_pure_term_schema('(λx:τ.x)', TypingStyle.explicit)
+    schema = parse_pure_term_schema('(λx:τ.x)', TypingStyle.EXPLICIT)
     instantiation = LambdaSchemaInstantiation(
         variable_mapping={parse_variable_placeholder('x'): parse_variable('x')},
         type_mapping={parse_type_placeholder('τ'): parse_type(HOL_SIGNATURE, 'ι')}
     )
 
-    expected = parse_term(HOL_SIGNATURE, '(λx:ι.x)', TypingStyle.explicit)
+    expected = parse_term(HOL_SIGNATURE, '(λx:ι.x)', TypingStyle.EXPLICIT)
     assert instantiate_term_schema(schema, instantiation) == expected
 
 
 def test_abstraction_annotation_failure() -> None:
     with pytest.raises(SchemaInstantiationError, match=r'No specification of how to instantiate the type placeholder τ'):
-        schema = parse_pure_term_schema('(λx:τ.x)', TypingStyle.explicit)
+        schema = parse_pure_term_schema('(λx:τ.x)', TypingStyle.EXPLICIT)
         instantiation = LambdaSchemaInstantiation(
             variable_mapping={parse_variable_placeholder('x'): parse_variable('x')},
         )
@@ -100,10 +100,10 @@ def test_abstraction_annotation_failure() -> None:
 
 def test_typed_instantiation_on_untyped_schema() -> None:
     with pytest.raises(SchemaInstantiationError, match='An untyped schema was provided, but the instantiation features typed terms'):
-        schema = parse_pure_term_schema('(λx.M)', TypingStyle.implicit)
+        schema = parse_pure_term_schema('(λx.M)', TypingStyle.IMPLICIT)
         instantiation = LambdaSchemaInstantiation(
             variable_mapping={parse_variable_placeholder('x'): parse_variable('x')},
-            term_mapping={parse_term_placeholder('M'): parse_term(HOL_SIGNATURE, '(λy:ι.y)', TypingStyle.explicit)},
+            term_mapping={parse_term_placeholder('M'): parse_term(HOL_SIGNATURE, '(λy:ι.y)', TypingStyle.EXPLICIT)},
             type_mapping={parse_type_placeholder('τ'): parse_type(HOL_SIGNATURE, 'ι')}
         )
 
@@ -112,10 +112,10 @@ def test_typed_instantiation_on_untyped_schema() -> None:
 
 def test_untyped_instantiation_on_typed_schema() -> None:
     with pytest.raises(SchemaInstantiationError, match='A typed schema was provided, but the instantiation features untyped terms'):
-        schema = parse_pure_term_schema('(λx:τ.M)', TypingStyle.explicit)
+        schema = parse_pure_term_schema('(λx:τ.M)', TypingStyle.EXPLICIT)
         instantiation = LambdaSchemaInstantiation(
             variable_mapping={parse_variable_placeholder('x'): parse_variable('x')},
-            term_mapping={parse_term_placeholder('M'): parse_term(HOL_SIGNATURE, '(λy.y)', TypingStyle.implicit)},
+            term_mapping={parse_term_placeholder('M'): parse_term(HOL_SIGNATURE, '(λy.y)', TypingStyle.IMPLICIT)},
             type_mapping={parse_type_placeholder('τ'): parse_type(HOL_SIGNATURE, 'ι')}
         )
 

@@ -1,56 +1,46 @@
 from collections.abc import Sequence
-from dataclasses import dataclass
+from typing import override
 
-from ....parsing.mixins.old_identifiers import IdentifierTokenizerMixin
-from ....parsing.old_tokenizer import Tokenizer
-from ....parsing.whitespace import Whitespace
-from ....support.inference.rules import InferenceRuleConnective
-from ....support.unicode import Capitalization, is_greek_string, is_latin_string
-from ..alphabet import BinaryTypeConnective, TermConnective, TypeAssertionConnective
-from ..signature import LambdaSignature
-from .tokens import BaseTypeToken, ConstantTermToken, LambdaToken, MiscToken, SuperscriptToken
+from ....parsing import IdentifierTokenizerMixin, Tokenizer, TokenizerContext, TrieTokenizerMixin
+from ....support.unicode import Capitalization
+from ..signature import LambdaSignature, LambdaSymbol
+from .tokens import SINGLETON_TOKEN_MAP, LambdaToken, LambdaTokenKind
 
 
-@dataclass
-class LambdaTokenizer(IdentifierTokenizerMixin[LambdaToken], Tokenizer[LambdaToken]):
+class FormalLambdaTokenizer(IdentifierTokenizerMixin[LambdaTokenKind], TrieTokenizerMixin[LambdaTokenKind, LambdaSymbol], Tokenizer[LambdaTokenKind]):
     signature: LambdaSignature
 
-    def parse_step(self, head: str) -> LambdaToken:
-        if sym := TermConnective.try_match(head) or \
-            BinaryTypeConnective.try_match(head) or \
-            TypeAssertionConnective.try_match(head) or \
-            InferenceRuleConnective.try_match(head) or \
-            SuperscriptToken.try_match(head) or \
-            MiscToken.try_match(head):
+    def __init__(self, source: str, signature: LambdaSignature) -> None:
+        super().__init__(source)
+        self.signature = signature
+
+    @override
+    def read_token(self, context: TokenizerContext[LambdaTokenKind]) -> LambdaToken | None:
+        while (head := self.peek()) and (head == ' '):
             self.advance()
-            return sym
 
-        if head == Whitespace.space.value:
+        if not head:
+            return None
+
+        context.reset()
+
+        if token_type := SINGLETON_TOKEN_MAP.get(head):
             self.advance()
-            return Whitespace.space
+            context.close_at_previous_char()
+            return context.extract_token(token_type)
 
-        for bt in self.signature.base_types:
-            if self.peek_multiple(len(bt)) == bt:
-                self.advance(len(bt))
-                return BaseTypeToken(bt)
+        if token := self.read_token_if_trie_matches(context, 'SIGNATURE_SYMBOL', self.signature.trie):
+            return token
 
-        for ct in self.signature.constant_terms:
-            if self.peek_multiple(len(ct)) == ct:
-                self.advance(len(ct))
-                return ConstantTermToken(ct)
+        if token := self.read_latin_identifier(context, 'LATIN_IDENTIFIER', Capitalization.MIXED):
+            return token
 
-        if is_latin_string(head, Capitalization.lower):
-            return self.parse_latin_identifier(Capitalization.lower)
+        if token := self.read_greek_identifier(context, 'GREEK_IDENTIFIER', Capitalization.LOWER):
+            return token
 
-        if is_latin_string(head, Capitalization.upper):
-            return self.parse_latin_identifier(Capitalization.upper)
-
-        if is_greek_string(head, Capitalization.lower):
-            return self.parse_greek_identifier(Capitalization.lower)
-
-        raise self.error('Unexpected symbol')
+        raise self.annotate_char_error('Unexpected symbol')
 
 
-def tokenize_lambda_string(signature: LambdaSignature, string: str) -> Sequence[LambdaToken]:
-    with LambdaTokenizer(string, signature) as tokenizer:
-        return list(tokenizer.parse())
+def tokenize_lambda_string(signature: LambdaSignature, source: str) -> Sequence[LambdaToken]:
+    with FormalLambdaTokenizer(source, signature) as tokenizer:
+        return list(tokenizer.iter_tokens())

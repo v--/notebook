@@ -51,11 +51,11 @@ class RemoveConstantsVisitor(FormulaTransformationVisitor):
         p = PredicateFormula('p', [])
 
         match formula.value:
-            case PropConstant.verum:
-                return ConnectiveFormula(BinaryConnective.disjunction, p, NegationFormula(p))
+            case PropConstant.VERUM:
+                return ConnectiveFormula(BinaryConnective.DISJUNCTION, p, NegationFormula(p))
 
-            case PropConstant.falsum:
-                return ConnectiveFormula(BinaryConnective.conjunction, p, NegationFormula(p))
+            case PropConstant.FALSUM:
+                return ConnectiveFormula(BinaryConnective.CONJUNCTION, p, NegationFormula(p))
 
 
 def remove_constants(formula: Formula) -> Formula:
@@ -71,10 +71,10 @@ class HasReachableConjunctionVisitor(FormulaVisitor[bool]):
 
     def visit_connective(self, formula: ConnectiveFormula) -> bool:
         match formula.conn:
-            case BinaryConnective.disjunction:
+            case BinaryConnective.DISJUNCTION:
                 return self.visit(formula.a) or self.visit(formula.b)
 
-            case BinaryConnective.conjunction:
+            case BinaryConnective.CONJUNCTION:
                     return True
 
             case _:
@@ -94,18 +94,18 @@ class PullConjunctionVisitor(FormulaTransformationVisitor):
 
         if is_disjunction(formula) and is_conjunction(a):
             return ConnectiveFormula(
-                BinaryConnective.conjunction,
-                self.visit(ConnectiveFormula(BinaryConnective.disjunction, a.a, formula.b)),
-                self.visit(ConnectiveFormula(BinaryConnective.disjunction, a.b, formula.b))
+                BinaryConnective.CONJUNCTION,
+                self.visit(ConnectiveFormula(BinaryConnective.DISJUNCTION, a.a, formula.b)),
+                self.visit(ConnectiveFormula(BinaryConnective.DISJUNCTION, a.b, formula.b))
             )
 
         b = self.visit(formula.b)
 
         if is_disjunction(formula) and is_conjunction(b):
             return ConnectiveFormula(
-                BinaryConnective.conjunction,
-                self.visit(ConnectiveFormula(BinaryConnective.disjunction, formula.a, b.a)),
-                self.visit(ConnectiveFormula(BinaryConnective.disjunction, formula.a, b.b))
+                BinaryConnective.CONJUNCTION,
+                self.visit(ConnectiveFormula(BinaryConnective.DISJUNCTION, formula.a, b.a)),
+                self.visit(ConnectiveFormula(BinaryConnective.DISJUNCTION, formula.a, b.b))
             )
 
         return ConnectiveFormula(formula.conn, a, b)
@@ -128,7 +128,7 @@ def function_to_cnf(fun: Callable[..., bool]) -> Formula:
     if len(fun_params) == 0:
         p = PredicateFormula('p', ())
         return ConnectiveFormula(
-            BinaryConnective.disjunction if fun() else BinaryConnective.conjunction,
+            BinaryConnective.DISJUNCTION if fun() else BinaryConnective.CONJUNCTION,
             p,
             NegationFormula(p)
         )
@@ -142,7 +142,7 @@ def function_to_cnf(fun: Callable[..., bool]) -> Formula:
     disjuncts = list[Formula](
         connect_formulas(
             [NegationFormula(p) if arg else p for p, arg in zip(predicates, arg_tuple, strict=True)],
-            BinaryConnective.disjunction
+            BinaryConnective.DISJUNCTION
         )
         for arg_tuple in itertools.product([False, True], repeat=len(fun_params))
         if fun(*arg_tuple) is False
@@ -150,6 +150,6 @@ def function_to_cnf(fun: Callable[..., bool]) -> Formula:
 
     if len(disjuncts) == 0:  # fun is vacuously true
         p = predicates[0]
-        return ConnectiveFormula(BinaryConnective.disjunction, p, NegationFormula(p))
+        return ConnectiveFormula(BinaryConnective.DISJUNCTION, p, NegationFormula(p))
 
-    return connect_formulas(disjuncts, BinaryConnective.conjunction)
+    return connect_formulas(disjuncts, BinaryConnective.CONJUNCTION)

@@ -6,15 +6,15 @@ from typing import NamedTuple
 
 class SourcePosition(NamedTuple):
     # The offset is zero-based, the rest are one-based
-    offset: int
+    OFFSET: int
     lineno: int
     column: int
 
 
 class SpecialChars(StrEnum):
-    marker = '^'
-    lineno_sep = '│'
-    line_break = '↵'
+    MARKER = '^'
+    LINENO_SEP = '│'
+    LINE_BREAK = '↵'
 
 
 @dataclass
@@ -89,10 +89,10 @@ class ErrorHighlighter:
 
         for line in self.lines_shown:
             yield str(lineno).ljust(lineno_prefix_length)
-            yield ' ' + SpecialChars.lineno_sep + ' '
+            yield ' ' + SpecialChars.LINENO_SEP + ' '
 
             if line[-1] == '\n':
-                yield line[:-1] + SpecialChars.line_break
+                yield line[:-1] + SpecialChars.LINE_BREAK
             else:
                 yield line
 
@@ -103,9 +103,9 @@ class ErrorHighlighter:
                 last_col = self.pos_hi_end.column if lineno == self.pos_hi_end.lineno else len(line)
 
                 yield ' ' * (lineno_prefix_length + 1)
-                yield SpecialChars.lineno_sep
+                yield SpecialChars.LINENO_SEP
                 yield ' ' * col # We must have at least one space and must subtract one from the column one-based index
-                yield SpecialChars.marker * (1 + (last_col - col))
+                yield SpecialChars.MARKER * (1 + (last_col - col))
                 yield '\n'
 
             lineno += 1

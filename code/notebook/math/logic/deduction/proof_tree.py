@@ -2,7 +2,7 @@ from collections.abc import Iterable, Mapping, Sequence
 from dataclasses import dataclass
 from typing import Protocol, override, runtime_checkable
 
-from ....support.inference.rendering import AssumptionRenderer, InferenceTreeRenderer, RuleApplicationRenderer
+from ....support.inference import AssumptionRenderer, InferenceTreeRenderer, RuleApplicationRenderer
 from ..formulas import Formula
 from ..instantiation import (
     FormalLogicSchemaInstantiation,
@@ -13,6 +13,7 @@ from ..instantiation import (
 from .exceptions import RuleApplicationError
 from .markers import Marker
 from .rules import NaturalDeductionRule
+from .system import NaturalDeductionSystem
 
 
 @runtime_checkable
@@ -61,25 +62,19 @@ def premise(*, tree: ProofTree, discharge: Formula | None = None, marker: Marker
     return RuleApplicationPremise(tree, discharge, marker)
 
 
+@dataclass(frozen=True)
 class RuleApplicationTree(ProofTree):
-    conclusion: Formula
-    rule: NaturalDeductionRule
+    system: NaturalDeductionSystem
+    rule_name: str
     instantiation: FormalLogicSchemaInstantiation
     premises: Sequence[RuleApplicationPremise]
+    conclusion: Formula
 
-    def __init__(
-        self,
-        rule: NaturalDeductionRule,
-        instantiation: FormalLogicSchemaInstantiation,
-        premises: Sequence[RuleApplicationPremise]
-    ) -> None:
-        self.conclusion = instantiate_formula_schema(rule.conclusion, instantiation)
-        self.rule = rule
-        self.instantiation = instantiation
-        self.premises = premises
+    def get_rule(self) -> NaturalDeductionRule:
+        return self.system[self.rule_name]
 
     def _filter_assumptions(self, *, discharged_at_current_step: bool) -> Iterable[tuple[Marker, Formula]]:
-        for rule_premise, application_premise in zip(self.rule.premises, self.premises, strict=True):
+        for rule_premise, application_premise in zip(self.get_rule().premises, self.premises, strict=True):
             if rule_premise is None:
                 continue
 
@@ -105,7 +100,7 @@ class RuleApplicationTree(ProofTree):
         return RuleApplicationRenderer(
             str(self.conclusion),
             [str(marker) for marker in self.get_marker_context()],
-            self.rule.name,
+            self.rule_name,
             [premise.tree.build_renderer() for premise in self.premises]
         )
 
@@ -113,9 +108,11 @@ class RuleApplicationTree(ProofTree):
         return self.build_renderer().render()
 
 
-def apply(rule: NaturalDeductionRule, *args: ProofTree | RuleApplicationPremise) -> RuleApplicationTree:
+def apply(system: NaturalDeductionSystem, rule_name: str, *args: ProofTree | RuleApplicationPremise) -> RuleApplicationTree:
+    rule = system[rule_name]
+
     if len(args) != len(rule.premises):
-        raise RuleApplicationError(f'The rule {rule.name} has {len(rule.premises)} premises, but the application has {len(args)}')
+        raise RuleApplicationError(f'The rule {rule_name} has {len(rule.premises)} premises, but the application has {len(args)}')
 
     instantiation = FormalLogicSchemaInstantiation()
     marker_map = dict[Marker, Formula]()
@@ -134,7 +131,7 @@ def apply(rule: NaturalDeductionRule, *args: ProofTree | RuleApplicationPremise)
 
         if rule_premise.discharge is not None:
             if application_premise.discharge is None:
-                raise RuleApplicationError(f'The rule {rule.name} requires a discharge formula for premise number {i}')
+                raise RuleApplicationError(f'The rule {rule_name} requires a discharge formula for premise number {i}')
 
             instantiation = merge_instantiations(
                 instantiation,
@@ -147,7 +144,9 @@ def apply(rule: NaturalDeductionRule, *args: ProofTree | RuleApplicationPremise)
         )
 
     return RuleApplicationTree(
-        rule=rule,
-        premises=application_premises,
-        instantiation=instantiation
+        system,
+        rule_name,
+        instantiation,
+        application_premises,
+        instantiate_formula_schema(rule.conclusion, instantiation)
     )

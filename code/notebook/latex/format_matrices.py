@@ -69,18 +69,18 @@ class MatrixEnvironmentParser:
         self.token_index += count
 
     def skip_whitespace_and_line_breaks(self) -> None:
-        while (head := self.peek()) and (head == SpecialNode.line_break or isinstance(head, Whitespace)):
+        while (head := self.peek()) and (head == SpecialNode.LINE_BREAK or isinstance(head, Whitespace)):
             self.advance()
 
     def _parse_cell(self) -> Sequence[LaTeXNode]:
         buffer = list[LaTeXNode]()
 
-        while (head := self.peek()) and head != SpecialNode.ampersand and head != LINE_BREAK_COMMAND:
+        while (head := self.peek()) and head != SpecialNode.AMPERSAND and head != LINE_BREAK_COMMAND:
             buffer.append(head)
             self.advance()
 
         # return strip_whitespace_and_line_breaks(buffer)
-        return buffer[get_strip_slice(buffer, lambda token: isinstance(token, Whitespace) or token == SpecialNode.line_break)]
+        return buffer[get_strip_slice(buffer, lambda token: isinstance(token, Whitespace) or token == SpecialNode.LINE_BREAK)]
 
     def _parse_line(self) -> Iterable[Sequence[LaTeXNode]]:
         while self.peek():
@@ -88,7 +88,7 @@ class MatrixEnvironmentParser:
 
             head = self.peek()
 
-            if head is None:
+            if not head:
                 return
 
             if head == LINE_BREAK_COMMAND:
@@ -161,12 +161,12 @@ def matrix_to_environment(env: MatrixEnvironment) -> Environment:
     if env.options is not None:
         # Put multi-line options on a new line
         if '\n' in str(env.options):
-            contents.append(SpecialNode.line_break)
+            contents.append(SpecialNode.LINE_BREAK)
             contents.append(Whitespace(' ' * (env.whitespace_prefix_length + INDENT)))
 
         contents.append(env.options)
 
-    contents.append(SpecialNode.line_break)
+    contents.append(SpecialNode.LINE_BREAK)
 
     w = env.matrix.get_width()
     h = env.matrix.get_height()
@@ -189,16 +189,16 @@ def matrix_to_environment(env: MatrixEnvironment) -> Environment:
                 if len(stringify_nodes(env.matrix[i, j])) > 0:
                     contents.append(Whitespace(' '))
 
-                contents.append(SpecialNode.ampersand)
+                contents.append(SpecialNode.AMPERSAND)
 
                 if len(stringify_nodes(env.matrix[i, j + 1])) > 0:
                     contents.append(Whitespace(' '))
             elif i < h - 1:
                 contents.append(Whitespace(' '))
                 contents.append(LINE_BREAK_COMMAND)
-                contents.append(SpecialNode.line_break)
+                contents.append(SpecialNode.LINE_BREAK)
             else:
-                contents.append(SpecialNode.line_break)
+                contents.append(SpecialNode.LINE_BREAK)
                 contents.append(Whitespace(' ' * env.whitespace_prefix_length))
 
     return Environment(name=env.name, contents=contents)
@@ -209,7 +209,7 @@ def format_recurse(nodes: Iterable[LaTeXNode], whitespace_prefix_length: int) ->
 
     for node in nodes:
         match node:
-            case SpecialNode.line_break:
+            case SpecialNode.LINE_BREAK:
                 child_whitespace_prefix_length = 0
                 yield node
 

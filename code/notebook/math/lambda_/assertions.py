@@ -1,9 +1,8 @@
 from dataclasses import dataclass
 
-from .alphabet import TypeAssertionConnective
 from .terms import (
-    Term,
-    TermSchema,
+    MixedTerm,
+    MixedTermSchema,
     TypedTerm,
     TypedTermSchema,
     UntypedTerm,
@@ -16,11 +15,11 @@ from .types import SimpleType, SimpleTypeSchema
 
 @dataclass(frozen=True)
 class GradualTypeAssertion:
-    term: Term
+    term: MixedTerm
     type: SimpleType
 
     def __str__(self) -> str:
-        return f'{self.term}{TypeAssertionConnective.colon} {self.type}'
+        return f'{self.term}: {self.type}'
 
 
 class ImplicitTypeAssertion(GradualTypeAssertion):
@@ -38,11 +37,11 @@ class VariableTypeAssertion(GradualTypeAssertion):
 
 @dataclass(frozen=True)
 class GradualTypeAssertionSchema:
-    term: TermSchema
+    term: MixedTermSchema
     type: SimpleTypeSchema
 
     def __str__(self) -> str:
-        return f'{self.term}{TypeAssertionConnective.colon} {self.type}'
+        return f'{self.term}: {self.type}'
 
 
 class ImplicitTypeAssertionSchema(GradualTypeAssertionSchema):

@@ -23,47 +23,47 @@ class TermPlaceholder:
 
 
 @dataclass(frozen=True)
-class ApplicationSchema:
-    a: 'TermSchema'
-    b: 'TermSchema'
+class MixedApplicationSchema:
+    a: 'MixedTermSchema'
+    b: 'MixedTermSchema'
 
     def __str__(self) -> str:
         return f'({self.a}{self.b})'
 
 
-class UntypedApplicationSchema(ApplicationSchema):
+class UntypedApplicationSchema(MixedApplicationSchema):
     a: 'UntypedTermSchema'
     b: 'UntypedTermSchema'
 
 
-class TypedApplicationSchema(ApplicationSchema):
+class TypedApplicationSchema(MixedApplicationSchema):
     a: 'TypedTermSchema'
     b: 'TypedTermSchema'
 
 
 @dataclass(frozen=True)
-class AbstractionSchema:
+class MixedAbstractionSchema:
     var: VariablePlaceholder
-    sub: 'TermSchema'
+    sub: 'MixedTermSchema'
     var_type: SimpleTypeSchema | None = None
 
     def __str__(self) -> str:
         if self.var_type is None:
-            return f'({TermConnective.l}{self.var}.{self.sub})'
+            return f'({TermConnective.LAMBDA}{self.var}.{self.sub})'
 
-        return f'({TermConnective.l}{self.var}:{self.var_type}.{self.sub})'
+        return f'({TermConnective.LAMBDA}{self.var}:{self.var_type}.{self.sub})'
 
 
-class UntypedAbstractionSchema(AbstractionSchema):
+class UntypedAbstractionSchema(MixedAbstractionSchema):
     sub: 'UntypedTermSchema'
     var_type: None
 
 
-class TypedAbstractionSchema(AbstractionSchema):
+class TypedAbstractionSchema(MixedAbstractionSchema):
     sub: 'TypedTermSchema'
     var_type: SimpleTypeSchema
 
 
-TermSchema = Constant | VariablePlaceholder | TermPlaceholder | ApplicationSchema | AbstractionSchema
+MixedTermSchema = Constant | VariablePlaceholder | TermPlaceholder | MixedApplicationSchema | MixedAbstractionSchema
 UntypedTermSchema = Constant | VariablePlaceholder | TermPlaceholder | UntypedApplicationSchema | UntypedAbstractionSchema
 TypedTermSchema = Constant | VariablePlaceholder | TermPlaceholder | TypedApplicationSchema | TypedAbstractionSchema

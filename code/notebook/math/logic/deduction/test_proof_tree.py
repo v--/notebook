@@ -36,7 +36,8 @@ def test_assumption_tree() -> None:
 
 def test_single_implication_introduction() -> None:
     tree = apply(
-        classical_natural_deduction_system['→⁺'],
+        classical_natural_deduction_system,
+        '→⁺',
         prop_premise(
             tree=prop_assume('q', 'u'),
             discharge='p'
@@ -54,12 +55,14 @@ def test_single_implication_introduction() -> None:
 
 def test_double_implication_introduction() -> None:
     tree = apply(
-        classical_natural_deduction_system['→⁺'],
+        classical_natural_deduction_system,
+        '→⁺',
         prop_premise(
             marker='u',
             discharge='p',
             tree=apply(
-                classical_natural_deduction_system['→⁺'],
+                classical_natural_deduction_system,
+                '→⁺',
                 prop_premise(
                     discharge='q',
                     tree=prop_assume('p', 'u')
@@ -81,29 +84,35 @@ def test_double_implication_introduction() -> None:
 
 def test_implication_distributivity_axiom_tree() -> None:
     tree = apply(
-        classical_natural_deduction_system['→⁺'],
+        classical_natural_deduction_system,
+        '→⁺',
         prop_premise(
             discharge='(p → (q → r))',
             marker='u',
             tree=apply(
-                classical_natural_deduction_system['→⁺'],
+                classical_natural_deduction_system,
+                '→⁺',
                 prop_premise(
                     discharge='(p → q)',
                     marker='w',
                     tree=apply(
-                        classical_natural_deduction_system['→⁺'],
+                        classical_natural_deduction_system,
+                        '→⁺',
                         prop_premise(
                             discharge='p',
                             marker='v',
                             tree=apply(
-                                classical_natural_deduction_system['→⁻'],
+                                classical_natural_deduction_system,
+                                '→⁻',
                                 apply(
-                                    classical_natural_deduction_system['→⁻'],
+                                    classical_natural_deduction_system,
+                                    '→⁻',
                                     prop_assume('(p → (q → r))', 'u'),
                                     prop_assume('p', 'v')
                                 ),
                                 apply(
-                                    classical_natural_deduction_system['→⁻'],
+                                    classical_natural_deduction_system,
+                                    '→⁻',
                                     prop_assume('(p → q)', 'w'),
                                     prop_assume('p', 'v')
                                 )
@@ -135,7 +144,8 @@ def test_implication_distributivity_axiom_tree() -> None:
 def test_invalid_application_arity() -> None:
     with pytest.raises(RuleApplicationError, match='The rule ∧⁺ has 2 premises, but the application has 1'):
         apply(
-            classical_natural_deduction_system['∧⁺'],
+            classical_natural_deduction_system,
+            '∧⁺',
             prop_assume('p', 'u')
             # Should have one more premise
         )
@@ -144,7 +154,8 @@ def test_invalid_application_arity() -> None:
 def test_invalid_application_duplicate_marker() -> None:
     with pytest.raises(RuleApplicationError, match='Multiple assumptions cannot have the same marker'):
         apply(
-            classical_natural_deduction_system['∧⁺'],
+            classical_natural_deduction_system,
+            '∧⁺',
             prop_assume('p', 'u'),
             prop_assume('q', 'u')
         )
@@ -153,6 +164,7 @@ def test_invalid_application_duplicate_marker() -> None:
 def test_invalid_application_missing_discharge() -> None:
     with pytest.raises(RuleApplicationError, match='The rule →⁺ requires a discharge formula for premise number 1'):
         apply(
-            classical_natural_deduction_system['→⁺'],
+            classical_natural_deduction_system,
+            '→⁺',
             prop_assume('p', 'u'),
         )

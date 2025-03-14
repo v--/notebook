@@ -1,9 +1,17 @@
 from ..exceptions import NotebookCodeError
 
 
-class ParsingError(NotebookCodeError):
+class BaseParsingError(NotebookCodeError):
     pass
 
 
-class TokenizationError(ParsingError):
+class ParserError(BaseParsingError):
+    pass
+
+
+class InvalidTokenError(BaseParsingError):
+    pass
+
+
+class TokenizerError(BaseParsingError):
     pass

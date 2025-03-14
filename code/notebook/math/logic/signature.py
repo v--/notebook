@@ -1,4 +1,15 @@
-from collections.abc import Iterable, MutableMapping
+from typing import Literal, NamedTuple
+
+from ...support.collections import TrieMapping
+
+
+SignatureSymbolKind = Literal['FUNCTION', 'PREDICATE']
+
+
+class SignatureSymbol(NamedTuple):
+    kind: SignatureSymbolKind
+    name: str
+    arity: int
 
 
 class FormalLogicSignature:
@@ -6,39 +17,16 @@ class FormalLogicSignature:
     yet they are guaranteed to correspond to one lexeme ("token").
     This makes it more convenient to use at the cost of possibly confusing terminology.
     Calling them "symbols" corresponds to their usage in the literature, where Unicode is not involved.'''
-
-    _payload: MutableMapping[str, int]
+    trie: TrieMapping[SignatureSymbol]
 
     def __init__(self) -> None:
-        self._payload = {}
+        self.trie = TrieMapping()
 
-    def add_function_symbol(self, name: str, arity: int) -> None:
-        assert not self.is_function_symbol(name)
-        self._payload[name] = arity
+    def add_symbol(self, symbol_kind: SignatureSymbolKind, name: str, arity: int) -> None:
+        self.trie[name] = SignatureSymbol(symbol_kind, name, arity)
 
-    def add_predicate_symbol(self, name: str, arity: int) -> None:
-        assert not self.is_predicate_symbol(name)
-        self._payload[name] = -1 - arity
-
-    def is_function_symbol(self, name: str) -> bool:
-        return self._payload.get(name, -1) >= 0
-
-    def is_predicate_symbol(self, name: str) -> bool:
-        return self._payload.get(name, 0) < 0
-
-    def get_function_arity(self, name: str) -> int:
-        assert self.is_function_symbol(name)
-        return self._payload[name]
-
-    def get_predicate_arity(self, name: str) -> int:
-        assert self.is_predicate_symbol(name)
-        return -1 - self._payload[name]
-
-    def iter_function_symbols(self) -> Iterable[str]:
-        return sorted(sym for sym, arity in self._payload.items() if arity >= 0)
-
-    def iter_predicate_symbols(self) -> Iterable[str]:
-        return sorted(sym for sym, arity in self._payload.items() if arity < 0)
+    def get_symbol(self, name: str) -> SignatureSymbol:
+        return self.trie[name]
 
 
 EMPTY_SIGNATURE = FormalLogicSignature()

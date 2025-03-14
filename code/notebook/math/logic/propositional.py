@@ -8,4 +8,4 @@ PROPOSITIONAL_SIGNATURE = FormalLogicSignature()
 
 # We shadow all variables with the corresponding predicates
 for ind in range(ord('a'), ord('z') + 1):
-    PROPOSITIONAL_SIGNATURE.add_predicate_symbol(chr(ind), arity=0)
+    PROPOSITIONAL_SIGNATURE.add_symbol('PREDICATE', name=chr(ind), arity=0)

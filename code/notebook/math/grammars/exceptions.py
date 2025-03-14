@@ -13,5 +13,5 @@ class TokenizationError(GrammarError):
     pass
 
 
-class ParsingError(GrammarError):
+class ParserError(GrammarError):
     pass

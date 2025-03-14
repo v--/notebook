@@ -7,7 +7,7 @@ from ..terms import (
     TypedApplication,
     TypedTerm,
 )
-from ..type_systems import ARROW_ELIM_RULE_EXPLICIT, ARROW_INTRO_RULE_EXPLICIT
+from ..type_system import BASE_EXPLICIT_TYPE_SYSTEM
 from ..variables import get_free_variables
 from .alpha import alpha_convert_derivation
 from .exceptions import TypeDerivationError
@@ -41,7 +41,6 @@ class ReductionVisitor(BasicDerivationTreeVisitor[TypeDerivationTree]):
         # β-reduction
         if isinstance(left_term, TypedAbstraction):
             assert isinstance(subtree_left, RuleApplicationTree)
-            assert subtree_left.rule == ARROW_INTRO_RULE_EXPLICIT
             reduct_tree = substitute(subtree_left.premises[0].tree, {left_term.var: subtree_right})
 
             try:
@@ -57,7 +56,7 @@ class ReductionVisitor(BasicDerivationTreeVisitor[TypeDerivationTree]):
                 pass
             else:
                 return apply(
-                    ARROW_ELIM_RULE_EXPLICIT,
+                    BASE_EXPLICIT_TYPE_SYSTEM, '→⁻',
                     result_subtree_left,
                     ReductionVisitor(self.reduct.b).visit(subtree_right)
                 )
@@ -68,7 +67,7 @@ class ReductionVisitor(BasicDerivationTreeVisitor[TypeDerivationTree]):
                 pass
             else:
                 return apply(
-                    ARROW_ELIM_RULE_EXPLICIT,
+                    BASE_EXPLICIT_TYPE_SYSTEM, '→⁻',
                     ReductionVisitor(self.reduct.a).visit(subtree_left),
                     result_subtree_right,
                 )
@@ -86,7 +85,6 @@ class ReductionVisitor(BasicDerivationTreeVisitor[TypeDerivationTree]):
         # η-reduction
         if isinstance(term.sub, TypedApplication) and term.sub.b == term.var and term.var not in get_free_variables(term.sub.a):
             assert isinstance(subtree, RuleApplicationTree)
-            assert subtree.rule == ARROW_ELIM_RULE_EXPLICIT
 
             try:
                 return alpha_convert_derivation(subtree.premises[0].tree, self.reduct)
@@ -109,7 +107,7 @@ class ReductionVisitor(BasicDerivationTreeVisitor[TypeDerivationTree]):
                 )
 
             return apply(
-                ARROW_INTRO_RULE_EXPLICIT,
+                BASE_EXPLICIT_TYPE_SYSTEM, '→⁺',
                 premise(
                     discharge=assertion,
                     tree=ReductionVisitor(self.reduct.sub).visit(adjusted_subtree)

@@ -1,15 +1,11 @@
-from ...parsing.old_tokens import TokenEnum
+from enum import StrEnum
 
 
-class TermConnective(TokenEnum):
-    l = 'λ'
+class TermConnective(StrEnum):
+    LAMBDA = 'λ'
 
 
-class BinaryTypeConnective(TokenEnum):
-    arrow = '→'
-    plus = '+'
-    times = '×'
-
-
-class TypeAssertionConnective(TokenEnum):
-    colon = ':'
+class BinaryTypeConnective(StrEnum):
+    ARROW = '→'
+    SUM = '+'
+    PROD = '×'

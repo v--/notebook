@@ -1,7 +1,7 @@
 from ...support.pytest import pytest_parametrize_kwargs
 from .erasure import erase_annotations
 from .parsing import parse_term
-from .type_systems import HOL_SIGNATURE
+from .type_system import HOL_SIGNATURE
 from .typing import TypingStyle
 
 
@@ -16,6 +16,6 @@ from .typing import TypingStyle
     )
 )
 def test_erase_annotations(typed: str, untyped: str) -> None:
-    typed_term = parse_term(HOL_SIGNATURE, typed, TypingStyle.explicit)
-    untyped_term = parse_term(HOL_SIGNATURE, untyped, TypingStyle.implicit)
+    typed_term = parse_term(HOL_SIGNATURE, typed, TypingStyle.EXPLICIT)
+    untyped_term = parse_term(HOL_SIGNATURE, untyped, TypingStyle.IMPLICIT)
     assert erase_annotations(typed_term) == untyped_term

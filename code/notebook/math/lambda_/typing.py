@@ -1,13 +1,13 @@
 from enum import Flag, auto
 
-from ...support.inference.rules import InferenceRule, InferenceRulePremise
+from ...support.inference import InferenceRule, InferenceRulePremise
 from .assertions import ExplicitTypeAssertionSchema, GradualTypeAssertionSchema, ImplicitTypeAssertionSchema
 
 
 class TypingStyle(Flag):
-    implicit = auto()
-    explicit = auto()
-    gradual = implicit | explicit
+    IMPLICIT = auto()
+    EXPLICIT = auto()
+    GRADUAL = IMPLICIT | EXPLICIT
 
 
 class GradualTypingRulePremise[SchemaT: GradualTypeAssertionSchema](InferenceRulePremise[SchemaT]):

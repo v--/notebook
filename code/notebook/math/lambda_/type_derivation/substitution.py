@@ -9,7 +9,7 @@ from ..terms import (
     TypedAbstraction,
     Variable,
 )
-from ..type_systems import ARROW_ELIM_RULE_EXPLICIT, ARROW_INTRO_RULE_EXPLICIT
+from ..type_system import BASE_EXPLICIT_TYPE_SYSTEM
 from ..variables import get_free_variables, new_variable
 from .exceptions import TypeDerivationError
 from .tree import AssumptionTree, RuleApplicationTree, TypeDerivationTree, apply, assume, premise
@@ -72,7 +72,7 @@ class TreeSubstitutionVisitor(BasicDerivationTreeVisitor[TypeDerivationTree]):
         term: TypedApplication
     ) -> RuleApplicationTree:
         return apply(
-            ARROW_ELIM_RULE_EXPLICIT,
+            BASE_EXPLICIT_TYPE_SYSTEM, '→⁻',
             self.visit(subtree_left),
             self.visit(subtree_right)
         )
@@ -95,7 +95,7 @@ class TreeSubstitutionVisitor(BasicDerivationTreeVisitor[TypeDerivationTree]):
         new_var_tree = assume(VariableTypeAssertion(new_var, term.var_type))
 
         return apply(
-            ARROW_INTRO_RULE_EXPLICIT,
+            BASE_EXPLICIT_TYPE_SYSTEM, '→⁺',
             premise(
                 tree=apply_tree_substitution(subtree, self.substitution.modify_at(term.var, new_var_tree)),
                 discharge=new_var_tree.conclusion

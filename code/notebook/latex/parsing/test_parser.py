@@ -2,7 +2,7 @@ from textwrap import dedent
 
 import pytest
 
-from ...parsing.parser import ParsingError
+from ...parsing.parser import ParserError
 from ..nodes import (
     BraceGroup,
     BracketGroup,
@@ -31,7 +31,7 @@ def test_tab() -> None:
 def test_line_break() -> None:
     string = '\n'
     nodes = parse_latex(string)
-    assert nodes == [SpecialNode.line_break]
+    assert nodes == [SpecialNode.LINE_BREAK]
 
 
 def test_line_break_command() -> None:
@@ -71,7 +71,7 @@ def test_command_with_brace_arg() -> None:
 
 
 def test_unmatched_brace() -> None:
-    with pytest.raises(ParsingError) as excinfo:
+    with pytest.raises(ParserError) as excinfo:
         parse_latex('\\test{a')
 
     assert str(excinfo.value) == 'Unmatched {'
@@ -93,7 +93,7 @@ def test_command_with_bracket_arg() -> None:
 
 
 def test_unmatched_bracket() -> None:
-    with pytest.raises(ParsingError) as excinfo:
+    with pytest.raises(ParserError) as excinfo:
         parse_latex('\\test[a')
 
     assert str(excinfo.value) == 'Unmatched ['
@@ -118,7 +118,7 @@ def test_command_with_mixed_args() -> None:
             Whitespace(' ')
         ]),
         Whitespace(' '),
-        SpecialNode.line_break,
+        SpecialNode.LINE_BREAK,
         BraceGroup([Text('d')]),
     ]
 
@@ -137,7 +137,7 @@ def test_basic_environment() -> None:
 
 
 def test_unmatched_environment() -> None:
-    with pytest.raises(ParsingError) as excinfo:
+    with pytest.raises(ParserError) as excinfo:
         parse_latex(r'\begin{test}')
 
     assert str(excinfo.value) == "Unclosed environment 'test'"
@@ -149,7 +149,7 @@ def test_unmatched_environment() -> None:
 
 
 def test_mismatched_environment() -> None:
-    with pytest.raises(ParsingError) as excinfo:
+    with pytest.raises(ParserError) as excinfo:
         parse_latex(
             dedent(r'''
                 \begin{test}
@@ -169,7 +169,7 @@ def test_mismatched_environment() -> None:
 
 
 def test_missing_environment_name() -> None:
-    with pytest.raises(ParsingError) as excinfo:
+    with pytest.raises(ParserError) as excinfo:
         parse_latex(r'\begin')
 
     assert str(excinfo.value) == 'No environment name specified'
@@ -181,7 +181,7 @@ def test_missing_environment_name() -> None:
 
 
 def test_unclosed_and_missing_environment_name() -> None:
-    with pytest.raises(ParsingError) as excinfo:
+    with pytest.raises(ParserError) as excinfo:
         parse_latex(r'\begin{')
 
     assert str(excinfo.value) == 'No environment name specified'
@@ -193,7 +193,7 @@ def test_unclosed_and_missing_environment_name() -> None:
 
 
 def test_invalid_environment_name() -> None:
-    with pytest.raises(ParsingError) as excinfo:
+    with pytest.raises(ParserError) as excinfo:
         parse_latex(r'\begin{&}')
 
     assert str(excinfo.value) == 'No environment name specified'
@@ -205,7 +205,7 @@ def test_invalid_environment_name() -> None:
 
 
 def test_unclosed_environment_name() -> None:
-    with pytest.raises(ParsingError) as excinfo:
+    with pytest.raises(ParserError) as excinfo:
         parse_latex(r'\begin{test')
 
     assert str(excinfo.value) == 'Unclosed brace when specifying environment name'

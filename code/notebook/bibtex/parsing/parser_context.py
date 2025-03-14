@@ -1,6 +1,6 @@
 from typing import override
 
-from ...parsing import ErrorHighlighter, Parser, ParserContext, ParsingError
+from ...parsing import ErrorHighlighter, Parser, ParserContext, ParserError
 from ..string import CompositeStringBuilder
 from .tokens import BibToken
 
@@ -18,8 +18,8 @@ class BibValueContext(ParserContext[BibToken]):
         self.string_builder = CompositeStringBuilder()
 
     @override
-    def annotate_context_error(self, message: str) -> ParsingError:
-        err = ParsingError(message)
+    def annotate_context_error(self, message: str) -> ParserError:
+        err = ParserError(message)
 
         first_token = self.get_first_token()
         last_token = self.get_last_token_safe()
@@ -43,7 +43,7 @@ class BibValueContext(ParserContext[BibToken]):
         return err
 
     @override
-    def annotate_token_error(self, message: str, token: BibToken | None = None) -> ParsingError:
+    def annotate_token_error(self, message: str, token: BibToken | None = None) -> ParserError:
         if self.entry_context:
             return self.entry_context.annotate_token_error(message, token)
 

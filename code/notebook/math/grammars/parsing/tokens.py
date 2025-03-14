@@ -1,12 +1,14 @@
-from collections.abc import Mapping
+from collections.abc import Mapping, Sequence
 from typing import Literal, get_args
 
 from ....parsing import Token
 
 
 GrammarTokenKind = Literal[
+    # Value-dependent
     'TEXT',
 
+    # Singletons
     'OPENING_CHEVRON',
     'CLOSING_CHEVRON',
     'DOUBLE_QUOTES',
@@ -19,7 +21,7 @@ GrammarTokenKind = Literal[
 ]
 
 
-TOKEN_KIND_LIST = get_args(GrammarTokenKind)
+TOKEN_KIND_LIST: Sequence[GrammarTokenKind] = get_args(GrammarTokenKind)
 SINGLETON_TOKEN_MAP: Mapping[str, GrammarTokenKind] = {
     '<': 'OPENING_CHEVRON',
     '>': 'CLOSING_CHEVRON',

@@ -11,7 +11,7 @@ from ..terms import (
     TypedTermVisitor,
     Variable,
 )
-from ..type_systems import ARROW_ELIM_RULE_EXPLICIT, ARROW_INTRO_RULE_EXPLICIT
+from ..type_system import BASE_EXPLICIT_TYPE_SYSTEM
 from ..types import SimpleType, is_arrow_type
 from .exceptions import TypeInferenceError
 from .tree import TypeDerivationTree, apply, assume, premise
@@ -42,7 +42,7 @@ class TypeInferenceVisitor(TypedTermVisitor[TypeDerivationTree]):
             raise TypeInferenceError(f'Incompatible types in application term {term}')
 
         return apply(
-            ARROW_ELIM_RULE_EXPLICIT,
+            BASE_EXPLICIT_TYPE_SYSTEM, '→⁻',
             premise(tree=subtree_a),
             premise(tree=subtree_b)
         )
@@ -52,7 +52,7 @@ class TypeInferenceVisitor(TypedTermVisitor[TypeDerivationTree]):
         subtree = TypeInferenceVisitor({**self.context, term.var: term.var_type}).visit(term.sub)
 
         return apply(
-            ARROW_INTRO_RULE_EXPLICIT,
+            BASE_EXPLICIT_TYPE_SYSTEM, '→⁺',
             premise(tree=subtree, discharge=VariableTypeAssertion(term.var, term.var_type))
         )
 

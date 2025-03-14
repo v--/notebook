@@ -81,7 +81,7 @@ class LaTeXParser(Parser[LaTeXToken]):
 
         raise env_context.annotate_context_error(f'Unclosed environment {env_name_token.value!r}')
 
-    def parse_node(self) -> LaTeXNode:  # noqa: PLR0911
+    def parse_node(self) -> LaTeXNode:
         head = self.peek()
 
         if not head:
@@ -104,7 +104,7 @@ class LaTeXParser(Parser[LaTeXToken]):
                 self.advance()
 
                 match head.kind:
-                    case 'TEXT' if is_latin_string(head.value, Capitalization.mixed):
+                    case 'TEXT' if is_latin_string(head.value, Capitalization.MIXED):
                         return Command(head.value)
 
                     case 'BACKSLASH':
@@ -123,17 +123,13 @@ class LaTeXParser(Parser[LaTeXToken]):
             case 'OPENING_BRACKET':
                 return self._parse_brace(BracketGroup, 'CLOSING_BRACKET')
 
-            case 'CLOSING_BRACE':
-                self.advance()
-                return Text(head.value)
-
-            case 'CLOSING_BRACKET':
+            case 'CLOSING_BRACE' | 'CLOSING_BRACKET':
                 self.advance()
                 return Text(head.value)
 
             case 'AT' | 'CARET' | 'PERCENT' | 'AMPERSAND' | 'UNDERSCORE' | 'DOLLAR' | 'LINE_BREAK':
                 self.advance()
-                return getattr(SpecialNode, head.kind.lower())
+                return getattr(SpecialNode, head.kind)
 
             case _:
                 raise self.annotate_token_error('Unexpected token')

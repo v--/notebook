@@ -2,7 +2,7 @@ from textwrap import dedent
 
 import pytest
 
-from ...parsing.parser import ParsingError
+from ...parsing.parser import ParserError
 from ..entry import BibAuthor, BibEntry
 from ..string import CompositeString, VerbatimString
 from .parser import parse_bibtex
@@ -17,7 +17,7 @@ def test_empty_lines() -> None:
 
 
 def test_invalid_entry() -> None:
-    with pytest.raises(ParsingError) as excinfo:
+    with pytest.raises(ParserError) as excinfo:
         parse_bibtex(' test')
 
     assert str(excinfo.value) == 'A bibtex entry must start with @'
@@ -29,7 +29,7 @@ def test_invalid_entry() -> None:
 
 
 def test_invalid_entry_type() -> None:
-    with pytest.raises(ParsingError) as excinfo:
+    with pytest.raises(ParserError) as excinfo:
         parse_bibtex('@123\n')
 
     assert str(excinfo.value) == 'Expected an entry type'
@@ -41,7 +41,7 @@ def test_invalid_entry_type() -> None:
 
 
 def test_end_after_entry_type() -> None:
-    with pytest.raises(ParsingError) as excinfo:
+    with pytest.raises(ParserError) as excinfo:
         parse_bibtex('@book')
 
     assert str(excinfo.value) == 'An opening brace must follow a bibtex entry type'
@@ -53,7 +53,7 @@ def test_end_after_entry_type() -> None:
 
 
 def test_unknown_entry_type() -> None:
-    with pytest.raises(ParsingError) as excinfo:
+    with pytest.raises(ParserError) as excinfo:
         parse_bibtex('@test')
 
     assert str(excinfo.value) == 'Unrecognized entry type'
@@ -65,7 +65,7 @@ def test_unknown_entry_type() -> None:
 
 
 def test_entry_name_string_end() -> None:
-    with pytest.raises(ParsingError) as excinfo:
+    with pytest.raises(ParserError) as excinfo:
         parse_bibtex('@book{')
 
     assert str(excinfo.value) == 'Expected an entry name'
@@ -77,7 +77,7 @@ def test_entry_name_string_end() -> None:
 
 
 def test_empty_entry_name() -> None:
-    with pytest.raises(ParsingError) as excinfo:
+    with pytest.raises(ParserError) as excinfo:
         parse_bibtex('@book{}')
 
     assert str(excinfo.value) == 'Expected an entry name'
@@ -94,7 +94,7 @@ def test_no_properties() -> None:
         '''[1:]
     )
 
-    with pytest.raises(ParsingError) as excinfo:
+    with pytest.raises(ParserError) as excinfo:
         parse_bibtex(string)
 
     assert str(excinfo.value) == 'Entry without properties'
@@ -112,7 +112,7 @@ def test_value_without_equality() -> None:
         '''[1:]
     )
 
-    with pytest.raises(ParsingError) as excinfo:
+    with pytest.raises(ParserError) as excinfo:
         parse_bibtex(string)
 
     assert str(excinfo.value) == 'Expected an equality sign'
@@ -130,7 +130,7 @@ def test_key_without_value() -> None:
           title ='''[1:]
     )
 
-    with pytest.raises(ParsingError) as excinfo:
+    with pytest.raises(ParserError) as excinfo:
         parse_bibtex(string)
 
     assert str(excinfo.value) == 'Expected a value'
@@ -149,7 +149,7 @@ def test_no_closing_brace() -> None:
         '''[1:]
     )
 
-    with pytest.raises(ParsingError) as excinfo:
+    with pytest.raises(ParserError) as excinfo:
         parse_bibtex(string)
 
     assert str(excinfo.value) == 'Expected a closing brace'
@@ -169,7 +169,7 @@ def test_no_title() -> None:
         '''[1:]
     )
 
-    with pytest.raises(ParsingError) as excinfo:
+    with pytest.raises(ParserError) as excinfo:
         parse_bibtex(string)
 
     assert str(excinfo.value) == 'Entry without title'
@@ -254,7 +254,7 @@ def test_trailing_comma() -> None:
         '''[1:]
     )
 
-    with pytest.raises(ParsingError) as excinfo:
+    with pytest.raises(ParserError) as excinfo:
         parse_bibtex(string)
 
     assert str(excinfo.value) == 'Trailing commas are disallowed'
@@ -344,7 +344,7 @@ def test_authors_only_and() -> None:
         '''[1:]
     )
 
-    with pytest.raises(ParsingError) as excinfo:
+    with pytest.raises(ParserError) as excinfo:
         parse_bibtex(string)
 
     assert str(excinfo.value) == 'Cannot parse list'
@@ -367,7 +367,7 @@ def test_authors_double_and() -> None:
         '''[1:]
     )
 
-    with pytest.raises(ParsingError) as excinfo:
+    with pytest.raises(ParserError) as excinfo:
         parse_bibtex(string)
 
     assert str(excinfo.value) == 'Cannot parse list'
@@ -390,7 +390,7 @@ def test_authors_empty_name() -> None:
         '''[1:]
     )
 
-    with pytest.raises(ParsingError) as excinfo:
+    with pytest.raises(ParserError) as excinfo:
         parse_bibtex(string)
 
     assert str(excinfo.value) == 'Cannot parse list'
@@ -582,7 +582,7 @@ def test_unclosed_demimiter() -> None:
           title = {Test'''[1:]
     )
 
-    with pytest.raises(ParsingError) as excinfo:
+    with pytest.raises(ParserError) as excinfo:
         parse_bibtex(string)
 
     assert str(excinfo.value) == 'Unclosed delimiter'
@@ -600,7 +600,7 @@ def test_escape_truncated() -> None:
           title = {Test \\'''[1:]
     )
 
-    with pytest.raises(ParsingError) as excinfo:
+    with pytest.raises(ParserError) as excinfo:
         parse_bibtex(string)
 
     assert str(excinfo.value) == 'No symbol to escape'
@@ -622,7 +622,7 @@ def test_invalid_escape() -> None:
         '''[1:]
     )
 
-    with pytest.raises(ParsingError) as excinfo:
+    with pytest.raises(ParserError) as excinfo:
         parse_bibtex(string)
 
     assert str(excinfo.value) == 'Unexpected line break'
@@ -684,7 +684,7 @@ def test_duplicate_name() -> None:
         '''[1:]
     )
 
-    with pytest.raises(ParsingError) as excinfo:
+    with pytest.raises(ParserError) as excinfo:
         parse_bibtex(string)
 
     assert str(excinfo.value) == 'Duplicate entry name'
@@ -752,7 +752,7 @@ def test_empty_isbn() -> None:
         '''[1:]
     )
 
-    with pytest.raises(ParsingError) as excinfo:
+    with pytest.raises(ParserError) as excinfo:
         parse_bibtex(string)
 
     assert str(excinfo.value) == 'Empty value'
@@ -850,7 +850,7 @@ def test_shortauthor_insufficient() -> None:
         '''[1:]
     )
 
-    with pytest.raises(ParsingError) as excinfo:
+    with pytest.raises(ParserError) as excinfo:
         parse_bibtex(string)
 
     assert str(excinfo.value) == "Property 'shortauthor' does not match the structure of 'author'"
@@ -877,7 +877,7 @@ def test_shortauthor_verbatim_overfull() -> None:
         '''[1:]
     )
 
-    with pytest.raises(ParsingError) as excinfo:
+    with pytest.raises(ParserError) as excinfo:
         parse_bibtex(string)
 
     assert str(excinfo.value) == "Property 'shortauthor' does not match the structure of 'author'"

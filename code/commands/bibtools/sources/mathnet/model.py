@@ -72,7 +72,7 @@ def read_amsbib_value(nodes: Iterable[LaTeXNode]) -> Iterable[str]:
 
 def parse_amsbib_entry_string(string: str) -> tuple[str, str]:
     tokens = parse_latex(string)
-    tokens = tokens[get_strip_slice(tokens, lambda token: isinstance(token, Whitespace) or token == SpecialNode.line_break)]
+    tokens = tokens[get_strip_slice(tokens, lambda token: isinstance(token, Whitespace) or token == SpecialNode.LINE_BREAK)]
 
     if len(tokens) == 0:
         raise BibToolsParsingError(f'Cannot parse AMSTEX entry line {string!r}')

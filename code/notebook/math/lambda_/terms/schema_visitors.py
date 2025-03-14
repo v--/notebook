@@ -1,8 +1,8 @@
 from .schemas import (
-    AbstractionSchema,
-    ApplicationSchema,
+    MixedAbstractionSchema,
+    MixedApplicationSchema,
+    MixedTermSchema,
     TermPlaceholder,
-    TermSchema,
     TypedAbstractionSchema,
     TypedApplicationSchema,
     TypedTermSchema,
@@ -15,7 +15,7 @@ from .terms import Constant
 
 
 class TermSchemaVisitor[T]:
-    def visit(self, schema: TermSchema) -> T:
+    def visit(self, schema: MixedTermSchema) -> T:
         match schema:
             case Constant():
                 return self.visit_constant(schema)
@@ -26,10 +26,10 @@ class TermSchemaVisitor[T]:
             case TermPlaceholder():
                 return self.visit_term_placeholder(schema)
 
-            case ApplicationSchema():
+            case MixedApplicationSchema():
                 return self.visit_application(schema)
 
-            case AbstractionSchema():
+            case MixedAbstractionSchema():
                 return self.visit_abstraction(schema)
 
     def visit_constant(self, schema: Constant) -> T:
@@ -41,13 +41,13 @@ class TermSchemaVisitor[T]:
     def visit_term_placeholder(self, schema: TermPlaceholder) -> T:
         return self.generic_visit(schema)
 
-    def visit_application(self, schema: ApplicationSchema) -> T:
+    def visit_application(self, schema: MixedApplicationSchema) -> T:
         return self.generic_visit(schema)
 
-    def visit_abstraction(self, schema: AbstractionSchema) -> T:
+    def visit_abstraction(self, schema: MixedAbstractionSchema) -> T:
         return self.generic_visit(schema)
 
-    def generic_visit(self, schema: TermSchema) -> T:
+    def generic_visit(self, schema: MixedTermSchema) -> T:
         raise NotImplementedError
 
 

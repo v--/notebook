@@ -7,7 +7,7 @@ from ..terms import (
     TypedApplication,
     TypedTerm,
 )
-from ..type_systems import ARROW_ELIM_RULE_EXPLICIT, ARROW_INTRO_RULE_EXPLICIT
+from ..type_system import BASE_EXPLICIT_TYPE_SYSTEM
 from ..variables import get_free_variables
 from .exceptions import TypeDerivationError
 from .substitution import substitute
@@ -42,7 +42,7 @@ class AlphaConversionVisitor(BasicDerivationTreeVisitor[TypeDerivationTree]):
             raise NotAlphaEquivalent
 
         return apply(
-            ARROW_ELIM_RULE_EXPLICIT,
+            BASE_EXPLICIT_TYPE_SYSTEM, '→⁻',
             AlphaConversionVisitor(self.other.a).visit(subtree_left),
             AlphaConversionVisitor(self.other.b).visit(subtree_right)
         )
@@ -72,7 +72,7 @@ class AlphaConversionVisitor(BasicDerivationTreeVisitor[TypeDerivationTree]):
             )
 
         return apply(
-            ARROW_INTRO_RULE_EXPLICIT,
+            BASE_EXPLICIT_TYPE_SYSTEM, '→⁺',
             premise(
                 discharge=assertion,
                 tree=AlphaConversionVisitor(self.other.sub).visit(adjusted_subtree)

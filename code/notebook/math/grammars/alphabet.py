@@ -4,7 +4,7 @@ from typing import Literal
 
 from ...exceptions import UnreachableException
 from ...parsing import StringContainer
-from ...support.unicode import atoi_subscripts, is_numeric_subscript, itoa_subscripts
+from ...support.unicode import atoi_subscripts, is_numeric_subscript_char, itoa_subscripts
 
 
 class Terminal(StringContainer):
@@ -24,7 +24,7 @@ class NonTerminal(StringContainer):
 
 
 def new_non_terminal(base_name: str, context: Collection[NonTerminal]) -> NonTerminal:
-    numeric_subscript = ''.join(itertools.takewhile(is_numeric_subscript, reversed(base_name)))
+    numeric_subscript = ''.join(itertools.takewhile(is_numeric_subscript_char, reversed(base_name)))
     index: int = -1
 
     if len(numeric_subscript) > 0:

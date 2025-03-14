@@ -1,6 +1,6 @@
 from ..assertions import VariableTypeAssertion
 from ..terms import TypedAbstraction, TypedApplication
-from ..type_systems.base import ARROW_ELIM_RULE_EXPLICIT, ARROW_INTRO_RULE_EXPLICIT
+from ..type_system import BASE_EXPLICIT_TYPE_SYSTEM
 from .exceptions import UnknownDerivationRuleError
 from .tree import AssumptionTree, RuleApplicationTree, TypeDerivationTree
 
@@ -11,19 +11,19 @@ class BasicDerivationTreeVisitor[T]:
             return self.visit_assumption(tree)
 
         if isinstance(tree, RuleApplicationTree):
-            if tree.rule == ARROW_ELIM_RULE_EXPLICIT:
+            if tree.get_rule() == BASE_EXPLICIT_TYPE_SYSTEM['→⁻']:
                 term = tree.conclusion.term
                 assert isinstance(term, TypedApplication)
                 return self.visit_arrow_elim(tree, tree.premises[0].tree, tree.premises[1].tree, term)
 
-            if tree.rule == ARROW_INTRO_RULE_EXPLICIT:
+            if tree.get_rule() == BASE_EXPLICIT_TYPE_SYSTEM['→⁺']:
                 term = tree.conclusion.term
                 discharge = tree.premises[0].discharge
                 assert isinstance(term, TypedAbstraction)
                 assert discharge is not None
                 return self.visit_arrow_intro(tree, tree.premises[0].tree, discharge, term)
 
-            raise UnknownDerivationRuleError(f'Unknown rule {tree.rule.name}')
+            raise UnknownDerivationRuleError(f'Unknown rule {tree.rule_name}')
 
         raise UnknownDerivationRuleError(f'Unknown tree type {type(tree).__name__}')
 

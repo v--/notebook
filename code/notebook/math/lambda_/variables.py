@@ -2,7 +2,7 @@ from collections.abc import Collection
 from typing import override
 
 from ...parsing.identifiers import new_latin_identifier
-from .terms import Abstraction, Application, Constant, Term, TermVisitor, Variable
+from .terms import Constant, MixedAbstraction, MixedApplication, MixedTerm, TermVisitor, Variable
 
 
 def new_variable(context: Collection[Variable]) -> Variable:
@@ -19,15 +19,15 @@ class FreeVariableVisitor(TermVisitor[Collection[Variable]]):
         return {term}
 
     @override
-    def visit_application(self, term: Application) -> Collection[Variable]:
+    def visit_application(self, term: MixedApplication) -> Collection[Variable]:
         return {*self.visit(term.a), *self.visit(term.b)}
 
     @override
-    def visit_abstraction(self, term: Abstraction) -> Collection[Variable]:
+    def visit_abstraction(self, term: MixedAbstraction) -> Collection[Variable]:
         return {var for var in self.visit(term.sub) if var != term.var}
 
 
-def get_free_variables(term: Term) -> Collection[Variable]:
+def get_free_variables(term: MixedTerm) -> Collection[Variable]:
     return FreeVariableVisitor().visit(term)
 
 
@@ -41,17 +41,17 @@ class BoundVariableVisitor(TermVisitor[Collection[Variable]]):
         return set()
 
     @override
-    def visit_application(self, term: Application) -> Collection[Variable]:
+    def visit_application(self, term: MixedApplication) -> Collection[Variable]:
         return {*self.visit(term.a), *self.visit(term.b)}
 
     @override
-    def visit_abstraction(self, term: Abstraction) -> Collection[Variable]:
+    def visit_abstraction(self, term: MixedAbstraction) -> Collection[Variable]:
         return {*self.visit(term.sub), term.var}
 
 
-def get_bound_variables(term: Term) -> Collection[Variable]:
+def get_bound_variables(term: MixedTerm) -> Collection[Variable]:
     return BoundVariableVisitor().visit(term)
 
 
-def get_term_variables(term: Term) -> Collection[Variable]:
+def get_term_variables(term: MixedTerm) -> Collection[Variable]:
     return {*get_free_variables(term), *get_bound_variables(term)}

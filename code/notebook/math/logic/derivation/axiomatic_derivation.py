@@ -3,18 +3,20 @@ from dataclasses import dataclass
 from typing import NamedTuple
 
 from ....support.schemas import SchemaInferenceError
-from ..deduction.markers import Marker, new_marker
-from ..deduction.proof_tree import AssumptionTree, ProofTree, RuleApplicationPremise, RuleApplicationTree
-from ..deduction.rules import NaturalDeductionRule, NaturalDeductionSystem
+from ..deduction import (
+    AssumptionTree,
+    Marker,
+    NaturalDeductionSystem,
+    ProofTree,
+    RuleApplicationPremise,
+    RuleApplicationTree,
+    new_marker,
+)
 from ..formulas import Formula, is_conditional
 from ..instantiation import FormalLogicSchemaInstantiation, infer_instantiation_from_formula
 from ..parsing import parse_formula_placeholder
-from .axiomatic_derivation_system import (
-    MODUS_PONENS_RULE,
-    AxiomaticDerivationSystem,
-    is_axiom,
-)
 from .exceptions import AxiomaticDerivationError
+from .system import AxiomaticDerivationSystem, derivation_system_to_natural_deduction_system
 
 
 class ModusPonensConfig(NamedTuple):
@@ -71,21 +73,21 @@ def _are_derivations_equivalent_recurse(a: AxiomaticDerivation, b: AxiomaticDeri
     )
 
 
-def are_derivations_equivalent(system: AxiomaticDerivationSystem, a: AxiomaticDerivation, b: AxiomaticDerivation) -> bool:
+def are_derivations_equivalent(ad_system: AxiomaticDerivationSystem, a: AxiomaticDerivation, b: AxiomaticDerivation) -> bool:
     if a.get_conclusion() != b.get_conclusion():
         return False
 
-    if get_premises(system, a) != get_premises(system, b):
+    if get_premises(ad_system, a) != get_premises(ad_system, b):
         return False
 
     return _are_derivations_equivalent_recurse(a, b)
 
 
-def get_premises(system: AxiomaticDerivationSystem, derivation: AxiomaticDerivation) -> Collection[Formula]:
+def get_premises(ad_system: AxiomaticDerivationSystem, derivation: AxiomaticDerivation) -> Collection[Formula]:
     return {
         conclusion
         for k, conclusion in enumerate(derivation.payload)
-        if derivation.get_mp_config(k) is None and not is_axiom(system, conclusion)
+        if derivation.get_mp_config(k) is None and not ad_system.is_axiom(conclusion)
     }
 
 
@@ -96,18 +98,19 @@ def derivation_to_proof_tree(ad_system: AxiomaticDerivationSystem, derivation: A
     if conclusion in get_premises(ad_system, derivation):
         return AssumptionTree(conclusion, new_marker(used_markers))
 
-    for axiom_schema in ad_system.axiom_schemas:
+    nd_system = derivation_system_to_natural_deduction_system(ad_system)
+
+    for rule_name, axiom_schema in ad_system.axiom_schemas.items():
         try:
             instantiation = infer_instantiation_from_formula(axiom_schema, conclusion)
         except SchemaInferenceError:
             continue
         else:
-            rule = NaturalDeductionRule(name='Ax', premises=[], conclusion=axiom_schema)
-
             return RuleApplicationTree(
-                rule=rule,
-                instantiation=instantiation,
-                premises=[]
+                nd_system, rule_name,
+                instantiation,
+                premises=[],
+                conclusion=conclusion
             )
 
     mp_config = derivation.get_mp_config()
@@ -135,9 +138,10 @@ def derivation_to_proof_tree(ad_system: AxiomaticDerivationSystem, derivation: A
     )
 
     return RuleApplicationTree(
-        rule=MODUS_PONENS_RULE,
-        instantiation=instantiation,
-        premises=[conditional_premise, antecedent_premise]
+        nd_system, 'MP',
+        instantiation,
+        premises=[conditional_premise, antecedent_premise],
+        conclusion=conclusion
     )
 
 
@@ -150,7 +154,7 @@ def _proof_tree_to_derivation_payload(tree: ProofTree) -> Iterable[Formula]:
 
 
 # This is alg:axiomatic_derivation_to_proof_tree in the monograph
-def proof_tree_to_derivation(system: NaturalDeductionSystem, tree: ProofTree) -> AxiomaticDerivation:  # noqa: ARG001
+def proof_tree_to_derivation(ad_system: NaturalDeductionSystem, tree: ProofTree) -> AxiomaticDerivation:  # noqa: ARG001
     return AxiomaticDerivation(
         payload=list(_proof_tree_to_derivation_payload(tree))
     )
