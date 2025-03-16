@@ -52,8 +52,8 @@ pair _bend_midpoint(pair u, pair v, real bend = 0, real bend_at = 1 / 2) {
   return bend_at * (u + v) + n * bend;
 }
 
-pair _shift_for_dot(pair u, pair v, real by = dot_radius) {
-  return by * (v - u) / length(v - u);
+pair _shift_for_dot(pair u, pair v, real vertex_offset = dot_radius) {
+  return vertex_offset * (v - u) / length(v - u);
 }
 
 void edge(
@@ -61,6 +61,7 @@ void edge(
   pair v,
   real bend = 0,
   real bend_at = 0.5,
+  real vertex_offset = dot_radius,
   Label L = '',
   pen color = black,
   bool dash = false,
@@ -68,8 +69,8 @@ void edge(
   bool is_arc = false
 ) {
   pair mid = _bend_midpoint(u, v, bend=bend, bend_at=bend_at);
-  pair u_ = u + _shift_for_dot(u, mid);
-  pair v_ = v - _shift_for_dot(mid, v);
+  pair u_ = u + _shift_for_dot(u, mid, vertex_offset);
+  pair v_ = v - _shift_for_dot(mid, v, vertex_offset);
 
   _draw_edge_impl(
     u_ .. mid .. v_,
@@ -82,12 +83,13 @@ void loop(
   Label L = '',
   pen color = black,
   real angle = 0,
+  real vertex_offset = dot_radius,
   bool dash = false,
   bool bold = false,
   bool is_arc = false
 ) {
   pair m = v + defaultcoordsys.polar(0.4, angle);
-  pair v_ = v + _shift_for_dot(v, m);
+  pair v_ = v + _shift_for_dot(v, m, vertex_offset);
 
   _draw_edge_impl(
     v_ .. _bend_midpoint(v_, m, bend=0.05) .. m .. _bend_midpoint(v_, m, bend=-0.05) .. v_,
@@ -98,6 +100,7 @@ void loop(
 void hyperedge(
   pair[] vert,
   Label L = '',
+  real vertex_offset = dot_radius,
   bool dash = false,
   bool bold = false
 ) {
@@ -113,7 +116,7 @@ void hyperedge(
     pair w = vert[(i + 1) % vert.length];
 
     outline = outline -- arc(v, dot_radius, degrees(u - v), degrees(w - v));
-    outline = outline -- v + _shift_for_dot(v, w) -- w - _shift_for_dot(v, w);
+    outline = outline -- v + _shift_for_dot(v, w, vertex_offset) -- w - _shift_for_dot(v, w, vertex_offset);
   }
 
   outline = outline -- cycle;
