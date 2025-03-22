@@ -23,13 +23,11 @@
     \thmitem{def:recurrence_relation/state}\mcite[397]{LidlNiederreiter1997FiniteFields} We define the \( n \)-th \term{state vector} of a recurrent sequence is the \hyperref[def:array/column_vector]{column vector}
     \begin{equation*}
       \begin{pmatrix}
-        x_n & x_{n+1} & \ldots & x_{n+k}.
+        x_n & x_{n+1} & \ldots & x_{n+k-1}.
       \end{pmatrix}^T
     \end{equation*}
 
     For the \( 0 \)-th state vector, we prefer the term \term{initial vector}.
-
-    \thmitem{def:recurrence_relation/autonomous} In analogy with dynamical systems, we say that the recurrence is \term{autonomous} if it does not depend on \( N \) --- that is, if evaluating the function with different values of \( N \) gives identical results.
 
     \thmitem{def:recurrence_relation/degenerate} If the function \( F \) is constant, we say that the recurrence is \term{degenerate}.
 
@@ -79,21 +77,6 @@
   \end{itemize}
 \end{remark}
 
-\begin{definition}\label{def:recurrence_relation_space}\mimprovised
-  A sequence \hyperref[def:recurrence_relation/sequence]{satisfying} an \hyperref[def:recurrence_relation]{autonomous recurrence} of order \( k \) over the \hyperref[def:ring/commutative]{commutative ring} \( R \) is determined by its \hyperref[def:recurrence_relation/state]{initial vector} from the \hyperref[def:sequence_space]{coordinate space} \( R^k \). All sequences satisfying the relation then form a \hyperref[def:module]{module} isomorphic to \( R^k \). We will call it the \term{space of initial vectors}.
-
-  We single out two particular sequences --- the \term{zero sequence} whose initial values are all zero and the \term[en=impulse response sequence (\cite[402]{LidlNiederreiter1997FiniteFields})]{impulse response sequence} whose initial values are all zero except the last, which is one.
-\end{definition}
-\begin{comments}
-  \item We could use \enquote{unit sequence} instead of \enquote{impulse response sequences}, but this would be more ambiguous. As pointed out in \incite[402]{LidlNiederreiter1997FiniteFields}, whose term we use,
-  \begin{displayquote}
-    We can think of this sequence as being obtained by starting with the state in which each delay element is \enquote{empty} (i.e., contains
-\( 0 \)) and then sending the \enquote{impulse} \( 1 \) into the rightmost delay element.
-  \end{displayquote}
-
-  \item If \( k = 0 \), there is only one initial vector, and thus the impulse response sequence and the zero sequence are both the zero sequence.
-\end{comments}
-
 \begin{example}\label{ex:def:recurrence_relation}
   We list some examples of \hyperref[def:recurrence_relation]{recurrence relations}:
   \begin{thmenum}
@@ -122,7 +105,7 @@
         (n - 1)! \cdot n, &n > 0,
       \end{cases}
     \end{equation*}
-    satisfies the non-autonomous recurrence
+    satisfies the recurrence
     \begin{equation*}
       X_{N+1} = X_N \cdot n.
     \end{equation*}
@@ -144,12 +127,12 @@
       \end{cases}
     \end{equation*}
 
-    It clearly satisfies the autonomous recurrence
+    It clearly satisfies the recurrence
     \begin{equation*}
       X_{N+1} = 2X_N + 1.
     \end{equation*}
 
-    It is less obvious that it also satisfies the order \( 0 \) non-autonomous recurrence
+    It is less obvious that it also satisfies the order \( 0 \) recurrence
     \begin{equation*}
       X_N = 2^N - 1.
     \end{equation*}
@@ -186,10 +169,76 @@
   \end{thmenum}
 \end{example}
 
+\paragraph{Autonomous recurrence relations}
+
+\begin{definition}\label{def:autonomous_recurrence_relation}\mimprovised
+  In analogy with autonomous systems of differential equations, we say that the recurrence is \term{autonomous} if it does not depend on \( N \) --- that is, if evaluating the function with different values of \( N \) gives identical results.
+\end{definition}
+\begin{comments}
+  \item Autonomous recurrences can be regarded as \hyperref[def:dynamical_system]{dynamical systems} --- see \fullref{thm:autonomous_recurrence_as_dynamical_system}.
+\end{comments}
+
+\begin{definition}\label{def:recurrence_relation_space}\mimprovised
+  A sequence \hyperref[def:recurrence_relation/sequence]{satisfying} an \hyperref[def:recurrence_relation]{autonomous recurrence} of order \( k \) over the \hyperref[def:ring/commutative]{commutative ring} \( R \) is determined by its \hyperref[def:recurrence_relation/state]{initial vector} from the \hyperref[def:sequence_space]{coordinate space} \( R^k \). All sequences satisfying the relation then form a \hyperref[def:module]{module} isomorphic to \( R^k \). We will call it the \term{space of state vectors}.
+
+  We single out two particular sequences --- the \term{zero sequence} whose initial values are all zero and the \term[en=impulse response sequence (\cite[402]{LidlNiederreiter1997FiniteFields})]{impulse response sequence} whose initial values are all zero except the last, which is one.
+\end{definition}
+\begin{comments}
+  \item We could use \enquote{unit sequence} instead of \enquote{impulse response sequences}, but this would be more ambiguous. As pointed out in \incite[402]{LidlNiederreiter1997FiniteFields}, whose term we use,
+  \begin{displayquote}
+    We can think of this sequence as being obtained by starting with the state in which each delay element is \enquote{empty} (i.e., contains
+\( 0 \)) and then sending the \enquote{impulse} \( 1 \) into the rightmost delay element.
+  \end{displayquote}
+
+  \item If \( k = 0 \), there is only one initial vector, and thus the impulse response sequence and the zero sequence are both the zero sequence.
+\end{comments}
+
+\begin{definition}\label{def:autonomous_recurrence_associated_function}\mimprovised
+  With each \hyperref[def:autonomous_recurrence_relation]{autonomous recurrence}
+  \begin{equation*}
+    X_{N+k} = F(X_{N+k-1}, \ldots, X_N)
+  \end{equation*}
+  we associate the following function on \hyperref[def:recurrence_relation/state]{state vectors}:
+  \begin{equation}\label{eq:def:autonomous_recurrence_associated_function}
+    \varphi
+    \begin{pmatrix}
+      x_n \\
+      \vdots \\
+      x_{n+k-2} \\
+      x_{n+k-1}
+    \end{pmatrix}
+    \coloneqq
+    \begin{pmatrix}
+      x_{n+1} \\
+      \vdots \\
+      x_{n+k-1} \\
+      F(x_{n+k-1}, \ldots, x_n)
+    \end{pmatrix}
+  \end{equation}
+\end{definition}
+
+\begin{proposition}\label{thm:autonomous_recurrence_as_dynamical_system}
+  Consider the \hyperref[def:autonomous_recurrence_relation]{autonomous recurrence}
+  \begin{equation*}
+    X_{N+k} = F(X_{N+k-1}, \ldots, X_N).
+  \end{equation*}
+
+  We can regard the associated function \eqref{eq:def:autonomous_recurrence_associated_function} as the \hyperref[def:one_step_evolution_function]{one-step evolution} of the \hyperref[def:discrete_dynamical_system]{discrete-time} \hyperref[def:dynamical_system]{dynamical system} acting on state vectors via
+  \begin{equation*}
+    s_{n+m} = \varphi^m(s_n).
+  \end{equation*}
+\end{proposition}
+\begin{comments}
+  \item Thus, even though recurrence relations generalize dynamical systems by considering dependency on more than one moment, we can regard them as dynamical systems on the state vectors.
+\end{comments}
+\begin{proof}
+  Straightforward induction.
+\end{proof}
+
 \paragraph{Linear recurrence relations}
 
 \begin{definition}\label{def:linear_recurrence}\mcite[395]{LidlNiederreiter1997FiniteFields}
-  We will mostly consider \hyperref[def:recurrence_relation/autonomous]{autonomous} \hyperref[def:recurrence_relation]{recurrence relation} given by a \hyperref[def:polynomial_degree_terminology]{linear} \hyperref[def:algebraic_equation]{algebraic equation}. We will unsurprisingly call such recurrence relations \term{linear}.
+  We will mostly consider \hyperref[def:autonomous_recurrence_relation]{autonomous} \hyperref[def:recurrence_relation]{recurrence relation} given by a \hyperref[def:polynomial_degree_terminology]{linear} \hyperref[def:algebraic_equation]{algebraic equation}. We will unsurprisingly call such recurrence relations \term{linear}.
 
   We will find it convenient to index the indeterminates and coefficients as follows:
   \begin{equation}\label{eq:def:linear_recurrence}
@@ -238,7 +287,7 @@
 \end{proof}
 
 \begin{definition}\label{def:homogeneous_linear_recurrence_matrix}\mimprovised
-  To the \hyperref[def:homogeneous_linear_recurrence]{homogeneous linear recurrence}
+  With each \hyperref[def:homogeneous_linear_recurrence]{homogeneous linear recurrence}
   \begin{equation*}
     X_{N+k} = \sum_{i=1}^k a_{k-i} X_{N+k-i}
   \end{equation*}
@@ -297,6 +346,16 @@
 \end{proposition}
 \begin{proof}
   Straightforward induction on \( m \).
+\end{proof}
+
+\begin{corollary}\label{thm:homogeneous_linear_recurrence_as_dynamical_system}
+  The \hyperref[def:homogeneous_linear_recurrence_matrix]{associated matrix} of a \hyperref[def:homogeneous_linear_recurrence]{homogeneous linear recurrent sequence} can be regarded as the \hyperref[def:one_step_evolution_function]{one-step evolution} of the \hyperref[def:discrete_dynamical_system]{discrete-time} \hyperref[def:linear_dynamical_system]{linear} \hyperref[def:dynamical_system]{dynamical system} acting on \hyperref[def:recurrence_relation/state]{state vectors}.
+\end{corollary}
+\begin{comments}
+  \item Thus, the matrix is simply an associated function in the sense of \fullref{def:autonomous_recurrence_associated_function}.
+\end{comments}
+\begin{proof}
+  Follows from \fullref{thm:homogeneous_linear_recurrence_matrix_action} and \fullref{thm:autonomous_recurrence_as_dynamical_system}.
 \end{proof}
 
 \begin{definition}\label{def:linear_recurrence_characteristic_polynomial}\mcite[404]{LidlNiederreiter1997FiniteFields}
@@ -542,69 +601,6 @@
 
 \paragraph{Period of linear recurrences}
 
-\begin{definition}\label{def:ultimately_periodic_sequence}\mcite[def. 8.3; 412]{LidlNiederreiter1997FiniteFields}
-  We say that the \hyperref[def:sequence]{sequence} \( \seq{ x_n }_{n=0}^\infty \) is \term{ultimately periodic} with \term{preperiod} \( p_0 \) and \term{period} \( p \) if \( p_0 \) is the smallest nonnegative integer such that the subsequence \( \seq{ x_n }_{n=p_0}^\infty \) is \hyperref[def:periodic_function]{periodic} with period \( p \).
-
-  We show in \fullref{thm:def:ultimately_periodic_sequence/preperiod} that all preperiods for a sequence coincide; thus, the preperiod is an intrinsic property of the sequence.
-
-  Then the periods are well-ordered, and there exists a smallest one (with respect to the \hyperref[def:natural_numbers_ordering]{natural number ordering}). \Fullref{thm:def:ultimately_periodic_sequence/least} implies that it divides all others. In accordance with \fullref{def:periodic_function}, call it the \term{least period}.
-\end{definition}
-\begin{comments}
-  \item In particular, every periodic sequence is ultimately periodic with preperiod \( 0 \).
-\end{comments}
-
-\begin{proposition}\label{thm:def:ultimately_periodic_sequence}
-  \hyperref[def:ultimately_periodic_sequence]{Ultimately periodic sequences} have the following basic properties:
-  \begin{thmenum}
-    \thmitem{thm:def:ultimately_periodic_sequence/preperiod} If a sequence is ultimately periodic with preperiod \( p_0 \) and period \( p \), and if it is also ultimately periodic with preperiod \( q_0 \) and period \( q \), then \( p_0 = q_0 \).
-
-    \thmitem{thm:def:ultimately_periodic_sequence/least} If a sequence is ultimately periodic, the smallest period divides all others.
-  \end{thmenum}
-\end{proposition}
-\begin{proof}
-  Fix a sequence \( \seq{ x_n }_{n=0}^\infty \) that is ultimately periodic with preperiod \( p_0 \) and period \( p \).
-
-  \SubProofOf{thm:def:ultimately_periodic_sequence/preperiod} Suppose that \( q_0 \) is also a preperiod with a corresponding period \( q \).
-
-  Suppose first that \( p_0 \leq q_0 \). \Fullref{alg:integer_division} gives us integers \( a \) and \( b \) such that \( 0 \leq b < q_0 \) and
-  \begin{equation*}
-    q_0 - p_0 = ap + b.
-  \end{equation*}
-
-  \Fullref{thm:alg:integer_division/quot_positivity} implies that \( a \geq 0 \). Thus,
-  \begin{equation*}
-    x_{q_0} = x_{p_0 + (q_0 - p_0)} = x_{p_0 + ap + b} = x_{p_0 + b}.
-  \end{equation*}
-
-  For every nonnegative integer \( m \), we have
-  \begin{equation*}
-    x_{q_0 + pm} = x_{p_0 + b + pm} = x_{p_0 + b},
-  \end{equation*}
-  thus \( p \) is a period for the preperiod \( q_0 \). By minimality of \( q_0 \), we conclude that it must equal \( p_0 \).
-
-  Similarly, if \( p_0 \geq q_0 \), we conclude that \( p_0 = q_0 \).
-
-  \SubProofOf{thm:def:ultimately_periodic_sequence/least} Let \( q \) be the smallest period. \Fullref{alg:integer_division} gives us integers \( a \) and \( b \) such that \( 0 \leq b < q \) and
-  \begin{equation*}
-    p = aq + b.
-  \end{equation*}
-
-  \Fullref{thm:alg:integer_division/quot_positivity} implies that \( a \geq 0 \). Thus,
-  \begin{equation*}
-    x_{p_0}
-    =
-    x_{p_0 + p}
-    =
-    x_{p_0 + aq + b}
-    =
-    x_{p_0 + b}.
-  \end{equation*}
-
-  If \( b > 0 \), this would contradict the minimality of \( q \); thus, \( b = 0 \), which implies that \( q \) divides \( p \).
-
-  Generalizing on \( p \), we conclude that \( q \) divides all periods of the sequence.
-\end{proof}
-
 \begin{proposition}\label{thm:linear_recurrence_finite_field_periodic}
   In the \hyperref[def:finite_field]{finite field} \( \BbbF_q \), consider the \hyperref[def:linear_recurrence]{linear recurrence}
   \begin{equation*}
@@ -612,7 +608,7 @@
   \end{equation*}
 
   \begin{thmenum}
-    \thmitem{thm:linear_recurrence_finite_field_periodic/general}\mcite[thm. 8.7]{LidlNiederreiter1997FiniteFields} Every sequence satisfying this recurrence is \hyperref[def:ultimately_periodic_sequence]{ultimately periodic} with least period at most \( q^k \).
+    \thmitem{thm:linear_recurrence_finite_field_periodic/general}\mcite[thm. 8.7]{LidlNiederreiter1997FiniteFields} Every sequence satisfying this recurrence is \hyperref[def:ultimately_periodic_sequence]{ultimately periodic} with fundamental period at most \( q^k \).
 
     \thmitem{thm:linear_recurrence_finite_field_periodic/homogeneous}\mcite[thm. 8.7]{LidlNiederreiter1997FiniteFields} For \hyperref[def:homogeneous_linear_recurrence]{homogeneous recurrences}, this upper bound can be reduced to \( q^k - 1 \).
 
@@ -635,7 +631,7 @@
 
   \SubProofOf{thm:linear_recurrence_finite_field_periodic/homogeneous} In case the recurrence is homogeneous, either \( \seq{ x_n }_{n=0}^\infty \) has a zero state vector, which makes the sequence vacuously ultimately periodic, or otherwise the zero vector does not occur, and we have at most \( \BbbF_q^k - 1 \) state vectors.
 
-  \SubProofOf{thm:linear_recurrence_finite_field_periodic/periodic} Suppose that \( a_0 \neq 0 \). Let \( r_0 \) be the preperiod and \( r \) --- the least period of \( \seq{ x_n }_{n=0}^\infty \). We will show that \( r_0 = 0 \).
+  \SubProofOf{thm:linear_recurrence_finite_field_periodic/periodic} Suppose that \( a_0 \neq 0 \). Let \( r_0 \) be the preperiod and \( r \) --- the fundamental period of \( \seq{ x_n }_{n=0}^\infty \). We will show that \( r_0 = 0 \).
 
   Suppose instead that \( r_0 > 0 \). Then
   \begin{equation*}
@@ -690,7 +686,7 @@
 \end{proof}
 
 \begin{proposition}\label{thm:impulse_response_sequence_period}\mcite[prop. 8.16]{LidlNiederreiter1997FiniteFields}
-  Over a \hyperref[def:finite_field]{finite field}, the least period of any sequence satisfying a \hyperref[def:homogeneous_linear_recurrence]{homogeneous linear recurrence} divides the least period of the \hyperref[def:recurrence_relation_space]{impulse response sequence}.
+  Over a \hyperref[def:finite_field]{finite field}, the fundamental period of any sequence satisfying a \hyperref[def:homogeneous_linear_recurrence]{homogeneous linear recurrence} divides the fundamental period of the \hyperref[def:recurrence_relation_space]{impulse response sequence}.
 \end{proposition}
 \begin{comments}
   \item \Fullref{thm:linear_recurrence_finite_field_periodic/homogeneous} implies that every recurrent sequence over a finite field is \hyperref[def:ultimately_periodic_sequence]{ultimately periodic}. We are only concerned with showing that the impulse response sequence has the largest possible period.
@@ -701,7 +697,7 @@
     X_{N+k} = \sum_{i=1}^k a_{k-i} X_{N+k-i}.
   \end{equation*}
 
-  Let \( \seq{ d_n }_{n=0}^\infty \) be the impulse response sequence. \Fullref{thm:linear_recurrence_finite_field_periodic/homogeneous} implies that it is ultimately periodic. Denote by \( t_0 \) and \( t \) the preperiod and least period and by \( v_n \) its \( n \)-th \hyperref[def:recurrence_relation/state]{state vector}.
+  Let \( \seq{ d_n }_{n=0}^\infty \) be the impulse response sequence. \Fullref{thm:linear_recurrence_finite_field_periodic/homogeneous} implies that it is ultimately periodic. Denote by \( t_0 \) and \( t \) the preperiod and fundamental period and by \( v_n \) its \( n \)-th \hyperref[def:recurrence_relation/state]{state vector}.
 
   Due to \fullref{thm:homogeneous_linear_recurrence_matrix_action}, we have
   \begin{equation*}
@@ -721,7 +717,7 @@
     s_{r_0}.
   \end{equation*}
 
-  It follows that \( t \) is a period of \( \seq{ x_n }_{n=0}^\infty \). \Fullref{thm:def:ultimately_periodic_sequence/least} implies that its least period divides \( t \).
+  It follows that \( t \) is a period of \( \seq{ x_n }_{n=0}^\infty \) and that the fundamental period divides \( t \).
 \end{proof}
 
 \begin{theorem}[Linear recurrences with maximal period]\label{thm:linear_recurrences_with_maximal_period}
@@ -737,13 +733,13 @@
   is a \hyperref[def:finite_field_primitive_polynomial]{primitive polynomial}.
 
   \begin{thmenum}
-    \thmitem{thm:linear_recurrences_with_maximal_period/root} For every root \( \alpha \) of \( \chi(X) \), the sequence \( \seq{ \alpha_k }_{k=0}^\infty \) satisfies the recurrence and is periodic with least period \( q^k - 1 \) --- the maximal possible period.
+    \thmitem{thm:linear_recurrences_with_maximal_period/root} For every root \( \alpha \) of \( \chi(X) \), the sequence \( \seq{ \alpha_k }_{k=0}^\infty \) satisfies the recurrence and is periodic with fundamental period \( q^k - 1 \) --- the maximal possible period.
 
-    \thmitem{thm:linear_recurrences_with_maximal_period/impulse} The \hyperref[def:recurrence_relation_space]{impulse response sequence} is periodic with the same least period.
+    \thmitem{thm:linear_recurrences_with_maximal_period/impulse} The \hyperref[def:recurrence_relation_space]{impulse response sequence} is periodic with the same fundamental period.
   \end{thmenum}
 \end{theorem}
 \begin{proof}
-  \SubProofOf{thm:linear_recurrences_with_maximal_period/root} Fix a root \( \alpha \) of the characteristic polynomial. By definition of primitive polynomial, \( \alpha \) must generate the multiplicative group of \( \BbbF_q^k \). Then \( q^k - 1 \) is the order of \( \alpha \), and thus the sequence \( \seq{ \alpha^k }_{k=0}^\infty \) is periodic with least period \( q^k - 1 \).
+  \SubProofOf{thm:linear_recurrences_with_maximal_period/root} Fix a root \( \alpha \) of the characteristic polynomial. By definition of primitive polynomial, \( \alpha \) must generate the multiplicative group of \( \BbbF_q^k \). Then \( q^k - 1 \) is the order of \( \alpha \), and thus the sequence \( \seq{ \alpha^k }_{k=0}^\infty \) is periodic with fundamental period \( q^k - 1 \).
 
   \Fullref{thm:linear_recurrence_characteristic_roots/satisfaction} implies that this sequence satisfies the recurrence.
 
@@ -751,9 +747,9 @@
 
   \SubProofOf{thm:linear_recurrences_with_maximal_period/impulse} \Fullref{thm:linear_recurrence_finite_field_periodic/homogeneous} implies that the impulse response sequence \( \seq{ d_n }_{n=0}^\infty \) is ultimately periodic (and hence periodic) with period at most \( q^k - 1 \).
 
-  Since the characteristic period is primitive, it does have at least one root by assumption, say \( \alpha \). \Fullref{thm:linear_recurrences_with_maximal_period/root} implies that the sequence \( \seq{ \alpha^k }_{k=0}^\infty \) satisfies the recurrence and is periodic with least period \( q^k - 1 \).
+  Since the characteristic period is primitive, it does have at least one root by assumption, say \( \alpha \). \Fullref{thm:linear_recurrences_with_maximal_period/root} implies that the sequence \( \seq{ \alpha^k }_{k=0}^\infty \) satisfies the recurrence and is periodic with fundamental period \( q^k - 1 \).
 
-  \Fullref{thm:impulse_response_sequence_period} then implies that \( q^k - 1 \) divides the least period of \( \seq{ d_n }_{n=0}^\infty \). We have already shown in the beginning that its least period cannot exceed \( q^k - 1 \); thus, it must coincide with \( q^k - 1 \).
+  \Fullref{thm:impulse_response_sequence_period} then implies that \( q^k - 1 \) divides the fundamental period of \( \seq{ d_n }_{n=0}^\infty \). We have already shown in the beginning that its fundamental period cannot exceed \( q^k - 1 \); thus, it must coincide with \( q^k - 1 \).
 \end{proof}
 
 \begin{example}\label{ex:thm:linear_recurrences_with_maximal_period}
@@ -1184,78 +1180,4 @@ There are two particularly simple recurrence relations colloquially referred to 
   \end{equation*}
 
   Then \eqref{eq:thm:binets_formula/lucas} follows.
-\end{proof}
-
-\paragraph{Catalan numbers}
-
-\begin{definition}\label{def:catalan_number}\mcite[188]{Stanley2023EnumerativeCombinatoricsVol2}
-  We define the \hyperref[def:sequence]{sequence} of \term[ru=число Каталана (\cite[\S 5.7.4]{Новиков2013ДискретнаяМатематика})]{Catalan numbers} recursively as
-  \begin{equation}\label{eq:def:catalan_number}
-    C_n \coloneqq \begin{cases}
-      1,                                    &n = 0, \\
-      \sum_{k=0}^{n-1} C_k \cdot C_{n-k-1}, &n > 0.
-    \end{cases}
-  \end{equation}
-\end{definition}
-\begin{comments}
-  \item Richard Stanley lists many characterizations of Catalan numbers in the exercises to \cite[ch. 6]{Stanley2023EnumerativeCombinatoricsVol2}.
-
-  \item We can regard \eqref{eq:def:catalan_number} as an unrestricted recurrence relation in the sense of \fullref{rem:unrestricted_recurrence_relation}. Justification for the recursive definition is provided by \fullref{thm:bounded_transfinite_induction}.
-\end{comments}
-
-\begin{proposition}\label{thm:catalan_number_via_binomial_coefficients}
-  We can characterize \hyperref[def:catalan_number]{Catalan numbers} via \hyperref[def:binomial_coefficient]{binomial coefficients}:
-  \begin{equation}\label{eq:thm:catalan_number_via_binomial_coefficients}
-    C_n = \frac 1 {n + 1} \binom {2n} n
-  \end{equation}
-\end{proposition}
-\begin{proof}
-  \todo{Prove}
-\end{proof}
-
-\begin{proposition}\label{thm:full_binary_tree_count}
-  The number of \hyperref[def:n_ary_tree]{full binary trees} with \( n \) \hyperref[def:rooted_tree/internal]{internal nodes} is described by the \hyperref[def:catalan_number]{Catalan number} \( C_n \).
-\end{proposition}
-\begin{proof}
-  We will use induction on \( n \). The case \( n = 0 \) is vacuous. For the inductive step, suppose that the hypothesis holds for less than \( n \) internal nodes.
-
-  Let \( T \) be a full binary tree with \( n \) internal nodes. The \hyperref[def:rooted_tree/subtree]{immediate subtrees} of \( T \) have a total of \( n - 1 \) internal nodes. If the left subtree has \( k \) internal nodes, the right subtree has \( n - k - 1 \) internal nodes.
-
-  Denote by \( t_n \) the number of full binary trees with \( n \) internal nodes. Then, by what we have shown,
-  \begin{equation*}
-    t_n = \sum_{k=0}^{n-1} t_k t_{n-k-1}.
-  \end{equation*}
-
-  By the inductive hypothesis, \( t_n \) satisfies the recursive clause in \eqref{eq:def:catalan_number}, hence it equals \( C_n \).
-\end{proof}
-
-\begin{lemma}\label{thm:dyck_language_length}
-  Every string in the \hyperref[def:dyck_language]{Dyck language} has even length.
-\end{lemma}
-\begin{proof}
-  We will use \fullref{thm:induction_on_rooted_trees} on the \hyperref[def:parse_tree]{parse tree} of the word \( w \):
-  \begin{itemize}
-    \item If \( w \) is the empty word, its length is clearly even.
-
-    \item If \( w = (w') \), then \( w \) is longer than \( w' \) by two symbols. By the inductive hypothesis, \( w \) has even length.
-
-    \item If \( w = w_1 w_2 \), then \( w \) has even length if and only if both \( w_1 \) and \( w_2 \) have even length.
-
-    Again, by the inductive hypothesis, \( w \) has even length.
-  \end{itemize}
-\end{proof}
-
-\begin{corollary}\label{thm:dyck_word_count}
-  The number of \hyperref[def:dyck_language]{Dyck words} of length \( 2n \) is described by the \hyperref[def:catalan_number]{Catalan number} \( C_n \).
-\end{corollary}
-\begin{proof}
-  \Fullref{thm:dyck_words_and_binary_trees} describes a bijective correspondence between Dyck words and full binary trees.
-
-  Let \( w \) be a Dyck word of length \( 2n \). \Fullref{thm:dyck_language_alternative_grammar} implies that either \( w \) is empty or \( w = (w_1) w_2 \). \Fullref{thm:dyck_language_length} implies that both \( w_1 \) and \( w_2 \) have even length. We can then use induction on the length of \( w \) to show that the tree constructed via \fullref{thm:dyck_words_and_binary_trees/word_to_tree} has \( n \) internal nodes:
-  \begin{itemize}
-    \item The base case where \( w \) is empty is clear.
-    \item If \( w = (w_1) w_2 \) and if the inductive hypothesis holds for \( w_1 \) and \( w_2 \), then the trees \( T_{w_1} \) and \( T_{w_2} \) have \( n - 1 \) internal nodes in common, and, by adding a new root, we obtain \( T_w \) with \( n \) internal nodes.
-  \end{itemize}
-
-  \Fullref{thm:full_binary_tree_count} then implies that there are \( C_n \) Dyck words of length \( 2n \).
 \end{proof}
