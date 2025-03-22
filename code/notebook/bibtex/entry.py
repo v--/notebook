@@ -80,6 +80,7 @@ class BibEntry:
     volume:        Annotated[BibString | None, BibFieldAnnotation()] = None
     version:       Annotated[BibString | None, BibFieldAnnotation()] = None
     institution:   Annotated[BibString | None, BibFieldAnnotation()] = None
+    addendum:      Annotated[BibString | None, BibFieldAnnotation()] = None
     # Theses
     advisors:      Annotated[Sequence[BibAuthor], BibFieldAnnotation(author=True, key_name='advisor')] = field(default_factory=list)
     # Books

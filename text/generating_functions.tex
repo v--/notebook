@@ -1,0 +1,77 @@
+\chapter{Generating functions}\label{sec:generating_functions}
+
+\todo{Generating functions}
+
+\paragraph{Catalan numbers}
+
+\begin{definition}\label{def:catalan_number}\mcite[188]{Stanley2023EnumerativeCombinatoricsVol2}
+  We define the \hyperref[def:sequence]{sequence} of \term[ru=число Каталана (\cite[\S 5.7.4]{Новиков2013ДискретнаяМатематика})]{Catalan numbers} recursively as
+  \begin{equation}\label{eq:def:catalan_number}
+    C_n \coloneqq \begin{cases}
+      1,                                    &n = 0, \\
+      \sum_{k=0}^{n-1} C_k \cdot C_{n-k-1}, &n > 0.
+    \end{cases}
+  \end{equation}
+\end{definition}
+\begin{comments}
+  \item Richard Stanley lists many characterizations of Catalan numbers in the exercises to \cite[ch. 6]{Stanley2023EnumerativeCombinatoricsVol2}.
+
+  \item We can regard \eqref{eq:def:catalan_number} as an unrestricted recurrence relation in the sense of \fullref{rem:unrestricted_recurrence_relation}. Justification for the recursive definition is provided by \fullref{thm:bounded_transfinite_induction}.
+\end{comments}
+
+\begin{proposition}\label{thm:catalan_number_via_binomial_coefficients}
+  We can characterize \hyperref[def:catalan_number]{Catalan numbers} via \hyperref[def:binomial_coefficient]{binomial coefficients}:
+  \begin{equation}\label{eq:thm:catalan_number_via_binomial_coefficients}
+    C_n = \frac 1 {n + 1} \binom {2n} n
+  \end{equation}
+\end{proposition}
+\begin{proof}
+  \todo{Prove}
+\end{proof}
+
+\begin{proposition}\label{thm:full_binary_tree_count}
+  The number of \hyperref[def:n_ary_tree]{full binary trees} with \( n \) \hyperref[def:rooted_tree/internal]{internal nodes} is described by the \hyperref[def:catalan_number]{Catalan number} \( C_n \).
+\end{proposition}
+\begin{proof}
+  We will use induction on \( n \). The case \( n = 0 \) is vacuous. For the inductive step, suppose that the hypothesis holds for less than \( n \) internal nodes.
+
+  Let \( T \) be a full binary tree with \( n \) internal nodes. The \hyperref[def:rooted_tree/subtree]{immediate subtrees} of \( T \) have a total of \( n - 1 \) internal nodes. If the left subtree has \( k \) internal nodes, the right subtree has \( n - k - 1 \) internal nodes.
+
+  Denote by \( t_n \) the number of full binary trees with \( n \) internal nodes. Then, by what we have shown,
+  \begin{equation*}
+    t_n = \sum_{k=0}^{n-1} t_k t_{n-k-1}.
+  \end{equation*}
+
+  By the inductive hypothesis, \( t_n \) satisfies the recursive clause in \eqref{eq:def:catalan_number}, hence it equals \( C_n \).
+\end{proof}
+
+\begin{lemma}\label{thm:dyck_language_length}
+  Every string in the \hyperref[def:dyck_language]{Dyck language} has even length.
+\end{lemma}
+\begin{proof}
+  We will use \fullref{thm:induction_on_rooted_trees} on the \hyperref[def:parse_tree]{parse tree} of the word \( w \):
+  \begin{itemize}
+    \item If \( w \) is the empty word, its length is clearly even.
+
+    \item If \( w = (w') \), then \( w \) is longer than \( w' \) by two symbols. By the inductive hypothesis, \( w \) has even length.
+
+    \item If \( w = w_1 w_2 \), then \( w \) has even length if and only if both \( w_1 \) and \( w_2 \) have even length.
+
+    Again, by the inductive hypothesis, \( w \) has even length.
+  \end{itemize}
+\end{proof}
+
+\begin{corollary}\label{thm:dyck_word_count}
+  The number of \hyperref[def:dyck_language]{Dyck words} of length \( 2n \) is described by the \hyperref[def:catalan_number]{Catalan number} \( C_n \).
+\end{corollary}
+\begin{proof}
+  \Fullref{thm:dyck_words_and_binary_trees} describes a bijective correspondence between Dyck words and full binary trees.
+
+  Let \( w \) be a Dyck word of length \( 2n \). \Fullref{thm:dyck_language_alternative_grammar} implies that either \( w \) is empty or \( w = (w_1) w_2 \). \Fullref{thm:dyck_language_length} implies that both \( w_1 \) and \( w_2 \) have even length. We can then use induction on the length of \( w \) to show that the tree constructed via \fullref{thm:dyck_words_and_binary_trees/word_to_tree} has \( n \) internal nodes:
+  \begin{itemize}
+    \item The base case where \( w \) is empty is clear.
+    \item If \( w = (w_1) w_2 \) and if the inductive hypothesis holds for \( w_1 \) and \( w_2 \), then the trees \( T_{w_1} \) and \( T_{w_2} \) have \( n - 1 \) internal nodes in common, and, by adding a new root, we obtain \( T_w \) with \( n \) internal nodes.
+  \end{itemize}
+
+  \Fullref{thm:full_binary_tree_count} then implies that there are \( C_n \) Dyck words of length \( 2n \).
+\end{proof}
