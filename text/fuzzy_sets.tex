@@ -1,0 +1,305 @@
+\section{Fuzzy sets}\label{sec:fuzzy_sets}
+
+\paragraph{Abstract fuzzy sets}
+
+\begin{definition}\label{def:fuzzy_set}\mcite[339]{Zadeh1965FuzzySets}
+  A \term[ru=нечёткое множество (\cite[27]{БогомоловСалий1997ДискретныеСистемы})]{fuzzy set} in a universe \( U \) is simply a \hyperref[def:labeled_set]{labeling} of \( U \) with numbers from the unit interval designating degrees of membership.
+
+  For a fuzzy set denoted by \( A \), we denote this degree function by \( f_A \)\fnote{\( A \) is by definition \( f_A \) itself, but we keep the notation distinct to highlight that \( f_A \) is a function while \( A \) is an \enquote{abstract} fuzzy set.}.
+\end{definition}
+\begin{comments}
+  \item In the most general setting it makes sense for \( U \) to be a \hyperref[def:grothendieck_universe]{Grothendieck universe}, but more often than not \( U \) will be a relatively common set like \( \BbbR^n \).
+
+  \item Every set can be regarded as a fuzzy set via the constant function sending its members to \( 1 \).
+\end{comments}
+
+\begin{definition}\label{def:fuzzy_subset}\mcite[339]{Zadeh1965FuzzySets}
+  Fix two \hyperref[def:fuzzy_set]{fuzzy sets} \( A \) and \( B \) over the same universe \( U \). We say that \( A \) is a \term{fuzzy subset} of \( B \) if \( f_A(x) \leq f_B(x) \) for every \( x \in U \).
+\end{definition}
+
+\begin{definition}\label{def:fuzzy_relation}\mcite[345]{Zadeh1965FuzzySets}
+  A \term{fuzzy relation} is simply a \hyperref[def:fuzzy_set]{fuzzy subset} of a relation as defined in \fullref{def:relation}.
+
+  Explicitly, a fuzzy relation on the sets \( S_1, \ldots, S_n \) is a function with signature
+  \begin{equation*}
+    f_R: S_1 \times \cdots \times S_n \to [0, 1].
+  \end{equation*}
+\end{definition}
+
+\begin{example}\label{ex:def:fuzzy_relation}
+  We list examples of \hyperref[def:fuzzy_relation]{fuzzy relations}:
+  \begin{thmenum}
+    \thmitem{ex:def:fuzzy_relation/leq} Given two real numbers \( x \) and \( y \), the standard order allows us to check whether \( y \) is greater than \( x \).
+
+    We can instead define the fuzzy relation \( x \ll y \), indicating how much \( y \) is greater than \( x \):
+    \begin{equation*}
+      f_\ll(x, y) \coloneqq \begin{cases}
+        1 - 1 / \ln(y - x + e), &y > x, \\
+        0,                      &\T{otherwise.}
+      \end{cases}
+    \end{equation*}
+
+    \begin{figure}[!ht]
+      \centering
+      \includegraphics[page=1]{output/ex__def__fuzzy_relation}
+      \caption{A plot of \( f_\ll(0, n) \) from \fullref{ex:def:fuzzy_relation/leq}.}\label{fig:ex:def:fuzzy_relation/leq}
+    \end{figure}
+
+    Thus, for example, \( f_\ll(0, e^k - e) = (k - 1) / k \) for \( k > 0 \), meaning that \( 0 \ll_{0.5} e^2 - e \) and \( 0 \ll_{0.9} e^{10} - e \).
+
+    \thmitem{ex:def:fuzzy_relation/entailment} In \hyperref[def:propositional_semantics/fuzzy]{fuzzy logic}, the entailment relation can be regarded as fuzzy if we let \( \varphi \vdash_\alpha \psi \) whenever \( \Bracks{\varphi \rightarrow \psi} = \alpha \).
+  \end{thmenum}
+\end{example}
+
+\begin{definition}\label{def:basic_fuzzy_set_operations}\mcite[339]{Zadeh1965FuzzySets}
+  Fix two \hyperref[def:fuzzy_set]{fuzzy sets} \( A \) and \( B \) over the same universe \( U \).
+
+  \begin{thmenum}
+    \thmitem{def:basic_fuzzy_set_operations/union} The \term{fuzzy union} of \( A \) and \( B \) is given by the membership function
+    \begin{equation}\label{eq:def:basic_fuzzy_set_operations/union}
+      f_{A \cup B} (x) \coloneqq \max\set{ f_A(x), f_B(x) }.
+    \end{equation}
+
+    \thmitem{def:basic_fuzzy_set_operations/intersection} The \term{fuzzy intersection} of \( A \) and \( B \) is given by the membership function
+    \begin{equation}\label{eq:def:basic_fuzzy_set_operations/intersection}
+      f_{A \cap B} (x) \coloneqq \min\set{ f_A(x), f_B(x) }.
+    \end{equation}
+  \end{thmenum}
+\end{definition}
+
+\paragraph{Convex fuzzy sets}
+
+\begin{definition}\label{def:convex_fuzzy_set}\mcite[348]{Zadeh1965FuzzySets}
+  We say that a \hyperref[def:fuzzy_set]{fuzzy set} \( A \) in \( \BbbR^n \) is \term{convex} if its \hyperref[def:level_set]{superlevel sets} for nonzero levels are \hyperref[def:convex_set]{convex}.
+
+  This can be expressed as follows: whenever \( 0 < \alpha \leq 1 \), if \( f_A(x) \geq \alpha \) and \( f_A(y) \geq \alpha \), then every convex combination of theirs must satisfy
+  \begin{equation}\label{eq:def:convex_fuzzy_set/superlevel}
+    f_A\parens[\Big]{ \lambda x + (1 - \lambda) y } \geq \alpha.
+  \end{equation}
+
+  More succinctly, without explicit references to levels:
+  \begin{equation}\label{eq:def:convex_fuzzy_set/min}
+    f_A\parens[\Big]{ \lambda x + (1 - \lambda) y } \geq \min\set[\Big]{ f_A(x), f_A(y) }.
+  \end{equation}
+
+  If the inequality in \eqref{eq:def:convex_fuzzy_set/min} is strict, we say that \( A \) is \term{strongly convex}.
+\end{definition}
+
+\begin{example}\label{ex:def:convex_fuzzy_set}
+  We list examples of \hyperref[def:convex_fuzzy_set]{convex fuzzy sets}:
+  \begin{thmenum}
+    \thmitem{ex:def:convex_fuzzy_set/convex_set_not_convex_function} Consider the fuzzy set \( A \) with membership function
+    \begin{equation*}
+      f_A(t) \coloneqq \max\set{ 0, 1 - \abs{t} }.
+    \end{equation*}
+
+    \begin{figure}[!ht]
+      \centering
+      \includegraphics[page=1]{output/ex__def__fuzzy_convex_set}
+      \caption{A plot of \( f_A \) from \fullref{ex:def:convex_fuzzy_set/convex_set_not_convex_function}.}\label{fig:ex:def:convex_fuzzy_set/convex_set_not_convex_function}
+    \end{figure}
+
+    Thus, for \( \alpha > 0 \), we have \( f_A(t) \geq \alpha \) if and only if \( \abs{t} \leq 1 - \alpha \).
+
+    If \( x \) and \( y \) satisfy the latter inequality, then \eqref{eq:def:convex_fuzzy_set/superlevel} holds because
+    \begin{equation*}
+      \abs{\lambda x + (1 - \lambda) y}
+      \leq
+      \lambda \abs{x} + (1 - \lambda) \abs{y}
+      \leq
+      \lambda (1 - \alpha) + (1 - \lambda) (1 - \alpha)
+      =
+      1 - \alpha.
+    \end{equation*}
+
+    Therefore, \( A \) is a convex fuzzy set.
+
+    The function \( f_A \) is itself concave because \( \abs{t} \) is convex.
+
+    \thmitem{ex:def:convex_fuzzy_set/convex_function_not_convex_fuzzy_set} Dually, consider the membership function
+    \begin{equation*}
+      f_A(t) \coloneqq \min\set{ 1, \abs{t} }.
+    \end{equation*}
+
+    It is convex as a composition of the convex function \( \abs{ \anon } \) and the nondecreasing function \( \min\set{ 1, \anon } \). The fuzzy set \( A \) is not convex, however, because
+    \begin{equation*}
+      f_A\parens[\Big]{ \lambda \cdot \parens[\Big]{ - \frac 1 3 } + (1 - \lambda) \cdot \frac 1 3 }
+      =
+      f_A(0)
+      =
+      0
+      <
+      \frac 1 3
+      =
+      \min\set[\Big]{ f_A\parens[\Big]{ -\frac 1 3 }, f_A\parens[\Big]{ \frac 1 3 } }.
+    \end{equation*}
+  \end{thmenum}
+\end{example}
+
+\begin{proposition}\label{thm:def:convex_fuzzy_set}
+  \hyperref[def:convex_fuzzy_set]{Convex fuzzy sets} have the following basic properties:
+  \begin{thmenum}
+    \thmitem{thm:def:convex_fuzzy_set/concave} If \( f_A \) is a (strongly) \hyperref[def:convex_function]{concave function}, then \( A \) is a (strongly) fuzzy convex set.
+
+    \thmitem{thm:def:convex_fuzzy_set/intersection} The \hyperref[def:basic_fuzzy_set_operations/intersection]{fuzzy intersection} of (strongly) convex fuzzy sets is (strongly) convex.
+
+    \thmitem{thm:def:convex_fuzzy_set/max} For a fuzzy strongly convex set \( A \), if \( x \) is a local maximum of \( f_A \), then \( x \) is the unique member with maximal membership degree.
+  \end{thmenum}
+\end{proposition}
+\begin{proof}
+  \SubProofOf{thm:def:convex_fuzzy_set/concave} Suppose that \( f_A: \BbbR^n \to [0, 1] \) is a strongly concave function. Fix \( x \) and \( y \) from \( \BbbR^n \). Then
+  \begin{equation*}
+    f_A\parens[\Big]{ \lambda x + (1 - \lambda) y }
+    >
+    \lambda f_A(x) + (1 - \lambda) f_A(y)
+    \geq
+    \min\set{ f_A(x), f_A(y) }.
+  \end{equation*}
+
+  \SubProofOf{thm:def:convex_fuzzy_set/intersection} If \( A \) and \( B \) are convex fuzzy sets, then
+  \begin{align*}
+    \min\set{ f_{A \cap B}(x), f_{A \cap B}(y) }
+    &=
+    \min\set{ f_A(x), f_B(x), f_A(y), f_B(y) }
+    \leq \\ &\leq
+    \min\set{ f_A(x), f_A(y) }
+    < \\ &<
+    f_A \set[\Big]{ \lambda x + (1 - \lambda) y }
+  \end{align*}
+  and similarly for \( f_B \), thus
+  \begin{equation*}
+    \min\set{ f_{A \cap B}(x), f_{A \cap B}(y) }
+    <
+    f_{A \cap B} \set[\Big]{ \lambda x + (1 - \lambda) y }.
+  \end{equation*}
+
+  Therefore, \( A \cap B \) is also convex.
+
+  \SubProofOf{thm:def:convex_fuzzy_set/max} Let \( A \) be a bounded strongly convex fuzzy set.
+
+  Let \( x \) be a global maximum and let \( y \) be a local maximum with radius \( r \). Suppose that they are distinct. Then, whenever \( \lambda < r / \norm{y - x} \), we have
+  \begin{equation*}
+    f_A(y)
+    \geq
+    f_A(\lambda y + (1 - \lambda) x)
+    >
+    \min\set{ f_A(y), f_A(x) }
+    =
+    f_A(y),
+  \end{equation*}
+  which is a contradiction.
+\end{proof}
+
+\begin{example}\label{ex:fuzzy_optimization}
+  Let us consider again the number comparison fuzzy relation from \fullref{ex:def:fuzzy_relation/leq}:
+  \begin{equation*}
+    f_\ll(x, y) \coloneqq \begin{cases}
+      1 - 1 / \ln(y - x + e), &y > x, \\
+      0,                      &\T{otherwise.}
+    \end{cases}
+  \end{equation*}
+
+  Following the approach of \incite{BellmanZadeh1970FuzzyDecisions}, we will demonstrate optimization with fuzzy constraints by finding a number much greater than \( 0 \) and much smaller than \( 100 \).
+
+  More concretely, we must find a number \( x \) satisfying \( 0 \ll x \ll 100 \). Let \( A \) be the fuzzy set with membership function \( f_A(x) = f_\ll(0, x) \) and \( B \) be the set with membership function \( f_B(x) = f_\ll(x, 100) \). Bellman and Zadeh suggest searching for a number of maximal degree in the intersection \( A \cap B \).
+
+  \begin{figure}[!ht]
+    \centering
+    \includegraphics[page=1]{output/ex__fuzzy_optimization}
+    \caption{A plot of \( f_A \) and \( f_B \) from \fullref{ex:fuzzy_optimization}.}\label{fig:ex:fuzzy_optimization}
+  \end{figure}
+
+  The derivative of \( f_A(x) \) on positive real numbers is
+  \begin{equation*}
+    f_A'(x) = \frac 1 {\ln(x + e)^2 \cdot (x + e)}.
+  \end{equation*}
+
+  Its denominator is greater than \( 1 \) and strictly increases with \( x \), hence \( f_A' \) itself decreases. Thus, \( f_A \) is stongly concave, and \fullref{thm:def:convex_fuzzy_set/concave} implies that \( A \) is a strongly \hyperref[def:convex_fuzzy_set]{convex fuzzy set}.
+
+  The derivative of \( f_B(x) \) on \( (-\infty, 100) \) is
+  \begin{equation*}
+    f_B'(x) = -\frac 1 {\ln(100 - x + e)^2 \cdot (100 - x + e)}.
+  \end{equation*}
+
+  We thus conclude that \( B \) is also a strongly convex fuzzy set. \Fullref{thm:def:convex_fuzzy_set/intersection} implies that the intersection \( A \cap B \) is again strongly convex.
+
+  We must find a member of \( A \cap B \) with a maximal membership degree. \Fullref{thm:def:convex_fuzzy_set/max} suggests that it is sufficient to find a local maximum of \( f_{A \cap B} \).
+
+  A candidate for a local maximum is \( 50 \):
+  \begin{equation*}
+    f_A(50) = 1 - \frac 1 {\ln(50 + e)} = f_B(50).
+  \end{equation*}
+
+  For smaller arguments, \( f_A \) (and hence \( f_{A \cap B} \)) decreases, while for larger arguments \( f_B \) decreases.
+
+  Therefore, we conclude that \( 50 \) is the solution to our problem --- finding a number that is much greater than \( 0 \) but also much smaller than \( 100 \).
+\end{example}
+
+\paragraph{Finitism}
+
+\begin{concept}\label{con:finitism}
+  We briefly discuss in \fullref{con:transfinitum} potential and actual infinity, as well as the concept of transfinite that tries to fit in between. As long as we distinguish between transfinite and actually infinite, denying the existence of actually infinite objects is widespread.
+
+  The existence of transfinite sets within \hyperref[def:zfc]{\logic{ZFC}} relies on the \hyperref[def:zfc/infinity]{axiom of infinity}. Removing this axiom thus provides a foundation for mathematics that does not depend on infinity. \Fullref{thm:cumulative_hierarchy_model_of_zfc_without_infinity} implies that the \hyperref[def:universe_of_hereditary_finite_sets]{\( V_\omega \)} of hereditary finite sets satisfies the resulting family of axioms, and even allows the negation of the axiom of infinity. \term{Finitism} is a school of thought which denies transfinite objects, and hence relies on this negation.
+
+  \term[en=ultrafinitism (\cite[2]{MannucciCherubin2006UltrafinitismI})]{Ultrafinitism} is more extreme --- in the words of \incite{MannucciCherubin2006UltrafinitismI}, it stems from a \enquote{deep-seated mistrust for all kinds of infinite, actual and potential alike}. We present in \fullref{def:fuzzy_initial_segment} an approach to formalizing ultrafinitism.
+\end{concept}
+
+\begin{definition}\label{def:fuzzy_initial_segment}\mcite[def. 1; def. 2]{MannucciCherubin2006UltrafinitismI}
+  We say that the \hyperref[def:fuzzy_set]{fuzzy set} \( G \) of \hyperref[def:natural_numbers]{natural numbers} is a \term{fuzzy initial segment} if
+  \begin{thmenum}[series=def:fuzzy_initial_segment]
+    \thmitem{def:fuzzy_initial_segment/zero} \( f_G(0) = 1 \)
+    \thmitem{def:fuzzy_initial_segment/decreasing} \( f_G(n + 1) \leq f_G(n) \) for every natural number \( n \)
+    \thmitem{def:fuzzy_initial_segment/no_jumps} \( f_G(n + 1) > 0 \) if \( f_G(n) = 1 \)
+  \end{thmenum}
+
+  We say that \( n \) is \term{feasible} if \( f_G(n) > 0 \) and \term{strongly feasible} if \( f_G(n) = 1 \).
+
+  Additionally, say that the fuzzy initial segment \( g \) is \term{strict} if
+  \begin{thmenum}[resume=def:fuzzy_initial_segment]
+    \thmitem{def:fuzzy_initial_segment/strict} \( f_G(n) = 0 \) for some natural number \( n \)
+  \end{thmenum}
+  and \term{regular} if
+  \begin{thmenum}[resume=def:fuzzy_initial_segment]
+    \thmitem{def:fuzzy_initial_segment/regular} \( r_G(n) \coloneqq f_G(n) - f_G(n + 1) \) is \hyperref[def:order_function/increasing]{nondecreasing} on feasible numbers.
+  \end{thmenum}
+\end{definition}
+
+\begin{example}\label{ex:def:fuzzy_initial_segment}
+  We list examples of \hyperref[def:fuzzy_initial_segment]{fuzzy initial segments} of \hyperref[def:natural_numbers]{natural numbers}:
+  \begin{thmenum}
+    \thmitem{ex:def:fuzzy_initial_segment/degenerate} In the simplest example, \( f_G(n) \coloneqq 1 \), and all numbers are strongly feasible. It is not strict, but it is regular since \( r_G(n) = 0 \).
+
+    \thmitem{ex:def:fuzzy_initial_segment/non_regular} Consider the fuzzy set given by \( f_G(n) \coloneqq 1 / \ln(e + n) \).
+
+    \begin{figure}[!ht]
+      \centering
+      \includegraphics[page=1]{output/ex__def__fuzzy_initial_segment__non_regular}
+      \caption{A plot of \( f_G(n) = 1 / \ln(e + n) \) from \fullref{ex:def:fuzzy_initial_segment/non_regular}.}\label{fig:ex:def:fuzzy_initial_segment/non_regular}
+    \end{figure}
+
+    Clearly \( f_G(n) \) is decreasing and nonzero. Also, we have \( f_G(0) = 1 / \ln(e) = 1 \). Thus, \( G \) is a fuzzy initial segment.
+
+    Note that \( r_G(n) = f_G(n) - f_G(n + 1) \) is strictly decreasing because \( f_G(n) \) decays indefinitely at slowing rates. We conclude that \( G \) is not a regular initial segment.
+
+    \thmitem{ex:def:fuzzy_initial_segment/regular} Fix a positive integer \( N \) and consider the fuzzy set given by \( f_G(n) \coloneqq \max\set{ 0, 1 - n / N } \).
+
+    It is evidently a strict fuzzy initial segment. It is also regular since
+    \begin{equation*}
+      r_G(n)
+      =
+      \max\set[\Big]{ 0, \frac {N - n} N } - \max\set[\Big]{ 0, \frac {N - (n + 1)} N }
+      =
+      \begin{cases}
+        \frac 1 N, &n < N, \\
+        0,         &n \geq N.
+      \end{cases}
+    \end{equation*}
+
+    \begin{figure}[!ht]
+      \centering
+      \includegraphics[page=1]{output/ex__def__fuzzy_initial_segment__regular}
+      \caption{A plot of \( f_G(n) = \max\set{ 0, 1 - n / N } \) from \fullref{ex:def:fuzzy_initial_segment/regular}.}\label{fig:ex:def:fuzzy_initial_segment/regular}
+    \end{figure}
+  \end{thmenum}
+\end{example}
