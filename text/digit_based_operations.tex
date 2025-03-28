@@ -483,7 +483,7 @@ We will present several algorithms which allow performing integer arithmetic usi
   To any \hyperref[def:positional_number_system]{digit string} \( d_0 \ldots d_{m-1} \) over a fixed \hyperref[def:positional_number_system]{positional number system}, we assign two total orders:
 
   \begin{thmenum}
-    \thmitem{def:endianness/big} The \term{big-endian} order is based on the implicit \hyperref[def:enumeration]{enumerations} \( d_0, \ldots, d_{m-1} \).
+    \thmitem{def:endianness/big} The \term{big-endian} order is based on the implicit \hyperref[def:enumeration]{enumeration} \( d_0, \ldots, d_{m-1} \).
 
     We say that the digit \( d_i \) is \term[en=more significant (\cite[195]{Knuth1997ArtVol2})]{more significant} than \( d_j \) if \( i < j \). Correspondingly, \( d_0 \) is the most significant digit, while \( d_{m-1} \) --- the least significant.
 
@@ -493,13 +493,13 @@ We will present several algorithms which allow performing integer arithmetic usi
   \end{thmenum}
 \end{definition}
 \begin{comments}
-  \item Endianness is useful in the context of memory likes --- see the discussion in \fullref{ex:little_endian_motivation}.
+  \item Endianness is useful in the context of memory lines --- see the discussion in \fullref{ex:little_endian_motivation}.
 
   \item Digit significance allows us to work with both big-endian and little-endian orders simultaneously by abstracting away the implicit order of a string. This is illustrated in \fullref{thm:nonnegative_integer_expansion_divisibility}.
 
   \item This endianness terminology is based on Danny Cohen's article \cite{Cohen1981Endianness} on the order in which computers and communication protocols handle \hyperref[def:bit_string]{bit strings}. Cohen in turn based his terms on Jonathan Swift's \cite{Swift2005GulliverTravels}, where Lilliputs fight wars for which end the eggs should be broken at.
 
-  The following quote from the book first refers to \enquote{endianness} (orthography is preserved):
+  The following quote from the book first refers to \enquote{endianness}:
   \begin{displayquote}
     It is computed, that eleven Thousand Persons have, at several Times, suffered Death, rather than submit to break their Eggs at the smaller End. Many hundred large Volumes have been published upon this Controversy: But the Books of the Big-Endians have been long forbidden, and the whole Party rendred incapable by Law of holding Employments.
   \end{displayquote}
@@ -538,9 +538,9 @@ We will present several algorithms which allow performing integer arithmetic usi
   \begin{equation*}
     s_{a_0} s_{a_1} \cdots s_{a_{m-1}}
   \end{equation*}
-  encoding \( n \) via big-endian ordering.
+  encoding \( n \) via little-endian ordering.
 
-  For little-endian ordering, we can simply reverse the string.
+  For big-endian ordering, we can simply reverse the string.
 
   We have thus constructed a digit string for each nonnegative integer \( n < b^m \). Each nonnegative integer has a unique radix \( b \) expansion, thus the numbers \( 0, \ldots, b^m - 1 \) correspond to \( b^m \) digit strings of length \( m \).
 
@@ -555,18 +555,18 @@ We will present several algorithms which allow performing integer arithmetic usi
 \begin{proof}
   Consider the encoding \( s_{a_0} \ldots s_{a_{m-1}} \).
 
-  In the case of big-endian ordering, we have
-  \begin{equation*}
-    n = \sum_{k=0}^m a_k b^k.
-  \end{equation*}
-
-  Since \( d \) divides \( b \), it divides \( b^k \) for \( k > 1 \), and thus also \( a_k b^k \). Therefore, in order to divide \( n \), \( d \) must divide the least significant digit \( a_0 = a_0 \cdot b^0 \), and vice versa.
-
   In the case of little-endian ordering, we have
   \begin{equation*}
-    n = \sum_{k=0}^m a_k b^{m-k},
+    n = \sum_{k=0}^{m-1} a_k b^k.
   \end{equation*}
-  and thus \( d \) divides \( n \) if and only if \( d \) divides the least significant digit \( a_m \).
+
+  Since \( d \) divides \( b \), it divides \( b^k \) for \( k > 0 \), and thus also \( a_k b^k \). Therefore, in order to divide \( n \), \( d \) must divide the least significant digit \( a_0 = a_0 \cdot b^0 \), and vice versa.
+
+  In the case of big-endian ordering, we have
+  \begin{equation*}
+    n = \sum_{k=0}^m a_k b^{m-1-k},
+  \end{equation*}
+  and thus \( d \) divides \( n \) if and only if \( d \) divides the least significant digit \( a_{m-1} \).
 \end{proof}
 
 \begin{corollary}\label{thm:nonnegative_integer_decimal_expansion_parity}
@@ -588,19 +588,19 @@ We will present several algorithms which allow performing integer arithmetic usi
 
   \hyperref[def:endianness/little]{Big-endian} ordering corresponds to how digits are encoded in the familiar decimal system --- the number \( 234 \) is \hyperref[def:fixed_length_nonnegative_integer_encoding]{encoded} by the decimal digit string
   \begin{MemoryLine}{3}
-    4 & 3 & 2
+    2 & 3 & 4
   \end{MemoryLine}
 
   \hyperref[def:endianness/little]{Little-endian} ordering, on the other hand, would encode the same number as
   \begin{MemoryLine}{3}
-    2 & 3 & 4
+    4 & 3 & 2
   \end{MemoryLine}
 
   At first little-endianness seems ridiculous, but it allows certain algorithmic patterns that big-endianness does not. Some of them are discussed in \cite{SESE:little_endianness}.
 
   For example, consider a long memory line with segments of cells, each segment having the same endianness. The unique \( 8 \)-digit big-endian decimal encoding of \( 234 \) corresponds to the segment
   \begin{MemoryLine}{12}
-    \anon & \anon & \MemoryLineArrow 0 & 0 & 0 & 0 & 0 & 4 & 3 & 2 & \anon & \anon
+    \anon & \anon & \MemoryLineArrow 0 & 0 & 0 & 0 & 0 & 2 & 3 & 4 & \anon & \anon
   \end{MemoryLine}
 
   We have denoted the beginning of the segment with an arrow pointer. Clearly \( 234 \) can be encoded via smaller \( 4 \)-digit segments.
@@ -609,12 +609,12 @@ We will present several algorithms which allow performing integer arithmetic usi
 
   To convert the \( 8 \)-digit segment above to a \( 4 \)-digit segment, one option is to move the pointer and discard the first \( 4 \) digits of the \( 8 \)-digit segment:
   \begin{MemoryLine}{12}
-    \anon & \anon & \anon & \anon & \anon & \anon & \MemoryLineArrow 0 & 4 & 3 & 2 & \anon & \anon
+    \anon & \anon & \anon & \anon & \anon & \anon & \MemoryLineArrow 0 & 2 & 3 & 4 & \anon & \anon
   \end{MemoryLine}
 
   Another option is to move the least significant \( 4 \) digits and discard the rest:
   \begin{MemoryLine}{12}
-    \anon & \anon & \MemoryLineArrow 0 & 4 & 3 & 2 & \anon & \anon & \anon & \anon & \anon & \anon
+    \anon & \anon & \MemoryLineArrow 0 & 2 & 3 & 4 & \anon & \anon & \anon & \anon & \anon & \anon
   \end{MemoryLine}
 
   With little-endian order, this operation is instead \enquote{free}. The original \( 8 \)-digit segment is
