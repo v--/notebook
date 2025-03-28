@@ -58,6 +58,7 @@ class BibEntry:
     authors:       Annotated[Sequence[BibAuthor], BibFieldAnnotation(author=True, key_name='author')] = field(default_factory=list)
     editors:       Annotated[Sequence[BibAuthor], BibFieldAnnotation(author=True, key_name='editor')] = field(default_factory=list)
     translators:   Annotated[Sequence[BibAuthor], BibFieldAnnotation(author=True, key_name='translator')] = field(default_factory=list)
+    commentators:  Annotated[Sequence[BibAuthor], BibFieldAnnotation(author=True, key_name='commentator')] = field(default_factory=list)
     languages:     Annotated[Sequence[BibString], BibFieldAnnotation(list=True, key_name='language')] = field(default_factory=list)
     origlanguages: Annotated[Sequence[BibString], BibFieldAnnotation(list=True, key_name='origlanguage')] = field(default_factory=list)
     options:       Annotated[BibString | None, BibFieldAnnotation()] = None

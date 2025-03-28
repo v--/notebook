@@ -11,9 +11,11 @@
   \item Free monoids allow describing the possible operations performed in a monoid, and \fullref{thm:free_monoid_universal_property} allows to actually perform these operations in some monoid. Thus, free monoids are an instance of the \hyperref[con:syntax_semantics_duality]{syntax-semantics duality}.
 
   \item In accordance with \fullref{rem:free_construction_univalence}, we refer to any monoid isomorphic to \( A^* \) as \enquote{free}, and to \( A^* \) itself as \enquote{the} free monoid.
+
+  \item To stay consistent with the general notation for monoids and groups, we denote the empty string by \( e \) rather than \( \bnfes \).
 \end{comments}
 \begin{defproof}
-  Concatenation is clearly associative and the empty string \( \bnfes \) is an \hyperref[def:monoid]{neutral element} under concatenation.
+  Concatenation is clearly associative, and the empty string is an \hyperref[def:monoid]{neutral element} under concatenation.
 \end{defproof}
 
 \begin{theorem}[Free monoid universal property]\label{thm:free_monoid_universal_property}
@@ -34,7 +36,7 @@
   \end{equation*}
 \end{comments}
 \begin{proof}
-  In order for \( \widetilde{f} \) to be a monoid homomorphism, it must satisfy \( \widetilde{f}(\bnfes) = e_M \) and
+  In order for \( \widetilde{f} \) to be a monoid homomorphism, it must satisfy \( \widetilde{f}(e) = e_M \) and
   \begin{equation*}
     \widetilde{f}(a_1 a_2 \ldots a_n) = \widetilde{f}(a_1) \cdot \widetilde{f}(a_2) \cdot \ldots \cdot \widetilde{f}(a_n).
   \end{equation*}
@@ -44,7 +46,7 @@
   This suggests the recursive definition
   \begin{equation*}
     \widetilde{f}(w) \coloneqq \begin{cases}
-      e_M,                         &w = \bnfes, \\
+      e_M,                         &w = e, \\
       f(a) \cdot \widetilde{f}(w') &w = a \cdot w'.
     \end{cases}
   \end{equation*}
@@ -164,17 +166,17 @@
 \begin{definition}\label{def:free_group}\mimprovised
   Let \( A \) be a \hyperref[def:set]{plain set}. We will now construct the \term{free group} \( F(A) \) of \( A \).
 
-  Let \( + \) and \( - \) be a arbitrary plain sets not in \( A \). Consider the \hyperref[def:disjoint_union]{disjoint union} \( U \coloneqq A \times \set{ +, - } \), whose members we will denote by \( a^+ \) and \( a^- \).
+  Let \( + \) and \( - \) be some \hyperref[def:alphabet/symbol]{symbols} not in \( A \). Define the \hyperref[def:disjoint_union]{disjoint union} \( U \coloneqq A \times \set{ +, - } \), whose members we will denote by \( a^+ \) and \( a^- \).
 
   Consider the \hyperref[def:formal_language/kleene_star]{Kleene star} \( U^* \). We say that a string in \( U^* \) is \term{reduced} if there exists no symbol \( a \in A \) such that either \( a^+ a^- \) or \( a^- a^+ \) is a substring of \( w \).
 
   Define via \hyperref[con:evaluation]{pattern matching} the reduction function
-  \begin{equation*}
+  \begin{equation}\label{eq:def:free_group/reduction}
     \red(w) \coloneqq \begin{cases}
       p \cdot \red(s), &w = p a^+ a^- s \T{or} w = p a^- a^+ s, \T{where} p \T{is reduced} \\
       w,               &\T{otherwise.}
     \end{cases}
-  \end{equation*}
+  \end{equation}
 
   It is well-defined because \( s \) is always shorter than \( w \) and thus \( \red(w) \) recursively applies itself finitely many times. Furthermore, the condition for \( p \) to be reduced ensures that the leftmost pair always gets eliminated, making the process deterministic.
 
@@ -185,9 +187,9 @@
   The identity is the empty string and the inverse \( w^{-1} \) of \( w \) can be characterized recursively as
   \begin{equation*}
     w^{-1} = \begin{cases}
-      \bnfes &w = \bnfes \\
-      w^{-1} a^-  &w = a^+ v \\
-      w^{-1} a^+  &w = a^- v
+      e          &w = e \\
+      w^{-1} a^- &w = a^+ v \\
+      w^{-1} a^+ &w = a^- v
     \end{cases}
   \end{equation*}
 
@@ -203,6 +205,8 @@
   \item Compare this definition to the much less syntactic definition of free abelian groups as \hyperref[def:free_semimodule]{free modules} over \( \BbbZ \).
 
   \item In accordance with \fullref{rem:free_construction_univalence}, we refer to any group isomorphic to \( F(A) \) as \enquote{free}, and to \(F(A) \) itself as \enquote{the} free group.
+
+  \item As shown in \fullref{thm:cayley_graph_of_free_group}, the \hyperref[def:cayley_graph]{Cayley graph} of a free group is \hyperref[def:acyclic_graph]{acyclic}.
 \end{comments}
 
 \begin{theorem}[Free group universal property]\label{thm:free_group_universal_property}
@@ -226,7 +230,7 @@
   A group homomorphism is a monoid homomorphism, hence we can utilize our reasoning for free monoids to extend the definition from \fullref{thm:free_monoid_universal_property} to
   \begin{equation*}
     \widetilde{f}(w) \coloneqq \begin{cases}
-      \bnfes,                      &w = \bnfes, \\
+      e,                      &w = e, \\
       f(a) \cdot \widetilde{f}(w')      &w = a^+ \cdot w', \\
       f(a)^{-1} \cdot \widetilde{f}(w') &w = a^- \cdot w'.
     \end{cases}
@@ -261,6 +265,16 @@
 \end{proof}
 
 \paragraph{Group presentations}
+
+\begin{proposition}\label{thm:group_presentation_generating_set}
+  The subset \( A \) generates a \hyperref[def:group]{group} \( G \) in the sense of \fullref{def:group/generated} if and only if there exists a \hyperref[def:first_order_congruence]{congruence} \( {\cong} \) such that \( G \) is isomorphic to the \hyperref[def:group/quotient]{quotient} \( F(A) / {\cong} \).
+\end{proposition}
+\begin{comments}
+  \item Thus, the notions of a generated subgroup coincide between \fullref{def:group/generated} and \fullref{def:group_presentation}.
+\end{comments}
+\begin{proof}
+  Straightforward.
+\end{proof}
 
 \begin{definition}\label{def:group_presentation}\mimprovised
   Let \( G \) be a \hyperref[def:group]{group}. Let \( A \) be a \hyperref[def:set]{plain set} and let \( {\sim} \) be a binary relation on the \hyperref[def:free_group]{free group} \( F(A) \).
@@ -311,6 +325,9 @@
 
   \Fullref{thm:cyclic_monoid_classification} implies that, up to an isomorphism, there is only one cyclic group for every possible order. When referring to an abstract cyclic group, we will use the notation \( C_n \) for groups of finite cardinality \( n \) or \( C_\infty \) for (countably) infinite groups.
 \end{definition}
+\begin{comments}
+  \item As shown in \fullref{thm:cayley_graph_of_finite_cyclic_group}, the \hyperref[def:cayley_graph]{Cayley graph} of a finite cyclic group with a singleton connection set is a \hyperref[def:cyclic_graph]{cycle graph}.
+\end{comments}
 
 \begin{definition}\label{def:cyclic_monoid}\mcite[exerc. II.4.6]{MacLane1998CategoryTheory}
   In analogy with \hyperref[def:cyclic_group]{cyclic groups}, we say that a \hyperref[def:monoid]{monoid} \( M \) is \term{cyclic} if there exists a single element \( a \) such that the submonoid generated by \( a \) coincides with \( M \).
@@ -390,9 +407,9 @@
   \begin{thmenum}
     \thmitem{thm:cyclic_monoid_classification/finite_monoid} A cyclic \hi{monoid} is a cyclic \hi{group} if and only if it is finite.
 
-    \thmitem{thm:cyclic_monoid_classification/finite_group} A finite group \( G \) with \( n \) elements is a cyclic group if and only if the following is a \hyperref[def:group_presentation]{presentation} of \( G \)\fnote{As per \fullref{def:formal_language/empty_string}, we denote the empty string by \( \bnfes \)}:
+    \thmitem{thm:cyclic_monoid_classification/finite_group} A finite group \( G \) with \( n \) elements is a cyclic group if and only if the following is a \hyperref[def:group_presentation]{presentation} of \( G \):
     \begin{equation}\label{eq:thm:cyclic_monoid_classification/finite_group}
-      \braket{ a \given a^n = \bnfes }.
+      \braket{ a \given a^n = e }.
     \end{equation}
 
     \thmitem{thm:cyclic_monoid_classification/infinite_monoid} An infinite monoid is a cyclic monoid if and only if it is isomorphic to the \hyperref[def:free_monoid]{free monoid} \( F(\set{ a }) \).
@@ -547,7 +564,7 @@
 \begin{proof}
   \SubProofOf{thm:def:cyclic_group/infinite_generators} Let \( a \) and \( b \) be generators of the infinite cyclic group \( C_\infty \).
 
-  Then there exist integers \( n \) and \( m \) such that \( b = a^n \) and \( a = b^m \). Then \( a = (a^n)^m \), which, by \fullref{thm:semigroup_exponentiation_properties/repeated}, equals \( a^{nm} \).
+  Then there exist integers \( n \) and \( m \) such that \( b = a^n \) and \( a = b^m \). Hence \( a = (a^n)^m \), which, by \fullref{thm:semigroup_exponentiation_properties/repeated}, equals \( a^{nm} \).
 
   If \( nm > 1 \), then, since \( a \) is a generator, \( C_\infty \) has at most \( nm \) elements, which is a contradiction. Similarly, if \( nm < 1 \), then \( a^{-nm} = a \), and \( C_\infty \) has at most \( -nm \) elements.
 
@@ -616,19 +633,19 @@
   \end{equation}
 \end{proposition}
 \begin{proof}
-  The product of the cyclic groups \( \braket{ \alpha \given \alpha^2 = \bnfes } \) and \( \braket{ \beta \given \beta^2 = \bnfes } \) has elements
+  The product of the cyclic groups \( \braket{ \alpha \given \alpha^2 = e } \) and \( \braket{ \beta \given \beta^2 = e } \) has elements
   \begin{equation*}
-    (\bnfes, \bnfes), (\alpha, \bnfes), (\bnfes, \beta), (\alpha, \beta).
+    (e, e), (\alpha, e), (e, \beta), (\alpha, \beta).
   \end{equation*}
 
-  If we denote \( (\bnfes, \bnfes) \) by \( e \), \( (\alpha, \bnfes) \) by \( a \) and \( (\bnfes, \beta) \) by \( b \), these become
+  If we denote \( (e, e) \) by \( e \), \( (\alpha, e) \) by \( a \) and \( (e, \beta) \) by \( b \), these become
   \begin{equation*}
     e, a, b, ab.
   \end{equation*}
 
   Clearly \( a^2 = b^2 = e \), and
   \begin{equation*}
-    ab = (\alpha, \bnfes) \cdot (\beta, \bnfes) = ba.
+    ab = (\alpha, e) \cdot (\beta, e) = ba.
   \end{equation*}
 \end{proof}
 

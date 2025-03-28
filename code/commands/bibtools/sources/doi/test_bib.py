@@ -496,7 +496,7 @@ def test_parse_101080_00150517200212428680_affiliation_places(doi: str = '10.108
             BibAuthor(full_name='Paul J. Andaloro')
         ],
         date='2024-09-19',
-        doi='10.1080/00150517.2002.12428680',
+        doi=doi,
         issn='0015-0517,2641-340X',
         journal='The Fibonacci Quarterly',
         languages=['english'],
@@ -504,6 +504,31 @@ def test_parse_101080_00150517200212428680_affiliation_places(doi: str = '10.108
         publisher='Informa UK Limited',
         title='The 3 <i>x</i> + 1 Problem and Directed Graphs',
         volume='40'
+    )
+
+
+def test_parse_101145_190347190362_affiliation_places(doi: str = '10.1145/190347.190362') -> None:
+    with get_doi_fixture_path(doi).open() as file:
+        json_body = file.read()
+
+    data = parse_doi_json(json_body)
+    entry = doi_data_to_bib(data, doi)
+
+    assert entry == BibEntry(
+        entry_type='misc',
+        entry_name='BosmaEtAl1994MAGMALanguage',
+        authors=[
+            BibAuthor(full_name='Wieb Bosma'),
+            BibAuthor(full_name='John Cannon'),
+            BibAuthor(full_name='Graham Matthews')
+        ],
+        date='1994',
+        doi=doi,
+        languages=['english'],
+        pages='52-57',
+        publisher='ACM Press',
+        subtitle='design of the MAGMA language',
+        title='Programming with algebraic structures'
     )
 
 

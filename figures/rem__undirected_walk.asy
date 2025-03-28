@@ -47,27 +47,27 @@ newpage();
 draw_vertices();
 
 grdraw.edge(a, b, is_arc=true, bold=true);
-grdraw.edge(a, c, bend=0.15, is_arc=true, dash=true);
-grdraw.edge(b, a, bend=0.15, is_arc=true, dash=true);
-grdraw.edge(b, c, bend=-0.15, is_arc=true, bold=true);
-grdraw.edge(b, d, bend=-0.15, is_arc=true, dash=true);
+grdraw.edge(a, c, bend=-0.2, is_arc=true, dash=true);
+grdraw.edge(b, a, bend=-0.2, is_arc=true, dash=true);
+grdraw.edge(b, c, bend=0.2, is_arc=true, bold=true);
+grdraw.edge(b, d, bend=0.2, is_arc=true, dash=true);
 grdraw.edge(c, a, is_arc=true, dash=true);
-grdraw.edge(c, b, bend=0.15, is_arc=true, dash=true);
+grdraw.edge(c, b, bend=-0.2, is_arc=true, dash=true);
 grdraw.edge(c, d, is_arc=true, dash=true);
 grdraw.edge(d, b, is_arc=true, dash=true);
-grdraw.edge(d, c, bend=-0.15, is_arc=true, dash=true);
+grdraw.edge(d, c, bend=0.2, is_arc=true, dash=true);
 
 newpage();
 
 draw_vertices();
 
 grdraw.edge(a, b, is_arc=true, dash=true);
-grdraw.edge(a, c, bend=0.15, is_arc=true, dash=true);
-grdraw.edge(b, a, bend=0.15, is_arc=true, bold=true);
-grdraw.edge(b, c, bend=-0.15, is_arc=true, dash=true);
-grdraw.edge(b, d, bend=-0.15, is_arc=true, dash=true);
+grdraw.edge(a, c, bend=-0.2, is_arc=true, dash=true);
+grdraw.edge(b, a, bend=-0.2, is_arc=true, bold=true);
+grdraw.edge(b, c, bend=0.2, is_arc=true, dash=true);
+grdraw.edge(b, d, bend=0.2, is_arc=true, dash=true);
 grdraw.edge(c, a, is_arc=true, dash=true);
-grdraw.edge(c, b, bend=0.15, is_arc=true, bold=true);
+grdraw.edge(c, b, bend=-0.2, is_arc=true, bold=true);
 grdraw.edge(c, d, is_arc=true, dash=true);
 grdraw.edge(d, b, is_arc=true, dash=true);
-grdraw.edge(d, c, bend=-0.15, is_arc=true, dash=true);
+grdraw.edge(d, c, bend=0.2, is_arc=true, dash=true);

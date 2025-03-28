@@ -31,16 +31,23 @@ struct PetersenGraph {
       this.inner[i] = inner_radius / outer_radius * this.outer[i];
   }
 
-  void draw() {
+  void draw_vertices() {
     for (int i = 0; i < this.n; ++i) {
       grdraw.vert(this.outer[i]);
       grdraw.vert(this.inner[i]);
     }
+  }
 
+  void draw_edges() {
     for (int i = 0; i < this.n; ++i) {
       grdraw.edge(this.outer[i], this.outer[(i + 1) % this.n]);
       grdraw.edge(this.outer[i], this.inner[i % this.n]);
       grdraw.edge(this.inner[i], this.inner[(i + this.m) % this.n]);
     }
+  }
+
+  void draw() {
+    this.draw_vertices();
+    this.draw_edges();
   }
 }

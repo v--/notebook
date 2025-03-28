@@ -13,11 +13,11 @@ real dot_radius = 0.04;
 void vert(
   pair v,
   Label L = '',
-  pen color = white
+  pen p = white
 ) {
   filldraw(
     shift(v) * scale(dot_radius) * unitcircle,
-    regular_edge + color
+    regular_edge + p
   );
 
   if (L != '') {
@@ -28,12 +28,12 @@ void vert(
 void _draw_edge_impl(
   path pth,
   Label L = '',
-  pen color = black,
+  pen p = black,
   bool dash = false,
   bool bold = false,
   bool is_arc = false
 ) {
-  pen p = (dash ? pens.densely_dashed : currentpen) + color + linecap(0);
+  pen p = (dash ? pens.densely_dashed : currentpen) + p + linecap(0);
   draw(pth, p=p + (bold ? bold_edge : regular_edge));
 
   if (is_arc) {
@@ -46,10 +46,16 @@ void _draw_edge_impl(
   }
 }
 
-pair _bend_midpoint(pair u, pair v, real bend = 0, real bend_at = 1 / 2) {
+pair _bend_midpoint(pair u, pair v, real bend = 0, real bend_at = 0.5) {
   pair d = v - u;
-  pair n = d.x == 0 ? (1, 0) : (d.y / d.x, -1);
-  return bend_at * (u + v) + n * bend;
+  pair n = (0, 1);
+
+  if (d.y != 0) {
+    int sign = (d.y > 0) ? 1 : -1;
+    n = sign * unit((-1, d.x / d.y));
+  }
+
+  return bend_at * v + (1 - bend_at) * u + n * bend;
 }
 
 pair _shift_for_dot(pair u, pair v, real vertex_offset = dot_radius) {
@@ -63,7 +69,7 @@ void edge(
   real bend_at = 0.5,
   real vertex_offset = dot_radius,
   Label L = '',
-  pen color = black,
+  pen p = black,
   bool dash = false,
   bool bold = false,
   bool is_arc = false
@@ -74,14 +80,14 @@ void edge(
 
   _draw_edge_impl(
     u_ .. mid .. v_,
-    L=L, color=color, dash=dash, bold=bold, is_arc=is_arc
+    L=L, p=p, dash=dash, bold=bold, is_arc=is_arc
   );
 }
 
 void loop(
   pair v,
   Label L = '',
-  pen color = black,
+  pen p = black,
   real angle = 0,
   real vertex_offset = dot_radius,
   bool dash = false,
@@ -93,7 +99,7 @@ void loop(
 
   _draw_edge_impl(
     v_ .. _bend_midpoint(v_, m, bend=0.05) .. m .. _bend_midpoint(v_, m, bend=-0.05) .. v_,
-    L=L, color=color, dash=dash, bold=bold, is_arc=is_arc
+    L=L, p=p, dash=dash, bold=bold, is_arc=is_arc
   );
 }
 

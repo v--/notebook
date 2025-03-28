@@ -12,4 +12,4 @@ grdraw.edge(bg.left[0], bg.right[0]);
 grdraw.edge(bg.left[0], bg.right[1]);
 grdraw.edge(bg.left[1], bg.right[1]);
 grdraw.edge(bg.right[0], v5);
-grdraw.edge(bg.left[1], v5, bend=-0.3);
+grdraw.edge(bg.left[1], v5, bend=0.2);
