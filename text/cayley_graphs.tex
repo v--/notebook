@@ -9,7 +9,7 @@
 
     He gives an example of a diagram of \( S_{12} \) with red and black edges.
 
-    Based on Cayley's work, \incite[156]{König1990GraphTheory} constructs a \hyperref[def:directed_graph]{directed graph} from a group \( G \) by taking the members of \( G \) as vertices and connecting each pair of vertices with an arc \( (x, y) \) colored by \( x^{-1} y \).
+    Based on Cayley's work, \incite[156]{König1990GraphTheory} constructs a \hyperref[def:directed_graph]{directed graph} from a finite group \( G \) by taking the members of \( G \) as vertices and connecting each pair of vertices with an arc \( (x, y) \) colored by \( x^{-1} y \).
 
     In an attempt to stay consistent with Cayley, in \fullref{def:cayley_graph} we consider directed Cayley graphs induced by generating sets.
 
@@ -25,7 +25,7 @@
 
     \item \incite[exerc. II.8.6]{Aluffi2009Algebra} defines a \enquote{Cayley graph} of a finitely generated group \( G \) and a set \( C \) of generators as the directed graph whose vertices are members of \( G \) and whose edges are pairs \( (x, xc) \), where \( x \) is in \( G \) and \( c \) is in \( C \), colored with \( c \).
 
-    We generally follow Aluffi's definition.
+    We generally follow Aluffi's definition but do not require \( C \) to be finite.
 
     \incite[18]{Rotman2017AdvancedModernAlgebraPart2} provides a similar definition, but without explicitly mentioning coloring.
 
@@ -34,7 +34,7 @@
 \end{remark}
 
 \begin{definition}\label{def:cayley_graph}\mimprovised
-  Fix a  \hyperref[def:group_presentation]{finitely generated} \hyperref[def:group]{group} \( G \) and let \( C \) be any finite set of generators. We will call \( C \) the \term[en=connection set (\cite[def. 7.3.1]{Knauer2019AlgebraicGraphTheory})]{connection set} and regard its elements as \hyperref[def:set_coloring]{colors}.
+  Fix a \hyperref[def:group]{group} \( G \) and let \( C \) be any set of generators. We will call \( C \) the \term[en=connection set (\cite[def. 7.3.1]{Knauer2019AlgebraicGraphTheory})]{connection set} and regard its elements as \hyperref[def:set_coloring]{colors}.
 
   We define the \term[en=Cayley graph (\cite[def. 2.1.3]{HadelerMüller2017CellularAutomata})]{Cayley graph} \( \Gamma(G, C) \) as the \hyperref[def:directed_graph]{directed graph} whose vertices are the elements of \( G \) and whose arcs are \( (x, xc) \), where \( x \) is a member of \( G \) and \( c \) is a color from \( C \). We call the neutral element the \term[en=origin (\cite[def. 2.1.3]{HadelerMüller2017CellularAutomata})]{origin} of \( \Gamma(G, C) \).
 \end{definition}
@@ -116,6 +116,12 @@
   \hyperref[def:cayley_graph]{Cayley graphs} have the following basic properties:
   \begin{thmenum}
     \thmitem{thm:def:cayley_graph/connected} Every Cayley graph is \hyperref[def:graph_connectedness/weak]{weakly connected}.
+
+    \thmitem{thm:def:cayley_graph/loops} The Cayley graph \( \Gamma(G, C) \) has \hyperref[def:directed_multigraph/loop]{loops} if and only if \( C \) contains the neutral element.
+
+    \thmitem{thm:def:cayley_graph/degree} All vertices of the Cayley graph \( \Gamma(G, C) \) have an \hyperref[def:graph_cardinality/directed_degree]{in-degree} and \hyperref[def:graph_cardinality/directed_degree]{out-degree} equal to \( \card C \).
+
+    \thmitem{thm:def:cayley_graph/finitely_generated} A group is \hyperref[def:group_presentation]{finitely generated} if and only if it has a \hyperref[def:graph_cardinality/local]{locally finite} Cayley graph.
   \end{thmenum}
 \end{proposition}
 \begin{proof}
@@ -126,12 +132,18 @@
   Then there exists a string \( z_1 \ldots z_n \) of (inclusions of) members of \( C \) and their inverses such that \( x^{-1} y \cong z_1 \ldots z_n \). We can thus multiply by \( x \) to obtain \( x z_1 \ldots, z_n \cong y \). The string \( x z_1 \ldots z_n \) induces a \hyperref[def:graph_walk/generalized]{generalized walk} from \( x \) to \( y \).
 
   Since \( x \) and \( y \) were arbitrary, we conclude that \( \Gamma(G, C) \) is weakly connected.
+
+  \SubProofOf{thm:def:cayley_graph/loops} Trivial.
+
+  \SubProofOf{thm:def:cayley_graph/degree} For every vertex \( v \) in \( \Gamma(G, C) \), the edges starting at \( v \) are \( (v, vc) \) for every \( c \) in \( C \), while the edges ending at \( v \) are \( (vc^{-1}, v) \) for every \( c \) in \( C \).
+
+  \SubProofOf{thm:def:cayley_graph/finitely_generated} Follows from \fullref{thm:def:cayley_graph/degree}.
 \end{proof}
 
 \paragraph{Undirected Cayley graphs}
 
 \begin{proposition}\label{thm:undirected_cayley_graph}
-  Let \( C \) be a finite generating set of the group \( G \) and suppose that \( C \) is closed under inverses. Consider the \hyperref[def:cayley_graph]{Cayley graph} \( \Gamma(G, C) \).
+  Let \( C \) be a generating set of the group \( G \) and suppose that \( C \) is closed under inverses. Consider the \hyperref[def:cayley_graph]{Cayley graph} \( \Gamma(G, C) \).
 
   Its undirected counterpart \hyperref[def:graph_functors/simple_forgetful]{\( U_S \)}\( (\Gamma(G, C)) \) has an edge \( \set{ x, y } \) if and only if \( x^{-1} y \) belongs to \( C \).
 \end{proposition}
@@ -165,7 +177,7 @@
   \begin{itemize}
     \item We must require \( C \) to be closed under inverses, which makes constructing even the simple examples from \fullref{ex:def:cayley_graph} less convenient.
 
-    \item The edge \( \set{ x, y } \) can be colored via either \( x^{-1} y \) or \( y^{-1} x \), which are in general distinct. There is no canonical choice, so authors like \incite[def. 2.1.3]{HadelerMüller2017CellularAutomata} avoid discussing coloring altogether.
+    \item The edge \( \set{ x, y } \) can be colored via either \( x^{-1} y \) or \( y^{-1} x \), which are in general distinct. There is no canonical choice, so authors like \incite[def. 2.1.3]{HadelerMüller2017CellularAutomata} who discuss undirected Cayley graphs avoid defining colorings altogether.
   \end{itemize}
 \end{remark}
 
@@ -198,7 +210,7 @@
 \end{proof}
 
 \begin{proposition}\label{thm:cayley_graph_of_free_group}\mcite[exerc. II.8.6]{Aluffi2009Algebra}
-  Fix a finite set \( C \) and consider the \hyperref[def:free_group]{free group} \( F(C) \) with canonical inclusion \( \iota: C \to F(C) \). The corresponding \hyperref[def:cayley_graph]{Cayley graph} \( \Gamma(F(C), \iota[C]) \) is \hyperref[def:acyclic_graph]{acyclic}.
+  Fix a set \( C \) and consider the \hyperref[def:free_group]{free group} \( F(C) \) with canonical inclusion \( \iota: C \to F(C) \). The corresponding \hyperref[def:cayley_graph]{Cayley graph} \( \Gamma(F(C), \iota[C]) \) is \hyperref[def:acyclic_graph]{acyclic}.
 \end{proposition}
 \begin{comments}
   \item Distinguishing between \( c \) and \( \iota(c) \) is essential due to our construction of the free group.
