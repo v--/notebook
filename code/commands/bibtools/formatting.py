@@ -249,9 +249,10 @@ class BibEntryAdjuster:
             # authors
             authors=[self.adjust_author(author) for author in self.adjusted.authors],
             editors=[self.adjust_author(author) for author in self.adjusted.editors],
+            compilers=[self.adjust_author(author) for author in self.adjusted.compilers],
             translators=[self.adjust_author(author) for author in self.adjusted.translators],
-            advisors=[self.adjust_author(author) for author in self.adjusted.advisors],
             commentators=[self.adjust_author(author) for author in self.adjusted.commentators],
+            advisors=[self.adjust_author(author) for author in self.adjusted.advisors],
             # # languages
             languages=[self.adjust_language(author) for author in self.adjusted.languages],
             origlanguages=[self.adjust_language(author) for author in self.adjusted.origlanguages],

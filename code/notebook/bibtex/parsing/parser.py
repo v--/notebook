@@ -394,6 +394,7 @@ class BibParser(Parser[BibToken]):
                 languages=self.process_language(properties, 'language'),
                 origlanguages=self.process_language(properties, 'origlanguage'),
                 authors=self.process_authors(properties, 'author'),
+                compilers=self.process_authors(properties, 'compiler'),
                 translators=self.process_authors(properties, 'translator'),
                 advisors=self.process_authors(properties, 'advisor'),
                 editors=self.process_authors(properties, 'editor'),

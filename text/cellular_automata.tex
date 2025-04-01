@@ -1,6 +1,245 @@
 \section{Cellular automata}\label{sec:cellular_automata}
 
-\paragraph{One-dimensional automata}
+\paragraph{General cellular automata}
+
+\begin{definition}\label{def:cellular_automaton}\mcite[def. 2.4.1]{HadelerMüller2017CellularAutomata}
+  Fix a \hyperref[def:cayley_graph]{Cayley graph} \( \Gamma(G, C) \), whose vertices we will call \term[en=cell (\cite[def. 2.1.3]{HadelerMüller2017CellularAutomata})]{cells}. Fix a nonempty set \( E \), whose elements we will call \term[en=elementary state (\cite[def. 2.3.1]{HadelerMüller2017CellularAutomata})]{elementary states}.
+
+  A \term{cellular automaton} is a \hyperref[def:discrete_dynamical_system]{discrete-time} \hyperref[def:dynamical_system]{dynamical systems} whose phase space is \( E^G \), the set of functions assigning states to cells. We will call such a function a \term[en=configuration (\cite[def. 2.3.2]{HadelerMüller2017CellularAutomata})]{configuration}.
+
+  We will assume that the \hyperref[def:one_step_evolution_function]{one-step evolution function} \( \varphi: E^G \to E^G \) is determined by its action on some \hyperref[def:cayley_graph_neighborhood]{neighborhood} \( D_e \) of the origin. More precisely, we need a function \( \varphi_e: E^{D_e} \to E \), which we call a \term[en=local function (\cite[def. 2.4.1]{HadelerMüller2017CellularAutomata})]{local evolution function}. By shifting the neighborhood, we are able to determine \( \varphi \) at any cell. In this context, we will call \( \varphi \) the \term[en=global function (\cite[def. 2.4.1]{HadelerMüller2017CellularAutomata})]{global evolution function}.
+\end{definition}
+\begin{comments}
+  \item We can regard a cellular automaton as a triple \( (\Gamma(G, C), E, \varphi_e) \).
+  \item Since the phase space consists of global configuration, \hyperref[def:dynamical_system_trajectory]{trajectories} are sequences of global configuration.
+\end{comments}
+
+\paragraph{Automata on the square grid}
+
+\begin{remark}\label{rem:automata_on_square_grid}
+  \hyperref[def:cellular_automaton]{Cellular automata} on \hyperref[def:free_abelian_group]{free abelian group} \( \BbbZ^2 \) are particularly useful and simple to visualize.
+
+  Consider the \hyperref[def:parallelogram_tiling]{parallelogram tiling} of the \hyperref[def:euclidean_plane]{Euclidean plane} with \hyperref[def:unit_hypercube]{unit square}. To each cell of the automata there corresponds exactly one square, which we can \hyperref[def:set_coloring]{color} based on its state.
+
+  In this context, we refer to the tiling as a \term{square grid}, and we assume that the connection set of the \hyperref[def:cayley_graph]{Cayley graph} is the standard basis.
+\end{remark}
+
+\begin{definition}\label{def:game_of_life}\mimprovised
+  One particular \hyperref[def:cellular_automaton]{cellular automaton} on the \hyperref[rem:automata_on_square_grid]{square grid} is called the \term[en=Game of Life (\cite[3]{HadelerMüller2017CellularAutomata})]{game of life}.
+
+  We assume that the states are \hyperref[def:boolean_value]{Boolean values}, where truth corresponds to a cell that is considered \term{alive} and falsity corresponds to one that is considered \term{dead}. We refer to the moments of the automaton as \term[en=generation (\cite[120]{Gardner1970GameOfLife})]{generations}.
+
+  Given the local state \( u: D_{i, j} \to \set{ T, F } \) at the cell \( (i, j) \), the local evolution function simply counts the number of \hi{other} live cells in the \hyperref[def:cayley_graph_neighborhood/moore]{Moore neighborhood} \( D_{i, j} \) as follows:
+  \begin{equation}\label{eq:def:game_of_life}
+    \varphi_{i,j}(u) \coloneqq \begin{cases}
+      u(i, j), &(i, j) \T{has} 2 \T{live neighbors}, \\
+      T,       &(i, j) \T{has} 3 \T{live neighbors}, \\
+      F,       &\T{otherwise}.
+    \end{cases}
+  \end{equation}
+\end{definition}
+\begin{comments}
+  \item The game of life was originally published by \incite[120]{Gardner1970GameOfLife} as a puzzle called \enquote{life} and attributed to John Horton Conway. The article suggests placing counters on a physical board, and Gardner describes the rules as follows:
+  \begin{displayquote}
+    \begin{enumerate}
+      \item Survivals. Every counter with two or three neighboring counters survives for the next generation.
+      \item Deaths. Each counter with four or more neighbors dies (is removed) from overpopulation. Every counter with one neighbor or none dies from isolation.
+      \item Births. Each empty cell adjacent to exactly three neighbors --- no more, no fewer --- is a birth cell. A counter is placed on it at the next move.
+    \end{enumerate}
+  \end{displayquote}
+
+  It later became popular enough for encyclopedic knowledge to be gathered on it. One such resource is \cite{ConwayLife:home}.
+
+  \cite{CGSE:game_of_life_digital_clock} demonstrates how the evolution of a certain initial configuration can visualize a digital clock.
+\end{comments}
+
+\begin{example}\label{ex:def:game_of_life}
+  We list examples related to the \hyperref[def:game_of_life]{game of life}, with names for the configurations taken from Gardner's article \cite[120]{Gardner1970GameOfLife}:
+  \begin{thmenum}
+    \thmitem{ex:def:game_of_life/blinker} The \term{blinker} is a neighborhood of three cells shown in \fullref{fig:ex:def:game_of_life/blinker/0}.
+
+    With a blinker as an initial configuration of live cells, game of life is \hyperref[def:dynamical_system_periodicity]{periodic} with fundamental period \( 2 \).
+
+    \begin{figure}[!ht]
+      \begin{subcaptionblock}{0.15\textwidth}
+        \centering
+        \includegraphics[page=1]{output/ex__def__game_of_life__blinker}
+        \caption{\( t = 0 \)}\label{fig:ex:def:game_of_life/blinker/0}
+      \end{subcaptionblock}
+      \hfill
+      \begin{subcaptionblock}{0.15\textwidth}
+        \centering
+        \includegraphics[page=2]{output/ex__def__game_of_life__blinker}
+        \caption{\( t = 1 \)}\label{fig:ex:def:game_of_life/blinker/1}
+      \end{subcaptionblock}
+      \hfill
+      \begin{subcaptionblock}{0.15\textwidth}
+        \centering
+        \includegraphics[page=3]{output/ex__def__game_of_life__blinker}
+        \caption{\( t = 2 \)}\label{fig:ex:def:game_of_life/blinker/2}
+      \end{subcaptionblock}
+      \hfill
+      \begin{subcaptionblock}{0.15\textwidth}
+        \centering
+        \includegraphics[page=4]{output/ex__def__game_of_life__blinker}
+        \caption{\( t = 3 \)}\label{fig:ex:def:game_of_life/blinker/3}
+      \end{subcaptionblock}
+      \hfill
+      \begin{subcaptionblock}{0.15\textwidth}
+        \centering
+        \includegraphics[page=5]{output/ex__def__game_of_life__blinker}
+        \caption{\( t = 4 \)}\label{fig:ex:def:game_of_life/blinker/4}
+      \end{subcaptionblock}
+      \caption{The evolution of a \hyperref[ex:def:game_of_life/blinker]{blinker} in the \hyperref[def:game_of_life]{game of life}.}\label{fig:ex:def:game_of_life/blinker}
+    \end{figure}
+
+    \thmitem{ex:def:game_of_life/loaf} The \term{loaf} is a neighborhood of seven cells shown in \cref{fig:ex:def:game_of_life/loaf/3}.
+
+    As a configuration of live cells, it is \hyperref[def:dynamical_system_fixed_point]{fixed}. When starting from the configuration in \cref{fig:ex:def:game_of_life/loaf/0}, it takes three generations to each the loaf.
+
+    \begin{figure}[!ht]
+      \begin{subcaptionblock}{0.15\textwidth}
+        \centering
+        \includegraphics[page=1]{output/ex__def__game_of_life__loaf}
+        \caption{\( t = 0 \)}\label{fig:ex:def:game_of_life/loaf/0}
+      \end{subcaptionblock}
+      \hfill
+      \begin{subcaptionblock}{0.15\textwidth}
+        \centering
+        \includegraphics[page=2]{output/ex__def__game_of_life__loaf}
+        \caption{\( t = 1 \)}\label{fig:ex:def:game_of_life/loaf/1}
+      \end{subcaptionblock}
+      \hfill
+      \begin{subcaptionblock}{0.15\textwidth}
+        \centering
+        \includegraphics[page=3]{output/ex__def__game_of_life__loaf}
+        \caption{\( t = 2 \)}\label{fig:ex:def:game_of_life/loaf/2}
+      \end{subcaptionblock}
+      \hfill
+      \begin{subcaptionblock}{0.15\textwidth}
+        \centering
+        \includegraphics[page=4]{output/ex__def__game_of_life__loaf}
+        \caption{\( t = 3 \)}\label{fig:ex:def:game_of_life/loaf/3}
+      \end{subcaptionblock}
+      \hfill
+      \begin{subcaptionblock}{0.15\textwidth}
+        \centering
+        \includegraphics[page=5]{output/ex__def__game_of_life__loaf}
+        \caption{\( t = 4 \)}\label{fig:ex:def:game_of_life/loaf/4}
+      \end{subcaptionblock}
+      \caption{An evolution in the \hyperref[def:game_of_life]{game of life} that reaches a \hyperref[ex:def:game_of_life/loaf]{loaf}.}\label{fig:ex:def:game_of_life/loaf}
+    \end{figure}
+
+    \thmitem{ex:def:game_of_life/r_pentomino} The \term{\( R \)-pentomino}, shown in \cref{fig:ex:def:game_of_life/r_pentomino/0}, is a neighborhood with a more complicated evolution. Gardner states that \enquote{Its fate is not yet known. Conway has tracked it for \( 460 \) moves.}
+
+    \cite{ConwayLife:r_pentomino} claims that it is \hyperref[def:dynamical_system_eventual_periodicity]{eventually periodic} with period \( 2 \) (due to several blinkers) and preperiod \( 1103 \).
+
+    \begin{figure}[!ht]
+      \begin{subcaptionblock}{0.15\textwidth}
+        \centering
+        \includegraphics[page=1]{output/ex__def__game_of_life__r_pentomino}
+        \caption{\( t = 0 \)}\label{fig:ex:def:game_of_life/r_pentomino/0}
+      \end{subcaptionblock}
+      \hfill
+      \begin{subcaptionblock}{0.15\textwidth}
+        \centering
+        \includegraphics[page=2]{output/ex__def__game_of_life__r_pentomino}
+        \caption{\( t = 1 \)}\label{fig:ex:def:game_of_life/r_pentomino/1}
+      \end{subcaptionblock}
+      \hfill
+      \begin{subcaptionblock}{0.15\textwidth}
+        \centering
+        \includegraphics[page=3]{output/ex__def__game_of_life__r_pentomino}
+        \caption{\( t = 2 \)}\label{fig:ex:def:game_of_life/r_pentomino/2}
+      \end{subcaptionblock}
+      \hfill
+      \begin{subcaptionblock}{0.15\textwidth}
+        \centering
+        \includegraphics[page=4]{output/ex__def__game_of_life__r_pentomino}
+        \caption{\( t = 3 \)}\label{fig:ex:def:game_of_life/r_pentomino/3}
+      \end{subcaptionblock}
+      \hfill
+      \begin{subcaptionblock}{0.15\textwidth}
+        \centering
+        \includegraphics[page=5]{output/ex__def__game_of_life__r_pentomino}
+        \caption{\( t = 4 \)}\label{fig:ex:def:game_of_life/r_pentomino/4}
+      \end{subcaptionblock}
+      \caption{The evolution of an \hyperref[ex:def:game_of_life/r_pentomino]{\( R \)-pentomino} in the \hyperref[def:game_of_life]{game of life}.}\label{fig:ex:def:game_of_life/r_pentomino}
+    \end{figure}
+
+    \thmitem{ex:def:game_of_life/glider} The \term{glider}, shown in \cref{fig:ex:def:game_of_life/loaf/0}, is more subtle. If we start with a glider as a configuration of live cells, after four generations, we reach a configuration with the glider translated diagonally.
+
+    \begin{figure}[!ht]
+      \begin{subcaptionblock}{0.20\textwidth}
+        \centering
+        \includegraphics[page=1]{output/ex__def__game_of_life__glider}
+        \caption{\( t = 0 \)}\label{fig:ex:def:game_of_life/glider/0}
+      \end{subcaptionblock}
+      \hfill
+      \begin{subcaptionblock}{0.20\textwidth}
+        \centering
+        \includegraphics[page=2]{output/ex__def__game_of_life__glider}
+        \caption{\( t = 1 \)}\label{fig:ex:def:game_of_life/glider/1}
+      \end{subcaptionblock}
+      \hfill
+      \begin{subcaptionblock}{0.20\textwidth}
+        \centering
+        \includegraphics[page=3]{output/ex__def__game_of_life__glider}
+        \caption{\( t = 2 \)}\label{fig:ex:def:game_of_life/glider/2}
+      \end{subcaptionblock}
+      \hfill
+      \begin{subcaptionblock}{0.20\textwidth}
+        \centering
+        \includegraphics[page=4]{output/ex__def__game_of_life__glider}
+        \caption{\( t = 3 \)}\label{fig:ex:def:game_of_life/glider/3}
+      \end{subcaptionblock}
+      \\[\baselineskip]
+      \begin{subcaptionblock}{0.20\textwidth}
+        \centering
+        \includegraphics[page=5]{output/ex__def__game_of_life__glider}
+        \caption{\( t = 4 \)}\label{fig:ex:def:game_of_life/glider/4}
+      \end{subcaptionblock}
+      \hfill
+      \begin{subcaptionblock}{0.20\textwidth}
+        \centering
+        \includegraphics[page=6]{output/ex__def__game_of_life__glider}
+        \caption{\( t = 5 \)}\label{fig:ex:def:game_of_life/glider/5}
+      \end{subcaptionblock}
+      \hfill
+      \begin{subcaptionblock}{0.20\textwidth}
+        \centering
+        \includegraphics[page=7]{output/ex__def__game_of_life__glider}
+        \caption{\( t = 6 \)}\label{fig:ex:def:game_of_life/glider/6}
+      \end{subcaptionblock}
+      \hfill
+      \begin{subcaptionblock}{0.20\textwidth}
+        \centering
+        \includegraphics[page=8]{output/ex__def__game_of_life__glider}
+        \caption{\( t = 7 \)}\label{fig:ex:def:game_of_life/glider/7}
+      \end{subcaptionblock}
+      \caption{The \enquote{movement} of a \hyperref[ex:def:game_of_life/glider]{glider} in the \hyperref[def:game_of_life]{game of life}.}\label{fig:ex:def:game_of_life/glider}
+    \end{figure}
+  \end{thmenum}
+\end{example}
+
+\paragraph{Elementary cellular automata}
+
+\begin{definition}\label{def:elementary_cellular_automaton}\mcite{Wolfram1983StatisticalMechanicsOfCellularAutomata}
+  An \term{elementary cellular automaton} is a two-state \hyperref[def:cellular_automaton]{cellular automaton} on the \hyperref[def:cayley_graph]{Cayley graph} \( \Gamma(\BbbZ, \set{ 1 }) \) with a local evolution function specified by the three-cell \hyperref[def:cayley_graph_neighborhood/moore]{Moore neighborhood}.
+
+  As in the \hyperref[def:game_of_life]{game of life}, we regard the (elementary) states as \hyperref[def:boolean_value]{Boolean values}, but it will be important to regard \( T \) as \( 1 \) and \( F \) as \( 0 \).
+
+  There are \( 8 = 2^3 \) possible configurations of the Moore neighborhood at a cell, and thus \( 2^8 = 256 \) possible local evolution functions. Fix some nonnegative integer \( n \) less than \( 256 \). We will determine an evolution function based on \( n \), and call it \term{rule \( n \)}.
+
+  Consider the \( 8 \)-bit \hyperref[def:endianness/big]{big endian} \hyperref[def:fixed_eength_nonnegative_integer_encoding]{binary encoding} \( a_0 \cdots a_7 \) of \( n \). If the Moore neighborhood at some cell \( k \) has values \( (l, c, r) \), regard them as the \( 3 \)-bit encoding of some integer \( i \), and define the value of the local evolution function at this neighborhood as \( a_i \).
+\end{definition}
+\begin{comments}
+  \item \incite[6]{HadelerMüller2017CellularAutomata} calls elementary cellular automata \enquote{Wolfram automata} because of Stephen Wolfram's paper \cite{Wolfram1983StatisticalMechanicsOfCellularAutomata} attempting to classify them.
+
+  \item By abuse of language, we will also refer to the automaton itself as \enquote{rule \( n \)}.
+
+  \item We can visualize a rule more easily; refer to \fullref{ex:def:elementary_cellular_automaton/30}.
+\end{comments}
 
 \begin{definition}\label{def:doubly_infinite_sequence}\mcite[87]{Feller1971ProbabilityTheoryVol2}
   A \term{doubly infinite sequence} is a \hyperref[def:indexed_family]{family} indexed by the set \( \BbbZ \) of \hyperref[def:integers]{integers}.
@@ -10,3 +249,94 @@
     \seq{ a_k }_{k=-\infty}^\infty.
   \end{equation*}
 \end{definition}
+
+\begin{remark}\label{rem:elementary_cellular_automaton_visualization}
+  Similarly to \hyperref[rem:automata_on_square_grid]{cellular automata on a square grid}, \hyperref[def:elementary_cellular_automaton]{elementary cellular automaton} can also be visualized on a square grid.
+
+  The global state at any given step is a \hyperref[def:doubly_infinite_sequence]{doubly infinite sequence}. Instead of the grid being the configuration of the elementary automaton, we simply let the \( k \)-th row represent step \( k \) of the evolution.
+
+  The \hyperref[def:dynamical_system_trajectory]{trajectories} of the automaton are then sequences of rows.
+\end{remark}
+
+\begin{example}\label{ex:def:elementary_cellular_automaton}
+  We list examples of \hyperref[def:elementary_cellular_automaton]{elementary cellular automata}:
+  \begin{thmenum}
+    \thmitem{ex:def:elementary_cellular_automaton/30} We show the evolution of rule \( 30 \) in \fullref{fig:ex:def:elementary_cellular_automaton/30}, visualized row-wise as per \fullref{rem:elementary_cellular_automaton_visualization}.
+
+    The corresponding big endian bit string of \( 30 \) is \( 00011110 \), meaning that the local evolution at the origin is
+    \begin{equation*}
+      \varphi_0(l, c, r) \coloneqq \begin{cases}
+        1, &\T{only one of} l, c \T{or} r \T{is} 1 \\
+        1, &l = 0 \T{and} c = r = 1 \\
+        0, &l.
+      \end{cases}
+    \end{equation*}
+
+    As suggested by \incite[604]{Wolfram1983StatisticalMechanicsOfCellularAutomata}, we can visualize the rule more easily as follows:
+    \begin{align*}
+      \frac {000} 0
+      &&
+      \frac {001} 1
+      &&
+      \frac {010} 1
+      &&
+      \frac {011} 1
+      &&
+      \frac {100} 1
+      &&
+      \frac {101} 0
+      &&
+      \frac {110} 0
+      &&
+      \frac {111} 0.
+    \end{align*}
+
+    \begin{figure}[!ht]
+      \begin{subcaptionblock}{\textwidth}
+        \centering
+        \includegraphics[page=1]{output/ex__def__elementary_cellular_automaton__30__zero}
+        \caption{Only the cell at \( 0 \) is marked initially.}\label{fig:ex:def:elementary_cellular_automaton/30/zero}
+      \end{subcaptionblock}
+      \\[\baselineskip]
+      \begin{subcaptionblock}{\textwidth}
+        \centering
+        \includegraphics[page=1]{output/ex__def__elementary_cellular_automaton__30__unit}
+        \caption{The cells at \( -1 \) and \( 1 \) are marked initially.}\label{fig:ex:def:elementary_cellular_automaton/30/unit}
+      \end{subcaptionblock}
+      \caption{The evolution of \hyperref[ex:def:elementary_cellular_automaton/30]{rule \( 30 \)} with different initial configurations.}\label{fig:ex:def:elementary_cellular_automaton/30}
+    \end{figure}
+
+    \thmitem{ex:def:elementary_cellular_automaton/diagonal} Some rules allow \hyperref[def:dynamical_system_periodicity]{periodic} configurations, for example \cref{fig:ex:def:elementary_cellular_automaton/diagonal/1}.
+
+    Others like \cref{fig:ex:def:elementary_cellular_automaton/diagonal/3} have configurations are not periodic but translate the initial configuration on regular periods, similarly to \hyperref[ex:def:game_of_life/glider]{gliders} in the \hyperref[def:game_of_life]{game of life}.
+
+    \begin{figure}[!ht]
+      \begin{subcaptionblock}{\textwidth}
+        \centering
+        \includegraphics[page=1]{output/ex__def__elementary_cellular_automaton__diagonal}
+        \caption{Rule \( 1 \).}\label{fig:ex:def:elementary_cellular_automaton/diagonal/1}
+      \end{subcaptionblock}
+      \\[\baselineskip]
+      \begin{subcaptionblock}{\textwidth}
+        \centering
+        \includegraphics[page=2]{output/ex__def__elementary_cellular_automaton__diagonal}
+        \caption{Rule \( 2 \).}\label{fig:ex:def:elementary_cellular_automaton/diagonal/2}
+      \end{subcaptionblock}
+      \\[\baselineskip]
+      \begin{subcaptionblock}{\textwidth}
+        \centering
+        \includegraphics[page=3]{output/ex__def__elementary_cellular_automaton__diagonal}
+        \caption{Rule \( 3 \).}\label{fig:ex:def:elementary_cellular_automaton/diagonal/3}
+      \end{subcaptionblock}
+      \caption{The evolution of several \hyperref[def:elementary_cellular_automaton]{elementary cellular automata}.}\label{fig:ex:def:elementary_cellular_automaton/diagonal}
+    \end{figure}
+
+    \thmitem{ex:def:elementary_cellular_automaton/18} Rule 18 allows for a peculiar pattern visualized in \cref{fig:ex:def:elementary_cellular_automaton/18} that resemble \hyperref[def:sierpinski_triangle]{Sierpinski triangles}.
+
+    \begin{figure}[!ht]
+      \centering
+      \includegraphics[page=1]{output/ex__def__elementary_cellular_automaton__18}
+      \caption{The evolution of \hyperref[ex:def:elementary_cellular_automaton/18]{rule 18} with only the zero marked initially.}\label{fig:ex:def:elementary_cellular_automaton/18}
+    \end{figure}
+  \end{thmenum}
+\end{example}
