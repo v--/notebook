@@ -398,7 +398,7 @@ class BibParser(Parser[BibToken]):
                 translators=self.process_authors(properties, 'translator'),
                 advisors=self.process_authors(properties, 'advisor'),
                 editors=self.process_authors(properties, 'editor'),
-                commentators=self.process_authors(properties, 'commentator'),
+                annotators=self.process_authors(properties, 'annotator'),
                 **{
                     key: context.string_builder.get_value() for key, context in properties.items()
                 }
