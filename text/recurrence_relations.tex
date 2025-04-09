@@ -3,7 +3,7 @@
 \paragraph{General recurrence relations}
 
 \begin{definition}\label{def:recurrence_relation}\mimprovised
-  A \term[ru=рекуррентное уравнение (\cite[21]{Юмагулов2015ДинамическиеСистемы}), en=recurrence relation (\cite[def. 2.4.4]{Rosen2019DiscreteMathematics})]{recurrence relation} or simply a \term{recurrence} of \term[en=order (of linear recurring sequence) (\cite[395]{LidlNiederreiter1997FiniteFields})]{order} \( k \) is a specification for building \hyperref[def:sequence]{sequences} given only the first \( k \) terms --- the \term{initial values}.
+  A \term[ru=рекуррентное уравнение (\cite[21]{Юмагулов2015ДинамическиеСистемы}), en=recurrence relation (\cite[def. 2.4.4]{Rosen2019DiscreteMathematics})]{recurrence relation} or simply a \term{recurrence} of \term[en=order (of linear recurring sequence) (\cite[395]{LidlNiederreiter1997FiniteFields})]{order} \( k \) is a specification for building \hyperref[def:sequence]{sequences} given only the first \( k \) terms --- the \term[en=initial values (\cite[396]{LidlNiederreiter1997FiniteFields})]{initial values}.
 
   We can characterize a recurrence by a function \( F: \BbbZ_{\geq 0} \times S^k \to S \), which gives rise to the \hyperref[def:equation]{equation}
   \begin{equation}\label{eq:def:recurrence_relation}
@@ -27,17 +27,13 @@
       \end{pmatrix}^T
     \end{equation*}
 
-    For the \( 0 \)-th state vector, we prefer the term \term{initial vector}.
+    \thmitem{def:recurrence_relation/initial} We call the \( 0 \)-th state vector the \term{initial vector}. If such a vector is specified in addition to \eqref{eq:def:recurrence_relation}, we call the obtained \hyperref[def:equation/system]{system of equations} an \term{initial value problem}.
 
-    \thmitem{def:recurrence_relation/degenerate} If the function \( F \) is constant, we say that the recurrence is \term{degenerate}.
-
-    A nondegenerate recurrence necessarily has at least one indeterminate.
+    \thmitem{def:recurrence_relation/autonomous} In analogy with autonomous systems of differential equations, we say that the recurrence is \term{autonomous} if it does not depend on \( N \) --- that is, if evaluating the function \( F \) with different values of \( N \) gives the same result.
   \end{thmenum}
 \end{definition}
 \begin{comments}
-  \item Recurrence relations generalize \fullref{thm:omega_recursion} to \( n > 1 \).
-
-  \item Our definition mostly resembles that in \bycite[21]{Юмагулов2015ДинамическиеСистемы}, however we allow the recurrence to depend on \( n \), and also highlight the metalogical aspect of the definition. A similar definition, albeit only for linear recurrence relations, is given by \incite[395]{LidlNiederreiter1997FiniteFields}.
+  \item Our definition mostly resembles that in \incite[3]{LevyLessman1961FiniteDifferenceEquations}, who however initially calls \eqref{eq:def:recurrence_relation} an \enquote{ordinary difference equation} before discussing \hyperref[def:finite_difference_operator]{finite differences} and their relation to recurrence relations. A brief literature overview is given in \fullref{rem:recurrence_relations_and_difference_equations}.
 
   \item We have stated that a recurrence relation is determined by an equation, but did not conflate the two. This distinction is intensional.
 
@@ -47,9 +43,13 @@
 
   \item We avoid referring to recurrent sequences as \enquote{solutions} to recurrences because \enquote{solving a recurrence} can also refer to \fullref{thm:linear_recurrence_unwinding}. \incite[def. 2.4.4]{Rosen2019DiscreteMathematics} calls recurrent sequences \enquote{solutions} even though section 8.2 is called \enquote{Solving Linear Recurrence Relations} and describes what we call unwinding.
 
+  \item Recurrence relations generalize \fullref{thm:omega_recursion} to \( n > 1 \).
+
   \item Although we generally start indexing from \( 1 \), as discussed in \fullref{rem:peano_arithmetic_zero}, here we index the indeterminates from \( 0 \) to \( k - 1 \) --- as we shall see, this turns out to be important for \hyperref[def:linear_recurrence_characteristic_polynomial]{characteristic polynomials}. This also allows us to keep compatibility with \incite[395]{LidlNiederreiter1997FiniteFields}), \incite[def. 2.4.4]{Rosen2019DiscreteMathematics} and \incite[21]{Юмагулов2015ДинамическиеСистемы}.
 
   For similar reasons we use \( k \) for the number of indeterminates despite generally preferring \( n \) for cardinality and \( k \) for indexing.
+
+  \item Autonomous recurrences can be regarded as \hyperref[def:dynamical_system]{dynamical systems} --- see \fullref{thm:autonomous_recurrence_as_dynamical_system}.
 \end{comments}
 
 \begin{remark}\label{rem:unrestricted_recurrence_relation}
@@ -82,7 +82,7 @@
   \begin{thmenum}
     \thmitem{ex:def:recurrence_relation/linear} We will consider several important linear recurrences later in this section --- arithmetic progressions defined in \fullref{def:arithmetic_progression}, geometric progressions defined in \fullref{def:geometric_progression}, the Fibonacci recurrence defined in \fullref{def:fibonacci_numbers}, as well as examples in \fullref{ex:thm:linear_recurrences_with_maximal_period}.
 
-    \thmitem{ex:def:recurrence_relation/constant} Every constant sequence \( c, c, c, \ldots \) satisfies the \hyperref[def:recurrence_relation/degenerate]{degenerate} recurrence
+    \thmitem{ex:def:recurrence_relation/constant} Every constant sequence \( c, c, c, \ldots \) satisfies the constant recurrence
     \begin{equation*}
       X_N = c.
     \end{equation*}
@@ -92,7 +92,7 @@
       X_{N+k} = c.
     \end{equation*}
 
-    The nondegenerate recurrence
+    The nonconstant recurrence
     \begin{equation*}
       X_{N+1} = X_N
     \end{equation*}
@@ -105,19 +105,21 @@
         (n - 1)! \cdot n, &n > 0,
       \end{cases}
     \end{equation*}
-    satisfies the recurrence
-    \begin{equation*}
-      X_{N+1} = X_N \cdot n.
-    \end{equation*}
+    satisfies the initial value problem
+    \begin{empheq}[left=\empheqlbrace]{align*}
+      &X_{N+1} = X_N \cdot n, \\
+      &X_0 = 1.
+    \end{empheq}
 
     \thmitem{ex:def:recurrence_relation/triangular_numbers} Similarly, triangular numbers, which we characterized algebraically in \fullref{def:triangular_number/arithmetic} as
     \begin{equation*}
       \sum_{k=1}^n k
     \end{equation*}
-    satisfy the recurrence
-    \begin{equation*}
-      X_{N+1} = X_N + n.
-    \end{equation*}
+    satisfy the initial value problem
+    \begin{empheq}[left=\empheqlbrace]{align*}
+      &X_{N+1} = X_N + n, \\
+      &X_0 = 0.
+    \end{empheq}
 
     \thmitem{ex:def:recurrence_relation/2n} Consider the sequence
     \begin{equation*}
@@ -171,17 +173,10 @@
 
 \paragraph{Autonomous recurrence relations}
 
-\begin{definition}\label{def:autonomous_recurrence_relation}\mimprovised
-  In analogy with autonomous systems of differential equations, we say that the recurrence is \term{autonomous} if it does not depend on \( N \) --- that is, if evaluating the function with different values of \( N \) gives identical results.
-\end{definition}
-\begin{comments}
-  \item Autonomous recurrences can be regarded as \hyperref[def:dynamical_system]{dynamical systems} --- see \fullref{thm:autonomous_recurrence_as_dynamical_system}.
-\end{comments}
-
 \begin{definition}\label{def:recurrence_relation_space}\mimprovised
   A sequence \hyperref[def:recurrence_relation/sequence]{satisfying} an \hyperref[def:recurrence_relation]{autonomous recurrence} of order \( k \) over the \hyperref[def:ring/commutative]{commutative ring} \( R \) is determined by its \hyperref[def:recurrence_relation/state]{initial vector} from the \hyperref[def:coordinate_space]{coordinate space} \( R^k \). All sequences satisfying the relation then form a \hyperref[def:module]{module} isomorphic to \( R^k \). We will call it the \term{space of state vectors}.
 
-  We single out two particular sequences --- the \term{zero sequence} whose initial values are all zero and the \term[en=impulse response sequence (\cite[402]{LidlNiederreiter1997FiniteFields})]{impulse response sequence} whose initial values are all zero except the last, which is one.
+  We single out two particular sequences --- the \term{zero sequence}, whose initial values are all zero, and the \term[en=impulse response sequence (\cite[402]{LidlNiederreiter1997FiniteFields})]{impulse response sequence}, whose initial values are all zero except the last, which is one.
 \end{definition}
 \begin{comments}
   \item We could use \enquote{unit sequence} instead of \enquote{impulse response sequences}, but this would be more ambiguous. As pointed out in \incite[402]{LidlNiederreiter1997FiniteFields}, whose term we use,
@@ -194,7 +189,7 @@
 \end{comments}
 
 \begin{definition}\label{def:autonomous_recurrence_associated_function}\mimprovised
-  With each \hyperref[def:autonomous_recurrence_relation]{autonomous recurrence}
+  With each \hyperref[def:recurrence_relation/autonomous]{autonomous recurrence}
   \begin{equation*}
     X_{N+k} = F(X_{N+k-1}, \ldots, X_N)
   \end{equation*}
@@ -218,7 +213,7 @@
 \end{definition}
 
 \begin{proposition}\label{thm:autonomous_recurrence_as_dynamical_system}
-  Consider the \hyperref[def:autonomous_recurrence_relation]{autonomous recurrence}
+  Consider the \hyperref[def:recurrence_relation/autonomous]{autonomous recurrence}
   \begin{equation*}
     X_{N+k} = F(X_{N+k-1}, \ldots, X_N).
   \end{equation*}
@@ -238,7 +233,7 @@
 \paragraph{Linear recurrence relations}
 
 \begin{definition}\label{def:linear_recurrence}\mcite[395]{LidlNiederreiter1997FiniteFields}
-  We will mostly consider \hyperref[def:autonomous_recurrence_relation]{autonomous} \hyperref[def:recurrence_relation]{recurrence relation} given by a \hyperref[def:polynomial_degree_terminology]{linear} \hyperref[def:algebraic_equation]{algebraic equation}. We will unsurprisingly call such recurrence relations \term{linear}.
+  We will mostly consider \hyperref[def:recurrence_relation/autonomous]{autonomous} \hyperref[def:recurrence_relation]{recurrence relation} given by a \hyperref[def:polynomial_degree_terminology]{linear} \hyperref[def:algebraic_equation]{algebraic equation}. We will unsurprisingly call such recurrence relations \term{linear}.
 
   We will find it convenient to index the indeterminates and coefficients as follows:
   \begin{equation}\label{eq:def:linear_recurrence}
@@ -246,7 +241,8 @@
   \end{equation}
 \end{definition}
 \begin{comments}
-  \item Degenerate linear recurrent sequences are constant except possibly for the first term.
+  \item A linear recurrent sequence with no indeterminates is constant except possibly for the first term.
+
   \item When describing such recurrences, \incite[def. 8.2.1]{Rosen2019DiscreteMathematics} states that they have \enquote{constant coefficients}, emphasizing that it is possible for the coefficients \( a_{k-i} \) to depend on \( N \).
 
   Examples of \enquote{non-constant coefficients} can be found in the linear recurrences studied by \incite{AkraBazzi1998Recurrences}, in which the order \( 0 \) coefficient \( a \) is allowed to vary with \( N \), i.e. to not be a constant. We briefly mention these recurrences in \fullref{rem:unrestricted_recurrence_relation}.
@@ -259,18 +255,23 @@
 \end{definition}
 
 \begin{proposition}\label{thm:linear_recurrence_relation_homogenization}
-  The \hyperref[def:recurrence_relation/degenerate]{nondegenerate} \hyperref[def:homogeneous_linear_recurrence]{inhomogeneous} \hyperref[def:linear_recurrence]{linear recurrence}
+  The \hyperref[def:homogeneous_linear_recurrence]{inhomogeneous} \hyperref[def:linear_recurrence]{linear recurrence}
   \begin{equation*}
-    X_{N+k} = \sum_{i=1}^k a_{k-i} X_{N+k-i} + a
+    X_{N+k}
+    =
+    \sum_{i=1}^k a_{k-i} X_{N+k-i} + a
   \end{equation*}
-  can be homogenized by introducing an additional indeterminate:
+  of order \( k > 0 \) can be homogenized by introducing an additional indeterminate:
   \begin{equation}\label{eq:thm:linear_recurrence_relation_homogenization}
     X_{N+k+1}
     =
     (a_{k-1} + 1) X_{N+k} + \sum_{i=1}^{k-1} (a_{k-(i+1)} - a_{k-i}) X_{N-(k-i)} - a_0 X_n.
   \end{equation}
+
 \end{proposition}
 \begin{comments}
+  \item For an \hyperref[def:recurrence_relation/initial]{initial value problem}, we must additionally specify a value for \( X_k \).
+
   \item It should be noted that different inhomogeneous relations can have the same homogenization --- for example, those differing only by their free coefficient. See \fullref{thm:arithmetic_progression_homogeneization}.
 \end{comments}
 \begin{proof}
@@ -349,7 +350,7 @@
 \end{proof}
 
 \begin{corollary}\label{thm:homogeneous_linear_recurrence_as_dynamical_system}
-  The \hyperref[def:homogeneous_linear_recurrence_matrix]{associated matrix} of a \hyperref[def:homogeneous_linear_recurrence]{homogeneous linear recurrent sequence} can be regarded as the \hyperref[def:one_step_evolution_function]{one-step evolution} of the \hyperref[def:discrete_dynamical_system]{discrete-time} \hyperref[def:linear_dynamical_system]{linear} \hyperref[def:dynamical_system]{dynamical system} acting on \hyperref[def:recurrence_relation/state]{state vectors}.
+  The \hyperref[def:homogeneous_linear_recurrence_matrix]{associated matrix} of a \hyperref[def:homogeneous_linear_recurrence]{homogeneous linear recurrence} can be regarded as the \hyperref[def:one_step_evolution_function]{one-step evolution} of the \hyperref[def:discrete_dynamical_system]{discrete-time} \hyperref[def:linear_dynamical_system]{linear} \hyperref[def:dynamical_system]{dynamical system} acting on \hyperref[def:recurrence_relation/state]{state vectors}.
 \end{corollary}
 \begin{comments}
   \item Thus, the matrix is simply an associated function in the sense of \fullref{def:autonomous_recurrence_associated_function}.
@@ -815,7 +816,7 @@
 There are two particularly simple recurrence relations colloquially referred to as \enquote{progressions}.
 
 \begin{definition}\label{def:arithmetic_progression}\mimprovised
-  In an \hyperref[def:abelian_group]{abelian group}, by default taken to be the field of complex numbers, we refer to recurrences satisfying \hyperref[def:linear_recurrence]{linear recurrence relation}
+  In an \hyperref[def:abelian_group]{abelian group}, by default taken to be the field of complex numbers, we refer to sequences satisfying \hyperref[def:linear_recurrence]{linear recurrence relation}
   \begin{equation}\label{eq:def:arithmetic_progression/recurrence}
     X_{N+1} = X_N + d
   \end{equation}
@@ -975,25 +976,26 @@ There are two particularly simple recurrence relations colloquially referred to 
   There are multiple conventions for the initial values of the \hyperref[def:fibonacci_numbers]{Fibonacci sequence}.
 
   \begin{itemize}
-    \item Fibonacci's own convention, discussed in \fullref{ex:fibonacci_rabbits}, where \( F_0 = 1 \) and \( F_1 = 2 \) is also used by \incite[exerc. 5.5]{Treil2017LinearAlgebraDoneWrong}.
+    \item Fibonacci's own convention, discussed in \fullref{ex:fibonacci_rabbits}, where \( F_0 = 1 \) and \( F_1 = 2 \) is also used in \cite[exerc. 5.5]{Treil2017LinearAlgebraDoneWrong}.
 
-    \item The modern convention from \fullref{def:fibonacci_numbers}, focusing on computation, is used by
-    \incite[98]{Aigner1997CombinatorialTheory},
-    \incite[467]{LidlNiederreiter1997FiniteFields},
-    \incite[def. 2.4.5]{Rosen2019DiscreteMathematics},
-    \incite[112]{ConwayGuy1998BookOfNumbers},
-    \incite[122]{Mimram2020ProgramEqualsProof},
-    \incite[98]{Erickson2019Algorithms},
-    \incite[13]{Knuth1997ArtVol1},
-    \incite[exerc. B-5.14(ii)]{Rotman2015AdvancedModernAlgebraPart1},
-    \incite[59]{Мальцев1986Алгоритмы} and
-    \incite[\S 5.7.3]{Новиков2013ДискретнаяМатематика}.
+    \item The modern convention from \fullref{def:fibonacci_numbers}, focusing on computation, is used in
+    \cite[98]{Aigner1997CombinatorialTheory},
+    \cite[467]{LidlNiederreiter1997FiniteFields},
+    \cite[2]{CullFlahiveRobson2005DifferenceEquations}
+    \cite[def. 2.4.5]{Rosen2019DiscreteMathematics},
+    \cite[112]{ConwayGuy1998BookOfNumbers},
+    \cite[122]{Mimram2020ProgramEqualsProof},
+    \cite[98]{Erickson2019Algorithms},
+    \cite[13]{Knuth1997ArtVol1},
+    \cite[exerc. B-5.14(ii)]{Rotman2015AdvancedModernAlgebraPart1},
+    \cite[59]{Мальцев1986Алгоритмы} and
+    \cite[\S 5.7.3]{Новиков2013ДискретнаяМатематика}.
 
-    \item Another convention is to avoid defining \( F_0 \), but start with \( F_1 = F_2 = 1 \). This gives a one-based sequence that otherwise coincides with ours. The approach is used by
-    \incite[273]{Deza2012FigurateNumbers},
-    \incite[example 1.1.12]{Stanley2012EnumerativeCombinatoricsVol1}
-    \incite[exerc. 7.15]{ГашковЧубариков2005СложностьВычисления})
-    \incite[97]{Зорич2019АнализЧасть1}.
+    \item Another convention is to avoid defining \( F_0 \), but start with \( F_1 = F_2 = 1 \). This gives a one-based sequence that otherwise coincides with ours. The approach is used in
+    \cite[273]{Deza2012FigurateNumbers},
+    \cite[example 1.1.12]{Stanley2012EnumerativeCombinatoricsVol1}
+    \cite[exerc. 7.15]{ГашковЧубариков2005СложностьВычисления})
+    \cite[97]{Зорич2019АнализЧасть1}.
 
     \item \incite[198]{Яблонский2003ДискретнаяМатематика} instead starts with \( F_0 = F_1 = 1 \).
   \end{itemize}
@@ -1131,7 +1133,7 @@ There are two particularly simple recurrence relations colloquially referred to 
   \end{equation}
 \end{theorem}
 \begin{comments}
-  \item The theorem is attributed to Binet by \incite[273]{Deza2012FigurateNumbers} and \incite[exerc. 7.18]{ГашковЧубариков2005СложностьВычисления}.
+  \item The theorem is attributed to Binet by \incite[5]{CullFlahiveRobson2005DifferenceEquations}, \incite[273]{Deza2012FigurateNumbers} and \incite[exerc. 7.18]{ГашковЧубариков2005СложностьВычисления}.
   \item Rather than using \( \psi \), we can express it via \( \varphi \) using \fullref{thm:def:golden_ratio/conjugate}.
 \end{comments}
 \begin{proof}
