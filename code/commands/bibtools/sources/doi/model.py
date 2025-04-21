@@ -150,6 +150,7 @@ class DoiUpdatedBy(DoiBaseModel):
     doi: str
     type: str
     label: str
+    source: str | None = None
 
 
 class DoiData(DoiBaseModel):
@@ -174,6 +175,7 @@ class DoiData(DoiBaseModel):
     published: DoiDateTime | None = None
     published_online: DoiDateTime | None = None
     published_print: DoiDateTime | None = None
+    published_other: DoiDateTime | None = None
     approved: DoiDateTime | None = None
 
     title: str | list[str]
@@ -183,6 +185,7 @@ class DoiData(DoiBaseModel):
     subtitle: str | list[str] | None = None
     event: str | list[str] | None = None
     proceedings_subject: str | list[str] | None = None
+    publisher: str | list[str] | None = None
 
     author: Annotated[list[DoiAuthor], Field(default_factory=list)]
     editor: Annotated[list[DoiAuthor], Field(default_factory=list)]

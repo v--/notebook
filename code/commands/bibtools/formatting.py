@@ -191,6 +191,7 @@ class BibEntryAdjuster:
         self.adjust_url_identifier('mathscinet')
         self.adjust_url_identifier('numdam')
         self.adjust_url_identifier('scopus')
+        self.adjust_url_identifier('ssrn')
         self.adjust_url_identifier('zbmath')
 
     def adjust_eprint(self) -> None:

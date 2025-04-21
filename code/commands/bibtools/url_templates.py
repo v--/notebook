@@ -12,6 +12,7 @@ mathnet =    UrlTemplate('mi.mathnet.ru/{identifier}')
 mathscinet = UrlTemplate('mathscinet.ams.org/mathscinet-getitem?mr={identifier}')
 numdam =     UrlTemplate('www.numdam.org/item/{identifier}')
 scopus =     UrlTemplate('www.scopus.com/record/display.url?origin=inward&eid={identifier}')
+ssrn =       UrlTemplate('papers.ssrn.com/sol3/papers.cfm?abstract_id={identifier}')
 zbmath =     UrlTemplate('zbmath.org/?q=an:{identifier}')
 
 

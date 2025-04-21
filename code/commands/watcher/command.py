@@ -12,7 +12,7 @@ from xvfbwrapper import Xvfb
 from ..common.logging import configure_loguru
 from ..common.paths import FIGURES_PATH, ROOT_PATH
 from .runner import TaskRunner
-from .tasks import AsymptoteTask, LaTeXTask
+from .tasks import AsymptoteTask, LaTeXTask, PythonTask
 
 
 WatchTarget = Literal['all', 'notebook', 'figures']
@@ -53,6 +53,9 @@ async def setup_watchers(base_logger: 'loguru.Logger', *, no_aux: bool) -> None:
 
         if fnmatch(path, 'figures/*.asy'):
             runner.schedule(AsymptoteTask(base_logger, path), trigger=str(path))
+
+        if fnmatch(path, 'figures/*.py'):
+            runner.schedule(PythonTask(base_logger, path), trigger=str(path))
 
         if not no_aux and fnmatch(path, 'asymptote/*.asy'):
             for figure_path in FIGURES_PATH.glob('*.asy'):

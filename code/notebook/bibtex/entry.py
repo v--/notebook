@@ -111,6 +111,7 @@ class BibEntry:
     mathscinet:    Annotated[BibString | None, BibFieldAnnotation()] = None
     numdam:        Annotated[BibString | None, BibFieldAnnotation()] = None
     scopus:        Annotated[BibString | None, BibFieldAnnotation()] = None
+    ssrn  :        Annotated[BibString | None, BibFieldAnnotation()] = None
     zbmath:        Annotated[BibString | None, BibFieldAnnotation()] = None
     # eprints
     eprinttype:    Annotated[BibString | None, BibFieldAnnotation()] = None

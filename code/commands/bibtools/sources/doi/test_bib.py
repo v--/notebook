@@ -532,6 +532,54 @@ def test_parse_101145_190347190362_affiliation_places(doi: str = '10.1145/190347
     )
 
 
+def test_parse_101038_261459a0_publisher(doi: str = '10.1038/261459a0') -> None:
+    with get_doi_fixture_path(doi).open() as file:
+        json_body = file.read()
+
+    data = parse_doi_json(json_body)
+    entry = doi_data_to_bib(data, doi)
+
+    assert entry == BibEntry(
+        entry_type='article',
+        entry_name='May1976SimpleMathematicalModels',
+        authors=[
+            BibAuthor(full_name='Robert M. May')
+        ],
+        date='1976-06-10',
+        doi='10.1038/261459a0',
+        issn='0028-0836,1476-4687',
+        journal='Nature',
+        languages=['english'],
+        pages='459-467',
+        publisher='Springer Science and Business Media LLC',
+        title='Simple mathematical models with very complicated dynamics',
+        volume='261'
+    )
+
+
+def test_parse_102139_ssrn360300_other_publisher(doi: str = '10.2139/ssrn.360300') -> None:
+    with get_doi_fixture_path(doi).open() as file:
+        json_body = file.read()
+
+    data = parse_doi_json(json_body)
+    entry = doi_data_to_bib(data, doi)
+
+    assert entry == BibEntry(
+        entry_type='article',
+        entry_name='Cramer2003LogisticRegression',
+        authors=[
+            BibAuthor(full_name='J.S. Cramer')
+        ],
+        date='2003',
+        doi='10.2139/ssrn.360300',
+        issn='1556-5068',
+        journal='SSRN Electronic Journal',
+        languages=['english'],
+        publisher='Elsevier BV',
+        title='The Origins of Logistic Regression',
+    )
+
+
 def test_parse_101090_gsm_250_datetime_version(doi: str = '10.1090/gsm/250') -> None:
     with get_doi_fixture_path(doi).open() as file:
         json_body = file.read()
