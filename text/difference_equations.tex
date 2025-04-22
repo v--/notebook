@@ -511,7 +511,7 @@
   \begin{equation*}
     n_t = n_0 \cdot (\alpha + 1)^t
   \end{equation*}
-  has the following basic properties:
+  with \( \alpha \geq -1 \) and \( n_0 \geq 0 \), has the following basic properties:
   \begin{thmenum}
     \thmitem{thm:discrete_malthusian_model_dynamics/zero_population} Every trajectory starting at \( n_0 = 0 \) is constant.
 
@@ -539,7 +539,7 @@
 \begin{definition}\label{def:logistic_map}\mimprovised
   For a fixed real number \( a \), we refer to the following function on real numbers as the \term[en=logistic map (\cite[22]{Müller2022HandbookOfDynamicsAndProbability})]{logistic map}:
   \begin{equation}\label{eq:def:logistic_map}
-    f(x) \coloneqq a x (1 - x).
+    f_a(x) \coloneqq a x (1 - x).
   \end{equation}
 \end{definition}
 \begin{comments}
@@ -566,9 +566,9 @@
 \end{remark}
 
 \begin{proposition}\label{thm:def:logistic_map}
-  The \hyperref[def:logistic_map]{logistic map} \( f(x) = a x (1 - x) \) has the following basic properties:
+  The \hyperref[def:logistic_map]{logistic map} \( f_a(x) = a x (1 - x) \) has the following basic properties:
   \begin{thmenum}
-    \thmitem{thm:def:logistic_map/unit} If \( 0 \leq a \leq 4 \) and \( 0 \leq x \leq 1 \), then \( 0 \leq f(x) \leq 1 \).
+    \thmitem{thm:def:logistic_map/unit} If \( 0 \leq a \leq 4 \) and \( 0 \leq x \leq 1 \), then \( 0 \leq f_a(x) \leq 1 \).
 
     \begin{figure}[!ht]
       \centering
@@ -578,9 +578,9 @@
   \end{thmenum}
 \end{proposition}
 \begin{proof}
-  \SubProofOf{thm:def:logistic_map/unit} The function \( f(x) = -ax^2 + ax \) has derivative
+  \SubProofOf{thm:def:logistic_map/unit} The function \( f_a(x) = -ax^2 + ax \) has derivative
   \begin{equation*}
-    f'(x) = -2ax + a,
+    f_a'(x) = -2ax + a,
   \end{equation*}
   which is zero when \( x = 1 / 2 \), positive for smaller values and negative for larger values.
 
@@ -615,7 +615,7 @@
   \begin{thmenum}
     \thmitem{ex:def:logistic_map/orbits} Consider the family of \hyperref[def:discrete_dynamical_system]{discrete-time} \hyperref[def:dynamical_system]{dynamical systems} with \hyperref[def:one_step_evolution_function]{one-step evolution functions}
     \begin{equation*}
-      \varphi_a(x) \coloneqq a x (1 - x).
+      f_a(x) = a x (1 - x).
     \end{equation*}
 
     An \hyperref[def:orbit_diagram]{orbit diagram} of this family is illustrated in \cref{fig:ex:def:logistic_map/orbits}.
@@ -629,7 +629,7 @@
 \end{example}
 
 \begin{definition}\label{def:discrete_logistic_model}\mimprovised
-  Fix real numbers \( \alpha \geq -1 \) and \( \beta > 0 \), as well as
+  Fix real numbers \( -1 \leq \alpha \leq 3 \) and \( \beta > 0 \), as well as
   \begin{equation*}
     0 \leq n_0 \leq \frac {1 + \alpha} \beta.
   \end{equation*}
@@ -659,7 +659,19 @@
   \end{figure}
 \end{definition}
 \begin{comments}
-  \item It follows from \fullref{thm:def:logistic_map/unit} that the entire trajectory is bounded between \( 0 \) and \( (1 + \alpha) / \beta \).
+  \item If \( X_T \coloneqq \beta / (1 + \alpha) N_T \), we have
+  \begin{equation*}
+    X_{T+1}
+    =
+    \frac \beta {1 + \alpha} N_{T+1}
+    =
+    \cancel{\frac \beta {1 + \alpha}} (1 + \alpha) (1 - X_T) \cancel{\frac {1 + \alpha} \beta} X_T
+    =
+    f_{1 + \alpha}(X_T),
+  \end{equation*}
+  where \( f_{1 + \alpha} \) is the corresponding \hyperref[def:logistic_map]{logistic map}.
+
+  It follows from \fullref{thm:def:logistic_map/unit} that the entire trajectory is bounded between \( 0 \) and \( (1 + \alpha) / \beta \).
 
   \item As in the discrete Malthusian model defined in \fullref{def:discrete_malthusian_model}, the conditions imposed on the parameters ensure that the solution is a sequence of nonnegative real numbers. If we allow \( \beta = 0 \), we obtain the Malthusian model.
 
@@ -669,3 +681,21 @@
 
   \item See \fullref{rem:logistic_model_etymology} for a discussion of the term \enquote{logistic}.
 \end{comments}
+
+\begin{proposition}\label{thm:discrete_logistic_model_dynamics}
+  As a \hyperref[def:dynamical_system]{dynamical system}, the \hyperref[def:discrete_logistic_model]{discrete logistic model}
+  \begin{equation*}
+    N_{T+1} = (1 + \alpha - \beta N_T) N_T
+  \end{equation*}
+  with \( -1 \leq \alpha \leq 3 \), \( \beta > 0 \) and phase space \( [0, (1 + \alpha) / \beta] \), has the following basic properties:
+  \begin{thmenum}
+    \thmitem{thm:discrete_logistic_model_dynamics/boundary} The trajectories starting at \( 0 \) or \( (1 + \alpha) / \beta \) converge to \( 0 \).
+  \end{thmenum}
+\end{proposition}
+\begin{proof}
+  \SubProofOf{thm:discrete_logistic_model_dynamics/boundary} The boundary points \( 0 \) and \( (1 + \alpha) / \beta \) are the roots of the equation
+  \begin{equation*}
+    (1 + \alpha - \beta X) X,
+  \end{equation*}
+  thus the trajectory becomes zero after the first moment.
+\end{proof}
