@@ -204,6 +204,7 @@ class DoiData(DoiBaseModel):
     source: str | None = None
     id: str | None = None
 
+    aliases: Annotated[list[str], Field(default_factory=list)]
     alternative_id: Annotated[list[str], Field(default_factory=list)]
     isbn_type: Annotated[list[DoiIsbn], Field(default_factory=list)]
     isbn: Annotated[list[str], Field(default_factory=list)]

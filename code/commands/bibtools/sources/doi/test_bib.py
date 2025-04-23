@@ -546,7 +546,7 @@ def test_parse_101038_261459a0_publisher(doi: str = '10.1038/261459a0') -> None:
             BibAuthor(full_name='Robert M. May')
         ],
         date='1976-06-10',
-        doi='10.1038/261459a0',
+        doi=doi,
         issn='0028-0836,1476-4687',
         journal='Nature',
         languages=['english'],
@@ -571,12 +571,37 @@ def test_parse_102139_ssrn360300_other_publisher(doi: str = '10.2139/ssrn.360300
             BibAuthor(full_name='J.S. Cramer')
         ],
         date='2003',
-        doi='10.2139/ssrn.360300',
+        doi=doi,
         issn='1556-5068',
         journal='SSRN Electronic Journal',
         languages=['english'],
         publisher='Elsevier BV',
         title='The Origins of Logistic Regression',
+    )
+
+
+def test_parse_101080_00029890198511971528_aliases(doi: str = '10.1080/00029890.1985.11971528') -> None:
+    with get_doi_fixture_path(doi).open() as file:
+        json_body = file.read()
+
+    data = parse_doi_json(json_body)
+    entry = doi_data_to_bib(data, doi)
+
+    assert entry == BibEntry(
+        entry_type='article',
+        entry_name='Lagarias2018Problem',
+        authors=[
+            BibAuthor(full_name='Jeffrey C. Lagarias')
+        ],
+        date='2018-02-05',
+        doi=doi,
+        issn='0002-9890,1930-0972',
+        journal='The American Mathematical Monthly',
+        languages=['english'],
+        publisher='Informa UK Limited',
+        pages='3-23',
+        title='The 3<i>x</i>+ 1 Problem and its Generalizations',
+        volume='92'
     )
 
 
