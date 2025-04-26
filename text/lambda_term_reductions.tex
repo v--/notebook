@@ -333,7 +333,7 @@
         \item \( C_1 \) for \( P^{-R} C \)
       \end{itemize}
 
-      \item \incite[\S 3.3.3]{Mimram2020ProgramEqualsProof} uses the identifiers \identifier{pair}, \identifier{fst} and \identifier{snd} to denote the combinators.
+      \item \incite[\S 3.3.3]{Mimram2020ProgramEqualsProof} uses the identifiers \verb|pair|, \verb|fst| and \verb|snd| to denote the combinators.
 
       \item \incite[exerc. 2.5]{AbelsonSussman2012eSICP} ask to implement these combinators in the programming language Scheme, imitating the built-in procedures. The language uses its own naming convention --- according to \cite[115]{AbelsonSussman2012eSICP}:
       \begin{itemize}
@@ -358,7 +358,7 @@
 
     We can regard an ordered pair as an element of a \hyperref[def:cartesian_product]{Cartesian product}. No established terminology exists for an element of the \hyperref[def:disjoint_union]{disjoint union} \( \mscrA \amalg \mscrB \), which can be either the inclusion \( \iota_\mscrA(A) \) of some element \( A \) from \( \mscrA \), or \( \iota_\mscrB(B) \) of \( B \) from \( \mscrB \); nevertheless, we will need such a construction when defining sum types in \fullref{def:sum_type}.
 
-    The programming language Haskell has \identifier{Left} and \identifier{Right} value constructors that roughly correspond to the functions \( \iota_\mscrA \) and \( \iota_\mscrB \), and an \identifier{Either} type constructor which roughly corresponds to the function \( (\mscrA, \mscrB) \mapsto \mscrA \amalg \mscrB \). Documentation for the corresponding Haskell constructs can be found in \cite{HackageDocs:base-4.21:either}.
+    The programming language Haskell has \verb|Left| and \verb|Right| value constructors that roughly correspond to the functions \( \iota_\mscrA \) and \( \iota_\mscrB \), and an \verb|Either| type constructor which roughly corresponds to the function \( (\mscrA, \mscrB) \mapsto \mscrA \amalg \mscrB \). Documentation for the corresponding Haskell constructs can be found in \cite{HackageDocs:base-4.21:either}.
 
     We want to emulate here via \( \synlambda \)-terms the following case analysis helper from Haskell:
     \begin{verbatim}
@@ -367,28 +367,24 @@
   either _ g (Right y) = g y
     \end{verbatim}\vspace{-\baselineskip}
 
-    The first line binds the identifier \identifier{either} to a specific type. We will discuss this particular example in \fullref{ex:def:type_derivation_tree/disjoint}, after discussing types in general. What we need to deduce here from the entire definition is the intended interpretation of \identifier{either} --- it should reduce a function \( f: \mscrA \to \mscrC \), a function \( g: \mscrB \to \mscrC \) and a value from either \( \mscrA \) or \( \mscrB \) via \( f \) or \( g \), correspondingly.
+    The first line binds the identifier \verb|either| to a specific type. We will discuss this particular example in \fullref{ex:def:type_derivation_tree/disjoint}, after discussing types in general. What we need to deduce here from the entire definition is the intended interpretation of \verb|either| --- it should apply a function \( f: \mscrA \to \mscrC \) to a value from \( \mscrA \) or \( g: \mscrB \to \mscrC \) to a value from \( \mscrB \).
 
-    A simple usage example of the above helper is obtaining the set of free variables of an atomic \( \synlambda \)-term (we presuppose that the types \identifier{Var} and \identifier{Const} have been defined):
-    \begin{verbatim}
-  free :: Either Var Const -> Set Var
-  free term = either (\var -> singleton var) (\const -> empty) term
-    \end{verbatim}\vspace{-\baselineskip}
+    As a simple usage example, consider \hyperref[def:order_interval/unbounded]{unbounded segments} of integers that can be either
+    \begin{align*}
+      \BbbZ_{\geq a} = \set{ a, a + 1, a + 2, \ldots }
+      &&\T{or}&&
+      \BbbZ_{\leq b} = \set{ b, b - 1, b - 2, \ldots }.
+    \end{align*}
 
-    While we have written out the functions
+    These can be constructed by the following Haskell code:
     \begin{verbatim}
-  \var -> singleton var
-    \end{verbatim}\vspace{-\baselineskip}
-    and
-    \begin{verbatim}
-  \const -> empty
-    \end{verbatim}\vspace{-\baselineskip}
-    explicitly for clarity, \( \eta \)-reduction (as a general principle, in this case applied to Haskell) allows using the \identifier{Set} constructors directly:
-    \begin{verbatim}
-  free term = either singleton empty term
+  interval :: Either Int Int -> [Int]
+  interval = either (\a -> [a..]) (\b -> [b, b - 1..])
     \end{verbatim}\vspace{-\baselineskip}
 
-    The following \( \synlambda \)-combinators, based on \cite{MathOF:product_type_in_simply_typed_lambda_terms}, correspond to Haskell's \identifier{Left} and \identifier{Right} constructors and to the \identifier{either} function, respectively:
+    Here \verb|interval (Left a)| produces the (infinite) Haskell list \verb|[a, a + 1, a + 2..]|, while \verb|interval (Right b)| produces \verb|[b, b - 1, b - 2..]|.
+
+    The following \( \synlambda \)-combinators, based on \cite{MathOF:product_type_in_simply_typed_lambda_terms}, correspond to Haskell's \verb|Left| and \verb|Right| constructors and to the \verb|either| function, respectively:
     \begin{align*}
       \ref{eq:ex:def:beta_eta_reduction/disjoint/intro_left}  &\coloneqq \qabs \synx \qabs \synf \qabs \syng \synf \synx       \taglabel[\ensuremath{ S_{+L} }]{eq:ex:def:beta_eta_reduction/disjoint/intro_left}, \\
       \ref{eq:ex:def:beta_eta_reduction/disjoint/intro_right} &\coloneqq \qabs \syny \qabs \synf \qabs \syng \syng \syny       \taglabel[\ensuremath{ S_{+R} }]{eq:ex:def:beta_eta_reduction/disjoint/intro_right}, \\
@@ -455,7 +451,7 @@
   \end{thmenum}
 \end{example}
 \begin{comments}
-  \item Many of these examples are verified programmatically in the module \identifier{lambda_.untyped.reduction.test_beta} in \cite{notebook:code}..
+  \item Many of these examples are verified programmatically in the module \identifier{lambda_.untyped.reduction.test_beta} in \cite{notebook:code}.
 \end{comments}
 
 \paragraph{Reduction strategies}
