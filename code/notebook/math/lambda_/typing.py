@@ -1,7 +1,7 @@
 from enum import Flag, auto
 
 from ...support.inference import InferenceRule, InferenceRulePremise
-from .assertions import ExplicitTypeAssertionSchema, GradualTypeAssertionSchema, ImplicitTypeAssertionSchema
+from .assertions import ExplicitTypeAssertionSchema, ImplicitTypeAssertionSchema, TypeAssertionSchema
 
 
 class TypingStyle(Flag):
@@ -10,25 +10,25 @@ class TypingStyle(Flag):
     GRADUAL = IMPLICIT | EXPLICIT
 
 
-class GradualTypingRulePremise[SchemaT: GradualTypeAssertionSchema](InferenceRulePremise[SchemaT]):
+class TypingRulePremise[SchemaT: TypeAssertionSchema](InferenceRulePremise[SchemaT]):
     pass
 
 
-class ImplicitTypingRulePremise(GradualTypingRulePremise[ImplicitTypeAssertionSchema]):
+class ImplicitTypingRulePremise(TypingRulePremise[ImplicitTypeAssertionSchema]):
     pass
 
 
-class ExplicitTypingRulePremise(GradualTypingRulePremise[ExplicitTypeAssertionSchema]):
+class ExplicitTypingRulePremise(TypingRulePremise[ExplicitTypeAssertionSchema]):
     pass
 
 
-class GradualTypingRule[SchemaT: GradualTypeAssertionSchema, PremiseT: GradualTypingRulePremise](InferenceRule[SchemaT, PremiseT]):
+class TypingRule[SchemaT: GradualTypeAssertionSchema, PremiseT: TypingRulePremise](InferenceRule[SchemaT, PremiseT]):
     pass
 
 
-class ImplicitTypingRule(GradualTypingRule[ImplicitTypeAssertionSchema, ImplicitTypingRulePremise]):
+class ImplicitTypingRule(TypingRule[ImplicitTypeAssertionSchema, ImplicitTypingRulePremise]):
     pass
 
 
-class ExplicitTypingRule(GradualTypingRule[ExplicitTypeAssertionSchema, ExplicitTypingRulePremise]):
+class ExplicitTypingRule(TypingRule[ExplicitTypeAssertionSchema, ExplicitTypingRulePremise]):
     pass

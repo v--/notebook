@@ -3,7 +3,7 @@ from dataclasses import dataclass
 from typing import Protocol, override, runtime_checkable
 
 from ....support.inference import AssumptionRenderer, InferenceTreeRenderer, RuleApplicationRenderer
-from ..assertions import GradualTypeAssertion, VariableTypeAssertion
+from ..assertions import TypeAssertion, VariableTypeAssertion
 from ..instantiation import (
     LambdaSchemaInstantiation,
     infer_instantiation_from_assertion,
@@ -13,13 +13,13 @@ from ..instantiation import (
 from ..terms import Variable
 from ..type_system import GradualTypeSystem
 from ..types import SimpleType
-from ..typing import GradualTypingRule
+from ..typing import TypingRule
 from .exceptions import TypeDerivationError
 
 
 @runtime_checkable
 class TypeDerivationTree(Protocol):
-    conclusion: GradualTypeAssertion
+    conclusion: TypeAssertion
 
     def get_context(self) -> Mapping[Variable, SimpleType]:
         ...
@@ -70,9 +70,9 @@ class RuleApplicationTree(TypeDerivationTree):
     rule_name: str
     instantiation: LambdaSchemaInstantiation
     premises: Sequence[RuleApplicationPremise]
-    conclusion: GradualTypeAssertion
+    conclusion: TypeAssertion
 
-    def get_rule(self) -> GradualTypingRule:
+    def get_rule(self) -> TypingRule:
         return self.system[self.rule_name]
 
     def _filter_assumptions(self, *, discharged_at_current_step: bool) -> Iterable[tuple[Variable, SimpleType]]:

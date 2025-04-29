@@ -1,7 +1,7 @@
 from ....support.inference import InferenceRuleSystem
-from ..typing import GradualTypingRule
+from ..typing import TypingRule
 
 
-class GradualTypeSystem[RuleT: GradualTypingRule](InferenceRuleSystem[RuleT]):
+class GradualTypeSystem[RuleT: TypingRule](InferenceRuleSystem[RuleT]):
     pass
 

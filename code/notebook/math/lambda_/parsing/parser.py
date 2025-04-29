@@ -6,10 +6,10 @@ from ..alphabet import BinaryTypeConnective, TermConnective
 from ..assertions import (
     ExplicitTypeAssertion,
     ExplicitTypeAssertionSchema,
-    GradualTypeAssertion,
-    GradualTypeAssertionSchema,
     ImplicitTypeAssertion,
     ImplicitTypeAssertionSchema,
+    TypeAssertion,
+    TypeAssertionSchema,
     VariableTypeAssertion,
     VariableTypeAssertionSchema,
 )
@@ -49,10 +49,10 @@ from ..types import (
 from ..typing import (
     ExplicitTypingRule,
     ExplicitTypingRulePremise,
-    GradualTypingRule,
-    GradualTypingRulePremise,
     ImplicitTypingRule,
     ImplicitTypingRulePremise,
+    TypingRule,
+    TypingRulePremise,
     TypingStyle,
 )
 from .parser_context import LambdaParserContext
@@ -401,20 +401,20 @@ class LambdaParser(IdentifierParserMixin[LambdaTokenKind, LambdaToken], Parser[L
     @overload
     def parse_type_assertion(self, *, parse_schema: Literal[True], variable_assertion: Literal[False], typing: Literal[TypingStyle.EXPLICIT]) -> ExplicitTypeAssertionSchema: ...
     @overload
-    def parse_type_assertion(self, *, parse_schema: Literal[True], variable_assertion: Literal[False], typing: TypingStyle) -> GradualTypeAssertionSchema: ...
+    def parse_type_assertion(self, *, parse_schema: Literal[True], variable_assertion: Literal[False], typing: TypingStyle) -> TypeAssertionSchema: ...
     @overload
     def parse_type_assertion(self, *, parse_schema: Literal[False], variable_assertion: Literal[False], typing: Literal[TypingStyle.IMPLICIT]) -> ImplicitTypeAssertion: ...
     @overload
     def parse_type_assertion(self, *, parse_schema: Literal[False], variable_assertion: Literal[False], typing: Literal[TypingStyle.EXPLICIT]) -> ExplicitTypeAssertion: ...
     @overload
-    def parse_type_assertion(self, *, parse_schema: Literal[False], variable_assertion: Literal[False], typing: TypingStyle) -> GradualTypeAssertion: ...
+    def parse_type_assertion(self, *, parse_schema: Literal[False], variable_assertion: Literal[False], typing: TypingStyle) -> TypeAssertion: ...
     @overload
     def parse_type_assertion(self, *, parse_schema: Literal[False], variable_assertion: Literal[True]) -> VariableTypeAssertion: ...
     @overload
     def parse_type_assertion(self, *, parse_schema: Literal[True], variable_assertion: Literal[True]) -> VariableTypeAssertionSchema: ...
     @overload
-    def parse_type_assertion(self, *, parse_schema: bool, variable_assertion: bool, typing: TypingStyle) -> GradualTypeAssertion | GradualTypeAssertionSchema: ...
-    def parse_type_assertion(self, *, parse_schema: bool, variable_assertion: bool, typing: TypingStyle = TypingStyle.GRADUAL) -> GradualTypeAssertion | GradualTypeAssertionSchema:
+    def parse_type_assertion(self, *, parse_schema: bool, variable_assertion: bool, typing: TypingStyle) -> TypeAssertion | TypeAssertionSchema: ...
+    def parse_type_assertion(self, *, parse_schema: bool, variable_assertion: bool, typing: TypingStyle = TypingStyle.GRADUAL) -> TypeAssertion | TypeAssertionSchema:
         head = self.peek()
 
         if not head:
@@ -444,7 +444,7 @@ class LambdaParser(IdentifierParserMixin[LambdaTokenKind, LambdaToken], Parser[L
             match typing:
                 case TypingStyle.GRADUAL:
                     assert isinstance(term, MixedTermSchema)
-                    return GradualTypeAssertionSchema(term, type_)
+                    return TypeAssertionSchema(term, type_)
 
                 case TypingStyle.IMPLICIT:
                     assert isinstance(term, UntypedTermSchema)
@@ -463,7 +463,7 @@ class LambdaParser(IdentifierParserMixin[LambdaTokenKind, LambdaToken], Parser[L
         match typing:
             case TypingStyle.GRADUAL:
                 assert isinstance(term, MixedTerm)
-                return GradualTypeAssertion(term, type_)
+                return TypeAssertion(term, type_)
 
             case TypingStyle.IMPLICIT:
                 assert isinstance(term, UntypedTerm)
@@ -478,9 +478,9 @@ class LambdaParser(IdentifierParserMixin[LambdaTokenKind, LambdaToken], Parser[L
     @overload
     def _parse_typing_rule_premise(self, premise_context: LambdaParserContext, typing: Literal[TypingStyle.EXPLICIT]) -> ExplicitTypingRulePremise: ...
     @overload
-    def _parse_typing_rule_premise(self, premise_context: LambdaParserContext, typing: TypingStyle) -> GradualTypingRulePremise: ...
-    def _parse_typing_rule_premise(self, premise_context: LambdaParserContext, typing: TypingStyle) -> GradualTypingRulePremise:
-        discharge: GradualTypeAssertionSchema | None = None
+    def _parse_typing_rule_premise(self, premise_context: LambdaParserContext, typing: TypingStyle) -> TypingRulePremise: ...
+    def _parse_typing_rule_premise(self, premise_context: LambdaParserContext, typing: TypingStyle) -> TypingRulePremise:
+        discharge: TypeAssertionSchema | None = None
 
         if (head := self.peek()) and head.kind == 'LEFT_BRACKET':
             head = self.advance_and_peek()
@@ -501,7 +501,7 @@ class LambdaParser(IdentifierParserMixin[LambdaTokenKind, LambdaToken], Parser[L
 
         match typing:
             case TypingStyle.GRADUAL:
-                return GradualTypingRulePremise(main, discharge)
+                return TypingRulePremise(main, discharge)
 
             case TypingStyle.IMPLICIT:
                 assert isinstance(main, ImplicitTypeAssertionSchema)
@@ -527,8 +527,8 @@ class LambdaParser(IdentifierParserMixin[LambdaTokenKind, LambdaToken], Parser[L
     @overload
     def _iter_typing_rule_premise(self, rule_context: LambdaParserContext, typing: Literal[TypingStyle.EXPLICIT]) -> Iterable[ExplicitTypingRulePremise]: ...
     @overload
-    def _iter_typing_rule_premise(self, rule_context: LambdaParserContext, typing: TypingStyle) -> Iterable[GradualTypingRulePremise]: ...
-    def _iter_typing_rule_premise(self, rule_context: LambdaParserContext, typing: TypingStyle) -> Iterable[GradualTypingRulePremise]:
+    def _iter_typing_rule_premise(self, rule_context: LambdaParserContext, typing: TypingStyle) -> Iterable[TypingRulePremise]: ...
+    def _iter_typing_rule_premise(self, rule_context: LambdaParserContext, typing: TypingStyle) -> Iterable[TypingRulePremise]:
         premise_context = LambdaParserContext(self)
 
         while (head := self.peek()) and head.kind != 'INFERENCE_RULE_SEQUENT':
@@ -552,8 +552,8 @@ class LambdaParser(IdentifierParserMixin[LambdaTokenKind, LambdaToken], Parser[L
     @overload
     def parse_typing_rule(self, typing: Literal[TypingStyle.EXPLICIT]) -> ExplicitTypingRule: ...
     @overload
-    def parse_typing_rule(self, typing: TypingStyle) -> GradualTypingRule: ...
-    def parse_typing_rule(self, typing: TypingStyle) -> GradualTypingRule:
+    def parse_typing_rule(self, typing: TypingStyle) -> TypingRule: ...
+    def parse_typing_rule(self, typing: TypingStyle) -> TypingRule:
         if self.peek() is None:
             raise self.annotate_unexpected_end_of_input()
 
@@ -564,7 +564,7 @@ class LambdaParser(IdentifierParserMixin[LambdaTokenKind, LambdaToken], Parser[L
                 premises = list(self._iter_typing_rule_premise(rule_context, typing=TypingStyle.GRADUAL))
                 self.advance()
                 assertion = self.parse_type_assertion(parse_schema=True, variable_assertion=False, typing=TypingStyle.GRADUAL)
-                return GradualTypingRule(premises, assertion)
+                return TypingRule(premises, assertion)
 
             case TypingStyle.IMPLICIT:
                 premises_imp = list(self._iter_typing_rule_premise(rule_context, typing=TypingStyle.IMPLICIT))
@@ -666,8 +666,8 @@ def parse_type_assertion(signature: LambdaSignature, source: str, typing: Litera
 @overload
 def parse_type_assertion(signature: LambdaSignature, source: str, typing: Literal[TypingStyle.EXPLICIT]) -> ExplicitTypeAssertion: ...
 @overload
-def parse_type_assertion(signature: LambdaSignature, source: str, typing: TypingStyle) -> GradualTypeAssertion: ...
-def parse_type_assertion(signature: LambdaSignature, source: str, typing: TypingStyle) -> GradualTypeAssertion:
+def parse_type_assertion(signature: LambdaSignature, source: str, typing: TypingStyle) -> TypeAssertion: ...
+def parse_type_assertion(signature: LambdaSignature, source: str, typing: TypingStyle) -> TypeAssertion:
     tokens = tokenize_lambda_string(signature, source)
 
     with LambdaParser(signature, source, tokens) as parser:
@@ -686,8 +686,8 @@ def parse_typing_rule(signature: LambdaSignature, source: str, typing: Literal[T
 @overload
 def parse_typing_rule(signature: LambdaSignature, source: str, typing: Literal[TypingStyle.EXPLICIT]) -> ExplicitTypingRule: ...
 @overload
-def parse_typing_rule(signature: LambdaSignature, source: str, typing: TypingStyle) -> GradualTypingRule: ...
-def parse_typing_rule(signature: LambdaSignature, source: str, typing: TypingStyle) -> GradualTypingRule:
+def parse_typing_rule(signature: LambdaSignature, source: str, typing: TypingStyle) -> TypingRule: ...
+def parse_typing_rule(signature: LambdaSignature, source: str, typing: TypingStyle) -> TypingRule:
     tokens = tokenize_lambda_string(signature, source)
 
     with LambdaParser(signature, source, tokens) as parser:

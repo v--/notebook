@@ -3,10 +3,10 @@ from typing import overload
 from ..assertions import (
     ExplicitTypeAssertion,
     ExplicitTypeAssertionSchema,
-    GradualTypeAssertion,
-    GradualTypeAssertionSchema,
     ImplicitTypeAssertion,
     ImplicitTypeAssertionSchema,
+    TypeAssertion,
+    TypeAssertionSchema,
 )
 from .base import LambdaSchemaInstantiation, merge_instantiations
 from .term_application import instantiate_term_schema
@@ -20,12 +20,12 @@ def instantiate_assertion_schema(schema: ImplicitTypeAssertionSchema, instantiat
 @overload
 def instantiate_assertion_schema(schema: ExplicitTypeAssertionSchema, instantiation: LambdaSchemaInstantiation) -> ExplicitTypeAssertion: ...
 @overload
-def instantiate_assertion_schema(schema: GradualTypeAssertionSchema, instantiation: LambdaSchemaInstantiation) -> GradualTypeAssertion: ...
-def instantiate_assertion_schema(schema: GradualTypeAssertionSchema, instantiation: LambdaSchemaInstantiation) -> GradualTypeAssertion:
+def instantiate_assertion_schema(schema: TypeAssertionSchema, instantiation: LambdaSchemaInstantiation) -> TypeAssertion: ...
+def instantiate_assertion_schema(schema: TypeAssertionSchema, instantiation: LambdaSchemaInstantiation) -> TypeAssertion:
     term = instantiate_term_schema(schema.term, instantiation)
     type_ = instantiate_type_schema(schema.type, instantiation)
 
-    match GradualTypeAssertion:
+    match TypeAssertion:
         case ImplicitTypeAssertion():
             return ImplicitTypeAssertion(term, type_)
 
@@ -33,10 +33,10 @@ def instantiate_assertion_schema(schema: GradualTypeAssertionSchema, instantiati
             return ExplicitTypeAssertion(term, type_)
 
         case _:
-            return GradualTypeAssertion(term, type_)
+            return TypeAssertion(term, type_)
 
 
-def infer_instantiation_from_assertion(schema: GradualTypeAssertionSchema, assertion: GradualTypeAssertion) -> LambdaSchemaInstantiation:
+def infer_instantiation_from_assertion(schema: TypeAssertionSchema, assertion: TypeAssertion) -> LambdaSchemaInstantiation:
     return merge_instantiations(
         infer_instantiation_from_term(schema.term, assertion.term),
         infer_instantiation_from_type(schema.type, assertion.type)

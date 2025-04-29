@@ -14,7 +14,7 @@ from .types import SimpleType, SimpleTypeSchema
 
 
 @dataclass(frozen=True)
-class GradualTypeAssertion:
+class TypeAssertion:
     term: MixedTerm
     type: SimpleType
 
@@ -22,21 +22,21 @@ class GradualTypeAssertion:
         return f'{self.term}: {self.type}'
 
 
-class ImplicitTypeAssertion(GradualTypeAssertion):
+class ImplicitTypeAssertion(TypeAssertion):
     term: UntypedTerm
 
 
-class ExplicitTypeAssertion(GradualTypeAssertion):
+class ExplicitTypeAssertion(TypeAssertion):
     term: TypedTerm
 
 
-class VariableTypeAssertion(GradualTypeAssertion):
+class VariableTypeAssertion(TypeAssertion):
     term: Variable
     type: SimpleType
 
 
 @dataclass(frozen=True)
-class GradualTypeAssertionSchema:
+class TypeAssertionSchema:
     term: MixedTermSchema
     type: SimpleTypeSchema
 
@@ -44,14 +44,14 @@ class GradualTypeAssertionSchema:
         return f'{self.term}: {self.type}'
 
 
-class ImplicitTypeAssertionSchema(GradualTypeAssertionSchema):
+class ImplicitTypeAssertionSchema(TypeAssertionSchema):
     term: UntypedTermSchema
 
 
-class ExplicitTypeAssertionSchema(GradualTypeAssertionSchema):
+class ExplicitTypeAssertionSchema(TypeAssertionSchema):
     term: TypedTermSchema
 
 
-class VariableTypeAssertionSchema(GradualTypeAssertionSchema):
+class VariableTypeAssertionSchema(TypeAssertionSchema):
     term: VariablePlaceholder
     type: SimpleTypeSchema
