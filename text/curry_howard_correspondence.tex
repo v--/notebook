@@ -11,22 +11,219 @@
     We shall study here a striking analogy between the theory of and the theory of functionality and the theory of implication in propositional algebra.
   \end{displayquote}
 
-  The core idea is that the type \( \alpha \synimplies \rho \) can be regarded as a propositional formula, and its \hyperref[def:type_derivation_tree]{type derivation trees} then correspond to \hyperref[def:natural_deduction_proof_tree]{natural deduction proof trees}.
+  Haskell Curry is credited for the realization that, in modern terms, the \hyperref[def:simple_type]{arrow type} \( \alpha \synimplies \rho \) can be regarded as a \hyperref[def:propositional_alphabet/connectives/conditional]{conditional formula}, and its \hyperref[def:type_derivation_tree]{type derivation trees} then correspond to \hyperref[def:natural_deduction_proof_tree]{natural deduction proof trees}. In \fullref{alg:proof_tree_to_type_derivation} and \fullref{alg:type_derivation_to_proof_tree}, we will extend this to conjunctions via \hyperref[def:product_type]{product types} and to disjunctions via \hyperref[def:sum_type]{sum types}.
 
-  These ideas are later developed and vastly amplified by Per Martin-L\"of, whose publication \cite{MartinLöf1975IntuitionisticTypeTheory} introduces \enquote{dependent types} (see \fullref{con:dependent_types}) for handling higher-order logic, at which Howard only hints. Because of the latter development, \enquote{intuitionistic type theory}, \enquote{dependent type theory} and \enquote{Martin-L\"of type theory} refer to this more abstract setting. \enquote{Simple type theory} continues to refer to the theory with only arrow types. Accidentally, the adjective \enquote{simple} is a contradistinction with Russell's type theory rather than Martin-L\"of's.
+  William Howard is credited for extending this analogy to \hyperref[sec:first_order_logic]{first-order logic} via what are now called \enquote{dependent types} (see \fullref{con:dependent_types}).
 
-  We will call the overall concept of identifying types with formulas the \term{Curry-Howard correspondence}. This phrase is used by \incite[45]{AwodeyWarren2009HoTT} and \incite[def. 4.1.7]{Mimram2020ProgramEqualsProof}. \incite[341]{BarendregtDekkersStatman2013LambdaCalculusWithTypes} extend this to \enquote{Curry-de Bruijn-Howard correspondence}. A variation, the \enquote{Curry-Howard isomorphism}, is used by \incite[74]{Hindley1997BasicSTT} and \incite[14]{GirardEtAl1989ProofsAndTypes}. An alternative suggested by Howard himself is \enquote{formulas-as-types correspondence}, also used by \incite[74]{Hindley1997BasicSTT}, \incite[\S 1.3.4]{TroelstraSchwichtenberg2000BasicProofTheory} and \incite[572]{Barendregt1984LambdaCalculus}. Another variation, \enquote{propositions-as-types correspondence}, is used by \incite[def. 5.4.14]{Barendregt1992LambdaCalculiWithTypes}, \incite[prop. 6.3.11]{BarendregtDekkersStatman2013LambdaCalculusWithTypes}, \incite[8]{AwodeyWarren2009HoTT} and \incite[def. 4.1.7]{Mimram2020ProgramEqualsProof}.
-
-  We formalize the base ideas via \fullref{alg:proof_tree_to_type_derivation} and \fullref{alg:type_derivation_to_proof_tree}. First, however, we must introduce additional types.
+  Honoring them, we will refer to the overall identification of types and formulas as the \term[en=Curry-Howard correspondence (\cite[def. 4.1.7]{Mimram2020ProgramEqualsProof})]{Curry-Howard correspondence}.
 \end{concept}
 \begin{comments}
   \item From the perspective of first-order logic, the correspondence is described in \incite[def. 5.1.11]{Mimram2020ProgramEqualsProof}.
+
+  \item Different authors refer to this concept slightly differently:
+  \begin{itemize}
+    \item This phrase \enquote{Curry-Howard correspondence} is used by \incite[45]{AwodeyWarren2009HoTT} and \incite[def. 4.1.7]{Mimram2020ProgramEqualsProof}.
+
+    \item \incite[341]{BarendregtDekkersStatman2013LambdaCalculusWithTypes} extends this to \enquote{Curry-de Bruijn-Howard correspondence}.
+
+    \item A variation, the \enquote{Curry-Howard isomorphism}, is used by \incite[74]{Hindley1997BasicSTT} and \incite[14]{GirardEtAl1989ProofsAndTypes}.
+
+    \item  An alternative suggested by Howard himself is \enquote{formulas-as-types correspondence}, also used by \incite[74]{Hindley1997BasicSTT}, \incite[\S 1.3.4]{TroelstraSchwichtenberg2000BasicProofTheory} and \incite[572]{Barendregt1984LambdaCalculus}.
+
+    \item Another variation, the \enquote{propositions-as-types correspondence}, is used by \incite[def. 5.4.14]{Barendregt1992LambdaCalculiWithTypes}, as well as by the aforementioned \incite[prop. 6.3.11]{BarendregtDekkersStatman2013LambdaCalculusWithTypes}, \incite[8]{AwodeyWarren2009HoTT} and \incite[def. 4.1.7]{Mimram2020ProgramEqualsProof}.
+  \end{itemize}
 \end{comments}
 
 \paragraph{Extended simple type theory}\hfill
 
 \begin{remark}\label{rem:type_theory_rule_classification}
+  \incite[24]{MartinLöf1984IntuitionisticTypeTheory} uses (metatheoretic) \hyperref[def:inference_rule]{inference rules} to build his entire type theory. He classifies the different rules for each family of types as follows:
+  \begin{thmenum}
+    \thmitem{rem:type_theory_rule_classification/formation} A \term[en=formation (rule) (\cite[\S 8.1.9]{Mimram2020ProgramEqualsProof})]{type formation} rule allows us to introduce a new type given some premises.
+
+    For example, in \fullref{def:simple_type}, we have introduced arrow types via the \hyperref[def:formal_grammar/schema]{formal grammar} rule
+    \begin{bnf*}
+      \bnfprod{arrow type} {\bnftsq{(} \bnfsp \bnfpn{type} \bnfsp \bnftsq{\( \synimplies \)} \bnfsp \bnfpn{type} \bnfsp \bnftsq{)}}
+    \end{bnf*}
+    which we can recast using \hyperref[rem:type_universes]{type universes} as the inference rule
+    \begin{equation*}
+      \begin{prooftree}
+        \hypo{ \syn\tau: \syn{\op*{Type}_n} }
+        \hypo{ \syn\sigma: \syn{\op*{Type}_n} }
+        \infer2{ \syn\tau \synimplies \syn\sigma: \syn{\op*{Type}_n} }
+      \end{prooftree}
+    \end{equation*}
+
+    \thmitem{rem:type_theory_rule_classification/introduction} An \term{introduction rule} allows us to assert the type to a term. In the words of Martin-L\"of, \enquote{The introduction rules say what are the canonical elements}.
+
+    We have already used such a rule for arrow types --- \ref{inf:def:arrow_typing_rules/intro/explicit} for typed and \ref{inf:def:arrow_typing_rules/intro/implicit} for untyped terms. Unlike type formation rules, we have completely formalized these; the first of them is
+    \begin{equation*}
+      \begin{prooftree}
+        \hypo{ [\synx: \syn\tau] }
+        \ellipsis {} { \synM: \syn\sigma }
+        \infer1{ \qabs {\synx^{\syn\tau}} \synM: \syn\tau \synimplies \syn\sigma }
+      \end{prooftree}
+    \end{equation*}
+
+    \thmitem{rem:type_theory_rule_classification/elimination} Conversely, an \term{elimination rule} allows us to deconstruct a term. In the words of Martin-L\"of, \enquote{The elimination rule shows how we may define functions on the set defined by the introduction rules}.
+
+    Again, we have already used such a rule, \ref{inf:def:arrow_typing_rules/elim}, which we defined as
+    \begin{equation*}
+      \begin{prooftree}
+        \hypo{ \synM: \syn\tau \synimplies \syn\sigma }
+        \hypo{ \synN: \syn\tau }
+        \infer2{ \synM \synN: \syn\sigma }
+      \end{prooftree}
+    \end{equation*}
+
+    \thmitem{rem:type_theory_rule_classification/equality} Finally, an \term{equality rule} demonstrates compatibility of \hyperref[con:equality]{definitional equality} with the other rules.
+
+    To enable substituting definitionally equal terms and types and making type derivation \hyperref[con:extensionality]{extensional}, we must introduce two rules. If, in accordance with \fullref{con:equality}, we denote the equality judgment
+    \begin{center}
+      \( \synx \) and \( \syny \) are definitionally equal terms of type \( \tau \)
+    \end{center}
+    by
+    \begin{equation*}
+      \synx \syncoloneqq \syny: \tau,
+    \end{equation*}
+    we can formulate the rules as follows:
+    \begin{paracol}{2}
+      \begin{leftcolumn}
+        \phantom{alignment hack}
+        \begin{equation*}
+          \begin{prooftree}
+            \hypo{ \synM: \syn\tau }
+            \hypo{ \syn\tau \syncoloneqq \syn\tau': \syn{\op*{Type}_n} }
+            \infer2{ \synM: \syn\tau' }
+          \end{prooftree}
+        \end{equation*}
+      \end{leftcolumn}
+
+      \begin{rightcolumn}
+        \phantom{alignment hack}
+        \begin{equation*}
+          \begin{prooftree}
+            \hypo{ \synM \syncoloneqq \synM': \syn\tau }
+            \hypo{ \syn\tau \syncoloneqq \syn\tau': \syn{\op*{Type}_n} }
+            \infer2{ \synM \syncoloneqq \synM': \syn\tau' }
+          \end{prooftree}
+        \end{equation*}
+      \end{rightcolumn}
+    \end{paracol}
+
+    Furthermore, to ensure that \( {\syncoloneqq} \) is an \hyperref[def:equivalence_relation]{equivalence relation}, we need inferences rules resembling those from \fullref{ex:recursively_defined_relation}:
+    \begingroup
+    \columnratio{0.25,0.25,0.5}
+    \begin{paracol}{3}
+      \begin{nthcolumn}{0}
+        \phantom{alignment hack}
+        \begin{equation*}
+          \begin{prooftree}
+            \hypo{ \synM: \syn\tau }
+            \infer1{ \synM \syncoloneqq \synM: \syn\tau }
+          \end{prooftree}
+        \end{equation*}
+      \end{nthcolumn}
+
+      \begin{nthcolumn}{1}
+        \phantom{alignment hack}
+        \begin{equation*}
+          \begin{prooftree}
+            \hypo{ \synM \syncoloneqq \synN: \syn\tau }
+            \infer1{ \synN \syncoloneqq \synM: \syn\tau }
+          \end{prooftree}
+        \end{equation*}
+      \end{nthcolumn}
+
+      \begin{nthcolumn}{2}
+        \phantom{alignment hack}
+        \begin{equation*}
+          \begin{prooftree}
+            \hypo{ \synM \syncoloneqq \synN: \syn\tau }
+            \hypo{ \synN \syncoloneqq \synK: \syn\tau }
+            \infer2{ \synM \syncoloneqq \synK: \syn\tau }
+          \end{prooftree}
+        \end{equation*}
+      \end{nthcolumn}
+    \end{paracol}
+    \endgroup
+
+    These five \enquote{common} equality rules are given in \cite[433]{UnivalentProject2024OctoberHoTT} and, in a less unrefined form, they are also discussed by \incite[14,15]{MartinLöf1984IntuitionisticTypeTheory}.
+
+    Unlike in Martin-L\"of's presentation, in \cite[27]{UnivalentProject2024OctoberHoTT}, the other equality rules are split into two kinds, additionally \incite[\S 8.1.9]{Mimram2020ProgramEqualsProof} also distinguishes congruence rules, which the former assume implicit:
+    \begin{thmenum}
+      \thmitem{rem:type_theory_rule_classification/equality/computation} A \term{computation rule} expresses how an elimination rule acts on the corresponding canonical objects obtained from introduction rules.
+
+      Such rules correspond to \hyperref[def:beta_eta_reduction]{\( \beta \)-reduction} of untyped \( \synlambda \)-terms. For example, for arrow types we have
+      \begin{equation*}
+        \begin{prooftree}
+          \hypo{ \synx: \syn\tau }
+          \ellipsis {} { \synM: \syn\sigma }
+
+          \hypo{ \synN: \tau }
+          \infer2{ (\qabs {\synx^\tau} \synM) \synN \syncoloneqq \synM[\synx \mapsto \synN]: \syn\sigma }.
+        \end{prooftree}
+      \end{equation*}
+
+      \thmitem{rem:type_theory_rule_classification/equality/uniqueness} A \term{uniqueness rule} expresses how an arbitrary term of a given type can be expressed in the canonical form given by introduction rules.
+
+      Such rules correspond to \hyperref[def:beta_eta_reduction]{\( \beta \)-expansion} of untyped \( \synlambda \)-terms. For example, for arrow types we have
+      \begin{equation*}
+        \begin{prooftree}
+          \hypo{ \synM: \syn\tau \synimplies \syn\sigma }
+          \infer1{ \qabs {\synx^\tau} \synM \synx: \syn\tau \synimplies \syn\sigma }.
+        \end{prooftree}
+      \end{equation*}
+
+      \thmitem{rem:type_theory_rule_classification/equality/congruence} A \term{congruence rule} propagates \hyperref[con:equality]{definitional equality}, allowing substituting definitionally equal terms and types and making type derivation \hyperref[con:extensionality]{extensional}.
+
+      If, in accordance with \fullref{con:equality}, we denote the equality judgment
+      \begin{center}
+        \( \synx \) and \( \syny \) are definitionally equal terms of type \( \tau \)
+      \end{center}
+      by
+      \begin{equation*}
+        \synx \syncoloneqq \syny: \tau,
+      \end{equation*}
+      we can formulate the following congruence rules for arrow types:
+      \begin{equation*}
+        \begin{prooftree}
+          \hypo{ \syn\tau \syncoloneqq \syn\tau': \syn{\op*{Type}_n} }
+          \hypo{ \syn\sigma \syncoloneqq \syn\sigma': \syn{\op*{Type}_n} }
+          \infer2{ \syn\tau \synimplies \syn\sigma \syncoloneqq \syn\tau' \synimplies \syn\sigma': \syn{\op*{Type}_n} }
+        \end{prooftree}
+      \end{equation*}
+
+      \begin{paracol}{2}
+        \begin{leftcolumn}
+          \phantom{alignment hack}
+          \begin{equation*}
+            \begin{prooftree}
+              \hypo{ \synM \syncoloneqq \synM': \syn\sigma }
+              \infer1{ \qabs {\synx^{\syn\tau}} \synM \syncoloneqq \qabs {\synx^{\syn\tau}} \synM': \syn\tau \synimplies \syn\sigma }
+            \end{prooftree}
+          \end{equation*}
+        \end{leftcolumn}
+
+        \begin{rightcolumn}
+          \phantom{alignment hack}
+          \begin{equation*}
+            \begin{prooftree}
+              \hypo{ \synM \syncoloneqq \synM': \syn\tau \synimplies \syn\sigma }
+              \hypo{ \synN \syncoloneqq \synN': \syn\tau }
+              \infer2{ \synM \synN \syncoloneqq \synM' \synN': \syn\sigma }
+            \end{prooftree}
+          \end{equation*}
+        \end{rightcolumn}
+      \end{paracol}
+    \end{thmenum}
+  \end{thmenum}
 \end{remark}
+\begin{comments}
+  \item Our list of rules is based on the corresponding rules for dependent products in \incite{MartinLöf1984IntuitionisticTypeTheory}, \cite[\S A.2]{UnivalentProject2024OctoberHoTT} and \cite[\S 8.1.10]{Mimram2020ProgramEqualsProof}.
+
+  \item In the cited lectures, Martin-L\"of refers to types as \enquote{sets} and to the corresponding rules as \enquote{set formation} rules, but in later works like \cite{MartinLöf1994TypeJudgments} he already shifts to \enquote{types} and \enquote{type formation}.
+\end{comments}
 
 \begin{definition}\label{def:empty_type}\mcite[\S 4.3.4]{Mimram2020ProgramEqualsProof}
   The \term{empty type} \( \syn\Bbbzero \).
@@ -42,15 +239,25 @@
 \begin{definition}\label{def:sum_type}
 \end{definition}
 
+\begin{concept}\label{con:identity_types}
+  \todo{Identity types}
+
+  Martin-L\"of distinguishes between several kinds of equality and introduces \enquote{identity types} (see \fullref{con:identity_types}), allowing him to develop his \enquote{intuitionistic type theory} --- a fusion of type theory and higher-order logic based on the \hyperref[con:curry_howard_correspondence]{Curry-Howard correspondence}. His theory first appears as \cite{MartinLöf1975IntuitionisticTypeTheory} and, in a more refined later form, can be found in \cite{MartinLöf1984IntuitionisticTypeTheory}.
+\end{concept}
+
+\begin{concept}\label{con:homotopy_type_theory}
+  \todo{Homotopy type theory}
+\end{concept}
+
 \begin{concept}\label{con:dependent_types}
   \todo{Discuss dependent types}
 
   \Fullref{thm:set_of_all_functions_via_cartesian_product}.
 \end{concept}
 
-\begin{concept}\label{con:homotopy_type_theory}
-  \todo{Homotopy type theory}
-\end{concept}
+\begin{remark}\label{rem:dependent_type_theory}
+  Because of this latter development, \enquote{intuitionistic type theory}, \enquote{dependent type theory} and \enquote{Martin-L\"of type theory} refer to this more abstract setting. \enquote{Simple type theory} continues to refer to the theory with only arrow types. Accidentally, the adjective \enquote{simple} is a contradistinction with Russell's type theory rather than Martin-L\"of's.
+\end{remark}
 
 \paragraph{Curry-Howard correspondence}\hfill
 

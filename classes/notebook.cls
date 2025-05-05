@@ -39,6 +39,9 @@
 \RequirePackage[english]{babel}
 \RequirePackage[autostyle]{csquotes}
 
+\useshorthands*{"}
+\defineshorthand{"-}{-\babelhyphen{soft}}
+
 % Misc nonmath packages
 \RequirePackage{subcaption}
 \RequirePackage{booktabs}
