@@ -36,6 +36,14 @@
 
 \paragraph{Extended simple type theory}\hfill
 
+\begin{remark}\label{rem:extended_simple_type_theory}
+  We will now use the sum and product types defined in \fullref{def:simple_type}, as well as the unit type and the empty type. Our end goal is to establish the \hyperref[con:curry_howard_correspondence]{Curry-Howard correspondence} for propositional logic.
+
+  Introducing more complicated types, for example for handling first-order and higher-order logic, is often done, in the tradition established by Per Martin-L\"of, via a stout list of metatheoretic \hyperref[def:inference_rule]{inference rules}. We describe the classification of these rules, as well as a list of eight rules for arrow types in \fullref{rem:type_theory_rule_classification}.
+
+  Fortunately, for the types we will consider, it will be sufficient to reuse the machinery we have built for untyped and simply typed \( \synlambda \)-calculus, with some small adjustments. We will still find useful the classification of rules, mostly because of the respective terminology. We will however only limit ourselves to introduction and elimination rules since we will not need the rest.
+\end{remark}
+
 \begin{remark}\label{rem:type_theory_rule_classification}
   \incite[24]{MartinLöf1984IntuitionisticTypeTheory} uses (metatheoretic) \hyperref[def:inference_rule]{inference rules} to build his entire type theory. He classifies the different rules for each family of types as follows:
   \begin{thmenum}
@@ -56,9 +64,9 @@
 
     Note that, since the rules are part of the metalanguage, we do not try to formalize them and hence do not use the dot convention from \fullref{rem:object_language_dots}.
 
-    \thmitem{rem:type_theory_rule_classification/introduction} An \term{introduction rule} specifies which terms have a type from the family. In the words of Martin-L\"of, \enquote{The introduction rules say what are the canonical elements}.
+    \thmitem{rem:type_theory_rule_classification/introduction} An \term{introduction rule} specifies which terms \hyperref[def:type_habitation]{inhabit} a type from the family. In the words of Martin-L\"of, \enquote{The introduction rules say what are the canonical elements}.
 
-    We have already used such a rule for arrow types --- \ref{inf:def:arrow_typing_rules/intro/explicit} for typed and \ref{inf:def:arrow_typing_rules/intro/implicit} for untyped terms. Unlike type formation rules, we have completely formalized these; the first of them is
+    We have already used such a rule for arrow types --- \ref{inf:def:arrow_typing_rules/intro/explicit} for typed and \ref{inf:def:arrow_typing_rules/intro/implicit} for untyped terms. Unlike type formation rules, we have completely formalized these with the aid of placeholders. In the metalanguage, where placeholders are not needed, the first of them becomes
     \begin{equation*}
       \begin{prooftree}
         \hypo{ [x: \tau] }
@@ -149,7 +157,7 @@
     \end{paracol}
     \columnratio{}
 
-    These five \enquote{common} equality rules are given in \cite[433]{UnivalentProject2024OctoberHoTT} and, in a less unrefined form, they are also discussed by \incite[14,15]{MartinLöf1984IntuitionisticTypeTheory}.
+    These five \enquote{common} equality rules are given in \cite[433]{UnivalentProject2024OctoberHoTT} and, in a less refined form, they are also discussed by \incite[14,15]{MartinLöf1984IntuitionisticTypeTheory}.
 
     Unlike in Martin-L\"of's presentation, in \cite[27]{UnivalentProject2024OctoberHoTT}, the other equality rules are split into two kinds. \incite[\S 8.1.9]{Mimram2020ProgramEqualsProof} also distinguishes congruence rules, which the Univalent Foundations Project assumes implicit:
     \begin{thmenum}
@@ -172,9 +180,12 @@
       \begin{equation*}
         \begin{prooftree}
           \hypo{ M: \tau \synimplies \sigma }
-          \infer1{ \qabs {x^\tau} M x: \tau \synimplies \sigma }.
+          \hypo{ x \T{is not free in} M }
+          \infer2{ M \coloneqq \qabs {x^\tau} M x: \tau \synimplies \sigma }.
         \end{prooftree}
       \end{equation*}
+
+      Note how, even though we equate a term with its expanded form, we regard this as an expansion rule rather than a reduction rule. The reasoning for this is that we should regard \( M \) as an \( \synlambda \)-abstraction in the canonical form \( \qabs {x^\tau} M x \), not the other way around.
 
       \thmitem{rem:type_theory_rule_classification/equality/congruence} Finally, a \term{congruence rule} simply propagates definitional equality.
 
@@ -218,9 +229,35 @@
   \item In the cited lectures, Martin-L\"of refers to types as \enquote{sets} and to the corresponding rules as \enquote{set formation} rules, but in later works like \cite{MartinLöf1994TypeJudgments} he already shifts to \enquote{types} and \enquote{type formation}.
 \end{comments}
 
-\begin{definition}\label{def:empty_type}\mcite[\S 4.3.4]{Mimram2020ProgramEqualsProof}
-  The \term{empty type} \( \syn\Bbbzero \).
+\begin{definition}\label{def:empty_type}\mimprovised
+  We designate a unique \hyperref[def:type_habitation]{uninhabited} type and, unsurprisingly, call it the \term[en=empty type (\cite[\S 4.3.4]{Mimram2020ProgramEqualsProof})]{empty type}. We denote it by \( \syn\Bbbzero \) and, if needed, we introduce it as a \hyperref[def:simple_type]{base type} of the \hyperref[def:simple_type_signature]{signature}, along with the constant term \( \synA_- \), and the following \hyperref[rem:type_theory_rule_classification/elimination]{elimination rule}:
+  \begin{equation*}\taglabel[\ensuremath{ \Bbbzero^- }]{inf:def:empty_type/elim}
+    \begin{prooftree}
+      \hypo{ \synM: \syn\Bbbzero }
+      \infer1[\ref{inf:def:empty_type/elim}]{ \synA_- \synM: \syn\tau }
+    \end{prooftree}
+  \end{equation*}
 \end{definition}
+\begin{comments}
+  \item We have formulated the rule so that it resembles \ref{inf:def:propositional_natural_deduction_systems/bot/efq}. Another possibility would be
+  \begin{equation*}
+    \begin{prooftree}
+      \hypo{ \synM: \syn\Bbbzero }
+      \infer1{ \synA_-: \syn\tau }
+    \end{prooftree}
+  \end{equation*}
+
+  Due to the availability of \ref{inf:def:arrow_typing_rules/elim}, we could have just as well introduced the rule
+  \begin{equation*}
+    \begin{prooftree}
+      \infer0{ \synA_-: \syn\Bbbzero \synimplies \syn\tau }
+    \end{prooftree}
+  \end{equation*}
+
+  Unfortunately, all of those break the uniqueness for simple types shown in \fullref{thm:typed_term_habitation_uniqueness}. One way to mitigate this is to introduce a distinct constant \( \synA_-^\tau \) and distinct rule \( \Bbbzero^-_\tau \) for every type \( \tau \), which would unfortunately complicate our formalization efforts. Due to our limited interest in the empty type, we avoid doing so.
+
+  \item A treatment of the empty type within simple type theory can be found in \cite[\S 4.3.4]{Mimram2020ProgramEqualsProof}.
+\end{comments}
 
 \begin{definition}\label{def:unit_type}\mcite[\S 4.3.2]{Mimram2020ProgramEqualsProof}
   The \term{unit type} \( \syn\Bbbone \).

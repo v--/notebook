@@ -77,14 +77,14 @@ Unless explicitly noted otherwise, we will follow \fullref{rem:arrow_typing_rule
 \end{comments}
 
 \begin{proposition}\label{thm:typed_substitution_assertions}
-  The following \hyperref[def:simple_typing_rule]{simple typing rule} is \hyperref[con:inference_rule_admissibility]{admissible} with respect to \ref{inf:def:arrow_typing_rules/elim} and \ref{inf:def:arrow_typing_rules/intro/explicit}:
+  The following \hyperref[con:typing_rule]{typing rule} is \hyperref[con:inference_rule_admissibility]{admissible} with respect to \ref{inf:def:arrow_typing_rules/elim} and \ref{inf:def:arrow_typing_rules/intro/explicit}:
   \begin{equation*}\taglabel[\ensuremath{ Subst }]{inf:thm:typed_substitution_assertions}
     \begin{prooftree}
-      \hypo{ [\synx: \syn\sigma] }
-      \ellipsis {} { \synM: \syn\tau }
+      \hypo{ [x: \sigma] }
+      \ellipsis {} { M: \tau }
 
-      \hypo{ \synN: \syn\sigma }
-      \infer2[\ref{inf:thm:typed_substitution_assertions}]{ \synM[\synx \synsubst \synN]: \syn\tau }.
+      \hypo{ N: \sigma }
+      \infer2[\ref{inf:thm:typed_substitution_assertions}]{ M[x \mapsto N]: \tau }.
     \end{prooftree}
   \end{equation*}
 \end{proposition}
@@ -94,9 +94,9 @@ Unless explicitly noted otherwise, we will follow \fullref{rem:arrow_typing_rule
   \item We can also express this via the following \hyperref[rem:sequent_calculus]{sequent calculus} style rule:
   \begin{equation*}
     \begin{prooftree}
-      \hypo{ \syn\Gamma, \synx: \syn\sigma \synvdash \synM: \syn\tau }
-      \hypo{ \syn\Delta \synvdash \synN: \syn\sigma }
-      \infer2{ \syn\Gamma, \syn\Delta \synvdash \synM[\synx \synsubst \synN]: \syn\tau }.
+      \hypo{ \Gamma, x: \sigma \vdash M: \tau }
+      \hypo{ \Delta \vdash N: \sigma }
+      \infer2{ \Gamma, \Delta \vdash M[x \mapsto N]: \tau }.
     \end{prooftree}
   \end{equation*}
 \end{comments}
@@ -232,9 +232,10 @@ Unless explicitly noted otherwise, we will follow \fullref{rem:arrow_typing_rule
 
     \begin{rightcolumn}
       \ParacolAlignmentHack
-      \begin{equation*}\taglabel[\ensuremath{ \logic{Par}_\eta^{\T{tt}} }]{inf:def:typed_reduction_rules/eta}
+      \begin{equation*}\taglabel[\ensuremath{ \logic{Red}_\eta^{\T{tt}} }]{inf:def:typed_reduction_rules/eta}
         \begin{prooftree}
-          \infer0[\ref{inf:def:typed_reduction_rules/eta}]{ \qabs {x^\tau} M x \ered M }.
+          \hypo{ x \not\in \op*{Free}(M) }
+          \infer1[\ref{inf:def:typed_reduction_rules/eta}]{ \qabs {x^\tau} M x \ered M }.
         \end{prooftree}
       \end{equation*}
     \end{rightcolumn}
@@ -352,15 +353,15 @@ Unless explicitly noted otherwise, we will follow \fullref{rem:arrow_typing_rule
 \end{defproof}
 
 \begin{proposition}\label{thm:reduction_typing_rules}
-  The following \hyperref[def:simple_typing_rule]{simple typing rules} are \hyperref[con:inference_rule_admissibility]{admissible} with respect to \ref{inf:def:arrow_typing_rules/elim} and \ref{inf:def:arrow_typing_rules/intro/explicit}:
+  The following \hyperref[con:typing_rule]{typing rules} are \hyperref[con:inference_rule_admissibility]{admissible} with respect to \ref{inf:def:arrow_typing_rules/elim} and \ref{inf:def:arrow_typing_rules/intro/explicit}:
   \begin{paracol}{2}
     \begin{leftcolumn}
       \ParacolAlignmentHack
       \begin{equation*}\taglabel[\ensuremath{ \rightarrow_\beta }]{inf:thm:reduction_typing_rules/beta}
         \begin{prooftree}
-          \hypo{ (\qabs {\synx^{\syn\sigma}} \synM) \synN: \syn\tau }
-          \hypo{ \synN: \syn\sigma }
-          \infer2[\ref{inf:thm:reduction_typing_rules/beta}]{ \synM[\synx \synsubst \synN]: \syn\tau }.
+          \hypo{ (\qabs {x^{\sigma}} M) N: \tau }
+          \hypo{ N: \sigma }
+          \infer2[\ref{inf:thm:reduction_typing_rules/beta}]{ M[x \mapsto N]: \tau }.
         \end{prooftree}
       \end{equation*}
     \end{leftcolumn}
@@ -369,31 +370,33 @@ Unless explicitly noted otherwise, we will follow \fullref{rem:arrow_typing_rule
       \ParacolAlignmentHack
       \begin{equation*}\taglabel[\ensuremath{ \leftarrow_\eta }]{inf:thm:reduction_typing_rules/eta}
         \begin{prooftree}
-          \hypo{ \synM: \syn\tau \synimplies \syn\sigma }
-          \infer1[\ref{inf:thm:reduction_typing_rules/eta}]{ \qabs {\synx^{\syn\tau}} \synM \synx: \syn\tau \synimplies \syn\sigma }.
+          \hypo{ M: \tau \synimplies \sigma }
+          \hypo{ x \not\in \op*{Free}(M) }
+          \infer2[\ref{inf:thm:reduction_typing_rules/eta}]{ \qabs {x^{\tau}} M x: \tau \synimplies \sigma }.
         \end{prooftree}
       \end{equation*}
     \end{rightcolumn}
   \end{paracol}
 \end{proposition}
 \begin{comments}
-  \item The rule \ref{inf:thm:reduction_typing_rules/beta} effectively replaces \ref{inf:def:typed_reduction_rules/beta}, but \ref{inf:thm:reduction_typing_rules/eta} corresponds to \( \eta \)-expansion rather than \( \eta \)-reduction and is thus inverse to \ref{inf:def:typed_reduction_rules/eta}. Furthermore, we place no restrictions on the variable \( \synx \) in \ref{inf:thm:reduction_typing_rules/eta}.
+  \item The rule \ref{inf:thm:reduction_typing_rules/beta} effectively replaces \ref{inf:def:typed_reduction_rules/beta}, but \ref{inf:thm:reduction_typing_rules/eta} corresponds to \( \eta \)-expansion rather than \( \eta \)-reduction and is thus inverse to \ref{inf:def:typed_reduction_rules/eta}.
 
-  \item Per the classification of type theory rules described in \fullref{rem:type_theory_rule_classification/computation}, these are computation and uniqueness rules, respectively.
+  The rule would still be admissible if were to place no restrictions on the variable \( \synx \) in \ref{inf:thm:reduction_typing_rules/eta}, however that would no longer correspond to \( \eta \)-expansion.
 
   \item As in \fullref{thm:typed_substitution_assertions}, we note that we have avoided defining schemas for substitutions. We simply state the rules without the ability to completely formalize them since that would complicate us unnecessarily.
 \end{comments}
 \begin{proof}
   Given a type derivation tree for \( (\qabs {x^\sigma} M) N: \tau \), we can apply \fullref{alg:simply_typed_reduction/app/beta} to obtain a tree for \( M[x \mapsto N]: \tau \). The assertion \( N: \sigma \) is not necessary; it simply makes explicit that the types of \( x \) and \( N \) coincide.
 
-  The rule \ref{inf:thm:reduction_typing_rules/beta} is more subtle since it corresponds to \( \eta \)-expansion rather than \( \eta \)-reduction. Thus, we cannot use \fullref{alg:simply_typed_reduction}. Fortunately, admissibility can easily be proven directly:
+  The rule \ref{inf:thm:reduction_typing_rules/eta} is more subtle since it corresponds to \( \eta \)-expansion rather than \( \eta \)-reduction. Thus, we cannot use \fullref{alg:simply_typed_reduction}. Fortunately, admissibility can easily be proven directly:
   \begin{equation*}
     \begin{prooftree}
-      \hypo{}
+      \hypo{ [x: \tau] }
       \ellipsis {} { M: \tau \synimplies \sigma }
-      \hypo{ x: \sigma }
 
-      \infer2[\ref{inf:def:arrow_typing_rules/elim}]{ Mx: \tau }
+      \hypo{ x: \tau }
+
+      \infer2[\ref{inf:def:arrow_typing_rules/elim}]{ Mx: \sigma }
 
       \infer[left label=\( x \)]1[\ref{inf:def:arrow_typing_rules/intro/explicit}]{ \qabs {x^\sigma} Mx: \tau \synimplies \sigma }
     \end{prooftree}
