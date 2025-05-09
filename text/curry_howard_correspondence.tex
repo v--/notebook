@@ -41,11 +41,13 @@
 
   Introducing more complicated types, for example for handling first-order and higher-order logic, is often done, in the tradition established by Per Martin-L\"of, via a stout list of metatheoretic \hyperref[def:inference_rule]{inference rules}. We describe the classification of these rules, as well as a list of eight rules for arrow types in \fullref{rem:type_theory_rule_classification}.
 
-  Fortunately, for the types we will consider, it will be sufficient to reuse the machinery we have built for untyped and simply typed \( \synlambda \)-calculus, with some small adjustments. We will still find useful the classification of rules, mostly because of the respective terminology. We will however only limit ourselves to introduction and elimination rules since we will not need the rest.
+  Fortunately, for the types we will consider, we will be able to easily reuse the machinery we have built for untyped and simply typed \( \synlambda \)-calculus, with some small adjustments. See \fullref{rem:product_type_equality_rules} for a more concrete discussion. Another reason we avoid such rules is that they assume implicit \hyperref[con:equality]{definitional equality} of distinct terms, while we have spent considerable effort dealing with even \hyperref[def:lambda_term_alpha_equivalence]{\( \alpha \)-equivalence}.
+
+  We will still find useful the classification of rules, mostly because of the respective terminology. We will however only limit ourselves to introduction and elimination rules since we will not need the rest.
 \end{remark}
 
 \begin{remark}\label{rem:type_theory_rule_classification}
-  \incite[24]{MartinLöf1984IntuitionisticTypeTheory} uses (metatheoretic) \hyperref[def:inference_rule]{inference rules} to build his entire type theory. He classifies the different rules for each family of types as follows:
+  \incite[24]{MartinLöf1984IntuitionisticTypeTheory} uses (metatheoretic) \hyperref[def:inference_rule]{inference rules} to build his entire type theory, without an underlying \hyperref[con:logical_system]{logical system} (or, rather, with only a minimalist one), and hence without \( \synlambda \)-calculus available. He classifies the different rules for each family of types as follows:
   \begin{thmenum}
     \thmitem{rem:type_theory_rule_classification/formation} A \term[en=formation (rule) (\cite[\S 8.1.9]{Mimram2020ProgramEqualsProof})]{type formation} rule allows us to introduce a new type given some premises.
 
@@ -185,7 +187,7 @@
         \end{prooftree}
       \end{equation*}
 
-      Note how, even though we equate a term with its expanded form, we regard this as an expansion rule rather than a reduction rule. The reasoning for this is that we should regard \( M \) as an \( \synlambda \)-abstraction in the canonical form \( \qabs {x^\tau} M x \), not the other way around.
+      Note how, even though we equate a term with its expanded form, we regard this as an expansion rule rather than a reduction rule. The reasoning for this is that we should regard \( M \) as a \( \synlambda \)-abstraction in the canonical form \( \qabs {x^\tau} M x \), not the other way around.
 
       \thmitem{rem:type_theory_rule_classification/equality/congruence} Finally, a \term{congruence rule} simply propagates definitional equality.
 
@@ -230,53 +232,288 @@
 \end{comments}
 
 \begin{definition}\label{def:empty_type}\mimprovised
-  We designate a unique \hyperref[def:type_habitation]{uninhabited} type and, unsurprisingly, call it the \term[en=empty type (\cite[\S 4.3.4]{Mimram2020ProgramEqualsProof})]{empty type}. We denote it by \( \syn\Bbbzero \) and, if needed, we introduce it as a \hyperref[def:simple_type]{base type} of the \hyperref[def:simple_type_signature]{signature}, along with the constant term \( \synA_- \), and the following \hyperref[rem:type_theory_rule_classification/elimination]{elimination rule}:
+  We designate a unique \hyperref[def:type_habitation]{uninhabited} type and, unsurprisingly, call it the \term[en=empty type (\cite[\S 4.3.4]{Mimram2020ProgramEqualsProof})]{empty type}. We denote it by \( \syn\Bbbzero \) and introduce it as a \hyperref[def:simple_type]{base type} of the \hyperref[def:simple_type_signature]{signature}, along with the constant term \( \synE_- \) and the following \hyperref[rem:type_theory_rule_classification/elimination]{elimination rule} based on \ref{inf:def:propositional_natural_deduction_systems/bot/efq}:
   \begin{equation*}\taglabel[\ensuremath{ \Bbbzero_- }]{inf:def:empty_type/elim}
     \begin{prooftree}
       \hypo{ \synM: \syn\Bbbzero }
-      \infer1[\ref{inf:def:empty_type/elim}]{ \synA_- \synM: \syn\tau }
+      \infer1[\ref{inf:def:empty_type/elim}]{ \synE_- \synM: \syn\tau }
     \end{prooftree}
   \end{equation*}
 \end{definition}
 \begin{comments}
-  \item We have formulated the rule so that it resembles \ref{inf:def:propositional_natural_deduction_systems/bot/efq}. Due to the availability of \ref{inf:def:arrow_typing_rules/elim}, we could have just as well introduced the rule
+  \item We have formulated the rule so that it resembles \ref{inf:def:propositional_natural_deduction_systems/bot/efq}. We do not forbid a variable to have type \( \syn\Bbbzero \), but provide a term of arbitrary type given such a variable.
+
+  Due to the availability of \ref{inf:def:arrow_typing_rules/elim}, we could have just as well introduced the rule
   \begin{equation*}
     \begin{prooftree}
-      \infer0{ \synA_-: \syn\Bbbzero \synimplies \syn\tau }
+      \infer0{ \synE_-: \syn\Bbbzero \synimplies \syn\tau }
     \end{prooftree}
   \end{equation*}
 
-  Another possibility is
+  Unfortunately, both break the type uniqueness for typed terms shown in \fullref{thm:typed_term_habitation_uniqueness}. One way to mitigate this is to introduce a distinct constant \( \synE_-^\tau \) and distinct rule \( \syn\Bbbzero_-^\tau \) for every type \( \tau \), which would unfortunately complicate our formalization efforts. Due to our limited interest in the empty type, we avoid doing this.
+
+  \item A simpler definition would be
   \begin{equation*}
     \begin{prooftree}
       \hypo{ \synM: \syn\Bbbzero }
-      \infer1{ \synA_-: \syn\tau }
+      \infer1{ \synE_-: \syn\tau }
     \end{prooftree}
   \end{equation*}
 
-  Unfortunately, all of those break the uniqueness for simple types shown in \fullref{thm:typed_term_habitation_uniqueness}. One way to mitigate this is to introduce a distinct constant \( \synA_-^\tau \) and distinct rule \( \Bbbzero_-^\tau \) for every type \( \tau \), which would unfortunately complicate our formalization efforts. Due to our limited interest in the empty type, we avoid doing so.
+  It has the drawback of \( \synE_- \) possibly having multiple types in the type context \( \synx: \syn\Bbbzero, \syny: \syn\Bbbzero \).
 
   \item A treatment of the empty type within simple type theory can be found in \cite[\S 4.3.4]{Mimram2020ProgramEqualsProof}.
 \end{comments}
 
-\begin{definition}\label{def:unit_type}\mcite[\S 4.3.2]{Mimram2020ProgramEqualsProof}
-  The \term{unit type} \( \syn\Bbbone \).
-\end{definition}
+\begin{definition}\label{def:unit_type}\mimprovised
+  Dually to the \hyperref[def:empty_type]{empty type}, we introduce the \term[en=unit type (\cite[\S 4.3.4]{Mimram2020ProgramEqualsProof})]{unit type} \( \syn\Bbbone \) with a unique inhabitant, the constant term \( \synU_+ \).
 
-\begin{definition}\label{def:product_type}
-\end{definition}
+  There is an \hyperref[rem:type_theory_rule_classification/introduction]{introduction rule} and an \hyperref[rem:type_theory_rule_classification/introduction]{elimination rule} resembling the verum rules from \ref{inf:def:propositional_natural_deduction_systems/top}:
+  \begin{paracol}{2}
+    \begin{leftcolumn}
+      \ParacolAlignmentHack
+      \begin{equation*}\taglabel[\ensuremath{ \Bbbone_+ }]{inf:def:unit_type/intro}
+        \begin{prooftree}
+          \infer0[\ref{inf:def:unit_type/intro}]{ \synU_+: \syn\Bbbone }
+        \end{prooftree}
+      \end{equation*}
+    \end{leftcolumn}
 
-\begin{definition}\label{def:sum_type}
+    \begin{rightcolumn}
+      \ParacolAlignmentHack
+      \begin{equation*}\taglabel[\ensuremath{ \Bbbone_- }]{inf:def:unit_type/elim}
+        \begin{prooftree}
+          \hypo{ [\synU_+: \Bbbone] }
+          \ellipsis {} { \synM: \syn\tau }
+          \infer1[\ref{inf:def:unit_type/elim}]{ \synM: \syn\tau }
+        \end{prooftree}
+      \end{equation*}
+    \end{rightcolumn}
+  \end{paracol}
 \end{definition}
+\begin{comments}
+  \item A treatment of the unit type within simple type theory can be found in \cite[\S 4.3.2]{Mimram2020ProgramEqualsProof}.
+
+  \item In a more complicated typing system, forcing uniqueness can be done via the \hyperref[rem:type_theory_rule_classification/equality/uniqueness]{uniqueness rule}
+  \begin{equation*}
+    \begin{prooftree}
+      \hypo{ \synM: \syn\Bbbone }
+      \infer1{ \synM \coloneqq \synU_+: \syn\Bbbone }
+    \end{prooftree}
+  \end{equation*}
+\end{comments}
+
+\begin{definition}\label{def:product_type}\mimprovised
+  When defining the syntax of simple types in \fullref{def:simple_type}, we have defined the product type of \( \tau \) and \( \sigma \) as \( \tau \syntimes \sigma \). We will now introduce rules based on the encoding of \hyperref[def:ordered_tuple]{ordered pairs} discussed in \fullref{ex:def:beta_eta_reduction/pairs} and \fullref{ex:def:type_derivation_tree/pairs}. For this, we will need constant terms \( \synP_+ \), \( \synP_{-L} \) and \( \synP_{-R} \).
+
+  Based on the natural deduction rules for conjunction formulas from \fullref{def:propositional_natural_deduction_systems/and}, we state one \hyperref[rem:type_theory_rule_classification/introduction]{introduction rule} and two \hyperref[rem:type_theory_rule_classification/elimination]{elimination rules}:
+  \begin{paracol}{3}
+    \begin{nthcolumn}{0}
+      \ParacolAlignmentHack
+      \begin{equation*}\taglabel[\ensuremath{ \times_+ }]{inf:def:product_type/intro}
+        \begin{prooftree}
+          \hypo{ \synM: \syn\tau }
+          \hypo{ \synN: \syn\sigma }
+          \infer2[\ref{inf:def:product_type/intro}]{ \synP_+ \synM \synN: \syn\tau \syntimes \syn\sigma }
+        \end{prooftree}
+      \end{equation*}
+    \end{nthcolumn}
+
+    \begin{nthcolumn}{1}
+      \ParacolAlignmentHack
+      \begin{equation*}\taglabel[\ensuremath{ \times_{-L} }]{inf:def:product_type/elim_left}
+        \begin{prooftree}
+          \hypo{ \synK: \syn\tau \syntimes \syn\sigma }
+          \infer1[\ref{inf:def:product_type/elim_left}]{ \synP_{-L} \synK: \syn\tau }
+        \end{prooftree}
+      \end{equation*}
+    \end{nthcolumn}
+
+    \begin{nthcolumn}{2}
+      \ParacolAlignmentHack
+      \begin{equation*}\taglabel[\ensuremath{ \times_{-R} }]{inf:def:product_type/elim_right}
+        \begin{prooftree}
+          \hypo{ \synK: \syn\tau \syntimes \syn\sigma }
+          \infer1[\ref{inf:def:product_type/elim_right}]{ \synP_{-R} \synK: \syn\tau }
+        \end{prooftree}
+      \end{equation*}
+    \end{nthcolumn}
+  \end{paracol}
+\end{definition}
+\begin{comments}
+  \item A treatment of product types within simple type theory can be found in \cite[\S 4.3.1]{Mimram2020ProgramEqualsProof}.
+
+  \item We discuss how equality rules and \( \beta\eta \)-reduction are related in \fullref{rem:product_type_equality_rules}.
+\end{comments}
+
+\begin{remark}\label{rem:product_type_equality_rules}
+  In \fullref{ex:def:beta_eta_reduction/pairs}, we have shown that the \( \synlambda \)-terms \ref{ex:def:beta_eta_reduction/pairs/intro}, \ref{ex:def:beta_eta_reduction/pairs/elim_left} and \ref{ex:def:beta_eta_reduction/pairs/elim_right} enable the following \( \beta \)-reductions:
+  \begin{align}\label{eq:rem:product_type_equality_rules/beta}
+    P_{-L} (P_+ A B) \bred* A
+    &&
+    \T{and}
+    &&
+    P_{-R} (P_+ A B) \bred* B.
+  \end{align}
+
+  In \fullref{rem:delta_reduction}, we have shown how \hyperref[def:delta_reduction]{\( \delta \)-reduction} rules replacing the constant term \( \synP_+ \) with the corresponding combinator \ref{ex:def:beta_eta_reduction/pairs/intro}, and similarly for \( \synP_{-L} \) and \( \synP_{-R} \), allows us to use \( \beta\delta \)-reduction to deduce
+  \begin{align*}
+    \synP_{-L} (\synP_+ A B) \redrel*{\beta\delta} A
+    &&
+    \T{and}
+    &&
+    \synP_{-R} (\synP_+ A B) \redrel*{\beta\delta} B.
+  \end{align*}
+
+  We have discussed in \fullref{ex:def:type_derivation_tree/pairs} how these combinators are not, in general, \hyperref[def:typability]{typable}, using only arrow types. Having the rules from \fullref{def:product_type}, however, we know the corresponding constants are typable, and we can easily derive
+  \begin{equation*}
+    \begin{prooftree}
+      \hypo{}
+      \ellipsis {} { A: \tau }
+
+      \hypo{}
+      \ellipsis {} { B: \sigma }
+
+      \infer2[\ref{inf:def:product_type/intro}]{ \synP_+ AB: \tau \syntimes \sigma }
+
+      \infer1[\ref{inf:def:product_type/elim_left}]{ \synP_{-L} (\synP_+ AB): \tau }
+    \end{prooftree}
+  \end{equation*}
+
+  Thus, \( \synP_{-L} (\synP_+ AB) \) has the same type as \( A \) and it \( \beta\delta \)-reduces to \( A \).
+
+  This diminishes the utility of adding \hyperref[rem:type_theory_rule_classification/equality/computation]{computation rules} for product types, which, as suggested in \cite[\S 4.3.1]{Mimram2020ProgramEqualsProof}, would simply mimic \( \beta \)-reduction:
+  \begin{paracol}{2}
+    \begin{leftcolumn}
+      \begin{equation*}
+        \begin{prooftree}
+          \hypo{ A: \tau }
+          \hypo{ B: \sigma }
+          \infer2{ \synP_{-L} (\synP_+ AB) \coloneqq A: \tau }
+        \end{prooftree}
+      \end{equation*}
+    \end{leftcolumn}
+
+    \begin{rightcolumn}
+      \begin{equation*}
+        \begin{prooftree}
+          \hypo{ A: \tau }
+          \hypo{ B: \sigma }
+          \infer2{ \synP_{-L} (\synP_+ AB) \coloneqq B: \sigma }
+        \end{prooftree}
+      \end{equation*}
+    \end{rightcolumn}
+  \end{paracol}
+
+  There is one important downside related to \( \eta \)-reduction and \hyperref[rem:type_theory_rule_classification/equality/uniqueness]{uniqueness rules}, however. We could expect that
+  \begin{equation}\label{eq:rem:product_type_equality_rules/eta}
+    P_+ (P_{-L} M) (P_{-R} A) \redrel*{\beta\eta} A.
+  \end{equation}
+
+  \incite*[corr. 1.23]{Barendregt1974SurjectivePairing} demonstrates that there is no triple of untyped \( \synlambda \)-terms \( P_+ \), \( P_{-L} \) and \( P_{+R} \) satisfying \eqref{eq:rem:product_type_equality_rules/eta}.
+
+  Barendregt calls a triple satisfying \eqref{eq:rem:product_type_equality_rules/beta} a \enquote{pairing}, and a triple additionally satisfying \eqref{eq:rem:product_type_equality_rules/eta} --- a \enquote{surjective pairing}. Thus, his result states that untyped \( \synlambda \)-calculus does not admit a surjective pairing, despite the obvious pairing shown in \fullref{ex:def:beta_eta_reduction/pairs}.
+
+  Thus, even for simple types, adding new rules for either \( \beta\eta \)-reduction or for judgmental equality cannot be circumvented by a simpler mechanism such as \( \delta \)-reduction. This will unfortunately require us to reprove all results involving either \( \beta\eta \)-reduction or only \( \alpha \)-equivalence. So, our decision is to avoid new rules and to sacrifice \hyperref[con:extensionality]{extensionality} for the sake of simplicity.
+\end{remark}
+
+\begin{definition}\label{def:sum_type}\mimprovised
+  Similarly to \hyperref[def:product_type]{product types}, we will introduce rules for the sum type \( \tau \synplus \sigma \) based on the discussion in \fullref{ex:def:beta_eta_reduction/disjoint} and \fullref{ex:def:type_derivation_tree/disjoint}. We will need the constants \( \synS_{+L} \), \( \synS_{+R} \) and \( \synS_- \) and three rules resembling the disjunction rules from \fullref{def:propositional_natural_deduction_systems/or}:
+  \columnratio{0.25,0.25,0.5}
+  \begin{paracol}{3}
+    \begin{nthcolumn}{0}
+      \ParacolAlignmentHack
+      \begin{equation*}\taglabel[\ensuremath{ +_{+L} }]{inf:def:sum_type/intro_left}
+        \begin{prooftree}
+          \hypo{ \synM: \syn\tau }
+          \infer1[\ref{inf:def:sum_type/intro_left}]{ \synS_{+L} \synM: \syn\tau \synplus \syn\sigma }
+        \end{prooftree}
+      \end{equation*}
+    \end{nthcolumn}
+
+    \begin{nthcolumn}{1}
+      \ParacolAlignmentHack
+      \begin{equation*}\taglabel[\ensuremath{ +_{+R} }]{inf:def:sum_type/intro_right}
+        \begin{prooftree}
+          \hypo{ \synN: \syn\sigma }
+          \infer1[\ref{inf:def:sum_type/intro_left}]{ \synS_{+R} \synN: \syn\tau \synplus \syn\sigma }
+        \end{prooftree}
+      \end{equation*}
+    \end{nthcolumn}
+
+    \begin{nthcolumn}{2}
+      \ParacolAlignmentHack
+      \begin{equation*}\taglabel[\ensuremath{ +_- }]{inf:def:sum_type/elim}
+        \begin{prooftree}
+          \hypo{ \synM: \syn\tau \synplus \syn\sigma }
+          \hypo{ [\synx: \syn\tau] }
+          \ellipsis {} { \synN: \syn\rho }
+          \hypo{ [\syny: \syn\sigma] }
+          \ellipsis {} { \synK: \syn\rho }
+          \infer3[\ref{inf:def:sum_type/elim}]{ \synS_- (\qabs {\synx^{\syn\tau}} \synN) (\qabs {\syny^{\syn\sigma}} \synK) \synM: \syn\rho }
+        \end{prooftree}
+      \end{equation*}
+    \end{nthcolumn}
+  \end{paracol}
+  \columnratio{}
+\end{definition}
+\begin{comments}
+  \item A treatment of sum types within simple type theory can be found in \cite[\S 4.3.3]{Mimram2020ProgramEqualsProof}.
+
+  \item As with the \hyperref[def:empty_type]{empty type}, unless we make the constants \( \synS_{+L} \) and \( \synS_{+R} \) depend on the types of the terms, we break the type uniqueness for typed terms shown in \fullref{thm:typed_term_habitation_uniqueness}. Again, this is a sacrifice for the sake of simplicity of our formalized system.
+
+  \item We discuss how equality rules and \( \beta\eta \)-reduction are related in \fullref{rem:sum_type_equality_rules}.
+\end{comments}
+
+\begin{remark}\label{rem:sum_type_equality_rules}
+  Similarly to product types, we can use \( \beta\delta \)-reduction to emulate \hyperref[rem:type_theory_rule_classification/equality/computation]{computation rules}. See \fullref{rem:product_type_equality_rules} for a broader discussion of the general idea.
+
+  In our case, given \( M: \tau \), we have
+  \begin{equation*}
+    \begin{prooftree}
+      \hypo{}
+      \ellipsis {} { M: \tau }
+      \infer1[\ref{inf:def:sum_type/intro_left}]{ \synS_{+L} M: \tau \syntimes \rho }
+
+      \hypo{ [x: \tau] }
+      \ellipsis {} { N: \rho }
+
+      \hypo{ [y: \sigma] }
+      \ellipsis {} { K: \rho }
+
+      \infer3[\ref{inf:def:sum_type/elim}]{ \synS_- (\qabs {x^\tau} N) (\qabs {y^\sigma} K) (\synS_{+L} M): \rho }
+    \end{prooftree}
+  \end{equation*}
+
+  We can reduce the latter based on our discussion in \fullref{ex:def:beta_eta_reduction/disjoint}:
+  \begin{align*}
+    &\phantom{{}\bred*{}}
+    \synS_- (\qabs {x^\tau} N) (\qabs {y^\sigma} K) (\synS_{+L} M)
+    \dred* \\ &\dred*
+    S_- (\qabs {x^\tau} N) (\qabs {y^\sigma} K) (S_{+L} M)
+    \bred* \\ &\bred*
+    (\qabs {x^\tau} N) M
+    \bred \\ &\bred
+    N[x \mapsto M].
+  \end{align*}
+
+  \Fullref{alg:simply_typed_reduction} allows deriving the same type \( \rho \) for \( N \) and \( N[x \mapsto M] \) from the derivation of \( \tau \) for \( M \). Thus, again, we can emulate computation rules via reduction.
+
+  Unlike for product types, a \hyperref[rem:type_theory_rule_classification/equality/uniqueness]{uniqueness rule} here is more complicated conceptually:
+  \begin{equation*}
+    \begin{prooftree}
+      \hypo{ M: \tau \synplus \sigma }
+      \infer1{ M \coloneqq \synS_- \synS_{+L} \synS_{+R} M }
+    \end{prooftree}
+  \end{equation*}
+
+  We can regard the positive constants as inclusion terms with types \( \synS_{+L}: \tau \synimplies (\tau \synplus \sigma) \) and \( \synS_{+R}: \sigma \synimplies (\tau \synplus \sigma) \), and the entire term as a conditional based on \( M \).
+\end{remark}
 
 \begin{concept}\label{con:identity_types}
   \todo{Identity types}
 
   Martin-L\"of distinguishes between several kinds of equality and introduces \enquote{identity types} (see \fullref{con:identity_types}), allowing him to develop his \enquote{intuitionistic type theory} --- a fusion of type theory and higher-order logic based on the \hyperref[con:curry_howard_correspondence]{Curry-Howard correspondence}. His theory first appears as \cite{MartinLöf1975IntuitionisticTypeTheory} and, in a more refined later form, can be found in \cite{MartinLöf1984IntuitionisticTypeTheory}.
-\end{concept}
-
-\begin{concept}\label{con:homotopy_type_theory}
-  \todo{Homotopy type theory}
 \end{concept}
 
 \begin{concept}\label{con:dependent_types}
