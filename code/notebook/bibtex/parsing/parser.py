@@ -389,7 +389,7 @@ class BibParser(Parser[BibToken]):
             self.perform_global_validation(entry_context, properties)
 
             yield BibEntry(
-                entry_type=cast(BibEntryType, entry_type),
+                entry_type=cast('BibEntryType', entry_type),
                 entry_name=entry_name,
                 languages=self.process_language(properties, 'language'),
                 origlanguages=self.process_language(properties, 'origlanguage'),

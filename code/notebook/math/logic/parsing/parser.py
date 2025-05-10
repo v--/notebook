@@ -133,7 +133,7 @@ class FormalLogicParser(IdentifierParserMixin[LogicTokenKind, LogicToken], Parse
                 raise context.annotate_context_error(f'Expected {arity} arguments for {name} but got {len(arguments)}')
 
         return cast(
-            tuple[str, Sequence[Term]] | tuple[str, Sequence[TermSchema]],
+            'tuple[str, Sequence[Term]] | tuple[str, Sequence[TermSchema]]',
             (name, arguments)
         )
 

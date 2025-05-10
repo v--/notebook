@@ -13,14 +13,14 @@ class GraphMeta[VertT, EdgeT: Collection, VertLabelT, EdgeSymbolT](type):
     edge_view_class: type[BaseEdgeView]
 
     def __new__[T: GraphMeta](
-        meta: type[T],  # noqa: N804
+        meta: type[T],
         name: str,
         bases: tuple[type, ...],
         attrs: dict[str, Any],
         payload: type[GraphPayload] = GraphPayload,
         vertex_view: type[VertexView] = VertexView,
         edge_view: type[BaseEdgeView] = BaseEdgeView,
-    ) -> T:  # noqa: PYI019
+    ) -> T:
         attrs['payload_class'] = payload
         attrs['vertex_view_class'] = vertex_view
         attrs['edge_view_class'] = edge_view

@@ -8,12 +8,12 @@ class IntModuloMeta(type):
     modulus: int
 
     def __new__[T: IntModuloMeta](
-        meta: type[T],  # noqa: N804
+        meta: type[T],
         name: str,
         bases: tuple[type, ...],
         attrs: dict[str, Any],
         modulus: int = 2,
-    ) -> T:  # noqa: PYI019
+    ) -> T:
         assert modulus > 1
         attrs['modulus'] = modulus
         return type.__new__(meta, name, bases, attrs)

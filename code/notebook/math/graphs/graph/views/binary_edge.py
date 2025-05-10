@@ -14,12 +14,12 @@ class BinaryEdgeViewMeta[VertT, EdgeT: Collection, VertLabelT, EdgeSymbolT](type
         return cls.edge_class(*edge)
 
     def __new__[T: BinaryEdgeViewMeta](
-        meta: type[T],  # noqa: N804
+        meta: type[T],
         name: str,
         bases: tuple[type, ...],
         attrs: dict[str, Any],
         edge_class: type[Collection] = tuple,
-    ) -> T:  # noqa: PYI019
+    ) -> T:
         attrs['edge_class'] = edge_class
         attrs['normalize_edge'] = meta.normalize_edge
         return type.__new__(meta, name, bases, attrs)

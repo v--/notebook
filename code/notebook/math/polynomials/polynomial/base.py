@@ -13,12 +13,12 @@ class PolynomialMeta(type):
     semiring: type[ISemiring]
 
     def __new__[T: PolynomialMeta](
-        meta: type[T],  # noqa: N804
+        meta: type[T],
         name: str,
         bases: tuple[type, ...],
         attrs: dict[str, Any],
         semiring: type[ISemiring] = ISemiring,
-    ) -> T:  # noqa: PYI019
+    ) -> T:
         attrs['semiring'] = semiring
         return type.__new__(meta, name, bases, attrs)
 
@@ -28,7 +28,7 @@ class BasePolynomial[N: ISemiring](metaclass=PolynomialMeta):
 
     @classmethod
     def lift_to_scalar(cls, value: int) -> N:
-        return cast(N, cls.semiring(value))
+        return cast('N', cls.semiring(value))
 
     @classmethod
     def new_zero(cls) -> Self:

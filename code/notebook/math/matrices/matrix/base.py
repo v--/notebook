@@ -34,12 +34,12 @@ class MatrixMeta(type):
     semiring: type[ISemiring]
 
     def __new__[M: MatrixMeta](
-        meta: type[M],  # noqa: N804
+        meta: type[M],
         name: str,
         bases: tuple[type, ...],
         attrs: dict[str, Any],
         semiring: type[ISemiring] = ISemiring,
-    ) -> M:  # noqa: PYI019
+    ) -> M:
         attrs['semiring'] = semiring
         return type.__new__(meta, name, bases, attrs)
 
@@ -51,7 +51,7 @@ class BaseMatrix[N: ISemiring](metaclass=MatrixMeta):
 
     @classmethod
     def lift_to_scalar(cls, value: int) -> N:
-        return cast(N, cls.semiring(value))
+        return cast('N', cls.semiring(value))
 
     @classmethod
     def from_factory(cls, m: int, n: int, factory: Callable[[int, int], N]) -> Self:
@@ -202,7 +202,7 @@ class BaseMatrix[N: ISemiring](metaclass=MatrixMeta):
                 if j >= self.n or j < -self.n:
                     raise MatrixIndexError(f'Attempted to access column with index {j}, but the matrix has only {self.n} columns')
 
-                self.payload[linearize_index(self.dimensions, key)] = cast(N, value)
+                self.payload[linearize_index(self.dimensions, key)] = cast('N', value)
 
     def get_rows(self) -> Sequence[Sequence[N]]:
         return [

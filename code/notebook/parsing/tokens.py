@@ -22,7 +22,7 @@ def map_of_str_enum_to_tokens[TokenKindT](allowed_token_kinds: Collection[TokenK
         if entry.name not in allowed_token_kinds:
             raise InvalidTokenError(f'Entry {entry.name} is not recognized')
 
-        yield entry.value, cast(TokenKindT, entry.name)
+        yield entry.value, cast('TokenKindT', entry.name)
 
 
 @dict_accumulator

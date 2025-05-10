@@ -9,13 +9,13 @@ class TropicalMeta(type):
     zero: float
 
     def __new__[T: TropicalMeta](
-        meta: type[T],  # noqa: N804
+        meta: type[T],
         name: str,
         bases: tuple[type, ...],
         attrs: dict[str, Any],
         sum: Callable[[float, float], float] = ISemiring.__add__,  # noqa: A002
         zero: float = 0
-    ) -> T:  # noqa: PYI019
+    ) -> T:
         attrs['sum'] = sum
         attrs['zero'] = zero
         return type.__new__(meta, name, bases, attrs)

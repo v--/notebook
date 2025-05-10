@@ -17,4 +17,4 @@ def fifth_postulate() -> str:
 
 @pytest.fixture
 def fifth_postulate_stop_words() -> Collection[str]:
-    return 'a across and being do if is itself less makes not of on other same than that the then to two whose'.split()
+    return 'a across and being do if is itself less makes not of on other same than that the then to two whose'.split()  # noqa: SIM905
