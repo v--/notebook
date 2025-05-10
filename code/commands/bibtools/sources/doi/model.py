@@ -185,7 +185,6 @@ class DoiData(DoiBaseModel):
     subtitle: str | list[str] | None = None
     event: str | list[str] | None = None
     proceedings_subject: str | list[str] | None = None
-    publisher: str | list[str] | None = None
 
     author: Annotated[list[DoiAuthor], Field(default_factory=list)]
     editor: Annotated[list[DoiAuthor], Field(default_factory=list)]
