@@ -27,13 +27,10 @@ class ProofTree(Protocol):
         ...
 
 
+@dataclass(frozen=True)
 class AssumptionTree(ProofTree):
-    marker: Marker
     conclusion: Formula
-
-    def __init__(self, conclusion: Formula, marker: Marker) -> None:
-        self.conclusion = conclusion
-        self.marker = marker
+    marker: Marker
 
     @override
     def get_context(self) -> Mapping[Marker, Formula]:
@@ -108,13 +105,18 @@ class RuleApplicationTree(ProofTree):
         return self.build_renderer().render()
 
 
-def apply(system: NaturalDeductionSystem, rule_name: str, *args: ProofTree | RuleApplicationPremise) -> RuleApplicationTree:
+def apply(
+    system: NaturalDeductionSystem,
+    rule_name: str,
+    *args: ProofTree | RuleApplicationPremise,
+    instantiation: FormalLogicSchemaInstantiation | None = None,
+) -> RuleApplicationTree:
     rule = system[rule_name]
 
     if len(args) != len(rule.premises):
         raise RuleApplicationError(f'The rule {rule_name} has {len(rule.premises)} premises, but the application has {len(args)}')
 
-    instantiation = FormalLogicSchemaInstantiation()
+    instantiation = instantiation or FormalLogicSchemaInstantiation()
     marker_map = dict[Marker, Formula]()
 
     application_premises = [

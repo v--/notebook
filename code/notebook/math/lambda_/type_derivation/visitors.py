@@ -11,12 +11,12 @@ class BasicDerivationTreeVisitor[T]:
             return self.visit_assumption(tree)
 
         if isinstance(tree, RuleApplicationTree):
-            if tree.get_rule() == BASE_EXPLICIT_TYPE_SYSTEM['→⁻']:
+            if tree.get_rule() == BASE_EXPLICIT_TYPE_SYSTEM['→₋']:
                 term = tree.conclusion.term
                 assert isinstance(term, TypedApplication)
                 return self.visit_arrow_elim(tree, tree.premises[0].tree, tree.premises[1].tree, term)
 
-            if tree.get_rule() == BASE_EXPLICIT_TYPE_SYSTEM['→⁺']:
+            if tree.get_rule() == BASE_EXPLICIT_TYPE_SYSTEM['→₊']:
                 term = tree.conclusion.term
                 discharge = tree.premises[0].discharge
                 assert isinstance(term, TypedAbstraction)

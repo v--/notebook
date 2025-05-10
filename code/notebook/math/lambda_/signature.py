@@ -1,4 +1,4 @@
-from collections.abc import Collection
+from collections.abc import Collection, Iterable
 from typing import Literal, NamedTuple
 
 from ...support.collections import TrieMapping
@@ -31,6 +31,9 @@ class LambdaSignature:
 
     def get_symbol(self, name: str) -> LambdaSymbol:
         return self.trie[name]
+
+    def iter_symbols(self) -> Iterable[LambdaSymbol]:
+        return self.trie.values()
 
 
 EMPTY_SIGNATURE = LambdaSignature()

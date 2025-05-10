@@ -22,7 +22,7 @@ class ExplicitTypingRulePremise(TypingRulePremise[ExplicitTypeAssertionSchema]):
     pass
 
 
-class TypingRule[SchemaT: GradualTypeAssertionSchema, PremiseT: TypingRulePremise](InferenceRule[SchemaT, PremiseT]):
+class TypingRule[SchemaT: TypeAssertionSchema, PremiseT: TypingRulePremise](InferenceRule[SchemaT, PremiseT]):
     pass
 
 

@@ -24,7 +24,7 @@ def test_arrow_elim(dummy_signature: LambdaSignature) -> None:
     term = parse_term(dummy_signature, '(xy)', TypingStyle.EXPLICIT)
     assert str(derive_type(term, context)) == dedent('''\
         x: (τ → τ)      y: τ
-        ______________________ →⁻
+        ______________________ →₋
                (xy): τ
         '''
     )
@@ -35,7 +35,7 @@ def test_arrow_intro(dummy_signature: LambdaSignature) -> None:
     term = parse_term(dummy_signature, '(λx:τ.x)', TypingStyle.EXPLICIT)
     assert str(derive_type(term)) == dedent('''\
                x: τ
-        x _________________ →⁺
+        x _________________ →₊
           (λx:τ.x): (τ → τ)
         '''
     )
@@ -45,9 +45,9 @@ def test_nested_arrow_intro(dummy_signature: LambdaSignature) -> None:
     term = parse_term(dummy_signature, '(λx:τ.(λy:σ.x))', TypingStyle.EXPLICIT)
     assert str(derive_type(term)) == dedent('''\
                      x: τ
-                _________________ →⁺
+                _________________ →₊
                 (λy:σ.x): (σ → τ)
-        x ______________________________ →⁺
+        x ______________________________ →₊
           (λx:τ.(λy:σ.x)): (τ → (σ → τ))
         '''
     )
@@ -58,15 +58,15 @@ def test_cons(dummy_signature: LambdaSignature) -> None:
     term = parse_term(dummy_signature, '(λx:τ.(λy:σ.(λf:(τ→(σ→ρ)).((fx)y))))', TypingStyle.EXPLICIT)
     assert str(derive_type(term)) == dedent('''\
                        f: (τ → (σ → ρ))      x: τ
-                       ____________________________ →⁻
+                       ____________________________ →₋
                               (fx): (σ → ρ)               y: σ
-                       _________________________________________ →⁻
+                       _________________________________________ →₋
                                       ((fx)y): ρ
-                    _______________________________________________ →⁺
+                    _______________________________________________ →₊
                     (λf:(τ → (σ → ρ)).((fx)y)): ((τ → (σ → ρ)) → ρ)
-              ____________________________________________________________ →⁺
+              ____________________________________________________________ →₊
               (λy:σ.(λf:(τ → (σ → ρ)).((fx)y))): (σ → ((τ → (σ → ρ)) → ρ))
-        _________________________________________________________________________ →⁺
+        _________________________________________________________________________ →₊
         (λx:τ.(λy:σ.(λf:(τ → (σ → ρ)).((fx)y)))): (τ → (σ → ((τ → (σ → ρ)) → ρ)))
         '''
     )

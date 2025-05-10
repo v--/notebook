@@ -8,7 +8,7 @@ from .system import AxiomaticDerivationSystem
 
 
 IMPLICATIONAL_AXIOMS = AxiomaticDerivationSystem({
-    '→⁺': parse_signatureless_formula_schema('(φ → (ψ → φ))'),
+    '→₊': parse_signatureless_formula_schema('(φ → (ψ → φ))'),
     '↠': parse_signatureless_formula_schema('((φ → (ψ → θ)) → ((φ → ψ) → (φ → θ)))'),
 })
 

@@ -42,7 +42,7 @@ class TypeInferenceVisitor(TypedTermVisitor[TypeDerivationTree]):
             raise TypeInferenceError(f'Incompatible types in application term {term}')
 
         return apply(
-            BASE_EXPLICIT_TYPE_SYSTEM, '→⁻',
+            BASE_EXPLICIT_TYPE_SYSTEM, '→₋',
             premise(tree=subtree_a),
             premise(tree=subtree_b)
         )
@@ -52,7 +52,7 @@ class TypeInferenceVisitor(TypedTermVisitor[TypeDerivationTree]):
         subtree = TypeInferenceVisitor({**self.context, term.var: term.var_type}).visit(term.sub)
 
         return apply(
-            BASE_EXPLICIT_TYPE_SYSTEM, '→⁺',
+            BASE_EXPLICIT_TYPE_SYSTEM, '→₊',
             premise(tree=subtree, discharge=VariableTypeAssertion(term.var, term.var_type))
         )
 

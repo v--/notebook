@@ -56,7 +56,7 @@ class ReductionVisitor(BasicDerivationTreeVisitor[TypeDerivationTree]):
                 pass
             else:
                 return apply(
-                    BASE_EXPLICIT_TYPE_SYSTEM, '→⁻',
+                    BASE_EXPLICIT_TYPE_SYSTEM, '→₋',
                     result_subtree_left,
                     ReductionVisitor(self.reduct.b).visit(subtree_right)
                 )
@@ -67,7 +67,7 @@ class ReductionVisitor(BasicDerivationTreeVisitor[TypeDerivationTree]):
                 pass
             else:
                 return apply(
-                    BASE_EXPLICIT_TYPE_SYSTEM, '→⁻',
+                    BASE_EXPLICIT_TYPE_SYSTEM, '→₋',
                     ReductionVisitor(self.reduct.a).visit(subtree_left),
                     result_subtree_right,
                 )
@@ -107,7 +107,7 @@ class ReductionVisitor(BasicDerivationTreeVisitor[TypeDerivationTree]):
                 )
 
             return apply(
-                BASE_EXPLICIT_TYPE_SYSTEM, '→⁺',
+                BASE_EXPLICIT_TYPE_SYSTEM, '→₊',
                 premise(
                     discharge=assertion,
                     tree=ReductionVisitor(self.reduct.sub).visit(adjusted_subtree)

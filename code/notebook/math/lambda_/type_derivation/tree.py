@@ -112,13 +112,18 @@ class RuleApplicationTree(TypeDerivationTree):
         return self.build_renderer().render()
 
 
-def apply(system: GradualTypeSystem, rule_name: str, *args: TypeDerivationTree | RuleApplicationPremise) -> RuleApplicationTree:
+def apply(
+    system: GradualTypeSystem,
+    rule_name: str,
+    *args: TypeDerivationTree | RuleApplicationPremise,
+    instantiation: LambdaSchemaInstantiation | None = None,
+) -> RuleApplicationTree:
     rule = system[rule_name]
 
     if len(args) != len(rule.premises):
         raise TypeDerivationError(f'The rule {rule_name} has {len(rule.premises)} premises, but the application has {len(args)}')
 
-    instantiation = LambdaSchemaInstantiation()
+    instantiation = instantiation or LambdaSchemaInstantiation()
     application_premises = [
         premise(tree=premise_arg) if isinstance(premise_arg, TypeDerivationTree) else premise_arg
         for premise_arg in args

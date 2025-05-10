@@ -1,6 +1,8 @@
 import pytest
 
+from ..logic.signature import FormalLogicSignature
 from .signature import LambdaSignature
+from .type_system.explicit import SIMPLE_SIGNATURE
 
 
 @pytest.fixture

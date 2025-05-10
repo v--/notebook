@@ -1,3 +1,4 @@
+from collections.abc import Iterable
 from typing import Literal, NamedTuple
 
 from ...support.collections import TrieMapping
@@ -27,6 +28,9 @@ class FormalLogicSignature:
 
     def get_symbol(self, name: str) -> SignatureSymbol:
         return self.trie[name]
+
+    def iter_symbols(self) -> Iterable[SignatureSymbol]:
+        return self.trie.values()
 
 
 EMPTY_SIGNATURE = FormalLogicSignature()

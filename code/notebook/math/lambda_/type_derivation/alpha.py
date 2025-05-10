@@ -42,7 +42,7 @@ class AlphaConversionVisitor(BasicDerivationTreeVisitor[TypeDerivationTree]):
             raise NotAlphaEquivalent
 
         return apply(
-            BASE_EXPLICIT_TYPE_SYSTEM, '→⁻',
+            BASE_EXPLICIT_TYPE_SYSTEM, '→₋',
             AlphaConversionVisitor(self.other.a).visit(subtree_left),
             AlphaConversionVisitor(self.other.b).visit(subtree_right)
         )
@@ -72,7 +72,7 @@ class AlphaConversionVisitor(BasicDerivationTreeVisitor[TypeDerivationTree]):
             )
 
         return apply(
-            BASE_EXPLICIT_TYPE_SYSTEM, '→⁺',
+            BASE_EXPLICIT_TYPE_SYSTEM, '→₊',
             premise(
                 discharge=assertion,
                 tree=AlphaConversionVisitor(self.other.sub).visit(adjusted_subtree)

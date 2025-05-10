@@ -11,7 +11,7 @@ class ImplicitTypeSystem(GradualTypeSystem[ImplicitTypingRule]):
 
 
 BASE_IMPLICIT_TYPE_SYSTEM = ImplicitTypeSystem({
-    '→⁺': parse_typing_rule(EMPTY_SIGNATURE, '[x: τ] M: σ ⫢ (λx.M): (τ → σ)', TypingStyle.IMPLICIT),
-    '→⁻': parse_typing_rule(EMPTY_SIGNATURE, 'M: (τ → σ), N: τ ⫢ (MN): σ', TypingStyle.IMPLICIT)
+    '→₊': parse_typing_rule(EMPTY_SIGNATURE, '[x: τ] M: σ ⫢ (λx.M): (τ → σ)', TypingStyle.IMPLICIT),
+    '→₋': parse_typing_rule(EMPTY_SIGNATURE, 'M: (τ → σ), N: τ ⫢ (MN): σ', TypingStyle.IMPLICIT)
 })
 

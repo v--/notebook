@@ -21,7 +21,7 @@ def test_assumption_tree(dummy_signature: LambdaSignature) -> None:
 def test_arrow_intro_untyped(dummy_signature: LambdaSignature) -> None:
     assumption = parse_variable_assertion(dummy_signature, 'x: τ')
     tree = apply(
-        BASE_IMPLICIT_TYPE_SYSTEM, '→⁺',
+        BASE_IMPLICIT_TYPE_SYSTEM, '→₊',
         premise(
             tree=assume(assumption),
             discharge=assumption
@@ -32,7 +32,7 @@ def test_arrow_intro_untyped(dummy_signature: LambdaSignature) -> None:
     assert tree.conclusion.term == combinators.i
     assert str(tree) == dedent('''\
               x: τ
-        x _______________ →⁺
+        x _______________ →₊
           (λx.x): (τ → τ)
         '''
     )
@@ -42,7 +42,7 @@ def test_arrow_intro_untyped(dummy_signature: LambdaSignature) -> None:
 def test_arrow_intro_typed(dummy_signature: LambdaSignature) -> None:
     assumption = parse_variable_assertion(dummy_signature, 'x: τ')
     tree = apply(
-        BASE_EXPLICIT_TYPE_SYSTEM, '→⁺',
+        BASE_EXPLICIT_TYPE_SYSTEM, '→₊',
         premise(
             tree=assume(assumption),
             discharge=assumption
@@ -52,7 +52,7 @@ def test_arrow_intro_typed(dummy_signature: LambdaSignature) -> None:
     assert tree.get_context() == {}
     assert str(tree) == dedent('''\
                x: τ
-        x _________________ →⁺
+        x _________________ →₊
           (λx:τ.x): (τ → τ)
         '''
     )
@@ -63,11 +63,11 @@ def test_nested_arrow_intro(dummy_signature: LambdaSignature) -> None:
     assumption_x = parse_variable_assertion(dummy_signature, 'x: τ')
     assumption_y = parse_variable_assertion(dummy_signature, 'y: σ')
     tree = apply(
-        BASE_IMPLICIT_TYPE_SYSTEM, '→⁺',
+        BASE_IMPLICIT_TYPE_SYSTEM, '→₊',
         premise(
             discharge=assumption_x,
             tree=apply(
-                BASE_IMPLICIT_TYPE_SYSTEM, '→⁺',
+                BASE_IMPLICIT_TYPE_SYSTEM, '→₊',
                 premise(
                     discharge=assumption_y,
                     tree=assume(assumption_x)
@@ -80,9 +80,9 @@ def test_nested_arrow_intro(dummy_signature: LambdaSignature) -> None:
     assert tree.conclusion.term == combinators.k
     assert str(tree) == dedent('''\
                    x: τ
-               _______________ →⁺
+               _______________ →₊
                (λy.x): (σ → τ)
-        x __________________________ →⁺
+        x __________________________ →₊
           (λx.(λy.x)): (τ → (σ → τ))
         '''
     )
@@ -94,21 +94,21 @@ def test_cons(dummy_signature: LambdaSignature) -> None:
     assumption_x = parse_variable_assertion(dummy_signature, 'x: τ')
     assumption_y = parse_variable_assertion(dummy_signature, 'y: σ')
     tree = apply(
-        BASE_IMPLICIT_TYPE_SYSTEM, '→⁺',
+        BASE_IMPLICIT_TYPE_SYSTEM, '→₊',
         premise(
             discharge=assumption_x,
             tree=apply(
-                BASE_IMPLICIT_TYPE_SYSTEM, '→⁺',
+                BASE_IMPLICIT_TYPE_SYSTEM, '→₊',
                 premise(
                     discharge=assumption_y,
                     tree=apply(
-                        BASE_IMPLICIT_TYPE_SYSTEM, '→⁺',
+                        BASE_IMPLICIT_TYPE_SYSTEM, '→₊',
                         premise(
                             discharge=assumption_f,
                             tree=apply(
-                                BASE_IMPLICIT_TYPE_SYSTEM, '→⁻',
+                                BASE_IMPLICIT_TYPE_SYSTEM, '→₋',
                                 apply(
-                                    BASE_IMPLICIT_TYPE_SYSTEM, '→⁻',
+                                    BASE_IMPLICIT_TYPE_SYSTEM, '→₋',
                                     assume(assumption_f),
                                     assume(assumption_x)
                                 ),
@@ -125,15 +125,15 @@ def test_cons(dummy_signature: LambdaSignature) -> None:
     assert tree.conclusion.term == pairs.cons
     assert str(tree) == dedent('''\
               f: (τ → (σ → ρ))      x: τ
-              ____________________________ →⁻
+              ____________________________ →₋
                      (fx): (σ → ρ)               y: σ
-              _________________________________________ →⁻
+              _________________________________________ →₋
                              ((fx)y): ρ
-              _________________________________________ →⁺
+              _________________________________________ →₊
                   (λf.((fx)y)): ((τ → (σ → ρ)) → ρ)
-             ____________________________________________ →⁺
+             ____________________________________________ →₊
              (λy.(λf.((fx)y))): (σ → ((τ → (σ → ρ)) → ρ))
-        _______________________________________________________ →⁺
+        _______________________________________________________ →₊
         (λx.(λy.(λf.((fx)y)))): (τ → (σ → ((τ → (σ → ρ)) → ρ)))
         '''
     )
