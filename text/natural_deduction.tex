@@ -146,7 +146,7 @@
 \end{comments}
 
 \begin{definition}\label{def:natural_deduction_proof_tree}\mimprovised
-  Fix a \hyperref[def:abstract_natural_deduction_system]{propositional natural deduction system}. We will define a family of \hyperref[def:labeled_tree]{labeled trees}, which we will call \term{proof trees}.
+  Fix a \hyperref[def:abstract_natural_deduction_system]{natural deduction system}. We will define a family of \hyperref[def:labeled_tree]{labeled trees}, which we will call \term{proof trees}.
 
   The labels of proof trees are triples consisting of the following objects:
   \begin{thmenum}[series=def:natural_deduction_proof_tree]
@@ -199,9 +199,12 @@
     Discharging requires some additional notes that can also be seen implemented programmatically as \identifier{logic.deduction.proof_tree.apply} in \cite{notebook:code}:
     \begin{itemize}
       \item Since open assumptions have markers attached, there generally is nondeterminism involved in the choice of marker, and different choices lead to different rule application trees.
-      \item If the rule allows discharging an assumption but no such assumption can be discharged, we apply the rule without discharging anything. In the context of typing rules, \incite[note 2A8.1]{Hindley1997BasicSTT} calls this \enquote{discharging [the assumption] vacuously}.
+
+      \item If the rule allows discharging an assumption but no such assumption can be discharged, we apply the rule without discharging anything. In the context of \hyperref[con:typing_rule]{typing rules}, \incite[note 2A8.1]{Hindley1997BasicSTT} calls this \enquote{discharging [the assumption] vacuously}. \Fullref{ex:natural_deduction_efq_vs_dne} demonstrates this, and a more practical example can be found in the distributivity proof in \fullref{thm:simple_algebraic_type_arithmetic}.
+
       \item We disallow multiple formulas with the same marker because that would break \fullref{alg:proof_tree_to_type_derivation}. If two assumptions have the same marker, we require the corresponding formulas to coincide.
-      \item It is possible to avoid markers entirely and discharge assumptions independently of their label. \incite[\S 2.1.9]{TroelstraSchwichtenberg2000BasicProofTheory} call this the \enquote{complete discharge convention}. We prefer to use markers because it makes the relationship to \( \synlambda \)-terms via the \hyperref[con:curry_howard_correspondence]{Curry-Howard correspondence} apparent.
+
+      \item It is possible to avoid markers entirely and discharge assumptions independently of their label. \incite[\S 2.1.9]{TroelstraSchwichtenberg2000BasicProofTheory} call this the \enquote{complete discharge convention}. We prefer to use markers because it simplifies \fullref{alg:proof_tree_to_type_derivation}.
     \end{itemize}
 
     Finally, we can define the rule application tree by \hyperref[def:ordered_tree_grafting_product]{grafting} \( P_1, \ldots, P_n \) to a new root with the following label:
@@ -652,6 +655,39 @@
 
   \item Although we have defined abstract natural deduction systems in great generality, we will refer to the above as \enquote{the} natural deduction systems.
 \end{comments}
+
+\begin{example}\label{ex:natural_deduction_efq_vs_dne}
+  The only difference between \ref{inf:def:propositional_natural_deduction_systems/bot/efq} and \ref{inf:def:propositional_natural_deduction_systems/bot/dne} is the dischargeable negation in the latter.
+
+  For example, by using the rule \ref{inf:def:propositional_natural_deduction_systems/bot/dne}, we can derive the formula \( \eqref{eq:thm:classical_tautologies/dne} = \neg \neg \varphi \synimplies \varphi \):
+  \begin{equation*}
+    \begin{prooftree}
+      \hypo{ [\neg\neg\varphi]^u }
+      \hypo{ [\neg\varphi]^v }
+      \infer2[\ref{inf:def:propositional_natural_deduction_systems/neg/elim}]{ \synbot }
+      \infer[left label=\( v \)]1[\ref{inf:def:propositional_natural_deduction_systems/bot/dne}]{ \neg\varphi }
+
+      \hypo{ [\varphi]^w }
+      \infer2[\ref{inf:def:propositional_natural_deduction_systems/neg/elim}]{ \synbot }
+      \infer[left label=\( w \)]1[\ref{inf:def:propositional_natural_deduction_systems/bot/dne}]{ \varphi }
+      \infer[left label=\( u \)]1[\ref{inf:def:propositional_natural_deduction_systems/imp/intro}]{ \neg\neg\varphi \synimplies \varphi }
+    \end{prooftree}
+  \end{equation*}
+
+  If we instead use the weaker \ref{inf:def:propositional_natural_deduction_systems/bot/efq}, we cannot discharge \( [\neg\varphi]^v \) nor \( [\varphi]^w \), and we are left with
+  \begin{equation*}
+    \neg\varphi, \varphi \vdash \neg\neg\varphi \synimplies \varphi.
+  \end{equation*}
+
+  We will show in \fullref{thm:syntactic_propositional_conjunction_of_premises} that this implies
+  \begin{equation*}
+    (\neg\varphi \synwedge \varphi) \vdash \neg\neg\varphi \synimplies \varphi
+  \end{equation*}
+
+  We will show in \fullref{thm:syntactic_minimal_tautologies} that the law of non-contradiction \eqref{eq:thm:intuitionistic_tautologies/lnc} can also be derived, which combined with \( \neg\varphi \synwedge \varphi \) gives us \( \synbot \).
+
+  Thus, the assumptions are interderivable with \( \synbot \), and might have just as well used the rule \ref{inf:def:propositional_natural_deduction_systems/bot/efq} directly.
+\end{example}
 
 \begin{proposition}\label{thm:minimal_implicational_logic_axioms_nd_proof}
   Every instance of the two axiom schemas --- \eqref{eq:def:minimal_implication_logic/intro} and \eqref{eq:def:minimal_implication_logic/dist} --- of \hyperref[def:minimal_implication_logic]{minimal implicational logic} is derivable in the \hyperref[def:propositional_natural_deduction_systems]{minimal natural deduction system}.

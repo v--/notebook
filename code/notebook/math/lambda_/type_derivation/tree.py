@@ -81,10 +81,8 @@ class RuleApplicationTree(TypeDerivationTree):
                 continue
 
             for var, type_ in application_premise.tree.get_context().items():
-                if application_premise.discharge is None:
-                    continue
-
-                is_discharged_at_current_step = application_premise.discharge.term == var and application_premise.discharge.type == type_
+                is_discharged_at_current_step = application_premise.discharge is not None and \
+                    application_premise.discharge.term == var and application_premise.discharge.type == type_
 
                 if discharged_at_current_step == is_discharged_at_current_step:
                     yield var, type_

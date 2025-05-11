@@ -22,7 +22,7 @@ SIMPLE_SIGNATURE = LambdaSignature(
 )
 
 
-EXPLICIT_SIMPLE_TYPE_SYSTEM = ExplicitTypeSystem({
+SIMPLE_ALGEBRAIC_TYPE_SYSTEM = ExplicitTypeSystem({
     **BASE_EXPLICIT_TYPE_SYSTEM.rules,
     '0₋': parse_typing_rule(SIMPLE_SIGNATURE, 'M: 0 ⫢ (E₋M): τ', TypingStyle.EXPLICIT),
     '1₊': parse_typing_rule(SIMPLE_SIGNATURE, '⫢ U₊: 1', TypingStyle.EXPLICIT),
@@ -31,6 +31,6 @@ EXPLICIT_SIMPLE_TYPE_SYSTEM = ExplicitTypeSystem({
     '×₋ₗ': parse_typing_rule(SIMPLE_SIGNATURE, 'K: (τ × σ) ⫢ (P₋ₗK): τ', TypingStyle.EXPLICIT),
     '×₋ᵣ': parse_typing_rule(SIMPLE_SIGNATURE, 'K: (τ × σ) ⫢ (P₋ᵣK): σ', TypingStyle.EXPLICIT),
     '+₊ₗ': parse_typing_rule(SIMPLE_SIGNATURE, 'M: τ ⫢ (S₊ₗM): (τ + σ)', TypingStyle.EXPLICIT),
-    '+₊ᵣ': parse_typing_rule(SIMPLE_SIGNATURE, 'N: σ ⫢ (S₊ᵣM): (τ + σ)', TypingStyle.EXPLICIT),
-    '+₋': parse_typing_rule(SIMPLE_SIGNATURE, 'M: (τ + σ), [x: τ] N: ρ, [y: σ] K: ρ ⫢ (((S₋(S₊ₗ(λx:τ.N)))(S₊ᵣ(λx:σ.K)))M): ρ', TypingStyle.EXPLICIT),
+    '+₊ᵣ': parse_typing_rule(SIMPLE_SIGNATURE, 'N: σ ⫢ (S₊ᵣN): (τ + σ)', TypingStyle.EXPLICIT),
+    '+₋': parse_typing_rule(SIMPLE_SIGNATURE, 'M: (τ + σ), [x: τ] N: ρ, [y: σ] K: ρ ⫢ (((S₋(λx:τ.N))(λy:σ.K))M): ρ', TypingStyle.EXPLICIT),
 })

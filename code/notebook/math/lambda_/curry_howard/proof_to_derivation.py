@@ -18,13 +18,9 @@ from ..assertions import VariableTypeAssertion
 from ..instantiation import LambdaSchemaInstantiation
 from ..terms import Variable
 from ..type_derivation import tree as dtree
-from ..type_system.explicit import EXPLICIT_SIMPLE_TYPE_SYSTEM
+from ..type_system.explicit import SIMPLE_ALGEBRAIC_TYPE_SYSTEM
 from ..types import BaseType, SimpleConnectiveType, SimpleType, TypePlaceholder
 from .exceptions import ProofToDerivationError
-
-
-DEFAULT_FORMULA_PLACEHOLDER = FormulaPlaceholder(GreekIdentifier('φ'))
-DEFAULT_TYPE_PLACEHOLDER = TypePlaceholder(GreekIdentifier('τ'))
 
 
 def formula_connective_to_type_connective(conn: BinaryConnective) -> BinaryTypeConnective:
@@ -123,6 +119,7 @@ def translate_instantiation(instantiation: FormalLogicSchemaInstantiation, **kwa
     )
 
 
+# This is alg:proof_tree_to_type_derivation in the monograph
 def proof_tree_to_type_derivation(proof: ptree.ProofTree) -> dtree.TypeDerivationTree:
     if isinstance(proof, ptree.AssumptionTree):
         return dtree.assume(
@@ -146,28 +143,28 @@ def proof_tree_to_type_derivation(proof: ptree.ProofTree) -> dtree.TypeDerivatio
     match proof.rule_name:
         case 'EFQ':
             return dtree.apply(
-                EXPLICIT_SIMPLE_TYPE_SYSTEM, '0₋',
+                SIMPLE_ALGEBRAIC_TYPE_SYSTEM, '0₋',
                 *premises,
                 instantiation=translate_instantiation(proof.instantiation, φ='τ')
             )
 
         case '∨₊ₗ':
             return dtree.apply(
-                EXPLICIT_SIMPLE_TYPE_SYSTEM, '+₊ₗ',
+                SIMPLE_ALGEBRAIC_TYPE_SYSTEM, '+₊ₗ',
                 *premises,
                 instantiation=translate_instantiation(proof.instantiation, ψ='σ')
             )
 
         case '∨₊ᵣ':
             return dtree.apply(
-                EXPLICIT_SIMPLE_TYPE_SYSTEM, '+₊ᵣ',
+                SIMPLE_ALGEBRAIC_TYPE_SYSTEM, '+₊ᵣ',
                 *premises,
                 instantiation=translate_instantiation(proof.instantiation, φ='τ')
             )
 
         case _:
             return dtree.apply(
-                EXPLICIT_SIMPLE_TYPE_SYSTEM,
+                SIMPLE_ALGEBRAIC_TYPE_SYSTEM,
                 proof_tree_premise_to_derivation_tree_rule(proof.rule_name),
                 *premises,
             )

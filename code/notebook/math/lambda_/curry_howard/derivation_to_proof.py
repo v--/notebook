@@ -10,7 +10,7 @@ from ...logic.instantiation import FormalLogicSchemaInstantiation
 from ..alphabet import BinaryTypeConnective
 from ..instantiation import LambdaSchemaInstantiation
 from ..type_derivation import tree as dtree
-from ..type_system.explicit import EXPLICIT_SIMPLE_TYPE_SYSTEM
+from ..type_system.explicit import SIMPLE_ALGEBRAIC_TYPE_SYSTEM
 from ..types import BaseType, SimpleConnectiveType, SimpleType, TypePlaceholder, TypeVisitor
 from .exceptions import DerivationToProofError
 
@@ -107,6 +107,7 @@ def translate_instantiation(instantiation: LambdaSchemaInstantiation, **kwargs: 
     )
 
 
+# This is alg:type_derivation_to_proof_tree in the monograph
 def type_derivation_to_proof_tree(derivation: dtree.TypeDerivationTree) -> ptree.ProofTree:
     if isinstance(derivation, dtree.AssumptionTree):
         return ptree.assume(
@@ -117,7 +118,7 @@ def type_derivation_to_proof_tree(derivation: dtree.TypeDerivationTree) -> ptree
     if not isinstance(derivation, dtree.RuleApplicationTree):
         raise DerivationToProofError('Unrecognized derivation tree')
 
-    if derivation.system != EXPLICIT_SIMPLE_TYPE_SYSTEM:
+    if derivation.system != SIMPLE_ALGEBRAIC_TYPE_SYSTEM:
         raise DerivationToProofError('Unrecognized type system')
 
     premises = [
