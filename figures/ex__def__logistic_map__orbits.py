@@ -9,7 +9,7 @@ from textwrap import dedent
 import numpy as np
 import PIL.Image
 
-from commands.common.paths import AUX_PATH
+from commands.common.paths import AUX_PATH, ROOT_PATH
 
 
 output_path = AUX_PATH / pathlib.Path(__file__).with_suffix('').name
@@ -83,5 +83,5 @@ with open(code_path, 'w') as code_file:
         )
     )
 
-os.system(f'asy -outname={output_path} {code_path}')
+os.system(f'asy -dir={ROOT_PATH} -outname={output_path} {code_path}')
 shutil.rmtree(tmp_path)
