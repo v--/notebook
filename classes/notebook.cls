@@ -12,8 +12,10 @@
   ]
   {scrbook}
 
-\RequirePackage{typearea}
-\RedeclareSectionCommand[tocnumwidth=3em]{section}
+% Paragraphs do not break the text by default
+% See https://tex.stackexchange.com/a/223524
+\RedeclareSectionCommands[beforeskip=2ex, afterskip=1ex]{paragraph,subparagraph}
+\RedeclareSectionCommands[tocdynnumwidth]{section}
 
 % Report errors verbosely
 \setcounter{errorcontextlines}{100}
