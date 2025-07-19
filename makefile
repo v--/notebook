@@ -8,7 +8,7 @@ TEXT_SOURCE := notebook.tex classes/notebook.cls bibliography/*.bib asymptote/*.
 .DEFAULT_GOAL := output/notebook.pdf
 
 aux:
-	mkdir --parents aux
+	mkdir --parents aux/text
 
 output:
 	mkdir --parents output

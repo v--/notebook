@@ -63,6 +63,7 @@ async def setup_watchers(base_logger: 'loguru.Logger', *, no_aux: bool) -> None:
 
         if not fnmatch(path, 'output/notebook.pdf') and (
             fnmatch(path, 'notebook.tex') or
+            fnmatch(path, 'includeonly') or
             fnmatch(path, 'classes/notebook.cls') or
             fnmatch(path, 'bibliography/*.bib') or
             fnmatch(path, 'text/*.tex') or
