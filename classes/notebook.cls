@@ -12,10 +12,12 @@
   ]
   {scrbook}
 
+\RedeclareSectionCommands[tocdynnumwidth]{section}
 % Paragraphs do not break the text by default
 % See https://tex.stackexchange.com/a/223524
-\RedeclareSectionCommands[beforeskip=2ex, afterskip=1ex]{paragraph,subparagraph}
-\RedeclareSectionCommands[tocdynnumwidth]{section}
+% The afterskip is taken from the same property for subsubsections
+% See https://sourceforge.net/p/koma-script/code/HEAD/tree/trunk/scrkernel-sections.dtx
+\RedeclareSectionCommands[afterskip=1.7ex]{paragraph,subparagraph}
 
 % Report errors verbosely
 \setcounter{errorcontextlines}{100}
