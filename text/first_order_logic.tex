@@ -2,6 +2,18 @@
 
 The idea of first-order predicate logic (we will omit \enquote{predicate} and only refer to \enquote{first-order logic}) is to create a formal language whose semantics (given by structures) supports boolean operations and can quantify over all elements of an ambient universe. Unlike in \hyperref[sec:propositional_logic]{propositional logic}, there are different first-order logic languages.
 
+\begin{concept}\label{con:quantifier}
+  \hyperref[con:variable_binding]{Variable binders} in first-order logic are called \term{quantifiers}.
+\end{concept}
+\begin{comments}
+  \item There are two quantifiers, defined in \fullref{def:first_order_language/quantifiers} --- a universal quantifier, \( \forall \), encoding the words \enquote{for each}, and an existential quantifier, \( \exists \), encoding \enquote{there exists}.
+
+  Despite them being ubiquitous, the term \enquote{quantifier} in isolation is not, and our referenced authors do not hint at a general theory of quantifiers. \incite*[41]{Church1956LogicVol1} dedicates the following two sentences to the general concept of quantifiers:
+  \begin{displayquote}
+    Of special importance for our purpose are \textit{quantifiers}. These are operators for which both the operands and the new constant or form produced by application of the operator are sentences or propositional forms.
+  \end{displayquote}
+\end{comments}
+
 \begin{definition}\label{def:first_order_language}\mcite[def. 2.1.2]{Hinman2005Logic}
   A \term{first-order language}\fnote{As in propositional logic, a first-order language is an \hyperref[def:formal_language]{alphabet} rather than a \hyperref[def:formal_language/language]{formal language}.} \( \mscrL \) extends the language of \hyperref[sec:propositional_logic]{propositional logic} and consists of two types of symbols.
 
@@ -55,7 +67,7 @@ The idea of first-order predicate logic (we will omit \enquote{predicate} and on
     \item The above also allows us to implement these concepts using conventional programming languages, for example in \cite{notebook:code}.
   \end{itemize}
 
-  Unfortunately, this decision also limits us in certain definitions like \fullref{def:semimodule/theory}, where we may need uncountably many functional symbols. This particular example may be considered pathological, because more general logical frameworks provide a more elegant solution.
+  Unfortunately, this decision also limits us in certain definitions like \fullref{def:semimodule/theory}, where we may need uncountably many functional symbols. This particular example may be considered pathological, because more general abstract logics provide a more elegant solution.
 
   Thus, we restrict ourselves to what Peter Hinman in \incite[def. 2.1.27]{Hinman2005Logic} calls \term{finite languages}.
 
@@ -868,6 +880,10 @@ The idea of first-order predicate logic (we will omit \enquote{predicate} and on
   Note that \( [\synx] \) is only a notational convenience for highlighting which variables are free, the actual formula is named \( \op{IsBottom} \). This is consistent with \fullref{rem:substitution_notation} which allows us to write \( \op{IsBottom}[\syny] \) rather than \( \op{IsBottom}[\synx \mapsto \syny] \) to verify if \( \syny \) is a bottom element
 \end{concept}
 
+\begin{concept}\label{con:syntactic_abbreviation}
+  \todo{Abbreviations}
+\end{concept}
+
 \begin{proposition}\label{thm:first_order_quantifiers_are_dual}
   For any formula \( \varphi \) and any variable \( \synx \) over \( \mscrL \), we have the following equivalences:
   \begin{align}
@@ -1195,6 +1211,28 @@ The idea of first-order predicate logic (we will omit \enquote{predicate} and on
 
 \paragraph{Natural deduction}
 
+\begin{concept}\label{con:eigenvariable}\mimprovised
+  If the conclusion of an \hyperref[def:inference_rule]{inference rule} features a \hyperref[con:variable_binding]{variable binder}, we must take precautions to avoid \hyperref[rem:renaming_substitution_rules]{variable capturing}.
+
+  For example, in \cite[36]{TroelstraSchwichtenberg2000BasicProofTheory}, the following first-order natural deduction rule is given for introducing \( \synforall \):
+  \begin{equation*}
+    \begin{prooftree}
+      \hypo{ \varphi[x subst y] }
+      \infer1[\ref{eq:def:first_order_natural_deduction_system/forall/intro}]{ \qforall x \varphi }.
+    \end{prooftree}
+  \end{equation*}
+
+  For applying the rule, they state the additional requirement that (the instantiation of) the variable \( \synx \) must either coincide with \( \syny \) or otherwise it must not be free in \( \syn\varphi \) nor any open assumptions of the corresponding premise subtree.
+
+  If, in a rule's premise, a variable replaces one that gets bound in the conclusion, we call it an \term[ru=собственная переменная (\cite[101]{Герасимов2011Вычислимость}), en=eigenvariable (\cite[\S 5.1.10]{Mimram2020ProgramEqualsProof}) / proper variable (\cite[38]{TroelstraSchwichtenberg2000BasicProofTheory})]{eigenvariable}. In our example, \( y \) is an eigenvariable.
+
+\end{concept}
+\begin{comments}
+  \item The term \enquote{eigenvariable} was used, in German, by \incite[186]{Gentzen1935LogischeSchließen}, where he introduces natural deduction calculus. In the corresponding English translation, \incite[293]{Gentzen1964LogicalDeduction}, these were called \enquote{proper variables}.
+
+  \item \incite*[5.1.10]{Mimram2020ProgramEqualsProof}, who presents his rules in \hyperref[rem:sequent_calculus]{sequent calculus} form, suggests using an auxiliary context that tracks the variables used. This approach still requires special treatment of eigenvariables, however.
+\end{comments}
+
 \begin{definition}\label{def:first_order_natural_deduction_system}\mcite[def. 2.1.1]{TroelstraSchwichtenberg2000BasicProofTheory}
   If we wish to work with first-order logic rather than merely propositional logic, we must extend the \hyperref[def:propositional_natural_deduction_systems]{classical propositional natural deduction system}. We call this, very simply, the (classical) \term{first-order natural deduction system}.
 
@@ -1215,7 +1253,7 @@ The idea of first-order predicate logic (we will omit \enquote{predicate} and on
         \begin{prooftree}
           \hypo{ \qexists \synx \varphi }
           \hypo{ [\varphi]^n }
-          \ellipsis {} { \psi }
+          \infer[dashed]1{ \psi }
           \infer[left label=\( n \)]2[\ref{eq:def:first_order_natural_deduction_system/exists/elim}]{ \psi }
         \end{prooftree}
       \end{equation*}
@@ -1382,7 +1420,7 @@ The idea of first-order predicate logic (we will omit \enquote{predicate} and on
 \end{proof}
 
 \begin{theorem}[Soundness and completeness of first-order logic]\label{thm:classical_first_order_logic_soundness_and_complete}\mcite[thm. 3.4.1]{Hinman2005Logic}
-  The \hyperref[def:first_order_natural_deduction_system]{classical first-order natural deduction system} is \hyperref[def:logical_framework/soundness]{sound} and \hyperref[def:logical_framework/completeness]{complete} with respect to \hyperref[def:first_order_semantics]{classical semantics}.
+  The \hyperref[def:first_order_natural_deduction_system]{classical first-order natural deduction system} is \hyperref[def:abstract_logic/soundness]{sound} and \hyperref[def:abstract_logic/completeness]{complete} with respect to \hyperref[def:first_order_semantics]{classical semantics}.
 \end{theorem}
 \begin{comments}
   \item The completeness part is known as \enquote{G\"odel's completeness theorem} and requires an elaborate proof.

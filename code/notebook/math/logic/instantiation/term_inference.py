@@ -5,7 +5,6 @@ from ....support.schemas import SchemaInferenceError
 from ..terms import (
     FunctionTerm,
     FunctionTermSchema,
-    StarredTermSchema,
     Term,
     TermPlaceholder,
     TermSchema,
@@ -42,10 +41,6 @@ class InferInstantiationVisitor(TermSchemaVisitor[FormalLogicSchemaInstantiation
             instantiation = merge_instantiations(instantiation, infer_instantiation_from_term(subschema, subterm))
 
         return instantiation
-
-    @override
-    def visit_starred_schema(self, schema: StarredTermSchema) -> FormalLogicSchemaInstantiation:
-        return self.visit(schema.term)
 
 
 def infer_instantiation_from_term(schema: TermSchema, term: Term) -> FormalLogicSchemaInstantiation:

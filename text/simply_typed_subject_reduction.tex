@@ -1,0 +1,496 @@
+\section{Simply typed subject reduction}\label{sec:simply_typed_subject_reduction}
+
+We will present several algorithms that take a \hyperref[def:type_derivation_tree]{type derivation tree} for a term and transform it into a derivation tree for a related term.
+
+We will mostly be working with \hyperref[def:simple_algebraic_types]{simple algebraic types}.
+
+\begin{concept}\label{con:subject_reduction}\mcite[36]{Mimram2020ProgramEqualsProof}
+  We say that a \hyperref[def:abstract_type_system]{type system} satisfies \term{subject reduction} with respect to the binary relation \( {\pred} \) on terms if \( \Gamma \vdash M: \tau \) and \( M \pred N \) implies \( \Gamma \vdash N: \tau \).
+\end{concept}
+\begin{comments}
+  \item The relation \( {\pred} \) is by default assumed to be a reduction relation with respect to \fullref{def:lambda_term_reduction}, but we will also prove subject reduction for substitution and \( \alpha \)-equivalence.
+\end{comments}
+
+\paragraph{Simply typed substitution}
+
+\begin{algorithm}[Simply typed substitution]\label{alg:simply_typed_substitution}
+  Consider the \hyperref[def:abstract_type_system]{type system} of \hyperref[def:simple_algebraic_types]{simple algebraic types}. Fix a \hyperref[def:lambda_term_substitution]{substitution} \( \Bbbs \) and a \hyperref[def:type_derivation_tree]{type derivation tree} \( T \) for \( M: \tau \). For every assumption \( v: \sigma \) of \( T \), suppose we are given a derivation tree \( T_v \) for \( \Bbbs(v): \sigma \).
+
+  We will build a derivation tree \( T' \) for \( M[\Bbbs]: \tau \) whose assumptions are those replacement trees \( T_v \) which are assumption trees (i.e. not rule application trees). Here \( M[\Bbbs] \) is \( \muplambda \)-term substitution as defined in \fullref{def:lambda_term_substitution/operation}, with obvious adjustments for typed terms.
+
+  Most rules follow the same pattern, but there are two exceptions with dischargeable assumptions --- \ref{inf:def:arrow_type/elim} and \ref{inf:def:simple_sum_type/elim} --- that bind variables which we may possibly rename as per \eqref{eq:def:lambda_term_substitution/abstraction/renaming}.
+
+  \begin{thmenum}
+    \thmitem{alg:simply_typed_substitution/assumption} If \( T \) is an assumption tree, then \( M \) is a variable. The assertion \( M: \tau \) is then an assumption of \( T \), and we have supposed that there exists a corresponding tree \( T_M \) deriving \( M[\Bbbs]: \tau \).
+
+    \thmitem{alg:simply_typed_substitution/arrow_intro} If \( T \) is an application tree for \ref{inf:def:arrow_type/intro/explicit}, we will need to handle variable binding appropriately. Let us restate the formalized rule here:
+    \begin{equation*}
+      \begin{prooftree}
+        \hypo{ \synx: \syn\tau }
+        \infer[dashed]1{ \synM: \syn\sigma }
+        \infer1[\ensuremath{ \rightarrow_+^{\logic{tt}} }]{ \qabs {\synx^{\syn\tau}} \synM: \syn\tau \synimplies \syn\sigma }
+      \end{prooftree}
+    \end{equation*}
+
+    In this case, \( \tau = \rho \synimplies \pi \) for some types \( \rho \) and \( \pi \), and \( M = \qabs {a^\rho} A \) for some variable \( a \) and \( \muplambda \)-term \( A \). The instantiation \( \BbbI \) of \( T \) does the following assignment:
+    \begin{align*}
+      \BbbI(\synx) &= a, &\BbbI(\syn\tau) &= \rho, \\
+      \BbbI(\synM) &= A, &\BbbI(\syn\sigma) &= \pi.
+    \end{align*}
+
+    Let \( T_A \) be the premise of \( T \). We use the algorithm to obtain a tree \( T_A' \) deriving \( A[\Bbbs]: \pi \).
+
+    \Fullref{thm:lambda_substitution_single_rule} implies that
+    \begin{equation*}
+      M[\Bbbs] = \qabs u A[\Bbbs_{a \mapsto u}],
+    \end{equation*}
+    where \( u \not\in \op*{Free}_\Bbbs(M) \). Here \( u \) may be either \( a \) or a fresh variable depending on whether we use \eqref{eq:def:lambda_term_substitution/abstraction/direct} or \eqref{eq:def:lambda_term_substitution/abstraction/renaming}.
+
+    We define a new instantiation \( \BbbI' \) as follows:
+    \begin{align*}
+      \BbbI'(\synx) &\coloneqq u,                      &\BbbI'(\syn\tau) &\coloneqq \BbbI(\syn\tau) = \rho, \\
+      \BbbI'(\synM) &\coloneqq A[\Bbbs_{a \mapsto u}], &\BbbI'(\syn\sigma) &\coloneqq \BbbI(\syn\sigma) = \pi.
+    \end{align*}
+
+    We then simply use \ref{inf:def:arrow_type/intro/explicit} with instantiation \( \BbbI' \), premise \( T_A' \) and discharge assertion \( u: \rho \) to obtain a derivation tree \( T' \) for \( M[\Bbbs]: \tau \).
+
+    \thmitem{alg:simply_typed_substitution/sum_elim} If \( T \) is an application tree for \ref{inf:def:simple_sum_type/elim}, we proceed analogously.
+
+    \thmitem{alg:simply_typed_substitution/generic_rule} If \( T \) is a rule application tree that does not bind variables, the transformation is fairly straightforward. The suitable rules are \ref{inf:def:arrow_type/elim}, \ref{inf:def:simple_empty_type/elim}, \ref{inf:def:simple_unit_type/intro}, \ref{inf:def:simple_product_type/intro}, \ref{inf:def:simple_product_type/elim_left}, \ref{inf:def:simple_product_type/elim_right}, \ref{inf:def:simple_sum_type/intro_left} and \ref{inf:def:simple_sum_type/intro_right}.
+
+    Let \( R \) be the (name of) the rule applied. Let \( T_1, \ldots, T_n \) be the premise trees, where \( T_k \) derives \( N_k: \rho_k \). Finally, let \( \BbbI \) be the instantiation of the application.
+
+    First, we use the algorithm on \( T_1, \ldots, T_n \) to obtain trees \( T_1', \ldots, T_n' \), where \( T_k \) derives \( N_k[\Bbbs]: \rho_k \).
+
+    In order to apply \( R \) and construct the derivation tree \( T' \) for \( M: \tau \), we must explicitly construct an instantiation \( \BbbI' \) because some rules like \ref{inf:def:simple_empty_type/elim} cannot infer the instantiation from the premises alone. We proceed as follows:
+    \begin{thmenum}
+      \thmitem{alg:simply_typed_substitution/generic_rule/instantiation/type} We preserve the type placeholder mapping from \( \BbbI \) since our intention is to not modify the types.
+
+      \thmitem{alg:simply_typed_substitution/generic_rule/instantiation/variable} We take no action for variable placeholders since the rules will not feature any.
+
+      \thmitem{alg:simply_typed_substitution/generic_rule/instantiation/term} For every term placeholder \( \Phi \), we define \( \BbbI'(\Phi) \) as the substituted term \( \BbbI(\Phi)[\Bbbs] \).
+    \end{thmenum}
+
+    Finally, we instantiate the rule \( R \) with \( \BbbI' \) and \( T_1', \ldots, T_n' \) as premises.
+  \end{thmenum}
+\end{algorithm}
+\begin{comments}
+  \item This algorithm can be found as \identifier{lambda_.algebraic_types.substitution.apply_tree_substitution} in \cite{notebook:code}.
+\end{comments}
+
+\begin{proposition}\label{thm:typed_substitution_assertions}
+  The following \hyperref[con:typing_rule]{typing rule} is \hyperref[con:inference_rule_admissibility]{admissible} with respect to \ref{inf:def:arrow_type/elim} and \ref{inf:def:arrow_type/intro/explicit}:
+  \begin{equation*}\taglabel[\ensuremath{ Subst }]{inf:thm:typed_substitution_assertions}
+    \begin{prooftree}
+      \hypo{ x: \sigma }
+      \infer[dashed]1{ M: \tau }
+
+      \hypo{ N: \sigma }
+      \infer2[\ref{inf:thm:typed_substitution_assertions}]{ M[x \mapsto N]: \tau }.
+    \end{prooftree}
+  \end{equation*}
+\end{proposition}
+\begin{comments}
+  \item When defining term schemas in \fullref{def:lambda_term_schema}, we have not defined schemas for substitution. As discussed in \fullref{rem:dependent_type_rule_formalization/substitution}, this will introduce complexity that will not pay off because our goal is merely to illustrate several simple typing rules.
+\end{comments}
+\begin{proof}
+  Let \( T_M \) and \( T_N \) be derivation trees for \( M: \tau \) and \( N: \sigma \), respectively. \Fullref{alg:simply_typed_substitution} allows us to build a derivation tree \( T'_M \) for \( M[x \mapsto N]: \tau \).
+
+  Suppose that the open assumptions of \( T_M \) are among \( \Gamma \cup \set{ x: \sigma } \), and those of \( T_N \) --- among \( \Delta \).
+
+  \Fullref{thm:lambda_substitution_free_variables_single} implies that
+  \begin{equation*}
+    \op*{Free}(M[x \mapsto N]) \subseteq \parens[\Big]{ \op*{Free}(M) \setminus \set{ x } } \cup \op*{Free}(N).
+  \end{equation*}
+
+  \Fullref{thm:assumptions_and_free_variables} implies that the open assumptions of \( T'_M \) are a subset of those of \( T_M \) with \( x: \sigma \) removed and with the open assumptions of \( T_N \) added.
+
+  Therefore, the open assumptions of \( T'_M \) are among \( \Gamma, \Delta \).
+\end{proof}
+
+\paragraph{Simply typed \( \alpha \)-equivalence}
+
+\begin{definition}\label{def:typed_term_alpha_equivalence}
+  \hyperref[def:typed_lambda_term]{Simply typed \( \muplambda \)-terms} require adapting \hyperref[def:lambda_term_alpha_equivalence]{\( \alpha \)-equivalence} by replacing the rules \ref{inf:thm:alpha_equivalence_simplified/lift} and \ref{inf:thm:alpha_equivalence_simplified/ren} with the following:
+  \begin{paracol}{2}
+    \begin{leftcolumn}
+      \ParacolAlignmentHack
+      \begin{equation*}\taglabel[\ensuremath{ \logic{Lift}_\alpha^{\logic{tt}} }]{inf:def:typed_term_alpha_equivalence/lift}
+        \begin{prooftree}
+          \hypo{ A \aequiv B }
+          \infer1[\ref{inf:def:typed_term_alpha_equivalence/lift}]{ \qabs {x^\tau} A \aequiv \qabs {x^\tau} B }
+        \end{prooftree}
+      \end{equation*}
+    \end{leftcolumn}
+
+    \begin{rightcolumn}
+      \ParacolAlignmentHack
+      \begin{equation*}\taglabel[\ensuremath{ \logic{Ren}_\alpha^{\logic{tt}} }]{inf:def:typed_term_alpha_equivalence/ren}
+        \begin{prooftree}
+          \hypo{ a \neq b }
+          \hypo{ a \not\in \op*{Free}(B) }
+          \hypo{ A \aequiv B[b \mapsto a] }
+          \infer3[\ref{inf:def:typed_term_alpha_equivalence/ren}]{ \qabs {a^\tau} A \aequiv \qabs {b^\tau} B }
+        \end{prooftree}
+      \end{equation*}
+    \end{rightcolumn}
+  \end{paracol}
+\end{definition}
+\begin{comments}
+  \item Here \( \tau \) is an arbitrary type, just like \( A \) and \( B \) are arbitrary terms.
+
+  \item This limits the scope of \( \alpha \)-equivalence considerably compared to relying on \( \alpha \)-equivalence on untyped terms via \hyperref[alg:type_erasure]{type erasure} --- see \fullref{ex:def:typed_term_alpha_equivalence}.
+
+  \item Note that these are not typing rules and are thus not stated using schemas. See \fullref{rem:dependent_type_rule_formalization} for a discussion.
+\end{comments}
+
+\begin{example}\label{ex:def:typed_term_alpha_equivalence}
+  The rule \ref{inf:thm:alpha_equivalence_simplified/ren} for untyped terms ensures that \( \qabs x x \) and \( \qabs y y \) are \( \alpha \)-equivalent irrespective of the choice of \( x \) and \( y \).
+
+  The corresponding rule \ref{inf:def:typed_term_alpha_equivalence/ren} for typed terms however ensures that \( \qabs {x^\tau} x \) and \( \qabs {y^\sigma} y \) are \( \alpha \)-equivalent only if \( \tau = \sigma \).
+
+  If we were instead to rely on \hyperref[alg:type_erasure]{type erasure}, we would conclude that \( \qabs {x^\tau} x \) and \( \qabs {y^\sigma} y \) are \( \alpha \)-equivalent even when their type annotations are distinct.
+\end{example}
+
+\begin{algorithm}[Simply typed alpha-conversion]\label{alg:simply_typed_alpha_conversion}
+  Fix a \hyperref[def:type_derivation_tree]{type derivation tree} \( T \) for \( M: \tau \) and a term \( N \) \hyperref[def:typed_term_alpha_equivalence]{\( \alpha \)-equivalent} to \( M \).
+
+  We will build a derivation tree \( T_N \) for \( N: \tau \) with the same assumptions. As in \fullref{alg:simply_typed_substitution}, only the rules \ref{inf:def:arrow_type/elim} and \ref{inf:def:simple_sum_type/elim} require special care.
+
+  There is a subtlety. We may theoretically assume that \( N \) is \( \alpha \)-equivalent to \( M \), but in practice this requires verification. So, we will allow \( N \) to be arbitrary, and, if during the course of the algorithm it turns our that it is not \( \alpha \)-equivalent to \( M \), the algorithm will halt with an error state.
+
+  \begin{thmenum}
+    \thmitem{alg:simply_typed_alpha_conversion/assumption} If \( T \) is an assumption tree, then \( M \) is a variable.
+    \begin{thmenum}
+      \thmitem{alg:simply_typed_alpha_conversion/assumption/valid} If \( M = N \), there is nothing to prove since \( T \) itself is a derivation tree for \( N: \tau \).
+
+      \thmitem{alg:simply_typed_alpha_conversion/assumption/error} Otherwise, we have \( M \neq N \), and there is no rule allowing us to conclude that \( N \) is \( \alpha \)-equivalent to \( M \). In this case the algorithm errors out.
+    \end{thmenum}
+
+    \thmitem{alg:simply_typed_alpha_conversion/arrow_intro} If \( T \) is an application tree for \ref{inf:def:arrow_type/intro/explicit}, as in \fullref{alg:simply_typed_substitution}, we will need to handle variable binding. Let us restate the formalized rule here:
+    \begin{equation*}
+      \begin{prooftree}
+        \hypo{ \synx: \syn\tau }
+        \infer[dashed]1{ \synM: \syn\sigma }
+        \infer1[\ensuremath{ \rightarrow_+^{\logic{tt}} }]{ \qabs {\synx^{\syn\tau}} \synM: \syn\tau \synimplies \syn\sigma }
+      \end{prooftree}
+    \end{equation*}
+
+    Again, \( \tau = \rho \synimplies \pi \) for some types \( \rho \) and \( \pi \), and \( M = \qabs {a^\rho} A \) for some variable \( a \) and \( \muplambda \)-term \( A \). The instantiation \( \BbbI \) of \( T \) does the following assignment:
+    \begin{align*}
+      \BbbI(\synx) &= a, &\BbbI(\syn\tau) &= \rho, \\
+      \BbbI(\synM) &= A, &\BbbI(\syn\sigma) &= \pi.
+    \end{align*}
+
+    Furthermore, the premise of \( T \), which we will denote by \( T_A \), derives \( A: \pi \).
+
+    By \fullref{thm:def:lambda_term_alpha_equivalence/same_kind}, \( N = \qabs {b^\rho} B \) for some variable \( b \) and \( \muplambda \)-term \( B \). Note that, as per \fullref{def:typed_term_alpha_equivalence}, we require the abstractor variables of \( \rho \)-equivalent abstractions to be equal, so the variable annotation in \( N \) must be equal to \( \rho \).
+
+    If \( N \) fails to have such a form, it cannot be \( \rho \)-equivalent to \( M \), and the algorithm errors out.
+
+    There are two possibilities to obtain a tree \( T_B \) deriving \( B: \rho \). We will discuss them next, but for now suppose that such a tree is available to us.
+
+    We define a new instantiation \( \BbbI' \) as follows:
+    \begin{align*}
+      \BbbI'(\synx) &\coloneqq b, &\BbbI'(\syn\tau) &\coloneqq \BbbI(\syn\tau) = \rho, \\
+      \BbbI'(\synM) &\coloneqq B, &\BbbI'(\syn\sigma) &\coloneqq \BbbI(\syn\sigma) = \pi.
+    \end{align*}
+
+    To obtain a derivation tree \( T' \) for \( N: \tau \), it remains to apply to \( T_B \) the typing rule \ref{inf:def:arrow_type/intro/explicit} with the instantiation \( \BbbI' \) and discharge assertion \( b: \rho \)
+
+    We have two possibilities to construct \( T_B \):
+    \begin{thmenum}
+      \thmitem{alg:simply_typed_alpha_conversion/arrow_intro/direct} If \( a = b \), then it is only possible that \ref{inf:def:typed_term_alpha_equivalence/lift} was used and \( A \aequiv B \).
+
+      We use the algorithm on \( A \aequiv B \) to obtain a tree \( T_B \) deriving \( B: \pi \). If the recursive application errors out, then \( A \not\aequiv B \), so \( M \not\aequiv N \) and the current application must also fail.
+
+      \thmitem{alg:simply_typed_alpha_conversion/arrow_intro/renaming} If \( a \neq b \), then \ref{inf:def:typed_term_alpha_equivalence/ren} must have been used.
+
+      \Fullref{thm:def:lambda_term_alpha_equivalence/abstraction_condition} implies that \( b \) is not free in \( A \) nor \( a \) is in \( B \). Thus, if \( b \) is free in \( A \), the algorithm errors out.
+
+      We will do a slight tweak in the style of \fullref{thm:alpha_equivalence_simplified_right} since the equivalence \( A \aequiv B[b \mapsto a] \) is not immediately useful to us. By symmetry of \( \rho \)-equivalence, from \( M \aequiv N \) we obtain the \( N \aequiv M \). Then \ref{inf:def:typed_term_alpha_equivalence/ren} gives us \( B \aequiv A[a \mapsto b] \), and symmetry implies that \( A[a \mapsto b] \aequiv B \).
+
+      We can use \Fullref{alg:simply_typed_substitution} on \( T_A \) with the assumption tree \( b: \rho \) to obtain a tree \( T_A' \) deriving \( A[a \mapsto b]: \pi \).
+
+      This allows us to use the current algorithm recursively on \( A[a \mapsto b] \aequiv B \) to obtain from \( T_A' \) a tree \( T_B \) deriving \( B: \pi \).
+
+      Again, if the recursive application fails, then \( A[a \mapsto b] \not\aequiv B \), so the current application must also fail.
+    \end{thmenum}
+
+    \thmitem{alg:simply_typed_alpha_conversion/sum_elim} If \( T \) is an application tree for \ref{inf:def:simple_sum_type/elim}, we proceed analogously.
+
+    \thmitem{alg:simply_typed_alpha_conversion/generic_rule} If \( T \) is an application tree for any of the other rules, we will use the algorithm recursively on the premises and rebuild the tree.
+
+    Let \( R \) be the (name of) the rule applied. Let \( T_1, \ldots, T_n \) be the premise trees, where \( T_k \) derives \( A_k: \rho_k \) for \( k = 1, \ldots, n \). Finally, let \( \BbbI \) be the instantiation of the application.
+
+    Let \( \BbbI' \) be the instantiation needed to obtain \( N: \tau \) via \( R \). We can derive such an instantiation using \fullref{alg:lambda_term_schema_inference}, with the type placeholder mapping merged with the one from \( \BbbI \). If case of type mapping mismatch, the algorithm errors out.
+
+    For every \( k = 1, \ldots, n \), we instantiate the premises of \( R \) using \( \BbbI' \) to obtain the type assertion \( B_k: \rho_k \), and then we apply the algorithm recursively to \( T_k \) and \( B_k \) to obtain a tree \( T_k' \) deriving \( B_k: \rho_k \).
+
+    It remains to apply \( R \) to the premises \( T_1', \ldots, T_n' \) with instantiation \( \BbbI' \) to obtain a tree \( T' \) deriving \( N: \tau \).
+  \end{thmenum}
+\end{algorithm}
+\begin{defproof}
+  We have already explained why, if the algorithm error out, then the terms are not \( \alpha \)-equivalent, and that if it succeeds, the result is correct.
+
+  That the algorithm always halts can be easily proven using induction on the length of terms.
+\end{defproof}
+\begin{comments}
+  \item This algorithm can be found as \identifier{lambda_.algebraic_types.alpha.alpha_convert_derivation} in \cite{notebook:code}.
+\end{comments}
+
+\begin{proposition}\label{thm:alpha_equivalent_term_typing}
+  If \( \Gamma \vdash M: \tau \) and if \( M \aequiv N \), then \( \Gamma \vdash N: \tau \).
+\end{proposition}
+\begin{proof}
+  \Fullref{alg:simply_typed_alpha_conversion} allows us to construct a derivation tree for \( N: \tau \) from any tree for \( M: \tau \).
+
+  \Fullref{thm:assumptions_and_free_variables} implies that the assumptions in both trees coincide since, by \fullref{thm:def:lambda_term_alpha_equivalence/free}, the free variables of \( M \) and \( N \) coincide.
+\end{proof}
+
+\paragraph{Reduction}
+
+\begin{definition}\label{def:typed_term_reduction}
+  Similarly to how we have adapted \hyperref[def:lambda_term_alpha_equivalence]{\( \alpha \)-equivalence} rules to \hyperref[def:typed_lambda_term]{typed \( \muplambda \)-terms} in \fullref{def:typed_term_alpha_equivalence}, some rules for reductions from \fullref{def:lambda_term_reduction} and \fullref{def:beta_eta_reduction} also require adaptation.
+
+  Of these, adapting \ref{inf:def:lambda_term_reduction/abs} puts restrictions on the abstractor variables:
+  \begin{equation*}\taglabel[\ensuremath{ \logic{Abs}_{\Anon}^{\logic{tt}} }]{inf:def:typed_term_reduction/abs}
+    \begin{prooftree}
+      \hypo{ M \pred N }
+      \infer1[\ref{inf:def:typed_term_reduction/abs}]{ \qabs {x^\tau} M \pred \qabs {x^\tau} N }.
+    \end{prooftree}
+  \end{equation*}
+
+  The adaptations of \ref{inf:def:beta_eta_reduction/beta} and \ref{inf:def:beta_eta_reduction/eta} do not make use of this annotation. Still, in this form, they aid \hyperref[con:subject_reduction]{subject reduction}, as shown in \fullref{alg:simply_typed_reduction}:
+  \begin{paracol}{2}
+    \begin{leftcolumn}
+      \ParacolAlignmentHack
+      \begin{equation*}\taglabel[\ensuremath{ \logic{Red}_\beta^{\logic{tt}} }]{inf:def:typed_term_reduction/beta}
+        \begin{prooftree}
+          \infer0[\ref{inf:def:typed_term_reduction/beta}]{ (\qabs {x^\tau} M) N \bred M[x \mapsto N] }.
+        \end{prooftree}
+      \end{equation*}
+    \end{leftcolumn}
+
+    \begin{rightcolumn}
+      \ParacolAlignmentHack
+      \begin{equation*}\taglabel[\ensuremath{ \logic{Red}_\eta^{\logic{tt}} }]{inf:def:typed_term_reduction/eta}
+        \begin{prooftree}
+          \hypo{ x \not\in \op*{Free}(M) }
+          \infer1[\ref{inf:def:typed_term_reduction/eta}]{ \qabs {x^\tau} M x \ered M }.
+        \end{prooftree}
+      \end{equation*}
+    \end{rightcolumn}
+  \end{paracol}
+\end{definition}
+\begin{comments}
+  \item Reduction rules in type theory are subsumed by computation and uniqueness rules; see \fullref{rem:type_theory_rule_classification/equality}.
+\end{comments}
+
+\begin{lemma}\label{thm:single_step_reduction_deconstruction}
+  Let \enquote{\( {\Anon} \)} be a combination of \enquote{\( \beta \)}, \enquote{\( \eta \)} and \enquote{\( \delta \)}.
+
+  If \( M \pred N \), depending on the structure of \( M \), we have the following possibilities:
+  \begin{thmenum}
+    \thmitem{thm:single_step_reduction_deconstruction/atom} \( M \) is a constant, there is a \( \delta \)-reduction rule such that \( N \aequiv \op*{\delta}(M) \), where \( \op*{\delta}(M) \) is the \( \delta \)-contractum of \( M \).
+
+    \thmitem{thm:single_step_reduction_deconstruction/var} \( M \) cannot be a variable.
+
+    \thmitem{thm:single_step_reduction_deconstruction/app} If \( M = AB \), we have three possibilities:
+    \begin{thmenum}
+      \thmitem{thm:single_step_reduction_deconstruction/app/left} \( N = CD \), where \( C \) and \( D \) are some \( \muplambda \)-terms such that \( A \pred C \) and \( B \aequiv D \).
+
+      \thmitem{thm:single_step_reduction_deconstruction/app/right} \( N = CD \), where \( C \) and \( D \) are some \( \muplambda \)-terms such that \( A \aequiv C \) and \( B \pred D \).
+
+      \thmitem{thm:single_step_reduction_deconstruction/app/beta} If \( \beta \)-reduction is allowed, it is possible that \( A = \qabs {x^\tau} E \) and \( N \aequiv E[x \mapsto B] \).
+    \end{thmenum}
+
+    \thmitem{thm:single_step_reduction_deconstruction/abs} If \( M = \qabs {x^\tau} A \), we have two possibilities:
+    \begin{thmenum}
+      \thmitem{thm:single_step_reduction_deconstruction/abs/lift} \( N \aequiv \qabs {x^\tau} B \) for some \( \muplambda \)-term \( B \) such that \( A \pred B \).
+
+      This can also be reformulated as in \fullref{rem:single_step_reduction_deconstruction_abs_lift}.
+
+      \thmitem{thm:single_step_reduction_deconstruction/abs/eta} If \( \eta \)-reduction is allowed, it is possible that \( A \aequiv Nx \) and \( x \not\in \op*{Free}(N) \).
+    \end{thmenum}
+  \end{thmenum}
+\end{lemma}
+\begin{proof}
+  Similar to \fullref{thm:parallel_reduction_deconstruction}, but with the following differences:
+  \begin{itemize}
+    \item No variables can be reduced.
+    \item \ref{inf:def:lambda_term_reduction/app_left} and \ref{inf:def:lambda_term_reduction/app_right} are handled separately.
+    \item Handling \ref{inf:def:typed_term_reduction/beta} is simplified.
+  \end{itemize}
+\end{proof}
+
+\begin{algorithm}[Simply typed reduction]\label{alg:simply_typed_reduction}
+  As in \fullref{sec:lambda_term_reductions}, let \enquote{\( {\Anon} \)} be a combination of \enquote{\( \beta \)} and \enquote{\( \eta \)}. We must avoid \( \delta \)-reduction here.
+
+  Fix a \hyperref[def:type_derivation_tree]{type derivation tree} \( T \) for \( M: \tau \) and a term \( N \) such that \( M \pred N \). We will build a tree \( T' \) deriving \( N: \tau \) with no additional assumptions.
+
+  As in \fullref{alg:simply_typed_alpha_conversion}, rather than assuming that \( M \pred N \), which requires verification, we will allow \( N \) to be arbitrary and optionally error out.
+
+  This algorithm relies on detailed case analysis, so we will restrict ourselves to simple type theory in the style of \fullref{con:simple_type_theory/arrow}, i.e. featuring only the arrow type rules \ref{inf:def:arrow_type/intro/explicit} and \ref{inf:def:arrow_type/elim}. Extending it to other types has limited utility because, for more complicated types like those in \hyperref[def:mltt]{Martin-L\"of type theory}, \( \beta \)- and \( \eta \)-reduction are subsumed by \hyperref[rem:type_theory_rule_classification/equality/comp]{computation} and \hyperref[rem:type_theory_rule_classification/equality/uniq]{uniqueness rules} for different types.
+
+  Like in \fullref{alg:simply_typed_substitution} and \fullref{alg:simply_typed_alpha_conversion}, we will recurse on \( T \).
+
+  \begin{thmenum}
+    \thmitem{alg:simply_typed_reduction/assumption} \( T \) cannot be an assumption tree because then \( M \) would be a variable, and \fullref{thm:single_step_reduction_deconstruction/var} implies that variables cannot be reduced. The algorithm must error out in this case.
+
+    \thmitem{alg:simply_typed_reduction/arrow_intro} If \( T \) is an application tree for \ref{inf:def:arrow_type/intro/explicit}, then \( \tau = \rho \rightarrow \pi \) for some types \( \rho \) and \( \pi \) and \( M = \qabs {a^\rho} A \) for some variable \( A \) and \( \muplambda \)-term \( A \).
+
+    Let \( T_A \) be the premise of \( T \).
+
+    \Fullref{thm:single_step_reduction_deconstruction/abs} gives us two possibilities for \( M \pred N \):
+    \begin{thmenum}
+      \thmitem{alg:simply_typed_reduction/arrow_intro/eta} If \( \eta \)-reduction was used, \fullref{thm:single_step_reduction_deconstruction/abs/eta} suggests that \( A \aequiv Na \) and that \( a \) is not free in \( N \).
+
+      This is only possible if \( A = Ea \) for some \( \muplambda \)-term \( E \) that is \( \alpha \)-equivalent to \( N \). Furthermore, \( A \) is an application term only if \( A \) is an application of \ref{inf:def:arrow_type/elim}.
+
+      Let \( T_E \) be the left premise subtree of \( T_A \). We can attempt to use \fullref{alg:simply_typed_alpha_conversion} on \( E \aequiv N \), which should transform \( T_E \) into a derivation tree \( T_N \) of \( N: \tau \).
+
+      In the following cases, we should proceed to \fullref{alg:simply_typed_reduction/arrow_intro/abs} since \( \eta \)-reduction could not have been used:
+      \begin{itemize}
+        \item If \( T_A \) is not an application of \ref{inf:def:arrow_type/elim}.
+        \item If the right premise subtree of \( T_A \) is not \( a: \rho \).
+        \item If \( a \) is free in \( E \).
+        \item If the \( \alpha \)-conversion algorithm errors out.
+      \end{itemize}
+
+      \thmitem{alg:simply_typed_reduction/arrow_intro/abs} If \( \eta \)-reduction was not used, \fullref{thm:single_step_reduction_deconstruction/abs} suggests that \( N \aequiv \qabs {a^\rho} C \) for some \( \muplambda \)-term \( C \) such that \( A \pred C \).
+
+      This requires \( N \) to be an abstraction, i.e. \( N = \qabs {b^\rho} B \) for some variable \( b \) and some \( \muplambda \)-term \( B \).
+
+      There are two possibilities here:
+      \begin{thmenum}
+        \thmitem{alg:simply_typed_reduction/arrow_intro/abs/lift} If \( a = b \), \ref{inf:def:typed_term_alpha_equivalence/lift} was used, and thus \( B \aequiv C \). We can apply \ref{inf:def:lambda_term_reduction/alpha} to conclude that \( A \pred B \).
+
+        In this case, we can use the algorithm recursively to obtain a tree \( T_B \) deriving \( B: \pi \). It then remains to apply \ref{inf:def:arrow_type/intro/explicit} with assumption \( b: \rho \) to obtain a tree \( T' \) deriving \( N: \tau \).
+
+        In the following cases, the algorithm should error out since \( N \) is not a reduct of \( M \):
+        \begin{itemize}
+          \item If \( N \) is not an abstraction.
+          \item If the abstractor variable type in \( N \) is not \( \rho \).
+          \item If the recursive algorithm obtaining \( T_B \) errors out.
+        \end{itemize}
+
+        \thmitem{alg:simply_typed_reduction/arrow_intro/abs/ren} If \( a \neq b \), \ref{inf:def:typed_term_alpha_equivalence/ren} was used, hence \( b \) is not free in \( C \) and \( B \aequiv C[a \mapsto b] \).
+
+        Since \( A \pred C \), \fullref{thm:substitution_on_single_step_reduction} implies that \( A[a \mapsto b] \pred C[a \mapsto b] \), and we can apply \ref{inf:def:lambda_term_reduction/alpha} to conclude that \( A[a \mapsto b] \pred B \).
+
+        We use \fullref{alg:simply_typed_substitution} to obtain a tree \( T_A' \) deriving \( A[a \mapsto b]: \pi \).
+
+        After that, we proceed as in \fullref{alg:simply_typed_reduction/arrow_intro/abs/lift} --- we recursively apply the algorithm to obtain a tree \( T_B \) deriving \( B: \pi \), and then apply \ref{inf:def:arrow_type/intro/explicit} to obtain a tree \( T' \) deriving \( N: \tau \).
+
+        In addition to the three cases for \fullref{alg:simply_typed_reduction/arrow_intro/abs/lift}, the algorithm should also error out in the following cases:
+        \begin{itemize}
+          \item If \( b \) is free in \( A \) (since \( b \) should not be free in \( C \), by \fullref{alg:simply_typed_reduction/arrow_intro/abs/lift} it should not be free in \( A \)).
+          \item If the substitution algorithm errors out.
+        \end{itemize}
+      \end{thmenum}
+    \end{thmenum}
+
+    \thmitem{alg:simply_typed_reduction/arrow_elim} Finally, if \( T \) is an application tree for \ref{inf:def:arrow_type/elim}, then \( M = AB \) and \( T \) has premise subtrees \( T_A \) and \( T_B \) deriving \( A: \sigma \synimplies \tau \) and \( B: \sigma \) for some type \( \sigma \).
+
+    \Fullref{thm:single_step_reduction_deconstruction/abs} gives us three possibilities for \( M \pred N \):
+    \begin{thmenum}
+      \thmitem{alg:simply_typed_reduction/arrow_elim/beta} If \( \beta \)-reduction was used, \fullref{thm:single_step_reduction_deconstruction/app/beta} implies that \( A = \qabs {x^\sigma} E \) for some variable \( x \) and some \( \muplambda \)-term \( E \) such that \( N \aequiv E[x \mapsto B] \).
+
+      In this case, \( T_A \) must be an application tree for \ref{inf:def:arrow_type/intro/explicit}. Let \( T_E \) be its premise. We use \fullref{alg:simply_typed_substitution} to obtain from \( T_E \) a derivation tree \( T_E' \) for \( E[x \mapsto B]: \tau \), and then \fullref{alg:simply_typed_alpha_conversion} on \( T_E' \) to obtain a derivation tree for \( N: \tau \).
+
+      In the following cases, we should proceed to \fullref{alg:simply_typed_reduction/arrow_elim/app} since \( \beta \)-reduction could not have been used:
+      \begin{itemize}
+        \item If \( T_A \) is not an application of \ref{inf:def:arrow_type/intro/explicit}.
+        \item If the substitution algorithm errors out.
+        \item If the \( \alpha \)-conversion algorithm errors out.
+      \end{itemize}
+
+      \thmitem{alg:simply_typed_reduction/arrow_elim/app} If \( \beta \)-reduction was not used, \fullref{thm:single_step_reduction_deconstruction/app} implies that \( N = CD \) for some \( \muplambda \)-terms \( C \) and \( D \) such that either \( A \pred C \) and \( B \aequiv D \) or \( A \aequiv C \) and \( B \pred D \).
+
+      If \( N \) is not an application term, the current algorithm application must error out.
+
+      We first suppose that the former holds, i.e. that \( A \pred C \) and \( B \aequiv D \). We use the algorithm recursively on \( T_A \) to obtain a tree \( T_C \) deriving \( C: \sigma \synimplies \tau \), and then use \fullref{alg:simply_typed_alpha_conversion} on \( T_B \) to obtain a tree \( T_D \) deriving \( D: \sigma \).
+
+      If either application errors out, we reverse them; i.e. we use \fullref{alg:simply_typed_alpha_conversion} on \( T_A \) to obtain a tree \( T_C \) deriving \( C: \sigma \synimplies \tau \), and then use this algorithm recursively on \( T_B \) to obtain a tree \( T_D \) deriving \( D: \sigma \).
+
+      If either application errors out again, the current algorithm application must also error out. Otherwise, we apply \ref{inf:def:arrow_type/elim} to \( T_C \) and \( T_C \) to obtain a tree \( T' \) deriving \( N: \tau \).
+    \end{thmenum}
+  \end{thmenum}
+\end{algorithm}
+\begin{comments}
+  \item This algorithm can be found as \identifier{lambda_.algebraic_types.reduction.reduce_derivation} in \cite{notebook:code}.
+\end{comments}
+\begin{defproof}
+  The algorithm halts as can be easily proven using induction on the abstract syntax tree of the terms. The justification for the algorithm's correctness is given inline.
+\end{defproof}
+
+\begin{proposition}\label{thm:reduction_typing_rules}
+  The following \hyperref[con:typing_rule]{typing rules} are \hyperref[con:inference_rule_admissibility]{admissible} with respect to \ref{inf:def:arrow_type/elim} and \ref{inf:def:arrow_type/intro/explicit}:
+  \begin{paracol}{2}
+    \begin{leftcolumn}
+      \ParacolAlignmentHack
+      \begin{equation*}\taglabel[\ensuremath{ \rightarrow_\beta }]{inf:thm:reduction_typing_rules/beta}
+        \begin{prooftree}
+          \hypo{ (\qabs {x^{\sigma}} M) N: \tau }
+          \hypo{ N: \sigma }
+          \infer2[\ref{inf:thm:reduction_typing_rules/beta}]{ M[x \mapsto N]: \tau }.
+        \end{prooftree}
+      \end{equation*}
+    \end{leftcolumn}
+
+    \begin{rightcolumn}
+      \ParacolAlignmentHack
+      \begin{equation*}\taglabel[\ensuremath{ \leftarrow_\eta }]{inf:thm:reduction_typing_rules/eta}
+        \begin{prooftree}
+          \hypo{ M: \tau \synimplies \sigma }
+          \hypo{ x \not\in \op*{Free}(M) }
+          \infer2[\ref{inf:thm:reduction_typing_rules/eta}]{ \qabs {x^{\tau}} M x: \tau \synimplies \sigma }.
+        \end{prooftree}
+      \end{equation*}
+    \end{rightcolumn}
+  \end{paracol}
+\end{proposition}
+\begin{comments}
+  \item The rule \ref{inf:thm:reduction_typing_rules/beta} effectively replaces \ref{inf:def:typed_term_reduction/beta}, but \ref{inf:thm:reduction_typing_rules/eta} corresponds to \( \eta \)-expansion rather than \( \eta \)-reduction and is thus inverse to \ref{inf:def:typed_term_reduction/eta}.
+
+  The rule would still be admissible if were to place no restrictions on the variable \( x \) in \ref{inf:thm:reduction_typing_rules/eta}, however that would no longer correspond to \( \eta \)-expansion.
+
+  \item As in \fullref{thm:typed_substitution_assertions}, we note that we have avoided defining schemas for substitutions. We simply state the rules without the ability to completely formalize them since that would complicate us unnecessarily. This is discussed in \fullref{rem:dependent_type_rule_formalization/substitution}.
+\end{comments}
+\begin{proof}
+  Given a type derivation tree for \( (\qabs {x^\sigma} M) N: \tau \), we can apply \fullref{alg:simply_typed_reduction/arrow_elim/beta} to obtain a tree for \( M[x \mapsto N]: \tau \). The assertion \( N: \sigma \) is not necessary; it simply makes explicit that the types of \( x \) and \( N \) coincide.
+
+  The rule \ref{inf:thm:reduction_typing_rules/eta} is more subtle since it corresponds to \( \eta \)-expansion rather than \( \eta \)-reduction. Thus, we cannot use \fullref{alg:simply_typed_reduction}. Fortunately, admissibility can easily be proven directly:
+  \begin{equation*}
+    \begin{prooftree}
+      \hypo{ M: \tau \synimplies \sigma }
+      \hypo{ x: \tau }
+      \infer2[\ref{inf:def:arrow_type/elim}]{ Mx: \sigma }
+
+      \infer[left label=\( x \)]1[\ref{inf:def:arrow_type/intro/explicit}]{ \qabs {x^\sigma} Mx: \tau \synimplies \sigma }
+    \end{prooftree}
+  \end{equation*}
+\end{proof}
+
+\begin{proposition}\label{thm:simply_typed_church_rosser_theorem}
+  \Fullref{thm:church_rosser_theorem} holds when restricted to terms \hyperref[def:typability]{typable} with arrow types.
+
+  More precisely, let \enquote{\( {\Anon} \)} be a combination of \enquote{\( \beta \)} and \enquote{\( \eta \)}. Let \( \Lambda \) be the set of either \hyperref[def:lambda_term]{untyped} or \hyperref[def:typed_lambda_term]{typed \( \muplambda \) terms}, typable via the arrow typing rules from \fullref{def:arrow_type}.
+
+  Then \hyperref[def:lambda_term_reduction/single]{single-step \( \Anon \)-reduction} (with the modified rules from \fullref{def:typed_term_reduction} for typed terms) is \hyperref[def:reduction_confluence]{weakly confluent} on \( \Lambda \) --- for every term \( M \) in \( \Lambda \), if \( M \pred N \) and \( M \pred K \), there exists a term \( L \) in \( \Lambda \) such that \( N \pred* L \) and \( K \pred* L \).
+\end{proposition}
+\begin{proof}
+  \Fullref{thm:church_rosser_theorem} gives us a term \( L \), without any statement regarding its typability. Since \( M \pred* L \), there exists a sequence of single-step reductions such that
+  \begin{equation*}
+    M = M_0 \pred M_1 \pred \cdots \pred M_l = L.
+  \end{equation*}
+
+  We proceed inductively on \( l \) to show that \( M_l \) is typable:
+  \begin{itemize}
+    \item If \( l = 0 \), then \( M = L \) and their type derivation trees coincide.
+    \item We can adapt every derivation tree for \( M_l \) to \( M_{l+1} \) via \fullref{alg:simply_typed_reduction}.
+  \end{itemize}
+
+  Therefore, \( L \) is typable.
+\end{proof}

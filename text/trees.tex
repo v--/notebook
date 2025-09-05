@@ -20,7 +20,7 @@
 
     \thmitem{def:tree/category}\mimprovised Correspondingly, for a \hyperref[def:grothendieck_universe]{Grothendieck universe} \( \mscrU \), the category of trees is a \hyperref[def:subcategory/full]{full subcategory} of the category of undirected graphs.
 
-    \thmitem{def:tree/subtree}\mcite[def. 5.9]{БелоусовТкачёв2004ДискретнаяМатематика} We say that the tree \( R \) is a \term{subtree} of \( T \) if it is a \hyperref[def:undirected_graph/subgraph]{subgraph} of \( T \).
+    \thmitem{def:tree/subtree}\mcite[def. 5.9]{БелоусовТкачёв2004ДискретнаяМатематика} We say that the tree \( S \) is a \term{subtree} of \( T \) if it is a \hyperref[def:undirected_graph/subgraph]{subgraph} of \( T \).
   \end{thmenum}
 \end{definition}
 \begin{defproof}
@@ -91,56 +91,6 @@
   Therefore, \( T \) must be acyclic.
 \end{defproof}
 
-\begin{lemma}\label{thm:removing_node_from_tree}
-  If we remove any node from a \hyperref[def:tree]{tree} along with its incident edges, the \hyperref[def:graph_connected_component]{connected components} of the resulting graph are trees.
-
-  \begin{figure}[!ht]
-    \centering
-    \includegraphics[page=1]{output/thm__removing_node_from_tree}
-    \caption{An illustration of \fullref{thm:removing_node_from_tree}.}\label{fig:thm:removing_node_from_tree}
-  \end{figure}
-\end{lemma}
-\begin{proof}
-  Since the ambient graph is a tree, there exists at most one path between any pair of points. Within a connected component, there exists at least one path between any pair of points, hence exactly one path. Thus, every component is a tree.
-\end{proof}
-
-\begin{lemma}[K\"{o}nig's infinity lemma]\label{thm:konigs_infinity_lemma}
-  Every \hyperref[def:graph_cardinality/local]{locally finite} \hyperref[def:tree]{tree} of \hyperref[def:graph_cardinality/order]{infinite order} has an \hyperref[def:graph_walk/path]{infinite path}.
-\end{lemma}
-\begin{comments}
-  \item We use an explicit choice function here given by the \hyperref[def:zfc/choice]{axiom of choice}, but in special cases like \hyperref[def:ordered_tree]{ordered trees}, there are natural choice functions to consider.
-\end{comments}
-\begin{proof}
-  Let \( T = (V, E) \) be a locally finite infinite tree. Fix a \hyperref[def:choice_function]{choice function} \( c \) on all families of nodes of \( T \) and let \( v_0 \coloneqq c(V) \).
-
-  We will build in parallel an infinite path
-  \begin{equation*}
-    v_0 \to v_1 \to v_2 \cdots
-  \end{equation*}
-  and a sequence of trees \( T_0, T_1, \ldots \), each also locally finite of infinite order, such that \( T_{k+1} \) is a connected component of \( T_k \) with \( v_k \) removed (as in \fullref{thm:removing_node_from_tree}).
-
-  \begin{itemize}
-    \item For the base case, let \( T_0 \) be \( T \).
-
-    \item For the inductive case, suppose that we have already built \( T_k \) and
-    \begin{equation*}
-      v_0 \to v_1 \to \cdots \to v_k.
-    \end{equation*}
-
-    Denote by \( W \) the set of nodes adjacent to \( v_k \) in \( T_k \) and by \( \mscrR \) the family of trees obtained by removing \( v_k \) from \( T_k \).
-
-    Since \( \mscrR \) partitions the infinitely many nodes of \( T_k \) (excluding \( v_k \)), \fullref{thm:pigeonhole_principle/infinitary} implies that at least one of the finitely many trees in \( \mscrR \) has infinite order. Denote by \( \mscrR_\infty \) be the set of all such trees.
-
-    Finally, let
-    \begin{equation*}
-      v_{k+1} \coloneqq c\parens[\Big]{ \set[\Big]{ w \in W \given \qexists* {R \in \mscrR_\infty} w \in R } }
-    \end{equation*}
-    and let \( T_{k+1} \) be the tree in \( \mscrR_\infty \) containing \( v_{k+1} \).
-  \end{itemize}
-
-  We have thus built an infinite path in \( T \) with the aid of a predetermined choice function.
-\end{proof}
-
 \paragraph{Rooted trees}
 
 \begin{definition}\label{def:rooted_tree}\mcite[def. 11.1.2; 783; 784]{Rosen2019DiscreteMathematics}
@@ -200,6 +150,52 @@
 
   Another option would be to require oriented trees to be acyclic, but forbid infinite paths.
 \end{example}
+
+\begin{proposition}\label{thm:oriented_tree_path_uniqueness}
+  A \hyperref[def:well_founded_graph]{well-founded} \hyperref[def:directed_graph]{simple directed graph} is an \hyperref[def:oriented_tree]{oriented tree} if and only if there is a unique \hyperref[def:graph_walk/directed]{directed path} from the root to any node.
+\end{proposition}
+\begin{proof}
+  \SufficiencySubProof Fix an oriented tree \( T = (V, A) \) with root \( r \). Fix any node \( v \).
+
+  \UniquenessSubProof* Fix two paths
+  \begin{equation*}
+    r = u_0 \to u_1 \to \cdots \to u_n = v
+  \end{equation*}
+  and
+  \begin{equation*}
+    r = v_0 \to v_1 \to \cdots \to v_m = v.
+  \end{equation*}
+
+  Suppose that they are different. Let \( k_0 \) be the smallest index such that \( u_{n - k_0} \neq v_{m - k_0} \). Then the node \( u_{n - k_0 + 1} = v_{n - k_0 + 1} \) has in-degree at least \( 2 \), which contradicts the definition of oriented tree.
+
+  Therefore, the two paths are equal.
+
+  \ExistenceSubProof* We use natural number recursion to build a sequence of nodes starting at \( v \):
+  \begin{equation*}
+    v_k \coloneqq \begin{cases}
+      v, &k = 0, \\
+      u, &k > 1 \T{and} u \T{is the unique predecessor of} v_{k-1},
+      r, &\T{otherwise}, \\
+    \end{cases}
+  \end{equation*}
+
+  For each index \( k \), either \( v_{k+1} \to v_k \) or \( v_{k+1} = v_k \). Since \( T \) is well-founded, the sequence eventually stabilizes, and thus there exists a largest index \( n \) such that \( v_{n+1} \to v_{n} \). Since all nodes except for \( r \) have a unique predecessor, we conclude that \( v_m = u \) for every integer \( m > n \).
+
+  This gives rise to the path
+  \begin{equation*}
+    u = v_{n+1} = \to v_n \to \cdots \to v_1 \to v_0 = v.
+  \end{equation*}
+
+  \NecessitySubProof Fix a well-founded directed graph \( T = (V, A) \) such that there is a unique directed path from a fixed node \( r \) to any node. We will show that it is an oriented tree.
+
+  \ProofOf*{Proof that \( r \) has in-degree \( 0 \)} Suppose that there is an arc from some node \( v \) to \( r \). Then we can concatenate it with the unique path from \( r \) to \( v \) and obtain a cycle at \( r \). This contradicts \fullref{thm:def:well_founded_graph/acyclic} since \( T \) is well-founded. The obtained contradiction shows that \( T \) has no arcs ending at \( r \).
+
+  \ProofOf*{Proof that any other node has in-degree \( 1 \)} Given any node \( u \) distinct from \( r \), suppose that there is an arc from \( v \) to \( u \) and from \( w \) to \( u \).
+
+  We can concatenate the path from \( r \) to \( v \) with \( v \to u \) and the path from \( r \) to \( w \) with \( w \to u \) to obtain two paths from \( r \) to \( u \).
+
+  The two paths must be equal, which implies that \( v = w \). Hence, there is exactly one arc ending at \( u \).
+\end{proof}
 
 \begin{lemma}\label{thm:tree_order_well_founded}
   The \hyperref[def:rooted_tree/order]{tree order} of a rooted tree is \hyperref[def:well_founded_relation]{well-founded} as a binary relation.
@@ -285,6 +281,99 @@
 \end{comments}
 \begin{proof}
   By \fullref{thm:tree_order_well_founded}, the \hyperref[def:rooted_tree]{tree order} is well-founded. This allows us to reduce the theorem to \fullref{thm:well_founded_induction}.
+\end{proof}
+
+\paragraph{Infinite trees}
+
+\begin{proposition}\label{thm:removing_node_from_oriented_tree}
+  If we remove any node from an \hyperref[def:oriented_tree]{oriented tree} along with its incident edges, the \hyperref[def:graph_connected_component]{weak connected components} of the resulting graph are trees.
+
+  \begin{figure}[!ht]
+    \centering
+    \includegraphics[page=1]{output/thm__removing_node_from_tree}
+    \caption{An illustration of \fullref{thm:removing_node_from_oriented_tree}.}\label{fig:thm:removing_node_from_oriented_tree}
+  \end{figure}
+\end{proposition}
+\begin{proof}
+  Let \( T = (V, A) \) an oriented tree with root \( r \). Fix a node \( v \) and let \( \mscrR \) be the family of connected components of \( T \) with \( v \) (and its arcs) removed.
+
+  Let \( R \) be any component from \( \mscrR \). Since \( T \) is well-founded, clearly so is \( R \). We must show that it has a root.
+
+  We have two cases --- either \( R \) contains either a parent or child of \( v \).
+
+  Fix a node \( u \) from \( R \). In \( T \), by \fullref{thm:oriented_tree_path_uniqueness}, there exists a (unique) path
+  \begin{equation}\label{eq:thm:removing_node_from_oriented_tree/proof/main_path}
+    r = u_0 \to \cdots \to u_n = u.
+  \end{equation}
+
+  \begin{itemize}
+    \item If \( v \) belongs to this path, say if \( v = u_{k_0} \), then \( u_{k_0+1} \) is a child of \( v \) that belongs to \( R \).
+
+    In this case, \( u_{k_0+1} \) has no predecessor in \( R \), but every descendant of \( u_{k_0+1} \) in \( T \) is also a descendant in \( R \). Thus, \( R \) is an oriented tree with root \( u_{k_0+1} \).
+
+    \item Otherwise, consider the path
+    \begin{equation}\label{eq:thm:removing_node_from_oriented_tree/proof/aux_path}
+      r = v_0 \to \cdots \to v_m = v.
+    \end{equation}
+
+    We can reverse \eqref{eq:thm:removing_node_from_oriented_tree/proof/main_path} and concatenate it with \eqref{eq:thm:removing_node_from_oriented_tree/proof/aux_path} to obtain a generalized path from \( u \) to \( v \):
+    \begin{equation*}
+      u = u_n \leftarrow \cdots \leftarrow u_0 = r = v_0 \to \cdots \to v_{m-1} \to v_m = v.
+    \end{equation*}
+
+    After removing \( v \), we obtain a generalized path from \( u \) to \( v_{m-1} \), which must belong to \( R \), the connected component containing \( u \). Then \( v_{m-1} \) is the parent of \( v \).
+
+    In this case \( r \), the root of \( T \), is also the root of \( R \), since no node in \( R \) changes its in-degree compared to \( T \).
+  \end{itemize}
+\end{proof}
+
+\begin{lemma}\label{thm:konigs_infinity_lemma_oriented}
+  Every \hyperref[def:graph_cardinality/local]{locally finite} \hyperref[def:oriented_tree]{oriented tree} of \hyperref[def:graph_cardinality/order]{infinite order} has an \hyperref[def:graph_walk/path]{infinite directed path}.
+\end{lemma}
+\begin{comments}
+  \item We use an explicit choice function here given by the \hyperref[def:zfc/choice]{axiom of choice}, but in special cases like \hyperref[def:oriented_tree]{oriented trees}, there are natural choice functions to consider.
+\end{comments}
+\begin{proof}
+  Let \( T = (V, A) \) be a locally finite infinite oriented tree. Fix a \hyperref[def:choice_function]{choice function} \( c \) on the nodes of \( T \).
+
+  We will build in parallel an infinite path
+  \begin{equation*}
+    v_0 \to v_1 \to v_2 \cdots
+  \end{equation*}
+  and a sequence of oriented trees \( T_0, T_1, \ldots \), each also locally finite of infinite order, such that \( T_{k+1} \) is subtree of \( T_k \) rooted at \( v_{k+1} \).
+
+  \begin{itemize}
+    \item For the base case, let \( T_0 \) be \( T \) and let \( v_0 \) be the root of \( T \).
+
+    \item For the inductive case, suppose that we have already built \( T_k \) and
+    \begin{equation*}
+      v_0 \to v_1 \to \cdots \to v_k.
+    \end{equation*}
+
+    Denote by \( W \) the set of children of \( v_k \) and by \( \mscrR \) the family of trees obtained by removing the root \( v_k \) from \( T_k \). \Fullref{thm:removing_node_from_oriented_tree} implies that each member of \( \mscrR \) is an oriented tree.
+
+    Since \( \mscrR \) partitions the infinitely many nodes of \( T_k \) (excluding \( v_k \)), \fullref{thm:pigeonhole_principle/infinitary} implies that at least one of the finitely many trees in \( \mscrR \) has infinite order. Denote by \( \mscrR_\infty \) be the set of all such trees.
+
+    Finally, let
+    \begin{equation*}
+      v_{k+1} \coloneqq c\parens[\Big]{ \set[\Big]{ w \in W \given \qexists* {S \in \mscrR_\infty} w \in S } }
+    \end{equation*}
+    and let \( T_{k+1} \) be the tree in \( \mscrR_\infty \) containing \( v_{k+1} \).
+  \end{itemize}
+
+  We have thus built an infinite path in \( T \) with the aid of a predetermined choice function.
+\end{proof}
+
+\begin{lemma}[K\"{o}nig's infinity lemma]\label{thm:konigs_infinity_lemma}
+  Every \hyperref[def:graph_cardinality/local]{locally finite} \hyperref[def:tree]{tree} of \hyperref[def:graph_cardinality/order]{infinite order} has an \hyperref[def:graph_walk/path]{infinite path}.
+\end{lemma}
+\begin{comments}
+  \item We use an explicit choice function here given by the \hyperref[def:zfc/choice]{axiom of choice}, but in special cases like \hyperref[def:ordered_tree]{ordered trees}, there are natural choice functions to consider.
+\end{comments}
+\begin{proof}
+  Let \( T = (V, E) \) be a locally finite infinite tree. Fix a \hyperref[def:choice_function]{choice function} \( c \) on the nodes of \( T \) and let \( v_0 \coloneqq c(V) \).
+
+  \Fullref{thm:oriented_and_rooted_trees/orientation} gives an orientation \( T' = (V, A) \) of \( T \) rooted at \( v_0 \). We can then use \fullref{thm:konigs_infinity_lemma_oriented} with the choice function \( c \) to obtain an infinite directed path in \( T' \).
 \end{proof}
 
 \paragraph{Ordered trees}
@@ -451,7 +540,7 @@
 \end{definition}
 
 \begin{proposition}\label{thm:labeled_tree_isomorphisms}
-  Fix two \( L \)-labeled trees \( T \) and \( R \). A function \( f: V_T \to V_R \) is a \hyperref[def:morphism_invertibility/isomorphism]{categorical isomorphism} from \( T \) to \( R \) if and only if it is a \hyperref[thm:graph_isomorphisms/simple_undirected]{isomorphism of simple undirected graphs} and, additionally, \( u \leq_T v \) if and only if \( f(u) \leq_R f(v) \) and \( l_T(v) = l_R(f(v)) \) for all vertices.
+  Fix two \( L \)-labeled trees \( T \) and \( S \). A function \( f: V_T \to V_S \) is a \hyperref[def:morphism_invertibility/isomorphism]{categorical isomorphism} from \( T \) to \( S \) if and only if it is a \hyperref[thm:graph_isomorphisms/simple_undirected]{isomorphism of simple undirected graphs} and, additionally, \( u \leq_T v \) if and only if \( f(u) \leq_S f(v) \) and \( l_T(v) = l_S(f(v)) \) for all vertices.
 \end{proposition}
 \begin{proof}
   The conditions are adjusted so that invertibility is clear.

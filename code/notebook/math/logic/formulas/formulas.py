@@ -15,11 +15,11 @@ class ConstantFormula:
 
 @dataclass(frozen=True)
 class EqualityFormula:
-    a: Term
-    b: Term
+    left: Term
+    right: Term
 
     def __str__(self) -> str:
-        return f'({self.a} = {self.b})'
+        return f'({self.left} = {self.right})'
 
 
 class PredicateFormula(FunctionLikeTerm[Term]):
@@ -28,30 +28,30 @@ class PredicateFormula(FunctionLikeTerm[Term]):
 
 @dataclass(frozen=True)
 class NegationFormula:
-    sub: 'Formula'
+    body: 'Formula'
 
     def __str__(self) -> str:
-        return f'{UnaryConnective.NEGATION}{self.sub}'
+        return f'{UnaryConnective.NEGATION}{self.body}'
 
 
 @dataclass(frozen=True)
 class ConnectiveFormula:
     conn: BinaryConnective
-    a: 'Formula'
-    b: 'Formula'
+    left: 'Formula'
+    right: 'Formula'
 
     def __str__(self) -> str:
-        return f'({self.a} {self.conn} {self.b})'
+        return f'({self.left} {self.conn} {self.right})'
 
 
 @dataclass(frozen=True)
 class QuantifierFormula:
     quantifier: Quantifier
     var: Variable
-    sub: 'Formula'
+    body: 'Formula'
 
     def __str__(self) -> str:
-        return f'{self.quantifier.value}{self.var}.{self.sub}'
+        return f'{self.quantifier.value}{self.var}.{self.body}'
 
 
 Formula = ConstantFormula | EqualityFormula | PredicateFormula | NegationFormula | ConnectiveFormula | QuantifierFormula

@@ -14,6 +14,6 @@ from .subformulas import is_subformula
 )
 def test_is_subformula_success(formula: str, subformula: str, dummy_signature: FormalLogicSignature) -> None:
     assert is_subformula(
-        parse_formula(dummy_signature, formula),
-        parse_formula(dummy_signature, subformula)
+        parse_formula(formula, dummy_signature),
+        parse_formula(subformula, dummy_signature)
     )

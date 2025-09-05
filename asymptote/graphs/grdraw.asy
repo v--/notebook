@@ -7,8 +7,8 @@ access 'asymptote/pens.asy' as pens;
 pen vert_label = fontsize(10);
 pen edge_label = fontsize(9);
 pen regular_edge = linewidth(0.5);
-pen bold_edge = linewidth(1);
-real dot_radius = 0.04;
+pen bold_edge = linewidth(2);
+real dot_radius = 0.08;
 
 void vert(
   pair v,
@@ -33,12 +33,13 @@ void _draw_edge_impl(
   bool bold = false,
   bool is_arc = false
 ) {
-  pen p = (dash ? pens.densely_dashed : currentpen) + p + linecap(0);
-  draw(pth, p=p + (bold ? bold_edge : regular_edge));
+  pen p = (dash ? pens.densely_dashed : currentpen) + (bold ? bold_edge : regular_edge) + linecap(0) + p;
 
   if (is_arc) {
-    arrowbar arrow = Arrow(size=4, angle=20, filltype=null);
-    draw(pth, p=p, arrow=arrow);
+    arrowbar arrow = Arrow(size=(bold ? 5 : 4), angle=(bold ? 30 : 20), filltype=FillDraw(drawpen=linecap(0)));
+    draw(pth, p=p, arrow);
+  } else {
+    draw(pth, p=p);
   }
 
   if (L != '') {

@@ -25,11 +25,11 @@ class QuantifierlessVerificationVisitor(FormulaVisitor[bool]):
 
     @override
     def visit_negation(self, formula: NegationFormula) -> bool:
-        return self.visit(formula.sub)
+        return self.visit(formula.body)
 
     @override
     def visit_connective(self, formula: ConnectiveFormula) -> bool:
-        return self.visit(formula.a) and self.visit(formula.b)
+        return self.visit(formula.left) and self.visit(formula.right)
 
     @override
     def visit_quantifier(self, formula: QuantifierFormula) -> bool:
@@ -47,21 +47,21 @@ class PNFVerificationVisitor(FormulaVisitor[bool]):
 
     @override
     def visit_negation(self, formula: NegationFormula) -> bool:
-        if isinstance(formula.sub, QuantifierFormula):
+        if isinstance(formula.body, QuantifierFormula):
             return False
 
-        return self.visit(formula.sub)
+        return self.visit(formula.body)
 
     @override
     def visit_connective(self, formula: ConnectiveFormula) -> bool:
-        if isinstance(formula.a, QuantifierFormula) or isinstance(formula.b, QuantifierFormula):
+        if isinstance(formula.left, QuantifierFormula) or isinstance(formula.right, QuantifierFormula):
             return False
 
-        return self.visit(formula.a) and self.visit(formula.b)
+        return self.visit(formula.left) and self.visit(formula.right)
 
     @override
     def visit_quantifier(self, formula: QuantifierFormula) -> bool:
-        return self.visit(formula.sub)
+        return self.visit(formula.body)
 
 
 def is_formula_in_pnf(formula: Formula) -> bool:
@@ -71,8 +71,8 @@ def is_formula_in_pnf(formula: Formula) -> bool:
 class ConditionalRemovalVisitor(FormulaTransformationVisitor):
     @override
     def visit_connective(self, formula: ConnectiveFormula) -> ConnectiveFormula:
-        a = self.visit(formula.a)
-        b = self.visit(formula.b)
+        a = self.visit(formula.left)
+        b = self.visit(formula.right)
 
         match formula.conn:
             case BinaryConnective.DISJUNCTION | BinaryConnective.CONJUNCTION:
@@ -96,44 +96,44 @@ def remove_conditionals(formula: Formula) -> Formula:
 class MoveNegationsVisitor(FormulaTransformationVisitor):
     @override
     def visit_negation(self, formula: NegationFormula) -> Formula:
-        if isinstance(formula.sub, ConnectiveFormula):
+        if isinstance(formula.body, ConnectiveFormula):
             new_conn: BinaryConnective
 
-            match formula.sub.conn:
+            match formula.body.conn:
                 case BinaryConnective.DISJUNCTION:
                     new_conn = BinaryConnective.CONJUNCTION
                 case BinaryConnective.CONJUNCTION:
                     new_conn = BinaryConnective.DISJUNCTION
                 case _:
-                    raise PNFError(f'Unexpected connective {formula.sub.conn}')
+                    raise PNFError(f'Unexpected connective {formula.body.conn}')
 
             return ConnectiveFormula(
                 new_conn,
-                self.visit(NegationFormula(formula.sub.a)),
-                self.visit(NegationFormula(formula.sub.b))
+                self.visit(NegationFormula(formula.body.left)),
+                self.visit(NegationFormula(formula.body.right))
             )
 
-        if isinstance(formula.sub, QuantifierFormula):
+        if isinstance(formula.body, QuantifierFormula):
             new_quantifier: Quantifier
 
-            match formula.sub.quantifier:
+            match formula.body.quantifier:
                 case Quantifier.UNIVERSAL:
                     new_quantifier = Quantifier.EXISTENTIAL
                 case Quantifier.EXISTENTIAL:
                     new_quantifier = Quantifier.UNIVERSAL
                 case _:
-                    raise PNFError(f'Unexpected quantifier {formula.sub.quantifier}')
+                    raise PNFError(f'Unexpected quantifier {formula.body.quantifier}')
 
             return QuantifierFormula(
                 new_quantifier,
-                formula.sub.var,
-                self.visit(NegationFormula(formula.sub.sub))
+                formula.body.var,
+                self.visit(NegationFormula(formula.body.body))
             )
 
-        if isinstance(formula.sub, NegationFormula):
-            return self.visit(formula.sub.sub)
+        if isinstance(formula.body, NegationFormula):
+            return self.visit(formula.body.body)
 
-        return NegationFormula(self.visit(formula.sub))
+        return NegationFormula(self.visit(formula.body))
 
     @override
     def visit_connective(self, formula: ConnectiveFormula) -> Formula:
@@ -153,44 +153,44 @@ class MoveQuantifiersVisitor(FormulaTransformationVisitor):
         if formula.conn not in (BinaryConnective.DISJUNCTION, BinaryConnective.CONJUNCTION):
             raise PNFError(f'Unexpected connective {formula.conn}')
 
-        if isinstance(formula.a, QuantifierFormula):
-            new_var = new_variable({*get_free_variables(formula.a.sub), *get_free_variables(formula.b)})
+        if isinstance(formula.left, QuantifierFormula):
+            new_var = new_variable({*get_free_variables(formula.left.body), *get_free_variables(formula.right)})
 
             return QuantifierFormula(
-                formula.a.quantifier,
+                formula.left.quantifier,
                 new_var,
                 self.visit(
                     ConnectiveFormula(
                         formula.conn,
-                        substitute_in_formula(formula.a.sub, formula.a.var, new_var),
-                        formula.b
+                        substitute_in_formula(formula.left.body, formula.left.var, new_var),
+                        formula.right
                     )
                 )
             )
 
-        if isinstance(formula.b, QuantifierFormula):
-            new_var = new_variable({*get_free_variables(formula.a), *get_free_variables(formula.b.sub)})
+        if isinstance(formula.right, QuantifierFormula):
+            new_var = new_variable({*get_free_variables(formula.left), *get_free_variables(formula.right.body)})
 
             return QuantifierFormula(
-                formula.b.quantifier,
+                formula.right.quantifier,
                 new_var,
                 self.visit(
                     ConnectiveFormula(
                         formula.conn,
-                        formula.a,
-                        substitute_in_formula(formula.b.sub, formula.b.var, new_var),
+                        formula.left,
+                        substitute_in_formula(formula.right.body, formula.right.var, new_var),
                     )
                 )
             )
 
-        if len(get_bound_variables(formula.a)) == 0 and len(get_bound_variables(formula.b)) == 0:
+        if len(get_bound_variables(formula.left)) == 0 and len(get_bound_variables(formula.right)) == 0:
             return formula
 
         return self.visit(
             ConnectiveFormula(
                 formula.conn,
-                self.visit(formula.a),
-                self.visit(formula.b)
+                self.visit(formula.left),
+                self.visit(formula.right)
             )
         )
 

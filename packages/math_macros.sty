@@ -21,12 +21,14 @@
 \NewDocumentCommand \boxprod      {} {\mathbin \smwhtsquare}
 \NewDocumentCommand \anon        {s} {\mathbin {\IfBooleanTF {#1} - \smblkcircle}}
 \NewDocumentCommand \Anon        {s} {\mathbin {\IfBooleanTF {#1} - \mdsmblkcircle}}
-\NewDocumentCommand \bincirc     {s} {\IfBooleanTF {#1} {\thinspace \circ \thinspace} {\mathbin \circ}}
 \NewDocumentCommand \relcirc     {s} {\IfBooleanTF {#1} {\thinspace \circ \thinspace} {\mathrel \circ}}
+\NewDocumentCommand \bincirc     {s} {\IfBooleanTF {#1} {\thinspace \circ \thinspace} {\mathbin \circ}}
+\NewDocumentCommand \binast      {s} {\IfBooleanTF {#1} {\thinspace \circ \ast} {\mathbin \ast}}
 \NewDocumentCommand \multto       {} {\rightrightarrows}
 \NewDocumentCommand \Textprime    {} {\ensuremath{'}}
 \NewDocumentCommand \vect        {m} {\overrightarrow{#1}}
 \NewDocumentCommand \bnftsq      {m} {\bnfts{\enquote{#1}}}
+\NewDocumentCommand \bnfves       {} {\bnfts{\( \varepsilon \)}}
 \NewDocumentCommand \oppos        {} {{\op*{op}}}
 \NewDocumentCommand \identifier  {v} {\texttt{\seqsplit{#1}}}
 
@@ -45,7 +47,9 @@
 \NewDocumentCommand \syneq      {} {\doteq}
 \NewDocumentCommand \synin      {} {\isindot}
 \NewDocumentCommand \synexists  {} {\syn\exists}
-\NewDocumentCommand \synlambda  {} {\mathrm{\lambda}}
+\NewDocumentCommand \synlambda  {} {\syn\muplambda}
+\NewDocumentCommand \synsum     {} {\syn\Sigma}
+\NewDocumentCommand \synprod    {} {\syn\Pi}
 \NewDocumentCommand \synplus    {} {\mathbin{\dotplus}}
 \NewDocumentCommand \syntimes   {} {\mathbin{\dottimes}}
 \NewDocumentCommand \synsubst   {} {\mathrel{\syn\mapsto}}
@@ -81,6 +85,15 @@
       }
   }
 
+\NewDocumentCommand \syndefeq {}
+  {
+    \mathrel
+      {
+        {\coloneqq}
+        \mathllap{\doteq}
+      }
+  }
+
 \box_new:N \l_nb_vreduce_box
 \cs_new_protected:Nn \nb_vreduce:nn
   {
@@ -101,11 +114,14 @@
 
 % Properly spaced quantifiers
 \cs_new:Nn \nb_qdelim: {.}
-\NewDocumentCommand \quantifier {smm} {#2 \thinspace #3 \thinspace \IfBooleanF {#1} {\nb_qdelim: \thinspace}}
-\NewDocumentCommand \qexists     {sm} {\quantifier {\IfBooleanTF {#1} {\exists} {\synexists}} {#2}}
-\NewDocumentCommand \qExists     {sm} {\quantifier {\IfBooleanTF {#1} {\exists} {\synexists}} {! \thinspace #2}}
-\NewDocumentCommand \qforall     {sm} {\quantifier {\IfBooleanTF {#1} {\forall} {\synforall}} {#2}}
-\NewDocumentCommand \qabs        {sm} {\IfBooleanTF {#1} {\quantifier* {\synlambda} {#2}} {\quantifier {\synlambda} {#2}}}
+\NewDocumentCommand \quantifier  {mm} {#1 #2 \mathinner {\nb_qdelim:}}
+\NewDocumentCommand \qexists     {sm} {\quantifier {\IfBooleanTF {#1} \exists    \synexists}  {#2}}
+\NewDocumentCommand \qExists     {sm} {\quantifier {\IfBooleanTF {#1} \exists    \synexists}  {! \thinspace #2}}
+\NewDocumentCommand \qforall     {sm} {\quantifier {\IfBooleanTF {#1} \forall    \synforall}  {#2}}
+\NewDocumentCommand \qabs        {sm} {\quantifier {\IfBooleanTF {#1} \muplambda \synlambda}  {#2}}
+\NewDocumentCommand \qAbs        {sm} {\quantifier {\IfBooleanTF {#1} \Lambda    \syn\Lambda} {#2}}
+\NewDocumentCommand \qprod       {sm} {\quantifier {\IfBooleanTF {#1} \Pi        \synprod}    {#2}}
+\NewDocumentCommand \qsum        {sm} {\quantifier {\IfBooleanTF {#1} \Sigma     \synsum}     {#2}}
 
 % More operators
 \DeclareMathOperator  \aut             {aut}
@@ -199,7 +215,7 @@
     % For some reason, equations are positioned badly without this hack
     % I am not sure why it works. My attempts at "more elegant" messing with boxes were futile.
     \phantom{alignment hack}
-    \vspace{-1.5em}
+    \vspace{-1.5ex}
   }
 
 % Permutation cycles

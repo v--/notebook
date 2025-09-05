@@ -1,4 +1,4 @@
-from .formula_visitors import FormulaTransformationVisitor, FormulaVisitor
+from .formula_visitor import FormulaTransformationVisitor, FormulaVisitor
 from .formulas import (
     ConnectiveFormula,
     ConstantFormula,
@@ -13,15 +13,13 @@ from .formulas import (
     is_conjunction,
     is_disjunction,
 )
-from .schema_visitors import FormulaSchemaVisitor
+from .schema_visitor import FormulaSchemaVisitor
 from .schemas import (
     ConnectiveFormulaSchema,
     EqualityFormulaSchema,
-    ExtendedFormulaSchema,
     FormulaPlaceholder,
     FormulaSchema,
     NegationFormulaSchema,
     PredicateFormulaSchema,
     QuantifierFormulaSchema,
-    SubstitutionSchema,
 )

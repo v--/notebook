@@ -16,17 +16,17 @@ def are_terms_alpha_equivalent(m: UntypedTerm, n: UntypedTerm) -> bool:
         case (UntypedApplication(), UntypedApplication()):
             assert isinstance(m, UntypedApplication)
             assert isinstance(n, UntypedApplication)
-            return are_terms_alpha_equivalent(m.a, n.a) and are_terms_alpha_equivalent(m.b, n.b)
+            return are_terms_alpha_equivalent(m.left, n.left) and are_terms_alpha_equivalent(m.right, n.right)
 
         case (UntypedAbstraction(), UntypedAbstraction()):
             assert isinstance(m, UntypedAbstraction)
             assert isinstance(n, UntypedAbstraction)
 
             if m.var == n.var:
-                return are_terms_alpha_equivalent(m.sub, n.sub)
+                return are_terms_alpha_equivalent(m.body, n.body)
 
-            return m.var not in get_free_variables(n.sub) and \
-                are_terms_alpha_equivalent(m.sub, substitute(n.sub, {n.var: m.var}))
+            return m.var not in get_free_variables(n.body) and \
+                are_terms_alpha_equivalent(m.body, substitute(n.body, {n.var: m.var}))
 
         case _:
             return False
@@ -43,20 +43,20 @@ def separate_free_and_bound_variables_impl(term: UntypedTerm, context: Collectio
 
         case UntypedApplication():
             return UntypedApplication(
-                separate_free_and_bound_variables_impl(term.a, context),
-                separate_free_and_bound_variables_impl(term.b, context)
+                separate_free_and_bound_variables_impl(term.left, context),
+                separate_free_and_bound_variables_impl(term.right, context)
             )
 
         case UntypedAbstraction():
             if term.var not in context:
-                return UntypedAbstraction(term.var, separate_free_and_bound_variables_impl(term.sub, {*context, term.var}))
+                return UntypedAbstraction(term.var, separate_free_and_bound_variables_impl(term.body, {*context, term.var}))
 
             new_var = new_variable(context)
 
             return UntypedAbstraction(
                 new_var,
                 substitute(
-                    separate_free_and_bound_variables_impl(term.sub, {*context, new_var}),
+                    separate_free_and_bound_variables_impl(term.body, {*context, new_var}),
                     {term.var: new_var}
                 ),
             )

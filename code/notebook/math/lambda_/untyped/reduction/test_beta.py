@@ -3,7 +3,7 @@ from collections.abc import Sequence
 from .....support.pytest import pytest_parametrize_kwargs
 from ...common import big_omega, church_numeral, church_numeral_to_int, combinators, omega3, pairs, succ
 from ...common import variables as var
-from ...parsing import parse_pure_term
+from ...parsing import parse_untyped_term
 from ...terms import UntypedAbstraction, UntypedApplication, UntypedTerm
 from ..alpha import are_terms_alpha_equivalent
 from .beta import BetaReduction, to_function
@@ -17,12 +17,12 @@ from .strategies import ApplicativeOrderStrategy, NormalOrderStrategy, reduce_te
         expected=var.x
     ),
     dict(
-        term=parse_pure_term('((λx.(λy.(xy)))x)'),
-        expected=parse_pure_term('(λy.(xy))')  # No need to rename
+        term=parse_untyped_term('((λx.(λy.(xy)))x)'),
+        expected=parse_untyped_term('(λy.(xy))')  # No need to rename
     ),
     dict(
-        term=parse_pure_term('((λx.(λy.(xy)))y)'),
-        expected=parse_pure_term('(λa.(ya))')  # We rename to avoid capturing
+        term=parse_untyped_term('((λx.(λy.(xy)))y)'),
+        expected=parse_untyped_term('(λa.(ya))')  # We rename to avoid capturing
     )
 )
 def test_applicative_beta(term: UntypedTerm, expected: UntypedTerm | None) -> None:
@@ -33,10 +33,11 @@ def test_applicative_beta(term: UntypedTerm, expected: UntypedTerm | None) -> No
 def test_applicative_beta_numerals() -> None:
     strategy = ApplicativeOrderStrategy(BetaReduction())
 
-    numeral = church_numeral(0)
+    numeral: UntypedTerm = church_numeral(0)
 
     for n in range(10):
         numeral = transitively_reduce_term(UntypedApplication(succ, numeral), strategy)
+        assert isinstance(numeral, UntypedAbstraction)
         assert church_numeral_to_int(numeral) == n + 1
 
 
@@ -113,7 +114,7 @@ def test_beta_c0_omega_i() -> None:
     dict(
         term=combinators.s,
         params=[var.x, var.y, var.z],
-        expected=parse_pure_term('((xz)(yz))')
+        expected=parse_untyped_term('((xz)(yz))')
     )
 )
 def test_to_function(term: UntypedTerm, params: Sequence[UntypedTerm], expected: UntypedTerm) -> None:

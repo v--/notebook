@@ -1,38 +1,26 @@
 from dataclasses import dataclass
-from typing import overload, override
+from typing import override
 
 from ....support.schemas import SchemaInstantiationError
 from ..terms import (
     Constant,
-    MixedAbstraction,
-    MixedAbstractionSchema,
-    MixedApplication,
-    MixedApplicationSchema,
-    MixedTerm,
-    MixedTermSchema,
     TermPlaceholder,
-    TermSchemaVisitor,
     TypedAbstraction,
     TypedAbstractionSchema,
     TypedApplication,
     TypedApplicationSchema,
     TypedTerm,
     TypedTermSchema,
-    UntypedAbstraction,
-    UntypedAbstractionSchema,
-    UntypedApplication,
-    UntypedApplicationSchema,
-    UntypedTerm,
-    UntypedTermSchema,
+    TypedTermSchemaVisitor,
     Variable,
     VariablePlaceholder,
 )
-from .base import LambdaSchemaInstantiation, is_instantiation_explicitly_typed, is_instantiation_implicitly_typed
+from .base import LambdaSchemaInstantiation
 from .type_application import instantiate_type_schema
 
 
 @dataclass(frozen=True)
-class InstantiationApplicationVisitor(TermSchemaVisitor[MixedTerm]):
+class InstantiationApplicationVisitor(TypedTermSchemaVisitor[TypedTerm]):
     instantiation: LambdaSchemaInstantiation
 
     @override
@@ -47,59 +35,24 @@ class InstantiationApplicationVisitor(TermSchemaVisitor[MixedTerm]):
         return self.instantiation.variable_mapping[schema]
 
     @override
-    def visit_term_placeholder(self, schema: TermPlaceholder) -> MixedTerm:
+    def visit_term_placeholder(self, schema: TermPlaceholder) -> TypedTerm:
         if schema not in self.instantiation.term_mapping:
             raise SchemaInstantiationError(f'No specification of how to instantiate the term placeholder {schema}')
 
         return self.instantiation.term_mapping[schema]
 
     @override
-    def visit_application(self, schema: MixedApplicationSchema) -> MixedApplication:
-        match schema:
-            case UntypedApplicationSchema():
-                return UntypedApplication(self.visit(schema.a), self.visit(schema.b))
-
-            case TypedApplicationSchema():
-                return TypedApplication(self.visit(schema.a), self.visit(schema.b))
-
-            case _:
-                return MixedApplication(self.visit(schema.a), self.visit(schema.b))
+    def visit_application(self, schema: TypedApplicationSchema) -> TypedApplication:
+        return TypedApplication(self.visit(schema.left), self.visit(schema.right))
 
     @override
-    def visit_abstraction(self, schema: MixedAbstractionSchema) -> MixedAbstraction:
-        match schema:
-            case UntypedAbstractionSchema():
-                return UntypedAbstraction(self.visit_variable_placeholder(schema.var), self.visit(schema.sub))
-
-            case TypedAbstractionSchema():
-                return TypedAbstraction(
-                    self.visit_variable_placeholder(schema.var),
-                    self.visit(schema.sub),
-                    instantiate_type_schema(schema.var_type, self.instantiation)
-                )
-
-            case _:
-                return MixedAbstraction(
-                    self.visit_variable_placeholder(schema.var),
-                    self.visit(schema.sub),
-                    instantiate_type_schema(schema.var_type, self.instantiation) if schema.var_type else None
-                )
+    def visit_abstraction(self, schema: TypedAbstractionSchema) -> TypedAbstraction:
+        return TypedAbstraction(
+            self.visit_variable_placeholder(schema.var),
+            instantiate_type_schema(schema.var_type, self.instantiation),
+            self.visit(schema.body)
+        )
 
 
-# mypy doesn't recognize that UntypedTermSchema and TypedTermSchema are distinct, so we mute its error
-@overload
-def instantiate_term_schema(schema: UntypedTermSchema, instantiation: LambdaSchemaInstantiation) -> UntypedTerm: ...  # type: ignore[overload-overlap]
-@overload
-def instantiate_term_schema(schema: TypedTermSchema, instantiation: LambdaSchemaInstantiation) -> TypedTerm: ...
-@overload
-def instantiate_term_schema(schema: MixedTermSchema, instantiation: LambdaSchemaInstantiation) -> MixedTerm: ...
-def instantiate_term_schema(schema: MixedTermSchema, instantiation: LambdaSchemaInstantiation) -> MixedTerm:
-    match schema:
-        case UntypedAbstractionSchema() if not is_instantiation_implicitly_typed(instantiation):
-            raise SchemaInstantiationError('An untyped schema was provided, but the instantiation features typed terms')
-
-        case TypedAbstractionSchema() if not is_instantiation_explicitly_typed(instantiation):
-            raise SchemaInstantiationError('A typed schema was provided, but the instantiation features untyped terms')
-
-        case _:
-            return InstantiationApplicationVisitor(instantiation).visit(schema)
+def instantiate_term_schema(schema: TypedTermSchema, instantiation: LambdaSchemaInstantiation) -> TypedTerm:
+    return InstantiationApplicationVisitor(instantiation).visit(schema)

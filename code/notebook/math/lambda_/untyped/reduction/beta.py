@@ -8,27 +8,27 @@ from .strategies import Reduction
 
 class BetaReduction(Reduction):
     def try_contract_redex(self, term: UntypedTerm) -> UntypedTerm | None:
-        if isinstance(term, UntypedApplication) and isinstance(term.a, UntypedAbstraction):
-            return substitute(term.a.sub, { term.a.var: term.b })
+        if isinstance(term, UntypedApplication) and isinstance(term.left, UntypedAbstraction):
+            return substitute(term.left.body, { term.left.var: term.right })
 
         return None
 
 
+# This is alg:untyped_lambda_term_to_function in the monograph
 def to_function(term: UntypedTerm) -> Callable:
-    red = BetaReduction()
     arg_names = list[str]()
 
     current = term
     while isinstance(current, UntypedAbstraction):
         arg_names.append(str(current.var.identifier))
-        current = current.sub
+        current = current.body
 
     def fun(*args: UntypedTerm) -> UntypedTerm:
         result = term
         i = 0
 
         while isinstance(result, UntypedAbstraction):
-            reduced = red.try_contract_redex(UntypedApplication(result, args[i]))
+            reduced = substitute(result.body, { result.var: args[i] })
             assert reduced
             result = reduced
             i += 1

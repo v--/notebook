@@ -1,8 +1,8 @@
 from dataclasses import dataclass
 
 from ....parsing.identifiers import GreekIdentifier
-from ..alphabet import BinaryConnective, Quantifier, SchemaConnective, UnaryConnective
-from ..terms import ExtendedTermSchema, FunctionLikeTerm, TermSchema, VariablePlaceholder
+from ..alphabet import BinaryConnective, Quantifier, UnaryConnective
+from ..terms import FunctionLikeTerm, TermSchema, VariablePlaceholder
 from .formulas import ConstantFormula
 
 
@@ -16,11 +16,11 @@ class FormulaPlaceholder:
 
 @dataclass(frozen=True)
 class EqualityFormulaSchema:
-    a: TermSchema
-    b: TermSchema
+    left: TermSchema
+    right: TermSchema
 
     def __str__(self) -> str:
-        return f'({self.a} = {self.b})'
+        return f'({self.left} = {self.right})'
 
 
 class PredicateFormulaSchema(FunctionLikeTerm[TermSchema]):
@@ -29,43 +29,30 @@ class PredicateFormulaSchema(FunctionLikeTerm[TermSchema]):
 
 @dataclass(frozen=True)
 class NegationFormulaSchema:
-    sub: 'FormulaSchema'
+    body: 'FormulaSchema'
 
     def __str__(self) -> str:
-        return f'{UnaryConnective.NEGATION}{self.sub}'
+        return f'{UnaryConnective.NEGATION}{self.body}'
 
 
 @dataclass(frozen=True)
 class ConnectiveFormulaSchema:
     conn: BinaryConnective
-    a: 'FormulaSchema'
-    b: 'FormulaSchema'
+    left: 'FormulaSchema'
+    right: 'FormulaSchema'
 
     def __str__(self) -> str:
-        return f'({self.a} {self.conn} {self.b})'
+        return f'({self.left} {self.conn} {self.right})'
 
 
 @dataclass(frozen=True)
 class QuantifierFormulaSchema:
     quantifier: Quantifier
-    variable: VariablePlaceholder
-    sub: 'FormulaSchema'
+    var: VariablePlaceholder
+    body: 'FormulaSchema'
 
     def __str__(self) -> str:
-        return f'{self.quantifier.value}{self.variable}.{self.sub}'
+        return f'{self.quantifier.value}{self.var}.{self.body}'
 
 
 FormulaSchema = FormulaPlaceholder | ConstantFormula | EqualityFormulaSchema | PredicateFormulaSchema | NegationFormulaSchema | ConnectiveFormulaSchema | QuantifierFormulaSchema
-
-
-@dataclass(frozen=True)
-class SubstitutionSchema:
-    formula: FormulaSchema
-    var: VariablePlaceholder
-    dest: ExtendedTermSchema
-
-    def __str__(self) -> str:
-        return f'{self.formula}[{self.var} {SchemaConnective.SUBSTITUTION} {self.dest}]'
-
-
-ExtendedFormulaSchema = FormulaSchema | SubstitutionSchema

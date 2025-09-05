@@ -7,9 +7,9 @@ from ..formulas import (
     ConstantFormula,
     EqualityFormula,
     EqualityFormulaSchema,
-    ExtendedFormulaSchema,
     Formula,
     FormulaPlaceholder,
+    FormulaSchema,
     FormulaSchemaVisitor,
     NegationFormula,
     NegationFormulaSchema,
@@ -17,9 +17,7 @@ from ..formulas import (
     PredicateFormulaSchema,
     QuantifierFormula,
     QuantifierFormulaSchema,
-    SubstitutionSchema,
 )
-from ..substitution import substitute_in_formula
 from ..terms import Variable
 from .base import FormalLogicSchemaInstantiation
 from .term_application import InstantiationApplicationVisitor as TermInstantiationApplicationVisitor
@@ -39,7 +37,7 @@ class InstantiationApplicationVisitor(FormulaSchemaVisitor[Formula]):
 
     @override
     def visit_equality(self, schema: EqualityFormulaSchema) -> EqualityFormula:
-        return EqualityFormula(self.term_visitor.visit(schema.a), self.term_visitor.visit(schema.b))
+        return EqualityFormula(self.term_visitor.visit(schema.left), self.term_visitor.visit(schema.right))
 
     @override
     def visit_predicate(self, schema: PredicateFormulaSchema) -> PredicateFormula:
@@ -54,31 +52,24 @@ class InstantiationApplicationVisitor(FormulaSchemaVisitor[Formula]):
 
     @override
     def visit_negation(self, schema: NegationFormulaSchema) -> NegationFormula:
-        return NegationFormula(self.visit(schema.sub))
+        return NegationFormula(self.visit(schema.body))
 
     @override
     def visit_connective(self, schema: ConnectiveFormulaSchema) -> ConnectiveFormula:
         return ConnectiveFormula(
             schema.conn,
-            self.visit(schema.a),
-            self.visit(schema.b)
+            self.visit(schema.left),
+            self.visit(schema.right)
         )
 
     @override
     def visit_quantifier(self, schema: QuantifierFormulaSchema) -> QuantifierFormula:
         return QuantifierFormula(
             schema.quantifier,
-            Variable(schema.variable.identifier),
-            self.visit(schema.sub)
+            Variable(schema.var.identifier),
+            self.visit(schema.body)
         )
 
-    @override
-    def visit_substitution(self, schema: SubstitutionSchema) -> Formula:
-        formula = self.visit(schema.formula)
-        var = self.term_visitor.visit_variable_placeholder(schema.var)
-        dest = self.term_visitor.visit(schema.dest)
-        return substitute_in_formula(formula, var, dest)
 
-
-def instantiate_formula_schema(schema: ExtendedFormulaSchema, instantiation: FormalLogicSchemaInstantiation) -> Formula:
+def instantiate_formula_schema(schema: FormulaSchema, instantiation: FormalLogicSchemaInstantiation) -> Formula:
     return InstantiationApplicationVisitor(instantiation).visit(schema)

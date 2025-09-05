@@ -1,3 +1,4 @@
+from ....support.inference import UnknownInferenceRuleError
 from ..exceptions import FormalLogicError
 
 
@@ -6,4 +7,8 @@ class NaturalDeductionError(FormalLogicError):
 
 
 class RuleApplicationError(FormalLogicError):
+    pass
+
+
+class UnknownNaturalDeductionRuleError(UnknownInferenceRuleError):
     pass

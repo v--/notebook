@@ -9,5 +9,5 @@ class PhraseContext(ParserContext[TextToken]):
             return None
 
         self.close_at_previous_token()
-        tokens = self.get_context_tokens()
+        tokens = self.get_assumption_map_tokens()
         return Phrase([token.value for token in tokens if token.kind == 'WORD'])

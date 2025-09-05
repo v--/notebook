@@ -29,9 +29,9 @@ from .substitution import substitute_in_formula, substitute_in_term
 def test_substitute_in_term(term: str, from_: str, to: str, expected: str, dummy_signature: FormalLogicSignature) -> None:
     actual = str(
         substitute_in_term(
-            parse_term(dummy_signature, term),
-            parse_term(dummy_signature, from_),
-            parse_term(dummy_signature, to)
+            parse_term(term, dummy_signature),
+            parse_term(from_, dummy_signature),
+            parse_term(to, dummy_signature)
         )
     )
 
@@ -81,9 +81,9 @@ def test_substitute_in_term(term: str, from_: str, to: str, expected: str, dummy
 def test_substitute_in_formula(formula: str, from_: str, to: str, expected: str, dummy_signature: FormalLogicSignature) -> None:
     actual = str(
         substitute_in_formula(
-            parse_formula(dummy_signature, formula),
-            parse_term(dummy_signature, from_),
-            parse_term(dummy_signature, to)
+            parse_formula(formula, dummy_signature),
+            parse_term(from_, dummy_signature),
+            parse_term(to, dummy_signature)
         )
     )
 

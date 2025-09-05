@@ -3,10 +3,8 @@ from typing import Any
 
 from ....support.schemas import SchemaInferenceError, iter_mapping_discrepancy
 from ..terms import (
-    MixedTerm,
     TermPlaceholder,
     TypedTerm,
-    UntypedTerm,
     Variable,
     VariablePlaceholder,
 )
@@ -18,19 +16,22 @@ from ..types import (
 
 class LambdaSchemaInstantiation:
     variable_mapping: Mapping[VariablePlaceholder, Variable]
-    term_mapping: Mapping[TermPlaceholder, MixedTerm]
+    term_mapping: Mapping[TermPlaceholder, TypedTerm]
     type_mapping: Mapping[TypePlaceholder, SimpleType]
 
     def __init__(
         self,
         *,
         variable_mapping: Mapping[VariablePlaceholder, Variable] | None = None,
-        term_mapping: Mapping[TermPlaceholder, MixedTerm] | None = None,
+        term_mapping: Mapping[TermPlaceholder, TypedTerm] | None = None,
         type_mapping: Mapping[TypePlaceholder, SimpleType] | None = None
     ) -> None:
         self.variable_mapping = variable_mapping or {}
         self.term_mapping = term_mapping or {}
         self.type_mapping = type_mapping or {}
+
+    def __hash__(self) -> int:
+        return hash((self.variable_mapping, self.term_mapping, self.type_mapping))
 
     def __eq__(self, other: object) -> bool:
         if not isinstance(other, LambdaSchemaInstantiation):
@@ -40,14 +41,25 @@ class LambdaSchemaInstantiation:
             self.term_mapping == other.term_mapping and \
             self.type_mapping == other.type_mapping
 
+    def __or__(self, other: 'LambdaSchemaInstantiation') -> 'LambdaSchemaInstantiation':
+        schema: Any
+        a: Any
+        b: Any
 
+        for schema, (a, b) in iter_mapping_discrepancy(self.variable_mapping, other.variable_mapping):
+            raise SchemaInferenceError(f'Cannot instantiate variable placeholder {schema} to both {a} and {b}')
 
-def is_instantiation_implicitly_typed(instantiation: LambdaSchemaInstantiation) -> bool:
-    return all(isinstance(term, UntypedTerm) for term in instantiation.term_mapping.values())
+        for schema, (a, b) in iter_mapping_discrepancy(self.term_mapping, other.term_mapping):
+            raise SchemaInferenceError(f'Cannot instantiate term placeholder {schema} to both {a} and {b}')
 
+        for schema, (a, b) in iter_mapping_discrepancy(self.type_mapping, other.type_mapping):
+            raise SchemaInferenceError(f'Cannot instantiate type placeholder {schema} to both {a} and {b}')
 
-def is_instantiation_explicitly_typed(instantiation: LambdaSchemaInstantiation) -> bool:
-    return all(isinstance(term, TypedTerm) for term in instantiation.term_mapping.values())
+        return LambdaSchemaInstantiation(
+            variable_mapping={**self.variable_mapping, **other.variable_mapping},
+            term_mapping={**self.term_mapping, **other.term_mapping},
+            type_mapping={**self.type_mapping, **other.type_mapping}
+        )
 
 
 def merge_instantiations(left: LambdaSchemaInstantiation, right: LambdaSchemaInstantiation) -> LambdaSchemaInstantiation:

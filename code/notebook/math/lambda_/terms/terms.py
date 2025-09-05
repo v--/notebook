@@ -22,47 +22,41 @@ class Variable:
 
 
 @dataclass(frozen=True)
-class MixedApplication:
-    a: 'MixedTerm'
-    b: 'MixedTerm'
+class UntypedApplication:
+    left: 'UntypedTerm'
+    right: 'UntypedTerm'
 
     def __str__(self) -> str:
-        return f'({self.a}{self.b})'
-
-
-class UntypedApplication(MixedApplication):
-    a: 'UntypedTerm'
-    b: 'UntypedTerm'
-
-
-class TypedApplication(MixedApplication):
-    a: 'TypedTerm'
-    b: 'TypedTerm'
+        return f'({self.left}{self.right})'
 
 
 @dataclass(frozen=True)
-class MixedAbstraction:
-    var: Variable
-    sub: 'MixedTerm'
-    var_type: SimpleType | None = None
+class TypedApplication:
+    left: 'TypedTerm'
+    right: 'TypedTerm'
 
     def __str__(self) -> str:
-        if self.var_type is None:
-            return f'({TermConnective.LAMBDA}{self.var}.{self.sub})'
-
-        return f'({TermConnective.LAMBDA}{self.var}:{self.var_type}.{self.sub})'
+        return f'({self.left}{self.right})'
 
 
-class UntypedAbstraction(MixedAbstraction):
-    sub: 'UntypedTerm'
-    var_type: None
+@dataclass(frozen=True)
+class UntypedAbstraction:
+    var: Variable
+    body: 'UntypedTerm'
+
+    def __str__(self) -> str:
+        return f'({TermConnective.LAMBDA}{self.var}.{self.body})'
 
 
-class TypedAbstraction(MixedAbstraction):
-    sub: 'TypedTerm'
+@dataclass(frozen=True)
+class TypedAbstraction:
+    var: Variable
     var_type: SimpleType
+    body: 'TypedTerm'
+
+    def __str__(self) -> str:
+        return f'({TermConnective.LAMBDA}{self.var}:{self.var_type}.{self.body})'
 
 
-MixedTerm = Constant | Variable | MixedApplication | MixedAbstraction
 UntypedTerm = Constant | Variable | UntypedApplication | UntypedAbstraction
 TypedTerm = Constant | Variable | TypedApplication | TypedAbstraction

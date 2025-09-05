@@ -1,6 +1,8 @@
 \section{Lambda term normalization}\label{sec:lambda_term_normalization}
 
-We will state and prove the results here for untyped \( \synlambda \)-terms. The proofs will hold just as well for typed terms, with the corresponding rules for \( \alpha \)-equivalence and \( \beta \)- and \( \eta \)-reduction replaced by those from \fullref{sec:type_derivation_algorithms}.
+We will state and prove the results here for untyped \( \muplambda \)-terms. The proofs will hold just as well for typed terms, with the corresponding rules for \( \alpha \)-equivalence and \( \beta \)- and \( \eta \)-reduction replaced by those from \fullref{sec:simply_typed_subject_reduction}.
+
+Proving \fullref{thm:simply_typable_terms_are_strongly_normalizing} requires considerable effort, so we will restrict ourselves to arrow types, with variables and arbitrary base types (as in \fullref{con:simple_type_theory/arrow}).
 
 \paragraph{Conversion and redexes}
 
@@ -20,14 +22,12 @@ We will state and prove the results here for untyped \( \synlambda \)-terms. The
   \end{thmenum}
 \end{proposition}
 \begin{proof}
-  \SubProofOf{thm:beta_eta_redexes/substitution} We will use \fullref{thm:induction_on_rooted_trees} on \( M \) to show, simultaneously on all substitutions \( \Bbbs \), that, if \( M \) contains a redex, so does \( M[\Bbbs] \), and that if \( M \) has a redex, so does \( M[\Bbbs] \).
+  \SubProofOf{thm:beta_eta_redexes/substitution} We will use \fullref{thm:induction_on_rooted_trees} on the \hyperref[def:lambda_term_ast]{abstract syntax tree} of \( M \) to show, simultaneously on all substitutions \( \Bbbs \), that, if \( M \) contains a redex, so does \( M[\Bbbs] \), and that if \( M \) is a redex, so is \( M[\Bbbs] \).
 
   \begin{itemize}
     \item If \( M \) is atomic, we have several possibilities:
     \begin{itemize}
-      \item If \( M \) is a \( \delta \)-redex, so is \( M[\Bbbs] \) because constants are invariant under substitution.
-
-      \item Otherwise, if \( M \) is a constant, then \( M = M[\Bbbs] \) and neither are \( \beta \)- nor \( \eta \)-redexes.
+      \item If \( M \) is a constant, then \( M = M[\Bbbs] \). It cannot be a \( \beta \)- nor \( \eta \)-redex, but it is possible that it is a \( \delta \)-redex.
 
       \item If \( M \) is a variable, then \( M[\Bbbs] \) can be any term, including a redex, however \( M \) is not a redex and so the proposition holds.
     \end{itemize}
@@ -40,7 +40,7 @@ We will state and prove the results here for untyped \( \synlambda \)-terms. The
       \begin{equation*}
         A[\Bbbs] = \qabs v E[\Bbbs_{x \mapsto v}]
       \end{equation*}
-      for some variable \( v \) such that \( v \not\in \op*{Free}(A) \cup \op*{Free}(A[\Bbbs]) \).
+      for some variable \( v \) not in \( \op*{Free}(A[\Bbbs]) \).
 
       Then \( M[\Bbbs] = A[\Bbbs] B[\Bbbs] \) is also a \( \beta \)-redex.
 
@@ -55,7 +55,7 @@ We will state and prove the results here for untyped \( \synlambda \)-terms. The
     \begin{equation*}
       M[\Bbbs] = \qabs v A[\Bbbs_{a \mapsto v}]
     \end{equation*}
-    for some variable \( v \) such that \( v \not\in \op*{Free}(M) \cup \op*{Free}(M[\Bbbs]) \).
+    for some variable \( v \) not in \( \op*{Free}(M[\Bbbs]) \).
 
     \begin{itemize}
       \item If \( A = Ea \) and \( a \) is not free in \( E \), then \( M \) is an \( \eta \)-redex.
@@ -66,7 +66,7 @@ We will state and prove the results here for untyped \( \synlambda \)-terms. The
     \end{itemize}
   \end{itemize}
 
-  \SubProofOf{thm:beta_eta_redexes/alpha} We use \fullref{thm:induction_on_recursively_defined_relations} on \( M \aequiv N \) simultaneously for all \( N \):
+  \SubProofOf{thm:beta_eta_redexes/alpha} We will use \fullref{thm:induction_on_recursively_defined_relations} on \( M \aequiv N \) simultaneously for all \( N \) to show that, if \( M \) contains (reps. is) a redex, so does (resp. is) \( N \):
   \begin{itemize}
     \item If \( M \aequiv N \) due to \ref{inf:def:lambda_term_alpha_equivalence/atom}, then \( M \) and \( N \) are identical atomic terms, which cannot contain \( \beta \)- or \( \eta \)-redexes.
 
@@ -76,16 +76,18 @@ We will state and prove the results here for untyped \( \synlambda \)-terms. The
 
     We have the following possibilities:
     \begin{itemize}
-      \item If \( A = (\qabs x E) \), \( M \) itself is a redex. In this case \( C \) is also an abstraction since \( A \aequiv C \) due to either \ref{inf:thm:alpha_equivalence_simplified/lift} or \ref{inf:thm:alpha_equivalence_simplified/ren}. Then \( N \) is also a redex.
+      \item If \( A = (\qabs x E) \), then \( M \) itself is a redex. In this case \( C \) is also an abstraction since \( A \aequiv C \) due to either \ref{inf:thm:alpha_equivalence_simplified/lift} or \ref{inf:thm:alpha_equivalence_simplified/ren}. Then \( N \) is also a redex.
 
       \item Otherwise, either \( A \) or \( B \) or possibly both contain a redex, and the inductive hypothesis allows us to conclude the same for \( C \) and/or \( D \).
     \end{itemize}
 
-    \item If \( M \aequiv N \) due to \ref{inf:thm:alpha_equivalence_simplified/lift}, then \( M = \qabs x A \) and \( N = \qabs x B \) and \( A \aequiv B \), where the inductive hypothesis holds for the latter.
+    \item If \( M \aequiv N \) due to \ref{inf:thm:alpha_equivalence_simplified/lift}, then \( M = \qabs x A \), \( N = \qabs x B \) and \( A \aequiv B \), where the inductive hypothesis holds for the latter.
 
     We have the following possibilities:
     \begin{itemize}
-      \item If \( A = Ea \) with \( a \) not free in \( E \), then \( B \) is also an application term whose second subterm is \( a \). It follows that \( B = Fa \) for some term \( F \). \Fullref{thm:def:lambda_term_alpha_equivalence/free} implies that \( a \) is not free in \( F \), hence both \( M \) and \( N \) are \( \eta \)-redexes.
+      \item If \( A = Ea \) with \( a \) not free in \( E \), then \( B \) is also an application term whose second subterm is \( a \). It follows that \( B = Fa \) for some \( \muplambda \)-term \( F \).
+
+      Since \( A \aequiv B \), we have \( E \aequiv F \). \Fullref{thm:def:lambda_term_alpha_equivalence/free} implies that \( a \) is not free in \( F \), hence both \( M \) and \( N \) are \( \eta \)-redexes.
 
       \item Otherwise, \( A \) must contain a redex and, by the inductive hypothesis, so does \( B \).
     \end{itemize}
@@ -96,7 +98,7 @@ We will state and prove the results here for untyped \( \synlambda \)-terms. The
 
     We have the following possibilities:
     \begin{itemize}
-      \item If \( A = Ea \), then \( B[b \mapsto a] \) is an application term whose second subterm is \( a \). It follows that \( B = Fb \) for some term \( F \). \Fullref{thm:def:lambda_term_alpha_equivalence/free} implies that \( a \) is not free in \( B[b \mapsto a] \), and \fullref{thm:lambda_substitution_free_variables_single} implies that \( b \) is not free in \( B \).
+      \item If \( A = Ea \), then \( B[b \mapsto a] \) is an application term whose second subterm is \( a \). It follows that \( B = Fb \) for some \( \muplambda \)-term \( F \). \Fullref{thm:def:lambda_term_alpha_equivalence/free} implies that \( a \) is not free in \( B[b \mapsto a] \), and \fullref{thm:lambda_substitution_free_variables_single} implies that \( b \) is not free in \( B \).
 
       Then both \( M \) and \( N \) are \( \eta \)-redexes.
 
@@ -135,7 +137,7 @@ We will state and prove the results here for untyped \( \synlambda \)-terms. The
     \item If \( M \pred N \) due to \ref{inf:def:beta_eta_reduction/beta}, \ref{inf:def:beta_eta_reduction/eta} or \ref{inf:def:delta_reduction}, \( M \) itself is a redex.
   \end{itemize}
 
-  \NecessitySubProof* We will use \fullref{thm:induction_on_rooted_trees} on \( M \) to show that, if \( M \) contains a redex, then there exists a term \( N \) such that \( M \pred N \).
+  \NecessitySubProof* We will use \fullref{thm:induction_on_rooted_trees} on the \hyperref[def:lambda_term_ast]{abstract syntax tree} of \( M \) to show that, if \( M \) contains a redex, then there exists a term \( N \) such that \( M \pred N \).
 
   \begin{itemize}
     \item If \( M \) is atomic, it cannot contain a \( \beta \)- or \( \eta \)-redex.
@@ -172,7 +174,7 @@ We will state and prove the results here for untyped \( \synlambda \)-terms. The
   If \( M \pred* N \) and \( N \) is a normal form, we refer to it is a normal form of \( M \). If \( M \) has a normal form, we say that it is \term{\( \Anon \)-normalizing}.
 \end{definition}
 \begin{comments}
-  \item \Fullref{def:lambda_term_normal_form/redex} is based on \bycite[def. 2.1.34]{Barendregt1984LambdaCalculus} and \bycite[def. 1B6]{Hindley1997BasicSTT}, who discuss only \( \beta \)-normal forms.
+  \item \Fullref{def:lambda_term_normal_form/redex} is based on \bycite[def. 2.1.34]{Barendregt1984LambdaCalculus} and \bycite[def. 1B6]{Hindley1997BasicSTT}, both of whom however only discuss only \( \beta \)-normal forms.
 
   \item \Fullref{def:lambda_term_normal_form/irreducible} generalizes easily to \hyperref[def:rewriting_system]{abstract rewriting systems}, at which level of generality no concept of redex exists.
 \end{comments}
@@ -180,13 +182,26 @@ We will state and prove the results here for untyped \( \synlambda \)-terms. The
   The equivalence of the definition follows from \fullref{thm:beta_eta_redexes/reducibility}.
 \end{defproof}
 
-\begin{proposition}\label{thm:normalization_of_alpha_equivalent_term}
-  If \( M \) is \hyperref[def:lambda_term_normal_form]{normalizing} and if \( M \aequiv N \), then \( N \) is also normalizing.
+\begin{proposition}\label{thm:alpha_equivalent_normal_form}
+  If \( M \) is a \hyperref[def:lambda_term_normal_form]{\( \Anon \)-normal form} and if \( M \aequiv N \), then \( N \) is also a normal form.
 \end{proposition}
 \begin{proof}
-  If \( N \) is not normalizing, it contains a redex, and, by \fullref{thm:beta_eta_redexes/alpha}, so does \( M \). But we have assumed that \( M \) is normalizing.
+  Follows from \fullref{thm:beta_eta_redexes/alpha}.
+\end{proof}
 
-  The obtained contradiction shows that \( N \) is normalizing.
+\begin{proposition}\label{thm:normalization_of_alpha_equivalent_term}
+  If \( M \) is a \hyperref[def:lambda_term_normal_form]{\( \Anon \)-normalizing} and if \( M \aequiv N \), then \( N \) is also normalizing.
+\end{proposition}
+\begin{proof}
+  Consider the sequence of reductions
+  \begin{equation*}
+    M = M_0 \pred M_1 \pred \cdots \pred M_n,
+  \end{equation*}
+  where \( M_n \) is a normal form.
+
+  We can apply \ref{inf:def:lambda_term_reduction/alpha} to conclude that \( N \pred M_1 \).
+
+  Therefore, \( M_n \) is a normal form of both \( M \) and \( N \).
 \end{proof}
 
 \begin{proposition}\label{thm:lambda_term_normal_form_uniqueness}
@@ -195,7 +210,7 @@ We will state and prove the results here for untyped \( \synlambda \)-terms. The
 \begin{proof}
   Let \( N \) and \( K \) be normal forms of \( M \).
 
-  By \fullref{thm:church_rosser_theorem}, there exists a \( \synlambda \)-term \( L \) such that \( N \pred* L \) and \( K \pred* L \).
+  By \fullref{thm:church_rosser_theorem}, there exists a \( \muplambda \)-term \( L \) such that \( N \pred* L \) and \( K \pred* L \).
 
   But \( N \) is a normal form, hence it cannot reduce via the single-step reduction relation \( {\pred} \). We have required the multi-step relation \( {\pred*} \) to be \hyperref[def:alpha_reflexive]{\( \alpha \)-reflexive}, hence it remains for \( N \) and \( K \) to be \hyperref[def:lambda_term_alpha_equivalence]{\( \alpha \)-equivalent} to \( L \).
 
@@ -205,42 +220,40 @@ We will state and prove the results here for untyped \( \synlambda \)-terms. The
 \paragraph{Strong normalization}
 
 \begin{definition}\label{def:lambda_term_reduction_graph}\mimprovised
-  Fix a \hyperref[def:lambda_term_reduction]{reduction relation} \( {\pred} \) for \( \synlambda \)-terms (with the modified rules from \fullref{def:typed_reduction_rules} in case the terms are typed).
+  Fix a \hyperref[def:lambda_term_reduction]{reduction relation} \( {\pred} \) for \( \muplambda \)-terms (with the modified rules from \fullref{def:typed_term_reduction} in case the terms are typed).
 
-  We define the \term{reduction graph} \( G_{\Anon}(M) \) of the \( \synlambda \)-term \( M \) as the \hyperref[def:directed_graph]{directed graph} \hyperref[def:directed_graph_induced_by_relation]{induced} by the relation \( {\pred} \).
+  We define the \term{\( \Anon \)-reduction graph} \( G_{\Anon}(M) \) of the \( \muplambda \)-term \( M \) as the \hyperref[def:directed_graph]{directed graph} \hyperref[def:directed_graph_induced_by_relation]{induced} by the relation \( {\pred} \).
 
   We call \hyperref[def:graph_walk/directed]{directed walks} in this graph starting from \( M \) \term{reduction chains}.
 \end{definition}
 \begin{comments}
   \item The definition and terminology is based on \bycite[def. 2.3.18]{Barendregt1992LambdaCalculiWithTypes}, however Barendregt distinguishes between reductions obtained using different strategies, even if their result coincides. Such a distinction will complicate us, for which reason we will avoid it.
+
+  Furthermore, according to this definition (but not Barendregt's), \( \alpha \)-equivalent terms are distinct nodes of the graph.
 \end{comments}
 
 \begin{proposition}\label{thm:term_normalizing_iff_exists_finite_reduction_chain}
-  A \( \synlambda \)-term is \hyperref[def:lambda_term_normal_form]{\( \Anon \)-normalizing} if and only if it has a (possibly empty) \hyperref[def:lambda_term_reduction_graph]{reduction chain} whose tail is a \( \Anon \)-normal form.
+  A \( \muplambda \)-term is \hyperref[def:lambda_term_normal_form]{\( \Anon \)-normalizing} if and only if it has a (possibly empty) \hyperref[def:lambda_term_reduction_graph]{reduction chain} ending with a \( \Anon \)-normal form.
 \end{proposition}
 \begin{proof}
   This is simply a reformulation of \fullref{def:lambda_term_normal_form}.
 \end{proof}
 
 \begin{definition}\label{def:strongly_normalizing_lambda_term}\mimprovised
-  Let \enquote{\( {\Anon} \)} be a combination of \enquote{\( \beta \)}, \enquote{\( \eta \)} and possibly \enquote{\( \delta \)}.
-
-  We say that the \( \synlambda \)-term \( M \) is \term{strongly \( \Anon \)-normalizing} if the following equivalent conditions hold:
-  \begin{thmenum}
-    \thmitem{def:strongly_normalizing_lambda_term/chains} All \hyperref[def:lambda_term_reduction_graph]{reduction chains} starting at \( M \) are finite.
-
-    \thmitem{def:strongly_normalizing_lambda_term/graph} The \hyperref[def:lambda_term_reduction_graph]{reduction graph} \( G_{\Anon}(M) \) is finite and \hyperref[def:acyclic_graph]{acyclic}.
-  \end{thmenum}
+  Let \enquote{\( {\Anon} \)} be a combination of \enquote{\( \beta \)}, \enquote{\( \eta \)} and possibly \enquote{\( \delta \)}. We say that the \( \muplambda \)-term \( M \) is \term{strongly \( \Anon \)-normalizing} if all \hyperref[def:lambda_term_reduction_graph]{reduction chains} starting at \( M \) are finite.
 \end{definition}
 \begin{comments}
-  \item \Fullref{def:strongly_normalizing_lambda_term/chains} is based on \bycite[\S 4.3]{Barendregt1992LambdaCalculiWithTypes} and \bycite[\S 4.2]{Mimram2020ProgramEqualsProof}, both of whom provide no formal definition.
+  \item This definition is based on \bycite[\S 4.3]{Barendregt1992LambdaCalculiWithTypes} and \bycite[\S 4.2]{Mimram2020ProgramEqualsProof}, both of whom provide no formal definition.
+
+  \item We cannot require the \hyperref[def:lambda_term_reduction_graph]{reduction graph} \( G_{\Anon}(M) \) to be finite because it may contain countably many \( \alpha \)-equivalent redexes or reducts.
+
+  Furthermore, due to \ref{inf:def:lambda_term_reduction/alpha} we may have multiple ways to reduce a term, so we cannot require \( G_{\Anon}(M) \) to be an \hyperref[def:oriented_tree]{oriented tree}.
+
+  \item We do not state the definition for general reduction relations in the sense of \ref{def:lambda_term_reduction} because we have only defined normal forms for these concrete reductions.
 \end{comments}
-\begin{defproof}
-  The graph \( G_{\Anon}(M) \) is necessarily (weakly) connected, hence, if no infinite walk exists, the graph must be finite. The equivalence then follows from \fullref{thm:acyclic_graph_walk_length}.
-\end{defproof}
 
 \begin{proposition}\label{thm:strongly_normalizing_term_is_normalizing}
-  Every \hyperref[def:strongly_normalizing_lambda_term]{strongly normalizing} \( \synlambda \)-term is also \hyperref[def:lambda_term_normal_form]{normalizing}.
+  Every \hyperref[def:strongly_normalizing_lambda_term]{strongly normalizing} \( \muplambda \)-term is also \hyperref[def:lambda_term_normal_form]{normalizing}.
 \end{proposition}
 \begin{proof}
   Follows from \fullref{thm:term_normalizing_iff_exists_finite_reduction_chain}.
@@ -263,6 +276,8 @@ We will state and prove the results here for untyped \( \synlambda \)-terms. The
   But \( M \) is strongly normalizing, contradicting the existence of such an infinite chain. Therefore, \( N \) must be strongly normalizing.
 \end{proof}
 
+\paragraph{Simply typed normalization}
+
 \begin{definition}\label{def:strong_normalization_reducibility_candidate}\mcite[172]{Mimram2020ProgramEqualsProof}
   Let \enquote{\( {\Anon} \)} be a combination of \enquote{\( \beta \)} and \enquote{\( \eta \)}.
 
@@ -275,7 +290,7 @@ We will state and prove the results here for untyped \( \synlambda \)-terms. The
   \end{thmenum}
 \end{definition}
 \begin{comments}
-  \item This definition is based on \bycite[172]{Mimram2020ProgramEqualsProof}, which in turn refines \bycite[49]{GirardEtAl1989ProofsAndTypes}. In our definition we allow not only \( \beta \)-, but also \( \eta \)- and \( \beta\eta \)-reduction.
+  \item This definition is based on \bycite[172]{Mimram2020ProgramEqualsProof}, which in turn refines \bycite[41]{GirardEtAl1989ProofsAndTypes}. In our definition we allow not only \( \beta \)-, but also \( \eta \)- and \( \beta\eta \)-reduction.
 \end{comments}
 
 \begin{lemma}\label{thm:alpha_equivalent_reducibility_candidates}
@@ -284,11 +299,11 @@ We will state and prove the results here for untyped \( \synlambda \)-terms. The
 \begin{proof}
   We will use \fullref{thm:induction_on_rooted_trees} on \( \tau \):
   \begin{itemize}
-    \item If \( \tau \) is a base type, \( R_\tau \) contains all strongly \( \Anon \)-normalizing terms. If \( M \) is in \( R_\tau \) and \( M \aequiv N \), \fullref{thm:strongly_normalizing_term_is_normalizing} implies that \( N \) is also in \( R_\tau \).
+    \item If \( \tau \) is an atomic type, \( R_\tau \) contains all strongly \( \Anon \)-normalizing terms. If \( M \) is in \( R_\tau \) and \( M \aequiv N \), \fullref{thm:strong_normalization_of_alpha_equivalent_term} implies that \( N \) is also in \( R_\tau \).
 
     \item Suppose that \( \tau = \sigma \synimplies \rho \) and that the inductive hypothesis holds for \( \sigma \) and \( \rho \).
 
-    Fix some \( M \) in \( R_{\sigma \synimplies \rho} \) and \( K \) in \( R_\sigma \). By definition, \( MK \) is in \( R_\rho \).
+    Fix some \( M \) in \( R_{\sigma \synimplies \rho} \) and \( K \) in \( R_\sigma \). By definition of \( R_{\sigma \synimplies \rho} \), \( MK \) is in \( R_\rho \).
 
     Suppose that \( M \aequiv N \). We can apply \ref{inf:def:lambda_term_alpha_equivalence/app} to conclude that \( MK \aequiv NK \). By the inductive hypothesis on \( \rho \), we conclude that \( NK \) is also in \( R_\rho \).
 
@@ -311,7 +326,7 @@ We will state and prove the results here for untyped \( \synlambda \)-terms. The
 \begin{proof}
   We will use \fullref{thm:induction_on_rooted_trees} on \( \tau \) to prove the statements simultaneously.
 
-  \SubProof{Proof of base case} Suppose that \( \tau \) is a base type.
+  \SubProof{Proof of base case} Suppose that \( \tau \) is an atomic type.
 
   \SubProofOf*{thm:def:strong_normalization_reducibility_candidate/normalizing} By definition, \( R_\tau \) is the set of all strongly normalizing terms.
 
@@ -395,10 +410,12 @@ We will state and prove the results here for untyped \( \synlambda \)-terms. The
 \begin{lemma}\label{thm:reducibility_candidate_abstraction}\mcite[lemma 4.2.2.2]{Mimram2020ProgramEqualsProof}
   Fix a term \( M \) and a variable \( x \).
 
-  If \( M[x \mapsto N] \) belongs to \( R_\sigma \) for every term \( N \) in \( R_\tau \), then \( \qabs x M \) (resp. \( \qabs {x^\tau} M \)) belongs to \( R_{\tau \synimplies \sigma} \).
+  If \( M[x \mapsto N] \) belongs to \( R_\sigma \) for every term \( N \) in \( R_\tau \), then \( \qabs x M \) belongs to \( R_{\tau \synimplies \sigma} \).
+
+  For typed terms, the conclusion is that \( \qabs {x^\tau} M \) belongs to \( R_{\tau \synimplies \sigma} \).
 \end{lemma}
 \begin{comments}
-  \item Unlike \incite[thm. 4.2.2.5]{Mimram2020ProgramEqualsProof}, we handle \( \eta \)- and \( \beta\eta \)-reduction.
+  \item We base this lemma on \bycite[thm. 4.2.2.5]{Mimram2020ProgramEqualsProof}, but also handle \( \eta \)- and \( \beta\eta \)-reduction.
 \end{comments}
 \begin{proof}
   Denote \( \qabs x M \) by \( P \). To show that \( P \) belongs to \( R_{\tau \synimplies \sigma} \), we must show that \( P N \) belongs to \( R_\sigma \) for every term \( N \) in \( R_\tau \).
@@ -448,13 +465,13 @@ We will state and prove the results here for untyped \( \synlambda \)-terms. The
   \begin{itemize}
     \item If \( T \) is an assumption tree, \( M \) is a variable, and \( M[\Bbbs] = \Bbbs(M) \) belongs to \( R_\tau \) by supposition.
 
-    \item If \( T \) is an application tree for \ref{inf:def:arrow_typing_rules/elim}, then \( M = NK \) and \( T \) has subtrees \( T_N \) and \( T_K \) deriving \( N: \sigma \synimplies \tau \) and \( K: \sigma \) for some type \( \sigma \). We suppose that the inductive hypothesis holds for \( T_N \) and \( T_K \).
+    \item If \( T \) is an application tree for \ref{inf:def:arrow_type/elim}, then \( M = NK \) and \( T \) has subtrees \( T_N \) and \( T_K \) deriving \( N: \sigma \synimplies \tau \) and \( K: \sigma \) for some type \( \sigma \). We suppose that the inductive hypothesis holds for \( T_N \) and \( T_K \).
 
     Since \( M[\Bbbs] = N[\Bbbs] \thinspace K[\Bbbs] \), the inductive hypothesis implies that \( N[\Bbbs] \) is in \( R_{\sigma \synimplies \tau} \) and \( K[\Bbbs] \) is in \( R_\sigma \).
 
     By definition of \( R_{\sigma \synimplies \tau} \), \( M[\Bbbs] \) must belong to \( R_\tau \).
 
-    \item If \( T \) is an assumption tree for \ref{inf:def:arrow_typing_rules/intro/explicit}, then \( \tau = \sigma \synimplies \rho \) and \( M = \qabs x N \). The tree \( T \) must have a discharge assertion \( x: \sigma \) and subtree \( T_N \) deriving \( N: \rho \).
+    \item If \( T \) is an assumption tree for \ref{inf:def:arrow_type/intro/explicit}, then \( \tau = \sigma \synimplies \rho \) and \( M = \qabs x N \). The tree \( T \) must have a discharge assertion \( x: \sigma \) and subtree \( T_N \) deriving \( N: \rho \).
 
     \Fullref{thm:lambda_substitution_single_rule} implies that
     \begin{equation*}
@@ -487,12 +504,12 @@ We will state and prove the results here for untyped \( \synlambda \)-terms. The
 \begin{theorem}[Simply typable terms are strongly normalizing]\label{thm:simply_typable_terms_are_strongly_normalizing}\mcite[thm. 4.2.2.5]{Mimram2020ProgramEqualsProof}
   Let \enquote{\( {\Anon} \)} be a combination of \enquote{\( \beta \)} and \enquote{\( \eta \)}.
 
-  Then every (\hyperref[def:typed_lambda_term]{typed} or \hyperref[def:lambda_term]{untyped}) \( \synlambda \)-term \hyperref[def:typability]{typable} via the arrow typing rules from \fullref{def:arrow_typing_rules} is \hyperref[def:strongly_normalizing_lambda_term]{\( \Anon \)-strongly normalizing}.
+  Then every (\hyperref[def:typed_lambda_term]{typed} or \hyperref[def:lambda_term]{untyped}) \( \muplambda \)-term \hyperref[def:typability]{typable} via the arrow typing rules from \fullref{def:arrow_type} is \hyperref[def:strongly_normalizing_lambda_term]{\( \Anon \)-strongly normalizing}.
 \end{theorem}
 \begin{comments}
-  \item Unlike \incite[thm. 4.2.2.5]{Mimram2020ProgramEqualsProof}, we handle \( \eta \)- and \( \beta\eta \)-reduction. This is done in \fullref{thm:reducibility_candidate_abstraction}.
+  \item The proof of this theorem with all the lemmas is based on \bycite[thm. 4.2.2.5]{Mimram2020ProgramEqualsProof}, but we additionally handle \( \eta \)- and \( \beta\eta \)-reduction. The work for this is done in \fullref{thm:reducibility_candidate_abstraction}.
 
-  \item \Fullref{thm:strongly_normalizing_term_is_normalizing} implies that every strongly normalizing term is \hyperref[def:lambda_term_normal_form]{normalizing}, and \Fullref{thm:lambda_term_normal_form_uniqueness} implies that its normal form is unique up to (possibly typed) \( \alpha \)-equivalence.
+  \item \Fullref{thm:strongly_normalizing_term_is_normalizing} implies that every strongly normalizing term is \hyperref[def:lambda_term_normal_form]{normalizing}, and \Fullref{thm:lambda_term_normal_form_uniqueness} implies that its normal form is unique up to (possibly typed) \( \alpha \)-equivalence. Thus, every typable term has a unique (up to \( \alpha \)-equivalence) normal form.
 \end{comments}
 \begin{proof}
   If \( \Gamma \vdash M: \tau \), \fullref{thm:reducibility_candidate_adequacy} implies that \( M \) belongs to \( R_\tau \). \Fullref{thm:def:strong_normalization_reducibility_candidate/normalizing} then implies that \( M \) is strongly normalizing.

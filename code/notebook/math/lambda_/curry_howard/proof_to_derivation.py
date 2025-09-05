@@ -2,8 +2,9 @@ from typing import override
 
 from ....parsing import GreekIdentifier
 from ...logic.alphabet import BinaryConnective, PropConstant
+from ...logic.classical_logic import CLASSICAL_NATURAL_DEDUCTION_SYSTEM
+from ...logic.deduction import NaturalDeductionRule, UnknownNaturalDeductionRuleError
 from ...logic.deduction import proof_tree as ptree
-from ...logic.deduction.classical_logic import CLASSICAL_NATURAL_DEDUCTION_SYSTEM
 from ...logic.formulas import (
     ConnectiveFormula,
     ConstantFormula,
@@ -13,13 +14,21 @@ from ...logic.formulas import (
     PredicateFormula,
 )
 from ...logic.instantiation import FormalLogicSchemaInstantiation
+from ..algebraic_types import SIMPLE_ALGEBRAIC_TYPE_SYSTEM
 from ..alphabet import BinaryTypeConnective
 from ..assertions import VariableTypeAssertion
 from ..instantiation import LambdaSchemaInstantiation
+from ..parsing import parse_type_variable
 from ..terms import Variable
 from ..type_derivation import tree as dtree
-from ..type_system.explicit import SIMPLE_ALGEBRAIC_TYPE_SYSTEM
-from ..types import BaseType, SimpleConnectiveType, SimpleType, TypePlaceholder
+from ..type_system import TypingRule
+from ..types import (
+    BaseType,
+    SimpleConnectiveType,
+    SimpleType,
+    TypePlaceholder,
+    TypeVariable,
+)
 from .exceptions import ProofToDerivationError
 
 
@@ -49,18 +58,20 @@ class FormulaToTypeVisitor(FormulaVisitor[SimpleType]):
                 return BaseType('0')
 
     @override
-    def visit_predicate(self, formula: PredicateFormula) -> BaseType:
+    def visit_predicate(self, formula: PredicateFormula) -> TypeVariable:
         if len(formula.arguments) > 0:
             raise ProofToDerivationError('Only nullary predicates can be converted to types')
 
-        return BaseType(formula.name)
+        # We encode propositional variables as nullary predicates
+        # As per rem:curry_howard_variables, we adjust our predicates so that they match the syntax of type variables
+        return parse_type_variable(formula.name)
 
     @override
     def visit_connective(self, formula: ConnectiveFormula) -> SimpleType:
         return SimpleConnectiveType(
             formula_connective_to_type_connective(formula.conn),
-            self.visit(formula.a),
-            self.visit(formula.b)
+            self.visit(formula.left),
+            self.visit(formula.right)
         )
 
     @override
@@ -87,25 +98,28 @@ def proof_tree_premise_to_derivation_tree_premise(premise: ptree.RuleApplication
     )
 
 
-def proof_tree_premise_to_derivation_tree_rule(rule_name: str) -> str:
-    if rule_name == 'EFQ':
-        return '0₋'
+def natural_deduction_rule_to_typing_rule(rule: NaturalDeductionRule) -> TypingRule:
+    if rule == CLASSICAL_NATURAL_DEDUCTION_SYSTEM['EFQ']:
+        return SIMPLE_ALGEBRAIC_TYPE_SYSTEM['0₋']
 
-    match rule_name[0]:
-        case '⊤':
-            return '1' + rule_name[1:]
+    prefix = rule.name[0]
+    suffix = rule.name[1:]
 
-        case '∧':
-            return '×' + rule_name[1:]
+    match prefix:
+        case '⊤' if rule == CLASSICAL_NATURAL_DEDUCTION_SYSTEM[rule.name]:
+            return SIMPLE_ALGEBRAIC_TYPE_SYSTEM['1' + suffix]
 
-        case '∨':
-            return '+' + rule_name[1:]
+        case '∧' if rule == CLASSICAL_NATURAL_DEDUCTION_SYSTEM[rule.name]:
+            return SIMPLE_ALGEBRAIC_TYPE_SYSTEM['×' + suffix]
 
-        case '→':
-            return rule_name
+        case '∨' if rule == CLASSICAL_NATURAL_DEDUCTION_SYSTEM[rule.name]:
+            return SIMPLE_ALGEBRAIC_TYPE_SYSTEM['+' + suffix]
+
+        case '→' if rule == CLASSICAL_NATURAL_DEDUCTION_SYSTEM[rule.name]:
+            return SIMPLE_ALGEBRAIC_TYPE_SYSTEM[rule.name]
 
         case _:
-            raise ProofToDerivationError(f'Unrecognized rule {rule_name!r}')
+            raise UnknownNaturalDeductionRuleError(rule)
 
 
 def translate_instantiation(instantiation: FormalLogicSchemaInstantiation, **kwargs: str) -> LambdaSchemaInstantiation:
@@ -132,39 +146,35 @@ def proof_tree_to_type_derivation(proof: ptree.ProofTree) -> dtree.TypeDerivatio
     if not isinstance(proof, ptree.RuleApplicationTree):
         raise ProofToDerivationError('Unrecognized proof tree')
 
-    if proof.system != CLASSICAL_NATURAL_DEDUCTION_SYSTEM:
-        raise ProofToDerivationError('Unrecognized type system')
-
     premises = [
         proof_tree_premise_to_derivation_tree_premise(premise)
         for premise in proof.premises
     ]
 
-    match proof.rule_name:
+    match proof.rule.name:
         case 'EFQ':
             return dtree.apply(
-                SIMPLE_ALGEBRAIC_TYPE_SYSTEM, '0₋',
+                SIMPLE_ALGEBRAIC_TYPE_SYSTEM['0₋'],
                 *premises,
                 instantiation=translate_instantiation(proof.instantiation, φ='τ')
             )
 
         case '∨₊ₗ':
             return dtree.apply(
-                SIMPLE_ALGEBRAIC_TYPE_SYSTEM, '+₊ₗ',
+                SIMPLE_ALGEBRAIC_TYPE_SYSTEM['+₊ₗ'],
                 *premises,
                 instantiation=translate_instantiation(proof.instantiation, ψ='σ')
             )
 
         case '∨₊ᵣ':
             return dtree.apply(
-                SIMPLE_ALGEBRAIC_TYPE_SYSTEM, '+₊ᵣ',
+                SIMPLE_ALGEBRAIC_TYPE_SYSTEM['+₊ᵣ'],
                 *premises,
                 instantiation=translate_instantiation(proof.instantiation, φ='τ')
             )
 
         case _:
             return dtree.apply(
-                SIMPLE_ALGEBRAIC_TYPE_SYSTEM,
-                proof_tree_premise_to_derivation_tree_rule(proof.rule_name),
+                natural_deduction_rule_to_typing_rule(proof.rule),
                 *premises,
             )

@@ -39,9 +39,9 @@ class AxiomaticDerivation:
         formula = self.payload[k]
 
         for i, cond in enumerate(self.payload[:k]):
-            if is_conditional(cond) and cond.b == formula:
+            if is_conditional(cond) and cond.right == formula:
                 for j, antecedent in enumerate(self.payload):
-                     if antecedent == cond.a:
+                     if antecedent == cond.left:
                         return ModusPonensConfig(i, j, k)
 
         return None
@@ -107,7 +107,7 @@ def derivation_to_proof_tree(ad_system: AxiomaticDerivationSystem, derivation: A
             continue
         else:
             return RuleApplicationTree(
-                nd_system, rule_name,
+                nd_system[rule_name],
                 instantiation,
                 premises=[],
                 conclusion=conclusion
@@ -125,7 +125,7 @@ def derivation_to_proof_tree(ad_system: AxiomaticDerivationSystem, derivation: A
         derivation_to_proof_tree(ad_system, derivation.truncate(mp_config.conditional_index), used_markers),
     )
 
-    markers = set(conditional_premise.tree.get_context().keys())
+    markers = set(conditional_premise.tree.get_assumption_map().keys())
     antecedent_premise = RuleApplicationPremise(
         derivation_to_proof_tree(ad_system, derivation.truncate(mp_config.antecedent_index), {*used_markers, *markers})
     )
@@ -138,7 +138,7 @@ def derivation_to_proof_tree(ad_system: AxiomaticDerivationSystem, derivation: A
     )
 
     return RuleApplicationTree(
-        nd_system, 'MP',
+        nd_system['MP'],
         instantiation,
         premises=[conditional_premise, antecedent_premise],
         conclusion=conclusion

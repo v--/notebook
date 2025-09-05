@@ -1,8 +1,8 @@
 from collections.abc import Iterable, Mapping, Sequence
 from dataclasses import dataclass
-from typing import Protocol, override, runtime_checkable
+from typing import override
 
-from ....support.inference import AssumptionRenderer, InferenceTreeRenderer, RuleApplicationRenderer
+from ....support.inference import AssumptionRenderer, InferenceTree, RuleApplicationRenderer
 from ..formulas import Formula
 from ..instantiation import (
     FormalLogicSchemaInstantiation,
@@ -12,28 +12,16 @@ from ..instantiation import (
 )
 from .exceptions import RuleApplicationError
 from .markers import Marker
-from .rules import NaturalDeductionRule
-from .system import NaturalDeductionSystem
-
-
-@runtime_checkable
-class ProofTree(Protocol):
-    conclusion: Formula
-
-    def get_context(self) -> Mapping[Marker, Formula]:
-        ...
-
-    def build_renderer(self) -> InferenceTreeRenderer:
-        ...
+from .system import NaturalDeductionRule
 
 
 @dataclass(frozen=True)
-class AssumptionTree(ProofTree):
+class AssumptionTree(InferenceTree[Formula, Mapping[Marker, Formula]]):
     conclusion: Formula
     marker: Marker
 
     @override
-    def get_context(self) -> Mapping[Marker, Formula]:
+    def get_assumption_map(self) -> Mapping[Marker, Formula]:
         return {self.marker: self.conclusion}
 
     @override
@@ -50,32 +38,28 @@ def assume(assumption: Formula, marker: Marker) -> AssumptionTree:
 
 @dataclass(frozen=True)
 class RuleApplicationPremise:
-    tree: ProofTree
+    tree: 'ProofTree'
     discharge: Formula | None = None
     marker: Marker | None = None
 
 
-def premise(*, tree: ProofTree, discharge: Formula | None = None, marker: Marker | None = None) -> RuleApplicationPremise:
+def premise(*, tree: 'ProofTree', discharge: Formula | None = None, marker: Marker | None = None) -> RuleApplicationPremise:
     return RuleApplicationPremise(tree, discharge, marker)
 
 
 @dataclass(frozen=True)
-class RuleApplicationTree(ProofTree):
-    system: NaturalDeductionSystem
-    rule_name: str
+class RuleApplicationTree(InferenceTree[Formula, Mapping[Marker, Formula]]):
+    rule: NaturalDeductionRule
     instantiation: FormalLogicSchemaInstantiation
     premises: Sequence[RuleApplicationPremise]
     conclusion: Formula
 
-    def get_rule(self) -> NaturalDeductionRule:
-        return self.system[self.rule_name]
-
     def _filter_assumptions(self, *, discharged_at_current_step: bool) -> Iterable[tuple[Marker, Formula]]:
-        for rule_premise, application_premise in zip(self.get_rule().premises, self.premises, strict=True):
+        for rule_premise, application_premise in zip(self.rule.premises, self.premises, strict=True):
             if rule_premise is None:
                 continue
 
-            for marker, assumption in application_premise.tree.get_context().items():
+            for marker, assumption in application_premise.tree.get_assumption_map().items():
                 is_discharged_at_current_step = application_premise.discharge == assumption and \
                     (application_premise.marker is None or application_premise.marker == marker)
 
@@ -83,7 +67,7 @@ class RuleApplicationTree(ProofTree):
                     yield marker, assumption
 
     @override
-    def get_context(self) -> Mapping[Marker, Formula]:
+    def get_assumption_map(self) -> Mapping[Marker, Formula]:
         return dict(self._filter_assumptions(discharged_at_current_step=False))
 
     def get_marker_context(self) -> Iterable[Marker]:
@@ -97,7 +81,7 @@ class RuleApplicationTree(ProofTree):
         return RuleApplicationRenderer(
             str(self.conclusion),
             [str(marker) for marker in self.get_marker_context()],
-            self.rule_name,
+            self.rule.name,
             [premise.tree.build_renderer() for premise in self.premises]
         )
 
@@ -106,15 +90,12 @@ class RuleApplicationTree(ProofTree):
 
 
 def apply(
-    system: NaturalDeductionSystem,
-    rule_name: str,
-    *args: ProofTree | RuleApplicationPremise,
+    rule: NaturalDeductionRule,
+    *args: 'ProofTree | RuleApplicationPremise',
     instantiation: FormalLogicSchemaInstantiation | None = None,
 ) -> RuleApplicationTree:
-    rule = system[rule_name]
-
     if len(args) != len(rule.premises):
-        raise RuleApplicationError(f'The rule {rule_name} has {len(rule.premises)} premises, but the application has {len(args)}')
+        raise RuleApplicationError(f'The rule {rule.name} has {len(rule.premises)} premises, but the application has {len(args)}')
 
     instantiation = instantiation or FormalLogicSchemaInstantiation()
     marker_map = dict[Marker, Formula]()
@@ -125,7 +106,7 @@ def apply(
     ]
 
     for i, (rule_premise, application_premise) in enumerate(zip(rule.premises, application_premises, strict=True), start=1):
-        for marker, assumption in application_premise.tree.get_context().items():
+        for marker, assumption in application_premise.tree.get_assumption_map().items():
             if marker in marker_map and marker_map[marker] != assumption:
                 raise RuleApplicationError('Multiple assumptions cannot have the same marker')
 
@@ -133,7 +114,7 @@ def apply(
 
         if rule_premise.discharge is not None:
             if application_premise.discharge is None:
-                raise RuleApplicationError(f'The rule {rule_name} requires a discharge formula for premise number {i}')
+                raise RuleApplicationError(f'The rule {rule.name} requires a discharge formula for premise number {i}')
 
             instantiation = merge_instantiations(
                 instantiation,
@@ -146,9 +127,11 @@ def apply(
         )
 
     return RuleApplicationTree(
-        system,
-        rule_name,
+        rule,
         instantiation,
         application_premises,
         instantiate_formula_schema(rule.conclusion, instantiation)
     )
+
+
+ProofTree = AssumptionTree | RuleApplicationTree

@@ -1,7 +1,7 @@
 from ....support.pytest import pytest_parametrize_kwargs
 from ..parsing import (
+    parse_formula_schema,
     parse_propositional_formula,
-    parse_signatureless_formula_schema,
 )
 from .formula_inference import is_formula_schema_instance
 
@@ -30,7 +30,7 @@ from .formula_inference import is_formula_schema_instance
 )
 def test_is_schema_instance_success(schema: str, formula: str) -> None:
     assert is_formula_schema_instance(
-        parse_signatureless_formula_schema(schema),
+        parse_formula_schema(schema),
         parse_propositional_formula(formula)
     )
 
@@ -53,6 +53,6 @@ def test_is_schema_instance_success(schema: str, formula: str) -> None:
 )
 def test_is_schema_instance_failure(schema: str, formula: str) -> None:
     assert not is_formula_schema_instance(
-        parse_signatureless_formula_schema(schema),
+        parse_formula_schema(schema),
         parse_propositional_formula(formula)
     )

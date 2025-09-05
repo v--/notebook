@@ -58,7 +58,7 @@ class ParserContext[TokenT: Token]:
     def get_last_token_safe(self) -> TokenT:
         return self.parser.tokens[self.get_index_end_safe()]
 
-    def get_context_tokens(self) -> Sequence[TokenT]:
+    def get_assumption_map_tokens(self) -> Sequence[TokenT]:
         start = self.index_start
         end = self.get_index_end_safe()
         return self.parser.tokens[start: end + 1]

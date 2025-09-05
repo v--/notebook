@@ -25,14 +25,3 @@ class FunctionTermSchema(FunctionLikeTerm['TermSchema']):
 
 
 TermSchema = VariablePlaceholder | TermPlaceholder | FunctionTermSchema
-
-
-@dataclass(frozen=True)
-class StarredTermSchema:
-    term: TermSchema
-
-    def __str__(self) -> str:
-        return f'{self.term}*'
-
-
-ExtendedTermSchema = TermSchema | StarredTermSchema

@@ -36,7 +36,7 @@ class FormulaSubstitutionVisitor(FormulaTransformationVisitor):
 
     def visit_equality(self, formula: EqualityFormula) -> EqualityFormula:
         term_visitor = TermSubstitutionVisitor(self.from_term, self.to_term)
-        return EqualityFormula(term_visitor.visit(formula.a), term_visitor.visit(formula.b))
+        return EqualityFormula(term_visitor.visit(formula.left), term_visitor.visit(formula.right))
 
     def visit_predicate(self, formula: PredicateFormula) -> PredicateFormula:
         term_visitor = TermSubstitutionVisitor(self.from_term, self.to_term)
@@ -54,16 +54,16 @@ class FormulaSubstitutionVisitor(FormulaTransformationVisitor):
             return QuantifierFormula(
                 formula.quantifier,
                 formula.var,
-                self.visit(formula.sub)
+                self.visit(formula.body)
             )
 
-        new_var = new_variable({*free_from, *free_to, *get_free_variables(formula.sub)})
+        new_var = new_variable({*free_from, *free_to, *get_free_variables(formula.body)})
         sub_visitor = FormulaSubstitutionVisitor(formula.var, new_var)
 
         return QuantifierFormula(
             formula.quantifier,
             new_var,
-            self.visit(sub_visitor.visit(formula.sub))
+            self.visit(sub_visitor.visit(formula.body))
         )
 
 

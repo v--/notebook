@@ -19,6 +19,6 @@ from .variables import get_free_variables
     ),
 )
 def test_get_free_variables(formula: str, expected: Collection[str], dummy_signature: FormalLogicSignature) -> None:
-    actual = set(map(str, get_free_variables(parse_formula(dummy_signature, formula))))
+    actual = set(map(str, get_free_variables(parse_formula(formula, dummy_signature))))
     assert actual == expected
 

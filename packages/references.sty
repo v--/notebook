@@ -88,19 +88,24 @@
       }
   }
 
-\tl_new:N \l_inset_tl
+\NewDocumentCommand \tcite {mom}
+  {
+    \cs_set:Npn \__tcite_template:nn ##1 ##2 {#1}
+    \__tcite_template:nn
+      { \citeauthor{#3} }
+      { \IfValueTF {#2} { \cite[#2]{#3} } { \cite{#3} } }
+  }
+
 \NewDocumentCommand \incite {som}
   {
-    \tl_set:Nn \l_inset_tl { \IfValueTF {#2} { \cite[#2]{#3} } { \cite{#3} } }
     \IfBooleanTF {#1}
-      { In~{\tl_use:N \l_inset_tl},~\citeauthor{#3} }
-      { \citeauthor{#3}~in~{\tl_use:N \l_inset_tl} }
+      { \tcite{In~##2,~##1}[#2]{#3} }
+      { \tcite{##1~in~##2}[#2]{#3} }
   }
 
 \NewDocumentCommand \bycite {om}
   {
-    {\IfValueTF {#1} { \cite[#1]{#2} } { \cite{#2} }}
-    {~by~\citeauthor{#2}}
+    \tcite{##2~by~##1}[#1]{#2}
   }
 
 %

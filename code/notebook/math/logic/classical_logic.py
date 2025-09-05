@@ -1,0 +1,29 @@
+from .deduction import NaturalDeductionSystem
+from .parsing import parse_natural_deduction_rule
+
+
+CLASSICAL_NATURAL_DEDUCTION_SYSTEM = NaturalDeductionSystem([
+    parse_natural_deduction_rule('⊤₊', '⫢ ⊤'),
+    parse_natural_deduction_rule('⊤₋', '[⊤] φ ⫢ φ'),
+
+    parse_natural_deduction_rule('EFQ', '⊥ ⫢ φ'),
+    parse_natural_deduction_rule('DNE', '[¬φ] ⊥ ⫢ φ'),
+
+    parse_natural_deduction_rule('¬₊', '[φ] ⊥ ⫢ ¬φ'),
+    parse_natural_deduction_rule('¬₋', '¬φ, φ ⫢ ⊥'),
+
+    parse_natural_deduction_rule('∨₊ₗ', 'φ ⫢ (φ ∨ ψ)'),
+    parse_natural_deduction_rule('∨₊ᵣ', 'ψ ⫢ (φ ∨ ψ)'),
+    parse_natural_deduction_rule('∨₋', '(φ ∨ ψ), [φ] θ, [ψ] θ ⫢ θ'),
+
+    parse_natural_deduction_rule('∧₊', 'φ, ψ ⫢ (φ ∧ ψ)'),
+    parse_natural_deduction_rule('∧₋ₗ', '(φ ∧ ψ) ⫢ φ'),
+    parse_natural_deduction_rule('∧₋ᵣ', '(φ ∧ ψ) ⫢ ψ'),
+
+    parse_natural_deduction_rule('→₊', '[φ] ψ ⫢ (φ → ψ)'),
+    parse_natural_deduction_rule('→₋', '(φ → ψ), φ ⫢ ψ'),
+
+    parse_natural_deduction_rule('↔₊', '[φ] ψ, [ψ] φ ⫢ (φ ↔ ψ)'),
+    parse_natural_deduction_rule('↔₋ₗ', '(φ ↔ ψ), φ ⫢ ψ'),
+    parse_natural_deduction_rule('↔₋ᵣ', '(φ ↔ ψ), ψ ⫢ φ'),
+])

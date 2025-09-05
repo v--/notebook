@@ -1,12 +1,8 @@
 from dataclasses import dataclass
 
 from .terms import (
-    MixedTerm,
-    MixedTermSchema,
     TypedTerm,
     TypedTermSchema,
-    UntypedTerm,
-    UntypedTermSchema,
     Variable,
     VariablePlaceholder,
 )
@@ -15,43 +11,31 @@ from .types import SimpleType, SimpleTypeSchema
 
 @dataclass(frozen=True)
 class TypeAssertion:
-    term: MixedTerm
+    term: TypedTerm
     type: SimpleType
 
     def __str__(self) -> str:
         return f'{self.term}: {self.type}'
 
-
-class ImplicitTypeAssertion(TypeAssertion):
-    term: UntypedTerm
-
-
-class ExplicitTypeAssertion(TypeAssertion):
-    term: TypedTerm
+    def __iter__(self) -> tuple[TypedTerm, SimpleType]:
+        return (self.term, self.type)
 
 
 class VariableTypeAssertion(TypeAssertion):
     term: Variable
-    type: SimpleType
 
 
 @dataclass(frozen=True)
 class TypeAssertionSchema:
-    term: MixedTermSchema
+    term: TypedTermSchema
     type: SimpleTypeSchema
 
     def __str__(self) -> str:
         return f'{self.term}: {self.type}'
 
-
-class ImplicitTypeAssertionSchema(TypeAssertionSchema):
-    term: UntypedTermSchema
-
-
-class ExplicitTypeAssertionSchema(TypeAssertionSchema):
-    term: TypedTermSchema
+    def __iter__(self) -> tuple[TypedTermSchema, SimpleTypeSchema]:
+        return (self.term, self.type)
 
 
 class VariableTypeAssertionSchema(TypeAssertionSchema):
     term: VariablePlaceholder
-    type: SimpleTypeSchema

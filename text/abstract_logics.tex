@@ -1,0 +1,503 @@
+\section{Abstract logics}\label{sec:abstract_logics}
+
+We introduce several notions that are common for different flavors of logic we will consider in this monograph.
+
+\begin{concept}\label{con:logical_system}
+  The phrases \term{formal system} and \term{logical system} may refer to a \hyperref[def:consequence_relation]{consequence relation} (or the less practical \hyperref[def:consequence_operator]{consequence operators}), \hyperref[def:entailment_system]{entailment system}, \hyperref[def:institution]{institution}, \hyperref[def:abstract_logic]{abstract logic} or another notion which allows performing deductive reasoning.
+
+  This may also encompass different \hyperref[def:rewriting_system]{rewriting systems} --- for example, \cite{Barendregt1974SurjectivePairing} starts with a definition that presupposes the availability of \hyperref[ch:lambda_calculus]{lambda calculus} or variations thereof:
+  \begin{displayquote}
+    A \textit{pairing} (in some formal system) is a triple of terms \( D \), \( D_1 \), \( D_3 \) such that \( D_1(Dab) = a \) and \( D_2(Dab) = b \) are provable in that system.
+  \end{displayquote}
+
+  Entailment systems and abstract logics are not established concepts and the usage that we will present is an attempt to systemize different logical systems.
+\end{concept}
+
+\begin{remark}\label{rem:named_logical_systems}
+  Several \hyperref[con:logical_system]{logical systems} have established names:
+  \begin{itemize}
+    \thmitem{rem:named_logical_systems/gentzen} \incite*[176]{Gentzen1935LogischeSchließen} introduced \hyperref[def:abstract_natural_deduction_system]{natural deduction systems} (which he called \enquote{Kalk\"ul des nat\"urlichen Schliessens}), and called the corresponding \hyperref[con:intuitionistic_logic]{intuitionistic} and \hyperref[con:classical_logic]{classical} variants \logic{NJ} and \logic{NK}.
+
+    In the same paper he also introduced \hyperref[rem:sequent_calculus]{sequent calculus}, whose variants he called \logic{LJ} (\enquote{Intuitionistische Pr\"adikatenlogik}) and \logic{LK} (\enquote{Klassik Pr\"adikatenlogik}).
+
+    \thmitem{rem:named_logical_systems/q0} \incite*[\S 51]{Andrews2002Logic} introduced the system \( \logic{Q}_0 \), upon which we base our \hyperref[def:simply_typed_hol]{simple type higher-order logic}.
+
+    \thmitem{rem:named_logical_systems/peano_robinson} \incite*[def. 4.1.1]{Hinman2005Logic} calls \hyperref[def:peano_arithmetic]{Peano arithmetic} \( \logic{P} \) (which we prefer to abbreviate as \logic{PA}), and its weaker form, the \hyperref[def:peano_arithmetic]{Robinson arithmetic}, \( \logic{Q} \).
+
+    \thmitem{rem:named_logical_systems/barendregt} \incite*{Barendregt1992LambdaCalculiWithTypes} introduces several \hyperref[con:type_system]{type systems} for \( \muplambda \)-calculus, which revolve around the letter \( \muplambda \). For example, he denotes his of \hyperref[con:simple_type_theory]{simply type theory} by \( \muplambda_{\rightarrow} \) and his flavor of \hyperref[con:dependent_type_theory]{dependent type theory} by \( \synlambda P \). Some others are listed in \fullref{def:lambda_cube}.
+  \end{itemize}
+\end{remark}
+
+\paragraph{Consequence operators and relations}
+
+\begin{definition}\label{def:consequence_operator}\mimprovised
+  Fix a set \( S \), whose elements we will call \term[ru=предложения (\cite[103]{КолмогоровДрагалин2006Логика}), en=sentences (\cite[93]{Woodger1983TarskiPapers})]{sentences}. If \( \op*{Cn} \) is a \hyperref[def:moore_closure_operator]{Moore closure operator} on the power set of \( S \), we say that it is a \term{Tarski consequence operator} on \( S \).
+
+  \begin{thmenum}
+    \thmitem{def:consequence_operator/compactness}\mcite[def. 4.2.1]{CitkinMuravitsky2022ConsequenceRelations} We say that \( \op*{Cn} \) is \term{compact} if the following condition holds:
+    \begin{equation}\label{eq:def:consequence_operator/compactness}
+      \op*{Cn}(\Gamma) = \bigcup\set{ \op*{Cn}(\Delta) \given \Delta \T{is a finite subset of} \Gamma }.
+    \end{equation}
+  \end{thmenum}
+\end{definition}
+\begin{comments}
+  \item Our main source of consequence operators will be \hyperref[def:consequence_relation]{consequence relations}. Will consider two types of consequence relations:
+  \begin{itemize}
+    \item Syntactic consequence based on building proof trees. This will be formalized via entailment systems in \fullref{def:entailment_system/entailment}.
+    \item Semantic consequence based on interpreting theories as \hyperref[con:judgment]{judgments} about metatheoretic objects. This will be formalized via institutions in \fullref{def:institutional_entailment}.
+  \end{itemize}
+
+  \item Tarski himself defines several variations of consequence operators. Our definition is based on \cite[64]{Woodger1983TarskiPapers}, but, following \incite[4.2.1]{CitkinMuravitsky2022ConsequenceRelations}, we replace the mandatory compactness condition with the weaker \hyperref[def:order_function/preserving]{monotonicity} property. Our main motivation for this is that we want to provide a general definition that is useful without a tedious proof of compactness, which may even not exist. Tarski proves monotonicity as a consequence of compactness.
+
+  Another distinction from Tarski's work is that we impose no restrictions on the set \( S \), while Tarski defines it to be \hyperref[def:set_countability/at_most_countable]{at most countable}.
+
+  In \cite[\enquote{On Some Fundamental Concepts of Metamathematics}, page 30]{Woodger1983TarskiPapers}, which chronologically precedes the aforementioned definition, Tarski additionally requires that there exists a sentence \( \varphi \) such that \( S = \op*{Cn}(\set{ \varphi }) \).
+
+  \item Sentences themselves are not, in practice, atoms. In propositional logic, they are formulas, which themselves have an elaborate structure discussed in \fullref{def:propositional_syntax/formula}. In first-order logic their structure is even more elaborate --- see \fullref{def:first_order_syntax/closed_formula}.
+
+  \item We are concerned with the epistemology of the judgments used to assert properties of sentences and consequence operators. At the same time, we are not concerned with epistemology of the sentences themselves, but regard them as autonomous abstract objects which can either be manipulated mechanically.
+\end{comments}
+
+\begin{definition}\label{def:variable_identifier}\mimprovised
+  We will introduce a convention for variable names based on the following \hyperref[def:formal_grammar/schema]{grammar schema}:
+  \begin{bnf*}
+    \bnfprod{Small Latin letter}     {\bnftsq{\( \syna \)} \bnfor \bnftsq{\( \synb \)} \bnfor \cdots \bnfor \bnftsq{\( \syn y \)} \bnfor \bnftsq{\( \syn z \)}}, \\
+    \bnfprod{Small Latin identifier} {\bnfpn{Small Latin letter} \bnfor} \\
+    \bnfmore                         {\bnfpn{Small Latin letter} \bnfsp \bnfpn{natural number}}, \\
+  \end{bnf*}
+  where grammar rules for natural numbers can be taken from \fullref{def:positional_number_system} (but without dots on top of the numerals). We have introduced dots on top of the letters in accordance with the disambiguation convention discussed in \fullref{rem:object_language_dots/terminals}.
+
+  We will consider each identifier as a single \hyperref[con:abstract_syntax_tree/lexical]{lexeme}. Using identifier rules will allow us to focus on \hyperref[con:abstract_syntax_tree/syntactic]{syntactic rules} on other definitions.
+
+  As per our definition, an identifier is a letter optionally followed by a number. Within the metalogic, we treat this number as a suffix and write it as a subscript, that is, we write \enquote{\( \synp_1 \)} instead of \enquote{\( \synp1 \)}. We will generally avoid suffixes --- we need them for the sake of having infinitely many identifiers.
+
+  Furthermore, in definitions like \fullref{def:lambda_term_substitution/sharp}, we would like to find the \enquote{identifier} digit not present in a given set of variables. This can be done via the \hyperref[thm:def:well_ordered_set/lexicographic]{reverse lexicographic order} on letter-number pairs:
+  \begin{equation*}
+    \syna < \synb < \cdots < \syn z < \syna_0 < \cdots < \syn z_0 < \cdots < \syna_9 < \cdots < \syn z_9 < \cdots < \syna_{10} < \cdots < \syn z_{10} < \cdots.
+  \end{equation*}
+
+  We will similarly consider \( \bnfpn{Small Greek identifier} \), as well as \( \bnfpn{Capital Latin identifier} \) and \( \bnfpn{Capital Greek identifier} \).
+\end{definition}
+\begin{comments}
+  \item We must elaborate on identifier ordering. The numeric strings themselves use lexicographic ordering as per \fullref{ex:def:lexicographic_order/natural_numbers}. We regard the set of numeric strings as ordered, and then use the reverse lexicographic ordering where we first compare the numeric indices and, if they are equal, we compare the letters.
+\end{comments}
+
+\begin{definition}\label{def:logical_context}\mimprovised
+  A \term{(logical) context} is a string generated by the corresponding grammar rule from the \hyperref[def:formal_grammar/schema]{schema}
+  \begin{bnf*}
+    \bnfprod{context placeholder} {\bnfpn{Capital Greek identifier}}, \\
+    \bnfprod{nonempty context}    {\bnfpn{context entry} \bnfor \bnfpn{context placeholder} \bnfor} \\
+    \bnfmore                      {\bnfpn{nonempty context} \bnfsp \bnftsq{,} \bnfsp \bnfpn{nonempty context}}, \\
+    \bnfprod{empty context}       {\bnfves}, \\
+    \bnfprod{context}             {\bnfpn{empty context} \bnfor \bnfpn{nonempty context}},
+  \end{bnf*}
+  where
+  \begin{itemize}
+    \item We have used variable identifier rules from \fullref{def:variable_identifier}.
+
+    \item We have purposely not specified rules for the nonterminal \( \bnfpn{context entry} \) in order to encompass entries with different syntax like \hyperref[def:first_order_syntax/var]{first-order variables} and \hyperref[def:type_assertion]{type assertions}. We assume that, whenever this definition is used, the syntax for entries is understood from the setting.
+  \end{itemize}
+\end{definition}
+\begin{comments}
+  \item The indented semantics for placeholders is to refer to other contexts.
+
+  \item This definition generalizes propositional contexts from \cite[45]{Mimram2020ProgramEqualsProof} and \hyperref[def:type_context]{type contexts} from \cite[159]{Mimram2020ProgramEqualsProof} and \cite[def. 2A5]{Hindley1997BasicSTT}, but formalized via grammars and not tied to variables.
+
+  \item Contexts purposely have ambiguous semantics --- we can use different interpretations, as discussed in \fullref{def:logical_context_semantics}.
+\end{comments}
+
+\begin{definition}\label{def:logical_context_semantics}\mimprovised
+  \hyperref[def:logical_context]{Logical contexts} can be studied as standalone objects, but we will mostly use them as \enquote{syntax sugar} in the \hyperref[con:metalogic]{metalanguage}.
+
+  We may, depending on the application, choose to interpret contexts as either lists of entries or as sets of entries, with a preference for lists.
+
+  An \enquote{entry} in a sequent can be a variable, sentence, type assertion or basically anything that contains additional information that we need to somehow use. For simplicity, let \( S \) be a nonempty set whose elements we will call entries. To formalize semantics, suppose we are given interpretation functions:
+  \begin{thmenum}[series=def:logical_context_semantics]
+    \thmitem{def:logical_context_semantics/int/entry} For each entry \( \varphi \), let \( I_s(\varphi) \) be an element of \( S \).
+    \thmitem{def:logical_context_semantics/int/placeholder} For each placeholder \( \Gamma \), let \( I_c(\Gamma) \) be a finite list (resp. set) of elements of \( S \), that is, an element of \( \pow(S) \) (resp. of the Kleene star \( S^* \) of \( S \)).
+  \end{thmenum}
+
+  We then extend these to arbitrary contexts:
+  \begin{thmenum}[series=def:logical_context_semantics]
+    \thmitem{def:logical_context_semantics/var/entry} For each placeholder \( \Gamma \), let \( \Bracks{\Gamma} \) be \( I_c(\Gamma) \).
+    \thmitem{def:logical_context_semantics/var/placeholder} For each entry \( \varphi \), let \( \Bracks{\varphi} \) be the singleton list (resp. singleton set) with element \( I_s(\varphi) \).
+    \thmitem{def:logical_context_semantics/var/pair} For each context of the form \( \Gamma, \Delta \), let \( \Bracks{\Gamma, \Delta} \) be the concatenation (resp. union) of \( \Bracks{\Gamma} \) and \( \Bracks{\Delta} \).
+    \thmitem{def:logical_context_semantics/var/empty} For each empty context \( \bnfves \), let \( \Bracks{\bnfves} \) be the empty list (resp. empty set).
+  \end{thmenum}
+\end{definition}
+\begin{comments}
+  \item When defining type contexts in \fullref{def:type_context}, we prefer list-based semantics because the order of type assertions can be crucial in systems with dependent types --- see \fullref{rem:well_formed_context}. In other places the order is mostly irrelevant, and we prefer the simpler set-based semantics.
+
+  \item Both set-based and list-based semantics are discussed in \cite[\S 2.2.10]{Mimram2020ProgramEqualsProof} and \cite[\S 4.1.7.2]{Mimram2020ProgramEqualsProof}, in the context of logic. The problem of non-unique proofs highlighted there will not concern us, as we will see in \fullref{ex:proof_tree_non_uniqueness}.
+\end{comments}
+
+\begin{definition}\label{def:sequent}\mimprovised
+  A \term[ru=секвенция (\cite[49]{Герасимов2011Вычислимость})]{sequent} is a string consisting of two \hyperref[def:logical_context]{contexts} joined by some infix relational symbol. They can be described by the \hyperref[def:formal_grammar]{grammar}
+  \begin{bnf*}
+    \bnfprod{sequent} {\bnfpn{context} \bnfsp \bnfpn{sequent relation} \bnfsp \bnfpn{context}}.
+  \end{bnf*}
+
+  Unless specified otherwise, we assume that the sequent relation is \enquote{\( \vdash \)}.
+\end{definition}
+\begin{comments}
+  \item This definition is based on the one by \incite[290]{Gentzen1964LogicalDeduction}, but formalized via grammars.
+
+  \item Although we have not put restrictions for the context on the right, we may assume that it consists of a single entry.
+  \begin{itemize}
+    \item An empty context on the right is often meaningless. The intended semantics of a sequent is that of a \hyperref[con:judgment]{judgment} asserting that the left context entails the right one, and if the right context is empty, there is nothing to imply.
+
+    \item General contexts on the right are used in \hyperref[rem:sequent_calculus]{sequent calculus}, which we will not delve into.
+  \end{itemize}
+\end{comments}
+
+\begin{remark}\label{rem:sequent_notation}
+  By \enquote{sequent notation} for a binary relation \( \vdash \), we will mean utilizing the grammar of contexts from \fullref{def:logical_context} to simplify notation for \hyperref[def:consequence_relation]{consequence relations}. For example, given a set \( \set{ \varphi_1, \ldots, \varphi_n } \) of logical formulas, which entail \( \psi \), we may write
+  \begin{equation*}
+    \varphi_1, \ldots, \varphi_n \vdash \psi.
+  \end{equation*}
+
+  This utilizes set-based semantics.
+
+  Correspondingly, if \( \psi \) can be derived from an empty set, we write
+  \begin{equation*}
+    \vdash \psi.
+  \end{equation*}
+
+  In fact, across \fullref{ch:mathematical_logic}, we will use the sequent notation
+  \begin{equation*}
+    \Gamma \vdash \psi
+  \end{equation*}
+  even when \( \Gamma \) is a possibly infinite set (for example, when discussing \hyperref[def:consequence_relation]{consequence relations}).
+\end{remark}
+
+\begin{definition}\label{def:consequence_relation}\mcite[def. 4.1.1]{CitkinMuravitsky2022ConsequenceRelations}
+  As in \fullref{def:consequence_operator}, fix a set \( S \) of sentences. We say that the relation \( \vdash \) from \( \pow(S) \) to \( S \) is a \term{consequence relation} if the following conditions hold\fnote{We use the sequent notation discussed in \fullref{rem:sequent_notation}, even though we allow \( \Gamma \), \( \Delta \) and \( \Epsilon \) to be infinite sets}:
+  \begin{thmenum}
+    \thmitem{def:consequence_relation/reflexivity} The following \hyperref[def:binary_relation/reflexive]{reflexivity}-like condition:
+    \begin{equation}\label{eq:def:consequence_relation/reflexivity}
+      \varphi \in \Gamma \T{implies} \Gamma \vdash \varphi.
+    \end{equation}
+
+    This corresponds to Gentzen's \hyperref[inf:rem:sequent_calculus/init]{initialization rule} in sequent calculus.
+
+    \thmitem{def:consequence_relation/monotonicity} The following \hyperref[def:order_function/preserving]{monotonicity}-like condition:
+    \begin{equation}\label{eq:def:consequence_relation/monotonicity}
+      \Gamma \vdash \varphi \T{implies} \Gamma, \Delta \vdash \varphi
+    \end{equation}
+
+    This corresponds to \hyperref[def:abstract_propositional_sequent_calculus_system/rules/weak]{weakening rules} in sequent calculus.
+
+    \thmitem{def:consequence_relation/transitivity} The following \hyperref[def:binary_relation/transitive]{transitivity}-like condition:
+    \begin{equation}\label{eq:def:consequence_relation/transitivity}
+      \qforall* {\psi \in \Delta} \Gamma \vdash \psi \T{and} \Delta, \Epsilon \vdash \varphi \T{imply} \Gamma, \Epsilon \vdash \varphi.
+    \end{equation}
+
+    This corresponds to the \hyperref[def:abstract_propositional_sequent_calculus_system/rules/cut]{cut rule} in sequent calculus.
+
+    \thmitem{def:consequence_relation/compactness} Optionally, we may require the following to hold, in which case we call the relation \term{compact}:
+    \begin{equation}\label{eq:def:consequence_relation/compactness}
+      \Gamma \vdash \varphi \T{implies that there exists a finite subset} \Delta \T{such that} \Delta \vdash \varphi.
+    \end{equation}
+  \end{thmenum}
+\end{definition}
+\begin{comments}
+  \item Regarded as a binary relation between sentences on a fixed signature, consequence is a \hyperref[def:preordered_set]{preorder}. This motivates Lindenbaum-Tarski algebras --- see \fullref{def:lindenbaum_tarski_algebra}.
+
+  \item The conditions are stated so that they also hold for contexts with list-based semantics. This will be used in \fullref{def:type_derivation_relation}.
+\end{comments}
+
+\begin{proposition}\label{thm:consequence_operators_and_relations}
+  Fix a set \( S \), a function \( \op*{Cn}: \pow(S) \to \pow(S) \) and a relation \( \vdash \) from \( \pow(S) \) to \( S \). Suppose that
+  \begin{equation}\label{eq:thm:consequence_operators_and_relations}
+    \varphi \in \op*{Cn}(\Gamma) \T{if and only if} \Gamma \vdash \varphi.
+  \end{equation}
+
+  Then \( \op*{Cn} \) is a \hyperref[def:consequence_operator]{consequence operator} if and only if \( {\vdash} \) is a \hyperref[def:consequence_relation]{consequence relation}.
+
+  Furthermore, \( \op*{Cn} \) is compact in the sense of \fullref{def:consequence_operator/compactness} if and only if \( \vdash \) is compact in the sense of \fullref{def:consequence_relation/compactness}.
+\end{proposition}
+\begin{proof}
+  \SubProof{Proof that operators give rise to relations} Suppose that we are given a consequence operator and that we have defined a relation, whose properties we wish to prove.
+
+  \SubProofOf*[def:consequence_relation/reflexivity]{reflexivity} \( \op*{Cn} \) is idempotent, thus \( \op*{Cn}(\Gamma) = \op*{Cn}(\op*{Cn}(\Gamma)) \) and \( \Gamma \vdash \varphi \) implies \( \op*{Cn}(\Gamma) \vdash \varphi \).
+
+  \SubProofOf*[def:consequence_relation/monotonicity]{monotonicity} \( \op*{Cn} \) preserves order, thus \( \op*{Cn}(\Gamma) \subseteq \op*{Cn}(\Gamma \cup \Delta) \) and \( \Gamma \vdash \varphi \) implies \( \Gamma \cup \Delta \vdash \psi \).
+
+  \SubProofOf*[def:consequence_relation/transitivity]{transitivity} First note that \( \Gamma \vdash \psi \) for every \( \psi \in \Delta \) implies \( \Delta \subseteq \op*{Cn}(\Gamma) \).
+
+  Furthermore, since \( \op*{Cn} \) preserves order, we have \( \op*{Cn}(\Gamma) \subseteq \op*{Cn}(\Gamma \cup \Eta) \), and since it is extensive, we have \( E \subseteq D \cup E \subseteq \op*{Cn}(\Gamma \cup \Eta) \). Combining the two inequalities, we obtain
+  \begin{equation}\label{eq:thm:consequence_operators_and_relations/op_to_rel/transitivity/intermediate}
+    \op*{Cn}(\Gamma) \cup E \subseteq \op*{Cn}(\Gamma \cup \Eta).
+  \end{equation}
+
+  Then
+  \begin{equation*}
+    \op*{Cn}(\Delta \cup \Epsilon)
+    \subseteq
+    \op*{Cn}(\op*{Cn}(\Gamma) \cup \Epsilon)
+    \reloset {\eqref{eq:thm:consequence_operators_and_relations/op_to_rel/transitivity/intermediate}} \subseteq
+    \op*{Cn}(\op*{Cn}(\Gamma \cup \Eta))
+    =
+    \op*{Cn}(\Gamma \cup \Eta)
+  \end{equation*}
+  and \eqref{eq:def:consequence_relation/transitivity} follows directly.
+
+  \SubProofOf*[def:consequence_relation/compactness]{compactness} Suppose that \( \op*{Cn} \) satisfies the compactness property \eqref{eq:def:consequence_operator/compactness}.
+
+  Suppose that \( \Gamma \vdash \varphi \). Then \( \varphi \in \op*{Cn}(\Gamma) \), and, by \eqref{eq:def:consequence_operator/compactness}, there exists at least one finite subset \( \Delta \) of \( \Gamma \) such that \( \varphi \in \op*{Cn}(\Delta) \). This implies \( \Delta \vdash \varphi \).
+
+  \SubProof{Proof that relations give rise to operators} Suppose that we are given a consequence relation and that we have defined an operator, whose properties we wish to prove.
+
+  \SubProofOf*[def:extensive_function]{extensiveness} If \( \varphi \in \Gamma \), the reflexivity property \eqref{eq:def:consequence_relation/reflexivity} implies that \( \Gamma \vdash \varphi \), and thus \( \varphi \in \op*{Cn}(\Gamma) \).
+
+  \SubProofOf*[def:idempotent_function]{idempotence} If \( \varphi \in \op*{Cn}(\op*{Cn}(\Gamma)) \), that is, if \( \op*{Cn}(\Gamma) \vdash \varphi \), then the transitivity property \eqref{eq:def:consequence_relation/transitivity} implies that \( \Gamma \vdash \varphi \) and thus \( \varphi \in \op*{Cn}(\Gamma) \).
+
+  \SubProofOf*[def:order_function/preserving]{monotonicity} Suppose that \( \Gamma \subseteq \Delta \). If \( \varphi \in \op*{Cn}(\Gamma) \), that is, if \( \Gamma \vdash \psi \), the monotonicity property \eqref{eq:def:consequence_relation/monotonicity} implies that \( \Delta \vdash \psi \), that is, \( \varphi \in \op*{Cn}(\Delta) \).
+
+  \SubProofOf*[def:consequence_operator/compactness]{compactness} Suppose that \( {\vdash} \) satisfies the compactness property \eqref{eq:def:consequence_relation/compactness}.
+
+  Let \( \varphi \) be a sentence in \( \op*{Cn}(\Gamma) \). Then \( \Gamma \vdash \varphi \), and \eqref{eq:def:consequence_relation/compactness} implies that there exists a finite subset \( \Delta \) of \( \Gamma \) such that \( \Delta \vdash \varphi \). Thus, \( \varphi \in \op*{Cn}(\Delta) \).
+
+  Generalizing on \( \varphi \), we obtain that
+  \begin{equation*}
+    \op*{Cn}(\Gamma) \subseteq \bigcup\set{ \op*{Cn}(\Delta) \given \Delta \T{is a finite subset of} \Gamma }.
+  \end{equation*}
+
+  The converse inclusion follows from the fact that \( \op*{Cn} \) preserves order.
+\end{proof}
+
+\begin{remark}\label{rem:logical_compactness_theorems}
+  We prove \hyperref[def:consequence_operator/compactness]{consequence operator compactness} in the following:
+  \begin{itemize}
+    \item \Fullref{thm:axiomatic_derivation_entailment_compact} for \hyperref[def:axiomatic_derivation_system]{axiomatic derivation systems}.
+    \item \Fullref{thm:propositional_natural_deduction_entailment_compact} for \hyperref[def:propositional_natural_deduction_systems]{propositional natural deduction systems}.
+    \item \Fullref{thm:first_order_natural_deduction_entailment_compact} for \hyperref[def:first_order_natural_deduction_system]{first-order natural deduction systems}.
+  \end{itemize}
+\end{remark}
+
+\begin{definition}\label{def:logical_theory}\mcite[96]{CitkinMuravitsky2022ConsequenceRelations}
+  Fix a compatible \hyperref[def:consequence_operator]{consequence operator} \( \op*{Cn} \) and \hyperref[def:consequence_relation]{consequence relation} \( {\vdash} \) on the same set of sentences \( S \). We say that a set of sentences \( \Gamma \) is a \term[ru=теория (\cite[3.1.1]{Герасимов2011Вычислимость})]{theory} with respect to them if any of the following equivalent conditions hold:
+  \begin{thmenum}[series=def:logical_theory]
+    \thmitem{def:logical_theory/operator} \( \Gamma \) is closed with respect to \( \op*{Cn} \), that is, the set \( \op*{Cn}(\Gamma) \) coincides with \( \Gamma \).
+
+    \thmitem{def:logical_theory/relation} \( \varphi \in \Gamma \) if and only if \( \Gamma \vdash \varphi \)
+  \end{thmenum}
+
+  We will find useful the following terminology:
+  \begin{thmenum}[resume=def:logical_theory]
+    \thmitem{def:logical_theory/generated} More generally, we say that \( \Gamma \) \term{generates} or \term{axiomatizes} the theory \( \op*{Cn}(\Gamma) \).
+
+    \thmitem{def:logical_theory/equivalent}\mcite[def. III.2]{Woodger1983TarskiPapers} We say that two sets of sentences are \term{equivalent} if they generate the same theory, that is, if \( \varphi \vdash \psi \) and \( \psi \vdash \varphi \).
+  \end{thmenum}
+\end{definition}
+\begin{comments}
+  \item Woodger, translating Tarski's \cite[\enquote{Fundamental Concepts of Methodology of Deductive Sciences}, page 70]{Woodger1983TarskiPapers} instead calls these theories \enquote{deduction systems}, but we avoid this term to prevent any confusion with \hyperref[def:axiomatic_derivation_system]{axiomatic deductive systems} and \hyperref[def:propositional_natural_deduction_systems]{natural deduction systems}.
+\end{comments}
+
+\begin{definition}\label{def:consequence_formula_equivalence}\mimprovised
+  Fix a compatible \hyperref[def:consequence_operator]{consequence operator} \( \op*{Cn} \) and \hyperref[def:consequence_relation]{consequence relation} \( {\vdash} \) on the same set of sentences \( S \). We say that two sentences \( \varphi \) and \( \psi \) are \term[ru=равносильные / эквивалентные (формулы) (\cite[44]{КолмогоровДрагалин2006Логика})]{equivalent} if any of the following tantamount conditions hold:
+  \begin{thmenum}
+    \thmitem{def:consequence_formula_equivalence/relations} We have \( \varphi \vdash \psi \) and \( \psi \vdash \varphi \).
+    \thmitem{def:consequence_formula_equivalence/operators} The \hyperref[def:logical_theory]{logical theories} \hyperref[def:logical_theory/generated]{axiomatized} by \( \varphi \) and \( \psi \) are \hyperref[def:logical_theory]{equivalent}.
+  \end{thmenum}
+\end{definition}
+\begin{defproof}
+  \ImplicationSubProof{def:consequence_formula_equivalence/relations}{def:consequence_formula_equivalence/operators} Suppose that \( \varphi \vDash_\Sigma \psi \) and \( \psi \vDash_\Sigma \varphi \) hold.
+
+  Then the theory
+  \begin{equation*}
+    \op*{Cn}(\set{ \varphi }) = \set{ \theta \in S \given \varphi \vDash_\Sigma \theta }
+  \end{equation*}
+  contains \( \psi \). Since \( \op*{Cn} \) preserves order,
+  \begin{equation*}
+    \op*{Cn}(\set{ \psi }) \subseteq \op*{Cn}(\op*{Cn}(\set{ \varphi })) = \op*{Cn}(\set{ \varphi }).
+  \end{equation*}
+
+  The converse can be shown similarly.
+
+  \ImplicationSubProof{def:consequence_formula_equivalence/operators}{def:consequence_formula_equivalence/relations} Suppose that \( \op*{Cn}(\set{ \varphi }) = \op*{Cn}(\set{ \psi }) \).
+
+  Since \( \op*{Cn} \) is \hyperref[def:extensive_function]{extensive}, it follows that \( \set{ \varphi } \subseteq \op*{Cn}(\set{ \varphi }) \). Then \( \varphi \in \op*{Cn}(\set{ \psi }) \), that is, \( \psi \vdash \varphi \).
+
+  The converse can be shown similarly.
+\end{defproof}
+
+\begin{definition}\label{def:entailment_system}\mcite[def. 1]{Meseguer1989GeneralLogics}
+  An \term{entailment system} consists of the following:
+  \begin{thmenum}
+    \thmitem{def:entailment_system/signatures} A \hyperref[def:category]{category} \( \cat{Sign} \), whose objects we will call \term{signatures} and whose morphisms we will call \term{translations}.
+
+    \thmitem{def:entailment_system/sentences} A \hyperref[def:functor]{functor} \( \op*{Sen}: \cat{Sign} \to \cat{Set} \). We call the elements of the set \( \op*{Sen}(\Sigma) \) \term{sentences}.
+
+    \thmitem{def:entailment_system/entailment} For every signature \( \Sigma \), a \hyperref[def:consequence_relation]{consequence relation} \( \vdash_\Sigma \) on \( \op*{Sen}(\Sigma) \) such that, for every signature translation \( s: \Sigma \to \Tau \), the following compatibility condition holds:
+    \begin{equation}\label{eq:def:entailment_system/entailment}
+      \Gamma \vdash_\Sigma \varphi \T{implies} s[\Gamma] \vdash_\Tau s(\varphi).
+    \end{equation}
+
+    We say that \( \Gamma \) \term{entails} \( \varphi \).
+  \end{thmenum}
+\end{definition}
+\begin{comments}
+  \item For entailment relations we use the sequent notation discussed in \fullref{rem:sequent_notation}.
+\end{comments}
+
+\paragraph{Institutions}
+
+\begin{definition}\label{def:institution}\mcite[def. 1]{GoguenBurstall1992Institutions}
+  An \term{institution} consists of the following:
+  \begin{thmenum}
+    \thmitem{def:institution/signatures} A \hyperref[def:category]{category} \( \cat{Sign} \), whose objects we will call \term{signatures}.
+
+    \thmitem{def:institution/sentences} A \hyperref[def:functor]{functor} \( \op*{Sen}: \cat{Sign} \to \cat{Set} \). We call the elements of the set \( \op*{Sen}(\Sigma) \) \term{sentences}.
+
+    \thmitem{def:institution/models} A \hyperref[def:functor]{functor} \( \cat{Mod}: \cat{Sign} \to \cat{Cat}^{\oppos} \). We call the objects of the category \( \op*{Mod}(\Sigma) \) \term{models} and the morphisms --- \term{homomorphisms}.
+
+    \thmitem{def:institution/satisfaction} A family of \hyperref[def:relation]{relations} indexed by \( \obj(\cat{Sign}) \), where, for a given signature \( \Sigma \), \( \vDash_\Sigma \) is a relation between \( \obj(\op*{Mod}(\Sigma)) \) and \( \cat{Sen}(\Sigma) \) such that, for each signature morphism \( s: \Sigma \to \Tau \), each sentence \( \varphi \) in \( \op*{Sen}(\Sigma) \) and each model \( \mscrT \) in \( \op*{Mod}\mscrI_\Tau \), the following condition holds:
+    \begin{equation}\label{eq:def:institution/satisfaction}
+      \mscrT \vDash_\Tau \underbrace{\op*{Sen}(s)}_{\mathclap{\op*{Sen}(\Sigma) \to \op*{Sen}(\Tau)}}(\varphi)
+      \quad\T{if and only if}\quad
+      \underbrace{\op*{Mod}(s)}_{\mathclap{\op*{Mod}(\Tau) \to \op*{Mod}(\Sigma)}}(\mscrT) \vDash_\Sigma \varphi
+    \end{equation}
+
+    We call \( \vDash_\Sigma \) the \term{satisfaction} relation for \( \Sigma \).
+  \end{thmenum}
+\end{definition}
+\begin{comments}
+  \item If needed, we will distinguish between the institutions \( \mscrI \) and \( \mscrJ \) via subscripts like \( \cat{Sign}_\mscrI \) and \( \cat{Sign}_\mscrJ \).
+\end{comments}
+
+\begin{definition}\label{def:institutional_satisfaction}\mcite[def. 2(1)]{GoguenBurstall1992Institutions}
+  Fix a signature \( \Sigma \) in some \hyperref[def:institution]{institution} and suppose that all sentences and models correspond to \( \Sigma \).
+
+  We say that the model \( \mscrX \) \term{satisfies} the sentence \( \varphi \) if \( \mscrX \vDash_\Sigma \varphi \). This extends to sets of sentences: if \( \mscrX \vDash_\Sigma \varphi \) for every sentence \( \varphi \) in the set \( \Gamma \), we say that \( \mscrX \) \term{satisfies} \( \Gamma \) and write \( \mscrX \vDash_\Sigma \Gamma \).
+
+  If \( \mscrX \) satisfies \( \Gamma \), we call \( \mscrX \) a \term{model} of \( \Gamma \).
+\end{definition}
+
+\begin{remark}\label{rem:institutional_model_terminology}
+  In general \hyperref[def:institution]{institutions}, we must distinguish between the phrases \enquote{\( \mscrX \) is a model} and \enquote{\( \mscrX \) is a model of \( \Gamma \)}. In the concrete institutions we will consider, the category \( \op*{Mod}(\Sigma) \) consists of objects that have other established names --- for example \hyperref[def:propositional_valuation/interpretation]{propositional interpretation} or \hyperref[def:first_order_structure]{first-order structures}.
+\end{remark}
+
+\begin{definition}\label{def:satisfiable_set_of_sentences}\mimprovised
+   In a given \hyperref[def:institution]{institution}, we say that a set of sentences is \term[ru=совместное (\cite[def. 1.3.17]{Герасимов2011Вычислимость})]{satisfiable} if it has at least one model.
+\end{definition}
+\begin{comments}
+  \item This definition is generalized from \incite[def. 1.4.8(i)]{Hinman2005Logic}.
+\end{comments}
+
+\begin{definition}\label{def:institutional_entailment}\mcite[def. 2(9)]{GoguenBurstall1992Institutions}
+  Fix a signature \( \Sigma \) in some \hyperref[def:institution]{institution} and suppose that all sentences and models correspond to \( \Sigma \).
+
+  We say that the set of sentences \( \Gamma \) \term{semantically entails} the sentence \( \varphi \) and write \( \Gamma \vDash_\Sigma \varphi \) if, whenever a model \( \mscrX \) satisfies \( \Gamma \), it also satisfies \( \varphi \). If \( \vdash_\Sigma \varphi \), we say that \( \varphi \) is \term[en=valid (\cite[def. 2.2.1]{Hinman2005Logic})]{valid}.
+\end{definition}
+\begin{comments}
+  \item Note that we now have two relations denoted by \( \vDash_\Sigma \) --- one is the satisfaction relation from \fullref{def:institutional_satisfaction}, the other one is the entailment relation from this definition. Since the relations are fundamentally different, this does not cause ambiguity.
+
+  \item Similarly to other entailment relations, we use the sequent notation discussed in \fullref{rem:sequent_notation}.
+\end{comments}
+
+\begin{proposition}\label{thm:derivability_relations_are_consequence}
+  The \hyperref[def:institutional_entailment]{semantic entailment relations} in an \hyperref[def:institution]{institution} are \hyperref[def:consequence_relation]{consequence relations}.
+\end{proposition}
+\begin{proof}
+  Fix a signature \( \Sigma \) and suppose that all sentences and models correspond to \( \Sigma \).
+
+  \SubProofOf[def:consequence_relation/reflexivity]{reflexivity} Let \( \varphi \in \Gamma \). If some model \( \mscrX \) satisfies \( \Gamma \), by definition it satisfies every sentence in \( \Gamma \), including \( \varphi \). Therefore, \( \Gamma \) entails \( \varphi \).
+
+  \SubProofOf[def:consequence_relation/monotonicity]{monotonicity} Suppose that \( \Gamma \) entails \( \varphi \) and that \( \mscrX \) satisfies \( \Gamma \cup \Delta \). Then \( \mscrX \) satisfies every sentence in \( \Gamma \), and, since \( \Gamma \) entails \( \varphi \), \( \mscrX \) satisfies \( \varphi \). Generalizing on \( \mscrX \), we conclude that \( \Gamma \cup \Delta \) entails \( \varphi \).
+
+  \SubProofOf[def:consequence_relation/transitivity]{transitivity} Suppose that \( \Gamma \vdash \psi \) for every \( \psi \in \Delta \). Fix a model \( \mscrX \) that satisfies \( \Gamma \cup \Epsilon \). By our first assumption, \( \mscrX \) also satisfies \( \Delta \).
+
+  If \( \Delta \cup \Epsilon \) entails \( \varphi \), then \( \mscrX \) satisfies \( \varphi \) because it satisfies both \( \Delta \) and \( \Epsilon \).
+
+  Generalizing on \( \mscrX \), we conclude that, if \( \Delta \cup \Epsilon \) entails \( \varphi \), then \( \Gamma \cup \Epsilon \) also does.
+\end{proof}
+
+\begin{corollary}\label{thm:institutional_is_entailment_system}
+  Every \hyperref[def:institution]{institution} becomes an \hyperref[def:entailment_system]{entailment system} via its \hyperref[def:institutional_entailment]{semantic entailment relations}.
+\end{corollary}
+\begin{comments}
+  \item Although every institution is an entailment system, we will, following \cite{Meseguer1989GeneralLogics}, use entailment systems for syntactic entailment that complement institutions.
+\end{comments}
+\begin{proof}
+  We can easily generalize \fullref{thm:derivability_relations_are_consequence} on signatures, but we must also show that \eqref{eq:def:entailment_system/entailment} holds.
+
+  Fix a signature translation \( s: \Sigma \to \Tau \) and suppose that \( \Gamma \vDash_\Sigma \varphi \).
+
+  Suppose that some model \( \mscrT \) in \( \op*{Mod}(\Tau) \) satisfies \( s[\Gamma] \). Due to \eqref{eq:def:institution/satisfaction}, \( \op*{Mod}(s)(\mscrT) \) is a model in \( \op*{Mod}(\Sigma) \) that satisfies \( \Gamma \), and hence also \( \varphi \). Again via \eqref{eq:def:institution/satisfaction} we conclude that \( \mscrT \) satisfies \( s(\varphi) \).
+
+  This demonstrates \eqref{eq:def:entailment_system/entailment}.
+\end{proof}
+
+\begin{definition}\label{def:semantic_equivalence}\mimprovised
+  Fix a signature \( \Sigma \) in some \hyperref[def:institution]{institution} and suppose that all sentences and models correspond to \( \Sigma \).
+
+  We say that two formulas \( \varphi \) and \( \psi \) are \term{semantically equivalent} and write \( \varphi \gleichstark_\Sigma \psi \) if any of the following tantamount conditions hold:
+  \begin{thmenum}
+    \thmitem{def:semantic_equivalence/models} A model satisfies \( \varphi \) if and only if it satisfies \( \psi \).
+    \thmitem{def:semantic_equivalence/entailment} Both formulas \hyperref[def:institutional_entailment]{semantically entail} each other.
+    \thmitem{def:semantic_equivalence/consequence} The \hyperref[def:logical_theory]{logical theories} \hyperref[def:logical_theory/generated]{axiomatized} by \( \varphi \) and \( \psi \) are \hyperref[def:logical_theory]{equivalent}.
+  \end{thmenum}
+\end{definition}
+\begin{proof}
+  \Fullref{def:semantic_equivalence/models} and \fullref{def:semantic_equivalence/entailment} are restatements of each other, while \fullref{def:semantic_equivalence/entailment} and \fullref{def:semantic_equivalence/consequence} are tantamount as shown in the proof of consistency of \fullref{def:consequence_formula_equivalence}.
+\end{proof}
+
+\paragraph{Abstract logics}
+
+\begin{definition}\label{def:abstract_logic}\mimprovised
+  A \term{abstract logic} consists of an \hyperref[def:institution]{institution} and an \hyperref[def:entailment_system]{entailment system} with a common category \( \cat{Sign} \) of signatures.
+
+  We will call the relation in the entailment system \term{syntactic entailment} or \term{derivability}. If a formula is derivable from the empty set, we simply say that it is \term{derivable}.
+
+  \begin{thmenum}
+    \thmitem{def:abstract_logic/soundness}\mcite[def. 6]{Meseguer1989GeneralLogics} We say that the logic is \term[ru=корректная (система) (\cite[37]{Герасимов2011Вычислимость})]{sound} if, whenever a formula is derivable from a set of premises, these premises entail the formula.
+
+    \thmitem{def:abstract_logic/completeness}\mcite[def. 6]{Meseguer1989GeneralLogics} We say that the logic is \term[ru=полная (система) (\cite[44]{Герасимов2011Вычислимость})]{complete} if, whenever a set of premises semantically entails a formula, then the formula is derivable from those premises.
+  \end{thmenum}
+\end{definition}
+\begin{comments}
+  \item Our definition is based in the notion of \enquote{logic} from \cite[def. 6]{Meseguer1989GeneralLogics}, but with a different name and without soundness being mandatory. The same paper introduces \enquote{proof calculi} and \enquote{logical systems}, however these definitions are unnecessarily technical for our purposes.
+
+  The term \enquote{logical framework} is a fine candidate, but is unfortunately also ambiguous --- according to \incite{Pfenning2002LogicalFrameworks},
+  \begin{displayquote}
+    A logical framework is a meta-language for the specification of deductive systems.
+  \end{displayquote}
+
+  Even though we introduce such a metalanguage in \fullref{sec:natural_deduction}, we will refrain from using the phrase \enquote{logical framework} as it is fundamentally distinct from our notion of abstract logic that unifies syntax and semantics.
+
+  \item We will later describe several logics --- \hyperref[con:intuitionistic_logic]{intuitionistic} and \hyperref[con:classical_logic]{classical logic} differ in their behavior, while \hyperref[sec:propositional_logic]{propositional} and \hyperref[sec:first_order_logic]{first-order logic} differ in what they can describe. We will almost exclusively use classical first-order logic.
+\end{comments}
+
+\begin{remark}\label{rem:soundness_and_completeness_theorem_list}
+  The following is a list of different proofs for \hyperref[def:abstract_logic/soundness]{soundness} and \hyperref[def:abstract_logic/completeness]{completeness}:
+  \begin{itemize}
+    \item \Fullref{thm:minimal_implicational_logic_soundness}.
+    \item \Fullref{thm:propositional_natural_deduction_soundness}.
+    \item \Fullref{thm:intuitionistic_propositional_completeness}.
+    \item \Fullref{thm:classical_propositional_completeness}.
+  \end{itemize}
+\end{remark}
+
+\begin{concept}\label{con:classical_logic}\mimprovised
+  By \term[ru=классическая логика (\cite[58]{ШеньВерещагин2017ЯзыкиИИсчисления}), en=classical logic (\cite[8]{TroelstraSchwichtenberg2000BasicProofTheory})]{classical logic} we will mean either the \hyperref[def:abstract_logic]{logic} of \hyperref[def:propositional_syntax/formula]{propositional formulas}, \hyperref[def:propositional_semantics/classical]{Boolean models} and the \hyperref[def:propositional_natural_deduction_systems]{classical propositional natural deduction system}, or to the logic of \hyperref[def:first_order_syntax/formula]{first-order formulas}, \hyperref[def:first_order_model]{classical first-order models} and the \hyperref[def:first_order_natural_deduction_system]{classical first-order natural deduction system}.
+\end{concept}
+\begin{comments}
+  \item Classical logic is characterized by the ability to use the law of double negation elimination \eqref{eq:thm:classical_tautologies/dne}. A more popular (but less accurate due to \fullref{thm:minimal_propositional_negation_laws}) characterization is that the law of the excluded middle \eqref{eq:thm:classical_tautologies/lem} holds.
+  \item Within the metalogic, the law of the excluded middle states that either a \hyperref[con:judgment]{judgment} or its negation holds.
+\end{comments}
+
+\begin{concept}\label{con:intuitionistic_logic}\mimprovised
+  By \term[ru=интуиционисткая логика (\cite[58]{ШеньВерещагин2017ЯзыкиИИсчисления}), en=intuitionistic logic (\cite[8]{TroelstraSchwichtenberg2000BasicProofTheory})]{intuitionistic logic} we will mean the generalization of \hyperref[con:classical_logic]{classical logic} where instead of the law of the excluded middle \eqref{eq:thm:classical_tautologies/lem}, we have the strictly weaker principle of explosion \eqref{eq:thm:intuitionistic_tautologies/efq} stating that everything can be proven from a contradiction.
+
+  We will only discuss one abstract logic --- that of \hyperref[def:propositional_syntax/formula]{propositional formulas}, \hyperref[def:propositional_semantics/intuitionistic]{Heyting algebra semantics} and the \hyperref[def:propositional_natural_deduction_systems]{intuitionistic propositional natural deduction system}.
+\end{concept}
+\begin{comments}
+  \item Intuitionistic logic can also be called \enquote{constructive logic} due to the \hyperref[con:brouwer_heyting_kolmogorov_interpretation]{Brouwer-Heyting-Kolmogorov interpretation}.
+\end{comments}
+
+\begin{concept}\label{con:minimal_logic}\mimprovised
+  By (Johansson's) \term[en=minimal logic (\cite[1]{VanDerMolen2016MinimalLogic}]{minimal logic} we will mean the generalization of \hyperref[con:intuitionistic_logic]{intuitionistic logic} where we reject both the law of the excluded middle \eqref{eq:thm:classical_tautologies/lem} and the strictly weaker principle of explosion \eqref{eq:thm:intuitionistic_tautologies/efq}.
+
+  As in the case of intuitionistic logic, we will only discuss one abstract logic --- that of \hyperref[def:propositional_syntax/formula]{propositional formulas}, \hyperref[def:minimal_propositional_semantics]{minimal Heyting algebra semantics} and the \hyperref[def:propositional_natural_deduction_systems]{minimal propositional natural deduction system}.
+\end{concept}

@@ -20,21 +20,21 @@ from .pnf import is_formula_quantifierless, move_negations, remove_conditionals
 
 
 def is_literal(formula: Formula) -> bool:
-    return is_atomic(formula) or (isinstance(formula, NegationFormula) and is_atomic(formula.sub))
+    return is_atomic(formula) or (isinstance(formula, NegationFormula) and is_atomic(formula.body))
 
 
 def is_elementary_disjunction(formula: Formula) -> bool:
     if is_literal(formula):
         return True
 
-    return is_disjunction(formula) and is_elementary_disjunction(formula.a) and is_elementary_disjunction(formula.b)
+    return is_disjunction(formula) and is_elementary_disjunction(formula.left) and is_elementary_disjunction(formula.right)
 
 
 def is_formula_in_cnf(formula: Formula) -> bool:
     if is_elementary_disjunction(formula):
         return True
 
-    return is_conjunction(formula) and is_formula_in_cnf(formula.a) and is_formula_in_cnf(formula.b)
+    return is_conjunction(formula) and is_formula_in_cnf(formula.left) and is_formula_in_cnf(formula.right)
 
 
 def connect_formulas(formulas: Sequence[Formula], conn: BinaryConnective) -> Formula:
@@ -72,7 +72,7 @@ class HasReachableConjunctionVisitor(FormulaVisitor[bool]):
     def visit_connective(self, formula: ConnectiveFormula) -> bool:
         match formula.conn:
             case BinaryConnective.DISJUNCTION:
-                return self.visit(formula.a) or self.visit(formula.b)
+                return self.visit(formula.left) or self.visit(formula.right)
 
             case BinaryConnective.CONJUNCTION:
                     return True
@@ -81,7 +81,7 @@ class HasReachableConjunctionVisitor(FormulaVisitor[bool]):
                     return False
 
     def visit_quantifier(self, formula: QuantifierFormula) -> bool:
-        return self.visit(formula.sub)
+        return self.visit(formula.body)
 
 
 def has_reachable_conjunction(formula: Formula) -> bool:
@@ -90,25 +90,25 @@ def has_reachable_conjunction(formula: Formula) -> bool:
 
 class PullConjunctionVisitor(FormulaTransformationVisitor):
     def visit_connective(self, formula: ConnectiveFormula) -> ConnectiveFormula:
-        a = self.visit(formula.a)
+        left = self.visit(formula.left)
 
-        if is_disjunction(formula) and is_conjunction(a):
+        if is_disjunction(formula) and is_conjunction(left):
             return ConnectiveFormula(
                 BinaryConnective.CONJUNCTION,
-                self.visit(ConnectiveFormula(BinaryConnective.DISJUNCTION, a.a, formula.b)),
-                self.visit(ConnectiveFormula(BinaryConnective.DISJUNCTION, a.b, formula.b))
+                self.visit(ConnectiveFormula(BinaryConnective.DISJUNCTION, left.left, formula.right)),
+                self.visit(ConnectiveFormula(BinaryConnective.DISJUNCTION, left.right, formula.right))
             )
 
-        b = self.visit(formula.b)
+        right = self.visit(formula.right)
 
-        if is_disjunction(formula) and is_conjunction(b):
+        if is_disjunction(formula) and is_conjunction(right):
             return ConnectiveFormula(
                 BinaryConnective.CONJUNCTION,
-                self.visit(ConnectiveFormula(BinaryConnective.DISJUNCTION, formula.a, b.a)),
-                self.visit(ConnectiveFormula(BinaryConnective.DISJUNCTION, formula.a, b.b))
+                self.visit(ConnectiveFormula(BinaryConnective.DISJUNCTION, formula.left, right.left)),
+                self.visit(ConnectiveFormula(BinaryConnective.DISJUNCTION, formula.left, right.right))
             )
 
-        return ConnectiveFormula(formula.conn, a, b)
+        return ConnectiveFormula(formula.conn, left, right)
 
 
 def pull_conjunction(formula: Formula) -> Formula:

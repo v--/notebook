@@ -6,7 +6,7 @@ struct CycleGraph {
   int n;
   pair[] vert;
 
-  void operator init(int n, real radius = 0.75) {
+  void operator init(int n, real radius = 1) {
     this.n = n;
 
     // The following correction ensures that the figure is "upright"

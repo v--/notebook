@@ -2,14 +2,14 @@ from collections.abc import Sequence
 
 from ..alphabet import BinaryConnective
 from ..formulas import ConnectiveFormula, Formula, is_conditional
-from ..parsing import parse_signatureless_formula_schema
+from ..parsing import parse_formula_schema
 from .axiomatic_derivation import AxiomaticDerivation, get_premises
 from .system import AxiomaticDerivationSystem
 
 
 IMPLICATIONAL_AXIOMS = AxiomaticDerivationSystem({
-    '→₊': parse_signatureless_formula_schema('(φ → (ψ → φ))'),
-    '↠': parse_signatureless_formula_schema('((φ → (ψ → θ)) → ((φ → ψ) → (φ → θ)))'),
+    '→₊': parse_formula_schema('(φ → (ψ → φ))'),
+    '↠': parse_formula_schema('((φ → (ψ → θ)) → ((φ → ψ) → (φ → θ)))'),
 })
 
 
@@ -69,8 +69,8 @@ def introduce_conclusion_hypothesis(system: AxiomaticDerivationSystem, derivatio
 
     dist = ConnectiveFormula(
         BinaryConnective.CONDITIONAL,
-        ConnectiveFormula(BinaryConnective.CONDITIONAL, hypothesis, cond.a),
-        ConnectiveFormula(BinaryConnective.CONDITIONAL, hypothesis, cond.b)
+        ConnectiveFormula(BinaryConnective.CONDITIONAL, hypothesis, cond.left),
+        ConnectiveFormula(BinaryConnective.CONDITIONAL, hypothesis, cond.right)
     )
 
     return AxiomaticDerivation(

@@ -44,13 +44,13 @@ class NormalOrderStrategy(ReductionStrategy):
             return contractum
 
         if isinstance(term, UntypedApplication):
-            if a := self.try_reduce(term.a):
-                return UntypedApplication(a, term.b)
+            if a := self.try_reduce(term.left):
+                return UntypedApplication(a, term.right)
 
-            if b := self.try_reduce(term.b):
-                return UntypedApplication(term.a, b)
+            if b := self.try_reduce(term.right):
+                return UntypedApplication(term.left, b)
 
-        if isinstance(term, UntypedAbstraction) and (sub := self.try_reduce(term.sub)):
+        if isinstance(term, UntypedAbstraction) and (sub := self.try_reduce(term.body)):
             return UntypedAbstraction(term.var, sub)
 
         return None
@@ -62,13 +62,13 @@ class ApplicativeOrderStrategy(ReductionStrategy):
 
     def try_reduce(self, term: UntypedTerm) -> UntypedTerm | None:
         if isinstance(term, UntypedApplication):
-            if a := self.try_reduce(term.a):
-                return UntypedApplication(a, term.b)
+            if a := self.try_reduce(term.left):
+                return UntypedApplication(a, term.right)
 
-            if b := self.try_reduce(term.b):
-                return UntypedApplication(term.a, b)
+            if b := self.try_reduce(term.right):
+                return UntypedApplication(term.left, b)
 
-        if isinstance(term, UntypedAbstraction) and (sub := self.try_reduce(term.sub)):
+        if isinstance(term, UntypedAbstraction) and (sub := self.try_reduce(term.body)):
             return UntypedAbstraction(term.var, sub)
 
         if contractum := self.reduction.try_contract_redex(term):

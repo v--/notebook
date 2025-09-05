@@ -10,7 +10,6 @@ from ..formulas import (
     ConstantFormula,
     EqualityFormula,
     EqualityFormulaSchema,
-    ExtendedFormulaSchema,
     Formula,
     FormulaPlaceholder,
     FormulaSchema,
@@ -20,15 +19,12 @@ from ..formulas import (
     PredicateFormulaSchema,
     QuantifierFormula,
     QuantifierFormulaSchema,
-    SubstitutionSchema,
 )
 from ..propositional import PROPOSITIONAL_SIGNATURE
 from ..signature import EMPTY_SIGNATURE, FormalLogicSignature
 from ..terms import (
-    ExtendedTermSchema,
     FunctionTerm,
     FunctionTermSchema,
-    StarredTermSchema,
     Term,
     TermPlaceholder,
     TermSchema,
@@ -172,16 +168,6 @@ class FormalLogicParser(IdentifierParserMixin[LogicTokenKind, LogicToken], Parse
             case _:
                 raise self.annotate_token_error('Unexpected token')
 
-    def parse_extended_term_schema(self) -> ExtendedTermSchema:
-        base_schema = self.parse_term(parse_schema=True)
-        head = self.peek()
-
-        if not head or head.kind != 'STAR':
-            return base_schema
-
-        self.advance()
-        return StarredTermSchema(base_schema)
-
     def _parse_constant_formula(self) -> ConstantFormula:
         head = self.peek_unsafe()
         self.advance()
@@ -208,7 +194,7 @@ class FormalLogicParser(IdentifierParserMixin[LogicTokenKind, LogicToken], Parse
         if head.kind == 'LATIN_IDENTIFIER' or (head.kind == 'SIGNATURE_SYMBOL' and self.signature.get_symbol(head.value).kind == 'FUNCTION'):
             a_term = self.parse_term(parse_schema=parse_schema)
         else:
-            a_form = self.parse_formula(parse_schema=parse_schema)
+            a_form = self.parse_formula_old(parse_schema=parse_schema)
 
         a_context.close_at_previous_token()
         head = self.peek()
@@ -256,7 +242,7 @@ class FormalLogicParser(IdentifierParserMixin[LogicTokenKind, LogicToken], Parse
             if head.kind == 'RIGHT_PARENTHESIS':
                 raise context.annotate_context_error(f'Binary {'formula schemas' if parse_schema else 'formulas'} must have a second subformula')
 
-            b_form = self.parse_formula(parse_schema=parse_schema)
+            b_form = self.parse_formula_old(parse_schema=parse_schema)
 
             if (head := self.peek()) and head.kind == 'RIGHT_PARENTHESIS':
                 self.advance()
@@ -285,9 +271,9 @@ class FormalLogicParser(IdentifierParserMixin[LogicTokenKind, LogicToken], Parse
         self.advance()
 
         if parse_schema:
-            return NegationFormulaSchema(self.parse_formula(parse_schema=True))
+            return NegationFormulaSchema(self.parse_formula_old(parse_schema=True))
 
-        return NegationFormula(self.parse_formula(parse_schema=False))
+        return NegationFormula(self.parse_formula_old(parse_schema=False))
 
     @overload
     def _parse_quantifier_formula(self, context: LogicParserContext, *, parse_schema: Literal[False]) -> QuantifierFormula: ...
@@ -313,18 +299,18 @@ class FormalLogicParser(IdentifierParserMixin[LogicTokenKind, LogicToken], Parse
 
         if parse_schema:
             assert isinstance(var, VariablePlaceholder)
-            return QuantifierFormulaSchema(q, var, self.parse_formula(parse_schema=True))
+            return QuantifierFormulaSchema(q, var, self.parse_formula_old(parse_schema=True))
 
         assert isinstance(var, Variable)
-        return QuantifierFormula(q, var, self.parse_formula(parse_schema=False))
+        return QuantifierFormula(q, var, self.parse_formula_old(parse_schema=False))
 
     @overload
-    def parse_formula(self, *, parse_schema: Literal[False]) -> Formula: ...
+    def parse_formula_old(self, *, parse_schema: Literal[False]) -> Formula: ...
     @overload
-    def parse_formula(self, *, parse_schema: Literal[True]) -> FormulaSchema: ...
+    def parse_formula_old(self, *, parse_schema: Literal[True]) -> FormulaSchema: ...
     @overload
-    def parse_formula(self, *, parse_schema: bool) -> Formula | FormulaSchema: ...
-    def parse_formula(self, *, parse_schema: bool) -> Formula | FormulaSchema:
+    def parse_formula_old(self, *, parse_schema: bool) -> Formula | FormulaSchema: ...
+    def parse_formula_old(self, *, parse_schema: bool) -> Formula | FormulaSchema:
         head = self.peek()
 
         if not head:
@@ -367,31 +353,6 @@ class FormalLogicParser(IdentifierParserMixin[LogicTokenKind, LogicToken], Parse
             case _:
                 raise self.annotate_token_error('Unexpected token')
 
-    def parse_extended_schema(self) -> ExtendedFormulaSchema:
-        base_schema = self.parse_formula(parse_schema=True)
-        head = self.peek()
-
-        if not head or head.kind != 'LEFT_BRACKET':
-            return base_schema
-
-        context = LogicParserContext(self)
-        self.advance()
-        var = self.parse_variable(parse_schema=True)
-        head = self.peek()
-
-        if not head or head.kind != 'SUBSTITUTION_ARROW':
-            raise context.annotate_context_error('Expected an arrow in a substitution specification')
-
-        head = self.advance_and_peek()
-        dest = self.parse_extended_term_schema()
-        head = self.peek()
-
-        if not head or head.kind != 'RIGHT_BRACKET':
-            raise context.annotate_context_error('Unclosed substitution specification')
-
-        self.advance()
-        return SubstitutionSchema(base_schema, var=var, dest=dest)
-
     def _parse_natural_deduction_premise(self, premise_context: LogicParserContext) -> NaturalDeductionPremise:
         discharge: FormulaSchema | None = None
 
@@ -401,7 +362,7 @@ class FormalLogicParser(IdentifierParserMixin[LogicTokenKind, LogicToken], Parse
             if head and head.kind == 'RIGHT_BRACKET':
                 raise premise_context.annotate_context_error('Empty discharge assumptions are disallowed')
 
-            discharge = self.parse_formula(parse_schema=True)
+            discharge = self.parse_formula_old(parse_schema=True)
             head = self.peek()
 
             if not head or head.kind == 'RIGHT_BRACKET':
@@ -410,7 +371,7 @@ class FormalLogicParser(IdentifierParserMixin[LogicTokenKind, LogicToken], Parse
                 premise_context.close_at_previous_token()
                 raise premise_context.annotate_context_error('Unclosed brackets for discharge schemas')
 
-        main = self.parse_formula(parse_schema=True)
+        main = self.parse_formula_old(parse_schema=True)
         return NaturalDeductionPremise(main, discharge)
 
     def _iter_natural_deduction_premises(self, rule_context: LogicParserContext) -> Iterable[NaturalDeductionPremise]:
@@ -432,14 +393,14 @@ class FormalLogicParser(IdentifierParserMixin[LogicTokenKind, LogicToken], Parse
         if not self.peek():
             raise rule_context.annotate_context_error('Expected a sequent symbol')
 
-    def parse_natural_deduction_rule(self) -> NaturalDeductionRule:
+    def parse_natural_deduction_rule(self, name: str) -> NaturalDeductionRule:
         if self.peek() is None:
             raise self.annotate_unexpected_end_of_input()
 
         rule_context = LogicParserContext(self)
         premises = list(self._iter_natural_deduction_premises(rule_context))
         self.advance()
-        return NaturalDeductionRule(premises, self.parse_formula(parse_schema=True))
+        return NaturalDeductionRule(name, premises, self.parse_formula_old(parse_schema=True))
 
 
 def parse_variable(source: str) -> Variable:
@@ -449,40 +410,36 @@ def parse_variable(source: str) -> Variable:
         return parser.parse_variable(parse_schema=False)
 
 
-def parse_term(signature: FormalLogicSignature, source: str) -> Term:
+def parse_term(source: str, signature: FormalLogicSignature = EMPTY_SIGNATURE) -> Term:
     tokens = tokenize_formal_logic_string(signature, source)
 
     with FormalLogicParser(signature, source, tokens) as parser:
         return parser.parse_term(parse_schema=False)
 
 
-def parse_formula(signature: FormalLogicSignature, source: str) -> Formula:
+def parse_formula(source: str, signature: FormalLogicSignature = EMPTY_SIGNATURE) -> Formula:
     tokens = tokenize_formal_logic_string(signature, source)
 
     with FormalLogicParser(signature, source, tokens) as parser:
-        return parser.parse_formula(parse_schema=False)
+        return parser.parse_formula_old(parse_schema=False)
 
 
 def parse_propositional_formula(source: str) -> Formula:
-    return parse_formula(PROPOSITIONAL_SIGNATURE, source)
+    return parse_formula(source, PROPOSITIONAL_SIGNATURE)
 
 
-def parse_formula_schema(signature: FormalLogicSignature, source: str) -> ExtendedFormulaSchema:
+def parse_formula_schema(source: str, signature: FormalLogicSignature = EMPTY_SIGNATURE) -> FormulaSchema:
     tokens = tokenize_formal_logic_string(signature, source)
 
     with FormalLogicParser(signature, source, tokens) as parser:
-        return parser.parse_extended_schema()
+        return parser.parse_formula_old(parse_schema=True)
 
 
-def parse_formula_placeholder(source: str) -> FormulaPlaceholder:
-    tokens = tokenize_formal_logic_string(EMPTY_SIGNATURE, source)
+def parse_formula_placeholder(source: str, signature: FormalLogicSignature = EMPTY_SIGNATURE) -> FormulaPlaceholder:
+    tokens = tokenize_formal_logic_string(signature, source)
 
-    with FormalLogicParser(EMPTY_SIGNATURE, source, tokens) as parser:
+    with FormalLogicParser(signature, source, tokens) as parser:
         return parser.parse_formula_placeholder()
-
-
-def parse_signatureless_formula_schema(source: str) -> ExtendedFormulaSchema:
-    return parse_formula_schema(EMPTY_SIGNATURE, source)
 
 
 def parse_marker(source: str) -> Marker:
@@ -492,12 +449,8 @@ def parse_marker(source: str) -> Marker:
         return parser.parse_marker()
 
 
-def parse_natural_deduction_rule(signature: FormalLogicSignature, source: str) -> NaturalDeductionRule:
+def parse_natural_deduction_rule(name: str, source: str, signature: FormalLogicSignature = EMPTY_SIGNATURE) -> NaturalDeductionRule:
     tokens = tokenize_formal_logic_string(signature, source)
 
     with FormalLogicParser(signature, source, tokens) as parser:
-        return parser.parse_natural_deduction_rule()
-
-
-def parse_signatureless_natural_deduction_rule(source: str) -> NaturalDeductionRule:
-    return parse_natural_deduction_rule(EMPTY_SIGNATURE, source)
+        return parser.parse_natural_deduction_rule(name)

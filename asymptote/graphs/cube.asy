@@ -31,11 +31,11 @@ struct CubeGraph {
     }
   }
 
-  void draw_edge() {
+  void draw_edge(bool oriented = false) {
     for (int x = 0; x <= segments; ++x) {
       for (int y = 0; y <= segments; ++y) {
         for (int z = 1; z <= segments; ++z) {
-          grdraw.edge(this.vertices[x][y][z - 1], this.vertices[x][y][z], dash=x < segments && y < segments);
+          grdraw.edge(this.vertices[x][y][z - 1], this.vertices[x][y][z], dash=x < segments && y < segments, is_arc=oriented);
         }
       }
     }
@@ -43,7 +43,7 @@ struct CubeGraph {
     for (int x = 0; x <= segments; ++x) {
       for (int y = 1; y <= segments; ++y) {
         for (int z = 0; z <= segments; ++z) {
-          grdraw.edge(this.vertices[x][y - 1][z], this.vertices[x][y][z], dash=x < segments && z > 0);
+          grdraw.edge(this.vertices[x][y - 1][z], this.vertices[x][y][z], dash=x < segments && z > 0, is_arc=oriented);
         }
       }
     }
@@ -51,7 +51,7 @@ struct CubeGraph {
     for (int x = 1; x <= segments; ++x) {
       for (int y = 0; y <= segments; ++y) {
         for (int z = 0; z <= segments; ++z) {
-          grdraw.edge(this.vertices[x - 1][y][z], this.vertices[x][y][z], dash=y < segments && z > 0);
+          grdraw.edge(this.vertices[x - 1][y][z], this.vertices[x][y][z], dash=y < segments && z > 0, is_arc=oriented);
         }
       }
     }

@@ -31,7 +31,7 @@ class InstantiationVisitor(TypeSchemaVisitor[SimpleType]):
 
     @override
     def visit_connective(self, schema: SimpleConnectiveTypeSchema) -> SimpleConnectiveType:
-        return SimpleConnectiveType(schema.conn, self.visit(schema.a), self.visit(schema.b))
+        return SimpleConnectiveType(schema.conn, self.visit(schema.left), self.visit(schema.right))
 
 
 def instantiate_type_schema(schema: SimpleTypeSchema, instantiation: LambdaSchemaInstantiation) -> SimpleType:

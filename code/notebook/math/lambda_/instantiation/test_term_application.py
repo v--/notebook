@@ -4,19 +4,16 @@ import pytest
 
 from ....support.pytest import pytest_parametrize_kwargs
 from ....support.schemas import SchemaInstantiationError
+from ..hol import HOL_SIGNATURE
 from ..parsing import (
-    parse_pure_term,
-    parse_pure_term_schema,
-    parse_term,
     parse_term_placeholder,
-    parse_term_schema,
     parse_type,
     parse_type_placeholder,
+    parse_typed_term,
+    parse_typed_term_schema,
     parse_variable,
     parse_variable_placeholder,
 )
-from ..type_system import HOL_SIGNATURE
-from ..typing import TypingStyle
 from .base import LambdaSchemaInstantiation
 from .term_application import (
     instantiate_term_schema,
@@ -28,19 +25,29 @@ from .term_application import (
         schema='x',
         expected='y',
         variable_mapping={'x': 'y'},
-        term_mapping={}
+        term_mapping={},
+        type_mapping={}
     ),
     dict(
         schema='y',
         expected='y',
         variable_mapping={'y': 'y'},
-        term_mapping={}
+        term_mapping={},
+        type_mapping={}
+    ),
+    dict(
+        schema='(λx:τ.x)',
+        expected='(λy:σ.y)',
+        variable_mapping={'x': 'y'},
+        term_mapping={},
+        type_mapping={'τ': 'σ'}
     ),
     dict(
         schema='(Ix)',
-        expected='((λx.x)y)',
+        expected='((λx:τ.x)y)',
         variable_mapping={'x': 'y'},
-        term_mapping={'I': '(λx.x)'}
+        term_mapping={'I': '(λx:τ.x)'},
+        type_mapping={}
     )
 )
 def test_instantiation_success(
@@ -48,18 +55,20 @@ def test_instantiation_success(
     schema: str,
     variable_mapping: Mapping[str, str],
     term_mapping: Mapping[str, str],
+    type_mapping: Mapping[str, str],
 ) -> None:
     instantiation = LambdaSchemaInstantiation(
         variable_mapping={parse_variable_placeholder(placeholder): parse_variable(value) for placeholder, value in variable_mapping.items()},
-        term_mapping={parse_term_placeholder(placeholder): parse_pure_term(value) for placeholder, value in term_mapping.items()}
+        term_mapping={parse_term_placeholder(placeholder): parse_typed_term(value) for placeholder, value in term_mapping.items()},
+        type_mapping={parse_type_placeholder(placeholder): parse_type(value) for placeholder, value in type_mapping.items()}
     )
 
-    assert instantiate_term_schema(parse_pure_term_schema(schema, TypingStyle.IMPLICIT), instantiation) == parse_pure_term(expected)
+    assert instantiate_term_schema(parse_typed_term_schema(schema), instantiation) == parse_typed_term(expected)
 
 
 def test_constant_instantiation_success() -> None:
     instantiation = LambdaSchemaInstantiation()
-    q = parse_term_schema(HOL_SIGNATURE, 'Q', TypingStyle.EXPLICIT)
+    q = parse_typed_term_schema('Q', HOL_SIGNATURE)
     assert instantiate_term_schema(q, instantiation) == q
 
 
@@ -67,56 +76,32 @@ def test_variable_instantiation_failure() -> None:
     instantiation = LambdaSchemaInstantiation()
 
     with pytest.raises(SchemaInstantiationError, match='No specification of how to instantiate the variable placeholder x'):
-        instantiate_term_schema(parse_pure_term_schema('x', TypingStyle.IMPLICIT), instantiation)
+        instantiate_term_schema(parse_typed_term_schema('x'), instantiation)
 
 
 def test_term_instantiation_failure() -> None:
     instantiation = LambdaSchemaInstantiation()
 
     with pytest.raises(SchemaInstantiationError, match='No specification of how to instantiate the term placeholder M'):
-        instantiate_term_schema(parse_pure_term_schema('M', TypingStyle.IMPLICIT), instantiation)
+        instantiate_term_schema(parse_typed_term_schema('M'), instantiation)
 
 
 def test_abstraction_annotation_success() -> None:
-    schema = parse_pure_term_schema('(λx:τ.x)', TypingStyle.EXPLICIT)
+    schema = parse_typed_term_schema('(λx:τ.x)')
     instantiation = LambdaSchemaInstantiation(
         variable_mapping={parse_variable_placeholder('x'): parse_variable('x')},
-        type_mapping={parse_type_placeholder('τ'): parse_type(HOL_SIGNATURE, 'ι')}
+        type_mapping={parse_type_placeholder('τ'): parse_type('τ')}
     )
 
-    expected = parse_term(HOL_SIGNATURE, '(λx:ι.x)', TypingStyle.EXPLICIT)
+    expected = parse_typed_term('(λx:τ.x)')
     assert instantiate_term_schema(schema, instantiation) == expected
 
 
 def test_abstraction_annotation_failure() -> None:
     with pytest.raises(SchemaInstantiationError, match=r'No specification of how to instantiate the type placeholder τ'):
-        schema = parse_pure_term_schema('(λx:τ.x)', TypingStyle.EXPLICIT)
+        schema = parse_typed_term_schema('(λx:τ.x)')
         instantiation = LambdaSchemaInstantiation(
             variable_mapping={parse_variable_placeholder('x'): parse_variable('x')},
-        )
-
-        instantiate_term_schema(schema, instantiation)
-
-
-def test_typed_instantiation_on_untyped_schema() -> None:
-    with pytest.raises(SchemaInstantiationError, match='An untyped schema was provided, but the instantiation features typed terms'):
-        schema = parse_pure_term_schema('(λx.M)', TypingStyle.IMPLICIT)
-        instantiation = LambdaSchemaInstantiation(
-            variable_mapping={parse_variable_placeholder('x'): parse_variable('x')},
-            term_mapping={parse_term_placeholder('M'): parse_term(HOL_SIGNATURE, '(λy:ι.y)', TypingStyle.EXPLICIT)},
-            type_mapping={parse_type_placeholder('τ'): parse_type(HOL_SIGNATURE, 'ι')}
-        )
-
-        instantiate_term_schema(schema, instantiation)
-
-
-def test_untyped_instantiation_on_typed_schema() -> None:
-    with pytest.raises(SchemaInstantiationError, match='A typed schema was provided, but the instantiation features untyped terms'):
-        schema = parse_pure_term_schema('(λx:τ.M)', TypingStyle.EXPLICIT)
-        instantiation = LambdaSchemaInstantiation(
-            variable_mapping={parse_variable_placeholder('x'): parse_variable('x')},
-            term_mapping={parse_term_placeholder('M'): parse_term(HOL_SIGNATURE, '(λy.y)', TypingStyle.IMPLICIT)},
-            type_mapping={parse_type_placeholder('τ'): parse_type(HOL_SIGNATURE, 'ι')}
         )
 
         instantiate_term_schema(schema, instantiation)

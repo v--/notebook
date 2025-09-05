@@ -49,7 +49,6 @@
 % Misc nonmath packages
 \RequirePackage{subcaption}
 \RequirePackage{booktabs}
-\RequirePackage{tabularx}
 \RequirePackage{seqsplit}
 \RequirePackage{xspace}
 \RequirePackage{enumitem}
@@ -102,6 +101,8 @@
 \RequirePackage{ebproof}
 \RequirePackage{bigints}
 \RequirePackage{cancel}
+
+\ebproofnewrulestyle{norule}{rule~code={}}
 
 % Custom code
 \RequirePackage{packages/fonts}

@@ -2,7 +2,13 @@
 
 We sometimes want to substitute a propositional variable with another variable or even with a formula. This is akin to applying a \hyperref[def:boolean_function]{Boolean function} like \( x \synvee y \) to different variables (e.g. to obtain \( x \synvee x \)) or even concrete values (e.g. \( F \synvee T \)), except that it is done on a purely syntactic level without involving any semantics involved.
 
-\paragraph{Simultaneous substitution}\hfill
+\paragraph{Simultaneous substitution}
+
+\begin{concept}\label{con:syntactic_substitution}
+  A basic operation on \hyperref[con:expression]{syntactic expressions} is the ability to replace all occurrences of a \hyperref[con:variable_binding]{free variable} with another expression so that the result is well-formed.
+
+  Such an operation is called \term[en=substitution (\cite[78]{Kleene1971Metamathematics})]{substitution}. It is a particular form of evaluation in the sense of \fullref{con:evaluation} and is closely related to the algebraic evaluation homomorphisms described in \fullref{con:evaluation_homomorphism}.
+\end{concept}
 
 \begin{definition}\label{def:propositional_substitution}\mimprovised
   Consider a map \( \Bbbs: \op*{Prop} \to \op*{Form} \), which allows us to replace propositional variables with arbitrary propositional formulas. In the case where only finitely many variables are not \hyperref[def:function_fixed_point]{fixed points}, we call such a map a \term[ru=одновременная замена (\cite[23]{Герасимов2011Вычислимость})]{simultaneous substitution} or simply \term{substitution}.
@@ -33,7 +39,7 @@ We sometimes want to substitute a propositional variable with another variable o
 \end{comments}
 
 \begin{remark}\label{rem:substitution_symbol}
-  Using \( \Bbbs \) and adjacent letters to denote a substitution function is inspired by Hindley's \enquote{type-substitutions} defined in \cite[def. 3A1]{Hindley1997BasicSTT}. An alternative used by \incite[\S 5.4]{Mimram2020ProgramEqualsProof} and \incite[def. 3.1.3]{CitkinMuravitsky2022ConsequenceRelations} is \( \sigma \).
+  Using \( \Bbbs \) and adjacent letters to denote an instantiation function is inspired by Hindley's \enquote{type-substitutions} defined in \cite[def. 3A1]{Hindley1997BasicSTT}. An alternative used by \incite[\S 5.4]{Mimram2020ProgramEqualsProof} and \incite[def. 3.1.3]{CitkinMuravitsky2022ConsequenceRelations} is \( \sigma \).
 
   We find Hindley's notation useful because:
   \begin{itemize}
@@ -49,7 +55,9 @@ We sometimes want to substitute a propositional variable with another variable o
   \end{equation*}
   without referring to \( \Bbbs \) itself.
 
-  A similar variation, used by \incite[def. 2.1.15]{Barendregt1984LambdaCalculus} in the context of \hyperref[def:lambda_term_substitution]{\( \synlambda \)-term substitution}, is
+  This syntax is formalized in \fullref{def:substitution_schema}.
+
+  A similar variation, used by \incite[def. 2.1.15]{Barendregt1984LambdaCalculus} in the context of \hyperref[def:lambda_term_substitution]{\( \muplambda \)-term substitution}, is
   \begin{equation*}
     \varphi[p_1 \coloneqq \omega_1, \ldots, p_n \coloneqq \omega_n].
   \end{equation*}
@@ -59,13 +67,13 @@ We sometimes want to substitute a propositional variable with another variable o
     \varphi[\omega_1 / p_1, \cdots, \omega_n / p_n].
   \end{equation*}
 
-  It is used for logical formulas by \incite[\S 3.1.4]{Mimram2020ProgramEqualsProof}, \incite[23]{Герасимов2011Вычислимость} and \incite[161]{ШеньВерещагин2017ЯзыкиИИсчисления}, and for \( \synlambda \)-terms by \incite[def. 1A7]{Hindley1997BasicSTT}.
+  It is used for logical formulas by \incite[\S 3.1.4]{Mimram2020ProgramEqualsProof}, \incite[23]{Герасимов2011Вычислимость} and \incite[161]{ШеньВерещагин2017ЯзыкиИИсчисления}, and for \( \muplambda \)-terms by \incite[def. 1A7]{Hindley1997BasicSTT}.
 
   Moreover, some authors like \incite[4]{TroelstraSchwichtenberg2000BasicProofTheory} exchange the variables and formulas in this notation.
 
   Other authors use more esoteric notations --- \incite[47]{КолмогоровДрагалин2006Логика}.
   \begin{equation*}
-    \varphi(p_1, \ldots, p_n \Vert \omega_1, \cdots, \omega_n),
+    \varphi(p_1, \ldots, p_n \mathrel{\Vert} \omega_1, \cdots, \omega_n),
   \end{equation*}
   while \incite[131]{Эдельман1975Логика} uses
   \begin{equation*}
@@ -81,6 +89,20 @@ We sometimes want to substitute a propositional variable with another variable o
     \varphi_p(\omega).
   \end{equation*}
 \end{remark}
+
+\begin{definition}\label{def:substitution_schema}
+  The metalinguistic syntax from \fullref{rem:substitution_notation} for describing \hyperref[con:syntactic_substitution]{substitution} of finitely many variables can be formalized via the \hyperref[def:formal_grammar/schema]{grammar schema}
+  \begin{bnf*}
+    \bnfprod{replacement}      {\bnfpn{variable} \bnfsp \bnftsq{\( \synsubst \)} \bnfsp \bnfpn{subject}}, \\
+    \bnfprod{replacement list} {\bnfpn{replacement} \bnfor \bnfpn{replacement} \bnfsp \bnftsq{,} \bnfsp \bnfpn{replacement list}}, \\
+    \bnfprod{substitution}     {\bnfpn{subject} \bnfsp \bnftsq{\( [ \)} \bnfsp \bnfpn{replacement list} \bnfsp \bnftsq{\( ] \)}}.
+  \end{bnf*}
+
+  Here the rules \( \bnfpn{variable} \) and \( \bnfpn{subject} \) must be provided externally. The subjects can be \hyperref[def:propositional_syntax/formula]{propositional formulas}, \hyperref[def:lambda_term]{\( \muplambda \)-terms}, or any other syntactic construct where substitution makes sense.
+\end{definition}
+\begin{comments}
+  \item These grammar rules give us the ability to formalize the syntax used for the \hyperref[def:inference_rule]{inference rules} in \fullref{sec:dependent_types} and \fullref{sec:first_order_logic}. Unfortunately, there are complications that prevent us from complete formalization of those rules --- see \fullref{rem:dependent_type_rule_formalization} and \fullref{rem:eigenvariable_rule_formalization}.
+\end{comments}
 
 \begin{remark}\label{rem:simulating_simultaneous_substitution}
   Substitution as defined in \fullref{def:propositional_substitution} allows us to replace more than one variable at a time:
@@ -102,7 +124,7 @@ We sometimes want to substitute a propositional variable with another variable o
   \end{equation*}
 \end{remark}
 
-\paragraph{Subformula substitution}\hfill
+\paragraph{Subformula substitution}
 
 For propositional logic, We will also find useful the ability to replace an entire subformula with another formula. We will use this, for example, to justify the substitutions in \fullref{alg:cnf_and_dnf}.
 

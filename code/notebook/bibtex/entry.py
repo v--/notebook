@@ -11,26 +11,7 @@ from .string import BibString
 TAB_SIZE = 2
 
 
-BibEntryType = Literal[
-    'article',
-    'book',
-    'booklet',
-    'collection',
-    'conference',
-    'inbook',
-    'incollection',
-    'inproceedings',
-    'manual',
-    'mastersthesis',
-    'misc',
-    'online',
-    'phdthesis',
-    'proceedings',
-    'report',
-    'techreport',
-    'thesis',
-    'unpublished',
-]
+BibEntryType = Literal['article', 'book', 'booklet', 'collection', 'conference', 'inbook', 'incollection', 'inproceedings', 'manual', 'mastersthesis', 'misc', 'online', 'phdthesis', 'proceedings', 'report', 'techreport', 'thesis', 'unpublished']
 
 
 ENTRY_TYPE_LIST: Sequence[BibEntryType] = get_args(BibEntryType)

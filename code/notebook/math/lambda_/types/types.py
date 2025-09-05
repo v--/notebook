@@ -1,6 +1,7 @@
 from dataclasses import dataclass
 from typing import TypeGuard
 
+from ....parsing.identifiers import GreekIdentifier
 from ..alphabet import BinaryTypeConnective
 
 
@@ -13,16 +14,24 @@ class BaseType:
 
 
 @dataclass(frozen=True)
-class SimpleConnectiveType:
-    conn: BinaryTypeConnective
-    a: 'SimpleType'
-    b: 'SimpleType'
+class TypeVariable:
+    identifier: GreekIdentifier
 
     def __str__(self) -> str:
-        return f'({self.a} {self.conn} {self.b})'
+        return str(self.identifier)
 
 
-SimpleType = BaseType | SimpleConnectiveType
+@dataclass(frozen=True)
+class SimpleConnectiveType:
+    conn: BinaryTypeConnective
+    left: 'SimpleType'
+    right: 'SimpleType'
+
+    def __str__(self) -> str:
+        return f'({self.left} {self.conn} {self.right})'
+
+
+SimpleType = BaseType | TypeVariable | SimpleConnectiveType
 
 
 def is_arrow_type(type_: SimpleType) -> TypeGuard[SimpleConnectiveType]:

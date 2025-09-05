@@ -38,10 +38,6 @@ class Tokenizer[TokenKindT](abc.ABC):
     def advance(self, count: int = 1) -> None:
         self.offset += count
 
-    def advance_and_peek(self, count: int = 1) -> str | None:
-        self.advance(count)
-        return self.peek()
-
     def annotate_char_error(self, message: str, offset: int | None = None) -> TokenizerError:
         err = TokenizerError(message)
 

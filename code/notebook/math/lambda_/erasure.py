@@ -24,11 +24,11 @@ class TypeErasureVisitor(TypedTermVisitor[UntypedTerm]):
 
     @override
     def visit_application(self, term: TypedApplication) -> UntypedApplication:
-        return UntypedApplication(self.visit(term.a), self.visit(term.b))
+        return UntypedApplication(self.visit(term.left), self.visit(term.right))
 
     @override
     def visit_abstraction(self, term: TypedAbstraction) -> UntypedAbstraction:
-        return UntypedAbstraction(term.var, self.visit(term.sub))
+        return UntypedAbstraction(term.var, self.visit(term.body))
 
 
 

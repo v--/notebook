@@ -1,23 +1,14 @@
-from .schema_visitors import TermSchemaVisitor
+from .schema_visitor import TypedTermSchemaVisitor
 from .schemas import (
-    MixedAbstractionSchema,
-    MixedApplicationSchema,
-    MixedTermSchema,
     TermPlaceholder,
     TypedAbstractionSchema,
     TypedApplicationSchema,
     TypedTermSchema,
-    UntypedAbstractionSchema,
-    UntypedApplicationSchema,
-    UntypedTermSchema,
     VariablePlaceholder,
 )
-from .term_visitors import TermVisitor, TypedTermVisitor, UntypedTermVisitor
+from .term_visitor import TermVisitor, TypedTermVisitor, UntypedTermVisitor
 from .terms import (
     Constant,
-    MixedAbstraction,
-    MixedApplication,
-    MixedTerm,
     TypedAbstraction,
     TypedApplication,
     TypedTerm,

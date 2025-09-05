@@ -1,7 +1,7 @@
 from collections.abc import Mapping
 
 from ....support.pytest import pytest_parametrize_kwargs
-from ..parsing import parse_pure_term, parse_variable
+from ..parsing import parse_untyped_term, parse_variable
 from .substitution import UntypedTermSubstitution, apply_term_substitution
 
 
@@ -67,6 +67,19 @@ from .substitution import UntypedTermSubstitution, apply_term_substitution
         term='(λa.(xb))',
         mapping=dict(x='a'),
         expected='(λc.(ab))'
+    ),
+    ## thm:lambda_substitution_restriction
+    dict(
+        term='(λx.(xy))',
+        mapping=dict(y='x'),
+        expected='(λa.(ax))'
+    ),
+    dict(
+        term='(λx.(xy))',
+        # Specifying how to substitute bound variables should not affect the result since we override the specification.
+        # In particular, the substituted value of x does not affect the choice of fresh variables.
+        mapping=dict(y='x', x='a'),
+        expected='(λa.(ax))'
     )
 )
 def test_substitute_in_term(term: str,
@@ -74,10 +87,10 @@ def test_substitute_in_term(term: str,
     expected: str
 ) -> None:
     sub = apply_term_substitution(
-        parse_pure_term(term),
+        parse_untyped_term(term),
         UntypedTermSubstitution(
             variable_mapping={
-                parse_variable(key): parse_pure_term(value) for key, value in mapping.items()
+                parse_variable(key): parse_untyped_term(value) for key, value in mapping.items()
             }
         )
     )

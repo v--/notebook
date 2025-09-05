@@ -1,12 +1,12 @@
-from ..parsing import parse_pure_term
+from ..parsing import parse_untyped_term
 from ..terms import UntypedAbstraction, UntypedApplication, UntypedTerm
 from .variables import x
 
 
-i = parse_pure_term('(λx.x)')
-k = parse_pure_term('(λx.(λy.x))')
-s = parse_pure_term('(λx.(λy.(λz.((xz)(yz)))))')
-y = parse_pure_term('(λf.((λx.(f(xx)))(λx.(f(xx)))))')
+i = parse_untyped_term('(λx.x)')
+k = parse_untyped_term('(λx.(λy.x))')
+s = parse_untyped_term('(λx.(λy.(λz.((xz)(yz)))))')
+y = parse_untyped_term('(λf.((λx.(f(xx)))(λx.(f(xx)))))')
 
 
 def get_omega(n: int) -> UntypedTerm:

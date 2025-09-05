@@ -22,7 +22,7 @@ from .signature import FormalLogicSignature
     ]
 )
 def test_is_formula_quantifierless_success(formula: str, dummy_signature: FormalLogicSignature) -> None:
-    assert is_formula_quantifierless(parse_formula(dummy_signature, formula))
+    assert is_formula_quantifierless(parse_formula(formula, dummy_signature))
 
 
 @pytest_parametrize_lists(
@@ -32,7 +32,7 @@ def test_is_formula_quantifierless_success(formula: str, dummy_signature: Formal
     ]
 )
 def test_is_formula_quantifierless_failure(formula: str, dummy_signature: FormalLogicSignature) -> None:
-    assert not is_formula_quantifierless(parse_formula(dummy_signature, formula))
+    assert not is_formula_quantifierless(parse_formula(formula, dummy_signature))
 
 
 @pytest_parametrize_lists(
@@ -43,7 +43,7 @@ def test_is_formula_quantifierless_failure(formula: str, dummy_signature: Formal
     ]
 )
 def test_is_formula_in_pnf_success(formula: str, dummy_signature: FormalLogicSignature) -> None:
-    assert is_formula_in_pnf(parse_formula(dummy_signature, formula))
+    assert is_formula_in_pnf(parse_formula(formula, dummy_signature))
 
 
 @pytest_parametrize_lists(
@@ -53,7 +53,7 @@ def test_is_formula_in_pnf_success(formula: str, dummy_signature: FormalLogicSig
     ]
 )
 def test_is_formula_in_pnf_failure(formula: str, dummy_signature: FormalLogicSignature) -> None:
-    assert not is_formula_in_pnf(parse_formula(dummy_signature, formula))
+    assert not is_formula_in_pnf(parse_formula(formula, dummy_signature))
 
 
 @pytest_parametrize_kwargs(
@@ -65,7 +65,7 @@ def test_is_formula_in_pnf_failure(formula: str, dummy_signature: FormalLogicSig
     dict(formula='∀y.∃z.¬(p₁(x) → q₁(y))', expected='∀y.∃z.¬(¬p₁(x) ∨ q₁(y))')
 )
 def test_remove_conditionals_success(formula: str, expected: str, dummy_signature: FormalLogicSignature) -> None:
-    assert str(remove_conditionals(parse_formula(dummy_signature, formula))) == expected
+    assert str(remove_conditionals(parse_formula(formula, dummy_signature))) == expected
 
 
 @pytest_parametrize_kwargs(
@@ -77,7 +77,7 @@ def test_remove_conditionals_success(formula: str, expected: str, dummy_signatur
     dict(formula='∀y.∃z.¬(p₁(x) → q₁(y))', expected='∀y.∃z.¬(¬p₁(x) ∨ q₁(y))')
 )
 def test_move_negations_success(formula: str, expected: str, dummy_signature: FormalLogicSignature) -> None:
-    assert str(remove_conditionals(parse_formula(dummy_signature, formula))) == expected
+    assert str(remove_conditionals(parse_formula(formula, dummy_signature))) == expected
 
 
 @pytest_parametrize_kwargs(
@@ -95,11 +95,11 @@ def test_move_negations_success(formula: str, expected: str, dummy_signature: Fo
     )
 )
 def test_move_negations(formula: str, expected: str, dummy_signature: FormalLogicSignature) -> None:
-    assert str(move_negations(parse_formula(dummy_signature, formula))) == expected
+    assert str(move_negations(parse_formula(formula, dummy_signature))) == expected
 
 
 def test_move_negations_conditional(dummy_signature: FormalLogicSignature) -> None:
-    formula = parse_formula(dummy_signature, '¬(p₁(x) → p₁(y))')
+    formula = parse_formula('¬(p₁(x) → p₁(y))', dummy_signature)
 
     with pytest.raises(PNFError) as excinfo:
         move_negations(formula)
@@ -108,7 +108,7 @@ def test_move_negations_conditional(dummy_signature: FormalLogicSignature) -> No
 
 
 def test_move_negations_biconditional(dummy_signature: FormalLogicSignature) -> None:
-    formula = parse_formula(dummy_signature, '¬(p₁(x) ↔ p₁(y))')
+    formula = parse_formula('¬(p₁(x) ↔ p₁(y))', dummy_signature)
 
     with pytest.raises(PNFError) as excinfo:
         move_negations(formula)
@@ -138,11 +138,11 @@ def test_move_negations_biconditional(dummy_signature: FormalLogicSignature) -> 
     ),
 )
 def test_move_quantifiers(formula: str, expected: str, dummy_signature: FormalLogicSignature) -> None:
-    assert str(move_quantifiers(parse_formula(dummy_signature, formula))) == expected
+    assert str(move_quantifiers(parse_formula(formula, dummy_signature))) == expected
 
 
 def test_move_quantifiers_conditional(dummy_signature: FormalLogicSignature) -> None:
-    formula = parse_formula(dummy_signature, '¬(p₁(x) → p₁(y))')
+    formula = parse_formula('¬(p₁(x) → p₁(y))', dummy_signature)
 
     with pytest.raises(PNFError) as excinfo:
         move_quantifiers(formula)
@@ -151,7 +151,7 @@ def test_move_quantifiers_conditional(dummy_signature: FormalLogicSignature) -> 
 
 
 def test_move_quantifiers_biconditional(dummy_signature: FormalLogicSignature) -> None:
-    formula = parse_formula(dummy_signature, '¬(p₁(x) ↔ p₁(y))')
+    formula = parse_formula('¬(p₁(x) ↔ p₁(y))', dummy_signature)
 
     with pytest.raises(PNFError) as excinfo:
         move_quantifiers(formula)
@@ -173,6 +173,6 @@ def test_move_quantifiers_biconditional(dummy_signature: FormalLogicSignature) -
     ),
 )
 def test_to_pnf(formula: str, expected: str, dummy_signature: FormalLogicSignature) -> None:
-    pnf = to_pnf(parse_formula(dummy_signature, formula))
+    pnf = to_pnf(parse_formula(formula, dummy_signature))
     assert is_formula_in_pnf(pnf)
     assert str(pnf) == expected

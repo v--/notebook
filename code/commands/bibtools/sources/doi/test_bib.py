@@ -605,6 +605,27 @@ def test_parse_101080_00029890198511971528_aliases(doi: str = '10.1080/00029890.
     )
 
 
+def test_parse_101145_6213862141_is_identical_to(doi: str = '10.1145/62138.62141') -> None:
+    with get_doi_fixture_path(doi).open() as file:
+        json_body = file.read()
+
+    data = parse_doi_json(json_body)
+    entry = doi_data_to_bib(data, doi)
+
+    assert entry == BibEntry(
+        entry_type='misc',
+        entry_name='Liskov1987KeynoteAddress',
+        authors=[
+            BibAuthor(full_name='Barbara Liskov')
+        ],
+        date='1987',
+        doi=doi,
+        languages=['english'],
+        publisher='ACM Press',
+        pages='17-34',
+        title='Keynote address - data abstraction and hierarchy',
+    )
+
 def test_parse_101090_gsm_250_datetime_version(doi: str = '10.1090/gsm/250') -> None:
     with get_doi_fixture_path(doi).open() as file:
         json_body = file.read()

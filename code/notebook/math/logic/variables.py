@@ -35,7 +35,7 @@ def get_term_variables(term: Term) -> Collection[Variable]:
 class FreeVariableVisitor(FormulaVisitor[Collection[Variable]]):
     @override
     def visit_equality(self, formula: EqualityFormula) -> Collection[Variable]:
-        return {*get_term_variables(formula.a), *get_term_variables(formula.b)}
+        return {*get_term_variables(formula.left), *get_term_variables(formula.right)}
 
     @override
     def visit_predicate(self, formula: PredicateFormula) -> Collection[Variable]:
@@ -43,15 +43,15 @@ class FreeVariableVisitor(FormulaVisitor[Collection[Variable]]):
 
     @override
     def visit_negation(self, formula: NegationFormula) -> Collection[Variable]:
-        return self.visit(formula.sub)
+        return self.visit(formula.body)
 
     @override
     def visit_connective(self, formula: ConnectiveFormula) -> Collection[Variable]:
-        return {*self.visit(formula.a), *self.visit(formula.b)}
+        return {*self.visit(formula.left), *self.visit(formula.right)}
 
     @override
     def visit_quantifier(self, formula: QuantifierFormula) -> Collection[Variable]:
-        return {var for var in self.visit(formula.sub) if var != formula.var}
+        return {var for var in self.visit(formula.body) if var != formula.var}
 
 
 def get_free_variables(formula: Formula) -> Collection[Variable]:
@@ -69,15 +69,15 @@ class BoundVariableVisitor(FormulaVisitor[Collection[Variable]]):
 
     @override
     def visit_negation(self, formula: NegationFormula) -> Collection[Variable]:
-        return self.visit(formula.sub)
+        return self.visit(formula.body)
 
     @override
     def visit_connective(self, formula: ConnectiveFormula) -> Collection[Variable]:
-        return {*self.visit(formula.a), *self.visit(formula.b)}
+        return {*self.visit(formula.left), *self.visit(formula.right)}
 
     @override
     def visit_quantifier(self, formula: QuantifierFormula) -> Collection[Variable]:
-        return {*self.visit(formula.sub), formula.var}
+        return {*self.visit(formula.body), formula.var}
 
 
 def get_bound_variables(formula: Formula) -> Collection[Variable]:

@@ -1,3 +1,4 @@
+from ....support.inference import UnknownInferenceRuleError
 from ..exceptions import LambdaCalculusError
 
 
@@ -9,9 +10,9 @@ class TypeDerivationRuleError(TypeDerivationError):
     pass
 
 
-class UnknownDerivationRuleError(TypeDerivationRuleError):
+class TypeInferenceError(LambdaCalculusError):
     pass
 
 
-class TypeInferenceError(LambdaCalculusError):
+class UnknownDerivationRuleError(UnknownInferenceRuleError):
     pass

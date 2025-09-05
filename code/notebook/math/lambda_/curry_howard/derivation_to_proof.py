@@ -2,16 +2,18 @@ from typing import override
 
 from ....parsing import GreekIdentifier
 from ...logic.alphabet import BinaryConnective, PropConstant
+from ...logic.classical_logic import CLASSICAL_NATURAL_DEDUCTION_SYSTEM
+from ...logic.deduction import Marker, NaturalDeductionRule
 from ...logic.deduction import proof_tree as ptree
-from ...logic.deduction.classical_logic import CLASSICAL_NATURAL_DEDUCTION_SYSTEM
-from ...logic.deduction.markers import Marker
 from ...logic.formulas import ConnectiveFormula, ConstantFormula, Formula, FormulaPlaceholder, PredicateFormula
 from ...logic.instantiation import FormalLogicSchemaInstantiation
+from ..algebraic_types import SIMPLE_ALGEBRAIC_TYPE_SYSTEM
 from ..alphabet import BinaryTypeConnective
 from ..instantiation import LambdaSchemaInstantiation
+from ..type_derivation import UnknownDerivationRuleError
 from ..type_derivation import tree as dtree
-from ..type_system.explicit import SIMPLE_ALGEBRAIC_TYPE_SYSTEM
-from ..types import BaseType, SimpleConnectiveType, SimpleType, TypePlaceholder, TypeVisitor
+from ..type_system import TypingRule
+from ..types import BaseType, SimpleConnectiveType, SimpleType, TypePlaceholder, TypeVariable, TypeVisitor
 from .exceptions import DerivationToProofError
 
 
@@ -29,7 +31,7 @@ def type_connective_to_formula_connective(conn: BinaryTypeConnective) -> BinaryC
 
 class TypeToFormulaVisitor(TypeVisitor[Formula]):
     @override
-    def visit_base(self, type_: BaseType) -> ConstantFormula | PredicateFormula:
+    def visit_base(self, type_: BaseType) -> ConstantFormula:
         match type_.name:
             case '1':
                 return ConstantFormula(PropConstant.VERUM)
@@ -38,14 +40,21 @@ class TypeToFormulaVisitor(TypeVisitor[Formula]):
                 return ConstantFormula(PropConstant.FALSUM)
 
             case _:
-                return PredicateFormula(type_.name, arguments=[])
+                raise DerivationToProofError(f'Unrecognized base type {type_!r}')
+
+    @override
+    def visit_variable(self, type_: TypeVariable) -> PredicateFormula:
+        # We have not implemented a dedicated syntax for propositional logic
+        # We treat propositional variables as nullary predicates
+        # As per rem:curry_howard_variables, we adjust our predicates so that they match the syntax of type variables
+        return PredicateFormula(str(type_.identifier), arguments=[])
 
     @override
     def visit_connective(self, type_: SimpleConnectiveType) -> ConnectiveFormula:
         return ConnectiveFormula(
             type_connective_to_formula_connective(type_.conn),
-            self.visit(type_.a),
-            self.visit(type_.b)
+            self.visit(type_.left),
+            self.visit(type_.right)
         )
 
 
@@ -75,25 +84,28 @@ def lambda_instantiation_to_logic_instantiation(instantiation: LambdaSchemaInsta
     )
 
 
-def type_derivation_premise_to_proof_tree_rule(rule_name: str) -> str:
-    if rule_name == '0₋':
-        return 'EFQ'
+def typing_rule_to_natural_deduction_rule(rule: TypingRule) -> NaturalDeductionRule:
+    if rule == SIMPLE_ALGEBRAIC_TYPE_SYSTEM['0₋']:
+        return CLASSICAL_NATURAL_DEDUCTION_SYSTEM['EFQ']
 
-    match rule_name[0]:
-        case '1':
-            return '⊤' + rule_name[1:]
+    prefix = rule.name[0]
+    suffix = rule.name[1:]
 
-        case '×':
-            return '∧' + rule_name[1:]
+    match prefix:
+        case '1' if rule == SIMPLE_ALGEBRAIC_TYPE_SYSTEM[rule.name]:
+            return CLASSICAL_NATURAL_DEDUCTION_SYSTEM['⊤' + suffix]
 
-        case '+':
-            return '∨' + rule_name[1:]
+        case '×' if rule == SIMPLE_ALGEBRAIC_TYPE_SYSTEM[rule.name]:
+            return CLASSICAL_NATURAL_DEDUCTION_SYSTEM['∧' + suffix]
 
-        case '→':
-            return rule_name
+        case '+' if rule == SIMPLE_ALGEBRAIC_TYPE_SYSTEM[rule.name]:
+            return CLASSICAL_NATURAL_DEDUCTION_SYSTEM['∨' + suffix]
+
+        case '→' if rule == SIMPLE_ALGEBRAIC_TYPE_SYSTEM[rule.name]:
+            return CLASSICAL_NATURAL_DEDUCTION_SYSTEM[rule.name]
 
         case _:
-            raise DerivationToProofError(f'Unrecognized rule {rule_name!r}')
+            raise UnknownDerivationRuleError(rule)
 
 
 def translate_instantiation(instantiation: LambdaSchemaInstantiation, **kwargs: str) -> FormalLogicSchemaInstantiation:
@@ -118,39 +130,35 @@ def type_derivation_to_proof_tree(derivation: dtree.TypeDerivationTree) -> ptree
     if not isinstance(derivation, dtree.RuleApplicationTree):
         raise DerivationToProofError('Unrecognized derivation tree')
 
-    if derivation.system != SIMPLE_ALGEBRAIC_TYPE_SYSTEM:
-        raise DerivationToProofError('Unrecognized type system')
-
     premises = [
         type_derivation_premise_to_proof_tree_premise(premise)
         for premise in derivation.premises
     ]
 
-    match derivation.rule_name:
+    match derivation.rule.name:
         case '0₋':
             return ptree.apply(
-                CLASSICAL_NATURAL_DEDUCTION_SYSTEM, 'EFQ',
+                CLASSICAL_NATURAL_DEDUCTION_SYSTEM['EFQ'],
                 *premises,
                 instantiation=translate_instantiation(derivation.instantiation, τ='φ')
             )
 
         case '+₊ₗ':
             return ptree.apply(
-                CLASSICAL_NATURAL_DEDUCTION_SYSTEM, '∨₊ₗ',
+                CLASSICAL_NATURAL_DEDUCTION_SYSTEM['∨₊ₗ'],
                 *premises,
                 instantiation=translate_instantiation(derivation.instantiation, σ='ψ')
             )
 
         case '+₊ᵣ':
             return ptree.apply(
-                CLASSICAL_NATURAL_DEDUCTION_SYSTEM, '∨₊ᵣ',
+                CLASSICAL_NATURAL_DEDUCTION_SYSTEM['∨₊ᵣ'],
                 *premises,
                 instantiation=translate_instantiation(derivation.instantiation, τ='φ')
             )
 
         case _:
             return ptree.apply(
-                CLASSICAL_NATURAL_DEDUCTION_SYSTEM,
-                type_derivation_premise_to_proof_tree_rule(derivation.rule_name),
+                typing_rule_to_natural_deduction_rule(derivation.rule),
                 *premises,
             )

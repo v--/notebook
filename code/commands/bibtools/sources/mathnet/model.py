@@ -66,7 +66,6 @@ def read_amsbib_value(nodes: Iterable[LaTeXNode]) -> Iterable[str]:
                     yield str(node)
 
             case _:
-                # print(node)
                 raise BibToolsParsingError(f'Unexpected LaTeX node of type {type(node).__name__}')
 
 

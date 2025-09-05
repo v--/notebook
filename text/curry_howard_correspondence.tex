@@ -11,11 +11,16 @@
     We shall study here a striking analogy between the theory of and the theory of functionality and the theory of implication in propositional algebra.
   \end{displayquote}
 
-  Haskell Curry is credited for the realization that, in modern terms, the \hyperref[def:simple_type]{arrow type} \( \alpha \synimplies \rho \) can be regarded as a \hyperref[def:propositional_alphabet/connectives/conditional]{conditional formula}, and its \hyperref[def:type_derivation_tree]{type derivation trees} then correspond to \hyperref[def:natural_deduction_proof_tree]{natural deduction proof trees}. In \fullref{alg:proof_tree_to_type_derivation} and \fullref{alg:type_derivation_to_proof_tree}, we will extend this to conjunctions via \hyperref[def:product_type]{product types} and to disjunctions via \hyperref[def:sum_type]{sum types}.
+  Haskell Curry is credited for the realization that, in modern terms, the \hyperref[def:arrow_type]{arrow type} \( \tau \synimplies \rho \) can be regarded as a \hyperref[def:propositional_alphabet/connectives/conditional]{conditional formula}. In this section will extend this to \hyperref[def:simple_algebraic_types]{simple algebraic types}.
 
-  William Howard is credited for extending this analogy to \hyperref[sec:first_order_logic]{first-order logic} via what are now called \enquote{dependent types} (see \fullref{con:dependent_types}).
+  William Howard is credited for extending this analogy to \hyperref[sec:first_order_logic]{first-order logic} via what are now called \enquote{dependent types}. We discuss these extensions in \fullref{rem:mltt_hol}.
 
-  Honoring them, we will refer to the overall identification of types and formulas as the \term[en=Curry-Howard correspondence (\cite[def. 4.1.7]{Mimram2020ProgramEqualsProof})]{Curry-Howard correspondence}.
+  Honoring Curry and Howard, we will refer to the overall identification of types and formulas as the \term[en=Curry-Howard correspondence (\cite[def. 4.1.7]{Mimram2020ProgramEqualsProof})]{Curry-Howard correspondence}.
+
+  An even deeper connection comes from the realization that \hyperref[def:type_derivation_tree]{type derivation trees} correspond to \hyperref[def:natural_deduction_proof_tree]{natural deduction proof trees}. This idea was investigated briefly by both Curry and Haskell, and later developed by Per Martin-L\"of, who, when discussing \hyperref[con:proposition]{propositions} in \cite[76]{MartinLöf1975IntuitionisticTypeTheory}, states that
+  \begin{displayquote}
+    In the present context, however, it will not be necessary to introduce the notion of proposition as a separate notion because we can represent each proposition by a certain type, namely, the type of proofs of that proposition.
+  \end{displayquote}
 \end{concept}
 \begin{comments}
   \item From the perspective of first-order logic, the correspondence is described in \incite[def. 5.1.11]{Mimram2020ProgramEqualsProof}.
@@ -24,67 +29,57 @@
   \begin{itemize}
     \item This phrase \enquote{Curry-Howard correspondence} is used by \incite[45]{AwodeyWarren2009HoTT} and \incite[def. 4.1.7]{Mimram2020ProgramEqualsProof}.
 
-    \item \incite[341]{BarendregtDekkersStatman2013LambdaCalculusWithTypes} extends this to \enquote{Curry-de Bruijn-Howard correspondence}.
-
     \item A variation, the \enquote{Curry-Howard isomorphism}, is used by \incite[74]{Hindley1997BasicSTT} and \incite[14]{GirardEtAl1989ProofsAndTypes}.
 
-    \item  An alternative suggested by Howard himself is \enquote{formulas-as-types correspondence}, also used by \incite[74]{Hindley1997BasicSTT}, \incite[\S 1.3.4]{TroelstraSchwichtenberg2000BasicProofTheory} and \incite[572]{Barendregt1984LambdaCalculus}.
+    \item An alternative suggested by Howard himself is \enquote{formulas-as-types correspondence}, also used by \incite[74]{Hindley1997BasicSTT}, \incite[\S 1.3.4]{TroelstraSchwichtenberg2000BasicProofTheory} and \incite[572]{Barendregt1984LambdaCalculus}.
 
-    \item Another variation, the \enquote{propositions-as-types correspondence}, is used by \incite[def. 5.4.14]{Barendregt1992LambdaCalculiWithTypes}, as well as by the aforementioned \incite[prop. 6.3.11]{BarendregtDekkersStatman2013LambdaCalculusWithTypes}, \incite[8]{AwodeyWarren2009HoTT} and \incite[def. 4.1.7]{Mimram2020ProgramEqualsProof}.
+    \item Another variation, the \enquote{propositions-as-types correspondence}, is used by \incite[def. 5.4.14]{Barendregt1992LambdaCalculiWithTypes}, as well as by the aforementioned \incite[8]{AwodeyWarren2009HoTT} and \incite[def. 4.1.7]{Mimram2020ProgramEqualsProof}.
   \end{itemize}
 \end{comments}
 
-\paragraph{Simple algebraic types}
-
-\begin{remark}\label{rem:extended_simple_type_theory}
-  We will now use the sum and product types defined in \fullref{def:simple_type}, and also introduce a unit type and an empty type. Our end goal is to establish the \hyperref[con:curry_howard_correspondence]{Curry-Howard correspondence} for propositional logic. We will collectively refer to these types as \enquote{algebraic} due to the relation to natural numbers established in \fullref{thm:simple_algebraic_type_arithmetic}.
-
-  Introducing more complicated types, for example for handling first-order and higher-order logic, is often done, in the tradition established by Per Martin-L\"of, via a stout list of metatheoretic \hyperref[def:inference_rule]{inference rules}. We describe the classification of these rules, as well as a list of eight rules for arrow types in \fullref{rem:type_theory_rule_classification}.
-
-  Fortunately, for the types we will consider, we will be able to easily reuse the machinery we have built for untyped and simply typed \( \synlambda \)-calculus, with some small adjustments. See \fullref{rem:product_type_equality_rules} for a more concrete discussion. Another reason we avoid such rules is that they assume implicit \hyperref[con:equality]{definitional equality} of distinct terms, while we have spent considerable effort dealing with even \hyperref[def:lambda_term_alpha_equivalence]{\( \alpha \)-equivalence}.
-
-  We will still find useful the classification of rules, mostly because of the respective terminology. We will however only limit ourselves to introduction and elimination rules since we will not need the rest.
-\end{remark}
-
 \begin{remark}\label{rem:type_theory_rule_classification}
-  \incite[24]{MartinLöf1984IntuitionisticTypeTheory} uses (metatheoretic) \hyperref[def:inference_rule]{inference rules} to build his entire type theory, without an underlying \hyperref[con:logical_system]{logical system} (or, rather, with only a minimalist one), and hence without \( \synlambda \)-calculus available. He classifies the different rules for each family of types as follows:
+  \incite[24]{MartinLöf1984IntuitionisticTypeTheory} uses (metatheoretic) \hyperref[def:inference_rule]{inference rules} to build his entire type theory, without an underlying \hyperref[con:logical_system]{logical system} (or, rather, with only a minimalist one), and hence without \( \muplambda \)-calculus available.
+
+  He associates with each distinguished family of types (except the variables) a symbol, which induces a type forming operation (type constructor) in the sense of \fullref{con:type_constructor}.
+
+  Martin-L\"of classifies the different rules for each family as follows:
   \begin{thmenum}
-    \thmitem{rem:type_theory_rule_classification/formation} A \term[en=formation (rule) (\cite[\S 8.1.9]{Mimram2020ProgramEqualsProof})]{type formation} rule allows us to introduce a new type given some premises.
+    \thmitem{rem:type_theory_rule_classification/form} A \term[en=formation (rule) (\cite[\S 8.1.9]{Mimram2020ProgramEqualsProof})]{type formation} rule allows us to introduce a new type given some premises by describing \enquote{how to use} the type forming operation.
 
     For example, in \fullref{def:simple_type}, we have introduced arrow types via the \hyperref[def:formal_grammar/schema]{formal grammar} rule
     \begin{bnf*}
       \bnfprod{arrow type} {\bnftsq{(} \bnfsp \bnfpn{type} \bnfsp \bnftsq{\( \synimplies \)} \bnfsp \bnfpn{type} \bnfsp \bnftsq{)}}
     \end{bnf*}
-    which we can recast using \hyperref[rem:type_universes]{type universes} as the inference rule
+    which we can recast as the inference rule using a fixed \hyperref[con:type_universe]{type universe} \( \BbbT \):
     \begin{equation*}
       \begin{prooftree}
-        \hypo{ \tau: \op*{Type}_n }
-        \hypo{ \sigma: \op*{Type}_n }
-        \infer2{ \tau \synimplies \sigma: \op*{Type}_n }
+        \hypo{ \tau: \BbbT }
+        \hypo{ \sigma: \BbbT }
+        \infer2[\ensuremath{ \rightarrow_{\logic{form}} }]{ \tau \synimplies \sigma: \BbbT }
       \end{prooftree}
     \end{equation*}
 
-    Note that, since the rules are part of the metalanguage, we do not try to formalize them and hence do not use the dot convention from \fullref{rem:object_language_dots}.
+    Note that, since the rules are part of the metalanguage, we do not try to formalize them and hence do not use formalized schemas. Here \( \tau \) and \( \sigma \) are metalogical variables.
 
-    \thmitem{rem:type_theory_rule_classification/introduction} An \term{introduction rule} specifies which terms \hyperref[def:type_habitation]{inhabit} a type from the family. In the words of Martin-L\"of, \enquote{The introduction rules say what are the canonical elements}.
+    \thmitem{rem:type_theory_rule_classification/intro} An \term{introduction rule} specifies which terms \hyperref[def:type_habitation]{inhabit} a type from the family. In the words of Martin-L\"of, \enquote{The introduction rules say what are the canonical elements}.
 
-    We have already used such a rule for arrow types --- \ref{inf:def:arrow_typing_rules/intro/explicit} for typed and \ref{inf:def:arrow_typing_rules/intro/implicit} for untyped terms. Unlike type formation rules, we have completely formalized these with the aid of placeholders. In the metalanguage, where placeholders are not needed, the first of them becomes
+    We have already used such a rule for arrow types --- \ref{inf:def:arrow_type/intro/explicit} for typed and \ref{inf:def:arrow_type/intro/implicit} for untyped terms. Unlike type formation rules, we have completely formalized these with the aid of placeholders. When encoded informally in the metalanguage, the first of them becomes
     \begin{equation*}
       \begin{prooftree}
-        \hypo{ [x: \tau] }
-        \ellipsis {} { M: \sigma }
-        \infer1{ \qabs {x^{\tau}} M: \tau \synimplies \sigma }
+        \hypo{ x: \tau }
+        \infer[dashed]1{ M: \sigma }
+        \infer1[\ensuremath{ \rightarrow_+ }]{ \qabs {x^{\tau}} M: \tau \synimplies \sigma }
       \end{prooftree}
     \end{equation*}
 
-    \thmitem{rem:type_theory_rule_classification/elimination} Conversely, an \term{elimination rule} allows us to deconstruct a term. In the words of Martin-L\"of, \enquote{The elimination rule shows how we may define functions on the set defined by the introduction rules}.
+    \thmitem{rem:type_theory_rule_classification/elim} Conversely, an \term{elimination rule} allows us to deconstruct a term. In the words of Martin-L\"of, \enquote{The elimination rule shows how we may define functions on the set defined by the introduction rules}.
 
-    Again, we have already used such a rule, \ref{inf:def:arrow_typing_rules/elim}, which we defined as
+    Again, we have already used such a rule, \ref{inf:def:arrow_type/elim}, which we defined as
     \begin{equation*}
       \begin{prooftree}
         \hypo{ M: \tau \synimplies \sigma }
         \hypo{ N: \tau }
-        \infer2{ M N: \sigma }
+        \infer2[\ensuremath{ \rightarrow_- }]{ M N: \sigma }
       \end{prooftree}
     \end{equation*}
 
@@ -96,117 +91,149 @@
     \end{center}
     by
     \begin{equation*}
-      x \coloneqq y: \tau,
+      x \syndefeq y: \tau,
     \end{equation*}
     we can formulate the rules as follows:
     \begin{paracol}{2}
       \begin{leftcolumn}
         \ParacolAlignmentHack
-        \begin{equation*}
+        \begin{equation*}\taglabel[\ensuremath{ \coloneqq_{\logic{type}} }]{rem:type_theory_rule_classification/equality/type}
           \begin{prooftree}
             \hypo{ M: \tau }
-            \hypo{ \tau \coloneqq \tau': \op*{Type}_n }
-            \infer2{ M: \tau' }
+            \hypo{ \tau \syndefeq \tau': \BbbT }
+            \infer2[\ref{rem:type_theory_rule_classification/equality/type}]{ M: \tau' }
           \end{prooftree}
         \end{equation*}
       \end{leftcolumn}
 
       \begin{rightcolumn}
         \ParacolAlignmentHack
-        \begin{equation*}
+        \begin{equation*}\taglabel[\ensuremath{ \coloneqq_{\logic{term}} }]{rem:type_theory_rule_classification/equality/term}
           \begin{prooftree}
-            \hypo{ M \coloneqq M': \tau }
-            \hypo{ \tau \coloneqq \tau': \op*{Type}_n }
-            \infer2{ M \coloneqq M': \tau' }
+            \hypo{ M \syndefeq M': \tau }
+            \hypo{ \tau \syndefeq \tau': \BbbT }
+            \infer2[\ref{rem:type_theory_rule_classification/equality/term}]{ M \syndefeq M': \tau' }
           \end{prooftree}
         \end{equation*}
       \end{rightcolumn}
     \end{paracol}
 
-    Furthermore, to ensure that \( {\coloneqq} \) is an \hyperref[def:equivalence_relation]{equivalence relation}, we need inferences rules resembling those from \fullref{ex:recursively_defined_relation}:
+    Furthermore, to ensure that \( {\syndefeq} \) is an \hyperref[def:equivalence_relation]{equivalence relation}, we need inference rules resembling those from \fullref{ex:recursively_defined_relation}:
     \columnratio{0.25,0.25,0.5}
     \begin{paracol}{3}
       \begin{nthcolumn}{0}
         \ParacolAlignmentHack
-        \begin{equation*}
+        \begin{equation*}\taglabel[\ensuremath{ \coloneqq_{\logic{refl}} }]{rem:type_theory_rule_classification/equality/refl}
           \begin{prooftree}
             \hypo{ M: \tau }
-            \infer1{ M \coloneqq M: \tau }
+            \infer1[\ref{rem:type_theory_rule_classification/equality/refl}]{ M \syndefeq M: \tau }
           \end{prooftree}
         \end{equation*}
       \end{nthcolumn}
 
       \begin{nthcolumn}{1}
         \ParacolAlignmentHack
-        \begin{equation*}
+        \begin{equation*}\taglabel[\ensuremath{ \coloneqq_{\logic{symm}} }]{rem:type_theory_rule_classification/equality/symm}
           \begin{prooftree}
-            \hypo{ M \coloneqq N: \tau }
-            \infer1{ N \coloneqq M: \tau }
+            \hypo{ M \syndefeq N: \tau }
+            \infer1[\ref{rem:type_theory_rule_classification/equality/symm}]{ N \syndefeq M: \tau }
           \end{prooftree}
         \end{equation*}
       \end{nthcolumn}
 
       \begin{nthcolumn}{2}
         \ParacolAlignmentHack
-        \begin{equation*}
+        \begin{equation*}\taglabel[\ensuremath{ \coloneqq_{\logic{trans}} }]{rem:type_theory_rule_classification/equality/trans}
           \begin{prooftree}
-            \hypo{ M \coloneqq N: \tau }
-            \hypo{ N \coloneqq K: \tau }
-            \infer2{ M \coloneqq K: \tau }
+            \hypo{ M \syndefeq N: \tau }
+            \hypo{ N \syndefeq K: \tau }
+            \infer2[\ref{rem:type_theory_rule_classification/equality/trans}]{ M \syndefeq K: \tau }
           \end{prooftree}
         \end{equation*}
       \end{nthcolumn}
     \end{paracol}
     \columnratio{}
 
-    These five \enquote{common} equality rules are given in \cite[433]{UnivalentProject2024OctoberHoTT} and, in a less refined form, they are also discussed by \incite[14,15]{MartinLöf1984IntuitionisticTypeTheory}.
+    These five \enquote{common} equality rules are given in \cite[433]{UnivalentFoundationsProgram2024OctoberHoTT} and, in a less refined form, they are also discussed by \incite[14,15]{MartinLöf1984IntuitionisticTypeTheory}.
 
-    Unlike in Martin-L\"of's presentation, in \cite[27]{UnivalentProject2024OctoberHoTT}, the other equality rules are split into two kinds. \incite[\S 8.1.9]{Mimram2020ProgramEqualsProof} also distinguishes congruence rules, which the Univalent Foundations Project assumes implicit:
+    Finally, since we use \hyperref[def:lambda_term_substitution]{substitution}, and since we are explicit about \hyperref[def:lambda_term_alpha_equivalence]{\( \alpha \)-equivalence}, we must also add the following rules mimicking \fullref{alg:simply_typed_substitution} and \fullref{alg:simply_typed_alpha_conversion}:
+    \begin{paracol}{2}
+      \begin{leftcolumn}
+        \ParacolAlignmentHack
+        \begin{equation*}\taglabel[\ensuremath{ \coloneqq_\mapsto }]{rem:type_theory_rule_classification/equality/subst}
+          \begin{prooftree}
+            \hypo{ x: \tau }
+            \infer[dashed]1{ M: \sigma }
+
+            \hypo{ N: \tau }
+            \infer2[\ref{rem:type_theory_rule_classification/equality/subst}]{ M[x \syndefeq N]: \sigma }
+          \end{prooftree}
+        \end{equation*}
+      \end{leftcolumn}
+
+      \begin{rightcolumn}
+        \ParacolAlignmentHack
+        \begin{equation*}\taglabel[\ensuremath{ \coloneqq_\alpha }]{rem:type_theory_rule_classification/equality/alpha}
+          \begin{prooftree}
+            \hypo{ M: \tau }
+            \hypo{ N: \tau }
+            \hypo{ M \aequiv N }
+            \infer3[\ref{rem:type_theory_rule_classification/equality/alpha}]{ M \syndefeq N: \tau }
+          \end{prooftree}
+        \end{equation*}
+      \end{rightcolumn}
+    \end{paracol}
+
+    Unlike in Martin-L\"of's presentation, in \cite[27]{UnivalentFoundationsProgram2024OctoberHoTT}, the other equality rules are split into two kinds. Additionally, they implicitly assume the presence of congruence rules, which \incite[\S 8.1.9]{Mimram2020ProgramEqualsProof} makes explicit.
+
     \begin{thmenum}
-      \thmitem{rem:type_theory_rule_classification/equality/computation} A \term{computation rule} expresses how an elimination rule acts on the corresponding canonical objects obtained from introduction rules.
+      \thmitem{rem:type_theory_rule_classification/equality/comp} A \term{computation rule} expresses how an elimination rule acts on the corresponding canonical objects obtained from introduction rules.
 
-      Such rules generalize \hyperref[def:beta_eta_reduction]{\( \beta \)-reduction} of untyped \( \synlambda \)-terms. For example, for arrow types we have
+      Such rules generalize \hyperref[def:beta_eta_reduction]{\( \beta \)-reduction} of untyped \( \muplambda \)-terms. For example, for arrow types we have
       \begin{equation*}
         \begin{prooftree}
-          \hypo{ [x: \tau] }
-          \ellipsis {} { M: \sigma }
+          \hypo{ x: \tau }
+          \infer[dashed]1{ M: \sigma }
 
           \hypo{ N: \tau }
-          \infer2{ (\qabs {x^\tau} M) N \coloneqq M[x \mapsto N]: \sigma }.
+          \infer2[\ensuremath{ \rightarrow_\beta }]{ (\qabs {x^\tau} M) N \syndefeq M[x \mapsto N]: \sigma }.
         \end{prooftree}
       \end{equation*}
 
-      \thmitem{rem:type_theory_rule_classification/equality/uniqueness} A \term{uniqueness rule} expresses how an arbitrary term of a given type can be expressed in the canonical form given by introduction rules.
+      \thmitem{rem:type_theory_rule_classification/equality/uniq} A \term{uniqueness rule} expresses how an arbitrary term of a given type can be expressed in the canonical form given by introduction rules.
 
-      Such rules generalize \hyperref[def:beta_eta_reduction]{\( \eta \)-expansion} of untyped \( \synlambda \)-terms. For example, for arrow types we have
+      Such rules generalize \hyperref[def:beta_eta_reduction]{\( \eta \)-expansion} of untyped \( \muplambda \)-terms. For example, for arrow types we have
       \begin{equation*}
         \begin{prooftree}
           \hypo{ M: \tau \synimplies \sigma }
-          \hypo{ x \T{is not free in} M }
-          \infer2{ M \coloneqq \qabs {x^\tau} M x: \tau \synimplies \sigma }.
+          \infer1[\ensuremath{ \rightarrow_\eta }]{ M \syndefeq \qabs {x^\tau} M x: \tau \synimplies \sigma },
         \end{prooftree}
       \end{equation*}
+      where we require \( x: \tau \) to not be an open assumption. This requirement is a restatement of the \( \eta \)-reduction side condition from \ref{inf:def:beta_eta_reduction/eta}, adapted to a situation where, as described in \fullref{rem:beta_equivalence_and_free_variables}, the set of free variables of a \( \muplambda \)-term is ill-defined. This is discussed in \cite{MathSE:dependent_type_theory_and_free_variables}.
 
-      Note how, even though we equate a term with its expanded form, we regard this as an expansion rule rather than a reduction rule. The reasoning for this is that we should regard \( M \) as a \( \synlambda \)-abstraction in the canonical form \( \qabs {x^\tau} M x \), not the other way around.
+      This side condition resembles the eigenvariable condition from \fullref{con:eigenvariable}.
 
-      \thmitem{rem:type_theory_rule_classification/equality/congruence} Finally, a \term{congruence rule} simply propagates definitional equality.
+      Even though we equate a term with its expanded form, we regard this as an expansion rule rather than a reduction rule. The reasoning for this is that we should regard \( M \) as a \( \muplambda \)-abstraction with canonical form \( \qabs {x^\tau} M x \), not the other way around.
+
+      \thmitem{rem:type_theory_rule_classification/equality/cong} Finally, a \term{congruence rule} simply propagates definitional equality.
 
       For example, we can formulate the following congruence rules for arrow types:
       \begin{equation*}
         \begin{prooftree}
-          \hypo{ \tau \coloneqq \tau': \op*{Type}_n }
-          \hypo{ \sigma \coloneqq \sigma': \op*{Type}_n }
-          \infer2{ \tau \synimplies \sigma \coloneqq \tau' \synimplies \sigma': \op*{Type}_n }
+          \hypo{ \tau \syndefeq \tau': \BbbT }
+          \hypo{ \sigma \syndefeq \sigma': \BbbT }
+          \infer2{ \tau \synimplies \sigma \syndefeq \tau' \synimplies \sigma': \BbbT }
         \end{prooftree}
       \end{equation*}
 
+      \columnratio{0.45,0.55}
       \begin{paracol}{2}
         \begin{leftcolumn}
           \ParacolAlignmentHack
           \begin{equation*}
             \begin{prooftree}
-              \hypo{ M \coloneqq M': \sigma }
-              \infer1{ \qabs {x^{\tau}} M \coloneqq \qabs {x^{\tau}} M': \tau \synimplies \sigma }
+              \hypo{ M \syndefeq M': \sigma }
+              \infer1{ \qabs {x^{\tau}} M \syndefeq \qabs {x^{\tau}} M': \tau \synimplies \sigma }
             \end{prooftree}
           \end{equation*}
         \end{leftcolumn}
@@ -215,44 +242,63 @@
           \ParacolAlignmentHack
           \begin{equation*}
             \begin{prooftree}
-              \hypo{ M \coloneqq M': \tau \synimplies \sigma }
-              \hypo{ N \coloneqq N': \tau }
-              \infer2{ M N \coloneqq M' N': \sigma }
+              \hypo{ M \syndefeq M': \tau \synimplies \sigma }
+              \hypo{ N \syndefeq N': \tau }
+              \infer2{ M N \syndefeq M' N': \sigma }
             \end{prooftree}
           \end{equation*}
         \end{rightcolumn}
       \end{paracol}
+      \columnratio{}
+
+      Congruence rules are repetitive, so, following \cite[\S A.2]{UnivalentFoundationsProgram2024OctoberHoTT}, we will not specify them explicitly.
     \end{thmenum}
   \end{thmenum}
 \end{remark}
 \begin{comments}
-  \item Our list of rules is based on the corresponding rules for dependent products in \incite{MartinLöf1984IntuitionisticTypeTheory}, \cite[\S A.2]{UnivalentProject2024OctoberHoTT} and \cite[\S 8.1.10]{Mimram2020ProgramEqualsProof}.
+  \item Our list of rules is based on the corresponding rules for dependent products in \incite{MartinLöf1984IntuitionisticTypeTheory}, \cite[\S A.2.4]{UnivalentFoundationsProgram2024OctoberHoTT} and \cite[\S 8.1.10]{Mimram2020ProgramEqualsProof}.
 
   \item In the cited lectures, Martin-L\"of refers to types as \enquote{sets} and to the corresponding rules as \enquote{set formation} rules, but in later works like \cite{MartinLöf1994TypeJudgments} he already shifts to \enquote{types} and \enquote{type formation}.
 \end{comments}
 
-\begin{definition}\label{def:empty_type}\mimprovised
-  We designate a unique \hyperref[def:type_habitation]{uninhabited} type and, unsurprisingly, call it the \term[en=empty type (\cite[\S 4.3.4]{Mimram2020ProgramEqualsProof})]{empty type}. We denote it by \( \syn\Bbbzero \) and introduce it as a \hyperref[def:simple_type]{base type} of the \hyperref[def:simple_type_signature]{signature}, along with the constant term \( \synE_- \) and the following \hyperref[rem:type_theory_rule_classification/elimination]{elimination rule} based on \ref{inf:def:propositional_natural_deduction_systems/bot/efq}:
-  \begin{equation*}\taglabel[\ensuremath{ \Bbbzero_- }]{inf:def:empty_type/elim}
+\paragraph{Simple algebraic types}
+
+\begin{remark}\label{rem:extended_simple_type_theory}
+  We will now use the sum and product types defined in \fullref{def:simple_type}, and also introduce a unit type and an empty type. Our end goal is to establish the \hyperref[con:curry_howard_correspondence]{Curry-Howard correspondence} for propositional logic. We will collectively refer to these types as \enquote{algebraic} due to the relation to natural numbers established in \fullref{thm:simple_algebraic_type_arithmetic}.
+
+  Introducing more complicated types, for example for handling first-order and higher-order logic, is often done, in the tradition established by Per Martin-L\"of, via a stout list of metatheoretic \hyperref[def:inference_rule]{inference rules}. The classification of these rules is described in \fullref{rem:type_theory_rule_classification}, and concrete rules extending the Curry-Howard correspondence to higher-order logic are presented in \fullref{sec:dependent_types}.
+
+  Fortunately, for the types we will consider in this section, we will be able to easily reuse the machinery we have built for untyped and simply typed (with only arrow types) \( \muplambda \)-calculus, with some small adjustments. See \fullref{rem:product_type_equality_rules} for a more concrete discussion. We will however only limit ourselves to introduction and elimination rules since we will not need the rest. We will avoid introducing judgmental equality rules because we have spent considerable effort ensuring correctness of even \hyperref[def:lambda_term_alpha_equivalence]{\( \alpha \)-equivalence}.
+
+  Still, we will still find useful the classification of rules, mostly because of the respective terminology.
+\end{remark}
+
+\begin{definition}\label{def:simple_empty_type}\mimprovised
+  We designate a special \hyperref[def:type_habitation]{uninhabited} type and, unsurprisingly, call it the \term[en=empty type (\cite[\S 4.3.4]{Mimram2020ProgramEqualsProof})]{empty type}. We denote it by \( \syn\Bbbzero \) and introduce it as a \hyperref[def:simple_type]{base type} of the \hyperref[def:simple_type_signature]{signature}, along with the constant term \( \synE_- \) and the following \hyperref[rem:type_theory_rule_classification/elim]{elimination rule} based on \ref{inf:def:propositional_natural_deduction_systems/bot/efq}:
+  \begin{equation*}\taglabel[\ensuremath{ \Bbbzero_- }]{inf:def:simple_empty_type/elim}
     \begin{prooftree}
       \hypo{ \synM: \syn\Bbbzero }
-      \infer1[\ref{inf:def:empty_type/elim}]{ \synE_- \synM: \syn\tau }
+      \infer1[\ref{inf:def:simple_empty_type/elim}]{ \synE_- \synM: \syn\tau }
     \end{prooftree}
   \end{equation*}
 \end{definition}
 \begin{comments}
+  \item A treatment of the empty type within simple type theory can be found in \cite[\S 4.3.4]{Mimram2020ProgramEqualsProof}.
+
   \item We have formulated the rule so that it resembles \ref{inf:def:propositional_natural_deduction_systems/bot/efq}. We do not forbid a variable to have type \( \syn\Bbbzero \), but provide a term of arbitrary type given such a variable.
 
-  Due to the availability of \ref{inf:def:arrow_typing_rules/elim}, we could have just as well introduced the rule
+  \item \hyperref[con:dependent_type]{Dependent types} allow stating a more involved introduction rule, as well as an \hyperref[rem:type_theory_rule_classification/intro]{elimination rule} and \hyperref[rem:type_theory_rule_classification/equality/comp]{computation rule} for the empty type. See \Fullref{def:dependent_empty_type}.
+
+  For disambiguation, we will refer to this definition as the \enquote{simple empty type}.
+
+  \item Due to the availability of \ref{inf:def:arrow_type/elim}, we could have just as well introduced the rule
   \begin{equation*}
     \begin{prooftree}
       \infer0{ \synE_-: \syn\Bbbzero \synimplies \syn\tau }
     \end{prooftree}
   \end{equation*}
 
-  Unfortunately, both break the type uniqueness for typed terms shown in \fullref{thm:typed_term_habitation_uniqueness}. One way to mitigate this is to introduce a distinct constant \( \synE_-^\tau \) and distinct rule \( \syn\Bbbzero_-^\tau \) for every type \( \tau \), which would unfortunately complicate our formalization efforts. Due to our limited interest in the empty type, we avoid doing this.
-
-  \item A simpler definition would be
+  Another simpler definition would be
   \begin{equation*}
     \begin{prooftree}
       \hypo{ \synM: \syn\Bbbzero }
@@ -260,81 +306,67 @@
     \end{prooftree}
   \end{equation*}
 
-  It has the drawback of \( \synE_- \) possibly having multiple types in the type context \( \synx: \syn\Bbbzero, \syny: \syn\Bbbzero \).
-
-  \item A treatment of the empty type within simple type theory can be found in \cite[\S 4.3.4]{Mimram2020ProgramEqualsProof}.
+  Unfortunately, both this rule and break the type uniqueness for typed terms shown in \fullref{thm:typed_term_habitation_uniqueness}. One way to mitigate this is to introduce a distinct constant \( \synE_-^\tau \) and distinct rule \( \syn\Bbbzero_-^\tau \) for every type \( \tau \), which would unfortunately complicate our formalization efforts.
 \end{comments}
 
-\begin{definition}\label{def:unit_type}\mimprovised
-  Dually to the \hyperref[def:empty_type]{empty type}, we introduce the \term[en=unit type (\cite[\S 4.3.4]{Mimram2020ProgramEqualsProof})]{unit type} \( \syn\Bbbone \) with a unique inhabitant, the constant term \( \synU_+ \).
+\begin{definition}\label{def:simple_unit_type}\mimprovised
+  Dually to the \hyperref[def:simple_empty_type]{empty type}, we introduce the \term[en=unit type (\cite[\S 4.3.4]{Mimram2020ProgramEqualsProof})]{unit type} \( \syn\Bbbone \) with a unique inhabitant, the constant term \( \synU_+ \).
 
-  There is an \hyperref[rem:type_theory_rule_classification/introduction]{introduction rule} and an \hyperref[rem:type_theory_rule_classification/introduction]{elimination rule} resembling the verum rules from \ref{inf:def:propositional_natural_deduction_systems/top}:
-  \begin{paracol}{2}
-    \begin{leftcolumn}
-      \ParacolAlignmentHack
-      \begin{equation*}\taglabel[\ensuremath{ \Bbbone_+ }]{inf:def:unit_type/intro}
-        \begin{prooftree}
-          \infer0[\ref{inf:def:unit_type/intro}]{ \synU_+: \syn\Bbbone }
-        \end{prooftree}
-      \end{equation*}
-    \end{leftcolumn}
-
-    \begin{rightcolumn}
-      \ParacolAlignmentHack
-      \begin{equation*}\taglabel[\ensuremath{ \Bbbone_- }]{inf:def:unit_type/elim}
-        \begin{prooftree}
-          \hypo{ [\synU_+: \Bbbone] }
-          \ellipsis {} { \synM: \syn\tau }
-          \infer1[\ref{inf:def:unit_type/elim}]{ \synM: \syn\tau }
-        \end{prooftree}
-      \end{equation*}
-    \end{rightcolumn}
-  \end{paracol}
+  There is an \hyperref[rem:type_theory_rule_classification/intro]{introduction rule} resembling the verum rule \ref{inf:def:propositional_natural_deduction_systems/top/intro}:
+  \begin{equation*}\taglabel[\ensuremath{ \Bbbone_+ }]{inf:def:simple_unit_type/intro}
+    \begin{prooftree}
+      \infer0[\ref{inf:def:simple_unit_type/intro}]{ \synU_+: \syn\Bbbone }
+    \end{prooftree}
+  \end{equation*}
 \end{definition}
 \begin{comments}
   \item A treatment of the unit type within simple type theory can be found in \cite[\S 4.3.2]{Mimram2020ProgramEqualsProof}.
 
-  \item In a more complicated typing system, forcing uniqueness can be done via the \hyperref[rem:type_theory_rule_classification/equality/uniqueness]{uniqueness rule}
+  \item \hyperref[con:dependent_type]{Dependent types} allow stating an \hyperref[rem:type_theory_rule_classification/intro]{elimination rule} and \hyperref[rem:type_theory_rule_classification/equality/uniq]{uniqueness rule} for the unit type. See \fullref{def:dependent_unit_type}.
+
+  A simple uniqueness rule can be stated using only simple types:
   \begin{equation*}
     \begin{prooftree}
-      \hypo{ \synM: \syn\Bbbone }
-      \infer1{ \synM \coloneqq \synU_+: \syn\Bbbone }
+      \hypo{ M: \Bbbone }
+      \infer1{ M \coloneqq U_+: \Bbbone }
     \end{prooftree}
   \end{equation*}
 \end{comments}
 
-\begin{definition}\label{def:product_type}\mimprovised
-  When defining the syntax of simple types in \fullref{def:simple_type}, we have defined the product type of \( \tau \) and \( \sigma \) as \( \tau \syntimes \sigma \). We will now introduce rules based on the encoding of \hyperref[def:ordered_tuple]{ordered pairs} discussed in \fullref{ex:def:beta_eta_reduction/pairs} and \fullref{ex:def:type_derivation_tree/pairs}. For this, we will need constant terms \( \synP_+ \), \( \synP_{-L} \) and \( \synP_{-R} \).
+\begin{definition}\label{def:simple_product_type}\mimprovised
+  When defining the syntax of simple types in \fullref{def:simple_type}, we have stated the \( \bnfpn{product type} \) grammar rule, which allows combining the types \( \tau \) and \( \sigma \) into the compound type \( \tau \syntimes \sigma \).
 
-  Based on the natural deduction rules for conjunction formulas from \fullref{def:propositional_natural_deduction_systems/and}, we state one \hyperref[rem:type_theory_rule_classification/introduction]{introduction rule} and two \hyperref[rem:type_theory_rule_classification/elimination]{elimination rules}:
+  We will now introduce rules based on the encoding of \hyperref[def:ordered_tuple]{ordered pairs} discussed in \fullref{ex:def:beta_eta_reduction/pairs} and \fullref{ex:def:type_derivation_tree/pairs}. For this, we will need constant terms \( \synP_+ \), \( \synP_{-L} \) and \( \synP_{-R} \).
+
+  Based on the natural deduction rules for conjunction formulas from \fullref{def:propositional_natural_deduction_systems/and}, we state one \hyperref[rem:type_theory_rule_classification/intro]{introduction rule} and two \hyperref[rem:type_theory_rule_classification/elim]{elimination rules}:
   \begin{paracol}{3}
     \begin{nthcolumn}{0}
       \ParacolAlignmentHack
-      \begin{equation*}\taglabel[\ensuremath{ \times_+ }]{inf:def:product_type/intro}
+      \begin{equation*}\taglabel[\ensuremath{ \times_+ }]{inf:def:simple_product_type/intro}
         \begin{prooftree}
           \hypo{ \synM: \syn\tau }
           \hypo{ \synN: \syn\sigma }
-          \infer2[\ref{inf:def:product_type/intro}]{ \synP_+ \synM \synN: \syn\tau \syntimes \syn\sigma }
+          \infer2[\ref{inf:def:simple_product_type/intro}]{ \synP_+ \synM \synN: \syn\tau \syntimes \syn\sigma }
         \end{prooftree}
       \end{equation*}
     \end{nthcolumn}
 
     \begin{nthcolumn}{1}
       \ParacolAlignmentHack
-      \begin{equation*}\taglabel[\ensuremath{ \times_{-L} }]{inf:def:product_type/elim_left}
+      \begin{equation*}\taglabel[\ensuremath{ \times_{-L} }]{inf:def:simple_product_type/elim_left}
         \begin{prooftree}
           \hypo{ \synK: \syn\tau \syntimes \syn\sigma }
-          \infer1[\ref{inf:def:product_type/elim_left}]{ \synP_{-L} \synK: \syn\tau }
+          \infer1[\ref{inf:def:simple_product_type/elim_left}]{ \synP_{-L} \synK: \syn\tau }
         \end{prooftree}
       \end{equation*}
     \end{nthcolumn}
 
     \begin{nthcolumn}{2}
       \ParacolAlignmentHack
-      \begin{equation*}\taglabel[\ensuremath{ \times_{-R} }]{inf:def:product_type/elim_right}
+      \begin{equation*}\taglabel[\ensuremath{ \times_{-R} }]{inf:def:simple_product_type/elim_right}
         \begin{prooftree}
           \hypo{ \synK: \syn\tau \syntimes \syn\sigma }
-          \infer1[\ref{inf:def:product_type/elim_right}]{ \synP_{-R} \synK: \syn\tau }
+          \infer1[\ref{inf:def:simple_product_type/elim_right}]{ \synP_{-R} \synK: \syn\tau }
         \end{prooftree}
       \end{equation*}
     \end{nthcolumn}
@@ -344,10 +376,12 @@
   \item A treatment of product types within simple type theory can be found in \cite[\S 4.3.1]{Mimram2020ProgramEqualsProof}.
 
   \item We discuss how equality rules and \( \beta\eta \)-reduction are related in \fullref{rem:product_type_equality_rules}.
+
+  \item This is a binary analogue to the dependent products defined in \fullref{def:dependent_product}.
 \end{comments}
 
 \begin{remark}\label{rem:product_type_equality_rules}
-  In \fullref{ex:def:beta_eta_reduction/pairs}, we have shown that the \( \synlambda \)-terms \ref{ex:def:beta_eta_reduction/pairs/intro}, \ref{ex:def:beta_eta_reduction/pairs/elim_left} and \ref{ex:def:beta_eta_reduction/pairs/elim_right} enable the following \( \beta \)-reductions:
+  In \fullref{ex:def:beta_eta_reduction/pairs}, we have shown that the \( \muplambda \)-terms \ref{ex:def:beta_eta_reduction/pairs/intro}, \ref{ex:def:beta_eta_reduction/pairs/elim_left} and \ref{ex:def:beta_eta_reduction/pairs/elim_right} enable the following \( \beta \)-reductions:
   \begin{align}\label{eq:rem:product_type_equality_rules/beta}
     P_{-L} (P_+ A B) \bred* A
     &&
@@ -365,24 +399,24 @@
     \synP_{-R} (\synP_+ A B) \redrel*{\beta\delta} B.
   \end{align*}
 
-  We have discussed in \fullref{ex:def:type_derivation_tree/pairs} how these combinators are not, in general, \hyperref[def:typability]{typable}, using only arrow types. Having the rules from \fullref{def:product_type}, however, we know the corresponding constants are typable, and we can easily derive
+  We have discussed in \fullref{ex:def:type_derivation_tree/pairs} how these combinators are not, in general, \hyperref[def:typability]{typable}, using only arrow types. Having the rules from \fullref{def:simple_product_type}, however, we know the corresponding constants are typable, and we can easily derive
   \begin{equation*}
     \begin{prooftree}
-      \hypo{}
+      \hypo {}
       \ellipsis {} { A: \tau }
 
-      \hypo{}
+      \hypo {}
       \ellipsis {} { B: \sigma }
 
-      \infer2[\ref{inf:def:product_type/intro}]{ \synP_+ AB: \tau \syntimes \sigma }
+      \infer2[\ref{inf:def:simple_product_type/intro}]{ \synP_+ AB: \tau \syntimes \sigma }
 
-      \infer1[\ref{inf:def:product_type/elim_left}]{ \synP_{-L} (\synP_+ AB): \tau }
+      \infer1[\ref{inf:def:simple_product_type/elim_left}]{ \synP_{-L} (\synP_+ AB): \tau }
     \end{prooftree}
   \end{equation*}
 
   Thus, \( \synP_{-L} (\synP_+ AB) \) has the same type as \( A \) and it \( \beta\delta \)-reduces to \( A \).
 
-  This diminishes the utility of adding \hyperref[rem:type_theory_rule_classification/equality/computation]{computation rules} for product types, which, as suggested in \cite[\S 4.3.1]{Mimram2020ProgramEqualsProof}, would simply mimic \( \beta \)-reduction:
+  This diminishes the utility of adding \hyperref[rem:type_theory_rule_classification/equality/comp]{computation rules} for product types, which, as suggested in \cite[\S 4.3.1]{Mimram2020ProgramEqualsProof}, would simply mimic \( \beta \)-reduction:
   \begin{paracol}{2}
     \begin{leftcolumn}
       \begin{equation*}
@@ -405,52 +439,55 @@
     \end{rightcolumn}
   \end{paracol}
 
-  There is one important downside related to \( \eta \)-reduction and \hyperref[rem:type_theory_rule_classification/equality/uniqueness]{uniqueness rules}, however. We could expect that
+  There is one important downside related to \( \eta \)-reduction and \hyperref[rem:type_theory_rule_classification/equality/uniq]{uniqueness rules}, however. We could expect that
   \begin{equation}\label{eq:rem:product_type_equality_rules/eta}
     P_+ (P_{-L} M) (P_{-R} A) \redrel*{\beta\eta} A.
   \end{equation}
 
-  \incite*[corr. 1.23]{Barendregt1974SurjectivePairing} demonstrates that there is no triple of untyped \( \synlambda \)-terms \( P_+ \), \( P_{-L} \) and \( P_{+R} \) satisfying \eqref{eq:rem:product_type_equality_rules/eta}.
+  \incite*[corr. 1.23]{Barendregt1974SurjectivePairing} demonstrates that there is no triple of untyped \( \muplambda \)-terms \( P_+ \), \( P_{-L} \) and \( P_{+R} \) satisfying \eqref{eq:rem:product_type_equality_rules/eta}.
 
-  Barendregt calls a triple satisfying \eqref{eq:rem:product_type_equality_rules/beta} a \enquote{pairing}, and a triple additionally satisfying \eqref{eq:rem:product_type_equality_rules/eta} --- a \enquote{surjective pairing}. Thus, his result states that untyped \( \synlambda \)-calculus does not admit a surjective pairing, despite the obvious pairing shown in \fullref{ex:def:beta_eta_reduction/pairs}.
+  Barendregt calls a triple satisfying \eqref{eq:rem:product_type_equality_rules/beta} a \enquote{pairing}, and a triple additionally satisfying \eqref{eq:rem:product_type_equality_rules/eta} --- a \enquote{surjective pairing}. Thus, his result states that untyped \( \muplambda \)-calculus does not admit a surjective pairing, despite the obvious pairing shown in \fullref{ex:def:beta_eta_reduction/pairs}.
 
-  Thus, even for simple types, adding new rules for either \( \beta\eta \)-reduction or for judgmental equality cannot be circumvented by a simpler mechanism such as \( \delta \)-reduction. This will unfortunately require us to reprove all results involving either \( \beta\eta \)-reduction or only \( \alpha \)-equivalence. So, our decision is to avoid new rules and to sacrifice \hyperref[con:extensionality]{extensionality} for the sake of simplicity.
+  Thus, even for simple types, adding new congruence and uniqueness rules cannot be circumvented by a simpler mechanism such as \( \delta \)-reduction. This will unfortunately require us to reprove all results involving either \( \beta\eta \)-reduction or only \( \alpha \)-equivalence. So, our decision is to avoid new rules and to sacrifice \hyperref[con:extensionality]{extensionality} for the sake of simplicity.
 \end{remark}
+\begin{comments}
+  \item Within a richer framework, product types are discussed in \fullref{rem:product_type_via_dependent_product}.
+\end{comments}
 
-\begin{definition}\label{def:sum_type}\mimprovised
-  Similarly to \hyperref[def:product_type]{product types}, we will introduce rules for the sum type \( \tau \synplus \sigma \) based on the discussion in \fullref{ex:def:beta_eta_reduction/disjoint} and \fullref{ex:def:type_derivation_tree/disjoint}. We will need the constants \( \synS_{+L} \), \( \synS_{+R} \) and \( \synS_- \) and three rules resembling the disjunction rules from \fullref{def:propositional_natural_deduction_systems/or}:
+\begin{definition}\label{def:simple_sum_type}\mimprovised
+  Similarly to \hyperref[def:simple_product_type]{product types}, we will introduce rules for the sum type \( \tau \synplus \sigma \) based on the discussion in \fullref{ex:def:beta_eta_reduction/disjoint} and \fullref{ex:def:type_derivation_tree/disjoint}. We will need the constants \( \synS_{+L} \), \( \synS_{+R} \) and \( \synS_- \) and three rules resembling the disjunction rules from \fullref{def:propositional_natural_deduction_systems/or}:
   \columnratio{0.25,0.25,0.5}
   \begin{paracol}{3}
     \begin{nthcolumn}{0}
       \ParacolAlignmentHack
-      \begin{equation*}\taglabel[\ensuremath{ +_{+L} }]{inf:def:sum_type/intro_left}
+      \begin{equation*}\taglabel[\ensuremath{ +_{+L} }]{inf:def:simple_sum_type/intro_left}
         \begin{prooftree}
           \hypo{ \synM: \syn\tau }
-          \infer1[\ref{inf:def:sum_type/intro_left}]{ \synS_{+L} \synM: \syn\tau \synplus \syn\sigma }
+          \infer1[\ref{inf:def:simple_sum_type/intro_left}]{ \synS_{+L} \synM: \syn\tau \synplus \syn\sigma }
         \end{prooftree}
       \end{equation*}
     \end{nthcolumn}
 
     \begin{nthcolumn}{1}
       \ParacolAlignmentHack
-      \begin{equation*}\taglabel[\ensuremath{ +_{+R} }]{inf:def:sum_type/intro_right}
+      \begin{equation*}\taglabel[\ensuremath{ +_{+R} }]{inf:def:simple_sum_type/intro_right}
         \begin{prooftree}
           \hypo{ \synN: \syn\sigma }
-          \infer1[\ref{inf:def:sum_type/intro_left}]{ \synS_{+R} \synN: \syn\tau \synplus \syn\sigma }
+          \infer1[\ref{inf:def:simple_sum_type/intro_right}]{ \synS_{+R} \synN: \syn\tau \synplus \syn\sigma }
         \end{prooftree}
       \end{equation*}
     \end{nthcolumn}
 
     \begin{nthcolumn}{2}
       \ParacolAlignmentHack
-      \begin{equation*}\taglabel[\ensuremath{ +_- }]{inf:def:sum_type/elim}
+      \begin{equation*}\taglabel[\ensuremath{ +_- }]{inf:def:simple_sum_type/elim}
         \begin{prooftree}
           \hypo{ \synM: \syn\tau \synplus \syn\sigma }
           \hypo{ [\synx: \syn\tau] }
-          \ellipsis {} { \synN: \syn\rho }
+          \infer[dashed]1{ \synN: \syn\rho }
           \hypo{ [\syny: \syn\sigma] }
-          \ellipsis {} { \synK: \syn\rho }
-          \infer3[\ref{inf:def:sum_type/elim}]{ \synS_- (\qabs {\synx^{\syn\tau}} \synN) (\qabs {\syny^{\syn\sigma}} \synK) \synM: \syn\rho }
+          \infer[dashed]1{ \synK: \syn\rho }
+          \infer3[\ref{inf:def:simple_sum_type/elim}]{ \synS_- (\qabs {\synx^{\syn\tau}} \synN) (\qabs {\syny^{\syn\sigma}} \synK) \synM: \syn\rho }
         \end{prooftree}
       \end{equation*}
     \end{nthcolumn}
@@ -460,20 +497,40 @@
 \begin{comments}
   \item A treatment of sum types within simple type theory can be found in \cite[\S 4.3.3]{Mimram2020ProgramEqualsProof}.
 
-  \item As with the \hyperref[def:empty_type]{empty type}, unless we make the constants \( \synS_{+L} \) and \( \synS_{+R} \) depend on the types of the terms, we break the type uniqueness for typed terms shown in \fullref{thm:typed_term_habitation_uniqueness}. Again, this is a sacrifice for the sake of simplicity of our formalized system.
+  \item As with the \hyperref[def:simple_empty_type]{empty type}, unless we make the constants \( \synS_{+L} \) and \( \synS_{+R} \) depend on the types of the terms, we break the type uniqueness for typed terms shown in \fullref{thm:typed_term_habitation_uniqueness}. Again, this is a sacrifice for the sake of simplicity of our formalized system.
 
   \item We discuss how equality rules and \( \beta\eta \)-reduction are related in \fullref{rem:sum_type_equality_rules}.
+
+  \item This is a binary analogue to the dependent sums defined in \fullref{def:dependent_sum}.
+\end{comments}
+
+\begin{remark}\label{rem:binders_in_type_theory_terms}
+  In \ref{inf:def:simple_sum_type/elim} we have constructed the term
+  \begin{equation*}
+    \synS_- (\qabs {x^\tau} N) (\qabs {y^\sigma} K) M: \rho.
+  \end{equation*}
+
+  The same rule is also presented in \cite[\S 4.3.3]{Mimram2020ProgramEqualsProof}, where this term has a dedicated syntactic rule, and the above term becomes
+  \begin{equation*}
+    \op{case}(M, x \mapsto N, y \mapsto K): \rho,
+  \end{equation*}
+  where it is highlighted that \( \op{case} \) acts as a \hyperref[con:variable_binding]{binder} for both \( x \) and \( y \).
+
+  Such a dedicated grammar rule enforces syntactically valid terms, while our approach relies on a convention. This is not a problem, however, because we have no rules that allow constructing syntactically invalid terms. We prefer not to extend the base syntax of terms.
+\end{remark}
+\begin{comments}
+  \item One downside of our approach is that some recursive tree traversals like that in \fullref{alg:simply_typed_reduction} become much more involved because application terms (i.e. \( M = NK \)) can be produced by a variety of rules. With a dedicated syntax, only \ref{inf:def:arrow_type/elim} is able to produce such terms.
 \end{comments}
 
 \begin{remark}\label{rem:sum_type_equality_rules}
-  Similarly to product types, we can use \( \beta\delta \)-reduction to emulate \hyperref[rem:type_theory_rule_classification/equality/computation]{computation rules}. See \fullref{rem:product_type_equality_rules} for a broader discussion of the general idea.
+  Similarly to product types, we can use \( \beta\delta \)-reduction to emulate \hyperref[rem:type_theory_rule_classification/equality/comp]{computation rules}. See \fullref{rem:product_type_equality_rules} for a broader discussion of the general idea.
 
   In our case, given \( M: \tau \), we have
   \begin{equation*}
     \begin{prooftree}
       \hypo{}
       \ellipsis {} { M: \tau }
-      \infer1[\ref{inf:def:sum_type/intro_left}]{ \synS_{+L} M: \tau \syntimes \rho }
+      \infer1[\ref{inf:def:simple_sum_type/intro_left}]{ \synS_{+L} M: \tau \syntimes \rho }
 
       \hypo{ x: \tau }
       \ellipsis {} { N: \rho }
@@ -481,7 +538,7 @@
       \hypo{ y: \sigma }
       \ellipsis {} { K: \rho }
 
-      \infer3[\ref{inf:def:sum_type/elim}]{ \synS_- (\qabs {x^\tau} N) (\qabs {y^\sigma} K) (\synS_{+L} M): \rho }
+      \infer3[\ref{inf:def:simple_sum_type/elim}]{ \synS_- (\qabs {x^\tau} N) (\qabs {y^\sigma} K) (\synS_{+L} M): \rho }
     \end{prooftree}
   \end{equation*}
 
@@ -499,11 +556,11 @@
 
   \Fullref{alg:simply_typed_reduction} allows deriving the same type \( \rho \) for \( N \) and \( N[x \mapsto M] \) from the derivation of \( \tau \) for \( M \). Thus, again, we can emulate computation rules via reduction.
 
-  Unlike for product types, a \hyperref[rem:type_theory_rule_classification/equality/uniqueness]{uniqueness rule} here is more complicated conceptually:
+  Unlike for product types, a \hyperref[rem:type_theory_rule_classification/equality/uniq]{uniqueness rule} here is more complicated conceptually:
   \begin{equation*}
     \begin{prooftree}
       \hypo{ M: \tau \synplus \sigma }
-      \infer1{ M \coloneqq \synS_- \synS_{+L} \synS_{+R} M }
+      \infer1{ M \coloneqq \synS_- (\qabs {\synx^\tau} \synS_{+L} \synx) (\qabs {\syny^\sigma} \synS_{+R} \syny) M }
     \end{prooftree}
   \end{equation*}
 
@@ -511,428 +568,25 @@
 \end{remark}
 
 \begin{definition}\label{def:simple_algebraic_types}\mimprovised
-  Consider the \hyperref[def:simple_type_system]{simple type system} featuring, along with the corresponding rules, \hyperref[def:simple_type]{arrow types}, \hyperref[def:product_type]{product types}, \hyperref[def:product_type]{sum types}, as well as the \hyperref[def:empty_type]{empty type} and \hyperref[def:unit_type]{unit type}.
+  Consider the \hyperref[def:simple_type_system]{simple type system} featuring, along with the corresponding rules, \hyperref[def:arrow_type]{arrow types}, \hyperref[def:simple_product_type]{product types}, \hyperref[def:simple_product_type]{sum types}, as well as the \hyperref[def:simple_empty_type]{empty type} and \hyperref[def:simple_unit_type]{unit type}.
 
   We will call this the system of \term{simple algebraic types}.
 \end{definition}
 
-\begin{proposition}\label{thm:simple_algebraic_type_arithmetic}
-  Denote by \( T \) the set of all algebraic types. Define the relation \( \tau \vDash \sigma \) on \( T \) to hold if, for some variable \( x \) and term \( M \), there is a \hyperref[def:type_derivation_tree]{derivation} of \( M: \sigma \) from \( x: \tau \). Let \( \tau \gleichstark \sigma \) if \( \tau \vDash \sigma \) and \( \sigma \vDash \tau \).
+\paragraph{Curry-Howard correspondence}
 
-  We will show that \( {\gleichstark} \) is an \hyperref[def:equivalence_relation]{equivalence relation} and that \( {\synplus} \) and \( {\syntimes} \) are well-behaved with respect to \( {\gleichstark} \). On the quotient \( T / {\gleichstark} \), these operations act as \hyperref[def:lattice]{lattice} join and meet, with \( {\syn\Bbbzero} \) as the bottom element and \( {\syn\Bbbone} \) as the top element.
+\begin{remark}\label{rem:curry_howard_variables}
+  When mechanizing the \hyperref[con:curry_howard_correspondence]{Curry-Howard correspondence} in \fullref{alg:type_derivation_to_proof_tree} and \fullref{alg:proof_tree_to_type_derivation}, there is a nuance we must handle when dealing with variables.
 
-  In the corresponding \hyperref[ex:def:semiring/lattice]{join-meet semiring} they act as conventional addition and multiplication, with zero element \( {\syn\Bbbzero} \) and unity element \( {\syn\Bbbone} \).
+  We have defined propositional variables in \fullref{def:propositional_syntax} as small Latin identifiers, and type variables in \fullref{def:simple_type} as small Greek identifiers. We must find a way to unify the two when translating between types and formulas.
 
-  First, we will show well-behavedness of \( {\gleichstark} \):
-  \begin{thmenum}[series=thm:simple_algebraic_type_arithmetic]
-    \thmitem{thm:simple_algebraic_type_arithmetic/equivalence} \( {\gleichstark} \) is an equivalence relation.
-
-    \thmitem{thm:simple_algebraic_type_arithmetic/addition_well_behaved} Addition is well-behaved:
-    \begin{equation}\label{eq:thm:simple_algebraic_type_arithmetic/addition_well_behaved}
-      \tau \gleichstark \tau' \T{and} \sigma \gleichstark \sigma' \T{imply} \tau \synplus \sigma \gleichstark \tau' \synplus \sigma'.
-    \end{equation}
-
-    \thmitem{thm:simple_algebraic_type_arithmetic/multiplication_well_behaved} Multiplication is well-behaved:
-    \begin{equation}\label{eq:thm:simple_algebraic_type_arithmetic/multiplication_well_behaved}
-      \tau \gleichstark \tau' \T{and} \sigma \gleichstark \sigma' \T{imply} \tau \syntimes \sigma \gleichstark \tau' \syntimes \sigma'.
-    \end{equation}
-  \end{thmenum}
-
-  We will prove the following for addition:
-  \begin{thmenum}[resume=thm:simple_algebraic_type_arithmetic]
-    \thmitem{thm:simple_algebraic_type_arithmetic/addition_associative} Addition is \hyperref[def:binary_operation/associative]{associative}:
-    \begin{equation}\label{eq:thm:simple_algebraic_type_arithmetic/addition_associative}
-      (\tau \synplus \sigma) \synplus \rho \gleichstark \tau \synplus (\sigma \synplus \rho).
-    \end{equation}
-
-    \thmitem{thm:simple_algebraic_type_arithmetic/addition_commutative} Addition is \hyperref[def:binary_operation/commutative]{commutative}:
-    \begin{equation}\label{eq:thm:simple_algebraic_type_arithmetic/addition_commutative}
-      \tau \synplus \sigma \gleichstark \sigma \synplus \tau.
-    \end{equation}
-
-    \thmitem{thm:simple_algebraic_type_arithmetic/addition_neutral} \( \syn\Bbbzero \) acts as a \hyperref[def:monoid]{neutral element} of addition (and thus satisfies the bounded lattice axiom \eqref{eq:def:bounded_lattice/theory/top}):
-    \begin{equation}\label{eq:thm:simple_algebraic_type_arithmetic/addition_neutral}
-      \tau \synplus \syn\Bbbzero \gleichstark \tau.
-    \end{equation}
-  \end{thmenum}
-
-  We will prove the following for multiplication:
-  \begin{thmenum}[resume=thm:simple_algebraic_type_arithmetic]
-    \thmitem{thm:simple_algebraic_type_arithmetic/multiplication_associative} Multiplication is associative:
-    \begin{equation}\label{eq:thm:simple_algebraic_type_arithmetic/multiplication_associative}
-      (\tau \syntimes \sigma) \syntimes \rho \gleichstark \tau \syntimes (\sigma \syntimes \rho).
-    \end{equation}
-
-    \thmitem{thm:simple_algebraic_type_arithmetic/multiplication_commutative} Multiplication is commutative:
-    \begin{equation}\label{eq:thm:simple_algebraic_type_arithmetic/multiplication_commutative}
-      \tau \syntimes \sigma \gleichstark \sigma \syntimes \tau.
-    \end{equation}
-
-    \thmitem{thm:simple_algebraic_type_arithmetic/multiplication_neutral} \( \syn\Bbbone \) acts as a neutral element of multiplication (and thus satisfies the bounded lattice axiom \eqref{eq:def:bounded_lattice/theory/bot}):
-    \begin{equation}\label{eq:thm:simple_algebraic_type_arithmetic/multiplication_neutral}
-      \tau \syntimes \syn\Bbbone \gleichstark \tau.
-    \end{equation}
-  \end{thmenum}
-
-  Additionally, we will also prove the following:
-  \begin{thmenum}[resume=thm:simple_algebraic_type_arithmetic]
-    \thmitem{thm:simple_algebraic_type_arithmetic/multiplication_distributes} Multiplication \hyperref[def:semiring]{distributes} over addition:
-    \begin{equation}\label{eq:thm:simple_algebraic_type_arithmetic/multiplication_distributes}
-      \tau \syntimes (\sigma \synplus \rho) \gleichstark (\tau \syntimes \sigma) \synplus (\tau \syntimes \sigma).
-    \end{equation}
-
-    \thmitem{thm:simple_algebraic_type_arithmetic/addition_distributes} Addition distributes over multiplication:
-    \begin{equation}\label{eq:thm:simple_algebraic_type_arithmetic/addition_distributes}
-      \tau \synplus (\sigma \syntimes \rho) \gleichstark (\tau \synplus \sigma) \syntimes (\tau \synplus \sigma).
-    \end{equation}
-
-    \thmitem{thm:simple_algebraic_type_arithmetic/multiplication_absorbs} The operations satisfy the absorption law \eqref{eq:thm:lattice_operation_characterization/absorption/meet}:
-    \begin{equation}\label{eq:thm:simple_algebraic_type_arithmetic/multiplication_absorbs}
-      \tau \syntimes (\tau \synplus \sigma) \gleichstark \tau
-    \end{equation}
-
-    \thmitem{thm:simple_algebraic_type_arithmetic/addition_absorbs} The operations satisfy the absorption law \eqref{eq:thm:lattice_operation_characterization/absorption/join}:
-    \begin{equation}\label{eq:thm:simple_algebraic_type_arithmetic/addition_absorbs}
-      \tau \synplus (\tau \syntimes \sigma) \gleichstark \tau
-    \end{equation}
-  \end{thmenum}
-\end{proposition}
-\begin{comments}
-  \item See \fullref{ex:con:curry_howard_correspondence/algebraic_types} for how this statement related to the \hyperref[con:curry_howard_correspondence]{Curry-Howard correspondence}.
-\end{comments}
-\begin{proof}
-  \SubProofOf{thm:simple_algebraic_type_arithmetic/equivalence} Obviously \( {\gleichstark} \) is reflexive, and it is by definition symmetric.
-
-  We will show transitivity. Suppose that \( x: \tau \vDash M: \sigma \) and \( y: \sigma \vDash N: \rho \). We can use \fullref{alg:simply_typed_substitution} to construct a derivation of \( N[y \mapsto M]: \rho \) from \( x: \tau \), i.e. \( x: \tau \vDash N[y \mapsto M]: \rho \).
-
-  Therefore, \( {\gleichstark} \) is indeed an equivalence relation.
-
-  \SubProofOf{thm:simple_algebraic_type_arithmetic/addition_well_behaved} Suppose that \( a: \tau \vDash M: \tau' \) and \( b: \sigma \vDash N: \sigma' \). From the corresponding derivations we can construct the tree
-  \begin{equation*}
-    \begin{prooftree}
-      \hypo{ x: \tau \synplus \sigma }
-
-      \hypo{ a: \tau }
-      \ellipsis {} { M: \tau' }
-      \infer1[\ref{inf:def:sum_type/intro_left}]{ \synS_{+L} M: \tau' \synplus \sigma' }
-
-      \hypo{ b: \sigma }
-      \ellipsis {} { N: \sigma' }
-      \infer1[\ref{inf:def:sum_type/intro_right}]{ \synS_{+R} N: \tau' \synplus \sigma' }
-
-      \infer[left label={\( a, b \)}]3[\ref{inf:def:sum_type/elim}]{ \synS_- (\qabs {a^\tau} \synS_{+L} M) (\qabs {b^{\sigma}} \synS_{+R} N) x: \tau' \synplus \sigma' }
-    \end{prooftree}
-  \end{equation*}
-
-  We have shown that \( \tau \synplus \sigma \vDash \tau' \synplus \sigma' \). We can obtain the converse by exchanging \( \tau \) with \( \tau' \) and \( \sigma \) with \( \sigma' \).
-
-  Therefore, we have shown that \( {\synplus} \) is well-defined on the cosets of \( T / {\gleichstark} \).
-
-  \SubProofOf{thm:simple_algebraic_type_arithmetic/multiplication_well_behaved} Again, suppose that \( a: \tau \vDash M: \tau' \) and \( b: \sigma \vDash N: \sigma' \).
-
-  Given the assertion \( x: \tau \syntimes \sigma \), \ref{inf:def:product_type/elim_left} gives us \( \synP_{-L} x: \tau \), and \fullref{alg:simply_typed_substitution} constructs a derivation tree of \( M[a \mapsto \synP_{-L} x]: \tau' \). Similarly, the same assertion allows deriving \( N[a \mapsto \synP_{-R} x]: \sigma' \).
-
-  Then
-  \begin{equation*}
-    \begin{prooftree}
-      \hypo{ x: \tau \syntimes \sigma }
-      \infer1[\ref{inf:def:product_type/elim_left}]{ \synP_{-L} x: \tau }
-
-      \ellipsis {} { M[a \mapsto \synP_{-L} x]: \tau' }
-
-      \hypo{ x: \tau \syntimes \sigma }
-      \infer1[\ref{inf:def:product_type/elim_right}]{ \synP_{-R} x: \sigma }
-
-      \ellipsis {} { N[b \mapsto \synP_{-R} x]: \sigma' }
-
-      \infer2[\ref{inf:def:product_type/intro}]{ \synP_+ M[a \mapsto \synP_{-L} x] \thinspace N[b \mapsto \synP_{-R} x]: \tau' \syntimes \sigma' }
-    \end{prooftree}
-  \end{equation*}
-
-  The converse is clear, hence \( {\syntimes} \) is well-defined on the cosets of \( T / {\gleichstark} \).
-
-  \SubProofOf{thm:simple_algebraic_type_arithmetic/multiplication_commutative} Commutativity is simpler to prove than for addition:
-  \begin{equation*}
-    \begin{prooftree}
-      \hypo{ x: \tau \syntimes \sigma }
-      \infer1[\ref{inf:def:product_type/elim_right}]{ \synP_{-R} x: \sigma }
-
-      \hypo{ x: \tau \syntimes \sigma }
-      \infer1[\ref{inf:def:product_type/elim_left}]{ \synP_{-L} x: \tau }
-
-      \infer2[\ref{inf:def:product_type/intro}]{ \synP_+ (\synP_{-R} x) (\synP_{-L} x): \sigma \syntimes \tau }
-    \end{prooftree}
-  \end{equation*}
-
-  \SubProofOf{thm:simple_algebraic_type_arithmetic/addition_commutative} We will show that \( \tau \synplus \sigma \gleichstark \sigma \synplus \tau \). Again, it is sufficient to only prove one direction:
-  \begin{equation*}
-    \begin{prooftree}
-      \hypo{ x: \tau \synplus \sigma }
-
-      \hypo{ a: \tau }
-      \infer1[\ref{inf:def:sum_type/intro_right}]{ \synS_{+R} a: \sigma \synplus \tau }
-
-      \hypo{ b: \sigma }
-      \infer1[\ref{inf:def:sum_type/intro_left}]{ \synS_{+L} b: \sigma \synplus \tau }
-
-      \infer[left label={\( a, b \)}]3[\ref{inf:def:sum_type/elim}]{ \synS_- (\qabs {a^\tau} a) (\qabs {b^{\sigma}} b) x: \sigma \synplus \tau }
-    \end{prooftree}
-  \end{equation*}
-
-  \SubProofOf{thm:simple_algebraic_type_arithmetic/addition_associative} A little more complicated but analogous to \fullref{thm:simple_algebraic_type_arithmetic/addition_commutative}.
-
-  \SubProofOf{thm:simple_algebraic_type_arithmetic/addition_neutral} Here the two directions require distinct derivations:
-  \begin{paracol}{2}
-    \begin{leftcolumn}
-      \ParacolAlignmentHack
-      \begin{equation*}
-        \begin{prooftree}
-          \hypo{ x: \tau }
-          \infer1[\ref{inf:def:sum_type/intro_left}]{ \synS_{+L} x: \tau \synplus \syn\Bbbzero }
-        \end{prooftree}
-      \end{equation*}
-    \end{leftcolumn}
-
-    \begin{rightcolumn}
-      \ParacolAlignmentHack
-      \begin{equation*}
-        \begin{prooftree}
-          \hypo{ x: \tau \synplus \syn\Bbbzero }
-
-          \hypo{ a: \tau }
-
-          \hypo{ b: \syn\Bbbzero }
-          \infer1[\ref{inf:def:empty_type/elim}]{ \synE_- b: \tau }
-
-          \infer[left label={\( a, b \)}]3[\ref{inf:def:sum_type/elim}]{ \synS_- (\qabs {a^\tau} a) (\qabs {b^{\syn\Bbbzero}} \synE_- b) x: \tau }
-        \end{prooftree}
-      \end{equation*}
-    \end{rightcolumn}
-  \end{paracol}
-
-  \SubProofOf{thm:simple_algebraic_type_arithmetic/multiplication_commutative} In one direction, we have
-  \begin{equation*}
-    \begin{prooftree}
-      \hypo{ x: (\tau \syntimes \sigma) \syntimes \rho }
-      \infer1[\ref{inf:def:product_type/elim_left}]{ \synP_{-L} x: \tau \syntimes \sigma }
-      \infer1[\ref{inf:def:product_type/elim_left}]{ \synP_{-L} \synP_{-L} x: \tau }
-
-      \hypo{ x: (\tau \syntimes \sigma) \syntimes \rho }
-      \infer1[\ref{inf:def:product_type/elim_left}]{ \synP_{-L} x: \tau \syntimes \sigma }
-      \infer1[\ref{inf:def:product_type/elim_right}]{ \synP_{-R} \synP_{-L} x: \sigma }
-
-      \hypo{ x: (\tau \syntimes \sigma) \syntimes \rho }
-      \infer1[\ref{inf:def:product_type/elim_right}]{ \synP_{-R} x: \rho }
-
-      \infer2[\ref{inf:def:product_type/intro}]{ \synP_+ (\synP_{-R} \synP_{-L} x) (\synP_{-R} x): \sigma \syntimes \rho }
-
-      \infer2[\ref{inf:def:product_type/intro}]{ \synP_+ (\synP_{-L} \synP_{-L} x) (\synP_+ (\synP_{-R} \synP_{-L} x) (\synP_{-R} x)): \tau \syntimes (\sigma \syntimes \rho) }
-    \end{prooftree}
-  \end{equation*}
-
-  In the other direction, we proceed similarly.
-
-  \SubProofOf{thm:simple_algebraic_type_arithmetic/multiplication_associative} Similar to \fullref{thm:simple_algebraic_type_arithmetic/multiplication_commutative}.
-
-  \SubProofOf{thm:simple_algebraic_type_arithmetic/multiplication_neutral} Again, here the two directions require distinct derivations:
-  \begin{paracol}{2}
-    \begin{leftcolumn}
-      \ParacolAlignmentHack
-      \begin{equation*}
-        \begin{prooftree}
-          \hypo{ x: \tau \syntimes \syn\Bbbone }
-          \infer1[\ref{inf:def:product_type/elim_left}]{ \synP_{-L} x: \tau }
-        \end{prooftree}
-      \end{equation*}
-    \end{leftcolumn}
-
-    \begin{rightcolumn}
-      \ParacolAlignmentHack
-      \begin{equation*}
-        \begin{prooftree}
-          \hypo{ x: \tau }
-
-          \infer0[\ref{inf:def:unit_type/intro}]{ \synU_+: \syn\Bbbone }
-
-          \infer2[\ref{inf:def:product_type/intro}]{ \synP_+ x \synU_+: \tau \syntimes \syn\Bbbone }
-        \end{prooftree}
-      \end{equation*}
-    \end{rightcolumn}
-  \end{paracol}
-
-  \SubProofOf{thm:simple_algebraic_type_arithmetic/multiplication_distributes} In one direction, we have
-  \begin{equation*}
-    \begin{prooftree}
-      \hypo{ x: \tau \syntimes (\sigma \synplus \rho) }
-      \infer1[\ref{inf:def:product_type/elim_right}]{ \synP_{-R} x: \sigma \synplus \rho }
-
-      \hypo{ x: \tau \syntimes (\sigma \synplus \rho) }
-      \infer1[\ref{inf:def:product_type/elim_left}]{ \synP_{-L} x: \tau }
-
-      \hypo{ a: \sigma }
-      \infer2[\ref{inf:def:product_type/intro}]{ \synP_+ (\synP_{-L} x) a: \tau \syntimes \sigma }
-      \infer1[\ref{inf:def:sum_type/intro_left}]{ \synS_{+L} (\synP_+ (\synP_{-L} x) a): (\tau \syntimes \sigma) \synplus (\tau \syntimes \rho) }
-
-      \hypo{ \cdots }
-
-      \infer[left label={\( a, b \)}]3[\ref{inf:def:sum_type/elim}]{ \cdots: (\tau \syntimes \sigma) \synplus (\tau \syntimes \rho) }
-    \end{prooftree}
-  \end{equation*}
-
-  In the other,
-  \begin{equation*}
-    \begin{prooftree}
-      \hypo{ x: (\tau \syntimes \sigma) \synplus (\tau \syntimes \rho) }
-
-      \hypo{ a: \tau \syntimes \sigma }
-      \infer1[\ref{inf:def:product_type/elim_left}]{ \synP_{-L} a: \tau }
-
-      \hypo{ a: \tau \syntimes \sigma }
-      \infer1[\ref{inf:def:product_type/elim_left}]{ \synP_{-R} a: \sigma }
-      \infer1[\ref{inf:def:sum_type/intro_left}]{ \synS_{+L} (\synP_{-R} a): \sigma \synplus \rho }
-
-      \infer2[\ref{inf:def:product_type/intro}]{ \synP_+ (\synP_{-L} a) (\synS_{+L} (\synP_{-R} a)): \tau \syntimes (\sigma \synplus \rho) }
-
-      \hypo{ \cdots }
-
-      \infer[left label={\( a, b \)}]3[\ref{inf:def:sum_type/elim}]{ \cdots: \tau \syntimes (\sigma \synplus \rho) }
-    \end{prooftree}
-  \end{equation*}
-
-  \SubProofOf{thm:simple_algebraic_type_arithmetic/addition_distributes} In one direction, we have
-  \begin{equation*}
-    \begin{prooftree}
-      \hypo{ x: \tau \synplus (\sigma \syntimes \rho) }
-
-      \hypo{ a: \tau }
-      \infer1[\ref{inf:def:sum_type/intro_left}]{ \synS_{+L} a: \tau \synplus \sigma }
-
-      \hypo{ a: \tau }
-      \infer1[\ref{inf:def:sum_type/intro_left}]{ \synS_{+L} a: \tau \synplus \rho }
-
-      \infer2[\ref{inf:def:product_type/intro}]{ \synP_+ (\synS_{+L} a) (\synS_{+L} a): (\tau \synplus \sigma) \syntimes (\tau \syntimes \rho) }
-
-      \hypo{}
-      \ellipsis { \( A \) } { \cdots: \tau \synplus (\rho \syntimes \sigma) }
-
-      \infer[left label={\( a, b \)}]3[\ref{inf:def:sum_type/elim}]{ \cdots: (\tau \synplus \sigma) \syntimes (\tau \syntimes \rho) }
-    \end{prooftree}
-  \end{equation*}
-  where \( A \) is the following derivation tree with open assumption \( b: \sigma \syntimes \rho \)
-  \begin{equation*}
-    \begin{prooftree}
-      \hypo{ b: \sigma \syntimes \rho }
-      \infer1[\ref{inf:def:product_type/elim_left}]{ \synP_{-L} b: \sigma }
-      \infer1[\ref{inf:def:sum_type/intro_left}]{ \synS_{+R} \synP_{-L} b: \tau \synplus \sigma }
-
-      \hypo{ b: \sigma \syntimes \rho }
-      \infer1[\ref{inf:def:product_type/elim_left}]{ \synP_{-R} b: \rho }
-      \infer1[\ref{inf:def:sum_type/intro_left}]{ \synS_{+R} \synP_{-R} b: \tau \synplus \rho }
-
-      \infer2[\ref{inf:def:product_type/intro}]{ \cdots: (\tau \synplus \sigma) \syntimes (\tau \syntimes \rho) }
-    \end{prooftree}
-  \end{equation*}
-
-  In the other,
-  \begin{equation*}
-    \begin{prooftree}
-      \hypo{ x: (\tau \synplus \sigma) \syntimes (\tau \synplus \rho) }
-      \infer1[\ref{inf:def:product_type/elim_left}]{ \synP_{-R} x: \tau \synplus \sigma }
-
-      \hypo{ a: \tau }
-      \infer1[\ref{inf:def:sum_type/intro_left}]{ \synP_{+L} a: \tau \synplus (\sigma \syntimes \rho) }
-
-      \hypo{}
-      \ellipsis { \( B \) } { \cdots: \tau \synplus (\rho \syntimes \sigma) }
-
-      \infer[left label={\( a, b \)}]3[\ref{inf:def:sum_type/elim}]{ \cdots: \tau \synplus (\sigma \syntimes \rho) }
-    \end{prooftree}
-  \end{equation*}
-  where \( B \) is the following derivation tree with open assumption \( b: \sigma \)
-  \begin{equation*}
-    \begin{prooftree}
-      \hypo{ x: (\tau \synplus \sigma) \syntimes (\tau \synplus \rho) }
-      \infer1[\ref{inf:def:product_type/elim_right}]{ \synP_{-R} x: \tau \synplus \rho }
-
-      \hypo{ c: \tau }
-      \infer1[\ref{inf:def:sum_type/intro_left}]{ \synS_{+L} c: \tau \synplus (\sigma \syntimes \rho) }
-
-      \hypo{ b: \sigma }
-      \hypo{ d: \rho }
-      \infer2[\ref{inf:def:product_type/intro}]{ \synP_+ b d: \sigma \syntimes \rho }
-      \infer1[\ref{inf:def:sum_type/intro_right}]{ \synS_{+R} (\synP_+ b d): \tau \synplus (\sigma \syntimes \rho) }
-
-      \infer[left label={\( c, d \)}]3[\ref{inf:def:sum_type/elim}]{ \synS_- (\qabs {c^\tau} \synS_{+L} c) (\qabs {d^\rho} \synS_{+R} \synP_+ bd): \tau \synplus (\rho \syntimes \sigma) }
-    \end{prooftree}
-  \end{equation*}
-
-  \SubProofOf{thm:simple_algebraic_type_arithmetic/multiplication_absorbs} Both directions are rather simple:
-  \begin{paracol}{2}
-    \begin{leftcolumn}
-      \ParacolAlignmentHack
-      \begin{equation*}
-        \begin{prooftree}
-          \hypo{ x: \tau \syntimes (\tau \synplus \sigma) }
-          \infer1[\ref{inf:def:product_type/elim_left}]{ \synP_{-L} x: \tau }
-        \end{prooftree}
-      \end{equation*}
-    \end{leftcolumn}
-
-    \begin{rightcolumn}
-      \ParacolAlignmentHack
-      \begin{equation*}
-        \begin{prooftree}
-          \hypo{ x: \tau }
-
-          \hypo{ x: \tau }
-          \infer1[\ref{inf:def:sum_type/intro_left}]{ \synS_{+L} x: \tau \synplus \sigma }
-
-          \infer2[\ref{inf:def:product_type/intro}]{ \synP_+ x (\synS_{+L} x): \tau \syntimes (\tau \synplus \sigma) }
-        \end{prooftree}
-      \end{equation*}
-    \end{rightcolumn}
-  \end{paracol}
-
-  \SubProofOf{thm:simple_algebraic_type_arithmetic/addition_absorbs} Again, both directions are simple:
-  \columnratio{0.3,0.7}
-  \begin{paracol}{2}
-    \begin{leftcolumn}
-      \ParacolAlignmentHack
-      \begin{equation*}
-        \begin{prooftree}
-          \hypo{ x: \tau }
-          \infer1[\ref{inf:def:sum_type/intro_left}]{ \synS_{+L} x: \tau \synplus (\tau \syntimes \sigma) }
-        \end{prooftree}
-      \end{equation*}
-    \end{leftcolumn}
-
-    \begin{rightcolumn}
-      \ParacolAlignmentHack
-      \begin{equation*}
-        \begin{prooftree}
-          \hypo{ x: \tau \synplus (\tau \syntimes \sigma) }
-
-          \hypo{ a: \tau }
-
-          \hypo{ b: \tau \syntimes \sigma }
-          \infer1[\ref{inf:def:product_type/elim_left}]{ \synP_{-L} b: \tau }
-
-          \infer[left label={\( a, b \)}]3[\ref{inf:def:sum_type/elim}]{ \synS_- (\qabs {a^\tau} a) (\qabs {b^{\tau \syntimes \sigma}} \synP_{-L} b): \tau }
-        \end{prooftree}
-      \end{equation*}
-    \end{rightcolumn}
-  \end{paracol}
-  \columnratio{}
-\end{proof}
-
-\paragraph{Curry-Howard correspondence}\hfill
+  A simple (albeit not a very elegant) solution that we will use is to treat Latin and Greek identifiers interchangeably, so that type variables correspond exactly to type variables.
+\end{remark}
 
 \begin{algorithm}[Type derivation to proof tree]\label{alg:type_derivation_to_proof_tree}
-  Consider the \hyperref[def:simple_type_system]{simple type system} featuring, along with the corresponding rules, \hyperref[def:simple_type]{arrow types}, \hyperref[def:product_type]{product types}, \hyperref[def:product_type]{sum types}, as well as the \hyperref[def:empty_type]{empty type} and \hyperref[def:unit_type]{unit type}.
+  Consider the \hyperref[def:abstract_type_system]{type system} of \hyperref[def:simple_algebraic_types]{simple algebraic types}.
 
   We give a straightforward algorithm for converting a \hyperref[def:type_derivation_tree]{type derivation tree} in this system into a \hyperref[def:natural_deduction_proof_tree]{proof tree} for the \hyperref[def:propositional_natural_deduction_systems]{propositional intuitionistic natural deduction system}.
-
-  We will present the algorithm for \hyperref[def:typed_lambda_term]{typed} \( \synlambda \)-terms, but the algorithm works just as well for \hyperref[def:lambda_term]{untyped} or even \hyperref[rem:mixed_lambda_term]{mixed} \( \synlambda \)-terms.
 
   \begin{thmenum}
     \thmitem{alg:type_derivation_to_proof_tree/form} First, via \hyperref[con:evaluation]{pattern matching} on the type \( \tau \), we define an operator for converting types into \hyperref[def:propositional_syntax/formula]{propositional formulas}:
@@ -940,11 +594,14 @@
       \op*{Form}(\tau) \coloneqq \begin{cases}
         \top,                                            &\tau = \syn\Bbbone, \\
         \bot,                                            &\tau = \syn\Bbbzero, \\
+        \tau,                                            &\tau \T{is a type variable}, \\
         \op*{Form}(\sigma) \synimplies \op*{Form}(\rho), &\tau = \sigma \synimplies \rho, \\
         \op*{Form}(\sigma) \synwedge \op*{Form}(\rho),   &\tau = \sigma \syntimes \rho, \\
-        \op*{Form}(\sigma) \synvee \op*{Form}(\rho),     &\tau = \sigma \synplus \rho, \\
+        \op*{Form}(\sigma) \synvee \op*{Form}(\rho),     &\tau = \sigma \synplus \rho. \\
       \end{cases}
     \end{equation*}
+
+    If \( \tau \) is a type variable, \( \op*{Form}(\tau) \) is the propositional variable with the same identifier. Variable interoperability is discussed in \fullref{rem:curry_howard_variables}. The other transformations are straightforward.
 
     \thmitem{alg:type_derivation_to_proof_tree/rule} Similarly, we map \hyperref[def:simple_typing_rule]{typing rules} to \hyperref[def:natural_deduction_rule]{natural deduction rules} by name:
     \begin{equation*}
@@ -957,41 +614,71 @@
       \end{cases}
     \end{equation*}
 
+    \thmitem{alg:type_derivation_to_proof_tree/instantiation} As discussed in \fullref{rem:natural_deduction_rule_application}, the application of some rules of natural deduction like \ref{inf:def:propositional_natural_deduction_systems/bot/efq}, \ref{inf:def:propositional_natural_deduction_systems/or/intro_left} and \ref{inf:def:propositional_natural_deduction_systems/or/intro_right} requires an explicit \hyperref[def:propositional_schema_instantiation]{propositional schema instantiation}.
+
+    Each derivation tree has an associated \hyperref[def:lambda_schema_instantiation]{\( \muplambda \)-schema instantiation} from which we can infer the required propositional instantiation.
+
+    It will be sufficient to specify how the instantiation acts on formula placeholders --- the rest can be inferred from the premises. Given a \( \muplambda \)-schema instantiation \( \BbbI \), we define the propositional instantiation \( \op*{Inst}(\BbbI) \) by matching, in order, the formula placeholders of the \( k \)-th premise of \( R \) to the type placeholder of the \( k \)-th premise of \( \op*{Rule}(R) \).
+
+    For example, consider the following application tree of \ref{inf:def:simple_sum_type/intro_left}:
+    \begin{equation*}
+      \begin{prooftree}
+        \hypo{ M: \tau }
+        \infer1[\ref{inf:def:simple_sum_type/intro_left}]{ \synS_{+L} \synx: \tau \synplus \sigma }
+      \end{prooftree}
+    \end{equation*}
+
+    Here \( \BbbI \) maps the type placeholder \( \syn\tau \) to \( \tau \) and \( \syn\sigma \) to \( \sigma \). For the corresponding rule \ref{inf:def:propositional_natural_deduction_systems/or/intro_left}, \( \op*{Inst}(\BbbI) \) maps \( \syn\varphi \) to \( \tau \) and \( \syn\psi \) to \( \sigma \).
+
+    This allows us to unambiguously apply the rule \ref{inf:def:propositional_natural_deduction_systems/or/intro_left} with \( \op*{Inst}(\BbbI) \) and obtain
+    \begin{equation*}
+      \begin{prooftree}
+        \hypo{ \tau }
+        \infer1[\ref{inf:def:propositional_natural_deduction_systems/or/intro_left}]{ \tau \synvee \sigma }
+      \end{prooftree}
+    \end{equation*}
+
     \thmitem{alg:type_derivation_to_proof_tree/tree} Finally, we define a proof tree \( \op*{Proof}(D) \) for every derivation tree \( D \) in our system:
     \begin{thmenum}
       \thmitem{alg:type_derivation_to_proof_tree/tree/assumption} Suppose first that \( D \) is an assumption tree for the type assertion \( x: \tau \).
 
       Then we define \( \op*{Proof}(D) \) as the assumption tree for the formula \( \op*{Form}(\tau) \) with assumption marker \( x \).
 
-      \thmitem{alg:type_derivation_to_proof_tree/tree/application} Otherwise, \( D \) is an application tree. Let \( R \) be the (name of the) applied rule and let \( M: \tau \) be the conclusion.
+      \thmitem{alg:type_derivation_to_proof_tree/tree/application} Otherwise, \( D \) is an application tree, in which case we define \( \op*{Proof}(D) \) via straightforward recursion on the premises of \( D \).
 
-      We define \( \op*{Proof}(D) \) via straightforward recursion on the premises of \( D \).
-
-      We have adjusted our rules so that \( \op*{Rule}(R) \) has the same amount of premises as \( R \), with discharge assertions in the same places, and with the types in \( R \) corresponding via \( \op*{Form} \) to the formulas in \( \op*{Rule}(R) \). It follows that the conclusion of \( \op*{Proof}(D) \) is the transformation via \( \op*{Form} \) of the conclusion of \( D \).
+      Correctness is straightforward. Let \( R \) be the (name of the) applied rule and let \( M: \tau \) be the conclusion. We have adjusted our rules so that \( \op*{Rule}(R) \) has the same amount of premises as \( R \), with discharge assertions in the same places, and with the types in \( R \) corresponding via \( \op*{Form} \) to the formulas in \( \op*{Rule}(R) \), with details filled in by the translated instantiation \( \op*{Inst}(\BbbI) \). It follows that the conclusion of \( \op*{Proof}(D) \) is the transformation via \( \op*{Form} \) of the conclusion of \( D \).
     \end{thmenum}
   \end{thmenum}
 \end{algorithm}
 \begin{comments}
   \item This algorithm can be found as \identifier{lambda_.curry_howard.derivation_to_proof.type_derivation_to_proof_tree} in \cite{notebook:code}.
+
+  \item When restricted to arrow types, this algorithm works just as well for \hyperref[def:lambda_term]{untyped} or even \hyperref[rem:mixed_lambda_term]{mixed} \( \muplambda \)-terms.
 \end{comments}
 
 \begin{algorithm}[Proof tree to type derivation]\label{alg:proof_tree_to_type_derivation}
   Dually to \fullref{alg:type_derivation_to_proof_tree}, we can convert a \hyperref[def:natural_deduction_proof_tree]{proof tree} in the \hyperref[def:propositional_natural_deduction_systems]{propositional intuitionistic natural deduction system} into a \hyperref[def:type_derivation_tree]{type derivation tree}. We must, however, due to the lack of established type-theoretic alternatives, restrict ourselves to formulas featuring no negation or equivalence, and disallow the rule \ref{inf:def:propositional_natural_deduction_systems/bot/dne}.
 
   \begin{thmenum}
-    \thmitem{alg:proof_tree_to_type_derivation/type} We define the operator \( \op*{Type}(\varphi) \) as the partial inverse of \( \op*{Form}(\tau) \) from \fullref{alg:type_derivation_to_proof_tree/form}, with no types corresponding to negation and equivalence.
+    \thmitem{alg:proof_tree_to_type_derivation/type} We define the operator \( \op*{Type}(\varphi) \) as the partial inverse of the operator \( \op*{Form}(\tau) \) from \fullref{alg:type_derivation_to_proof_tree/form}, with no types corresponding to negation and equivalence.
+
+    Propositional variables get mapped to type variables with the same name. Variable interoperability is discussed in \fullref{rem:curry_howard_variables}.
 
     \thmitem{alg:proof_tree_to_type_derivation/rule} We define \( \op*{Rule}(R) \) as the inverse of the eponymous operator from \fullref{alg:type_derivation_to_proof_tree/rule}.
+
+    \thmitem{alg:proof_tree_to_type_derivation/instantiation} Conversely to \fullref{alg:type_derivation_to_proof_tree/instantiation}, we must translate the \hyperref[def:propositional_schema_instantiation]{propositional schema instantiation} \( \mscrI \) to a \hyperref[def:lambda_schema_instantiation]{\( \muplambda \)-schema instantiation} \( \op*{Inst}(\mscrI) \).
+
+    Fortunately, it is sufficient to only match formula placeholders to type placeholders since the rest can be inferred from the premises. Thus \( \op*{Inst} \) must be the inverse of the eponymous operator in \fullref{alg:type_derivation_to_proof_tree/instantiation}.
 
     \thmitem{alg:proof_tree_to_type_derivation/tree} Finally, we define a derivation tree \( \op*{Deriv}(P) \) for every admissible proof tree \( P \):
     \begin{thmenum}
       \thmitem{alg:proof_tree_to_type_derivation/tree/assumption} Suppose first that \( P \) is an assumption tree for \( \varphi \) with marker \( x \).
 
-      Then we regard \( x \) as a variable \( \synlambda \)-term, and define \( \op*{Deriv}(P) \) as the assumption tree for the type assertion \( x: \op*{Type}(\varphi) \).
+      Then we regard \( x \) as a variable \( \muplambda \)-term, and define \( \op*{Deriv}(P) \) as the assumption tree for the type assertion \( x: \op*{Type}(\varphi) \).
 
-      \thmitem{alg:proof_tree_to_type_derivation/tree/application} Otherwise, \( P \) is an application tree. As in \fullref{alg:type_derivation_to_proof_tree/tree/application}, we define \( \op*{Deriv}(P) \) by straightforward recursion on the premises of \( P \).
+      \thmitem{alg:proof_tree_to_type_derivation/tree/application} Otherwise, \( P \) is an application tree. As in \fullref{alg:type_derivation_to_proof_tree/tree/application}, we define \( \op*{Deriv}(P) \) by straightforward recursion on the premises of \( P \), with details filled by the translated instantiation \fullref{alg:proof_tree_to_type_derivation/instantiation}.
 
-      We thus conjure up a (typed) \( \synlambda \)-term in the conclusion of \( \op*{Deriv}(P) \), which is uniquely determined by the assumption markers in \( P \) and the typing rules we have crafted.
+      We thus conjure up a (typed) \( \muplambda \)-term in the conclusion of \( \op*{Deriv}(P) \), which is uniquely determined by the assumption markers in \( P \) and the typing rules we have crafted.
     \end{thmenum}
   \end{thmenum}
 \end{algorithm}
@@ -1008,7 +695,7 @@
     \begin{equation*}
       \begin{prooftree}
         \hypo{ \synx: \tau }
-        \infer[left label=\( \synx \)]1[\ref{inf:def:arrow_typing_rules/intro/implicit}]{ \qabs \synx \synx: \tau \synimplies \tau }
+        \infer[left label=\( \synx \)]1[\ref{inf:def:arrow_type/intro/implicit}]{ \qabs \synx \synx: \tau \synimplies \tau }
       \end{prooftree}
     \end{equation*}
     into the \hyperref[def:natural_deduction_proof_tree]{proof tree}
@@ -1023,8 +710,8 @@
     \begin{equation*}
       \begin{prooftree}
         \hypo{ \synx: \tau }
-        \infer1[\ref{inf:def:arrow_typing_rules/intro/implicit}]{ \qabs \syny \synx: \sigma \synimplies \tau }
-        \infer[left label=\( \synx \)]1[\ref{inf:def:arrow_typing_rules/intro/implicit}]{ \qabs \synx \qabs \syny \synx: \tau \synimplies \sigma \synimplies \tau }
+        \infer1[\ref{inf:def:arrow_type/intro/implicit}]{ \qabs \syny \synx: \sigma \synimplies \tau }
+        \infer[left label=\( \synx \)]1[\ref{inf:def:arrow_type/intro/implicit}]{ \qabs \synx \qabs \syny \synx: \tau \synimplies \sigma \synimplies \tau }
       \end{prooftree}
     \end{equation*}
     is transformed into
@@ -1038,34 +725,16 @@
 
     We can recognize the axiom schema \eqref{eq:def:minimal_implication_logic/intro} from \hyperref[def:minimal_implication_logic]{minimal implicational logic}.
 
-    For the combinator \( \ref{eq:ex:def:lambda_term/combinator/s} = \qabs \synx \qabs \syny \qabs \synz \synx \synz (\syny \synz) \) we have a more derivation tree shown in \fullref{ex:def:type_derivation_tree/s}. Transforming it, we obtain a proof tree for
+    For the combinator \( \ref{eq:ex:def:lambda_term/combinator/s} = \qabs \synx \qabs \syny \qabs \synz \synx \synz (\syny \synz) \) we have a more complicated derivation tree shown in \fullref{ex:def:type_derivation_tree/s}. Transforming it, we obtain a proof tree for
     \begin{equation*}
       \parens[\Big]{ \tau \synimplies (\sigma \synimplies \rho) } \synimplies \parens[\Big]{ (\tau \synimplies \sigma) \synimplies (\tau \synimplies \rho)},
     \end{equation*}
     which is an instance of the axiom schema \eqref{eq:def:minimal_implication_logic/dist} from minimal implicational logic.
 
-    \thmitem{ex:con:curry_howard_correspondence/algebraic_types} Under the identification given by the Curry-Howard correspondence, the quotient \( T / {\gleichstark} \) from \fullref{thm:simple_algebraic_type_arithmetic} corresponds to a \hyperref[def:lindenbaum_tarski_algebra]{Lindenbaum-Tarski algebra}, which for intuitionistic natural deduction is, as shown in \fullref{thm:lindenbaum_tarski_algebras/intuitionistic}, a \hyperref[def:heyting_algebra]{Heyting algebra}.
+    \thmitem{ex:con:curry_howard_correspondence/algebraic_types} We will show in \fullref{thm:simple_algebraic_type_arithmetic} how a certain quotient set of simple algebraic types is a distributive lattice. Under the identification given by the Curry-Howard correspondence, this quotient corresponds to a \hyperref[def:lindenbaum_tarski_algebra]{Lindenbaum-Tarski algebra}, which for intuitionistic natural deduction is, as shown in \fullref{thm:lindenbaum_tarski_algebras/intuitionistic}, a \hyperref[def:heyting_algebra]{Heyting algebra}.
 
-    Unlike in Lindenbaum-Tarski algebras, here we are mostly interested in the algebraic, and not the order-theoretic properties. We don't even show that the arrow type former acts as a relative pseudocomplement.
+    Unlike in Lindenbaum-Tarski algebras, here we are mostly interested in the algebraic, and not the order-theoretic properties. We don't even show that the arrow type constructor acts as a relative pseudocomplement.
 
     We prove the algebraic properties directly by giving proof derivation trees. Via \fullref{alg:type_derivation_to_proof_tree}, however, these derivation trees can be converted to proof trees that demonstrate some of the properties of the Lindenbaum-Tarski algebra that we show in \fullref{thm:lindenbaum_tarski_algebras/intuitionistic}.
   \end{thmenum}
 \end{example}
-
-\paragraph{Dependent types}
-
-\begin{concept}\label{con:identity_types}
-  \todo{Identity types}
-
-  Martin-L\"of distinguishes between several kinds of equality and introduces \enquote{identity types} (see \fullref{con:identity_types}), allowing him to develop his \enquote{intuitionistic type theory} --- a fusion of type theory and higher-order logic based on the \hyperref[con:curry_howard_correspondence]{Curry-Howard correspondence}. His theory first appears as \cite{MartinLöf1975IntuitionisticTypeTheory} and, in a more refined later form, can be found in \cite{MartinLöf1984IntuitionisticTypeTheory}.
-\end{concept}
-
-\begin{concept}\label{con:dependent_types}
-  \todo{Discuss dependent types}
-
-  \Fullref{thm:set_of_all_functions_via_cartesian_product}.
-\end{concept}
-
-\begin{remark}\label{rem:dependent_type_theory}
-  Because of this latter development, \enquote{intuitionistic type theory}, \enquote{dependent type theory} and \enquote{Martin-L\"of type theory} refer to this more abstract setting. \enquote{Simple type theory} continues to refer to the theory with only arrow types. Accidentally, the adjective \enquote{simple} is a contradistinction with Russell's type theory rather than Martin-L\"of's.
-\end{remark}

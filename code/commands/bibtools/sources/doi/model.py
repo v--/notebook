@@ -113,7 +113,13 @@ class DoiAssertion(DoiBaseModel):
 
 
 class DoiRelation(DoiBaseModel):
-    pass
+    id_type: str
+    id: str
+    asserted_by: str
+
+
+class DoiRelationMap(DoiBaseModel):
+    is_identical_to: Annotated[list[DoiRelation], Field(default_factory=list)]
 
 
 class DoiSubject(DoiBaseModel):
@@ -160,7 +166,7 @@ class DoiData(DoiBaseModel):
     url: str
 
     resource: DoiResource | None = None
-    relation: DoiRelation | None =None
+    relation: DoiRelationMap | None =None
     subject: list[DoiSubject] | None = None
 
     is_referenced_by_count: int | None = None

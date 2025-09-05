@@ -1,5 +1,5 @@
 from ....support.pytest import pytest_parametrize_kwargs
-from ..parsing import parse_pure_term
+from ..parsing import parse_untyped_term
 from ..variables import get_bound_variables, get_free_variables
 from .alpha import are_terms_alpha_equivalent, separate_free_and_bound_variables
 
@@ -19,8 +19,8 @@ from .alpha import are_terms_alpha_equivalent, separate_free_and_bound_variables
 )
 def test_are_terms_alpha_equivalent_true(m: str, n: str) -> None:
     assert are_terms_alpha_equivalent(
-        parse_pure_term(m),
-        parse_pure_term(n)
+        parse_untyped_term(m),
+        parse_untyped_term(n)
     )
 
 
@@ -34,8 +34,8 @@ def test_are_terms_alpha_equivalent_true(m: str, n: str) -> None:
 )
 def test_are_terms_alpha_equivalent_false(m: str, n: str) -> None:
     assert not are_terms_alpha_equivalent(
-        parse_pure_term(m),
-        parse_pure_term(n)
+        parse_untyped_term(m),
+        parse_untyped_term(n)
     )
 
 
@@ -70,7 +70,7 @@ def test_are_terms_alpha_equivalent_false(m: str, n: str) -> None:
     ),
 )
 def test_separate_free_and_bound_variables(term: str, expected: str) -> None:
-    old_term = parse_pure_term(term)
+    old_term = parse_untyped_term(term)
     new_term = separate_free_and_bound_variables(old_term)
     assert are_terms_alpha_equivalent(old_term, new_term)
 

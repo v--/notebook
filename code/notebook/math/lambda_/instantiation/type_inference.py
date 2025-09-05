@@ -34,11 +34,12 @@ class BuildInstantiationVisitor(TypeSchemaVisitor[LambdaSchemaInstantiation]):
         if not isinstance(self.type, SimpleConnectiveType) or self.type.conn != schema.conn:
             raise SchemaInferenceError(f'Cannot match type schema {schema} to {self.type}')
 
-        a = infer_instantiation_from_type(schema.a, self.type.a)
-        b = infer_instantiation_from_type(schema.b, self.type.b)
-        return merge_instantiations(a, b)
+        left = infer_instantiation_from_type(schema.left, self.type.left)
+        right = infer_instantiation_from_type(schema.right, self.type.right)
+        return merge_instantiations(left, right)
 
 
+# This is alg:simple_type_schema_inference in the monograph
 def infer_instantiation_from_type(schema: SimpleTypeSchema, type_: SimpleType) -> LambdaSchemaInstantiation:
     return BuildInstantiationVisitor(type_).visit(schema)
 
