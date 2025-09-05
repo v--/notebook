@@ -141,3 +141,4 @@ class TestMatrixMultiplication:
 
     def test_inverse(self, mat123: IntMatrix, mat123inv: FloatMatrix) -> None:
         assert mat123inv @ FloatMatrix.lift_matrix(mat123) == pytest.approx(FloatMatrix.eye(3))
+
