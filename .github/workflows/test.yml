@@ -1,0 +1,25 @@
+name: Test
+
+on:
+  push:
+    branches: [master]
+
+jobs:
+  build:
+    runs-on:  ubuntu-24.04
+
+    steps:
+    - uses: actions/checkout@v2
+    - uses: actions/setup-python@v4
+    - uses: abatilo/actions-poetry@v2
+
+    - name: Install dependencies
+      run: |
+        poetry --directory code install --all-extras --with dev
+        pip install poethepoet
+
+    - name: Lint
+      run: poe --root code lint
+
+    - name: Test
+      run: poe --root code test
