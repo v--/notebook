@@ -82,7 +82,7 @@ class LaTeXTask(WatcherTask):
         if requires_rerun:
             runner.schedule(LaTeXTask(self.base_logger, self.tex_path), 'rerunfilecheck')
         elif requires_biber_rerun:
-            from .biber import BiberTask  # Avoid circular import
+            from .biber import BiberTask  # Avoid circular import  # noqa: PLC0415
             runner.schedule(BiberTask(self.base_logger, self.tex_path), str(self.tex_path))
         else:
             self.sublogger.debug(f'No more passes required. Copying {self.get_aux_path(".pdf")} to {self.build_pdf_path}')

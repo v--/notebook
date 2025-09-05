@@ -259,7 +259,7 @@ class BibEntryAdjuster:
             origlanguages=[self.adjust_language(author) for author in self.adjusted.origlanguages],
             # other
             pages=normalize_pages(self.adjusted.pages) if isinstance(self.adjusted.pages, str) else self.adjusted.pages,
-            isbn=isbn.format(self.adjusted.isbn) if self.adjusted.isbn else None,
+            isbn=isbn.format(self.adjusted.isbn) if isinstance(self.adjusted.isbn, str) else None,
             issn=','.join(map(issn.format, self.adjusted.issn.split(','))) if isinstance(self.adjusted.issn, str) else self.adjusted.issn
         )
 
