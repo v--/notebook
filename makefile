@@ -13,7 +13,7 @@ aux:
 output:
 	mkdir --parents output
 
-output/notebook.pdf: $(TEXT_SOURCE) images/*.png | aux output
+output/notebook.pdf: $(TEXT_SOURCE) images/*.png $(wildcard includeonly metadata) | aux output
 	$(COMPILER) -output-directory=aux -draftmode notebook.tex
 	biber --quiet aux/notebook.bcf
 	$(COMPILER) -output-directory=aux -draftmode notebook.tex
