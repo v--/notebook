@@ -18,7 +18,7 @@
 
     \thmitem{ex:def:endomorphism_monoid/c2} The endomorphism monoid \( \End(C_2) \) of the \hyperref[def:cyclic_group]{cyclic group} \( C_2 = \set{ e, a } \) consists of two functions:
     \begin{itemize}
-      \item The identity map)
+      \item The identity map.
       \item The contraction sending both \( e \) and \( a \) to \( e \).
     \end{itemize}
 
@@ -451,10 +451,10 @@
 
 \paragraph{Group action orbits}
 
-\begin{definition}\label{def:group_action_orbit}\mcite[163]{Knapp2016BasicAlgebra}
-  The \term[bg=орбита (\cite[def. IV.20]{ГеновМиховскиМоллов1991Алгебра}), ru=орбита (\cite[453]{Винберг2014КурсАлгебры})]{orbit} of \( x \) under the \hyperref[def:group_action]{group action} \( \Phi: G \times X \to X \) is the set of all members of \( X \) \enquote{reachable} from \( x \):
+\begin{definition}\label{def:group_action_orbit}\mcite[74]{Jacobson1985BasicAlgebraI}
+  The \term[bg=орбита (\cite[def. IV.20]{ГеновМиховскиМоллов1991Алгебра}), ru=орбита (\cite[179]{Винберг2014КурсАлгебры})]{orbit} of \( x \) under the \hyperref[def:group_action]{group action} \( \Phi: G \times X \to X \) is the set of all members of \( X \) \enquote{reachable} from \( x \):
   \begin{equation*}
-    \set{ \Phi_g(x) \given g \in G }.
+    O(x) \coloneqq \set{ \Phi_g(x) \given g \in G }.
   \end{equation*}
 \end{definition}
 
@@ -1130,4 +1130,99 @@
   \end{equation*}
 
   Since \( \varphi \) is an epimorphism, we have \( \psi = \theta \). But we have deliberately constructed \( \psi \) and \( \theta \) such that \( \psi \neq \theta \). The obtained contradiction shows that \( \img \varphi \) cannot be a strict subgroup of \( G \). Therefore, \( \varphi \) must be surjective.
+\end{proof}
+
+\paragraph{Stabilizers}
+
+\begin{definition}\label{def:group_action_stabilizer}\mcite[75]{Jacobson1985BasicAlgebraI}
+  The \term[bg=стабилизатор (\cite[def. IV.19]{ГеновМиховскиМоллов1991Алгебра}), ru=стабилизатор (\cite[179]{Винберг2014КурсАлгебры})]{stabilizer} of \( x \) under the \hyperref[def:group_action]{group action} \( \Phi: G \times X \to X \) is the set of all group members under which \( x \) is invariant:
+  \begin{equation*}
+    S(x) \coloneqq \set{ g \in G \given \Phi_g(x) = x }.
+  \end{equation*}
+\end{definition}
+
+\begin{proposition}\label{thm:def:group_action_stabilizer}
+  The \hyperref[def:group_action_stabilizer]{stabilizers} of the \hyperref[def:group_action]{group action} \( \Phi: G \times X \to X \) have the following basic properties:
+  \begin{thmenum}
+    \thmitem{thm:def:group_action_stabilizer/subgroup} The stabilizer \( S(x) \) of any element is a \hyperref[def:group/submodel]{subgroup} of \( G \).
+  \end{thmenum}
+\end{proposition}
+\begin{proof}
+  \SubProofOf{thm:def:group_action_stabilizer/subgroup} We have \( \Phi(e, x) = x \) by \eqref{eq:def:monoid_action/family/identity}, hence \( e \in S(x) \).
+
+  Next, if \( g \in S(x) \), we have
+  \begin{equation*}
+    x
+    =
+    \Phi(e, x)
+    =
+    \Phi(g^{-1}, g, x)
+    \reloset {\eqref{eq:def:group_action/family/compatibility}} =
+    \Phi(g^{-1}, \Phi(g, x))
+    =
+    \Phi(g^{-1}, x),
+  \end{equation*}
+  hence \( g^{-1} \in S(x) \).
+
+  Finally, given \( g, h \in S(x) \), we have
+  \begin{equation*}
+    \Phi(gh, x)
+    \reloset {\eqref{eq:def:group_action/family/compatibility}} =
+    \Phi(g, \Phi(h, x))
+    =
+    \Phi(g, x)
+    =
+    x,
+  \end{equation*}
+  hence \( gh \in S(x) \).
+
+  Thus, we have shown that \( S(x) \) is a subgroup of \( G \).
+\end{proof}
+
+\begin{theorem}[Orbit-stabilizer theorem]\label{thm:orbit_stabilizer_theorem}
+  The \hyperref[def:group_action_orbit]{orbits} and \hyperref[def:group_action_stabilizer]{stabilizers} of the \hyperref[def:group_action]{group action} \( \Phi: G \times X \to X \) are related as follows: for any point \( x \) in \( X \), we have
+  \begin{equation}\label{eq:thm:orbit_stabilizer_theorem}
+    \ord(G) = \ord(S(x)) \cdot \ord(O(x)).
+  \end{equation}
+\end{theorem}
+\begin{comments}
+  \item The set \( S(x) \) consists of group elements, while \( O(x) \) consists of points of \( X \).  The two sets are related only by cardinality.
+\end{comments}
+\begin{proof}
+  \Fullref{thm:def:group_action_stabilizer/subgroup} implies that \( S(x) \) is a subgroup of \( G \), hence, by \fullref{thm:lagranges_subgroup_theorem},
+  \begin{equation*}
+    \ord(G) = \ord(S(x)) \cdot [G: S(x)].
+  \end{equation*}
+
+  It remains to show that \( [G: S(x)] = \ord(O(x)) \). For this, consider the map
+  \begin{equation*}
+    F(g S(x)) \coloneqq \Phi(g, x).
+  \end{equation*}
+  defined on the (left) cosets of \( S(x) \) in \( G \). We will show that it is a well-defined bijective map from the cosets of \( S(x) \) to \( O(x) \).
+
+  \SubProof{Proof that \( F \) is well-defined} Suppose that \( g S(x) = h S(x) \). \Fullref{thm:subgroup_cosets/translation_congruence} implies that \( g^{-1} h \in S(x) \).
+
+  Then \( \Phi(e, x) = \Phi(g^{-1} h, x) = \Phi(g, x)^{-1} \Phi(h, x) \) After multiplying (composing) by \( \Phi(x, g) \), we obtain \( \Phi(x, h) = \Phi(x, g) \).
+
+  Therefore, \( F(g S(x)) = F(h S(x)) \); that is, \( F \) is well-defined.
+
+  \SubProof{Proof that \( \img F = O(x) \)} Since \( F(g S(x)) = \Phi(g, x) \), we have
+  \begin{equation*}
+    O(x) = \set{ F(g S(x)) \given g \in G }.
+  \end{equation*}
+
+  \SubProof{Proof that \( F \) is injective} Suppose that \( F(g S(x)) = F(h S(x)) \). Then
+  \begin{equation*}
+    \Phi(g, x) = F(g S(x)) = F(h S(x)) = \Phi(h, x).
+  \end{equation*}
+
+  We can compose with \( \Phi(g, x)^{-1} \) to conclude that
+  \begin{equation*}
+    \Phi(e, x) = \underbrace{\Phi(g, x)^{-1} \Phi(h, x)}_{\Phi(g^{-1} h, x)}.
+  \end{equation*}
+
+  Then \( g^{-1} h \) stabilizes \( x \), i.e. \( g^{-1} h \in S(x) \). By \fullref{thm:subgroup_cosets/translation_congruence} it follows that
+  \begin{equation*}
+    g S(x) = g g^{-1} h S(x) = h S(x).
+  \end{equation*}
 \end{proof}
