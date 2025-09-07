@@ -59,10 +59,12 @@
     This defines a function \( \Phi: M \times X \to X \).
   \end{thmenum}
 \end{definition}
-  \begin{comments}
+\begin{comments}
   \item Our definition is based on a straightforward generalization of group actions; see \fullref{def:group_action}.
   \item Even though we assume by default that \( X \) is a set, more general cases can be helpful; see \fullref{rem:group_action_category}.
   \item For convenience, we will sometimes denote the values of the \hyperref[def:monoid_action]{evolution function} \( \Phi: M \times X \to X \) as \( \Phi_m(x) \) rather than \( \Phi(m, x) \).
+
+  \item When \( M \) is commutative, left and right actions coincide.
 \end{comments}
 \begin{defproof}
   \ImplicationSubProof{def:monoid_action/homomorphism}{def:monoid_action/functor} Suppose that we have a monoid homomorphism \( \Phi: M \to \End(X) \). Define the functor
@@ -276,6 +278,7 @@
 \end{definition}
 \begin{comments}
   \item Even though we assume by default that \( X \) is a set, more general cases can be helpful; see \fullref{rem:group_action_category}.
+  \item When \( M \) is commutative, left and right actions coincide.
 \end{comments}
 
 \begin{remark}\label{rem:group_action_category}
@@ -397,6 +400,8 @@
     \thmitem{ex:def:group_action/exponentiation} As shown in \fullref{thm:exponentiation_group_action}, the additive group of integers acts on any group by exponentiation.
 
     \thmitem{ex:def:group_action/conjugation} As shown in \fullref{thm:group_conjugation_action}, every group acts on itself by conjugation.
+
+    \thmitem{ex:def:group_action/cyclic_shift} As shown in \fullref{thm:cyclic_shift_is_action}, \hyperref[def:cyclic_group]{cyclic groups} act on certain sets of tuples by \hyperref[def:cyclic_shift]{cyclic shifts}.
 
     \thmitem{ex:def:group_action/representation} All \hyperref[def:group_representation]{group representations} (see \fullref{ex:def:group_representation}) are group actions by definition.
 
@@ -768,16 +773,65 @@
 \end{definition}
 
 \begin{definition}\label{def:cyclic_shift}\mimprovised
-  The \term{cyclic shift} of a list
+  We define the \term{right cyclic shift} of a list
   \begin{equation*}
     a_1, a_2, \ldots, a_n
   \end{equation*}
-  by an integer \( c \) is the list
+  by an integer \( c \) as the list
   \begin{equation*}
     a_{k_1}, \ldots, a_{k_n},
   \end{equation*}
-  where \( k_i \coloneqq \rem_1(i + c, m) \) for \( i = 1, \ldots, n \).
+  where \( k_i \coloneqq \rem_1(i + c, n) \) for \( i = 1, \ldots, n \).
+
+  We denote by \( S^c \) the operator that sends a list of length \( n \) to its right shift by \( c \).
+
+  We define left cyclic shifts as right cyclic shifts by \( -c \).
 \end{definition}
+\begin{comments}
+  \item Cyclic shifts adapt to finite lists the shift operators from infinite and doubly-infinite sequences, which we define in \fullref{def:sequence_shift_operator}, as well as digit shifts, which we define in \fullref{def:digit_shift}.
+\end{comments}
+
+\begin{proposition}\label{thm:cyclic_shift_is_action}
+  Fix a subset \( L \) of \( n \)-tuples that is closed under \hyperref[def:cyclic_shift]{cyclic shifts}.
+
+  Then the \hyperref[def:cyclic_group]{cyclic group} \( C_n \) \hyperref[def:group_action]{acts} on \( S \) by sending \( a^c \) to a right shift by \( c \).
+\end{proposition}
+\begin{comments}
+  \item Since \( C_n \) is commutative, this is simultaneously a left and a right action.
+\end{comments}
+\begin{proof}
+  We must show that \( S^d \bincirc S^c = S^{d + c} \).
+
+  For a concrete tuple \( (x_1, \ldots, x_n) \), we have
+  \begin{equation*}
+    S^d(S^c(x_1, \ldots, x_n)) = S^d(x_{k_1}, \ldots, x_{k_n}) = (x_{m_1}, \ldots, x_{m_n}),
+  \end{equation*}
+  where \( k_i \coloneqq \rem_1(c + i, n) = \rem(c + i - 1, n) + 1 \) and \( m_i \coloneqq \rem_1(d + k_i, n) = \rem(d + k_i - 1, n) + 1 \) for every index \( i \).
+
+  We will discuss modular arithmetic in more detail in \fullref{sec:abelian_groups}; until then, we must prove from first principles whatever properties we need.
+
+  Fix an index \( i \). By definition of remainder, there exist integers \( e \) such that
+  \begin{equation*}
+    c + i - 1 = ne + (k_i - 1)
+  \end{equation*}
+  and \( f \) such that
+  \begin{equation*}
+    d + k_i - 1 = nf + (m_i - 1).
+  \end{equation*}
+
+  We have \( k_i = c + i - ne \), thus
+  \begin{equation*}
+    d + (c + i - ne) - 1 = nf + (m_i - 1),
+  \end{equation*}
+  which we can transform to
+  \begin{equation*}
+    (d + c) + i - 1 = n(e + f) + (m_i - 1).
+  \end{equation*}
+
+  Therefore, \( m_i = \rem((d + c) + i - 1, n) + 1 = \rem_1((d + c) + i, n) \).
+
+  We have thus demonstrated that \( S^d \bincirc S^c \) is a cyclic shift by \( d + c \).
+\end{proof}
 
 \begin{proposition}\label{thm:cyclic_permutation_cyclic_shift}
   \hyperref[def:cyclic_permutation]{Cyclic permutations} are invariant under \hyperref[def:cyclic_shift]{cyclic shifts} of the elements in their representations.
@@ -1182,7 +1236,7 @@
 \begin{theorem}[Orbit-stabilizer theorem]\label{thm:orbit_stabilizer_theorem}
   The \hyperref[def:group_action_orbit]{orbits} and \hyperref[def:group_action_stabilizer]{stabilizers} of the \hyperref[def:group_action]{group action} \( \Phi: G \times X \to X \) are related as follows: for any point \( x \) in \( X \), we have
   \begin{equation}\label{eq:thm:orbit_stabilizer_theorem}
-    \ord(G) = \ord(S(x)) \cdot \ord(O(x)).
+    \ord(G) = \ord(S(x)) \cdot \card(O(x)).
   \end{equation}
 \end{theorem}
 \begin{comments}
@@ -1194,7 +1248,7 @@
     \ord(G) = \ord(S(x)) \cdot [G: S(x)].
   \end{equation*}
 
-  It remains to show that \( [G: S(x)] = \ord(O(x)) \). For this, consider the map
+  It remains to show that \( [G: S(x)] = \card(O(x)) \). For this, consider the map
   \begin{equation*}
     F(g S(x)) \coloneqq \Phi(g, x).
   \end{equation*}
