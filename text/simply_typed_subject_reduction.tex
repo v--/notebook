@@ -336,7 +336,7 @@ We will mostly be working with \hyperref[def:simple_algebraic_types]{simple alge
   \begin{thmenum}
     \thmitem{alg:simply_typed_reduction/assumption} \( T \) cannot be an assumption tree because then \( M \) would be a variable, and \fullref{thm:single_step_reduction_deconstruction/var} implies that variables cannot be reduced. The algorithm must error out in this case.
 
-    \thmitem{alg:simply_typed_reduction/arrow_intro} If \( T \) is an application tree for \ref{inf:def:arrow_type/intro/explicit}, then \( \tau = \rho \rightarrow \pi \) for some types \( \rho \) and \( \pi \) and \( M = \qabs {a^\rho} A \) for some variable \( A \) and \( \muplambda \)-term \( A \).
+    \thmitem{alg:simply_typed_reduction/arrow_intro} If \( T \) is an application tree for \ref{inf:def:arrow_type/intro/explicit}, then \( \tau = \rho \synimplies \pi \) for some types \( \rho \) and \( \pi \) and \( M = \qabs {a^\rho} A \) for some variable \( A \) and \( \muplambda \)-term \( A \).
 
     Let \( T_A \) be the premise of \( T \).
 
@@ -346,7 +346,38 @@ We will mostly be working with \hyperref[def:simple_algebraic_types]{simple alge
 
       This is only possible if \( A = Ea \) for some \( \muplambda \)-term \( E \) that is \( \alpha \)-equivalent to \( N \). Furthermore, \( A \) is an application term only if \( A \) is an application of \ref{inf:def:arrow_type/elim}.
 
-      Let \( T_E \) be the left premise subtree of \( T_A \). We can attempt to use \fullref{alg:simply_typed_alpha_conversion} on \( E \aequiv N \), which should transform \( T_E \) into a derivation tree \( T_N \) of \( N: \tau \).
+      Let \( T_E \) be the left premise subtree of \( T_A \). We can attempt to use \fullref{alg:simply_typed_alpha_conversion} on \( E \aequiv N \), which should transform \( T_E \) into a derivation tree \( T' \) of \( N: \tau \).
+
+      \begin{figure}[!ht]
+        \hfill
+        \hfill
+        \begin{subcaptionblock}{0.45\textwidth}
+          \begin{equation*}
+            \begin{prooftree}
+              \hypo{ }
+              \ellipsis { \( T_E \) } { E: \rho \synimplies \pi }
+
+              \hypo { a: \rho }
+              \infer2[\ref{inf:def:arrow_type/elim}]{ E a: \pi }.
+
+              \infer1[\ref{inf:def:arrow_type/intro/explicit}]{ \qabs {a^\rho} E a: \rho \synimplies \pi }.
+            \end{prooftree}
+          \end{equation*}
+          \caption{The original tree \( T \).}
+        \end{subcaptionblock}
+        \hfill
+        \begin{subcaptionblock}{0.45\textwidth}
+          \begin{equation*}
+            \begin{prooftree}
+              \hypo{ }
+              \ellipsis { \( T' \) } { N: \rho \synimplies \pi }
+            \end{prooftree}
+          \end{equation*}
+          \caption{The tree \( T' \) obtained via conversion of \( T_E \).}
+        \end{subcaptionblock}
+        \hfill
+        \caption{Transformation of the \hyperref[def:type_derivation_tree]{type derivation tree} when handling \hyperref[def:beta_eta_reduction]{\( \eta \)-reduction} in \fullref{alg:simply_typed_reduction}. Since \( E \aequiv N \), we use \fullref{alg:simply_typed_alpha_conversion} to transform \( T_E \) into a tree \( T' \) deriving \( N: \rho \synimplies \pi \).}\label{fig:alg:simply_typed_reduction/arrow_intro/eta}
+      \end{figure}
 
       In the following cases, we should proceed to \fullref{alg:simply_typed_reduction/arrow_intro/abs} since \( \eta \)-reduction could not have been used:
       \begin{itemize}
@@ -397,6 +428,37 @@ We will mostly be working with \hyperref[def:simple_algebraic_types]{simple alge
 
       In this case, \( T_A \) must be an application tree for \ref{inf:def:arrow_type/intro/explicit}. Let \( T_E \) be its premise. We use \fullref{alg:simply_typed_substitution} to obtain from \( T_E \) a derivation tree \( T_E' \) for \( E[x \mapsto B]: \tau \), and then \fullref{alg:simply_typed_alpha_conversion} on \( T_E' \) to obtain a derivation tree for \( N: \tau \).
 
+      \begin{figure}[!ht]
+        \hfill
+        \hfill
+        \begin{subcaptionblock}[B]{0.45\textwidth}
+          \begin{equation*}
+            \begin{prooftree}
+              \hypo{ x: \sigma }
+              \ellipsis { \( T_E \) } { E: \tau }
+              \infer[left label=\( x \)]1[\ref{inf:def:arrow_type/intro/explicit}]{ \qabs {x^\sigma} E: \sigma \rightarrow \tau }.
+
+              \hypo{ }
+              \ellipsis { \( T_B \) } { B: \sigma }
+              \infer2[\ref{inf:def:arrow_type/elim}]{ (\qabs {x^\sigma} E) B: \tau }.
+            \end{prooftree}
+          \end{equation*}
+          \caption{The original tree \( T \).}
+        \end{subcaptionblock}
+        \hfill
+        \begin{subcaptionblock}[B]{0.45\textwidth}
+          \begin{equation*}
+            \begin{prooftree}
+              \hypo{ }
+              \ellipsis { \( T_E' \) } { E[x \mapsto B]: \tau }
+            \end{prooftree}
+          \end{equation*}
+          \caption{The tree \( T_E' \) obtained via substitution.}
+        \end{subcaptionblock}
+        \hfill
+        \caption{Transformation of the \hyperref[def:type_derivation_tree]{type derivation tree} when handling \hyperref[def:beta_eta_reduction]{\( \beta \)-reduction} in \fullref{alg:simply_typed_reduction}. We use \fullref{alg:simply_typed_substitution} to construct from \( T_E \) and \( T_B \) a tree \( T_E' \) deriving \( E[x \mapsto B]: \tau \).}\label{fig:alg:simply_typed_reduction/arrow_elim/beta}
+      \end{figure}
+
       In the following cases, we should proceed to \fullref{alg:simply_typed_reduction/arrow_elim/app} since \( \beta \)-reduction could not have been used:
       \begin{itemize}
         \item If \( T_A \) is not an application of \ref{inf:def:arrow_type/intro/explicit}.
@@ -430,8 +492,11 @@ We will mostly be working with \hyperref[def:simple_algebraic_types]{simple alge
       \ParacolAlignmentHack
       \begin{equation*}\taglabel[\ensuremath{ \rightarrow_\beta }]{inf:thm:reduction_typing_rules/beta}
         \begin{prooftree}
-          \hypo{ (\qabs {x^{\sigma}} M) N: \tau }
+          \hypo{ x: \sigma }
+          \infer[dashed]1{ M: \tau }
+
           \hypo{ N: \sigma }
+
           \infer2[\ref{inf:thm:reduction_typing_rules/beta}]{ M[x \mapsto N]: \tau }.
         \end{prooftree}
       \end{equation*}
@@ -471,10 +536,43 @@ We will mostly be working with \hyperref[def:simple_algebraic_types]{simple alge
   \end{equation*}
 \end{proof}
 
+\begin{remark}\label{rem:beta_reduction_and_cut_elimination}
+  The rule \ref{inf:thm:reduction_typing_rules/beta} can be written in \hyperref[rem:natural_deduction_explicit_sequents]{explicit sequent form} as follows:
+  \begin{equation*}
+    \begin{prooftree}
+      \hypo{ \Gamma, x: \sigma \vdash M: \tau }
+      \hypo{ \Gamma' \vdash N: \sigma }
+      \infer2[\ensuremath{ \rightarrow_\beta }]{ \Gamma, \Gamma' \vdash M[x \mapsto N]: \tau }
+    \end{prooftree}
+  \end{equation*}
+
+  Regarding the types as formulas, this rule becomes
+  \begin{equation*}
+    \begin{prooftree}
+      \hypo{ \Gamma, \sigma \vdash \tau }
+      \hypo{ \Gamma' \vdash \sigma }
+      \infer2[\ensuremath{ \rightarrow_\beta }]{ \Gamma, \Gamma' \vdash \tau }
+    \end{prooftree}
+  \end{equation*}
+
+  We will find it more convenient to exchange \( \Gamma \) and \( \Gamma' \) and swap the premises themselves:
+  \begin{equation*}
+    \begin{prooftree}
+      \hypo{ \Gamma \vdash \sigma }
+      \hypo{ \Gamma', \sigma \vdash \tau }
+      \infer2[\ensuremath{ \rightarrow_\beta }]{ \Gamma, \Gamma' \vdash \tau }
+    \end{prooftree}
+  \end{equation*}
+
+  This latter rule is a now clearly special case of \ref{inf:def:abstract_sequent_calculus_system/rules/cut} in which \( \Delta \) is empty and \( \Delta' = \tau \).
+
+  Therefore, \( \beta \)-reduction can be seen as a simply-typed counterpart to eliminating usage of the cut rule, and \cref{fig:alg:simply_typed_reduction/arrow_elim/beta} --- as a proof tree transformation that aids with cut elimination.
+\end{remark}
+
 \begin{proposition}\label{thm:simply_typed_church_rosser_theorem}
   \Fullref{thm:church_rosser_theorem} holds when restricted to terms \hyperref[def:typability]{typable} with arrow types.
 
-  More precisely, let \enquote{\( {\Anon} \)} be a combination of \enquote{\( \beta \)} and \enquote{\( \eta \)}. Let \( \Lambda \) be the set of either \hyperref[def:lambda_term]{untyped} or \hyperref[def:typed_lambda_term]{typed \( \muplambda \) terms}, typable via the arrow typing rules from \fullref{def:arrow_type}.
+  More precisely, let \enquote{\( {\Anon} \)} be a combination of \enquote{\( \beta \)} and \enquote{\( \eta \)}. Let \( \Lambda \) be the set of either \hyperref[def:lambda_term]{untyped} or \hyperref[def:typed_lambda_term]{typed \( \muplambda \)-terms}, typable via the arrow typing rules from \fullref{def:arrow_type}.
 
   Then \hyperref[def:lambda_term_reduction/single]{single-step \( \Anon \)-reduction} (with the modified rules from \fullref{def:typed_term_reduction} for typed terms) is \hyperref[def:reduction_confluence]{weakly confluent} on \( \Lambda \) --- for every term \( M \) in \( \Lambda \), if \( M \pred N \) and \( M \pred K \), there exists a term \( L \) in \( \Lambda \) such that \( N \pred* L \) and \( K \pred* L \).
 \end{proposition}
