@@ -1,24 +1,59 @@
 \section{Propositional logic}\label{sec:propositional_logic}
 
-Propositional logic allows us to express basic relations between atomic propositions --- variables that can be true or false or, in the case of \hyperref[def:propositional_semantics]{non-classical semantics}, have some intermediate value.
+Propositional logic allows us to express basic relations between atomic \hyperref[con:proposition]{propositions}, irrespective of how these propositions are structured.
 
 \paragraph{Syntax of propositional logic}
 
 There are different approaches to formalizing the syntax of propositional logic. We use the theory of formal grammars that we have developed in \fullref{sec:formal_languages} and \fullref{sec:syntax_trees}. This requires specific adjustments related to other treatments of propositional logic --- e.g. \incite[ch. 1]{Hinman2005Logic}, \incite[pt. I]{Smullyan1995FOL} and \incite[ch. 1]{КолмогоровДрагалин2006Логика} --- which rely on a more informal treatment of syntax more akin to what can be achieved via \fullref{thm:knaster_tarski_iteration}. Our approach allows us to use powerful tools while treating the object logic in complete formality. \incite[45]{Mimram2020ProgramEqualsProof} also describes syntax via formal grammars, but does not utilize the theory of formal languages.
 
-\begin{concept}\label{con:logical_symbol}
-  \incite*[2]{Hinman2005Logic} writes
-  \begin{displayquote}
-    \textellipsis the symbols will fall into two classes: \textit{\textbf{logical symbols}}, which have a fixed meaning, and \textit{\textbf{non-logical symbols}}, which are subject to multiple interpretations.
-  \end{displayquote}
+\begin{concept}\label{con:reserved_symbol}
+  \hyperref[con:logical_system]{Logical systems} are generally designed to encode multiple \hyperref[con:metalogic]{object languages}\fnote{An exception is the syntax of propositional logic, which we define in \fullref{def:propositional_syntax}. It provides only a way to study logical relations between \hyperref[con:proposition]{propositions}, irrespective of how these propositions are structured.}.
 
-  The distinction is more subtle than this informal definition suggests, even though a more precise definition may not be possible. For example, the \hyperref[def:propositional_alphabet/constants/falsum]{falsum} \( \synbot \) is considered a logical symbol, but has no intended interpretation under \hyperref[def:minimal_propositional_semantics]{minimal semantics}. At the same time, the set membership symbol \( {\synin} \) is technically a non-logical \hyperref[def:first_order_language/fun]{functional symbol} in first-order logic, but has a clear intended interpretation.
+  A particular object language may require additional symbols, which we pack into signatures. For example, \hyperref[def:peano_arithmetic]{Peano arithmetic} as expressed in the \hyperref[def:first_order_syntax]{syntax of first-order logic}, requires the symbols \( \syn0 \), \( \syns \), \( \synplus \) and \( \syncirc \) in order to express the axioms \ref{eq:def:peano_arithmetic/PA6} and \ref{eq:def:peano_arithmetic/PA7} for multiplication:
+  \begin{align*}
+    \synx \syncirc \syn0        &\syneq \syn0,                    \\
+    \synx \syncirc \syns(\syny) &\syneq \synx \syncirc \syny + \synx
+  \end{align*}
 
-  We will call a symbol \term{logical} or \term{nonlogical} depending on whether it is allowed to vary in the language's syntax.
+  The equality symbol \( {\syneq} \) is not part of the signature of Peano arithmetic because it is common for all languages expressible in first-order logic. We will call such symbols \term{reserved}.
+
+  To avoid \hyperref[def:grammar_ambiguity]{syntactic ambiguity}, we generally disallow non-reserved symbols to clash with reserved symbols. There is an exception for \hyperref[con:variable]{variables}, however. We generally have an unbounded supply of variables because they follow the identifier rules from \fullref{def:variable_identifier}. We allow non-reserved symbols to take precedence over variables. For example, in \fullref{def:syntax_of_simply_typed_hol}, we allow \( \syn\iota \) and \( \syn\omicron \) as base types, even though they would otherwise be considered variables.
 \end{concept}
+\begin{comments}
+  \item The term \enquote{reserved} comes from programming languages, where certain words are marked as reserved and cannot be used for naming. For example, \cite[\S 6.4.1]{ISO:9899:2018} lists several dozens of words that are called \enquote{reserved} and cannot be used as identifiers in the programming language C.
+
+  \item It is common to call reserved symbols \enquote{logical}, but this is unfortunately ambiguous --- see \fullref{rem:logical_symbol_terminology}.
+\end{comments}
+
+\begin{remark}\label{rem:logical_symbol_terminology}
+  It is common to call \hyperref[con:reserved_symbol]{reserved symbols} \enquote{logical}, distinguishing them from \enquote{nonlogical} symbols that appear in a signature. This terminology is unfortunately ambiguous, as discussed in \cite{MathSE:are_variables_logical_symbols}. For example, for the \hyperref[def:first_order_syntax]{syntax of first-order logic}, the terms are used as follows:
+  \begin{itemize}
+    \item \incite[178]{Gentzen1935LogischeSchließen}, when presenting first-order logic, calls \enquote{Logische Zeichen} (\enquote{logical symbols}) the \hyperref[def:propositional_alphabet/negation]{negation}, \hyperref[def:propositional_alphabet/connectives]{propositional connectives} and \hyperref[con:quantifier]{quantifiers}.
+
+    He separately lists other syntactic classes:
+    \begin{itemize}
+      \item Two \hyperref[def:propositional_alphabet/constants]{logical constants}.
+      \item \enquote{Hilfszeichen} (\enquote{auxiliary symbols}) consisting of two \hyperref[def:propositional_alphabet/parentheses]{parentheses} and a \hyperref[def:sequent]{sequent relation symbol}.
+      \item \hyperref[con:variable]{Variables}, separated into \hyperref[def:variable_binding]{free} object variables, bound object variables and propositional variables.
+    \end{itemize}
+
+    \item \incite[69]{Kleene1971Metamathematics}, \incite[57]{КолмогоровДрагалин2006Логика}, \incite[140]{Мальцев1970АлгебраическиеСистемы} and \incite[62]{Герасимов2011Вычислимость} extend Gentzen's list of logical symbols with quantifiers. Neither of them uses logical constants, but it is reasonable to expect them to regard constants as logical symbols.
+
+    \item \incite*[102]{BoolosEtAl2002ComputabilityAndLogic} further extends the list of logical symbols with variables.
+
+    \item \incite*[2]{Hinman2005Logic} writes
+    \begin{displayquote}
+      \textellipsis the symbols will fall into two classes: \textit{\textbf{logical symbols}}, which have a fixed meaning, and \textit{\textbf{non-logical symbols}}, which are subject to multiple interpretations.
+    \end{displayquote}
+
+    As stated, this principle suggests that constants, being a part of a signature and having a predefined interpretation, are logical symbols, while variables, whose interpretation depends on a \hyperref[def:first_order_valuation/variable_assignment]{variable assignment}, are nonlogical symbols.
+
+    Later, in \cite[def. 2.1.2]{Hinman2005Logic}, Hinman designates as logical symbols a limited set of quantifiers and connectives, as well as the variables and the equality symbol. Constants, functional and relational symbols are instead designated as non-logical.
+  \end{itemize}
+\end{remark}
 
 \begin{definition}\label{def:propositional_alphabet}\mcite[4; 5]{Smullyan1995FOL}
-  The \hyperref[def:formal_language/alphabet]{alphabet} of \hyperref[con:logical_symbol]{logical symbols} of propositional logic consists of the following:
+  The \hyperref[def:formal_language/alphabet]{alphabet} of \hyperref[con:reserved_symbol]{reserved symbols} of propositional logic consists of the following:
 
   \begin{thmenum}
     \thmitem{def:propositional_alphabet/constants} Two \term{propositional constants}:
@@ -30,19 +65,19 @@ There are different approaches to formalizing the syntax of propositional logic.
     \thmitem{def:propositional_alphabet/negation} \term[ru=отрицание (\cite[17]{КолмогоровДрагалин2006Логика})]{Negation} \enquote{\( \synneg \)}.
     \thmitem{def:propositional_alphabet/connectives} The set \( \op*{Conn} \) of \term{binary propositional connectives}, namely
     \begin{thmenum}
-      \thmitem{def:propositional_alphabet/connectives/disjunction} \term[ru=дизъюнкция (\cite[17]{КолмогоровДрагалин2006Логика})]{Disjunction} \enquote{\( \synvee \)}, also known as \hyperref[def:standard_boolean_functions]{\term{or}}.
-      \thmitem{def:propositional_alphabet/connectives/conjunction} \term[ru=конъюнкция (\cite[17]{КолмогоровДрагалин2006Логика})]{Conjunction} \enquote{\( \synwedge \)}, also known as \hyperref[def:standard_boolean_functions]{\term{and}}.
-      \thmitem{def:propositional_alphabet/connectives/conditional} \term{Conditional}\fnote{Although we prefer the phrase \enquote{conditional formula} to simply \enquote{conditional}, the words \enquote{conditional} and \enquote{biconditional} are used nouns in this context. We use these terms to avoid confusion with the same connectives in the metalogic, for example \enquote{A biconditional formula is equivalent \dots} could otherwise become \enquote{An equivalence is equivalent \dots}.} \( \synimplies \), also known as \term{if\ldots then} and \hyperref[def:standard_boolean_functions]{\term[ru=импликация (\cite[17]{КолмогоровДрагалин2006Логика})]{implication}}.
-      \thmitem{def:propositional_alphabet/connectives/biconditional} \term{Biconditional} \enquote{\( \syniff \)}, also known as \term{if and only if} (\hyperref[def:standard_boolean_functions]{\term{iff}}) and \term[ru=эквиваленция (\cite[17]{КолмогоровДрагалин2006Логика})]{equivalence}.
+      \thmitem{def:propositional_alphabet/connectives/disjunction} The \term[ru=дизъюнкция (\cite[17]{КолмогоровДрагалин2006Логика})]{disjunction} connective \enquote{\( \synvee \)}, also known as \hyperref[def:standard_boolean_functions]{\term{or}}.
+      \thmitem{def:propositional_alphabet/connectives/conjunction} The \term[ru=конъюнкция (\cite[17]{КолмогоровДрагалин2006Логика})]{conjunction} connective \enquote{\( \synwedge \)}, also known as \hyperref[def:standard_boolean_functions]{\term{and}}.
+      \thmitem{def:propositional_alphabet/connectives/conditional} The \term{conditional} connective\fnote{Although we prefer the phrase \enquote{conditional formula} to simply \enquote{conditional}, the words \enquote{conditional} and \enquote{biconditional} are used nouns in this context. We use these terms to avoid confusion with the same connectives in the metalogic, for example \enquote{A biconditional formula is equivalent \dots} could otherwise become \enquote{An equivalence is equivalent \dots}.} \( \synimplies \), also known as \term{if\ldots then} and \hyperref[def:standard_boolean_functions]{\term[ru=импликация (\cite[17]{КолмогоровДрагалин2006Логика})]{implication}}.
+      \thmitem{def:propositional_alphabet/connectives/biconditional} The \term{biconditional} connective \enquote{\( \syniff \)}, also known as \term{if and only if} (\hyperref[def:standard_boolean_functions]{\term{iff}}) and \term[ru=эквиваленция (\cite[17]{КолмогоровДрагалин2006Логика})]{equivalence}.
     \end{thmenum}
 
     \thmitem{def:propositional_alphabet/parentheses} Parentheses \enquote{\( ( \)} and \enquote{\( ) \)} for defining the order of operations unambiguously.
   \end{thmenum}
 \end{definition}
 \begin{comments}
-  \item If desired, we can utilize a smaller propositional language without losing its semantical properties. Important example are the \hyperref[def:cnf_and_dnf]{conjunctive normal forms} in \fullref{alg:full_cnf_and_dnf}, although similar constructions hold for other \hyperref[def:boolean_closure/complete]{complete sets of Boolean functions} like those from \fullref{thm:complete_sets_of_boolean_functions}.
-
   \item We place dots over the various symbols in order to highlight that they are merely symbols without semantics --- see \fullref{rem:mathematical_logic_conventions/metavariable_syntax} for a general discussion.
+
+  \item If desired, we can utilize a smaller propositional language without losing its semantical properties. Important example are the \hyperref[def:cnf_and_dnf]{conjunctive normal forms} in \fullref{alg:full_cnf_and_dnf}, although similar constructions hold for other \hyperref[def:boolean_closure/complete]{complete sets of Boolean functions} like those from \fullref{thm:complete_sets_of_boolean_functions}.
 
   \item \enquote{Conjunctio} and \enquote{disjunctio} are Latin words for \enquote{union} and \enquote{separation}, respectively. \enquote{Implicatio} is Latin for \enquote{entangled}.
 
@@ -57,14 +92,13 @@ There are different approaches to formalizing the syntax of propositional logic.
       \bnfprod{variable}           {\bnfpn{Small Latin identifier}} \\
       \bnfprod{constant formula}   {\bnftsq{\( \syntop \)} \bnfor \bnftsq{\( \synbot \)}} \\
       \bnfprod{negation formula}   {\bnftsq{\( \synneg \)} \bnfsp \bnfpn{formula}} \\
-      \bnfprod{connective}         {\bnftsq{\( \synvee \)} \bnfor \bnftsq{\( \synwedge \)} \bnfor \bnftsq{\( \synimplies \)}\bnfor \bnftsq{\( \syniff \)}} \\
       \bnfprod{connective formula} {\bnftsq{(} \bnfsp \bnfpn{formula} \bnfsp \bnfpn{connective} \bnfsp \bnfpn{formula} \bnfsp \bnftsq{)}} \\
       \bnfprod{formula}            {\bnfpn{constant formula} \bnfor} \\
       \bnfmore                     {\bnfpn{variable} \bnfor} \\
       \bnfmore                     {\bnfpn{negation formula} \bnfor} \\
       \bnfmore                     {\bnfpn{connective formula},}
     \end{bnf*}
-    where we have used the variable identifier rules from \fullref{def:variable_identifier}.
+    where we have used the connectives from \fullref{def:propositional_alphabet/connectives} and the variable identifier rules from \fullref{def:variable_identifier}.
 
     \thmitem{def:propositional_syntax/prop} We will denote by \( \op*{Prop} \) the set of all \term[ru=пропозициональные переменные (\cite[43]{КолмогоровДрагалин2006Логика})]{propositional variables}, that is, all strings generated by the above grammar schema with starting nonterminal \( \bnfpn{variable} \).
 

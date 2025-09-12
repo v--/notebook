@@ -54,6 +54,9 @@
 \NewDocumentCommand \syntimes   {} {\mathbin{\dottimes}}
 \NewDocumentCommand \synsubst   {} {\mathrel{\syn\mapsto}}
 
+\NewDocumentCommand \synless    {} {\mathrel{\lessdot}}
+\NewDocumentCommand \syngtr     {} {\mathrel{\gtrdot}}
+
 \nb_define_alphabet:Nnnn \syn {syn} {a} {z}
 \nb_define_alphabet:Nnnn \syn {syn} {A} {Z}
 
@@ -62,7 +65,7 @@
   {
     \hbox_set:Nn \l_nb_superimpose_box {\ensuremath{#1}}
     \mathclap {\hspace {\box_wd:N \l_nb_superimpose_box} #2}
-    \box_use:N \l_nb_superimpose_box
+    \box_use_drop:N \l_nb_superimpose_box
   }
 
 \NewDocumentCommand \syniff {}
@@ -94,22 +97,61 @@
       }
   }
 
-\box_new:N \l_nb_vreduce_box
-\cs_new_protected:Nn \nb_vreduce:nn
+\box_new:N \l_nb_raisebox_box_inner
+\box_new:N \l_nb_raisebox_box_outer
+\cs_new_protected:Nn \nb_raisebox:nn
   {
-    \hbox_set:Nn \l_nb_vreduce_box {\ensuremath{#1}}
-    \box_set_ht:Nn \l_nb_vreduce_box {\box_ht:N \l_nb_vreduce_box - #2}
-    \box_use:N \l_nb_vreduce_box
+    \hbox_set:Nn \l_nb_raisebox_box_inner {\ensuremath{#1}}
+    \hbox_set:Nn \l_nb_raisebox_box_outer {\box_move_up:nn {#2} {\box_use_drop:N \l_nb_raisebox_box_inner}}
+    \box_use_drop:N \l_nb_raisebox_box_outer
   }
 
 \NewDocumentCommand \synforall {}
   {
-    \syn{ \nb_vreduce:nn {\forall} {2.3pt} }
+    \mathrel
+      {
+        \nb_superimpose:NN \forall {\nb_raisebox:nn {\cdot} {3.5pt}}
+      }
   }
 
 \NewDocumentCommand \synvdash {}
   {
-    \mathrel { \syn{ \nb_vreduce:nn {\vdash} {2.3pt} } }
+    \mathrel
+      {
+        \nb_superimpose:NN \vdash {\nb_raisebox:nn {\cdot} {3.5pt}}
+      }
+  }
+
+\NewDocumentCommand \synleq {}
+  {
+    \mathrel
+      {
+        \nb_superimpose:NN \leq {\nb_raisebox:nn {\lessdot} {0.9pt}}
+      }
+  }
+
+\NewDocumentCommand \syngeq {}
+  {
+    \mathrel
+      {
+        \nb_superimpose:NN \leq {\nb_raisebox:nn {\cdot} {0.9pt}}
+      }
+  }
+
+\NewDocumentCommand \synvarwedge {}
+  {
+    \mathrel
+      {
+        \nb_superimpose:NN \curlywedge {\nb_raisebox:nn {\cdot} {-2.5pt}}
+      }
+  }
+
+\NewDocumentCommand \synvarvee {}
+  {
+    \mathrel
+      {
+        \nb_superimpose:NN \curlyvee {\nb_raisebox:nn {\cdot} {2.5pt}}
+      }
   }
 
 % Properly spaced quantifiers
@@ -234,7 +276,7 @@
 \NewDocumentCommand \oline {sm}
   {
     \IfBooleanTF {#1}
-      { \overline{ \nb_vreduce:nn { #2 } {2.3pt} } }
+      { \overline{ \nb_raisebox:nn { #2 } {2.3pt} } }
       { \overline{ #2 } }
   }
 
