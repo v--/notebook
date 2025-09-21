@@ -9,7 +9,9 @@ There are different approaches to formalizing the syntax of propositional logic.
 \begin{concept}\label{con:reserved_symbol}
   \hyperref[con:logical_system]{Logical systems} are generally designed to encode multiple \hyperref[con:metalogic]{object languages}\fnote{An exception is the syntax of propositional logic, which we define in \fullref{def:propositional_syntax}. It provides only a way to study logical relations between \hyperref[con:proposition]{propositions}, irrespective of how these propositions are structured.}.
 
-  A particular object language may require additional symbols, which we pack into signatures. For example, \hyperref[def:peano_arithmetic]{Peano arithmetic} as expressed in the \hyperref[def:first_order_syntax]{syntax of first-order logic}, requires the symbols \( \syn0 \), \( \syns \), \( \synplus \) and \( \syncirc \) in order to express the axioms \ref{eq:def:peano_arithmetic/PA6} and \ref{eq:def:peano_arithmetic/PA7} for multiplication:
+  A particular object language may require additional symbols. We call a \term[en=signature (\cite[98]{GoguenBurstall1992Institutions})]{signature} the collection of symbols specific to an object language but not the \hyperref[con:logical_system]{logical system} used to describe it.
+
+  For example, \hyperref[def:peano_arithmetic]{Peano arithmetic} as expressed in the \hyperref[def:first_order_syntax]{syntax of first-order logic}, requires the symbols \( \syn0 \), \( \syns \), \( \synplus \) and \( \syncirc \) in order to express the axioms \ref{eq:def:peano_arithmetic/PA6} and \ref{eq:def:peano_arithmetic/PA7} for multiplication:
   \begin{align*}
     \synx \syncirc \syn0        &\syneq \syn0,                    \\
     \synx \syncirc \syns(\syny) &\syneq \synx \syncirc \syny + \synx
@@ -17,12 +19,14 @@ There are different approaches to formalizing the syntax of propositional logic.
 
   The equality symbol \( {\syneq} \) is not part of the signature of Peano arithmetic because it is common for all languages expressible in first-order logic. We will call such symbols \term{reserved}.
 
-  To avoid \hyperref[def:grammar_ambiguity]{syntactic ambiguity}, we generally disallow non-reserved symbols to clash with reserved symbols. There is an exception for \hyperref[con:variable]{variables}, however. We generally have an unbounded supply of variables because they follow the identifier rules from \fullref{def:variable_identifier}. We allow non-reserved symbols to take precedence over variables. For example, in \fullref{def:syntax_of_simply_typed_hol}, we allow \( \syn\iota \) and \( \syn\omicron \) as base types, even though they would otherwise be considered variables.
+  To avoid \hyperref[def:grammar_ambiguity]{syntactic ambiguity}, we generally disallow symbols in the signature to clash with reserved symbols. There is an exception for \hyperref[con:variable]{variables}, however. We generally have an unbounded supply of variables because they follow the identifier rules from \fullref{def:variable_identifier}. We allow non-reserved symbols to take precedence over variables. For example, in \fullref{def:simply_typed_hol_syntax}, we allow \( \syn\iota \) and \( \syn\omicron \) as base types, even though they would otherwise be considered variables.
 \end{concept}
 \begin{comments}
   \item The term \enquote{reserved} comes from programming languages, where certain words are marked as reserved and cannot be used for naming. For example, \cite[\S 6.4.1]{ISO:9899:2018} lists several dozens of words that are called \enquote{reserved} and cannot be used as identifiers in the programming language C.
 
-  \item It is common to call reserved symbols \enquote{logical}, but this is unfortunately ambiguous --- see \fullref{rem:logical_symbol_terminology}.
+  \item It is common to call reserved symbols \enquote{logical}, but this is unfortunately ambiguous --- see \fullref{rem:logical_symbol_terminology}. Still, with some disambiguation, we find useful the adjectives \enquote{logical} and \enquote{non-logical} when discussing simply typed higher-order logic in \fullref{sec:predicate_logic}.
+
+  \item \incite[97]{GoguenBurstall1992Institutions} describe a signature as \enquote{vocabularies for use in constructing sentences in a logical system}.
 \end{comments}
 
 \begin{remark}\label{rem:logical_symbol_terminology}
@@ -96,7 +100,7 @@ There are different approaches to formalizing the syntax of propositional logic.
       \bnfprod{formula}            {\bnfpn{constant formula} \bnfor} \\
       \bnfmore                     {\bnfpn{variable} \bnfor} \\
       \bnfmore                     {\bnfpn{negation formula} \bnfor} \\
-      \bnfmore                     {\bnfpn{connective formula},}
+      \bnfmore                     {\bnfpn{connective formula}}
     \end{bnf*}
     where we have used the connectives from \fullref{def:propositional_alphabet/connectives} and the variable identifier rules from \fullref{def:variable_identifier}.
 
@@ -107,10 +111,6 @@ There are different approaches to formalizing the syntax of propositional logic.
     Within the metalanguage, we will denote abstract formulas via \( \varphi \), \( \psi \), \( \theta \) and other letters as discussed in \fullref{rem:mathematical_logic_conventions/greek_alphabet}. This convention will later lead us to a formal definition of formula schemas in \fullref{def:propositional_formula_schema}.
 
     We will also call \term{sentences} in relation to \hyperref[def:abstract_logic]{abstract logics}. This contrasts with first-order logic, where only specific formulas are called sentences --- see \fullref{def:first_order_syntax/closed_formula}.
-
-    \thmitem{def:propositional_syntax/language} By \enquote{language of propositional logic} we will mean the set \( \op*{Form} \) of formulas (and hence also the variables).
-
-    \thmitem{def:propositional_syntax/fragment} By a \term[en=fragment (\cite[49]{Mimram2020ProgramEqualsProof})]{fragment} of propositional logic we will mean a subset of \( \op*{Form} \), most easily obtained by restricting which rules from the full schema are used. See \fullref{def:implicational_propositional_fragment}.
   \end{thmenum}
 \end{definition}
 \begin{comments}
@@ -650,10 +650,13 @@ There are different approaches to formalizing the syntax of propositional logic.
   the other cases being the same as in \eqref{eq:def:propositional_valuation/formula_valuation}.
 \end{definition}
 \begin{comments}
-  \item \Fullref{thm:lindenbaum_tarski_algebras} provides a concrete motivation for this precise definition.
-  \item Unless we are specifically interested in \( \synbot \) and \( \synneg \), a more reasonable approach may be to only consider the \hyperref[def:propositional_syntax/fragment]{fragment} of propositional logic without them. This is approach to minimal logic mentioned in \mcite[49]{Mimram2020ProgramEqualsProof}, and this is the approach used in \fullref{def:minimal_implication_logic}. In this case we lose the distinction between minimal and intuitionistic logic. Perhaps this is the entire point of working in minimal logic?
   \item Minimal logic was introduced by Ingebrigt Johansson as an attempt to further refine intuitionistic logic. An analysis of his works and his interactions with Gerhard Gentzen is given by \incite{VanDerMolen2016MinimalLogic}. No semantics are discussed there.
-  \item Our definition for minimal semantics is based on the general principles outlined by \incite[3]{VanDerMolen2016MinimalLogic}, \incite[35]{TroelstraSchwichtenberg2000BasicProofTheory} and \incite[1]{DienerMcKubreJordens2020MaterialImplication}. None of the aforementioned discuss semantics.
+
+  Unless we are specifically interested in \( \synbot \) and \( \synneg \), a more reasonable approach may be to only consider the \hyperref[con:syntax_fragment]{fragment} of propositional logic without them. This is approach to minimal logic mentioned in \mcite[49]{Mimram2020ProgramEqualsProof}, and this is the approach used in \fullref{def:minimal_implication_logic}.
+
+  In \fullref{sec:natural_deduction} and \fullref{sec:propositional_completeness}, we will find it simpler to generalize the semantics as per \eqref{eq:def:minimal_propositional_semantics/formula_valuation}. Our definition for minimal semantics is based on the general principles outlined by \incite[3]{VanDerMolen2016MinimalLogic}, \incite[35]{TroelstraSchwichtenberg2000BasicProofTheory} and \incite[1]{DienerMcKubreJordens2020MaterialImplication}.
+
+  None of the aforementioned authors discuss semantics.
 \end{comments}
 
 \begin{definition}\label{def:paraconsistent_consequence_operator}\mcite{StanfordPlato:paraconsistent_logic}

@@ -56,25 +56,31 @@ This section is a detour; our purpose is to present some ideas without diving in
   Similarly to the case of untyped \( \muplambda \)-terms, fix an \hyperref[def:formal_language/alphabet]{alphabet} \( \op*{Const} \) of constant pseudoterms. It will be used as a generalization of both constant \( \muplambda \)-terms and base types. Consider the following rules:
 
   \begin{bnf*}
-    \bnfprod{variable}           {\bnfpn{Small Latin identifier}}, \\
-    \bnfprod{atom}               {\bnfpn{variable} \bnfor \bnfpn{constant}}, \\
-    \bnfprod{annotated variable} {\bnfpn{variable} \bnfsp \bnftsq{:} \bnfsp \bnfpn{pseudoterm}}, \\
-    \bnfprod{application}        {\bnftsq{\( ( \)} \bnfsp \bnfpn{pseudoterm} \bnfsp \bnfpn{pseudoterm} \bnfsp \bnftsq{\( ) \)}}, \\
-    \bnfprod{abstraction}        {\bnftsq{\( ( \)} \bnfsp \bnftsq{\( \synlambda \)} \bnfsp \bnfpn{annotated variable} \bnfsp \bnftsq{.} \bnfsp \bnfpn{pseudoterm} \bnfsp \bnftsq{\( ) \)}}, \\
-    \bnfprod{dependent product}  {\bnftsq{\( ( \)} \bnfsp \bnftsq{\( \synprod \)} \bnfsp \bnfpn{annotated variable} \bnfsp \bnftsq{.} \bnfsp \bnfpn{pseudoterm} \bnfsp \bnftsq{\( ) \)}}, \\
-    \bnfprod{dependent sum}      {\bnftsq{\( ( \)} \bnfsp \bnftsq{\( \synsum \)} \bnfsp \bnfpn{annotated variable} \bnfsp \bnftsq{.} \bnfsp \bnfpn{pseudoterm} \bnfsp \bnftsq{\( ) \)}}, \\
-    \bnfprod{identity}           {\bnftsq{\( ( \)} \bnfsp \bnfpn{pseudoterm} \bnfsp \bnftsq{\( \syneq \)} \bnfsp \bnftsq{\( : \)} \bnfsp \bnfpn{pseudoterm} \bnfsp \bnfpn{pseudoterm} \bnfsp \bnftsq{\( ) \)}}, \\
+    \bnfprod{variable}           {\bnfpn{Small Latin identifier}} \\
+    \bnfprod{atom}               {\bnfpn{variable} \bnfor \bnfpn{constant}} \\
+    \bnfprod{annotated variable} {\bnfpn{variable} \bnfsp \bnftsq{:} \bnfsp \bnfpn{pseudoterm}} \\
+    \bnfprod{application}        {\bnftsq{\( ( \)} \bnfsp \bnfpn{pseudoterm} \bnfsp \bnfpn{pseudoterm} \bnfsp \bnftsq{\( ) \)}} \\
+    \bnfprod{binder}             {\bnftsq{\( \synlambda \)} \bnfor \bnftsq{\( \synprod \)} \bnfor \bnftsq{\( \synsum \)}} \\
+    \bnfprod{binder pseudoterm}  {\bnftsq{\( ( \)} \bnfsp \bnfpn{binder} \bnfsp \bnfpn{annotated variable} \bnfsp \bnftsq{.} \bnfsp \bnfpn{pseudoterm} \bnfsp \bnftsq{\( ) \)}} \\
+    \bnfprod{identity}           {\bnftsq{\( ( \)} \bnfsp \bnfpn{pseudoterm} \bnfsp \bnftsq{\( \syneq \)} \bnfsp \bnftsq{\( : \)} \bnfsp \bnfpn{pseudoterm} \bnfsp \bnfpn{pseudoterm} \bnfsp \bnftsq{\( ) \)}} \\
     \bnfprod{pseudoterm}         {\bnfpn{atom} \bnfor \bnfpn{application}\bnfor \bnfpn{abstraction} \bnfor \bnfpn{identity} \bnfor} \\
-    \bnfmore                     {\bnfpn{dependent product} \bnfor \bnfpn{dependent sum}.}
+    \bnfmore                     {\bnfpn{dependent product} \bnfor \bnfpn{dependent sum}}
   \end{bnf*}
 
   In the \( \bnfpn{identity} \) rule, the second pseudoterm is intended to serve as a \hyperref[con:type_annotation]{type annotation} for the other two. This will be explained in \fullref{def:identity_type}. We will find it more convenient to write \enquote{\( M \syneq_\tau N \)} instead of \enquote{\( M \mathrel{{\syneq:} \tau} N \)}.
 
-  The \( \bnfpn{abstraction} \) rule is intended for terms, while \( \bnfpn{identity} \), \( \bnfpn{dependent product} \) and \( \bnfpn{dependent sum} \) are intended for types\fnote{See \fullref{def:identity_type}, \fullref{def:dependent_product} and \fullref{def:dependent_sum}, correspondingly}. The latter two are \hyperref[con:variable_binding]{variable binders}, and we assume capture-avoiding substitution and \( \alpha \)-equivalence are defined for them as per \fullref{rem:variable_binding_properties}.
+  The \( \bnfpn{binder} \) rule is so-named because its instances are intended to act as \hyperref[con:variable_binding]{variable binders}, and we assume capture-avoiding substitution and \( \alpha \)-equivalence are defined for them as per \fullref{rem:variable_binding_properties}.
+
+  The binder pseudoterms, despite syntactic similarities, act very differently:
+  \begin{itemize}
+    \item The \( \synlambda \) binder induces the familiar abstraction terms from \fullref{def:lambda_term}. We will instead use them as terms for dependent product types (see next) rather than for arrow types as in \fullref{sec:simply_typed_lambda_terms}.
+
+    \item The \( \synprod \) binder is instead intended for types. We call the corresponding pseudoterms \term[en=dependent product (\cite[\S 1.4]{UnivalentFoundationsProgram2024OctoberHoTT})]{dependent products} and introduce rules for them in \fullref{def:dependent_product}. Due to the binder, \incite[\S 1.4]{UnivalentFoundationsProgram2024OctoberHoTT} also call them \enquote{\( \Pi \)-types}.
+
+    \item The \( \synsum \) binder is also intended for types. We call the corresponding pseudoterms \term[en=dependent sum (\cite[\S 8.3.4]{Mimram2020ProgramEqualsProof})]{dependent sums} and introduce rules for them in \fullref{def:dependent_sum}. Due to the binder, \incite[\S 8.3.4]{Mimram2020ProgramEqualsProof} also calls them \enquote{\( \Sigma \)-types}.
+  \end{itemize}
 \end{definition}
 \begin{comments}
-  \item We could use a common rule for abstractions, dependent products and dependent sums, since all three constructs \hyperref[con:variable_binding]{bind variables}. This is loosely similar to how we have handled propositional connectives in \fullref{def:propositional_syntax}. What stops us here is our reluctance to introduce a clumsy generalization --- unlike propositional connectives, each of the binders acts very differently.
-
   \item Because of the \hyperref[con:curry_howard_correspondence]{Curry-Howard correspondence}, we focus on types rather than terms, and we have added dedicated grammar rules for the new \hyperref[con:type_constructor]{type constructors}. On the other hand, in accordance with \fullref{rem:binders_in_type_theory_terms}, we will not bother introducing distinct grammar rules for every kind of term, but instead rely on the familiar syntax of \( \muplambda \)-calculus to express all needed terms.
 \end{comments}
 
@@ -83,8 +89,8 @@ This section is a detour; our purpose is to present some ideas without diving in
 
   Since there is no distinct grammar rule for types, we can use the placeholder rules
   \begin{bnf*}
-    \bnfprod{variable placeholder}   {\bnfpn{Small Latin identifier}}, \\
-    \bnfprod{pseudoterm placeholder} {\bnfpn{Capital Latin identifier} \bnfor \bnfpn{Small Greek identifier}},
+    \bnfprod{variable placeholder}   {\bnfpn{Small Latin identifier}} \\
+    \bnfprod{pseudoterm placeholder} {\bnfpn{Capital Latin identifier} \bnfor \bnfpn{Small Greek identifier}}
   \end{bnf*}
   and define the rest in the obvious way.
 
@@ -576,7 +582,7 @@ This section is a detour; our purpose is to present some ideas without diving in
 \paragraph{Dependent products}
 
 \begin{definition}\label{def:dependent_product}\mcite[35]{MartinLöf1984IntuitionisticTypeTheory}
-  When defining the syntax of Martin-L\"of type theory in \fullref{def:mltt_pseudoterm}, we have stated the \( \bnfpn{dependent product} \) grammar rule, which generalizes both \hyperref[def:arrow_type]{arrow types} and \hyperref[def:simple_product_type]{binary product types}.
+  When defining the syntax of Martin-L\"of type theory in \fullref{def:mltt_pseudoterm}, we have described the syntax of dependent products. They generalize both \hyperref[def:arrow_type]{arrow types} and \hyperref[def:simple_product_type]{binary product types}.
 
   The rules largely mirror those for arrow types described in \fullref{rem:type_theory_rule_classification}. For a fixed \hyperref[con:type_universe]{type universe} \( \BbbT \), we have the following \hyperref[rem:type_theory_rule_classification/form]{formation}, \hyperref[rem:type_theory_rule_classification/intro]{introduction} and \hyperref[rem:type_theory_rule_classification/elim]{elimination} rules:
   \begin{paracol}{3}
@@ -726,7 +732,7 @@ This section is a detour; our purpose is to present some ideas without diving in
 \paragraph{Dependent sums}
 
 \begin{definition}\label{def:dependent_sum}\mcite[\S A.2.5]{UnivalentFoundationsProgram2024OctoberHoTT}
-  When defining the syntax of Martin-L\"of type theory in \fullref{def:mltt_pseudoterm}, we have stated the \( \bnfpn{dependent sum} \) grammar rule, which generalizes \hyperref[def:simple_sum_type]{binary sum types} and also, coincidentally, \hyperref[def:simple_product_type]{binary product types}.
+  When defining the syntax of Martin-L\"of type theory in \fullref{def:mltt_pseudoterm}, we have stated the syntax of dependent sums. They generalize \hyperref[def:simple_sum_type]{binary sum types} and also, coincidentally, \hyperref[def:simple_product_type]{binary product types}.
 
   For a fixed \hyperref[con:type_universe]{type universe} \( \BbbT \), we have the following \hyperref[rem:type_theory_rule_classification/form]{formation rule}:
   \begin{equation*}\taglabel[\ensuremath{ \Sigma_{\logic{form}} }]{inf:def:dependent_sum/form}
@@ -1007,7 +1013,7 @@ This section is a detour; our purpose is to present some ideas without diving in
 \begin{remark}\label{rem:mltt_hol}
   With the \hyperref[def:type_derivation_relation]{type derivation relation} defined in \fullref{def:mltt_entailment}, \hyperref[def:mltt]{Martin-L\"of type theory} can be seen as a form of \hyperref[con:higher_order_logic]{higher-order logic} if we extend the \hyperref[con:curry_howard_correspondence]{Curry-Howard correspondence} by matching \hyperref[def:higher_order_language/quantifiers/universal]{universal quantifiers} with \hyperref[def:dependent_product]{dependent products} and \hyperref[def:higher_order_language/quantifiers/existential]{existential quantifiers} with \hyperref[def:dependent_sum]{dependent sums}.
 
-  We do not put restrictions on which types are allowed to act as formulas. This makes the theory go beyond what we discuss in \fullref{sec:higher_order_logic}.
+  We do not put restrictions on which types are allowed to act as formulas. This makes the theory go beyond what we discuss in \fullref{sec:predicate_logic}.
 
   One reasonable restriction is to only use \hyperref[def:mere_proposition]{mere propositions} rather than arbitrary types. This has the downside that, as mentioned in \fullref{rem:mere_propositions}, without additional assumptions we are not able to prove that some useful types are mere propositions.
 \end{remark}
@@ -1305,12 +1311,12 @@ This section is a detour; our purpose is to present some ideas without diving in
 
   The type syntax is based on the following \hyperref[con:variable_binding]{variable binder} extending the grammar of simple types from \fullref{def:simple_type}:
   \begin{bnf*}
-    \bnfprod{polymorphic type} {\bnftsq{\( \synforall \)} \bnfsp \bnfpn{type variable} \bnfsp \bnftsq{\( . \)} \bnfsp \bnfpn{type}}.
+    \bnfprod{polymorphic type} {\bnftsq{\( \synforall \)} \bnfsp \bnfpn{type variable} \bnfsp \bnftsq{\( . \)} \bnfsp \bnfpn{type}}
   \end{bnf*}
 
   We also extend the grammar of typed \( \muplambda \)-terms from \fullref{def:typed_lambda_term} with a corresponding binder:
   \begin{bnf*}
-    \bnfprod{type abstraction} {\bnftsq{\( \syn\Lambda \)} \bnfsp \bnfpn{type variable} \bnfsp \bnftsq{\( . \)} \bnfsp \bnfpn{typed term}}.
+    \bnfprod{type abstraction} {\bnftsq{\( \syn\Lambda \)} \bnfsp \bnfpn{type variable} \bnfsp \bnftsq{\( . \)} \bnfsp \bnfpn{typed term}}
   \end{bnf*}
 
   We assume capture-avoiding substitution is extended to polymorphic types and type abstractions as per \fullref{rem:variable_binding_properties}.
@@ -1439,7 +1445,7 @@ This section is a detour; our purpose is to present some ideas without diving in
 \begin{definition}\label{def:pure_type_system}\mcite[\S 5.2]{Barendregt1992LambdaCalculiWithTypes}
   A \term{pure type system} is a modular \hyperref[def:abstract_type_system]{type system} based on a restricted version of \hyperref[def:mltt]{Martin-L\"of type theory} featuring only \hyperref[def:dependent_product]{dependent products}, without even the judgmental equality rules from \fullref{rem:type_theory_rule_classification/equality}.
 
-  A particular pure type system is determined by a \term{signature} consisting of the following:
+  A particular pure type system is determined by a \hyperref[con:reserved_symbol]{signature} consisting of the following:
   \begin{thmenum}
     \thmitem{def:pure_type_system/signature/const} A nonempty set of constants, which we will call \term{sorts}. These will act as \hyperref[con:type_universe]{type universes}.
 
