@@ -69,7 +69,9 @@ def get_entry_type(doi_type: str) -> BibEntryType:
             return 'book'
 
         case 'book-chapter':
-            return 'inbook'
+            # inbook is more appropriate, but most of the time we are interested in citing a paper in a book series (e.g. LCNS)
+            # See https://tex.stackexchange.com/questions/697259/what-is-the-recommended-way-to-cite-papers-in-lncs-volumes-in-biblatex
+            return 'inproceedings'
 
         case _:
             return 'misc'
@@ -158,7 +160,7 @@ def doi_data_to_bib(data: DoiData, doi: str, *, print_edition: bool = False) -> 
         edition=data.edition_number if data.edition_number != '1' else None,
         isbn=get_isbn(data.isbn_type, data.isbn, print_edition=print_edition),
         issn=get_issn(data.issn),
-        series=container_title if entry_type == 'book' or entry_type == 'inbook' else None,
+        series=container_title if entry_type == 'book' or entry_type == 'inbook' or entry_type == 'inproceedings' else None,
         journal=container_title if entry_type == 'article' else None,
         url=data.url if data.url != f'http://dx.doi.org/{doi}' else None
     )

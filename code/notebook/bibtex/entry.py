@@ -11,7 +11,29 @@ from .string import BibString
 TAB_SIZE = 2
 
 
-BibEntryType = Literal['article', 'book', 'booklet', 'collection', 'conference', 'inbook', 'incollection', 'inproceedings', 'manual', 'mastersthesis', 'misc', 'online', 'phdthesis', 'proceedings', 'report', 'techreport', 'thesis', 'unpublished']
+BibEntryType = Literal[
+    'article',
+    'book',
+    'bookinbook',
+    'booklet',
+    'collection',
+    'conference',
+    'inbook',
+    'incollection',
+    'inproceedings',
+    'manual',
+    'mastersthesis',
+    'misc',
+    'mvbook',
+    'mvcollection',
+    'online',
+    'phdthesis',
+    'proceedings',
+    'report',
+    'techreport',
+    'thesis',
+    'unpublished'
+]
 
 
 ENTRY_TYPE_LIST: Sequence[BibEntryType] = get_args(BibEntryType)
@@ -47,6 +69,7 @@ class BibEntry:
     options:       Annotated[BibString | None, BibFieldAnnotation()] = None
     related:       Annotated[BibString | None, BibFieldAnnotation()] = None
     relatedtype:   Annotated[BibString | None, BibFieldAnnotation()] = None
+    crossref:      Annotated[BibString | None, BibFieldAnnotation()] = None
     publisher:     Annotated[BibString | None, BibFieldAnnotation()] = None
     pubstate:      Annotated[BibString | None, BibFieldAnnotation()] = None
     titleaddon:    Annotated[BibString | None, BibFieldAnnotation()] = None

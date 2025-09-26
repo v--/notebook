@@ -98,7 +98,7 @@ class BibEntryAdjuster:
             return
 
         if self.adjusted.year is None:
-            if self.adjusted.urldate is None and self.adjusted.entry_type != 'mvcollection':
+            if self.adjusted.urldate is None and self.adjusted.crossref is None:
                 self.logger.warning('The date field is blank')
 
             return
@@ -117,7 +117,7 @@ class BibEntryAdjuster:
         possibly_reprinted = self.adjusted.pubstate is not None or self.adjusted.relatedtype == 'origpubas' or self.adjusted.relatedtype == 'origpubin' or self.adjusted.origpublisher is not None
 
         match self.adjusted.entry_type:
-            case 'inbook' | 'incollection' | 'inproceedincs' if not self.adjusted.booktitle:
+            case 'inbook' | 'incollection' | 'inproceedings' if (self.adjusted.booktitle is None) and (self.adjusted.crossref is None):
                 self.logger.warning(f'No book title specified for entry type {self.adjusted.entry_type!r}')
 
             case 'book' | 'article' if not self.adjusted.publisher and not possibly_reprinted:
@@ -132,10 +132,10 @@ class BibEntryAdjuster:
         if self.adjusted.relatedtype == 'translationof' and len(self.adjusted.origlanguages) > 0:
             self.logger.warning('Specified both an original publication and an original language')
 
-        if len(self.adjusted.translators) > 0 and self.adjusted.relatedtype != 'translationof' and len(self.adjusted.origlanguages) == 0:
+        if len(self.adjusted.translators) > 0 and self.adjusted.crossref is None and self.adjusted.relatedtype != 'translationof' and len(self.adjusted.origlanguages) == 0:
             self.logger.warning('Specified the translators, but not the original publication nor the original language')
 
-        if len(self.adjusted.origlanguages) > 0 and len(self.adjusted.translators) == 0:
+        if len(self.adjusted.origlanguages) > 0 and self.adjusted.crossref is None and len(self.adjusted.translators) == 0:
             self.logger.warning('Specified the original language, but not the translators')
 
 
@@ -144,6 +144,9 @@ class BibEntryAdjuster:
 
         # We assume that such entries are special, e.g. standards
         if ':' in name:
+            return
+
+        if self.adjusted.crossref:
             return
 
         name_year = extract_year(name)
@@ -248,7 +251,7 @@ class BibEntryAdjuster:
         self.check_missing_fields()
         self.adjust_entry_name()
 
-        if len(self.adjusted.authors) == 0 and len(self.adjusted.editors) == 0:
+        if len(self.adjusted.authors) == 0 and len(self.adjusted.editors) == 0 and self.adjusted.crossref is None:
             self.logger.warning('Entry has neither authors nor editors specified')
 
         self.update(

@@ -733,7 +733,7 @@ def test_parse_101007_97836421282192_book_chapter(doi: str = '10.1007/978-3-642-
     entry = doi_data_to_bib(data, doi)
 
     assert entry == BibEntry(
-        entry_type='inbook',
+        entry_type='inproceedings',
         entry_name='BaezStay2010RosettaStone',
         title='Physics, Topology, Logic and Computation: A Rosetta Stone',
         publisher='Springer Berlin Heidelberg',
