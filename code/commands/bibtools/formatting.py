@@ -156,10 +156,15 @@ class BibEntryAdjuster:
         if self.adjusted.entry_type.startswith('mv'):
             return
 
-        if name_year is None:
-            self.logger.warning('No year present in the entry name')
-        elif name.endswith(name_year):
+        if name_year and date_year is None:
+            self.logger.warning('The entry name contains a date, but the date field does not')
+
+        elif date_year and name_year is None:
+            self.logger.warning('The date field contains a date, but the entry name does not')
+
+        elif name_year and name.endswith(name_year):
             self.logger.warning('No subject present in the entry name')
+
         else:
             return
 
