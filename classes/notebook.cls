@@ -17,7 +17,9 @@
 % See https://tex.stackexchange.com/a/223524
 % The afterskip is taken from the same property for subsubsections
 % See https://sourceforge.net/p/koma-script/code/HEAD/tree/trunk/scrkernel-sections.dtx
-\RedeclareSectionCommands[afterskip=1.7ex]{paragraph,subparagraph}
+\RedeclareSectionCommands[afterskip=1.7ex,level=2,toclevel=2]{paragraph}
+\setcounter{tocdepth}{\sectiontocdepth}
+\setcounter{secnumdepth}{\sectionnumdepth}
 
 % Report errors verbosely
 \setcounter{errorcontextlines}{100}
