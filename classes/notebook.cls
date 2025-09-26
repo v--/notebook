@@ -68,6 +68,7 @@
 % Reference packages
 % Using hypertexnames=false is suggested in https://tex.stackexchange.com/a/282313 and explained in https://tex.stackexchange.com/a/3197
 % Without it the log gets cluttered with insubstantial warnings
+\RequirePackage{crossreftools}
 \RequirePackage
   [
     colorlinks,
@@ -95,7 +96,7 @@
   }
 
 \RequirePackage[nameinlink]{cleveref}
-\RequirePackage{crossreftools}
+\RequirePackage{nameref}
 
 % Misc math packages
 \RequirePackage[altpo,epsilon]{backnaur}
