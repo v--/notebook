@@ -3,14 +3,14 @@
 \paragraph{Syntax of \( \muplambda \)-terms}
 
 \begin{concept}\label{con:variable}
-  A \term[en=variable (\cite[9]{Church1956LogicVol1})]{variable} is an atomic \hyperref[con:expression]{expression}, usually a single symbol, whose intended interpretation is to take one of many possible values, called the variable's \term[en=range (\cite[9]{Church1956LogicVol1})]{range}. Variables intended to always take the same value are called \term[en=constant (\cite[9]{Church1956LogicVol1})]{constants}.
+  A \term[en=variable (\cite[9]{Church1956LogicVol1})]{variable} is an atomic \hyperref[con:expression]{expression}, usually a single symbol, whose intended interpretation is to take one of many possible values, collectively called the variable's \term[en=range (\cite[9]{Church1956LogicVol1})]{range}. If the expression is instead intended to always take the same value, it is called a \term[en=constant (\cite[9]{Church1956LogicVol1})]{constant}.
 \end{concept}
 \begin{comments}
   \item When defining substitution for \hyperref[def:lambda_term]{\( \muplambda \)-terms} in \fullref{def:lambda_term_substitution/operation}, we make it clear that variables are affected, but constants are invariant. In fact, the entire concept of substitution revolves around replacing variables with other \( \muplambda \)-terms.
 
   \item We describe in \fullref{con:variable_dependence} how variables may depend on one another.
 
-  \item A related notions is that of a \hyperref[def:random_variable]{random variables}, whose value is nondeterministic. They are neither dependent nor independent; in fact, they have their own notion of dependence that we define formally in \fullref{def:random_variable_independence}.
+  \item A related notion is that of a \hyperref[def:random_variable]{random variables}, whose value is nondeterministic. They are neither dependent nor independent; in fact, they have their own notion of dependence that we define formally in \fullref{def:random_variable_independence}.
 
   \item Variables and constants are \hyperref[con:assumed_knowledge]{assumed knowledge}, so definitions across the literature are scarce. \incite[9]{Church1956LogicVol1} writes
   \begin{displayquote}
@@ -25,29 +25,29 @@
 \end{comments}
 
 \begin{definition}\label{def:lambda_term_alphabet}\mimprovised
-  The \hyperref[def:formal_language/alphabet]{alphabet} of \hyperref[con:reserved_symbol]{reserved symbols} of \( \muplambda \)-calculus consists of the following:
+  The \hyperref[def:formal_language/alphabet]{alphabet} of \hyperref[con:improper_symbol]{improper symbols} of \( \muplambda \)-calculus consists of the following:
 
   \begin{thmenum}
-    \thmitem{def:lambda_term_alphabet/binder} The \hyperref[con:variable_binder]{variable binder} \( \synlambda \), after which \( \muplambda \)-calculus is named.
+    \thmitem{def:lambda_term_alphabet/binder} The \hyperref[con:variable_binding]{variable binder} \( \synlambda \), after which \( \muplambda \)-calculus is named.
 
     \thmitem{def:lambda_term_alphabet/aux} Auxiliary symbols:
     \begin{thmenum}
       \thmitem{def:lambda_term_alphabet/aux/dot} The dot \enquote{\( . \)} for separating variable binders from their bodies.
-      \thmitem{def:lambda_term_alphabet/aux/auxiliary} The colon \enquote{\( : \)} for \hyperref[def:type_assertion]{type assertions} in typed \( \muplambda \)-terms.
+      \thmitem{def:lambda_term_alphabet/aux/auxiliary} The colon \enquote{\( : \)} for \hyperref[def:type_assertion]{type assertions} in typed \( \muplambda \)-terms (these will be defined in \fullref{sec:simply_typed_lambda_terms}).
       \thmitem{def:lambda_term_alphabet/aux/parentheses} Parentheses \enquote{\( ( \)} and \enquote{\( ) \)} for grouping terms unambiguously.
     \end{thmenum}
   \end{thmenum}
 \end{definition}
 \begin{comments}
-  \item We place dots over the various symbols in order to highlight that they are merely symbols without semantics --- see \fullref{rem:mathematical_logic_conventions/metavariable_syntax} for a general discussion.
+  \item We place dots over the various symbols in order to highlight that they are merely symbols without semantics --- see \fullref{rem:mathematical_logic_conventions/terminal_dots} for a general discussion.
 
-  \item We will extend this alphabet with new \hyperref[con:variable_binder]{variable binders} in \fullref{sec:dependent_types}, and also extend it for simply typed higher-order logic in \fullref{def:simply_typed_hol_alphabet}.
+  \item We will extend this alphabet with new \hyperref[con:variable_binding]{variable binders} in \fullref{sec:dependent_types}, and also adapt it for simply typed higher-order logic in \fullref{def:simply_typed_hol_signature}.
 
-  \item The auxiliary dot after the variable binders is not strictly necessary, and was in fact not used in \incite{Church1932LambdaCalculus} where \( \muplambda \)-calculus was introduced. It later became standard to include it. Our main reference books --- \incite[def. 1A1]{Hindley1997BasicSTT}, \incite[22]{Barendregt1984LambdaCalculus}, \incite[\S 4.1.3]{Mimram2020ProgramEqualsProof} and \incite[188]{Герасимов2011Вычислимость} --- all use it.
+  \item The auxiliary dot after the variable binders may be omitted --- see \fullref{rem:lambda_term_abstractor_dot}.
 \end{comments}
 
 \begin{definition}\label{def:lambda_term}\mimprovised
-  Fix a (finite) \hyperref[def:formal_language/alphabet]{alphabet} \( \op*{Const} \), whose elements we will call \term[en=constant (\cite[202]{Andrews2002Logic})]{constant terms}. To ensure \hyperref[def:grammar_ambiguity]{syntactic unambiguity}, we disallow the \hyperref[con:reserved_symbol]{reserved symbols} from \fullref{def:lambda_term_alphabet} as constants (but do not consider constants to be reserved).
+  Fix a (finite) \hyperref[def:formal_language/alphabet]{alphabet} \( \op*{Const} \), whose elements we will call \term[en=constant (\cite[202]{Andrews2002Logic})]{constant terms}. To ensure \hyperref[def:grammar_ambiguity]{syntactic unambiguity}, we disallow the \hyperref[con:improper_symbol]{improper symbols} from \fullref{def:lambda_term_alphabet} as constants.
 
   We will introduce a \hyperref[def:formal_grammar/schema]{grammar schema} whose rules and generated languages we will collectively call \enquote{the \hyperref[con:syntax_semantics_duality]{syntax} of untyped lambda calculus}:
   \begin{bnf*}
@@ -58,7 +58,7 @@
     \bnfprod{term}        {\bnfpn{atom} \bnfor \bnfpn{application} \bnfor \bnfpn{abstraction}}.
   \end{bnf*}
 
-  We have used variable identifier rules from \fullref{def:variable_identifier}. As discussed in \fullref{con:reserved_symbol}, when parsing a string generated by this grammar, constants have higher priority than variables; that is, if a small Latin identifier belongs to \( \op*{Const} \), we parse it as a constant and not as the variable with the same name.
+  We have used variable identifier rules from \fullref{def:variable_identifier}. As discussed in \fullref{con:improper_symbol}, when parsing a string generated by this grammar, constants have higher priority than variables; that is, if a small Latin identifier belongs to \( \op*{Const} \), we parse it as a constant and not as the variable with the same name.
 
   \begin{thmenum}
     \thmitem{def:lambda_term/const} Technically, the definition of \( \muplambda \)-term depends on the set of constants. Constants are an important part of type systems, where they are treated as part of the type system. In general untyped lambda calculus, we will not need them.
@@ -88,6 +88,14 @@
 
   \item We need all the parentheses so that we can prove unambiguity in \fullref{thm:lambda_term_grammar/unambiguous}. In the metalanguage, we will use the conventions from \fullref{rem:lambda_term_parentheses} regarding parentheses.
 \end{comments}
+
+\begin{remark}\label{rem:lambda_term_abstractor_dot}
+  In \fullref{def:lambda_term}, we have defined \( \muplambda \)-terms so that there is a dot after the abstractor's variable, i.e. \( \qabs x M \) rather than \( \synlambda x M \).
+
+  This dot is not strictly necessary and was in fact not used in \incite{Church1932LambdaCalculus} where \( \muplambda \)-calculus was introduced. Including it has since become standard, as a leftover from a dated convention in logic --- see \fullref{ex:dot_delimiters_in_logic/quantifiers}.
+
+  Our main reference books --- \cite[def. 1A1]{Hindley1997BasicSTT}, \cite[22]{Barendregt1984LambdaCalculus}, \cite[15]{GirardEtAl1989ProofsAndTypes}, \cite[\S A.2.4]{UnivalentFoundationsProgram2024OctoberHoTT}, \cite[\S 4.1.3]{Mimram2020ProgramEqualsProof} and \cite[188]{Герасимов2011Вычислимость} --- all use dots.
+\end{remark}
 
 \begin{proposition}\label{thm:lambda_term_grammar}
   The \hyperref[def:formal_grammar]{grammar} of \hyperref[def:lambda_term]{\( \muplambda \)-terms} has the following basic properties:
@@ -149,6 +157,12 @@
     This convention is used by Church himself in \incite[58]{Church1940STT}, as well as our main sources --- \incite[1]{Hindley1997BasicSTT}, \incite[notation 2.1.3]{Barendregt1984LambdaCalculus} and \incite[112]{Mimram2020ProgramEqualsProof}.
   \end{thmenum}
 \end{remark}
+
+\begin{remark}\label{rem:binders_and_syntactic_ambiguity}
+  \Fullref{thm:lambda_term_grammar/unambiguous} implies that \( \muplambda \)-terms are \hyperref[def:grammar_ambiguity]{syntactically unambiguous}. This is so because we have taken precautions to restrict which symbols are allowed as constants.
+\end{remark}
+
+\paragraph{Subterms}
 
 \begin{definition}\label{def:lambda_subterm}\mcite[def. 1A3]{Hindley1997BasicSTT}
   We define the set of all \term[ru=подтерм (\cite[189]{Герасимов2011Вычислимость})]{subterms} of a term \( M \) as follows:
@@ -218,7 +232,7 @@
 
   In some \hyperref[con:logical_system]{logical systems} like \( \muplambda \)-calculus and higher-order logic, this can be formalized --- we can associate variables with scopes in which they are bound. Within this scope, their interpretation will be determined by the rules of the logical system alone.
 
-  Correspondingly, in the \( \muplambda \)-term \( \qabs x M \), we call \( \muplambda \) the \term[en=binder (\cite[23]{UnivalentFoundationsProgram2024OctoberHoTT})]{binder}. We will also encounter other binders --- \( \synprod \) in \( \synsum \) in \fullref{sec:dependent_types}, as well as the \hyperref[con:quantifier]{quantifiers} \( \synforall \) and \( \synexists \) in \fullref{sec:first_order_logic}.
+  Correspondingly, in the \( \muplambda \)-term \( \qabs x M \), we call \( \muplambda \) the \term[en=binder (\cite[23]{UnivalentFoundationsProgram2024OctoberHoTT})]{binder}. We will also encounter other binders --- \( \synprod \) in \( \synsum \) in \fullref{sec:dependent_types}, as well as the \hyperref[def:predicate_logic_alphabet/quantifiers]{quantifiers} \( \synforall \) and \( \synexists \) in \fullref{sec:first_order_logic}.
 
   Variables that are not bound will be called \term{free}, and for determining their interpretation we will need additional machinery.
 \end{concept}

@@ -6,64 +6,14 @@ Propositional logic allows us to express basic relations between atomic \hyperre
 
 There are different approaches to formalizing the syntax of propositional logic. We use the theory of formal grammars that we have developed in \fullref{sec:formal_languages} and \fullref{sec:syntax_trees}. This requires specific adjustments related to other treatments of propositional logic --- e.g. \incite[ch. 1]{Hinman2005Logic}, \incite[pt. I]{Smullyan1995FOL} and \incite[ch. 1]{КолмогоровДрагалин2006Логика} --- which rely on a more informal treatment of syntax more akin to what can be achieved via \fullref{thm:knaster_tarski_iteration}. Our approach allows us to use powerful tools while treating the object logic in complete formality. \incite[45]{Mimram2020ProgramEqualsProof} also describes syntax via formal grammars, but does not utilize the theory of formal languages.
 
-\begin{concept}\label{con:reserved_symbol}
-  \hyperref[con:logical_system]{Logical systems} are generally designed to encode multiple \hyperref[con:metalogic]{object languages}\fnote{An exception is the syntax of propositional logic, which we define in \fullref{def:propositional_syntax}. It provides only a way to study logical relations between \hyperref[con:proposition]{propositions}, irrespective of how these propositions are structured.}.
-
-  A particular object language may require additional symbols. We call a \term[en=signature (\cite[98]{GoguenBurstall1992Institutions})]{signature} the collection of symbols specific to an object language but not the \hyperref[con:logical_system]{logical system} used to describe it.
-
-  For example, \hyperref[def:peano_arithmetic]{Peano arithmetic} as expressed in the \hyperref[def:first_order_syntax]{syntax of first-order logic}, requires the symbols \( \syn0 \), \( \syns \), \( \synplus \) and \( \syncirc \) in order to express the axioms \ref{eq:def:peano_arithmetic/PA6} and \ref{eq:def:peano_arithmetic/PA7} for multiplication:
-  \begin{align*}
-    \synx \syncirc \syn0        &\syneq \syn0,                    \\
-    \synx \syncirc \syns(\syny) &\syneq \synx \syncirc \syny + \synx
-  \end{align*}
-
-  The equality symbol \( {\syneq} \) is not part of the signature of Peano arithmetic because it is common for all languages expressible in first-order logic. We will call such symbols \term{reserved}.
-
-  To avoid \hyperref[def:grammar_ambiguity]{syntactic ambiguity}, we generally disallow symbols in the signature to clash with reserved symbols. There is an exception for \hyperref[con:variable]{variables}, however. We generally have an unbounded supply of variables because they follow the identifier rules from \fullref{def:variable_identifier}. We allow non-reserved symbols to take precedence over variables. For example, in \fullref{def:simply_typed_hol_syntax}, we allow \( \syn\iota \) and \( \syn\omicron \) as base types, even though they would otherwise be considered variables.
-\end{concept}
-\begin{comments}
-  \item The term \enquote{reserved} comes from programming languages, where certain words are marked as reserved and cannot be used for naming. For example, \cite[\S 6.4.1]{ISO:9899:2018} lists several dozens of words that are called \enquote{reserved} and cannot be used as identifiers in the programming language C.
-
-  \item It is common to call reserved symbols \enquote{logical}, but this is unfortunately ambiguous --- see \fullref{rem:logical_symbol_terminology}. Still, with some disambiguation, we find useful the adjectives \enquote{logical} and \enquote{non-logical} when discussing simply typed higher-order logic in \fullref{sec:predicate_logic}.
-
-  \item \incite[97]{GoguenBurstall1992Institutions} describe a signature as \enquote{vocabularies for use in constructing sentences in a logical system}.
-\end{comments}
-
-\begin{remark}\label{rem:logical_symbol_terminology}
-  It is common to call \hyperref[con:reserved_symbol]{reserved symbols} \enquote{logical}, distinguishing them from \enquote{nonlogical} symbols that appear in a signature. This terminology is unfortunately ambiguous, as discussed in \cite{MathSE:are_variables_logical_symbols}. For example, for the \hyperref[def:first_order_syntax]{syntax of first-order logic}, the terms are used as follows:
-  \begin{itemize}
-    \item \incite[178]{Gentzen1935LogischeSchließen}, when presenting first-order logic, calls \enquote{Logische Zeichen} (\enquote{logical symbols}) the \hyperref[def:propositional_alphabet/negation]{negation}, \hyperref[def:propositional_alphabet/connectives]{propositional connectives} and \hyperref[con:quantifier]{quantifiers}.
-
-    He separately lists other syntactic classes:
-    \begin{itemize}
-      \item Two \hyperref[def:propositional_alphabet/constants]{logical constants}.
-      \item \enquote{Hilfszeichen} (\enquote{auxiliary symbols}) consisting of two \hyperref[def:propositional_alphabet/parentheses]{parentheses} and a \hyperref[def:sequent]{sequent relation symbol}.
-      \item \hyperref[con:variable]{Variables}, separated into \hyperref[def:variable_binding]{free} object variables, bound object variables and propositional variables.
-    \end{itemize}
-
-    \item \incite[69]{Kleene1971Metamathematics}, \incite[57]{КолмогоровДрагалин2006Логика}, \incite[140]{Мальцев1970АлгебраическиеСистемы} and \incite[62]{Герасимов2011Вычислимость} extend Gentzen's list of logical symbols with quantifiers. Neither of them uses logical constants, but it is reasonable to expect them to regard constants as logical symbols.
-
-    \item \incite*[102]{BoolosEtAl2002ComputabilityAndLogic} further extends the list of logical symbols with variables.
-
-    \item \incite*[2]{Hinman2005Logic} writes
-    \begin{displayquote}
-      \textellipsis the symbols will fall into two classes: \textit{\textbf{logical symbols}}, which have a fixed meaning, and \textit{\textbf{non-logical symbols}}, which are subject to multiple interpretations.
-    \end{displayquote}
-
-    As stated, this principle suggests that constants, being a part of a signature and having a predefined interpretation, are logical symbols, while variables, whose interpretation depends on a \hyperref[def:first_order_valuation/variable_assignment]{variable assignment}, are nonlogical symbols.
-
-    Later, in \cite[def. 2.1.2]{Hinman2005Logic}, Hinman designates as logical symbols a limited set of quantifiers and connectives, as well as the variables and the equality symbol. Constants, functional and relational symbols are instead designated as non-logical.
-  \end{itemize}
-\end{remark}
-
 \begin{definition}\label{def:propositional_alphabet}\mcite[4; 5]{Smullyan1995FOL}
-  The \hyperref[def:formal_language/alphabet]{alphabet} of \hyperref[con:reserved_symbol]{reserved symbols} of propositional logic consists of the following:
+  The \hyperref[def:formal_language/alphabet]{alphabet} of \hyperref[con:improper_symbol]{improper} and \hyperref[con:variable]{constant} \hyperref[def:formal_language/symbol]{symbols} of propositional logic consists of the following:
 
   \begin{thmenum}
     \thmitem{def:propositional_alphabet/constants} Two \term{propositional constants}:
     \begin{thmenum}
-      \thmitem{def:propositional_alphabet/constants/verum}\mcite[67]{CitkinMuravitsky2022ConsequenceRelations} \term{verum} \enquote{\( \syntop \)}.
-      \thmitem{def:propositional_alphabet/constants/falsum}\mcite[67]{CitkinMuravitsky2022ConsequenceRelations} \term{falsum} \enquote{\( \synbot \)}.
+      \thmitem{def:propositional_alphabet/constants/verum}\mcite[VIII]{Peano1889ArithmeticesPrincipia} \term{verum} \enquote{\( \syntop \)}.
+      \thmitem{def:propositional_alphabet/constants/falsum}\mcite[VIII]{Peano1889ArithmeticesPrincipia} \term{falsum} \enquote{\( \synbot \)}.
     \end{thmenum}
 
     \thmitem{def:propositional_alphabet/negation} \term[ru=отрицание (\cite[17]{КолмогоровДрагалин2006Логика})]{Negation} \enquote{\( \synneg \)}.
@@ -79,7 +29,7 @@ There are different approaches to formalizing the syntax of propositional logic.
   \end{thmenum}
 \end{definition}
 \begin{comments}
-  \item We place dots over the various symbols in order to highlight that they are merely symbols without semantics --- see \fullref{rem:mathematical_logic_conventions/metavariable_syntax} for a general discussion.
+  \item We place dots over the various symbols in order to highlight that they are merely symbols without semantics --- see \fullref{rem:mathematical_logic_conventions/terminal_dots} for a general discussion.
 
   \item If desired, we can utilize a smaller propositional language without losing its semantical properties. Important example are the \hyperref[def:cnf_and_dnf]{conjunctive normal forms} in \fullref{alg:full_cnf_and_dnf}, although similar constructions hold for other \hyperref[def:boolean_closure/complete]{complete sets of Boolean functions} like those from \fullref{thm:complete_sets_of_boolean_functions}.
 
@@ -138,6 +88,18 @@ There are different approaches to formalizing the syntax of propositional logic.
 
   \SubProofOf{thm:propositional_formula_grammar/not_regular} Follows from \fullref{thm:propositional_formula_grammar/balanced} and \fullref{thm:paired_delimiters_not_regular}.
 \end{proof}
+
+\begin{remark}\label{rem:improper_symbols_and_parsing}
+  We generally disallow \hyperref[con:improper_symbol]{improper symbols} as variables because the usefulness of a formula such as \( \synneg \synneg \) is highly questionable.
+
+  There are however also technical considerations for this. For example, it is important for us to work with \hyperref[def:grammar_ambiguity]{syntactically unambiguous} \hyperref[def:formal_grammar]{grammars}. In more complicated languages, allowing improper symbols as variable identifiers can actually lead to syntactic ambiguity. For example, the specification \cite[\S 6.4.1]{ISO:9899:2018} of the programming language C lists several dozens of words that are called \enquote{reserved} and cannot be used as identifiers.
+
+  We have defined the syntax of propositional formulas in \fullref{def:propositional_syntax} so that they are syntactically unambiguous. In fact, even if we allow improper symbols such as \( \synneg \) or \( {\synwedge} \) to denote variables, the grammar would again be unambiguous because we would be able to determine that \( \synneg \synneg \) is a negation of the variable \( \synneg \) and that \( (\synwedge \synwedge \synwedge) \) is a conjunction of the variable \( {\synwedge} \) with itself.
+
+  Even if the grammar remains unambiguous, however, parsing becomes more complicated because the context in which a symbol occurs becomes significant\fnote{Even if parsing requires additional context, generating expressions does not, so the language remains \hyperref[def:chomsky_hierarchy/context_free]{context-free}.} --- the parser must at all times know whether to expect at a certain position a variable symbol or the corresponding improper symbol.
+
+  We even disallow \hyperref[con:logical_system_signature]{signature symbols} to clash with variables or placeholders, except in the special case of \fullref{def:simply_typed_hol_typing/equality}.
+\end{remark}
 
 \begin{remark}\label{rem:propositional_formula_parentheses}
   We will use several following \enquote{abuse-of-notation} \hyperref[con:metalogic]{metalingual} conventions regarding parentheses. These are only notations shortcuts in the \hyperref[con:metalogic]{metalanguage} and the formulas themselves (as abstract mathematical objects) are still assumed to contain parentheses that help them avoid syntactic ambiguity.
@@ -302,7 +264,7 @@ There are different approaches to formalizing the syntax of propositional logic.
 
 \paragraph{Intuitionistic propositional semantics}
 
-\begin{definition}\label{def:truth_value_algebra}\mimprovised
+\begin{definition}\label{con:truth_value_algebra}\mimprovised
   In order to determine whether a sentence holds under given circumstances, we must have a set of \term[ru=истинностное значение (\cite[17]{Герасимов2011Вычислимость}), en=truth value (\cite[9]{Smullyan1995FOL})]{truth values}, for example the Boolean values \( T \) and \( F \) from \fullref{con:boolean_value}. This set may need some additional structure depending on the syntax of the sentences. The aforementioned set is naturally a \hyperref[def:boolean_algebra]{Boolean algebra}, and the most general setting we will consider are \hyperref[def:heyting_algebra]{Heyting algebras}.
 
   When working with \hyperref[def:institution/models]{models} and notions related to them, we will presume that an underlying Heyting algebra \( \BbbH \) is fixed. In accordance with \fullref{rem:mathematical_logic_conventions/propositional_constants}, we will denote the top and bottom element of \( \BbbH \) by \( T \) and \( F \).
@@ -324,7 +286,7 @@ There are different approaches to formalizing the syntax of propositional logic.
 \end{definition}
 
 \begin{definition}\label{def:propositional_valuation}\mimprovised
-  We will define valuations for propositional formulas in a fixed \hyperref[def:truth_value_algebra]{truth value Heyting algebra} \( \BbbH \).
+  We will define valuations for propositional formulas in a fixed \hyperref[con:truth_value_algebra]{truth value Heyting algebra} \( \BbbH \).
 
   \begin{thmenum}
     \thmitem{def:propositional_valuation/interpretation} A \term[ru=интерпретация (\cite[17]{Герасимов2011Вычислимость}), en=interpretation (\cite[10]{Smullyan1995FOL})]{propositional interpretation} is a function with signature \( I: \op*{Prop} \to \BbbH \).
@@ -364,8 +326,57 @@ There are different approaches to formalizing the syntax of propositional logic.
   \end{itemize}
 \end{comments}
 
+\begin{concept}\label{con:improper_symbol}
+  In \fullref{def:propositional_valuation/formula_valuation}, we have defined valuations for \hyperref[def:propositional_syntax/formula]{propositional formulas}. Based on this definition, the symbols used to define the formal grammar of formulas can be divided into two collections:
+  \begin{thmenum}
+    \thmitem{con:improper_symbol/proper} The propositional variables and the constants \( \syntop \) and \( \synbot \) can be regarded, in the words of \incite[32]{Church1956LogicVol1}, as \enquote{having meaning in isolation}.
+
+    That is to mean that, given a fixed \hyperref[def:propositional_valuation/interpretation]{propositional interpretation}, any variable and any constant has a definite valuation.
+
+    Following Church, we call such symbols \term[en=proper (symbol) (\cite[32]{Church1956LogicVol1})]{proper}.
+
+    \thmitem{con:improper_symbol/improper} On the other hand, the rest of the symbols from \fullref{def:propositional_alphabet} \enquote{have no meaning in isolation} but \enquote{combine with proper symbols (one or more) to form longer expressions that do have meaning in isolation.}
+
+    Indeed, the conjunction symbol \( {\synwedge} \) has no valuation by itself, but the conjunction formula \( \varphi \synwedge \psi \) does.
+
+    Again following Church, we call such symbols \term[en=improper (symbol) (\cite[32]{Church1956LogicVol1})]{improper}.
+  \end{thmenum}
+\end{concept}
+\begin{comments}
+  \item An alternative to the adjective \enquote{improper} is \enquote{reserved}. In programming languages, certain words are marked as reserved and cannot be used for naming. For example, \cite[\S 6.4.1]{ISO:9899:2018} lists several dozens of words that are called \enquote{reserved} and cannot be used as identifiers in the programming language C.
+
+  \item It is common to call improper symbols \enquote{logical}, but this is unfortunately ambiguous --- see \fullref{rem:logical_symbol_terminology}. Still, with some disambiguation, we find useful the adjectives \enquote{logical} and \enquote{nonlogical} when discussing simply typed higher-order logic in \fullref{sec:predicate_logic}.
+\end{comments}
+
+\begin{remark}\label{rem:logical_symbol_terminology}
+  It is common to call \hyperref[con:improper_symbol]{improper symbols} \enquote{logical}, distinguishing them from \enquote{nonlogical} symbols that appear in a signature. This terminology is unfortunately ambiguous, as discussed in \cite{MathSE:are_variables_logical_symbols}. For example, for the \hyperref[def:first_order_syntax]{syntax of first-order logic}, the terms are used as follows:
+  \begin{itemize}
+    \item \incite[178]{Gentzen1935LogischeSchließen}, when presenting first-order logic, calls \enquote{Logische Zeichen} (\enquote{logical symbols}) the \hyperref[def:propositional_alphabet/negation]{negation}, \hyperref[def:propositional_alphabet/connectives]{propositional connectives} and \hyperref[def:predicate_logic_alphabet/quantifiers]{quantifiers}.
+
+    He separately lists other syntactic classes:
+    \begin{itemize}
+      \item Two \hyperref[def:propositional_alphabet/constants]{logical constants}.
+      \item \enquote{Hilfszeichen} (\enquote{auxiliary symbols}) consisting of two \hyperref[def:propositional_alphabet/parentheses]{parentheses} and a \hyperref[def:sequent]{sequent relation symbol}.
+      \item \hyperref[con:variable]{Variables}, separated into \hyperref[con:variable_binding]{free} object variables, bound object variables and propositional variables.
+    \end{itemize}
+
+    \item \incite[69]{Kleene1971Metamathematics}, \incite[57]{КолмогоровДрагалин2006Логика}, \incite[140]{Мальцев1970АлгебраическиеСистемы} and \incite[62]{Герасимов2011Вычислимость} extend Gentzen's list of logical symbols with quantifiers. Neither of them uses logical constants, but it is reasonable to expect them to regard constants as logical symbols.
+
+    \item \incite*[102]{BoolosEtAl2002ComputabilityAndLogic} further extend the list of logical symbols with variables.
+
+    \item \incite*[2]{Hinman2005Logic} writes
+    \begin{displayquote}
+      \textellipsis the symbols will fall into two classes: \textit{\textbf{logical symbols}}, which have a fixed meaning, and \textit{\textbf{non-logical symbols}}, which are subject to multiple interpretations.
+    \end{displayquote}
+
+    As stated, this principle suggests that constants, being a part of a signature and having a predefined interpretation, are logical symbols, while variables, whose interpretation depends on a \hyperref[def:first_order_valuation/variable_assignment]{variable assignment}, are nonlogical symbols.
+
+    Later, in \cite[def. 2.1.2]{Hinman2005Logic}, Hinman designates as logical symbols a limited set of quantifiers and connectives, as well as the variables and the equality symbol. Constants, functional and relational symbols are instead designated as non-logical.
+  \end{itemize}
+\end{remark}
+
 \begin{definition}\label{def:propositional_institution}\mimprovised
-  For a fixed \hyperref[def:truth_value_algebra]{truth value Heyting algebra} \( \BbbH \), \hyperref[def:propositional_valuation/interpretation]{propositional interpretations} naturally give rise to an \hyperref[def:institution]{institution} as follows:
+  For a fixed \hyperref[con:truth_value_algebra]{truth value Heyting algebra} \( \BbbH \), \hyperref[def:propositional_valuation/interpretation]{propositional interpretations} naturally give rise to an \hyperref[def:institution]{institution} as follows:
   \begin{thmenum}
     \thmitem{thm:propositional_institution/signatures} For the category of \hyperref[def:institution/signatures]{signatures}, fix some symbol \( \anon \) and let \( \cat{Sign} \) be the \hyperref[def:discrete_category]{discrete category} on \( \set{ \anon } \).
 
@@ -386,7 +397,7 @@ There are different approaches to formalizing the syntax of propositional logic.
   \begin{thmenum}
     \thmitem{def:propositional_semantics/intuitionistic} In the general case we consider here, we will say that the semantics are \term{\hyperref[con:intuitionistic_logic]{intuitionistic}}.
 
-    \thmitem{def:propositional_semantics/classical} In the special case where the \hyperref[def:truth_value_algebra]{truth value Heyting algebra} is the two-element Boolean algebra \( \set{ T, F } \), we will call them \term{\hyperref[con:classical_logic]{classical}} or \term{Boolean}.
+    \thmitem{def:propositional_semantics/classical} In the special case where the \hyperref[con:truth_value_algebra]{truth value algebra} is the two-element Boolean algebra \( \set{ T, F } \), we will call them \term{\hyperref[con:classical_logic]{classical}} or \term{Boolean}.
 
     \thmitem{def:propositional_semantics/topological} If the Heyting algebra is a \hyperref[def:topological_space]{topology}, as in \fullref{ex:def:heyting_algebra/topology}, we obtain \term{topological semantics}.
 
@@ -404,7 +415,7 @@ There are different approaches to formalizing the syntax of propositional logic.
 \end{remark}
 
 \begin{definition}\label{def:propositional_entailment}\mimprovised
-  For a fixed \hyperref[def:truth_value_algebra]{truth value Heyting algebra}, we will now consider the \hyperref[def:institutional_entailment]{institutional entailment} relation obtained via \fullref{def:propositional_institution}, according to which that the set \( \Gamma \) of \hyperref[def:propositional_syntax/formula]{propositional formulas} entails \( \psi \) if, whenever some \hyperref[def:propositional_valuation/interpretation]{interpretation} \hyperref[thm:propositional_institution/satisfaction]{satisfies} every formula of \( \Gamma \), it also satisfies \( \psi \).
+  For a fixed \hyperref[con:truth_value_algebra]{truth value Heyting algebra}, we will now consider the \hyperref[def:institutional_entailment]{institutional entailment} relation obtained via \fullref{def:propositional_institution}, according to which that the set \( \Gamma \) of \hyperref[def:propositional_syntax/formula]{propositional formulas} entails \( \psi \) if, whenever some \hyperref[def:propositional_valuation/interpretation]{interpretation} \hyperref[thm:propositional_institution/satisfaction]{satisfies} every formula of \( \Gamma \), it also satisfies \( \psi \).
 
   We denote the corresponding relation via \( {\vDash} \). Similarly to other \hyperref[def:entailment_system/entailment]{entailment relations}, we use the sequent notation discussed in \fullref{rem:sequent_notation}.
 \end{definition}
@@ -498,7 +509,7 @@ There are different approaches to formalizing the syntax of propositional logic.
   \end{thmenum}
 \end{definition}
 \begin{comments}
-  \item In the English translation of Tarski's \cite[\enquote{On the Concept of Logical Consequence}, page 419]{Woodger1983TarskiPapers}, \enquote{tautology} is transiently described as \enquote{a statement which \enquote*{says nothing about reality}}.
+  \item In \cite[419]{Tarski1983LogicalConsequence}, an English translation of Tarski, \enquote{tautology} is described as \enquote{a statement which \enquote*{says nothing about reality}}.
 \end{comments}
 
 \begin{definition}\label{def:propositional_contradiction}
@@ -725,7 +736,7 @@ There are different approaches to formalizing the syntax of propositional logic.
 \end{proof}
 
 \begin{theorem}[Propositional semantic deduction theorem]\label{thm:propositional_semantic_deduction_theorem}
-  With respect to \hyperref[def:minimal_propositional_semantics]{minimal semantics}, for an arbitrary \hyperref[def:truth_value_algebra]{truth value Heyting algebra} and arbitrary propositional formulas, we have
+  With respect to \hyperref[def:minimal_propositional_semantics]{minimal semantics}, for an arbitrary \hyperref[con:truth_value_algebra]{truth value algebra} and arbitrary propositional formulas, we have
   \begin{equation*}
     \Gamma, \varphi \vDash \psi \T{if and only if} \Gamma \vDash \varphi \synimplies \psi.
   \end{equation*}

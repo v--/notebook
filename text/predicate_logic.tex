@@ -1,5 +1,7 @@
 \section{Predicate logic}\label{sec:predicate_logic}
 
+\paragraph{Syntax of predicate logic}
+
 \begin{remark}\label{rem:predicate_logic}
   We have defined \enquote{predicates} in \fullref{def:boolean_function} as \hyperref[con:boolean_value]{Boolean-valued} functions. We are interested here in \hyperref[con:syntax_semantics_duality]{syntactic} constructs that allow encoding such functions.
 
@@ -16,31 +18,98 @@
     propositions enter as unanalyzed wholes. In the \textit{predicate calculus}, we carry the analysis a step deeper to take into account also what in grammar is called \enquote{subject-predicate structure}, and we use two further operations, \( \forall \) (\enquote{for all}) and \( \exists \) (\enquote{for some} or \enquote{there exists}) which depend on that structure. (The predicate calculus includes the propositional calculus.)
   \end{displayquote}
 
+  These two operations are \hyperref[con:variable_binding]{variable binders} called quantifiers; we will formally introduce them in \fullref{def:predicate_logic_alphabet/quantifiers}. They can be viewed as generalizations of disjunction and conjunction --- \( \qforall* x \varphi \) encodes the \hyperref[con:judgment]{judgment} that \( \varphi \) holds for any value of \( x \) (here \( x \) is a \hyperref[con:variable_binding]{free variable}), without having to list all values in a conjunction, while \( \qexists* x \varphi \) instead states that \( \varphi \) holds for at least one \( x \).
+
   In this analogy, the variables upon which a predicate depends are subjects. We will call these subject variables \enquote{individual variables} based on Russell's usage described in \fullref{con:ramified_type_theory}.
 
-  Also based on Russell's usage is the stratification of formulas into orders. We will describe here some generalities that do not belong to a particular level of this hierarchy, and which, in accordance with \fullref{con:higher_order_logic}, we will collectively call \enquote{higher-order logic}. Later, in \fullref{sec:first_order_logic}, we will narrow out focus in order to study particular predicate formulas more elaborately.
+  Also based on Russell's usage is the stratification of formulas into orders. We will describe here some generalities that do not belong to a particular level of this hierarchy, and which we will collectively call \term{higher-order logic}. Later, in \fullref{sec:first_order_logic}, we will narrow out focus in order to study particular predicate formulas more elaborately.
 \end{remark}
 
-\begin{remark}\label{rem:simply_typed_hol_term_ambiguity}
-  In this section, we will use \hyperref[def:typed_lambda_term]{\( \muplambda \)-terms}, but in later sections we will only refer to \hyperref[def:first_order_syntax/term]{terms in first-order logic}. Both terminologies are established, and we try to make their usage as unambiguous as possible.
+\begin{definition}\label{def:predicate_logic_alphabet}\mimprovised
+  The \hyperref[def:formal_language/alphabet]{alphabet} of \hyperref[con:improper_symbol]{improper symbols} of predicate logic extends the \hyperref[def:propositional_alphabet]{alphabet of propositional logic} with the following:
+  \begin{thmenum}
+    \thmitem{def:predicate_logic_alphabet/quantifiers}\mcite[80]{Kleene2002Logic} The following symbols, collectively called \term[ru=кванторы (\cite[72]{ШеньВерещагин2017ЯзыкиИИсчисления})]{quantifiers}:
+    \begin{thmenum}
+      \thmitem{def:predicate_logic_alphabet/quantifiers/universal} The \term[ru=квантор общости (\cite[61]{Эдельман1975Логика})]{universal quantifier} \enquote{\( \synforall \)}.
+      \thmitem{def:predicate_logic_alphabet/quantifiers/existential}\mcite[80]{Kleene2002Logic} The \term[ru=квантор существования (\cite[61]{Эдельман1975Логика})]{existential quantifier} \enquote{\( \synexists \)}.
+    \end{thmenum}
+
+    We will denote by \( \op*{Quant} \) the set \( \set{ \synforall, \synexists } \) of quantifiers.
+
+    \thmitem{def:predicate_logic_alphabet/equality}\mcite[def. 2.1.2(vi)]{Hinman2005Logic} The \hyperref[rem:first_order_formula_conventions/infix]{infix} \term{equality symbol} \enquote{\( \syneq \)}
+
+    \thmitem{def:predicate_logic_alphabet/comma} In addition to the parentheses, we will also need another auxiliary symbol --- the comma \enquote{\( , \)} for delimiting \hyperref[con:function_arguments]{function arguments}.
+  \end{thmenum}
+\end{definition}
+
+\begin{remark}\label{rem:notation_for_quantifiers}
+  There are different possible notations for formulas with \hyperref[def:predicate_logic_alphabet/quantifiers]{quantifier}. We use the most straightforward notation, \( \qforall x \varphi \), because it seems to be dominating --- it is used in
+  \cite[ch. 2]{Hinman2005Logic},
+  \cite[ch. II]{Kleene2002Logic},
+  \cite[ch. IV]{Smullyan1995FOL},
+  \cite[\S I.9]{КолмогоровДрагалин2006Логика},
+  \cite[def. 2.1.6]{Герасимов2011Вычислимость},
+  \cite[ch. 3]{ШеньВерещагин2017ЯзыкиИИсчисления} and
+  \cite[ch. II]{Эдельман1975Логика}.
+
+  Another options is to use \( \quantifier* \synforall x \varphi \) in order to stay consistent with \( \muplambda \)-calculus --- see \fullref{rem:lambda_term_abstractor_dot} for the relevant discussion regarding \hyperref[def:lambda_term]{\( \muplambda \)-terms}. This convention stems from the dot delimiters of Russell and Whitehead, which are discussed in detail in \fullref{ex:dot_delimiters_in_logic}. It is used by \incite{Farmer2008STTVirtues}.
+
+  A general discussion of syntactic conventions for quantifiers can be found in \cite{MathSE:standards_for_quantifier_notation}. The answers suggest \( (\synforall x) \varphi \) as a popular alternative. The latter is used by \incite[\S 20]{Andrews2002Logic}. Ironically, Andrews also discusses his \( \muplambda \)-calculus based system \hyperref[rem:simply_typed_hol]{\( \logic{Q}_0 \)} in the same book, and avoids dots in his \( \muplambda \)-terms.
 \end{remark}
 
-\paragraph{Syntax of higher-order logic}
+\begin{definition}\label{def:function_syntax}\mimprovised
+  Fix a \hyperref[def:formal_language/symbol]{symbol} \( f \) intended to denote a function of \hyperref[con:function_arguments]{arity} \( n \). The following is a simple \hyperref[def:formal_grammar]{formal grammar} for \( f \), specifically for \hyperref[rem:predicate_logic]{predicate logic}:
+  \begin{bnf*}
+    \bnfprod{variable} {\bnfpn{Small Latin identifier}} \\
+    \bnfprod{function} {\bnfts{f} \bnfsp \bnftsq{(} \bnfsp \underbrace{\bnfpn{variable} \bnfsp \bnftsq{,} \bnfsp \cdots \bnfsp \bnftsq{,} \bnfsp \bnfpn{variable}}_{n \T*{variables}} \bnfsp \bnftsq{)}}
+  \end{bnf*}
 
-\begin{concept}\label{con:higher_order_logic}
-  \term{Higher-order logic} is a loose term for \hyperref[def:abstract_logic]{abstract logics} whose sentences do not belong to a particular level of \hyperref[con:ramified_type_theory]{Russell's order hierarchy}.
+  In the special case where \( n = 0 \), we avoid even the parentheses and use
+  \begin{bnf*}
+    \bnfprod{function} {\bnfts{f}}
+  \end{bnf*}
 
-  Such sentences can encode \hyperref[con:judgment]{judgments} not only about objects of discourse --- the individuals --- but also judgments about \hyperref[con:proposition]{propositions} about individuals and so forth.
-\end{concept}
+  We have used variable identifier rules from \fullref{def:variable_identifier}.
+\end{definition}
+\begin{comments}
+  \item The improper symbols used are the comma and parentheses, both from the corresponding alphabet from \fullref{def:predicate_logic_alphabet}.
+\end{comments}
+
+\begin{remark}\label{rem:simple_type_function_syntax}
+  Given a (simple) \hyperref[con:type_annotation]{type assertion} \( f: \tau \), we want to utilize the functions syntax from \fullref{def:function_syntax} to write \( f(x_1, \ldots, x_n) \) rather than the conventional \( \muplambda \)-term syntax \( f x_1 \cdots x_n \) or the corresponding variant with explicit parentheses, \( (\ldots ((f x_1) x_2) \ldots x_n) \).
+
+  This is easy for untyped \( \muplambda \)-terms, for which we have defined the arity in \eqref{eq:alg:untyped_lambda_term_to_function/arity}. We will now define its counterpart for \hyperref[def:simple_type]{simple types} as follows:
+  \begin{equation*}
+    \op*{Arity}(\tau) \coloneqq \begin{cases}
+      1 + \op*{Arity}(\rho), &\tau = \sigma \synimplies \rho, \\
+      0,                     &\T{otherwise.}
+    \end{cases}
+  \end{equation*}
+
+  For example:
+  \begin{itemize}
+    \item The arity of the type variable \( \syn\tau \) is \( 0 \), so the function syntax of \( f: \syn\tau \) is simply \( f \).
+
+    \item The arity of \( \syn\sigma \synimplies \syn\tau \) is \( 1 \) and each argument has arity \( 0 \). The function syntax of \( f: \syn\sigma \synimplies \syn\tau \) can be \( f(x) \) for any variable \( x \).
+
+    \item The arity of \( \syn\rho \synimplies (\syn\sigma \synimplies \syn\tau) \) is \( 2 \) and again each argument has arity \( 0 \). Here the function syntax is simply \( f(x, y) \).
+
+    \item The arity of \( (\syn\rho \synimplies \syn\sigma) \synimplies \syn\tau \) is instead \( 1 \), but now the first argument has arity \( 1 \).
+
+    We can define an auxiliary function \( g: \syn\rho \synimplies \syn\sigma \) and use \( f(g(x)) \).
+  \end{itemize}
+\end{remark}
+
+\paragraph{\( \muplambda \)-calculus and predicate logic}
 
 \begin{remark}\label{rem:higher_order_logic_and_type_theory}
-  Type theory allows two unrelated approaches to \hyperref[con:higher_order_logic]{higher-order logic}:
+  Type theory allows two unrelated approaches to \hyperref[rem:predicate_logic]{higher-order logic}:
   \begin{thmenum}
     \thmitem{rem:higher_order_logic_and_type_theory/terms} As mentioned in \fullref{rem:type_theory}, Alonzo Church initially formulated typed \( \muplambda \)-calculus as a way to encode logical formulas via \hyperref[def:typed_lambda_term]{typed \( \muplambda \)-terms}.
 
-    This approach has later been extended by his student Peter Andrews. We present here a variant of Andrews' system \( \logic{Q}_0 \).
+    This approach has later been extended by his students Leon Henkin and Peter Andrews. The latter describes a \hyperref[con:logical_system]{logical system} \( \logic{Q}_0 \) in \cite[ch. 5]{Andrews2002Logic} based on his and Henkin's refinements. More recently, William Farmer suggests modernized variants of Church's and Andrews' systems; he briefly outlines such a system in \cite{Farmer2008STTVirtues}.
 
-    The appeal of this approach for us is that it allows to generalize the semantics of first-order logic as traditionally described.
+    We present our own variant of their systems based on the availability of \fullref{ch:lambda_calculus}. We sketch its syntax and semantics and then shift our focus to first-order logic as a particularly well-studied restriction.
 
     \thmitem{rem:higher_order_logic_and_type_theory/types} A much more powerful approach is based on the \hyperref[con:curry_howard_correspondence]{Curry-Howard correspondence}, which hints at how \hi{types} rather than \( \muplambda \)-terms can be used to encode logical formulas.
 
@@ -51,131 +120,6 @@
     We avoid this approach because, although it is rightfully considered elegant, it is also much more complicated to study metatheoretically.
   \end{thmenum}
 \end{remark}
-
-\begin{concept}\label{con:quantifier}
-  \hyperref[con:variable_binding]{Variable binders} in logic are called \term[en=quantifier (\cite[41]{Church1956LogicVol1})]{quantifiers}.
-\end{concept}
-\begin{comments}
-  \item There are two quantifiers, defined in \fullref{def:simply_typed_hol_alphabet/quantifiers} --- a universal quantifier, \( \forall \), encoding the words \enquote{for each}, and an existential quantifier, \( \exists \), encoding \enquote{there exists}.
-
-  Despite them being ubiquitous, the term \enquote{quantifier} in isolation is not, and our referenced authors do not hint at a general theory of quantifiers. \incite*[41]{Church1956LogicVol1} dedicates the following two sentences to the general concept of quantifiers:
-  \begin{displayquote}
-    Of special importance for our purpose are \textit{quantifiers}. These are operators for which both the operands and the new constant or form produced by application of the operator are sentences or propositional forms.
-  \end{displayquote}
-\end{comments}
-
-\begin{definition}\label{def:simply_typed_hol_alphabet}\mimprovised
-  A \hyperref[con:logical_system]{logical system} based on \( \muplambda \)-calculus must inevitably rely on the syntax of the latter. We will extend simultaneously the \hyperref[def:formal_language/alphabet]{alphabet} of propositional logic from \fullref{def:propositional_alphabet} and the alphabet of \( \muplambda \)-terms from \fullref{def:lambda_term_alphabet}, as well as the arrow type connective from \fullref{def:simple_type_alphabet}. Following \fullref{rem:object_language_dots}, we place dots on top of (most) symbols.
-
-  \begin{thmenum}
-    \thmitem{def:simply_typed_hol_alphabet/types} The following will be used as base types in the sense of \fullref{def:simple_type}:
-    \begin{thmenum}[series=def:simply_typed_hol_alphabet]
-      \thmitem{def:simply_typed_hol_alphabet/types/propositions}\mcite[57]{Church1940STT} The \term{type of propositions} \enquote{\( \syn\omicron \)}.
-      \thmitem{def:simply_typed_hol_alphabet/types/individuals}\mcite[57]{Church1940STT} The \term{type of individuals} \enquote{\( \syn\iota \)} (Small Greek iota \( \iota \) with a dot).
-    \end{thmenum}
-
-    As discussed in \fullref{con:reserved_symbol}, both \( \syn\omicron \) and \( \syn\iota \) take precedence over the variables with the same name, i.e. both need to be parsed as constants in simply typed higher-order logic.
-
-    \thmitem{def:simply_typed_hol_alphabet/const} The following will be used as constant \( \muplambda \)-terms in the sense of \fullref{def:lambda_term}:
-    \begin{thmenum}[resume=def:simply_typed_hol_alphabet]
-      \thmitem{def:simply_typed_hol_alphabet/const/equality}\mcite[270]{Farmer2008STTVirtues} The \term{equality} term \enquote{\( \synQ \)}.
-      \thmitem{def:simply_typed_hol_alphabet/const/description}\mcite[270]{Farmer2008STTVirtues} The \term{definite description} term \enquote{\( \synI \)}.
-    \end{thmenum}
-
-    \thmitem{def:simply_typed_hol_alphabet/aux} Except for the auxiliary symbols from \fullref{def:lambda_term_alphabet}, we will also need another auxiliary symbol --- the comma \enquote{\( , \)} for separating function arguments.
-
-    \thmitem{def:simply_typed_hol_alphabet/equality}\mcite[def. 2.1.2(vi)]{Hinman2005Logic} Corresponding to the equality term \( \synQ \) is the more convenient \hyperref[rem:first_order_formula_conventions/infix]{infix} \term{equality symbol} \enquote{\( \syneq \)}
-
-    \thmitem{def:simply_typed_hol_alphabet/quantifiers} Finally, we will use the following symbols as \hyperref[con:quantifier]{quantifiers}:
-    \begin{thmenum}[resume=def:simply_typed_hol_alphabet]
-      \thmitem{def:simply_typed_hol_alphabet/quantifiers/universal}\mcite[80]{Kleene2002Logic} The \term[ru=квантор общости (\cite[61]{Эдельман1975Логика})]{universal quantifier} \enquote{\( \synforall \)}.
-      \thmitem{def:simply_typed_hol_alphabet/quantifiers/existential}\mcite[80]{Kleene2002Logic} The \term[ru=квантор существования (\cite[61]{Эдельман1975Логика})]{existential quantifier} \enquote{\( \synexists \)}.
-    \end{thmenum}
-
-    We will denote by \( \op*{Quant} \) the set \( \set{ \synforall, \synexists } \) of quantifiers.
-  \end{thmenum}
-\end{definition}
-
-\begin{definition}\label{def:simply_typed_hol_signature}\mimprovised
-  A \hyperref[con:reserved_symbol]{signature} \( \Sigma \) for simply typed higher-order logic consists of two \hi{nonempty} sets, \( \op*{Sort}_\Sigma \) and \( \op*{NLConst}_\Sigma \), which must act as follows:
-  \begin{thmenum}
-    \thmitem{def:simply_typed_hol_signature/sorts} The elements of \( \op*{Sort}_\Sigma \), which we will call \term{sorts}, along with the \hyperref[def:simply_typed_hol_alphabet/types/omicron]{type of propositions} \( \syn\omicron \), act as base types and must thus not include reserved symbols from \fullref{def:simple_type_alphabet}.
-
-    As mentioned in \fullref{con:simple_type_theory/hol}, we are interested in the \hyperref[con:syntax_fragment]{fragment} of \hyperref[def:simple_type]{simple types} over these base types with only arrow types (i.e. without product and sum types or even type variables).
-
-    Unless explicitly noted otherwise, we suppose that \( \op*{Sort}_\Sigma \) consists of a single symbol --- the \hyperref[def:simply_typed_hol_alphabet/types/propositions]{type of individuals} \( \syn\iota \).
-
-    If there is more than one sort, we call the resulting logical system \term[en=many-sorted predicate logic (\cite[\S 4.4.13]{TroelstraSchwichtenberg2000BasicProofTheory})]{many-sorted}.
-
-    \thmitem{def:simply_typed_hol_signature/const} The elements of \( \op*{NLConst}_\Sigma \) should be \hyperref[def:type_assertion]{type assertions} for \hi{distinct} \( \muplambda \)-term constants.
-
-    We call them \term{non-logical constants} to distinguish them from the \hyperref[def:simply_typed_hol_alphabet/const/equality]{equality} \( \synQ \) and \hyperref[def:simply_typed_hol_alphabet/const/description]{definite description} \( \synI \), which we call \term{logical constants}.
-
-    Note that the nonlogical constants are not merely \( \muplambda \)-term constants --- they have types assigned. The logical constants instead have \hyperref[def:polymorphic_typed_lambda_calculus]{polymorphic types} and we prefer to express this via \hyperref[def:simple_type_rule]{typing rules}.
-  \end{thmenum}
-\end{definition}
-\begin{comments}
-  \item This definition is loosely based on \bycite[270]{Farmer2008STTVirtues}:
-  \begin{displayquote}
-    A \textit{language} of STT is a pair \( L = (\mscrC, \tau) \) where is \( \mscrC \) is a set of symbols called \textit{constants} and \( \tau: \mscrC \to \mscrT \) is a total function. That is, a language is a set of symbols with assigned types (what computer scientists usually call a \enquote{signature}). The constants are the nonlogical primitive symbols that are used to construct the expressions of the language.
-  \end{displayquote}
-
-  Farmer assumes here that \( \syn\iota \) is the only sort, but later suggests adding other sorts (which he calls base types).
-
-  We have decided to call the non-propositional base types \enquote{sorts} based on similar usage in many-sorted first-order logic, which is discussed in \cite[\S 4.4.13]{TroelstraSchwichtenberg2000BasicProofTheory}, \cite[\S 55.24]{Church1956LogicVol1} and \cite[def. 62]{GoguenBurstall1992Institutions}.
-
-  \item Sorts as defined here are unrelated to sorts in \hyperref[def:pure_type_system]{pure type systems}, which act as \hyperref[con:type_universe]{type universes} rather than types.
-
-  \item We stated in \fullref{con:reserved_symbol} that the separation into \enquote{logical} and \enquote{nonlogical} symbols is generally ambiguous, but in this case there will be no ambiguity because we specify the kind of entity we refer to, e.g. \enquote{logical constant \( \muplambda \)-term} rather than simply \enquote{logical symbol}.
-\end{comments}
-
-\begin{definition}\label{def:simple_type_arity}\mimprovised
-  We have defined the arity of an untyped \( \muplambda \)-term in \eqref{eq:alg:untyped_lambda_term_to_function/arity}. We will now define its counterpart for \hyperref[def:simple_type]{simple types} as follows:
-  \begin{equation*}
-    \op*{Arity}(\tau) \coloneqq \begin{cases}
-      1 + \op*{Arity}(\rho), &\tau = \sigma \synimplies \rho, \\
-      0,                     &\T{otherwise.}
-    \end{cases}
-  \end{equation*}
-\end{definition}
-\begin{comments}
-  \item This is a working definition necessary only for properly defining the syntax of simply typed higher-order logic in \fullref{def:simply_typed_hol_syntax}.
-\end{comments}
-
-\begin{example}\label{ex:def:simple_type_arity}
-  We list examples of \hyperref[def:simple_type_arity]{simple type arity}:
-  \begin{thmenum}
-    \thmitem{ex:def:simple_type_arity/var} The arity of the variable \( \syn\tau \) is \( 0 \).
-    \thmitem{ex:def:simple_type_arity/arrow} The arity of \( \syn\sigma \synimplies \syn\tau \) is \( 1 \).
-    \thmitem{ex:def:simple_type_arity/nested_arrow_right} The arity of \( \syn\rho \synimplies (\syn\sigma \synimplies \syn\tau) \) is \( 2 \).
-    \thmitem{ex:def:simple_type_arity/nested_arrow_left} The arity of \( (\syn\rho \synimplies \syn\sigma) \synimplies \syn\tau \) is instead \( 1 \), but the first argument itself also has arity \( 1 \).
-  \end{thmenum}
-\end{example}
-
-\begin{definition}\label{def:simply_typed_hol_syntax}\mimprovised
-  We introduce a \hyperref[def:formal_grammar]{formal grammar} extending \hyperref[def:propositional_syntax/formula]{propositional formulas} to simply typed higher-order logic.
-
- It is difficult to ensure that all generated formulas are \hyperref[con:expression]{well-formed}, so we take an approach somewhat resembling that for \hyperref[con:pseudoterm_expression]{pseudoterm expressions} in \fullref{sec:dependent_types} --- we define a loose syntax and then only consider well-formed those formulas that are derivable according to the typing rules in \fullref{def:simply_typed_hol}.
-
-  Based on the \hyperref[def:simply_typed_hol_alphabet]{corresponding alphabet}, for a given \hyperref[def:simply_typed_hol_signature]{signature} \( \Sigma \) we introduce the following rules:
-  \begin{bnf*}
-    \bnfprod{variable}           {\bnfpn{Small Latin identifier}} \\
-    \bnfprod{annotated variable} {\bnfpn{variable} \bnfsp \bnftsq{\( : \)} \bnfsp \bnfpn{type}} \\
-    \bnfprod{quantifier formula} {\bnfpn{quantifier} \bnfsp \bnfpn{annotated variable} \bnfsp \bnftsq{\( . \)} \bnfsp \bnfpn{formula}} \\
-    \bnfprod{atomic formula}     {\bnfpn{typed term}} \\
-    \bnfprod{equality formula}   {\bnfpn{typed term} \bnfsp \bnftsq{\( \syneq \)} \bnfsp \bnfpn{typed term}} \\
-    \bnfprod{formula}            {\bnfpn{constant formula} \bnfor} \\
-    \bnfmore                     {\bnfpn{atomic formula} \bnfor} \\
-    \bnfmore                     {\bnfpn{equality formula} \bnfor} \\
-    \bnfmore                     {\bnfpn{negation formula} \bnfor} \\
-    \bnfmore                     {\bnfpn{connective formula} \bnfor} \\
-    \bnfmore                     {\bnfpn{quantifier formula}}
-  \end{bnf*}
-
-  Here the rules \( \bnfpn{constant formula} \), \( \bnfpn{negation formula} \) and \( \bnfpn{connective formula} \) are based on the propositional syntax from \fullref{def:propositional_syntax/schema}, while the \( \bnfpn{quantifier} \) rule lists the two quantifiers from \fullref{def:simply_typed_hol_alphabet/quantifiers}.
-
-  The rule \( \bnfpn{typed term} \) refers to typed \( \muplambda \)-terms as defined in \fullref{def:typed_lambda_term}, while \( \bnfpn{type} \) refers to the fragment of simple types discussed in \fullref{def:simply_typed_hol_signature/sorts}.
-\end{definition}
 
 \begin{concept}\label{con:primitive_notion}
   When formalizing \hyperref[def:lattice]{lattices}, we may use an \hyperref[con:metalogic]{object theory} based on one \hyperref[def:partially_ordered_set]{partial order relation} \( {\synleq} \), as we have done in \fullref{def:lattice/theory}, or we may use a theory based on two operations \( {\synvarwedge} \) and \( {\synvarvee} \).
@@ -194,11 +138,166 @@
   \item We avoid introducing a distinct term for symbols whose behavior is defined via others. \incite[28]{Kleene1971Metamathematics} suggests \enquote{ordinary}, \enquote{logical} and \enquote{defined}.
 \end{comments}
 
-\begin{definition}\label{def:simply_typed_hol}\mimprovised
-  We will describe a variant of Peter Andrews' system \( \logic{Q}_0 \) presented in \cite[\S 51]{Andrews2002Logic} and, with some variations, in \incite{Farmer2008STTVirtues}. Andrews' system is itself a variation of Church's simply typed \( \lambda \)-calculus from \cite{Church1940STT}.
+\begin{concept}\label{con:description_operator}
+  Bertrand Russell begins his philosophical paper \cite{Russell1905OnDenoting} as follows:
+  \begin{displayquote}
+    By a \enquote{denoting phrase} I mean a phrase such as any one of the following: a man, some man, any man, every man, all men, the present King of England, the present King of France, the centre of mass of the Solar System at the first instant of the twentieth century, the revolution of the earth round the sun, the revolution of the sun round the earth. Thus a phrase is denoting solely in virtue of its form. We may distinguish three cases: (1) A phrase may be denoting, and yet not denote anything; \textit{e.g.}, \enquote{the present King of France}. (2) A phrase may denote one definite object; \textit{e.g.}, \enquote{the present King of England} denotes a certain man. (3) A phrase may denote ambiguously, \textit{e.g.}, \enquote{a man} denotes not many men, but an ambiguous man. The interpretation of such phrases is a matter of considerable difficulty; indeed, it is very hard to frame any theory not susceptible of formal refutation.
+  \end{displayquote}
 
-  \thmitem{def:simply_typed_hol/equality}
-  \thmitem{def:simply_typed_hol/formula}
+  Later in the paper, Russell discusses \term{denotations} and how they relate to the meaning of denoting phrases:
+  \begin{displayquote}
+    When we wish to speak about the \textit{meaning} of a denoting phrase, as opposed to its \textit{denotation}, the natural mode of doing so it by inverted commas.
+    \begin{equation*}
+      \vdots
+    \end{equation*}
+    We say to begin with, that when \( C \) occurs it is the \textit{denotation} that we are speaking about; but when \enquote{C} occurs, it is the \textit{meaning}.
+  \end{displayquote}
+
+  Russell provides an example --- the first line of Gray's Elegy is the meaning of the sentence \enquote{the first line of Gray's Elegy}, while the textual content of that line is its denotation. When defining the \hyperref[con:evaluation]{evaluation} of a \hyperref[con:expression]{formal expression} in some \hyperref[con:metalogic]{object language}, we are only interested in its denotation.
+
+  With that in mind, we will now inspect Russell's three cases via different \hyperref[con:variable_binding]{variable binders} --- the \hyperref[def:predicate_logic_alphabet/quantifiers/existential]{existential quantifier} \( \exists \), David Hilbert's \( \varepsilon \) operator described in \cite{Leisenring1969MathematicalLogic}, and Russell and Whitehead's \( \rotiota \) operator described in \cite[30]{WhiteheadRussell1927PrincipiaMathematicaVol1}:
+  \begin{center}
+    \begin{tabular}{l c c c}
+      \toprule
+                                                        & \( \qexists* x p(x) \) & \( \quantifier \varepsilon x p(x) \) & \( \quantifier \rotiota x p(x) \) \\
+      \midrule
+      \( p(x) \) does not hold for any value of \( x \) & \( F \)                & ambiguous                            & undefined \\
+      \( p(x) \) holds for a unique value \( x = a \)   & \( T \)                & \( a \)                              & \( a \)   \\
+      \( p(x) \) holds for multiple values of \( x \)   & \( T \)                & ambiguous                            & undefined \\
+      \bottomrule
+    \end{tabular}
+  \end{center}
+
+  We now discuss these binders in more detail:
+  \begin{thmenum}
+    \thmitem{con:description_operator/exists} The \( \exists \) quantifier merely postulates the existence of a value of \( x \) satisfying \( p \).
+
+    \thmitem{con:description_operator/epsilon} The \( \varepsilon \) operator produces a particular value of \( x \) satisfying \( p \), if one exists, and otherwise produces a value \hi{not} satisfying \( p \).
+
+    Hilbert's intention was to define \( \exists \) via \( \varepsilon \) by using \( p(\quantifier \varepsilon x p(x)) \) as an abbreviation for \( \qexists* x p(x) \).
+
+    In this case, the particular value given by \( \varepsilon \) does not matter, but the nondeterminism may be undesirable in general. The semantics suggested by \incite[\S 3.3]{Leisenring1969MathematicalLogic} for \( \quantifier \varepsilon x p(x) \) requires a \hyperref[def:choice_function]{choice function} for determining a particular value of \( x \) satisfying \( p(x) \), and a fixed constant value (independent of \( p \)) in case no value satisfies \( p(x) \). These choices are in general not obvious.
+
+    \incite[\S 8.3]{Farmer2008STTVirtues} calls the \( \varepsilon \) operator \term{indefinite description}.
+
+    \thmitem{con:description_operator/iota} The \( \rotiota \) operator is by intention ill-defined wherever \( \varepsilon \) has an ambiguous value.
+
+    \incite*[30]{WhiteheadRussell1927PrincipiaMathematicaVol1} call it a \term{description} operator. \incite{Farmer2008STTVirtues} suggests calling it \term{definite description} to distinguish it from indefinite descriptions.
+
+    The symbol \( \rotiota \) is an \enquote{inverted} (rotated) Greek iota. In Russell's terms, it provides the denotation of a denoting phrase. The inversion is perhaps reminiscent of how Russell calls \enquote{inverted commas} the quotes that abstract away the meaning of a sentence.
+
+    Unlike Hilbert's \( \varepsilon \) operator, by intention the description is well-defined only in the case of uniqueness (2) and meaningless in the case of nonexistence (1) or ambiguity (3).
+
+    We list two suggestions for the semantics of  \( \quantifier \rotiota x p(x) \) in cases (1) and (3):
+    \begin{thmenum}
+      \thmitem{con:description_operator/iota/error} We can, as with \( \varepsilon \), provide a dedicated \enquote{error value}. This is done by \incite[\S 3.2]{Farmer2008STTVirtues}, and also by \incite[\S 54]{Andrews2002Logic}.
+
+      As in the case of the \( \varepsilon \) operator, such a choice has the downside of generally not being obvious or even obvious.
+
+      \thmitem{con:description_operator/iota/undefined} Alternatively, we can leave \( \quantifier \rotiota x p(x) \) \hyperref[con:undefinedness]{undefined} in the case of nonuniqueness. This is done by \incite{Farmer1990PartialFunctionSTT}, and, for first-order logic, by \incite{Hamkins2022DefiniteDescriptions} (in several variants).
+
+      This however requires every formula depending on \( \quantifier \rotiota x p(x) \) to possibly be undefined, which leads to elaborate rules of when a formula may even have a truth value.
+    \end{thmenum}
+
+    \thmitem{con:description_operator/exists_unique} If we wish to merely postulate the existence of a unique value satisfying \( p \), we can use the \enquote{unique existential quantifier} \( \exists ! \).
+
+    The formula \( \qExists* x p(x) \) is intended to state the existence of a unique value of \( x \) satisfying \( p(x) \), which comes in two parts:
+    \begin{thmenum}
+      \thmitem{con:description_operator/exists_unique/exists} There must exist a value \( a_0 \) satisfying \( p \).
+      \thmitem{con:description_operator/exists_unique/unique} If \( b \) satisfies \( p \), then \( b \) must equal \( a_0 \).
+    \end{thmenum}
+
+    Unlike the \( \rotiota \) operator with its complexities, this quantifier can easily be defined via other logical connectives, as we have done in \fullref{rem:first_order_formula_conventions/exists_unique}.
+  \end{thmenum}
+\end{concept}
+
+\begin{remark}\label{rem:simply_typed_hol}
+  As mentioned in \fullref{rem:higher_order_logic_and_type_theory/terms}, we are interested is a variant of Church's typed \( \muplambda \)-calculus that allows us to outline some aspects of \hyperref[rem:predicate_logic]{predicate logic}.
+
+  This approach is based on simply typed \( \muplambda \)-calculus, and we will assume the availability of \fullref{ch:lambda_calculus}.
+
+  In order to express logical constructs, \incite[56]{Church1940STT} suggested using logical formulas as \hyperref[con:syntactic_abbreviation]{abbreviations} for certain \( \muplambda \)-terms. There are two languages involved --- the familiar syntax of simply typed \( \muplambda \)-terms over a dedicated \hyperref[def:simple_type_signature]{signature}, as well as a dedicated syntax for higher-order logic. These are appropriately viewed as distinct layers rather than alternatives, since both the syntax and semantics of the logical formulas depends on the underlying \( \muplambda \)-terms, while the usability of the system as an \hyperref[def:abstract_logic]{abstract logic} relies on the upper \enquote{logical} layer.
+
+  Church's type theory is briefly described in \fullref{rem:type_theory}; there are two major ways in which it differs from ours. The first one is that Church places a \hyperref[con:type_annotation]{type annotations} on every \( \muplambda \)-term, even though many of the types are in fact \hyperref[def:polymorphic_typed_lambda_calculus]{polymorphic} and require formal adjustments. The second one is syntactic --- we denote by \( \tau \synimplies \sigma \) the arrow type that Church denotes by \( (\sigma\tau) \).
+
+  When presenting his logical system, Church uses several \hyperref[con:primitive_notion]{primitive constant \( \muplambda \)-terms} --- \( N_{oo} \) for \hyperref[def:propositional_alphabet/negation]{negation}, \( A_{ooo} \) for \hyperref[def:propositional_alphabet/connectives/conjunction]{conjunction}, \( \Pi_{o(o\alpha)} \) for \hyperref[def:predicate_logic_alphabet/quantifiers/universal]{universal quantification} and \( \iota_{\alpha(o\alpha)} \) for \hyperref[con:description_operator/iota]{definite description}. The other logical constants, connectives and quantifiers are then built from these via \( \muplambda \)-abstraction and application.
+
+  \incite*{Henkin1963TheoryOfPropositionalTypes} presents a formulation that uses only one primitive constant \( \muplambda \)-term --- \( Q_{o \alpha \alpha } \) for \hyperref[def:predicate_logic_alphabet/equality]{formal equality}, acknowledging that one such constant is needed for each type \( \alpha \). His formulation is restricted to propositional formulas, but later in \cite{Henkin1975Identity} he extends it to all types supported by Church's original system.
+
+  \incite*[\S 51]{Andrews2002Logic} presents a refinement of the systems of Church, Henkins and himself. Andrews calls this system \( \logic{Q}_0 \). It is based on two (familiar) of primitive constant \( \muplambda \)-terms --- \( Q_{o \alpha \alpha} \) for formal equality and \( \iota_{\iota (o \iota)} \) for definite description.
+
+  A modernized perspective is suggested by \incite{Farmer2008STTVirtues}, who makes explicit the notion of signature (unlike Andrews, who simply allows different sets of constants). He also introduces dedicated syntax for equality and definite descriptions, and experiments with semantics, especially regarding definite descriptions.
+
+  We use a combination of all the systems presented above, with comments reflecting our choices. The major difference with \( \logic{Q}_0 \) is that we discard the description operator because of the semantic problems described in \fullref{con:description_operator/iota}.
+\end{remark}
+
+\paragraph{Simply typed higher-order logic}
+
+\begin{definition}\label{def:simply_typed_hol_signature}\mimprovised
+  A \hyperref[con:improper_symbol]{signature} \( \Sigma \) for simply typed higher-order logic consists of two \hi{nonempty} sets, \( \op*{Sort}_\Sigma \) and \( \op*{NLConst}_\Sigma \), which must act as follows:
+  \begin{thmenum}
+    \thmitem{def:simply_typed_hol_signature/types} The elements of \( \op*{Sort}_\Sigma \), which we will call \term{sorts}, act as base types along with a dedicated type symbol \( \syn\omicron \) for \hyperref[con:boolean_value]{Boolean values} called the \term[en=type of propositions (\cite[56]{Church1940STT})]{type of propositions}.
+
+    As mentioned in \fullref{con:simple_type_theory/hol}, we are interested in the \hyperref[con:syntax_fragment]{fragment} of \hyperref[def:simple_type]{simple types} over these base types with only arrow types (i.e. without product and sum types or even type variables). The sorts must not include improper symbols from \fullref{def:simple_type_alphabet}, but are allowed to range over small Greek identifiers because there are no type variables to clash with (we have used small Greek omicron to denote the type of propositions).
+
+    Unless explicitly noted otherwise, we suppose that \( \op*{Sort}_\Sigma \) consists of a single symbol --- \( \syn\iota \) --- called the \term[en=type of individuals (\cite[56]{Church1940STT})]{type of individuals}\fnote{The term \enquote{individuals} is discussed in \fullref{con:ramified_type_theory/types}. The symbol we use to denote their type is Church's small iota from \cite[56]{Church1940STT} with a dot on top, as per \fullref{rem:object_language_dots}.}.
+
+    If there is more than one sort, we call the resulting logical system \term[en=many-sorted predicate logic (\cite[\S 4.4.13]{TroelstraSchwichtenberg2000BasicProofTheory})]{many-sorted}.
+
+    \thmitem{def:simply_typed_hol_signature/const} The elements of \( \op*{NLConst}_\Sigma \) should be \hyperref[def:type_assertion]{type assertions} for \hi{distinct} \( \muplambda \)-term constants. We call them \term[en=nonlogical constants (\cite[211]{Andrews2002Logic})]{nonlogical constants}.
+
+    Additionally, we have a single constant, \( \synQ \), for denoting equality as per \fullref{rem:simply_typed_hol}. Naturally, we call it a \term[en=logical constants (\cite[211]{Andrews2002Logic})]{logical constant} to distinguish it from the rest. We associate no \hyperref[con:type_annotation]{type annotations} with it because the annotation must be \hyperref[def:polymorphic_typed_lambda_calculus]{polymorphic} (and we are working with simple types). \hyperref[con:typing_rule]{Typing rules} for \( \synQ \) will be provided in \fullref{def:simply_typed_hol_typing/equality}.
+
+    The logical and nonlogical constants, along with the base types discussed above, form a \hyperref[def:simple_type_signature]{simple type signature}.
+  \end{thmenum}
+\end{definition}
+\begin{comments}
+  \item This definition is loosely based on \bycite[270]{Farmer2008STTVirtues}:
+  \begin{displayquote}
+    A \textit{language} of STT is a pair \( L = (\mscrC, \tau) \) where is \( \mscrC \) is a set of symbols called \textit{constants} and \( \tau: \mscrC \to \mscrT \) is a total function. That is, a language is a set of symbols with assigned types (what computer scientists usually call a \enquote{signature}). The constants are the nonlogical primitive symbols that are used to construct the expressions of the language.
+  \end{displayquote}
+
+  Farmer assumes here that \( \syn\iota \) is the only sort, but later suggests adding other sorts (which he calls base types).
+
+  We have decided to call the non-propositional base types \enquote{sorts} based on similar usage in many-sorted first-order logic, which is discussed in \cite[\S 4.4.13]{TroelstraSchwichtenberg2000BasicProofTheory} and \cite[def. 62]{GoguenBurstall1992Institutions}.
+
+  \item Sorts as defined here are unrelated to sorts in \hyperref[def:pure_type_system]{pure type systems}, which act as \hyperref[con:type_universe]{type universes} rather than types.
+
+  \item We stated in \fullref{rem:logical_symbol_terminology} that the separation into \enquote{logical} and \enquote{nonlogical} symbols is generally ambiguous, but in this case there will be no ambiguity because we specify the kind of entity we refer to, e.g. \enquote{logical constant \( \muplambda \)-term} rather than simply \enquote{logical symbol}.
+\end{comments}
+
+\begin{definition}\label{def:simply_typed_hol_typing}\mimprovised
+  We introduce several \hyperref[def:simple_typing_rule]{simple typing rules} for the typed \( \muplambda \)-terms corresponding to a \hyperref[def:simply_typed_hol_signature]{simply typed higher-order logic signature}:
+  \begin{thmenum}
+    \thmitem{def:simply_typed_hol_typing/equality} The following rule allows typing the \hyperref[def:simply_typed_hol_signature/const]{equality logical constant} \( \synQ \):
+    \begin{equation*}\taglabel[\ensuremath{ Q_+ }]{inf:def:simply_typed_hol_typing/equality}
+      \begin{prooftree}
+        \hypo{ \synM: \syn\tau }
+        \hypo{ \synN: \syn\tau }
+        \infer2[\ref{inf:def:simply_typed_hol_typing/equality}]{ \synQ \synM \synN: \syn\omicron }
+      \end{prooftree}
+    \end{equation*}
+
+    Note that here \( \synQ \) is a constant \( \muplambda \)-term while \( \synM \) and \( \synN \) are \( \muplambda \)-term placeholders. In this particular case we suppose that the parser recognizes \( \synQ \) as a constant rather than placeholder.
+
+    \thmitem{def:simply_typed_hol_typing/const} For every assertion \( C: \tau \) among non-logical constants, we need the following rule:
+    \begin{equation*}\taglabel[\ensuremath{ \logic{Ax}_C }]{inf:def:simply_typed_hol_typing/const}
+      \begin{prooftree}
+        \infer0[\ref{inf:def:simply_typed_hol_typing/const}]{ C: \tau }
+      \end{prooftree}
+    \end{equation*}
+  \end{thmenum}
+\end{definition}
+\begin{comments}
+  \item The rule \ref{inf:def:simply_typed_hol_typing/equality} can be avoided of we assign the \hyperref[def:polymorphic_typed_lambda_calculus]{polymorphic type} \( \qpolytype {\syn\tau} \syn\tau \synimplies \syn\tau \synimplies \syn\omicron \) to \( \synQ \). This approach is a formalization of the typing of \( \synQ \) by \incite[211]{Andrews2002Logic}.
+
+  The constant rule \ref{inf:def:simply_typed_hol_typing/const} is simply a way to formalize the introduction of nonlogical constants and is not based on any particular author's work (none of the aforementioned use natural deduction style rules).
+\end{comments}
+
+\begin{definition}\label{def:simply_typed_hol_formula}\mimprovised
+\end{definition}
+
+\begin{definition}\label{def:simply_typed_hol}\mimprovised
 \end{definition}
 
 \begin{definition}\label{def:nth_order_logic}
