@@ -30,7 +30,8 @@ def format_(paths: Sequence[pathlib.Path]) -> None:
 
             for i, entry in enumerate(entries):
                 logger = context.logger.bind(logger=path.stem + ':' + entry.entry_name)
-                entries[i] = adjust_entry(entry, logger)
+                crossref = next((e for e in entries if entry.crossref == e.entry_name), None) if entry.crossref else None
+                entries[i] = adjust_entry(entry, crossref, logger)
 
             write_entries(
                 sorted(entries, key=lambda entry: entry.entry_name),

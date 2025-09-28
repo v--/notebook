@@ -19,7 +19,7 @@ def benchmark_format(benchmark: BenchmarkFixture) -> None:
         entries = read_entries(file)
 
     benchmark.pedantic(
-        lambda: [adjust_entry(entry, loguru.logger) for entry in entries],
+        lambda: [adjust_entry(entry, None, loguru.logger) for entry in entries],
         warmup_rounds=5,
         rounds=50
     )

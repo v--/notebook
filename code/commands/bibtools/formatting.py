@@ -25,10 +25,12 @@ from .sources.common.url_template import UrlTemplate
 class BibEntryAdjuster:
     original: BibEntry
     adjusted: BibEntry
+    crossref: BibEntry | None
     logger: 'loguru.Logger'
 
-    def __init__(self, entry: BibEntry, logger: 'loguru.Logger') -> None:
+    def __init__(self, entry: BibEntry, crossref: BibEntry | None, logger: 'loguru.Logger') -> None:
         self.original = entry
+        self.crossref = crossref
         self.adjusted = replace(entry)
         self.logger = logger
 
@@ -52,7 +54,7 @@ class BibEntryAdjuster:
                 setattr(self.adjusted, field_name, new_value)
 
     def get_author_short_name(self, author: BibAuthor) -> BibString | None:
-        main_language = get_main_entry_language(self.adjusted)
+        main_language = get_main_entry_language(self.crossref) if self.crossref and len(self.adjusted.languages) == 0 else get_main_entry_language(self.adjusted)
 
         if (
             author.short_name is None and \
@@ -146,24 +148,32 @@ class BibEntryAdjuster:
         if ':' in name:
             return
 
-        if self.adjusted.crossref:
-            return
-
         name_year = extract_year(name)
         date_year = extract_year(str(self.adjusted.date))
+        crossref_date_year = extract_year(str(self.crossref.date)) if self.crossref else None
 
         if name_year and date_year and name_year != date_year:
             self.logger.info('Year mismatch between the entry name and date; using the year from the date')
             self.update(entry_name=self.adjusted.entry_name.replace(name_year, date_year))
 
-        if self.adjusted.entry_type.startswith('mv'):
-            return
+        if date_year and crossref_date_year:
+            self.logger.warning("Both the entry's and crossref's date field are present")
 
-        if name_year and date_year is None:
-            self.logger.warning('The entry name contains a date, but the date field does not')
+        if self.crossref and name_year and crossref_date_year and name_year != crossref_date_year:
+            self.logger.info("Year mismatch between the entry name and the crossref's date; using the year from the date")
+            self.update(entry_name=self.adjusted.entry_name.replace(name_year, crossref_date_year))
 
-        elif date_year and name_year is None:
-            self.logger.warning('The date field contains a date, but the entry name does not')
+        if name_year and date_year is None and self.crossref is None:
+            self.logger.warning('The entry name contains a date, but its date field does not')
+
+        elif name_year and self.crossref and crossref_date_year is None:
+            self.logger.warning("The entry name contains a date, but neither the entry's nor its crossref's date field does not")
+
+        elif name_year is None and date_year:
+            self.logger.warning("The crossref's date field contains a date, but the entry name does not")
+
+        elif name_year is None and self.crossref and crossref_date_year:
+            self.logger.warning("The entry's date field contains a date, but the entry name does not")
 
         elif name_year and name.endswith(name_year):
             self.logger.warning('No subject present in the entry name')
@@ -281,8 +291,8 @@ class BibEntryAdjuster:
         self.adjust_entry_date()
 
 
-def adjust_entry(entry: BibEntry, logger: 'loguru.Logger') -> BibEntry:
-    adjuster = BibEntryAdjuster(entry, logger)
+def adjust_entry(entry: BibEntry, crossref: BibEntry | None, logger: 'loguru.Logger') -> BibEntry:
+    adjuster = BibEntryAdjuster(entry, crossref, logger)
     adjuster.adjust()
     return adjuster.adjusted
 
