@@ -2,6 +2,9 @@ from collections.abc import Collection, Iterable
 from typing import Literal, NamedTuple
 
 from ...support.collections import TrieMapping
+from ...support.unicode import Capitalization, is_greek_string, is_latin_string
+from .alphabet import BinaryTypeConnective, ImproperTermSymbol
+from .exceptions import LambdaSignatureError
 
 
 LambdaSymbolKind = Literal['CONSTANT_TERM', 'BASE_TYPE']
@@ -20,10 +23,31 @@ class LambdaSignature:
 
         if base_types:
             for name in base_types:
+                if name == '(' or name == ')':
+                    raise LambdaSignatureError('Cannot use a parenthesis as a base type')
+
+                if name in BinaryTypeConnective:
+                    raise LambdaSignatureError(f'Cannot use the type connective {name!r} as a base type')
+
+                if len(name) == 1 and is_greek_string(name, Capitalization.LOWER):
+                    raise LambdaSignatureError(f'Cannot use {name!r} as a base type because that conflicts with the grammar of type variables')
+
                 self.trie[name] = LambdaSymbol('BASE_TYPE', name)
 
         if constant_terms:
             for name in constant_terms:
+                if name == '(' or name == ')':
+                    raise LambdaSignatureError('Cannot use a parenthesis as a λ-term constant')
+
+                if name in ImproperTermSymbol:
+                    raise LambdaSignatureError(f'Cannot use the improper symbol {name!r} as a λ-term constant')
+
+                if len(name) == 1 and is_latin_string(name, Capitalization.LOWER):
+                    raise LambdaSignatureError(f'Cannot use {name!r} as a λ-term constant because that conflicts with the grammar of variables')
+
+                if len(name) == 1 and is_latin_string(name, Capitalization.UPPER):
+                    raise LambdaSignatureError(f'Cannot use {name!r} as a λ-term constant because that conflicts with the grammar of placeholders')
+
                 self.trie[name] = LambdaSymbol('CONSTANT_TERM', name)
 
     def add_symbol(self, symbol_kind: LambdaSymbolKind, name: str) -> None:

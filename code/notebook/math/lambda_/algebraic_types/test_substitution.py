@@ -146,41 +146,41 @@ def test_substitute_nested_abstraction_noop() -> None:
 
 
 def test_substitute_unknown_rule() -> None:
-    signature = LambdaSignature(constant_terms=['C'], base_types=['T'])
-    rule = parse_typing_rule('R', f'{InferenceRuleConnective.SEQUENT} C: T', signature)
+    signature = LambdaSignature(constant_terms=['𝐂'], base_types=['𝛕'])
+    rule = parse_typing_rule('R', f'{InferenceRuleConnective.SEQUENT} 𝐂: 𝛕', signature)
     tree = apply(rule)
     src = variables.x
-    dest = assume(parse_variable_assertion('y: T', signature))
+    dest = assume(parse_variable_assertion('y: 𝛕', signature))
 
-    with pytest.raises(UnknownDerivationRuleError, match=re.escape("Unrecognized inference rule '(R) ⫢ C: T'")):
+    with pytest.raises(UnknownDerivationRuleError, match=re.escape("Unrecognized inference rule '(R) ⫢ 𝐂: 𝛕'")):
         substitute_in_tree(tree, {src: dest})
 
 
 # Analogous to the previous test, but with a rule name that collides with an arrow type rule
 def test_substitute_unknown_rule_with_matching_name() -> None:
-    signature = LambdaSignature(constant_terms=['C'], base_types=['T'])
-    rule = parse_typing_rule('→₊', f'{InferenceRuleConnective.SEQUENT} C: T', signature)
+    signature = LambdaSignature(constant_terms=['𝐂'], base_types=['𝛕'])
+    rule = parse_typing_rule('→₊', f'{InferenceRuleConnective.SEQUENT} 𝐂: 𝛕', signature)
     tree = apply(rule)
     src = variables.x
-    dest = assume(parse_variable_assertion('y: T', signature))
+    dest = assume(parse_variable_assertion('y: 𝛕', signature))
 
-    with pytest.raises(UnknownDerivationRuleError, match=re.escape("Unrecognized inference rule '(→₊) ⫢ C: T'")):
+    with pytest.raises(UnknownDerivationRuleError, match=re.escape("Unrecognized inference rule '(→₊) ⫢ 𝐂: 𝛕'")):
         substitute_in_tree(tree, {src: dest})
 
 
 def test_substitute_top_intro_noop() -> None:
-    tree = apply(SIMPLE_ALGEBRAIC_TYPE_SYSTEM['1₊'])
+    tree = apply(SIMPLE_ALGEBRAIC_TYPE_SYSTEM['𝟙₊'])
     src = variables.x
-    dest = assume(parse_variable_assertion('x: 0', SIMPLE_ALGEBRAIC_SIGNATURE))
+    dest = assume(parse_variable_assertion('x: 𝟘', SIMPLE_ALGEBRAIC_SIGNATURE))
 
     assert substitute_in_tree(tree, {src: dest}) == tree
 
 
 def test_substitute_bot_elim() -> None:
     tree = apply(
-        SIMPLE_ALGEBRAIC_TYPE_SYSTEM['0₋'],
+        SIMPLE_ALGEBRAIC_TYPE_SYSTEM['𝟘₋'],
         assume(
-            parse_variable_assertion('x: 0', SIMPLE_ALGEBRAIC_SIGNATURE),
+            parse_variable_assertion('x: 𝟘', SIMPLE_ALGEBRAIC_SIGNATURE),
         ),
         instantiation=LambdaSchemaInstantiation(
             type_mapping={
@@ -190,10 +190,10 @@ def test_substitute_bot_elim() -> None:
     )
 
     src = variables.x
-    dest = assume(parse_variable_assertion('y: 0', SIMPLE_ALGEBRAIC_SIGNATURE))
+    dest = assume(parse_variable_assertion('y: 𝟘', SIMPLE_ALGEBRAIC_SIGNATURE))
 
     expected = apply(
-        SIMPLE_ALGEBRAIC_TYPE_SYSTEM['0₋'],
+        SIMPLE_ALGEBRAIC_TYPE_SYSTEM['𝟘₋'],
         dest,
         instantiation=LambdaSchemaInstantiation(
             type_mapping={
@@ -211,7 +211,7 @@ def test_substitute_sum_elim_without_renaming() -> None:
 
         apply(
             SIMPLE_ALGEBRAIC_TYPE_SYSTEM['+₊ₗ'],
-            assume(parse_variable_assertion('x: 1', SIMPLE_ALGEBRAIC_SIGNATURE)),
+            assume(parse_variable_assertion('x: 𝟙', SIMPLE_ALGEBRAIC_SIGNATURE)),
             instantiation=LambdaSchemaInstantiation(
                 type_mapping={
                     parse_type_placeholder('σ'): parse_type('σ')
@@ -220,26 +220,26 @@ def test_substitute_sum_elim_without_renaming() -> None:
         ),
 
         premise(
-            tree=assume(parse_variable_assertion('a: 1', SIMPLE_ALGEBRAIC_SIGNATURE)),
-            discharge=parse_variable_assertion('y: 1', SIMPLE_ALGEBRAIC_SIGNATURE)
+            tree=assume(parse_variable_assertion('a: 𝟙', SIMPLE_ALGEBRAIC_SIGNATURE)),
+            discharge=parse_variable_assertion('y: 𝟙', SIMPLE_ALGEBRAIC_SIGNATURE)
         ),
 
         premise(
-            tree=apply(SIMPLE_ALGEBRAIC_TYPE_SYSTEM['1₊']),
+            tree=apply(SIMPLE_ALGEBRAIC_TYPE_SYSTEM['𝟙₊']),
             discharge=parse_variable_assertion('z: σ', SIMPLE_ALGEBRAIC_SIGNATURE)
         )
     )
 
     # "a" gets replaced with "y", and due to renaming "y" gets replaced with "a"
     src = variables.a
-    dest = assume(parse_variable_assertion('y: 1', SIMPLE_ALGEBRAIC_SIGNATURE))
+    dest = assume(parse_variable_assertion('y: 𝟙', SIMPLE_ALGEBRAIC_SIGNATURE))
 
     expected = apply(
         SIMPLE_ALGEBRAIC_TYPE_SYSTEM['+₋'],
 
         apply(
             SIMPLE_ALGEBRAIC_TYPE_SYSTEM['+₊ₗ'],
-            assume(parse_variable_assertion('x: 1', SIMPLE_ALGEBRAIC_SIGNATURE)),
+            assume(parse_variable_assertion('x: 𝟙', SIMPLE_ALGEBRAIC_SIGNATURE)),
             instantiation=LambdaSchemaInstantiation(
                 type_mapping={
                     parse_type_placeholder('σ'): parse_type('σ')
@@ -248,12 +248,12 @@ def test_substitute_sum_elim_without_renaming() -> None:
         ),
 
         premise(
-            tree=assume(parse_variable_assertion('y: 1', SIMPLE_ALGEBRAIC_SIGNATURE)),
-            discharge=parse_variable_assertion('a: 1', SIMPLE_ALGEBRAIC_SIGNATURE)
+            tree=assume(parse_variable_assertion('y: 𝟙', SIMPLE_ALGEBRAIC_SIGNATURE)),
+            discharge=parse_variable_assertion('a: 𝟙', SIMPLE_ALGEBRAIC_SIGNATURE)
         ),
 
         premise(
-            tree=apply(SIMPLE_ALGEBRAIC_TYPE_SYSTEM['1₊']),
+            tree=apply(SIMPLE_ALGEBRAIC_TYPE_SYSTEM['𝟙₊']),
             discharge=parse_variable_assertion('z: σ', SIMPLE_ALGEBRAIC_SIGNATURE)
         )
     )

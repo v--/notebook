@@ -1,7 +1,7 @@
 from dataclasses import dataclass
 from typing import TypeGuard
 
-from ..alphabet import BinaryConnective, PropConstant, Quantifier, UnaryConnective
+from ..alphabet import BinaryConnective, PropConstant, Quantifier, UnaryPrefix
 from ..terms import FunctionLikeTerm, Term, Variable
 
 
@@ -31,7 +31,7 @@ class NegationFormula:
     body: 'Formula'
 
     def __str__(self) -> str:
-        return f'{UnaryConnective.NEGATION}{self.body}'
+        return f'{UnaryPrefix.NEGATION}{self.body}'
 
 
 @dataclass(frozen=True)

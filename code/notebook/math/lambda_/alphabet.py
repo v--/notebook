@@ -1,7 +1,7 @@
 from enum import StrEnum
 
 
-class TermConnective(StrEnum):
+class ImproperTermSymbol(StrEnum):
     LAMBDA = 'λ'
 
 

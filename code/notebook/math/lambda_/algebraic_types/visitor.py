@@ -27,14 +27,14 @@ class SimpleAlgebraicDerivationTreeVisitor[T]:
                     subtree_right=tree.premises[1].tree
                 )
 
-        if tree.rule == SIMPLE_ALGEBRAIC_TYPE_SYSTEM['0₋']:
+        if tree.rule == SIMPLE_ALGEBRAIC_TYPE_SYSTEM['𝟘₋']:
             return self.visit_empty_elim(
                 tree=tree,
                 subtree=tree.premises[0].tree,
                 new_type=tree.conclusion.type
             )
 
-        if tree.rule == SIMPLE_ALGEBRAIC_TYPE_SYSTEM['1₊']:
+        if tree.rule == SIMPLE_ALGEBRAIC_TYPE_SYSTEM['𝟙₊']:
             return self.visit_unit_intro(tree)
 
         if tree.rule == SIMPLE_ALGEBRAIC_TYPE_SYSTEM['×₊']:

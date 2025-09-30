@@ -4,7 +4,7 @@ import pytest
 
 from ....support.pytest import pytest_parametrize_kwargs
 from ....support.schemas import SchemaInstantiationError
-from ..hol import HOL_SIGNATURE
+from ..algebraic_types import SIMPLE_ALGEBRAIC_SIGNATURE
 from ..parsing import (
     parse_term_placeholder,
     parse_type,
@@ -68,8 +68,8 @@ def test_instantiation_success(
 
 def test_constant_instantiation_success() -> None:
     instantiation = LambdaSchemaInstantiation()
-    q = parse_typed_term_schema('Q', HOL_SIGNATURE)
-    assert instantiate_term_schema(q, instantiation) == q
+    u = parse_typed_term_schema('U₊', SIMPLE_ALGEBRAIC_SIGNATURE)
+    assert instantiate_term_schema(u, instantiation) == u
 
 
 def test_variable_instantiation_failure() -> None:

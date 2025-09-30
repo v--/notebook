@@ -6,7 +6,7 @@ class PropConstant(StrEnum):
     FALSUM = '⊥'
 
 
-class UnaryConnective(StrEnum):
+class UnaryPrefix(StrEnum):
     NEGATION = '¬'
 
 
@@ -20,7 +20,3 @@ class BinaryConnective(StrEnum):
 class Quantifier(StrEnum):
     UNIVERSAL = '∀'
     EXISTENTIAL = '∃'
-
-
-class SchemaConnective(StrEnum):
-    SUBSTITUTION = '↦'

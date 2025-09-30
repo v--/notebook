@@ -52,10 +52,10 @@ class FormulaToTypeVisitor(FormulaVisitor[SimpleType]):
     def visit_constant(self, formula: ConstantFormula) -> BaseType:
         match formula.value:
             case PropConstant.VERUM:
-                return BaseType('1')
+                return BaseType('𝟙')
 
             case PropConstant.FALSUM:
-                return BaseType('0')
+                return BaseType('𝟘')
 
     @override
     def visit_predicate(self, formula: PredicateFormula) -> TypeVariable:
@@ -100,14 +100,14 @@ def proof_tree_premise_to_derivation_tree_premise(premise: ptree.RuleApplication
 
 def natural_deduction_rule_to_typing_rule(rule: NaturalDeductionRule) -> TypingRule:
     if rule == CLASSICAL_NATURAL_DEDUCTION_SYSTEM['EFQ']:
-        return SIMPLE_ALGEBRAIC_TYPE_SYSTEM['0₋']
+        return SIMPLE_ALGEBRAIC_TYPE_SYSTEM['𝟘₋']
 
     prefix = rule.name[0]
     suffix = rule.name[1:]
 
     match prefix:
         case '⊤' if rule == CLASSICAL_NATURAL_DEDUCTION_SYSTEM[rule.name]:
-            return SIMPLE_ALGEBRAIC_TYPE_SYSTEM['1' + suffix]
+            return SIMPLE_ALGEBRAIC_TYPE_SYSTEM['𝟙' + suffix]
 
         case '∧' if rule == CLASSICAL_NATURAL_DEDUCTION_SYSTEM[rule.name]:
             return SIMPLE_ALGEBRAIC_TYPE_SYSTEM['×' + suffix]
@@ -154,7 +154,7 @@ def proof_tree_to_type_derivation(proof: ptree.ProofTree) -> dtree.TypeDerivatio
     match proof.rule.name:
         case 'EFQ':
             return dtree.apply(
-                SIMPLE_ALGEBRAIC_TYPE_SYSTEM['0₋'],
+                SIMPLE_ALGEBRAIC_TYPE_SYSTEM['𝟘₋'],
                 *premises,
                 instantiation=translate_instantiation(proof.instantiation, φ='τ')
             )

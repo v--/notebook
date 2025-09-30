@@ -33,10 +33,10 @@ class TypeToFormulaVisitor(TypeVisitor[Formula]):
     @override
     def visit_base(self, type_: BaseType) -> ConstantFormula:
         match type_.name:
-            case '1':
+            case '𝟙':
                 return ConstantFormula(PropConstant.VERUM)
 
-            case '0':
+            case '𝟘':
                 return ConstantFormula(PropConstant.FALSUM)
 
             case _:
@@ -85,14 +85,14 @@ def lambda_instantiation_to_logic_instantiation(instantiation: LambdaSchemaInsta
 
 
 def typing_rule_to_natural_deduction_rule(rule: TypingRule) -> NaturalDeductionRule:
-    if rule == SIMPLE_ALGEBRAIC_TYPE_SYSTEM['0₋']:
+    if rule == SIMPLE_ALGEBRAIC_TYPE_SYSTEM['𝟘₋']:
         return CLASSICAL_NATURAL_DEDUCTION_SYSTEM['EFQ']
 
     prefix = rule.name[0]
     suffix = rule.name[1:]
 
     match prefix:
-        case '1' if rule == SIMPLE_ALGEBRAIC_TYPE_SYSTEM[rule.name]:
+        case '𝟙' if rule == SIMPLE_ALGEBRAIC_TYPE_SYSTEM[rule.name]:
             return CLASSICAL_NATURAL_DEDUCTION_SYSTEM['⊤' + suffix]
 
         case '×' if rule == SIMPLE_ALGEBRAIC_TYPE_SYSTEM[rule.name]:
@@ -136,7 +136,7 @@ def type_derivation_to_proof_tree(derivation: dtree.TypeDerivationTree) -> ptree
     ]
 
     match derivation.rule.name:
-        case '0₋':
+        case '𝟘₋':
             return ptree.apply(
                 CLASSICAL_NATURAL_DEDUCTION_SYSTEM['EFQ'],
                 *premises,

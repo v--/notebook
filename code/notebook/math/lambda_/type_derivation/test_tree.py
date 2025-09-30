@@ -121,9 +121,9 @@ def test_cons() -> None:
 
 
 def test_empty_elim() -> None:
-    assumption = parse_variable_assertion('x: 0', SIMPLE_ALGEBRAIC_SIGNATURE)
+    assumption = parse_variable_assertion('x: 𝟘', SIMPLE_ALGEBRAIC_SIGNATURE)
     tree = apply(
-        SIMPLE_ALGEBRAIC_TYPE_SYSTEM['0₋'],
+        SIMPLE_ALGEBRAIC_TYPE_SYSTEM['𝟘₋'],
         premise(
             tree=assume(assumption),
             discharge=assumption
@@ -137,8 +137,8 @@ def test_empty_elim() -> None:
 
     assert tree.get_assumption_map() == {}
     assert str(tree) == dedent('''\
-           x: 0
-        x ________ 0₋
+           x: 𝟘
+        x ________ 𝟘₋
           (E₋x): σ
         '''
     )

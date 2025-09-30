@@ -1,7 +1,7 @@
 from dataclasses import dataclass
 
 from ....parsing.identifiers import GreekIdentifier
-from ..alphabet import BinaryConnective, Quantifier, UnaryConnective
+from ..alphabet import BinaryConnective, Quantifier, UnaryPrefix
 from ..terms import FunctionLikeTerm, TermSchema, VariablePlaceholder
 from .formulas import ConstantFormula
 
@@ -32,7 +32,7 @@ class NegationFormulaSchema:
     body: 'FormulaSchema'
 
     def __str__(self) -> str:
-        return f'{UnaryConnective.NEGATION}{self.body}'
+        return f'{UnaryPrefix.NEGATION}{self.body}'
 
 
 @dataclass(frozen=True)

@@ -3,7 +3,7 @@ from typing import Literal, get_args
 
 from ....parsing import Token, map_of_str_enum_to_single_token
 from ....support.inference import InferenceRuleConnective
-from ..alphabet import BinaryTypeConnective, TermConnective
+from ..alphabet import BinaryTypeConnective, ImproperTermSymbol
 
 
 LambdaTokenKind = Literal[
@@ -37,7 +37,7 @@ SINGLETON_TOKEN_MAP: Mapping[str, LambdaTokenKind] = {
     ')': 'RIGHT_PARENTHESIS',
     '[': 'LEFT_BRACKET',
     ']': 'RIGHT_BRACKET',
-    TermConnective.LAMBDA.value: 'LAMBDA',
+    ImproperTermSymbol.LAMBDA.value: 'LAMBDA',
     InferenceRuleConnective.SEQUENT.value: 'INFERENCE_RULE_SEQUENT',
     **map_of_str_enum_to_single_token('BINARY_TYPE_CONNECTIVE', BinaryTypeConnective),
 }

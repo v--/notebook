@@ -4,7 +4,7 @@ import pytest
 
 from ....support.pytest import pytest_parametrize_kwargs
 from ....support.schemas import SchemaInferenceError
-from ..hol import HOL_SIGNATURE
+from ..algebraic_types import SIMPLE_ALGEBRAIC_SIGNATURE
 from ..parsing import (
     parse_term_placeholder,
     parse_type,
@@ -75,16 +75,16 @@ def test_infer_success(
 
 
 def test_constant_infer_success() -> None:
-    schema = parse_typed_term_schema('Q', HOL_SIGNATURE)
-    term = parse_typed_term('Q', HOL_SIGNATURE)
+    schema = parse_typed_term_schema('U₊', SIMPLE_ALGEBRAIC_SIGNATURE)
+    term = parse_typed_term('U₊', SIMPLE_ALGEBRAIC_SIGNATURE)
     assert infer_instantiation_from_term(schema, term) == LambdaSchemaInstantiation()
 
 
 def test_constant_instantiation_failure() -> None:
-    with pytest.raises(SchemaInferenceError, match='Cannot match constant Q to x'):
+    with pytest.raises(SchemaInferenceError, match='Cannot match constant U₊ to x'):
         infer_instantiation_from_term(
-            parse_typed_term_schema('Q', HOL_SIGNATURE),
-            parse_typed_term('x', HOL_SIGNATURE)
+            parse_typed_term_schema('U₊', SIMPLE_ALGEBRAIC_SIGNATURE),
+            parse_typed_term('x', SIMPLE_ALGEBRAIC_SIGNATURE)
         )
 
 
@@ -114,10 +114,10 @@ def test_abstraction_instantiation_failure() -> None:
 
 def test_abstraction_annotation_success() -> None:
     schema = parse_typed_term_schema('(λx:τ.x)')
-    term = parse_typed_term('(λx:ι.x)', HOL_SIGNATURE)
+    term = parse_typed_term('(λx:ι.x)', SIMPLE_ALGEBRAIC_SIGNATURE)
     assert infer_instantiation_from_term(schema, term) == LambdaSchemaInstantiation(
         variable_mapping={parse_variable_placeholder('x'): parse_variable('x')},
-        type_mapping={parse_type_placeholder('τ'): parse_type('ι', HOL_SIGNATURE)}
+        type_mapping={parse_type_placeholder('τ'): parse_type('ι', SIMPLE_ALGEBRAIC_SIGNATURE)}
     )
 
 

@@ -1,7 +1,7 @@
 from dataclasses import dataclass
 
 from ....parsing.identifiers import LatinIdentifier
-from ..alphabet import TermConnective
+from ..alphabet import ImproperTermSymbol
 from ..types import SimpleType
 
 
@@ -45,7 +45,7 @@ class UntypedAbstraction:
     body: 'UntypedTerm'
 
     def __str__(self) -> str:
-        return f'({TermConnective.LAMBDA}{self.var}.{self.body})'
+        return f'({ImproperTermSymbol.LAMBDA}{self.var}.{self.body})'
 
 
 @dataclass(frozen=True)
@@ -55,7 +55,7 @@ class TypedAbstraction:
     body: 'TypedTerm'
 
     def __str__(self) -> str:
-        return f'({TermConnective.LAMBDA}{self.var}:{self.var_type}.{self.body})'
+        return f'({ImproperTermSymbol.LAMBDA}{self.var}:{self.var_type}.{self.body})'
 
 
 UntypedTerm = Constant | Variable | UntypedApplication | UntypedAbstraction

@@ -76,7 +76,7 @@ def test_alpha_convert_sum_elim() -> None:
 
             apply(
                 SIMPLE_ALGEBRAIC_TYPE_SYSTEM['+₊ₗ'],
-                assume(parse_variable_assertion('x: 1', SIMPLE_ALGEBRAIC_SIGNATURE)),
+                assume(parse_variable_assertion('x: 𝟙', SIMPLE_ALGEBRAIC_SIGNATURE)),
                 instantiation=LambdaSchemaInstantiation(
                     type_mapping={
                         parse_type_placeholder('σ'): parse_type('σ')
@@ -85,18 +85,18 @@ def test_alpha_convert_sum_elim() -> None:
             ),
 
             premise(
-                tree=assume(VariableTypeAssertion(parse_variable(x), BaseType('1'))),
-                discharge=VariableTypeAssertion(parse_variable(x), BaseType('1'))
+                tree=assume(VariableTypeAssertion(parse_variable(x), BaseType('𝟙'))),
+                discharge=VariableTypeAssertion(parse_variable(x), BaseType('𝟙'))
             ),
 
             premise(
-                tree=apply(SIMPLE_ALGEBRAIC_TYPE_SYSTEM['1₊']),
+                tree=apply(SIMPLE_ALGEBRAIC_TYPE_SYSTEM['𝟙₊']),
                 discharge=VariableTypeAssertion(parse_variable(y), parse_type('σ'))
             )
         )
 
     tree = factory(x='a', y='b')
-    equivalent_term = parse_typed_term('(((S₋(λc:1.c))(λd:σ.U₊))(S₊ₗx))', SIMPLE_ALGEBRAIC_SIGNATURE)
+    equivalent_term = parse_typed_term('(((S₋(λc:𝟙.c))(λd:σ.U₊))(S₊ₗx))', SIMPLE_ALGEBRAIC_SIGNATURE)
     expected = factory(x='c', y='d')
 
     assert alpha_convert_derivation(tree, equivalent_term) == expected

@@ -5,7 +5,7 @@ from ..type_system import ExplicitTypeSystem
 
 
 SIMPLE_ALGEBRAIC_SIGNATURE = LambdaSignature(
-    base_types=['0', '1'],
+    base_types=['𝟘', '𝟙'],
     constant_terms=['E₋', 'U₊', 'P₊', 'P₋ₗ', 'P₋ᵣ', 'S₊ₗ', 'S₊ᵣ', 'S₋']
 )
 
@@ -13,8 +13,8 @@ SIMPLE_ALGEBRAIC_SIGNATURE = LambdaSignature(
 SIMPLE_ALGEBRAIC_TYPE_SYSTEM = ExplicitTypeSystem([
     *ARROW_ONLY_TYPE_SYSTEM.rules,
 
-    parse_typing_rule('0₋', 'M: 0 ⫢ (E₋M): τ', SIMPLE_ALGEBRAIC_SIGNATURE),
-    parse_typing_rule('1₊', '⫢ U₊: 1', SIMPLE_ALGEBRAIC_SIGNATURE),
+    parse_typing_rule('𝟘₋', 'M: 𝟘 ⫢ (E₋M): τ', SIMPLE_ALGEBRAIC_SIGNATURE),
+    parse_typing_rule('𝟙₊', '⫢ U₊: 𝟙', SIMPLE_ALGEBRAIC_SIGNATURE),
 
     parse_typing_rule('×₊', 'M: τ, N: σ ⫢ ((P₊M)N): (τ × σ)', SIMPLE_ALGEBRAIC_SIGNATURE),
     parse_typing_rule('×₋ₗ', 'K: (τ × σ) ⫢ (P₋ₗK): τ', SIMPLE_ALGEBRAIC_SIGNATURE),

@@ -21,13 +21,13 @@ from .proof_to_derivation import formula_to_type, proof_tree_to_type_derivation
 
 
 @pytest_parametrize_kwargs(
-    dict(type_='0', formula='⊥'),
-    dict(type_='1', formula='⊤'),
+    dict(type_='𝟘', formula='⊥'),
+    dict(type_='𝟙', formula='⊤'),
     dict(type_='τ', formula='τ'),
     dict(type_='(τ → σ)', formula='(τ → σ)'),
     dict(type_='(τ × σ)', formula='(τ ∧ σ)'),
     dict(type_='(τ + σ)', formula='(τ ∨ σ)'),
-    dict(type_='((1 + 0) × 1)', formula='((⊤ ∨ ⊥) ∧ ⊤)'),
+    dict(type_='((𝟙 + 𝟘) × 𝟙)', formula='((⊤ ∨ ⊥) ∧ ⊤)'),
 )
 def test_type_to_formula(
     type_: str,
@@ -60,14 +60,14 @@ class TestTypeDerivationToProofTree:
         assert type_derivation_to_proof_tree(derivation) == proof
         assert proof_tree_to_type_derivation(proof) == derivation
 
-    # U₊: 1
+    # U₊: 𝟙
     def test_unit_intro(self) -> None:
-        derivation = dtree.apply(SIMPLE_ALGEBRAIC_TYPE_SYSTEM['1₊'])
+        derivation = dtree.apply(SIMPLE_ALGEBRAIC_TYPE_SYSTEM['𝟙₊'])
         proof = ptree.apply(CLASSICAL_NATURAL_DEDUCTION_SYSTEM['⊤₊'])
 
         assert str(derivation) == dedent('''\
-            _____ 1₊
-            U₊: 1
+            _____ 𝟙₊
+            U₊: 𝟙
             '''
         )
         assert type_derivation_to_proof_tree(derivation) == proof
@@ -76,9 +76,9 @@ class TestTypeDerivationToProofTree:
     # The test here is mostly that instantiations are properly translated
     def test_empty_elim(self, ch_logic_dummy_signature: FormalLogicSignature) -> None:
         derivation = dtree.apply(
-            SIMPLE_ALGEBRAIC_TYPE_SYSTEM['0₋'],
+            SIMPLE_ALGEBRAIC_TYPE_SYSTEM['𝟘₋'],
             dtree.assume(
-                parse_variable_assertion('x: 0', SIMPLE_ALGEBRAIC_SIGNATURE),
+                parse_variable_assertion('x: 𝟘', SIMPLE_ALGEBRAIC_SIGNATURE),
             ),
             instantiation=LambdaSchemaInstantiation(
                 type_mapping={
@@ -88,8 +88,8 @@ class TestTypeDerivationToProofTree:
         )
 
         assert str(derivation) == dedent('''\
-             x: 0
-            ________ 0₋
+             x: 𝟘
+            ________ 𝟘₋
             (E₋x): τ
             '''
         )
@@ -217,12 +217,12 @@ class TestTypeDerivationToProofTree:
         assert type_derivation_to_proof_tree(derivation) == proof
         assert proof_tree_to_type_derivation(proof) == derivation
 
-    # This can be found in the proof that τ ⧦ τ + 0 in thm:simple_algebraic_type_arithmetic
+    # This can be found in the proof that τ ⧦ τ + 𝟘 in thm:simple_algebraic_type_arithmetic
     def test_sum(self, ch_logic_dummy_signature: FormalLogicSignature) -> None:
         derivation = dtree.apply(
             SIMPLE_ALGEBRAIC_TYPE_SYSTEM['+₋'],
             dtree.assume(
-                parse_variable_assertion('x: (τ + 0)', SIMPLE_ALGEBRAIC_SIGNATURE)
+                parse_variable_assertion('x: (τ + 𝟘)', SIMPLE_ALGEBRAIC_SIGNATURE)
             ),
             dtree.premise(
                 tree=dtree.assume(
@@ -232,9 +232,9 @@ class TestTypeDerivationToProofTree:
             ),
             dtree.premise(
                 tree=dtree.apply(
-                    SIMPLE_ALGEBRAIC_TYPE_SYSTEM['0₋'],
+                    SIMPLE_ALGEBRAIC_TYPE_SYSTEM['𝟘₋'],
                     dtree.assume(
-                        parse_variable_assertion('b: 0', SIMPLE_ALGEBRAIC_SIGNATURE),
+                        parse_variable_assertion('b: 𝟘', SIMPLE_ALGEBRAIC_SIGNATURE),
                     ),
                     instantiation=LambdaSchemaInstantiation(
                         type_mapping={
@@ -242,16 +242,16 @@ class TestTypeDerivationToProofTree:
                         }
                     )
                 ),
-                discharge=parse_variable_assertion('b: 0', SIMPLE_ALGEBRAIC_SIGNATURE)
+                discharge=parse_variable_assertion('b: 𝟘', SIMPLE_ALGEBRAIC_SIGNATURE)
             )
         )
 
         assert str(derivation) == dedent('''\
-                                            b: 0
-                                           ________ 0₋
-                 x: (τ + 0)      a: τ      (E₋b): τ
+                                            b: 𝟘
+                                           ________ 𝟘₋
+                 x: (τ + 𝟘)      a: τ      (E₋b): τ
             a, b __________________________________ +₋
-                  (((S₋(λa:τ.a))(λb:0.(E₋b)))x): τ
+                  (((S₋(λa:τ.a))(λb:𝟘.(E₋b)))x): τ
             '''
         )
 
