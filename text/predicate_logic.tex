@@ -5,7 +5,7 @@
 \begin{remark}\label{rem:predicate_logic}
   We have defined \enquote{predicates} in \cref{def:boolean_function} as \hyperref[con:boolean_value]{Boolean-valued} functions. We are interested here in \hyperref[con:syntax_semantics_duality]{syntactic} constructs that allow encoding such functions.
 
-  As described in \cref{def:propositional_valuation/formula_valuation}, \hyperref[def:propositional_syntax/formula]{propositional formulas} are evaluated to Boolean (not merely Boolean-valued) functions under \hyperref[def:first_order_semantics]{classical semantics}. Predicate logic extends propositional logic by formalizing not only relationship between \hyperref[con:proposition]{propositions}, but also the structure of individual propositions. An atomic proposition in predicate logic may depend on \hyperref[con:variable]{variables} that range over arbitrary domains.
+  As described in \cref{def:propositional_valuation/formula_valuation}, \hyperref[def:propositional_syntax/formula]{propositional formulas} are evaluated to Boolean (not merely Boolean-valued) functions under \hyperref[def:first_order_semantics]{classical semantics}. Predicate logic extends propositional logic by formalizing not only relationship between \hyperref[con:proposition]{propositions}, but also the structure of individual propositions. An atomic proposition in predicate logic may depend on \hyperref[con:variable]{variables} that range over arbitrary domains. We will give a formal definition of syntactic predicate in \cref{def:simply_typed_hol_derivation}.
 
   \incite*[74]{Kleene2002Logic} describes the relationship between predicates and propositions as follows:
   \begin{displayquote}
@@ -60,7 +60,13 @@
 \begin{remark}\label{rem:predicate_logic_formalization}
   We will first present a syntax of predicate logic in \cref{def:simply_typed_hol_abbreviations} via \hyperref[con:metalingual_abbreviation]{abbreviations}, and then describe it via \hyperref[def:formal_grammar]{formal grammar rules} in \cref{def:first_order_syntax} in the special case of first-order logic.
 
-  Still, we will not attempt to fully formalize the syntax of inference rules and derivations like we did with propositional logic in \fullref{sec:axiomatic_derivations} and \fullref{sec:natural_deduction}. Our main obstacles are the eigenvariable rules, which we discuss in \cref{con:eigenvariable}. Formalizing them requires a more sophisticated approach than what we have for propositional logic because we must extend our \hyperref[con:schemas_and_instances]{schemas} with constructs for describing restrictions on \hyperref[con:variable_binding]{free} variables.
+  Still, we will not attempt to fully formalize the syntax of inference rules and derivations like we did with propositional logic in \fullref{sec:axiomatic_derivations} and \fullref{sec:natural_deduction}.
+
+  For the simpler case of first-order logic, our main obstacles are eigenvariable rules, which we discuss in \cref{con:eigenvariable}, and which require extending our \hyperref[con:schemas_and_instances]{schemas} with constructs for describing restrictions on \hyperref[con:variable_binding]{free} variables.
+
+  In this section, our main obstacle is instead the fundamental reliance on metalingual abbreviation, which requires us to work with several distinct syntaxes simultaneously. Furthermore, the rules \ref{inf:def:simply_typed_hol_derivation/rules/r} and \ref{inf:def:simply_typed_hol_derivation/rules/beta} carry a lot of subtleties, including the need to describe restrictions on free variables.
+
+  In both cases, formalizing the syntax of axioms and inference rules requires a more sophisticated approach than what we have for propositional logic.
 \end{remark}
 \begin{comments}
   \item We described in \cref{rem:dependent_type_rule_formalization} several significant complications that arise when formalizing \hyperref[def:mltt]{Martin-L\"of type theory}. As described in \cref{rem:higher_order_logic_and_type_theory/terms}, we will use an approach to \hyperref[rem:predicate_logic]{higher-order logic} that only requires simple types, and is thus more susceptible to formalization.
@@ -170,7 +176,7 @@
 \begin{remark}\label{rem:simple_type_function_syntax}
   We will often utilize the different notations from \cref{def:function_application_syntax} as notational shorthands in the \hyperref[con:metalogic]{metalanguage} which does not affect the object language.
 
-  Given a (simple) \hyperref[con:type_annotation]{type assertion} \( f: \tau \), we will find it convenient to write \( f(x_1, \ldots, x_n) \) rather than the conventional \( \muplambda \)-term syntax \( f x_1 \cdots x_n \) or the corresponding variant with explicit parentheses, \( (\ldots ((f x_1) x_2) \ldots x_n) \).
+  Given a (simple) \hyperref[con:type_annotation]{type assertion} \( f: \tau \), we will find it convenient to write \( f(x_1, \ldots, x_n) \) rather than the conventional \( \muplambda \)-term application syntax \( f x_1 \cdots x_n \) or the corresponding variant with explicit parentheses, \( (\ldots ((f x_1) x_2) \ldots x_n) \).
 
   For this, we only need to know the arity of \( f \). This is easy for untyped \( \muplambda \)-terms, for which we have defined the arity in \eqref{eq:alg:untyped_lambda_term_to_function/arity}. We will define its counterpart for \hyperref[def:simple_type]{simple types} as follows:
   \begin{equation*}
@@ -180,19 +186,21 @@
     \end{cases}
   \end{equation*}
 
-  The \hyperref[con:metalingual_abbreviation]{abbreviations} for the \hyperref[def:propositional_alphabet]{propositional symbols} from \cref{def:simply_typed_hol_abbreviations} provide several examples:
+  The \hyperref[con:metalingual_abbreviation]{abbreviations} for the \hyperref[def:predicate_logic_alphabet]{predicate logic alphabet} from \cref{def:simply_typed_hol_abbreviations} provide several examples:
   \begin{itemize}
-    \item The \( \muplambda \)-term \( T \) encoding the \hyperref[def:propositional_alphabet/constants/verum]{verum} \( \syntop \) has type \( \syn\omicron \). Its arity is thus \( 0 \), and its prefix notation is simply \( \syntop \).
+    \item The \hyperref[def:propositional_alphabet/constants/verum]{verum} \( \muplambda \)-term \( \syntop \) has type \( \syn\omicron \). Its arity is thus \( 0 \), and its prefix notation is simply \( \syntop \).
 
-    \item The \( \muplambda \)-term \( N \) encoding \hyperref[def:propositional_alphabet/negation]{negation} \( \synneg \) has type \( \syn\omicron \synimplies \syn\omicron \), thus its arity is \( 1 \) and its prefix notation should be \( \synneg(\varphi) \). We prefer the parenthesis-free notation, which coincides with the conventional \( \muplambda \)-term notation.
+    \item The \hyperref[def:propositional_alphabet/negation]{negation} \( \muplambda \)-term \( \synneg \) has type \( \syn\omicron \synimplies \syn\omicron \), thus its arity is \( 1 \) and its prefix notation for application should be \( \synneg(\varphi) \). We prefer the parenthesis-free notation, which coincides with the conventional \( \muplambda \)-term notation.
 
-    \item The \( \muplambda \)-term \( C \) encoding \hyperref[def:propositional_alphabet/connectives/conjunction]{conjunction} \( \synwedge \) has type \( \syn\omicron \synimplies \syn\omicron \synimplies \syn\omicron \), thus its arity is \( 2 \). The infix notation \( \varphi \wedge \psi \) is precisely the familiar syntax of propositional formulas \cref{def:propositional_syntax}.
+    \item The \hyperref[def:propositional_alphabet/connectives/conjunction]{conjunction} \( \muplambda \)-term \( \synwedge \) has type \( \syn\omicron \synimplies \syn\omicron \synimplies \syn\omicron \), thus its arity is \( 2 \). The infix notation \( \varphi \wedge \psi \) is precisely the familiar syntax of propositional formulas \cref{def:propositional_syntax}.
 
-    The conventional \( \muplambda \)-calculus syntax would give us precisely \L{}ukasiewicz's notation \( {\synimplies} \varphi \psi \) discussed in \ref{rem:def:function_application_syntax/polish}, while using the conventional prefix notation would give us \( \synimplies(\varphi, \psi) \).
+    The conventional \( \muplambda \)-calculus syntax would give us precisely \L{}ukasiewicz's notation \( {\synimplies} \varphi \psi \) discussed in \ref{rem:def:function_application_syntax/polish}, while using the prefix notation would give us \( \synimplies(\varphi, \psi) \).
 
-    \item The \( \muplambda \)-term \( \Pi \) encoding \hyperref[def:predicate_logic_alphabet/quantifiers/universal]{universal quantification} \( \synforall \) has type \( (\syn\iota \synimplies \syn\omicron) \synimplies \syn\omicron \). Its arity is \( 1 \), and the arity of its argument is \( 1 \) as well.
+    \item The \hyperref[def:predicate_logic_alphabet/quantifiers/universal]{universal quantification} \( \muplambda \)-term \( \synforall_\tau \) has type \( (\tau \synimplies \syn\omicron) \synimplies \syn\omicron \). Its arity is \( 1 \), and the arity of its argument is \( 1 \) as well.
 
-    If \( p \) inhabits \( \syn\iota \synimplies \syn\omicron \), its prefix notation is \( p(x) \). For \( \synforall \) we prefer the conventional \( \muplambda \)-term notation \( \synforall p(x) \). If we make the abstraction variable \( x \) explicit by placing it after the quantifier, we obtain the more familiar notation \( \qforall x p(x) \).
+    The conventional \( \muplambda \)-calculus notation is \( \synforall_\tau p \), where \( p \) inhabits \( \tau \synimplies \syn\omicron \).
+
+    We want to highlight that \( \synforall_\tau \) binds a variable which \( p \) depends upon. If \( x \) is intended to inhabit \( \tau \), we can write \( \quantifier {\synforall_\tau} {x^\tau} p(x) \). Simply removing the \( \tau \) subscript from \( \synforall \) gives us the conventional quantifier notation.
   \end{itemize}
 \end{remark}
 
@@ -343,7 +351,7 @@
 
     \thmitem{def:simply_typed_hol_signature/const} The elements of \( \op*{NLConst}_\Sigma \) should be \hyperref[def:type_assertion]{type assertions} for \hi{distinct} \( \muplambda \)-term constants. We call them \term[en=nonlogical constants (\cite[211]{Andrews2002Logic})]{nonlogical constants}.
 
-    Additionally, we have a single constant, \( \synQ \), for denoting equality as per \cref{rem:simply_typed_hol}. Naturally, we call it a \term[en=logical constants (\cite[211]{Andrews2002Logic})]{logical constant} to distinguish it from the rest. We associate no \hyperref[con:type_annotation]{type annotations} with it because the annotation must be \hyperref[def:polymorphic_typed_lambda_calculus]{polymorphic} (and we are working with simple types). \hyperref[con:typing_rule]{Typing rules} for \( \synQ \) will be provided in \cref{def:simply_typed_hol_typing/equality}.
+    Additionally, we have a single constant, \( \synQ \), for denoting equality as per \cref{rem:simply_typed_hol}. Naturally, we call it a \term[en=logical constants (\cite[211]{Andrews2002Logic})]{logical constant} to distinguish it from the rest. We associate no \hyperref[con:type_annotation]{type annotations} with it because the annotation must be \hyperref[def:polymorphic_typed_lambda_calculus]{polymorphic} (see \cref{rem:simply_typed_hol_polymorphic_types} for a broader discussion). \hyperref[con:typing_rule]{Typing rules} for \( \synQ \) will be provided in \cref{def:simply_typed_hol_typing/equality}.
 
     The logical and nonlogical constants, along with the base types discussed above, form a \hyperref[def:simple_type_signature]{simple type signature}.
   \end{thmenum}
@@ -384,11 +392,11 @@
   \end{thmenum}
 \end{definition}
 \begin{comments}
-  \item The rule \ref{inf:def:simply_typed_hol_typing/equality} can be avoided of we assign the \hyperref[def:polymorphic_typed_lambda_calculus]{polymorphic type} \( \qpolytype {\syn\tau} \syn\tau \synimplies \syn\tau \synimplies \syn\omicron \) to \( \synQ \). This approach would be a formalization of the typing of \( \synQ \) by \incite[211]{Andrews2002Logic}.
+  \item The rule \ref{inf:def:simply_typed_hol_typing/equality} can be avoided of we assign a \hyperref[def:polymorphic_typed_lambda_calculus]{polymorphic type} to \( \synQ \). We discuss this possibility in \cref{rem:simply_typed_hol_polymorphic_types}.
 
-  As presented, \ref{inf:def:simply_typed_hol_typing/equality} is in fact a simple typing rule, i.e. it can be formally expressed via \hyperref[def:lambda_term_schema]{typed \( \muplambda \)-term schemas} as per \cref{def:simple_typing_rule}. We avoid this to prevent clutter; as discussed in \cref{rem:predicate_logic_formalization}, we will not formalize the syntax and derivation system of higher-order logic.
+  \item As presented, \ref{inf:def:simply_typed_hol_typing/equality} is in fact a simple typing rule, i.e. it can be formally expressed via \hyperref[def:lambda_term_schema]{typed \( \muplambda \)-term schemas} as per \cref{def:simple_typing_rule}. We avoid this to prevent clutter; as discussed in \cref{rem:predicate_logic_formalization}, we will not formalize the syntax and derivation system of higher-order logic.
 
-  The constant rule \ref{inf:def:simply_typed_hol_typing/const} is simply a way to formalize the introduction of nonlogical constants and is not based on any particular author's work (none of the aforementioned use natural deduction style rules).
+  \item The constant rule \ref{inf:def:simply_typed_hol_typing/const} is simply a way to formalize the introduction of nonlogical constants and is not based on any particular author's work (none of the aforementioned use natural deduction style rules).
 \end{comments}
 
 \begin{definition}\label{def:simply_typed_hol}
@@ -398,6 +406,22 @@
 
   In particular, such \( \muplambda \)-terms will be used in \cref{def:simply_typed_hol_formula} for introducing \hyperref[con:metalingual_abbreviation]{metalinguistic abbreviations} emulating the more familiar syntax of logical formulas.
 \end{definition}
+\begin{comments}
+  \item We consider the following an indispensable part of the system:
+  \begin{itemize}
+    \item The axiomatic derivation proof system described in \cref{def:simply_typed_hol_derivation}.
+  \end{itemize}
+\end{comments}
+
+\begin{remark}\label{rem:simply_typed_hol_polymorphic_types}
+  There are several occasions where \hyperref[def:simply_typed_hol]{simply-typed higher-order logic} would benefit from \hyperref[def:polymorphic_typed_lambda_calculus]{polymorphic types}. An obvious example is the typing rule \ref{inf:def:simply_typed_hol_typing/equality}, which can avoided if we assign the type \( \qpolytype {\syn\tau} \syn\tau \synimplies \syn\tau \synimplies \syn\omicron \) to \( \synQ \).
+
+  Polymorphic types can also aid us when formulating the axioms in \ref{def:simply_typed_hol_derivation/axioms} --- they currently depend on a type, which technically makes them \hyperref[con:schemas_and_instances]{metalingual schemas} rather than axioms.
+
+  The obvious obstacle is that, if we allow polymorphic types, the system is no longer simply-typed. This requires the introduction and handling of type variables, which the system by design does not support, as well as dedicated rules for handling type variable binding and substitution.
+
+  So, while there are benefits of allowing polymorphic types, this would complicate the system further without much benefit.
+\end{remark}
 
 \begin{proposition}\label{thm:simply_typed_hol_type_uniqueness}
   Let \( M \) be a \( \muplambda \)-term of \hyperref[def:simply_typed_hol]{simply-typed higher-order logic}, and let \( \Gamma \) be a \hyperref[def:type_context]{type context} for the free variables of \( M \).
@@ -421,11 +445,15 @@
 
 \begin{definition}\label{def:simply_typed_hol_formula}\mimprovised
   A \term[en=formula (\cite[270]{Farmer2008STTVirtues})]{formula} of \hyperref[def:simply_typed_hol]{simply-typed higher-order logic} is a \( \muplambda \)-term \hyperref[def:type_habitation]{inhabiting} the \hyperref[def:simply_typed_hol_signature/types]{type of propositions} \( \syn\omicron \).
+
+  More generally, a \term[en=predicate (\cite[270]{Farmer2008STTVirtues})]{predicate} is a \( \muplambda \)-term inhabiting \( \tau \synimplies \syn\omicron \) for some type \( \tau \).
+
+  We have implicitly assumed that formulas and predicates are \hyperref[def:lambda_combinator]{closed} and \hyperref[def:typability]{typable} \( \muplambda \)-terms. It is convenient for a predicate to utilize the prefix notation from \cref{def:function_application_syntax}; that is, if \( p \) has arity \( n \), we write \( p(x_1, \ldots, x_n) \).
 \end{definition}
 \begin{comments}
-  \item A formula is thus inevitably a \hyperref[def:lambda_combinator]{closed} and \hyperref[def:typability]{typable} \( \muplambda \)-term.
-
   \item We will present a dedicated syntax for formulas in \cref{def:simply_typed_hol_abbreviations} based on \hyperref[con:metalingual_abbreviation]{metalinguistic abbreviations}. First-order logic will allow a simple description of formulas via \hyperref[def:formal_grammar]{formal grammars} --- see \ref{def:first_order_syntax}.
+
+  \item We will justify the use of \hyperref[def:beta_eta_reduction]{\( \beta \)-reduction} in  \cref{def:simply_typed_hol_derivation}, which will allow us to regard \( p(x_1, \ldots, x_n) \) as function application in the sense of \fullref{alg:untyped_lambda_term_to_function}.
 
   \item We adapt Farmer's terminology from \cite[270]{Farmer2008STTVirtues}.
 \end{comments}
@@ -450,7 +478,7 @@
 
   Since this abbreviation only affects the metalanguage, where the placeholder \( M \) belongs, we may have just used the letter \( M \) itself. There are subtleties, however, and we want to highlight that \( M \) is appropriately used. For this reason, on abbreviated symbols in the object language, we will continue placing dots on top of symbols, as per \cref{rem:object_language_dots}.
 
-  First, it is reasonable to suppose that \( M \) is \hyperref[def:lambda_combinator]{closed}, for two reasons. If the variable \( x \) is free in \( M \), and \( \syn\mu \) is placed in some \( \muplambda \)-term that binds \( x \), it is not clear whether the binding of the free occurrences of \( x \) in \( M \) is intentional. Even if it is, since \( x \) does not have a \hyperref[con:type_annotation]{type annotation}, it is not clear whether the type annotation of the binder will match the intended type of \( x \) (and thus whether the resulting term will be \hyperref[def:typability]{typable}). On the other hand, if \( M \) is closed, we are forced to be explicit about its parameters, which also allows us to use the convenient notations described in \cref{rem:simple_type_function_syntax}.
+  First, it is reasonable to suppose that \( M \) is \hyperref[def:lambda_combinator]{closed}, for two reasons. If the variable \( x \) is free in \( M \), and \( \syn\mu \) is placed in some \( \muplambda \)-term that binds \( x \), it is not clear whether the binding of the free occurrences of \( x \) in \( M \) is intentional. Even if it is, since \( x \) does not have a \hyperref[con:type_annotation]{type annotation}, it is not clear whether the type annotation of the binder will match the intended type of \( x \). On the other hand, if \( M \) is closed, we are forced to be explicit about its parameters, which also allows us to use the convenient notations described in \cref{rem:simple_type_function_syntax}.
 
   Second, since \( M \) is closed, it is reasonable to require it to be \hyperref[def:typability]{typable} (by the typing rules from \cref{def:simply_typed_hol_typing}), because its usefulness is questionable otherwise. \Cref{thm:simply_typed_hol_type_uniqueness} implies that \( M \) inhabits a unique type.
 
@@ -461,6 +489,8 @@
   For \hyperref[def:simply_typed_hol]{simply-typed higher-order logic}, we will use \hyperref[con:metalingual_abbreviation]{metalingual abbreviation} to introduce a dedicated syntax for \hyperref[def:simply_typed_hol_formula]{formulas}.
 
   The \( \muplambda \)-terms and their intended notation are listed in \cref{tab:def:simply_typed_hol_abbreviations}. It is easily seen that all the \( \muplambda \)-terms are \hyperref[def:lambda_combinator]{closed} and \hyperref[def:typability]{typable}, as recommended in \cref{rem:simply_typed_hol_abbreviations}. In fact, formal equality and the quantifiers depend on a type, so for every type \( \tau \) we have a distinct \( \muplambda \)-term for each of them\fnote{An alternative would be to use \hyperref[def:polymorphic_typed_lambda_calculus]{polymorphic types}, thus going beyond the scope of a simple type system}. This is mitigated by further notational shortcuts intended to imitate a more conventional syntax.
+
+  The conventional \( \muplambda \)-calculus syntax and the dedicated syntax are discussed in \cref{rem:simple_type_function_syntax}.
 
   \begin{table}
     \begin{center}
@@ -489,6 +519,87 @@
 \end{definition}
 \begin{comments}
   \item Most abbreviations are based on \bycite[212]{Andrews2002Logic}, with the exception of \( \syntop \), taken from \bycite[273]{Farmer2008STTVirtues}, and \( \synExists_\tau \), based on Russell's ideas outlined in \cref{con:description_operator/exists_unique}. Note that we treat \( \synExists \) as a single symbol.
+\end{comments}
+
+\paragraph{Proofs in simply-typed higher-order logic}
+
+\begin{definition}\label{def:simply_typed_hol_derivation}\mimprovised
+  We will now define a \hyperref[def:consequence_relation]{consequence relation} for \hyperref[def:simply_typed_hol_formula]{formulas} of \hyperref[def:simply_typed_hol]{simply-typed higher-order logic} based on axiomatic derivations for propositional logic from \fullref{sec:axiomatic_derivations}.
+
+  \begin{thmenum}[series=def:simply_typed_hol_derivation]
+    \thmitem{def:simply_typed_hol_derivation/axioms} We will need the following \( \muplambda \)-terms, intended to be used as axiom schemas:
+    \begin{align}
+      \qabs {\synp^{\syn\omicron \synimplies \syn\omicron}} &\parens[\Big]{ \synp(\syntop) \synwedge \synp(\synbot) \syniff \qforall {\synx^{\syn\omicron}} \synp(\synx) \tag{\logic{A1}} } \label{eq:def:simply_typed_hol_derivation/axioms/a1} \\
+      \qabs {\synx^\tau} \qabs {\syny^\tau} &\parens[\Big]{ (\synx \syneq \syny) \synimplies \qforall {\synp^{\tau \synimplies \syn\omicron}} (\synp(\synx) \syniff \synp(\syny) } \tag{\ensuremath{ \logic{A2}_\tau }} \label{eq:def:simply_typed_hol_derivation/axioms/a2} \\
+      \qabs {\synf^{\tau \synimplies \sigma}} \qabs {\syng^{\tau \synimplies \sigma}} &\parens[\Big]{ (\synf \syneq \syng) \syniff \qforall {\synx^\tau} (\synf(\synx) = \syng(\synx) } \tag{\ensuremath{ \logic{A3}_{\tau\sigma} }} \label{eq:def:simply_typed_hol_derivation/axioms/a3}
+    \end{align}
+
+    In accordance with \cref{rem:simply_typed_hol_abbreviations}, we add abstractors so that these \( \muplambda \)-terms are well-typed and usable as \hyperref[def:simply_typed_hol_formula]{predicates}. We call them \enquote{axiom schemas} based on our usage in \cref{def:axiomatic_derivation_system}, since, given such an \( n \)-ary schema \( \Psi \), we say that \( M \) is an \term{instance} of \( \Psi \) if there exist \( \muplambda \)-terms \( N_1, \ldots, N_n \) such that \( \Psi(N_1, \ldots, N_n) \bred* M \). Unsurprisingly, we call an \term{axiom} an instance of an axiom schema.
+
+    This naming is unrelated to the fact that \eqref{eq:def:simply_typed_hol_derivation/axioms/a2} depends on a type \( \tau \), while \eqref{eq:def:simply_typed_hol_derivation/axioms/a3} depends on \( \tau \) and \( \sigma \), and thus both are metalingual schemas in the sense of \cref{con:schemas_and_instances}. We discuss the possibility of instead using \hyperref[def:polymorphic_typed_lambda_calculus]{polymorphic types} in \cref{rem:simply_typed_hol_polymorphic_types}.
+
+    The schema \eqref{eq:def:simply_typed_hol_derivation/axioms/a2} is a form of the \enquote{indiscernibility of identicals} principle discussed in \cref{rem:identity_of_indiscernibles}, while \eqref{eq:def:simply_typed_hol_derivation/axioms/a3} is a form of function extensionality, which as a general principle we discuss in \cref{con:extensionality}.
+
+    \thmitem{def:simply_typed_hol_derivation/reduction} We will need ad-hoc \( \muplambda \)-term reduction relations. Namely, for every pair of \( \muplambda \)-terms \( A \) and \( B \), we define a reduction relation based on the following rule:
+    \begin{equation*}\taglabel[\ensuremath{ \logic{Red}_{A \mapsto B} }]{inf:def:simply_typed_hol_derivation/rules/red}
+      \begin{prooftree}
+        \infer0[\ref{inf:def:simply_typed_hol_derivation/rules/red}]{ A \redrel{A \mapsto B} B }.
+      \end{prooftree}
+    \end{equation*}
+
+    As per \cref{def:typed_term_reduction}, we extend this relation via the rules \ref{inf:def:lambda_term_reduction/alpha}, \ref{inf:def:lambda_term_reduction/app_left}, \ref{inf:def:lambda_term_reduction/app_right} and \ref{inf:def:typed_term_reduction/abs}.
+
+    \thmitem{def:simply_typed_hol_derivation/rules} We will rely on the following \hyperref[def:inference_rule]{inference rules}:
+    \begin{paracol}{2}
+      \begin{leftcolumn}
+        \ParacolAlignmentHack
+        \begin{equation*}\taglabel[\logic{R}]{inf:def:simply_typed_hol_derivation/rules/r}
+          \begin{prooftree}
+            \hypo{ A \syneq B }
+            \hypo{ M }
+            \infer2[\ref{inf:def:simply_typed_hol_derivation/rules/r}]{ N },
+          \end{prooftree}
+        \end{equation*}
+        where \( M \redrel{A \mapsto B} N \).
+      \end{leftcolumn}
+
+      \begin{rightcolumn}
+        \ParacolAlignmentHack
+        \begin{equation*}\taglabel[\ensuremath{ \beta }]{inf:def:simply_typed_hol_derivation/rules/beta}
+          \begin{prooftree}
+            \infer0[\ref{inf:def:simply_typed_hol_derivation/rules/beta}]{ M \syneq N },
+          \end{prooftree}
+        \end{equation*}
+        where \( M \bred N \).
+      \end{rightcolumn}
+    \end{paracol}
+
+    \thmitem{def:simply_typed_hol_derivation/derivation} Finally, it remains to define an \term{axiomatic derivation}. Similarly to \cref{def:axiomatic_derivation}, we define a derivation of the \hyperref[def:simply_typed_hol_formula]{formula} \( \varphi \) from \( \Gamma \) as a nonempty list \( \psi_1, \ldots, \psi_n \) of formulas such that \( \psi_n = \varphi \) and, for every \( k = 1, \ldots, n \), any of the following hold:
+    \begin{thmenum}
+      \thmitem{def:simply_typed_hol_derivation/derivation/axiom} \( \psi_k \) is an instance of any of the axiom schemas from \cref{def:simply_typed_hol_derivation/axioms}.
+
+      \thmitem{def:simply_typed_hol_derivation/derivation/premise} \( \psi_k \) is a premise, that is, it belongs to \( \Gamma \).
+
+      \thmitem{def:simply_typed_hol_derivation/derivation/rules} \( \phi_k \) is the conclusion of either \ref{inf:def:simply_typed_hol_derivation/rules/r} or \ref{inf:def:simply_typed_hol_derivation/rules/beta} with premises from \( \psi_1, \ldots, \psi_{k-1} \).
+    \end{thmenum}
+
+    \thmitem{def:simply_typed_hol_derivation/consequence} Finally, we let \( \Gamma \vdash \varphi \) if there exists an axiomatic derivation of \( \varphi \) from \( \Gamma \).
+  \end{thmenum}
+\end{definition}
+\begin{defproof}
+  We can prove that \( {\vdash} \) is indeed a \hyperref[def:consequence_relation]{consequence relation} similarly to how we have done this for propositional logic in \cref{def:axiomatic_derivation_entailment}.
+\end{defproof}
+\begin{comments}
+  \item This definition is amalgamated from all \hyperref[con:logical_system]{logical systems} discussed in \cref{rem:simply_typed_hol}. Namely, the axiom schemas \eqref{eq:def:simply_typed_hol_derivation/axioms/a1}, \eqref{eq:def:simply_typed_hol_derivation/axioms/a2} and \eqref{eq:def:simply_typed_hol_derivation/axioms/a3} are adaptations of the eponymous axioms from Henkin's paper \cite[37]{Henkin1975Identity}. They are also found in Andrew's system \( \logic{Q}_0 \) from \cite[\S 51]{Andrews2002Logic} and Farmer's system from \cite[278]{Farmer2008STTVirtues}.
+
+  All the above feature another axiom allowing \( \beta \)-reduction. We could not easily adapt this axiom to our underlying formalisms, but fortunately our extensive discussion of \( \beta \)-reduction in \fullref{sec:lambda_term_reductions} and \fullref{sec:simply_typed_subject_reduction} allowed us to very simply state the rule \ref{inf:def:simply_typed_hol_derivation/rules/beta} instead.
+
+  Additionally, all the above systems feature \enquote{rule R}. For example, \incite[213]{Andrews2002Logic} postulates the following:
+  \begin{displayquote}
+    \textit{Rule R}. From \( \mathbf{C} \) and \( \mathbf{A_\alpha} = \mathbf{B_\alpha} \) to infer the result of replacing one occurrence of \( \mathbf{A_\alpha} \) in \( \mathbf{C} \) by an occurrence of \( \mathbf{B_\alpha} \), provided that the occurrence of \( \mathbf{A_\alpha} \) in \( \mathbf{C} \) is not (an occurrence of a variable) immediately preceded by \( \muplambda \).
+  \end{displayquote}
+
+  Here we have again relied on our extensive discussion of reductions in order to define an appropriate relation \( M \redrel{A \mapsto B} N \), apt for stating \ref{inf:def:simply_typed_hol_derivation/rules/r}.
 \end{comments}
 
 \begin{definition}\label{def:nth_order_logic}
