@@ -58,6 +58,7 @@
 \RequirePackage{csquotes}
 \RequirePackage{numprint}
 \RequirePackage{blkarray}
+\RequirePackage{fancyvrb}
 \RequirePackage{diagbox}
 \RequirePackage{paracol}
 \RequirePackage{forest}
