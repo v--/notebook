@@ -1,3 +1,4 @@
+from .formula_sub import FormulaSubstitutionSpec
 from .formula_visitor import FormulaTransformationVisitor, FormulaVisitor
 from .formulas import (
     ConnectiveFormula,
@@ -13,6 +14,7 @@ from .formulas import (
     is_conjunction,
     is_disjunction,
 )
+from .schema_sub import FormulaSchemaSubstitutionSpec
 from .schema_visitor import FormulaSchemaVisitor
 from .schemas import (
     ConnectiveFormulaSchema,

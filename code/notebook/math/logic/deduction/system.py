@@ -1,12 +1,12 @@
 from ....support.inference import InferenceRule, InferenceRulePremise, InferenceRuleSystem
-from ..formulas import FormulaSchema
+from ..formulas import FormulaSchemaSubstitutionSpec
 
 
-class NaturalDeductionPremise(InferenceRulePremise[FormulaSchema, FormulaSchema]):
+class NaturalDeductionPremise(InferenceRulePremise[FormulaSchemaSubstitutionSpec, FormulaSchemaSubstitutionSpec]):
     pass
 
 
-class NaturalDeductionRule(InferenceRule[FormulaSchema, NaturalDeductionPremise]):
+class NaturalDeductionRule(InferenceRule[FormulaSchemaSubstitutionSpec, NaturalDeductionPremise]):
     pass
 
 

@@ -4,13 +4,13 @@ from typing import NamedTuple
 
 from ....support.schemas import SchemaInferenceError
 from ..deduction import (
-    AssumptionTree,
     Marker,
     NaturalDeductionSystem,
     ProofTree,
-    RuleApplicationPremise,
     RuleApplicationTree,
+    assume,
     new_marker,
+    premise,
 )
 from ..formulas import Formula, is_conditional
 from ..instantiation import FormalLogicSchemaInstantiation, infer_instantiation_from_formula
@@ -96,7 +96,7 @@ def derivation_to_proof_tree(ad_system: AxiomaticDerivationSystem, derivation: A
     conclusion = derivation.get_conclusion()
 
     if conclusion in get_premises(ad_system, derivation):
-        return AssumptionTree(conclusion, new_marker(used_markers))
+        return assume(conclusion, new_marker(used_markers))
 
     nd_system = derivation_system_to_natural_deduction_system(ad_system)
 
@@ -121,13 +121,13 @@ def derivation_to_proof_tree(ad_system: AxiomaticDerivationSystem, derivation: A
     cond = derivation.payload[mp_config.conditional_index]
     assert is_conditional(cond)
 
-    conditional_premise = RuleApplicationPremise(
-        derivation_to_proof_tree(ad_system, derivation.truncate(mp_config.conditional_index), used_markers),
+    conditional_premise = premise(
+        tree=derivation_to_proof_tree(ad_system, derivation.truncate(mp_config.conditional_index), used_markers),
     )
 
     markers = set(conditional_premise.tree.get_assumption_map().keys())
-    antecedent_premise = RuleApplicationPremise(
-        derivation_to_proof_tree(ad_system, derivation.truncate(mp_config.antecedent_index), {*used_markers, *markers})
+    antecedent_premise = premise(
+        tree=derivation_to_proof_tree(ad_system, derivation.truncate(mp_config.antecedent_index), {*used_markers, *markers})
     )
 
     instantiation = FormalLogicSchemaInstantiation(

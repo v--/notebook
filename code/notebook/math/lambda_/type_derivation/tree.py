@@ -62,10 +62,7 @@ class RuleApplicationTree(InferenceTree[TypeAssertion, Mapping[Variable, SimpleT
     conclusion: TypeAssertion
 
     def _filter_assumptions(self, *, discharged_at_current_step: bool) -> Iterable[tuple[Variable, SimpleType]]:
-        for rule_premise, application_premise in zip(self.rule.premises, self.premises, strict=True):
-            if rule_premise is None:
-                continue
-
+        for application_premise in self.premises:
             for var, type_ in application_premise.tree.get_assumption_map().items():
                 is_discharged_at_current_step = application_premise.discharge is not None and \
                     application_premise.discharge.term == var and application_premise.discharge.type == type_

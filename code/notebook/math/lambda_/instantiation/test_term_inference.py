@@ -15,9 +15,7 @@ from ..parsing import (
     parse_variable_placeholder,
 )
 from .base import LambdaSchemaInstantiation
-from .term_inference import (
-    infer_instantiation_from_term,
-)
+from .term_inference import infer_instantiation_from_term
 
 
 @pytest_parametrize_kwargs(

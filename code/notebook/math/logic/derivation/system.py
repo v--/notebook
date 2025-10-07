@@ -2,7 +2,7 @@ from collections.abc import Iterator, Mapping
 from dataclasses import dataclass
 
 from ..deduction import NaturalDeductionRule, NaturalDeductionSystem
-from ..formulas import Formula, FormulaSchema
+from ..formulas import Formula, FormulaSchema, FormulaSchemaSubstitutionSpec
 from ..instantiation import is_formula_schema_instance
 from ..parsing import parse_natural_deduction_rule
 
@@ -34,7 +34,7 @@ def derivation_system_to_natural_deduction_system(system: AxiomaticDerivationSys
     return NaturalDeductionSystem([
         MODUS_PONENS_RULE,
         *(
-            NaturalDeductionRule(name, premises=[], conclusion=schema)
+            NaturalDeductionRule(name, premises=[], conclusion=FormulaSchemaSubstitutionSpec(schema))
             for name, schema in system.axiom_schemas.items()
         )
     ])

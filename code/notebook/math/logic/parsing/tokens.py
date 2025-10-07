@@ -3,6 +3,7 @@ from typing import Literal, get_args
 
 from ....parsing import Token, map_of_str_enum_to_single_token
 from ....support.inference import InferenceRuleConnective
+from ....support.substitution import SubstitutionConnective
 from ..alphabet import BinaryConnective, PropConstant, Quantifier, UnaryPrefix
 
 
@@ -15,6 +16,7 @@ LogicTokenKind = Literal[
     'UNARY_CONNECTIVE',
     'BINARY_CONNECTIVE',
     'QUANTIFIER',
+    'SUBSTITUTION_CONNECTIVE',
 
     # Singletons
     'COMMA',
@@ -45,6 +47,7 @@ SINGLETON_TOKEN_MAP: Mapping[str, LogicTokenKind] = {
     **map_of_str_enum_to_single_token('UNARY_CONNECTIVE', UnaryPrefix),
     **map_of_str_enum_to_single_token('BINARY_CONNECTIVE', BinaryConnective),
     **map_of_str_enum_to_single_token('QUANTIFIER', Quantifier),
+    **map_of_str_enum_to_single_token('SUBSTITUTION_CONNECTIVE', SubstitutionConnective),
 }
 
 LogicToken = Token[LogicTokenKind]
