@@ -12,7 +12,7 @@ from ..deduction import (
     new_marker,
     premise,
 )
-from ..formulas import Formula, is_conditional
+from ..formulas import Formula, FormulaSubstitutionSpec, is_conditional
 from ..instantiation import FormalLogicSchemaInstantiation, infer_instantiation_from_formula
 from ..parsing import parse_formula_placeholder
 from .exceptions import AxiomaticDerivationError
@@ -110,7 +110,7 @@ def derivation_to_proof_tree(ad_system: AxiomaticDerivationSystem, derivation: A
                 nd_system[rule_name],
                 instantiation,
                 premises=[],
-                conclusion=conclusion
+                conclusion=FormulaSubstitutionSpec(conclusion)
             )
 
     mp_config = derivation.get_mp_config()
@@ -132,7 +132,7 @@ def derivation_to_proof_tree(ad_system: AxiomaticDerivationSystem, derivation: A
 
     instantiation = FormalLogicSchemaInstantiation(
         formula_mapping={
-            parse_formula_placeholder('φ'): antecedent_premise.tree.conclusion,
+            parse_formula_placeholder('φ'): antecedent_premise.tree.conclusion.formula,
             parse_formula_placeholder('ψ'): conclusion
         }
     )
@@ -141,7 +141,7 @@ def derivation_to_proof_tree(ad_system: AxiomaticDerivationSystem, derivation: A
         nd_system['MP'],
         instantiation,
         premises=[conditional_premise, antecedent_premise],
-        conclusion=conclusion
+        conclusion=FormulaSubstitutionSpec(conclusion)
     )
 
 
@@ -150,10 +150,10 @@ def _proof_tree_to_derivation_payload(tree: ProofTree) -> Iterable[Formula]:
         for premise in tree.premises:
             yield from _proof_tree_to_derivation_payload(premise.tree)
 
-    yield tree.conclusion
+    yield tree.conclusion.formula
 
 
-# This is alg:axiomatic_derivation_to_proof_tree in the monograph
+# This is alg:axiomatic_proof_tree_to_derivation in the monograph
 def proof_tree_to_derivation(ad_system: NaturalDeductionSystem, tree: ProofTree) -> AxiomaticDerivation:  # noqa: ARG001
     return AxiomaticDerivation(
         payload=list(_proof_tree_to_derivation_payload(tree))

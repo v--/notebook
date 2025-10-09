@@ -2,7 +2,7 @@ from collections.abc import Collection, Iterable, Mapping, Sequence
 from dataclasses import dataclass
 from typing import override
 
-from ....support.inference import AssumptionRenderer, InferenceTree, RuleApplicationRenderer
+from ....support.inference import AssumptionRenderer, InferenceTree, InferenceTreeRenderer, RuleApplicationRenderer
 from ..formulas import Formula, FormulaSubstitutionSpec
 from ..instantiation import (
     FormalLogicSchemaInstantiation,
@@ -11,6 +11,7 @@ from ..instantiation import (
     instantiate_substitution_spec,
     merge_instantiations,
 )
+from ..substitution import evaluate_substitution_spec
 from ..terms import EigenvariableSchemaSubstitutionSpec, TermSubstitutionSpec, Variable
 from ..variables import get_free_variables
 from .exceptions import RuleApplicationError
@@ -19,67 +20,100 @@ from .system import NaturalDeductionPremise, NaturalDeductionRule
 
 
 @dataclass(frozen=True)
-class AssumptionTree(InferenceTree[Formula, Mapping[Marker, Formula]]):
-    conclusion: Formula
+class AssumptionTree(InferenceTree[FormulaSubstitutionSpec, Mapping[Marker, Formula]]):
+    conclusion: FormulaSubstitutionSpec
     marker: Marker
 
     @override
     def get_assumption_map(self) -> Mapping[Marker, Formula]:
-        return {self.marker: self.conclusion}
+        return {self.marker: self.conclusion.formula}
 
     @override
-    def build_renderer(self) -> AssumptionRenderer:
-        return AssumptionRenderer(str(self.conclusion), marker=str(self.marker))
+    def build_renderer(self, *, conclusion: FormulaSubstitutionSpec | None = None) -> AssumptionRenderer:
+        if conclusion is None:
+            conclusion = self.conclusion
+
+        return AssumptionRenderer(
+            str(conclusion.formula),
+            marker=str(self.marker),
+            suffix=str(conclusion.sub) if conclusion.sub else None
+        )
 
     def get_free_variables(self) -> Collection[Variable]:
-        return get_free_variables(self.conclusion)
+        return get_free_variables(evaluate_substitution_spec(self.conclusion))
 
     def __str__(self) -> str:
         return self.build_renderer().render()
 
 
-def assume(assumption: Formula, marker: Marker) -> AssumptionTree:
-    return AssumptionTree(assumption, marker)
+def assume(assumption: Formula | FormulaSubstitutionSpec, marker: Marker) -> AssumptionTree:
+    return AssumptionTree(
+        assumption if isinstance(assumption, FormulaSubstitutionSpec) else FormulaSubstitutionSpec(assumption),
+        marker
+    )
 
 
 @dataclass(frozen=True)
 class RuleApplicationPremise:
     tree: 'ProofTree'
-    main_unsubstituted: Formula
-    main_sub: TermSubstitutionSpec | None = None
-    discharge: Formula | None = None
-    discharge_sub: TermSubstitutionSpec | None = None
+    main: FormulaSubstitutionSpec
+    discharge: FormulaSubstitutionSpec | None = None
     marker: Marker | None = None
+
+    def build_renderer(self) -> InferenceTreeRenderer:
+        return self.tree.build_renderer(conclusion=self.main)
 
 
 def premise(
     *,
     tree: 'ProofTree',
-    main_unsubstituted: Formula | None = None,
+    main: Formula | FormulaSubstitutionSpec | None = None,
     main_sub: TermSubstitutionSpec | None = None,
-    discharge: Formula | None = None,
+    discharge: Formula | FormulaSubstitutionSpec | None = None,
     discharge_sub: TermSubstitutionSpec | None = None,
     marker: Marker | None = None,
 ) -> RuleApplicationPremise:
+    main_spec: FormulaSubstitutionSpec
+    discharge_spec: FormulaSubstitutionSpec | None = None
+
+    if isinstance(main, FormulaSubstitutionSpec):
+        if main_sub:
+            raise RuleApplicationError(f'Redundant substitution specified for {main}')
+
+        main_spec = main
+    elif main:
+        main_spec = FormulaSubstitutionSpec(main, main_sub)
+    else:
+        main_spec = FormulaSubstitutionSpec(
+            evaluate_substitution_spec(tree.conclusion),
+            main_sub
+        )
+
+    if isinstance(discharge, FormulaSubstitutionSpec):
+        if discharge_sub:
+            raise RuleApplicationError(f'Redundant substitution specified for {discharge}')
+
+        discharge_spec = discharge
+    elif discharge:
+        discharge_spec = FormulaSubstitutionSpec(discharge, discharge_sub)
+
     return RuleApplicationPremise(
         tree,
-        main_unsubstituted or tree.conclusion,
-        main_sub,
-        discharge,
-        discharge_sub,
+        main_spec,
+        discharge_spec,
         marker,
     )
 
 
 def get_main_eigenvariable(rule_premise: NaturalDeductionPremise, application_premise: RuleApplicationPremise) -> Variable | None:
     if isinstance(rule_premise.main.sub, EigenvariableSchemaSubstitutionSpec):
-        if application_premise.main_sub is None:
-            raise RuleApplicationError(f'No substitution specified on {application_premise.main_unsubstituted} for eigenvariable rule {rule_premise.main}')
+        if application_premise.main.sub is None:
+            raise RuleApplicationError(f'No substitution specified for {application_premise.main} in eigenvariable rule with conclusion {rule_premise.main}')
 
-        if not isinstance(application_premise.main_sub.dest, Variable):
-            raise RuleApplicationError(f'The substitution {application_premise.main_sub} should map to a variable')
+        if not isinstance(application_premise.main.sub.dest, Variable):
+            raise RuleApplicationError(f'The substitution {application_premise.main.sub} should map to a variable')
 
-        return application_premise.main_sub.dest
+        return application_premise.main.sub.dest
 
     return None
 
@@ -89,28 +123,32 @@ def get_discharge_eigenvariable(rule_premise: NaturalDeductionPremise, applicati
         return None
 
     if isinstance(rule_premise.discharge.sub, EigenvariableSchemaSubstitutionSpec):
-        if application_premise.discharge_sub is None:
-            raise RuleApplicationError(f'No substitution specified on {application_premise.main_unsubstituted} for eigenvariable rule {rule_premise.main}')
+        # This is verified during rule application
+        assert application_premise.discharge
 
-        if not isinstance(application_premise.discharge_sub.dest, Variable):
-            raise RuleApplicationError(f'The substitution {application_premise.main_sub} should map to a variable')
+        if application_premise.discharge.sub is None:
+            raise RuleApplicationError(f'No discharge substitution specified for {application_premise.discharge} in eigenvariable rule with discharge schema {rule_premise.discharge}')
 
-        return application_premise.discharge_sub.dest
+        if not isinstance(application_premise.discharge.sub.dest, Variable):
+            raise RuleApplicationError(f'The substitution {application_premise.discharge.sub} should map to a variable')
+
+        return application_premise.discharge.sub.dest
 
     return None
 
 
 @dataclass(frozen=True)
-class RuleApplicationTree(InferenceTree[Formula, Mapping[Marker, Formula]]):
+class RuleApplicationTree(InferenceTree[FormulaSubstitutionSpec, Mapping[Marker, Formula]]):
     rule: NaturalDeductionRule
     instantiation: FormalLogicSchemaInstantiation
     premises: Sequence[RuleApplicationPremise]
-    conclusion: Formula
+    conclusion: FormulaSubstitutionSpec
 
     def _filter_assumptions(self, *, discharged_at_current_step: bool) -> Iterable[tuple[Marker, Formula]]:
         for application_premise in self.premises:
             for marker, assumption in application_premise.tree.get_assumption_map().items():
-                is_discharged_at_current_step = application_premise.discharge == assumption and \
+                is_discharged_at_current_step = application_premise.discharge is not None and \
+                    evaluate_substitution_spec(application_premise.discharge) == assumption and \
                     (application_premise.marker is None or application_premise.marker == marker)
 
                 if discharged_at_current_step == is_discharged_at_current_step:
@@ -128,22 +166,29 @@ class RuleApplicationTree(InferenceTree[Formula, Mapping[Marker, Formula]]):
 
     def _iter_eigenvariables(self) -> Iterable[Variable]:
         for rule_premise, application_premise in zip(self.rule.premises, self.premises, strict=True):
-            if var := get_main_eigenvariable(rule_premise, application_premise):
+            free = application_premise.tree.get_free_variables()
+
+            if (var := get_main_eigenvariable(rule_premise, application_premise)) and var in free:
                 yield var
 
-            if var := get_discharge_eigenvariable(rule_premise, application_premise):
+            if (var := get_discharge_eigenvariable(rule_premise, application_premise)) and var in free:
                 yield var
 
     def get_eigenvariable_context(self) -> Iterable[Variable | None]:
         return sorted(set(self._iter_eigenvariables()), key=str)
 
     @override
-    def build_renderer(self) -> RuleApplicationRenderer:
+    def build_renderer(self, *, conclusion: FormulaSubstitutionSpec | None = None) -> RuleApplicationRenderer:
+        if conclusion is None:
+            conclusion = self.conclusion
+
+        line = str(conclusion)
+
         return RuleApplicationRenderer(
-            str(self.conclusion),
+            line,
             [str(marker) for marker in self.get_marker_context()] + [f'{var}*' for var in self.get_eigenvariable_context()],
             self.rule.name,
-            [premise.tree.build_renderer() for premise in self.premises]
+            [premise.build_renderer() for premise in self.premises]
         )
 
     def iter_free_variables(self) -> Iterable[Variable]:
@@ -204,7 +249,7 @@ def apply(
             if eigen in application_premise.tree.get_free_variables():
                 raise RuleApplicationError(f'The discharge formula eigenvariable {eigen} cannot be free in the derivation of {application_premise.discharge}')
 
-            if eigen in get_free_variables(application_premise.tree.conclusion):
+            if eigen in get_free_variables(evaluate_substitution_spec(application_premise.tree.conclusion)):
                 raise RuleApplicationError(f'The discharge formula eigenvariable {eigen} cannot be free in the conclusion {application_premise.tree.conclusion} of the premise')
 
             # Update instantiation
@@ -212,10 +257,7 @@ def apply(
                 instantiation,
                 infer_instantiation_from_formula_substitution_spec(
                     rule_premise.discharge,
-                    FormulaSubstitutionSpec(
-                        application_premise.discharge,
-                        application_premise.discharge_sub
-                    )
+                    application_premise.discharge
                 )
             )
 
@@ -223,10 +265,7 @@ def apply(
             instantiation,
             infer_instantiation_from_formula_substitution_spec(
                 rule_premise.main,
-                FormulaSubstitutionSpec(
-                    application_premise.main_unsubstituted,
-                    application_premise.main_sub,
-                )
+                application_premise.main,
             )
         )
 

@@ -11,11 +11,9 @@ from ..parsing import (
     parse_formula_placeholder,
     parse_marker,
     parse_propositional_formula,
-    parse_term,
-    parse_variable,
+    parse_substitution_spec,
 )
-from ..signature import EMPTY_SIGNATURE, FormalLogicSignature
-from ..terms import TermSubstitutionSpec
+from ..signature import FormalLogicSignature
 from .exceptions import RuleApplicationError
 from .proof_tree import AssumptionTree, ProofTree, RuleApplicationPremise, apply, assume, premise
 
@@ -30,10 +28,6 @@ def prop_premise(*, tree: ProofTree, discharge: str, marker: str | None = None) 
         discharge=parse_propositional_formula(discharge),
         marker=parse_marker(marker) if marker is not None else None
     )
-
-
-def parse_sub_spec(src: str, dest: str, signature: FormalLogicSignature = EMPTY_SIGNATURE) -> TermSubstitutionSpec:
-    return TermSubstitutionSpec(parse_variable(src), parse_term(dest, signature))
 
 
 def str_context(tree: ProofTree) -> Mapping[str, str]:
@@ -200,15 +194,15 @@ def test_forall_introduction() -> None:
         CLASSICAL_NATURAL_DEDUCTION_SYSTEM['∀₊'],
         premise(
             tree=apply(CLASSICAL_NATURAL_DEDUCTION_SYSTEM['⊤₊']),
-            main_sub=parse_sub_spec('x', 'x'),
+            main_sub=parse_substitution_spec('x ↦ x'),
         ),
     )
 
     assert str(tree) == dedent('''\
-            _ ⊤₊
-            ⊤
-        x* ____ ∀₊
-           ∀x.⊤
+        ________ ⊤₊
+        ⊤[x ↦ x]
+        ________ ∀₊
+          ∀x.⊤
         '''
     )
 
@@ -220,18 +214,18 @@ def test_forall_reintroduction(dummy_signature: FormalLogicSignature) -> None:
             tree=apply(
                 CLASSICAL_NATURAL_DEDUCTION_SYSTEM['∀₋'],
                 assume(parse_formula('∀x.p₁(x)', dummy_signature), parse_marker('u')),
-                conclusion_sub=parse_sub_spec('x', 'x')
+                conclusion_sub=parse_substitution_spec('x ↦ x'),
             ),
-            main_sub=parse_sub_spec('x', 'x'),
+            main_sub=parse_substitution_spec('x ↦ x'),
         ),
     )
 
     assert str(tree) == dedent('''\
-           [∀x.p₁(x)]ᵘ
-           ___________ ∀₋
-              p₁(x)
-        x* ___________ ∀₊
-            ∀x.p₁(x)
+        [∀x.p₁(x)]ᵘ
+        ____________ ∀₋
+        p₁(x)[x ↦ x]
+        ____________ ∀₊
+          ∀x.p₁(x)
         '''
     )
 
@@ -243,18 +237,18 @@ def test_forall_to_exists(dummy_signature: FormalLogicSignature) -> None:
             tree=apply(
                 CLASSICAL_NATURAL_DEDUCTION_SYSTEM['∀₋'],
                 assume(parse_formula('∀x.p₁(x)', dummy_signature), parse_marker('u')),
-                conclusion_sub=parse_sub_spec('x', 'x')
+                conclusion_sub=parse_substitution_spec('x ↦ x'),
             ),
-            main_sub=parse_sub_spec('x', 'x'),
+            main_sub=parse_substitution_spec('x ↦ x'),
         ),
     )
 
     assert str(tree) == dedent('''\
         [∀x.p₁(x)]ᵘ
-        ___________ ∀₋
-           p₁(x)
-        ___________ ∃₊
-         ∃x.p₁(x)
+        ____________ ∀₋
+        p₁(x)[x ↦ x]
+        ____________ ∃₊
+          ∃x.p₁(x)
         '''
     )
 
@@ -286,14 +280,14 @@ def test_forall_negation(dummy_signature: FormalLogicSignature) -> None:
                                                 CLASSICAL_NATURAL_DEDUCTION_SYSTEM['∃₊'],
                                                 premise(
                                                     tree=assume(v, parse_marker('v')),
-                                                    main_sub=parse_sub_spec('x', 'x'),
+                                                    main_sub=parse_substitution_spec('x ↦ x'),
                                                 ),
                                             )
                                         ),
                                         discharge=v
                                     )
                                 ),
-                                main_sub=parse_sub_spec('x', 'x'),
+                                main_sub=parse_substitution_spec('x ↦ x'),
                             )
                         )
                     ),
@@ -305,21 +299,21 @@ def test_forall_negation(dummy_signature: FormalLogicSignature) -> None:
     )
 
     assert str(tree) == dedent('''\
-                                              [p₁(x)]ᵛ
-                                              ________ ∃₊
-                              [¬∃x.p₁(x)]ᵘ    ∃x.p₁(x)
-                              ________________________ ¬₋
-                                         ⊥
-                            v ________________________ ¬₊
-                                       ¬p₁(x)
-                           x* ________________________ ∀₊
-          [¬∀x.¬p₁(x)]ʷ              ∀x.¬p₁(x)
-          ____________________________________________ ¬₋
-                               ⊥
-        u ____________________________________________ DNE
-                            ∃x.p₁(x)
-        w ____________________________________________ →₊
-                    (¬∀x.¬p₁(x) → ∃x.p₁(x))
+                                             [p₁(x)]ᵛ[x ↦ x]
+                                             _______________ ∃₊
+                             [¬∃x.p₁(x)]ᵘ       ∃x.p₁(x)
+                             _______________________________ ¬₋
+                                            ⊥
+                           v _______________________________ ¬₊
+                                      ¬p₁(x)[x ↦ x]
+                           _______________________________ ∀₊
+          [¬∀x.¬p₁(x)]ʷ                 ∀x.¬p₁(x)
+          __________________________________________________ ¬₋
+                                  ⊥
+        u __________________________________________________ DNE
+                               ∃x.p₁(x)
+        w __________________________________________________ →₊
+                       (¬∀x.¬p₁(x) → ∃x.p₁(x))
         '''
     )
 
@@ -333,6 +327,6 @@ def test_forall_introduction_failure(dummy_signature: FormalLogicSignature) -> N
                     parse_formula('p₁(x)', dummy_signature),
                     parse_marker('u')
                 ),
-                main_sub=parse_sub_spec('x', 'x'),
+                main_sub=parse_substitution_spec('x ↦ x'),
             ),
         )

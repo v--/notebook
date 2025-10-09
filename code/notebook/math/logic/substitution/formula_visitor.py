@@ -1,4 +1,11 @@
-from ..formulas import EqualityFormula, Formula, FormulaTransformationVisitor, PredicateFormula, QuantifierFormula
+from ..formulas import (
+    EqualityFormula,
+    Formula,
+    FormulaSubstitutionSpec,
+    FormulaTransformationVisitor,
+    PredicateFormula,
+    QuantifierFormula,
+)
 from ..terms import Term
 from ..variables import get_free_variables, get_term_variables, new_variable
 from .term_visitor import TermSubstitutionVisitor
@@ -45,3 +52,10 @@ class FormulaSubstitutionVisitor(FormulaTransformationVisitor):
 
 def substitute_in_formula(formula: Formula, from_term: Term, to_term: Term) -> Formula:
     return FormulaSubstitutionVisitor(from_term, to_term).visit(formula)
+
+
+def evaluate_substitution_spec(spec: FormulaSubstitutionSpec) -> Formula:
+    if spec.sub is None:
+        return spec.formula
+
+    return substitute_in_formula(spec.formula, spec.sub.src, spec.sub.dest)

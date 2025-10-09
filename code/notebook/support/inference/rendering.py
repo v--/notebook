@@ -38,13 +38,11 @@ class InferenceTreeRenderer(Protocol):
 class AssumptionRenderer(InferenceTreeRenderer):
     conclusion: str
     marker: str | None = None
+    suffix: str | None = None
 
     @override
     def get_base_width(self) -> int:
-        if self.marker is None:
-            return len(self.conclusion) + 2
-
-        return len(self.conclusion) + len(self.marker) + 2
+        return len(self.conclusion) + len(self.marker or '') + len(self.suffix or '') + 2
 
     @override
     def get_prefix_width(self) -> int:
@@ -69,7 +67,7 @@ class AssumptionRenderer(InferenceTreeRenderer):
         if self.marker is None:
             return str(self.conclusion)
 
-        return f'[{self.conclusion}]{to_superscript(self.marker)}'
+        return f'[{self.conclusion}]{to_superscript(self.marker)}{self.suffix or ''}'
 
     @override
     def render(self) -> str:

@@ -1,5 +1,5 @@
 from dataclasses import dataclass
-from typing import override
+from typing import overload, override
 
 from ....support.schemas import SchemaInstantiationError
 from ..terms import (
@@ -54,5 +54,9 @@ class InstantiationApplicationVisitor(TypedTermSchemaVisitor[TypedTerm]):
         )
 
 
+@overload
+def instantiate_term_schema(schema: VariablePlaceholder, instantiation: LambdaSchemaInstantiation) -> Variable: ...
+@overload
+def instantiate_term_schema(schema: TypedTermSchema, instantiation: LambdaSchemaInstantiation) -> TypedTerm: ...
 def instantiate_term_schema(schema: TypedTermSchema, instantiation: LambdaSchemaInstantiation) -> TypedTerm:
     return InstantiationApplicationVisitor(instantiation).visit(schema)

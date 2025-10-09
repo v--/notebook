@@ -89,7 +89,7 @@ def proof_tree_premise_to_derivation_tree_premise(premise: ptree.RuleApplication
             tree=proof_tree_to_type_derivation(premise.tree),
             discharge=VariableTypeAssertion(
                 Variable(premise.marker.identifier),
-                formula_to_type(premise.discharge)
+                formula_to_type(premise.discharge.formula)
             )
         )
 
@@ -139,7 +139,7 @@ def proof_tree_to_type_derivation(proof: ptree.ProofTree) -> dtree.TypeDerivatio
         return dtree.assume(
             VariableTypeAssertion(
                 Variable(proof.marker.identifier),
-                formula_to_type(proof.conclusion)
+                formula_to_type(proof.conclusion.formula)
             )
         )
 

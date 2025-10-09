@@ -1,5 +1,5 @@
 from dataclasses import dataclass
-from typing import override
+from typing import overload, override
 
 from ....support.schemas import SchemaInstantiationError
 from ..types import (
@@ -34,5 +34,9 @@ class InstantiationVisitor(TypeSchemaVisitor[SimpleType]):
         return SimpleConnectiveType(schema.conn, self.visit(schema.left), self.visit(schema.right))
 
 
+@overload
+def instantiate_type_schema(schema: BaseType, instantiation: LambdaSchemaInstantiation) -> BaseType: ...
+@overload
+def instantiate_type_schema(schema: SimpleTypeSchema, instantiation: LambdaSchemaInstantiation) -> SimpleType: ...
 def instantiate_type_schema(schema: SimpleTypeSchema, instantiation: LambdaSchemaInstantiation) -> SimpleType:
     return InstantiationVisitor(instantiation).visit(schema)
