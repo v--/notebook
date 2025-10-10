@@ -1,5 +1,5 @@
 from .assertion import infer_instantiation_from_assertion, instantiate_assertion_schema
-from .base import LambdaSchemaInstantiation, merge_instantiations
+from .base import LambdaSchemaInstantiation
 from .term_application import instantiate_term_schema
 from .term_inference import infer_instantiation_from_term, is_term_schema_instance
 from .type_application import instantiate_type_schema

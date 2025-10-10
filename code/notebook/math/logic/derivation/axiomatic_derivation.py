@@ -12,7 +12,7 @@ from ..deduction import (
     new_marker,
     premise,
 )
-from ..formulas import Formula, FormulaSubstitutionSpec, is_conditional
+from ..formulas import Formula, FormulaWithSubstitution, is_conditional
 from ..instantiation import FormalLogicSchemaInstantiation, infer_instantiation_from_formula
 from ..parsing import parse_formula_placeholder
 from .exceptions import AxiomaticDerivationError
@@ -110,7 +110,7 @@ def derivation_to_proof_tree(ad_system: AxiomaticDerivationSystem, derivation: A
                 nd_system[rule_name],
                 instantiation,
                 premises=[],
-                conclusion=FormulaSubstitutionSpec(conclusion)
+                conclusion=FormulaWithSubstitution(conclusion)
             )
 
     mp_config = derivation.get_mp_config()
@@ -141,7 +141,7 @@ def derivation_to_proof_tree(ad_system: AxiomaticDerivationSystem, derivation: A
         nd_system['MP'],
         instantiation,
         premises=[conditional_premise, antecedent_premise],
-        conclusion=FormulaSubstitutionSpec(conclusion)
+        conclusion=FormulaWithSubstitution(conclusion)
     )
 
 

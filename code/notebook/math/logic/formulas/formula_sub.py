@@ -5,12 +5,12 @@ from .formulas import Formula
 
 
 @dataclass(frozen=True)
-class FormulaSubstitutionSpec:
+class FormulaWithSubstitution:
     formula: Formula
     sub: TermSubstitutionSpec | None = None
 
     def __str__(self) -> str:
-        if self.sub:
-            return f'{self.formula}{self.sub}'
+        if self.sub and not self.sub.is_noop():
+            return f'{self.formula}[{self.sub}]'
 
         return str(self.formula)

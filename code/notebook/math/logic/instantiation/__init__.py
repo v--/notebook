@@ -1,4 +1,4 @@
-from .base import FormalLogicSchemaInstantiation, merge_instantiations
+from .base import FormalLogicSchemaInstantiation
 from .formula_application import instantiate_formula_schema
 from .formula_inference import infer_instantiation_from_formula, is_formula_schema_instance
 from .substitution_application import instantiate_substitution_spec

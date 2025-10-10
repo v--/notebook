@@ -19,7 +19,7 @@ from ..formulas import (
     QuantifierFormula,
     QuantifierFormulaSchema,
 )
-from .base import FormalLogicSchemaInstantiation, merge_instantiations
+from .base import FormalLogicSchemaInstantiation
 from .term_inference import infer_instantiation_from_term
 
 
@@ -43,10 +43,10 @@ class InferInstantiationVisitor(FormulaSchemaVisitor[FormalLogicSchemaInstantiat
         if not isinstance(self.formula, EqualityFormula):
             raise SchemaInferenceError(f'Cannot match negation schema {schema} to {self.formula}')
 
-        return merge_instantiations(
-            infer_instantiation_from_term(schema.left, self.formula.left),
-            infer_instantiation_from_term(schema.right, self.formula.right)
-        )
+        left = infer_instantiation_from_term(schema.left, self.formula.left)
+        right = infer_instantiation_from_term(schema.right, self.formula.right)
+
+        return left | right
 
     @override
     def visit_predicate(self, schema: PredicateFormulaSchema) -> FormalLogicSchemaInstantiation:
@@ -56,7 +56,7 @@ class InferInstantiationVisitor(FormulaSchemaVisitor[FormalLogicSchemaInstantiat
         instantiation = FormalLogicSchemaInstantiation()
 
         for subschema, subterm in zip(schema.arguments, self.formula.arguments, strict=True):
-            instantiation = merge_instantiations(instantiation, infer_instantiation_from_term(subschema, subterm))
+            instantiation |= infer_instantiation_from_term(subschema, subterm)
 
         return instantiation
 
@@ -72,20 +72,20 @@ class InferInstantiationVisitor(FormulaSchemaVisitor[FormalLogicSchemaInstantiat
         if not isinstance(self.formula, ConnectiveFormula) or self.formula.conn != schema.conn:
             raise SchemaInferenceError(f'Cannot match connective formula schema {schema} to {self.formula}')
 
-        return merge_instantiations(
-            infer_instantiation_from_formula(schema.left, self.formula.left),
-            infer_instantiation_from_formula(schema.right, self.formula.right)
-        )
+        left = infer_instantiation_from_formula(schema.left, self.formula.left)
+        right = infer_instantiation_from_formula(schema.right, self.formula.right)
+
+        return left | right
 
     @override
     def visit_quantifier(self, schema: QuantifierFormulaSchema) -> FormalLogicSchemaInstantiation:
         if not isinstance(self.formula, QuantifierFormula) or self.formula.quantifier != schema.quantifier:
             raise SchemaInferenceError(f'Cannot match quantifier formula schema {schema} to {self.formula}')
 
-        return merge_instantiations(
-            infer_instantiation_from_term(schema.var, self.formula.var),
-            infer_instantiation_from_formula(schema.body, self.formula.body)
-        )
+        var = infer_instantiation_from_term(schema.var, self.formula.var)
+        body = infer_instantiation_from_formula(schema.body, self.formula.body)
+
+        return var | body
 
 
 def infer_instantiation_from_formula(schema: FormulaSchema, formula: Formula) -> FormalLogicSchemaInstantiation:

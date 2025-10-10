@@ -1,8 +1,8 @@
 from ..formulas import (
     EqualityFormula,
     Formula,
-    FormulaSubstitutionSpec,
     FormulaTransformationVisitor,
+    FormulaWithSubstitution,
     PredicateFormula,
     QuantifierFormula,
 )
@@ -54,7 +54,7 @@ def substitute_in_formula(formula: Formula, from_term: Term, to_term: Term) -> F
     return FormulaSubstitutionVisitor(from_term, to_term).visit(formula)
 
 
-def evaluate_substitution_spec(spec: FormulaSubstitutionSpec) -> Formula:
+def evaluate_substitution_spec(spec: FormulaWithSubstitution) -> Formula:
     if spec.sub is None:
         return spec.formula
 

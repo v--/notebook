@@ -60,24 +60,3 @@ class LambdaSchemaInstantiation:
             term_mapping={**self.term_mapping, **other.term_mapping},
             type_mapping={**self.type_mapping, **other.type_mapping}
         )
-
-
-def merge_instantiations(left: LambdaSchemaInstantiation, right: LambdaSchemaInstantiation) -> LambdaSchemaInstantiation:
-    schema: Any
-    a: Any
-    b: Any
-
-    for schema, (a, b) in iter_mapping_discrepancy(left.variable_mapping, right.variable_mapping):
-        raise SchemaInferenceError(f'Cannot instantiate variable placeholder {schema} to both {a} and {b}')
-
-    for schema, (a, b) in iter_mapping_discrepancy(left.term_mapping, right.term_mapping):
-        raise SchemaInferenceError(f'Cannot instantiate term placeholder {schema} to both {a} and {b}')
-
-    for schema, (a, b) in iter_mapping_discrepancy(left.type_mapping, right.type_mapping):
-        raise SchemaInferenceError(f'Cannot instantiate type placeholder {schema} to both {a} and {b}')
-
-    return LambdaSchemaInstantiation(
-        variable_mapping={**left.variable_mapping, **right.variable_mapping},
-        term_mapping={**left.term_mapping, **right.term_mapping},
-        type_mapping={**left.type_mapping, **right.type_mapping}
-    )

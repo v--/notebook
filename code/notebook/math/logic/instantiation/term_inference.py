@@ -12,7 +12,7 @@ from ..terms import (
     Variable,
     VariablePlaceholder,
 )
-from .base import FormalLogicSchemaInstantiation, merge_instantiations
+from .base import FormalLogicSchemaInstantiation
 
 
 @dataclass(frozen=True)
@@ -38,7 +38,7 @@ class InferInstantiationVisitor(TermSchemaVisitor[FormalLogicSchemaInstantiation
         instantiation = FormalLogicSchemaInstantiation()
 
         for subschema, subterm in zip(schema.arguments, self.term.arguments, strict=True):
-            instantiation = merge_instantiations(instantiation, infer_instantiation_from_term(subschema, subterm))
+            instantiation |= infer_instantiation_from_term(subschema, subterm)
 
         return instantiation
 

@@ -11,6 +11,6 @@ class FormulaSchemaSubstitutionSpec:
 
     def __str__(self) -> str:
         if self.sub:
-            return f'{self.formula}{self.sub}'
+            return f'{self.formula}[{self.sub}]'
 
         return str(self.formula)

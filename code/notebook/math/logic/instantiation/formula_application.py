@@ -18,7 +18,6 @@ from ..formulas import (
     QuantifierFormula,
     QuantifierFormulaSchema,
 )
-from ..terms import Variable
 from .base import FormalLogicSchemaInstantiation
 from .term_application import InstantiationApplicationVisitor as TermInstantiationApplicationVisitor
 
@@ -66,7 +65,7 @@ class InstantiationApplicationVisitor(FormulaSchemaVisitor[Formula]):
     def visit_quantifier(self, schema: QuantifierFormulaSchema) -> QuantifierFormula:
         return QuantifierFormula(
             schema.quantifier,
-            Variable(schema.var.identifier),
+            self.term_visitor.visit_variable_placeholder(schema.var),
             self.visit(schema.body)
         )
 

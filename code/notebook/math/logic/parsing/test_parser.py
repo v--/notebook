@@ -11,9 +11,10 @@ from ..terms import EigenvariableSchemaSubstitutionSpec, FunctionTerm, Variable,
 from .parser import (
     parse_formula,
     parse_formula_schema,
+    parse_formula_schema_with_substitution,
     parse_natural_deduction_rule,
-    parse_schema_substitution_spec,
     parse_term,
+    parse_term_schema_substitution_spec,
     parse_variable,
 )
 
@@ -396,7 +397,7 @@ def test_parsing_discharge_schema_with_no_closing_bracket() -> None:
 
 def test_parsing_substitution_schema_with_no_connective() -> None:
     with pytest.raises(ParserError) as excinfo:
-        parse_schema_substitution_spec('x')
+        parse_term_schema_substitution_spec('x')
 
     assert str(excinfo.value) == 'Expected ↦ after the variable in a substitution'
     assert excinfo.value.__notes__[0] == dedent('''\
@@ -407,7 +408,7 @@ def test_parsing_substitution_schema_with_no_connective() -> None:
 
 
 def test_parsing_eigenvariable_substitution_schema() -> None:
-    parsed = parse_schema_substitution_spec('x ↦ y*')
+    parsed = parse_term_schema_substitution_spec('x ↦ y*')
     assert parsed == EigenvariableSchemaSubstitutionSpec(
         src=VariablePlaceholder(LatinIdentifier('x')),
         dest=VariablePlaceholder(LatinIdentifier('y'))
@@ -416,7 +417,7 @@ def test_parsing_eigenvariable_substitution_schema() -> None:
 
 def test_parsing_substitution_schema_with_star_on_term_placeholder() -> None:
     with pytest.raises(ParserError) as excinfo:
-        parse_schema_substitution_spec('x ↦ τ*')
+        parse_term_schema_substitution_spec('x ↦ τ*')
 
     assert str(excinfo.value) == 'Cannot place an eigenvariable marker on a more general term'
     assert excinfo.value.__notes__[0] == dedent('''\
@@ -428,11 +429,11 @@ def test_parsing_substitution_schema_with_star_on_term_placeholder() -> None:
 
 def test_parsing_substitution_schema_with_no_closing_bracket() -> None:
     with pytest.raises(ParserError) as excinfo:
-        parse_natural_deduction_rule('name', 'φ[x ↦ y ⫢ ψ')
+        parse_formula_schema_with_substitution('φ[x ↦ y')
 
     assert str(excinfo.value) == 'Unclosed brackets for substitution specification'
     assert excinfo.value.__notes__[0] == dedent('''\
-        1 │ φ[x ↦ y ⫢ ψ
+        1 │ φ[x ↦ y
           │ ^^^^^^^
         '''
     )
