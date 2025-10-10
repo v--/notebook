@@ -1,5 +1,5 @@
 from ..assertions import TypeAssertion, TypeAssertionSchema
-from .base import LambdaSchemaInstantiation, merge_instantiations
+from .base import LambdaSchemaInstantiation
 from .term_application import instantiate_term_schema
 from .term_inference import infer_instantiation_from_term
 from .type_application import instantiate_type_schema
@@ -13,7 +13,5 @@ def instantiate_assertion_schema(schema: TypeAssertionSchema, instantiation: Lam
 
 
 def infer_instantiation_from_assertion(schema: TypeAssertionSchema, assertion: TypeAssertion) -> LambdaSchemaInstantiation:
-    return merge_instantiations(
-        infer_instantiation_from_term(schema.term, assertion.term),
+    return infer_instantiation_from_term(schema.term, assertion.term) | \
         infer_instantiation_from_type(schema.type, assertion.type)
-    )

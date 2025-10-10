@@ -1,4 +1,4 @@
-from .formula_sub import FormulaSubstitutionSpec
+from .formula_sub import FormulaWithSubstitution
 from .formula_visitor import FormulaTransformationVisitor, FormulaVisitor
 from .formulas import (
     ConnectiveFormula,

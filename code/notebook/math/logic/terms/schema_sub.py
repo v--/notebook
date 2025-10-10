@@ -9,7 +9,7 @@ class TermSchemaSubstitutionSpec:
     dest: TermSchema
 
     def __str__(self) -> str:
-        return f'[{self.src} ↦ {self.dest}]'
+        return f'{self.src} ↦ {self.dest}'
 
 
 @dataclass(frozen=True)
@@ -18,4 +18,4 @@ class EigenvariableSchemaSubstitutionSpec:
     dest: VariablePlaceholder
 
     def __str__(self) -> str:
-        return f'[{self.src} ↦ {self.dest}*]'
+        return f'{self.src} ↦ {self.dest}*'

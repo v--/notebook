@@ -1,51 +1,31 @@
-from ..formulas import FormulaSchemaSubstitutionSpec, FormulaSubstitutionSpec
+from ..formulas import FormulaSchemaSubstitutionSpec, FormulaWithSubstitution
 from ..terms import EigenvariableSchemaSubstitutionSpec, TermSchemaSubstitutionSpec, TermSubstitutionSpec
-from .base import FormalLogicSchemaInstantiation, merge_instantiations
+from .base import FormalLogicSchemaInstantiation
 from .exceptions import InsufficientInferenceDataError
 from .formula_inference import infer_instantiation_from_formula
 from .term_inference import infer_instantiation_from_term
-
-
-def infer_instantiation_from_formula_substitution_spec(
-    schema_spec: FormulaSchemaSubstitutionSpec,
-    spec: FormulaSubstitutionSpec,
-) -> FormalLogicSchemaInstantiation:
-    instantiation = infer_instantiation_from_formula(schema_spec.formula, spec.formula)
-
-    match (schema_spec.sub, spec.sub):
-        case (None, None):
-            return instantiation
-
-        case (None, _):
-            raise InsufficientInferenceDataError('Cannot infer substitution schema without the schema substitution')
-
-        case (_, None):
-            raise InsufficientInferenceDataError('Cannot infer substitution schema without the formula substitution')
-
-        case _:
-            assert schema_spec.sub is not None
-            assert spec.sub is not None
-
-            instantiation = merge_instantiations(
-                instantiation,
-                infer_instantiation_from_term(schema_spec.sub.dest, spec.sub.dest)
-            )
-
-            variable_mapping = dict(instantiation.variable_mapping)
-            variable_mapping[schema_spec.sub.src] = spec.sub.src
-
-            return FormalLogicSchemaInstantiation(
-                variable_mapping=variable_mapping,
-                term_mapping=instantiation.term_mapping,
-                formula_mapping=instantiation.formula_mapping
-            )
 
 
 def infer_instantiation_from_term_substitution_spec(
     schema_spec: EigenvariableSchemaSubstitutionSpec | TermSchemaSubstitutionSpec,
     spec: TermSubstitutionSpec
 ) -> FormalLogicSchemaInstantiation:
-    return merge_instantiations(
-        infer_instantiation_from_term(schema_spec.src, spec.src),
+    return infer_instantiation_from_term(schema_spec.src, spec.src) | \
         infer_instantiation_from_term(schema_spec.dest, spec.dest)
-    )
+
+
+def infer_instantiation_from_formula_substitution_spec(
+    schema_spec: FormulaSchemaSubstitutionSpec,
+    spec: FormulaWithSubstitution,
+) -> FormalLogicSchemaInstantiation:
+    instantiation = infer_instantiation_from_formula(schema_spec.formula, spec.formula)
+    schema_sub = schema_spec.sub
+    formula_sub = spec.sub
+
+    if formula_sub and schema_sub:
+        return instantiation | infer_instantiation_from_term_substitution_spec(schema_sub, formula_sub)
+
+    if formula_sub and schema_sub is None:
+        raise InsufficientInferenceDataError('Cannot infer a substitution schema instantiation without the schema substitution')
+
+    return instantiation

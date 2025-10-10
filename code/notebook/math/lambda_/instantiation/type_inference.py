@@ -11,7 +11,7 @@ from ..types import (
     TypePlaceholder,
     TypeSchemaVisitor,
 )
-from .base import LambdaSchemaInstantiation, merge_instantiations
+from .base import LambdaSchemaInstantiation
 
 
 @dataclass(frozen=True)
@@ -36,7 +36,7 @@ class BuildInstantiationVisitor(TypeSchemaVisitor[LambdaSchemaInstantiation]):
 
         left = infer_instantiation_from_type(schema.left, self.type.left)
         right = infer_instantiation_from_type(schema.right, self.type.right)
-        return merge_instantiations(left, right)
+        return left | right
 
 
 # This is alg:simple_type_schema_inference in the monograph

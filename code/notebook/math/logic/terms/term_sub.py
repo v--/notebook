@@ -9,4 +9,7 @@ class TermSubstitutionSpec:
     dest: Term
 
     def __str__(self) -> str:
-        return f'[{self.src} ↦ {self.dest}]'
+        return f'{self.src} ↦ {self.dest}'
+
+    def is_noop(self) -> bool:
+        return self.src == self.dest

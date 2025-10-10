@@ -30,23 +30,25 @@ class FormalLogicSchemaInstantiation:
             self.term_mapping == other.term_mapping and \
             self.formula_mapping == other.formula_mapping
 
+    def __or__(self, other: object) -> 'FormalLogicSchemaInstantiation':
+        if not isinstance(other, FormalLogicSchemaInstantiation):
+            return NotImplemented
 
-def merge_instantiations(left: FormalLogicSchemaInstantiation, right: FormalLogicSchemaInstantiation) -> FormalLogicSchemaInstantiation:
-    schema: Any
-    a: Any
-    b: Any
+        schema: Any
+        a: Any
+        b: Any
 
-    for schema, (a, b) in iter_mapping_discrepancy(left.variable_mapping, right.variable_mapping):
-        raise SchemaInferenceError(f'Cannot instantiate variable placeholder {schema} to both {a} and {b}')
+        for schema, (a, b) in iter_mapping_discrepancy(self.variable_mapping, other.variable_mapping):
+            raise SchemaInferenceError(f'Cannot instantiate variable placeholder {schema} to both {a} and {b}')
 
-    for schema, (a, b) in iter_mapping_discrepancy(left.term_mapping, right.term_mapping):
-        raise SchemaInferenceError(f'Cannot instantiate term placeholder {schema} to both {a} and {b}')
+        for schema, (a, b) in iter_mapping_discrepancy(self.term_mapping, other.term_mapping):
+            raise SchemaInferenceError(f'Cannot instantiate term placeholder {schema} to both {a} and {b}')
 
-    for schema, (a, b) in iter_mapping_discrepancy(left.formula_mapping, right.formula_mapping):
-        raise SchemaInferenceError(f'Cannot instantiate type placeholder {schema} to both {a} and {b}')
+        for schema, (a, b) in iter_mapping_discrepancy(self.formula_mapping, other.formula_mapping):
+            raise SchemaInferenceError(f'Cannot instantiate type placeholder {schema} to both {a} and {b}')
 
-    return FormalLogicSchemaInstantiation(
-        variable_mapping={**left.variable_mapping, **right.variable_mapping},
-        term_mapping={**left.term_mapping, **right.term_mapping},
-        formula_mapping={**left.formula_mapping, **right.formula_mapping}
-    )
+        return FormalLogicSchemaInstantiation(
+            variable_mapping={**self.variable_mapping, **other.variable_mapping},
+            term_mapping={**self.term_mapping, **other.term_mapping},
+            formula_mapping={**self.formula_mapping, **other.formula_mapping}
+        )
