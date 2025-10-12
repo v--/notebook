@@ -55,18 +55,18 @@
   Another options is to use \( \quantifier* \synforall x \varphi \) in order to stay consistent with \( \muplambda \)-calculus --- see \cref{rem:lambda_term_abstractor_dot} for the relevant discussion regarding \hyperref[def:lambda_term]{\( \muplambda \)-terms}. This convention stems from the dot delimiters of Russell and Whitehead, which are discussed in detail in \cref{ex:dot_delimiters_in_logic}. It is used by \incite{Farmer2008STTVirtues}.
 
   A general discussion of syntactic conventions for quantifiers can be found in \cite{MathSE:standards_for_quantifier_notation}. The answers suggest \( (\synforall x) \varphi \) as a popular alternative. The latter is used by \incite[\S 20]{Andrews2002Logic}. Ironically, Andrews also discusses his \( \muplambda \)-calculus based system \hyperref[rem:simply_typed_hol]{\( \logic{Q}_0 \)} in the same book, and avoids dots in his \( \muplambda \)-terms.
+
+  We avoid dots after variables in the monograph to keep close to the popular convention, but keep in the code because it aids readability in monospaced text.
 \end{remark}
 
 \begin{remark}\label{rem:predicate_logic_formalization}
   We will first present a syntax of predicate logic in \cref{def:simply_typed_hol_abbreviations} via \hyperref[con:metalingual_abbreviation]{abbreviations}, and then describe it via \hyperref[def:formal_grammar]{formal grammar rules} in \cref{def:first_order_syntax} in the special case of first-order logic.
 
-  Still, we will not attempt to fully formalize the syntax of inference rules and derivations like we did with propositional logic in \fullref{sec:axiomatic_derivations} and \fullref{sec:natural_deduction}.
+  Still, we will not attempt to fully formalize the metalanguage of inference rules and derivations like we did with propositional logic in \fullref{sec:axiomatic_derivations} and \fullref{sec:natural_deduction}, and like we will do for first-order logic in \fullref{sec:first_order_natural_deduction}.
 
-  For the simpler case of first-order logic, our main obstacles are eigenvariable rules, which we discuss in \cref{con:eigenvariable}, and which require extending our \hyperref[con:schemas_and_instances]{schemas} with constructs for describing restrictions on \hyperref[con:variable_binding]{free} variables.
+  In this section, our main obstacle is instead the fundamental reliance on metalingual abbreviation, which requires us to work with several distinct syntaxes simultaneously. Furthermore, the rules \ref{inf:def:simply_typed_hol_derivation/rules/r} and \ref{inf:def:simply_typed_hol_derivation/rules/beta} carry a lot of subtleties.
 
-  In this section, our main obstacle is instead the fundamental reliance on metalingual abbreviation, which requires us to work with several distinct syntaxes simultaneously. Furthermore, the rules \ref{inf:def:simply_typed_hol_derivation/rules/r} and \ref{inf:def:simply_typed_hol_derivation/rules/beta} carry a lot of subtleties, including the need to describe restrictions on free variables.
-
-  In both cases, formalizing the syntax of axioms and inference rules requires a more sophisticated approach than what we have for propositional logic.
+  As in \fullref{sec:dependent_types}, formalizing the syntax of axioms and inference rules requires a more sophisticated approach than what we have for propositional logic.
 \end{remark}
 \begin{comments}
   \item We described in \cref{rem:dependent_type_rule_formalization} several significant complications that arise when formalizing \hyperref[def:mltt]{Martin-L\"of type theory}. As described in \cref{rem:higher_order_logic_and_type_theory/terms}, we will use an approach to \hyperref[rem:predicate_logic]{higher-order logic} that only requires simple types, and is thus more susceptible to formalization.
@@ -94,9 +94,9 @@
     \bnfprod{postfix application} {\bnftsq{(} \bnfsp \underbrace{\bnfpn{variable} \bnfsp \bnftsq{,} \bnfsp \cdots \bnfsp \bnftsq{,} \bnfsp \bnfpn{variable}}_{n \T*{variables}} \bnfsp \bnftsq{)} \bnfsp \bnfts{\( f \)}}
   \end{bnf*}
 
-  The usefulness of postfix notation is limited. We discuss some applications in \cref{rem:def:function_application_syntax}. The only ubiquitous use of it is perhaps the \hyperref[def:factorial]{factorial} \( n! \).
+  The usefulness of postfix notation is limited. We discuss some applications in \cref{rem:def:function_application_syntax}. The only ubiquitous use of it is perhaps the \hyperref[def:factorial]{factorial function} \( n! \).
 
-  For \hyperref[def:binary_operator]{binary operators}, which are traditionally denoted using non-letter symbols, both notations becomes cumbersome. For example, \( \ast(x, y) \) and \( (x, y)\ast \) denote an application of the operator \( \ast \). In this case, we find useful the \term[ru=инфиксная форма (\cite[example 6.6]{БелоусовТкачёв2004ДискретнаяМатематика}), en=infix notation (\cite[833]{HighamEtAl2015PrincetonCompanion})]{infix notation}:
+  For \hyperref[def:binary_operator]{binary operators}, which are traditionally denoted using non-letter symbols, both notations becomes cumbersome. For example, \( \ast(x, y) \) and \( (x, y)\ast \) denote an application of the operator \( \ast \). In this case, we find useful the \term[ru=инфиксная форма (\cite[example 6.6]{БелоусовТкачёв2004ДискретнаяМатематика}), en=infix notation (\cite[833]{HighamEtAl2015PrincetonCompanion})]{infix notation} \( x \ast y \). More generally:
   \begin{bnf*}
     \bnfprod{infix application} {\bnftsq{(} \bnfsp \bnfpn{variable} \bnfsp \bnfts{\( \ast \)} \bnfsp \bnfpn{variable} \bnfsp \bnftsq{)}}
   \end{bnf*}
@@ -176,9 +176,9 @@
 \begin{remark}\label{rem:simple_type_function_syntax}
   We will often utilize the different notations from \cref{def:function_application_syntax} as notational shorthands in the \hyperref[con:metalogic]{metalanguage} which does not affect the object language.
 
-  Given a (simple) \hyperref[con:type_annotation]{type assertion} \( f: \tau \), we will find it convenient to write \( f(x_1, \ldots, x_n) \) rather than the conventional \( \muplambda \)-term application syntax \( f x_1 \cdots x_n \) or the corresponding variant with explicit parentheses, \( (\ldots ((f x_1) x_2) \ldots x_n) \).
+  Given a (simple) \hyperref[con:type_annotation]{type assertion} \( f: \tau \), we will find it convenient to write \( f(x_1, \ldots, x_n) \) rather than the conventional \( \muplambda \)-term application syntax \( f x_1 \cdots x_n \), which itself is a simplification of the variant with explicit parentheses, \( (\ldots ((f x_1) x_2) \ldots x_n) \).
 
-  For this, we only need to know the arity of \( f \). This is easy for untyped \( \muplambda \)-terms, for which we have defined the arity in \eqref{eq:alg:untyped_lambda_term_to_function/arity}. We will define its counterpart for \hyperref[def:simple_type]{simple types} as follows:
+  To achieve this, we only need to know the arity of \( f \). This is easy for untyped \( \muplambda \)-terms, for which we have defined the arity in \eqref{eq:alg:untyped_lambda_term_to_function/arity}. We will define its counterpart for \hyperref[def:simple_type]{simple types} as follows:
   \begin{equation*}
     \op*{Arity}(\tau) \coloneqq \begin{cases}
       1 + \op*{Arity}(\rho), &\tau = \sigma \synimplies \rho, \\
@@ -418,7 +418,7 @@
 
   Polymorphic types can also aid us when formulating the axioms in \ref{def:simply_typed_hol_derivation/axioms} --- they currently depend on a type, which technically makes them \hyperref[con:schemas_and_instances]{metalingual schemas} rather than axioms.
 
-  The obvious obstacle is that, if we allow polymorphic types, the system is no longer simply-typed. This requires the introduction and handling of type variables, which the system by design does not support, as well as dedicated rules for handling type variable binding and substitution.
+  The obvious obstacle is that, if we allow polymorphic types, the system is no longer simply-typed. This requires the introduction and handling of type variables (along with their binding and substitution), which the system by design does not support.
 
   So, while there are benefits of allowing polymorphic types, this would complicate the system further without much benefit.
 \end{remark}
@@ -534,36 +534,43 @@
       \qabs {\synf^{\tau \synimplies \sigma}} \qabs {\syng^{\tau \synimplies \sigma}} &\parens[\Big]{ (\synf \syneq \syng) \syniff \qforall {\synx^\tau} (\synf(\synx) = \syng(\synx) } \tag{\ensuremath{ \logic{A3}_{\tau\sigma} }} \label{eq:def:simply_typed_hol_derivation/axioms/a3}
     \end{align}
 
-    In accordance with \cref{rem:simply_typed_hol_abbreviations}, we add abstractors so that these \( \muplambda \)-terms are well-typed and usable as \hyperref[def:simply_typed_hol_formula]{predicates}. We call them \enquote{axiom schemas} based on our usage in \cref{def:axiomatic_derivation_system}, since, given such an \( n \)-ary schema \( \Psi \), we say that \( M \) is an \term{instance} of \( \Psi \) if there exist \( \muplambda \)-terms \( N_1, \ldots, N_n \) such that \( \Psi(N_1, \ldots, N_n) \bred* M \). Unsurprisingly, we call an \term{axiom} an instance of an axiom schema.
+    In accordance with \cref{rem:simply_typed_hol_abbreviations}, we add abstractors so that these \( \muplambda \)-terms are well-typed and usable as \hyperref[def:simply_typed_hol_formula]{predicates}. We call them \enquote{axiom schemas} based on our usage in \cref{def:axiomatic_derivation_system}. Given such an \( n \)-ary schema \( \Psi \), we say that \( M \) is an \term{instance} of \( \Psi \) if there exist \( \muplambda \)-terms \( N_1, \ldots, N_n \) such that \( \Psi(N_1, \ldots, N_n) \bred* M \). Unsurprisingly, we refer to instances of an axiom schema as \term{axioms}.
 
     This naming is unrelated to the fact that \eqref{eq:def:simply_typed_hol_derivation/axioms/a2} depends on a type \( \tau \), while \eqref{eq:def:simply_typed_hol_derivation/axioms/a3} depends on \( \tau \) and \( \sigma \), and thus both are metalingual schemas in the sense of \cref{con:schemas_and_instances}. We discuss the possibility of instead using \hyperref[def:polymorphic_typed_lambda_calculus]{polymorphic types} in \cref{rem:simply_typed_hol_polymorphic_types}.
 
     The schema \eqref{eq:def:simply_typed_hol_derivation/axioms/a2} is a form of the \enquote{indiscernibility of identicals} principle discussed in \cref{rem:identity_of_indiscernibles}, while \eqref{eq:def:simply_typed_hol_derivation/axioms/a3} is a form of function extensionality, which as a general principle we discuss in \cref{con:extensionality}.
 
-    \thmitem{def:simply_typed_hol_derivation/reduction} We will need ad-hoc \( \muplambda \)-term reduction relations. Namely, for every pair of \( \muplambda \)-terms \( A \) and \( B \), we define a reduction relation based on the following rule:
-    \begin{equation*}\taglabel[\ensuremath{ \logic{Red}_{A \mapsto B} }]{inf:def:simply_typed_hol_derivation/rules/red}
+    \thmitem{def:simply_typed_hol_derivation/reduction} We will need ad-hoc \( \muplambda \)-term reduction relations. Namely, for every pair of \( \muplambda \)-terms \( A \) and \( B \) and every set of variables \( \Gamma \), we define a reduction relation based on the following rule:
+    \begin{equation*}\taglabel[\ensuremath{ \logic{Red}_{A \mapsto_\Gamma B} }]{inf:def:simply_typed_hol_derivation/reduction/base}
       \begin{prooftree}
-        \infer0[\ref{inf:def:simply_typed_hol_derivation/rules/red}]{ A \redrel{A \mapsto B} B }.
+        \infer0[\ref{inf:def:simply_typed_hol_derivation/reduction/base}]{ A \redrel{A \mapsto_\Gamma B} B }.
       \end{prooftree}
     \end{equation*}
 
-    As per \cref{def:typed_term_reduction}, we extend this relation via the rules \ref{inf:def:lambda_term_reduction/alpha}, \ref{inf:def:lambda_term_reduction/app_left}, \ref{inf:def:lambda_term_reduction/app_right} and \ref{inf:def:typed_term_reduction/abs}.
+    As per \cref{def:typed_term_reduction}, we extend this relation via the rules \ref{inf:def:lambda_term_reduction/alpha}, \ref{inf:def:lambda_term_reduction/app_left} and \ref{inf:def:lambda_term_reduction/app_right}, but modify \ref{inf:def:typed_term_reduction/abs} as follows:
+    \begin{equation*}\taglabel[\ensuremath{ \logic{Abs}_{A \mapsto_\Gamma B} }]{inf:def:simply_typed_hol_derivation/reduction/abs}
+      \begin{prooftree}
+        \hypo{ M \redrel{A \mapsto_\Gamma B} N }
+        \hypo{ x \not\in \Gamma }
+        \infer2[\ref{inf:def:simply_typed_hol_derivation/reduction/abs}]{ \qabs {x^\tau} M \redrel{A \mapsto_\Gamma B} \qabs {x^\tau} N }.
+      \end{prooftree}
+    \end{equation*}
+
+    The reduction relation \( {\redrel{A \mapsto_\Gamma B}} \) replaces a single occurrence of \( A \) with \( B \), as long as it is not in the body of an abstraction whose variable lies in \( \Gamma \).
 
     \thmitem{def:simply_typed_hol_derivation/rules} We will rely on the following \hyperref[def:inference_rule]{inference rules}:
-    \begin{paracol}{2}
-      \begin{leftcolumn}
+    \begin{paracol}{3}
+      \begin{nthcolumn}{0}
         \ParacolAlignmentHack
-        \begin{equation*}\taglabel[\logic{R}]{inf:def:simply_typed_hol_derivation/rules/r}
+        \begin{equation*}\taglabel[\ensuremath{ \logic{Ax}_n }]{inf:def:simply_typed_hol_derivation/rules/ax}
           \begin{prooftree}
-            \hypo{ A \syneq B }
-            \hypo{ M }
-            \infer2[\ref{inf:def:simply_typed_hol_derivation/rules/r}]{ N },
+            \infer0[\ref{inf:def:simply_typed_hol_derivation/rules/ax}]{ M },
           \end{prooftree}
         \end{equation*}
-        where \( M \redrel{A \mapsto B} N \).
-      \end{leftcolumn}
+        where \( M \) is an instance of axiom \( n \) and \( n \) can be \( \eqref{eq:def:simply_typed_hol_derivation/axioms/a1} \), \( \eqref{eq:def:simply_typed_hol_derivation/axioms/a2} \) or \( \eqref{eq:def:simply_typed_hol_derivation/axioms/a3} \).
+      \end{nthcolumn}
 
-      \begin{rightcolumn}
+      \begin{nthcolumn}{1}
         \ParacolAlignmentHack
         \begin{equation*}\taglabel[\ensuremath{ \beta }]{inf:def:simply_typed_hol_derivation/rules/beta}
           \begin{prooftree}
@@ -571,19 +578,28 @@
           \end{prooftree}
         \end{equation*}
         where \( M \bred N \).
-      \end{rightcolumn}
+      \end{nthcolumn}
+
+      \begin{nthcolumn}{2}
+        \ParacolAlignmentHack
+        \begin{equation*}\taglabel[\ensuremath{ \logic{R} }]{inf:def:simply_typed_hol_derivation/rules/r}
+          \begin{prooftree}
+            \hypo{ A \syneq B }
+            \hypo{ M }
+            \infer2[\ref{inf:def:simply_typed_hol_derivation/rules/r}]{ N },
+          \end{prooftree}
+        \end{equation*}
+        where \( M \redrel{A \mapsto B}_\Gamma N \).
+      \end{nthcolumn}
     \end{paracol}
 
-    \thmitem{def:simply_typed_hol_derivation/derivation} Finally, it remains to define an \term{axiomatic derivation}. Similarly to \cref{def:axiomatic_derivation}, we define a derivation of the \hyperref[def:simply_typed_hol_formula]{formula} \( \varphi \) from \( \Gamma \) as a nonempty list \( \psi_1, \ldots, \psi_n \) of formulas such that \( \psi_n = \varphi \) and, for every \( k = 1, \ldots, n \), any of the following hold:
-    \begin{thmenum}
-      \thmitem{def:simply_typed_hol_derivation/derivation/axiom} \( \psi_k \) is an instance of any of the axiom schemas from \cref{def:simply_typed_hol_derivation/axioms}.
+    In \ref{inf:def:simply_typed_hol_derivation/rules/r}, \( A \), \( B \) and \( \Gamma \) are parameters that should be provided when applying the rule.
 
-      \thmitem{def:simply_typed_hol_derivation/derivation/premise} \( \psi_k \) is a premise, that is, it belongs to \( \Gamma \).
+    \thmitem{def:simply_typed_hol_derivation/proof} To use the rule \ref{inf:def:simply_typed_hol_derivation/rules/r}, we must adapt the definition of proof trees from \cref{def:natural_deduction_proof_tree}. Namely, when applying \ref{inf:def:simply_typed_hol_derivation/rules/r}, \( A \) and \( B \) can be arbitrary and \( \Gamma \) must be the set of free variables of \( A \), \( B \) and all premises.
 
-      \thmitem{def:simply_typed_hol_derivation/derivation/rules} \( \phi_k \) is the conclusion of either \ref{inf:def:simply_typed_hol_derivation/rules/r} or \ref{inf:def:simply_typed_hol_derivation/rules/beta} with premises from \( \psi_1, \ldots, \psi_{k-1} \).
-    \end{thmenum}
+    There is also no assumption discharging. So the proof trees we will deal with here will be quite different compared to those for propositional logic or first-order logic.
 
-    \thmitem{def:simply_typed_hol_derivation/consequence} Finally, we let \( \Gamma \vdash \varphi \) if there exists an axiomatic derivation of \( \varphi \) from \( \Gamma \).
+    \thmitem{def:simply_typed_hol_derivation/consequence} Finally, we let \( \Gamma \vdash \varphi \) if there exists a proof tree with conclusion \( \varphi \) whose assumptions are in \( \Gamma \).
   \end{thmenum}
 \end{definition}
 \begin{defproof}
@@ -599,7 +615,12 @@
     \textit{Rule R}. From \( \mathbf{C} \) and \( \mathbf{A_\alpha} = \mathbf{B_\alpha} \) to infer the result of replacing one occurrence of \( \mathbf{A_\alpha} \) in \( \mathbf{C} \) by an occurrence of \( \mathbf{B_\alpha} \), provided that the occurrence of \( \mathbf{A_\alpha} \) in \( \mathbf{C} \) is not (an occurrence of a variable) immediately preceded by \( \muplambda \).
   \end{displayquote}
 
-  Here we have again relied on our extensive discussion of reductions in order to define an appropriate relation \( M \redrel{A \mapsto B} N \), apt for stating \ref{inf:def:simply_typed_hol_derivation/rules/r}.
+  For conditional hypotheses, Andrews further refines this rule as follows:
+  \begin{displayquote}
+    (Rule R') If \( \mscrH \vdash \mathbf{A_\alpha} = \mathbf{B_\alpha} \), and \( \mscrH \vdash \mathbf{C} \), and \( \mathbf{D} \) is obtained from \( \mathbf{C} \) by replacing one occurrence of \( \mathbf{A_\alpha} \) in \( \mathbf{C} \) by an occurrence of \( \mathbf{B_\alpha} \), then \( \mscrH \vdash \mathbf{A_\alpha} \), provided that the occurrence of \( \mathbf{A_\alpha} \) in \( \mathbf{C} \) is not a variable immediately preceded by \( \mathbf{\muplambda} \), and the occurrence of \( \mathbf{A_\alpha} \) in \( \mathbf{C} \) is not a wf part \( [\mathbf{\muplambda x_\beta E_\gamma}] \) of \( \mathbf{C} \), where \( \mathbf{x_\beta} \) is free in a member of \( \mscrH \) and free in \( \mathbf{A_\alpha} = \mathbf{B_\alpha} \).
+  \end{displayquote}
+
+  Here we have again relied on our extensive discussion of reductions in order to define an appropriate relation \( M \redrel{A \mapsto_\Gamma B} N \), apt for stating \ref{inf:def:simply_typed_hol_derivation/rules/r}.
 \end{comments}
 
 \begin{definition}\label{def:nth_order_logic}
