@@ -1,4 +1,4 @@
-\section{Natural deduction}\label{sec:natural_deduction}
+\section{Propositional natural deduction}\label{sec:propositional_natural_deduction}
 
 \paragraph{Inference rules}
 
@@ -99,6 +99,67 @@
   To clarify whether rules act inside the object theory or the metatheory, \incite[112]{CitkinMuravitsky2022ConsequenceRelations}, who define rules as relations, refer as \enquote{rule} to inference rules acting on sequents and as \enquote{hyperrules} to inference rules acting on judgments, and give distinct definitions for the two.
 \end{remark}
 
+\begin{concept}\label{con:proof_tree}
+  Given a collection of \hyperref[def:inference_rule]{inference rules}, we can define a family of \hyperref[def:labeled_tree]{labeled trees}, which we will call \term{proof trees}.
+
+  We will assume that the entries of the rules are \hyperref[con:schemas_and_instances]{schemas} whose instances are entries of the proof trees.
+
+  In their most basic form, the labels of proof trees consist of the following objects:
+  \begin{thmenum}[series=con:proof_tree]
+    \thmitem{con:proof_tree/conclusion} An entry, called the \term[en=conclusion (\cite[22]{TroelstraSchwichtenberg2000BasicProofTheory})]{conclusion} of the proof.
+
+    \thmitem{con:proof_tree/rule_name} An empty string or the name of a rule.
+  \end{thmenum}
+
+  We define two kinds of proof trees:
+  \begin{thmenum}[resume=con:proof_tree]
+    \thmitem{con:proof_tree/assumption} An \term{assumption} tree for \( \varphi \) is simply a \hyperref[def:canonical_singleton_tree]{canonical singleton tree} with the following label:
+    \begin{itemize}
+      \item The conclusion is, unsurprisingly, \( \varphi \).
+      \item The rule name is the empty string (because the conclusion has not been obtained by an application of a rule).
+    \end{itemize}
+
+    \thmitem{con:proof_tree/application} We now define \term{rule application} trees.
+
+    Consider the rule
+    \begin{equation*}
+      \begin{prooftree}
+        \hypo{ \Phi_1 }
+        \hypo{ \cdots }
+        \hypo{ \Phi_n }
+        \infer3[\logic{R}]{ \Psi }
+      \end{prooftree}
+    \end{equation*}
+
+    Fix a list \( (P_1, \ldots, P_n) \) of proof trees such that, for \( i = 1, \ldots, n \), the conclusion of \( P_i \) is \( \Phi_i[\BbbI] \).
+
+    We may add additional content to the labels or even disallow rule application depending on the concrete entries and on the purpose of the trees.
+
+    In the end, we can define the rule application tree by \hyperref[def:ordered_tree_grafting_product]{grafting} \( P_1, \ldots, P_n \) to a new root with the following label:
+    \begin{itemize}
+      \item The conclusion is \( \Psi[\BbbI] \).
+      \item The rule name is \( \logic{R} \).
+    \end{itemize}
+
+    We draw this tree as follows (resembling stacked inference rules):
+    \begin{equation*}
+      \begin{prooftree}
+        \hypo{}
+        \ellipsis { \( P_1 \) } { \Phi_1[\BbbI] }
+
+        \hypo{ \cdots }
+
+        \hypo{}
+        \ellipsis { \( P_n \) } { \Phi_n[\BbbI] }
+        \infer3[\logic{R}]{ \Psi[\BbbI] }
+      \end{prooftree}
+    \end{equation*}
+  \end{thmenum}
+\end{concept}
+\begin{comments}
+  \item This definition somewhat resembles \enquote{prooftrees} from \bycite{TroelstraSchwichtenberg2000BasicProofTheory}, but, given a suitable definition of schemas and instantiations, it becomes completely rigorous and explicitly encodes which inference rules have been used.
+\end{comments}
+
 \begin{remark}\label{rem:inference_rule_formalization}
   Using the fact that, in \cref{def:inference_rule}, we have formalized inference rules as strings, we are able to encode some concrete rules. Our end goal is to completely formalize the \hyperref[con:curry_howard_correspondence]{Curry-Howard correspondence} for \hyperref[def:propositional_syntax/formula]{propositional formulas} and \hyperref[def:simple_type]{simple types} in \fullref{alg:type_derivation_to_proof_tree} and \fullref{alg:proof_tree_to_type_derivation}.
 
@@ -107,9 +168,9 @@
   \begin{itemize}
     \thmitem{rem:inference_rule_formalization/proofs} The propositional \hyperref[def:natural_deduction_rule]{natural deduction rules} stated in \cref{def:propositional_natural_deduction_systems} are encoded in the module \identifier{logic.deduction.classical_logic}, based on the schemas defined in \cref{def:propositional_formula_schema}.
 
-    These rules can be applied to form proof trees as described in \cref{def:natural_deduction_proof_tree}. Constructs for building such trees can be found in the module \identifier{logic.deduction.proof_tree}.
+    These rules can be applied to form proof trees as described in \cref{def:propositional_natural_deduction_proof_tree}. Constructs for building such trees can be found in the module \identifier{logic.deduction.proof_tree}.
 
-    We are not able to easily express substitution and eigenvariable conditions that are found in first-order logic rules. Hence, we will not completely formalize the first-order logic rules in \cref{def:first_order_natural_deduction_system}.
+    We will also extend proof trees for first-order logic rules in \cref{def:first_order_natural_deduction_system}.
 
     \thmitem{rem:inference_rule_formalization/types} The \hyperref[def:simple_typing_rule]{simple typing rules} stated in \fullref{sec:simply_typed_lambda_terms} and \fullref{sec:curry_howard_correspondence} are encoded in the module \identifier{lambda_.type_system}.
 
@@ -135,7 +196,7 @@
     \bnfmore        {\bnftsq{[} \bnfsp \bnfpn{formula schema} \bnfsp \bnftsq{]} \bnfsp \bnfpn{formula schema}}.
   \end{bnf*}
 
-  These bracketed schemas allow \enquote{discharging} certain assumptions --- see \cref{def:natural_deduction_proof_tree/application}. Some rules require more than one dischargeable assumption; see \cref{inf:def:identity_type/j/elim}. We do not bother with formalizing these cases since they affect the programmatic implementation as well, but it is clear how to handle them.
+  These bracketed schemas allow \enquote{discharging} certain assumptions --- see \cref{def:propositional_natural_deduction_proof_tree/application}. Some rules require more than one dischargeable assumption; see \cref{inf:def:identity_type/j/elim}. We do not bother with formalizing these cases since they affect the programmatic implementation as well, but it is clear how to handle them.
 
   We forbid the conclusion to have such a bracketed schema by replacing the existing rules from \cref{def:inference_rule} with
   \begin{bnf*}
@@ -184,27 +245,18 @@
   \item We implicitly assume that the rules have different names.
 \end{comments}
 
-\begin{definition}\label{def:natural_deduction_proof_tree}\mimprovised
-  Fix a \hyperref[def:abstract_natural_deduction_system]{natural deduction system}. We will define a family of \hyperref[def:labeled_tree]{labeled trees}, which we will call \term{proof trees}.
+\begin{definition}\label{def:propositional_natural_deduction_proof_tree}\mimprovised
+  We will define \hyperref[con:proof_tree]{proof trees} for a fixed \hyperref[def:abstract_natural_deduction_system]{natural deduction system} for \hyperref[def:propositional_syntax/formula]{propositional formulas}.
 
-  The labels of proof trees are triples consisting of the following objects:
-  \begin{thmenum}[series=def:natural_deduction_proof_tree]
-    \thmitem{def:natural_deduction_proof_tree/conclusion} A formula, called the \term[ru=conclusion (\cite[35]{TroelstraSchwichtenberg2000BasicProofTheory}), en=conclusion (\cite[36]{TroelstraSchwichtenberg2000BasicProofTheory})]{conclusion} of the proof.
+  Except for the conclusion and rule name, we attach to every tree must a set of marked formulas generated by the following grammar:
+  \begin{bnf*}
+    \bnfprod{marker}          {\bnfpn{Small Latin identifier}}, \\
+    \bnfprod{marked formula}  {\bnfpn{marker} \bnfsp \bnftsq{:} \bnfsp \bnfpn{formula}}.
+  \end{bnf*}
 
-    \thmitem{def:natural_deduction_proof_tree/rule_name} An empty string or the name of a rule from the deduction system.
-
-    \thmitem{def:natural_deduction_proof_tree/open} A set of marked formulas generated by the following grammar:
-    \begin{bnf*}
-      \bnfprod{marker}          {\bnfpn{Small Latin identifier}}, \\
-      \bnfprod{marked formula}  {\bnfpn{marker} \bnfsp \bnftsq{:} \bnfsp \bnfpn{formula}}.
-    \end{bnf*}
-
-    We will call these formulas \term{open assumptions}.
-  \end{thmenum}
-
-  We define two kinds of proof trees:
-  \begin{thmenum}[resume=def:natural_deduction_proof_tree]
-    \thmitem{def:natural_deduction_proof_tree/assumption} An \term{assumption} tree for a propositional formula \( \varphi \) and marker \( u \) is the \hyperref[def:canonical_singleton_tree]{canonical singleton tree} with the following label:
+  We will call these formulas \term{open assumptions}. The specificity of the trees mostly revolves around open assumptions:
+  \begin{thmenum}[resume=def:propositional_natural_deduction_proof_tree]
+    \thmitem{def:propositional_natural_deduction_proof_tree/assumption} An assumption tree for a propositional formula \( \varphi \) with marker \( u \) is the \hyperref[def:canonical_singleton_tree]{canonical singleton tree} with the following label:
     \begin{itemize}
       \item The conclusion is, unsurprisingly, \( \varphi \).
       \item The rule name is the empty string (because the conclusion has not been obtained by an application of a rule).
@@ -216,7 +268,7 @@
       [\varphi]^u.
     \end{equation*}
 
-    \thmitem{def:natural_deduction_proof_tree/application} We now define \term{rule application} trees.
+    \thmitem{def:propositional_natural_deduction_proof_tree/application} Rule application trees may feature optional dischargeable premises.
 
     Consider the schema instantiation \( \BbbI \) and the rule
     \begin{equation*}
@@ -233,7 +285,7 @@
       \end{prooftree}
     \end{equation*}
 
-    Fix a list \( (P_1, \ldots, P_n) \) of proof trees such that, for \( i = 1, \ldots, n \), the conclusion of \( P_i \) is \( \Phi_i[\BbbI] \).
+    As in \cref{con:proof_tree}, fix a list \( (P_1, \ldots, P_n) \) of proof trees such that, for \( i = 1, \ldots, n \), the conclusion of \( P_i \) is \( \Phi_i[\BbbI] \).
 
     The delicate part of defining rule application trees is to build a set of open assumption. We define it as the union of the assumptions for \( P_1, \ldots, P_n \), with some of the assumptions possibly removed.
 
@@ -277,7 +329,7 @@
   \end{thmenum}
 \end{definition}
 \begin{comments}
-  \item This definition somewhat resembles \enquote{prooftrees} from \incite{TroelstraSchwichtenberg2000BasicProofTheory}, but is completely rigorous and explicitly encodes which inference rules have been used. The treatment of the rules is based on \cite[\S 2.1]{TroelstraSchwichtenberg2000BasicProofTheory}.
+  \item The general definition and the treatment of discharging are based on \cite[\S 2.1]{TroelstraSchwichtenberg2000BasicProofTheory}.
 
   \item Even though we have defined what a natural deduction proof tree is, it is not always immediate what it means to \enquote{apply a rule}. There may be multiple possible ways to do so, in which cases specifying an \hyperref[def:propositional_schema_instantiation]{instantiation} is necessary. See \cref{rem:natural_deduction_rule_application} for a broader discussion.
 
@@ -285,7 +337,7 @@
 \end{comments}
 
 \begin{definition}\label{def:natural_deduction_entailment}\mcite[205]{Hinman2005Logic}
-  For a \hyperref[def:abstract_natural_deduction_system]{natural deduction system}, we define a \hyperref[def:consequence_relation]{consequence relation} as follows: we let \( \Gamma \vdash \varphi \) if there is a \hyperref[def:natural_deduction_proof_tree]{proof tree} with conclusion \( \varphi \) whose \hyperref[def:natural_deduction_proof_tree/open]{open assumptions} are all in \( \Gamma \).
+  For a \hyperref[def:abstract_natural_deduction_system]{natural deduction system}, we define a \hyperref[def:consequence_relation]{consequence relation} as follows: we let \( \Gamma \vdash \varphi \) if there is a \hyperref[def:propositional_natural_deduction_proof_tree]{proof tree} with conclusion \( \varphi \) whose \hyperref[def:propositional_natural_deduction_proof_tree/open]{open assumptions} are all in \( \Gamma \).
 
   As per \cref{def:abstract_logic}, we say that \( \varphi \) is \term{derivable} from \( \Gamma \) if this relation holds.
 \end{definition}
@@ -426,7 +478,7 @@
 \begin{algorithm}[Axiomatic derivation to proof tree]\label{alg:axiomatic_derivation_to_proof_tree}
   Fix an \hyperref[def:axiomatic_derivation_system]{axiomatic derivation system} and consider the corresponding \hyperref[def:abstract_natural_deduction_system]{natural deduction system} as described in \cref{rem:axiomatic_derivation_system_as_natural_deduction_system}.
 
-  Fix a derivation \( \psi_1, \ldots, \psi_n \) of \( \varphi \). We will build a proof tree whose conclusion is \( \varphi \) and whose \hyperref[def:natural_deduction_proof_tree/open]{open assumptions} are the premises of the derivation. We recurse on the length \( n \) of the derivation.
+  Fix a derivation \( \psi_1, \ldots, \psi_n \) of \( \varphi \). We will build a proof tree whose conclusion is \( \varphi \) and whose \hyperref[def:propositional_natural_deduction_proof_tree/open]{open assumptions} are the premises of the derivation. We recurse on the length \( n \) of the derivation.
 
   \begin{thmenum}
     \thmitem{alg:axiomatic_derivation_to_proof_tree/premise} If \( \varphi \) itself is a premise, then, for a fixed marker \( u \), we declare the result of the algorithm to be the assumption tree \( [\varphi]^u \).
@@ -466,7 +518,7 @@
 \begin{algorithm}[Proof tree to axiomatic derivation]\label{alg:proof_tree_to_axiomatic_derivation}
   Again, fix an \hyperref[def:axiomatic_derivation_system]{axiomatic derivation system} and consider the corresponding \hyperref[def:abstract_natural_deduction_system]{natural deduction system} as described in \cref{rem:axiomatic_derivation_system_as_natural_deduction_system}.
 
-  Then, given a \hyperref[def:natural_deduction_proof_tree]{proof tree}, enumerating its nodes' conclusions via \hyperref[def:ordered_tree_enumeration]{pre-order traversal}, we obtain an axiomatic derivation whose premises are the open assumptions of the tree, and whose conclusion coincides with that of the tree.
+  Then, given a \hyperref[def:propositional_natural_deduction_proof_tree]{proof tree}, enumerating its nodes' conclusions via \hyperref[def:ordered_tree_enumeration]{pre-order traversal}, we obtain an axiomatic derivation whose premises are the open assumptions of the tree, and whose conclusion coincides with that of the tree.
 \end{algorithm}
 \begin{comments}
   \item This algorithm can be found as \identifier{natural_deduction.axiomatic_derivation.proof_tree_to_derivation} in \cite{notebook:code}.
@@ -475,7 +527,7 @@
 \begin{proposition}\label{thm:axiomatic_derivation_as_natural_deduction}
   Fix an \hyperref[def:axiomatic_derivation_system]{axiomatic derivation system} and consider the corresponding \hyperref[def:abstract_natural_deduction_system]{natural deduction system} as described in \cref{rem:axiomatic_derivation_system_as_natural_deduction_system}.
 
-  Then there exists an \hyperref[def:axiomatic_derivation]{axiomatic derivation} of \( \varphi \) from \( \Gamma \) if and only if there exists a \hyperref[def:natural_deduction_proof_tree]{proof tree} concluding \( \varphi \) from \( \Gamma \).
+  Then there exists an \hyperref[def:axiomatic_derivation]{axiomatic derivation} of \( \varphi \) from \( \Gamma \) if and only if there exists a \hyperref[def:propositional_natural_deduction_proof_tree]{proof tree} concluding \( \varphi \) from \( \Gamma \).
 \end{proposition}
 \begin{proof}
   We can use \fullref{alg:axiomatic_derivation_to_proof_tree} in one direction and \fullref{alg:proof_tree_to_axiomatic_derivation} in the other one.
@@ -827,7 +879,7 @@
   \item See \cref{rem:deduction_theorem_list} for a list of similar theorems.
 \end{comments}
 \begin{proof}
-  \SufficiencySubProof Let \( P \) be a \hyperref[def:natural_deduction_proof_tree]{proof tree} of \( \psi \) from \( \Gamma \cup \set{ \varphi } \). If \( \varphi \) is marked with \( u \) in an open assumption in \( P \), the following tree derives \( \varphi \synimplies \psi \) from \( \Gamma \):
+  \SufficiencySubProof Let \( P \) be a \hyperref[def:propositional_natural_deduction_proof_tree]{proof tree} of \( \psi \) from \( \Gamma \cup \set{ \varphi } \). If \( \varphi \) is marked with \( u \) in an open assumption in \( P \), the following tree derives \( \varphi \synimplies \psi \) from \( \Gamma \):
   \begin{equation*}
     \begin{prooftree}
       \hypo{ [\varphi]^u }
@@ -1159,7 +1211,7 @@ We will only briefly sketch some ideas of sequent calculus because of their impo
 \begin{remark}\label{rem:sequent_calculus}
   As discussed in \cref{rem:inference_rules_semantics}, \incite*{Gentzen1935LogischeSchließen} introduced both natural deduction rules and sequent calculus rules.
 
-  We saw in \cref{def:abstract_natural_deduction_system} and \cref{def:natural_deduction_proof_tree} how natural deduction can be completely formalized, and we will extend those rules (although less formally) to first-order logic in \cref{def:abstract_first_order_natural_deduction_system}.
+  We saw in \cref{def:abstract_natural_deduction_system} and \cref{def:propositional_natural_deduction_proof_tree} how natural deduction can be completely formalized, and we will extend those rules (although less formally) to first-order logic in \cref{def:abstract_first_order_natural_deduction_system}.
 
   Sequent calculus is instead based on \hyperref[def:inference_rule]{inference rules} whose entries are all \hyperref[def:sequent]{sequents}. The intended instantiation of the sequent  \( \syn\Gamma \synvdash \syn\Delta \)\fnote{We regard inference rules are purely syntactic objects. In order to explicitly distinguish sequents in a rule from \hyperref[con:judgment]{judgments} in the metalanguage a-la those discussed by Martin-L\"of in \cite[2]{MartinLöf1996LogicalLaws}, in accordance with \cref{rem:object_language_dots}, we put dots over the \hyperref[def:variable_identifier]{capital Greek identifiers} denoting \hyperref[def:logical_context]{logical context placeholders}, as well as over the sequent symbol \( {\vdash} \). Thus, we denote by \( \syn\Gamma \synvdash \syn\Delta \) what Gentzen denotes by \( \Gamma \vdash \Delta \).} is that at least one formula in \( \syn\Delta \) is a consequence of the entire set \( \syn\Gamma \). Thus, \( \syn\varphi, \syn\psi \vdash \syn\theta, \syn\chi \) corresponds to \( \syn\varphi \synwedge \syn\psi \vdash \syn\theta \synvee \syn\chi \).
 
@@ -1196,7 +1248,7 @@ We will only briefly sketch some ideas of sequent calculus because of their impo
     \end{rightcolumn}
   \end{paracol}
 
-  One fundamental difference is that the subtleties of defining natural deduction proof trees that we saw in \cref{def:natural_deduction_proof_tree} are now made explicit --- they are simply a part of the rule itself.
+  One fundamental difference is that the subtleties of defining natural deduction proof trees that we saw in \cref{def:propositional_natural_deduction_proof_tree} are now made explicit --- they are simply a part of the rule itself.
 
   Furthermore, the conclusion of a proof tree is now a sequent, and, rather than encoding a single \hyperref[con:proposition]{proposition}, it encodes an entailment of finitely many propositions from finitely many propositions. The assumptions of a proof tree are contained entirely in its conclusion. To make sure that the tree's premises are valid, we introduce the following rule, made implicit by Gentzen:
   \begin{equation*}\taglabel[\ensuremath{ \logic{Init} }]{inf:rem:sequent_calculus/init}

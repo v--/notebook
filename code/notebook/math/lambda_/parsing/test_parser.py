@@ -272,7 +272,7 @@ def test_parsing_valid_type(type_: str, expected: SimpleType) -> None:
 
 @pytest_parametrize_lists(
     # 𝛊 and 𝐨 are base types, the rest are variables
-    # Simply-typed higher order logic disallows variables; we only aim to test the parser here
+    # Simply typed higher order logic disallows variables; we only aim to test the parser here
     type_=[
         '𝛊',
         '(𝛊 → 𝐨)',
