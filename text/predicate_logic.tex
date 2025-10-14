@@ -64,9 +64,9 @@
 
   Still, we will not attempt to fully formalize the metalanguage of inference rules and derivations like we did with propositional logic in \fullref{sec:propositional_axiomatic_derivations} and \fullref{sec:propositional_natural_deduction}, and like we will do for first-order logic in \fullref{sec:first_order_natural_deduction}.
 
-  In this section, our main obstacle is instead the fundamental reliance on metalingual abbreviation, which requires us to work with several distinct syntaxes simultaneously. Furthermore, the rules \ref{inf:def:simply_typed_hol_proof_tree/rules/r} and \ref{inf:def:simply_typed_hol_proof_tree/rules/beta} carry a lot of subtleties.
+  In this section, our main obstacle is the fundamental reliance on metalingual abbreviation, which requires us to work with several distinct syntaxes simultaneously. Furthermore, the rules \ref{inf:def:simply_typed_hol_proof_tree/rules/r} and \ref{inf:def:simply_typed_hol_proof_tree/rules/beta} carry a lot of subtleties.
 
-  As in \fullref{sec:dependent_types}, formalizing the syntax of axioms and inference rules requires a more sophisticated approach than what we have for propositional logic.
+  As in \fullref{sec:dependent_types}, formalizing the syntax of inference rules requires a more sophisticated approach than what we have available.
 \end{remark}
 \begin{comments}
   \item We described in \cref{rem:dependent_type_rule_formalization} several significant complications that arise when formalizing \hyperref[def:mltt]{Martin-L\"of type theory}. As described in \cref{rem:higher_order_logic_and_type_theory/terms}, we will use an approach to \hyperref[rem:predicate_logic]{higher-order logic} that only requires simple types, and is thus more susceptible to formalization.
@@ -186,22 +186,9 @@
     \end{cases}
   \end{equation*}
 
-  The \hyperref[con:metalingual_abbreviation]{abbreviations} for the \hyperref[def:predicate_logic_alphabet]{predicate logic alphabet} from \cref{def:simply_typed_hol_abbreviations} provide several examples:
-  \begin{itemize}
-    \item The \hyperref[def:propositional_alphabet/constants/verum]{verum} \( \muplambda \)-term \( \syntop \) has type \( \syn\omicron \). Its arity is thus \( 0 \), and its prefix notation is simply \( \syntop \).
+  As an example, we define in \cref{def:simply_typed_hol_formula} formulas as terms having the type of propositions \( \syn\omicron \). Such a formula \( \varphi \) is nullary, so its prefix and suffix notations are both simply \( \varphi \) itself.
 
-    \item The \hyperref[def:propositional_alphabet/negation]{negation} \( \muplambda \)-term \( \synneg \) has type \( \syn\omicron \synimplies \syn\omicron \), thus its arity is \( 1 \) and its prefix notation for application should be \( \synneg(\varphi) \). We prefer the parenthesis-free notation, which coincides with the conventional \( \muplambda \)-term notation.
-
-    \item The \hyperref[def:propositional_alphabet/connectives/conjunction]{conjunction} \( \muplambda \)-term \( \synwedge \) has type \( \syn\omicron \synimplies \syn\omicron \synimplies \syn\omicron \), thus its arity is \( 2 \). The infix notation \( \varphi \wedge \psi \) is precisely the familiar syntax of propositional formulas \cref{def:propositional_syntax}.
-
-    The conventional \( \muplambda \)-calculus syntax would give us precisely \L{}ukasiewicz's notation \( {\synimplies} \varphi \psi \) discussed in \ref{rem:def:function_application_syntax/polish}, while using the prefix notation would give us \( \synimplies(\varphi, \psi) \).
-
-    \item The \hyperref[def:predicate_logic_alphabet/quantifiers/universal]{universal quantification} \( \muplambda \)-term \( \synforall_\tau \) has type \( (\tau \synimplies \syn\omicron) \synimplies \syn\omicron \). Its arity is \( 1 \), and the arity of its argument is \( 1 \) as well.
-
-    The conventional \( \muplambda \)-calculus notation is \( \synforall_\tau p \), where \( p \) inhabits \( \tau \synimplies \syn\omicron \).
-
-    We want to highlight that \( \synforall_\tau \) binds a variable which \( p \) depends upon. If \( x \) is intended to inhabit \( \tau \), we can write \( \quantifier {\synforall_\tau} {x^\tau} p(x) \). Simply removing the \( \tau \) subscript from \( \synforall \) gives us the conventional quantifier notation.
-  \end{itemize}
+  On the other hand, the predicate \( \varphi \) of type \( \syn\iota \synimplies \syn\iota \synimplies \syn\omicron \) has arity \( 2 \), so we must choose between \( \varphi(x, y) \) and \( x \mathbin{\varphi} y \) and \( (x, y)\varphi \).
 \end{remark}
 
 \begin{concept}\label{con:description_operator}
@@ -374,7 +361,7 @@
 
     \thmitem{def:simply_typed_hol_signature/const} The elements of \( \op*{NLConst}_\Sigma \) should be \hyperref[def:type_assertion]{type assertions} for \hi{distinct} \( \muplambda \)-term constants. We call them \term[en=nonlogical constants (\cite[211]{Andrews2002Logic})]{nonlogical constants}.
 
-    Additionally, we have a single constant, \( \synQ \), for denoting equality as per \cref{rem:simply_typed_hol}. Naturally, we call it a \term[en=logical constants (\cite[211]{Andrews2002Logic})]{logical constant} to distinguish it from the rest. We associate no \hyperref[con:type_annotation]{type annotations} with it because the annotation must be \hyperref[def:polymorphic_typed_lambda_calculus]{polymorphic} (see \cref{rem:simply_typed_hol_polymorphic_types} for a broader discussion). \hyperref[con:typing_rule]{Typing rules} for \( \synQ \) will be provided in \cref{def:simply_typed_hol_typing/equality}.
+    Additionally, we have a single constant, \( \synQ \), for denoting equality as per \cref{rem:simply_typed_hol}. Naturally, we call it a \term[en=logical constants (\cite[211]{Andrews2002Logic})]{logical constant} to distinguish it from the rest. We associate no \hyperref[con:type_annotation]{type annotations} with it because the annotation must be \hyperref[def:polymorphic_typed_lambda_calculus]{polymorphic}, while we are working only with simple types. \hyperref[con:typing_rule]{Typing rules} for \( \synQ \) will be provided in \cref{def:simply_typed_hol_typing/equality}.
 
     The logical and nonlogical constants, along with the base types discussed above, form a \hyperref[def:simple_type_signature]{simple type signature}.
   \end{thmenum}
@@ -422,9 +409,7 @@
   \end{thmenum}
 \end{definition}
 \begin{comments}
-  \item As presented, all rules are in fact a simple typing rule, i.e. it can be formally expressed via \hyperref[def:lambda_term_schema]{typed \( \muplambda \)-term schemas} as per \cref{def:simple_typing_rule}. We avoid this to prevent clutter; as discussed in \cref{rem:predicate_logic_formalization}, we will not formalize the syntax and derivation system of higher-order logic.
-
-  \item The rule \ref{inf:def:simply_typed_hol_typing/equality} can be avoided of we assign a \hyperref[def:polymorphic_typed_lambda_calculus]{polymorphic type} to \( \synQ \). We discuss this possibility in \cref{rem:simply_typed_hol_polymorphic_types}.
+  \item As presented, all rules are in fact simple typing rules, i.e. it can be easily expressed via formalized schemas. We mostly avoid such schemas because, as discussed in \cref{rem:predicate_logic_formalization}, the syntax and derivation system of higher-order logic has many subtleties elsewhere.
 \end{comments}
 
 \begin{definition}\label{def:freely_typed_lambda_term}\mimprovised
@@ -490,16 +475,6 @@
   \end{itemize}
 \end{comments}
 
-\begin{remark}\label{rem:simply_typed_hol_polymorphic_types}
-  There are several occasions where \hyperref[def:simply_typed_hol]{simply typed higher-order logic} would benefit from \hyperref[def:polymorphic_typed_lambda_calculus]{polymorphic types}. An obvious example is the typing rule \ref{inf:def:simply_typed_hol_typing/equality}, which can avoided if we assign the type \( \qpolytype {\syn\tau} \syn\tau \synimplies \syn\tau \synimplies \syn\omicron \) to \( \synQ \).
-
-  Polymorphic types can also aid us when formulating the axioms in \ref{def:simply_typed_hol_proof_tree/axioms} --- they currently depend on a type, which technically makes them \hyperref[con:schemas_and_instances]{metalingual schemas} rather than axioms.
-
-  The obvious obstacle is that, if we allow polymorphic types, the system is no longer simply typed. This requires the introduction and handling of type variables (along with their binding and substitution), which the system by design does not support.
-
-  So, while there are benefits of allowing polymorphic types, this would complicate the system further without much benefit.
-\end{remark}
-
 \begin{definition}\label{def:simply_typed_hol_formula}\mcite[270]{Farmer2008STTVirtues}
   A \term{formula} of \hyperref[def:simply_typed_hol]{simply typed higher-order logic} is a \( \muplambda \)-term \hyperref[def:type_habitation]{inhabiting} the \hyperref[def:simply_typed_hol_signature/types]{type of propositions} \( \syn\omicron \).
 
@@ -526,52 +501,45 @@
   Different cases are discussed in \cref{rem:simple_type_function_syntax}.
 \end{comments}
 
-\begin{remark}\label{rem:simply_typed_hol_abbreviations}
-  Fix a \( \muplambda \)-term \( M \) over a \hyperref[def:simply_typed_hol_signature]{simply typed higher-order logic signature}. Suppose we want to \hyperref[con:metalingual_abbreviation]{abbreviate} it to some symbol \( \syn\mu \).
+\begin{definition}\label{def:freely_typed_lambda_term_schema}
+  We generalize the schemas for context-dependent typed \( \muplambda \)-terms from \cref{def:lambda_term_schema} to \hyperref[def:freely_typed_lambda_term]{freely typed \( \muplambda \)-terms} by endowing variable and term placeholders with \hyperref[con:type_annotation]{type annotations}.
 
-  Since this abbreviation only affects the metalanguage, where the placeholder \( M \) belongs, we may have just used the letter \( M \) itself. There are subtleties, however, and we want to highlight that \( M \) is appropriately used. For this reason, on abbreviated symbols in the object language, we will continue placing dots on top of symbols, as per \cref{rem:object_language_dots}.
+  Such a schema depends on a \hyperref[def:simply_typed_hol_signature]{simply typed higher-order logic signature}. We thus disallow the sorts and constant symbols as placeholders. In particular, \( \synQ \) will always refer to the equality constant rather than a term placeholder, while \( \syn\omicron \) will always refer to the type of propositions rather than a type placeholder.
 
-  It is reasonable to suppose that \( M \) is \hyperref[def:lambda_combinator]{closed}. If the variable \( x \) is free in \( M \), and \( \syn\mu \) is placed in some \( \muplambda \)-term that binds \( x \), it is not clear whether the binding of the free occurrences of \( x \) in \( M \) is intentional. On the other hand, if \( M \) is closed, we are forced to be explicit about its parameters, which also allows us to use the convenient notations described in \cref{rem:simple_type_function_syntax}.
-
-  Thus, we only allow closed \( \muplambda \)-terms to be abbreviated. Furthermore, must specify the desired notation of each abbreviated symbol. The latter is discussed in \cref{rem:simple_type_function_syntax}.
-
-  When using an abbreviation, we suppose that the result is not immediately \( \beta \)-reduced. Thus, if \( \qabs {x^\tau} M \) has type \( \tau \synimplies \sigma \) and \( \syn\mu \) abbreviates \( M \), we assume that \( \syn\mu y^\tau \) is \( (\qabs {x^\tau} M) y^\tau \) rather than \( M[x \mapsto y] \). Due to \ref{typed_hol_derivation/rules/beta}, when not dealing with proof trees it is mostly safe to also assume the latter.
-\end{remark}
+  We also disallow multiple annotations on the same placeholder since they are likely to produce an ill-formed \( \muplambda \)-term.
+\end{definition}
 
 \begin{definition}\label{def:simply_typed_hol_abbreviations}\mcite[212]{Andrews2002Logic}
   For \hyperref[def:simply_typed_hol]{simply typed higher-order logic}, we will use \hyperref[con:metalingual_abbreviation]{metalingual abbreviation} to introduce a dedicated syntax for \hyperref[def:simply_typed_hol_formula]{formulas}.
 
-  The \( \muplambda \)-terms and their intended notation are listed in \cref{tab:def:simply_typed_hol_abbreviations}. It is easily seen that all the \( \muplambda \)-terms are \hyperref[def:lambda_combinator]{closed} and \hyperref[def:typability]{typable}, as recommended in \cref{rem:simply_typed_hol_abbreviations}. In fact, formal equality and the quantifiers depend on a type, so for every type \( \tau \) we have a distinct \( \muplambda \)-term for each of them\fnote{An alternative would be to use \hyperref[def:polymorphic_typed_lambda_calculus]{polymorphic types}, thus going beyond the scope of a simple type system}. This is mitigated by further notational shortcuts intended to imitate a more conventional syntax.
-
-  The conventional \( \muplambda \)-calculus syntax and the dedicated syntax are discussed in \cref{rem:simple_type_function_syntax}.
+  The \( \muplambda \)-term schemas and their intended notation are listed in \cref{tab:def:simply_typed_hol_abbreviations}. The placeholders in the notation should match those in the schema, while the rest are allowed to take any value.
 
   \begin{table}
     \begin{center}
-      \begin{tabular}{l l l l}
+      \begin{tabular}{l l}
         \toprule
-        \multicolumn{1}{c}{\( \muplambda \)-term}                                                                                                   & Symbol                & \multicolumn{2}{c}{Notation} \\
-                                                                                                                                                    &                       & \( \muplambda \)-calculus          & Dedicated \\
+        \multicolumn{1}{c}{Metalingual abbreviation}        & \multicolumn{1}{c}{Metalingual \( \muplambda \)-term schema}                                                                                                                                                                          \\
         \midrule
-        \( \qabs {\synx^\tau} {\syny^\tau} \synQ \synx \syny \)                                                                                     & \( \syneq_\tau \)     & \( {\syneq_\tau} x y \)            & \( x \syneq y \) \\
-        \( (\qabs {\synp^{\syn\omicron}} \synp) \syneq (\qabs {\synp^{\syn\omicron}} \synp) \)                                                      & \( \syntop \)         & \( \syntop \)                      & \( \syntop \) \\
-        \( (\qabs {\synp^{\syn\omicron}} \syntop) \syneq (\qabs {\synp^{\syn\omicron}} \synp) \)                                                    & \( \synbot \)         & \( \synbot \)                      & \( \synbot \) \\
-        \( \qabs {\synp^{\syn\omicron}} (\synbot \syneq \synp) \)                                                                                   & \( \synneg \)         & \( \synneg \varphi \)              & \( \synneg \varphi \) \\
-        \( \qabs {\synp^{\syn\omicron}} \qabs {\synq^{\syn\omicron}} \parens[\big]{ (\qabs {\synr^{\syn\omicron \synimplies \syn\omicron \synimplies \syn\omicron}} \synr \syntop \syntop) \syneq (\qabs {\synr^{\syn\omicron \synimplies \syn\omicron \synimplies \syn\omicron}} \synr \synp \synq) } \) & \( \synwedge \) & \( {\synwedge} \varphi \psi \) & \( \varphi \synwedge \psi \) \\
-        \( \qabs {\synp^{\syn\omicron}} \qabs {\synq^{\syn\omicron}} \synneg (\synneg \synp \synwedge \synneg \synq) \)                             & \( \synvee \)         & \( {\synvee} \varphi \psi \)       & \( \varphi \synvee \psi \) \\
-        \( \qabs {\synp^{\syn\omicron}} \qabs {\synq^{\syn\omicron}} (\synp \syneq \synp \synwedge \synq) \)                                        & \( \synimplies \)     & \( {\synimplies} \varphi \psi \)   & \( \varphi \synimplies \psi \) \\
-        \( \qabs {\synp^{\syn\omicron}} \qabs {\synq^{\syn\omicron}} (\synp \syneq \synq) \)                                                        & \( \syniff \)         & \( {\syniff} \varphi \psi \)       & \( \varphi \syniff \psi \) \\
-        \( \qabs {\synp^{\tau \synimplies \syn\omicron}} (\qabs {\synx^\tau} \synp \synx) \syneq (\qabs {\synx^\tau} \syntop) \)                    & \( \synforall_\tau \) & \( \synforall_\tau \varphi \)      & \( \qforall {x^\tau} \varphi(x) \) \\
-        \( \qabs {\synp^{\tau \synimplies \syn\omicron}} \synneg (\qforall {\synx^\tau} \synneg \synp \synx)  \)                                    & \( \synexists_\tau \) & \( \synexists_\tau \varphi \)      & \( \qexists {x^\tau} \varphi(x) \) \\
-        \( \qabs {\synp^{\tau \synimplies \syn\omicron}} \qexists {\synx^\tau} \parens[\big]{ \synp \synx \synwedge \qforall {\syny^\tau} (\synp \syny \synimplies \synx \syneq \syny) } \) & \( \synExists_\tau \) & \( \synExists_\tau \varphi\) & \( \qExists {x^\tau} \varphi(x) \) \\
+        \( M^\tau \syneq N^\tau \)                          & \( \synQ M^\tau N^\tau \)                                                                                                                                                                                                             \\
+        \( \syntop \)                                       & \( (\qabs {\synp^{\syn\omicron}} \synp) \syneq (\qabs {\synp^{\syn\omicron}} \synp) \)                                                                                                                                                \\
+        \( \synbot \)                                       & \( (\qabs {\synp^{\syn\omicron}} \syntop) \syneq (\qabs {\synp^{\syn\omicron}} \synp) \)                                                                                                                                              \\
+        \( \synneg P^{\syn\omicron} \)                      & \( \synbot \syneq P^{\syn\omicron} \)                                                                                                                                                                                                 \\
+        \( P^{\syn\omicron} \synwedge R^{\syn\omicron} \)   & \( (\qabs {f^{\syn\omicron \synimplies \syn\omicron \synimplies \syn\omicron}} \syns \syntop \syntop) \syneq (\qabs {f^{\syn\omicron \synimplies \syn\omicron \synimplies \syn\omicron}} \syns P^{\syn\omicron} R^{\syn\omicron}) \), \\
+                                                            & \quad where \( f = \sharp(\op*{Free}(P) \cup \op*{Free}(R)) \)                                                                                                                                                                        \\
+        \( P^{\syn\omicron} \synvee R^{\syn\omicron} \)     & \( \synneg (\synneg P^{\syn\omicron} \synwedge \synneg R^{\syn\omicron}) \)                                                                                                                                                           \\
+        \( P^{\syn\omicron} \synimplies R^{\syn\omicron} \) & \( P^{\syn\omicron} \syneq P^{\syn\omicron} \synwedge R^{\syn\omicron} \)                                                                                                                                                             \\
+        \( P^{\syn\omicron} \syniff R^{\syn\omicron} \)     & \( P^{\syn\omicron} \syneq R^{\syn\omicron} \)                                                                                                                                                                                        \\
+        \( \qforall {x^\tau} P^{\syn\omicron} \)            & \( (\qabs {x^\tau} P^{\syn\omicron}) \syneq (\qabs {x^\tau} \syntop) \)                                                                                                                                                               \\
+        \( \qexists {x^\tau} P^{\syn\omicron} \)            & \( \synneg (\qforall {x^\tau} \synneg P^{\syn\omicron}) \)                                                                                                                                                                            \\
         \bottomrule
       \end{tabular}
     \end{center}
 
-    \caption{Encoding \hyperref[rem:predicate_logic]{predicate logic} via \( \muplambda \)-terms in simply typed higher-order logic.}\label{tab:def:simply_typed_hol_abbreviations}
+    \caption{Encoding \hyperref[rem:predicate_logic]{predicate logic} in \hyperref[def:simply_typed_hol]{simply typed higher-order logic}.}\label{tab:def:simply_typed_hol_abbreviations}
   \end{table}
 \end{definition}
 \begin{comments}
-  \item Most abbreviations are based on \bycite[212]{Andrews2002Logic}, with the exception of \( \syntop \), taken from \bycite[273]{Farmer2008STTVirtues}, and \( \synExists_\tau \), based on Russell's ideas outlined in \cref{con:description_operator/exists_unique}. Note that we treat \( \synExists \) as a single symbol.
+  \item Most abbreviations are based on \bycite[212]{Andrews2002Logic}, with the exception of \( \syntop \), taken from \bycite[273]{Farmer2008STTVirtues}.
 \end{comments}
 
 \paragraph{Proofs in simply typed higher-order logic}
@@ -584,10 +552,10 @@
     \begin{align}
       &\synP^{\syn\omicron \synimplies \syn\omicron}(\syntop) \synwedge \synP^{\syn\omicron \synimplies \syn\omicron}(\synbot) \syniff \qforall {\synx^{\syn\omicron}} \synP^{\syn\omicron \synimplies \syn\omicron}(\synx) \tag{\logic{A1}} \label{eq:def:simply_typed_hol_proof_tree/axioms/a1} \\
       &(\synX^{\syn\tau} \syneq \synY^{\syn\tau}) \synimplies \qforall {\synp^{\syn\tau \synimplies \syn\omicron}} (\synp(\synX^{\syn\tau}) \syniff \synp(\synY^{\syn\tau}) \tag{\ensuremath{ \logic{A2} }} \label{eq:def:simply_typed_hol_proof_tree/axioms/a2} \\
-      &(\synF^{\syn\tau \synimplies \syn\sigma} \syneq \synG^{\syn\tau \synimplies \syn\sigma}) \syniff \qforall {\synx^{\syn\tau}} (\synF^{\syn\tau \synimplies \syn\sigma}(\synx) = \synG^{\syn\tau \synimplies \syn\sigma}(\synx) \tag{\ensuremath{ \logic{A3} }} \label{eq:def:simply_typed_hol_proof_tree/axioms/a3}
+      &(\synF^{\syn\tau \synimplies \syn\sigma} \syneq \synG^{\syn\tau \synimplies \syn\sigma}) \syniff \qforall {\synx^{\syn\tau}} (\synF^{\syn\tau \synimplies \syn\sigma}(\synx) = \synG^{\syn\tau \synimplies \syn\sigma}(\synx)) \tag{\ensuremath{ \logic{A3} }} \label{eq:def:simply_typed_hol_proof_tree/axioms/a3}
     \end{align}
 
-    These schemas generalize those for context-dependent typed \( \muplambda \)-terms from \cref{def:lambda_term_schema}; the capital Latin letters denote \( \muplambda \)-term placeholders, however they have annotations to ensure that they only get instantiated to \( \muplambda \)-terms of the appropriate type.
+    These schemas generalize those for context-dependent typed \( \muplambda \)-terms from \cref{def:lambda_term_schema} by placing type annotations over \( \muplambda \)-term placeholders. We will not use formalized schemas for freely typed \( \muplambda \)-terms elsewhere.
 
     The schema \eqref{eq:def:simply_typed_hol_proof_tree/axioms/a2} is a form of the \enquote{indiscernibility of identicals} principle discussed in \cref{rem:identity_of_indiscernibles}, while \eqref{eq:def:simply_typed_hol_proof_tree/axioms/a3} is a form of function extensionality, which as a general principle we discuss in \cref{con:extensionality}.
 
@@ -724,7 +692,24 @@
 \end{proof}
 
 \begin{proposition}\label{thm:simply_typed_hol_natural_deduction}
+  Under the \hyperref[def:simply_typed_hol_proof_tree]{simply typed higher-order logic derivation system}, the propositional natural deduction rules from \cref{def:propositional_natural_deduction_systems} are \hyperref[con:inference_rule_admissibility]{admissible}.
 \end{proposition}
+\begin{proof}
+  \SubProofOf{inf:def:propositional_natural_deduction_systems/top/intro} Special case of \cref{thm:simply_typed_hol_equivalence/reflexivity} with \( M = \qabs {\synp^{\syn\omicron}} \synp \).
+
+  \SubProofOf{inf:def:propositional_natural_deduction_systems/bot/dne} Let \( T \) be a tree deriving \( \synbot \) from \( \synneg \varphi \). Then
+
+  \begin{equation*}
+    \begin{prooftree}
+      \hypo{ \synneg \varphi }
+      \ellipsis { T } { \synbot }
+
+      \hypo { \overbrace{\synneg \varphi}^{\varphi \syneq \synbot} }
+
+      \infer2[\ref{inf:def:simply_typed_hol_proof_tree/rules/r}]{ \varphi }
+    \end{prooftree}
+  \end{equation*}
+\end{proof}
 
 \begin{definition}\label{def:nth_order_logic}
 \end{definition}
