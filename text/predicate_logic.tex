@@ -64,7 +64,7 @@
 
   Still, we will not attempt to fully formalize the metalanguage of inference rules and derivations like we did with propositional logic in \fullref{sec:propositional_axiomatic_derivations} and \fullref{sec:propositional_natural_deduction}, and like we will do for first-order logic in \fullref{sec:first_order_natural_deduction}.
 
-  In this section, our main obstacle is the fundamental reliance on metalingual abbreviation, which requires us to work with several distinct syntaxes simultaneously. Furthermore, the rules \ref{inf:def:simply_typed_hol_proof_tree/rules/r} and \ref{inf:def:simply_typed_hol_proof_tree/rules/beta} carry a lot of subtleties.
+  In this section, our main obstacle is the fundamental reliance on metalingual abbreviation, which requires us to work with several distinct syntaxes simultaneously. Furthermore, the rules \ref{inf:def:simply_typed_hol_proof/rules/r} and \ref{inf:def:simply_typed_hol_proof/rules/a4} carry a lot of subtleties.
 
   As in \fullref{sec:dependent_types}, formalizing the syntax of inference rules requires a more sophisticated approach than what we have available.
 \end{remark}
@@ -453,25 +453,25 @@
   The type of a (well-formed) \hyperref[def:freely_typed_lambda_term]{freely typed \( \muplambda \)-term} is unique.
 \end{proposition}
 \begin{proof}
-  Let \( T \) and \( T' \) be tree deriving \( M: \tau \) and \( M: \tau' \), correspondingly. We will show that \( T \) and \( T' \) coincide, from which it will also follow that \( \tau = \tau' \).
+  Let \( P \) and \( P' \) be tree deriving \( M: \tau \) and \( M: \tau' \), correspondingly. We will show that \( P \) and \( P' \) coincide, from which it will also follow that \( \tau = \tau' \).
 
   Assuming \( x \) is free in \( M \), we will also show that all annotations of \( x \) coincide.
 
-  For this, we must use \fullref{thm:induction_on_rooted_trees} on \( T \), simultaneously on all \( T' \):
+  For this, we must use \fullref{thm:induction_on_rooted_trees} on \( P \), simultaneously on all \( P' \):
   \begin{itemize}
-    \item If \( T \) is an application tree for \ref{inf:def:simply_typed_hol_typing/var}, then \( M = x^\tau \) for some variable \( x \) and type \( \tau \).
+    \item If \( P \) is an application tree for \ref{inf:def:simply_typed_hol_typing/var}, then \( M = x^\tau \) for some variable \( x \) and type \( \tau \).
 
-    In this case the only possibility for \( T' \) is to also be an application of \ref{inf:def:simply_typed_hol_typing/var}, and for \( T \) and \( T' \) to coincide.
+    In this case the only possibility for \( P' \) is to also be an application of \ref{inf:def:simply_typed_hol_typing/var}, and for \( P \) and \( P' \) to coincide.
 
-    \item If \( T \) is an application tree for \ref{inf:def:simply_typed_hol_typing/const}, then \( M \) is a nonlogical constant, and the only possibility for \( T' \) is to be an application of the same rule.
+    \item If \( P \) is an application tree for \ref{inf:def:simply_typed_hol_typing/const}, then \( M \) is a nonlogical constant, and the only possibility for \( P' \) is to be an application of the same rule.
 
-    \item If \( T \) is an application tree for \ref{inf:def:simply_typed_hol_typing/equality}, then \( M = \synQ N K \) for some \( \muplambda \)-terms \( N \) and \( K \), \( \tau = \omicron \) and \( T \) has subtrees \( T_N \) and \( T_K \) deriving \( N: \sigma \) and \( K: \sigma \) for some type \( \sigma \).
+    \item If \( P \) is an application tree for \ref{inf:def:simply_typed_hol_typing/equality}, then \( M = \synQ N K \) for some \( \muplambda \)-terms \( N \) and \( K \), \( \tau = \omicron \) and \( P \) has subtrees \( P_N \) and \( P_K \) deriving \( N: \sigma \) and \( K: \sigma \) for some type \( \sigma \).
 
-    Then \( T' \) must also be an application tree for \ref{inf:def:simply_typed_hol_typing/equality}. Then its subtrees \( T_N' \) and \( T_K' \) derive \( N: \sigma' \) and \( K: \sigma' \) for some type \( \sigma' \).
+    Then \( P' \) must also be an application tree for \ref{inf:def:simply_typed_hol_typing/equality}. Then its subtrees \( P_N' \) and \( P_K' \) derive \( N: \sigma' \) and \( K: \sigma' \) for some type \( \sigma' \).
 
-    Since the inductive hypothesis holds for \( T_N \) and \( T_K \), we can conclude that \( \sigma = \sigma' \), and therefore the two derivation trees in each pair coincide.
+    Since the inductive hypothesis holds for \( P_N \) and \( P_K \), we can conclude that \( \sigma = \sigma' \), and therefore the two derivation trees in each pair coincide.
 
-    \item If \( T \) is an application of \ref{inf:def:arrow_type/elim} or \ref{inf:def:arrow_type/intro/explicit}, we proceed as in \cref{thm:typed_term_habitation_uniqueness}.
+    \item If \( P \) is an application of \ref{inf:def:arrow_type/elim} or \ref{inf:def:arrow_type/intro/explicit}, we proceed as in \cref{thm:typed_term_habitation_uniqueness}.
   \end{itemize}
 \end{proof}
 
@@ -548,97 +548,100 @@
 \paragraph{Proofs in simply typed higher-order logic}
 
 \begin{definition}\label{def:simply_typed_hol_proof_tree}\mimprovised
-  We will now define a \hyperref[def:consequence_relation]{consequence relation} for \hyperref[def:simply_typed_hol_formula]{formulas} of \hyperref[def:simply_typed_hol]{simply typed higher-order logic} based on a combination of axiomatic derivations from \fullref{sec:propositional_axiomatic_derivations} and natural deduction from \fullref{sec:propositional_natural_deduction}.
+  We will now define a \hyperref[def:consequence_relation]{consequence relation} for \hyperref[def:simply_typed_hol_formula]{formulas} of \hyperref[def:simply_typed_hol]{simply typed higher-order logic} based on \hyperref[def:proof_tree]{proof trees}:
 
   \begin{thmenum}[series=def:simply_typed_hol_proof_tree]
-    \thmitem{def:simply_typed_hol_proof_tree/axioms} The following will act as axiom schemas:
-    \begin{align}
-      &\synP^{\syn\omicron \synimplies \syn\omicron}(\syntop) \synwedge \synP^{\syn\omicron \synimplies \syn\omicron}(\synbot) \syniff \qforall {\synx^{\syn\omicron}} \synP^{\syn\omicron \synimplies \syn\omicron}(\synx) \tag{\logic{A1}} \label{eq:def:simply_typed_hol_proof_tree/axioms/a1} \\
-      &(\synX^{\syn\tau} \syneq \synY^{\syn\tau}) \synimplies \qforall {\synp^{\syn\tau \synimplies \syn\omicron}} (\synp(\synX^{\syn\tau}) \syniff \synp(\synY^{\syn\tau})) \tag{\ensuremath{ \logic{A2} }} \label{eq:def:simply_typed_hol_proof_tree/axioms/a2} \\
-      &(\synF^{\syn\tau \synimplies \syn\sigma} \syneq \synG^{\syn\tau \synimplies \syn\sigma}) \syniff \qforall {\synx^{\syn\tau}} (\synF^{\syn\tau \synimplies \syn\sigma}(\synx) = \synG^{\syn\tau \synimplies \syn\sigma}(\synx)) \tag{\ensuremath{ \logic{A3} }} \label{eq:def:simply_typed_hol_proof_tree/axioms/a3}
-    \end{align}
-
-    These schemas generalize those for context-dependent typed \( \muplambda \)-terms from \cref{def:lambda_term_schema} by placing type annotations over \( \muplambda \)-term placeholders.
-
-    The schema \eqref{eq:def:simply_typed_hol_proof_tree/axioms/a2} is a form of the \enquote{indiscernibility of identicals} principle discussed in \cref{rem:identity_of_indiscernibles}, while \eqref{eq:def:simply_typed_hol_proof_tree/axioms/a3} is a form of function extensionality, which as a general principle we discuss in \cref{con:extensionality}.
-
-    Unsurprisingly, we refer to instances of an axiom schema as \term{axioms}.
-
     \thmitem{def:simply_typed_hol_proof_tree/reduction} We will need ad-hoc \( \muplambda \)-term reduction relations. Namely, for every pair of \( \muplambda \)-terms \( A \) and \( B \) and every set of variables \( V \), we define a reduction relation based on the following rule:
-    \begin{equation*}\taglabel[\ensuremath{ \logic{Red}_{A \mapsto_V B} }]{inf:def:simply_typed_hol_proof_tree/reduction/base}
+    \begin{equation*}\taglabel[\ensuremath{ \logic{Red}_{A \mapsto_V B} }]{inf:def:simply_typed_hol_proof/reduction/base}
       \begin{prooftree}
-        \infer0[\ref{inf:def:simply_typed_hol_proof_tree/reduction/base}]{ A \redrel{A \mapsto_V B} B }.
+        \infer0[\ref{inf:def:simply_typed_hol_proof/reduction/base}]{ A \redrel{A \mapsto_V B} B }.
       \end{prooftree}
     \end{equation*}
 
     As per \cref{def:typed_term_reduction}, we extend this relation via the rules \ref{inf:def:lambda_term_reduction/alpha}, \ref{inf:def:lambda_term_reduction/app_left} and \ref{inf:def:lambda_term_reduction/app_right}, but modify \ref{inf:def:typed_term_reduction/abs} as follows:
-    \begin{equation*}\taglabel[\ensuremath{ \logic{Abs}_{A \mapsto_V B} }]{inf:def:simply_typed_hol_proof_tree/reduction/abs}
+    \begin{equation*}\taglabel[\ensuremath{ \logic{Abs}_{A \mapsto_V B} }]{inf:def:simply_typed_hol_proof/reduction/abs}
       \begin{prooftree}
         \hypo{ M \redrel{A \mapsto_V B} N }
         \hypo{ x \not\in V }
-        \infer2[\ref{inf:def:simply_typed_hol_proof_tree/reduction/abs}]{ \qabs {x^\tau} M \redrel{A \mapsto_V B} \qabs {x^\tau} N }.
+        \infer2[\ref{inf:def:simply_typed_hol_proof/reduction/abs}]{ \qabs {x^\tau} M \redrel{A \mapsto_V B} \qabs {x^\tau} N }.
       \end{prooftree}
     \end{equation*}
 
     The reduction relation \( {\redrel{A \mapsto_V B}} \) replaces a single occurrence of \( A \) with \( B \), as long as it is not in the body of an abstraction whose variable lies in \( V \).
 
-    \thmitem{def:simply_typed_hol_proof_tree/rules} We will rely on the following \hyperref[def:inference_rule]{inference rules}:
-    \begin{paracol}{3}
-      \begin{nthcolumn}{0}
-        \ParacolAlignmentHack
-        \begin{equation*}\taglabel[\ensuremath{ \logic{A}_n }]{inf:def:simply_typed_hol_proof_tree/rules/an}
-          \begin{prooftree}
-            \infer0[\ref{inf:def:simply_typed_hol_proof_tree/rules/an}]{ M },
-          \end{prooftree}
-        \end{equation*}
-        where \( M \) is an instance of axiom \( \logic{A}n \), \( n = 1, 2, 3 \).
-      \end{nthcolumn}
+    \thmitem{def:simply_typed_hol_proof_tree/rules} We will rely on the following base \hyperref[def:inference_rule]{inference rules}:
 
-      \begin{nthcolumn}{1}
-        \ParacolAlignmentHack
-        \begin{equation*}\taglabel[\ensuremath{ \logic{A}_4 }]{inf:def:simply_typed_hol_proof_tree/rules/beta}
-          \begin{prooftree}
-            \infer0[\ref{inf:def:simply_typed_hol_proof_tree/rules/beta}]{ M \syneq N },
-          \end{prooftree}
-        \end{equation*}
-        where \( M \bred N \).
-      \end{nthcolumn}
+    \begin{thmenum}
+      \thmitem{def:simply_typed_hol_proof_tree/rules/a1} The following rule enumerates the possible truth values in \( \syn\omicron \):
+      \begin{equation*}\taglabel[\ensuremath{ \logic{A}_1 }]{inf:def:simply_typed_hol_proof/rules/a1}
+        \begin{prooftree}
+          \infer0[\ref{inf:def:simply_typed_hol_proof/rules/a1}]{ (P \syntop \synwedge P \synbot) \syniff \qforall {x^{\syn\omicron}} P x },
+        \end{prooftree}
+      \end{equation*}
+      where \( P \) inhabits \( \syn\omicron \synimplies \syn\omicron \) and \( x^{\syn\omicron} \) is not free in \( P \).
 
-      \begin{nthcolumn}{2}
-        \ParacolAlignmentHack
-        \begin{equation*}\taglabel[\ensuremath{ \logic{R} }]{inf:def:simply_typed_hol_proof_tree/rules/r}
-          \begin{prooftree}
-            \hypo{ M }
-            \hypo{ A \syneq B }
-            \infer2[\ref{inf:def:simply_typed_hol_proof_tree/rules/r}]{ N },
-          \end{prooftree}
-        \end{equation*}
-        where \( M \redrel{A \mapsto B}_\Gamma N \).
-      \end{nthcolumn}
-    \end{paracol}
+      \thmitem{def:simply_typed_hol_proof_tree/rules/a2} The following is a form of the \enquote{indiscernibility of identicals} principle discussed in \cref{rem:identity_of_indiscernibles}:
+      \begin{equation*}\taglabel[\ensuremath{ \logic{A}_2 }]{inf:def:simply_typed_hol_proof/rules/a2}
+        \begin{prooftree}
+          \infer0[\ref{inf:def:simply_typed_hol_proof/rules/a2}]{ (M \syneq N) \synimplies (PM \syniff PN) },
+        \end{prooftree}
+      \end{equation*}
+      where \( M \) and \( N \) both inhabit \( \tau \) and \( P \) inhabits \( \tau \synimplies \syn\omicron \).
 
-    In \ref{inf:def:simply_typed_hol_proof_tree/rules/r}, \( A \), \( B \) and \( V \) are parameters that should be provided when applying the rule.
+      \thmitem{def:simply_typed_hol_proof_tree/rules/a3} The following is a form of function extensionality, which as a general principle we discuss in \cref{con:extensionality}:
+      \begin{equation*}\taglabel[\ensuremath{ \logic{A}_3 }]{inf:def:simply_typed_hol_proof/rules/a3}
+        \begin{prooftree}
+          \infer0[\ref{inf:def:simply_typed_hol_proof/rules/a3}]{ (F \syneq G) \syniff \qforall {x^\tau} (Fx \syneq Gx) },
+        \end{prooftree}
+      \end{equation*}
+      where \( F \) and \( G \) both inhabit \( \tau \synimplies \sigma \) for some types \( \tau \) and \( \sigma \), and \( x^\tau \) is free in neither.
 
-    \thmitem{def:simply_typed_hol_proof_tree/proof} \hyperref[con:proof_tree]{Proof trees} for \hyperref[def:simply_typed_hol_formula]{formulas of simply typed higher-order logic} are rather simple since no discharging or eigenvalues are involved, but the intricacies of the rules makes them hard to formalize.
+      \thmitem{def:simply_typed_hol_proof_tree/rules/reduction} The following two rules allow using reduction relations:
+      \begin{paracol}{2}
+        \begin{leftcolumn}
+          \ParacolAlignmentHack
+          \begin{equation*}\taglabel[\ensuremath{ \logic{A}_4 }]{inf:def:simply_typed_hol_proof/rules/a4}
+            \begin{prooftree}
+              \infer0[\ref{inf:def:simply_typed_hol_proof/rules/a4}]{ M \syneq N },
+            \end{prooftree}
+          \end{equation*}
+          where \( M \bred* N \).
+        \end{leftcolumn}
 
-    To use the rule \ref{inf:def:simply_typed_hol_proof_tree/rules/r}, we fix arbitrary \( \muplambda \)-terms \( A \) and \( B \) of the same type and define
+        \begin{rightcolumn}
+          \ParacolAlignmentHack
+          \begin{equation*}\taglabel[\ensuremath{ \logic{R} }]{inf:def:simply_typed_hol_proof/rules/r}
+            \begin{prooftree}
+              \hypo{ M }
+              \hypo{ A \syneq B }
+              \infer2[\ref{inf:def:simply_typed_hol_proof/rules/r}]{ N },
+            \end{prooftree}
+          \end{equation*}
+          where \( M \redrel{A \mapsto B}_\Gamma N \).
+        \end{rightcolumn}
+      \end{paracol}
+    \end{thmenum}
+
+    In \ref{inf:def:simply_typed_hol_proof/rules/r}, \( A \), \( B \) and \( V \) are parameters that should be provided when applying the rule.
+
+    \thmitem{def:simply_typed_hol_proof_tree/proof} \hyperref[con:proof_tree]{Proof trees} for \hyperref[def:simply_typed_hol_formula]{formulas of simply typed higher-order logic} are rather simple since no discharging\fnote{Some derived rules will have dischargeable assumptions, for example \cref{thm:simply_typed_hol_natural_deduction}.} or eigenvalues are involved, but the intricacies of the rules makes them hard to formalize.
+
+    To use the rule \ref{inf:def:simply_typed_hol_proof/rules/r}, we fix arbitrary \( \muplambda \)-terms \( A \) and \( B \) of the same type and define
     \begin{equation*}
       V \coloneqq \parens[\Big]{ \op*{Free}(A) \cup \op*{Free}(B) } \cap \bigcup_{M \in \Gamma} \op*{Free}(M),
     \end{equation*}
-    where \( \Gamma \) is the set of assumptions of the premise subtrees of \( A \) and \( B \).
+    where \( \Gamma \) is the set of open assumptions of the premise subtrees of \( A \) and \( B \).
 
-    \Fullref{thm:simply_typed_hol_equal} shows that the conclusion of any rule application is itself a formula.
+    \Cref{thm:simply_typed_hol_proof_produce_formulas} shows that the conclusion of any rule application is itself a formula.
 
-    \thmitem{def:simply_typed_hol_proof_tree/consequence} Finally, we let \( \Gamma \vdash \varphi \) if there exists a proof tree with conclusion \( \varphi \) whose assumptions are in \( \Gamma \).
+    \thmitem{def:simply_typed_hol_proof_tree/consequence} Finally, we let \( \Gamma \vdash \varphi \) if there exists a proof tree with conclusion \( \varphi \) whose open assumptions are in \( \Gamma \).
   \end{thmenum}
 \end{definition}
 \begin{defproof}
   We can prove that \( {\vdash} \) is indeed a \hyperref[def:consequence_relation]{consequence relation} similarly to how we have done this for propositional logic in \cref{def:axiomatic_derivation_entailment}.
 \end{defproof}
 \begin{comments}
-  \item This definition is amalgamated from all \hyperref[con:logical_system]{logical systems} discussed in \cref{rem:simply_typed_hol}. Namely, the axiom schemas \eqref{eq:def:simply_typed_hol_proof_tree/axioms/a1}, \eqref{eq:def:simply_typed_hol_proof_tree/axioms/a2} and \eqref{eq:def:simply_typed_hol_proof_tree/axioms/a3} are adaptations of the eponymous axioms from Henkin's paper \cite[37]{Henkin1975Identity}. They are also found in Andrew's system \( \logic{Q}_0 \) from \cite[\S 51]{Andrews2002Logic} and Farmer's system from \cite[278]{Farmer2008STTVirtues}.
-
-  All the above feature a fourth axiom allowing \( \beta \)-reduction. We could not easily adapt this axiom to our underlying formalisms, but fortunately our extensive discussion of \( \beta \)-reduction in \fullref{sec:lambda_term_reductions} and \fullref{sec:simply_typed_subject_reduction} allowed us to very simply state the rule \ref{inf:def:simply_typed_hol_proof_tree/rules/beta} instead.
+  \item This definition is amalgamated from all \hyperref[con:logical_system]{logical systems} discussed in \cref{rem:simply_typed_hol} and adapted to use \hyperref[con:proof_tree]{proof trees}. Namely, the rules \ref{inf:def:simply_typed_hol_proof/rules/a1}, \ref{inf:def:simply_typed_hol_proof/rules/a2}, \ref{inf:def:simply_typed_hol_proof/rules/a3} and \eqref{eq:def:simply_typed_hol_proof_tree/axioms/a4} are presented as axioms in Henkin's paper \cite[37]{Henkin1975Identity}. They are also found in Andrew's system \( \logic{Q}_0 \) from \cite[\S 51]{Andrews2002Logic} and Farmer's system from \cite[278]{Farmer2008STTVirtues}.
 
   All the above systems imitate an axiomatic derivation system by listing several axiom schemas and only one rule. Namely, all the above systems feature \enquote{rule R}. For example, \incite[213]{Andrews2002Logic} postulates the following:
   \begin{displayquote}
@@ -650,32 +653,34 @@
     (Rule R') If \( \mscrH \vdash \mathbf{A_\alpha} = \mathbf{B_\alpha} \), and \( \mscrH \vdash \mathbf{C} \), and \( \mathbf{D} \) is obtained from \( \mathbf{C} \) by replacing one occurrence of \( \mathbf{A_\alpha} \) in \( \mathbf{C} \) by an occurrence of \( \mathbf{B_\alpha} \), then \( \mscrH \vdash \mathbf{A_\alpha} \), provided that the occurrence of \( \mathbf{A_\alpha} \) in \( \mathbf{C} \) is not a variable immediately preceded by \( \mathbf{\muplambda} \), and the occurrence of \( \mathbf{A_\alpha} \) in \( \mathbf{C} \) is not in a wf part \( [\mathbf{\muplambda x_\beta E_\gamma}] \) of \( \mathbf{C} \), where \( \mathbf{x_\beta} \) is free in a member of \( \mscrH \) and free in \( \mathbf{A_\alpha} = \mathbf{B_\alpha} \).
   \end{displayquote}
 
-  Here we have again relied on our extensive discussion of reductions in order to define an appropriate relation \( M \redrel{A \mapsto_\Gamma B} N \), apt for stating \ref{inf:def:simply_typed_hol_proof_tree/rules/r}.
+  Here we have again relied on our extensive discussion of reductions in order to define an appropriate relation \( M \redrel{A \mapsto_\Gamma B} N \), apt for stating \ref{inf:def:simply_typed_hol_proof/rules/r}.
+
+  Additionally, to reduce the required number of \( \beta \)-reductions, compared to Andrews, we allow multi-step \( \beta \)-reduction in \ref{inf:def:simply_typed_hol_proof/rules/a4}, and use term placeholders instead of substitutable variables in the other three \enquote{axiom rules}.
 \end{comments}
 
-\begin{proposition}\label{thm:simply_typed_hol_equal}
+\begin{proposition}\label{thm:simply_typed_hol_proof_produce_formulas}
   Fix a set \( \Gamma \) of \hyperref[def:simply_typed_hol_formula]{simply typed higher-order logic formulas} (i.e. freely typed \( \muplambda \)-terms inhabiting \( \syn\omicron \) according to the rules in \cref{def:simply_typed_hol_typing}).
 
   Suppose that \( \Gamma \vdash \varphi \) in the corresponding \hyperref[def:simply_typed_hol_proof_tree]{derivation system}. Then \( \varphi \) is also a formula.
 \end{proposition}
 \begin{proof}
-  Let \( T \) be a proof tree deriving \( M \) from \( \Gamma \).
+  Let \( P \) be a proof tree deriving \( M \) from \( \Gamma \).
 
-  We will use \fullref{thm:induction_on_rooted_trees} on \( T \) to show that \( M \) is well-formed.
+  We will use \fullref{thm:induction_on_rooted_trees} on \( P \) to show that \( M \) is well-formed.
   \begin{itemize}
-    \item If \( T \) is an assumption tree for some premise in \( \Gamma \), this premise is by assumption a formula, so there is nothing to prove.
+    \item If \( P \) is an assumption tree for some premise in \( \Gamma \), this premise is by assumption a formula, so there is nothing to prove.
 
-    \item If \( T \) is an application tree for \ref{inf:def:simply_typed_hol_proof_tree/rules/an} with \( n = 1 \), then \( M \) is an instance of the schema \eqref{eq:def:simply_typed_hol_proof_tree/axioms/a1}. As such, if the term placeholders are instantiated in accordance with their type annotations, by construction \( M \) is a formula.
+    \item If \( P \) is an application tree for \ref{inf:def:simply_typed_hol_proof/rules/a1}, then \( M \) is an instance of the schema \eqref{eq:def:simply_typed_hol_proof_tree/axioms/a1}. As such, if the term placeholders are instantiated in accordance with their type annotations, by construction \( M \) is a formula.
 
-    \item If \( T \) is an application tree for \ref{inf:def:simply_typed_hol_proof_tree/rules/an} with \( n = 2 \), then \( M \) is an instance of \eqref{eq:def:simply_typed_hol_proof_tree/axioms/a2}, and we analogously conclude that \( M \) is a formula.
+    \item If \( P \) is an application tree for \ref{inf:def:simply_typed_hol_proof/rules/a2}, then \( M \) is an instance of \eqref{eq:def:simply_typed_hol_proof_tree/axioms/a2}, and we analogously conclude that \( M \) is a formula.
 
-    \item If \( T \) is an application tree for \ref{inf:def:simply_typed_hol_proof_tree/rules/an} with \( n = 3 \), we again proceed similarly.
+    \item If \( P \) is an application tree for \ref{inf:def:simply_typed_hol_proof/rules/a3}, we again proceed similarly.
 
-    \item If \( T \) is an application tree for \ref{inf:def:simply_typed_hol_proof_tree/rules/beta}, then \( M = (N \syneq K) \), where \( N \bred K \).
+    \item If \( P \) is an application tree for \ref{inf:def:simply_typed_hol_proof/rules/a4}, then \( M = (N \syneq K) \), where \( N \bred K \).
 
     \Fullref{alg:simply_typed_reduction} shows how \( K \) has the same type as \( N \), so \( M \) inhabits \( \syn\omicron \) due to \ref{inf:def:simply_typed_hol_typing/equality}.
 
-    \item Finally, if \( T \) is an application tree for \ref{inf:def:simply_typed_hol_proof_tree/rules/r}, then \( N \redrel{A \mapsto_V B} M \), where the premises \( T_N \) and \( T_{A \syneq B} \) of \( T \) derive the formulas \( N \) and \( A \syneq B \), correspondingly.
+    \item Finally, if \( P \) is an application tree for \ref{inf:def:simply_typed_hol_proof/rules/r}, then \( N \redrel{A \mapsto_V B} M \), where the premises \( P_N \) and \( P_{A \syneq B} \) of \( P \) derive the formulas \( N \) and \( A \syneq B \), correspondingly.
 
     Since \( A \syneq B \) is well-formed, \( A \) and \( B \) inhabit the same type; then, by an extension of \fullref{alg:simply_typed_substitution}, we can conclude that \( M \) inhabits the same type as \( N \).
 
@@ -683,51 +688,72 @@
   \end{itemize}
 \end{proof}
 
-\begin{proposition}\label{thm:simply_typed_hol_equality}
-  Equality in \hyperref[def:simply_typed_hol]{simply typed higher-order logic} acts like an \hyperref[def:equivalence_relation]{equivalence relation} with respect to \hyperref[def:simply_typed_hol_proof_tree]{derivability}. More precisely:
+\begin{proposition}\label{thm:simply_typed_hol_equality_derivation}
+  Equality in \hyperref[def:simply_typed_hol]{simply typed higher-order logic} acts like an \hyperref[def:equivalence_relation]{equivalence relation} with respect to \hyperref[def:simply_typed_hol_proof_tree]{derivability}. More precisely, the following rules are \hyperref[con:inference_rule_admissibility]{admissible}:
 
-  \begin{thmenum}
-    \thmitem{thm:simply_typed_hol_equality/reflexivity}\mcite[prop. 5200]{Andrews2002Logic} \hyperref[def:relation_closures/reflexive]{Reflexivity}: for any (freely typed) \( \muplambda \)-term \( M \), we have \( \vdash M \syneq M \).
+  \begin{paracol}{3}
+    \begin{nthcolumn}{0}
+      \ParacolAlignmentHack
+      \begin{equation*}\taglabel[\ensuremath{ \logic{HOL}_{=R} }]{inf:thm:simply_typed_hol_equality_derivation/reflexivity}
+        \begin{prooftree}
+          \infer0[\ref{inf:thm:simply_typed_hol_equality_derivation/reflexivity}]{ M \syneq M }.
+        \end{prooftree}
+      \end{equation*}
+    \end{nthcolumn}
 
-    \thmitem{thm:simply_typed_hol_equality/symmetry} \hyperref[def:relation_closures/symmetric]{Symmetry}: we have \( M \syneq N \vdash N \syneq M \).
+    \begin{nthcolumn}{1}
+      \ParacolAlignmentHack
+      \begin{equation*}\taglabel[\ensuremath{ \logic{HOL}_{=S} }]{inf:thm:simply_typed_hol_equality_derivation/symmetry}
+        \begin{prooftree}
+          \hypo{ M \syneq N }
+          \infer1[\ref{inf:thm:simply_typed_hol_equality_derivation/symmetry}]{ N \syneq M }.
+        \end{prooftree}
+      \end{equation*}
+    \end{nthcolumn}
 
-    \thmitem{thm:simply_typed_hol_equality/transitivity} \hyperref[def:relation_closures/transitive]{Transitivity}: we have \( M \syneq N, N \syneq K \vdash M \syneq K \).
-  \end{thmenum}
+    \begin{nthcolumn}{2}
+      \ParacolAlignmentHack
+      \begin{equation*}\taglabel[\ensuremath{ \logic{HOL}_{=T} }]{inf:thm:simply_typed_hol_equality_derivation/transitivity}
+        \begin{prooftree}
+          \hypo{ M \syneq N }
+          \hypo{ N \syneq K }
+          \infer2[\ref{inf:thm:simply_typed_hol_equality_derivation/transitivity}]{ M \syneq K }.
+        \end{prooftree}
+      \end{equation*}
+    \end{nthcolumn}
+  \end{paracol}
 \end{proposition}
 \begin{proof}
-  \SubProofOf{thm:simply_typed_hol_equality/reflexivity} Let \( \tau \) be the type of \( M \). Then
+  \SubProofOf{inf:thm:simply_typed_hol_equality_derivation/reflexivity} Let \( \tau \) be the type of \( M \). Then
   \begin{equation*}
     \begin{prooftree}
-      \infer0[\ref{inf:def:simply_typed_hol_proof_tree/rules/beta}]{ (\qabs {\synx^\tau} \synx) M \syneq M }
-      \infer0[\ref{inf:def:simply_typed_hol_proof_tree/rules/beta}]{ (\qabs {\synx^\tau} \synx) M \syneq M }
-      \infer2[\ref{inf:def:simply_typed_hol_proof_tree/rules/r}]{ M \syneq M }
+      \infer0[\ref{inf:def:simply_typed_hol_proof/rules/a4}]{ (\qabs {\synx^\tau} \synx) M \syneq M }
+      \infer0[\ref{inf:def:simply_typed_hol_proof/rules/a4}]{ (\qabs {\synx^\tau} \synx) M \syneq M }
+      \infer2[\ref{inf:def:simply_typed_hol_proof/rules/r}]{ M \syneq M }
     \end{prooftree}
   \end{equation*}
 
-  \SubProofOf{thm:simply_typed_hol_equality/symmetry}
+  \SubProofOf{inf:thm:simply_typed_hol_equality_derivation/symmetry}
   \begin{equation*}
     \begin{prooftree}
-      \hypo{}
-      \ellipsis { \ref{thm:simply_typed_hol_equality/reflexivity} } { M \syneq M }
-
+      \infer0[\ref{inf:thm:simply_typed_hol_equality_derivation/reflexivity}]{ M \syneq M }
       \hypo{ M \syneq N }
-
-      \infer2[\ref{inf:def:simply_typed_hol_proof_tree/rules/r}]{ N \syneq M }
+      \infer2[\ref{inf:def:simply_typed_hol_proof/rules/r}]{ N \syneq M }
     \end{prooftree}
   \end{equation*}
 
-  \SubProofOf{thm:simply_typed_hol_equality/transitivity}
+  \SubProofOf{inf:thm:simply_typed_hol_equality_derivation/transitivity}
   \begin{equation*}
     \begin{prooftree}
       \hypo{ M \syneq N }
       \hypo{ N \syneq K }
-      \infer2[\ref{inf:def:simply_typed_hol_proof_tree/rules/r}]{ M \syneq K }
+      \infer2[\ref{inf:def:simply_typed_hol_proof/rules/r}]{ M \syneq K }
     \end{prooftree}
   \end{equation*}
 \end{proof}
 
 \begin{remark}\label{rem:simply_typed_hol_syntactic_metalogical_consequence}
-  Since \cref{thm:simply_typed_hol_equality} did not involve substitution under quantifiers, we were able to deduce
+  Since \cref{thm:simply_typed_hol_equality_derivation} did not involve substitution under quantifiers, we were able to deduce
   \begin{equation*}
     M \syneq N, N \syneq K \vdash M \syneq K.
   \end{equation*}
@@ -737,7 +763,7 @@
     \begin{prooftree}
       \hypo{ M \syneq N }
       \hypo{ N \syneq K }
-      \infer2[\ref{inf:def:simply_typed_hol_proof_tree/rules/r}]{ M \syneq K }
+      \infer2[\ref{inf:def:simply_typed_hol_proof/rules/r}]{ M \syneq K }
     \end{prooftree}
   \end{equation*}
 
@@ -746,20 +772,20 @@
     \vdash M \syneq N \thinspace \T{and} {}\vdash N \syneq K \thinspace \T{entail} {}\vdash M \syneq K.
   \end{equation*}
 
-  This instead requires us to assume that \( M \syneq N \) and \( N \syneq K \) have proofs without assumptions, and then deduce \( M \syneq K \), again without assumptions. This is done quite easily --- if \( T_{M \syneq N} \) is the proof tree of \( M \syneq N \) and \( T_{N \syneq K} \) --- of \( N \syneq K \), then
+  This instead requires us to assume that \( M \syneq N \) and \( N \syneq K \) have proofs without assumptions, and then deduce \( M \syneq K \), again without assumptions. This is done quite easily --- if \( P_{M \syneq N} \) is the proof tree of \( M \syneq N \) and \( P_{N \syneq K} \) --- of \( N \syneq K \), then
   \begin{equation*}
     \begin{prooftree}
       \hypo{}
-      \ellipsis { \( T_{M \syneq N} \) } { M \syneq N }
+      \ellipsis { \( P_{M \syneq N} \) } { M \syneq N }
 
       \hypo{}
-      \ellipsis { \( T_{N \syneq K} \) } { N \syneq K }
+      \ellipsis { \( P_{N \syneq K} \) } { N \syneq K }
 
-      \infer2[\ref{inf:def:simply_typed_hol_proof_tree/rules/r}]{ M \syneq K }
+      \infer2[\ref{inf:def:simply_typed_hol_proof/rules/r}]{ M \syneq K }
     \end{prooftree}
   \end{equation*}
 
-  All we needed to do was to assume that proof trees for \( M \syneq N \) and \( N \syneq K \) exist and to replace the corresponding assumptions with these proof trees.
+  All we needed to do was to suppose that proof trees for \( M \syneq N \) and \( N \syneq K \) exist and to replace the corresponding assumptions with these proof trees.
 
   This is an instance of the cut-like transitivity property \eqref{eq:def:consequence_relation/transitivity} of \hyperref[def:consequence_relation]{consequence relations}.
 
@@ -772,140 +798,414 @@
   \begin{equation*}
     M \syneq N \vdash M[x^\tau \mapsto K] \syneq N[x^\tau \mapsto K],
   \end{equation*}
-  but only if \( x^\tau \) is not free in \( M \) or \( N \). Otherwise, the preconditions of applying \ref{inf:def:simply_typed_hol_proof_tree/rules/r} will not be satisfied.
+  but only if \( x^\tau \) is not free in \( M \) or \( N \). Otherwise, the preconditions of applying \ref{inf:def:simply_typed_hol_proof/rules/r} will not be satisfied.
 
   This is also justified semantics-wise, since the valuation of \( f^{\tau \synimplies \syn\omicron}(x^\tau) \) may equal that of \( g^{\tau \synimplies \syn\omicron}(x^\tau) \), but may differ if we replace \( x^\tau \) with \( K \).
 \end{remark}
 
 \begin{proposition}\label{thm:simply_typed_hol_derivations}
-  The \hyperref[def:simply_typed_hol_proof_tree]{simply typed higher-order logic derivation system} allows the following derivations:
-  \begin{thmenum}
-    \thmitem{thm:simply_typed_hol_derivations/substitution_of_equal_terms} Fix \( \muplambda \)-terms \( M \) and \( N \) inhabiting the same type and suppose that \( K \) inhabits \( \tau \). Then, for any variable \( x^\tau \), we have
-    \begin{equation}\label{eq:thm:simply_typed_hol_derivations/substitution_of_equal_terms}
-      \vdash M \syneq N \thinspace \T{entails} {}\vdash M[x^\tau \mapsto K] \syneq N[x^\tau \mapsto K].
-    \end{equation}
+  We will list here some miscellaneous derivations in the \hyperref[def:simply_typed_hol_proof_tree]{simply typed higher-order logic derivation system}.
 
-    \thmitem{thm:simply_typed_hol_derivations/refl_iff_top}\mcite[prop. 5210]{Andrews2002Logic} For any \( \muplambda \)-term \( M \), we have
-    \begin{equation}\label{eq:thm:simply_typed_hol_derivations/refl_iff_top}
-      \syntop \syniff (M \syneq M)
-    \end{equation}
+  The following are more useful and are stated as  \hyperref[con:inference_rule_admissibility]{admissible rules}:
+  \begin{thmenum}[series=thm:simply_typed_hol_derivations]
+    \thmitem{thm:simply_typed_hol_derivations/application} \( \muplambda \)-term application is compatible with equality:
+    \begin{equation*}\taglabel[\ensuremath{ \logic{HOL}_{=\logic{app}} }]{inf:thm:simply_typed_hol_derivations/application}
+      \begin{prooftree}
+        \hypo{ M \syneq N }
+        \hypo{ K \syneq L }
+        \infer2[\ref{inf:thm:simply_typed_hol_derivations/application}]{ MK \syneq NL },
+      \end{prooftree}
+    \end{equation*}
+    where \( M \) and \( N \) inhabit \( \tau \synimplies \sigma \) for some \( \tau \) and \( \sigma \), while \( K \) and \( L \) inhabit \( \tau \).
 
-    \thmitem{thm:simply_typed_hol_derivations/top_elimination}\mcite[prop. 5218]{Andrews2002Logic} For any formula \( \varphi \), we have
-    \begin{equation}\label{eq:thm:simply_typed_hol_derivations/top_elimination}
-      \vdash \varphi \syniff (\syntop \syniff \varphi).
-    \end{equation}
+    \thmitem{thm:simply_typed_hol_derivations/alpha} Two \( \alpha \)-equivalent \( \muplambda \)-terms can be substituted:
+    \begin{equation*}\taglabel[\ensuremath{ \logic{HOL}_\alpha }]{inf:thm:simply_typed_hol_derivations/alpha}
+      \begin{prooftree}
+        \hypo{ M }
+        \infer1[\ref{inf:thm:simply_typed_hol_derivations/alpha}]{ N },
+      \end{prooftree}
+    \end{equation*}
+    where \( M \aequiv N \).
+
+    \thmitem{thm:simply_typed_hol_derivations/beta} A \( \beta \)-redex can be substituted for its \( \beta \)-contractum:
+    \begin{equation*}\taglabel[\ensuremath{ \logic{HOL}_\beta }]{inf:thm:simply_typed_hol_derivations/beta}
+      \begin{prooftree}
+        \hypo{ M }
+        \infer1[\ref{inf:thm:simply_typed_hol_derivations/beta}]{ N },
+      \end{prooftree}
+    \end{equation*}
+    where \( M \bred N \).
+
+    \thmitem{thm:simply_typed_hol_derivations/eta_intro} An \( \eta \)-redex equals its \( \eta \)-contractum:
+    \begin{equation*}\taglabel[\ensuremath{ \logic{HOL}_{\eta+} }]{inf:thm:simply_typed_hol_derivations/eta_intro}
+      \begin{prooftree}
+        \infer0[\ref{inf:thm:simply_typed_hol_derivations/eta_intro}]{ \qabs {x^\tau} M x \syneq M },
+      \end{prooftree}
+    \end{equation*}
+    where \( M \) inhabits \( \tau \synimplies \sigma \) for some \( \tau \) and \( \sigma \) and, more importantly, where \( x^\tau \) is not free in \( M \).
+
+    \thmitem{thm:simply_typed_hol_derivations/beta_compat} \( \beta \)-reduction is compatible with equality:
+    \begin{equation*}\taglabel[\ensuremath{ \logic{HOL}_{=\beta} }]{inf:thm:simply_typed_hol_derivations/beta_compat}
+      \begin{prooftree}
+        \hypo{ M \syneq N }
+        \infer1[\ref{inf:thm:simply_typed_hol_derivations/beta_compat}]{ K \syneq L },
+      \end{prooftree}
+    \end{equation*}
+    where \( M \bred K \) and \( N \bred L \).
+
+    \thmitem{thm:simply_typed_hol_derivations/conjunction} Conjunction is compatible with equality:
+    \begin{equation*}\taglabel[\ensuremath{ \logic{HOL}_{=\wedge} }]{inf:thm:simply_typed_hol_derivations/conjunction}
+      \begin{prooftree}
+        \hypo{ M \syneq N }
+        \hypo{ K \syneq L }
+        \infer2[\ref{inf:thm:simply_typed_hol_derivations/conjunction}]{ (M \syneq N) \synwedge (K \syneq L) }
+      \end{prooftree}
+    \end{equation*}
+
+    \thmitem{thm:simply_typed_hol_derivations/top_intro} We can introduce the verum \( \syntop \):
+    \begin{equation*}\taglabel[\ensuremath{ \logic{HOL}_{\top+} }]{inf:thm:simply_typed_hol_derivations/top_intro}
+      \begin{prooftree}
+        \infer0[\ref{inf:thm:simply_typed_hol_derivations/top_intro}]{ \syntop },
+      \end{prooftree}
+    \end{equation*}
+
+    \thmitem{thm:simply_typed_hol_derivations/forall_elim} We can eliminate universal quantification:
+    \begin{equation*}\taglabel[\ensuremath{ \logic{HOL}_{\forall-} }]{inf:thm:simply_typed_hol_derivations/forall_elim}
+      \begin{prooftree}
+        \hypo{ \qabs {x^\tau} M }
+        \infer1[\ref{inf:thm:simply_typed_hol_derivations/forall_elim}]{ M[x^\tau \mapsto N] },
+      \end{prooftree}
+    \end{equation*}
+    where \( N \) inhabits \( \tau \).
+
+    \thmitem{thm:simply_typed_hol_derivations/forall_intro} We can eliminate universal quantification:
+    \begin{equation*}\taglabel[\ensuremath{ \logic{HOL}_{\forall+} }]{inf:thm:simply_typed_hol_derivations/forall_intro}
+      \begin{prooftree}
+        \hypo{ \varphi[x^\tau \mapsto y^\tau] }
+        \infer1[\ref{inf:thm:simply_typed_hol_derivations/forall_elim}]{ \qabs {x^\tau} \varphi },
+      \end{prooftree}
+    \end{equation*}
+    where
+    \begin{itemize}
+      \item either \( x^\tau = y^\tau \) or \( y^\tau \) is not free in \( \varphi \).
+      \item \( y^\tau \) is not free in any open assumption.
+    \end{itemize}
   \end{thmenum}
+
+  The following \hyperref[rem:natural_deduction_explicit_sequents]{explicit sequent} rules govern the consequence relation itself --- as per \cref{rem:simply_typed_hol_syntactic_metalogical_consequence}, they allow replacing proof trees rather than combining them:
+  \begin{thmenum}[resume=thm:simply_typed_hol_derivations]
+    \thmitem{thm:simply_typed_hol_derivations/substitution_of_equal_terms} We can replace the proof of an equality \( \muplambda \)-term with a proof of its valid substitutions without changing the assumptions:
+    \begin{equation*}\taglabel[\ensuremath{ \logic{HOL}_{\mapsto}^\vdash }]{inf:thm:simply_typed_hol_derivations/substitution_of_equal_terms}
+      \begin{prooftree}
+        \hypo{ \Gamma \vdash M \syneq N }
+        \infer1[\ref{inf:thm:simply_typed_hol_derivations/substitution_of_equal_terms}]{ \Gamma \vdash M[x^\tau \mapsto K] \syneq N[x^\tau \mapsto K] },
+      \end{prooftree}
+    \end{equation*}
+    where \( K \) inhabits \( \tau \) and \( x^\tau \) is not free in any formula in \( \Gamma \).
+  \end{thmenum}
+
+  Finally, the following formulas are derivable without assumptions (but their obscure usage does not justify stating them as rules):
+  \begin{align}
+    (M \syneq M)                &\syniff \syntop \label{eq:thm:simply_typed_hol_derivations/refl_iff_top} \\
+    (\syntop \synwedge \syntop) &\syniff \syntop \label{eq:thm:simply_typed_hol_derivations/top_and_top} \\
+    (\syntop \synwedge \synbot) &\syniff \synbot \label{eq:thm:simply_typed_hol_derivations/top_and_bot} \\
+    (\syntop \synwedge \varphi) &\syniff \varphi \label{eq:thm:simply_typed_hol_derivations/top_and_phi} \\
+    (\syntop \syneq \syntop)    &\syniff \syntop \label{eq:thm:simply_typed_hol_derivations/top_eq_top} \\
+    (\syntop \syneq \synbot)    &\syniff \synbot \label{eq:thm:simply_typed_hol_derivations/top_eq_bot} \\
+    (\syntop \syneq \varphi)    &\syniff \varphi \label{eq:thm:simply_typed_hol_derivations/top_eq_phi}
+  \end{align}
+
+  As in the rules above, \( M \) is an arbitrary \( \muplambda \)-term and \( \varphi \) is an arbitrary formula.
 \end{proposition}
+\begin{comments}
+  \item Most of these are based on \bycite[\S 52]{Andrews2002Logic}. Because of the lack of space, the references to the corresponding statements in Andrew's book for the formulas are given in their proof.
+\end{comments}
 \begin{proof}
-  \SubProofOf{thm:simply_typed_hol_derivations/substitution_of_equal_terms} Suppose that \( T_{M \syneq N} \) derives \( M \syneq N \) (without assumptions). Then the following tree derives \( M[x^\tau \mapsto K] \syneq N[x^\tau \mapsto K] \):
+  \SubProofOf{thm:simply_typed_hol_derivations/application}
+  \begin{equation*}
+    \begin{prooftree}
+      \infer0[\ref{inf:thm:simply_typed_hol_equality_derivation/reflexivity}]{ MK \syneq MK }
+      \hypo{ M \syneq N }
+      \infer2[\ref{inf:def:simply_typed_hol_proof/rules/r}]{ MK \syneq NK }
+
+      \hypo{ K \syneq L }
+      \infer2[\ref{inf:def:simply_typed_hol_proof/rules/r}]{ MK \syneq NL }
+    \end{prooftree}
+  \end{equation*}
+
+  \SubProofOf{thm:simply_typed_hol_derivations/alpha} If \( M \aequiv N \), then \( M \bred* N \), hence we can use \ref{inf:def:simply_typed_hol_proof/rules/a4}:
+  \begin{equation*}
+    \begin{prooftree}
+      \hypo{ M }
+      \infer0[\ref{inf:def:simply_typed_hol_proof/rules/a4}]{ M \bred N }
+      \infer2[\ref{inf:def:simply_typed_hol_proof/rules/r}]{ N }
+    \end{prooftree}
+  \end{equation*}
+
+  \SubProofOf{thm:simply_typed_hol_derivations/beta} If \( M \bred N \), then
+  \begin{equation*}
+    \begin{prooftree}
+      \hypo{ M }
+      \infer0[\ref{inf:def:simply_typed_hol_proof/rules/a4}]{ M \bred N }
+      \infer2[\ref{inf:def:simply_typed_hol_proof/rules/r}]{ N }
+    \end{prooftree}
+  \end{equation*}
+
+  \SubProofOf{thm:simply_typed_hol_derivations/beta_compat}
+  \begin{equation*}
+    \begin{prooftree}
+      \hypo{ M \syneq N }
+      \infer0[\ref{inf:def:simply_typed_hol_proof/rules/a4}]{ M \syneq K }
+      \infer2[\ref{inf:def:simply_typed_hol_proof/rules/r}]{ K \syneq N }
+
+      \infer0[\ref{inf:def:simply_typed_hol_proof/rules/a4}]{ N \syneq L }
+      \infer2[\ref{inf:def:simply_typed_hol_proof/rules/r}]{ K \syneq L }
+    \end{prooftree}
+  \end{equation*}
+
+  \SubProofOf{thm:simply_typed_hol_derivations/eta_intro}\mcite[prop. 5205]{Andrews2002Logic} Consider the derivation
+  \begin{equation*}
+    \begin{prooftree}
+      \infer0[\ref{inf:def:simply_typed_hol_proof/rules/a3}]{ (M \syneq M) \syniff \qforall {\syny^\tau} (M\syny \syneq M\syny) }
+      \infer0[\ref{inf:thm:simply_typed_hol_equality_derivation/reflexivity}]{ M \syneq M }
+      \infer2[\ref{inf:def:simply_typed_hol_proof/rules/r}]{ \qforall {\syny^\tau} (M\syny \syneq M\syny) }
+    \end{prooftree}
+  \end{equation*}
+
+  We will combine it with the following:
+  \begin{equation*}
+    \begin{prooftree}
+      \infer0[\ref{inf:def:simply_typed_hol_proof/rules/a3}]{ (M \syneq \qabs {x^\tau} M x) \syniff \qforall {\syny^\tau} \parens[\big]{ M\syny \syneq (\qabs {x^\tau} M x) \syny } }
+      \infer1[\ref{inf:thm:simply_typed_hol_derivations/beta}]{ (M \syneq \qabs {x^\tau} M x) \syniff \qforall {\syny^\tau} \parens[\big]{ M\syny \syneq M\syny } }
+      \infer1[\ref{inf:thm:simply_typed_hol_equality_derivation/symmetry}]{ \qforall {\syny^\tau} \parens[\big]{ M\syny \syneq M\syny } \syniff (M \syneq \qabs {x^\tau} M x) }
+    \end{prooftree}
+  \end{equation*}
+
+  It was important that \( x \) is not free in \( M \) so that we could \( \beta \)-reduce \( (\qabs {x^\tau} M x) y \) to \( M\syny \). Whether or not \( \syny \) is free in \( M \) or not is irrelevant, however. It may even coincide with \( x \).
+
+  Via \ref{inf:def:simply_typed_hol_proof/rules/r}, from the above we derive
+  \begin{equation*}
+    M \syneq \qabs {x^\tau} M x,
+  \end{equation*}
+  as desired.
+
+  \SubProofOf{thm:simply_typed_hol_derivations/substitution_of_equal_terms}\mcite[prop. 5209]{Andrews2002Logic} Suppose that \( P_{M \syneq N} \) derives \( M \syneq N \) from \( \Gamma \). Then the following tree derives \( M[x^\tau \mapsto K] \syneq N[x^\tau \mapsto K] \) from \( \Gamma \):
+  \begin{equation*}
+    \begin{prooftree}[separation=0.9em]
+      \infer0[\ref{inf:thm:simply_typed_hol_equality_derivation/reflexivity}]{ (\qabs {x^\tau} M) K \syneq (\qabs {x^\tau} M) K }
+
+      \hypo{}
+      \ellipsis { \( P_{M \syneq N} \) } { M \syneq N }
+      \infer2[\ref{inf:def:simply_typed_hol_proof/rules/r}]{ (\qabs {x^\tau} M) K \syneq (\qabs {x^\tau} N) K }
+
+      \infer1[\ref{inf:thm:simply_typed_hol_derivations/beta_compat}]{ M[x^\tau \mapsto K] \syneq N[x^\tau \mapsto K] }
+    \end{prooftree}
+  \end{equation*}
+
+  The requirement that \( x^\tau \) is not free in any formula in \( \Gamma \) ensure that \ref{inf:def:simply_typed_hol_proof_tree/rules/r} can be applied.
+
+  \SubProofOf{eq:thm:simply_typed_hol_derivations/refl_iff_top}\mcite[prop. 5210]{Andrews2002Logic} Let \( \tau \) be the type of \( M \). Denote by \( P \) the tree
+  \begin{equation*}
+    \begin{prooftree}
+      \infer0[\ref{inf:thm:simply_typed_hol_equality_derivation/reflexivity}]{ \qabs {\syny^\tau} \syny \syneq \qabs {\syny^\tau} \syny }
+
+      \infer0[\ref{inf:def:simply_typed_hol_proof/rules/a3}]{ (\qabs {\syny^\tau} \syny \syneq \qabs {\syny^\tau} \syny) \syniff \qforall {\synx^\tau} \parens[\big]{ (\qabs {\synx^\tau} \syny) \synx \syneq (\qabs {\syny^\tau} \syny) \synx } }
+      \infer1[\ref{inf:thm:simply_typed_hol_derivations/beta}]{ (\qabs {\syny^\tau} \syny \syneq \qabs {\syny^\tau} \syny) \syniff \qforall {\synx^\tau} (\synx \syneq \synx) }
+
+      \infer2[\ref{inf:def:simply_typed_hol_proof/rules/r}]{ \underbrace{\qforall {\synx^\tau} (\synx \syneq \synx)}_{\qabs {\synx^\tau} (\synx \syneq \synx) \syneq \qabs {\synx^\tau} \syntop} }
+    \end{prooftree}
+  \end{equation*}
+
+  We can use it to build the desired derivation:
+  \begin{equation*}
+    \begin{prooftree}
+      \hypo{}
+      \ellipsis {\( P \)} { \qabs {\synx^\tau} (\synx \syneq \synx) \syneq \qabs {\synx^\tau} \syntop }
+      \infer0[\ref{inf:thm:simply_typed_hol_equality_derivation/reflexivity}] { M \syneq M }
+      \infer2[\ref{thm:simply_typed_hol_derivations/application}]{ \parens[\big]{ \qabs {\synx^\tau} (\synx \syneq \synx) } M \syneq (\qabs {\synx^\tau} \syntop) M }
+      \infer1[\ref{inf:thm:simply_typed_hol_derivations/beta}]{ (M \syneq M) \syneq \syntop }
+    \end{prooftree}
+  \end{equation*}
+
+  \SubProofOf{eq:thm:simply_typed_hol_derivations/top_and_top}\mcite[prop. 5211]{Andrews2002Logic}
+  \begin{equation*}
+    \begin{prooftree}
+      \infer0[\ref{inf:def:simply_typed_hol_proof/rules/a1}]{ (\qabs {\syny^{\syn\omicron}} \syntop) \syntop \synwedge (\qabs {\syny^{\syn\omicron}} \syntop) \synbot \syniff \qforall {\synp^{\syn\omicron}} (\qabs {\syny^{\syn\omicron}} \syntop) \synp }
+      \infer1[\ref{inf:thm:simply_typed_hol_derivations/beta}]{ \syntop \synwedge \syntop \syniff \qforall {\synp^{\syn\omicron}} \syntop }
+
+      \hypo{}
+      \ellipsis { \eqref{eq:thm:simply_typed_hol_derivations/refl_iff_top} } { (\qabs {\synp^{\syn\omicron}} \syntop \syniff \qabs {\synp^{\syn\omicron}} \syntop) \syneq \syntop }
+
+      \infer2[\ref{inf:thm:simply_typed_hol_equality_derivation/transitivity}]{ \syntop \synwedge \syntop \syniff \syntop }
+    \end{prooftree}
+  \end{equation*}
+
+  \SubProofOf{thm:simply_typed_hol_derivations/conjunction}\mcite[prop. 5213]{Andrews2002Logic}
+  \begin{equation*}
+    \begin{prooftree}
+      \hypo{}
+      \ellipsis { \eqref{eq:thm:simply_typed_hol_derivations/refl_iff_top} } { (M \syneq M) \syniff \syntop }
+
+      \hypo{ M \syneq N }
+
+      \infer2[\ref{inf:def:simply_typed_hol_proof/rules/r}]{ (M \syneq N) \syneq \syntop }
+
+      \hypo{}
+      \ellipsis { \eqref{eq:thm:simply_typed_hol_derivations/refl_iff_top} } { (K \syneq K) \syniff \syntop }
+
+      \hypo{ N \syneq L }
+
+      \infer2[\ref{inf:def:simply_typed_hol_proof/rules/r}]{ (K \syneq L) \syneq \syntop }
+      \infer1[\ref{inf:thm:simply_typed_hol_equality_derivation/symmetry}]{ \syntop \syneq (K \syneq L) }
+
+      \infer2[\ref{inf:thm:simply_typed_hol_equality_derivation/transitivity}]{ (M \syneq N) \syneq (K \syneq L) }
+    \end{prooftree}
+  \end{equation*}
+
+  \SubProofOf{eq:thm:simply_typed_hol_derivations/top_and_bot}\mcite[prop. 5214]{Andrews2002Logic}
+  \begin{equation*}
+    \begin{prooftree}
+      \infer0[\ref{inf:def:simply_typed_hol_proof/rules/a1}]{ (\qabs {\syny^{\syn\omicron}} \syny) \syntop \synwedge (\qabs {\syny^{\syn\omicron}} \syny) \synbot \syniff \qforall {\synp^{\syn\omicron}} (\qabs {\syny^{\syn\omicron}} \syny) \synp }
+      \infer1[\ref{inf:thm:simply_typed_hol_derivations/beta}]{ \syntop \synwedge \synbot \syniff \underbrace{\qforall {\synp^{\syn\omicron}} \synp}_{\mathclap{\qabs {\synp^{\syn\omicron}} \synp \syneq \qabs {\synp^{\syn\omicron}} \syntop}} }
+    \end{prooftree}
+  \end{equation*}
+
+  \SubProofOf{thm:simply_typed_hol_derivations/top_intro} Special case of \cref{thm:simply_typed_hol_equality_derivation/reflexivity} with \( M = \qabs {\synp^{\syn\omicron}} \synp \).
+
+  \SubProofOf{thm:simply_typed_hol_derivations/forall_elim} Since \( \qforall {x^\tau} \varphi \) abbreviates \( \qabs {x^\tau} \varphi \syneq \qabs {x^\tau} \syntop \), we can derive
+  \begin{equation*}
+    \begin{prooftree}
+      \infer0[\ref{inf:thm:simply_typed_hol_derivations/top_intro}]{ \syntop }
+
+      \hypo{ \qabs {x^\tau} \varphi \syneq \qabs {x^\tau} \syntop }
+      \infer0[\ref{inf:thm:simply_typed_hol_equality_derivation/reflexivity}]{ N \syneq N }
+
+      \infer2[\ref{inf:thm:simply_typed_hol_derivations/application}]{ (\qabs {x^\tau} \varphi) N \syneq (\qabs {x^\tau} \syntop) N }
+      \infer1[\ref{inf:thm:simply_typed_hol_derivations/beta}]{ \varphi[x^\tau \mapsto N] \syneq \syntop }
+      \infer1[\ref{inf:thm:simply_typed_hol_equality_derivation/symmetry}]{ \syntop \syneq \varphi[x^\tau \mapsto N] }
+
+      \infer2[\ref{inf:def:simply_typed_hol_proof/rules/r}]{ \varphi[x^\tau \mapsto N] }
+    \end{prooftree}
+  \end{equation*}
+
+  \SubProofOf{eq:thm:simply_typed_hol_derivations/top_and_phi}\mcite[prop. 5216]{Andrews2002Logic}
   \small
   \begin{equation*}
     \begin{prooftree}[separation=0.9em]
       \hypo{}
-      \ellipsis { \ref{thm:simply_typed_hol_equality/reflexivity} } { (\qabs {x^\tau} M) K \syneq (\qabs {x^\tau} M) K }
+      \ellipsis{ \eqref{eq:thm:simply_typed_hol_derivations/top_and_top} }{ (\syntop \synwedge \syntop) \syniff \syntop }
 
       \hypo{}
-      \ellipsis { \( T_{M \syneq N} \) } { M \syneq N }
-      \infer2[\ref{inf:def:simply_typed_hol_proof_tree/rules/r}]{ (\qabs {x^\tau} M) K \syneq (\qabs {x^\tau} N) K }
+      \ellipsis{ \eqref{eq:thm:simply_typed_hol_derivations/top_and_bot} }{ (\syntop \synwedge \synbot) \syniff \synbot }
 
-      \infer0[\ref{inf:def:simply_typed_hol_proof_tree/rules/beta}]{ (\qabs {x^\tau} M) K \syneq M[x^\tau \mapsto K] }
-      \infer2[\ref{inf:def:simply_typed_hol_proof_tree/rules/r}]{ M[x^\tau \mapsto K] \syneq (\qabs {x^\tau} N) K }
+      \infer2[\ref{inf:thm:simply_typed_hol_derivations/conjunction}]{ \parens[\big]{ (\syntop \synwedge \syntop) \syneq \syntop } \synwedge \parens[\big]{ (\syntop \synwedge \synbot) \syneq \synbot } }
 
-      \infer0[\ref{inf:def:simply_typed_hol_proof_tree/rules/beta}]{ (\qabs {x^\tau} N) K \syneq N[x^\tau \mapsto K] }
-      \infer2[\ref{inf:def:simply_typed_hol_proof_tree/rules/r}]{ M[x^\tau \mapsto K] \syneq N[x^\tau \mapsto K] }
+      \infer0[\ref{inf:def:simply_typed_hol_proof/rules/a1}]{ \vdots }
+      \infer1[\ref{inf:thm:simply_typed_hol_derivations/beta}]{ \parens[\big]{ (\syntop \synwedge \syntop) \syneq \syntop } \synwedge \parens[\big]{ (\syntop \synwedge \synbot) \syneq \synbot } \syniff \qabs {\synp^{\syn\omicron}} \parens[\big]{ (\syntop \synwedge \synp) \syneq \synp } }
+
+      \infer2[\ref{inf:def:simply_typed_hol_proof/rules/r}]{ \qabs {\synp^{\syn\omicron}} \parens[\big]{ (\syntop \synwedge \synp) \syneq \synp } }
+      \infer1[\ref{inf:thm:simply_typed_hol_derivations/forall_elim}]{ (\syntop \synwedge \varphi) \syneq \varphi }
     \end{prooftree}
   \end{equation*}
   \normalsize
 
-  \SubProofOf{thm:simply_typed_hol_derivations/refl_iff_top} Let \( \tau \) be the type of \( M \). Consider be the instance of the axiom schema \eqref{eq:def:simply_typed_hol_proof_tree/axioms/a3} where both \( \synX^{\syn\tau} \) and \( \synY^{\syn\tau} \) map to \( \qabs {\syny^\tau} \syny \) and the variable placeholder \( \syny \) maps to the variable \( \synx \):
-  \begin{equation*}
-    \parens[\big]{ (\qabs {\syny^\tau} \syny) \syneq (\qabs {\syny^\tau} \syny) } \syniff \qforall {\synx^\tau} \parens[\big]{ (\qabs {\syny^\tau} \syny) \synx \syneq (\qabs {\syny^\tau} \syny) \synx }.
-  \end{equation*}
-
-  The right side \( \beta \)-reduces to \( \qforall {\synx^\tau} (\synx \syneq \synx) \). Let
-  \begin{equation*}
-    \varphi \coloneqq \parens[\big]{ (\qabs {\syny^\tau} \syny) \syneq (\qabs {\syny^\tau} \syny) } \syniff \qforall {\synx^\tau} (\synx \syneq \synx).
-  \end{equation*}
-
-  The rules \ref{inf:def:simply_typed_hol_proof_tree/rules/an} and \ref{inf:def:simply_typed_hol_proof_tree/rules/beta} allow deriving \( \varphi \).
-
-  Then
+  \SubProofOf{eq:thm:simply_typed_hol_derivations/top_eq_top}
   \begin{equation*}
     \begin{prooftree}
-      \hypo{}
-      \ellipsis { \ref{thm:simply_typed_hol_equality/reflexivity} } { (\qabs {\syny^\tau} \syny) \syneq (\qabs {\syny^\tau} \syny) }
-
-      \hypo{}
-      \ellipsis {} { \varphi }
-      \infer2[\ref{inf:def:simply_typed_hol_proof_tree/rules/r}]{ \qforall {\synx^\tau} (\synx \syneq \synx) }
+      \infer0[\ref{inf:thm:simply_typed_hol_equality_derivation/reflexivity}]{ \syntop \syneq \syntop }
+      \infer0[\ref{inf:thm:simply_typed_hol_equality_derivation/reflexivity}]{ \syntop \syneq \syntop }
+      \infer2[\ref{inf:def:simply_typed_hol_proof/rules/r}]{ (\syntop \syneq \syntop) \syneq \syntop }
     \end{prooftree}
   \end{equation*}
 
-  Expanding the abbreviation of \( \synforall \), we obtain
-  \begin{equation*}
-    \psi \coloneqq \qabs {\synx^\tau} \syntop \syneq \qabs {\synx^\tau} (\synx \syneq \synx).
-  \end{equation*}
-
-  Therefore,
+  \SubProofOf{eq:thm:simply_typed_hol_derivations/top_eq_bot}\mcite[prop. 5217]{Andrews2002Logic} Denote by \( P \) the tree
   \begin{equation*}
     \begin{prooftree}
-      \hypo{}
-      \ellipsis { \ref{thm:simply_typed_hol_equality/reflexivity} } { (\qabs {\synx^\tau} \syntop) M \syneq (\qabs {\synx^\tau} \syntop) M }
+      \infer0[\ref{inf:def:simply_typed_hol_proof/rules/a1}]{ \vdots }
+      \infer1[\ref{inf:thm:simply_typed_hol_derivations/beta}]{ (\syntop \syneq \syntop) \synwedge (\syntop \syneq \synbot) \syniff \qabs {\synp^{\syn\omicron}} (\syntop \syneq \synp) }
 
       \hypo{}
-      \ellipsis {} { \psi }
+      \ellipsis{ \eqref{eq:thm:simply_typed_hol_derivations/top_eq_top} }{ (\syntop \syneq \syntop) \syniff \syntop }
 
-      \infer2[\ref{inf:def:simply_typed_hol_proof_tree/rules/r}]{ (\qabs {\synx^\tau} \syntop) M \syneq \qabs {\synx^\tau} (\synx \syneq \synx) M }
-      \infer1[\ref{inf:def:simply_typed_hol_proof_tree/rules/beta}]{ \syntop \syneq \qabs {\synx^\tau} (\synx \syneq \synx) M }
-      \infer1[\ref{inf:def:simply_typed_hol_proof_tree/rules/beta}]{ \syntop \syneq M \syneq M }
+      \infer2[\ref{inf:def:simply_typed_hol_proof/rules/r}]{ \syntop \synwedge (\syntop \syneq \synbot) \syniff \qabs {\synp^{\syn\omicron}} (\syntop \syneq \synp) }
+
+      \hypo{}
+      \ellipsis{ \eqref{eq:thm:simply_typed_hol_derivations/top_and_phi} }{ \parens[\big]{ \syntop \synwedge (\syntop \syneq \synbot) } \syniff (\syntop \syneq \synbot) }
+
+      \infer2[\ref{inf:def:simply_typed_hol_proof/rules/r}]{ (\syntop \syneq \synbot) \syniff \qabs {\synp^{\syn\omicron}} (\syntop \syneq \synp) }
     \end{prooftree}
   \end{equation*}
 
-  \SubProofOf{thm:simply_typed_hol_derivations/top_elimination} Consider the instance of the axiom schema \eqref{eq:def:simply_typed_hol_proof_tree/axioms/a1} where \( \synP^{\syn\omicron \synimplies \syn\omicron} \) is
-  \begin{equation*}
-    \qabs {\synp^{\syn\omicron}} \synp \syneq (\syntop \syneq \synp).
-  \end{equation*}
-
-  It \( \beta \)-reduces to
-  \begin{equation*}
-    \varphi \coloneqq \parens[\big]{ \syntop \syneq (\syntop \syneq \syntop) } \synwedge \parens[\big]{ \synbot \syneq (\syntop \syneq \syntop) } \syneq \synforall {\synp^{\syn\omicron}} \parens[\big]{ \synp \syneq (\syntop \syneq \synp) }.
-  \end{equation*}
-
-  Thus, \ref{inf:def:simply_typed_hol_proof_tree/rules/an} and \ref{inf:def:simply_typed_hol_proof_tree/rules/beta} allow deriving \( \varphi \).
-
-  \small
+  We can combine it with an application of \ref{inf:def:simply_typed_hol_proof/rules/a3} as follows:
   \begin{equation*}
     \begin{prooftree}
       \hypo{}
-      \ellipsis { \ref{thm:simply_typed_hol_derivations/refl_iff_top} } { \varphi }
+      \ellipsis {\( P \)} { (\syntop \syneq \synbot) \syniff \qabs {\synp^{\syn\omicron}} (\syntop \syneq \synp) }
 
-      \hypo{}
-      \ellipsis { \ref{thm:simply_typed_hol_derivations/refl_iff_top} } { \syntop \syneq (\syntop \syneq \syntop) }
+      \infer0[\ref{inf:def:simply_typed_hol_proof/rules/a3}]{ \vdots }
+      \infer1[\ref{inf:thm:simply_typed_hol_derivations/beta}]{ \parens[\big]{ \underbrace{ (\qabs {\synp^{\syn\omicron}} \syntop) \syneq (\qabs {\synp^{\syn\omicron}} \synp) } } \syniff \qabs {\synq^{\syn\omicron}} (\syntop \syneq \synq) }
+      \infer1[\ref{inf:thm:simply_typed_hol_equality_derivation/symmetry}]{ \qabs {\synq^{\syn\omicron}} (\syntop \syneq \synq) \syniff \synbot }
 
-      \infer2[\ref{inf:def:simply_typed_hol_proof_tree/rules/r}]{}
+      \infer2[\ref{inf:thm:simply_typed_hol_equality_derivation/transitivity}]{ (\syntop \syneq \synbot) \syniff \synbot }
     \end{prooftree}
   \end{equation*}
-  \normalsize
+
+  \SubProofOf{eq:thm:simply_typed_hol_derivations/top_eq_phi}\mcite[prop. 5218]{Andrews2002Logic} Analogous to the proof of \eqref{eq:thm:simply_typed_hol_derivations/top_and_phi}, but with \( (\syntop \syneq \synp) \syneq \synp \) instead of \( (\syntop \synwedge \synp) \syneq \synp \), which requires replacing the left subtree with
+  \begin{equation*}
+    \begin{prooftree}
+      \hypo{}
+      \ellipsis{ \eqref{eq:thm:simply_typed_hol_derivations/top_eq_top} }{ (\syntop \syneq \synbot) \syniff \synbot }
+
+      \hypo{}
+      \ellipsis{ \eqref{eq:thm:simply_typed_hol_derivations/top_eq_bot} }{ (\syntop \syneq \synbot) \syniff \synbot }
+
+      \infer2[\ref{inf:thm:simply_typed_hol_derivations/conjunction}]{ \parens[\big]{ (\syntop \syneq \syntop) \syneq \syntop } \synwedge \parens[\big]{ (\syntop \syneq \synbot) \syneq \synbot } }
+    \end{prooftree}
+  \end{equation*}
+
+  \SubProofOf{thm:simply_typed_hol_derivations/forall_intro}\mcite[prop. 5220]{Andrews2002Logic} Denote \( \varphi[x^\tau \mapsto y^\tau] \) by \( \psi \). Then we can derive
+  \begin{equation*}
+    \begin{prooftree}
+      \infer0[\ref{inf:thm:simply_typed_hol_equality_derivation/reflexivity}]{ (\qabs {y^\tau} \syntop) \syneq (\qabs {y^\tau} \syntop) }
+
+      \hypo{ \psi }
+
+      \hypo{}
+      \ellipsis { \eqref{eq:thm:simply_typed_hol_derivations/top_eq_phi} } { (\syntop \syneq \psi) \syniff \psi }
+      \infer1[\ref{inf:thm:simply_typed_hol_equality_derivation/symmetry}]{ \psi \syniff (\syntop \syneq \psi) }
+
+      \infer2[\ref{inf:def:simply_typed_hol_proof/rules/r}]{ \syntop \syneq \psi }
+
+      \infer2[\ref{inf:def:simply_typed_hol_proof/rules/r}]{ \underbrace{(\qabs {y^\tau} \psi) \syneq (\qabs {y^\tau} \syntop)}_{\qforall {y^\tau} \psi} }.
+    \end{prooftree}
+  \end{equation*}
+
+  Although \( y^\tau \) is possibly free in \( \psi \), we have assumed that \( y^\tau \) is not free in any formula in \( \Gamma \), which allowed us to use \ref{inf:def:simply_typed_hol_proof/rules/r}.
+
+  If \( y^\tau \) coincides with \( x^\tau \), then \cref{thm:lambda_substitution_noop} implies that \( \varphi = \psi \), and hence we have derived
+  \begin{equation*}
+    \qabs {y^\tau} \psi
+    =
+    \qabs {x^\tau} \varphi.
+  \end{equation*}
+
+  Otherwise, we have
+  \begin{equation*}
+    \qabs {y^\tau} \varphi[x^\tau \mapsto y^\tau]
+    \reloset {\eqref{eq:thm:alpha_conversion}} \aequiv
+    \qabs {x^\tau} \varphi[x^\tau \mapsto y^\tau][y^\tau \mapsto x^\tau]
+    \reloset {\eqref{eq:thm:substitution_chain_contraction/precomposition}} \aequiv
+    \qabs {x^\tau} \varphi.
+  \end{equation*}
+
+  In the latter case \ref{inf:thm:simply_typed_hol_derivations/alpha} allows us to derive \( \qabs {x^\tau} \varphi \).
 \end{proof}
 
 \begin{proposition}\label{thm:simply_typed_hol_natural_deduction}
   Under the \hyperref[def:simply_typed_hol_proof_tree]{simply typed higher-order logic derivation system}, the propositional natural deduction rules from \cref{def:propositional_natural_deduction_systems} are \hyperref[con:inference_rule_admissibility]{admissible}.
 \end{proposition}
 \begin{proof}
-  \SubProofOf{inf:def:propositional_natural_deduction_systems/top/intro} Special case of \cref{thm:simply_typed_hol_equality/reflexivity} with \( M = \qabs {\synp^{\syn\omicron}} \synp \).
-
-  \SubProofOf{inf:def:propositional_natural_deduction_systems/bot/dne} Let \( T \) be a tree deriving \( \synbot \) from \( \synneg \varphi \). Then
-
-  \begin{equation*}
-    \begin{prooftree}
-      \hypo{ \synneg \varphi }
-      \ellipsis { T } { \synbot }
-
-      \hypo { \overbrace{\synneg \varphi}^{\varphi \syneq \synbot} }
-
-      \infer2[\ref{inf:def:simply_typed_hol_proof_tree/rules/r}]{ \varphi }
-    \end{prooftree}
-  \end{equation*}
+  \SubProofOf{inf:def:propositional_natural_deduction_systems/top/intro} Shown in \cref{thm:simply_typed_hol_derivations/top_intro}.
 \end{proof}
 
 \begin{definition}\label{def:nth_order_logic}
