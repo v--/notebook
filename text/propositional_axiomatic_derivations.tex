@@ -65,7 +65,7 @@
   \begin{itemize}
     \item We allow a distinction between formulas and sentences.
     \item We avoid any restrictions on formulas and sentences, while Hindley requires them to be \hyperref[def:propositional_tautology]{semantic tautologies}.
-    \item We avoid adding any rules except for \ref{inf:thm:axiomatic_derivation_as_natural_deduction/mp}.
+    \item We avoid adding any \hyperref[def:inference_rule]{inference rules} except for \ref{inf:thm:axiomatic_derivation_as_natural_deduction/mp}.
   \end{itemize}
 
   \item Since we do not require the logical axioms to be (semantic) tautologies, an axiomatic derivation system may fail to be \hyperref[def:abstract_logic/soundness]{sound}.
@@ -220,16 +220,16 @@ Implicational logic is both a toy derivation system we will explore and a useful
 \end{comments}
 
 \begin{algorithm}[Derivation conclusion hypothesis introduction]\label{alg:derivation_conclusion_hypothesis_introduction}
-  We will present an algorithm that, given an \hyperref[def:axiomatic_derivation]{axiomatic derivation} of \( \varphi \) from \( \Gamma \cup \set{ \varphi } \), will provide a derivation of \( \varphi \synimplies \varphi \) from \( \Gamma \).
+  We will present an algorithm that, given an \hyperref[def:axiomatic_derivation]{axiomatic derivation} of \( \psi \) from \( \Gamma \cup \set{ \varphi } \), will provide a derivation of \( \varphi \synimplies \psi \) from \( \Gamma \).
 
-  We will refer to the formula \( \varphi \synimplies \varphi \) as our \term{goal}. We will use \fullref{thm:omega_recursion} on the length of the derivation \( \theta_1, \ldots, \theta_n \), although we will only need this in \fullref{alg:derivation_conclusion_hypothesis_introduction/recursive}.
+  We will refer to the formula \( \varphi \synimplies \psi \) as our \term{goal}. We will use \fullref{thm:omega_recursion} on the length of the derivation \( \theta_1, \ldots, \theta_n \), although we will only need this in \fullref{alg:derivation_conclusion_hypothesis_introduction/recursive}.
 
   \begin{thmenum}
-    \thmitem{alg:derivation_conclusion_hypothesis_introduction/goal_premise} If our goal is either an axiom or a premise from \( \Gamma \), the desired derivation is simply the singleton tuple \( \varphi \synimplies \varphi \).
+    \thmitem{alg:derivation_conclusion_hypothesis_introduction/goal_premise} If our goal is either an axiom or a premise from \( \Gamma \), the desired derivation is simply the singleton list of \( \varphi \synimplies \phi \).
 
     \thmitem{alg:derivation_conclusion_hypothesis_introduction/identity} Otherwise, if \( \varphi = \psi \), then we must derive \( \varphi \synimplies \varphi \), which can be done via logical axioms alone as shown in \cref{ex:minimal_implication_logic_identity/derivations}.
 
-    \thmitem{alg:derivation_conclusion_hypothesis_introduction/conclusion_premise} Otherwise, if \( \psi \) is either an axiom or a premise from \( \Gamma \), then the following is a derivation of \( \varphi \synimplies \psi \):
+    \thmitem{alg:derivation_conclusion_hypothesis_introduction/conclusion_premise} Otherwise, if \( \psi \) is either a nonlogical axiom or a premise from \( \Gamma \), then the following is a derivation of \( \varphi \synimplies \psi \):
     \begin{equation*}
       \underbrace{\psi \synimplies (\varphi \synimplies \psi)}_{\eqref{eq:def:minimal_implication_logic/intro}},
       \psi,
@@ -241,20 +241,20 @@ Implicational logic is both a toy derivation system we will explore and a useful
       \theta_i = \theta_j \synimplies \theta_n.
     \end{equation*}
 
-    Suppose that the inductive hypothesis holds for all formulas preceding \( \theta_n = \varphi \) in the derivation. Then we can obtain a derivation \( \chi_1, \ldots, \chi_m \) of \( \varphi \synimplies \theta_i \) and \( \omega_1, \ldots, \omega_k \) of \( \varphi \synimplies \theta_j \), and use them to build a derivation of our goal:
+    Suppose that the inductive hypothesis holds for all formulas preceding \( \theta_n = \phi \) in the derivation. Then we can obtain a derivation \( \chi_1, \ldots, \chi_m \) of \( \varphi \synimplies \theta_i \) and \( \omega_1, \ldots, \omega_k \) of \( \varphi \synimplies \theta_j \), and use them to build a derivation of our goal:
     \small
     \begin{equation*}
-      \underbrace{\chi_1, \ldots, \chi_m}_{\varphi \synimplies \theta_i},
+      \overbrace{\chi_1, \ldots, \chi_m}^{\varphi \synimplies \theta_i},
       \underbrace{(\varphi \synimplies \theta_i) \synimplies ((\varphi \synimplies \theta_j) \synimplies (\varphi \synimplies \theta_n))}_{\eqref{eq:def:minimal_implication_logic/intro}},
-      \underbrace{((\varphi \synimplies \theta_j) \synimplies (\varphi \synimplies \theta_n))}_{\ref{def:axiomatic_derivation/mp}},
-      \underbrace{\omega_1, \ldots, \omega_k}_{\varphi \synimplies \theta_j},
-      \underbrace{\varphi \synimplies \theta_n}_{\ref{def:axiomatic_derivation/mp}}.
+      ((\varphi \synimplies \theta_j) \synimplies (\varphi \synimplies \theta_n)),
+      \overbrace{\omega_1, \ldots, \omega_k}^{\varphi \synimplies \theta_j},
+      \varphi \synimplies \theta_n.
     \end{equation*}
     \normalsize
   \end{thmenum}
 \end{algorithm}
 \begin{comments}
-  \item This algorithm can be found as \identifier{natural_deduction.derivation.introduce_conclusion_hypothesis} in \cite{notebook:code}.
+  \item This algorithm can be found as \identifier{logic.derivation.minimal_implicational_logic.introduce_conclusion_hypothesis} in \cite{notebook:code}.
 \end{comments}
 
 \begin{theorem}[Implicational syntactic deduction theorem]\label{thm:implicational_syntactic_deduction_theorem}
