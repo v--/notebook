@@ -1,5 +1,5 @@
 from collections.abc import Collection, Iterable, Mapping, Sequence
-from dataclasses import dataclass, field
+from dataclasses import dataclass, field, asdict
 from typing import Annotated, Literal, get_args, get_type_hints
 
 from ..support.iteration import string_accumulator
@@ -125,6 +125,10 @@ class BibEntry:
     # Online
     howpublished:  Annotated[BibString | None, BibFieldAnnotation()] = None
     urldate:       Annotated[BibString | None, BibFieldAnnotation()] = None
+
+    # Based on https://stackoverflow.com/a/77690186/2756776
+    def __or__(self, other: 'BibEntry') -> 'BibEntry':
+        return BibEntry(**asdict(self) | asdict(other))
 
     def _string_properties(self) -> Iterable[tuple[str, BibString]]:
         for key in sorted(ENTRY_KEYS.known):

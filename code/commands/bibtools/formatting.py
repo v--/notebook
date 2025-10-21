@@ -26,6 +26,7 @@ class BibEntryAdjuster:
     original: BibEntry
     adjusted: BibEntry
     crossref: BibEntry | None
+    merged: BibEntry
     logger: 'loguru.Logger'
 
     def __init__(self, entry: BibEntry, crossref: BibEntry | None, logger: 'loguru.Logger') -> None:
@@ -33,6 +34,11 @@ class BibEntryAdjuster:
         self.crossref = crossref
         self.adjusted = replace(entry)
         self.logger = logger
+
+        if self.crossref:
+            self.merged = self.adjusted | self.crossref
+        else:
+            self.merged = self.adjusted
 
     def log_update[T](self, what: str, old_value: T, new_value: T) -> None:
         if new_value == old_value:
@@ -52,6 +58,7 @@ class BibEntryAdjuster:
             if old_value != new_value:
                 self.log_update(f'the {field_name} field', old_value, new_value)
                 setattr(self.adjusted, field_name, new_value)
+                setattr(self.merged, field_name, new_value)
 
     def get_author_short_name(self, author: BibAuthor) -> BibString | None:
         main_language = get_main_entry_language(self.crossref) if self.crossref and len(self.adjusted.languages) == 0 else get_main_entry_language(self.adjusted)
@@ -116,13 +123,13 @@ class BibEntryAdjuster:
         self.update(date=date, year=None, month=None, day=None)
 
     def check_missing_fields(self) -> None:
-        possibly_reprinted = self.adjusted.pubstate is not None or self.adjusted.relatedtype == 'origpubas' or self.adjusted.relatedtype == 'origpubin' or self.adjusted.origpublisher is not None
+        possibly_reprinted = self.merged.pubstate is not None or self.merged.relatedtype == 'origpubas' or self.merged.relatedtype == 'origpubin' or self.merged.origpublisher is not None
 
         match self.adjusted.entry_type:
             case 'inbook' | 'incollection' | 'inproceedings' if (self.adjusted.booktitle is None) and (self.adjusted.crossref is None):
                 self.logger.warning(f'No book title specified for entry type {self.adjusted.entry_type!r}')
 
-            case 'book' | 'article' if not self.adjusted.publisher and not possibly_reprinted:
+            case 'book' | 'article' if not self.merged.publisher and not possibly_reprinted:
                 self.logger.warning(f'No publisher and no original publication specified for entry type {self.adjusted.entry_type!r}')
 
             case 'article' if not self.adjusted.journal and not possibly_reprinted:
