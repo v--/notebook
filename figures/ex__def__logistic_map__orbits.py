@@ -3,7 +3,7 @@ import pathlib
 import tempfile
 import os
 import shutil
-from concurrent.futures import ProcessPoolExecutor
+from concurrent.futures import ThreadPoolExecutor
 from textwrap import dedent
 
 import numpy as np
@@ -46,7 +46,7 @@ def fill_pixels(j: int):
     return column
 
 
-with ProcessPoolExecutor() as executor:
+with ThreadPoolExecutor() as executor:
     columns = list(executor.map(fill_pixels, list(range(a_resolution))))
 
 

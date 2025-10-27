@@ -34,7 +34,7 @@ def introduce_conclusion_hypothesis(system: AxiomaticDerivationSystem, derivatio
     if len(derivation.payload) == 0:
         return derivation
 
-    *rest, conclusion = derivation.payload
+    *_rest, conclusion = derivation.payload
 
     goal = ConnectiveFormula(BinaryConnective.CONDITIONAL, hypothesis, conclusion)
 

@@ -51,7 +51,7 @@ class ArxivEntry:
 
     primary_category: ArxivCategory = field(metadata=dict(type='Element', required=True, namespace=ARXIV_NAMESPACE))
     comment: str | None =             field(metadata=dict(type='Element', namespace=ARXIV_NAMESPACE), default=None)
-    affiliation: str | None =        field(metadata=dict(type='Element', namespace=ARXIV_NAMESPACE), default=None)
+    affiliation: str | None =         field(metadata=dict(type='Element', namespace=ARXIV_NAMESPACE), default=None)
     journal_ref: str | None =         field(metadata=dict(type='Element', namespace=ARXIV_NAMESPACE), default=None)
     doi: str | None =                 field(metadata=dict(type='Element', namespace=ARXIV_NAMESPACE), default=None)
 
