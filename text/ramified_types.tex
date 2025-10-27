@@ -1,0 +1,593 @@
+\section{Ramified types}
+
+\paragraph{Russell's theory of types}
+
+\begin{concept}\label{con:impredicative_definition}
+  In \cite[42]{Kleene1971Metamathematics} and \cite[146]{GowersEtAl2008PrincetonCompanion}, Poincar\'e is attributed with the concept of \term{impredicative definition}. The latter book describes it as follows:
+  \begin{displayquote}
+    Informally, a definition is impredicative when it introduces an element by reference to a totality that already contains that element.
+  \end{displayquote}
+\end{concept}
+\begin{comments}
+  \item Impredicativity is a form of self-reference; see \cref{ex:self_reference/impredicativity}. It is closely related to the vicious circle principle, which we describe in \cref{rem:vicious_circle_principle}.
+
+  \item Russell's ramified theory of types will allow us to formalize impredicativity in \cref{def:hol_formula_predicativity}.
+\end{comments}
+
+\begin{example}\label{ex:self_reference}
+  We list here examples related to self-reference:
+  \begin{thmenum}
+    \thmitem{ex:self_reference/impredicativity} \hyperref[con:impredicative_definition]{Impredicativity}, defined formally for \hyperref[def:hol_term/formula]{higher-order formulas} in \cref{def:hol_formula_predicativity}, allows a \hyperref[con:proposition]{proposition} to refer to itself.
+
+    The disallowance of impredicative definitions is called the \enquote{vicious cycle principle} by Bertrand Russell. We discuss this in more detail in \cref{rem:vicious_circle_principle}.
+
+    \thmitem{ex:self_reference/russels_paradox} The infamous \fullref{thm:russels_paradox} arises from an impredicative definition.
+
+    \Fullref{thm:burali_forti_paradox} precedes Russell's paradox, but is of similar nature.
+
+    \thmitem{ex:self_reference/self_application} We show in \cref{ex:def:type_derivation_tree/self_application} how \( \muplambda \)-calculus allows syntactic self-application of a function. Such an expression cannot have meaningful semantics, but is still possible to express syntactically.
+
+    Confining ourselves to \hyperref[def:strongly_normalizing_lambda_term]{strongly normalizing \( \muplambda \)-terms} prevents self-application. Such restrictions arise naturally by typing restrictions --- see, for example, \cref{thm:simply_typable_terms_are_strongly_normalizing}.
+  \end{thmenum}
+\end{example}
+
+\begin{remark}\label{rem:vicious_circle_principle}
+  When explaining their resolution of certain paradoxes such as \fullref{thm:russels_paradox}, \incite[83]{WhiteheadRussell1927PrincipiaMathematicaVol1} write the following:
+  \begin{displayquote}
+    An analysis of the paradoxes to be avoided shows that they all result from a certain kind of vicious circle. The vicious circles in question arise from supposing that a collection of objects may contain members which can only be defined by means of the collection as a whole.
+  \end{displayquote}
+
+  The authors then proceed to discuss the \term{vicious circle principle}, which is more succinctly stated in \cite[237]{Russell1908TypeTheory}:
+  \begin{displayquote}
+    no totality can contain members defined in terms of itself.
+  \end{displayquote}
+
+  \incite*[347]{Church1956LogicVol1} discusses the vicious circle principle and relates it to Poincar\'{e}'s notion of \hyperref[con:impredicative_definition]{impredicative definitions}.
+
+  As an example of a vicious circle that is allowed by \hyperref[def:higher_order_logic]{higher-order logic}, consider Leibniz' \enquote{identity of indiscernibles} principle discussed in \cref{rem:identity_of_indiscernibles}:
+  \begin{displayquote}
+    \textellipsis if we can discern no property \( P \) in which \( x \) and \( y \) differ, \( x \) and \( y \) are identical.
+  \end{displayquote}
+
+  We have presented this principle via the formula
+  \begin{equation*}
+    \qforall {\synp^{\syn\iota \synimplies \syn\omicron}} (\synp(\synx^{\syn\iota}) \syniff \synp(\syny^{\syn\iota})) \synimplies (\synx^{\syn\iota} \syneq \syny^{\syn\iota}).
+  \end{equation*}
+
+  Russell uses a similar approach for defining equality in \cite[246]{Russell1908TypeTheory}.
+
+  Suppose that we are working in (higher-order) \hyperref[def:peano_arithmetic]{Peano arithmetic} and substitute \( \syny \) with \( \syn0 \). With the help of \( \muplambda \)-abstraction, we obtain the following predicate characterizing zero:
+  \begin{equation*}
+    P \coloneqq \qabs {\synx^{\syn\iota}} \qforall {\synp^{\syn\iota \synimplies \syn\omicron}} (\synp(\synx^{\syn\iota}) \syniff \synp(\syn0)) \synimplies (\synx^{\syn\iota} \syneq \syn0).
+  \end{equation*}
+
+  Russell was concerned that \( P \) is a valid possible value for the variable \( \synp \) inside \( P \), so \hyperref[con:evaluation]{evaluating} \( P \) would require us to first evaluate \( P \) --- a vicious circle.
+
+  This concern is irrelevant in modern higher-order logic with a clear distinction between the object language and \hyperref[con:metalogic]{metalanguage}, but the latter concepts were shaped by analyzing similar conundrums.
+
+  Russell's attempts to avoid such vicious circles lead to the ramified theory of types, which we discuss in \cref{def:ramified_theory_of_types}.
+\end{remark}
+
+\begin{definition}\label{def:ramified_theory_of_types}
+  In his attempt to resolve issues of \hyperref[ex:self_reference]{self-reference} and \hyperref[con:impredicative_definition]{impredicativity} in logic, Bertrand Russell introduced a \hyperref[con:logical_system]{formal system} which was later called the \term[en=ramified theory of types (\cite[44]{Kleene1971Metamathematics})]{ramified theory of types}.
+
+  He presented this system in \cite{Russell1908TypeTheory}. Along with Alfred Whitehead, he used it to derive a large portion of mathematics. These efforts were published under the name \enquote{Principia Mathematica} in three volumes --- \cite{WhiteheadRussell1927PrincipiaMathematicaVol1}, \cite{WhiteheadRussell1927PrincipiaMathematicaVol2} and \cite{WhiteheadRussell1927PrincipiaMathematicaVol3}.
+
+  Russell tried to circumvent self-reference by introducing types and orders. His theory predates most of what is shown in this chapter, and, as originally presented, it is archaic. Still, both types and orders are relevant concepts. Type theory has developed immensely, unlike orders. We will attempt to describe the latter on modified \hyperref[def:hol_formula]{formulas of higher-order logic}. Our efforts are based on Russell's own writings, which we quote in \cref{rem:hol_formula_order_origin}, and on their modernized reinterpretation in \cite[\S 2B]{KamareddineLaanNederpelt2005TypeTheory}.
+
+  Russell's approach is purely syntactic\fnote{Russell's books precede the modern semantical notions.}, and relies fundamentally on \hyperref[con:syntactic_substitution]{substitution}. Variables in formulas are regarded as placeholders for either individuals or other formulas. A formula with free variables is regarded as a function\fnote{Russell's books also precede \( \muplambda \)-calculus, and hence also precedes the practice of creating ad-hoc functions via \( \muplambda \)-abstraction.}. \enquote{Applying} such a function must be done via substitution rather than via the more elaborate constructs of \( \muplambda \)-calculus (the two approaches are discussed in \cref{rem:paramters_in_hol}). The ramified types allow finer control over which formulas are allowed to be substituted for which variables.
+
+  As a running motivational example, we will consider the following formula characterizing zero (based on our example from \cref{rem:vicious_circle_principle}):
+  \begin{equation*}
+    \zeta \coloneqq \qforall {\synp^{\syn\iota \synimplies \syn\omicron}} (\synp(\synx^{\syn\iota}) \syniff \synp(\syn0)) \synimplies (\synx^{\syn\iota} \syneq \syn0).
+  \end{equation*}
+
+  \begin{thmenum}
+    \thmitem{def:ramified_theory_of_types/ramified_type} We define \term[en=ramified type (\cite[def. 2.36]{KamareddineLaanNederpelt2005TypeTheory})]{ramified types} via the following \hyperref[def:formal_grammar]{formal grammar}:
+    \begin{bnf*}
+      \bnfprod{order}              {\bnfpn{natural number}} \\
+      \bnfprod{atomic type}        {\bnftsq{\( \syn\iota \)} \bnfor \bnftsq{\( \syn\omicron \)}} \\
+      \bnfprod{ramified type list} {\bnfpn{ramified type} \bnfor \bnfpn{ramified type} \bnfsp \bnftsq{\( , \)} \bnfsp \bnfpn{ramified type list}} \\
+      \bnfprod{ramified type}      {\bnfpn{atomic type} \bnfsp \bnfpn{order} \bnfor} \\
+      \bnfmore                     {\bnftsq{\( ( \)} \bnfsp \bnfpn{ramified type list} \bnfsp \bnftsq{\( ) \)} \bnfsp \bnfpn{order}}
+    \end{bnf*}
+
+    The \( \bnfpn{natural number} \) rule is taken from \cref{def:positional_number_system}. We denote the order via superscripts.
+
+    We can classify the ramified types as follows:
+    \begin{thmenum}
+      \thmitem{def:ramified_theory_of_types/ramified_type/individuals} The type \( \syn\iota^n \) of \term[en=individuals (\cite[237]{Russell1908TypeTheory})]{individuals} of order \( n \).
+
+      Russell's goal was to assign orders to formulas, so he did not have the need to consider individuals of different orders, nor functions whose values are individuals. For this reason, we presuppose that \( n = 0 \) and use the familiar notation \( \syn\iota \).
+
+      \thmitem{def:ramified_theory_of_types/ramified_type/propositions} The type \( \syn\omicron^n \) of \term{propositions} of order \( n \). We require \( n \) to be positive\fnote{As we will see in \cref{rem:hol_formula_order_origin}, Russell distinguishes between propositions and propositional functions (despite the former being a nullary special case of the latter). Nevertheless, he disallows bound variables of first-order formulas to range over propositions, so, from the perspective of assigning an order, propositions are treated as nullary propositional functions. Our treatment here differs from that in \cite[def. 4.36]{KamareddineLaanNederpelt2005TypeTheory}, where the order of a proposition is allowed to be \( 0 \)}.
+
+      \thmitem{def:ramified_theory_of_types/ramified_type/propositional_functions} The type \( (\rho_1^{k_1}, \cdots, \rho_m^{k_m})^n \) of \term{propositional functions} of order \( n \) with arguments of the corresponding types and orders.
+
+      The order of a propositional function is intended to measure its complexity, so it is natural that it should exceed that of its arguments. This leads to the condition \( n > \max\set{ k_1, \ldots, k_m } \).
+
+      This can be written using the more familiar notation \( (\rho_1^{k_1} \synimplies \cdots \synimplies \rho_m^{k_m} \synimplies \syn\omicron)^n \), however the role of \( \syn\omicron \) in the latter case would be purely cosmetic (and the notation is not exactly known for its beauty).
+    \end{thmenum}
+
+    \begin{table}
+      \begin{center}
+        \begin{tabular}{l l}
+          \toprule
+          Ramified type                      & Unramified type \\
+          \midrule
+          \( \syn\omicron^n \)               & \( \syn\omicron \) \\
+          \( (\syn\iota)^n \)                & \( \syn\iota \synimplies \syn\omicron \) \\
+          \( (\syn\omicron)^n \)             & \( \syn\omicron \synimplies \syn\omicron \) \\
+          \( ((\syn\iota, \syn\iota)^m)^n \) & \( (\syn\iota \synimplies \syn\iota \synimplies \syn\omicron)  \synimplies \syn\omicron \) \\
+          \bottomrule
+        \end{tabular}
+      \end{center}
+
+      \caption{\hyperref[def:ramified_theory_of_types/ramified_type]{Ramified types} and their unramified equivalents.}\label{tab:def:ramified_theory_of_types/ramified_type}
+    \end{table}
+
+    By removing the orders from a ramified type, it reduces to a quantifiable type. We call this operation \term{unramification}. Some examples are given in \cref{tab:def:ramified_theory_of_types/ramified_type}.
+
+    Conversely, a \term{ramification} a quantified type \( \tau \) is any ramified type which equals \( \tau \) when unramified.
+
+    \thmitem{def:ramified_theory_of_types/formulas} Now that we have defined ramified types, we can use them instead of our familiar quantifiable types for annotating variables in higher-order formulas. The minimal order of a variable is determined by its usage, so if a variable denoting a propositional function \( \synp \) is applied to \( \synx \), the order of \( \synp \) must be higher than that of \( \synx \). If \( \synp \) is never applied, it can have any order allowed by its type. We further discuss the latter case in \cref{ex:def:hol_formula_ramification_order/flat_predicative}.
+
+    To avoid unnecessary limitations like disallowing binary operations, we should continue using general (non-ramified) quantifiable types for the nonlogical constants (the types of these constants are part of the \hyperref[def:hol_signature]{signature}, so luckily we do not need to modify the signature). We assume a constant can accept arguments, and serve as any argument, of any order.
+
+    The role of orders comes into play when handling propositional functions. As already mentioned, we are only interested in formulas. A propositional function with ramified type \( (\rho_1^{k_1}, \cdots, \rho_m^{k_m})^n \) is \hi{not} a logical predicate of higher-order logic with unramified type \( \rho_1 \synimplies \cdots \synimplies \rho_m \synimplies \syn\omicron \), but rather a formula \( \varphi \) with lexicographically-ordered\fnote{An alphabetical ordering of free variables is also suggested by \incite[250]{Russell1908TypeTheory} and \incite[22]{KamareddineLaanNederpelt2005TypeTheory}. Lexicographic ordering allows also treating suffixes.} free variables of the corresponding types and orders. Arguments are to be applied via substitution, as per \cref{rem:paramters_in_hol}.
+
+    It is important that we require \( n \) to exceed not only the orders of the free variables of \( \varphi \), but also the orders of the bound variables. We ignore the order on nonlogical constants. The point of ramification is to restrict variables of order \( n \) to values of order at most \( n \).
+
+    In our running example, if we try to use ramified types in \( \zeta \), we notice that it is unclear what order we should attach to \( \synp \). So we instead define a family of propositional functions parameterized by \( n \):
+    \begin{equation*}
+      \zeta_n \coloneqq \qforall {\synp^{(\syn\iota)^n}} (\synp(\synx^{\syn\iota}) \syniff \synp(\syn0)) \synimplies (\synx^{\syn\iota} \syneq \syn0).
+    \end{equation*}
+
+    We again call \term{unramification} the operation of taking a propositional function or proposition to its corresponding higher-order formula, achieved by unramifying its types. A \term{ramification} of the formula \( \varphi \) is any propositional function or proposition that equals \( \varphi \) when unramified. Thus, for every \( n \), \( \zeta_n \) is a ramification of \( \zeta \).
+
+    Since \( \zeta_n \) binds a variable of order \( n \), its own order must exceed \( n \). We can assign the type \( (\syn\iota)^m \) to \( \zeta_n \), as long as \( m > n \). None of these options allow using \( \zeta_n \) as a value for \( \synp \), circumventing Russell's concerns of self-reference.
+
+    \thmitem{def:ramified_theory_of_types/predicativity} We will call the ramified type \( \tau^n \) \term[en=predicative type (\cite[def. 2.40]{KamareddineLaanNederpelt2005TypeTheory})]{predicative} if it has minimal possible order, i.e. if it is either an individual type of order \( 0 \), propositional type of order \( 1 \) or a compound type \( (\rho_1^{k_1}, \cdots, \rho_m^{k_m})^n \), where \( n = 1 + \max\set{ k_1, \ldots, k_m } \) and the subtypes are predicative\fnote{Based only on Russell's remarks from \cref{rem:hol_formula_order_origin/propositions}, we may assume that the compound type \( (\rho_1^{k_1}, \cdots, \rho_m^{k_m})^n \) should be predicative if \( n = 1 + \max\set{ k_1, \ldots, k_m } \), irrespective of whether the subtypes \( \rho_1^{k_1}, \ldots, \rho_m^{k_m} \) are predicative. This would unfortunately render the equivalence in \cref{def:quantifiable_type_ramification_order} false due to examples like \cref{ex:def:hol_formula_ramification_order/flat_predicative}.}.
+
+    We will call a proposition or propositional function \term[en=predicative (function) (\cite[239]{Russell1908TypeTheory})]{predicative}\fnote{By staying close to Russell's terminology and avoiding \enquote{formula} and \enquote{predicate}, we managed to avoid the unfortunate phrase \enquote{predicative predicate}. In fact, in \tcite{in #2, #1}[56]{WhiteheadRussell1927PrincipiaMathematicaVol1} define a \enquote{predicate} as a \enquote{predicative propositional function}} if its type is predicative. Equivalently, a proposition or propositional function is predicative if its order can be determined only by its free variables.
+
+    In our example, \( \zeta_n \) cannot be predicative for any \( n \) because its only free variable is an individual (of order \( 0 \)), while its only bound variable is a propositional function (of order at least \( 1 \)).
+
+    Some predicative formulas are given in \cref{ex:def:hol_formula_ramification_order}.
+
+    \thmitem{def:ramified_theory_of_types/reducibility} Dealing with predicative propositions is simplified by the following nonconstructive \term{axiom of reducibility} stated in \cite[241]{Russell1908TypeTheory}\fnote{By \enquote{function} Russell means a \enquote{propositional function}.}:
+    \begin{displayquote}
+      We assume, then, that every function is equivalent, for all its values, to some predicative function of the same arguments.
+    \end{displayquote}
+
+    We give Russell justification in \cref{rem:hol_formula_order_origin/class}.
+
+    We will restate the axiom (schema) more formally\fnote{Russell himself states the axiom as a (symbolic) proposition in two cases --- for unary and for binary propositional functions. We are unable to express them in our object language alone. Russell had a distinct syntax for unary and binary propositional functions, and a special notation for predicative functions (using \( \phi ! x \) instead of \( \phi x \)). Still, technically his language also could not express the axioms because they are impredicative.} as follows:
+    \begin{displayquote}
+      For every proposition \( \varphi \) of type \( \syn\omicron^n \), there exists a predicative proposition \( \varphi' \) such that the following always holds (i.e. is required to be derivable in all \hyperref[def:entailment_system]{entailment systems}):
+      \begin{equation*}
+        \varphi \syniff \varphi'.
+      \end{equation*}
+
+      More generally, for every propositional function \( \varphi \) of type \( (\rho_1^{k_1}, \cdots, \rho_m^{k_m})^n \), there exists a predicative propositional function \( \varphi' \) of the same arguments such that the following always holds:
+      \begin{equation*}
+        \qforall {\synx_1^{\rho_1^{k_1}}} \cdots \qforall {\synx_m^{\rho_m^{k_m}}} \parens[\big]{ \varphi(\synx_1, \ldots, \synx_m) \syniff \varphi'(\synx_1, \ldots, \synx_m) }.
+      \end{equation*}
+    \end{displayquote}
+
+    Consider the propositional function \( \zeta_n \) discussed above. Its only free variable has order \( 0 \), so a predicative type must have order \( 1 \). By the axiom of reducibility, there exists some \( \zeta_n' \) of order \( 1 \) that is equivalent to \( \zeta_n \).
+
+    Thus, \( \synp \) in \( \zeta_n \) can quantify over \( \zeta_n' \) since \( \zeta_n' \) is of the lowest possible order. But we still avoid circularity because the order of \( \zeta_n' \) does not allow it to quantify over \( \zeta_n \).
+  \end{thmenum}
+\end{definition}
+
+\begin{remark}\label{rem:unramified_theory_of_types}
+  \incite*[xix]{WhiteheadRussell1927PrincipiaMathematicaVol1} write
+  \begin{displayquote}
+    One point in regard to which improvement is obviously desirable is the axiom of reducibility (\( {\ast} 12 {\cdot} 1 {\cdot} 11 \)). This axiom has a purely pragmatic justification: it leads to the desired results, and to no others. But clearly it is not the sort of axiom with which we can rest content.
+  \end{displayquote}
+
+  Russell's ramified types were later simplified to what was called \enquote{simple types}. For example, when adapting the \enquote{simple theory of types} to his \( \muplambda \)-calculus\fnote{We discuss Church's type theory in \cref{rem:simply_typed_hol}.} \tcite{in #2, #1}{Church1940STT}, writes
+  \begin{displayquote}
+    The simple theory of types was suggested as a modification of Russell's ramified theory of types by Leon Chwistek in 1921 and 1922 and by F. P. Ramsey in 1926.
+  \end{displayquote}
+
+  So, at the time of Church's paper, a separation between \enquote{ramified} and \enquote{simple} types already existed, and the latter were seen as convenient. We discuss in \cref{con:simple_type_theory} how simple types have since developed in different directions (while still retaining the name \enquote{simple}).
+
+  To explain what lead to the abandonment of ramified types, \incite[45]{Kleene1971Metamathematics} writes
+  \begin{displayquote}
+    Ramsey 1926 found that the desired results and no others can apparently be obtained without the hierarchy of orders (i.e. with a simple theory of types).
+  \end{displayquote}
+
+  In the paper mentioned, \cite{Ramsey1926Foundations}, Ramsey essentially regards a proposition as its truth value when using it as an argument, thus rendering the concept of orders obsolete.
+\end{remark}
+
+\begin{remark}\label{rem:unpropositional_functions_in_ramified_theory_of_types}
+  Unlike general \hyperref[def:hol_signature/universes/quant]{quantifiable types}, \hyperref[def:ramified_theory_of_types/ramified_type]{ramified types} only allow proposition-valued functions. This is due to Russell, who, as we can see in \cref{rem:hol_formula_order_origin/functions}, did not consider functions producing individual values or other functions.
+
+  Unfortunately, this leaves it unclear how to ramify an individual-valued function type like \( (\syn\iota \synimplies \syn\omicron) \synimplies \syn\iota \), which \incite[57]{Church1940STT} uses for the \hyperref[con:description_operator]{definite description operator}.
+
+  This prevents us from classifying certain formulas based on their perceived \hyperref[def:hol_formula_ramification_order]{ramification order}.
+\end{remark}
+
+\begin{remark}\label{rem:hol_formula_order_origin}
+  We discussed Russell's ramified type theory in \cref{def:ramified_theory_of_types}. We will present several excerpts from Russell \cite{Russell1908TypeTheory} which demonstrate Russell's original ideas.
+
+  \begin{thmenum}
+    \thmitem{rem:hol_formula_order_origin/propositions} The following touch upon propositions, propositional functions and their ramified types:
+    \begin{displayquote}
+      A \textit{type} is defined as the range of significance of a propositional function, i.e., as the collection of arguments for which the said function has values.
+
+      \begin{center}
+        \vdots
+      \end{center}
+
+      A proposition containing no apparent\fnote{In Russell's terminology, free variables were called \enquote{real}, while bound variables were called \enquote{apparent} --- see \cref{rem:apparent_variables}.} variable we will call an \textit{elementary} proposition.
+
+      \begin{center}
+        \vdots
+      \end{center}
+
+      The \textit{terms} are whatever can be regarded as the \textit{subject} of the proposition,\ldots
+
+      \begin{center}
+        \vdots
+      \end{center}
+
+      The terms of elementary proposition we will call \textit{individuals}; these form the first or lowest type.
+
+      \begin{center}
+        \vdots
+      \end{center}
+
+      Elementary propositions together with such as contain only individuals as apparent variables we will call \textit{first-order propositions}. These form the second logical type.
+
+      We have thus a new totality, that of \textit{first-order propositions}. We can thus form new propositions in which first-order propositions occur as apparent variables. These we will call \textit{second-order propositions}; these form the third logical type.
+
+      \begin{center}
+        \vdots
+      \end{center}
+
+      The above process can be continued indefinitely. The \( n + 1 \)th logical type will consist of propositions of order \( n \), which will be such as contain propositions of order \( n - 1 \), but of no higher order, as apparent variables. The types so obtained are mutually exclusive, and thus no reflexive fallacies are possible so long as we remember that an apparent variable must always be confined within some one type.
+
+      \begin{center}
+        \vdots
+      \end{center}
+
+      A function\fnote{By \enquote{function} Russell means a \enquote{propositional function}.} whose argument is an individual and whose value is always a first-order proposition will be called a first-order function. A function involving a first-order function or proposition as apparent variable will be called a second-order function, and so on.
+    \end{displayquote}
+
+    \thmitem{rem:hol_formula_order_origin/class} Russell justifies the \hyperref[def:ramified_theory_of_types/reducibility]{axiom of reducibility} as follows:
+    \begin{displayquote}
+      Hence we must find, if possible, some method of reducing the order of a propositional function without affecting the truth or falsehood of its values. This seems to be what common-sense effects by the admission of \textit{classes}. Given any propositional function \( \phi x \), of whatever order, this is assumed to be equivalent, for all values of \( x \), to a statement of the form \enquote{\( x \) belongs to the class \( a \).} Now this statement is of the first order, since it makes no allusion to \enquote{all functions of such-and-such a type.} Indeed its only practical advantage over the original statement \( \phi x \) is that it is of the first order. There is no advantage in assuming that there really are such things as classes, and the contradiction about the classes which are not members of themselves shows that, if there are classes, they must be something radically different from individuals. I believe the chief purpose which classes serve, and the chief reason which makes them linguistically convenient, is that they provide a method of reducing the order of a propositional function. I shall, therefore, not assume anything of what may seem to be involved in the common-sense admission of classes, except this: that every propositional function is equivalent, for all its values, to some predicative function.
+    \end{displayquote}
+
+    Russell associates a \term{class} to every unary propositional function \( \phi \), which is meant to allow treating the collection of all values satisfying \( \phi \) as a whole. An analogue of \fullref{thm:russels_paradox} is circumvented because of the ramification. A class is merely a \hyperref[con:syntactic_abbreviation]{syntactic abbreviations} for the function itself. Russell denotes the class of \( \phi x \) by \( \hat x (\phi x) \), and allows familiar set-theoretic notation like \( x \varepsilon \hat z (\phi z) \)\fnote{He used \( \varepsilon \) instead of the modern \( {\in} \); see \cref{rem:epsilon_and_set_membership} for a broader discussion.} for \( \phi x \), possibly abbreviating \( \hat z (\phi z) \) to single symbol like \( \alpha \). For example, for a fixed type, he defines the \hyperref[con:universal_set]{universal set} \( V \) as an abbreviation for \( \hat x (x = x) \) and the \hyperref[def:empty_set]{empty set} (\enquote{null-class}) \( \Lambda \) as \( \hat x (\neg (x = x)) \).
+
+    As an alternative name for the axiom of reducibility for unary propositional functions, Russell suggests \enquote{axiom of classes}.
+
+    He similarly treats binary propositional functions as relations.
+
+    \thmitem{rem:hol_formula_order_origin/functions} The following hint how to treat functions whose values are not propositions (see also Russell's theory of descriptions discussed in \cref{con:denotation}):
+    \begin{displayquote}
+      The functions hitherto considered have been propositional functions, with the exception of a few particular functions such as \( R \mathrel{\syn\cap} S \). But the ordinary functions of mathematics, such as \( x^2 \), \( \sin x \), \( \log x \), are not propositional. Functions of this kind always mean \enquote{the term having such-and-such a relation to \( x \).} For this reason they may be called \textit{descriptive} functions, because they \textit{describe} a certain term by means of its relation to their argument. Thus \enquote{\( \sin \pi / 2 \)} describes the number \( 1 \); yet propositions in which \( \sin \pi / 2 \) occurs are not the same as they would be if \( 1 \) were substituted. This appears, e.g., from the proposition \enquote{\( \sin \pi / 2 = 1 \),} which conveys valuable information, where \enquote{\( 1 = 1 \)} is trivial. Descriptive functions have no meaning by themselves, but only as constituents of propositions; and thus applies generally to phrases of the form \enquote{the term having such-and-such a property.} Hence in dealing with such phrases, we must define any proposition in which they occur, not the phrases themselves.
+    \end{displayquote}
+
+    We see here a sharp contrast with modern notions of semantics, where the valuation of a formula depends on the valuation of its nonlogical terms.
+
+    Russell proceeds to introduce the definite description operator \( \rotiota \) (which we discuss in \cref{con:description_operator}) and to use it to build classes that can be used as individuals. For example, he defines the singleton class \( \iota\text{\lq} x \) as an abbreviation for \( \hat y (y = x) \), and zero \( 0 \) as \( \iota\text{\lq} \Lambda \) (he admits that this produces a distinct zero for every type).
+
+    He seems to treat all syntactic constructs as either individuals, propositions or propositional formulas. Either more complicated expressions are themselves considered individuals, or their \hyperref[con:evaluation]{evaluation} is indeed done in the \hyperref[con:metalogic]{metatheory}. Both cases explain why Russell provides no function types whose values are individuals, but only the latter explains why he doesn't assign orders to individuals.
+
+    Anyhow, in the more rigorous object language we use for his theory in \cref{def:ramified_theory_of_types}, we allow various function types as constants of the signature (but still restrict quantification only to ramified types). This allows us to provide a modern stratification of higher-order logic formulas into orders in \cref{def:hol_formula_ramification_order}.
+  \end{thmenum}
+\end{remark}
+
+\paragraph{Ramification order}
+
+\begin{proposition}\label{thm:predicative_ramification_of_type}
+  In the following, \( \rho^n \) is the unique \hyperref[def:ramified_theory_of_types/predicative]{predicative ramification} of a \hyperref[def:hol_signature/universes/quant]{quantifiable type} \( \tau \):
+  \begin{thmenum}
+    \thmitem{thm:predicative_ramification_of_type/individual} If \( \tau = \syn\iota \), let \( \rho = \syn\iota \) and \( n = 0 \).
+    \thmitem{thm:predicative_ramification_of_type/proposition} If \( \tau = \syn\omicron \), let \( \rho = \syn\omicron \) and \( n = 1 \).
+    \thmitem{thm:predicative_ramification_of_type/propositional_function} If \( \tau = \sigma_1 \synimplies \cdots \synimplies \sigma_m \synimplies \syn\omicron \), use the algorithm recursively on \( \sigma_1, \ldots, \sigma_m \) to obtain predicative types \( \omega_1^{k_1}, \ldots, \omega_m^{k_m} \), and let \( \rho = (\omega_1^{k_1}, \ldots, \omega_m^{k_m}) \) and \( n = 1 + \max\set{ k_1, \ldots, k_m } \).
+    \thmitem{thm:predicative_ramification_of_type/otherwise} Otherwise, \( \tau \) has no ramification.
+  \end{thmenum}
+\end{proposition}
+\begin{proof}
+  Uniqueness follows from minimality.
+\end{proof}
+
+\begin{definition}\label{def:quantifiable_type_ramification_order}\mimprovised
+  Let \( n \) be a nonnegative integer or the \hyperref[def:extended_real_numbers]{extended real number} \( \infty \).
+
+  We say that \( n \) is the \term{ramification order} of the \hyperref[def:hol_signature/universes/quant]{quantifiable type} \( \tau \) if any of the following equivalent conditions hold:
+  \begin{thmenum}
+    \thmitem{def:quantifiable_type_ramification_order/ramification} There exists a \hyperref[def:ramified_theory_of_types/ramified_type]{ramification} of \( \tau \) of order \( n \), but not of lower order.
+
+    If no ramification exists, we let \( n = \infty \).
+
+    \thmitem{def:quantifiable_type_ramification_order/predicative} There exists a \hyperref[def:ramified_theory_of_types/predicativity]{predicative ramification} of \( \tau \) of order \( n \).
+
+    If no predicative ramification exists, we let \( n = \infty \).
+
+    \thmitem{def:quantifiable_type_ramification_order/direct} The value \( n \) equals
+    \begin{equation}\label{eq:def:quantifiable_type_ramification_order/direct}
+      \ord(\tau) \coloneqq \begin{cases}
+        0,                                                      &\tau \in \op*{Sort}, \\
+        0,                                                      &\tau = \syn\omicron, \\
+        1 + \max\set{ \ord(\sigma_1), \ldots, \ord(\sigma_n) }, &\tau = \sigma_1 \synimplies \cdots \synimplies \sigma_n \synimplies \syn\omicron, \\
+        \infty,                                                 &\T{otherwise.}
+      \end{cases}
+    \end{equation}
+  \end{thmenum}
+\end{definition}
+\begin{comments}
+  \item A quantifiable type has infinite order if and only if is unramifiable. We discuss the use of \( \infty \) in this case in \cref{ex:def:extended_real_numbers/formal_order}.
+\end{comments}
+\begin{proof}
+  \ImplicationSubProof{def:quantifiable_type_ramification_order/ramification}{def:quantifiable_type_ramification_order/predicative} If \( \tau \) has no ramification, it cannot have a predicative ramification, so \( n = \infty \).
+
+  Otherwise, suppose that \( \tau \) has a ramification of order \( n \), but not \( n - 1 \). It may not be predicative, but fortunately \cref{thm:predicative_ramification_of_type} gives us a predicative ramification, and its order must coincide with \( n \) due to minimality.
+
+  \ImplicationSubProof{def:quantifiable_type_ramification_order/predicative}{def:quantifiable_type_ramification_order/direct} If \( \tau \) has no predicative ramification, by assumption \( n = \infty \). Based on what we have already shown, in this case \( \tau \) has no ramification at all, so \eqref{eq:def:quantifiable_type_ramification_order/direct} produces \( \infty \) too.
+
+  Otherwise, let \( \rho^n \) be a predicative ramification. We will use \fullref{thm:induction_on_rooted_trees} on the abstract syntax tree of \( \tau \) to show that \( n = \ord(\tau) \). The cases \( \tau = \syn\iota \) and \( \tau = \syn\omicron \) are obvious.
+
+  Suppose that \( \tau = \sigma_1 \synimplies \cdots \synimplies \sigma_m \synimplies \syn\omicron \). Then \( \rho = (\omega_1^{s_1}, \ldots, \omega_m^{s_m}) \) and \( n = 1 + \max\set{ s_1, \ldots, s_m } \). By the inductive hypothesis, we have \( s_i = \ord(\sigma_i) \). Then \( n = \ord(\tau) \).
+
+  \ImplicationSubProof{def:quantifiable_type_ramification_order/direct}{def:quantifiable_type_ramification_order/ramification} If \( \ord(\tau) = \infty \), then \( \tau \) is incompatible with Russell's ramified types, so no ramification exists.
+
+  Otherwise, \( \ord(\tau) \) is finite, and we can proceed to build a ramification via \cref{thm:predicative_ramification_of_type}.
+\end{proof}
+
+\begin{definition}\label{def:hol_formula_ramification_order}\mimprovised
+  Let \( n \) be a nonnegative integer or the \hyperref[def:extended_real_numbers]{extended real number} \( \infty \).
+
+  We say that \( n \) is the \term{ramification order} of the \hyperref[def:hol_term/formula]{higher-order formula} \( \varphi \) if any of the following equivalent conditions hold:
+  \begin{thmenum}
+    \thmitem{def:hol_formula_ramification_order/ramification} There exists a \hyperref[def:ramified_theory_of_types/formula]{ramification} of \( \varphi \) of order \( n \), but not of lower order.
+
+    If no ramification exists, we let \( n = \infty \).
+
+    \thmitem{def:hol_formula_ramification_order/direct} The value \( n \) equals
+    \begin{equation}\label{eq:def:hol_formula_ramification_order/direct}
+      \ord(\varphi) \coloneqq 1 + \max\set{ \ord(\tau) \given x^\tau \T{is a variable in} \varphi }.
+    \end{equation}
+  \end{thmenum}
+\end{definition}
+\begin{comments}
+  \item A formula has infinite ramification order if and only if is unramifiable (this will be shown). We discuss the use of \( \infty \) in this case in \cref{ex:def:extended_real_numbers/formal_order}.
+\end{comments}
+\begin{defproof}
+  Suppose first that \( \varphi \) is unramifiable. Then at least one variable must also be unramifiable, and, by the equivalence in \cref{def:quantifiable_type_ramification_order}, this would mean the type of the variable has an infinite ramification order. Then the ramification order for \( \varphi \), computed via \eqref{eq:def:hol_formula_ramification_order/direct}, would also be infinite.
+
+  Conversely, if \eqref{eq:def:hol_formula_ramification_order/direct} gives us an infinite ramification order, at least one variable has an infinite ramification order, and thus \( \varphi \) is unramifiable.
+
+  Now suppose that \( \varphi \) has a ramification, \( \psi \), and let \( \rho^n \) be its (ramified) type. Clearly \( n \) must be finite.
+
+  We will analyze two cases:
+  \begin{itemize}
+    \item If \( \rho \) is atomic, either \( \rho = \syn\iota \) or \( \rho = \syn\omicron \). The former is not possible since \( \psi \) is not an individual; hence \( \psi \) is a proposition.
+
+    Thus, \( \psi \) has no free variables, and \( n \) is determined only by its bound variables. Since \( n \) is minimal, \( n - 1 \) must be the greatest order among the bound variables. Then, among all bound variables of ramified order \( n - 1 \), there must exist at least one for which \( n - 2 \) is an invalid order. If not, this would contradict the minimality of \( n \). Let \( \omega^{n-1} \) be the ramified type of this variable.
+
+    By the equivalence of definitions in \cref{def:quantifiable_type_ramification_order}, \( n - 1 \) is the ramification order of the unramified type of \( \omega^{n-1} \).
+
+    Then \eqref{eq:def:hol_formula_ramification_order/direct} allows concluding that \( \ord(\varphi) = n \).
+
+    \item Suppose that \( \rho^n = (\omega_1^{k_1}, \cdots, \omega_m^{k_m})^n \).
+
+    If \( k_i < n - 1 \) for every \( i = 1, \ldots, m \), then \( n \) is determined by the bound variables, and we argue as in the previous case.
+
+    Otherwise, there exists some index \( i \) such that \( k_i = n - 1 \). Then the unramification of \( \omega_i^{k_i} \) has ramification order \( n - 1 \), and since no other variable can have a higher order, we conclude that \( \ord(\varphi) = n \).
+  \end{itemize}
+\end{defproof}
+
+\begin{proposition}\label{thm:predicative_ramification_of_formula}
+  Fix a \hyperref[def:hol_term/formula]{formula} \( \varphi \) of \hyperref[def:higher_order_logic]{higher-order logic}. We can build a \hyperref[def:ramified_theory_of_types/formulas]{ramification} \( \psi \) of \( \varphi \) by simply replacing each type via the corresponding ramified type obtained from \cref{thm:predicative_ramification_of_type}.
+
+  If any of the variables turn out not to be ramifiable, then neither is \( \varphi \).
+\end{proposition}
+\begin{proof}
+  The obtained ramification is valid because, by construction, every possible argument has a lower order than its function.
+\end{proof}
+
+\begin{definition}\label{def:hol_formula_free_type}\mimprovised
+  We define the \term{free type} of a \hyperref[def:hol_term/formula]{formula} \( \varphi \) of \hyperref[def:higher_order_logic]{higher-order logic} with free variables \( x_1^{\tau_1}, \ldots, x_n^{\tau_n} \) (ordered \hyperref[def:lexicographic_order]{lexicographically}) as \( \tau_1 \synimplies \cdots \synimplies \tau_n \synimplies \syn\omicron \) (if \( n = 0 \), the free type is simply \( \syn\omicron \)).
+\end{definition}
+
+\begin{definition}\label{def:hol_formula_predicativity}\mimprovised
+  We say that a \hyperref[def:hol_term/formula]{formula} \( \varphi \) of \hyperref[def:higher_order_logic]{higher-order logic} is \term{predicative} if any of the following equivalent conditions hold:
+  \begin{thmenum}
+    \thmitem{def:hol_formula_predicativity/ramification} \( \varphi \) has a \hyperref[def:ramified_theory_of_types/predicativity]{predicative ramification}.
+
+    \thmitem{def:hol_formula_predicativity/direct} The \hyperref[def:hol_formula_ramification_order]{ramification order} of \( \varphi \) is finite and coincides with the order of its \hyperref[def:hol_formula_free_type]{free type}.
+  \end{thmenum}
+
+  If \( \varphi \) is not predicative, we call it \term{impredicative}.
+\end{definition}
+\begin{comments}
+  \item Some nuances of how this definition relates to Poincare's notion impredicativity, discussed in \cref{con:impredicative_definition}, are described in several examples in \cref{ex:def:hol_formula_ramification_order}. In short, Russellian impredicativity is based only on which orders we quantify over, irrespective of whether we quantify over the precise type.
+\end{comments}
+\begin{defproof}
+  Fix a formula \( \varphi \) with free type \( \tau \) (determined by its free variables).
+
+  \ImplicationSubProof{def:hol_formula_predicativity/ramification}{def:hol_formula_predicativity/direct} Suppose that \( \varphi \) has a ramification \( \psi \) with predicative ramified type \( \rho^n \). By the equivalence in \cref{def:quantifiable_type_ramification_order}, \( n = \ord(\tau) \).
+
+  Let \( \sigma \) be the type of any bound variable in \( \varphi \). By the equivalence of definitions in \cref{def:quantifiable_type_ramification_order}, \( \sigma \) has a predicative ramification \( \omega^k \), where \( k = \ord(\sigma) \). In order for \( \psi \) to be a predicative ramification of \( \varphi \), its order \( n \) must exceed \( k \).
+
+  Therefore, \( \ord(\varphi) \) is not affected by the bound variables of \( \varphi \), hence \( \ord(\varphi) = \ord(\tau) = n \).
+
+  \ImplicationSubProof{def:hol_formula_predicativity/direct}{def:hol_formula_predicativity/ramification} Suppose that \( \ord(\varphi) = \ord(\tau) < \infty \). Denote this common value by \( n \).
+
+  Let \( \psi \) be the ramification of \( \varphi \) constructed as per \cref{thm:predicative_ramification_of_formula}. Let \( \rho^m \) be the (ramified) type of \( \psi \).
+
+  By construction, the ramified order (in the sense of \cref{def:ramified_theory_of_types/ramified_type}) of every variable in \( \psi \) coincides with the ramification order (in the sense of \ref{def:quantifiable_type_ramification_order/direct}) of the corresponding variable in \( \varphi \). Since \( \rho^m \) is a ramification of \( \tau \), we have \( m \geq n = \ord(\tau) \), and \( m > n \) is possible only if some bound variable in \( \psi \) has order at least \( n \). But \( \ord(\varphi) = n \), and thus \( n \) exceeds the ramification orders of bound variables in \( \varphi \), and hence also the orders of bound variables in \( \psi \).
+
+  Then \( m = n \), and, since all subtypes of \( \rho^m \) are predicative, \( \rho^m \) is itself predicative.
+\end{defproof}
+
+\begin{example}\label{ex:def:hol_formula_ramification_order}
+  We list examples of \hyperref[def:hol_term/formula]{higher-order formulas} and their \hyperref[def:hol_formula_ramification_order]{ramification orders}:
+  \begin{thmenum}
+    \thmitem{ex:def:hol_formula_ramification_order/propositional_constants} The most basic formulas are the propositional constants \( \syntop \) and \( \synbot \). Both contain no variables, so their order is \( 1 = \ord(\syn\omicron) \). They are both predicative.
+
+    \thmitem{ex:def:hol_formula_ramification_order/exist_properties} Consider the formula \( \varphi \coloneqq \qexists {\synp^{\syn\iota \synimplies \syn\omicron}} \synp(\synx^{\syn\iota}) \). Its free type is \( \syn\iota \synimplies \syn\omicron \), matching the type of its bound variable \( \synp \).
+
+    The ramification order of \( \synp \) is then \( 1 + \max\set{ 0 } \) (calculated via \eqref{eq:def:quantifiable_type_ramification_order/direct}). The only other variable in \( \varphi \) is \( \synx \) of type \( \syn\iota \), whose order is \( 0 \). Thus, the ramification order of \( \varphi \) (calculated via \eqref{eq:def:hol_formula_ramification_order/direct}) is \( 1 + \max\set{ 1, 0 } = 2 \).
+
+    Then \( \varphi \) is impredicative per \cref{def:hol_formula_predicativity/direct}.
+
+    We will verify the equivalent condition \cref{def:hol_formula_predicativity/ramification}. The ramifications of \( \varphi \) are \( \psi_n \coloneqq \qexists {\synp^{(\syn\iota)^n}} \synp(\synx^{\syn\iota}) \) for integers \( n \geq 1 \), where the ramified type of \( \psi_n \) can be \( (\syn\iota)^k \) for some \( k > n \). In order for \( (\syn\iota)^k \) to be predicative according to \cref{def:ramified_theory_of_types/predicativity}, it must have order \( k = 1 \), which cannot happen because \( k > n \geq 1 \).
+
+    The formula \( \zeta \), analyzed in \cref{def:ramified_theory_of_types} and determined to be impredicative per \cref{def:hol_formula_predicativity/ramification}, can similarly be shown to also be impredicative per \cref{def:hol_formula_predicativity/direct}.
+
+    \thmitem{ex:def:hol_formula_ramification_order/vacuous_binding} We can modify \cref{ex:def:hol_formula_ramification_order/exist_properties} to reveal a pathology.
+
+    Consider \( \varphi \coloneqq \qexists {\synp^{\syn\iota \synimplies \syn\omicron}} (\synx^{\syn\iota} \syneq \synx^{\syn\iota}) \). Its free type is again \( \syn\iota \synimplies \syn\omicron \), matching the type of its bound variable \( \synp \).
+
+    Again, as in the previous example, \( \varphi \) is impredicative, for the same reasons. The differences is that \( \synp \) is unused, so, even though \( \varphi \) may refer to itself, this reference is never used.
+
+    \thmitem{ex:def:hol_formula_ramification_order/flat_predicative} Consider the formula
+    \begin{equation*}
+      \varphi \coloneqq \qforall {\synq^{\syn\iota \synimplies \syn\omicron}} \parens[\Big]{ \parens[\big]{ \qforall {\synx^{\syn\iota}} \synp^{\syn\iota \synimplies \syn\omicron}(\synx) \syneq \synq(\synx) } \synwedge \qexists {\synr^{(\syn\iota \synimplies \syn\omicron) \synimplies \syn\omicron} \synr(\synq)} }.
+    \end{equation*}
+
+    The only free variable of \( \varphi \) is \( \synp \), so its free type is \( (\syn\iota \synimplies \syn\omicron) \synimplies \syn\omicron \). The ramification order of the type is \( 2 \).
+
+    The ramification order of (the type of) \( \synq \) is also \( 2 \), so the ramification order of \( \varphi \) itself is \( 3 \). This makes \( \varphi \) impredicative per \cref{def:hol_formula_predicativity/direct}.
+
+    This example reveals a nuance that arises with predicative ramified types. Consider the ramification
+    \begin{equation*}
+      \psi \coloneqq \qforall {\synq^{(\syn\iota)^k}} \parens[\Big]{ \parens[\big]{ \qexists {\synx^{\syn\iota}} \synp^{(\syn\iota)^n}(\synx) } \synwedge \qforall {\synr^{((\syn\iota)^m)^s} \synr(\synq)} },
+    \end{equation*}
+    where \( n \geq 1 \) and \( s > m \geq k \geq 1 \).
+
+    Here \( \psi \) is a propositional function and can be assigned the ramified type \( ((\syn\iota)^n)^l \) for any \( l > n \). Per our definition in \cref{def:ramified_theory_of_types/predicativity}, this type is predicative if \( l = n + 1 \) and \( (\syn\iota)^n \) is itself predicative, which requires \( n = 1 \).
+
+    We discussed in \cref{def:ramified_theory_of_types/predicativity} how, based only on Russell's writing, it is possible to proclaim \( ((\syn\iota)^n)^l \) as predicative by requiring \( l = n + 1 \), but imposing no restrictions on the subtypes. If \( m = k = 1 \) and \( s = n = 2 \) (and thus \( l = 3 \)), this would make \( \psi \) predicative since its free and bound variables would all have order at most \( 2 \).
+
+    \thmitem{ex:def:hol_formula_ramification_order/group} In the notation of higher-order logic, the group axiom \eqref{eq:def:group/theory/inverse_axiom} becomes
+    \begin{equation}\label{eq:ex:def:hol_formula_ramification_order/group/axiom}
+      \qforall {\synx^{\syn\iota}} (\synx \syntimes \synI(\synx) \syneq \synE \synwedge \synI(\synx) \syntimes \synx \syneq \synE).
+    \end{equation}
+
+    The formula has no free variables and only one bound variable of type \( \syn\iota \). The ramification order of \eqref{eq:ex:def:hol_formula_ramification_order/group/axiom} is thus \( 1 + \max\set{ 0 } \). It is rightfully referred to as a \enquote{first-order axiom}.
+
+    In particular, it is predicative since its free type \( \syn\omicron \) has ramification order \( 1 \); In Russell's terms, it is predicative since it is a first-order proposition that does not quantify over first-order propositions or propositional functions.
+
+    \thmitem{ex:def:hol_formula_ramification_order/axiom_of_specification} Consider the \hyperref[def:function_application_syntax]{infix} constant \( {\synin}: \syn\iota \synimplies \syn\iota \synimplies \syn\omicron \) from \fullref{ch:set_theory}.
+
+    The formula \( \synx^{\syn\iota} \synin \syny^{\syn\iota} \) features two free variables of order \( 0 \), so it has free type \( \syn\iota \synimplies \syn\iota \synimplies \syn\omicron \), just like \( {\synin} \) itself. Its ramification order is \( 1 + \max\set{ 0, 0 } \).
+
+    Now consider the \hyperref[def:zfc/specification]{axiom of specification}, where we want to quantify over predicates:
+    \begin{equation}\label{eq:ex:def:hol_formula_ramification_order/axiom_of_specification/specification}
+      \qforall {\synp^{\syn\iota \synimplies \syn\omicron}} \qforall {\syna^{\syn\iota}} \qexists {\synb^{\syn\iota}} \qforall {\synx^{\syn\iota}} \parens[\big]{ \synx \in \synb \syniff (\synx \synin \syna \synwedge \synp(\synx)) }.
+    \end{equation}
+
+    The variable \( \synp \) of order \( 1 \) increases the order of the formula to \( 2 \). For this reason, we refer to the axiom of specification as a \enquote{second-order axiom}.
+
+    Since the axiom of specification has no free variables, the ramification order of its free type is \( 1 \), but since it quantifies over a predicate, its own ramification orders is \( 2 \). This makes it impredicative. The Russellian explanation for this is that the axiom quantifies over a first-order predicative function, even though the function's type differs from the axiom's. This is perhaps a disparateness with Poincar\"e's notion of impredicativity, discussed in \cref{con:impredicative_definition}.
+
+    \thmitem{ex:def:hol_formula_ramification_order/peano_arithmetic} As another example, axiom schema \eqref{eq:def:peano_arithmetic/PA3} from \hyperref[def:peano_arithmetic]{Peano arithmetic} is parameterized by a formula. In higher-order logic, it can instead be expressed via a single axiom:
+    \begin{equation}\label{eq:ex:def:hol_formula_ramification_order/peano_arithmetic/pa3}
+      \qforall {\synp^{\syn\iota \synimplies \syn\omicron}} \parens[\big]{ \synp(\syn0) \synwedge \qforall {\synn^{\syn\iota}} \parens[\big]{ \synp(\synn) \synimplies \synp(\synS(\synn)) } \synimplies \qforall {\synn^{\syn\iota}} \synp(\synn) }.
+    \end{equation}
+
+    The individual variable \( \synn \) inhabits \( \syn\iota \) of order \( 0 \), and binding it does not change the ramification order of the axiom.
+
+    The variable \( \synp \) inhabits \( \syn\iota \synimplies \syn\omicron \) of order \( 1 \), so binding it increases the order of the axiom to \( 2 \).
+
+    Hence, \eqref{eq:ex:def:hol_formula_ramification_order/peano_arithmetic/pa3} is also a second-order axiom.
+
+    \thmitem{ex:def:hol_formula_ramification_order/topology} If we want to formalize point-set topology, we may have to use formulas of higher order.
+
+    Suppose we have a nonlogical constant \( \syn{\mscrT} \) that represents the topology. Since subsets of the domain correspond to unary predicates inhabiting \( \syn\iota \synimplies \syn\omicron \), families of subsets like the topology itself must have type \( (\syn\iota \synimplies \syn\omicron) \synimplies \syn\omicron \).
+
+    Suppose we also have a nonlogical constant \( \bigcupdot \) that represents set union. Since it transforms families of sets to sets, its type must be
+    \begin{equation*}
+      ((\syn\iota \synimplies \syn\omicron) \synimplies \syn\omicron) \synimplies (\syn\iota \synimplies \syn\omicron).
+    \end{equation*}
+
+    This type is not ramifiable.
+
+    Then axiom \ref{def:topological_space/O3} can be then expressed as follows:
+    \begin{equation}\label{ex:def:hol_formula_ramification_order/topology/o3}
+      \qforall {\synu^{(\syn\iota \synimplies \syn\omicron) \synimplies \syn\omicron}} \parens[\Big]{ \underbrace{\qforall {\syna^{\syn\iota \synimplies \syn\omicron}} \parens[\big]{ \synu(\syna) \synimplies \syn{\mscrT}(\syna) }}_{\synu \T*{is a subfamily of} \syn{\mscrT}} \synimplies \syn{\mscrT}\parens[\Big]{ \bigcupdot \synu } }
+    \end{equation}
+
+    The ramification order of this formula is \( 3 \) because of the bound variable \( \synu \) of order \( 2 \).
+
+    Thus, general topology provides an example of a \enquote{third-order theory}.
+  \end{thmenum}
+\end{example}
+
+\begin{definition}\label{def:bounded_hol}\mimprovised
+  We call \term{bounded higher-order logic} of order \( n \) the \hyperref[con:syntax_fragment]{fragment} of \hyperref[def:higher_order_logic]{higher-order logic} that features only formulas of \hyperref[def:hol_formula_ramification_order]{ramification order} \( n \) and below, and generally disallows quantifiable types of higher order.
+\end{definition}
+\begin{comments}
+  \item A better name is perhaps \enquote{\( n \)-th order logic}, however this may conflict with other usage like \fullref{sec:first_order_logic}. See \cref{ex:def:bounded_hol} for other subtleties.
+\end{comments}
+
+\begin{example}\label{ex:def:bounded_hol}
+  We list examples of \hyperref[def:bounded_hol]{bounded higher-order logic}:
+  \begin{thmenum}
+    \thmitem{ex:def:bounded_hol/zeroth} \incite[201]{Andrews2002Logic} writes that \hyperref[def:propositional_logic]{propositional logic} can be regarded as \enquote{zeroth-order logic}.
+
+    The ramification order of a formula, as defined in \eqref{eq:def:hol_formula_ramification_order/direct}, is \( 1 \), and actual ramifications may have higher orders. This technically leaves no possible zero-order formulas.
+
+    We obtain propositional logic (as formulated in \fullref{sec:propositional_logic}) by allowing formulas build from logical constants and free propositional variables, both of type \( \syn\omicron \). As shown in \cref{ex:def:hol_formula_ramification_order/propositional_constants}, a formula with only the logical constants \( \syntop \) and \( \synbot \) has ramification order \( 1 \), so it belongs to first-order logic. A formula featuring propositional variables has ramification order \( 2 \), so it belongs to second-order logic instead.
+
+    Nevertheless, it is clear that quantification in zeroth-order logic should be prohibited, and if we regard the propositional variables as metalogical placeholders for abstract truth values, the name \enquote{zeroth-order logic} seems justified.
+
+    \thmitem{ex:def:bounded_hol/first} First-order logic, as formulated in \fullref{sec:first_order_logic}, allows \( n \)-ary functions and predicates over individuals, as well as quantification over individual variables.
+
+    We see in \cref{tab:ex:def:bounded_hol/first} that this is compatible with what is allowed in bounded higher-order logic of order \( 1 \).
+
+    \begin{table}
+      \begin{center}
+        \begin{tabular}{l l l}
+          \toprule
+          First-order logic              & Higher-order logic                                                                                                                 & Ramification order \\
+          \midrule
+          Function of arity \( 0 \)      & Constant of type \( \syn\iota \)                                                                                                   & --      \\
+          Function of arity \( n > 0 \)  & Constant of type \( \underbrace{\syn\iota \synimplies \cdots \synimplies \syn\iota}_{n \T*{instances}} \synimplies \syn\iota \)    & --      \\
+          Free variable                  & Free variable of type \( \syn\iota \)                                                                                              & \( 0 \) \\
+          Bound variable                 & Bound variable of type \( \syn\iota \)                                                                                             & \( 0 \) \\
+          Predicate of arity \( 0 \)     & Constant of type \( \syn\omicron \)                                                                                                & --      \\
+          Predicate of arity \( n > 0 \) & Constant of type \( \underbrace{\syn\iota \synimplies \cdots \synimplies \syn\iota}_{n \T*{instances}} \synimplies \syn\omicron \) & --      \\
+          \bottomrule
+        \end{tabular}
+      \end{center}
+
+      \caption{Compatibility of constructs in \hyperref[def:first_order_logic]{first-order logic} and \hyperref[def:bounded_hol]{bounded higher-order logic}.}\label{tab:ex:def:bounded_hol/first}
+    \end{table}
+
+    Many-sorted first-order logic may be closer to higher-order logic in its formalisms than to standard one-sorted first-order logic.
+
+    \thmitem{ex:def:bounded_hol/second} Finally, let us now study bounded higher-order logic of order \( 2 \).
+
+    In addition to the constructs of first-order logic, we allow quantification over first-order functions and predicates.
+
+    We already saw in \cref{ex:def:hol_formula_ramification_order/axiom_of_specification} and \cref{ex:def:hol_formula_ramification_order/peano_arithmetic} how allowing bound variables of type \( \syn\iota \synimplies \syn\omicron \) can lead to a tidier exposition of important theories.
+
+    Let us compare this to the dedicated syntax of second-order logic from \cite[\S 3.6]{Hinman2005Logic}. Hinman first considers \term{monadic second-order logic}, which allows distinct sets of variables for individual variables and for \enquote{set variables}. A set should range over individuals, so it can be equivalently regarded as a predicate of type \( \syn\iota \synimplies \syn\omicron \).
+
+    If we denote these set variables by capital Latin letters, we will obtain a slightly simplified notation. Consider the reinterpretation from \cref{eq:ex:def:hol_formula_ramification_order/peano_arithmetic/pa3} of the axiom \eqref{eq:def:peano_arithmetic/PA3}, which we will restate here again:
+    \begin{equation*}
+      \qforall {\synp^{\syn\iota \synimplies \syn\omicron}} \parens[\big]{ \synp(\syn0) \synwedge \qforall {\synn^{\syn\iota}} \parens[\big]{ \synp(\synn) \synimplies \synp(\synS(\synn)) } \synimplies \qforall {\synn^{\syn\iota}} \synp(\synn) }.
+    \end{equation*}
+
+    Using the dedicated second-order syntax, this becomes
+    \begin{equation*}
+      \qforall {\synP} \parens[\big]{ \synP(\syn0) \synwedge \qforall {\synn} \parens[\big]{ \synP(\synn) \synimplies \synP(\synS(\synn)) } \synimplies \qforall {\synn} \synP(\synn) }.
+    \end{equation*}
+
+    This is only a fragment of what is allowed by higher-order logic, but it already covers many cases where first-order logic is insufficient.
+
+    Hinman also mentions \term{full second-order logic}, which is allowed to quantify over first-order functions and predicates (including nullary).
+
+    As with first-order logic, many-sorted second-order logic is more suitably presented via bounded higher-order logic.
+  \end{thmenum}
+\end{example}

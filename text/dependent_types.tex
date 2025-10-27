@@ -37,12 +37,20 @@ This section is a detour; our purpose is to present some ideas without diving in
 \begin{remark}\label{rem:well_formed_context}
   Most \hyperref[def:abstract_type_system]{type systems} we consider are based on \hyperref[def:simple_type]{simple types}, where terms and types have distinct grammars, both of which only generate strings that are well-formed in the sense of \cref{con:expression}. The role of the type system and its rules is then only to clarify the relationship between terms and types.
 
-  In contrast, more complicated systems like \hyperref[def:mltt]{Martin-L\"of type theory} are based on \hyperref[con:pseudoterm_expression]{pseudoterm expressions} that combine the syntax of terms and types. We consider an expression a well-formed type if it inhabits a \hyperref[con:type_universe]{type universe} with respect to some well-formed context. For simplicity, we consider type universes themselves to be well-formed types. It is reasonable to shorten \enquote{well-formed type} to \enquote{type} since there is no other notion of type available.
+  In contrast, more complicated systems like \hyperref[def:martin_lof_type_theory]{Martin-L\"of type theory} are based on \hyperref[con:pseudoterm_expression]{pseudoterm expressions} that combine the syntax of terms and types. We consider an expression a well-formed type if it inhabits a \hyperref[con:type_universe]{type universe} with respect to some well-formed context. For simplicity, we consider type universes themselves to be well-formed types. It is reasonable to shorten \enquote{well-formed type} to \enquote{type} since there is no other notion of type available.
 
   We will call a \enquote{well-formed term} or simply \enquote{term} an expression which inhabit a type but not a type universe.
 
   There is some logical circularity because a well-formed type is defined with respect to a well-formed context and vice versa. This can be resolved by stating the necessary definitions using mutual recursion. In \cref{def:mltt_well_formed_context} we will give precise definitions for well-formed types, \hyperref[def:type_context]{type contexts} and \hyperref[def:type_derivation_tree]{type derivation trees}.
 \end{remark}
+
+\begin{definition}\label{def:mltt_alphabet}\mimprovised
+  The \hyperref[def:formal_language/alphabet]{alphabet} of \hyperref[con:improper_symbol]{improper symbols} for Martin-L\"of type theory extends that of \( \muplambda \)-terms from \cref{def:lambda_term_alphabet} with two additional \hyperref[def:variable_binding]{variable binders}:
+  \begin{thmenum}
+    \thmitem{def:mltt_alphabet/product} The \term{dependent product} binder \enquote{\( \synprod \)}.
+    \thmitem{def:mltt_alphabet/sum}\mcite[374]{Mimram2020ProgramEqualsProof} The \term{dependent sum} binder \enquote{\( \synsum \)}.
+  \end{thmenum}
+\end{definition}
 
 \begin{definition}\label{def:mltt_pseudoterm}\mimprovised
   We will present a \hyperref[def:formal_grammar/schema]{grammar schema} suitable for all \hyperref[def:abstract_type_system]{type systems} considered in this section. It is based on Martin-L\"of's \cite{MartinLöf1984IntuitionisticTypeTheory}, for which reason we refer to it as the \enquote{the \hyperref[con:syntax_semantics_duality]{syntax} of Martin-L\"of type theory}.
@@ -61,21 +69,14 @@ This section is a detour; our purpose is to present some ideas without diving in
     \bnfmore                     {\bnfpn{dependent product} \bnfor \bnfpn{dependent sum}}
   \end{bnf*}
 
+  The \( \bnfpn{binder} \) rule lists the binder symbols from \cref{def:mltt_alphabet}. We assume capture-avoiding substitution and \( \alpha \)-equivalence are defined for them as per \cref{rem:variable_binding_properties}.
+
   In the \( \bnfpn{identity} \) rule, the second pseudoterm is intended to serve as a \hyperref[con:type_annotation]{type annotation} for the other two. This will be explained in \cref{def:identity_type}. We will find it more convenient to write \enquote{\( M \syneq_\tau N \)} instead of \enquote{\( M \mathrel{{\syneq:} \tau} N \)}.
-
-  The \( \bnfpn{binder} \) rule is so-named because its instances are intended to act as \hyperref[con:variable_binding]{variable binders}, and we assume capture-avoiding substitution and \( \alpha \)-equivalence are defined for them as per \cref{rem:variable_binding_properties}.
-
-  The binder pseudoterms, despite syntactic similarities, act very differently:
-  \begin{itemize}
-    \item The \( \synlambda \) binder induces the familiar abstraction terms from \cref{def:lambda_term}. We will instead use them as terms for dependent product types (see next) rather than for arrow types as in \fullref{sec:simply_typed_lambda_terms}.
-
-    \item The \( \synprod \) binder is instead intended for types. We call the corresponding pseudoterms \term[en=dependent product (\cite[\S 1.4]{UnivalentFoundationsProgram2013HoTT})]{dependent products} and introduce rules for them in \cref{def:dependent_product}. Due to the binder, \incite[\S 1.4]{UnivalentFoundationsProgram2013HoTT} also call them \enquote{\( \Pi \)-types}.
-
-    \item The \( \synsum \) binder is also intended for types. We call the corresponding pseudoterms \term[en=dependent sum (\cite[\S 8.3.4]{Mimram2020ProgramEqualsProof})]{dependent sums} and introduce rules for them in \cref{def:dependent_sum}. Due to the binder, \incite[\S 8.3.4]{Mimram2020ProgramEqualsProof} also calls them \enquote{\( \Sigma \)-types}.
-  \end{itemize}
 \end{definition}
 \begin{comments}
   \item Because of the \hyperref[con:curry_howard_correspondence]{Curry-Howard correspondence}, we focus on types rather than terms, and we have added dedicated grammar rules for the new \hyperref[con:type_constructor]{type constructors}. On the other hand, in accordance with \cref{rem:binders_in_type_theory_terms}, we will not bother introducing distinct grammar rules for every kind of term, but instead rely on the familiar syntax of \( \muplambda \)-calculus to express all needed terms.
+
+  \item Because of the symbols used, dependent products and sums are also called \enquote{\( \Pi \)-types} and \enquote{\( \Sigma \)-types} in \cite{UnivalentFoundationsProgram2013HoTT}.
 \end{comments}
 
 \begin{remark}\label{rem:pseudoterm_schemas}
@@ -264,7 +265,7 @@ This section is a detour; our purpose is to present some ideas without diving in
 \end{comments}
 
 \begin{definition}\label{def:type_of_booleans}\mcite[\S 8.3.6]{Mimram2020ProgramEqualsProof}
-  Similarly to the dependent empty type \( \syn\Bbbzero \) defined in \cref{def:dependent_empty_type} and the dependent unit type \( \syn\Bbbone \) defined in \cref{def:dependent_unit_type}, we will introduce a type, denoted by \( \syn\Bbbtwo \), with two inhabitants. Such a type can be used to express Boolean values in the sense of \cref{con:boolean_value}, and we will call it the \term{type of Booleans}\fnote{Not to be confused with the type of propositions from \cref{def:simply_typed_hol_signature/types}}.
+  Similarly to the dependent empty type \( \syn\Bbbzero \) defined in \cref{def:dependent_empty_type} and the dependent unit type \( \syn\Bbbone \) defined in \cref{def:dependent_unit_type}, we will introduce a type, denoted by \( \syn\Bbbtwo \), with two inhabitants. Such a type can be used to express Boolean values in the sense of \cref{con:boolean_value}, and we will call it the \term{type of Booleans}\fnote{Not to be confused with the type of propositions from \cref{def:hol_signature/types}}.
 
   The rules are a degenerate case of \hyperref[def:simple_sum_type]{binary sum types}, but they are based on dependent types rather than simple types.
 
@@ -891,10 +892,21 @@ This section is a detour; our purpose is to present some ideas without diving in
 
 \paragraph{Martin-L\"of type theory}
 
-\begin{definition}\label{def:mltt}\mimprovised
-  We call \term{Martin-L\"of type theory} the \hyperref[def:abstract_type_system]{type system} based on the \hyperref[def:mltt_pseudoterm]{eponymous pseudoterm expressions} and featuring the \hyperref[con:dependent_type]{dependent types} presented in this section --- \hyperref[def:identity_type]{identity types}, \hyperref[def:dependent_product]{dependent products} and \hyperref[def:dependent_sum]{dependent sums} --- as well as the \hyperref[def:dependent_empty_type]{dependent empty type}, \hyperref[def:dependent_unit_type]{dependent unit type} and the \hyperref[def:type_of_booleans]{type of Booleans}.
+\begin{definition}\label{def:mltt_signature}\mimprovised
+  A \hyperref[con:logical_system_signature]{signature} for Martin-L\"of type theory is a specification of the following:
+  \begin{thmenum}
+    \thmitem{def:mltt_signature/universe} A nonempty set \( \op*{Univ} \) of symbols acting as \hyperref[con:type_universe]{type universe}. Unless noted otherwise, we assume that there is only one universe --- \( \syn\BbbT \).
 
-  We only assume the existence of one type universe, \( \syn\BbbT \). We also assume all generic equality rules from \cref{rem:type_theory_rule_classification/equality}\fnote{Although we have not formally defined substitution and \( \alpha \)-equivalence specifically for the pseudoterms, doing so is routine.}.
+    \thmitem{def:mltt_signature/const} A (possibly empty) set \( \op*{Const}_\Sigma \) of symbols acting as \hyperref[def:mltt_pseudoterm]{(pseudoterm) constants}.
+  \end{thmenum}
+
+  As per \cref{rem:improper_symbols_and_parsing}, we disallow the \hyperref[con:improper_symbol]{improper symbols} from \cref{def:lambda_term_alphabet} and \cref{def:mltt_alphabet} as universes and constants.
+\end{definition}
+
+\begin{definition}\label{def:martin_lof_type_theory}\mimprovised
+  We call \term{Martin-L\"of type theory} the \hyperref[def:abstract_type_system]{type system} based on the \hyperref[def:mltt_pseudoterm]{eponymous pseudoterm expressions}, depending on an \hyperref[def:mltt_signature]{eponymous signature} and featuring the \hyperref[con:dependent_type]{dependent types} presented in this section --- \hyperref[def:identity_type]{identity types}, \hyperref[def:dependent_product]{dependent products} and \hyperref[def:dependent_sum]{dependent sums} --- as well as the \hyperref[def:dependent_empty_type]{dependent empty type}, \hyperref[def:dependent_unit_type]{dependent unit type} and the \hyperref[def:type_of_booleans]{type of Booleans}.
+
+  We assume all generic equality rules from \cref{rem:type_theory_rule_classification/equality}.
 
   Furthermore, we label as well-formed the types, type contexts and derivation trees as per the procedure described in \cref{def:mltt_well_formed_context}. We consider the others ill-formed and implicitly disregard them.
 \end{definition}
@@ -912,10 +924,10 @@ This section is a detour; our purpose is to present some ideas without diving in
 \begin{definition}\label{def:mltt_well_formed_context}\mimprovised
   We have briefly described in \cref{rem:well_formed_context} how types, \hyperref[def:type_context]{type contexts} and \hyperref[def:type_derivation_tree]{type derivation trees} can be well- and ill-formed in \hyperref[def:abstract_type_system]{type systems} with \hyperref[con:pseudoterm_expression]{pseudoterm expressions}.
 
-  Here we will give precise mutually recursive definitions for these concepts for \hyperref[def:mltt]{Martin-L\"of type theory}. The definitions will be just as valid for \hyperref[def:pure_type_system]{pure type systems} and possibly other type systems.
+  Here we will give precise mutually recursive definitions for these concepts for \hyperref[def:martin_lof_type_theory]{Martin-L\"of type theory}. The definitions will be just as valid for \hyperref[def:pure_type_system]{pure type systems} and \hyperref[def:higher_order_logic]{higher-order logic}, and possibly other related type systems.
 
   \begin{thmenum}
-    \thmitem{def:mltt_well_formed_context/base} We consider any \hyperref[con:type_universe]{type universe} itself to be a well-formed type (with respect to the empty type context). Correspondingly, if the type context \( \Gamma \) has type universes as its only types, we consider it well-formed.
+    \thmitem{def:mltt_well_formed_context/base} We consider any \hyperref[def:mltt_signature/universe]{type universe} itself to be a well-formed type (with respect to the empty type context). Correspondingly, if the type context \( \Gamma \) has type universes as its only types, we consider it well-formed.
 
     This is the base case. The other well-formed types and contexts depend recursively on derivation trees, which we will discuss next.
 
@@ -931,30 +943,30 @@ This section is a detour; our purpose is to present some ideas without diving in
 \end{comments}
 
 \begin{definition}\label{def:mltt_entailment}\mimprovised
-  We define a \hyperref[def:type_derivation_relation]{type derivation relation} for \hyperref[def:mltt]{Martin-L\"of type theory} by asserting that \( \Gamma \vdash M: \tau \) holds if there exists a \hyperref[def:type_derivation_tree]{type derivation tree} with conclusion \( M: \tau \) that is \hyperref[def:mltt_well_formed_context/derivation]{well-formed} with respect to \( \Gamma \).
+  We define a \hyperref[def:type_derivation_relation]{type derivation relation} for \hyperref[def:martin_lof_type_theory]{Martin-L\"of type theory} by asserting that \( \Gamma \vdash M: \tau \) holds if there exists a \hyperref[def:type_derivation_tree]{type derivation tree} with conclusion \( M: \tau \) that is \hyperref[def:mltt_well_formed_context/derivation]{well-formed} with respect to \( \Gamma \).
 \end{definition}
 \begin{comments}
   \item The proof that this is indeed a type derivation relation is analogous to the proof of consistency in \cref{def:natural_deduction_entailment}.
 \end{comments}
 
 \begin{example}\label{ex:def:mltt_well_formed_context}
-  We list examples of \hyperref[def:mltt_well_formed_context]{well- and ill-formed contexts} in \hyperref[def:mltt]{Martin-L\"of type theory}:
+  We list examples of \hyperref[def:mltt_well_formed_context]{well- and ill-formed contexts} in \hyperref[def:martin_lof_type_theory]{Martin-L\"of type theory}:
 
   \begin{thmenum}
     \thmitem{ex:def:mltt_well_formed_context/negation} Consider first the following derivation tree:
     \begin{equation*}
       \begin{prooftree}
-        \hypo{ \syn\tau: \syn\BbbT }
-        \infer0[\ref{inf:def:dependent_empty_type/form}]{ \syn\Bbbzero: \syn\BbbT }
-        \infer2[\ref{inf:def:dependent_product/form}]{ \syn\tau \synimplies \syn\Bbbzero: \syn\BbbT }
+        \hypo{ \syn\tau: \BbbT }
+        \infer0[\ref{inf:def:dependent_empty_type/form}]{ \syn\Bbbzero: \BbbT }
+        \infer2[\ref{inf:def:dependent_product/form}]{ \syn\tau \synimplies \syn\Bbbzero: \BbbT }
       \end{prooftree}
     \end{equation*}
 
-    The context \( \syn\tau: \syn\BbbT \) is well-formed as per \cref{def:mltt_well_formed_context/base}, and there are no other assumptions, so, by \cref{def:mltt_well_formed_context/derivation}, the derivation is well-formed.
+    The context \( \syn\tau: \BbbT \) is well-formed as per \cref{def:mltt_well_formed_context/base}, and there are no other assumptions, so, by \cref{def:mltt_well_formed_context/derivation}, the derivation is well-formed.
 
-    By \cref{def:mltt_well_formed_context/type}, \( \syn\tau \synimplies \syn\Bbbzero \) is a well-formed type with respect to \( \syn\tau: \syn\BbbT \), so, by \cref{def:mltt_well_formed_context/context}, the following context is well-formed:
+    By \cref{def:mltt_well_formed_context/type}, \( \syn\tau \synimplies \syn\Bbbzero \) is a well-formed type with respect to \( \syn\tau: \BbbT \), so, by \cref{def:mltt_well_formed_context/context}, the following context is well-formed:
     \begin{equation*}
-      \syn\tau: \syn\BbbT, \synf: \syn\tau \synimplies \syn\Bbbzero
+      \syn\tau: \BbbT, \synf: \syn\tau \synimplies \syn\Bbbzero
     \end{equation*}
 
     The order of type assertions here is important because \( \synf: \syn\tau \synimplies \syn\Bbbzero \) is not by itself meaningful unless we know that \( \syn\tau \) is a type.
@@ -970,7 +982,7 @@ This section is a detour; our purpose is to present some ideas without diving in
 
     It shows that
     \begin{equation*}
-      \syn\tau: \syn\BbbT, \synf: \syn\tau \synimplies \syn\Bbbzero, \synx: \syn\tau \vdash \synf \synx: \syn\Bbbzero.
+      \syn\tau: \BbbT, \synf: \syn\tau \synimplies \syn\Bbbzero, \synx: \syn\tau \vdash \synf \synx: \syn\Bbbzero.
     \end{equation*}
 
     We can exchange the assertions for \( \synf \) and \( \synx \) in the context, but both can only come after the assertion for \( \syn\tau \).
@@ -984,11 +996,11 @@ This section is a detour; our purpose is to present some ideas without diving in
     \end{equation*}
     is well-formed.
 
-    The order of assumptions in the type context is important. In the context \( \Gamma \coloneqq \syn\tau: \BbbT, \synx: \syn\tau \), we can attempt to abstract away \( \tau: \syn\BbbT \) rather than \( \synx: \syn\tau \). The derivation
+    The order of assumptions in the type context is important. In the context \( \Gamma \coloneqq \syn\tau: \BbbT, \synx: \syn\tau \), we can attempt to abstract away \( \tau: \BbbT \) rather than \( \synx: \syn\tau \). The derivation
     \begin{equation*}
       \begin{prooftree}
         \hypo{ \synx: \syn\tau }
-        \infer1[\ref{inf:def:dependent_product/intro}]{ \qabs {\syn\tau^{\syn\BbbT}} \synx: \syn\BbbT \synimplies \syn\tau }
+        \infer1[\ref{inf:def:dependent_product/intro}]{ \qabs {\syn\tau^{\BbbT}} \synx: \BbbT \synimplies \syn\tau }
       \end{prooftree}
     \end{equation*}
     is not well-formed, however.
@@ -999,7 +1011,7 @@ This section is a detour; our purpose is to present some ideas without diving in
     \begin{equation*}
       \begin{prooftree}
         \hypo{ \synx: \syn\tau }
-        \infer1[\ref{inf:def:dependent_product/intro}]{ \qabs {\syn\sigma^{\syn\BbbT}} \synx: \syn\BbbT \synimplies \syn\tau }
+        \infer1[\ref{inf:def:dependent_product/intro}]{ \qabs {\syn\sigma^{\BbbT}} \synx: \BbbT \synimplies \syn\tau }
       \end{prooftree}
     \end{equation*}
     that is well-formed with respect to \( \Gamma \).
@@ -1007,7 +1019,7 @@ This section is a detour; our purpose is to present some ideas without diving in
 \end{example}
 
 \begin{remark}\label{rem:mltt_hol}
-  With the \hyperref[def:type_derivation_relation]{type derivation relation} defined in \cref{def:mltt_entailment}, \hyperref[def:mltt]{Martin-L\"of type theory} can be seen as a form of \hyperref[rem:predicate_logic]{predicate logic} if we extend the \hyperref[con:curry_howard_correspondence]{Curry-Howard correspondence} by matching \hyperref[def:predicate_logic_alphabet/quantifiers/universal]{universal quantifiers} with \hyperref[def:dependent_product]{dependent products} and \hyperref[def:predicate_logic_alphabet/quantifiers/existential]{existential quantifiers} with \hyperref[def:dependent_sum]{dependent sums}.
+  With the \hyperref[def:type_derivation_relation]{type derivation relation} defined in \cref{def:mltt_entailment}, \hyperref[def:martin_lof_type_theory]{Martin-L\"of type theory} can be seen as a form of \hyperref[rem:predicate_logic]{predicate logic} if we extend the \hyperref[con:curry_howard_correspondence]{Curry-Howard correspondence} by matching \hyperref[def:predicate_logic_alphabet/quantifiers/universal]{universal quantifiers} with \hyperref[def:dependent_product]{dependent products} and \hyperref[def:predicate_logic_alphabet/quantifiers/existential]{existential quantifiers} with \hyperref[def:dependent_sum]{dependent sums}.
 
   We do not put restrictions on which types are allowed to act as formulas. This makes the theory go beyond what we discuss in \fullref{sec:predicate_logic}.
 
@@ -1015,7 +1027,7 @@ This section is a detour; our purpose is to present some ideas without diving in
 \end{remark}
 
 \begin{proposition}\label{thm:propositional_equality_equivalence_relation}
-  \hyperref[def:mltt_propositional_equality]{Propositional equality} in \hyperref[def:mltt]{Martin-L\"of type theory} (with the \hyperref[def:identity_type/j]{\( J \) eliminator}) acts like an \hyperref[def:equivalence_relation]{equivalence relation}. More precisely:
+  \hyperref[def:mltt_propositional_equality]{Propositional equality} in \hyperref[def:martin_lof_type_theory]{Martin-L\"of type theory} (with the \hyperref[def:identity_type/j]{\( J \) eliminator}) acts like an \hyperref[def:equivalence_relation]{equivalence relation}. More precisely:
   \begin{thmenum}
     \thmitem{thm:propositional_equality_equivalence_relation/reflexivity} \hyperref[def:relation_closures/reflexive]{Reflexivity}: the type \( A \syneq_\tau A \) is inhabited (if the term \( A \) inhabits \( \tau \)).
 
@@ -1076,7 +1088,7 @@ This section is a detour; our purpose is to present some ideas without diving in
 \end{proof}
 
 \begin{definition}\label{def:propositionally_uninhabited}\mimprovised
-  In \hyperref[def:mltt]{Martin-L\"of type theory}, we say that the type \( \tau \) is \term{propositionally uninhabited} if \( \vdash \tau \synimplies \syn\Bbbzero \), where \( \syn\Bbbzero \) is the (dependent) \hyperref[def:dependent_empty_type]{empty type}.
+  In \hyperref[def:martin_lof_type_theory]{Martin-L\"of type theory}, we say that the type \( \tau \) is \term{propositionally uninhabited} if \( \vdash \tau \synimplies \syn\Bbbzero \), where \( \syn\Bbbzero \) is the (dependent) \hyperref[def:dependent_empty_type]{empty type}.
 \end{definition}
 \begin{comments}
   \item Via the \hyperref[con:curry_howard_correspondence]{Curry-Howard correspondence}, we can view \( \tau \synimplies \syn\Bbbzero \) as a logical negation of \( \tau \). From this perspective \( \tau \) is propositionally uninhabited if and only if its negation is inhabited. Propositionally uninhabited types thus correspond to \hyperref[def:propositional_contradiction]{contradictions}.
@@ -1099,7 +1111,7 @@ This section is a detour; our purpose is to present some ideas without diving in
 \paragraph{Mere propositions}
 
 \begin{remark}\label{rem:mere_propositions}
-  Due to the \hyperref[con:curry_howard_correspondence]{Curry-Howard correspondence}, every type in \hyperref[def:mltt]{Martin-L\"of type theory} can be regarded as a logical formula in the sense of \cref{con:proposition}.
+  Due to the \hyperref[con:curry_howard_correspondence]{Curry-Howard correspondence}, every type in \hyperref[def:martin_lof_type_theory]{Martin-L\"of type theory} can be regarded as a logical formula in the sense of \cref{con:proposition}.
 
   As noted in \cite[111]{UnivalentFoundationsProgram2013HoTT}, this definition only takes into account whether the type is inhabited, and not in which terms inhabit it. The authors suggest restricting the Curry-Howard correspondence to only those types that are inhabited by at most one term. We define such types, called \enquote{mere propositions}, in \cref{def:mere_proposition}.
 
@@ -1107,7 +1119,7 @@ This section is a detour; our purpose is to present some ideas without diving in
 \end{remark}
 
 \begin{definition}\label{def:mere_proposition}\mcite[def. 3.3.1]{UnivalentFoundationsProgram2013HoTT}
-  Within \hyperref[def:mltt]{Martin-L\"of type theory}, we call the type \( \tau \) a \term{mere proposition} if all its inhabitants are \hyperref[def:mltt_propositional_equality]{propositionally equal} or, more formally, if the following type is inhabited:
+  Within \hyperref[def:martin_lof_type_theory]{Martin-L\"of type theory}, we call the type \( \tau \) a \term{mere proposition} if all its inhabitants are \hyperref[def:mltt_propositional_equality]{propositionally equal} or, more formally, if the following type is inhabited:
   \begin{equation*}\taglabel[\op{IsProp}]{abbr:def:mere_proposition}
     \ref{abbr:def:mere_proposition}[\tau] \coloneqq \qprod {\synx^\tau} \qprod {\syny^\tau} (\synx \syneq_\tau \syny).
   \end{equation*}
@@ -1115,7 +1127,7 @@ This section is a detour; our purpose is to present some ideas without diving in
 \begin{comments}
   \item Since the condition resembles that for \hyperref[def:subsingleton_set]{subsingleton sets}, mere propositions are also called \enquote{subsingletons}.
 
-  \item The \hyperref[con:type_constructor]{type constructor} \( \op{IsProp} \) here is an abbreviation in the sense of \cref{con:metalingual_abbreviation}.
+  \item The \hyperref[con:type_constructor]{type constructor} \( \op{IsProp} \) here is an abbreviation in the sense of \cref{con:syntactic_abbreviation}.
 \end{comments}
 
 \begin{proposition}\label{thm:uninhabited_type_is_proposition}
@@ -1125,10 +1137,10 @@ This section is a detour; our purpose is to present some ideas without diving in
   If \( \tau \) is propositionally uninhabited, there exists a term \( M \) inhabiting \( \tau \synimplies \syn\Bbbzero \). Then
   \begin{equation*}
     \begin{prooftree}
-      \hypo{ \tau: \syn\BbbT }
+      \hypo{ \tau: \BbbT }
       \hypo{ \synx: \tau }
       \hypo{ \syny: \tau }
-      \infer3[\ref{inf:def:identity_type/form}]{ \synx \syneq_\tau \syny: \syn\BbbT }
+      \infer3[\ref{inf:def:identity_type/form}]{ \synx \syneq_\tau \syny: \BbbT }
 
       \hypo {}
       \ellipsis {} { M: \tau \synimplies \syn\Bbbzero }
@@ -1151,7 +1163,7 @@ This section is a detour; our purpose is to present some ideas without diving in
 \end{proof}
 
 \begin{definition}\label{def:contractible_type}\mcite[def. 3.11.1]{UnivalentFoundationsProgram2013HoTT}
-  Within \hyperref[def:mltt]{Martin-L\"of type theory}, we call the type \( \tau \) \term{contractible} if it has a distinguished inhabitant, called the \term{center of contraction}, that is \hyperref[def:mltt_propositional_equality]{propositionally equal} to any other inhabitant, i.e. if the following type is inhabited:
+  Within \hyperref[def:martin_lof_type_theory]{Martin-L\"of type theory}, we call the type \( \tau \) \term{contractible} if it has a distinguished inhabitant, called the \term{center of contraction}, that is \hyperref[def:mltt_propositional_equality]{propositionally equal} to any other inhabitant, i.e. if the following type is inhabited:
   \begin{equation*}\taglabel[\op{IsContr}]{abbr:def:contractible_type}
     \ref{abbr:def:contractible_type}[\tau] \coloneqq \qsum {\syna^\tau} \qprod {\synx^\tau} (\syna \syneq_\tau \synx).
   \end{equation*}
@@ -1159,7 +1171,7 @@ This section is a detour; our purpose is to present some ideas without diving in
 \begin{comments}
   \item There is generally no canonical choice of center of contraction.
 
-  \item The \hyperref[con:type_constructor]{type constructor} \( \op{IsProp} \) here is an abbreviation in the sense of \cref{con:metalingual_abbreviation}.
+  \item The \hyperref[con:type_constructor]{type constructor} \( \op{IsProp} \) here is an abbreviation in the sense of \cref{con:syntactic_abbreviation}.
 \end{comments}
 
 \begin{proposition}\label{thm:contractible_type_is_proposition}
@@ -1183,14 +1195,14 @@ This section is a detour; our purpose is to present some ideas without diving in
   \footnotesize
   \begin{equation*}
     \begin{prooftree}
-      \infer0[\ref{inf:def:dependent_unit_type/form}]{ \syn\Bbbone: \syn\BbbT }
+      \infer0[\ref{inf:def:dependent_unit_type/form}]{ \syn\Bbbone: \BbbT }
 
-      \infer0[\ref{inf:def:dependent_unit_type/form}]{ \syn\Bbbone: \syn\BbbT }
+      \infer0[\ref{inf:def:dependent_unit_type/form}]{ \syn\Bbbone: \BbbT }
       \hypo{ \syna: \syn\Bbbone }
       \hypo{ \synx: \syn\Bbbone }
-      \infer3[\ref{inf:def:identity_type/form}]{ \syna \syneq_{\syn\Bbbone} \synx: \syn\BbbT }
+      \infer3[\ref{inf:def:identity_type/form}]{ \syna \syneq_{\syn\Bbbone} \synx: \BbbT }
 
-      \infer[left label=\( \synx \)]2[\ref{inf:def:dependent_product/form}]{ \qprod {\synx^{\syn\Bbbone}} \syna \syneq_{\syn\Bbbone} \synx: \syn\BbbT }
+      \infer[left label=\( \synx \)]2[\ref{inf:def:dependent_product/form}]{ \qprod {\synx^{\syn\Bbbone}} \syna \syneq_{\syn\Bbbone} \synx: \BbbT }
 
       \infer0[\ref{inf:def:dependent_unit_type/intro}]{ \synU_+: \syn\Bbbone }
 
@@ -1453,21 +1465,21 @@ This section is a detour; our purpose is to present some ideas without diving in
 \paragraph{Pure type systems}
 
 \begin{definition}\label{def:pure_type_system}\mcite[\S 5.2]{Barendregt1992LambdaCalculiWithTypes}
-  A \term{pure type system} is a modular \hyperref[def:abstract_type_system]{type system} based on a restricted version of \hyperref[def:mltt]{Martin-L\"of type theory} featuring only \hyperref[def:dependent_product]{dependent products}, without even the judgmental equality rules from \cref{rem:type_theory_rule_classification/equality}.
+  A \term{pure type system} is a modular \hyperref[def:abstract_type_system]{type system} based on a restricted version of \hyperref[def:martin_lof_type_theory]{Martin-L\"of type theory} featuring only \hyperref[def:dependent_product]{dependent products}, without even the judgmental equality rules from \cref{rem:type_theory_rule_classification/equality}.
 
-  A particular pure type system is determined by a \hyperref[con:logical_system_signature]{signature} consisting of the following:
+  A particular pure type system is determined by a \hyperref[con:logical_system_signature]{signature} consisting of the following\fnote{We usually require \hyperref[con:logical_system_signature]{signatures} to only have finitely many symbols. Here, we have not required the sets of sorts or axioms to be finite since we simply follow Barendregt's definition.}:
   \begin{thmenum}
-    \thmitem{def:pure_type_system/signature/const} A nonempty set of constants, which we will call \term{sorts}. These will act as \hyperref[con:type_universe]{type universes}.
+    \thmitem{def:pure_type_system/signature/const} A nonempty set of symbols, which we will call \term{sorts}. These will act as \hyperref[con:type_universe]{type universes}.
 
-    \thmitem{def:pure_type_system/signature/axioms} A possibly empty set of \hyperref[def:type_assertion]{type assertions} of the form \( C: S \), where \( C \) is a constant and \( S \) is a sort. We will call these assertions \term{axioms}.
+    \thmitem{def:pure_type_system/signature/axioms} A possibly empty set of \hyperref[def:type_assertion]{type assertions} of the form \( c: S \), where \( c \) is a constant and \( S \) is a sort. We will call these assertions \term{axioms}.
 
-    These induce the typing rule
+    These induce the typing rule:
     \begin{equation*}\taglabel[\logic{Ax}]{inf:def:pure_type_system/axiom}
       \begin{prooftree}
-        \infer0[\ref{inf:def:pure_type_system/axiom}]{ C: S },
+        \infer0[\ref{inf:def:pure_type_system/axiom}]{ c: S },
       \end{prooftree}
     \end{equation*}
-    where \( C: S \) ranges over axioms.
+    where \( c: S \) ranges over axioms.
 
     \thmitem{def:pure_type_system/signature/rules} A possibly empty set of triples of sorts, which we will call \term{rule specifications} because they determine the product formation rule.
 
@@ -1506,6 +1518,8 @@ This section is a detour; our purpose is to present some ideas without diving in
   \item We have adapted the rules from \cite[\S 5.2]{Barendregt1992LambdaCalculiWithTypes} to \hyperref[rem:natural_deduction_explicit_sequents]{implicit sequent style} as per \cref{rem:dependent_type_rule_sequents}.
 
   \item We implicitly assume that, via a rule analogous to \ref{inf:def:lambda_term_reduction/abs} and \ref{inf:def:polymorphic_lambda_calculus/beta_compat}, \( \beta \)-reduction is compatible with the variable binder \( \synprod \). We do not postulate a rule for reducing \( (\qprod {x^\tau} \sigma) \rho \) to \( \sigma[x \mapsto \rho] \) because that is handled implicitly in \ref{inf:def:dependent_product/elim}.
+
+  \item As defined here, sorts are unrelated to sorts in \hyperref[def:higher_order_logic]{higher order logic}, which instead act analogously to base types in \hyperref[def:simple_type_theory]{simple type theories}.
 \end{comments}
 
 \begin{definition}\label{def:lambda_cube}\mcite[sec. 5.2]{Barendregt1992LambdaCalculiWithTypes}
@@ -1567,7 +1581,7 @@ This section is a detour; our purpose is to present some ideas without diving in
 
     The new type formation rule enables dependent types in the sense of \cref{con:dependent_type}, and we refer to adding \( (\Box, \ast) \) to an existing system as \enquote{adding dependent types}.
 
-    It should be noted that this rule is incompatible with the familiar dependent product formation rule \ref{inf:def:dependent_product/form} from \hyperref[def:mltt]{Martin-L\"of type theory} because the type universe is instead stratified into types and kinds.
+    It should be noted that this rule is incompatible with the familiar dependent product formation rule \ref{inf:def:dependent_product/form} from \hyperref[def:martin_lof_type_theory]{Martin-L\"of type theory} because the type universe is instead stratified into types and kinds.
 
     \incite*[def. 5.1.8]{Barendregt1992LambdaCalculiWithTypes} denotes this system by \( \muplambda P \) and places it next to \( \muplambda_{\rightarrow} \) in the \( \muplambda \)-cube.
 

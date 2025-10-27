@@ -21,7 +21,7 @@ from .parser import (
 )
 
 
-# This is our base signature from def:simply_typed_hol_signature,
+# This is our base signature from def:hol_signature,
 # but with boldface symbols so that the (unicode) symbols do not collide with variables and placeholders
 # It is used only for testing the parser.
 HOL_TEST_SIGNATURE = LambdaSignature(base_types=['𝛊', '𝐨'], constant_terms=['𝐐'])

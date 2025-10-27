@@ -6,107 +6,24 @@ Typed \( \lambda \)-calculus shifts the perspective from terms to type derivatio
 
 \paragraph{Type systems}
 
-\begin{concept}\label{con:ramified_type_theory}
-  In his attempt to resolve issues of \hyperref[rem:self_reference]{self-reference} and \hyperref[con:impredicativity]{impredicativity} in logic, Bertrand Russell introduced a \hyperref[con:logical_system]{formal system} which was later called the \term[en=ramified theory of types (\cite[44]{Kleene1971Metamathematics})]{ramified theory of types}.
-
-  He presented this system in \cite{Russell1908TypeTheory}. Along with Alfred Whitehead, he used it to derive a large portion of mathematics. These efforts were published in three volumes --- \cite{WhiteheadRussell1927PrincipiaMathematicaVol1}, \cite{WhiteheadRussell1927PrincipiaMathematicaVol2} and \cite{WhiteheadRussell1927PrincipiaMathematicaVol3}.
-
-  As originally presented, Russell's type theory is quite dated. We will attempt to present his theory with modernized terminology and notation from \fullref{ch:mathematical_logic}, but without complete formalization of the object logic\fnote{If not for the circular dependency, we could have tried to formulate his theory via \hyperref[def:simply_typed_hol]{simply typed higher-order logic}.}.
-
-  Russell conflates \hyperref[con:syntax_semantics_duality]{syntax and semantics}; he studies \hyperref[con:proposition]{propositions}, each of which is assumed to have a syntactic representation like the formulas of \hyperref[rem:predicate_logic]{higher-order logic}. He also distinguishes between \enquote{propositions}, who have a predetermined truth value, and \enquote{propositional functions}, who depend on externally provided \hyperref[con:variable]{variables}. In our attempt to stay close to the formalisms we use for logic, we will call both \enquote{formulas}. When the formula is intended to be used as a \hyperref[def:boolean_function]{predicate}, we will refer to it as a \enquote{property} of its \hyperref[con:variable_binding]{free variables}.
-
-  Briefly, in Russell's ramified type theory, each formula has two \hyperref[def:labeled_set]{labels} --- one called the \term[en=type (\cite[237]{Russell1908TypeTheory})]{type} and one called the \term[en=order (\cite[44]{Kleene1971Metamathematics})]{order}. Variables accepting formulas are assumed to be annotated with the type and order of formulas they are allowed to range over.
-
-  \begin{thmenum}
-    \thmitem{con:ramified_type_theory/types} The purpose of a type is to indicate the intended values a variable can range over. We assume our object language is such that every formula has a well-defined type.
-
-    The \hyperref[con:variable_dependence]{independent variables} range over the base type, which Russell calls the \enquote{type of individuals}. The nature of individuals is considered irrelevant for the logic\fnote{The only restriction Russell places is that individuals must not be propositions --- a requirement that is meaningless in a more refined formalization.}. We denote this type by \( \syn\iota \)\fnote{Small Greek \( \iota \) with a dot, as per the convention from \cref{rem:object_language_dots} of placing dots over terminal symbols.}.
-
-    The other variables that he allows range over formulas. \tcite{In #2, where #1}[56]{Church1940STT} pioneers a dedicated syntax for types, propositions (without free variables) have a dedicated type --- the \enquote{type of propositions}, denoted by \( \syn\omicron \).
-
-    We reiterate that Russell's propositions and propositional functions are assumed to have a syntactic representation. They are thus restricted to formulas and not abstract predicates. This also means that the available formulas are neatly grouped into types, and the range of a given variable can be determined from the object theory alone. In modern higher-order logic, the type of variables is merely a label, and the values that the variable can take is determined in the metatheory.
-
-    Following the modern notation that we will use in \fullref{sec:predicate_logic}, if the formula's enumerated free variables have types \( \tau_1, \ldots, \tau_n \), we will denote the type of the formula by
-    \begin{equation*}
-      \tau_1 \synimplies \cdots \synimplies \tau_n \synimplies \syn\omicron.
-    \end{equation*}
-
-    This syntax will be formalized in \cref{def:simple_type}, and, with this particular \hyperref[def:simple_type_signature]{signature}, in \cref{def:simply_typed_hol_signature/types}.
-
-    As an example, consider Leibniz' equality law \eqref{eq:rem:identity_of_indiscernibles/bi}, which we can restate in an informal metalanguage as follows:
-    \begin{displayquote}
-      The individuals \( x \) and \( y \) are equal if, for every unary property of individuals \( p \), \( p[x] \) holds if and only if \( p[y] \) does.
-    \end{displayquote}
-
-    As stated, the law has two free variables --- \( x \) and \( y \) --- both of type \( \syn\iota \); the type of the law is thus \( \syn\iota \synimplies \syn\iota \synimplies \syn\omicron \). It also has one bound variable, \( p \), of type \( \syn\iota \synimplies \syn\omicron \).
-
-    If we substitute one of the variables, say \( y \), with a constant, we will obtain a characterization of the other. For example\fnote{We use here the function syntax from \cref{def:function_application_syntax}, adapted for \hyperref[def:simple_type]{simple types} based on \cref{rem:simple_type_function_syntax}.}:
-    \begin{displayquote}
-      The individual \( x \) equals the integer \( 0 \) if, for every univariate property of individuals \( p \), \( p(x) \) holds if and only if \( p(0) \) does.
-    \end{displayquote}
-
-    But this instance of Leibniz's law is itself a univariate property, so we obtain a situation where a formula references itself. To resolve such issues, Russell introduces orders in addition to types.
-
-    \thmitem{con:ramified_type_theory/order} A formula's type is determined by its free variables, while its order is determined by both its free and its bound variables\fnote{In Russell's terminology, free variables were called \enquote{real}, while bound variables were called \enquote{apparent} --- see \cref{rem:apparent_variables}.}.
-
-    In order to determine the order of a formula, it is sufficient to consider the types of all its variables. We will find useful the following formalism: we define the \term{height} of a type \( \tau \) based on the \hyperref[def:rooted_tree/height]{height} of its \hyperref[def:simple_type_ast]{abstract syntax tree}:
-    \begin{itemize}
-      \item We define the height of \( \syn\iota \) as \( 0 \).
-      \item We define the height of \( \tau_1 \synimplies \cdots \synimplies \tau_n \synimplies \syn\omicron \) as \( 1 \) plus the maximal height among \( \tau_1, \ldots, \tau_n \). In the special case where \( n = 0 \), we define the height as \( 0 \).
-      \item We assume no other types here.
-    \end{itemize}
-
-    Then we define the order of a formula as the maximal height of the types of its variables. If a formula contains no variables, i.e. if it is a propositional constant like \( \top \) or \( \bot \), we define the order as \( 1 \).
-
-    In the example above with Leibniz' equality law, the predicate \( p \) can have any order, but the law itself must have a higher order. Otherwise, as already noted, if we substitute \( y \) with a constant, the law will be able to reference itself.
-
-    This also means that we cannot refer to \enquote{every univariate property of individuals} --- we must restrict ourselves to \( n \)-th order properties for a fixed \( n \). This leads to a stratification of the law into distinct formulas, one for each nonnegative integer \( n \). Denote by \( L_n \) the proposition
-    \begin{displayquote}
-      For every unary property of individuals \( p \) of order \( n \), \( p(x) \) holds if and only if \( p(y) \) does.
-    \end{displayquote}
-
-    Then, if \( L_n(a, b) \) holds for some individuals \( a \) and \( b \), they are identical for properties of order \( n \). The formula \( L_n \) itself has order \( n + 1 \).
-
-    This stratification pattern occurred often enough for Russell to also provide a way to circumvent it.
-
-    \thmitem{con:ramified_type_theory/reducibility} Russell calls a formula \enquote{predicative} if its order coincides with the maximal height of the types of its \hi{free} variables. In other words, a formula is predicative if its bound variables are allowed to range over the same formulas as its free variables.
-
-    The motivation for this concept is the following \term[en=axiom of reducibility (\cite[241]{Russell1908TypeTheory})]{axiom of reducibility} stated in \cite[241]{Russell1908TypeTheory}\fnote{By \enquote{function} Russell means a \enquote{propositional function} with an attached syntactic representation. As already mentioned, we perceive such a function as a formula with enumerated free variables.}:
-    \begin{displayquote}
-      We assume, then, that every function is equivalent, for all its values, to some predicative function of the same arguments.
-    \end{displayquote}
-
-    This axiom provides a method of nonconstructive \enquote{reduction} of higher-order formulas to ones of lower order.
-
-    As an example, consider the stratified equality law \( L_n \) discussed above. Suppose that \( L_1(a, b) \) holds for some individuals \( a \) and \( b \). We will show that \( L_n(a, b) \) also holds for any \( n \).
-
-    Fix a property \( q \) of individuals of order \( n \). By the axiom of reducibility, there exists a property \( r \) of order \( 1 \) such that, for every individual \( x \), \( q(x) \) holds if and only if \( r(x) \) does.
-
-    Now, since \( L_1(a, b) \) holds, for every first-order property \( p \) of individuals, \( p(a) \) holds if and only if \( p(b) \) does. In particular, \( r(a) \) and \( r(b) \) have the same truth value. Backtracking, we conclude that \( q(a) \) and \( q(b) \) also have the same truth value.
-
-    Since \( q \) was an arbitrary property of order \( n \), we conclude that \( L_n(a, b) \) holds.
-
-    Therefore, we have collapsed the stratified law of equality into one of lowest possible order.
-  \end{thmenum}
-\end{concept}
-
 \begin{remark}\label{rem:type_theory}
-  We discussed Russell's ramified type theory in \cref{con:ramified_type_theory}. His theory has influences the introduction of both types and orders. The hierarchy of orders was later found to be superfluous in the presence of the axiom of reducibility, and Russell's theory was called \enquote{ramified} to contrast with the newer \enquote{simple theory of types} which abolishes orders altogether. The latter is discussed in more detail in \cref{con:simple_type_theory}. The base idea is attributed in \cite[45]{Kleene1971Metamathematics} to Frank Ramsey's \cite{Ramsey1926Foundations}. As can be seen from the following passage, Ramsey tried to discard the concept of orders but retain types:
+  The concept of types in mathematics is attributes to Russell and his ramified theory of types, which he created for the purposes of logic. We will discuss his theory in \cref{def:ramified_theory_of_types}. What matters to us here is the following passage from \incite[237]{Russell1908TypeTheory}:
   \begin{displayquote}
-    We must emphasize the essential distinction between order and type. The type of a function is a real characteristic of it depending on the
-    arguments it can take; but the order of a proposition or function is not a real characteristic, but what Peano called a pseudo-function. The
-    order of a proposition is like the numerator of a fraction. Just as from \enquote{\( x = y \)} we cannot deduce that the numerator of \enquote{\( x \)} is equal to the numerator of \enquote{\( y \)}, from the fact that \enquote{\( p \)} and \enquote{\( q \)} are instances of the
-    same proposition we cannot deduce that the order of \enquote{\( p \)} is equal to that of \enquote{\( q \)}.
+    A \textit{type} is defined as the range of significance of a propositional function, i.e., as the collection of arguments for which the said function has values.
   \end{displayquote}
 
-  Later, in \cite{Church1940STT}, Alonzo Church extends his untyped \( \muplambda \)-calculus with a concrete syntax for simple types. He uses the base types \( \syn\iota \) of individuals and \( \syn\omicron \) of propositions; both already discussed in \cref{con:ramified_type_theory/types}. Given the types \( \alpha \) and \( \beta \), Church regards the type \( (\alpha\beta) \) as
+  Thus, types were introduced to serve as specifications of which arguments are acceptable for a given function. As we shall see, types are now regarded as syntactic labels, but the development of such an understanding took several decades.
+
+  The ramification in Russell's theory was due to an intertwined hierarchy of orders, which, in the presence of his axiom of reducibility turned out to be superfluous. This conclusion is attributed in \cite[45]{Kleene1971Metamathematics} to Frank Ramsey's \cite{Ramsey1926Foundations}. The newer \enquote{simple theory of types} abolished orders altogether.
+
+  Later, in \cite{Church1940STT}, Alonzo Church extends his untyped \( \muplambda \)-calculus with a concrete syntax for simple types. He uses the base types \( \syn\iota \) of individuals and \( \syn\omicron \) of propositions; both already discussed in \cref{def:ramified_theory_of_types/types}. Given the types \( \alpha \) and \( \beta \), Church regards the type \( (\alpha\beta) \) as
   \begin{displayquote}
     \textellipsis the type of functions of one variable for which the range of the independent variable comprises the type \( \beta \) and the range of the dependent variable is contained in the type \( \alpha \).
   \end{displayquote}
 
   Thus, he used two base types and one \hyperref[con:type_constructor]{type constructor}, resulting in infinitely many types. He assigned to each \( \muplambda \)-term a subscript indicating its type, with certain coherence conditions that exclude \hyperref[def:typability]{untypable terms}. The term \( x_{\syn\omicron} \) would thus correspond to our notion of propositional formula, while the term \( x_{\syn\iota} \) --- to a first-order variable.
 
-  Subsequent works by Curry and Howard lead to the Curry-Howard correspondence, which we discuss in \cref{con:curry_howard_correspondence}, which required developing \hyperref[con:dependent_type]{dependent types}. This later lead Martin-Löf to introduce \hyperref[def:identity_type]{identity types} and systemize the presentation of dependent type theory via \hyperref[con:typing_rule]{typing rules}. We introduce a refinement of Martin-L\"of's theory in \cref{def:mltt}.
+  Subsequent works by Curry and Howard lead to the Curry-Howard correspondence, which we discuss in \cref{con:curry_howard_correspondence}, which required developing \hyperref[con:dependent_type]{dependent types}. This later lead Martin-Löf to introduce \hyperref[def:identity_type]{identity types} and systemize the presentation of dependent type theory via \hyperref[con:typing_rule]{typing rules}. We introduce a refinement of Martin-L\"of's theory in \cref{def:martin_lof_type_theory}.
 
   At this point, notation started unifying across authors, ultimately leading to \enquote{\( M: \tau \)} rather than \enquote{\( M_\tau \)} or \enquote{\( M^\tau \)} for \hyperref[def:type_assertion]{type assertions} postulating that the term \( M \) has type \( \tau \), and to \( \tau \synimplies \sigma \) for \enquote{function types}, replacing Church's equivalent \( (\sigma\tau) \) (and swapping \( \tau \) and \( \sigma \)). As we will see in \cref{con:type_annotation} and \cref{def:typed_lambda_term}, superscript notation is still convenient for type annotations.
 
@@ -157,7 +74,9 @@ Typed \( \lambda \)-calculus shifts the perspective from terms to type derivatio
   such that, for every nonnegative integer \( k \), \( \tau: \syn\BbbT_k \) implies \( \tau: \syn\BbbT_{k+1} \).
 \end{concept}
 \begin{comments}
-  \item Typing rules for universes are given in \cref{ex:type_universe_rules}
+  \item In \hyperref[def:martin_lof_type_theory]{Martin-L\"of type theory}, type universes are part of the signature --- see \cref{def:mltt_signature/universe}.
+
+  \item Typing rules for nested universes are given in \cref{ex:type_universe_rules}.
 \end{comments}
 
 \begin{remark}\label{rem:typing_judgments}
@@ -211,11 +130,11 @@ Typed \( \lambda \)-calculus shifts the perspective from terms to type derivatio
   \end{thmenum}
 \end{definition}
 \begin{comments}
-  \item We will extend this alphabet for polymorphic types in \cref{def:polymorphic_typed_lambda_calculus} and adapt it for simply typed higher-order logic in \cref{def:simply_typed_hol_signature}.
+  \item We will extend this alphabet for polymorphic types in \cref{def:polymorphic_typed_lambda_calculus} and adapt it for higher-order logic in \cref{def:hol_signature}.
 \end{comments}
 
 \begin{definition}\label{def:simple_type}\mimprovised
-  Fix a nonempty finite \hyperref[def:formal_language/alphabet]{alphabet} \( \op*{Base} \), whose elements we will call \term{base types}. To ensure \hyperref[def:grammar_ambiguity]{syntactic unambiguity}, we disallow the \hyperref[con:improper_symbol]{improper symbols} from \cref{def:simple_type_alphabet} as base types (but do not consider base types to be reserved).
+  Fix a nonempty finite set \( \op*{Base} \), whose elements we will call \term{base types}. To ensure \hyperref[def:grammar_ambiguity]{syntactic unambiguity}, we disallow the \hyperref[con:improper_symbol]{improper symbols} from \cref{def:simple_type_alphabet} as base types (but do not consider base types to be reserved).
 
   We introduce \term{simple types} based on the following \hyperref[def:formal_grammar/schema]{grammar schema}:
   \begin{bnf*}
@@ -226,7 +145,7 @@ Typed \( \lambda \)-calculus shifts the perspective from terms to type derivatio
   \end{bnf*}
   where we have used the type connectives from \cref{def:simple_type_alphabet/connectives} and the variable identifier rules from \cref{def:variable_identifier}.
 
-  We are often interested only in \hyperref[con:syntax_fragment]{fragment} of this grammar. By default, we will only consider arrow types without product or sum types. Furthermore, in \hyperref[def:simply_typed_hol]{simply typed higher-order logic} we disallow even type variables --- see \cref{def:simply_typed_hol_signature/types}.
+  We are often interested only in \hyperref[con:syntax_fragment]{fragment} of this grammar. By default, we will only consider arrow types without product or sum types. Furthermore, in \hyperref[def:simply_typed_hol]{higher-order logic} we disallow even type variables --- see \cref{def:hol_signature/types}.
 \end{definition}
 \begin{comments}
   \item As it often happens, usage in the literature is not consistent. See, for example, \cref{con:simple_type_theory} and \cref{rem:arrow_type_name}. To avoid ambiguity, we will be explicit about which types we allow. Furthermore, we will sometimes restrict ourselves to arrow types because handling each extension requires additional work.
@@ -257,11 +176,11 @@ Typed \( \lambda \)-calculus shifts the perspective from terms to type derivatio
   The phrase \term[en=simple type theory (\cite[ix]{Hindley1997BasicSTT})]{simple type theory} refers to several distinct \hyperref[def:abstract_type_system]{type systems}, depending on the authors. All of them revolve around simple types as defined in \cref{def:simple_type}.
 
   \begin{thmenum}
-    \thmitem{con:simple_type_theory/hol} The original usage, due to \bycite[56]{Church1940STT}, allows two base types, arrow types and no type variables, with the specific typing rules discussed in \cref{def:simply_typed_hol_typing}. The intended usage of this system is as \hyperref[rem:predicate_logic]{higher-order logic}.
+    \thmitem{con:simple_type_theory/hol} The original usage, due to \bycite[56]{Church1940STT}, allows two base types, arrow types and no type variables, with the specific typing rules discussed in \cref{def:hol_typing}. The intended usage of this system is as \hyperref[rem:predicate_logic]{higher-order logic}.
 
     Other authors who follow this convention are \incite[\S 51]{Andrews2002Logic} and \incite[269]{Farmer2008STTVirtues}.
 
-    As Church himself points out, the adjective \enquote{simple} is a contradistinction with Russell's \hyperref[con:ramified_type_theory]{ramified type theory}, even though it is indeed simpler than later developments like \hyperref[con:dependent_type]{dependent types}.
+    As Church himself points out, the adjective \enquote{simple} is a contradistinction with Russell's \hyperref[def:ramified_theory_of_types]{ramified type theory}, even though it is indeed simpler than later developments like \hyperref[con:dependent_type]{dependent types}.
 
     \thmitem{con:simple_type_theory/arrow} Simple type theory can also be regarded as a type system in and of itself. In this case base types are disallowed, but type variables are allowed, and the rules are \ref{inf:def:arrow_type/elim} and either \ref{inf:def:arrow_type/intro/implicit} or \ref{inf:def:arrow_type/intro/explicit}.
 
@@ -275,7 +194,7 @@ Typed \( \lambda \)-calculus shifts the perspective from terms to type derivatio
 
     \incite[ch. 4]{Mimram2020ProgramEqualsProof} initially only considers type variables and arrow types, without base types, but later allows the full spectrum of simple algebraic types.
 
-    Richer type systems often fundamentally rely on the Curry-Howard correspondence and thus extend this system. Such a system is the Martin-L\"of type theory presented in \cref{def:mltt}.
+    Richer type systems often fundamentally rely on the Curry-Howard correspondence and thus extend this system. Such a system is the Martin-L\"of type theory presented in \cref{def:martin_lof_type_theory}.
   \end{thmenum}
 \end{concept}
 
@@ -354,7 +273,7 @@ Typed \( \lambda \)-calculus shifts the perspective from terms to type derivatio
 
   \item Even though most concepts from untyped terms transfer via \fullref{alg:type_erasure}, some, like \hyperref[def:lambda_term_alpha_equivalence]{\( \alpha \)-equivalence}, require modification --- see \cref{def:typed_term_alpha_equivalence}.
 
-  \item For \hyperref[def:simply_typed_hol]{simply typed higher-order logic}, we will consider in \cref{def:freely_typed_lambda_term} \( \muplambda \)-terms for which all variables have type annotations.
+  \item For \hyperref[def:simply_typed_hol]{higher-order logic}, we will consider in \cref{def:freely_typed_lambda_term} \( \muplambda \)-terms for which all variables have type annotations.
 
   \item Our definition is based on \bycite[def. 3.2.1]{Barendregt1992LambdaCalculiWithTypes}. He prefers calling such terms \enquote{pseudoterms} because the grammar may produce \enquote{ill-typed} terms that are not \hyperref[def:typability]{typable} according to the typing rules. He does this in accordance with his more general terminology discussed in \cref{con:pseudoterm_expression}.
 
@@ -635,13 +554,13 @@ To completely formalize the typing rules, which we will do in \cref{def:simple_t
 
 \begin{definition}\label{def:simple_type_signature}\mimprovised
   A \hyperref[con:logical_system_signature]{signature} \( \Sigma \) for simple type systems is a specification of (possibly empty) sets \( \op*{Base}_\Sigma \) of \hyperref[def:simple_type]{base types} and \( \op*{Const}_\Sigma \) of \hyperref[def:lambda_term]{\( \muplambda \)-term constants}.
+
+  We disallow the \hyperref[con:improper_symbol]{improper symbols} from \cref{def:lambda_term_alphabet} as constants and the symbols from \cref{def:simple_type_alphabet} as base types, but we do not impose their restrictions on each other. For example, \( \synlambda \) is a improper symbol for \( \muplambda \)-terms, but it is also a valid type.
 \end{definition}
 \begin{comments}
   \item For simplicity of definition, we put no restrictions on sets of \( \muplambda \)-terms and types. If needed, we can consider \hyperref[con:syntax_fragment]{fragments} of the syntax of terms or types.
 
-  For example, the most restrictive example we will encounter is the simply typed higher-order logic system from in \fullref{sec:predicate_logic}, in which we omit type variables, product and sum types.
-
-  \item We disallow certain \hyperref[con:improper_symbol]{improper symbols} for both \( \muplambda \)-terms and simple types, but we do not impose their restrictions on each other. For example, \( \synlambda \) is a improper symbol for \( \muplambda \)-terms, but it is also a valid type.
+  For example, the most restrictive example we will encounter is the higher-order logic system from in \fullref{sec:predicate_logic}, in which we omit type variables, product and sum types.
 \end{comments}
 
 \begin{definition}\label{def:simple_type_system}\mimprovised
@@ -675,7 +594,7 @@ To completely formalize the typing rules, which we will do in \cref{def:simple_t
 \end{comments}
 
 \begin{definition}\label{def:type_derivation_tree}\mimprovised
-  In analogy with natural deduction proof trees, defined in \cref{def:propositional_natural_deduction_proof_tree}, we will define here a family of \hyperref[def:labeled_tree]{labeled trees}, which we will call \term{type derivation trees}. Although we will focus on \hyperref[def:simple_type_system]{simple type systems}, the definition easily extends to more complicated systems like \hyperref[def:mltt]{Martin-L\"of type theory}.
+  In analogy with natural deduction proof trees, defined in \cref{def:propositional_natural_deduction_proof_tree}, we will define here a family of \hyperref[def:labeled_tree]{labeled trees}, which we will call \term{type derivation trees}. Although we will focus on \hyperref[def:simple_type_system]{simple type systems}, the definition easily extends to more complicated systems like \hyperref[def:martin_lof_type_theory]{Martin-L\"of type theory}.
 
   As discussed in \cref{rem:well_formed_context}, for these more complicated type systems we will need to ensure that all assumptions of a derivation tree are well-formed with respect to some type context. We will elucidate this in \cref{def:mltt_well_formed_context}. For simple types, all type assertions, type contexts and derivation trees are considered well-formed.
 
@@ -857,7 +776,7 @@ To completely formalize the typing rules, which we will do in \cref{def:simple_t
 
   \item Unlike for \hyperref[def:typability]{typability}, this definition only applies to derivations from the empty context. This restricts us to inhabitants without free variables.
 
-  \item Proving that a type is inhabited reduces to constructing a derivation tree, however proving that it is uninhabited requires reaching a metalogical contradiction. For \hyperref[def:mltt]{Martin-L\"of type theory}, we have introduced a notion of \enquote{propositionally uninhabited} types --- see \cref{def:propositionally_uninhabited}.
+  \item Proving that a type is inhabited reduces to constructing a derivation tree, however proving that it is uninhabited requires reaching a metalogical contradiction. For \hyperref[def:martin_lof_type_theory]{Martin-L\"of type theory}, we have introduced a notion of \enquote{propositionally uninhabited} types --- see \cref{def:propositionally_uninhabited}.
 \end{comments}
 
 \begin{example}\label{ex:def:type_derivation_tree}
@@ -928,7 +847,7 @@ To completely formalize the typing rules, which we will do in \cref{def:simple_t
 
     \thmitem{ex:def:type_derivation_tree/self_application} The term \( xx \) is not typable because \ref{inf:def:arrow_type/elim} requires the existence of types \( \tau \) and \( \sigma \) so that \( x \) inhibits \( x: \tau \to \sigma \) and \( x: \tau \) simultaneously. This is not possible because type contexts disallow variables to have more than one type assigned.
 
-    We can regard this as an instance of \hyperref[con:impredicativity]{impredicativity} --- namely, function self-application.
+    We can regard this as an instance of self-reference; see \cref{ex:self_reference/self_application}.
 
     We have shown in \cref{ex:def:beta_eta_reduction/omega} that some terms like \( \ref{eq:ex:def:lambda_term/combinator/big_omega} = (\qabs \synx \synx \synx) (\qabs \synx \synx \synx) \) containing self-application lead to infinite chains of \hyperref[def:beta_eta_reduction]{\( \beta \)-reductions}.
 
