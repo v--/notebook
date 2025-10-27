@@ -30,7 +30,7 @@ class FormalLogicSchemaInstantiation:
             self.term_mapping == other.term_mapping and \
             self.formula_mapping == other.formula_mapping
 
-    def __or__(self, other: object) -> 'FormalLogicSchemaInstantiation':
+    def __or__(self, other: object) -> FormalLogicSchemaInstantiation:
         if not isinstance(other, FormalLogicSchemaInstantiation):
             return NotImplemented
 

@@ -41,7 +41,7 @@ class LambdaSchemaInstantiation:
             self.term_mapping == other.term_mapping and \
             self.type_mapping == other.type_mapping
 
-    def __or__(self, other: 'LambdaSchemaInstantiation') -> 'LambdaSchemaInstantiation':
+    def __or__(self, other: LambdaSchemaInstantiation) -> LambdaSchemaInstantiation:
         schema: Any
         a: Any
         b: Any

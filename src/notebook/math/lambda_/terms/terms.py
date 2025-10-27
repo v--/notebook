@@ -23,8 +23,8 @@ class Variable:
 
 @dataclass(frozen=True)
 class UntypedApplication:
-    left: 'UntypedTerm'
-    right: 'UntypedTerm'
+    left: UntypedTerm
+    right: UntypedTerm
 
     def __str__(self) -> str:
         return f'({self.left}{self.right})'
@@ -32,8 +32,8 @@ class UntypedApplication:
 
 @dataclass(frozen=True)
 class TypedApplication:
-    left: 'TypedTerm'
-    right: 'TypedTerm'
+    left: TypedTerm
+    right: TypedTerm
 
     def __str__(self) -> str:
         return f'({self.left}{self.right})'
@@ -42,7 +42,7 @@ class TypedApplication:
 @dataclass(frozen=True)
 class UntypedAbstraction:
     var: Variable
-    body: 'UntypedTerm'
+    body: UntypedTerm
 
     def __str__(self) -> str:
         return f'({ImproperTermSymbol.LAMBDA}{self.var}.{self.body})'
@@ -52,7 +52,7 @@ class UntypedAbstraction:
 class TypedAbstraction:
     var: Variable
     var_type: SimpleType
-    body: 'TypedTerm'
+    body: TypedTerm
 
     def __str__(self) -> str:
         return f'({ImproperTermSymbol.LAMBDA}{self.var}:{self.var_type}.{self.body})'

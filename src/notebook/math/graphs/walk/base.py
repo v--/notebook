@@ -53,7 +53,7 @@ class BaseGraphWalk[VertT, EdgeT: Collection](metaclass=BaseGraphWalkMeta):
         self._segments.append(segment)
         self._tail = segment.tail
 
-    def __add__(self, other: 'BaseGraphWalk[VertT, EdgeT]') -> 'BaseGraphWalk[VertT, EdgeT]':
+    def __add__(self, other: BaseGraphWalk[VertT, EdgeT]) -> BaseGraphWalk[VertT, EdgeT]:
         if not isinstance(other, BaseGraphWalk):
             return NotImplemented
 

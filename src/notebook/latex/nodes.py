@@ -28,9 +28,9 @@ class SpecialNode(StrEnum):
 
 
 class Group:
-    contents: 'Sequence[LaTeXNode]'
+    contents: Sequence[LaTeXNode]
 
-    def __init__(self, contents: 'Sequence[LaTeXNode]') -> None:
+    def __init__(self, contents: Sequence[LaTeXNode]) -> None:
         self.contents = contents
 
     def __str__(self) -> str:
@@ -59,7 +59,7 @@ class BracketGroup(Group):
 class Environment(Group):
     name: str
 
-    def __init__(self, name: str, contents: 'Sequence[LaTeXNode]') -> None:
+    def __init__(self, name: str, contents: Sequence[LaTeXNode]) -> None:
         self.name = name
         super().__init__(contents)
 

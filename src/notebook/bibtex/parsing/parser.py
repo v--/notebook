@@ -41,7 +41,7 @@ class BibParser(Parser[BibToken]):
 
         return None
 
-    def parse_entry_name(self, name_context: 'BibValueContext', existing_names: Collection[str]) -> str:
+    def parse_entry_name(self, name_context: BibValueContext, existing_names: Collection[str]) -> str:
         # Entry names may even contain %, which is otherwise used for comments
         while (head := self.peek()) and head.kind not in ['CLOSING_BRACE', 'COMMA', 'LINE_BREAK']:
             self.advance()
@@ -60,7 +60,7 @@ class BibParser(Parser[BibToken]):
 
         return entry_name
 
-    def parse_property_key(self, entry_context: 'BibEntryContext', existing_keys: Collection[str]) -> str:
+    def parse_property_key(self, entry_context: BibEntryContext, existing_keys: Collection[str]) -> str:
         head = self.peek_unsafe()
 
         if head.kind != 'WORD':
@@ -75,7 +75,7 @@ class BibParser(Parser[BibToken]):
         self.advance()
         return head.value
 
-    def _parse_escape_sequence(self, value_context: 'BibValueContext') -> str:
+    def _parse_escape_sequence(self, value_context: BibValueContext) -> str:
         lookahead = self.peek_multiple(2)
 
         if len(lookahead) == 1:
@@ -90,7 +90,7 @@ class BibParser(Parser[BibToken]):
             case _:
                 return '\\' + lookahead[1].value
 
-    def parse_value_in_context(self, value_context: 'BibValueContext', key: str, *, quotes: bool) -> None:
+    def parse_value_in_context(self, value_context: BibValueContext, key: str, *, quotes: bool) -> None:
         self.advance()
 
         builder = value_context.string_builder
@@ -190,7 +190,7 @@ class BibParser(Parser[BibToken]):
     def parse_author_string(self, source: BibString) -> BibAuthor:
         return BibAuthor(full_name=source.strip())
 
-    def parse_list(self, value_context: 'BibValueContext') -> Iterable[BibString]:
+    def parse_list(self, value_context: BibValueContext) -> Iterable[BibString]:
         value = value_context.string_builder.get_value()
         expecting_and = False
         buffer = list[BibString]()
@@ -216,11 +216,11 @@ class BibParser(Parser[BibToken]):
         if len(buffer) > 0:
             yield CompositeString(buffer) if len(buffer) > 1 else buffer[0].strip()
 
-    def parse_authors(self, value_context: 'BibValueContext') -> Iterable[BibAuthor]:
+    def parse_authors(self, value_context: BibValueContext) -> Iterable[BibAuthor]:
         for entry in self.parse_list(value_context):
             yield self.parse_author_string(entry)
 
-    def perform_inline_validation(self, value_context: 'BibValueContext', key: str) -> None:
+    def perform_inline_validation(self, value_context: BibValueContext, key: str) -> None:
         value_str = str(value_context.string_builder.get_value())
 
         if len(value_str) == 0 or value_str.isspace():
@@ -230,7 +230,7 @@ class BibParser(Parser[BibToken]):
             for _ in self.parse_authors(value_context):
                 pass
 
-    def parse_entry_properties(self, entry_context: 'BibEntryContext') -> Iterable[tuple[str, 'BibValueContext']]:
+    def parse_entry_properties(self, entry_context: BibEntryContext) -> Iterable[tuple[str, BibValueContext]]:
         existing_keys = set[str]()
         last_comma: BibToken | None = None
 
@@ -293,12 +293,12 @@ class BibParser(Parser[BibToken]):
         if last_comma is not None:
             raise entry_context.annotate_token_error('Trailing commas are disallowed', token=last_comma)
 
-    def perform_global_validation(self, entry_context: 'BibEntryContext', properties: dict[str, 'BibValueContext']) -> None:
+    def perform_global_validation(self, entry_context: BibEntryContext, properties: dict[str, BibValueContext]) -> None:
         if 'title' not in properties:
             raise entry_context.annotate_context_error('Entry without title')
 
     @list_accumulator
-    def process_authors(self, properties: dict[str, 'BibValueContext'], key: str) -> Iterable[BibAuthor]:
+    def process_authors(self, properties: dict[str, BibValueContext], key: str) -> Iterable[BibAuthor]:
         if key not in properties:
             return
 
@@ -326,7 +326,7 @@ class BibParser(Parser[BibToken]):
         if short_value_context and len(short_segments) > 0:
             raise short_value_context.annotate_context_error(error_message)
 
-    def process_language(self, properties: dict[str, 'BibValueContext'], key: str) -> Sequence[BibString]:
+    def process_language(self, properties: dict[str, BibValueContext], key: str) -> Sequence[BibString]:
         value_context = properties.pop(key, None)
 
         if value_context is None:

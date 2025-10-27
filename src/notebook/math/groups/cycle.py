@@ -29,7 +29,7 @@ class Cycle[T]:
     def __getitem__(self, key: int | slice) -> T | Sequence[T]:
         return self.payload[key]
 
-    def iter_decomposed(self) -> 'Iterable[Cycle[T]]':
+    def iter_decomposed(self) -> Iterable[Cycle[T]]:
         if len(self.payload) < 2:
             yield Cycle([])
             return

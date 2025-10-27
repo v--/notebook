@@ -37,5 +37,5 @@ class UntypedTermSubstitution(AbstractSubstitution[Variable, UntypedTerm]):
         return term.var
 
     @override
-    def modify_at(self, var: Variable, replacement: UntypedTerm) -> 'UntypedTermSubstitution':
+    def modify_at(self, var: Variable, replacement: UntypedTerm) -> UntypedTermSubstitution:
         return UntypedTermSubstitution(variable_mapping={**self.variable_mapping, var: replacement})

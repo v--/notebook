@@ -20,7 +20,7 @@ class VerbatimString:
 
         return self.value == other.value
 
-    def strip(self) -> 'VerbatimString':
+    def strip(self) -> VerbatimString:
         return self
 
     lstrip = rstrip = strip
@@ -30,9 +30,9 @@ class VerbatimString:
 
 
 class CompositeString:
-    segments: 'Sequence[BibString]'
+    segments: Sequence[BibString]
 
-    def __init__(self, segments: 'Sequence[BibString]') -> None:
+    def __init__(self, segments: Sequence[BibString]) -> None:
         self.segments = segments
 
     def __str__(self) -> str:
@@ -47,7 +47,7 @@ class CompositeString:
 
         return self.segments == other.segments
 
-    def strip(self) -> 'CompositeString':
+    def strip(self) -> CompositeString:
         return self
 
     lstrip = rstrip = strip

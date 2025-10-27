@@ -7,7 +7,7 @@ from .exceptions import MissingKeyError
 
 class TrieMappingNode[T](NamedTuple):
     head: str
-    subtrie: 'TrieMapping[T]'
+    subtrie: TrieMapping[T]
 
 
 class TrieMapping[T](MutableMapping[str, T]):
@@ -26,7 +26,7 @@ class TrieMapping[T](MutableMapping[str, T]):
         for key, value in items_iter:
             self[key] = value
 
-    def get_subtrie(self, key: str) -> 'TrieMapping[T]':
+    def get_subtrie(self, key: str) -> TrieMapping[T]:
         if key == '':
             return self
 

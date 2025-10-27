@@ -7,7 +7,7 @@ from .exceptions import MissingKeyError
 class SequentialMappingItem[K, V]:
     key: K
     value: V
-    next: 'SequentialMappingItem[K, V] | None'
+    next: SequentialMappingItem[K, V] | None
 
     def __init__(self, key: K, value: V) -> None:
         self.key = key

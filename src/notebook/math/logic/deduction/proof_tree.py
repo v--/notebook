@@ -59,7 +59,7 @@ def assume(assumption: Formula, marker: Marker) -> AssumptionTree:
 
 @dataclass(frozen=True)
 class RuleApplicationPremise:
-    tree: 'ProofTree'
+    tree: ProofTree
     main: FormulaWithSubstitution
     discharge: FormulaWithSubstitution | None = None
     marker: Marker | None = None
@@ -70,7 +70,7 @@ class RuleApplicationPremise:
 
 def premise(
     *,
-    tree: 'ProofTree',
+    tree: ProofTree,
     main: Formula | FormulaWithSubstitution | None = None,
     main_noop_sub: Variable | None = None,
     discharge: Formula | FormulaWithSubstitution | None = None,
@@ -243,7 +243,7 @@ class RuleApplicationTree(InferenceTree[FormulaWithSubstitution, Mapping[Marker,
 
 def apply(  # noqa: C901
     rule: NaturalDeductionRule,
-    *args: 'ProofTree | RuleApplicationPremise',
+    *args: ProofTree | RuleApplicationPremise,
     instantiation: FormalLogicSchemaInstantiation | None = None,
     conclusion_sub: TermSubstitutionSpec | None = None,
 ) -> RuleApplicationTree:

@@ -46,11 +46,11 @@ def assume(assertion: VariableTypeAssertion) -> AssumptionTree:
 
 @dataclass(frozen=True)
 class RuleApplicationPremise:
-    tree: 'TypeDerivationTree'
+    tree: TypeDerivationTree
     discharge: VariableTypeAssertion | None = None
 
 
-def premise(*, tree: 'TypeDerivationTree', discharge: VariableTypeAssertion | None = None) -> RuleApplicationPremise:
+def premise(*, tree: TypeDerivationTree, discharge: VariableTypeAssertion | None = None) -> RuleApplicationPremise:
     return RuleApplicationPremise(tree, discharge)
 
 
@@ -95,7 +95,7 @@ class RuleApplicationTree(InferenceTree[TypeAssertion, Mapping[Variable, SimpleT
 
 def apply(
     rule: TypingRule,
-    *args: 'TypeDerivationTree | RuleApplicationPremise',
+    *args: TypeDerivationTree | RuleApplicationPremise,
     instantiation: LambdaSchemaInstantiation | None = None,
 ) -> RuleApplicationTree:
     if len(args) != len(rule.premises):

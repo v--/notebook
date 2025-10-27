@@ -19,7 +19,7 @@ class LaTeXTask(WatcherTask):
     tex_path: pathlib.Path
     out_buffer: int | None = asyncio.subprocess.DEVNULL
 
-    def __init__(self, base_logger: 'loguru.Logger', tex_path: pathlib.Path | str) -> None:
+    def __init__(self, base_logger: loguru.Logger, tex_path: pathlib.Path | str) -> None:
         self.tex_path = pathlib.Path(tex_path)
         self.base_logger = base_logger
         self.sublogger = base_logger.bind(logger=str(os.path.relpath(self.tex_path, ROOT_PATH)))

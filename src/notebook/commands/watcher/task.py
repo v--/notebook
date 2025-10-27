@@ -9,7 +9,7 @@ if TYPE_CHECKING:
 
 
 class WatcherTask(abc.ABC):
-    sublogger: 'loguru.Logger'
+    sublogger: loguru.Logger
     out_buffer: int | None
 
     def __eq__(self, other: object) -> bool:
@@ -23,11 +23,11 @@ class WatcherTask(abc.ABC):
     def command(self) -> str:
         ...
 
-    async def pre_process(self, runner: 'TaskRunner') -> None:
+    async def pre_process(self, runner: TaskRunner) -> None:
         pass
 
-    async def post_process(self, runner: 'TaskRunner') -> None:
+    async def post_process(self, runner: TaskRunner) -> None:
         pass
 
-    async def on_failure(self, runner: 'TaskRunner') -> None:
+    async def on_failure(self, runner: TaskRunner) -> None:
         pass

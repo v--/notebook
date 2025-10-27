@@ -29,7 +29,7 @@ class PredicateFormulaSchema(FunctionLikeTerm[TermSchema]):
 
 @dataclass(frozen=True)
 class NegationFormulaSchema:
-    body: 'FormulaSchema'
+    body: FormulaSchema
 
     def __str__(self) -> str:
         return f'{UnaryPrefix.NEGATION}{self.body}'
@@ -38,8 +38,8 @@ class NegationFormulaSchema:
 @dataclass(frozen=True)
 class ConnectiveFormulaSchema:
     conn: BinaryConnective
-    left: 'FormulaSchema'
-    right: 'FormulaSchema'
+    left: FormulaSchema
+    right: FormulaSchema
 
     def __str__(self) -> str:
         return f'({self.left} {self.conn} {self.right})'
@@ -49,7 +49,7 @@ class ConnectiveFormulaSchema:
 class QuantifierFormulaSchema:
     quantifier: Quantifier
     var: VariablePlaceholder
-    body: 'FormulaSchema'
+    body: FormulaSchema
 
     def __str__(self) -> str:
         return f'{self.quantifier.value}{self.var}.{self.body}'

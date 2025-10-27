@@ -12,7 +12,7 @@ class Permutation[T: IComparable]:
     _payload: Mapping[T, T]
 
     @classmethod
-    def from_incomplete_mapping(cls: 'type[Permutation[T]]', domain: Sequence[T], incomplete: Mapping[T, T]) -> 'Permutation[T]':
+    def from_incomplete_mapping(cls: type[Permutation[T]], domain: Sequence[T], incomplete: Mapping[T, T]) -> Permutation[T]:
         complete = {}
 
         for key in list(incomplete):
@@ -29,7 +29,7 @@ class Permutation[T: IComparable]:
         return cls(domain, complete)
 
     @classmethod
-    def from_cycle(cls: 'type[Permutation[T]]', domain: Sequence[T], cycle: Cycle[T]) -> 'Permutation[T]':
+    def from_cycle(cls: type[Permutation[T]], domain: Sequence[T], cycle: Cycle[T]) -> Permutation[T]:
         if len(cycle) == 0:
             return Permutation(domain, {})
 
@@ -38,7 +38,7 @@ class Permutation[T: IComparable]:
         return Permutation(domain, mapping)
 
     @classmethod
-    def identity(cls: 'type[Permutation[T]]', domain: Sequence[T]) -> 'Permutation[T]':
+    def identity(cls: type[Permutation[T]], domain: Sequence[T]) -> Permutation[T]:
         return Permutation(domain, {})
 
     def __getitem__(self, key: T) -> T:
@@ -51,7 +51,7 @@ class Permutation[T: IComparable]:
     def values(self) -> Sequence[T]:
         return sorted(self._payload)
 
-    def __matmul__(self, other: 'Permutation[T]') -> 'Permutation[T]':
+    def __matmul__(self, other: Permutation[T]) -> Permutation[T]:
         if not isinstance(other, Permutation):
             return NotImplemented
 
@@ -71,7 +71,7 @@ class Permutation[T: IComparable]:
 
         return self.get_mapping() == other.get_mapping()
 
-    def inverse(self) -> 'Permutation[T]':
+    def inverse(self) -> Permutation[T]:
         return Permutation(self.domain, {self[value]: value for value in self.values})
 
     def iter_decomposed(self) -> Iterable[Cycle[T]]:

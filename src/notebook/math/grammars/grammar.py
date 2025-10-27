@@ -76,7 +76,7 @@ class GrammarSchema:
 
         return result
 
-    def instantiate(self, start: NonTerminal) -> 'Grammar':
+    def instantiate(self, start: NonTerminal) -> Grammar:
         return Grammar(self, start)
 
 

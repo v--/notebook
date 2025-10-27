@@ -6,7 +6,7 @@ from .base import BaseGraphWalk, GraphWalkSegment
 
 class DirectedWalk[VertT](BaseGraphWalk[VertT, DirectedEdge[VertT]]):
     @classmethod
-    def from_vertex_list(cls, origin: VertT, *rest: VertT) -> 'DirectedWalk[VertT]':
+    def from_vertex_list(cls, origin: VertT, *rest: VertT) -> DirectedWalk[VertT]:
         walk = cls(origin)
 
         for vertex in rest:

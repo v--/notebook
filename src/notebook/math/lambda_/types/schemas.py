@@ -16,8 +16,8 @@ class TypePlaceholder:
 @dataclass(frozen=True)
 class SimpleConnectiveTypeSchema:
     conn: BinaryTypeConnective
-    left: 'SimpleTypeSchema'
-    right: 'SimpleTypeSchema'
+    left: SimpleTypeSchema
+    right: SimpleTypeSchema
 
     def __str__(self) -> str:
         return f'({self.left} {self.conn} {self.right})'

@@ -6,7 +6,7 @@ from .base import BaseGraphWalk, GraphWalkSegment
 
 class UndirectedWalk[VertT](BaseGraphWalk[VertT, UndirectedEdge[VertT]]):
     @classmethod
-    def from_vertex_list(cls, origin: VertT, *rest: VertT) -> 'UndirectedWalk[VertT]':
+    def from_vertex_list(cls, origin: VertT, *rest: VertT) -> UndirectedWalk[VertT]:
         walk = cls(origin)
 
         for vertex in rest:

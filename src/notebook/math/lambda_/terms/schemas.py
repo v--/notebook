@@ -24,8 +24,8 @@ class TermPlaceholder:
 
 @dataclass(frozen=True)
 class TypedApplicationSchema:
-    left: 'TypedTermSchema'
-    right: 'TypedTermSchema'
+    left: TypedTermSchema
+    right: TypedTermSchema
 
     def __str__(self) -> str:
         return f'({self.left}{self.right})'
@@ -35,7 +35,7 @@ class TypedApplicationSchema:
 class TypedAbstractionSchema:
     var: VariablePlaceholder
     var_type: SimpleTypeSchema
-    body: 'TypedTermSchema'
+    body: TypedTermSchema
 
     def __str__(self) -> str:
         return f'({ImproperTermSymbol.LAMBDA}{self.var}:{self.var_type}.{self.body})'

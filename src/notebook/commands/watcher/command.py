@@ -18,7 +18,7 @@ from .tasks import AsymptoteTask, LaTeXTask, PythonTask
 WatchTarget = Literal['all', 'notebook', 'figures']
 
 
-async def iter_file_changes(logger: 'loguru.Logger') -> AsyncIterator:
+async def iter_file_changes(logger: loguru.Logger) -> AsyncIterator:
     with Inotify() as inotify:
         inotify.add_watch(ROOT_PATH, Mask.MODIFY)
         inotify.add_watch(ROOT_PATH / 'text', Mask.MODIFY)
@@ -36,7 +36,7 @@ async def iter_file_changes(logger: 'loguru.Logger') -> AsyncIterator:
                 yield os.path.relpath(event.path, ROOT_PATH)
 
 
-async def setup_watchers(base_logger: 'loguru.Logger', *, no_aux: bool) -> None:
+async def setup_watchers(base_logger: loguru.Logger, *, no_aux: bool) -> None:
     runner = TaskRunner()
 
     async for path in iter_file_changes(base_logger):

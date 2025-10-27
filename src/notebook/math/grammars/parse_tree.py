@@ -25,7 +25,7 @@ class Derivation:
 @dataclass(frozen=True)
 class ParseTree:
     payload: NonTerminal | Terminal
-    subtrees: Sequence['ParseTree'] = field(default_factory=list)
+    subtrees: Sequence[ParseTree] = field(default_factory=list)
 
     def is_leaf(self) -> bool:
         return len(self.subtrees) == 0

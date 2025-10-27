@@ -78,7 +78,7 @@ class PrimeFactorization:
 
         return self.sign * math.prod(p ** k for p, k in self.multiset.items())
 
-    def __and__(self, other: 'PrimeFactorization') -> 'PrimeFactorization':
+    def __and__(self, other: PrimeFactorization) -> PrimeFactorization:
         return PrimeFactorization(
             multiset=self.multiset & other.multiset,
             sign=sgn(self.sign * other.sign)

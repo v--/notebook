@@ -15,7 +15,7 @@ class Variable:
 @dataclass(frozen=True)
 class FunctionLikeTerm[ArgT]:
     name: str
-    arguments: 'Sequence[ArgT]'
+    arguments: Sequence[ArgT]
 
     def __str__(self) -> str:
         args = ', '.join(str(arg) for arg in self.arguments)

@@ -33,25 +33,25 @@ class Monomial(Mapping[str, int], Hashable):
     def __getitem__(self, indeterminate: str) -> int:
         return self._payload.get(indeterminate, 0)
 
-    def __mul__(self, other: 'Monomial') -> 'Monomial':
+    def __mul__(self, other: Monomial) -> Monomial:
         return Monomial(**{
             ind: self[ind] + other[ind]
             for ind in {*self.get_indeterminates(), *other.get_indeterminates()}
         })
 
-    def __pow__(self, power: int) -> 'Monomial':
+    def __pow__(self, power: int) -> Monomial:
         return Monomial(**{
             indeterminate: p * power
             for indeterminate, p in self._payload.items()
         })
 
-    def __eq__(self, other: 'object') -> bool:
+    def __eq__(self, other: object) -> bool:
         if not isinstance(other, Monomial):
             return NotImplemented
 
         return self._payload == other._payload
 
-    def __le__(self, other: 'Monomial') -> bool:
+    def __le__(self, other: Monomial) -> bool:
         if self.total_degree > other.total_degree:
             return True
 

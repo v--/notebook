@@ -6,7 +6,7 @@ from .exceptions import MissingKeyError
 
 class SequentialSetItem[T]:
     value: T
-    next: 'SequentialSetItem[T] | None'
+    next: SequentialSetItem[T] | None
 
     def __init__(self, value: T) -> None:
         self.value = value

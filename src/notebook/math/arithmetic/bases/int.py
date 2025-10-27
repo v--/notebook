@@ -23,17 +23,17 @@ class IntRadixExpansion:
     def __int__(self) -> int:
         return self.sign * self.polynomial(x=self.radix)
 
-    def __neg__(self) -> 'IntRadixExpansion':
+    def __neg__(self) -> IntRadixExpansion:
         return IntRadixExpansion(self.radix, self.polynomial, -self.sign)
 
-    def __abs__(self) -> 'IntRadixExpansion':
+    def __abs__(self) -> IntRadixExpansion:
         return IntRadixExpansion(self.radix, self.polynomial, sign=1)
 
     @property
     def max_power(self) -> int:
         return self.polynomial.total_degree or 0
 
-    def shifted_power(self, k: int) -> 'IntRadixExpansion':
+    def shifted_power(self, k: int) -> IntRadixExpansion:
         pol = IntPolynomial.new_zero()
 
         for mon in self.polynomial.get_monomials():
@@ -41,7 +41,7 @@ class IntRadixExpansion:
 
         return IntRadixExpansion(self.radix, pol, self.sign)
 
-    def with_sign(self, sign: SignT) -> 'IntRadixExpansion':
+    def with_sign(self, sign: SignT) -> IntRadixExpansion:
         return IntRadixExpansion(self.radix, self.polynomial, sign)
 
     def __str__(self) -> str:

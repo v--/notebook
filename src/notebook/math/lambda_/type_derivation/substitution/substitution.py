@@ -45,5 +45,5 @@ class TypeDerivationSubstitution(AbstractSubstitution[Variable, TypeDerivationTr
         return term.var
 
     @override
-    def modify_at(self, var: Variable, replacement: TypeDerivationTree) -> 'TypeDerivationSubstitution':
+    def modify_at(self, var: Variable, replacement: TypeDerivationTree) -> TypeDerivationSubstitution:
         return TypeDerivationSubstitution(variable_mapping={**self.variable_mapping, var: replacement})

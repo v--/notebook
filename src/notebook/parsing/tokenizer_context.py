@@ -10,11 +10,11 @@ if TYPE_CHECKING:
 
 
 class TokenizerContext[TokenKindT]:
-    tokenizer: 'Tokenizer[TokenKindT]'
+    tokenizer: Tokenizer[TokenKindT]
     offset_start: int
     offset_end: int | None
 
-    def __init__(self, tokenizer: 'Tokenizer[TokenKindT]') -> None:
+    def __init__(self, tokenizer: Tokenizer[TokenKindT]) -> None:
         self.tokenizer = tokenizer
         self.reset()
 

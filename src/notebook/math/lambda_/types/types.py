@@ -24,8 +24,8 @@ class TypeVariable:
 @dataclass(frozen=True)
 class SimpleConnectiveType:
     conn: BinaryTypeConnective
-    left: 'SimpleType'
-    right: 'SimpleType'
+    left: SimpleType
+    right: SimpleType
 
     def __str__(self) -> str:
         return f'({self.left} {self.conn} {self.right})'

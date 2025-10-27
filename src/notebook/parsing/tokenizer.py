@@ -78,5 +78,5 @@ class Tokenizer[TokenKindT](abc.ABC):
                 yield token
 
     @abc.abstractmethod
-    def read_token(self, context: 'TokenizerContext[TokenKindT]') -> Token[TokenKindT] | None:
+    def read_token(self, context: TokenizerContext[TokenKindT]) -> Token[TokenKindT] | None:
         ...

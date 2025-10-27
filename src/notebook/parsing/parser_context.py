@@ -7,11 +7,11 @@ from .tokens import Token
 
 
 class ParserContext[TokenT: Token]:
-    parser: 'Parser[TokenT]'
+    parser: Parser[TokenT]
     index_start: int
     index_end: int | None
 
-    def __init__(self, parser: 'Parser[TokenT]') -> None:
+    def __init__(self, parser: Parser[TokenT]) -> None:
         self.parser = parser
         self.reset()
 

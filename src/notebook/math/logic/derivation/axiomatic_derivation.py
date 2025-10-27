@@ -46,7 +46,7 @@ class AxiomaticDerivation:
 
         return None
 
-    def truncate(self, index: int) -> 'AxiomaticDerivation':
+    def truncate(self, index: int) -> AxiomaticDerivation:
         assert index < len(self.payload)
         return AxiomaticDerivation(payload=self.payload[:index + 1])
 

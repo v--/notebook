@@ -128,7 +128,7 @@ class BibEntry:
     urldate:       Annotated[BibString | None, BibFieldAnnotation()] = None
 
     # Based on https://stackoverflow.com/a/77690186/2756776
-    def __or__(self, other: 'BibEntry') -> 'BibEntry':
+    def __or__(self, other: BibEntry) -> BibEntry:
         return BibEntry(**asdict(self) | asdict(other))
 
     def _string_properties(self) -> Iterable[tuple[str, BibString]]:

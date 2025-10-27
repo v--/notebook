@@ -22,7 +22,7 @@ class MatrixConstructorMixin[N: ISemiring](BaseMatrix[N]):
         return cls.from_factory(m, n, lambda i, j: rows[i][j])
 
     @classmethod
-    def lift_matrix(cls, mat: 'BaseMatrix[int]') -> Self:
+    def lift_matrix(cls, mat: BaseMatrix[int]) -> Self:
         return cls.from_factory(
             mat.m,
             mat.n,

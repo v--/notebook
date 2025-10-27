@@ -12,11 +12,11 @@ from .latex import LaTeXTask
 
 
 class BiberTask(WatcherTask):
-    base_logger: 'loguru.Logger'
+    base_logger: loguru.Logger
     out_buffer: int | None = asyncio.subprocess.DEVNULL
     tex_path: pathlib.Path
 
-    def __init__(self, base_logger: 'loguru.Logger', tex_path: pathlib.Path | str) -> None:
+    def __init__(self, base_logger: loguru.Logger, tex_path: pathlib.Path | str) -> None:
         self.tex_path = pathlib.Path(tex_path)
         self.base_logger = base_logger
         self.sublogger = base_logger.bind(logger=str(os.path.relpath(self.bcf_path, ROOT_PATH)))

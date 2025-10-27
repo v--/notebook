@@ -12,7 +12,7 @@ import loguru
 class FormatterContext(NamedTuple):
     src: TextIO
     dest: TextIO
-    logger: 'loguru.Logger'
+    logger: loguru.Logger
 
 
 class FormatterContextManager:
