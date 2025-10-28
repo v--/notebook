@@ -1,16 +1,5 @@
 from ..pytest import pytest_parametrize_kwargs
-from .mangling import normalize_whitespace, remove_accents
-
-
-@pytest_parametrize_kwargs(
-    dict(string='lorem',  expected='lorem'),
-    dict(string='Йордан', expected='Йордан'),
-    dict(string='Fučík',  expected='Fucik'),
-    dict(string='Marián', expected='Marian'),
-    dict(string='Łukasz', expected='Lukasz'),
-)
-def test_remove_accents(string: str, expected: str) -> None:
-    assert remove_accents(string) == expected
+from .whitespace import normalize_whitespace
 
 
 @pytest_parametrize_kwargs(
