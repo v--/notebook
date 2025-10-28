@@ -38,10 +38,9 @@ There are externalized figures in the [`figures`](./figures) directory of the fo
 ### Parsers
 
 A lot of the monograph-related code, as well as some of the tools are based on a recursive descent [parser framework](./src/notebook/parsing) created specifically for various (micro)languages in the monograph:
-* [Natural deduction rules](./src/notebook/math/natural_deduction/parsing)
 * [Formal grammar schemas](./src/notebook/math/grammars/parsing)
-* [First-order logic terms and formulas](./src/notebook/math/fol/parsing)
-* [Lambda calculus terms](./src/notebook/math/lambda/parsing)
+* [First-order logic terms and formulas and schemas](./src/notebook/math/logic/parsing)
+* [Lambda calculus terms and schemas](./src/notebook/math/lambda/parsing)
 * [Plain text](./src/notebook/math/nlp/parsing)
 
 Two additional parsers are included:
