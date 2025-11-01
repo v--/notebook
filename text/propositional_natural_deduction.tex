@@ -293,9 +293,15 @@
 
     Discharging requires some additional elucidation that can also be seen implemented programmatically as \identifier{math.logic.deduction.proof_tree.apply} in \cite{notebook:code}:
     \begin{itemize}
-      \item Since open assumptions have markers attached, there generally is nondeterminism involved in the choice of marker, and different choices lead to different rule application trees.
+      \item If an assumption can be discharged, it \hi{must} be discharged\fnote{This is not enforced in the code because dischargeable assumptions are expected to be provided by the user.}. It will not no longer be open in the proof tree.
+
+      When defining the entailment relation in \cref{def:natural_deduction_entailment}, for deducing \( \Gamma \vdash \varphi \), we only require \( \varphi \) to have a proof tree whose open assumptions are members of \( \Gamma \); discharged assumptions may just as well be in \( \Gamma \). But they will no longer be open in the proof tree.
+
+      This avoids confusing situations like \cref{ex:def:mltt_well_formed_context/discharging} (for similarly structured type derivation trees). As discussed in \cref{con:eigenvariable}, this particular example provides a justification for the eigenvariable conditions in predicate logic.
 
       \item If the rule allows discharging an assumption but no such assumption can be discharged, we apply the rule without discharging anything. We call the corresponding assumption \term{implicit}. For \hyperref[con:typing_rule]{typing rules}, \incite[note 2A8.1]{Hindley1997BasicSTT} calls this \enquote{discharging vacuously}. \Cref{ex:natural_deduction_efq_vs_dne} demonstrates this, and a more practical example can be found in the proof of \cref{thm:simple_algebraic_type_arithmetic/equivalence}.
+
+      \item Since open assumptions have markers attached, there generally is nondeterminism involved in the choice of marker, and different choices lead to different rule application trees. See \cref{ex:proof_tree_non_uniqueness} for some uniqueness considerations.
 
       \item We disallow the case where the same marked formula is open in multiple premise subtrees, but dischargeable in only some of them. This is done to prevent name collisions in complicated rules like \ref{inf:def:identity_type/j/elim}.
 
@@ -337,9 +343,9 @@
 \end{comments}
 
 \begin{definition}\label{def:natural_deduction_entailment}\mcite[205]{Hinman2005Logic}
-  For a \hyperref[def:abstract_natural_deduction_system]{natural deduction system}, we define a \hyperref[def:consequence_relation]{consequence relation} as follows: we let \( \Gamma \vdash \varphi \) if there is a \hyperref[def:propositional_natural_deduction_proof_tree]{proof tree} with conclusion \( \varphi \) whose \hyperref[def:propositional_natural_deduction_proof_tree/open]{open assumptions} are all in \( \Gamma \).
+  For a \hyperref[def:abstract_natural_deduction_system]{natural deduction system}, we define a \hyperref[def:consequence_relation]{consequence relation} as follows: we let \( \Gamma \vdash \varphi \) if there exists a \hyperref[def:propositional_natural_deduction_proof_tree]{proof tree} with conclusion \( \varphi \) whose \hyperref[def:propositional_natural_deduction_proof_tree/open]{open assumptions} are all in \( \Gamma \).
 
-  As per \cref{def:abstract_logic}, we say that \( \varphi \) is \term{derivable} from \( \Gamma \) if this relation holds.
+  In accordance with \cref{def:abstract_logic}, we say that \( \varphi \) is \term{derivable} from \( \Gamma \) if this relation holds.
 \end{definition}
 \begin{comments}
   \item We lose almost all information about the concrete proof by using such an entailment relation. Here \( \Gamma \) is a set of formulas somehow deriving \( \varphi \), and we only know that there exists a proof tree whose open assumptions include those from \( \Gamma \) with some label.
@@ -1506,5 +1512,5 @@ We will only briefly sketch some ideas of sequent calculus because of their impo
 
   The latter resembles the sequent calculus rule \ref{inf:rem:sequent_calculus/imp/right}, but with no context on the right.
 
-  Other than that, there will be no benefit for us from using explicit sequents in our natural deduction rules. Furthermore, as discussed in \cref{rem:typing_rule_eigenvariables}, they still require stating eigenvariable conditions as side conditions, so they share the same limitations.
+  Nevertheless, we will prefer the more vivid proof trees of natural deduction.
 \end{remark}

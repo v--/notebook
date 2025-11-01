@@ -101,7 +101,7 @@ This section is a detour; our purpose is to present some ideas without diving in
   \end{equation*}
   as an \( n \)-ary function whose arguments are inhabitants of \( \tau_1, \ldots, \tau_n \), correspondingly. In accordance with the terminology for functions from \cref{con:variable_dependence}, we may state that \( M \) depends on variables of types \( \tau_1, \ldots, \tau_n \).
 
-  We can extend this to \hyperref[rem:pseudoterm_schemas]{Martin-L\"of type theory pseudoterms} by regarding \( \synprod \) and \( \synsum \) as \hyperref[con:variable_binding]{variable binders} in addition to \( \synlambda \).
+  We can extend this to \hyperref[def:mltt_pseudoterm]{Martin-L\"of type theory pseudoterms} by regarding \( \synprod \) and \( \synsum \) as \hyperref[con:variable_binding]{variable binders} in addition to \( \synlambda \).
 
   Because of the unified syntax of terms and types, this opens different possibilities. Suppose that, in a fixed \hyperref[def:abstract_type_system]{type system}, \( M \) inhabits \( \tau \). Then, in accordance with \cref{rem:well_formed_context}, based on \( \tau \) and \( \tau_k \), we can state that the term/type \( M \) depends on the term/type variable \( x_k \).
 
@@ -174,9 +174,9 @@ This section is a detour; our purpose is to present some ideas without diving in
       \hypo{ x: \syn\Bbbzero }
       \infer[dashed]1{ \tau: \BbbT }
 
-      \hypo{ a: \syn\Bbbzero }
+      \hypo{ A: \syn\Bbbzero }
 
-      \infer2[\ref{inf:def:simple_empty_type/elim}]{ \synE_- (\qabs {x^{\syn\Bbbzero}} \tau) a: \tau[x \mapsto a] }
+      \infer2[\ref{inf:def:simple_empty_type/elim}]{ \synE_- (\qabs {x^{\syn\Bbbzero}} \tau) A: \tau[x \mapsto A] }
     \end{prooftree}
   \end{equation*}
 \end{definition}
@@ -191,8 +191,8 @@ This section is a detour; our purpose is to present some ideas without diving in
   \begin{equation*}
     \begin{prooftree}
       \hypo{ \Gamma, x: \syn\Bbbzero \vdash \tau: \BbbT }
-      \hypo{ \Gamma \vdash a: \syn\Bbbzero }
-      \infer2[\ref{inf:def:simple_empty_type/elim}]{ \Gamma \vdash \synE_- (\qabs {x^{\syn\Bbbzero}} \tau) a: \tau[x \mapsto a] }
+      \hypo{ \Gamma \vdash A: \syn\Bbbzero }
+      \infer2[\ref{inf:def:simple_empty_type/elim}]{ \Gamma \vdash \synE_- (\qabs {x^{\syn\Bbbzero}} \tau) A: \tau[x \mapsto A] }
     \end{prooftree}
   \end{equation*}
 
@@ -651,30 +651,6 @@ This section is a detour; our purpose is to present some ideas without diving in
   \item The rules are generally based on Martin-L\"of's rules from \cite[35]{MartinLöf1984IntuitionisticTypeTheory}, with computation and equality rules adapted from \cite[\S A.2.4]{UnivalentFoundationsProgram2013HoTT}. Due to \cref{rem:product_type_via_dependent_product}, the latter prefer calling dependent products \enquote{dependent function types}.
 \end{comments}
 
-\begin{remark}\label{rem:typing_rule_eigenvariables}
-  We have stated the rule \ref{inf:def:dependent_product/intro} as
-  \begin{equation*}
-    \begin{prooftree}
-      \hypo{ x: \tau }
-      \infer[dashed]1{ M: \sigma }
-      \infer1[\ensuremath{ \Pi_+ }]{ \qabs {x^\tau} M: \qprod {x^\tau} \sigma }
-    \end{prooftree}
-  \end{equation*}
-
-  Actually, due to the Curry-Howard correspondence, the rule should exactly match \ref{eq:def:first_order_natural_deduction_system/forall/intro}, which we state as
-  \begin{equation*}
-    \begin{prooftree}
-      \hypo{ \varphi[x \mapsto y] }
-      \infer1[\ensuremath{ \synforall_+ }]{ \qpolytype x \varphi },
-    \end{prooftree}
-  \end{equation*}
-  where the \hyperref[con:eigenvariable]{eigenvariable} \( y \) either equals \( x \) or otherwise \( y \) is not free in \( \varphi \) nor any open assumption.
-
-  The difference comes from how we handle \hyperref[def:lambda_term_alpha_equivalence]{\( \alpha \)-equivalence}. In the typing rule, we rely on judgmental equality, and in particular on the rule \ref{rem:type_theory_rule_classification/equality/alpha}. This rule ensures that, due to a generalization of \cref{thm:alpha_conversion}, the types \( \qprod {x^\tau} \sigma \) and \( \qprod {y^\tau} \sigma[x \mapsto y] \) are equal (as long as \( y \) is not an open assumption \( \sigma \)). We do not mention free variables because, as described in \cref{rem:beta_equivalence_and_free_variables}, in the presence of judgmental equality rules, the concept of free variables becomes largely meaningless.
-
-  On the other hand, in first-order logic, we do not rely such much on implicit metatheoretic equality, and the formulas \( \qpolytype x \varphi \) and \( \qpolytype y \varphi[x \mapsto y] \) are distinct. In order to be able to derive both from \( \varphi \), we must state the eigenvariable condition and use substitution in the rule premise.
-\end{remark}
-
 \begin{remark}\label{rem:arrow_type_via_dependent_product}
   The \hyperref[def:arrow_type]{arrow type} \( \tau \synimplies \sigma \) is a special case of the \hyperref[def:dependent_product]{dependent product} \( \qprod {x^\tau} \sigma \), in which \( \sigma \) does not depend on \( x \) (in the sense of \cref{rem:mltt_pseudoterm_dependency}).
 \end{remark}
@@ -764,9 +740,9 @@ This section is a detour; our purpose is to present some ideas without diving in
       \hypo{ z: \qsum {x^\tau} \sigma }
       \infer[dashed]1{ \rho: \BbbT }
 
-      \hypo{ x: \tau }
-      \hypo{ y: \sigma }
-      \infer[dashed]2{ M: \rho[z \mapsto \synS_+ x y] }
+      \hypo{ a: \tau }
+      \hypo{ b: \sigma }
+      \infer[dashed]2{ M: \rho[z \mapsto \synS_+ a b] }
 
       \hypo{ A: \qsum {x^\tau} \sigma }
 
@@ -780,14 +756,14 @@ This section is a detour; our purpose is to present some ideas without diving in
       \hypo{ z: \qsum {x^\tau} \sigma }
       \infer[dashed]1{ \rho: \BbbT }
 
-      \hypo{ x: \tau }
-      \hypo{ y: \sigma }
-      \infer[dashed]2{ M: \rho[z \mapsto \synS_+ x y] }
+      \hypo{ a: \tau }
+      \hypo{ b: \sigma }
+      \infer[dashed]2{ M: \rho[z \mapsto \synS_+ a b] }
 
       \hypo{ A: \tau }
       \hypo{ B: \sigma[x \mapsto A] }
 
-      \infer4[\ref{inf:def:dependent_sum/comp}]{ \synS_- (\qabs {z^{\qsum {x^\tau} \sigma}} \rho) (\qabs {x^\tau} {y^\sigma} M) (\synS_+ A B) \syndefeq M[x \mapsto A, y \mapsto B]: \rho[z \mapsto \synS_+ A B] }
+      \infer4[\ref{inf:def:dependent_sum/comp}]{ \synS_- (\qabs {z^{\qsum {x^\tau} \sigma}} \rho) (\qabs {a^\tau} {b^\sigma} M) (\synS_+ A B) \syndefeq M[a \mapsto A, b \mapsto B]: \rho[z \mapsto \synS_+ A B] }
     \end{prooftree}
   \end{equation*}
 \end{definition}
@@ -933,6 +909,8 @@ This section is a detour; our purpose is to present some ideas without diving in
 
     \thmitem{def:mltt_well_formed_context/derivation} We consider a type derivation tree \( T \) to be well-formed with respect to a well-formed context \( \Gamma \) if all open assumptions of \( T \) are in \( \Gamma \) and if all discharged (closed and implicit) assumptions are \hi{not} in \( \Gamma \) but have well-formed types with respect to \( \Gamma \).
 
+    We give several examples in \cref{ex:def:mltt_well_formed_context} of why allowing discharged assumptions in \( \Gamma \) can lead to pathologies.
+
     \thmitem{def:mltt_well_formed_context/type} We consider the pseudoterm expression \( \tau \) a well-formed type with respect to a well-formed context \( \Gamma \) if it either satisfies \cref{def:mltt_well_formed_context/base} (i.e. if it is a type universe) or if there exists a well-formed (with respect to \( \Gamma \)) derivation tree with conclusion \( \tau: \BbbT \), where \( \BbbT \) is a type universe.
 
     \thmitem{def:mltt_well_formed_context/context} Finally, we consider the type context \( \Delta \) to be a well-formed if it either satisfies \cref{def:mltt_well_formed_context/base} (i.e. if it features only type universes; the base case also covers the case where \( \Delta \) is empty) or if \( \Delta = \Gamma, (x: \tau) \), where \( \Gamma \) has already been shown to be a well-formed context, and \( \tau \) has already been shown to be a well-formed type with respect to \( \Gamma \).
@@ -1015,15 +993,39 @@ This section is a detour; our purpose is to present some ideas without diving in
       \end{prooftree}
     \end{equation*}
     that is well-formed with respect to \( \Gamma \).
+
+    \thmitem{ex:def:mltt_well_formed_context/discharging} The type \( \synx \syneq_{\syn\tau} \syny \) is well-formed in the context \( \syn\tau: \BbbT, \synx: \syn\tau, \syny: \syn\tau \) due to \ref{inf:def:identity_type/form}.
+
+    Let \( M \) be some term inhabiting this type and consider the following derivation tree:
+    \begin{equation*}
+      \begin{prooftree}
+        \hypo{ M: \synx \syneq_{\syn\tau} \syny }
+        \infer[left label=\( \synx \)]1[\ref{inf:def:dependent_product/intro}]{ \qabs {\synx^{\syn\tau}} M: \qprod {\synx^{\syn\tau}} (\synx \syneq_{\syn\tau} \syny) }
+      \end{prooftree}
+    \end{equation*}
+
+    According to \cref{def:mltt_well_formed_context/derivation}, the tree is well-formed in a (well-formed) context \( \Gamma \) if \( \Gamma \) contains the open assumptions \( \syn\tau: \BbbT \) and \( \syny: \syn\tau \), but \hi{not} the discharged assumption \( \synx: \syn\tau \). Without \( \synx: \syn\tau \), the assumption \( M: \synx \syneq_{\syn\tau} \syny \) cannot even be assigned a type. So this derivation tree is ill-formed.
+
+    See \cref{con:eigenvariable} for how this well-formedness condition justifies the eigenvariable conditions in \hyperref[def:higher_order_logic]{higher-order logic}.
   \end{thmenum}
 \end{example}
 
-\begin{remark}\label{rem:mltt_hol}
+\begin{remark}\label{rem:mltt_curry_howard}
   With the \hyperref[def:type_derivation_relation]{type derivation relation} defined in \cref{def:mltt_entailment}, \hyperref[def:martin_lof_type_theory]{Martin-L\"of type theory} can be seen as a form of \hyperref[rem:predicate_logic]{predicate logic} if we extend the \hyperref[con:curry_howard_correspondence]{Curry-Howard correspondence} by matching \hyperref[def:predicate_logic_alphabet/quantifiers/universal]{universal quantifiers} with \hyperref[def:dependent_product]{dependent products} and \hyperref[def:predicate_logic_alphabet/quantifiers/existential]{existential quantifiers} with \hyperref[def:dependent_sum]{dependent sums}.
 
-  We do not put restrictions on which types are allowed to act as formulas. This makes the theory go beyond what we discuss in \fullref{sec:predicate_logic}.
+  \begin{thmenum}
+    \thmitem{rem:mltt_curry_howard/no_restriction} Without constraints on which types are allowed to act as formulas, we obtain a very general \hyperref[con:logical_system]{logical system} that is hard to analyze.
 
-  One reasonable restriction is to only use \hyperref[def:mere_proposition]{mere propositions} rather than arbitrary types. This has the downside that, as mentioned in \cref{rem:mere_propositions}, without additional assumptions we are not able to prove that some useful types are mere propositions.
+    \thmitem{rem:mltt_curry_howard/mere_propositions} One possibility is to only use allow those types that are \hyperref[def:mere_proposition]{mere propositions}.
+
+    A benefit of this is that all terms inhabiting a mere proposition are \hyperref[def:mltt_propositional_equality]{propositionally equal}. This is important in some cases such as our definition of subtypes in \cref{def:dependent_subtype}.
+
+    \thmitem{rem:mltt_curry_howard/arrow_types} Another possibility is to restrict type annotations of quantifiers to only arrow types without type variables.
+
+    The resulting types then resemble those allowed by Church in his simply typed higher-order logic. Since Church encoded propositions via terms (and not types), we must discard the terms since they are not relevant. This is discussed in \cref{rem:higher_order_logic_and_type_theory}. The inference rules require adaptation; see \cref{con:eigenvariable}.
+
+    We use this hybrid approach in \fullref{sec:predicate_logic}.
+  \end{thmenum}
 \end{remark}
 
 \begin{proposition}\label{thm:propositional_equality_equivalence_relation}
@@ -1226,9 +1228,9 @@ This section is a detour; our purpose is to present some ideas without diving in
 
 \paragraph{Subtypes}
 
-\begin{definition}\label{def:subtype}\mcite[46; 115]{UnivalentFoundationsProgram2013HoTT}
+\begin{definition}\label{def:dependent_subtype}\mcite[46; 115]{UnivalentFoundationsProgram2013HoTT}
   Consider the \hyperref[def:dependent_sum]{dependent sum} \( \qsum {x^\tau} \sigma \), assumed to satisfy
-  \begin{equation}\label{eq:def:subtype}
+  \begin{equation}\label{eq:def:dependent_subtype}
     \qprod {x^\tau} \ref{abbr:def:mere_proposition}[\sigma].
   \end{equation}
 
@@ -1244,31 +1246,31 @@ This section is a detour; our purpose is to present some ideas without diving in
   \item Subtypes are ubiquitous in programming, where they are advised, if not enforced, to obey Liskov's substitution principle. We discuss this principle in \cref{con:liskov_substitution_principle}.
 \end{comments}
 
-\begin{example}\label{ex:def:subtype}
-  We list examples of \hyperref[def:subtype]{subtypes}:
+\begin{example}\label{ex:def:dependent_subtype}
+  We list examples of \hyperref[def:dependent_subtype]{subtypes}:
   \begin{thmenum}
-    \thmitem{ex:def:subtype/trivial} For any type \( \tau \), the (dependent) \hyperref[def:dependent_empty_type]{empty type} induces the \hyperref[def:propositionally_uninhabited]{propositionally uninhabited} subtype \( \qsum {\synx^\tau} \syn\Bbbzero \).
+    \thmitem{ex:def:dependent_subtype/trivial} For any type \( \tau \), the (dependent) \hyperref[def:dependent_empty_type]{empty type} induces the \hyperref[def:propositionally_uninhabited]{propositionally uninhabited} subtype \( \qsum {\synx^\tau} \syn\Bbbzero \).
 
-    Indeed, by \cref{thm:empty_type_is_proposition}, \( \syn\Bbbzero \) is a mere proposition, so the condition \eqref{eq:def:subtype} for the definition of subtype is satisfied.
+    Indeed, by \cref{thm:empty_type_is_proposition}, \( \syn\Bbbzero \) is a mere proposition, so the condition \eqref{eq:def:dependent_subtype} for the definition of subtype is satisfied.
 
     Furthermore, the right projection \( \pi_R: \qprod {\syna^{\qsum {x^\tau} \syn\Bbbzero}} \syn\Bbbzero \) itself acts as a witness that the subtype \( \qsum {x^\tau} \syn\Bbbzero \) is (propositionally) uninhabited.
 
-    \thmitem{ex:def:subtype/improper} Dually, for any type \( \tau \), the (dependent) \hyperref[def:dependent_unit_type]{unit type} induces the subtype \( \qsum {\synx^\tau} \syn\Bbbone \).
+    \thmitem{ex:def:dependent_subtype/improper} Dually, for any type \( \tau \), the (dependent) \hyperref[def:dependent_unit_type]{unit type} induces the subtype \( \qsum {\synx^\tau} \syn\Bbbone \).
 
     The definition of subtype is satisfied because, due to \cref{thm:unit_type_is_proposition}, \( \syn\Bbbone \) is a mere proposition.
 
     Furthermore, \( \syn\Bbbone \) does not depend on \( \synx \) and it is always inhabited. Thus, the inclusion \( \iota \) is a surjective function --- for any term \( M \) of \( \tau \), \( \synS_+ M \synU_+ \) is a term of the subtype \( \qsum {\synx^\tau} \syn\Bbbone \).
 
-    \thmitem{ex:def:subtype/unit} Consider the subtype \( \qsum {\synx^{\syn\Bbbone}} (\synx \syneq_{\syn\Bbbone} \synU_+) \) of the unit type \( \syn\Bbbone \).
+    \thmitem{ex:def:dependent_subtype/unit} Consider the subtype \( \qsum {\synx^{\syn\Bbbone}} (\synx \syneq_{\syn\Bbbone} \synU_+) \) of the unit type \( \syn\Bbbone \).
 
     For simplicity, we can assume the \( K \) elimination rule \ref{inf:def:identity_type/k/elim}. By \cref{thm:uniqueness_of_identity_proofs}, that would imply that the identity type \( \synU_+ \syneq_{\syn\Bbbone} \synU_+ \) is \hyperref[def:contractible_type]{contractible} and, by \cref{thm:contractible_type_is_proposition}, a mere proposition.
 
-    Then \ref{inf:def:dependent_unit_type/elim} can be used to conclude that \( \synx \syneq_{\syn\Bbbone} \synU_+ \) is a mere proposition for any \( \synx \), hence the condition \eqref{eq:def:subtype} for subtype is satisfied.
+    Then \ref{inf:def:dependent_unit_type/elim} can be used to conclude that \( \synx \syneq_{\syn\Bbbone} \synU_+ \) is a mere proposition for any \( \synx \), hence the condition \eqref{eq:def:dependent_subtype} for subtype is satisfied.
   \end{thmenum}
 \end{example}
 
 \begin{concept}\label{con:liskov_substitution_principle}
-  In \cite[25]{Liskov1987DataAbstractionAndHierarchy}, in the context of object-oriented programming, Barbara Liskov formulates the following informal definition for \hyperref[def:subtype]{subtypes}:
+  In \cite[25]{Liskov1987DataAbstractionAndHierarchy}, in the context of object-oriented programming, Barbara Liskov formulates the following informal definition for \hyperref[def:dependent_subtype]{subtypes}:
   \begin{displayquote}
     A type hierarchy is composed of subtypes and supertypes. The intuitive idea of a \textit{subtype} is one whose objects provide all the behavior of objects of another type (the \textit{supertype}) plus something extra. What is wanted here is something like the following substitution property [6]: If for each object \( o_1 \) of type \( S \) there is an object \( o_2 \) of type \( T \) such that for all programs \( P \) defined in the terms of \( T \), the behavior of \( P \) is unchanged when \( o_1 \) is substituted for \( o_2 \), then \( S \) is a subtype of \( T \).
   \end{displayquote}
