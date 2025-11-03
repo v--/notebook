@@ -1,5 +1,17 @@
 \ExplSyntaxOn
 
+% Based on https://tex.stackexchange.com/a/564222
+\cs_new_protected:Nn \nb_define_alphabet:Nnnn
+  {% #1 = command, #2 = prefix, #3 = start, #4 = end
+    \int_step_inline:nnn { `#3 } { `#4 }
+      {
+        \cs_new_protected:cpx { #2 \char_generate:nn { ##1 }{ 11 } }
+          {{
+            \exp_not:N #1 { \char_generate:nn { ##1 } { 11 } }
+          }}
+      }
+  }
+
 \bool_if:nTF
   { \sys_if_engine_xetex_p: || \sys_if_engine_luatex_p: }
   {
@@ -14,18 +26,6 @@
     \RenewDocumentCommand \sfdefault {} {lmss}
     \RenewDocumentCommand \ttdefault {} {lmtt}
     \RequirePackage{microtype}
-
-    % Based on https://tex.stackexchange.com/a/564222
-    \cs_new_protected:Nn \nb_define_alphabet:Nnnn
-      {% #1 = command, #2 = prefix, #3 = start, #4 = end
-        \int_step_inline:nnn { `#3 } { `#4 }
-          {
-            \cs_new_protected:cpx { #2 \char_generate:nn { ##1 }{ 11 } }
-              {{
-                \exp_not:N #1 { \char_generate:nn { ##1 } { 11 } }
-              }}
-          }
-      }
 
     % Based on https://tex.stackexchange.com/a/460325
     \cs_new_protected:Nn \__recode_aux:nnn { \DeclareTextSymbolDefault #2 {#3} }
