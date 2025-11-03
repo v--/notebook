@@ -100,7 +100,7 @@ def test_parse_101134_s0081543815090023_references(doi: str = '10.1134/s00815438
 
     assert entry == BibEntry(
         entry_type='article',
-        entry_name='AseevVeliov2015InfiniteHorizonOptimalControlProblems',
+        entry_name='AseevVeliov2015InfiniteHorizonOptimalControl',
         title='Maximum principle for infinite-horizon optimal control problems under weak regularity assumptions',
         publisher='Pleiades Publishing Ltd',
         journal='Proceedings of the Steklov Institute of Mathematics',
@@ -258,7 +258,7 @@ def test_parse_101007_s1065401601493_extended_funder(doi: str = '10.1007/s10654-
 
     assert entry == BibEntry(
         entry_type='article',
-        entry_name='GreenlandEtAl2016StatisticalTests',
+        entry_name='GreenlandEtAl2016ConfidenceIntervals',
         title='Statistical tests, P values, confidence intervals, and power: a guide to misinterpretations',
         publisher='Springer Science and Business Media LLC',
         authors=[
@@ -588,7 +588,7 @@ def test_parse_101080_00029890198511971528_aliases(doi: str = '10.1080/00029890.
 
     assert entry == BibEntry(
         entry_type='article',
-        entry_name='Lagarias2018Problem',
+        entry_name='Lagarias2018Generalizations',
         authors=[
             BibAuthor(full_name='Jeffrey C. Lagarias')
         ],
@@ -659,7 +659,7 @@ def test_parse_101007_9783662074138_editor(doi: str = '10.1007/978-3-662-07413-8
 
     assert entry == BibEntry(
         entry_type='book',
-        entry_name='ArhangelSkiiEtAl1995GeneralTopologyIII',
+        entry_name='ArhangelSkiiEtAl1995TopologyIII',
         title='General Topology III',
         publisher='Springer Berlin Heidelberg',
         editors=[
@@ -709,7 +709,7 @@ def test_parse_101007_9783319114781_book(doi: str = '10.1007/978-3-319-11478-1')
 
     assert entry == BibEntry(
         entry_type='book',
-        entry_name='Bergman2015GeneralAlgebra',
+        entry_name='Bergman2015UniversalConstructions',
         title='An Invitation to General Algebra and Universal Constructions',
         publisher='Springer International Publishing',
         authors=[
@@ -759,7 +759,7 @@ def test_parse_101007_9783642617010_container_empty_array(doi: str = '10.1007/97
 
     assert entry == BibEntry(
         entry_type='book',
-        entry_name='Bourbaki1995GeneralTopology',
+        entry_name='Bourbaki1995Topology',
         title='General Topology',
         subtitle='Chapters 1–4',
         publisher='Springer Berlin Heidelberg',

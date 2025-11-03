@@ -144,7 +144,7 @@ def test_parse_2401_09270v1_title_line_break(arxiv_id: str = '2401.09270v1') -> 
 
     assert entry == BibEntry(
         entry_type='misc',
-        entry_name='Ambridge2024ExactRealSearch',
+        entry_name='Ambridge2024ConstructiveUnivalentMathematics',
         title='Exact Real Search: Formalised Optimisation and Regression in Constructive Univalent Mathematics',
         authors=[
             BibAuthor(full_name='Todd Waugh Ambridge')

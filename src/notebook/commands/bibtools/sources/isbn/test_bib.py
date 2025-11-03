@@ -66,7 +66,7 @@ def test_parse_3885380064_limited_data(isbn: str = '3-88538-006-4') -> None:
 
     assert entry == BibEntry(
         entry_type='book',
-        entry_name='Engelking1989GeneralTopology',
+        entry_name='Engelking1989Topology',
         title='General Topology',
         authors=[
             BibAuthor(full_name='Ryszard Engelking')
