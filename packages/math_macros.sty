@@ -63,11 +63,25 @@
 \nb_define_alphabet:Nnnn \syn {syn} {A} {Z}
 
 \box_new:N \l_nb_superimpose_box
+\dim_new:N \l_nb_superimpose_half_width
 \cs_new_protected:Nn \nb_superimpose:NN
   {
     \hbox_set:Nn \l_nb_superimpose_box {\ensuremath{#1}}
-    \mathclap {\hspace {\box_wd:N \l_nb_superimpose_box} #2}
-    \box_use_drop:N \l_nb_superimpose_box
+    \dim_set:Nn \l_nb_superimpose_half_width
+      {
+        \fp_to_dim:n
+          {
+            \fp_eval:n
+              {
+                {\dim_to_fp:n {\box_wd:N \l_nb_superimpose_box}} / 2
+              }
+          }
+      }
+
+    \hspace{\l_nb_superimpose_half_width}
+    \mathclap {#2}
+    \mathclap {#1}
+    \hspace{\l_nb_superimpose_half_width}
   }
 
 \NewDocumentCommand \syniff {}
