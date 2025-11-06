@@ -24,6 +24,15 @@ from .system import NaturalDeductionPremise, NaturalDeductionRule
 
 
 @dataclass(frozen=True)
+class MarkedVariable:
+    var: Variable
+    marker: Marker
+
+    def __str__(self) -> str:
+        return f'{self.var}: {self.marker}'
+
+
+@dataclass(frozen=True)
 class AssumptionTree(InferenceTree[FormulaWithSubstitution, Mapping[Marker, Formula]]):
     conclusion: FormulaWithSubstitution
     marker: Marker
@@ -45,6 +54,12 @@ class AssumptionTree(InferenceTree[FormulaWithSubstitution, Mapping[Marker, Form
 
     def get_free_variables(self) -> Collection[Variable]:
         return get_free_variables(evaluate_substitution_spec(self.conclusion))
+
+    def get_marked_free_variables(self) -> Collection[MarkedVariable]:
+        return {
+            MarkedVariable(var, self.marker)
+            for var in self.get_free_variables()
+        }
 
     def __str__(self) -> str:
         return self.build_renderer().render()
@@ -178,7 +193,7 @@ class RuleApplicationTree(InferenceTree[FormulaWithSubstitution, Mapping[Marker,
             for marker, assumption in application_premise.tree.get_assumption_map().items():
                 is_discharged_at_current_step = application_premise.discharge is not None and \
                     evaluate_substitution_spec(application_premise.discharge) == assumption and \
-                    (application_premise.marker is None or application_premise.marker == marker)
+                    application_premise.marker == marker
 
                 if discharged_at_current_step == is_discharged_at_current_step:
                     yield marker, assumption
@@ -223,19 +238,17 @@ class RuleApplicationTree(InferenceTree[FormulaWithSubstitution, Mapping[Marker,
             [premise.build_renderer() for premise in self.premises]
         )
 
-    def iter_free_variables(self) -> Iterable[Variable]:
-        for rule_premise, application_premise in zip(self.rule.premises, self.premises, strict=True):
-            if application_premise.discharge:
-                continue
+    def get_marked_free_variables(self) -> Iterable[MarkedVariable]:
+        discharged_markers = self.get_marker_context()
+        discharged_eigen = {evar.var for evar in self.get_eigenvariable_context()}
 
-            eigen = get_main_eigenvariable(rule_premise, application_premise)
-
-            for var in application_premise.tree.get_free_variables():
-                if var != eigen:
-                    yield var
+        for application_premise in self.premises:
+            for mvar in application_premise.tree.get_marked_free_variables():
+                if mvar.marker not in discharged_markers and mvar.var not in discharged_eigen:
+                    yield mvar
 
     def get_free_variables(self) -> Collection[Variable]:
-        return set(self.iter_free_variables())
+        return {mvar.var for mvar in self.get_marked_free_variables()}
 
     def __str__(self) -> str:
         return self.build_renderer().render()

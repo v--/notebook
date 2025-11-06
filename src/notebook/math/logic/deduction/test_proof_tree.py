@@ -54,7 +54,8 @@ def test_single_implication_intro() -> None:
         CLASSICAL_NATURAL_DEDUCTION_SYSTEM['→₊'],
         prop_premise(
             tree=prop_assume('q', 'u'),
-            discharge='p'
+            discharge='p',
+            marker='u'
         )
     )
 
@@ -340,17 +341,20 @@ def test_forall_negation(dummy_signature: FormalLogicSignature) -> None:
                                                 ),
                                             )
                                         ),
-                                        discharge=v
+                                        discharge=v,
+                                        marker=parse_marker('v')
                                     )
                                 ),
                                 main_noop_sub=parse_variable('x')
                             )
                         )
                     ),
-                    discharge=u
+                    discharge=u,
+                    marker=parse_marker('u')
                 )
             ),
-            discharge=w
+            discharge=w,
+            marker=parse_marker('w')
         )
     )
 
@@ -418,6 +422,7 @@ def test_exists_elimination(dummy_signature: FormalLogicSignature) -> None:
                 assume(w, parse_marker('w')),  # We avoid discharging w here
             ),
             discharge=parse_formula_with_substitution('p₁(x)[x ↦ y]', dummy_signature),  # So that we can discharge it here
+            marker=parse_marker('w')
         ),
     )
 
