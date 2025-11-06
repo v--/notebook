@@ -202,7 +202,7 @@ This section is a detour; our purpose is to present some ideas without diving in
   \begin{itemize}
     \item Our definition of type derivation trees in \cref{def:type_derivation_tree} makes the assumptions explicit. Furthermore, \cref{def:mltt_well_formed_context/derivation} states precise conditions for type derivations to be well-formed.
 
-    \item Our definition of entailment in \cref{def:mltt_entailment} define precisely what is means for a type assertion to be derivable from a (well-formed) type context.
+    \item Our definition of entailment in \cref{def:mltt_derivation} define precisely what is means for a type assertion to be derivable from a (well-formed) type context.
   \end{itemize}
 
   This allows us to use rules with implicit sequents while still being fully precise about derivations. We actually prefer implicit sequents because it makes derivation trees less clunky.
@@ -869,15 +869,18 @@ This section is a detour; our purpose is to present some ideas without diving in
 \paragraph{Martin-L\"of type theory}
 
 \begin{definition}\label{def:mltt_signature}\mimprovised
-  A \hyperref[con:logical_system_signature]{signature} for Martin-L\"of type theory is a specification of the following:
+  A \hyperref[con:logical_system_signature]{signature} \( \Sigma \) for Martin-L\"of type theory is a specification of two \hyperref[def:formal_language/alphabet]{alphabets} (nonempty hereditarily finite sets):
   \begin{thmenum}
-    \thmitem{def:mltt_signature/universe} A nonempty set \( \op*{Univ} \) of symbols acting as \hyperref[con:type_universe]{type universe}. Unless noted otherwise, we assume that there is only one universe --- \( \syn\BbbT \).
+    \thmitem{def:mltt_signature/universe} A nonempty set \( \op*{Univ}_\Sigma \) of symbols acting as \hyperref[con:type_universe]{type universe}. Unless noted otherwise, we assume that there is only one universe --- \( \syn\BbbT \).
 
     \thmitem{def:mltt_signature/const} A (possibly empty) set \( \op*{Const}_\Sigma \) of symbols acting as \hyperref[def:mltt_pseudoterm]{(pseudoterm) constants}.
   \end{thmenum}
 
   As per \cref{rem:improper_symbols_and_parsing}, we disallow the \hyperref[con:improper_symbol]{improper symbols} from the \hyperref[def:mltt_alphabet]{Martin-L\"of type theory alphabet} as universes and constants.
 \end{definition}
+\begin{comments}
+  \item The requirement for \( \op*{Univ}_\Sigma \) and \( \op*{Const}_\Sigma \) to be hereditarily finite is discussed in \cref{rem:signatures_are_small}.
+\end{comments}
 
 \begin{definition}\label{def:martin_lof_type_theory}\mimprovised
   We call \term{Martin-L\"of type theory} the \hyperref[def:abstract_type_system]{type system} based on the \hyperref[def:mltt_pseudoterm]{eponymous pseudoterm expressions}, depending on an \hyperref[def:mltt_signature]{eponymous signature} and featuring the \hyperref[con:dependent_type]{dependent types} presented in this section --- \hyperref[def:identity_type]{identity types}, \hyperref[def:dependent_product]{dependent products} and \hyperref[def:dependent_sum]{dependent sums} --- as well as the \hyperref[def:dependent_empty_type]{dependent empty type}, \hyperref[def:dependent_unit_type]{dependent unit type} and the \hyperref[def:type_of_booleans]{type of Booleans}.
@@ -920,11 +923,11 @@ This section is a detour; our purpose is to present some ideas without diving in
   \item As discussed in \cref{rem:well_formed_context}, we have not defined what it means for a pseudoterm expression to be a \enquote{type}, only a \enquote{well-formed type}, so we take \enquote{type} to be synonymous with \enquote{well-formed type}.
 \end{comments}
 
-\begin{definition}\label{def:mltt_entailment}\mimprovised
+\begin{definition}\label{def:mltt_derivation}\mimprovised
   We define a \hyperref[def:type_derivation_relation]{type derivation relation} for \hyperref[def:martin_lof_type_theory]{Martin-L\"of type theory} by asserting that \( \Gamma \vdash M: \tau \) holds if there exists a \hyperref[def:type_derivation_tree]{type derivation tree} with conclusion \( M: \tau \) that is \hyperref[def:mltt_well_formed_context/derivation]{well-formed} with respect to \( \Gamma \).
 \end{definition}
 \begin{comments}
-  \item The proof that this is indeed a type derivation relation is analogous to the proof of consistency in \cref{def:natural_deduction_entailment}.
+  \item The proof that this is indeed a type derivation relation is analogous to the proof of consistency in \cref{def:propositional_natural_deduction_consequence}.
 \end{comments}
 
 \begin{example}\label{ex:def:mltt_well_formed_context}
@@ -1011,7 +1014,7 @@ This section is a detour; our purpose is to present some ideas without diving in
 \end{example}
 
 \begin{remark}\label{rem:mltt_curry_howard}
-  With the \hyperref[def:type_derivation_relation]{type derivation relation} defined in \cref{def:mltt_entailment}, \hyperref[def:martin_lof_type_theory]{Martin-L\"of type theory} can be seen as a form of \hyperref[rem:predicate_logic]{predicate logic} if we extend the \hyperref[con:curry_howard_correspondence]{Curry-Howard correspondence} by matching \hyperref[def:predicate_logic_alphabet/quantifiers/universal]{universal quantifiers} with \hyperref[def:dependent_product]{dependent products} and \hyperref[def:predicate_logic_alphabet/quantifiers/existential]{existential quantifiers} with \hyperref[def:dependent_sum]{dependent sums}.
+  With the \hyperref[def:type_derivation_relation]{type derivation relation} defined in \cref{def:mltt_derivation}, \hyperref[def:martin_lof_type_theory]{Martin-L\"of type theory} can be seen as a form of \hyperref[rem:predicate_logic]{predicate logic} if we extend the \hyperref[con:curry_howard_correspondence]{Curry-Howard correspondence} by matching \hyperref[def:predicate_logic_alphabet/quantifiers/universal]{universal quantifiers} with \hyperref[def:dependent_product]{dependent products} and \hyperref[def:predicate_logic_alphabet/quantifiers/existential]{existential quantifiers} with \hyperref[def:dependent_sum]{dependent sums}.
 
   \begin{thmenum}
     \thmitem{rem:mltt_curry_howard/no_restriction} Without constraints on which types are allowed to act as formulas, we obtain a very general \hyperref[con:logical_system]{logical system} that is hard to analyze.
@@ -1398,7 +1401,7 @@ This section is a detour; our purpose is to present some ideas without diving in
 
   Reynolds used the same term-level binder, but with \( \syn\Delta \) rather than \( \synforall \) as a type-level binder. His intention was to study semantics of polymorphic types.
 
-  Girard introduced a much more complicated syntax, with two type-level binders --- \( \syn\delta \) and \( \syn\sigma \), mapping via the \hyperref[con:curry_howard_correspondence]{Curry-Howard correspondence} to \hyperref[def:predicate_logic_alphabet/quantifiers/universal]{universal quantification} and \hyperref[def:predicate_logic_alphabet/quantifiers/existential]{existential quantification}, with rules resembling those we give for first-order logic in \cref{def:first_order_natural_deduction_system}. He called \enquote{system \( F \)} the restriction of the more general \enquote{system \( Y \)} to terms and types without \hyperref[con:variable_binding]{free variables}. His intention was to formulate an \hyperref[def:axiomatic_derivation_system]{axiomatic derivation system} based on system \( F \).
+  Girard introduced a much more complicated syntax, with two type-level binders --- \( \syn\delta \) and \( \syn\sigma \), mapping via the \hyperref[con:curry_howard_correspondence]{Curry-Howard correspondence} to \hyperref[def:predicate_logic_alphabet/quantifiers/universal]{universal quantification} and \hyperref[def:predicate_logic_alphabet/quantifiers/existential]{existential quantification}, with rules resembling those we give for first-order logic in \cref{def:first_order_natural_deduction_system}. He called \enquote{system \( F \)} the restriction of the more general \enquote{system \( Y \)} to terms and types without \hyperref[con:variable_binding]{free variables}. His intention was to formulate an \hyperref[def:propositional_axiomatic_derivation_system]{axiomatic derivation system} based on system \( F \).
 
   \cite[ch. 11]{GirardEtAl1989ProofsAndTypes} features Girard's description of system \( F \) from \( 15 \) years later, with a much simplified syntax --- \( \qAbs \alpha M \) is used as the only term-level binder and \( \qprod \alpha \tau \) --- as the type-level binder.
 \end{remark}

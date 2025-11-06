@@ -560,7 +560,7 @@ To completely formalize the typing rules, which we will do in \cref{def:simple_t
 \paragraph{Type derivations}
 
 \begin{definition}\label{def:simple_type_signature}\mimprovised
-  A \hyperref[con:logical_system_signature]{signature} \( \Sigma \) for simple type systems is a specification of (possibly empty) finite sets \( \op*{Base}_\Sigma \) of \hyperref[def:simple_type]{base types} and \( \op*{Const}_\Sigma \) of \hyperref[def:lambda_term]{\( \muplambda \)-term constants}.
+  A \hyperref[con:logical_system_signature]{signature} \( \Sigma \) for simple type systems is a specification of (possibly empty) \hyperref[def:formal_language/alphabet]{alphabets} (hereditarily finite sets) \( \op*{Base}_\Sigma \) of \hyperref[def:simple_type]{base types} and \( \op*{Const}_\Sigma \) of \hyperref[def:lambda_term]{\( \muplambda \)-term constants}.
 
   We disallow the \hyperref[con:improper_symbol]{improper symbols} from the \hyperref[def:lambda_term_alphabet]{\( \muplambda \)-calculus alphabet} as constants and the symbols from the \hyperref[def:simple_type_alphabet]{simple type alphabet} as base types, but we do not impose their restrictions on each other. For example, \( \synlambda \) is a improper symbol for \( \muplambda \)-terms, but it is also a valid type.
 \end{definition}
@@ -568,6 +568,8 @@ To completely formalize the typing rules, which we will do in \cref{def:simple_t
   \item For simplicity of definition, we put no restrictions on sets of \( \muplambda \)-terms and types. If needed, we can consider \hyperref[con:syntax_fragment]{fragments} of the syntax of terms or types.
 
   For example, the most restrictive example we will encounter is the higher-order logic system from in \fullref{sec:higher_order_logic}, in which we omit type variables, product and sum types.
+
+  \item The requirement for \( \op*{Base}_\Sigma \) and \( \op*{Const}_\Sigma \) to be hereditarily finite is discussed in \cref{rem:signatures_are_small}.
 \end{comments}
 
 \begin{definition}\label{def:simple_type_system}\mimprovised
@@ -576,9 +578,9 @@ To completely formalize the typing rules, which we will do in \cref{def:simple_t
   Unless stated otherwise, we presuppose that such a system includes the rule \ref{inf:def:arrow_type/elim} and either \ref{inf:def:arrow_type/intro/implicit} or \ref{inf:def:arrow_type/intro/explicit} (or even possibly both).
 \end{definition}
 \begin{comments}
-  \item With every type system we will associate its typing style, defined in \cref{def:simple_type_system_style}, and its derivability relation, defined in \cref{def:simple_type_entailment}.
+  \item With every type system we will associate its typing style, defined in \cref{def:simple_type_system_style}, and its derivability relation, defined in \cref{def:simple_type_derivation}.
 
-  \item We do not enforce this, but for the concrete systems we will make sure that the properties in \cref{thm:def:simple_type_entailment} and \cref{thm:typed_term_habitation_uniqueness} hold.
+  \item We do not enforce this, but for the concrete systems we will make sure that the properties in \cref{thm:def:simple_type_derivation} and \cref{thm:typed_term_habitation_uniqueness} hold.
 
   \item The type system featuring only \ref{inf:def:arrow_type/elim} and \ref{inf:def:arrow_type/intro/explicit} is called \hyperref[con:simple_type_theory/arrow]{simply typed \( \muplambda \)-calculus} and denoted by \( \muplambda_{\rightarrow} \); see \cref{con:simple_type_theory/arrow}.
 \end{comments}
@@ -698,13 +700,13 @@ To completely formalize the typing rules, which we will do in \cref{def:simple_t
   \item Since lists are by their nature finite, a type derivation relation necessarily satisfies a compactness condition akin to \eqref{eq:def:consequence_relation/compactness}.
 \end{comments}
 
-\begin{definition}\label{def:simple_type_entailment}\mimprovised
+\begin{definition}\label{def:simple_type_derivation}\mimprovised
   In a fixed \hyperref[def:simple_type_system]{simple type system} (specifying terms, types and rules), we define a \hyperref[def:type_derivation_relation]{type derivation relation} as follows: for a \hyperref[rem:well_formed_context]{well-formed} \hyperref[def:type_context]{type context} \( \Gamma \) and a \hyperref[def:type_assertion]{type assertion} \( M: \tau \), we let \( \Gamma \vdash M: \tau \) if there exists a \hyperref[def:type_derivation_tree]{type derivation tree} with conclusion \( M: \tau \) whose \hyperref[def:type_derivation_tree/open]{open assumptions} are a \hyperref[def:subsequence]{sublist} of \( \Gamma \).
 
   As per \cref{def:abstract_logic}, we say that the type assertion \( M: \tau \) is \term[en=derivable (\cite[def. 3.1.4]{Barendregt1992LambdaCalculiWithTypes})]{derivable} from \( \Gamma \) if this relation holds.
 \end{definition}
 \begin{defproof}
-  We can prove that \( {\vdash} \) is indeed a consequence relation analogously to our proof of consistency in \cref{def:natural_deduction_entailment}.
+  We can prove that \( {\vdash} \) is indeed a consequence relation analogously to our proof of consistency in \cref{def:propositional_natural_deduction_consequence}.
 \end{defproof}
 \begin{comments}
   \item We introduce additional terminology in \cref{def:typability} and \cref{def:type_habitation}.
@@ -713,7 +715,7 @@ To completely formalize the typing rules, which we will do in \cref{def:simple_t
 \end{comments}
 
 \begin{remark}\label{rem:type_context_only_variables}
-  In \cref{def:simple_type_entailment} we have only defined a \hyperref[def:consequence_relation]{consequence relation} for \hyperref[def:type_context]{type context} consisting of type assertions for variables, i.e. \( \Gamma \vdash M: \tau \) can hold for an arbitrarily complex term \( M \), however the context \( \Gamma \) must have only variable type assertions. The types in both the context and the consequence are allowed to be arbitrarily complex.
+  In \cref{def:simple_type_derivation} we have only defined a \hyperref[def:consequence_relation]{consequence relation} for \hyperref[def:type_context]{type context} consisting of type assertions for variables, i.e. \( \Gamma \vdash M: \tau \) can hold for an arbitrarily complex term \( M \), however the context \( \Gamma \) must have only variable type assertions. The types in both the context and the consequence are allowed to be arbitrarily complex.
 
   This is seemingly different from, for example, natural deduction proofs, where the context may consist of arbitrarily complex formulas. We would like to point out the following:
   \begin{itemize}
@@ -731,21 +733,21 @@ To completely formalize the typing rules, which we will do in \cref{def:simple_t
   \cite[\S 4.1]{Mimram2020ProgramEqualsProof}.
 \end{remark}
 
-\begin{proposition}\label{thm:def:simple_type_entailment}
-  \hyperref[def:simple_type_entailment]{Type derivability} for \hyperref[con:simple_type_theory/arrow]{simple type theory} (i.e. the \hyperref[def:simple_type_system]{simple type system} only featuring the arrow typing rules \ref{inf:def:arrow_type/elim} and either \ref{inf:def:arrow_type/intro/implicit} or \ref{inf:def:arrow_type/intro/explicit}) has the following basic properties:
+\begin{proposition}\label{thm:def:simple_type_derivation}
+  \hyperref[def:simple_type_derivation]{Type derivability} for \hyperref[con:simple_type_theory/arrow]{simple type theory} (i.e. the \hyperref[def:simple_type_system]{simple type system} only featuring the arrow typing rules \ref{inf:def:arrow_type/elim} and either \ref{inf:def:arrow_type/intro/implicit} or \ref{inf:def:arrow_type/intro/explicit}) has the following basic properties:
   \begin{thmenum}
-    \thmitem{thm:def:simple_type_entailment/combinator} If \( \vdash M: \sigma \), then \( M \) is a \hyperref[def:lambda_combinator]{combinator}.
+    \thmitem{thm:def:simple_type_derivation/combinator} If \( \vdash M: \sigma \), then \( M \) is a \hyperref[def:lambda_combinator]{combinator}.
 
-    \thmitem{thm:def:simple_type_entailment/assumption_removal} We have \( \Gamma, x: \tau \vdash M: \sigma \) if and only if \( \Gamma \vdash \qabs x M: \tau \to \sigma \).
+    \thmitem{thm:def:simple_type_derivation/assumption_removal} We have \( \Gamma, x: \tau \vdash M: \sigma \) if and only if \( \Gamma \vdash \qabs x M: \tau \to \sigma \).
   \end{thmenum}
 \end{proposition}
 \begin{comments}
-  \item \Cref{thm:def:simple_type_entailment/assumption_removal} allows us to remove assumptions by prefixing the term with an abstractor.
+  \item \Cref{thm:def:simple_type_derivation/assumption_removal} allows us to remove assumptions by prefixing the term with an abstractor.
 \end{comments}
 \begin{proof}
-  \SubProofOf{thm:def:simple_type_entailment/combinator} It follows from \cref{thm:assumptions_and_free_variables} that \( x: \tau \) is an open assumption for a derivation of \( M: \sigma \) if and only if \( x \) is not free in \( M \). If \( M \) is a combinator, it has no free variables, hence derivations of \( M \) have no open assumptions.
+  \SubProofOf{thm:def:simple_type_derivation/combinator} It follows from \cref{thm:assumptions_and_free_variables} that \( x: \tau \) is an open assumption for a derivation of \( M: \sigma \) if and only if \( x \) is not free in \( M \). If \( M \) is a combinator, it has no free variables, hence derivations of \( M \) have no open assumptions.
 
-  \SubProofOf{thm:def:simple_type_entailment/assumption_removal}
+  \SubProofOf{thm:def:simple_type_derivation/assumption_removal}
 
   \SufficiencySubProof* Let \( P \) be a derivation tree for \( M: \sigma \) from \( \Gamma, x: \tau \). We will build a tree deriving \( \qabs x M: \tau \to \sigma \) from \( \Gamma \).
 
@@ -763,7 +765,7 @@ To completely formalize the typing rules, which we will do in \cref{def:simple_t
 
     Applying the implicitly typed rule \ref{inf:def:arrow_type/intro/implicit} is analogous.
 
-    \item Otherwise, if \( x: \tau \) is not an open assumption in \( P \), then \( \Gamma \vdash P \) by \cref{def:simple_type_entailment}. During application of \ref{inf:def:arrow_type/intro/explicit} (or \ref{inf:def:arrow_type/intro/implicit}) nothing is discharged, and we again obtain \( \Gamma \vdash \qabs {x^\tau} M: \tau \synimplies \sigma \).
+    \item Otherwise, if \( x: \tau \) is not an open assumption in \( P \), then \( \Gamma \vdash P \) by \cref{def:simple_type_derivation}. During application of \ref{inf:def:arrow_type/intro/explicit} (or \ref{inf:def:arrow_type/intro/implicit}) nothing is discharged, and we again obtain \( \Gamma \vdash \qabs {x^\tau} M: \tau \synimplies \sigma \).
   \end{itemize}
 
   \NecessitySubProof* Conversely, if \( P \) is a derivation tree of \( \qabs x M: \tau \to \sigma \) from \( \Gamma \), it must be an application tree for \ref{inf:def:arrow_type/intro/explicit} (or \ref{inf:def:arrow_type/intro/implicit}), and hence \( x: \tau \) is either discharged during the application, or it is not and the derivation of \( M: \sigma \) does not depend on it. In both cases, we conclude that \( \Gamma, x: \tau \vdash M \).
@@ -775,7 +777,7 @@ To completely formalize the typing rules, which we will do in \cref{def:simple_t
   We say that \( M \) is \term{typable} (without a context specified) if there exists a context in which it is typable.
 \end{definition}
 \begin{comments}
-  \item We will often be interested in \hyperref[def:lambda_combinator]{combinators}, in which case, due to \cref{thm:def:simple_type_entailment/combinator}, we may restrict ourselves to empty contexts: a combinator is typable if and only if there exists a type \( \tau \) such that \( \vdash M: \tau \).
+  \item We will often be interested in \hyperref[def:lambda_combinator]{combinators}, in which case, due to \cref{thm:def:simple_type_derivation/combinator}, we may restrict ourselves to empty contexts: a combinator is typable if and only if there exists a type \( \tau \) such that \( \vdash M: \tau \).
 
   \item We generalize Hindley's definition for simple types to our notion of abstract type systems.
 \end{comments}
@@ -1054,7 +1056,7 @@ To completely formalize the typing rules, which we will do in \cref{def:simple_t
 \end{remark}
 
 \begin{proposition}\label{thm:typed_term_habitation_uniqueness}
-  In the \hyperref[def:simple_type_system_style]{explicitly typed} \hyperref[def:simple_type_system]{simple type system} featuring only the arrow typing rules \ref{inf:def:arrow_type/elim} and \ref{inf:def:arrow_type/intro/explicit}, we can \hyperref[def:simple_type_entailment]{derive} at most one type for any \hyperref[def:typed_lambda_term]{typed term} from a fixed \hyperref[def:type_context]{type context}.
+  In the \hyperref[def:simple_type_system_style]{explicitly typed} \hyperref[def:simple_type_system]{simple type system} featuring only the arrow typing rules \ref{inf:def:arrow_type/elim} and \ref{inf:def:arrow_type/intro/explicit}, we can \hyperref[def:simple_type_derivation]{derive} at most one type for any \hyperref[def:typed_lambda_term]{typed term} from a fixed \hyperref[def:type_context]{type context}.
 \end{proposition}
 \begin{comments}
   \item In particular, a typed combinator can \hyperref[def:type_habitation]{inhabit} at most one type.

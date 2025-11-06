@@ -295,7 +295,7 @@ We give here the following definition, and then proceed to explain it:
 \end{comments}
 
 \begin{definition}\label{def:hol_signature}\mimprovised
-  A \hyperref[con:logical_system_signature]{signature} for higher-order logic consists of several nonempty finite sets:
+  A \hyperref[con:logical_system_signature]{signature} for higher-order logic consists of two \hyperref[def:formal_language/alphabet]{alphabets} (nonempty hereditarily finite sets) and corresponding \hyperref[def:type_assertion]{type assertions}:
   \begin{thmenum}
     \thmitem{def:hol_signature/sorts} A set \( \op*{Sort} \), whose elements act as sorts of \hyperref[def:quantifiable_type]{quantifiable types}.
 
@@ -307,7 +307,7 @@ We give here the following definition, and then proceed to explain it:
 
     These constants must not include improper symbols from the \hyperref[def:simple_type_alphabet]{\( \muplambda \)-calculus alphabet}.
 
-    \thmitem{def:hol_signature/nl_type} A set \( \op*{NLType} \), whose elements are \hyperref[def:type_assertion]{type assertions} for the nonlogical constants. We require exactly one assertion per nonlogical constant.
+    \thmitem{def:hol_signature/nl_type} A set \( \op*{NLType} \), whose elements are type assertions for the nonlogical constants. We require exactly one assertion per nonlogical constant.
 
     For each nonlogical constant \( c \), then, if \( c: \tau \) is its assertion, we introduce the \hyperref[def:simple_typing_rule]{simple typing rule}
     \begin{equation*}\taglabel[\ensuremath{ \logic{Ax}_c }]{inf:def:hol_signature/nl_type}
@@ -326,6 +326,8 @@ We give here the following definition, and then proceed to explain it:
   \end{displayquote}
 
   Farmer assumes here that \( \syn\iota \) is the only sort, but later suggests adding other sorts (which he calls base types).
+
+  \item The requirement for \( \op*{Sort}_\Sigma \) and \( \op*{NLConst}_\Sigma \) to be hereditarily finite is discussed in \cref{rem:signatures_are_small}.
 \end{comments}
 
 \begin{remark}\label{rem:hol_notational_shorthands}
@@ -382,14 +384,18 @@ We give here the following definition, and then proceed to explain it:
 \end{remark}
 
 \begin{definition}\label{def:hol_term}\mimprovised
-  Based on our discussion in \cref{rem:hol_notational_shorthands/variable_annotations}, given the \hyperref[def:simple_type_entailment]{entailment} \( \Gamma \vdash M: \tau \) over a fixed \hyperref[def:hol_signature]{signature of higher-order logic}, we call the triple \( (\Gamma, M, \tau) \) a \term{logical term} if all variables in \( \Gamma \) are free in \( M \).
+  Based on our discussion in \cref{rem:hol_notational_shorthands/variable_annotations}, given the \hyperref[def:simple_type_derivation]{entailment} \( \Gamma \vdash M: \tau \) over a fixed \hyperref[def:hol_signature]{signature} \( \Sigma \) of higher-order logic, we call the triple \( (\Gamma, M, \tau) \) a \term{logical term} if all variables in \( \Gamma \) are free in \( M \).
 
   As per \cref{rem:hol_notational_shorthands/placeholder_annotations}, we annotate metalingual placeholders for logical terms, so \( M^\tau \) denotes a logical term of type \( \tau \).
+
+  We denote the set of all logical terms over \( \Sigma \) by \( \op*{Term}_\Sigma \).
 
   \begin{thmenum}[resume=def:hol_term]
     \thmitem{def:hol_term/formula} If \( \tau \) is the type of propositions, we also call the logical term a \term{formula}.
 
     As per \cref{rem:hol_notational_shorthands/placeholder_annotations}, we use the familiar symbols like \( \varphi \), \( \psi \) and \( \theta \) (without superscripts) for denoting formulas. \Cref{def:hol_typing_rules} lists some formation rules for formulas.
+
+    We denote the set of all formulas over \( \Sigma \) by \( \op*{Form}_\Sigma \).
 
     \thmitem{def:hol_term/predicate} If \( \tau = \sigma_1 \synimplies \cdots \synimplies \sigma_n \synimplies \syn\omicron \), we instead call the logical term a \term{predicate}.
 
@@ -399,6 +405,8 @@ We give here the following definition, and then proceed to explain it:
   Finally, some additional terminology:
   \begin{thmenum}[resume=def:hol_term]
     \thmitem{def:hol_term/closed} If \( M \) has no free variables, we say that the corresponding logical term is \term[en=closed expression (\cite[270]{Farmer2008STTVirtues})]{closed}.
+
+    \thmitem{def:hol_term/sentence} If a formula is closed, we call it a \term{sentence}.
   \end{thmenum}
 \end{definition}
 \begin{comments}
@@ -489,9 +497,11 @@ We give here the following definition, and then proceed to explain it:
   The rules \ref{inf:def:hol_typing_rules/conn} and \ref{inf:def:hol_typing_rules/quant} are schemas --- we have a distinct rule for each propositional connective \( \syncirc \) and a distinct rule for every quantifier \( Q \).
 \end{definition}
 \begin{comments}
-  \item As discussed in \cref{rem:hol_notational_shorthands/abbreviations}, unlike Church, Henkin and Andrews, we do not pursue minimalism, so we add a dedicated constant for every propositional connective.
+  \item We use \( \varphi \) and \( \psi \) as \( \muplambda \)-term placeholders and \( \tau \) as a (quantifiable) type placeholder.
 
-  \item Even though the rules stated here as simple and can be formalized via the familiar schemas used through \fullref{sec:curry_howard_correspondence}, we only state them in the metalanguage, as per \cref{rem:hol_rule_formalization}.
+  Even though the rules stated here as simple and can be formalized via the familiar schemas used through \fullref{sec:curry_howard_correspondence}, we only state them in the metalanguage, as per \cref{rem:hol_rule_formalization}.
+
+  \item As discussed in \cref{rem:hol_notational_shorthands/abbreviations}, unlike Church, Henkin and Andrews, we do not pursue minimalism, so we add a dedicated constant for every propositional connective.
 \end{comments}
 
 \begin{proposition}\label{thm:logical_term_type_uniqueness}
@@ -502,17 +512,6 @@ We give here the following definition, and then proceed to explain it:
 
   The rules are adjusted so that uniqueness is straightforward.
 \end{proof}
-
-\begin{remark}\label{rem:exists_unique_abbreviation}
-  We can introduce the \hyperref[con:description_operator/exists_unique]{unique existence quantifier} \( \qExists {x^\tau} \varphi \) into \hyperref[def:higher_order_logic]{higher-order logic} via the following \hyperref[con:syntactic_abbreviation]{metalingual abbreviation}:
-  \begin{equation}\label{eq:rem:exists_unique_abbreviation}
-    \qexists {x^\tau} \parens[\big]{ \varphi \synwedge \qforall {y^\tau} (\varphi[x \mapsto y] \synimplies y \syneq x) },
-  \end{equation}
-  where \( y = \sharp(\op*{Free}(\varphi) \cup \set{ x }) \). Here, as in \cref{def:lambda_term_substitution/sharp}, the function \( \sharp(V) \) gives the smallest identifier not in \( V \).
-\end{remark}
-\begin{comments}
-  \item The idea of representing \( \synExists \) via other quantifiers is also due to Russell and is outlined in \cite{Russell1905OnDenoting}.
-\end{comments}
 
 \begin{remark}\label{rem:hol_formula_abbreviations}
   The choice of \hyperref[con:primitive_notion]{primitive} constant \( \muplambda \)-terms, used to encode logical constructs, has evolved a lot since the publication of \bycite{Church1940STT}.
@@ -820,7 +819,7 @@ We give here the following definition, and then proceed to explain it:
   An alternative to \ref{inf:def:hol_equality_rules/intro} could be, as in \cref{rem:hol_axiomatic_derivations}, a rule equating \hyperref[def:beta_eta_reduction]{\( \beta \)-equivalent} \( \muplambda \)-terms. Although the latter has its appeal, we avoid it due to its complexity.
 \end{comments}
 
-\begin{definition}\label{def:hol_entailment}\mimprovised
+\begin{definition}\label{def:hol_consequence}\mimprovised
   We can now define a \hyperref[def:consequence_relation]{consequence relation} on \hyperref[def:hol_term/formula]{formulas} of \hyperref[
   def:higher_order_logic]{higher-order logic} as follows: let \( \Gamma \vdash \varphi \) if there exists a \hyperref[def:hol_natural_deduction_proof_tree]{higher-order logic proof tree} of \( \varphi \) whose open assumptions are in \( \Gamma \) and whose allowed rules are the \hyperref[def:natural_deduction_rule]{natural deduction rules} for propositional logic from \cref{def:propositional_natural_deduction_systems}, the quantifier rules from \cref{def:hol_quantifier_rules} and the equality rules from \cref{def:hol_equality_rules}.
 
@@ -831,11 +830,11 @@ We give here the following definition, and then proceed to explain it:
 
   \item We have now fully formalized the proof trees for higher-order logic; indeed, the quantifier and equality rules require side conditions that are only stated in the metalanguage. We will formalize special cases of these rules and proof trees in \fullref{sec:first_order_logic}.
 
-  \item This system is based on natural deduction for first-order logic. Church and his students instead consider a system resembling \hyperref[def:axiomatic_derivation_system]{axiomatic derivations} --- see \cref{rem:hol_axiomatic_derivations}.
+  \item This system is based on natural deduction for first-order logic. Church and his students instead consider a system resembling \hyperref[def:propositional_axiomatic_derivation_system]{axiomatic derivations} --- see \cref{rem:hol_axiomatic_derivations}.
 \end{comments}
 
 \begin{proposition}\label{thm:hol_equality_is_equivalence}
-  Equality in \hyperref[def:higher_order_logic]{simply typed higher-order logic} acts like an \hyperref[def:equivalence_relation]{equivalence relation} with respect to \hyperref[def:hol_entailment]{derivability}. More precisely, the following rules are \hyperref[con:inference_rule_admissibility]{admissible} (\ref{inf:def:hol_equality_rules/intro} acts as reflexivity):
+  Equality in \hyperref[def:higher_order_logic]{simply typed higher-order logic} acts like an \hyperref[def:equivalence_relation]{equivalence relation} with respect to \hyperref[def:hol_consequence]{derivability}. More precisely, the following rules are \hyperref[con:inference_rule_admissibility]{admissible} (\ref{inf:def:hol_equality_rules/intro} acts as reflexivity):
 
   \begin{paracol}{2}
     \begin{leftcolumn}
@@ -883,7 +882,7 @@ We give here the following definition, and then proceed to explain it:
 \begin{remark}\label{rem:hol_axiomatic_derivations}
   We will outline the proof system of Andrews' \( \logic{Q}_0 \) from \incite[\S 51]{Andrews2002Logic} since it is the most refined of the Church-like systems listed in \cref{rem:higher_order_logic_and_type_theory/types}.
 
-  It is based on \hyperref[def:axiomatic_derivation_system]{axiomatic derivation systems}, but instead of \ref{inf:thm:axiomatic_derivation_as_natural_deduction/mp}, it features a peculiar rule:
+  It is based on \hyperref[def:propositional_axiomatic_derivation_system]{axiomatic derivation systems}, but instead of \ref{inf:thm:axiomatic_derivation_as_natural_deduction/mp}, it features a peculiar rule:
   \begin{displayquote}
     \textit{Rule R}. From \( \mathbf{C} \) and \( \mathbf{A_\alpha} = \mathbf{B_\alpha} \) to infer the result of replacing one occurrence of \( \mathbf{A_\alpha} \) in \( \mathbf{C} \) by an occurrence of \( \mathbf{B_\alpha} \), provided that the occurrence of \( \mathbf{A_\alpha} \) in \( \mathbf{C} \) is not (an occurrence of a variable) immediately preceded by \( \muplambda \).
   \end{displayquote}
@@ -937,13 +936,13 @@ We give here the following definition, and then proceed to explain it:
   Clearly
   \begin{equation*}
     \begin{prooftree}
-      \hypo{ \theta[x^\tau \coloneqq A^\tau] }
+      \hypo{ \theta[x^\tau \mapsto A^\tau] }
       \hypo{ A^\tau \syneq B^\tau }
-      \infer2[\ref{inf:def:hol_equality_rules/elim}]{ \theta[x^\tau \coloneqq A^\tau] }
+      \infer2[\ref{inf:def:hol_equality_rules/elim}]{ \theta[x^\tau \mapsto A^\tau] }
     \end{prooftree}
   \end{equation*}
 
-  If \( f \) is not free in \( A^\tau \) nor \( B^\tau \), the substitution in both \( \varphi \) and \( \psi \) must use the non-renaming rule \eqref{eq:def:lambda_term_substitution/abstraction/direct}, and thus \( \varphi = \theta[x^\tau \coloneqq B^\tau] \) and \( \psi = \theta[x^\tau \coloneqq B^\tau] \). In this case,
+  If \( f \) is not free in \( A^\tau \) nor \( B^\tau \), the substitution in both \( \varphi \) and \( \psi \) must use the non-renaming rule \eqref{eq:def:lambda_term_substitution/abstraction/direct}, and thus \( \varphi = \theta[x^\tau \mapsto B^\tau] \) and \( \psi = \theta[x^\tau \mapsto B^\tau] \). In this case,
   \begin{equation*}
     \begin{prooftree}
       \hypo{ \varphi }
@@ -987,7 +986,98 @@ We give here the following definition, and then proceed to explain it:
   We will refrain from these tweaks, as well as from empty domains in general.
 \end{example}
 
+\paragraph{Signature extensions}
+
+\begin{definition}\label{def:hol_signature_extension}\mimprovised
+  We say that the \hyperref[def:hol_signature]{signature} \( \Theta \) of higher-order logic is an \term{extension} of \( \Sigma \) if all \hyperref[def:hol_signature/sorts]{sorts} in \( \Sigma \) are sorts in \( \Theta \), and similarly for the \hyperref[def:hol_signature/nl_const]{nonlogical constants} and \hyperref[def:hol_signature/nl_type]{their type assertions}.
+\end{definition}
+\begin{comments}
+  \item Signature extensions for first-order logic are studied systematically in \bycite[\S 2.6]{Hinman2005Logic}. We merely need them in higher-order logic to state some generalities.
+\end{comments}
+
+\begin{remark}\label{rem:signatures_are_small}
+  We have defined a signature \( \Sigma \) for higher-order logic in \cref{def:higher_order_signature} so that the sets \( \op*{Sort}_\Sigma \) of sorts and \( \op*{NLConst}_\Sigma \) of nonlogical constants are \hyperref[def:universe_of_hereditary_finite_sets]{hereditarily finite}.
+
+  This ensures that \( \Sigma \) is itself a hereditarily finite set. Thus, \( \Sigma \) belongs to the \hyperref[def:grothendieck_universe]{Grothendieck universe} \( V_\omega \) and, due to \cref{thm:grothendieck_universe_contains_finite_sets}, to every Grothendieck universe.
+
+  We can thus safely form a category whose objects are \hi{all} signatures of higher-order logic --- such a category is guaranteed to be \hyperref[def:category_size]{small} if the morphism sets are.
+\end{remark}
+
+\begin{definition}\label{def:hol_entailment_system}\mimprovised
+  We will define an \hyperref[def:entailment_system]{entailment system} for \hyperref[def:higher_order_logic]{higher-order logic}.
+
+  \begin{thmenum}
+    \thmitem{def:hol_entailment_system/signatures} Define the \hyperref[def:category]{category} \( \op*{Sign} \) by endowing the \hyperref[def:partially_ordered_set]{partially ordered set} of all \hyperref[def:hol_signature]{signatures} with a category structure, as per \cref{thm:order_category_isomorphism}.
+
+    Thus, we have a single translation morphism from \( \Sigma \) to \( \Theta \) if \( \Theta \) is an \hyperref[def:hol_signature_extension]{extension} of \( \Sigma \).
+
+    This category is well-defined --- as shown in \cref{rem:signatures_are_small}, it is small with respect to any \hyperref[def:grothendieck_universe]{Grothendieck universe}.
+
+    \thmitem{def:hol_entailment_system/sentences} Define the functor \( \op*{Sen}: \op*{Sign} \to \cat{Set} \) as follows:
+    \begin{itemize}
+      \item For each signature \( \Sigma \), let \( \op*{Sen}(\Sigma) \) be the set of all sentences (\hyperref[def:hol_term/closed]{\hi{closed}} \hyperref[def:hol_term/formula]{logical formulas}) over \( \Sigma \).
+
+      \item Since \( \op*{Sen}(\Sigma) \) is a subset of \( \op*{Sen}(\Theta) \), let \( \op*{Sen}(s: \Sigma \to \Theta) \) be the set-theoretic inclusion of \( \op*{Sen}(\Sigma) \) into \( \op*{Sen}(\Theta) \).
+    \end{itemize}
+
+    There is at most one morphism from \( \Sigma \) to \( \Theta \), so this functor is in fact \hyperref[def:functor_invertibility/faithful]{faithful}.
+
+    \thmitem{def:hol_entailment_system/entailment} Finally, for each signature \( \Sigma \), \cref{def:hol_consequence} gives us a \hyperref[def:consequence_relation]{consequence relation} \( {\vdash_\Sigma} \) on \( \op*{Sen}(\Sigma) \).
+
+    Since a \hyperref[def:hol_natural_deduction_proof_tree]{proof tree} over \( \Sigma \) is also valid over extensions of \( \Sigma \), \eqref{eq:def:entailment_system/entailment} holds, and the definition of entailment system is satisfied.
+  \end{thmenum}
+\end{definition}
+
 \paragraph{Definitional extensions}
 
-\begin{definition}\label{def:hol_definitional_extension}\mimprovised
+\begin{definition}\label{def:hol_theory}\mimprovised
+  The \hyperref[def:entailment_system]{entailment system} for \hyperref[def:higher_order_logic]{higher-order logic} from \cref{def:hol_entailment_system} allows us consider \hyperref[def:logical_theory]{theories}. For the reasons outlined in \cref{rem:predicate_logic_sentences}, we suppose that a theory necessarily consists of \hyperref[def:hol_term/sentence]{sentences} (closed formulas).
 \end{definition}
+
+\begin{remark}\label{rem:exists_unique_abbreviation}
+  We can introduce the \hyperref[con:description_operator/exists_unique]{unique existence quantifier} \( \qExists {x^\tau} \varphi \) into \hyperref[def:higher_order_logic]{higher-order logic} via the \hyperref[con:syntactic_abbreviation]{metalingual abbreviation}
+  \begin{equation}\label{eq:rem:exists_unique_abbreviation}
+    \qexists {x^\tau} \parens[\big]{ \varphi \synwedge \qforall {y^\tau} (\varphi[x \mapsto y] \synimplies y \syneq x) },
+  \end{equation}
+  where \( y = \sharp(\op*{Free}(\varphi) \cup \set{ x }) \).
+
+  Here, as in \cref{def:lambda_term_substitution/sharp}, the function \( \sharp(V) \) gives the smallest identifier not in \( V \).
+\end{remark}
+\begin{comments}
+  \item The idea of representing \( \synExists \) via other quantifiers is also due to Russell and is outlined in \cite{Russell1905OnDenoting}.
+\end{comments}
+
+\begin{definition}\label{def:hol_definition}\mimprovised
+  Fix a (syntactic or semantic) \hyperref[def:hol_theory]{theory} \( \Gamma \) of \hyperref[def:higher_order_logic]{higher-order logic} over some \hyperref[def:hol_signature]{signature} \( \Sigma \).
+
+  Let \( \varphi \) be a \hyperref[def:hol_term/formula]{formula} whose free variables are among \( {x_1}^{\tau_1}, \ldots, {x_n}^{\tau_n}, y^\sigma \), and such that
+  \begin{equation}\label{eq:def:hol_definitional_extension/sequent}
+    \Gamma \vdash \qforall {{x_1}^{\tau_1}} \ldots \qforall {{x_n}^{\tau_n}} \qExists {y^\sigma} \varphi.
+  \end{equation}
+
+  We can use \( \varphi \) to justify \hyperref[def:hol_signature_extension]{extending} \( \Gamma \) with a new nonlogical symbol. Let \( \Sigma' \) be the extension of \( \Sigma \) with a new constant \( f \) of type \( \tau_1 \synimplies \cdots \synimplies \tau_n \synimplies \sigma \).
+
+  A \term[en=\( \Gamma \)-definition (\cite[def. 2.6.11]{Hinman2005Logic})]{definition} for \( f \) in \( \Gamma \) is the following formula in \( \Gamma' \):
+  \begin{equation}\label{eq:def:hol_definitional_extension/definition}
+    \qforall {{x_1}^{\tau_1}} \ldots \qforall {{x_n}^{\tau_n}} \qforall {y^\sigma} \parens[\big]{ f(x_1, \ldots, x_n) \syneq y \syniff \varphi }.
+  \end{equation}
+\end{definition}
+\begin{comments}
+  \item The above is adapted from \tcite{#2, where #1}[def. 2.6.11]{Hinman2005Logic} discusses definitions in first-order logic.
+
+  \item There is an important special case that can be ignored here but which hints at how to introduce new predicate symbols in first-order logic.
+
+  When \( \sigma = \syn\omicron \) and \( \varphi = (\psi \syneq y^{\syn\omicron}) \) the condition \eqref{eq:def:hol_definitional_extension/sequent} becomes meaningless, \( T \) becomes irrelevant and \eqref{eq:def:hol_definitional_extension/definition} simplifies to
+  \begin{equation}\label{eq:def:hol_definitional_extension/definition_simplified}
+    \qforall {{x_1}^{\tau_1}} \ldots \qforall {{x_n}^{\tau_n}} \parens[\big]{ f(x_1, \ldots, x_n) \syniff \psi }.
+  \end{equation}
+\end{comments}
+
+\begin{definition}\label{def:hol_definitional_extension}\mcite[def. 2.6.12]{Hinman2005Logic}
+  Let \( \Sigma' \) be an \hyperref[def:hol_signature_extension]{extension} of the \hyperref[def:hol_signature]{signature} \( \Sigma \) of higher-order logic with finitely many new nonlogical symbols \( f_1, \ldots, f_m \).
+
+  If \( \Gamma \) is a \hyperref[def:hol_theory]{theory} over \( \Sigma \) and \( \Gamma' \) is theory over \( \Sigma' \) axiomatized by \( \Gamma \) and the \hyperref[def:hol_definition]{definitions} for \( f_1, \ldots, f_m \), we say that \( \Gamma' \) is a \term{definitional extension} of the theory \( \Gamma \).
+\end{definition}
+
+\begin{remark}\label{rem:predicate_logic_sentences}
+\end{remark}
