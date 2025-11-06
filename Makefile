@@ -1,7 +1,7 @@
 COMPILER := pdflatex -interaction=batchmode
 FIGURES_TEX_PDF := $(patsubst figures/%.tex,output/%.pdf,$(wildcard figures/*.tex))
 FIGURES_ASY_PDF := $(patsubst figures/%.asy,output/%.pdf,$(wildcard figures/*.asy))
-FIGURES_PY_PDF := $(patsubst src/notebook/figures/%.py,output/%.pdf,$(wildcard src/notebook/figures/*.py))
+FIGURES_PY_PDF := $(patsubst src/notebook/figures/%.py,output/%.pdf,$(filter-out src/notebook/figures/__init__.py, $(wildcard src/notebook/figures/*.py)))
 TEXT_SOURCE := notebook.tex classes/notebook.cls bibliography/*.bib asymptote/*.asy asymptote/geom/*.asy asymptote/graphs/*.asy asymptote/square_grid_automaton/*.asy packages/*.sty text/*.tex $(FIGURES_TEX_PDF) $(FIGURES_ASY_PDF) $(FIGURES_PY_PDF)
 
 .PHONY: figures clean
