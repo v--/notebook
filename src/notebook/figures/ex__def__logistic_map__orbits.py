@@ -18,14 +18,14 @@ raster_path = tmp_path / 'intermediate.eps'  # Asymptote requires EPS, which doe
 code_path = tmp_path / 'diagram.asy'
 
 
-x_resolution = 1500
+x_resolution = 3000
 x_0 = 0.5
 
-a_resolution = 3000
+a_resolution = 4500
 a_min = 2
 a_max = 4
 
-iterations = 600
+iterations = 1000
 min_iterations = 100
 
 
