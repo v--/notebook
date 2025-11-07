@@ -24,6 +24,7 @@ async def iter_file_changes(logger: loguru.Logger) -> AsyncIterator:
         inotify.add_watch(ROOT_PATH / 'text', Mask.MODIFY)
         inotify.add_watch(ROOT_PATH / 'packages', Mask.MODIFY)
         inotify.add_watch(ROOT_PATH / 'figures', Mask.MODIFY)
+        inotify.add_watch(ROOT_PATH / 'src' / 'notebook' / 'figures', Mask.MODIFY)
         inotify.add_watch(ROOT_PATH / 'images', Mask.MODIFY)
         inotify.add_watch(ROOT_PATH / 'bibliography', Mask.MODIFY)
         inotify.add_watch(ROOT_PATH / 'asymptote', Mask.MODIFY)
@@ -54,7 +55,7 @@ async def setup_watchers(base_logger: loguru.Logger, *, no_aux: bool) -> None:
         if fnmatch(path, 'figures/*.asy'):
             runner.schedule(AsymptoteTask(base_logger, path), trigger=str(path))
 
-        if fnmatch(path, 'figures/*.py'):
+        if fnmatch(path, 'src/notebook/figures/*.py') and path != 'src/notebook/figures/__init__.py':
             runner.schedule(PythonTask(base_logger, path), trigger=str(path))
 
         if not no_aux and fnmatch(path, 'asymptote/*.asy'):

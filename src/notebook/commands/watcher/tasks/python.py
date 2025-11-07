@@ -32,7 +32,7 @@ class PythonTask(WatcherTask):
     @override
     @property
     def command(self) -> str:
-        return f'python -m figures.{self.src_path.stem}'
+        return f'python -m src.notebook.figures.{self.src_path.stem}'
 
     @override
     async def pre_process(self, runner: TaskRunner) -> None:
