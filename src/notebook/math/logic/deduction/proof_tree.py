@@ -8,6 +8,7 @@ from ....support.inference import (
     InferenceTreeRenderer,
     RuleApplicationRenderer,
 )
+from ....support.unicode import to_superscript
 from ..formulas import Formula, FormulaWithSubstitution
 from ..instantiation import (
     FormalLogicSchemaInstantiation,
@@ -204,11 +205,11 @@ class RuleApplicationTree(InferenceTree[FormulaWithSubstitution, Mapping[Marker,
 
     def get_marker_context(self) -> Iterable[Marker]:
         return sorted(
-            (marker for marker, formula in self._filter_assumptions(discharged_at_current_step=True)),
+            {marker for marker, formula in self._filter_assumptions(discharged_at_current_step=True)},
             key=str
         )
 
-    def _iter_free_eigenvariables(self) -> Iterable[Eigenvariable]:
+    def _iter_dischargeable_eigenvariables(self) -> Iterable[Eigenvariable]:
         for rule_premise, application_premise in zip(self.rule.premises, self.premises, strict=True):
             free = application_premise.tree.get_free_variables()
 
@@ -219,7 +220,7 @@ class RuleApplicationTree(InferenceTree[FormulaWithSubstitution, Mapping[Marker,
                 yield eigen
 
     def get_eigenvariable_context(self) -> Iterable[Eigenvariable]:
-        return sorted(set(self._iter_free_eigenvariables()), key=str)
+        return sorted(set(self._iter_dischargeable_eigenvariables()), key=str)
 
     @override
     def build_renderer(self, *, conclusion: FormulaWithSubstitution | None = None) -> RuleApplicationRenderer:
@@ -233,7 +234,7 @@ class RuleApplicationTree(InferenceTree[FormulaWithSubstitution, Mapping[Marker,
 
         return RuleApplicationRenderer(
             line,
-            [str(marker) for marker in self.get_marker_context()] + [eigen.with_star() for eigen in self.get_eigenvariable_context()],
+            [str(marker) for marker in self.get_marker_context()],
             self.rule.name,
             [premise.build_renderer() for premise in self.premises]
         )
@@ -281,7 +282,7 @@ def apply(  # noqa: C901
         # Check if there is an eigenvariable in the main formula
         if eigen := get_main_eigenvariable(rule_premise, application_premise):
             if eigen.is_renamed() and eigen.var in get_free_variables(eigen.formula):
-                raise RuleApplicationError(f'The renamed eigenvariable {eigen.get_sub()} of the premise {eigen.formula} cannot be free in it')
+                raise RuleApplicationError(f'The renamed eigenvariable {eigen.get_sub()} of the premise conclusion {eigen.formula} cannot be free in it')
 
             if eigen.var in application_premise.tree.get_free_variables():
                 raise RuleApplicationError(f'The eigenvariable {eigen} cannot be free in the derivation of {application_premise.tree.conclusion}')
@@ -293,13 +294,16 @@ def apply(  # noqa: C901
             # Check if there is an eigenvariable in the discharge formula
             if eigen := get_discharge_eigenvariable(rule_premise, application_premise):
                 if eigen.is_renamed() and eigen.var in get_free_variables(eigen.formula):
-                    raise RuleApplicationError(f'The renamed discharge formula eigenvariable {eigen} cannot be free in {eigen.formula}')
+                    raise RuleApplicationError(f'The renamed eigenvariable {eigen.get_sub()} of the dischargeable formula {eigen.formula} cannot be free in it')
 
-                if eigen in application_premise.tree.get_free_variables():
-                    raise RuleApplicationError(f'The eigenvariable {eigen} for the discharge formula {application_premise.discharge} cannot be free in it')
+                if any(mvar.var == eigen.var and mvar.marker != application_premise.marker for mvar in application_premise.tree.get_marked_free_variables()):
+                    if application_premise.marker:
+                        raise RuleApplicationError(f'The eigenvariable {eigen} cannot be free in the derivation of {application_premise.tree.conclusion}, except possibly in [{application_premise.discharge}]{to_superscript(str(application_premise.marker))}')
 
-                if eigen in get_free_variables(evaluate_substitution_spec(application_premise.tree.conclusion)):
-                    raise RuleApplicationError(f'The discharge formula eigenvariable {eigen} cannot be free in the conclusion {application_premise.tree.conclusion} of the premise')
+                    raise RuleApplicationError(f'The eigenvariable {eigen} cannot be free in the derivation of {application_premise.tree.conclusion}')
+
+                if eigen.var in get_free_variables(evaluate_substitution_spec(application_premise.tree.conclusion)):
+                    raise RuleApplicationError(f'The discharge formula eigenvariable {eigen} cannot be free in the conclusion {application_premise.tree.conclusion} of premise number {i}')
 
             # Update instantiation
             instantiation |= infer_instantiation_from_formula_substitution_spec(

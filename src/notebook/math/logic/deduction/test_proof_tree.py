@@ -117,6 +117,7 @@ def test_efq() -> None:
     )
 
 
+# thm:minimal_implicational_logic_axioms_nd_proof
 def test_implication_distributivity_axiom_tree() -> None:
     tree = apply(
         CLASSICAL_NATURAL_DEDUCTION_SYSTEM['→₊'],
@@ -166,6 +167,29 @@ def test_implication_distributivity_axiom_tree() -> None:
                          ((p → q) → (p → r))
         u _________________________________________________ →₊
                 ((p → (q → r)) → ((p → q) → (p → r)))
+        '''
+    )
+
+
+# inf:thm:propositional_admissible_rules/self_biconditional
+def test_self_biconditional() -> None:
+    premise = prop_premise(
+        marker='u',
+        discharge='p',
+        tree=prop_assume('p', 'u')
+    )
+
+    tree = apply(
+        CLASSICAL_NATURAL_DEDUCTION_SYSTEM['↔₊'],
+        premise,
+        premise
+    )
+
+    assert str_assumptions(tree) == {}
+    assert str(tree) == dedent('''\
+          [p]ᵘ    [p]ᵘ
+        u ____________ ↔₊
+            (p ↔ p)
         '''
     )
 
@@ -380,7 +404,7 @@ def test_forall_negation(dummy_signature: FormalLogicSignature) -> None:
 
 
 def test_forall_introduction_eigenvariable_failure_free_in_self(dummy_signature: FormalLogicSignature) -> None:
-    with pytest.raises(RuleApplicationError, match=re.escape('The renamed eigenvariable x ↦ y of the premise p₂(x, y) cannot be free in it')):
+    with pytest.raises(RuleApplicationError, match=re.escape('The renamed eigenvariable x ↦ y of the premise conclusion p₂(x, y) cannot be free in it')):
         apply(
             CLASSICAL_NATURAL_DEDUCTION_SYSTEM['∀₊'],
             premise(
@@ -409,7 +433,7 @@ def test_forall_introduction_eigenvariable_failure_free_in_derivation(dummy_sign
 
 def test_exists_elimination(dummy_signature: FormalLogicSignature) -> None:
     u = parse_formula('∃x.p₁(x)', dummy_signature)
-    v = parse_formula('(p₁(y) → q₁(f₀))', dummy_signature)
+    v = parse_formula('∀y.(p₁(y) → q₁(f₀))', dummy_signature)
     w = parse_formula('p₁(y)', dummy_signature)
 
     tree = apply(
@@ -418,7 +442,11 @@ def test_exists_elimination(dummy_signature: FormalLogicSignature) -> None:
         premise(
             tree=apply(
                 CLASSICAL_NATURAL_DEDUCTION_SYSTEM['→₋'],
-                assume(v, parse_marker('v')),
+                apply(
+                    CLASSICAL_NATURAL_DEDUCTION_SYSTEM['∀₋'],
+                    assume(v, parse_marker('v')),
+                    conclusion_sub=parse_term_substitution_spec('y ↦ y')
+                ),
                 assume(w, parse_marker('w')),  # We avoid discharging w here
             ),
             discharge=parse_formula_with_substitution('p₁(x)[x ↦ y]', dummy_signature),  # So that we can discharge it here
@@ -426,12 +454,101 @@ def test_exists_elimination(dummy_signature: FormalLogicSignature) -> None:
         ),
     )
 
-    assert str_free_variables(tree) == set()
     assert str(tree) == dedent('''\
-                             [(p₁(y) → q₁(f₀))]ᵛ    [p₁(y)]ʷ
-                             _______________________________ →₋
-              [∃x.p₁(x)]ᵘ                q₁(f₀)
-        w, y* ______________________________________________ ∃₋
-                                  q₁(f₀)
+                         [∀y.(p₁(y) → q₁(f₀))]ᵛ
+                         ______________________ ∀₋
+                            (p₁(y) → q₁(f₀))          [p₁(y)]ʷ
+                         _____________________________________ →₋
+          [∃x.p₁(x)]ᵘ                   q₁(f₀)
+        w ____________________________________________________ ∃₋
+                                 q₁(f₀)
         '''
     )
+
+
+def test_simple_invalid_exists_elimination(dummy_signature: FormalLogicSignature) -> None:
+    u = parse_formula('∃x.p₁(x)', dummy_signature)
+    v = parse_formula('p₁(y)', dummy_signature)
+
+    # If not for its invalidity, the tree would look as follows:
+    #
+    #   [∃x.p₁(x)]ᵘ    [p₁(y)]ᵛ
+    # v _______________________ ∃₋
+    #            p₁(y)
+
+    with pytest.raises(RuleApplicationError, match=re.escape('The discharge formula eigenvariable y cannot be free in the conclusion p₁(y) of premise number 2')):
+        apply(
+            CLASSICAL_NATURAL_DEDUCTION_SYSTEM['∃₋'],
+            assume(u, parse_marker('u')),
+            premise(
+                tree=assume(v, parse_marker('v')),
+                discharge=parse_formula_with_substitution('p₁(x)[x ↦ y]', dummy_signature),  # So that we can discharge it here
+                marker=parse_marker('v')
+            ),
+        )
+
+
+def test_invalid_exists_elimination_with_leftover_variable(dummy_signature: FormalLogicSignature) -> None:
+    # A variation of test_exists_elimination with the constant f₀ replaced by the variable y
+    u = parse_formula('∃x.p₁(x)', dummy_signature)
+    v = parse_formula('∀y.(p₁(y) → q₁(y))', dummy_signature)
+    w = parse_formula('p₁(y)', dummy_signature)
+
+    # If not for its invalidity, the tree would look as follows:
+    #
+    #                  [∀y.(p₁(y) → q₁(y))]ᵛ
+    #                  _____________________ ∀₋
+    #                     (p₁(y) → q₁(y))          [p₁(y)]ʷ
+    #                  ____________________________________ →₋
+    #   [∃x.p₁(x)]ᵘ                   q₁(y)
+    # w ___________________________________________________ ∃₋
+    #                          q₁(y)
+
+    with pytest.raises(RuleApplicationError, match=re.escape('The discharge formula eigenvariable y cannot be free in the conclusion q₁(y) of premise number 2')):
+        apply(
+            CLASSICAL_NATURAL_DEDUCTION_SYSTEM['∃₋'],
+            assume(u, parse_marker('u')),
+            premise(
+                tree=apply(
+                    CLASSICAL_NATURAL_DEDUCTION_SYSTEM['→₋'],
+                    apply(
+                        CLASSICAL_NATURAL_DEDUCTION_SYSTEM['∀₋'],
+                        assume(v, parse_marker('v')),
+                        conclusion_sub=parse_term_substitution_spec('y ↦ y')
+                    ),
+                    assume(w, parse_marker('w')),  # We avoid discharging w here
+                ),
+                discharge=parse_formula_with_substitution('p₁(x)[x ↦ y]', dummy_signature),  # So that we can discharge it here
+                marker=parse_marker('w')
+            ),
+        )
+
+
+def test_invalid_exists_elimination_with_imprecise_quantification(dummy_signature: FormalLogicSignature) -> None:
+    # A variation of test_exists_elimination without universal quantification
+    u = parse_formula('∃x.p₁(x)', dummy_signature)
+    v = parse_formula('(p₁(y) → q₁(f₀))', dummy_signature)
+    w = parse_formula('p₁(y)', dummy_signature)
+
+    # If not for its invalidity, the tree would look as follows:
+    #
+    #                  [(p₁(y) → q₁(f₀))]ᵛ    [p₁(y)]ʷ
+    #                  _______________________________ →₋
+    #   [∃x.p₁(x)]ᵘ                q₁(f₀)
+    # w ______________________________________________ ∃₋
+    #                       q₁(f₀)
+
+    with pytest.raises(RuleApplicationError, match=re.escape('The eigenvariable y cannot be free in the derivation of q₁(f₀), except possibly in [p₁(x)[x ↦ y]]ʷ')):
+        apply(
+            CLASSICAL_NATURAL_DEDUCTION_SYSTEM['∃₋'],
+            assume(u, parse_marker('u')),
+            premise(
+                tree=apply(
+                    CLASSICAL_NATURAL_DEDUCTION_SYSTEM['→₋'],
+                    assume(v, parse_marker('v')),
+                    assume(w, parse_marker('w')),  # We avoid discharging w here
+                ),
+                discharge=parse_formula_with_substitution('p₁(x)[x ↦ y]', dummy_signature),  # So that we can discharge it here
+                marker=parse_marker('w')
+            ),
+        )

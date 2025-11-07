@@ -59,3 +59,10 @@ def evaluate_substitution_spec(spec: FormulaWithSubstitution) -> Formula:
         return spec.formula
 
     return substitute_in_formula(spec.formula, spec.sub.src, spec.sub.dest)
+
+
+def unwrap_substitution_spec(spec: FormulaWithSubstitution) -> Formula:
+    if spec.sub is None:
+        return spec.formula
+
+    return spec.formula

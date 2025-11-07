@@ -1,2 +1,2 @@
-from .formula_visitor import evaluate_substitution_spec, substitute_in_formula
+from .formula_visitor import evaluate_substitution_spec, substitute_in_formula, unwrap_substitution_spec
 from .term_visitor import substitute_in_term
