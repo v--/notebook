@@ -338,11 +338,11 @@ We give here the following definition, and then proceed to explain it:
 
     We have defined typed \( \muplambda \)-terms in \cref{def:typed_lambda_term} so that \( \muplambda \)-terms have no \hyperref[con:type_annotation]{type annotations}. Instead, the types of bound variables are determined by an annotation on the corresponding abstractor variable, while the types of free variables are determined by \hyperref[def:type_context]{type contexts}. This allows us to unambiguously infer the type of an arbitrary \( \muplambda \)-term, provided all its free variables are in the context.
 
-    We want to attach annotations to free variables so that we do not have to mix type contexts and logical contexts. This leads us to define, in \cref{def:hol_term}, a logical term as a triple \( (\Gamma, M, \tau) \), where \( \Gamma \vdash M: \tau \) and all variables of \( \Gamma \) are free in \( M \).
+    We want to attach annotations to free variables so that we do not have to mix type contexts and logical contexts. This leads us to define, in \cref{def:hol_term}, a logical term as a pair \( (\Gamma, M) \), where \( \Gamma \vdash M: \tau \) for some type \( \tau \), and all variables of \( \Gamma \) are free in \( M \). \Cref{thm:logical_term_type_uniqueness} shows that, as long as \( M \) is \hyperref[def:typability]{typable} in \( \Gamma \), \( \tau \) is uniquely determined by \( \Gamma \) and \( M \).
 
     This allows us to place the type of every free variable in \( M \) in a superscript. For example, we denote the logical term
     \begin{equation*}
-      \parens[\big]{ (f: \tau \synimplies \sigma, x: \tau), f x, \sigma }
+      \parens[\big]{ (f: \tau \synimplies \sigma, x: \tau), f x }
     \end{equation*}
     by
     \begin{equation*}
@@ -386,7 +386,9 @@ We give here the following definition, and then proceed to explain it:
 \end{remark}
 
 \begin{definition}\label{def:hol_term}\mimprovised
-  Based on our discussion in \cref{rem:hol_notational_shorthands/variable_annotations}, given the \hyperref[def:simple_type_derivation]{entailment} \( \Gamma \vdash M: \tau \) over a fixed \hyperref[def:hol_signature]{signature} \( \Sigma \) of higher-order logic, we call the triple \( (\Gamma, M, \tau) \) a \term{logical term} if all variables in \( \Gamma \) are free in \( M \).
+  Over a fixed \hyperref[def:hol_signature]{signature} \( \Sigma \) of higher-order logic, suppose that the \( \muplambda \)-term \( M \) is \hyperref[def:typability]{typable} in the \hyperref[def:type_context]{type context} \( \Gamma \) with respect to the arrow typing rules \ref{inf:def:arrow_type/elim} and \ref{inf:def:arrow_type/intro/explicit}, the constant typing rule \ref{inf:def:hol_signature/nl_type} and the formula formation rules from \cref{def:hol_typing_rules}.
+
+  Based on our discussion in \cref{rem:hol_notational_shorthands/variable_annotations}, call the pair \( (\Gamma, M) \) a \term{logical term} if all variables in \( \Gamma \) are free in \( M \). \Cref{thm:logical_term_type_uniqueness} shows that each logical term has a unique type \( \tau \).
 
   As per \cref{rem:hol_notational_shorthands/placeholder_annotations}, we annotate metalingual placeholders for logical terms, so \( M^\tau \) denotes a logical term of type \( \tau \).
 
@@ -507,12 +509,10 @@ We give here the following definition, and then proceed to explain it:
 \end{comments}
 
 \begin{proposition}\label{thm:logical_term_type_uniqueness}
-  The type of a \hyperref[def:hol_term]{higher-order logical term} is unique: for every logical term \( (\Gamma, M, \tau) \), if \( \Gamma \vdash M: \tau' \), then \( \tau = \tau' \).
+  The type of a \hyperref[def:hol_term]{higher-order logical term} is unique: for every logical term \( (\Gamma, M) \), if \( \Gamma \vdash M: \tau \) and \( \Gamma \vdash M: \tau' \), then \( \tau = \tau' \).
 \end{proposition}
 \begin{proof}
-  We must extend the recursion in the proof of \cref{thm:typed_term_habitation_uniqueness} to handle the new typing rules from \cref{def:hol_typing_rules}, as well as \ref{inf:def:hol_signature/nl_type}.
-
-  The rules are adjusted so that uniqueness is straightforward.
+  We must extend the recursion in the proof of \cref{thm:typed_term_habitation_uniqueness} to handle the new typing rules from \cref{def:hol_typing_rules}, as well as \ref{inf:def:hol_signature/nl_type}. The actual recursive cases are straightforward.
 \end{proof}
 
 \begin{remark}\label{rem:hol_formula_abbreviations}
