@@ -1,0 +1,598 @@
+\section{Higher-order natural deduction}\label{sec:higher_order_natural_deduction}
+
+\paragraph{Proofs in higher-order logic}
+
+\begin{concept}\label{con:eigenvariable}
+  When \hyperref[con:variable_binding]{binding} a variable in \hyperref[rem:predicate_logic]{predicate logic}, we want to discharge it, similarly to how we discharge assumptions in \hyperref[def:propositional_natural_deduction_proof_tree]{natural deduction proof trees} for \hyperref[def:propositional_logic]{propositional logic}.
+
+  We will call such a dischargeable variable an \term[ru=собственная переменная (\cite[101]{Герасимов2011Вычислимость}), en=eigenvariable (\cite[\S 5.1.10]{Mimram2020ProgramEqualsProof})]{eigenvariable}.
+\end{concept}
+\begin{comments}
+  \item Discharging either variables or formulas reduces to discharging type assertions in \hyperref[def:martin_lof_type_theory]{Martin-L\"of type theory} under the \hyperref[con:curry_howard_correspondence]{Curry-Howard correspondence}. We discuss this in \cref{ex:dependent_types_and_hol_quantifier_rules}.
+
+  \item The term \enquote{eigenvariable} comes from \tcite{#2, where #1}{Gentzen1935LogischeSchließen} introduces natural deduction. In the corresponding English translation, \cite[293]{Gentzen1964LogicalDeduction}, eigenvariables are instead called \enquote{proper variables}. Both terms are currently used in English (e.g. \incite[\S 5.1.10]{Mimram2020ProgramEqualsProof} uses \enquote{eigenvariable}, while \incite[38]{TroelstraSchwichtenberg2000BasicProofTheory} uses \enquote{proper variable}).
+
+  Gentzen presents only two rules featuring eigenvariables, in which the variables must satisfy slightly differing constraints. We restate Gentzen's rules in \cref{def:fol_quantifier_rules/eigenvariables} and adapt them for \hyperref[def:higher_order_logic]{higher-order logic} in \cref{def:hol_quantifier_rules/eigenvariables}.
+\end{comments}
+
+\begin{definition}\label{def:hol_natural_deduction_proof_tree}\mimprovised
+  Natural deduction \hyperref[con:proof_tree]{proof trees} for \hyperref[def:hol_term/formula]{formulas of higher-order logic} require some adaptation compared to their propositional equivalents defined in \cref{def:propositional_natural_deduction_proof_tree}.
+
+  In accordance with \cref{rem:hol_rule_formalization}, we do not formalize the schemas and rules and only state them in the metalanguage, so proof trees also only exist in the metalanguage. This somewhat simplifies the exposition. We will fully formalize the somewhat simpler proof trees for first-order logic in \cref{def:fol_natural_deduction_proof_tree}.
+
+  The difference compared to propositional logic is that we must handle \hyperref[def:lambda_term_substitution]{substitution} and \hyperref[con:eigenvariable]{eigenvariables}. Substitution is straightforward, but handling variable requires special care in general since each \hyperref[def:hol_term]{logical term} has an implicit \hyperref[def:type_context]{type context}.
+
+  A proof tree \( P \) for higher-order logic has three labels:
+
+  \begin{thmenum}[series=def:hol_natural_deduction_proof_tree]
+    \thmitem{def:hol_natural_deduction_proof_tree/open} A set of marked open assumptions, based on the same notion for propositional proof trees.
+
+    \thmitem{def:hol_natural_deduction_proof_tree/type_context} A type context \( T_P \) for all free variables across all formulas in \( P \).
+
+    \thmitem{def:hol_natural_deduction_proof_tree/free_variables} A set \( F_P \) of undischarged \hi{marked} variables. We call them the \term{free variables} of \( P \).
+  \end{thmenum}
+
+  We populate \( T_P \) and \( F_P \) as follows:
+  \begin{thmenum}[resume=def:hol_natural_deduction_proof_tree]
+    \thmitem{def:hol_natural_deduction_proof_tree/assumption} Suppose first that \( P \) is an assumption tree for \( \varphi \).
+    \begin{itemize}
+      \item Its type context \( T_P \) is the implicit context of \( \varphi \).
+      \item Its free variable set \( F_P \) is the set of free variables of \( \varphi \):
+      \begin{equation}\label{eq:def:hol_natural_deduction_proof_tree/assumption/free_variables}
+        F_P \coloneqq \op*{Free}(\varphi).
+      \end{equation}
+    \end{itemize}
+
+    \thmitem{def:hol_natural_deduction_proof_tree/application} Suppose first that \( P \) is a rule application with premises \( P_1, \ldots, P_n \).
+    \begin{itemize}
+      \item Its type context \( T_P \) is the union of the contexts \( T_{P_1}, \ldots, T_{P_n} \) of the premises.
+      \item Its free variable set \( F_P \) is more complicated:
+      \begin{equation}\label{eq:def:hol_natural_deduction_proof_tree/application/free_variables}
+        F_P \coloneqq \bigcup_{i=1}^n \set{ (v: m) \in F_{P_i} \given m \not\in D \T{and} v \not\in E },
+      \end{equation}
+      where
+      \begin{itemize}
+        \item \( D \) is the set of markers of assumptions discharged during the current application.
+        \item \( E \) is the set of eigenvariables discharged during the current application.
+      \end{itemize}
+
+      The same free variable may be present in both an open and a closed discharged, and the label helps us filter out those present in only discharged assumptions.
+
+      The eigenvariable constraints on the rules \ref{inf:def:hol_quantifier_rules/eigenvariables/forall_intro} and \ref{inf:def:hol_quantifier_rules/eigenvariables/exists_elim} determine when they are applicable.
+
+      Note that a variable of type \( \syn\omicron \) can be discharged, in which case it belongs to \( D \), or bound, in which case it belongs to \( E \), but the two cases are distinct.
+    \end{itemize}
+  \end{thmenum}
+\end{definition}
+\begin{comments}
+  \item The details of how we define the set of free variables is based on the analogous considerations for first-order logic from \cite[37]{TroelstraSchwichtenberg2000BasicProofTheory}, also implemented programmatically in the module \identifier{math.logic.deduction.proof_tree} in \cite{notebook:code}.
+
+  The type context is only here for compatibility with our peculiar definition of logical formulas.
+\end{comments}
+
+\begin{definition}\label{def:hol_quantifier_rules}\mimprovised
+  We will present \hyperref[def:natural_deduction_rule]{natural deduction rules} for \hyperref[def:predicate_logic_alphabet/quantifiers]{quantifiers} in \hyperref[def:higher_order_logic]{higher-order logic}.
+
+  \begin{thmenum}
+    \thmitem{def:hol_quantifier_rules/eigenvariables} In the following rules, asterisks indicate \hyperref[con:eigenvariable]{eigenvariables}:
+    \begin{paracol}{2}
+      \begin{leftcolumn}
+        \ParacolAlignmentHack
+        \begin{equation*}\taglabel[\ensuremath{ \forall_+ }]{inf:def:hol_quantifier_rules/eigenvariables/forall_intro}
+          \begin{prooftree}
+            \hypo{ \varphi[x^\tau \mapsto y_*^\tau] }
+            \infer1[\ref{inf:def:hol_quantifier_rules/eigenvariables/forall_intro}]{ \qforall {x^\tau} \varphi }
+          \end{prooftree}
+        \end{equation*}
+      \end{leftcolumn}
+
+      \begin{rightcolumn}
+        \ParacolAlignmentHack
+        \begin{equation*}\taglabel[\ensuremath{ \exists_- }]{inf:def:hol_quantifier_rules/eigenvariables/exists_elim}
+          \begin{prooftree}
+            \hypo{ \qexists {x^\tau} \varphi }
+            \hypo{ \varphi[x^\tau \mapsto y_*^\tau] }
+            \infer[dashed]1{ \psi }
+            \infer2[\ref{inf:def:hol_quantifier_rules/eigenvariables/exists_elim}]{ \psi }
+          \end{prooftree}
+        \end{equation*}
+      \end{rightcolumn}
+    \end{paracol}
+
+    These rules have constraints, which we enforce with the help of the marked free variables discussed in \cref{def:hol_natural_deduction_proof_tree/free_variables}:
+    \begin{paracol}{2}
+      \begin{leftcolumn}
+        \begin{thmenum}
+          \thmitem{def:hol_quantifier_rules/main/variable} Either \( y \) must coincide with \( x \) or otherwise \( y \) must not be free in \( \varphi \).
+          \thmitem{def:hol_quantifier_rules/main/assumptions} The eigenvariable \( y \) must not be free in the premise subtree.
+        \end{thmenum}
+      \end{leftcolumn}
+
+      \begin{rightcolumn}
+        \begin{thmenum}
+          \thmitem{def:hol_quantifier_rules/discharge/variable} Either \( y \) must coincide with \( x \) or otherwise \( y \) must not be free in \( \varphi \).
+          \thmitem{def:hol_quantifier_rules/discharge/assumptions} The eigenvariable \( y \) must not be free in the right subtree, except possibly in \( \varphi[x^\tau \mapsto y_*^\tau] \) itself.
+          \thmitem{def:hol_quantifier_rules/discharge/conclusion} Additionally, \( y \) must not be free in the conclusion \( \psi \).
+        \end{thmenum}
+      \end{rightcolumn}
+    \end{paracol}
+
+    \thmitem{def:hol_quantifier_rules/terms} In the following rules, \( M^\tau \) indicates an arbitrary higher-order logic term of type \( \tau \):
+    \begin{paracol}{2}
+      \begin{leftcolumn}
+        \ParacolAlignmentHack
+        \begin{equation*}\taglabel[\ensuremath{ \forall_- }]{inf:def:hol_quantifier_rules/terms/forall_elim}
+          \begin{prooftree}
+            \hypo{ \qforall {x^\tau} \varphi }
+            \infer1[\ref{inf:def:hol_quantifier_rules/terms/forall_elim}]{ \varphi[x^\tau \mapsto M^\tau] }
+          \end{prooftree}
+        \end{equation*}
+      \end{leftcolumn}
+
+      \begin{rightcolumn}
+        \ParacolAlignmentHack
+        \begin{equation*}\taglabel[\ensuremath{ \exists_+ }]{inf:def:hol_quantifier_rules/terms/exists_intro}
+          \begin{prooftree}
+            \hypo{ \varphi[x^\tau \mapsto M^\tau] }
+            \infer1[\ref{inf:def:hol_quantifier_rules/terms/exists_intro}]{ \qexists {x^\tau} \varphi }
+          \end{prooftree}
+        \end{equation*}
+      \end{rightcolumn}
+    \end{paracol}
+  \end{thmenum}
+\end{definition}
+\begin{comments}
+  \item These rules are based on the analogous rules of first-order logic given by \incite[36]{TroelstraSchwichtenberg2000BasicProofTheory}.
+
+  The higher-order variants follow naturally from the rules of \hyperref[def:martin_lof_type_theory]{Martin-L\"of type theory} via \hyperref[con:curry_howard_correspondence]{Curry-Howard correspondence}, as shown in \cref{ex:dependent_types_and_hol_quantifier_rules}.
+
+  We fully formalize the corresponding rules for first-order logic in \cref{def:fol_quantifier_rules/eigenvariables}.
+\end{comments}
+
+\begin{example}\label{ex:dependent_types_and_hol_quantifier_rules}
+  The \hyperref[con:eigenvariable]{eigenvariable} rules for \hyperref[def:higher_order_logic]{higher-order logic} from \cref{def:hol_quantifier_rules/eigenvariables} follow naturally, via the \hyperref[con:curry_howard_correspondence]{Curry-Howard correspondence}, from the \hyperref[con:typing_rule]{typing rules} for \hyperref[def:dependent_product]{dependent products} and \hyperref[def:dependent_sum]{dependent sums}.
+
+  Generally, in \hyperref[def:martin_lof_type_theory]{Martin-L\"of type theory}, we must be careful not to allow \hyperref[def:mltt_well_formed_context/derivation]{ill-formed derivations}. There can be situations where an assumption \( x: \tau \) cannot be discharged because the types of other open assumptions depend on \( x \).
+
+  \begin{thmenum}
+    \thmitem{ex:dependent_types_and_hol_quantifier_rules/product} Consider first the dependent product introduction rule \ref{inf:def:dependent_product/intro}, which we will restate here with some types renamed:
+    \begin{equation*}\taglabel[\ensuremath{ \Pi_+' }]{inf:ex:dependent_types_and_hol_quantifier_rules/product/intro}
+      \begin{prooftree}
+        \hypo{ x: \tau }
+        \infer[dashed]1{ M: \varphi }
+        \infer1[\ref{inf:ex:dependent_types_and_hol_quantifier_rules/product/intro}]{ \qabs {x^\tau} M: \qprod {x^\tau} \varphi }
+      \end{prooftree}
+    \end{equation*}
+
+    We are only interested in the existence of the terms \( M \) and \( \qabs {x^\tau} M \), but not in the terms themselves. So we may rewrite the above to resemble a natural deduction rule (with \( \synforall \) used instead of \( \synprod \)):
+    \begin{equation*}\taglabel[\ensuremath{ \forall_+' }]{inf:ex:dependent_types_and_hol_quantifier_rules/forall_intro_raw}
+      \begin{prooftree}
+        \hypo{ x: \tau }
+        \infer[dashed]1{ \varphi }
+        \infer1[\ref{inf:ex:dependent_types_and_hol_quantifier_rules/forall_intro_raw}]{ \qforall {x^\tau} \varphi }
+      \end{prooftree}
+    \end{equation*}
+
+    We showed in \cref{ex:def:mltt_well_formed_context/discharging} how, if some open assumption of a type derivation tree depends on \( x \), applying the rule and discharging \( x: \tau \) will make the derivation ill-formed.
+
+    For the purposes of higher-order logic, it will suffice, instead of dealing with explicit type contexts, we instead enforce the constraints given in \cref{def:hol_quantifier_rules/eigenvariables}.
+
+    It is important here to note that \( \qforall {x^\tau} \varphi \) and \( \qforall {y^\tau} \varphi[x \mapsto y] \) are considered different formulas. This contrasts with Martin-L\"of type theory, where, due to the rule \ref{rem:type_theory_rule_classification/equality/alpha}, \hyperref[def:lambda_term_alpha_equivalence]{\( \alpha \)-equivalent} \( \muplambda \)-terms are assumed to be \hyperref[con:equality]{judgmentally equal}.
+
+    Thus, the rule \ref{inf:def:hol_quantifier_rules/eigenvariables/forall_intro} with its constraints generalizes \ref{inf:ex:dependent_types_and_hol_quantifier_rules/forall_intro_raw} by also handling \( \alpha \)-conversion.
+
+    \thmitem{ex:dependent_types_and_hol_quantifier_rules/sum} The dependent sum rule \ref{inf:def:dependent_sum/elim} is more subtle:
+    \begin{equation*}\taglabel[\ensuremath{ \Sigma_-' }]{inf:ex:dependent_types_and_hol_quantifier_rules/sum/elim}
+      \begin{prooftree}
+        \hypo{ z: \qsum {x^\tau} \varphi }
+        \infer[dashed]1{ \psi: \BbbT }
+
+        \hypo{ x: \tau }
+        \hypo{ y: \varphi }
+        \infer[dashed]2{ M: \psi[z \mapsto \synS_+ x y] }
+
+        \hypo{ A: \qsum {x^\tau} \varphi }
+
+        \infer3[\ref{inf:ex:dependent_types_and_hol_quantifier_rules/sum/elim}]{ \synS_- (\qabs {z^{\qsum {x^\tau} \varphi}} \psi) (\qabs {x^\tau} \qabs {y^\varphi} M) A: \psi[z \mapsto A] }
+      \end{prooftree}
+    \end{equation*}
+
+    We obtain a logical derivation rule resembling \ref{inf:def:hol_quantifier_rules/eigenvariables/exists_elim} (with swapped subtrees) if we suppose that \( \varphi \) does not depend on \( y \), while \( \psi \) --- on \( z \):
+    \begin{equation*}\taglabel[\ensuremath{ \exists_-' }]{inf:ex:dependent_types_and_hol_quantifier_rules/sum/exists_elim_raw}
+      \begin{prooftree}
+        \hypo{ x: \tau }
+        \infer[dashed]1{ \psi }
+
+        \hypo{ \qexists {x^\tau} \varphi }
+
+        \infer2[\ref{inf:ex:dependent_types_and_hol_quantifier_rules/sum/exists_elim_raw}]{ \psi }
+      \end{prooftree}
+    \end{equation*}
+
+    When applying \ref{inf:ex:dependent_types_and_hol_quantifier_rules/sum/exists_elim_raw}, we must discharge \( x: \tau \), so it cannot be free in any assumption of the left subtree. But it is possible for \( x \) to be free in \( \varphi \) if the latter is a dependent type. This gives us the modified constraint \cref{def:hol_quantifier_rules/discharge/assumptions}.
+
+    The additional constraint \cref{def:hol_quantifier_rules/discharge/conclusion} simply states that we want to allow \( \psi \) to depend on \( x \) only indirectly through \( \varphi \).
+  \end{thmenum}
+\end{example}
+
+\begin{definition}\label{def:hol_equality_rules}\mimprovised
+  We will state the following \hyperref[def:inference_rule]{inference rules} for \hyperref[def:predicate_logic_alphabet/equality]{equality}:
+  \begin{paracol}{3}
+    \begin{nthcolumn}{0}
+      \ParacolAlignmentHack
+      \begin{equation*}\taglabel[\ensuremath{ =_\leftrightarrow }]{inf:def:hol_equality_rules/equiv}
+        \begin{prooftree}
+          \hypo{ \varphi \syniff \psi }
+          \infer1[\ref{inf:def:hol_equality_rules/equiv}]{ \varphi \syneq \psi }
+        \end{prooftree}
+      \end{equation*}
+    \end{nthcolumn}
+
+    \begin{nthcolumn}{1}
+      \ParacolAlignmentHack
+      \begin{equation*}\taglabel[\ensuremath{ =_+ }]{inf:def:hol_equality_rules/intro}
+        \begin{prooftree}
+          \infer0[\ref{inf:def:hol_equality_rules/intro}]{ M^\tau \syneq N^\tau }
+        \end{prooftree}
+      \end{equation*}
+      \begin{center}
+        when \( M^\tau \) \hyperref[def:beta_eta_reduction]{\( \beta \)-reduces} to \( N^\tau \).
+      \end{center}
+    \end{nthcolumn}
+
+    \begin{nthcolumn}{2}
+      \ParacolAlignmentHack
+      \begin{equation*}\taglabel[\ensuremath{ =_- }]{inf:def:hol_equality_rules/elim}
+        \begin{prooftree}
+          \hypo{ \varphi[x^\tau \mapsto M^\tau] }
+          \hypo{ M^\tau \syneq N^\tau }
+          \infer2[\ref{inf:def:hol_equality_rules/elim}]{ \varphi[x^\tau \mapsto N^\tau] }
+        \end{prooftree}
+      \end{equation*}
+    \end{nthcolumn}
+  \end{paracol}
+\end{definition}
+\begin{comments}
+  \item The three rules ensure that \cref{thm:hol_equality_is_equivalence_relation} and \cref{thm:hol_equality_entails_equivalence} hold, and their full power is demonstrated in \cref{ex:simplified_hol_predicate_definition}. The elimination rule generalizes rule \logic{R'} from Andrews' system \( \logic{Q}_0 \) --- see \cref{ex:hol_equality_rules_and_rule_r}
+
+  An alternative to \ref{inf:def:hol_equality_rules/intro} could be, as in \cref{rem:hol_axiomatic_derivations}, a rule equating \hyperref[def:beta_eta_reduction]{\( \beta \)-equivalent} \( \muplambda \)-terms. Although the latter has its appeal, we avoid it due to its complexity.
+\end{comments}
+
+\begin{definition}\label{def:hol_consequence}\mimprovised
+  We can now define a \hyperref[def:consequence_relation]{consequence relation} on \hyperref[def:hol_term/formula]{formulas} of \hyperref[
+def:higher_order_logic]{higher-order logic} as follows: let \( \Gamma \vdash \varphi \) if there exists a \hyperref[def:hol_natural_deduction_proof_tree]{higher-order logic proof tree} of \( \varphi \) whose open assumptions are in \( \Gamma \) and whose allowed rules are the \hyperref[def:natural_deduction_rule]{natural deduction rules} for propositional logic from \cref{def:propositional_natural_deduction_systems}, the quantifier rules from \cref{def:hol_quantifier_rules} and the equality rules from \cref{def:hol_equality_rules}.
+
+  In accordance with \cref{def:abstract_logic}, we say that \( \varphi \) is \term{derivable} from \( \Gamma \) if \( \Gamma \vdash \varphi \).
+\end{definition}
+\begin{comments}
+  \item We obtain, based on the propositional logic rules considered, a proof system for either \hyperref[def:minimal_propositional_semantics]{minimal}, \hyperref[def:truth_value_algebra/intuitionistic]{intuitionistic} or \hyperref[def:truth_value_algebra/classical]{classical logic}.
+
+  \item We have now fully formalized the proof trees for higher-order logic; indeed, the quantifier and equality rules require side conditions that are only stated in the metalanguage. We will formalize special cases of these rules and proof trees in \fullref{sec:first_order_logic}.
+
+  \item This system is based on natural deduction for first-order logic. Church and his students instead consider a system resembling \hyperref[def:propositional_axiomatic_derivation_system]{axiomatic derivations} --- see \cref{rem:hol_axiomatic_derivations}.
+\end{comments}
+
+\begin{proposition}\label{thm:hol_equality_is_equivalence_relation}
+  Equality in \hyperref[def:higher_order_logic]{higher-order logic} acts like an \hyperref[def:equivalence_relation]{equivalence relation} with respect to \hyperref[def:hol_consequence]{syntactic consequence}. More precisely, the following rules are \hyperref[con:inference_rule_admissibility]{admissible}:
+
+  \begin{paracol}{3}
+    \begin{nthcolumn}{0}
+      \ParacolAlignmentHack
+      \begin{equation*}\taglabel[\ensuremath{ =_R }]{inf:thm:hol_equality_is_equivalence_relation/reflexivity}
+        \begin{prooftree}
+          \infer0[\ref{inf:thm:hol_equality_is_equivalence_relation/reflexivity}]{ M^\tau \syneq M^\tau }.
+        \end{prooftree}
+      \end{equation*}
+    \end{nthcolumn}
+
+    \begin{nthcolumn}{1}
+      \ParacolAlignmentHack
+      \begin{equation*}\taglabel[\ensuremath{ =_S }]{inf:thm:hol_equality_is_equivalence_relation/symmetry}
+        \begin{prooftree}
+          \hypo{ M^\tau \syneq N^\tau }
+          \infer1[\ref{inf:thm:hol_equality_is_equivalence_relation/symmetry}]{ N^\tau \syneq M^\tau }.
+        \end{prooftree}
+      \end{equation*}
+    \end{nthcolumn}
+
+    \begin{nthcolumn}{2}
+      \ParacolAlignmentHack
+      \begin{equation*}\taglabel[\ensuremath{ =_T }]{inf:thm:hol_equality_is_equivalence_relation/transitivity}
+        \begin{prooftree}
+          \hypo{ M^\tau \syneq N^\tau }
+          \hypo{ N^\tau \syneq K^\tau }
+          \infer2[\ref{inf:thm:hol_equality_is_equivalence_relation/transitivity}]{ M^\tau \syneq K^\tau }
+        \end{prooftree}
+      \end{equation*}
+    \end{nthcolumn}
+  \end{paracol}
+\end{proposition}
+\begin{proof}
+  \SubProofOf{inf:thm:hol_equality_is_equivalence_relation/reflexivity} Let \( x \) be a variable not free in \( M^\tau \). Obviously \( (\qabs {x^\tau} x) M^\tau \bred M^\tau \).
+
+  Let \( \varphi \coloneqq (x^\tau \syneq M^\tau) \). Then
+  \begin{equation*}
+    \begin{prooftree}
+      \infer0[\ref{inf:def:hol_equality_rules/intro}]{ \varphi[x^\tau \mapsto (\qabs {x^\tau} x) M^\tau] }
+      \infer0[\ref{inf:def:hol_equality_rules/intro}]{ (\qabs {x^\tau} x) M^\tau \syneq M^\tau }
+      \infer2[\ref{inf:def:hol_equality_rules/elim}]{ \underbrace{\varphi[x^\tau \mapsto M^\tau]}_{M^\tau \syneq M^\tau} }
+    \end{prooftree}
+  \end{equation*}
+
+  \SubProofOf{inf:thm:hol_equality_is_equivalence_relation/symmetry} Again, let \( \varphi \coloneqq (x^\tau \syneq M^\tau) \) for some variable \( x \) not free in \( M^\tau \). Then
+  \begin{equation*}
+    \begin{prooftree}
+      \infer0[\ref{inf:thm:hol_equality_is_equivalence_relation/reflexivity}]{ \varphi[x^\tau \mapsto M^\tau] }
+      \hypo{ M^\tau \syneq N^\tau }
+      \infer2[\ref{inf:def:hol_equality_rules/elim}]{ \underbrace{\varphi[x^\tau \mapsto N^\tau]}_{N^\tau \syneq M^\tau} }
+    \end{prooftree}
+  \end{equation*}
+
+  \SubProofOf{inf:thm:hol_equality_is_equivalence_relation/transitivity}
+  \begin{equation*}
+    \begin{prooftree}
+      \hypo{ M^\tau \syneq N^\tau }
+      \hypo{ N^\tau \syneq K^\tau }
+      \infer2[\ref{inf:def:hol_equality_rules/elim}]{ M^\tau \syneq K^\tau }
+    \end{prooftree}
+  \end{equation*}
+\end{proof}
+
+\begin{proposition}\label{thm:hol_equality_entails_equivalence}
+  With respect to \hyperref[def:hol_consequence]{syntactic consequence}, the converse rule of \ref{inf:def:hol_equality_rules/equiv} is \hyperref[con:inference_rule_admissibility]{admissible}:
+  \begin{equation*}\taglabel[\ensuremath{ \leftrightarrow_= }]{inf:thm:hol_equality_entails_equivalence}
+    \begin{prooftree}
+      \hypo{ \varphi \syneq \psi }
+      \infer1[\ref{inf:thm:hol_equality_entails_equivalence}]{ \varphi \syniff \psi }
+    \end{prooftree}
+  \end{equation*}
+\end{proposition}
+\begin{comments}
+  \item Thus, equality of two formulas is \hyperref[def:interderivability]{interderivable} with their biconditional
+\end{comments}
+\begin{proof}
+  Let \( x \) be a variable not free in \( \varphi \) nor \( \psi \). Then
+  \begin{equation*}
+    \begin{prooftree}
+      \infer0[\ref{inf:thm:propositional_admissible_rules/self_biconditional}]{ (\varphi \syniff x^{\syn\omicron})[x^{\syn\omicron} \mapsto \varphi] }
+      \hypo{ \varphi \syneq \psi }
+      \infer2[\ref{inf:def:hol_equality_rules/elim}]{ \varphi \syniff \psi }
+    \end{prooftree}
+  \end{equation*}
+\end{proof}
+
+\begin{remark}\label{rem:hol_axiomatic_derivations}
+  We will outline the proof system of Andrews' \( \logic{Q}_0 \) from \incite[\S 51]{Andrews2002Logic} since it is the most refined of the Church-like systems listed in \cref{rem:higher_order_logic_and_type_theory/types}.
+
+  It is based on \hyperref[def:propositional_axiomatic_derivation_system]{axiomatic derivation systems}, but instead of \ref{inf:thm:axiomatic_derivation_as_natural_deduction/mp}, it features a peculiar rule:
+  \begin{displayquote}
+    \textit{Rule R}. From \( \mathbf{C} \) and \( \mathbf{A_\alpha} = \mathbf{B_\alpha} \) to infer the result of replacing one occurrence of \( \mathbf{A_\alpha} \) in \( \mathbf{C} \) by an occurrence of \( \mathbf{B_\alpha} \), provided that the occurrence of \( \mathbf{A_\alpha} \) in \( \mathbf{C} \) is not (an occurrence of a variable) immediately preceded by \( \muplambda \).
+  \end{displayquote}
+
+  For conditional hypotheses, Andrews further refines this rule as follows:
+  \begin{displayquote}
+    (Rule R') If \( \mscrH \vdash \mathbf{A_\alpha} = \mathbf{B_\alpha} \), and \( \mscrH \vdash \mathbf{C} \), and \( \mathbf{D} \) is obtained from \( \mathbf{C} \) by replacing one occurrence of \( \mathbf{A_\alpha} \) in \( \mathbf{C} \) by an occurrence of \( \mathbf{B_\alpha} \), then \( \mscrH \vdash \mathbf{A_\alpha} \), provided that the occurrence of \( \mathbf{A_\alpha} \) in \( \mathbf{C} \) is not a variable immediately preceded by \( \mathbf{\muplambda} \), and the occurrence of \( \mathbf{A_\alpha} \) in \( \mathbf{C} \) is not in a wf part \( [\mathbf{\muplambda x_\beta E_\gamma}] \) of \( \mathbf{C} \), where \( \mathbf{x_\beta} \) is free in a member of \( \mscrH \) and free in \( \mathbf{A_\alpha} = \mathbf{B_\alpha} \).
+  \end{displayquote}
+
+  We will show in \cref{ex:hol_equality_rules_and_rule_r} that this rule is a special case of rule \ref{inf:def:hol_equality_rules/elim} above.
+
+  Andrews spends considerable effort demonstrating that part of the familiar natural deduction rules from \cref{def:propositional_natural_deduction_systems} are \hyperref[con:inference_rule_admissibility]{admissible}.
+
+  The axioms are constructed so that they allow deriving many useful proofs. For example, axiom \( 4 \) allow performing \( \beta \)-reduction similarly to \ref{inf:def:hol_equality_rules/intro}. This axiom, along with rule \logic{R'}, allows proving \cref{thm:hol_equality_is_equivalence_relation}.
+
+  With the abbreviations in \ref{rem:hol_formula_abbreviations}, the rule \ref{inf:def:propositional_natural_deduction_systems/top/intro} is a special case of \ref{inf:thm:hol_equality_is_equivalence_relation/reflexivity} with \( M^\tau = \qabs {\synp^{\syn\omicron}} \synp \).
+
+  An immediate downside to his system is that hypothesis discharging in rules such as \ref{inf:def:propositional_natural_deduction_systems/imp/intro} requires rewriting the entire proof, akin to \fullref{alg:derivation_conclusion_hypothesis_introduction} (but more complicated).
+
+  There are other subtleties. For example, we must be careful so that the choice of variable \( f \) from the abbreviation of \( \varphi \synwedge \psi \) so that it is compatible with substitution via rule \logic{R'}.
+\end{remark}
+
+\begin{example}\label{ex:hol_equality_rules_and_rule_r}
+  Andrews' rule \logic{R'} described in \cref{rem:hol_axiomatic_derivations} is also \hyperref[con:inference_rule_admissibility]{admissible} with respect to \ref{inf:def:hol_equality_rules/elim}, but the latter is more general.
+
+  Indeed, fix a formula \( \varphi \) and let \( \psi \) be the result of substituting a single occurrence of \( A^\tau \) for \( B^\tau \) in \( \varphi \). Rule \logic{R'} then allows us to infer \( \psi \) from the open hypotheses \( \Gamma \) as long as the substituted occurrence of \( A^\tau \) is not in the scope of a variable in
+  \begin{equation*}
+    \parens[\Bigg]{ \bigcup_{\chi \in \Gamma} \op*{Free}(\chi) } \cap \parens[\Bigg]{ \op*{Free}(A) \cup \op*{Free}(B) }.
+  \end{equation*}
+
+  As an example, let
+  \begin{align*}
+    \varphi &\coloneqq \qabs {f^{\tau \synimplies \tau \synimplies \syn\omicron}} f A^\tau A^\tau, \\
+    \psi    &\coloneqq \qabs {f^{\tau \synimplies \tau \synimplies \syn\omicron}} f B^\tau A^\tau  \\
+  \intertext{and}
+    \theta  &\coloneqq \qabs {f^{\tau \synimplies \tau \synimplies \syn\omicron}} f x^\tau A^\tau.
+  \end{align*}
+
+  Clearly
+  \begin{equation*}
+    \begin{prooftree}
+      \hypo{ \theta[x^\tau \mapsto A^\tau] }
+      \hypo{ A^\tau \syneq B^\tau }
+      \infer2[\ref{inf:def:hol_equality_rules/elim}]{ \theta[x^\tau \mapsto A^\tau] }
+    \end{prooftree}
+  \end{equation*}
+
+  If \( f \) is not free in \( A^\tau \) nor \( B^\tau \), the substitution in both \( \varphi \) and \( \psi \) must use the non-renaming rule \eqref{eq:def:lambda_term_substitution/abstraction/direct}, and thus \( \varphi = \theta[x^\tau \mapsto B^\tau] \) and \( \psi = \theta[x^\tau \mapsto B^\tau] \). In this case,
+  \begin{equation*}
+    \begin{prooftree}
+      \hypo{ \varphi }
+      \hypo{ A^\tau \syneq B^\tau }
+      \infer2[\ref{inf:def:hol_equality_rules/elim}]{ \psi }
+    \end{prooftree}
+  \end{equation*}
+
+  This is precisely an application of \( \logic{R'} \).
+
+  On the other hand, if \( f \) is free in \( B^\tau \) but not \( A^\tau \), then the substitution in \( \theta[x^\tau \mapsto B^\tau] \) must use the renaming rule \eqref{eq:def:lambda_term_substitution/abstraction/renaming}, and thus
+  \begin{equation*}
+    \theta[x^\tau \mapsto B^\tau] = \qabs {g^{\tau \synimplies \tau \synimplies \syn\omicron}} g B^\tau (B^\tau[f \mapsto g]),
+  \end{equation*}
+  where \( g \) is not free in \( B^\tau \). Then
+  \begin{itemize}
+    \item \( \theta[x^\tau \mapsto B^\tau] \) does not equal \( \psi \), so we cannot deduce \( \psi \) from \( \varphi \) and \( A^\tau \syneq B^\tau \) using \ref{inf:def:hol_equality_rules/elim}.
+
+    \item \( \theta[x^\tau \mapsto B^\tau] \) is not \enquote{\( \varphi \) with a single instance of \( A^\tau \) substituted \( B^\tau \)}, and rule \logic{R'} is inapplicable.
+  \end{itemize}
+
+  Admissibility of rule \logic{R'} for arbitrary \( \varphi \) and \( \psi \) can be proven by induction on the abstract syntax tree of \( \varphi \).
+\end{example}
+
+\paragraph{Signature extensions}
+
+\begin{definition}\label{def:hol_signature_extension}\mimprovised
+  We say that the \hyperref[def:hol_signature]{signature} \( \Theta \) of higher-order logic is an \term{extension} of \( \Sigma \) if all \hyperref[def:hol_signature/sorts]{sorts} in \( \Sigma \) are sorts in \( \Theta \), and similarly for the \hyperref[def:hol_signature/nl_const]{nonlogical constants} and \hyperref[def:hol_signature/nl_type]{their type assertions}.
+\end{definition}
+\begin{comments}
+  \item Signature extensions for first-order logic are studied systematically in \bycite[\S 2.6]{Hinman2005Logic}. We merely need them in higher-order logic to state some generalities.
+\end{comments}
+
+\begin{remark}\label{rem:signatures_are_small}
+  We have defined a signature \( \Sigma \) for higher-order logic in \cref{def:hol_signature} so that the sets \( \op*{Sort}_\Sigma \) of sorts and \( \op*{NLConst}_\Sigma \) of nonlogical constants are \hyperref[def:universe_of_hereditary_finite_sets]{hereditarily finite}.
+
+  This ensures that \( \Sigma \) is itself a hereditarily finite set. Thus, \( \Sigma \) belongs to the \hyperref[def:grothendieck_universe]{Grothendieck universe} \( V_\omega \) and, due to \cref{thm:grothendieck_universe_contains_finite_sets}, to every Grothendieck universe.
+
+  We can thus safely form a category whose objects are \hi{all} signatures of higher-order logic --- such a category is guaranteed to be \hyperref[def:category_size]{small} if the morphism sets are.
+\end{remark}
+
+\begin{definition}\label{def:hol_entailment_system}\mimprovised
+  We will define an \hyperref[def:entailment_system]{entailment system} for \hyperref[def:higher_order_logic]{higher-order logic}.
+
+  \begin{thmenum}
+    \thmitem{def:hol_entailment_system/signatures} Define the \hyperref[def:category]{category} \( \op*{Sign} \) by endowing the \hyperref[def:partially_ordered_set]{partially ordered set} of all \hyperref[def:hol_signature]{signatures} with a category structure, as per \cref{thm:order_category_isomorphism}.
+
+    Thus, we have a single translation morphism from \( \Sigma \) to \( \Theta \) if \( \Theta \) is an \hyperref[def:hol_signature_extension]{extension} of \( \Sigma \).
+
+    This category is well-defined --- as shown in \cref{rem:signatures_are_small}, it is small with respect to any \hyperref[def:grothendieck_universe]{Grothendieck universe}.
+
+    \thmitem{def:hol_entailment_system/sentences} Define the functor \( \op*{Sen}: \op*{Sign} \to \cat{Set} \) as follows:
+    \begin{itemize}
+      \item For each signature \( \Sigma \), let \( \op*{Sen}(\Sigma) \) be the set of all sentences (\hyperref[def:hol_term/closed]{\hi{closed}} \hyperref[def:hol_term/formula]{logical formulas}) over \( \Sigma \).
+
+      \item Since \( \op*{Sen}(\Sigma) \) is a subset of \( \op*{Sen}(\Theta) \), let \( \op*{Sen}(s: \Sigma \to \Theta) \) be the set-theoretic inclusion of \( \op*{Sen}(\Sigma) \) into \( \op*{Sen}(\Theta) \).
+    \end{itemize}
+
+    There is at most one morphism from \( \Sigma \) to \( \Theta \), so this functor is in fact \hyperref[def:functor_invertibility/faithful]{faithful}.
+
+    \thmitem{def:hol_entailment_system/entailment} Finally, for each signature \( \Sigma \), \cref{def:hol_consequence} gives us a \hyperref[def:consequence_relation]{consequence relation} \( {\vdash_\Sigma} \) on \( \op*{Sen}(\Sigma) \).
+
+    Since a \hyperref[def:hol_natural_deduction_proof_tree]{proof tree} over \( \Sigma \) is also valid over extensions of \( \Sigma \), \eqref{eq:def:entailment_system/entailment} holds, and the definition of entailment system is satisfied.
+  \end{thmenum}
+\end{definition}
+
+\paragraph{Definitional extensions}
+
+\begin{definition}\label{def:hol_theory}\mimprovised
+  The \hyperref[def:entailment_system]{entailment system} for \hyperref[def:higher_order_logic]{higher-order logic} from \cref{def:hol_entailment_system} allows us consider \hyperref[def:logical_theory]{theories}. For the reasons outlined in \cref{ex:universal_validity_and_lem}, we suppose that a theory necessarily consists of \hyperref[def:hol_term/sentence]{sentences} (closed formulas).
+\end{definition}
+
+\begin{remark}\label{rem:exists_unique_abbreviation}
+  We can introduce the \hyperref[con:description_operator/unique_existence]{unique existence quantifier} \( \qExists {x^\tau} \varphi \) into \hyperref[def:higher_order_logic]{higher-order logic} via the \hyperref[con:syntactic_abbreviation]{metalingual abbreviation}
+  \begin{equation}\label{eq:rem:exists_unique_abbreviation}
+    \qexists {x^\tau} \parens[\big]{ \varphi \synwedge \qforall {y^\tau} (\varphi[x \mapsto y] \synimplies y \syneq x) },
+  \end{equation}
+  where \( y = \sharp(\op*{Free}(\varphi) \cup \set{ x }) \).
+
+  Here, as in \cref{def:lambda_term_substitution/sharp}, the function \( \sharp(V) \) gives the smallest identifier not in \( V \).
+\end{remark}
+\begin{comments}
+  \item The idea of representing \( \synExists \) via other quantifiers is also due to Russell and is outlined in \cite{Russell1905OnDenoting}.
+\end{comments}
+
+\begin{definition}\label{def:hol_definition}\mimprovised
+  Fix a (syntactic or semantic) \hyperref[def:hol_theory]{theory} \( \Gamma \) of \hyperref[def:higher_order_logic]{higher-order logic} over some \hyperref[def:hol_signature]{signature} \( \Sigma \).
+
+  Let \( \varphi \) be a \hyperref[def:hol_term/formula]{formula} whose free variables are among \( {x_1}^{\tau_1}, \ldots, {x_n}^{\tau_n}, y^\sigma \), and such that
+  \begin{equation}\label{eq:def:hol_definition/sequent}
+    \Gamma \vdash \qforall {{x_1}^{\tau_1}} \ldots \qforall {{x_n}^{\tau_n}} \qExists {y^\sigma} \varphi.
+  \end{equation}
+
+  We can use \( \varphi \) to justify \hyperref[def:hol_signature_extension]{extending} \( \Gamma \) with a new nonlogical symbol. Let \( \Sigma' \) be the extension of \( \Sigma \) with a new constant \( f \) of type \( \tau_1 \synimplies \cdots \synimplies \tau_n \synimplies \sigma \).
+
+  We call a \term[en=\( \Gamma \)-definition (\cite[def. 2.6.11]{Hinman2005Logic})]{definition} for \( f \) in \( \Gamma \) the following formula in \( \Gamma' \):
+  \begin{equation}\label{eq:def:hol_definition/definition}
+    \qforall {{x_1}^{\tau_1}} \ldots \qforall {{x_n}^{\tau_n}} \qforall {y^\sigma} \parens[\big]{ f(x_1, \ldots, x_n) \syneq y \syniff \varphi }.
+  \end{equation}
+\end{definition}
+\begin{comments}
+  \item The above is adapted from \tcite{#2, where #1}[def. 2.6.11]{Hinman2005Logic} discusses definitions in first-order logic.
+\end{comments}
+
+\begin{example}\label{ex:simplified_hol_predicate_definition}
+  There is an important simplified special case of \hyperref[def:hol_definition]{higher-order logic definitions} which hints at how to introduce new predicate symbols in first-order logic, where equality is only available for individuals.
+
+  Let \( \varphi = (\psi \syniff y^{\syn\omicron}) \), where \( \psi \) is a formula whose free variables are among \( {x_1}^{\tau_1}, \ldots, {x_n}^{\tau_n} \). Then the condition \eqref{eq:def:hol_definition/sequent} is vacuous, the theory \( \Gamma \) is irrelevant, and \eqref{eq:def:hol_definition/definition} follows from
+  \begin{equation}\label{eq:ex:simplified_hol_predicate_definition/definition}
+    \qforall {{x_1}^{\tau_1}} \ldots \qforall {{x_n}^{\tau_n}} \parens[\big]{ f(x_1, \ldots, x_n) \syniff \psi }.
+  \end{equation}
+
+  Indeed, the condition \eqref{eq:def:hol_definition/sequent} becomes
+  \begin{equation*}
+    \Gamma \vdash \qforall {{x_1}^{\tau_1}} \ldots \qforall {{x_n}^{\tau_n}} \qExists {y^{\syn\omicron}} (\psi \syniff y^{\syn\omicron}).
+  \end{equation*}
+
+  This formula is derivable without axioms. Indeed, expanding \( \synexists ! \), we obtain
+  \begin{equation*}
+    \qforall {{x_1}^{\tau_1}} \ldots \qforall {{x_n}^{\tau_n}} \qExists {y^{\syn\omicron}} \parens[\Big]{ (\psi \syniff y^{\syn\omicron}) \synwedge \qforall {z^{\syn\omicron}} \parens[\big]{ (\psi \syniff z) \synimplies (z \syneq y) } },
+  \end{equation*}
+  where \( z \neq y \) is not free in \( \psi \).
+
+  This can be proven as follows (the final \( n \) applications of \ref{inf:def:hol_quantifier_rules/eigenvariables/forall_intro} are skipped):
+  \begin{equation*}
+    \begin{prooftree}
+      \infer0[\ref{inf:thm:propositional_admissible_rules/self_biconditional}]{ \psi \syniff \psi }
+
+      \hypo{ [\psi \syniff z^{\syn\omicron}]^v }
+      \infer1[\ref{inf:def:hol_equality_rules/equiv}]{ \psi \syneq z^{\syn\omicron} }
+      \infer1[\ref{inf:thm:hol_equality_is_equivalence_relation/symmetry}]{ z^{\syn\omicron} \syneq \psi }
+      \infer[left label=\( v \)]1[\ref{inf:def:propositional_natural_deduction_systems/imp/intro}]{ (\psi \syneq z^{\syn\omicron}) \synimplies (z^{\syn\omicron} \syneq \psi) }
+      \infer1[\ref{inf:def:hol_quantifier_rules/eigenvariables/forall_intro}]{ \qforall {z^{\syn\omicron}} \parens[\big]{ (\psi \syniff z) \synimplies (z \syneq \psi) } }
+
+      \infer2[\ref{inf:def:propositional_natural_deduction_systems/and/intro}]{ \parens[\Big]{ (\psi \syniff y^{\syn\omicron}) \synwedge \qforall {z^{\syn\omicron}} \parens[\big]{ (\psi \syniff z) \synimplies (z \syneq y^{\syn\omicron}) } }[y^{\syn\omicron} \mapsto \psi] }
+
+      \infer1[\ref{inf:def:hol_quantifier_rules/terms/exists_intro}]{ \underbrace{ \qexists {y^{\syn\omicron}} \parens[\big]{ (\psi \syniff y) \synwedge \qforall {z^{\syn\omicron}} \parens[\big]{ (\psi \syniff z) \synimplies (z \syneq y) } } }_{\qExists {y^{\syn\omicron}} (\psi \syniff y)} }
+    \end{prooftree}
+  \end{equation*}
+
+  Thus, the theory \( \Gamma \) becomes irrelevant.
+
+  Now consider \eqref{eq:def:hol_definition/definition}, which in this case becomes
+  \begin{equation}\label{eq:ex:simplified_hol_predicate_definition/definition_raw}
+    \qforall {{x_1}^{\tau_1}} \ldots \qforall {{x_n}^{\tau_n}} \qforall {y^{\syn\omicron}} \parens[\big]{ f(x_1, \ldots, x_n) \syneq y \syniff (\psi \syniff y) }
+  \end{equation}
+
+  The following tree demonstrates that it follows from \eqref{eq:ex:simplified_hol_predicate_definition/definition}:
+  \begin{equation*}
+    \begin{prooftree}
+      \hypo{ [\eqref{eq:ex:simplified_hol_predicate_definition/definition}]^u }
+      \infer1[\ref{inf:def:hol_quantifier_rules/terms/forall_elim}]{}
+      \ellipsis {} {}
+      \infer1[\ref{inf:def:hol_quantifier_rules/terms/forall_elim}]{ f(x_1, \ldots, x_n) \syniff \psi }
+      \infer1[\ref{inf:def:hol_equality_rules/equiv}]{ f(x_1, \ldots, x_n) \syneq \psi }
+
+      \hypo{ [\psi]^v }
+
+      \hypo{ [\psi \syniff y^{\syn\omicron}]^w }
+      \hypo{ [\psi]^v }
+      \infer2[\ref{inf:def:propositional_natural_deduction_systems/iff/elim_left}]{ y^{\syn\omicron} }
+
+      \hypo{ [\psi \syniff y^{\syn\omicron}]^w }
+      \infer[left label=\( w \)]2[\ref{inf:def:propositional_natural_deduction_systems/iff/intro}]{ y^{\syn\omicron} \syniff (\psi \syniff y^{\syn\omicron}) }
+
+      \infer[left label=\( v \)]2[\ref{inf:def:propositional_natural_deduction_systems/iff/intro}]{ \psi \syniff (y^{\syn\omicron} \syniff (\psi \syniff y^{\syn\omicron})) }
+
+      \infer1[\ref{inf:def:hol_equality_rules/equiv}]{ \psi \syneq (y^{\syn\omicron} \syniff (\psi \syniff y^{\syn\omicron})) }
+
+      \infer2[\ref{inf:def:hol_equality_rules/elim}]{ f(x_1, \ldots, x_n) \syneq (y^{\syn\omicron} \syniff (\psi \syniff y^{\syn\omicron})) }
+      \infer1[\ref{inf:def:hol_quantifier_rules/eigenvariables/forall_intro}]{ \qforall {y^{\syn\omicron}} \parens[\big]{ f(x_1, \ldots, x_n) \syneq (y \syniff (\psi \syniff y)) } }
+      \infer1[\ref{inf:def:hol_quantifier_rules/eigenvariables/forall_intro}]{  }
+      \ellipsis {} {}
+      \infer1[\ref{inf:def:hol_quantifier_rules/eigenvariables/forall_intro}]{ \eqref{eq:ex:simplified_hol_predicate_definition/definition_raw} }
+    \end{prooftree}
+  \end{equation*}
+\end{example}
+
+\begin{definition}\label{def:hol_definitional_extension}\mcite[def. 2.6.12]{Hinman2005Logic}
+  Let \( \Sigma' \) be an \hyperref[def:hol_signature_extension]{extension} of the \hyperref[def:hol_signature]{signature} \( \Sigma \) of higher-order logic with finitely many new nonlogical symbols \( f_1, \ldots, f_m \).
+
+  If \( \Gamma \) is a \hyperref[def:hol_theory]{theory} over \( \Sigma \) and \( \Gamma' \) is theory over \( \Sigma' \) axiomatized by \( \Gamma \) and the \hyperref[def:hol_definition]{definitions} for \( f_1, \ldots, f_m \), we say that \( \Gamma' \) is a \term{definitional extension} of the theory \( \Gamma \).
+\end{definition}

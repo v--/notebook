@@ -18,6 +18,8 @@
   \end{thmenum}
 \end{definition}
 \begin{comments}
+  \item In a saturated frame, it is sufficient to specify only the universes of sorts.
+
   \item We adapt Andrew's definition from \cite[238]{Andrews2002Logic} by allowing arbitrary truth value algebras and arbitrary sorts.
 
   We refer to the individual sets as \enquote{universes} rather than Andrews' term \enquote{domains}; see \cref{rem:model_theory_universe_terminology}.
@@ -32,7 +34,7 @@
     \item \enquote{Universe} is used by \cite[83]{Hinman2005Logic} and \cite[59]{VanDalen2004LogicAndStructure} for first-order structures.
 
     \item \enquote{Domain} is used by
-    \cite[84]{Henkin1950CompletenssInTheoryOfTypes},
+    \cite[84]{Henkin1950CompletenessInTheoryOfTypes},
     \cite[238]{Andrews2002Logic} and
     \cite[271]{Farmer2008STTVirtues}
     for frames, and by
@@ -49,7 +51,6 @@
   A \term{structure} over a given \hyperref[def:hol_signature]{signature} \( \Sigma \) of higher-order logic is a \hyperref[def:hol_frame]{frame} \( \seq{ X_\tau }_{\tau \in \op*{\BbbQ_\Sigma}} \) endowed with a function \( I \) such that \( I(c) \in X_\tau \) whenever \( (c: \tau) \in \op*{NLType}_\Sigma \).
 
   We call \( I \) the \term{interpretation} of the structure \( \mscrX \coloneqq (\seq{ X_\tau }_{\tau \in \op*{\BbbQ_\Sigma}}, I) \).
-
 \end{definition}
 \begin{comments}
   \item The interpretation is well-defined as a function since it maps \( \op*{NLConst}_\Sigma \) to the union \( \bigcup_{\tau \in \op*{\BbbQ_\Sigma}} X_\tau \).
@@ -68,14 +69,14 @@
 
   This is especially useful for one-sorted first-order logic, where only one universe is needed --- that of individuals --- and we can say \enquote{Let \( \mscrP = (P, \leq) \) be a \hyperref[def:partially_ordered_set]{partially ordered sets}}.
 
-  Outside logic, for more complicated signature like that of the \hyperref[def:group/theory]{theory of groups}, it is burdensome to specify the entire signature since it is tantamount specifying a quadruple \( (G, e, (\anon)^{-1}, \cdot) \). Often it is sufficient to write only the domain \( G \) and say \enquote{Let \( G \) be a group} or even \enquote{Let \( (G, \ast) \) be a group} if we wish to spotlight the symbol used for the group operation. This is technically wrong, but it is both convenient and conventional. The rest of the definition of the group can easily be inferred. In case of ambiguity, the simplest disambiguation is to use lower indices with the name of the structure, e.g. \( +_G \) and \( +_H \) may be the addition operation in different abelian groups.
+  Outside logic, for more complicated signature like that of the \hyperref[def:group/theory]{theory of groups}, it is burdensome to specify the entire signature since it is tantamount specifying a quadruple \( (G, e, (\anon)^{-1}, \cdot) \). Often it is sufficient to write only the domain \( G \) and say \enquote{let \( G \) be a group} or even \enquote{let \( (G, \ast) \) be a group} instead of \enquote{let \( G \) be a group with respect to some operation \( {\ast} \)}. This is technically wrong, but it is both convenient and conventional. The rest of the definition of the group can easily be inferred. In case of ambiguity, the simplest disambiguation is to use lower indices with the name of the structure, e.g. \( +_G \) and \( +_H \) may be the addition operation in different abelian groups.
 \end{remark}
 
-\begin{definition}\label{def:hol_assignment}\mcite[238]{Andrews2002Logic}
-  An \term{assignment} of variables in a given \hyperref[def:hol_frame]{frame} \( \seq{ X_\tau }_{\tau \in \op*{\BbbQ_\Sigma}} \) is a function \( v \) that sends each possible annotated variable \( x^\tau \) to an element of \( X_\tau \).
+\begin{definition}\label{def:hol_variable_assignment}\mcite[238]{Andrews2002Logic}
+  A \term{variable assignment} in a given \hyperref[def:hol_frame]{frame} \( \seq{ X_\tau }_{\tau \in \op*{\BbbQ_\Sigma}} \) is a function \( v \) that sends each possible annotated variable \( x^\tau \) to an element of \( X_\tau \).
 
   \begin{thmenum}
-    \thmitem{def:hol_assignment/modified}\mimprovised For every variable \( x^\tau \) and every domain element \( a \in X^\tau \) we also define the \term{modified assignment} of \( v \) at \( x^\tau \) with \( a \):
+    \thmitem{def:hol_variable_assignment/modified}\mimprovised For every variable \( x^\tau \) and every domain element \( a \in X_\tau \) we also define the \term{modified assignment} of \( v \) at \( x^\tau \) with \( a \):
     \begin{equation*}
       v_{x^\tau \mapsto a}(y^\sigma) \coloneqq \begin{cases}
         a,           &y = x \T{and} \tau = \sigma, \\
@@ -104,22 +105,26 @@
 \end{comments}
 
 \begin{definition}\label{def:hol_term_valuation}\mimprovised
-  Fix a \hyperref[def:hol_structure]{structure} \( \mscrX = (\seq{ X_\tau }_{\tau \in \op*{\BbbQ_\Sigma}}, I) \) of \hyperref[def:higher_order_logic]{higher-order logic} over the \hyperref[def:truth_value_algebra]{truth value algebra} \( \BbbH \). Fix also an \hyperref[def:hol_assignment]{assignment} \( v \) into the frame of \( \mscrX \).
+  Fix a \hyperref[def:hol_structure]{structure} \( \mscrX = (\seq{ X_\tau }_{\tau \in \op*{\BbbQ_\Sigma}}, I) \) of \hyperref[def:higher_order_logic]{higher-order logic} over the \hyperref[def:truth_value_algebra]{truth value algebra} \( \BbbH \). Fix also a \hyperref[def:hol_variable_assignment]{variable assignment} \( v \) into the frame of \( \mscrX \).
 
   We will define the \term{valuation} \( \Bracks{ M^\tau }_\mscrX^v \) of \( M^\tau \) with respect to \( \mscrX \) and \( v \). We want \( \Bracks{ M^\tau }_\mscrX^v \) to be an element of \( X_\tau \).
 
   First, suppose that \( \tau = \syn\omicron \) and \( M = \varphi \) is a \hyperref[def:hol_term/formula]{logical formula} typed by the rules of \cref{def:hol_formula_rules}. In this case the valuation should be an element of \( \BbbH \). We define
   \begin{empheq}[left={\Bracks{\varphi}_\mscrX^v} \coloneqq \empheqlbrace]{align}
-    &T,                                                                                           &&\varphi = \synH_\syntop,                                           && (\syntop)                  \label{eq:def:hol_term_valuation/formula/top} \\
-    &F,                                                                                           &&\varphi = \synH_\synbot,                                           && (\synbot)                  \label{eq:def:hol_term_valuation/formula/bot} \\
-    &\oline{\Bracks{\psi}_\mscrX^v},                                                              &&\varphi = \synH_\synneg \psi,                                      && (\synneg \psi)             \label{eq:def:hol_term_valuation/formula/neg} \\
-    &\Bracks{\psi}_\mscrX^v \relcirc \Bracks{\theta}_\mscrX^v,                                    &&\varphi = \synH_{\syncirc} \psi \theta, {\syncirc} \in \op*{Conn}, && (\psi \syncirc \theta)     \label{eq:def:hol_term_valuation/formula/conn} \\
-    &\Bracks{N^\sigma}_\mscrX^v = \Bracks{K^\sigma}_\mscrX^v,                                     &&\varphi = \synH_\syneq N^\sigma K^\sigma,                          && (M^\sigma \syneq N^\sigma) \label{eq:def:hol_term_valuation/formula/eq} \\
-    &\bigwedge\set[\big]{ \Bracks{\psi}_\mscrX^{v^{x^\sigma \mapsto a}} \given* a \in X^\sigma }, &&\varphi = \synH_{\synforall} (\qabs {x^\sigma} \psi),              && (\qforall {x^\sigma} \psi) \label{eq:def:hol_term_valuation/formula/forall} \\
-    &\bigvee\set[\big]{ \Bracks{\psi}_\mscrX^{v^{x^\sigma \mapsto a}} \given* a \in X^\sigma },   &&\varphi = \synH_{\synexists} (\qabs {x^\sigma} \psi),              && (\qexists {x^\sigma} \psi) \label{eq:def:hol_term_valuation/formula/exists}
+    &T,                                                                                           &&\varphi = \synH_\syntop,                               && (\syntop)                  \label{eq:def:hol_term_valuation/formula/top} \\
+    &F,                                                                                           &&\varphi = \synH_\synbot,                               && (\synbot)                  \label{eq:def:hol_term_valuation/formula/bot} \\
+    &\oline{\Bracks{\psi}_\mscrX^v},                                                              &&\varphi = \synH_\synneg \psi,                          && (\synneg \psi)             \label{eq:def:hol_term_valuation/formula/neg} \\
+    &\Bracks{\psi}_\mscrX^v \relcirc \Bracks{\theta}_\mscrX^v,                                    &&\varphi = \synH_{\syncirc} \psi \theta,                && (\psi \syncirc \theta)     \label{eq:def:hol_term_valuation/formula/conn} \\
+    &\delta\parens[\big]{ \Bracks{N^\sigma}_\mscrX^v, \Bracks{K^\sigma}_\mscrX^v },               &&\varphi = \synH_\syneq N^\sigma K^\sigma,              && (M^\sigma \syneq N^\sigma) \label{eq:def:hol_term_valuation/formula/eq} \\
+    &\bigwedge\set[\big]{ \Bracks{\psi}_\mscrX^{v^{x^\sigma \mapsto a}} \given* a \in X_\sigma }, &&\varphi = \synH_{\synforall} (\qabs {x^\sigma} \psi),  && (\qforall {x^\sigma} \psi) \label{eq:def:hol_term_valuation/formula/forall} \\
+    &\bigvee\set[\big]{ \Bracks{\psi}_\mscrX^{v^{x^\sigma \mapsto a}} \given* a \in X_\sigma },   &&\varphi = \synH_{\synexists} (\qabs {x^\sigma} \psi),  && (\qexists {x^\sigma} \psi) \label{eq:def:hol_term_valuation/formula/exists}
   \end{empheq}
 
-  Most of the cases above are familiar from the propositional valuations defined in \cref{def:propositional_valuation/formula_valuation}. In \eqref{eq:def:hol_term_valuation/formula/eq} we want the valuations of the two subterms to be equal in the \hyperref[con:metalogic]{metalogic}. The cases \eqref{eq:def:hol_term_valuation/formula/forall} and \eqref{eq:def:hol_term_valuation/formula/exists} evaluates \( \psi \) using a \hyperref[def:hol_assignment/modified]{modified assignment} parameterized by the elements of \( X^\sigma \).
+  Most of the cases above are familiar from the propositional valuations defined in \cref{def:propositional_valuation/formula_valuation}.
+  \begin{itemize}
+    \item In \eqref{eq:def:hol_term_valuation/formula/eq}, the function \( \delta(a, b) \) is \( T \) if \( a = b \) and \( F \) otherwise.
+    \item The cases \eqref{eq:def:hol_term_valuation/formula/forall} and \eqref{eq:def:hol_term_valuation/formula/exists} evaluates \( \psi \) using a \hyperref[def:hol_variable_assignment/modified]{modified assignment} parameterized by the elements of \( X_\sigma \).
+  \end{itemize}
 
   In all other cases, the valuation is determined as follows:
   \begin{empheq}[left={\Bracks{ M^\tau }_\mscrX^v} \coloneqq \empheqlbrace]{align}
@@ -129,24 +134,22 @@
     &\Bracks{ N^{\sigma \synimplies \tau} }_\mscrX^v \parens[\big]{ \Bracks{ K^\sigma }_\mscrX^v }, &&M^\tau = N^{\sigma \synimplies \tau} K^\sigma.                           \label{eq:def:hol_term_valuation/app}
   \end{empheq}
 
-  Here \eqref{eq:def:hol_term_valuation/abs} determines a function whose value for \( a \in X^\sigma \) is the valuation of \( N^\rho \) with respect to \( v \) modified at \( x^\sigma \) with \( a \). This ensures that the valuation of an arrow type is a function, so in \eqref{eq:def:hol_term_valuation/app} we apply the valuation of the left (function) subterm to the valuation of the right subterm.
-
-  Finally, if \( M^\tau \) is a \hyperref[def:hol_term/closed]{closed logical term}, its valuation does not depend on the assignment, we denote it by \( \Bracks{ M^\tau }_\mscrX \).
+  Here \eqref{eq:def:hol_term_valuation/abs} determines a function whose value for \( a \in X_\sigma \) is the valuation of \( N^\rho \) with respect to \( v \) modified at \( x^\sigma \) with \( a \). This ensures that the valuation of an arrow type is a function, so in \eqref{eq:def:hol_term_valuation/app} we apply the valuation of the left (function) subterm to the valuation of the right subterm.
 \end{definition}
 \begin{comments}
   \item We take the definition of valuation for arbitrary terms from \cite[238]{Andrews2002Logic}. For formulas, we generalize the valuations of first-order formulas defined in \cref{def:first_order_valuation}.
 
-  \item As per \cref{rem:parameters_in_hol}, unlike in propositional or first-order logic, here we will not be interested in treating formulas with free variables as functions, as in \cref{def:propositional_valuation/formula_valuation_function}.
+  \item As per \cref{rem:parameters_in_hol}, due to the availability of \( \muplambda \)-abstraction, we will not be interested in treating formulas with free variables as functions (unlike in propositional or first-order logic).
 \end{comments}
 
 \begin{remark}\label{rem:predicate_logic_empty_universe}
   We list several complications that arise if we allow empty universes in \hyperref[def:hol_structure]{structures} of \hyperref[def:higher_order_logic]{higher-order logic}. We allow such structures in some isolated cases like \hyperref[def:preordered_set]{preordered sets} and \hyperref[def:topological_space]{topological spaces}, where tradition dictates allowing empty domains (and ignoring these concerns).
 
-  Let \( \mscrX = (\seq{ X_\tau }_{\tau \in \op*{\BbbQ_\Sigma}}, I) \) be a structure over a one-sorted signature \( \Sigma \), and suppose that \( X^{\syn\iota} \) is empty.
+  Let \( \mscrX = (\seq{ X_\tau }_{\tau \in \op*{\BbbQ_\Sigma}}, I) \) be a structure over a one-sorted signature \( \Sigma \), and suppose that \( X_{\syn\iota} \) is empty.
   \begin{thmenum}
-    \thmitem{rem:predicate_logic_empty_universe/function_set} An immediate peculiarity is that the function universe \( X_{\tau \synimplies \syn\iota} \) is empty if and only if \( X^\tau \) is \hi{not} empty.
+    \thmitem{rem:predicate_logic_empty_universe/function_set} An immediate peculiarity is that the function universe \( X_{\tau \synimplies \syn\iota} \) is empty if and only if \( X_\tau \) is \hi{not} empty.
 
-    In particular, \( X^{\syn\omicron \synimplies \syn\iota} \) is empty (but \( X^{\syn\iota \synimplies \syn\omicron} \) is not).
+    In particular, \( X_{\syn\omicron \synimplies \syn\iota} \) is empty (but \( X_{\syn\iota \synimplies \syn\omicron} \) is not).
 
     We must thus reconcile with possibly empty sets of functions.
 
@@ -156,9 +159,9 @@
 
     Therefore, allowing empty universes is only meaningful when dealing with constants of types whose universe are guaranteed to be nonempty. Such is the case for \hyperref[def:hol_term/predicate]{predicates}, for example.
 
-    \thmitem{rem:predicate_logic_empty_universe/assignment} Even if all constants have a proper interpretation, variable valuations are impossible to define.
+    \thmitem{rem:predicate_logic_empty_universe/variable_assignment} Even if all constants have a proper interpretation, variable assignments are impossible to define.
 
-    It is easy to avoid free variables in \hyperref[def:logical_theory]{logical theories} by only considering closed formulas and using \hyperref[def:universal_closure]{universal closures} where appropriate. It is also easy to avoid other logical terms that would otherwise inhabit an empty type.
+    It is easy to avoid free variables in \hyperref[def:logical_theory]{logical theories} by only considering closed formulas and using \hyperref[def:fol_universal_closure]{universal closures} where appropriate. It is also easy to avoid other logical terms that would otherwise inhabit an empty type.
 
     Thus, when computing valuations using \eqref{eq:def:hol_term_valuation/formula/forall} or \eqref{eq:def:hol_term_valuation/formula/exists}, we must rely on lattice meets and joins behaving trivially for empty sets.
 
@@ -174,7 +177,7 @@
     An obvious problem is that
     \begin{equation*}
       \Bracks{\qforall {x^\tau} \varphi}_\mscrX
-      =
+      \reloset {\eqref{eq:def:hol_term_valuation/formula/forall}} =
       \bigwedge\varnothing
       =
       T
@@ -182,15 +185,165 @@
       F
       =
       \bigvee\varnothing
-      =
+      \reloset {\eqref{eq:def:hol_term_valuation/formula/exists}} =
       \Bracks{\qexists {x^\tau} \varphi}_\mscrX.
     \end{equation*}
 
-    As stated, both inference rules are applicable with \( M^\tau = x^\tau \). But a variable is a placeholder for a value. One solution is to require \( M^\tau \) to refer to an actual value.
+    As stated, both inference rules are applicable with \( M^\tau = x^\tau \). But a variable is a placeholder for a value. One solution is to force \( M^\tau \) to refer to an actual value.
 
     \incite*[\S 5.1.10]{Mimram2020ProgramEqualsProof} suggests an unorthodox tweak for his formulation of first-order logic. In our formulation, the tweak would require us to modify \ref{inf:def:hol_quantifier_rules/terms/forall_elim} and \ref{inf:def:hol_quantifier_rules/terms/exists_intro} so that the free variables of the term \( M^\tau \) are free in the proof tree (in the sense of \cref{def:hol_natural_deduction_proof_tree/free_variables}). This would disallow \( M^\tau = x^\tau \), and instead require \( M^\tau \) to be a logical term not depending on \( x^\tau \) like an individual constant.
   \end{thmenum}
 \end{remark}
 
-\begin{remark}\label{rem:predicate_logic_sentences}
+\paragraph{Universal validity}
+
+\begin{definition}\label{def:hol_universal_validity}\mimprovised
+  If, for some \hyperref[def:hol_term/formula]{higher-order logical formula} \( \varphi \), the \hyperref[def:hol_term_valuation]{valuation} \( \Bracks{ \varphi }_\mscrX^v \) equals \( T \) for any variable assignment \( v \), we say that \( \varphi \) is \term{universally valid} and use the notation \( \Bracks{ \varphi }_\mscrX \).
+\end{definition}
+\begin{comments}
+  \item \hyperref[def:hol_term/closed]{Closed terms} are universally valid, but the notion is more general --- see \cref{ex:universal_validity_and_lem}.
+
+  \item Universal validity is closely related to \hyperref[def:hol_universal_closure]{universal closures} --- see \cref{thm:hol_universal_validity_iff_closure_validity}.
+
+  \item We generalize universal validity as defined for first-order logic in \cref{def:fol_universal_validity}.
+\end{comments}
+
+\begin{definition}\label{def:hol_universal_closure}\mimprovised
+  We call a \term{universal closure} of the \hyperref[def:hol_term/formula]{higher-order logical formula} \( \varphi \) any formula of the form
+  \begin{equation*}
+    \qforall {x_1^{\tau_1}} \ldots \qforall {x_n^{\tau_n}} \varphi,
+  \end{equation*}
+  where \( x_1^{\tau_1}, \ldots, x_n^{\tau_n} \) is an \hyperref[def:enumeration]{enumeration} of the free variables of \( \varphi \).
+
+  Using the \hyperref[def:lexicographic_order]{lexicographic order} on the variables, we may pick a canonical closure, which we will call the \term{lexicographic} universal closure, or simply \enquote{the} universal closure of \( \varphi \).
+\end{definition}
+\begin{comments}
+  \item We generalize universal closures as defined for first-order logic in \cref{def:fol_universal_closure}.
+\end{comments}
+
+\begin{proposition}\label{thm:hol_universal_validity_iff_closure_validity}
+ A \hyperref[def:hol_term/formula]{higher-order logical formula} \( \varphi \) is \hyperref[def:hol_universal_validity]{universally valid} if and only if of its \hyperref[def:hol_universal_closure]{universal closures} are.
+\end{proposition}
+\begin{comments}
+  \item Universal closures are nevertheless better behaved than simply universally valid formulas --- see \cref{ex:universal_validity_and_lem}.
+\end{comments}
+\begin{proof}
+  Fix a \hyperref[def:hol_structure]{structure} \( \mscrX = (\seq{ X_\tau }_{\tau \in \op*{\BbbQ_\Sigma}}, I) \) over the \hyperref[def:hol_signature]{signature} \( \Sigma \).
+
+  Let \( \varphi \) be a formula and let \( x_1^{\tau_1}, \ldots, x_n^{\tau_n} \) be any lexicographic ordering of its variables.
+
+  \SufficiencySubProof Suppose that \( \Bracks{ \varphi }_\mscrX^v = T \) for any assignment \( v \). Then
+  \begin{equation*}
+    \Bracks{ \qforall {x_n^{\tau_n}} \varphi }_\mscrX^v
+    \reloset {\eqref{eq:def:hol_term_valuation/formula/forall}} =
+    \bigwedge\set[\big]{ \Bracks{ \varphi }_\mscrX^{v^{x^{\tau_n} \mapsto a}} \given* a \in X_{\tau_n} }
+    =
+    \bigwedge\set[\big]{ T \given* a \in X_{\tau_n} }
+    =
+    T.
+  \end{equation*}
+
+  Proceeding by induction, we conclude that
+  \begin{equation*}
+    \Bracks{ \qforall {x_1^{\tau_1}} \ldots \qforall {x_n^{\tau_n}} \varphi }_\mscrX^v = T.
+  \end{equation*}
+
+  Since \( v \) is arbitrary, we conclude that the universal closure of \( \varphi \) is universally valid.
+
+  \NecessitySubProof Conversely, suppose that \( \Bracks{ \qforall {x_1^{\tau_1}} \ldots \qforall {x_n^{\tau_n}} \varphi }_\mscrX^v = T \) for any assignment \( v \).
+
+  Then, if for some assignment \( v_0 \) we have \( \Bracks{ \varphi }_\mscrX^{v_0} = F \), we would have
+  \begin{equation*}
+    \Bracks{ \qforall {x_n^{\tau_n}} \varphi }_\mscrX^v
+    \reloset {\eqref{eq:def:hol_term_valuation/formula/forall}} =
+    \bigwedge\set[\big]{ \Bracks{ \varphi }_\mscrX^{v^{x^{\tau_n} \mapsto a}} \given* a \in X_{\tau_n} }
+    \leq
+    \Bracks{ \varphi }_\mscrX^{v_0}
+    =
+    F.
+  \end{equation*}
+
+  By induction, we could then conclude that  \( \Bracks{ \qforall {x_1^{\tau_1}} \ldots \qforall {x_n^{\tau_n}} \varphi }_\mscrX^v = F \).
+
+  The obtained contradiction shows that \( \varphi \) must be universally valid.
+\end{proof}
+
+\begin{example}\label{ex:universal_validity_and_lem}
+  We will demonstrate a pathology of \hyperref[def:hol_universal_validity]{universal validity} of \hyperref[def:hol_term/formula]{higher-order logical formula} that can easily be avoided by restricting our attention to closed formulas.
+
+  We will discuss the law \eqref{eq:thm:classical_tautologies/lem} of the excluded middle, so we will be work with \hyperref[def:truth_value_algebra/classical]{classical semantics}.
+
+  Consider \( \varphi \coloneqq (\synx^{\syn\iota} \syneq \syny^{\syn\iota}) \) over a one-sorted \hyperref[def:hol_signature]{signature} \( \Sigma \). Fix a \hyperref[def:hol_structure]{structure} \( \mscrX = (\seq{ X_\tau }_{\tau \in \op*{\BbbQ_\Sigma}}, I) \) where \( X_{\syn\iota} \) has more than one element.
+
+  For any \hyperref[def:hol_variable_assignment]{variable assignment} \( v \), we have
+  \begin{equation*}
+    \Bracks{ \varphi }_\mscrX^v
+    =
+    \Bracks{ \synx^{\syn\iota} \syneq \syny^{\syn\iota} }_\mscrX^v
+    \reloset {\eqref{eq:def:hol_term_valuation/formula/eq}} =
+    \delta(\Bracks{ \synx^{\syn\iota} }_\mscrX^v, \Bracks{ \syny^{\syn\iota} }_\mscrX^v)
+    \reloset {\eqref{eq:def:hol_term_valuation/var}} =
+    \delta(v(\synx^{\syn\iota}), v(\syny^{\syn\iota}))
+    =
+    \begin{cases}
+      T, &v(\synx^{\syn\iota}) = v(\syny^{\syn\iota}), \\
+      F, &\T{otherwise.}
+    \end{cases}
+  \end{equation*}
+
+  Then it is straightforward to find assignments \( v \) such that \( \Bracks{ \varphi }_\mscrX^v = T \) and \( w \) such that \( \Bracks{ \varphi }_\mscrX^v = F \).
+
+  Clearly
+  \begin{equation*}
+    \Bracks{ \varphi \synvee \synneg \varphi }_\mscrX^v
+    \reloset {\eqref{eq:def:hol_term_valuation/formula/conn}} =
+    \Bracks{ \varphi }_\mscrX^v \synvee \Bracks{ \synneg \varphi }_\mscrX^v
+    \reloset {\eqref{eq:def:hol_term_valuation/formula/neg}} =
+    \Bracks{ \varphi }_\mscrX^v \synvee \oline{ \Bracks{ \varphi }_\mscrX^v }
+    =
+    T.
+  \end{equation*}
+
+  Therefore, even though the valuations of \( \varphi \) and \( \synneg \varphi \) depend on \( v \), the valuation of \( \varphi \synvee \synneg \varphi \) does not. This is hardly surprising given that \eqref{eq:thm:classical_tautologies/lem} is a \hyperref[def:propositional_tautology]{tautology}.
+
+  Then \( \varphi \synvee \synneg \varphi \) is universally valid. But neither \( \varphi \) nor \( \synneg \varphi \) are universally valid, so the corresponding statement of the \hyperref[con:metalogic]{metalanguage}, \enquote{either \( \varphi \) or \( \synneg \varphi \) or both are universally valid}, is false.
+
+  On the other hand, if we take the \hyperref[def:hol_universal_closure]{universal closure} \( \psi \coloneqq \qforall {\synx^{\syn\iota}} \qforall {\syny^{\syn\iota}} (\synx \syneq \syny) \) of \( \varphi \), then
+  \begin{balign*}
+    \Bracks{ \psi }_\mscrX^v
+    &=
+    \Bracks{ \qforall {\synx^{\syn\iota}} \qforall {\syny^{\syn\iota}} (\synx \syneq \syny) }_\mscrX^v
+    \reloset {\eqref{eq:def:hol_term_valuation/formula/forall}} = \\ &=
+    \bigwedge\set[\big]{ \Bracks{ \qforall {\syny^{\syn\iota}} (\synx \syneq \syny) }_\mscrX^{v^{x^\syn\iota \mapsto a}} \given* a \in X_\syn\iota }
+    \reloset {\eqref{eq:def:hol_term_valuation/formula/forall}} = \\ &=
+    \bigwedge\set[\big]{ \Bracks{ \synx \syneq \syny }_\mscrX^{v^{x^\syn\iota \mapsto a, y^\syn\iota \mapsto b}} \given* a \in X_\syn\iota \T{and} b \in X_\syn\iota }
+    \reloset {\eqref{eq:def:hol_term_valuation/formula/conn}} = \\ &=
+    \bigwedge\set[\big]{ \delta(a, b) \given* a \in X_\syn\iota \T{and} b \in X_\syn\iota }
+    = \\ &=
+    F,
+  \end{balign*}
+  so \( \Bracks{ \synneg \psi }_\mscrX^v = T \) and exactly one \( \psi \) and \( \synneg \psi \) is universally valid.
+\end{example}
+
+\paragraph{Models}
+
+\begin{definition}\label{def:hol_model}\mcite[239]{Andrews2002Logic}
+  We say that the \hyperref[def:hol_structure]{structure} \( \mscrX \) of \hyperref[def:higher_order_logic]{higher-order logic} is a \term{general model} of the set \( \Gamma \) of \hyperref[def:hol_term/sentence]{\hi{closed} formulas} (sentences) if \( \Bracks{\varphi}_\mscrX = T \) for every \( \varphi \) in \( \Gamma \).
+
+  In the special case where the frame of \( \mscrX \) is saturated, we call \( \mscrX \) a \term{standard model} of \( \Gamma \).
+
+  We use the terminology from \cref{def:institutional_satisfaction} regarding satisfaction and validity. Incidentally, the phrases \enquote{\( \Gamma \) is satisfiable} and \enquote{\( \Gamma \) is valid} are ambiguous here, so we use Henkin's disambiguation \enquote{valid in the standard sense} from \cite[84]{Henkin1950CompletenessInTheoryOfTypes}.
+\end{definition}
+\begin{comments}
+  \item It is important that the formulas in \( \Gamma \) are closed --- see \cref{ex:universal_validity_and_lem}.
+
+  \item Even though we call \( \mscrX \) a \enquote{(general) model of \( \Gamma \)}, unlike in general \hyperref[def:institution]{institutions}, we do not refer to itself \( \mscrX \) as a \enquote{model} without a corresponding set of formulas. We further discuss this terminology in \cref{rem:institutional_model_terminology}.
+\end{comments}
+
+\begin{remark}\label{rem:henkin_semantics}
+  As defined in \cref{def:hol_model}, general and standard models in \hyperref[def:higher_order_logic]{higher-order logic} are a straightforward adaptation of Leon Henkin's definitions from \cite{Henkin1950CompletenessInTheoryOfTypes}.
+
+  He also formulated a proof system and proved \hyperref[def:abstract_logic/completeness]{completeness} of this system proof system with respect to general (but not standard) models. As part of the proof, Henkin constructs a specific general model.
+
+  The phrase \enquote{Henkins model} may refer either to his general models based on frames, or to variants of the specific construction. For example, \incite[xii]{Hinman2005Logic} refers to an analogous construction in \hyperref[def:first_order_logic]{first-order logic} as a \enquote{Henkin model}.
 \end{remark}
