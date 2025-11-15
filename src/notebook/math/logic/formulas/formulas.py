@@ -2,7 +2,7 @@ from dataclasses import dataclass
 from typing import TypeGuard
 
 from ..alphabet import BinaryConnective, PropConstant, Quantifier, UnaryPrefix
-from ..terms import FunctionLikeTerm, Term, Variable
+from ..terms import FunctionLike, Term, Variable
 
 
 @dataclass(frozen=True)
@@ -22,7 +22,7 @@ class EqualityFormula:
         return f'({self.left} = {self.right})'
 
 
-class PredicateFormula(FunctionLikeTerm[Term]):
+class PredicateFormula(FunctionLike[Term]):
     pass
 
 

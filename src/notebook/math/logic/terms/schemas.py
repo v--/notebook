@@ -1,7 +1,7 @@
 from dataclasses import dataclass
 
 from ....parsing.identifiers import GreekIdentifier, LatinIdentifier
-from .terms import FunctionLikeTerm
+from .terms import FunctionLike
 
 
 @dataclass(frozen=True)
@@ -20,7 +20,7 @@ class TermPlaceholder:
         return str(self.identifier)
 
 
-class FunctionTermSchema(FunctionLikeTerm['TermSchema']):
+class FunctionTermSchema(FunctionLike['TermSchema']):
     pass
 
 

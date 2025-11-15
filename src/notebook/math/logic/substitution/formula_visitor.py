@@ -1,3 +1,7 @@
+from collections.abc import Mapping
+from dataclasses import dataclass
+from typing import override
+
 from ..formulas import (
     EqualityFormula,
     Formula,
@@ -6,59 +10,45 @@ from ..formulas import (
     PredicateFormula,
     QuantifierFormula,
 )
-from ..terms import Term
-from ..variables import get_free_variables, get_term_variables, new_variable
+from ..terms import Term, Variable
+from .substitution import LogicSubstitution, infer_substitution
 from .term_visitor import TermSubstitutionVisitor
 
 
+@dataclass(frozen=True)
 class FormulaSubstitutionVisitor(FormulaTransformationVisitor):
-    def __init__(self, from_term: Term, to_term: Term) -> None:
-        self.from_term = from_term
-        self.to_term = to_term
-        super().__init__()
+    substitution: LogicSubstitution
 
+    @override
     def visit_equality(self, formula: EqualityFormula) -> EqualityFormula:
-        term_visitor = TermSubstitutionVisitor(self.from_term, self.to_term)
+        term_visitor = TermSubstitutionVisitor(self.substitution)
         return EqualityFormula(term_visitor.visit(formula.left), term_visitor.visit(formula.right))
 
+    @override
     def visit_predicate(self, formula: PredicateFormula) -> PredicateFormula:
-        term_visitor = TermSubstitutionVisitor(self.from_term, self.to_term)
+        term_visitor = TermSubstitutionVisitor(self.substitution)
         return PredicateFormula(formula.name, [term_visitor.visit(arg) for arg in formula.arguments])
 
     def visit_quantifier(self, formula: QuantifierFormula) -> QuantifierFormula:
-        free_from = get_term_variables(self.from_term)
-        free_to = get_term_variables(self.to_term)
-
-        # This first check is not strictly necessary, but it is how we defined the algorithm
-        if formula.var in free_from:
-            return formula
-
-        if formula.var not in {*free_from, *free_to}:
-            return QuantifierFormula(
-                formula.quantifier,
-                formula.var,
-                self.visit(formula.body)
-            )
-
-        new_var = new_variable({*free_from, *free_to, *get_free_variables(formula.body)})
-        sub_visitor = FormulaSubstitutionVisitor(formula.var, new_var)
-
-        return QuantifierFormula(
-            formula.quantifier,
-            new_var,
-            self.visit(sub_visitor.visit(formula.body))
-        )
+        new_var = self.substitution.get_modified_quantifier_variable(formula)
+        new_subst = self.substitution.modify_at(formula.var, new_var)
+        new_subformula = apply_formula_substitution(formula.body, new_subst)
+        return QuantifierFormula(formula.quantifier, new_var, new_subformula)
 
 
-def substitute_in_formula(formula: Formula, from_term: Term, to_term: Term) -> Formula:
-    return FormulaSubstitutionVisitor(from_term, to_term).visit(formula)
+def apply_formula_substitution(formula: Formula, substitution: LogicSubstitution) -> Formula:
+    return FormulaSubstitutionVisitor(substitution).visit(formula)
+
+
+def substitute_in_formula(formula: Formula, variable_mapping: Mapping[Variable, Term]) -> Formula:
+    return apply_formula_substitution(formula, LogicSubstitution(variable_mapping=variable_mapping))
 
 
 def evaluate_substitution_spec(spec: FormulaWithSubstitution) -> Formula:
     if spec.sub is None:
         return spec.formula
 
-    return substitute_in_formula(spec.formula, spec.sub.src, spec.sub.dest)
+    return apply_formula_substitution(spec.formula, infer_substitution(spec))
 
 
 def unwrap_substitution_spec(spec: FormulaWithSubstitution) -> Formula:

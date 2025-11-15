@@ -121,20 +121,20 @@ def test_move_negations_biconditional(dummy_signature: FormalLogicSignature) -> 
     dict(formula='∀y.p₁(x)',    expected='∀y.p₁(x)'),
     dict(formula='∀y.∀y.p₁(x)', expected='∀y.∀y.p₁(x)'),
     dict(formula='∀y.∀y.p₁(y)', expected='∀y.∀y.p₁(y)'),
-    dict(formula='(∀x.p₁(x) ∨ q₁(y))', expected='∀a.(p₁(a) ∨ q₁(y))'),
+    dict(formula='(∀x.p₁(x) ∨ q₁(y))', expected='∀x.(p₁(x) ∨ q₁(y))'),
     dict(formula='(∀x.p₁(x) ∨ q₁(x))', expected='∀a.(p₁(a) ∨ q₁(x))'),
-    dict(formula='(∀x.p₁(x) ∨ q₁(a))', expected='∀b.(p₁(b) ∨ q₁(a))'),
+    dict(formula='(∀x.p₁(x) ∨ q₂(a, x))', expected='∀b.(p₁(b) ∨ q₂(a, x))'),
     dict(
         formula='(∀x.p₁(x) ∨ ∀x.q₁(x))',
-        expected='∀a.∀b.(p₁(a) ∨ q₁(b))'
+        expected='∀x.∀a.(p₁(x) ∨ q₁(a))'
     ),
     dict(
         formula='((∃x.p₁(x) ∧ ∃y.q₁(y)) ∨ (∃x.p₁(x) ∧ ∃y.q₁(y)))',
-        expected='∃b.∃a.∃c.∃d.((p₁(b) ∧ q₁(a)) ∨ (p₁(c) ∧ q₁(d)))'
+        expected='∃x.∃y.∃a.∃b.((p₁(x) ∧ q₁(y)) ∨ (p₁(a) ∧ q₁(b)))'
     ),
     dict(
         formula='((∀x.p₁(x) ∨ q₁(x)) ∧ ∃a.r₁(a))',
-        expected='∃b.∀c.((p₁(c) ∨ q₁(x)) ∧ r₁(b))'
+        expected='∃a.∀b.((p₁(b) ∨ q₁(x)) ∧ r₁(a))'
     ),
 )
 def test_move_quantifiers(formula: str, expected: str, dummy_signature: FormalLogicSignature) -> None:
@@ -169,7 +169,7 @@ def test_move_quantifiers_biconditional(dummy_signature: FormalLogicSignature) -
     ),
     dict(
         formula='((∃x.¬p₁(x) → q₁(x)) ∧ ∃x.r₁(b))',
-        expected='∃a.∀c.((p₁(c) ∨ q₁(x)) ∧ r₁(b))'
+        expected='∃a.∀a.((p₁(a) ∨ q₁(x)) ∧ r₁(b))'
     ),
 )
 def test_to_pnf(formula: str, expected: str, dummy_signature: FormalLogicSignature) -> None:

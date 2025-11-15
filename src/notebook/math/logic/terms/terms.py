@@ -13,19 +13,22 @@ class Variable:
 
 
 @dataclass(frozen=True)
-class FunctionLikeTerm[ArgT]:
+class FunctionLike[ArgT]:
     name: str
     arguments: Sequence[ArgT]
 
     def __str__(self) -> str:
+        if len(self.arguments) == 0:
+            return self.name
+
         args = ', '.join(str(arg) for arg in self.arguments)
-        return f'{self.name}({args})' if len(args) > 0 else self.name
+        return f'{self.name}({args})'
 
     def __hash__(self) -> int:
         return hash(self.name) ^ hash(tuple(self.arguments))
 
 
-class FunctionTerm(FunctionLikeTerm['Term']):
+class FunctionTerm(FunctionLike['Term']):
     pass
 
 

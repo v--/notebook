@@ -59,7 +59,7 @@ class FreeVariableVisitor(FormulaVisitor[Collection[Variable]]):
         return {var for var in self.visit(formula.body) if var != formula.var}
 
 
-def get_free_variables(formula: Formula) -> Collection[Variable]:
+def get_formula_free_variables(formula: Formula) -> Collection[Variable]:
     return FreeVariableVisitor().visit(formula)
 
 
@@ -89,9 +89,9 @@ class BoundVariableVisitor(FormulaVisitor[Collection[Variable]]):
         return {*self.visit(formula.body), formula.var}
 
 
-def get_bound_variables(formula: Formula) -> Collection[Variable]:
+def get_formula_bound_variables(formula: Formula) -> Collection[Variable]:
     return BoundVariableVisitor().visit(formula)
 
 
 def get_formula_variables(formula: Formula) -> Collection[Variable]:
-    return {*get_free_variables(formula), *get_bound_variables(formula)}
+    return {*get_formula_free_variables(formula), *get_formula_bound_variables(formula)}

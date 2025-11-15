@@ -2,11 +2,7 @@ from collections.abc import Collection, Iterable, Mapping
 from typing import override
 
 from .....support.substitution import AbstractSubstitution
-from ...terms import (
-    UntypedAbstraction,
-    UntypedTerm,
-    Variable,
-)
+from ...terms import UntypedAbstraction, UntypedTerm, Variable
 from ...variables import get_free_variables, new_variable
 
 

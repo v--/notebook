@@ -11,7 +11,7 @@ from .formulas import (
     QuantifierFormula,
 )
 from .substitution import substitute_in_formula
-from .variables import get_bound_variables, get_free_variables, new_variable
+from .variables import get_formula_bound_variables, get_formula_free_variables, new_variable
 
 
 class PNFError(NotebookMathError):
@@ -154,7 +154,12 @@ class MoveQuantifiersVisitor(FormulaTransformationVisitor):
             raise PNFError(f'Unexpected connective {formula.conn}')
 
         if isinstance(formula.left, QuantifierFormula):
-            new_var = new_variable({*get_free_variables(formula.left.body), *get_free_variables(formula.right)})
+            right_free = get_formula_free_variables(formula.right)
+
+            if formula.left.var in right_free:
+                new_var = new_variable({*get_formula_free_variables(formula.left), *right_free})
+            else:
+                new_var = formula.left.var
 
             return QuantifierFormula(
                 formula.left.quantifier,
@@ -162,14 +167,19 @@ class MoveQuantifiersVisitor(FormulaTransformationVisitor):
                 self.visit(
                     ConnectiveFormula(
                         formula.conn,
-                        substitute_in_formula(formula.left.body, formula.left.var, new_var),
+                        substitute_in_formula(formula.left.body, {formula.left.var: new_var}),
                         formula.right
                     )
                 )
             )
 
         if isinstance(formula.right, QuantifierFormula):
-            new_var = new_variable({*get_free_variables(formula.left), *get_free_variables(formula.right.body)})
+            left_free = get_formula_free_variables(formula.left)
+
+            if formula.right.var in left_free:
+                new_var = new_variable({*left_free, *get_formula_free_variables(formula.right)})
+            else:
+                new_var = formula.right.var
 
             return QuantifierFormula(
                 formula.right.quantifier,
@@ -178,12 +188,12 @@ class MoveQuantifiersVisitor(FormulaTransformationVisitor):
                     ConnectiveFormula(
                         formula.conn,
                         formula.left,
-                        substitute_in_formula(formula.right.body, formula.right.var, new_var),
+                        substitute_in_formula(formula.right.body, {formula.right.var: new_var}),
                     )
                 )
             )
 
-        if len(get_bound_variables(formula.left)) == 0 and len(get_bound_variables(formula.right)) == 0:
+        if len(get_formula_bound_variables(formula.left)) == 0 and len(get_formula_bound_variables(formula.right)) == 0:
             return formula
 
         return self.visit(

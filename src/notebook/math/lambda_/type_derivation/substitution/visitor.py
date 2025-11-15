@@ -38,6 +38,7 @@ class TypedSubstitutionApplicationVisitor(TypedTermVisitor[TypedTerm]):
         return TypedAbstraction(new_var, term.var_type, new_subterm)
 
 
+# This is alg:simply_typed_substitution in the monograph
 def apply_tree_substitution_to_term(term: TypedTerm, substitution: TypeDerivationSubstitution) -> TypedTerm:
     return TypedSubstitutionApplicationVisitor(substitution).visit(term)
 

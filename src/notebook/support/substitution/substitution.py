@@ -2,12 +2,12 @@ from collections.abc import Collection
 from typing import Protocol, Self
 
 
-class AbstractSubstitution[VariableT, TermT](Protocol):
+class AbstractSubstitution[VariableT, ReplacementT](Protocol):
     def generate_fresh_variable(self, blacklist: Collection[VariableT]) -> VariableT:
         ...
 
-    def substitute_variable(self, var: VariableT) -> TermT:
+    def substitute_variable(self, var: VariableT) -> ReplacementT:
         ...
 
-    def modify_at(self, var: VariableT, replacement: TermT) -> Self:
+    def modify_at(self, var: VariableT, replacement: ReplacementT) -> Self:
         ...

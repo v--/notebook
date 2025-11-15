@@ -1,0 +1,102 @@
+from collections.abc import Mapping
+
+from ....support.pytest import pytest_parametrize_kwargs
+from ..parsing import parse_formula, parse_term, parse_variable
+from ..signature import FormalLogicSignature
+from .formula_visitor import substitute_in_formula
+from .term_visitor import substitute_in_term
+
+
+@pytest_parametrize_kwargs(
+    dict(
+        term='x',
+        mapping=dict(x='y'),
+        expected='y'
+    ),
+    dict(
+        term='y',
+        mapping=dict(x='z'),
+        expected='y'
+    ),
+    dict(
+        term='f₁(x)',
+        mapping=dict(x='y'),
+        expected='f₁(y)'
+    ),
+    dict(
+        term='f₂(g₁(x), y)',
+        mapping=dict(x='y', y='x'),
+        expected='f₂(g₁(y), x)'
+    )
+)
+def test_substitute_in_term(
+    term: str,
+    mapping: Mapping[str, str],
+    expected: str,
+    dummy_signature: FormalLogicSignature
+) -> None:
+    actual = substitute_in_term(
+        parse_term(term, dummy_signature),
+        {parse_variable(key): parse_term(value, dummy_signature) for key, value in mapping.items()}
+    )
+
+    assert str(actual) == expected
+
+
+@pytest_parametrize_kwargs(
+    # Straighforward substitution
+    dict(
+        formula='p₁(x)',
+        mapping=dict(x='y'),
+        expected='p₁(y)'
+    ),
+    dict(
+        formula='p₁(y)',
+        mapping=dict(x='z'),
+        expected='p₁(y)'
+    ),
+    # (Avoiding) capturing free variables
+    dict(
+        formula='∀x.p₁(y)',
+        mapping=dict(y='z'),
+        expected='∀x.p₁(z)'
+    ),
+    dict(
+        formula='∀x.p₁(y)',
+        mapping=dict(y='x'),
+        expected='∀a.p₁(x)'
+    ),
+    dict(
+        formula='∀x.p₂(x, y)',
+        mapping=dict(y='x'),
+        expected='∀a.p₂(a, x)'
+    ),
+    dict(
+        formula='∀x.p₃(x, y, z)',
+        mapping=dict(y='z', z='y'),
+        expected='∀x.p₃(x, z, y)'
+    ),
+    dict(
+        formula='∀x.p₃(x, y, z)',
+        mapping=dict(y='x', z='a'),
+        expected='∀b.p₃(b, x, a)'
+    ),
+    # (Avoiding) colliding variables
+    dict(
+        formula='∀x.p₁(y)',
+        mapping=dict(y='x'),
+        expected='∀a.p₁(x)'
+    ),
+)
+def test_substitute_in_formula(
+    formula: str,
+    mapping: Mapping[str, str],
+    expected: str,
+    dummy_signature: FormalLogicSignature
+) -> None:
+    actual = substitute_in_formula(
+        parse_formula(formula, dummy_signature),
+        {parse_variable(key): parse_term(value, dummy_signature) for key, value in mapping.items()}
+    )
+
+    assert str(actual) == expected

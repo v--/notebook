@@ -2,7 +2,7 @@ from collections.abc import Mapping
 
 from ....support.pytest import pytest_parametrize_kwargs
 from ..parsing import parse_untyped_term, parse_variable
-from .substitution import UntypedTermSubstitution, apply_term_substitution
+from .substitution import substitute
 
 
 @pytest_parametrize_kwargs(
@@ -82,17 +82,10 @@ from .substitution import UntypedTermSubstitution, apply_term_substitution
         expected='(λa.(ax))'
     )
 )
-def test_substitute_in_term(term: str,
-    mapping: Mapping[str, str],
-    expected: str
-) -> None:
-    sub = apply_term_substitution(
+def test_substitute_in_term(term: str, mapping: Mapping[str, str], expected: str) -> None:
+    sub = substitute(
         parse_untyped_term(term),
-        UntypedTermSubstitution(
-            variable_mapping={
-                parse_variable(key): parse_untyped_term(value) for key, value in mapping.items()
-            }
-        )
+        {parse_variable(key): parse_untyped_term(value) for key, value in mapping.items()}
     )
 
     assert str(sub) == expected
