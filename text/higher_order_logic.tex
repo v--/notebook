@@ -4,105 +4,6 @@ We give here the following definition, and then proceed to explain it:
 \begin{definition}\label{def:higher_order_logic}
 \end{definition}
 
-\paragraph{Predicates}
-
-\begin{concept}\label{con:denotation}
-  Bertrand Russell begins his philosophical paper \cite{Russell1905OnDenoting} as follows:
-  \begin{displayquote}
-    By a \enquote{denoting phrase} I mean a phrase such as any one of the following: a man, some man, any man, every man, all men, the present King of England, the present King of France, the centre of mass of the Solar System at the first instant of the twentieth century, the revolution of the earth round the sun, the revolution of the sun round the earth. Thus a phrase is denoting solely in virtue of its form. We may distinguish three cases: (1) A phrase may be denoting, and yet not denote anything; \textit{e.g.}, \enquote{the present King of France}. (2) A phrase may denote one definite object; \textit{e.g.}, \enquote{the present King of England} denotes a certain man. (3) A phrase may denote ambiguously, \textit{e.g.}, \enquote{a man} denotes not many men, but an ambiguous man. The interpretation of such phrases is a matter of considerable difficulty; indeed, it is very hard to frame any theory not susceptible of formal refutation.
-  \end{displayquote}
-
-  Later in the paper, Russell discusses \term{denotations} and how they relate to the meaning of denoting phrases:
-  \begin{displayquote}
-    When we wish to speak about the \textit{meaning} of a denoting phrase, as opposed to its \textit{denotation}, the natural mode of doing so it by inverted commas.
-    \begin{equation*}
-      \vdots
-    \end{equation*}
-    We say to begin with, that when \( C \) occurs it is the \textit{denotation} that we are speaking about; but when \enquote{C} occurs, it is the \textit{meaning}.
-  \end{displayquote}
-
-  Russell provides an example --- the first line of Gray's Elegy is the meaning of the denoting phrase \enquote{the first line of Gray's Elegy}, while the textual content of that line is its denotation. When defining the \hyperref[con:evaluation]{evaluation} of a \hyperref[con:expression]{formal expression} in some \hyperref[con:metalogic]{object language}, we are only interested in its denotation.
-\end{concept}
-
-\begin{remark}\label{con:predicate_logic}
-  In \cref{rem:boolean_valued_functions_and_predicates}, we mentioned that the word \enquote{predicate} is sometimes used as a synonym for \enquote{\hyperref[con:boolean_value]{Boolean-valued} function}. We are interested here in \hyperref[con:syntax_semantics_duality]{syntactic} constructs that allow encoding such functions.
-
-  As described in \cref{def:propositional_valuation/formula_valuation}, \hyperref[def:propositional_syntax/formula]{propositional formulas} are evaluated to Boolean (not merely Boolean-valued) functions under \hyperref[def:first_order_semantics]{classical semantics}. Predicate logic extends propositional logic by also formalizing \hyperref[con:denotation]{denoting phrases} --- it is able to express not only relationship between \hyperref[con:proposition]{propositions}, but also the structure of individual propositions. An atomic proposition in predicate logic may depend on \hyperref[con:variable]{variables} that range over arbitrary domains. We will give a formal definition of syntactic predicate in \cref{def:hol_term/predicate}.
-
-  As mentioned in \cref{con:proposition}, propositions are sometimes called \enquote{sentences}. The name \enquote{predicate} is based on the grammatical role of a predicate in a sentence, as pointed out by \incite*[74]{Kleene2002Logic}:
-  \begin{displayquote}
-    In the propositional calculus, we studied those occurrences of variables, logical relationships which depend on how some propositions are from other propositions by operations (expressed by the symbols \( \sim \), \( \rightimply \), \( \land \), \( \vee \), \( \neg \)) in which the latter
-    propositions enter as unanalyzed wholes. In the \textit{predicate calculus}, we carry the analysis a step deeper to take into account also what in grammar is called \enquote{subject-predicate structure}, and we use two further operations, \( \forall \) (\enquote{for all}) and \( \exists \) (\enquote{for some} or \enquote{there exists}) which depend on that structure. (The predicate calculus includes the propositional calculus.)
-  \end{displayquote}
-
-  These two operations are \hyperref[con:variable_binding]{variable binders} called \enquote{quantifiers}. They can be viewed as generalizations of disjunction and conjunction --- \( \qforall* x \varphi \) encodes the \hyperref[con:judgment]{judgment} that \( \varphi \) holds for any value of \( x \) (here \( x \) is a possibly \hyperref[con:variable_binding]{free} in \( \varphi \)), without having to list all values in a conjunction, while \( \qexists* x \varphi \) instead states that \( \varphi \) holds for at least one \( x \).
-
-  In this analogy, the variables upon which a predicate depends are subjects. We will call these subject variables \enquote{individual variables} based on Russell's usage described in \cref{def:ramified_theory_of_types}.
-
-  Also based on Russell's usage is the stratification of formulas into \hyperref[def:ramified_theory_of_types/ramified_type]{ramified types}. We will describe here some generalities that do not belong to a particular level of this hierarchy. Later, in \fullref{sec:first_order_logic}, we will narrow out focus in order to study particular predicate formulas more elaborately.
-\end{remark}
-
-\begin{concept}\label{con:predicate_logic}
-  In this monograph we present particular formulations of \hyperref[def:higher_order_logic]{higher-order logic} and \hyperref[def:first_order_logic]{first-order logic}. They share a lot of features since they are both based on the subject-predicate sentence structure discussed in \cref{con:predicate_logic}. We will occasionally refer to their commonalities as \term[ru=предикатная логика (\cite[49]{КолмогоровДрагалин2006Логика}), en=predicate logic (\cite[57]{VanDalen2004LogicAndStructure})]{predicate logic}.
-\end{concept}
-
-\begin{concept}\label{con:description_operator}
-  Consider the unary predicate \( p(x) \). We will present here several \hyperref[con:variable_binding]{variable binders} related to Russell's theory of denotations (which we touch upon in \cref{con:denotation}).
-
-  To summarize, they act as follows on three kinds of denoting phrases considered by Russell in \cite{Russell1905OnDenoting}:
-  \begin{center}
-    \begin{tabular}{l c c c c}
-      \toprule
-                                                        & \( \qexists* x p(x) \) & \( \quantifier \varepsilon x p(x) \) & \( \quantifier \rotiota x p(x) \) & \( \qExists* x p(x) \) \\
-      \midrule
-      \( p(x) \) does not hold for any value of \( x \) & \( F \)                & ambiguous                            & undefined                         & \( F \) \\
-      \( p(x) \) holds for a unique value \( x = a \)   & \( T \)                & \( a \)                              & \( a \)                           & \( T \) \\
-      \( p(x) \) holds for multiple values of \( x \)   & \( T \)                & ambiguous                            & undefined                         & \( F \) \\
-      \bottomrule
-    \end{tabular}
-  \end{center}
-
-  We now discuss these binders in more detail:
-  \begin{thmenum}
-    \thmitem{con:description_operator/exists} The \( \exists \) quantifier merely postulates the existence of a value of \( x \) satisfying \( p \). It is one of the two quantifies commonly considered, as is part of both the syntax of higher-order logic, described in \cref{def:hol_term}, and of first-order logic, described in \cref{def:first_order_syntax}.
-
-    \thmitem{con:description_operator/epsilon} David Hilbert's \( \varepsilon \) operator, described in \cite{Leisenring1969MathematicalLogic}, produces a particular value of \( x \) satisfying \( p \), if one exists, and otherwise produces a value \hi{not} satisfying \( p \).
-
-    Hilbert's intention was to regard \( \varepsilon \) as a \hyperref[con:primitive_notion]{primitive notion}, and define \( \qexists* x p(x) \) as an \hyperref[con:syntactic_abbreviation]{abbreviation} for \( p(\quantifier \varepsilon x p(x)) \).
-
-    In this case, the particular value given by \( \varepsilon \) does not matter, but the nondeterminism may be undesirable in general. The semantics suggested by \incite[\S 3.3]{Leisenring1969MathematicalLogic} for \( \quantifier \varepsilon x p(x) \) requires a \hyperref[def:choice_function]{choice function} for determining a particular value of \( x \) satisfying \( p(x) \), and a fixed value (independent of \( p \)) in case no value satisfies \( p(x) \). These choices are in general not obvious.
-
-    \incite[\S 8.3]{Farmer2008STTVirtues} calls the \( \varepsilon \) operator \term{indefinite description}.
-
-    \thmitem{con:description_operator/iota} Bertrand Russell's \( \rotiota \) operator is by intention left undefined wherever \( \varepsilon \) has an ambiguous value.
-
-    \incite*[30]{WhiteheadRussell1927PrincipiaMathematicaVol1} call it a \term{description} operator. \incite{Farmer2008STTVirtues} suggests calling it \term{definite description} to distinguish it from indefinite descriptions.
-
-    The symbol \( \rotiota \) is an \enquote{inverted} (rotated) Greek iota. The inversion is perhaps reminiscent of how Russell calls \enquote{inverted commas} the quotes that abstract away the meaning of a sentence.
-
-    Unlike Hilbert's \( \varepsilon \) operator, by intention the description is well-defined only if a unique unambiguous value \( x = a \) satisfies \( p(x) \). We list two suggestions for the semantics of  \( \quantifier \rotiota x p(x) \) in the other cases:
-    \begin{thmenum}
-      \thmitem{con:description_operator/iota/error} We can, as with \( \varepsilon \), provide a dedicated \enquote{error value}. This is done by \incite[\S 3.2]{Farmer2008STTVirtues}, and also by \incite[\S 54]{Andrews2002Logic}.
-
-      As in the case of the \( \varepsilon \) operator, such a choice has the downside of generally not being obvious or even meaningful.
-
-      \thmitem{con:description_operator/iota/undefined} Alternatively, we can leave \( \quantifier \rotiota x p(x) \) \hyperref[con:undefinedness]{undefined} in the case of nonuniqueness. This is done by \incite{Farmer1990PartialFunctionSTT}, and, for first-order logic, by \incite{Hamkins2022DefiniteDescriptions} (in several variants).
-
-      This however requires every formula depending on \( \quantifier \rotiota x p(x) \) to possibly be undefined, which leads to elaborate rules of when a formula may even have a truth value.
-    \end{thmenum}
-
-    \thmitem{con:description_operator/unique_existence} Finally, if we wish to merely postulate the existence of a unique value satisfying \( p \), but are not interested in the value itself, we can use the \term{unique existential quantifier} \( \qExists* x p(x) \).
-
-    Unique existence comes in two parts:
-    \begin{thmenum}
-      \thmitem{con:description_operator/unique_existence/exists} There must exist a value \( a \) satisfying \( p \).
-      \thmitem{con:description_operator/unique_existence/unique} For every \( b \), if \( b \) satisfies \( p \), then \( b \) must equal \( a \).
-    \end{thmenum}
-
-    Unlike the \( \rotiota \) operator with its complexities, this quantifier can easily be defined via other logical connectives, as we will do in \cref{rem:exists_unique_abbreviation} for higher-order logic.
-  \end{thmenum}
-\end{concept}
-
 \paragraph{Syntax of predicate logic}
 
 \begin{definition}\label{def:function_application_syntax}\mimprovised
@@ -220,22 +121,6 @@ We give here the following definition, and then proceed to explain it:
     \thmitem{def:predicate_logic_alphabet/comma} In addition to the parentheses, we will also need another auxiliary symbol --- the comma \enquote{\( , \)} for delimiting \hyperref[con:function_arguments]{function arguments}.
   \end{thmenum}
 \end{definition}
-
-\begin{remark}\label{rem:notation_for_quantifiers}
-  There are different possible notations for formulas with \hyperref[def:predicate_logic_alphabet/quantifiers]{quantifiers}. We use the most straightforward notation, \( \qforall x \varphi \), because it seems to be dominating --- it is used in
-  \cite[ch. 2]{Hinman2005Logic},
-  \cite[ch. II]{Kleene2002Logic},
-  \cite[\S I.9]{КолмогоровДрагалин2006Логика},
-  \cite[def. 2.1.6]{Герасимов2011Вычислимость},
-  \cite[ch. 3]{ШеньВерещагин2017ЯзыкиИИсчисления} and
-  \cite[ch. II]{Эдельман1975Логика}.
-
-  Another options is to use \( \quantifier* \synforall x \varphi \) in order to stay consistent with \( \muplambda \)-calculus --- see \cref{rem:lambda_term_abstractor_dot} for the relevant discussion regarding \hyperref[def:lambda_term]{\( \muplambda \)-terms}. This convention stems from the dot delimiters of Russell and Whitehead, which are discussed in detail in \cref{ex:dot_delimiters_in_logic}. This convention is used by \incite{Mimram2020ProgramEqualsProof} and \incite{Farmer2008STTVirtues}.
-
-  A general discussion of syntactic conventions for quantifiers can be found in \cite{MathSE:standards_for_quantifier_notation}. The answers suggest \( (\synforall x) \varphi \) as a popular alternative. The latter is used by \incite[def. 2.3.2]{VanDalen2004LogicAndStructure} and \incite[\S 20]{Andrews2002Logic}. Ironically, Andrews also discusses his \( \muplambda \)-calculus based logical system \( \logic{Q}_0 \) in the same book, and avoids dots in his \( \muplambda \)-terms.
-
-  We avoid dots after variables in the monograph to keep close to the popular convention, but using dots in the code because it aids readability in monospaced text.
-\end{remark}
 
 \paragraph{Syntax of higher-order logic}
 
@@ -591,3 +476,9 @@ We give here the following definition, and then proceed to explain it:
     This requires us to state new rules rather than reuse those from \fullref{sec:dependent_types}.
   \end{thmenum}
 \end{remark}
+
+\begin{algorithm}\label{alg:higher_order_to_first_order_logic}
+\end{algorithm}
+
+\begin{algorithm}\label{alg:many_sorted_to_one_sorted_theory}
+\end{algorithm}
