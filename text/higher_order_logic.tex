@@ -4,124 +4,6 @@ We give here the following definition, and then proceed to explain it:
 \begin{definition}\label{def:higher_order_logic}
 \end{definition}
 
-\paragraph{Syntax of predicate logic}
-
-\begin{definition}\label{def:function_application_syntax}\mimprovised
-  Fix a \hyperref[def:formal_language/symbol]{symbol} \( f \) intended to denote a function of \hyperref[con:function_arguments]{arity} \( n \). The following is a simple \hyperref[def:formal_grammar]{formal grammar rule} for \( f \), specifically for \hyperref[con:predicate_logic]{predicate logic}:
-  \begin{bnf*}
-    \bnfprod{function application} {\bnfts{\( f \)} \bnfsp \bnftsq{(} \bnfsp \underbrace{\bnfpn{variable} \bnfsp \bnftsq{,} \bnfsp \cdots \bnfsp \bnftsq{,} \bnfsp \bnfpn{variable}}_{n \T*{variables}} \bnfsp \bnftsq{)}}
-  \end{bnf*}
-
-  Here the variable syntax is taken from the ambient \hyperref[def:formal_grammar/schema]{grammar schema}; in higher-order logic, these will be Latin identifiers.
-
-  We call this the \term[en=prefix notation (\cite[45]{Andrews2002Logic})]{prefix notation} for \( f \). In the special case where \( n = 0 \), we avoid the parentheses and use
-  \begin{bnf*}
-    \bnfprod{function application} {\bnfts{\( f \)}}
-  \end{bnf*}
-
-  We can also put the operator after its arguments to obtain \term[en=postfix form (\cite[818]{Rosen2019DiscreteMathematics})]{postfix notation}:
-  \begin{bnf*}
-    \bnfprod{postfix application} {\bnftsq{(} \bnfsp \underbrace{\bnfpn{variable} \bnfsp \bnftsq{,} \bnfsp \cdots \bnfsp \bnftsq{,} \bnfsp \bnfpn{variable}}_{n \T*{variables}} \bnfsp \bnftsq{)} \bnfsp \bnfts{\( f \)}}
-  \end{bnf*}
-
-  The usefulness of postfix notation is limited. We describe in \cref{rem:def:function_application_syntax/reverse_polish} how it can simplify evaluation in some cases. The only ubiquitous use of it in mathematics is perhaps the \hyperref[def:factorial]{factorial function} \( n! \).
-
-  For \hyperref[def:operation_on_set]{binary operations}, which are traditionally denoted using non-letter symbols, both notations becomes cumbersome. For example, \( \ast(x, y) \) and \( (x, y)\ast \) denote an application of the operator \( \ast \). In this case, we find useful the \term[ru=инфиксная форма (\cite[example 6.6]{БелоусовТкачёв2004ДискретнаяМатематика}), en=infix notation (\cite[833]{HighamEtAl2015PrincetonCompanion})]{infix notation} \( (x \ast y) \). More generally:
-  \begin{bnf*}
-    \bnfprod{infix application} {\bnftsq{(} \bnfsp \bnfpn{variable} \bnfsp \bnfts{\( \ast \)} \bnfsp \bnfpn{variable} \bnfsp \bnftsq{)}}
-  \end{bnf*}
-\end{definition}
-\begin{comments}
-  \item The improper symbols used here are the comma and parentheses, both from the \hyperref[def:predicate_logic_alphabet]{predicate logic alphabet}.
-\end{comments}
-
-\begin{remark}\label{rem:def:function_application_syntax}
-  We will discuss here several aspects of \hyperref[def:function_application_syntax]{prefix and postfix notation}.
-
-  \begin{thmenum}
-    \thmitem{rem:def:function_application_syntax/s_expression} Prefix notation is the basis of the programming language LISP and its derivatives. These languages are based on only one syntactic construct, which, when describing LISP, \incite[187]{McCarthy1960SExpressionsPartI} called an \term{S-expression}. They can be described via the following \hyperref[def:formal_grammar]{grammar}, assuming a predefined set of atomic \( S \)-expressions (e.g. alphanumeric strings or arithmetic operators):
-    \begin{bnf*}
-      \bnfprod{S-expression list} {\bnfpn{S-expression} \bnfor \bnfpn{S-expression} \bnfsp \bnftsq{\textvisiblespace} \bnfsp \bnfpn{S-expression list}} \\
-      \bnfprod{S-expression}      {\bnfpn{atomic S-expression} \bnfor \bnftsq{(} \bnfsp \bnfpn{S-expression list} \bnfsp \bnftsq{)}}
-    \end{bnf*}
-
-    For example, the arithmetic expression \( 3(1 + 2) \) can be described via the \( S \)-expression
-    \begin{center}
-      \begin{BVerbatim}[gobble=8]
-        (* 3 (+ 1 2))
-      \end{BVerbatim}
-    \end{center}
-
-    \thmitem{rem:def:function_application_syntax/polish} \incite*[45]{Andrews2002Logic} explains that prefix notation is also called \enquote{Polish notation} because, in the context of \hyperref[def:propositional_alphabet/connectives]{propositional connectives}, it was used by some Polish logicians. In prefix notation, the formula
-    \begin{equation*}
-      ((\synp \synwedge \synq) \synimplies \synr)
-    \end{equation*}
-    becomes
-    \begin{equation*}
-      (\synimplies (\synwedge \synp \synq) \synr).
-    \end{equation*}
-
-    The advantage of this notation is that, knowing the arity of the operators, we can avoid all parentheses because
-    \begin{equation*}
-      \synimplies \synwedge \synp \synq \synr
-    \end{equation*}
-    can be parsed unambiguously, unlike
-    \begin{equation*}
-      \synp \synwedge \synq \synimplies \synr.
-    \end{equation*}
-
-    Alonzo Church, who in \cite[38]{Church1956LogicVol1} uses Russell and Whitehead's notation (explained in \cref{ex:dot_delimiters_in_logic}), calls this the \enquote{parenthesis-free notation of Jan \L{}ukasiewicz}. He remarks
-    \begin{displayquote}
-      The possibility of this is interesting. But the notation so obtained is unfamiliar, and less perspicuous than the usual one.
-    \end{displayquote}
-
-    Peter Hinman, who initially defines propositional formulas via Polish notation in \cite[def. 1.1.2]{Hinman2005Logic}, later reflects upon it:
-    \begin{displayquote}
-      It is convenient for proving unique readability and other technical matters, but it is clearly not well designed for \textit{human} readability.
-    \end{displayquote}
-
-    He then proceeds to use infix notation for the rest of the book.
-
-    \thmitem{rem:def:function_application_syntax/reverse_polish} Postfix notation is also called \enquote{reverse Polish notation}, for example in \cite[833]{HighamEtAl2015PrincetonCompanion} and \cite[817]{Rosen2019DiscreteMathematics}. It is particularly apt for performing calculations using a stack --- an abstract data type supporting only \enquote{pushing} an element to the top and \enquote{popping} the top element.
-
-    We will sketch the general technique with an example. Consider the arithmetic expression \( 3(1 + 2) \). When written in parenthesis-free postfix notation, it becomes
-    \begin{center}
-      \begin{BVerbatim}[gobble=8]
-        3 1 2 + *
-      \end{BVerbatim}
-    \end{center}
-
-    We start with an empty stack. We keep reading (space-delimited) \hyperref[def:positional_number_system/decimal]{decimal strings} and pushing the corresponding integers to the stack until we encounter an operator. In our example, when we encounter \( + \), the stack looks as follows:
-    \begin{MemoryLine}{3}
-      3 & 1 & \MemoryLineArrow 2
-    \end{MemoryLine}
-
-    Knowing that the operator \( + \) is binary, we pop two elements from the stack and sum them. We then push the result to the stack:
-    \begin{MemoryLine}{2}
-      3 & \MemoryLineArrow 3
-    \end{MemoryLine}
-
-    We continue traversing the source string. We again encounter a binary operator, so we pop the remaining two elements and multiply them to obtain \( 9 \).
-
-    At this point we have traversed the input string, so the expression is well-formed, and we managed to successfully evaluate it to \( 9 \).
-  \end{thmenum}
-\end{remark}
-
-\begin{definition}\label{def:predicate_logic_alphabet}\mimprovised
-  The \hyperref[def:formal_language/alphabet]{alphabet} of \hyperref[con:improper_symbol]{improper symbols} of predicate logic extends the \hyperref[def:propositional_alphabet]{alphabet of propositional logic} with the following new symbols:
-  \begin{thmenum}
-    \thmitem{def:predicate_logic_alphabet/quantifiers}\mcite[80]{Kleene2002Logic} The set \( \op*{Quant} \) of \term[ru=кванторы (\cite[72]{ШеньВерещагин2017ЯзыкиИИсчисления})]{quantifiers}, namely
-    \begin{thmenum}
-      \thmitem{def:predicate_logic_alphabet/quantifiers/universal} The \term[ru=квантор общости (\cite[61]{Эдельман1975Логика})]{universal quantifier} \enquote{\( \synforall \)}.
-      \thmitem{def:predicate_logic_alphabet/quantifiers/existential}\mcite[80]{Kleene2002Logic} The \term[ru=квантор существования (\cite[61]{Эдельман1975Логика})]{existential quantifier} \enquote{\( \synexists \)}.
-    \end{thmenum}
-
-    \thmitem{def:predicate_logic_alphabet/equality}\mcite[def. 2.1.2(vi)]{Hinman2005Logic} The \hyperref[def:function_application_syntax]{infix} \term{equality symbol} \enquote{\( \syneq \)}
-
-    \thmitem{def:predicate_logic_alphabet/comma} In addition to the parentheses, we will also need another auxiliary symbol --- the comma \enquote{\( , \)} for delimiting \hyperref[con:function_arguments]{function arguments}.
-  \end{thmenum}
-\end{definition}
-
 \paragraph{Syntax of higher-order logic}
 
 \begin{remark}\label{rem:higher_order_logic_and_type_theory}
@@ -137,36 +19,11 @@ We give here the following definition, and then proceed to explain it:
 
     \thmitem{rem:higher_order_logic_and_type_theory/types} A much more powerful approach is based on the \hyperref[con:curry_howard_correspondence]{Curry-Howard correspondence}, which hints at how \hi{types} rather than \( \muplambda \)-terms can be used to encode logical formulas.
 
-    The correspondence itself is briefly outlined in \cref{con:curry_howard_correspondence} and formalized for \hyperref[def:propositional_syntax/formula]{propositional formulas} via \fullref{alg:type_derivation_to_proof_tree} and \fullref{alg:proof_tree_to_type_derivation}.
+    The correspondence itself is briefly outlined in \cref{con:curry_howard_correspondence} and formalized for \hyperref[def:propositional_formula]{propositional formulas} via \fullref{alg:type_derivation_to_proof_tree} and \fullref{alg:proof_tree_to_type_derivation}.
 
     We can use a \hyperref[con:syntax_fragment]{fragment} of \hyperref[def:martin_lof_type_theory]{Martin-L\"of type theory} to emulate Church's original system. We further discuss this possibility in \cref{rem:mltt_hol}.
   \end{thmenum}
 \end{remark}
-
-\begin{concept}\label{con:syntactic_abbreviation}\mimprovised
-  It is sometimes convenient to introduce a simplified notation for a more intricate \hyperref[con:expression]{expression}. We call this process \term{abbreviation}.
-
-  We mostly avoid modifying the \hyperref[con:metalogic]{object languages}, which are carefully crafted, and instead use notational shorthands entirely within the \hyperref[con:metalogic]{metalanguage}. For example, we use the \hyperref[con:description_operator/unique_existence]{unique existence quantifier} \( \qExists {x^\tau} \varphi \) as an abbreviation of the more complicated expression \eqref{eq:rem:exists_unique_abbreviation}.
-
-  Definitional extensions, which we will introduce formally in \cref{def:hol_definitional_extension}, provide a rigorous way to perform abbreviation.
-\end{concept}
-
-\begin{concept}\label{con:primitive_notion}
-  In a sufficiently complex \hyperref[con:metalogic]{object theory}, different notions can be defined via each other. If we want to use \hyperref[def:well_founded_relation]{well-founded} notions that are not defined circularly via each other, we must choose a subset of them that should to be characterized via axioms, and then use them to define the rest. Following \incite[28]{Kleene1971Metamathematics}, we will refer call these notions as \term{primitive}.
-
-  For instance, when formalizing \hyperref[def:lattice]{lattices}, we may use an object theory based on one \hyperref[def:partially_ordered_set]{partial order relation} \( {\synleq} \), as we have done in \cref{def:lattice/theory}, or we may use a theory based on two operations \( {\synvarwedge} \) and \( {\synvarvee} \).
-
-  The object language will feature all three symbols anyway. If we use the formalization from \cref{def:lattice/theory}, however, we will specify the behavior of \( {\synleq} \) via axioms, while the behavior of \( {\synvarwedge} \) and \( {\synvarvee} \) will be defined via that of \( {\synleq} \). Conversely, \cref{thm:lattice_from_binary_operations} shows how we can take \( {\synvarwedge} \) and \( {\synvarvee} \) as primitive and use them to specify how \( {\synleq} \) behaves.
-
-  Usually the essential object of study is taken as primitive --- for example, sets and set membership are primitive in \fullref{ch:set_theory}, groups and group operations are primitive in \fullref{ch:group_theory}, vectors and vector space operations are primitive in \fullref{ch:linear_algebra} and so forth. This is mildly ironic because, for example, linear algebra cannot answer what a vector is beyond characterizing it as \enquote{an element of an abstract vector space}.
-
-  Since it is impractical to make a definitive list of all required symbols beforehand, we will find useful both \hyperref[con:syntactic_abbreviation]{metalingual abbreviations} and \hyperref[def:hol_definitional_extension]{definitional extensions}.
-\end{concept}
-\begin{comments}
-  \item In addition to the adjective \enquote{primitive}, \incite[28]{Kleene1971Metamathematics} suggests \enquote{technical} and \enquote{undefined}. We will avoid the latter term because it would conflict with undefinedness as described in \cref{con:undefinedness}. See \cref{rem:undefined_and_primitive_terms} for disambiguation of the different notions of undefinedness.
-
-  \item We avoid introducing a distinct term for symbols whose behavior is defined via others. \incite[28]{Kleene1971Metamathematics} suggests \enquote{ordinary}, \enquote{logical} and \enquote{defined}.
-\end{comments}
 
 \begin{definition}\label{def:quantifiable_type}\mimprovised
   As discussed in \cref{con:simple_type_theory/hol}, Church uses restricted \hyperref[def:simple_type]{simple types} in \cite{Church1940STT} for his formulation of higher-order logic. We will call them \term{quantifiable types} to distinguish them from other simple types we consider in this monograph.
@@ -190,19 +47,19 @@ We give here the following definition, and then proceed to explain it:
 \end{comments}
 
 \begin{definition}\label{def:hol_signature}\mimprovised
-  A \hyperref[con:logical_system_signature]{signature} for higher-order logic consists of two \hyperref[def:formal_language/alphabet]{alphabets} (nonempty hereditarily finite sets) and corresponding \hyperref[def:type_assertion]{type assertions}:
+  A \hyperref[con:logical_system_signature]{signature} for higher-order logic consists of the following:
   \begin{thmenum}
-    \thmitem{def:hol_signature/sorts} A set \( \op*{Sort} \), whose elements act as sorts of \hyperref[def:quantifiable_type]{quantifiable types}.
+    \thmitem{def:hol_signature/sorts} A nonempty \hyperref[def:formal_language/alphabet]{alphabet} \( \op*{Sort} \), whose elements act as sorts of \hyperref[def:quantifiable_type]{quantifiable types}.
 
     These sorts must not include improper symbols from the \hyperref[def:simple_type_alphabet]{simple type alphabet}.
 
     We call the resulting logical system \term[en=one-sorted (predicate calculus) (\cite[84]{Kleene2002Logic})]{one-sorted} or \term[en=many-sorted predicate logic (\cite[\S 4.4.13]{TroelstraSchwichtenberg2000BasicProofTheory})]{many-sorted} depending on the amount of sorts.
 
-    \thmitem{def:hol_signature/nl_const} A set \( \op*{NLConst} \), whose elements act as \hyperref[def:lambda_term]{constant \( \muplambda \)-terms}. We call them \term{nonlogical constants}\fnote{We stated in \cref{rem:logical_symbol_terminology} that the separation into \enquote{logical} and \enquote{nonlogical} symbols is generally ambiguous, but in this case there will be no ambiguity because we specify the kind of entity we refer to, e.g. \enquote{nonlogical constant} rather than simply \enquote{nonlogical symbol}.}.
+    \thmitem{def:hol_signature/nl_const} A possibly empty alphabet \( \op*{NLConst} \), whose elements act as \hyperref[def:lambda_term]{constant \( \muplambda \)-terms}. We call them \term{nonlogical constants}\fnote{We stated in \cref{rem:logical_symbol_terminology} that the separation into \enquote{logical} and \enquote{nonlogical} symbols is generally ambiguous, but in this case there will be no ambiguity because we specify the kind of entity we refer to, e.g. \enquote{nonlogical constant} rather than simply \enquote{nonlogical symbol}.}.
 
     These constants must not include improper symbols from the \hyperref[def:simple_type_alphabet]{\( \muplambda \)-calculus alphabet}.
 
-    \thmitem{def:hol_signature/nl_type} A set \( \op*{NLType} \), whose elements are type assertions for the nonlogical constants. We require exactly one assertion per nonlogical constant.
+    \thmitem{def:hol_signature/nl_type} A set \( \op*{NLType} \), whose elements are \hyperref[def:type_assertion]{type assertions} for the nonlogical constants. We require exactly one assertion per nonlogical constant.
 
     For each nonlogical constant \( c \), then, if \( c: \tau \) is its assertion, we introduce the \hyperref[def:simple_typing_rule]{simple typing rule}
     \begin{equation*}\taglabel[\ensuremath{ \logic{Ax}_c }]{inf:def:hol_signature/nl_type}
@@ -213,6 +70,8 @@ We give here the following definition, and then proceed to explain it:
   \end{thmenum}
 \end{definition}
 \begin{comments}
+  \item We discuss in \cref{rem:language_alphabet_cardinality} some cardinality considerations; we mention here only that both alphabets are by default assumed to be finite. In general, we use adjectives like \enquote{finite} and \enquote{countably infinite} for the signature itself as per \cref{rem:cardinality_auxiliary_terminology}.
+
   \item Explicit signatures are not considered by Church nor Henkin. \incite*[\S 55]{Andrews2002Logic} distinguishes between different \enquote{languages} of his system \( \logic{Q}_0 \), where a single language consists of all well-formed formulas. So Andrews also does not consider signatures, but only the resulting sets of formulas.
 
   Our definition is instead (loosely) based on \bycite[270]{Farmer2008STTVirtues}:
@@ -221,8 +80,6 @@ We give here the following definition, and then proceed to explain it:
   \end{displayquote}
 
   Farmer assumes here that \( \syn\iota \) is the only sort, but later suggests adding other sorts (which he calls base types).
-
-  \item The requirement for \( \op*{Sort}_\Sigma \) and \( \op*{NLConst}_\Sigma \) to be hereditarily finite is discussed in \cref{rem:signatures_are_small}.
 \end{comments}
 
 \begin{remark}\label{rem:hol_notational_shorthands}
@@ -313,7 +170,7 @@ We give here the following definition, and then proceed to explain it:
 
   \item This precise definition for logical terms and formulas is discussed in \cref{rem:hol_notational_shorthands}.
 
-  \item The phrase \enquote{logical term} is inspired by \hyperref[def:first_order_syntax/term]{first-order terms}, which is in turn inspired by Russell's terminology discussed in \cref{rem:hol_formula_order_origin}; we add the adjective \enquote{logical} to distinguish them conceptually from \( \muplambda \)-terms. Unlike in first-order logic, terms here are more general than formulas since the (quantifiable) type of any term can be quantified over.
+  \item The phrase \enquote{logical term} is inspired by \hyperref[def:fol_term]{first-order terms}, which is in turn inspired by Russell's terminology discussed in \cref{rem:hol_formula_order_origin}; we add the adjective \enquote{logical} to distinguish them conceptually from \( \muplambda \)-terms. Unlike in first-order logic, terms here are more general than formulas since the (quantifiable) type of any term can be quantified over.
 \end{comments}
 
 \begin{remark}\label{rem:quantifiable_type_uncurrying}

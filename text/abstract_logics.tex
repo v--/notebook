@@ -5,10 +5,7 @@ We introduce several notions that are common for different flavors of logic we w
 \begin{concept}\label{con:logical_system}
   The phrases \term{formal system} and \term{logical system} may refer to a \hyperref[def:consequence_relation]{consequence relation} (or the less practical \hyperref[def:consequence_operator]{consequence operators}), \hyperref[def:entailment_system]{entailment system}, \hyperref[def:institution]{institution}, \hyperref[def:abstract_logic]{abstract logic} or another notion which allows performing deductive reasoning.
 
-  This may also encompass different \hyperref[def:rewriting_system]{rewriting systems} --- for example, \cite{Barendregt1974SurjectivePairing} starts with a definition that presupposes the availability of \hyperref[ch:lambda_calculus]{\( \muplambda \)-calculus} or variations thereof:
-  \begin{displayquote}
-    A \textit{pairing} (in some formal system) is a triple of terms \( D \), \( D_1 \), \( D_3 \) such that \( D_1(Dab) = a \) and \( D_2(Dab) = b \) are provable in that system.
-  \end{displayquote}
+  This may also encompass different \hyperref[def:rewriting_system]{rewriting systems} --- for example, \incite{Barendregt1974SurjectivePairing} assumes that what he calls a \enquote{logical system} has application a-la \hyperref[ch:lambda_calculus]{\( \muplambda \)-calculus}.
 
   Entailment systems and abstract logics are not established concepts and the usage that we will present is an attempt to systemize different logical systems.
 \end{concept}
@@ -65,7 +62,7 @@ We introduce several notions that are common for different flavors of logic we w
 
   In \cite[31]{Tarski1983FundamentalConceptsOfMetamathematics}, which chronologically precedes the aforementioned definition, Tarski additionally requires that there exists a sentence \( \varphi \) such that \( S = \op*{Cn}(\set{ \varphi }) \).
 
-  \item Sentences themselves are not, in practice, atoms. In propositional logic, they are formulas, which themselves have an elaborate structure discussed in \cref{def:propositional_syntax/formula}. In first-order logic their structure is even more elaborate --- see \cref{def:first_order_syntax/closed_formula}.
+  \item Sentences themselves are not, in practice, atoms. In propositional logic, they are formulas, which themselves have an elaborate structure discussed in \cref{def:propositional_formula}. In first-order logic their structure is even more elaborate --- see \cref{def:closed_fol_formula}.
 
   \item We are concerned with the epistemology of the judgments used to assert properties of sentences and consequence operators. At the same time, we are not concerned with epistemology of the sentences themselves, but regard them as autonomous abstract objects which can either be manipulated mechanically.
 \end{comments}
@@ -294,10 +291,27 @@ We introduce several notions that are common for different flavors of logic we w
   \end{thmenum}
 \end{definition}
 \begin{comments}
-  \item As per \cref{ex:universal_validity_and_lem}, in \hyperref[con:predicate_logic]{predicate logic}, we usually require theories to consist of closed formulas (i.e. formulas without \hyperref[con:variable_binding]{free variables}).
+  \item In accordance with \cref{ex:universal_validity_and_lem}, in \hyperref[con:predicate_logic]{predicate logic}, we require theories to consist of closed formulas (i.e. formulas without \hyperref[con:variable_binding]{free variables}).
 
   \item Woodger, translating Tarski's \cite[70]{Tarski1983MethodologyOfDeductiveSciences} instead calls these theories \enquote{deduction systems}, but we avoid this term to prevent any confusion with \hyperref[def:propositional_natural_deduction_systems]{natural deduction systems}.
 \end{comments}
+
+\begin{remark}\label{rem:logical_theory_closed}
+  We have defined a logical theory in \cref{def:logical_theory} as a set of sentences closed under consequence. This is due to \tcite{#2, where #1}[96]{CitkinMuravitsky2022ConsequenceRelations}, like us, consider arbitrary consequence operators.
+
+  Similarly, theories are required to be closed under consequence by \incite[def. 1.4.5]{Hinman2005Logic} (for propositional logic), \incite[def. 3.1.4(i)]{VanDalen2004LogicAndStructure} and \incite[21]{Andrews2002Logic}. \incite{Эдельман1975Логика} even distinguishes between syntactic and semantic theories of first-order logic.
+
+  On the other hand, the requirement that a theory is closed is sometimes lifted, for example by \incite[7]{TroelstraSchwichtenberg2000BasicProofTheory}, \incite[def. 3.1.1]{Герасимов2011Вычислимость} and \incite[146]{ШеньВерещагин2017ЯзыкиИИсчисления}.
+
+  In \cite[284]{Meseguer1989GeneralLogics}, when discussing \hyperref[def:entailment_system]{entailment systems}, Meseguer comments on this dichotomy as follows:
+  \begin{displayquote}
+    Given a signature \( \Sigma \), a theory is presented by a set \( \Gamma \) if \( \Sigma \)-sentences called its axioms. We can therefore define a \textit{theory} as a pair \( T = (\Sigma, \Gamma) \). For some purposes, one deals not with the original axioms \( \Gamma \) but rather with their closure under entailment \( \Gamma^* \), so that it is tempting to call \( T = (\Sigma, \Gamma) \) a \textit{presentation} of the theory \( T = (\Sigma, \Gamma^*) \). However, the view of theories as presentations allows us to make finer distinctions that are important for both proof-theoretic and computational purposes.
+  \end{displayquote}
+
+  \tcite{#2 take the opposite approach in #1}[def. 2]{GoguenBurstall1992Institutions} --- they distinguish between closed theories and possibly non-closed presentations of theories.
+
+  We assume that theories are closed and try to be explicit about how a given theory is \hyperref[def:logical_theory/generated]{axiomatized}.
+\end{remark}
 
 \begin{definition}\label{def:consequence_formula_equivalence}\mimprovised
   Fix a compatible \hyperref[def:consequence_operator]{consequence operator} \( \op*{Cn} \) and \hyperref[def:consequence_relation]{consequence relation} \( {\vdash} \) on the same set of sentences \( S \). We say that two sentences \( \varphi \) and \( \psi \) are \term[ru=равносильные / эквивалентные (формулы) (\cite[44]{КолмогоровДрагалин2006Логика})]{equivalent} if any of the following tantamount conditions hold:
@@ -327,12 +341,16 @@ We introduce several notions that are common for different flavors of logic we w
   The converse can be shown similarly.
 \end{defproof}
 
+\paragraph{Entailment systems}
+
 \begin{concept}\label{con:logical_system_signature}
   A single \hyperref[con:logical_system]{logical system} is generally designed to encode multiple \hyperref[con:metalogic]{object languages}\fnote{An exception is propositional logic, which we discuss in \fullref{sec:propositional_logic}. It provides only a way to study logical relations between \hyperref[con:proposition]{propositions}, irrespective of how these propositions are structured.}. A particular symbol may or may not be common for all languages of the system. For example, the addition symbol \( {\synplus} \) appears in \hyperref[def:peano_arithmetic]{Peano arithmetic} or the \hyperref[def:semiring/theory]{theory of semirings}, while some \hyperref[con:improper_symbol]{improper symbols} such as the conditional connective \( {\synimplies} \) is part of the \hyperref[def:propositional_alphabet]{propositional alphabet} and may thus appear in all formulas of \hyperref[def:propositional_logic]{propositional logic}, \hyperref[def:first_order_logic]{first-order logic} and \hyperref[def:higher_order_logic]{higher-order logic}.
 
   We call a \term[ru=сигнатура (логики первого порядка) (\cite[73]{ШеньВерещагин2017ЯзыкиИИсчисления}), en=signature (\cite[97]{GoguenBurstall1992Institutions})]{signature} the collection of symbols specific to an object language but not the entire system. Thus, in our example with Peano arithmetic, the signature consists of \( {\synplus} \), \( {\syntimes} \), \( \syn0 \) and \( \syns \).
 
   Signatures may also specify some properties of their symbols. \hyperref[def:first_order_signature]{First-order signatures}, for example, specify the kind and arity of the symbols --- in Peano arithmetic, \( {\synplus} \) and \( {\syntimes} \) are binary operation, \( \syns \) is a unary operation, while \( \syn0 \) is a nullary operation.
+
+  Finally, the (cardinal) number of symbols of a signature is important for several reasons outlined in \cref{rem:language_alphabet_cardinality}. Even when signatures are specified using multiple sets, we use adjectives like \enquote{finite} and \enquote{countably infinite} for the signature itself as per \cref{rem:cardinality_auxiliary_terminology}.
 \end{concept}
 \begin{comments}
   \item \incite[97]{GoguenBurstall1992Institutions} describe a signature as \enquote{vocabularies for use in constructing sentences in a logical system}.
@@ -340,8 +358,6 @@ We introduce several notions that are common for different flavors of logic we w
   \item Some authors use \enquote{language} for what we call \enquote{signature}, for example \incite[def. 2.1.2]{Hinman2005Logic} and \incite[270]{Farmer2008STTVirtues}.
 
   We avoid this usage because it conflicts with our formalisms from \fullref{ch:formal_language_theory}.
-
-  \item It is occasionally important for signatures to be \hyperref[def:universe_of_hereditary_finite_sets]{hereditarily finite} sets so that we can safely take the set of all signatures of a given system. See \cref{rem:signatures_are_small} for a broader discussion.
 \end{comments}
 
 \begin{definition}\label{def:entailment_system}\mcite[def. 1]{Meseguer1989GeneralLogics}
@@ -515,7 +531,7 @@ We introduce several notions that are common for different flavors of logic we w
 \end{remark}
 
 \begin{concept}\label{con:classical_logic}\mimprovised
-  By \term[ru=классическая логика (\cite[58]{ШеньВерещагин2017ЯзыкиИИсчисления}), en=classical logic (\cite[8]{TroelstraSchwichtenberg2000BasicProofTheory})]{classical logic} we will mean either the \hyperref[def:abstract_logic]{logic} of \hyperref[def:propositional_syntax/formula]{propositional formulas}, \hyperref[def:truth_value_algebra/classical]{Boolean models} and the \hyperref[def:propositional_natural_deduction_systems]{classical propositional natural deduction system}, or to the logic of \hyperref[def:first_order_syntax/formula]{first-order formulas}, \hyperref[def:first_order_model]{classical first-order models} and the \hyperref[def:first_order_natural_deduction_system]{classical first-order natural deduction system}.
+  By \term[ru=классическая логика (\cite[58]{ШеньВерещагин2017ЯзыкиИИсчисления}), en=classical logic (\cite[8]{TroelstraSchwichtenberg2000BasicProofTheory})]{classical logic} we will mean either the \hyperref[def:abstract_logic]{logic} of \hyperref[def:propositional_formula]{propositional formulas}, \hyperref[def:truth_value_algebra/classical]{Boolean models} and the \hyperref[def:propositional_natural_deduction_systems]{classical propositional natural deduction system}, or to the logic of \hyperref[def:first_order_syntax/formula]{first-order formulas}, \hyperref[def:first_order_model]{classical first-order models} and the \hyperref[def:first_order_natural_deduction_system]{classical first-order natural deduction system}.
 \end{concept}
 \begin{comments}
   \item Classical logic is characterized by the ability to use the law of double negation elimination \eqref{eq:thm:classical_tautologies/dne}. A more popular (but less accurate due to \cref{thm:minimal_propositional_negation_laws}) characterization is that the law of the excluded middle \eqref{eq:thm:classical_tautologies/lem} holds.
@@ -525,7 +541,7 @@ We introduce several notions that are common for different flavors of logic we w
 \begin{concept}\label{con:intuitionistic_logic}\mimprovised
   By \term[ru=интуиционисткая логика (\cite[58]{ШеньВерещагин2017ЯзыкиИИсчисления}), en=intuitionistic logic (\cite[8]{TroelstraSchwichtenberg2000BasicProofTheory})]{intuitionistic logic} we will mean the generalization of \hyperref[con:classical_logic]{classical logic} where instead of the law of the excluded middle \eqref{eq:thm:classical_tautologies/lem}, we have the strictly weaker principle of explosion \eqref{eq:thm:intuitionistic_tautologies/efq} stating that everything can be proven from a contradiction.
 
-  We will only discuss one abstract logic --- that of \hyperref[def:propositional_syntax/formula]{propositional formulas}, \hyperref[def:truth_value_algebra/intuitionistic]{Heyting algebra semantics} and the \hyperref[def:propositional_natural_deduction_systems]{intuitionistic propositional natural deduction system}.
+  We will only discuss one abstract logic --- that of \hyperref[def:propositional_formula]{propositional formulas}, \hyperref[def:truth_value_algebra/intuitionistic]{Heyting algebra semantics} and the \hyperref[def:propositional_natural_deduction_systems]{intuitionistic propositional natural deduction system}.
 \end{concept}
 \begin{comments}
   \item Intuitionistic logic can also be called \enquote{constructive logic} due to the \hyperref[con:brouwer_heyting_kolmogorov_interpretation]{Brouwer-Heyting-Kolmogorov interpretation}.
@@ -534,5 +550,5 @@ We introduce several notions that are common for different flavors of logic we w
 \begin{concept}\label{con:minimal_logic}\mimprovised
   By (Johansson's) \term[en=minimal logic (\cite[1]{VanDerMolen2016MinimalLogic}]{minimal logic} we will mean the generalization of \hyperref[con:intuitionistic_logic]{intuitionistic logic} where we reject both the law of the excluded middle \eqref{eq:thm:classical_tautologies/lem} and the strictly weaker principle of explosion \eqref{eq:thm:intuitionistic_tautologies/efq}.
 
-  As in the case of intuitionistic logic, we will only discuss one abstract logic --- that of \hyperref[def:propositional_syntax/formula]{propositional formulas}, \hyperref[def:minimal_propositional_semantics]{minimal Heyting algebra semantics} and the \hyperref[def:propositional_natural_deduction_systems]{minimal propositional natural deduction system}.
+  As in the case of intuitionistic logic, we will only discuss one abstract logic --- that of \hyperref[def:propositional_formula]{propositional formulas}, \hyperref[def:minimal_propositional_semantics]{minimal Heyting algebra semantics} and the \hyperref[def:propositional_natural_deduction_systems]{minimal propositional natural deduction system}.
 \end{concept}

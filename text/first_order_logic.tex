@@ -1,1473 +1,331 @@
 \section{First-order logic}\label{sec:first_order_logic}
 
-The idea of first-order predicate logic (we will omit \enquote{predicate} and only refer to \enquote{first-order logic}) is to create a formal language whose semantics (given by structures) supports boolean operations and can quantify over all elements of an ambient universe. Unlike in \hyperref[sec:propositional_logic]{propositional logic}, there are different first-order logic languages.
+First-order logic is a particularly convenient form of \hyperref[con:predicate_logic]{predicate logic}.
 
+We give here the following definition, and then dedicate several sections to explaining it:
 \begin{definition}\label{def:first_order_logic}\mimprovised
 \end{definition}
 \begin{comments}
   \item First-order logic can be regarded as a special case of \hyperref[def:higher_order_logic]{higher-order logic}. See \cref{ex:def:bounded_hol/first}.
 \end{comments}
 
-\begin{definition}\label{def:first_order_language}\mcite[def. 2.1.2]{Hinman2005Logic}
-  A \term{first-order language}\fnote{As in propositional logic, a first-order language is an \hyperref[def:formal_language]{alphabet} rather than a \hyperref[def:formal_language/language]{formal language}.} \( \mscrL \) extends the language of \hyperref[sec:propositional_logic]{propositional logic} and consists of two types of symbols.
+\paragraph{First-order signatures}
 
-  \begin{description}
-    \item[Logical symbols]
-    \hfill
-    \begin{thmenum}[series=def:first_order_language]
-      \thmitem{def:first_order_language/propositional} The entirety of the \hyperref[sec:propositional_logic]{propositional logic language}.
-
-      \thmitem{def:first_order_language/quantifiers} The set \( \op*{Quan} \) consisting of the \term[ru=квантор общости (\cite[61]{Эдельман1975Логика})]{universal quantifier} \enquote{\( \synforall \)} and the \term[ru=квантор существования (\cite[61]{Эдельман1975Логика})]{existential quantifier} \enquote{\( \synexists \)}.
-
-      \thmitem{def:first_order_language/dot} A dot \enquote{\( . \)} for separating a quantifier from its formula.
-
-      \thmitem{def:first_order_language/equality} A symbol for \term{formal equality}\fnote{Equality is sometimes omitted by logicians, but examples of first-order languages without formal equality are obscure.} \enquote{\( \syneq \)}.
-    \end{thmenum}
-
-    \item[Non-logical symbols]
-    \hfill
-    \begin{thmenum}[resume=def:first_order_language]
-      \thmitem{def:first_order_language/fun} A possibly empty \hi{finite} set \( \op*{Fun} \) of symbols for denoting functions.
-
-      Note that, despite using notation like \( f_n \), we regard \( f_n \) as a single symbol, and it is usually a single symbol like \( + \) or \( / \).
-
-      Each functional symbol has an associated natural number called its \term{arity}, which we denote by \( \# f \). Functional symbols of zero arity are called \term{constants}.
-
-      Of course, none of the functional symbols are allowed to clash with the logical symbols.
-
-      \thmitem{def:first_order_language/pred} A possibly empty \hi{finite} set \( \op*{Pred} \) of symbols for denoting predicates.
-
-      Predicate symbols also have an associated arity. Predicate symbols of zero arity act as \hyperref[def:propositional_syntax/prop]{propositional variables}.
-
-      None of the predicate symbols are allowed to clash with either the functional symbols or with the logical symbols.
-    \end{thmenum}
-  \end{description}
-
-  The logical symbols are common for all first-order languages. Thus, first-order languages differ by their non-logical symbols. The collection of functional and predicate symbols of a language are sometimes called its \term{signature}.
-\end{definition}
-\begin{comments}
-  \item The dot is not itself a quantifier and is not strictly necessary --- we use it only for readability.
-
-  \item We can avoid functional symbols altogether in favor of predicate symbols because functions can be represented via relations. This however introduces certain complications --- see \cref{ex:replacing_functional_symbols_via_relations}.
-\end{comments}
-
-\begin{remark}\label{rem:first_order_abbreviations}
-
-\end{remark}
-
-\begin{remark}\label{rem:uncountable_first_order_language}
-  We require the sets of \hyperref[def:first_order_language/fun]{functional symbols} and \hyperref[def:first_order_language/fun]{predicate symbols} to be finite. This restriction is natural in several ways:
-  \begin{itemize}
-    \item This allows us to stpredicatepredicateick to the conventional theory of \hyperref[def:formal_language/language]{formal languages} over finite alphabets and \hyperref[def:formal_grammar]{formal grammars} over finite alphabets with finitely many rules.
-
-    \item The above carets to the philosophical implication of languages being at most countable.
-
-    \item The above also allows us to implement these concepts using conventional programming languages, for example in \cite{notebook:code}.
-  \end{itemize}
-
-  Unfortunately, this decision also limits us in certain definitions like \cref{def:semimodule/theory}, where we may need uncountably many functional symbols. This particular example may be considered pathological, because more general abstract logics provide a more elegant solution.
-
-  Thus, we restrict ourselves to what Peter Hinman in \incite[def. 2.1.27]{Hinman2005Logic} calls \term{finite languages}.
-
-  An alternative is to use \fullref{thm:knaster_tarski_theorem} rather than formal grammars, however this has the downside of allowing languages which cannot be parsed.
-\end{remark}
-
-\begin{definition}\label{def:first_order_syntax}
-  Similarly to the \hyperref[def:propositional_syntax]{syntax of propositional logic}, we define the \term{syntax} of a fixed \hyperref[def:first_order_language]{first-order language} \( \mscrL \).
-
+\begin{definition}\label{def:predicate_logic_alphabet}\mimprovised
+  The \hyperref[def:formal_language/alphabet]{alphabet} of \hyperref[con:improper_symbol]{improper symbols} of \hyperref[con:predicate_logic]{predicate logic} extends the \hyperref[def:propositional_alphabet]{alphabet of propositional logic} with the following new symbols:
   \begin{thmenum}
-    \thmitem{def:first_order_syntax/grammar_schema} Consider the following \hyperref[def:formal_grammar/schema]{grammar schema}:
-    \begin{bnf*}
-      \bnfprod{connective}      {\bnftsq{\( \synvee \)} \bnfor \bnftsq{\( \synwedge \)} \bnfor \bnftsq{\( \synimplies \)} \bnfor \bnftsq{\( \syniff \)}} \\
-      \bnfprod{quantifier}      {\bnftsq{\( \synforall \)} \bnfor \bnftsq{\( \synexists \)}} \\
-      \bnfprod{variable}        {\bnfpn{Small Latin identifier}} \\
-      \bnfprod{term}            {\bnfpn{variable} \bnfor} \\
-      \bnfmore                  {f \thickspace \} \thickspace \T*{Standalone rule for each} f \in \op*{Fun} \T*{where} \# f = 0} \\
-      \bnfmore                  {\underbrace{f \bnfsp \bnftsq{(} \bnfsp \overbrace{\bnfpn{term} \bnfsp \bnftsq{,} \bnfsp \bnfsk \bnfsp \bnftsq{,} \bnfsp \bnfpn{term}}^{\# f \T*{terms separated by commas}} \bnfsp \bnftsq{)}}_{\T*{Standalone rule for each} f \in \op*{Fun} \T*{where} \# f > 0}} \\
-      \bnfprod{atomic formula}  {\bnftsq{\( \syntop \)} \bnfor \bnftsq{\( \synbot \)} \bnfor} \\
-      \bnfmore                  {\bnftsq{(} \bnfsp \bnfpn{term} \bnfsp \bnftsq{\( \syneq \)} \bnfsp \bnfpn{term} \bnfsp \bnftsq{)} \bnfor} \\
-      \bnfmore                  {\underbrace{p \bnfsp \bnftsq{(} \bnfsp \overbrace{\bnfpn{term} \bnfsp \bnftsq{,} \bnfsp \bnfsk \bnfsp \bnftsq{,} \bnfsp \bnfpn{term}}^{\# p \T*{terms separated by commas}} \bnfsp \bnftsq{)}}_{\T*{Standalone rule for each} p \in \op*{Prod}}} \\
-      \bnfprod{formula}         {\bnfpn{atomic formula} \bnfor} \\
-      \bnfmore                  {\bnftsq{\( \syntop \)} \bnfor \bnftsq{\( \synbot \)} \bnfor} \\
-      \bnfmore                  {\bnftsq{\( \synneg \)} \bnfpn{formula} \bnfor} \\
-      \bnfmore                  {\bnftsq{(} \bnfsp \bnfpn{formula} \bnfsp \bnfpn{connective} \bnfsp \bnfpn{formula} \bnfsp \bnftsq{)} \bnfor} \\
-      \bnfmore                  {\bnfpn{quantifier} \bnfsp \bnfpn{variable} \bnfsp \bnftsq{.} \bnfsp \bnfpn{formula}}
-    \end{bnf*}
-
-    \thmitem{def:first_order_syntax/var} We denote by \( \op*{Var} \) the set of strings generated by the above grammar schema with starting nonterminal \( \bnfpn{variable} \).
-
-    \thmitem{def:first_order_syntax/term} Similarly, we denote by \( \op*{Term} \) the set of strings generated with starting nonterminal \( \bnfpn{term} \).
-
-    We implicitly associate with each first-order term a syntax tree. The grammar of terms is unambiguous as shown via \cref{thm:propositional_formula_grammar/unambiguous}, which makes it possible to perform proofs via \fullref{thm:induction_on_rooted_trees}.
-
-    \thmitem{def:first_order_syntax/subterm} If \( \tau \) and \( \kappa \) are terms and \( \kappa \) is a \hyperref[def:formal_language/substring]{substring} of \( \tau \), we say that \( \kappa \) is a \term{subterm} of \( \tau \).
-
-    \thmitem{def:first_order_syntax/term_variables} For each term \( \tau \), we define the set of variables occurring in the term:
-    \begin{equation}\label{eq:def:first_order_syntax/term_variables}
-      \op*{Var}(\tau) \coloneqq \begin{cases}
-        \synx,                                                            &\tau = \synx \in \op*{Var}, \\
-        \op*{Var}(\kappa_1) \cup \ldots \cup \op*{Var}(\kappa_n), &\tau = f(\kappa_1, \ldots, \kappa_n).
-      \end{cases}
-    \end{equation}
-
-    \thmitem{def:first_order_syntax/closed_term} A term \( \tau \) is called a \term{closed term} if \( \op*{Var}(\tau) = \varnothing \).
-
-    Peter Hinman in \incite[def. 2.6.10]{Hinman2005Logic} calls them \enquote{constant terms}, but we prefer \enquote{closed term} because of similarity with closed formulas defined in \cref{def:first_order_syntax/closed_formula}.
-
-    \thmitem{def:first_order_syntax/atomic_formula} We denote by \( \op*{Var} \) the set of strings generated by the above grammar schema with starting nonterminal \( \bnfpn{atomic formula} \).
-
-    \thmitem{def:first_order_syntax/formula} Similarly, we denote by \( \op*{Formula} \) the set of strings generated with starting nonterminal \( \bnfpn{formula} \).
-
-    The grammar of first-order formulas is unambiguous as shown in \cref{thm:first_order_terms_and_formulas_are_unambiguous}.
-
-    \Cref{ex:first_order_substitution} discussed the structure of some first-order formulas, while arbitrarily complicated formulas can be found in \fullref{ch:set_theory}, for example the axiom of universes \eqref{eq:def:axiom_of_universes}.
-
-    \thmitem{def:first_order_syntax/subformula} If \( \varphi \) and \( \psi \) are formulas and \( \psi \) is a \hyperref[def:formal_language/substring]{substring} of \( \varphi \), we say that \( \psi \) is a \term{subformula} of \( \varphi \).
-
-    \thmitem{def:first_order_syntax/formula_terms} If \( \varphi \) is a formula, if \( \tau \) is a term and if \( \tau \) is a \hyperref[def:formal_language/substring]{substring} of \( \varphi \), we say that \( \tau \) is a \term{term} of \( \varphi \).
-
-    \thmitem{def:first_order_syntax/formula_bound_variables} For each formula \( \varphi \), we define its set of \term{bound variables} as
-    \begin{equation*}
-      \op*{Bound}(\varphi) \coloneqq \begin{cases}
-        \varnothing,                                        &\varphi \T{is atomic,} \\
-        \op*{Bound}(\psi),                               &\varphi = \synneg \psi, \\
-        \op*{Bound}(\psi_1) \cup \op*{Bound}(\psi_2), &\varphi = \psi_1 \syncirc \psi_2, {\syncirc} \in \op*{Conn}, \\
-        \op*{Bound}(\psi) \cup \set{ \synx },              &\varphi = \quantifier{q}{\synx} \psi, q \in \op*{Quan}.
-      \end{cases}
-    \end{equation*}
-
-    \thmitem{def:first_order_syntax/formula_free_variables} We also define the set of \term{free variables} as
-    \begin{equation*}
-      \op*{Free}(\varphi) \coloneqq \begin{cases}
-        \varnothing,                                                &\varphi \in \set{ \syntop, \synbot }, \\
-        \op*{Var}(\tau_1) \cup \ldots \cup \op*{Var}(\tau_n), &\varphi = p(\tau_1, \ldots, \tau_n), \\
-        \op*{Var}(\tau_1) \cup \op*{Var}(\tau_2),             &\varphi = \tau_1 \syneq \tau_2, \\
-        \op*{Free}(\psi),                                        &\varphi = \synneg \psi, \\
-        \op*{Free}(\psi_1) \cup \op*{Free}(\psi_2),           &\varphi = \psi_1 \syncirc \psi_2, {\syncirc} \in \op*{Conn}, \\
-        \op*{Free}(\psi) \setminus \set{ \synx },                  &\varphi = \quantifier{q}{\synx} \psi, q \in \op*{Quan}
-      \end{cases}
-    \end{equation*}
-
-    \thmitem{def:first_order_syntax/closed_formula}\mcite[def. 2.2.7]{Hinman2005Logic} A formula \( \varphi \) is called a \term{closed formula}.
-
-    Peter Hinman in \incite[def. 2.2.7]{Hinman2005Logic} calls them \term{sentences}. This contrasts with propositional logic, where all formulas are called sentences --- see \cref{def:propositional_syntax/formula}. We prefer \enquote{closed formula} because of similarity with closed terms defined in \cref{def:first_order_syntax/closed_term}.
-
-    \thmitem{def:first_order_syntax/formula_variables} Finally, the set of all variables of a formula \( \varphi \) is
-    \begin{equation*}
-      \op*{Var}(\varphi) \coloneqq \op*{Free}(\varphi) \cup \op*{Bound}(\varphi).
-    \end{equation*}
-  \end{thmenum}
-\end{definition}
-\begin{comments}
-  \item Certain important theorems like \fullref{thm:semantic_deduction_theorem} and \cref{thm:syntactic_deduction_theorem} require some formulas to be closed. In general, wherever we need closed formulas, we will rely on implicit quantification as mentioned in \cref{rem:mathematical_logic_conventions/quantification}.
-
-  \item See \cref{rem:notation_for_quantifiers} regarding the different possible notations for quantifiers.
-\end{comments}
-
-\begin{example}\label{ex:dot_delimiters_in_logic}
-  The syntax of first-order logic, as presented in \cref{def:first_order_syntax}, has evolved drastically since its inception in the 19th century. We will demonstrate several examples.
-
-  \begin{thmenum}
-    \thmitem{ex:dot_delimiters_in_logic/contraposition} For example, we can express the \hyperref[def:conditional_formula/contrapositive]{contrapositive} equivalence \cref{thm:classical_equivalences/contrapositive} as follows:
-    \begin{equation}\label{eq:ex:dot_delimiters_in_logic/contraposition/object}
-      (\synp \synimplies \synq) \syniff (\synneg \synq \synimplies \synneg \synp)
-    \end{equation}
-
-    Here \( \synp \) and \( \synq \) are concrete variables, which we may \hyperref[def:propositional_substitution]{substitute} for any formulas. A more conventional presentation \eqref{eq:ex:dot_delimiters_in_logic/contraposition/object} disregards the convention from \cref{rem:object_language_dots} and disposes of the dots on top of the symbols:
-    \begin{equation}\label{eq:ex:dot_delimiters_in_logic/contraposition/plain}
-      (p \rightarrow q) \leftrightarrow (\neg q \rightarrow \neg p)
-    \end{equation}
-
-    When discussing ramified type theory in \cref{def:ramified_theory_of_types}, we mentioned how Russell and Whitehead's three-volume \enquote{Principia Mathematica} (\cite{WhiteheadRussell1927PrincipiaMathematicaVol1}, \cite{WhiteheadRussell1927PrincipiaMathematicaVol2} and \cite{WhiteheadRussell1927PrincipiaMathematicaVol3}) uses dated formalisms. In the first book, \eqref{eq:ex:dot_delimiters_in_logic/contraposition/plain} can be found as (*4 1):
-    \begin{equation}\label{eq:ex:dot_delimiters_in_logic/contraposition/principia}
-      p \rightimply q \qdot \equiv \qdot \sim q \rightimply \ \sim p
-    \end{equation}
-
-    Without familiarity with the syntax, it is clear here that dots act as delimiters, but it is not clear how. As it turns out, the rules are quite complicated, and it is unclear why there were chosen at all.
-
-    In \cite[9]{WhiteheadRussell1927PrincipiaMathematicaVol1}, in a paragraph called \enquote{The use of dots}, Russell and Whitehead explain how dots are used either as conjunctions or as delimiters depending on their position. In the latter case, \enquote{a larger number of dots indicates an outside bracket, a smaller number indicates an inside bracket}. The \enquote{number of dots} refers to clusters of dots in more complicated formulas such as \eqref{eq:ex:dot_delimiters_in_logic/complicated/principia}, which we will inspect next.
-
-    The precise rules require dividing the occurrences of dots into three groups:
-    \begin{itemize}
-      \item \enquote{Group I} consists of dots adjoining a propositional connective or \enquote{equality by definition} (which construct does not exist in our formulation). In our notation, we place each connective formula in parentheses to avoid the need of such a group.
-
-      \item \enquote{Group II} consists of dots following \hyperref[def:predicate_logic_alphabet/quantifiers]{quantifiers}. In our notation, we place a quantifiers's body in parentheses to avoid the need of such a group.
-
-      \item \enquote{Group III} consists of dots which \enquote{stand between propositions in order to indicate a logical product} (i.e. a conjunction). In our notation, we simply use a distinguished conjunction symbol to avoid the need for such a group.
-    \end{itemize}
-
-    Finally,
-    \begin{displayquote}
-      The scope of the bracket indicated by any collection of dots extends backwards or forwards beyond any \textit{smaller} number of dots, or any \textit{equal} number from a group of less force, until we reach either the end of the asserted proposition or a \textit{greater} number of dots or an \textit{equal} number belonging to a group of equal or superior force.
-    \end{displayquote}
-
-    Since \eqref{eq:ex:dot_delimiters_in_logic/contraposition/principia} features no quantifiers, and since the dots are all singular, we can conclude that \eqref{eq:ex:dot_delimiters_in_logic/contraposition/principia} reduces to
-    \begin{equation}\label{eq:ex:dot_delimiters_in_logic/contraposition/principia_parens}
-      (p \rightimply q) \equiv (\sim q \rightimply \ \sim p),
-    \end{equation}
-    which differs from \eqref{eq:ex:dot_delimiters_in_logic/contraposition/plain} only by how the connectives are named.
-
-    The convention is attributed to Peano's \cite{Peano1908FormulatioMathematico}, first published in 1894. There, the same formula can be found as (I.4.2) on page 10:
-    \begin{equation}\label{eq:ex:dot_delimiters_in_logic/contraposition/peano}
-      a \rightimply b \qdot \equiv \qdot - a \rightimply - b
-    \end{equation}
-
-    Modulo the variable names and the negation symbol, this coincides with \eqref{eq:ex:dot_delimiters_in_logic/contraposition/principia} from Principia Mathematica. The exact same formula can be found in Peano's earlier work \cite{Peano1889ArithmeticesPrincipia} on formalized arithmetic as (22.) on page IX. Dots delimiters are more convenient in Peano's work because he does not use quantifiers and denotes conjunction by the symbol \( {\cap} \), so Russell and Whitehead's groups II and III are irrelevant to his writing.
-
-    \thmitem{ex:dot_delimiters_in_logic/complicated} Even without quantifiers and conjunctions, the formulas in Principia Mathematica can be difficult to parse. The following is given as an example when discussing the dot delimiters:
-    \begin{equation}\label{eq:ex:dot_delimiters_in_logic/complicated/principia}
-      p \vee q \qdot \rightimply \mathinner{\phantom{:}\mathllap{:}\mathrlap{.}\phantom{.}} p \qdot \vee \qdot q \rightimply r \mathinner{:} \rightimply \qdot p \vee r
-    \end{equation}
-
-    First, we eliminate the triple dots:
-    \begin{equation}\label{eq:ex:dot_delimiters_in_logic/complicated/principia_without_triple}
-      p \vee q \ . \rightimply \parens[\Big]{ p \qdot \vee \qdot q \rightimply r \mathinner{:} \rightimply \qdot p \vee r }
-    \end{equation}
-
-    Then the double dots:
-    \begin{equation}\label{eq:ex:dot_delimiters_in_logic/complicated/principia_without_double}
-      p \vee q \qdot \rightimply \parens[\Big]{ \parens[\big]{ p \qdot \vee \qdot q \rightimply r } \rightimply \qdot p \vee r }
-    \end{equation}
-
-    Finally, we eliminate the single dots:
-    \begin{equation}\label{eq:ex:dot_delimiters_in_logic/complicated/plain}
-      (p \vee q) \rightimply \parens[\Big]{ \parens[\big]{ p \vee (q \rightimply r) } \rightimply (p \vee r) }
-    \end{equation}
-
-    \thmitem{ex:dot_delimiters_in_logic/quantifiers} The quantifier formulas \( \qforall x \phi(x) \) and \( \qexists x \phi(x) \) become, in Russell and Whitehead's notation, \( (x) \qdot \phi x \) and \( (\exists x) \qdot \phi x \).
-
-    The dots in these latter formulas belong to group II discussed above, so, written without dots, these formulas become \( (x) (\phi x) \) and \( (\exists x) (\phi x) \).
-
-    Even though we have fully divorced dot delimiters, following popular convention, we use dots after variables in \hyperref[con:variable_binding]{variable binders} in \( \muplambda \)-calculus --- see \cref{rem:lambda_term_abstractor_dot} for a discussion.
-
-    For quantifiers, also following popular convention, we prefer using a notation without dots --- see \cref{rem:notation_for_quantifiers}.
-  \end{thmenum}
-\end{example}
-
-\begin{proposition}\label{thm:first_order_terms_and_formulas_are_unambiguous}
-  The grammars of \hyperref[def:first_order_syntax/term]{first-order terms} and of \hyperref[def:first_order_syntax/formula]{first-order formulas} are \hyperref[def:grammar_ambiguity]{unambiguous}.
-\end{proposition}
-\begin{proof}
-  The proof is more complicated, but similar to \cref{thm:propositional_formula_grammar/unambiguous}.
-\end{proof}
-
-\begin{remark}\label{rem:postfix_notation}
-  \todo{Describe postfix notation}
-\end{remark}
-
-\begin{remark}\label{rem:first_order_formula_conventions}
-  In order to simplify exposition, we use several conventions. As in the case of \cref{rem:propositional_formula_notation_conventions}, both of these conventions exist only in the metalanguage and the formulas themselves are assumed to have the former form within the object language.
-  \begin{thmenum}
-    \thmitem{rem:first_order_formula_conventions/parentheses} We use the parentheses conventions from \cref{rem:propositional_formula_notation_conventions}.
-
-    \thmitem{rem:first_order_formula_conventions/infix} \hyperref[def:function_application_syntax]{infix notation}
-
-    \thmitem{rem:first_order_formula_conventions/negation} Negation of an infix binary predicate symbol \( \sim \) can be written more simply as
-    \begin{equation*}
-      \synx \not\sim \syny
-    \end{equation*}
-    rather than
-    \begin{equation*}
-      \synneg(\synx \sim \syny).
-    \end{equation*}
-
-    \thmitem{rem:first_order_formula_conventions/relativization}\mcite[def. 2.6.24]{Hinman2005Logic} For any predicate \( p \), to further shorten notation, we write
-    \begin{equation*}
-      \qforall {p(\synx, \cdots)} \varphi
-    \end{equation*}
-    as a shorthand for
-    \begin{equation*}
-      \mathbf{\qforall \synx (p(\synx, \cdots) \synimplies \varphi)}
-    \end{equation*}
-    \begin{equation*}
-      \mathbf{\qforall x (p(x, \cdots) \synimplies \varphi)}
-    \end{equation*}
-    \begin{equation*}
-      \qforall \synx (p(\synx, \cdots) \synimplies \varphi)
-    \end{equation*}
-    and
-    \begin{equation*}
-      \qexists {p(\synx, \cdots)} \varphi
-    \end{equation*}
-    as a shorthand for
-    \begin{equation*}
-      \qexists \synx (p(\synx, \cdots) \synwedge \varphi).
-    \end{equation*}
-
-    \Cref{thm:relativized_first_order_quantifiers_are_dual} justifies this duality.
-
-    This is called \term{relativization} of the quantifier and is useful when working with heterogeneous objects or even in \hyperref[ch:set_theory]{set theory}.
-
-    \thmitem{rem:first_order_formula_conventions/unique_existence}\mcite[177]{Hinman2005Logic} We sometimes want to specify not only existence, but also uniqueness. This is the case in \eqref{eq:def:zfc/choice}, for example. It is conventional to write
-    \begin{equation*}
-      \qExists \synx \varphi
-    \end{equation*}
-    as a shorthand for
-    \begin{equation*}
-      \qexists \synx \parens[\Big]{ \varphi \synwedge \parens[\Big]{ \qforall \syny \varphi[\synx \mapsto \syny] \synimplies (\synx \syneq \syny) } },
-    \end{equation*}
-    where \( \varphi[\synx \mapsto \syny] \) is substitution defined in \cref{def:first_order_substitution/term_in_formula}.
-
-    \thmitem{rem:first_order_formula_conventions/necessary_signature} We only add to the language itself the functional and predicate symbols that are necessary for our desired axioms --- see \cref{def:first_order_theory}. We can define additional functions and predicates in terms of these, but we avoid using them as much as possible when writing formulas in the object language. For example, we avoid adding the functional symbols \hyperref[thm:well_ordered_order_type_existence]{\( \ord(A) \)} and \hyperref[def:cardinal]{\( \card(A) \)} or even \hyperref[def:basic_set_operations/union]{\( \cup \)} and \hyperref[def:basic_set_operations/intersection]{\( \cap \)} to \hyperref[def:zfc]{\logic{ZFC}}.
-
-    If needed, we can consider these new functions and predicates to be abbreviations for more verbose terms and formulas as described in \cref{con:formula_defined_predicate}.
-  \end{thmenum}
-\end{remark}
-
-\begin{definition}\label{def:first_order_structure}\mcite[def. 2.1.15]{Hinman2005Logic}
-  Fix a first-order logic language \( \mscrL \). A \term{structure} for \( \mscrL \) is a pair \( \mscrX = (X, I) \), where
-  \begin{thmenum}
-    \thmitem{def:first_order_structure/set}\mcite[def. 2.1.15(i)]{Hinman2005Logic} \( X \) is a nonempty\fnote{See \cref{rem:empty_first_order_structures} regarding special cases where we allow \( X \) to be empty.} set called the \term{domain} or \term{universe} of the structure \( \mscrX \).
-
-    \thmitem{def:first_order_structure/interpretation} The \term{interpretation} \( I \) of the structure \( \mscrX \) is a \hyperref[def:function]{function} that is defined on the signature of \( \mscrL \) and satisfies the following conditions:
+    \thmitem{def:predicate_logic_alphabet/quantifiers}\mcite[80]{Kleene2002Logic} The set \( \op*{Quant} \) of \term[ru=кванторы (\cite[72]{ШеньВерещагин2017ЯзыкиИИсчисления})]{quantifiers}, namely
     \begin{thmenum}
-      \thmitem{def:first_order_structure/interpretation/function}\mcite[def. 2.1.15(ii)]{Hinman2005Logic} For every \( n \)-ary function symbol \( f \), its interpretation is a \hyperref[def:function]{function} with signature \( I(f): X^n \to X \).
+      \thmitem{def:predicate_logic_alphabet/quantifiers/universal} The \term[ru=квантор общости (\cite[61]{Эдельман1975Логика})]{universal quantifier} \enquote{\( \synforall \)}.
+      \thmitem{def:predicate_logic_alphabet/quantifiers/existential}\mcite[80]{Kleene2002Logic} The \term[ru=квантор существования (\cite[61]{Эдельман1975Логика})]{existential quantifier} \enquote{\( \synexists \)}.
+    \end{thmenum}
 
-      \thmitem{def:first_order_structure/interpretation/predicate}\mcite[def. 2.1.15(iii)]{Hinman2005Logic} For every \( n \)-ary predicate \( p \), its interpretation is an n-ary \hyperref[def:boolean_function]{Boolean-valued function} with signature \( I(p): X^n \to \set{ T, F } \). A tuple \( (x_1, \ldots, x_n) \) satisfies \( p \) if \( p(x_1, \ldots, x_n) = T \).
+    \thmitem{def:predicate_logic_alphabet/equality}\mcite[def. 2.1.2(vi)]{Hinman2005Logic} The \hyperref[def:function_application_syntax]{infix} \term{equality symbol} \enquote{\( \syneq \)}
+
+    \thmitem{def:predicate_logic_alphabet/comma} In addition to the parentheses, two more auxiliary symbols:
+    \begin{thmenum}
+      \thmitem{def:lambda_term_alphabet/aux/comma} The comma \enquote{\( , \)} for delimiting \hyperref[con:function_arguments]{function arguments}.
+
+      \thmitem{def:lambda_term_alphabet/aux/dot} The dot \enquote{\( . \)} for separating quantifiers from their bodies.
     \end{thmenum}
   \end{thmenum}
 \end{definition}
 \begin{comments}
-  \item Some authors like Peter Hinman in \incite[def. 2.1.15(iii)]{Hinman2005Logic} define \( I(p) \) to be a \hyperref[def:relation]{relation} \( I(p) \subseteq X^n \), however it is more convenient for us to work with Boolean-valued functions. The two approaches are equivalent as explained in \cref{rem:boolean_valued_functions_and_relations}.
-  \item Unlike in the rest of this monograph, when dealing with first-order structures directly, it is important to distinguish between the structure \( \mscrX \) as a pair and its domain \( X \) as a set. See \cref{rem:hol_structure_notation}.
+  \item This alphabet is intended for first-order logic, but will also be reused for higher-order logic in \fullref{sec:higher_order_logic}.
+
+  \item As discussed in \cref{rem:quantifier_notation}, the dot has no functional role and is only used as visual aid for complicated formulas.
 \end{comments}
 
-\begin{remark}\label{rem:empty_first_order_structures}
-   If we allow the domain of a structure to be empty, we would have to reformulate a lot of important theorems (e.g. our proof of \cref{thm:renaming_assignment_compatibility/formulas}), which would complicate compatibility between semantics and \hyperref[def:deduction_system]{deduction systems}.
-
-   See \cref{thm:intersection_substructure} and \cref{thm:substructures_form_complete_lattice/bottom} for contexts where empty sets are justified as domains of first-order structures. We also use this in \cref{rem:propositional_logic_as_first_order_logic}, although in the latter case the domain itself is irrelevant.
-\end{remark}
-
-\begin{definition}\label{def:first_order_valuation}
-  Fix a structure \( \mscrX = (X, I) \) for a first-order logic language \( \mscrL \).
-
+\begin{definition}\label{def:fol_signature}\mcite[282]{Meseguer1989GeneralLogics}
+  A \hyperref[con:logical_system_signature]{signature} \( \Sigma \) for first-order logic consists of the following:
   \begin{thmenum}
-    \thmitem{def:first_order_valuation/variable_assignment}\mcite[def. 2.1.16]{Hinman2005Logic} A \term[ru=оценка (\cite[77]{ШеньВерещагин2017ЯзыкиИИсчисления})]{variable assignment} for the variables of \( \mscrL \) is any function \( v: \op*{Var} \to X \).
+    \thmitem{def:fol_signature/fun} A possibly empty \hyperref[def:formal_language/alphabet]{alphabet} \( \op*{Fun}_\Sigma \), whose elements we call \term{function symbols}.
 
-    These are loosely similar to \hyperref[def:propositional_valuation/interpretation]{propositional interpretations}.
+    \thmitem{def:fol_signature/pred} A possibly empty alphabet \( \op*{Pred}_\Sigma \), whose elements we call \term{relation symbols}.
 
-    \thmitem{def:first_order_valuation/modified_assignment}\mcite[92]{Hinman2005Logic} For every variable \( \synx \) and every domain element \( x \in X \) we also define the \term{modified assignment} at \( \synx \) with \( x \):
-    \begin{equation*}
-      v_{\synx \mapsto x}(\synz) \coloneqq \begin{cases}
-        x,        &\synz = \synx, \\
-        v(\synz), &\synz \neq \synx.
-      \end{cases}
-    \end{equation*}
+    \thmitem{def:fol_signature/arity}\mcite[38]{CitkinMuravitsky2022ConsequenceRelations} A function \( {\#}: \op*{Fun} \cup \op*{Pred} \to \BbbZ_{\geq 0} \) determining the corresponding symbol's \term{arity}.
 
-    We can also modify the value at \( \synx \) with another variable, e.g.
-    \begin{equation*}
-      v_{\synx \mapsto \syny}(\synz) \coloneqq \begin{cases}
-        v(\syny),  &\synz = \synx, \\
-        v(\synz), &\synz \neq \synx.
-      \end{cases}
-    \end{equation*}
-
-    Inductively,
-    \begin{equation*}
-      v_{\synx_1 \mapsto x_1, \ldots, \synx_n \mapsto x_n}(\syny) \coloneqq ((\ldots(v_{\synx_1 \mapsto x_1})\ldots)_{\synx_n \mapsto x_n})(\syny).
-    \end{equation*}
-
-    \thmitem{def:first_order_valuation/term_valuation}\mcite[def. 2.1.17]{Hinman2005Logic} The \term{valuation} of a term \( \tau \) is a value in the domain \( X \) given by
-    \begin{equation}\label{eq:def:first_order_valuation/term_valuation}
-      \Bracks{\tau}_v \coloneqq \begin{cases}
-        v(\synx),                                                 &\tau = \synx \in \op*{Var}, \\
-        I(f)(\Bracks{\kappa_1}_v, \ldots, \Bracks{\kappa_n}_v), &\tau = f(\kappa_1, \ldots, \kappa_n).
-      \end{cases}
-    \end{equation}
-
-    \thmitem{def:propositional_valuation/term_valuation_function} Analogously to how we defined Boolean functions for propositional formulas in \cref{def:propositional_valuation/valuation_function}, if \( \op*{Var}(\tau) \subseteq \set{ \synx_1, \ldots, \synx_n } \), the valuation \( \Bracks{\tau}_v \) only depends on the particular values \( v(\synx_1), \ldots, v(\synx_n) \). Hence, if the variables are clear from the context, we obtain a function
-    \begin{equation*}
-      \begin{aligned}
-        &\Bracks{\tau}_\mscrX: X^n \to X, \\
-        &\Bracks{\tau}_\mscrX(x_1, \ldots, x_n) \coloneqq \Bracks{\tau}_v,
-      \end{aligned}
-    \end{equation*}
-    where \( v \) is any variable assignment such that \( v(\synx_k) = x_k \) for \( k = 1, \ldots, n \).
-
-    \thmitem{def:first_order_valuation/formula_valuation}\mcite[def. 2.1.19, def. 2.1.22]{Hinman2005Logic} We extend the classical propositional valuations from \cref{def:propositional_valuation}. The (classical) \term{valuation} of a formula \( \varphi \) is a \hyperref[con:boolean_value]{Boolean value} given by
-    \begin{equation}\label{eq:def:first_order_valuation/formula_valuation}
-      \Bracks{\varphi}_v \coloneqq \begin{cases}
-        T,                                                                        &\varphi = \syntop, \\
-        F,                                                                        &\varphi = \synbot, \\
-        \Bracks{\tau_1}_v = \Bracks{\tau_2}_v,                                    &\varphi = \tau_1 \syneq \tau_2, \\
-        I(p)(\Bracks{\tau_1}_v, \ldots, \Bracks{\tau_n}_v),                       &\varphi = p(\tau_1, \ldots, \tau_n), \\
-        \oline{\Bracks{\psi}_v},                                               &\varphi = \synneg \psi, \\
-        \Bracks{\psi_1}_v \relcirc \Bracks{\psi_2}_v,                    &\varphi = \psi_1 \syncirc \psi_2, {\syncirc} \in \op*{Conn}, \\
-        \bigwedge\set[\Big]{ \Bracks{\psi}_{v_{\synx \mapsto x}} \given* x \in X }, &\varphi = \qforall \synx \psi, \\
-        \bigvee\set[\Big]{ \Bracks{\psi}_{v_{\synx \mapsto x}} \given* x \in X },   &\varphi = \qexists \synx \psi.
-      \end{cases}
-    \end{equation}
-
-    \thmitem{def:propositional_valuation/formula_valuation_function} We also define a function corresponding to a first-order formula, but we are only interested in the \hyperref[def:first_order_syntax/formula_free_variables]{free variables} rather than \hyperref[def:first_order_syntax/formula_variables]{all variables}:
-    \begin{equation*}
-      \begin{aligned}
-        &\Bracks{\varphi}_\mscrX: X^n \to \set{ T, F }, \\
-        &\Bracks{\varphi}_\mscrX(\synx_1, \ldots, \synx_n) \coloneqq \Bracks{\varphi}_v,
-      \end{aligned}
-    \end{equation*}
-    where \( v \) is any variable assignment such that \( v(\synx_k) = x_k \) for \( k = 1, \ldots, n \).
+    Based on this arity, we will use the prefixes from \cref{def:operation_arity_terminology} like \enquote{unary}, \enquote{binary}, etc.
   \end{thmenum}
+
+  As per \cref{rem:improper_symbols_and_parsing}, we disallow the \hyperref[con:improper_symbol]{improper symbols} from the \hyperref[def:predicate_logic_alphabet]{alphabet of predicate logic} as function or predicate symbols.
 \end{definition}
 \begin{comments}
-  \item The rules for evaluating constants, negations and connectives are a direct extension of the rules for propositional logic from \cref{def:propositional_valuation/formula_valuation}.
+  \item We discuss in \cref{rem:language_alphabet_cardinality} some cardinality considerations; we mention here only that both alphabets are by default assumed to be finite. In general, we use adjectives like \enquote{finite} and \enquote{countably infinite} for the signature itself as per \cref{rem:cardinality_auxiliary_terminology}.
 
-  \item It is important that the domain is nonempty because \( \bigwedge\varnothing = T \), which directly contradicts our intent of defining \( \synexists \) as a quantifier for existence.
-
-  \item Except for semantics of quantification, modified assignments are also used in other places like \cref{thm:renaming_assignment_compatibility}.
+  \item When specifying a signature, we will be explicit about whether we want to use \hyperref[def:function_application_syntax]{infix notation} for binary function or predicate symbols. We do not include this choice as part of the signature since it only affects the \hyperref[con:metalogic]{metalanguage} --- see \cref{rem:first_order_formula_conventions/infix}.
 \end{comments}
 
-\begin{remark}\label{rem:propositional_logic_as_first_order_logic}
-  We will show in details how, with certain limitations on the number of variables, propositional logic can be embedded into first-order logic.
-
-  Fix a set \( \Gamma \) of \hyperref[def:propositional_syntax/formula]{propositional formulas}. Suppose that there is only a finite set of variables in \( \Gamma \); otherwise we would have to generalize first-order syntax as discussed in \cref{rem:uncountable_first_order_language}. Consider the \hyperref[def:first_order_language]{first-order language} \( \mscrL \) with no functional symbols and a nullary predicate symbol for every propositional variable in \( \Gamma \). Denote by \( \widehat{P} \) the predicate symbol corresponding to the variable \( P \).
-
-  Given the propositional formula \( \varphi \) from \( \Gamma \), let \( \widehat \varphi \) be the formula over \( \mscrL \) in which the variables are replaced with the predicate symbols from \( \mscrL \). Then \( \widehat \varphi \) is closed, and thus its interpretation does not depend on the variable assignment.
-
-  Given an arbitrary propositional interpretation \( I \), let \( \widehat{I} \) be a first-order interpretation over the empty domain\fnote{See \cref{rem:empty_first_order_structures} regarding empty domains.} \( \varnothing \) such that \( \widehat{I}(\widehat{P}) = I(P) \). Let \( \mscrX = (\varnothing, \widehat{I}) \). Then
-  \begin{equation*}
-    \Bracks{\widehat{P}}_\mscrX = \Bracks{\widehat{P}}_I.
-  \end{equation*}
-\end{remark}
-
-\begin{remark}\label{rem:first_order_entailment_without_closed_formulas}
-  \todo{Commutativity counterexample}
-\end{remark}
-
-\begin{definition}\label{def:first_order_semantics}
-  Fix a first-order logic language \( \mscrL \). We introduce notions analogous to \hyperref[def:propositional_semantics]{propositional semantics}:
+\begin{definition}\label{def:fol_signature_category}\mcite[282]{Meseguer1989GeneralLogics}
+  For a fixed \hyperref[def:grothendieck_universe]{Grothendieck universe} \( \mscrU \), assumed by default to be the universe \hyperref[def:universe_of_hereditary_finite_sets]{\( V_\omega \)} of hereditarily finite sets, we define the \hyperref[def:category]{category} \( \ucat{Sign} \) of \( \mscrU \)-small \hyperref[def:fol_signature]{first-order signatures} as follows:
   \begin{thmenum}
-    \thmitem{def:first_order_semantics/assignment_entailment}\mcite[def. 2.1.23(i)]{Hinman2005Logic} We say that the set of \hyperref[def:first_order_syntax/formula]{first-order formulas} \enquote{\( \Gamma \) \term{entails} \( \psi \) in the \hyperref[def:first_order_structure]{structure} \( \mscrX = (X, I) \) under the \hyperref[def:first_order_valuation/variable_assignment]{variable assignment} \( v \)} if, whenever \( \Bracks{\varphi}_v = T \) for all \( \varphi \in \Gamma \), it follows that \( \Bracks{\psi}_v = T \).
+    \thmitem{def:fol_signature_category/objects} The objects are, unsurprisingly, the \( \mscrU \)-small signatures.
 
-    \thmitem{def:first_order_semantics/entailment}\mcite[def. 2.2.1(iv)]{Hinman2005Logic} If \( \Gamma \) entails \( \psi \) under every variable assignment \( v \) in every structure \( \mscrX \), we simply say that \enquote{\( \Gamma \) entails \( \psi \)} and write \( \Gamma \vDash \psi \).
+    \thmitem{def:fol_signature_category/morphism} A morphism \( s: \Sigma \to \Theta \) between signatures is a set-theoretic function mapping the function symbols of \( \Sigma \) to function symbols of \( \Theta \) with the same arity, and analogously for predicate symbols.
 
-    As in the case of propositional formulas, we prefer the notation \( \gamma_1, \ldots, \gamma_n \vDash \psi \) to \( \set{ \gamma_1, \ldots, \gamma_n } \vDash \psi \).
+    \thmitem{def:fol_signature_category/morphism} The composition of morphisms is their set-theoretic composition.
 
-    If \( \Gamma \) does not entail \( \varphi \) under at least one variable assignment, we write \( \Gamma \not\vDash \varphi \).
-
-    As in the case of propositional formulas, we prefer the notation \( \gamma_1, \ldots, \gamma_n \vDash \psi \) to \( \set{ \gamma_1, \ldots, \gamma_n } \vDash \psi \).
-
-    \thmitem{def:first_order_semantics/equivalence}\mcite[def. 2.2.1(ii)]{Hinman2005Logic} As in the case with \hyperref[def:semantic_equivalence]{propositional semantical equivalence}, we say that \( \varphi \) and \( \psi \) are \term{semantically equivalent} and write \( \varphi \gleichstark \psi \) if both \( \varphi \vDash \psi \) and \( \psi \vDash \varphi \).
-
-    \thmitem{def:first_order_semantics/validity}\mcite[def. 2.2.1(i)]{Hinman2005Logic} We say that the formula \( \varphi \) is \term{universally valid} if \( \vDash \varphi \).
+    \thmitem{def:fol_signature_category/identity} The identity on \( \Sigma \) is simply the set-theoretic identity.
   \end{thmenum}
 \end{definition}
-\begin{comments}
-  \item It is actually important that we haven't defined entailment within a structure, because it can only be well-defined for \hyperref[def:first_order_syntax/closed_formula]{closed formulas} for reasons outlined in \cref{rem:first_order_satisfiability_bivalence}.
 
-  \item The concept of universal validity is more general than \hyperref[def:propositional_tautology]{propositional tautologies} in the sense that we define validity for arbitrary formulas that may or may not be closed.
+\paragraph{First-order terms}
 
-  \item \Cref{thm:intuitionistic_equivalences} hold for first-order entailment as well.
-\end{comments}
+\begin{definition}\label{def:fol_term}\mimprovised
+  For a fixed \hyperref[def:fol_signature]{signature} \( \Sigma \) of \hyperref[def:first_order_logic]{first-order logic}, we reuse the function application grammar from \cref{def:function_application_syntax} to formally introduce \hyperref[con:predicate_logic/predicate]{terms}:
+  \begin{bnf*}
+    \bnfprod{function application} {\underbrace{f \bnfsp \bnftsq{(} \bnfsp \overbrace{\bnfpn{term} \bnfsp \bnftsq{,} \bnfsp \bnfsk \bnfsp \bnftsq{,} \bnfsp \bnfpn{term}}^{\# f \T*{terms separated by commas}} \bnfsp \bnftsq{)}}_{\T*{Standalone rule for each} f \in \op*{Fun}_\Sigma}} \\
+    \bnfprod{individual variable}  {\bnfpn{Small Latin identifier}} \\
+    \bnfprod{term}                 {\bnfpn{individual variable} \bnfor \bnfpn{function application}}
+  \end{bnf*}
 
-\begin{definition}\label{def:first_order_substitution}
-  As in \hyperref[sec:propositional_logic]{propositional logic}, we sometimes want to perform substitution, however we have different types of syntactic objects (terms and formulas) which have different substitution rules. The notion of free and bound variables further complicates us --- see for example the problems outlined in \cref{rem:first_order_substitution_renaming_justification}. It is not only difficult, but also it is of no practical use to define substitution of a first-order subformula inside another formula as it is done in \cref{def:propositional_substitution}. Instead, we concern ourselves with substituting variables --- propositional variables with first-order formulas and first-order variables with first-order terms. Furthermore, since this does not complicate us, we allow substituting arbitrary terms rather than only first-order variables.
+  \begin{itemize}
+    \item As in \cref{def:function_application_syntax}, when \( \# f = 0 \), we avoid writing parentheses in function application rules.
+    \item We have used the variable identifier rules from \cref{def:variable_identifier}.
+  \end{itemize}
 
-  While substituting a propositional variable is the syntactic analog to applying \hyperref[def:boolean_function]{Boolean functions} to different variables or propositional constants, substituting a first-order variable can express applying \hyperref[def:function]{arbitrary functions} to different first-order variables or arbitrary constants. For example, in a suitable language, we can apply \( \log(x) \) to the constant \( e \) by substituting \( x \) with \( e \) to obtain the closed term \( \log(e) \).
-
-  Where applicable, \term{simultaneous substitution} is defined via the same trick as in \cref{def:propositional_substitution}.
-
-  \begin{thmenum}
-    \thmitem{def:first_order_substitution/propositional} Let \( \varphi \) be a \hyperref[def:propositional_syntax/formula]{propositional formula} with variables \( \op*{Var}(\varphi) = \set{ P_1, \ldots, P_n } \). For brevity, denote \( V \coloneqq \op*{Var}(\varphi) \). Let \( \Theta = \set{ \theta_1, \ldots, \theta_n } \) be a set of \hyperref[def:first_order_syntax/formula]{first-order formulas}.
-
-    It does not make sense to replace a single propositional variable with a single formula. Furthermore, a first-order formula \( \theta_k \) cannot possibly contain any of the propositional variables \( P_1, \ldots, P_n \). This allows us to introduce a simplification of the simultaneous substitution based on \eqref{eq:def:propositional_subformula_substitution} as follows:
-    \begin{equation}\label{eq:def:first_order_substitution/propositional}
-      \varphi[V \mapsto \Theta] \coloneqq \begin{cases}
-        \varphi,                                                    &\varphi \in \set{ \syntop, \synbot } \\
-        \theta_k,                                                   &\varphi = \theta_k \T{for some} k = 1, \ldots, n \\
-        \synneg \psi[V \mapsto \Theta],                                &\varphi = \synneg \psi \\
-        \psi_1[V \mapsto \Theta] \syncirc \psi_2[V \mapsto \Theta], &\varphi = \psi_1 \syncirc \psi_2, {\syncirc} \in \op*{Conn}.
-      \end{cases}
-    \end{equation}
-
-    As in \cref{def:propositional_substitution}, it is not strictly necessary for any of the variables to belong to \( \op*{Var}(\varphi) \).
-
-    \thmitem{def:first_order_substitution/term_in_term}\mcite[def. 2.2.19]{Hinman2005Logic} We define the substitution of the \hyperref[def:first_order_syntax/term]{first-order term} \( \kappa \) with \( \mu \) in the term \( \tau \) as follows:
-    \begin{equation}\label{eq:def:first_order_substitution/term_in_term}
-      \tau[\kappa \mapsto \mu] \coloneqq \begin{cases}
-        \mu,                                                               &\tau = \kappa, \\
-        \tau,                                                              &\tau \neq \kappa \T{and} \tau \in \op*{Var}, \\
-        f(\rho_1[\kappa \mapsto \mu], \ldots, \rho_n[\kappa \mapsto \mu]), &\tau \neq \kappa \T{and} \tau = f(\rho_1, \ldots, \rho_n).
-      \end{cases}
-    \end{equation}
-
-    It is not strictly necessary for \( \kappa \) to be a \hyperref[def:first_order_syntax/subterm]{subterm} of \( \tau \).
-
-    \thmitem{def:first_order_substitution/term_in_formula}\mimprovised This last case is more complicated. We define the substitution of the term \( \kappa \) with the term \( \mu \) in the first-order formula \( \varphi \) as follows:
-    \begin{equation}\label{eq:def:first_order_substitution/term_in_formula}
-      \varphi[\kappa \mapsto \mu] \coloneqq \begin{cases}
-        \varphi,                                                           &\varphi \in \set{ \syntop, \synbot }, \\
-        p(\tau_1[\kappa \mapsto \mu], \ldots, \tau_n[\kappa \mapsto \mu]), &\varphi = p(\tau_1, \ldots, \tau_n), \\
-        \tau_1[\kappa \mapsto \mu] \syneq \tau_2[\kappa \mapsto \mu],      &\varphi = \tau_1 \syneq \tau_2, \\
-        \synneg \psi[\kappa \mapsto \mu],                                     &\varphi = \synneg \psi, \\
-        \psi_1[\kappa \mapsto \mu] \syncirc \psi_2[\synx \mapsto \mu],       &\varphi = \psi_1 \syncirc \psi_2, {\syncirc} \in \op*{Conn}, \\
-        (\dagger),                                                         &\varphi = \quantifier Q {\synx} \psi, Q \in \op*{Quan},
-      \end{cases}
-    \end{equation}
-    where
-    \begin{empheq}[left=(\dagger) \coloneqq \empheqlbrace]{align}
-      &\varphi,                                                                        && \synx \in \op*{Var}(\kappa), \label{eq:def:first_order_substitution/term_in_formula/quantifiers/trivial} \\
-      &\quantifier Q {\synx} \parens[\Big]{\psi[\kappa \mapsto \mu]},                    && \synx \not\in \op*{Var}(\kappa) \cup \op*{Var}(\mu), \label{eq:def:first_order_substitution/term_in_formula/quantifiers/direct} \\
-      &\quantifier Q {\syny} \parens[\Big]{\psi[\synx \mapsto \syny][\kappa \mapsto \mu]}, && \synx \not\in \op*{Var}(\kappa) \T{and} \synx \in \op*{Var}(\mu) \T{and} &\label{eq:def:first_order_substitution/term_in_formula/quantifiers/renaming} \\
-                                                                                      &&& \syny \not\in \op*{Var}(\kappa) \cup \op*{Var}(\mu) \cup \op*{Free}(\psi). \nonumber
-    \end{empheq}
-  \end{thmenum}
+  Similarly to the case of \( \muplambda \)-terms in \cref{def:propositional_subformula}, we will denote the set of all \term[ru=индивидные переменные / предметные переменные (\cite[49]{КолмогоровДрагалин2006Логика}), en=individual variables (\cite[57]{VanDalen2004LogicAndStructure})]{individuals variables} by \( \op*{Var} \) and the set of all \term{first-order terms} over \( \Sigma \) by \( \op*{Term}_\Sigma \).
 \end{definition}
 \begin{comments}
-  \item In \eqref{eq:def:first_order_substitution/term_in_formula/quantifiers/renaming} we chose a fresh variable \( \syny \). As discussed in \cref{def:variable_identifier}, we can use the well-ordering on the set \( \op*{Var} \) of variables and deterministically choose \( \syny \) to be the smallest variable not present in \( \varphi \). This rule is called \term{renaming of the bound variables} \( \synx \) to \( \syny \) and is done to mitigate capturing as described in \cref{rem:first_order_substitution_renaming_justification/capturing}.
+  \item A general discussion of terms and variables in predicate logic can be found in \cref{con:predicate_logic}.
 
-  \item We could avoid the rule for renaming, however renaming both free and bound variables is natural and is often done in practice (i.e. outside formal logic). For example, consider the \hyperref[def:peano_arithmetic]{Peano arithmetic} formula \enquote{there exists \( n \) such that \( nm \) is even}. Note that the bound variable \( n \) is renamed to \( k \) and the free variable \( m \) to \( n \) in the larger formula \enquote{for every \( n \) there exists \( k \) such that \( kn \) is even}.
+  \item Within the metalanguage, we will denote abstract terms via \( \tau \), \( \sigma \), \( \rho \) and other letters in accordance with \cref{rem:mathematical_logic_conventions/greek_alphabet}. This convention will later lead us to a formal definition of formula schemas in \cref{def:fol_formula_schema}.
 
-  \item The rule \eqref{eq:def:first_order_substitution/term_in_formula/quantifiers/trivial} may seem redundant, but when doing inductive proofs (e.g. our proof of \cref{thm:renaming_assignment_compatibility}), we usually need to separately consider the cases where \( \synx \in \op*{Var}(\kappa) \) and \( \synx \not\in \op*{Var}(\kappa) \setminus \op*{Var}(\mu) \) and the rule \eqref{eq:def:first_order_substitution/term_in_formula/quantifiers/direct} being trivial simplifies the proofs.
+  \item We implicitly associate with each propositional formula an \hyperref[con:abstract_syntax_tree]{abstract syntax tree} --- see \cref{def:fol_term_ast}. The grammar of first-order terms is unambiguous as shown via \cref{thm:fol_term_grammar/unambiguous}, which makes it possible to perform proofs via \fullref{thm:induction_on_rooted_trees}.
 
-  \item See \cref{rem:first_order_substitution_parentheses} regarding the additional parentheses in \eqref{eq:def:first_order_substitution/term_in_formula/quantifiers/renaming}.
-
-  \item See \cref{ex:first_order_substitution} for examples of applying the different quantifier rules.
-
-  \item We use the shorthand convention from \cref{rem:substitution_notation}.
-
-  \item These algorithms can be found as \identifier{math.logic.substitution.substitute_in_term} and \identifier{math.logic.substitution.substitute_in_formula} in \cite{notebook:code}.
+  \item First-order terms are implemented in \identifier{math.logic.terms}, with a parser in \identifier{math.logic.parsing}.
 \end{comments}
 
-\begin{remark}\label{rem:first_order_substitution_renaming_justification}
-  The renaming rule \eqref{eq:def:first_order_substitution/term_in_formula/quantifiers/renaming} is designed to mitigate the following two problems when compared to \eqref{eq:def:first_order_substitution/term_in_formula/quantifiers/direct}:
-
+\begin{proposition}\label{thm:fol_term_grammar}
+  The \hyperref[def:formal_grammar]{grammar} of \hyperref[def:fol_term]{first-order terms} has the following basic properties:
   \begin{thmenum}
-    \thmitem{rem:first_order_substitution_renaming_justification/capturing} Renaming mitigates \enquote{capturing} free variables as in
-    \begin{equation*}
-      \parens[\Big]{ \qforall \syny p(\synx, \syny) }[\synx \mapsto \syny] = \qforall \syny p(\syny, \syny)
-    \end{equation*}
-    by instead producing, up to a choice of fresh variables, the formula
-    \begin{equation*}
-      \parens[\Big]{ \qforall \syny p(\synx, \syny) }[\synx \mapsto \syny] = \qforall \synz p(\syny, \synz).
-    \end{equation*}
+    \thmitem{thm:fol_term_grammar/unambiguous} It is \hyperref[def:grammar_ambiguity]{unambiguous}.
 
-    \thmitem{rem:first_order_substitution_renaming_justification/colliding} Renaming mitigates \enquote{colliding} multiple bound variables as in
-    \begin{equation*}
-      \parens[\Big]{ \qforall \synx \qforall \syny p(\synx, \syny) }[\synx \mapsto \syny] = \qforall \synx \qforall \syny p(\syny, \syny)
-    \end{equation*}
-    by instead producing, up to a choice of fresh variables, the formula
-    \begin{equation*}
-      \parens[\Big]{ \qforall \synx \qforall \syny p(\synx, \syny) }[\synx \mapsto \syny] = \qforall \synz \qforall \sigma p(\synz, \sigma).
-    \end{equation*}
-  \end{thmenum}
-\end{remark}
+    \thmitem{thm:fol_term_grammar/balanced} The \hyperref[def:formal_grammar/language]{generated language} has \hyperref[def:paired_delimiters]{balanced parentheses}.
 
-\begin{remark}\label{rem:first_order_substitution_parentheses}
-  When performing \hyperref[def:first_order_substitution]{substitution}, it is sometimes convenient to add additional parentheses to avoid ambiguity. For example, while parentheses around quantifier expressions are not necessary by the syntax of first-order logic, adding such parentheses helps avoid the ambiguity in
-  \begin{equation*}
-    \qforall \synx p(\synx, \syny) [\syny \mapsto \synz].
-  \end{equation*}
-
-  Instead, we either write
-  \begin{equation*}
-    \parens[\Big]{ \qforall \synx p(\synx, \syny) } [\syny \mapsto \synz]
-  \end{equation*}
-  or
-  \begin{equation*}
-    \qforall \synx \parens[\Big]{ p(\synx, \syny)[\syny \mapsto \synz] }.
-  \end{equation*}
-
-  This convention is only part of the metasyntax and the parentheses are not part of the syntax of the formulas themselves.
-\end{remark}
-
-\begin{example}\label{ex:first_order_substitution}
-  The following term substitutions should justify the distinct cases in \eqref{eq:def:first_order_substitution/term_in_formula}:
-  \begin{thmenum}
-    \thmitem{ex:first_order_substitution/1} The trivial case without actual substitution:
-    \begin{equation*}
-      \parens[\Big]{\qforall \synx p(\synx, \syny)}[\synx \mapsto \syny]
-      \reloset {\eqref{eq:def:first_order_substitution/term_in_formula/quantifiers/trivial}} =
-      \qforall \synx p(\synx, \syny).
-    \end{equation*}
-
-    \Cref{ex:first_order_substitution/5} demonstrates that this does not work for nested substitution.
-
-    \thmitem{ex:first_order_substitution/2} A simple substitution without renaming:
-    \begin{align*}
-      &\phantom{{}={}}
-      \parens[\Big]{\qforall \synx p(\synx, \syny)}[\syny \mapsto \synz]
-      \reloset {\eqref{eq:def:first_order_substitution/term_in_formula/quantifiers/direct}} = \\ &=
-      \qforall \synx \parens[\Big]{p(\synx, \syny)[\syny \mapsto \synz]}
-      \reloset {\eqref{eq:def:first_order_substitution/term_in_formula}} = \\ &=
-      \qforall \synx p(\synx, \synz).
-    \end{align*}
-
-    \thmitem{ex:first_order_substitution/3} A simple renaming without actual substitution:
-    \begin{align*}
-      &\phantom{{}={}}
-      \parens[\Big]{\qforall \synx p(\synx, \syny)}[\syny \mapsto \synx]
-      \reloset {\eqref{eq:def:first_order_substitution/term_in_formula/quantifiers/renaming}} = \\ &=
-      \qforall \synz \parens[\Big]{p(\synx, \syny)[\synx \mapsto \synz][\syny \mapsto \synx]}
-      \reloset {\eqref{eq:def:first_order_substitution/term_in_formula}} = \\ &=
-      \qforall \synz p(\synz, \synx).
-    \end{align*}
-
-    \thmitem{ex:first_order_substitution/4} \Cref{ex:first_order_substitution/3}, but with \( \mu \) in \eqref{eq:def:first_order_substitution/term_in_formula} containing \( \synx \) indirectly:
-    \begin{align*}
-      &\phantom{{}={}}
-      \parens[\Big]{\qforall \synx p(\synx, \syny)}[\syny \mapsto f(\synx)]
-      \reloset {\eqref{eq:def:first_order_substitution/term_in_formula/quantifiers/renaming}} = \\ &=
-      \qforall \synz \parens[\Big]{p(\synx, \syny)[\synx \mapsto \synz][\syny \mapsto f(\synx)]}
-      \reloset {\eqref{eq:def:first_order_substitution/term_in_formula}} = \\ &=
-      \qforall \synz p(\synz, f(\synx)).
-    \end{align*}
-
-    \thmitem{ex:first_order_substitution/5} Only renaming with multiple quantifiers which shows the limitations of \eqref{eq:def:first_order_substitution/term_in_formula/quantifiers/trivial} as a way to avoid unnecessary renaming:
-    \begin{align*}
-      &\phantom{{}={}}
-      \parens[\Big]{\qforall \syny \qexists \synx p(\synx, \syny)}[\synx \mapsto \syny]
-      \reloset {\eqref{eq:def:first_order_substitution/term_in_formula/quantifiers/renaming}} = \\ &=
-      \qforall \synz \parens*{ \parens[\Big]{ \qforall \synx p(\synx, \syny) }[\syny \mapsto \synz][\synx \mapsto \syny]}
-      \reloset {\eqref{eq:def:first_order_substitution/term_in_formula}} = \\ &=
-      \qforall \synz \parens*{ \parens[\Big]{ \qforall \synx p(\synx, \synz) }[\synx \mapsto \syny]}
-      \reloset {\eqref{eq:def:first_order_substitution/term_in_formula/quantifiers/trivial}} = \\ &=
-      \qforall \synz \qforall \synx p(\synx, \synz).
-    \end{align*}
-
-    \thmitem{ex:first_order_substitution/6} Both renaming and substitution with multiple quantifiers:
-    \begin{align*}
-      &\phantom{{}={}}
-      \parens[\Big]{ \qforall \syny (p(\synx, \syny) \synvee \qforall \synx p(\synx, \syny)) }[\synx \mapsto \syny]
-      \reloset {\eqref{eq:def:first_order_substitution/term_in_formula/quantifiers/renaming}} = \\ &=
-      \qforall \synz \parens*{ \parens[\Big]{ p(\synx, \syny) \synvee \qexists \synx p(\synx, \syny) }[\syny \mapsto \synz][\synx \mapsto \syny] }
-      \reloset {\eqref{eq:def:first_order_substitution/term_in_formula}} = \\ &=
-      \qforall \synz \parens*{ p(\syny, \synz) \synvee \parens[\Big]{ \qexists \synx p(\synx, \syny) }[\syny \mapsto \synz][\synx \mapsto \syny] }
-      \reloset {\eqref{eq:def:first_order_substitution/term_in_formula/quantifiers/direct}} = \\ &=
-      \qforall \synz \parens*{ p(\syny, \synz) \synvee \parens[\Big]{ \qexists \synx p(\synx, \synz) }[\synx \mapsto \syny] }
-      \reloset {\eqref{eq:def:first_order_substitution/term_in_formula/quantifiers/trivial}} = \\ &=
-      \parens[\Big]{ \qforall \synz p(\syny, \synz) } \synvee \parens[\Big]{ \qexists \synx p(\synx, \synz) }.
-    \end{align*}
-
-    \thmitem{ex:first_order_substitution/7} Substitution of more general terms than variables with renaming of term's variables:
-    \begin{align*}
-      &\phantom{{}={}}
-      \parens*{\qforall \synx p(\synx, \syny, f(\syny))}[f(\syny) \mapsto g(\syny, \synx)]
-      \reloset {\eqref{eq:def:first_order_substitution/term_in_formula/quantifiers/renaming}} = \\ &=
-      \qforall \synz \parens[\Big]{p(\synx, \syny, f(\syny))[\synx \mapsto \synz][f(\syny) \mapsto g(\syny, \synx)]}
-      \reloset {\eqref{eq:def:first_order_substitution/term_in_formula}} = \\ &=
-      \qforall \synz p(\synz, \syny, g(\syny, \synx)).
-    \end{align*}
-  \end{thmenum}
-\end{example}
-
-\begin{proposition}\label{thm:renaming_assignment_compatibility}
-  We will show how \hyperref[rem:first_order_substitution_renaming_justification]{syntactic renaming} is compatible with a certain \enquote{semantic renaming}.
-
-  Fix a \hyperref[def:first_order_language]{first-order language} \( \mscrL \), a \hyperref[def:first_order_structure]{structure} \( \mscrX = (X, I) \) on \( \mscrL \) and a \hyperref[def:first_order_valuation/variable_assignment]{variable assignment} \( v \) in \( \mscrX \).
-
-  \begin{thmenum}
-    \thmitem{thm:renaming_assignment_compatibility/terms} For any term \( \tau \) and any two variables \( \synx \) and \( \syny \), we have
-    \begin{equation}\label{eq:thm:renaming_assignment_compatibility/terms}
-      \Bracks{\tau}_{v_{\synx \mapsto \syny}}
-      =
-      \Bracks[\Big]{\tau[\synx \mapsto \syny]}_v.
-    \end{equation}
-
-    \thmitem{thm:renaming_assignment_compatibility/formulas} For any formula \( \varphi \), any variable \( \synx \) and any other variable \( \syny \) not in \( \op*{Var}(\varphi) \) we have
-    \begin{equation}\label{eq:thm:renaming_assignment_compatibility/formulas}
-      \Bracks{\varphi}_{v_{\synx \mapsto \syny}}
-      =
-      \Bracks[\Big]{\varphi[\synx \mapsto \syny]}_v.
-    \end{equation}
+    \thmitem{thm:fol_term_grammar/not_regular} The grammar is not \hyperref[def:chomsky_hierarchy/regular]{regular}.
   \end{thmenum}
 \end{proposition}
 \begin{proof}
-  In both cases, we use \fullref{thm:induction_on_rooted_trees} on the definition of the substitution.
-
-  \SubProofOf{thm:renaming_assignment_compatibility/terms}
-
-  \begin{itemize}
-    \item If \( \tau = \synx \), then
-    \begin{equation*}
-      \tau[\synx \mapsto \syny] = \synx[\synx \mapsto \syny] = \syny
-    \end{equation*}
-    and \eqref{eq:thm:renaming_assignment_compatibility/terms} follows directly.
-
-    \item If \( \tau \) is a variable and \( \tau \neq \synx \), then
-    \begin{equation*}
-      \tau[\synx \mapsto \syny] = \tau
-    \end{equation*}
-    and \eqref{eq:thm:renaming_assignment_compatibility/terms} again holds trivially.
-
-    \item If \( \tau = f(\kappa_1, \ldots, \kappa_n) \) and if the inductive hypothesis holds for \( \kappa_1, \ldots, \kappa_n \), then
-    \begin{balign*}
-      \Bracks[\Big]{ \tau[\synx \mapsto \syny] }_v
-      &=
-      \Bracks[\Big]{ f(\kappa_1[\synx \mapsto \syny], \ldots, \kappa_n[\synx \mapsto \syny]) }_v
-      = \\ &=
-      I(f) \parens[\Bigg]{ \Bracks[\Big]{ \kappa_1[\synx \mapsto \syny] }_v, \ldots, \Bracks[\Big]{ \kappa_1[\synx \mapsto \syny] }_v }
-      \reloset {\T{ind.}} = \\ &=
-      I(f) \parens[\Big]{ \Bracks{\kappa_1}_{v_{\synx \mapsto \syny}}, \ldots, \Bracks{\kappa_n}_{v_{\synx \mapsto \syny}} }
-      = \\ &=
-      \Bracks[\Big]{ f(\kappa_1, \ldots, \kappa_n) }_{\synx \mapsto \syny}
-      = \\ &=
-      \Bracks{\tau}_{\synx \mapsto \syny}.
-    \end{balign*}
-  \end{itemize}
-
-  In all cases, \eqref{eq:thm:renaming_assignment_compatibility/terms} holds.
-
-  \SubProofOf{thm:renaming_assignment_compatibility/formulas}
-  \hfill
-  \begin{itemize}
-    \item If \( \varphi \in \set{ \syntop, \synbot } \), then \( \varphi \) has no subterms and thus \eqref{eq:thm:renaming_assignment_compatibility/formulas} holds vacuously.
-
-    \item If \( \varphi = p(\tau_1, \ldots, \tau_n) \), then since \eqref{eq:thm:renaming_assignment_compatibility/terms} holds for all \( \tau_k \), we have
-    \begin{equation*}
-      \Bracks[\Big]{ \tau_k[\synx \mapsto \syny] }_v = \Bracks{\tau_k}_{v_{\synx \mapsto \syny}}
-    \end{equation*}
-    and thus
-    \begin{equation*}
-      I(p)\parens[\Big]{ \Bracks[\Big]{ \tau_1[\synx \mapsto \syny] }_v, \ldots, \Bracks[\Big]{ \tau_1[\synx \mapsto \syny] }_v }
-      \reloset {\T{ind.}} =
-      I(p)\parens[\Big]{ \Bracks{\tau_1}_{v_{\synx \mapsto \syny}}, \ldots, \Bracks{\tau_n}_{v_{\synx \mapsto \syny}} }.
-    \end{equation*}
-
-    Therefore,
-    \begin{balign*}
-      \Bracks[\Big]{ \varphi[\synx \mapsto \syny] }_v
-      &=
-      \Bracks[\Big]{ p(\tau_1[\synx \mapsto \syny], \ldots, \tau_n[\synx \mapsto \syny]) }_v
-      = \\ &=
-      \Bracks{ p(\tau_1, \ldots, \tau_n) }_{v_{\synx \mapsto \syny}}
-      = \\ &=
-      \Bracks{\varphi}_{v_{\synx \mapsto \syny}}.
-    \end{balign*}
-
-    \item The case \( \varphi = \tau_1 \syneq \tau_2 \) is proved analogously.
-
-    \item The cases \( \varphi = \synneg \psi \) and \( \varphi = \psi_1 \syncirc \psi_2 \) are proved in an straightforward manner.
-
-    \item Let \( \varphi = \qforall \synz \psi \), where the inductive hypothesis holds for \( \psi \). We consider three cases
-    \begin{itemize}
-      \item Suppose that \( \synz = \synx \). By definition, we have
-      \begin{equation*}
-        \varphi[\synx \mapsto \syny]
-        =
-        \varphi,
-      \end{equation*}
-      hence \eqref{eq:thm:renaming_assignment_compatibility/formulas} holds trivially.
-
-      \item Suppose that \( \synz \neq \synx \). It follows that
-      \begin{equation*}
-        \varphi[\synx \mapsto \syny]
-        =
-        \qforall \synz \parens[\Big]{ \psi[\synx \mapsto \syny] }.
-      \end{equation*}
-
-      \begin{itemize}
-        \item If \( \Bracks[\Big]{\varphi[\synx \mapsto \syny]}_v = T \), by definition of \hyperref[def:first_order_valuation/formula_valuation]{quantifier formula valuation}, for any \( x \in X \) we have
-        \begin{equation}\label{eq:thm:renaming_assignment_compatibility/formulas/true_modified_assignment}
-          \underbrace{\Bracks[\Big]{\qforall \synz \parens[\Big]{ \psi[\synx \mapsto \syny] } }_v}_{\varphi[\synx \mapsto \syny]}
-          =
-          \Bracks[\Big]{\psi[\synx \mapsto \syny]}_{v_{\synz \mapsto x}}
-          =
-          T.
-        \end{equation}
-
-        On the other hand, by the inductive hypothesis,
-        \begin{equation*}
-          \Bracks[\Big]{ \psi[\synx \mapsto \syny] }_v = \Bracks{\psi}_{v_{\synx \mapsto \syny}}
-        \end{equation*}
-        and, as a special case, for any \( x \in X \),
-        \begin{equation}\label{eq:thm:renaming_assignment_compatibility/formulas/ind_hyp_modified_assignment}
-          \Bracks[\Big]{ \psi[\synx \mapsto \syny] }_{v_{\synz \mapsto x}} = \Bracks{\psi}_{v_{\synx \mapsto \syny, \synz \mapsto x}}.
-        \end{equation}
-
-        Combining \eqref{eq:thm:renaming_assignment_compatibility/formulas/true_modified_assignment} and \eqref{eq:thm:renaming_assignment_compatibility/formulas/ind_hyp_modified_assignment}, we obtain
-        \begin{equation*}
-          \Bracks[\Big]{ \varphi[\synx \mapsto \syny] }_v
-          =
-          \Bracks[\Big]{ \psi[\synx \mapsto \syny] }_{v_{\synz \mapsto x}}
-          =
-          \underbrace{\Bracks{\psi}_{v_{\synx \mapsto \syny, \synz \mapsto x}}}_{T \T*{for all} x \in X}
-          =
-          \Bracks{\varphi}_{v_{\synx \mapsto \syny}},
-        \end{equation*}
-        which proves the case.
-
-        \item If \( \Bracks[\Big]{\varphi[\synx \mapsto \syny]}_v = F \), then there exists \( x \in X \) such that
-        \begin{equation*}
-          \Bracks[\Big]{\psi[\synx \mapsto \syny]}_{v_{\synz \mapsto x}} = F.
-        \end{equation*}
-
-        Since \eqref{eq:thm:renaming_assignment_compatibility/formulas/ind_hyp_modified_assignment} holds by the inductive hypothesis, we have
-        \begin{equation*}
-          \Bracks{\psi}_{v_{\synx \mapsto \syny, \synz \mapsto x}} = F
-        \end{equation*}
-        for the same \( x \).
-
-        It follows that \( \Bracks{\varphi}_{v_{\synx \mapsto \syny}} = F \), which proves the case.
-      \end{itemize}
-    \end{itemize}
-
-    \item We can prove the case \( \varphi = \qexists \synz \psi \) using double negation on the previous case.
-  \end{itemize}
-
-  In all cases, \eqref{eq:thm:renaming_assignment_compatibility/formulas} holds.
+  The proof is similar to \cref{thm:propositional_formula_grammar}.
 \end{proof}
 
-\begin{proposition}\label{thm:first_order_substitution_equivalence}
-  Analogously to \cref{thm:propositional_substitution_equivalence}, we will show that all substitutions defined in \cref{def:first_order_substitution} types of substitution preserve the corresponding \hyperref[def:first_order_semantics]{semantics}.
-
-  By induction, this proposition also holds for \hyperref[def:propositional_substitution]{simultaneous substitution}.
-
-  Fix a \hyperref[def:first_order_structure]{structure} \( \mscrX = (X, I) \) and a \hyperref[def:first_order_valuation/variable_assignment]{variable assignment} \( v \).
-
-  \begin{thmenum}
-    \thmitem{thm:first_order_substitution_equivalence/propositional} As in \cref{def:first_order_substitution/propositional}, let \( \varphi \) be a \hyperref[def:propositional_syntax/formula]{propositional formula} with variables \( {V = \set{ P_1, \ldots, P_n }} \) and let \( \Theta = \set{ \theta_1, \ldots, \theta_n } \) be a set of \hyperref[def:first_order_syntax/formula]{first-order formulas}.
-
-    Furthermore, let \( J \) be a \hyperref[def:propositional_valuation/interpretation]{propositional interpretation} such that, for all \( k = 1, \ldots, n \),
-    \begin{equation}\label{eq:thm:first_order_substitution_equivalence/propositional/compatibility}
-      \Bracks{P_k}_J = \Bracks{\theta_k}_v.
-    \end{equation}
-
-    Then
-    \begin{equation}\label{eq:thm:first_order_substitution_equivalence/propositional}
-      \Bracks[\Big]{ \varphi[V \mapsto \Theta] }_v = \Bracks{\varphi}_J.
-    \end{equation}
-
-    In particular, \( \vDash \varphi \) in the sense of \cref{def:propositional_tautology} implies \( \vDash \varphi[V \mapsto \Theta] \) in the sense of \cref{def:first_order_semantics/validity}.
-
-    \thmitem{thm:first_order_substitution_equivalence/term_in_term} Let \( \tau \) be a \hyperref[def:first_order_syntax/term]{first-order term} and let \( \kappa \) be a \hyperref[def:first_order_syntax/subterm]{subterm} of \( \tau \). Let \( \mu \) be another term such that
-    \begin{equation}\label{eq:thm:first_order_substitution_equivalence/term_in_term/compatibility}
-      \Bracks{\mu}_v = \Bracks{\kappa}_v.
-    \end{equation}
-
-    Then
-    \begin{equation}\label{eq:thm:first_order_substitution_equivalence/term_in_term}
-      \Bracks[\Big]{\tau[\kappa \mapsto \mu]}_v = \Bracks{\tau}_v.
-    \end{equation}
-
-    \thmitem{thm:first_order_substitution_equivalence/term_in_formula} Let \( \varphi \) be a \hyperref[def:first_order_syntax/formula]{first-order formula} and let \( \kappa \) be a \hyperref[def:first_order_syntax/formula_terms]{term} of \( \varphi \). Let \( \mu \) be another term such that
-    \begin{equation}\label{eq:thm:first_order_substitution_equivalence/term_in_formula/compatibility}
-      \Bracks{\mu}_v = \Bracks{\kappa}_v.
-    \end{equation}
-
-    Then
-    \begin{equation}\label{eq:thm:first_order_substitution_equivalence/term_in_formula}
-      \Bracks{\varphi[\kappa \mapsto \mu]}_v = \Bracks{\varphi}_v.
-    \end{equation}
-  \end{thmenum}
-\end{proposition}
-\begin{proof}
-  In all cases, we use \fullref{thm:induction_on_rooted_trees} by the definition of the substitution. The inductive hypothesis for a formula is that the proposition holds for arbitrary substitutions and valuations.
-
-  \SubProofOf{thm:first_order_substitution_equivalence/propositional} Let \( \varphi \) be a propositional formula.
-  \begin{itemize}
-    \item If \( \varphi \in \set{ \syntop, \synbot } \), no substitution is performed and thus \eqref{eq:thm:first_order_substitution_equivalence/propositional} holds trivially.
-
-    \item If \( \varphi = P_k \) for some \( k = 1, \ldots, n \), then follows \eqref{eq:thm:first_order_substitution_equivalence/propositional} from \eqref{eq:thm:first_order_substitution_equivalence/propositional/compatibility}.
-
-    \item If \( \varphi = \synneg \psi \) and if the inductive hypothesis holds for \( \psi \), then
-    \begin{equation*}
-      \Bracks[\Big]{ \psi[V \mapsto \Theta] }_v
-      =
-      \oline{\Bracks[\Big]{ \psi[V \mapsto \Theta] }_v}
-      \reloset {\T{ind.}} =
-      \oline{\Bracks{\psi}_J}
-      =
-      \Bracks{\varphi}_J.
-    \end{equation*}
-
-    \item If \( \varphi = \psi_1 \syncirc \psi_2, {\syncirc} \in \op*{Conn} \) and if the inductive hypothesis holds for both \( \psi_1 \) and \( \psi_2 \), then
-    \begin{equation*}
-      \Bracks[\Big]{ \psi[V \mapsto \Theta] }_v
-      =
-      \Bracks[\Big]{ \psi_1[V \mapsto \Theta] }_v \relcirc \Bracks[\Big]{ \psi_2[V \mapsto \Theta] }_v
-      \reloset {\T{ind.}} =
-      \Bracks{\psi_1}_J \relcirc \Bracks{\psi_2}_J
-      =
-      \Bracks{\varphi}_J.
-    \end{equation*}
-  \end{itemize}
-
-  In all cases, \eqref{eq:thm:first_order_substitution_equivalence/propositional} holds.
-
-  \SubProofOf{thm:first_order_substitution_equivalence/term_in_term} The proof is identical to that of \cref{thm:renaming_assignment_compatibility/terms}.
-
-  \SubProofOf{thm:first_order_substitution_equivalence/term_in_formula} The proof is identical to that of \cref{thm:renaming_assignment_compatibility/formulas} except for the special cases where \hyperref[rem:first_order_substitution_renaming_justification]{renaming} occurs, i.e. \( \varphi = \qforall \synx \psi \) and \( \varphi = \qexists \synx \psi \), where
-  \begin{itemize}
-    \item \( \synx \in \op*{Free}(\mu) \).
-    \item \( \syny \not\in \op*{Var}(\kappa) \cup \op*{Var}(\mu) \cup \op*{Var}(\psi) \).
-    \item The inductive hypothesis holds for \( \psi \).
-  \end{itemize}
-
-  We will only show the case \( \varphi = \qforall \synx \psi \) since the existential case is handled similarly. Since \( \synx \in \op*{Free}(\mu) \), we have
+\begin{definition}\label{def:fol_subterm}\mimprovised
+  We define the set of all \term{subterms} of a \hyperref[def:fol_term]{first-order term} \( \tau \) as follows:
   \begin{equation*}
-    \varphi[\kappa \mapsto \mu]
-    =
-    \qforall \syny \parens[\Big]{ \psi[\synx \mapsto \syny][\kappa \mapsto \mu] },
-  \end{equation*}
-  which does not allow us to use the inductive hypothesis directly.
-
-  We proceed to prove the statement by nested induction on the number of quantifiers. We have already shown the case of \( 0 \) quantifiers. Suppose that the statement holds for all formulas with strictly less than \( n \) quantifiers and suppose that \( \varphi \) has exactly \( n \) quantifiers.
-
-  Furthermore, for formulas with \( n \) quantifiers with \( \synforall \) as the outermost one, the non-renaming cases \eqref{eq:def:first_order_substitution/term_in_formula/quantifiers/trivial} and \eqref{eq:def:first_order_substitution/term_in_formula/quantifiers/direct} hold. Therefore, since \( \syny \not\in \op*{Free}(\mu) \),
-  \begin{equation}\label{eq:thm:first_order_substitution_equivalence/term_in_formula/nested_induction}
-    \begin{aligned}
-      &\phantom{{}={}}
-      \Bracks{\varphi[\kappa \mapsto \mu]}_v
-      = \\ &=
-      \Bracks[\Big]{\qforall \syny \parens[\Big]{ \psi[\synx \mapsto \syny][\kappa \mapsto \mu] }}_v
-      \reloset {\eqref{eq:def:first_order_substitution/term_in_formula/quantifiers/direct}} = \\ &=
-      \Bracks[\Big]{ \parens*{ \qforall \syny \parens[\Big]{ \psi[\synx \mapsto \syny] } }[\kappa \mapsto \mu] }_v
-      \reloset {\T{ind.}} = \\ &=
-      \Bracks[\Big]{\qforall \syny \parens[\Big]{ \psi[\synx \mapsto \syny] } }_v,
-    \end{aligned}
-  \end{equation}
-  where we have implicitly used that \( \psi \) has \( n - 1 \) quantifiers.
-
-  On the other hand, due to \cref{thm:renaming_assignment_compatibility/formulas},
-  \begin{equation*}
-    \Bracks[\Big]{ \psi[\synx \mapsto \syny] }_v = \Bracks{\psi}_{v_{\synx \mapsto \syny}}
-  \end{equation*}
-  and, in particular, for any \( x \in X \),
-  \begin{equation*}
-    \Bracks[\Big]{ \psi[\synx \mapsto \syny] }_{v_{\syny \mapsto x}}
-    =
-    \Bracks{\psi}_{v_{\synx \mapsto \syny,\syny \mapsto x}}
-    =
-    \Bracks{\psi}_{v_{\synx \mapsto x}},
-  \end{equation*}
-  where the last equality holds because \( \syny \not\in \op*{Var}(\psi) \).
-
-  Hence,
-  \begin{equation*}
-    \underbrace{ \Bracks[\Big]{\qforall \syny \parens[\Big]{ \psi[\synx \mapsto \syny] } }_v }_{\Bracks{\varphi[\synx \mapsto \syny]}_v}
-    =
-    \underbrace{ \Bracks[\Big]{\qforall \synx \psi }_{v_{\synx \mapsto \syny}} }_{\Bracks{\varphi}_{v_{\synx \mapsto \syny}}}.
-  \end{equation*}
-
-  This proves \eqref{eq:thm:first_order_substitution_equivalence/term_in_formula}.
-\end{proof}
-
-\begin{concept}\label{con:formula_defined_predicate}
-  As explained in \cref{rem:first_order_formula_conventions/necessary_signature}, we avoid adding more predicates than necessary to a language. For this reason, we sometimes use \term{formula-defined predicates}. For example, if \( \leq \) is a \hyperref[def:partially_ordered_set]{partial order} symbol and we want to have a predicate for whether \( \synx \) is the \hyperref[def:extremal_points/top_and_bottom]{bottom element}, we can define the formula
-  \begin{equation}\taglabel[\op{IsBottom}]{con:formula_defined_predicate/bottom}
-    \ref{con:formula_defined_predicate/bottom}[\synx] \coloneqq \qforall \syny (\synx \leq \syny).
-  \end{equation}
-
-  Note that \( [\synx] \) is only a notational convenience for highlighting which variables are free, the actual formula is named \( \op{IsBottom} \). This is consistent with \cref{rem:substitution_notation} which allows us to write \( \op{IsBottom}[\syny] \) rather than \( \op{IsBottom}[\synx \mapsto \syny] \) to verify if \( \syny \) is a bottom element
-\end{concept}
-
-\begin{proposition}\label{thm:first_order_quantifiers_are_dual}
-  For any formula \( \varphi \) and any variable \( \synx \) over \( \mscrL \), we have the following equivalences:
-  \begin{align}
-    \synneg \qforall \synx \varphi &\gleichstark \qexists \synx \synneg \varphi \label{eq:thm:first_order_quantifiers_are_dual/negation_of_universal} \\
-    \synneg \qexists \synx \varphi &\gleichstark \qforall \synx \synneg \varphi \label{eq:thm:first_order_quantifiers_are_dual/negation_of_existential}
-  \end{align}
-\end{proposition}
-\begin{proof}
-  The two equivalences are connected using \hyperref[thm:classical_equivalences/double_negation]{double negation}. We will only prove \eqref{eq:thm:first_order_quantifiers_are_dual/negation_of_universal}.
-
-  Let \( \mscrX = (X, I) \) be a structure over \( \mscrL \) and let \( v \) be a variable assignment. Then
-  \begin{align*}
-    \Bracks{ \synneg \qforall \synx \varphi }_v
-    &=
-    \oline{\Bracks{ \qforall \synx \varphi }_v}
-    = \\ &=
-    \oline{\bigwedge\set{ \Bracks{\varphi}_{v_{\synx \mapsto x}} \given x \in X }}
-    \reloset {\eqref{eq:thm:de_morgans_laws/complement_of_meet}} = \\ &=
-    \bigvee\set*{ \oline{\Bracks{\varphi}_{v_{\synx \mapsto x}}} \given x \in X }
-    = \\ &=
-    \bigvee\set{ \Bracks{\synneg \varphi}_{v_{\synx \mapsto x}} \given x \in X }
-    = \\ &=
-    \Bracks{\qexists \synx \synneg \varphi}_v.
-  \end{align*}
-\end{proof}
-
-\begin{corollary}\label{thm:relativized_first_order_quantifiers_are_dual}
-  \Cref{thm:first_order_quantifiers_are_dual} also holds for \hyperref[rem:first_order_formula_conventions/relativization]{relativized} formulas:
-  \begin{align}
-    \synneg \qforall {p(\synx, \cdots)} \varphi &\gleichstark \qexists {p(\synx, \cdots)} \synneg \varphi \label{eq:thm:relativized_first_order_quantifiers_are_dual/negation_of_universal} \\
-    \synneg \qexists {p(\synx, \cdots)} \varphi &\gleichstark \qforall {p(\synx, \cdots)} \synneg \varphi \label{eq:thm:relativized_first_order_quantifiers_are_dual/negation_of_existential}
-  \end{align}
-\end{corollary}
-\begin{proof}
-  We will only show \eqref{eq:thm:relativized_first_order_quantifiers_are_dual/negation_of_universal}:
-  \begin{align*}
-    \synneg \qforall {p(\synx, \cdots)} \varphi
-    &=
-    \synneg \qforall \synx \parens[\Big]{ p(\synx, \cdots) \synimplies \varphi }
-    \gleichstark \\ \reloset {\eqref{eq:thm:classical_equivalences/conditional_as_disjunction}} \gleichstark
-    \synneg \qforall \synx \parens[\Big]{ \synneg p(\synx, \cdots) \synvee \varphi }
-    \gleichstark \\ \reloset {\eqref{eq:thm:first_order_quantifiers_are_dual/negation_of_universal}} \gleichstark
-    \qexists \synx \parens[\Big]{ p(\synx, \cdots) \synwedge \synneg \varphi }
-  \end{align*}
-\end{proof}
-
-\begin{proposition}\label{thm:pulling_quantifiers_out}
-  For \( Q \in \op*{Quan} \) and \( \syncirc \in \set{ \synvee, \synwedge } \), if \( \syny \) is not free in \( \varphi \) nor \( \psi \), then
-  \begin{equation}\label{thm:pulling_quantifiers_out/first}
-    \parens[\Big]{ \quantifier Q \synx \varphi } \syncirc \psi \gleichstark \quantifier Q \syny \parens[\Big]{ \varphi[\synx \mapsto \syny] \syncirc \psi }\phantom{.}
-  \end{equation}
-  and similarly
-  \begin{equation}\label{thm:pulling_quantifiers_out/second}
-    \varphi \syncirc \parens[\Big]{ \quantifier Q \synx \psi } \gleichstark \quantifier Q \syny \parens[\Big]{ \varphi \syncirc \psi[\synx \mapsto \syny] }.
-  \end{equation}
-\end{proposition}
-\begin{proof}
-  We will only consider one special case of \eqref{thm:pulling_quantifiers_out/first}:
-  \begin{equation}\label{thm:pulling_quantifiers_out/first_proof}
-    \parens[\Big]{ \qforall \synx \varphi } \synwedge \psi \gleichstark \qforall \synx \parens[\Big]{ \varphi[\synx \mapsto \syny] \synwedge \psi }
-  \end{equation}
-
-  The other cases have similar proofs.
-
-  Fix some \hyperref[def:first_order_structure]{structure} \( \mscrX = (X, I) \) and some \hyperref[def:first_order_valuation/variable_assignment]{variable assignment} \( v: \op*{Var} \to X \). Since \( \syny \) is not free in \( \psi \),
-  \begin{balign*}
-    \Bracks[\Big]{ \qforall \syny \parens[\Big]{ \varphi[\synx \mapsto \syny] \synwedge \psi } }_v
-    &=
-    \bigvee\set[\Big]{ \Bracks[\Big]{\varphi[\synx \mapsto \syny]}_{v_{\syny \mapsto x}} \synwedge \Bracks{\psi}_{v_{\syny \mapsto x}} \given* x \in X }
-    \reloset {\eqref{eq:thm:renaming_assignment_compatibility/formulas}} = \\ &=
-    \bigvee\set[\Big]{ \Bracks{\varphi}_{v_{\synx \mapsto \syny,\syny \mapsto x}} \synwedge \Bracks{\psi}_{v_{\syny \mapsto x}} \given* x \in X }
-    = \\ &=
-    \bigvee\set[\Big]{ \Bracks{\varphi}_{v_{\synx \mapsto x}} \synwedge \Bracks{\psi}_{v_{\syny \mapsto x}} \given* x \in X }
-    = \\ &=
-    \bigvee\set[\Big]{ \Bracks{\varphi}_{v_{\synx \mapsto x}} \synwedge \Bracks{\psi}_v \given* x \in X }
-    \reloset {\eqref{eq:thm:def:boolean_algebra/distributive/meet_over_join}} = \\ &=
-    \bigvee\set[\Big]{ \Bracks{\varphi}_{v_{\synx \mapsto x}} \given* x \in X } \synwedge \Bracks{\psi}_v
-    = \\ &=
-    \Bracks[\Big]{ \qforall \synx \varphi }_v \synwedge \Bracks{\psi}_v
-    = \\ &=
-    \Bracks[\Big]{ \parens[\Big]{ \qforall \synx \varphi } \synwedge \psi }_v.
-  \end{balign*}
-
-  Generalizing on variable assignments and structures, we conclude that \eqref{thm:pulling_quantifiers_out/first_proof} holds.
-\end{proof}
-
-\begin{definition}\label{def:prenex_normal_form}\mcite[def. 2.2.33]{Hinman2005Logic}
-  We say that the formula \( \varphi \) over \( \mscrL \) is in \term{prenex normal form} if it can be split as \( \varphi = \psi \theta \), where \( \psi \) contains only quantifiers and their variables (and dots) and \( \theta \) is a formula without quantifiers.
-
-  We call \( \psi \) the \term{quantifier prefix} of \( \varphi \) and \( \theta \) --- the \term{matrix} of \( \varphi \).
-\end{definition}
-
-\begin{algorithm}[Prenex normal form conversion]\label{alg:prenex_normal_form_conversion}
-  We will describe an algorithm that takes a formula \( \varphi \) over \( \mscrL \) and outputs another formula \( \theta \) over \( \mscrL \) that is \hyperref[def:first_order_semantics/equivalence]{semantically equivalent}, but is in \hyperref[def:prenex_normal_form]{prenex normal form}.
-
-  \begin{thmenum}
-    \thmitem{alg:prenex_normal_form/conditionals} First, we remove the conditional \( \synimplies \) and biconditional \( \syniff \). Define
-    \begin{equation*}
-      P_1(\varphi) \coloneqq \begin{cases}
-        \synneg P_1(\psi) \synvee P_1(\theta),                                                                          &\varphi = \psi \synimplies \theta, \\
-        \parens[\Big]{ \synneg P_1(\psi) \synvee P_1(\theta) } \synwedge \parens[\Big]{ P_1(\psi) \synvee \synneg P_1(\theta) }, &\varphi = \psi \syniff \theta, \\
-        \hyperref[rem:straightforward_traversal]{\T{straightforward traversal}},                                  &\T{otherwise.}
-      \end{cases}
-    \end{equation*}
-
-    \Cref{thm:classical_equivalences/conditional_as_disjunction}, \cref{thm:propositional_admissible_rules/biconditional_as_conjunction} and \cref{thm:first_order_substitution_equivalence/propositional} together ensure that \( P_1(\varphi) \gleichstark \varphi \) for any formula \( \varphi \).
-
-    \thmitem{alg:prenex_normal_form/negation} Second, we \enquote{push} negations inwards. Define
-    \begin{equation*}
-      P_2(\varphi) \coloneqq \begin{cases}
-        \qexists \synx P_2(\synneg \psi),                                             &\varphi = \synneg \qforall \synx \psi, \\
-        \qforall \synx P_2(\synneg \psi),                                             &\varphi = \synneg \qexists \synx \psi, \\
-        P_2(\synneg \psi) \synwedge P_2(\synneg \theta),                                  &\varphi = \synneg (\psi \synvee \theta), \\
-        P_2(\synneg \psi) \synvee P_2(\synneg \theta),                                    &\varphi = \synneg (\psi \synwedge \theta), \\
-        P_2(\psi),                                                               &\varphi = \synneg \synneg \psi, \\
-        \synneg P_2(\psi),                                                          &\T{otherwise if} \varphi = \synneg \psi, \\
-        \hyperref[rem:straightforward_traversal]{\T{straightforward traversal}}, &\T{otherwise.}
-      \end{cases}
-    \end{equation*}
-
-    \Fullref{thm:de_morgans_laws}, \cref{thm:classical_equivalences/double_negation}, \cref{thm:first_order_substitution_equivalence/propositional} and \cref{thm:first_order_quantifiers_are_dual} ensure that \( P_2(\varphi) \gleichstark \varphi \) for any formula \( \varphi \)  not containing \( \synimplies \) or \( \syniff \).
-
-    \thmitem{alg:prenex_normal_form/quantifiers} Finally, we \enquote{pull} quantifiers outwards. Define
-    \begin{equation*}
-      P_3(\varphi) \coloneqq \begin{cases}
-        \varphi,                                                                           &\op*{Bound}(\varphi) = \varnothing, \\
-        P_3\parens[\Big]{ P_3(\psi) \syncirc P_3(\theta) },                                &\varphi = \psi \syncirc \theta \T{and} \op*{Bound}(\varphi) \neq \varnothing, \\
-        \quantifier Q \syny P_3 \parens[\Big]{ \psi[\synx \mapsto \syny] \syncirc \theta }, &\varphi = \parens[\Big]{ \quantifier Q \synx \psi } \syncirc \theta, \\
-                                                                                           &Q \in \op*{Quan}, \quad \syncirc \in \set{ \synvee, \synwedge }, \\
-                                                                                           &\syny \not\in \op*{Free}(\quantifier Q \synx \psi) \cup \op*{Free}(\theta), \\
-        \quantifier Q \syny P_3 \parens[\Big]{ \psi \syncirc \theta[\synx \mapsto \syny] }, &\varphi = \psi \syncirc \parens[\Big]{ \quantifier Q \synx \theta }, \\
-                                                                                           &Q \in \op*{Quan}, \quad \syncirc \in \set{ \synvee, \synwedge }, \\
-                                                                                           &\syny \not\in \op*{Free}(\psi) \cup \op*{Free}(\quantifier Q \synx \theta), \\
-        \hyperref[rem:straightforward_traversal]{\T{straightforward traversal}},           &\T{otherwise.}
-      \end{cases}
-    \end{equation*}
-
-    \Cref{thm:pulling_quantifiers_out} ensures that \( P_3(\varphi) \gleichstark \varphi \) for any formula \( \varphi \) not containing \( \synimplies \) or \( \syniff \). It is not necessarily in prenex normal form because it does nothing to \( \varphi = \synneg \qforall \synx \psi \).
-  \end{thmenum}
-
-  It remains to compose the operators. As per our comments above, the formula \( P_3(P_2(P_1(\varphi))) \) is in prenex normal form and is semantically equivalent to \( \varphi \).
-\end{algorithm}
-\begin{comments}
-  \item The first rule in the definition of \( P_3 \) ensures that the recursion is well-founded. Checking whether the formula has bound variables is a way to verify that it contains no quantifiers.
-  \item This algorithm can be found as \identifier{math.logic.pnf.to_pnf} in \cite{notebook:code}.
-\end{comments}
-
-\begin{proposition}\label{thm:quantifier_satisfiability}
-  Let \( \mscrL \) be a first-order language, let \( \varphi \) be a formula, let \( \synx \) be any variable and let \( \tau \) be any term in \( \mscrL \). The following hold:
-
-  \begin{thmenum}
-    \thmitem{thm:quantifier_satisfiability/universal} \( \qforall \synx \varphi \vDash \varphi[\synx \mapsto \tau] \),
-
-    \thmitem{thm:quantifier_satisfiability/existential} \( \varphi[\synx \mapsto \tau] \vDash \qexists \synx \varphi \).
-  \end{thmenum}
-\end{proposition}
-\begin{comments}
-  \item See also \cref{def:first_order_natural_deduction_system/terms} for inference rules corresponding to this proposition.
-\end{comments}
-\begin{proof}
-  The proof is very straightforward, but the technical details make it look a bit more complicated.
-
-  First note that if the formulas on the left are unsatisfiable, the proof is trivial. Hence, we will assume that they are satisfiable.
-
-  \SubProofOf{thm:quantifier_satisfiability/universal} Suppose that \( \Bracks{\qforall \synx \varphi}_v = T \) for some variable assignment in \( \mscrX \), and let \( t \coloneqq \Bracks{\tau}_v \).
-
-  To avoid the case where \( \synx \in \op*{Var}(\varphi) \) for the purposes for \cref{thm:renaming_assignment_compatibility}, we substitute it with \( \syny \) that is not a variable in neither \( \tau \) nor \( \varphi \). Then
-  \begin{align*}
-    \Bracks[\Big]{\varphi[\synx \mapsto \tau]}_v
-    &=
-    \Bracks[\Big]{\varphi[\synx \mapsto \syny][\syny \mapsto \tau]}_v
-    = \\ &=
-    \Bracks[\Big]{\varphi[\synx \mapsto \syny][\syny \mapsto \tau]}_{v_{\syny \mapsto t}}
-    \reloset {\ref{thm:first_order_substitution_equivalence/term_in_formula}} = \\ &=
-    \Bracks[\Big]{\varphi[\synx \mapsto \syny]}_{v_{\syny \mapsto t}}
-    \reloset {\ref{thm:renaming_assignment_compatibility/formulas}} = \\ &=
-    \Bracks{\varphi}_{v_{\synx \mapsto \syny, \syny \mapsto t}}
-    = \\ &=
-    \Bracks{\varphi}_{v_{\synx \mapsto t}}.
-  \end{align*}
-
-  Since \( \Bracks{\qforall \synx \varphi} = T \), by definition of valuation of \( \synforall \) we have
-  \begin{equation*}
-    \Bracks{\varphi}_{v_{\synx \mapsto t}} = T.
-  \end{equation*}
-  and thus
-  \begin{equation*}
-    \Bracks[\Big]{\varphi[\synx \mapsto \tau]}_v = T.
-  \end{equation*}
-
-  Therefore,
-  \begin{equation*}
-    \qforall \synx \varphi \T{entails} \varphi[\synx \mapsto \tau] \T{under} v.
-  \end{equation*}
-
-  Both \( v \) and \( \mscrX \) were chosen arbitrarily, implying
-  \begin{equation*}
-    \qforall \synx \varphi \vDash \varphi[\synx \mapsto \tau].
-  \end{equation*}
-
-  \SubProofOf{thm:quantifier_satisfiability/existential} If \( \Bracks{\varphi[\synx \mapsto \tau]} = T \), then, as shown previously,
-  \begin{equation*}
-    \Bracks[\Big]{\varphi[\synx \mapsto \tau]}_v = \Bracks{\varphi}_{v_{\synx \mapsto t}}.
-  \end{equation*}
-
-  Hence,
-  \begin{equation*}
-    \Bracks{\qexists \synx \varphi} = \Bracks{\varphi}_{v_{\synx \mapsto t}} = T.
-  \end{equation*}
-
-  Therefore,
-  \begin{equation*}
-    \varphi[\synx \mapsto \tau] \T{entails} \varphi \T{under} v,
-  \end{equation*}
-  and, generalizing,
-  \begin{equation*}
-    \varphi[\synx \mapsto \tau] \vDash \varphi.
-  \end{equation*}
-\end{proof}
-
-\begin{proposition}\label{thm:existential_quantifier_removal}
-  Let \( \varphi \) be a formula in the first-order language \( \mscrL \), and let \( \widetilde \mscrL \) be an extension of \( \mscrL \). Clearly \( \varphi \) is a formula in \( \widetilde \mscrL \).
-
-  Suppose that \( c \) is some constant in \( \widetilde \mscrL \) that does not occur in \( \varphi \). Then there exists a structure \( \mscrX = (X, I_X) \) for \( \mscrL \) and an assignment \( v \) in \( \mscrX \) such that
-  \begin{equation*}
-    \Bracks{\qexists \synx \varphi}_v = T
-  \end{equation*}
-  if and only if there exists a structure \( \mscrY = (Y, I_Y) \) for \( \widetilde \mscrL \) and an assignment \( w \) in \( \mscrY \) such that
-  \begin{equation*}
-    \Bracks[\Big]{\varphi[\synx \mapsto c]}_w = T
-  \end{equation*}
-\end{proposition}
-\begin{comments}
-  \item The sufficiency statement is a weaker converse to \cref{thm:quantifier_satisfiability/existential}.
-  \item We can always adjoin a single constant \( c \) to \( \mscrL \) to obtain \( \widetilde \mscrL \) (this is actually our proof of sufficiency). This allows us to eliminate existential quantifiers from formulas at the cost of a more general first-order language.
-\end{comments}
-\begin{proof}
-  \SufficiencySubProof Suppose that, for some assignment \( v \) in \( \mscrX \), \( \Bracks{\qexists \synx \varphi}_v = T \). Let \( x_0 \) be a value in \( X \) such that \( \Bracks{\varphi}_{v_{\synx \to x_0}} = T \).
-
-  Construct a language \( \widetilde \mscrL \) with all predicate and functional symbols of \( \mscrL \), along with a new constant symbol \( c \).
-
-  Define a structure \( \mscrY = (X, I_Y) \), where
-  \begin{equation*}
-    \widetilde I_Y(a) \coloneqq \begin{cases}
-      x_0,    &a = c, \\
-      I_X(a), &a \in \op*{Func}, \\
-      I_X(a), &a \in \op*{Pred}
+    \op*{Subterm}(\tau) \coloneqq \begin{cases}
+      \set{ \tau },                                            &\tau \in \op*{Var}, \\
+      \set{ \tau } \cup \bigcup_{k=1}^n \op*{Subterm}(\rho_k), &\tau = f(\rho_1, \ldots, \rho_n).
     \end{cases}
   \end{equation*}
 
-  This structure has the same domain as \( \mscrX \), hence \( v \) is also a variable assignment in \( \mscrY \).
+  We denote by \( \op*{Var}(\tau) \) those subterms of \( \tau \) that are variables.
+\end{definition}
 
-  Since \( \Bracks{c}_{v_{\synx \mapsto x_0}} = \Bracks{\synx}_{v_{\synx \mapsto x_0}} \), \cref{thm:first_order_substitution_equivalence/term_in_formula} implies that
-  \begin{equation*}
-    \Bracks[\Big]{\varphi[\synx \mapsto c]}_{v_{\synx \mapsto x_0}} = \Bracks{\varphi}_{v_{\synx \mapsto x_0}} = T.
-  \end{equation*}
-
-  But, since \( \varphi[\synx \mapsto c] \) contains no free instances of \( \synx \),
-  \begin{equation*}
-    \Bracks[\Big]{\varphi[\synx \mapsto c]}_v = \Bracks[\Big]{\varphi[\synx \mapsto c]}_{v_{\synx \mapsto x_0}}.
-  \end{equation*}
-
-  Therefore, \( \Bracks{\qexists \synx \varphi}_v = T \) in \( \mscrX \) implies \( \Bracks{\varphi[\synx \mapsto c]}_v = T \) in \( \mscrY \).
-
-  \NecessitySubProof Follows from \cref{thm:quantifier_satisfiability/existential}.
-\end{proof}
-
-\begin{example}\label{ex:existential_quantifier_removal_monoids}
-  The \hyperref[def:monoid/theory]{theory of monoids} features a simple demonstration of \cref{thm:existential_quantifier_removal}.
-
-  One of the axioms for monoids states, in prose, that there exists a distinguished element that is a two-sided identity. This can be written as follows:
-  \begin{equation*}
-    \qexists \syny \qforall \synx (\syny \cdot \synx \syneq \synx \synwedge \synx \cdot \syny \syneq \synx).
-  \end{equation*}
-
-  Instead, for \cref{def:monoid/theory} we chose to include a constant symbol \( e \) in the language and use the axiom
-  \begin{equation*}
-    \qforall \synx (e \cdot \synx \syneq \synx \synwedge \synx \cdot e \syneq \synx).
-  \end{equation*}
-\end{example}
-
-\begin{theorem}[First-order semantic deduction theorem]\label{thm:semantic_deduction_theorem}
-  For arbitrary first-order formulas, the entailment \( \Gamma, \varphi \vDash \psi \) holds if and only if \( \Gamma \vDash \varphi \to \psi \) holds.
-\end{theorem}
-\begin{comments}
-  \item This theorem also holds for propositional formulas with the adaptation outlined in \cref{rem:propositional_logic_as_first_order_logic}.
-  \item Compare this result with \cref{thm:syntactic_deduction_theorem}.
-\end{comments}
+\begin{proposition}\label{thm:propositional_formula_characterization}
+  The \hyperref[def:formal_language/substring]{substring} \( \rho \) of the first-order term \( \tau \) is a \hyperref[def:fol_subterm]{subterm} of \( \tau \) if and only if \( \rho \) is itself a formula.
+\end{proposition}
 \begin{proof}
-  \SufficiencySubProof Suppose that \( \Gamma, \varphi \vDash \psi \). Let \( \mscrX = (X, I) \) be some structure and let \( v \) be a variable assignment in \( \mscrX = (X, I) \) such that \( \Bracks{\theta}_v = T \) for every \( \theta \in \Gamma \).
-
-  \begin{itemize}
-    \item If \( \Bracks{\varphi}_v = T \), by assumption it follows that \( \Bracks{\psi}_v = T \), and
-    \begin{equation*}
-      \Bracks{\varphi \synimplies \psi}_v
-      =
-      \Bracks{\varphi}_v \rightarrow \Bracks{\psi}_v
-      =
-      T \rightarrow T
-      =
-      T.
-    \end{equation*}
-
-    \item If \( \Bracks{\varphi}_v = F \), then
-    \begin{equation*}
-      \Bracks{\varphi \synimplies \psi}_v
-      =
-      F \rightarrow \Bracks{\psi}_v
-      =
-      T.
-    \end{equation*}
-  \end{itemize}
-
-  In both cases we conclude that \( \Gamma \) entails \( \varphi \synimplies \psi \) under \( v \). Generalizing on \( v \) and \( \mscrX \), we conclude that \( \Gamma \vDash \varphi \synimplies \psi \).
-
-  \NecessitySubProof Conversely, suppose that \( \Gamma \vDash \varphi \synimplies \psi \). Let \( v \) again be a variable assignment in \( \mscrX = (X, I) \) such that \( \Bracks{\theta}_v = T \) for every \( \theta \in \Gamma \). Then
-  \begin{equation*}
-    \Bracks{\varphi \synimplies \psi}_v = T.
-  \end{equation*}
-
-  If we additionally suppose that \( \Bracks{\varphi}_v = T \), it follows from \cref{def:standard_boolean_functions} that \( \Bracks{\psi}_v = T \).
-
-  Generalizing on \( v \) and \( \mscrX \), we conclude that \( \Gamma, \varphi \vDash \psi \).
+  We can adapt the proof of \cref{thm:propositional_formula_characterization}. There are no variable binders, so we are safe from the \( \muplambda \)-term nuances in \cref{thm:lambda_subterm_characterization}.
 \end{proof}
 
-\paragraph{Natural deduction}
-
-\begin{definition}\label{def:first_order_natural_deduction_system}\mcite[def. 2.1.1]{TroelstraSchwichtenberg2000BasicProofTheory}
-  If we wish to work with first-order logic rather than merely propositional logic, we must extend the \hyperref[def:propositional_natural_deduction_systems]{classical propositional natural deduction system}. We call this, very simply, the (classical) \term{first-order natural deduction system}.
-
+\begin{definition}\label{def:fol_term_ast}\mimprovised
+  We implicitly associate with each first-order term \( \tau \) an \hyperref[con:abstract_syntax_tree]{abstract syntax tree} \( T(\tau) \) as follows:
   \begin{thmenum}
-    \thmitem{def:first_order_natural_deduction_system/eigenvariables} We first add the following two \hyperref[def:inference_rule]{inference rules} for quantification:
+    \thmitem{def:fol_term_ast/variable} If \( \tau \) is a variable, we define \( T(\tau) \) as the \hyperref[def:canonical_singleton_tree]{canonical singleton tree} with label \( \tau \).
 
-    \begin{minipage}{0.45\textwidth}
-      \begin{equation*}\taglabel[\ensuremath{ \synforall_+ }]{eq:def:first_order_natural_deduction_system/forall/intro}
-        \begin{prooftree}
-          \hypo{ \varphi }
-          \infer1[\ref{eq:def:first_order_natural_deduction_system/forall/intro}]{ \qforall \synx \varphi }
-        \end{prooftree}
-      \end{equation*}
-    \end{minipage}
-    \hfill
-    \begin{minipage}{0.45\textwidth}
-      \begin{equation*}\taglabel[\ensuremath{ \synexists_- }]{eq:def:first_order_natural_deduction_system/exists/elim}
-        \begin{prooftree}
-          \hypo{ \qexists \synx \varphi }
-          \hypo{ [\varphi]^n }
-          \infer[dashed]1{ \psi }
-          \infer[left label=\( n \)]2[\ref{eq:def:first_order_natural_deduction_system/exists/elim}]{ \psi }
-        \end{prooftree}
-      \end{equation*}
-    \end{minipage}
-
-    Here \( \synx \) is a variable that is not free in any undischarged assumption in our proof of \( \varphi \) (it may be free in \( \varphi \) as long as \( \varphi \) itself is discharged). A variable \( \synx \) satisfying these conditions is called an \term{eigenvariable} of the rule.
-
-    These rules are the primary motivation for inference rules accepting proof trees rather than only formulas --- see \cref{def:inference_rule} and \cref{def:deduction_system/rule}. See \cref{ex:def:first_order_natural_deduction_system/eigenvariables/invalid_universal} for why this condition is important.
-
-    \thmitem{def:first_order_natural_deduction_system/terms} We add two \hyperref[def:inference_rule]{inference rules}, where \( \tau \) is an arbitrary term:
-
-    \begin{minipage}{0.45\textwidth}
-      \begin{equation*}\taglabel[\ensuremath{ \synforall_- }]{eq:def:first_order_natural_deduction_system/forall/elim}
-        \begin{prooftree}
-          \hypo{ \qforall \synx \varphi }
-          \infer1[\ref{eq:def:first_order_natural_deduction_system/forall/elim}]{ \varphi[\synx \mapsto \tau] }
-        \end{prooftree}
-      \end{equation*}
-    \end{minipage}
-    \hfill
-    \begin{minipage}{0.45\textwidth}
-      \begin{equation*}\taglabel[\ensuremath{ \synexists_+ }]{eq:def:first_order_natural_deduction_system/exists/intro}
-        \begin{prooftree}
-          \hypo{ \varphi[\synx \mapsto \tau] }
-          \infer1[\ref{eq:def:first_order_natural_deduction_system/exists/intro}]{ \qexists \synx \varphi }
-        \end{prooftree}
-      \end{equation*}
-    \end{minipage}
-
-    Compare this to \cref{thm:quantifier_satisfiability}.
-
-    \thmitem{def:first_order_natural_deduction_system/equality} Finally, we also add three rules for formal equality:
-
-    \begin{minipage}{0.3\textwidth}
-      \begin{equation*}\taglabel[\ensuremath{ \syneq_+ }]{eq:def:first_order_natural_deduction_system/equality/intro}
-        \begin{prooftree}
-          \infer0[\ref{eq:def:first_order_natural_deduction_system/equality/intro}]{ \tau \syneq \tau }
-        \end{prooftree}
-      \end{equation*}
-    \end{minipage}
-    \hfill
-    \begin{minipage}{0.3\textwidth}
-      \begin{equation*}\taglabel[\ensuremath{ \syneq_{-L} }]{eq:def:first_order_natural_deduction_system/equality/elim_left}
-        \begin{prooftree}
-          \hypo{ \tau \syneq \sigma }
-          \hypo{ \varphi[\synx \mapsto \tau] }
-          \infer2[\ref{eq:def:first_order_natural_deduction_system/equality/elim_left}]{ \varphi[\synx \mapsto \sigma] }
-        \end{prooftree}
-      \end{equation*}
-    \end{minipage}
-    \hfill
-    \begin{minipage}{0.3\textwidth}
-      \begin{equation*}\taglabel[\ensuremath{ \syneq_{+L} }]{eq:def:first_order_natural_deduction_system/equality/elim_right}
-        \begin{prooftree}
-          \hypo{ \tau \syneq \sigma }
-          \hypo{ \varphi[\synx \mapsto \sigma] }
-          \infer2[\ref{eq:def:first_order_natural_deduction_system/equality/elim_right}]{ \varphi[\synx \mapsto \tau] }
-        \end{prooftree}
-      \end{equation*}
-    \end{minipage}
+    \thmitem{def:fol_term_ast/application} If \( \tau = f(\rho_1, \ldots, \rho_n) \), assuming we have built \( T(\rho_k) \) for \( k = 1, \ldots, n \), we define \( T(\tau) \) by \hyperref[def:ordered_tree_grafting_product]{grafting} these trees to a new root labeled with \( f \):
+    \begin{equation*}
+      \includegraphics[page=1]{output/def__fol_term_ast}
+    \end{equation*}
   \end{thmenum}
 \end{definition}
 
-\begin{example}\label{ex:def:first_order_natural_deduction_system/eigenvariables}
-  \hfill
+\begin{definition}\label{def:closed_fol_term}\mcite[def. 2.3.8]{VanDalen2004LogicAndStructure}
+  We say that a \hyperref[def:fol_term]{first-order term} is \term[ru=замкнутый терм (\cite[62]{КолмогоровДрагалин2006Логика})]{closed} if it has no variables.
+\end{definition}
+\begin{comments}
+  \item Closed terms are also called \enquote{ground terms}, for example by \incite[def. 3.1.5]{BaaderNipkow2012TermRewriting}.
+\end{comments}
+
+\begin{algorithm}[Signature translation of first-order terms]\label{alg:fol_term_signature_translation}
+  Given a \hyperref[def:fol_signature_category/morphism]{signature morphism} \( s: \Sigma \to \Theta \), we can easily translate any \hyperref[def:fol_term]{first-order term} from \( \op*{Term}_\Sigma \) to \( \op*{Term}_\Theta \):
+  \begin{equation*}
+    \tau[s] \coloneqq \begin{cases}
+      \tau,                                              &\tau \in \op*{Var}, \\
+      s(f)\parens[\big]{ \rho_1[s], \ldots, \rho_n[s] }, &\tau = f(\rho_1, \ldots, \rho_n).
+    \end{cases}
+  \end{equation*}
+\end{algorithm}
+\begin{comments}
+  \item This algorithm can be found as \identifier{math.logic.signature_translation.translate_term} in \cite{notebook:code}.
+\end{comments}
+
+\paragraph{First-order formulas}
+
+\begin{definition}\label{def:fol_formula}\mimprovised
+  For a fixed \hyperref[def:fol_signature]{signature} \( \Sigma \) of \hyperref[def:first_order_logic]{first-order logic}, we introduce a \hyperref[def:formal_grammar]{formal grammar} for \hyperref[con:proposition]{formulas}:
+  \begin{bnf*}
+    \bnfprod{predicate application} {\underbrace{p \bnfsp \bnftsq{(} \bnfsp \overbrace{\bnfpn{term} \bnfsp \bnftsq{,} \bnfsp \bnfsk \bnfsp \bnftsq{,} \bnfsp \bnfpn{term}}^{\# p \T*{terms separated by commas}} \bnfsp \bnftsq{)}}_{\T*{Standalone rule for each} p \in \op*{Pred}_\Sigma}} \\
+    \bnfprod{equality formula}       {\bnftsq{(} \bnfsp \bnfpn{term} \bnfsp \bnftsq{\( \syneq \)} \bnfsp \bnfpn{term} \bnfsp \bnftsq{)}} \\
+    \bnfprod{quantifier formula}     {\bnfpn{quantifier} \bnfsp \bnfpn{individual variable} \bnfsp \bnftsq{.} \bnfsp \bnfpn{formula}} \\
+    \bnfprod{atomic formula}         {\bnfpn{constant formula} \bnfor} \\
+    \bnfmore                         {\bnfpn{equality formula} \bnfor} \\
+    \bnfmore                         {\bnfpn{predicate application} \bnfor} \\
+    \bnfprod{formula}                {\bnfpn{atomic formula} \bnfor} \\
+    \bnfmore                         {\bnfpn{negation formula} \bnfor} \\
+    \bnfmore                         {\bnfpn{connective formula} \bnfor} \\
+    \bnfmore                         {\bnfpn{quantifier formula}}
+  \end{bnf*}
+
+  \begin{itemize}
+    \item The \( \bnfpn{individual variable} \) and \( \bnfpn{term} \) rules are taken from \cref{def:fol_term}.
+
+    \item The \( \bnfpn{negation formula} \) and \( \bnfpn{connective formula} \) rules are exactly as in for propositional formulas in \cref{def:propositional_formula}, so we have avoided stating them explicitly.
+
+    \item The \( \bnfpn{predicate application} \) rules are based on the function application syntax from \cref{def:function_application_syntax} (without parentheses when \( \# p = 0 \)).
+
+    \item The \( \bnfpn{quantifier} \) rule lists the corresponding symbols from the alphabet.
+  \end{itemize}
+
+  Similarly to the case of propositional formulas in \cref{def:propositional_subformula}, we denote by \( \op*{Form}_\Sigma \) the set of all \term[en=first-order formulas (\cite[23]{CitkinMuravitsky2022ConsequenceRelations})]{first-order formulas} over \( \Sigma \), and by \( \op*{Atom}_\Sigma \) those that are \term[ru=атомарные (формулы) (\cite[56]{КолмогоровДрагалин2006Логика}), en=atomic (formulas) (\cite[def. 2.1.8]{Hinman2005Logic})]{atomic}.
+\end{definition}
+\begin{comments}
+  \item Within the metalanguage, we will denote abstract formulas via \( \varphi \), \( \psi \), \( \theta \) and other letters in accordance with \cref{rem:mathematical_logic_conventions/greek_alphabet}. This convention will later lead us to a formal definition of formula schemas in \cref{def:fol_formula_schema}.
+
+  \item First-order formulas are implemented in \identifier{math.logic.formulas}, with a parser in \identifier{math.logic.parsing}.
+\end{comments}
+
+\begin{proposition}\label{thm:fol_formula_grammar}
+  The \hyperref[def:formal_grammar]{grammar} of \hyperref[def:fol_formula]{first-order terms} has the following basic properties:
   \begin{thmenum}
-    \thmitem{ex:def:first_order_natural_deduction_system/eigenvariables/invalid_universal_closure} We explicitly forbid the syntactic equivalent of \cref{thm:implicit_universal_quantification} in order to avoid invalid proofs like \cref{ex:def:first_order_natural_deduction_system/eigenvariables/invalid_universal}. Consider the proof
-    \begin{equation*}
-      \begin{prooftree}
-        \hypo{ \varphi }
-        \infer1[\ref{eq:def:first_order_natural_deduction_system/forall/intro}]{ \qforall \synx \varphi }
-      \end{prooftree}
-    \end{equation*}
+    \thmitem{thm:fol_formula_grammar/unambiguous} It is \hyperref[def:grammar_ambiguity]{unambiguous}.
 
-    The problem here is that \( \varphi \) is itself an undischarged assumption, hence \eqref{eq:def:first_order_natural_deduction_system/forall/intro} is actually inapplicable here, and the proof is invalid.
+    \thmitem{thm:fol_formula_grammar/balanced} The \hyperref[def:formal_grammar/language]{generated language} has \hyperref[def:paired_delimiters]{balanced parentheses}.
 
-    \thmitem{ex:def:first_order_natural_deduction_system/eigenvariables/invalid_universal} To see why the eigenvariable conditions in \cref{def:first_order_natural_deduction_system/eigenvariables} are essential, consider the following proof of \( \qforall \synx \varphi \) from \( \qexists \synx \varphi \):
-    \begin{equation*}
-      \begin{prooftree}
-        \hypo{ \qexists \synx \varphi }
-
-        \hypo{ [\varphi]^1 }
-        \infer1[\ref{eq:def:first_order_natural_deduction_system/forall/intro}]{ \qforall \synx \varphi }
-
-        \infer[left label=\( 1 \)]2[\ref{eq:def:first_order_natural_deduction_system/exists/elim}]{ \qforall \synx \varphi }
-      \end{prooftree}
-    \end{equation*}
-
-    This proof relies on \cref{ex:def:first_order_natural_deduction_system/eigenvariables/invalid_universal_closure}, which we have already demonstrated to be invalid.
-
-    \thmitem{ex:def:first_order_natural_deduction_system/eigenvariables/invalid_existence} Another invalid proof, in case \( \synx \in \op*{Free}(\varphi) \), is
-    \begin{equation*}
-      \begin{prooftree}
-        \hypo{ \qexists \synx \varphi }
-
-        \hypo{ [\varphi]^1 }
-        \infer1{ \varphi }
-
-        \infer[left label=\( 1 \)]2[\ref{eq:def:first_order_natural_deduction_system/exists/elim}]{ \varphi }
-      \end{prooftree}
-    \end{equation*}
-
-    \thmitem{ex:def:first_order_natural_deduction_system/eigenvariables/universal_implies_existence} On the other hand, \( \qexists \synx \varphi \) can easily be derived from \( \qforall \synx \varphi \):
-    \begin{equation*}
-      \begin{prooftree}
-        \hypo{ \qforall \synx \varphi }
-        \infer1[\ref{eq:def:first_order_natural_deduction_system/forall/elim}]{ \varphi = \varphi[\synx \mapsto \synx] }
-        \infer1[\ref{eq:def:first_order_natural_deduction_system/exists/intro}]{ \qexists \synx \varphi }
-      \end{prooftree}
-    \end{equation*}
-
-    \thmitem{ex:def:first_order_natural_deduction_system/eigenvariables/universal_implies_universal} It is also valid to perform the completely meaningless derivation:
-    \begin{equation*}
-      \begin{prooftree}
-        \hypo{ \qforall \synx \varphi }
-        \infer1[\ref{eq:def:first_order_natural_deduction_system/forall/elim}]{ \varphi = \varphi[\synx \mapsto \synx] }
-        \infer1[\ref{eq:def:first_order_natural_deduction_system/forall/intro}]{ \qforall \synx \varphi }
-      \end{prooftree}
-    \end{equation*}
+    \thmitem{thm:fol_formula_grammar/not_regular} The grammar is not \hyperref[def:chomsky_hierarchy/regular]{regular}.
   \end{thmenum}
-\end{example}
-
-\begin{proposition}\label{thm:syntactic_first_order_quantifiers_are_dual}
-  For any formula \( \varphi \) and any variable \( \synx \) over \( \mscrL \), we have the following interderivable pairs:
-  \begin{align}
-    \synneg \qforall \synx \varphi &\T{and} \qexists \synx \synneg \varphi \label{thm:syntactic_first_order_quantifiers_are_dual/negation_of_universal} \\
-    \synneg \qexists \synx \varphi &\T{and} \qforall \synx \synneg \varphi \label{thm:syntactic_first_order_quantifiers_are_dual/negation_of_existential}
-  \end{align}
 \end{proposition}
 \begin{proof}
-  We will only show \eqref{thm:syntactic_first_order_quantifiers_are_dual/negation_of_universal}. First,
-
-  \begin{equation*}
-    \begin{prooftree}
-      \hypo{ \synneg \qforall \synx \varphi }
-      \hypo{ [\qforall \synx \varphi]^1 }
-      \infer2[\ref{inf:def:propositional_natural_deduction_systems/neg/elim}]{ \synbot }
-      \infer[left label=\( 1 \)]1[\eqref{eq:def:propositional_natural_deduction_systems/rules/dne}]{ \qforall \synx \varphi }
-      \infer1[\eqref{eq:def:first_order_natural_deduction_system/forall/elim}]{ \varphi }
-
-      \hypo{ [\synneg \varphi]^2 }
-      \infer2[\ref{inf:def:propositional_natural_deduction_systems/neg/elim}]{ \synbot }
-
-      \infer[left label=\( 2 \)]1[\ref{inf:def:propositional_natural_deduction_systems/neg/intro}]{ \synneg \varphi }
-      \infer1[\eqref{eq:def:first_order_natural_deduction_system/exists/intro}]{ \qexists \synx \synneg \varphi }
-    \end{prooftree}
-  \end{equation*}
-
-  Conversely,
-  \begin{equation*}
-    \begin{prooftree}
-      \hypo{ \qexists \synx \synneg \varphi }
-
-      \hypo{ [\qforall \synx \varphi]^1 }
-      \infer1[\eqref{eq:def:first_order_natural_deduction_system/forall/elim}]{ \varphi }
-
-      \hypo{ [\synneg \varphi]^2 }
-      \infer2[\ref{inf:def:propositional_natural_deduction_systems/neg/elim}]{ \synbot }
-      \infer[left label=\( 1 \)]1[\ref{inf:def:propositional_natural_deduction_systems/neg/intro}]{ \synneg \qforall \synx \varphi }
-
-      \infer[left label=\( 2 \)]2[\eqref{eq:def:first_order_natural_deduction_system/exists/elim}]{ \synneg \qforall \synx \varphi }
-    \end{prooftree}
-  \end{equation*}
+  The proof is more complicated, but similar to \cref{thm:propositional_formula_grammar}.
 \end{proof}
 
-\begin{theorem}[Soundness and completeness of first-order logic]\label{thm:classical_first_order_logic_soundness_and_complete}\mcite[thm. 3.4.1]{Hinman2005Logic}
-  The \hyperref[def:first_order_natural_deduction_system]{classical first-order natural deduction system} is \hyperref[def:abstract_logic/soundness]{sound} and \hyperref[def:abstract_logic/completeness]{complete} with respect to \hyperref[def:first_order_semantics]{classical semantics}.
-\end{theorem}
+\begin{definition}\label{def:fol_subformula}\mimprovised
+  Analogously to how we handled propositional subformulas in \cref{def:propositional_subformula}, we define the set of all \term{subformulas} of a \hyperref[def:fol_formula]{first-order formula} \( \varphi \) as follows:
+  \begin{equation*}
+    \op*{Subform}(\varphi) \coloneqq \begin{cases}
+      \set{ \varphi },                                                        &\varphi \in \op*{Atom}, \\
+      \set{ \varphi } \bigcup \op*{Subform}(\psi),                            &\varphi = \synneg \psi, \\
+      \set{ \varphi } \bigcup \op*{Subform}(\psi) \cup \op*{Subform}(\theta), &\varphi = \psi \syncirc \theta, {\syncirc} \in \op*{Conn}, \\
+      \set{ \varphi } \bigcup \op*{Subform}(\psi),                            &\varphi = \quantifier Q x \psi, Q \in \op*{Quant}.
+    \end{cases}
+  \end{equation*}
+
+  The only difference is the presence of the quantifier case.
+\end{definition}
+
+\begin{proposition}\label{thm:fol_formula_characterization}
+  The \hyperref[def:formal_language/substring]{substring} \( \psi \) of the first-order term \( \varphi \) is a \hyperref[def:fol_subformula]{subformula} of \( \varphi \) if and only if \( \psi \) is itself a formula.
+\end{proposition}
+\begin{proof}
+  Like in the case of \( \muplambda \)-terms in \cref{thm:lambda_subterm_characterization}, there are variable binders, but unlike in that case, the variables themselves are not considered formulas. So, there are no nuances to handle, and we can proceed as in the propositional case in \cref{thm:propositional_formula_characterization}.
+\end{proof}
+
+\begin{definition}\label{def:fol_formula_ast}\mimprovised
+  We implicitly associate with each first-order formula \( \varphi \) an \hyperref[con:abstract_syntax_tree]{abstract syntax tree} \( T(\varphi) \) as follows:
+  \begin{thmenum}
+    \thmitem{def:fol_formula_ast/const} If \( \varphi \) is a logical constant, i.e. \( \syntop \) or \( \synbot \), we define \( T(\tau) \) as the \hyperref[def:canonical_singleton_tree]{canonical singleton tree} with label \( \tau \).
+
+    \thmitem{def:fol_formula_ast/equality} If \( \varphi = \tau \syneq \sigma \), assuming we have built \( T(\tau) \) and \( T(\sigma) \) in accordance with \cref{def:fol_formula_ast}, we define \( T(\varphi) \) by \hyperref[def:ordered_tree_grafting_product]{grafting} these trees to a new root labeled with \( \syneq \):
+    \begin{equation*}
+      \includegraphics[page=1]{output/def__fol_formula_ast}
+    \end{equation*}
+
+    \thmitem{def:fol_formula_ast/application} If \( \varphi = p(\tau_1, \ldots, \tau_n) \), assuming we have built \( T(\tau_k) \) for \( k = 1, \ldots, n \) in accordance with \cref{def:fol_formula_ast}, we define \( T(\tau) \) by \hyperref[def:ordered_tree_grafting_product]{grafting} these trees to a new root labeled with \( p \):
+    \begin{equation*}
+      \includegraphics[page=2]{output/def__fol_formula_ast}
+    \end{equation*}
+
+    \thmitem{def:fol_formula_ast/negation} Analogously to the propositional negation trees from \cref{def:propositional_formula_ast/negation}, if \( \varphi = \synneg \psi \), assuming we have already built \( T(\psi) \), we define \( T(\varphi) \) by grafting \( T(\psi) \) to a new root labeled with \( \synneg \):
+    \begin{equation*}
+      \includegraphics[page=3]{output/def__fol_formula_ast}
+    \end{equation*}
+
+    \thmitem{def:fol_formula_ast/connective} Analogously to the propositional connective formula trees from \cref{def:propositional_formula_ast/connective}, if \( \varphi = \psi \syncirc \theta \), assuming we have built \( T(\psi) \) and \( T(\theta) \), we define \( T(\varphi) \) by grafting \( T(\psi) \) and \( T(\theta) \) to a new root labeled with \( \syncirc \):
+    \begin{equation*}
+      \includegraphics[page=4]{output/def__fol_formula_ast}
+    \end{equation*}
+
+    \thmitem{def:fol_formula_ast/quantifier} Analogously to the untyped \( \muplambda \)-abstraction trees from \cref{def:lambda_term_ast/abstraction}, if \( \varphi = \quantifier Q x \psi \), where \( Q \) is a quantifier, assuming we have built \( T(\psi) \), we define \( T(\varphi) \) by grafting \( T(\psi) \) to a new root labeled with \( Q x \):
+    \begin{equation*}
+      \includegraphics[page=5]{output/def__fol_formula_ast}
+    \end{equation*}
+  \end{thmenum}
+\end{definition}
+
+\begin{algorithm}[Signature translation of first-order formulas]\label{alg:fol_formula_signature_translation}
+  Given a \hyperref[def:fol_signature_category/morphism]{signature morphism} \( s: \Sigma \to \Theta \), we can translate any \hyperref[def:fol_formula]{first-order formula} from \( \op*{Form}_\Sigma \) to \( \op*{Form}_\Theta \) with the aid of \fullref{alg:fol_term_signature_translation}:
+  \begin{equation*}
+    \varphi[s] \coloneqq \begin{cases}
+      \varphi,                                                                 &\varphi = \syntop \T{or} \varphi = \synbot, \\
+      \tau[s] \syneq \sigma[s],                                                &\varphi = \tau \syneq \sigma, \\
+      s(p)\parens[\big]{ \tau_1[s], \ldots, \tau_n[s]) },                      &\varphi = p(\tau_1, \ldots, \tau_n), \\
+      \hyperref[rem:straightforward_traversal]{\T{straightforward traversal}}, &\T{otherwise.}
+    \end{cases}
+  \end{equation*}
+\end{algorithm}
 \begin{comments}
-  \item The completeness part is known as \enquote{G\"odel's completeness theorem} and requires an elaborate proof.
-  \item The theorem also applies, with adaptations based on \cref{rem:propositional_logic_as_first_order_logic}, to the \hyperref[def:propositional_natural_deduction_systems]{classical propositional natural deduction system}.
+  \item This algorithm can be found as \identifier{math.logic.signature_translation.translate_formula} in \cite{notebook:code}.
+\end{comments}
+
+\paragraph{Variable binding}
+
+\begin{definition}\label{def:fol_variable_occurrence}\mimprovised
+  Similarly to variable occurrences of \( \muplambda \)-terms defined in \cref{def:lambda_variable_occurrence}, we define an \term[ru=вхождение (\cite[64]{Герасимов2011Вычислимость}), en=occurrence (\cite[63]{VanDalen2004LogicAndStructure})]{occurrence} of an individual variable \( x \) in a \hyperref[def:fol_formula]{first-order formula} \( \varphi \) as a variable node with label \( x \) in the \hyperref[def:fol_formula_ast]{abstract syntax tree} of \( \varphi \).
+
+  We analogously call a variable occurrence of \( x \) \term[ru=свободное (вхождение) (\cite[64]{Герасимов2011Вычислимость}), en=free occurrence (\cite[def. 9.1.2]{CitkinMuravitsky2022ConsequenceRelations})]{free} in \( \varphi \) if the root of the AST can be reached without passing through a quantifier. If an occurrence is not free, we say that it is \term[ru=связоное (вхождение) (\cite[64]{Герасимов2011Вычислимость}), en=bound occurrence (\cite[def. 9.1.2]{CitkinMuravitsky2022ConsequenceRelations})]{bound}.
+\end{definition}
+
+\begin{definition}\label{def:fol_variable_freeness}\mcite[64]{Герасимов2011Вычислимость}
+  In analogy with how we handled variable freeness in \( \muplambda \)-terms defined in \cref{def:lambda_variable_freeness}, we say that a variable \( x \) is \term[ru=свободная (переменная), en=free (variable) (\cite[63]{VanDalen2004LogicAndStructure})]{free} in a first-order formula \( \varphi \) if \( x \) has at least one \hyperref[def:fol_variable_occurrence]{free occurrence} in \( \varphi \) and \term[ru=связанная (переменная), en=bound (variable) (\cite[63]{VanDalen2004LogicAndStructure})]{bound} if it has a \hyperref[def:lambda_variable_occurrence]{bound occurrence} in \( M \).
+\end{definition}
+\begin{comments}
+  \item We may use the recursive definitions from \cref{thm:fol_variable_freeness_characterization} instead.
+\end{comments}
+
+\begin{proposition}\label{thm:fol_variable_freeness_characterization}
+  The set of all \hyperref[def:fol_variable_freeness]{free variables} of a first-order formula can be characterized as follows:
+  \begin{equation*}
+    \op*{Free}(\varphi) \coloneqq \begin{cases}
+      \varnothing,                                &\varphi = \syntop \T{or} \varphi = \synbot, \\
+      \op*{Var}(\tau) \cup \op*{Var}(\sigma),     &\varphi = \tau \syneq \sigma, \\
+      \bigcup_{k=1}^n \op*{Var}(\tau_k),          &\varphi = p(\tau_1, \ldots, \tau_n), \\
+      \op*{Free}(\psi),                           &\varphi = \synneg \psi, \\
+      \op*{Free}(\psi) \cup \op*{Free}(\theta),   &\varphi = \synneg \psi \syncirc \theta, {\syncirc} \in \op*{Conn}, \\
+      \op*{Free}(\psi) \setminus \set{ x },       &\varphi = \quantifier Q x \psi, Q \in \op*{Quant}.
+    \end{cases}
+  \end{equation*}
+
+  Similarly, the bound variables can be characterized via
+  \begin{equation*}
+    \op*{Bound}(\varphi) \coloneqq \begin{cases}
+      \varnothing,                                &\varphi \in \op*{Atom}, \\
+      \op*{Bound}(\psi),                          &\varphi = \synneg \psi, \\
+      \op*{Bound}(\psi) \cup \op*{Bound}(\theta), &\varphi = \synneg \psi \syncirc \theta, {\syncirc} \in \op*{Conn}, \\
+      \op*{Bound}(\psi) \cup \set{ x },           &\varphi = \quantifier Q x \psi, Q \in \op*{Quant}.
+    \end{cases}
+  \end{equation*}
+\end{proposition}
+\begin{comments}
+  \item We show an analogous result for \( \muplambda \)-terms in \cref{thm:lambda_variable_freeness_characterization}.
+\end{comments}
+\begin{proof}
+  Straightforward.
+\end{proof}
+
+\begin{definition}\label{def:closed_fol_formula}\mcite[def. 2.3.8]{VanDalen2004LogicAndStructure}
+  We say that a \hyperref[def:fol_formula]{first-order formula} is \term[ru=замкнутая формула (\cite[61]{КолмогоровДрагалин2006Логика})]{closed} if it has no \hyperref[def:fol_variable_freeness]{free variables}. Closed formulas are also called \term[ru=предложения (\cite[61]{КолмогоровДрагалин2006Логика})]{sentences}.
+\end{definition}
+\begin{comments}
+  \item In fact, \enquote{sentence} is a more general word used in many definitions in \cref{sec:abstract_logics}. We explicitly disallow non-closed formulas as sentences for the reasons outlined in \cref{ex:universal_validity_and_lem}.
 \end{comments}

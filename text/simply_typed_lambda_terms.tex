@@ -139,9 +139,7 @@ Typed \( \lambda \)-calculus shifts the perspective from terms to type derivatio
 \end{comments}
 
 \begin{definition}\label{def:simple_type}\mimprovised
-  Fix a nonempty finite set \( \op*{Base} \), whose elements we will call \term{base types}. To ensure \hyperref[def:grammar_ambiguity]{syntactic unambiguity}, we disallow the \hyperref[con:improper_symbol]{improper symbols} from the \hyperref[def:simple_type_alphabet]{simple type alphabet} as base types (but do not consider base types to be reserved).
-
-  We introduce \term{simple types} based on the following \hyperref[def:formal_grammar/schema]{grammar schema}:
+  Fix a nonempty set \( \op*{Base} \), assumed by default to be finite, whose elements we will call \term{base types}. We introduce \term{simple types} based on the following \hyperref[def:formal_grammar/schema]{grammar schema}:
   \begin{bnf*}
     \bnfprod{type variable}   {\bnfpn{Small Greek identifier}} \\
     \bnfprod{atomic type}     {\bnfpn{base type} \bnfor \bnfpn{type variable}} \\
@@ -149,6 +147,8 @@ Typed \( \lambda \)-calculus shifts the perspective from terms to type derivatio
     \bnfprod{type}            {\bnfpn{atomic type} \bnfor \bnfpn{arrow type}}
   \end{bnf*}
   where we have used the type connectives from \cref{def:simple_type_alphabet/connectives} and the variable identifier rules from \cref{def:variable_identifier}.
+
+  As per \cref{rem:improper_symbols_and_parsing}, we disallow the \hyperref[con:improper_symbol]{improper symbols} from the \hyperref[def:mltt_alphabet]{Martin-L\"of type theory alphabet} as universes and constants.
 
   We are often interested only in \hyperref[con:syntax_fragment]{fragment} of this grammar. By default, we will only consider arrow types without product or sum types. Furthermore, in \hyperref[def:higher_order_logic]{higher-order logic} we disallow even type variables --- see \cref{def:quantifiable_type}.
 \end{definition}
@@ -287,6 +287,8 @@ Typed \( \lambda \)-calculus shifts the perspective from terms to type derivatio
   We avoid Barendregt's terminology here because, unlike general pseudoterms, where the type assertion may be nonsensical, a type assertion involving simply typed terms is always well-formed (but may not be derivable, just like an assertion for untyped terms may not be derivable).
 
   We borrow the phrase \enquote{typed term} from \incite[ch. 5]{Hindley1997BasicSTT}, who however follows Church in annotating every term. Our variant, also used by \incite[\S 4.1.3]{Mimram2020ProgramEqualsProof}, only guarantees uniqueness (but not existence) of a type for each term; this is shown in \cref{thm:typed_term_habitation_uniqueness}.
+
+  \item Both typed and untyped \( \muplambda \)-terms are implemented in \identifier{math.lambda_.terms}, with a parser in \identifier{math.lambda_.parsing}.
 \end{comments}
 
 \begin{remark}\label{rem:mixed_lambda_term}\mimprovised
@@ -560,16 +562,20 @@ To completely formalize the typing rules, which we will do in \cref{def:simple_t
 \paragraph{Type derivations}
 
 \begin{definition}\label{def:simple_type_signature}\mimprovised
-  A \hyperref[con:logical_system_signature]{signature} \( \Sigma \) for simple type systems is a specification of (possibly empty) \hyperref[def:formal_language/alphabet]{alphabets} (hereditarily finite sets) \( \op*{Base}_\Sigma \) of \hyperref[def:simple_type]{base types} and \( \op*{Const}_\Sigma \) of \hyperref[def:lambda_term]{\( \muplambda \)-term constants}.
+  A \hyperref[con:logical_system_signature]{signature} \( \Sigma \) for simple type systems is a specification of the following:
+  \begin{thmenum}
+    \thmitem{def:simple_type_signature/const} A possibly empty \hyperref[def:formal_language/alphabet]{alphabet} \( \op*{Const}_\Sigma \) of \hyperref[def:lambda_term]{\( \muplambda \)-term constants}.
+    \thmitem{def:simple_type_signature/types} A possibly empty alphabet \( \op*{Base}_\Sigma \) of \hyperref[def:simple_type]{base types}.
+  \end{thmenum}
 
   We disallow the \hyperref[con:improper_symbol]{improper symbols} from the \hyperref[def:lambda_term_alphabet]{\( \muplambda \)-calculus alphabet} as constants and the symbols from the \hyperref[def:simple_type_alphabet]{simple type alphabet} as base types, but we do not impose their restrictions on each other. For example, \( \synlambda \) is a improper symbol for \( \muplambda \)-terms, but it is also a valid type.
+
+  We discuss in \cref{rem:language_alphabet_cardinality} some cardinality considerations; we mention here only that both alphabets are by default assumed to be finite. In general, we use adjectives like \enquote{finite} and \enquote{countably infinite} for the signature itself as per \cref{rem:cardinality_auxiliary_terminology}.
 \end{definition}
 \begin{comments}
   \item For simplicity of definition, we put no restrictions on sets of \( \muplambda \)-terms and types. If needed, we can consider \hyperref[con:syntax_fragment]{fragments} of the syntax of terms or types.
 
   For example, the most restrictive example we will encounter is the higher-order logic system from in \fullref{sec:higher_order_logic}, in which we omit type variables, product and sum types.
-
-  \item The requirement for \( \op*{Base}_\Sigma \) and \( \op*{Const}_\Sigma \) to be hereditarily finite is discussed in \cref{rem:signatures_are_small}.
 \end{comments}
 
 \begin{definition}\label{def:simple_type_system}\mimprovised

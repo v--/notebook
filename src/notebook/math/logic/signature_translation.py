@@ -82,6 +82,6 @@ class FormulaTranslationVisitor(FormulaTransformationVisitor):
         )
 
 
-# This is alg:fol_signature_translation in the monograph
+# This is alg:fol_formula_signature_translation in the monograph
 def translate_formula(translation: SignatureTranslation, formula: Formula) -> Formula:
     return FormulaTranslationVisitor(translation).visit(formula)
