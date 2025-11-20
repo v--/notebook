@@ -6,7 +6,7 @@ from .formulas import (
     EqualityFormula,
     Formula,
     NegationFormula,
-    PredicateFormula,
+    PredicateApplication,
     QuantifierFormula,
     is_atomic,
     is_biconditional,
@@ -22,6 +22,6 @@ from .schemas import (
     FormulaPlaceholder,
     FormulaSchema,
     NegationFormulaSchema,
-    PredicateFormulaSchema,
+    PredicateApplicationSchema,
     QuantifierFormulaSchema,
 )

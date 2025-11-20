@@ -9,10 +9,10 @@ from .formulas import (
     Formula,
     FormulaVisitor,
     NegationFormula,
-    PredicateFormula,
+    PredicateApplication,
     QuantifierFormula,
 )
-from .terms import FunctionTerm, Term, TermVisitor, Variable
+from .terms import FunctionApplication, Term, TermVisitor, Variable
 
 
 def new_variable(context: Collection[Variable]) -> Variable:
@@ -25,7 +25,7 @@ class TermVariableVisitor(TermVisitor[Collection[Variable]]):
         return {term}
 
     @override
-    def visit_function(self, term: FunctionTerm) -> Collection[Variable]:
+    def visit_function(self, term: FunctionApplication) -> Collection[Variable]:
         return {var for arg in term.arguments for var in self.visit(arg)}
 
 
@@ -35,7 +35,7 @@ def get_term_variables(term: Term) -> Collection[Variable]:
 
 class FreeVariableVisitor(FormulaVisitor[Collection[Variable]]):
     @override
-    def visit_constant(self, formula: ConstantFormula) -> Collection[Variable]:
+    def visit_logical_constant(self, formula: ConstantFormula) -> Collection[Variable]:
         return set()
 
     @override
@@ -43,7 +43,7 @@ class FreeVariableVisitor(FormulaVisitor[Collection[Variable]]):
         return {*get_term_variables(formula.left), *get_term_variables(formula.right)}
 
     @override
-    def visit_predicate(self, formula: PredicateFormula) -> Collection[Variable]:
+    def visit_predicate(self, formula: PredicateApplication) -> Collection[Variable]:
         return {var for arg in formula.arguments for var in get_term_variables(arg)}
 
     @override
@@ -65,7 +65,7 @@ def get_formula_free_variables(formula: Formula) -> Collection[Variable]:
 
 class BoundVariableVisitor(FormulaVisitor[Collection[Variable]]):
     @override
-    def visit_constant(self, formula: ConstantFormula) -> Collection[Variable]:
+    def visit_logical_constant(self, formula: ConstantFormula) -> Collection[Variable]:
         return set()
 
     @override
@@ -73,7 +73,7 @@ class BoundVariableVisitor(FormulaVisitor[Collection[Variable]]):
         return set()
 
     @override
-    def visit_predicate(self, formula: PredicateFormula) -> Collection[Variable]:
+    def visit_predicate(self, formula: PredicateApplication) -> Collection[Variable]:
         return set()
 
     @override

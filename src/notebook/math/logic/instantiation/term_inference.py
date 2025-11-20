@@ -3,8 +3,8 @@ from typing import override
 
 from ....support.schemas import SchemaInferenceError
 from ..terms import (
-    FunctionTerm,
-    FunctionTermSchema,
+    FunctionApplication,
+    FunctionApplicationSchema,
     Term,
     TermPlaceholder,
     TermSchema,
@@ -31,8 +31,8 @@ class InferInstantiationVisitor(TermSchemaVisitor[FormalLogicSchemaInstantiation
         return FormalLogicSchemaInstantiation(term_mapping={schema: self.term})
 
     @override
-    def visit_function(self, schema: FunctionTermSchema) -> FormalLogicSchemaInstantiation:
-        if not isinstance(self.term, FunctionTerm) or schema.name != self.term.name or len(schema.arguments) != len(self.term.arguments):
+    def visit_function(self, schema: FunctionApplicationSchema) -> FormalLogicSchemaInstantiation:
+        if not isinstance(self.term, FunctionApplication) or schema.name != self.term.name or len(schema.arguments) != len(self.term.arguments):
             raise SchemaInferenceError(f'Cannot match function term schema {schema} to {self.term}')
 
         instantiation = FormalLogicSchemaInstantiation()

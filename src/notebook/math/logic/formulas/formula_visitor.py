@@ -1,10 +1,11 @@
+from typing import override
 from .formulas import (
     ConnectiveFormula,
     ConstantFormula,
     EqualityFormula,
     Formula,
     NegationFormula,
-    PredicateFormula,
+    PredicateApplication,
     QuantifierFormula,
 )
 
@@ -18,7 +19,7 @@ class FormulaVisitor[T]:
             case EqualityFormula():
                 return self.visit_equality(formula)
 
-            case PredicateFormula():
+            case PredicateApplication():
                 return self.visit_predicate(formula)
 
             case NegationFormula():
@@ -30,13 +31,13 @@ class FormulaVisitor[T]:
             case QuantifierFormula():
                 return self.visit_quantifier(formula)
 
-    def visit_constant(self, formula: ConstantFormula) -> T:
+    def visit_logical_constant(self, formula: ConstantFormula) -> T:
         return self.generic_visit(formula)
 
     def visit_equality(self, formula: EqualityFormula) -> T:
         return self.generic_visit(formula)
 
-    def visit_predicate(self, formula: PredicateFormula) -> T:
+    def visit_predicate(self, formula: PredicateApplication) -> T:
         return self.generic_visit(formula)
 
     def visit_negation(self, formula: NegationFormula) -> T:
@@ -53,18 +54,23 @@ class FormulaVisitor[T]:
 
 
 class FormulaTransformationVisitor(FormulaVisitor[Formula]):
-    def visit_constant(self, formula: ConstantFormula) -> Formula:
+    @override
+    def visit_logical_constant(self, formula: ConstantFormula) -> Formula:
         return formula
 
+    @override
     def visit_equality(self, formula: EqualityFormula) -> Formula:
         return formula
 
-    def visit_predicate(self, formula: PredicateFormula) -> Formula:
+    @override
+    def visit_predicate(self, formula: PredicateApplication) -> Formula:
         return formula
 
+    @override
     def visit_negation(self, formula: NegationFormula) -> Formula:
         return NegationFormula(self.visit(formula.body))
 
+    @override
     def visit_connective(self, formula: ConnectiveFormula) -> Formula:
         return ConnectiveFormula(
             formula.conn,
@@ -72,6 +78,7 @@ class FormulaTransformationVisitor(FormulaVisitor[Formula]):
             self.visit(formula.right)
         )
 
+    @override
     def visit_quantifier(self, formula: QuantifierFormula) -> Formula:
         return QuantifierFormula(
             formula.quantifier,

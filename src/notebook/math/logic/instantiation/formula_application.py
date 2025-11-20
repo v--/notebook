@@ -13,8 +13,8 @@ from ..formulas import (
     FormulaSchemaVisitor,
     NegationFormula,
     NegationFormulaSchema,
-    PredicateFormula,
-    PredicateFormulaSchema,
+    PredicateApplication,
+    PredicateApplicationSchema,
     QuantifierFormula,
     QuantifierFormulaSchema,
 )
@@ -31,7 +31,7 @@ class InstantiationApplicationVisitor(FormulaSchemaVisitor[Formula]):
         self.term_visitor = TermInstantiationApplicationVisitor(self.instantiation)
 
     @override
-    def visit_constant(self, schema: ConstantFormula) -> ConstantFormula:
+    def visit_logical_constant(self, schema: ConstantFormula) -> ConstantFormula:
         return ConstantFormula(schema.value)
 
     @override
@@ -39,8 +39,8 @@ class InstantiationApplicationVisitor(FormulaSchemaVisitor[Formula]):
         return EqualityFormula(self.term_visitor.visit(schema.left), self.term_visitor.visit(schema.right))
 
     @override
-    def visit_predicate(self, schema: PredicateFormulaSchema) -> PredicateFormula:
-        return PredicateFormula(schema.name, [self.term_visitor.visit(arg) for arg in schema.arguments])
+    def visit_predicate(self, schema: PredicateApplicationSchema) -> PredicateApplication:
+        return PredicateApplication(schema.name, [self.term_visitor.visit(arg) for arg in schema.arguments])
 
     @override
     def visit_formula_placeholder(self, schema: FormulaPlaceholder) -> Formula:

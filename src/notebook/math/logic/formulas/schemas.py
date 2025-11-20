@@ -2,7 +2,7 @@ from dataclasses import dataclass
 
 from ....parsing.identifiers import GreekIdentifier
 from ..alphabet import BinaryConnective, Quantifier, UnaryPrefix
-from ..terms import FunctionLike, TermSchema, VariablePlaceholder
+from ..terms import SyntacticApplication, TermSchema, VariablePlaceholder
 from .formulas import ConstantFormula
 
 
@@ -23,7 +23,7 @@ class EqualityFormulaSchema:
         return f'({self.left} = {self.right})'
 
 
-class PredicateFormulaSchema(FunctionLike[TermSchema]):
+class PredicateApplicationSchema(SyntacticApplication[TermSchema]):
     pass
 
 
@@ -55,4 +55,4 @@ class QuantifierFormulaSchema:
         return f'{self.quantifier.value}{self.var}.{self.body}'
 
 
-FormulaSchema = FormulaPlaceholder | ConstantFormula | EqualityFormulaSchema | PredicateFormulaSchema | NegationFormulaSchema | ConnectiveFormulaSchema | QuantifierFormulaSchema
+FormulaSchema = FormulaPlaceholder | ConstantFormula | EqualityFormulaSchema | PredicateApplicationSchema | NegationFormulaSchema | ConnectiveFormulaSchema | QuantifierFormulaSchema

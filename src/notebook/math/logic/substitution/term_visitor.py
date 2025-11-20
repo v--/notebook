@@ -2,7 +2,7 @@ from collections.abc import Mapping
 from dataclasses import dataclass
 from typing import override
 
-from ..terms import FunctionTerm, Term, TermTransformationVisitor, Variable
+from ..terms import FunctionApplication, Term, TermTransformationVisitor, Variable
 from .substitution import LogicSubstitution
 
 
@@ -15,8 +15,8 @@ class TermSubstitutionVisitor(TermTransformationVisitor):
         return self.substitution.substitute_variable(term)
 
     @override
-    def visit_function(self, term: FunctionTerm) -> Term:
-        return FunctionTerm(term.name, [self.visit(arg) for arg in term.arguments])
+    def visit_function(self, term: FunctionApplication) -> Term:
+        return FunctionApplication(term.name, [self.visit(arg) for arg in term.arguments])
 
 
 def apply_term_substitution(term: Term, substitution: LogicSubstitution) -> Term:

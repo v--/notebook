@@ -14,8 +14,8 @@ from ..formulas import (
     FormulaSchemaVisitor,
     NegationFormula,
     NegationFormulaSchema,
-    PredicateFormula,
-    PredicateFormulaSchema,
+    PredicateApplication,
+    PredicateApplicationSchema,
     QuantifierFormula,
     QuantifierFormulaSchema,
 )
@@ -28,7 +28,7 @@ class InferInstantiationVisitor(FormulaSchemaVisitor[FormalLogicSchemaInstantiat
     formula: Formula
 
     @override
-    def visit_constant(self, schema: ConstantFormula) -> FormalLogicSchemaInstantiation:
+    def visit_logical_constant(self, schema: ConstantFormula) -> FormalLogicSchemaInstantiation:
         if self.formula != schema:
             raise SchemaInferenceError(f'Cannot match constant {schema} to {self.formula}')
 
@@ -49,8 +49,8 @@ class InferInstantiationVisitor(FormulaSchemaVisitor[FormalLogicSchemaInstantiat
         return left | right
 
     @override
-    def visit_predicate(self, schema: PredicateFormulaSchema) -> FormalLogicSchemaInstantiation:
-        if not isinstance(self.formula, PredicateFormula) or schema.name != self.formula.name or len(schema.arguments) != len(self.formula.arguments):
+    def visit_predicate(self, schema: PredicateApplicationSchema) -> FormalLogicSchemaInstantiation:
+        if not isinstance(self.formula, PredicateApplication) or schema.name != self.formula.name or len(schema.arguments) != len(self.formula.arguments):
             raise SchemaInferenceError(f'Cannot match predicate formula schema {schema} to {self.formula}')
 
         instantiation = FormalLogicSchemaInstantiation()

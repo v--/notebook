@@ -22,8 +22,8 @@ from ..formulas import (
     FormulaWithSubstitution,
     NegationFormula,
     NegationFormulaSchema,
-    PredicateFormula,
-    PredicateFormulaSchema,
+    PredicateApplication,
+    PredicateApplicationSchema,
     QuantifierFormula,
     QuantifierFormulaSchema,
 )
@@ -31,8 +31,8 @@ from ..propositional import PROPOSITIONAL_SIGNATURE
 from ..signature import EMPTY_SIGNATURE, FormalLogicSignature
 from ..terms import (
     EigenvariableSchemaSubstitutionSpec,
-    FunctionTerm,
-    FunctionTermSchema,
+    FunctionApplication,
+    FunctionApplicationSchema,
     Term,
     TermPlaceholder,
     TermSchema,
@@ -165,9 +165,9 @@ class FormalLogicParser(IdentifierParserMixin[LogicTokenKind, LogicToken], Parse
                 context = LogicParserContext(self)
 
                 if parse_schema:
-                    return FunctionTermSchema(*self._parse_function_like(context, symbol.arity, parse_schema=True))
+                    return FunctionApplicationSchema(*self._parse_function_like(context, symbol.arity, parse_schema=True))
 
-                return FunctionTerm(*self._parse_function_like(context, symbol.arity, parse_schema=False))
+                return FunctionApplication(*self._parse_function_like(context, symbol.arity, parse_schema=False))
 
             case 'LATIN_IDENTIFIER':
                 return self.parse_variable(parse_schema=parse_schema)
@@ -350,9 +350,9 @@ class FormalLogicParser(IdentifierParserMixin[LogicTokenKind, LogicToken], Parse
                 context = LogicParserContext(self)
 
                 if parse_schema:
-                    return PredicateFormulaSchema(*self._parse_function_like(context, symbol.arity, parse_schema=True))
+                    return PredicateApplicationSchema(*self._parse_function_like(context, symbol.arity, parse_schema=True))
 
-                return PredicateFormula(*self._parse_function_like(context, symbol.arity, parse_schema=False))
+                return PredicateApplication(*self._parse_function_like(context, symbol.arity, parse_schema=False))
 
             case 'GREEK_IDENTIFIER':
                 if parse_schema:

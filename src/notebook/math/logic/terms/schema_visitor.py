@@ -1,4 +1,4 @@
-from .schemas import FunctionTermSchema, TermPlaceholder, TermSchema, VariablePlaceholder
+from .schemas import FunctionApplicationSchema, TermPlaceholder, TermSchema, VariablePlaceholder
 
 
 class TermSchemaVisitor[T]:
@@ -10,7 +10,7 @@ class TermSchemaVisitor[T]:
             case TermPlaceholder():
                 return self.visit_term_placeholder(schema)
 
-            case FunctionTermSchema():
+            case FunctionApplicationSchema():
                 return self.visit_function(schema)
 
     def visit_variable_placeholder(self, schema: VariablePlaceholder) -> T:
@@ -19,7 +19,7 @@ class TermSchemaVisitor[T]:
     def visit_term_placeholder(self, schema: TermPlaceholder) -> T:
         return self.generic_visit(schema)
 
-    def visit_function(self, schema: FunctionTermSchema) -> T:
+    def visit_function(self, schema: FunctionApplicationSchema) -> T:
         return self.generic_visit(schema)
 
     def generic_visit(self, schema: TermSchema) -> T:

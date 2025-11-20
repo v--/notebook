@@ -7,7 +7,7 @@ from ....support.pytest import pytest_parametrize_kwargs, pytest_parametrize_lis
 from ..common import variables as var
 from ..formulas import EqualityFormula
 from ..signature import EMPTY_SIGNATURE, FormalLogicSignature
-from ..terms import EigenvariableSchemaSubstitutionSpec, FunctionTerm, Variable, VariablePlaceholder
+from ..terms import EigenvariableSchemaSubstitutionSpec, FunctionApplication, Variable, VariablePlaceholder
 from .parser import (
     parse_formula,
     parse_formula_schema,
@@ -40,22 +40,22 @@ def test_parsing_valid_variables(term: str, expected: Variable) -> None:
 @pytest_parametrize_kwargs(
     dict(
         term='f₀',
-        expected=FunctionTerm('f₀', [])
+        expected=FunctionApplication('f₀', [])
     ),
     dict(
         term='f₁(x)',
-        expected=FunctionTerm('f₁', [Variable(LatinIdentifier('x'))])
+        expected=FunctionApplication('f₁', [Variable(LatinIdentifier('x'))])
     ),
     dict(
         term='f₃(x, y, z)',
-        expected=FunctionTerm('f₃', [Variable(LatinIdentifier(s)) for s in 'xyz'])
+        expected=FunctionApplication('f₃', [Variable(LatinIdentifier(s)) for s in 'xyz'])
     ),
     dict(
         term='f₃(x,y,  z)',
-        expected=FunctionTerm('f₃', [Variable(LatinIdentifier(s)) for s in 'xyz'])
+        expected=FunctionApplication('f₃', [Variable(LatinIdentifier(s)) for s in 'xyz'])
     )
 )
-def test_parsing_valid_functions(term: str, expected: FunctionTerm, dummy_signature: FormalLogicSignature) -> None:
+def test_parsing_valid_functions(term: str, expected: FunctionApplication, dummy_signature: FormalLogicSignature) -> None:
     assert parse_term(term, dummy_signature) == expected
 
 
@@ -155,8 +155,8 @@ def test_parsing_function_with_wrong_arity(dummy_signature: FormalLogicSignature
     dict(
         formula='(f₁(x) = f₂(y, z))',
         expected=EqualityFormula(
-            FunctionTerm('f₁', [var.x]),
-            FunctionTerm('f₂', [var.y, var.z]),
+            FunctionApplication('f₁', [var.x]),
+            FunctionApplication('f₂', [var.y, var.z]),
         )
     )
 )

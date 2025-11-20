@@ -5,7 +5,7 @@ from .schemas import (
     FormulaPlaceholder,
     FormulaSchema,
     NegationFormulaSchema,
-    PredicateFormulaSchema,
+    PredicateApplicationSchema,
     QuantifierFormulaSchema,
 )
 
@@ -19,7 +19,7 @@ class FormulaSchemaVisitor[T]:
             case EqualityFormulaSchema():
                 return self.visit_equality(schema)
 
-            case PredicateFormulaSchema():
+            case PredicateApplicationSchema():
                 return self.visit_predicate(schema)
 
             case FormulaPlaceholder():
@@ -34,13 +34,13 @@ class FormulaSchemaVisitor[T]:
             case QuantifierFormulaSchema():
                 return self.visit_quantifier(schema)
 
-    def visit_constant(self, schema: ConstantFormula) -> T:
+    def visit_logical_constant(self, schema: ConstantFormula) -> T:
         return self.generic_visit(schema)
 
     def visit_equality(self, schema: EqualityFormulaSchema) -> T:
         return self.generic_visit(schema)
 
-    def visit_predicate(self, schema: PredicateFormulaSchema) -> T:
+    def visit_predicate(self, schema: PredicateApplicationSchema) -> T:
         return self.generic_visit(schema)
 
     def visit_formula_placeholder(self, schema: FormulaPlaceholder) -> T:

@@ -10,7 +10,7 @@ from .formulas import (
     FormulaTransformationVisitor,
     FormulaVisitor,
     NegationFormula,
-    PredicateFormula,
+    PredicateApplication,
     QuantifierFormula,
     is_atomic,
     is_conjunction,
@@ -47,8 +47,8 @@ def connect_formulas(formulas: Sequence[Formula], conn: BinaryConnective) -> For
 
 
 class RemoveConstantsVisitor(FormulaTransformationVisitor):
-    def visit_constant(self, formula: ConstantFormula) -> ConnectiveFormula:
-        p = PredicateFormula('p', [])
+    def visit_logical_constant(self, formula: ConstantFormula) -> ConnectiveFormula:
+        p = PredicateApplication('p', [])
 
         match formula.value:
             case PropConstant.VERUM:
@@ -126,7 +126,7 @@ def function_to_cnf(fun: Callable[..., bool]) -> Formula:
     fun_params = inspect.signature(fun).parameters
 
     if len(fun_params) == 0:
-        p = PredicateFormula('p', ())
+        p = PredicateApplication('p', ())
         return ConnectiveFormula(
             BinaryConnective.DISJUNCTION if fun() else BinaryConnective.CONJUNCTION,
             p,
@@ -138,7 +138,7 @@ def function_to_cnf(fun: Callable[..., bool]) -> Formula:
             f'In order to become a valid predicate name, the parameter name {param.name!r} must consist only of small Latin characters.'
 
     # These names will generate valid formulas only when they consist of Latin letters
-    predicates = [PredicateFormula(param.name, ()) for param in fun_params.values()]
+    predicates = [PredicateApplication(param.name, ()) for param in fun_params.values()]
     disjuncts = list[Formula](
         connect_formulas(
             [NegationFormula(p) if arg else p for p, arg in zip(predicates, arg_tuple, strict=True)],

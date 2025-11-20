@@ -13,7 +13,7 @@ class Variable:
 
 
 @dataclass(frozen=True)
-class FunctionLike[ArgT]:
+class SyntacticApplication[ArgT]:
     name: str
     arguments: Sequence[ArgT]
 
@@ -28,8 +28,8 @@ class FunctionLike[ArgT]:
         return hash(self.name) ^ hash(tuple(self.arguments))
 
 
-class FunctionTerm(FunctionLike['Term']):
+class FunctionApplication(SyntacticApplication['Term']):
     pass
 
 
-Term = Variable | FunctionTerm
+Term = Variable | FunctionApplication

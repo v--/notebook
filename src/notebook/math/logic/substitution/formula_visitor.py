@@ -7,7 +7,7 @@ from ..formulas import (
     Formula,
     FormulaTransformationVisitor,
     FormulaWithSubstitution,
-    PredicateFormula,
+    PredicateApplication,
     QuantifierFormula,
 )
 from ..terms import Term, Variable
@@ -25,9 +25,9 @@ class FormulaSubstitutionVisitor(FormulaTransformationVisitor):
         return EqualityFormula(term_visitor.visit(formula.left), term_visitor.visit(formula.right))
 
     @override
-    def visit_predicate(self, formula: PredicateFormula) -> PredicateFormula:
+    def visit_predicate(self, formula: PredicateApplication) -> PredicateApplication:
         term_visitor = TermSubstitutionVisitor(self.substitution)
-        return PredicateFormula(formula.name, [term_visitor.visit(arg) for arg in formula.arguments])
+        return PredicateApplication(formula.name, [term_visitor.visit(arg) for arg in formula.arguments])
 
     def visit_quantifier(self, formula: QuantifierFormula) -> QuantifierFormula:
         new_var = self.substitution.get_modified_quantifier_variable(formula)

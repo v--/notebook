@@ -2,7 +2,7 @@ from dataclasses import dataclass
 from typing import TypeGuard
 
 from ..alphabet import BinaryConnective, PropConstant, Quantifier, UnaryPrefix
-from ..terms import FunctionLike, Term, Variable
+from ..terms import SyntacticApplication, Term, Variable
 
 
 @dataclass(frozen=True)
@@ -22,7 +22,7 @@ class EqualityFormula:
         return f'({self.left} = {self.right})'
 
 
-class PredicateFormula(FunctionLike[Term]):
+class PredicateApplication(SyntacticApplication[Term]):
     pass
 
 
@@ -54,11 +54,11 @@ class QuantifierFormula:
         return f'{self.quantifier.value}{self.var}.{self.body}'
 
 
-Formula = ConstantFormula | EqualityFormula | PredicateFormula | NegationFormula | ConnectiveFormula | QuantifierFormula
+Formula = ConstantFormula | EqualityFormula | PredicateApplication | NegationFormula | ConnectiveFormula | QuantifierFormula
 
 
-def is_atomic(formula: Formula) -> TypeGuard[ConstantFormula | EqualityFormula | PredicateFormula]:
-    return isinstance(formula, ConstantFormula | EqualityFormula | PredicateFormula)
+def is_atomic(formula: Formula) -> TypeGuard[ConstantFormula | EqualityFormula | PredicateApplication]:
+    return isinstance(formula, ConstantFormula | EqualityFormula | PredicateApplication)
 
 
 def is_disjunction(formula: Formula) -> TypeGuard[ConnectiveFormula]:

@@ -1,7 +1,7 @@
 from dataclasses import dataclass
 
 from ....parsing.identifiers import GreekIdentifier, LatinIdentifier
-from .terms import FunctionLike
+from .terms import SyntacticApplication
 
 
 @dataclass(frozen=True)
@@ -20,8 +20,8 @@ class TermPlaceholder:
         return str(self.identifier)
 
 
-class FunctionTermSchema(FunctionLike['TermSchema']):
+class FunctionApplicationSchema(SyntacticApplication['TermSchema']):
     pass
 
 
-TermSchema = VariablePlaceholder | TermPlaceholder | FunctionTermSchema
+TermSchema = VariablePlaceholder | TermPlaceholder | FunctionApplicationSchema

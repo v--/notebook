@@ -3,8 +3,8 @@ from typing import overload, override
 
 from ....support.schemas import SchemaInstantiationError
 from ..terms import (
-    FunctionTerm,
-    FunctionTermSchema,
+    FunctionApplication,
+    FunctionApplicationSchema,
     Term,
     TermPlaceholder,
     TermSchema,
@@ -34,8 +34,8 @@ class InstantiationApplicationVisitor(TermSchemaVisitor[Term]):
         return self.instantiation.term_mapping[schema]
 
     @override
-    def visit_function(self, schema: FunctionTermSchema) -> FunctionTerm:
-        return FunctionTerm(schema.name, [self.visit(arg) for arg in schema.arguments])
+    def visit_function(self, schema: FunctionApplicationSchema) -> FunctionApplication:
+        return FunctionApplication(schema.name, [self.visit(arg) for arg in schema.arguments])
 
 
 @overload

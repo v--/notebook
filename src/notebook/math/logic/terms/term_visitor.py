@@ -1,6 +1,6 @@
 from typing import override
 
-from .terms import FunctionTerm, Term, Variable
+from .terms import FunctionApplication, Term, Variable
 
 
 class TermVisitor[T]:
@@ -9,13 +9,13 @@ class TermVisitor[T]:
             case Variable():
                 return self.visit_variable(term)
 
-            case FunctionTerm():
+            case FunctionApplication():
                 return self.visit_function(term)
 
     def visit_variable(self, term: Variable) -> T:
         return self.generic_visit(term)
 
-    def visit_function(self, term: FunctionTerm) -> T:
+    def visit_function(self, term: FunctionApplication) -> T:
         return self.generic_visit(term)
 
     def generic_visit(self, term: Term) -> T:
@@ -28,8 +28,8 @@ class TermTransformationVisitor(TermVisitor[Term]):
         return term
 
     @override
-    def visit_function(self, term: FunctionTerm) -> Term:
-        return FunctionTerm(
+    def visit_function(self, term: FunctionApplication) -> Term:
+        return FunctionApplication(
             term.name,
             [self.visit(arg) for arg in term.arguments]
         )
