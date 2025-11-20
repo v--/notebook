@@ -25,6 +25,13 @@ def test_get_failure() -> None:
         trie['a']
 
 
+def test_partial_match() -> None:
+    trie = TrieMapping({'ab': 1})
+
+    with pytest.raises(MissingKeyError):
+        trie['a']
+
+
 def test_del_success() -> None:
     trie = TrieMapping({'a': 1})
     del trie['a']

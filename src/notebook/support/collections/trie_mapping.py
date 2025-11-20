@@ -53,7 +53,10 @@ class TrieMapping[T](MutableMapping[str, T]):
     def __getitem__(self, key: str) -> T:
         subtrie = self.get_subtrie(key)
         value = subtrie._value  # noqa: SLF001
-        assert value is not None
+
+        if value is None:
+            raise MissingKeyError(key)
+
         return value
 
     def __contains__(self, key: object) -> bool:
