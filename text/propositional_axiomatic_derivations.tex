@@ -122,7 +122,9 @@ Implicational logic is both a toy derivation system we will explore and a useful
 \begin{concept}\label{con:syntax_fragment}\mimprovised
   We will refer to any reasonable restriction of a \hyperref[con:syntax_semantics_duality]{formalized syntax} as \term[en=fragment (\cite[\S 2.2.6]{Mimram2020ProgramEqualsProof})]{fragment}.
 
-  Such a fragment is easily obtained by removing \hyperref[def:formal_grammar]{formal grammar rules}. For example, in the grammar of propositional formulas from \cref{def:propositional_formula}, we have the following four rules (after we expand the \( \bnpn{atomic formula} \) rule):
+  For example, the formulas in conjunctive and disjunctive normal forms from \cref{def:cnf_and_dnf} are a subset of all propositional formulas, as defined in \cref{def:propositional_formula}. This constitutes a fragment.
+
+  Unlike in the case above, describing fragments is often as simple as removing \hyperref[def:formal_grammar]{formal grammar rules}. For example, consider the grammar schema of propositional formulas from \cref{def:propositional_formula}, where
   \begin{bnf*}
     \bnfprod{formula}            {\bnfpn{constant formula} \bnfor} \\
     \bnfmore                     {\bnfpn{propositional variable} \bnfor} \\
@@ -130,12 +132,30 @@ Implicational logic is both a toy derivation system we will explore and a useful
     \bnfmore                     {\bnfpn{connective formula}}
   \end{bnf*}
 
-  We can remove the rule
+  The Backus normal form offers a notational shorthand, as explained in \cref{con:backus_normal_form}, and the above expands to four rules:
   \begin{bnf*}
-    \bnfpn{formula} \bnfpo \bnfpn{constant formula}
+    \bnfprod{formula}            {\bnfpn{constant formula} \bnfor} \\
+    \bnfprod{formula}            {\bnfpn{propositional variable} \bnfor} \\
+    \bnfprod{formula}            {\bnfpn{negation formula} \bnfor} \\
+    \bnfprod{formula}            {\bnfpn{connective formula}}
   \end{bnf*}
 
-  The result would be a fragment that is as expressive as the original since \( \syntop \) can be replaced by \( \synp \syn\vee \synneg \synp \) and \( \synbot \) --- by \( \synp \syn\wedge \synneg \synp \). This is the approach we use in \fullref{alg:cnf_and_dnf}.
+  To obtain the implicational fragment from \cref{def:implicational_propositional_fragment}, we can remove the rules
+  \begin{bnf*}
+    \bnfprod{formula}            {\bnfpn{constant formula}} \\
+    \bnfprod{formula}            {\bnfpn{negation formula}}
+  \end{bnf*}
+  as well as
+  \begin{bnf*}
+    \bnfprod{connective}         {\bnftsq{\( \synwedge \)}} \\
+    \bnfprod{connective}         {\bnftsq{\( \synimplies \)}} \\
+    \bnfprod{connective}         {\bnftsq{\( \syniff \)}}
+  \end{bnf*}
+
+  The result can be compactly written quite compactly:
+  \begin{bnf*}
+    \bnfprod{formula}            {\bnfpn{propositional variable} \bnfor \bnfpn{formula} \bnfsp \bnftsq{\( \synimplies \)} \bnfsp \bnfpn{formula}}
+  \end{bnf*}
 \end{concept}
 \begin{comments}
   \item This description is loosely based on \tcite{#2, where #1}[\S 2.2.6]{Mimram2020ProgramEqualsProof} writes
@@ -156,11 +176,11 @@ Implicational logic is both a toy derivation system we will explore and a useful
 \end{comments}
 
 \begin{definition}\label{def:implicational_propositional_fragment}\mcite[49]{Mimram2020ProgramEqualsProof}
-  The \term{implicational \hyperref[con:syntax_fragment]{fragment}} of propositional logic is the \hyperref[con:syntax_fragment]{fragment} obtained via the following grammar (based on the \hyperref[def:propositional_formula]{usual schema}):
-  \begin{bnf*}
-    \bnfprod{impl. formula} {\bnfpn{variable} \bnfor \bnftsq{(} \bnfsp \bnfpn{impl. formula} \bnfsp \bnftsq{\( \synimplies \)} \bnfsp \bnfpn{impl. formula} \bnfsp \bnftsq{)}}
-  \end{bnf*}
+  We will call \term{implicational} the \hyperref[con:syntax_fragment]{fragment} of the \hyperref[def:propositional_formula]{grammar of propositional formulas} featuring only the propositional variables and the \hyperref[def:propositional_alphabet/connectives/conditional]{conditional connective} \( \synimplies \).
 \end{definition}
+\begin{comments}
+  \item We can retain the logical constants, but then we would face the dilemma of how to interpret \( \synbot \) when minimal semantics is involved; see \cref{rem:minimal_semantics_and_bottom}.
+\end{comments}
 
 \begin{definition}\label{def:minimal_implication_logic}\mcite[sec. 1.3.9]{TroelstraSchwichtenberg2000BasicProofTheory}
   \term{Minimal implicational logic} is an extraordinarily simple \hyperref[def:propositional_axiomatic_derivation_system]{axiomatic derivation system} for the \hyperref[def:implicational_propositional_fragment]{implicational fragment} of propositional logic.
@@ -278,7 +298,7 @@ Implicational logic is both a toy derivation system we will explore and a useful
 \begin{proof}
   \SubProof{Proof for logical axioms} We must first prove that the logical axioms are \hyperref[def:propositional_tautology]{semantic tautologies}.
 
-  \SubProof*{Proof for axiom schema \eqref{eq:def:minimal_implication_logic/intro}} Consider the formula \( \varphi = \psi \synimplies (\theta \synimplies \psi) \) and an arbitrary \hyperref[def:propositional_valuation]{propositional interpretation} \( I \).
+  \SubProof*{Proof for axiom schema \eqref{eq:def:minimal_implication_logic/intro}} Consider the formula \( \varphi = \psi \synimplies (\theta \synimplies \psi) \) and an arbitrary \hyperref[def:propositional_denotation]{propositional interpretation} \( I \).
 
   \Cref{thm:def:heyting_algebra/leq_right} implies that
   \begin{equation*}
