@@ -67,10 +67,6 @@ def euclidean_divmod[P: IRingPolynomial](f: P, g: P, indet: str) -> DivMod[P]:
         raise PolynomialDivisionError(f'Expected either polynomials over a field or a monic divisor, got {str(g)!r}')
 
     g_lead_inv = scalar_one / g_lead if isinstance(g, IFieldPolynomial) else scalar_one
-
-    if g.total_degree == 0:
-        return DivMod(g_lead_inv * f, zero)
-
     indet_pol = cls.from_monomial(Monomial.from_indeterminate(indet))
     leveling_term = (g_lead_inv * f_lead) * indet_pol ** (f_deg - g_deg)
     r_ = f - leveling_term * g

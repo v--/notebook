@@ -2,9 +2,9 @@
 
 We will discuss here the \hyperref[def:polynomial_algebra]{polynomial algebra} \( R[X] \) in one indeterminate over the \hyperref[def:ring/trivial]{nontrivial} \hyperref[def:ring/commutative]{commutative unital ring} \( R \). We call them \term{univariate polynomials} based on \cref{def:operation_arity_terminology}, although we acknowledge the polynomials are not functions. \Cref{rem:polynomials_over_infinitely_many_indeterminates} discusses why we often focus only on finitely many indeterminates, and why the theory of univariate polynomials is often sufficient.
 
-Polynomials are not functions in general, and the exact relationship between polynomials and polynomial functions is discussed in \fullref{thm:polynomial_algebra_universal_property} and \cref{thm:functions_over_finite_fields}.
+Polynomials do not exactly correspond to polynomial functions in general, and the exact relationship between polynomials and polynomial functions is discussed in \fullref{thm:polynomial_algebra_universal_property} and \cref{thm:functions_over_finite_fields}.
 
-\paragraph{Univariate polynomials}
+\paragraph{Euclidean division of polynomials}
 
 \begin{definition}\label{def:monic_polynomial}
   We say that the nonzero univariate polynomial is \term[bg=нормиран (\cite[409]{Обрешков1962ВисшаАлгебра}), ru=нормированный/приведенный (\cite[102]{Винберг2014КурсАлгебры})]{monic} if its leading coefficient is \( 1 \).
@@ -13,19 +13,21 @@ Polynomials are not functions in general, and the exact relationship between pol
 \begin{proposition}\label{thm:polynomial_degree_arithmetic}
   The \hyperref[def:polynomial_degree]{polynomial degree} has the following basic properties:
   \begin{thmenum}
-    \thmitem{thm:polynomial_degree_arithmetic/sum} For any two nonzero polynomials satisfying \( f(X) \neq -g(X) \), we have
+    \thmitem{thm:polynomial_degree_arithmetic/sum} For any two nonzero polynomials \( f(X) \) and \( g(X) \), either their sum is zero or
     \begin{equation}\label{eq:thm:polynomial_degree_arithmetic/sum}
       \deg (f + g) \leq \max \set{ \deg f, \deg g }.
     \end{equation}
 
-    \thmitem{thm:polynomial_degree_arithmetic/product} For any two nonzero polynomials \( f(X) \) and \( g(X) \) whose leading coefficients do not multiply to zero, we have
+    \thmitem{thm:polynomial_degree_arithmetic/product} For any two nonzero polynomials \( f(X) \) and \( g(X) \), either their product is zero or
     \begin{equation}\label{eq:thm:polynomial_degree_arithmetic/product}
-      \deg (fg) = \deg f + \deg g.
+      \deg (fg) \leq \deg f + \deg g.
     \end{equation}
+
+    If the leading coefficients of \( f(X) \) and \( g(X) \) do not multiply to zero, then equality in \eqref{eq:thm:polynomial_degree_arithmetic/product} holds.
   \end{thmenum}
 \end{proposition}
 \begin{comments}
-  \item An easy sufficient condition for \eqref{eq:thm:polynomial_degree_arithmetic/product} is for the ring to be \hyperref[def:entire_semiring]{entire}, although it is also sufficient for the ring to be nontrivial (so that \( 0_R \neq 1_R \)) and either \( f(X) \) or \( g(X) \) to be \hyperref[def:monic_polynomial]{monic}.
+  \item An easy sufficient condition for equality in \eqref{eq:thm:polynomial_degree_arithmetic/product} is for the semiring to be \hyperref[def:entire_semiring]{entire}, although it is also sufficient for the ring to be nontrivial (so that \( 0_R \neq 1_R \)) and either \( f(X) \) or \( g(X) \) to be \hyperref[def:monic_polynomial]{monic}.
 
   \item We generalize a weaker statement for multivariate polynomials in \cref{thm:degree_of_multivariate_polynomial_product}.
 \end{comments}
@@ -38,17 +40,14 @@ Polynomials are not functions in general, and the exact relationship between pol
 
   \SubProofOf{thm:polynomial_degree_arithmetic/sum} Additionally assume that \( f(X) \neq -g(X) \) since otherwise \( f(X) + g(X) = 0 \) and \( \deg(f + g) \) is undefined.
 
-  Since the polynomials are not equal, there exists at least one index \( k = 1, 2, \ldots \) such that \( a_k \neq b_k \). Denote by \( k_0 \) the largest such index (only finitely many are nonzero). Then
+  Since the polynomials are not equal, there exists at least one index \( k = 0, 1, 2, \ldots \) such that \( a_k \neq b_k \). Denote by \( k_0 \) the largest such index (only finitely many are nonzero). Then
   \begin{equation*}
-    a_k - b_k = 0 \T{for} k > k_0.
+    a_k - b_k = 0 \T{whenever} k > k_0.
   \end{equation*}
 
   Therefore, \( \deg(f + g) = k_0 \). Note that \( k_0 \) cannot exceed both \( \deg f \) and \( \deg g \) because it corresponds to a nonzero coefficient in both. Thus, \( k_0 \leq \max\set{ \deg f, \deg g } \).
 
-  \SubProofOf{thm:polynomial_degree_arithmetic/product} The coefficient \( c_{n + m} \) of the product \( f(X) g(X) \) is \( a_n b_m \) by definition. By assumption, it is nonzero. Then, since \( c_{n+m+1} = 0 \), we have
-  \begin{equation*}
-    \deg (fg) = \deg f + \deg g.
-  \end{equation*}
+  \SubProofOf{thm:polynomial_degree_arithmetic/product} Suppose that the product \( f(X) g(X) \) is nonzero. The coefficient \( c_{n + m} \) of \( f(X) g(X) \) is \( a_n b_m \) by definition. For \( k > n + m \), if \( i + j = k \), either \( i > n \) or \( j > m \), so \( c_k \) is zero. In other words, either \( c_{n + m} \) is zero or is last nonzero coefficient of \( f(X) g(X) \).
 \end{proof}
 
 \begin{corollary}\label{thm:leading_coefficient_of_product}
@@ -64,114 +63,100 @@ Polynomials are not functions in general, and the exact relationship between pol
   By definition of convolution product, the \( (n + m) \)-th coefficient of \( f(X) g(X) \) is \( a_n b_m \). \Cref{thm:polynomial_degree_arithmetic/product} implies that this is their leading coefficient.
 \end{proof}
 
-\begin{algorithm}[Euclidean division of polynomials]\label{alg:euclidean_division_of_polynomials}\mcite[prop. 1.12]{Knapp2016BasicAlgebra}
-  Fix two univariate polynomials \( f(X) \) and \( g(X) \), and assume that \( g(X) \) is \hyperref[def:monic_polynomial]{monic}.
+\begin{algorithm}[Euclidean division of polynomials]\label{alg:euclidean_division_of_polynomials}
+  In a commutative ring \( R \), fix two univariate polynomials
+  \begin{align*}
+    f(X) = \sum_{k=0}^n a_k X^k, &&
+    g(X) = \sum_{k=0}^m b_k X^k.
+  \end{align*}
 
-  We will build polynomials \( q(X) \) and \( r(X) \), where \( r(X) \) is either zero or \( \deg r < \deg g \), such that
+  Suppose that \( g(X) \) is \hyperref[def:monic_polynomial]{monic}, i.e. \( b_m = 1_R \). We will build polynomials \( q(X) \) and \( r(X) \), where \( r(X) \) is either zero or \( \deg r < \deg g = m \), such that
   \begin{equation*}
     f(X) = g(X) \cdot q(X) + r(X).
   \end{equation*}
 
-  The algorithm only demonstrates existence; we will prove uniqueness right after it.
-
   \begin{thmenum}
-    \thmitem{alg:euclidean_division_of_polynomials/zero_degree} If \( \deg f = \deg g = 0 \), necessarily \( g(X) = 1_R \), and in this case we define
+    \thmitem{alg:euclidean_division_of_polynomials/zero} If \( f(X) \) is the zero polynomial, let
     \begin{align*}
-      q(X) &\coloneqq f(X), \\
-      r(X) &\coloneqq 0_R.
+      q(X) \coloneqq 0_R, &&
+      r(X) \coloneqq 0_R.
     \end{align*}
 
-    \thmitem{alg:euclidean_division_of_polynomials/no_division} If \( f(X) \) is the zero polynomial or \( \deg f < \deg g \), define
+    \thmitem{alg:euclidean_division_of_polynomials/no_division} Otherwise, if \( \deg f = n < m = \deg g \), let
     \begin{align*}
-      q(X) &\coloneqq 0_R, \\
-      r(X) &\coloneqq f(X).
+      q(X) \coloneqq 0_R, &&
+      r(X) \coloneqq f(X).
     \end{align*}
 
-    In this case, \( r(X) \) is either zero or \( \deg r = \deg f < \deg b \).
+    \thmitem{alg:euclidean_division_of_polynomials/division} Otherwise, \( \deg f = n \geq m = \deg g \). Let
+    \begin{equation*}
+      \widehat r(X) \coloneqq f(X) - a_n X^{n-m} \cdot g(X).
+    \end{equation*}
 
-    \thmitem{alg:euclidean_division_of_polynomials/positive_degree} Suppose that
-    \begin{align*}
-      f(X) = a_n X^n + \hat f(X), \\
-      g(X) = X^m + \hat g(X),
-    \end{align*}
-    where \( n \) and \( m \) are positive, \( \hat f(X) \) is either zero or \( \deg \hat f < \deg f \), and similarly for \( \deg \hat g \).
+    We use the algorithm recursively to divide \( \widehat r(X) \) by \( g(X) \), and obtain \( \widehat q(X) \) and \( r(X) \), where \( r(X) \) is either zero or of lower degree than \( g \), such that
+    \begin{equation*}
+      \widehat r(X) = g(X) \cdot \widehat q(X) + r(X).
+    \end{equation*}
 
     Then
     \begin{align*}
-    f(X) - g(X) a_n X^{n-m}
-    &=
-    a_n X^n + \hat f(X) - (b_m X^m + \hat g(X)) a_n X^{n-m}
-    = \\ &=
-    a_n X^n + \hat f(X) - a_n X^n - \hat g(X) a_n X^{n-m}
-    = \\ &=
-    \underbrace{\hat f(X) - \hat g(X) a_n X^{n-m}}_{\hat r(X)}.
+      \widehat r(X)                                                  &= f(X) - a_n X^{n-m} \cdot g(X), \\
+      g(X) \cdot \widehat q(X) + r(X)                                &= f(X) - a_n X^{n-m} \cdot g(X), \\
+      g(X) \cdot \parens[\big]{ \widehat q(X) + a_n X^{n-m} } + r(X) &= f(X).
     \end{align*}
 
-    The polynomial \( \hat r(X) \) is either zero, in which case we define \( r(X) \coloneqq \hat r(X) \), or \( \deg \hat r \leq n - 1 \).
-
-    We use the algorithm recursively to divide \( \hat r(X) \) by \( g(X) \), and obtain \( \hat q(X) \) and \( r(X) \) such that
+    It remains to define
     \begin{equation*}
-      \hat r(X) \coloneqq g(X) \hat q(X) + r(X),
+      q(X) \coloneqq \widehat q(X) + a_n X^{n-m}.
     \end{equation*}
-    where \( r(X) \) is either zero or \( \deg r < \deg g \).
-
-    Then
-    \begin{align*}
-      \hat r(X)                                         &= f(X) - g(X) a_n X^{n-m} \\
-      g(X) \hat q(X) + r(X)                             &= f(X) - g(X) a_n X^{n-m} \\
-      g(X) \left(\hat q(X) + a_n X^{n-m} \right) + r(X) &= f(X).
-    \end{align*}
-
-    Define
-    \begin{equation*}
-      q(X) \coloneqq \hat q(X) + a_n X^{n-m}.
-    \end{equation*}
-
-    We have obtained polynomials \( r(X) \) and \( q(X) \) where \( r(X) \) is either zero or \( \deg r < \deg g \).
   \end{thmenum}
 \end{algorithm}
 \begin{comments}
-  \item This algorithm can be found as \identifier{math.polynomials.univariate.euclidean_divmod} in \cite{notebook:code}.
+  \item In general \( q(X) \) and \( r(X) \) are not unique. This is discussed in \cref{ex:polynomial_root_uniqueness}. In \hyperref[def:integral_domain]{integral domains}, uniqueness follows from \cref{thm:polynomial_euclidean_division_uniqueness}.
+
+  \item This algorithm can be found as \identifier{math.polynomials.euclidean_divmod} in \cite{notebook:code}.
 \end{comments}
 \begin{defproof}
-  \UniquenessSubProof Suppose that
-  \begin{equation*}
-    a(X) = g(X)q(X) + r(X) = g(X) \widetilde{q}(X) + \widetilde{r}(X),
-  \end{equation*}
-  where \( r(X) \) and \( \widetilde{r}(X) \) are either zero or have degree less than \( g(X) \).
-
-  Assume that \( r(X) \neq \widetilde{r}(X) \).
+  We only need to show that the algorithm terminates. This is clear if \( f(X) \) is zero. Otherwise, we will do this by induction on the degree \( n \) of \( f(X) \).
 
   \begin{itemize}
-    \item If both \( r(X) \) and \( \widetilde{r}(X) \) are nonzero, we have
+    \item If \( n = 0 \), either \( m > 0 \) and the algorithm terminates at \cref{alg:euclidean_division_of_polynomials/no_division}, or \( m = 0 \) and we use the recursive step \cref{alg:euclidean_division_of_polynomials/division}.
+
+    In the latter case, \( \widehat r(X) \) evaluates to \( 0_R \), so the recursive application uses \cref{alg:euclidean_division_of_polynomials/zero} and then the algorithm terminates.
+
+    \item Suppose that \( n > 0 \) and that the inductive hypothesis holds for \( n - 1 \).
+
+    Again, we use either \cref{alg:euclidean_division_of_polynomials/no_division} or the recursive step \cref{alg:euclidean_division_of_polynomials/division}.
+
+    In the latter case, to use the inductive hypothesis, we only need to show that \( \widehat r(X) \) is either zero or has degree lower than \( n \). Let
+    \begin{align*}
+      \widehat f(X) &\coloneqq f(X) - a_n X^n, \\
+      \widehat g(X) &\coloneqq g(X) - X^m.
+    \end{align*}
+
+    Clearly \( \deg \widehat f < n \) and \( \deg \widehat g < m \). Moreover,
     \begin{equation*}
-      g(X) \parens[\Big]{ q(X) - \widetilde{q}(X) } = -\parens[\Big]{ r(X) - \widetilde{r}(X) }.
+      \widehat r(X) = \widehat f(X) - a_n X^{n-m} \cdot \widehat g(X).
     \end{equation*}
 
-    Since \( g(X) \) is monic and its leading coefficient \( 1_R \) is not a zero divisor, \cref{thm:polynomial_degree_arithmetic/product} holds, and thus
+    If \( \widehat r(X) \) is not zero, then
     \begin{equation*}
-      \deg g + \deg(q - \widetilde{q})
-      \reloset {\eqref{eq:thm:polynomial_degree_arithmetic/product}} =
-      \deg(g (q - \widetilde{q}))
+      \deg \widehat r
+      \reloset {\eqref{eq:thm:polynomial_degree_arithmetic/sum}} \leq
+      \max\set{ \deg \widehat f, n - 1 }
       =
-      \deg(r - \widetilde{r})
-      \reloset {\eqref{eq:thm:polynomial_degree_arithmetic/sum}} =
-      \leq \max\set{ \deg r, \deg \widetilde{r} }
-      <
-      \deg g,
+      n - 1
     \end{equation*}
-    which is a contradiction.
-
-    \item If \( r(X) \) is zero but \( \widetilde{r}(X) \) is not, then
+    because
     \begin{equation*}
-      g(X) q(X) = g(X) \widetilde{q}(X) + \widetilde{r}(X),
+      \deg(a_n X^{n-m} \cdot \widehat g(X))
+      \reloset {\eqref{eq:thm:polynomial_degree_arithmetic/product}} =
+      (n - m) + \deg \widehat g
+      \leq
+      (n - m) + (m - 1)
+      =
+      n - 1.
     \end{equation*}
-    implying that
-    \begin{equation*}
-      \widetilde{r}(X) = g(X) \parens[\Big]{ q(X) - \widetilde{q}(X) }.
-    \end{equation*}
-
-    By \eqref{thm:polynomial_degree_arithmetic/product}, \( \deg g \leq \widetilde{r} \), which contradicts our choice of \( \widetilde{r}(X) \).
   \end{itemize}
 \end{defproof}
 
@@ -193,7 +178,7 @@ Polynomials are not functions in general, and the exact relationship between pol
     \end{cases}
   \end{equation}
 
-  Furthermore, \( r(X) \) is a constant that can be obtained from the above as
+  Furthermore, \( r(X) \) is a constant that equals
   \begin{equation}\label{eq:alg:horners_rule/rem}
     c_{-1} = a_0 - b \cdot c_0.
   \end{equation}
@@ -241,7 +226,7 @@ Polynomials are not functions in general, and the exact relationship between pol
 \paragraph{\( n \)-th roots}
 
 \begin{definition}\label{def:nth_root}\mimprovised
-  In a \hyperref[def:ring/commutative]{commutative ring}, for \( n \geq 2 \), we say that an element is an \term{\( n \)-th root} of \( a \) if it is a \hyperref[def:root_of_polynomial]{polynomial root} of \( X^n - a \).
+  In a \hyperref[def:ring/commutative]{commutative ring}, for \( n \geq 2 \), we say that an element is an \term{\( n \)-th root} of \( a \) if it is a \hyperref[def:polynomial_root]{polynomial root} of \( X^n - a \).
 
   We use the prefixes from the polynomial degree terminology described in \cref{def:polynomial_degree_terminology}, with one modification --- instead of \enquote{quadratic root}, we say \enquote{square root}.
 
@@ -269,13 +254,13 @@ Polynomials are not functions in general, and the exact relationship between pol
   \begin{itemize}
     \item The \( n \)-th root in the sense of \cref{def:nth_root}. The discussion in \cite{HSMSE:radical_symbol_history} suggests that this is the origin of the terms \enquote{root} and \enquote{radical}, based on the Latin \enquote{radix}.
 
-    There is inherent ambiguity in pick \enquote{the} root, since there may be many. For positive real numbers we have an established canonical choice of \( n \)-th roots, which we call \enquote{principal roots}, and for negative real numbers --- of square roots.
+    There is inherent ambiguity in picking \enquote{the} root, since there may be many. For positive real numbers we have an established canonical choice of \( n \)-th roots, which we call \enquote{principal roots}, and for negative real numbers --- of square roots.
 
-    \item The \hyperref[def:equation/solution]{solutions} of an \hyperref[def:algebraic_equation]{algebraic equation} are also called \enquote{roots}. An explicit definition of this usage can be found in \incite[2]{Обрешков1962ВисшаАлгебра}.
+    \item The \hyperref[def:equation/solution]{solutions} of an \hyperref[def:algebraic_equation]{algebraic equation} are also called \enquote{roots}. An explicit definition with this usage can be found in \incite[2]{Обрешков1962ВисшаАлгебра}.
 
     As noted in \cref{def:algebraic_equation}, polynomials naturally arise from equations on rings, thus it makes sense for this usage to predate polynomials.
 
-    \item From a modern perspective, both are encompassed by roots of polynomials as defined in \cref{def:root_of_polynomial}. Roots are zeros in the sense of \cref{def:zero_of_function} of a fixed polynomial function. For \hyperref[def:univariate_polynomial]{univariate polynomials} \cref{def:multiple_root} provides a characterization in terms of divisibility, as well as a concept of \enquote{multiplicity} of a root.
+    \item From a modern perspective, both are encompassed by roots of polynomials as defined in \cref{def:polynomial_root}. Roots are zeros in the sense of \cref{def:zero_of_function} of a fixed polynomial function. For \hyperref[def:univariate_polynomial]{univariate polynomials}, \cref{def:polynomial_root_multiplicity} provides a characterization in terms of divisibility, as well as a concept of \enquote{multiplicity} of a root.
 
     A \enquote{root} is defined as a zero of a univariate polynomial by
     \incite[282]{Aluffi2009Algebra},
@@ -382,25 +367,23 @@ Polynomials are not functions in general, and the exact relationship between pol
   \end{equation*}
 \end{proof}
 
-\begin{definition}\label{def:multiple_root}\mimprovised
+\begin{definition}\label{def:polynomial_root_multiplicity}\mimprovised
   Let \( R \) be a nontrivial commutative ring.
 
-  We say that the \hyperref[def:root_of_polynomial]{root} \( \alpha \) of the univariate polynomial \( f(X) \) of degree \( n \) has \term[bg=кратност (\cite[171]{Обрешков1962ВисшаАлгебра}), ru=кратность (\cite[163]{Тыртышников2017ОсновыАлгебры}), en=multiplicity (\cite[229]{Jacobson1985BasicAlgebraI})]{multiplicity} \( m \) if any of the following equivalent conditions hold:
+  We say that the \hyperref[def:polynomial_root]{root} \( \alpha \) of the univariate polynomial \( f(X) \) of degree \( n \) has \term[bg=кратност (\cite[171]{Обрешков1962ВисшаАлгебра}), ru=кратность (\cite[163]{Тыртышников2017ОсновыАлгебры}), en=multiplicity (\cite[229]{Jacobson1985BasicAlgebraI})]{multiplicity} \( m \) if any of the following equivalent conditions hold:
   \begin{thmenum}
-    \thmitem{def:multiple_root/division}\mcite[163]{Тыртышников2017ОсновыАлгебры} The polynomial \( (X - \alpha)^m \) divides \( f(X) \).
+    \thmitem{def:polynomial_root_multiplicity/division}\mcite[163]{Тыртышников2017ОсновыАлгебры} The polynomial \( (X - \alpha)^m \) divides \( f(X) \).
 
-    \thmitem{def:multiple_root/derivative_roots} The value \( \alpha \) is a \hyperref[def:root_of_polynomial]{zero} of the \hyperref[def:algebraic_derivative]{algebraic derivatives} \( f^{(0)}(X), f^{(1)}(X), \ldots, f^{(m-1)}(X) \).
+    \thmitem{def:polynomial_root_multiplicity/derivative_roots} The value \( \alpha \) is a \hyperref[def:polynomial_root]{root} of the \hyperref[def:algebraic_derivative]{algebraic derivatives} \( f^{(0)}(X), f^{(1)}(X), \ldots, f^{(m-1)}(X) \).
   \end{thmenum}
 
   Every polynomial \( f(X) \) has a \hyperref[def:multiset]{multiset} of roots. If at least one of them has multiplicity greater than one, we say that it is a \term[bg=многократен (корен) (\cite[171]{Обрешков1962ВисшаАлгебра}), ru=кратный (корень) (\cite[163]{Тыртышников2017ОсновыАлгебры}), en=multiple root (\cite[229]{Jacobson1985BasicAlgebraI})]{multiple root}, otherwise we say that it is a \term[bg=прост корен (\cite[171]{Обрешков1962ВисшаАлгебра}), ru=простой корень (\cite[163]{Тыртышников2017ОсновыАлгебры}), en=simple root (\cite[229]{Jacobson1985BasicAlgebraI})]{simple root}.
 \end{definition}
 \begin{comments}
-  \item This is an extension of the general concept of polynomial roots discussed in \cref{def:root_of_polynomial}.
-
-  \item The equivalence between \( (X - \alpha) \) dividing \( f(X) \) and \( f(\alpha) \) being zero is called the \enquote{factor theorem} by \incite[corr. 1.13]{Knapp2016BasicAlgebra}.
+  \item This is an extension of the general concept of polynomial roots discussed in \cref{def:polynomial_root}.
 \end{comments}
 \begin{defproof}
-  \ImplicationSubProof{def:multiple_root/division}{def:multiple_root/derivative_roots} Suppose that \( (X - \alpha)^m \) divides \( f(X) \). Then there exists a polynomial \( g(X) \) such that
+  \ImplicationSubProof{def:polynomial_root_multiplicity/division}{def:polynomial_root_multiplicity/derivative_roots} Suppose that \( (X - \alpha)^m \) divides \( f(X) \). Then there exists a polynomial \( g(X) \) such that
   \begin{equation*}
     f(X) = (X - \alpha)^m g(X).
   \end{equation*}
@@ -417,7 +400,7 @@ Polynomials are not functions in general, and the exact relationship between pol
 
   For \( n < m \), clearly \( \Phi_\alpha(f^{(n)}) = 0_R \).
 
-  \ImplicationSubProof{def:multiple_root/derivative_roots}{def:multiple_root/division} Suppose that \( \alpha \) is a root of \( f^{(0)}(X), \ldots, f^{(m-1)}(X) \). We will use induction on \( m \) to show that \( (X - \alpha)^m \mid f(X) \).
+  \ImplicationSubProof{def:polynomial_root_multiplicity/derivative_roots}{def:polynomial_root_multiplicity/division} Suppose that \( \alpha \) is a root of \( f^{(0)}(X), \ldots, f^{(m-1)}(X) \). We will use induction on \( m \) to show that \( (X - \alpha)^m \mid f(X) \).
 
   The case \( m = 0 \) is trivial. Suppose that \( \alpha \) is root of \( f^{(0)}(X), \ldots, f^{(m-1)}(X) \) and that \( (X - \alpha)^{m-1} \) divides \( f(X) \). Additionally suppose that \( \alpha \) is a root of \( f^{(m)}(X) \).
 
@@ -448,3 +431,10 @@ Polynomials are not functions in general, and the exact relationship between pol
     f(X) = (X - \alpha)^{m-1} g(X) = (X - \alpha)^m s(X).
   \end{equation*}
 \end{defproof}
+
+\begin{theorem}[Polynomial factor theorem]\label{thm:polynomial_factor_theorem}\mcite[corr. 2.2]{Jacobson1985BasicAlgebraI}
+  Over a nontrivial commutative ring, the value \( \alpha \) is a \hyperref[def:polynomial_root]{root} of the univariate polynomial \( f(X) \) if and only if \( (X - \alpha) \) divides \( f(X) \).
+\end{theorem}
+\begin{proof}
+  Special case of the equivalence of definitions in \cref{def:polynomial_root_multiplicity}.
+\end{proof}
