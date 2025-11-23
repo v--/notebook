@@ -309,7 +309,7 @@ class FormalLogicParser(IdentifierParserMixin[LogicTokenKind, LogicToken], Parse
     def parse_formula(self, *, parse_schema: Literal[True]) -> FormulaSchema: ...
     @overload
     def parse_formula(self, *, parse_schema: bool) -> Formula | FormulaSchema: ...
-    def parse_formula(self, *, parse_schema: bool) -> Formula | FormulaSchema:
+    def parse_formula(self, *, parse_schema: bool) -> Formula | FormulaSchema:  # noqa: C901
         head = self.peek()
 
         if not head:

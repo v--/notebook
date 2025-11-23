@@ -5,7 +5,7 @@ from ...logic.alphabet import BinaryConnective, PropConstant
 from ...logic.classical_logic import CLASSICAL_NATURAL_DEDUCTION_SYSTEM
 from ...logic.deduction import Marker, NaturalDeductionRule
 from ...logic.deduction import proof_tree as ptree
-from ...logic.formulas import ConnectiveFormula, ConstantFormula, Formula, FormulaPlaceholder, PredicateFormula
+from ...logic.formulas import ConnectiveFormula, ConstantFormula, Formula, FormulaPlaceholder, PredicateApplication
 from ...logic.instantiation import FormalLogicSchemaInstantiation
 from ..algebraic_types import SIMPLE_ALGEBRAIC_TYPE_SYSTEM
 from ..alphabet import BinaryTypeConnective
@@ -43,11 +43,11 @@ class TypeToFormulaVisitor(TypeVisitor[Formula]):
                 raise DerivationToProofError(f'Unrecognized base type {type_!r}')
 
     @override
-    def visit_variable(self, type_: TypeVariable) -> PredicateFormula:
+    def visit_variable(self, type_: TypeVariable) -> PredicateApplication:
         # We have not implemented a dedicated syntax for propositional logic
         # We treat propositional variables as nullary predicates
         # As per rem:curry_howard_variables, we adjust our predicates so that they match the syntax of type variables
-        return PredicateFormula(str(type_.identifier), arguments=[])
+        return PredicateApplication(str(type_.identifier), arguments=[])
 
     @override
     def visit_connective(self, type_: SimpleConnectiveType) -> ConnectiveFormula:

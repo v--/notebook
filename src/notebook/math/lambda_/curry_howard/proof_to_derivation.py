@@ -11,7 +11,7 @@ from ...logic.formulas import (
     Formula,
     FormulaPlaceholder,
     FormulaVisitor,
-    PredicateFormula,
+    PredicateApplication,
 )
 from ...logic.instantiation import FormalLogicSchemaInstantiation
 from ..algebraic_types import SIMPLE_ALGEBRAIC_TYPE_SYSTEM
@@ -49,7 +49,7 @@ def formula_connective_to_type_connective(conn: BinaryConnective) -> BinaryTypeC
 
 class FormulaToTypeVisitor(FormulaVisitor[SimpleType]):
     @override
-    def visit_constant(self, formula: ConstantFormula) -> BaseType:
+    def visit_logical_constant(self, formula: ConstantFormula) -> BaseType:
         match formula.value:
             case PropConstant.VERUM:
                 return BaseType('𝟙')
@@ -58,7 +58,7 @@ class FormulaToTypeVisitor(FormulaVisitor[SimpleType]):
                 return BaseType('𝟘')
 
     @override
-    def visit_predicate(self, formula: PredicateFormula) -> TypeVariable:
+    def visit_predicate(self, formula: PredicateApplication) -> TypeVariable:
         if len(formula.arguments) > 0:
             raise ProofToDerivationError('Only nullary predicates can be converted to types')
 

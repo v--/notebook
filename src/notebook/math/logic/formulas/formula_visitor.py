@@ -1,4 +1,5 @@
 from typing import override
+
 from .formulas import (
     ConnectiveFormula,
     ConstantFormula,
@@ -14,7 +15,7 @@ class FormulaVisitor[T]:
     def visit(self, formula: Formula) -> T:
         match formula:
             case ConstantFormula():
-                return self.visit_constant(formula)
+                return self.visit_logical_constant(formula)
 
             case EqualityFormula():
                 return self.visit_equality(formula)

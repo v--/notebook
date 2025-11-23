@@ -1,8 +1,8 @@
 import pytest
 
-from .parsing import parse_term, parse_formula
+from .parsing import parse_formula, parse_term
 from .signature import FormalLogicSignature
-from .signature_translation import SignatureTranslation, SignatureTranslationError, translate_term, translate_formula
+from .signature_translation import SignatureTranslation, SignatureTranslationError, translate_formula, translate_term
 
 
 def test_translation_kind_mismatch(dummy_signature: FormalLogicSignature) -> None:

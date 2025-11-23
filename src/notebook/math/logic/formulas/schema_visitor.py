@@ -14,7 +14,7 @@ class FormulaSchemaVisitor[T]:
     def visit(self, schema: FormulaSchema) -> T:
         match schema:
             case ConstantFormula():
-                return self.visit_constant(schema)
+                return self.visit_logical_constant(schema)
 
             case EqualityFormulaSchema():
                 return self.visit_equality(schema)
