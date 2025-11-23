@@ -186,90 +186,79 @@ class FormalLogicParser(IdentifierParserMixin[LogicTokenKind, LogicToken], Parse
         )
 
     @overload
-    def _parse_binary_formula(self, context: LogicParserContext, *, parse_schema: Literal[False]) -> EqualityFormula | ConnectiveFormula: ...
+    def _parse_equality_formula(self, context: LogicParserContext, *, parse_schema: Literal[False]) -> EqualityFormula: ...
     @overload
-    def _parse_binary_formula(self, context: LogicParserContext, *, parse_schema: Literal[True]) -> EqualityFormulaSchema | ConnectiveFormulaSchema: ...
+    def _parse_equality_formula(self, context: LogicParserContext, *, parse_schema: Literal[True]) -> EqualityFormulaSchema: ...
     @overload
-    def _parse_binary_formula(self, context: LogicParserContext, *, parse_schema: bool) -> EqualityFormula | EqualityFormulaSchema | ConnectiveFormula | ConnectiveFormulaSchema: ...
-    def _parse_binary_formula(self, context: LogicParserContext, *, parse_schema: bool) -> EqualityFormula | EqualityFormulaSchema | ConnectiveFormula | ConnectiveFormulaSchema:
-        head = self.advance_and_peek()
-
-        if not head:
-            raise self.annotate_unexpected_end_of_input()
-
+    def _parse_equality_formula(self, context: LogicParserContext, *, parse_schema: bool) -> EqualityFormula | EqualityFormulaSchema: ...
+    def _parse_equality_formula(self, context: LogicParserContext, *, parse_schema: bool) -> EqualityFormula | EqualityFormulaSchema:
         a_context = LogicParserContext(self)
-        a_term: Term | TermSchema | None = None
-        a_form: Formula | FormulaSchema | None = None
-
-        if head.kind == 'LATIN_IDENTIFIER' or (head.kind == 'SIGNATURE_SYMBOL' and self.signature.get_symbol(head.value).kind == 'FUNCTION'):
-            a_term = self.parse_term(parse_schema=parse_schema)
-        else:
-            a_form = self.parse_formula(parse_schema=parse_schema)
-
+        a_term = self.parse_term(parse_schema=parse_schema)
         a_context.close_at_previous_token()
         head = self.peek()
 
-        if head and head.kind == 'EQUALITY':
-            if a_term is None:
-                raise a_context.annotate_context_error(f'The left side of an equality {'formula schema' if parse_schema else 'formula'} must be a term')
+        if not head or head.kind != 'EQUALITY':
+            raise context.annotate_context_error(f'Equality {'formula schema' if parse_schema else 'formula'} must have an equality symbol after the first term')
 
-            head = self.advance_and_peek()
+        head = self.advance_and_peek()
 
-            if not head:
-                raise context.annotate_context_error(f'Unclosed parentheses for equality {'formula schema' if parse_schema else 'formula'}')
+        if not head or head.kind == 'RIGHT_PARENTHESIS':
+            raise context.annotate_context_error(f'Equality {'formula schemas' if parse_schema else 'formulas'} must have a second term')
 
-            if head.kind == 'RIGHT_PARENTHESIS':
-                raise context.annotate_context_error(f'Equality {'formula schemas' if parse_schema else 'formulas'} must have a second term')
+        b_term = self.parse_term(parse_schema=parse_schema)
+        head = self.peek()
 
-            b_term = self.parse_term(parse_schema=parse_schema)
+        if not head or head.kind != 'RIGHT_PARENTHESIS':
+            raise context.annotate_context_error(f'Equality {'formula schemas' if parse_schema else 'formulas'} must have a closing parenthesis')
 
-            if (head := self.peek()) and head.kind == 'RIGHT_PARENTHESIS':
-                self.advance()
+        self.advance()
 
-                if parse_schema:
-                    assert isinstance(a_term, TermSchema)
-                    assert isinstance(b_term, TermSchema)
-                    return EqualityFormulaSchema(a_term, b_term)
+        if parse_schema:
+            assert isinstance(a_term, TermSchema)
+            assert isinstance(b_term, TermSchema)
+            return EqualityFormulaSchema(a_term, b_term)
 
-                assert isinstance(a_term, Term)
-                assert isinstance(b_term, Term)
-                return EqualityFormula(a_term, b_term)
+        assert isinstance(a_term, Term)
+        assert isinstance(b_term, Term)
+        return EqualityFormula(a_term, b_term)
 
-            context.close_at_previous_token()
-            raise context.annotate_context_error(f'Unclosed parentheses for equality {'formula schema' if parse_schema else 'formula'}')
+    @overload
+    def _parse_connective_formula(self, context: LogicParserContext, *, parse_schema: Literal[False]) -> ConnectiveFormula: ...
+    @overload
+    def _parse_connective_formula(self, context: LogicParserContext, *, parse_schema: Literal[True]) -> ConnectiveFormulaSchema: ...
+    @overload
+    def _parse_connective_formula(self, context: LogicParserContext, *, parse_schema: bool) -> ConnectiveFormula | ConnectiveFormulaSchema: ...
+    def _parse_connective_formula(self, context: LogicParserContext, *, parse_schema: bool) -> ConnectiveFormula | ConnectiveFormulaSchema:
+        a_context = LogicParserContext(self)
+        a_form = self.parse_formula(parse_schema=parse_schema)
+        a_context.close_at_previous_token()
+        head = self.peek()
 
-        if head and head.kind == 'BINARY_CONNECTIVE':
-            connective = BinaryConnective(head.value)
+        if not head or head.kind != 'BINARY_CONNECTIVE':
+            raise context.annotate_context_error(f'Binary {'formula schema' if parse_schema else 'formula'} must have a connective after the first subformula')
 
-            if a_form is None:
-                raise a_context.annotate_context_error(f'The left side of a binary {'formula schema' if parse_schema else 'formula'} must be a {'formula schema' if parse_schema else 'formula'}')
+        connective = BinaryConnective(head.value)
+        head = self.advance_and_peek()
 
-            head = self.advance_and_peek()
+        if not head or head.kind == 'RIGHT_PARENTHESIS':
+            raise context.annotate_context_error(f'Binary {'formula schemas' if parse_schema else 'formulas'} must have a second subformula')
 
-            if not head:
-                raise context.annotate_context_error(f'Unclosed parentheses for binary {'formula schema' if parse_schema else 'formula'}')
+        b_form = self.parse_formula(parse_schema=parse_schema)
+        head = self.peek()
 
-            if head.kind == 'RIGHT_PARENTHESIS':
-                raise context.annotate_context_error(f'Binary {'formula schemas' if parse_schema else 'formulas'} must have a second subformula')
+        if not head or head.kind != 'RIGHT_PARENTHESIS':
+            raise context.annotate_context_error(f'Binary {'formula schemas' if parse_schema else 'formulas'} must have a closing parenthesis')
 
-            b_form = self.parse_formula(parse_schema=parse_schema)
+        self.advance()
 
-            if (head := self.peek()) and head.kind == 'RIGHT_PARENTHESIS':
-                self.advance()
+        if parse_schema:
+            assert isinstance(a_form, FormulaSchema)
+            assert isinstance(b_form, FormulaSchema)
+            return ConnectiveFormulaSchema(connective, a_form, b_form)
 
-                if parse_schema:
-                    assert isinstance(a_form, FormulaSchema)
-                    assert isinstance(b_form, FormulaSchema)
-                    return ConnectiveFormulaSchema(connective, a_form, b_form)
-
-                assert isinstance(a_form, Formula)
-                assert isinstance(b_form, Formula)
-                return ConnectiveFormula(connective, a_form, b_form)
-
-            context.close_at_previous_token()
-            raise context.annotate_context_error(f'Unclosed parentheses for binary {'formula schema' if parse_schema else 'formula'}')
-
-        raise context.annotate_context_error(f'Binary {'formula schema' if parse_schema else 'formula'} must have a connective after the first subformula')
+        assert isinstance(a_form, Formula)
+        assert isinstance(b_form, Formula)
+        return ConnectiveFormula(connective, a_form, b_form)
 
     @overload
     def _parse_negation_formula(self, *, parse_schema: Literal[False]) -> NegationFormula: ...
@@ -329,7 +318,25 @@ class FormalLogicParser(IdentifierParserMixin[LogicTokenKind, LogicToken], Parse
         match head.kind:
             case 'LEFT_PARENTHESIS':
                 context = LogicParserContext(self)
-                return self._parse_binary_formula(context, parse_schema=parse_schema)
+                head = self.advance_and_peek()
+
+                if not head:
+                    raise self.annotate_unexpected_end_of_input()
+
+                if head.kind == 'SIGNATURE_SYMBOL':
+                    symbol = self.signature.get_symbol(head.value)
+
+                    match symbol.kind:
+                        case 'FUNCTION':
+                            return self._parse_equality_formula(context, parse_schema=parse_schema)
+
+                        case 'PREDICATE':
+                            return self._parse_connective_formula(context, parse_schema=parse_schema)
+
+                if head.kind == 'LATIN_IDENTIFIER':
+                    return self._parse_equality_formula(context, parse_schema=parse_schema)
+
+                return self._parse_connective_formula(context, parse_schema=parse_schema)
 
             case 'PROP_CONSTANT':
                 return self._parse_constant_formula()
