@@ -40,7 +40,7 @@ class InstantiationApplicationVisitor(FormulaSchemaVisitor[Formula]):
 
     @override
     def visit_predicate(self, schema: PredicateApplicationSchema) -> PredicateApplication:
-        return PredicateApplication(schema.name, [self.term_visitor.visit(arg) for arg in schema.arguments])
+        return PredicateApplication(schema.symbol, [self.term_visitor.visit(arg) for arg in schema.arguments])
 
     @override
     def visit_formula_placeholder(self, schema: FormulaPlaceholder) -> Formula:

@@ -3,8 +3,9 @@ from typing import Literal, NamedTuple
 
 from ...parsing import is_greek_identifier, is_latin_identifier
 from ...support.collections import TrieMapping
+from ...support.inference import ImproperInferenceRuleSymbol
 from ...support.unicode import Capitalization
-from .alphabet import BinaryTypeConnective, ImproperTermSymbol
+from .alphabet import AuxImproperSymbol, BinaryTypeConnective, BinderSymbol
 from .exceptions import LambdaSignatureError
 
 
@@ -24,11 +25,8 @@ class LambdaSignature:
 
         if base_types:
             for name in base_types:
-                if name == '(' or name == ')':
-                    raise LambdaSignatureError('Cannot use a parenthesis as a base type')
-
-                if name in BinaryTypeConnective:
-                    raise LambdaSignatureError(f'Cannot use the type connective {name!r} as a base type')
+                if name in BinaryTypeConnective or name in AuxImproperSymbol or name in ImproperInferenceRuleSymbol:
+                    raise LambdaSignatureError(f'Cannot use the improper symbol {name!r} as a base type')
 
                 if is_greek_identifier(name, Capitalization.LOWER):
                     raise LambdaSignatureError(f'Cannot use {name!r} as a base type because that conflicts with the grammar of type variables')
@@ -37,10 +35,7 @@ class LambdaSignature:
 
         if constant_terms:
             for name in constant_terms:
-                if name == '(' or name == ')':
-                    raise LambdaSignatureError('Cannot use a parenthesis as a λ-term constant')
-
-                if name in ImproperTermSymbol:
+                if name in BinderSymbol or name in AuxImproperSymbol or name in ImproperInferenceRuleSymbol:
                     raise LambdaSignatureError(f'Cannot use the improper symbol {name!r} as a λ-term constant')
 
                 if is_latin_identifier(name, Capitalization.LOWER):

@@ -1,7 +1,7 @@
 from collections.abc import Sequence
 from dataclasses import dataclass
 
-from .alphabet import InferenceRuleConnective
+from .alphabet import ImproperInferenceRuleSymbol
 
 
 @dataclass(frozen=True)
@@ -25,9 +25,9 @@ class InferenceRule[ConclusionT, PremiseT]:
     def without_name(self) -> str:
         if len(self.premises) > 0:
             premise_str = ', '.join(map(str, self.premises))
-            return f'{premise_str} {InferenceRuleConnective.SEQUENT} {self.conclusion}'
+            return f'{premise_str} {ImproperInferenceRuleSymbol.SEQUENT} {self.conclusion}'
 
-        return f'{InferenceRuleConnective.SEQUENT} {self.conclusion}'
+        return f'{ImproperInferenceRuleSymbol.SEQUENT} {self.conclusion}'
 
     def __str__(self) -> str:
         return f'({self.name}) {self.without_name()}'

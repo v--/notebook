@@ -64,7 +64,7 @@ class FormulaToTypeVisitor(FormulaVisitor[SimpleType]):
 
         # We encode propositional variables as nullary predicates
         # As per rem:curry_howard_variables, we adjust our predicates so that they match the syntax of type variables
-        return parse_type_variable(formula.name)
+        return parse_type_variable(formula.symbol.name)
 
     @override
     def visit_connective(self, formula: ConnectiveFormula) -> SimpleType:

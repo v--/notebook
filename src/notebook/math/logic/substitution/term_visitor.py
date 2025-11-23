@@ -16,7 +16,7 @@ class TermSubstitutionVisitor(TermTransformationVisitor):
 
     @override
     def visit_function(self, term: FunctionApplication) -> Term:
-        return FunctionApplication(term.name, [self.visit(arg) for arg in term.arguments])
+        return FunctionApplication(term.symbol, [self.visit(arg) for arg in term.arguments])
 
 
 def apply_term_substitution(term: Term, substitution: LogicSubstitution) -> Term:

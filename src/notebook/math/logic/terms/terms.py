@@ -2,6 +2,8 @@ from collections.abc import Sequence
 from dataclasses import dataclass
 
 from ....parsing.identifiers import LatinIdentifier
+from ..exceptions import FormalLogicError
+from ..signature import SignatureSymbol
 
 
 @dataclass(frozen=True)
@@ -14,18 +16,26 @@ class Variable:
 
 @dataclass(frozen=True)
 class SyntacticApplication[ArgT]:
-    name: str
+    symbol: SignatureSymbol
     arguments: Sequence[ArgT]
+
+    def __post_init__(self) -> None:
+        if len(self.arguments) != self.symbol.arity:
+            raise FormalLogicError(f'Unexpected argument count {len(self.arguments)} for {self.symbol.get_readable_kind()} symbol with arity {self.symbol.arity}')
 
     def __str__(self) -> str:
         if len(self.arguments) == 0:
-            return self.name
+            return self.symbol.name
+
+        if len(self.arguments) == 2 and self.symbol.infix:
+            left, right = self.arguments
+            return f'({left} {self.symbol.name} {right})'
 
         args = ', '.join(str(arg) for arg in self.arguments)
-        return f'{self.name}({args})'
+        return f'{self.symbol.name}({args})'
 
     def __hash__(self) -> int:
-        return hash(self.name) ^ hash(tuple(self.arguments))
+        return hash(self.symbol.name) ^ hash(tuple(self.arguments))
 
 
 class FunctionApplication(SyntacticApplication['Term']):

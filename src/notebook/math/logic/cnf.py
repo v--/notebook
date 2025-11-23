@@ -3,6 +3,7 @@ import itertools
 from collections.abc import Callable, Sequence
 
 from .alphabet import BinaryConnective, PropConstant
+from .exceptions import FormalLogicSignatureError
 from .formulas import (
     ConnectiveFormula,
     ConstantFormula,
@@ -17,6 +18,7 @@ from .formulas import (
     is_disjunction,
 )
 from .pnf import is_formula_quantifierless, move_negations, remove_conditionals
+from .propositional import DEFAULT_PROPOSITIONAL_VARIABLE, PROPOSITIONAL_SIGNATURE
 
 
 def is_literal(formula: Formula) -> bool:
@@ -48,7 +50,7 @@ def connect_formulas(formulas: Sequence[Formula], conn: BinaryConnective) -> For
 
 class RemoveConstantsVisitor(FormulaTransformationVisitor):
     def visit_logical_constant(self, formula: ConstantFormula) -> ConnectiveFormula:
-        p = PredicateApplication('p', [])
+        p = PredicateApplication(DEFAULT_PROPOSITIONAL_VARIABLE, [])
 
         match formula.value:
             case PropConstant.VERUM:
@@ -126,19 +128,22 @@ def function_to_cnf(fun: Callable[..., bool]) -> Formula:
     fun_params = inspect.signature(fun).parameters
 
     if len(fun_params) == 0:
-        p = PredicateApplication('p', ())
+        p = PredicateApplication(DEFAULT_PROPOSITIONAL_VARIABLE, [])
         return ConnectiveFormula(
             BinaryConnective.DISJUNCTION if fun() else BinaryConnective.CONJUNCTION,
             p,
             NegationFormula(p)
         )
 
+
     for param in fun_params.values():
-        assert all('a' <= c <= 'z' for c in param.name), \
-            f'In order to become a valid predicate name, the parameter name {param.name!r} must consist only of small Latin characters.'
+        try:
+            PROPOSITIONAL_SIGNATURE.get_symbol(param.name)
+        except KeyError:
+            raise FormalLogicSignatureError(f'The parameter name {param.name!r} is not a valid propositional variable name.') from None
 
     # These names will generate valid formulas only when they consist of Latin letters
-    predicates = [PredicateApplication(param.name, ()) for param in fun_params.values()]
+    predicates = [PredicateApplication(PROPOSITIONAL_SIGNATURE.get_symbol(param.name), []) for param in fun_params.values()]
     disjuncts = list[Formula](
         connect_formulas(
             [NegationFormula(p) if arg else p for p, arg in zip(predicates, arg_tuple, strict=True)],

@@ -35,7 +35,7 @@ class InstantiationApplicationVisitor(TermSchemaVisitor[Term]):
 
     @override
     def visit_function(self, schema: FunctionApplicationSchema) -> FunctionApplication:
-        return FunctionApplication(schema.name, [self.visit(arg) for arg in schema.arguments])
+        return FunctionApplication(schema.symbol, [self.visit(arg) for arg in schema.arguments])
 
 
 @overload

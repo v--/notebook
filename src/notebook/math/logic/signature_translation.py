@@ -9,7 +9,7 @@ from .formulas import (
     FormulaTransformationVisitor,
     PredicateApplication,
 )
-from .signature import FormalLogicSignature
+from .signature import SignatureSymbol
 from .terms import FunctionApplication, Term, TermTransformationVisitor
 
 
@@ -19,27 +19,15 @@ class SignatureTranslationError(FormalLogicError):
 
 @dataclass
 class SignatureTranslation:
-    src: FormalLogicSignature
-    dest: FormalLogicSignature
-    mapping: Mapping[str, str]
+    mapping: Mapping[SignatureSymbol, SignatureSymbol]
 
     def __post_init__(self) -> None:
         for a, b in self.mapping.items():
-            try:
-                sym_a = self.src.get_symbol(a)
-            except LookupError:
-                raise SignatureTranslationError(f'Symbol {a!r} is not present in the signature') from None
+            if a.kind != b.kind:
+                raise SignatureTranslationError(f'Mismatch between the {a.get_readable_kind()} symbol {a.name!r} and the {b.get_readable_kind()} symbol {b.name!r}')
 
-            try:
-                sym_b = self.dest.get_symbol(b)
-            except LookupError:
-                raise SignatureTranslationError(f'Symbol {a!r} is not present in the signature') from None
-
-            if sym_a.kind != sym_b.kind:
-                raise SignatureTranslationError(f'Mismatch between the {sym_a.kind.lower()} symbol {a!r} and the {sym_b.kind.lower()} symbol {b!r}')
-
-            if sym_a.arity != sym_b.arity:
-                raise SignatureTranslationError(f'Mismatch between {a!r} of arity {sym_a.arity} and {b!r} of arity {sym_b.arity}')
+            if a.arity != b.arity:
+                raise SignatureTranslationError(f'Mismatch between {a.name!r} of arity {a.arity} and {b.name!r} of arity {b.arity}')
 
 
 @dataclass
@@ -49,7 +37,7 @@ class TermTranslationVisitor(TermTransformationVisitor):
     @override
     def visit_function(self, term: FunctionApplication) -> Term:
         return FunctionApplication(
-            self.translation.mapping[term.name],
+            self.translation.mapping[term.symbol],
             [self.visit(arg) for arg in term.arguments]
         )
 
@@ -77,7 +65,7 @@ class FormulaTranslationVisitor(FormulaTransformationVisitor):
     @override
     def visit_predicate(self, formula: PredicateApplication) -> PredicateApplication:
         return PredicateApplication(
-            self.translation.mapping[formula.name],
+            self.translation.mapping[formula.symbol],
             [self.term_visitor.visit(arg) for arg in formula.arguments]
         )
 

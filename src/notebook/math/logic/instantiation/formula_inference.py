@@ -50,7 +50,7 @@ class InferInstantiationVisitor(FormulaSchemaVisitor[FormalLogicSchemaInstantiat
 
     @override
     def visit_predicate(self, schema: PredicateApplicationSchema) -> FormalLogicSchemaInstantiation:
-        if not isinstance(self.formula, PredicateApplication) or schema.name != self.formula.name or len(schema.arguments) != len(self.formula.arguments):
+        if not isinstance(self.formula, PredicateApplication) or schema.symbol != self.formula.symbol or len(schema.arguments) != len(self.formula.arguments):
             raise SchemaInferenceError(f'Cannot match predicate formula schema {schema} to {self.formula}')
 
         instantiation = FormalLogicSchemaInstantiation()

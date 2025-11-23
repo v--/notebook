@@ -1,3 +1,3 @@
-from .alphabet import SubstitutionConnective
+from .alphabet import ImproperSubstitutionSymbol
 from .exceptions import SubstitutionError, UnspecifiedReplacementError
 from .substitution import AbstractSubstitution

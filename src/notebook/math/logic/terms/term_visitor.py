@@ -30,6 +30,6 @@ class TermTransformationVisitor(TermVisitor[Term]):
     @override
     def visit_function(self, term: FunctionApplication) -> Term:
         return FunctionApplication(
-            term.name,
+            term.symbol,
             [self.visit(arg) for arg in term.arguments]
         )

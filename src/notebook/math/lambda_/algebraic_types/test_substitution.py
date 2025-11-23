@@ -2,7 +2,7 @@ import re
 
 import pytest
 
-from ....support.inference import InferenceRuleConnective
+from ....support.inference import ImproperInferenceRuleSymbol
 from ..arrow_types import derive_type
 from ..common import variables
 from ..instantiation import LambdaSchemaInstantiation
@@ -147,7 +147,7 @@ def test_substitute_nested_abstraction_noop() -> None:
 
 def test_substitute_unknown_rule() -> None:
     signature = LambdaSignature(constant_terms=['𝐂'], base_types=['𝛕'])
-    rule = parse_typing_rule('R', f'{InferenceRuleConnective.SEQUENT} 𝐂: 𝛕', signature)
+    rule = parse_typing_rule('R', f'{ImproperInferenceRuleSymbol.SEQUENT} 𝐂: 𝛕', signature)
     tree = apply(rule)
     src = variables.x
     dest = assume(parse_variable_assertion('y: 𝛕', signature))
@@ -159,7 +159,7 @@ def test_substitute_unknown_rule() -> None:
 # Analogous to the previous test, but with a rule name that collides with an arrow type rule
 def test_substitute_unknown_rule_with_matching_name() -> None:
     signature = LambdaSignature(constant_terms=['𝐂'], base_types=['𝛕'])
-    rule = parse_typing_rule('→₊', f'{InferenceRuleConnective.SEQUENT} 𝐂: 𝛕', signature)
+    rule = parse_typing_rule('→₊', f'{ImproperInferenceRuleSymbol.SEQUENT} 𝐂: 𝛕', signature)
     tree = apply(rule)
     src = variables.x
     dest = assume(parse_variable_assertion('y: 𝛕', signature))

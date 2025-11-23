@@ -1,10 +1,10 @@
+from collections.abc import Sequence
 from textwrap import dedent
 
 import pytest
 
 from ....parsing import LatinIdentifier, ParserError, TokenizerError
 from ....support.pytest import pytest_parametrize_kwargs, pytest_parametrize_lists
-from ..common import variables as var
 from ..formulas import EqualityFormula
 from ..signature import EMPTY_SIGNATURE, FormalLogicSignature
 from ..terms import EigenvariableSchemaSubstitutionSpec, FunctionApplication, Variable, VariablePlaceholder
@@ -41,22 +41,27 @@ def test_parsing_valid_variables(term: str, expected: Variable) -> None:
 @pytest_parametrize_kwargs(
     dict(
         term='f⁰',
-        expected=FunctionApplication('f⁰', [])
+        name='f⁰',
+        arguments=[]
     ),
     dict(
         term='f¹(x)',
-        expected=FunctionApplication('f¹', [Variable(LatinIdentifier('x'))])
+        name='f¹',
+        arguments=['x']
     ),
     dict(
         term='f³(x, y, z)',
-        expected=FunctionApplication('f³', [Variable(LatinIdentifier(s)) for s in 'xyz'])
+        name='f³',
+        arguments=list('xyz')
     ),
     dict(
         term='f³(x,y,  z)',
-        expected=FunctionApplication('f³', [Variable(LatinIdentifier(s)) for s in 'xyz'])
+        name='f³',
+        arguments=list('xyz')
     )
 )
-def test_parsing_valid_functions(term: str, expected: FunctionApplication, dummy_signature: FormalLogicSignature) -> None:
+def test_parsing_valid_functions(term: str, name: str, arguments: Sequence[str], dummy_signature: FormalLogicSignature) -> None:
+    expected = FunctionApplication(dummy_signature.get_symbol(name), [parse_term(arg, dummy_signature) for arg in arguments])
     assert parse_term(term, dummy_signature) == expected
 
 
@@ -141,27 +146,161 @@ def test_parsing_function_with_wrong_arity(dummy_signature: FormalLogicSignature
     with pytest.raises(ParserError) as excinfo:
         parse_term('f²(x)', dummy_signature)
 
-    assert str(excinfo.value) == 'Expected 2 arguments for f² but got 1'
+    assert str(excinfo.value) == 'Expected 2 arguments for function f², but got 1'
     assert excinfo.value.__notes__[0] == dedent('''\
         1 │ f²(x)
           │ ^^^^^
     ''')
 
 
+def test_parsing_parenthesized_expression_without_symbol(dummy_signature: FormalLogicSignature) -> None:
+    with pytest.raises(ParserError) as excinfo:
+        parse_term('(x', dummy_signature)
+
+    assert str(excinfo.value) == 'Parenthesized expression must have a propositional connective, infix proper symbol or equality after the first subexpression'
+    assert excinfo.value.__notes__[0] == dedent('''\
+        1 │ (x
+          │ ^^
+    ''')
+
+
+def test_parsing_unrecognized_infix_symbol(dummy_signature: FormalLogicSignature) -> None:
+    with pytest.raises(ParserError) as excinfo:
+        parse_term('(x ( y)', dummy_signature)
+
+    assert str(excinfo.value) == "The symbol '(' is not an infix operator"
+    assert excinfo.value.__notes__[0] == dedent('''\
+        1 │ (x ( y)
+          │    ^
+    ''')
+
+
+def test_parsing_infix_function(dummy_signature: FormalLogicSignature) -> None:
+    string = '(x + y)'
+    term = parse_term(string, dummy_signature)
+    assert str(term) == string
+
+
+def test_parsing_nested_infix_functions(dummy_signature: FormalLogicSignature) -> None:
+    string = '((x + y) + z)'
+    term = parse_term(string, dummy_signature)
+    assert str(term) == string
+
+
+def test_parsing_infix_function_without_second_term(dummy_signature: FormalLogicSignature) -> None:
+    with pytest.raises(ParserError) as excinfo:
+        parse_term('(x +', dummy_signature)
+
+    assert str(excinfo.value) == 'Infix applications must have a second term'
+    assert excinfo.value.__notes__[0] == dedent('''\
+        1 │ (x +
+          │ ^^^^
+    ''')
+
+def test_parsing_infix_function_without_closing_parens(dummy_signature: FormalLogicSignature) -> None:
+    with pytest.raises(ParserError) as excinfo:
+        parse_term('(x + y', dummy_signature)
+
+    assert str(excinfo.value) == 'Infix applications must have a closing parenthesis'
+    assert excinfo.value.__notes__[0] == dedent('''\
+        1 │ (x + y
+          │ ^^^^^^
+    ''')
+
+def test_parsing_infix_function_with_non_infix_notation(dummy_signature: FormalLogicSignature) -> None:
+    with pytest.raises(ParserError) as excinfo:
+        parse_term('+(x, y)', dummy_signature)
+
+    assert str(excinfo.value) == "Expected a prefix proper symbol, but got '+'"
+    assert excinfo.value.__notes__[0] == dedent('''\
+        1 │ +(x, y)
+          │ ^
+    ''')
+
+
+def test_parsing_non_infix_function_with_infix_notation(dummy_signature: FormalLogicSignature) -> None:
+    with pytest.raises(ParserError) as excinfo:
+        parse_term('(x f³ y)', dummy_signature)
+
+    assert str(excinfo.value) == "Expected an infix proper symbol, but got 'f³'"
+    assert excinfo.value.__notes__[0] == dedent('''\
+        1 │ (x f³ y)
+          │    ^^
+    ''')
+
+
+def test_parsing_infix_predicate(dummy_signature: FormalLogicSignature) -> None:
+    string = '(x < y)'
+    term = parse_formula(string, dummy_signature)
+    assert str(term) == string
+
+
+def test_parsing_infix_predicate_without_second_term(dummy_signature: FormalLogicSignature) -> None:
+    with pytest.raises(ParserError) as excinfo:
+        parse_formula('(x <', dummy_signature)
+
+    assert str(excinfo.value) == 'Infix applications must have a second term'
+    assert excinfo.value.__notes__[0] == dedent('''\
+        1 │ (x <
+          │ ^^^^
+    ''')
+
+def test_parsing_infix_predicate_without_closing_parens(dummy_signature: FormalLogicSignature) -> None:
+    with pytest.raises(ParserError) as excinfo:
+        parse_formula('(x < y', dummy_signature)
+
+    assert str(excinfo.value) == 'Infix applications must have a closing parenthesis'
+    assert excinfo.value.__notes__[0] == dedent('''\
+        1 │ (x < y
+          │ ^^^^^^
+    ''')
+
+def test_parsing_infix_predicate_with_non_infix_notation(dummy_signature: FormalLogicSignature) -> None:
+    with pytest.raises(ParserError) as excinfo:
+        parse_formula('<(x, y)', dummy_signature)
+
+    assert str(excinfo.value) == "Expected a prefix proper symbol, but got '<'"
+    assert excinfo.value.__notes__[0] == dedent('''\
+        1 │ <(x, y)
+          │ ^
+    ''')
+
+
+def test_parsing_non_infix_predicate_with_infix_notation(dummy_signature: FormalLogicSignature) -> None:
+    with pytest.raises(ParserError) as excinfo:
+        parse_formula('(x p³ y)', dummy_signature)
+
+    assert str(excinfo.value) == "Expected an infix proper symbol, but got 'p³'"
+    assert excinfo.value.__notes__[0] == dedent('''\
+        1 │ (x p³ y)
+          │    ^^
+    ''')
+
+
+
+@pytest_parametrize_lists(
+    formula=[
+        'p²((x + y), z)',
+        '((x + y) < (f³(x, y, z) × y))',
+    ]
+)
+def test_mixing_prefix_and_infix_notation(formula: str, dummy_signature: FormalLogicSignature) -> None:
+    assert str(parse_formula(formula, dummy_signature)) == formula
+
+
 @pytest_parametrize_kwargs(
     dict(
-        formula='(x = y)',
-        expected=EqualityFormula(var.x, var.y)
+        left='x',
+        right='x',
     ),
     dict(
-        formula='(f¹(x) = f²(y, z))',
-        expected=EqualityFormula(
-            FunctionApplication('f¹', [var.x]),
-            FunctionApplication('f²', [var.y, var.z]),
-        )
+        left='f¹(x)',
+        right='f²(y, z)',
     )
 )
-def test_parsing_valid_equalities(formula: str, expected: EqualityFormula, dummy_signature: FormalLogicSignature) -> None:
+def test_parsing_valid_equalities(left: str, right: str, dummy_signature: FormalLogicSignature) -> None:
+    formula = f'({left} = {right})'
+    expected = EqualityFormula(parse_term(left, dummy_signature), parse_term(right, dummy_signature))
     assert parse_formula(formula, dummy_signature) == expected
 
 

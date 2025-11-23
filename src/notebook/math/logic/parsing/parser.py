@@ -3,7 +3,7 @@ from dataclasses import dataclass
 from typing import Literal, cast, overload
 
 from ....parsing import GreekIdentifier, IdentifierParserMixin, Parser
-from ....support.substitution import SubstitutionConnective
+from ....support.substitution import ImproperSubstitutionSymbol
 from ..alphabet import BinaryConnective, PropConstant, Quantifier, UnaryPrefix
 from ..deduction import (
     Marker,
@@ -29,7 +29,7 @@ from ..formulas import (
     QuantifierFormulaSchema,
 )
 from ..propositional import PROPOSITIONAL_SIGNATURE
-from ..signature import EMPTY_SIGNATURE, FormalLogicSignature
+from ..signature import EMPTY_SIGNATURE, FormalLogicSignature, SignatureSymbol
 from ..terms import (
     EigenvariableSchemaSubstitutionSpec,
     FunctionApplication,
@@ -90,14 +90,14 @@ class FormalLogicParser(IdentifierParserMixin[LogicTokenKind, LogicToken], Parse
         return Variable(identifier)
 
     @overload
-    def _parse_args(self, context: LogicParserContext, arity: int, *, parse_schema: Literal[False]) -> Iterable[Term]: ...
+    def _iter_application_args(self, context: LogicParserContext, symbol: SignatureSymbol, *, parse_schema: Literal[False]) -> Iterable[Term]: ...
     @overload
-    def _parse_args(self, context: LogicParserContext, arity: int, *, parse_schema: Literal[True]) -> Iterable[TermSchema]: ...
+    def _iter_application_args(self, context: LogicParserContext, symbol: SignatureSymbol, *, parse_schema: Literal[True]) -> Iterable[TermSchema]: ...
     @overload
-    def _parse_args(self, context: LogicParserContext, arity: int, *, parse_schema: bool) -> Iterable[Term] | Iterable[TermSchema]: ...
-    def _parse_args(self, context: LogicParserContext, arity: int, *, parse_schema: bool) -> Iterable[Term] | Iterable[TermSchema]:
+    def _iter_application_args(self, context: LogicParserContext, symbol: SignatureSymbol, *, parse_schema: bool) -> Iterable[Term] | Iterable[TermSchema]: ...
+    def _iter_application_args(self, context: LogicParserContext, symbol: SignatureSymbol, *, parse_schema: bool) -> Iterable[Term] | Iterable[TermSchema]:
         if (head := self.advance_and_peek()) and head.kind == 'RIGHT_PARENTHESIS':
-            if arity == 0:
+            if symbol.arity == 0:
                 raise context.annotate_context_error('Avoid the argument list at all when zero arguments are expected')
 
             raise context.annotate_context_error('Empty argument lists are disallowed')
@@ -129,28 +129,22 @@ class FormalLogicParser(IdentifierParserMixin[LogicTokenKind, LogicToken], Parse
                     raise self.annotate_token_error('Unexpected token')
 
     @overload
-    def _parse_syntactic_application(self, context: LogicParserContext, arity: int, *, parse_schema: Literal[False]) -> tuple[str, Sequence[Term]]: ...
+    def _parse_application_args(self, context: LogicParserContext, symbol: SignatureSymbol, *, parse_schema: Literal[False]) -> Sequence[Term]: ...
     @overload
-    def _parse_syntactic_application(self, context: LogicParserContext, arity: int, *, parse_schema: Literal[True]) -> tuple[str, Sequence[TermSchema]]: ...
+    def _parse_application_args(self, context: LogicParserContext, symbol: SignatureSymbol, *, parse_schema: Literal[True]) -> Sequence[TermSchema]: ...
     @overload
-    def _parse_syntactic_application(self, context: LogicParserContext, arity: int, *, parse_schema: bool) -> tuple[str, Sequence[Term]] | tuple[str, Sequence[TermSchema]]: ...
-    def _parse_syntactic_application(self, context: LogicParserContext, arity: int, *, parse_schema: bool) -> tuple[str, Sequence[Term]] | tuple[str, Sequence[TermSchema]]:
-        name = self.peek_unsafe().value
-        self.advance()
-
+    def _parse_application_args(self, context: LogicParserContext, symbol: SignatureSymbol, *, parse_schema: bool) -> Sequence[Term] | Sequence[TermSchema]: ...
+    def _parse_application_args(self, context: LogicParserContext, symbol: SignatureSymbol, *, parse_schema: bool) -> Sequence[Term] | Sequence[TermSchema]:
         # A narrower type leads to duplicated code
         arguments = list[Term | TermSchema]()
 
         if (head := self.peek()) and head.kind == 'LEFT_PARENTHESIS':
-            arguments = list(self._parse_args(context,arity, parse_schema=parse_schema))
+            arguments = list(self._iter_application_args(context, symbol, parse_schema=parse_schema))
 
-            if arity != len(arguments):
-                raise context.annotate_context_error(f'Expected {arity} arguments for {name} but got {len(arguments)}')
+            if symbol.arity != len(arguments):
+                raise context.annotate_context_error(f'Expected {symbol.arity} arguments for {symbol.get_readable_kind()} {symbol.name}, but got {len(arguments)}')
 
-        return cast(
-            'tuple[str, Sequence[Term]] | tuple[str, Sequence[TermSchema]]',
-            (name, arguments)
-        )
+        return cast(Sequence[TermSchema] | Sequence[Term], arguments)
 
     def _parse_constant_formula(self) -> ConstantFormula:
         head = self.peek_unsafe()
@@ -213,10 +207,10 @@ class FormalLogicParser(IdentifierParserMixin[LogicTokenKind, LogicToken], Parse
         left = self._parse(left_context, parse_schema=parse_schema)
         left_context.close_at_previous_token()
         head = self.peek()
-        right: Term | Formula | TermSchema | FormulaSchema | UndeterminedPlaceholder
+        right: Term | Formula | TermSchema | FormulaSchema
 
         if not head:
-            raise context.annotate_token_error(f'Parenthesized {'expression schema' if parse_schema else 'expression'} must have a propositional connective, infix proper symbol or equality after the first subexpression')
+            raise context.annotate_context_error(f'Parenthesized {'expression schema' if parse_schema else 'expression'} must have a propositional connective, infix proper symbol or equality after the first subexpression')
 
         match head.kind:
             case 'BINARY_CONNECTIVE':
@@ -286,11 +280,11 @@ class FormalLogicParser(IdentifierParserMixin[LogicTokenKind, LogicToken], Parse
                     raise left_context.annotate_context_error(f'The first argument of an infix {'application schema' if parse_schema else 'application'} must be a {'term schema' if parse_schema else 'term'}')
 
                 symbol = self.signature.get_symbol(head.value)
-                raise context.annotate_context_error('Cannot parse an infix expression')
-                head = self.advance_and_peek()
 
-                # if symbol and not symbol.infix:
-                #     raise context.annotate_context_error(f'Expected an infix proper symbol, but got {symbol.name!r}')
+                if symbol and not symbol.infix:
+                    raise context.annotate_token_error(f'Expected an infix proper symbol, but got {symbol.name!r}')
+
+                head = self.advance_and_peek()
 
                 if not head or head.kind == 'RIGHT_PARENTHESIS':
                     raise context.annotate_context_error(f'Infix {'application schemas' if parse_schema else 'applications'} must have a second term')
@@ -303,21 +297,29 @@ class FormalLogicParser(IdentifierParserMixin[LogicTokenKind, LogicToken], Parse
 
                 self.advance()
 
+                if parse_schema:
+                    assert isinstance(left, TermSchema)
+                    assert isinstance(right, TermSchema)
+
+                    match symbol.kind:
+                        case 'PREDICATE':
+                            return PredicateApplicationSchema(symbol, [left, right])
+
+                        case 'FUNCTION':
+                            return FunctionApplicationSchema(symbol, [left, right])
+
+                assert isinstance(left, Term)
+                assert isinstance(right, Term)
+
                 match symbol.kind:
                     case 'PREDICATE':
-                        if parse_schema:
-                            return PredicateApplicationSchema(symbol.name, [left, right])
-
-                        return PredicateApplication(symbol.name, [left, right])
+                        return PredicateApplication(symbol, [left, right])
 
                     case 'FUNCTION':
-                        if parse_schema:
-                            return FunctionApplicationSchema(symbol.name, [left, right])
-
-                        return FunctionApplication(symbol.name, [left, right])
+                        return FunctionApplication(symbol, [left, right])
 
             case _:
-                raise context.annotate_token_error(f'Unrecognized infix symbol {head.value!r}')
+                raise context.annotate_token_error(f'The symbol {head.value!r} is not an infix operator')
 
     @overload
     def _parse(self, context: LogicParserContext, *, parse_schema: Literal[False]) -> Term | Formula: ...
@@ -335,18 +337,23 @@ class FormalLogicParser(IdentifierParserMixin[LogicTokenKind, LogicToken], Parse
             case 'SIGNATURE_SYMBOL':
                 symbol = self.signature.get_symbol(head.value)
 
+                if symbol.infix:
+                    raise context.annotate_token_error(f'Expected a prefix proper symbol, but got {symbol.name!r}')
+
+                self.advance()
+
                 match symbol.kind:
                     case 'PREDICATE':
                         if parse_schema:
-                            return PredicateApplicationSchema(*self._parse_syntactic_application(context, symbol.arity, parse_schema=True))
+                            return PredicateApplicationSchema(symbol, self._parse_application_args(context, symbol, parse_schema=True))
 
-                        return PredicateApplication(*self._parse_syntactic_application(context, symbol.arity, parse_schema=False))
+                        return PredicateApplication(symbol, self._parse_application_args(context, symbol, parse_schema=False))
 
                     case 'FUNCTION':
                         if parse_schema:
-                            return FunctionApplicationSchema(*self._parse_syntactic_application(context, symbol.arity, parse_schema=True))
+                            return FunctionApplicationSchema(symbol, self._parse_application_args(context, symbol, parse_schema=True))
 
-                        return FunctionApplication(*self._parse_syntactic_application(context, symbol.arity, parse_schema=False))
+                        return FunctionApplication(symbol, self._parse_application_args(context, symbol, parse_schema=False))
 
             case 'LATIN_IDENTIFIER':
                 return self.parse_variable(parse_schema=parse_schema)
@@ -428,13 +435,13 @@ class FormalLogicParser(IdentifierParserMixin[LogicTokenKind, LogicToken], Parse
         head = self.peek()
 
         if not head or head.kind != 'SUBSTITUTION_CONNECTIVE':
-            raise context.annotate_context_error(f'Expected {SubstitutionConnective.BASE} after the variable in a substitution')
+            raise context.annotate_context_error(f'Expected {ImproperSubstitutionSymbol.CONNECTIVE} after the variable in a substitution')
 
         self.advance()
         dest = self.parse_term(parse_schema=parse_schema)
         head = self.peek()
 
-        if head and head.kind == 'STAR':
+        if head and head.kind == 'ASTERISK':
             if not parse_schema:
                 raise context.annotate_token_error('Can only place an eigenvariable marker on a schema')
 
@@ -515,12 +522,12 @@ class FormalLogicParser(IdentifierParserMixin[LogicTokenKind, LogicToken], Parse
     def _iter_natural_deduction_premises(self, rule_context: LogicParserContext) -> Iterable[NaturalDeductionPremise]:
         premise_context = LogicParserContext(self)
 
-        while (head := self.peek()) and head.kind != 'INFERENCE_RULE_SEQUENT':
+        while (head := self.peek()) and head.kind != 'RULE_SEQUENT':
             premise_context.reset()
             yield self._parse_natural_deduction_premise(premise_context)
             head = self.peek()
 
-            if not head or head.kind == 'INFERENCE_RULE_SEQUENT':
+            if not head or head.kind == 'RULE_SEQUENT':
                 break
 
             if head.kind == 'COMMA':

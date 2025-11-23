@@ -2,7 +2,7 @@ from collections.abc import Iterable, Sequence
 from typing import Literal, overload
 
 from ....parsing import IdentifierParserMixin, Parser, ParserError
-from ..alphabet import BinaryTypeConnective, ImproperTermSymbol
+from ..alphabet import BinaryTypeConnective, BinderSymbol
 from ..assertions import (
     TypeAssertion,
     TypeAssertionSchema,
@@ -178,7 +178,7 @@ class LambdaParser(IdentifierParserMixin[LambdaTokenKind, LambdaToken], Parser[L
         head = self.advance_and_peek(2)
 
         if not head or head.kind != 'LATIN_IDENTIFIER' or head.value[0].isupper():
-            raise context.annotate_context_error(f'Expected a variable name after {ImproperTermSymbol.LAMBDA}')
+            raise context.annotate_context_error(f'Expected a variable name after {BinderSymbol.LAMBDA}')
 
         var = self.parse_variable(parse_schema=parse_schema)
         var_type: SimpleType | SimpleTypeSchema | None = None
@@ -319,7 +319,7 @@ class LambdaParser(IdentifierParserMixin[LambdaTokenKind, LambdaToken], Parser[L
                 match next_head.kind:
                     case 'RIGHT_PARENTHESIS':
                         self.advance()
-                        raise context.annotate_context_error(f'{'UntypedApplication schemas' if parse_schema else 'Applications'} must have two terms, while {'Abstractions schemas' if parse_schema else 'abstractions'} must begin with {ImproperTermSymbol.LAMBDA}')
+                        raise context.annotate_context_error(f'{'UntypedApplication schemas' if parse_schema else 'Applications'} must have two terms, while {'Abstractions schemas' if parse_schema else 'abstractions'} must begin with {BinderSymbol.LAMBDA}')
 
                     case 'LAMBDA':
                         return self._parse_abstraction(context, parse_schema=parse_schema, typed=typed)
@@ -403,12 +403,12 @@ class LambdaParser(IdentifierParserMixin[LambdaTokenKind, LambdaToken], Parser[L
     def _iter_typing_rule_premise(self, rule_context: LambdaParserContext) -> Iterable[TypingRulePremise]:
         premise_context = LambdaParserContext(self)
 
-        while (head := self.peek()) and head.kind != 'INFERENCE_RULE_SEQUENT':
+        while (head := self.peek()) and head.kind != 'RULE_SEQUENT':
             premise_context.reset()
             yield self._parse_typing_rule_premise(premise_context)
             head = self.peek()
 
-            if not head or head.kind == 'INFERENCE_RULE_SEQUENT':
+            if not head or head.kind == 'RULE_SEQUENT':
                 break
 
             if head.kind == 'COMMA':

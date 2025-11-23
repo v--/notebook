@@ -12,7 +12,7 @@ We give here the following definition, and then dedicate several sections to exp
 \paragraph{First-order signatures}
 
 \begin{definition}\label{def:predicate_logic_alphabet}\mimprovised
-  The \hyperref[def:formal_language/alphabet]{alphabet} of \hyperref[con:improper_symbol]{improper symbols} of \hyperref[con:predicate_logic]{predicate logic} extends the \hyperref[def:propositional_alphabet]{alphabet of propositional logic} with the following new symbols:
+  The \hyperref[def:formal_language/alphabet]{alphabet} of \hyperref[con:improper_symbol]{improper symbols} of \hyperref[con:predicate_logic]{predicate logic} extends the \hyperref[def:propositional_alphabet]{alphabet of propositional logic} and the \hyperref[def:substitution_schema_alphabet]{alphabet of substitution schemas} with the following new symbols:
   \begin{thmenum}
     \thmitem{def:predicate_logic_alphabet/quantifiers}\mcite[80]{Kleene2002Logic} The set \( \op*{Quant} \) of \term[ru=кванторы (\cite[72]{ШеньВерещагин2017ЯзыкиИИсчисления})]{quantifiers}, namely
     \begin{thmenum}
@@ -22,11 +22,13 @@ We give here the following definition, and then dedicate several sections to exp
 
     \thmitem{def:predicate_logic_alphabet/equality}\mcite[def. 2.1.2(vi)]{Hinman2005Logic} The \hyperref[def:function_application_syntax]{infix} \term{equality symbol} \enquote{\( \syneq \)}
 
-    \thmitem{def:predicate_logic_alphabet/comma} In addition to the parentheses, two more auxiliary symbols:
+    \thmitem{def:predicate_logic_alphabet/aux} In addition to the parentheses, two more auxiliary symbols:
     \begin{thmenum}
-      \thmitem{def:lambda_term_alphabet/aux/comma} The comma \enquote{\( , \)} for delimiting \hyperref[con:function_arguments]{function arguments}.
+      \thmitem{def:predicate_logic_alphabet/aux/comma} The comma \enquote{\( , \)} for delimiting \hyperref[con:function_arguments]{function arguments}.
 
-      \thmitem{def:lambda_term_alphabet/aux/dot} The dot \enquote{\( . \)} for separating quantifiers from their bodies.
+      \thmitem{def:predicate_logic_alphabet/aux/dot} The dot \enquote{\( . \)} for separating quantifiers from their bodies.
+
+      \thmitem{def:predicate_logic_alphabet/aux/asterisk} The asterisk \enquote{\( * \)} for denoting \hyperref[con:eigenvariable]{eigenvariables}.
     \end{thmenum}
   \end{thmenum}
 \end{definition}
@@ -46,14 +48,14 @@ We give here the following definition, and then dedicate several sections to exp
     \thmitem{def:fol_signature/arity}\mcite[38]{CitkinMuravitsky2022ConsequenceRelations} A function \( {\#}: \op*{Fun}_\Sigma \cup \op*{Pred}_\Sigma \to \BbbZ_{\geq 0} \) determining the corresponding symbol's \term[ru=арность (\cite[141]{Мальцев1970АлгебраическиеСистемы}); валентность (\cite[73]{ШеньВерещагин2017ЯзыкиИИсчисления})]{arity}.
 
     Based on this arity, we will use the prefixes from \cref{def:operation_arity_terminology} like \enquote{unary}, \enquote{binary}, etc.
+
+    \thmitem{def:fol_signature/infix}\mimprovised A subset \( \op*{Infix}_\Sigma \subseteq \op*{Fun}_\Sigma \cup \op*{Pred}_\Sigma \) of those binary operations we want to use \hyperref[def:function_application_syntax]{infix notation} for.
   \end{thmenum}
 
-  As per \cref{rem:improper_symbols_and_parsing}, we disallow the \hyperref[con:improper_symbol]{improper symbols} from the \hyperref[def:predicate_logic_alphabet]{alphabet of predicate logic} as function or predicate symbols.
+  As per \cref{rem:improper_symbols_and_parsing}, we disallow the \hyperref[con:improper_symbol]{improper symbols} from the \hyperref[def:predicate_logic_alphabet]{alphabet of predicate logic} and the \hyperref[def:inference_rule_alphabet]{alphabet of inference rules} as function or predicate symbols.
 \end{definition}
 \begin{comments}
   \item We discuss in \cref{rem:language_alphabet_cardinality} some cardinality considerations; we mention here only that both alphabets are by default assumed to be finite. In accordance with \cref{rem:cardinality_auxiliary_terminology}, we use cardinality-related terminology like \enquote{finite} and \enquote{countably infinite} for the signature itself when we mean the larger of the cardinalities of the alphabets.
-
-  \item When specifying a signature, we will be explicit about whether we want to use \hyperref[def:function_application_syntax]{infix notation} for binary function or predicate symbols. We do not include this choice as part of the signature since it only affects the \hyperref[con:metalogic]{metalanguage} --- see \cref{rem:fol_formula_conventions/infix}.
 \end{comments}
 
 \begin{definition}\label{def:fol_signature_category}\mcite[282]{Meseguer1989GeneralLogics}
@@ -61,9 +63,11 @@ We give here the following definition, and then dedicate several sections to exp
   \begin{thmenum}
     \thmitem{def:fol_signature_category/objects} The objects are, unsurprisingly, the \( \mscrU \)-small signatures.
 
-    \thmitem{def:fol_signature_category/morphism} A morphism \( s: \Sigma \to \Theta \) between signatures is a set-theoretic function mapping the function symbols of \( \Sigma \) to function symbols of \( \Theta \) with the same arity, and analogously for predicate symbols.
+    \thmitem{def:fol_signature_category/morphisms} A morphism \( s: \Sigma \to \Theta \) between signatures is a set-theoretic function mapping the function symbols of \( \Sigma \) to function symbols of \( \Theta \) with the same arity, and analogously for predicate symbols.
 
-    \thmitem{def:fol_signature_category/morphism} The composition of morphisms is their set-theoretic composition.
+    We allow changing the notation of a symbol, i.e. sending a prefix symbol to an infix symbol and vice versa.
+
+    \thmitem{def:fol_signature_category/composition} The composition of morphisms is their set-theoretic composition.
 
     \thmitem{def:fol_signature_category/identity} The identity on \( \Sigma \) is simply the set-theoretic identity.
   \end{thmenum}
@@ -77,14 +81,15 @@ We give here the following definition, and then dedicate several sections to exp
 \begin{definition}\label{def:fol_term}\mimprovised
   For a fixed \hyperref[def:fol_signature]{first-order signature} \( \Sigma \), we reuse the function application grammar from \cref{def:function_application_syntax} to formally introduce \hyperref[con:predicate_logic/predicate]{terms}:
   \begin{bnf*}
-    \bnfprod{function application} {\underbrace{f \bnfsp \bnftsq{(} \bnfsp \overbrace{\bnfpn{term} \bnfsp \bnftsq{,} \bnfsp \bnfsk \bnfsp \bnftsq{,} \bnfsp \bnfpn{term}}^{\# f \T*{terms separated by commas}} \bnfsp \bnftsq{)}}_{\T*{Standalone rule for each} f \in \op*{Fun}_\Sigma}} \\
+    \bnfprod{function application} {\underbrace{f \bnfsp \bnftsq{(} \bnfsp \overbrace{\bnfpn{term} \bnfsp \bnftsq{,} \bnfsp \bnfsk \bnfsp \bnftsq{,} \bnfsp \bnfpn{term}}^{\# f \T*{terms separated by commas}} \bnfsp \bnftsq{)}}_{\T*{One rule for each} f \in \op*{Fun}_\Sigma \setminus \op*{Infix}_\Sigma}} \\
+    \bnfprod{function application} {\underbrace{\bnftsq{(} \bnfsp \bnfpn{term} \anon \bnfpn{term} \bnfsp \bnftsq{)}}_{\mathclap{\T*{One rule for each} \anon \in \op*{Fun}_\Sigma \cap \op*{Infix}_\Sigma}}} \\
     \bnfprod{individual variable}  {\bnfpn{Small Latin identifier}} \\
     \bnfprod{term}                 {\bnfpn{individual variable} \bnfor \bnfpn{function application}}
   \end{bnf*}
 
   \begin{itemize}
-    \item As in \cref{def:function_application_syntax}, when \( \# f = 0 \), we avoid writing parentheses in function application rules.
     \item We have used the variable identifier rules from \cref{def:variable_identifier}.
+    \item The function application rules are discussed in \cref{rem:fol_application_infix_notation}.
   \end{itemize}
 
   Similarly to the case of \( \muplambda \)-terms in \cref{def:propositional_subformula}, we will denote the set of all \term[ru=индивидные переменные / предметные переменные (\cite[49]{КолмогоровДрагалин2006Логика}), en=individual variables (\cite[57]{VanDalen2004LogicAndStructure})]{individuals variables} by \( \op*{Var} \) and the set of all \term{first-order terms} over \( \Sigma \) by \( \op*{Term}_\Sigma \).
@@ -96,8 +101,36 @@ We give here the following definition, and then dedicate several sections to exp
 
   \item We implicitly associate with each propositional formula an \hyperref[con:abstract_syntax_tree]{abstract syntax tree} --- see \cref{def:fol_term_ast}. The grammar of first-order terms is unambiguous as shown via \cref{thm:fol_term_grammar/unambiguous}, which makes it possible to perform proofs via \fullref{thm:induction_on_rooted_trees}.
 
-  \item First-order terms are implemented in \identifier{math.logic.terms}, with a parser in \identifier{math.logic.parsing}.
+  \item First-order terms are implemented in the module \identifier{math.logic.terms} in \cite{notebook:code}, with a parser in \identifier{math.logic.parsing}.
 \end{comments}
+
+\begin{remark}\label{rem:fol_application_infix_notation}
+  We have defined first-order terms in \cref{def:fol_term} so that function application differs syntactically between prefix and infix function symbols. We will do the same in \cref{def:fol_formula} for predicate application. Supporting different notations greatly increases the readability of some symbolic expressions in \cite{notebook:code}.
+
+  Examples of infix function and predicate symbols abound --- all binary operations from \fullref{ch:group_theory}, \fullref{ch:ring_theory} and \fullref{ch:order_theory}, as well as the order relations from the latter. Other examples include the binary Peano arithmetic operations in \fullref{sec:natural_numbers} and the set membership predicate and most defined operations in \fullref{ch:set_theory}.
+
+  Unlike the metalingual \enquote{abuse-of-notation} conventions like those in \cref{rem:fol_formula_conventions}, support for infix notation does not require sacrificing syntactic unambiguity or useful properties like the subterm characterization in \cref{thm:lambda_subterm_characterization}. Furthermore, since both binary connective formulas and equality formulas use infix notation, adding support for other infix symbols is not difficult.
+
+  One thing should be noted, however. Since we mostly deal with \hyperref[con:abstract_syntax_tree]{abstract syntax trees}, the actual notation is not relevant outside the object language. We want \fullref{alg:fol_term_signature_translation} to produce an isomorphic syntax tree, but we have allowed signature morphisms to exchange prefix and infix symbols.
+
+  Correspondingly, when only the abstract structure of a term (or formula) is concerned, we assume that a metalingual schema for function application like \( f(x, y) \) encompasses both prefix and infix symbols. Otherwise, we would have to add meaningless cases when using \hyperref[con:evaluation]{pattern matching}. For instance, when defining term denotations in \cref{def:fol_denotation/terms}, we prefer writing
+  \begin{equation*}
+    \Bracks{\tau}_\mscrX^v \coloneqq \begin{cases}
+      v(\tau),                                                                             &\tau \in \op*{Var}, \\
+      I(f)\parens[\big]{ \Bracks{\sigma_1}_\mscrX^v, \ldots, \Bracks{\sigma_n}_\mscrX^v }, &\tau = f(\sigma_1, \ldots, \sigma_n)
+    \end{cases}
+  \end{equation*}
+  instead of
+  \begin{equation*}
+    \Bracks{\tau}_\mscrX^v \coloneqq \begin{cases}
+      v(\tau),                                                                             &\tau \in \op*{Var}, \\
+      I(\anon)\parens[\big]{ \Bracks{\sigma}_\mscrX^v, \Bracks{\rho}_\mscrX^v },           &\tau = \sigma \anon \rho, \\
+      I(f)\parens[\big]{ \Bracks{\sigma_1}_\mscrX^v, \ldots, \Bracks{\sigma_n}_\mscrX^v }, &\tau = f(\sigma_1, \ldots, \sigma_n) \T{and} f \not\in \op*{Infix}_\Sigma
+    \end{cases}
+  \end{equation*}
+
+  Furthermore, we have defined signature morphisms in \cref{def:fol_signature_category/morphisms} so that prefix and infix symbols can be exchanged.
+\end{remark}
 
 \begin{proposition}\label{thm:fol_term_grammar}
   The \hyperref[def:formal_grammar]{grammar} of \hyperref[def:fol_term]{first-order terms} has the following basic properties:
@@ -125,7 +158,7 @@ We give here the following definition, and then dedicate several sections to exp
   We denote by \( \op*{Var}(\tau) \) those subterms of \( \tau \) that are variables.
 \end{definition}
 
-\begin{proposition}\label{thm:propositional_formula_characterization}
+\begin{proposition}\label{thm:fol_term_characterization}
   The \hyperref[def:formal_language/substring]{substring} \( \rho \) of the first-order term \( \tau \) is a \hyperref[def:fol_subterm]{subterm} of \( \tau \) if and only if \( \rho \) is itself a formula.
 \end{proposition}
 \begin{proof}
@@ -155,12 +188,13 @@ We give here the following definition, and then dedicate several sections to exp
   Given a \hyperref[def:fol_signature_category/morphism]{signature morphism} \( s: \Sigma \to \Theta \), we can easily translate any \hyperref[def:fol_term]{first-order term} from \( \op*{Term}_\Sigma \) to \( \op*{Term}_\Theta \):
   \begin{equation*}
     \tau[s] \coloneqq \begin{cases}
-      \tau,                                              &\tau \in \op*{Var}, \\
+      \tau,                                                  &\tau \in \op*{Var}, \\
       s(f)\parens[\big]{ \sigma_1[s], \ldots, \sigma_n[s] }, &\tau = f(\sigma_1, \ldots, \sigma_n).
     \end{cases}
   \end{equation*}
 \end{algorithm}
 \begin{comments}
+  \item As discussed in \cref{rem:fol_application_infix_notation}, we allow exchanging prefix and infix symbols.
   \item This algorithm can be found as \identifier{math.logic.signature_translation.translate_term} in \cite{notebook:code}.
 \end{comments}
 
@@ -169,7 +203,8 @@ We give here the following definition, and then dedicate several sections to exp
 \begin{definition}\label{def:fol_formula}\mimprovised
   For a fixed \hyperref[def:fol_signature]{first-order signature} \( \Sigma \), we introduce a \hyperref[def:formal_grammar]{formal grammar} for \hyperref[con:proposition]{formulas}:
   \begin{bnf*}
-    \bnfprod{predicate application} {\underbrace{p \bnfsp \bnftsq{(} \bnfsp \overbrace{\bnfpn{term} \bnfsp \bnftsq{,} \bnfsp \bnfsk \bnfsp \bnftsq{,} \bnfsp \bnfpn{term}}^{\# p \T*{terms separated by commas}} \bnfsp \bnftsq{)}}_{\T*{Standalone rule for each} p \in \op*{Pred}_\Sigma}} \\
+    \bnfprod{predicate application} {\underbrace{p \bnfsp \bnftsq{(} \bnfsp \overbrace{\bnfpn{term} \bnfsp \bnftsq{,} \bnfsp \bnfsk \bnfsp \bnftsq{,} \bnfsp \bnfpn{term}}^{\# p \T*{terms separated by commas}} \bnfsp \bnftsq{)}}_{\T*{One rule for each} p \in \op*{Pred}_\Sigma \setminus \op*{Infix}_\Sigma}} \\
+    \bnfprod{predicate application} {\underbrace{\bnftsq{(} \bnfsp \bnfpn{term} \anon \bnfpn{term} \bnfsp \bnftsq{)}}_{\mathclap{\T*{One rule for each} \anon \in \op*{Pred}_\Sigma \cap \op*{Infix}_\Sigma}}} \\
     \bnfprod{equality formula}       {\bnftsq{(} \bnfsp \bnfpn{term} \bnfsp \bnftsq{\( \syneq \)} \bnfsp \bnfpn{term} \bnfsp \bnftsq{)}} \\
     \bnfprod{quantifier formula}     {\bnfpn{quantifier} \bnfsp \bnfpn{individual variable} \bnfsp \bnftsq{.} \bnfsp \bnfpn{formula}} \\
     \bnfprod{atomic formula}         {\bnfpn{constant formula} \bnfor} \\
@@ -186,7 +221,7 @@ We give here the following definition, and then dedicate several sections to exp
 
     \item The \( \bnfpn{negation formula} \) and \( \bnfpn{connective formula} \) rules are exactly as in for propositional formulas in \cref{def:propositional_formula}, so we have avoided stating them explicitly.
 
-    \item The \( \bnfpn{predicate application} \) rules are based on the function application syntax from \cref{def:function_application_syntax} (without parentheses when \( \# p = 0 \)).
+    \item The \( \bnfpn{predicate application} \) rules are discussed in \cref{rem:fol_application_infix_notation}.
 
     \item The \( \bnfpn{quantifier} \) rule lists the corresponding symbols from the alphabet.
   \end{itemize}
@@ -218,11 +253,7 @@ We give here the following definition, and then dedicate several sections to exp
   \begin{thmenum}
     \thmitem{rem:fol_formula_conventions/parentheses} We use the parentheses conventions from \cref{rem:propositional_formula_notation_conventions}.
 
-    \thmitem{rem:fol_formula_conventions/infix} As mentioned in \cref{def:fol_signature}, many binary function and predicate symbols are intended to use \hyperref[def:function_application_syntax]{infix notation}.
-
-    Examples abound --- all binary operations from \fullref{ch:group_theory}, \fullref{ch:ring_theory} and \fullref{ch:order_theory}, as well as the order relations from the latter. Other examples include the binary Peano arithmetic operations in \fullref{sec:natural_numbers} and the set membership predicate in \fullref{sec:set_theory}.
-
-    Thus, when we have declared that a symbol should use infix notation, we use it in all related terms and formulas in the metalanguage.
+    \thmitem{rem:fol_formula_conventions/infix} As discussed in \cref{rem:fol_application_infix_notation}, we will mostly disregard the difference between prefix and infix function and predicate applications if we are only interested in the \hyperref[con:abstract_syntax_tree]{abstract syntax trees} of the terms and formulas.
 
     \thmitem{rem:fol_formula_conventions/relativization} Bounded quantifiers, which we discuss in general in \cref{con:predicate_logic/relativization}, are not allowed by the syntax of first-order logic.
 
@@ -238,7 +269,7 @@ We give here the following definition, and then dedicate several sections to exp
 
     The particular choice of abbreviations is justified in \cref{thm:relativized_first_order_quantifiers_are_dual}.
 
-    \thmitem{rem:fol_formula_conventions/unique_existence} We use the abbreviation in \cref{rem:exists_unique_abbreviation} to emulate the unique existence quantifier \( \qExists x \varphi \) discussed in \cref{con:description_operator/unique_existence}.
+    \thmitem{rem:fol_formula_conventions/unique_existence} We will use the abbreviation in \cref{rem:exists_unique_abbreviation} to emulate the unique existence quantifier \( \qExists x \varphi \) discussed in \cref{con:description_operator/unique_existence}.
   \end{thmenum}
 \end{remark}
 
@@ -307,6 +338,8 @@ We give here the following definition, and then dedicate several sections to exp
   \end{equation*}
 \end{algorithm}
 \begin{comments}
+  \item As discussed in \cref{rem:fol_application_infix_notation}, we allow exchanging prefix and infix symbols.
+
   \item This straightforward algorithm becomes powerful when combined with \hyperref[def:fol_definitional_extension]{definitional extensions}; see \cref{rem:signature_translation_and_definitional_extensions}.
 
   \item This algorithm can be found as \identifier{math.logic.signature_translation.translate_formula} in \cite{notebook:code}.
@@ -453,8 +486,8 @@ We give here the following definition, and then dedicate several sections to exp
     \thmitem{def:fol_denotation/term_function} Based on how we defined functions on propositional formulas in \cref{def:propositional_denotation/function}, assuming that \( \op*{Var}(\tau) \subseteq \set{ x_1, \ldots, x_n } \), we can define the function
     \begin{equation*}
       \begin{aligned}
-        &\Bracks{\tau}: X^n \to X, \\
-        &\Bracks{\tau}(a_1, \ldots, a_n) \coloneqq \Bracks{\tau}_\mscrX^v,
+        &\Bracks{\tau}_\mscrX: X^n \to X, \\
+        &\Bracks{\tau}_\mscrX(a_1, \ldots, a_n) \coloneqq \Bracks{\tau}_\mscrX^v,
       \end{aligned}
     \end{equation*}
     where \( v \) is any variable assignment such that \( v(x_k) = a_k \) for \( k = 1, \ldots, n \).
@@ -487,8 +520,8 @@ We give here the following definition, and then dedicate several sections to exp
     \thmitem{def:fol_denotation/formula_valuation} Just as we have associated a function with every term, if \( \op*{Free}(\varphi) \subseteq \set{ x_1, \ldots, x_n } \), we can define the function
     \begin{equation*}
       \begin{aligned}
-        &\Bracks{\tau}: X^n \to \BbbH, \\
-        &\Bracks{\tau}(a_1, \ldots, a_n) \coloneqq \Bracks{\varphi}_\mscrX^v,
+        &\Bracks{\varphi}_\mscrX: X^n \to \BbbH, \\
+        &\Bracks{\varphi}_\mscrX(a_1, \ldots, a_n) \coloneqq \Bracks{\varphi}_\mscrX^v,
       \end{aligned}
     \end{equation*}
     where \( v \) is any variable assignment such that \( v(x_k) = a_k \) for \( k = 1, \ldots, n \).

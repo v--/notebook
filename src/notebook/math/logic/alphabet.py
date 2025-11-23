@@ -20,3 +20,17 @@ class BinaryConnective(StrEnum):
 class Quantifier(StrEnum):
     UNIVERSAL = '∀'
     EXISTENTIAL = '∃'
+
+
+class EqualitySymbol(StrEnum):
+    EQUALITY = '='
+
+
+class AuxImproperSymbol(StrEnum):
+    DOT = '.'
+    COMMA = ','
+    ASTERISK = '*'
+    LEFT_PARENTHESIS = '('
+    RIGHT_PARENTHESIS = ')'
+    LEFT_BRACKET = '['
+    RIGHT_BRACKET = ']'

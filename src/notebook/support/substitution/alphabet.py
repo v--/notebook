@@ -1,5 +1,7 @@
 from enum import StrEnum
 
 
-class SubstitutionConnective(StrEnum):
-    BASE = '↦'
+class ImproperSubstitutionSymbol(StrEnum):
+    CONNECTIVE = '↦'
+    LEFT_BRACKET = '['
+    RIGHT_BRACKET = ']'

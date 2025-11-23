@@ -32,7 +32,7 @@ class InferInstantiationVisitor(TermSchemaVisitor[FormalLogicSchemaInstantiation
 
     @override
     def visit_function(self, schema: FunctionApplicationSchema) -> FormalLogicSchemaInstantiation:
-        if not isinstance(self.term, FunctionApplication) or schema.name != self.term.name or len(schema.arguments) != len(self.term.arguments):
+        if not isinstance(self.term, FunctionApplication) or schema.symbol != self.term.symbol or len(schema.arguments) != len(self.term.arguments):
             raise SchemaInferenceError(f'Cannot match function term schema {schema} to {self.term}')
 
         instantiation = FormalLogicSchemaInstantiation()

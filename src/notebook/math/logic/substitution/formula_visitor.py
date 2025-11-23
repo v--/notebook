@@ -27,7 +27,7 @@ class FormulaSubstitutionVisitor(FormulaTransformationVisitor):
     @override
     def visit_predicate(self, formula: PredicateApplication) -> PredicateApplication:
         term_visitor = TermSubstitutionVisitor(self.substitution)
-        return PredicateApplication(formula.name, [term_visitor.visit(arg) for arg in formula.arguments])
+        return PredicateApplication(formula.symbol, [term_visitor.visit(arg) for arg in formula.arguments])
 
     def visit_quantifier(self, formula: QuantifierFormula) -> QuantifierFormula:
         new_var = self.substitution.get_modified_quantifier_variable(formula)

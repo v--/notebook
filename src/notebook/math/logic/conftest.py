@@ -8,12 +8,18 @@ from .signature import FormalLogicSignature
 def dummy_signature(max_args: int = 3) -> FormalLogicSignature:
     signature = FormalLogicSignature()
 
-    for l in ['f', 'g', 'h', 't']:
-        for i in range(max_args + 1):
-            signature.add_symbol('FUNCTION', name=l + itoa_superscripts(i), arity=i)
+    for char in ['+', '×']:
+        signature.add_symbol('FUNCTION', name=char, arity=2, infix=True)
 
-    for l in ['p', 'q', 'r', 's']:
+    for char in ['<', '>']:
+        signature.add_symbol('PREDICATE', name=char, arity=2, infix=True)
+
+    for char in ['f', 'g', 'h', 't']:
         for i in range(max_args + 1):
-            signature.add_symbol('PREDICATE', name=l + itoa_superscripts(i), arity=i)
+            signature.add_symbol('FUNCTION', name=char + itoa_superscripts(i), arity=i, infix=False)
+
+    for char in ['p', 'q', 'r', 's']:
+        for i in range(max_args + 1):
+            signature.add_symbol('PREDICATE', name=char + itoa_superscripts(i), arity=i, infix=False)
 
     return signature

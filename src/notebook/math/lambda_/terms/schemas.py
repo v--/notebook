@@ -1,7 +1,7 @@
 from dataclasses import dataclass
 
 from ....parsing.identifiers import LatinIdentifier
-from ..alphabet import ImproperTermSymbol
+from ..alphabet import BinderSymbol
 from ..types import SimpleTypeSchema
 from .terms import Constant
 
@@ -38,7 +38,7 @@ class TypedAbstractionSchema:
     body: TypedTermSchema
 
     def __str__(self) -> str:
-        return f'({ImproperTermSymbol.LAMBDA}{self.var}:{self.var_type}.{self.body})'
+        return f'({BinderSymbol.LAMBDA}{self.var}:{self.var_type}.{self.body})'
 
 
 TypedTermSchema = Constant | VariablePlaceholder | TermPlaceholder | TypedApplicationSchema | TypedAbstractionSchema
