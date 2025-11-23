@@ -19,14 +19,14 @@ from .term_visitor import substitute_in_term
         expected='y'
     ),
     dict(
-        term='f₁(x)',
+        term='f¹(x)',
         mapping=dict(x='y'),
-        expected='f₁(y)'
+        expected='f¹(y)'
     ),
     dict(
-        term='f₂(g₁(x), y)',
+        term='f²(g¹(x), y)',
         mapping=dict(x='y', y='x'),
-        expected='f₂(g₁(y), x)'
+        expected='f²(g¹(y), x)'
     )
 )
 def test_substitute_in_term(
@@ -46,46 +46,46 @@ def test_substitute_in_term(
 @pytest_parametrize_kwargs(
     # Straighforward substitution
     dict(
-        formula='p₁(x)',
+        formula='p¹(x)',
         mapping=dict(x='y'),
-        expected='p₁(y)'
+        expected='p¹(y)'
     ),
     dict(
-        formula='p₁(y)',
+        formula='p¹(y)',
         mapping=dict(x='z'),
-        expected='p₁(y)'
+        expected='p¹(y)'
     ),
     # (Avoiding) capturing free variables
     dict(
-        formula='∀x.p₁(y)',
+        formula='∀x.p¹(y)',
         mapping=dict(y='z'),
-        expected='∀x.p₁(z)'
+        expected='∀x.p¹(z)'
     ),
     dict(
-        formula='∀x.p₁(y)',
+        formula='∀x.p¹(y)',
         mapping=dict(y='x'),
-        expected='∀a.p₁(x)'
+        expected='∀a.p¹(x)'
     ),
     dict(
-        formula='∀x.p₂(x, y)',
+        formula='∀x.p²(x, y)',
         mapping=dict(y='x'),
-        expected='∀a.p₂(a, x)'
+        expected='∀a.p²(a, x)'
     ),
     dict(
-        formula='∀x.p₃(x, y, z)',
+        formula='∀x.p³(x, y, z)',
         mapping=dict(y='z', z='y'),
-        expected='∀x.p₃(x, z, y)'
+        expected='∀x.p³(x, z, y)'
     ),
     dict(
-        formula='∀x.p₃(x, y, z)',
+        formula='∀x.p³(x, y, z)',
         mapping=dict(y='x', z='a'),
-        expected='∀b.p₃(b, x, a)'
+        expected='∀b.p³(b, x, a)'
     ),
     # (Avoiding) colliding variables
     dict(
-        formula='∀x.p₁(y)',
+        formula='∀x.p¹(y)',
         mapping=dict(y='x'),
-        expected='∀a.p₁(x)'
+        expected='∀a.p¹(x)'
     ),
 )
 def test_substitute_in_formula(

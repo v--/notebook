@@ -10,11 +10,11 @@ from .variables import get_formula_free_variables
     dict(formula='(x = y)',   expected={'x', 'y'}),
     dict(formula='(x = y)',   expected={'x', 'y'}),
     dict(formula='(x₁ = y₂)', expected={'x₁', 'y₂'}),
-    dict(formula='p₂(x, y)',  expected={'x', 'y'}),
-    dict(formula='∀y.p₁(x)',  expected={'x'}),
-    dict(formula='∀x.p₁(x)',  expected=set()),
+    dict(formula='p²(x, y)',  expected={'x', 'y'}),
+    dict(formula='∀y.p¹(x)',  expected={'x'}),
+    dict(formula='∀x.p¹(x)',  expected=set()),
     dict(
-        formula='((∀y.p₁(y) ∨ q₁(x)) ∧ ∃y.r₁(y))',
+        formula='((∀y.p¹(y) ∨ q¹(x)) ∧ ∃y.r¹(y))',
         expected={'x'}
     ),
 )

@@ -1,3 +1,4 @@
+from collections.abc import Iterable
 from typing import override
 
 from .exceptions import FormalLogicSignatureError
@@ -5,12 +6,12 @@ from .signature import FormalLogicSignature, SignatureSymbol, SignatureSymbolKin
 
 
 class PropositionalLogicSignature(FormalLogicSignature):
-    """A hackish class designed to treat all individual variables as nullary propositions."""
-    def __init__(self) -> None:
+    """A hackish class designed to treat individual variables without indices as nullary propositions."""
+    def __init__(self, variable_names: Iterable[str]) -> None:
         super().__init__()
 
-        for ind in range(ord('a'), ord('z') + 1):
-            self.trie[chr(ind)] = SignatureSymbol('PREDICATE', name=chr(ind), arity=0)
+        for name in variable_names:
+            self.trie[name] = SignatureSymbol('PREDICATE', name=name, arity=0)
 
     @override
     def add_symbol(self, symbol_kind: SignatureSymbolKind, name: str, arity: int) -> None:
@@ -19,4 +20,4 @@ class PropositionalLogicSignature(FormalLogicSignature):
 
 # We only support propositional formulas encoded as first-order formulas with no terms and predicates acting as variables.
 # This deviates from the monograph, but implementing support for propositional variables will be of no use for us.
-PROPOSITIONAL_SIGNATURE = PropositionalLogicSignature()
+PROPOSITIONAL_SIGNATURE = PropositionalLogicSignature(chr(ind) for ind in range(ord('a'), ord('z') + 1))

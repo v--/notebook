@@ -1,6 +1,6 @@
 import pytest
 
-from ...support.unicode import itoa_subscripts
+from ...support.unicode import itoa_superscripts
 from .signature import FormalLogicSignature
 
 
@@ -10,10 +10,10 @@ def dummy_signature(max_args: int = 3) -> FormalLogicSignature:
 
     for l in ['f', 'g', 'h', 't']:
         for i in range(max_args + 1):
-            signature.add_symbol('FUNCTION', name=l + itoa_subscripts(i), arity=i)
+            signature.add_symbol('FUNCTION', name=l + itoa_superscripts(i), arity=i)
 
     for l in ['p', 'q', 'r', 's']:
         for i in range(max_args + 1):
-            signature.add_symbol('PREDICATE', name=l + itoa_subscripts(i), arity=i)
+            signature.add_symbol('PREDICATE', name=l + itoa_superscripts(i), arity=i)
 
     return signature

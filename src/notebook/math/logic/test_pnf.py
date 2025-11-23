@@ -27,8 +27,8 @@ def test_is_formula_quantifierless_success(formula: str, dummy_signature: Formal
 
 @pytest_parametrize_lists(
     formula=[
-        '∀x.p₁(y)',
-        '¬∀x.p₁(y)',
+        '∀x.p¹(y)',
+        '¬∀x.p¹(y)',
     ]
 )
 def test_is_formula_quantifierless_failure(formula: str, dummy_signature: FormalLogicSignature) -> None:
@@ -38,8 +38,8 @@ def test_is_formula_quantifierless_failure(formula: str, dummy_signature: Formal
 @pytest_parametrize_lists(
     formula=[
         '(x = y)',
-        '∀x.p₁(y)',
-        '∀z.∃z.(¬r₁(y) ∧ ¬r₂(z, y))',
+        '∀x.p¹(y)',
+        '∀z.∃z.(¬r¹(y) ∧ ¬r²(z, y))',
     ]
 )
 def test_is_formula_in_pnf_success(formula: str, dummy_signature: FormalLogicSignature) -> None:
@@ -48,8 +48,8 @@ def test_is_formula_in_pnf_success(formula: str, dummy_signature: FormalLogicSig
 
 @pytest_parametrize_lists(
     formula=[
-        '¬∀x.p₁(y)',
-        '∀y.∃z.(¬p₁(z) ∧ ∀x.(q₂(z, x) → ¬r₂(y, x)))',
+        '¬∀x.p¹(y)',
+        '∀y.∃z.(¬p¹(z) ∧ ∀x.(q²(z, x) → ¬r²(y, x)))',
     ]
 )
 def test_is_formula_in_pnf_failure(formula: str, dummy_signature: FormalLogicSignature) -> None:
@@ -58,11 +58,11 @@ def test_is_formula_in_pnf_failure(formula: str, dummy_signature: FormalLogicSig
 
 @pytest_parametrize_kwargs(
     dict(formula='(x = y)',                expected='(x = y)'),
-    dict(formula='(p₁(x) ∨ q₁(y))',        expected='(p₁(x) ∨ q₁(y))'),
-    dict(formula='(p₁(x) → q₁(y))',        expected='(¬p₁(x) ∨ q₁(y))'),
-    dict(formula='(p₁(x) ↔ q₁(y))',        expected='((¬p₁(x) ∨ q₁(y)) ∧ (p₁(x) ∨ ¬q₁(y)))'),
-    dict(formula='¬(p₁(x) → q₁(y))',       expected='¬(¬p₁(x) ∨ q₁(y))'),
-    dict(formula='∀y.∃z.¬(p₁(x) → q₁(y))', expected='∀y.∃z.¬(¬p₁(x) ∨ q₁(y))')
+    dict(formula='(p¹(x) ∨ q¹(y))',        expected='(p¹(x) ∨ q¹(y))'),
+    dict(formula='(p¹(x) → q¹(y))',        expected='(¬p¹(x) ∨ q¹(y))'),
+    dict(formula='(p¹(x) ↔ q¹(y))',        expected='((¬p¹(x) ∨ q¹(y)) ∧ (p¹(x) ∨ ¬q¹(y)))'),
+    dict(formula='¬(p¹(x) → q¹(y))',       expected='¬(¬p¹(x) ∨ q¹(y))'),
+    dict(formula='∀y.∃z.¬(p¹(x) → q¹(y))', expected='∀y.∃z.¬(¬p¹(x) ∨ q¹(y))')
 )
 def test_remove_conditionals_success(formula: str, expected: str, dummy_signature: FormalLogicSignature) -> None:
     assert str(remove_conditionals(parse_formula(formula, dummy_signature))) == expected
@@ -70,11 +70,11 @@ def test_remove_conditionals_success(formula: str, expected: str, dummy_signatur
 
 @pytest_parametrize_kwargs(
     dict(formula='(x = y)',                expected='(x = y)'),
-    dict(formula='(p₁(x) ∨ q₁(y))',        expected='(p₁(x) ∨ q₁(y))'),
-    dict(formula='(p₁(x) → q₁(y))',        expected='(¬p₁(x) ∨ q₁(y))'),
-    dict(formula='(p₁(x) ↔ q₁(y))',        expected='((¬p₁(x) ∨ q₁(y)) ∧ (p₁(x) ∨ ¬q₁(y)))'),
-    dict(formula='¬(p₁(x) → q₁(y))',       expected='¬(¬p₁(x) ∨ q₁(y))'),
-    dict(formula='∀y.∃z.¬(p₁(x) → q₁(y))', expected='∀y.∃z.¬(¬p₁(x) ∨ q₁(y))')
+    dict(formula='(p¹(x) ∨ q¹(y))',        expected='(p¹(x) ∨ q¹(y))'),
+    dict(formula='(p¹(x) → q¹(y))',        expected='(¬p¹(x) ∨ q¹(y))'),
+    dict(formula='(p¹(x) ↔ q¹(y))',        expected='((¬p¹(x) ∨ q¹(y)) ∧ (p¹(x) ∨ ¬q¹(y)))'),
+    dict(formula='¬(p¹(x) → q¹(y))',       expected='¬(¬p¹(x) ∨ q¹(y))'),
+    dict(formula='∀y.∃z.¬(p¹(x) → q¹(y))', expected='∀y.∃z.¬(¬p¹(x) ∨ q¹(y))')
 )
 def test_move_negations_success(formula: str, expected: str, dummy_signature: FormalLogicSignature) -> None:
     assert str(remove_conditionals(parse_formula(formula, dummy_signature))) == expected
@@ -84,14 +84,14 @@ def test_move_negations_success(formula: str, expected: str, dummy_signature: Fo
     dict(formula='(x = y)',           expected='(x = y)'),
     dict(formula='¬(x = y)',          expected='¬(x = y)'),
     dict(formula='¬¬(x = y)',         expected='(x = y)'),
-    dict(formula='¬(p₁(x) ∨ ¬q₁(y))', expected='(¬p₁(x) ∧ q₁(y))'),
+    dict(formula='¬(p¹(x) ∨ ¬q¹(y))', expected='(¬p¹(x) ∧ q¹(y))'),
     dict(
-        formula='¬∀y.∃z.(p₁(x) ∨ ¬q₁(y))',
-        expected='∃y.∀z.(¬p₁(x) ∧ q₁(y))'
+        formula='¬∀y.∃z.(p¹(x) ∨ ¬q¹(y))',
+        expected='∃y.∀z.(¬p¹(x) ∧ q¹(y))'
     ),
     dict(
-        formula='¬(p₁(x) ∨ ¬(q₁(y) ∧ ¬(∃z.r₁(z) ∨ ¬s₀)))',
-        expected='(¬p₁(x) ∧ (q₁(y) ∧ (∀z.¬r₁(z) ∧ s₀)))'
+        formula='¬(p¹(x) ∨ ¬(q¹(y) ∧ ¬(∃z.r¹(z) ∨ ¬s⁰)))',
+        expected='(¬p¹(x) ∧ (q¹(y) ∧ (∀z.¬r¹(z) ∧ s⁰)))'
     )
 )
 def test_move_negations(formula: str, expected: str, dummy_signature: FormalLogicSignature) -> None:
@@ -99,7 +99,7 @@ def test_move_negations(formula: str, expected: str, dummy_signature: FormalLogi
 
 
 def test_move_negations_conditional(dummy_signature: FormalLogicSignature) -> None:
-    formula = parse_formula('¬(p₁(x) → p₁(y))', dummy_signature)
+    formula = parse_formula('¬(p¹(x) → p¹(y))', dummy_signature)
 
     with pytest.raises(PNFError) as excinfo:
         move_negations(formula)
@@ -108,7 +108,7 @@ def test_move_negations_conditional(dummy_signature: FormalLogicSignature) -> No
 
 
 def test_move_negations_biconditional(dummy_signature: FormalLogicSignature) -> None:
-    formula = parse_formula('¬(p₁(x) ↔ p₁(y))', dummy_signature)
+    formula = parse_formula('¬(p¹(x) ↔ p¹(y))', dummy_signature)
 
     with pytest.raises(PNFError) as excinfo:
         move_negations(formula)
@@ -118,23 +118,23 @@ def test_move_negations_biconditional(dummy_signature: FormalLogicSignature) -> 
 
 @pytest_parametrize_kwargs(
     dict(formula='(x = y)',     expected='(x = y)'),
-    dict(formula='∀y.p₁(x)',    expected='∀y.p₁(x)'),
-    dict(formula='∀y.∀y.p₁(x)', expected='∀y.∀y.p₁(x)'),
-    dict(formula='∀y.∀y.p₁(y)', expected='∀y.∀y.p₁(y)'),
-    dict(formula='(∀x.p₁(x) ∨ q₁(y))', expected='∀x.(p₁(x) ∨ q₁(y))'),
-    dict(formula='(∀x.p₁(x) ∨ q₁(x))', expected='∀a.(p₁(a) ∨ q₁(x))'),
-    dict(formula='(∀x.p₁(x) ∨ q₂(a, x))', expected='∀b.(p₁(b) ∨ q₂(a, x))'),
+    dict(formula='∀y.p¹(x)',    expected='∀y.p¹(x)'),
+    dict(formula='∀y.∀y.p¹(x)', expected='∀y.∀y.p¹(x)'),
+    dict(formula='∀y.∀y.p¹(y)', expected='∀y.∀y.p¹(y)'),
+    dict(formula='(∀x.p¹(x) ∨ q¹(y))', expected='∀x.(p¹(x) ∨ q¹(y))'),
+    dict(formula='(∀x.p¹(x) ∨ q¹(x))', expected='∀a.(p¹(a) ∨ q¹(x))'),
+    dict(formula='(∀x.p¹(x) ∨ q²(a, x))', expected='∀b.(p¹(b) ∨ q²(a, x))'),
     dict(
-        formula='(∀x.p₁(x) ∨ ∀x.q₁(x))',
-        expected='∀x.∀a.(p₁(x) ∨ q₁(a))'
+        formula='(∀x.p¹(x) ∨ ∀x.q¹(x))',
+        expected='∀x.∀a.(p¹(x) ∨ q¹(a))'
     ),
     dict(
-        formula='((∃x.p₁(x) ∧ ∃y.q₁(y)) ∨ (∃x.p₁(x) ∧ ∃y.q₁(y)))',
-        expected='∃x.∃y.∃a.∃b.((p₁(x) ∧ q₁(y)) ∨ (p₁(a) ∧ q₁(b)))'
+        formula='((∃x.p¹(x) ∧ ∃y.q¹(y)) ∨ (∃x.p¹(x) ∧ ∃y.q¹(y)))',
+        expected='∃x.∃y.∃a.∃b.((p¹(x) ∧ q¹(y)) ∨ (p¹(a) ∧ q¹(b)))'
     ),
     dict(
-        formula='((∀x.p₁(x) ∨ q₁(x)) ∧ ∃a.r₁(a))',
-        expected='∃a.∀b.((p₁(b) ∨ q₁(x)) ∧ r₁(a))'
+        formula='((∀x.p¹(x) ∨ q¹(x)) ∧ ∃a.r¹(a))',
+        expected='∃a.∀b.((p¹(b) ∨ q¹(x)) ∧ r¹(a))'
     ),
 )
 def test_move_quantifiers(formula: str, expected: str, dummy_signature: FormalLogicSignature) -> None:
@@ -142,7 +142,7 @@ def test_move_quantifiers(formula: str, expected: str, dummy_signature: FormalLo
 
 
 def test_move_quantifiers_conditional(dummy_signature: FormalLogicSignature) -> None:
-    formula = parse_formula('¬(p₁(x) → p₁(y))', dummy_signature)
+    formula = parse_formula('¬(p¹(x) → p¹(y))', dummy_signature)
 
     with pytest.raises(PNFError) as excinfo:
         move_quantifiers(formula)
@@ -151,7 +151,7 @@ def test_move_quantifiers_conditional(dummy_signature: FormalLogicSignature) -> 
 
 
 def test_move_quantifiers_biconditional(dummy_signature: FormalLogicSignature) -> None:
-    formula = parse_formula('¬(p₁(x) ↔ p₁(y))', dummy_signature)
+    formula = parse_formula('¬(p¹(x) ↔ p¹(y))', dummy_signature)
 
     with pytest.raises(PNFError) as excinfo:
         move_quantifiers(formula)
@@ -162,14 +162,14 @@ def test_move_quantifiers_biconditional(dummy_signature: FormalLogicSignature) -
 
 @pytest_parametrize_kwargs(
     dict(formula='(x = y)',   expected='(x = y)'),
-    dict(formula='¬∀y.p₁(x)', expected='∃y.¬p₁(x)'),
+    dict(formula='¬∀y.p¹(x)', expected='∃y.¬p¹(x)'),
     dict(
-        formula='((∀x.p₁(x) ∨ q₁(x)) ∧ ∃x.¬¬r₁(x))',
-        expected='∃a.∀b.((p₁(b) ∨ q₁(x)) ∧ r₁(a))'
+        formula='((∀x.p¹(x) ∨ q¹(x)) ∧ ∃x.¬¬r¹(x))',
+        expected='∃a.∀b.((p¹(b) ∨ q¹(x)) ∧ r¹(a))'
     ),
     dict(
-        formula='((∃x.¬p₁(x) → q₁(x)) ∧ ∃x.r₁(b))',
-        expected='∃a.∀a.((p₁(a) ∨ q₁(x)) ∧ r₁(b))'
+        formula='((∃x.¬p¹(x) → q¹(x)) ∧ ∃x.r¹(b))',
+        expected='∃a.∀a.((p¹(a) ∨ q¹(x)) ∧ r¹(b))'
     ),
 )
 def test_to_pnf(formula: str, expected: str, dummy_signature: FormalLogicSignature) -> None:

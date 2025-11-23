@@ -1,8 +1,9 @@
 from collections.abc import Collection, Iterable
 from typing import Literal, NamedTuple
 
+from ...parsing import is_greek_identifier, is_latin_identifier
 from ...support.collections import TrieMapping
-from ...support.unicode import Capitalization, is_greek_string, is_latin_string
+from ...support.unicode import Capitalization
 from .alphabet import BinaryTypeConnective, ImproperTermSymbol
 from .exceptions import LambdaSignatureError
 
@@ -29,7 +30,7 @@ class LambdaSignature:
                 if name in BinaryTypeConnective:
                     raise LambdaSignatureError(f'Cannot use the type connective {name!r} as a base type')
 
-                if len(name) == 1 and is_greek_string(name, Capitalization.LOWER):
+                if is_greek_identifier(name, Capitalization.LOWER):
                     raise LambdaSignatureError(f'Cannot use {name!r} as a base type because that conflicts with the grammar of type variables')
 
                 self.trie[name] = LambdaSymbol('BASE_TYPE', name)
@@ -42,10 +43,10 @@ class LambdaSignature:
                 if name in ImproperTermSymbol:
                     raise LambdaSignatureError(f'Cannot use the improper symbol {name!r} as a λ-term constant')
 
-                if len(name) == 1 and is_latin_string(name, Capitalization.LOWER):
+                if is_latin_identifier(name, Capitalization.LOWER):
                     raise LambdaSignatureError(f'Cannot use {name!r} as a λ-term constant because that conflicts with the grammar of variables')
 
-                if len(name) == 1 and is_latin_string(name, Capitalization.UPPER):
+                if is_latin_identifier(name, Capitalization.UPPER):
                     raise LambdaSignatureError(f'Cannot use {name!r} as a λ-term constant because that conflicts with the grammar of placeholders')
 
                 self.trie[name] = LambdaSymbol('CONSTANT_TERM', name)

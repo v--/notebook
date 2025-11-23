@@ -28,12 +28,12 @@ class SignatureTranslation:
             try:
                 sym_a = self.src.get_symbol(a)
             except LookupError:
-                raise SignatureTranslationError(f'Symbol {a!r} is not present in signature') from None
+                raise SignatureTranslationError(f'Symbol {a!r} is not present in the signature') from None
 
             try:
                 sym_b = self.dest.get_symbol(b)
             except LookupError:
-                raise SignatureTranslationError(f'Symbol {a!r} is not present in signature') from None
+                raise SignatureTranslationError(f'Symbol {a!r} is not present in the signature') from None
 
             if sym_a.kind != sym_b.kind:
                 raise SignatureTranslationError(f'Mismatch between the {sym_a.kind.lower()} symbol {a!r} and the {sym_b.kind.lower()} symbol {b!r}')

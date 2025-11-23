@@ -13,6 +13,7 @@ from .parser import (
     parse_formula_schema,
     parse_formula_schema_with_substitution,
     parse_natural_deduction_rule,
+    parse_propositional_formula,
     parse_term,
     parse_term_schema_substitution_spec,
     parse_variable,
@@ -39,20 +40,20 @@ def test_parsing_valid_variables(term: str, expected: Variable) -> None:
 
 @pytest_parametrize_kwargs(
     dict(
-        term='f₀',
-        expected=FunctionApplication('f₀', [])
+        term='f⁰',
+        expected=FunctionApplication('f⁰', [])
     ),
     dict(
-        term='f₁(x)',
-        expected=FunctionApplication('f₁', [Variable(LatinIdentifier('x'))])
+        term='f¹(x)',
+        expected=FunctionApplication('f¹', [Variable(LatinIdentifier('x'))])
     ),
     dict(
-        term='f₃(x, y, z)',
-        expected=FunctionApplication('f₃', [Variable(LatinIdentifier(s)) for s in 'xyz'])
+        term='f³(x, y, z)',
+        expected=FunctionApplication('f³', [Variable(LatinIdentifier(s)) for s in 'xyz'])
     ),
     dict(
-        term='f₃(x,y,  z)',
-        expected=FunctionApplication('f₃', [Variable(LatinIdentifier(s)) for s in 'xyz'])
+        term='f³(x,y,  z)',
+        expected=FunctionApplication('f³', [Variable(LatinIdentifier(s)) for s in 'xyz'])
     )
 )
 def test_parsing_valid_functions(term: str, expected: FunctionApplication, dummy_signature: FormalLogicSignature) -> None:
@@ -72,77 +73,77 @@ def test_parsing_functions_with_unrecognized_names() -> None:
 
 def test_parsing_predicate_as_term(dummy_signature: FormalLogicSignature) -> None:
     with pytest.raises(ParserError) as excinfo:
-        parse_term('p₀', dummy_signature)
+        parse_term('p⁰', dummy_signature)
 
     assert str(excinfo.value) == 'Expected a term'
     assert excinfo.value.__notes__[0] == dedent('''\
-        1 │ p₀
+        1 │ p⁰
           │ ^^
     ''')
 
 
 def test_parsing_zero_arity_function_with_empty_arg_list(dummy_signature: FormalLogicSignature) -> None:
     with pytest.raises(ParserError) as excinfo:
-        parse_term('f₀()', dummy_signature)
+        parse_term('f⁰()', dummy_signature)
 
     assert str(excinfo.value) == 'Avoid the argument list at all when zero arguments are expected'
     assert excinfo.value.__notes__[0] == dedent('''\
-        1 │ f₀()
+        1 │ f⁰()
           │ ^^^^
     ''')
 
 
 def test_parsing_nonzero_arity_function_with_empty_arg_list(dummy_signature: FormalLogicSignature) -> None:
     with pytest.raises(ParserError) as excinfo:
-        parse_term('f₁()', dummy_signature)
+        parse_term('f¹()', dummy_signature)
 
     assert str(excinfo.value) == 'Empty argument lists are disallowed'
     assert excinfo.value.__notes__[0] == dedent('''\
-        1 │ f₁()
+        1 │ f¹()
           │ ^^^^
     ''')
 
 
 def test_parsing_function_with_only_open_paren(dummy_signature: FormalLogicSignature) -> None:
     with pytest.raises(ParserError) as excinfo:
-        parse_term('f₁(', dummy_signature)
+        parse_term('f¹(', dummy_signature)
 
     assert str(excinfo.value) == 'Unclosed argument list'
     assert excinfo.value.__notes__[0] == dedent('''\
-        1 │ f₁(
+        1 │ f¹(
           │ ^^^
     ''')
 
 
 def test_parsing_function_with_unclosed_arg_list(dummy_signature: FormalLogicSignature) -> None:
     with pytest.raises(ParserError) as excinfo:
-        parse_term('f₂(x,y', dummy_signature)
+        parse_term('f²(x,y', dummy_signature)
 
     assert str(excinfo.value) == 'Unclosed argument list'
     assert excinfo.value.__notes__[0] == dedent('''\
-        1 │ f₂(x,y
+        1 │ f²(x,y
           │ ^^^^^^
     ''')
 
 
 def test_parsing_function_with_missing_arg(dummy_signature: FormalLogicSignature) -> None:
     with pytest.raises(ParserError) as excinfo:
-        parse_term('f₂(x,)', dummy_signature)
+        parse_term('f²(x,)', dummy_signature)
 
     assert str(excinfo.value) == 'Unexpected closing parenthesis for argument list'
     assert excinfo.value.__notes__[0] == dedent('''\
-        1 │ f₂(x,)
+        1 │ f²(x,)
           │ ^^^^^^
     ''')
 
 
 def test_parsing_function_with_wrong_arity(dummy_signature: FormalLogicSignature) -> None:
     with pytest.raises(ParserError) as excinfo:
-        parse_term('f₂(x)', dummy_signature)
+        parse_term('f²(x)', dummy_signature)
 
-    assert str(excinfo.value) == 'Expected 2 arguments for f₂ but got 1'
+    assert str(excinfo.value) == 'Expected 2 arguments for f² but got 1'
     assert excinfo.value.__notes__[0] == dedent('''\
-        1 │ f₂(x)
+        1 │ f²(x)
           │ ^^^^^
     ''')
 
@@ -153,10 +154,10 @@ def test_parsing_function_with_wrong_arity(dummy_signature: FormalLogicSignature
         expected=EqualityFormula(var.x, var.y)
     ),
     dict(
-        formula='(f₁(x) = f₂(y, z))',
+        formula='(f¹(x) = f²(y, z))',
         expected=EqualityFormula(
-            FunctionApplication('f₁', [var.x]),
-            FunctionApplication('f₂', [var.y, var.z]),
+            FunctionApplication('f¹', [var.x]),
+            FunctionApplication('f²', [var.y, var.z]),
         )
     )
 )
@@ -199,11 +200,11 @@ def test_parsing_invalid_equality() -> None:
 
 def test_parsing_equality_with_formulas_inside(dummy_signature: FormalLogicSignature) -> None:
     with pytest.raises(ParserError) as excinfo:
-        parse_formula('(¬p₀ = y)', dummy_signature)
+        parse_formula('(¬p⁰ = y)', dummy_signature)
 
     assert str(excinfo.value) == 'The first argument of an equality formula must be a term'
     assert excinfo.value.__notes__[0] == dedent('''\
-        1 │ (¬p₀ = y)
+        1 │ (¬p⁰ = y)
           │  ^^^
     ''')
 
@@ -213,48 +214,48 @@ def test_parsing_equality_with_formulas_inside(dummy_signature: FormalLogicSigna
         '⊤',
         '⊥',
         '(x = y)',
-        '∀x.p₁(y)',
-        '(p₁(x) ∧ p₁(y))',
-        '(¬p₁(z) ∧ ∀x.(q₂(z, x) → ¬r₂(y, x)))',
-        '∀y.∃z.(¬p₁(z) ∧ ∀x.(q₂(z, x) → ¬r₂(y, x)))',
-        '∀y.(∀z.(¬r₁(z) → ¬q₂(y, z)) → p₁(y))',
-        '∀z.∃z.(¬r₁(y) ∧ ¬r₂(z, y))'
+        '∀x.p¹(y)',
+        '(p¹(x) ∧ p¹(y))',
+        '(¬p¹(z) ∧ ∀x.(q²(z, x) → ¬r²(y, x)))',
+        '∀y.∃z.(¬p¹(z) ∧ ∀x.(q²(z, x) → ¬r²(y, x)))',
+        '∀y.(∀z.(¬r¹(z) → ¬q²(y, z)) → p¹(y))',
+        '∀z.∃z.(¬r¹(y) ∧ ¬r²(z, y))'
     ]
 )
 def test_rebuilding_formulas(formula: str, dummy_signature: FormalLogicSignature) -> None:
     assert str(parse_formula(formula, dummy_signature)) == formula
 
 
-def test_parsing_unclosed_conjunction_parentheses(dummy_signature: FormalLogicSignature) -> None:
+def test_parsing_unclosed_conjunction_parentheses() -> None:
     with pytest.raises(ParserError) as excinfo:
-        parse_formula('(p₀ ∧ q₀ ∧', dummy_signature)
+        parse_propositional_formula('(p ∧ q ∧')
 
     assert str(excinfo.value) == 'Binary connective formulas must have a closing parenthesis'
     assert excinfo.value.__notes__[0] == dedent('''\
-        1 │ (p₀ ∧ q₀ ∧
-          │ ^^^^^^^^^^
-    ''')
-
-
-def test_parsing_unclosed_conjunction_parentheses_truncated(dummy_signature: FormalLogicSignature) -> None:
-    with pytest.raises(ParserError) as excinfo:
-        parse_formula('(p₀ ∧ q₀', dummy_signature)
-
-    assert str(excinfo.value) == 'Binary connective formulas must have a closing parenthesis'
-    assert excinfo.value.__notes__[0] == dedent('''\
-        1 │ (p₀ ∧ q₀
+        1 │ (p ∧ q ∧
           │ ^^^^^^^^
     ''')
 
 
-def test_parsing_invalid_conjunction(dummy_signature: FormalLogicSignature) -> None:
+def test_parsing_unclosed_conjunction_parentheses_truncated() -> None:
     with pytest.raises(ParserError) as excinfo:
-        parse_formula('(p₀ ∧ )', dummy_signature)
+        parse_propositional_formula('(p ∧ q')
+
+    assert str(excinfo.value) == 'Binary connective formulas must have a closing parenthesis'
+    assert excinfo.value.__notes__[0] == dedent('''\
+        1 │ (p ∧ q
+          │ ^^^^^^
+    ''')
+
+
+def test_parsing_invalid_conjunction() -> None:
+    with pytest.raises(ParserError) as excinfo:
+        parse_propositional_formula('(p ∧ )')
 
     assert str(excinfo.value) == 'Binary connective formulas must have a second subformula'
     assert excinfo.value.__notes__[0] == dedent('''\
-        1 │ (p₀ ∧ )
-          │ ^^^^^^^
+        1 │ (p ∧ )
+          │ ^^^^^^
     ''')
 
 
@@ -271,11 +272,11 @@ def test_parsing_conjunction_with_term_inside(dummy_signature: FormalLogicSignat
 
 def test_complex_unbalanced_formula(dummy_signature: FormalLogicSignature) -> None:
     with pytest.raises(ParserError) as excinfo:
-        parse_formula('(∀x.(q₂(z, x) → ¬r₂(y, x) ∧ ¬p₁(z))', dummy_signature)
+        parse_formula('(∀x.(q²(z, x) → ¬r²(y, x) ∧ ¬p¹(z))', dummy_signature)
 
     assert str(excinfo.value) == 'Binary connective formulas must have a closing parenthesis'
     assert excinfo.value.__notes__[0] == dedent('''\
-        1 │ (∀x.(q₂(z, x) → ¬r₂(y, x) ∧ ¬p₁(z))
+        1 │ (∀x.(q²(z, x) → ¬r²(y, x) ∧ ¬p¹(z))
           │     ^^^^^^^^^^^^^^^^^^^^^^^
     ''')
 
@@ -293,22 +294,22 @@ def test_lone_quantifier() -> None:
 
 def test_quantifier_with_invalid_variable(dummy_signature: FormalLogicSignature) -> None:
     with pytest.raises(ParserError) as excinfo:
-        parse_formula('∀p₀.p₀', dummy_signature)
+        parse_formula('∀p⁰.p⁰', dummy_signature)
 
     assert str(excinfo.value) == 'Expected a variable after the quantifier'
     assert excinfo.value.__notes__[0] == dedent('''\
-        1 │ ∀p₀.p₀
+        1 │ ∀p⁰.p⁰
           │ ^^^
     ''')
 
 
 def test_quantifier_with_no_dot(dummy_signature: FormalLogicSignature) -> None:
     with pytest.raises(ParserError) as excinfo:
-        parse_formula('∀xp₀', dummy_signature)
+        parse_formula('∀xp⁰', dummy_signature)
 
     assert str(excinfo.value) == 'Expected dot after variable'
     assert excinfo.value.__notes__[0] == dedent('''\
-        1 │ ∀xp₀
+        1 │ ∀xp⁰
           │ ^^
     ''')
 
@@ -326,10 +327,10 @@ def test_quantifier_with_no_subformula(dummy_signature: FormalLogicSignature) ->
 
 @pytest_parametrize_lists(
     formula=[
-        '∀y.∃z.(¬p₁(z) ∧ ∀x.(q₂(z, x) → ¬r₂(y, x)))',
-        '∀y.∃z.(¬p₁(z) ∧ ∀x.(q₂(z, x) → ¬r₂(y, x)))',
-        '∀y₀.(∀z.(¬r₁(z) → ¬q₂(y₀, z)) → p₁(y₀))',
-        '((∃x.p₁(x) ∧ ∃y.q₁(y)) ∨ (∃x.p₁(x) ∧ ∃y.q₁(y)))'
+        '∀y.∃z.(¬p¹(z) ∧ ∀x.(q²(z, x) → ¬r²(y, x)))',
+        '∀y.∃z.(¬p¹(z) ∧ ∀x.(q²(z, x) → ¬r²(y, x)))',
+        '∀y₀.(∀z.(¬r¹(z) → ¬q²(y₀, z)) → p¹(y₀))',
+        '((∃x.p¹(x) ∧ ∃y.q¹(y)) ∨ (∃x.p¹(x) ∧ ∃y.q¹(y)))'
     ]
 )
 def test_reparsing_formulas(formula: str, dummy_signature: FormalLogicSignature) -> None:

@@ -5,6 +5,8 @@ from .identifiers import (
     IdentifierParserMixin,
     IdentifierTokenizerMixin,
     LatinIdentifier,
+    is_greek_identifier,
+    is_latin_identifier,
     new_latin_identifier,
 )
 from .parser import Parser

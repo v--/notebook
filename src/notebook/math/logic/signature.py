@@ -1,8 +1,9 @@
 from collections.abc import Iterable
 from typing import Literal, NamedTuple
 
+from ...parsing import is_greek_identifier, is_latin_identifier
 from ...support.collections import TrieMapping
-from ...support.unicode import Capitalization, is_latin_string
+from ...support.unicode import Capitalization
 from .alphabet import BinaryConnective, PropConstant, Quantifier, UnaryPrefix
 from .exceptions import FormalLogicSignatureError
 
@@ -33,10 +34,10 @@ class FormalLogicSignature:
         if name in PropConstant or name in UnaryPrefix or name in BinaryConnective or name in Quantifier:
             raise FormalLogicSignatureError(f'Cannot use the improper symbol {name!r} as a proper signature symbol')
 
-        if len(name) == 1 and is_latin_string(name, Capitalization.LOWER):
+        if is_latin_identifier(name, Capitalization.LOWER):
             raise FormalLogicSignatureError(f'Cannot use {name!r} as a proper signature symbol because that conflicts with the grammar of variables')
 
-        if len(name) == 1 and is_latin_string(name, Capitalization.UPPER):
+        if is_greek_identifier(name, Capitalization.LOWER):
             raise FormalLogicSignatureError(f'Cannot use {name!r} as a proper signature symbol because that conflicts with the grammar of placeholders')
 
         self.trie[name] = SignatureSymbol(symbol_kind, name, arity)

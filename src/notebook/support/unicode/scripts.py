@@ -131,3 +131,10 @@ def itoa_subscripts(value: int) -> str:
         return '₋' + itoa_subscripts(-value)
 
     return to_subscript(str(value))
+
+
+def itoa_superscripts(value: int) -> str:
+    if value < 0:
+        return '₋' + itoa_superscripts(-value)
+
+    return to_superscript(str(value))
