@@ -25,7 +25,7 @@ class TokenizerContext[TokenKindT]:
         try:
             self.tokenizer.source[self.offset_start]
         except IndexError:
-            raise TokenizerError('Context can be entered before end of input') from None
+            raise TokenizerError('Context cannot be entered at the end of input before end of input') from None
 
     def is_closed(self) -> bool:
         return self.offset_end is not None

@@ -1,7 +1,8 @@
 from collections.abc import Iterable, Sequence
+from dataclasses import dataclass
 from typing import Literal, cast, overload
 
-from ....parsing import IdentifierParserMixin, Parser
+from ....parsing import GreekIdentifier, IdentifierParserMixin, Parser
 from ....support.substitution import SubstitutionConnective
 from ..alphabet import BinaryConnective, PropConstant, Quantifier, UnaryPrefix
 from ..deduction import (
@@ -46,12 +47,21 @@ from .tokenizer import tokenize_formal_logic_string
 from .tokens import LogicToken, LogicTokenKind
 
 
+@dataclass
+class UndeterminedPlaceholder:
+    identifier: GreekIdentifier
+
+
 class FormalLogicParser(IdentifierParserMixin[LogicTokenKind, LogicToken], Parser[LogicToken]):
     signature: FormalLogicSignature
 
     def __init__(self, signature: FormalLogicSignature, source: str, tokens: Sequence[LogicToken]) -> None:
         super().__init__(source, tokens)
         self.signature = signature
+
+    def _parse_undetermined_placeholder(self) -> UndeterminedPlaceholder:
+        identifier = self.parse_greek_identifier('GREEK_IDENTIFIER')
+        return UndeterminedPlaceholder(identifier)
 
     def parse_term_placeholder(self) -> TermPlaceholder:
         identifier = self.parse_greek_identifier('GREEK_IDENTIFIER')
@@ -102,7 +112,6 @@ class FormalLogicParser(IdentifierParserMixin[LogicTokenKind, LogicToken], Parse
                 raise context.annotate_context_error('Unexpected closing parenthesis for argument list')
 
             yield self.parse_term(parse_schema=parse_schema)
-
             head = self.peek()
 
             if not head:
@@ -120,12 +129,12 @@ class FormalLogicParser(IdentifierParserMixin[LogicTokenKind, LogicToken], Parse
                     raise self.annotate_token_error('Unexpected token')
 
     @overload
-    def _parse_function_like(self, context: LogicParserContext, arity: int, *, parse_schema: Literal[False]) -> tuple[str, Sequence[Term]]: ...
+    def _parse_syntactic_application(self, context: LogicParserContext, arity: int, *, parse_schema: Literal[False]) -> tuple[str, Sequence[Term]]: ...
     @overload
-    def _parse_function_like(self, context: LogicParserContext, arity: int, *, parse_schema: Literal[True]) -> tuple[str, Sequence[TermSchema]]: ...
+    def _parse_syntactic_application(self, context: LogicParserContext, arity: int, *, parse_schema: Literal[True]) -> tuple[str, Sequence[TermSchema]]: ...
     @overload
-    def _parse_function_like(self, context: LogicParserContext, arity: int, *, parse_schema: bool) -> tuple[str, Sequence[Term]] | tuple[str, Sequence[TermSchema]]: ...
-    def _parse_function_like(self, context: LogicParserContext, arity: int, *, parse_schema: bool) -> tuple[str, Sequence[Term]] | tuple[str, Sequence[TermSchema]]:
+    def _parse_syntactic_application(self, context: LogicParserContext, arity: int, *, parse_schema: bool) -> tuple[str, Sequence[Term]] | tuple[str, Sequence[TermSchema]]: ...
+    def _parse_syntactic_application(self, context: LogicParserContext, arity: int, *, parse_schema: bool) -> tuple[str, Sequence[Term]] | tuple[str, Sequence[TermSchema]]:
         name = self.peek_unsafe().value
         self.advance()
 
@@ -143,122 +152,12 @@ class FormalLogicParser(IdentifierParserMixin[LogicTokenKind, LogicToken], Parse
             (name, arguments)
         )
 
-    @overload
-    def parse_term(self, *, parse_schema: Literal[False]) -> Term: ...
-    @overload
-    def parse_term(self, *, parse_schema: Literal[True]) -> TermSchema: ...
-    @overload
-    def parse_term(self, *, parse_schema: bool) -> Term | TermSchema: ...
-    def parse_term(self, *, parse_schema: bool) -> Term | TermSchema:
-        head = self.peek()
-
-        if not head:
-            raise self.annotate_unexpected_end_of_input()
-
-        match head.kind:
-            case 'SIGNATURE_SYMBOL':
-                symbol = self.signature.get_symbol(head.value)
-
-                if symbol.kind == 'PREDICATE':
-                    raise self.annotate_token_error(f'Unexpected predicate symbol while parsing {'term schema' if parse_schema else 'term'}')
-
-                context = LogicParserContext(self)
-
-                if parse_schema:
-                    return FunctionApplicationSchema(*self._parse_function_like(context, symbol.arity, parse_schema=True))
-
-                return FunctionApplication(*self._parse_function_like(context, symbol.arity, parse_schema=False))
-
-            case 'LATIN_IDENTIFIER':
-                return self.parse_variable(parse_schema=parse_schema)
-
-            case 'GREEK_IDENTIFIER':
-                return self.parse_term_placeholder()
-
-            case _:
-                raise self.annotate_token_error('Unexpected token')
-
     def _parse_constant_formula(self) -> ConstantFormula:
         head = self.peek_unsafe()
         self.advance()
         return ConstantFormula(
             PropConstant(head.value)
         )
-
-    @overload
-    def _parse_equality_formula(self, context: LogicParserContext, *, parse_schema: Literal[False]) -> EqualityFormula: ...
-    @overload
-    def _parse_equality_formula(self, context: LogicParserContext, *, parse_schema: Literal[True]) -> EqualityFormulaSchema: ...
-    @overload
-    def _parse_equality_formula(self, context: LogicParserContext, *, parse_schema: bool) -> EqualityFormula | EqualityFormulaSchema: ...
-    def _parse_equality_formula(self, context: LogicParserContext, *, parse_schema: bool) -> EqualityFormula | EqualityFormulaSchema:
-        a_context = LogicParserContext(self)
-        a_term = self.parse_term(parse_schema=parse_schema)
-        a_context.close_at_previous_token()
-        head = self.peek()
-
-        if not head or head.kind != 'EQUALITY':
-            raise context.annotate_context_error(f'Equality {'formula schema' if parse_schema else 'formula'} must have an equality symbol after the first term')
-
-        head = self.advance_and_peek()
-
-        if not head or head.kind == 'RIGHT_PARENTHESIS':
-            raise context.annotate_context_error(f'Equality {'formula schemas' if parse_schema else 'formulas'} must have a second term')
-
-        b_term = self.parse_term(parse_schema=parse_schema)
-        head = self.peek()
-
-        if not head or head.kind != 'RIGHT_PARENTHESIS':
-            raise context.annotate_context_error(f'Equality {'formula schemas' if parse_schema else 'formulas'} must have a closing parenthesis')
-
-        self.advance()
-
-        if parse_schema:
-            assert isinstance(a_term, TermSchema)
-            assert isinstance(b_term, TermSchema)
-            return EqualityFormulaSchema(a_term, b_term)
-
-        assert isinstance(a_term, Term)
-        assert isinstance(b_term, Term)
-        return EqualityFormula(a_term, b_term)
-
-    @overload
-    def _parse_connective_formula(self, context: LogicParserContext, *, parse_schema: Literal[False]) -> ConnectiveFormula: ...
-    @overload
-    def _parse_connective_formula(self, context: LogicParserContext, *, parse_schema: Literal[True]) -> ConnectiveFormulaSchema: ...
-    @overload
-    def _parse_connective_formula(self, context: LogicParserContext, *, parse_schema: bool) -> ConnectiveFormula | ConnectiveFormulaSchema: ...
-    def _parse_connective_formula(self, context: LogicParserContext, *, parse_schema: bool) -> ConnectiveFormula | ConnectiveFormulaSchema:
-        a_context = LogicParserContext(self)
-        a_form = self.parse_formula(parse_schema=parse_schema)
-        a_context.close_at_previous_token()
-        head = self.peek()
-
-        if not head or head.kind != 'BINARY_CONNECTIVE':
-            raise context.annotate_context_error(f'Binary {'formula schema' if parse_schema else 'formula'} must have a connective after the first subformula')
-
-        connective = BinaryConnective(head.value)
-        head = self.advance_and_peek()
-
-        if not head or head.kind == 'RIGHT_PARENTHESIS':
-            raise context.annotate_context_error(f'Binary {'formula schemas' if parse_schema else 'formulas'} must have a second subformula')
-
-        b_form = self.parse_formula(parse_schema=parse_schema)
-        head = self.peek()
-
-        if not head or head.kind != 'RIGHT_PARENTHESIS':
-            raise context.annotate_context_error(f'Binary {'formula schemas' if parse_schema else 'formulas'} must have a closing parenthesis')
-
-        self.advance()
-
-        if parse_schema:
-            assert isinstance(a_form, FormulaSchema)
-            assert isinstance(b_form, FormulaSchema)
-            return ConnectiveFormulaSchema(connective, a_form, b_form)
-
-        assert isinstance(a_form, Formula)
-        assert isinstance(b_form, Formula)
-        return ConnectiveFormula(connective, a_form, b_form)
 
     @overload
     def _parse_negation_formula(self, *, parse_schema: Literal[False]) -> NegationFormula: ...
@@ -304,71 +203,218 @@ class FormalLogicParser(IdentifierParserMixin[LogicTokenKind, LogicToken], Parse
         return QuantifierFormula(q, var, self.parse_formula(parse_schema=False))
 
     @overload
-    def parse_formula(self, *, parse_schema: Literal[False]) -> Formula: ...
+    def _parse_parenthesized(self, context: LogicParserContext, *, parse_schema: Literal[False]) -> FunctionApplication | ConnectiveFormula | EqualityFormula | PredicateApplication: ...
     @overload
-    def parse_formula(self, *, parse_schema: Literal[True]) -> FormulaSchema: ...
+    def _parse_parenthesized(self, context: LogicParserContext, *, parse_schema: Literal[True]) -> FunctionApplicationSchema | ConnectiveFormulaSchema | EqualityFormulaSchema | PredicateApplicationSchema: ...
     @overload
-    def parse_formula(self, *, parse_schema: bool) -> Formula | FormulaSchema: ...
-    def parse_formula(self, *, parse_schema: bool) -> Formula | FormulaSchema:  # noqa: C901
+    def _parse_parenthesized(self, context: LogicParserContext, *, parse_schema: bool) -> FunctionApplication | ConnectiveFormula | EqualityFormula | PredicateApplication | FunctionApplicationSchema | ConnectiveFormulaSchema | EqualityFormulaSchema | PredicateApplicationSchema: ...
+    def _parse_parenthesized(self, context: LogicParserContext, *, parse_schema: bool) -> FunctionApplication | ConnectiveFormula | EqualityFormula | PredicateApplication | FunctionApplicationSchema | ConnectiveFormulaSchema | EqualityFormulaSchema | PredicateApplicationSchema:  # noqa: C901,PLR0915
+        left_context = LogicParserContext(self)
+        left = self._parse(left_context, parse_schema=parse_schema)
+        left_context.close_at_previous_token()
+        head = self.peek()
+        right: Term | Formula | TermSchema | FormulaSchema | UndeterminedPlaceholder
+
+        if not head:
+            raise context.annotate_token_error(f'Parenthesized {'expression schema' if parse_schema else 'expression'} must have a propositional connective, infix proper symbol or equality after the first subexpression')
+
+        match head.kind:
+            case 'BINARY_CONNECTIVE':
+                if isinstance(left, UndeterminedPlaceholder):
+                    left = FormulaPlaceholder(left.identifier)
+
+                if not isinstance(left, Formula | FormulaSchema):
+                    raise left_context.annotate_context_error(f'The first argument of a connective {'formula schema' if parse_schema else 'formula'} must itself be a {'formula schema' if parse_schema else 'formula'}')
+
+                connective = BinaryConnective(head.value)
+                head = self.advance_and_peek()
+
+                if not head or head.kind == 'RIGHT_PARENTHESIS':
+                    raise context.annotate_context_error(f'Binary connective {'formula schemas' if parse_schema else 'formulas'} must have a second subformula')
+
+                right = self.parse_formula(parse_schema=parse_schema)
+                head = self.peek()
+
+                if not head or head.kind != 'RIGHT_PARENTHESIS':
+                    raise context.annotate_context_error(f'Binary connective {'formula schemas' if parse_schema else 'formulas'} must have a closing parenthesis')
+
+                self.advance()
+
+                if parse_schema:
+                    assert isinstance(left, FormulaSchema)
+                    assert isinstance(right, FormulaSchema)
+                    return ConnectiveFormulaSchema(connective, left, right)
+
+                assert isinstance(left, Formula)
+                assert isinstance(right, Formula)
+                return ConnectiveFormula(connective, left, right)
+
+            case 'EQUALITY':
+                if isinstance(left, UndeterminedPlaceholder):
+                    left = TermPlaceholder(left.identifier)
+
+                if not isinstance(left, Term | TermSchema):
+                    raise left_context.annotate_context_error(f'The first argument of an equality {'formula schema' if parse_schema else 'formula'} must be a {'term schema' if parse_schema else 'term'}')
+
+                head = self.advance_and_peek()
+
+                if not head or head.kind == 'RIGHT_PARENTHESIS':
+                    raise context.annotate_context_error(f'Equality {'formula schemas' if parse_schema else 'formulas'} must have a second term')
+
+                right = self.parse_term(parse_schema=parse_schema)
+                head = self.peek()
+
+                if not head or head.kind != 'RIGHT_PARENTHESIS':
+                    raise context.annotate_context_error(f'Equality {'formula schemas' if parse_schema else 'formulas'} must have a closing parenthesis')
+
+                self.advance()
+
+                if parse_schema:
+                    assert isinstance(left, TermSchema)
+                    assert isinstance(right, TermSchema)
+                    return EqualityFormulaSchema(left, right)
+
+                assert isinstance(left, Term)
+                assert isinstance(right, Term)
+                return EqualityFormula(left, right)
+
+            case 'SIGNATURE_SYMBOL':
+                if isinstance(left, UndeterminedPlaceholder):
+                    left = TermPlaceholder(left.identifier)
+
+                if not isinstance(left, Term | TermSchema):
+                    raise left_context.annotate_context_error(f'The first argument of an infix {'application schema' if parse_schema else 'application'} must be a {'term schema' if parse_schema else 'term'}')
+
+                symbol = self.signature.get_symbol(head.value)
+                raise context.annotate_context_error('Cannot parse an infix expression')
+                head = self.advance_and_peek()
+
+                # if symbol and not symbol.infix:
+                #     raise context.annotate_context_error(f'Expected an infix proper symbol, but got {symbol.name!r}')
+
+                if not head or head.kind == 'RIGHT_PARENTHESIS':
+                    raise context.annotate_context_error(f'Infix {'application schemas' if parse_schema else 'applications'} must have a second term')
+
+                right = self.parse_term(parse_schema=parse_schema)
+                head = self.peek()
+
+                if not head or head.kind != 'RIGHT_PARENTHESIS':
+                    raise context.annotate_context_error(f'Infix {'expression schemas' if parse_schema else 'applications'} must have a closing parenthesis')
+
+                self.advance()
+
+                match symbol.kind:
+                    case 'PREDICATE':
+                        if parse_schema:
+                            return PredicateApplicationSchema(symbol.name, [left, right])
+
+                        return PredicateApplication(symbol.name, [left, right])
+
+                    case 'FUNCTION':
+                        if parse_schema:
+                            return FunctionApplicationSchema(symbol.name, [left, right])
+
+                        return FunctionApplication(symbol.name, [left, right])
+
+            case _:
+                raise context.annotate_token_error(f'Unrecognized infix symbol {head.value!r}')
+
+    @overload
+    def _parse(self, context: LogicParserContext, *, parse_schema: Literal[False]) -> Term | Formula: ...
+    @overload
+    def _parse(self, context: LogicParserContext, *, parse_schema: Literal[True]) -> TermSchema | FormulaSchema | UndeterminedPlaceholder: ...
+    @overload
+    def _parse(self, context: LogicParserContext, *, parse_schema: bool) -> Term | Formula | TermSchema | FormulaSchema | UndeterminedPlaceholder: ...
+    def _parse(self, context: LogicParserContext, *, parse_schema: bool) -> Term | Formula | TermSchema | FormulaSchema | UndeterminedPlaceholder:
         head = self.peek()
 
         if not head:
             raise self.annotate_unexpected_end_of_input()
 
         match head.kind:
+            case 'SIGNATURE_SYMBOL':
+                symbol = self.signature.get_symbol(head.value)
+
+                match symbol.kind:
+                    case 'PREDICATE':
+                        if parse_schema:
+                            return PredicateApplicationSchema(*self._parse_syntactic_application(context, symbol.arity, parse_schema=True))
+
+                        return PredicateApplication(*self._parse_syntactic_application(context, symbol.arity, parse_schema=False))
+
+                    case 'FUNCTION':
+                        if parse_schema:
+                            return FunctionApplicationSchema(*self._parse_syntactic_application(context, symbol.arity, parse_schema=True))
+
+                        return FunctionApplication(*self._parse_syntactic_application(context, symbol.arity, parse_schema=False))
+
+            case 'LATIN_IDENTIFIER':
+                return self.parse_variable(parse_schema=parse_schema)
+
+            case 'GREEK_IDENTIFIER':
+                if not parse_schema:
+                    raise self.annotate_token_error('Placeholders are only allowed in schemas')
+
+                return self._parse_undetermined_placeholder()
+
             case 'LEFT_PARENTHESIS':
-                context = LogicParserContext(self)
-                head = self.advance_and_peek()
-
-                if not head:
-                    raise self.annotate_unexpected_end_of_input()
-
-                if head.kind == 'SIGNATURE_SYMBOL':
-                    symbol = self.signature.get_symbol(head.value)
-
-                    match symbol.kind:
-                        case 'FUNCTION':
-                            return self._parse_equality_formula(context, parse_schema=parse_schema)
-
-                        case 'PREDICATE':
-                            return self._parse_connective_formula(context, parse_schema=parse_schema)
-
-                if head.kind == 'LATIN_IDENTIFIER':
-                    return self._parse_equality_formula(context, parse_schema=parse_schema)
-
-                return self._parse_connective_formula(context, parse_schema=parse_schema)
+                self.advance()
+                return self._parse_parenthesized(context, parse_schema=parse_schema)
 
             case 'PROP_CONSTANT':
                 return self._parse_constant_formula()
 
             case 'QUANTIFIER':
-                context = LogicParserContext(self)
                 return self._parse_quantifier_formula(context, parse_schema=parse_schema)
 
             case 'UNARY_CONNECTIVE' if head.value == UnaryPrefix.NEGATION.value:
                 return self._parse_negation_formula(parse_schema=parse_schema)
 
-            case 'SIGNATURE_SYMBOL':
-                symbol = self.signature.get_symbol(head.value)
-
-                if symbol.kind == 'FUNCTION':
-                    raise self.annotate_token_error(f'Unexpected function symbol while parsing {'term schema' if parse_schema else 'term'}')
-
-                context = LogicParserContext(self)
-
-                if parse_schema:
-                    return PredicateApplicationSchema(*self._parse_function_like(context, symbol.arity, parse_schema=True))
-
-                return PredicateApplication(*self._parse_function_like(context, symbol.arity, parse_schema=False))
-
-            case 'GREEK_IDENTIFIER':
-                if parse_schema:
-                    return self.parse_formula_placeholder()
-
-                raise self.annotate_token_error('Formula placeholders are only allowed in schemas')
-
             case _:
                 raise self.annotate_token_error('Unexpected token')
+
+    @overload
+    def parse_term(self, *, parse_schema: Literal[False]) -> Term: ...
+    @overload
+    def parse_term(self, *, parse_schema: Literal[True]) -> TermSchema: ...
+    @overload
+    def parse_term(self, *, parse_schema: bool) -> Term | TermSchema: ...
+    def parse_term(self, *, parse_schema: bool) -> Term | TermSchema:
+        if not self.peek():
+            raise self.annotate_unexpected_end_of_input()
+
+        context = LogicParserContext(self)
+        result = self._parse(context, parse_schema=parse_schema)
+
+        if isinstance(result, UndeterminedPlaceholder):
+            return TermPlaceholder(result.identifier)
+
+        if isinstance(result, Formula | FormulaSchema):
+            raise context.annotate_context_error(f'Expected a {'term schema' if parse_schema else 'term'}')
+
+        return result
+
+
+    @overload
+    def parse_formula(self, *, parse_schema: Literal[False]) -> Formula: ...
+    @overload
+    def parse_formula(self, *, parse_schema: Literal[True]) -> FormulaSchema: ...
+    @overload
+    def parse_formula(self, *, parse_schema: bool) -> Formula | FormulaSchema: ...
+    def parse_formula(self, *, parse_schema: bool) -> Formula | FormulaSchema:
+        if not self.peek():
+            raise self.annotate_unexpected_end_of_input()
+
+        context = LogicParserContext(self)
+        result = self._parse(context, parse_schema=parse_schema)
+
+        if isinstance(result, UndeterminedPlaceholder):
+            return FormulaPlaceholder(result.identifier)
+
+        if isinstance(result, Term | TermSchema):
+            raise context.annotate_context_error(f'Expected a {'formula schema' if parse_schema else 'formula'}')
+
+        return result
 
     @overload
     def parse_term_substitution_spec(self, *, parse_schema: Literal[False]) -> TermSubstitutionSpec: ...

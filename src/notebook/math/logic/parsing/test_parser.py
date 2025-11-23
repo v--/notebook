@@ -74,7 +74,7 @@ def test_parsing_predicate_as_term(dummy_signature: FormalLogicSignature) -> Non
     with pytest.raises(ParserError) as excinfo:
         parse_term('p₀', dummy_signature)
 
-    assert str(excinfo.value) == 'Unexpected predicate symbol while parsing term'
+    assert str(excinfo.value) == 'Expected a term'
     assert excinfo.value.__notes__[0] == dedent('''\
         1 │ p₀
           │ ^^
@@ -201,10 +201,10 @@ def test_parsing_equality_with_formulas_inside(dummy_signature: FormalLogicSigna
     with pytest.raises(ParserError) as excinfo:
         parse_formula('(¬p₀ = y)', dummy_signature)
 
-    assert str(excinfo.value) == 'Binary formula must have a connective after the first subformula'
+    assert str(excinfo.value) == 'The first argument of an equality formula must be a term'
     assert excinfo.value.__notes__[0] == dedent('''\
         1 │ (¬p₀ = y)
-          │ ^^^^^^
+          │  ^^^
     ''')
 
 
@@ -229,7 +229,7 @@ def test_parsing_unclosed_conjunction_parentheses(dummy_signature: FormalLogicSi
     with pytest.raises(ParserError) as excinfo:
         parse_formula('(p₀ ∧ q₀ ∧', dummy_signature)
 
-    assert str(excinfo.value) == 'Binary formulas must have a closing parenthesis'
+    assert str(excinfo.value) == 'Binary connective formulas must have a closing parenthesis'
     assert excinfo.value.__notes__[0] == dedent('''\
         1 │ (p₀ ∧ q₀ ∧
           │ ^^^^^^^^^^
@@ -240,7 +240,7 @@ def test_parsing_unclosed_conjunction_parentheses_truncated(dummy_signature: For
     with pytest.raises(ParserError) as excinfo:
         parse_formula('(p₀ ∧ q₀', dummy_signature)
 
-    assert str(excinfo.value) == 'Binary formulas must have a closing parenthesis'
+    assert str(excinfo.value) == 'Binary connective formulas must have a closing parenthesis'
     assert excinfo.value.__notes__[0] == dedent('''\
         1 │ (p₀ ∧ q₀
           │ ^^^^^^^^
@@ -251,21 +251,21 @@ def test_parsing_invalid_conjunction(dummy_signature: FormalLogicSignature) -> N
     with pytest.raises(ParserError) as excinfo:
         parse_formula('(p₀ ∧ )', dummy_signature)
 
-    assert str(excinfo.value) == 'Binary formulas must have a second subformula'
+    assert str(excinfo.value) == 'Binary connective formulas must have a second subformula'
     assert excinfo.value.__notes__[0] == dedent('''\
         1 │ (p₀ ∧ )
           │ ^^^^^^^
     ''')
 
 
-def test_parsing_conjunction_with_formulas_inside(dummy_signature: FormalLogicSignature) -> None:
+def test_parsing_conjunction_with_term_inside(dummy_signature: FormalLogicSignature) -> None:
     with pytest.raises(ParserError) as excinfo:
         parse_formula('(x ∧ q₀)', dummy_signature)
 
-    assert str(excinfo.value) == 'Equality formula must have an equality symbol after the first term'
+    assert str(excinfo.value) == 'The first argument of a connective formula must itself be a formula'
     assert excinfo.value.__notes__[0] == dedent('''\
         1 │ (x ∧ q₀)
-          │ ^^^^
+          │  ^
     ''')
 
 
@@ -273,7 +273,7 @@ def test_complex_unbalanced_formula(dummy_signature: FormalLogicSignature) -> No
     with pytest.raises(ParserError) as excinfo:
         parse_formula('(∀x.(q₂(z, x) → ¬r₂(y, x) ∧ ¬p₁(z))', dummy_signature)
 
-    assert str(excinfo.value) == 'Binary formulas must have a closing parenthesis'
+    assert str(excinfo.value) == 'Binary connective formulas must have a closing parenthesis'
     assert excinfo.value.__notes__[0] == dedent('''\
         1 │ (∀x.(q₂(z, x) → ¬r₂(y, x) ∧ ¬p₁(z))
           │     ^^^^^^^^^^^^^^^^^^^^^^^
@@ -352,7 +352,7 @@ def test_parsing_formula_placeholder_with_regular_parser() -> None:
     with pytest.raises(ParserError) as excinfo:
         parse_formula('φ', EMPTY_SIGNATURE)
 
-    assert str(excinfo.value) == 'Formula placeholders are only allowed in schemas'
+    assert str(excinfo.value) == 'Placeholders are only allowed in schemas'
     assert excinfo.value.__notes__[0] == dedent('''\
         1 │ φ
           │ ^

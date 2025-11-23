@@ -22,7 +22,7 @@ class ParserContext[TokenT: Token]:
         try:
             self.parser.tokens[self.index_start]
         except IndexError:
-            raise ParserError('Context can be entered before end of input') from None
+            raise ParserError('Context cannot be entered at the end of input before end of input') from None
 
     def is_closed(self) -> bool:
         return self.index_end is not None
