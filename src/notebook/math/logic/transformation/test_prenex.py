@@ -5,12 +5,12 @@ from ..parsing import parse_formula
 from ..signature import FormalLogicSignature
 from .prenex import (
     DisallowedFormulaError,
+    formula_to_pnf,
     is_formula_in_pnf,
     is_formula_quantifierless,
     move_negations,
     move_quantifiers,
     remove_conditionals,
-    formula_to_pnf,
 )
 
 
