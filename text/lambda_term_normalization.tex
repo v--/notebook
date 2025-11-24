@@ -219,35 +219,43 @@ Proving \fullref{thm:simply_typable_terms_are_strongly_normalizing} requires con
 
 \paragraph{Strong normalization}
 
-\begin{definition}\label{def:lambda_term_reduction_graph}\mimprovised
+\begin{definition}\label{def:lambda_term_reduction_chain}\mimprovised
   Fix a \hyperref[def:lambda_term_reduction]{reduction relation} \( {\pred} \) for \( \muplambda \)-terms (with the modified rules from \cref{def:typed_term_reduction} in case the terms are typed).
 
-  We define the \term{\( \Anon \)-reduction graph} \( G_{\Anon}(M) \) of the \( \muplambda \)-term \( M \) as the \hyperref[def:directed_graph]{directed graph} \hyperref[def:directed_graph_induced_by_relation]{induced} by the relation \( {\pred} \).
-
-  We call \hyperref[def:graph_walk/directed]{directed walks} in this graph starting from \( M \) \term{reduction chains}.
+  We call a \term{\( \Anon \)-reduction chain} any \hyperref[def:graph_walk/directed]{directed walk} in the graph \hyperref[def:directed_graph_induced_by_relation]{induced} by \( {\pred} \).
 \end{definition}
 \begin{comments}
-  \item The definition and terminology is based on \bycite[def. 2.3.18]{Barendregt1992LambdaCalculiWithTypes}, however Barendregt distinguishes between reductions obtained using different strategies, even if their result coincides. Such a distinction will complicate us, for which reason we will avoid it.
-
-  Furthermore, according to this definition (but not Barendregt's), \( \alpha \)-equivalent terms are distinct nodes of the graph.
+  \item The \enquote{reduction graphs} can be considered as standalone objects, but in our formulation are somewhat ill-behaved. This is discussed in \cref{rem:lambda_term_reduction_graphs}.
 \end{comments}
 
+\begin{remark}\label{rem:lambda_term_reduction_graphs}
+  It is possible to define the \term{\( \Anon \)-reduction graph} \( G_{\Anon}(M) \) of the \( \muplambda \)-term \( M \) as the \hyperref[def:directed_graph]{directed graph} \hyperref[def:directed_graph_induced_by_relation]{induced} by \( {\pred} \).
+
+  Unfortunately, studying such a graph requires making several choices which are not evident without a clear goal in mind. Consider \cref{fig:rem:lambda_term_reduction_graphs}. All \( \beta \)-reducts in the figure are \( \alpha \)-equivalent \hyperref[def:lambda_term_normal_form]{normal forms} (validating \cref{thm:lambda_term_normal_form_uniqueness}), but they are distinct \( \muplambda \)-terms. Having countably many \( \alpha \)-equivalent normal forms does not carry important information for us.
+
+  \begin{figure}[!ht]
+    \centering
+    \includegraphics[page=1]{output/rem__lambda_term_reduction_graphs}
+    \caption{A fragment of the \hyperref[rem__lambda_term_reduction_graphs]{reduction graph} of a \( \muplambda \)-term.}\label{fig:rem:lambda_term_reduction_graphs}
+  \end{figure}
+
+  In line with Barendregt's convention described in \cref{rem:barendregt_convention}, we can consider cosets under \( \alpha \)-equivalence rather than concrete \( \muplambda \)-terms. Furthermore, Barendregt makes another non-evident choice in \cite[def. 2.3.18]{Barendregt1992LambdaCalculiWithTypes}, where he defines reduction multigraphs so that reductions obtained using different strategies correspond to different arcs.
+
+  We avoid discussing reduction graphs since we do not need to study concrete reduction chains.
+\end{remark}
+
 \begin{proposition}\label{thm:term_normalizing_iff_exists_finite_reduction_chain}
-  A \( \muplambda \)-term is \hyperref[def:lambda_term_normal_form]{\( \Anon \)-normalizing} if and only if it has a (possibly empty) \hyperref[def:lambda_term_reduction_graph]{reduction chain} ending with a \( \Anon \)-normal form.
+  A \( \muplambda \)-term is \hyperref[def:lambda_term_normal_form]{\( \Anon \)-normalizing} if and only if it has a (possibly empty) \hyperref[def:lambda_term_reduction_chain]{reduction chain} ending with a \( \Anon \)-normal form.
 \end{proposition}
 \begin{proof}
   This is simply a reformulation of \cref{def:lambda_term_normal_form}.
 \end{proof}
 
 \begin{definition}\label{def:strongly_normalizing_lambda_term}\mimprovised
-  Let \enquote{\( {\Anon} \)} be a combination of \enquote{\( \beta \)}, \enquote{\( \eta \)} and possibly \enquote{\( \delta \)}. We say that the \( \muplambda \)-term \( M \) is \term{strongly \( \Anon \)-normalizing} if all \hyperref[def:lambda_term_reduction_graph]{reduction chains} starting at \( M \) are finite.
+  Let \enquote{\( {\Anon} \)} be a combination of \enquote{\( \beta \)}, \enquote{\( \eta \)} and possibly \enquote{\( \delta \)}. We say that the \( \muplambda \)-term \( M \) is \term{strongly \( \Anon \)-normalizing} if all \hyperref[def:lambda_term_reduction_chain]{reduction chains} starting at \( M \) are finite.
 \end{definition}
 \begin{comments}
   \item This definition is based on \bycite[\S 4.3]{Barendregt1992LambdaCalculiWithTypes} and \bycite[\S 4.2]{Mimram2020ProgramEqualsProof}, both of whom provide no formal definition.
-
-  \item We cannot require the \hyperref[def:lambda_term_reduction_graph]{reduction graph} \( G_{\Anon}(M) \) to be finite because it may contain countably many \( \alpha \)-equivalent redexes or reducts.
-
-  Furthermore, due to \ref{inf:def:lambda_term_reduction/alpha} we may have multiple ways to reduce a term, so we cannot require \( G_{\Anon}(M) \) to be an \hyperref[def:oriented_tree]{oriented tree}.
 
   \item We do not state the definition for general reduction relations in the sense of \ref{def:lambda_term_reduction} because we have only defined normal forms for these concrete reductions.
 \end{comments}
@@ -263,7 +271,7 @@ Proving \fullref{thm:simply_typable_terms_are_strongly_normalizing} requires con
   If \( M \) is \hyperref[def:strongly_normalizing_lambda_term]{strongly normalizing} and if \( M \aequiv N \), then \( N \) is also strongly normalizing.
 \end{proposition}
 \begin{proof}
-  Suppose that \( N \) has an infinite \hyperref[def:lambda_term_reduction_graph]{reduction chain}
+  Suppose that \( N \) has an infinite \hyperref[def:lambda_term_reduction_chain]{reduction chain}
   \begin{equation*}
     N = N_0 \pred N_1 \pred N_2 \pred \cdots
   \end{equation*}
