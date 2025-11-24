@@ -1,8 +1,7 @@
 from typing import override
 
-from ..exceptions import NotebookMathError
-from .alphabet import BinaryConnective, Quantifier
-from .formulas import (
+from ..alphabet import BinaryConnective, Quantifier
+from ..formulas import (
     ConnectiveFormula,
     Formula,
     FormulaTransformationVisitor,
@@ -10,12 +9,9 @@ from .formulas import (
     NegationFormula,
     QuantifierFormula,
 )
-from .substitution import substitute_in_formula
-from .variables import get_formula_bound_variables, get_formula_free_variables, new_variable
-
-
-class PNFError(NotebookMathError):
-    pass
+from ..substitution import substitute_in_formula
+from ..variables import get_formula_bound_variables, get_formula_free_variables, new_variable
+from .exceptions import DisallowedFormulaError
 
 
 class QuantifierlessVerificationVisitor(FormulaVisitor[bool]):
@@ -105,7 +101,7 @@ class MoveNegationsVisitor(FormulaTransformationVisitor):
                 case BinaryConnective.CONJUNCTION:
                     new_conn = BinaryConnective.DISJUNCTION
                 case _:
-                    raise PNFError(f'Unexpected connective {formula.body.conn}')
+                    raise DisallowedFormulaError(f'Unexpected connective {formula.body.conn}')
 
             return ConnectiveFormula(
                 new_conn,
@@ -122,7 +118,7 @@ class MoveNegationsVisitor(FormulaTransformationVisitor):
                 case Quantifier.EXISTENTIAL:
                     new_quantifier = Quantifier.UNIVERSAL
                 case _:
-                    raise PNFError(f'Unexpected quantifier {formula.body.quantifier}')
+                    raise DisallowedFormulaError(f'Unexpected quantifier {formula.body.quantifier}')
 
             return QuantifierFormula(
                 new_quantifier,
@@ -138,7 +134,7 @@ class MoveNegationsVisitor(FormulaTransformationVisitor):
     @override
     def visit_connective(self, formula: ConnectiveFormula) -> Formula:
         if formula.conn not in (BinaryConnective.DISJUNCTION, BinaryConnective.CONJUNCTION):
-            raise PNFError(f'Unexpected connective {formula.conn}')
+            raise DisallowedFormulaError(f'Unexpected connective {formula.conn}')
 
         return super().visit_connective(formula)
 
@@ -151,7 +147,7 @@ class MoveQuantifiersVisitor(FormulaTransformationVisitor):
     @override
     def visit_connective(self, formula: ConnectiveFormula) -> Formula:
         if formula.conn not in (BinaryConnective.DISJUNCTION, BinaryConnective.CONJUNCTION):
-            raise PNFError(f'Unexpected connective {formula.conn}')
+            raise DisallowedFormulaError(f'Unexpected connective {formula.conn}')
 
         if isinstance(formula.left, QuantifierFormula):
             right_free = get_formula_free_variables(formula.right)
@@ -210,5 +206,5 @@ def move_quantifiers(formula: Formula) -> Formula:
 
 
 # This is alg:prenex_normal_form_conversion in the monograph
-def to_pnf(formula: Formula) -> Formula:
+def formula_to_pnf(formula: Formula) -> Formula:
     return move_quantifiers(move_negations(remove_conditionals(formula)))

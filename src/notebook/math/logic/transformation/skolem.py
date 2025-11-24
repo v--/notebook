@@ -1,5 +1,5 @@
-from .formulas import Formula, QuantifierFormula
-from .pnf import PNFVerificationVisitor
+from ..formulas import Formula, QuantifierFormula
+from .prenex import PNFVerificationVisitor
 
 
 class SNFVerificationVisitor(PNFVerificationVisitor):

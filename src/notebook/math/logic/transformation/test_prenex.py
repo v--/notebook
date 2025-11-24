@@ -1,17 +1,17 @@
 import pytest
 
-from ...support.pytest import pytest_parametrize_kwargs, pytest_parametrize_lists
-from .parsing import parse_formula
-from .pnf import (
-    PNFError,
+from ....support.pytest import pytest_parametrize_kwargs, pytest_parametrize_lists
+from ..parsing import parse_formula
+from ..signature import FormalLogicSignature
+from .prenex import (
+    DisallowedFormulaError,
     is_formula_in_pnf,
     is_formula_quantifierless,
     move_negations,
     move_quantifiers,
     remove_conditionals,
-    to_pnf,
+    formula_to_pnf,
 )
-from .signature import FormalLogicSignature
 
 
 @pytest_parametrize_lists(
@@ -101,7 +101,7 @@ def test_move_negations(formula: str, expected: str, dummy_signature: FormalLogi
 def test_move_negations_conditional(dummy_signature: FormalLogicSignature) -> None:
     formula = parse_formula('¬(p¹(x) → p¹(y))', dummy_signature)
 
-    with pytest.raises(PNFError) as excinfo:
+    with pytest.raises(DisallowedFormulaError) as excinfo:
         move_negations(formula)
 
     assert str(excinfo.value) == 'Unexpected connective →'
@@ -110,7 +110,7 @@ def test_move_negations_conditional(dummy_signature: FormalLogicSignature) -> No
 def test_move_negations_biconditional(dummy_signature: FormalLogicSignature) -> None:
     formula = parse_formula('¬(p¹(x) ↔ p¹(y))', dummy_signature)
 
-    with pytest.raises(PNFError) as excinfo:
+    with pytest.raises(DisallowedFormulaError) as excinfo:
         move_negations(formula)
 
     assert str(excinfo.value) == 'Unexpected connective ↔'
@@ -144,7 +144,7 @@ def test_move_quantifiers(formula: str, expected: str, dummy_signature: FormalLo
 def test_move_quantifiers_conditional(dummy_signature: FormalLogicSignature) -> None:
     formula = parse_formula('¬(p¹(x) → p¹(y))', dummy_signature)
 
-    with pytest.raises(PNFError) as excinfo:
+    with pytest.raises(DisallowedFormulaError) as excinfo:
         move_quantifiers(formula)
 
     assert str(excinfo.value) == 'Unexpected connective →'
@@ -153,7 +153,7 @@ def test_move_quantifiers_conditional(dummy_signature: FormalLogicSignature) -> 
 def test_move_quantifiers_biconditional(dummy_signature: FormalLogicSignature) -> None:
     formula = parse_formula('¬(p¹(x) ↔ p¹(y))', dummy_signature)
 
-    with pytest.raises(PNFError) as excinfo:
+    with pytest.raises(DisallowedFormulaError) as excinfo:
         move_quantifiers(formula)
 
     assert str(excinfo.value) == 'Unexpected connective ↔'
@@ -172,7 +172,7 @@ def test_move_quantifiers_biconditional(dummy_signature: FormalLogicSignature) -
         expected='∃a.∀a.((p¹(a) ∨ q¹(x)) ∧ r¹(b))'
     ),
 )
-def test_to_pnf(formula: str, expected: str, dummy_signature: FormalLogicSignature) -> None:
-    pnf = to_pnf(parse_formula(formula, dummy_signature))
+def test_formula_to_pnf(formula: str, expected: str, dummy_signature: FormalLogicSignature) -> None:
+    pnf = formula_to_pnf(parse_formula(formula, dummy_signature))
     assert is_formula_in_pnf(pnf)
     assert str(pnf) == expected

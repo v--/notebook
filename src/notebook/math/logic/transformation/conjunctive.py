@@ -2,9 +2,8 @@ import inspect
 import itertools
 from collections.abc import Callable, Sequence
 
-from .alphabet import BinaryConnective, PropConstant
-from .exceptions import FormalLogicSignatureError
-from .formulas import (
+from ..alphabet import BinaryConnective, PropConstant
+from ..formulas import (
     ConnectiveFormula,
     ConstantFormula,
     Formula,
@@ -17,8 +16,9 @@ from .formulas import (
     is_conjunction,
     is_disjunction,
 )
-from .pnf import is_formula_quantifierless, move_negations, remove_conditionals
-from .propositional import DEFAULT_PROPOSITIONAL_VARIABLE, PROPOSITIONAL_SIGNATURE
+from ..propositional import DEFAULT_PROPOSITIONAL_VARIABLE, PROPOSITIONAL_SIGNATURE
+from .exceptions import VariableNameError
+from .prenex import is_formula_quantifierless, move_negations, remove_conditionals
 
 
 def is_literal(formula: Formula) -> bool:
@@ -118,7 +118,7 @@ def pull_conjunction(formula: Formula) -> Formula:
 
 
 # This is alg:cnf_and_dnf in the monograph
-def to_cnf(formula: Formula) -> Formula:
+def formula_to_cnf(formula: Formula) -> Formula:
     assert is_formula_quantifierless(formula)
     return pull_conjunction(move_negations(remove_conditionals(remove_constants(formula))))
 
@@ -140,7 +140,7 @@ def function_to_cnf(fun: Callable[..., bool]) -> Formula:
         try:
             PROPOSITIONAL_SIGNATURE.get_symbol(param.name)
         except KeyError:
-            raise FormalLogicSignatureError(f'The parameter name {param.name!r} is not a valid propositional variable name.') from None
+            raise VariableNameError(f'The parameter name {param.name!r} is not a valid propositional variable name.') from None
 
     # These names will generate valid formulas only when they consist of Latin letters
     predicates = [PredicateApplication(PROPOSITIONAL_SIGNATURE.get_symbol(param.name), []) for param in fun_params.values()]

@@ -1,8 +1,8 @@
 from collections.abc import Callable
 
-from ...support.pytest import pytest_parametrize_kwargs, pytest_parametrize_lists
-from .cnf import function_to_cnf, is_formula_in_cnf, pull_conjunction, to_cnf
-from .parsing import parse_propositional_formula
+from ....support.pytest import pytest_parametrize_kwargs, pytest_parametrize_lists
+from ..parsing import parse_propositional_formula
+from .conjunctive import formula_to_cnf, function_to_cnf, is_formula_in_cnf, pull_conjunction
 
 
 @pytest_parametrize_lists(
@@ -80,8 +80,8 @@ def test_pull_conjunction(formula: str, expected: str) -> None:
         expected='((p ∨ (¬p ∨ q)) ∧ (p ∨ (¬p ∨ r)))'
     ),
 )
-def test_to_cnf(formula: str, expected: str) -> None:
-    cnf = to_cnf(parse_propositional_formula(formula))
+def test_formula_to_cnf(formula: str, expected: str) -> None:
+    cnf = formula_to_cnf(parse_propositional_formula(formula))
     assert is_formula_in_cnf(cnf)
     assert str(cnf) == expected
 
