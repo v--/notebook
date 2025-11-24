@@ -36,7 +36,6 @@ LogicTokenKind = Literal[
 
 TOKEN_KIND_LIST: Sequence[LogicTokenKind] = get_args(LogicTokenKind)
 
-# It is important here that the same tokens have the same name everywhere they occur
 SINGLETON_TOKEN_MAP: Mapping[str, LogicTokenKind] = {
     ImproperInferenceRuleSymbol.SEQUENT.value: 'RULE_SEQUENT',
     ImproperSubstitutionSymbol.CONNECTIVE.value: 'SUBSTITUTION_CONNECTIVE',

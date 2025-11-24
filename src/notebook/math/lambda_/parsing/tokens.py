@@ -29,7 +29,6 @@ LambdaTokenKind = Literal[
 
 TOKEN_KIND_LIST: Sequence[LambdaTokenKind] = get_args(LambdaTokenKind)
 
-# It is important here that the same tokens have the same name everywhere they occur
 SINGLETON_TOKEN_MAP: Mapping[str, LambdaTokenKind] = {
     ImproperInferenceRuleSymbol.SEQUENT.value: 'RULE_SEQUENT',
     ImproperInferenceRuleSymbol.COMMA.value: 'COMMA',
