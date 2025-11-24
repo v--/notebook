@@ -29,6 +29,16 @@ def test_translate_term(dummy_signature: FormalLogicSignature) -> None:
     assert str(translate_term(translation, term)) == 'ф²(г¹(x), y)'
 
 
+def test_translate_term_exchange_prefix_and_infix(dummy_signature: FormalLogicSignature) -> None:
+    translation = SignatureTranslation({
+        dummy_signature.get_symbol('f²'): dummy_signature.get_symbol('+'),
+        dummy_signature.get_symbol('×'): dummy_signature.get_symbol('g²'),
+    })
+
+    term = parse_term('f²(x, (y × z))', dummy_signature)
+    assert str(translate_term(translation, term)) == '(x + g²(y, z))'
+
+
 def test_translate_formula(dummy_signature: FormalLogicSignature) -> None:
     target_signature = FormalLogicSignature()
     target_signature.add_symbol('FUNCTION', 'ф⁰', 0, infix=False)

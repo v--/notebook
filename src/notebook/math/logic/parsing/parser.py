@@ -397,7 +397,7 @@ class FormalLogicParser(IdentifierParserMixin[LogicTokenKind, LogicToken], Parse
             return TermPlaceholder(result.identifier)
 
         if isinstance(result, Formula | FormulaSchema):
-            raise context.annotate_context_error(f'Expected a {'term schema' if parse_schema else 'term'}')
+            raise context.annotate_context_error(f'Encountered a {'formula schema' if parse_schema else 'formula'} where a {'term schema' if parse_schema else 'term'} was expected')
 
         return result
 
@@ -419,7 +419,7 @@ class FormalLogicParser(IdentifierParserMixin[LogicTokenKind, LogicToken], Parse
             return FormulaPlaceholder(result.identifier)
 
         if isinstance(result, Term | TermSchema):
-            raise context.annotate_context_error(f'Expected a {'formula schema' if parse_schema else 'formula'}')
+            raise context.annotate_context_error(f'Encountered a {'term schema' if parse_schema else 'term'} where a {'formula schema' if parse_schema else 'formula'} was expected')
 
         return result
 

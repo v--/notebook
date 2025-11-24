@@ -80,7 +80,7 @@ def test_parsing_predicate_as_term(dummy_signature: FormalLogicSignature) -> Non
     with pytest.raises(ParserError) as excinfo:
         parse_term('p⁰', dummy_signature)
 
-    assert str(excinfo.value) == 'Expected a term'
+    assert str(excinfo.value) == 'Encountered a formula where a term was expected'
     assert excinfo.value.__notes__[0] == dedent('''\
         1 │ p⁰
           │ ^^
