@@ -12,6 +12,10 @@ def normalize_human_name(full_name: BibString) -> BibString:
     return full_name
 
 
+def is_name_normalized(full_name: BibString) -> bool:
+    return normalize_human_name(full_name) == full_name
+
+
 def get_main_human_name(full_name: BibString) -> BibString:
     if isinstance(full_name, str):
         names = HumanName(full_name)

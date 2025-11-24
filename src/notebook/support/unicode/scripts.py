@@ -66,6 +66,7 @@ SUPERSCRIPT_TABLE = str.maketrans({
     '9': '⁹'
 })
 
+
 SUBSCRIPT_TABLE = str.maketrans({
     'a': 'ₐ',
     'e': 'ₑ',

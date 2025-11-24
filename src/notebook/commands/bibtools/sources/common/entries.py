@@ -48,6 +48,16 @@ def generate_keyphrase(title: str, subtitle: str | None, language: str, *aux_tex
     return title_keyphrase
 
 
+def generate_entry_short_name(
+    title: str,
+    main_language: str,
+    *aux_texts: str | None,
+    subtitle: str | None = None,
+) -> str:
+    keyphrase = generate_keyphrase(title, subtitle, main_language, *aux_texts)
+    return mangle_string_for_entry_name(str(keyphrase))
+
+
 @string_accumulator()
 def generate_entry_name(
     authors: Sequence[BibAuthor],
@@ -71,8 +81,7 @@ def generate_entry_name(
     if year:
         yield year
 
-    keyphrase = generate_keyphrase(title, subtitle, main_language, *aux_texts)
-    yield mangle_string_for_entry_name(str(keyphrase))
+    yield generate_entry_short_name(title, main_language, *aux_texts, subtitle=subtitle)
 
 
 def regenerate_entry_name(entry: BibEntry, main_language: str, *aux_texts: str | None) -> str:

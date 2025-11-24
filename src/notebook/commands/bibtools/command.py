@@ -12,6 +12,7 @@ from .sources.arxiv import retrieve_arxiv_entry
 from .sources.doi import retrieve_doi_entry
 from .sources.isbn import retrieve_isbn_entry
 from .sources.mathnet import retrieve_mathnet_entry
+from .sources.stackexchange import retrieve_stackexchange_entry
 
 
 @click.group()
@@ -78,4 +79,13 @@ def doi(identifier: str, *, print_edition: bool, dump_as_fixture: bool) -> None:
 @exit_gracefully_on_exception(NotebookError)
 def mathnet(identifier: str, *, english: bool, dump_as_fixture: bool) -> None:
     entry = retrieve_mathnet_entry(identifier, english=english, dump_as_fixture=dump_as_fixture)
+    click.echo(str(entry), nl=False)
+
+
+@fetch.command()
+@click.argument('identifier', type=str)
+@click.option('--dump-as-fixture', is_flag=True)
+@exit_gracefully_on_exception(NotebookError)
+def stackexchange(identifier: str, *, dump_as_fixture: bool) -> None:
+    entry = retrieve_stackexchange_entry(identifier, dump_as_fixture=dump_as_fixture)
     click.echo(str(entry), nl=False)
