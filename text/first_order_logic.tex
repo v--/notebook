@@ -398,7 +398,7 @@ We give here the following definition, and then dedicate several sections to exp
   In general, wherever we need closed formulas, we will rely on implicit quantification --- see \cref{rem:mathematical_logic_conventions/quantification}.
 \end{definition}
 
-\paragraph{Semantics}
+\paragraph{First-order structures}
 
 \begin{definition}\label{def:fol_structure}\mimprovised
   Fix a \hyperref[def:truth_value_algebra]{truth value algebra} \( \BbbH \). A \term[ru=структура (\cite[73]{ШеньВерещагин2017ЯзыкиИИсчисления})]{structure} \( \mscrX = (X, I) \) over the \hyperref[def:fol_signature]{first-order signature} \( \Sigma \) consists of the following:
@@ -408,6 +408,8 @@ We give here the following definition, and then dedicate several sections to exp
   \end{thmenum}
 \end{definition}
 \begin{comments}
+  \item It is important the universe is nonempty; see \cref{rem:higher_order_logic_empty_universe} for a broader discussion.
+
   \item In accordance with \cref{rem:cardinality_auxiliary_terminology}, we use cardinality-related terminology like \enquote{finite} and \enquote{countably infinite} for the structure itself when we mean the cardinality of the universe.
 
   \item Both \enquote{universe} and \enquote{interpretation}, as well other related terms, are used inconsistently in the literature. See \cref{rem:model_theory_structure_terminology}.
@@ -459,7 +461,7 @@ We give here the following definition, and then dedicate several sections to exp
 
   It is also traditionally called the \term[bg=символ на Кронекер (\cite[26]{Боянов2008ЧислениМетоди}), ru=символ Кронекера (\cite[461]{Тыртышников2007ЛинейнаяАлгебра}), en=Kronecker delta symbol (\cite[33]{Knuth1997ArtVol1}); Kronecker symbol (\cite[213]{Bourbaki1998Algebra1to3})]{Kronecker delta symbol}.
 
-  The definition naturally extends to a \hyperref[def:heyting_algebra]{Heyting algebra} \( H \), where we can take \( R \) to be the \hyperref[ex:def:semiring/lattice]{join-meet semiring} of \( H \). Thus, in a \hyperref[con:truth_value_algebra]{truth value algebra}, the delta becomes
+  The definition naturally extends to a \hyperref[con:truth_value_algebra]{truth value algebra}, where it becomes
   \begin{equation}\label{eq:def:kronecker_delta/truth}
     \delta_{i,j} = \begin{cases}
       T, &i = j, \\
@@ -472,7 +474,9 @@ We give here the following definition, and then dedicate several sections to exp
 \end{comments}
 
 \begin{definition}\label{def:fol_denotation}\mimprovised
-  Fix a \hyperref[def:truth_value_algebra]{truth value algebra} \( \BbbH \). Let \( \mscrX = (X, I) \) be a \hyperref[def:fol_structure]{first-order structure} over \( \Sigma \), and let \( v: \op*{Var} \to X \) be a \hyperref[def:fol_variable_assignment]{variable assignment}.
+  For the reasons outlined in \cref{rem:intuitionistic_first_order_semantics}, we will be working over the \hyperref[def:truth_value_algebra/classical]{classical truth value algebra} \( \BbbH = \set{ T, F } \).
+
+  Let \( \mscrX = (X, I) \) be a \hyperref[def:fol_structure]{first-order structure} over \( \Sigma \), and let \( v: \op*{Var} \to X \) be a \hyperref[def:fol_variable_assignment]{variable assignment}.
 
   \begin{thmenum}
     \thmitem{def:fol_denotation/terms} We define the \term[ru=значение (\cite[def. 2.2.8]{Герасимов2011Вычислимость}), en=denotation (\cite[91]{Hinman2005Logic})]{denotation} \( \Bracks{\tau}_\mscrX^v \) of a \hyperref[def:fol_term]{first-order term} \( \tau \) as follows:
@@ -508,14 +512,14 @@ We give here the following definition, and then dedicate several sections to exp
 
     Most of the cases above are simply the familiar propositional denotation rules from \cref{def:propositional_denotation}.
     \begin{itemize}
-      \item In \eqref{eq:def:fol_denotation/formulas/eq}, \( \delta \) is the \hyperref[def:kronecker_delta]{Kronecker delta function} (written with prefix notation).
+      \item In \eqref{eq:def:fol_denotation/formulas/eq}, \( \delta \) is the \hyperref[def:kronecker_delta]{Kronecker delta function} (written using prefix notation).
 
       \item In \eqref{eq:def:fol_denotation/formulas/pred}, we utilize predicate functions from the structure's interpretation.
 
       \item The cases \eqref{eq:def:fol_denotation/formulas/forall} and \eqref{eq:def:fol_denotation/formulas/exists} evaluates \( \psi \) using a \hyperref[def:hol_variable_assignment/modified]{modified assignment} parameterized by the elements of \( X_\sigma \).
     \end{itemize}
 
-    If the denotation \( \Bracks{\varphi}_\mscrX^v \) does not depend on \( v \), we use the simpler notation \( \Bracks{\varphi}_\mscrX \). Unlike for terms, this can happen even if \( \varphi \) is not a \hyperref[def:closed_fol_formula]{closed formula} --- see \cref{ex:def:fol_denotation/independent}.
+    If the denotation \( \Bracks{\varphi}_\mscrX^v \) does not depend on \( v \), we use the simpler notation \( \Bracks{\varphi}_\mscrX \). Unlike for terms, this can happen even if \( \varphi \) is not a \hyperref[def:closed_fol_formula]{closed formula} --- see \cref{ex:universal_validity_and_lem}.
 
     \thmitem{def:fol_denotation/formula_valuation} Just as we have associated a function with every term, if \( \op*{Free}(\varphi) \subseteq \set{ x_1, \ldots, x_n } \), we can define the function
     \begin{equation*}
@@ -526,12 +530,112 @@ We give here the following definition, and then dedicate several sections to exp
     \end{equation*}
     where \( v \) is any variable assignment such that \( v(x_k) = a_k \) for \( k = 1, \ldots, n \).
 
-    Unless otherwise noted, we assume that \( x_1, \ldots, x_n \) are precisely the \hi{free} variables of \( \tau \) ordered lexicographically.
+    Unless otherwise noted, we assume that \( x_1, \ldots, x_n \) are precisely the \hi{free} variables of \( \varphi \), ordered lexicographically.
   \end{thmenum}
 \end{definition}
 \begin{comments}
   \item The term \enquote{denotation} is inspired by Russell's theory of denotations discussed in \cref{con:denotation}. It is used inconsistently in the literature. See \cref{rem:model_theory_structure_terminology}.
 \end{comments}
+
+\begin{remark}\label{rem:intuitionistic_first_order_semantics}
+  It is tempting to extend \cref{def:fol_denotation} so that the denotation of a first-order formula takes its \hyperref[def:truth_value_algebra]{truth values} over arbitrary \hyperref[def:heyting_algebra]{Heyting algebras} rather than taking only \hyperref[def:boolean_value]{Boolean values}. The definition extends transparently, but has undesired consequences.
+
+  Fix a structure \( \mscrX = (X, I) \) and a variable assignment \( v: \op*{Var} \to X \). For any two terms \( \tau \) and \( \sigma \), the denotation of equality based on \hyperref[def:kronecker_delta]{Kronecher's \( \delta \) function} gives us
+  \begin{equation*}
+    \Bracks{\tau \syneq \sigma}_\mscrX^v
+    =
+    \delta(\Bracks{\tau}_\mscrX^v, \Bracks{\sigma}_\mscrX^v)
+    =
+    \begin{cases}
+      T, &\Bracks{\tau}_\mscrX^v = \Bracks{\sigma}_\mscrX^v \\
+      F, &\T{otherwise.}
+    \end{cases}
+  \end{equation*}
+
+  As shown in \cref{def:kronecker_delta}, in any Heyting algebra the complement of \( T \) is \( F \) and vice versa. Thus,
+  \begin{equation*}
+    \Bracks{\tau \syneq \sigma}_\mscrX^v = T \T{if and only if} \Bracks{\synneg (\tau \syneq \sigma)}_\mscrX^v = F.
+  \end{equation*}
+
+  Therefore, for any variable assignment \( v \) in any structure \( \mscrX \), we have
+  \begin{equation*}
+    \Bracks{(\tau \syneq \sigma) \synvee \synneg (\tau \syneq \sigma)}_\mscrX^v = T
+  \end{equation*}
+
+  This is a particular instance of the law \eqref{eq:thm:classical_tautologies/lem} of the excluded middle that holds unconditionally.
+
+  In the intuitionistic natural deduction system from \cref{def:fol_natural_deduction_systems}, the only equality rule introduction is \ref{inf:def:fol_natural_deduction_systems/equality/intro}, so, unless \( \tau \) coincides with \( \sigma \), a proof of the above must rely on discharging hypotheses. A careful inspection shows that none of the rules with dischargeable hypotheses allows us to obtain the desired proof tree. So, as defined, the intuitionistic semantics is \hyperref[def:abstract_logic/completeness]{incomplete} with respect to the more established rules of natural deduction.
+
+  This particular denotation is also discussed in \cite{MathSE:topological_semantics_for_first_order_logic}, where several much more complicated denotations are suggested. \incite*{Scott1968IntuitionisticAnalysis} suggests a particular adaptation of \hyperref[def:truth_value_algebra/topological]{topological semantics} for first-order logic.
+\end{remark}
+
+\paragraph{Universal validity}
+
+\begin{definition}\label{def:fol_universal_validity}\mcite[105]{Hinman2005Logic}
+  If, for some \hyperref[def:fol_formula]{first-order formula} \( \varphi \) and some \hyperref[def:fol_structure]{first-order structure} \( \mscrX \), the \hyperref[def:fol_denotation/formula]{denotation} \( \Bracks{ \varphi }_\mscrX^v \) equals \( T \) for any variable assignment \( v \) in \( \mscrX \), we say that \( \varphi \) is \term{universally valid} in \( \mscrX \).
+\end{definition}
+\begin{comments}
+  \item \hyperref[def:closed_fol_formula]{Closed formulas} are universally valid, but the notion is more general --- see \cref{ex:universal_validity_and_lem}.
+
+  \item Universal validity is closely related to \hyperref[def:fol_universal_closure]{universal closures} --- see \cref{thm:fol_universal_validity_iff_closure_validity}.
+\end{comments}
+
+\begin{definition}\label{def:fol_universal_closure}\mcite[def. 2.2.28]{Hinman2005Logic}
+  We call a \term[ru=универсальное замыкание (\cite[65]{Герасимов2011Вычислимость})]{universal closure} of the \hyperref[def:hol_term/formula]{higher-order logical formula} \( \varphi \) any formula of the form
+  \begin{equation*}
+    \qforall {x_1} \ldots \qforall {x_n} \varphi,
+  \end{equation*}
+  where \( x_1, \ldots, x_n \) is an \hyperref[def:set_enumeration]{enumeration} of the free variables of \( \varphi \).
+
+  Using the \hyperref[def:lexicographic_order]{lexicographic order} on the variables, we may pick a canonical closure, which we will simply call \enquote{the} (lexicographic) universal closure of \( \varphi \).
+\end{definition}
+
+\begin{proposition}\label{thm:fol_universal_validity_iff_closure_validity}
+ A \hyperref[def:fol_formula]{first-order formula} \( \varphi \) is \hyperref[def:fol_universal_validity]{universally valid} if and only if of its \hyperref[def:fol_universal_closure]{universal closures} are.
+\end{proposition}
+\begin{comments}
+  \item Universal closures are nevertheless better behaved than simply universally valid formulas --- see \cref{ex:universal_validity_and_lem}.
+\end{comments}
+\begin{proof}
+  Fix a \hyperref[def:hol_structure]{structure} \( \mscrX = (X, I) \) over the \hyperref[def:hol_signature]{signature} \( \Sigma \).
+
+  Let \( \varphi \) be a formula and let \( x_1, \ldots, x_n \) be any ordering of its variables.
+
+  \SufficiencySubProof Suppose that \( \Bracks{ \varphi }_\mscrX^v = T \) for any assignment \( v \). Then
+  \begin{equation*}
+    \Bracks{ \qforall {x_n} \varphi }_\mscrX^v
+    \reloset {\eqref{eq:def:fol_denotation/formulas/forall}} =
+    \bigwedge\set[\big]{ \Bracks{ \varphi }_\mscrX^{v_{x \mapsto a}} \given* a \in X }
+    =
+    \bigwedge\set[\big]{ T \given* a \in X }
+    =
+    T.
+  \end{equation*}
+
+  Proceeding by induction, we conclude that
+  \begin{equation*}
+    \Bracks{ \qforall {x_1} \ldots \qforall {x_n} \varphi }_\mscrX^v = T.
+  \end{equation*}
+
+  Since \( v \) is arbitrary, we conclude that the universal closure of \( \varphi \) is universally valid.
+
+  \NecessitySubProof Conversely, suppose that \( \Bracks{ \qforall {x_1} \ldots \qforall {x_n} \varphi }_\mscrX^v = T \) for any assignment \( v \).
+
+  Aiming at a contradiction, suppose that, for some assignment \( v_0 \), we have \( \Bracks{ \varphi }_\mscrX^{v_0} < T \). Then
+  \begin{equation*}
+    \Bracks{ \qforall {x_n} \varphi }_\mscrX^v
+    \reloset {\eqref{eq:def:fol_denotation/formulas/forall}} =
+    \bigwedge\set[\big]{ \Bracks{ \varphi }_\mscrX^{v_{x \mapsto a}} \given* a \in X }
+    \leq
+    \Bracks{ \varphi }_\mscrX^{v_0}
+    <
+    T.
+  \end{equation*}
+
+  By induction, we conclude that  \( \Bracks{ \qforall {x_1} \ldots \qforall {x_n} \varphi }_\mscrX^v < T \).
+
+  The obtained contradiction shows that \( \varphi \) must be universally valid if its universal closure is.
+\end{proof}
 
 \begin{remark}\label{rem:model_theory_structure_terminology}
   \hyperref[def:propositional_interpretation]{Propositional interpretations}, \hyperref[def:fol_structure]{first-order structures} and \hyperref[def:hol_structure]{higher-order structures} can act as \hyperref[con:logical_model]{models} for the corresponding \hyperref[def:logical_theory]{logical theories}. In particular, they act as models in the corresponding \hyperref[def:institution]{institutions}. Unlike in general institutions, however, we refer to them as \enquote{models} only with respect to a theory.
