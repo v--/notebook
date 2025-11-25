@@ -1,15 +1,14 @@
 import unicodedata
 from collections.abc import Iterable
 from datetime import datetime
-from nameparser import HumanName
 
 from .....bibtex.author import BibAuthor
 from .....bibtex.entry import BibEntry
 from .....support.iteration import string_accumulator
 from ...exceptions import BibToolsParsingError
-from ..common.names import is_name_normalized
-from .model import StackExchangeEntry
 from ..common.dates import to_iso_date
+from .model import StackExchangeEntry
+
 
 SITE_ENTRY_PREFIX_MAP = {
     'Code Golf Stack Exchange': 'CGSE',

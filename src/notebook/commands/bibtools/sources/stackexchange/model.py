@@ -38,7 +38,7 @@ def parse_stackexchange_html(html: str) -> StackExchangeEntry:
     if not isinstance(site_tag, bs4.Tag):
         raise BibToolsParsingError('No site tag found')
 
-    signup_json_tag = soup.find('script', **{'data-module-name': 'islands/signup-modal/index.mod'})
+    signup_json_tag = soup.find('script', **{'data-module-name': 'islands/signup-modal/index.mod'})  # type: ignore[arg-type]
 
     if not isinstance(signup_json_tag, bs4.Tag):
         raise BibToolsParsingError('No signup metainformation tag found')
@@ -57,12 +57,12 @@ def parse_stackexchange_html(html: str) -> StackExchangeEntry:
     answer_id = match.group('answer_id')
 
     if answer_id is None:
-        question_container = soup.find(**{'data-questionid': question_id})
-        author_username = get_tag_attribute(question_container, 'data-author-username')
+        question_container = soup.find(**{'data-questionid': question_id})  # type: ignore[arg-type]
 
         if not isinstance(question_container, bs4.Tag):
             raise BibToolsParsingError(f'No question container found for id {question_id}')
 
+        author_username = get_tag_attribute(question_container, 'data-author-username')
         datetime_tag = question_container.find('span', 'relativetime')
 
         if not isinstance(datetime_tag, bs4.Tag):
@@ -71,12 +71,12 @@ def parse_stackexchange_html(html: str) -> StackExchangeEntry:
         datetime_str = get_tag_attribute(datetime_tag, 'title')
         datetime_ = datetime.fromisoformat(datetime_str)
     else:
-        answer_container = soup.find(**{'data-answerid': answer_id})
-        author_username = get_tag_attribute(answer_container, 'data-author-username')
+        answer_container = soup.find(**{'data-answerid': answer_id})  # type: ignore[arg-type]
 
         if not isinstance(answer_container, bs4.Tag):
             raise BibToolsParsingError(f'No answer container found for id {answer_id}')
 
+        author_username = get_tag_attribute(answer_container, 'data-author-username')
         datetime_tag = answer_container.find('time', itemprop='dateCreated')
 
         if not isinstance(datetime_tag, bs4.Tag):
