@@ -126,4 +126,9 @@
 % % Use the left margins rather than the right margins
 \reversemarginpar
 
+% Based on https://tex.stackexchange.com/a/112585
+\newcolumntype {L} {>{\(} l <{\)}}
+\newcolumntype {C} {>{\(} c <{\)}}
+\newcolumntype {R} {>{\(} r <{\)}}
+
 \ExplSyntaxOff
