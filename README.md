@@ -61,7 +61,7 @@ There is a set of tools, [`notebook.commands.bibtools`](./src/notebook/commands/
   * `... fetch isbn <id>`
   * `... fetch arxiv <id>`.
   * `... fetch mathnet <id>`.
-  * `... fetch stackexchange <url>` (only permalinks).
+  * `... fetch stackexchange <url>` (supports question and answer URLs).
 
 Some comments should be made about the parser. It was created specifically for maintaining my personal (digital) library and this monograph's sources in particular.
 * The rules for entry fields are based on those of BibLaTeX with some additions (e.g. mathnet, zbMATH, jstor).
