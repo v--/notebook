@@ -4,7 +4,7 @@ from typing import overload
 
 from .exceptions import MissingSignatureSymbolError, SignatureMorphismError
 from .signature import FormalLogicSignature
-from .symbols import FunctionSymbol, PredicateSymbol, SignatureSymbol, get_symbol_kind
+from .symbols import FunctionSymbol, PredicateSymbol, SignatureSymbol
 
 
 @dataclass
@@ -18,10 +18,10 @@ class SignatureMorphism:
                 raise MissingSignatureSymbolError(f'Unrecognized {a}')
 
             if (isinstance(a, FunctionSymbol) and isinstance(b, PredicateSymbol)) or (isinstance(a, PredicateSymbol) and isinstance(b, FunctionSymbol)):
-                raise SignatureMorphismError(f'Mismatch between the {get_symbol_kind(a)} symbol {a} and the {get_symbol_kind(b)} symbol {b}')
+                raise SignatureMorphismError(f'Mismatch between the {a.get_kind_string()} symbol {a} and the {b.get_kind_string()} symbol {b}')
 
             if a.arity != b.arity:
-                raise SignatureMorphismError(f'Mismatch between the arity {a.arity} of the {get_symbol_kind(a)} symbol {a} and the arity {b.arity} of the {get_symbol_kind(b)} symbol {b}')
+                raise SignatureMorphismError(f'Mismatch between the arity {a.arity} of the {a.get_kind_string()} symbol {a} and the arity {b.arity} of the {b.get_kind_string()} symbol {b}')
 
     @overload
     def __call__(self, symbol: FunctionSymbol) -> FunctionSymbol: ...
@@ -36,4 +36,4 @@ class SignatureMorphism:
         if symbol in self.source:
             return symbol
 
-        raise MissingSignatureSymbolError(f'The {get_symbol_kind(symbol)} symbol {symbol} is not present in the source signature')
+        raise MissingSignatureSymbolError(f'The {symbol.get_kind_string()} symbol {symbol} is not present in the source signature')

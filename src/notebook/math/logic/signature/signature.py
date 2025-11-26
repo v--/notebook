@@ -1,13 +1,8 @@
 from collections.abc import Iterator
 
-from ....parsing import is_greek_identifier, is_latin_identifier
 from ....support.collections import MissingKeyError, TrieMapping
-from ....support.inference import ImproperInferenceRuleSymbol
-from ....support.substitution import ImproperSubstitutionSymbol
-from ....support.unicode import Capitalization
-from ..alphabet import AuxImproperSymbol, BinaryConnective, EqualitySymbol, PropConstant, Quantifier, UnaryPrefix
 from .exceptions import FormalLogicSignatureError
-from .symbols import SignatureSymbol, get_symbol_kind
+from .symbols import SignatureSymbol
 
 
 class FormalLogicSignature:
@@ -24,33 +19,12 @@ class FormalLogicSignature:
             self.add_symbol(symbol)
 
     def add_symbol(self, symbol: SignatureSymbol) -> None:
-        name = symbol.name
-
-        if name == '(' or name == ')':
-            raise FormalLogicSignatureError('Cannot use a parenthesis as a proper signature symbol')
-
-        if (
-            name in PropConstant or
-            name in UnaryPrefix or
-            name in BinaryConnective or
-            name in Quantifier or
-            name in EqualitySymbol or
-            name in AuxImproperSymbol or
-            name in ImproperInferenceRuleSymbol or
-            name in ImproperSubstitutionSymbol
-        ):
-            raise FormalLogicSignatureError(f'Cannot use the improper symbol {name} as a proper signature symbol')
-
-        if is_latin_identifier(name, Capitalization.LOWER):
-            raise FormalLogicSignatureError(f'Cannot use {name} as a proper signature symbol because that conflicts with the grammar of variables')
-
-        if is_greek_identifier(name, Capitalization.LOWER):
-            raise FormalLogicSignatureError(f'Cannot use {name} as a proper signature symbol because that conflicts with the grammar of placeholders')
-
-        if symbol.notation == 'INFIX' and symbol.arity != 2:
-            raise FormalLogicSignatureError(f'Cannot use infix notation for the {get_symbol_kind(symbol)} {symbol} since it has arity {symbol.arity}')
-
-        self.trie[name] = symbol
+        try:
+            existing = self.trie[symbol.name]
+        except MissingKeyError:
+            self.trie[symbol.name] = symbol
+        else:
+            raise FormalLogicSignatureError(f'The signature already contains a {existing.get_kind_string()} symbol {symbol.name}')
 
     def __getitem__(self, name: str) -> SignatureSymbol:
         return self.trie[name]

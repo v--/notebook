@@ -7,7 +7,7 @@ from ...logic.deduction import Marker, NaturalDeductionRule
 from ...logic.deduction import proof_tree as ptree
 from ...logic.formulas import ConnectiveFormula, ConstantFormula, Formula, FormulaPlaceholder, PredicateApplication
 from ...logic.instantiation import FormalLogicSchemaInstantiation
-from ...logic.propositional import get_propositional_variable
+from ...logic.propositional import PropositionalVariable
 from ..algebraic_types import SIMPLE_ALGEBRAIC_TYPE_SYSTEM
 from ..alphabet import BinaryTypeConnective
 from ..instantiation import LambdaSchemaInstantiation
@@ -16,7 +16,6 @@ from ..type_derivation import tree as dtree
 from ..type_system import TypingRule
 from ..types import BaseType, SimpleConnectiveType, SimpleType, TypePlaceholder, TypeVariable, TypeVisitor
 from .exceptions import DerivationToProofError
-from .signature import CH_PROPOSITIONAL_SIGNATURE
 
 
 def type_connective_to_formula_connective(conn: BinaryTypeConnective) -> BinaryConnective:
@@ -49,7 +48,7 @@ class TypeToFormulaVisitor(TypeVisitor[Formula]):
         # We have not implemented a dedicated syntax for propositional logic
         # We treat propositional variables as nullary predicates
         # As per rem:curry_howard_variables, we adjust our predicates so that they match the syntax of type variables
-        return get_propositional_variable(str(type_.identifier), CH_PROPOSITIONAL_SIGNATURE)
+        return PredicateApplication(PropositionalVariable(str(type_.identifier)), [])
 
     @override
     def visit_connective(self, type_: SimpleConnectiveType) -> ConnectiveFormula:

@@ -35,7 +35,6 @@ from ..signature import (
     FunctionSymbol,
     PredicateSymbol,
     SignatureSymbol,
-    get_symbol_kind,
 )
 from ..terms import (
     EigenvariableSchemaSubstitutionSpec,
@@ -105,14 +104,8 @@ class FormalLogicParser(IdentifierParserMixin[LogicTokenKind, LogicToken], Parse
     def _iter_prefix_notation_args(self, context: LogicParserContext, symbol: SignatureSymbol, *, parse_schema: bool) -> Iterable[Term] | Iterable[TermSchema]:
         head = self.peek()
 
-        if symbol.arity == 0:
-            if head and head.kind == 'LEFT_PARENTHESIS':
-                raise context.annotate_context_error('Avoid an argument list at all for nullary symbols')
-
-            return
-
         if not head or head.kind != 'LEFT_PARENTHESIS':
-            raise context.annotate_context_error(f'Expected a parenthesized argument list for the {get_symbol_kind(symbol)} {symbol}')
+            raise context.annotate_context_error(f'Expected a parenthesized argument list for the {symbol.get_kind_string()} {symbol}')
 
         head = self.advance_and_peek()
 
@@ -154,7 +147,7 @@ class FormalLogicParser(IdentifierParserMixin[LogicTokenKind, LogicToken], Parse
     def _iter_condensed_notation_args(self, context: LogicParserContext, symbol: SignatureSymbol, *, parse_schema: bool) -> Iterable[Term] | Iterable[TermSchema]:
         head = self.peek()
 
-        if symbol.arity > 0 and head and head.kind == 'LEFT_PARENTHESIS':
+        if head and head.kind == 'LEFT_PARENTHESIS':
             raise context.annotate_context_error(f'Parentheses are disallowed for the symbol {symbol} that uses condensed notation')
 
         for _ in range(symbol.arity):
@@ -191,7 +184,7 @@ class FormalLogicParser(IdentifierParserMixin[LogicTokenKind, LogicToken], Parse
                 arguments = list(self._iter_condensed_notation_args(context, symbol, parse_schema=parse_schema))
 
         if symbol.arity != len(arguments):
-            raise context.annotate_context_error(f'Expected {symbol.arity} arguments for the {get_symbol_kind(symbol)} {symbol}, but got {len(arguments)}')
+            raise context.annotate_context_error(f'Expected {symbol.arity} arguments for the {symbol.get_kind_string()} {symbol}, but got {len(arguments)}')
 
         return cast(Sequence[TermSchema] | Sequence[Term], arguments)
 

@@ -87,17 +87,6 @@ def test_parsing_predicate_as_term(dummy_signature: FormalLogicSignature) -> Non
     ''')
 
 
-def test_parsing_zero_arity_function_with_empty_arg_list(dummy_signature: FormalLogicSignature) -> None:
-    with pytest.raises(ParserError) as excinfo:
-        parse_term('f⁰()', dummy_signature)
-
-    assert str(excinfo.value) == 'Avoid an argument list at all for nullary symbols'
-    assert excinfo.value.__notes__[0] == dedent('''\
-        1 │ f⁰()
-          │ ^^^
-    ''')
-
-
 def test_parsing_nonzero_arity_function_with_empty_arg_list(dummy_signature: FormalLogicSignature) -> None:
     with pytest.raises(ParserError) as excinfo:
         parse_term('f¹()', dummy_signature)

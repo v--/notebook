@@ -5,6 +5,7 @@ from ...logic.classical_logic import CLASSICAL_NATURAL_DEDUCTION_SYSTEM
 from ...logic.deduction import proof_tree as ptree
 from ...logic.instantiation import FormalLogicSchemaInstantiation
 from ...logic.parsing import parse_formula, parse_formula_placeholder, parse_marker
+from ...logic.signature import FormalLogicSignature
 from ..algebraic_types import SIMPLE_ALGEBRAIC_SIGNATURE, SIMPLE_ALGEBRAIC_TYPE_SYSTEM
 from ..instantiation import LambdaSchemaInstantiation
 from ..parsing import (
@@ -17,7 +18,6 @@ from ..parsing import (
 from ..type_derivation import tree as dtree
 from .derivation_to_proof import type_derivation_to_proof_tree, type_to_formula
 from .proof_to_derivation import formula_to_type, proof_tree_to_type_derivation
-from .signature import CH_PROPOSITIONAL_SIGNATURE
 
 
 @pytest_parametrize_kwargs(
@@ -29,16 +29,16 @@ from .signature import CH_PROPOSITIONAL_SIGNATURE
     dict(type_='(τ + σ)', formula='(τ ∨ σ)'),
     dict(type_='((𝟙 + 𝟘) × 𝟙)', formula='((⊤ ∨ ⊥) ∧ ⊤)'),
 )
-def test_type_to_formula(type_: str, formula: str) -> None:
+def test_type_to_formula(type_: str, formula: str, ch_logic_dummy_signature: FormalLogicSignature) -> None:
     parsed_type = parse_type(type_, SIMPLE_ALGEBRAIC_SIGNATURE)
-    parsed_formula = parse_formula(formula, CH_PROPOSITIONAL_SIGNATURE)
+    parsed_formula = parse_formula(formula, ch_logic_dummy_signature)
     assert type_to_formula(parsed_type) == parsed_formula
     assert formula_to_type(parsed_formula) == parsed_type
 
 
 class TestTypeDerivationToProofTree:
     # x: τ
-    def test_assumption(self) -> None:
+    def test_assumption(self, ch_logic_dummy_signature: FormalLogicSignature) -> None:
         derivation = dtree.assume(
             parse_variable_assertion('x: τ')
         )
@@ -49,7 +49,7 @@ class TestTypeDerivationToProofTree:
         )
 
         proof = ptree.assume(
-            parse_formula('τ',CH_PROPOSITIONAL_SIGNATURE),
+            parse_formula('τ',ch_logic_dummy_signature),
             parse_marker('x')
         )
 
@@ -70,7 +70,7 @@ class TestTypeDerivationToProofTree:
         assert proof_tree_to_type_derivation(proof) == derivation
 
     # The test here is mostly that instantiations are properly translated
-    def test_empty_elim(self) -> None:
+    def test_empty_elim(self, ch_logic_dummy_signature: FormalLogicSignature) -> None:
         derivation = dtree.apply(
             SIMPLE_ALGEBRAIC_TYPE_SYSTEM['𝟘₋'],
             dtree.assume(
@@ -93,12 +93,12 @@ class TestTypeDerivationToProofTree:
         proof = ptree.apply(
             CLASSICAL_NATURAL_DEDUCTION_SYSTEM['EFQ'],
             ptree.assume(
-                parse_formula('⊥', CH_PROPOSITIONAL_SIGNATURE),
+                parse_formula('⊥', ch_logic_dummy_signature),
                 parse_marker('x')
             ),
             instantiation=FormalLogicSchemaInstantiation(
                 formula_mapping={
-                    parse_formula_placeholder('φ'): parse_formula('τ', CH_PROPOSITIONAL_SIGNATURE)
+                    parse_formula_placeholder('φ'): parse_formula('τ', ch_logic_dummy_signature)
                 }
             )
         )
@@ -106,7 +106,7 @@ class TestTypeDerivationToProofTree:
         assert type_derivation_to_proof_tree(derivation) == proof
         assert proof_tree_to_type_derivation(proof) == derivation
 
-    def test_arrow_intro(self) -> None:
+    def test_arrow_intro(self, ch_logic_dummy_signature: FormalLogicSignature) -> None:
         derivation = dtree.apply(
             SIMPLE_ALGEBRAIC_TYPE_SYSTEM['→₊'],
             dtree.premise(
@@ -127,10 +127,10 @@ class TestTypeDerivationToProofTree:
         proof = ptree.apply(
             CLASSICAL_NATURAL_DEDUCTION_SYSTEM['→₊'],
             ptree.premise(
-                discharge=parse_formula('τ', CH_PROPOSITIONAL_SIGNATURE),
+                discharge=parse_formula('τ', ch_logic_dummy_signature),
                 marker=parse_marker('x'),
                 tree=ptree.assume(
-                    parse_formula('σ', CH_PROPOSITIONAL_SIGNATURE),
+                    parse_formula('σ', ch_logic_dummy_signature),
                     parse_marker('y')
                 )
             )
@@ -139,7 +139,7 @@ class TestTypeDerivationToProofTree:
         assert type_derivation_to_proof_tree(derivation) == proof
         assert proof_tree_to_type_derivation(proof) == derivation
 
-    def test_prod_intro(self) -> None:
+    def test_prod_intro(self, ch_logic_dummy_signature: FormalLogicSignature) -> None:
         derivation = dtree.apply(
             SIMPLE_ALGEBRAIC_TYPE_SYSTEM['×₊'],
             dtree.assume(
@@ -160,11 +160,11 @@ class TestTypeDerivationToProofTree:
         proof = ptree.apply(
             CLASSICAL_NATURAL_DEDUCTION_SYSTEM['∧₊'],
             ptree.assume(
-                parse_formula('τ', CH_PROPOSITIONAL_SIGNATURE),
+                parse_formula('τ', ch_logic_dummy_signature),
                 parse_marker('x')
             ),
             ptree.assume(
-                parse_formula('σ', CH_PROPOSITIONAL_SIGNATURE),
+                parse_formula('σ', ch_logic_dummy_signature),
                 parse_marker('y')
             )
         )
@@ -172,7 +172,7 @@ class TestTypeDerivationToProofTree:
         assert type_derivation_to_proof_tree(derivation) == proof
         assert proof_tree_to_type_derivation(proof) == derivation
 
-    def test_prod(self) -> None:
+    def test_prod(self, ch_logic_dummy_signature: FormalLogicSignature) -> None:
         derivation = dtree.apply(
             SIMPLE_ALGEBRAIC_TYPE_SYSTEM['×₋ₗ'],
             dtree.apply(
@@ -200,11 +200,11 @@ class TestTypeDerivationToProofTree:
             ptree.apply(
                 CLASSICAL_NATURAL_DEDUCTION_SYSTEM['∧₊'],
                 ptree.assume(
-                    parse_formula('τ', CH_PROPOSITIONAL_SIGNATURE),
+                    parse_formula('τ', ch_logic_dummy_signature),
                     parse_marker('x')
                 ),
                 ptree.assume(
-                    parse_formula('σ', CH_PROPOSITIONAL_SIGNATURE),
+                    parse_formula('σ', ch_logic_dummy_signature),
                     parse_marker('y')
                 )
             )
@@ -214,7 +214,7 @@ class TestTypeDerivationToProofTree:
         assert proof_tree_to_type_derivation(proof) == derivation
 
     # This can be found in the proof that τ ⧦ τ + 𝟘 in thm:simple_algebraic_type_arithmetic
-    def test_sum(self) -> None:
+    def test_sum(self, ch_logic_dummy_signature: FormalLogicSignature) -> None:
         derivation = dtree.apply(
             SIMPLE_ALGEBRAIC_TYPE_SYSTEM['+₋'],
             dtree.assume(
@@ -254,31 +254,31 @@ class TestTypeDerivationToProofTree:
         proof = ptree.apply(
             CLASSICAL_NATURAL_DEDUCTION_SYSTEM['∨₋'],
             ptree.assume(
-                parse_formula('(τ ∨ ⊥)', CH_PROPOSITIONAL_SIGNATURE),
+                parse_formula('(τ ∨ ⊥)', ch_logic_dummy_signature),
                 parse_marker('x')
             ),
             ptree.premise(
                 tree=ptree.assume(
-                    parse_formula('τ', CH_PROPOSITIONAL_SIGNATURE),
+                    parse_formula('τ', ch_logic_dummy_signature),
                     parse_marker('a')
                 ),
-                discharge=parse_formula('τ', CH_PROPOSITIONAL_SIGNATURE),
+                discharge=parse_formula('τ', ch_logic_dummy_signature),
                 marker=parse_marker('a')
             ),
             ptree.premise(
                 tree=ptree.apply(
                     CLASSICAL_NATURAL_DEDUCTION_SYSTEM['EFQ'],
                     ptree.assume(
-                        parse_formula('⊥', CH_PROPOSITIONAL_SIGNATURE),
+                        parse_formula('⊥', ch_logic_dummy_signature),
                         parse_marker('b')
                     ),
                     instantiation=FormalLogicSchemaInstantiation(
                         formula_mapping={
-                            parse_formula_placeholder('φ'): parse_formula('τ', CH_PROPOSITIONAL_SIGNATURE)
+                            parse_formula_placeholder('φ'): parse_formula('τ', ch_logic_dummy_signature)
                         }
                     )
                 ),
-                discharge=parse_formula('⊥', CH_PROPOSITIONAL_SIGNATURE),
+                discharge=parse_formula('⊥', ch_logic_dummy_signature),
                 marker=parse_marker('b')
             )
         )
@@ -286,7 +286,7 @@ class TestTypeDerivationToProofTree:
         assert type_derivation_to_proof_tree(derivation) == proof
         assert proof_tree_to_type_derivation(proof) == derivation
 
-    def test_unused_discharged_assertions(self) -> None:
+    def test_unused_discharged_assertions(self, ch_logic_dummy_signature: FormalLogicSignature) -> None:
         derivation = dtree.apply(
             SIMPLE_ALGEBRAIC_TYPE_SYSTEM['+₋'],
             dtree.apply(
@@ -349,7 +349,7 @@ class TestTypeDerivationToProofTree:
             ptree.apply(
                 CLASSICAL_NATURAL_DEDUCTION_SYSTEM['∧₋ᵣ'],
                 ptree.assume(
-                    parse_formula('(τ ∧ (σ ∨ ρ))', CH_PROPOSITIONAL_SIGNATURE),
+                    parse_formula('(τ ∧ (σ ∨ ρ))', ch_logic_dummy_signature),
                     marker=parse_marker('x')
                 )
             ),
@@ -357,17 +357,17 @@ class TestTypeDerivationToProofTree:
                 tree=ptree.apply(
                     CLASSICAL_NATURAL_DEDUCTION_SYSTEM['∨₊ᵣ'],
                     ptree.assume(
-                        parse_formula('σ', CH_PROPOSITIONAL_SIGNATURE),
+                        parse_formula('σ', ch_logic_dummy_signature),
                         marker=parse_marker('a')
                     ),
                     instantiation=FormalLogicSchemaInstantiation(
                         formula_mapping={
-                            parse_formula_placeholder('φ'): parse_formula('τ', CH_PROPOSITIONAL_SIGNATURE)
+                            parse_formula_placeholder('φ'): parse_formula('τ', ch_logic_dummy_signature)
                         }
                     )
                 ),
                 marker=parse_marker('a'),
-                discharge=parse_formula('σ', CH_PROPOSITIONAL_SIGNATURE)
+                discharge=parse_formula('σ', ch_logic_dummy_signature)
             ),
             ptree.premise(
                 tree=ptree.apply(
@@ -375,18 +375,18 @@ class TestTypeDerivationToProofTree:
                     ptree.apply(
                         CLASSICAL_NATURAL_DEDUCTION_SYSTEM['∧₋ₗ'],
                         ptree.assume(
-                            parse_formula('(τ ∧ (σ ∨ ρ))', CH_PROPOSITIONAL_SIGNATURE),
+                            parse_formula('(τ ∧ (σ ∨ ρ))', ch_logic_dummy_signature),
                             marker=parse_marker('x')
                         )
                     ),
                     instantiation=FormalLogicSchemaInstantiation(
                         formula_mapping={
-                            parse_formula_placeholder('ψ'): parse_formula('σ', CH_PROPOSITIONAL_SIGNATURE)
+                            parse_formula_placeholder('ψ'): parse_formula('σ', ch_logic_dummy_signature)
                         }
                     )
                 ),
                 marker=parse_marker('b'),
-                discharge=parse_formula('ρ', CH_PROPOSITIONAL_SIGNATURE)
+                discharge=parse_formula('ρ', ch_logic_dummy_signature)
             )
         )
 
