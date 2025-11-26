@@ -7,3 +7,7 @@ class FormalLogicError(NotebookMathError):
 
 class FormalLogicSignatureError(FormalLogicError):
     pass
+
+
+class SignatureTranslationError(FormalLogicError):
+    pass

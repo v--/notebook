@@ -1,4 +1,4 @@
-from ...rings.modulo import Z2
+from ...rings.modular import Z2
 from .common import IRingMatrix
 
 

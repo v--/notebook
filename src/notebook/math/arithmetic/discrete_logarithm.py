@@ -1,4 +1,4 @@
-from ..rings.modulo import BaseIntModulo
+from ..rings.modular import BaseIntModulo
 from .exceptions import NotebookArithmeticError
 from .primes import is_prime_naive
 

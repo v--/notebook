@@ -1,5 +1,5 @@
 from ...support.pytest import pytest_parametrize_kwargs
-from .modulo import Z3
+from .modular import Z3
 
 
 @pytest_parametrize_kwargs(

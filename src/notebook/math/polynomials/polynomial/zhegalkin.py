@@ -2,7 +2,7 @@ import functools
 import inspect
 from collections.abc import Callable
 
-from ...rings.modulo import Z2
+from ...rings.modular import Z2
 from .. import monomial
 from ..monomial import Monomial
 from .common import IRingPolynomial

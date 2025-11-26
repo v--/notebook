@@ -39,6 +39,9 @@ class BaseIntModulo(metaclass=IntModuloMeta):
 
         return self.value == other.value
 
+    def __hash__(self) -> int:
+        return hash((self.modulus, self.value))
+
     def __add__(self, other: Self | int) -> Self:
         if isinstance(other, BaseIntModulo):
             return self.new(self.value + other.value)

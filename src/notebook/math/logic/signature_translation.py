@@ -2,7 +2,7 @@ from collections.abc import Mapping
 from dataclasses import dataclass, field
 from typing import override
 
-from .exceptions import FormalLogicError
+from .exceptions import SignatureTranslationError
 from .formulas import (
     EqualityFormula,
     Formula,
@@ -13,12 +13,8 @@ from .signature import SignatureSymbol
 from .terms import FunctionApplication, Term, TermTransformationVisitor
 
 
-class SignatureTranslationError(FormalLogicError):
-    pass
-
-
 @dataclass
-class SignatureTranslation:
+class SignatureMorphism:
     mapping: Mapping[SignatureSymbol, SignatureSymbol]
 
     def __post_init__(self) -> None:
@@ -32,7 +28,7 @@ class SignatureTranslation:
 
 @dataclass
 class TermTranslationVisitor(TermTransformationVisitor):
-    translation: SignatureTranslation
+    translation: SignatureMorphism
 
     @override
     def visit_function(self, term: FunctionApplication) -> Term:
@@ -43,13 +39,13 @@ class TermTranslationVisitor(TermTransformationVisitor):
 
 
 # This is alg:fol_term_signature_translation in the monograph
-def translate_term(translation: SignatureTranslation, term: Term) -> Term:
+def translate_term(translation: SignatureMorphism, term: Term) -> Term:
     return TermTranslationVisitor(translation).visit(term)
 
 
 @dataclass
 class FormulaTranslationVisitor(FormulaTransformationVisitor):
-    translation: SignatureTranslation
+    translation: SignatureMorphism
     term_visitor: TermTranslationVisitor = field(init=False)
 
     def __post_init__(self) -> None:
@@ -71,5 +67,5 @@ class FormulaTranslationVisitor(FormulaTransformationVisitor):
 
 
 # This is alg:fol_formula_signature_translation in the monograph
-def translate_formula(translation: SignatureTranslation, formula: Formula) -> Formula:
+def translate_formula(translation: SignatureMorphism, formula: Formula) -> Formula:
     return FormulaTranslationVisitor(translation).visit(formula)

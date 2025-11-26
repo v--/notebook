@@ -3,7 +3,7 @@ import re
 import pytest
 
 from ...support.pytest import pytest_parametrize_kwargs
-from ..rings.modulo import Z2, Z4, Z5, Z7, BaseIntModulo
+from ..rings.modular import Z2, Z4, Z5, Z7, BaseIntModulo
 from .discrete_logarithm import DiscreteLogarithmError, naive_discrete_logarithm
 
 
