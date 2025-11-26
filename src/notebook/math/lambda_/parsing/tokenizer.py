@@ -3,11 +3,11 @@ from typing import override
 
 from ....parsing import IdentifierTokenizerMixin, Tokenizer, TokenizerContext, TrieTokenizerMixin
 from ....support.unicode import Capitalization
-from ..signature import LambdaSignature, LambdaSymbol
+from ..signature import LambdaSignature, SignatureSymbol
 from .tokens import SINGLETON_TOKEN_MAP, LambdaToken, LambdaTokenKind
 
 
-class FormalLambdaTokenizer(IdentifierTokenizerMixin[LambdaTokenKind], TrieTokenizerMixin[LambdaTokenKind, LambdaSymbol], Tokenizer[LambdaTokenKind]):
+class FormalLambdaTokenizer(IdentifierTokenizerMixin[LambdaTokenKind], TrieTokenizerMixin[LambdaTokenKind, SignatureSymbol], Tokenizer[LambdaTokenKind]):
     signature: LambdaSignature
 
     def __init__(self, source: str, signature: LambdaSignature) -> None:

@@ -1,9 +1,8 @@
 from collections.abc import Iterable
 from typing import override
 
-from .exceptions import FormalLogicSignatureError
 from .formulas import PredicateApplication
-from .signature import FormalLogicSignature, SignatureSymbol, SignatureSymbolKind
+from .signature import FormalLogicSignature, FormalLogicSignatureError, PredicateSymbol, SignatureSymbol
 
 
 class PropositionalLogicSignature(FormalLogicSignature):
@@ -12,19 +11,18 @@ class PropositionalLogicSignature(FormalLogicSignature):
         super().__init__()
 
         for name in variable_names:
-            self.trie[name] = SignatureSymbol('PREDICATE', name=name, arity=0, infix=False)
+            self.trie[name] = PredicateSymbol(name=name, arity=0, infix=False)
 
     @override
-    def add_symbol(self, symbol_kind: SignatureSymbolKind, name: str, arity: int, *, infix: bool) -> None:
+    def add_symbol(self, symbol: SignatureSymbol) -> None:
         raise FormalLogicSignatureError('Adding proper symbols to a propositional signature is disallowed')
 
 
 # We only support propositional formulas encoded as first-order formulas with no terms and predicates acting as variables.
 # This deviates from the monograph, but implementing support for propositional variables will be of no use for us.
 PROPOSITIONAL_SIGNATURE = PropositionalLogicSignature(chr(ind) for ind in range(ord('a'), ord('z') + 1))
-DEFAULT_PROPOSITIONAL_VARIABLE = PROPOSITIONAL_SIGNATURE.get_symbol('p')
+DEFAULT_PROPOSITIONAL_VARIABLE = PROPOSITIONAL_SIGNATURE['p']
 
 
 def get_propositional_variable(source: str, signature: PropositionalLogicSignature = PROPOSITIONAL_SIGNATURE) -> PredicateApplication:
-    symbol = signature.get_symbol(source)
-    return PredicateApplication(symbol, [])
+    return PredicateApplication(signature[source], [])

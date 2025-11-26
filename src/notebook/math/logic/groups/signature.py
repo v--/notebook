@@ -1,7 +1,8 @@
-from ..signature import FormalLogicSignature
+from ..signature import FormalLogicSignature, FunctionSymbol
 
 
-GROUP_SIGNATURE = FormalLogicSignature()
-GROUP_SIGNATURE.add_symbol('FUNCTION', name='ⅇ', arity=0, infix=False)
-GROUP_SIGNATURE.add_symbol('FUNCTION', name='~', arity=1, infix=False)
-GROUP_SIGNATURE.add_symbol('FUNCTION', name='⋅', arity=2, infix=True)
+GROUP_SIGNATURE = FormalLogicSignature(
+    FunctionSymbol(name='1', arity=0, infix=False),
+    FunctionSymbol(name='~', arity=1, infix=False),
+    FunctionSymbol(name='⋅', arity=2, infix=True)
+)

@@ -3,7 +3,7 @@ from dataclasses import dataclass
 
 from ....parsing.identifiers import LatinIdentifier
 from ..exceptions import FormalLogicError
-from ..signature import SignatureSymbol
+from ..signature import FunctionSymbol, SignatureSymbol
 
 
 @dataclass(frozen=True)
@@ -21,7 +21,7 @@ class SyntacticApplication[ArgT]:
 
     def __post_init__(self) -> None:
         if len(self.arguments) != self.symbol.arity:
-            raise FormalLogicError(f'Unexpected argument count {len(self.arguments)} for {self.symbol.get_readable_kind()} symbol with arity {self.symbol.arity}')
+            raise FormalLogicError(f'Unexpected argument count {len(self.arguments)} for {self.symbol} with arity {self.symbol.arity}')
 
     def __str__(self) -> str:
         if len(self.arguments) == 0:
@@ -39,7 +39,7 @@ class SyntacticApplication[ArgT]:
 
 
 class FunctionApplication(SyntacticApplication['Term']):
-    pass
+    symbol: FunctionSymbol
 
 
 Term = Variable | FunctionApplication

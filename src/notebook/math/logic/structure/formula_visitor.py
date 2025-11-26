@@ -41,7 +41,7 @@ class FormulaEvaluationVisitor[T](FormulaVisitor[bool]):
 
     @override
     def visit_predicate(self, formula: PredicateApplication) -> bool:
-        return self.structure.apply_predicate(formula.symbol, *(self.term_visitor.visit(arg) for arg in formula.arguments))
+        return self.structure.apply(formula.symbol, *(self.term_visitor.visit(arg) for arg in formula.arguments))
 
     @override
     def visit_negation(self, formula: NegationFormula) -> bool:

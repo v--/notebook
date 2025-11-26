@@ -1,26 +1,13 @@
-from collections.abc import Iterable
-from typing import Literal, NamedTuple
+from collections.abc import Iterator
 
-from ...parsing import is_greek_identifier, is_latin_identifier
-from ...support.collections import TrieMapping
-from ...support.inference import ImproperInferenceRuleSymbol
-from ...support.substitution import ImproperSubstitutionSymbol
-from ...support.unicode import Capitalization
-from .alphabet import AuxImproperSymbol, BinaryConnective, EqualitySymbol, PropConstant, Quantifier, UnaryPrefix
+from ....parsing import is_greek_identifier, is_latin_identifier
+from ....support.collections import MissingKeyError, TrieMapping
+from ....support.inference import ImproperInferenceRuleSymbol
+from ....support.substitution import ImproperSubstitutionSymbol
+from ....support.unicode import Capitalization
+from ..alphabet import AuxImproperSymbol, BinaryConnective, EqualitySymbol, PropConstant, Quantifier, UnaryPrefix
 from .exceptions import FormalLogicSignatureError
-
-
-SignatureSymbolKind = Literal['FUNCTION', 'PREDICATE']
-
-
-class SignatureSymbol(NamedTuple):
-    kind: SignatureSymbolKind
-    name: str
-    arity: int
-    infix: bool
-
-    def get_readable_kind(self) -> str:
-        return self.kind.lower()
+from .symbols import SignatureSymbol
 
 
 class FormalLogicSignature:
@@ -30,10 +17,15 @@ class FormalLogicSignature:
     Calling them "symbols" corresponds to their usage in the literature, where Unicode is not involved.'''
     trie: TrieMapping[SignatureSymbol]
 
-    def __init__(self) -> None:
+    def __init__(self, *symbols: SignatureSymbol) -> None:
         self.trie = TrieMapping()
 
-    def add_symbol(self, symbol_kind: SignatureSymbolKind, name: str, arity: int, *, infix: bool) -> None:
+        for symbol in symbols:
+            self.add_symbol(symbol)
+
+    def add_symbol(self, symbol: SignatureSymbol) -> None:
+        name = symbol.name
+
         if name == '(' or name == ')':
             raise FormalLogicSignatureError('Cannot use a parenthesis as a proper signature symbol')
 
@@ -55,16 +47,24 @@ class FormalLogicSignature:
         if is_greek_identifier(name, Capitalization.LOWER):
             raise FormalLogicSignatureError(f'Cannot use {name!r} as a proper signature symbol because that conflicts with the grammar of placeholders')
 
-        if infix and arity != 2:
-            raise FormalLogicSignatureError(f'Cannot use {name!r} as an infix symbol since it has arity {arity}')
+        if symbol.infix and symbol.arity != 2:
+            raise FormalLogicSignatureError(f'Cannot use {name!r} as an infix symbol since it has arity {symbol.arity}')
 
-        self.trie[name] = SignatureSymbol(symbol_kind, name, arity, infix)
+        self.trie[name] = symbol
 
-    def get_symbol(self, name: str) -> SignatureSymbol:
+    def __getitem__(self, name: str) -> SignatureSymbol:
         return self.trie[name]
 
-    def iter_symbols(self) -> Iterable[SignatureSymbol]:
-        return self.trie.values()
+    def __contains__(self, symbol: SignatureSymbol) -> bool:
+        try:
+            existing = self.trie[symbol.name]
+        except MissingKeyError:
+            return False
+
+        return existing == symbol
+
+    def __iter__(self) -> Iterator[SignatureSymbol]:
+        return iter(self.trie.values())
 
 
 EMPTY_SIGNATURE = FormalLogicSignature()

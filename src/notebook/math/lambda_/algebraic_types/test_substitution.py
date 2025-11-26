@@ -13,7 +13,7 @@ from ..parsing import (
     parse_typing_rule,
     parse_variable_assertion,
 )
-from ..signature import LambdaSignature
+from ..signature import BaseTypeSymbol, ConstantTermSymbol, LambdaSignature
 from ..type_derivation import TypeDerivationError, UnknownDerivationRuleError, apply, assume, premise
 from .substitution import substitute_in_tree
 from .system import SIMPLE_ALGEBRAIC_SIGNATURE, SIMPLE_ALGEBRAIC_TYPE_SYSTEM
@@ -146,7 +146,7 @@ def test_substitute_nested_abstraction_noop() -> None:
 
 
 def test_substitute_unknown_rule() -> None:
-    signature = LambdaSignature(constant_terms=['𝐂'], base_types=['𝛕'])
+    signature = LambdaSignature(ConstantTermSymbol('𝐂'), BaseTypeSymbol('𝛕'))
     rule = parse_typing_rule('R', f'{ImproperInferenceRuleSymbol.SEQUENT} 𝐂: 𝛕', signature)
     tree = apply(rule)
     src = variables.x
@@ -158,7 +158,7 @@ def test_substitute_unknown_rule() -> None:
 
 # Analogous to the previous test, but with a rule name that collides with an arrow type rule
 def test_substitute_unknown_rule_with_matching_name() -> None:
-    signature = LambdaSignature(constant_terms=['𝐂'], base_types=['𝛕'])
+    signature = LambdaSignature(ConstantTermSymbol('𝐂'), BaseTypeSymbol('𝛕'))
     rule = parse_typing_rule('→₊', f'{ImproperInferenceRuleSymbol.SEQUENT} 𝐂: 𝛕', signature)
     tree = apply(rule)
     src = variables.x

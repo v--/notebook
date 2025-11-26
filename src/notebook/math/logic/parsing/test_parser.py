@@ -61,7 +61,7 @@ def test_parsing_valid_variables(term: str, expected: Variable) -> None:
     )
 )
 def test_parsing_valid_functions(term: str, name: str, arguments: Sequence[str], dummy_signature: FormalLogicSignature) -> None:
-    expected = FunctionApplication(dummy_signature.get_symbol(name), [parse_term(arg, dummy_signature) for arg in arguments])
+    expected = FunctionApplication(dummy_signature[name], [parse_term(arg, dummy_signature) for arg in arguments])
     assert parse_term(term, dummy_signature) == expected
 
 
@@ -146,7 +146,7 @@ def test_parsing_function_with_wrong_arity(dummy_signature: FormalLogicSignature
     with pytest.raises(ParserError) as excinfo:
         parse_term('f²(x)', dummy_signature)
 
-    assert str(excinfo.value) == 'Expected 2 arguments for function f², but got 1'
+    assert str(excinfo.value) == "Expected 2 arguments for function symbol 'f²', but got 1"
     assert excinfo.value.__notes__[0] == dedent('''\
         1 │ f²(x)
           │ ^^^^^

@@ -6,7 +6,7 @@ from ....parsing import GreekIdentifier, LatinIdentifier, ParserError, Tokenizer
 from ....support.pytest import pytest_parametrize_kwargs, pytest_parametrize_lists
 from ..alphabet import BinaryTypeConnective
 from ..assertions import TypeAssertion
-from ..signature import LambdaSignature
+from ..signature import BaseTypeSymbol, ConstantTermSymbol, LambdaSignature
 from ..terms import Constant, TypedAbstraction, UntypedApplication, Variable
 from ..types import SimpleConnectiveType, SimpleType, TypeVariable
 from .parser import (
@@ -24,7 +24,11 @@ from .parser import (
 # This is our base signature from def:hol_signature,
 # but with boldface symbols so that the (unicode) symbols do not collide with variables and placeholders
 # It is used only for testing the parser.
-HOL_TEST_SIGNATURE = LambdaSignature(base_types=['𝛊', '𝐨'], constant_terms=['𝐐'])
+HOL_TEST_SIGNATURE = LambdaSignature(
+    BaseTypeSymbol('𝛊'),
+    BaseTypeSymbol('𝐨'),
+    ConstantTermSymbol('𝐐')
+)
 
 
 @pytest_parametrize_kwargs(

@@ -1,12 +1,20 @@
 from ..arrow_types import ARROW_ONLY_TYPE_SYSTEM
 from ..parsing import parse_typing_rule
-from ..signature import LambdaSignature
+from ..signature import BaseTypeSymbol, ConstantTermSymbol, LambdaSignature
 from ..type_system import ExplicitTypeSystem
 
 
 SIMPLE_ALGEBRAIC_SIGNATURE = LambdaSignature(
-    base_types=['𝟘', '𝟙'],
-    constant_terms=['E₋', 'U₊', 'P₊', 'P₋ₗ', 'P₋ᵣ', 'S₊ₗ', 'S₊ᵣ', 'S₋']
+    BaseTypeSymbol('𝟘'),
+    BaseTypeSymbol('𝟙'),
+    ConstantTermSymbol('E₋'),
+    ConstantTermSymbol('U₊'),
+    ConstantTermSymbol('P₊'),
+    ConstantTermSymbol('P₋ₗ'),
+    ConstantTermSymbol('P₋ᵣ'),
+    ConstantTermSymbol('S₊ₗ'),
+    ConstantTermSymbol('S₊ᵣ'),
+    ConstantTermSymbol('S₋')
 )
 
 

@@ -17,7 +17,7 @@ class TermEvaluationVisitor[T](TermVisitor[T]):
 
     @override
     def visit_function(self, term: FunctionApplication) -> T:
-        return self.structure.apply_function(term.symbol, *(self.visit(arg) for arg in term.arguments))
+        return self.structure.apply(term.symbol, *(self.visit(arg) for arg in term.arguments))
 
 
 # This is def:fol_denotation/terms in the monograph

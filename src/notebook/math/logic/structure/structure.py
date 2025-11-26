@@ -1,15 +1,28 @@
-from collections.abc import Collection
-from typing import Protocol
+from collections.abc import Callable, Collection, Mapping
+from dataclasses import dataclass
+from typing import overload
 
-from ..signature import FormalLogicSignature, SignatureSymbol
+from ..signature import FormalLogicSignature, FunctionSymbol, PredicateSymbol, SignatureSymbol
+from .exceptions import FormalLogicInterpretationError, MissingInterpretationError
 
 
-class FormalLogicStructure[T](Protocol):
-    universe: Collection[T]
+@dataclass
+class FormalLogicStructure[T]:
     signature: FormalLogicSignature
+    universe: Collection[T]
+    interpretation: Mapping[SignatureSymbol, Callable[..., T] | Callable[..., bool]]
 
-    def apply_function(self, f: SignatureSymbol, *args: T) -> T:
-        ...
+    @overload
+    def apply(self, sym: FunctionSymbol, *args: T) -> T: ...
+    @overload
+    def apply(self, sym: PredicateSymbol, *args: T) -> bool: ...
+    @overload
+    def apply(self, sym: SignatureSymbol, *args: T) -> T | bool: ...
+    def apply(self, sym: SignatureSymbol, *args: T) -> T | bool:
+        if sym not in self.interpretation:
+            raise MissingInterpretationError(f'No interpretation specified for {sym}')
 
-    def apply_predicate(self, p: SignatureSymbol, *args: T) -> bool:
-        ...
+        if sym.arity != len(args):
+            raise FormalLogicInterpretationError(f'The {sym} has arity {sym.arity}, but {len(args)} are given.')
+
+        return self.interpretation[sym](*args)

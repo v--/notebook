@@ -3,7 +3,7 @@ from dataclasses import dataclass, field
 
 from ..parsing import parse_variable
 from ..terms import Variable
-from .exceptions import MissingVariableError
+from .exceptions import MissingInterpretationError
 
 
 @dataclass(frozen=True)
@@ -18,7 +18,7 @@ class VariableAssignment[T]:
         if var in self.mapping:
             return self.mapping[var]
 
-        raise MissingVariableError(var)
+        raise MissingInterpretationError(f'No assignment specified for variable {var}')
 
     def modify(self, var: Variable, value: T) -> VariableAssignment[T]:
         return VariableAssignment({**self.mapping, var: value})

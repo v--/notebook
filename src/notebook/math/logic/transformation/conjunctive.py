@@ -138,12 +138,12 @@ def function_to_cnf(fun: Callable[..., bool]) -> Formula:
 
     for param in fun_params.values():
         try:
-            PROPOSITIONAL_SIGNATURE.get_symbol(param.name)
+            PROPOSITIONAL_SIGNATURE[param.name]
         except KeyError:
             raise VariableNameError(f'The parameter name {param.name!r} is not a valid propositional variable name.') from None
 
     # These names will generate valid formulas only when they consist of Latin letters
-    predicates = [PredicateApplication(PROPOSITIONAL_SIGNATURE.get_symbol(param.name), []) for param in fun_params.values()]
+    predicates = [PredicateApplication(PROPOSITIONAL_SIGNATURE[param.name], []) for param in fun_params.values()]
     disjuncts = list[Formula](
         connect_formulas(
             [NegationFormula(p) if arg else p for p, arg in zip(predicates, arg_tuple, strict=True)],

@@ -5,5 +5,9 @@ class FormalLogicStructureError(FormalLogicError):
     pass
 
 
-class MissingVariableError(FormalLogicStructureError, KeyError):
+class FormalLogicInterpretationError(FormalLogicStructureError):
+    pass
+
+
+class MissingInterpretationError(FormalLogicInterpretationError):
     pass

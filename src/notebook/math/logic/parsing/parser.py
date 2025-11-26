@@ -29,7 +29,7 @@ from ..formulas import (
     QuantifierFormulaSchema,
 )
 from ..propositional import PROPOSITIONAL_SIGNATURE
-from ..signature import EMPTY_SIGNATURE, FormalLogicSignature, SignatureSymbol
+from ..signature import EMPTY_SIGNATURE, FormalLogicSignature, FunctionSymbol, PredicateSymbol, SignatureSymbol
 from ..terms import (
     EigenvariableSchemaSubstitutionSpec,
     FunctionApplication,
@@ -142,7 +142,7 @@ class FormalLogicParser(IdentifierParserMixin[LogicTokenKind, LogicToken], Parse
             arguments = list(self._iter_application_args(context, symbol, parse_schema=parse_schema))
 
             if symbol.arity != len(arguments):
-                raise context.annotate_context_error(f'Expected {symbol.arity} arguments for {symbol.get_readable_kind()} {symbol.name}, but got {len(arguments)}')
+                raise context.annotate_context_error(f'Expected {symbol.arity} arguments for {symbol}, but got {len(arguments)}')
 
         return cast(Sequence[TermSchema] | Sequence[Term], arguments)
 
@@ -279,7 +279,7 @@ class FormalLogicParser(IdentifierParserMixin[LogicTokenKind, LogicToken], Parse
                 if not isinstance(left, Term | TermSchema):
                     raise left_context.annotate_context_error(f'The first argument of an infix {'application schema' if parse_schema else 'application'} must be a {'term schema' if parse_schema else 'term'}')
 
-                symbol = self.signature.get_symbol(head.value)
+                symbol = self.signature[head.value]
 
                 if symbol and not symbol.infix:
                     raise context.annotate_token_error(f'Expected an infix proper symbol, but got {symbol.name!r}')
@@ -301,21 +301,21 @@ class FormalLogicParser(IdentifierParserMixin[LogicTokenKind, LogicToken], Parse
                     assert isinstance(left, TermSchema)
                     assert isinstance(right, TermSchema)
 
-                    match symbol.kind:
-                        case 'PREDICATE':
+                    match symbol:
+                        case PredicateSymbol():
                             return PredicateApplicationSchema(symbol, [left, right])
 
-                        case 'FUNCTION':
+                        case FunctionSymbol():
                             return FunctionApplicationSchema(symbol, [left, right])
 
                 assert isinstance(left, Term)
                 assert isinstance(right, Term)
 
-                match symbol.kind:
-                    case 'PREDICATE':
+                match symbol:
+                    case PredicateSymbol():
                         return PredicateApplication(symbol, [left, right])
 
-                    case 'FUNCTION':
+                    case FunctionSymbol():
                         return FunctionApplication(symbol, [left, right])
 
             case _:
@@ -335,21 +335,21 @@ class FormalLogicParser(IdentifierParserMixin[LogicTokenKind, LogicToken], Parse
 
         match head.kind:
             case 'SIGNATURE_SYMBOL':
-                symbol = self.signature.get_symbol(head.value)
+                symbol = self.signature[head.value]
 
                 if symbol.infix:
                     raise context.annotate_token_error(f'Expected a prefix proper symbol, but got {symbol.name!r}')
 
                 self.advance()
 
-                match symbol.kind:
-                    case 'PREDICATE':
+                match symbol:
+                    case PredicateSymbol():
                         if parse_schema:
                             return PredicateApplicationSchema(symbol, self._parse_application_args(context, symbol, parse_schema=True))
 
                         return PredicateApplication(symbol, self._parse_application_args(context, symbol, parse_schema=False))
 
-                    case 'FUNCTION':
+                    case FunctionSymbol():
                         if parse_schema:
                             return FunctionApplicationSchema(symbol, self._parse_application_args(context, symbol, parse_schema=True))
 

@@ -1,29 +1,14 @@
-from collections.abc import Mapping
 from dataclasses import dataclass, field
 from typing import override
 
-from .exceptions import SignatureTranslationError
 from .formulas import (
     EqualityFormula,
     Formula,
     FormulaTransformationVisitor,
     PredicateApplication,
 )
-from .signature import SignatureSymbol
+from .signature import SignatureMorphism
 from .terms import FunctionApplication, Term, TermTransformationVisitor
-
-
-@dataclass
-class SignatureMorphism:
-    mapping: Mapping[SignatureSymbol, SignatureSymbol]
-
-    def __post_init__(self) -> None:
-        for a, b in self.mapping.items():
-            if a.kind != b.kind:
-                raise SignatureTranslationError(f'Mismatch between the {a.get_readable_kind()} symbol {a.name!r} and the {b.get_readable_kind()} symbol {b.name!r}')
-
-            if a.arity != b.arity:
-                raise SignatureTranslationError(f'Mismatch between {a.name!r} of arity {a.arity} and {b.name!r} of arity {b.arity}')
 
 
 @dataclass
@@ -33,7 +18,7 @@ class TermTranslationVisitor(TermTransformationVisitor):
     @override
     def visit_function(self, term: FunctionApplication) -> Term:
         return FunctionApplication(
-            self.translation.mapping[term.symbol],
+            self.translation(term.symbol),
             [self.visit(arg) for arg in term.arguments]
         )
 
@@ -61,7 +46,7 @@ class FormulaTranslationVisitor(FormulaTransformationVisitor):
     @override
     def visit_predicate(self, formula: PredicateApplication) -> PredicateApplication:
         return PredicateApplication(
-            self.translation.mapping[formula.symbol],
+            self.translation(formula.symbol),
             [self.term_visitor.visit(arg) for arg in formula.arguments]
         )
 

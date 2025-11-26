@@ -2,6 +2,7 @@ from dataclasses import dataclass
 from typing import TypeGuard
 
 from ..alphabet import BinaryConnective, PropConstant, Quantifier, UnaryPrefix
+from ..signature import PredicateSymbol
 from ..terms import SyntacticApplication, Term, Variable
 
 
@@ -23,7 +24,7 @@ class EqualityFormula:
 
 
 class PredicateApplication(SyntacticApplication[Term]):
-    pass
+    symbol: PredicateSymbol
 
 
 @dataclass(frozen=True)
