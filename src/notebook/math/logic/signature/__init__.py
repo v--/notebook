@@ -1,4 +1,4 @@
-from .exceptions import FormalLogicSignatureError, SignatureTranslationError
+from .exceptions import FormalLogicSignatureError, SignatureMorphismError
 from .morphism import SignatureMorphism
 from .signature import EMPTY_SIGNATURE, FormalLogicSignature
-from .symbols import FunctionSymbol, PredicateSymbol, SignatureSymbol
+from .symbols import FunctionSymbol, PredicateSymbol, SignatureSymbol, get_symbol_kind

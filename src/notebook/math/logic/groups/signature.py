@@ -2,7 +2,7 @@ from ..signature import FormalLogicSignature, FunctionSymbol
 
 
 GROUP_SIGNATURE = FormalLogicSignature(
-    FunctionSymbol(name='1', arity=0, infix=False),
-    FunctionSymbol(name='~', arity=1, infix=False),
-    FunctionSymbol(name='⋅', arity=2, infix=True)
+    FunctionSymbol('1', arity=0),
+    FunctionSymbol('~', arity=1, notation='CONDENSED'),
+    FunctionSymbol('⋅', arity=2, notation='INFIX')
 )

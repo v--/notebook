@@ -1,19 +1,30 @@
 from dataclasses import dataclass
+from typing import Literal
 
 
 @dataclass(frozen=True)
 class BaseSignatureSymbol:
     name: str
 
+    def __str__(self) -> str:
+        return self.name
+
 
 class ConstantTermSymbol(BaseSignatureSymbol):
-    def __str__(self) -> str:
-        return f'constant symbol {self.name!r}'
+    pass
 
 
 class BaseTypeSymbol(BaseSignatureSymbol):
-    def __str__(self) -> str:
-        return f'base type symbol {self.name!r}'
+    pass
 
 
 SignatureSymbol = ConstantTermSymbol | BaseTypeSymbol
+
+
+def get_symbol_kind(sym: SignatureSymbol) -> Literal['constant term', 'base type']:
+    match sym:
+        case ConstantTermSymbol():
+            return 'constant term'
+
+        case BaseTypeSymbol():
+            return 'base type'

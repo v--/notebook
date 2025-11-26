@@ -91,10 +91,10 @@ def test_parsing_zero_arity_function_with_empty_arg_list(dummy_signature: Formal
     with pytest.raises(ParserError) as excinfo:
         parse_term('f⁰()', dummy_signature)
 
-    assert str(excinfo.value) == 'Avoid the argument list at all when zero arguments are expected'
+    assert str(excinfo.value) == 'Avoid an argument list at all for nullary symbols'
     assert excinfo.value.__notes__[0] == dedent('''\
         1 │ f⁰()
-          │ ^^^^
+          │ ^^^
     ''')
 
 
@@ -146,7 +146,7 @@ def test_parsing_function_with_wrong_arity(dummy_signature: FormalLogicSignature
     with pytest.raises(ParserError) as excinfo:
         parse_term('f²(x)', dummy_signature)
 
-    assert str(excinfo.value) == "Expected 2 arguments for function symbol 'f²', but got 1"
+    assert str(excinfo.value) == 'Expected 2 arguments for the function f², but got 1'
     assert excinfo.value.__notes__[0] == dedent('''\
         1 │ f²(x)
           │ ^^^^^
@@ -176,44 +176,44 @@ def test_parsing_unrecognized_infix_symbol(dummy_signature: FormalLogicSignature
 
 
 def test_parsing_infix_function(dummy_signature: FormalLogicSignature) -> None:
-    string = '(x + y)'
+    string = '(x ∘ y)'
     term = parse_term(string, dummy_signature)
     assert str(term) == string
 
 
 def test_parsing_nested_infix_functions(dummy_signature: FormalLogicSignature) -> None:
-    string = '((x + y) + z)'
+    string = '((x ∘ y) ∘ z)'
     term = parse_term(string, dummy_signature)
     assert str(term) == string
 
 
 def test_parsing_infix_function_without_second_term(dummy_signature: FormalLogicSignature) -> None:
     with pytest.raises(ParserError) as excinfo:
-        parse_term('(x +', dummy_signature)
+        parse_term('(x ∘', dummy_signature)
 
     assert str(excinfo.value) == 'Infix applications must have a second term'
     assert excinfo.value.__notes__[0] == dedent('''\
-        1 │ (x +
+        1 │ (x ∘
           │ ^^^^
     ''')
 
 def test_parsing_infix_function_without_closing_parens(dummy_signature: FormalLogicSignature) -> None:
     with pytest.raises(ParserError) as excinfo:
-        parse_term('(x + y', dummy_signature)
+        parse_term('(x ≠ y', dummy_signature)
 
     assert str(excinfo.value) == 'Infix applications must have a closing parenthesis'
     assert excinfo.value.__notes__[0] == dedent('''\
-        1 │ (x + y
+        1 │ (x ≠ y
           │ ^^^^^^
     ''')
 
 def test_parsing_infix_function_with_non_infix_notation(dummy_signature: FormalLogicSignature) -> None:
     with pytest.raises(ParserError) as excinfo:
-        parse_term('+(x, y)', dummy_signature)
+        parse_term('∘(x, y)', dummy_signature)
 
-    assert str(excinfo.value) == "Expected a prefix proper symbol, but got '+'"
+    assert str(excinfo.value) == 'Expected a prefix proper symbol, but got ∘'
     assert excinfo.value.__notes__[0] == dedent('''\
-        1 │ +(x, y)
+        1 │ ∘(x, y)
           │ ^
     ''')
 
@@ -222,7 +222,7 @@ def test_parsing_non_infix_function_with_infix_notation(dummy_signature: FormalL
     with pytest.raises(ParserError) as excinfo:
         parse_term('(x f³ y)', dummy_signature)
 
-    assert str(excinfo.value) == "Expected an infix proper symbol, but got 'f³'"
+    assert str(excinfo.value) == 'Expected an infix proper symbol, but got f³'
     assert excinfo.value.__notes__[0] == dedent('''\
         1 │ (x f³ y)
           │    ^^
@@ -230,38 +230,38 @@ def test_parsing_non_infix_function_with_infix_notation(dummy_signature: FormalL
 
 
 def test_parsing_infix_predicate(dummy_signature: FormalLogicSignature) -> None:
-    string = '(x < y)'
+    string = '(x ≠ y)'
     term = parse_formula(string, dummy_signature)
     assert str(term) == string
 
 
 def test_parsing_infix_predicate_without_second_term(dummy_signature: FormalLogicSignature) -> None:
     with pytest.raises(ParserError) as excinfo:
-        parse_formula('(x <', dummy_signature)
+        parse_formula('(x ≠', dummy_signature)
 
     assert str(excinfo.value) == 'Infix applications must have a second term'
     assert excinfo.value.__notes__[0] == dedent('''\
-        1 │ (x <
+        1 │ (x ≠
           │ ^^^^
     ''')
 
 def test_parsing_infix_predicate_without_closing_parens(dummy_signature: FormalLogicSignature) -> None:
     with pytest.raises(ParserError) as excinfo:
-        parse_formula('(x < y', dummy_signature)
+        parse_formula('(x ≠ y', dummy_signature)
 
     assert str(excinfo.value) == 'Infix applications must have a closing parenthesis'
     assert excinfo.value.__notes__[0] == dedent('''\
-        1 │ (x < y
+        1 │ (x ≠ y
           │ ^^^^^^
     ''')
 
 def test_parsing_infix_predicate_with_non_infix_notation(dummy_signature: FormalLogicSignature) -> None:
     with pytest.raises(ParserError) as excinfo:
-        parse_formula('<(x, y)', dummy_signature)
+        parse_formula('≠(x, y)', dummy_signature)
 
-    assert str(excinfo.value) == "Expected a prefix proper symbol, but got '<'"
+    assert str(excinfo.value) == 'Expected a prefix proper symbol, but got ≠'
     assert excinfo.value.__notes__[0] == dedent('''\
-        1 │ <(x, y)
+        1 │ ≠(x, y)
           │ ^
     ''')
 
@@ -270,7 +270,7 @@ def test_parsing_non_infix_predicate_with_infix_notation(dummy_signature: Formal
     with pytest.raises(ParserError) as excinfo:
         parse_formula('(x p³ y)', dummy_signature)
 
-    assert str(excinfo.value) == "Expected an infix proper symbol, but got 'p³'"
+    assert str(excinfo.value) == 'Expected an infix proper symbol, but got p³'
     assert excinfo.value.__notes__[0] == dedent('''\
         1 │ (x p³ y)
           │    ^^
@@ -280,12 +280,58 @@ def test_parsing_non_infix_predicate_with_infix_notation(dummy_signature: Formal
 
 @pytest_parametrize_lists(
     formula=[
-        'p²((x + y), z)',
-        '((x + y) < (f³(x, y, z) × y))',
+        'p²((x ∘ y), z)',
+        '((x ∘ y) ≠ f³(x, y, z))',
     ]
 )
 def test_mixing_prefix_and_infix_notation(formula: str, dummy_signature: FormalLogicSignature) -> None:
     assert str(parse_formula(formula, dummy_signature)) == formula
+
+
+@pytest_parametrize_lists(
+    term=[
+        'fᶜ⁰',
+        'fᶜ¹x',
+        'fᶜ²xgᶜ⁰',
+        'fᶜ²xgᶜ¹y',
+    ]
+)
+def test_parsing_term_with_condensed_notation(term: str, dummy_signature: FormalLogicSignature) -> None:
+    assert str(parse_term(term, dummy_signature)) == term
+
+
+def test_parsing_prefix_function_without_parentheses(dummy_signature: FormalLogicSignature) -> None:
+    with pytest.raises(ParserError) as excinfo:
+        parse_term('f¹x', dummy_signature)
+
+    assert str(excinfo.value) == 'Expected a parenthesized argument list for the function f¹'
+    assert excinfo.value.__notes__[0] == dedent('''\
+        1 │ f¹x
+          │ ^^^
+    ''')
+
+
+def test_parsing_condensed_function_with_parentheses(dummy_signature: FormalLogicSignature) -> None:
+    with pytest.raises(ParserError) as excinfo:
+        parse_term('fᶜ¹(', dummy_signature)
+
+    assert str(excinfo.value) == 'Parentheses are disallowed for the symbol fᶜ¹ that uses condensed notation'
+    assert excinfo.value.__notes__[0] == dedent('''\
+        1 │ fᶜ¹(
+          │ ^^^^
+    ''')
+
+
+def test_parsing_condensed_function_with_missing_arguments(dummy_signature: FormalLogicSignature) -> None:
+    with pytest.raises(ParserError) as excinfo:
+        parse_term('fᶜ¹', dummy_signature)
+
+    assert str(excinfo.value) == 'Insufficient arguments for the symbol fᶜ¹ of arity 1'
+    assert excinfo.value.__notes__[0] == dedent('''\
+        1 │ fᶜ¹
+          │ ^^^
+    ''')
+
 
 
 @pytest_parametrize_kwargs(

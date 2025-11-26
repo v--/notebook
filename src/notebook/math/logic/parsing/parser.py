@@ -29,7 +29,14 @@ from ..formulas import (
     QuantifierFormulaSchema,
 )
 from ..propositional import PROPOSITIONAL_SIGNATURE
-from ..signature import EMPTY_SIGNATURE, FormalLogicSignature, FunctionSymbol, PredicateSymbol, SignatureSymbol
+from ..signature import (
+    EMPTY_SIGNATURE,
+    FormalLogicSignature,
+    FunctionSymbol,
+    PredicateSymbol,
+    SignatureSymbol,
+    get_symbol_kind,
+)
 from ..terms import (
     EigenvariableSchemaSubstitutionSpec,
     FunctionApplication,
@@ -90,16 +97,26 @@ class FormalLogicParser(IdentifierParserMixin[LogicTokenKind, LogicToken], Parse
         return Variable(identifier)
 
     @overload
-    def _iter_application_args(self, context: LogicParserContext, symbol: SignatureSymbol, *, parse_schema: Literal[False]) -> Iterable[Term]: ...
+    def _iter_prefix_notation_args(self, context: LogicParserContext, symbol: SignatureSymbol, *, parse_schema: Literal[False]) -> Iterable[Term]: ...
     @overload
-    def _iter_application_args(self, context: LogicParserContext, symbol: SignatureSymbol, *, parse_schema: Literal[True]) -> Iterable[TermSchema]: ...
+    def _iter_prefix_notation_args(self, context: LogicParserContext, symbol: SignatureSymbol, *, parse_schema: Literal[True]) -> Iterable[TermSchema]: ...
     @overload
-    def _iter_application_args(self, context: LogicParserContext, symbol: SignatureSymbol, *, parse_schema: bool) -> Iterable[Term] | Iterable[TermSchema]: ...
-    def _iter_application_args(self, context: LogicParserContext, symbol: SignatureSymbol, *, parse_schema: bool) -> Iterable[Term] | Iterable[TermSchema]:
-        if (head := self.advance_and_peek()) and head.kind == 'RIGHT_PARENTHESIS':
-            if symbol.arity == 0:
-                raise context.annotate_context_error('Avoid the argument list at all when zero arguments are expected')
+    def _iter_prefix_notation_args(self, context: LogicParserContext, symbol: SignatureSymbol, *, parse_schema: bool) -> Iterable[Term] | Iterable[TermSchema]: ...
+    def _iter_prefix_notation_args(self, context: LogicParserContext, symbol: SignatureSymbol, *, parse_schema: bool) -> Iterable[Term] | Iterable[TermSchema]:
+        head = self.peek()
 
+        if symbol.arity == 0:
+            if head and head.kind == 'LEFT_PARENTHESIS':
+                raise context.annotate_context_error('Avoid an argument list at all for nullary symbols')
+
+            return
+
+        if not head or head.kind != 'LEFT_PARENTHESIS':
+            raise context.annotate_context_error(f'Expected a parenthesized argument list for the {get_symbol_kind(symbol)} {symbol}')
+
+        head = self.advance_and_peek()
+
+        if head and head.kind == 'RIGHT_PARENTHESIS':
             raise context.annotate_context_error('Empty argument lists are disallowed')
 
         while True:
@@ -129,6 +146,29 @@ class FormalLogicParser(IdentifierParserMixin[LogicTokenKind, LogicToken], Parse
                     raise self.annotate_token_error('Unexpected token')
 
     @overload
+    def _iter_condensed_notation_args(self, context: LogicParserContext, symbol: SignatureSymbol, *, parse_schema: Literal[False]) -> Iterable[Term]: ...
+    @overload
+    def _iter_condensed_notation_args(self, context: LogicParserContext, symbol: SignatureSymbol, *, parse_schema: Literal[True]) -> Iterable[TermSchema]: ...
+    @overload
+    def _iter_condensed_notation_args(self, context: LogicParserContext, symbol: SignatureSymbol, *, parse_schema: bool) -> Iterable[Term] | Iterable[TermSchema]: ...
+    def _iter_condensed_notation_args(self, context: LogicParserContext, symbol: SignatureSymbol, *, parse_schema: bool) -> Iterable[Term] | Iterable[TermSchema]:
+        head = self.peek()
+
+        if symbol.arity > 0 and head and head.kind == 'LEFT_PARENTHESIS':
+            raise context.annotate_context_error(f'Parentheses are disallowed for the symbol {symbol} that uses condensed notation')
+
+        for _ in range(symbol.arity):
+            head = self.peek()
+
+            if not head:
+                raise context.annotate_context_error(f'Insufficient arguments for the symbol {symbol} of arity {symbol.arity}')
+
+            if head.kind == 'RIGHT_PARENTHESIS':
+                raise context.annotate_context_error(f'Parentheses are disallowed for the symbol {symbol} that uses condensed notation')
+
+            yield self.parse_term(parse_schema=parse_schema)
+
+    @overload
     def _parse_application_args(self, context: LogicParserContext, symbol: SignatureSymbol, *, parse_schema: Literal[False]) -> Sequence[Term]: ...
     @overload
     def _parse_application_args(self, context: LogicParserContext, symbol: SignatureSymbol, *, parse_schema: Literal[True]) -> Sequence[TermSchema]: ...
@@ -138,11 +178,20 @@ class FormalLogicParser(IdentifierParserMixin[LogicTokenKind, LogicToken], Parse
         # A narrower type leads to duplicated code
         arguments = list[Term | TermSchema]()
 
-        if (head := self.peek()) and head.kind == 'LEFT_PARENTHESIS':
-            arguments = list(self._iter_application_args(context, symbol, parse_schema=parse_schema))
+        match symbol.notation:
+            case 'INFIX':
+                raise context.annotate_token_error(f'Expected a prefix proper symbol, but got {symbol}')
 
-            if symbol.arity != len(arguments):
-                raise context.annotate_context_error(f'Expected {symbol.arity} arguments for {symbol}, but got {len(arguments)}')
+            case 'PREFIX':
+                self.advance()
+                arguments = list(self._iter_prefix_notation_args(context, symbol, parse_schema=parse_schema))
+
+            case 'CONDENSED':
+                self.advance()
+                arguments = list(self._iter_condensed_notation_args(context, symbol, parse_schema=parse_schema))
+
+        if symbol.arity != len(arguments):
+            raise context.annotate_context_error(f'Expected {symbol.arity} arguments for the {get_symbol_kind(symbol)} {symbol}, but got {len(arguments)}')
 
         return cast(Sequence[TermSchema] | Sequence[Term], arguments)
 
@@ -281,8 +330,8 @@ class FormalLogicParser(IdentifierParserMixin[LogicTokenKind, LogicToken], Parse
 
                 symbol = self.signature[head.value]
 
-                if symbol and not symbol.infix:
-                    raise context.annotate_token_error(f'Expected an infix proper symbol, but got {symbol.name!r}')
+                if symbol and symbol.notation != 'INFIX':
+                    raise context.annotate_token_error(f'Expected an infix proper symbol, but got {symbol}')
 
                 head = self.advance_and_peek()
 
@@ -336,11 +385,6 @@ class FormalLogicParser(IdentifierParserMixin[LogicTokenKind, LogicToken], Parse
         match head.kind:
             case 'SIGNATURE_SYMBOL':
                 symbol = self.signature[head.value]
-
-                if symbol.infix:
-                    raise context.annotate_token_error(f'Expected a prefix proper symbol, but got {symbol.name!r}')
-
-                self.advance()
 
                 match symbol:
                     case PredicateSymbol():

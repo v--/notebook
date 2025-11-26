@@ -3,7 +3,7 @@ from dataclasses import dataclass
 
 from ....parsing.identifiers import LatinIdentifier
 from ..exceptions import FormalLogicError
-from ..signature import FunctionSymbol, SignatureSymbol
+from ..signature import FunctionSymbol, SignatureSymbol, get_symbol_kind
 
 
 @dataclass(frozen=True)
@@ -21,18 +21,24 @@ class SyntacticApplication[ArgT]:
 
     def __post_init__(self) -> None:
         if len(self.arguments) != self.symbol.arity:
-            raise FormalLogicError(f'Unexpected argument count {len(self.arguments)} for {self.symbol} with arity {self.symbol.arity}')
+            raise FormalLogicError(f'Unexpected argument count {len(self.arguments)} for {get_symbol_kind(self.symbol)} {self.symbol} with arity {self.symbol.arity}')
 
     def __str__(self) -> str:
-        if len(self.arguments) == 0:
+        if self.symbol.arity == 0:
             return self.symbol.name
 
-        if len(self.arguments) == 2 and self.symbol.infix:
-            left, right = self.arguments
-            return f'({left} {self.symbol.name} {right})'
+        match self.symbol.notation:
+            case 'INFIX':
+                [left, right] = self.arguments
+                return f'({left} {self.symbol.name} {right})'
 
-        args = ', '.join(str(arg) for arg in self.arguments)
-        return f'{self.symbol.name}({args})'
+            case 'PREFIX':
+                args = ', '.join(str(arg) for arg in self.arguments)
+                return f'{self.symbol.name}({args})'
+
+            case 'CONDENSED':
+                args = ''.join(str(arg) for arg in self.arguments)
+                return f'{self.symbol.name}{args}'
 
     def __hash__(self) -> int:
         return hash(self.symbol.name) ^ hash(tuple(self.arguments))

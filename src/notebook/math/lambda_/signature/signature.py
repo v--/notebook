@@ -24,20 +24,20 @@ class LambdaSignature:
         match symbol:
             case BaseTypeSymbol():
                 if name in BinaryTypeConnective or name in AuxImproperSymbol or name in ImproperInferenceRuleSymbol:
-                    raise LambdaSignatureError(f'Cannot use the improper symbol {name!r} as a base type')
+                    raise LambdaSignatureError(f'Cannot use the improper symbol {name} as a base type')
 
                 if is_greek_identifier(name, Capitalization.LOWER):
-                    raise LambdaSignatureError(f'Cannot use {name!r} as a base type because that conflicts with the grammar of type variables')
+                    raise LambdaSignatureError(f'Cannot use {name} as a base type because that conflicts with the grammar of type variables')
 
             case ConstantTermSymbol():
                 if name in BinderSymbol or name in AuxImproperSymbol or name in ImproperInferenceRuleSymbol:
-                    raise LambdaSignatureError(f'Cannot use the improper symbol {name!r} as a λ-term constant')
+                    raise LambdaSignatureError(f'Cannot use the improper symbol {name} as a λ-term constant')
 
                 if is_latin_identifier(name, Capitalization.LOWER):
-                    raise LambdaSignatureError(f'Cannot use {name!r} as a λ-term constant because that conflicts with the grammar of variables')
+                    raise LambdaSignatureError(f'Cannot use {name} as a λ-term constant because that conflicts with the grammar of variables')
 
                 if is_latin_identifier(name, Capitalization.UPPER):
-                    raise LambdaSignatureError(f'Cannot use {name!r} as a λ-term constant because that conflicts with the grammar of placeholders')
+                    raise LambdaSignatureError(f'Cannot use {name} as a λ-term constant because that conflicts with the grammar of placeholders')
 
         self.trie[name] = symbol
 

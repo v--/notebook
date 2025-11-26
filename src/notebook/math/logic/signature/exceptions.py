@@ -9,5 +9,5 @@ class MissingSignatureSymbolError(FormalLogicError):
     pass
 
 
-class SignatureTranslationError(FormalLogicError):
+class SignatureMorphismError(FormalLogicError):
     pass

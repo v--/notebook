@@ -7,7 +7,7 @@ from ....support.substitution import ImproperSubstitutionSymbol
 from ....support.unicode import Capitalization
 from ..alphabet import AuxImproperSymbol, BinaryConnective, EqualitySymbol, PropConstant, Quantifier, UnaryPrefix
 from .exceptions import FormalLogicSignatureError
-from .symbols import SignatureSymbol
+from .symbols import SignatureSymbol, get_symbol_kind
 
 
 class FormalLogicSignature:
@@ -39,16 +39,16 @@ class FormalLogicSignature:
             name in ImproperInferenceRuleSymbol or
             name in ImproperSubstitutionSymbol
         ):
-            raise FormalLogicSignatureError(f'Cannot use the improper symbol {name!r} as a proper signature symbol')
+            raise FormalLogicSignatureError(f'Cannot use the improper symbol {name} as a proper signature symbol')
 
         if is_latin_identifier(name, Capitalization.LOWER):
-            raise FormalLogicSignatureError(f'Cannot use {name!r} as a proper signature symbol because that conflicts with the grammar of variables')
+            raise FormalLogicSignatureError(f'Cannot use {name} as a proper signature symbol because that conflicts with the grammar of variables')
 
         if is_greek_identifier(name, Capitalization.LOWER):
-            raise FormalLogicSignatureError(f'Cannot use {name!r} as a proper signature symbol because that conflicts with the grammar of placeholders')
+            raise FormalLogicSignatureError(f'Cannot use {name} as a proper signature symbol because that conflicts with the grammar of placeholders')
 
-        if symbol.infix and symbol.arity != 2:
-            raise FormalLogicSignatureError(f'Cannot use {name!r} as an infix symbol since it has arity {symbol.arity}')
+        if symbol.notation == 'INFIX' and symbol.arity != 2:
+            raise FormalLogicSignatureError(f'Cannot use infix notation for the {get_symbol_kind(symbol)} {symbol} since it has arity {symbol.arity}')
 
         self.trie[name] = symbol
 

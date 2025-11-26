@@ -9,7 +9,7 @@ from ..assertions import (
     VariableTypeAssertion,
     VariableTypeAssertionSchema,
 )
-from ..signature import EMPTY_SIGNATURE, BaseTypeSymbol, ConstantTermSymbol, LambdaSignature
+from ..signature import EMPTY_SIGNATURE, BaseTypeSymbol, ConstantTermSymbol, LambdaSignature, get_symbol_kind
 from ..terms import (
     Constant,
     TermPlaceholder,
@@ -117,7 +117,7 @@ class LambdaParser(IdentifierParserMixin[LambdaTokenKind, LambdaToken], Parser[L
                 symbol = self.signature[head.value]
 
                 if not isinstance(symbol, BaseTypeSymbol):
-                    raise self.annotate_token_error(f'Unexpected {symbol} while parsing type')
+                    raise self.annotate_token_error(f'Unexpected {get_symbol_kind(symbol)} {symbol} while parsing type')
 
                 return self._parse_base_type()
 
@@ -295,7 +295,7 @@ class LambdaParser(IdentifierParserMixin[LambdaTokenKind, LambdaToken], Parser[L
                 symbol = self.signature[head.value]
 
                 if not isinstance(symbol, ConstantTermSymbol):
-                    raise self.annotate_token_error(f'Unexpected {symbol} while parsing term')
+                    raise self.annotate_token_error(f'Unexpected {get_symbol_kind(symbol)} {symbol} while parsing term')
 
                 return self._parse_constant()
 

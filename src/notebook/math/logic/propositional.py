@@ -11,7 +11,7 @@ class PropositionalLogicSignature(FormalLogicSignature):
         super().__init__()
 
         for name in variable_names:
-            self.trie[name] = PredicateSymbol(name=name, arity=0, infix=False)
+            self.trie[name] = PredicateSymbol(name, arity=0)
 
     @override
     def add_symbol(self, symbol: SignatureSymbol) -> None:

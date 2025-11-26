@@ -2,11 +2,11 @@ from ..signature import FormalLogicSignature, FunctionSymbol, PredicateSymbol
 
 
 ARITHMETIC_SIGNATURE = FormalLogicSignature(
-    FunctionSymbol(name='0', arity=0, infix=False),
-    FunctionSymbol(name='S', arity=1, infix=False),
-    FunctionSymbol(name='~', arity=1, infix=False),
-    FunctionSymbol(name='+', arity=2, infix=True),
-    FunctionSymbol(name='×', arity=2, infix=True),
-    PredicateSymbol(name='≤', arity=2, infix=True)
+    FunctionSymbol('0', arity=0),
+    FunctionSymbol('S', arity=1, notation='CONDENSED'),
+    FunctionSymbol('~', arity=1, notation='CONDENSED'),
+    FunctionSymbol('+', arity=2, notation='INFIX'),
+    FunctionSymbol('×', arity=2, notation='INFIX'),
+    PredicateSymbol('≤', arity=2, notation='INFIX')
 )
 
