@@ -31,7 +31,7 @@ class IntRadixExpansion:
 
     @property
     def max_power(self) -> int:
-        return self.polynomial.total_degree or 0
+        return self.polynomial.get_max_power('x')
 
     def shifted_power(self, k: int) -> IntRadixExpansion:
         pol = IntPolynomial.new_zero()

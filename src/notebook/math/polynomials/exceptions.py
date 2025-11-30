@@ -9,7 +9,7 @@ class PolynomialDivisionError(NotebookMathError):
     pass
 
 
-class PolynomialZeroDivisionError(PolynomialDivisionError, ZeroDivisionError):
+class ZeroPolynomialError(PolynomialDivisionError, ZeroDivisionError):
     pass
 
 

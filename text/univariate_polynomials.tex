@@ -1,79 +1,20 @@
 \section{Univariate polynomials}\label{sec:univariate_polynomials}
 
-We will discuss here the \hyperref[def:polynomial_algebra]{polynomial algebra} \( R[X] \) in one indeterminate over the \hyperref[def:ring/trivial]{nontrivial} \hyperref[def:ring/commutative]{commutative unital ring} \( R \). We call them \term{univariate polynomials} based on \cref{def:operation_arity_terminology}, although we acknowledge the polynomials are not functions. \Cref{rem:polynomials_over_infinitely_many_indeterminates} discusses why we often focus only on finitely many indeterminates, and why the theory of univariate polynomials is often sufficient.
-
-Polynomials do not exactly correspond to polynomial functions in general, and the exact relationship between polynomials and polynomial functions is discussed in \fullref{thm:polynomial_algebra_universal_property} and \cref{thm:functions_over_finite_fields}.
-
-\paragraph{Euclidean division of polynomials}
-
-\begin{definition}\label{def:monic_polynomial}
-  We say that the nonzero univariate polynomial is \term[bg=нормиран (\cite[409]{Обрешков1962ВисшаАлгебра}), ru=нормированный/приведенный (\cite[102]{Винберг2014КурсАлгебры})]{monic} if its leading coefficient is \( 1 \).
-\end{definition}
-
-\begin{proposition}\label{thm:polynomial_degree_arithmetic}
-  The \hyperref[def:polynomial_degree]{polynomial degree} has the following basic properties:
-  \begin{thmenum}
-    \thmitem{thm:polynomial_degree_arithmetic/sum} For any two nonzero polynomials \( f(X) \) and \( g(X) \), either their sum is zero or
-    \begin{equation}\label{eq:thm:polynomial_degree_arithmetic/sum}
-      \deg (f + g) \leq \max \set{ \deg f, \deg g }.
-    \end{equation}
-
-    \thmitem{thm:polynomial_degree_arithmetic/product} For any two nonzero polynomials \( f(X) \) and \( g(X) \), either their product is zero or
-    \begin{equation}\label{eq:thm:polynomial_degree_arithmetic/product}
-      \deg (fg) \leq \deg f + \deg g.
-    \end{equation}
-
-    If the leading coefficients of \( f(X) \) and \( g(X) \) do not multiply to zero, then equality in \eqref{eq:thm:polynomial_degree_arithmetic/product} holds.
-  \end{thmenum}
-\end{proposition}
-\begin{comments}
-  \item An easy sufficient condition for equality in \eqref{eq:thm:polynomial_degree_arithmetic/product} is for the semiring to be \hyperref[def:entire_semiring]{entire}, although it is also sufficient for the ring to be nontrivial (so that \( 0_R \neq 1_R \)) and either \( f(X) \) or \( g(X) \) to be \hyperref[def:monic_polynomial]{monic}.
-
-  \item We generalize a weaker statement for multivariate polynomials in \cref{thm:degree_of_multivariate_polynomial_product}.
-\end{comments}
-\begin{proof}
-  Fix nonzero polynomials
-  \begin{align*}
-    f(X) = \sum_{k=0}^n a_k X^k, &&
-    g(X) = \sum_{k=0}^m b_k X^k.
-  \end{align*}
-
-  \SubProofOf{thm:polynomial_degree_arithmetic/sum} Additionally assume that \( f(X) \neq -g(X) \) since otherwise \( f(X) + g(X) = 0 \) and \( \deg(f + g) \) is undefined.
-
-  Since the polynomials are not equal, there exists at least one index \( k = 0, 1, 2, \ldots \) such that \( a_k \neq b_k \). Denote by \( k_0 \) the largest such index (only finitely many are nonzero). Then
-  \begin{equation*}
-    a_k - b_k = 0 \T{whenever} k > k_0.
-  \end{equation*}
-
-  Therefore, \( \deg(f + g) = k_0 \). Note that \( k_0 \) cannot exceed both \( \deg f \) and \( \deg g \) because it corresponds to a nonzero coefficient in both. Thus, \( k_0 \leq \max\set{ \deg f, \deg g } \).
-
-  \SubProofOf{thm:polynomial_degree_arithmetic/product} Suppose that the product \( f(X) g(X) \) is nonzero. The coefficient \( c_{n + m} \) of \( f(X) g(X) \) is \( a_n b_m \) by definition. For \( k > n + m \), if \( i + j = k \), either \( i > n \) or \( j > m \), so \( c_k \) is zero. In other words, either \( c_{n + m} \) is zero or is last nonzero coefficient of \( f(X) g(X) \).
-\end{proof}
-
-\begin{corollary}\label{thm:leading_coefficient_of_product}
-  If the leading coefficients of two univariate polynomials do not multiply to zero, the product of their leading coefficients is the leading coefficient of their product.
-\end{corollary}
-\begin{proof}
-  Consider the polynomials
-  \begin{align*}
-    f(X) = \sum_{k=0}^n a_k X^k, &&
-    g(X) = \sum_{k=0}^m b_k X^k.
-  \end{align*}
-
-  By definition of convolution product, the \( (n + m) \)-th coefficient of \( f(X) g(X) \) is \( a_n b_m \). \Cref{thm:polynomial_degree_arithmetic/product} implies that this is their leading coefficient.
-\end{proof}
+\paragraph{Euclidean division}
 
 \begin{algorithm}[Euclidean division of polynomials]\label{alg:euclidean_division_of_polynomials}
-  In a commutative ring \( R \), fix two univariate polynomials
+  In a nontrivial commutative ring \( R \), fix two univariate polynomials
   \begin{align*}
     f(X) = \sum_{k=0}^n a_k X^k, &&
     g(X) = \sum_{k=0}^m b_k X^k.
   \end{align*}
 
-  Suppose that \( g(X) \) is \hyperref[def:monic_polynomial]{monic}, i.e. \( b_m = 1_R \). We will build polynomials \( q(X) \) and \( r(X) \), where \( r(X) \) is either zero or \( \deg r < \deg g = m \), such that
+  Suppose that the leading coefficient \( b_m \) of \( g(X) \) is invertible. We will build polynomials \( q(X) \) and \( r(X) \), where \( r(X) \) is either zero or \( \deg r < \deg g = m \), such that
   \begin{equation*}
     f(X) = g(X) \cdot q(X) + r(X).
   \end{equation*}
+
+  \Cref{thm:alg:euclidean_division_of_polynomials/unique} will demonstrate uniqueness of \( q(X) \) and \( r(X) \).
 
   \begin{thmenum}
     \thmitem{alg:euclidean_division_of_polynomials/zero} If \( f(X) \) is the zero polynomial, let
@@ -90,7 +31,7 @@ Polynomials do not exactly correspond to polynomial functions in general, and th
 
     \thmitem{alg:euclidean_division_of_polynomials/division} Otherwise, \( \deg f = n \geq m = \deg g \). Let
     \begin{equation*}
-      \widehat r(X) \coloneqq f(X) - a_n X^{n-m} \cdot g(X).
+      \widehat r(X) \coloneqq f(X) - (a_n / b_m) X^{n-m} \cdot g(X).
     \end{equation*}
 
     We use the algorithm recursively to divide \( \widehat r(X) \) by \( g(X) \), and obtain \( \widehat q(X) \) and \( r(X) \), where \( r(X) \) is either zero or of lower degree than \( g \), such that
@@ -100,20 +41,19 @@ Polynomials do not exactly correspond to polynomial functions in general, and th
 
     Then
     \begin{align*}
-      \widehat r(X)                                                  &= f(X) - a_n X^{n-m} \cdot g(X), \\
-      g(X) \cdot \widehat q(X) + r(X)                                &= f(X) - a_n X^{n-m} \cdot g(X), \\
-      g(X) \cdot \parens[\big]{ \widehat q(X) + a_n X^{n-m} } + r(X) &= f(X).
+      \widehat r(X)                                                          &= f(X) - (a_n / b_m) X^{n-m} \cdot g(X), \\
+      g(X) \cdot \widehat q(X) + r(X)                                        &= f(X) - (a_n / b_m) X^{n-m} \cdot g(X), \\
+      g(X) \cdot \parens[\big]{ \widehat q(X) + (a_n / b_m) X^{n-m} } + r(X) &= f(X).
     \end{align*}
 
     It remains to define
     \begin{equation*}
-      q(X) \coloneqq \widehat q(X) + a_n X^{n-m}.
+      q(X) \coloneqq \widehat q(X) + (a_n / b_m) X^{n-m}.
     \end{equation*}
   \end{thmenum}
 \end{algorithm}
 \begin{comments}
-  \item In general \( q(X) \) and \( r(X) \) are not unique. This is discussed in \cref{ex:polynomial_root_uniqueness}. In \hyperref[def:integral_domain]{integral domains}, uniqueness follows from \cref{thm:polynomial_euclidean_division_uniqueness}.
-
+  \item In accordance with \cref{def:euclidean_domain}, we denote \( q(X) \) and \( r(X) \) by \( \quot(f, g) \) and \( \rem(f, g) \).
   \item This algorithm can be found as \identifier{math.polynomials.euclidean_divmod} in \cite{notebook:code}.
 \end{comments}
 \begin{defproof}
@@ -131,26 +71,26 @@ Polynomials do not exactly correspond to polynomial functions in general, and th
     In the latter case, to use the inductive hypothesis, we only need to show that \( \widehat r(X) \) is either zero or has degree lower than \( n \). Let
     \begin{align*}
       \widehat f(X) &\coloneqq f(X) - a_n X^n, \\
-      \widehat g(X) &\coloneqq g(X) - X^m.
+      \widehat g(X) &\coloneqq g(X) - b_m X^m.
     \end{align*}
 
     Clearly \( \deg \widehat f < n \) and \( \deg \widehat g < m \). Moreover,
     \begin{equation*}
-      \widehat r(X) = \widehat f(X) - a_n X^{n-m} \cdot \widehat g(X).
+      \widehat r(X) = \widehat f(X) - (a_n / b_m) X^{n-m} \cdot \widehat g(X).
     \end{equation*}
 
     If \( \widehat r(X) \) is not zero, then
     \begin{equation*}
       \deg \widehat r
-      \reloset {\eqref{eq:thm:polynomial_degree_arithmetic/sum}} \leq
+      \reloset {\eqref{eq:thm:univariate_polynomial_sum/degree}} \leq
       \max\set{ \deg \widehat f, n - 1 }
       =
       n - 1
     \end{equation*}
     because
     \begin{equation*}
-      \deg(a_n X^{n-m} \cdot \widehat g(X))
-      \reloset {\eqref{eq:thm:polynomial_degree_arithmetic/product}} =
+      \deg\parens[\big]{ (a_n / b_m) X^{n-m} \cdot \widehat g(X) }
+      \reloset {\eqref{eq:thm:univariate_polynomial_product/degree}} =
       (n - m) + \deg \widehat g
       \leq
       (n - m) + (m - 1)
@@ -160,15 +100,87 @@ Polynomials do not exactly correspond to polynomial functions in general, and th
   \end{itemize}
 \end{defproof}
 
+\begin{proposition}\label{thm:alg:euclidean_division_of_polynomials}
+  In a nontrivial commutative ring \( R \), fix a polynomial \( g(X) \) of degree \( n \) whose leading coefficient is invertible. \Fullref{alg:euclidean_division_of_polynomials} gives us maps \( \quot(\anon*, g) \) and \( \rem(\anon*, g) \) on \( R[X] \).
+
+  These quotients and remainders have the following basic properties:
+  \begin{thmenum}
+    \thmitem{thm:alg:euclidean_division_of_polynomials/unique} They are unique in the following sense: if \( f = q \cdot g + r \), where \( r \) is either zero or \( \deg r < \deg g \), then \( r = \rem(f, g) \) and \( q = \quot(f, g) \).
+
+    \thmitem{thm:alg:euclidean_division_of_polynomials/linear} Both functions \( \rem(\anon*, g) \) and \( \quot(\anon*, g) \) are \hyperref[def:linear_function]{linear}.
+
+    \thmitem{thm:alg:euclidean_division_of_polynomials/rem_zeros} The kernel of \( \rem(\anon*, g) \) is the ideal \( \braket{ g(X) } \).
+
+    \thmitem{thm:alg:euclidean_division_of_polynomials/quot_zeros} The kernel of \( \quot(\anon*, g) \) and the set of \hyperref[def:function_fixed_point]{fixed points} of \( \rem(\anon*, g) \) coincide.
+
+    We will show in \cref{thm:truncated_polynomial_algebra/quot_zeros} that both sets coincide with the \hyperref[def:truncated_polynomial_module]{truncated polynomial module} \( \Pi_{n-1}(R[X]) \).
+  \end{thmenum}
+\end{proposition}
+\begin{proof}
+  \SubProofOf{thm:alg:euclidean_division_of_polynomials/unique} We have
+  \begin{equation}\label{eq:thm:alg:euclidean_division_of_polynomials/unique/proof/diff}
+    [\rem(f, g) - r] = -[\quot(f, g) - q] \cdot g.
+  \end{equation}
+
+  If either \( \quot(f, g) - q \) or \( \rem(f, g) - r \) is nonzero, \cref{thm:univariate_polynomial_product/zero_product} implies that both are nonzero.
+
+  In such case, then \cref{thm:univariate_polynomial_product/degree} implies that
+  \begin{equation*}
+    \deg(\rem(f, g) - r) = \deg(\quot(f, g) - q) + \deg g.
+  \end{equation*}
+
+  In particular, \( \deg(\rem(f, g) - r) \geq \deg g \).
+
+  \begin{itemize}
+    \item If \( r \) is zero, then \( \rem(f, g) - r = \rem(f, g) \) and thus \( \deg g \leq \deg \rem(f, g) \). But we have assumed that \( \deg \rem(f, g) < \deg g \), which is a contradiction.
+
+    \item Otherwise, if \( \rem(f, g) \) is zero, we similarly derive a contradiction.
+
+    \item If both \( \rem(f, g) \) and \( r \) are nonzero, \cref{thm:univariate_polynomial_sum/degree} implies that
+    \begin{equation*}
+      \deg(\rem(f, g) - r) \leq \underbrace{\max\set{ \deg \rem(f, g), \deg r }}_{< \deg g},
+    \end{equation*}
+    which is again a contradiction.
+  \end{itemize}
+
+  The obtained contradictions show that both \( \rem(f, g) - r \) and \( \quot(f, g) - q \) are zero.
+
+  \SubProofOf{thm:alg:euclidean_division_of_polynomials/linear}
+
+  \SubProofOf[eq:def:additive_function]{additivity} We have
+  \begin{equation*}
+    f + p = \parens[\big]{ \quot(f, g) + \quot(p, g) } \cdot g + \parens[\big]{ \rem(f, g) + \rem(p, g) }.
+  \end{equation*}
+
+  The sum \( \rem(f, g) + \rem(p, g) \) is either zero or has degree less than \( n \), so the uniqueness shown in \cref{thm:alg:euclidean_division_of_polynomials/unique} implies that \( \rem(f + p, g) = \rem(f, g) + \rem(p, g) \).
+
+  We similarly conclude that \( \quot(f + p, g) = \quot(f, g) + \quot(p, g) \).
+
+  \SubProofOf[def:homogeneous_function]{homogeneity} Analogous.
+
+  \SubProofOf{thm:alg:euclidean_division_of_polynomials/rem_zeros} If \( f \) is in the ideal \( \braket{ g(X) } \), it is a multiple of \( g \), and hence, by the uniqueness of division shown in \cref{thm:alg:euclidean_division_of_polynomials/unique}, its remainder \( \rem(f, g) \) is zero.
+
+  Conversely, if \( \rem(f, g) \) is zero, then \( f = \quot(f, g) \cdot g \), hence \( f \) belongs to \( \braket{ g(X) } \).
+
+  \SubProofOf{thm:alg:euclidean_division_of_polynomials/quot_zeros}
+  \SufficiencySubProof* If \( f(X) \) is a fixed point of \( \rem(\anon*, g) \), then
+  \begin{equation*}
+    f = \quot(f, g) \cdot g + f,
+  \end{equation*}
+  hence \( \quot(f, g) \cdot g \) is zero. Because \( g \) is nonzero, \cref{thm:univariate_polynomial_product/zero_product} implies that \( \quot(f, g) \) must be zero.
+
+  \NecessitySubProof* If \( f \) is in the kernel of \( \quot(\anon*, g) \), then \( \quot(f, g) \) is zero, and obviously \( f = \rem(f, g) \).
+\end{proof}
+
+\paragraph{Horner's rule}
+
 \begin{algorithm}[Horner's rule]\label{alg:horners_rule}\mcite[\S III.V.2]{Обрешков1962ВисшаАлгебра}
   Consider the polynomials
-  \begin{equation*}
+  \begin{align*}
     f(X) = \sum_{k=0}^n a_k X^k
-  \end{equation*}
-  and
-  \begin{equation*}
+    &&
     g(X) = X + b.
-  \end{equation*}
+  \end{align*}
 
   The coefficients of the quotient of \( f(X) \) and \( g(X) \) with respect to \fullref{alg:euclidean_division_of_polynomials} can be computed recursively as follows:
   \begin{equation}\label{eq:alg:horners_rule/quot}
@@ -269,15 +281,6 @@ Polynomials do not exactly correspond to polynomial functions in general, and th
   \end{itemize}
 \end{remark}
 
-\begin{definition}\label{def:square_free_element}\mimprovised
-   In a \hyperref[def:ring/commutative]{commutative ring}, we say that \( x \) of is \term[ru=свободное от квадратов (число) (\cite[def. 93]{Бухштаб1966ТеорияЧисел}), en=square-free (element) (\cite[79]{JędrzejewiczEtAl2017SquareFreeFactorization})]{square-free} if no \hi{non-invertible} divisor of \( x \) has a \hyperref[def:nth_root]{square root}.
-\end{definition}
-\begin{comments}
-  \item This concept is established for the ring of integers. An explicit definition can be found in \cite[def. 93]{Бухштаб1966ТеорияЧисел}) and an inline definition can be found in \cite[176]{Birkhoff1967LatticeTheory}, both requiring all prime factors of square-free integers to be distinct.
-
-  \incite[79]{JędrzejewiczEtAl2017SquareFreeFactorization} generalize this concept to commutative rings --- they require \( y \mid x \) to imply that \( y^2 \not\mid x \). We give an equivalent definition in terms of square roots.
-\end{comments}
-
 \paragraph{Multiple roots}
 
 \begin{definition}\label{def:algebraic_derivative}\mcite[461]{Knapp2016BasicAlgebra}
@@ -294,7 +297,7 @@ Polynomials do not exactly correspond to polynomial functions in general, and th
   \begin{equation*}
     f^{(m)}(X) \coloneqq \begin{cases}
       f(X)                             &m = 0 \\
-      \parens[\Big]{ f^{(m - 1)} }'(X) &m > 0
+      \parens[\big]{ f^{(m - 1)} }'(X) &m > 0
     \end{cases}
   \end{equation*}
 \end{definition}
@@ -346,20 +349,20 @@ Polynomials do not exactly correspond to polynomial functions in general, and th
 
   The case \( m = n = 1 \) is obvious. Assume that the statement holds for \( m = 1 \) and \( n - 1 \). Then
   \begin{equation*}
-    \parens[\Big]{ (X - \alpha)^n }'
+    \parens[\big]{ (X - \alpha)^n }'
     =
-    \parens[\Big]{ (X - \alpha)^{n-1} \cdot (X - \alpha) }'
+    \parens[\big]{ (X - \alpha)^{n-1} \cdot (X - \alpha) }'
     \reloset {\eqref{eq:thm:def:algebraic_derivative/product}} =
-    \parens[\Big]{ (X - \alpha)^{n-1} }' (X - \alpha) + (X - \alpha)^{n-1}
+    \parens[\big]{ (X - \alpha)^{n-1} }' (X - \alpha) + (X - \alpha)^{n-1}
     \reloset {\T{ind.}} =
     n (X - \alpha)^{n-1}.
   \end{equation*}
 
   Now suppose that the statement holds for derivatives of order less than \( m \) and for every \( n \geq m \). Then,
   \begin{equation*}
-    \parens[\Big]{ (X - \alpha)^n }^{(m)}
+    \parens[\big]{ (X - \alpha)^n }^{(m)}
     =
-    \parens*{\parens[\Big]{ (X - \alpha)^n }^{(m-1)}}'
+    \parens*{\parens[\big]{ (X - \alpha)^n }^{(m-1)}}'
     \reloset {\T{ind.}} =
     \parens*{ \frac {n!} {(n - m + 1)!} (X - \alpha)^{n - m + 1} }'
     \reloset {\T{ind.}} =
@@ -390,7 +393,7 @@ Polynomials do not exactly correspond to polynomial functions in general, and th
 
   For the \( n < m \)-th derivative of \( f(X) \), by \cref{thm:def:algebraic_derivative/leibniz}, we have
   \begin{equation*}
-    f^{(n)}(X) = \sum_{k=0}^n \binom n k \underbrace{\parens[\Big]{ (X - \alpha)^m }^{(k)}}_{\mathclap{\frac {m!} {(m-k)!} (X - \alpha)^{m-k} \T*{by} \ref{thm:def:algebraic_derivative/affine_power}}} q^{(n-k)}(X).
+    f^{(n)}(X) = \sum_{k=0}^n \binom n k \underbrace{\parens[\big]{ (X - \alpha)^m }^{(k)}}_{\mathclap{\frac {m!} {(m-k)!} (X - \alpha)^{m-k} \T*{by} \ref{thm:def:algebraic_derivative/affine_power}}} q^{(n-k)}(X).
   \end{equation*}
 
   Let \( \Phi_\alpha: R[X] \to R \) be the \hyperref[con:evaluation_homomorphism]{evaluation homomorphism} at \( \alpha \). Then
@@ -411,7 +414,7 @@ Polynomials do not exactly correspond to polynomial functions in general, and th
 
   By \cref{thm:def:algebraic_derivative/leibniz},
   \begin{equation*}
-    f^{(m-1)}(X) = \sum_{k=0}^{m-1} \binom {m-1} k \underbrace{\parens[\Big]{ (X - \alpha)^{m - 1} }^{(k)}}_{\mathclap{\frac {(m - 1)!} {(m - 1 - k)!} (X - \alpha)^{m - 1 - k} \T*{by} \ref{thm:def:algebraic_derivative/affine_power}}} q^{(m - 1 - k)}(X).
+    f^{(m-1)}(X) = \sum_{k=0}^{m-1} \binom {m-1} k \underbrace{\parens[\big]{ (X - \alpha)^{m - 1} }^{(k)}}_{\mathclap{\frac {(m - 1)!} {(m - 1 - k)!} (X - \alpha)^{m - 1 - k} \T*{by} \ref{thm:def:algebraic_derivative/affine_power}}} q^{(m - 1 - k)}(X).
   \end{equation*}
 
   Then
@@ -441,3 +444,242 @@ Polynomials do not exactly correspond to polynomial functions in general, and th
 \begin{proof}
   Special case of the equivalence of definitions in \cref{def:polynomial_root_multiplicity}.
 \end{proof}
+
+\paragraph{Truncated polynomial modules}
+
+\begin{definition}\label{def:truncated_polynomial_algebra}\mimprovised
+  Corresponding to the \hyperref[def:polynomial_algebra]{polynomial algebra} \( R[X] \) (over an arbitrary commutative semiring), we define the \term{truncated polynomial module} of degree \( d \) as the \( R \)-submodule
+  \begin{equation*}
+    \Pi_d(R[X]) \coloneqq \lin\set{ 1, X, X^2, \ldots, X^d }
+  \end{equation*}
+
+  In a nontrivial commutative ring, by the argumentation in \cref{ex:def:hamel_basis/polynomial_algebra}, the monomials \( 1, X, \ldots, X^d \) form a \hyperref[def:hamel_basis]{Hamel basis} of \( \Pi_d(R[X]) \). Furthermore, due to the isomorphism in \cref{thm:truncated_polynomial_algebra/isomorphism}, we identify \( \Pi_d(R[X]) \) with the \hyperref[def:algebra_over_ring/quotient]{quotient algebra} \( R[X] / \braket{ X^{d+1} } \).
+\end{definition}
+
+\begin{proposition}\label{thm:truncated_polynomial_algebra}
+  In a nontrivial commutative ring \( R \), fix a polynomial \( g(X) \) of degree \( n \) whose leading coefficient is invertible.
+
+  We will now develop a correspondence between the \hyperref[def:algebra_over_ring/quotient]{quotient algebra} \( R[X] / \braket{ g(X) } \) and the \hyperref[def:truncated_polynomial_algebra]{truncated polynomial module} \( \Pi_{n-1}(R[X]) \).
+
+  \begin{thmenum}
+    \thmitem{thm:truncated_polynomial_algebra/quot_zeros} The kernel of \( \quot(\anon*, g) \) and the set of fixed points of \( \rem(\anon*, g) \) both coincide with \( \Pi_{n-1}(R[X]) \).
+
+    \thmitem{thm:truncated_polynomial_algebra/principal} For every coset \( [f] \) in \( R[X] / \braket{ g(X) } \), we have
+    \begin{equation*}
+      [f] \cap \Pi_{n-1}(R[X]) = \set{ \rem(f, g) }.
+    \end{equation*}
+
+    \thmitem{thm:truncated_polynomial_algebra/algebra} With the operation
+    \begin{equation*}
+      (f \ast_g p) \coloneqq \rem(fp, g),
+    \end{equation*}
+    the truncated \( R \)-module \( \Pi_{n-1}(R[X]) \) becomes a commutative \( R \)-algebra.
+
+    \thmitem{thm:truncated_polynomial_algebra/isomorphism} The map
+    \begin{equation*}
+      \varphi([f]) \coloneqq \rem(f, g)
+    \end{equation*}
+    is a well-defined \( R \)-algebra isomorphism between \( R[X] / \braket{ g(X) } \) and \( \Pi_{n-1}(R[X]) \).
+
+    \thmitem{thm:truncated_polynomial_algebra/basis} The cosets \( [1], [X], \ldots, [X^{n-1}] \) form a \hyperref[def:hamel_basis]{Hamel basis} of \( R[X] / \braket{ g(X) } \).
+  \end{thmenum}
+\end{proposition}
+\begin{proof}
+  \SubProofOf{thm:truncated_polynomial_algebra/quot_zeros} \Cref{thm:alg:euclidean_division_of_polynomials/quot_zeros} implies that the zeros of \( \quot(\anon*, g) \) coincide with the fixed points of \( \rem(\anon*, g) \). We will now show that \( \rem(p, g) = r \) if and only if \( r \) is in \( \Pi_{n-1}(R[X]) \).
+
+  \SufficiencySubProof* Suppose that \( \rem(r, g) = r \). Then \( r \) is either zero or \( \deg r < n \). In both cases, \( r \) is in \( \Pi_{n-1}(R[X]) \).
+
+  \NecessitySubProof* If \( r \in \Pi_{n-1}(R[X]) \), then division must use either \cref{alg:euclidean_division_of_polynomials/zero} or \cref{alg:euclidean_division_of_polynomials/no_division}. In both cases, \( \rem(r, g) = r \).
+
+  \SubProofOf{thm:truncated_polynomial_algebra/principal} Fix a polynomial \( r \) that is both in \( [f] \) and \( \Pi_{n-1}(R[X]) \).
+
+  Since \( r \) is in \( [f] \), there exists a polynomial \( q \) such that \( f = qg + r \). Then, since \( r \) is in \( \Pi_{n-1}(R[X]) \), \cref{thm:alg:euclidean_division_of_polynomials/unique} implies that \( q = \quot(f, g) \) and \( r = \rem(f, g) \).
+
+  \SubProofOf{thm:truncated_polynomial_algebra/algebra} We must show that \( (f \ast_g p) = \rem(fp, g) \) is associative, commutative and bilinear.
+
+  \SubProofOf*[def:binary_operation/associative]{associativity} We have
+  \begin{align*}
+    (fp)s
+    &=
+    \parens[\big]{ \quot(fp, g) \cdot g + \rem(fp, g) } \cdot s
+    = \\ &=
+    \parens[\big]{ \quot(fp, g) \cdot s + \quot\parens[\big]{ \rem(fp, g) \cdot s, g } } \cdot g + \rem\parens[\big]{ \rem(fp, g) \cdot s, g }
+  \end{align*}
+  and similarly
+  \begin{equation*}
+    f(ps)
+    =
+    \parens[\big]{ f \cdot \quot(ps, g) + \quot\parens[\big]{ f \cdot \rem(ps, g), g } } \cdot g + \rem\parens[\big]{ f \cdot \rem(ps, g), g }
+  \end{equation*}
+
+  The uniqueness of remainders shown in \cref{thm:alg:euclidean_division_of_polynomials/unique} implies that
+  \begin{equation*}
+    \underbrace{\rem\parens[\big]{ \overbrace{\rem(fp, g)}^{f \ast_g p} \cdot s, g }}_{(f \ast_g p) \ast_g s} = \underbrace{\rem\parens[\big]{ f \cdot \overbrace{\rem(ps, g)}^{p \ast_g s}, g }}_{f \ast_g (p \ast_g s)},
+  \end{equation*}
+  as desired.
+
+  \SubProofOf*[def:binary_operation/commutative]{commutativity} Follows directly from commutativity of the convolution product.
+
+  \SubProofOf*[eq:def:additive_function]{additivity} Due to commutativity, it will be sufficient to show additivity in the first argument; that is, we want to show that
+  \begin{equation*}
+    (f + p) \ast_g s = \rem((f + p)s, g) = \rem(fs, g) + \rem(ps, g) = (f \ast_g s) + (p \ast_g s).
+  \end{equation*}
+
+  This follows from \cref{thm:alg:euclidean_division_of_polynomials/linear} and bilinearity of the polynomial convolution product.
+
+  \SubProofOf*[eq:def:additive_function]{homogeneity} Analogous.
+
+  \SubProofOf{thm:truncated_polynomial_algebra/isomorphism}
+
+  \SubProof*{Proof of well-definedness} For any polynomial \( p \) in \( [f] \), there exists some \( s \) such that \( p = sg + f \). Then
+  \begin{equation*}
+    p = sg + \quot(f, g) \cdot g + \rem(f, g).
+  \end{equation*}
+
+  The uniqueness of remainders shown in \cref{thm:alg:euclidean_division_of_polynomials/unique} implies that
+  \begin{equation*}
+    \varphi([p]) = \rem(p, g) = \rem(f, g) = \varphi([f]).
+  \end{equation*}
+
+  \SubProofOf[def:function_invertibility/injective/equality]{injectivity} Suppose that \( \rem(f, g)  = \rem(p, g) \). Then
+  \begin{equation*}
+    f - p = \parens[\big]{ \quot(f, g) - \quot(p, g) } \cdot g + \parens[\big]{ \underbrace{\rem(f, g) - \rem(p, g)}_{0} },
+  \end{equation*}
+  thus \( [f] = [p] \).
+
+  \SubProofOf[def:function_invertibility/surjective/existence]{surjectivity} Fix a polynomial \( r \) in \( \Pi_{n-1}(R[X]) \).
+
+  \Cref{thm:truncated_polynomial_algebra/quot_zeros} implies that \( \rem(r, g) = r \), so \( [r] \) is the desired preimage.
+
+  \SubProofOf[def:linear_function]{linearity} Follows from \cref{thm:alg:euclidean_division_of_polynomials/linear}.
+
+  \SubProof{Proof that the isomorphism \hyperref[def:algebra_over_ring/homomorphism]{preserves multiplication}} We have
+  \begin{equation*}
+    fp = \quot(fp, g) \cdot g + \rem(fp, g)
+  \end{equation*}
+  and
+  \begin{align*}
+    fp
+    &=
+    \parens[\big]{ \quot(f, g) \cdot g + \rem(f, g) } \cdot \parens[\big]{ \quot(p, g) \cdot g + \rem(p, g) }
+    = \\ &=
+    \quot(f, g) \cdot \quot(f, g) \cdot g^2 + \parens[\big]{ \quot(f, g) + \rem(p, g) } \cdot g + \rem(f, g) \cdot \rem(p, g).
+  \end{align*}
+
+  The uniqueness of remainders shown in \cref{thm:alg:euclidean_division_of_polynomials/unique} implies that
+  \begin{equation*}
+    \underbrace{\rem(fp, g)}_{\varphi([fp])}
+    =
+    \underbrace{\rem\parens[\big]{ \overbrace{\rem(f, g)}^{\varphi([f])} \cdot \overbrace{\rem(p, g)}^{\varphi([p])}, g }}_{\varphi([f]) \ast_g \varphi([p])}
+  \end{equation*}
+
+  \SubProofOf{thm:truncated_polynomial_algebra/basis} Obvious considering the linear isomorphism with \( \Pi_{n-1}(R[X]) \).
+\end{proof}
+
+\begin{definition}\label{def:quotient_polynomial_algebra_as_truncated}\mimprovised
+  In a nontrivial commutative ring \( R \), fix a polynomial \( g(X) \) of degree \( n \) whose leading coefficient is invertible.
+
+  We showed in \cref{thm:truncated_polynomial_algebra/isomorphism} how the \hyperref[def:algebra_over_ring/quotient]{quotient algebra} \( R[X] / \braket{ g(X) } \) is isomorphic to the \hyperref[def:truncated_polynomial_algebra]{truncated polynomial module} \( \Pi_{n-1}(R[X]) \) with the product operation
+  \begin{equation*}
+     (f \ast_g p) \coloneqq \rem(fp, g).
+  \end{equation*}
+
+  Furthermore, we showed in \cref{thm:truncated_polynomial_algebra/principal} that \( \rem(f, g) \) is the unique representative of the coset \( [f] \) in \( \Pi_{n-1}(R[X]) \). We call it the \term{principal representative} of \( [f] \).
+
+  We thus find it natural to regard \( R[X] / \braket{ g(X) } \) not as a family of cosets, but as the truncated module \( \Pi_{n-1}(R[X]) \) of its principal representatives endowed with the product operation \( {\ast_g} \).
+\end{definition}
+
+\paragraph{Quotient algebras and adjunction}
+
+\begin{proposition}\label{thm:adjoint_roots_and_quotients}
+  Fix arbitrary nontrivial commutative rings \( R \subseteq S \) and some element \( u \) of \( S \). Consider the \hyperref[con:evaluation_homomorphism]{evaluation homomorphism} \( \Phi_u: R[X] \to S \) sending \( X \) to \( u \). Additionally, suppose that the kernel of \( \Phi_u \) is a principal ideal with generator \( f(X) \).
+
+  Then the quotient ring \( R[X] / \braket{ f(X) } \) is isomorphic to the ring \( R[u] \) obtained by \hyperref[def:semiring_adjunction]{adjoining} \( u \) to \( R \).
+\end{proposition}
+\begin{comments}
+  \item Even though
+  \begin{equation*}
+    \ker \Phi_u
+    =
+    \set{ p(X) \in R[X] \given p(u) = 0 }
+    \reloset {\ref{thm:polynomial_factor_theorem}} =
+    \set{ p(X) \in R[X] \given (X - u) \T{divides} p(X) },
+  \end{equation*}
+  unless \( u \) itself belongs to \( R \), the above is not the principal ideal of \( (X - u) \).
+
+  When \( R \) is a \hyperref[def:field]{field}, by \cref{thm:def:principal_ideal_domain/field_polynomials}, \( R[X] \) is a \hyperref[def:principal_ideal_domain]{principal ideal domain}, and thus the kernel of \( \Phi_u \) is always principal. If \( u \) is an \hyperref[def:algebraic_element]{algebraic element}, i.e. if \( \ker \Phi_u \) is nontrivial and thus has a monic generator, this generator is called the \hyperref[def:algebraic_element_minimal_polynomial]{minimal polynomial} of \( u \).
+
+  \item When \( R \) is an \hyperref[def:integral_domain]{integral domain}, the elements of the ring \( R[u] \) correspond to the \hyperref[def:quotient_polynomial_algebra_as_truncated]{principal representatives} of the cosets in \( R[X] / \braket{ f(X) } \).
+\end{comments}
+\begin{proof}
+  \Cref{thm:ring_zero_morphisms/isomorphism} implies that
+  \begin{equation*}
+    R[X] / \underbrace{\ker \Phi_u}_{\braket{ f(X) }} \cong \underbrace{\img \Phi_u}_{R[u]}.
+  \end{equation*}
+\end{proof}
+
+\begin{definition}\label{def:gaussian_integers}\mcite[\S V.6.2]{Aluffi2009Algebra}
+  A \term[ru=целые гауссовые числа (\cite[example 3.5.1]{Винберг2014КурсАлгебры})]{Gaussian integer} is a \hyperref[def:complex_numbers]{complex number} whose real and imaginary part are \hyperref[def:integers]{integers}.
+\end{definition}
+
+\begin{example}\label{ex:thm:adjoint_roots_and_quotients}
+  We list several examples related to \cref{thm:adjoint_roots_and_quotients}:
+  \begin{thmenum}
+    \thmitem{ex:thm:adjoint_roots_and_quotients/gaussian} We can define several rings isomorphic to the \hyperref[def:gaussian_integers]{Gaussian integers}, demonstrating \cref{thm:adjoint_roots_and_quotients}.
+
+    We assume that the field of complex numbers is available to us.
+
+    \begin{thmenum}
+      \thmitem{ex:thm:adjoint_roots_and_quotients/gaussian/quotient} Based on how we defined complex numbers in \cref{def:complex_numbers}, we can simply take the \hyperref[def:algebra_over_ring/quotient]{quotient algebra} \( \BbbZ[X] / \braket{X^2 + 1} \).
+
+      \thmitem{ex:thm:adjoint_roots_and_quotients/gaussian/evaluation} Alternatively, we can \hyperref[def:semiring_adjunction]{adjoin} \( i \) to \( \BbbZ \) to obtain the ring \( \BbbZ[i] \).
+
+      Given a Gaussian integer \( z = a + bi \), it corresponds to the polynomial
+      \begin{equation*}
+        f_z(X) \coloneqq a + bX.
+      \end{equation*}
+
+      Conversely, consider the \hyperref[con:evaluation_homomorphism]{evaluation homomorphism} \( \Phi_i: \BbbZ[X] \to \BbbC \) for the imaginary unit. Let \( f(X) \in \BbbZ[X] \). Then
+      \begin{equation*}
+        f(i)
+        =
+        \Phi_i(f)
+        =
+        \sum_{k=0}^n a_k i^n
+        =
+        \thickspace \sum_{\scriptscriptstyle{\mathclap{\rem(k, 4) = 0}}}^n a_k - \sum_{\scriptscriptstyle{\mathclap{\rem(k, 4) = 2}}}^n a_k + i \parens*{ \quad \sum_{\scriptscriptstyle{\mathclap{\rem(k, 4) = 1}}}^n a_k - \sum_{\scriptscriptstyle{\mathclap{\rem(k, 4) = 3}}}^n a_k }.
+      \end{equation*}
+
+      This is clearly again a Gaussian integer.
+
+      Thus, although we skipped proving that \( \braket{X^2 + 1} \) is the kernel of \( \Phi_i: \BbbZ[X] \to \BbbC \), we have shown that the rings \( \BbbZ[X] / \braket{ X^2 + 1 } \) and \( \BbbZ[i] \) behave identically.
+    \end{thmenum}
+
+    \thmitem{ex:thm:adjoint_roots_and_quotients/integers_with_sqrt2} Similarly to \cref{ex:thm:adjoint_roots_and_quotients/gaussian}, we have
+    \begin{equation*}
+      \BbbZ[X] / \braket{X^2 - 2} \cong \BbbZ[\sqrt 2].
+    \end{equation*}
+
+    The gist of this example is that, even though \( \BbbZ[\sqrt 2] \) and \( \BbbZ[i] \) are isomorphic as modules, their vector multiplication operation is different. Indeed, since \( X^2 = 2 \), we have
+    \begin{align*}
+      (a + bX) (c + dX) = (ac + 2bd) + (bc + ad)X
+    \end{align*}
+    which is different compared to complex multiplication.
+
+    \thmitem{ex:thm:adjoint_roots_and_quotients/integers_mod_xx_minus_1} In \cref{ex:thm:adjoint_roots_and_quotients/gaussian}, we discussed how the ring of \hyperref[def:gaussian_integers]{Gaussian integers} can be defined via the quotient
+    \begin{equation*}
+      \BbbZ[X] / \braket{ X^2 + 1 }.
+    \end{equation*}
+
+    If we instead take
+    \begin{equation*}
+      \BbbZ[X] / \braket{ X^2 - 1 },
+    \end{equation*}
+    multiplication of \( a + bX \) and \( c + dX \) would behave as
+    \begin{equation*}
+      (a + bX) (c + dX) = (ac + bd) + (bc + ad)X.
+    \end{equation*}
+
+    This is less useful since \( -1 \) and \( 1 \) are already roots of \( X^2 - 1 \), and we adjoin a new root. Nevertheless, the example shows that polynomial quotient algebras are constructed similarly when the polynomial is not irreducible.
+  \end{thmenum}
+\end{example}

@@ -1,76 +1,92 @@
 \section{Boolean functions}\label{sec:boolean_functions}
 
-\paragraph{Boolean values and functions}
+\begin{definition}\label{def:truth_value_algebra}\mimprovised
+  The \hyperref[con:syntax_semantics_duality]{semantic interpretation} of a \hyperref[con:proposition]{sentence} must be a value indicating its truthfulness. We group all possible such values in a set \( \BbbT \), whose members we call \term[ru=истинностное значение (\cite[def. 1.1.12]{Герасимов2014Вычислимость}), en=truth value (\cite[\S 6.5.9]{Mimram2020ProgramEqualsProof})]{truth values}.
 
-\begin{proposition}\label{thm:two_element_lattice}
-  Any two-element \hyperref[def:lattice]{lattice} is \hyperref[def:lattice/homomorphism]{isomorphic} to the \hyperref[def:finite_field]{finite field} \( \BbbF_2 = \set{ 0, 1 } \).
-\end{proposition}
-\begin{comments}
-  \item \Cref{ex:def:boolean_algebra/f2} shows how \( \BbbF_2 \) can be regarded as a \hyperref[def:boolean_algebra]{Boolean algebra}.
-\end{comments}
-\begin{proof}
-  There is only one possible lattice homomorphism from \( \set{ \top, \bot } \) to \( \BbbF_2 = \set{ 0, 1 } \). Furthermore, it is invertible, and its inverse is also a lattice homomorphism. Hence, it is a lattice isomorphism.
-\end{proof}
+  In accordance with \cref{rem:mathematical_logic_conventions/propositional_constants}, we reserve special symbols for two truth values --- \( \semtop \) and \( \sembot \) --- corresponding to truth and falsity. The two may be equal; or, as in \hyperref[con:minimal_logic]{minimal logic}, we may ignore \( \sembot \).
 
-\begin{concept}\label{con:boolean_value}\mimprovised
-  There is a natural \hyperref[def:boolean_algebra]{Boolean algebra} structure on any two-element set \( \set{ T, F } \) in which one of the elements is larger than the other. We can regard \( T \) as a value denoting truth and \( F \) as denoting falsity, in which case \( F < T \). We call \( T \) and \( F \) in this context \term{Boolean values}.
-\end{concept}
-\begin{comments}
-  \item See \cref{rem:mathematical_logic_conventions/propositional_constants} for more discussions regarding related notation conventions.
+  In order to combine truth values, we must assume that some operations are defined on \( \BbbT \). We show in \cref{thm:lindenbaum_tarski_algebras/intuitionistic} how the \hyperref[def:propositional_alphabet/connectives]{specific connectives} we consider in \hyperref[def:propositional_logic]{propositional logic} give rise to a \hyperref[def:heyting_algebra]{Heyting algebra}; thus, it is natural to assume that the set \( \BbbT \) of truth values is itself a Heyting algebra (whose top and bottom elements are denoted by \( \semtop \) and \( \sembot \)). We will call it a \term{truth value algebra}.
 
-  \item For certain purposes, for example \hyperref[def:zhegalkin_polynomial]{Zhegalkin polynomials}, it makes sense to identify \( F \) with \( 0 \) and \( T \) with \( 1 \) in the \hyperref[def:finite_field]{finite field} \( \BbbF_2 \) (this is technically the isomorphism of Boolean algebras from \cref{thm:two_element_lattice}).
-\end{comments}
+  The names of the operations in \( \BbbT \) are often adapted as to reflect their use in logic; see \cref{def:standard_boolean_functions}.
 
-\begin{definition}\label{def:boolean_function}\mcite[9, 120]{Яблонский2003ДискретнаяМатематика}
-  We call functions from any set to \( \set{ T, F } \)  and functions from \( \set{ T, F }^n \) to \( \set{ T, F } \) \( n \)-ary \term[ru=булевые функции, en=Boolean functions (\cite[847]{Rosen2019DiscreteMathematics})]{Boolean functions}.
+  We will consider different algebras depending on the situation:
+  \begin{thmenum}
+    \thmitem{def:truth_value_algebra/classical} By default, we assume that we are working with a fixed two-element algebra \( \BbbT = \set{ \semtop, \sembot } \).
+
+    Without loss of generality, we presuppose that \( \BbbT \) is the \hyperref[def:finite_field]{finite field} \( \BbbF_2 \); this is especially useful for \hyperref[def:zhegalkin_polynomial]{Zhegalkin polynomials}. Generally, however, our choice of \( \BbbT \) is not particularly important --- for any Heyting algebra \( H \) (or, in fact, for any \hyperref[def:lattice]{lattice}), if \( \top_H \neq \bot_H \), the subalgebra \( \set{ \top_H, \bot_H } \) is a \hyperref[def:boolean_algebra]{Boolean algebra} isomorphic to \( \set{ \semtop, \sembot } \).
+
+    We refer to the \hyperref[con:syntax_semantics_duality]{semantics} based on \( \BbbT = \set{ \semtop, \sembot } \) as \term{classical}, because it enables formalizing \hyperref[con:classical_logic]{classical logic}, or \term{Boolean}, in honor of George Boole, who tried to devise a calculus for truth values based on the algebraic rules for numbers\fnote{A refined variant of Boole's theory can be found in \incite*{Boole1854LawsOfThought}.}. In this setting, we refer to \( \semtop \) and \( \sembot \) as \term[en=Boolean values (\cite[218]{DaveyPriestley2002LatticeTheory})]{Boolean values}.
+
+    \thmitem{def:truth_value_algebra/intuitionistic} In the general case where \( \BbbT \) is an arbitrary Heyting algebra, we will say that the semantics is \term{intuitionistic} since it enables formalizing \hyperref[con:intuitionistic_logic]{intuitionistic logic}.
+
+    \thmitem{def:truth_value_algebra/topological} If the Heyting algebra is a \hyperref[def:topological_space]{topology}, as in \cref{ex:def:heyting_algebra/topology}, we obtain \term{topological semantics}.
+
+    \thmitem{def:truth_value_algebra/fuzzy} If the Heyting algebra is the unit interval \( [0, 1] \), as in \cref{ex:def:heyting_algebra/totally_ordered}, we obtain \term{fuzzy semantics}, also called \term[en=fuzzy logic (\cite[17]{Rosen2019DiscreteMathematics})]{fuzzy logic}.
+  \end{thmenum}
+\end{definition}
+
+\paragraph{Boolean functions}
+
+\begin{definition}\label{def:boolean_function}
+  We call a function \term{Boolean-valued} if its \hyperref[def:set_valued_map/codomain]{codomain} is the set \( \set{ \semtop, \sembot } \) of \hyperref[def:truth_value_algebra/classical]{Boolean values}.
+
+  An \( n \)-ary \term[ru=булевые функции (\cite[9]{Яблонский2003ДискретнаяМатематика}), en=Boolean functions (\cite[847]{Rosen2019DiscreteMathematics})]{Boolean functions} is a function from \( \set{ \semtop, \sembot }^n \) to \( \set{ \semtop, \sembot } \).
 \end{definition}
 
 \begin{remark}\label{rem:boolean_valued_functions_and_predicates}
-  We may, following \incite[9, 120]{Яблонский2003ДискретнаяМатематика}, call more general Boolean-valued functions \enquote{predicates}. We refrain from doing so because Boolean-valued functions are semantic notions, while predicates, as defined in \cref{def:predicate} or \cref{def:first_order_signature/predicates}, are a syntactic notion, and we do not wish to mix them.
+  In \cref{con:predicate_logic/predicate}, we will call \enquote{predicates} those syntactic constructs whose intended \hyperref[def:truth_value_algebra/classical]{classical interpretation} is a \hyperref[def:boolean_function]{Boolean-valued function}.
+
+  We will keep a clear distinction between predicates and the corresponding Boolean-valued function, however we must note that this distinction is sometimes blurred. For example, \incite[4]{DaveyPriestley2002LatticeTheory} write
+  \begin{displayquote}
+    A \textbf{predicate} is a statement taking value \( \mathbfsf{T} \) (true) or \( \mathbfsf{F} \) (false). More precisely, a predicate on \( X \) is a function from \( X \) to \( \set{ \mathbfsf{T}, \mathbfsf{F} } \); here we don't distinguish between different ways of specifying the same function.
+  \end{displayquote}
+
+  Outside predicate logic, some sources refer to Boolean-valued functions as predicates, for example in \cite[42]{Rosen2019DiscreteMathematics}, \cite[9]{Яблонский2003ДискретнаяМатематика} and \cite[46]{Мальцев1970АлгебраическиеСистемы}
 \end{remark}
 
 \begin{remark}\label{rem:boolean_valued_functions_and_relations}
-  \hyperref[def:boolean_function]{Boolean-valued functions} and \hyperref[def:relation]{relations} represent the same concept. In particular, if we fix some sets \( X_1, \ldots, X_n \), any relation \( R \subseteq X_1 \times \cdots \times X_n \) corresponds to a unique Boolean-valued function
+  \hyperref[def:boolean_function]{Boolean-valued functions} and \hyperref[def:relation]{relations} represent the same concept. In particular, if we fix some sets \( X_1, \ldots, X_n \), the relation \( R \subseteq X_1 \times \cdots \times X_n \) corresponds to a unique Boolean-valued function
   \begin{equation*}
     \begin{aligned}
-      &f: X_1 \times \cdots \times X_n \to \set{ T, F } \\
+      &f: X_1 \times \cdots \times X_n \to \set{ \semtop, \sembot } \\
       &f(x_1, \ldots, x_n) = \begin{cases}
-        T, &(x_1, \ldots, x_n) \in R, \\
-        F, &\T{otherwise}
+        \semtop, &(x_1, \ldots, x_n) \in R, \\
+        \sembot, &\T{otherwise}
       \end{cases}
     \end{aligned}
   \end{equation*}
   and vice versa.
+
+  We use this when we generalize equivalence relations beyond Boolean values in \cref{def:generalized_equivalence_relation}.
 \end{remark}
 
 \begin{definition}\label{def:boolean_closure}\mcite[30; 33]{Яблонский2003ДискретнаяМатематика}
   Consider the set of all Boolean functions
   \begin{equation*}
-    \mscrB \coloneqq \set[\Big]{ f \given* f \colon \set{ T, F }^n \to \set{ T, F } \T{for some nonnegative integer} n }.
+    \mscrB \coloneqq \bigcup_{n=0}^\infty \fun \parens[\big]{ \set{ \semtop, \sembot }^n, \set{ \semtop, \sembot } }.
   \end{equation*}
 
   \begin{thmenum}
     \thmitem{def:boolean_closure/closed} We say that a subset \( B \) of \( \mscrB \) is \term{closed} if, whenever \( g(x_1, \ldots, x_m) \) is in \( B \) and \( f_k(x_1, \ldots, x_n) \) is in \( B \) for \( k = 1, \ldots, m \), then their \hyperref[con:function_superposition]{superposition}
     \begin{equation*}
-      h(x_1, \ldots, x_n) \coloneqq g(f_1(x_1, \ldots, x_n), \ldots, f_m(x_1, \ldots, x_n))
+      h(x_1, \ldots, x_n) \coloneqq g\parens[\big]{ f_1(x_1, \ldots, x_n), \ldots, f_m(x_1, \ldots, x_n) }
     \end{equation*}
     is also in \( B \).
 
-    \thmitem{def:boolean_closure/closure} We define the \hyperref[def:moore_closure_operator]{Moore closure operator} \( \cl \) on \( \pow(\mscrB) \) by assigning to every set \( B \) the smallest closed set containing \( B \).
+    \thmitem{def:boolean_closure/closure} We define a \hyperref[def:moore_closure_operator]{Moore closure operator} on \( \pow(\mscrB) \) by assigning to every set \( B \) the smallest closed set \( \cl(B) \) containing \( B \).
 
-    \thmitem{def:boolean_closure/complete} If the closure \( \cl{B} \) is the entire set \( \mscrB \), we say that \( B \) is \term[ru=полная система, en=functionally complete (\cite[857]{Rosen2019DiscreteMathematics})]{complete}.
+    \thmitem{def:boolean_closure/complete} If the closure \( \cl(B) \) is the entire set \( \mscrB \), we say that \( B \) is \term[ru=полная система, en=functionally complete (\cite[857]{Rosen2019DiscreteMathematics})]{functionally complete}.
   \end{thmenum}
 \end{definition}
 \begin{comments}
   \item If \( B \) is complete, then from \cref{thm:functions_over_model_form_model} it follows that \( B \) is a Boolean algebra. This is used in \cref{thm:propositional_formulas_and_boolean_functions/bijection}.
 \end{comments}
-\begin{defproof}
-  Let \( B \) be an arbitrary set of Boolean functions (i.e. an arbitrary subset of \( \mscrB \)). If a function belongs to \( \cl{B} \), it must belong to any closed set containing \( B \), and vice versa - if a function belongs to every closed superset of \( B \), it must belong to \( \cl{B} \). Hence, \( \cl{B} \) is the intersection of all closed superset of \( B \). At least one such superset exists - \( \mscrB \) itself - hence \( \cl{B} \) is well-defined.
-
-  The conditions for closure operator from \cref{def:moore_closure_operator} are trivial to verify.
-\end{defproof}
 
 \paragraph{Zhegalkin polynomials}
+
+\begin{definition}\label{def:square_free_element}\mcite[79]{JędrzejewiczEtAl2017SquareFreeFactorization}
+   In a \hyperref[def:ring/commutative]{commutative (semi)ring}, we say that \( x \) of is \term[ru=свободное от квадратов (число) (\cite[def. 93]{Бухштаб1966ТеорияЧисел}), en=square-free (element) (\cite[79]{JędrzejewiczEtAl2017SquareFreeFactorization})]{square-free} if, whenever \( y \) divides \( x \), its \hyperref[def:nth_root]{square} \( y^2 \) does not.
+\end{definition}
 
 \begin{definition}\label{def:zhegalkin_polynomial}\mcite[37]{Герасимов2014Вычислимость}
   A \term[ru=полином Жегалкина]{Zhegalkin polynomial} is a \hyperref[def:polynomial_algebra/polynomials]{polynomial} in the \hyperref[def:finite_field]{finite field} \( \BbbF_2 \) whose monomials are \hyperref[def:square_free_element]{square-free}.
@@ -83,12 +99,12 @@
   Given a \hyperref[def:boolean_function]{Boolean function} \( f(x_1, \ldots, x_n) \), we can recursively build a \hyperref[def:zhegalkin_polynomial]{Zhegalkin polynomial} \( p(X_1, \ldots, X_n) \) that \hyperref[con:evaluation_homomorphism]{evaluates} to \( f(x_1, \ldots, x_n) \).
 
   \begin{thmenum}
-    \thmitem{alg:infer_zhegalkin_polynomial/base} If \( n = 0 \), then \( f \) is a constant; Let \( p \coloneqq f \).
-    \thmitem{alg:infer_zhegalkin_polynomial/step} If \( n > 0 \), we can recursively apply the algorithm to obtain polynomials \( p_T(X_2, \ldots, X_n) \) and \( p_F(X_2, \ldots, X_n) \) corresponding to \( f(T, X_2, \ldots, X_n) \) and \( f(F, X_2, \ldots, X_n) \).
+    \thmitem{alg:infer_zhegalkin_polynomial/base} If \( n = 0 \), then \( f \) is a constant; let \( p \coloneqq f \).
+    \thmitem{alg:infer_zhegalkin_polynomial/step} If \( n > 0 \), we can recursively apply the algorithm to obtain polynomials \( p_\semtop(X_2, \ldots, X_n) \) and \( p_\sembot(X_2, \ldots, X_n) \) corresponding to \( f(\semtop, X_2, \ldots, X_n) \) and \( f(\sembot, X_2, \ldots, X_n) \).
 
     We then define
     \begin{equation}\label{eq:alg:infer_zhegalkin_polynomial/step}
-      p(X_1, \ldots, X_n) = X_1 \cdot \parens[\Big]{ p_T(X_2, \ldots, X_n) \oplus p_F(X_2, \ldots, X_n) } \oplus p_F(X_2, \ldots, X_n).
+      p(X_1, \ldots, X_n) = X_1 \cdot \parens[\big]{ p_\semtop(X_2, \ldots, X_n) \oplus p_\sembot(X_2, \ldots, X_n) } \oplus p_\sembot(X_2, \ldots, X_n).
     \end{equation}
   \end{thmenum}
 \end{algorithm}
@@ -98,12 +114,20 @@
 \begin{defproof}
   We will prove correctness by induction. The base case \( n = 0 \) is vacuous, so suppose that \( n > 0 \) and that the algorithm is correct for less than \( n \) variables.
 
-  Fix a Boolean function \( f(X_1, \ldots, X_n) \) and let \( p_T \) and \( p_F \) be as in \fullref{alg:infer_zhegalkin_polynomial/step}.
+  Fix a Boolean function \( f(X_1, \ldots, X_n) \) and let \( p_\semtop \) and \( p_\sembot \) be as in \fullref{alg:infer_zhegalkin_polynomial/step}.
 
-  Both are elements of the ring \( \BbbF_2[X_2, \ldots, X_n] \). The polynomial \( p \) as defined by \eqref{eq:alg:infer_zhegalkin_polynomial/step} is a linear polynomial in \( X_1 \) over this ring.
+  Both are elements of the ring \( \BbbF_2[X_2, \ldots, X_n] \). The polynomial \( p \) as defined by \eqref{eq:alg:infer_zhegalkin_polynomial/step} is a linear (hence square-free) polynomial in \( X_1 \) over this ring.
   \begin{itemize}
-    \item Evaluating \( p \) with \( X_1 \mapsto F \) yields the constant coefficient, which by definition is \( p_F \).
-    \item Evaluating \( p \) with \( X_1 \mapsto T \) yields a value that is the sum of the linear and constant coefficient. Thus, the linear coefficient itself is \( p_T \ominus p_F = p_T \oplus p_F \).
+    \item Evaluating \( p \) with \( X_1 \mapsto \sembot \) yields the constant coefficient, which by definition is \( p_\sembot \).
+    \item Evaluating \( p \) with \( X_1 \mapsto \semtop \) yields a value that is the sum of the linear and constant coefficient:
+    \begin{align*}
+      &\phantom{{}={}}
+      \parens[\big]{ p_\semtop(X_2, \ldots, X_n) \oplus p_\sembot(X_2, \ldots, X_n) } \oplus p_\sembot(X_2, \ldots, X_n)
+      = \\ &=
+      p_\semtop(X_2, \ldots, X_n) \oplus \parens[\big]{ \underbrace{p_\sembot(X_2, \ldots, X_n) \oplus p_\sembot(X_2, \ldots, X_n)}_{\semtop} }.
+    \end{align*}
+
+    We have thus obtained \( p_\semtop \).
   \end{itemize}
 
   By the inductive hypothesis, evaluating \( p \) over \( \BbbF_2 \) gives \( f \).
@@ -113,11 +137,24 @@
   To every Boolean function in \( n \) variables there corresponds a unique Zhegalkin polynomial in \( n \) indeterminates.
 \end{proposition}
 \begin{proof}
-  Existence is provided by \fullref{alg:infer_zhegalkin_polynomial}, while uniqueness is provided by \cref{thm:functions_over_finite_fields}.
+  Existence follows by \fullref{alg:infer_zhegalkin_polynomial}, so we must show uniqueness.
+
+  \Cref{thm:cardinality_product_rule} implies that there are \( 2^n \) elements in \( \set{ \semtop, \sembot }^n \) and \cref{thm:cardinality_exponentiation_rule} implies that there are \( 2^{2^n} \) \( n \)-ary Boolean functions.
+
+  We will show by induction on \( n \) that there are \( 2^{2^n} \) Zhegalkin polynomials on \( n \) indeterminates.
+
+  The case \( n = 0 \) is obvious. Suppose that the inductive hypothesis holds for \( n \) and let \( f \) be an arbitrary polynomial from \( \BbbF_2[X_1, \ldots, X_n][X_{n+1}] \).
+
+  Suppose that \( f \) is square-free. Then the only occurrence of \( X_{n+1} \) in \( f \) has power \( 1 \). So, for some square-free polynomials \( g \) and \( h \) from \( \BbbF_2[X_1, \ldots, X_n] \), we have
+  \begin{equation*}
+    f(X_1, \ldots, X_n, X_{n+1}) = g(X_1, \ldots, X_n) X_{n+1} \oplus h(X_1, \ldots, X_n).
+  \end{equation*}
+
+  By the inductive hypothesis, there are \( 2^{2^{n-1}} \) choices for \( g \) and as much for \( h \), so that totals to \( 2^{2^n} \).
 \end{proof}
 
 \begin{lemma}\label{thm:f2_sum_parity}
-  In the \hyperref[def:finite_field]{finite field} \( \BbbF_2 \), the sum \( a_1 \oplus \cdots \oplus a_n \) is \( T \) if and only if there is an odd amount of summands with value \( T \).
+  In the \hyperref[def:finite_field]{finite field} \( \BbbF_2 \), the sum \( a_1 \oplus \cdots \oplus a_n \) is \( \semtop \) if and only if there is an odd amount of summands with value \( \semtop \).
 \end{lemma}
 \begin{proof}
   Trivial.
@@ -126,110 +163,164 @@
 \begin{proposition}\label{thm:unary_boolean_function_zhegalkin_polynomial}
   For a unary \hyperref[def:boolean_function]{Boolean function} \( f(x) \), the unique Zhegalkin polynomial
   \begin{equation}\label{eq:thm:unary_boolean_function_zhegalkin_polynomial}
-    p(x) = ax \oplus b
+    p(X) = aX \oplus b
   \end{equation}
   has coefficients
   \begin{align*}
-    b &\coloneqq f(F) \\
-    a &\coloneqq f(T) \oplus f(F).
+    b &\coloneqq f(\sembot) \\
+    a &\coloneqq f(\semtop) \oplus f(\sembot).
   \end{align*}
 \end{proposition}
 \begin{proof}
-  This is simply a restatement of \eqref{eq:alg:infer_zhegalkin_polynomial/step}.
+  This is simply a restatement of \cref{alg:infer_zhegalkin_polynomial/step}.
 \end{proof}
 
 \begin{proposition}\label{thm:binary_boolean_function_zhegalkin_polynomial}
   For a binary \hyperref[def:boolean_function]{Boolean function} \( f(x, y) \), the unique Zhegalkin polynomial
   \begin{equation}\label{eq:thm:binary_boolean_function_zhegalkin_polynomial}
-    p(x, y) = axy \oplus bx \oplus cy \oplus d
+    p(X, X) = aXY \oplus bX \oplus cY \oplus d
   \end{equation}
   has coefficients
   \begin{align*}
-    d &\coloneqq f(F, F) \\
-    c &\coloneqq f(F, T) \oplus f(F, F) \\
-    b &\coloneqq f(T, F) \oplus f(F, F) \\
-    a &\coloneqq \underbrace{f(T, T) \oplus f(T, F) \oplus f(T, F) \oplus f(F, F)}_{T \T*{if} 1 \T*{or} 3 \T*{of the values are} T}.
+    d &\coloneqq f(\sembot, \sembot) \\
+    c &\coloneqq f(\sembot, \semtop) \oplus f(\sembot, \sembot) \\
+    b &\coloneqq f(\semtop, \sembot) \oplus f(\sembot, \sembot) \\
+    a &\coloneqq \underbrace{f(\semtop, \semtop) \oplus f(\semtop, \sembot) \oplus f(\semtop, \sembot) \oplus f(\sembot, \sembot)}_{\semtop \T*{if} 1 \T*{or} 3 \T*{of the values are} \semtop}.
   \end{align*}
 \end{proposition}
 \begin{proof}
-  \Fullref{alg:infer_zhegalkin_polynomial}
+  \Fullref{alg:infer_zhegalkin_polynomial} give us
   \begin{equation*}
-    f(x, y) = x(ay \oplus b) \oplus (cy \oplus d).
+    p(X, Y) = X(aY \oplus b) \oplus (cY \oplus d).
   \end{equation*}
 
-  The expressions for the concrete values for the coefficients follow from \cref{thm:unary_boolean_function_zhegalkin_polynomial} and \eqref{eq:alg:infer_zhegalkin_polynomial/step}.
+  The expressions for the concrete values for the coefficients follow from \cref{thm:unary_boolean_function_zhegalkin_polynomial} and \cref{alg:infer_zhegalkin_polynomial/step}.
 \end{proof}
 
 \paragraph{Binary Boolean functions}
 
+\begin{definition}\label{def:sheffers_stroke}\mcite[40]{Hinman2005Logic}
+  \term[ru=штрих Шеффера (\cite[29]{Эдельман1975Логика}), en=Sheffer's stroke]{Sheffer's stroke} \( \uparrow \) is \hyperref[def:boolean_function]{Boolean function} defined as
+  \begin{equation*}
+    (x \uparrow y) \coloneqq \oline{x \wedge y}.
+  \end{equation*}
+\end{definition}
+\begin{comments}
+  \item As discussed in \cref{def:standard_boolean_functions}, the meet operation is also called \enquote{and}. For this reason, Sheffer's stroke is also called \enquote{nand} (short for \enquote{not and}), for example in \cite[40]{Hinman2005Logic}.
+
+  \item This function does not correspond to a specific logical operation. We mention it because, as shown in \cref{thm:complete_sets_of_boolean_functions/nand}, it is by itself \hyperref[def:boolean_closure/complete]{functionally complete}.
+\end{comments}
+
 \begin{definition}\label{def:standard_boolean_functions}\mcite[sec. 1.1]{Rosen2019DiscreteMathematics}
-  The \hyperref[def:boolean_function]{Boolean functions} in \cref{tab:def:standard_boolean_functions} are well-established.
+  We list several important \hyperref[def:boolean_function]{Boolean functions} in \cref{fig:def:standard_boolean_functions}. As we will show in \cref{thm:def:standard_boolean_functions}, these are mostly restrictions of the corresponding operations in \hyperref[def:boolean_algebra]{Boolean} or even \hyperref[def:heyting_algebra]{Heyting algebras}.
 
   \begin{table}
     \begin{equation*}
       \begin{array}{*{2}{c}}
         \toprule
-        x & \oline{x}  \\
+        x       & \oline{x}        \\
         \midrule
-          & \T{not} x  \\
+                & \T{not} x        \\
         \midrule
-        F & T          \\
-        T & F          \\
+        \sembot & \semtop          \\
+        \semtop & \sembot          \\
+                &                  \\
+                &                  \\
         \midrule
-          & x \oplus T \\
+                & x \oplus \semtop \\
         \bottomrule
       \end{array}
       \thinspace
       \begin{array}{*{8}{c}}
         \toprule
-        x & y & x \vee y             & x \oplus y  & x \wedge y  & x \uparrow y & x \rightarrow y      & x \leftrightarrow y \\
+        x       & y       & x \vee y             & x \oplus y  & x \wedge y  & x \uparrow y      & x \rightarrow y            & x \leftrightarrow y       \\
         \midrule
-          &   & x \T{or} y           & x \T{xor} y & x \T{and} y & x \T{nand} y & x \T{implies} y      & x \T{iff} y         \\
+                &         & x \T{or} y           & x \T{xor} y & x \T{and} y & x \T{nand} y      & x \T{implies} y            & x \T{iff} y               \\
         \midrule
-        F & F & F                    & F           & F           & T            & T                    & T                   \\
-        T & F & T                    & T           & F           & T            & F                    & F                   \\
-        F & T & T                    & T           & F           & T            & T                    & F                   \\
-        T & T & T                    & F           & T           & F            & T                    & T                   \\
+        \sembot & \sembot & \sembot              & \sembot     & \sembot     & \semtop           & \semtop                    & \semtop                   \\
+        \semtop & \sembot & \semtop              & \semtop     & \sembot     & \semtop           & \sembot                    & \sembot                   \\
+        \sembot & \semtop & \semtop              & \semtop     & \sembot     & \semtop           & \semtop                    & \sembot                   \\
+        \semtop & \semtop & \semtop              & \sembot     & \semtop     & \sembot           & \semtop                    & \semtop                   \\
         \midrule
-          &   & xy \oplus x \oplus y & x \oplus y  & xy          & xy \oplus T  & xy \oplus x \oplus T & x \oplus y \oplus T \\
+                &         & xy \oplus x \oplus y & x \oplus y  & xy          & xy \oplus \semtop & xy \oplus x \oplus \semtop & x \oplus y \oplus \semtop \\
         \bottomrule
       \end{array}
     \end{equation*}
-    \caption{Several important \hyperref[def:boolean_function]{Boolean functions}.}\label{tab:def:standard_boolean_functions}.
+    \caption{Several important \hyperref[def:boolean_function]{Boolean functions}.}\label{fig:def:standard_boolean_functions}.
   \end{table}
 
-  The following abbreviations have been used in the table:
-  \begin{itemize}
-    \item \term{xor} for \enquote{exclusive or}, which is a special case of the \hyperref[def:symmetric_difference]{symmetric difference}.
-    \item \term[en=nand (\cite[40]{Hinman2005Logic})]{nand} for \enquote{not and}, also known as \term[ru=штрих Шеффера (\cite[29]{Эдельман1975Логика}), en=Sheffer's stroke (\cite[40]{Hinman2005Logic})]{Sheffer's stroke}.
-    \item \term{iff} for \enquote{if and only if}.
-  \end{itemize}
+  The names of the Boolean functions are based on their role in logic; we discuss this more when introducing the corresponding symbols in \cref{def:propositional_alphabet}.
+
+  The last rows of the tables contain \hyperref[def:zhegalkin_polynomial]{Zhegalkin polynomials} of the corresponding functions. We used \cref{thm:unary_boolean_function_zhegalkin_polynomial} and \cref{thm:binary_boolean_function_zhegalkin_polynomial} to determine the coefficients.
 \end{definition}
-\begin{comments}
-  \item The last rows of the two tables contain \hyperref[def:zhegalkin_polynomial]{Zhegalkin polynomials} of the corresponding functions. \Cref{thm:unary_boolean_function_zhegalkin_polynomial} and \cref{thm:binary_boolean_function_zhegalkin_polynomial} were used to determine the coefficients.
 
-  \item See \cref{ex:def:heyting_algebra/three_valued} for how \( {\rightarrow} \) becomes more complicated in three-valued logic.
+\begin{proposition}\label{thm:def:standard_boolean_functions}
+  Except for Sheffer's stroke, defined in \cref{def:sheffers_stroke}, the other Boolean functions from \cref{def:standard_boolean_functions} are restrictions of more general lattice-theoretic operations on the \hyperref[def:boolean_algebra/submodel]{Boolean algebra} \( \set{ \semtop, \sembot } \):
 
-  \item These tables can be used to prove \cref{thm:classical_equivalences} and \cref{thm:classical_tautologies}.
-\end{comments}
+  \begin{thmenum}
+    \thmitem{thm:def:standard_boolean_functions/lattice} The \enquote{and} and \enquote{or} functions correspond to the basic lattice operations \enquote{join} (\( \vee \)) and \enquote{meet} (\( \wedge \)) defined in \cref{def:lattice}.
+
+    \thmitem{thm:def:standard_boolean_functions/pseudocomplement} The \enquote{not} and \enquote{implies} functions correspond to the relative (\( \rightarrow \)) and usual (\( \oline{\anon} \)) pseudocomplements in a \hyperref[def:heyting_algebra]{Heyting algebra}, as defined in \cref{def:heyting_algebra}.
+
+    \thmitem{thm:def:standard_boolean_functions/biconditional} The \enquote{iff} (\enquote{if and only if}) function corresponds to the \enquote{biconditional} (\( \leftrightarrow \)) operation in a Heyting algebra defined in \cref{def:heyting_algebra/biconditional}.
+
+    \thmitem{thm:def:standard_boolean_functions/xor} The \enquote{xor} (\enquote{exclusive or}) function corresponds the \enquote{symmetric difference} operation for \hyperref[def:boolean_algebra]{Boolean algebras} defined in \cref{def:symmetric_difference} (but it uses a different symbol).
+  \end{thmenum}
+\end{proposition}
+\begin{proof}
+  \SubProofOf{thm:def:standard_boolean_functions/lattice} We have \( x \vee y = \sup\set{ x, y } \), which is \( \semtop \) unless \( x = y = \sembot \).
+
+  Dually, \( x \wedge y = \inf\set{ x, y } \), which is \( \sembot \) unless \( x = y = \semtop \).
+
+  \SubProofOf{thm:def:standard_boolean_functions/pseudocomplement} \Cref{thm:def:heyting_algebra/leq} implies that \( (x \rightarrow y) = \semtop \) if and only if \( x \leq y \). Thus, \( (x \rightarrow y) = \semtop \) unless \( x = \semtop \) and \( y = \sembot \).
+
+  For the relative pseudocomplement, \cref{thm:def:heyting_algebra/extrema_complement} implies that \( \oline{\bot} = \top \) and \( \oline{\top} = \bot \).
+
+  \SubProofOf{thm:def:standard_boolean_functions/biconditional} By definition,
+  \begin{equation*}
+    (x \leftrightarrow y) = (x \rightarrow y) \wedge (y \rightarrow x).
+  \end{equation*}
+
+  \begin{itemize}
+    \item Based on our discussion of \( \wedge \), \( (x \leftrightarrow y) = \semtop \) if and only if \( (x \rightarrow y) = (y \rightarrow x) = \semtop \).
+
+    \item Based on our discussion of \( \rightarrow \), \( (x \rightarrow y) = (y \rightarrow x) \) is only possible if \( x = y \).
+  \end{itemize}
+
+  So \( (x \leftrightarrow y) = \semtop \) if and only if \( x = y \).
+
+  \SubProofOf{thm:def:standard_boolean_functions/xor} \Cref{thm:symmetric_difference_outer_meet} implies that
+  \begin{equation*}
+    (x \symdiff y) = (x \vee y) \wedge \oline{(x \wedge y)}.
+  \end{equation*}
+
+  Based on our discussion of the other operations, we have the following:
+  \begin{itemize}
+    \item \( (x \symdiff y) = \semtop \) if and only if \( (x \vee y) = \oline{(x \wedge y)} = \semtop \).
+    \item \( (x \vee y) = \semtop \) unless \( x = y = \sembot \).
+    \item \( \oline{(x \wedge y)} = \semtop \) unless \( x = y = \semtop \).
+  \end{itemize}
+
+  Thus, \( (x \symdiff y) = \semtop \) if and only if \( x \neq y \).
+\end{proof}
 
 \begin{proposition}\label{thm:complete_sets_of_boolean_functions}
   The following sets of Boolean functions are \hyperref[def:boolean_closure/complete]{complete}:
   \begin{thmenum}
-    \thmitem{thm:complete_sets_of_boolean_functions/zhegalkin} \( \set{ \oplus, \wedge, F, T } \).
+    \thmitem{thm:complete_sets_of_boolean_functions/zhegalkin} \( \set{ \oplus, \wedge, \sembot, \semtop } \).
     \thmitem{thm:complete_sets_of_boolean_functions/or_not} \( \set{ \vee, \oline{\anon} } \).
     \thmitem{thm:complete_sets_of_boolean_functions/and_not} \( \set{ \wedge, \oline{\anon} } \).
     \thmitem{thm:complete_sets_of_boolean_functions/nand} \( \set{ \uparrow } \).
-    \thmitem{thm:complete_sets_of_boolean_functions/conditional_falsum} \( \set{ \rightarrow, F } \).
+    \thmitem{thm:complete_sets_of_boolean_functions/conditional_falsum} \( \set{ \rightarrow, \sembot } \).
   \end{thmenum}
 \end{proposition}
 \begin{proof}
-  \SubProofOf{thm:complete_sets_of_boolean_functions/zhegalkin} \Fullref{alg:infer_zhegalkin_polynomial} gives an explicit Zhegalkin polynomial for every Boolean function. The polynomial's constant coefficient is either \( F \) or \( T \); \( \wedge \) is used when evaluating monomials, and \( \oplus \) is used when summing the values of the monomials.
+  \SubProofOf{thm:complete_sets_of_boolean_functions/zhegalkin} \Fullref{alg:infer_zhegalkin_polynomial} gives an explicit Zhegalkin polynomial for every Boolean function. The polynomial's constant coefficient is either \( \sembot \) or \( \semtop \); \( \wedge \) is used when evaluating monomials, and \( \oplus \) is used when summing the values of the monomials.
 
   \SubProofOf{thm:complete_sets_of_boolean_functions/or_not} By inspecting \cref{def:standard_boolean_functions}, we can conclude that we can express the operators from \cref{thm:complete_sets_of_boolean_functions/zhegalkin} via \( \vee \) and \( \oline{\anon} \):
   \begin{itemize}
-    \item \( T = x \vee \oline{x} \),
-    \item \( F = \oline{T} \),
+    \item \( \semtop = x \vee \oline{x} \),
+    \item \( \sembot = \oline{\semtop} \),
     \item \( x \wedge y = \oline*{\oline{x} \vee \oline{y}} \),
     \item \( x \oplus y = (x \vee y) \wedge (\oline{x} \vee \oline{y}) \).
   \end{itemize}
@@ -243,7 +334,7 @@
 
   \SubProofOf{thm:complete_sets_of_boolean_functions/nand} Note that
   \begin{itemize}
-    \item \( \oline{x} = x \uparrow T \),
+    \item \( \oline{x} = x \uparrow \semtop \),
     \item \( x \wedge y = \oline{x \uparrow y} \).
   \end{itemize}
 
@@ -251,6 +342,6 @@
 
   \SubProofOf{thm:complete_sets_of_boolean_functions/conditional_falsum} Follows from \cref{thm:complete_sets_of_boolean_functions/nand} by noting that
   \begin{equation*}
-    x \uparrow y = x \rightarrow (y \rightarrow F).
+    x \uparrow y = x \rightarrow (y \rightarrow \sembot).
   \end{equation*}
 \end{proof}

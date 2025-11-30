@@ -1,23 +1,12 @@
 import pytest
 
 from ...support.pytest import pytest_parametrize_kwargs
-from .division import DivMod, euclidean_divmod, horner_divmod, leading_coefficient
-from .exceptions import PolynomialDivisionError, PolynomialZeroDivisionError
+from ..rings.modular import Z4
+from .division import DivMod, euclidean_divmod, horner_divmod
+from .exceptions import PolynomialDivisionError, ZeroPolynomialError
 from .monomial import Monomial
+from .polynomial.common import IRingPolynomial
 from .polynomial.int import IntPolynomial, const, x, y, z, zero
-
-
-@pytest_parametrize_kwargs(
-    dict(pol=zero,                                  indet='x', leading=zero),
-    dict(pol=const,                                 indet='x', leading=const),
-    dict(pol=x ** 2,                                indet='x', leading=const),
-    dict(pol=x - 2 * x ** 2,                        indet='x', leading=-2 * const),
-    dict(pol=x * y,                                 indet='x', leading=y),
-    dict(pol=x * y,                                 indet='y', leading=x),
-    dict(pol=x ** 2 * y + 2 * (x ** 2) * z + x * y, indet='x', leading=y + 2 * z),
-)
-def test_leading_coefficient(pol: IntPolynomial, indet: str, leading: IntPolynomial) -> None:
-    assert leading_coefficient(pol, indet) == leading
 
 
 @pytest_parametrize_kwargs(
@@ -33,13 +22,20 @@ def test_euclidean_divmod(f: IntPolynomial, g: IntPolynomial, indet: str, q: Int
 
 
 def test_euclidean_divmod_failure_division_by_zero() -> None:
-    with pytest.raises(PolynomialZeroDivisionError, match='Cannot divide by the zero polynomial'):
+    with pytest.raises(ZeroPolynomialError, match='Cannot divide by the zero polynomial'):
         euclidean_divmod(x, zero, 'x')
 
 
-def test_euclidean_divmod_failure_non_monic() -> None:
-    with pytest.raises(PolynomialDivisionError, match="Expected either polynomials over a field or a monic divisor, got '2x'"):
-        euclidean_divmod(x, 2 * x, 'x')
+class Z4Polynomial(IRingPolynomial, semiring=Z4):
+    pass
+
+
+z4x = Z4Polynomial.from_monomial(Monomial.from_indeterminate('x'))
+
+
+def test_euclidean_divmod_failure_non_invertible() -> None:
+    with pytest.raises(PolynomialDivisionError, match='Over rings more general than fields, we cannot determine whether the leading coefficient of a polynomial is invertible, so we require the polynomial to be monic'):
+        euclidean_divmod(z4x ** 2, 2 * z4x, 'x')
 
 
 @pytest_parametrize_kwargs(

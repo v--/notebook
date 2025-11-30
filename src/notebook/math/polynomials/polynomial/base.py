@@ -5,7 +5,7 @@ from typing import Any, Self, cast, override
 
 from ....support.iteration import string_accumulator
 from ...rings.types import IRing, ISemiring
-from ..exceptions import PolynomialEvaluationError
+from ..exceptions import PolynomialEvaluationError, ZeroPolynomialError
 from ..monomial import Monomial
 
 
@@ -39,6 +39,9 @@ class BasePolynomial[N: ISemiring](metaclass=PolynomialMeta):
 
     @property
     def total_degree(self) -> int | None:
+        if self.is_zero:
+            raise ZeroPolynomialError('The zero polynomial has undefined degree')
+
         return max((mon.total_degree for mon in self._coefficients.keys()), default=None)
 
     @property
@@ -147,6 +150,36 @@ class BasePolynomial[N: ISemiring](metaclass=PolynomialMeta):
                 term *= kwargs[indeterminate] ** mon[indeterminate]
 
             result += term
+
+        return result
+
+    def get_max_power(self, indet: str) -> int:
+        max_power = 0
+
+        for mon in self.get_monomials():
+            if indet in mon.get_indeterminates() and mon[indet] > max_power:
+                max_power = mon[indet]
+
+        return max_power
+
+    def get_degree(self, indet: str) -> int:
+        if self.is_zero:
+            raise ZeroPolynomialError('The zero polynomial has undefined degree')
+
+        return self.get_max_power(indet)
+
+    def leading_coefficient(self, indet: str) -> Self:
+        result = self.new_zero()
+
+        if self.is_zero:
+            return result
+
+        n = self.get_degree(indet)
+
+        for mon in self.get_monomials():
+            if mon[indet] == n:
+                new_mon = Monomial(**{ind: mon[ind] for ind in mon if ind != indet})
+                result[new_mon] = self[mon]
 
         return result
 

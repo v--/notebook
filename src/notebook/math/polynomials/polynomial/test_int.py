@@ -9,10 +9,7 @@ from .int import IntPolynomial, const, x, y, z, zero
 
 
 @pytest_parametrize_kwargs(
-    dict(pol=zero,            degree=None),
     dict(pol=const,           degree=0),
-    dict(pol=0 * const,       degree=None),
-    dict(pol=0 * x,           degree=None),
     dict(pol=x * y,           degree=2),
     dict(pol=2 * x ** 2,      degree=2),
     dict(pol=x * y * z,       degree=3),
@@ -20,6 +17,18 @@ from .int import IntPolynomial, const, x, y, z, zero
 )
 def test_total_degree(pol: IntPolynomial, degree: int) -> None:
     assert pol.total_degree == degree
+
+
+@pytest_parametrize_kwargs(
+    dict(pol=const,                                 indet='x', leading=const),
+    dict(pol=x ** 2,                                indet='x', leading=const),
+    dict(pol=x - 2 * x ** 2,                        indet='x', leading=-2 * const),
+    dict(pol=x * y,                                 indet='x', leading=y),
+    dict(pol=x * y,                                 indet='y', leading=x),
+    dict(pol=x ** 2 * y + 2 * (x ** 2) * z + x * y, indet='x', leading=y + 2 * z),
+)
+def test_leading_coefficient(pol: IntPolynomial, indet: str, leading: IntPolynomial) -> None:
+    assert pol.leading_coefficient(indet) == leading
 
 
 @pytest_parametrize_kwargs(
