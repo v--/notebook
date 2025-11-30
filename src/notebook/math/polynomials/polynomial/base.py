@@ -5,8 +5,9 @@ from typing import Any, Self, cast, override
 
 from ....support.iteration import string_accumulator
 from ...rings.types import IRing, ISemiring
-from ..exceptions import PolynomialEvaluationError, ZeroPolynomialError
+from ..exceptions import PolynomialError, PolynomialEvaluationError, ZeroPolynomialError
 from ..monomial import Monomial
+from .degree import UNDEFINED_POLYNOMIAL_DEGREE, PolynomialDegree
 
 
 class PolynomialMeta(type):
@@ -38,15 +39,31 @@ class BasePolynomial[N: ISemiring](metaclass=PolynomialMeta):
         self._coefficients = {}
 
     @property
-    def total_degree(self) -> int | None:
+    def total_degree(self) -> PolynomialDegree:
         if self.is_zero:
             raise ZeroPolynomialError('The zero polynomial has undefined degree')
 
-        return max((mon.total_degree for mon in self._coefficients.keys()), default=None)
+        return PolynomialDegree(
+            max((mon.total_degree for mon in self._coefficients.keys()), default=None)
+        )
 
     @property
     def is_zero(self) -> bool:
         return len(self._coefficients) == 0
+
+    def get_indeterminates(self) -> Sequence[str]:
+        return sorted({indet for mon in self._coefficients for indet in mon.get_indeterminates()})
+
+    def infer_inteterminate(self) -> str:
+        indeterminates = self.get_indeterminates()
+
+        if len(indeterminates) == 0:
+            raise PolynomialError('Cannot infer an indeterminate of a zero polynomial')
+
+        if len(indeterminates) > 1:
+            raise PolynomialError('Cannot infer an indeterminate of a multivariate polynomial')
+
+        return indeterminates[0]
 
     def get_monomials(self) -> Sequence[Monomial]:
         return list(self._coefficients.keys())
@@ -153,8 +170,14 @@ class BasePolynomial[N: ISemiring](metaclass=PolynomialMeta):
 
         return result
 
-    def get_max_power(self, indet: str) -> int:
+    def get_max_power(self, indet: str | None = None) -> int:
         max_power = 0
+
+        if self.is_zero:
+            return max_power
+
+        if indet is None:
+            indet = self.infer_inteterminate()
 
         for mon in self.get_monomials():
             if indet in mon.get_indeterminates() and mon[indet] > max_power:
@@ -162,19 +185,22 @@ class BasePolynomial[N: ISemiring](metaclass=PolynomialMeta):
 
         return max_power
 
-    def get_degree(self, indet: str) -> int:
+    def get_degree(self, indet: str | None = None) -> PolynomialDegree:
         if self.is_zero:
-            raise ZeroPolynomialError('The zero polynomial has undefined degree')
+            return UNDEFINED_POLYNOMIAL_DEGREE
 
-        return self.get_max_power(indet)
+        return PolynomialDegree(self.get_max_power(indet))
 
-    def leading_coefficient(self, indet: str) -> Self:
+    def leading_coefficient(self, indet: str | None = None) -> Self:
         result = self.new_zero()
 
         if self.is_zero:
             return result
 
-        n = self.get_degree(indet)
+        if indet is None:
+            indet = self.infer_inteterminate()
+
+        n = self.get_max_power(indet)
 
         for mon in self.get_monomials():
             if mon[indet] == n:

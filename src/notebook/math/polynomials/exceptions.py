@@ -5,6 +5,10 @@ class PolynomialError(NotebookMathError):
     pass
 
 
+class PolynomialDegreeError(NotebookMathError):
+    pass
+
+
 class PolynomialDivisionError(NotebookMathError):
     pass
 

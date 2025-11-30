@@ -66,9 +66,6 @@ class BaseIntModulo(metaclass=IntModuloMeta):
     def __int__(self) -> int:
         return self.value
 
-    def __str__(self) -> str:
-        return str(self.value)
-
     def __repr__(self) -> str:
         return type(self).__name__ + '(' + str(self.value) + ')'
 
