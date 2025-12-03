@@ -9,34 +9,28 @@
     g(X) = \sum_{k=0}^m b_k X^k.
   \end{align*}
 
-  Suppose that the leading coefficient \( b_m \) of \( g(X) \) is invertible. We will build polynomials \( q(X) \) and \( r(X) \), where \( r(X) \) is either zero or \( \deg r < \deg g = m \), such that
+  Suppose that the leading coefficient \( b_m \) of \( g(X) \) is invertible. We will build polynomials \( q(X) \) and \( r(X) \), where \( \deg r < \deg g = m \), such that
   \begin{equation*}
     f(X) = g(X) \cdot q(X) + r(X).
   \end{equation*}
 
   \Cref{thm:alg:euclidean_division_of_polynomials/unique} will demonstrate uniqueness of \( q(X) \) and \( r(X) \).
 
-  The algorithm will be used in \cref{thm:def:euclidean_domain/polynomials} to show that the polynomial algebra \( R[X] \) is a \hyperref[def:euclidean_domain]{Euclidean domain} when \( R \) is a field. Even more generally, we will reuse the Euclidean domain notation \( \quot(f, q) \) and \( \quot(f, g) \) for \( q(X) \) and \( r(X) \).
+  The algorithm will be used in \cref{thm:def:euclidean_domain/polynomials} to show that the polynomial algebra \( R[X] \) is a \hyperref[def:euclidean_domain]{Euclidean domain} when \( R \) is a field. Even more generally, we will reuse the Euclidean domain notation \( \quot(f, q) \) and \( \rem(f, g) \) for \( q(X) \) and \( r(X) \).
 
   \begin{thmenum}
-    \thmitem{alg:euclidean_division_of_polynomials/zero} If \( f(X) \) is the zero polynomial, let
-    \begin{align*}
-      q(X) \coloneqq 0_R, &&
-      r(X) \coloneqq 0_R.
-    \end{align*}
-
-    \thmitem{alg:euclidean_division_of_polynomials/no_division} Otherwise, if \( \deg f = n < m = \deg g \), let
+    \thmitem{alg:euclidean_division_of_polynomials/no_division} If \( \deg f < \deg g \), let
     \begin{align*}
       q(X) \coloneqq 0_R, &&
       r(X) \coloneqq f(X).
     \end{align*}
 
-    \thmitem{alg:euclidean_division_of_polynomials/division} Otherwise, \( \deg f = n \geq m = \deg g \). Let
+    \thmitem{alg:euclidean_division_of_polynomials/division} Otherwise, \( \deg f \geq \deg g \). In this case \( f(X) \) is nonzero. Let
     \begin{equation*}
       \widehat r(X) \coloneqq f(X) - (a_n / b_m) X^{n-m} \cdot g(X).
     \end{equation*}
 
-    We use the algorithm recursively to divide \( \widehat r(X) \) by \( g(X) \), and obtain \( \widehat q(X) \) and \( r(X) \), where \( r(X) \) is either zero or of lower degree than \( g \), such that
+    We use the algorithm recursively to divide \( \widehat r(X) \) by \( g(X) \), and obtain \( \widehat q(X) \) and \( r(X) \), where \( r(X) \) is of lower degree than \( g \), such that
     \begin{equation*}
       \widehat r(X) = g(X) \cdot \widehat q(X) + r(X).
     \end{equation*}
@@ -55,22 +49,21 @@
   \end{thmenum}
 \end{algorithm}
 \begin{comments}
-  \item In accordance with \cref{def:euclidean_domain}, we denote \( q(X) \) and \( r(X) \) by \( \quot(f, g) \) and \( \rem(f, g) \).
   \item This algorithm can be found as \identifier{math.polynomials.euclidean_divmod} in \cite{notebook:code}.
 \end{comments}
 \begin{defproof}
-  We only need to show that the algorithm terminates. This is clear if \( f(X) \) is zero. Otherwise, we will do this by induction on the degree \( n \) of \( f(X) \).
+  Via induction on \( n \), we will show that the algorithm terminates.
 
   \begin{itemize}
     \item If \( n = 0 \), either \( m > 0 \) and the algorithm terminates at \cref{alg:euclidean_division_of_polynomials/no_division}, or \( m = 0 \) and we use the recursive step \cref{alg:euclidean_division_of_polynomials/division}.
 
-    In the latter case, \( \widehat r(X) \) evaluates to \( 0_R \), so the recursive application uses \cref{alg:euclidean_division_of_polynomials/zero} and then the algorithm terminates.
+    In the latter case, \( \widehat r(X) \) evaluates to \( 0_R \), so the recursive application uses \cref{alg:euclidean_division_of_polynomials/no_division} and then the algorithm terminates.
 
     \item Suppose that \( n > 0 \) and that the inductive hypothesis holds for \( n - 1 \).
 
     Again, we use either \cref{alg:euclidean_division_of_polynomials/no_division} or the recursive step \cref{alg:euclidean_division_of_polynomials/division}.
 
-    In the latter case, to use the inductive hypothesis, we only need to show that \( \widehat r(X) \) is either zero or has degree lower than \( n \). Let
+    In the latter case, to use the inductive hypothesis, we only need to show that \( \widehat r(X) \) has degree lower than \( n \). Let
     \begin{align*}
       \widehat f(X) &\coloneqq f(X) - a_n X^n, \\
       \widehat g(X) &\coloneqq g(X) - b_m X^m.
@@ -78,27 +71,29 @@
 
     Clearly \( \deg \widehat f < n \) and \( \deg \widehat g < m \). Moreover,
     \begin{equation*}
-      \widehat r(X) = \widehat f(X) - (a_n / b_m) X^{n-m} \cdot \widehat g(X).
+      \widehat r(X)
+      =
+      f(X) - (a_n / b_m) X^{n-m} \cdot g(X)
+      =
+      \widehat f(X) - (a_n / b_m) X^{n-m} \cdot \widehat g(X).
     \end{equation*}
 
-    If \( \widehat r(X) \) is not zero, then
-    \begin{equation*}
-      \deg \widehat r
-      \reloset {\eqref{eq:thm:univariate_polynomial_sum/degree}} \leq
-      \max\set{ \deg \widehat f, n - 1 }
-      =
-      n - 1
-    \end{equation*}
-    because
+    \Cref{thm:univariate_polynomial_sum} implies that
     \begin{equation*}
       \deg\parens[\big]{ (a_n / b_m) X^{n-m} \cdot \widehat g(X) }
-      \reloset {\eqref{eq:thm:univariate_polynomial_product/degree}} =
-      (n - m) + \deg \widehat g
-      \leq
-      (n - m) + (m - 1)
       =
-      n - 1.
+      \deg X^{n - m} + \deg \widehat g
+      <
+      (n - m) + m
+      =
+      n,
     \end{equation*}
+    hence
+    \begin{equation*}
+      \deg \widehat r = \max\set{ \deg \widehat f, \deg \widehat g } < n.
+    \end{equation*}
+
+    Then the inductive hypothesis is applicable to \( \deg \widehat r \).
   \end{itemize}
 \end{defproof}
 
@@ -107,13 +102,13 @@
 
   These quotients and remainders have the following basic properties:
   \begin{thmenum}
-    \thmitem{thm:alg:euclidean_division_of_polynomials/unique} They are unique in the following sense: if \( f = q \cdot g + r \), where \( r \) is either zero or \( \deg r < \deg g \), then \( r = \rem(f, g) \) and \( q = \quot(f, g) \).
+    \thmitem{thm:alg:euclidean_division_of_polynomials/unique} They are unique in the following sense: if \( f = q \cdot g + r \), where \( \deg r < \deg g \), then \( r = \rem(f, g) \) and \( q = \quot(f, g) \).
 
     \thmitem{thm:alg:euclidean_division_of_polynomials/linear} Both functions \( \rem(\anon*, g) \) and \( \quot(\anon*, g) \) are \hyperref[def:linear_function]{linear}.
 
     \thmitem{thm:alg:euclidean_division_of_polynomials/rem_zeros} The kernel of \( \rem(\anon*, g) \) is the ideal \( \braket{ g(X) } \).
 
-    \thmitem{thm:alg:euclidean_division_of_polynomials/quot_zeros} The kernel of \( \quot(\anon*, g) \) and the set of \hyperref[def:function_fixed_point]{fixed points} of \( \rem(\anon*, g) \) coincide.
+    \thmitem{thm:alg:euclidean_division_of_polynomials/quot_zeros} The kernel of \( \quot(\anon*, g) \) and the f\hyperref[def:fol_fixed_point_substructure]{fixed point subspace} of \( \rem(\anon*, g) \) coincide.
 
     We will show in \cref{thm:truncated_polynomial_algebra/quot_zeros} that both sets coincide with the \hyperref[def:truncated_polynomial_module]{truncated polynomial module} \( \Pi_{n-1}(R[X]) \).
   \end{thmenum}
@@ -124,28 +119,21 @@
     [\rem(f, g) - r] = -[\quot(f, g) - q] \cdot g.
   \end{equation}
 
-  If either \( \quot(f, g) - q \) or \( \rem(f, g) - r \) is nonzero, both are nonzero. Indeed, if \( \quot(f, g) - q \) is nonzero, \cref{thm:univariate_polynomial_product/invertible_leading} implies that \( \rem(f, g) - r \) is. Conversely, if \( \rem(f, g) - r \) is nonzero, \cref{thm:univariate_polynomial_product/degree} implies that \( \quot(f, g) - q \) is nonzero.
-
-  In such case, \cref{thm:univariate_polynomial_product/degree} implies that
+  \Cref{thm:univariate_polynomial_product/degree} implies that
   \begin{equation*}
     \deg(\rem(f, g) - r) = \deg(\quot(f, g) - q) + \deg g.
   \end{equation*}
 
-  In particular, \( \deg(\rem(f, g) - r) \geq \deg g \).
+  \Cref{thm:univariate_polynomial_sum/degree} implies that
+  \begin{equation*}
+    \deg(\rem(f, g) - r) \leq \underbrace{\max\set{ \deg \rem(f, g), \deg r }}_{< \deg g},
+  \end{equation*}
+  so
+  \begin{equation*}
+    \deg(\quot(f, g) - q) + \deg g < \deg g.
+  \end{equation*}
 
-  \begin{itemize}
-    \item If \( r \) is zero, then \( \rem(f, g) - r = \rem(f, g) \) and thus \( \deg g \leq \deg \rem(f, g) \). But we have assumed that \( \deg \rem(f, g) < \deg g \), which is a contradiction.
-
-    \item Otherwise, if \( \rem(f, g) \) is zero, we similarly derive a contradiction.
-
-    \item If both \( \rem(f, g) \) and \( r \) are nonzero, \cref{thm:univariate_polynomial_sum/degree} implies that
-    \begin{equation*}
-      \deg(\rem(f, g) - r) \leq \underbrace{\max\set{ \deg \rem(f, g), \deg r }}_{< \deg g},
-    \end{equation*}
-    which is again a contradiction.
-  \end{itemize}
-
-  The obtained contradictions show that both \( \rem(f, g) - r \) and \( \quot(f, g) - q \) are zero.
+  This is only possible if the left side is \( -\infty \), which happens precisely when \( \quot(f, g) - q \) is the zero polynomial. Hence, \( \rem(f, g) - r \) is also zero.
 
   \SubProofOf{thm:alg:euclidean_division_of_polynomials/linear}
 
@@ -154,7 +142,7 @@
     f + p = \parens[\big]{ \quot(f, g) + \quot(p, g) } \cdot g + \parens[\big]{ \rem(f, g) + \rem(p, g) }.
   \end{equation*}
 
-  The sum \( \rem(f, g) + \rem(p, g) \) is either zero or has degree less than \( n \), so the uniqueness shown in \cref{thm:alg:euclidean_division_of_polynomials/unique} implies that \( \rem(f + p, g) = \rem(f, g) + \rem(p, g) \).
+  The sum \( \rem(f, g) + \rem(p, g) \) has degree less than \( n \), so the uniqueness shown in \cref{thm:alg:euclidean_division_of_polynomials/unique} implies that \( \rem(f + p, g) = \rem(f, g) + \rem(p, g) \).
 
   We similarly conclude that \( \quot(f + p, g) = \quot(f, g) + \quot(p, g) \).
 
@@ -165,13 +153,34 @@
   Conversely, if \( \rem(f, g) \) is zero, then \( f = \quot(f, g) \cdot g \), hence \( f \) belongs to \( \braket{ g(X) } \).
 
   \SubProofOf{thm:alg:euclidean_division_of_polynomials/quot_zeros}
-  \SufficiencySubProof* If \( f(X) \) is a fixed point of \( \rem(\anon*, g) \), then
+  \SufficiencySubProof* If \( f \) is a fixed point of \( \rem(\anon*, g) \), then
   \begin{equation*}
     f = \quot(f, g) \cdot g + f,
   \end{equation*}
-  hence \( \quot(f, g) \cdot g \) is zero. Because \( g \) is nonzero, \cref{thm:univariate_polynomial_product/invertible_leading} implies that \( \quot(f, g) \) must be zero.
+  hence \( \quot(f, g) \cdot g \) is zero. Because \( g \) is invertible, \( \quot(f, g) \) must be zero since otherwise we would contradict \cref{thm:univariate_polynomial_product/invertible_leading}.
 
   \NecessitySubProof* If \( f \) is in the kernel of \( \quot(\anon*, g) \), then \( \quot(f, g) \) is zero, and obviously \( f = \rem(f, g) \).
+\end{proof}
+
+\begin{theorem}[Polynomial remainder theorem]\label{thm:polynomial_remainder_theorem}\mcite[corr. 2.1]{Jacobson1985BasicAlgebraI}
+  Over a nontrivial commutative ring, for any univariate polynomial \( f(X) \) and any value \( \alpha \) we have
+  \begin{equation}\label{eq:thm:polynomial_remainder_theorem}
+    f(X) = (X - \alpha) \cdot \quot(f, X - \alpha) + f(\alpha).
+  \end{equation}
+\end{theorem}
+\begin{proof}
+  The uniqueness of remainders from \cref{thm:alg:euclidean_division_of_polynomials/unique} implies that \( \rem(f, X - \alpha) = f(\alpha) \).
+\end{proof}
+
+\begin{theorem}[Polynomial factor theorem]\label{thm:polynomial_factor_theorem}\mcite[corr. 2.2]{Jacobson1985BasicAlgebraI}
+  Over a nontrivial commutative ring, \( \alpha \) is a \hyperref[def:polynomial_root]{root} of the univariate polynomial \( f(X) \) if and only if \( (X - \alpha) \) divides \( f(X) \).
+\end{theorem}
+\begin{comments}
+  \item This is a special case of the equivalence of definitions of multiple roots in \cref{def:polynomial_root_multiplicity}.
+  \item A much stronger theorem holds in \hyperref[def:gcd_domain]{GCD domains} --- see \fullref{thm:polynomial_factorization_via_roots}.
+\end{comments}
+\begin{proof}
+  Follows directly from \cref{thm:polynomial_remainder_theorem}.
 \end{proof}
 
 \paragraph{Horner's rule}
@@ -184,7 +193,7 @@
     g(X) = X + b.
   \end{align*}
 
-  The coefficients of the quotient of \( f(X) \) and \( g(X) \) with respect to \fullref{alg:euclidean_division_of_polynomials} can be computed recursively as follows:
+  The coefficients of the quotient of \( f \) and \( g \) with respect to \fullref{alg:euclidean_division_of_polynomials} can be computed recursively as follows:
   \begin{equation}\label{eq:alg:horners_rule/quot}
     c_{n-k} \coloneqq \begin{cases}
       a_n,                              &k = 1 \\
@@ -192,7 +201,7 @@
     \end{cases}
   \end{equation}
 
-  Furthermore, \( r(X) \) is a constant that equals
+  Furthermore, \( \rem(f, g) \) is a constant polynomial that equals
   \begin{equation}\label{eq:alg:horners_rule/rem}
     c_{-1} = a_0 - b \cdot c_0.
   \end{equation}
@@ -201,16 +210,9 @@
   \item This algorithm can be found as \identifier{math.polynomials.division.horner_divmod} in \cite{notebook:code}.
 \end{comments}
 \begin{proof}
-  Denote the quotient by
-  \begin{equation*}
-    q(X) = \sum_{k=0}^{n-1} c_k X^k.
-  \end{equation*}
+  Since \( \deg \rem(f, g) < \deg g = 1 \), the remainder is obviously constant.
 
-  We have
-  \begin{equation*}
-    f(X) = g(X) \cdot q(X) + r(X),
-  \end{equation*}
-  from where, for every \( k > 0 \),
+  Let \( c_k \) be the \( k \)-th coefficient of \( \quot(f, g) \). For every \( k > 0 \), we have
   \begin{equation*}
     a_k = c_{k-1} + b \cdot c_k,
   \end{equation*}
@@ -218,7 +220,7 @@
 
   Furthermore,
   \begin{equation*}
-    r(X) = a_0 - b \cdot c_0,
+    \rem(f, g) = a_0 - b \cdot c_0,
   \end{equation*}
   which demonstrates \eqref{eq:alg:horners_rule/rem}.
 \end{proof}
@@ -226,54 +228,21 @@
 \begin{remark}\label{rem:alg:horners_rule}
   The phrase \enquote{Horner's rule} is ambiguous.
 
-  \incite{Horner1819SolvingNumericalEquations} describes a method for solving equations. Variations of method are described by \incite[144]{Курош1968КурсВысшейАлгебры}, \incite[97]{Винберг2014КурсАлгебры} and \incite[209]{Кострикин2000АлгебраЧасть1} as \enquote{схема Горнера} (\enquote{Horner's scheme}) and \incite[\S III.V.2]{Обрешков1962ВисшаАлгебра} as \enquote{правилото на Хорнер} (\enquote{Horner's rule}). We roughly follow their discussion in \fullref{alg:horners_rule}.
+  \incite{Horner1819SolvingNumericalEquations} describes a method for solving \hyperref[def:polynomial_equation]{algebraic equations}. Variations of his method are described in \cite[144]{Курош1968КурсВысшейАлгебры}, \cite[97]{Винберг2014КурсАлгебры} and \cite[209]{Кострикин2000АлгебраЧасть1} as \enquote{схема Горнера} (\enquote{Horner's scheme}) and in \cite[\S III.V.2]{Обрешков1962ВисшаАлгебра} as \enquote{правилото на Хорнер} (\enquote{Horner's rule}). We roughly follow their discussion in \fullref{alg:horners_rule}.
 
   On the other hand, \incite[486]{Knuth1997ArtVol2} calls \enquote{Horner's rule} the representation
   \begin{equation}\label{eq:rem:alg:horners_rule/knuth}
     f(X) = \sum_{k=0}^n a_k X^k = a_0 + X (a_1 + \cdots + X(a_{n-1} + X a_n) + \cdots),
   \end{equation}
-  considered from the point of view of computational complexity --- at allows computing \( f(\alpha) \) via \( n \) multiplications and \( n \) additions, while direct evaluation requires  \( {n(n+1)} / 2 \) multiplications and \( n \) additions.
+  considered from the point of view of computational complexity --- at allows computing \( f(x) \) via \( n \) multiplications and \( n \) additions, while direct evaluation requires  \( {n(n+1)} / 2 \) multiplications and \( n \) additions.
 
   \incite[exerc. 3.3.14]{Rosen2019DiscreteMathematics} calls this procedure \enquote{Horner's method}.
 \end{remark}
 
-\paragraph{\( n \)-th roots}
-
-\begin{definition}\label{def:nth_root}\mimprovised
-  In a \hyperref[def:ring/commutative]{commutative ring}, for \( n \geq 2 \), we say that an element is an \term{\( n \)-th root} of \( a \) if it is a \hyperref[def:polynomial_root]{polynomial root} of \( X^n - a \).
-
-  We use the prefixes from the polynomial degree terminology described in \cref{def:polynomial_degree_terminology}, with one modification --- instead of \enquote{quadratic root}, we say \enquote{square root}.
-
-  If \( b \) is a square root (resp. cubic root) of \( a \), we say that \( a \) is a \term{square} (resp. \term{cube}) of \( b \).
-\end{definition}
-\begin{comments}
-  \item In the case of positive \hyperref[def:real_numbers]{real numbers}, we have a canonical choice of \( n \)-th roots given by \cref{def:principal_nonnegative_nth_root}, where we use the notation \( \sqrt[n]{ x } \). We also have such a canonical choice for square roots of negative real numbers --- see \cref{def:principal_real_square_root}.
-\end{comments}
-
-\begin{remark}\label{rem:root_terminology}
-  The term \enquote{root} has several distinct (but related) meanings:
-  \begin{itemize}
-    \item The \( n \)-th root in the sense of \cref{def:nth_root}. The discussion in \cite{HSMSE:radical_symbol_history} suggests that this is the origin of the terms \enquote{root} and \enquote{radical}, based on the Latin \enquote{radix}.
-
-    There is inherent ambiguity in picking \enquote{the} root, since there may be many. For positive real numbers we have an established canonical choice of \( n \)-th roots, which we call \enquote{principal roots}, and for negative real numbers --- of square roots.
-
-    \item The \hyperref[def:equation_solution]{solutions} of an \hyperref[def:algebraic_equation]{algebraic equation} are also called \enquote{roots}. An explicit definition with this usage can be found in \incite[2]{Обрешков1962ВисшаАлгебра}.
-
-    As noted in \cref{def:algebraic_equation}, polynomials naturally arise from equations on rings, thus it makes sense for this usage to predate polynomials.
-
-    \item From a modern perspective, both are encompassed by roots of polynomials as defined in \cref{def:polynomial_root}. Roots are zeros in the sense of \cref{def:zero_of_function} of a fixed polynomial function. For \hyperref[def:univariate_polynomial]{univariate polynomials}, \cref{def:polynomial_root_multiplicity} provides a characterization in terms of divisibility, as well as a concept of \enquote{multiplicity} of a root.
-
-    A \enquote{root} is defined as a zero of a univariate polynomial by
-    \incite[282]{Aluffi2009Algebra},
-    \incite[11]{Knapp2016BasicAlgebra} and
-    \incite[119]{Тыртышников2017ОсновыАлгебры}.
-  \end{itemize}
-\end{remark}
-
 \paragraph{Multiple roots}
 
-\begin{definition}\label{def:algebraic_derivative}\mcite[461]{Knapp2016BasicAlgebra}
-  Generalizing \cref{def:differentiability} from analysis, we define the \term[ru=производная (\cite[163]{Тыртышников2017ОсновыАлгебры})]{algebraic derivative} of a univariate polynomial
+\begin{definition}\label{def:algebraic_derivative}\mcite[434]{Aluffi2009Algebra}
+  Generalizing \cref{def:differentiability} from analysis, we define the \term[ru=производная (\cite[163]{Тыртышников2017ОсновыАлгебры}), en=derivative (\cite[434]{Aluffi2009Algebra})]{algebraic derivative} of a univariate polynomial
   \begin{equation*}
     f(X) = \sum_{k=0}^n a_k X^k = a_n X^n + a_{n-1} X^{n-1} + \cdots + a_2 X^2 + a_1 X + a_0
   \end{equation*}
@@ -282,7 +251,7 @@
     f'(X) \coloneqq \sum_{k=1}^n k a_k X^{k-1} = n a_n X^{n-1} + (n-1) a_{n-1} X^{n-2} + \cdots + a_2 X + a_1.
   \end{equation*}
 
-  Via \fullref{thm:omega_recursion}, we can define algebraic derivatives of order \( m \) as
+  Via \fullref{thm:omega_recursion}, we can extend algebraic derivatives to order \( m \) as
   \begin{equation*}
     f^{(m)}(X) \coloneqq \begin{cases}
       f(X)                             &m = 0 \\
@@ -318,10 +287,10 @@
 
   \SubProofOf{thm:def:algebraic_derivative/degree} Trivial.
 
-  \SubProofOf{thm:def:algebraic_derivative/product} By \cref{thm:def:algebraic_derivative/linear}, it is enough to consider the case where both \( f(X) \) and \( g(X) \) are monomials.
+  \SubProofOf{thm:def:algebraic_derivative/product} Due to the linearity shown in \cref{thm:def:algebraic_derivative/linear}, it is enough to consider the case where both \( f \) and \( g \) are monomials.
 
   \begin{align*}
-    f'(X) g(X) + f(X) g'(X)
+    f' g + f g'
     &=
     n a_n X^{n-1} \cdot b_m X^m + a_n X^n \cdot m b_m X^{m-1}
     = \\ &=
@@ -371,9 +340,6 @@
 
   Every polynomial \( f(X) \) has a \hyperref[def:multiset]{multiset} of roots. If at least one of them has multiplicity greater than one, we say that it is a \term[bg=многократен (корен) (\cite[171]{Обрешков1962ВисшаАлгебра}), ru=кратный (корень) (\cite[163]{Тыртышников2017ОсновыАлгебры}), en=multiple root (\cite[229]{Jacobson1985BasicAlgebraI})]{multiple root}, otherwise we say that it is a \term[bg=прост корен (\cite[171]{Обрешков1962ВисшаАлгебра}), ru=простой корень (\cite[163]{Тыртышников2017ОсновыАлгебры}), en=simple root (\cite[229]{Jacobson1985BasicAlgebraI})]{simple root}.
 \end{definition}
-\begin{comments}
-  \item This is an extension of the general concept of polynomial roots discussed in \cref{def:polynomial_root}.
-\end{comments}
 \begin{defproof}
   \ImplicationSubProof{def:polynomial_root_multiplicity/division}{def:polynomial_root_multiplicity/derivative_roots} Suppose that \( (X - \alpha)^m \) divides \( f(X) \). Then there exists a polynomial \( g(X) \) such that
   \begin{equation*}
@@ -413,33 +379,23 @@
 
   All terms on the right are zero except for the case where \( k = m - 1 \), where \( g^{(0)} = g \) and the entire expression reduces to \( \Phi_\alpha(g) \). The scalar \( \alpha \) is a root of \( f^{(m-1)} \), implying that it is also a root of \( g \).
 
-  We use \fullref{alg:euclidean_division_of_polynomials} to obtain a polynomial \( s(X) \) and a constant polynomial \( r(X) = r_0 \) so that
+  We have
   \begin{equation*}
-    g(X) = (X - \alpha) s(X) + r_0.
+    g(X) = (X - \alpha) \cdot \quot(g, X - \alpha) + \rem(g, X - \alpha).
   \end{equation*}
 
-  Since \( \Phi_\alpha(g) = 0_R \), then necessarily \( r_0 = 0_R \). Therefore,
+  Since \( \Phi_\alpha(g) = 0_R \), the remainder is necessarily zero. Therefore,
   \begin{equation*}
-    f(X) = (X - \alpha)^{m-1} g(X) = (X - \alpha)^m s(X).
+    f(X) = (X - \alpha)^{m-1} \cdot g(X) = (X - \alpha)^m \cdot \quot(g, X - \alpha).
   \end{equation*}
 \end{defproof}
-
-\begin{theorem}[Polynomial factor theorem]\label{thm:polynomial_factor_theorem}\mcite[corr. 2.2]{Jacobson1985BasicAlgebraI}
-  Over a nontrivial commutative ring, the value \( \alpha \) is a \hyperref[def:polynomial_root]{root} of the univariate polynomial \( f(X) \) if and only if \( (X - \alpha) \) divides \( f(X) \).
-\end{theorem}
-\begin{comments}
-  \item A much stronger theorem holds in \hyperref[def:gcd_domain]{GCD domains} --- see \fullref{thm:polynomial_factorization_via_roots}.
-\end{comments}
-\begin{proof}
-  Special case of the equivalence of definitions in \cref{def:polynomial_root_multiplicity}.
-\end{proof}
 
 \paragraph{Truncated polynomial modules}
 
 \begin{definition}\label{def:truncated_polynomial_algebra}\mimprovised
-  Corresponding to the \hyperref[def:polynomial_algebra]{polynomial algebra} \( R[X] \) (over an arbitrary commutative semiring), we define the \term{truncated polynomial module} of degree \( d \) as the \( R \)-submodule
+  Corresponding to the \hyperref[def:polynomial_algebra]{polynomial algebra} \( R[X] \) (over an arbitrary commutative semiring), we define the \term{truncated polynomial module} of degree \( d \) as the \( R \)-submodule of polynomials of degree at most \( d \), i.e. the linear span
   \begin{equation*}
-    \Pi_d(R[X]) \coloneqq \lin\set{ 1, X, X^2, \ldots, X^d }
+    \Pi_d(R[X]) \coloneqq \lin\set{ 1, X, X^2, \ldots, X^d }.
   \end{equation*}
 
   In a nontrivial commutative ring, by the argumentation in \cref{ex:def:hamel_basis/polynomial_algebra}, the monomials \( 1, X, \ldots, X^d \) form a \hyperref[def:hamel_basis]{Hamel basis} of \( \Pi_d(R[X]) \). Furthermore, due to the isomorphism in \cref{thm:truncated_polynomial_algebra/isomorphism}, we identify \( \Pi_d(R[X]) \) with the \hyperref[def:algebra_over_ring/quotient]{quotient algebra} \( R[X] / \braket{ X^{d+1} } \).
@@ -451,7 +407,7 @@
   We will now develop a correspondence between the \hyperref[def:algebra_over_ring/quotient]{quotient algebra} \( R[X] / \braket{ g(X) } \) and the \hyperref[def:truncated_polynomial_algebra]{truncated polynomial module} \( \Pi_{n-1}(R[X]) \).
 
   \begin{thmenum}
-    \thmitem{thm:truncated_polynomial_algebra/quot_zeros} The kernel of \( \quot(\anon*, g) \) and the set of fixed points of \( \rem(\anon*, g) \) both coincide with \( \Pi_{n-1}(R[X]) \).
+    \thmitem{thm:truncated_polynomial_algebra/quot_zeros} The kernel of \( \quot(\anon*, g) \) and the \hyperref[def:fol_fixed_point_substructure]{fixed point subspace} of \( \rem(\anon*, g) \) both coincide with \( \Pi_{n-1}(R[X]) \).
 
     \thmitem{thm:truncated_polynomial_algebra/principal} For every coset \( [f] \) in \( R[X] / \braket{ g(X) } \), we have
     \begin{equation*}
@@ -474,11 +430,11 @@
   \end{thmenum}
 \end{proposition}
 \begin{proof}
-  \SubProofOf{thm:truncated_polynomial_algebra/quot_zeros} \Cref{thm:alg:euclidean_division_of_polynomials/quot_zeros} implies that the zeros of \( \quot(\anon*, g) \) coincide with the fixed points of \( \rem(\anon*, g) \). We will now show that \( \rem(p, g) = r \) if and only if \( r \) is in \( \Pi_{n-1}(R[X]) \).
+  \SubProofOf{thm:truncated_polynomial_algebra/quot_zeros} \Cref{thm:alg:euclidean_division_of_polynomials/quot_zeros} implies that the zeros of \( \quot(\anon*, g) \) coincide with the fixed points of \( \rem(\anon*, g) \). We will now show that \( \rem(r, g) = r \) if and only if \( r \) is in \( \Pi_{n-1}(R[X]) \).
 
-  \SufficiencySubProof* Suppose that \( \rem(r, g) = r \). Then \( r \) is either zero or \( \deg r < n \). In both cases, \( r \) is in \( \Pi_{n-1}(R[X]) \).
+  \SufficiencySubProof* Suppose that \( \rem(r, g) = r \). Then \( \deg r < n \). In both cases, \( r \) is in \( \Pi_{n-1}(R[X]) \).
 
-  \NecessitySubProof* If \( r \in \Pi_{n-1}(R[X]) \), then division must use either \cref{alg:euclidean_division_of_polynomials/zero} or \cref{alg:euclidean_division_of_polynomials/no_division}. In both cases, \( \rem(r, g) = r \).
+  \NecessitySubProof* If \( r \in \Pi_{n-1}(R[X]) \), then division must use \cref{alg:euclidean_division_of_polynomials/no_division}, which defines \( \rem(r, g) \) as \( r \).
 
   \SubProofOf{thm:truncated_polynomial_algebra/principal} Fix a polynomial \( r \) that is both in \( [f] \) and \( \Pi_{n-1}(R[X]) \).
 
@@ -536,13 +492,11 @@
   \end{equation*}
   thus \( [f] = [p] \).
 
-  \SubProofOf[def:function_invertibility/surjective/existence]{surjectivity} Fix a polynomial \( r \) in \( \Pi_{n-1}(R[X]) \).
-
-  \Cref{thm:truncated_polynomial_algebra/quot_zeros} implies that \( \rem(r, g) = r \), so \( [r] \) is the desired preimage.
+  \SubProofOf[def:function_invertibility/surjective/existence]{surjectivity} For a polynomial \( r \) in \( \Pi_{n-1}(R[X]) \).,\cref{thm:truncated_polynomial_algebra/quot_zeros} implies that \( \rem(r, g) = r \), so \( [r] \) is the desired preimage.
 
   \SubProofOf[def:linear_function]{linearity} Follows from \cref{thm:alg:euclidean_division_of_polynomials/linear}.
 
-  \SubProof{Proof that the isomorphism \hyperref[def:algebra_over_ring/homomorphism]{preserves multiplication}} We have
+  \SubProof{Proof that the supposed isomorphism \hyperref[def:algebra_over_ring/homomorphism]{preserves multiplication}} We have
   \begin{equation*}
     fp = \quot(fp, g) \cdot g + \rem(fp, g)
   \end{equation*}
