@@ -4,6 +4,7 @@ from datetime import datetime
 
 from .....bibtex.author import BibAuthor
 from .....bibtex.entry import BibEntry
+from .....bibtex.string import BibString, VerbatimString
 from .....support.iteration import string_accumulator
 from ...exceptions import BibToolsParsingError
 from ..common.dates import to_iso_date
@@ -37,7 +38,7 @@ def stackexchange_entry_to_bib(entry: StackExchangeEntry, identifier: str) -> Bi
     if entry.site not in SITE_ENTRY_PREFIX_MAP:
         raise BibToolsParsingError(f'Cannot generate an entry name for {entry.site!r} because we do not have a dedicated prefix.')
 
-    author_name = entry.author_username if len(entry.author_username.split()) > 1 else f"User ``{entry.author_username}''"
+    author_name: BibString = entry.author_username if len(entry.author_username.split()) > 1 else VerbatimString(f"User ``{entry.author_username}''")
 
     return BibEntry(
         entry_type='online',

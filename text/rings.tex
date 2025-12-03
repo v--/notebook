@@ -460,29 +460,144 @@
 
     \thmitem{ex:def:ring_characteristic/integers_modulo} The ring \hyperref[def:ring_of_integers_modulo]{\( \BbbZ_n \)} of integers modulo \( n \) has characteristic \( \op{char}(\BbbZ_n) = n \) because of \cref{thm:integers_modulo_isomorphic_to_quotient_group}.
 
-    \thmitem{ex:def:ring_characteristic/polynomial_ring} An \hyperref[def:algebra_over_semiring]{algebra} \( M \) over a commutative unital ring \( R \) has the same characteristic as \( R \) because of the canonical embedding of \( R \) in \( M \). In particular, the \hyperref[def:polynomial_algebra]{polynomial ring} \( R[X] \) has the same characteristic as its ring.
+    \thmitem{ex:def:ring_characteristic/polynomial_ring} An \hyperref[def:algebra_over_semiring]{algebra} \( M \) over a commutative unital ring \( R \) has the same characteristic as \( R \) because of the canonical embedding of \( R \) in \( M \). In particular, the \hyperref[def:polynomial_algebra]{polynomial algebra} \( R[X] \) has the same characteristic as its ring.
 
     \thmitem{ex:def:ring_characteristic/boolean_ring} \Cref{thm:boolean_ring_characteristic} implies that the characteristic of a \hyperref[def:boolean_ring]{Boolean ring} is \( 2 \).
   \end{thmenum}
 \end{example}
 
+\paragraph{Algebraic equations}
+
+\begin{algorithm}[Logical term to integer polynomial]\label{alg:logical_term_to_integer_polynomial}
+  Fix a \hyperref[def:fol_term]{logical term} \( \tau \) from the first-order logical theory of rings described in \cref{def:ring/theory}.
+
+  Fix a \hyperref[def:fol_variable_assignment]{variable assignment} \( v \) into the \hyperref[def:integers]{ring of integers} \( \BbbZ \). We will build a \hyperref[def:polynomial_algebra/polynomials]{polynomial} \( f_\tau \) over \( R \), whose indeterminates are the variables of \( \tau \), and such that the denotation \( \Bracks{ \tau }_R^v \), as defined in \cref{def:fol_denotation/terms_parametrized}, coincides with the evaluation \( \Phi_v(f_\tau) \) given by \fullref{thm:polynomial_algebra_universal_property}.
+
+  The construction itself is quite straightforward:
+  \begin{equation}\label{eq:alg:logical_term_to_polynomial}
+    f_\tau \coloneqq \begin{cases}
+      \tau,                &\tau \in \op*{Var},          \\
+      0,                   &\tau = \syn0,                \\
+      1,                   &\tau = \syn1,                \\
+      -f_\sigma,           &\tau = \synminus \sigma,     \\
+      f_\tau + f_\rho,     &\tau = \sigma \synplus \rho, \\
+      f_\tau \cdot f_\rho, &\tau = \sigma \syncdot \rho.
+    \end{cases}
+  \end{equation}
+\end{algorithm}
+\begin{comments}
+  \item For the theory of semirings, we instead obtain polynomials over the \hyperref[def:natural_numbers]{semiring of natural numbers}.
+  \item This algorithm can be found as \identifier{math.logic.theories.semirings.term_to_polynomial.term_to_polynomial} in \cite{notebook:code}.
+\end{comments}
+\begin{defproof}
+  That \( \Phi_v(f_\tau) \) equals \( \Bracks{ \tau }_R^v \) becomes obvious once we note that \( \Phi_v \) preserves sums and products.
+\end{defproof}
+
+\begin{algorithm}[Integer polynomial to logical term]\label{alg:integer_polynomial_to_logical_term}
+  Conversely to \fullref{alg:logical_term_to_integer_polynomial}, given a finite set \( \mscrX \) of indeterminates, for every polynomial \( f(\mscrX) \) over the \hyperref[def:integers]{ring of integers} \( \BbbZ \), we can build a \hyperref[def:fol_term]{logical term} \( \tau_f \) in the \hyperref[def:ring/theory]{first-order theory of rings} such that, for any assignment \( v \), the denotation \( \Bracks{ \tau_f }_R^v \) equals the evaluation \( \Phi_v(f) \).
+
+  \begin{thmenum}
+    \thmitem{alg:integer_polynomial_to_logical_term/number} First, we convert a nonnegative integer \( k \) to a term as follows:
+    \begin{equation}\label{eq:alg:logical_term_to_polynomial/number}
+      \tau_k \coloneqq \begin{cases}
+        \syn0,                     &k = 0, \\
+        \syn1,                     &k = 1, \\
+        \syn1 \synplus \tau_{k-1}, &k > 1, \\
+        \synminus \tau_{k-1},      &k < 0.
+      \end{cases}
+    \end{equation}
+
+    \thmitem{alg:integer_polynomial_to_logical_term/monomial} For a monomial \( \mscrX^\nu = X_1^{\nu_1} \cdots X_n^{\nu_n} \), we proceed as follows:
+    \begin{equation}\label{eq:alg:logical_term_to_polynomial/monomial}
+      \tau_{\mscrX^\nu} \coloneqq \begin{cases}
+        \syn1,                                                                     &\nu_1 = \cdots = \nu_n = 0, \\
+        X_k,                                                                       &\nu_k = 1 \T{and} \nu_i = 0 \T{for all} i \neq k, \\
+        X_k \syncdot \tau_{X_1^{\nu_1} \cdots X_k^{\nu_k - 1} \cdots X_n^{\nu_n}}, &\T{otherwise if} \nu_k > 0 \T{and} \nu_i = 0 \T{for all} i < k.
+      \end{cases}
+    \end{equation}
+
+    \thmitem{alg:integer_polynomial_to_logical_term/polynomial} Finally, for \( f(\mscrX) \) itself, we define the term \( \tau_f \) as follows:
+    \begin{equation}\label{eq:alg:logical_term_to_polynomial/polynomial}
+      \tau_f \coloneqq \begin{cases}
+        \tau_a,                              &f(\mscrX) = a \in \BbbZ, \\
+        \tau_{\mscrX^\nu},                   &f(\mscrX) = a \mscrX^\nu \T{and} a = 1, \\
+        \tau_a \syncdot \tau_{\mscrX^\nu},   &f(\mscrX) = a \mscrX^\nu \T{and} a \neq 1, \\
+        \tau_{a \mscrX^\nu} \synplus \tau_g, &f(\mscrX) = a \mscrX^\nu + g(\mscrX).
+      \end{cases}
+    \end{equation}
+  \end{thmenum}
+\end{algorithm}
+\begin{comments}
+  \item If the polynomials with nonnegative coefficients produce terms over the \hyperref[def:semiring/theory]{theory of semirings}.
+  \item This algorithm can be found as \identifier{math.logic.theories.semirings.polynomial_to_term.polynomial_to_term} in \cite{notebook:code}.
+\end{comments}
+\begin{defproof}
+  In all cases, correctness can be proved straightforwardly via induction.
+\end{defproof}
+
+\begin{proposition}\label{thm:integer_polynomials_and_logical_terms}
+  Let \( \Sigma \) be the \hyperref[def:hol_signature]{signature} of the \hyperref[def:ring/theory]{theory of rings}. Consider the set \( \op*{Term}_\Sigma \) of all \hyperref[def:fol_term]{logical terms} over it. Denote by \( f_\tau \) the corresponding polynomials produced via \fullref{alg:logical_term_to_integer_polynomial} for the term \( \tau \).
+
+  Let \( {\sim} \) be the \hyperref[def:equivalence_relation]{equivalence relation} on \( \op*{Term}_\Sigma \) defined as \( \tau \sim \sigma \) if and only if \( \tau \) and \( \sigma \) have the same \hyperref[def:fol_denotation/terms]{denotation} for every variable assignment into over \( \BbbZ \).
+
+  \begin{thmenum}
+    \thmitem{thm:integer_polynomials_and_logical_terms/denotation} We have \( \tau \sim \sigma \) if and only if \( f_\tau = f_\sigma \).
+
+    \thmitem{thm:integer_polynomials_and_logical_terms/mapping} The map \( \tau \mapsto f_\tau \) from the quotient \( \op*{Term}_\Sigma / {\sim} \) to the \hyperref[def:polynomial_algebra]{polynomial algebra} \( \BbbZ[\mscrX] \) is bijective.
+  \end{thmenum}
+\end{proposition}
+\begin{comments}
+  \item The proof of \cref{thm:integer_polynomials_and_logical_terms/denotation} relies fundamentally on \fullref{thm:polynomial_comparison_principle}, which we prove in \fullref{sec:integral_domains}. To avoid forward references, we may simply redefine \( \tau \sim \sigma \) to hold if and only if \( f_\tau = f_\sigma \).
+\end{comments}
+\begin{proof}
+  \SubProofOf{thm:integer_polynomials_and_logical_terms/denotation} Fix some terms \( \tau \) and \( \sigma \). By construction, for every variable assignment \( v \), the denotation \( \Bracks{\tau}_\BbbZ^v \) equals the polynomial evaluation \( \Phi_v(f_\tau) \). Similarly, \( \Bracks{\sigma}_\BbbZ^v \) equals \( \Phi_v(f_\sigma) \).
+
+  Then \( \Bracks{\tau}_\BbbZ^v = \Bracks{\sigma}_\BbbZ^v \) if and only if \( \Phi_v(f_\tau) = \Phi_v(f_\sigma) \). The latter condition is equivalent to \( \Phi_v(f_\tau - f_\sigma) = 0 \).
+
+  If \( \Phi_v(f_\tau - f_\sigma) = 0 \) for every assignment \( v \), the polynomial \( f_\tau - f_\sigma \) has infinitely many roots, and \fullref{thm:polynomial_comparison_principle} implies that \( f_\tau = f_\sigma \).
+
+  Therefore, \( \Bracks{\tau}_\BbbZ^v = \Bracks{\sigma}_\BbbZ^v \) for every \( v \) if and only if \( f_\tau = f_\sigma \).
+
+  \SubProofOf{thm:integer_polynomials_and_logical_terms/mapping} Injectivity is obvious considering \cref{thm:integer_polynomials_and_logical_terms/denotation}, while surjectivity is provided by \fullref{alg:integer_polynomial_to_logical_term}.
+\end{proof}
+
+\begin{definition}\label{def:algebraic_equation}\mimprovised
+  \hyperref[def:fol_equation]{Equations of first-order logic} in the \hyperref[def:ring/theory]{theory of rings} are called \term{algebraic}.
+
+  As shown in \cref{thm:integer_polynomials_and_logical_terms}, these correspond naturally to polynomials over integers. \Fullref{alg:logical_term_to_integer_polynomial} allows transforming the equation \( \tau \syneq \sigma \) in the object logic to the metalingual \term{polynomial equation}
+  \begin{equation}\label{eq:def:algebraic_equation/general}
+    f_\tau(X_1, \ldots, X_n) = f_\sigma(X_1, \ldots, X_n).
+  \end{equation}
+
+  By subtracting these polynomials, we obtain an equation in canonical form
+  \begin{equation}\label{eq:def:algebraic_equation/canonical}
+    f(X_1, \ldots, X_n) = 0.
+  \end{equation}
+
+  When not only the coefficients but also the solutions are intended to be integers, we call the equation \term[ru=Диофантово уравнение (\cite[\S 1.9]{ШеньВерещагин2017ВычислимыеФункции}), en=Diophantine equation (\cite[5]{Apostol1976AnalyticNumberTheory})]{Diophantine}.
+
+  More generally we can consider polynomial equations over any \hyperref[def:semiring]{semiring}. This aligns with \cref{con:free_construction}, where we discussed the role of polynomials as abstract syntax for (semi)rings.
+
+  We use the prefixes from the polynomial degree terminology described in \cref{def:polynomial_degree_terminology}, e.g. we call \eqref{eq:def:algebraic_equation/canonical} a \enquote{quadratic equation} if \( f(X_1, \ldots, X_n) \) is a quadratic polynomial.
+\end{definition}
+
 \paragraph{Ordered rings}
 
 \begin{proposition}\label{thm:xn_minus_yn_factorization}
-  In any \hyperref[def:ring]{ring}, we have the following \hyperref[def:polynomial_algebra/polynomials]{polynomial} factorization:
+  In any \hyperref[def:ring]{ring}, the following holds:
   \begin{equation}\label{eq:thm:xn_minus_yn_factorization}
-    X^{n + 1} - Y^{n + 1} = (X - Y) \cdot \sum_{k=0}^n X^k Y^{n-k}.
+    x^{n + 1} - y^{n + 1} = (x - y) \cdot \sum_{k=0}^n x^k y^{n-k}.
   \end{equation}
 \end{proposition}
 \begin{proof}
   \begin{align*}
-    (X - Y) \cdot \sum_{k=0}^n X^k Y^{n-k}
+    (x - y) \cdot \sum_{k=0}^n x^k y^{n-k}
     &=
-    \sum_{k=0}^n X^{k+1} Y^{n-k} - \sum_{k=0}^n X^k Y^{n-k+1}
+    \sum_{k=0}^n x^{k+1} y^{n-k} - \sum_{k=0}^n x^k y^{n-k+1}
     = \\ &=
-    \sum_{k=1}^{n+1} X^k Y^{(n+1)-k} - \sum_{k=0}^n X^k Y^{(n+1)-k}
+    \sum_{k=1}^{n+1} x^k y^{(n+1)-k} - \sum_{k=0}^n x^k y^{(n+1)-k}
     =
-    X^{n+1} - Y^{n+1}.
+    x^{n+1} - y^{n+1}.
   \end{align*}
 \end{proof}
 

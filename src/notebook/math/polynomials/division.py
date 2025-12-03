@@ -1,5 +1,6 @@
 from typing import NamedTuple
 
+from ...parsing import LatinIdentifier
 from ..rings.types import IRing
 from . import monomial
 from .exceptions import PolynomialDivisionError, ZeroPolynomialError
@@ -13,7 +14,7 @@ class DivMod[P: ISemiringPolynomial](NamedTuple):
 
 
 # This is alg:euclidean_division_of_polynomials in the monograph
-def euclidean_divmod[P: IRingPolynomial](f: P, g: P, indet: str) -> DivMod[P]:
+def euclidean_divmod[P: IRingPolynomial](f: P, g: P, indet: LatinIdentifier) -> DivMod[P]:
     f_deg = f.get_degree(indet)
     g_deg = g.get_degree(indet)
 
@@ -44,7 +45,7 @@ def euclidean_divmod[P: IRingPolynomial](f: P, g: P, indet: str) -> DivMod[P]:
 
 
 # This is alg:horners_rule in the monograph
-def horner_divmod[N: IRing, P: IRingPolynomial](f: P, indet: str, free: N) -> DivMod[P]:
+def horner_divmod[N: IRing, P: IRingPolynomial](f: P, indet: LatinIdentifier, free: N) -> DivMod[P]:
     cls = type(f)
 
     if f.is_zero:

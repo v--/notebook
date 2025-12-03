@@ -3,9 +3,11 @@ import itertools
 from collections.abc import Iterable, MutableMapping, Sequence
 from typing import Any, Self, cast, override
 
+from ....parsing import LatinIdentifier, is_latin_identifier
 from ....support.iteration import string_accumulator
+from ....support.unicode import Capitalization
 from ...rings.types import IRing, ISemiring
-from ..exceptions import PolynomialError, PolynomialEvaluationError, ZeroPolynomialError
+from ..exceptions import IndeterminateError, PolynomialError, PolynomialEvaluationError, ZeroPolynomialError
 from ..monomial import Monomial
 from .degree import UNDEFINED_POLYNOMIAL_DEGREE, PolynomialDegree
 
@@ -44,17 +46,17 @@ class BasePolynomial[N: ISemiring](metaclass=PolynomialMeta):
             raise ZeroPolynomialError('The zero polynomial has undefined degree')
 
         return PolynomialDegree(
-            max((mon.total_degree for mon in self._coefficients.keys()), default=None)
+            max((mon.degree for mon in self._coefficients.keys()), default=None)
         )
 
     @property
     def is_zero(self) -> bool:
         return len(self._coefficients) == 0
 
-    def get_indeterminates(self) -> Sequence[str]:
+    def get_indeterminates(self) -> Sequence[LatinIdentifier]:
         return sorted({indet for mon in self._coefficients for indet in mon.get_indeterminates()})
 
-    def infer_inteterminate(self) -> str:
+    def infer_inteterminate(self) -> LatinIdentifier:
         indeterminates = self.get_indeterminates()
 
         if len(indeterminates) == 0:
@@ -130,10 +132,10 @@ class BasePolynomial[N: ISemiring](metaclass=PolynomialMeta):
         if not is_first:
             yield ' + '
 
-        if monomial.total_degree == 0 or coefficient != self.lift_to_scalar(1):
+        if monomial.degree == 0 or coefficient != self.lift_to_scalar(1):
             yield str(coefficient)
 
-        if monomial.total_degree > 0:
+        if monomial.degree > 0:
             yield str(monomial)
 
     @string_accumulator()
@@ -155,22 +157,26 @@ class BasePolynomial[N: ISemiring](metaclass=PolynomialMeta):
         return str(self)
 
     def __call__(self, **kwargs: N) -> N:
+        for key in kwargs.keys():
+            if not is_latin_identifier(key, capitalization=Capitalization.LOWER):
+                raise IndeterminateError(f'The parameter name {key} is not a valid indeterminate name.') from None
+
         result = self.lift_to_scalar(0)
 
         for mon, c in self._coefficients.items():
             term = c
 
             for indeterminate in mon.get_indeterminates():
-                if indeterminate not in kwargs:
-                    raise PolynomialEvaluationError(f'No value provided for indeterminate {indeterminate!r}')
+                if str(indeterminate) not in kwargs:
+                    raise PolynomialEvaluationError(f'No value provided for the indeterminate {str(indeterminate)!r}')
 
-                term *= kwargs[indeterminate] ** mon[indeterminate]
+                term *= kwargs[str(indeterminate)] ** mon[indeterminate]
 
             result += term
 
         return result
 
-    def get_max_power(self, indet: str | None = None) -> int:
+    def get_max_power(self, indet: LatinIdentifier | None = None) -> int:
         max_power = 0
 
         if self.is_zero:
@@ -185,13 +191,13 @@ class BasePolynomial[N: ISemiring](metaclass=PolynomialMeta):
 
         return max_power
 
-    def get_degree(self, indet: str | None = None) -> PolynomialDegree:
+    def get_degree(self, indet: LatinIdentifier | None = None) -> PolynomialDegree:
         if self.is_zero:
             return UNDEFINED_POLYNOMIAL_DEGREE
 
         return PolynomialDegree(self.get_max_power(indet))
 
-    def leading_coefficient(self, indet: str | None = None) -> Self:
+    def leading_coefficient(self, indet: LatinIdentifier | None = None) -> Self:
         result = self.new_zero()
 
         if self.is_zero:
@@ -204,7 +210,7 @@ class BasePolynomial[N: ISemiring](metaclass=PolynomialMeta):
 
         for mon in self.get_monomials():
             if mon[indet] == n:
-                new_mon = Monomial(**{ind: mon[ind] for ind in mon if ind != indet})
+                new_mon = Monomial({ind: mon[ind] for ind in mon if ind != indet})
                 result[new_mon] = self[mon]
 
         return result
@@ -218,7 +224,7 @@ class PolynomialSubtractionMixin[N: IRing](BasePolynomial[N]):
             return
 
         if is_first:
-            if monomial.total_degree == 0:
+            if monomial.degree == 0:
                 yield str(coefficient)
             elif coefficient == self.lift_to_scalar(1):
                 yield str(monomial)
@@ -236,15 +242,15 @@ class PolynomialSubtractionMixin[N: IRing](BasePolynomial[N]):
         if using_negation:
             yield ' - '
 
-            if monomial.total_degree == 0 or -coefficient != self.lift_to_scalar(1):
+            if monomial.degree == 0 or -coefficient != self.lift_to_scalar(1):
                 yield str(-coefficient)
         else:
             yield ' + '
 
-            if monomial.total_degree == 0 or coefficient != self.lift_to_scalar(1):
+            if monomial.degree == 0 or coefficient != self.lift_to_scalar(1):
                 yield str(coefficient)
 
-        if monomial.total_degree > 0:
+        if monomial.degree > 0:
             yield str(monomial)
 
     def __neg__(self: Self) -> Self:

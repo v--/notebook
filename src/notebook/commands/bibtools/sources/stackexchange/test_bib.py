@@ -4,6 +4,7 @@ import pytest
 
 from .....bibtex.author import BibAuthor
 from .....bibtex.entry import BibEntry
+from .....bibtex.string import VerbatimString
 from ...exceptions import BibToolsParsingError
 from ..common.dates import to_iso_date
 from .bib import stackexchange_entry_to_bib
@@ -52,7 +53,7 @@ def test_parse_mathof_answer_231571(identifier: str='https://mathoverflow.net/a/
         entry_type='online',
         entry_name='MathOS:functions_of_several_variables_over_finite_fields',
         title='Functions of several variables over finite fields',
-        authors=[BibAuthor(full_name="User ``user9072''")],
+        authors=[BibAuthor(full_name=VerbatimString("User ``user9072''"))],
         languages=['english'],
         addendum='Citation of answer',
         date='2016-02-19',

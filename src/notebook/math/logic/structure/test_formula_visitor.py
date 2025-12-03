@@ -1,8 +1,8 @@
 from ...rings.modular import Z5
-from ..arithmetic import ARITHMETIC_SIGNATURE, ModularArithmeticStructure
-from ..groups import GROUP_ASSOCIATIVITY, GROUP_SIGNATURE
 from ..signature import SignatureMorphism
 from ..signature_translation import translate_formula
+from ..theories.arithmetic import ARITHMETIC_SIGNATURE, ModularArithmeticStructure
+from ..theories.groups import GROUP_ASSOCIATIVITY, GROUP_SIGNATURE
 from .formula_visitor import evaluate_formula
 
 

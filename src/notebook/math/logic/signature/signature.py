@@ -2,7 +2,7 @@ from collections.abc import Iterator
 
 from ....support.collections import MissingKeyError, TrieMapping
 from .exceptions import FormalLogicSignatureError
-from .symbols import SignatureSymbol
+from .symbols import FunctionSymbol, PredicateSymbol, SignatureSymbol
 
 
 class FormalLogicSignature:
@@ -28,6 +28,22 @@ class FormalLogicSignature:
 
     def __getitem__(self, name: str) -> SignatureSymbol:
         return self.trie[name]
+
+    def get_function_symbol(self, name: str) -> FunctionSymbol:
+        sym = self[name]
+
+        if not isinstance(sym, FunctionSymbol):
+            raise FormalLogicSignatureError(f'Expected {name} to be a function symbol, but got a {sym.get_kind_string()}')
+
+        return sym
+
+    def get_predicate_symbol(self, name: str) -> PredicateSymbol:
+        sym = self[name]
+
+        if not isinstance(sym, PredicateSymbol):
+            raise FormalLogicSignatureError(f'Expected {name} to be a predicate symbol, but got a {sym.get_kind_string()}')
+
+        return sym
 
     def __contains__(self, symbol: SignatureSymbol) -> bool:
         try:

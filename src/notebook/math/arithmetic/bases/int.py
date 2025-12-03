@@ -1,6 +1,7 @@
 from dataclasses import dataclass
 from typing import NamedTuple
 
+from ....parsing import common_identifiers as ci
 from ...polynomials import monomial
 from ...polynomials.polynomial.int import IntPolynomial, const, x
 from ..divisibility import int_divmod
@@ -31,7 +32,7 @@ class IntRadixExpansion:
 
     @property
     def max_power(self) -> int:
-        return self.polynomial.get_max_power('x')
+        return self.polynomial.get_max_power(ci.x)
 
     def shifted_power(self, k: int) -> IntRadixExpansion:
         pol = IntPolynomial.new_zero()

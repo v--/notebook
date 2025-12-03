@@ -1,9 +1,8 @@
 from collections.abc import Collection
 
-from ...rings.modular import BaseIntModulo
-from ..signature import FormalLogicSignature
-from ..structure import FormalLogicStructure
-from .signature import ARITHMETIC_SIGNATURE
+from ....rings.modular import BaseIntModulo
+from ...structure import FormalLogicStructure
+from .signature import ARITHMETIC_SIGNATURE, FormalLogicSignature
 
 
 class ModularArithmeticStructure[T: BaseIntModulo](FormalLogicStructure[T]):

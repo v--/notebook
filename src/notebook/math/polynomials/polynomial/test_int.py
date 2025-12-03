@@ -2,6 +2,8 @@ from collections.abc import Mapping
 
 import pytest
 
+from ....parsing import LatinIdentifier
+from ....parsing import common_identifiers as ci
 from ....support.pytest import pytest_parametrize_kwargs
 from .. import monomial
 from ..exceptions import PolynomialEvaluationError
@@ -20,14 +22,14 @@ def test_total_degree(pol: IntPolynomial, degree: int) -> None:
 
 
 @pytest_parametrize_kwargs(
-    dict(pol=const,                                 indet='x', leading=const),
-    dict(pol=x ** 2,                                indet='x', leading=const),
-    dict(pol=x - 2 * x ** 2,                        indet='x', leading=-2 * const),
-    dict(pol=x * y,                                 indet='x', leading=y),
-    dict(pol=x * y,                                 indet='y', leading=x),
-    dict(pol=x ** 2 * y + 2 * (x ** 2) * z + x * y, indet='x', leading=y + 2 * z),
+    dict(pol=const,                                 indet=ci.x, leading=const),
+    dict(pol=x ** 2,                                indet=ci.x, leading=const),
+    dict(pol=x - 2 * x ** 2,                        indet=ci.x, leading=-2 * const),
+    dict(pol=x * y,                                 indet=ci.x, leading=y),
+    dict(pol=x * y,                                 indet=ci.y, leading=x),
+    dict(pol=x ** 2 * y + 2 * (x ** 2) * z + x * y, indet=ci.x, leading=y + 2 * z),
 )
-def test_leading_coefficient(pol: IntPolynomial, indet: str, leading: IntPolynomial) -> None:
+def test_leading_coefficient(pol: IntPolynomial, indet: LatinIdentifier, leading: IntPolynomial) -> None:
     assert pol.leading_coefficient(indet) == leading
 
 

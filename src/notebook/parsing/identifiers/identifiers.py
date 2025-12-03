@@ -1,3 +1,4 @@
+import functools
 import itertools
 from collections.abc import Collection, Iterable
 from typing import Self
@@ -7,6 +8,7 @@ from ...support.unicode import itoa_subscripts
 from ..strings import StringContainer
 
 
+@functools.total_ordering
 class BaseIdentifier(StringContainer):
     index: int | None
 
@@ -22,6 +24,20 @@ class BaseIdentifier(StringContainer):
 
     def __repr__(self) -> str:
         return f'{type(self).__name__}({self.value!r}, {self.index})'
+
+    def __le__(self, other: Self) -> bool:
+        self_index = self.index or 0
+        other_index = other.index or 0
+        return self.value <= other.value and self_index <= other_index
+
+    def __eq__(self, other: object) -> bool:
+        if not isinstance(other, BaseIdentifier):
+            return False
+
+        return self.value == other.value and self.index == other.index
+
+    def __hash__(self) -> int:
+        return hash((self.value, self.index))
 
     def increment(self) -> Self:
         return type(self)(

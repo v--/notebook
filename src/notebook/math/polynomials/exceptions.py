@@ -5,11 +5,15 @@ class PolynomialError(NotebookMathError):
     pass
 
 
-class PolynomialDegreeError(NotebookMathError):
+class IndeterminateError(PolynomialError):
     pass
 
 
-class PolynomialDivisionError(NotebookMathError):
+class PolynomialDegreeError(PolynomialError):
+    pass
+
+
+class PolynomialDivisionError(PolynomialError):
     pass
 
 

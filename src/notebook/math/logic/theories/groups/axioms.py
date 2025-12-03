@@ -1,4 +1,4 @@
-from ..parsing import parse_formula
+from ...parsing import parse_formula
 from .signature import GROUP_SIGNATURE
 
 
