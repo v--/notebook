@@ -1,48 +1,33 @@
 import pathlib
 import shutil
+from collections.abc import Iterable
 from typing import override
 
-import loguru
-
-from ....paths import AUX_PATH, OUTPUT_PATH
-from ..runner import TaskRunner
-from ..task import WatcherTask
+from .cli import CliTask
+from .runner import TaskRunner
 
 
-class PythonTask(WatcherTask):
-    src_path: pathlib.Path
-    out_buffer: int | None = None
-
-    def __init__(self, base_logger: loguru.Logger, src_path: pathlib.Path | str) -> None:
-        self.src_path = pathlib.Path(src_path)
-        self.base_logger = base_logger
-        self.sublogger = base_logger.bind(logger=str(self.src_path))
-
-    def __repr__(self) -> str:
-        return f'PythonTask({self.src_path!r})'
-
-    @property
-    def aux_pdf_path(self) -> pathlib.Path:
-        return AUX_PATH / self.src_path.with_suffix('.pdf').name
-
-    @property
-    def build_pdf_path(self) -> pathlib.Path:
-        return OUTPUT_PATH / self.src_path.with_suffix('.pdf').name
+class PythonTask(CliTask):
+    @override
+    def get_default_extension(self) -> str:
+        return '.pdf'
 
     @override
-    @property
-    def command(self) -> str:
-        return f'python -m src.notebook.figures.{self.src_path.stem}'
+    def iter_clean_paths(self) -> Iterable[pathlib.Path]:
+        yield self.get_aux_path()
+        yield self.get_output_path()
 
     @override
-    async def pre_process(self, runner: TaskRunner) -> None:
-        if self.aux_pdf_path.exists():
-            self.aux_pdf_path.unlink()
+    def get_build_command(self) -> str:
+        return f'python -m src.notebook.figures.{self.trigger.path.stem}'
 
     @override
-    async def post_process(self, runner: TaskRunner) -> None:
-        if not self.aux_pdf_path.exists():
+    async def build_post_process(self, runner: TaskRunner) -> None:
+        aux_path = self.get_aux_path()
+        output_path = self.get_output_path()
+
+        if not aux_path.exists():
             self.sublogger.error('No output file')
             return
 
-        shutil.copyfile(self.aux_pdf_path, self.build_pdf_path)
+        shutil.copyfile(aux_path, output_path)

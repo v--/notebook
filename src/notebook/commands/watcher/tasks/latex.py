@@ -1,46 +1,45 @@
 import asyncio
-import os.path
 import pathlib
 import shutil
+from collections.abc import Iterable
 from typing import override
 
-import loguru
 import texoutparse
 
-from ....paths import AUX_PATH, OUTPUT_PATH, ROOT_PATH
-from ..runner import TaskRunner
-from ..task import WatcherTask
+from ....paths import AUX_PATH
+from ..trigger import TaskTrigger, TaskTriggerKind
+from .cli import CliTask
+from .runner import TaskRunner
 
 
 TEX_LOG_ENCODING = 'latin-1'
 
 
-class LaTeXTask(WatcherTask):
-    tex_path: pathlib.Path
-    out_buffer: int | None = asyncio.subprocess.DEVNULL
-
-    def __init__(self, base_logger: loguru.Logger, tex_path: pathlib.Path | str) -> None:
-        self.tex_path = pathlib.Path(tex_path)
-        self.base_logger = base_logger
-        self.sublogger = base_logger.bind(logger=str(os.path.relpath(self.tex_path, ROOT_PATH)))
-
-    def __repr__(self) -> str:
-        return f'LaTeXTask({self.tex_path!r})'
-
-    @property
-    def build_pdf_path(self) -> pathlib.Path:
-        return OUTPUT_PATH / self.tex_path.with_suffix('.pdf').name
-
-    @property
+class LaTeXTask(CliTask):
     @override
-    def command(self) -> str:
-        return r'pdflatex -interaction=batchmode -output-directory=%s %s' % (AUX_PATH, self.tex_path)
-
-    def get_aux_path(self, extension: str) -> pathlib.Path:
-        return AUX_PATH / self.tex_path.with_suffix(extension).name
+    def get_default_extension(self) -> str:
+        return '.pdf'
 
     @override
-    async def post_process(self, runner: TaskRunner) -> None:
+    def iter_clean_paths(self) -> Iterable[pathlib.Path]:
+        yield self.get_aux_path('.aux')  # Principal auxiliary file
+        yield self.get_aux_path('.log')  # Principal log file
+        yield self.get_aux_path('.old.log')  # Copy of old build log (that can be viewed while the new one is being generated)
+        yield self.get_aux_path('.blg')  # Outline data
+        yield self.get_aux_path('.toc')  # Table of contents data
+        yield self.get_aux_path('.pdf')
+        yield self.get_output_path('.pdf')
+
+    @override
+    def get_build_command(self) -> str:
+        return r'pdflatex -interaction=batchmode -output-directory=%s %s' % (AUX_PATH, self.trigger.path)
+
+    @override
+    def get_build_out_buffer(self) -> int:
+        return asyncio.subprocess.DEVNULL
+
+    @override
+    async def build_post_process(self, runner: TaskRunner) -> None:
         parser = texoutparse.LatexLogParser()
         requires_rerun = False
         requires_biber_rerun = False
@@ -80,12 +79,25 @@ class LaTeXTask(WatcherTask):
             return
 
         if requires_rerun:
-            runner.schedule(LaTeXTask(self.base_logger, self.tex_path), 'rerunfilecheck')
+            runner.schedule(
+                LaTeXTask(
+                    TaskTrigger(TaskTriggerKind.BUILD, self.trigger.path),
+                    reason='rerunfilecheck',
+                    base_logger=self.base_logger
+                )
+            )
         elif requires_biber_rerun:
             from .biber import BiberTask  # Avoid circular import  # noqa: PLC0415
-            runner.schedule(BiberTask(self.base_logger, self.tex_path), str(self.tex_path))
+            runner.schedule(
+                BiberTask(
+                    TaskTrigger(TaskTriggerKind.BUILD, self.trigger.path),
+                    reason=self.trigger.path.name,
+                    base_logger=self.base_logger
+                )
+            )
         else:
-            self.sublogger.debug(f'No more passes required. Copying {self.get_aux_path(".pdf")} to {self.build_pdf_path}')
-            shutil.copyfile(self.get_aux_path('.pdf'), self.build_pdf_path)
+            output_path = self.get_output_path()
+            self.sublogger.debug('No more passes required.')
+            shutil.copyfile(self.get_aux_path('.pdf'), output_path)
 
-    on_failure = post_process
+    build_on_failure = build_post_process

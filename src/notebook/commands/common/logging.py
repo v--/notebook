@@ -1,13 +1,13 @@
 import sys
 
-from loguru import logger
+import loguru
 
 
 def configure_loguru(*, verbose: bool) -> None:
-    logger.remove()
-    logger.configure(extra=dict(logger='<system>'))
-    logger.add(
+    loguru.logger.configure(extra=dict(logger='<system>'))
+    loguru.logger.remove()
+    loguru.logger.add(
         sys.stdout,
-        format='<level>{level:8}</level> <green>{time:HH:mm:ss}</green>   <cyan>{extra[logger]}</cyan>   <level>{message}</level>',
+        format='<level>{level:7}</level> <green>{time:HH:mm:ss}</green>   <cyan>{extra[logger]}</cyan> <level>{message}</level>',
         level='DEBUG' if verbose else 'INFO'
     )
