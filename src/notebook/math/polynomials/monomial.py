@@ -77,7 +77,7 @@ class Monomial(Mapping[LatinIdentifier, int], Hashable):
                 yield to_superscript(str(power))
 
     def __hash__(self) -> int:
-        return hash(tuple(self._payload.items()))
+        return hash(tuple(dict(self).items()))
 
 
 x = Monomial({ ci.x: 1 })
