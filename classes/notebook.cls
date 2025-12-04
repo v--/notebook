@@ -50,6 +50,7 @@
 
 % Misc nonmath packages
 \RequirePackage{subcaption}
+\RequirePackage{longtable}
 \RequirePackage{booktabs}
 \RequirePackage{seqsplit}
 \RequirePackage{xspace}
