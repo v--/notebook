@@ -7,8 +7,8 @@ from ....parsing import LatinIdentifier, is_latin_identifier
 from ....support.iteration import string_accumulator
 from ....support.unicode import Capitalization
 from ...rings.types import IRing, ISemiring
-from ..exceptions import IndeterminateError, PolynomialError, PolynomialEvaluationError, ZeroPolynomialError
-from ..monomial import Monomial
+from ..exceptions import IndeterminateError, PolynomialError, PolynomialEvaluationError
+from ..monomial import Monomial, const
 from .degree import UNDEFINED_POLYNOMIAL_DEGREE, PolynomialDegree
 
 
@@ -42,9 +42,6 @@ class BasePolynomial[N: ISemiring](metaclass=PolynomialMeta):
 
     @property
     def total_degree(self) -> PolynomialDegree:
-        if self.is_zero:
-            raise ZeroPolynomialError('The zero polynomial has undefined degree')
-
         return PolynomialDegree(
             max((mon.degree for mon in self._coefficients.keys()), default=None)
         )
@@ -68,7 +65,10 @@ class BasePolynomial[N: ISemiring](metaclass=PolynomialMeta):
         return indeterminates[0]
 
     def get_monomials(self) -> Sequence[Monomial]:
-        return list(self._coefficients.keys())
+        return sorted(
+            self._coefficients.keys(),
+            key=lambda mon: [-mon.degree, mon.get_indeterminates()],
+        )
 
     def __getitem__(self, key: Monomial) -> N:
         return self._coefficients.get(key, self.lift_to_scalar(0))
@@ -114,15 +114,19 @@ class BasePolynomial[N: ISemiring](metaclass=PolynomialMeta):
         return pol
 
     def __pow__(self, power: int) -> Self:
-        pol = self.new_zero()
+        match power:
+            case 1:
+                return self
 
-        for mon, c in self._coefficients.items():
-            pol[mon ** power] = c ** power
+            case 0:
+                pol = self.new_zero()
+                pol[const] = self.lift_to_scalar(1)
+                return pol
 
-        for mon, c in self._coefficients.items():
-            pol[mon ** power] = c ** power
+            case _ if power > 0:
+                return self * self ** (power - 1)
 
-        return pol
+        raise PolynomialError('Cannot raise a polynomial to a negative power')
 
     @string_accumulator()
     def stringify_term_with_prefix(self, monomial: Monomial, coefficient: N, *, is_first: bool) -> Iterable[str]:
@@ -140,18 +144,18 @@ class BasePolynomial[N: ISemiring](metaclass=PolynomialMeta):
 
     @string_accumulator()
     def __str__(self) -> Iterable[str]:
-        it = iter(self._coefficients.items())
+        it = iter(self.get_monomials())
 
         try:
-            monomial, coefficient = next(it)
+            mon = next(it)
         except StopIteration:
             yield str(self.lift_to_scalar(0))
             return  # noqa: PLE0307
         else:
-            yield self.stringify_term_with_prefix(monomial, coefficient, is_first=True)
+            yield self.stringify_term_with_prefix(mon, self[mon], is_first=True)
 
-        for monomial, coefficient in it:
-            yield self.stringify_term_with_prefix(monomial, coefficient, is_first=False)
+        for mon in it:
+            yield self.stringify_term_with_prefix(mon, self[mon], is_first=False)
 
     def __repr__(self) -> str:
         return str(self)

@@ -44,6 +44,27 @@ def test_add(a: IntPolynomial, b: IntPolynomial, c: IntPolynomial) -> None:
 
 
 @pytest_parametrize_kwargs(
+    dict(a=x,     b=zero,      c=zero),
+    dict(a=x,     b=2 * const, c=IntPolynomial.from_mapping({monomial.x: 2})),
+    dict(a=x,     b=y,         c=IntPolynomial.from_mapping({monomial.x * monomial.y: 1})),
+    dict(a=x,     b=-x,        c=IntPolynomial.from_mapping({monomial.x * monomial.x: -1})),
+    dict(a=x + y, b=x - y,     c=IntPolynomial.from_mapping({monomial.x * monomial.x: 1, monomial.y * monomial.y: -1})),
+)
+def test_mul(a: IntPolynomial, b: IntPolynomial, c: IntPolynomial) -> None:
+    assert a * b == c
+
+
+@pytest_parametrize_kwargs(
+    dict(a=x - y, power=0, b=const),
+    dict(a=x - y, power=1, b=x - y),
+    dict(a=x - y, power=2, b=x * x - 2 * x * y + y * y),
+    dict(a=x - y, power=3, b=x * x * x - 3 * x * x * y + 3 * x * y * y - y * y * y),
+)
+def test_pow(a: IntPolynomial, power: int, b: IntPolynomial) -> None:
+    assert a ** power == b
+
+
+@pytest_parametrize_kwargs(
     dict(pol=zero,              expected='0'),
     dict(pol=0 * const,         expected='0'),
     dict(pol=const,             expected='1'),
@@ -52,6 +73,8 @@ def test_add(a: IntPolynomial, b: IntPolynomial, c: IntPolynomial) -> None:
     dict(pol=-2 * x,            expected='-2x'),
     dict(pol=x - y,             expected='x - y'),
     dict(pol=x ** 2 - const,    expected='x² - 1'),
+    dict(pol=(x + y) ** 2,      expected='x² + 2xy + y²'),
+    dict(pol=(y + x) ** 2,      expected='x² + 2xy + y²'),
 )
 def test_str(pol: IntPolynomial, expected: str) -> None:
     assert str(pol) == expected
