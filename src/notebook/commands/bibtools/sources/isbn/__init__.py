@@ -1,4 +1,4 @@
-from .....bibtex.entry import BibEntry
+from .....bibtex import BibEntry
 from ...exceptions import BibToolsError
 from .bib import isbn_book_to_bib
 from .fetch import fetch_isbn_json

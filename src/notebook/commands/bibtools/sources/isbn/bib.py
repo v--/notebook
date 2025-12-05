@@ -1,6 +1,6 @@
 import stdnum
 
-from .....bibtex.entry import BibEntry
+from .....bibtex import BibEntry
 from .....support.unicode import normalize_whitespace
 from ..common.dates import extract_year
 from ..common.entries import generate_entry_name

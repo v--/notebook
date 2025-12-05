@@ -3,8 +3,7 @@ from collections.abc import Iterable, Sequence
 from nameparser import HumanName
 from stdnum import isbn, issn
 
-from .....bibtex.author import BibAuthor
-from .....bibtex.entry import BibEntry, BibEntryType
+from .....bibtex import BibAuthor, BibEntry, BibEntryType
 from .....exceptions import UnreachableException
 from .....support.unicode import normalize_whitespace
 from ..common.entries import generate_entry_name

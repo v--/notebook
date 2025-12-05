@@ -1,6 +1,6 @@
 import re
 
-from .....bibtex.entry import BibEntry
+from .....bibtex import BibEntry
 from .....support.unicode import normalize_whitespace
 from ... import url_templates
 from ..common.entries import generate_entry_name

@@ -1,4 +1,4 @@
-from .....bibtex.entry import BibEntry
+from .....bibtex import BibEntry
 from ...exceptions import BibToolsError
 from ..common.url_template import UrlTemplate
 from .bib import arxiv_entry_to_bib

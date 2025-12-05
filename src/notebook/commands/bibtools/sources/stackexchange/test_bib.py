@@ -2,9 +2,7 @@ from datetime import datetime
 
 import pytest
 
-from .....bibtex.author import BibAuthor
-from .....bibtex.entry import BibEntry
-from .....bibtex.string import VerbatimString
+from .....bibtex import BibAuthor, BibEntry, VerbatimString
 from ...exceptions import BibToolsParsingError
 from ..common.dates import to_iso_date
 from .bib import stackexchange_entry_to_bib

@@ -5,10 +5,7 @@ from typing import Any, TextIO
 import loguru
 from stdnum import isbn, issn
 
-from ...bibtex.author import BibAuthor
-from ...bibtex.entry import BibEntry
-from ...bibtex.parsing import parse_bibtex
-from ...bibtex.string import BibString
+from ...bibtex import BibAuthor, BibEntry, BibString, parse_bibtex
 from ...parsing.parser import ParserError
 from ..common.names import latinize_cyrillic_name
 from . import url_templates

@@ -2,9 +2,7 @@ import unicodedata
 from collections.abc import Iterable
 from datetime import datetime
 
-from .....bibtex.author import BibAuthor
-from .....bibtex.entry import BibEntry
-from .....bibtex.string import BibString, VerbatimString
+from .....bibtex import BibAuthor, BibEntry, BibString, VerbatimString
 from .....support.iteration import string_accumulator
 from ...exceptions import BibToolsParsingError
 from ..common.dates import to_iso_date

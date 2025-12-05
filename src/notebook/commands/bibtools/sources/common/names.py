@@ -1,8 +1,6 @@
 from nameparser import HumanName
 
-from .....bibtex.author import BibAuthor
-from .....bibtex.parsing import parse_value
-from .....bibtex.string import BibString
+from .....bibtex import BibAuthor, BibString, parse_value
 
 
 def normalize_human_name(full_name: BibString) -> BibString:

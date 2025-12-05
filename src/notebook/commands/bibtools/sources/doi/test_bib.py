@@ -1,5 +1,4 @@
-from .....bibtex.author import BibAuthor
-from .....bibtex.entry import BibEntry
+from .....bibtex import BibAuthor, BibEntry
 from .bib import doi_data_to_bib
 from .fixtures import get_doi_fixture_path
 from .model import parse_doi_json

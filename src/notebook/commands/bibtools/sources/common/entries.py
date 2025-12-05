@@ -1,9 +1,7 @@
 import re
 from collections.abc import Iterable, Sequence
 
-from .....bibtex.author import BibAuthor
-from .....bibtex.entry import BibEntry
-from .....bibtex.string import strip_braces
+from .....bibtex import BibAuthor, BibEntry, strip_braces
 from .....math.nlp.phrases import Phrase
 from .....math.nlp.rake import RakeNoPhrasesError
 from .....support.iteration import string_accumulator

@@ -1,5 +1,4 @@
-from .....bibtex.author import BibAuthor
-from .....bibtex.entry import BibEntry
+from .....bibtex import BibAuthor, BibEntry
 from .bib import isbn_book_to_bib
 from .fixtures import get_isbn_fixture_path
 from .model import parse_isbn_json

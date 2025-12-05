@@ -1,8 +1,7 @@
 from iso639 import Lang
 from iso639.exceptions import InvalidLanguageValue
 
-from .....bibtex.entry import BibEntry
-from .....bibtex.string import BibString, strip_braces
+from .....bibtex import BibEntry, BibString, strip_braces
 from ...exceptions import BibToolsParsingError
 
 

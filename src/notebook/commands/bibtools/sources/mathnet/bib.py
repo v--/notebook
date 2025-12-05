@@ -1,4 +1,4 @@
-from .....bibtex.entry import BibEntry
+from .....bibtex import BibEntry
 from .....support.unicode import normalize_whitespace
 from ... import url_templates
 from ..common.dates import extract_year

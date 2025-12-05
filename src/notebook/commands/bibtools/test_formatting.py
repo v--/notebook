@@ -3,8 +3,7 @@ from textwrap import dedent
 import loguru
 import pytest
 
-from ...bibtex.parsing import parse_bibtex
-from ...bibtex.string import VerbatimString
+from ...bibtex import VerbatimString, parse_bibtex
 from .formatting import adjust_entry
 
 

@@ -1,7 +1,6 @@
 import pytest
 
-from .....bibtex.author import BibAuthor
-from .....bibtex.entry import BibEntry
+from .....bibtex import BibAuthor, BibEntry
 from ...exceptions import BibToolsNotFoundError, BibToolsParsingError
 from .bib import mathnet_entry_to_bib
 from .fixtures import get_mathnet_fixture_path
