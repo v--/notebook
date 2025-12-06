@@ -11,10 +11,10 @@ from ..parsing import (
     parse_formula_placeholder,
     parse_formula_with_substitution,
     parse_marker,
-    parse_propositional_formula,
     parse_term_substitution_spec,
     parse_variable,
 )
+from ..propositional import parse_propositional_formula
 from ..signature import FormalLogicSignature
 from .exceptions import RuleApplicationError
 from .proof_tree import AssumptionTree, ProofTree, RuleApplicationPremise, apply, assume, premise

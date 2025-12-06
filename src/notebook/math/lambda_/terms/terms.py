@@ -12,6 +12,9 @@ class Constant:
     def __str__(self) -> str:
         return str(self.name)
 
+    def __repr__(self) -> str:
+        return f"parse_term('{self}')"
+
 
 @dataclass(frozen=True)
 class Variable:
@@ -19,6 +22,9 @@ class Variable:
 
     def __str__(self) -> str:
         return str(self.identifier)
+
+    def __repr__(self) -> str:
+        return f"parse_term('{self}')"
 
 
 @dataclass(frozen=True)
@@ -29,6 +35,9 @@ class UntypedApplication:
     def __str__(self) -> str:
         return f'({self.left}{self.right})'
 
+    def __repr__(self) -> str:
+        return f"parse_term('{self}')"
+
 
 @dataclass(frozen=True)
 class TypedApplication:
@@ -37,6 +46,9 @@ class TypedApplication:
 
     def __str__(self) -> str:
         return f'({self.left}{self.right})'
+
+    def __repr__(self) -> str:
+        return f"parse_term('{self}')"
 
 
 @dataclass(frozen=True)
@@ -47,6 +59,9 @@ class UntypedAbstraction:
     def __str__(self) -> str:
         return f'({BinderSymbol.LAMBDA}{self.var}.{self.body})'
 
+    def __repr__(self) -> str:
+        return f"parse_term('{self}')"
+
 
 @dataclass(frozen=True)
 class TypedAbstraction:
@@ -56,6 +71,9 @@ class TypedAbstraction:
 
     def __str__(self) -> str:
         return f'({BinderSymbol.LAMBDA}{self.var}:{self.var_type}.{self.body})'
+
+    def __repr__(self) -> str:
+        return f"parse_term('{self}')"
 
 
 UntypedTerm = Constant | Variable | UntypedApplication | UntypedAbstraction

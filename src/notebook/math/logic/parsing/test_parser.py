@@ -6,6 +6,7 @@ import pytest
 from ....parsing import LatinIdentifier, ParserError, TokenizerError
 from ....support.pytest import pytest_parametrize_kwargs, pytest_parametrize_lists
 from ..formulas import EqualityFormula
+from ..propositional import parse_propositional_formula
 from ..signature import EMPTY_SIGNATURE, FormalLogicSignature
 from ..terms import EigenvariableSchemaSubstitutionSpec, FunctionApplication, Variable, VariablePlaceholder
 from .parser import (
@@ -13,7 +14,6 @@ from .parser import (
     parse_formula_schema,
     parse_formula_schema_with_substitution,
     parse_natural_deduction_rule,
-    parse_propositional_formula,
     parse_term,
     parse_term_schema_substitution_spec,
     parse_variable,

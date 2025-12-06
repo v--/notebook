@@ -1,39 +1,34 @@
-\section{Propositional normal forms}\label{sec:propositional_normal_forms}
+\section{Propositional formula transformations}\label{sec:propositional_formula_transformations}
 
 We sometimes want to substitute a propositional variable with another variable or even with a formula. This is akin to applying a \hyperref[def:boolean_function]{Boolean function} like \( x \synvee y \) to different variables (e.g. to obtain \( x \synvee x \)) or even concrete values (e.g. \( F \synvee T \)), except that it is done on a purely syntactic level without involving any semantics involved.
 
 \paragraph{Simultaneous substitution}
 
 \begin{concept}\label{con:syntactic_substitution}
-  A basic operation on \hyperref[con:expression]{syntactic expressions} is the ability to replace all occurrences of a \hyperref[con:variable_binding]{free variable} with another expression so that the result is well-formed.
+  A basic operation on \hyperref[con:expression]{syntactic expressions} is the ability to replace all occurrences of a \hyperref[con:variable]{variable} with another expression so that the result is well-formed.
 
-  Such an operation is called \term[en=substitution (\cite[78]{Kleene1971Metamathematics})]{substitution}. It is a particular form of evaluation in the sense of \cref{con:evaluation} and is closely related to the algebraic evaluation homomorphisms described in \cref{con:free_construction/evaluation}.
+  Such an operation is called \term[en=substitution (\cite[78]{Kleene1971Metamathematics})]{substitution} or, if we replace multiple variables at once, \term[en=simultaneous substitution (\cite[def. 3.1.3]{CitkinMuravitsky2022ConsequenceRelations})]{simultaneous substitution}.
+
+  Substitution is a syntactic counterpart of \hyperref[con:evaluation]{evaluation}.
 \end{concept}
 
 \begin{definition}\label{def:propositional_substitution}\mimprovised
-  Consider a map \( \Bbbs: \op*{Prop} \to \op*{Form} \), which allows us to replace propositional variables with arbitrary propositional formulas. In the case where only finitely many variables are not \hyperref[def:function_fixed_point]{fixed points}, we call such a map a \term[en=simultaneous substitution (\cite[exerc. 1.3.15]{VanDalen2004LogicAndStructure})]{simultaneous substitution} or simply \term{substitution}.
+  We can define \hyperref[con:syntactic_substitution]{simultaneous substitution} for \hyperref[def:propositional_formula]{propositional formulas} as follows.
+
+  Consider a map \( \Bbbs: \op*{Prop} \to \op*{Form} \), which allows us to replace propositional variables with arbitrary propositional formulas. In the case where only finitely many variables are not \hyperref[def:function_fixed_point]{fixed points}, we will call the map \( \Bbbs \) itself a \term{substitution}.
 
   Given a substitution \( \Bbbs \), we define via \hyperref[rem:straightforward_traversal]{straightforward traversal} the following operation on arbitrary formulas:
   \begin{equation*}
     \varphi[\Bbbs] \coloneqq \begin{cases}
-      \varphi,                            &\varphi \in \set{ \syntop, \synbot }, \\
+      \varphi,                            &\varphi \in \op*{PConst}, \\
       \Bbbs(\varphi),                     &\varphi \in \op*{Prop}, \\
-      \neg \psi[\Bbbs],                   &\varphi = \neg \psi, \\
+      \synneg \psi[\Bbbs],                &\varphi = \neg \psi, \\
       \psi[\Bbbs] \syncirc \theta[\Bbbs], &\varphi = \psi \syncirc \theta, {\syncirc} \in \op*{Conn}. \\
     \end{cases}
   \end{equation*}
 \end{definition}
 \begin{comments}
-  \item Our definition is based on \incite[def. 3.1.3]{CitkinMuravitsky2022ConsequenceRelations}, with three notable differences:
-  \begin{itemize}
-    \item The authors define substitutions in the general setting of logical matrices, while we prefer to avoid them and instead specialize the definition to propositional logic.
-
-    \item The authors define substitutions to be maps from formulas to formulas satisfying additional recursive conditions, while we define substitutions to be maps from variables to formulas.
-
-    This allows us to stay consistent with \cref{def:propositional_denotation}, where we make a distinction between interpretations and valuations
-
-    \item The requirement of only finitely many variables is inspired by \incite[222]{Mimram2020ProgramEqualsProof}.
-  \end{itemize}
+  \item Our definition is loosely based on that in \cite[def. 3.1.3]{CitkinMuravitsky2022ConsequenceRelations}, but with a fixed set of logical operations. Furthermore, we require only finitely many variables to not be fixed; this requirement is inspired by \cite[222]{Mimram2020ProgramEqualsProof}.
 
   \item We focus on simultaneous substitutions directly instead of defining substituting a single variable. The latter is often done similarly to \cref{def:propositional_subformula_substitution}. See \cref{rem:simulating_simultaneous_substitution} for an alternative approach.
 \end{comments}
@@ -44,7 +39,7 @@ We sometimes want to substitute a propositional variable with another variable o
   We find Hindley's notation useful because:
   \begin{itemize}
     \item Plain Latin letters adjacent to \( p \), like \( s \), are used for both propositional variables and \hyperref[def:fol_signature/predicates]{first-order predicates}.
-    \item Greek letters adjacent to \( \tau \), like \( \sigma \), are used for both \hyperref[def:fol_term]{first-order terms} and \hyperref[def:simple_type]{types}.
+    \item Greek letters adjacent to \( \tau \), like \( \sigma \), are used for both \hyperref[def:fol_schema]{first-order terms} and for \hyperref[rem:type_theory]{types}.
   \end{itemize}
 \end{remark}
 
@@ -71,7 +66,7 @@ We sometimes want to substitute a propositional variable with another variable o
 
   Moreover, some authors like \incite[4]{TroelstraSchwichtenberg2000BasicProofTheory} exchange the variables and formulas in this notation.
 
-  Other authors use more esoteric notations --- \incite[47]{КолмогоровДрагалин2006Логика}.
+  Other authors use more esoteric notations --- \incite[47]{КолмогоровДрагалин2006Логика} use
   \begin{equation*}
     \varphi(p_1, \ldots, p_n \mathrel{\Vert} \omega_1, \cdots, \omega_n),
   \end{equation*}
@@ -89,6 +84,54 @@ We sometimes want to substitute a propositional variable with another variable o
     \varphi_p(\omega).
   \end{equation*}
 \end{remark}
+
+\begin{proposition}\label{thm:propositional_substitution_equivalence}
+  For a \hyperref[def:propositional_interpretation]{propositional interpretation} \( I \) and \hyperref[def:propositional_substitution]{simultaneous substitution} \( \Bbbs \), we have \( \Bracks[\big]{\varphi[\Bbbs]}_I = \Bracks{\varphi}_I \) if and only if \( \Bracks{\Bbbs(p)}_I = I(p) \) for every variable \( p \) in \( \op*{Var}(\varphi) \).
+\end{proposition}
+\begin{proof}
+  \SufficiencySubProof Suppose that \( \Bracks[\big]{\varphi[\Bbbs]}_I = \Bracks{\varphi}_I\). We will use \fullref{thm:induction_on_rooted_trees} on the abstract syntax tree of \( \varphi \) to show that \( \Bracks{\Bbbs(p)}_I = I(p) \) for every variable \( p \) in \( \op*{Var}(\varphi) \).
+
+  \begin{itemize}
+    \item If \( \varphi \) is a proposition constant, it has no variables, so the statement is vacuous.
+    \item If \( \varphi \) is a variable and \( \Bracks[\big]{\varphi[\Bbbs]}_I = \Bracks{\varphi}_I \), then the statement holds since \( \varphi \) is the only variable of \( \varphi \).
+    \item If \( \varphi = \synneg \psi \), where the inductive hypothesis holds for \( \psi \), then the statement automatically holds for \( \varphi \) because \( \varphi \) and \( \psi \) have the same free variables.
+    \item Finally, if \( \varphi = \psi \syncirc \theta \), where the inductive hypothesis holds for \( \psi \) and \( \theta \), then again the statement holds for \( \varphi \) because its variables are the union of those \( \psi \) and \( \theta \).
+  \end{itemize}
+
+  \NecessitySubProof Suppose that \( \Bracks{\Bbbs(p)}_I = I(p) \) for every variable \( p \) in \( \op*{Var}(\varphi) \). We will use \fullref{thm:induction_on_rooted_trees} on \( \varphi \) to show that \( \Bracks[\big]{\varphi[\Bbbs]}_I = \Bracks{\varphi}_I \).
+
+  \begin{itemize}
+    \item If \( \varphi \) is a propositional constant, then \( \varphi[\Bbbs] = \varphi \), so naturally \( \Bracks[\big]{\varphi[\Bbbs]}_I = \Bracks{\varphi}_I \).
+    \item If \( \varphi \) is a variable, then \( \Bracks[\big]{\varphi[\Bbbs]}_I = I(\Bbbs(\varphi)) \), which we have assumed equals \( I(\varphi) \).
+    \item If \( \varphi = \synneg \psi \), where the inductive hypothesis holds for \( \psi \), then
+    \begin{equation*}
+      \Bracks[\big]{\varphi[\Bbbs]}_I
+      =
+      \Bracks{\synneg \psi[\Bbbs]}_I
+      =
+      \oline{\Bracks[\big]{\psi[\Bbbs]}_I}
+      \reloset {\T{ind.}} =
+      \oline{\Bracks{\psi}_I}
+      =
+      \Bracks{\synneg \psi}_I
+      =
+      \Bracks{\varphi}_I.
+    \end{equation*}
+
+    \item Similarly, if \( \varphi = \psi \syncirc \theta \), where the inductive hypothesis holds for \( \psi \) and \( \theta \), then
+    \begin{equation*}
+      \Bracks[\big]{\varphi[\Bbbs]}_I
+      =
+      \Bracks[\big]{\psi[\Bbbs] \syncirc \theta[\Bbbs]}_I
+      =
+      \Bracks[\big]{\psi[\Bbbs]}_I \bincirc \Bracks[\big]{\theta[\Bbbs]}_I
+      \reloset {\T{ind.}} =
+      \Bracks{\psi}_I \bincirc \Bracks{\psi}_I
+      =
+      \Bracks{\varphi}_I.
+    \end{equation*}
+  \end{itemize}
+\end{proof}
 
 \begin{definition}\label{def:substitution_schema_alphabet}
   The \hyperref[def:formal_language/alphabet]{alphabet} of \hyperref[con:improper_symbol]{improper symbols} for substitution schemas consists of the following:
@@ -110,7 +153,7 @@ We sometimes want to substitute a propositional variable with another variable o
   Here the rules \( \bnfpn{variable} \) and \( \bnfpn{subject} \) must be provided externally. The subjects can be \hyperref[def:propositional_formula]{propositional formulas}, \hyperref[def:lambda_term]{\( \muplambda \)-terms}, or any other syntactic construct where substitution makes sense.
 \end{definition}
 \begin{comments}
-  \item These grammar rules give us the ability to formalize the syntax used for the \hyperref[def:inference_rule]{inference rules} in \fullref{sec:first_order_logic}.
+  \item These grammar rules give us the ability to formalize the syntax used for the \hyperref[def:inference_rule]{inference rules} in \fullref{sec:first_order_natural_deduction}.
 \end{comments}
 
 \begin{remark}\label{rem:simulating_simultaneous_substitution}
@@ -121,7 +164,7 @@ We sometimes want to substitute a propositional variable with another variable o
     rqp.
   \end{equation*}
 
-  We can also simulate this via single-variable substitution with the help of temporary variables:
+  We can also simulate this via single-variable substitution with the aid of temporary variables:
   \begin{equation*}
     (pqr)[p \mapsto t][r \mapsto p][t \mapsto r]
     =
@@ -142,7 +185,7 @@ For propositional logic, We will also find useful the ability to replace an enti
   \begin{equation}\label{eq:def:propositional_subformula_substitution}
     \varphi[\chi \mapsto \omega] \coloneqq \begin{cases}
       \omega,                                                         &\varphi = \chi \\
-      \varphi,                                                        &\varphi \neq \chi \T{and} \varphi \in \set{ \syntop, \synbot } \cup \op*{Prop} \\
+      \varphi,                                                        &\varphi \neq \chi \T{and} \varphi \in \op*{PConst} \cup \op*{Prop} \\
       \synneg \psi[\chi \mapsto \omega],                              &\varphi \neq \chi \T{and} \varphi = \synneg \psi \\
       \psi[\chi \mapsto \omega] \syncirc \theta[\chi \mapsto \omega], &\varphi \neq \chi \T{and} \varphi = \psi \syncirc \theta, \circ \in \op*{Conn}.
     \end{cases}
@@ -153,32 +196,28 @@ For propositional logic, We will also find useful the ability to replace an enti
   \item It is safe to reuse the notation for simultaneous substitutions because in the case where \( \chi \) is a variable, the two notions coincide.
 \end{comments}
 
-\begin{proposition}\label{thm:propositional_substitution_equivalence}
-  If \( \chi \gleichstark \omega \), then
-  \begin{equation*}
-    \varphi[\chi \mapsto \omega] \gleichstark \varphi.
-  \end{equation*}
+\begin{proposition}\label{thm:propositional_subformula_substitution_equivalence}
+  For a \hyperref[def:propositional_interpretation]{propositional interpretation} \( I \) and formulas \( \chi \) and \( \omega \) such that \( \Bracks{\chi}_I = \Bracks{\omega}_I \), we have \( \Bracks[\big]{\varphi[\chi \mapsto \omega]}_I = \Bracks{\varphi}_I \) for every \( \varphi \).
+
+  In particular, if \( \chi \gleichstark \omega \), then \( \varphi[\chi \mapsto \omega] \gleichstark \varphi \).
 \end{proposition}
 \begin{proof}
-  Suppose that \( \chi \gleichstark \omega \). We will use \fullref{thm:induction_on_rooted_trees} on \( \varphi \) to show that
-  \begin{equation}\label{eq:thm:propositional_substitution_equivalence/proof}
-    \varphi[\chi \mapsto \omega] \gleichstark \varphi.
+  Suppose that \( \Bracks{\chi}_I = \Bracks{\omega}_I \). We will use \fullref{thm:induction_on_rooted_trees} on the abstract syntax tree of \( \varphi \) to show that
+  \begin{equation}\label{eq:thm:propositional_subformula_substitution_equivalence/proof}
+    \Bracks[\big]{\varphi[\chi \mapsto \omega]}_I = \Bracks{\varphi}_I.
   \end{equation}
 
   \begin{itemize}
-    \item If \( \varphi = \chi \), then \( \varphi[\chi \mapsto \omega] = \omega \) and, by definition,
-    \begin{equation*}
-      \varphi = \chi \gleichstark \omega = \varphi[\chi \mapsto \omega].
-    \end{equation*}
+    \item If \( \varphi = \chi \), then \( \varphi[\chi \mapsto \omega] = \omega \) and \eqref{eq:thm:propositional_subformula_substitution_equivalence/proof} is immediate.
 
-    \item If \( \varphi \neq \chi \) and \( \varphi \in \set{ \syntop, \synbot } \cup \op*{Prop} \), then \( \varphi[\chi \mapsto \omega] = \varphi \) and \eqref{eq:thm:propositional_substitution_equivalence/proof} again holds trivially.
+    \item If \( \varphi \neq \chi \) and \( \varphi \in \op*{PConst} \cup \op*{Prop} \), then \( \varphi[\chi \mapsto \omega] = \varphi \) and \eqref{eq:thm:propositional_subformula_substitution_equivalence/proof} again holds trivially.
 
     \item If \( \varphi \neq \chi \) and \( \varphi = \synneg \omega \) and if the inductive hypothesis holds for \( \omega \), then
     \begin{equation*}
       \varphi[\chi \mapsto \omega] = \synneg \psi[\chi \mapsto \omega].
     \end{equation*}
 
-    For any interpretation \( I \),
+    Thus,
     \begin{equation*}
       \Bracks[\big]{ \varphi[\chi \mapsto \omega] }_I
       =
@@ -189,23 +228,106 @@ For propositional logic, We will also find useful the ability to replace an enti
       \Bracks{\varphi}_I.
     \end{equation*}
 
-    Generalizing on \( I \), we conclude that \eqref{eq:thm:propositional_substitution_equivalence/proof} holds in this case.
-
-    \item If \( \varphi \neq \chi \) and \( \varphi = \psi \syncirc \theta, {\syncirc} \in \op*{Conn} \) and if the inductive hypothesis holds for both \( \psi \) and \( \theta \), then for any interpretation \( I \),
+    \item If \( \varphi \neq \chi \) and \( \varphi = \psi \syncirc \theta, {\syncirc} \in \op*{Conn} \) and if the inductive hypothesis holds for both \( \psi \) and \( \theta \), then
     \begin{equation*}
       \Bracks[\big]{ \varphi[\chi \mapsto \omega] }_I
       =
-      \Bracks[\big]{ \psi[\chi \mapsto \omega] }_I \relcirc \Bracks[\big]{ \theta[\chi \mapsto \omega] }_I
+      \Bracks[\big]{ \psi[\chi \mapsto \omega] }_I \bincirc \Bracks[\big]{ \theta[\chi \mapsto \omega] }_I
       \reloset {\T{ind.}} =
-      \Bracks[\big]{\psi}_I \relcirc \Bracks[\big]{\theta}_I
+      \Bracks[\big]{\psi}_I \bincirc \Bracks[\big]{\theta}_I
       =
       \Bracks{\varphi}_I.
     \end{equation*}
-
-    Again, generalizing on \( I \), we conclude that \eqref{eq:thm:propositional_substitution_equivalence/proof} holds.
   \end{itemize}
 
-  We have verified that \eqref{eq:thm:propositional_substitution_equivalence/proof} holds in all cases.
+  We have verified that \eqref{eq:thm:propositional_subformula_substitution_equivalence/proof} holds in all cases.
+\end{proof}
+
+\paragraph{Elimination of propositional constants}
+
+\begin{algorithm}[Propositional constant collapse]\label{alg:propositional_constant_collapse}
+  We introduce an operator \( T_{\logic{cc}} \) on \hyperref[def:propositional_formula]{propositional formulas} that attempts to simplify subformulas involving logical constants. The result \( T_{\logic{cc}}(\varphi) \) will be \hyperref[def:first_order_semantics/equivalence]{semantically equivalent} with \( \varphi \).
+
+  \begin{thmenum}
+    \thmitem{alg:propositional_constant_collapse/atomic} If \( \varphi \) is atomic, i.e. a constant or variable, there is nothing we can do, so we let \( T_{\logic{cc}} \coloneqq \varphi \).
+
+    \thmitem{alg:propositional_constant_collapse/negation} If \( \varphi = \synneg \psi \), let \( \psi' \coloneqq T_{\logic{cc}}(\psi) \) and proceed as follows:
+    \begin{equation*}
+      T_{\logic{cc}}(\synneg \psi) \coloneqq \begin{cases}
+        \synbot,       &\psi' = \syntop \\
+        \syntop,       &\psi' = \synbot \\
+        \synneg \psi', &\T{otherwise.}
+      \end{cases}
+    \end{equation*}
+
+    \thmitem{alg:propositional_constant_collapse/conjunction} If \( \varphi = \psi \synwedge \theta \), let \( \psi' \coloneqq T_{\logic{cc}}(\psi) \) and \( \theta' \coloneqq T_{\logic{cc}}(\theta) \) and proceed as follows:
+    \begin{equation*}
+      T_{\logic{cc}}(\psi \synwedge \theta) \coloneqq \begin{cases}
+        \synbot,                   &\psi' = \synbot \T{or} \theta' = \synbot \\
+        \theta',                   &\T{otherwise if} \psi' = \syntop \\
+        \psi',                     &\T{otherwise if} \theta' = \syntop \\
+        \psi' \synwedge \theta',   &\T{otherwise.}
+      \end{cases}
+    \end{equation*}
+
+    The replacement here is justified semantically since \( \semtop \) and \( \sembot \) are absorbing.
+
+    \thmitem{alg:propositional_constant_collapse/disjunction} Dually, if \( \varphi = \psi \synvee \theta \), we proceed as follows:
+    \begin{equation*}
+      T_{\logic{cc}}(\psi \synvee \theta) \coloneqq \begin{cases}
+        \syntop,                   &\psi' = \syntop \T{or} \theta' = \syntop \\
+        \theta',                   &\T{otherwise if} \psi' = \synbot \\
+        \psi',                     &\T{otherwise if} \theta' = \synbot \\
+        \psi' \synvee \theta',     &\T{otherwise.}
+      \end{cases}
+    \end{equation*}
+
+    \thmitem{alg:propositional_constant_collapse/conditional} If \( \varphi = \psi \synimplies \theta \), we proceed as we would for \( \synneg \psi \synvee \theta \):
+    \begin{equation*}
+      T_{\logic{cc}}(\psi \synimplies \theta) \coloneqq \begin{cases}
+        \syntop,                   &\psi' = \synbot \T{or} \theta' = \syntop \\
+        \theta',                   &\T{otherwise if} \psi' = \syntop \\
+        \synneg \psi',             &\T{otherwise if} \theta' = \synbot \\
+        \psi' \synimplies \theta', &\T{otherwise.}
+      \end{cases}
+    \end{equation*}
+
+    The replacements here are justified by \cref{thm:def:heyting_algebra/leq}, \cref{thm:def:heyting_algebra/top_left} and the definition \eqref{eq:def:heyting_algebra/pseudocomplement} of pseudocomplement, respectively.
+
+    \thmitem{alg:propositional_constant_collapse/biconditional} Finally, the case \( \varphi = \psi \syniff \theta \) is a bit different:
+    \begin{equation*}
+      T_{\logic{cc}}(\psi \syniff \theta) \coloneqq \begin{cases}
+        \syntop,                   &\psi' = \theta' = \syntop \T{or} \psi' = \theta' = \synbot \\
+        \synbot,                   &(\psi' = \syntop \T{and} \theta' = \synbot) \T{or} (\psi' = \synbot \T{and} \theta' = \syntop) \\
+        \psi' \syniff \theta',     &\T{otherwise.}
+      \end{cases}
+    \end{equation*}
+  \end{thmenum}
+\end{algorithm}
+\begin{comments}
+  \item This algorithm can be found as \identifier{math.logic.transformation.constants.collapse_constants} in \cite{notebook:code}.
+\end{comments}
+\begin{defproof}
+  For a fixed interpretation, \cref{thm:propositional_subformula_substitution_equivalence} justifies replacing the subformulas of \( \varphi \) with their substitute.
+\end{defproof}
+
+\begin{algorithm}[Propositional constant expansion]\label{alg:propositional_constant_expansion}
+  We introduce an operator \( T_{\logic{ce}} \) on \hyperref[def:propositional_formula]{propositional formulas} that removes propositional constants at the cost of possibly introducing new variables.
+
+  Unlike the collapsing of constants, this algorithm is much simpler. Denote by \( p_\varphi \) the lexicographically smallest variable in \( \varphi \), if such exists, and let \( p_\varphi \) be the default variable \( \synp \) otherwise. Define
+  \begin{equation*}
+    T_{\logic{ce}}(\varphi) \coloneqq \begin{cases}
+      p_\varphi \synimplies p_\varphi,       &\varphi = \syntop \\
+      p_\varphi \synwedge \synneg p_\varphi, &\varphi = \synbot \\
+      \hyperref[rem:straightforward_traversal]{\T{straightforward traversal}}, &\T{otherwise.}
+    \end{cases}
+  \end{equation*}
+\end{algorithm}
+\begin{comments}
+  \item This algorithm can be found as \identifier{math.logic.transformation.constants.expand_constants} in \cite{notebook:code}.
+\end{comments}
+\begin{proof}
+  The replacement is justified by \eqref{eq:thm:intuitionistic_tautologies/self} and \cref{thm:intuitionistic_equivalences/contradiction}.
 \end{proof}
 
 \paragraph{Conjunctive and disjunctive normal forms}
@@ -214,7 +336,7 @@ For propositional logic, We will also find useful the ability to replace an enti
   We will now introduce \term[ru=конъюнктивная нормальная форма (\cite[def. 6.2]{Эдельман1975Логика}), en=conjunctive normal form (\cite[def. 1.3.10]{Hinman2005Logic})]{conjunctive normal forms} (CNF) and \term[ru=дизъюнктивная нормальная форма (\cite[def. 6.2]{Эдельман1975Логика}), en=disjunctive normal form (\cite[def. 1.3.10]{Hinman2005Logic})]{disjunctive normal forms} (DNF) for propositional formulas.
 
   The structure of these formulas is best described by the following extension of the \hyperref[def:propositional_formula]{propositional formula grammar schema}:
-  \begin{bnf*}
+  \begin{longbnf*}
     \bnfprod{positive literal}       {\bnfpn{propositional variable}} \\
     \bnfprod{negative literal}       {\synneg \bnfpn{propositional variable}} \\
     \bnfprod{literal}                {\bnfpn{positive literal}       \bnfor \bnfpn{negative literal}} \\
@@ -224,11 +346,11 @@ For propositional logic, We will also find useful the ability to replace an enti
     \bnfprod{elementary conjunction} {\bnfpn{literal} \bnfor} \\
     \bnfmore                         {\bnftsq{(} \bnfsp \bnfpn{elem. conjunction} \bnfsp \bnftsq{\( \synvee \)} \bnfsp \bnfpn{elem. conjunction} \bnfsp \bnftsq{)}} \\
     \bnfprod{DNF}                    {\bnfpn{elementary conjunction} \bnfor \bnftsq{(} \bnfsp \bnfpn{DNF}              \bnfsp \bnftsq{\( \synvee \)}   \bnfsp \bnfpn{DNF}             \bnfsp \bnftsq{)}}
-  \end{bnf*}
+  \end{longbnf*}
 \end{definition}
 \begin{comments}
   \item The terms \enquote{literal}, \enquote{positive literal} and \enquote{negative literal} are used by \incite[def. 12.2.1]{Rosen2019DiscreteMathematics}, \incite[103]{DaveyPriestley2002LatticeTheory}, \incite[77]{Mimram2020ProgramEqualsProof} and \incite[132]{Savage2008ModelsOfComputation}. The adjective \enquote{elementary} for conjunctions and disjunctions is based on \cite[36]{Эдельман1975Логика}.
-  \item The concepts are related but distinct from that of \hyperref[rem:lattice_polynomials]{lattice polynomials}.
+  \item With only positive literals, this becomes a particular syntax for \hyperref[rem:lattice_polynomials]{lattice polynomials}.
   \item As usual, we utilize the convention in \cref{rem:propositional_formula_notation_conventions} and avoid excessive parentheses.
 \end{comments}
 
@@ -293,7 +415,7 @@ For propositional logic, We will also find useful the ability to replace an enti
   \begin{equation*}
     \begin{aligned}
       \id(\varphi) \coloneqq \begin{cases}
-        \varphi,                        &\varphi \in \set{ \syntop, \synbot } \\
+        \varphi,                        &\varphi \in \op*{PConst} \\
         \varphi,                        &\varphi \in \op*{Prop} \\
         \synneg \id(\psi),              &\varphi = \synneg \psi, \\
         \id(\psi) \syncirc \id(\theta), &\varphi = \psi \syncirc \theta, {\syncirc} \in \op*{Conn}, \\
@@ -305,7 +427,7 @@ For propositional logic, We will also find useful the ability to replace an enti
   \begin{equation*}
     \begin{aligned}
       R(\varphi) \coloneqq \begin{cases}
-        \varphi,                     &\varphi \in \set{ \syntop, \synbot } \\
+        \varphi,                     &\varphi \in \op*{PConst} \\
         \varphi,                     &\varphi \in \op*{Prop} \\
         R(\psi) \synimplies \synbot, &\varphi = \synneg \psi, \\
         R(\psi) \syncirc R(\theta),  &\varphi = \psi \syncirc \theta, {\syncirc} \in \op*{Conn}, \\
@@ -323,7 +445,7 @@ For propositional logic, We will also find useful the ability to replace an enti
     \end{aligned}
   \end{equation*}
 
-  In computer programming, this exact problem is solved via the visitor design pattern --- visitors for formulas of first-order logic can be found in \cite{notebook:code}.
+  In computer programming, this exact problem is solved via the visitor design pattern --- generic visitors for formulas of first-order logic can be found in the module \identifier{math.logic.formulas.formula_visitor} in \cite{notebook:code}.
 \end{remark}
 
 \begin{algorithm}[Formula to CNF or DNF]\label{alg:cnf_and_dnf}
@@ -347,7 +469,7 @@ For propositional logic, We will also find useful the ability to replace an enti
       \end{cases}
     \end{equation*}
 
-    \Cref{thm:propositional_substitution_equivalence} implies that, since \( \synp \synvee \synneg \synp \gleichstark \syntop \) and \( \synp \synwedge \synneg \synp \gleichstark \synbot \), then \( C_1(\varphi) \gleichstark \varphi \).
+    \Cref{thm:propositional_subformula_substitution_equivalence} implies that, since \( \synp \synvee \synneg \synp \gleichstark \syntop \) and \( \synp \synwedge \synneg \synp \gleichstark \synbot \), then \( C_1(\varphi) \gleichstark \varphi \).
 
     \thmitem{alg:cnf_and_dnf/conditional} Next, we remove the conditional \( \synimplies \) and biconditional \( \syniff \). Let
     \begin{equation*}
@@ -698,3 +820,55 @@ For propositional logic, We will also find useful the ability to replace an enti
 
   Injectivity of \( \Phi \) is also obvious from the definition of semantic equivalence, while surjectivity is given by \fullref{alg:full_cnf_and_dnf}.
 \end{proof}
+
+\paragraph{Dual formulas}
+
+\begin{algorithm}[Dual propositional formulas]\label{alg:dual_propositional_formulas}
+  We introduce several operators on \hyperref[def:propositional_formula]{propositional formulas} that produce dual formulas. With logical operations regarded as Boolean algebra operations, these correspond exactly to the transformations from \fullref{thm:boolean_algebra_duality}. These substitutions are only sound with respect to \hyperref[def:truth_value_algebra/intuitionistic]{classical semantics}.
+
+  \begin{thmenum}
+    \thmitem{alg:opposite_propositional_formula/literals} The following only exchanges every variable with its negation:
+    \begin{equation*}
+      \varphi^{\oppos_L} \coloneqq \begin{cases}
+        \varphi,                                    &\varphi \in \op*{PConst}, \\
+        \synneg \varphi,                            &\varphi \in \op*{Prop}, \\
+        \psi,                                       &\varphi = \synneg \psi \T{and} \psi \in \op*{Prop}, \\
+        \synneg \psi^{\oppos_L},                    &\varphi = \synneg \psi \T{and} \psi \not\in \op*{Prop}, \\
+        \psi^{\oppos_L} \syncirc \theta^{\oppos_L}, &\varphi = \psi \syncirc \theta. \\
+      \end{cases}
+    \end{equation*}
+
+    The letter \enquote{L} comes from \enquote{literal} since propositional variables and their negations are called so in the context of \hyperref[def:cnf_and_dnf]{conjunctive and disjunctive normal forms}.
+
+    \thmitem{alg:opposite_propositional_formula/connectives} The following instead exchanges dual connectives and swaps propositional constants:
+    \begin{equation*}
+      \varphi^{\oppos_C} \coloneqq \begin{cases}
+        \synbot,                                       &\varphi = \syntop, \\
+        \syntop,                                       &\varphi = \synbot, \\
+        \varphi,                                       &\varphi \in \op*{Prop}, \\
+        \synneg \psi^{\oppos_C},                       &\varphi = \synneg \psi, \\
+        \psi^{\oppos_C} \synvee \theta^{\oppos_C},     &\varphi = \psi \synwedge \theta, \\
+        \psi^{\oppos_C} \synwedge \theta^{\oppos_C},   &\varphi = \psi \synvee \theta, \\
+        \theta^{\oppos_C} \synimplies \psi^{\oppos_C}, &\varphi = \psi \synimplies \theta, \\
+        \psi^{\oppos_C} \syniff \theta^{\oppos_C},     &\varphi = \psi \syniff \theta. \\
+      \end{cases}
+    \end{equation*}
+
+    Note that we exchange every conditional formula with its converse, but preserve the biconditionals.
+
+    \thmitem{alg:opposite_propositional_formula/combined} Finally, since the two commute, we can compose them in any order to obtain \( \varphi^{\oppos_{LC}} \).
+  \end{thmenum}
+\end{algorithm}
+\begin{comments}
+  \item This algorithm can be found as \identifier{math.logic.transformation.negation.to_dual_formula} in \cite{notebook:code}.
+\end{comments}
+
+\begin{proposition}\label{thm:opposite_propositional_formula_semantics}
+  Under \hyperref[def:truth_value_algebra/intuitionistic]{classical semantics}, the dual formula operators from \fullref{alg:opposite_propositional_formula} behave as follows with respect to a \hyperref[def:propositional_interpretation]{propositional interpretation} \( I \):
+  \begin{equation*}
+    \Bracks{\varphi}_I = \Bracks{\varphi^{\oppos_{LC}}}_I = \oline{\Bracks{\varphi^{\oppos_L}}_I} = \oline{\Bracks{\varphi^{\oppos_C}}_I}.
+  \end{equation*}
+\end{proposition}
+\begin{comments}
+  \item Follows from \fullref{thm:boolean_algebra_duality}.
+\end{comments}

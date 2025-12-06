@@ -13,6 +13,9 @@ from .formulas import (
     is_conditional,
     is_conjunction,
     is_disjunction,
+    is_logical_constant,
+    is_negation,
+    is_predicate_application,
 )
 from .schema_sub import FormulaSchemaSubstitutionSpec
 from .schema_visitor import FormulaSchemaVisitor

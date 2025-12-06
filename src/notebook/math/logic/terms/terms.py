@@ -13,6 +13,9 @@ class Variable:
     def __str__(self) -> str:
         return str(self.identifier)
 
+    def __repr__(self) -> str:
+        return f"parse_term('{self}')"
+
 
 @dataclass(frozen=True)
 class SyntacticApplication[ArgT]:
@@ -46,6 +49,9 @@ class SyntacticApplication[ArgT]:
 
 class FunctionApplication(SyntacticApplication['Term']):
     symbol: FunctionSymbol
+
+    def __repr__(self) -> str:
+        return f"parse_term('{self}')"
 
 
 Term = Variable | FunctionApplication

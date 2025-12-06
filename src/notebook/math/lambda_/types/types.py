@@ -12,6 +12,9 @@ class BaseType:
     def __str__(self) -> str:
         return str(self.name)
 
+    def __repr__(self) -> str:
+        return f"parse_type('{self}')"
+
 
 @dataclass(frozen=True)
 class TypeVariable:
@@ -19,6 +22,9 @@ class TypeVariable:
 
     def __str__(self) -> str:
         return str(self.identifier)
+
+    def __repr__(self) -> str:
+        return f"parse_type('{self}')"
 
 
 @dataclass(frozen=True)
@@ -29,6 +35,9 @@ class SimpleConnectiveType:
 
     def __str__(self) -> str:
         return f'({self.left} {self.conn} {self.right})'
+
+    def __repr__(self) -> str:
+        return f"parse_type('{self}')"
 
 
 SimpleType = BaseType | TypeVariable | SimpleConnectiveType

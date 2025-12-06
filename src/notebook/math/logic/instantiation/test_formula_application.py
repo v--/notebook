@@ -5,11 +5,8 @@ import pytest
 from ....support.pytest import pytest_parametrize_kwargs
 from ....support.schemas import SchemaInstantiationError
 from ..formulas import Formula
-from ..parsing import (
-    parse_formula_placeholder,
-    parse_formula_schema,
-    parse_propositional_formula,
-)
+from ..parsing import parse_formula_placeholder, parse_formula_schema
+from ..propositional import parse_propositional_formula
 from .base import FormalLogicSchemaInstantiation
 from .formula_application import instantiate_formula_schema
 

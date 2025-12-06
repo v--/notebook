@@ -2,7 +2,7 @@ from collections.abc import Sequence
 from textwrap import dedent
 
 from ....support.pytest import pytest_parametrize_kwargs, pytest_parametrize_lists
-from ..parsing import parse_propositional_formula
+from ..propositional import parse_propositional_formula
 from .axiomatic_derivation import (
     AxiomaticDerivation,
     are_derivations_equivalent,
