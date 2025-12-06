@@ -56,7 +56,7 @@ async def setup_watchers(manager: TaskRunner, base_logger: loguru.Logger, *, reb
         if path.match('src/notebook/figures/*.py') and path.name != '__init__.py':
             manager.schedule(PythonTask(target, reason='watcher', base_logger=base_logger))
 
-        if target.kind == TaskTriggerKind.BUILD:
+        if target.kind == TaskTriggerKind.BUILD or path.match('includeonly'):
             if rebuild_all_figures:
                 if path.match('asymptote/*.asy'):
                     for figure_path in FIGURES_PATH.glob('*.asy'):
@@ -79,14 +79,14 @@ async def setup_watchers(manager: TaskRunner, base_logger: loguru.Logger, *, reb
                             )
                         )
 
-            if not path.match('output/notebook.pdf') and (
+            if (
                 path.match('notebook.tex') or
                 path.match('includeonly') or
                 path.match('classes/notebook.cls') or
                 path.match('bibliography/*.bib') or
                 path.match('text/*.tex') or
                 path.match('images/*') or
-                path.match('output/*') or
+                (path.match('output/*') and not path.match('output/notebook.pdf')) or
                 path.match('packages/*.sty')
             ):
                 manager.schedule(
