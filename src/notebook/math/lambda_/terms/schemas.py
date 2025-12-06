@@ -13,6 +13,9 @@ class VariablePlaceholder:
     def __str__(self) -> str:
         return str(self.identifier)
 
+    def __repr__(self) -> str:
+        return f"parse_term_schema('{self}')"
+
 
 @dataclass(frozen=True)
 class TermPlaceholder:
@@ -20,6 +23,9 @@ class TermPlaceholder:
 
     def __str__(self) -> str:
         return str(self.identifier)
+
+    def __repr__(self) -> str:
+        return f"parse_term_schema('{self}')"
 
 
 @dataclass(frozen=True)
@@ -30,6 +36,9 @@ class TypedApplicationSchema:
     def __str__(self) -> str:
         return f'({self.left}{self.right})'
 
+    def __repr__(self) -> str:
+        return f"parse_term_schema('{self}')"
+
 
 @dataclass(frozen=True)
 class TypedAbstractionSchema:
@@ -39,6 +48,9 @@ class TypedAbstractionSchema:
 
     def __str__(self) -> str:
         return f'({BinderSymbol.LAMBDA}{self.var}:{self.var_type}.{self.body})'
+
+    def __repr__(self) -> str:
+        return f"parse_term_schema('{self}')"
 
 
 TypedTermSchema = Constant | VariablePlaceholder | TermPlaceholder | TypedApplicationSchema | TypedAbstractionSchema

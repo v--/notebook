@@ -26,7 +26,7 @@ def ramsey_upper_bound(s: int, t: int, *rest: int) -> int:
 def enumerate_edge_coloring_sequences(n: int, r: int) -> Iterable[Collection[int]]:
     colors = list(range(r))
     m = choose(n, 2)
-    yield from itertools.product(*([colors] * m))
+    yield from itertools.product(colors, repeat=m)
 
 
 def enumerate_complete_graph_coloring(n: int, r: int) -> Iterable[EdgeColoredGraph]:

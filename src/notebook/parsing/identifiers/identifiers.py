@@ -23,6 +23,9 @@ class BaseIdentifier(StringContainer):
         return self.value + itoa_subscripts(self.index)
 
     def __repr__(self) -> str:
+        if self.index is None:
+            return f'{type(self).__name__}({self.value!r})'
+
         return f'{type(self).__name__}({self.value!r}, {self.index})'
 
     def __le__(self, other: Self) -> bool:

@@ -1,7 +1,7 @@
 from collections.abc import Callable
 
 from ....support.pytest import pytest_parametrize_kwargs, pytest_parametrize_lists
-from ..parsing import parse_propositional_formula
+from ..propositional import parse_propositional_formula
 from .conjunctive import formula_to_cnf, function_to_cnf, is_formula_in_cnf, pull_conjunction
 
 

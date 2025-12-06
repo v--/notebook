@@ -1,7 +1,7 @@
 from collections.abc import Collection, Sequence
 
 from ....support.pytest import pytest_parametrize_kwargs
-from ..parsing import parse_propositional_formula
+from ..propositional import parse_propositional_formula
 from .axiomatic_derivation import AxiomaticDerivation, get_premises
 from .minimal_implicational_logic import (
     IMPLICATIONAL_AXIOMS,

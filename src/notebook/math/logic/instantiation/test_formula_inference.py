@@ -1,8 +1,6 @@
 from ....support.pytest import pytest_parametrize_kwargs
-from ..parsing import (
-    parse_formula_schema,
-    parse_propositional_formula,
-)
+from ..parsing import parse_formula_schema
+from ..propositional import parse_propositional_formula
 from .formula_inference import is_formula_schema_instance
 
 

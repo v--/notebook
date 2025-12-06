@@ -13,6 +13,9 @@ class ConstantFormula:
     def __str__(self) -> str:
         return str(self.value)
 
+    def __repr__(self) -> str:
+        return f"parse_formula('{self}')"
+
 
 @dataclass(frozen=True)
 class EqualityFormula:
@@ -22,9 +25,15 @@ class EqualityFormula:
     def __str__(self) -> str:
         return f'({self.left} = {self.right})'
 
+    def __repr__(self) -> str:
+        return f"parse_formula('{self}')"
+
 
 class PredicateApplication(SyntacticApplication[Term]):
     symbol: PredicateSymbol
+
+    def __repr__(self) -> str:
+        return f"parse_formula('{self}')"
 
 
 @dataclass(frozen=True)
@@ -33,6 +42,9 @@ class NegationFormula:
 
     def __str__(self) -> str:
         return f'{UnaryPrefix.NEGATION}{self.body}'
+
+    def __repr__(self) -> str:
+        return f"parse_formula('{self}')"
 
 
 @dataclass(frozen=True)
@@ -44,6 +56,9 @@ class ConnectiveFormula:
     def __str__(self) -> str:
         return f'({self.left} {self.conn} {self.right})'
 
+    def __repr__(self) -> str:
+        return f"parse_formula('{self}')"
+
 
 @dataclass(frozen=True)
 class QuantifierFormula:
@@ -54,12 +69,27 @@ class QuantifierFormula:
     def __str__(self) -> str:
         return f'{self.quantifier.value}{self.var}.{self.body}'
 
+    def __repr__(self) -> str:
+        return f"parse_formula('{self}')"
+
 
 Formula = ConstantFormula | EqualityFormula | PredicateApplication | NegationFormula | ConnectiveFormula | QuantifierFormula
 
 
+def is_logical_constant(formula: Formula) -> TypeGuard[ConstantFormula]:
+    return isinstance(formula, ConstantFormula)
+
+
+def is_predicate_application(formula: Formula) -> TypeGuard[PredicateApplication]:
+    return isinstance(formula, PredicateApplication)
+
+
 def is_atomic(formula: Formula) -> TypeGuard[ConstantFormula | EqualityFormula | PredicateApplication]:
     return isinstance(formula, ConstantFormula | EqualityFormula | PredicateApplication)
+
+
+def is_negation(formula: Formula) -> TypeGuard[NegationFormula]:
+    return isinstance(formula, NegationFormula)
 
 
 def is_disjunction(formula: Formula) -> TypeGuard[ConnectiveFormula]:

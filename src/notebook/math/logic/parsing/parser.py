@@ -28,7 +28,6 @@ from ..formulas import (
     QuantifierFormula,
     QuantifierFormulaSchema,
 )
-from ..propositional import PROPOSITIONAL_SIGNATURE
 from ..signature import (
     EMPTY_SIGNATURE,
     FormalLogicSignature,
@@ -625,10 +624,6 @@ def parse_formula(source: str, signature: FormalLogicSignature = EMPTY_SIGNATURE
 
     with FormalLogicParser(signature, source, tokens) as parser:
         return parser.parse_formula(parse_schema=False)
-
-
-def parse_propositional_formula(source: str) -> Formula:
-    return parse_formula(source, PROPOSITIONAL_SIGNATURE)
 
 
 def parse_formula_schema(source: str, signature: FormalLogicSignature = EMPTY_SIGNATURE) -> FormulaSchema:
