@@ -4,7 +4,7 @@ from .exceptions import (
     TypeInferenceError,
     UnknownDerivationRuleError,
 )
-from .substitution import TypeDerivationSubstitution, apply_tree_substitution_to_term, substitute_term
+from .substitution import AtomicTypeDerivationSubstitution, apply_tree_substitution_to_term, substitute_term
 from .tree import (
     AssumptionTree,
     RuleApplicationPremise,

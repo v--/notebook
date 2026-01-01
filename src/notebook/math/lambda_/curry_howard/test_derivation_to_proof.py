@@ -3,11 +3,11 @@ from textwrap import dedent
 from ....support.pytest import pytest_parametrize_kwargs
 from ...logic.classical_logic import CLASSICAL_NATURAL_DEDUCTION_SYSTEM
 from ...logic.deduction import proof_tree as ptree
-from ...logic.instantiation import FormalLogicSchemaInstantiation
+from ...logic.instantiation import AtomicLogicSchemaInstantiation
 from ...logic.parsing import parse_formula, parse_formula_placeholder, parse_marker
 from ...logic.signature import FormalLogicSignature
 from ..algebraic_types import SIMPLE_ALGEBRAIC_SIGNATURE, SIMPLE_ALGEBRAIC_TYPE_SYSTEM
-from ..instantiation import LambdaSchemaInstantiation
+from ..instantiation import AtomicLambdaSchemaInstantiation
 from ..parsing import (
     parse_type,
     parse_type_placeholder,
@@ -76,7 +76,7 @@ class TestTypeDerivationToProofTree:
             dtree.assume(
                 parse_variable_assertion('x: 𝟘', SIMPLE_ALGEBRAIC_SIGNATURE),
             ),
-            instantiation=LambdaSchemaInstantiation(
+            instantiation=AtomicLambdaSchemaInstantiation(
                 type_mapping={
                     parse_type_placeholder('τ'): parse_type('τ')
                 }
@@ -96,7 +96,7 @@ class TestTypeDerivationToProofTree:
                 parse_formula('⊥', ch_logic_dummy_signature),
                 parse_marker('x')
             ),
-            instantiation=FormalLogicSchemaInstantiation(
+            instantiation=AtomicLogicSchemaInstantiation(
                 formula_mapping={
                     parse_formula_placeholder('φ'): parse_formula('τ', ch_logic_dummy_signature)
                 }
@@ -232,7 +232,7 @@ class TestTypeDerivationToProofTree:
                     dtree.assume(
                         parse_variable_assertion('b: 𝟘', SIMPLE_ALGEBRAIC_SIGNATURE),
                     ),
-                    instantiation=LambdaSchemaInstantiation(
+                    instantiation=AtomicLambdaSchemaInstantiation(
                         type_mapping={
                             parse_type_placeholder('τ'): parse_type('τ')
                         }
@@ -272,7 +272,7 @@ class TestTypeDerivationToProofTree:
                         parse_formula('⊥', ch_logic_dummy_signature),
                         parse_marker('b')
                     ),
-                    instantiation=FormalLogicSchemaInstantiation(
+                    instantiation=AtomicLogicSchemaInstantiation(
                         formula_mapping={
                             parse_formula_placeholder('φ'): parse_formula('τ', ch_logic_dummy_signature)
                         }
@@ -301,7 +301,7 @@ class TestTypeDerivationToProofTree:
                     dtree.assume(
                         parse_variable_assertion('a: σ'),
                     ),
-                    instantiation=LambdaSchemaInstantiation(
+                    instantiation=AtomicLambdaSchemaInstantiation(
                         type_mapping={
                             parse_type_placeholder('τ'): parse_type('τ')
                         }
@@ -318,7 +318,7 @@ class TestTypeDerivationToProofTree:
                             parse_variable_assertion('x: (τ × (σ + ρ))'),
                         )
                     ),
-                    instantiation=LambdaSchemaInstantiation(
+                    instantiation=AtomicLambdaSchemaInstantiation(
                         type_mapping={
                             parse_type_placeholder('σ'): parse_type('σ')
                         }
@@ -326,7 +326,7 @@ class TestTypeDerivationToProofTree:
                 ),
                 discharge=parse_variable_assertion('b: ρ')
             ),
-            instantiation=LambdaSchemaInstantiation(
+            instantiation=AtomicLambdaSchemaInstantiation(
                 variable_mapping={
                     parse_variable_placeholder('y'): parse_variable('b'),
                 }
@@ -360,7 +360,7 @@ class TestTypeDerivationToProofTree:
                         parse_formula('σ', ch_logic_dummy_signature),
                         marker=parse_marker('a')
                     ),
-                    instantiation=FormalLogicSchemaInstantiation(
+                    instantiation=AtomicLogicSchemaInstantiation(
                         formula_mapping={
                             parse_formula_placeholder('φ'): parse_formula('τ', ch_logic_dummy_signature)
                         }
@@ -379,7 +379,7 @@ class TestTypeDerivationToProofTree:
                             marker=parse_marker('x')
                         )
                     ),
-                    instantiation=FormalLogicSchemaInstantiation(
+                    instantiation=AtomicLogicSchemaInstantiation(
                         formula_mapping={
                             parse_formula_placeholder('ψ'): parse_formula('σ', ch_logic_dummy_signature)
                         }

@@ -1,5 +1,5 @@
-from .conjunctive import formula_to_cnf, function_to_cnf, is_formula_in_cnf
-from .constants import collapse_constants, expand_constants
-from .dual import DualFormulaKind, to_dual_formula
-from .prenex import formula_to_pnf, is_formula_in_pnf
-from .skolem import is_formula_in_snf
+from .collapse_constants import collapse_constants, collapse_constants_prop
+from .dualize_formula import dualize_formula, dualize_formula_prop
+from .expand_constants import expand_constants, expand_constants_prop
+from .pull_quantifiers import pull_quantifiers
+from .quantifier_closure import existential_closure, quantifier_closure, universal_closure

@@ -4,7 +4,7 @@ from typing import Literal, cast, overload
 
 from ....parsing import GreekIdentifier, IdentifierParserMixin, Parser
 from ....support.substitution import ImproperSubstitutionSymbol
-from ..alphabet import BinaryConnective, PropConstant, Quantifier, UnaryPrefix
+from ..alphabet import BinaryConnective, PropConstantSymbol, Quantifier, UnaryPrefix
 from ..deduction import (
     Marker,
     NaturalDeductionPremise,
@@ -13,7 +13,6 @@ from ..deduction import (
 from ..formulas import (
     ConnectiveFormula,
     ConnectiveFormulaSchema,
-    ConstantFormula,
     EqualityFormula,
     EqualityFormulaSchema,
     Formula,
@@ -25,6 +24,7 @@ from ..formulas import (
     NegationFormulaSchema,
     PredicateApplication,
     PredicateApplicationSchema,
+    PropConstant,
     QuantifierFormula,
     QuantifierFormulaSchema,
 )
@@ -146,9 +146,6 @@ class FormalLogicParser(IdentifierParserMixin[LogicTokenKind, LogicToken], Parse
     def _iter_condensed_notation_args(self, context: LogicParserContext, symbol: SignatureSymbol, *, parse_schema: bool) -> Iterable[Term] | Iterable[TermSchema]:
         head = self.peek()
 
-        if head and head.kind == 'LEFT_PARENTHESIS':
-            raise context.annotate_context_error(f'Parentheses are disallowed for the symbol {symbol} that uses condensed notation')
-
         for _ in range(symbol.arity):
             head = self.peek()
 
@@ -187,11 +184,11 @@ class FormalLogicParser(IdentifierParserMixin[LogicTokenKind, LogicToken], Parse
 
         return cast(Sequence[TermSchema] | Sequence[Term], arguments)
 
-    def _parse_constant_formula(self) -> ConstantFormula:
+    def _parse_constant_formula(self) -> PropConstant:
         head = self.peek_unsafe()
         self.advance()
-        return ConstantFormula(
-            PropConstant(head.value)
+        return PropConstant(
+            PropConstantSymbol(head.value)
         )
 
     @overload
@@ -219,7 +216,7 @@ class FormalLogicParser(IdentifierParserMixin[LogicTokenKind, LogicToken], Parse
         head = self.advance_and_peek()
 
         if not head or head.kind != 'LATIN_IDENTIFIER':
-            raise context.annotate_context_error('Expected a variable after the quantifier')
+            raise context.annotate_context_error('Expected a variable after the quant')
 
         var = self.parse_variable(parse_schema=parse_schema)
         head = self.peek()
@@ -244,6 +241,9 @@ class FormalLogicParser(IdentifierParserMixin[LogicTokenKind, LogicToken], Parse
     @overload
     def _parse_parenthesized(self, context: LogicParserContext, *, parse_schema: bool) -> FunctionApplication | ConnectiveFormula | EqualityFormula | PredicateApplication | FunctionApplicationSchema | ConnectiveFormulaSchema | EqualityFormulaSchema | PredicateApplicationSchema: ...
     def _parse_parenthesized(self, context: LogicParserContext, *, parse_schema: bool) -> FunctionApplication | ConnectiveFormula | EqualityFormula | PredicateApplication | FunctionApplicationSchema | ConnectiveFormulaSchema | EqualityFormulaSchema | PredicateApplicationSchema:  # noqa: C901,PLR0915
+        if not self.peek():
+            raise context.annotate_context_error(f'Parenthesized {'expression schema' if parse_schema else 'expression'} must start with a subexpression')
+
         left_context = LogicParserContext(self)
         left = self._parse(left_context, parse_schema=parse_schema)
         left_context.close_at_previous_token()
@@ -466,6 +466,9 @@ class FormalLogicParser(IdentifierParserMixin[LogicTokenKind, LogicToken], Parse
     @overload
     def parse_term_substitution_spec(self, *, parse_schema: bool) -> TermSubstitutionSpec | TermSchemaSubstitutionSpec | EigenvariableSchemaSubstitutionSpec: ...
     def parse_term_substitution_spec(self, *, parse_schema: bool) -> TermSubstitutionSpec | TermSchemaSubstitutionSpec | EigenvariableSchemaSubstitutionSpec:
+        if not self.peek():
+            raise self.annotate_unexpected_end_of_input()
+
         context = LogicParserContext(self)
         src = self.parse_variable(parse_schema=parse_schema)
         head = self.peek()
@@ -505,6 +508,9 @@ class FormalLogicParser(IdentifierParserMixin[LogicTokenKind, LogicToken], Parse
     @overload
     def parse_formula_with_substitution(self, *, parse_schema: bool) -> FormulaWithSubstitution | FormulaSchemaSubstitutionSpec: ...
     def parse_formula_with_substitution(self, *, parse_schema: bool) -> FormulaWithSubstitution | FormulaSchemaSubstitutionSpec:
+        if not self.peek():
+            raise self.annotate_unexpected_end_of_input()
+
         context = LogicParserContext(self)
         formula = self.parse_formula(parse_schema=parse_schema)
 

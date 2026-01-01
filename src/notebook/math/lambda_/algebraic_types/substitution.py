@@ -4,14 +4,14 @@ from typing import override
 
 from ....support.substitution import UnspecifiedReplacementError
 from ..assertions import VariableTypeAssertion
-from ..instantiation import LambdaSchemaInstantiation
+from ..instantiation import AtomicLambdaSchemaInstantiation
 from ..terms import TypedAbstraction, Variable
 from ..type_derivation import (
     AssumptionTree,
+    AtomicTypeDerivationSubstitution,
     RuleApplicationPremise,
     RuleApplicationTree,
     TypeDerivationError,
-    TypeDerivationSubstitution,
     TypeDerivationTree,
     apply,
     apply_tree_substitution_to_term,
@@ -23,7 +23,7 @@ from .visitor import SimpleAlgebraicDerivationTreeVisitor
 
 @dataclass
 class TreeSubstitutionVisitor(SimpleAlgebraicDerivationTreeVisitor[TypeDerivationTree]):
-    substitution: TypeDerivationSubstitution
+    substitution: AtomicTypeDerivationSubstitution
 
     @override
     def visit_assumption(self, tree: AssumptionTree) -> TypeDerivationTree:
@@ -44,7 +44,7 @@ class TreeSubstitutionVisitor(SimpleAlgebraicDerivationTreeVisitor[TypeDerivatio
             for placeholder, term in tree.instantiation.term_mapping.items()
         }
 
-        instantiation = LambdaSchemaInstantiation(
+        instantiation = AtomicLambdaSchemaInstantiation(
             term_mapping=term_mapping,
             type_mapping=tree.instantiation.type_mapping,
         )
@@ -101,13 +101,13 @@ class TreeSubstitutionVisitor(SimpleAlgebraicDerivationTreeVisitor[TypeDerivatio
         )
 
 
-# This is def:lambda_term_substitution in the monograph
-def apply_substitution_to_tree(tree: TypeDerivationTree, substitution: TypeDerivationSubstitution) -> TypeDerivationTree:
+# This is def:atomic_lambda_term_substitution in the monograph
+def apply_substitution_to_tree(tree: TypeDerivationTree, substitution: AtomicTypeDerivationSubstitution) -> TypeDerivationTree:
     return TreeSubstitutionVisitor(substitution).visit(tree)
 
 
 def substitute_in_tree(tree: TypeDerivationTree, variable_mapping: Mapping[Variable, TypeDerivationTree]) -> TypeDerivationTree:
     return apply_substitution_to_tree(
         tree,
-        TypeDerivationSubstitution(variable_mapping=variable_mapping)
+        AtomicTypeDerivationSubstitution(variable_mapping=variable_mapping)
     )

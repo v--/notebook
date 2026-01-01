@@ -8,7 +8,7 @@ from .reduct import reduct_along_signature_morphism
 
 def test_modular_reduct() -> None:
     morphism = SignatureMorphism(GROUP_SIGNATURE, {
-        GROUP_SIGNATURE['1']: ARITHMETIC_SIGNATURE['0'],
+        GROUP_SIGNATURE['𝕖']: ARITHMETIC_SIGNATURE['0'],
         GROUP_SIGNATURE['~']: ARITHMETIC_SIGNATURE['~'],
         GROUP_SIGNATURE['⋅']: ARITHMETIC_SIGNATURE['+'],
     })

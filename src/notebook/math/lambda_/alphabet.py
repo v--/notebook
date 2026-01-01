@@ -17,4 +17,4 @@ class AuxImproperSymbol(StrEnum):
 class BinaryTypeConnective(StrEnum):
     ARROW = '→'
     SUM = '+'
-    PROD = '×'
+    PRODUCT = '×'

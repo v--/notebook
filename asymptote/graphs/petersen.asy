@@ -7,25 +7,25 @@ struct PetersenGraph {
   pair[] outer;
   pair[] inner;
 
-  void operator init(int n, int m, real outer_radius = 1, real inner_radius = 0.5) {
+  void operator init(int n, int m, pair center = (0, 0), real outer_radius = 1, real inner_radius = 0.5) {
     this.n = n;
     this.m = m;
 
     if (n == 2) {
       this.outer = new pair[] {
-        (-outer_radius, 0),
-        (outer_radius, 0)
+        center + (-outer_radius, 0),
+        center + (outer_radius, 0)
       };
 
       this.inner = new pair[] {
-        (-inner_radius, -inner_radius),
-        (inner_radius, -inner_radius)
+        center + (-inner_radius, -inner_radius),
+        center + (inner_radius, -inner_radius)
       };
 
       return;
     }
 
-    this.outer = CycleGraph(n, outer_radius).vert;
+    this.outer = CycleGraph(n, center, outer_radius).vert;
 
     for (int i = 0; i < n; ++i)
       this.inner[i] = inner_radius / outer_radius * this.outer[i];

@@ -2,6 +2,15 @@ import functools
 from collections.abc import Callable, Collection, Hashable, Iterable, Mapping, Sequence
 
 
+def power_set[T](base_set: Collection[T]) -> Collection[Collection[T]]:
+    if len(base_set) == 0:
+        return frozenset([frozenset()])
+
+    head, *tail = base_set
+    subset_power = power_set(tail)
+    return frozenset((*subset_power, *(frozenset((*subset, head)) for subset in subset_power)))
+
+
 def groupby_custom[K: Hashable, V](values: Iterable[V], by: Callable[[V], K]) -> Iterable[tuple[K, Sequence[V]]]:
     result: dict[K, list[V]] = {}
 

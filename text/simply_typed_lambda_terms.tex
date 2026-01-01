@@ -224,7 +224,7 @@ Typed \( \lambda \)-calculus shifts the perspective from terms to type derivatio
   \begin{thmenum}
     \thmitem{rem:simple_type_parentheses/outermost} As in \cref{rem:propositional_formula_notation_conventions/outermost} and \cref{rem:lambda_term_notation_conventions/outermost}, we avoid writing the outermost parentheses in types.
 
-    \thmitem{rem:simple_type_parentheses/arrow} We suppose that the arrow in arrow types is \hyperref[rem:binary_operation_syntax_trees/associativity]{right-associative}, which allows us to vastly simplify notation in some cases. This helps highlight the types of terms than can be \enquote{applied} to abstractions. See \cref{ex:def:type_derivation_tree/pairs} and \cref{ex:def:type_derivation_tree/disjoint} for examples.
+    \thmitem{rem:simple_type_parentheses/arrow} We suppose that the arrow in arrow types is \hyperref[con:one_sided_associativity/right]{right-associative}, which allows us to vastly simplify notation in some cases. This helps highlight the types of terms than can be \enquote{applied} to abstractions. See \cref{ex:def:type_derivation_tree/pairs} and \cref{ex:def:type_derivation_tree/disjoint} for examples.
 
     This convention is used by our main sources --- \incite[\S 2A1.1]{Hindley1997BasicSTT}, \incite[notation 3.1.2]{Barendregt1992LambdaCalculiWithTypes} and \incite[\S 4.1.1]{Mimram2020ProgramEqualsProof}.
   \end{thmenum}
@@ -344,17 +344,23 @@ To completely formalize the typing rules, which we will do in \cref{def:simple_t
   \item Similarly to propositional formula schemas, in the metalanguage we will denote arbitrary schemas via capital Greek identifiers like \( \Phi \).
 \end{comments}
 
-\begin{definition}\label{def:lambda_schema_instantiation}
+\begin{definition}\label{def:atomic_lambda_schema_instantiation}\mimprovised
   We define a \hyperref[con:schemas_and_instances]{schema instantiations} for \hyperref[def:type_assertion]{type assertions} featuring \hyperref[def:lambda_term_schema]{\( \muplambda \)-term schemas} and \hyperref[def:simple_type_schema]{simple type schemas} as a \hyperref[def:set_valued_map/partial]{partial map} \( \BbbI \) sending
   \begin{itemize}
     \item \hyperref[def:lambda_term_schema]{variable placeholders} to \hyperref[def:lambda_term]{variables},
     \item \hyperref[def:lambda_term_schema]{\( \muplambda \)-term placeholders} to \hyperref[def:lambda_term]{\( \muplambda \)-terms} and
     \item \hyperref[def:simple_type_schema]{type placeholders} to \hyperref[def:simple_type]{simple types}.
   \end{itemize}
+\end{definition}
+\begin{comments}
+  \item Another possibility is to keep instantiations for term and type schemas distinct. However, that would complicate handling typed terms and type assertions unnecessarily.
+\end{comments}
 
+\begin{algorithm}[Typed \( \muplambda \)-term schema instantiation]\label{alg:lambda_schema_instantiation}
+  We extend the \hyperref[def:atomic_lambda_schema_instantiation]{atomic \( \muplambda \)-term instantiation} \( \BbbI \) to all \hyperref[def:typed_lambda_term]{typed \( \muplambda \)-terms} as follows:
   \begin{thmenum}
-    \thmitem{def:lambda_schema_instantiation/types} We extend the instantiation \( \BbbI \) to compound simple types straightforwardly:
-    \begin{equation}\label{eq:def:lambda_schema_instantiation/types}
+    \thmitem{alg:lambda_schema_instantiation/types} We extend the instantiation \( \BbbI \) to compound simple types straightforwardly:
+    \begin{equation}\label{eq:alg:lambda_schema_instantiation/types}
       \Phi[\BbbI] \coloneqq \begin{cases}
         \tau,                                  &\tau \T{is a base type},        \\
         \BbbI(\tau),                           &\tau \T{is a placeholder},      \\
@@ -362,12 +368,12 @@ To completely formalize the typing rules, which we will do in \cref{def:simple_t
       \end{cases}
     \end{equation}
 
-    \thmitem{def:lambda_schema_instantiation/terms} We will not concern ourselves with \hyperref[def:lambda_variable_occurrence]{free and bound occurrence} of variables as in the case of \hyperref[def:lambda_term_substitution]{substitution}. As discussed in \cref{rem:pseudoterm_schemas}, lifting this restriction can be quite subtle.
+    \thmitem{alg:lambda_schema_instantiation/terms} We will not concern ourselves with \hyperref[def:lambda_variable_occurrence]{free and bound occurrence} of variables as in the case of \hyperref[def:atomic_lambda_term_substitution]{atomic substitution}. As discussed in \cref{rem:pseudoterm_schemas}, lifting this restriction can be quite subtle.
 
     We suppose that all occurrences of the same variable placeholder refer to the same variable.
 
     Thus, we extend \( \BbbI \) to compound \( \muplambda \)-term schemas as follows:
-    \begin{equation}\label{eq:def:lambda_schema_instantiation/terms}
+    \begin{equation}\label{eq:alg:lambda_schema_instantiation/terms}
       \Phi[\BbbI] \coloneqq \begin{cases}
         \Phi,                                       &\Phi \T{is a constant},             \\
         \BbbI(\Phi),                                &\Phi \T{is a variable placeholder}, \\
@@ -378,22 +384,22 @@ To completely formalize the typing rules, which we will do in \cref{def:simple_t
       \end{cases}
     \end{equation}
 
-    \thmitem{def:lambda_schema_instantiation/assertion} Finally, given an assertion \( \Psi: \Alpha \), we let
-    \begin{equation}\label{eq:def:lambda_schema_instantiation/assertion}
+    \thmitem{alg:lambda_schema_instantiation/assertion} Finally, given an assertion \( \Psi: \Alpha \), we let
+    \begin{equation}\label{eq:alg:lambda_schema_instantiation/assertion}
       (\Phi: \Alpha)[\BbbI] \coloneqq \Phi[\BbbI]: \Alpha[\BbbI]
     \end{equation}
   \end{thmenum}
-\end{definition}
+\end{algorithm}
 \begin{comments}
   \item Of course, an application of an instantiation is only valid if the placeholders are in its domain.
 
-  \item Another possibility is to keep instantiations for term and type schemas distinct. However, that would complicate handling typed terms and type assertions unnecessarily.
+  \item The parts of this algorithm can be found in the module \identifier{math.lambda_.instantiation} in \cite{notebook:code}.
 \end{comments}
 
 \begin{algorithm}[Simple type schema inference]\label{alg:simple_type_schema_inference}
   Fix a \hyperref[def:simple_type]{simple type} \( \tau \) and a \hyperref[def:simple_type_schema]{simple type schema} \( \Alpha \) over the same base types.
 
-  We will present a simple algorithm for inferring an \hyperref[def:lambda_schema_instantiation]{instantiation} \( \BbbI \) such that \( \Alpha[\BbbI] = \tau \), if such an instantiation exists.
+  We will present a simple algorithm for inferring an \hyperref[def:atomic_lambda_schema_instantiation]{atomic instantiation} \( \BbbI \) such that \( \Alpha[\BbbI] = \tau \), if such an instantiation exists.
 
   We will do case analysis on the abstract syntax tree of \( \Alpha \) as defined in \cref{def:simple_type_ast}.
   \begin{thmenum}
@@ -422,10 +428,10 @@ To completely formalize the typing rules, which we will do in \cref{def:simple_t
   \item This algorithm can be found as \identifier{math.lambda_.type_derivation.instantiation.type_inference.infer_instantiation_from_type} in \cite{notebook:code}.
 \end{comments}
 
-\begin{algorithm}[Lambda term schema inference]\label{alg:lambda_term_schema_inference}
+\begin{algorithm}[\( \muplambda \)-term schema inference]\label{alg:lambda_term_schema_inference}
   Fix a (simply) \hyperref[def:typed_lambda_term]{typed \( \muplambda \)-term} \( M \) and \hyperref[def:lambda_term_schema]{\( \muplambda \)-term schema} \( \Phi \).
 
-  We will present an algorithm analogous to \fullref{alg:simple_type_schema_inference} for inferring an \hyperref[def:lambda_schema_instantiation]{instantiation} \( \BbbI \) such that \( \Phi[\BbbI] = M \), if such an instantiation exists.
+  We will present an algorithm analogous to \fullref{alg:simple_type_schema_inference} for inferring an \hyperref[def:atomic_lambda_schema_instantiation]{atomic instantiation} \( \BbbI \) such that \( \Phi[\BbbI] = M \), if such an instantiation exists.
 
   We will do case analysis on the abstract syntax tree of \( \Phi \)\fnote{We have not defined syntax trees for schemas, but they are obvious adjustment of the trees defined in \cref{def:lambda_term_ast} for untyped \( \muplambda \)-terms and \cref{def:simple_type_ast} for simple types.}.
 
@@ -447,7 +453,7 @@ To completely formalize the typing rules, which we will do in \cref{def:simple_t
 
     \thmitem{alg:lambda_term_schema_inference/abstraction} Finally, suppose that \( \Phi = \qabs {X^\Alpha} \Psi \). If \( M \) is not an abstraction, the algorithm errors out.
 
-    Otherwise, \( M = \qabs {x^\tau} N \). We use \fullref{alg:simple_type_schema_inference} to obtain an instantiation \( \BbbI_\Alpha \) such that \( \Alpha[\BbbI_\Alpha] = \tau \). If the type instantiation inference errors out, so does the current algorithm.
+    Otherwise, \( M = \qabs {x^\tau} N \). We use \fullref{alg:simple_type_schema_inference} to obtain an atomic instantiation \( \BbbI_\Alpha \) such that \( \Alpha[\BbbI_\Alpha] = \tau \). If the type instantiation inference errors out, so does the current algorithm.
 
     We also recursively use this algorithm on to obtain an instantiation \( \BbbI_\Psi \) such that \( \Psi[\BbbI_\Psi] = N \). Of course, if the recursive application errors out, so does the current application.
 
@@ -567,7 +573,7 @@ To completely formalize the typing rules, which we will do in \cref{def:simple_t
     \thmitem{def:simple_type_signature/types} A possibly empty alphabet \( \op*{Base}_\Sigma \) of \hyperref[def:simple_type]{base types}.
   \end{thmenum}
 
-  We disallow the \hyperref[con:improper_symbol]{improper symbols} from the \hyperref[def:lambda_term_alphabet]{alphabet of \( \muplambda \)-calculus} as constants and the symbols from the \hyperref[def:simple_type_alphabet]{alphabet of simple types} as base types, but we do not impose their restrictions on each other. For example, \( \synlambda \) is a improper symbol for \( \muplambda \)-terms, but it is also a valid type.
+  We disallow the \hyperref[con:improper_symbol]{improper symbols} from the \hyperref[def:lambda_term_alphabet]{alphabet of \( \muplambda \)-calculus} as constants and the symbols from the \hyperref[def:simple_type_alphabet]{alphabet of simple types} as base types, but we do not impose their restrictions on each other. For example, \( \synlambda \) is a improper symbol for \( \muplambda \)-terms, but it is also a valid type variable.
 
   We discuss in \cref{rem:language_alphabet_cardinality} some cardinality considerations; we mention here only that both alphabets are by default assumed to be finite. In accordance with \cref{rem:cardinality_auxiliary_terminology}, we use cardinality-related terminology like \enquote{finite} and \enquote{countably infinite} for the signature itself when we mean the larger of the cardinalities of the alphabets.
 \end{definition}
@@ -630,7 +636,7 @@ To completely formalize the typing rules, which we will do in \cref{def:simple_t
 
     We will not need to annotate terms with markers --- the variable plays the role of a marker for the type. To avoid clutter, we will skip square brackets around the assertion that we put in \cref{def:inference_rule}, i.e. we will denote the tree as \( x: \tau \) rather than \( [x: \tau] \).
 
-    \thmitem{def:type_derivation_tree/application} We define \term{rule application} trees based on a straightforward adaptation of \cref{def:propositional_natural_deduction_proof_tree/application} for natural deduction rule applications, with schema instantiation based on \cref{def:lambda_schema_instantiation}.
+    \thmitem{def:type_derivation_tree/application} We define \term{rule application} trees based on a straightforward adaptation of \cref{def:propositional_natural_deduction_proof_tree/application} for natural deduction rule applications, with schema instantiation based on \fullref{alg:lambda_schema_instantiation}.
 
     Again, some assumptions of the subtrees can be \term{discharged} if the rule allows it. The important difference is that we have no markers, so there is a unique choice of type assertion that can be discharged. In relation to \hyperref[def:higher_order_logic]{higher-order logic}, we discuss this in \cref{con:eigenvariable}.
 
@@ -728,7 +734,7 @@ To completely formalize the typing rules, which we will do in \cref{def:simple_t
 
     \item By assuming that a complex term \( M \) has type \( \tau \), we must have a derivation of \( M: \tau \). This would extend our considerations for well-formed types from \cref{rem:well_formed_context} to terms.
 
-    \item While logic studies \hyperref[def:consequence_relation]{logical consequence} and \hyperref[con:hypothetical_judgment]{hypothetical judgments}, for type theory terms should ideally be typed unconditionally. Thus, while in logic \hyperref[def:propositional_tautology]{tautologies} with empty contexts are a curiosity, in type theory contexts are an instrument for dealing with \hyperref[def:lambda_variable_freeness]{free variables}.
+    \item While logic studies \hyperref[def:consequence_relation]{logical consequence} and \hyperref[con:hypothetical_judgment]{hypothetical judgments}, for type theory terms should ideally be typed unconditionally. Thus, while in logic \hyperref[def:tautology]{tautologies} with empty contexts are a curiosity, in type theory contexts are an instrument for dealing with \hyperref[def:lambda_variable_freeness]{free variables}.
   \end{itemize}
 
   Our sources which define type contexts only allow variable type assertions in them ---
@@ -1073,7 +1079,7 @@ To completely formalize the typing rules, which we will do in \cref{def:simple_t
 \begin{proof}
   Let \( T \) be a tree deriving \( M: \tau \) from the type context \( \Gamma \).
 
-  We will use \fullref{thm:induction_on_rooted_trees} on \( T \) to show that if \( T' \) derives \( M: \tau' \) from \( \Gamma \), the trees coincide and \( \tau = \tau' \):
+  We will use \fullref{thm:induction_on_abstract_syntax} on \( T \) to show that if \( T' \) derives \( M: \tau' \) from \( \Gamma \), the trees coincide and \( \tau = \tau' \):
   \begin{itemize}
     \item If \( T \) is an assumption tree, then \( M \) must be a variable, and \( \Gamma \vdash M \) only if \( \Gamma \) contains a type assertion for \( M \). Since type contexts have at most one type assertion per variable, it follows that the type \( \tau \) of \( M \) is uniquely determined.
 

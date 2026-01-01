@@ -1,28 +1,33 @@
 from collections.abc import Collection
 from typing import override
 
-from ..formulas import ConnectiveFormula, ConstantFormula, Formula, NegationFormula
-from .formula_visitor import PropositionalFormulaVisitor
-from .formulas import PropositionalVariable, PropositionalVariableFormula, extract_variable
+from ..formulas import PropConstant
+from .formula_visitor import PropFormulaVisitor
+from .formulas import (
+    PropConnectiveFormula,
+    PropFormula,
+    PropNegationFormula,
+    PropVariable,
+)
 
 
-class VariableVisitor(PropositionalFormulaVisitor[Collection[PropositionalVariable]]):
+class VariableVisitor(PropFormulaVisitor[Collection[PropVariable]]):
     @override
-    def visit_logical_constant(self, formula: ConstantFormula) -> Collection[PropositionalVariable]:
+    def visit_prop_constant(self, formula: PropConstant) -> Collection[PropVariable]:
         return set()
 
     @override
-    def visit_propositional_variable(self, formula: PropositionalVariableFormula) -> Collection[PropositionalVariable]:
-        return {extract_variable(formula)}
+    def visit_variable(self, formula: PropVariable) -> Collection[PropVariable]:
+        return {formula}
 
     @override
-    def visit_negation(self, formula: NegationFormula) -> Collection[PropositionalVariable]:
+    def visit_negation(self, formula: PropNegationFormula) -> Collection[PropVariable]:
         return self.visit(formula.body)
 
     @override
-    def visit_connective(self, formula: ConnectiveFormula) -> Collection[PropositionalVariable]:
+    def visit_connective(self, formula: PropConnectiveFormula) -> Collection[PropVariable]:
         return {*self.visit(formula.left), *self.visit(formula.right)}
 
 
-def get_propositional_variables(formula: Formula) -> Collection[PropositionalVariable]:
+def get_prop_variables(formula: PropFormula) -> Collection[PropVariable]:
     return VariableVisitor().visit(formula)

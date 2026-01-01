@@ -3,12 +3,12 @@ from dataclasses import dataclass
 from typing import override
 
 from ..terms import FunctionApplication, Term, TermTransformationVisitor, Variable
-from .substitution import LogicSubstitution
+from .substitution import AtomicLogicSubstitution
 
 
 @dataclass(frozen=True)
 class TermSubstitutionVisitor(TermTransformationVisitor):
-    substitution: LogicSubstitution
+    substitution: AtomicLogicSubstitution
 
     @override
     def visit_variable(self, term: Variable) -> Term:
@@ -19,9 +19,10 @@ class TermSubstitutionVisitor(TermTransformationVisitor):
         return FunctionApplication(term.symbol, [self.visit(arg) for arg in term.arguments])
 
 
-def apply_term_substitution(term: Term, substitution: LogicSubstitution) -> Term:
+# This is alg:fol_substitution/terms in the monograph
+def apply_substitution_to_term(term: Term, substitution: AtomicLogicSubstitution) -> Term:
     return TermSubstitutionVisitor(substitution).visit(term)
 
 
 def substitute_in_term(term: Term, variable_mapping: Mapping[Variable, Term]) -> Term:
-    return apply_term_substitution(term, LogicSubstitution(variable_mapping=variable_mapping))
+    return apply_substitution_to_term(term, AtomicLogicSubstitution(variable_mapping=variable_mapping))

@@ -3,7 +3,7 @@ from textwrap import dedent
 from ..algebraic_types import SIMPLE_ALGEBRAIC_SIGNATURE, SIMPLE_ALGEBRAIC_TYPE_SYSTEM
 from ..common import combinators, pairs
 from ..erasure import erase_annotations
-from ..instantiation import LambdaSchemaInstantiation
+from ..instantiation import AtomicLambdaSchemaInstantiation
 from ..parsing import parse_type, parse_type_placeholder, parse_variable_assertion
 from .tree import apply, assume, premise
 
@@ -128,7 +128,7 @@ def test_empty_elim() -> None:
             tree=assume(assumption),
             discharge=assumption
         ),
-        instantiation=LambdaSchemaInstantiation(
+        instantiation=AtomicLambdaSchemaInstantiation(
             type_mapping={
                 parse_type_placeholder('τ'): parse_type('σ')
             }

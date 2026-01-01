@@ -37,7 +37,7 @@ class UntypedSubstitutionApplicationVisitor(UntypedTermVisitor[UntypedTerm]):
         return UntypedAbstraction(new_var, new_subterm)
 
 
-# This is def:lambda_term_substitution/operation in the monograph
+# This is alg:lambda_term_substitution in the monograph
 def apply_term_substitution(term: UntypedTerm, substitution: UntypedTermSubstitution) -> UntypedTerm:
     return UntypedSubstitutionApplicationVisitor(substitution).visit(term)
 

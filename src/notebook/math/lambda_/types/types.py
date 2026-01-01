@@ -1,5 +1,4 @@
 from dataclasses import dataclass
-from typing import TypeGuard
 
 from ....parsing.identifiers import GreekIdentifier
 from ..alphabet import BinaryTypeConnective
@@ -41,15 +40,3 @@ class SimpleConnectiveType:
 
 
 SimpleType = BaseType | TypeVariable | SimpleConnectiveType
-
-
-def is_arrow_type(type_: SimpleType) -> TypeGuard[SimpleConnectiveType]:
-    return isinstance(type_, SimpleConnectiveType) and type_.conn == BinaryTypeConnective.ARROW
-
-
-def is_product_type(type_: SimpleType) -> TypeGuard[SimpleConnectiveType]:
-    return isinstance(type_, SimpleConnectiveType) and type_.conn == BinaryTypeConnective.PROD
-
-
-def is_sum_type(type_: SimpleType) -> TypeGuard[SimpleConnectiveType]:
-    return isinstance(type_, SimpleConnectiveType) and type_.conn == BinaryTypeConnective.SUM

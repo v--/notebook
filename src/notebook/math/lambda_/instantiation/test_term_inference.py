@@ -14,7 +14,7 @@ from ..parsing import (
     parse_variable,
     parse_variable_placeholder,
 )
-from .base import LambdaSchemaInstantiation
+from .base import AtomicLambdaSchemaInstantiation
 from .term_inference import infer_instantiation_from_term
 
 
@@ -63,7 +63,7 @@ def test_infer_success(
     type_mapping: Mapping[str, str],
 ) -> None:
     instantiation = infer_instantiation_from_term(parse_typed_term_schema(schema), parse_typed_term(term))
-    expected = LambdaSchemaInstantiation(
+    expected = AtomicLambdaSchemaInstantiation(
         variable_mapping={parse_variable_placeholder(placeholder): parse_variable(value) for placeholder, value in variable_mapping.items()},
         term_mapping={parse_term_placeholder(placeholder): parse_typed_term(value) for placeholder, value in term_mapping.items()},
         type_mapping={parse_type_placeholder(placeholder): parse_type(value) for placeholder, value in type_mapping.items()}
@@ -75,7 +75,7 @@ def test_infer_success(
 def test_constant_infer_success() -> None:
     schema = parse_typed_term_schema('U₊', SIMPLE_ALGEBRAIC_SIGNATURE)
     term = parse_typed_term('U₊', SIMPLE_ALGEBRAIC_SIGNATURE)
-    assert infer_instantiation_from_term(schema, term) == LambdaSchemaInstantiation()
+    assert infer_instantiation_from_term(schema, term) == AtomicLambdaSchemaInstantiation()
 
 
 def test_constant_instantiation_failure() -> None:
@@ -113,7 +113,7 @@ def test_abstraction_instantiation_failure() -> None:
 def test_abstraction_annotation_success() -> None:
     schema = parse_typed_term_schema('(λx:τ.x)')
     term = parse_typed_term('(λx:ι.x)', SIMPLE_ALGEBRAIC_SIGNATURE)
-    assert infer_instantiation_from_term(schema, term) == LambdaSchemaInstantiation(
+    assert infer_instantiation_from_term(schema, term) == AtomicLambdaSchemaInstantiation(
         variable_mapping={parse_variable_placeholder('x'): parse_variable('x')},
         type_mapping={parse_type_placeholder('τ'): parse_type('ι', SIMPLE_ALGEBRAIC_SIGNATURE)}
     )

@@ -11,13 +11,13 @@ from ..formulas import (
     QuantifierFormula,
 )
 from ..terms import Term, Variable
-from .substitution import LogicSubstitution, infer_substitution
+from .substitution import AtomicLogicSubstitution, infer_substitution
 from .term_visitor import TermSubstitutionVisitor
 
 
 @dataclass(frozen=True)
 class FormulaSubstitutionVisitor(FormulaTransformationVisitor):
-    substitution: LogicSubstitution
+    substitution: AtomicLogicSubstitution
 
     @override
     def visit_equality(self, formula: EqualityFormula) -> EqualityFormula:
@@ -32,23 +32,24 @@ class FormulaSubstitutionVisitor(FormulaTransformationVisitor):
     def visit_quantifier(self, formula: QuantifierFormula) -> QuantifierFormula:
         new_var = self.substitution.get_modified_quantifier_variable(formula)
         new_subst = self.substitution.modify_at(formula.var, new_var)
-        new_subformula = apply_formula_substitution(formula.body, new_subst)
-        return QuantifierFormula(formula.quantifier, new_var, new_subformula)
+        new_subformula = apply_substitution_to_formula(formula.body, new_subst)
+        return QuantifierFormula(formula.quant, new_var, new_subformula)
 
 
-def apply_formula_substitution(formula: Formula, substitution: LogicSubstitution) -> Formula:
+# This is alg:fol_substitution/formulas in the monograph
+def apply_substitution_to_formula(formula: Formula, substitution: AtomicLogicSubstitution) -> Formula:
     return FormulaSubstitutionVisitor(substitution).visit(formula)
 
 
 def substitute_in_formula(formula: Formula, variable_mapping: Mapping[Variable, Term]) -> Formula:
-    return apply_formula_substitution(formula, LogicSubstitution(variable_mapping=variable_mapping))
+    return apply_substitution_to_formula(formula, AtomicLogicSubstitution(variable_mapping=variable_mapping))
 
 
 def evaluate_substitution_spec(spec: FormulaWithSubstitution) -> Formula:
     if spec.sub is None:
         return spec.formula
 
-    return apply_formula_substitution(spec.formula, infer_substitution(spec))
+    return apply_substitution_to_formula(spec.formula, infer_substitution(spec))
 
 
 def unwrap_substitution_spec(spec: FormulaWithSubstitution) -> Formula:

@@ -11,7 +11,7 @@ from ....support.inference import (
 from ....support.unicode import to_superscript
 from ..formulas import Formula, FormulaWithSubstitution
 from ..instantiation import (
-    FormalLogicSchemaInstantiation,
+    AtomicLogicSchemaInstantiation,
     infer_instantiation_from_formula_substitution_spec,
     infer_instantiation_from_term_substitution_spec,
     instantiate_substitution_spec,
@@ -185,7 +185,7 @@ def get_discharge_eigenvariable(rule_premise: NaturalDeductionPremise, applicati
 @dataclass(frozen=True)
 class RuleApplicationTree(InferenceTree[FormulaWithSubstitution, Mapping[Marker, Formula]]):
     rule: NaturalDeductionRule
-    instantiation: FormalLogicSchemaInstantiation
+    instantiation: AtomicLogicSchemaInstantiation
     premises: Sequence[RuleApplicationPremise]
     conclusion: FormulaWithSubstitution
 
@@ -227,10 +227,7 @@ class RuleApplicationTree(InferenceTree[FormulaWithSubstitution, Mapping[Marker,
         if conclusion is None:
             conclusion = self.conclusion
 
-        if str(conclusion) == str(self.conclusion):
-            line = str(conclusion)
-        else:
-            line = f'{self.conclusion} = {conclusion}'
+        line = str(evaluate_substitution_spec(conclusion))
 
         return RuleApplicationRenderer(
             line,
@@ -258,13 +255,13 @@ class RuleApplicationTree(InferenceTree[FormulaWithSubstitution, Mapping[Marker,
 def apply(  # noqa: C901
     rule: NaturalDeductionRule,
     *args: ProofTree | RuleApplicationPremise,
-    instantiation: FormalLogicSchemaInstantiation | None = None,
+    instantiation: AtomicLogicSchemaInstantiation | None = None,
     conclusion_sub: TermSubstitutionSpec | None = None,
 ) -> RuleApplicationTree:
     if len(args) != len(rule.premises):
         raise RuleApplicationError(f'The rule {rule.name} has {len(rule.premises)} premises, but the application has {len(args)}')
 
-    instantiation = instantiation or FormalLogicSchemaInstantiation()
+    instantiation = instantiation or AtomicLogicSchemaInstantiation()
     marker_map = dict[Marker, Formula]()
 
     application_premises = [

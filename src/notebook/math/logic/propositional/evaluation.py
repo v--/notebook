@@ -1,55 +1,54 @@
 from dataclasses import dataclass
 from typing import override
 
-from ..alphabet import BinaryConnective, PropConstant
-from ..formulas import (
-    ConnectiveFormula,
-    ConstantFormula,
-    Formula,
-    NegationFormula,
+from ..formulas import PropConstant
+from .formula_visitor import PropFormulaVisitor
+from .formulas import (
+    PropConnectiveFormula,
+    PropFormula,
+    PropNegationFormula,
+    PropVariable,
 )
-from .formula_visitor import PropositionalFormulaVisitor
-from .interpretation import PropositionalInterpretation
-from .variables import PropositionalVariableFormula, extract_variable
+from .interpretation import PropInterpretation
 
 
 @dataclass
-class FormulaEvaluationVisitor[T](PropositionalFormulaVisitor[bool]):
-    interpretation: PropositionalInterpretation
+class FormulaEvaluationVisitor[T](PropFormulaVisitor[bool]):
+    interpretation: PropInterpretation
 
     @override
-    def visit_logical_constant(self, formula: ConstantFormula) -> bool:
-        match formula.value:
-            case PropConstant.VERUM:
-                return True
-
-            case PropConstant.FALSUM:
-                return False
+    def visit_verum(self, formula: PropConstant) -> bool:
+        return True
 
     @override
-    def visit_propositional_variable(self, formula: PropositionalVariableFormula) -> bool:
-        return self.interpretation.get_value(extract_variable(formula))
+    def visit_falsum(self, formula: PropConstant) -> bool:
+        return False
 
     @override
-    def visit_negation(self, formula: NegationFormula) -> bool:
+    def visit_variable(self, formula: PropVariable) -> bool:
+        return self.interpretation.get_value(formula)
+
+    @override
+    def visit_negation(self, formula: PropNegationFormula) -> bool:
         return not self.visit(formula.body)
 
     @override
-    def visit_connective(self, formula: ConnectiveFormula) -> bool:
-        match formula.conn:
-            case BinaryConnective.CONJUNCTION:
-                return self.visit(formula.left) and self.visit(formula.right)
+    def visit_conjunction(self, formula: PropConnectiveFormula) -> bool:
+        return self.visit(formula.left) and self.visit(formula.right)
 
-            case BinaryConnective.DISJUNCTION:
-                return self.visit(formula.left) or self.visit(formula.right)
+    @override
+    def visit_disjunction(self, formula: PropConnectiveFormula) -> bool:
+        return self.visit(formula.left) or self.visit(formula.right)
 
-            case BinaryConnective.CONDITIONAL:
-                return not self.visit(formula.left) or self.visit(formula.right)
+    @override
+    def visit_conditional(self, formula: PropConnectiveFormula) -> bool:
+        return not self.visit(formula.left) or self.visit(formula.right)
 
-            case BinaryConnective.BICONDITIONAL:
-                return self.visit(formula.left) == self.visit(formula.right)
+    @override
+    def visit_biconditional(self, formula: PropConnectiveFormula) -> bool:
+        return self.visit(formula.left) == self.visit(formula.right)
 
 
 # This is def:propositional_denotation in the monograph
-def evaluate_propositional_formula(formula: Formula, interpretation: PropositionalInterpretation) -> bool:
+def evaluate_prop_formula(formula: PropFormula, interpretation: PropInterpretation) -> bool:
     return FormulaEvaluationVisitor(interpretation).visit(formula)

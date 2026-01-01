@@ -3,7 +3,7 @@ from typing import override
 
 from ....support.schemas import SchemaInferenceError
 from ..assertions import VariableTypeAssertion
-from ..instantiation import LambdaSchemaInstantiation, infer_instantiation_from_term, instantiate_term_schema
+from ..instantiation import AtomicLambdaSchemaInstantiation, infer_instantiation_from_term, instantiate_term_schema
 from ..terms import Constant, TypedAbstraction, TypedApplication, TypedTerm
 from ..type_derivation import (
     AssumptionTree,
@@ -37,7 +37,7 @@ class AlphaConversionVisitor(SimpleAlgebraicDerivationTreeVisitor[TypeDerivation
 
     @override
     def visit_rule_application(self, tree: RuleApplicationTree) -> RuleApplicationTree:
-        new_instantiation = LambdaSchemaInstantiation(type_mapping=tree.instantiation.type_mapping)
+        new_instantiation = AtomicLambdaSchemaInstantiation(type_mapping=tree.instantiation.type_mapping)
         rule = tree.rule
 
         try:

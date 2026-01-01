@@ -260,7 +260,7 @@ def test_parsing_term_schema_with_regular_parser() -> None:
     dict(
         type_='(τ × (σ → ρ))',
         expected=SimpleConnectiveType(
-            BinaryTypeConnective.PROD,
+            BinaryTypeConnective.PRODUCT,
             TypeVariable(GreekIdentifier('τ')),
             SimpleConnectiveType(
                 BinaryTypeConnective.ARROW,

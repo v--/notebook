@@ -18,7 +18,7 @@ class VariableAssignment[T]:
         if var in self.mapping:
             return self.mapping[var]
 
-        raise MissingInterpretationError(f'No assignment specified for variable {var}')
+        raise MissingInterpretationError(f'No assignment specified for variable {var.identifier}')
 
     def modify(self, var: Variable, value: T) -> VariableAssignment[T]:
         return VariableAssignment({**self.mapping, var: value})

@@ -6,7 +6,7 @@ from ..formulas import Formula, FormulaPlaceholder
 from ..terms import Term, TermPlaceholder, Variable, VariablePlaceholder
 
 
-class FormalLogicSchemaInstantiation:
+class AtomicLogicSchemaInstantiation:
     formula_mapping: Mapping[FormulaPlaceholder, Formula]
     variable_mapping: Mapping[VariablePlaceholder, Variable]
     term_mapping: Mapping[TermPlaceholder, Term]
@@ -23,15 +23,15 @@ class FormalLogicSchemaInstantiation:
         self.term_mapping = term_mapping or {}
 
     def __eq__(self, other: object) -> bool:
-        if not isinstance(other, FormalLogicSchemaInstantiation):
+        if not isinstance(other, AtomicLogicSchemaInstantiation):
             return NotImplemented
 
         return self.variable_mapping == other.variable_mapping and \
             self.term_mapping == other.term_mapping and \
             self.formula_mapping == other.formula_mapping
 
-    def __or__(self, other: object) -> FormalLogicSchemaInstantiation:
-        if not isinstance(other, FormalLogicSchemaInstantiation):
+    def __or__(self, other: object) -> AtomicLogicSchemaInstantiation:
+        if not isinstance(other, AtomicLogicSchemaInstantiation):
             return NotImplemented
 
         schema: Any
@@ -47,7 +47,7 @@ class FormalLogicSchemaInstantiation:
         for schema, (a, b) in iter_mapping_discrepancy(self.formula_mapping, other.formula_mapping):
             raise SchemaInferenceError(f'Cannot instantiate type placeholder {schema} to both {a} and {b}')
 
-        return FormalLogicSchemaInstantiation(
+        return AtomicLogicSchemaInstantiation(
             variable_mapping={**self.variable_mapping, **other.variable_mapping},
             term_mapping={**self.term_mapping, **other.term_mapping},
             formula_mapping={**self.formula_mapping, **other.formula_mapping}

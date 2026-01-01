@@ -1,3 +1,3 @@
 from .formula_visitor import evaluate_substitution_spec, substitute_in_formula, unwrap_substitution_spec
-from .substitution import LogicSubstitution, infer_substitution
+from .substitution import AtomicLogicSubstitution, infer_substitution
 from .term_visitor import substitute_in_term

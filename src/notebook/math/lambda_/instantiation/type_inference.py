@@ -11,26 +11,26 @@ from ..types import (
     TypePlaceholder,
     TypeSchemaVisitor,
 )
-from .base import LambdaSchemaInstantiation
+from .base import AtomicLambdaSchemaInstantiation
 
 
 @dataclass(frozen=True)
-class BuildInstantiationVisitor(TypeSchemaVisitor[LambdaSchemaInstantiation]):
+class BuildInstantiationVisitor(TypeSchemaVisitor[AtomicLambdaSchemaInstantiation]):
     type: SimpleType
 
     @override
-    def visit_base(self, schema: BaseType) -> LambdaSchemaInstantiation:
+    def visit_base(self, schema: BaseType) -> AtomicLambdaSchemaInstantiation:
         if self.type != schema:
             raise SchemaInferenceError(f'Cannot match base type {schema} to {self.type}')
 
-        return LambdaSchemaInstantiation()
+        return AtomicLambdaSchemaInstantiation()
 
     @override
-    def visit_type_placeholder(self, schema: TypePlaceholder) -> LambdaSchemaInstantiation:
-        return LambdaSchemaInstantiation(type_mapping={schema: self.type})
+    def visit_type_placeholder(self, schema: TypePlaceholder) -> AtomicLambdaSchemaInstantiation:
+        return AtomicLambdaSchemaInstantiation(type_mapping={schema: self.type})
 
     @override
-    def visit_connective(self, schema: SimpleConnectiveTypeSchema) -> LambdaSchemaInstantiation:
+    def visit_connective(self, schema: SimpleConnectiveTypeSchema) -> AtomicLambdaSchemaInstantiation:
         if not isinstance(self.type, SimpleConnectiveType) or self.type.conn != schema.conn:
             raise SchemaInferenceError(f'Cannot match type schema {schema} to {self.type}')
 
@@ -40,7 +40,7 @@ class BuildInstantiationVisitor(TypeSchemaVisitor[LambdaSchemaInstantiation]):
 
 
 # This is alg:simple_type_schema_inference in the monograph
-def infer_instantiation_from_type(schema: SimpleTypeSchema, type_: SimpleType) -> LambdaSchemaInstantiation:
+def infer_instantiation_from_type(schema: SimpleTypeSchema, type_: SimpleType) -> AtomicLambdaSchemaInstantiation:
     return BuildInstantiationVisitor(type_).visit(schema)
 
 

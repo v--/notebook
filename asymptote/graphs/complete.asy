@@ -5,14 +5,14 @@ struct CompleteGraph {
   int n;
   pair[] vert;
 
-  void operator init(int n, real radius = 0.75) {
+  void operator init(int n, pair center = (0, 0), real radius = 0.75) {
     this.n = n;
 
     if (n == 4) {
-      this.vert = CycleGraph(3, radius).vert;
-      this.vert[3] = (0, 0);
+      this.vert = CycleGraph(3, center, radius).vert;
+      this.vert[3] = center;
     } else {
-      this.vert = CycleGraph(n, radius).vert;
+      this.vert = CycleGraph(n, center, radius).vert;
     }
   }
 

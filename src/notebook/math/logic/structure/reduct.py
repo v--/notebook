@@ -4,7 +4,7 @@ from ..signature import SignatureMorphism
 from .structure import FormalLogicStructure
 
 
-# This is def:fol_structure_reduct in the monograph
+# This is def:fol_reduct_along_morphism in the monograph
 def reduct_along_signature_morphism[T](morphism: SignatureMorphism, structure: FormalLogicStructure[T]) -> FormalLogicStructure[T]:
     return FormalLogicStructure(
         morphism.source,

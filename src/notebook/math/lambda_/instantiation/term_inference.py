@@ -15,34 +15,34 @@ from ..terms import (
     Variable,
     VariablePlaceholder,
 )
-from .base import LambdaSchemaInstantiation
+from .base import AtomicLambdaSchemaInstantiation
 from .type_inference import infer_instantiation_from_type
 
 
 @dataclass(frozen=True)
-class InferInstantiationVisitor(TypedTermSchemaVisitor[LambdaSchemaInstantiation]):
+class InferInstantiationVisitor(TypedTermSchemaVisitor[AtomicLambdaSchemaInstantiation]):
     term: TypedTerm
 
     @override
-    def visit_constant(self, schema: Constant) -> LambdaSchemaInstantiation:
+    def visit_constant(self, schema: Constant) -> AtomicLambdaSchemaInstantiation:
         if self.term != schema:
             raise SchemaInferenceError(f'Cannot match constant {schema} to {self.term}')
 
-        return LambdaSchemaInstantiation()
+        return AtomicLambdaSchemaInstantiation()
 
     @override
-    def visit_variable_placeholder(self, schema: VariablePlaceholder) -> LambdaSchemaInstantiation:
+    def visit_variable_placeholder(self, schema: VariablePlaceholder) -> AtomicLambdaSchemaInstantiation:
         if not isinstance(self.term, Variable):
             raise SchemaInferenceError(f'Cannot match variable placeholder {schema} to {self.term}')
 
-        return LambdaSchemaInstantiation(variable_mapping={schema: self.term})
+        return AtomicLambdaSchemaInstantiation(variable_mapping={schema: self.term})
 
     @override
-    def visit_term_placeholder(self, schema: TermPlaceholder) -> LambdaSchemaInstantiation:
-        return LambdaSchemaInstantiation(term_mapping={schema: self.term})
+    def visit_term_placeholder(self, schema: TermPlaceholder) -> AtomicLambdaSchemaInstantiation:
+        return AtomicLambdaSchemaInstantiation(term_mapping={schema: self.term})
 
     @override
-    def visit_application(self, schema: TypedApplicationSchema) -> LambdaSchemaInstantiation:
+    def visit_application(self, schema: TypedApplicationSchema) -> AtomicLambdaSchemaInstantiation:
         if not isinstance(self.term, TypedApplication):
             raise SchemaInferenceError(f'Cannot match application schema {schema} to {self.term}')
 
@@ -51,17 +51,17 @@ class InferInstantiationVisitor(TypedTermSchemaVisitor[LambdaSchemaInstantiation
         return left | right
 
     @override
-    def visit_abstraction(self, schema: TypedAbstractionSchema) -> LambdaSchemaInstantiation:
+    def visit_abstraction(self, schema: TypedAbstractionSchema) -> AtomicLambdaSchemaInstantiation:
         if not isinstance(self.term, TypedAbstraction):
             raise SchemaInferenceError(f'Cannot match abstraction schema {schema} to {self.term}')
 
-        return LambdaSchemaInstantiation(variable_mapping={schema.var: self.term.var}) | \
+        return AtomicLambdaSchemaInstantiation(variable_mapping={schema.var: self.term.var}) | \
             infer_instantiation_from_type(schema.var_type, self.term.var_type) | \
             infer_instantiation_from_term(schema.body, self.term.body)
 
 
 # This is alg:lambda_term_schema_inference in the monograph
-def infer_instantiation_from_term(schema: TypedTermSchema, term: TypedTerm) -> LambdaSchemaInstantiation:
+def infer_instantiation_from_term(schema: TypedTermSchema, term: TypedTerm) -> AtomicLambdaSchemaInstantiation:
     return InferInstantiationVisitor(term).visit(schema)
 
 

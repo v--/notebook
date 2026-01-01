@@ -6,7 +6,7 @@ from ....parsing import is_greek_identifier, is_latin_identifier
 from ....support.inference import ImproperInferenceRuleSymbol
 from ....support.substitution import ImproperSubstitutionSymbol
 from ....support.unicode import Capitalization
-from ..alphabet import AuxImproperSymbol, BinaryConnective, EqualitySymbol, PropConstant, Quantifier, UnaryPrefix
+from ..alphabet import AuxImproperSymbol, BinaryConnective, EqualitySymbol, PropConstantSymbol, Quantifier, UnaryPrefix
 from .exceptions import FormalLogicSignatureError
 
 
@@ -36,7 +36,7 @@ class BaseSignatureSymbol(abc.ABC):
             raise FormalLogicSignatureError('Cannot use a parenthesis as a proper signature symbol')
 
         if (
-            name in PropConstant or
+            name in PropConstantSymbol or
             name in UnaryPrefix or
             name in BinaryConnective or
             name in Quantifier or

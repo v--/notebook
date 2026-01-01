@@ -1,15 +1,14 @@
 from dataclasses import dataclass, field
 from typing import override
 
-from ..alphabet import BinaryConnective, PropConstant, Quantifier
 from ..formulas import (
     ConnectiveFormula,
-    ConstantFormula,
     EqualityFormula,
     Formula,
     FormulaVisitor,
     NegationFormula,
     PredicateApplication,
+    PropConstant,
     QuantifierFormula,
 )
 from .assignment import VariableAssignment
@@ -27,13 +26,12 @@ class FormulaEvaluationVisitor[T](FormulaVisitor[bool]):
         self.term_visitor = TermEvaluationVisitor(self.structure, self.assignment)
 
     @override
-    def visit_logical_constant(self, formula: ConstantFormula) -> bool:
-        match formula.value:
-            case PropConstant.VERUM:
-                return True
+    def visit_verum(self, formula: PropConstant) -> bool:
+        return True
 
-            case PropConstant.FALSUM:
-                return False
+    @override
+    def visit_falsum(self, formula: PropConstant) -> bool:
+        return False
 
     @override
     def visit_equality(self, formula: EqualityFormula) -> bool:
@@ -48,34 +46,34 @@ class FormulaEvaluationVisitor[T](FormulaVisitor[bool]):
         return not self.visit(formula.body)
 
     @override
-    def visit_connective(self, formula: ConnectiveFormula) -> bool:
-        match formula.conn:
-            case BinaryConnective.CONJUNCTION:
-                return self.visit(formula.left) and self.visit(formula.right)
-
-            case BinaryConnective.DISJUNCTION:
-                return self.visit(formula.left) or self.visit(formula.right)
-
-            case BinaryConnective.CONDITIONAL:
-                return not self.visit(formula.left) or self.visit(formula.right)
-
-            case BinaryConnective.BICONDITIONAL:
-                return self.visit(formula.left) == self.visit(formula.right)
+    def visit_conjunction(self, formula: ConnectiveFormula) -> bool:
+        return self.visit(formula.left) and self.visit(formula.right)
 
     @override
-    def visit_quantifier(self, formula: QuantifierFormula) -> bool:
-        match formula.quantifier:
-            case Quantifier.UNIVERSAL:
-                return min(
-                    evaluate_formula(formula.body, self.structure, self.assignment.modify(formula.var, value))
-                    for value in self.structure.universe
-                )
+    def visit_disjunction(self, formula: ConnectiveFormula) -> bool:
+        return self.visit(formula.left) or self.visit(formula.right)
 
-            case Quantifier.EXISTENTIAL:
-                return max(
-                    evaluate_formula(formula.body, self.structure, self.assignment.modify(formula.var, value))
-                    for value in self.structure.universe
-                )
+    @override
+    def visit_conditional(self, formula: ConnectiveFormula) -> bool:
+        return not self.visit(formula.left) or self.visit(formula.right)
+
+    @override
+    def visit_biconditional(self, formula: ConnectiveFormula) -> bool:
+        return self.visit(formula.left) == self.visit(formula.right)
+
+    @override
+    def visit_universal(self, formula: QuantifierFormula) -> bool:
+        return min(
+            evaluate_formula(formula.body, self.structure, self.assignment.modify(formula.var, value))
+            for value in self.structure.universe
+        )
+
+    @override
+    def visit_existential(self, formula: QuantifierFormula) -> bool:
+        return max(
+            evaluate_formula(formula.body, self.structure, self.assignment.modify(formula.var, value))
+            for value in self.structure.universe
+        )
 
 
 # This is def:fol_denotation/formulas in the monograph

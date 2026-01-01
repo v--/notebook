@@ -14,7 +14,7 @@ from ..types import (
 )
 
 
-class LambdaSchemaInstantiation:
+class AtomicLambdaSchemaInstantiation:
     variable_mapping: Mapping[VariablePlaceholder, Variable]
     term_mapping: Mapping[TermPlaceholder, TypedTerm]
     type_mapping: Mapping[TypePlaceholder, SimpleType]
@@ -34,14 +34,14 @@ class LambdaSchemaInstantiation:
         return hash((self.variable_mapping, self.term_mapping, self.type_mapping))
 
     def __eq__(self, other: object) -> bool:
-        if not isinstance(other, LambdaSchemaInstantiation):
+        if not isinstance(other, AtomicLambdaSchemaInstantiation):
             return NotImplemented
 
         return self.variable_mapping == other.variable_mapping and \
             self.term_mapping == other.term_mapping and \
             self.type_mapping == other.type_mapping
 
-    def __or__(self, other: LambdaSchemaInstantiation) -> LambdaSchemaInstantiation:
+    def __or__(self, other: AtomicLambdaSchemaInstantiation) -> AtomicLambdaSchemaInstantiation:
         schema: Any
         a: Any
         b: Any
@@ -55,7 +55,7 @@ class LambdaSchemaInstantiation:
         for schema, (a, b) in iter_mapping_discrepancy(self.type_mapping, other.type_mapping):
             raise SchemaInferenceError(f'Cannot instantiate type placeholder {schema} to both {a} and {b}')
 
-        return LambdaSchemaInstantiation(
+        return AtomicLambdaSchemaInstantiation(
             variable_mapping={**self.variable_mapping, **other.variable_mapping},
             term_mapping={**self.term_mapping, **other.term_mapping},
             type_mapping={**self.type_mapping, **other.type_mapping}

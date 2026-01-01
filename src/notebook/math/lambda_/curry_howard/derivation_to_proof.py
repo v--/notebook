@@ -1,16 +1,16 @@
 from typing import override
 
 from ....parsing import GreekIdentifier
-from ...logic.alphabet import BinaryConnective, PropConstant
+from ...logic.alphabet import BinaryConnective, PropConstantSymbol
 from ...logic.classical_logic import CLASSICAL_NATURAL_DEDUCTION_SYSTEM
 from ...logic.deduction import Marker, NaturalDeductionRule
 from ...logic.deduction import proof_tree as ptree
-from ...logic.formulas import ConnectiveFormula, ConstantFormula, Formula, FormulaPlaceholder, PredicateApplication
-from ...logic.instantiation import FormalLogicSchemaInstantiation
-from ...logic.propositional import PropositionalVariable
+from ...logic.formulas import ConnectiveFormula, Formula, FormulaPlaceholder, PredicateApplication, PropConstant
+from ...logic.instantiation import AtomicLogicSchemaInstantiation
+from ...logic.propositional import PropVariableSymbol
 from ..algebraic_types import SIMPLE_ALGEBRAIC_TYPE_SYSTEM
 from ..alphabet import BinaryTypeConnective
-from ..instantiation import LambdaSchemaInstantiation
+from ..instantiation import AtomicLambdaSchemaInstantiation
 from ..type_derivation import UnknownDerivationRuleError
 from ..type_derivation import tree as dtree
 from ..type_system import TypingRule
@@ -23,7 +23,7 @@ def type_connective_to_formula_connective(conn: BinaryTypeConnective) -> BinaryC
         case BinaryTypeConnective.ARROW:
             return BinaryConnective.CONDITIONAL
 
-        case BinaryTypeConnective.PROD:
+        case BinaryTypeConnective.PRODUCT:
             return BinaryConnective.CONJUNCTION
 
         case BinaryTypeConnective.SUM:
@@ -32,13 +32,13 @@ def type_connective_to_formula_connective(conn: BinaryTypeConnective) -> BinaryC
 
 class TypeToFormulaVisitor(TypeVisitor[Formula]):
     @override
-    def visit_base(self, type_: BaseType) -> ConstantFormula:
+    def visit_base(self, type_: BaseType) -> PropConstant:
         match type_.name:
             case '𝟙':
-                return ConstantFormula(PropConstant.VERUM)
+                return PropConstant(PropConstantSymbol.VERUM)
 
             case '𝟘':
-                return ConstantFormula(PropConstant.FALSUM)
+                return PropConstant(PropConstantSymbol.FALSUM)
 
             case _:
                 raise DerivationToProofError(f'Unrecognized base type {type_!r}')
@@ -48,7 +48,7 @@ class TypeToFormulaVisitor(TypeVisitor[Formula]):
         # We have not implemented a dedicated syntax for propositional logic
         # We treat propositional variables as nullary predicates
         # As per rem:curry_howard_variables, we adjust our predicates so that they match the syntax of type variables
-        return PredicateApplication(PropositionalVariable(str(type_.identifier)), [])
+        return PredicateApplication(PropVariableSymbol(str(type_.identifier)), [])
 
     @override
     def visit_connective(self, type_: SimpleConnectiveType) -> ConnectiveFormula:
@@ -76,8 +76,8 @@ def type_derivation_premise_to_proof_tree_premise(premise: dtree.RuleApplication
     )
 
 
-def lambda_instantiation_to_logic_instantiation(instantiation: LambdaSchemaInstantiation) -> FormalLogicSchemaInstantiation:
-    return FormalLogicSchemaInstantiation(
+def lambda_instantiation_to_logic_instantiation(instantiation: AtomicLambdaSchemaInstantiation) -> AtomicLogicSchemaInstantiation:
+    return AtomicLogicSchemaInstantiation(
         formula_mapping={
             FormulaPlaceholder(placeholder.identifier): type_to_formula(type_)
             for placeholder, type_ in instantiation.type_mapping.items()
@@ -109,8 +109,8 @@ def typing_rule_to_natural_deduction_rule(rule: TypingRule) -> NaturalDeductionR
             raise UnknownDerivationRuleError(rule)
 
 
-def translate_instantiation(instantiation: LambdaSchemaInstantiation, **kwargs: str) -> FormalLogicSchemaInstantiation:
-    return FormalLogicSchemaInstantiation(
+def translate_instantiation(instantiation: AtomicLambdaSchemaInstantiation, **kwargs: str) -> AtomicLogicSchemaInstantiation:
+    return AtomicLogicSchemaInstantiation(
         formula_mapping={
             FormulaPlaceholder(GreekIdentifier(value)):
                 type_to_formula(instantiation.type_mapping[TypePlaceholder(GreekIdentifier(key))])

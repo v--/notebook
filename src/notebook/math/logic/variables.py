@@ -4,12 +4,12 @@ from typing import override
 from ...parsing.identifiers import new_latin_identifier
 from .formulas import (
     ConnectiveFormula,
-    ConstantFormula,
     EqualityFormula,
     Formula,
     FormulaVisitor,
     NegationFormula,
     PredicateApplication,
+    PropConstant,
     QuantifierFormula,
 )
 from .terms import FunctionApplication, Term, TermVisitor, Variable
@@ -35,7 +35,7 @@ def get_term_variables(term: Term) -> Collection[Variable]:
 
 class FreeVariableVisitor(FormulaVisitor[Collection[Variable]]):
     @override
-    def visit_logical_constant(self, formula: ConstantFormula) -> Collection[Variable]:
+    def visit_prop_constant(self, formula: PropConstant) -> Collection[Variable]:
         return set()
 
     @override
@@ -65,7 +65,7 @@ def get_formula_free_variables(formula: Formula) -> Collection[Variable]:
 
 class BoundVariableVisitor(FormulaVisitor[Collection[Variable]]):
     @override
-    def visit_logical_constant(self, formula: ConstantFormula) -> Collection[Variable]:
+    def visit_prop_constant(self, formula: PropConstant) -> Collection[Variable]:
         return set()
 
     @override

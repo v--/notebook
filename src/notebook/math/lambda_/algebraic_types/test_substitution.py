@@ -5,7 +5,7 @@ import pytest
 from ....support.inference import ImproperInferenceRuleSymbol
 from ..arrow_types import derive_type
 from ..common import variables
-from ..instantiation import LambdaSchemaInstantiation
+from ..instantiation import AtomicLambdaSchemaInstantiation
 from ..parsing import (
     parse_type,
     parse_type_placeholder,
@@ -96,7 +96,7 @@ def test_substitute_abstraction_renaming() -> None:
     assert substitute_in_tree(tree, variable_mapping={src: dest}) == expected
 
 
-# ex:def:lambda_term_substitution/composed_vs_iterated
+# ex:alg:lambda_term_substitution/composed_vs_iterated
 def test_substitute_abstraction_renaming_simultaneous() -> None:
     tree = derive_type(
         parse_typed_term('(λa:(τ → σ).(xb))'),
@@ -146,25 +146,25 @@ def test_substitute_nested_abstraction_noop() -> None:
 
 
 def test_substitute_unknown_rule() -> None:
-    signature = LambdaSignature(ConstantTermSymbol('𝐂'), BaseTypeSymbol('𝛕'))
-    rule = parse_typing_rule('R', f'{ImproperInferenceRuleSymbol.SEQUENT} 𝐂: 𝛕', signature)
+    signature = LambdaSignature(ConstantTermSymbol('𝕔'), BaseTypeSymbol('𝕥'))
+    rule = parse_typing_rule('R', f'{ImproperInferenceRuleSymbol.SEQUENT} 𝕔: 𝕥', signature)
     tree = apply(rule)
     src = variables.x
-    dest = assume(parse_variable_assertion('y: 𝛕', signature))
+    dest = assume(parse_variable_assertion('y: 𝕥', signature))
 
-    with pytest.raises(UnknownDerivationRuleError, match=re.escape("Unrecognized inference rule '(R) ⫢ 𝐂: 𝛕'")):
+    with pytest.raises(UnknownDerivationRuleError, match=re.escape("Unrecognized inference rule '(R) ⫢ 𝕔: 𝕥'")):
         substitute_in_tree(tree, {src: dest})
 
 
 # Analogous to the previous test, but with a rule name that collides with an arrow type rule
 def test_substitute_unknown_rule_with_matching_name() -> None:
-    signature = LambdaSignature(ConstantTermSymbol('𝐂'), BaseTypeSymbol('𝛕'))
-    rule = parse_typing_rule('→₊', f'{ImproperInferenceRuleSymbol.SEQUENT} 𝐂: 𝛕', signature)
+    signature = LambdaSignature(ConstantTermSymbol('𝕔'), BaseTypeSymbol('𝕥'))
+    rule = parse_typing_rule('→₊', f'{ImproperInferenceRuleSymbol.SEQUENT} 𝕔: 𝕥', signature)
     tree = apply(rule)
     src = variables.x
-    dest = assume(parse_variable_assertion('y: 𝛕', signature))
+    dest = assume(parse_variable_assertion('y: 𝕥', signature))
 
-    with pytest.raises(UnknownDerivationRuleError, match=re.escape("Unrecognized inference rule '(→₊) ⫢ 𝐂: 𝛕'")):
+    with pytest.raises(UnknownDerivationRuleError, match=re.escape("Unrecognized inference rule '(→₊) ⫢ 𝕔: 𝕥'")):
         substitute_in_tree(tree, {src: dest})
 
 
@@ -182,7 +182,7 @@ def test_substitute_bot_elim() -> None:
         assume(
             parse_variable_assertion('x: 𝟘', SIMPLE_ALGEBRAIC_SIGNATURE),
         ),
-        instantiation=LambdaSchemaInstantiation(
+        instantiation=AtomicLambdaSchemaInstantiation(
             type_mapping={
                 parse_type_placeholder('τ'): parse_type('τ', SIMPLE_ALGEBRAIC_SIGNATURE)
             }
@@ -195,7 +195,7 @@ def test_substitute_bot_elim() -> None:
     expected = apply(
         SIMPLE_ALGEBRAIC_TYPE_SYSTEM['𝟘₋'],
         dest,
-        instantiation=LambdaSchemaInstantiation(
+        instantiation=AtomicLambdaSchemaInstantiation(
             type_mapping={
                 parse_type_placeholder('τ'): parse_type('τ', SIMPLE_ALGEBRAIC_SIGNATURE)
             }
@@ -212,7 +212,7 @@ def test_substitute_sum_elim_without_renaming() -> None:
         apply(
             SIMPLE_ALGEBRAIC_TYPE_SYSTEM['+₊ₗ'],
             assume(parse_variable_assertion('x: 𝟙', SIMPLE_ALGEBRAIC_SIGNATURE)),
-            instantiation=LambdaSchemaInstantiation(
+            instantiation=AtomicLambdaSchemaInstantiation(
                 type_mapping={
                     parse_type_placeholder('σ'): parse_type('σ')
                 }
@@ -240,7 +240,7 @@ def test_substitute_sum_elim_without_renaming() -> None:
         apply(
             SIMPLE_ALGEBRAIC_TYPE_SYSTEM['+₊ₗ'],
             assume(parse_variable_assertion('x: 𝟙', SIMPLE_ALGEBRAIC_SIGNATURE)),
-            instantiation=LambdaSchemaInstantiation(
+            instantiation=AtomicLambdaSchemaInstantiation(
                 type_mapping={
                     parse_type_placeholder('σ'): parse_type('σ')
                 }

@@ -4,43 +4,6 @@ from ....support.pytest import pytest_parametrize_kwargs
 from ..parsing import parse_formula, parse_term, parse_variable
 from ..signature import FormalLogicSignature
 from .formula_visitor import substitute_in_formula
-from .term_visitor import substitute_in_term
-
-
-@pytest_parametrize_kwargs(
-    dict(
-        term='x',
-        mapping=dict(x='y'),
-        expected='y'
-    ),
-    dict(
-        term='y',
-        mapping=dict(x='z'),
-        expected='y'
-    ),
-    dict(
-        term='f¹(x)',
-        mapping=dict(x='y'),
-        expected='f¹(y)'
-    ),
-    dict(
-        term='f²(g¹(x), y)',
-        mapping=dict(x='y', y='x'),
-        expected='f²(g¹(y), x)'
-    )
-)
-def test_substitute_in_term(
-    term: str,
-    mapping: Mapping[str, str],
-    expected: str,
-    dummy_signature: FormalLogicSignature
-) -> None:
-    actual = substitute_in_term(
-        parse_term(term, dummy_signature),
-        {parse_variable(key): parse_term(value, dummy_signature) for key, value in mapping.items()}
-    )
-
-    assert str(actual) == expected
 
 
 @pytest_parametrize_kwargs(
@@ -94,9 +57,11 @@ def test_substitute_in_formula(
     expected: str,
     dummy_signature: FormalLogicSignature
 ) -> None:
-    actual = substitute_in_formula(
-        parse_formula(formula, dummy_signature),
+    formula_ = parse_formula(formula, dummy_signature)
+    expected_ = parse_formula(expected, dummy_signature)
+    result = substitute_in_formula(
+        formula_,
         {parse_variable(key): parse_term(value, dummy_signature) for key, value in mapping.items()}
     )
 
-    assert str(actual) == expected
+    assert result == expected_

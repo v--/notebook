@@ -12,12 +12,12 @@ from ..terms import (
     Variable,
     VariablePlaceholder,
 )
-from .base import FormalLogicSchemaInstantiation
+from .base import AtomicLogicSchemaInstantiation
 
 
 @dataclass(frozen=True)
 class InstantiationApplicationVisitor(TermSchemaVisitor[Term]):
-    instantiation: FormalLogicSchemaInstantiation
+    instantiation: AtomicLogicSchemaInstantiation
 
     @override
     def visit_variable_placeholder(self, schema: VariablePlaceholder) -> Variable:
@@ -39,8 +39,8 @@ class InstantiationApplicationVisitor(TermSchemaVisitor[Term]):
 
 
 @overload
-def instantiate_term_schema(schema: VariablePlaceholder, instantiation: FormalLogicSchemaInstantiation) -> Variable: ...
+def instantiate_term_schema(schema: VariablePlaceholder, instantiation: AtomicLogicSchemaInstantiation) -> Variable: ...
 @overload
-def instantiate_term_schema(schema: TermSchema, instantiation: FormalLogicSchemaInstantiation) -> Term: ...
-def instantiate_term_schema(schema: TermSchema, instantiation: FormalLogicSchemaInstantiation) -> Term:
+def instantiate_term_schema(schema: TermSchema, instantiation: AtomicLogicSchemaInstantiation) -> Term: ...
+def instantiate_term_schema(schema: TermSchema, instantiation: AtomicLogicSchemaInstantiation) -> Term:
     return InstantiationApplicationVisitor(instantiation).visit(schema)

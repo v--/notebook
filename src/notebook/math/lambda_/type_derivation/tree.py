@@ -5,7 +5,7 @@ from typing import override
 from ....support.inference import AssumptionRenderer, InferenceTree, RuleApplicationRenderer
 from ..assertions import TypeAssertion, VariableTypeAssertion
 from ..instantiation import (
-    LambdaSchemaInstantiation,
+    AtomicLambdaSchemaInstantiation,
     infer_instantiation_from_assertion,
     instantiate_assertion_schema,
 )
@@ -57,7 +57,7 @@ def premise(*, tree: TypeDerivationTree, discharge: VariableTypeAssertion | None
 @dataclass(frozen=True)
 class RuleApplicationTree(InferenceTree[TypeAssertion, Mapping[Variable, SimpleType]]):
     rule: TypingRule
-    instantiation: LambdaSchemaInstantiation
+    instantiation: AtomicLambdaSchemaInstantiation
     premises: Sequence[RuleApplicationPremise]
     conclusion: TypeAssertion
 
@@ -96,12 +96,12 @@ class RuleApplicationTree(InferenceTree[TypeAssertion, Mapping[Variable, SimpleT
 def apply(
     rule: TypingRule,
     *args: TypeDerivationTree | RuleApplicationPremise,
-    instantiation: LambdaSchemaInstantiation | None = None,
+    instantiation: AtomicLambdaSchemaInstantiation | None = None,
 ) -> RuleApplicationTree:
     if len(args) != len(rule.premises):
         raise TypeDerivationError(f'The rule {rule.name} has {len(rule.premises)} premises, but the application has {len(args)}')
 
-    instantiation = instantiation or LambdaSchemaInstantiation()
+    instantiation = instantiation or AtomicLambdaSchemaInstantiation()
     application_premises = [
         premise(tree=premise_arg) if isinstance(premise_arg, TypeDerivationTree) else premise_arg
         for premise_arg in args

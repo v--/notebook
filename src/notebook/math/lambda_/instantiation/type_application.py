@@ -11,12 +11,12 @@ from ..types import (
     TypePlaceholder,
     TypeSchemaVisitor,
 )
-from .base import LambdaSchemaInstantiation
+from .base import AtomicLambdaSchemaInstantiation
 
 
 @dataclass(frozen=True)
 class InstantiationVisitor(TypeSchemaVisitor[SimpleType]):
-    instantiation: LambdaSchemaInstantiation
+    instantiation: AtomicLambdaSchemaInstantiation
 
     @override
     def visit_base(self, schema: BaseType) -> BaseType:
@@ -35,8 +35,8 @@ class InstantiationVisitor(TypeSchemaVisitor[SimpleType]):
 
 
 @overload
-def instantiate_type_schema(schema: BaseType, instantiation: LambdaSchemaInstantiation) -> BaseType: ...
+def instantiate_type_schema(schema: BaseType, instantiation: AtomicLambdaSchemaInstantiation) -> BaseType: ...
 @overload
-def instantiate_type_schema(schema: SimpleTypeSchema, instantiation: LambdaSchemaInstantiation) -> SimpleType: ...
-def instantiate_type_schema(schema: SimpleTypeSchema, instantiation: LambdaSchemaInstantiation) -> SimpleType:
+def instantiate_type_schema(schema: SimpleTypeSchema, instantiation: AtomicLambdaSchemaInstantiation) -> SimpleType: ...
+def instantiate_type_schema(schema: SimpleTypeSchema, instantiation: AtomicLambdaSchemaInstantiation) -> SimpleType:
     return InstantiationVisitor(instantiation).visit(schema)

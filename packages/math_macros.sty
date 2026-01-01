@@ -21,6 +21,7 @@
 \NewDocumentCommand \boxprod      {} {\mathbin \smwhtsquare}
 \NewDocumentCommand \anon        {s} {\mathbin {\IfBooleanTF {#1} - \smblkcircle}}
 \NewDocumentCommand \Anon        {s} {\mathbin {\IfBooleanTF {#1} - \mdsmblkcircle}}
+\NewDocumentCommand \judgeq       {} {\mathrel \eqdef}
 \NewDocumentCommand \bincirc     {s} {\IfBooleanTF {#1} {\thinspace \circ \thinspace} {\mathbin \circ}}
 \NewDocumentCommand \binast      {s} {\IfBooleanTF {#1} {\thinspace \circ \ast} {\mathbin \ast}}
 \NewDocumentCommand \multto       {} {\rightrightarrows}
@@ -41,38 +42,24 @@
 \NewDocumentCommand \semtop       {} {\mathbfsf{T}}
 \NewDocumentCommand \sembot       {} {\mathbfsf{F}}
 
-% Syntactic logical symbols
+% Syntactic symbols
 \NewDocumentCommand \syn         {m} {{\dot{#1}}}
-\NewDocumentCommand \syntop       {} {\syn\top}
-\NewDocumentCommand \synbot       {} {\syn\bot}
-\NewDocumentCommand \synneg       {} {\syn\neg}
-\NewDocumentCommand \synvee       {} {\veedot}
-\NewDocumentCommand \synwedge     {} {\wedgedot}
-\NewDocumentCommand \syneq        {} {\doteq}
-\NewDocumentCommand \synin        {} {\isindot}
+\NewDocumentCommand \synvee       {} {\mathrel{\veedot}}
+\NewDocumentCommand \synwedge     {} {\mathrel{\wedgedot}}
+\NewDocumentCommand \syneq        {} {\mathrel{\doteq}}
+\NewDocumentCommand \synsubst     {} {\mathrel{\syn\mapsto}}
+\NewDocumentCommand \syntop       {} {\mathord{\syn\top}}
+\NewDocumentCommand \synbot       {} {\mathord{\syn\bot}}
+\NewDocumentCommand \synneg       {} {\mathord{\syn\neg}}
 \NewDocumentCommand \synexists    {} {\mathord{\syn\exists}}
 \NewDocumentCommand \synExists    {} {\mathord{\syn\exists !}}
-\NewDocumentCommand \synlambda    {} {\mathord{\syn\muplambda}}
-\NewDocumentCommand \synsum       {} {\syn\Sigma}
-\NewDocumentCommand \synprod      {} {\syn\Pi}
-\NewDocumentCommand \synplus      {} {\mathbin{\dotplus}}
-\NewDocumentCommand \synminus     {} {\mathbin{\dotminus}}
-\NewDocumentCommand \syninv       {} {\mathbin{\dotsim}}
-\NewDocumentCommand \syntimes     {} {\mathbin{\dottimes}}
-\NewDocumentCommand \syncdot      {} {\mathbin{\syn\vysmblkcircle}}
-\NewDocumentCommand \synsubst     {} {\mathrel{\syn\mapsto}}
-
-\NewDocumentCommand \synless      {} {\mathrel{\lessdot}}
-\NewDocumentCommand \syngreater   {} {\mathrel{\gtrdot}}
-\NewDocumentCommand \synleq       {} {\lesdot}
-\NewDocumentCommand \syngeq       {} {\gesdot}
 
 \nb_define_alphabet:Nnnn \syn {syn} {a} {z}
 \nb_define_alphabet:Nnnn \syn {syn} {A} {Z}
 
 \box_new:N \l_nb_superimpose_box
 \dim_new:N \l_nb_superimpose_half_width
-\cs_new_protected:Nn \nb_superimpose:NN
+\cs_new_protected:Nn \nb_superimpose:nn
   {
     \hbox_set:Nn \l_nb_superimpose_box {\ensuremath{#1}}
     \dim_set:Nn \l_nb_superimpose_half_width
@@ -87,80 +74,68 @@
       }
 
     \hspace{\l_nb_superimpose_half_width}
-    \mathclap {#2}
-    \mathclap {#1}
+    \mathclap{#1}
+    \mathclap{#2}
     \hspace{\l_nb_superimpose_half_width}
   }
 
 \NewDocumentCommand \syniff {}
   {
-    \mathrel { \nb_superimpose:NN \leftrightarrow \dotminus }
+    \mathrel { \nb_superimpose:nn \leftrightarrow \dotminus }
   }
 
 \NewDocumentCommand \syncirc {}
   {
-    \mathrel { \nb_superimpose:NN \circ \cdot }
+    \mathrel { \nb_superimpose:nn \circ \cdot }
   }
 
-% We avoid using "\nb_superimpose" because we do not want the dot to be centered
 \NewDocumentCommand \synimplies {}
   {
-    \mathrel
-      {
-        \mathrlap{\dotminus}
-        {\rightarrow}
-      }
-  }
-
-\NewDocumentCommand \syndefeq {}
-  {
-    \mathrel
-      {
-        {\coloneqq}
-        \mathllap{\doteq}
-      }
-  }
-
-\box_new:N \l_nb_raisebox_box_inner
-\box_new:N \l_nb_raisebox_box_outer
-\cs_new_protected:Nn \nb_raisebox:nn
-  {
-    \hbox_set:Nn \l_nb_raisebox_box_inner {\ensuremath{#1}}
-    \hbox_set:Nn \l_nb_raisebox_box_outer {\box_move_up:nn {#2} {\box_use_drop:N \l_nb_raisebox_box_inner}}
-    \box_use_drop:N \l_nb_raisebox_box_outer
+    \mathrel { \nb_superimpose:nn \rightarrow \dotminus }
   }
 
 \NewDocumentCommand \synforall {}
   {
-    \mathord
-      {
-        \nb_superimpose:NN \forall {\nb_raisebox:nn {\cdot} {3.5pt}}
-      }
+    \mathord { \nb_superimpose:nn \forall {\dot{\phantom{\cdot}}} }
   }
 
 \NewDocumentCommand \synvdash {}
   {
-    \mathord
-      {
-        \nb_superimpose:NN \vdash {\nb_raisebox:nn {\cdot} {3.5pt}}
-      }
+    \mathord { \nb_superimpose:nn \vdash {\dot{\phantom{\cdot}}} }
   }
 
-\NewDocumentCommand \synvarwedge {}
-  {
-    \mathrel
-      {
-        \nb_superimpose:NN \curlywedge {\nb_raisebox:nn {\cdot} {-2.5pt}}
-      }
-  }
+%% λ−calculus
+\NewDocumentCommand \synlambda    {} {\mathord{\syn\muplambda}}
+\NewDocumentCommand \synsum       {} {\syn\Sigma}
+\NewDocumentCommand \synprod      {} {\syn\Pi}
+\NewDocumentCommand \synplus      {} {\mathbin{\dotplus}}
+\NewDocumentCommand \syntimes     {} {\mathbin{\dottimes}}
 
-\NewDocumentCommand \synvarvee {}
-  {
-    \mathrel
-      {
-        \nb_superimpose:NN \curlyvee {\nb_raisebox:nn {\cdot} {2.5pt}}
-      }
-  }
+%% Set theory
+\NewDocumentCommand \synin        {} {\isindot}
+
+%% Arithmetic
+\NewDocumentCommand \syncdot      {} {\mathbin{\syn\vysmblkcircle}}
+\NewDocumentCommand \synminus     {} {\mathbin{\dotminus}}
+
+%% Groups
+\NewDocumentCommand \syninv       {} {\mathbin{\dotsim}}
+\NewDocumentCommand \synneutral   {} {\mathord{\syn\Bbbe}}
+
+%% Orders
+\NewDocumentCommand \synless      {} {\mathrel{\lessdot}}
+\NewDocumentCommand \syngreater   {} {\mathrel{\gtrdot}}
+\NewDocumentCommand \synleq       {} {\mathrel{\lesdot}}
+\NewDocumentCommand \syngeq       {} {\mathrel{\gesdot}}
+
+%% Lattices
+\NewDocumentCommand \latneg       {} {\mathord{\asteraccent \neg}}
+\NewDocumentCommand \lattop       {} {\mathord{\asteraccent \top}}
+\NewDocumentCommand \latbot       {} {\mathord{\asteraccent \bot}}
+\NewDocumentCommand \latwedge     {} {\mathrel{\asteraccent \wedge}}
+\NewDocumentCommand \latvee       {} {\mathrel{\asteraccent \vee}}
+\NewDocumentCommand \latimplies   {} {\mathrel{\asteraccent \rightarrow}}
+\NewDocumentCommand \latiff       {} {\mathrel{\asteraccent \leftrightarrow}}
 
 % Properly spaced variable binders. The "q" prefix comes from "quantifier", even though "b" is more appropriate.
 % We prefer "q" because "bsum" is more ambiguous than "qsum".
@@ -273,18 +248,25 @@
     }
   }
 
-% Overlines
-\NewDocumentCommand \oline {sm}
+% Overlines with reduces vertical spacing
+\cs_new_protected:Nn \nb_oline:nn
   {
-    \IfBooleanTF {#1}
-      % The lowered overline is based on https://tex.stackexchange.com/a/87615
-      { \overline{ \raisebox{0pt}[0.85\height]{ \( #2 \) } } }
-      { \overline{ #2 } }
+    \overline{ \raisebox{0pt}[0.85\height]{ \ensuremath{ #1 #2 } } }
+  }
+
+\NewDocumentCommand \oline {m}
+  {
+    \mathpalette \nb_oline:nn { #1 }
+  }
+
+\cs_new_protected:Nn \nb_doline:nn
+  {
+    \overline{ \raisebox{0pt}[0.8\height]{ \ensuremath{ #1 #2 } } }
   }
 
 \NewDocumentCommand \doline {m}
   {
-    \oline*{ \oline{#1} }
+    \mathpalette \nb_doline:nn { \oline {#1} }
   }
 
 \ExplSyntaxOff

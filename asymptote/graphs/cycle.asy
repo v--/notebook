@@ -6,7 +6,7 @@ struct CycleGraph {
   int n;
   pair[] vert;
 
-  void operator init(int n, real radius = 1) {
+  void operator init(int n, pair center = (0, 0), real radius = 1) {
     this.n = n;
 
     // The following correction ensures that the figure is "upright"
@@ -16,7 +16,7 @@ struct CycleGraph {
 
     for (int i = 0; i < n; ++i) {
       real angle = base_angle + correction + (3 / 4 + i / n) * 2 * pi;
-      this.vert[i] = defaultcoordsys.polar(radius, angle);
+      this.vert[i] = center + defaultcoordsys.polar(radius, angle);
     }
   }
 
@@ -25,13 +25,13 @@ struct CycleGraph {
       grdraw.vert(this.vert[i]);
   }
 
-  void draw_edge() {
+  void draw_edge(bool directed = false) {
     for (int i = 0; i < this.n; ++i)
-      grdraw.edge(this.vert[i], this.vert[(i + 1) % this.n]);
+      grdraw.edge(this.vert[i], this.vert[(i + 1) % this.n], is_arc=directed);
   }
 
-  void draw() {
+  void draw(bool directed = false) {
     this.draw_vertices();
-    this.draw_edge();
+    this.draw_edge(directed);
   }
 }

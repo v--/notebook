@@ -1,30 +1,24 @@
-from typing import override
-
-from ..formulas import Formula
-from ..parsing import parse_formula
+from ..parsing import parse_formula, parse_formula_schema
 from .exceptions import PropositionalLogicError
-from .formula_visitor import PropositionalFormulaVisitor
-from .signature import PROPOSITIONAL_SIGNATURE
-from .variables import PropositionalVariable
+from .formula_conversion import convert_to_prop_formula
+from .formulas import PropFormula, PropVariable
+from .schema_conversion import convert_to_prop_schema
+from .schemas import PropFormulaSchema
+from .signature import DEFAULT_PROP_SIGNATURE
 
 
-# The validation logic is part of the PropositionalFormulaVisitor
-class PropositionalFormulaValidationVisitor[T](PropositionalFormulaVisitor[None]):
-    @override
-    def generic_visit(self, formula: Formula) -> None:
-        return None
+def parse_prop_formula(source: str) -> PropFormula:
+    return convert_to_prop_formula(parse_formula(source, DEFAULT_PROP_SIGNATURE))
 
 
-def parse_propositional_formula(source: str) -> Formula:
-    formula = parse_formula(source, PROPOSITIONAL_SIGNATURE)
-    PropositionalFormulaValidationVisitor().visit(formula)
-    return formula
+def parse_prop_variable(source: str) -> PropVariable:
+    formula = parse_prop_formula(source)
 
-
-def parse_propositional_variable(source: str) -> PropositionalVariable:
-    formula = parse_propositional_formula(source)
-
-    if not isinstance(formula, PropositionalVariable):
+    if not isinstance(formula, PropVariable):
         raise PropositionalLogicError(f'Encountered a propositional variable, but got {source}')
 
     return formula
+
+
+def parse_prop_schema(source: str) -> PropFormulaSchema:
+    return convert_to_prop_schema(parse_formula_schema(source, DEFAULT_PROP_SIGNATURE))

@@ -2,7 +2,7 @@ from collections.abc import Collection
 from typing import Protocol, Self
 
 
-class AbstractSubstitution[VariableT, ReplacementT](Protocol):
+class AbstractAtomicSubstitution[VariableT, ReplacementT](Protocol):
     def generate_fresh_variable(self, blacklist: Collection[VariableT]) -> VariableT:
         ...
 

@@ -1,14 +1,10 @@
-from collections.abc import Collection
-
 from ....rings.modular import BaseIntModulo
 from ...structure import FormalLogicStructure
-from .signature import ARITHMETIC_SIGNATURE, FormalLogicSignature
+from .signature import ARITHMETIC_SIGNATURE
 
 
 class ModularArithmeticStructure[T: BaseIntModulo](FormalLogicStructure[T]):
     ring: type[T]
-    universe: Collection[T]
-    signature: FormalLogicSignature
 
     def __init__(self, ring: type[T]) -> None:
         self.ring = ring

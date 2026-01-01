@@ -2,6 +2,7 @@ from collections.abc import Mapping
 from dataclasses import dataclass
 from typing import Never, override
 
+from ..alphabet import BinaryTypeConnective
 from ..arrow_types import ARROW_ONLY_TYPE_SYSTEM
 from ..assertions import VariableTypeAssertion
 from ..terms import (
@@ -13,7 +14,7 @@ from ..terms import (
     Variable,
 )
 from ..type_derivation import TypeDerivationTree, TypeInferenceError, apply, assume, premise
-from ..types import SimpleType, is_arrow_type
+from ..types import SimpleConnectiveType, SimpleType
 
 
 # This is alg:simply_typed_term_type_inference in the monograph
@@ -37,7 +38,9 @@ class TypeInferenceVisitor(TypedTermVisitor[TypeDerivationTree]):
         left_subtree = self.visit(term.left)
         right_subtree = self.visit(term.right)
 
-        if not is_arrow_type(left_subtree.conclusion.type) or left_subtree.conclusion.type.left != right_subtree.conclusion.type:
+        if not isinstance(left_subtree.conclusion.type, SimpleConnectiveType) or \
+            left_subtree.conclusion.type.conn != BinaryTypeConnective.ARROW or \
+            left_subtree.conclusion.type.left != right_subtree.conclusion.type:
             raise TypeInferenceError(f'Incompatible types in application term {term}')
 
         return apply(

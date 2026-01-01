@@ -6,7 +6,7 @@ import pytest
 from ....parsing import LatinIdentifier, ParserError, TokenizerError
 from ....support.pytest import pytest_parametrize_kwargs, pytest_parametrize_lists
 from ..formulas import EqualityFormula
-from ..propositional import parse_propositional_formula
+from ..propositional import parse_prop_formula
 from ..signature import EMPTY_SIGNATURE, FormalLogicSignature
 from ..terms import EigenvariableSchemaSubstitutionSpec, FunctionApplication, Variable, VariablePlaceholder
 from .parser import (
@@ -283,6 +283,7 @@ def test_mixing_prefix_and_infix_notation(formula: str, dummy_signature: FormalL
         'fᶜ¹x',
         'fᶜ²xgᶜ⁰',
         'fᶜ²xgᶜ¹y',
+        'fᶜ¹(x ∘ y)',
     ]
 )
 def test_parsing_term_with_condensed_notation(term: str, dummy_signature: FormalLogicSignature) -> None:
@@ -304,10 +305,10 @@ def test_parsing_condensed_function_with_parentheses(dummy_signature: FormalLogi
     with pytest.raises(ParserError) as excinfo:
         parse_term('fᶜ¹(', dummy_signature)
 
-    assert str(excinfo.value) == 'Parentheses are disallowed for the symbol fᶜ¹ that uses condensed notation'
+    assert str(excinfo.value) == 'Parenthesized expression must start with a subexpression'
     assert excinfo.value.__notes__[0] == dedent('''\
         1 │ fᶜ¹(
-          │ ^^^^
+          │    ^
     ''')
 
 
@@ -402,7 +403,7 @@ def test_rebuilding_formulas(formula: str, dummy_signature: FormalLogicSignature
 
 def test_parsing_unclosed_conjunction_parentheses() -> None:
     with pytest.raises(ParserError) as excinfo:
-        parse_propositional_formula('(p ∧ q ∧')
+        parse_prop_formula('(p ∧ q ∧')
 
     assert str(excinfo.value) == 'Binary connective formulas must have a closing parenthesis'
     assert excinfo.value.__notes__[0] == dedent('''\
@@ -413,7 +414,7 @@ def test_parsing_unclosed_conjunction_parentheses() -> None:
 
 def test_parsing_unclosed_conjunction_parentheses_truncated() -> None:
     with pytest.raises(ParserError) as excinfo:
-        parse_propositional_formula('(p ∧ q')
+        parse_prop_formula('(p ∧ q')
 
     assert str(excinfo.value) == 'Binary connective formulas must have a closing parenthesis'
     assert excinfo.value.__notes__[0] == dedent('''\
@@ -424,7 +425,7 @@ def test_parsing_unclosed_conjunction_parentheses_truncated() -> None:
 
 def test_parsing_invalid_conjunction() -> None:
     with pytest.raises(ParserError) as excinfo:
-        parse_propositional_formula('(p ∧ )')
+        parse_prop_formula('(p ∧ )')
 
     assert str(excinfo.value) == 'Binary connective formulas must have a second subformula'
     assert excinfo.value.__notes__[0] == dedent('''\
@@ -459,7 +460,7 @@ def test_lone_quantifier() -> None:
     with pytest.raises(ParserError) as excinfo:
         parse_formula('∀')
 
-    assert str(excinfo.value) == 'Expected a variable after the quantifier'
+    assert str(excinfo.value) == 'Expected a variable after the quant'
     assert excinfo.value.__notes__[0] == dedent('''\
         1 │ ∀
           │ ^
@@ -470,7 +471,7 @@ def test_quantifier_with_invalid_variable(dummy_signature: FormalLogicSignature)
     with pytest.raises(ParserError) as excinfo:
         parse_formula('∀p⁰.p⁰', dummy_signature)
 
-    assert str(excinfo.value) == 'Expected a variable after the quantifier'
+    assert str(excinfo.value) == 'Expected a variable after the quant'
     assert excinfo.value.__notes__[0] == dedent('''\
         1 │ ∀p⁰.p⁰
           │ ^^^

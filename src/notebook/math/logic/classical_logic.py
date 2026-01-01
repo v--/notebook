@@ -31,4 +31,7 @@ CLASSICAL_NATURAL_DEDUCTION_SYSTEM = NaturalDeductionSystem([
 
     parse_natural_deduction_rule('∃₊', 'φ[x ↦ τ] ⫢ ∃x.φ'),
     parse_natural_deduction_rule('∃₋', '∃x.φ, [φ[x ↦ y*]] ψ ⫢ ψ'),
+
+    parse_natural_deduction_rule('=₊', '⫢ (τ = τ)'),
+    parse_natural_deduction_rule('=₋', 'φ[x ↦ τ], (τ = σ) ⫢ φ[x ↦ σ]'),
 ])

@@ -39,19 +39,26 @@
 
 \end{comments}
 
-\begin{definition}\label{def:propositional_schema_instantiation}\mimprovised
-  We define \hyperref[con:schemas_and_instances]{schema instantiations} for \hyperref[def:propositional_formula_schema]{propositional formula schemas} is \hyperref[def:set_valued_map/partial]{partial maps} from \hyperref[def:propositional_formula_schema]{propositional formula placeholders} to \hyperref[def:propositional_formula]{propositional formulas}. For simplicity, we will assume that instantiations have finite domains.
-
-  We extend this to an operation on compound formula schemas via \hyperref[rem:straightforward_traversal]{straightforward traversal} similarly to how it is done in \cref{def:propositional_substitution} for propositional substitution. Of course, this extension will only be valid for schemas whose placeholders are in the domain of the instantiation.
-
-  Given an instantiation \( \BbbI \) and a schema \( \Phi \), we call \( \Phi[\BbbI] \) an \term{instance} of \( \Phi \).
+\begin{definition}\label{def:atomic_propositional_schema_instantiation}\mimprovised
+  For \hyperref[con:schemas_and_instances]{schema instantiation} of \hyperref[def:propositional_formula]{propositional formulas}, we will need a \hyperref[def:set_valued_map/partial]{partial map} \( \BbbI \) from \hyperref[def:propositional_formula_schema]{propositional formula placeholders} to \hyperref[def:propositional_formula]{propositional formulas}. We call this map an \term{atomic instantiation}.
 \end{definition}
 \begin{comments}
-  \item This definition was adapted from \cref{def:propositional_substitution}, which is in turn based on \cite[def. 3.1.3]{CitkinMuravitsky2022ConsequenceRelations}.
+  \item The requirement for the substitution to be partial is more of a simplification than a restriction because, in practice, we will consider at most three to four placeholders, and we want a way to replace them consistently.
+\end{comments}
+
+\begin{definition}\label{alg:propositional_schema_instantiation}\mimprovised
+  We extend the \hyperref[def:atomic_propositional_schema_instantiation]{atomic propositional instantiation} \( \BbbI \) to an operation \( \varphi \mapsto \varphi[\BbbI] \) on compound formula schemas via \hyperref[rem:straightforward_traversal]{straightforward traversal} similarly to how it is done in \fullref{alg:propositional_substitution}. Of course, this extension will only be valid for schemas whose placeholders are in the domain of the instantiation.
+
+  Given an atomic instantiation \( \BbbI \) and a schema \( \Phi \), we call \( \Phi[\BbbI] \) an \term{instance} of \( \Phi \).
+\end{definition}
+\begin{comments}
+  \item This definition was adapted from \fullref{alg:propositional_substitution}, which is in turn based on \cite[def. 3.1.3]{CitkinMuravitsky2022ConsequenceRelations}.
 
   \item We reuse the notation for substitution from \cref{rem:substitution_notation}, i.e. \( \Phi[\syn\varphi \mapsto \varphi] \).
 
-  \item The requirement for the substitution to be partial is more of a simplification than a restriction because, in practice, we will consider at most three to four placeholders, and we want a way to replace them consistently.
+  \item This algorithm can be found as \identifier{math.logic.instantiation.instantiate_formula_schema} in \cite{notebook:code}.
+
+  \item This algorithm is a special case of the analogous first-order logic algorithm \fullref{alg:fol_schema_instantiation}, implemented as \identifier{math.logic.instantiation.instantiate_formula_schema} in \cite{notebook:code}.
 \end{comments}
 
 \paragraph{Axiomatic derivation systems}
@@ -59,7 +66,7 @@
 \begin{definition}\label{def:propositional_axiomatic_derivation_system}\mimprovised
   A \term[en=axiomatic system (\cite[6D1]{Hindley1997BasicSTT})]{propositional axiomatic derivation system}, also called a \term[ru=исчисление высказываний гильбертовского типа (\cite[46]{Герасимов2014Вычислимость}), en=Hilbert system (\cite[33]{TroelstraSchwichtenberg2000BasicProofTheory}); Hilbert calculus (\cite[103]{Mimram2020ProgramEqualsProof})]{Hilbert-style system}, consists of a set of \hyperref[def:propositional_formula_schema]{propositional schemas}, whose elements we call \term[en=axiom schema (\cite[82]{VanDalen2004LogicAndStructure})]{logical axiom schemas}.
 
-  For any axiom schema \( \Phi \) and any \hyperref[def:propositional_schema_instantiation]{instantiation} \( \BbbI \) defined for the placeholders of \( \Phi \), we call the formula \( \Phi[\BbbI] \) a \term{logical axiom}.
+  For any axiom schema \( \Phi \) and any \hyperref[def:atomic_propositional_schema_instantiation]{atomic instantiation} \( \BbbI \) defined for the placeholders of \( \Phi \), we call the formula \( \Phi[\BbbI] \) a \term{logical axiom}.
 \end{definition}
 \begin{comments}
   \item Similar general definitions appear in \incite[6D1]{Hindley1997BasicSTT} and \incite[46]{Герасимов2014Вычислимость}.
@@ -76,7 +83,7 @@
 
   An \term[ru=вывод (\cite[def. 1.2.4]{Герасимов2014Вычислимость})]{axiomatic derivation} of the single formula \( \varphi \) from the set \( \Gamma \) of formulas is a nonempty list \( \psi_1, \ldots, \psi_n \) of formulas such that \( \psi_n = \varphi \) and, for every \( k = 1, \ldots, n \), any of the following hold:
   \begin{thmenum}
-    \thmitem{def:propositional_axiomatic_derivation/axiom} \( \psi_k \) is a logical axiom, i.e. there exists an axiom schema \( \syn\psi_k \) and an \hyperref[def:propositional_schema_instantiation]{instantiation} \( \BbbI \) such that \( \psi_k = \syn\psi_k[\BbbI] \).
+    \thmitem{def:propositional_axiomatic_derivation/axiom} \( \psi_k \) is a logical axiom, i.e. there exists an axiom schema \( \syn\psi_k \) and an \hyperref[def:atomic_propositional_schema_instantiation]{atomic instantiation} \( \BbbI \) such that \( \psi_k = \syn\psi_k[\BbbI] \).
     \thmitem{def:propositional_axiomatic_derivation/premise} \( \psi_k \) is a premise, that is, it belongs to \( \Gamma \).
     \thmitem{def:propositional_axiomatic_derivation/mp} There exist indices \( i \) and \( j \), both smaller than \( k \), such that \( \psi_j = (\psi_i \synimplies \psi_k) \).
   \end{thmenum}
@@ -296,7 +303,7 @@ Implicational logic is both a toy derivation system we will explore and a useful
   \item See \cref{rem:soundness_and_completeness_theorem_list} for a list of soundness and completeness theorems.
 \end{comments}
 \begin{proof}
-  \SubProof{Proof for logical axioms} We must first prove that the logical axioms are \hyperref[def:propositional_tautology]{semantic tautologies}.
+  \SubProof{Proof for logical axioms} We must first prove that the logical axioms are \hyperref[def:propositional_semantics/tautology]{semantic tautologies}.
 
   \SubProof*{Proof for axiom schema \eqref{eq:def:minimal_implication_logic/intro}} Consider the formula \( \varphi = \psi \synimplies (\theta \synimplies \psi) \) and an arbitrary \hyperref[def:propositional_denotation]{propositional interpretation} \( I \).
 

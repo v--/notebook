@@ -21,7 +21,7 @@ class ArxivTitle:
 @dataclass
 class ArxivLink:
     href: str =         field(metadata=dict(type='Attribute', required=True))
-    rel: str =          field(metadata=dict(type='Attribute', required=True))
+    rel: str | None =   field(metadata=dict(type='Attribute'), default=None)
     type: str | None =  field(metadata=dict(type='Attribute'), default=None)
     title: str | None = field(metadata=dict(type='Attribute'), default=None)
 

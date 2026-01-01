@@ -1,7 +1,7 @@
 from collections.abc import Collection, Sequence
 
 from ....support.pytest import pytest_parametrize_kwargs
-from ..propositional import parse_propositional_formula
+from ..propositional import parse_prop_formula
 from .axiomatic_derivation import AxiomaticDerivation, get_premises
 from .minimal_implicational_logic import (
     IMPLICATIONAL_AXIOMS,
@@ -12,7 +12,7 @@ from .minimal_implicational_logic import (
 
 IDENTITY_DERIVATION = [
     str(f) for f in
-    get_identity_derivation_payload(parse_propositional_formula('p'))
+    get_identity_derivation_payload(parse_prop_formula('p'))
 ]
 
 
@@ -39,7 +39,7 @@ IDENTITY_DERIVATION = [
 )
 def test_minimal_implicational_derivation_premises(payload: Sequence[str], expected: Collection[str]) -> None:
     derivation = AxiomaticDerivation(
-        payload=[parse_propositional_formula(s) for s in payload]
+        payload=[parse_prop_formula(s) for s in payload]
     )
 
     premises = get_premises(IMPLICATIONAL_AXIOMS, derivation)
@@ -105,9 +105,14 @@ def test_minimal_implicational_derivation_premises(payload: Sequence[str], expec
 )
 def test_introduce_conclusion_hypothesis(payload: Sequence[str], hypothesis: str, expected: Sequence[str]) -> None:
     derivation = AxiomaticDerivation(
-        payload=[parse_propositional_formula(s) for s in payload]
+        payload=[parse_prop_formula(s) for s in payload]
     )
 
-    hypothesis_formula = parse_propositional_formula(hypothesis)
+    expected_derivation = AxiomaticDerivation(
+        payload=[parse_prop_formula(s) for s in expected]
+    )
+
+    hypothesis_formula = parse_prop_formula(hypothesis)
     relativized = introduce_conclusion_hypothesis(IMPLICATIONAL_AXIOMS, derivation, hypothesis_formula)
-    assert [str(f) for f in relativized.payload] == expected
+
+    assert relativized == expected_derivation

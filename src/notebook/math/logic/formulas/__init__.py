@@ -1,25 +1,19 @@
 from .formula_sub import FormulaWithSubstitution
 from .formula_visitor import FormulaTransformationVisitor, FormulaVisitor
 from .formulas import (
+    AtomicFormula,
     ConnectiveFormula,
-    ConstantFormula,
     EqualityFormula,
     Formula,
     NegationFormula,
     PredicateApplication,
+    PropConstant,
     QuantifierFormula,
-    is_atomic,
-    is_biconditional,
-    is_conditional,
-    is_conjunction,
-    is_disjunction,
-    is_logical_constant,
-    is_negation,
-    is_predicate_application,
 )
 from .schema_sub import FormulaSchemaSubstitutionSpec
 from .schema_visitor import FormulaSchemaVisitor
 from .schemas import (
+    AtomicFormulaSchema,
     ConnectiveFormulaSchema,
     EqualityFormulaSchema,
     FormulaPlaceholder,

@@ -5,7 +5,7 @@ from textwrap import dedent
 import pytest
 
 from ..classical_logic import CLASSICAL_NATURAL_DEDUCTION_SYSTEM
-from ..instantiation import FormalLogicSchemaInstantiation
+from ..instantiation import AtomicLogicSchemaInstantiation
 from ..parsing import (
     parse_formula,
     parse_formula_placeholder,
@@ -14,20 +14,20 @@ from ..parsing import (
     parse_term_substitution_spec,
     parse_variable,
 )
-from ..propositional import parse_propositional_formula
+from ..propositional import parse_prop_formula
 from ..signature import FormalLogicSignature
 from .exceptions import RuleApplicationError
 from .proof_tree import AssumptionTree, ProofTree, RuleApplicationPremise, apply, assume, premise
 
 
 def prop_assume(formula: str, marker: str) -> AssumptionTree:
-    return assume(parse_propositional_formula(formula), parse_marker(marker))
+    return assume(parse_prop_formula(formula), parse_marker(marker))
 
 
 def prop_premise(*, tree: ProofTree, discharge: str, marker: str | None = None) -> RuleApplicationPremise:
     return premise(
         tree=tree,
-        discharge=parse_propositional_formula(discharge),
+        discharge=parse_prop_formula(discharge),
         marker=parse_marker(marker) if marker is not None else None
     )
 
@@ -101,9 +101,9 @@ def test_efq() -> None:
         prop_assume('⊥', 'u'),
         # We are unable to infer the necessary instantiation of the rule "(EFQ) ⊥ ⫢ φ"
         # based only on the conclusion and premises, so we give a hint
-        instantiation=FormalLogicSchemaInstantiation(
+        instantiation=AtomicLogicSchemaInstantiation(
             formula_mapping={
-                parse_formula_placeholder('φ'): parse_propositional_formula('p')
+                parse_formula_placeholder('φ'): parse_prop_formula('p')
             }
         )
     )
@@ -277,11 +277,11 @@ def test_forall_reintroduction_with_renaming(dummy_signature: FormalLogicSignatu
 
     assert str_free_variables(tree) == set()
     assert str(tree) == dedent('''\
-                [∀x.p¹(x)]ᵘ
-        ___________________________ ∀₋
-        p¹(x)[x ↦ y] = p¹(z)[z ↦ y]
-        ___________________________ ∀₊
-                 ∀z.p¹(z)
+        [∀x.p¹(x)]ᵘ
+        ___________ ∀₋
+           p¹(y)
+        ___________ ∀₊
+         ∀z.p¹(z)
         '''
     )
 
@@ -325,11 +325,11 @@ def test_forall_to_exists_with_constant(dummy_signature: FormalLogicSignature) -
 
     assert str_free_variables(tree) == set()
     assert str(tree) == dedent('''\
-         [∀x.p¹(x)]ᵘ
-        _____________ ∀₋
-        p¹(x)[x ↦ f₀]
-        _____________ ∃₊
-          ∃x.p¹(x)
+        [∀x.p¹(x)]ᵘ
+        ___________ ∀₋
+          p¹(f₀)
+        ___________ ∃₊
+         ∃x.p¹(x)
         '''
     )
 
@@ -524,7 +524,7 @@ def test_invalid_exists_elimination_with_leftover_variable(dummy_signature: Form
         )
 
 
-def test_invalid_exists_elimination_with_imprecise_quantification(dummy_signature: FormalLogicSignature) -> None:
+def test_invalid_exists_elimination_with_imprecise_quantifierification(dummy_signature: FormalLogicSignature) -> None:
     # A variation of test_exists_elimination without universal quantification
     u = parse_formula('∃x.p¹(x)', dummy_signature)
     v = parse_formula('(p¹(y) → q¹(f₀))', dummy_signature)

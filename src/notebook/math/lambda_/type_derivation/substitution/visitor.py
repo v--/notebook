@@ -6,12 +6,12 @@ from .....support.substitution.exceptions import UnspecifiedReplacementError
 from ...assertions import VariableTypeAssertion
 from ...terms import Constant, TypedAbstraction, TypedApplication, TypedTerm, TypedTermVisitor, Variable
 from ..tree import TypeDerivationTree, assume
-from .substitution import TypeDerivationSubstitution
+from .substitution import AtomicTypeDerivationSubstitution
 
 
 @dataclass(frozen=True)
 class TypedSubstitutionApplicationVisitor(TypedTermVisitor[TypedTerm]):
-    substitution: TypeDerivationSubstitution
+    substitution: AtomicTypeDerivationSubstitution
 
     @override
     def visit_constant(self, term: Constant) -> Constant:
@@ -39,9 +39,9 @@ class TypedSubstitutionApplicationVisitor(TypedTermVisitor[TypedTerm]):
 
 
 # This is alg:simply_typed_substitution in the monograph
-def apply_tree_substitution_to_term(term: TypedTerm, substitution: TypeDerivationSubstitution) -> TypedTerm:
+def apply_tree_substitution_to_term(term: TypedTerm, substitution: AtomicTypeDerivationSubstitution) -> TypedTerm:
     return TypedSubstitutionApplicationVisitor(substitution).visit(term)
 
 
 def substitute_term(term: TypedTerm, variable_mapping: Mapping[Variable, TypeDerivationTree]) -> TypedTerm:
-    return apply_tree_substitution_to_term(term, TypeDerivationSubstitution(variable_mapping=variable_mapping))
+    return apply_tree_substitution_to_term(term, AtomicTypeDerivationSubstitution(variable_mapping=variable_mapping))

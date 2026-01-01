@@ -4,7 +4,6 @@ from ....support.schemas import SchemaInstantiationError
 from ..formulas import (
     ConnectiveFormula,
     ConnectiveFormulaSchema,
-    ConstantFormula,
     EqualityFormula,
     EqualityFormulaSchema,
     Formula,
@@ -15,24 +14,25 @@ from ..formulas import (
     NegationFormulaSchema,
     PredicateApplication,
     PredicateApplicationSchema,
+    PropConstant,
     QuantifierFormula,
     QuantifierFormulaSchema,
 )
-from .base import FormalLogicSchemaInstantiation
+from .base import AtomicLogicSchemaInstantiation
 from .term_application import InstantiationApplicationVisitor as TermInstantiationApplicationVisitor
 
 
 class InstantiationApplicationVisitor(FormulaSchemaVisitor[Formula]):
-    instantiation: FormalLogicSchemaInstantiation
+    instantiation: AtomicLogicSchemaInstantiation
     term_visitor: TermInstantiationApplicationVisitor
 
-    def __init__(self, instantiation: FormalLogicSchemaInstantiation) -> None:
+    def __init__(self, instantiation: AtomicLogicSchemaInstantiation) -> None:
         self.instantiation = instantiation
         self.term_visitor = TermInstantiationApplicationVisitor(self.instantiation)
 
     @override
-    def visit_logical_constant(self, schema: ConstantFormula) -> ConstantFormula:
-        return ConstantFormula(schema.value)
+    def visit_prop_constant(self, schema: PropConstant) -> PropConstant:
+        return PropConstant(schema.value)
 
     @override
     def visit_equality(self, schema: EqualityFormulaSchema) -> EqualityFormula:
@@ -64,11 +64,11 @@ class InstantiationApplicationVisitor(FormulaSchemaVisitor[Formula]):
     @override
     def visit_quantifier(self, schema: QuantifierFormulaSchema) -> QuantifierFormula:
         return QuantifierFormula(
-            schema.quantifier,
+            schema.quant,
             self.term_visitor.visit_variable_placeholder(schema.var),
             self.visit(schema.body)
         )
 
 
-def instantiate_formula_schema(schema: FormulaSchema, instantiation: FormalLogicSchemaInstantiation) -> Formula:
+def instantiate_formula_schema(schema: FormulaSchema, instantiation: AtomicLogicSchemaInstantiation) -> Formula:
     return InstantiationApplicationVisitor(instantiation).visit(schema)

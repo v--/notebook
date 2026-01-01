@@ -12,30 +12,30 @@ from ..terms import (
     Variable,
     VariablePlaceholder,
 )
-from .base import FormalLogicSchemaInstantiation
+from .base import AtomicLogicSchemaInstantiation
 
 
 @dataclass(frozen=True)
-class InferInstantiationVisitor(TermSchemaVisitor[FormalLogicSchemaInstantiation]):
+class InferInstantiationVisitor(TermSchemaVisitor[AtomicLogicSchemaInstantiation]):
     term: Term
 
     @override
-    def visit_variable_placeholder(self, schema: VariablePlaceholder) -> FormalLogicSchemaInstantiation:
+    def visit_variable_placeholder(self, schema: VariablePlaceholder) -> AtomicLogicSchemaInstantiation:
         if not isinstance(self.term, Variable):
             raise SchemaInferenceError(f'Cannot match variable placeholder {schema} to {self.term}')
 
-        return FormalLogicSchemaInstantiation(variable_mapping={schema: self.term})
+        return AtomicLogicSchemaInstantiation(variable_mapping={schema: self.term})
 
     @override
-    def visit_term_placeholder(self, schema: TermPlaceholder) -> FormalLogicSchemaInstantiation:
-        return FormalLogicSchemaInstantiation(term_mapping={schema: self.term})
+    def visit_term_placeholder(self, schema: TermPlaceholder) -> AtomicLogicSchemaInstantiation:
+        return AtomicLogicSchemaInstantiation(term_mapping={schema: self.term})
 
     @override
-    def visit_function(self, schema: FunctionApplicationSchema) -> FormalLogicSchemaInstantiation:
+    def visit_function(self, schema: FunctionApplicationSchema) -> AtomicLogicSchemaInstantiation:
         if not isinstance(self.term, FunctionApplication) or schema.symbol != self.term.symbol or len(schema.arguments) != len(self.term.arguments):
             raise SchemaInferenceError(f'Cannot match function term schema {schema} to {self.term}')
 
-        instantiation = FormalLogicSchemaInstantiation()
+        instantiation = AtomicLogicSchemaInstantiation()
 
         for subschema, subterm in zip(schema.arguments, self.term.arguments, strict=True):
             instantiation |= infer_instantiation_from_term(subschema, subterm)
@@ -43,7 +43,7 @@ class InferInstantiationVisitor(TermSchemaVisitor[FormalLogicSchemaInstantiation
         return instantiation
 
 
-def infer_instantiation_from_term(schema: TermSchema, term: Term) -> FormalLogicSchemaInstantiation:
+def infer_instantiation_from_term(schema: TermSchema, term: Term) -> AtomicLogicSchemaInstantiation:
     return InferInstantiationVisitor(term).visit(schema)
 
 

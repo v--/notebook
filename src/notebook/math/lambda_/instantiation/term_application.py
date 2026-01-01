@@ -15,13 +15,13 @@ from ..terms import (
     Variable,
     VariablePlaceholder,
 )
-from .base import LambdaSchemaInstantiation
+from .base import AtomicLambdaSchemaInstantiation
 from .type_application import instantiate_type_schema
 
 
 @dataclass(frozen=True)
 class InstantiationApplicationVisitor(TypedTermSchemaVisitor[TypedTerm]):
-    instantiation: LambdaSchemaInstantiation
+    instantiation: AtomicLambdaSchemaInstantiation
 
     @override
     def visit_constant(self, schema: Constant) -> Constant:
@@ -55,8 +55,8 @@ class InstantiationApplicationVisitor(TypedTermSchemaVisitor[TypedTerm]):
 
 
 @overload
-def instantiate_term_schema(schema: VariablePlaceholder, instantiation: LambdaSchemaInstantiation) -> Variable: ...
+def instantiate_term_schema(schema: VariablePlaceholder, instantiation: AtomicLambdaSchemaInstantiation) -> Variable: ...
 @overload
-def instantiate_term_schema(schema: TypedTermSchema, instantiation: LambdaSchemaInstantiation) -> TypedTerm: ...
-def instantiate_term_schema(schema: TypedTermSchema, instantiation: LambdaSchemaInstantiation) -> TypedTerm:
+def instantiate_term_schema(schema: TypedTermSchema, instantiation: AtomicLambdaSchemaInstantiation) -> TypedTerm: ...
+def instantiate_term_schema(schema: TypedTermSchema, instantiation: AtomicLambdaSchemaInstantiation) -> TypedTerm:
     return InstantiationApplicationVisitor(instantiation).visit(schema)

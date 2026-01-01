@@ -3,6 +3,7 @@ from dataclasses import dataclass
 from typing import NamedTuple
 
 from ....support.schemas import SchemaInferenceError
+from ..alphabet import BinaryConnective
 from ..deduction import (
     Marker,
     NaturalDeductionSystem,
@@ -12,8 +13,8 @@ from ..deduction import (
     new_marker,
     premise,
 )
-from ..formulas import Formula, FormulaWithSubstitution, is_conditional
-from ..instantiation import FormalLogicSchemaInstantiation, infer_instantiation_from_formula
+from ..formulas import ConnectiveFormula, Formula, FormulaWithSubstitution
+from ..instantiation import AtomicLogicSchemaInstantiation, infer_instantiation_from_formula
 from ..parsing import parse_formula_placeholder
 from .exceptions import AxiomaticDerivationError
 from .system import AxiomaticDerivationSystem, derivation_system_to_natural_deduction_system
@@ -29,6 +30,9 @@ class ModusPonensConfig(NamedTuple):
 class AxiomaticDerivation:
     payload: Sequence[Formula]
 
+    def __getitem__(self, index: int) -> Formula:
+        return self.payload[index]
+
     def get_conclusion(self) -> Formula:
         return self.payload[-1]
 
@@ -39,7 +43,7 @@ class AxiomaticDerivation:
         formula = self.payload[k]
 
         for i, cond in enumerate(self.payload[:k]):
-            if is_conditional(cond) and cond.right == formula:
+            if isinstance(cond, ConnectiveFormula) and cond.conn == BinaryConnective.CONDITIONAL and cond.right == formula:
                 for j, antecedent in enumerate(self.payload):
                      if antecedent == cond.left:
                         return ModusPonensConfig(i, j, k)
@@ -49,6 +53,15 @@ class AxiomaticDerivation:
     def truncate(self, index: int) -> AxiomaticDerivation:
         assert index < len(self.payload)
         return AxiomaticDerivation(payload=self.payload[:index + 1])
+
+
+def get_config_conditional_safe(derivation: AxiomaticDerivation, mp_config: ModusPonensConfig) -> ConnectiveFormula:
+    formula = derivation[mp_config.conditional_index]
+
+    if not isinstance(formula, ConnectiveFormula) or formula.conn != BinaryConnective.CONDITIONAL:
+        raise AxiomaticDerivationError(f'Invalid conditional {formula} in axiomatic derivation')
+
+    return formula
 
 
 def _are_derivations_equivalent_recurse(a: AxiomaticDerivation, b: AxiomaticDerivation) -> bool:
@@ -118,9 +131,6 @@ def derivation_to_proof_tree(ad_system: AxiomaticDerivationSystem, derivation: A
     if mp_config is None:
         raise AxiomaticDerivationError(f'Invalid derivation of {conclusion}')
 
-    cond = derivation.payload[mp_config.conditional_index]
-    assert is_conditional(cond)
-
     conditional_premise = premise(
         tree=derivation_to_proof_tree(ad_system, derivation.truncate(mp_config.conditional_index), used_markers),
     )
@@ -130,7 +140,7 @@ def derivation_to_proof_tree(ad_system: AxiomaticDerivationSystem, derivation: A
         tree=derivation_to_proof_tree(ad_system, derivation.truncate(mp_config.antecedent_index), {*used_markers, *markers})
     )
 
-    instantiation = FormalLogicSchemaInstantiation(
+    instantiation = AtomicLogicSchemaInstantiation(
         formula_mapping={
             parse_formula_placeholder('φ'): antecedent_premise.tree.conclusion.formula,
             parse_formula_placeholder('ψ'): conclusion

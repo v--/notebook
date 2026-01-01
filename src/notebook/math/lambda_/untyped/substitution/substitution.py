@@ -1,12 +1,12 @@
 from collections.abc import Collection, Iterable, Mapping
 from typing import override
 
-from .....support.substitution import AbstractSubstitution
+from .....support.substitution import AbstractAtomicSubstitution
 from ...terms import UntypedAbstraction, UntypedTerm, Variable
 from ...variables import get_free_variables, new_variable
 
 
-class UntypedTermSubstitution(AbstractSubstitution[Variable, UntypedTerm]):
+class UntypedTermSubstitution(AbstractAtomicSubstitution[Variable, UntypedTerm]):
     variable_mapping: Mapping[Variable, UntypedTerm]
 
     def __init__(self, *, variable_mapping: Mapping[Variable, UntypedTerm] | None = None) -> None:

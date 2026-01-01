@@ -1,13 +1,13 @@
 from collections.abc import Collection, Iterable, Mapping
 from typing import override
 
-from .....support.substitution import AbstractSubstitution, UnspecifiedReplacementError
+from .....support.substitution import AbstractAtomicSubstitution, UnspecifiedReplacementError
 from ...terms import TypedAbstraction, TypedTerm, Variable
 from ...variables import get_free_variables, new_variable
 from ..tree import TypeDerivationTree
 
 
-class TypeDerivationSubstitution(AbstractSubstitution[Variable, TypeDerivationTree]):
+class AtomicTypeDerivationSubstitution(AbstractAtomicSubstitution[Variable, TypeDerivationTree]):
     variable_mapping: Mapping[Variable, TypeDerivationTree]
 
     def __init__(self, *, variable_mapping: Mapping[Variable, TypeDerivationTree] | None = None) -> None:
@@ -22,7 +22,7 @@ class TypeDerivationSubstitution(AbstractSubstitution[Variable, TypeDerivationTr
         try:
             return self.variable_mapping[var]
         except KeyError:
-            raise UnspecifiedReplacementError(f'No substitution nor type given for variable {var}') from None
+            raise UnspecifiedReplacementError(f'No substitution nor type given for variable {var.identifier}') from None
 
     def iter_free_in_substituted_for_term(self, term: TypedTerm) -> Iterable[Variable]:
         for var in get_free_variables(term):
@@ -45,5 +45,5 @@ class TypeDerivationSubstitution(AbstractSubstitution[Variable, TypeDerivationTr
         return term.var
 
     @override
-    def modify_at(self, var: Variable, replacement: TypeDerivationTree) -> TypeDerivationSubstitution:
-        return TypeDerivationSubstitution(variable_mapping={**self.variable_mapping, var: replacement})
+    def modify_at(self, var: Variable, replacement: TypeDerivationTree) -> AtomicTypeDerivationSubstitution:
+        return AtomicTypeDerivationSubstitution(variable_mapping={**self.variable_mapping, var: replacement})

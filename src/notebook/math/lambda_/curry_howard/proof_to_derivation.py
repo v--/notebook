@@ -1,23 +1,23 @@
 from typing import override
 
 from ....parsing import GreekIdentifier
-from ...logic.alphabet import BinaryConnective, PropConstant
+from ...logic.alphabet import BinaryConnective, PropConstantSymbol
 from ...logic.classical_logic import CLASSICAL_NATURAL_DEDUCTION_SYSTEM
 from ...logic.deduction import NaturalDeductionRule, UnknownNaturalDeductionRuleError
 from ...logic.deduction import proof_tree as ptree
 from ...logic.formulas import (
     ConnectiveFormula,
-    ConstantFormula,
     Formula,
     FormulaPlaceholder,
     FormulaVisitor,
     PredicateApplication,
+    PropConstant,
 )
-from ...logic.instantiation import FormalLogicSchemaInstantiation
+from ...logic.instantiation import AtomicLogicSchemaInstantiation
 from ..algebraic_types import SIMPLE_ALGEBRAIC_TYPE_SYSTEM
 from ..alphabet import BinaryTypeConnective
 from ..assertions import VariableTypeAssertion
-from ..instantiation import LambdaSchemaInstantiation
+from ..instantiation import AtomicLambdaSchemaInstantiation
 from ..parsing import parse_type_variable
 from ..terms import Variable
 from ..type_derivation import tree as dtree
@@ -38,23 +38,23 @@ def formula_connective_to_type_connective(conn: BinaryConnective) -> BinaryTypeC
             return BinaryTypeConnective.ARROW
 
         case BinaryConnective.CONJUNCTION:
-            return BinaryTypeConnective.PROD
+            return BinaryTypeConnective.PRODUCT
 
         case BinaryConnective.DISJUNCTION:
             return BinaryTypeConnective.SUM
 
         case BinaryConnective.BICONDITIONAL:
-            raise ProofToDerivationError('Biconditional formulas have no equivalent type')
+            raise ProofToDerivationError('No simple type corresponds to biconditional formulas')
 
 
 class FormulaToTypeVisitor(FormulaVisitor[SimpleType]):
     @override
-    def visit_logical_constant(self, formula: ConstantFormula) -> BaseType:
+    def visit_prop_constant(self, formula: PropConstant) -> BaseType:
         match formula.value:
-            case PropConstant.VERUM:
+            case PropConstantSymbol.VERUM:
                 return BaseType('𝟙')
 
-            case PropConstant.FALSUM:
+            case PropConstantSymbol.FALSUM:
                 return BaseType('𝟘')
 
     @override
@@ -122,8 +122,8 @@ def natural_deduction_rule_to_typing_rule(rule: NaturalDeductionRule) -> TypingR
             raise UnknownNaturalDeductionRuleError(rule)
 
 
-def translate_instantiation(instantiation: FormalLogicSchemaInstantiation, **kwargs: str) -> LambdaSchemaInstantiation:
-    return LambdaSchemaInstantiation(
+def translate_instantiation(instantiation: AtomicLogicSchemaInstantiation, **kwargs: str) -> AtomicLambdaSchemaInstantiation:
+    return AtomicLambdaSchemaInstantiation(
         type_mapping={
             TypePlaceholder(GreekIdentifier(value)):
                 formula_to_type(instantiation.formula_mapping[FormulaPlaceholder(GreekIdentifier(key))])
