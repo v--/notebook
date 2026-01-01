@@ -1,4 +1,4 @@
-\section{\texorpdfstring{\( \muplambda \)}{λ}-term \texorpdfstring{\( \alpha \)}{α} equivalence}\label{sec:lambda_term_alpha_equivalence}
+\section{\texorpdfstring{\( \muplambda \)}{λ}-term \texorpdfstring{\( \alpha \)}{α}-equivalence}\label{sec:lambda_term_alpha_equivalence}
 
 \paragraph{\( \alpha \)-equivalence}
 
@@ -34,25 +34,25 @@
       \infer1[\ref{inf:def:lambda_term_alpha_equivalence/abs}]{ \qabs a A \aequiv \qabs b B }
     \end{prooftree}
   \end{equation*}
-
-  The gist of \ref{inf:def:lambda_term_alpha_equivalence/abs} is that we want \( A[a \mapsto n] \aequiv B[a \mapsto n] \) to hold for every variable \( n \) that is not free in either \( A \) or \( B \), but we still want to allow \( n \) to be \( a \) or \( b \). This will simplify our inductive proofs, but it is impossible to mechanize. We will be able to split it into two simplified rules in \cref{thm:alpha_equivalence_simplified}.
-
-  We do not need a separate condition for \( n \) not to be free in \( \qabs b B \) because, as we will show in \cref{thm:def:lambda_term_alpha_equivalence/free}, \( \qabs a A \) and \( \qabs b B \) have the same free variables if they are \( \alpha \)-equivalent.
 \end{definition}
 \begin{comments}
+  \item The gist of \ref{inf:def:lambda_term_alpha_equivalence/abs} is that we want \( A[a \mapsto n] \aequiv B[a \mapsto n] \) to hold for every variable \( n \) that is not free in either \( A \) or \( B \), but we still want to allow \( n \) to be \( a \) or \( b \). This will simplify our inductive proofs, but it is impossible to mechanize. We will be able to split it into two simplified rules in \cref{thm:alpha_equivalence_simplified}.
+
+  \item We do not need a separate condition for \( n \) not to be free in \( \qabs b B \) because, as we will show in \cref{thm:def:lambda_term_alpha_equivalence/free}, \( \qabs a A \) and \( \qabs b B \) have the same free variables if they are \( \alpha \)-equivalent.
+
   \item \hyperref[def:typed_lambda_term]{Typed \( \muplambda \)-terms} require modified rules for abstraction --- see \cref{def:typed_term_alpha_equivalence}.
 
-  \item Except for the explicit rule for constant terms, our rules resemble those in \cite[5]{Pollack2005AlphaConversion}, with two notable differences, both of which allow us to simplify inductive proofs:
+  \item Our rules resemble those in \cite[5]{Pollack2005AlphaConversion}, with two notable differences, both of which allow us to simplify inductive proofs:
   \begin{itemize}
     \item We have restricted \ref{inf:def:lambda_term_alpha_equivalence/atom} to atomic terms only, while Pollack states the rule for general terms.
-    \item We have generalized the premise in \ref{inf:def:lambda_term_alpha_equivalence/abs} to hold for all suitable variables simultaneously, and have allowed this variable to be \( a \) or \( b \).
+    \item We have allowed in \ref{inf:def:lambda_term_alpha_equivalence/abs} to be \( a \) or \( b \).
   \end{itemize}
 
   \item \incite[\S 2.1.11]{Barendregt1984LambdaCalculus} and \incite[def. 1A8]{Hindley1997BasicSTT} call the successive renaming of bound variables \enquote{\( \alpha \)-conversion} and consider \( \muplambda \)-terms \enquote{up to \( \alpha \)-conversion} (see \cref{rem:barendregt_convention}). Barendregt calls \enquote{\( \alpha \)-congruence} what we call \( \alpha \)-equivalence, while Hindley says that \enquote{\( M \) \( \alpha \)-converts to \( N \)}.
 
   \incite[5]{Pollack2005AlphaConversion} use \enquote{\( \alpha \)-conversion} and \enquote{\( \alpha \)-equivalence} interchangeably, while \incite[114]{Mimram2020ProgramEqualsProof} uses \enquote{\( \alpha \)-conversion} for what we call \( \alpha \)-equivalence.
 
-  Due to this ambiguity, we will avoid using the term \enquote{\( \alpha \)-conversion}.
+  Due to this ambiguity, we will generally avoid the term \enquote{\( \alpha \)-conversion}.
 
   \item The rules themselves can be formalized using \( \muplambda \)-term schemas and instantiations akin to how we will formalize the typing rules in \fullref{sec:curry_howard_correspondence}. Such formalization will introduce some complications akin to those described in \cref{rem:dependent_type_rule_formalization}, so we will avoid it.
 \end{comments}
@@ -70,7 +70,7 @@
 \end{comments}
 
 \begin{definition}\label{def:lambda_renaming}
-  We say that the \hyperref[def:atomic_lambda_term_substitution]{atomic substitution} \( \Bbbs \) is a \term{renaming substitution} if \( \Bbbs(x) \) is a variable for every \( x \).
+  We say that an \hyperref[def:atomic_lambda_term_substitution]{atomic substitution} is a \term{renaming substitution} if it sends variables to variables.
 \end{definition}
 \begin{comments}
   \item Renaming substitutions preserve the \hyperref[def:lambda_term_length]{length} of \( \muplambda \)-terms, which will aid us when proving \cref{thm:def:lambda_term_alpha_equivalence}.
@@ -89,9 +89,9 @@
   \end{equation*}
 \end{definition}
 \begin{comments}
-  \item If the variable names in \( M \) are single-symbol strings, then \( \len(M) \) is exactly the \hyperref[def:formal_language/string_length]{string length} of \( M \). The string length is the definition of term length given by \incite[\S 2.1.3]{Barendregt1984LambdaCalculus}.
+  \item If the variable names in \( M \) do not have numeric indices, then \( \len(M) \) is exactly the \hyperref[def:formal_language/string_length]{string length} of \( M \). The string length is the definition of term length given by \incite[\S 2.1.3]{Barendregt1984LambdaCalculus}.
 
-  Our definition instead resembles that by \incite[def. 1A2]{Hindley1997BasicSTT}, but we also account for parentheses, dots and \( \muplambda \) itself.
+  Our definition instead resembles that by \incite[def. 1A2]{Hindley1997BasicSTT}, but we also account for parentheses, dots and \( \synlambda \) itself.
 
   \item We have introduced this concept mostly for proofs like that of \cref{thm:def:lambda_term_alpha_equivalence/equivalence} so that the inductive hypothesis holds simultaneously for all terms of the same length.
 \end{comments}
@@ -118,9 +118,9 @@
   \begin{itemize}
     \item If \( M \) is a constant, then \( M \) has no free variables, thus \eqref{eq:thm:def:lambda_term_length/substitution} holds vacuously.
 
-    \item If \( M \) is a variable, then
+    \item If \( M \) is a variable, say \( M = x \), then
     \begin{equation*}
-      \len(M[\Bbbs]) = \len(\Bbbs(M)) = \len(M) + (\len(\Bbbs(M)) - \underbrace{\len(M)}_1).
+      \len(M[\Bbbs]) = \len(\Bbbs(x)) = \len(x) + (\len(\Bbbs(x)) - \underbrace{\len(x)}_1).
     \end{equation*}
 
     \item If \( M = NK \), where the inductive hypothesis holds for \( N \) and \( K \), we have
@@ -168,7 +168,12 @@
 
     \thmitem{thm:def:lambda_term_alpha_equivalence/free} The free variables of \( \alpha \)-equivalent \( \muplambda \)-terms coincide.
 
-    \thmitem{thm:def:lambda_term_alpha_equivalence/abstraction_condition} If \( \qabs a A \aequiv \qabs b B \), then \( a \) is free in \( A \) if and only if \( b \) is free in \( B \). Unless \( a = b \), however, \( a \) is never free in \( B \), nor \( b \) --- in \( A \).
+    \thmitem{thm:def:lambda_term_alpha_equivalence/abstraction_body_free} If \( \qabs a A \aequiv \qabs b B \), then
+    \begin{equation}\label{eq:thm:def:lambda_term_alpha_equivalence/abstraction_body_free}
+      \op*{Free}(A) \setminus \set{ a } = \op*{Free}(B) \setminus \set{ b }.
+    \end{equation}
+
+    In particular, \( a \) is free in \( A \) if and only if \( b \) is free in \( B \). Unless \( a = b \), however, \( a \) is never free in \( B \), nor \( b \) --- in \( A \).
 
     \thmitem{thm:def:lambda_term_alpha_equivalence/equivalence} \( \alpha \)-equivalence is an \hyperref[def:equivalence_relation]{equivalence relation}.
   \end{thmenum}
@@ -180,7 +185,7 @@
 
   No term has length \( 0 \). As per \cref{rem:induction_base_case}, we will skip this case in the future, and consider the base case to be the terms of length \( 1 \).
 
-  If \( M \) has length \( 1 \), it is necessarily an atom, and the only rule that allow us to conclude that \( M \aequiv N \) is \ref{inf:def:lambda_term_alpha_equivalence/atom}. It is satisfied only if \( M = N \). Thus, \( \op*{Free}(M) = \op*{Free}(N) \).
+  If \( M \) has length \( 1 \), it is necessarily an atom, and the only rule that allow us to conclude that \( M \aequiv N \) due to \ref{inf:def:lambda_term_alpha_equivalence/atom}. It is satisfied only if \( M = N \). Thus, \( \op*{Free}(M) = \op*{Free}(N) \).
 
   If the length of \( M \) is strictly greater than \( 1 \), we have the following possibilities:
   \begin{itemize}
@@ -204,78 +209,84 @@
 
     In particular, \( A[a \mapsto a] \aequiv B[b \mapsto a] \). Furthermore, \cref{thm:lambda_substitution_noop} implies that \( A[a \mapsto a] = A \) and thus \( A \aequiv B[b \mapsto a] \).
 
+    We have two possibilities:
     \begin{itemize}
-      \item Suppose first that \( b \) is free in \( B \). Then
+      \item Suppose first that \( b \) is free in \( B \). Then \( a \) is free in \( B[b \mapsto a] \) and, by the inductive hypothesis, it is also free in \( A \).
+
+      Furthermore,
       \begin{equation*}
         \op*{Free}(A)
         \reloset{\T{ind.}} =
         \op*{Free}(B[b \mapsto a])
         \reloset {\eqref{eq:thm:lambda_substitution_free_variables_single}} =
-        \parens[\Big]{ \op*{Free}(B) \setminus \set{ b } } \cup \set{ a },
+        \parens[\big]{ \op*{Free}(B) \setminus \set{ b } } \cup \set{ a },
       \end{equation*}
       hence
-      \begin{equation*}
-        \underbrace{\op*{Free}(\qabs a A)}_M
-        =
+      \begin{balign*}
+        \op*{Free}(M)
+        &=
+        \op*{Free}(\qabs a A)
+        = \\ &=
         \op*{Free}(A) \setminus \set{ a }
-        =
-        \op*{Free}(B) \setminus \set{ b }
-        =
-        \underbrace{\op*{Free}(\qabs b B)}_N,
-      \end{equation*}
-      as desired.
+        = \\ &=
+        \parens[\big]{ \parens[\big]{ \op*{Free}(B) \setminus \set{ b } } \cup \set{ a } } \setminus \set{ a }
+        = \\ &=
+        \op*{Free}(B) \setminus \set{ a, b }
+        = \\ &=
+        \op*{Free}(\qabs b B) \setminus \set{ a }
+        = \\ &=
+        \op*{Free}(N) \setminus \set{ a }.
+      \end{balign*}
 
-      \item Otherwise, if \( b \) is not free in \( B \), then, by \cref{thm:lambda_substitution_noop}, \( B = B[b \mapsto a] \). Hence, \( A \aequiv B \).
+      It remains to show that \( a \) is free in \( N \).
 
-      By the inductive hypothesis, \( \op*{Free}(A) = \op*{Free}(B) \).
-
-      Since we have used \ref{inf:def:lambda_term_alpha_equivalence/abs}, we also have
+      Since \( A[a \mapsto b] \aequiv B \), we have \( \op*{Free}(B) = \op*{Free}(A[a \mapsto b]) \) by the inductive hypothesis. Furthermore, we have already concluded that \( a \) is free in \( A \), so \cref{thm:lambda_substitution_free_variables_single} implies that
       \begin{equation*}
-        A[a \mapsto b] \aequiv \underbrace{B[b \mapsto b]}_B,
+        \op*{Free}(B) =\parens[\big]{ \op*{Free}(A) \setminus \set{ a } } \cup \set{ b }.
       \end{equation*}
-      hence, by the inductive hypothesis,
+
+      Thus, \( a \) is not free in \( B \), and hence also not in \( N \). It follows that \( \op*{Free}(M) = \op*{Free}(N) \).
+
+      \item Otherwise, \( b \) is not free in \( B \). Aiming at a contradiction, suppose that \( a \) is free in \( A \).
+
+      We have \( A[a \mapsto B] \aequiv B \), thus
       \begin{equation*}
-        \op*{Free}(A[a \mapsto b]) = \op*{Free}(B).
+        \op*{Free}(B)
+        \reloset{\T{ind.}} =
+        \op*{Free}(A[a \mapsto b])
+        \reloset {\eqref{eq:thm:lambda_substitution_free_variables_single}} =
+        \parens[\big]{ \op*{Free}(A) \setminus \set{ a } } \cup \set{ b }.
       \end{equation*}
 
-      Then the free variables of \( A \) and \( A[a \mapsto b] \) coincide. If \( a \) was free in \( A \), this would contradict \cref{thm:lambda_substitution_noop}. So \( a \) cannot be free in \( A \).
+      But we have assumed that \( b \) is not free in \( B \). The obtained contradiction shows that \( a \) is also not free in \( A \). Then \cref{thm:lambda_substitution_noop} implies that \( A[a \mapsto B] = A \), hence \( A \aequiv B \).
 
-      Then
-      \begin{multline*}
-        \op*{Free}(\overbrace{\qabs a A}^M)
+      By the inductive hypothesis, \( A \) and \( B \) have the same free variables. Furthermore, \( a \) in not free in \( A \) and \( b \) is not free in \( B \), so
+      \begin{equation*}
+        \op*{Free}(M)
         =
-        \op*{Free}(A) \setminus \set{ a }
+        \op*{Free}(\qabs a A)
         =
         \op*{Free}(A)
-        = \\ =
+        =
         \op*{Free}(B)
         =
-        \op*{Free}(B) \setminus \set{ b }
+        \cdots
         =
-        \op*{Free}(\underbrace{\qabs b B}_N),
-      \end{multline*}
-      as desired.
+        \op*{Free}(N).
+      \end{equation*}
     \end{itemize}
   \end{itemize}
 
-  \SubProofOf{thm:def:lambda_term_alpha_equivalence/abstraction_condition}
-
-  \SufficiencySubProof* Suppose that \( \qabs a A \aequiv \qabs b B \) and let \( a \) be free in \( A \).
-
-  By \ref{inf:def:lambda_term_alpha_equivalence/abs}, we have \( B = B[b \mapsto b] \aequiv A[b \mapsto a] \). Then
+  \SubProofOf{thm:def:lambda_term_alpha_equivalence/abstraction_body_free} Suppose that \( \qabs a A \aequiv \qabs b B \). Then
   \begin{equation*}
-    \op*{Free}(B)
-    \reloset {\ref{thm:def:lambda_term_alpha_equivalence/free}} =
-    \op*{Free}(A[a \mapsto b])
-    \reloset {\eqref{eq:thm:lambda_substitution_free_variables_single}} =
-    \parens[\Big]{ \op*{Free}(A) \setminus \set{ a } } \cup \set{ b }.
+    \op*{Free}(A) \setminus \set{ a }
+    =
+    \op*{Free}(\qabs a A)
+    \reloset {\ref{thm:def:lambda_term_alpha_equivalence/abstraction_body_free}} =
+    \op*{Free}(\qabs b B)
+    =
+    \op*{Free}(B) \setminus \set{ b }.
   \end{equation*}
-
-  We have obtained that \( b \) is free in \( B \), while \( a \) is not (unless \( a = b \)).
-
-  \NecessitySubProof* The converse is analogous.
-
-  \Cref{thm:def:lambda_term_alpha_equivalence/free} implies that.
 
   \SubProofOf{thm:def:lambda_term_alpha_equivalence/equivalence}
 
@@ -371,9 +382,6 @@
 
   This extends recursively to any number of substitutions, starting with the identity \( \id \) as a nullary composition.
 \end{definition}
-\begin{comments}
-  \item In more complicated cases we may also use the symbol \enquote{\( \circ \)} to denote composition, for example when handling \( \Bbbt_{v \mapsto w} \bincirc \Bbbs_{x \mapsto v} \) in the proof of \cref{thm:nary_substitution_composition_match_is_alpha_equivalent}.
-\end{comments}
 
 \begin{lemma}\label{thm:substitution_composition_free_variables}
   For the \hyperref[def:atomic_lambda_term_substitution]{atomic substitution} \( \Bbbs \) and \( \Bbbt \), we have
@@ -597,7 +605,7 @@
   \begin{itemize}
     \item If \( M \aequiv N \) due to \ref{inf:def:lambda_term_alpha_equivalence/atom}, then \( M \) and \( N \) are the same atom.
 
-    Either \( M \) and \( N \) are the same constants or the same variable. In both cases, \( M[\Bbbs] = N[\Bbbs] \).
+    Either \( M \) and \( N \) are the same constants or the same variable. In both cases, we have \( M[\Bbbs] = N[\Bbbs] \).
 
     \item If \( M \aequiv N \) due to \ref{inf:def:lambda_term_alpha_equivalence/app}, then \( M = AB \) and \( N = CD \), where \( A \aequiv C \) and \( B \aequiv D \) and the inductive hypothesis holds for the latter two.
 
@@ -656,7 +664,7 @@
 
     First, \cref{thm:lambda_substitution_identity} implies that \( A[a \mapsto a] = A \), so the left side of \eqref{eq:thm:substitution_on_alpha_equivalent_terms_lemma/proof/hyp} becomes \( A[\Bbbs_{a \mapsto m}] \).
 
-    For the right side, we can use \cref{thm:def:lambda_term_alpha_equivalence/abstraction_condition} to conclude that \( a \) is not free in \( B \), and \cref{thm:substitution_chain_contraction/precomposition} to conclude that
+    For the right side, we can use \cref{thm:def:lambda_term_alpha_equivalence/abstraction_body_free} to conclude that \( a \) is not free in \( B \), and \cref{thm:substitution_chain_contraction/precomposition} to conclude that
     \begin{equation*}
       B[b \mapsto a][\Bbbs_{a \mapsto m}] \aequiv B[\Bbbs_{b \mapsto m}].
     \end{equation*}
@@ -725,7 +733,7 @@
 
     \item Otherwise, \( A \aequiv B[b \mapsto a] \), and to use \ref{inf:thm:alpha_equivalence_simplified/ren} we must only verify that \( a \) is not free in \( B \).
 
-    By \cref{thm:def:lambda_term_alpha_equivalence/abstraction_condition}, \( b \) is not free in \( A \) (and hence in \( \qabs a A \)), thus we can use our assumption with \( n = b \) to conclude that \( A[a \mapsto b] \aequiv B \). By \cref{thm:def:lambda_term_alpha_equivalence/free}, \( A[a \mapsto b] \) and \( B \) have the same free variables. By \cref{thm:lambda_substitution_free_variables_single}, \( a \) is not free in \( A[a \mapsto b] \), hence also not in \( B \).
+    By \cref{thm:def:lambda_term_alpha_equivalence/abstraction_body_free}, \( b \) is not free in \( A \) (and hence in \( \qabs a A \)), thus we can use our assumption with \( n = b \) to conclude that \( A[a \mapsto b] \aequiv B \). By \cref{thm:def:lambda_term_alpha_equivalence/free}, \( A[a \mapsto b] \) and \( B \) have the same free variables. By \cref{thm:lambda_substitution_free_variables_single}, \( a \) is not free in \( A[a \mapsto b] \), hence also not in \( B \).
 
     Therefore, we can use \ref{inf:thm:alpha_equivalence_simplified/ren} to conclude that \( \qabs a A \aequiv \qabs b B \).
   \end{itemize}
