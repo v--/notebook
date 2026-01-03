@@ -11,27 +11,26 @@ from .dualize_formula import dualize_formula, dualize_formula_prop
 
 @pytest_parametrize_kwargs(
     dict(formula='⊤',         dual='⊥'),
-    dict(formula='¬⊤',        dual='⊤'),
+    dict(formula='¬⊤',        dual='¬⊥'),
     dict(formula='¬¬⊤',       dual='⊥'),
-    dict(formula='¬¬¬⊤',      dual='⊤'),
     dict(formula='p',         dual='¬p'),
     dict(formula='¬p',        dual='p'),
     dict(formula='¬¬p',       dual='¬p'),
     dict(formula='(p ∨ q)',   dual='(¬p ∧ ¬q)'),
     dict(formula='(p ∧ q)',   dual='(¬p ∨ ¬q)'),
-    dict(formula='(p → q)',   dual='¬(¬q → ¬p)'),
-    dict(formula='(p ↔ q)',   dual='¬(¬p ↔ ¬q)'),
+    dict(formula='(p → q)',   dual='¬(p → q)'),
+    dict(formula='(p ↔ q)',   dual='¬(p ↔ q)'),
     dict(formula='¬(p ∨ q)',  dual='¬(¬p ∧ ¬q)'),
     dict(formula='¬(p ∧ q)',  dual='¬(¬p ∨ ¬q)'),
-    dict(formula='¬(p → q)',  dual='(¬q → ¬p)'),
-    dict(formula='¬(p ↔ q)',  dual='(¬p ↔ ¬q)'),
+    dict(formula='¬(p → q)',  dual='(p → q)'),
+    dict(formula='¬(p ↔ q)',  dual='(p ↔ q)'),
     dict(formula='¬¬(p ∨ q)', dual='(¬p ∧ ¬q)'),
     dict(formula='¬¬(p ∧ q)', dual='(¬p ∨ ¬q)'),
-    dict(formula='¬¬(p → q)', dual='¬(¬q → ¬p)'),
-    dict(formula='¬¬(p ↔ q)', dual='¬(¬p ↔ ¬q)'),
+    dict(formula='¬¬(p → q)', dual='¬(p → q)'),
+    dict(formula='¬¬(p ↔ q)', dual='¬(p ↔ q)'),
     dict(
-        formula='((p ∧ q) → (r ∨ s))',
-        dual='¬((¬r ∧ ¬s) → (¬p ∨ ¬q))'
+        formula='((¬¬¬p ∧ ⊥) ∨ (q → ⊥))',
+        dual='((p ∨ ⊤) ∧ ¬(q → ⊥))'
     ),
 )
 def test_dualize_formula_prop(formula: str, dual: str) -> None:

@@ -13,6 +13,7 @@ from ..formulas import (
     QuantifierFormula,
 )
 from ..propositional import PropFormula, convert_to_prop_formula
+from .collapse_repeated_negation import collapse_repeated_negation
 
 
 @dataclass(frozen=True)
@@ -31,15 +32,7 @@ class FormulaDualizationVisitor(FormulaTransformationVisitor):
 
     @override
     def visit_negation(self, formula: NegationFormula) -> Formula:
-        dual_body = self.visit(formula.body)
-
-        if isinstance(dual_body, PropConstant):
-            return self.visit(dual_body)
-
-        if isinstance(dual_body, NegationFormula):
-            return dual_body.body
-
-        return NegationFormula(dual_body)
+        return collapse_repeated_negation(NegationFormula(self.visit(formula.body)))
 
     @override
     def visit_conjunction(self, formula: ConnectiveFormula) -> Formula:
@@ -55,21 +48,11 @@ class FormulaDualizationVisitor(FormulaTransformationVisitor):
 
     @override
     def visit_conditional(self, formula: ConnectiveFormula) -> Formula:
-        dual_left = self.visit(formula.left)
-        dual_right = self.visit(formula.right)
-
-        return NegationFormula(
-            ConnectiveFormula(BinaryConnective.CONDITIONAL, dual_right, dual_left)
-        )
+        return NegationFormula(collapse_repeated_negation(formula))
 
     @override
     def visit_biconditional(self, formula: ConnectiveFormula) -> Formula:
-        dual_left = self.visit(formula.left)
-        dual_right = self.visit(formula.right)
-
-        return NegationFormula(
-            ConnectiveFormula(BinaryConnective.BICONDITIONAL, dual_left, dual_right)
-        )
+        return NegationFormula(collapse_repeated_negation(formula))
 
     @override
     def visit_quantifier(self, formula: QuantifierFormula) -> QuantifierFormula:

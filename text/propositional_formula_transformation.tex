@@ -180,7 +180,7 @@ We sometimes want to substitute a propositional variable with another variable o
 
 \paragraph{Subformula substitution}
 
-For propositional logic, We will also find useful the ability to replace an entire subformula with another formula. We will use this, for example, to justify the substitutions in \fullref{alg:formula_to_cnf}.
+For propositional logic, We will also find useful the ability to replace an entire subformula with another formula. We will use this, for example, to justify the substitutions in \fullref{alg:formula_to_cnf_and_dnf}.
 
 \begin{algorithm}[Propositional subformula substitution]\label{alg:propositional_subformula_substitution}\mcite[def. 1.3.13]{Hinman2005Logic}
   We define the \term[en=substitution]{subformula substitution} of the propositional formula \( \chi \) with \( \omega \) in \( \varphi \) as follows:
@@ -252,7 +252,7 @@ For propositional logic, We will also find useful the ability to replace an enti
   We introduce an operator \( T_{\logic{cc}} \) on \hyperref[def:propositional_formula]{propositional formulas} that attempts to simplify subformulas involving logical constants. The result \( T_{\logic{cc}}(\varphi) \) will be \hyperref[def:first_order_semantics/equivalence]{semantically equivalent} with \( \varphi \).
 
   \begin{thmenum}
-    \thmitem{alg:propositional_constant_collapse/atomic} If \( \varphi \) is atomic, i.e. a constant or variable, there is nothing we can do, so we let \( T_{\logic{cc}} \coloneqq \varphi \).
+    \thmitem{alg:propositional_constant_collapse/atomic} If \( \varphi \) is atomic, i.e. a constant or variable, there is nothing we can do, so let \( T_{\logic{cc}} \coloneqq \varphi \).
 
     \thmitem{alg:propositional_constant_collapse/negation} If \( \varphi = \synneg \psi \), let \( \psi' \coloneqq T_{\logic{cc}}(\psi) \) and proceed as follows:
     \begin{equation*}
@@ -354,7 +354,7 @@ For propositional logic, We will also find useful the ability to replace an enti
   \end{equation*}
 \end{algorithm}
 \begin{comments}
-  \item A variation suitable for \fullref{alg:formula_to_cnf} is to replace \( \syntop \) with \( p_\varphi \synvee \synneg p_\varphi \). This has the downside of only being sound with respect to classical semantics.
+  \item A variation suitable for \fullref{alg:formula_to_cnf_and_dnf} is to replace \( \syntop \) with \( p_\varphi \synvee \synneg p_\varphi \). This has the downside of only being sound with respect to classical semantics.
 
   \item This algorithm can be found as \identifier{math.logic.transformation.expand_constants_propositional} in \cite{notebook:code}.
 \end{comments}
@@ -364,45 +364,50 @@ For propositional logic, We will also find useful the ability to replace an enti
 
 \paragraph{Propositional formula dualization}
 
+\begin{algorithm}[Propositional repeated negation collapse]\label{alg:propositional_repeated_negation_collapse}
+  We can collapse repeated negations in any \hyperref[def:propositional_formula]{propositional formula} \( \varphi \) via the operator
+  \begin{equation*}
+    T_{\logic{DNE}}(\varphi) = \begin{cases}
+      T_{\logic{DNE}}(\psi), &\varphi = \synneg \synneg \psi, \\
+      \varphi,               &\T{otherwise.}
+    \end{cases}
+  \end{equation*}
+
+  For any \hyperref[def:propositional_interpretation]{propositional interpretation} \( I \), due to \cref{thm:def:heyting_algebra/dni} we have \( \Bracks{\varphi}_I \leq \Bracks{T_{\logic{DNE}}(\varphi)}_I \). Equality holds under \hyperref[def:truth_value_algebra/classical]{classical semantics}.
+\end{algorithm}
+\begin{comments}
+  \item This algorithm can be found as \identifier{math.logic.transformation.collapse_repeated_negation} in \cite{notebook:code}.
+\end{comments}
+
 \begin{algorithm}[Propositional formula dualization]\label{alg:propositional_formula_dualization}
   Suppose we are working with \hyperref[def:truth_value_algebra/classical]{classical semantics}.
 
-  We will introduce an operator on \hyperref[def:propositional_formula]{propositional formulas} based on the recursive expression of \hyperref[def:free_boolean_algebra/polynomial]{Boolean polynomial} \hyperref[def:bounded_lattice_complement]{complements} from \cref{thm:boolean_polynomial_complement}.
+  We will introduce an operator on \hyperref[def:propositional_formula]{propositional formulas} loosely based on the recursive expression of \hyperref[def:free_boolean_algebra/polynomial]{Boolean polynomial} \hyperref[def:bounded_lattice_complement]{complements} from \cref{thm:boolean_polynomial_complement}.
 
   Our goal is to build a formula \( \oline{T}(\varphi) \) such that \( \Bracks{\oline{T}(\varphi)}_I = \oline{\Bracks{\varphi}_I} \) for every \hyperref[def:propositional_interpretation]{propositional interpretation} \( I \).
 
   \begin{thmenum}
-    \thmitem{alg:propositional_formula_dualization/const} If \( \varphi \) is a constant formula, let
+    \thmitem{alg:propositional_formula_dualization/const} If \( \varphi \) is a constant formula, let \( \oline{T}(\varphi) \) be the \hyperref[def:bounded_lattice/opposite]{dual constant} of \( \varphi \).
+
+    \thmitem{alg:propositional_formula_dualization/prop} For every variable \( p \), let \( \oline{T}(p) \coloneqq \synneg p \).
+
+    \thmitem{alg:propositional_formula_dualization/neg} If \( \varphi = \synneg \psi \), let
+    \begin{equation*}
+      \oline{T}(\varphi) \coloneqq T_{\logic{DNE}}(\synneg \oline{T}(\psi)),
+    \end{equation*}
+    where \( T_{\logic{DNE}} \) is the operator from \fullref{alg:propositional_repeated_negation_collapse}.
+
+    \thmitem{alg:propositional_formula_dualization/conn} Finally, if \( \varphi = \psi \syncirc \theta \), let
     \begin{equation*}
       \oline{T}(\varphi) \coloneqq \begin{cases}
-        \synbot, &\varphi = \syntop, \\
-        \syntop, &\varphi = \synbot.
+        \oline{T}(\psi) \synvee \oline{T}(\theta),                                          &{\syncirc} = {\synwedge}, \\
+        \oline{T}(\psi) \synwedge \oline{T}(\theta),                                        &{\syncirc} = {\synvee}, \\
+        \synneg \parens[\big]{ T_{\logic{DNE}}(\psi) \synimplies T_{\logic{DNE}}(\theta) }, &{\syncirc} = {\synimplies}, \\
+        \synneg \parens[\big]{ T_{\logic{DNE}}(\psi) \syniff T_{\logic{DNE}}(\theta) },     &{\syncirc} = {\syniff}. \\
       \end{cases}
     \end{equation*}
 
-    \thmitem{alg:propositional_formula_dualization/prop} For every variable \( p \), let
-    \begin{equation*}
-      p^\oppos \coloneqq \synneg p.
-    \end{equation*}
-
-    \thmitem{alg:propositional_formula_dualization/neg} Suppose that \( \varphi = \synneg \psi \) and let \( \psi' = \oline{T}(\psi) \) and
-    \begin{equation*}
-      \oline{T}(\varphi) \coloneqq \begin{cases}
-        (\psi')^{\oppos}, &\psi' \in \op*{PConst}, \\
-        \psi',            &\psi' = \synneg \theta, \\
-        \synneg \psi',    &\T{otherwise.} \\
-      \end{cases}
-    \end{equation*}
-
-    \thmitem{alg:propositional_formula_dualization/conn} Finally, suppose that \( \varphi = \psi \syncirc \theta \) and let \( \psi' = \oline{T}(\psi) \), \( \theta' = \oline{T}(\theta) \) and
-    \begin{equation*}
-      \oline{T}(\varphi) \coloneqq \begin{cases}
-        \psi' \synvee \theta',               &{\syncirc} = {\synwedge}, \\
-        \psi' \synwedge \theta',             &{\syncirc} = {\synvee}, \\
-        \synneg (\theta' \synimplies \psi'), &{\syncirc} = {\synimplies}, \\
-        \synneg (\psi' \syniff \theta'),     &{\syncirc} = {\syniff}. \\
-      \end{cases}
-    \end{equation*}
+    The first two cases are justified by De Morgan's laws from \cref{thm:classical_equivalences/de_morgan}, while the other cases simply negate \( \varphi \) because we lack the necessary dual connectives.
   \end{thmenum}
 \end{algorithm}
 \begin{comments}
@@ -411,11 +416,159 @@ For propositional logic, We will also find useful the ability to replace an enti
   \item The other Boolean polynomial operations from \cref{def:opposite_boolean_polynomial} also give rise to transformations of propositional formulas. For example, \incite{Gottschalk1953Quaternality} discusses contradual and dual formulas. \incite[114]{Church1956LogicVol1} and \incite[192]{Andrews2002Logic} call the latter formulas \enquote{principal dual}.
 
   The aforementioned authors add additional dual connectives --- \( \nleftarrow \) for \( \rightarrow \) (which also requires adding \( \leftarrow \) and \( \nrightarrow \)), and also \( \nleftrightarrow \) for \( \leftrightarrow \). In our algorithm we emulate these connectives.
+
+  \item It seems simpler to define \( \oline{T}(\synneg \psi) \) as \( \psi \) rather than \( \synneg \oline{T}(\psi) \) (module double negation elimination). Unfortunately, this would require handling recursive cases separately.
+
+  \item As stated, the algorithm satisfies some useful properties like \cref{thm:alg:propositional_formula_dualization} and \cref{thm:full_cnf_and_dnf_uniqueness}.
 \end{comments}
+
+\begin{proposition}\label{thm:alg:propositional_formula_dualization}
+  \Fullref{alg:propositional_formula_dualization} has the following basic properties:
+  \begin{thmenum}
+    \thmitem{thm:alg:propositional_formula_dualization/no_double_negation} The result of the algorithm contains no double negations.
+
+    \thmitem{thm:alg:propositional_formula_dualization/double_dual} If \( \varphi \) does not contain double negations, then \( \varphi \) coincides with its double opposite \( \oline{T}(\oline{T}(\varphi)) \).
+   \end{thmenum}
+\end{proposition}
+\begin{proof}
+  \SubProofOf{thm:alg:propositional_formula_dualization/no_double_negation} We will use \fullref{thm:induction_on_abstract_syntax} on \( \varphi \) to show that \( T(\varphi) \) contains no double negations.
+
+  \begin{itemize}
+    \item If \( \varphi \) is atomic, there is nothing to prove.
+    \item If \( \varphi = \synneg \psi \), then \( \oline{T}(\varphi) \coloneqq T_{\logic{DNE}}(\synneg \oline{T}(\psi)) \). We explicitly remove double negations here.
+
+    \item If \( \varphi = \psi \synwedge \theta \), where the inductive hypothesis holds for \( \psi \) and \( \theta \), we have
+    \begin{equation*}
+      \oline{T}(\varphi) = \oline{T}(\psi) \synvee \oline{T}(\theta).
+    \end{equation*}
+
+    No additional negations are introduced in \( \oline{T}(\varphi) \) compared to \( \oline{T}(\psi) \) or \( \oline{T}(\theta) \), so the inductive hypothesis implies that \( \oline{T}(\varphi) \) does not contain double negation.
+
+    \item If \( \varphi = \psi \synvee \theta \), the result follows by duality.
+    \item If \( \varphi = \psi \synimplies \theta \), then
+    \begin{equation*}
+      \oline{T}(\varphi) = \synneg \parens[\big]{ T_{\logic{DNE}}(\psi) \synimplies T_{\logic{DNE}}(\theta) }.
+    \end{equation*}
+
+    We explicitly remove double negations from \( \psi \) and \( \theta \), so \( \oline{T}(\varphi) \) also contains none.
+
+    \item If \( \varphi = \psi \syniff \theta \), we proceed analogously.
+  \end{itemize}
+
+  \SubProofOf{thm:alg:propositional_formula_dualization/double_dual} Suppose that \( \varphi \) contains no double negations. We will use \fullref{thm:induction_on_abstract_syntax} on \( \varphi \) to show that \( \oline{T}(\oline{T}(\varphi)) \).
+
+  \begin{itemize}
+    \item If \( \varphi \) is a constant, then \( \oline{T}(\varphi) \) is by definition the dual constant, and \( \oline{T}(\oline{T}(\varphi)) \) thus coincides with \( \varphi \).
+
+    \item If \( \varphi \) is a propositional variable, say \( p \), then \( \oline{T}(p) = \synneg p \)
+    \begin{equation*}
+      \oline{T}(\oline{T}(p)) = \oline{T}(\synneg p) = p.
+    \end{equation*}
+
+    \item If \( \varphi = \synneg \psi \), where the inductive hypothesis holds for \( \psi \), then
+    \begin{equation*}
+      \oline{T}(\varphi)
+      =
+      \oline{T}(\synneg \psi)
+      =
+      T_{\logic{DNE}}(\synneg \oline{T}(\psi)).
+    \end{equation*}
+
+    We have two possibilities:
+    \begin{itemize}
+      \item If \( \oline{T}(\psi) \) is a negation, then \( \oline{T}(\psi) = \synneg \psi = \varphi \).
+
+      Indeed, we have the following possibilities:
+      \begin{itemize}
+        \item If \( \psi \) is a variable, say \( p \), then \( \oline{T}(p) = \synneg p \).
+
+        \item If \( \psi = \theta \synimplies \chi \), then
+        \begin{equation*}
+          \oline{T}(\psi)
+          =
+          \oline{T}(\theta \synimplies \chi)
+          =
+          \synneg (T_{\logic{DNE}}(\theta) \synimplies T_{\logic{DNE}}(\chi))
+          =
+          \synneg (\theta \synimplies \chi)
+          =
+          \synneg \psi
+        \end{equation*}
+        because we have assumed that \( \varphi \), and hence all its subformulas, have no double negations.
+
+        \item If \( \psi = \theta \syniff \chi \), we proceed similarly.
+      \end{itemize}
+
+      In all three cases,
+      \begin{equation*}
+        \oline{T}(\varphi)
+        =
+        \oline{T}(\synneg \psi)
+        =
+        T_{\logic{DNE}}(\synneg \oline{T}(\psi))
+        =
+        T_{\logic{DNE}}(\synneg \synneg \psi)
+        =
+        \psi,
+      \end{equation*}
+      thus
+      \begin{equation*}
+        \oline{T}(\oline{T}(\varphi)) = \oline{T}(\psi) = \synneg \psi = \varphi.
+      \end{equation*}
+
+      \item Otherwise, \( \oline{T}(\psi) \) is not a negation, thus
+      \begin{equation*}
+        \oline{T}(\varphi) = T_{\logic{DNE}}(\synneg \oline{T}(\psi) = \synneg \oline{T}(\psi)
+      \end{equation*}
+      and
+      \begin{equation*}
+        \oline{T}(\oline{T}(\varphi))
+        =
+        T_{\logic{DNE}}(\synneg \oline{T}(\oline{T}(\psi)))
+        \reloset {\T{ind.}} =
+        T_{\logic{DNE}}(\synneg \psi)
+        =
+        T_{\logic{DNE}}(\varphi)
+        =
+        \varphi.
+      \end{equation*}
+    \end{itemize}
+
+    \item If \( \varphi = \psi \synwedge \theta \), where the inductive hypothesis holds for \( \psi \) and \( \theta \), then
+    \begin{equation*}
+      \oline{T}(\oline{T}(\varphi))
+      =
+      \oline{T}(\oline{T}(\psi) \synvee \oline{T}(\theta))
+      =
+      \oline{T}(\oline{T}(\psi)) \synwedge \oline{T}(\oline{T}(\theta))
+      \reloset {\T{ind.}} =
+      \psi \synwedge \theta
+      =
+      \varphi,
+    \end{equation*}
+    as desired.
+
+    \item If \( \varphi = \psi \synvee \theta \), the result follows by duality.
+
+    \item If \( \varphi = \psi \synimplies \theta \), then
+    \begin{equation*}
+      \oline{T}(\oline{T}(\varphi))
+      =
+      \oline{T}(T_{\logic{DNE}}(\psi) \synimplies T_{\logic{DNE}}(\theta))
+      =
+      \oline{T}(\psi \synimplies \theta)
+      =
+      \varphi,
+    \end{equation*}
+    where we have used that \( \varphi \), and hence all its subformulas, contain no double negations.
+
+    \item Finally, if \( \varphi = \psi \syniff \theta \), we proceed similarly.
+  \end{itemize}
+\end{proof}
 
 \paragraph{Conjunctive and disjunctive normal forms}
 
-\begin{definition}\label{def:cnf_and_dnf}\mimprovised
+\begin{definition}\label{def:propositional_cnf_and_dnf}\mimprovised
   We will now introduce \term[ru=конъюнктивная нормальная форма (\cite[def. 6.2]{Эдельман1975Логика}), en=conjunctive normal form (\cite[def. 1.3.10]{Hinman2005Logic})]{conjunctive normal forms} (CNF) and \term[ru=дизъюнктивная нормальная форма (\cite[def. 6.2]{Эдельман1975Логика}), en=disjunctive normal form (\cite[def. 1.3.10]{Hinman2005Logic})]{disjunctive normal forms} (DNF) for propositional formulas.
 
   The structure of these formulas is best described by the following extension of the \hyperref[def:propositional_formula]{propositional formula grammar schema}:
@@ -423,269 +576,155 @@ For propositional logic, We will also find useful the ability to replace an enti
     \bnfprod{positive literal}       {\bnfpn{propositional variable}} \\
     \bnfprod{negative literal}       {\bnftsq{\( \synneg \)} \bnfsp \bnfpn{propositional variable}} \\
     \bnfprod{literal}                {\bnfpn{positive literal} \bnfor \bnfpn{negative literal}} \\
-    \bnfprod{elementary disjunction} {\bnfpn{literal} \bnfor} \\
+    \bnfprod{elementary disjunction} {\bnfpn{constant formula} \bnfor \bnfpn{literal} \bnfor} \\
     \bnfmore                         {\bnftsq{(} \bnfsp \bnfpn{elem. disjunction} \bnfsp \bnftsq{\( \synvee \)} \bnfsp \bnfpn{elem. disjunction} \bnfsp \bnftsq{)}} \\
     \bnfprod{CNF}                    {\bnfpn{elem. disjunction} \bnfor \bnftsq{(} \bnfsp \bnfpn{CNF}              \bnfsp \bnftsq{\( \synwedge \)} \bnfsp \bnfpn{CNF}             \bnfsp \bnftsq{)}} \\
-    \bnfprod{elementary conjunction} {\bnfpn{literal} \bnfor} \\
+    \bnfprod{elementary disjunction} {\bnfpn{constant formula} \bnfor \bnfpn{literal} \bnfor} \\
     \bnfmore                         {\bnftsq{(} \bnfsp \bnfpn{elem. conjunction} \bnfsp \bnftsq{\( \synvee \)} \bnfsp \bnfpn{elem. conjunction} \bnfsp \bnftsq{)}} \\
     \bnfprod{DNF}                    {\bnfpn{elem. conjunction} \bnfor \bnftsq{(} \bnfsp \bnfpn{DNF}              \bnfsp \bnftsq{\( \synvee \)}   \bnfsp \bnfpn{DNF}             \bnfsp \bnftsq{)}}
   \end{longbnf*}
 \end{definition}
 \begin{comments}
-  \item The terms \enquote{literal}, \enquote{positive literal} and \enquote{negative literal} are used by \incite[def. 12.2.1]{Rosen2019DiscreteMathematics}, \incite[103]{DaveyPriestley2002LatticeTheory}, \incite[77]{Mimram2020ProgramEqualsProof} and \incite[132]{Savage2008ModelsOfComputation}. The adjective \enquote{elementary} for conjunctions and disjunctions is based on \cite[36]{Эдельман1975Логика}.
-  \item With only positive literals, this becomes a particular syntax for \hyperref[rem:algebraic_and_lattice_polynomials]{lattice polynomials}.
+  \item We can use \cref{alg:propositional_constant_collapse} to remove unnecessary propositional constants in formulas like \( \synp \wedge \syntop \).
+
+  We can expand \( \synbot \) to \( \synp \wedge \synneg \synp \) (in accordance with \fullref{alg:propositional_constant_expansion}) and, dually, we can expand \( \syntop \) to \( \synp \vee \synneg \synp \).
+
+  \item The terms \enquote{literal}, \enquote{positive literal} and \enquote{negative literal} are used in \cite[def. 12.2.1]{Rosen2019DiscreteMathematics}, \cite[103]{DaveyPriestley2002LatticeTheory}, \cite[77]{Mimram2020ProgramEqualsProof} and \cite[132]{Savage2008ModelsOfComputation}. The adjective \enquote{elementary} for conjunctions and disjunctions is based on \cite[36]{Эдельман1975Логика}.
+
+  \item Via \fullref{alg:propositional_formula_to_boolean_term}, this becomes a particular syntax for \hyperref[def:free_boolean_algebra/polynomial]{Boolean polynomials}.
+
   \item As usual, we utilize the convention in \cref{rem:propositional_formula_notation_conventions} and avoid excessive parentheses.
 \end{comments}
 
-\begin{algorithm}[Formula to CNF or DNF]\label{alg:formula_to_cnf}
-  Again, suppose we are working with \hyperref[def:truth_value_algebra/classical]{classical semantics}.
-
-  We will define four operators, \( C_1 \) through \( C_4 \), such that, for a \hyperref[def:propositional_formula]{propositional formula} \( \varphi \)
-  \begin{equation*}
-    [C_4 \bincirc C_3 \bincirc C_2 \bincirc C_1](\varphi)
-  \end{equation*}
-  is a formula in \hyperref[def:cnf_and_dnf]{conjunctive normal form} that is \hyperref[def:semantic_equivalence]{semantically equivalent} to \( \varphi \).
-
-  In order to obtain a \hyperref[def:cnf_and_dnf]{disjunctive normal form} instead, we will need to use \( C_4^\oppos \) rather than \( C_4 \).
+\begin{proposition}\label{thm:propositional_cnf_and_dnf_dualization}
+  Suppose that the \hyperref[def:propositional_formula]{propositional formula} \( \varphi \) has no double negations. Consider its opposite \( \oline{T}(\varphi) \) obtained via \fullref{alg:propositional_formula_dualization}.
 
   \begin{thmenum}
-    \thmitem{alg:formula_to_cnf/constants} First, we remove the propositional constants. Choose any propositional variable, say \( \synp \), and let
+    \thmitem{thm:propositional_cnf_and_dnf_dualization/cnf} The formula \( \varphi \) is in \hyperref[def:propositional_cnf_and_dnf]{conjunctive normal form} if and only if \( \oline{T}(\varphi) \) is in disjunctive normal form.
+
+    \thmitem{thm:propositional_cnf_and_dnf_dualization/dnf} Conversely, \( \varphi \) is in disjunctive normal form if and only if \( \oline{T}(\varphi) \) is in conjunctive normal form.
+  \end{thmenum}
+\end{proposition}
+\begin{proof}
+  We will only show \cref{thm:propositional_cnf_and_dnf_dualization/cnf} because \cref{thm:propositional_cnf_and_dnf_dualization/dnf} follows by \fullref{thm:lattice_duality} (via \fullref{alg:propositional_formula_to_boolean_term}).
+
+  \SufficiencySubProof Suppose that \( \varphi \) is in CNF.
+
+  We will use \fullref{thm:induction_on_abstract_syntax} on \( \varphi \) to show that \( \oline{T}(\varphi) \) is in DNF:
+  \begin{itemize}
+    \item If \( \varphi \) is atomic, it is either a variable (i.e. a positive literal) or a constant, so it is in both CNF and DNF.
+
+    Then \( \oline{T}(\varphi) \) is either a negative literal or a constant; hence it is also both in CNF and DNF.
+
+    \item If \( \varphi = \synneg \psi \), then \( \psi \) must be a propositional variable. In this case \( \oline{T}(\varphi) = \psi \), which is again both in CNF and DNF.
+
+    \item If \( \varphi = \psi \synvee \theta \), then \( \psi \) and \( \theta \) are elementary disjuncts.
+
+    Then \( \oline{T}(\psi) \) and \( \oline{T}(\theta) \) are elementary conjuncts, and thus so is their conjunction.
+
+    \item If \( \varphi = \psi \synwedge \theta \), where the inductive hypothesis holds for \( \psi \) and \( \theta \), we have
     \begin{equation*}
-      C_1(\varphi) \coloneqq \begin{cases}
-        \synp \synvee \synneg \synp,                                             &\varphi = \syntop, \\
-        \synp \synwedge \synneg \synp,                                           &\varphi = \synbot, \\
-        \hyperref[rem:straightforward_traversal]{\T{straightforward traversal}}, &\T{otherwise.}
+      \oline{T}(\varphi) = \oline{T}(\psi) \synvee \oline{T}(\theta).
+    \end{equation*}
+
+    Since \( \varphi \) is in CNF, so are \( \psi \) and \( \theta \). By the inductive hypothesis, \( \oline{T}(\psi) \) and \( \oline{T}(\theta) \) are in DNF; then so is their disjunction \( \oline{T}(\varphi) \).
+  \end{itemize}
+
+  \NecessitySubProof Let \( \varphi \) be a formula without double negation and suppose that \( \oline{T}(\varphi) \) is in DNF.
+
+  Sufficiency in \cref{thm:propositional_cnf_and_dnf_dualization/dnf} implies that \( \oline{T}(\oline{T}(\varphi)) \) is in CNF. Moreover, since we have assumed that \( \varphi \) contains no double negations, \cref{thm:alg:propositional_formula_dualization/double_dual} implies that \( \oline{T}(\oline{T}(\varphi)) = \varphi \).
+
+  Therefore, \( \varphi \) is in CNF.
+\end{proof}
+
+\begin{algorithm}[Propositional formula to CNF or DNF]\label{alg:propositional_formula_to_cnf_or_dnf}
+  Again, suppose we are working with \hyperref[def:truth_value_algebra/classical]{classical semantics}.
+
+  We will define two complementary operators on \hyperref[def:propositional_formula]{propositional formulas}, \( T_{\wedge}(\varphi) \) and \( T_{\vee}(\varphi) \), that convert \( \varphi \) to \hyperref[def:propositional_cnf_and_dnf]{conjunctive and disjunctive normal form}, respectively.
+
+  Denote by \( \syncirc \) the outer connective (\( \synwedge \) for CNF and \( \synvee \) for DNF) and by \( \syncirc^{\oppos} \) its dual, the inner connective.
+
+  \begin{thmenum}
+    \thmitem{alg:formula_to_cnf_and_dnf/atomic} If \( \varphi \) is atomic, it is either a constant or a positive literal, and thus it is already in both conjunctive and disjunctive normal form.
+
+    In this case, let \( T_{\anon}(\varphi) \coloneqq \varphi \) for both \( {\anon} = \wedge \) and \( {\anon} = \vee \).
+
+    \thmitem{alg:formula_to_cnf_and_dnf/negation} If \( \varphi = \synneg \psi \), let
+    \begin{align*}
+      T_\wedge(\varphi) \coloneqq \oline{T}(T_\vee(\psi))
+      &&
+      \T{and}
+      &&
+      T_\vee(\varphi) \coloneqq \oline{T}(T_\wedge(\psi)),
+    \end{align*}
+    where \( \oline{T} \) is the dualization operator from \fullref{thm:alg:propositional_formula_dualization}.
+
+    These cases are justified by \cref{thm:propositional_cnf_and_dnf_dualization}.
+
+    \thmitem{alg:formula_to_cnf_and_dnf/conditional} If \( \varphi = \psi \synimplies \theta \), let
+    \begin{equation*}
+      T_{\anon}(\varphi) \coloneqq T_{\anon}(\synneg \psi \synvee \theta).
+    \end{equation*}
+
+    \thmitem{alg:formula_to_cnf_and_dnf/biconditional} If \( \varphi = \psi \syniff \theta \), let
+    \begin{align*}
+      T_\wedge(\varphi) &\coloneqq T_\wedge\parens[\big]{ (\synneg \psi \synvee \theta) \synwedge (\psi \synvee \synneg \theta) }, \\
+      T_\vee(\varphi)   &\coloneqq T_\vee\parens[\big]{ (\psi \synvee \theta) \synwedge (\synneg \psi \synvee \synneg \theta) }.
+    \end{align*}
+
+    \thmitem{alg:formula_to_cnf_and_dnf/outer} If \( \varphi = \psi \syncirc \theta \), let
+    \begin{equation*}
+      T_{\syncirc}(\varphi) \coloneqq T_{\syncirc}(\psi) \syncirc T_{\syncirc}(\theta).
+    \end{equation*}
+
+    \thmitem{alg:formula_to_cnf_and_dnf/inner} If \( \varphi = \psi \syncirc^{\oppos} \theta \), define \( \psi' \coloneqq T_{\syncirc}(\psi) \) and \( \theta' \coloneqq T_{\syncirc}(\theta) \) and let
+    \begin{equation*}
+      T_{\syncirc}(\varphi) \coloneqq \begin{cases}
+        T_{\syncirc}(\chi \syncirc^{\oppos} \psi) \syncirc T_{\syncirc}(\omega \syncirc^{\oppos} \psi),   &\psi' = \chi \syncirc \omega, \\
+        T_{\syncirc}(\psi' \syncirc^{\oppos} \chi) \syncirc T_{\syncirc}(\psi' \syncirc^{\oppos} \omega), &\T{otherwise if} \theta' = \chi \syncirc \omega, \\
+        \psi' \syncirc \theta',                                                                           &\T{otherwise.}
       \end{cases}
     \end{equation*}
 
-    \Cref{thm:propositional_subformula_substitution_equivalence} implies that, since \( \synp \synvee \synneg \synp \gleichstark \syntop \) and \( \synp \synwedge \synneg \synp \gleichstark \synbot \), then \( C_1(\varphi) \gleichstark \varphi \).
-
-    \thmitem{alg:formula_to_cnf/conditional} Next, we remove the conditional \( \synimplies \) and biconditional \( \syniff \). Let
-    \begin{equation*}
-      C_2(\varphi) \coloneqq \begin{cases}
-        \synneg C_2(\psi) \synvee C_2(\theta),                                   &\varphi = \psi \synimplies \theta, \\
-        C_2(\psi \synimplies \theta) \synwedge C_2(\theta \synimplies \psi),     &\varphi = \psi \syniff \theta, \\
-        \hyperref[rem:straightforward_traversal]{\T{straightforward traversal}}, &\T{otherwise.}
-      \end{cases}
-    \end{equation*}
-
-    \Cref{thm:classical_equivalences/conditional_as_disjunction} and \cref{def:heyting_algebra/biconditional} justify the substitutions and ensure that \( C_2(\varphi) \gleichstark \varphi \).
-
-    \thmitem{alg:formula_to_cnf/negation} We \enquote{push} negations inwards. Let
-    \begin{equation*}
-      C_3(\varphi) \coloneqq \begin{cases}
-        C_3(\synneg \psi) \synwedge C_3(\synneg \theta),                         &\varphi = \synneg (\psi \synvee \theta), \\
-        C_3(\synneg \psi) \synvee C_3(\synneg \theta),                           &\varphi = \synneg (\psi \synwedge \theta), \\
-        C_3(\psi),                                                               &\varphi = \synneg \synneg \psi, \\
-        \synneg C_3(\psi),                                                       &\T{otherwise if} \varphi = \synneg \psi, \\
-        \hyperref[rem:straightforward_traversal]{\T{straightforward traversal}}, &\T{otherwise.}
-      \end{cases}
-    \end{equation*}
-
-    \Cref{thm:classical_equivalences/de_morgan} and \cref{thm:classical_equivalences/double_negation} ensure that \( C_3(\varphi) \gleichstark \varphi \) for any formula \( \varphi \).
-
-    If case \( \varphi \) has no (bi)conditionals (e.g. due to \( C_2 \)), the result \( C_3(\varphi) \) has negations only before propositional variables.
-
-    \thmitem{alg:formula_to_cnf/distributive} Finally, we \enquote{pull} conjunctions outwards. Let
-    \begin{equation*}
-      C_4(\varphi) \coloneqq \begin{cases}
-        C_4(\psi_1 \synvee \theta) \synwedge C_4(\psi_1 \synvee \theta),         &\varphi = \psi \synvee \theta \T{and} C_4(\psi) = \psi_1 \synwedge \psi_2, \\
-        C_4(\psi \synvee \theta_1) \synwedge C_4(\psi \synvee \theta_2),         &\T{otherwise if} \varphi = \psi \synvee \theta \T{and} C_4(\theta) = \theta_1 \synwedge \theta_2, \\
-        C_4(\psi) \synvee C_4(\theta),                                           &\T{otherwise if} \varphi = \psi \synvee \theta, \\
-        C_4(\psi) \synwedge C_4(\theta),                                         &\varphi = \psi \synwedge \theta, \\
-        \hyperref[rem:straightforward_traversal]{\T{straightforward traversal}}, &\T{otherwise.}
-      \end{cases}
-    \end{equation*}
-
-    The last case is due to the usual traversal rules, and we could avoid writing it, but we wanted to be explicit about how conjunction behaves with \( C_4 \).
-
-    \Cref{thm:classical_equivalences/distributivity} ensures that \( C_4(\varphi) \gleichstark \varphi \) for any formula \( \varphi \).
-
-    To \enquote{pull} out disjunctions instead, we will need the operator \( C_4^\oppos \), which is defined like \( C_4 \) but with \( \synvee \) and \( \synwedge \) swapped.
+    These cases are justified by \cref{thm:classical_equivalences/distributivity}.
   \end{thmenum}
 \end{algorithm}
 \begin{comments}
-  \item This algorithm can be found as \identifier{math.logic.transformations.conjunctive.formula_to_cnf} in \cite{notebook:code}.
+  \item This algorithm can be found as \identifier{math.logic.transformation.formula_to_cnf_or_dnf} in \cite{notebook:code}.
 \end{comments}
-\begin{defproof}
-  It is obvious from our comments that \( \varphi \) is equivalent to
-  \begin{equation*}
-    \varphi' \coloneqq [C_4 \bincirc C_3 \bincirc C_2 \bincirc C_1](\varphi).
-  \end{equation*}
 
-  We will use \hyperref[con:induction/peano_arithmetic]{natural number induction} on the length of \( \varphi \) to show that it is in conjunctive normal form.
+\begin{definition}\label{def:full_propositional_cnf_and_dnf}\mimprovised
+  Fix a \hyperref[def:propositional_formula]{propositional formula} \( \varphi \) and let \( p_1, \ldots, p_n \) be the lexicographic enumeration of its variables as per \cref{def:variable_identifier}.
 
-  \begin{itemize}
-    \item If \( \varphi = \syntop \), then \( \varphi' = C_1(\varphi) = \synp \synvee \synneg \synp \), which is a disjunction of literals.
-    \item If \( \varphi = \synbot \), then \( \varphi' = C_1(\varphi) = \synp \synwedge \synneg \synp \), which is a conjunction of \enquote{unary} disjuncts of literals.
-    \item If \( \varphi \) is a propositional variable, then \( \varphi' = \varphi \) is a literal.
-
-    \item If \( \varphi = \psi_1 \synvee \psi_2 \), then
-    \begin{equation*}
-      \varphi'
-      =
-      [C_4 \bincirc C_3 \bincirc C_2 \bincirc C_1](\psi_1 \synvee \psi_2)
-      =
-      C_4\parens[\big]{ [C_3 \bincirc C_2 \bincirc C_1](\psi_1) \synvee [C_3 \bincirc C_2 \bincirc C_1](\psi_2) }
-    \end{equation*}
-
-    The result of applying \( C_4 \) depends on \( \psi_1' \) and \( \psi_2' \). Note that both are shorter than \( \varphi \), so both must be in CNF.
-    \begin{itemize}
-      \item If \( (\synneg \theta_1)' = \chi_1 \synwedge \chi_2 \), then
-      \begin{balign*}
-        \varphi'
-        &=
-        C_4\parens[\bigg]{ \parens[\big]{ \chi_1 \synvee [C_3 \bincirc C_2 \bincirc C_1](\psi_2) } \synwedge \parens[\big]{ \chi_2 \synvee [C_3 \bincirc C_2 \bincirc C_1](\psi_2) } }
-        = \\ &=
-        C_4\parens[\big]{ \chi_1 \synvee [C_3 \bincirc C_2 \bincirc C_1](\psi_2) } \synwedge C_4\parens[\big]{ \chi_2 \synvee [C_3 \bincirc C_2 \bincirc C_1](\psi_2) }
-        = \\ &=
-        (\chi_1 \synvee \psi_2)' \synwedge (\chi_2 \synvee \psi_2)'.
-      \end{balign*}
-
-      Since both \( (\chi_1 \synvee \psi_2)' \) and \( (\chi_2 \synvee \psi_2)' \) are shorter than \( \varphi \), the inductive hypothesis implies that they are in CNF. Then \( \varphi' \) itself is also in CNF.
-
-      \item If \( \psi_1' \) is not a conjunction and if \( \psi_2' = \chi_1 \synwedge \chi_2 \), then, by analogy with the case above, we conclude that \( \varphi' \) is in CNF.
-
-      \item If neither \( \psi_1' \) nor \( \psi_2' \) are conjunctions, then they must be disjunctions of literals, and hence \( \varphi' \) is also a disjunction of literals.
-    \end{itemize}
-
-    \item If \( \varphi = \psi_1 \synwedge \psi_2 \), the inductive hypothesis holds for both \( \psi_1 \) and \( \psi_2 \), hence \( \varphi' = \psi_1' \synwedge \psi_2' \) is in CNF.
-
-    \item If \( \varphi = \psi_1 \synimplies \psi_2 \), then
-    \begin{balign*}
-      \varphi'
-      &=
-      [C_4 \bincirc C_3 \bincirc C_2 \bincirc C_1](\psi_1 \synimplies \psi_2)
-      = \\ &=
-      [C_4 \bincirc C_3 \bincirc C_2]\parens[\big]{ C_1(\psi_1) \synimplies C_1(\psi_2) }
-      = \\ &=
-      [C_4 \bincirc C_3]\parens[\big]{ [C_2 \bincirc C_1](\synneg \psi_1) \synvee [C_2 \bincirc C_1](\psi_2) }
-      = \\ &=
-      [C_4 \bincirc C_3 \bincirc C_2 \bincirc C_1](\synneg \psi_1 \synvee \psi_2).
-    \end{balign*}
-
-    This reduces to the case where \( \varphi \) is a disjunction, hence we can conclude that \( \varphi' \) is in CNF.
-
-    \item If \( \varphi = \psi_1 \syniff \psi_1 \), then
-    \small
-    \begin{balign*}
-      \varphi'
-      &=
-      [C_4 \bincirc C_3 \bincirc C_2 \bincirc C_1](\psi_1 \syniff \psi_2)
-      = \\ &=
-      [C_4 \bincirc C_3 \bincirc C_2]\parens[\big]{ C_1(\psi_1) \syniff C_1(\psi_2) }
-      = \\ &=
-      [C_4 \bincirc C_3]\parens[\bigg]{ \parens[\big]{\synneg [C_2 \bincirc C_1](\psi_1) \synvee [C_2 \bincirc C_1](\psi_2)} \synwedge \parens[\big]{ [C_2 \bincirc C_1](\psi_1) \synvee \synneg [C_2 \bincirc C_1](\psi_2) } }
-      = \\ &=
-      [C_4 \bincirc C_3 \bincirc C_2 \bincirc C_1]\parens[\big]{ (\synneg \psi_1 \synvee \psi_2) \synwedge (\psi_1 \synvee \synneg \psi_2) },
-    \end{balign*}
-    \normalsize
-    which reduces to the case where \( \varphi \) is a conjunction.
-
-    \item If \( \varphi = \synneg \psi \), where \( \psi' \) is in CNF, then we must use nested induction on \( \psi' \):
-    \begin{itemize}
-      \item If \( \psi = \syntop \), then
-      \begin{multline*}
-        \varphi'
-        =
-        C_3(C_1(\synneg \syntop))
-        =
-        C_3(\synneg C_1(\syntop))
-        =
-        C_3(\synneg (\synp \synvee \synneg \synp))
-        = \\ =
-        C_3(\synneg \synp) \synvee C_3(\synneg \synneg \synp)
-        =
-        \synneg C_3(\synp) \synwedge C_3(\synp)
-        =
-        \synneg \synp \synwedge \synp,
-      \end{multline*}
-      which is again a conjunction of unary disjuncts of literals.
-
-      \item Dually, if \( \psi = \synbot \), then
-      \begin{equation*}
-        \varphi'
-        =
-        C_3(C_1(\synneg \synbot))
-        =
-        C_3(\synneg (\synp \synwedge \synneg \synp))
-        =
-        \synneg \synp \synvee \synp,
-      \end{equation*}
-      which is a disjunction of literals.
-
-      \item If \( \psi = \synneg \theta \), we have \( \varphi' = \theta' \). Furthermore, since \( \theta \) is shorter than \( \varphi \), \( \theta' \) is in CNF, and hence so is.
-
-      \item If \( \psi = \theta_1 \synvee \theta_2 \), then
-      \begin{balign*}
-        \varphi'
-        &=
-        [C_4 \bincirc C_3 \bincirc C_2 \bincirc C_1]\parens[\big]{\synneg (\theta_1 \synvee \theta_2) }
-        = \\ &=
-        [C_4 \bincirc C_3]\parens[\big]{ \synneg \parens[\big]{ [C_2 \bincirc C_1](\theta_1) \synvee [C_2 \bincirc C_1](\theta_2) } }
-        = \\ &=
-        C_4\parens[\big]{ C_3\parens[\big]{ \synneg [C_2 \bincirc C_1](\theta_1) } \synwedge C_3\parens[\big]{ \synneg [C_2 \bincirc C_1](\theta_2) } }
-        = \\ &=
-        C_4\parens[\big]{ [C_3 \bincirc C_2 \bincirc C_1](\synneg \theta_1) \synwedge [C_3 \bincirc C_2 \bincirc C_1](\synneg \theta_2) }
-        = \\ &=
-        (\synneg \theta_1 \synwedge \synneg \theta_2)'
-      \end{balign*}
-
-      This reduces to the case where \( \varphi' \) is a conjunction.
-
-      \item If \( \psi = \theta_1 \synwedge \theta_2 \), then
-      \begin{align*}
-        \varphi'
-        =
-        (\synneg \theta_1 \synvee \synneg \theta_2)',
-      \end{align*}
-      which reduces to the case where \( \varphi \) is a disjunction.
-
-      \item If \( \psi = \theta_1 \synimplies \theta_2 \), this reduces to the case where \( \psi \) is a disjunction and \( \varphi \) is a conjunction.
-      \item If \( \psi = \theta_1 \syniff \theta_2 \), this reduces to the case where \( \psi \) is a conjunction and \( \varphi \) is a disjunction.
-    \end{itemize}
-
-    In all cases for \( \psi \) in \( \varphi = \synneg \psi \), we have shown that \( \varphi' \) is in CNF.
-  \end{itemize}
-
-  We have finished the inductive proof that, for any formula \( \varphi \), the result \( \varphi' \) of applying the transformations \( C_1 \) through \( C_4 \) is a formula in CNF.
-\end{defproof}
-
-\begin{definition}\label{def:full_cnf_and_dnf}\mimprovised
-  We say that the \hyperref[def:cnf_and_dnf]{CNF} (resp. \hyperref[def:cnf_and_dnf]{DNF}) is \term[ru=совершенная (\cite[def. 6.3; def. 6.4]{Эдельман1975Логика}), en=full (\incite[103]{DaveyPriestley2002LatticeTheory}); strict (\cite[def. 1.3.10]{Hinman2005Logic})]{full} if the following hold:
+  We say that \( \varphi \) is in \term[ru=совершенная дизъюнктная нормальная форма (\cite[def. 6.3; def. 6.4]{Эдельман1975Логика}), en=full disjunctive normal form (\cite[103]{DaveyPriestley2002LatticeTheory}); strict disjunctive normal form (\cite[def. 1.3.10]{Hinman2005Logic})]{full disjunctive normal form} (resp. \term{full conjunctive normal form}) if it is in \hyperref[def:propositional_cnf_and_dnf]{DNF} (resp. \hyperref[def:propositional_cnf_and_dnf]{CNF}) and the following additional conditions hold:
   \begin{thmenum}
-    \thmitem{def:full_cnf_and_dnf/literals} Every elementary disjunction (resp. conjunction) contains exactly one literal for each variable encountered in the formula, and these variables are ordered as per \cref{def:variable_identifier}.
+    \thmitem{def:full_propositional_cnf_and_dnf/constants} If \( n = 0 \), then \( \varphi \) is a propositional constant.
 
-    More explicitly, if the variables are \( p_1, \ldots, p_n \), every elementary disjunction has the form
+    Otherwise, either \( \varphi = \sembot \) (resp. \( \varphi = \semtop \)) or otherwise \( \varphi \) contains no constants.
+
+    \thmitem{def:full_propositional_cnf_and_dnf/literals} Every elementary disjunction (resp. conjunction) has the form
     \begin{equation*}
       L_1 \synvee L_2 \synvee \cdots \synvee L_n,
     \end{equation*}
-    where, for every \( k = 1, \ldots, n \), \( L_k \) is either \( p_k \) or \( \neg p_k \).
+    where \( L_k \) is either \( p_k \) or \( \synneg p_k \) for \( k = 1, \ldots, n \).
 
-    \thmitem{def:full_cnf_and_dnf/elementary} The elementary disjunctions (resp. conjunctions) are ordered \hyperref[def:lexicographic_order]{lexicographically} so that \( p_k < \neg p_k \) for every variable \( p_k \).
+    \thmitem{def:full_propositional_cnf_and_dnf/ordering} The elementary disjunctions (resp. conjunctions) are ordered \hyperref[def:lexicographic_order]{lexicographically} so that \( p_k < \neg p_k \) for every variable \( p_k \).
   \end{thmenum}
 \end{definition}
 \begin{comments}
   \item This definition is based on \cite[def. 6.3; def. 6.4]{Эдельман1975Логика}, but with adjustments made in order to improve rigor.
 \end{comments}
 
-\begin{proposition}\label{thm:full_cnf_and_dnf_uniqueness}
-  A \hyperref[def:full_cnf_and_dnf]{perfect} \hyperref[def:cnf_and_dnf]{CNF} (resp. \hyperref[def:cnf_and_dnf]{DNF}) is unique.
-\end{proposition}
-\begin{proof}
-  Trivial.
-\end{proof}
-
-\begin{example}\label{ex:def:cnf_and_dnf}
-  We list examples of formulas in \hyperref[def:cnf_and_dnf]{conjunctive and disjunctive normal forms}:
+\begin{example}\label{ex:def:propositional_cnf_and_dnf}
+  We list examples of formulas in \hyperref[def:propositional_cnf_and_dnf]{conjunctive and disjunctive normal forms}:
   \begin{thmenum}
-    \thmitem{def:cnf_and_dnf/perfect_cnf} The \hyperref[thm:classical_equivalences]{Boolean equivalence} \eqref{eq:thm:classical_equivalences/conditional_as_disjunction} allows us to represent convert the \hyperref[def:propositional_alphabet/connectives/conditional]{conditional} \( \varphi \synimplies \psi \) to \( \synneg \varphi \synvee \psi \), which is both in CNF and in DNF.
+    \thmitem{def:propositional_cnf_and_dnf/perfect_cnf} The Boolean equivalence \eqref{eq:thm:classical_equivalences/conditional_as_disjunction} allows us to represent convert the \hyperref[def:propositional_alphabet/connectives/conditional]{conditional} \( \varphi \synimplies \psi \) to \( \synneg \varphi \synvee \psi \), which is both in CNF and in DNF.
 
     It is an elementary disjunction, hence it is vacuously in perfect CNF.
 
-    The DNF is not perfect, however, because the condition \cref{def:full_cnf_and_dnf/literals} is not satisfied.
+    The DNF is not perfect, however, because the condition \cref{def:full_propositional_cnf_and_dnf/literals} is not satisfied.
 
-    \thmitem{def:cnf_and_dnf/perfect_dnf} Consider instead the formula
+    \thmitem{def:propositional_cnf_and_dnf/perfect_dnf} Consider instead the formula
     \begin{equation*}
       (\varphi \synwedge \psi) \synvee (\synneg \varphi \synwedge \psi) \synvee (\synneg \varphi \synwedge \synneg \psi)
     \end{equation*}
@@ -694,38 +733,37 @@ For propositional logic, We will also find useful the ability to replace an enti
   \end{thmenum}
 \end{example}
 
-\begin{algorithm}[Boolean function to perfect CNF or DNF]\label{alg:function_to_cnf}\mcite[thm. I.1.3]{Яблонский2003ДискретнаяМатематика}
-  Let \( f(x_1, \ldots, x_n) \) be an arbitrary \hyperref[def:boolean_function]{Boolean function}.
+\begin{algorithm}[Boolean function to perfect DNF]\label{alg:function_to_dnf}\mcite[thm. I.1.3]{Яблонский2003ДискретнаяМатематика}
+  Fix a \hyperref[def:boolean_function]{Boolean function} \( f(x_1, \ldots, x_n) \).
 
-  We will build a formula \( \varphi \) in \hyperref[def:full_cnf_and_dnf]{perfect} \hyperref[def:cnf_and_dnf]{conjunctive normal form} whose \hyperref[def:parametrized_propositional_denotation]{induced function} under \hyperref[def:truth_value_algebra/classical]{classical semantics} will be \( f \).
+  We will build a formula \( \varphi_f \) in \hyperref[def:full_propositional_cnf_and_dnf]{perfect} \hyperref[def:propositional_cnf_and_dnf]{disjunctive normal form} whose \hyperref[def:parametrized_propositional_denotation]{parametrized denotation} under \hyperref[def:truth_value_algebra/classical]{classical semantics} coincides with \( f \).
+
+  If we wish to obtain a perfect conjunctive normal form instead, we can take the opposite \( \oline{T}(\varphi_f) \) obtained via \fullref{alg:propositional_formula_dualization}.
+
+  Fix some propositional variables \( p_1, \ldots, p_n \). It will follow from the proof of correctness that, for fixed variables, \( \varphi_f \) is unique.
 
   \begin{thmenum}
-    \thmitem{alg:function_to_cnf/true} If \( f \) is canonically true, let \( \varphi \coloneqq \synp \synvee \neg \synp \).
+    \thmitem{alg:function_to_dnf/false} If \( f \) is canonically false, let \( \varphi_f \coloneqq \synbot \).
 
-    \thmitem{alg:function_to_cnf/false} If \( n = 0 \) and \( f = \sembot \), let \( \varphi \coloneqq \synp \synwedge \neg \synp \).
+    \thmitem{alg:function_to_dnf/true} If \( n = 0 \) and \( f = \semtop \), let \( \varphi_f \coloneqq \syntop \).
 
-    \thmitem{alg:function_to_cnf/elementary} Otherwise, fix some propositional variables \( p_1, \ldots, p_n \). Given a tuple \( x_1, \ldots, x_n \) of Boolean values, we can construct the following elementary disjunction:
-    \begin{equation}\label{alg:function_to_cnf/cnf}
-      p_1^{x_1} \synvee \cdots \synvee p_n^{x_n},
+    \thmitem{alg:function_to_dnf/elementary} Given a tuple \( x_1, \ldots, x_n \) of Boolean values, we can construct the elementary conjunction
+    \begin{equation}\label{alg:function_to_dnf/cnf}
+      p_1^{x_1} \synwedge \cdots \synwedge p_n^{x_n},
     \end{equation}
     where
     \begin{equation*}
       p_k^{x_k} \coloneqq \begin{cases}
-        p_k,      &x_k = \sembot, \\
-        \neg p_k, &x_k = \semtop.
+        p_k,      &x_k = \semtop, \\
+        \neg p_k, &x_k = \sembot.
       \end{cases}
     \end{equation*}
 
-    \thmitem{alg:function_to_cnf/total} Finally, order the disjunctions with respect to the \hyperref[def:lexicographic_order]{lexicographic order} on the set \( \set{ \semtop, \sembot }^n \) (\( \sembot < \semtop \)) to which the tuples of Boolean values \( (x_1, \ldots, x_n) \) belong. Then let \( \varphi \) be the conjunction of the corresponding elementary disjunctions for which
+    \thmitem{alg:function_to_dnf/total} Finally, let \( \varphi_f \) be the disjunction of those elementary conjunctions for which
     \begin{equation*}
-      f(x_1, \ldots, x_n) = \sembot.
+      f(x_1, \ldots, x_n) = \semtop,
     \end{equation*}
-
-    \thmitem{alg:function_to_cnf/dual} In order to obtain a perfect DNF instead, we can utilize \fullref{thm:cnf_and_dnf_duality} by instead considering the function
-    \begin{equation*}
-      \oline{f(x_1, \ldots, x_n)},
-    \end{equation*}
-    obtaining a formula \( \varphi \) in CNF and then using the dual formula \( \oline{T}(\varphi) \).
+    ordered as per \cref{def:full_propositional_cnf_and_dnf/ordering}.
   \end{thmenum}
 \end{algorithm}
 \begin{comments}
@@ -734,78 +772,68 @@ For propositional logic, We will also find useful the ability to replace an enti
 \begin{defproof}
   We will use induction on \( n \) to show that
   \begin{equation*}
-    \Bracks{\varphi}(x_1, \ldots, x_n) = f(x_1, \ldots, x_n).
+    \Bracks{\varphi_f}(x_1, \ldots, x_n) = f(x_1, \ldots, x_n)
   \end{equation*}
+  and that \( \varphi_f \) is unique with this property.
 
   \begin{itemize}
-    \item The case \( n = 0 \) is special.
+    \item The case \( n = 0 \) must be handled separately.
     \begin{itemize}
-      \item If \( f = \semtop \), then, by \fullref{alg:function_to_cnf/true}, \( \varphi = p \synvee \neg p \), which is a tautology.
-      \item If \( f = \sembot \), then, by \fullref{alg:function_to_cnf/false}, \( \varphi = p \synwedge \neg p \), which is a contradictory formula.
+      \item If \( f = \semtop \), then \( \varphi_f = \syntop \) by \cref{alg:function_to_dnf/true}.
+      \item If \( f = \sembot \), then \( \varphi_f = \synbot \) by \cref{alg:function_to_dnf/false}.
     \end{itemize}
+
+    Uniqueness is obvious.
 
     \item Let \( n = 1 \).
     \begin{itemize}
-      \item If \( f(x) = \semtop \), then again by \fullref{alg:function_to_cnf/true}, \( \varphi = p \synvee \neg p \) is a tautology.
-      \item If \( f(x) = \sembot \), then \fullref{alg:function_to_cnf/elementary} provides us with the elementary disjunctions \( p^\sembot = p \) and \( p^\semtop = \neg p \) and \fullref{alg:function_to_cnf/total} gives us \( \varphi = p \synwedge \neg p \).
-      \item If \( f(x) = x \), then we only consider the elementary disjunction \( p^\sembot = p \), which leads us to \( \varphi = p \).
-      \item If \( f(x) = \oline{x} \), then \( \varphi = \neg p \).
+      \item If \( f(x) = \sembot \), then \( \varphi_f = \synbot \), again by \cref{alg:function_to_dnf/false}.
+
+      \item If \( f(x) = \semtop \), then \cref{alg:function_to_dnf/elementary} provides us with the elementary disjunctions \( p_1^\semtop = p_1 \) and \( p_1^\sembot = \synneg p_1 \) and \cref{alg:function_to_dnf/total} gives us \( \varphi_f = p_1 \synwedge \synneg p_1 \).
+
+      \item If \( f(x) = x \), then we only consider the elementary conjunction \( p_1^\semtop = p_1 \), which leads us to \( \varphi_f = p_1 \).
+
+      \item If \( f(x) = \oline{x} \), then \( \varphi_f = \synneg p_1 \).
     \end{itemize}
 
-    Therefore, if \( f \) is unary, the formula \( \varphi \) constructed via this algorithm satisfies \( \Bracks{\varphi}(x) = f(x) \).
+    Therefore, if \( f \) is a unary function, the formula \( \varphi_f \) constructed via this algorithm satisfies \( \Bracks{\varphi_f}(x) = f(x) \).
 
-    \item Consider the function \( f(x_1, \ldots, x_n, x_{n+1}) \) and suppose that, for any \( n \)-ary Boolean function \( g \), the interpretation of its corresponding formula coincides with \( g \).
+    Again, uniqueness is obvious.
 
-    Let \( \varphi_F \) be the formula obtained for \( f(x_1, \ldots, x_n, \sembot) \) and let \( \varphi_F' \) be the formula obtained from \( \varphi_F \) by adding the literal \( p_{n+1} \) to each elementary disjunction.
+    \item Let \( n > 0 \), suppose that the inductive hypothesis holds for \( n - 1 \) and consider some function \( f(x_1, \ldots, x_n) \).
 
-    Dually, let \( \varphi_T \) be the formula for \( f(x_1, \ldots, x_n, \semtop) \) and let \( \varphi_T' \) be the formula obtained by adding the literal \( \neg p_{n+1} \) to each elementary disjunction.
+    Let \( \varphi_{\sembot} \) be the formula obtained for \( f(x_1, \ldots, x_{n-1}, \sembot) \) and let \( \varphi_{\sembot'} \) be the formula obtained from \( \varphi_{\sembot} \) by appending the negative literal \( \synneg p_n \) to each elementary conjunction.
 
-    Then
+    Let \( \varphi_{\semtop} \) be the formula for \( f(x_1, \ldots, x_{n-1}, \semtop) \) and let \( \varphi_{\semtop'} \) be the formula obtained by appending the literal \( p_n \) to each elementary conjunction. Then
+    \begin{align*}
+      \Bracks{\varphi_{\semtop'}}(x_1, \ldots, x_{n-1}, \semtop) &= \Bracks{\varphi_{\semtop}}(x_1, \ldots, x_{n-1}) \wedge \semtop = \Bracks{\varphi_{\semtop}}(x_1, \ldots, x_{n-1}), \\
+      \Bracks{\varphi_{\semtop'}}(x_1, \ldots, x_{n-1}, \sembot) &= \Bracks{\varphi_{\semtop}}(x_1, \ldots, x_{n-1}) \wedge \sembot = \sembot.
+    \end{align*}
+
+    Dually, let \( \varphi_{\sembot} \) be the formula obtained for \( f(x_1, \ldots, x_{n-1}, \sembot) \) and let \( \varphi_{\sembot'} \) be the formula obtained from \( \varphi_{\sembot} \) by appending the negative literal \( \synneg p_n \) to each elementary conjunction. Similarly,
+    \begin{align*}
+      \Bracks{\varphi_{\sembot'}}(x_1, \ldots, x_{n-1}, \semtop) &= \Bracks{\varphi_{\sembot}}(x_1, \ldots, x_{n-1}) \wedge \sembot = \sembot, \\
+      \Bracks{\varphi_{\sembot'}}(x_1, \ldots, x_{n-1}, \sembot) &= \Bracks{\varphi_{\sembot}}(x_1, \ldots, x_{n-1}) \wedge \semtop = \Bracks{\varphi_{\sembot}}(x_1, \ldots, x_{n-1}).
+    \end{align*}
+
+    Let \( \varphi_f \coloneqq \varphi_{\semtop'} \synvee \varphi_{\sembot'} \). Then
     \begin{equation*}
-      \Bracks{\varphi_F' \synwedge \varphi_T'}(x_1, \ldots, x_n, \sembot)
+      \Bracks{\varphi}(x_1, \ldots, x_{n-1}, x_n)
       =
-      \underbrace{\Bracks{\varphi_F'}(x_1, \ldots, x_n, \sembot)}_{\mathclap{\Bracks{\varphi_F}(x_1, \ldots, x_n) \T*{because} \Bracks{p_{n+1}}(\sembot) = \sembot}} \wedge \overbrace{\Bracks{\varphi_T'}(x_1, \ldots, x_n, \sembot)}^{\semtop \T*{because} \Bracks{\neg p_{n+1}}(\sembot) = \semtop}
-      =
-      \underbrace{\Bracks{\varphi_F}(x_1, \ldots, x_n)}_{f(x_1, \ldots, x_n, \sembot)}
+      \begin{cases}
+        \overbrace{\Bracks{\varphi_{\semtop'}}(x_1, \ldots, x_{n-1}, \semtop)}^{\Bracks{\varphi_{\semtop}}(x_1, \ldots, x_{n-1})} \vee \overbrace{\Bracks{\varphi_{\sembot'}}(x_1, \ldots, x_{n-1}, \sembot)}^{\semtop},   &x_n = \semtop \\
+        \underbrace{\Bracks{\varphi_{\semtop'}}(x_1, \ldots, x_{n-1}, \sembot)}_{\sembot} \vee \underbrace{\Bracks{\varphi_{\sembot'}}(x_1, \ldots, x_{n-1}, \semtop)}_{\Bracks{\varphi_{\sembot}}(x_1, \ldots, x_{n-1})}, &x_n = \sembot,
+      \end{cases}
     \end{equation*}
-    and similarly
-    \begin{equation*}
-      \Bracks{\varphi_F' \synwedge \varphi_T'}(x_1, \ldots, x_n, \semtop)
-      =
-      \Bracks{\varphi_T}(x_1, \ldots, x_n)
-      =
-      f(x_1, \ldots, x_n, \semtop).
-    \end{equation*}
+    as desired.
+
+    Uniqueness follows readily from the inductive hypothesis.
   \end{itemize}
-
-  We conclude that the interpretation of a formula obtained through this algorithm is the initial function.
 \end{defproof}
 
-\paragraph{Equivalence of propositional formulas and Boolean functions}
-
-\begin{proposition}\label{thm:propositional_formulas_and_boolean_functions}
-  \hyperref[def:propositional_formula]{Propositional formulas} under \hyperref[def:truth_value_algebra/classical]{classical semantics} have the following structural properties when treated as \hyperref[def:boolean_function]{Boolean functions}:
-
-  \begin{thmenum}
-    \thmitem{thm:propositional_formulas_and_boolean_functions/equivalence_classes} \hyperref[def:semantic_equivalence]{Semantic equivalence} \( \gleichstark \) is an \hyperref[def:equivalence_relation]{equivalence relation} on the set \( \op*{Form} \) of all propositional formulas.
-
-    \thmitem{thm:propositional_formulas_and_boolean_functions/bijection} Given the set \( \mscrB \) of all \hyperref[def:boolean_function]{Boolean functions} of arbitrary arity, the following map is bijective:
-    \begin{equation*}
-      \begin{aligned}
-        &\Phi: \op*{Form} / {\gleichstark} \to \mscrB \\
-        &\Phi([\varphi]) \coloneqq \Bracks{\varphi}.
-      \end{aligned}
-    \end{equation*}
-  \end{thmenum}
+\begin{proposition}\label{thm:full_cnf_and_dnf_uniqueness}
+  Every \hyperref[def:propositional_formula]{propositional formula} is \hyperref[def:semantic_equivalence]{semantically equivalent} to a unique formula in \hyperref[def:full_propositional_cnf_and_dnf]{perfect disjunctive normal form} (resp. perfect conjunctive normal form).
 \end{proposition}
-\begin{comments}
-  \item This is one of the motivations for studying \hyperref[def:lindenbaum_tarski_algebra]{Lindenbaum-Tarski algebras}.
-  \item Both \( \op*{Form} / {\gleichstark} \) and \( \mscrB \) are provably Boolean algebras, but we give very different proofs --- the former is a Boolean algebra due to the syntactic \cref{thm:lindenbaum_tarski_algebras}, and the latter is a Boolean algebra due to the semantic \cref{thm:functions_over_model_form_model}. This is another demonstration of the soundness and completeness stated in \fullref{thm:classical_first_order_logic_soundness_and_complete}.
-\end{comments}
 \begin{proof}
-  \SubProofOf{thm:propositional_formulas_and_boolean_functions/equivalence_classes} Straightforward.
-
-  \SubProofOf{thm:propositional_formulas_and_boolean_functions/bijection} The map \( \Phi \) is well-defined since, by definition of semantic equivalence, \( \varphi \gleichstark \psi \) whenever \( \Bracks{\varphi}_I = \Bracks{\psi}_I \) for every interpretation \( I \).
-
-  Injectivity of \( \Phi \) is also obvious from the definition of semantic equivalence, while surjectivity is given by \fullref{alg:function_to_cnf}.
+  Follows from the uniqueness of \fullref{alg:function_to_dnf} applied to the \hyperref[def:parametrized_propositional_denotation]{parametrized denotation} of the formula.
 \end{proof}

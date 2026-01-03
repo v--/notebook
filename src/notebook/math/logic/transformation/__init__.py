@@ -1,4 +1,5 @@
 from .collapse_constants import collapse_constants, collapse_constants_prop
+from .collapse_repeated_negation import collapse_repeated_negation, collapse_repeated_negation_prop
 from .dualize_formula import dualize_formula, dualize_formula_prop
 from .expand_constants import expand_constants, expand_constants_prop
 from .pull_quantifiers import pull_quantifiers

@@ -1,6 +1,6 @@
 from .....support.pytest import pytest_parametrize_kwargs
 from ...propositional import are_semantically_equivalent, parse_prop_formula
-from .formula_to_polynomial_form import formula_to_cnf_prop
+from .formula_to_cnf_or_dnf import formula_to_cnf_prop
 from .validation import is_formula_in_cnf
 
 
@@ -23,6 +23,7 @@ from .validation import is_formula_in_cnf
     dict(formula='(p → q)',  expected='(¬p ∨ q)'),
     dict(formula='(¬p → q)', expected='(p ∨ q)'),
     dict(formula='¬(p → q)', expected='(p ∧ ¬q)'),
+    dict(formula='(p ∨ (q ↔ r))', expected='((p ∨ (¬q ∨ r)) ∧ (p ∨ (q ∨ ¬r)))'),
 
     # Removing biconditionals
     dict(formula='(p ↔ q)',  expected='((¬p ∨ q) ∧ (p ∨ ¬q))'),
@@ -41,7 +42,7 @@ from .validation import is_formula_in_cnf
     ),
     dict(formula='¬(p ∧ (q ∨ r))', expected='((¬p ∨ ¬q) ∧ (¬p ∨ ¬r))'), # We distribute the dual of the inner formula
 )
-def test_formula_to_polynomial_form_prop(formula: str, expected: str) -> None:
+def test_formula_to_cnf_prop(formula: str, expected: str) -> None:
     formula_ = parse_prop_formula(formula)
     expected_ = parse_prop_formula(expected)
 
