@@ -2,7 +2,7 @@ from enum import StrEnum
 
 
 class ImproperInferenceRuleSymbol(StrEnum):
-    SEQUENT = '⫢'
+    SEQUENT = '⊩'
     COMMA = ','
     LEFT_PARENTHESIS = '('
     RIGHT_PARENTHESIS = ')'

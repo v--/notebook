@@ -7,7 +7,7 @@ from ..instantiation import is_formula_schema_instance
 from ..parsing import parse_natural_deduction_rule
 
 
-MODUS_PONENS_RULE = parse_natural_deduction_rule('MP', '(φ → ψ), φ ⫢ ψ')
+MODUS_PONENS_RULE = parse_natural_deduction_rule('MP', '(φ → ψ), φ ⊩ ψ')
 
 
 @dataclass(frozen=True)

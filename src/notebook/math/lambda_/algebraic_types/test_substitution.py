@@ -152,7 +152,7 @@ def test_substitute_unknown_rule() -> None:
     src = variables.x
     dest = assume(parse_variable_assertion('y: 𝕥', signature))
 
-    with pytest.raises(UnknownDerivationRuleError, match=re.escape("Unrecognized inference rule '(R) ⫢ 𝕔: 𝕥'")):
+    with pytest.raises(UnknownDerivationRuleError, match=re.escape("Unrecognized inference rule '(R) ⊩ 𝕔: 𝕥'")):
         substitute_in_tree(tree, {src: dest})
 
 
@@ -164,7 +164,7 @@ def test_substitute_unknown_rule_with_matching_name() -> None:
     src = variables.x
     dest = assume(parse_variable_assertion('y: 𝕥', signature))
 
-    with pytest.raises(UnknownDerivationRuleError, match=re.escape("Unrecognized inference rule '(→₊) ⫢ 𝕔: 𝕥'")):
+    with pytest.raises(UnknownDerivationRuleError, match=re.escape("Unrecognized inference rule '(→₊) ⊩ 𝕔: 𝕥'")):
         substitute_in_tree(tree, {src: dest})
 
 

@@ -537,10 +537,10 @@ def test_parsing_formula_placeholder_with_regular_parser() -> None:
 
 @pytest_parametrize_lists(
     rule=[
-        '⫢ ψ',
-        'φ ⫢ ψ',
-        'φ₁, φ₂ ⫢ ψ',
-        '[θ] φ ⫢ ψ'
+        '⊩ ψ',
+        'φ ⊩ ψ',
+        'φ₁, φ₂ ⊩ ψ',
+        '[θ] φ ⊩ ψ'
     ]
 )
 def test_rebuilding_rules(rule: str) -> None:
@@ -549,11 +549,11 @@ def test_rebuilding_rules(rule: str) -> None:
 
 def test_parsing_empty_discharge_schema() -> None:
     with pytest.raises(ParserError) as excinfo:
-        parse_natural_deduction_rule('name', '[] φ ⫢ ψ')
+        parse_natural_deduction_rule('name', '[] φ ⊩ ψ')
 
     assert str(excinfo.value) == 'Empty discharge assumptions are disallowed'
     assert excinfo.value.__notes__[0] == dedent('''\
-        1 │ [] φ ⫢ ψ
+        1 │ [] φ ⊩ ψ
           │ ^^
         '''
     )
@@ -561,11 +561,11 @@ def test_parsing_empty_discharge_schema() -> None:
 
 def test_parsing_discharge_schema_with_no_closing_bracket() -> None:
     with pytest.raises(ParserError) as excinfo:
-        parse_natural_deduction_rule('name', '[θ φ ⫢ ψ')
+        parse_natural_deduction_rule('name', '[θ φ ⊩ ψ')
 
     assert str(excinfo.value) == 'Unclosed brackets for discharge schemas'
     assert excinfo.value.__notes__[0] == dedent('''\
-        1 │ [θ φ ⫢ ψ
+        1 │ [θ φ ⊩ ψ
           │ ^^
         '''
     )

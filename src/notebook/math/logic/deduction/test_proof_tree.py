@@ -99,7 +99,7 @@ def test_efq() -> None:
     tree = apply(
         CLASSICAL_NATURAL_DEDUCTION_SYSTEM['EFQ'],
         prop_assume('⊥', 'u'),
-        # We are unable to infer the necessary instantiation of the rule "(EFQ) ⊥ ⫢ φ"
+        # We are unable to infer the necessary instantiation of the rule "(EFQ) ⊥ ⊩ φ"
         # based only on the conclusion and premises, so we give a hint
         instantiation=AtomicLogicSchemaInstantiation(
             formula_mapping={
