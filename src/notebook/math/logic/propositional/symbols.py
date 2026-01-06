@@ -13,7 +13,7 @@ from ..signature import (
 @functools.total_ordering
 class PropVariableSymbol(PredicateSymbol):
     def __init__(self, name: str) -> None:
-        super().__init__(name, arity=0, notation='CONDENSED')
+        super().__init__(name, arity=0, notation=SignatureSymbolNotation.CONDENSED)
 
     def __lt__(self, other: PropVariableSymbol) -> bool:
         return self.name <= other.name

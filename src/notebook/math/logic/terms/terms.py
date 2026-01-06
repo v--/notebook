@@ -3,7 +3,7 @@ from dataclasses import dataclass
 
 from ....parsing.identifiers import LatinIdentifier
 from ..exceptions import FormalLogicError
-from ..signature import FunctionSymbol, SignatureSymbol
+from ..signature import FunctionSymbol, SignatureSymbol, SignatureSymbolNotation
 
 
 @dataclass(frozen=True)
@@ -31,15 +31,15 @@ class SyntacticApplication[ArgT]:
             return self.symbol.name
 
         match self.symbol.notation:
-            case 'INFIX':
+            case SignatureSymbolNotation.INFIX:
                 [left, right] = self.arguments
                 return f'({left} {self.symbol.name} {right})'
 
-            case 'PREFIX':
+            case SignatureSymbolNotation.PREFIX:
                 args = ', '.join(str(arg) for arg in self.arguments)
                 return f'{self.symbol.name}({args})'
 
-            case 'CONDENSED':
+            case SignatureSymbolNotation.CONDENSED:
                 args = ''.join(str(arg) for arg in self.arguments)
                 return f'{self.symbol.name}{args}'
 

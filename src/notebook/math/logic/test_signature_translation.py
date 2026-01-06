@@ -1,7 +1,13 @@
 import pytest
 
 from .parsing import parse_formula, parse_term
-from .signature import FormalLogicSignature, FunctionSymbol, PredicateSymbol, SignatureMorphismError
+from .signature import (
+    FormalLogicSignature,
+    FunctionSymbol,
+    PredicateSymbol,
+    SignatureMorphismError,
+    SignatureSymbolNotation,
+)
 from .signature_translation import SignatureMorphism, translate_formula, translate_term
 
 
@@ -17,8 +23,8 @@ def test_translation_arity_mismatch(dummy_signature: FormalLogicSignature) -> No
 
 def test_translate_term(dummy_signature: FormalLogicSignature) -> None:
     target_signature = FormalLogicSignature()
-    target_signature.add_symbol(FunctionSymbol('ф²', 2))
-    target_signature.add_symbol(FunctionSymbol('г¹', 1))
+    target_signature.add_symbol(FunctionSymbol('ф²', arity=2, notation=SignatureSymbolNotation.PREFIX))
+    target_signature.add_symbol(FunctionSymbol('г¹', arity=1, notation=SignatureSymbolNotation.PREFIX))
 
     translation = SignatureMorphism(dummy_signature, {
         dummy_signature['f²']: target_signature['ф²'],
@@ -41,8 +47,8 @@ def test_translate_term_exchange_prefix_and_infix(dummy_signature: FormalLogicSi
 
 def xtest_translate_formula(dummy_signature: FormalLogicSignature) -> None:
     target_signature = FormalLogicSignature()
-    target_signature.add_symbol(FunctionSymbol('ф⁰', 0))
-    target_signature.add_symbol(PredicateSymbol('п¹', 1))
+    target_signature.add_symbol(FunctionSymbol('ф⁰', 0, notation=SignatureSymbolNotation.CONDENSED))
+    target_signature.add_symbol(PredicateSymbol('п¹', 1, notation=SignatureSymbolNotation.PREFIX))
 
     translation = SignatureMorphism(dummy_signature, {
         dummy_signature['f⁰']: target_signature['ф⁰'],

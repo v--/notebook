@@ -34,6 +34,7 @@ from ..signature import (
     FunctionSymbol,
     PredicateSymbol,
     SignatureSymbol,
+    SignatureSymbolNotation,
 )
 from ..terms import (
     EigenvariableSchemaSubstitutionSpec,
@@ -168,14 +169,14 @@ class FormalLogicParser(IdentifierParserMixin[LogicTokenKind, LogicToken], Parse
         arguments = list[Term | TermSchema]()
 
         match symbol.notation:
-            case 'INFIX':
+            case SignatureSymbolNotation.INFIX:
                 raise context.annotate_token_error(f'Expected a prefix proper symbol, but got {symbol}')
 
-            case 'PREFIX':
+            case SignatureSymbolNotation.PREFIX:
                 self.advance()
                 arguments = list(self._iter_prefix_notation_args(context, symbol, parse_schema=parse_schema))
 
-            case 'CONDENSED':
+            case SignatureSymbolNotation.CONDENSED:
                 self.advance()
                 arguments = list(self._iter_condensed_notation_args(context, symbol, parse_schema=parse_schema))
 
@@ -216,7 +217,7 @@ class FormalLogicParser(IdentifierParserMixin[LogicTokenKind, LogicToken], Parse
         head = self.advance_and_peek()
 
         if not head or head.kind != 'LATIN_IDENTIFIER':
-            raise context.annotate_context_error('Expected a variable after the quant')
+            raise context.annotate_context_error('Expected a variable after the quantifier')
 
         var = self.parse_variable(parse_schema=parse_schema)
         head = self.peek()
@@ -322,7 +323,7 @@ class FormalLogicParser(IdentifierParserMixin[LogicTokenKind, LogicToken], Parse
 
                 symbol = self.signature[head.value]
 
-                if symbol and symbol.notation != 'INFIX':
+                if symbol and symbol.notation != SignatureSymbolNotation.INFIX:
                     raise context.annotate_token_error(f'Expected an infix proper symbol, but got {symbol}')
 
                 head = self.advance_and_peek()

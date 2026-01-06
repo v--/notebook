@@ -1,6 +1,7 @@
 import abc
 from dataclasses import dataclass
-from typing import Literal, override
+from enum import IntEnum, auto
+from typing import override
 
 from ....parsing import is_greek_identifier, is_latin_identifier
 from ....support.inference import ImproperInferenceRuleSymbol
@@ -10,18 +11,29 @@ from ..alphabet import AuxImproperSymbol, BinaryConnective, EqualitySymbol, Prop
 from .exceptions import FormalLogicSignatureError
 
 
-SignatureSymbolNotation = Literal['PREFIX', 'INFIX', 'CONDENSED']
+class SignatureSymbolNotation(IntEnum):
+    PREFIX = auto()
+    INFIX = auto()
+    CONDENSED = auto()
 
 
 @dataclass(unsafe_hash=True)
 class BaseSignatureSymbol(abc.ABC):
     name: str
     arity: int
-    notation: SignatureSymbolNotation = 'PREFIX'
+    notation: SignatureSymbolNotation = SignatureSymbolNotation.PREFIX
 
     def __init__(self, name: str, arity: int, notation: SignatureSymbolNotation | None = None) -> None:
         if notation is None:
-            notation = 'CONDENSED' if arity == 0 else 'PREFIX'
+            match arity:
+                case 0 | 1:
+                    notation = SignatureSymbolNotation.CONDENSED
+
+                case 2:
+                    notation = SignatureSymbolNotation.INFIX
+
+                case _:
+                    notation = SignatureSymbolNotation.PREFIX
 
         self.validate(name, arity, notation)
         self.name = name
@@ -53,10 +65,10 @@ class BaseSignatureSymbol(abc.ABC):
         if is_greek_identifier(name, Capitalization.LOWER):
             raise FormalLogicSignatureError(f'Cannot use {name} as a proper signature symbol because that conflicts with the grammar of placeholders')
 
-        if notation == 'INFIX' and arity != 2:
+        if notation == SignatureSymbolNotation.INFIX and arity != 2:
             raise FormalLogicSignatureError(f'Cannot use infix notation for the {self.get_kind_string()} {name} with arity {arity}')
 
-        if arity == 0 and notation != 'CONDENSED':
+        if arity == 0 and notation != SignatureSymbolNotation.CONDENSED:
             raise FormalLogicSignatureError(f'Only condensed prefix notation is allowed for the nullary {self.get_kind_string()} {name}')
 
     @abc.abstractmethod

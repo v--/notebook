@@ -8,11 +8,11 @@ from ...signature import FormalLogicSignature, FunctionSymbol, PredicateSymbol
 BOOLEAN_ALGEBRA_SIGNATURE = FormalLogicSignature(
     FunctionSymbol('⫪', arity=0),
     FunctionSymbol('⫫', arity=0),
-    FunctionSymbol('⫬', arity=1, notation='CONDENSED'),
-    FunctionSymbol('⩓', arity=2, notation='INFIX'),
-    FunctionSymbol('⩔', arity=2, notation='INFIX'),
-    PredicateSymbol('≤', arity=2, notation='INFIX'),
-    PredicateSymbol('≥', arity=2, notation='INFIX')
+    FunctionSymbol('⫬', arity=1),
+    FunctionSymbol('⩓', arity=2),
+    FunctionSymbol('⩔', arity=2),
+    PredicateSymbol('≤', arity=2),
+    PredicateSymbol('≥', arity=2)
 )
 
 
