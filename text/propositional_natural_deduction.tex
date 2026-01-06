@@ -62,7 +62,7 @@
 
     We discuss proof trees in general in \cref{con:proof_tree}. Natural deduction systems are presented in \cref{def:propositional_natural_deduction_systems} for propositional logic, in \cref{def:hol_consequence} for higher-order logic and in \cref{def:first_order_natural_deduction_systems} for first-order logic.
 
-    We also describe sequent calculus rules in \cref{rem:sequent_calculus}.
+    We also describe sequent calculus rules in \cref{rem:sequent_calculus} and discuss how natural deduction rules can be presented in \enquote{sequent calculus style} in \cref{rem:natural_deduction_explicit_sequents}.
 
     Using inference rules for logical rules is done in
     \cite{Gentzen1935LogischeSchließen},
@@ -221,11 +221,8 @@
 \end{comments}
 
 \begin{definition}\label{def:propositional_natural_deduction_system}\mimprovised
-  An \term{abstract propositional natural deduction system} consists of a nonempty collection of \hyperref[def:natural_deduction_rule]{natural deduction rules} for \hyperref[def:propositional_formula_schema]{propositional formula schemas}.
+  An \term{abstract propositional natural deduction system} consists of a nonempty collection of \hyperref[def:natural_deduction_rule]{natural deduction rules} for \hyperref[def:propositional_formula_schema]{propositional formula schemas}. We require the rules to have distinct names, but otherwise impose no restrictions on them.
 \end{definition}
-\begin{comments}
-  \item We implicitly assume that the rules have different names, however we do not require it in order to encompass \fullref{alg:propositional_axiomatic_derivation_to_natural_deduction}.
-\end{comments}
 
 \begin{definition}\label{def:propositional_natural_deduction_proof_tree}\mimprovised
   We will define \hyperref[con:proof_tree]{proof trees} for a fixed \hyperref[def:propositional_natural_deduction_system]{propositional natural deduction system}.
@@ -301,7 +298,9 @@
 
       \item Since open assumptions have markers attached, there generally is nondeterminism involved in the choice of marker, and different choices lead to different rule application trees. See \cref{ex:proof_tree_non_uniqueness} for some uniqueness considerations.
 
-      \item We disallow applying the rule when the same marked formula is open in multiple premise subtrees, but dischargeable in only some of them. This prevents name collisions in complicated rules like \ref{inf:def:identity_type/j/elim}.
+      \item We disallow applying the rule when the same marked formula is open in multiple premise subtrees, but dischargeable in only some of them. An explicit example where the same assumption is discharged from different premises can be found in \cref{thm:propositional_admissible_rules/self_biconditional}.
+
+      This restriction helps prevent name collisions in some dependent typing rules like \ref{inf:def:identity_type/j/elim}.
 
       \item We also disallow distinct formulas with the same marker because that would break \fullref{alg:proof_tree_to_type_derivation}. If two assumptions have the same marker, we require the corresponding formulas to coincide. This requirement is also explicit in \cite[\S 2.1.8]{TroelstraSchwichtenberg2000BasicProofTheory}.
 
@@ -369,11 +368,11 @@
 
 \paragraph{Axiomatic derivations via natural deduction}
 
-\begin{remark}\label{alg:propositional_axiomatic_derivation_to_natural_deduction}
-  We can regard any (propositional) \hyperref[def:propositional_axiomatic_derivation_system]{axiomatic derivation system} as a \hyperref[def:propositional_natural_deduction_system]{natural deduction system}. For this, suppose that each axiom schema \( \Phi \) has a name \( \logic{R}_\Phi \). If we are willing to break our convention of rules having unique names, we may use a generic name such as \( \logic{Ax} \) for each schema.
+\begin{definition}\label{def:axiomatic_derivation_as_natural_deduction}\mimprovised
+  We can regard any (propositional) \hyperref[def:propositional_axiomatic_derivation_system]{axiomatic derivation system} as a \hyperref[def:propositional_natural_deduction_system]{natural deduction system}. For this, suppose that each axiom schema \( \Phi \) has a name \( \logic{R}_\Phi \).
 
   \begin{thmenum}
-    \thmitem{thm:axiomatic_derivation_as_natural_deduction/axiom} For the axiom schema \( \Phi \), we introduce the rule
+    \thmitem{def:axiomatic_derivation_as_natural_deduction/axiom} For the axiom schema \( \Phi \), we introduce the rule
     \begin{equation*}
       \begin{prooftree}
         \infer0[\ensuremath{ \logic{R}_\Phi }]{ \Phi }
@@ -382,84 +381,64 @@
 
     Note that \( \Phi \) here is a metalogical variable that refers to a \hyperref[def:propositional_formula_schema]{formula schema}.
 
-    \thmitem{thm:axiomatic_derivation_as_natural_deduction/mp} For deducing proofs, we introduce the following rule, called \term{modus ponens}:
-    \begin{equation*}\taglabel[\ensuremath{ \logic{MP} }]{inf:thm:axiomatic_derivation_as_natural_deduction/mp}
+    \thmitem{def:axiomatic_derivation_as_natural_deduction/mp} For deducing proofs, we introduce the following rule, called \term{modus ponens}:
+    \begin{equation*}\taglabel[\ensuremath{ \logic{MP} }]{inf:def:axiomatic_derivation_as_natural_deduction/mp}
       \begin{prooftree}
         \hypo{ \syn\varphi \synimplies \syn\psi }
         \hypo{ \syn\varphi }
-        \infer2[\ref{inf:thm:axiomatic_derivation_as_natural_deduction/mp}]{ \syn\psi }
+        \infer2[\ref{inf:def:axiomatic_derivation_as_natural_deduction/mp}]{ \syn\psi }
       \end{prooftree}
     \end{equation*}
 
     Note that \( \syn\varphi \synimplies \syn\psi \) here refers to a concrete formula schema.
   \end{thmenum}
-\end{remark}
+\end{definition}
+\begin{comments}
+  \item According to \cite[75]{Rosen2019DiscreteMathematics}, \enquote{modus ponens} is Latin for \enquote{mode that affirms}.
+  \item If we are willing to break our convention of rules having unique names, we may use a generic name such as \( \logic{Ax} \) for each schema.
+\end{comments}
 
 \begin{example}\label{ex:minimal_implication_logic_identity/trees}
-  Regard \hyperref[def:minimal_implication_logic]{minimal implicational logic} as a \hyperref[def:propositional_natural_deduction_system]{natural deduction system} as explained in \cref{alg:propositional_axiomatic_derivation_to_natural_deduction}.
+  Regard \hyperref[def:minimal_implication_logic]{minimal implicational logic} as a \hyperref[def:propositional_natural_deduction_system]{natural deduction system} in accordance with \cref{def:axiomatic_derivation_as_natural_deduction}.
 
-  The two axiom schemas --- \eqref{eq:def:minimal_implication_logic/intro} and \eqref{eq:def:minimal_implication_logic/dist} --- become inference rules.
+  The two axiom schemas --- \eqref{eq:def:minimal_implication_logic/intro} and \eqref{eq:def:minimal_implication_logic/dist} --- become inference rules:
+  \columnratio{0.3,0.7}
+  \begin{paracol}{2}
+    \begin{leftcolumn}
+      \ParacolAlignmentHack
+      \begin{equation*}\taglabel[\ensuremath{ \rightarrow^+ }]{inf:ex:minimal_implication_logic_identity/trees/intro}
+        \begin{prooftree}
+          \infer0[\ref{inf:ex:minimal_implication_logic_identity/trees/intro}]{ \syn\varphi \synimplies (\syn\psi \synimplies \syn\varphi) }
+        \end{prooftree}
+      \end{equation*}
+    \end{leftcolumn}
 
-  Then the final derivation in \cref{ex:minimal_implication_logic_identity/derivations} can be presented as follows:
+    \begin{rightcolumn}
+      \ParacolAlignmentHack
+      \begin{equation*}\taglabel[\ensuremath{ \twoheadrightarrow }]{inf:ex:minimal_implication_logic_identity/trees/dist}
+        \begin{prooftree}
+          \infer0[\ref{inf:ex:minimal_implication_logic_identity/trees/dist}]{ \parens[\big]{ \syn\varphi \synimplies (\syn\psi \synimplies \syn\theta) } \synimplies \parens[\big]{ (\syn\varphi \synimplies \syn\psi) \synimplies (\syn\varphi \synimplies \syn\theta) } }
+        \end{prooftree}
+      \end{equation*}
+    \end{rightcolumn}
+  \end{paracol}
+  \columnratio{}
+
+  Then \cref{ex:minimal_implication_logic_identity/derivations} can be presented as follows:
   \begin{equation*}
     \begin{prooftree}[separation=3em]
-      \hypo
-        {
-          \eqref{eq:def:minimal_implication_logic/intro}
-        }
-
-      \ellipsis
-        {
-          \(
-            \substack
-              {
-                \psi \mapsto (\varphi \synimplies \varphi)
-                \\
-                \mbox{}
-              }
-          \)
-        }
-        {
-          \ref{ex:minimal_implication_logic_identity/trees/dagger}
-        }
-
-      \hypo
-        {
-          \eqref{eq:def:minimal_implication_logic/dist}
-        }
-
-      \ellipsis
-        {
-          \(
-            \substack
-              {
-                \psi \mapsto (\varphi \synimplies \varphi)
-                \\
-                \theta \mapsto \varphi
-              }
-          \)
-        }
+      \infer0[\ref{inf:ex:minimal_implication_logic_identity/trees/intro}]{ \ref{ex:minimal_implication_logic_identity/trees/dagger} }
+      \infer0[\ref{inf:ex:minimal_implication_logic_identity/trees/dist}]
         {
           \ref{ex:minimal_implication_logic_identity/trees/dagger}
           \synimplies ((\varphi \synimplies (\varphi \synimplies \varphi)) \synimplies (\varphi \synimplies \varphi))
         }
 
-      \infer2[\ref{inf:thm:axiomatic_derivation_as_natural_deduction/mp}]{(\varphi \synimplies (\varphi \synimplies \varphi)) \synimplies (\varphi \synimplies \varphi)}
+      \infer2[\ref{inf:def:axiomatic_derivation_as_natural_deduction/mp}]{(\varphi \synimplies (\varphi \synimplies \varphi)) \synimplies (\varphi \synimplies \varphi)}
 
-      \hypo
-        {
-          \eqref{eq:def:minimal_implication_logic/intro}
-        }
+      \infer0[\ref{inf:ex:minimal_implication_logic_identity/trees/intro}]{ \varphi \synimplies (\varphi \synimplies \varphi) }
 
-      \ellipsis
-        {
-          \( \psi \mapsto \varphi \)
-        }
-        {
-          \varphi \synimplies (\varphi \synimplies \varphi)
-        }
-
-      \infer2[\ref{inf:thm:axiomatic_derivation_as_natural_deduction/mp}]{\varphi \synimplies \varphi}
+      \infer2[\ref{inf:def:axiomatic_derivation_as_natural_deduction/mp}]{\varphi \synimplies \varphi}
     \end{prooftree}
   \end{equation*}
   where
@@ -469,9 +448,9 @@
 \end{example}
 
 \begin{algorithm}[Axiomatic derivation to proof tree]\label{alg:propositional_axiomatic_derivation_to_proof_tree}
-  Fix an \hyperref[def:propositional_axiomatic_derivation_system]{axiomatic derivation system} and consider the corresponding \hyperref[def:propositional_natural_deduction_system]{natural deduction system} as described in \cref{alg:propositional_axiomatic_derivation_to_natural_deduction}.
+  Fix an \hyperref[def:propositional_axiomatic_derivation_system]{axiomatic derivation system} and regard it as a \hyperref[def:propositional_natural_deduction_system]{natural deduction system} in accordance with \cref{def:axiomatic_derivation_as_natural_deduction}.
 
-  Fix a derivation \( \psi_1, \ldots, \psi_n \) of \( \varphi \). We will build a proof tree whose conclusion is \( \varphi \) and whose \hyperref[def:propositional_natural_deduction_proof_tree/open]{open assumptions} are the premises of the derivation. We recurse on the length \( n \) of the derivation.
+  Fix a derivation \( \psi_1, \ldots, \psi_n \) of \( \varphi \). We will build a proof tree whose conclusion is \( \varphi \) and whose \hyperref[def:propositional_natural_deduction_proof_tree/open]{open assumptions} are the premises of the derivation.
 
   \begin{thmenum}
     \thmitem{alg:propositional_axiomatic_derivation_to_proof_tree/premise} If \( \varphi \) itself is a premise, then, for a fixed marker \( u \), we declare the result of the algorithm to be the assumption tree \( [\varphi]^u \).
@@ -499,7 +478,7 @@
         \hypo{}
         \ellipsis { \( P_j \) } { \varphi_j }
 
-        \infer2[\logic{MP}]{ \varphi }
+        \infer2[\ref{inf:def:axiomatic_derivation_as_natural_deduction/mp}]{ \varphi }
       \end{prooftree}
     \end{equation*}
   \end{thmenum}
@@ -509,22 +488,13 @@
 \end{comments}
 
 \begin{algorithm}[Proof tree to axiomatic derivation]\label{alg:proof_tree_to_propositional_axiomatic_derivation}
-  Again, fix an \hyperref[def:propositional_axiomatic_derivation_system]{axiomatic derivation system} and consider the corresponding \hyperref[def:propositional_natural_deduction_system]{natural deduction system} as described in \cref{alg:propositional_axiomatic_derivation_to_natural_deduction}.
+  Again, fix an \hyperref[def:propositional_axiomatic_derivation_system]{axiomatic derivation system} and regard it as a \hyperref[def:propositional_natural_deduction_system]{natural deduction system} in accordance with \cref{def:axiomatic_derivation_as_natural_deduction}.
 
-  Then, given a \hyperref[def:propositional_natural_deduction_proof_tree]{proof tree}, enumerating its nodes' conclusions via \hyperref[def:ordered_tree_enumeration]{pre-order traversal}, we obtain an axiomatic derivation whose premises are the open assumptions of the tree, and whose conclusion coincides with that of the tree.
+  Then, given a \hyperref[def:propositional_natural_deduction_proof_tree]{proof tree}, enumerating its nodes' conclusions via \hyperref[def:ordered_tree_enumeration]{post-order traversal}, we obtain an axiomatic derivation whose premises are the open assumptions of the tree, and whose conclusion coincides with that of the tree.
 \end{algorithm}
 \begin{comments}
   \item This algorithm can be found as \identifier{math.logic.derivation.axiomatic_derivation.proof_tree_to_derivation} in \cite{notebook:code}.
 \end{comments}
-
-\begin{proposition}\label{thm:axiomatic_derivation_as_natural_deduction}
-  Fix an \hyperref[def:propositional_axiomatic_derivation_system]{axiomatic derivation system} and consider the corresponding \hyperref[def:propositional_natural_deduction_system]{natural deduction system} as described in \cref{alg:propositional_axiomatic_derivation_to_natural_deduction}.
-
-  Then there exists an \hyperref[def:propositional_axiomatic_derivation]{axiomatic derivation} of \( \varphi \) from \( \Gamma \) if and only if there exists a \hyperref[def:propositional_natural_deduction_proof_tree]{proof tree} concluding \( \varphi \) from \( \Gamma \).
-\end{proposition}
-\begin{proof}
-  We can use \fullref{alg:propositional_axiomatic_derivation_to_proof_tree} in one direction and \fullref{alg:proof_tree_to_propositional_axiomatic_derivation} in the other one.
-\end{proof}
 
 \paragraph{Minimal, intuitionistic and classical logic}
 
@@ -594,6 +564,40 @@
       \end{rightcolumn}
     \end{paracol}
 
+    \thmitem{def:propositional_natural_deduction_systems/and}\mcite[fig. 2.5]{Mimram2020ProgramEqualsProof} Rules for introducing and eliminating \hyperref[def:propositional_alphabet/connectives/conjunction]{conjunctions}:
+    \begin{paracol}{3}
+      \begin{nthcolumn}{0}
+        \ParacolAlignmentHack
+        \begin{equation*}\taglabel[\ensuremath{ \wedge_+ }]{inf:def:propositional_natural_deduction_systems/and/intro}
+          \begin{prooftree}
+            \hypo{ \syn\varphi }
+            \hypo{ \syn\psi }
+            \infer2[\ref{inf:def:propositional_natural_deduction_systems/and/intro}]{ \syn\varphi \synwedge \syn\psi }
+          \end{prooftree}
+        \end{equation*}
+      \end{nthcolumn}
+
+      \begin{nthcolumn}{1}
+        \ParacolAlignmentHack
+        \begin{equation*}\taglabel[\ensuremath{ \wedge_{-L} }]{inf:def:propositional_natural_deduction_systems/and/elim_left}
+          \begin{prooftree}
+            \hypo{ \syn\varphi \synwedge \syn\psi }
+            \infer1[\ref{inf:def:propositional_natural_deduction_systems/and/elim_left}]{ \syn\varphi }
+          \end{prooftree}
+        \end{equation*}
+      \end{nthcolumn}
+
+      \begin{nthcolumn}{2}
+        \ParacolAlignmentHack
+        \begin{equation*}\taglabel[\ensuremath{ \wedge_{-R} }]{inf:def:propositional_natural_deduction_systems/and/elim_right}
+          \begin{prooftree}
+            \hypo{ \syn\varphi \synwedge \syn\psi }
+            \infer1[\ref{inf:def:propositional_natural_deduction_systems/and/elim_right}]{ \syn\psi }
+          \end{prooftree}
+        \end{equation*}
+      \end{nthcolumn}
+    \end{paracol}
+
     \thmitem{def:propositional_natural_deduction_systems/or} Rules for introducing and eliminating \hyperref[def:propositional_alphabet/connectives/disjunction]{disjunctions}:
     \begin{paracol}{3}
       \begin{nthcolumn}{0}
@@ -629,40 +633,6 @@
             \infer[dashed]1{ \syn\theta }
 
             \infer3[\ref{inf:def:propositional_natural_deduction_systems/or/elim}]{ \syn\theta }
-          \end{prooftree}
-        \end{equation*}
-      \end{nthcolumn}
-    \end{paracol}
-
-    \thmitem{def:propositional_natural_deduction_systems/and} Rules for introducing and eliminating \hyperref[def:propositional_alphabet/connectives/conjunction]{conjunctions}:
-    \begin{paracol}{3}
-      \begin{nthcolumn}{0}
-        \ParacolAlignmentHack
-        \begin{equation*}\taglabel[\ensuremath{ \wedge_+ }]{inf:def:propositional_natural_deduction_systems/and/intro}
-          \begin{prooftree}
-            \hypo{ \syn\varphi }
-            \hypo{ \syn\psi }
-            \infer2[\ref{inf:def:propositional_natural_deduction_systems/and/intro}]{ \syn\varphi \synwedge \syn\psi }
-          \end{prooftree}
-        \end{equation*}
-      \end{nthcolumn}
-
-      \begin{nthcolumn}{1}
-        \ParacolAlignmentHack
-        \begin{equation*}\taglabel[\ensuremath{ \wedge_{-L} }]{inf:def:propositional_natural_deduction_systems/and/elim_left}
-          \begin{prooftree}
-            \hypo{ \syn\varphi \synwedge \syn\psi }
-            \infer1[\ref{inf:def:propositional_natural_deduction_systems/and/elim_left}]{ \syn\varphi }
-          \end{prooftree}
-        \end{equation*}
-      \end{nthcolumn}
-
-      \begin{nthcolumn}{2}
-        \ParacolAlignmentHack
-        \begin{equation*}\taglabel[\ensuremath{ \wedge_{-R} }]{inf:def:propositional_natural_deduction_systems/and/elim_right}
-          \begin{prooftree}
-            \hypo{ \syn\varphi \synwedge \syn\psi }
-            \infer1[\ref{inf:def:propositional_natural_deduction_systems/and/elim_right}]{ \syn\psi }
           \end{prooftree}
         \end{equation*}
       \end{nthcolumn}
@@ -713,8 +683,8 @@
         \begin{equation*}\taglabel[\ensuremath{ \leftrightarrow_{-L} }]{inf:def:propositional_natural_deduction_systems/iff/elim_left}
           \begin{prooftree}
             \hypo{ \syn\varphi \syniff \syn\psi }
-            \hypo{ \syn\varphi }
-            \infer2[\ref{inf:def:propositional_natural_deduction_systems/iff/elim_left}]{ \syn\psi }
+            \hypo{ \syn\psi }
+            \infer2[\ref{inf:def:propositional_natural_deduction_systems/iff/elim_left}]{ \syn\varphi }
           \end{prooftree}
         \end{equation*}
       \end{nthcolumn}
@@ -724,8 +694,8 @@
         \begin{equation*}\taglabel[\ensuremath{ \leftrightarrow_{-R} }]{inf:def:propositional_natural_deduction_systems/iff/elim_right}
           \begin{prooftree}
             \hypo{ \syn\varphi \syniff \syn\psi }
-            \hypo{ \syn\psi }
-            \infer2[\ref{inf:def:propositional_natural_deduction_systems/iff/elim_right}]{ \syn\varphi }
+            \hypo{ \syn\varphi }
+            \infer2[\ref{inf:def:propositional_natural_deduction_systems/iff/elim_right}]{ \syn\psi }
           \end{prooftree}
         \end{equation*}
       \end{nthcolumn}
@@ -733,16 +703,50 @@
   \end{thmenum}
 \end{definition}
 \begin{comments}
-  \item The systems are mostly based on \cite[def. 2.1.1]{TroelstraSchwichtenberg2000BasicProofTheory}, with the following additions:
+  \item The systems are mostly based on \bycite[def. 2.1.1]{TroelstraSchwichtenberg2000BasicProofTheory}, with the following additions:
   \begin{itemize}
-    \item The additional rules for \( \syntop \) and \( \synneg \) obtained from \ref{inf:def:simple_unit_type/intro} and \ref{inf:def:simple_empty_type/elim} via the \hyperref[con:curry_howard_correspondence]{Curry-Howard correspondence}.
+    \item The additional rules for \( \syntop \) and \( \synneg \) obtained from \ref{inf:def:simple_unit_type/intro} and \ref{inf:def:simple_empty_type/elim} via the \hyperref[con:curry_howard_correspondence]{Curry-Howard correspondence}. They can also be found in \cite[fig. 2.5]{Mimram2020ProgramEqualsProof}.
 
-    \item The rules for \( \syntop \) and \( \synneg \) can be found in \cite[fig. 2.5]{Mimram2020ProgramEqualsProof}.
+    \item We swap the order of the conjunction elimination rules --- see \cref{rem:conjunction_elimination_order}.
 
     \item The rules for \( \syniff \) are stated for \hyperref[rem:sequent_calculus]{sequent calculus} in \cite[99]{КолмогоровДрагалин2006Логика}.
   \end{itemize}
 
   \item Although we have defined abstract natural deduction systems in great generality, we will refer to the above as \enquote{the} natural deduction systems.
+\end{comments}
+
+\begin{remark}\label{rem:conjunction_elimination_order}
+  There are two conventions for conjunction elimination rules:
+  \begin{paracol}{2}
+    \begin{leftcolumn}
+      \ParacolAlignmentHack
+      \begin{equation*}
+        \begin{prooftree}
+          \hypo{ \syn\varphi \synwedge \syn\psi }
+          \infer1[\ensuremath{ \wedge_{-L} }]{ \syn\varphi }
+        \end{prooftree}
+      \end{equation*}
+    \end{leftcolumn}
+
+    \begin{rightcolumn}
+      \ParacolAlignmentHack
+      \begin{equation*}
+        \begin{prooftree}
+          \hypo{ \syn\varphi \synwedge \syn\psi }
+          \infer1[\ensuremath{ \wedge_{-L} }]{ \syn\psi }
+        \end{prooftree}
+      \end{equation*}
+    \end{rightcolumn}
+  \end{paracol}
+
+  The first selects \( \syn\varphi \), while the second \enquote{eliminates} \( \syn\varphi \) and instead selects \( \syn\psi \).
+
+  When defining the corresponding rule in \ref{inf:def:propositional_natural_deduction_systems/and/elim_left}, we have used the first convention because it ensures compatibility with product type \enquote{projection} rules, which we present in \cref{def:simple_product_type}. This convention is also used by \incite[fig. 2.5]{Mimram2020ProgramEqualsProof} (who also discusses product types).
+
+  The other convention, which eliminates \( \syn\varphi \), can be found, for example, in \cite[def. 2.1.1]{TroelstraSchwichtenberg2000BasicProofTheory}.
+\end{remark}
+\begin{comments}
+  \item This reasoning has also affected our definition of biconditional elimination rules in \ref{inf:def:propositional_natural_deduction_systems/iff}.
 \end{comments}
 
 \begin{example}\label{ex:def:propositional_natural_deduction_systems}
@@ -761,7 +765,7 @@
     \begin{equation*}
       \begin{prooftree}
         \hypo{ \synbot }
-        \infer1{ \syn\varphi }
+        \infer1[\ref{inf:def:propositional_natural_deduction_systems/bot/efq}]{ \syn\varphi }
       \end{prooftree}
     \end{equation*}
 
@@ -771,34 +775,25 @@
 
     \thmitem{ex:def:propositional_natural_deduction_systems/efq_vs_dne} The only difference between \ref{inf:def:propositional_natural_deduction_systems/bot/efq} and \ref{inf:def:propositional_natural_deduction_systems/bot/dne} is the dischargeable negation in the latter.
 
-    For example, by using the rule \ref{inf:def:propositional_natural_deduction_systems/bot/dne}, we can derive the formula \( \eqref{eq:thm:classical_tautologies/dne} = \neg \neg \varphi \synimplies \varphi \):
+    For example, by using the rule \ref{inf:def:propositional_natural_deduction_systems/bot/dne}, we can derive the formula \( \eqref{eq:thm:classical_tautologies/dne} = \synneg \synneg \varphi \synimplies \varphi \):
     \begin{equation*}
       \begin{prooftree}
-        \hypo{ [\neg\neg\varphi]^u }
-        \hypo{ [\neg\varphi]^v }
+        \hypo{ [\synneg\synneg\varphi]^u }
+        \hypo{ [\synneg\varphi]^v }
         \infer2[\ref{inf:def:propositional_natural_deduction_systems/neg/elim}]{ \synbot }
-        \infer[left label=\( v \)]1[\ref{inf:def:propositional_natural_deduction_systems/bot/dne}]{ \neg\varphi }
-
-        \hypo{ [\varphi]^w }
-        \infer2[\ref{inf:def:propositional_natural_deduction_systems/neg/elim}]{ \synbot }
-        \infer[left label=\( w \)]1[\ref{inf:def:propositional_natural_deduction_systems/bot/dne}]{ \varphi }
-        \infer[left label=\( u \)]1[\ref{inf:def:propositional_natural_deduction_systems/imp/intro}]{ \neg\neg\varphi \synimplies \varphi }
+        \infer[left label=\( v \)]1[\ref{inf:def:propositional_natural_deduction_systems/bot/dne}]{ \varphi }
+        \infer[left label=\( u \)]1[\ref{inf:def:propositional_natural_deduction_systems/imp/intro}]{ \synneg\synneg\varphi \synimplies \varphi }
       \end{prooftree}
     \end{equation*}
 
-    If we instead use the weaker \ref{inf:def:propositional_natural_deduction_systems/bot/efq}, we cannot discharge \( [\neg\varphi]^v \) nor \( [\varphi]^w \), and we are left with
+    If we instead use the weaker \ref{inf:def:propositional_natural_deduction_systems/bot/efq}, we cannot discharge \( [\synneg\varphi]^v \), and instead of
     \begin{equation*}
-      \neg\varphi, \varphi \vdash \neg\neg\varphi \synimplies \varphi.
+      \vdash \synneg\synneg\varphi \synimplies \varphi,
     \end{equation*}
-
-    We will show in \cref{thm:syntactic_propositional_conjunction_of_premises} that this implies
+    we are left with
     \begin{equation*}
-      (\neg\varphi \synwedge \varphi) \vdash \neg\neg\varphi \synimplies \varphi
+      \synneg\varphi \vdash \synneg\synneg\varphi \synimplies \varphi.
     \end{equation*}
-
-    We will show in \cref{thm:syntactic_minimal_tautologies} that the law of non-contradiction \eqref{eq:thm:intuitionistic_tautologies/lnc} can also be derived, which combined with \( \neg\varphi \synwedge \varphi \) gives us \( \synbot \).
-
-    Thus, the assumptions are \hyperref[def:interderivability]{interderivable} with \( \synbot \), and might have just as well used the rule \ref{inf:def:propositional_natural_deduction_systems/bot/efq} directly.
   \end{thmenum}
 \end{example}
 
@@ -806,7 +801,7 @@
   Every instance of the two axiom schemas --- \eqref{eq:def:minimal_implication_logic/intro} and \eqref{eq:def:minimal_implication_logic/dist} --- of \hyperref[def:minimal_implication_logic]{minimal implicational logic} is derivable in the \hyperref[def:propositional_natural_deduction_systems]{minimal natural deduction system}.
 \end{proposition}
 \begin{comments}
-  \item When regarding \hyperref[def:minimal_implication_logic]{minimal implicational logic} as a \hyperref[def:propositional_natural_deduction_system]{natural deduction system} (as explained in \cref{alg:propositional_axiomatic_derivation_to_natural_deduction}), the rules of the resulting system are \hyperref[con:inference_rule_admissibility]{admissible} with respect to the minimal natural deduction system. Thus, we do not need to introduce additional rules in order for implicational proofs to hold in the natural deduction systems we will consider.
+  \item When regarding \hyperref[def:minimal_implication_logic]{minimal implicational logic} as a \hyperref[def:propositional_natural_deduction_system]{natural deduction system} in accordance with \cref{def:axiomatic_derivation_as_natural_deduction}, the rules of the resulting system are \hyperref[con:inference_rule_admissibility]{admissible} with respect to the minimal natural deduction system. Thus, we do not need to introduce additional rules in order for implicational proofs to hold in the natural deduction systems we will consider.
 \end{comments}
 \begin{proof}
   \SubProofOf{eq:def:minimal_implication_logic/intro}
@@ -856,10 +851,10 @@
   \begin{equation*}
     \begin{prooftree}
       \hypo{ [\varphi \synwedge \synneg \varphi]^u }
-      \infer1[\ref{inf:def:propositional_natural_deduction_systems/and/elim_right}]{ \varphi }
+      \infer1[\ref{inf:def:propositional_natural_deduction_systems/and/elim_left}]{ \varphi }
 
       \hypo{ [\varphi \synwedge \synneg \varphi]^u }
-      \infer1[\ref{inf:def:propositional_natural_deduction_systems/and/elim_left}]{ \synneg \varphi }
+      \infer1[\ref{inf:def:propositional_natural_deduction_systems/and/elim_right}]{ \synneg \varphi }
 
       \infer2[\ref{inf:def:propositional_natural_deduction_systems/neg/elim}]{ \synbot }
 
@@ -908,7 +903,7 @@
   \end{equation*}
 \end{proof}
 
-\begin{proposition}\label{thm:minimal_propositional_negation_laws}
+\begin{proposition}\label{thm:minimal_propositional_negation_laws}\mcite[prop. 3; prop. 13]{DienerMcKubreJordens2020MaterialImplication}
   With respect to the \hyperref[def:propositional_natural_deduction_systems]{minimal natural deduction system}, we have the following strict derivability graph (\eqref{eq:thm:classical_tautologies/dne} being the most powerful):
   \begin{center}
     \begin{forest}
@@ -926,26 +921,6 @@
     \end{forest}
   \end{center}
 \end{proposition}
-\begin{proof}
-  Most proofs are given in \cite[prop. 3]{DienerMcKubreJordens2020MaterialImplication} and \cite[prop. 13]{DienerMcKubreJordens2020MaterialImplication}. We will only show that \eqref{eq:thm:intuitionistic_tautologies/lnc} is strictly weaker than \eqref{eq:thm:intuitionistic_tautologies/efq}.
-
-  For any formula \( \varphi \), we have the \hyperref[def:propositional_natural_deduction_systems]{natural deduction} proof that \( \eqref{eq:thm:intuitionistic_tautologies/lnc} \) is a tautology:
-  \begin{equation*}
-    \begin{prooftree}[separation=3em]
-      \hypo{ [\varphi \synwedge \synneg \varphi]^u }
-      \infer1[\ref{inf:def:propositional_natural_deduction_systems/and/elim_left}]{ \varphi }
-
-      \hypo{ [\varphi \synwedge \synneg \varphi]^u }
-      \infer1[\ref{inf:def:propositional_natural_deduction_systems/and/elim_right}]{ \synneg \varphi }
-
-      \infer2[\ref{inf:def:propositional_natural_deduction_systems/neg/elim}]{ \synbot }
-
-      \infer[left label=\( u \)]1[\ref{inf:def:propositional_natural_deduction_systems/neg/intro}]{ \synneg (\varphi \synwedge \synneg \varphi) }
-    \end{prooftree}
-  \end{equation*}
-
-  Hence, \eqref{eq:thm:intuitionistic_tautologies/lnc} is a theorem of \hyperref[con:minimal_logic]{minimal logic}. If it were to imply \eqref{eq:thm:intuitionistic_tautologies/efq}, then minimal and intuitionistic logic would be equivalent, which would contradict \cite[prop. 3]{DienerMcKubreJordens2020MaterialImplication}. Therefore, \eqref{eq:thm:intuitionistic_tautologies/lnc} is indeed strictly weaker than \eqref{eq:thm:intuitionistic_tautologies/efq}.
-\end{proof}
 
 \begin{proposition}\label{thm:syntactic_propositional_conjunction_of_premises}
   With respect to the \hyperref[def:propositional_natural_deduction_systems]{minimal natural deduction system}, we have \( \varphi, \psi \vdash \theta \) if and only if \( (\varphi \synwedge \psi) \vdash \theta \).
@@ -1054,12 +1029,12 @@
     \begin{prooftree}
       \hypo{ [\varphi \syniff \psi]^u }
       \hypo{ [\varphi]^v }
-      \infer2[\ref{inf:def:propositional_natural_deduction_systems/iff/elim_left}]{ \psi }
+      \infer2[\ref{inf:def:propositional_natural_deduction_systems/iff/elim_right}]{ \psi }
       \infer[left label=\( v \)]1[\ref{inf:def:propositional_natural_deduction_systems/imp/intro}]{ \varphi \synimplies \psi }
 
       \hypo{ [\varphi \syniff \psi]^u }
       \hypo{ [\psi]^w }
-      \infer2[\ref{inf:def:propositional_natural_deduction_systems/iff/elim_right}]{ \varphi }
+      \infer2[\ref{inf:def:propositional_natural_deduction_systems/iff/elim_left}]{ \varphi }
       \infer[left label=\( w \)]1[\ref{inf:def:propositional_natural_deduction_systems/imp/intro}]{ \psi \synimplies \varphi }
 
       \infer2[\ref{inf:def:propositional_natural_deduction_systems/and/intro}]{ (\varphi \synimplies \psi) \synwedge (\psi \synimplies \varphi) }
@@ -1070,12 +1045,12 @@
   \begin{equation*}
     \begin{prooftree}
       \hypo{ [(\varphi \synimplies \psi) \synwedge (\psi \synimplies \varphi)]^u }
-      \infer1[\ref{inf:def:propositional_natural_deduction_systems/and/elim_right}]{ \varphi \synimplies \psi }
+      \infer1[\ref{inf:def:propositional_natural_deduction_systems/and/elim_left}]{ \varphi \synimplies \psi }
       \hypo{ [\varphi]^v }
       \infer2[\ref{inf:def:propositional_natural_deduction_systems/imp/elim}]{ \psi }
 
       \hypo{ [(\varphi \synimplies \psi) \synwedge (\psi \synimplies \varphi)]^u }
-      \infer1[\ref{inf:def:propositional_natural_deduction_systems/and/elim_left}]{ \psi \synimplies \varphi }
+      \infer1[\ref{inf:def:propositional_natural_deduction_systems/and/elim_right}]{ \psi \synimplies \varphi }
       \hypo{ [\psi]^w }
       \infer2[\ref{inf:def:propositional_natural_deduction_systems/imp/elim}]{ \varphi }
 
@@ -1083,36 +1058,16 @@
     \end{prooftree}
   \end{equation*}
 
-  \SubProofOf{thm:propositional_admissible_rules/disjunction_as_conditional}
-  \begin{equation*}
-    \begin{prooftree}
-      \hypo{ [\synneg \varphi \synvee \psi]^w }
-
-      \hypo{ \eqref{eq:thm:intuitionistic_tautologies/efq} }
-      \ellipsis {} {\bot \synimplies \psi}
-
-      \hypo{ [\synneg \varphi]^x }
-      \hypo{ [\varphi]^u }
-      \infer2[\ref{inf:def:propositional_natural_deduction_systems/neg/elim}]{ \bot }
-      \infer2[\ref{inf:def:propositional_natural_deduction_systems/imp/elim}]{ \psi }
-
-      \hypo{ [\psi]^v }
-      \infer[left label={\( x, v \)}]3[\ref{inf:def:propositional_natural_deduction_systems/or/elim}]{ \psi }
-
-      \infer[left label=\( u \)]1[\ref{inf:def:propositional_natural_deduction_systems/imp/intro}]{ \varphi \synimplies \psi }
-    \end{prooftree}
-  \end{equation*}
-
   \SubProofOf{thm:propositional_admissible_rules/conditional_as_conjunction}
   \begin{equation*}
     \begin{prooftree}
       \hypo{ [\varphi \synwedge \synneg \psi]^u}
-      \infer1[\ref{inf:def:propositional_natural_deduction_systems/and/elim_left}]{ \synneg \psi }
+      \infer1[\ref{inf:def:propositional_natural_deduction_systems/and/elim_right}]{ \synneg \psi }
 
       \hypo { [\varphi \rightarrow \psi]^v }
 
       \hypo{ [\varphi \synwedge \synneg \psi]^u}
-      \infer1[\ref{inf:def:propositional_natural_deduction_systems/and/elim_right}]{ \varphi }
+      \infer1[\ref{inf:def:propositional_natural_deduction_systems/and/elim_left}]{ \varphi }
 
       \infer2[\ref{inf:def:propositional_natural_deduction_systems/imp/elim}]{ \psi }
       \infer2[\ref{inf:def:propositional_natural_deduction_systems/imp/elim}]{ \synbot }
@@ -1121,18 +1076,35 @@
     \end{prooftree}
   \end{equation*}
 
+  \SubProofOf{thm:propositional_admissible_rules/disjunction_as_conditional}
+  \begin{equation*}
+    \begin{prooftree}
+      \hypo{ [\synneg \varphi \synvee \psi]^u }
+
+      \hypo{ [\synneg \varphi]^v }
+      \hypo{ [\varphi]^w }
+      \infer2[\ref{inf:def:propositional_natural_deduction_systems/neg/elim}]{ \bot }
+      \infer1[\ref{inf:def:propositional_natural_deduction_systems/bot/efq}]{ \psi }
+
+      \hypo{ [\psi]^t }
+      \infer[left label={\( v, t \)}]3[\ref{inf:def:propositional_natural_deduction_systems/or/elim}]{ \psi }
+
+      \infer[left label=\( w \)]1[\ref{inf:def:propositional_natural_deduction_systems/imp/intro}]{ \varphi \synimplies \psi }
+    \end{prooftree}
+  \end{equation*}
+
   \SubProofOf{thm:propositional_admissible_rules/contraposition}
   \begin{equation*}
     \begin{prooftree}
-      \hypo{ \varphi \synimplies \psi }
-      \hypo{ [\varphi]^u }
-      \infer2[\ref{inf:def:propositional_natural_deduction_systems/imp/elim}]{ \psi }
+      \hypo{ [\synneg \psi]^u }
 
-      \hypo{ [\synneg \psi]^v }
+      \hypo{ \varphi \synimplies \psi }
+      \hypo{ [\varphi]^v }
+      \infer2[\ref{inf:def:propositional_natural_deduction_systems/imp/elim}]{ \psi }
       \infer2[\ref{inf:def:propositional_natural_deduction_systems/neg/elim}]{ \synbot }
 
-      \infer[left label=\( u \)]1[\ref{inf:def:propositional_natural_deduction_systems/neg/intro}]{ \synneg \varphi }
-      \infer[left label=\( v \)]1[\ref{inf:def:propositional_natural_deduction_systems/imp/intro}]{ \synneg \psi \synimplies \synneg \varphi }
+      \infer[left label=\( v \)]1[\ref{inf:def:propositional_natural_deduction_systems/neg/intro}]{ \synneg \varphi }
+      \infer[left label=\( u \)]1[\ref{inf:def:propositional_natural_deduction_systems/imp/intro}]{ \synneg \psi \synimplies \synneg \varphi }
     \end{prooftree}
   \end{equation*}
 
@@ -1158,70 +1130,119 @@
   The minimal, intuitionistic and classical \hyperref[def:propositional_natural_deduction_systems]{propositional natural deduction systems} are \hyperref[def:general_logic]{sound} with respect to \hyperref[def:minimal_propositional_semantics]{minimal}, \hyperref[def:truth_value_algebra/intuitionistic]{intuitionistic} and \hyperref[def:truth_value_algebra/classical]{classical} semantics, respectively.
 \end{theorem}
 \begin{comments}
-  \item See \cref{rem:soundness_and_completeness_theorem_list} for a list of soundness and completeness theorems.
   \item This provides a proof that the propositional general logics in \cref{def:propositional_logic} are well-defined.
+  \item See \cref{rem:soundness_and_completeness_theorem_list} for a list of soundness and completeness theorems.
 \end{comments}
 \begin{proof}
-  We justify the rules of \cref{def:propositional_natural_deduction_systems} individually, utilizing \fullref{thm:propositional_syntactic_deduction_theorem} when necessary.
+  Fix a \hyperref[def:propositional_natural_deduction_proof_tree]{proof tree} \( P \) that derives its conclusion from \( \Gamma \). Let \( I \) be a \hyperref[def:propositional_interpretation]{propositional interpretation} (extended to \( \synbot \) for minimal logic as per \cref{def:minimal_propositional_semantics}) and suppose that \( I \) is a model of \( \Gamma \).
 
-  \SubProofOf{inf:def:propositional_natural_deduction_systems/top/intro} We define valuations of \( \syntop \) to be \( T \).
+  We will use \fullref{thm:induction_on_rooted_trees} on \( P \) to show that its conclusion is valid in \( \Gamma \).
 
-  \SubProofOf{inf:def:propositional_natural_deduction_systems/bot/efq} Justified by \eqref{eq:thm:intuitionistic_tautologies/efq}.
+  The case where \( P \) is an assumption tree is vacuous, so suppose that the statement holds for all premises of \( P \). We will perform case analysis by the rule used.
 
-  \SubProofOf{inf:def:propositional_natural_deduction_systems/bot/dne} Justified by \eqref{eq:thm:classical_tautologies/dne} and \eqref{eq:thm:intuitionistic_equivalences/negation_bottom}.
+  \SubProofOf{inf:def:propositional_natural_deduction_systems/top/intro} If \( \varphi = \syntop \), there is nothing to prove since the denotation of \( \syntop \) is defined to be \( \semtop \).
 
-  \SubProofOf{inf:def:propositional_natural_deduction_systems/neg/intro} Justified by \eqref{eq:thm:intuitionistic_equivalences/negation_bottom}, which, as explained in \cref{thm:intuitionistic_equivalences}, holds under minimal semantics.
+  \SubProofOf{inf:def:propositional_natural_deduction_systems/bot/efq} Follows from \fullref{thm:propositional_semantic_efq}.
 
-  \SubProofOf{inf:def:propositional_natural_deduction_systems/neg/elim} Also justified by \eqref{eq:thm:intuitionistic_equivalences/negation_bottom}.
+  \SubProofOf{inf:def:propositional_natural_deduction_systems/bot/dne} Follows from \fullref{thm:propositional_semantic_dne}.
 
-  \SubProofOf{inf:def:propositional_natural_deduction_systems/or/intro_left} If \( \Bracks{\varphi}_I = T \), then
+  \SubProofOf{inf:def:propositional_natural_deduction_systems/neg/intro} Let \( R \) be the premise tree of \( P \) deriving \( \synbot \) from \( \varphi \).
+
+  By the inductive hypothesis, \( \varphi \vDash \synbot \). \Cref{thm:propositional_semantic_deduction_theorem} implies that \( \vDash \varphi \synimplies \synbot \). Then \cref{thm:intuitionistic_equivalences/negation_bottom} implies that \( \vDash \synneg \varphi \).
+
+  \SubProofOf{inf:def:propositional_natural_deduction_systems/neg/elim} If \( \Bracks{\synneg \varphi}_I = \Bracks{\varphi}_I = \semtop \), then
   \begin{equation*}
-    \Bracks{\varphi \synvee \psi}_I = T \vee \Bracks{\psi}_I = T.
+    \underbrace{\Bracks{\synneg \varphi}_I}_{\semtop}
+    \reloset {\eqref{eq:thm:intuitionistic_equivalences/negation_bottom}} =
+    \underbrace{\Bracks{\varphi}_I}_{\semtop} \rightarrow \Bracks{\synbot}_I
+    \reloset {\ref{thm:def:heyting_algebra/top_left}} =
+    \Bracks{\synbot}_I.
+  \end{equation*}
+
+  \SubProofOf{inf:def:propositional_natural_deduction_systems/and/intro} If \( \Bracks{\varphi}_I = \Bracks{\psi}_I = \semtop \), then
+  \begin{equation*}
+    \Bracks{\varphi \synwedge \psi}_I = \semtop \wedge \semtop = \semtop.
+  \end{equation*}
+
+  \SubProofOf{inf:def:propositional_natural_deduction_systems/and/elim_right} If \( \Bracks{\varphi \synwedge \psi}_I = \semtop \), then \( \Bracks{\varphi}_I = \Bracks{\psi}_I = \semtop \).
+
+  \SubProofOf{inf:def:propositional_natural_deduction_systems/and/elim_left} Analogous.
+
+  \SubProofOf{inf:def:propositional_natural_deduction_systems/or/intro_left} If \( \Bracks{\varphi}_I = \semtop \), then
+  \begin{equation*}
+    \Bracks{\varphi \synvee \psi}_I = \semtop \vee \Bracks{\psi}_I = \semtop.
   \end{equation*}
 
   \SubProofOf{inf:def:propositional_natural_deduction_systems/or/intro_right} Analogous.
 
-  \SubProofOf{inf:def:propositional_natural_deduction_systems/or/elim} If \( \varphi \vDash \theta \) and \( \psi \vDash \theta \), then
+  \SubProofOf{inf:def:propositional_natural_deduction_systems/or/elim} Suppose that \( P \) has the form
   \begin{equation*}
-    \Bracks{(\varphi \synvee \psi) \synimplies \theta}_I
-    =
-    (\Bracks{\varphi}_I \vee \Bracks{\psi}_I) \rightarrow \Bracks{\theta}_I
+    \begin{prooftree}
+      \hypo{}
+      \ellipsis { \( A \) } { \varphi \synvee \psi }
+
+      \hypo{ \varphi }
+      \ellipsis { \( B \) } { \theta }
+
+      \hypo{ \psi }
+      \ellipsis { \( C \) } { \theta }
+
+      \infer3[\ref{inf:def:propositional_natural_deduction_systems/or/elim}]{ \theta }
+    \end{prooftree}
   \end{equation*}
+  where the inductive hypothesis holds for the subtrees \( A \), \( B \) and \( C \).
 
-  \SubProofOf{inf:def:propositional_natural_deduction_systems/and/intro} If \( \Bracks{\varphi}_I = \Bracks{\psi}_I = T \), then
+  By the inductive hypothesis on \( A \), we have \( \Gamma \vDash \varphi \synvee \psi \). Since \( \Gamma \) is valid in \( I \), so is \( \varphi \synvee \psi \).
+
+  By the inductive hypothesis on \( B \) and \( C \), we have \( \Gamma, \varphi \vDash \theta \) and \( \Gamma, \psi \vDash \theta \). \Cref{thm:propositional_deduction_theorem_leq} implies that \( \Bracks{\varphi}_I \leq \Bracks{\theta}_I \) and \( \Bracks{\psi}_I \leq \Bracks{\theta}_I \).
+
+  Therefore, \( \Bracks{\theta}_I \) is an upper bound of \( \Bracks{\varphi}_I \) and \( \Bracks{\psi}_I \). Since \( \Bracks{\varphi \synvee \psi}_I \) is the least upper bound, we have \( \Bracks{\varphi \synvee \psi}_I \leq \Bracks{\theta}_I \). Via \cref{thm:propositional_deduction_theorem_leq}, this implies that \( \varphi \synvee \psi \vDash \theta \).
+
+  \SubProofOf{inf:def:propositional_natural_deduction_systems/imp/intro} Let \( R \) be the premise subtree of \( P \) deriving \( \psi \) from \( \varphi \). By the inductive hypothesis, \( \varphi \vDash \psi \). \Cref{thm:propositional_deduction_theorem_leq} then implies that \( \Bracks{\varphi}_I \leq \Bracks{\psi}_I \) for every interpretation \( I \).
+
+  It follows from \cref{thm:def:heyting_algebra/leq} that \( \Bracks{\varphi \synimplies \psi}_I = \semtop \).
+
+  \SubProofOf{inf:def:propositional_natural_deduction_systems/imp/elim} If \( \Bracks{\varphi \synimplies \psi}_I = \semtop \) and \( \Bracks{\varphi}_I = \semtop \), then
   \begin{equation*}
-    \Bracks{\varphi \synwedge \psi}_I = T \wedge T = T.
-  \end{equation*}
-
-  \SubProofOf{inf:def:propositional_natural_deduction_systems/and/elim_left} If \( \Bracks{\varphi \synwedge \psi}_I = T \), then \( \Bracks{\varphi}_I = \Bracks{\psi}_I = T \).
-
-  \SubProofOf{inf:def:propositional_natural_deduction_systems/and/elim_right} Analogous.
-
-  \SubProofOf{inf:def:propositional_natural_deduction_systems/imp/intro} Justified by \fullref{thm:propositional_syntactic_deduction_theorem}.
-
-  \SubProofOf{inf:def:propositional_natural_deduction_systems/imp/elim} If \( \Bracks{\varphi \synimplies \psi}_I = T \) and \( \Bracks{\varphi}_I = T \), then
-  \begin{equation*}
-    \underbrace{\Bracks{\varphi \synimplies \psi}_I}_T
-    =
-    \underbrace{\Bracks{\varphi}_I}_T \rightarrow \Bracks{\psi}_I
+    \underbrace{\Bracks{\varphi \synimplies \psi}_I}_{\semtop}
+    \reloset {\eqref{eq:def:propositional_denotation/conn}} =
+    \underbrace{\Bracks{\varphi}_I}_{\semtop} \rightarrow \Bracks{\psi}_I
     \reloset {\ref{thm:def:heyting_algebra/top_left}} =
     \Bracks{\psi}_I.
   \end{equation*}
 
-  \SubProofOf{inf:def:propositional_natural_deduction_systems/iff/intro} Justified by \fullref{thm:propositional_syntactic_deduction_theorem}.
+  \SubProofOf{inf:def:propositional_natural_deduction_systems/iff/intro} Suppose that \( P \) has the form
+  \begin{equation*}
+    \begin{prooftree}
+      \hypo{ \varphi }
+      \ellipsis { \( L \) } { \psi }
 
-  \SubProofOf{inf:def:propositional_natural_deduction_systems/iff/elim_left} If \( \Bracks{\varphi \syniff \psi}_I = T \) and \( \Bracks{\varphi}_I = T \), then
+      \hypo{ \psi }
+      \ellipsis { \( R \) } { \varphi }
+
+      \infer2[\ref{inf:def:propositional_natural_deduction_systems/or/elim}]{ \varphi \syniff \psi }
+    \end{prooftree}
+  \end{equation*}
+  where the inductive hypothesis holds for the subtrees \( L \) and \( R \).
+
+  By the inductive hypothesis on \( L \), we have \( \varphi \vDash \psi \). \Cref{thm:propositional_deduction_theorem_leq} implies that \( \Bracks{\varphi}_I \leq \Bracks{\psi}_I \) for every interpretation \( I \).
+
+  Similarly, using the inductive hypothesis on \( R \), we conclude that \( \Bracks{\varphi}_I \geq \Bracks{\psi}_I \). Therefore, \( \Bracks{\varphi}_I = \Bracks{\psi}_I \) for every interpretation \( I \).
+
+  \Cref{thm:def:heyting_algebra/eq} implies that \( \Bracks{\varphi \syniff \psi}_I = \semtop \).
+
+  \SubProofOf{inf:def:propositional_natural_deduction_systems/iff/elim_left} If \( \Bracks{\varphi \syniff \psi}_I = \semtop \) and \( \Bracks{\varphi}_I = \semtop \), then
   \begin{multline*}
-    \underbrace{\Bracks{\varphi \syniff \psi}_I}_T
-    =
+    \underbrace{\Bracks{\varphi \syniff \psi}_I}_{\semtop}
+    \reloset {\eqref{eq:def:propositional_denotation/conn}} =
     \Bracks{\varphi}_I \leftrightarrow \Bracks{\psi}_I
-    =
-    (\underbrace{\Bracks{\varphi}_I}_T \rightarrow \Bracks{\psi}_I) \wedge (\Bracks{\psi}_I \rightarrow \underbrace{\Bracks{\varphi}_I}_T)
+    \reloset {\eqref{eq:def:heyting_algebra/biconditional}} =
+    (\underbrace{\Bracks{\varphi}_I}_{\semtop} \rightarrow \Bracks{\psi}_I) \wedge (\Bracks{\psi}_I \rightarrow \underbrace{\Bracks{\varphi}_I}_{\semtop})
     \reloset {\ref{thm:def:heyting_algebra/top_left}} = \\ =
-    \Bracks{\psi}_I \wedge (\Bracks{\psi}_I \rightarrow \underbrace{\Bracks{\varphi}_I}_T)
+    \Bracks{\psi}_I \wedge (\Bracks{\psi}_I \rightarrow \underbrace{\Bracks{\varphi}_I}_{\semtop})
     \reloset {\eqref{eq:def:heyting_algebra/axioms/modus_ponens}} =
-    \Bracks{\psi}_I \wedge \underbrace{\Bracks{\varphi}_I}_T
-    =
+    \Bracks{\psi}_I \wedge \underbrace{\Bracks{\varphi}_I}_{\semtop}
+    \reloset {\ref{thm:def:bounded_lattice/neutral}} =
     \Bracks{\psi}_I.
   \end{multline*}
 
@@ -1231,9 +1252,9 @@
 \begin{theorem}[Glivenko's double negation theorem]\label{thm:glivenkos_double_negation_theorem}\mcite[202]{CitkinMuravitsky2022ConsequenceRelations}
   A formula \( \varphi \) is derivable from \( \Gamma \) in the \hyperref[def:propositional_natural_deduction_systems]{classical propositional natural deduction system} if and only if it's double negation \( \synneg \synneg \varphi \) is derivable from \( \Gamma \) in the minimal natural deduction system.
 \end{theorem}
-\begin{proof}
+\begin{comments}
   \item We will not prove this theorem.
-\end{proof}
+\end{comments}
 
 \paragraph{Sequent calculus}
 
@@ -1248,11 +1269,11 @@ We will only briefly sketch some ideas of sequent calculus because of their impo
 \end{comments}
 
 \begin{remark}\label{rem:sequent_calculus}
-  As discussed in \cref{rem:inference_rules_semantics}, \incite*{Gentzen1935LogischeSchließen} introduced both natural deduction rules and sequent calculus rules.
+  \incite*{Gentzen1935LogischeSchließen} introduced both natural deduction rules and sequent calculus rules.
 
   We saw in \cref{def:propositional_natural_deduction_system} and \cref{def:propositional_natural_deduction_proof_tree} how natural deduction can be completely formalized, and we will extend those rules (although less formally) to first-order logic in \cref{def:abstract_first_order_natural_deduction_system}.
 
-  Sequent calculus is instead based on \hyperref[def:inference_rule]{inference rules} whose entries are all \hyperref[def:sequent]{sequents}. The intended instantiation of the sequent  \( \syn\Gamma \synvdash \syn\Delta \)\fnote{We regard inference rules are purely syntactic objects. In order to explicitly distinguish sequents in a rule from \hyperref[con:judgment]{judgments} in the metalanguage a-la those discussed by Martin-L\"of in \cite[2]{MartinLöf1996LogicalLaws}, in accordance with \cref{rem:mathematical_logic_conventions/terminal_dots}, we put dots over the \hyperref[def:variable_identifier]{capital Greek identifiers} denoting \hyperref[def:logical_context]{logical context placeholders}, as well as over the sequent symbol \( {\vdash} \). Thus, we denote by \( \syn\Gamma \synvdash \syn\Delta \) what Gentzen denotes by \( \Gamma \vdash \Delta \).} is that at least one formula in \( \syn\Delta \) is a consequence of the entire set \( \syn\Gamma \). Thus, \( \syn\varphi, \syn\psi \vdash \syn\theta, \syn\chi \) corresponds to \( \syn\varphi \synwedge \syn\psi \vdash \syn\theta \synvee \syn\chi \).
+  Sequent calculus is instead based on \hyperref[def:inference_rule]{inference rules} whose entries are all \hyperref[def:sequent]{sequents}. The intended interpretation of the sequent  \( \syn\Gamma \synvdash \syn\Delta \)\fnote{We regard inference rules are purely syntactic objects. In order to explicitly distinguish sequents in a rule from \hyperref[con:judgment]{judgments} in the metalanguage a-la those discussed by Martin-L\"of in \cite[2]{MartinLöf1996LogicalLaws}, in accordance with \cref{rem:mathematical_logic_conventions/terminal_dots}, we put dots over the \hyperref[def:variable_identifier]{capital Greek identifiers} denoting \hyperref[def:logical_context]{logical context placeholders}, as well as over the sequent symbol \( {\vdash} \). Thus, we denote by \( \syn\Gamma \synvdash \syn\Delta \) what Gentzen denotes by \( \Gamma \vdash \Delta \).} is that at least one formula in \( \syn\Delta \) is a consequence of the entire set \( \syn\Gamma \). Thus, \( \syn\varphi, \syn\psi \vdash \syn\theta, \syn\chi \) corresponds to \( \syn\varphi \synwedge \syn\psi \vdash \syn\theta \synvee \syn\chi \).
 
   Consider Gentzen's natural deduction rule \ref{inf:def:propositional_natural_deduction_systems/imp/intro}, which we will restate here for clarity:
   \begin{equation*}
@@ -1278,16 +1299,16 @@ We will only briefly sketch some ideas of sequent calculus because of their impo
 
     \begin{rightcolumn}
       \ParacolAlignmentHack
-      \begin{equation}\taglabel[\ensuremath{ \rightarrow_R }]{inf:rem:sequent_calculus/imp/right}
+      \begin{equation*}\taglabel[\ensuremath{ \rightarrow_R }]{inf:rem:sequent_calculus/imp/right}
         \begin{prooftree}
           \hypo{ \syn\varphi, \syn\Gamma \synvdash \syn\Delta, \syn\psi }
           \infer1[\ref{inf:rem:sequent_calculus/imp/right}]{ \syn\Gamma \synvdash \syn\Delta, (\syn\varphi \synimplies \syn\psi) }
         \end{prooftree}
-      \end{equation}
+      \end{equation*}
     \end{rightcolumn}
   \end{paracol}
 
-  One fundamental difference is that the subtleties of defining natural deduction proof trees that we saw in \cref{def:propositional_natural_deduction_proof_tree} are now made explicit --- they are simply a part of the rule itself.
+  One fundamental difference is that the subtleties of discharging in natural deduction proof trees that we saw in \cref{def:propositional_natural_deduction_proof_tree/application} are now made explicit --- they are simply a part of the rule itself.
 
   Furthermore, the conclusion of a proof tree is now a sequent, and, rather than encoding a single \hyperref[con:proposition]{proposition}, it encodes an entailment of finitely many propositions from finitely many propositions. The assumptions of a proof tree are contained entirely in its conclusion. To make sure that the tree's premises are valid, we introduce the following rule, made implicit by Gentzen:
   \begin{equation*}\taglabel[\ensuremath{ \logic{Init} }]{inf:rem:sequent_calculus/init}
@@ -1300,13 +1321,13 @@ We will only briefly sketch some ideas of sequent calculus because of their impo
 
   Furthermore, since the complexity is now in the rules themselves, sequent calculus requires additional rules for properly handling sequents --- what Gentzen himself calls \enquote{Struktur-Schlu\ss{}figuren} (\enquote{structural rules}). In particular, the rules rely on the order of items in a context, so we need to work with \hyperref[def:logical_context_semantics]{list-based context semantics}. We present Gentzen's structural rules in \cref{def:abstract_sequent_calculus_system}.
 
-  Gentzen's primary motivation for sequent calculus is the ability to prove that the structural rule \ref{inf:def:abstract_sequent_calculus_system/rules/cut} is redundant given sequent calculus rules for first-order logic. He called this result the \enquote{Hauptsatz}, and \incite[92]{TroelstraSchwichtenberg2000BasicProofTheory} and \incite[\S 2.6.4]{Mimram2020ProgramEqualsProof} call it \enquote{cut elimination}.
+  Gentzen's primary motivation for sequent calculus is the ability to prove that the structural rule \ref{inf:def:abstract_sequent_calculus_system/rules/cut} is \hyperref[con:inference_rule_admissibility]{admissible} with respect to the sequent calculus rules for first-order logic, and is thus redundant. He called this result the \enquote{Hauptsatz}, and \incite[92]{TroelstraSchwichtenberg2000BasicProofTheory} and \incite[\S 2.6.4]{Mimram2020ProgramEqualsProof} call it \enquote{cut elimination}.
 
   Since we aren't interested in proof theory and thus in cut elimination, we will not further pursue sequent calculus but only state the original structural rules.
 \end{remark}
 
 \begin{example}\label{ex:sequent_calculus_modus_ponens}
-  The modus ponens rule \ref{inf:thm:axiomatic_derivation_as_natural_deduction/mp} can easily be derived in \hyperref[rem:sequent_calculus]{sequent calculus} as follows:
+  The modus ponens rule \ref{inf:def:axiomatic_derivation_as_natural_deduction/mp} can easily be derived in \hyperref[rem:sequent_calculus]{sequent calculus} as follows:
   \begin{equation*}
     \begin{prooftree}
       \infer0[\ref{inf:rem:sequent_calculus/init}]{ \varphi \synvdash \varphi }
@@ -1319,7 +1340,7 @@ We will only briefly sketch some ideas of sequent calculus because of their impo
 \begin{definition}\label{def:abstract_sequent_calculus_system}\mimprovised
   We define an \term{abstract propositional sequent calculus system} as a collection of \hyperref[def:sequent_calculus_rule]{sequent calculus rules}.
 
-  As discussed in \cref{rem:sequent_calculus}, auxiliary rules are needed to ensure that contexts can be manipulated in accordance with the set-based or list-based semantics presented in \cref{def:logical_context_semantics}. We list here Gentzen's original structural rules from \cite[192]{Gentzen1935LogischeSchließen} with the English translation of his terminology from \cite[296]{Gentzen1964LogicalDeduction}\fnote{These rules are also discussed in \cite[def. 3.1.1]{TroelstraSchwichtenberg2000BasicProofTheory}, \cite[\S 2.6.2]{Mimram2020ProgramEqualsProof} and \cite[\S III*.3]{КолмогоровДрагалин2006Логика}, with slight variations made immaterial by the interplay of the structural rules themselves (e.g. whether we use \enquote{\( \syn\Gamma, \syn\varphi \)} or \enquote{\( \syn\varphi, \syn\Gamma \)} is immaterial due to \ref{inf:def:abstract_sequent_calculus_system/rules/inter/left}).}. As per Gentzen's presentation, we will refer to these as \term[ru=структурные правила (\cite[97]{КолмогоровДрагалин2006Логика}), de=Struktur-Schlu\ss{}figuren (\cite[191]{Gentzen1935LogischeSchließen})]{structural rules}, and to other rules as \term[ru=логические правила (\cite[97]{КолмогоровДрагалин2006Логика}), de=Logische-Zeichen-Schlu\ss{}figuren (\cite[191]{Gentzen1935LogischeSchließen})]{logical rules}. If a system includes only a part of Gentzen's structural rules, we will call it \term[en=substructural (\cite[91]{TroelstraSchwichtenberg2000BasicProofTheory})]{substructural}.
+  As discussed in \cref{rem:sequent_calculus}, auxiliary rules are needed to ensure that contexts can be manipulated in accordance with the set-based or list-based semantics presented in \cref{def:logical_context_semantics}. We list here Gentzen's original structural rules from \cite[192]{Gentzen1935LogischeSchließen} with the English translation of his terminology from \cite[296]{Gentzen1964LogicalDeduction}\fnote{These rules are also discussed in \cite[def. 3.1.1]{TroelstraSchwichtenberg2000BasicProofTheory}, \cite[\S 2.6.2]{Mimram2020ProgramEqualsProof} and \cite[\S III*.3]{КолмогоровДрагалин2006Логика}, with slight variations made immaterial by the interplay of the structural rules themselves (e.g. whether we use \enquote{\( \syn\Gamma, \syn\varphi \)} or \enquote{\( \syn\varphi, \syn\Gamma \)} is immaterial due to \ref{inf:def:abstract_sequent_calculus_system/rules/inter/left}).}. As per Gentzen's presentation, we will refer to these as \term[ru=структурные правила (\cite[97]{КолмогоровДрагалин2006Логика}), de=Struktur-Schlu\ss{}figuren (\cite[191]{Gentzen1935LogischeSchließen})]{structural rules}, and to other rules as \term[ru=логические правила (\cite[97]{КолмогоровДрагалин2006Логика}), de=Logische-Zeichen-Schlu\ss{}figuren (\cite[191]{Gentzen1935LogischeSchließen})]{logical rules}.
 
   \begin{thmenum}
     \thmitem{def:abstract_sequent_calculus_system/rules/weak} \term[ru=правила добавления (\cite[217]{КолмогоровДрагалин2006Логика})]{Weakening rules} (originally called \enquote{thinning rules} in \cite[296]{Gentzen1964LogicalDeduction}):
@@ -1345,7 +1366,7 @@ We will only briefly sketch some ideas of sequent calculus because of their impo
       \end{rightcolumn}
     \end{paracol}
 
-    When the other structural rules are chosen carefully, weakening rules can be avoided to simplify inductive proofs; see \cite{TCSSE:weakening_rule_for_lambda_cube}.
+    When the other structural rules are chosen carefully, weakening rules become \hyperref[con:admissible_inference_rule]{admissible}; see \cite{TCSSE:weakening_rule_for_lambda_cube}.
 
     \thmitem{def:abstract_sequent_calculus_system/rules/contract} \term[ru=правила сокращения (\cite[218]{КолмогоровДрагалин2006Логика})]{Contraction rules}:
     \begin{paracol}{2}
@@ -1404,6 +1425,8 @@ We will only briefly sketch some ideas of sequent calculus because of their impo
       \end{prooftree}
     \end{equation*}
   \end{thmenum}
+
+  Without weakening or contraction rules, we refer to the system as \term[en=substructural (\cite[91]{TroelstraSchwichtenberg2000BasicProofTheory})]{substructural}.
 \end{definition}
 
 \begin{example}\label{ex:proof_tree_non_uniqueness}
@@ -1506,9 +1529,9 @@ We will only briefly sketch some ideas of sequent calculus because of their impo
 \end{example}
 
 \begin{remark}\label{rem:natural_deduction_explicit_sequents}
-  The familiar \hyperref[def:natural_deduction_rule]{natural deduction rules} from \cref{def:propositional_natural_deduction_systems} and \cref{def:first_order_natural_deduction_system} are sometimes stated with explicit \hyperref[def:sequent]{sequents}, in a way similar to \hyperref[def:sequent_calculus_rule]{sequent calculus rules}. \incite[\S 2.1.8]{TroelstraSchwichtenberg2000BasicProofTheory} call this \enquote{natural deduction in sequent style}.
+  The \hyperref[def:natural_deduction_rule]{natural deduction rules} from \cref{def:propositional_natural_deduction_systems} and \cref{def:first_order_natural_deduction_systems} are sometimes stated with explicit \hyperref[def:sequent]{sequents}, in a way similar to \hyperref[def:sequent_calculus_rule]{sequent calculus rules}. \incite[\S 2.1.8]{TroelstraSchwichtenberg2000BasicProofTheory} call this \enquote{natural deduction in sequent style}.
 
-  For example, the \hyperref[thm:axiomatic_derivation_as_natural_deduction/mp]{modus ponens} (arrow type elimination) rule
+  For example, the \hyperref[def:axiomatic_derivation_as_natural_deduction/mp]{modus ponens} (arrow type elimination) rule
   \begin{equation*}
     \begin{prooftree}
       \hypo{ \syn\varphi \synimplies \syn\psi }

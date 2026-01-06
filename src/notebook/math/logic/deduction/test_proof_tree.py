@@ -117,6 +117,40 @@ def test_efq() -> None:
     )
 
 
+# ex:def:propositional_natural_deduction_systems/efq_vs_dne
+def test_dne() -> None:
+    tree = apply(
+        CLASSICAL_NATURAL_DEDUCTION_SYSTEM['→₊'],
+        prop_premise(
+            tree=apply(
+                CLASSICAL_NATURAL_DEDUCTION_SYSTEM['DNE'],
+                prop_premise(
+                    tree=apply(
+                        CLASSICAL_NATURAL_DEDUCTION_SYSTEM['¬₋'],
+                        prop_assume('¬¬p', 'u'),
+                        prop_assume('¬p', 'v'),
+                    ),
+                    discharge='¬p',
+                    marker='v'
+                )
+            ),
+            discharge='¬¬p',
+            marker='u'
+        )
+    )
+
+    assert str(tree) == dedent('''\
+          [¬¬p]ᵘ    [¬p]ᵛ
+          _______________ ¬₋
+                 ⊥
+        v _______________ DNE
+                 p
+        u _______________ →₊
+             (¬¬p → p)
+        '''
+    )
+
+
 # thm:minimal_implicational_logic_axioms_nd_proof
 def test_implication_distributivity_axiom_tree() -> None:
     tree = apply(

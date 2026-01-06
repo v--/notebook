@@ -91,7 +91,7 @@ def test_bottom_minimality_proof() -> None:
         CLASSICAL_NATURAL_DEDUCTION_SYSTEM['∀₊'],
         premise(
             tree=apply(
-                CLASSICAL_NATURAL_DEDUCTION_SYSTEM['↔₋ᵣ'],
+                CLASSICAL_NATURAL_DEDUCTION_SYSTEM['↔₋ₗ'],
                 apply(
                     CLASSICAL_NATURAL_DEDUCTION_SYSTEM['∀₋'],
                     premise(
@@ -119,7 +119,7 @@ def test_bottom_minimality_proof() -> None:
            ∀y.((⫫ ≤ y) ↔ ((⫫ ⩓ y) = ⫫))          [∀x.((⫫ ⩓ x) = ⫫)]ᵛ
         __________________________________ ∀₋    ___________________ ∀₋
             ((⫫ ≤ x) ↔ ((⫫ ⩓ x) = ⫫))               ((⫫ ⩓ x) = ⫫)
-        ____________________________________________________________ ↔₋ᵣ
+        ____________________________________________________________ ↔₋ₗ
                                   (⫫ ≤ x)
         ____________________________________________________________ ∀₊
                                  ∀x.(⫫ ≤ x)
