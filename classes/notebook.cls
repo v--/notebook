@@ -36,6 +36,7 @@
     block=ragged,
     backend=biber,
     style=alphabetic,
+    useprefix=true,
     citestyle=alphabetic,
     datamodel=classes/bibmodel
   ]
