@@ -310,7 +310,7 @@ There are different approaches to formalizing the syntax of propositional logic.
 \begin{definition}\label{def:parametrized_propositional_denotation}\mimprovised
   We can define a \hyperref[con:parametrized_denotation]{parametrized denotation} for the \hyperref[def:propositional_formula]{propositional formula} \( \varphi \) as follows.
 
-  If \( \op*{Var}(\varphi) \subseteq \set{ p_1, \ldots, p_n } \), the valuation \( \Bracks{\varphi}_I \) only depends on the particular values \( I(p_1), \ldots, I(p_n) \) of \( I \). Hence, if the variables are clear from the context, we obtain a Boolean function
+  If \( \op*{Var}(\varphi) \subseteq \set{ p_1, \ldots, p_n } \), the denotation \( \Bracks{\varphi}_I \) only depends on the particular values \( I(p_1), \ldots, I(p_n) \) of \( I \). Hence, if the variables are clear from the context, we obtain a Boolean function
   \begin{equation*}
     \begin{aligned}
       &\Bracks{\varphi}: \BbbT^n \to \BbbT, \\
@@ -326,7 +326,7 @@ There are different approaches to formalizing the syntax of propositional logic.
 \end{comments}
 
 \begin{concept}\label{con:improper_symbol}
-  In \cref{def:propositional_denotation}, we have defined valuations for \hyperref[def:propositional_formula]{propositional formulas}. Based on this definition, the symbols used to define the formal grammar of formulas can be divided into two collections:
+  In \cref{def:propositional_denotation}, we have defined denotations for \hyperref[def:propositional_formula]{propositional formulas}. Based on this definition, the symbols used to define the formal grammar of formulas can be divided into two collections:
   \begin{thmenum}
     \thmitem{con:improper_symbol/proper} The propositional variables and the constants \( \syntop \) and \( \synbot \) can be regarded, in the words of \incite[32]{Church1956LogicVol1}, as \enquote{having meaning in isolation}.
 
@@ -336,7 +336,7 @@ There are different approaches to formalizing the syntax of propositional logic.
 
     \thmitem{con:improper_symbol/improper} On the other hand, the rest of the symbols from the \hyperref[def:propositional_alphabet]{propositional alphabet} \enquote{have no meaning in isolation} but \enquote{combine with proper symbols (one or more) to form longer expressions that do have meaning in isolation.}
 
-    Indeed, the conjunction symbol \( {\synwedge} \) has no valuation by itself, but the conjunction formula \( \varphi \synwedge \psi \) does.
+    Indeed, the conjunction symbol \( {\synwedge} \) has no denotation by itself, but the conjunction formula \( \varphi \synwedge \psi \) does.
 
     Again, following Church, we call such symbols \term[en=improper (symbol) (\cite[32]{Church1956LogicVol1})]{improper}. We will consider the propositional connectives to be improper, but only because that would simplify our exposition by imposing a special role for the fixed symbols from the alphabet of the logical system.
   \end{thmenum}
@@ -432,6 +432,71 @@ There are different approaches to formalizing the syntax of propositional logic.
   \item \Cref{thm:propositional_semantic_inconsistency} lists some conditions equivalent to (un)satisfiability.
 \end{comments}
 
+\begin{proposition}\label{thm:propositional_denotation_characterization}
+  \hyperref[def:propositional_satisfaction]{Propositional satisfaction} of compounds formulas can be characterized as follows:
+  \begin{thmenum}
+    \thmitem{thm:propositional_denotation_characterization/negation} Assuming \hyperref[def:truth_value_algebra/degenerate]{non-degenerate semantics}, from \( I \vDash \varphi \) it follows that \( I \nvDash \synneg \varphi \).
+
+    The converse holds in \hyperref[def:truth_value_algebra/classical]{classical semantics}.
+
+    \thmitem{thm:propositional_denotation_characterization/conjunction} We have \( I \vDash \varphi \synwedge \psi \) if and only if \( I \vDash \varphi \) and \( I \vDash \psi \).
+
+    \thmitem{thm:propositional_denotation_characterization/disjunction} If \( I \vDash \varphi \) or \( I \vDash \psi \) (or both), it follows that \( I \vDash \varphi \synvee \psi \).
+
+    The converse holds in classical semantics.
+
+    \thmitem{thm:propositional_denotation_characterization/conditional} From \( I \vDash \varphi \synimplies \psi \) it follows that \( I \vDash \varphi \) implies \( I \vDash \psi \).
+
+    The converse holds in classical semantics.
+
+    \thmitem{thm:propositional_denotation_characterization/biconditional} We have \( I \vDash \varphi \syniff \psi \) if and only if \( I \vDash \varphi \) is equivalent to \( I \vDash \psi \).
+  \end{thmenum}
+\end{proposition}
+\begin{proof}
+  \SubProofOf{thm:propositional_denotation_characterization/negation} Assume non-degenerate semantics.
+
+  If \( I \vDash \varphi \), then
+  \begin{equation*}
+    \Bracks{\synneg \varphi}_I
+    \reloset{\eqref{eq:def:propositional_denotation/neg}} =
+    \oline{\Bracks{\varphi}_I}
+    =
+    \oline{\semtop}
+    \reloset{\ref{thm:def:standard_boolean_functions/pseudocomplement}} =
+    \sembot,
+  \end{equation*}
+  hence \( I \nvDash \synneg \varphi \).
+
+  Conversely, if \( I \nvDash \varphi \), then \( \Bracks{\varphi}_I < \semtop \), but with more than two truth values we cannot automatically conclude that \( \Bracks{\varphi}_I = \sembot \) and hence \( \Bracks{\synneg \varphi}_I = \semtop \).
+
+  \SubProofOf{thm:propositional_denotation_characterization/conjunction} We have
+  \begin{equation*}
+    \Bracks{\varphi \synwedge \psi}_I
+    \reloset {\eqref{eq:def:propositional_denotation/conn}} =
+    \inf\set{ \Bracks{\varphi}_I, \Bracks{\psi}_I },
+  \end{equation*}
+  hence \( \Bracks{\varphi \synwedge \psi}_I = \semtop \) if and only if \( \Bracks{\varphi}_I = \Bracks{\psi}_I = \semtop \).
+
+  \SubProofOf{thm:propositional_denotation_characterization/disjunction} We have
+  \begin{equation*}
+    \Bracks{\varphi \synvee \psi}_I
+    \reloset {\eqref{eq:def:propositional_denotation/conn}} =
+    \sup\set{ \Bracks{\varphi}_I, \Bracks{\psi}_I }.
+  \end{equation*}
+
+  Clearly \( \Bracks{\varphi \synvee \psi}_I = \semtop \) if either \( \Bracks{\varphi}_I = \semtop \) or \( \Bracks{\psi}_I = \semtop \) (or both).
+
+  The converse is more tricky. Suppose that \( \Bracks{\varphi \synvee \psi}_I = \sup\set{ \Bracks{\varphi}_I, \Bracks{\psi}_I } = \semtop \). Even though \( \semtop \) if the least upper bound of \( \Bracks{\varphi}_I \) and \( \Bracks{\psi}_I \), it is possible that \( \Bracks{\varphi}_I < \semtop \) and \( \Bracks{\psi}_I < \semtop \) if they are incomparable \hyperref[def:partial_order_atom]{coatoms}. Such cases are impossible in classical logic.
+
+  \SubProofOf{thm:propositional_denotation_characterization/conditional} \Cref{thm:def:heyting_algebra/leq} implies that \( \Bracks{\varphi \synimplies \psi}_I = \semtop \) if and only if \( \Bracks{\varphi}_I \leq \Bracks{\psi}_I \).
+
+  If \( \Bracks{\varphi \synimplies \psi}_I = \semtop \) and \( \Bracks{\varphi}_I = \semtop \), it remains for \( \Bracks{\psi}_I \) to be \( \semtop \).
+
+  Conversely, suppose that from \( \Bracks{\varphi}_I = \semtop \) it follows that \( \Bracks{\psi}_I = \semtop \). If \( \Bracks{\varphi}_I < \semtop \), we generally have no information about \( \Bracks{\psi}_I \). In classical logic, however, there are only two truth values, so \( \Bracks{\varphi}_I \leq \Bracks{\psi}_I \) is straightforward to verify --- either \( \Bracks{\varphi}_I = \semtop \), in which case \( \Bracks{\psi}_I = \semtop \) by assumption, or otherwise \( \Bracks{\varphi}_I = \sembot \).
+
+  \SubProofOf{thm:propositional_denotation_characterization/biconditional} \Cref{thm:def:heyting_algebra/eq} implies that \( \Bracks{\varphi \syniff \psi}_I = \semtop \) if and only if \( \Bracks{\varphi}_I = \Bracks{\psi}_I \).
+\end{proof}
+
 \begin{example}\label{ex:def:propositional_semantics}
   We list some examples related to \hyperref[def:propositional_semantics]{propositional semantics}:
   \begin{thmenum}
@@ -441,7 +506,7 @@ There are different approaches to formalizing the syntax of propositional logic.
 
     We will give a simple counterexample when \( \BbbT \) is the more general three-valued Heyting algebra from \cref{ex:def:heyting_algebra/three_valued}, where \( \sembot < \mathbfsf{N} < \semtop \).
 
-    Let \( I \) be a \hyperref[def:propositional_denotation]{propositional interpretation} such that \( I(\synp) = \mathbfsf{N} \). Then the valuation of \eqref{eq:thm:classical_tautologies/lem} is
+    Let \( I \) be a \hyperref[def:propositional_denotation]{propositional interpretation} such that \( I(\synp) = \mathbfsf{N} \). Then the denotation of \eqref{eq:thm:classical_tautologies/lem} is
     \begin{equation*}
       \Bracks{\synp \synvee \synneg \synp}_I
       =
@@ -472,7 +537,7 @@ There are different approaches to formalizing the syntax of propositional logic.
 \end{example}
 
 \begin{remark}\label{rem:classical_propositional_interpretations}
-  Note that a propositional interpretation may be used to define valuations different from the one in \cref{def:propositional_denotation}. For example, the semantics for \hyperref[con:minimal_logic]{minimal logic} defined in \cref{def:minimal_propositional_semantics} require a slight variation.
+  Note that a propositional interpretation may be used to define denotations different from the one in \cref{def:propositional_denotation}. For example, the semantics for \hyperref[con:minimal_logic]{minimal logic} defined in \cref{def:minimal_propositional_semantics} require a slight variation.
 
   Thus, an interpretation cannot, by itself, be \hyperref[con:classical_logic]{classical} or \hyperref[con:intuitionistic_logic]{intuitionistic}.
 
@@ -733,7 +798,7 @@ There are different approaches to formalizing the syntax of propositional logic.
 \begin{definition}\label{def:minimal_propositional_semantics}\mimprovised
   In addition to classical and intuitionistic semantics discussed in \cref{def:truth_value_algebra}, we will also occasionally consider \term{minimal semantics}, obtained by interpreting \( \synbot \) as a propositional variable. Thus, a propositional interpretation must now provide a value for \( \synbot \).
 
-  Formula valuations are thus defined as follows:
+  Formula denotations are thus defined as follows:
   \begin{empheq}[left={\Bracks{\varphi}_I} \coloneqq \empheqlbrace]{align}
     &I(\synbot),                             &&\varphi = \synbot,      \label{eq:def:minimal_propositional_semantics/bot} \\
     &\Bracks{\psi}_I \rightarrow I(\synbot), &&\varphi = \synneg \psi, \label{eq:def:minimal_propositional_semantics/neg} \\
@@ -974,27 +1039,6 @@ There are different approaches to formalizing the syntax of propositional logic.
   \end{equation*}
 \end{proof}
 
-\begin{lemma}\label{thm:propositional_semantic_lem_lemma}
-  Assuming \hyperref[def:truth_value_algebra/degenerate]{non-degenerate semantics}, for any \hyperref[def:propositional_interpretation]{propositional interpretation} \( I \) and any formula \( \varphi \), from \( I \vDash \varphi \) it follows that \( I \nvDash \synneg \varphi \).
-
-  The converse --- that \( I \nvDash \varphi \) implies \( I \vDash \synneg \varphi \) --- holds in \hyperref[def:truth_value_algebra/classical]{classical semantics}.
-\end{lemma}
-\begin{proof}
-  If \( I \vDash \varphi \), then
-  \begin{equation*}
-    \Bracks{\synneg \varphi}_I
-    \reloset{\eqref{eq:def:propositional_denotation/neg}} =
-    \oline{\Bracks{\varphi}_I}
-    =
-    \oline{\semtop}
-    \reloset{\ref{thm:def:standard_boolean_functions/pseudocomplement}} =
-    \sembot,
-  \end{equation*}
-  hence \( I \nvDash \synneg \varphi \).
-
-  Conversely, if \( I \nvDash \varphi \), then \( \Bracks{\varphi}_I < \semtop \), but with more than two truth values we cannot automatically conclude that \( \Bracks{\varphi}_I = \sembot \) and hence \( \Bracks{\synneg \varphi}_I = \semtop \).
-\end{proof}
-
 \begin{theorem}[Law of the excluded middle]\label{thm:propositional_semantic_lem}
   Assuming \hyperref[def:truth_value_algebra/classical]{classical semantics}, a \hyperref[def:propositional_interpretation]{propositional interpretation} \( I \) must \hyperref[def:propositional_semantics/model]{satisfy} either a formula \( \varphi \) or its negation \( \synneg \varphi \).
 \end{theorem}
@@ -1004,9 +1048,9 @@ There are different approaches to formalizing the syntax of propositional logic.
   \item This principle can be stated in the object language as a \hyperref[def:tautology]{tautological formula} --- see \eqref{eq:thm:classical_tautologies/lem}.
 \end{comments}
 \begin{proof}
-  If \( I \nvDash \varphi \), \cref{thm:propositional_semantic_lem_lemma} implies that \( I \vDash \synneg \varphi \).
+  If \( I \nvDash \varphi \), \cref{thm:propositional_denotation_characterization/negation} implies that \( I \vDash \synneg \varphi \).
 
-  Otherwise, if \( I \nvDash \synneg \varphi \), \cref{thm:propositional_semantic_lem_lemma} implies that \( I \vDash \synneg \synneg \varphi \), and \fullref{thm:propositional_semantic_dne} implies that \( I \vDash \varphi \).
+  Otherwise, if \( I \nvDash \synneg \varphi \), \cref{thm:propositional_denotation_characterization/negation} implies that \( I \vDash \synneg \synneg \varphi \), and \fullref{thm:propositional_semantic_dne} implies that \( I \vDash \varphi \).
 \end{proof}
 
 \begin{proposition}\label{thm:classical_tautologies}
