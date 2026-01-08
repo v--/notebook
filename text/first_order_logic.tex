@@ -4,7 +4,7 @@ First-order logic is a particularly convenient form of \hyperref[con:predicate_l
 
 We give here the following definition, and then dedicate several sections to explaining it:
 \begin{definition}\label{def:first_order_logic}\mimprovised
-  We call \term[ru=логика первого порядка (\cite[83]{Герасимов2014Вычислимость}), en=first-order logic (\cite[58]{VanDalen2004LogicAndStructure})]{first-order logic} the \hyperref[def:general_logic]{general logic} specified by the \hyperref[def:fol_institution]{first-order institutions} and the corresponding \hyperref[def:fol_natural_deduction_systems]{\hyperref[def:truth_value_algebra/classical]{classical} natural deduction system}.
+  We call \term[ru=логика первого порядка (\cite[83]{Герасимов2014Вычислимость}), en=first-order logic (\cite[58]{VanDalen2004LogicAndStructure})]{first-order logic} the \hyperref[def:general_logic]{general logic} specified by the \hyperref[def:fol_institution]{first-order institutions} (with \hyperref[def:minimal_propositional_denotation]{minimal}, \hyperref[def:truth_value_algebra/intuitionistic]{intuitionistic} or \hyperref[def:truth_value_algebra/classical]{classical} semantics) and the corresponding \hyperref[def:fol_natural_deduction_systems]{natural deduction systems}.
 \end{definition}
 \begin{comments}
   \item The soundness requirement in general logics from \cref{def:general_logic} is satisfied due to \fullref{thm:first_order_natural_deduction_soundness}.
@@ -89,6 +89,13 @@ We give here the following definition, and then dedicate several sections to exp
   \item Signature morphisms will be used to define institutions in \cref{def:fol_institution}. We first need to construct the corresponding sentences and translations.
 \end{comments}
 
+\begin{definition}\label{def:fol_signature_extension}\mcite[def. 2.6.1]{Hinman2005Logic}
+  We say that the \hyperref[def:fol_signature]{first-order signature} \( \Sigma^+ \) is an \term{extension} of \( \Sigma \) if every function or predicate symbol in \( \Sigma \) is also in \( \Sigma^+ \) and has the same arity and notation.
+\end{definition}
+\begin{comments}
+  \item Every signature extension induces a \hyperref[def:fol_signature_category/morphisms]{signature morphism}.
+\end{comments}
+
 \paragraph{First-order terms}
 
 \begin{definition}\label{def:fol_term}\mimprovised
@@ -149,8 +156,6 @@ We give here the following definition, and then dedicate several sections to exp
       I(f)\parens[\big]{ \Bracks{\sigma_1}_\mscrX^v, \ldots, \Bracks{\sigma_n}_\mscrX^v }, &\tau = f(\sigma_1, \ldots, \sigma_n)
     \end{cases}
   \end{equation*}
-
-  Furthermore, we have defined signature morphisms in \cref{def:fol_signature_category/morphisms} so that symbols using different notation can be exchanged.
 \end{remark}
 
 \begin{proposition}\label{thm:fol_term_grammar}
@@ -164,7 +169,7 @@ We give here the following definition, and then dedicate several sections to exp
   \end{thmenum}
 \end{proposition}
 \begin{proof}
-  The proof is similar to \cref{thm:propositional_formula_grammar}.
+  We can prove the proposition similarly to \cref{thm:propositional_formula_grammar}.
 \end{proof}
 
 \begin{definition}\label{def:fol_subterm}\mimprovised
@@ -215,7 +220,7 @@ We give here the following definition, and then dedicate several sections to exp
   \end{equation*}
 \end{algorithm}
 \begin{comments}
-  \item As discussed in \cref{rem:fol_application_notation}, we allow exchanging prefix and infix symbols.
+  \item As discussed in \cref{rem:fol_application_notation}, we allow translation to change the notation of symbols.
   \item This algorithm can be found as \identifier{math.logic.signature_translation.translate_term} in \cite{notebook:code}.
 \end{comments}
 
@@ -264,7 +269,7 @@ We give here the following definition, and then dedicate several sections to exp
   \end{thmenum}
 \end{proposition}
 \begin{proof}
-  The proof is more complicated, but similar to \cref{thm:propositional_formula_grammar}.
+  The proof is more complicated, but similar to that of \cref{thm:propositional_formula_grammar}.
 \end{proof}
 
 \begin{remark}\label{rem:fol_formula_conventions}
@@ -299,7 +304,7 @@ We give here the following definition, and then dedicate several sections to exp
       \set{ \varphi },                                                        &\varphi \in \op*{Atom}_\Sigma, \\
       \set{ \varphi } \bigcup \op*{Subform}(\psi),                            &\varphi = \synneg \psi, \\
       \set{ \varphi } \bigcup \op*{Subform}(\psi) \cup \op*{Subform}(\theta), &\varphi = \psi \syncirc \theta, {\syncirc} \in \op*{Conn}, \\
-      \set{ \varphi } \bigcup \op*{Subform}(\psi),                            &\varphi = \quantifier Q x \psi, Q \in \op*{Quant}.
+      \set{ \varphi } \bigcup \op*{Subform}(\psi),                            &\varphi = \quantifier Q x \psi, Q \in \op*{Quant.}
     \end{cases}
   \end{equation*}
 
@@ -411,30 +416,83 @@ We give here the following definition, and then dedicate several sections to exp
 
 \begin{definition}\label{def:closed_fol_formula}\mcite[def. 2.3.8]{VanDalen2004LogicAndStructure}
   We say that a \hyperref[def:fol_formula]{first-order formula} is \term[ru=замкнутая формула (\cite[61]{КолмогоровДрагалин2006Логика})]{closed} if it has no \hyperref[def:fol_variable_freeness]{free variables}. Closed formulas are also called \term[ru=предложения (\cite[61]{КолмогоровДрагалин2006Логика})]{sentences}.
-
-  In fact, \enquote{sentence} is a more general placeholder word used in many definitions in \cref{sec:logical_consequence}. For the reasons outlined in \cref{rem:implicit_quantification_and_deduction}, we will only consider closed formulas for the sentence functor when defining an \hyperref[def:institution]{institution} in \cref{def:fol_institution/sentences}. Furthermore, we will be explicit about when we want to work with \hyperref[def:fol_quantifier_closure]{universal closures} (see e.g. the theory of semirings in \cref{def:semiring/theory}), and will mostly avoid relying on \hyperref[con:implicit_universal_quantification]{implicit universal quantification}.
 \end{definition}
+\begin{comments}
+  \item In fact, \enquote{sentence} is a more general placeholder word used in many definitions in \cref{sec:logical_consequence}. As discussed in \cref{rem:implicit_quantification_and_deduction}, allowing arbitrary formulas breaks some important results like \fullref{thm:fol_semantic_deduction_theorem}, so we will we will only consider closed formulas for the sentence functor when defining an \hyperref[def:institution]{institution} in \cref{def:fol_institution/sentences}.
 
-\paragraph{Generalized equivalence relations}
-
-\begin{definition}\label{def:generalized_equivalence_relation}
-\end{definition}
+  There will be cases like the binary relation axioms in \cref{def:binary_relation} where we will adapt non-closed formulas using \hyperref[def:fol_implicit_universal_quantification]{implicit universal quantification}, but we will use this convention sparingly.
+\end{comments}
 
 \paragraph{First-order semantics}
 
+\begin{definition}\label{def:intuitionistic_equivalence_relation}\mimprovised
+  We will generalize \hyperref[def:equivalence_relation]{equivalence relations} to an arbitrary \hyperref[def:truth_value_algebra]{truth value algebra} \( \BbbT \).
+
+  Consider the function \( {\semeq}: A^2 \to \BbbT \) on some set \( A \). We will call \( {\semeq} \) an \term{intuitionistic equivalence relation} if it satisfies the following conditions:
+  \begin{thmenum}
+    \thmitem{def:intuitionistic_equivalence_relation/reflexivity} We have \( (a \semeq a) = \semtop \) for every element \( a \) of \( A \).
+    \thmitem{def:intuitionistic_equivalence_relation/symmetry} We have \( (a \semeq b) = (b \semeq a) \) for all \( a \) and \( b \) in \( A \).
+    \thmitem{def:intuitionistic_equivalence_relation/transitivity} We have \( (a \semeq b) \wedge (b \semeq c) \leq (a \semeq c) \) for all \( a \), \( b \) and \( c \) in \( A \).
+  \end{thmenum}
+\end{definition}
+\begin{comments}
+  \item This definition is based on \tcite{#1, where #2}[def. 13.6.2]{TroelstraVanDalen1988ConstructivismVol2} introduce \enquote{global \( \BbbT \)-sets} for dealing with intuitionistic semantics for predicate logic.
+\end{comments}
+
+\begin{definition}\label{def:kronecker_delta}\mimprovised
+  We define the \term[ru=дельта-функция Кронекера (\cite[45]{БарановСтечкин2004ЭкстремальнаяКомбинаторика}), en=Kronecker delta function (\cite[16]{Hall1986CombinatorialTheory})]{Kronecker delta function} on a \hyperref[def:semiring]{semiring} \( R \) as
+  \begin{equation}\label{eq:def:kronecker_delta}
+    \delta_{i,j} \coloneqq \begin{cases}
+      1_R, &i = j, \\
+      0_R, &i \neq j.
+    \end{cases}
+  \end{equation}
+
+  It is also traditionally called the \term[bg=символ на Кронекер (\cite[26]{Боянов2008ЧислениМетоди}), ru=символ Кронекера (\cite[461]{Тыртышников2007ЛинейнаяАлгебра}), en=Kronecker delta symbol (\cite[33]{Knuth1997ArtVol1}); Kronecker symbol (\cite[213]{Bourbaki1998Algebra1to3})]{Kronecker delta symbol}.
+
+  The definition naturally extends to a \hyperref[con:truth_value_algebra]{truth value algebra}, where it becomes
+  \begin{equation}\label{eq:def:kronecker_delta/truth}
+    \delta_{i,j} = \begin{cases}
+      \semtop, &i = j, \\
+      \sembot, &i \neq j.
+    \end{cases}
+  \end{equation}
+\end{definition}
+\begin{comments}
+  \item We generalize the \enquote{Kronecker symbol} from \cite[213]{Bourbaki1998Algebra1to3} from rings to semirings, so that we are able to encompass truth value algebras. We use the latter as canonical \hyperref[def:intuitionistic_equivalence_relation]{intuitionistic equivalence relations} when defining denotations for equality in \hyperref[def:fol_structure]{first-order structures}.
+\end{comments}
+
 \begin{definition}\label{def:fol_structure}\mimprovised
-  Fix a \hyperref[def:truth_value_algebra]{truth value algebra} \( \BbbT \). A \term[ru=структура (\cite[73]{ШеньВерещагин2017ЯзыкиИИсчисления})]{structure} \( \mscrX = (X, I) \) over the \hyperref[def:fol_signature]{first-order signature} \( \Sigma \) consists of the following:
+  Fix a complete \hyperref[def:truth_value_algebra]{truth value algebra} \( \BbbT \). A \( \BbbT \)-valued \term[en=structure (\cite[def. 2.1.15]{Hinman2005Logic})]{structure} \( \mscrX = (X, I) \) over the \hyperref[def:fol_signature]{first-order signature} \( \Sigma \) consists of the following:
   \begin{thmenum}
     \thmitem{def:fol_structure/universe} A \hi{nonempty} set \( X \), called a \term[en=universe (\cite[def. 2.1.15]{Hinman2005Logic})]{universe}.
-    \thmitem{def:fol_structure/interpretation} A map \( I \), called an \term{interpretation}, that sends each \( n \)-ary function symbol to a function \( X^n \to X \) and every \( n \)-ary predicate to a function \( X^n \to \BbbT \).
+    \thmitem{def:fol_structure/interpretation} A map \( I \), called an \term{interpretation}, that sends each \( n \)-ary function symbol to a function \( X^n \to X \) and every \( n \)-ary predicate to a function \( X^n \to \BbbT \), and \( \syneq \) to an \hyperref[def:intuitionistic_equivalence_relation]{intuitionistic equivalence relation} \( {\semeq} \) on \( X \).
+
+    We require the following coherence conditions for every \( n \)-ary functional symbol \( f \) and every \( n \)-ary predicate symbol \( p \):
+    \begin{align}
+      &(x_1 \semeq y_1) \wedge \cdots \wedge (x_n \semeq y_n) \leq I(f)(x_1, \ldots, x_n) \semeq I(f)(y_1, \ldots, y_n), \label{eq:def:fol_structure/interpretation/function_equality} \\
+      &(x_1 \semeq y_1) \wedge \cdots \wedge (x_n \semeq y_n) \wedge I(p)(x_1, \ldots, x_n) \leq I(p)(y_1, \ldots, y_n). \label{eq:def:fol_structure/interpretation/predicate_equality}
+    \end{align}
+
+    By \term{standard equality}, we will mean that \( {\semeq} \) is metatheoretical equality; then \( {\semeq} \) is \hyperref[def:kronecker_delta]{Kroneker's \( \delta \)-function}.
   \end{thmenum}
+
+  We will refer to the structure itself as \term{intuitionistic} or \term{classical} depending on \( \BbbT \). We presuppose that equality is standard in classical structures.
+
+  Unless explicitly noted otherwise, all structures we consider simultaneously will have the same underlying truth value algebra.
 \end{definition}
 \begin{comments}
   \item It is important the universe is nonempty; see \cref{rem:higher_order_logic_empty_universe} for a broader discussion.
 
   \item In accordance with \cref{rem:cardinality_auxiliary_terminology}, we use cardinality-related terminology like \enquote{finite} and \enquote{countably infinite} for the structure itself when we mean the cardinality of the universe.
 
+  \item This definition is based on \bycite[711]{TroelstraVanDalen1988ConstructivismVol2}, where the authors introduce \enquote{global \( \BbbT \)-structures} for dealing with intuitionistic semantics for predicate logic. For the classical case, a similar definition is given in \bycite[def. 2.2.3]{Герасимов2014Вычислимость}.
+
+  \item We prefer the infix notation \( x \semeq y \) to the prefix notation \( I(\syneq)(x, y) \). For disambiguation, we may add a subscript to \( \semeq \), .e.g \( \semeq_\mscrX \).
+
   \item Both \enquote{universe} and \enquote{interpretation}, as well other related terms, are used inconsistently in the literature. See \cref{rem:model_theory_structure_terminology}.
+
+  \item \hyperref[con:minimal_logic]{Minimal logic} also requires a structure to interpret the falsum \( \synbot \); see \cref{def:minimal_fol_denotation}.
 \end{comments}
 
 \begin{remark}\label{rem:fol_structure_notation}
@@ -475,33 +533,8 @@ We give here the following definition, and then dedicate several sections to exp
   \item \incite{Andrews2002Logic} introduces no term for modified assignments, and neither do \cite[rem. 2.2.17]{Hinman2005Logic} or \cite[def. 2.2.9]{Герасимов2014Вычислимость}.
 \end{comments}
 
-\begin{definition}\label{def:kronecker_delta}\mimprovised
-  We define the \term[ru=дельта-функция Кронекера (\cite[45]{БарановСтечкин2004ЭкстремальнаяКомбинаторика}), en=Kronecker delta function (\cite[16]{Hall1986CombinatorialTheory})]{Kronecker delta function} on a \hyperref[def:semiring]{semiring} \( R \) as
-  \begin{equation}\label{eq:def:kronecker_delta}
-    \delta_{i,j} \coloneqq \begin{cases}
-      1_R, &i = j, \\
-      0_R, &i \neq j.
-    \end{cases}
-  \end{equation}
-
-  It is also traditionally called the \term[bg=символ на Кронекер (\cite[26]{Боянов2008ЧислениМетоди}), ru=символ Кронекера (\cite[461]{Тыртышников2007ЛинейнаяАлгебра}), en=Kronecker delta symbol (\cite[33]{Knuth1997ArtVol1}); Kronecker symbol (\cite[213]{Bourbaki1998Algebra1to3})]{Kronecker delta symbol}.
-
-  The definition naturally extends to a \hyperref[con:truth_value_algebra]{truth value algebra}, where it becomes
-  \begin{equation}\label{eq:def:kronecker_delta/truth}
-    \delta_{i,j} = \begin{cases}
-      T, &i = j, \\
-      F, &i \neq j.
-    \end{cases}
-  \end{equation}
-\end{definition}
-\begin{comments}
-  \item We generalize the \enquote{Kronecker symbol} from \cite[213]{Bourbaki1998Algebra1to3} from rings to semirings, so that we are able to encompass truth value algebras. We use the latter when defining denotations for equality in \cref{def:fol_denotation} and \cref{def:hol_term_denotation}.
-\end{comments}
-
 \begin{definition}\label{def:fol_denotation}\mimprovised
-  For the reasons outlined in \cref{rem:intuitionistic_first_order_semantics}, we will be working over the \hyperref[def:truth_value_algebra/classical]{classical truth value algebra} \( \BbbT = \set{ T, F } \).
-
-  Let \( \mscrX = (X, I) \) be a \hyperref[def:fol_structure]{first-order structure} over \( \Sigma \), and let \( v: \op*{Var} \to X \) be a \hyperref[def:fol_variable_assignment]{variable assignment}.
+  Fix a complete \hyperref[def:truth_value_algebra/classical]{truth value algebra} \( \BbbT \). Let \( \mscrX = (X, I) \) be a \( \BbbT \)-valued \hyperref[def:fol_structure]{first-order structure} over \( \Sigma \), and let \( v: \op*{Var} \to X \) be a \hyperref[def:fol_variable_assignment]{variable assignment}.
 
   \begin{thmenum}
     \thmitem{def:fol_denotation/terms} We define the \term[ru=значение (терма) (\cite[def. 2.2.9]{Герасимов2014Вычислимость}), en=denotation (\cite[91]{Hinman2005Logic})]{denotation} \( \Bracks{\tau}_\mscrX^v \) of a \hyperref[def:fol_term]{first-order term} \( \tau \) as follows:
@@ -525,30 +558,28 @@ We give here the following definition, and then dedicate several sections to exp
 
     \thmitem{def:fol_denotation/formulas} We define the \term[ru=истинностное значение (формулы) (\cite[def. 2.2.10]{Герасимов2014Вычислимость}), en=denotation (\cite[91]{Hinman2005Logic})]{denotation} \( \Bracks{\varphi}_\mscrX^v \) of a \hyperref[def:fol_formula]{first-order formula} \( \varphi \) as follows:
     \begin{empheq}[left={\Bracks{\varphi}_\mscrX^v} \coloneqq \empheqlbrace]{align}
-      &T,                                                                               &&\varphi = \syntop,                   \label{eq:def:fol_denotation/formulas/top} \\
-      &F,                                                                               &&\varphi = \synbot,                   \label{eq:def:fol_denotation/formulas/bot} \\
+      &\semtop,                                                                         &&\varphi = \syntop,                   \label{eq:def:fol_denotation/formulas/top} \\
+      &\sembot,                                                                         &&\varphi = \synbot,                   \label{eq:def:fol_denotation/formulas/bot} \\
       &\oline{\Bracks{\psi}_\mscrX^v},                                                  &&\varphi = \synneg \psi,              \label{eq:def:fol_denotation/formulas/neg} \\
       &\Bracks{\psi}_\mscrX^v \bincirc \Bracks{\theta}_\mscrX^v,                        &&\varphi = \psi \syncirc \theta,      \label{eq:def:fol_denotation/formulas/conn} \\
-      &\delta_\mscrX\parens[\big]{ \Bracks{N}_\mscrX^v, \Bracks{K}_\mscrX^v },          &&\varphi = (N \syneq K),              \label{eq:def:fol_denotation/formulas/eq} \\
-      &I(p)\parens[\big]{ \Bracks{\psi_1}_\mscrX^v, \ldots, \Bracks{\psi_n}_\mscrX^v }, &&\varphi = p(\phi_1, \ldots, \phi_n). \label{eq:def:fol_denotation/formulas/pred} \\
+      &\Bracks{N}_\mscrX^v \semeq_\mscrX \Bracks{K}_\mscrX^v,                           &&\varphi = (N \syneq K),              \label{eq:def:fol_denotation/formulas/eq} \\
+      &I(p)\parens[\big]{ \Bracks{\tau_1}_\mscrX^v, \ldots, \Bracks{\tau_n}_\mscrX^v }, &&\varphi = p(\tau_1, \ldots, \tau_n). \label{eq:def:fol_denotation/formulas/pred} \\
       &\bigwedge\set[\big]{ \Bracks{\psi}_\mscrX^{v_{x \mapsto a}} \given* a \in X },   &&\varphi = \qforall x \psi,           \label{eq:def:fol_denotation/formulas/forall} \\
       &\bigvee\set[\big]{ \Bracks{\psi}_\mscrX^{v_{x \mapsto a}} \given* a \in X },     &&\varphi = \qexists x \psi,           \label{eq:def:fol_denotation/formulas/exists}
     \end{empheq}
 
     Most of the cases above are simply the familiar propositional denotation rules from \cref{def:propositional_denotation}.
     \begin{itemize}
-      \item In \eqref{eq:def:fol_denotation/formulas/eq}, \( \delta_\mscrX \) is the \hyperref[def:kronecker_delta]{Kronecker delta function} (written using prefix notation).
+      \item In \eqref{eq:def:fol_denotation/formulas/eq}, \( \approx_\mscrX \) is the \( \BbbT \)-valued interpretation of formal equality in \( \mscrX \).
 
       \item In \eqref{eq:def:fol_denotation/formulas/pred}, we utilize predicate functions from the structure's interpretation.
 
-      \item The cases \eqref{eq:def:fol_denotation/formulas/forall} and \eqref{eq:def:fol_denotation/formulas/exists} evaluates \( \psi \) using a \hyperref[def:hol_variable_assignment/modified]{modified assignment} parameterized by the elements of \( X_\sigma \).
+      \item The cases \eqref{eq:def:fol_denotation/formulas/forall} and \eqref{eq:def:fol_denotation/formulas/exists} evaluates \( \psi \) using a \hyperref[def:hol_variable_assignment/modified]{modified assignment} parameterized by the elements of \( X_\sigma \). We see here why it is important for \( \BbbT \) to be \hyperref[def:complete_lattice]{complete}.
     \end{itemize}
-
-    Even though we have restricted ourselves to the two-element truth value algebra, the denotations above (except for equality) work more generally. We will thus be explicit about when we rely on classical semantics.
 
     If the denotation \( \Bracks{\varphi}_\mscrX^v \) does not depend on \( v \), we use the simpler notation \( \Bracks{\varphi}_\mscrX \). Unlike for terms, this can happen even if \( \varphi \) is not a \hyperref[def:closed_fol_formula]{closed formula} --- see \cref{rem:implicit_quantification_and_deduction}.
 
-    \thmitem{def:fol_denotation/formulas_parametrized} Just as we have associated a \hyperref[con:parametrized_denotation]{parametrized denotation} with every term, if \( \op*{Free}(\varphi) \subseteq \set{ x_1, \ldots, x_n } \), we can define the function
+    \thmitem{def:fol_denotation/formulas_parametrized} In the same way we have associated a \hyperref[con:parametrized_denotation]{parametrized denotation} with every term, if \( \op*{Free}(\varphi) \subseteq \set{ x_1, \ldots, x_n } \), we can define the function
     \begin{equation*}
       \begin{aligned}
         &\Bracks{\varphi}_\mscrX: X^n \to \BbbT, \\
@@ -562,6 +593,8 @@ We give here the following definition, and then dedicate several sections to exp
 \end{definition}
 \begin{comments}
   \item The term \enquote{denotation} is inspired by Russell's theory of denotations discussed in \cref{con:denotation}. It is used inconsistently in the literature. See \cref{rem:model_theory_structure_terminology}.
+
+  \item A modification of the first-order denotation is needed for \hyperref[con:minimal_logic]{minimal logic} --- see \cref{def:minimal_fol_denotation}.
 
   \item First-order denotations are implemented as \identifier{evaluate_term} and \identifier{evaluate_formula} in the module \identifier{math.logic.structure} in \cite{notebook:code}.
 \end{comments}
@@ -578,6 +611,7 @@ We give here the following definition, and then dedicate several sections to exp
       \midrule
       \cite[ch. 2]{Hinman2005Logic}                               & Structure          & Universe    & ---              & Assignment & Denotation     \\
       \cite[ch. 2]{VanDalen2004LogicAndStructure}                 & Structure          & Universe    & ---              & ---        & Interpretation \\
+      \cite[\S 13.6.1]{TroelstraVanDalen1988ConstructivismVol2}   & Structure          & ---         & ---              & ---        & ---            \\
       \cite[84]{Kleene2002Logic}                                  & ---                & Domain      & Assignment       &            & ---            \\
       \cite[115]{Andrews2002Logic}                                & Interpretation     & Domain      & Assignment       &            & Value          \\
       \cite[70, 72, 73]{КолмогоровДрагалин2006Логика}             & Интерпретация      & Носитель    & Интерпретация    & ---        & Значение       \\
@@ -595,27 +629,40 @@ We give here the following definition, and then dedicate several sections to exp
     \caption{A terminological comparison for \hyperref[def:fol_structure]{first-order structures}.}\label{tab:rem:model_theory_structure_terminology}
   \end{table}
 
-  As it often happens, the terminology is inconsistent across authors. As an example, in \cref{tab:rem:model_theory_structure_terminology} we list some of the terminology for\hyperref[def:fol_structure]{first-order structures} used by different authors. Their entire formulations are so fundamentally different that making an explicit comparison beyond the essential result is not worth the effort. This is unlike most cases outside logic, where the differences are indeed terminological (see e.g. \cref{rem:sigma_algebra_terminology} for algebras of subsets or \cref{rem:graph_walk_terminology} for graph walks).
+  As it often happens, the terminology is inconsistent across authors. As an example, in \cref{tab:rem:model_theory_structure_terminology} we list some of the terminology for \hyperref[def:fol_structure]{first-order structures} used by different authors. Their entire formulations are so fundamentally different that making an explicit comparison beyond the essential result is not worth the effort. This is unlike most cases outside logic, where the differences are indeed terminological (see e.g. \cref{rem:sigma_algebra_terminology} for algebras of subsets or \cref{rem:graph_walk_terminology} for graph walks).
 
   For propositional logic, the comparison is somewhat simpler because there is only one concept involved --- that of a (classical) \hyperref[def:propositional_interpretation]{propositional interpretation}. It is called an \enquote{assignment} in \cite[50]{Andrews2002Logic}, an \enquote{atomic truth assignment} in \cite[def. 1.1.6]{Hinman2005Logic}, a \enquote{denotation} in \cite[def. 1.2.1]{VanDalen2004LogicAndStructure}, \cite[\S 2.5.6]{Mimram2020ProgramEqualsProof} and \cite[\S 3.2]{CitkinMuravitsky2022ConsequenceRelations}, and an \enquote{interpretation} (\enquote{интерпретация}) in \cite[def. 1.1.10]{Герасимов2014Вычислимость}.
 
   For higher-order logic, Henkin's original terminology from \cite[84]{Henkin1950CompletenessInTheoryOfTypes} seems to be respected by \cite[238]{Andrews2002Logic} and \cite[271]{Farmer2008STTVirtues}. We will slightly deviate from this in \fullref{sec:henkin_semantics} in order to say consistent with our presentation of first-order logic.
 \end{remark}
 
-\begin{definition}\label{def:fol_homomorphism}\mcite[def. 3.3.1]{VanDalen2004LogicAndStructure}
-  Fix a \hyperref[def:first_order_signature]{first-order signature} \( \Sigma \). We define a \term{homomorphism} between the \hyperref[def:fol_structure]{structures} \( \mscrX = (X, I) \) and \( \mscrY = (Y, J) \) over \( \Sigma \) as a function \( h: X \to Y \) which satisfies the following conditions:
+\begin{definition}\label{def:minimal_fol_denotation}
+  Similarly to how we modified propositional denotations for \hyperref[con:minimal_logic]{minimal logic} in \cref{def:minimal_propositional_denotation}, we modify first-order denotations for formulas from \cref{def:fol_denotation/formulas}.
+
+  Fix a (complete) \hyperref[def:truth_value_algebra]{truth value algebra} \( \BbbT \). We need a \hyperref[def:fol_structure]{first-order structure} \( \mscrX = (X, I) \) to also interpret the falsum \( \synbot \) as a constant from \( \BbbT \) (not necessarily \( \sembot \)).
+
+  Then we modify denotations as follows:
+  \begin{empheq}[left={\Bracks{\varphi}_I} \coloneqq \empheqlbrace]{align}
+    &I(\synbot),                             &&\varphi = \synbot,      \label{eq:def:minimal_fol_denotation/bot} \\
+    &\Bracks{\psi}_I \rightarrow I(\synbot), &&\varphi = \synneg \psi, \label{eq:def:minimal_fol_denotation/neg} \\
+    &\vdots,                                 && \notag
+  \end{empheq}
+\end{definition}
+
+\begin{definition}\label{def:fol_homomorphism}\mimprovised
+  Fix a complete \hyperref[def:truth_value_algebra]{truth value algebra} \( \BbbT \) and a \hyperref[def:fol_signature]{first-order signature} \( \Sigma \). We define a \term[en=homomorphism (\cite[def. 3.3.1]{VanDalen2004LogicAndStructure})]{homomorphism} between the \( \BbbT \)-valued \hyperref[def:fol_structure]{structures} \( \mscrX = (X, I) \) and \( \mscrY = (Y, J) \) over \( \Sigma \) as a function \( h: X \to Y \) which satisfies the following conditions:
   \begin{thmenum}
-    \thmitem{def:fol_homomorphism/functions} For every function symbol \( f \) of arity \( n \) over \( \Sigma \), we have
+    \thmitem{def:fol_homomorphism/functions} For every function symbol \( f \) of arity \( n \) over \( \Sigma \), we must have
     \begin{equation}\label{eq:def:fol_homomorphism/functions}
       h\parens[\big]{ I(f)(x_1, \ldots, x_n) } = J(f)\parens[\big]{ h(x_1), \ldots, h(x_n) }.
     \end{equation}
 
-    \thmitem{def:fol_homomorphism/predicates} For every predicate symbol \( p \) of arity \( n \) over \( \Sigma \), we have
+    \thmitem{def:fol_homomorphism/predicates} For every predicate symbol \( p \) of arity \( n \) over \( \Sigma \), and also for \( {\syneq} \) (regarded as a binary predicate), we must have
     \begin{equation}\label{eq:def:fol_homomorphism/predicates}
       I(p)\parens[\big]{ x_1, \ldots, x_n } \leq J(p)\parens[\big]{ h(x_1), \ldots, h(x_n) }.
     \end{equation}
 
-    If equality holds, we say that the homomorphism is \term{strong}.
+    If the converse inequality in \eqref{eq:def:fol_homomorphism/predicates} holds for all predicates (including \( {\syneq} \)), we say that the homomorphism is \term{strong}.
   \end{thmenum}
 \end{definition}
 \begin{comments}
@@ -623,24 +670,29 @@ We give here the following definition, and then dedicate several sections to exp
 
   \item \Cref{thm:first_order_homomorphism_as_substructure} provides a condition equivalent to \cref{def:fol_homomorphism/functions}, while for strong homomorphism \cref{thm:def:fol_function_respect/atomic} packs the two conditions into one.
 
+  \item The definition is based on \bycite[def. 3.3.1]{VanDalen2004LogicAndStructure}, with adjustments intuitionistic equality based on \bycite[711]{TroelstraVanDalen1988ConstructivismVol2}.
+
   \item The inequality for predicates leads precisely to the desired notion of homomorphism for \hyperref[def:partially_ordered_set]{partially ordered sets} and \hyperref[def:directed_graph]{directed graphs}. The adjective \enquote{strong} is based on Knauer's \enquote{strong graph homomorphisms} defined in \cite[def. 1.4.3]{Knauer2019AlgebraicGraphTheory}.
 
   \incite[def. 3.3.1]{VanDalen2004LogicAndStructure} and \incite[49]{Мальцев1970АлгебраическиеСистемы} define homomorphisms like we do, and neither discuss strong homomorphisms. \incite[def. 2.3.26(i)]{Hinman2005Logic} considers strong homomorphisms by default (and simply calls them \enquote{homomorphisms}), while later in \cite[rem. 2.3.27]{Hinman2005Logic} he mentions that our weaker homomorphisms are also useful and calls them \enquote{positive homomorphisms}.
+
+  \item For minimal logic, with the denotations modified as per \cref{def:minimal_fol_denotation}, we require also want \eqref{eq:def:fol_homomorphism/predicates} to hold for the falsum \( \synbot \).
 \end{comments}
 
 \begin{definition}\label{def:fol_structure_expansion}\mcite[def. 2.6.3]{Hinman2005Logic}
   Let \( \Sigma^+ \) be an \hyperref[def:fol_signature_extension]{extension} of the \hyperref[def:fol_signature]{first-order signature} \( \Sigma \).
 
-  We say that the \hyperref[def:fol_structure]{structure} \( \mscrX^+ = (X^+, I^+) \) over \( \Sigma^+ \) is an \term{expansion} of \( \mscrX = (X, I) \) over \( \Sigma^+ \) if \( X = X^+ \) and \( I^+(f) = I(f) \) for every function or predicate symbol \( f \) in \( \Sigma \).
+  We say that the \hyperref[def:fol_structure]{structure} \( \mscrX^+ = (X^+, I^+) \) over \( \Sigma^+ \) is an \term{expansion} of \( \mscrX = (X, I) \) over \( \Sigma^+ \) if \( X = X^+ \) and if the interpretations of all symbols in \( \Sigma \) (and also of \( \syneq \) and possibly \( \synbot \)) coincide.
 
   In this case we call \( \mscrX^+ \) a \term{reduct} of \( \mscrX \).
 \end{definition}
 \begin{comments}
   \item Reducts are implemented in the module \identifier{math.logic.structure.reduct} in \cite{notebook:code}.
+  \item The definition is based on \bycite[def. 2.6.3]{Hinman2005Logic}, with small adjustments made for the intuitionistic treatment of formal equality.
 \end{comments}
 
 \begin{definition}\label{def:fol_reduct_along_morphism}\mcite[example 5]{MossakowskiKrumnackMaibaum2015DerivedSignatureMorphisms}
-  For every \hyperref[def:fol_signature_category/morphisms]{signature morphism} \( t: \Sigma \to \Theta \) and every \hyperref[def:fol_structure]{structure} \( \mscrY = (Y, J) \) over \( \Theta \), we define the \term{reduct} of \( \mscrY \) along \( t \) as the structure \( \red_t(\mscrY) \coloneqq (Y, J_t) \), where, for every (function or predicate) symbol \( f \) in \( \Sigma \),
+  For every \hyperref[def:fol_signature_category/morphisms]{signature morphism} \( t: \Sigma \to \Theta \) and every \hyperref[def:fol_structure]{structure} \( \mscrY = (Y, J) \) over \( \Theta \), we define the \term{reduct} of \( \mscrY \) along \( t \) as the structure \( \red_t(\mscrY) \coloneqq (Y, J_t) \), where, for every (function or predicate) symbol \( f \) in \( \Sigma \), and also for \( {\syneq} \) and possibly for \( \synbot \),
   \begin{equation}\label{eq:def:fol_reduct_along_morphism/interpretation}
     J_t(f) \coloneqq J(t(f)).
   \end{equation}
@@ -703,7 +755,7 @@ We give here the following definition, and then dedicate several sections to exp
 \end{proof}
 
 \begin{definition}\label{def:fol_institution}\mimprovised
-  Suppose that we are given a \hyperref[def:grothendieck_universe]{Grothendieck universe} \( \mscrU \), which is safe to assume to be the smallest suitable one as explained in \cref{def:large_and_small_sets}.
+  Suppose that we are given a \hyperref[def:grothendieck_universe]{Grothendieck universe} \( \mscrU \), which is safe to assume to be the smallest suitable one as explained in \cref{def:large_and_small_sets}. Fix also a complete \hyperref[def:truth_value_algebra]{truth value algebra} \( \BbbT \).
 
   We define an \hyperref[def:institution]{institution} based on \hyperref[def:fol_structure]{first-order structures} as follows:
   \begin{thmenum}
@@ -717,12 +769,16 @@ We give here the following definition, and then dedicate several sections to exp
 
     \thmitem{def:fol_institution/models} We define the \hyperref[def:institution/models]{model functor} as follows:
     \begin{thmenum}
-      \thmitem{def:fol_institution/models/obj} Let \( \ucat{Mod}(\Sigma) \) be the category of \( \mscrU \)-small \hyperref[def:fol_structure]{first-order structures} and \hyperref[def:fol_homomorphism]{their homomorphisms}.
+      \thmitem{def:fol_institution/models/obj} Let \( \ucat{Mod}(\Sigma) \) be the category of \( \mscrU \)-small \( \BbbT \)-valued \hyperref[def:fol_structure]{first-order structures} and \hyperref[def:fol_homomorphism]{their homomorphisms}.
+
+      For \hyperref[con:minimal_logic]{minimal logic}, we must also modify structures as per \cref{def:minimal_fol_denotation}.
 
       \thmitem{def:fol_institution/models/hom} For the signature translation \( s: \Sigma \to \Theta \), we define the \hyperref[def:fol_institution/models/hom]{model reduct functor} \( \ucat{Mod}(s): \ucat{Mod}(\Theta) \to \ucat{Mod}(\Sigma) \) via the operator \( \red_t \) from \cref{def:fol_reduct_along_morphism}.
     \end{thmenum}
 
-    \thmitem{def:fol_institution/satisfaction} Finally, let the \hyperref[def:institution/satisfaction]{satisfaction} relation \( \mscrX \vDash_{\Sigma} \varphi \) hold for \( \mscrX = (X, I) \) if and only if \( \Bracks{\varphi}_\mscrX = T \).
+    \thmitem{def:fol_institution/satisfaction} Finally, let the \hyperref[def:institution/satisfaction]{satisfaction} relation \( \mscrX \vDash_{\Sigma} \varphi \) hold for \( \mscrX = (X, I) \) if and only if \( \Bracks{\varphi}_\mscrX = \semtop \).
+
+    Here \( \Bracks{\varphi}_I \) is the denotation from \cref{def:fol_denotation/formulas}. For minimal logic, we will also need the modifications from \cref{def:minimal_fol_denotation}.
   \end{thmenum}
 \end{definition}
 \begin{comments}
@@ -743,30 +799,32 @@ We give here the following definition, and then dedicate several sections to exp
 \end{defproof}
 
 \begin{definition}\label{def:fol_semantics}\mimprovised
-  By the (\hyperref[def:truth_value_algebra/classical]{classical}) \enquote{\hyperref[con:syntax_semantics_duality]{semantics} of first-order logic} we mean the \hyperref[def:fol_institution]{first-order institutions} and all related notions like \hyperref[def:institution/models]{models}, \hyperref[def:institution/satisfaction]{satisfaction}, \hyperref[def:institutional_entailment]{semantic entailment} and \hyperref[def:semantic_equivalence]{semantic equivalence}.
+  Fix a complete \hyperref[def:truth_value_algebra]{truth value algebra} \( \BbbT \). By the \( \BbbT \)-valued \enquote{\hyperref[con:syntax_semantics_duality]{semantics} of first-order logic} we mean the \hyperref[def:fol_institution]{first-order institutions} and all related notions like \hyperref[def:institution/models]{models}, \hyperref[def:institution/satisfaction]{satisfaction}, \hyperref[def:institutional_entailment]{semantic entailment} and \hyperref[def:semantic_equivalence]{semantic equivalence}.
+
+  We will label the semantics \enquote{classical}, \enquote{intuitionistic}, etc., based on \( \BbbT \), with \enquote{minimal semantics} using the modified denotation from \cref{def:minimal_fol_denotation}.
 
   \begin{thmenum}
     \thmitem{def:fol_semantics/model} We use the terminology from \cref{def:institutional_satisfaction} regarding satisfaction and validity.
 
     However, as per \cref{rem:model_theory_structure_terminology}, unlike in general institutions, we will refer to structures as \enquote{models} only with respect to a theory.
 
-    We say that \( \mscrX \) is a \term[ru=модель (\cite[2.6.21]{Герасимов2014Вычислимость}), en=model (\cite[def. def.2.2.13(ii)]{Hinman2005Logic})]{model} \hi{of} the set of closed formulas \( \Gamma \) and write \( \mscrX \vDash \Gamma \) if and only if \( \Bracks{\varphi}_\mscrX = T \) for every (closed) formula \( \varphi \in \Gamma \).
+    We say that \( \mscrX \) is a \term[ru=модель (\cite[2.6.21]{Герасимов2014Вычислимость}), en=model (\cite[def. def.2.2.13(ii)]{Hinman2005Logic})]{model} \hi{of} the set of closed formulas \( \Gamma \) and write \( \mscrX \vDash \Gamma \) if and only if \( \Bracks{\varphi}_\mscrX = \semtop \) for every (closed) formula \( \varphi \in \Gamma \).
 
     We also say that \( \varphi \) is \term[en=valid (\cite[144]{VanDalen2004LogicAndStructure})]{valid} in \( \mscrX \).
 
-    It is possible to extend this relation to arbitrary formulas, not necessarily closed, by requiring \( \Bracks{\varphi}_\mscrX^v = T \) for every variable assignment \( v \) into \( \mscrX \). We call this convention \enquote{\hyperref[def:fol_implicit_universal_quantification]{implicit universal quantification}}, but only use it sparingly because, as explained in \cref{rem:implicit_quantification_and_deduction}, it breaks \fullref{thm:fol_semantic_deduction_theorem}.
+    It is possible to extend this relation to arbitrary formulas, not necessarily closed, by requiring \( \Bracks{\varphi}_\mscrX^v = \semtop \) for every variable assignment \( v \) into \( \mscrX \). We call this convention \enquote{\hyperref[def:fol_implicit_universal_quantification]{implicit universal quantification}}, but only use it sparingly because, as explained in \cref{rem:implicit_quantification_and_deduction}, it breaks \fullref{thm:fol_semantic_deduction_theorem}.
 
     \thmitem{def:fol_semantics/satisfaction} If \( \mscrX \) is a model of the closed formula \( \varphi \), we also say that \( \mscrX \) \term{satisfies} \( \varphi \), in accordance with the general terminology for institutions.
 
-    It is possible to generalize this relation to arbitrary formulas, not necessarily closed. We say that the variable assignment \( v \) \term[en=satisfies (\cite[def. 2.1.23(i)]{Hinman2005Logic})]{satisfies} the formula \( \varphi \) if \( \Bracks{\varphi}_\mscrX^v = \semtop \). Note that in this case the assignment \( v \) satisfies \( \varphi \), not the structure \( \mscrX \). This notion is not the same as implicit existential quantification for \( \mscrX \).
+    It is possible to generalize this notion to arbitrary formulas, not necessarily closed. We say that the variable assignment \( v \) \term[en=satisfies (\cite[def. 2.1.23(i)]{Hinman2005Logic})]{satisfies} the formula \( \varphi \) if \( \Bracks{\varphi}_\mscrX^v = \semtop \). Note that in this case the assignment \( v \) satisfies \( \varphi \), not the structure \( \mscrX \). This notion is not the same as implicit existential quantification for \( \mscrX \).
 
-    We say that \( \varphi \) is \term[ru=выполнимая (формула) (\cite[def. 2.4.1]{Герасимов2014Вычислимость}), en=satisfiable (formula) (\cite[71]{VanDalen2004LogicAndStructure})]{satisfiable} if at least one interpretation satisfies it.
+    We say that \( \varphi \) is \term[ru=выполнимая (формула) (\cite[def. 2.4.1]{Герасимов2014Вычислимость}), en=satisfiable (formula) (\cite[71]{VanDalen2004LogicAndStructure})]{satisfiable} in \( \mscrX \) if at least one assignment satisfies it.
 
     \thmitem{def:fol_semantics/tautology} We call the closed formula \( \varphi \) a \term[ru=тавтология (\cite[def. 2.4.1]{Герасимов2014Вычислимость}), en=tautology (\cite[97]{Hinman2005Logic})]{tautology} if \( \Bracks{\varphi}_\mscrX = \semtop \) for every interpretation \( \mscrX \), and a \term[ru=противоречивая формула (\cite[def. 2.4.1]{Герасимов2014Вычислимость})]{contradiction} if \( \Bracks{\varphi}_\mscrX < \semtop \) for every \( \mscrX \).
 
     This is consistent with \fullref{def:tautology}, where a tautology must be satisfied in every model (and a contradiction --- in no model).
 
-    \thmitem{def:fol_semantics/entailment} We use the terminology and notation from \cref{def:institutional_entailment} regarding entailment: \( \Gamma \vDash \varphi \) if and only if, whenever \( \mscrX \) satisfies \( \Gamma \), it also satisfies \( \varphi \).
+    \thmitem{def:fol_semantics/entailment} We use the terminology and notation from \cref{def:institutional_entailment} regarding entailment: \( \Gamma \vDash \varphi \) if and only if \( \mscrX \) satisfies \( \varphi \) whenever it satisfies \( \Gamma \).
   \end{thmenum}
 \end{definition}
 
@@ -781,7 +839,7 @@ We give here the following definition, and then dedicate several sections to exp
   \item This is one of several deduction theorems presented here --- see \cref{rem:deduction_theorem_list/fol_semantic}.
 \end{comments}
 \begin{proof}
-  Since the formulas are closed, we can prove the theorem analogously to \fullref{thm:propositional_semantic_deduction_theorem}.
+  Since the formulas are closed and do not depend on assignments, we can prove the theorem analogously to \fullref{thm:propositional_semantic_deduction_theorem}.
 \end{proof}
 
 \paragraph{Implicit and explicit quantification}
@@ -799,7 +857,7 @@ We give here the following definition, and then dedicate several sections to exp
 \end{definition}
 
 \begin{definition}\label{def:fol_universal_validity}\mcite[105]{Hinman2005Logic}
-  If, for some \hyperref[def:fol_formula]{first-order formula} \( \varphi \) and some \hyperref[def:fol_structure]{first-order structure} \( \mscrX \), the \hyperref[def:fol_denotation/formula]{denotation} \( \Bracks{ \varphi }_\mscrX^v \) equals \( T \) for any variable assignment \( v \) in \( \mscrX \), we say that \( \varphi \) is \term[ru=общезначимая (формула) (\cite[def. 2.4.1]{Герасимов2014Вычислимость})]{universally valid} in \( \mscrX \).
+  If, for some \hyperref[def:fol_formula]{first-order formula} \( \varphi \) and some \hyperref[def:fol_structure]{first-order structure} \( \mscrX \), the \hyperref[def:fol_denotation/formula]{denotation} \( \Bracks{ \varphi }_\mscrX^v \) equals \( \semtop \) for any variable assignment \( v \) in \( \mscrX \), we say that \( \varphi \) is \term[ru=общезначимая (формула) (\cite[def. 2.4.1]{Герасимов2014Вычислимость})]{universally valid} in \( \mscrX \).
 \end{definition}
 \begin{comments}
   \item \hyperref[def:closed_fol_formula]{Closed formulas} are universally valid, but the notion is more general --- see \cref{rem:implicit_quantification_and_deduction}.
@@ -818,27 +876,27 @@ We give here the following definition, and then dedicate several sections to exp
 
   Let \( \varphi \) be a formula and let \( x_1, \ldots, x_n \) be any ordering of its variables.
 
-  \SufficiencySubProof Suppose that \( \Bracks{ \varphi }_\mscrX^v = T \) for any assignment \( v \). Then
+  \SufficiencySubProof Suppose that \( \Bracks{ \varphi }_\mscrX^v = \semtop \) for any assignment \( v \). Then
   \begin{equation*}
     \Bracks{ \qforall {x_n} \varphi }_\mscrX^v
     \reloset {\eqref{eq:def:fol_denotation/formulas/forall}} =
     \bigwedge\set[\big]{ \Bracks{ \varphi }_\mscrX^{v_{x \mapsto a}} \given* a \in X }
     =
-    \bigwedge\set[\big]{ T \given* a \in X }
+    \bigwedge\set[\big]{ \semtop \given* a \in X }
     =
-    T.
+    \semtop.
   \end{equation*}
 
   Proceeding by induction, we conclude that
   \begin{equation*}
-    \Bracks{ \qforall {x_1} \ldots \qforall {x_n} \varphi }_\mscrX^v = T.
+    \Bracks{ \qforall {x_1} \ldots \qforall {x_n} \varphi }_\mscrX^v = \semtop.
   \end{equation*}
 
   Since \( v \) is arbitrary, we conclude that the universal closure of \( \varphi \) is valid in \( \mscrX \).
 
-  \NecessitySubProof Conversely, suppose that \( \Bracks{ \qforall {x_1} \ldots \qforall {x_n} \varphi }_\mscrX = T \).
+  \NecessitySubProof Conversely, suppose that \( \Bracks{ \qforall {x_1} \ldots \qforall {x_n} \varphi }_\mscrX = \semtop \).
 
-  Aiming at a contradiction, suppose that, for some assignment \( v_0 \), we have \( \Bracks{ \varphi }_\mscrX^{v_0} < T \). Then, for any assignment \( v \) in \( \mscrX \),
+  Aiming at a contradiction, suppose that, for some assignment \( v_0 \), we have \( \Bracks{ \varphi }_\mscrX^{v_0} < \semtop \). Then, for any assignment \( v \) in \( \mscrX \),
   \begin{equation*}
     \Bracks{ \qforall {x_n} \varphi }_\mscrX^v
     \reloset {\eqref{eq:def:fol_denotation/formulas/forall}} =
@@ -846,47 +904,13 @@ We give here the following definition, and then dedicate several sections to exp
     \leq
     \Bracks{ \varphi }_\mscrX^{v_0}
     <
-    T.
+    \semtop.
   \end{equation*}
 
-  By induction, we conclude that  \( \Bracks{ \qforall {x_1} \ldots \qforall {x_n} \varphi }_\mscrX^v < T \).
+  By induction, we conclude that  \( \Bracks{ \qforall {x_1} \ldots \qforall {x_n} \varphi }_\mscrX^v < \semtop \).
 
   The obtained contradiction shows that \( \varphi \) must be universally valid if its universal closure is.
 \end{proof}
-
-\begin{remark}\label{rem:intuitionistic_first_order_semantics}
-  It is tempting to extend \cref{def:fol_denotation} so that the denotation of a first-order formula takes its \hyperref[def:truth_value_algebra]{truth values} over arbitrary \hyperref[def:heyting_algebra]{Heyting algebras} rather than taking only \hyperref[def:boolean_value]{Boolean values}. The definition extends transparently, but has undesired consequences.
-
-  Fix a structure \( \mscrX = (X, I) \) and a variable assignment \( v: \op*{Var} \to X \). For any two terms \( \tau \) and \( \sigma \), the denotation of equality based on \hyperref[def:kronecker_delta]{Kronecker's \( \delta_\mscrX \) function} gives us
-  \begin{equation*}
-    \Bracks{\tau \syneq \sigma}_\mscrX^v
-    =
-    \delta_\mscrX(\Bracks{\tau}_\mscrX^v, \Bracks{\sigma}_\mscrX^v)
-    =
-    \begin{cases}
-      T, &\Bracks{\tau}_\mscrX^v = \Bracks{\sigma}_\mscrX^v \\
-      F, &\T{otherwise.}
-    \end{cases}
-  \end{equation*}
-
-  As shown in \cref{def:kronecker_delta}, in any Heyting algebra the complement of \( T \) is \( F \) and vice versa. Thus,
-  \begin{equation*}
-    \Bracks{\tau \syneq \sigma}_\mscrX^v = T \T{if and only if} \Bracks{\synneg (\tau \syneq \sigma)}_\mscrX^v = F.
-  \end{equation*}
-
-  Therefore, the following formula is \hyperref[def:fol_universal_validity]{universally valid}:
-  \begin{equation*}
-    (\tau \syneq \sigma) \synvee \synneg (\tau \syneq \sigma)
-  \end{equation*}
-
-  This is a particular instance of the classical tautology \eqref{eq:thm:classical_tautologies/lem}. The \hyperref[con:brouwer_heyting_kolmogorov_interpretation]{Brouwer-Heyting-Kolmogorov} interpretation suggests that either \( \tau \syneq \sigma \) or \( \tau \syneq \sigma \) should be universally valid, but neither is.
-
-  There is a more technical argument to be made. In the intuitionistic natural deduction system from \cref{def:fol_natural_deduction_systems}, the only equality rule introduction is \ref{inf:def:fol_natural_deduction_systems/equality/intro}, so, unless \( \tau \) coincides with \( \sigma \), a proof of the above must rely on discharging assumptions. A careful inspection shows that the intuitionistic rules \ref{inf:def:propositional_natural_deduction_systems/or/elim}, \ref{inf:def:propositional_natural_deduction_systems/imp/intro}, \ref{inf:def:propositional_natural_deduction_systems/iff/intro}, \ref{inf:def:fol_natural_deduction_systems/equality/intro} and \ref{inf:def:fol_natural_deduction_systems/eigenvariables/exists_elim} with dischargeable premises do not allow obtaining the desired proof tree. So, as defined, the natural deduction system is \hyperref[def:general_logic/completeness]{incomplete} with respect to our semantics.
-
-  This particular denotation is also discussed in \cite{MathSE:topological_semantics_for_first_order_logic}, where generalized equivalence relations are suggested for evaluating equality. \incite*{Scott1968IntuitionisticAnalysis} suggests a particular adaptation of \hyperref[def:truth_value_algebra/topological]{topological semantics} for first-order logic.
-
-  Since we are not generally interested in first-order intuitionistic semantics, we have restricted ourselves to classical logic.
-\end{remark}
 
 \begin{definition}\label{def:fol_implicit_universal_quantification}\mimprovised
   The concept of \hyperref[def:fol_universal_validity]{universal validity} allows us to extend the model relation from \cref{def:fol_semantics/model} to arbitrary \hyperref[def:fol_formula]{first-order formulas}.
@@ -1131,55 +1155,6 @@ We give here the following definition, and then dedicate several sections to exp
   \end{thmenum}
 \end{example}
 
-\paragraph{Definitional extensions}
-
-\begin{definition}\label{def:fol_signature_extension}\mcite[def. 2.6.1]{Hinman2005Logic}
-  We say that the \hyperref[def:fol_signature]{first-order signature} \( \Sigma^+ \) is an \term{extension} of \( \Sigma \) if every function or predicate symbol in \( \Sigma \) is also in \( \Sigma^+ \) and has the same arity and notation.
-\end{definition}
-\begin{comments}
-  \item Every signature extension induces a \hyperref[def:fol_signature_category/morphisms]{signature morphism}.
-\end{comments}
-
-\begin{definition}\label{def:fol_theory}\mimprovised
-  We restate here some definitions related to \hyperref[def:logical_theory]{logical theories}, adapted to \hyperref[def:first_order_logic]{first-order logic}.
-
-  First and foremost, a (syntactic or semantic) \term[ru=теория (\cite[def. 3.1.1]{Герасимов2014Вычислимость}), en=theory (\cite[def. 2.4.1]{Hinman2005Logic})]{theory} is, as in \cref{def:general_logic_theory}, a set of sentences closed under logical consequence. For any set of sentences \( \Gamma \), we denote its consequence closure by \( \op*{Th}(\Gamma) \).
-
-  \begin{thmenum}
-    \thmitem{def:fol_theory/morphism} As in \cref{def:entailment_system_theory/morphism}, we call the \hyperref[def:fol_signature_category/morphisms]{first-order signature morphism} \( t: \Sigma \to \Theta \) a \term{theory morphisms} from \( (\Sigma, \Gamma) \) to \( (\Theta, \Delta) \) if the translation via \fullref{alg:fol_formula_signature_translation} of the formulas in \( \Gamma \) belong to \( \Delta \).
-
-    \thmitem{def:fol_theory/extension} Of special interest is the case where \( t: \Sigma \to \Sigma^+ \) is the inclusion map of a \hyperref[def:fol_signature_extension]{signature extension}. In this case translation is does nothing, and \( t \) is a theory morphism from \( (\Sigma, \Gamma) \) to \( (\Sigma^+, \Gamma^+) \) if and only if \( \Gamma \) is a subset of \( \Gamma^+ \).
-
-    We call \( \Gamma^+ \) an \term{extension} of \( \Gamma \).
-
-    \thmitem{def:fol_theory/category} Based on theories and their morphisms, as per \cref{def:category_of_theories}, we have a (syntactic or semantic) category of theories \( \ucat{Th} \) for every \hyperref[def:grothendieck_universe]{Grothendieck universe} \( \mscrU \).
-
-    \thmitem{def:fol_theory/conservative} As in \cref{def:entailment_system_theory/conservative}, we say that a theory morphism or extension is \term[en=conservative extension (\cite[180]{Hinman2005Logic})]{conservative} when \( \Gamma \nvDash_\Sigma \varphi \) implies \( \Delta \nvDash_\Theta \op*{Sen}(t)(\varphi) \).
-
-    \thmitem{def:fol_theory/model}\mcite[def. 2.4.4]{Hinman2005Logic} As in \cref{def:theory_of_institutional_model}, we define the \term{theory} \( \op*{Th}(\mscrX) \) \hi{of} a structure \( \mscrX \) as the set of all sentences valid in \( \mscrX \).
-  \end{thmenum}
-\end{definition}
-
-\begin{proposition}\label{thm:def:fol_theory}
-  \hyperref[def:fol_theory]{First-order theories} have the following basic properties:
-  \begin{thmenum}
-    \thmitem{thm:def:fol_theory/model_theory_consistency} For every structure \( \mscrX \), the theory \( \op*{Th}(\mscrX) \) is \hyperref[def:consistent_set_of_sentences]{consistent}.
-
-    \thmitem{thm:def:fol_theory/model_theory_completeness} Assuming \hyperref[def:truth_value_algebra/classical]{classical semantics}, for every structure \( \mscrX \), the theory \( \op*{Th}(\mscrX) \) is \hyperref[def:complete_set_of_sentences]{complete}.
-  \end{thmenum}
-\end{proposition}
-\begin{proof}
-  \todo{Adapt propositional characterizations}
-
-  \SubProofOf{thm:def:fol_theory/model_theory_consistency} Follows from \fullref{thm:propositional_semantic_lnc} via the equivalent condition \cref{thm:propositional_semantic_inconsistency/unsatisfiable} for consistency.
-
-  \SubProofOf{thm:def:fol_theory/model_theory_completeness} Assume classical semantics and fix a structure \( \mscrX \).
-
-  A formula \( \varphi \) is either valid in \( \mscrX \) or not. In the latter case \fullref{thm:propositional_semantic_lem} implies that \( \synneg \varphi \) is valid.
-
-  \Cref{thm:propositional_complete_set} then implies that \( \op*{Th}(\mscrX) \) is complete.
-\end{proof}
-
 \paragraph{Elementary embeddings}
 
 \begin{remark}\label{rem:fol_homomorphism_refinements}
@@ -1221,7 +1196,7 @@ We give here the following definition, and then dedicate several sections to exp
 \end{definition}
 
 \begin{proposition}\label{thm:def:fol_function_respect}
-  Let \( \mscrX = (X, I) \) and \( \mscrY = (Y, J) \) be \hyperref[def:fol_structure]{structures} over a common \hyperref[def:fol_signature]{signature} \( \Sigma \).
+  Let \( \mscrX = (X, I) \) and \( \mscrY = (Y, J) \) be \hyperref[def:fol_structure]{classical structures} over a common \hyperref[def:fol_signature]{signature} \( \Sigma \).
 
   The term and formula compatibility notions from \cref{def:fol_function_respect} have the following basic properties:
   \begin{thmenum}
@@ -1230,19 +1205,19 @@ We give here the following definition, and then dedicate several sections to exp
 \end{proposition}
 \begin{proof}
   \SubProofOf{thm:def:fol_function_respect/atomic}
-  \SufficiencySubProof* Suppose that \( h: X \to Y \) is a homomorphism. Fix an atomic formula \( \varphi \) and a variable assignment \( v \).
+  \SufficiencySubProof* Suppose that \( h: X \to Y \) is a strong homomorphism. Fix an atomic formula \( \varphi \) and a variable assignment \( v \).
 
   We will use \fullref{thm:induction_on_abstract_syntax} on \( \varphi \) to show that \( h \) respects \( \varphi \).
   \begin{itemize}
     \item If \( \varphi \) is a constant, by definition \( \Bracks{\varphi}_\mscrX^v = \semtop = \Bracks{\varphi}_\mscrY^{h \bincirc v} \) if \( \varphi = \syntop \) and similarly if \( \varphi = \synbot \).
 
-    \item If \( \varphi = (\tau \syneq \sigma) \), then
+    \item If \( \varphi = (\tau \syneq \sigma) \), where the inductive hypothesis holds for \( \tau \) and \( \sigma \), then
     \begin{equation*}
       \Bracks{\tau \syneq \sigma}_\mscrX^v
       \reloset {\eqref{eq:def:fol_denotation/formulas/eq}} =
-      \delta_\mscrX\parens[\big]{ \Bracks{\tau}_\mscrX^v, \Bracks{\sigma}_\mscrX^v }
+      \parens[\big]{ \Bracks{\tau}_\mscrX^v \approx_\mscrX \Bracks{\sigma}_\mscrX^v }
       \reloset {\T{ind.}} =
-      \delta_\mscrY\parens[\big]{ \Bracks{\tau}_\mscrY^{h \bincirc v}, \Bracks{\sigma}_\mscrY^{h \bincirc v} }
+      \parens[\big]{ \Bracks{\tau}_\mscrY^{h \bincirc v} \approx_\mscrY \Bracks{\sigma}_\mscrY^{h \bincirc v} }
       \reloset {\eqref{eq:def:fol_denotation/formulas/eq}} =
       \Bracks{\tau \syneq \sigma}_\mscrY^{h \bincirc v}
     \end{equation*}
@@ -1252,38 +1227,45 @@ We give here the following definition, and then dedicate several sections to exp
 
   \NecessitySubProof* Suppose that \( h: X \to Y \) respects atomic formulas. We will show that it is a homomorphism.
 
-  \SubProofOf*{def:fol_homomorphism/predicates} For a predicate symbol \( p \) in \( \Sigma \) of arity \( n \), since \( h \) respects atomic formulas, we have
-  \begin{equation*}
-    \Bracks{p(\synx_1, \ldots, \synx_n)}_\mscrX^v = \Bracks{p(\synx_1, \ldots, \synx_n)}_\mscrY^{h \bincirc v}.
-  \end{equation*}
+  \begin{itemize}
+    \item For a predicate symbol \( p \) in \( \Sigma \) of arity \( n \), since \( h \) respects atomic formulas, we have
+    \begin{equation*}
+      \Bracks{p(\synx_1, \ldots, \synx_n)}_\mscrX^v = \Bracks{p(\synx_1, \ldots, \synx_n)}_\mscrY^{h \bincirc v}.
+    \end{equation*}
 
-  Given elements \( a_1, \ldots, a_n \) in \( X \), we can take any assignment \( v \) satisfying \( v(\synx_k) = a_k \) for \( k = 1, \ldots, n \) to conclude that
-  \begin{equation*}
-    J(p)\parens[\big]{ h(a_1), \ldots, h(a_n) } = h\parens[\big]{ I(p)(a_1, \ldots, a_n) },
-  \end{equation*}
-  as desired.
+    Given elements \( a_1, \ldots, a_n \) in \( X \), we can take any assignment \( v \) satisfying \( v(\synx_k) = a_k \) for \( k = 1, \ldots, n \) to conclude that
+    \begin{equation*}
+      J(p)\parens[\big]{ h(a_1), \ldots, h(a_n) } = h\parens[\big]{ I(p)(a_1, \ldots, a_n) },
+    \end{equation*}
+    as desired.
 
-  \SubProofOf*{def:fol_homomorphism/functions} For a functional symbol \( f \) in \( \Sigma \) of arity \( n \), we consider the following equality formulas:
-  \begin{equation}\label{thm:def:fol_function_respect/atomic/proof/functions}
-    \Bracks{f(\synx_1, \ldots, \synx_n) \syneq \syny}_\mscrX^v = \Bracks{f(\synx_1, \ldots, \synx_n) \syneq \syny}_\mscrY^{h \bincirc v}
-  \end{equation}
-  for every variable assignment \( v \).
+    \item For a functional symbol \( f \) in \( \Sigma \) of arity \( n \), we consider the following equality formulas:
+    \begin{equation}\label{thm:def:fol_function_respect/atomic/proof/functions}
+      \Bracks{f(\synx_1, \ldots, \synx_n) \syneq \syny}_\mscrX^v = \Bracks{f(\synx_1, \ldots, \synx_n) \syneq \syny}_\mscrY^{h \bincirc v}
+    \end{equation}
+    for every variable assignment \( v \).
 
-  Fix elements \( a_1, \ldots, a_n \) in \( X \) and consider any assignment \( v \) that satisfies \( v(\synx_k) = a_k \) for \( k = 1, \ldots, n \) and
-  \begin{equation*}
-    v(\syny) = I(f)(a_1, \ldots, a_n).
-  \end{equation*}
+    Fix elements \( a_1, \ldots, a_n \) in \( X \) and consider any assignment \( v \) that satisfies \( v(\synx_k) = a_k \) for \( k = 1, \ldots, n \), and also
+    \begin{equation*}
+      v(\syny) = I(f)(a_1, \ldots, a_n).
+    \end{equation*}
 
-  From \eqref{thm:def:fol_function_respect/atomic/proof/functions} it follows that
-  \begin{equation*}
-    \underbrace{I(f)(a_1, \ldots, a_n) = v(\syny)}_{\T{true by assumption}} \T{if and only if} J(f)\parens[\big]{ h(a_1), \ldots, h(a_n) } = h(v(\syny)),
-  \end{equation*}
-  hence
-  \begin{equation*}
-    J(f)\parens[\big]{ h(a_1), \ldots, h(a_n) } = h(v(\syny)) = h\parens[\big]{ I(f)(a_1, \ldots, a_n) }.
-  \end{equation*}
+    From \eqref{thm:def:fol_function_respect/atomic/proof/functions} it follows that
+    \begin{equation*}
+      \parens[\big]{ I(f)(a_1, \ldots, a_n) \approx_\mscrX v(\syny) } = \parens[\big]{ J(f)\parens[\big]{ h(a_1), \ldots, h(a_n) } \approx_\mscrY h(v(\syny)) }.
+    \end{equation*}
 
-  Therefore, \( h \) is compatible with function application.
+    Since the interpretation of formal equality is standard, this amounts to
+    \begin{equation*}
+      I(f)(a_1, \ldots, a_n) = v(\syny) \T{if and only if} J(f)\parens[\big]{ h(a_1), \ldots, h(a_n) } = h(v(\syny)),
+    \end{equation*}
+    hence
+    \begin{equation*}
+      h(v(\syny)) = J(f)\parens[\big]{ h(a_1), \ldots, h(a_n) } = h\parens[\big]{ I(f)(a_1, \ldots, a_n) }.
+    \end{equation*}
+
+    Therefore, \( h \) is compatible with function application.
+  \end{itemize}
 \end{proof}
 
 \begin{definition}\label{def:elementary_embedding}\mcite[def. 2.3.30; def. 2.3.43]{Hinman2005Logic}
@@ -1298,7 +1280,7 @@ We give here the following definition, and then dedicate several sections to exp
 \end{comments}
 
 \begin{proposition}\label{thm:def:elementary_embedding}
-  \hyperref[def:elementary_embedding]{Elementary embeddings} have the following basic properties:
+  \hyperref[def:elementary_embedding]{Elementary embeddings} for \hyperref[def:fol_structure]{classical structures} have the following basic properties:
   \begin{thmenum}
     \thmitem{thm:def:elementary_embedding/embedding} Every elementary embedding is a first-order embedding in the sense of \cref{def:first_order_embedding}.
 
@@ -1310,7 +1292,7 @@ We give here the following definition, and then dedicate several sections to exp
 
   Let \( h: X \to Y \) be an elementary embedding from \( \mscrX = (X, I) \) to \( \mscrY = (Y, J) \). Suppose that \( h(a) = h(b) \). Let \( v \) be an assignment such that \( v(\synx) = a \) and \( v(\syny) = b \). Then
   \begin{equation*}
-    \Bracks{\synx \syneq \syny}_\mscrX^v = \underbrace{\Bracks{\synx \syneq \syny}_\mscrY^{h \bincirc v}}_{\delta_\mscrY(h(a), h(b)) = \semtop},
+    \Bracks{\synx \syneq \syny}_\mscrX^v = \underbrace{\Bracks{\synx \syneq \syny}_\mscrY^{h \bincirc v}}_{h(a) \approx_\mscrY h(b) = \semtop},
   \end{equation*}
   hence \( a = b \).
 
@@ -1396,7 +1378,7 @@ We give here the following definition, and then dedicate several sections to exp
     \end{cases}
   \end{equation*}
 
-  For \( n > 1 \), we define \( \chi^{< n} \) as the opposite of \( \chi^{\geq n} \) obtained via \cref{alg:propositional_formula_dualization}:
+  For \( n > 1 \), we define \( \chi^{< n} \) as the opposite of \( \chi^{\geq n} \) obtained via \fullref{alg:fol_formula_dualization}:
   \begin{equation*}
     \chi^{< n} \coloneqq \qexists {\synx_1} \ldots \qexists {\synx_{n-1}} \qforall \syny (\synx_1 \syneq \syny) \synvee \cdots \synvee (\synx_{n-1} \syneq \syny).
   \end{equation*}
@@ -1414,7 +1396,7 @@ We give here the following definition, and then dedicate several sections to exp
   \begin{equation*}
     \chi^{\geq 1} \synwedge \chi^{<2} = \syntop \synwedge \qexists {\synx_1} \qforall {\syny} (\synx_1 \syneq \syny) = \syntop \synwedge \chi^{=1},
   \end{equation*}
-  which can be simplified (as justified in \cref{alg:propositional_constant_collapse/conjunction}).
+  which can be simplified (as justified in \cref{alg:propositional_constant_collapse}).
 
   An adaptation of the obtained formula \( \chi^{=1} \) is used for defining contractible types in \cref{def:contractible_type}.
 
@@ -1517,10 +1499,12 @@ We give here the following definition, and then dedicate several sections to exp
 
 \begin{definition}\label{def:pure_equality}\mimprovised
   Over the empty \hyperref[def:fol_signature]{first-order signature}, consider the \hyperref[def:fol_theory]{theory} axiomatized by an empty set of sentences. Its only terms are variables and its atomic formulas are either logical constants or equality formulas. For this reason, we call it the \term{theory of pure equality} and denote it by \( \op*{Th}_{\syneq} \). Similarly, we denote the signature by \( \op*{Sign}_{\syneq} \).
+
+  For this to truly be a theory of equality, we must restrict ourselves to classical structures.
 \end{definition}
 
 \begin{proposition}\label{thm:pure_equality_isomorphism}
-  The \hyperref[def:pure_equality]{theory of pure equality} \( \op*{Th}_{\syneq} \) has the following basic properties:
+  The \hyperref[def:pure_equality]{theory of pure equality} \( \op*{Th}_{\syneq} \) for \hyperref[def:fol_structure]{classical structures} has the following basic properties:
   \begin{thmenum}
     \thmitem{thm:pure_equality_isomorphism/function} Every function \( f: X \to Y \) between the structures \( \mscrX = (X, I) \) and \( \mscrY = (Y, J) \) over \( \op*{Sign}_{\syneq} \) is a \hyperref[def:fol_homomorphism]{homomorphism}.
 
@@ -1591,4 +1575,44 @@ We give here the following definition, and then dedicate several sections to exp
 \end{proposition}
 \begin{proof}
   Straightforward induction on \( \varphi \).
+\end{proof}
+
+\paragraph{Definitional extensions}
+
+\begin{definition}\label{def:fol_theory}\mimprovised
+  We restate here some definitions related to \hyperref[def:logical_theory]{logical theories}, adapted to \hyperref[def:first_order_logic]{first-order logic}.
+
+  First and foremost, a (syntactic or semantic) \term[ru=теория (\cite[def. 3.1.1]{Герасимов2014Вычислимость}), en=theory (\cite[def. 2.4.1]{Hinman2005Logic})]{theory} is, as in \cref{def:general_logic_theory}, a set of sentences closed under logical consequence. For any set of sentences \( \Gamma \), we denote its consequence closure by \( \op*{Th}(\Gamma) \).
+
+  \begin{thmenum}
+    \thmitem{def:fol_theory/morphism} As in \cref{def:entailment_system_theory/morphism}, we call the \hyperref[def:fol_signature_category/morphisms]{first-order signature morphism} \( t: \Sigma \to \Theta \) a \term{theory morphisms} from \( (\Sigma, \Gamma) \) to \( (\Theta, \Delta) \) if the translation via \fullref{alg:fol_formula_signature_translation} of the formulas in \( \Gamma \) belong to \( \Delta \).
+
+    \thmitem{def:fol_theory/extension} Of special interest is the case where \( t: \Sigma \to \Sigma^+ \) is the inclusion map of a \hyperref[def:fol_signature_extension]{signature extension}. In this case translation is does nothing, and \( t \) is a theory morphism from \( (\Sigma, \Gamma) \) to \( (\Sigma^+, \Gamma^+) \) if and only if \( \Gamma \) is a subset of \( \Gamma^+ \).
+
+    We call \( \Gamma^+ \) an \term{extension} of \( \Gamma \).
+
+    \thmitem{def:fol_theory/category} Based on theories and their morphisms, as per \cref{def:category_of_theories}, we have a (syntactic or semantic) category of theories \( \ucat{Th} \) for every \hyperref[def:grothendieck_universe]{Grothendieck universe} \( \mscrU \).
+
+    \thmitem{def:fol_theory/conservative} As in \cref{def:entailment_system_theory/conservative}, we say that a theory morphism or extension is \term[en=conservative extension (\cite[180]{Hinman2005Logic})]{conservative} when \( \Gamma \nvDash_\Sigma \varphi \) implies \( \Delta \nvDash_\Theta \op*{Sen}(t)(\varphi) \).
+
+    \thmitem{def:fol_theory/model}\mcite[def. 2.4.4]{Hinman2005Logic} As in \cref{def:theory_of_institutional_model}, we define the \term{theory} \( \op*{Th}(\mscrX) \) \hi{of} a structure \( \mscrX \) as the set of all sentences valid in \( \mscrX \).
+  \end{thmenum}
+\end{definition}
+
+\begin{proposition}\label{thm:def:fol_theory}
+  \hyperref[def:fol_theory]{First-order theories} have the following basic properties:
+  \begin{thmenum}
+    \thmitem{thm:def:fol_theory/model_theory_consistency} For every structure \( \mscrX \), the theory \( \op*{Th}(\mscrX) \) is \hyperref[def:consistent_set_of_sentences]{consistent}.
+
+    \thmitem{thm:def:fol_theory/model_theory_completeness} Assuming \hyperref[def:truth_value_algebra/classical]{classical semantics}, for every structure \( \mscrX \), the theory \( \op*{Th}(\mscrX) \) is \hyperref[def:complete_set_of_sentences]{complete}.
+  \end{thmenum}
+\end{proposition}
+\begin{proof}
+  \SubProofOf{thm:def:fol_theory/model_theory_consistency} Follows from \fullref{thm:propositional_semantic_lnc} (translated via \fullref{alg:fol_propositional_formula_translation}). We use the equivalent condition \cref{thm:propositional_semantic_inconsistency/unsatisfiable} for consistency.
+
+  \SubProofOf{thm:def:fol_theory/model_theory_completeness} Assume classical semantics and fix a structure \( \mscrX \).
+
+  A formula \( \varphi \) is either valid in \( \mscrX \) or not. In the latter case \fullref{thm:propositional_semantic_lem} implies that \( \synneg \varphi \) is valid.
+
+  \Cref{thm:propositional_complete_set} then implies that \( \op*{Th}(\mscrX) \) is complete.
 \end{proof}

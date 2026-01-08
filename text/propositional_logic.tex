@@ -4,7 +4,7 @@ Propositional logic allows us to express basic relations between atomic \hyperre
 
 We give here the following definition, and then dedicate several sections to explaining it:
 \begin{definition}\label{def:propositional_logic}\mimprovised
-  We call \term[ru=логика высказываний (\cite[10]{Герасимов2014Вычислимость}), en=propositional logic (\cite[4]{Kleene2002Logic})]{propositional logic} the \hyperref[def:general_logic]{general logic} specified by the \hyperref[def:propositional_institution]{propositional institution} (with \hyperref[def:minimal_propositional_semantics]{minimal}, \hyperref[def:truth_value_algebra/intuitionistic]{intuitionistic} or \hyperref[def:truth_value_algebra/classical]{classical} semantics) and the corresponding \hyperref[def:propositional_natural_deduction_systems]{propositional natural deduction system}.
+  We call \term[ru=логика высказываний (\cite[10]{Герасимов2014Вычислимость}), en=propositional logic (\cite[4]{Kleene2002Logic})]{propositional logic} the \hyperref[def:general_logic]{general logic} specified by the \hyperref[def:propositional_institution]{propositional institution} (with \hyperref[def:minimal_propositional_denotation]{minimal}, \hyperref[def:truth_value_algebra/intuitionistic]{intuitionistic} or \hyperref[def:truth_value_algebra/classical]{classical} semantics) and the corresponding \hyperref[def:propositional_natural_deduction_systems]{propositional natural deduction system}.
 \end{definition}
 \begin{comments}
   \item The soundness requirement in general logics from \cref{def:general_logic} is satisfied due to \fullref{thm:propositional_natural_deduction_soundness}.
@@ -268,7 +268,7 @@ There are different approaches to formalizing the syntax of propositional logic.
   Trivial.
 \end{proof}
 
-\paragraph{Intuitionistic propositional semantics}
+\paragraph{General propositional semantics}
 
 \begin{definition}\label{def:propositional_interpretation}\mimprovised
   A \term[ru=интерпретация (\cite[def. 1.1.10]{Герасимов2014Вычислимость})]{propositional interpretation} in a \hyperref[def:truth_value_algebra]{truth value algebra} \( \BbbT \) is any function \( I: \op*{Prop} \to \BbbT \) assigning truth values to propositional variables.
@@ -293,36 +293,11 @@ There are different approaches to formalizing the syntax of propositional logic.
 \begin{comments}
   \item If we are using \hyperref[def:truth_value_algebra/classical]{classical semantics}, due to \cref{thm:def:standard_boolean_functions}, the operation \( {\bincirc} \) is completely described by the truth tables in \cref{def:standard_boolean_functions}.
 
+  \item A modification of the propositional denotation is needed for \hyperref[con:minimal_logic]{minimal logic} --- see \cref{def:minimal_propositional_denotation}.
+
   \item The term \enquote{denotation} is inspired by Russell's theory of denotations discussed in \cref{con:denotation}. Along with \enquote{interpretation}, it is used inconsistently in the literature. See \cref{rem:model_theory_structure_terminology}.
 
   \item Propositional denotations are implemented as \identifier{math.logic.propositional.evaluate_prop_formula} in \cite{notebook:code}.
-\end{comments}
-
-\begin{concept}\label{con:parametrized_denotation}
-  Unless bound, \hyperref[con:variable]{variables} can introduce ambiguity in the \hyperref[con:denotation]{denotation} of \hyperref[con:proposition]{logical formulas}. The resolution of this ambiguity requires us to explicitly assign values to the variables.
-
-  We can use this to our favor and define \term{parametrized denotations} in which the free variables are regarded as the parameters of a function.
-\end{concept}
-\begin{comments}
-  \item An alternative is provided in \hyperref[def:higher_order_logic]{higher-order logic}, whose syntax supports function definitions. See \cref{rem:hol_parametrized_denotation}.
-\end{comments}
-
-\begin{definition}\label{def:parametrized_propositional_denotation}\mimprovised
-  We can define a \hyperref[con:parametrized_denotation]{parametrized denotation} for the \hyperref[def:propositional_formula]{propositional formula} \( \varphi \) as follows.
-
-  If \( \op*{Var}(\varphi) \subseteq \set{ p_1, \ldots, p_n } \), the denotation \( \Bracks{\varphi}_I \) only depends on the particular values \( I(p_1), \ldots, I(p_n) \) of \( I \). Hence, if the variables are clear from the context, we obtain a Boolean function
-  \begin{equation*}
-    \begin{aligned}
-      &\Bracks{\varphi}: \BbbT^n \to \BbbT, \\
-      &\Bracks{\varphi}(x_1, \ldots, x_n) \coloneqq \Bracks{\varphi}_I,
-    \end{aligned}
-  \end{equation*}
-  where \( I \) is any interpretation such that \( I(p_k) = x_k \) for \( k = 1, \ldots, n \).
-
-  Unless otherwise noted, we assume that \( p_1, \ldots, p_n \) are precisely the variables of \( \varphi \) ordered lexicographically.
-\end{definition}
-\begin{comments}
-  \item This is implemented as \identifier{math.logic.propositional.formula_to_function} in \cite{notebook:code}.
 \end{comments}
 
 \begin{concept}\label{con:improper_symbol}
@@ -384,6 +359,61 @@ There are different approaches to formalizing the syntax of propositional logic.
   We even disallow \hyperref[con:logical_system_signature]{signature symbols} to clash with variables or placeholders (except in the special case of \hyperref[def:quantifiable_type]{quantifiable types} in \hyperref[def:higher_order_logic]{higher-order logic}, where we instead disallow type variables).
 \end{remark}
 
+\begin{concept}\label{con:parametrized_denotation}
+  Unless bound, \hyperref[con:variable]{variables} can introduce ambiguity in the \hyperref[con:denotation]{denotation} of \hyperref[con:proposition]{logical formulas}. The resolution of this ambiguity requires us to explicitly assign values to the variables.
+
+  We can use this to our favor and define \term{parametrized denotations} in which the free variables are regarded as the parameters of a function.
+\end{concept}
+\begin{comments}
+  \item An alternative is provided in \hyperref[def:higher_order_logic]{higher-order logic}, whose syntax supports function definitions. See \cref{rem:hol_parametrized_denotation}.
+\end{comments}
+
+\begin{definition}\label{def:parametrized_propositional_denotation}\mimprovised
+  We can define a \hyperref[con:parametrized_denotation]{parametrized denotation} for the \hyperref[def:propositional_formula]{propositional formula} \( \varphi \) as follows.
+
+  If \( \op*{Var}(\varphi) \subseteq \set{ p_1, \ldots, p_n } \), the denotation \( \Bracks{\varphi}_I \) only depends on the particular values \( I(p_1), \ldots, I(p_n) \) of \( I \). Hence, if the variables are clear from the context, we obtain a Boolean function
+  \begin{equation*}
+    \begin{aligned}
+      &\Bracks{\varphi}: \BbbT^n \to \BbbT, \\
+      &\Bracks{\varphi}(x_1, \ldots, x_n) \coloneqq \Bracks{\varphi}_I,
+    \end{aligned}
+  \end{equation*}
+  where \( I \) is any interpretation such that \( I(p_k) = x_k \) for \( k = 1, \ldots, n \).
+
+  Unless otherwise noted, we assume that \( p_1, \ldots, p_n \) are precisely the variables of \( \varphi \) ordered lexicographically.
+\end{definition}
+\begin{comments}
+  \item This is implemented as \identifier{math.logic.propositional.formula_to_function} in \cite{notebook:code}.
+\end{comments}
+
+\begin{remark}\label{rem:minimal_semantics_and_falsum}
+  Minimal logic was introduced by Ingebrigt Johansson as an attempt to further refine intuitionistic logic. An analysis of his works and his interactions with Gerhard Gentzen is given by \incite{VanDerMolen2016MinimalLogic}.
+
+  What matters to us is that, in minimal logic, the falsum \( \synbot \) plays no special role that otherwise allows principles like \fullref{thm:propositional_semantic_efq}.
+
+  To achieve this semantically, in \cref{def:minimal_propositional_semantics}, we will simply interpret \( \synbot \) as a \hyperref[def:propositional_variable]{propositional variable}. This also requires us to modify denotations as defined in \cref{def:propositional_denotation}.
+
+  Therefore, for minimal semantics, we will modify the denotation, not the underlying \hyperref[def:truth_value_algebra]{truth value algebra}.
+
+  Unless we are specifically interested in \( \synbot \) and \( \synneg \), a more reasonable approach may be to only consider the \hyperref[con:syntax_fragment]{fragment} of propositional logic without them. This is approach to minimal logic mentioned in \cite[49]{Mimram2020ProgramEqualsProof} and used in \cref{def:minimal_implication_logic}.
+
+  Both in \fullref{sec:propositional_natural_deduction} and in \fullref{sec:propositional_completeness}, we will find it simpler to generalize the semantics as we did here. Our definition for minimal semantics is based on the principles outlined in \cite[3]{VanDerMolen2016MinimalLogic}, \cite[35]{TroelstraSchwichtenberg2000BasicProofTheory} and \cite[1]{DienerMcKubreJordens2020MaterialImplication}, although none of the aforementioned authors discuss semantics.
+\end{remark}
+
+\begin{definition}\label{def:minimal_propositional_denotation}\mimprovised
+  In accordance with \cref{rem:minimal_semantics_and_falsum}, we will adapt the propositional denotation from \cref{def:propositional_denotation} for \hyperref[con:minimal_logic]{minimal logic}. We treat \( \synbot \) as a propositional variable and presume that \( I \) is defined for \( \synbot \).
+
+  We define the \term{minimal denotation} as follows:
+  \begin{empheq}[left={\Bracks{\varphi}_I} \coloneqq \empheqlbrace]{align}
+    &I(\synbot),                             &&\varphi = \synbot,      \label{eq:def:minimal_propositional_denotation/bot} \\
+    &\Bracks{\psi}_I \rightarrow I(\synbot), &&\varphi = \synneg \psi, \label{eq:def:minimal_propositional_denotation/neg} \\
+    &\vdots,                                 && \notag
+  \end{empheq}
+  the other cases being the same as in \cref{def:propositional_denotation}.
+
+  We will refer to semantics using this denotation as \term{minimal semantics}. See \cref{def:propositional_semantics} for a broader discussion.
+\end{definition}
+
 \begin{definition}\label{def:propositional_institution}\mimprovised
   For a fixed \hyperref[def:truth_value_algebra]{truth value algebra} \( \BbbT \), \hyperref[def:propositional_interpretation]{propositional interpretations} naturally give rise to an \hyperref[def:institution]{institution} as follows:
   \begin{thmenum}
@@ -391,9 +421,13 @@ There are different approaches to formalizing the syntax of propositional logic.
 
     \thmitem{def:propositional_institution/sentences} Define the \hyperref[def:institution/sentences]{sentence functor} as \( \anon \mapsto \op*{Form} \).
 
-    \thmitem{def:propositional_institution/models} Let \( \BbbI \) be the discrete category on the \hyperref[def:set_of_all_functions]{function set} \( \fun(\op*{Prop}, \BbbT) \). The \hyperref[def:institution/models]{model functor} can then be described as \( \anon \mapsto \BbbI \).
+    \thmitem{def:propositional_institution/models} Let \( \BbbI \) be the discrete category on the \hyperref[def:set_of_all_functions]{function set} \( \fun(\op*{Prop}, \BbbT) \), i.e. the set of all propositional interpretations. The \hyperref[def:institution/models]{model functor} can then be described as \( \anon \mapsto \BbbI \).
+
+    As discussed in \cref{rem:minimal_semantics_and_falsum}, for minimal logic, we will regard \( \synbot \) as a propositional variable.
 
     \thmitem{def:propositional_institution/satisfaction} Finally, let the \hyperref[def:institution/satisfaction]{satisfaction} relation \( I \vDash_{\anon} \varphi \) hold if and only if \( \Bracks{\varphi}_I = \semtop \).
+
+    Here \( \Bracks{\varphi}_I \) is the propositional denotation from \cref{def:propositional_denotation}. For minimal logic, we will also need the modifications from \cref{def:minimal_propositional_denotation}.
   \end{thmenum}
 \end{definition}
 \begin{comments}
@@ -404,7 +438,9 @@ There are different approaches to formalizing the syntax of propositional logic.
 \end{defproof}
 
 \begin{definition}\label{def:propositional_semantics}\mimprovised
-  By the \enquote{\hyperref[con:syntax_semantics_duality]{semantics} of propositional logic} we mean the \hyperref[def:propositional_institution]{propositional institution} and all related notions like \hyperref[def:institution/models]{models}, \hyperref[def:institution/satisfaction]{satisfaction}, \hyperref[def:institutional_entailment]{semantic entailment} and \hyperref[def:semantic_equivalence]{semantic equivalence}.
+  Fix a \hyperref[def:truth_value_algebra]{truth value algebra} \( \BbbT \). By the \( \BbbT \)-valued \enquote{\hyperref[con:syntax_semantics_duality]{semantics} of propositional logic} we mean the \hyperref[def:propositional_institution]{propositional institution} and all related notions like \hyperref[def:institution/models]{models}, \hyperref[def:institution/satisfaction]{satisfaction}, \hyperref[def:institutional_entailment]{semantic entailment} and \hyperref[def:semantic_equivalence]{semantic equivalence}.
+
+  We will label the semantics \enquote{classical}, \enquote{intuitionistic}, etc., based on \( \BbbT \), with \enquote{minimal semantics} using the modified denotation from \cref{def:minimal_propositional_denotation}.
 
   \begin{thmenum}
     \thmitem{def:propositional_semantics/model} We use the terminology from \cref{def:institutional_satisfaction} regarding satisfaction and validity.
@@ -423,14 +459,22 @@ There are different approaches to formalizing the syntax of propositional logic.
 
     \thmitem{def:propositional_semantics/tautology} We call the formula \( \varphi \) a \term[ru=тавтология (\cite[def. 1.1.14]{Герасимов2014Вычислимость}), en=tautology (\cite[def. 1.2.4]{VanDalen2004LogicAndStructure})]{propositional tautology} if \( \Bracks{\varphi}_I = \semtop \) for every interpretation \( I \), and a \term{propositional contradiction} if \( \Bracks{\varphi}_I < \semtop \) for every \( I \).
 
-    This is consistent with \fullref{def:tautology}, where a tautology must be satisfied in every model (and a contradiction --- in no model).
+    This is consistent with \cref{def:tautology}, where a tautology must be satisfied in every model (and a contradiction --- in no model).
 
-    \thmitem{def:propositional_semantics/entailment} We use the terminology and notation from \cref{def:institutional_entailment} regarding entailment: \( \Gamma \vDash \varphi \) if and only if, whenever \( I \) satisfies \( \Gamma \), it also satisfies \( \varphi \).
+    \thmitem{def:propositional_semantics/entailment} We use the terminology and notation from \cref{def:institutional_entailment} regarding entailment: \( \Gamma \vDash \varphi \) if and only if \( I \) satisfies \( \varphi \) whenever it satisfies \( \Gamma \).
   \end{thmenum}
 \end{definition}
 \begin{comments}
   \item \Cref{thm:propositional_semantic_inconsistency} lists some conditions equivalent to (un)satisfiability.
 \end{comments}
+
+\begin{remark}\label{rem:classical_propositional_interpretations}
+  Note that a propositional interpretation may be used to define denotations different from the one in \cref{def:propositional_denotation}. For example, the semantics for \hyperref[con:minimal_logic]{minimal logic} defined in \cref{def:minimal_propositional_denotation} require a slight variation.
+
+  Thus, an interpretation cannot, by itself, be \hyperref[con:classical_logic]{classical} or \hyperref[con:intuitionistic_logic]{intuitionistic}.
+
+  On the other hand, (institutional) models can be classical, and propositional models are interpretations, so we are free to use the term \enquote{classical model} when referring to interpretations in an appropriate context.
+\end{remark}
 
 \begin{proposition}\label{thm:propositional_denotation_characterization}
   \hyperref[def:propositional_satisfaction]{Propositional satisfaction} of compounds formulas can be characterized as follows:
@@ -453,7 +497,7 @@ There are different approaches to formalizing the syntax of propositional logic.
   \end{thmenum}
 \end{proposition}
 \begin{proof}
-  \SubProofOf{thm:propositional_denotation_characterization/negation} Assume non-degenerate semantics.
+  \SubProofOf{thm:propositional_denotation_characterization/negation} Assume non-degenerate intuitionistic semantics.
 
   If \( I \vDash \varphi \), then
   \begin{equation*}
@@ -497,6 +541,163 @@ There are different approaches to formalizing the syntax of propositional logic.
   \SubProofOf{thm:propositional_denotation_characterization/biconditional} \Cref{thm:def:heyting_algebra/eq} implies that \( \Bracks{\varphi \syniff \psi}_I = \semtop \) if and only if \( \Bracks{\varphi}_I = \Bracks{\psi}_I \).
 \end{proof}
 
+\paragraph{Minimal propositional semantics}
+
+\begin{definition}\label{def:paraconsistent_consequence_operator}\mcite{StanfordPlato:paraconsistent_logic}
+  We say that the \hyperref[def:consequence_operator]{consequence operator} \( \vdash \) for \hyperref[def:propositional_formula]{propositional formulas} is \term{explosive} if \fullref{thm:propositional_semantic_efq} holds, i.e. if \( \synbot \vdash \varphi \) for any formula \( \varphi \).
+
+  If \( \vdash \) is not explosive, we say that it is \term{paraconsistent}.
+\end{definition}
+
+\begin{proposition}\label{thm:minimal_semantics_is_paraconsistent}
+  \hyperref[def:minimal_propositional_denotation]{Minimal propositional semantics} is \hyperref[def:paraconsistent_consequence_operator]{paraconsistent}.
+\end{proposition}
+\begin{proof}
+  Fix an interpretation \( I \) such that \( I(\synbot) = \semtop \) and \( I(\synp) = \sembot \). Then \( I \vDash \synbot \), yet \( I \nvDash p \).
+\end{proof}
+
+\begin{proposition}\label{thm:intuitionistic_semantics_are_explosive}
+  \hyperref[def:propositional_semantics]{Intuitionistic semantics} is \hyperref[def:paraconsistent_consequence_operator]{explosive}.
+\end{proposition}
+\begin{proof}
+  Fix two formulas, \( \varphi \) and \( \psi \), and an interpretation \( I \) such that \( I \vDash \varphi \) and \( I \vDash \synneg \varphi \). Then \( I \vDash \varphi \synwedge \synneg \varphi \) because
+  \begin{equation*}
+    \Bracks{\varphi \synwedge \synneg \varphi}_I
+    \reloset {\eqref{eq:def:propositional_denotation/conn}} =
+    \Bracks{\varphi}_I \synwedge \Bracks{\synneg \varphi}_I
+    =
+    \semtop \wedge \semtop
+    =
+    \semtop.
+  \end{equation*}
+
+  But also
+  \begin{equation*}
+    \Bracks{\varphi \synwedge \synneg \varphi}_I
+    \reloset {\eqref{eq:def:propositional_denotation/conn}} =
+    \Bracks{\varphi}_I \wedge \Bracks{\synneg \varphi}_I
+    \reloset {\eqref{eq:thm:intuitionistic_equivalences/negation_bottom}} =
+    \Bracks{\varphi}_I \wedge (\Bracks{\varphi}_I \rightarrow \sembot)
+    \reloset {\eqref{eq:def:heyting_algebra/axioms/modus_ponens}} =
+    \Bracks{\varphi}_I \wedge \sembot
+    =
+    \sembot.
+  \end{equation*}
+
+  The obtained contradiction shows that such an interpretation \( I \) does not exist.
+
+  Therefore, for all zero interpretations \( I \) for which both \( I \vDash \varphi \) and \( I \vDash \psi \), we can conclude that \( I \vDash \psi \) for any formula \( \psi \).
+\end{proof}
+
+\begin{proposition}\label{thm:semantic_propositional_conjunction_of_premises}
+  With respect to \hyperref[def:minimal_propositional_denotation]{minimal semantics}, we have \( \varphi_1, \ldots, \varphi_n \vDash \psi \) if and only if \( (\varphi_1 \synwedge \cdots \synwedge \varphi_n) \vDash \psi \).
+\end{proposition}
+\begin{proof}
+  By induction on \( n \), we can easily show that
+  \begin{equation*}
+    \Bracks{\varphi_1 \synwedge \cdots \synwedge \varphi_n}_I
+    \reloset {\eqref{eq:def:propositional_denotation/conn}} =
+    \Bracks{\varphi_1}_I \wedge \cdots \wedge \Bracks{\varphi_n}_I,
+  \end{equation*}
+  so \( \Bracks{\varphi_1 \synwedge \cdots \synwedge \varphi_n}_I = \semtop \) if and only if \( \Bracks{\varphi_k}_I = \semtop \) for every \( k = 1, \ldots, n \).
+\end{proof}
+
+\begin{theorem}[Propositional semantic deduction theorem]\label{thm:propositional_semantic_deduction_theorem}
+  With respect to \hyperref[def:minimal_propositional_denotation]{minimal semantics}, for an arbitrary \hyperref[def:truth_value_algebra]{truth value algebra} and for arbitrary propositional formulas, we have
+  \begin{equation*}
+    \Gamma, \varphi \vDash \psi \T{if and only if} \Gamma \vDash \varphi \synimplies \psi.
+  \end{equation*}
+\end{theorem}
+\begin{comments}
+  \item This is one of several deduction theorems presented here --- see \cref{rem:deduction_theorem_list/propositional_semantic}.
+\end{comments}
+\begin{proof}
+  Fix an interpretation \( I \) satisfying \( \Gamma \).
+
+  \SufficiencySubProof Suppose that from \( I \vDash \varphi \) it follows that \( I \vDash \psi \). If \( I \vDash \varphi \), then
+  \begin{equation*}
+    \Bracks{\varphi \synimplies \psi}_I
+    =
+    \underbrace{\Bracks{\varphi}_I}_{\semtop} \rightarrow \underbrace{\Bracks{\psi}_I}_{\semtop}
+    \reloset {\ref{thm:def:heyting_algebra/top_left}} =
+    \underbrace{\Bracks{\psi}_I}_{\semtop},
+  \end{equation*}
+  thus \( I \vDash (\varphi \synimplies \psi) \).
+
+  \NecessitySubProof Suppose that \( I \vDash (\varphi \synimplies \psi) \). If additionally \( I \vDash \varphi \), then
+  \begin{equation*}
+    \underbrace{\Bracks{\varphi \synimplies \psi}_I}_{\semtop}
+    =
+    \underbrace{\Bracks{\varphi}_I}_{\semtop} \rightarrow \Bracks{\psi}_I
+    \reloset {\ref{thm:def:heyting_algebra/top_left}} =
+    \Bracks{\psi}_I,
+  \end{equation*}
+  thus \( I \vDash \psi \).
+\end{proof}
+
+\begin{corollary}\label{thm:propositional_deduction_theorem_leq}
+  For \hyperref[def:propositional_formula]{propositional formulas} we have \( \Gamma, \varphi \vDash \psi \) if and only if, for every \hyperref[def:propositional_semantics/model]{model} \( I \) of \( \Gamma \), we have \( \Bracks{\varphi}_I \leq \Bracks{\psi}_I \).
+\end{corollary}
+\begin{proof}
+  \Fullref{thm:propositional_semantic_deduction_theorem} implies that \( \Gamma, \varphi \vDash \psi \) if and only if \( \Gamma \vDash (\varphi \synimplies \psi) \).
+
+  Let \( I \) be a model of \( \Gamma \). We must prove that \( \Gamma \vDash (\varphi \synimplies \psi) \) if and only if \( \Bracks{\varphi}_I \leq \Bracks{\psi}_I \). This readily follows from \cref{thm:def:heyting_algebra/leq}.
+\end{proof}
+
+\begin{remark}\label{rem:deduction_theorem_list}
+  The following is a list of different flavors of the \enquote{deductive theorem} that allows us to use \hyperref[def:propositional_alphabet/connectives/conditional]{implication} and \hyperref[def:entailment_system/entailment]{entailment} interchangeably:
+  \begin{thmenum}
+    \thmitem{rem:deduction_theorem_list/propositional_semantic} \Fullref{thm:propositional_semantic_deduction_theorem}.
+    \thmitem{rem:deduction_theorem_list/implicational_syntactic} \Fullref{thm:implicational_syntactic_deduction_theorem}.
+    \thmitem{rem:deduction_theorem_list/propositional_syntactic} \Fullref{thm:propositional_syntactic_deduction_theorem}.
+    \thmitem{rem:deduction_theorem_list/fol_semantic} \Fullref{thm:fol_semantic_deduction_theorem}.
+  \end{thmenum}
+\end{remark}
+
+\begin{corollary}\label{thm:intuitionistic_deduction_consequences}
+  We list some consequences of \fullref{thm:propositional_semantic_deduction_theorem}:
+  \begin{thmenum}
+    \thmitem{thm:intuitionistic_deduction_consequences/top} Under \hyperref[def:minimal_propositional_denotation]{minimal semantics}, \( \varphi \vDash \syntop \) for every formula \( \varphi \).
+
+    \thmitem{thm:intuitionistic_deduction_consequences/bot} Under \hyperref[def:truth_value_algebra/intuitionistic]{intuitionistic semantics}, \( \synbot \vDash \varphi \) for every formula \( \varphi \).
+  \end{thmenum}
+\end{corollary}
+\begin{proof}
+  \SubProofOf{thm:intuitionistic_deduction_consequences/top} Follows from \cref{thm:def:heyting_algebra/top_right}.
+
+  \SubProofOf{thm:intuitionistic_deduction_consequences/bot} Follows from \cref{thm:def:heyting_algebra/leq}.
+\end{proof}
+
+\paragraph{Propositional intuitionistic semantics}
+
+\begin{concept}\label{con:brouwer_heyting_kolmogorov_interpretation}\mcite[sec. 1.3.1]{TroelstraSchwichtenberg2000BasicProofTheory}
+  \hyperref[def:propositional_semantics]{Intuitionistic semantics} correspond to the less formal \term{Brouwer-Heyting-Kolmogorov interpretation}. This interpretation is based on the notion of a \enquote{construction}, which is also why we will refer to intuitionistic logic as \term{constructive logic}.
+
+  \begin{thmenum}
+    \thmitem{con:brouwer_heyting_kolmogorov_interpretation/verum} We suppose that \( \syntop \) is evident without a construction.
+
+    \thmitem{con:brouwer_heyting_kolmogorov_interpretation/falsum} There is no construction that proves \( \synbot \).
+
+    \thmitem{con:brouwer_heyting_kolmogorov_interpretation/atomic} We suppose that we know what constitutes a construction proving a propositional variable.
+
+    \thmitem{con:brouwer_heyting_kolmogorov_interpretation/disjunction} A construction proving \( \varphi \synvee \psi \) is a construction proving \( \varphi \) or a construction proving \( \psi \).
+
+    \thmitem{con:brouwer_heyting_kolmogorov_interpretation/conjunction} A construction proving \( \varphi \synwedge \psi \) is a pair of constructions, one proving \( \varphi \) and one proving \( \psi \).
+
+    \thmitem{con:brouwer_heyting_kolmogorov_interpretation/conditional} A construction proving \( \varphi \synimplies \psi \) is a transformation of constructions proving \( \varphi \) into constructions proving \( \psi \).
+
+    \thmitem{con:brouwer_heyting_kolmogorov_interpretation/biconditional} Based on \cref{con:brouwer_heyting_kolmogorov_interpretation/conditional}, the biconditional \( \varphi \syniff \varphi \) then corresponds to a pair of transformations (not necessarily inverses).
+
+    \thmitem{con:brouwer_heyting_kolmogorov_interpretation/negation} A construction of \( \neg \varphi \) demonstrates the impossibility of a construction of \( \varphi \). Based on \cref{con:brouwer_heyting_kolmogorov_interpretation/falsum} and \cref{con:brouwer_heyting_kolmogorov_interpretation/conditional}, a construction of \( \neg \varphi \) should correspond to a transformation of constructions transforming proofs of \( \varphi \) into elements of the empty set, and such a transformation is only possible if there exist no constructions proving \( \varphi \).
+  \end{thmenum}
+\end{concept}
+
+\begin{example}\label{ex:con:brouwer_heyting_kolmogorov_interpretation/well_ordering_principle_zfc}
+  \Fullref{thm:well_ordering_theorem} in \hyperref[def:zfc]{\( \logic{ZFC} \)} does not provide a way to construct a well-ordering of an arbitrary set. The theorem relies on the axiom of choice, whose consequence \fullref{thm:diaconescu_goodman_myhill_theorem} proves the law of the excluded middle \eqref{eq:thm:classical_tautologies/lem} from the axioms of \logic{ZF}.
+
+  Since \eqref{eq:thm:classical_tautologies/lem} does not generally hold in intuitionistic logic, it follows that both \fullref{thm:well_ordering_theorem} and the axiom of choice itself should not in general hold under the Brouwer-Heyting-Kolmogorov interpretation. By the terminology in \cref{con:brouwer_heyting_kolmogorov_interpretation}, then, \fullref{thm:well_ordering_theorem} is a non-constructive theorem.
+\end{example}
+
 \begin{example}\label{ex:def:propositional_semantics}
   We list some examples related to \hyperref[def:propositional_semantics]{propositional semantics}:
   \begin{thmenum}
@@ -536,14 +737,6 @@ There are different approaches to formalizing the syntax of propositional logic.
   \end{thmenum}
 \end{example}
 
-\begin{remark}\label{rem:classical_propositional_interpretations}
-  Note that a propositional interpretation may be used to define denotations different from the one in \cref{def:propositional_denotation}. For example, the semantics for \hyperref[con:minimal_logic]{minimal logic} defined in \cref{def:minimal_propositional_semantics} require a slight variation.
-
-  Thus, an interpretation cannot, by itself, be \hyperref[con:classical_logic]{classical} or \hyperref[con:intuitionistic_logic]{intuitionistic}.
-
-  On the other hand, (institutional) models can be classical, and propositional models are interpretations, so we are free to use the term \enquote{classical model} when referring to interpretations in an appropriate context.
-\end{remark}
-
 \begin{proposition}\label{thm:intuitionistic_equivalences}
   We list some \hyperref[def:truth_value_algebra/intuitionistic]{intuitionistic} propositional \hyperref[def:semantic_equivalence]{semantic equivalences}, which also extend to \hyperref[def:first_order_logic]{first-order logic} via \fullref{alg:fol_propositional_formula_translation}:
   \begin{thmenum}
@@ -552,7 +745,7 @@ There are different approaches to formalizing the syntax of propositional logic.
       \mathllap{\synneg \varphi} \gleichstark \mathrlap{\varphi \synimplies \synbot.}
     \end{equation}
 
-    This equivalence is used when defining minimal semantics in \cref{def:minimal_propositional_semantics}.
+    This equivalence is used when defining minimal semantics in \cref{def:minimal_propositional_denotation}.
 
     \thmitem{thm:intuitionistic_equivalences/top_elim} We can eliminate verum from the antecedent of conditional formulas:
     \begin{equation}\label{eq:thm:intuitionistic_equivalences/top_elim}
@@ -704,7 +897,7 @@ There are different approaches to formalizing the syntax of propositional logic.
 \begin{comments}
   \item Some other useful tautologies hold in classical logic --- see \cref{thm:classical_tautologies}.
 
-  \item Both \eqref{eq:thm:intuitionistic_tautologies/dni} and \eqref{eq:thm:intuitionistic_tautologies/lnc} hold under \hyperref[def:minimal_propositional_semantics]{minimal semantics}, but our semantic proofs for them are not valid in minimal logic. We will demonstrate simple syntactic proofs in \cref{thm:syntactic_minimal_tautologies}.
+  \item Both \eqref{eq:thm:intuitionistic_tautologies/dni} and \eqref{eq:thm:intuitionistic_tautologies/lnc} hold under \hyperref[def:minimal_propositional_denotation]{minimal semantics}, but our semantic proofs for them are not valid in minimal logic. We will demonstrate simple syntactic proofs in \cref{thm:syntactic_minimal_tautologies}.
 \end{comments}
 \begin{proof}
   Fix an interpretation \( I \).
@@ -763,186 +956,6 @@ There are different approaches to formalizing the syntax of propositional logic.
     \reloset {\ref{thm:def:heyting_algebra/extrema_pseudocomplement}} =
     \semtop.
   \end{equation*}
-\end{proof}
-
-\paragraph{Brouwer-Heyting-Kolmogorov interpretation}
-
-\begin{concept}\label{con:brouwer_heyting_kolmogorov_interpretation}\mcite[sec. 1.3.1]{TroelstraSchwichtenberg2000BasicProofTheory}
-  \hyperref[def:propositional_semantics]{Intuitionistic semantics} correspond to the less formal \term{Brouwer-Heyting-Kolmogorov interpretation}. This interpretation is based on the notion of a \enquote{construction}, which is also why we will refer to intuitionistic logic as \term{constructive logic}.
-
-  \begin{thmenum}
-    \thmitem{con:brouwer_heyting_kolmogorov_interpretation/verum} We suppose that \( \syntop \) is evident without a construction.
-
-    \thmitem{con:brouwer_heyting_kolmogorov_interpretation/falsum} There is no construction that proves \( \synbot \).
-
-    \thmitem{con:brouwer_heyting_kolmogorov_interpretation/atomic} We suppose that we know what constitutes a construction proving a propositional variable.
-
-    \thmitem{con:brouwer_heyting_kolmogorov_interpretation/disjunction} A construction proving \( \varphi \synvee \psi \) is a construction proving \( \varphi \) or a construction proving \( \psi \).
-
-    \thmitem{con:brouwer_heyting_kolmogorov_interpretation/conjunction} A construction proving \( \varphi \synwedge \psi \) is a pair of constructions, one proving \( \varphi \) and one proving \( \psi \).
-
-    \thmitem{con:brouwer_heyting_kolmogorov_interpretation/conditional} A construction proving \( \varphi \synimplies \psi \) is a transformation of constructions proving \( \varphi \) into constructions proving \( \psi \).
-
-    \thmitem{con:brouwer_heyting_kolmogorov_interpretation/biconditional} Based on \cref{con:brouwer_heyting_kolmogorov_interpretation/conditional}, the biconditional \( \varphi \syniff \varphi \) then corresponds to a pair of transformations (not necessarily inverses).
-
-    \thmitem{con:brouwer_heyting_kolmogorov_interpretation/negation} A construction of \( \neg \varphi \) demonstrates the impossibility of a construction of \( \varphi \). Based on \cref{con:brouwer_heyting_kolmogorov_interpretation/falsum} and \cref{con:brouwer_heyting_kolmogorov_interpretation/conditional}, a construction of \( \neg \varphi \) should correspond to a transformation of constructions transforming proofs of \( \varphi \) into elements of the empty set, and such a transformation is only possible if there exist no constructions proving \( \varphi \).
-  \end{thmenum}
-\end{concept}
-
-\begin{example}\label{ex:con:brouwer_heyting_kolmogorov_interpretation/well_ordering_principle_zfc}
-  \Fullref{thm:well_ordering_theorem} in \hyperref[def:zfc]{\( \logic{ZFC} \)} does not provide a way to construct a well-ordering of an arbitrary set. The theorem relies on the axiom of choice, whose consequence \fullref{thm:diaconescu_goodman_myhill_theorem} proves the law of the excluded middle \eqref{eq:thm:classical_tautologies/lem} from the axioms of \logic{ZF}.
-
-  Since \eqref{eq:thm:classical_tautologies/lem} does not generally hold in intuitionistic logic, it follows that both \fullref{thm:well_ordering_theorem} and the axiom of choice itself should not in general hold under the Brouwer-Heyting-Kolmogorov interpretation. By the terminology in \cref{con:brouwer_heyting_kolmogorov_interpretation}, then, \fullref{thm:well_ordering_theorem} is a non-constructive theorem.
-\end{example}
-
-\paragraph{Minimal propositional semantics}
-
-\begin{definition}\label{def:minimal_propositional_semantics}\mimprovised
-  In addition to classical and intuitionistic semantics discussed in \cref{def:truth_value_algebra}, we will also occasionally consider \term{minimal semantics}, obtained by interpreting \( \synbot \) as a propositional variable. Thus, a propositional interpretation must now provide a value for \( \synbot \).
-
-  Formula denotations are thus defined as follows:
-  \begin{empheq}[left={\Bracks{\varphi}_I} \coloneqq \empheqlbrace]{align}
-    &I(\synbot),                             &&\varphi = \synbot,      \label{eq:def:minimal_propositional_semantics/bot} \\
-    &\Bracks{\psi}_I \rightarrow I(\synbot), &&\varphi = \synneg \psi, \label{eq:def:minimal_propositional_semantics/neg} \\
-    &\vdots,                                 && \notag
-  \end{empheq}
-  the other cases being the same as in \cref{def:propositional_denotation}.
-\end{definition}
-\begin{comments}
-  \item Minimal logic was introduced by Ingebrigt Johansson as an attempt to further refine intuitionistic logic. An analysis of his works and his interactions with Gerhard Gentzen is given by \incite{VanDerMolen2016MinimalLogic}. No semantics are discussed there.
-\end{comments}
-
-\begin{remark}\label{rem:minimal_semantics_and_falsum}
-  For achieving minimal semantics, in \cref{def:minimal_propositional_semantics} we treat the falsum \( \synbot \) as a propositional variable.
-
-  Unless we are specifically interested in \( \synbot \) and \( \synneg \), a more reasonable approach may be to only consider the \hyperref[con:syntax_fragment]{fragment} of propositional logic without them. This is approach to minimal logic mentioned in \cite[49]{Mimram2020ProgramEqualsProof} and used in \cref{def:minimal_implication_logic}.
-
-  Both in \fullref{sec:propositional_natural_deduction} and in \fullref{sec:propositional_completeness}, we will find it simpler to generalize the semantics as we did here. Our definition for minimal semantics is based on the principles outlined in \cite[3]{VanDerMolen2016MinimalLogic}, \cite[35]{TroelstraSchwichtenberg2000BasicProofTheory} and \cite[1]{DienerMcKubreJordens2020MaterialImplication}, although none of the aforementioned authors discuss semantics.
-\end{remark}
-
-\begin{definition}\label{def:paraconsistent_consequence_operator}\mcite{StanfordPlato:paraconsistent_logic}
-  We say that the \hyperref[def:consequence_operator]{consequence operator} \( \vdash \) for \hyperref[def:propositional_formula]{propositional formulas} is \term{explosive} if \fullref{thm:propositional_semantic_efq} holds, i.e. if \( \synbot \vdash \varphi \) for any formula \( \varphi \).
-
-  If \( \vdash \) is not explosive, we say that it is \term{paraconsistent}.
-\end{definition}
-
-\begin{proposition}\label{thm:minimal_semantics_is_paraconsistent}
-  \hyperref[def:minimal_propositional_semantics]{Minimal semantics} is \hyperref[def:paraconsistent_consequence_operator]{paraconsistent}.
-\end{proposition}
-\begin{proof}
-  Fix an interpretation \( I \) such that \( I(\synbot) = \semtop \) and \( I(\synp) = \sembot \). Then \( I \vDash \synbot \), yet \( I \nvDash p \).
-\end{proof}
-
-\begin{proposition}\label{thm:intuitionistic_semantics_are_explosive}
-  \hyperref[def:propositional_semantics]{Intuitionistic semantics} is \hyperref[def:paraconsistent_consequence_operator]{explosive}.
-\end{proposition}
-\begin{proof}
-  Fix two formulas, \( \varphi \) and \( \psi \), and an interpretation \( I \) such that \( I \vDash \varphi \) and \( I \vDash \synneg \varphi \). Then \( I \vDash \varphi \synwedge \synneg \varphi \) because
-  \begin{equation*}
-    \Bracks{\varphi \synwedge \synneg \varphi}_I
-    \reloset {\eqref{eq:def:propositional_denotation/conn}} =
-    \Bracks{\varphi}_I \synwedge \Bracks{\synneg \varphi}_I
-    =
-    \semtop \wedge \semtop
-    =
-    \semtop.
-  \end{equation*}
-
-  But also
-  \begin{equation*}
-    \Bracks{\varphi \synwedge \synneg \varphi}_I
-    \reloset {\eqref{eq:def:propositional_denotation/conn}} =
-    \Bracks{\varphi}_I \wedge \Bracks{\synneg \varphi}_I
-    \reloset {\eqref{eq:thm:intuitionistic_equivalences/negation_bottom}} =
-    \Bracks{\varphi}_I \wedge (\Bracks{\varphi}_I \rightarrow \sembot)
-    \reloset {\eqref{eq:def:heyting_algebra/axioms/modus_ponens}} =
-    \Bracks{\varphi}_I \wedge \sembot
-    =
-    \sembot.
-  \end{equation*}
-
-  The obtained contradiction shows that such an interpretation \( I \) does not exist.
-
-  Therefore, for all zero interpretations \( I \) for which both \( I \vDash \varphi \) and \( I \vDash \psi \), we can conclude that \( I \vDash \psi \) for any formula \( \psi \).
-\end{proof}
-
-\begin{proposition}\label{thm:semantic_propositional_conjunction_of_premises}
-  With respect to \hyperref[def:minimal_propositional_semantics]{minimal semantics}, we have \( \varphi_1, \ldots, \varphi_n \vDash \psi \) if and only if \( (\varphi_1 \synwedge \cdots \synwedge \varphi_n) \vDash \psi \).
-\end{proposition}
-\begin{proof}
-  By induction on \( n \), we can easily show that
-  \begin{equation*}
-    \Bracks{\varphi_1 \synwedge \cdots \synwedge \varphi_n}_I
-    \reloset {\eqref{eq:def:propositional_denotation/conn}} =
-    \Bracks{\varphi_1}_I \wedge \cdots \wedge \Bracks{\varphi_n}_I,
-  \end{equation*}
-  so \( \Bracks{\varphi_1 \synwedge \cdots \synwedge \varphi_n}_I = \semtop \) if and only if \( \Bracks{\varphi_k}_I = \semtop \) for every \( k = 1, \ldots, n \).
-\end{proof}
-
-\begin{theorem}[Propositional semantic deduction theorem]\label{thm:propositional_semantic_deduction_theorem}
-  With respect to \hyperref[def:minimal_propositional_semantics]{minimal semantics}, for an arbitrary \hyperref[def:truth_value_algebra]{truth value algebra} and for arbitrary propositional formulas, we have
-  \begin{equation*}
-    \Gamma, \varphi \vDash \psi \T{if and only if} \Gamma \vDash \varphi \synimplies \psi.
-  \end{equation*}
-\end{theorem}
-\begin{comments}
-  \item This is one of several deduction theorems presented here --- see \cref{rem:deduction_theorem_list/propositional_semantic}.
-\end{comments}
-\begin{proof}
-  Fix an interpretation \( I \) satisfying \( \Gamma \).
-
-  \SufficiencySubProof Suppose that from \( I \vDash \varphi \) it follows that \( I \vDash \psi \). If \( I \vDash \varphi \), then
-  \begin{equation*}
-    \Bracks{\varphi \synimplies \psi}_I
-    =
-    \underbrace{\Bracks{\varphi}_I}_T \rightarrow \underbrace{\Bracks{\psi}_I}_T
-    \reloset {\ref{thm:def:heyting_algebra/top_left}} =
-    \underbrace{\Bracks{\psi}_I}_T,
-  \end{equation*}
-  thus \( I \vDash (\varphi \synimplies \psi) \).
-
-  \NecessitySubProof Suppose that \( I \vDash (\varphi \synimplies \psi) \). If additionally \( I \vDash \varphi \), then
-  \begin{equation*}
-    \underbrace{\Bracks{\varphi \synimplies \psi}_I}_{\semtop}
-    =
-    \underbrace{\Bracks{\varphi}_I}_T \rightarrow \Bracks{\psi}_I
-    \reloset {\ref{thm:def:heyting_algebra/top_left}} =
-    \Bracks{\psi}_I,
-  \end{equation*}
-  thus \( I \vDash \psi \).
-\end{proof}
-
-\begin{corollary}\label{thm:propositional_deduction_theorem_leq}
-  For \hyperref[def:propositional_formula]{propositional formulas} we have \( \Gamma, \varphi \vDash \psi \) if and only if, for every \hyperref[def:propositional_semantics/model]{model} \( I \) of \( \Gamma \), we have \( \Bracks{\varphi}_I \leq \Bracks{\psi}_I \).
-\end{corollary}
-\begin{proof}
-  \Fullref{thm:propositional_semantic_deduction_theorem} implies that \( \Gamma, \varphi \vDash \psi \) if and only if \( \Gamma \vDash (\varphi \synimplies \psi) \).
-
-  Let \( I \) be a model of \( \Gamma \). We must prove that \( \Gamma \vDash (\varphi \synimplies \psi) \) if and only if \( \Bracks{\varphi}_I \leq \Bracks{\psi}_I \). This readily follows from \cref{thm:def:heyting_algebra/leq}.
-\end{proof}
-
-\begin{remark}\label{rem:deduction_theorem_list}
-  The following is a list of different flavors of the \enquote{deductive theorem} that allows us to use \hyperref[def:propositional_alphabet/connectives/conditional]{implication} and \hyperref[def:entailment_system/entailment]{entailment} interchangeably:
-  \begin{thmenum}
-    \thmitem{rem:deduction_theorem_list/propositional_semantic} \Fullref{thm:propositional_semantic_deduction_theorem}.
-    \thmitem{rem:deduction_theorem_list/implicational_syntactic} \Fullref{thm:implicational_syntactic_deduction_theorem}.
-    \thmitem{rem:deduction_theorem_list/propositional_syntactic} \Fullref{thm:propositional_syntactic_deduction_theorem}.
-    \thmitem{rem:deduction_theorem_list/fol_semantic} \Fullref{thm:fol_semantic_deduction_theorem}.
-  \end{thmenum}
-\end{remark}
-
-\begin{corollary}\label{thm:intuitionistic_deduction_consequences}
-  We list some consequences of \fullref{thm:propositional_semantic_deduction_theorem}:
-  \begin{thmenum}
-    \thmitem{thm:intuitionistic_deduction_consequences/top} Under \hyperref[def:minimal_propositional_semantics]{minimal semantics}, \( \varphi \vDash \syntop \) for every formula \( \varphi \).
-
-    \thmitem{thm:intuitionistic_deduction_consequences/bot} Under \hyperref[def:truth_value_algebra/intuitionistic]{intuitionistic semantics}, \( \synbot \vDash \varphi \) for every formula \( \varphi \).
-  \end{thmenum}
-\end{corollary}
-\begin{proof}
-  \SubProofOf{thm:intuitionistic_deduction_consequences/top} Follows from \cref{thm:def:heyting_algebra/top_right}.
-
-  \SubProofOf{thm:intuitionistic_deduction_consequences/bot} Follows from \cref{thm:def:heyting_algebra/leq}.
 \end{proof}
 
 \paragraph{Classical propositional semantics}
