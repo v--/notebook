@@ -1,3 +1,5 @@
+\ExplSyntaxOn
+
 % Multi-page align environments
 % Based on https://tex.stackexchange.com/a/162895
 \NewDocumentEnvironment {balign*} {}
@@ -59,14 +61,33 @@
       }
   }
 
-\NewDocumentEnvironment {MemoryLine} {m}
+\tl_new:N \l_nb_memory_line_array_param
+\NewDocumentEnvironment {MemoryLine} {mo}
   {
+    \IfValueTF {#2}
+      {
+        \tl_set:Nn \l_nb_memory_line_array_param
+          {
+            *{\int_eval:n {#2 - 1}} {| c}
+            {!{\vline width 1.5pt} c !{\vline width 1.5pt}}
+            *{\int_eval:n {#1 - #2}} {c |}
+          }
+      }
+      {
+        \tl_set:Nn \l_nb_memory_line_array_param
+          {
+            | *{#1} {c |}
+          }
+      }
+
     \begin{equation*}
-    \begin{array}{| *{#1} {c |}}
-    \toprule
+    \exp_args:Nne \begin {array} {\l_nb_memory_line_array_param}
+    \hline
   }
   {
-    \\ \bottomrule
+    \\ \hline
     \end{array}
     \end{equation*}
   }
+
+\ExplSyntaxOff
