@@ -138,53 +138,53 @@
   In this example, we will regard \hyperref[def:positional_number_system]{digit string} as lines of \enquote{memory cells}, like those of a physical computer or a \hyperref[def:turing_machine]{Turing machine's tape}.
 
   \hyperref[def:endianness/little]{Big-endian} ordering corresponds to how digits are encoded in the familiar decimal system --- the number \( 234 \) is \hyperref[def:ring_of_unsigned_integers]{encoded} by the decimal digit string
-  \begin{MemoryLine}{3}
-    2 & 3 & 4
+  \begin{MemoryLine}
+    2 3 4
   \end{MemoryLine}
 
   \hyperref[def:endianness/little]{Little-endian} ordering, on the other hand, would encode the same number as
-  \begin{MemoryLine}{3}
-    4 & 3 & 2
+  \begin{MemoryLine}
+    4 3 2
   \end{MemoryLine}
 
   Little-endianness allows certain algorithmic patterns that big-endianness does not. Some of them are discussed in \cite{SESE:little_endianness}.
 
   For example, consider a long memory line with segments of cells, each segment having the same endianness. The unique \( 8 \)-digit big-endian decimal encoding of \( 234 \) corresponds to the segment
-  \begin{MemoryLine}{12}
-    \anon & \anon & \MemoryLineArrow 0 & 0 & 0 & 0 & 0 & 2 & 3 & 4 & \anon & \anon
+  \begin{MemoryLine}
+    \MP \MP \MH{0} 0 0 0 0 2 3 4 \MP \MP
   \end{MemoryLine}
 
-  We have denoted the beginning of the segment with an arrow pointer. Clearly \( 234 \) can be encoded via smaller \( 4 \)-digit segments.
+  We have marked the beginning of the segment. Clearly \( 234 \) can be encoded with a smaller \( 4 \)-digit segment.
 
   If we depend on reading the memory line sequentially, we need to scan the entire segment to determine the least significant digit. For algorithms that depend on reading the least significant bit first, like \fullref{alg:addition_with_carrying} or even the evenness check \cref{thm:nonnegative_integer_binary_expansion_parity}, this requires scanning the whole segment and then possibly going backwards.
 
   To convert the \( 8 \)-digit segment above to a \( 4 \)-digit segment, one option is to move the pointer and discard the first \( 4 \) digits of the \( 8 \)-digit segment:
-  \begin{MemoryLine}{12}
-    \anon & \anon & \anon & \anon & \anon & \anon & \MemoryLineArrow 0 & 2 & 3 & 4 & \anon & \anon
+  \begin{MemoryLine}
+    \MP \MP \MP \MP \MP \MP \MH{0} 2 3 4 \MP \MP
   \end{MemoryLine}
 
   Another option is to move the least significant \( 4 \) digits and discard the rest:
-  \begin{MemoryLine}{12}
-    \anon & \anon & \MemoryLineArrow 0 & 2 & 3 & 4 & \anon & \anon & \anon & \anon & \anon & \anon
+  \begin{MemoryLine}
+    \MP \MP \MH{0} 2 3 4 \MP \MP \MP \MP \MP \MP
   \end{MemoryLine}
 
   With little-endian order, this operation is instead \enquote{free}. The original \( 8 \)-digit segment is
-  \begin{MemoryLine}{12}
-    \anon & \anon & \MemoryLineArrow 4 & 3 & 2 & 0 & 0 & 0 & 0 & 0 & \anon & \anon
+  \begin{MemoryLine}
+    \MP \MP \MH{4} 3 2 0 0 0 0 0 \MP \MP
   \end{MemoryLine}
 
   To obtain a \( 4 \)-digit segment, we simply discard the most significant digits:
-  \begin{MemoryLine}{12}
-    \anon & \anon & \MemoryLineArrow 4 & 3 & 2 & 0 & \anon & \anon & \anon & \anon & \anon & \anon
+  \begin{MemoryLine}
+    \MP \MP \MH{4} 3 2 0 \MP \MP \MP \MP \MP \MP
   \end{MemoryLine}
 
   This has impact on arithmetic, for example. Adding the above to the segment
-  \begin{MemoryLine}{12}
-    \anon & \anon & \MemoryLineArrow 6 & 6 & 7 & 9 & \anon & \anon & \anon & \anon & \anon & \anon
+    \begin{MemoryLine}
+    \MP \MP \MH{6} 6 7 9 \MP \MP \MP \MP \MP \MP
   \end{MemoryLine}
   results in the \( 5 \)-digit segment
-  \begin{MemoryLine}{12}
-    \anon & \anon & \MemoryLineArrow 0 & 0 & 0 & 0 & 1 & \anon & \anon & \anon & \anon & \anon
+  \begin{MemoryLine}
+    \MP \MP \MH{0} 0 0 0 1 \MP \MP \MP \MP \MP
   \end{MemoryLine}
 
   We can start summing via \fullref{alg:addition_with_carrying} from the least significant bits. The algorithm states that the sum has at most one digit more than the summands. If we pre-allocate one spare digit to the right, we are guaranteed for the sum to fit, and we can trivially discard unused digits later. Such discarding is not possible with big-endian ordering.
