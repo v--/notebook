@@ -18,7 +18,7 @@ class IdentifierParserMixin[TokenKindT, TokenT: Token](Parser[TokenT]):
             raise self.annotate_unexpected_end_of_input()
 
         if head.kind != token_kind:
-            raise self.annotate_token_error('Expected a Latin identifier')
+            raise self.annotate_token_error(f'Unexpected token kind {head.kind}')
 
         letter = head.value[0]
         subscript = head.value[1:]
@@ -37,7 +37,7 @@ class IdentifierParserMixin[TokenKindT, TokenT: Token](Parser[TokenT]):
             raise self.annotate_unexpected_end_of_input()
 
         if head.kind != token_kind:
-            raise self.annotate_token_error('Expected a Greek identifier')
+            raise self.annotate_token_error(f'Unexpected token kind {head.kind}')
 
         letter = head.value[0]
         subscript = head.value[1:]

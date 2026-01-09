@@ -59,10 +59,10 @@ class BaseSignatureSymbol(abc.ABC):
         ):
             raise FormalLogicSignatureError(f'Cannot use the improper symbol {name} as a proper signature symbol')
 
-        if is_latin_identifier(name, Capitalization.LOWER):
+        if is_latin_identifier(name, Capitalization.SMALL):
             raise FormalLogicSignatureError(f'Cannot use {name} as a proper signature symbol because that conflicts with the grammar of variables')
 
-        if is_greek_identifier(name, Capitalization.LOWER):
+        if is_greek_identifier(name, Capitalization.SMALL):
             raise FormalLogicSignatureError(f'Cannot use {name} as a proper signature symbol because that conflicts with the grammar of placeholders')
 
         if notation == SignatureSymbolNotation.INFIX and arity != 2:

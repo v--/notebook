@@ -19,7 +19,7 @@ def infer_zhegalkin(fun: Callable[..., bool]) -> BooleanPolynomial:
 
     first_param = next(iter(fun_params.values()))
 
-    if not is_latin_string(first_param.name, Capitalization.LOWER) or len(first_param.name) != 1:
+    if not is_latin_string(first_param.name, Capitalization.SMALL) or len(first_param.name) != 1:
         raise IndeterminateError(f'Expected a lowercase Latin letter as a parameter name, but got {first_param.name!r}.') from None
 
     first_pol, = BooleanPolynomial.from_monomials(Monomial.from_indeterminate(LatinIdentifier(first_param.name)))

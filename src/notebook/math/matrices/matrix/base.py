@@ -12,10 +12,10 @@ from ..exceptions import MatrixIndexError, MatrixValueError
 class SpecialChars(StrEnum):
     SINGLE_LEFT = '('
     SINGLE_RIGHT = ')'
-    UPPER_LEFT = '⎛'
-    LOWER_LEFT = '⎝'
-    UPPER_RIGHT = '⎞'
-    LOWER_RIGHT = '⎠'
+    CAPITAL_LEFT = '⎛'
+    SMALL_LEFT = '⎝'
+    CAPITAL_RIGHT = '⎞'
+    SMALL_RIGHT = '⎠'
     PIPE = '⎜'
 
 
@@ -255,9 +255,9 @@ class BaseMatrix[N: ISemiring](metaclass=MatrixMeta):
             if self.m == 1:
                 yield SpecialChars.SINGLE_LEFT
             elif i == 0:
-                yield SpecialChars.UPPER_LEFT
+                yield SpecialChars.CAPITAL_LEFT
             elif i == self.m - 1:
-                yield SpecialChars.LOWER_LEFT
+                yield SpecialChars.SMALL_LEFT
             else:
                 yield SpecialChars.PIPE
 
@@ -271,9 +271,9 @@ class BaseMatrix[N: ISemiring](metaclass=MatrixMeta):
             if self.n == 1:
                 yield SpecialChars.SINGLE_RIGHT
             elif i == 0:
-                yield SpecialChars.UPPER_RIGHT
+                yield SpecialChars.CAPITAL_RIGHT
             elif i == self.m - 1:
-                yield SpecialChars.LOWER_RIGHT
+                yield SpecialChars.SMALL_RIGHT
             else:
                 yield SpecialChars.PIPE
 

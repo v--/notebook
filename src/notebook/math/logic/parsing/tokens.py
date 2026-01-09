@@ -10,8 +10,9 @@ from ..alphabet import AuxImproperSymbol, BinaryConnective, EqualitySymbol, Prop
 LogicTokenKind = Literal[
     # Value-dependent
     'SIGNATURE_SYMBOL',
-    'LATIN_IDENTIFIER',
-    'GREEK_IDENTIFIER',
+    'SMALL_LATIN_IDENTIFIER',
+    'SMALL_GREEK_IDENTIFIER',
+    'CAPITAL_GREEK_IDENTIFIER',
 
     # Singletons
     'PROP_CONSTANT',
@@ -21,6 +22,7 @@ LogicTokenKind = Literal[
 
     'EQUALITY',
 
+    'SEQUENT',
     'DOT',
     'COMMA',
     'ASTERISK',

@@ -5,6 +5,7 @@ from typing import Literal, cast, overload
 from ....parsing import GreekIdentifier, IdentifierParserMixin, Parser
 from ....support.substitution import ImproperSubstitutionSymbol
 from ..alphabet import BinaryConnective, PropConstantSymbol, Quantifier, UnaryPrefix
+from ..contexts import LogicalContext, LogicalContextPlaceholder, LogicalContextSchema
 from ..deduction import (
     Marker,
     NaturalDeductionPremise,
@@ -28,6 +29,7 @@ from ..formulas import (
     QuantifierFormula,
     QuantifierFormulaSchema,
 )
+from ..sequents import Sequent, SequentSchema
 from ..signature import (
     EMPTY_SIGNATURE,
     FormalLogicSignature,
@@ -66,19 +68,23 @@ class FormalLogicParser(IdentifierParserMixin[LogicTokenKind, LogicToken], Parse
         self.signature = signature
 
     def _parse_undetermined_placeholder(self) -> UndeterminedPlaceholder:
-        identifier = self.parse_greek_identifier('GREEK_IDENTIFIER')
+        identifier = self.parse_greek_identifier('SMALL_GREEK_IDENTIFIER')
         return UndeterminedPlaceholder(identifier)
 
     def parse_term_placeholder(self) -> TermPlaceholder:
-        identifier = self.parse_greek_identifier('GREEK_IDENTIFIER')
+        identifier = self.parse_greek_identifier('SMALL_GREEK_IDENTIFIER')
         return TermPlaceholder(identifier)
 
     def parse_formula_placeholder(self) -> FormulaPlaceholder:
-        identifier = self.parse_greek_identifier('GREEK_IDENTIFIER')
+        identifier = self.parse_greek_identifier('SMALL_GREEK_IDENTIFIER')
         return FormulaPlaceholder(identifier)
 
+    def parse_context_placeholder(self) -> LogicalContextPlaceholder:
+        identifier = self.parse_greek_identifier('CAPITAL_GREEK_IDENTIFIER')
+        return LogicalContextPlaceholder(identifier)
+
     def parse_marker(self) -> Marker:
-        identifier = self.parse_latin_identifier('LATIN_IDENTIFIER')
+        identifier = self.parse_latin_identifier('SMALL_LATIN_IDENTIFIER')
         return Marker(identifier)
 
     @overload
@@ -88,7 +94,7 @@ class FormalLogicParser(IdentifierParserMixin[LogicTokenKind, LogicToken], Parse
     @overload
     def parse_variable(self, *, parse_schema: bool) -> Variable | VariablePlaceholder: ...
     def parse_variable(self, *, parse_schema: bool) -> Variable | VariablePlaceholder:
-        identifier = self.parse_latin_identifier('LATIN_IDENTIFIER')
+        identifier = self.parse_latin_identifier('SMALL_LATIN_IDENTIFIER')
 
         if parse_schema:
             return VariablePlaceholder(identifier)
@@ -165,7 +171,6 @@ class FormalLogicParser(IdentifierParserMixin[LogicTokenKind, LogicToken], Parse
     @overload
     def _parse_application_args(self, context: LogicParserContext, symbol: SignatureSymbol, *, parse_schema: bool) -> Sequence[Term] | Sequence[TermSchema]: ...
     def _parse_application_args(self, context: LogicParserContext, symbol: SignatureSymbol, *, parse_schema: bool) -> Sequence[Term] | Sequence[TermSchema]:
-        # A narrower type leads to duplicated code
         arguments = list[Term | TermSchema]()
 
         match symbol.notation:
@@ -183,7 +188,10 @@ class FormalLogicParser(IdentifierParserMixin[LogicTokenKind, LogicToken], Parse
         if symbol.arity != len(arguments):
             raise context.annotate_context_error(f'Expected {symbol.arity} arguments for the {symbol.get_kind_string()} {symbol}, but got {len(arguments)}')
 
-        return cast(Sequence[TermSchema] | Sequence[Term], arguments)
+        if parse_schema:
+            return cast(Sequence[TermSchema], arguments)
+
+        return cast(Sequence[Term], arguments)
 
     def _parse_constant_formula(self) -> PropConstant:
         head = self.peek_unsafe()
@@ -216,7 +224,7 @@ class FormalLogicParser(IdentifierParserMixin[LogicTokenKind, LogicToken], Parse
         q = Quantifier(self.peek_unsafe().value)
         head = self.advance_and_peek()
 
-        if not head or head.kind != 'LATIN_IDENTIFIER':
+        if not head or head.kind != 'SMALL_LATIN_IDENTIFIER':
             raise context.annotate_context_error('Expected a variable after the quantifier')
 
         var = self.parse_variable(parse_schema=parse_schema)
@@ -392,10 +400,10 @@ class FormalLogicParser(IdentifierParserMixin[LogicTokenKind, LogicToken], Parse
 
                         return FunctionApplication(symbol, self._parse_application_args(context, symbol, parse_schema=False))
 
-            case 'LATIN_IDENTIFIER':
+            case 'SMALL_LATIN_IDENTIFIER':
                 return self.parse_variable(parse_schema=parse_schema)
 
-            case 'GREEK_IDENTIFIER':
+            case 'SMALL_GREEK_IDENTIFIER':
                 if not parse_schema:
                     raise self.annotate_token_error('Placeholders are only allowed in schemas')
 
@@ -590,6 +598,70 @@ class FormalLogicParser(IdentifierParserMixin[LogicTokenKind, LogicToken], Parse
         self.advance()
         return NaturalDeductionRule(name, premises, self.parse_formula_with_substitution(parse_schema=True))
 
+    @overload
+    def _parse_context_args(self, *, parse_schema: Literal[False]) -> Iterable[Formula]: ...
+    @overload
+    def _parse_context_args(self, *, parse_schema: Literal[True]) -> Iterable[FormulaSchema | LogicalContextPlaceholder]: ...
+    @overload
+    def _parse_context_args(self, *, parse_schema: bool) -> Iterable[Formula | FormulaSchema | LogicalContextPlaceholder]: ...
+    def _parse_context_args(self, *, parse_schema: bool) -> Iterable[Formula | FormulaSchema | LogicalContextPlaceholder]:
+        while head := self.peek():
+            match head.kind:
+                case 'COMMA':
+                    self.advance()
+
+                case 'RIGHT_PARENTHESIS' | 'SEQUENT':
+                    return
+
+                case 'CAPITAL_GREEK_IDENTIFIER':
+                    yield self.parse_context_placeholder()
+
+                case _:
+                    yield self.parse_formula(parse_schema=parse_schema)
+
+    @overload
+    def parse_sequent(self, *, parse_schema: Literal[False]) -> Sequent: ...
+    @overload
+    def parse_sequent(self, *, parse_schema: Literal[True]) -> SequentSchema: ...
+    @overload
+    def parse_sequent(self, *, parse_schema: bool) -> Sequent | SequentSchema: ...
+    def parse_sequent(self, *, parse_schema: bool) -> Sequent | SequentSchema:
+        if not self.peek():
+            raise self.annotate_unexpected_end_of_input()
+
+        head = self.peek()
+        sequent_context = LogicParserContext(self)
+
+        if not head or head.kind != 'LEFT_PARENTHESIS':
+            raise sequent_context.annotate_context_error('Expected a parenthesized sequent')
+
+        self.advance()
+        left = list(self._parse_context_args(parse_schema=parse_schema))
+        head = self.peek()
+
+        if not head or head.kind != 'SEQUENT':
+            raise sequent_context.annotate_context_error('Expected either a separator or a sequent symbol')
+
+        self.advance()
+        right = list(self._parse_context_args(parse_schema=parse_schema))
+        head = self.peek()
+
+        if not head or head.kind != 'RIGHT_PARENTHESIS':
+            raise sequent_context.annotate_context_error('Expected a closing parenthesis')
+
+        self.advance()
+
+        if parse_schema:
+            return SequentSchema(
+                LogicalContextSchema(cast(Sequence[FormulaSchema | LogicalContextPlaceholder], left)),
+                LogicalContextSchema(cast(Sequence[FormulaSchema | LogicalContextPlaceholder], right))
+            )
+
+        return Sequent(
+            LogicalContext(cast(Sequence[Formula], left)),
+            LogicalContext(cast(Sequence[Formula], right))
+        )
+
 
 def parse_variable(source: str) -> Variable:
     tokens = tokenize_formal_logic_string(EMPTY_SIGNATURE, source)
@@ -687,3 +759,17 @@ def parse_natural_deduction_rule(name: str, source: str, signature: FormalLogicS
 
     with FormalLogicParser(signature, source, tokens) as parser:
         return parser.parse_natural_deduction_rule(name)
+
+
+def parse_sequent(source: str, signature: FormalLogicSignature = EMPTY_SIGNATURE) -> Sequent:
+    tokens = tokenize_formal_logic_string(signature, source)
+
+    with FormalLogicParser(signature, source, tokens) as parser:
+        return parser.parse_sequent(parse_schema=False)
+
+
+def parse_sequent_schema(source: str, signature: FormalLogicSignature = EMPTY_SIGNATURE) -> SequentSchema:
+    tokens = tokenize_formal_logic_string(signature, source)
+
+    with FormalLogicParser(signature, source, tokens) as parser:
+        return parser.parse_sequent(parse_schema=True)

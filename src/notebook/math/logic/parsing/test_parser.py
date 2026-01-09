@@ -14,6 +14,7 @@ from .parser import (
     parse_formula_schema,
     parse_formula_schema_with_substitution,
     parse_natural_deduction_rule,
+    parse_sequent_schema,
     parse_term,
     parse_term_schema_substitution_spec,
     parse_variable,
@@ -617,3 +618,16 @@ def test_parsing_substitution_schema_with_no_closing_bracket() -> None:
           │ ^^^^^^^
         '''
     )
+
+
+@pytest_parametrize_lists(
+    sequent=[
+        '( ⊢ )',
+        '(φ ⊢ φ)',
+        '(Γ, φ ⊢ ψ)',
+        '(Γ ⊢ φ, ψ)',
+        '(Γ ⊢ Δ)',
+    ]
+)
+def test_parsing_sequent_schema(sequent: str) -> None:
+    assert str(parse_sequent_schema(sequent)) == sequent

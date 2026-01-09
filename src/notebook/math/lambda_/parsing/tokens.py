@@ -9,8 +9,9 @@ from ..alphabet import AuxImproperSymbol, BinaryTypeConnective, BinderSymbol
 LambdaTokenKind = Literal[
     # Value-dependent
     'SIGNATURE_SYMBOL',
-    'LATIN_IDENTIFIER',
-    'GREEK_IDENTIFIER',
+    'SMALL_LATIN_IDENTIFIER',
+    'CAPITAL_LATIN_IDENTIFIER',
+    'SMALL_GREEK_IDENTIFIER',
     'BINARY_TYPE_CONNECTIVE',
 
     # Singletons

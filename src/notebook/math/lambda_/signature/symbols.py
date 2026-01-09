@@ -35,10 +35,10 @@ class ConstantTermSymbol(BaseSignatureSymbol):
         if name in BinderSymbol or name in AuxImproperSymbol or name in ImproperInferenceRuleSymbol:
             raise LambdaSignatureError(f'Cannot use the improper symbol {name} as a λ-term constant')
 
-        if is_latin_identifier(name, Capitalization.LOWER):
+        if is_latin_identifier(name, Capitalization.SMALL):
             raise LambdaSignatureError(f'Cannot use {name} as a λ-term constant because that conflicts with the grammar of variables')
 
-        if is_latin_identifier(name, Capitalization.UPPER):
+        if is_latin_identifier(name, Capitalization.CAPITAL):
             raise LambdaSignatureError(f'Cannot use {name} as a λ-term constant because that conflicts with the grammar of placeholders')
 
     @override
@@ -56,7 +56,7 @@ class BaseTypeSymbol(BaseSignatureSymbol):
         if name in BinaryTypeConnective or name in AuxImproperSymbol or name in ImproperInferenceRuleSymbol:
             raise LambdaSignatureError(f'Cannot use the improper symbol {name} as a base type')
 
-        if is_greek_identifier(name, Capitalization.LOWER):
+        if is_greek_identifier(name, Capitalization.SMALL):
             raise LambdaSignatureError(f'Cannot use {name} as a base type because that conflicts with the grammar of type variables')
 
 

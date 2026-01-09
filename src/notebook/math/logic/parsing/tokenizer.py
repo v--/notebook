@@ -32,10 +32,13 @@ class FormalLogicTokenizer(IdentifierTokenizerMixin[LogicTokenKind], TrieTokeniz
         if token := self.read_token_if_trie_matches(context, 'SIGNATURE_SYMBOL', self.signature.trie):
             return token
 
-        if token := self.read_latin_identifier(context, 'LATIN_IDENTIFIER', Capitalization.LOWER):
+        if token := self.read_latin_identifier(context, 'SMALL_LATIN_IDENTIFIER', Capitalization.SMALL):
             return token
 
-        if token := self.read_greek_identifier(context, 'GREEK_IDENTIFIER', Capitalization.LOWER):
+        if token := self.read_greek_identifier(context, 'SMALL_GREEK_IDENTIFIER', Capitalization.SMALL):
+            return token
+
+        if token := self.read_greek_identifier(context, 'CAPITAL_GREEK_IDENTIFIER', Capitalization.CAPITAL):
             return token
 
         raise self.annotate_char_error('Unexpected symbol')

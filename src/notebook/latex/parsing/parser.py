@@ -104,7 +104,7 @@ class LaTeXParser(Parser[LaTeXToken]):
                 self.advance()
 
                 match head.kind:
-                    case 'TEXT' if is_latin_string(head.value, Capitalization.MIXED):
+                    case 'TEXT' if is_latin_string(head.value, Capitalization.ANY):
                         return Command(head.value)
 
                     case 'BACKSLASH':

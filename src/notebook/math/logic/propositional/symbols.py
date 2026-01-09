@@ -24,5 +24,5 @@ class PropVariableSymbol(PredicateSymbol):
 
     @override
     def validate(self, name: str, arity: int, notation: SignatureSymbolNotation | None = None) -> None:
-        if not is_latin_identifier(name, Capitalization.LOWER) and not is_greek_identifier(name, Capitalization.LOWER):
+        if not is_latin_identifier(name, Capitalization.SMALL) and not is_greek_identifier(name, Capitalization.SMALL):
             raise FormalLogicSignatureError('Propositional variables are only allowed to be lowercase Latin or Greek identifiers')

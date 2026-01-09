@@ -6,6 +6,8 @@ from .parser import (
     parse_formula_with_substitution,
     parse_marker,
     parse_natural_deduction_rule,
+    parse_sequent,
+    parse_sequent_schema,
     parse_term,
     parse_term_placeholder,
     parse_term_schema,

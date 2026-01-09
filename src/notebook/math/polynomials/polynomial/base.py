@@ -162,7 +162,7 @@ class BasePolynomial[N: ISemiring](metaclass=PolynomialMeta):
 
     def __call__(self, **kwargs: N) -> N:
         for key in kwargs.keys():
-            if not is_latin_identifier(key, capitalization=Capitalization.LOWER):
+            if not is_latin_identifier(key, capitalization=Capitalization.SMALL):
                 raise IndeterminateError(f'The parameter name {key} is not a valid indeterminate name.') from None
 
         result = self.lift_to_scalar(0)

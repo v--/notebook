@@ -53,11 +53,11 @@ class LambdaParser(IdentifierParserMixin[LambdaTokenKind, LambdaToken], Parser[L
         return BaseType(head.value)
 
     def parse_type_variable(self) -> TypeVariable:
-        identifier = self.parse_greek_identifier('GREEK_IDENTIFIER')
+        identifier = self.parse_greek_identifier('SMALL_GREEK_IDENTIFIER')
         return TypeVariable(identifier)
 
     def parse_type_placeholder(self) -> TypePlaceholder:
-        identifier = self.parse_greek_identifier('GREEK_IDENTIFIER')
+        identifier = self.parse_greek_identifier('SMALL_GREEK_IDENTIFIER')
         return TypePlaceholder(identifier)
 
     @overload
@@ -121,7 +121,7 @@ class LambdaParser(IdentifierParserMixin[LambdaTokenKind, LambdaToken], Parser[L
 
                 return self._parse_base_type()
 
-            case 'GREEK_IDENTIFIER':
+            case 'SMALL_GREEK_IDENTIFIER':
                 if parse_schema:
                     return self.parse_type_placeholder()
 
@@ -140,7 +140,7 @@ class LambdaParser(IdentifierParserMixin[LambdaTokenKind, LambdaToken], Parser[L
         return Constant(head.value)
 
     def parse_term_placeholder(self) -> TermPlaceholder:
-        identifier = self.parse_latin_identifier('LATIN_IDENTIFIER')
+        identifier = self.parse_latin_identifier('CAPITAL_LATIN_IDENTIFIER')
 
         if identifier.value.islower():
             raise self.annotate_token_error('Expected a capital Latin identifier')
@@ -154,7 +154,7 @@ class LambdaParser(IdentifierParserMixin[LambdaTokenKind, LambdaToken], Parser[L
     @overload
     def parse_variable(self, *, parse_schema: bool) -> VariablePlaceholder | Variable: ...
     def parse_variable(self, *, parse_schema: bool) -> VariablePlaceholder | Variable:
-        identifier = self.parse_latin_identifier('LATIN_IDENTIFIER')
+        identifier = self.parse_latin_identifier('SMALL_LATIN_IDENTIFIER')
 
         if parse_schema:
             return VariablePlaceholder(identifier)
@@ -177,7 +177,7 @@ class LambdaParser(IdentifierParserMixin[LambdaTokenKind, LambdaToken], Parser[L
 
         head = self.advance_and_peek(2)
 
-        if not head or head.kind != 'LATIN_IDENTIFIER' or head.value[0].isupper():
+        if not head or head.kind != 'SMALL_LATIN_IDENTIFIER' or head.value[0].isupper():
             raise context.annotate_context_error(f'Expected a variable name after {BinderSymbol.LAMBDA}')
 
         var = self.parse_variable(parse_schema=parse_schema)
@@ -299,10 +299,10 @@ class LambdaParser(IdentifierParserMixin[LambdaTokenKind, LambdaToken], Parser[L
 
                 return self._parse_constant()
 
-            case 'LATIN_IDENTIFIER':
-                if head.value[0].islower():
-                    return self.parse_variable(parse_schema=parse_schema)
+            case 'SMALL_LATIN_IDENTIFIER':
+                return self.parse_variable(parse_schema=parse_schema)
 
+            case 'CAPITAL_LATIN_IDENTIFIER':
                 if parse_schema:
                     return self.parse_term_placeholder()
 
