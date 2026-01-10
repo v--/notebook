@@ -16,7 +16,7 @@ from .base import AtomicLogicSchemaInstantiation
 
 
 @dataclass(frozen=True)
-class InstantiationApplicationVisitor(TermSchemaVisitor[Term]):
+class TermInstantiationApplicationVisitor(TermSchemaVisitor[Term]):
     instantiation: AtomicLogicSchemaInstantiation
 
     @override
@@ -43,4 +43,4 @@ def instantiate_term_schema(schema: VariablePlaceholder, instantiation: AtomicLo
 @overload
 def instantiate_term_schema(schema: TermSchema, instantiation: AtomicLogicSchemaInstantiation) -> Term: ...
 def instantiate_term_schema(schema: TermSchema, instantiation: AtomicLogicSchemaInstantiation) -> Term:
-    return InstantiationApplicationVisitor(instantiation).visit(schema)
+    return TermInstantiationApplicationVisitor(instantiation).visit(schema)

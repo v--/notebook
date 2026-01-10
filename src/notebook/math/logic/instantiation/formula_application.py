@@ -19,7 +19,7 @@ from ..formulas import (
     QuantifierFormulaSchema,
 )
 from .base import AtomicLogicSchemaInstantiation
-from .term_application import InstantiationApplicationVisitor as TermInstantiationApplicationVisitor
+from .term_application import TermInstantiationApplicationVisitor
 
 
 class InstantiationApplicationVisitor(FormulaSchemaVisitor[Formula]):

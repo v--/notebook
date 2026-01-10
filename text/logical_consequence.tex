@@ -23,9 +23,9 @@ We introduce several notions that are common for different flavors of logic we w
 \begin{remark}\label{rem:named_logical_systems}
   Several \hyperref[con:logical_system]{logical systems} have established names:
   \begin{itemize}
-    \thmitem{rem:named_logical_systems/gentzen} \incite*[176]{Gentzen1935LogischeSchließen} introduced \hyperref[def:first_order_natural_deduction_system]{natural deduction systems} (which he called \enquote{Kalk\"ul des nat\"urlichen Schliessens}), and called the corresponding \hyperref[con:intuitionistic_logic]{intuitionistic} and \hyperref[con:classical_logic]{classical} variants \logic{NJ} and \logic{NK}.
+    \thmitem{rem:named_logical_systems/gentzen} \incite*[176]{Gentzen1935LogischeSchließen} introduces \hyperref[def:first_order_natural_deduction_system]{natural deduction systems} (which he called \enquote{Kalk\"ul des nat\"urlichen Schliessens}), and called the corresponding \hyperref[con:intuitionistic_logic]{intuitionistic} and \hyperref[con:classical_logic]{classical} variants \logic{NJ} and \logic{NK}. We formulate them in \cref{def:propositional_natural_deduction_systems}.
 
-    In the same paper he also introduced \hyperref[rem:sequent_calculus]{sequent calculus}, whose variants he called \logic{LJ} (\enquote{Intuitionistische Pr\"adikatenlogik}) and \logic{LK} (\enquote{Klassik Pr\"adikatenlogik}).
+    In the same paper he also introduces \hyperref[def:sequent_calculus_system]{sequent calculus}, whose variants he called \logic{LJ} (\enquote{Intuitionistische Pr\"adikatenlogik}) and \logic{LK} (\enquote{Klassik Pr\"adikatenlogik}). We formulate them in \cref{def:propositional_sequent_calculus_systems}.
 
     \thmitem{rem:named_logical_systems/q0} \incite*[\S 51]{Andrews2002Logic} introduces the system \( \logic{Q}_0 \), which we use as an inspiration for our \hyperref[def:higher_order_logic]{higher-order logic} --- see \cref{rem:higher_order_logic_and_type_theory/terms}.
 
@@ -69,118 +69,72 @@ We introduce several notions that are common for different flavors of logic we w
   \item We are concerned with the epistemology of the judgments used to assert properties of sentences and consequence operators. At the same time, we are not concerned with epistemology of the sentences themselves, but regard them as autonomous abstract objects which can either be manipulated mechanically.
 \end{comments}
 
-\begin{definition}\label{def:variable_identifier}\mimprovised
-  We will introduce a convention for variable names based on the following \hyperref[def:formal_grammar/schema]{grammar schema}:
-  \begin{bnf*}
-    \bnfprod{Small Latin letter}     {\bnftsq{\( \syna \)} \bnfor \bnftsq{\( \synb \)} \bnfor \cdots \bnfor \bnftsq{\( \syny \)} \bnfor \bnftsq{\( \synz \)}}, \\
-    \bnfprod{Small Latin identifier} {\bnfpn{Small Latin letter} \bnfor} \\
-    \bnfmore                         {\bnfpn{Small Latin letter} \bnfsp \bnfpn{natural number}}, \\
-  \end{bnf*}
-  where grammar rules for natural numbers can be taken from \cref{def:positional_number_system} (but without dots on top of the numerals). We have introduced dots on top of the letters in accordance with the disambiguation convention discussed in \cref{rem:object_language_dots}.
-
-  We will consider each identifier as a single \hyperref[con:abstract_syntax_tree/lexical]{lexeme}. Using identifier rules will allow us to focus on \hyperref[con:abstract_syntax_tree/syntactic]{syntactic rules} on other definitions.
-
-  As per our definition, an identifier is a letter optionally followed by a number. Within the metalogic, we treat this number as a suffix and write it as a subscript, that is, we write \enquote{\( \synp_1 \)} instead of \enquote{\( \synp1 \)}. We will generally avoid suffixes --- we need them for the sake of having infinitely many identifiers.
-
-  Furthermore, in definitions like \cref{def:atomic_lambda_term_substitution/sharp}, we would like to find the \enquote{identifier} digit not present in a given set of variables. This can be done via the \hyperref[thm:def:well_ordered_set/lexicographic]{reverse lexicographic order} on letter-number pairs (i.e. not on the string \enquote{a31}, but on the pair (\enquote{a}, \( 31 \))):
-  \begin{equation*}
-    \syna < \synb < \cdots < \synz < \syna_0 < \cdots < \synz_0 < \cdots < \syna_9 < \cdots < \synz_9 < \cdots < \syna_{10} < \cdots < \synz_{10} < \cdots.
-  \end{equation*}
-
-  We call this the \term{identifier order}.
-
-  We will similarly consider \( \bnfpn{Small Greek identifier} \), as well as \( \bnfpn{Capital Latin identifier} \) and \( \bnfpn{Capital Greek identifier} \).
-\end{definition}
-\begin{comments}
-  \item We must elaborate on identifier ordering. The numeric strings themselves use lexicographic ordering as per \cref{ex:def:lexicographic_order/natural_numbers}. We regard the set of numeric strings as ordered, and then use the reverse lexicographic ordering where we first compare the numeric indices and, if they are equal, we compare the letters.
-\end{comments}
-
 \begin{definition}\label{def:logical_context}\mimprovised
-  A \term{(logical) context} is a string generated by the corresponding grammar rule from the \hyperref[def:formal_grammar/schema]{schema}
+  A \term{logical context} is a syntactic list generated by the corresponding grammar rule from the \hyperref[def:formal_grammar/schema]{schema}
   \begin{bnf*}
-    \bnfprod{context placeholder} {\bnfpn{Capital Greek identifier}} \\
-    \bnfprod{nonempty context}    {\bnfpn{context entry} \bnfor \bnfpn{context placeholder} \bnfor} \\
+    \bnfprod{nonempty context}    {\bnfpn{context entry} \bnfor} \\
     \bnfmore                      {\bnfpn{nonempty context} \bnfsp \bnftsq{,} \bnfsp \bnfpn{nonempty context}} \\
     \bnfprod{empty context}       {\bnfves} \\
     \bnfprod{context}             {\bnfpn{empty context} \bnfor \bnfpn{nonempty context}}
   \end{bnf*}
 
-  \begin{itemize}
-    \item We have used the variable identifier rules from \cref{def:variable_identifier}.
+  We have purposely not specified rules for the nonterminal \( \bnfpn{context entry} \) in order to encompass entries with different syntax like \hyperref[def:fol_term]{first-order variables} and \hyperref[def:type_assertion]{type assertions}. We assume that, whenever this definition is used, the syntax for entries is understood from the setting.
 
-    \item We have purposely not specified rules for the nonterminal \( \bnfpn{context entry} \) in order to encompass entries with different syntax like \hyperref[def:fol_term]{first-order variables} and \hyperref[def:type_assertion]{type assertions}. We assume that, whenever this definition is used, the syntax for entries is understood from the setting.
-  \end{itemize}
+  We require that the resulting grammar is \hyperref[def:grammar_ambiguity]{unambiguous} so that we can treat contexts as lists of entries.
 \end{definition}
 \begin{comments}
-  \item The indented semantics for placeholders is to refer to other contexts.
+  \item Contexts are sometimes treated as sets rather than lists --- see \cref{rem:logical_contexts_as_sets}.
+
+  \item Within the metalanguage, we denote abstract formulas via capital Greek letters, most notably \( \Gamma \) and \( \Delta \). This convention will later lead us to a formal definition of context schemas in \cref{def:logical_context_schema}.
 
   \item This definition generalizes propositional contexts from \cite[45]{Mimram2020ProgramEqualsProof} and \hyperref[def:type_context]{type contexts} from \cite[159]{Mimram2020ProgramEqualsProof} and \cite[def. 2A5]{Hindley1997BasicSTT}, but formalized via grammars and not tied to variables.
-
-  \item Contexts purposely have ambiguous semantics --- we can use different interpretations, as discussed in \cref{def:logical_context_semantics}.
 \end{comments}
 
-\begin{definition}\label{def:logical_context_semantics}\mimprovised
-  \hyperref[def:logical_context]{Logical contexts} can be studied as standalone objects, but we will mostly use them as \enquote{syntax sugar} in the \hyperref[con:metalogic]{metalanguage}.
+\begin{remark}\label{rem:logical_contexts_as_sets}
+  It is possible to treat a \hyperref[def:logical_context]{logical context} \( \Gamma = \varphi_1, \ldots, \varphi_n \) as an unordered collection, i.e. a set, thus retaining only the metalingual notation. As discussed in \cref{rem:sequent_notation}, this is an established practice for \hyperref[def:consequence_relation]{consequence relations} (but not, for example for \hyperref[def:type_derivation_relation]{type derivation relations}).
 
-  We may, depending on the application, choose to interpret contexts as either lists of entries or as sets of entries, with a preference for lists.
+  Both ordered and unordered contexts are discussed in \cite[\S 2.2.10]{Mimram2020ProgramEqualsProof} and \cite[\S 4.1.7.2]{Mimram2020ProgramEqualsProof}, in the context of proof trees. Mimram highlights some non-uniqueness problems that will not concern us, as we will see in \cref{ex:proof_tree_non_uniqueness}.
+\end{remark}
 
-  An \enquote{entry} in a sequent can be a variable, sentence, type assertion or basically anything that contains additional information that we need to somehow use. For simplicity, let \( S \) be a nonempty set whose elements we will call entries. To formalize semantics, suppose we are given interpretation functions:
-  \begin{thmenum}[series=def:logical_context_semantics]
-    \thmitem{def:logical_context_semantics/int/entry} For each entry \( \varphi \), let \( I_s(\varphi) \) be an element of \( S \).
-    \thmitem{def:logical_context_semantics/int/placeholder} For each placeholder \( \Gamma \), let \( I_c(\Gamma) \) be a finite list (resp. set) of elements of \( S \), that is, an element of \( \pow(S) \) (resp. of the Kleene star \( S^* \) of \( S \)).
-  \end{thmenum}
-
-  We then extend these to arbitrary contexts:
-  \begin{thmenum}[series=def:logical_context_semantics]
-    \thmitem{def:logical_context_semantics/var/entry} For each placeholder \( \Gamma \), let \( \Bracks{\Gamma} \) be \( I_c(\Gamma) \).
-    \thmitem{def:logical_context_semantics/var/placeholder} For each entry \( \varphi \), let \( \Bracks{\varphi} \) be the singleton list (resp. singleton set) with element \( I_s(\varphi) \).
-    \thmitem{def:logical_context_semantics/var/pair} For each context of the form \( \Gamma, \Delta \), let \( \Bracks{\Gamma, \Delta} \) be the concatenation (resp. union) of \( \Bracks{\Gamma} \) and \( \Bracks{\Delta} \).
-    \thmitem{def:logical_context_semantics/var/empty} For each empty context \( \bnfves \), let \( \Bracks{\bnfves} \) be the empty list (resp. empty set).
-  \end{thmenum}
+\begin{definition}\label{def:substitution_schema_alphabet}\mimprovised
+  The \hyperref[def:formal_language/alphabet]{alphabet} of \hyperref[con:improper_symbol]{improper symbols} for sequents consists only of the sequent relation symbol, \enquote{\( \synvdash \)}.
 \end{definition}
-\begin{comments}
-  \item When defining type contexts in \cref{def:type_context}, we prefer list-based semantics because the order of type assertions can be crucial in systems with dependent types --- see \cref{rem:well_formed_context}. In other places the order is mostly irrelevant, and we prefer the simpler set-based semantics.
-
-  \item Both set-based and list-based semantics are discussed in \cite[\S 2.2.10]{Mimram2020ProgramEqualsProof} and \cite[\S 4.1.7.2]{Mimram2020ProgramEqualsProof}, in the context of logic. The problem of non-unique proofs highlighted there will not concern us, as we will see in \cref{ex:proof_tree_non_uniqueness}.
-\end{comments}
 
 \begin{definition}\label{def:sequent}\mimprovised
   A \term[ru=секвенция (\cite[66]{Герасимов2014Вычислимость})]{sequent} is a string consisting of two \hyperref[def:logical_context]{contexts} joined by some infix relational symbol. They can be described by the \hyperref[def:formal_grammar]{grammar}
   \begin{bnf*}
-    \bnfprod{sequent} {\bnfpn{context} \bnfsp \bnfpn{sequent relation} \bnfsp \bnfpn{context}}.
+    \bnfprod{sequent} {\bnfpn{context} \bnfsp \bnftsq{\( \synvdash \)} \bnfsp \bnfpn{context}}.
   \end{bnf*}
-
-  Unless specified otherwise, we assume that the sequent relation is \enquote{\( \synvdash \)} (with a dot on top inside the object language, in accordance with \cref{rem:mathematical_logic_conventions/terminal_dots}).
 \end{definition}
 \begin{comments}
-  \item This definition is based on the one by \incite[290]{Gentzen1964LogicalDeduction}, but formalized via grammars.
+  \item This definition is based on \bycite[290]{Gentzen1964LogicalDeduction}, but formalized via grammars.
 
   \item Although we have not put restrictions for the context on the right, we may assume that it consists of a single entry.
   \begin{itemize}
     \item An empty context on the right is often meaningless. The intended semantics of a sequent is that of a \hyperref[con:judgment]{judgment} asserting that the left context entails the right one, and if the right context is empty, there is nothing to imply.
 
-    \item General contexts on the right are used in \hyperref[rem:sequent_calculus]{sequent calculus}, which we will not delve into.
+    \item General contexts on the right are used in \fullref{sec:sequent_calculus}.
   \end{itemize}
 \end{comments}
 
 \begin{remark}\label{rem:sequent_notation}
-  By \enquote{sequent notation} for a binary relation \( \vdash \), we will mean utilizing the grammar of contexts from \cref{def:logical_context} to simplify notation for \hyperref[def:consequence_relation]{consequence relations}. For example, given a set \( \set{ \varphi_1, \ldots, \varphi_n } \) of logical formulas, which entail \( \psi \), we may write
+  As mentioned in \cref{rem:logical_contexts_as_sets}, even though logical contexts in sequents are defined to be ordered, we often treat them as unordered.
+
+  By \term{sequent notation} for a binary relation \( \vdash \), we will mean utilizing the grammar of contexts from \cref{def:logical_context} to simplify notation for \hyperref[def:consequence_relation]{consequence relations}. Given a set \( \set{ \varphi_1, \ldots, \varphi_n } \) of logical formulas which entail \( \psi \), we may write
   \begin{equation*}
     \varphi_1, \ldots, \varphi_n \vdash \psi.
   \end{equation*}
-
-  This utilizes set-based semantics.
 
   Correspondingly, if \( \psi \) can be derived from an empty set, we write
   \begin{equation*}
     \vdash \psi.
   \end{equation*}
 
-  In fact, across \fullref{ch:mathematical_logic}, we will use the sequent notation
+  In fact, across this chapter, we will use the sequent notation
   \begin{equation*}
     \Gamma \vdash \psi
   \end{equation*}
-  even when \( \Gamma \) is a possibly infinite set (for example, when discussing \hyperref[def:consequence_relation]{consequence relations}).
+  even when \( \Gamma \) is a possibly infinite set.
 \end{remark}
 
 \begin{definition}\label{def:consequence_relation}\mcite[def. 4.1.1]{CitkinMuravitsky2022ConsequenceRelations}
@@ -191,21 +145,21 @@ We introduce several notions that are common for different flavors of logic we w
       \varphi \in \Gamma \T{implies} \Gamma \vdash \varphi.
     \end{equation}
 
-    This corresponds to Gentzen's \hyperref[inf:rem:sequent_calculus/init]{initialization rule} in sequent calculus.
+    This corresponds to Gentzen's \hyperref[inf:def:abstract_sequent_calculus_system/init]{initialization rule} in sequent calculus.
 
     \thmitem{def:consequence_relation/monotonicity} The following \hyperref[def:order_function/preserving]{monotonicity}-like condition:
     \begin{equation}\label{eq:def:consequence_relation/monotonicity}
       \Gamma \vdash \varphi \T{implies} \Gamma, \Delta \vdash \varphi
     \end{equation}
 
-    This corresponds to \hyperref[def:abstract_sequent_calculus_system/rules/weak]{weakening rules} in sequent calculus.
+    This corresponds to \hyperref[def:abstract_propositional_sequent_calculus_system/rules/weak]{weakening rules} in sequent calculus.
 
     \thmitem{def:consequence_relation/transitivity} The following \hyperref[def:binary_relation/transitive]{transitivity}-like condition:
     \begin{equation}\label{eq:def:consequence_relation/transitivity}
       (\qforall* {\psi \in \Delta} \Gamma \vdash \psi) \T{and} \Delta, \Epsilon \vdash \varphi \T{imply} \Gamma, \Epsilon \vdash \varphi.
     \end{equation}
 
-    This corresponds to the \hyperref[def:abstract_sequent_calculus_system/rules/cut]{cut rule} in sequent calculus.
+    This corresponds to the \hyperref[def:abstract_propositional_sequent_calculus_system/rules/cut]{cut rule} in sequent calculus.
 
     \thmitem{def:consequence_relation/compactness} Optionally, we may require the following to hold, in which case we call the relation \term{compact}:
     \begin{equation}\label{eq:def:consequence_relation/compactness}
@@ -216,7 +170,7 @@ We introduce several notions that are common for different flavors of logic we w
 \begin{comments}
   \item Regarded as a binary relation between sentences on a fixed signature, consequence is a \hyperref[def:preordered_set]{preorder}. This motivates Lindenbaum-Tarski algebras --- see \cref{def:lindenbaum_tarski_algebra}.
 
-  \item The conditions are stated so that they also hold for contexts with list-based semantics. This will be used in \cref{def:type_derivation_relation}.
+  \item The conditions are stated so that they hold if \( \Gamma \) is either a set or a list. The former will be used through this chapter, while the latter will be used as a basis for defining type derivation relations in \cref{def:type_derivation_relation}.
 \end{comments}
 
 \begin{proposition}\label{thm:consequence_operators_and_relations}
@@ -282,9 +236,10 @@ We introduce several notions that are common for different flavors of logic we w
 \begin{remark}\label{rem:logical_compactness_theorems}
   We prove \hyperref[def:consequence_operator/compactness]{consequence operator compactness} in the following:
   \begin{thmenum}
-    \thmitem{rem:logical_compactness_theorems/implicational} \Cref{thm:propositional_axiomatic_derivation_entailment_compact}.
+    \thmitem{rem:logical_compactness_theorems/propositional_semantic} \Cref{thm:classical_propositional_semantic_compactness}.
     \thmitem{rem:logical_compactness_theorems/propositional_syntactic} \Cref{thm:propositional_natural_deduction_derivation_compact}.
-    \thmitem{rem:logical_compactness_theorems/propositional_semantic} \Cref{thm:classical_propositional_compactness}.
+    \thmitem{rem:logical_compactness_theorems/implicational} \Cref{thm:propositional_axiomatic_derivation_entailment_compact}.
+    \thmitem{rem:logical_compactness_theorems/sequent_calculus} \Cref{thm:sequent_calculus_derivation_compact}.
     \thmitem{rem:logical_compactness_theorems/first_order_syntactic} \Cref{thm:first_order_natural_deduction_entailment_compact}.
   \end{thmenum}
 \end{remark}

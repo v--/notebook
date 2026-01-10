@@ -761,6 +761,13 @@ def parse_natural_deduction_rule(name: str, source: str, signature: FormalLogicS
         return parser.parse_natural_deduction_rule(name)
 
 
+def parse_context_placeholder(source: str) -> LogicalContextPlaceholder:
+    tokens = tokenize_formal_logic_string(EMPTY_SIGNATURE, source)
+
+    with FormalLogicParser(EMPTY_SIGNATURE, source, tokens) as parser:
+        return parser.parse_context_placeholder()
+
+
 def parse_sequent(source: str, signature: FormalLogicSignature = EMPTY_SIGNATURE) -> Sequent:
     tokens = tokenize_formal_logic_string(signature, source)
 
