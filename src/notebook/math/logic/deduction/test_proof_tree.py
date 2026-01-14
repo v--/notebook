@@ -117,7 +117,7 @@ def test_efq() -> None:
     )
 
 
-# ex:def:propositional_natural_deduction_systems/efq_vs_dne
+# ex:def:propositional_natural_deduction/efq_vs_dne
 def test_dne() -> None:
     tree = apply(
         CLASSICAL_NATURAL_DEDUCTION_SYSTEM['→₊'],
