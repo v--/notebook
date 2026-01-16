@@ -12,6 +12,7 @@ class ModularArithmeticStructure[T: BaseIntModulo](FormalLogicStructure[T]):
         self.signature = ARITHMETIC_SIGNATURE
         self.interpretation = {
             ARITHMETIC_SIGNATURE['0']: lambda: self.ring(0),
+            ARITHMETIC_SIGNATURE['S']: lambda a: a + 1,
             ARITHMETIC_SIGNATURE['~']: lambda a: -a,
             ARITHMETIC_SIGNATURE['+']: lambda a, b: a + b,
             ARITHMETIC_SIGNATURE['×']: lambda a, b: a * b,

@@ -19,7 +19,7 @@ class TermSubstitutionVisitor(TermTransformationVisitor):
         return FunctionApplication(term.symbol, [self.visit(arg) for arg in term.arguments])
 
 
-# This is alg:fol_substitution/terms in the monograph
+# This is alg:fol_term_substitution in the monograph
 def apply_substitution_to_term(term: Term, substitution: AtomicLogicSubstitution) -> Term:
     return TermSubstitutionVisitor(substitution).visit(term)
 

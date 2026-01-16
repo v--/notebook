@@ -1,4 +1,4 @@
-\section{Unification}\label{sec:unification}
+\section{Unisorted unification}\label{sec:unisorted_unification}
 
 \paragraph{Equality}
 
@@ -187,7 +187,7 @@
 \begin{algorithm}[First-order term substitution]\label{alg:fol_term_substitution}\mimprovised
   We can extend an \hyperref[def:atomic_lambda_term_substitution]{atomic simultaneous substitution} \( (\Bbbs, \sharp) \) to arbitrary \hyperref[def:fol_term]{first-order terms} as follows:
   \begin{empheq}[left={\tau[\Bbbs]} \coloneqq \empheqlbrace]{align}
-    &\Bbbs(x),                                                   &&\tau = x \in \op*{Var},     \label{eq:alg:fol_term_substitution/var}         \\
+    &\Bbbs(x),                                                   &&\tau = x \in \op*{Var},               \label{eq:alg:fol_term_substitution/var}         \\
     &f\parens[\big]{ \sigma_1[\Bbbs], \ldots, \sigma_n[\Bbbs] }, &&\tau = f(\sigma_1, \ldots, \sigma_n). \label{eq:alg:fol_term_substitution/application}
   \end{empheq}
 \end{algorithm}
@@ -195,6 +195,52 @@
   \item This algorithm can be found as \identifier{math.logic.substitution.apply_substitution_to_term} in \cite{notebook:code}.
   \item This substitution has the properties listed in \cref{rem:variable_binding_properties}, but since we perform no renaming, these properties are trivial. Compare this to \fullref{alg:fol_formula_substitution}, for which the properties are made explicit in \cref{thm:alg:fol_formula_substitution}.
 \end{comments}
+
+\begin{algorithm}[First-order assignment substitution]\label{alg:fol_assignment_substitution}\mimprovised
+  We can extend an \hyperref[def:atomic_lambda_term_substitution]{atomic simultaneous substitution} \( (\Bbbs, \sharp) \) to a arbitrary \hyperref[def:fol_variable_assignment]{first-order variable assignment} \( v \) in the \hyperref[def:fol_structure]{structure} \( \mscrX = (X, I) \) as follows:
+  \begin{equation}\label{eq:alg:fol_assignment_substitution}
+    v[\Bbbs](x) \coloneqq \Bracks{\Bbbs(x)}_\mscrX^v.
+  \end{equation}
+\end{algorithm}
+\begin{comments}
+  \item This algorithm can be found as \identifier{math.logic.structure.apply_substitution_to_assignment} in \cite{notebook:code}.
+\end{comments}
+
+\begin{proposition}\label{thm:fol_assignment_substitution_compatibility}
+  \Fullref{alg:fol_term_substitution} and \fullref{alg:fol_assignment_substitution} are compatible:
+  \begin{equation}\label{eq:thm:fol_assignment_substitution_compatibility}
+    \Bracks{\tau}_\mscrX^{v[\Bbbs]} = \Bracks{\tau[\Bbbs]}_\mscrX^v,
+  \end{equation}
+\end{proposition}
+\begin{proof}
+  We will use \fullref{thm:induction_on_abstract_syntax} on \( \tau \) simultaneously on all assignments to show \eqref{eq:thm:fol_assignment_substitution_compatibility}.
+
+  \begin{itemize}
+    \item If \( \tau \) is a variable, say \( x \), then
+    \begin{equation*}
+      \Bracks{\tau}_\mscrX^{v[\Bbbs]}
+      \reloset {\eqref{eq:alg:fol_term_substitution/var}} =
+      v[\Bbbs](x)
+      \reloset {\eqref{eq:alg:fol_assignment_substitution}} =
+      \Bracks{\Bbbs(x)}_\mscrX^v
+      \reloset {\eqref{eq:alg:fol_term_substitution/var}} =
+      \Bracks{\tau[\Bbbs]}_\mscrX^v.
+    \end{equation*}
+
+    \item If \( \tau = f(\sigma_1, \ldots, \sigma_n) \), and if the inductive hypothesis holds for \( \sigma_1, \ldots, \sigma_n \), then
+    \begin{multline*}
+      \Bracks{\tau}_\mscrX^{v[\Bbbs]}
+      \reloset {\eqref{eq:alg:fol_term_substitution/application}} =
+      I(f) \parens[\big]{ \Bracks{\sigma_1}_\mscrX^{v[\Bbbs]}, \ldots, \Bracks{\sigma_n}_\mscrX^{v[\Bbbs]} }
+      \reloset {\T{ind.}} = \\ =
+      I(f) \parens[\big]{ \Bracks{\sigma_1[\Bbbs]}_\mscrX^v, \ldots, \Bracks{\sigma_n[\Bbbs]}_\mscrX^v }
+      \reloset {\eqref{eq:def:fol_denotation/terms/fun}} =
+      \Bracks[\big]{f(\sigma_1[\Bbbs], \ldots, \sigma_n[\Bbbs])}_\mscrX^v
+      \reloset {\eqref{eq:alg:fol_term_substitution/application}} =
+      \Bracks{\tau[\Bbbs]}_\mscrX^v.
+    \end{multline*}
+  \end{itemize}
+\end{proof}
 
 \paragraph{Unification}
 
@@ -204,7 +250,11 @@
   \begin{thmenum}
     \thmitem{def:fol_equation/system}\mimprovised A \hyperref[def:system_of_equations]{system} of first-order equations is then a list
     \begin{equation}\label{eq:def:fol_equation/system}
-      \tau_1 \syneq \sigma_1, \cdots, \tau_n \syneq \sigma_n
+      \begin{aligned}
+        \tau_1 &\syneq \sigma_1, \\
+               &\vdots \\
+        \tau_n &\syneq \sigma_n.
+      \end{aligned}
     \end{equation}
     of equality formulas.
 
@@ -215,6 +265,27 @@
     We call the collection of all such assignments the \term{solution set} of \eqref{eq:def:fol_equation/system} in \( \mscrX \).
   \end{thmenum}
 \end{definition}
+\begin{comments}
+  \item \Cref{thm:fol_unifier_semantic_solution} shows compatibility of syntactic and semantic solutions.
+\end{comments}
+
+\begin{proposition}\label{thm:fol_unifier_semantic_solution}
+  Let \( \Bbbs \) be an \hyperref[def:atomic_lambda_term_substitution]{atomic simultaneous substitution}. Let \( v \) be any \hyperref[def:fol_variable_assignment]{variable assignment} \( v \) in any \hyperref[def:fol_structure]{structure} \( \mscrX = (X, I) \).
+
+  Then the assignment \( v[\Bbbs] \) obtained via \fullref{alg:fol_assignment_substitution} \hyperref[def:fol_equation/semantic_solution]{solves} the system.
+\end{proposition}
+\begin{proof}
+  For every equation \( \tau \syneq \sigma \), we have
+  \begin{equation*}
+    \Bracks{\tau}^{v[\Bbbs]}
+    \reloset {\eqref{eq:thm:fol_assignment_substitution_compatibility}} =
+    \Bracks{\tau[\Bbbs]}^v
+    =
+    \Bracks{\sigma[\Bbbs]}^v
+    \reloset {\eqref{eq:thm:fol_assignment_substitution_compatibility}} =
+    \Bracks{\sigma}^{v[\Bbbs]}.
+  \end{equation*}
+\end{proof}
 
 \begin{concept}\label{con:unification}
   \term[en=unification, ru=унификация (\cite[\S 4.3]{Герасимов2014Вычислимость})]{unification}

@@ -36,7 +36,7 @@ class FormulaSubstitutionVisitor(FormulaTransformationVisitor):
         return QuantifierFormula(formula.quant, new_var, new_subformula)
 
 
-# This is alg:fol_substitution/formulas in the monograph
+# This is alg:fol_formula_substitution in the monograph
 def apply_substitution_to_formula(formula: Formula, substitution: AtomicLogicSubstitution) -> Formula:
     return FormulaSubstitutionVisitor(substitution).visit(formula)
 
