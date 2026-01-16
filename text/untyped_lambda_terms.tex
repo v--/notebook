@@ -239,12 +239,15 @@
   \begin{itemize}
     \item Binder scope as defined in \cref{def:lambda_abstractor}.
     \item Free and bound variables as defined in \cref{def:lambda_variable_freeness}.
-    \item Capture-avoiding substitution as defined in \cref{def:atomic_lambda_term_substitution}, with properties like \cref{thm:lambda_substitution_noop}, \cref{thm:lambda_substitution_free_variables_single} and \cref{thm:lambda_substitution_single_rule}.
+    \item Capture-avoiding substitution as defined in \cref{alg:lambda_term_substitution}, with properties like \cref{thm:lambda_substitution_free_variables}, \cref{thm:lambda_substitution_single_rule}, \cref{thm:lambda_substitutions_agree} and \cref{thm:lambda_substitutions_agree}.
     \item \( \alpha \)-equivalence as defined in \cref{def:lambda_term_alpha_equivalence}, with properties like \cref{thm:def:lambda_term_alpha_equivalence}, \cref{thm:nary_substitution_composition_is_alpha_equivalent}, \cref{thm:substitution_on_alpha_equivalent_terms}, \cref{thm:alpha_conversion} and \fullref{alg:separation_of_free_and_bound_variables}.
   \end{itemize}
 
   We will study all of these in depth in the simple case of \( \muplambda \)-terms and, whenever we define another binder, we will extend the above by analogy.
 \end{remark}
+\begin{comments}
+  \item For \hyperref[def:fol_formula]{first-order formulas}, capture-avoiding substitution is defined in \fullref{alg:fol_formula_substitution} and characterized in \cref{thm:alg:fol_formula_substitution}, while \( \alpha \)-equivalence is defined in \cref{def:fol_alpha_equivalence} and characterized in \cref{thm:fol_alpha_equivalence}.
+\end{comments}
 
 \begin{remark}\label{rem:apparent_variables}
   According to \cite[11]{Church1956LogicVol1}, in a tradition due to Peano and Russell, \hyperref[con:variable_binding]{bound variables} used to be called \enquote{apparent variables} and free variables used to be called \enquote{real variables}.
@@ -383,25 +386,25 @@
   For \fullref{alg:lambda_term_substitution}, we will need the following auxiliary definitions:
   \begin{thmenum}[resume=def:atomic_lambda_term_substitution]
     \thmitem{def:atomic_lambda_term_substitution/modified} We will find useful the concept of \term{modifying} \( \Bbbs \) at \( x \) with \( y \):
-    \begin{equation}\label{eq:alg:lambda_term_substitution/modified}
+    \begin{equation}\label{eq:def:atomic_lambda_term_substitution/modified}
       \Bbbs_{x \mapsto y}(u) \coloneqq \begin{cases}
         y,        &u = x, \\
         \Bbbs(u), &u \neq x.
       \end{cases}
     \end{equation}
 
-    \thmitem{def:atomic_lambda_term_substitution/free} In order to be able to define substitutions for arbitrary terms, we will also need the following auxiliary definition:
-    \begin{equation}\label{eq:alg:lambda_term_substitution/free}
+    \thmitem{def:atomic_lambda_term_substitution/free} For defining capture-avoiding substitutions, we will also need the following auxiliary definition:
+    \begin{equation}\label{eq:def:atomic_lambda_term_substitution/free}
       \op*{Free}_\Bbbs(M) \coloneqq \bigcup_{\mathclap{v \in \op*{Free}(M)}} \op*{Free}(\Bbbs(v)).
     \end{equation}
   \end{thmenum}
 \end{definition}
 \begin{comments}
-  \item The auxiliary function \( \sharp \) allows determinism when choosing a new variable during renaming in \fullref{alg:lambda_term_substitution}. This enables programmatic implementations. A more theoretical consequence of this determinism is \cref{thm:lambda_substitution_restriction}.
+  \item The auxiliary function \( \sharp \) allows determinism when choosing a new variable during renaming in \fullref{alg:lambda_term_substitution}. This enables programmatic implementations. A more theoretical consequence of this determinism is \cref{thm:lambda_substitutions_agree}.
 \end{comments}
 
 \begin{algorithm}[\( \muplambda \)-term substitution]\label{alg:lambda_term_substitution}\mimprovised
-  We can extend a \hyperref[def:atomic_lambda_term_substitution]{simultaneous substitution} \( (\Bbbs, \sharp) \) to an arbitrary \( \muplambda \)-term \( M \) as follows:
+  We can extend an \hyperref[def:atomic_lambda_term_substitution]{atomic simultaneous substitution} \( (\Bbbs, \sharp) \) to an arbitrary \( \muplambda \)-term \( M \) as follows:
   \begin{empheq}[left={M[\Bbbs]} \coloneqq \empheqlbrace]{align}
     &M,                              &&M \in \op*{Const},                                   \label{eq:alg:lambda_term_substitution/const}               \\
     &\Bbbs(x),                       &&M = x \in \op*{Var},                                 \label{eq:alg:lambda_term_substitution/var}                 \\
@@ -422,7 +425,7 @@
 
   \item In \fullref{alg:simply_typed_substitution} we will show how \hyperref[def:type_derivation_tree]{type derivation trees} for \( M \) and \( L \) can be used to build a derivation tree for \( M[x \mapsto L] \) .
 
-  \item This algorithm can be found as \identifier{math.lambda_.untyped.substitution.apply_term_substitution} in \cite{notebook:code}.
+  \item This algorithm can be found as \identifier{math.lambda_.untyped.substitution.apply_substitution_to_term} in \cite{notebook:code}.
 \end{comments}
 
 \begin{remark}\label{rem:renaming_substitution_rules}
@@ -525,14 +528,14 @@
   For any two \( \muplambda \)-terms \( M \) and \( N \) and any variable \( x \), we have
   \begin{equation}\label{eq:thm:lambda_substitution_free_variables_single}
     \op*{Free}( M[x \mapsto N] ) = \begin{cases}
-      \parens[\Big]{ \op*{Free}(M) \setminus \set{ x } } \cup \op*{Free}(N), &x \in \op*{Free}(M) \\
-      \op*{Free}(M),                                                         &\T{otherwise.}
+      (\op*{Free}(M) \setminus \set{ x }) \cup \op*{Free}(N), &x \in \op*{Free}(M) \\
+      \op*{Free}(M),                                          &\T{otherwise.}
     \end{cases}
   \end{equation}
 
   In both cases,
   \begin{equation}\label{eq:thm:lambda_substitution_free_variables_single/subset}
-    \op*{Free}( M[x \mapsto N] ) \subseteq \parens[\Big]{ \op*{Free}(M) \setminus \set{ x } } \cup \op*{Free}(N).
+    \op*{Free}( M[x \mapsto N] ) \subseteq (\op*{Free}(M) \setminus \set{ x }) \cup \op*{Free}(N).
   \end{equation}
 \end{corollary}
 \begin{proof}
@@ -556,7 +559,7 @@
 \end{proof}
 
 \begin{proposition}\label{thm:lambda_substitution_single_rule}
-  For any abstraction \( M = \qabs x N \) and substitution \( \Bbbs \), there exists a variable \( v \not\in \op*{Free}_\Bbbs(M) \) such that
+  For any abstraction \( M = \qabs x N \) and any substitution \( \Bbbs \), there exists a variable \( v \not\in \op*{Free}_\Bbbs(M) \) such that
   \begin{equation}\label{eq:thm:lambda_substitution_single_rule}
     M[\Bbbs] = \qabs v N[\Bbbs_{x \mapsto v}].
   \end{equation}
@@ -585,14 +588,11 @@
   \end{itemize}
 \end{proof}
 
-\begin{proposition}\label{thm:lambda_substitution_restriction}
-  If the substitutions \( \Bbbs \) and \( \Bbbt \) agree on the free variables of \( M \), then
-  \begin{equation}\label{eq:thm:lambda_substitution_restriction}
-    M[\Bbbs] = M[\Bbbt].
-  \end{equation}
+\begin{proposition}\label{thm:lambda_substitutions_agree}
+  If the substitutions \( \Bbbs \) and \( \Bbbt \) agree on the free variables of \( M \), then \( M[\Bbbs] = M[\Bbbt] \).
 \end{proposition}
 \begin{proof}
-  We will use \fullref{thm:induction_on_abstract_syntax} on of \( M \) to show \eqref{eq:thm:lambda_substitution_restriction} simultaneously for all suitable substitutions.
+  We will use \fullref{thm:induction_on_abstract_syntax} on of \( M \) to show that \( M[\Bbbs] = M[\Bbbt] \) simultaneously for all suitable substitutions.
 
   \begin{itemize}
     \item If \( M \) is a constant, it is invariant under substitution and
@@ -713,18 +713,18 @@
   \end{itemize}
 \end{proof}
 
-\begin{corollary}\label{thm:lambda_substitution_combinators}
-  For any \hyperref[def:lambda_combinator]{combinator} \( M \) and any atomic substitution \( \Bbbs \), we have \( M[\Bbbs] = M \).
-\end{corollary}
-\begin{proof}
-  Vacuously follows from \cref{thm:lambda_substitution_noop} since combinators simply have no free variables.
-\end{proof}
-
 \begin{corollary}\label{thm:lambda_substitution_identity}
   For any term \( M \), we have \( M[\id] = M \) for the identity substitution \( \id \).
 \end{corollary}
 \begin{proof}
   Follows from \cref{thm:lambda_substitution_noop}.
+\end{proof}
+
+\begin{corollary}\label{thm:lambda_substitution_combinators}
+  For any \hyperref[def:lambda_combinator]{combinator} \( M \) and any atomic substitution \( \Bbbs \), we have \( M[\Bbbs] = M \).
+\end{corollary}
+\begin{proof}
+  Vacuously follows from \cref{thm:lambda_substitution_identity} since combinators simply have no free variables.
 \end{proof}
 
 \begin{example}\label{ex:alg:lambda_term_substitution}

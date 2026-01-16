@@ -68,7 +68,7 @@ from .substitution import substitute
         mapping=dict(x='a'),
         expected='(λc.(ab))'
     ),
-    ## thm:lambda_substitution_restriction
+    ## athm:lambda_substitutions_agree
     dict(
         term='(λx.(xy))',
         mapping=dict(y='x'),

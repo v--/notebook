@@ -2,18 +2,67 @@
 
 \paragraph{Simultaneous substitution}
 
-\begin{definition}\label{def:atomic_fol_substitution}\mimprovised
-  We will define \hyperref[con:syntactic_substitution]{simultaneous substitution} for \hyperref[def:fol_term]{first-order terms} and \hyperref[def:fol_formula]{formulas} based on how we have defined it for \hyperref[def:lambda_term]{\( \muplambda \)-term} in \cref{def:atomic_lambda_term_substitution}.
+\begin{algorithm}[First-order formula substitution]\label{alg:fol_formula_substitution}\mimprovised
+  We can extend an \hyperref[def:atomic_lambda_term_substitution]{atomic simultaneous substitution} \( (\Bbbs, \sharp) \) to arbitrary \hyperref[def:fol_formula]{first-order formulas} as follows:
+  \begin{empheq}[left={\varphi[\Bbbs]} \coloneqq \empheqlbrace]{align}
+    &\varphi,                                                    &&\varphi \in \op*{PConst},                                                                      \label{eq:alg:fol_formula_substitution/const}         \\
+    &\tau[\Bbbs] \syneq \sigma[\Bbbs],                           &&\varphi = (\tau \syneq \sigma),                                                                \label{eq:alg:fol_formula_substitution/eq} \\
+    &p\parens[\big]{ \sigma_1[\Bbbs], \ldots, \sigma_n[\Bbbs] }, &&\varphi = p(\sigma_1, \ldots, \sigma_n),                                                       \label{eq:alg:fol_formula_substitution/application} \\
+    &\synneg \psi[\Bbbs],                                        &&\varphi = \synneg \psi,                                                                        \label{eq:alg:fol_formula_substitution/neg} \\
+    &\psi[\Bbbs] \syncirc \theta[\Bbbs],                         &&\varphi = (\psi \syncirc \theta), {\syncirc} \in \op*{Conn},                                   \label{eq:alg:fol_formula_substitution/conn} \\
+    &\quantifier Q x \psi[\Bbbs_{x \mapsto x}],                  &&\varphi = \quantifier Q x \psi, Q \in \op*{Quant} \T{and} x \not\in \op*{Free}_\Bbbs(\varphi), \label{eq:alg:fol_formula_substitution/quant/direct} \\
+    &\quantifier Q x \psi[\Bbbs_{x \mapsto n}],                  &&\varphi = \quantifier Q x \psi, Q \in \op*{Quant} \T{and} x \in \op*{Free}_\Bbbs(\varphi)      \label{eq:alg:fol_formula_substitution/quant/renaming}
+  \end{empheq}
+  where \( n = \sharp(\op*{Free}_\Bbbs(\varphi)) \).
+\end{algorithm}
+\begin{comments}
+  \item This algorithm can be found as \identifier{math.logic.substitution.apply_substitution_to_formula} in \cite{notebook:code}.
+  \item This substitution is defined as to have the properties listed in \cref{rem:variable_binding_properties}; we elaborate on this in \fullref{thm:alg:fol_formula_substitution}.
+\end{comments}
 
-  Namely, for a fixed \hyperref[def:fol_signature]{signature} \( \Sigma \), we will need a pair \( (\Bbbs, \sharp) \), where
-  \begin{thmenum}[series=def:atomic_lambda_term_substitution]
-    \thmitem{def:atomic_fol_substitution/atomic} \( \Bbbs: \op*{Var} \to \op*{Term}_\Sigma \) is a function specifying how variables need to be replaced with terms. We allow only finitely many variables to not be fixed by \( \Bbbs \). We call \( \Bbbs \) an \term{atomic substitution}.
+\begin{proposition}\label{thm:alg:fol_formula_substitution}
+  \Fullref{alg:fol_formula_substitution} has the following basic properties:
+  \begin{thmenum}
+    \thmitem{thm:alg:fol_formula_substitution/free} For any formula \( \varphi \) and any atomic substitution \( \Bbbs \), we have
+    \begin{equation}\label{eq:thm:alg:fol_formula_substitution/free}
+      \op*{Free}( \varphi[\Bbbs] ) = \overbrace{\bigcup_{\mathclap{v \in \op*{Free}(\varphi)}} \op*{Free}(\Bbbs(v))}^{\op*{Free}_\Bbbs(\varphi)}.
+    \end{equation}
 
-    \thmitem{def:atomic_fol_substitution/sharp} \( \sharp \) is, as in \cref{def:atomic_lambda_term_substitution/sharp}, a function providing us with fresh variables, i.e. \( \sharp(V) \) is a new variable not in \( V \).
+    \thmitem{thm:alg:fol_formula_substitution/free_single} For any terms \( \varphi \) and \( \psi \) and any variable \( x \), we have
+    \begin{equation}\label{eq:thm:alg:fol_formula_substitution/free_single}
+      \op*{Free}( \varphi[x \mapsto \psi] ) = \begin{cases}
+        (\op*{Free}(\varphi) \setminus \set{ x }) \cup \op*{Free}(\psi), &x \in \op*{Free}(\varphi) \\
+        \op*{Free}(\varphi),                                             &\T{otherwise.}
+      \end{cases}
+    \end{equation}
 
-    By default, we suppose that \( \sharp(V) \) is the smallest, with respect to the \hyperref[def:variable_identifier]{identifier order}, variable not in \( V \).
+    In both cases,
+    \begin{equation}\label{eq:thm:alg:fol_formula_substitution/free_single/subset}
+      \op*{Free}( \varphi[x \mapsto \psi] ) \subseteq (\op*{Free}(\varphi) \setminus \set{ x }) \cup \op*{Free}(\psi).
+    \end{equation}
+
+    \thmitem{thm:alg:fol_formula_substitution/quant_single_rule} For any quantifier formula \( \varphi = \quantifier Q x \psi \) and any substitution \( \Bbbs \), there exists a variable \( v \not\in \op*{Free}_\Bbbs(\varphi) \) such that
+    \begin{equation}\label{eq:thm:alg:fol_formula_substitution/quant_single_rule}
+      \varphi[\Bbbs] = \quantifier Q v \psi[\Bbbs_{x \mapsto v}].
+    \end{equation}
+
+    \thmitem{thm:alg:fol_formula_substitution/substitutions_agree} If the substitutions \( \Bbbs \) and \( \Bbbt \) agree on the free variables of \( \varphi \), then \( M[\Bbbs] = M[\Bbbt] \).
+    \thmitem{thm:alg:fol_formula_substitution/noop} We have \( \varphi[\Bbbs] = \varphi \) if and only if the free variables of \( \varphi \) are fixed by the substitution \( \Bbbs \).
+    \thmitem{thm:alg:fol_formula_substitution/identity} For any formula \( \varphi \), we have \( \varphi[\id] = \varphi \) for the identity substitution.
+    \thmitem{thm:alg:fol_formula_substitution/closed} For any closed formula \( \varphi \) and any atomic substitution \( \Bbbs \), we have \( \varphi[\Bbbs] = \varphi \).
   \end{thmenum}
-\end{definition}
+\end{proposition}
+\begin{proof}
+  \SubProofOf{thm:alg:fol_formula_substitution/free} Can be proven as in \cref{thm:lambda_substitution_free_variables}.
+  \SubProofOf{thm:alg:fol_formula_substitution/free_single} Follows from \cref{thm:lambda_substitution_free_variables}, similarly to \cref{thm:lambda_substitution_free_variables_single}.
+  \SubProofOf{thm:alg:fol_formula_substitution/quant_single_rule} Can be proven as in \cref{thm:lambda_substitution_single_rule}.
+  \SubProofOf{thm:alg:fol_formula_substitution/substitutions_agree} Can be proven as in \cref{thm:lambda_substitutions_agree}.
+  \SubProofOf{thm:alg:fol_formula_substitution/noop} Can be proven as in \cref{thm:lambda_substitution_noop}.
+  \SubProofOf{thm:alg:fol_formula_substitution/identity} Follows from \cref{thm:alg:fol_formula_substitution/noop}.
+  \SubProofOf{thm:alg:fol_formula_substitution/closed} Vacuously follows from \cref{thm:lambda_substitution_identity} since combinators simply have no free variables.
+\end{proof}
+
+\paragraph{\( \alpha \)-equivalence}
 
 \begin{remark}\label{def:abstract_sequent_calculus_system_eigenvariables}
   % \hyperref[con:predicate_logic]{predicate logic}, the entries must also account for \hyperref[def:fol_schema/formula]{eigenvariables}

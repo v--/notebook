@@ -33,14 +33,14 @@ class UntypedSubstitutionApplicationVisitor(UntypedTermVisitor[UntypedTerm]):
     def visit_abstraction(self, term: UntypedAbstraction) -> UntypedAbstraction:
         new_var = self.substitution.get_modified_abstractor_variable(term)
         new_subst = self.substitution.modify_at(term.var, new_var)
-        new_subterm = apply_term_substitution(term.body, new_subst)
+        new_subterm = apply_substitution_to_term(term.body, new_subst)
         return UntypedAbstraction(new_var, new_subterm)
 
 
 # This is alg:lambda_term_substitution in the monograph
-def apply_term_substitution(term: UntypedTerm, substitution: UntypedTermSubstitution) -> UntypedTerm:
+def apply_substitution_to_term(term: UntypedTerm, substitution: UntypedTermSubstitution) -> UntypedTerm:
     return UntypedSubstitutionApplicationVisitor(substitution).visit(term)
 
 
 def substitute(term: UntypedTerm, variable_mapping: Mapping[Variable, UntypedTerm]) -> UntypedTerm:
-    return apply_term_substitution(term, UntypedTermSubstitution(variable_mapping=variable_mapping))
+    return apply_substitution_to_term(term, UntypedTermSubstitution(variable_mapping=variable_mapping))
