@@ -76,6 +76,6 @@ class FormulaEvaluationVisitor[T](FormulaVisitor[bool]):
         )
 
 
-# This is def:fol_denotation/formulas in the monograph
+# This is alg:fol_formula_denotation/formulas in the monograph
 def evaluate_formula[T](formula: Formula, structure: FormalLogicStructure[T], assignment: VariableAssignment[T] | None = None) -> bool:
     return FormulaEvaluationVisitor(structure, assignment or VariableAssignment()).visit(formula)

@@ -20,6 +20,6 @@ class TermEvaluationVisitor[T](TermVisitor[T]):
         return self.structure.apply(term.symbol, *(self.visit(arg) for arg in term.arguments))
 
 
-# This is def:fol_denotation/terms in the monograph
+# This is alg:fol_term_denotation in the monograph
 def evaluate_term[T](term: Term, structure: FormalLogicStructure[T], assignment: VariableAssignment[T] | None = None) -> T:
     return TermEvaluationVisitor(structure, assignment or VariableAssignment()).visit(term)
