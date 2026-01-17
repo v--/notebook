@@ -49,6 +49,6 @@ class FormulaEvaluationVisitor[T](PropFormulaVisitor[bool]):
         return self.visit(formula.left) == self.visit(formula.right)
 
 
-# This is def:propositional_denotation in the monograph
+# This is alg:propositional_denotation in the monograph
 def evaluate_prop_formula(formula: PropFormula, interpretation: PropInterpretation) -> bool:
     return FormulaEvaluationVisitor(interpretation).visit(formula)

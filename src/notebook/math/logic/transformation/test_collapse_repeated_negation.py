@@ -16,6 +16,10 @@ from .collapse_repeated_negation import collapse_repeated_negation_prop
     dict(formula='¬¬p',       collapsed='p'),
     dict(formula='¬¬¬p',      collapsed='¬p'),
     dict(
+        formula='((p ∨ ¬¬p) ∧ q)',
+        collapsed='((p ∨ p) ∧ q)',
+    ),
+    dict(
         formula='¬¬¬(¬¬p ∧ ¬q)',
         collapsed='¬(p ∧ ¬q)'
     ),

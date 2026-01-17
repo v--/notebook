@@ -106,7 +106,7 @@ There are different approaches to formalizing the syntax of propositional logic.
 
   \item We refer both to the connective \( {\synwedge} \) and to the formula \( \varphi \synwedge \psi \) as a \enquote{conjunction}.
 
-  \item Propositional formulas correspond exactly to \hyperref[def:fol_term]{logical terms} in the \hyperref[def:lattice/theory]{first-order theory of Boolean algebras} --- see \cref{alg:propositional_formula_to_boolean_term}.
+  \item Propositional formulas correspond exactly to \hyperref[def:fol_term]{logical terms} in the \hyperref[def:lattice/theory]{first-order theory of Boolean algebras} --- see \fullref{alg:propositional_formula_to_boolean_term}.
 
   \item Propositional formulas are implemented in \identifier{math.logic.propositional} as a special case of first-order formulas in accordance with \cref{rem:propositional_logic_as_first_order_logic}.
 \end{comments}
@@ -297,7 +297,7 @@ There are different approaches to formalizing the syntax of propositional logic.
 \paragraph{General propositional semantics}
 
 \begin{definition}\label{def:propositional_interpretation}\mimprovised
-  A \term[ru=интерпретация (\cite[def. 1.1.10]{Герасимов2014Вычислимость})]{propositional interpretation} in a \hyperref[def:truth_value_algebra]{truth value algebra} \( \BbbT \) is any function \( I: \op*{Prop} \to \BbbT \) assigning truth values to propositional variables.
+  Fix a \hyperref[def:truth_value_algebra]{truth value algebra} \( \BbbT \). A \( \BbbT \)-valued \term[ru=интерпретация (\cite[def. 1.1.10]{Герасимов2014Вычислимость})]{propositional interpretation} is any function \( I: \op*{Prop} \to \BbbT \) assigning truth values to propositional variables.
 \end{definition}
 \begin{comments}
   \item Propositional interpretations act as models in the propositional institution. Unlike in general institutions, however, we will refer to interpretations as \enquote{models} only with respect to a theory; see \cref{rem:model_theory_structure_terminology} for a broader discussion.
@@ -305,27 +305,30 @@ There are different approaches to formalizing the syntax of propositional logic.
   \item The terms \enquote{interpretation} and \enquote{denotation} are used inconsistently in the literature; see \cref{rem:model_theory_structure_terminology}.
 \end{comments}
 
-\begin{definition}\label{def:propositional_denotation}\mimprovised
-  Fix a \hyperref[def:truth_value_algebra]{truth value algebra} \( \BbbT \). For any interpretation \( I \), we define the \term{denotation} of the formula \( \varphi \) recursively as follows:
+\begin{algorithm}[Propositional denotation]\label{alg:propositional_denotation}\mimprovised
+  For any \( \BbbT \)-valued \hyperref[def:propositional_interpretation]{interpretation} \( I \), we define the \term{denotation} of the formula \( \varphi \) recursively as follows:
   \begin{empheq}[left={\Bracks{\varphi}_I} \coloneqq \empheqlbrace]{align}
-    &\semtop,                                   &&\varphi = \syntop,                                         \label{eq:def:propositional_denotation/top} \\
-    &\sembot,                                   &&\varphi = \synbot,                                         \label{eq:def:propositional_denotation/bot} \\
-    &I(p),                                      &&\varphi = p \in \op*{Prop},                                \label{eq:def:propositional_denotation/prop} \\
-    &\oline{\Bracks{\psi}_I},                   &&\varphi = \synneg \psi,                                    \label{eq:def:propositional_denotation/neg} \\
-    &\Bracks{\psi}_I \bincirc \Bracks{\theta}_I &&\varphi = \psi \syncirc \theta, {\syncirc} \in \op*{Conn}, \label{eq:def:propositional_denotation/conn}
+    &\semtop,                                   &&\varphi = \syntop,                                         \label{eq:alg:propositional_denotation/top} \\
+    &\sembot,                                   &&\varphi = \synbot,                                         \label{eq:alg:propositional_denotation/bot} \\
+    &I(p),                                      &&\varphi = p \in \op*{Prop},                                \label{eq:alg:propositional_denotation/prop} \\
+    &\oline{\Bracks{\psi}_I},                   &&\varphi = \synneg \psi,                                    \label{eq:alg:propositional_denotation/neg} \\
+    &\Bracks{\psi}_I \bincirc \Bracks{\theta}_I &&\varphi = \psi \syncirc \theta, {\syncirc} \in \op*{Conn}, \label{eq:alg:propositional_denotation/conn}
   \end{empheq}
   where \( {\bincirc} \) denotes the \hyperref[def:heyting_algebra]{Heyting algebra} operation corresponding to the connective \( \syncirc \).
-\end{definition}
+\end{algorithm}
+\begin{defproof}
+  We can show that the algorithm halts by induction on \( \varphi \).
+\end{defproof}
 \begin{comments}
   \item If we are using \hyperref[def:truth_value_algebra/classical]{classical semantics}, due to \cref{thm:def:standard_boolean_functions}, the operation \( {\bincirc} \) is fully described by the truth tables in \cref{def:standard_boolean_functions}.
 
   \item The term \enquote{denotation} is inspired by Russell's theory of denotations discussed in \cref{con:denotation}. Along with \enquote{interpretation}, it is used inconsistently in the literature. See \cref{rem:model_theory_structure_terminology}.
 
-  \item Propositional denotations are implemented as \identifier{math.logic.propositional.evaluate_prop_formula} in \cite{notebook:code}.
+  \item This algorithm can be found as \identifier{math.logic.propositional.evaluate_prop_formula} in \cite{notebook:code}.
 \end{comments}
 
 \begin{concept}\label{con:improper_symbol}
-  In \cref{def:propositional_denotation}, we have defined denotations for \hyperref[def:propositional_formula]{propositional formulas}. Based on this definition, the symbols used to define the formal grammar of formulas can be divided into two collections:
+  In \fullref{alg:propositional_denotation}, we have defined denotations for \hyperref[def:propositional_formula]{propositional formulas}. Based on this definition, the symbols used to define the formal grammar of formulas can be divided into two collections:
   \begin{thmenum}
     \thmitem{con:improper_symbol/proper} The propositional variables and the constants \( \syntop \) and \( \synbot \) can be regarded, in the words of \incite[32]{Church1956LogicVol1}, as \enquote{having meaning in isolation}.
 
@@ -407,7 +410,7 @@ There are different approaches to formalizing the syntax of propositional logic.
   Unless otherwise noted, we assume that \( p_1, \ldots, p_n \) are precisely the variables of \( \varphi \), ordered lexicographically.
 \end{definition}
 \begin{comments}
-  \item This is implemented as \identifier{math.logic.propositional.formula_to_function} in \cite{notebook:code}.
+  \item Parametrized denotations are implemented as \identifier{math.logic.propositional.formula_to_function} in \cite{notebook:code}.
 \end{comments}
 
 \begin{definition}\label{def:propositional_institution}\mimprovised
@@ -417,7 +420,7 @@ There are different approaches to formalizing the syntax of propositional logic.
 
     \thmitem{def:propositional_institution/sentences} Define the \hyperref[def:institution/sentences]{sentence functor} as \( \anon \mapsto \op*{Form} \).
 
-    \thmitem{def:propositional_institution/models} Let \( \BbbI \) be the discrete category on the \hyperref[def:set_of_all_functions]{function set} \( \fun(\op*{Prop}, \BbbT) \), i.e. the set of all propositional interpretations. The \hyperref[def:institution/models]{model functor} can then be described as \( \anon \mapsto \BbbI \).
+    \thmitem{def:propositional_institution/models} Let \( \BbbI \) be the discrete category on the \hyperref[def:set_of_all_functions]{function set} \( \fun(\op*{Prop}, \BbbT) \), i.e. the set of all \( \BbbT \)-valued propositional interpretations. The \hyperref[def:institution/models]{model functor} can then be described as \( \anon \mapsto \BbbI \).
 
     \thmitem{def:propositional_institution/satisfaction} Finally, let the \hyperref[def:institution/satisfaction]{satisfaction} relation \( I \vDash_{\anon} \varphi \) hold if and only if \( \Bracks{\varphi}_I = \semtop \).
   \end{thmenum}
@@ -460,24 +463,20 @@ There are different approaches to formalizing the syntax of propositional logic.
   \item \Cref{thm:propositional_semantic_inconsistency} lists some conditions equivalent to (un)satisfiability.
 \end{comments}
 
-\begin{remark}\label{rem:classical_propositional_interpretations}
-  Note that a propositional interpretation may be used to define denotations different from the one in \cref{def:propositional_denotation}. An example is provided in \cref{rem:minimal_propositional_semantics}, where we discuss possible semantics for \hyperref[con:minimal_logic]{minimal logic}.
-
-  Thus, an interpretation cannot, by itself, be \hyperref[con:classical_logic]{classical} or \hyperref[con:intuitionistic_logic]{intuitionistic}.
-
-  On the other hand, (institutional) models can be classical, and propositional models are interpretations, so we are free to use the term \enquote{classical model} when referring to interpretations in an appropriate context.
-\end{remark}
-
 \begin{example}\label{ex:def:propositional_semantics}
   We list some examples related to \hyperref[def:propositional_semantics]{propositional semantics}:
   \begin{thmenum}
-    \thmitem{ex:def:propositional_semantics/degenerate} Within the \hyperref[def:truth_value_algebra/degenerate]{degenerate truth value algebra}, where \( \semtop = \sembot \), every formula is satisfied because there is simply no truth value other than \( \semtop \). \Cref{thm:inconsistent_lindenbaum_tarski_algebra} implies that this precisely is the \hyperref[def:lindenbaum_tarski_algebra]{Lindenbaum-Tarski algebra} of any \hyperref[def:consistent_set_of_sentences]{inconsistent} set of formulas.
+    \thmitem{ex:def:propositional_semantics/degenerate} Within the \hyperref[def:truth_value_algebra/degenerate]{degenerate truth value algebra}, where \( \semtop = \sembot \), every formula is satisfied because there is simply no truth value other than \( \semtop \). \Cref{thm:inconsistent_lindenbaum_tarski_algebra} implies that this is precisely the \hyperref[def:lindenbaum_tarski_algebra]{Lindenbaum-Tarski algebra} of any \hyperref[def:consistent_set_of_sentences]{inconsistent} set of formulas.
 
-    \thmitem{ex:def:propositional_semantics/three_valued_lem} We show in \cref{thm:classical_tautologies/lem} that the law of the excluded middle \( \eqref{eq:thm:classical_tautologies/lem} = \varphi \synvee \synneg \varphi \) holds in classical logic.
+    \thmitem{ex:def:propositional_semantics/three_valued_lem} We will show in \cref{thm:classical_tautologies/lem} that the law of the excluded middle
+    \begin{equation*}
+      \eqref{eq:thm:classical_tautologies/lem} = \varphi \synvee \synneg \varphi
+    \end{equation*}
+    holds in classical logic.
 
     We will give a simple counterexample when \( \BbbT \) is the more general three-valued Heyting algebra from \cref{ex:def:heyting_algebra/three_valued}, where \( \sembot < \mathbfsf{N} < \semtop \).
 
-    Let \( I \) be a \hyperref[def:propositional_denotation]{propositional interpretation} such that \( I(\synp) = \mathbfsf{N} \). Then the denotation of \eqref{eq:thm:classical_tautologies/lem} is
+    Let \( I \) be a \hyperref[alg:propositional_denotation]{propositional interpretation} such that \( I(\synp) = \mathbfsf{N} \). Then the denotation of \eqref{eq:thm:classical_tautologies/lem} is
     \begin{equation*}
       \Bracks{\synp \synvee \synneg \synp}_I
       =
@@ -492,7 +491,7 @@ There are different approaches to formalizing the syntax of propositional logic.
 
     \thmitem{ex:def:propositional_semantics/topological_semantics_lem} Similarly, the law of the excluded middle does not hold with respect to \hyperref[def:truth_value_algebra/topological]{topological semantics} based on the standard topology of \( \BbbR \).
 
-    Indeed, let \( U \) be an open set. For any \hyperref[def:propositional_denotation]{propositional interpretation} \( I \) such that \( I(p) = U \), we have
+    Indeed, let \( U \) be an open set. For any \hyperref[alg:propositional_denotation]{propositional interpretation} \( I \) such that \( I(p) = U \), we have
     \begin{equation*}
       \Bracks{p \synvee \synneg p}_I
       =
@@ -510,7 +509,7 @@ There are different approaches to formalizing the syntax of propositional logic.
 \begin{proposition}\label{thm:propositional_denotation_characterization}
   \hyperref[def:propositional_satisfaction]{Propositional satisfaction} of compounds formulas can be characterized as follows:
   \begin{thmenum}
-    \thmitem{thm:propositional_denotation_characterization/negation} Assuming \hyperref[def:truth_value_algebra/degenerate]{non-degenerate intuitionistic semantics}, from \( I \vDash \varphi \) it follows that \( I \nvDash \synneg \varphi \).
+    \thmitem{thm:propositional_denotation_characterization/negation} Assuming \hyperref[def:truth_value_algebra/degenerate]{non-degenerate semantics}, from \( I \vDash \varphi \) it follows that \( I \nvDash \synneg \varphi \).
 
     The converse holds in \hyperref[def:truth_value_algebra/classical]{classical semantics}.
 
@@ -533,7 +532,7 @@ There are different approaches to formalizing the syntax of propositional logic.
   If \( I \vDash \varphi \), then
   \begin{equation*}
     \Bracks{\synneg \varphi}_I
-    \reloset{\eqref{eq:def:propositional_denotation/neg}} =
+    \reloset{\eqref{eq:alg:propositional_denotation/neg}} =
     \oline{\Bracks{\varphi}_I}
     =
     \oline{\semtop}
@@ -547,7 +546,7 @@ There are different approaches to formalizing the syntax of propositional logic.
   \SubProofOf{thm:propositional_denotation_characterization/conjunction} We have
   \begin{equation*}
     \Bracks{\varphi \synwedge \psi}_I
-    \reloset {\eqref{eq:def:propositional_denotation/conn}} =
+    \reloset {\eqref{eq:alg:propositional_denotation/conn}} =
     \inf\set{ \Bracks{\varphi}_I, \Bracks{\psi}_I },
   \end{equation*}
   hence \( \Bracks{\varphi \synwedge \psi}_I = \semtop \) if and only if \( \Bracks{\varphi}_I = \Bracks{\psi}_I = \semtop \).
@@ -555,7 +554,7 @@ There are different approaches to formalizing the syntax of propositional logic.
   \SubProofOf{thm:propositional_denotation_characterization/disjunction} We have
   \begin{equation*}
     \Bracks{\varphi \synvee \psi}_I
-    \reloset {\eqref{eq:def:propositional_denotation/conn}} =
+    \reloset {\eqref{eq:alg:propositional_denotation/conn}} =
     \sup\set{ \Bracks{\varphi}_I, \Bracks{\psi}_I }.
   \end{equation*}
 
@@ -573,13 +572,13 @@ There are different approaches to formalizing the syntax of propositional logic.
 \end{proof}
 
 \begin{proposition}\label{thm:semantic_propositional_conjunction_of_premises}
-  For \hyperref[def:propositional_formula]{propositional formulas} we have \( \varphi_1, \ldots, \varphi_n \vDash \psi \) if and only if \( (\varphi_1 \synwedge \cdots \synwedge \varphi_n) \vDash \psi \).
+  The \hyperref[def:propositional_formula]{propositional formulas} \( \varphi_1, \ldots, \varphi_n \) \hyperref[def:propositional_semantics/entailment]{entail} \( \psi \) if and only if their conjunction \( (\varphi_1 \synwedge \cdots \synwedge \varphi_n) \) entails it.
 \end{proposition}
 \begin{proof}
   By induction on \( n \), we can easily show that
   \begin{equation*}
     \Bracks{\varphi_1 \synwedge \cdots \synwedge \varphi_n}_I
-    \reloset {\eqref{eq:def:propositional_denotation/conn}} =
+    \reloset {\eqref{eq:alg:propositional_denotation/conn}} =
     \Bracks{\varphi_1}_I \wedge \cdots \wedge \Bracks{\varphi_n}_I,
   \end{equation*}
   so \( \Bracks{\varphi_1 \synwedge \cdots \synwedge \varphi_n}_I = \semtop \) if and only if \( \Bracks{\varphi_k}_I = \semtop \) for every \( k = 1, \ldots, n \).
@@ -778,7 +777,7 @@ There are different approaches to formalizing the syntax of propositional logic.
     \semtop
     =
     \Bracks{\synneg \varphi}_I
-    \reloset{\eqref{eq:def:propositional_denotation/neg}} =
+    \reloset{\eqref{eq:alg:propositional_denotation/neg}} =
     \oline{\Bracks{\varphi}_I}
     =
     \oline{\semtop}
@@ -841,7 +840,7 @@ There are different approaches to formalizing the syntax of propositional logic.
   \SubProofOf{thm:intuitionistic_tautologies/self}
   \begin{equation*}
     \Bracks{\varphi \synimplies \varphi}_I
-    \reloset {\eqref{eq:def:propositional_denotation/conn}} =
+    \reloset {\eqref{eq:alg:propositional_denotation/conn}} =
     \Bracks{\varphi}_I \synimplies \Bracks{\varphi}_I
     \reloset {\ref{thm:def:heyting_algebra/leq}} =
     \semtop.
@@ -850,9 +849,9 @@ There are different approaches to formalizing the syntax of propositional logic.
   \SubProofOf{thm:intuitionistic_tautologies/dni}
   \begin{equation*}
     \Bracks{\varphi \synimplies \neg \neg \varphi}_I
-    \reloset {\eqref{eq:def:propositional_denotation/conn}} =
+    \reloset {\eqref{eq:alg:propositional_denotation/conn}} =
     \Bracks{\varphi} \rightarrow \Bracks{\neg \neg \varphi}_I
-    \reloset {\eqref{eq:def:propositional_denotation/neg}} =
+    \reloset {\eqref{eq:alg:propositional_denotation/neg}} =
     \Bracks{\varphi}_I \rightarrow \underbrace{\doline{\Bracks{\varphi}_I}}_{\mathclap{\leq \Bracks{\varphi}_I \T*{by} \ref{thm:def:heyting_algebra/dni}}}
     \reloset {\ref{thm:def:heyting_algebra/leq}}
     \semtop
@@ -863,7 +862,7 @@ There are different approaches to formalizing the syntax of propositional logic.
   \SubProofOf{thm:intuitionistic_tautologies/efq}
   \begin{equation*}
     \Bracks{\synbot \synimplies \varphi}_I
-    \reloset {\eqref{eq:def:propositional_denotation/conn}} =
+    \reloset {\eqref{eq:alg:propositional_denotation/conn}} =
     \Bracks{\synbot}_I \rightarrow \Bracks{\varphi}_I
     \reloset {\ref{thm:def:heyting_algebra/leq}} =
     \semtop.
@@ -872,7 +871,7 @@ There are different approaches to formalizing the syntax of propositional logic.
   \SubProofOf{thm:intuitionistic_tautologies/ecq}
   \begin{equation*}
     \Bracks{(\varphi \synwedge \neg \varphi) \synimplies \psi}_I
-    \reloset {\eqref{eq:def:propositional_denotation/conn}} =
+    \reloset {\eqref{eq:alg:propositional_denotation/conn}} =
     \Bracks{\varphi \synwedge \neg \varphi}_I \rightarrow \Bracks{\synimplies \psi}_I
     \reloset {\eqref{eq:thm:intuitionistic_equivalences/contradiction}} =
     \Bracks{\synbot}_I \rightarrow \Bracks{\synimplies \psi}_I
@@ -883,11 +882,11 @@ There are different approaches to formalizing the syntax of propositional logic.
   \SubProofOf{thm:intuitionistic_tautologies/lnc}
   \begin{equation*}
     \Bracks{\synneg (\varphi \synwedge \synneg \varphi)}_I
-    \reloset {\eqref{eq:def:propositional_denotation/neg}} =
+    \reloset {\eqref{eq:alg:propositional_denotation/neg}} =
     \oline{\Bracks{\varphi \synwedge \synneg \varphi}_I}
     \reloset {\eqref{eq:thm:intuitionistic_equivalences/contradiction}} =
     \oline{\Bracks{\synbot}_I}
-    \reloset {\eqref{eq:def:propositional_denotation/bot}} =
+    \reloset {\eqref{eq:alg:propositional_denotation/bot}} =
     \oline{\sembot}
     \reloset {\ref{thm:def:heyting_algebra/extrema_pseudocomplement}} =
     \semtop.
@@ -983,7 +982,7 @@ There are different approaches to formalizing the syntax of propositional logic.
     \Bracks{\varphi}_I
     \reloset {\ref{thm:def:boolean_algebra/involution}} =
     \doline{\Bracks{\varphi}_I}
-    \reloset {\eqref{eq:def:propositional_denotation/neg}} =
+    \reloset {\eqref{eq:alg:propositional_denotation/neg}} =
     \Bracks{\synneg \synneg \varphi}_I
     =
     \semtop

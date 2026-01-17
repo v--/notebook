@@ -1,7 +1,5 @@
 \section{Propositional formula transformation}\label{sec:propositional_formula_transformation}
 
-We sometimes want to substitute a propositional variable with another variable or even with a formula. This is akin to applying a \hyperref[def:boolean_function]{Boolean function} like \( x \vee y \) to different variables (e.g. \( a \vee b \)) or even concrete values (e.g. \( \sembot \vee \semtop \)), except that it is done on a purely syntactic level.
-
 \paragraph{Simultaneous substitution}
 
 \begin{concept}\label{con:syntactic_substitution}
@@ -24,18 +22,21 @@ We sometimes want to substitute a propositional variable with another variable o
   \begin{equation*}
     \varphi[\Bbbs] \coloneqq \begin{cases}
       \varphi,                            &\varphi \in \op*{PConst}, \\
-      \Bbbs(P),                           &\varphi = p \in \op*{Prop}, \\
+      \Bbbs(p),                           &\varphi = p \in \op*{Prop}, \\
       \synneg \psi[\Bbbs],                &\varphi = \neg \psi, \\
       \psi[\Bbbs] \syncirc \theta[\Bbbs], &\varphi = \psi \syncirc \theta, {\syncirc} \in \op*{Conn}. \\
     \end{cases}
   \end{equation*}
 \end{algorithm}
+\begin{defproof}
+  We can show that the algorithm halts by induction on \( \varphi \).
+\end{defproof}
 \begin{comments}
   \item Our definition is loosely based on that in \cite[def. 3.1.3]{CitkinMuravitsky2022ConsequenceRelations}, but with a fixed set of logical operations. Furthermore, we require only finitely many variables to not be fixed; this requirement is inspired by \cite[222]{Mimram2020ProgramEqualsProof}.
 
   \item This substitution has the properties listed in \cref{rem:variable_binding_properties}, but since we perform no renaming, these properties are trivial.
 
-  \item We focus on simultaneous substitutions directly instead of defining substituting a single variable. The latter is often done similarly to \cref{alg:propositional_subformula_substitution}. See \cref{rem:simulating_simultaneous_substitution} for an alternative approach.
+  \item We focus on simultaneous substitutions directly instead of defining substituting a single variable. The latter is often done similarly to \fullref{alg:propositional_subformula_substitution}. See \cref{rem:simulating_simultaneous_substitution} for an alternative approach.
 
   \item This algorithm is a special case of the analogous first-order logic algorithm \fullref{alg:fol_substitution}, implemented as \identifier{math.logic.substitution.apply_substitution_to_formula} in \cite{notebook:code}.
 \end{comments}
@@ -373,12 +374,14 @@ For propositional logic, We will also find useful the ability to replace an enti
   We can collapse repeated negations in any \hyperref[def:propositional_formula]{propositional formula} \( \varphi \) via the operator
   \begin{equation*}
     T_{\logic{DNE}}(\varphi) = \begin{cases}
-      T_{\logic{DNE}}(\psi), &\varphi = \synneg \synneg \psi, \\
-      \varphi,               &\T{otherwise.}
+      p,                                                      &\varphi = p \in \op*{Prop}, \\
+      \theta,                                                 &\varphi = \synneg \psi \T{and} T_{\logic{DNE}}(\psi) = \synneg \theta, \\
+      \synneg T_{\logic{DNE}}(\psi),                          &\varphi = \synneg \psi \T{and} T_{\logic{DNE}}(\psi) \T{is not a negation}, \\
+      T_{\logic{DNE}}(\psi) \syncirc T_{\logic{DNE}}(\theta), &\varphi = \psi \syncirc \theta.
     \end{cases}
   \end{equation*}
 
-  For any \hyperref[def:propositional_interpretation]{propositional interpretation} \( I \), due to \cref{thm:def:heyting_algebra/dni} we have \( \Bracks{\varphi}_I \leq \Bracks{T_{\logic{DNE}}(\varphi)}_I \). Equality holds under \hyperref[def:truth_value_algebra/classical]{classical semantics}.
+  For any \hyperref[def:propositional_interpretation]{propositional interpretation} \( I \), we have \( \Bracks{\varphi}_I \leq \Bracks{T_{\logic{DNE}}(\varphi)}_I \) as a consequence of \cref{thm:def:heyting_algebra/dni}. Equality holds in \hyperref[def:truth_value_algebra/classical]{classical semantics}.
 \end{algorithm}
 \begin{comments}
   \item This algorithm can be found as \identifier{math.logic.transformation.collapse_repeated_negation} in \cite{notebook:code}.
@@ -420,9 +423,9 @@ For propositional logic, We will also find useful the ability to replace an enti
 
   \item The other Boolean polynomial operations from \cref{def:opposite_boolean_polynomial} also give rise to transformations of propositional formulas. For example, \incite{Gottschalk1953Quaternality} discusses contradual and dual formulas. \incite[114]{Church1956LogicVol1} and \incite[192]{Andrews2002Logic} call the latter formulas \enquote{principal dual}.
 
-  The aforementioned authors add additional dual connectives --- \( \nleftarrow \) for \( \rightarrow \) (which also requires adding \( \leftarrow \) and \( \nrightarrow \)), and also \( \nleftrightarrow \) for \( \leftrightarrow \). In our algorithm we emulate these connectives.
+  The aforementioned authors add additional dual connectives --- \( \nleftarrow \) for \( \rightarrow \) (which also requires adding \( \leftarrow \) and \( \nrightarrow \)), and also \( \nleftrightarrow \) for \( \leftrightarrow \).
 
-  \item It seems simpler to define \( \oline{T}(\synneg \psi) \) as \( \psi \) rather than \( \synneg \oline{T}(\psi) \) (module double negation elimination). Unfortunately, this would require handling recursive cases separately.
+  \item It seems simpler to define \( \oline{T}(\synneg \psi) \) as \( \psi \) rather than \( \synneg \oline{T}(\psi) \) (modulo double negation elimination). Unfortunately, this would require handling recursive cases separately.
 
   \item As stated, the algorithm satisfies some useful properties like \cref{thm:alg:propositional_formula_dualization} and \cref{thm:full_cnf_and_dnf_uniqueness}.
 \end{comments}
@@ -590,7 +593,7 @@ For propositional logic, We will also find useful the ability to replace an enti
   \end{longbnf*}
 \end{definition}
 \begin{comments}
-  \item We can use \cref{alg:propositional_constant_collapse} to remove unnecessary propositional constants in formulas like \( \synp \wedge \syntop \).
+  \item We can use \fullref{alg:propositional_constant_collapse} to remove unnecessary propositional constants in formulas like \( \synp \wedge \syntop \).
 
   We can expand \( \synbot \) to \( \synp \wedge \synneg \synp \) (in accordance with \fullref{alg:propositional_constant_expansion}) and, dually, we can expand \( \syntop \) to \( \synp \vee \synneg \synp \).
 
@@ -662,7 +665,7 @@ For propositional logic, We will also find useful the ability to replace an enti
       &&
       T_\vee(\varphi) \coloneqq \oline{T}(T_\wedge(\psi)),
     \end{align*}
-    where \( \oline{T} \) is the dualization operator from \fullref{thm:alg:propositional_formula_dualization}.
+    where \( \oline{T} \) is the dualization operator from \fullref{alg:propositional_formula_dualization}.
 
     These cases are justified by \cref{thm:propositional_cnf_and_dnf_dualization}.
 
@@ -705,7 +708,7 @@ For propositional logic, We will also find useful the ability to replace an enti
   \begin{thmenum}
     \thmitem{def:full_propositional_cnf_and_dnf/constants} If \( n = 0 \), then \( \varphi \) is a propositional constant.
 
-    Otherwise, either \( \varphi = \sembot \) (resp. \( \varphi = \semtop \)) or otherwise \( \varphi \) contains no constants.
+    Otherwise, either \( \varphi = \sembot \) (resp. \( \varphi = \semtop \)) or \( \varphi \) contains no constants.
 
     \thmitem{def:full_propositional_cnf_and_dnf/literals} Every elementary disjunction (resp. conjunction) has the form
     \begin{equation*}
@@ -772,7 +775,7 @@ For propositional logic, We will also find useful the ability to replace an enti
   \end{thmenum}
 \end{algorithm}
 \begin{comments}
-  \item This algorithm can be found as \identifier{math.logic.transformation.conjunctive.function_to_cnf} in \cite{notebook:code}.
+  \item This algorithm can be found as \identifier{math.logic.normal_forms.function_to_dnf} in \cite{notebook:code}.
 \end{comments}
 \begin{defproof}
   We will use induction on \( n \) to show that
@@ -784,17 +787,17 @@ For propositional logic, We will also find useful the ability to replace an enti
   \begin{itemize}
     \item The case \( n = 0 \) must be handled separately.
     \begin{itemize}
-      \item If \( f = \semtop \), then \( \varphi_f = \syntop \) by \cref{alg:function_to_dnf/true}.
-      \item If \( f = \sembot \), then \( \varphi_f = \synbot \) by \cref{alg:function_to_dnf/false}.
+      \item If \( f = \semtop \), then \( \varphi_f = \syntop \) by \fullref{alg:function_to_dnf/true}.
+      \item If \( f = \sembot \), then \( \varphi_f = \synbot \) by \fullref{alg:function_to_dnf/false}.
     \end{itemize}
 
     Uniqueness is obvious.
 
     \item Let \( n = 1 \).
     \begin{itemize}
-      \item If \( f(x) = \sembot \), then \( \varphi_f = \synbot \), again by \cref{alg:function_to_dnf/false}.
+      \item If \( f(x) = \sembot \), then \( \varphi_f = \synbot \), again by \fullref{alg:function_to_dnf/false}.
 
-      \item If \( f(x) = \semtop \), then \cref{alg:function_to_dnf/elementary} provides us with the elementary disjunctions \( p_1^\semtop = p_1 \) and \( p_1^\sembot = \synneg p_1 \) and \cref{alg:function_to_dnf/total} gives us \( \varphi_f = p_1 \synwedge \synneg p_1 \).
+      \item If \( f(x) = \semtop \), then \fullref{alg:function_to_dnf/elementary} provides us with the elementary disjunctions \( p_1^\semtop = p_1 \) and \( p_1^\sembot = \synneg p_1 \) and \fullref{alg:function_to_dnf/total} gives us \( \varphi_f = p_1 \synwedge \synneg p_1 \).
 
       \item If \( f(x) = x \), then we only consider the elementary conjunction \( p_1^\semtop = p_1 \), which leads us to \( \varphi_f = p_1 \).
 
