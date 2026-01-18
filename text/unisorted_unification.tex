@@ -29,7 +29,7 @@
     \end{tabular}
   \end{center}
 
-  On a \hyperref[con:syntax_semantics_duality]{semantic level}, we can utilize Leibniz' \enquote{identity of indiscernibles} principle discussed in \cref{rem:identity_of_indiscernibles} to justify equating objects that have identical properties. On a metatheoretic level two objects may be distinct, but as long as they satisfy the same collection of desired properties, we can construct an equivalence relation that will be used to interpret equality propositions in the object language.
+  On a \hyperref[con:syntax_semantics_duality]{semantic level}, we can utilize Leibniz' \enquote{identity of indiscernibles} principle discussed in \cref{rem:identity_of_indiscernibles} to justify equating objects that have identical properties. On a metatheoretic level two objects may be distinct, but as long as they satisfy the same collection of desired properties, we can construct an equivalence relation that will be used to interpret equality propositions in the object language. A more abstract approach to equality via generalized equivalence relations is discussed in \cref{rem:intuitionistic_equality}.
 \end{concept}
 
 \begin{remark}\label{rem:identity_of_indiscernibles}
@@ -242,7 +242,153 @@
   \end{itemize}
 \end{proof}
 
-\paragraph{Unification}
+\begin{definition}\label{def:fol_term_length}\mimprovised
+  For some inductive proofs, we will find useful to recursively define the \term{length} of a \hyperref[def:fol_term]{first-order term} as
+  \begin{equation*}
+    \len(\tau) \coloneqq \begin{cases}
+      1,                                                  &\tau \in \op*{Var}, \\
+      3 + \len(\sigma_1) + \len(\rho),                    &\tau = (\sigma \anon \rho), \\
+      1 + \len(\sigma_1) + \cdots + \len(\sigma_n),       &\tau = f \sigma_1 \ldots \sigma_n, \\
+      (n + 2) + \len(\sigma_1) + \cdots + \len(\sigma_n), &\tau = f(\sigma_1, \ldots, \sigma_n). \\
+    \end{cases}
+  \end{equation*}
+\end{definition}
+\begin{comments}
+  \item If the variable names in \( \tau \) do not have numeric indices, then \( \len(\tau) \) is exactly the \hyperref[def:formal_language/string_length]{string length} of \( \tau \).
+
+  \item We adapt this definition from the \( \muplambda \)-term counterpart presented in \cref{def:lambda_term_length}.
+\end{comments}
+
+\begin{proposition}\label{thm:def:fol_term_length}
+  \hyperref[def:fol_term]{First-order terms} have the following basic properties regarding their \hyperref[def:fol_term_length]{length}:
+  \begin{thmenum}
+    \thmitem{thm:def:fol_term_length/subterm} Every strict subterm of a term is strictly shorter.
+
+    \thmitem{thm:def:fol_term_length/substitution} For any atomic substitution \( \Bbbs \) and term \( \tau \), we have
+    \begin{equation}\label{eq:thm:def:fol_term_length/substitution}
+      \len(\tau[\Bbbs]) = \len(\tau) + \sum_{\mathclap{u \in \op*{Var}(\tau)}} (\len(\Bbbs(u)) - 1).
+    \end{equation}
+
+    In particular, if \( \Bbbs \) is a \hyperref[def:lambda_renaming_substitution]{renaming}, then \( \len(\tau[\Bbbs]) = \len(\tau) \).
+  \end{thmenum}
+\end{proposition}
+\begin{comments}
+  \item See the corresponding statements for \( \muplambda \)-terms in \cref{thm:def:lambda_term_length}.
+\end{comments}
+\begin{proof}
+  \SubProofOf{thm:def:fol_term_length/subterm} Trivial.
+  \SubProofOf{thm:def:fol_term_length/substitution} Similar to \cref{thm:def:lambda_term_length/substitution}.
+\end{proof}
+
+\begin{definition}\label{def:fol_substitution_composition}\mcite[39]{BaaderNipkow2012TermRewriting}
+  We define the \term{composition} \( \Bbbt\Bbbs \) of the \hyperref[def:atomic_fol_substitution]{atomic first-order substitutions} \( \Bbbs \) and \( \Bbbt \) as
+  \begin{equation}\label{eq:def:fol_substitution_composition}
+    \parens[\big]{ \Bbbt\Bbbs }(a) \coloneqq a[\Bbbs][\Bbbt].
+  \end{equation}
+
+  This extends recursively to any number of substitutions, starting with the identity \( \id \) as a nullary composition.
+\end{definition}
+
+\begin{proposition}\label{thm:def:fol_substitution_composition}
+  \hyperref[def:fol_substitution_composition]{Substitution composition} has the following basic properties:
+  \begin{thmenum}
+    \thmitem{thm:def:fol_substitution_composition/associative} It is \hyperref[def:binary_operation/associative]{associative}.
+  \end{thmenum}
+\end{proposition}
+\begin{proof}
+  \SubProofOf{thm:def:fol_substitution_composition/associative} Can be proven as the analogous property in \cref{thm:lambda_substitution_composition_associative}, but without the special cases for abstractions.
+\end{proof}
+
+\begin{definition}\label{def:fol_substitution_order}\mcite[def. 4.5.1]{BaaderNipkow2012TermRewriting}
+  We say that the \hyperref[def:atomic_fol_substitution]{atomic first-order substitution} \( \Bbbt \) is an \term{instance} of \( \Bbbs \) if there exists a third substitution \( \Bbbr \) such that \( \Bbbt = \Bbbr\Bbbs \). We also say that \( \Bbbs \) is \term{more general} than \( \Bbbt \).
+\end{definition}
+
+\begin{proposition}\label{thm:def:fol_substitution_order}
+  The substitution instance relation from \cref{def:fol_substitution_order} has the following basic properties:
+  \begin{thmenum}
+    \thmitem{thm:def:fol_substitution_order/preorder} It is a \hyperref[def:preordered_set]{preorder}.
+  \end{thmenum}
+\end{proposition}
+\begin{comments}
+  \SubProofOf{thm:def:fol_substitution_order/preorder}
+  \SubProofOf*[def:binary_relation/reflexive]{reflexivity} Every substitution \( \Bbbs \) is an instance of itself because \( \Bbbs = \id \bincirc \Bbbs \).
+  \SubProofOf*[def:binary_relation/transitive]{transitivity} If \( \Bbbt = \Bbbr\Bbbs \) and \( \Bbbo = \Bbbp\Bbbt \), then
+  \begin{equation*}
+    \Bbbo
+    =
+    \Bbbp\Bbbt
+    =
+    \Bbbp(\Bbbr\Bbbs)
+    \reloset {\ref{thm:def:fol_substitution_composition/associative}} =
+    (\Bbbp\Bbbr)\Bbbs
+  \end{equation*}
+  hence \( \Bbbo \) is an instance of \( \Bbbs \).
+\end{comments}
+
+\begin{definition}\label{def:fol_renaming_substitution}\mcite[\S 5.4.2]{Mimram2020ProgramEqualsProof}
+  We say that an \hyperref[def:atomic_fol_substitution]{atomic first-order substitution} is a \term{renaming} if it sends variables to variables.
+\end{definition}
+\begin{comments}
+  \item \incite*[39]{BaaderNipkow2012TermRewriting} additionally require the substitution to be injective.
+\end{comments}
+
+\begin{definition}\label{def:fol_unifier_equivalence}\mimprovised
+  We say that the \hyperref[def:atomic_fol_substitution]{atomic first-order substitutions} \( \Bbbs \) and \( \Bbbt \) are \term{equally general} if the following equivalent conditions hold:
+  \begin{thmenum}
+    \thmitem{def:fol_unifier_equivalence/order} Both are instances of each other in the sense of \cref{def:fol_substitution_order}.
+    \thmitem{def:fol_unifier_equivalence/renaming} There exists a \hyperref[def:fol_renaming_substitution]{renaming} \( \Bbbr \) such that \( \Bbbt = \Bbbr\Bbbs \).
+  \end{thmenum}
+\end{definition}
+\begin{defproof}
+  \ImplicationSubProof{def:fol_unifier_equivalence/order}{def:fol_unifier_equivalence/renaming} Suppose that there exist substitutions \( \Bbbr \) and \( \Bbbp \) such that \( \Bbbt = \Bbbr\Bbbs \) and \( \Bbbs = \Bbbp\Bbbt \). \Cref{thm:def:fol_substitution_composition/associative} implies that
+  \begin{equation*}
+    \Bbbs = \Bbbp\Bbbt = \Bbbp(\Bbbr\Bbbs) = (\Bbbp\Bbbr)\Bbbs.
+  \end{equation*}
+
+  Let us define
+  \begin{equation*}
+    \Bbbr'(x) \coloneqq \begin{cases}
+      \Bbbr(x), &\qexists* y x \in \op*{Var}(\Bbbs(y)), \\
+      x,        &\T{otherwise.}
+    \end{cases}
+  \end{equation*}
+
+  This ensures that \( \Bbbt = \Bbbr' \Bbbs \). It remains to show that \( \Bbbr' \) is a renaming.
+
+  Suppose that this is not so. Then there exists a variable \( x \) such that \( \Bbbr'(x) \) is not a variable. In turn, there exists a variable \( y \) such that \( x \in \op*{Var}(\Bbbs(y)) \). Then \( \Bbbr(x) = \Bbbr'(x) \).
+
+  We have
+  \begin{equation*}
+    \Bbbs(y)[\Bbbp\Bbbr] = \Bbbs(y),
+  \end{equation*}
+  in particular
+  \begin{equation*}
+    x[\Bbbp\Bbbr] = x.
+  \end{equation*}
+
+  But since \( \Bbbr(x) \) is not a variable, neither is \( x[\Bbbp\Bbbr] = \Bbbs(r)[\Bbbp] \). The obtained contradiction shows that \( \Bbbr \) must be a renaming substitution.
+
+  \ImplicationSubProof{def:fol_unifier_equivalence/renaming}{def:fol_unifier_equivalence/order} Suppose that \( \Bbbt = \Bbbr\Bbbs \), where \( \Bbbr \) is a renaming. Obviously \( \Bbbt \) is an instance of \( \Bbbs \).
+
+  Consider the \hyperref[def:set_valued_map/inverse]{multi-valued inverse} \( \Bbbr^{-1} \). Let \( \Bbbp \) be a \hyperref[def:function/selection]{single-valued selection} of \( \Bbbr^{-1} \), with \( \Bbbp(x) \coloneqq x \) whenever \( x \) is not in the domain of \( \Bbbr^{-1} \). Clearly \( \Bbbp \) is also a renaming. Then \( \Bbbp \) is a left inverse of \( \Bbbr \), i.e. \( \Bbbp\Bbbr = \id \).
+
+  We have
+  \begin{equation*}
+    \Bbbp\Bbbt
+    =
+    \Bbbp(\Bbbr\Bbbs)
+    \reloset {\ref{thm:def:fol_substitution_composition/associative}} =
+    (\Bbbp\Bbbr)\Bbbs
+    =
+    \id\Bbbs
+    =
+    \Bbbs.
+  \end{equation*}
+
+  Therefore, \( \Bbbs \) is an instance of \( \Bbbt \).
+\end{defproof}
+
+\paragraph{Unifiers}
 
 \begin{definition}\label{def:fol_equation}\mcite[39]{BaaderNipkow2012TermRewriting}
   In \hyperref[def:first_order_logic]{first-order logic}, an \hyperref[def:equation]{equation} is simply an equality formula \( \tau \syneq \sigma \). Equivalently, we can regard it is a pair of first-order terms.
@@ -286,6 +432,8 @@
     \Bracks{\sigma}^{v[\Bbbs]}.
   \end{equation*}
 \end{proof}
+
+\paragraph{Unification}
 
 \begin{concept}\label{con:unification}
   \term[en=unification, ru=унификация (\cite[\S 4.3]{Герасимов2014Вычислимость})]{unification}
