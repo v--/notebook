@@ -187,7 +187,7 @@
 \begin{algorithm}[First-order term substitution]\label{alg:fol_term_substitution}\mimprovised
   We can extend an \hyperref[def:atomic_lambda_term_substitution]{atomic simultaneous substitution} \( (\Bbbs, \sharp) \) to arbitrary \hyperref[def:fol_term]{first-order terms} as follows:
   \begin{empheq}[left={\tau[\Bbbs]} \coloneqq \empheqlbrace]{align}
-    &\Bbbs(x),                                                   &&\tau = x \in \op*{Var},               \label{eq:alg:fol_term_substitution/var}         \\
+    &\Bbbs(x),                                                   &&\tau = x \in \op*{Var},               \label{eq:alg:fol_term_substitution/var} \\
     &f\parens[\big]{ \sigma_1[\Bbbs], \ldots, \sigma_n[\Bbbs] }, &&\tau = f(\sigma_1, \ldots, \sigma_n). \label{eq:alg:fol_term_substitution/application}
   \end{empheq}
 \end{algorithm}
@@ -195,6 +195,37 @@
   \item This algorithm can be found as \identifier{math.logic.substitution.apply_substitution_to_term} in \cite{notebook:code}.
   \item This substitution has the properties listed in \cref{rem:variable_binding_properties}, but since we perform no renaming, these properties are trivial. Compare this to \fullref{alg:fol_formula_substitution}, for which the properties are made explicit in \cref{thm:alg:fol_formula_substitution}.
 \end{comments}
+
+\begin{proposition}\label{thm:alg:fol_term_substitution}
+  \Fullref{alg:fol_term_substitution} has the following basic properties:
+  \begin{thmenum}
+    \thmitem{thm:alg:fol_term_substitution/subterm} If \( \sigma \) is a (strict) \hyperref[def:fol_subterm]{subterm} of \( \tau \), then \( \sigma[\Bbbs] \) is a (strict) subterm of \( \tau[\Bbbs] \) for any substitution \( \Bbbs \).
+    \thmitem{thm:alg:fol_term_substitution/fixed} If \( \tau[\Bbbs] = \tau \), then every variable in \( \tau \) is fixed under \( \Bbbs \).
+  \end{thmenum}
+\end{proposition}
+\begin{proof}
+  \SubProofOf{thm:alg:fol_term_substitution/subterm} We will use \fullref{thm:induction_on_abstract_syntax} on \( \tau \) simultaneously on all \( \sigma \) and \( \Bbbs \):
+  \begin{itemize}
+    \item If \( \tau \) is a variable, its only subterm is \( \tau \) itself, so \( \tau = \sigma \). Then obviously \( \tau[\Bbbs] = \sigma[\Bbbs] \), i.e. \( \sigma[\Bbbs] \) is a (nonstrict) subterm of \( \tau[\Bbbs] \).
+    \item Suppose that \( \tau = f(\sigma_1, \ldots, \sigma_n) \), where the inductive hypothesis holds for \( \sigma_1, \ldots, \sigma_n \).
+
+    We have two cases:
+    \begin{itemize}
+      \item If \( \tau = \sigma \), again obviously \( \tau[\Bbbs] = \sigma[\Bbbs] \).
+      \item If \( \sigma \) is a subterm of \( \sigma_k \), by the inductive hypothesis \( \sigma[\Bbbs] \) is a subterm of \( \sigma_k[\Bbbs] \), and hence also of \( \tau[\Bbbs] \).
+    \end{itemize}
+  \end{itemize}
+
+  \SubProofOf{thm:alg:fol_term_substitution/fixed} We will use \fullref{thm:induction_on_abstract_syntax} on \( \tau \):
+  \begin{itemize}
+    \item If \( \tau \) is a variable, say \( x \), and \( \tau[\Bbbs] = \tau \), by definition \( \Bbbs(x) = x \).
+    \item Suppose that \( \tau = f(\sigma_1, \ldots, \sigma_n) \) and that the inductive hypothesis holds for \( \sigma_1, \ldots, \sigma_n \).
+
+    Since, for \( k = 1, \ldots, n \), \( \tau[\Bbbs] = \tau \) implies \( \sigma_k[\Bbbs] = \sigma_k \), the inductive hypothesis implies that every variable in \( \sigma_k \) is fixed by \( \Bbbs \).
+
+    This holds for every index \( k \), so every variable in \( \tau \) is fixed by \( \Bbbs \).
+  \end{itemize}
+\end{proof}
 
 \begin{algorithm}[First-order assignment substitution]\label{alg:fol_assignment_substitution}\mimprovised
   We can extend an \hyperref[def:atomic_lambda_term_substitution]{atomic simultaneous substitution} \( (\Bbbs, \sharp) \) to a arbitrary \hyperref[def:fol_variable_assignment]{first-order variable assignment} \( v \) in the \hyperref[def:fol_structure]{structure} \( \mscrX = (X, I) \) as follows:
@@ -245,7 +276,7 @@
 \begin{definition}\label{def:fol_substitution_composition}\mcite[39]{BaaderNipkow2012TermRewriting}
   We define the \term{composition} \( \Bbbt\Bbbs \) of the \hyperref[def:atomic_fol_substitution]{atomic first-order substitutions} \( \Bbbs \) and \( \Bbbt \) as
   \begin{equation}\label{eq:def:fol_substitution_composition}
-    \parens[\big]{ \Bbbt\Bbbs }(a) \coloneqq a[\Bbbs][\Bbbt].
+    (\Bbbt\Bbbs)(x) \coloneqq x[\Bbbs][\Bbbt].
   \end{equation}
 
   This extends recursively to any number of substitutions, starting with the identity \( \id \) as a nullary composition.
@@ -254,38 +285,59 @@
 \begin{proposition}\label{thm:def:fol_substitution_composition}
   \hyperref[def:fol_substitution_composition]{Substitution composition} has the following basic properties:
   \begin{thmenum}
-    \thmitem{thm:def:fol_substitution_composition/associative} It is \hyperref[def:binary_operation/associative]{associative}.
+    \thmitem{thm:def:fol_substitution_composition/iterated} For the composition \( \Bbbt\Bbbs \), we have
+    \begin{equation}\label{eq:thm:def:fol_substitution_composition/iterated}
+      \tau[\Bbbt\Bbbs] = \tau[\Bbbs][\Bbbt]
+    \end{equation}
+    for any term \( \tau \).
   \end{thmenum}
 \end{proposition}
 \begin{proof}
-  \SubProofOf{thm:def:fol_substitution_composition/associative} Can be proven as the analogous property in \cref{thm:lambda_substitution_composition_associative}, but without the special cases for abstractions.
+  \SubProofOf{thm:def:fol_substitution_composition/iterated} We will use \fullref{thm:induction_on_abstract_syntax} on \( \tau \):
+  \begin{itemize}
+    \item If \( \tau \) is a variable, then \eqref{eq:thm:def:fol_substitution_composition/iterated} holds by definition.
+    \item If \( \tau = f(\sigma_1, \ldots, \sigma_n) \), where \( \sigma_1, \ldots, \sigma_n \) are substitutions, then
+    \begin{equation*}
+      \tau[\Bbbt\Bbbs]
+      =
+      f(\sigma_1[\Bbbt\Bbbs], \cdots, \sigma_n[\Bbbt\Bbbs])
+      \reloset {\T{ind.}} =
+      f(\sigma_1[\Bbbt][\Bbbs], \cdots, \sigma_n[\Bbbt][\Bbbs])
+      =
+      \tau[\Bbbt][\Bbbs].
+    \end{equation*}
+  \end{itemize}
 \end{proof}
 
-\begin{definition}\label{def:fol_substitution_order}\mcite[def. 4.5.1]{BaaderNipkow2012TermRewriting}
+\begin{definition}\label{def:fol_substitution_instance}\mcite[def. 4.5.1]{BaaderNipkow2012TermRewriting}
   We say that the \hyperref[def:atomic_fol_substitution]{atomic first-order substitution} \( \Bbbt \) is an \term{instance} of \( \Bbbs \) if there exists a third substitution \( \Bbbr \) such that \( \Bbbt = \Bbbr\Bbbs \). We also say that \( \Bbbs \) is \term{more general} than \( \Bbbt \).
 \end{definition}
 
-\begin{proposition}\label{thm:def:fol_substitution_order}
-  The substitution instance relation from \cref{def:fol_substitution_order} has the following basic properties:
+\begin{proposition}\label{thm:def:fol_substitution_instance}
+  The substitution instance relation from \cref{def:fol_substitution_instance} has the following basic properties:
   \begin{thmenum}
-    \thmitem{thm:def:fol_substitution_order/preorder} It is a \hyperref[def:preordered_set]{preorder}.
+    \thmitem{thm:def:fol_substitution_instance/preorder} It is a \hyperref[def:preordered_set]{preorder}.
   \end{thmenum}
 \end{proposition}
 \begin{comments}
-  \SubProofOf{thm:def:fol_substitution_order/preorder}
+  \SubProofOf{thm:def:fol_substitution_instance/preorder}
   \SubProofOf*[def:binary_relation/reflexive]{reflexivity} Every substitution \( \Bbbs \) is an instance of itself because \( \Bbbs = \id \bincirc \Bbbs \).
-  \SubProofOf*[def:binary_relation/transitive]{transitivity} If \( \Bbbt = \Bbbr\Bbbs \) and \( \Bbbo = \Bbbp\Bbbt \), then
+  \SubProofOf*[def:binary_relation/transitive]{transitivity} If \( \Bbbt = \Bbbr\Bbbs \) and \( \Bbbo = \Bbbp\Bbbt \), then, due to associativity of composition,
   \begin{equation*}
     \Bbbo
     =
     \Bbbp\Bbbt
     =
     \Bbbp(\Bbbr\Bbbs)
-    \reloset {\ref{thm:def:fol_substitution_composition/associative}} =
+    =
     (\Bbbp\Bbbr)\Bbbs
   \end{equation*}
   hence \( \Bbbo \) is an instance of \( \Bbbs \).
 \end{comments}
+
+\begin{definition}\label{def:fol_unifier_equivalence}\mimprovised
+  We say that the \hyperref[def:atomic_fol_substitution]{atomic first-order substitutions} \( \Bbbs \) and \( \Bbbt \) are \term{equally general} if both are instances of each other in the sense of \cref{def:fol_substitution_instance}.
+\end{definition}
 
 \begin{definition}\label{def:fol_renaming_substitution}\mcite[\S 5.4.2]{Mimram2020ProgramEqualsProof}
   We say that an \hyperref[def:atomic_fol_substitution]{atomic first-order substitution} is a \term{renaming} if it sends variables to variables.
@@ -294,15 +346,15 @@
   \item \incite*[39]{BaaderNipkow2012TermRewriting} additionally require the substitution to be injective.
 \end{comments}
 
-\begin{definition}\label{def:fol_unifier_equivalence}\mimprovised
-  We say that the \hyperref[def:atomic_fol_substitution]{atomic first-order substitutions} \( \Bbbs \) and \( \Bbbt \) are \term{equally general} if the following equivalent conditions hold:
+\begin{proposition}\label{thm:def:fol_unifier_equivalence}
+  \hyperref[def:fol_idempotent_substitution]{Equally general first-order substitutions} have the following basic properties:
   \begin{thmenum}
-    \thmitem{def:fol_unifier_equivalence/order} Both are instances of each other in the sense of \cref{def:fol_substitution_order}.
-    \thmitem{def:fol_unifier_equivalence/renaming} There exists a \hyperref[def:fol_renaming_substitution]{renaming} \( \Bbbr \) such that \( \Bbbt = \Bbbr\Bbbs \).
+    \thmitem{thm:def:fol_unifier_equivalence/renaming} \( \Bbbs \) and \( \Bbbt \) are equally general if and only if there exists a \hyperref[def:fol_renaming_substitution]{renaming} \( \Bbbr \) such that \( \Bbbt = \Bbbr\Bbbs \).
   \end{thmenum}
-\end{definition}
-\begin{defproof}
-  \ImplicationSubProof{def:fol_unifier_equivalence/order}{def:fol_unifier_equivalence/renaming} Suppose that there exist substitutions \( \Bbbr \) and \( \Bbbp \) such that \( \Bbbt = \Bbbr\Bbbs \) and \( \Bbbs = \Bbbp\Bbbt \). \Cref{thm:def:fol_substitution_composition/associative} implies that
+\end{proposition}
+\begin{proof}
+  \SubProofOf{thm:def:fol_unifier_equivalence/renaming}
+  \SufficiencySubProof* Suppose that there exist substitutions \( \Bbbr \) and \( \Bbbp \) such that \( \Bbbt = \Bbbr\Bbbs \) and \( \Bbbs = \Bbbp\Bbbt \). Since composition is associative, we have
   \begin{equation*}
     \Bbbs = \Bbbp\Bbbt = \Bbbp(\Bbbr\Bbbs) = (\Bbbp\Bbbr)\Bbbs.
   \end{equation*}
@@ -323,14 +375,14 @@
   \begin{equation*}
     \Bbbs(y)[\Bbbp\Bbbr] = \Bbbs(y),
   \end{equation*}
-  in particular
+  and, by \cref{thm:alg:fol_term_substitution/fixed},
   \begin{equation*}
     x[\Bbbp\Bbbr] = x.
   \end{equation*}
 
-  But since \( \Bbbr(x) \) is not a variable, neither is \( x[\Bbbp\Bbbr] = \Bbbs(r)[\Bbbp] \). The obtained contradiction shows that \( \Bbbr \) must be a renaming substitution.
+  But since \( \Bbbr(x) \) is not a variable, neither is \( x[\Bbbp\Bbbr] = \Bbbs(r)[\Bbbp] \). The obtained contradiction shows that \( \Bbbr' \) must be a renaming substitution.
 
-  \ImplicationSubProof{def:fol_unifier_equivalence/renaming}{def:fol_unifier_equivalence/order} Suppose that \( \Bbbt = \Bbbr\Bbbs \), where \( \Bbbr \) is a renaming. Obviously \( \Bbbt \) is an instance of \( \Bbbs \).
+  \NecessitySubProof* Suppose that \( \Bbbt = \Bbbr\Bbbs \), where \( \Bbbr \) is a renaming. Obviously \( \Bbbt \) is an instance of \( \Bbbs \).
 
   Consider the \hyperref[def:set_valued_map/inverse]{multi-valued inverse} \( \Bbbr^{-1} \). Let \( \Bbbp \) be a \hyperref[def:function/selection]{single-valued selection} of \( \Bbbr^{-1} \), with \( \Bbbp(x) \coloneqq x \) whenever \( x \) is not in the domain of \( \Bbbr^{-1} \). Clearly \( \Bbbp \) is also a renaming. Then \( \Bbbp \) is a left inverse of \( \Bbbr \), i.e. \( \Bbbp\Bbbr = \id \).
 
@@ -339,7 +391,7 @@
     \Bbbp\Bbbt
     =
     \Bbbp(\Bbbr\Bbbs)
-    \reloset {\ref{thm:def:fol_substitution_composition/associative}} =
+    =
     (\Bbbp\Bbbr)\Bbbs
     =
     \id\Bbbs
@@ -348,7 +400,26 @@
   \end{equation*}
 
   Therefore, \( \Bbbs \) is an instance of \( \Bbbt \).
-\end{defproof}
+\end{proof}
+
+\begin{definition}\label{def:fol_idempotent_substitution}\mcite[def. 4.5.6]{BaaderNipkow2012TermRewriting}
+  We say that an \hyperref[def:atomic_fol_substitution]{atomic first-order substitution} \( \Bbbs \) is \term{idempotent} if \( \Bbbs\Bbbs = \Bbbs \).
+\end{definition}
+
+\begin{proposition}\label{thm:def:fol_idempotent_substitution}
+  \hyperref[def:fol_idempotent_substitution]{Idempotent first-order substitutions} have the following basic properties:
+  \begin{thmenum}
+    \thmitem{thm:def:fol_idempotent_substitution/fixed}\mcite[lemma 4.5.7]{BaaderNipkow2012TermRewriting} \( \Bbbs \) is idempotent if and only if, for any \( x \), every variable in \( \Bbbs(x) \) is fixed.
+  \end{thmenum}
+\end{proposition}
+\begin{proof}
+  \SubProofOf{thm:def:fol_idempotent_substitution/fixed}
+  \SufficiencySubProof* Suppose that \( \Bbbs \) is idempotent. Fix a variable \( x \).
+
+  By idempotence, we have \( \Bbbs(x)[\Bbbs] = \Bbbs(x) \). \Cref{thm:alg:fol_term_substitution/fixed} implies that every variable in \( \Bbbs(x) \) is fixed.
+
+  \NecessitySubProof* Suppose that, for any \( x \), every variable in \( \Bbbs(x) \) is fixed. Then \( x[\Bbbs\Bbbs] = \Bbbs(x)[\Bbbs] = \Bbbs(x) \), hence \( \Bbbs \) is idempotent.
+\end{proof}
 
 \paragraph{Unifiers}
 
@@ -366,9 +437,11 @@
     \end{equation}
     of equality formulas.
 
-    \thmitem{def:fol_equation/syntactic_solution}\mcite[def. 4.5.4]{BaaderNipkow2012TermRewriting} A \term[ru=унификатор (\cite[def. 4.3.6]{Герасимов2014Вычислимость})]{unifier} or \term[en=solution (\cite[def. 4.5.4]{BaaderNipkow2012TermRewriting})]{syntactic solution} to the system \eqref{eq:def:fol_equation/system} is an \hyperref[def:atomic_fol_substitution]{atomic substitution} \( \Bbbs \) such that \( \tau_i[\Bbbs] \) and \( \sigma_i[\Bbbs] \) coincide for \( i = 1, \ldots, n \).
+    We will single letters like \( E \) to encompass the entire list \eqref{eq:def:fol_equation/system}.
 
-    \thmitem{def:fol_equation/semantic_solution}\mimprovised A \term{semantic solution} to the system \eqref{eq:def:fol_equation/system} in the \hyperref[def:fol_structure]{structure} \( \mscrX = (X, I) \) is a \hyperref[def:fol_variable_assignment]{variable assignment} \( v \) such that \( \Bracks{\tau_i}_\mscrX^v \) and \( \Bracks{\sigma_i}_\mscrX^v \) coincide for \( i = 1, \ldots, n \).
+    \thmitem{def:fol_equation/syntactic_solution}\mcite[def. 4.5.4]{BaaderNipkow2012TermRewriting} A \term[ru=унификатор (\cite[def. 4.3.6]{Герасимов2014Вычислимость})]{unifier} or \term[en=solution (\cite[def. 4.5.4]{BaaderNipkow2012TermRewriting})]{syntactic solution} to the system \( E \) is an \hyperref[def:atomic_fol_substitution]{atomic substitution} \( \Bbbs \) such that \( \tau_i[\Bbbs] \) and \( \sigma_i[\Bbbs] \) coincide for \( i = 1, \ldots, n \).
+
+    \thmitem{def:fol_equation/semantic_solution}\mimprovised A \term{semantic solution} to the system \( E \) in the \hyperref[def:fol_structure]{structure} \( \mscrX = (X, I) \) is a \hyperref[def:fol_variable_assignment]{variable assignment} \( v \) such that \( \Bracks{\tau_i}_\mscrX^v \) and \( \Bracks{\sigma_i}_\mscrX^v \) coincide for \( i = 1, \ldots, n \).
 
     We call the collection of all such assignments the \term{solution set} of \eqref{eq:def:fol_equation/system} in \( \mscrX \).
   \end{thmenum}
@@ -380,7 +453,7 @@
 \begin{proposition}\label{thm:fol_unifier_semantic_solution}
   Let \( \Bbbs \) be an \hyperref[def:atomic_lambda_term_substitution]{atomic simultaneous substitution}. Let \( v \) be any \hyperref[def:fol_variable_assignment]{variable assignment} \( v \) in any \hyperref[def:fol_structure]{structure} \( \mscrX = (X, I) \).
 
-  Then the assignment \( v[\Bbbs] \) obtained via \fullref{alg:fol_assignment_substitution} \hyperref[def:fol_equation/semantic_solution]{solves} the system.
+  If \( \Bbbs \) is a \hyperref[def:fol_equation/syntactic_solution]{unifier} of a \hyperref[def:fol_equation/system]{system} \( E \), then the assignment \( v[\Bbbs] \) obtained via \fullref{alg:fol_assignment_substitution} \hyperref[def:fol_equation/semantic_solution]{solves} \( E \).
 \end{proposition}
 \begin{proof}
   For every equation \( \tau \syneq \sigma \), we have
@@ -395,9 +468,110 @@
   \end{equation*}
 \end{proof}
 
+\begin{proposition}\label{thm:fol_unifier_instance}
+  If the \hyperref[def:atomic_fol_substitution]{atomic substitution} \( \Bbbs \) is a \hyperref[def:fol_equation/syntactic_solution]{unifier} of the \hyperref[def:fol_equation/system]{system} \( E \), then every \hyperref[def:fol_substitution_instance]{instance} of \( \Bbbs \) is also a unifier of \( E \).
+\end{proposition}
+\begin{proof}
+  Let \( \Bbbt = \Bbbr\Bbbs \). For every equation \( \tau \syneq \sigma \) in \( E \), we have \( \tau[\Bbbs] = \sigma[\Bbbs] \) by assumption, hence
+  \begin{equation*}
+    \tau[\Bbbt]
+    =
+    \tau[\Bbbr\Bbbs]
+    \reloset {\eqref{eq:thm:def:fol_substitution_composition/iterated}} =
+    \tau[\Bbbs][\Bbbr]
+    =
+    \sigma[\Bbbs][\Bbbr]
+    \reloset {\eqref{eq:thm:def:fol_substitution_composition/iterated}} =
+    \sigma[\Bbbt].
+  \end{equation*}
+
+  Generalizing on \( \tau \syneq \sigma \), we conclude that \( \Bbbt \) unifies \( E \).
+\end{proof}
+
+\begin{definition}\label{def:fol_most_general_unifier}
+  If a \hyperref[def:fol_equation/syntactic_solution]{unifier} \( \Bbbs \) for a given \hyperref[def:fol_equation/system]{system of equations} \( E \) is \hyperref[def:extremal_points/maximal_and_minimal_element]{minimal}, i.e. if every unifier of \( E \) is an \hyperref[def:fol_substitution_instance]{instance} of \( \Bbbs \), we call \( \Bbbs \) a \term{most general unifier}.
+\end{definition}
+
+\begin{proposition}\label{thm:def:fol_most_general_unifier}
+  \hyperref[def:fol_most_general_unifier]{Most general unifiers} have the following basic properties:
+  \begin{thmenum}
+    \thmitem{thm:def:fol_most_general_unifier/equivalent} Any two most general unifiers are \hyperref[def:fol_unifier_equivalence]{equally general}.
+  \end{thmenum}
+\end{proposition}
+\begin{proof}
+  \SubProofOf{thm:def:fol_most_general_unifier/equivalent} Trivial.
+\end{proof}
+
 \paragraph{Unification}
 
 \begin{concept}\label{con:unification}
-  \term[en=unification, ru=унификация (\cite[\S 4.3]{Герасимов2014Вычислимость})]{unification}
-  \todo{}
+  \term[en=unification (\cite[71]{BaaderNipkow2012TermRewriting}), ru=унификация (\cite[\S 4.3]{Герасимов2014Вычислимость})]{Unification} is the process of solving \hyperref[def:equation]{equations} symbolically. In this monograph, it reduces to finding \hyperref[def:fol_equation/syntactic_solution]{unifiers} via \fullref{alg:first_order_unification}.
 \end{concept}
+
+\begin{definition}\label{def:fol_equation_system_solved_form}\mcite[def. 4.6.1]{BaaderNipkow2012TermRewriting}
+  We say that the \hyperref[def:fol_equation/system]{system of first-order equations} is in \term{solved form} if the left sides are pairwise distinct variables that do not occur on any of the right sides.
+
+  Such a system has the form
+  \begin{equation}\label{eq:def:fol_equation_system_solved_form}
+    \begin{aligned}
+      x_1 &\syneq \sigma_1, \\
+          &\vdots \\
+      x_n &\syneq \sigma_n,
+    \end{aligned}
+  \end{equation}
+  where \( x_i \not\in \op*{Var}(\sigma_j) \) for all indices \( i \) and \( j \), and \( x_i \neq x_j \) whenever \( i \neq j \).
+
+  Denote the system above by \( E \). We define the \hyperref[def:atomic_fol_substitution]{atomic substitution}
+  \begin{equation*}
+    \Bbbe_E(x) \coloneqq \begin{cases}
+      \sigma_i, &x = x_i, \\
+      x,        &\T{otherwise.}
+    \end{cases}
+  \end{equation*}
+
+  We refer to \( \Bbbe_E \) as \hi{the} canonical unifier of \( E \).
+\end{definition}
+
+\begin{proposition}\label{thm:fol_canonical_unifier_is_most_general}\mcite[lemma 4.6.2]{BaaderNipkow2012TermRewriting}
+  The \hyperref[def:fol_equation_system_solved_form]{canonical unifier} of a \hyperref[def:fol_equation/system]{system of equations} in solved form is an \hyperref[def:fol_idempotent_substitution]{idempotent} \hyperref[def:fol_most_general_unifier]{most general unifier}.
+\end{proposition}
+\begin{proof}
+  Consider the system \( E \) from \eqref{eq:def:fol_equation_system_solved_form}. Idempotence of \( \Bbbe_E \) follows from \cref{thm:def:fol_idempotent_substitution/fixed}.
+
+  We will show that \( \Bbbe_E \) is a most general unifier of \( E \). Let \( \Bbbt \) be a unifier of \( E \). Define
+  \begin{equation*}
+    \Bbbr(x) \coloneqq \begin{cases}
+      x,        &x \in \op*{Var}(\sigma_k) \T{for some} k = 1, \ldots, n, \\
+      \Bbbt(x), &\T{otherwise}.
+    \end{cases}
+  \end{equation*}
+
+  Then, for every variable \( x \), we have
+  \begin{equation*}
+    \Bbbt(x) = \Bbbe_E(x)[\Bbbr],
+  \end{equation*}
+  hence \( \Bbbt \) is an instance of \( \Bbbe_E \).
+\end{proof}
+
+\begin{lemma}\label{thm:fol_unifier_non_existence}
+  The following equations have no \hyperref[def:fol_equation/syntactic_solution]{unifier}:
+  \begin{thmenum}
+    \thmitem{thm:fol_unifier_non_existence/var} \( x \syneq \tau \) if \( \tau \) is a function application that contains \( x \).
+    \thmitem{thm:fol_unifier_non_existence/fun} \( f(\tau_1, \ldots, \tau_n) \syneq g(\sigma_1, \ldots, \sigma_m) \) if \( f \neq g \).
+  \end{thmenum}
+\end{lemma}
+\begin{proof}
+  \SubProofOf{thm:fol_unifier_non_existence/var} Suppose that \( \Bbbs \) unifies \( x \syneq \tau \), i.e. \( \Bbbs(x) = \tau[\Bbbs] \).
+
+  Suppose that \( \tau = f(\sigma_1, \ldots, \sigma_n) \) and \( \tau[\Bbbs] \) contains \( x \). Then there exists some variable \( y \) in \( \tau \) such that \( \Bbbs(y) \) contains \( x \).
+
+  \Cref{thm:alg:fol_term_substitution/subterm} implies that \( y \) is a strict subterm of \( \tau \). Since \( \Bbbs(x) \) is a subterm of \( \Bbbs(y) \), it follows that \( \Bbbs(x) \) is a strict subterm of \( \tau[\Bbbs] = \Bbbs(x) \), i.e. \( \Bbbs(x) \) is a strict subterm of itself.
+
+  The obtained contradiction shows that \( \tau[\Bbbs] \) cannot contain \( x \).
+
+  \SubProofOf{thm:fol_unifier_non_existence/fun} If \( f \neq g \), unification requires \fullref{alg:fol_term_signature_translation} rather than variable substitution.
+\end{proof}
+
+\begin{algorithm}[First-order unification]\label{alg:first_order_unification}
+
+\end{algorithm}
