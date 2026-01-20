@@ -5,6 +5,7 @@ from .formula_application import instantiate_formula_schema
 from .term_application import instantiate_term_schema
 
 
+# This is alg:fol_formula_schema_instantiation in the monograph
 def instantiate_substitution_spec(schema: FormulaSchemaSubstitutionSpec, instantiation: AtomicLogicSchemaInstantiation) -> FormulaWithSubstitution:
     formula = instantiate_formula_schema(schema.formula, instantiation)
 

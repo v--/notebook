@@ -10,7 +10,7 @@ The content reflects only my own understanding. Most of the document contains co
 
 I tried putting citations on as many things as possible, often in the left margin or in a separate comment. If there is no citation on a definition or theorem, that means that I don't have a reference for the precise variant I present. I try to mark my own definitions to distinguish them from one taken from other sources. Many of the unoriginal definitions and theorems are restated. The simple proofs are mostly original, and the difficult ones are, often loosely, based on proofs from the places cited.
 
-Last but not least, more algorithmic portions of the monograph have programmatic implementations in the [`src`](https://github.com/v--/notebook/tree/master/src) subdirectory within the source code. I have prioritized following the exposition of the text, so parts of the code are more naive than necessary.
+Last but not least, more algorithmic portions of the monograph have programmatic implementations in the [`src`](https://github.com/v--/notebook/tree/master/src) subdirectory within the source code. I have prioritized following the exposition of the text, so parts of the code are more naive than necessary. Correspondingly, some seemingly trivial algorithms have been described explicitly because their programmatic implementation requires some care.
 
 ## License
 

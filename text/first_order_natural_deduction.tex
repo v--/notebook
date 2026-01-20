@@ -216,14 +216,89 @@
     \bnfmore                       {\bnfpn{function application schema}},
   \end{bnf*}
   where the rules for \( \bnfpn{function application schema} \) are defined as in \cref{def:fol_term}, where we have a distinct rule for every function symbol in the signature.
+
+  We have also used the variable identifier rules from \cref{def:variable_identifier}.
 \end{definition}
+\begin{comments}
+  \item Term schemas are implemented in \identifier{math.logic.formulas} in \cite{notebook:code}.
+\end{comments}
+
+\begin{concept}\label{con:eigenvariable}
+  When \hyperref[con:variable_binding]{binding} a variable in \hyperref[con:predicate_logic]{predicate logic}, we want to discharge it, similarly to how we discharge assumptions in \hyperref[def:propositional_natural_deduction_proof_tree]{natural deduction proof trees} for \hyperref[def:propositional_logic]{propositional logic}.
+
+  We will call such a dischargeable variable an \term[ru=собственная переменная (\cite[145]{Герасимов2014Вычислимость}), en=eigenvariable (\cite[\S 5.1.10]{Mimram2020ProgramEqualsProof})]{eigenvariable}.
+\end{concept}
+\begin{comments}
+  \item Discharging either variables or formulas reduces to discharging type assertions in \hyperref[def:martin_lof_type_theory]{Martin-L\"of type theory} under the \hyperref[con:curry_howard_correspondence]{Curry-Howard correspondence}. We discuss this in \cref{ex:dependent_types_and_hol_quantifier_rules}.
+
+  \item The term \enquote{eigenvariable} comes from \tcite{#2, where #1}{Gentzen1935LogischeSchließen} introduces natural deduction. In the corresponding English translation, \cite[293]{Gentzen1964LogicalDeduction}, eigenvariables are instead called \enquote{proper variables}. Both terms are currently used in English (e.g. \incite[\S 5.1.10]{Mimram2020ProgramEqualsProof} uses \enquote{eigenvariable}, while \incite[38]{TroelstraSchwichtenberg2000BasicProofTheory} uses \enquote{proper variable}).
+
+  Gentzen presents only two rules featuring eigenvariables, in which the variables must satisfy slightly differing constraints. We restate Gentzen's rules in \cref{def:fol_quantifier_rules/eigenvariables} and adapt them for \hyperref[def:higher_order_logic]{higher-order logic} in \cref{def:hol_quantifier_rules/eigenvariables}.
+\end{comments}
 
 \begin{definition}\label{def:fol_formula_schema}\mimprovised
-  We define \hyperref[con:schemas_and_instances]{schemas} for \hyperref[def:fol_formula]{first-order formulas} by using \hyperref[def:fol_term_schema]{term schemas} instead of \hyperref[def:fol_term]{terms} and allowing formula placeholders (small Greek identifiers) as in \cref{def:propositional_formula_schema}.
+  We will define \hyperref[con:schemas_and_instances]{schemas} for \hyperref[def:fol_formula]{first-order formulas} based on \hyperref[def:fol_term_schema]{term schemas} instead of \hyperref[def:fol_term]{terms}. We avoid writing the obvious rules in detail, but there are new important novelties:
+  \begin{longbnf*}
+    \bnfprod{eigenvariable}           {\bnfpn{variable placeholder} \bnfsp \bnftsq{\( \ast \)}} \\
+    \bnfprod{formula placeholder}     {\bnfpn{Small Greek identifier}} \\
+    \bnfprod{formula schema}          {\bnfpn{formula placeholder} \bnfor \cdots} \\
+    \bnfprod{substitution subject}    {\bnfpn{term schema} \bnfor \bnfpn{eigenvariable}} \\
+    \bnfprod{extended formula schema} {\bnfpn{formula schema} \bnfor} \\
+    \bnfmore                          {\bnfpn{formula schema} \bnfsp \bnfpn{substitution}}
+  \end{longbnf*}
+
+  \begin{itemize}
+    \item For the placeholders we have used the identifier rules from \cref{def:variable_identifier}.
+    \item For the substitutions we have used the rule from \cref{def:substitution_schema}, with the appropriate variable placeholders and subjects.
+  \end{itemize}
 \end{definition}
 \begin{comments}
   \item Small Greek identifiers are used for both term and formula placeholders, but in practice they do not cause confusion.
+  \item Formulas schemas are implemented in \identifier{math.logic.formulas} in \cite{notebook:code}.
+  \item The eigenvariable rules only show intention; we will use them to restrict certain constructions when defining proof trees in \cref{def:fol_natural_deduction_proof_tree}.
 \end{comments}
+
+\begin{definition}\label{def:atomic_fol_instantiation}\mimprovised
+  We define \hyperref[con:schemas_and_instances]{atomic instantiations} for \hyperref[def:fol_formula_schema]{first-order formula schemas} as \hyperref[def:set_valued_map/partial]{partial maps} \( \BbbI \) sending \hyperref[def:fol_term_schema]{variable placeholders} to \hyperref[def:fol_term]{variables}, \hyperref[def:fol_term_schema]{term placeholders} to \hyperref[def:fol_term]{terms} and \hyperref[def:fol_formula_schema]{formula placeholders} to \hyperref[def:fol_formula]{formulas}.
+\end{definition}
+
+\begin{algorithm}[First-order term instantiation]\label{alg:fol_term_schema_instantiation}
+  We extend the \hyperref[def:atomic_fol_instantiation]{atomic first-order instantiation} \( \BbbI \) to all \hyperref[def:fol_term_schema]{term schemas} straightforwardly:
+  \begin{equation}\label{eq:alg:simple_type_schema_instantiation}
+    \Tau[\BbbI] \coloneqq \begin{cases}
+      \BbbI(\Tau),                                 &\Tau \T{is a variable placeholder},   \\
+      \BbbI(\Tau),                                 &\Tau \T{is a term placeholder},       \\
+      f(\Sigma_1[\BbbI], \ldots, \Sigma_n[\BbbI]), &\Tau = f(\Sigma_1, \ldots, \Sigma_n), \\
+    \end{cases}
+  \end{equation}
+\end{algorithm}
+\begin{comments}
+  \item Of course, an application of an instantiation is only valid if the placeholders are in its domain.
+  \item This algorithm can be found as \identifier{math.logic.instantiation.instantiate_term_schema} in \cite{notebook:code}.
+\end{comments}
+
+\begin{algorithm}[First-order formula instantiation]\label{alg:fol_formula_schema_instantiation}
+  We will extend the \hyperref[def:atomic_fol_instantiation]{atomic first-order instantiation} \( \BbbI \) to all \hyperref[def:fol_formula_schema]{formula schemas} with the aid of \fullref{alg:fol_term_schema_instantiation}:
+  \begin{equation}\label{eq:alg:lambda_term_schema_instantiation}
+    \Phi[\BbbI] \coloneqq \begin{cases}
+      \Phi,                                       &\Phi \T{is a propositional constant},                                   \\
+      \BbbI(\Phi),                                &\Phi \T{is a formula placeholder},                                      \\
+                                                  &\vdots                                                                  \\
+      \quantifier Q {\BbbI(x)} \Psi[\BbbI],       &\Phi = \quantifier Q x \Psi, Q \in \op*{Quant},                         \\
+      \Phi[\BbbI][\BbbI(x) \mapsto \BbbI(y)],     &\Phi = \Phi[x \synsubst y^\ast],                                        \\
+      \Phi[\BbbI][\BbbI(x) \mapsto \tau[\BbbI]],  &\Phi = \Phi[x \synsubst \tau] \T{and} \tau \T{is not an eigenvariable}.
+    \end{cases}
+  \end{equation}
+
+  We have skipped half of the cases because they are obvious.
+\end{algorithm}
+\begin{comments}
+  \item As in \fullref{alg:lambda_term_schema_instantiation}, we do not distinguish between with free and bound variable schemas.
+
+  \item This algorithm can be found as \identifier{math.logic.instantiation.instantiate_substitution_spec} in \cite{notebook:code}.
+\end{comments}
+
+\paragraph{Natural deduction}
 
 \begin{proposition}\label{thm:alpha_equivalent_forulas_are_interderivable}
 \end{proposition}

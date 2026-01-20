@@ -54,6 +54,7 @@ class InstantiationApplicationVisitor(TypedTermSchemaVisitor[TypedTerm]):
         )
 
 
+# This is alg:lambda_term_schema_instantiation in the monograph
 @overload
 def instantiate_term_schema(schema: VariablePlaceholder, instantiation: AtomicLambdaSchemaInstantiation) -> Variable: ...
 @overload

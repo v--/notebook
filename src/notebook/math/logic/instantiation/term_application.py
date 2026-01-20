@@ -38,6 +38,7 @@ class TermInstantiationApplicationVisitor(TermSchemaVisitor[Term]):
         return FunctionApplication(schema.symbol, [self.visit(arg) for arg in schema.arguments])
 
 
+# This is alg:fol_term_schema_instantiation in the monograph
 @overload
 def instantiate_term_schema(schema: VariablePlaceholder, instantiation: AtomicLogicSchemaInstantiation) -> Variable: ...
 @overload

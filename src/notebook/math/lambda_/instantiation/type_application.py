@@ -34,6 +34,7 @@ class InstantiationVisitor(TypeSchemaVisitor[SimpleType]):
         return SimpleConnectiveType(schema.conn, self.visit(schema.left), self.visit(schema.right))
 
 
+# This is alg:simple_type_schema_instantiation in the monograph
 @overload
 def instantiate_type_schema(schema: BaseType, instantiation: AtomicLambdaSchemaInstantiation) -> BaseType: ...
 @overload
