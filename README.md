@@ -4,15 +4,13 @@
 
 ## Introduction
 
-This ever-expanding monograph started as a set of study notes and exercises and gradually outgrew itself to become more encyclopedic. Having all these notes in one place is quite helpful for both expressing my own thoughts clearly and for later reference. It is also helpful for tracking connections between seemingly unrelated concepts --- the entire monograph is hyperlinked. Even though I aim at understanding every concept in the way it is meant to be used, most concepts are presented insomuch as they are relevant to my previous experience.
+This ever-expanding monograph started as a set of study notes and exercises and gradually outgrew itself to become more and more encyclopedic. Having all these notes in one place is quite helpful for both expressing my own thoughts clearly and for later reference. It is also helpful for tracking connections between seemingly unrelated concepts --- the entire monograph is hyperlinked, and the order of the chapters is more-or-less arbitrary.
 
-Most of the document contains concepts that are new to me at the time of writing, and thus it is naturally rough around the edges. There are a lot of errors, both insignificant and substantial, so read with caution. The document claims no referential nor pedagogical value. Everything is written at the level of abstraction I am comfortable with. Furthermore, some sections in the monograph are much more polished than others. Feel free to [contact me](https://ivasilev.net) if something in this monograph happens to distress you.
+The content reflects only my own understanding. Most of the document contains concepts that are new to me at the time of writing, and thus it is naturally rough around the edges. There are a lot of errors, both insignificant and substantial, so read with caution. The document claims no referential nor pedagogical value. Everything is written at the level of abstraction I am comfortable with. Furthermore, some sections in the monograph are much more polished than others. Feel free to open a [GitHub issue](https://github.com/v--/notebook/issues) or [contact me](https://ivasilev.net) if something in this monograph happens to distress you.
 
-I tried putting citations on as many things as possible. The citations themselves are usually put in the left margin. If there is no citation on a definition or theorem, that means that I have either recalled it from memory or discovered it on my own. I try to mark my own definitions to distinguish them from one taken from other sources. Many of the unoriginal definitions and theorems are restated. The simple proofs are mostly original, and the difficult ones are, often loosely, based on proofs from the places cited.
+I tried putting citations on as many things as possible, often in the left margin or in a separate comment. If there is no citation on a definition or theorem, that means that I don't have a reference for the precise variant I present. I try to mark my own definitions to distinguish them from one taken from other sources. Many of the unoriginal definitions and theorems are restated. The simple proofs are mostly original, and the difficult ones are, often loosely, based on proofs from the places cited.
 
-Last but not least, some auxiliary programs are provided in the [`src`](https://github.com/v--/notebook/tree/master/src) subdirectory within the monograph's source. Staying close to the monograph exposition is a priority over performance or code quality considerations.
-
-Even though the document starts by building the familiar number systems, from a formalist perspective, it should start at the chapter for mathematical logic.
+Last but not least, more algorithmic portions of the monograph have programmatic implementations in the [`src`](https://github.com/v--/notebook/tree/master/src) subdirectory within the source code. I have prioritized following the exposition of the text, so parts of the code are more naive than necessary.
 
 ## License
 
@@ -20,7 +18,7 @@ This is a [public domain](https://en.wikipedia.org/wiki/Public_domain) project: 
 
 ## Project structure
 
-While I have put in a lot of effort into the project structure itself, I believe that, because of the nature of the project, it makes little sense to document it extensively. There is a GNU Make file specifying how to build the document. There are also several custom tools that can be found in the [`src/notebook/commands`](./src/notebook/commands) subdirectory - they are most easily activated via [poe](https://poethepoet.natn.io) (`poe <command>`).
+While I have put in a lot of effort into the project structure itself, I believe that, because of the nature of the project, it makes little sense to document it extensively. There is a GNU [`Makefile`]('./Makefile') specifying how to build the document. There are also several custom tools that can be found in the [`src/notebook/commands`](./src/notebook/commands) subdirectory - they are most easily activated via [poe](https://poethepoet.natn.io) (`poe <command>`).
 
 See the README at [`src/notebook`](./src/notebook) for an overview of how the code is structured.
 
@@ -29,6 +27,8 @@ If you happen to be interested in any aspect of the setup, feel free to [contact
 ### Build system
 
 There are two build systems --- the [`Makefile`](./Makefile) and the [`notebook.commands.watcher`](./src/notebook/commands/watcher) (Usage: `poe watcher [--rebuild-all-figures]`) command. The first one is aimed at full builds, i.e. for continuous integration, while the second one is aimed at incremental builds, i.e. for development.
+
+Additional metadata is read by [`TryReadMetadataFile`](./packages/metadata.sty) from the `metadata` file, if it exists. Similarly, a list of files to be whitelisted for building read by [`ProcessIncludeOnly`](./packages/compilation.sty) from the `includeonly` file, if it exists.
 
 There are externalized figures in the [`figures`](./figures) directory of the following kinds:
 * [Asymptote](https://github.com/vectorgraphics/asymptote) (`.asy`) files for 2D and 3D sketches and plots, as well as (graph-theoretic) graphs. `xvfb` is used by default for 3D rendering (freeglut doesn't work on headless environments nor on Wayland).
@@ -39,8 +39,8 @@ There are externalized figures in the [`figures`](./figures) directory of the fo
 
 A lot of the monograph-related code, as well as some of the tools are based on a recursive descent [parser framework](./src/notebook/parsing) created specifically for various (micro)languages in the monograph:
 * [Formal grammar schemas](./src/notebook/math/grammars/parsing)
-* [First-order logic terms and formulas and schemas](./src/notebook/math/logic/parsing)
-* [Lambda calculus terms and schemas](./src/notebook/math/lambda/parsing)
+* [First-order logic terms and formulas with schemas](./src/notebook/math/logic/parsing)
+* [Lambda calculus terms with schemas](./src/notebook/math/lambda/parsing)
 * [Plain text](./src/notebook/math/nlp/parsing)
 
 Two additional parsers are included:
