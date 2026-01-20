@@ -15,6 +15,7 @@ from ..parsing import (
     parse_variable,
     parse_variable_assertion,
 )
+from ..signature import BaseTypeSymbol
 from ..type_derivation import RuleApplicationTree, TypeDerivationError, apply, assume, premise
 from ..types import BaseType
 from .alpha import alpha_convert_derivation
@@ -85,8 +86,8 @@ def test_alpha_convert_sum_elim() -> None:
             ),
 
             premise(
-                tree=assume(VariableTypeAssertion(parse_variable(x), BaseType('𝟙'))),
-                discharge=VariableTypeAssertion(parse_variable(x), BaseType('𝟙'))
+                tree=assume(VariableTypeAssertion(parse_variable(x), BaseType(BaseTypeSymbol('𝟙')))),
+                discharge=VariableTypeAssertion(parse_variable(x), BaseType(BaseTypeSymbol('𝟙')))
             ),
 
             premise(

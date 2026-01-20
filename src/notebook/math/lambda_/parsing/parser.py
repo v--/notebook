@@ -50,7 +50,7 @@ class LambdaParser(IdentifierParserMixin[LambdaTokenKind, LambdaToken], Parser[L
     def _parse_base_type(self) -> BaseType:
         head = self.peek_unsafe()
         self.advance()
-        return BaseType(head.value)
+        return BaseType(self.signature.get_base_type_symbol(head.value))
 
     def parse_type_variable(self) -> TypeVariable:
         identifier = self.parse_greek_identifier('SMALL_GREEK_IDENTIFIER')
@@ -137,7 +137,7 @@ class LambdaParser(IdentifierParserMixin[LambdaTokenKind, LambdaToken], Parser[L
     def _parse_constant(self) -> Constant:
         head = self.peek_unsafe()
         self.advance()
-        return Constant(head.value)
+        return Constant(self.signature.get_constant_term_symbol(head.value))
 
     def parse_term_placeholder(self) -> TermPlaceholder:
         identifier = self.parse_latin_identifier('CAPITAL_LATIN_IDENTIFIER')

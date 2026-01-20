@@ -4,6 +4,7 @@ from typing import override
 from ....support.schemas import SchemaInferenceError
 from ..assertions import VariableTypeAssertion
 from ..instantiation import AtomicLambdaSchemaInstantiation, infer_instantiation_from_term, instantiate_term_schema
+from ..signature import ConstantTermSymbol
 from ..terms import Constant, TypedAbstraction, TypedApplication, TypedTerm
 from ..type_derivation import (
     AssumptionTree,
@@ -109,7 +110,7 @@ class AlphaConversionVisitor(SimpleAlgebraicDerivationTreeVisitor[TypeDerivation
         if not isinstance(self.other, TypedApplication) or \
             not isinstance(self.other.left, TypedApplication) or \
             not isinstance(self.other.left.left, TypedApplication) or \
-            self.other.left.left.left != Constant('S₋'):
+            self.other.left.left.left != Constant(ConstantTermSymbol('S₋')):
             raise NotAlphaEquivalent
 
         other_sum_term = self.other.right

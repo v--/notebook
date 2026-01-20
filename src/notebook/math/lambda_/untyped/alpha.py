@@ -11,12 +11,12 @@ def are_terms_alpha_equivalent(m: UntypedTerm, n: UntypedTerm) -> bool:
         case (Constant(), Constant()):
             assert isinstance(m, Constant)
             assert isinstance(n, Constant)
-            return m.name == n.name
+            return m == n
 
         case (Variable(), Variable()):
             assert isinstance(m, Variable)
             assert isinstance(n, Variable)
-            return m.identifier == n.identifier
+            return m == n
 
         case (UntypedApplication(), UntypedApplication()):
             assert isinstance(m, UntypedApplication)

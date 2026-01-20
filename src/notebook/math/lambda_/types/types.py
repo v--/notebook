@@ -2,14 +2,15 @@ from dataclasses import dataclass
 
 from ....parsing.identifiers import GreekIdentifier
 from ..alphabet import BinaryTypeConnective
+from ..signature import BaseTypeSymbol
 
 
 @dataclass(frozen=True)
 class BaseType:
-    name: str
+    value: BaseTypeSymbol
 
     def __str__(self) -> str:
-        return str(self.name)
+        return str(self.value)
 
     def __repr__(self) -> str:
         return f"parse_type('{self}')"

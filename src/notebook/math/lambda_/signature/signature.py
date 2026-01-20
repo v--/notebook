@@ -2,7 +2,7 @@ from collections.abc import Iterator
 
 from ....support.collections import MissingKeyError, TrieMapping
 from .exceptions import LambdaSignatureError
-from .symbols import SignatureSymbol
+from .symbols import BaseTypeSymbol, ConstantTermSymbol, SignatureSymbol
 
 
 class LambdaSignature:
@@ -24,6 +24,22 @@ class LambdaSignature:
 
     def __getitem__(self, name: str) -> SignatureSymbol:
         return self.trie[name]
+
+    def get_constant_term_symbol(self, name: str) -> ConstantTermSymbol:
+        sym = self[name]
+
+        if not isinstance(sym, ConstantTermSymbol):
+            raise LambdaSignatureError(f'Expected {name} to be a constant term symbol, but got a {sym.get_kind_string()}')
+
+        return sym
+
+    def get_base_type_symbol(self, name: str) -> BaseTypeSymbol:
+        sym = self[name]
+
+        if not isinstance(sym, BaseTypeSymbol):
+            raise LambdaSignatureError(f'Expected {name} to be a constant term symbol, but got a {sym.get_kind_string()}')
+
+        return sym
 
     def __contains__(self, symbol: SignatureSymbol) -> bool:
         try:

@@ -88,13 +88,13 @@ def test_parsing_invalid_variable_suffix() -> None:
 @pytest_parametrize_kwargs(
     dict(
         term='𝐐',
-        expected=Constant('𝐐')
+        expected=Constant(ConstantTermSymbol('𝐐'))
     ),
     dict(
         term='(𝐐(𝐐x))',
         expected=UntypedApplication(
-            Constant('𝐐'),
-            UntypedApplication(Constant('𝐐'), Variable(LatinIdentifier('x')))
+            Constant(ConstantTermSymbol('𝐐')),
+            UntypedApplication(Constant(ConstantTermSymbol('𝐐')), Variable(LatinIdentifier('x')))
         )
     )
 )

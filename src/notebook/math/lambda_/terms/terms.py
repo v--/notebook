@@ -2,15 +2,16 @@ from dataclasses import dataclass
 
 from ....parsing.identifiers import LatinIdentifier
 from ..alphabet import BinderSymbol
+from ..signature import ConstantTermSymbol
 from ..types import SimpleType
 
 
 @dataclass(frozen=True)
 class Constant:
-    name: str
+    value: ConstantTermSymbol
 
     def __str__(self) -> str:
-        return str(self.name)
+        return str(self.value)
 
     def __repr__(self) -> str:
         return f"parse_term('{self}')"

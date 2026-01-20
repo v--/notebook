@@ -19,6 +19,7 @@ from ..alphabet import BinaryTypeConnective
 from ..assertions import VariableTypeAssertion
 from ..instantiation import AtomicLambdaSchemaInstantiation
 from ..parsing import parse_type_variable
+from ..signature import BaseTypeSymbol
 from ..terms import Variable
 from ..type_derivation import tree as dtree
 from ..type_system import TypingRule
@@ -52,10 +53,10 @@ class FormulaToTypeVisitor(FormulaVisitor[SimpleType]):
     def visit_prop_constant(self, formula: PropConstant) -> BaseType:
         match formula.value:
             case PropConstantSymbol.VERUM:
-                return BaseType('𝟙')
+                return BaseType(BaseTypeSymbol('𝟙'))
 
             case PropConstantSymbol.FALSUM:
-                return BaseType('𝟘')
+                return BaseType(BaseTypeSymbol('𝟘'))
 
     @override
     def visit_predicate(self, formula: PredicateApplication) -> TypeVariable:

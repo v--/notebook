@@ -33,7 +33,7 @@ def type_connective_to_formula_connective(conn: BinaryTypeConnective) -> BinaryC
 class TypeToFormulaVisitor(TypeVisitor[Formula]):
     @override
     def visit_base(self, type_: BaseType) -> PropConstant:
-        match type_.name:
+        match type_.value.name:
             case '𝟙':
                 return PropConstant(PropConstantSymbol.VERUM)
 
