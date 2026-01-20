@@ -273,6 +273,41 @@
   \end{itemize}
 \end{proof}
 
+\begin{definition}\label{def:fol_term_length}\mimprovised
+  For some inductive proofs, we will find useful to recursively define the \term{length} of a \hyperref[def:fol_term]{first-order term} as
+  \begin{equation*}
+    \len(\tau) \coloneqq \begin{cases}
+      1,                                                  &\tau \in \op*{Var}, \\
+      1 + \len(\sigma_1) + \cdots + \len(\sigma_n),       &\tau = f(\sigma_1, \ldots, \sigma_n), \\
+    \end{cases}
+  \end{equation*}
+\end{definition}
+\begin{comments}
+  \item If all function symbols use prefix notation and if the variable names in \( \tau \) contain no numeric indices, then \( \len(\tau) \) is exactly the \hyperref[def:formal_language/string_length]{string length} of \( \tau \).
+  \item We adapt this definition from the \( \muplambda \)-term counterpart presented in \cref{def:lambda_term_length}.
+\end{comments}
+
+\begin{proposition}\label{thm:def:fol_term_length}
+  \hyperref[def:fol_term]{First-order terms} have the following basic properties regarding their \hyperref[def:fol_term_length]{length}:
+  \begin{thmenum}
+    \thmitem{thm:def:fol_term_length/subterm} Every strict subterm of a term is strictly shorter.
+
+    \thmitem{thm:def:fol_term_length/substitution} For any atomic substitution \( \Bbbs \) and term \( \tau \), we have
+    \begin{equation}\label{eq:thm:def:fol_term_length/substitution}
+      \len(\tau[\Bbbs]) = \len(\tau) + \sum_{\mathclap{u \in \op*{Var}(\tau)}} (\len(\Bbbs(u)) - 1).
+    \end{equation}
+
+    In particular, if \( \Bbbs \) is a \hyperref[def:lambda_renaming_substitution]{renaming}, then \( \len(\tau[\Bbbs]) = \len(\tau) \).
+  \end{thmenum}
+\end{proposition}
+\begin{comments}
+  \item See the corresponding statements for \( \muplambda \)-terms in \cref{thm:def:lambda_term_length}.
+\end{comments}
+\begin{proof}
+  \SubProofOf{thm:def:fol_term_length/subterm} Trivial.
+  \SubProofOf{thm:def:fol_term_length/substitution} Similar to \cref{thm:def:lambda_term_length/substitution}.
+\end{proof}
+
 \begin{definition}\label{def:fol_substitution_composition}\mcite[39]{BaaderNipkow2012TermRewriting}
   We define the \term{composition} \( \Bbbt\Bbbs \) of the \hyperref[def:atomic_fol_substitution]{atomic first-order substitutions} \( \Bbbs \) and \( \Bbbt \) as
   \begin{equation}\label{eq:def:fol_substitution_composition}
@@ -572,6 +607,185 @@
   \SubProofOf{thm:fol_unifier_non_existence/fun} If \( f \neq g \), unification requires \fullref{alg:fol_term_signature_translation} rather than variable substitution.
 \end{proof}
 
-\begin{algorithm}[First-order unification]\label{alg:first_order_unification}
+\begin{algorithm}[First-order unification]\label{alg:first_order_unification}\mcite[74]{BaaderNipkow2012TermRewriting}
+  Consider some \hyperref[def:fol_equation/system]{system of first-order equations} \( E \). We will attempt to build a system \( U(E) \) in \hyperref[def:fol_equation_system_solved_form]{solved form}, which will have the same \hyperref[def:fol_equation/syntactic_solution]{unifiers} as \( E \). In particular, the canonical unifier of \( U(E) \) can be used for \( E \).
 
+  Let \( E_0 \coloneqq E \). We will define a sequence \( E_1, E_2, \ldots \) that will eventually \hyperref[def:chain_condition/stabilization]{stabilize}. Suppose we have built \( E_k \). If it is in solved form, halt the algorithm with \( U(E) \coloneqq E_k \).
+
+  Otherwise, try the following steps:
+  \begin{thmenum}
+    \thmitem{alg:first_order_unification/delete} We can \term{delete} identities: if \( E_k = E_k', (\tau \syneq \tau), E_k^\dprime \) for some term \( \tau \), where \( E_k' \) has no such equation, let \( E_{k+1} \) be
+    \begin{equation*}
+      E_k', E_k^\dprime.
+    \end{equation*}
+
+    \thmitem{alg:first_order_unification/decompose} We can \term{decompose} applications: if \( E_k = E_k', f(\tau_1, \ldots, \tau_n) \syneq f(\sigma_1, \ldots, \sigma_n), E_k^\dprime \), where \( E_k' \) has no such equation, let \( E_{k+1} \) be
+    \begin{equation*}
+      E_k', (\tau_1 \syneq \sigma_1), \ldots, (\tau_n \syneq \sigma_n), E_k^\dprime.
+    \end{equation*}
+
+    \thmitem{alg:first_order_unification/orient} We can \term{orient} equations: if \( E_k = E_k', (\tau \syneq x), E_k^\dprime \) for some variable \( x \) and some application \( \tau \), where \( E_k' \) has no such equation, let \( E_{k+1} \) be
+    \begin{equation*}
+      E_k', (x \syneq \tau), E_k^\dprime.
+    \end{equation*}
+
+    \thmitem{alg:first_order_unification/eliminate} We can \term{eliminate} known variables on right sides: if \( E_k = E_k', (x \syneq \tau), E_k^\dprime \), where \( \tau \) is a term that does not contain \( x \), if at least one term from \( E_k' \) or \( E_k^\dprime \) contains \( x \) and if \( E_k' \) has no such equation, let \( E_{k+1} \) be
+    \begin{equation*}
+      E_k'[x \mapsto \tau], (x \syneq \tau), E_k^\dprime[x \mapsto \tau],
+    \end{equation*}
+    where \( E_k'[x \mapsto \tau] \) applies \fullref{alg:fol_term_substitution} to both sides of every equation in \( E_k' \) (and similarly for \( E_k^\dprime \)).
+
+    \thmitem{alg:first_order_unification/deduplicate} We can \term{deduplicate} equations: if \( E_k = E_k', (\tau \syneq \sigma), E_k^\dprime, (\tau \syneq \sigma), E_k^\trprime \), where \( E_k' \) and \( E_k^\dprime \) do not share an equation, let \( E_{k+1} \) be
+    \begin{equation*}
+      E_k', (\tau \syneq \sigma), E_k^\dprime, E_k^\trprime.
+    \end{equation*}
+
+    \thmitem{alg:first_order_unification/failure} If none of the cases above occur (and \( E_k \) is not in solved form), one of the cases in \cref{thm:fol_unifier_non_existence} occurs, and \( E \) has no unifier.
+
+    In this case we can only abort the algorithm.
+  \end{thmenum}
 \end{algorithm}
+\begin{comments}
+  \item \incite[74]{BaaderNipkow2012TermRewriting} present this algorithm with \( E \) being a set rather than a list. We made some adjustments and added a deduplication rule.
+\end{comments}
+\begin{defproof}
+  \SubProof{Proof that the algorithm halts} Let us call the variable \( x \) \term{solved} if it occurs exactly once in \( E \), as a standalone variable on the left side of some equation (i.e. \( x \syneq \tau \) and \( x \not\in \op*{Var} \)).
+
+  At step \( k \), we can define a triple \( (n_{k,1}, n_{k,2}, n_{k,3}) \), where
+  \begin{itemize}
+    \item \( n_{k,1} \) is the number of unsolved variables present in \( E_k \).
+    \item \( n_{k,2} \) is the summary \hyperref[def:fol_term_length]{length} of all terms in \( E_k \), i.e.
+    \begin{equation*}
+      n_{k,2} = \sum_{\mathclap{(\tau \syneq \sigma) \in E_k}} \parens[\big]{ \len(\tau) + \len(\sigma) }.
+    \end{equation*}
+
+    \item \( n_{k,3} \) is the number of equations in \( E_k \) with a standalone variable on the right.
+  \end{itemize}
+
+  \Cref{tab:alg:first_order_unification/proof/halting} describes how the operations affect these triples. We see that, at each step, we obtain a lower \hyperref[def:lexicographic_order]{lexicographic order}. Hence, the algorithm eventually halts.
+  \begin{table}
+    \begin{center}
+      \begin{tabular}{lCCC}
+        \toprule
+                    & n_{k+1,1} - n_{k,1} & n_{k+1,2} - n_{k,2} & n_{k+1,3} - n_{k,3} \\
+        \midrule
+        Delete      & \geq 0              & > 0                 & \geq 0              \\
+        Decompose   & \geq 0              & = 2                 & = 0                 \\
+        Orient      & \geq 0              & = 0                 & = 1                 \\
+        Eliminate   & = 1                 & \leq 0              &                     \\
+        Deduplicate & = 0                 & > 0                 & \geq 0              \\
+        \bottomrule
+      \end{tabular}
+    \end{center}
+    \caption{The effect of the operations of \fullref{alg:first_order_unification} on the complexity of the system of equations.}\label{tab:alg:first_order_unification/proof/halting}
+  \end{table}
+
+  \SubProof{Proof that the algorithm preserves unifiers} First, let \( \Bbbs \) be a unifier of \( E \). We will show that it is a unifier of \( U(E) \).
+
+  More specifically, we will use induction on \( k \) to show that, if \( \Bbbs \) unifies \( E_k \), it also unifies \( E_{k+1} \).
+
+  Let \( \tau \syneq \sigma \) be an equation in \( E_{k+1} \) not in \( E_k \). We will show that \( \tau[\Bbbs] = \sigma[\Bbbs] \).
+  \begin{itemize}
+    \item If the equation was introduced by \cref{alg:first_order_unification/decompose}, there exists some equation \( f(\tau_1, \ldots, \tau_n) \syneq f(\sigma_1, \ldots, \sigma_n) \) in \( E_k \) such that \( \tau = \tau_k \) and \( \sigma = \sigma_k \) for some \( k \).
+
+    Since \( \Bbbs \) unifies the application, it also unifies all terms. Thus, \( \tau[\Bbbs] = \sigma[\Bbbs] \).
+
+    \item If the equation was introduced by \cref{alg:first_order_unification/orient}, the equation \( \sigma \syneq \tau \) in \( E_k \); hence \( \sigma[\Bbbs] = \tau[\Bbbs] \).
+
+    \item Finally, if the equation was introduced by \cref{alg:first_order_unification/eliminate}, there exists some equations \( x \syneq \rho \) and \( \tau' \syneq \sigma' \) in \( E_k \) such that \( \tau = \tau'[x \mapsto \rho] \) and \( \sigma = \sigma'[x \mapsto \rho] \).
+
+    Then
+    \begin{equation*}
+      \tau[\Bbbs] = \tau'[x \mapsto \rho][\Bbbs] = \tau'[\Bbbs_{x \mapsto \rho[\Bbbs]}]
+    \end{equation*}
+
+    But \( x[\Bbbs] = \rho[\Bbbs] \) since \( x \syneq \rho \) is an equation in \( E_k \), hence \( \Bbbs_{x \mapsto \rho[\Bbbs]} = \Bbbs \). Therefore,
+    \begin{equation*}
+      \tau[\Bbbs]
+      =
+      \tau'[\Bbbs]
+      \reloset {\T{ind.}} =
+      \sigma'[\Bbbs]
+      =
+      \sigma[\Bbbs].
+    \end{equation*}
+  \end{itemize}
+
+  It follows that \( \Bbbs \) unifies \( E_k \) for any \( k \), and hence also \( U(E) \).
+
+  \SubProof{Proof that the algorithm reflects unifiers} We can also show that if \( \Bbbs \) unifies \( E_{k+1} \), it unifies \( E_k \).
+
+  Let \( \tau \syneq \sigma \) be an equation in \( E_k \) not in \( E_{k+1} \).
+  \begin{itemize}
+    \item If the equation was eliminated by \cref{alg:first_order_unification/delete}, then \( \tau = \sigma \), which trivially implies that \( \tau[\Bbbs] = \sigma[\Bbbs] \).
+    \item If the equation was eliminated by \cref{alg:first_order_unification/decompose}, then \( \tau = f(\tau_1, \ldots, \tau_n) \) and \( \sigma = f(\sigma_1, \ldots, \sigma_n) \), where each of the equations \( \tau_k \syneq \sigma_k \) is in \( E_{k+1} \).
+
+    By the inductive hypothesis, it follows that
+    \begin{equation*}
+      \tau[\Bbbs]
+      =
+      f(\tau_1[\Bbbs], \ldots, \tau_n[\Bbbs])
+      =
+      f(\sigma_1[\Bbbs], \ldots, \sigma_n[\Bbbs])
+      =
+      \sigma[\Bbbs].
+    \end{equation*}
+  \end{itemize}
+
+  It follows that \( \Bbbs \) unifies \( E_k \) for any \( k \), and hence also \( E = E_0 \).
+
+  \SubProof{Proof that aborting is correct} Suppose that \( E_k \) is not in solved form, but no rules are applicable. We will show that \( E_k \) has no unifiers. It will follow that \( E \) also has no unifiers, since we have just shown that the unifiers of \( E \) and \( E_k \) coincide.
+
+  We have the following possibilities:
+  \begin{itemize}
+    \item \( E_k \) can contain multiple equations that solve some variable \( x \), i.e. \( x \syneq \tau \) and \( x \syneq \sigma \) for some terms \( \tau \) and \( \sigma \).
+
+    If \( \tau = \sigma \), we could have used \cref{alg:first_order_unification/deduplicate}, so they must be different. In this case there cannot be a unifier.
+
+    \item \( E_k \) can contain equations \( x \syneq \tau \) and \( y \syneq \sigma \), where \( x \) is a variable in \( \sigma \).
+
+    If \( x \) and \( y \) were different, we could have used \cref{alg:first_order_unification/eliminate}, so they must coincide.
+
+    Then we have an equation \( x \syneq \sigma \), there \( \sigma \) contains \( x \). \Cref{thm:fol_unifier_non_existence/var} shows that this equation has no unifier.
+
+    \item \( E_k \) can contain an equation \( \tau \syneq \sigma \), where \( \tau \) is a function application, say \( \tau = f(\tau_1, \ldots, \tau_n) \).
+
+    If \( \sigma \) is a variable, we could have used \cref{alg:first_order_unification/orient}, so it must also be an application, say \( \sigma = g(\sigma_1, \ldots, \sigma_m) \).
+
+    If \( f = g \), we could have used \cref{alg:first_order_unification/decompose}, so they must be different.
+
+    \Cref{thm:fol_unifier_non_existence/fun} shows that this equation has no unifier.
+  \end{itemize}
+
+  In all cases, we have shown that \( E_k \) has no unifier. Then neither does \( E \).
+\end{defproof}
+
+\begin{example}\label{ex:alg:first_order_unification}
+  We list examples related to \fullref{alg:first_order_unification}:
+  \begin{thmenum}
+    \thmitem{ex:alg:first_order_unification/empty} Clearly every substitution unifies \( x \syneq x \). The algorithm suggests removing this equation and then unifying the empty system of equations.
+
+    \thmitem{ex:alg:first_order_unification/loop} The equation \( x \syneq f(x) \) has no unifier since, for any substitution \( \Bbbs \), \( \Bbbs(x) \) is a strict subterm of \( f(x)[\Bbbs] = f(x[\Bbbs]) \).
+
+    The algorithm aborts in this case, and \cref{thm:fol_unifier_non_existence/var} implies that no unifier exists.
+
+    This may be harder to detect is systems with many equations. For example, given \( x \syneq f(y) \) and \( y \syneq g(x) \), \( x \) can be eliminated to form \( y \syneq g(f(y)) \).
+
+    \thmitem{ex:alg:first_order_unification/glue} The system consisting of \( x \syneq f(y) \) and \( x \syneq f(z) \) allows eliminating \( x \) from the second equation to obtain \( f(y) \syneq f(z) \) and then using decomposition to obtain \( y \syneq z \). Finally, we eliminate \( y \) from the first equation and obtain the simpler system in solved form with \( x \syneq f(z) \) and \( y \syneq z \).
+
+    \thmitem{ex:alg:first_order_unification/418a}\mcite[exerc. 4.18(a)]{BaaderNipkow2012TermRewriting} For the equation \( f(x, y) \syneq f(g(c), x) \), where \( c \) is a constant, the unification algorithm suggests into \( x \syneq g(c) \) and \( y \syneq x \) and then eliminating \( x \) from the second equation to obtain a substitution sending both \( x \) and \( y \) to \( g(c) \). \Cref{thm:fol_canonical_unifier_is_most_general} implies that this substitution it is both most general and idempotent.
+
+    \thmitem{ex:alg:first_order_unification/418b}\mcite[exerc. 4.18(b)]{BaaderNipkow2012TermRewriting} We decompose the equation \( f(x, y) \syneq f(g(x), x) \) into \( x \syneq g(x) \) and \( y \syneq x \). We eliminate \( x \) from the second equation and obtain \( y \syneq g(x) \).
+
+    Unfortunately, the final system is not in solved form; \cref{thm:fol_unifier_non_existence/var} implies that \( x \syneq g(x) \) has no unifier.
+
+    \thmitem{ex:alg:first_order_unification/418c}\mcite[exerc. 4.18(c)]{BaaderNipkow2012TermRewriting} We decompose the equation \( f(x, c) \syneq f(g(y), z) \) into \( x \syneq g(y) \) and \( c \syneq z \). After orienting the second equation, we obtain a solved form, so we have a unifier sending \( x \) to \( g(y) \) and \( z \) to \( c \).
+
+    \thmitem{ex:alg:first_order_unification/418d}\mcite[exerc. 4.18(d)]{BaaderNipkow2012TermRewriting} We decompose the equation \( f(x, x) \syneq f(g(y), y) \) into \( x \syneq g(y) \) and \( x \syneq y \). We eliminate \( x \) from the second equation and obtain \( g(y) \syneq y \), which we orient.
+
+    \Cref{thm:fol_unifier_non_existence/var} implies that no unifier exists in this case.
+  \end{thmenum}
+\end{example}
+\begin{comments}
+  \item Many of these examples are verified programmatically in the module \identifier{math.logic.test_unification} in \cite{notebook:code}.
+\end{comments}

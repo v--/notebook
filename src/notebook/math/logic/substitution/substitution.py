@@ -37,6 +37,18 @@ class AtomicLogicSubstitution(AbstractAtomicSubstitution[Variable, Term]):
     def modify_at(self, var: Variable, replacement: Term) -> AtomicLogicSubstitution:
         return AtomicLogicSubstitution(variable_mapping={**self.variable_mapping, var: replacement})
 
+    def __eq__(self, other: object) -> bool:
+        if not isinstance(other, AtomicLogicSubstitution):
+            return NotImplemented
+
+        return self.variable_mapping == other.variable_mapping
+
+    def __str__(self) -> str:
+        return '[' + ', '.join(f'{key} ↦ {value}' for key, value in self.variable_mapping.items()) + ']'
+
+    def __repr__(self) -> str:
+        return str(self)
+
 
 def infer_substitution(spec: FormulaWithSubstitution) -> AtomicLogicSubstitution:
     if spec.sub:

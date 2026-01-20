@@ -35,3 +35,15 @@ class UntypedTermSubstitution(AbstractAtomicSubstitution[Variable, UntypedTerm])
     @override
     def modify_at(self, var: Variable, replacement: UntypedTerm) -> UntypedTermSubstitution:
         return UntypedTermSubstitution(variable_mapping={**self.variable_mapping, var: replacement})
+
+    def __eq__(self, other: object) -> bool:
+        if not isinstance(other, UntypedTermSubstitution):
+            return NotImplemented
+
+        return self.variable_mapping == other.variable_mapping
+
+    def __str__(self) -> str:
+        return '[' + ', '.join(f'{key} ↦ {value}' for key, value in self.variable_mapping.items()) + ']'
+
+    def __repr__(self) -> str:
+        return str(self)

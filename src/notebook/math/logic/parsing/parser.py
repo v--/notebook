@@ -469,6 +469,24 @@ class FormalLogicParser(IdentifierParserMixin[LogicTokenKind, LogicToken], Parse
         return result
 
     @overload
+    def parse_equation(self, *, parse_schema: Literal[False]) -> EqualityFormula: ...
+    @overload
+    def parse_equation(self, *, parse_schema: Literal[True]) -> EqualityFormulaSchema: ...
+    @overload
+    def parse_equation(self, *, parse_schema: bool) -> EqualityFormula | EqualityFormulaSchema: ...
+    def parse_equation(self, *, parse_schema: bool) -> EqualityFormula | EqualityFormulaSchema:
+        if not self.peek():
+            raise self.annotate_unexpected_end_of_input()
+
+        context = LogicParserContext(self)
+        result = self.parse_formula(parse_schema=parse_schema)
+
+        if not isinstance(result, EqualityFormula | EqualityFormulaSchema):
+            raise context.annotate_context_error(f'Expected an {'equality formula schema' if parse_schema else 'equality formula'}')
+
+        return result
+
+    @overload
     def parse_term_substitution_spec(self, *, parse_schema: Literal[False]) -> TermSubstitutionSpec: ...
     @overload
     def parse_term_substitution_spec(self, *, parse_schema: Literal[True]) -> TermSchemaSubstitutionSpec | EigenvariableSchemaSubstitutionSpec: ...
@@ -696,6 +714,20 @@ def parse_term_schema(source: str, signature: FormalLogicSignature = EMPTY_SIGNA
 
     with FormalLogicParser(signature, source, tokens) as parser:
         return parser.parse_term(parse_schema=True)
+
+
+def parse_equation(source: str, signature: FormalLogicSignature = EMPTY_SIGNATURE) -> EqualityFormula:
+    tokens = tokenize_formal_logic_string(signature, source)
+
+    with FormalLogicParser(signature, source, tokens) as parser:
+        return parser.parse_equation(parse_schema=False)
+
+
+def parse_equation_schema(source: str, signature: FormalLogicSignature = EMPTY_SIGNATURE) -> EqualityFormulaSchema:
+    tokens = tokenize_formal_logic_string(signature, source)
+
+    with FormalLogicParser(signature, source, tokens) as parser:
+        return parser.parse_equation(parse_schema=True)
 
 
 def parse_formula(source: str, signature: FormalLogicSignature = EMPTY_SIGNATURE) -> Formula:
