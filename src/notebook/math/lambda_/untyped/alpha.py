@@ -8,6 +8,11 @@ from .substitution import substitute
 # The assertions are needed because mypy doesn't handle such complicated type narrowing
 def are_terms_alpha_equivalent(m: UntypedTerm, n: UntypedTerm) -> bool:
     match (m, n):
+        case (Constant(), Constant()):
+            assert isinstance(m, Constant)
+            assert isinstance(n, Constant)
+            return m.name == n.name
+
         case (Variable(), Variable()):
             assert isinstance(m, Variable)
             assert isinstance(n, Variable)

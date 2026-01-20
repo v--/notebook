@@ -64,6 +64,170 @@
 
 \paragraph{\( \alpha \)-equivalence}
 
+\begin{definition}\label{def:fol_formula_alpha_equivalence}\mimprovised
+  Based on how we defined \( \alpha \)-equivalence of \hyperref[def:lambda_term]{\( \muplambda \)-terms} in \cref{def:lambda_term_alpha_equivalence}, we will define \term{\( \alpha \)-equivalence} between \hyperref[def:fol_formula]{first-order formulas} over a common \hyperref[def:fol_signature]{signature} \( \Sigma \):
+
+  \columnratio{0.25,0.25,0.5}
+  \begin{paracol}{3}
+    \begin{nthcolumn}{0}
+      \ParacolAlignmentHack
+      \begin{equation*}\taglabel[\ensuremath{ \logic{Atom}_\alpha }]{inf:def:fol_formula_alpha_equivalence/atom}
+        \begin{prooftree}
+          \hypo{ \varphi \in \op*{Atom}_\Sigma }
+          \infer1[\ref{inf:def:fol_formula_alpha_equivalence/atom}]{ \varphi \aequiv \varphi }
+        \end{prooftree}
+      \end{equation*}
+    \end{nthcolumn}
+
+    \begin{nthcolumn}{1}
+      \ParacolAlignmentHack
+      \begin{equation*}\taglabel[\ensuremath{ \logic{Neg}_\alpha }]{inf:def:fol_formula_alpha_equivalence/neg}
+        \begin{prooftree}
+          \hypo{ \varphi \aequiv \psi }
+          \infer1[\ref{inf:def:fol_formula_alpha_equivalence/neg}]{ \synneg \varphi \aequiv \synneg \psi }
+        \end{prooftree}
+      \end{equation*}
+    \end{nthcolumn}
+
+    \begin{nthcolumn}{2}
+      \ParacolAlignmentHack
+      \begin{equation*}\taglabel[\ensuremath{ \logic{Conn}_\alpha }]{inf:def:fol_formula_alpha_equivalence/conn}
+        \begin{prooftree}
+          \hypo{ \varphi_1 \aequiv \psi_1 }
+          \hypo{ \varphi_2 \aequiv \psi_1 }
+          \hypo{ {\syncirc} \in \op*{Conn} }
+          \infer3[\ref{inf:def:fol_formula_alpha_equivalence/conn}]{ (\varphi_1 \syncirc \varphi_2) \aequiv (\psi_1 \syncirc \psi_2) }
+        \end{prooftree}
+      \end{equation*}
+    \end{nthcolumn}
+  \end{paracol}
+  \columnratio{}
+
+  For quantifiers, we can either use the single rule
+  \begin{equation*}\taglabel[\ensuremath{ \logic{Quant}_\alpha }]{inf:def:fol_formula_alpha_equivalence/quant}
+    \begin{prooftree}
+      \hypo{ Q \in \op*{Quant} }
+      \hypo{ \varphi[x \mapsto n] \aequiv \psi[y \mapsto n] \T{for every} n \not\in \op*{Free}(\quantifier Q x \varphi) }
+      \infer2[\ref{inf:def:fol_formula_alpha_equivalence/quant}]{ (\quantifier Q x \varphi) \aequiv (\quantifier Q y \psi) }
+    \end{prooftree}
+  \end{equation*}
+  or the following pair of rules based on \cref{thm:alpha_equivalence_simplified}:
+  \columnratio{0.325,0.675}
+  \begin{paracol}{2}
+    \begin{leftcolumn}
+      \ParacolAlignmentHack
+      \begin{equation*}\taglabel[\ensuremath{ \logic{Lift}_\alpha }]{inf:def:fol_formula_alpha_equivalence/lift}
+        \begin{prooftree}[separation=1.1em]
+          \hypo{ Q \in \op*{Quant} }
+          \hypo{ \varphi \aequiv \psi }
+          \infer2[\ref{inf:def:fol_formula_alpha_equivalence/lift}]{ (\quantifier Q x \varphi) \aequiv (\quantifier Q x \psi) }
+        \end{prooftree}
+      \end{equation*}
+    \end{leftcolumn}
+
+    \begin{rightcolumn}
+      \ParacolAlignmentHack
+      \begin{equation*}\taglabel[\ensuremath{ \logic{Ren}_\alpha }]{inf:def:fol_formula_alpha_equivalence/ren}
+        \begin{prooftree}[separation=1.1em]
+          \hypo{ Q \in \op*{Quant} }
+          \hypo{ x \neq y }
+          \hypo{ x \not\in \op*{Free}(\psi) }
+          \hypo{ \varphi \aequiv \psi[y \mapsto x] }
+          \infer4[\ref{inf:def:fol_formula_alpha_equivalence/ren}]{ (\quantifier Q x \varphi) \aequiv (\quantifier Q y \psi) }
+        \end{prooftree}
+      \end{equation*}
+    \end{rightcolumn}
+  \end{paracol}
+  \columnratio{}
+\end{definition}
+\begin{comments}
+  \item We can prove that the quantifier rules are interchangeable similarly to the case of \( \muplambda \)-terms. In fact, with the properties from \cref{thm:def:fol_formula_alpha_equivalence}, the proof becomes analogous.
+\end{comments}
+
+\begin{proposition}\label{thm:def:fol_formula_alpha_equivalence}
+  \hyperref[thm:def:fol_formula_alpha_equivalence]{\( \alpha \)-equivalence} of \hyperref[def:fol_formula]{first-order formulas} has the following basic properties:
+  \begin{thmenum}
+    \thmitem{thm:def:fol_formula_alpha_equivalence/same_kind} If two formulas are \( \alpha \)-equivalent, they have the same kind: both are either atomic formulas (in which case they are equal), negation formulas, connective formulas with the same connective or quantifier formulas with the same quantifier.
+
+    \thmitem{thm:def:fol_formula_alpha_equivalence/free} The free variables of \( \alpha \)-equivalent formulas coincide.
+
+    \thmitem{thm:def:fol_formula_alpha_equivalence/quantifier_body_free} If \( (\quantifier Q x \varphi) \aequiv (\quantifier Q y \psi) \), then
+    \begin{equation}\label{eq:thm:def:fol_formula_alpha_equivalence/abstraction_body_free}
+      \op*{Free}(\varphi) \setminus \set{ x } = \op*{Free}(\psi) \setminus \set{ y }.
+    \end{equation}
+
+    In particular, \( x \) is free in \( \varphi \) if and only if \( y \) is free in \( \psi \). Unless \( x = y \), however, \( x \) is never free in \( \psi \), nor \( y \) --- in \( \varphi \).
+
+    \thmitem{thm:def:fol_formula_alpha_equivalence/equivalence} \( \alpha \)-equivalence is an \hyperref[def:equivalence_relation]{equivalence relation}.
+
+    \thmitem{thm:def:fol_formula_alpha_equivalence/substitution_composition} For the \hyperref[def:fol_substitution_composition]{composition} \( \Bbbt \Bbbs \) of the \hyperref[def:fol_substitution]{substitutions} \( \Bbbt \Bbbs \), we have
+    \begin{equation}\label{eq:thm:def:fol_formula_alpha_equivalence/composition}
+      \varphi[\Bbbt\Bbbs] \aequiv \varphi[\Bbbs][\Bbbt]
+    \end{equation}
+    for any formula \( \varphi \)
+
+    \thmitem{thm:def:fol_formula_alpha_equivalence/contraction} For every formula \( \varphi \), every term \( \psi \) and any variable \( y \) not in \( \op*{Free}(\varphi) \), we have
+    \begin{equation}\label{thm:def:fol_formula_alpha_equivalence/contraction/precomposition}
+      \varphi[x \mapsto y][\Bbbs_{y \mapsto \tau}]
+      \aequiv
+      \varphi[\Bbbs_{x \mapsto \tau}]
+    \end{equation}
+    and
+    \begin{equation}\label{thm:def:fol_formula_alpha_equivalence/contraction/composition}
+      \varphi[\Bbbs_{x \mapsto y}][y \mapsto \tau]
+      \aequiv
+      \varphi[\Bbbs_{x \mapsto \tau}].
+    \end{equation}
+
+    \thmitem{thm:def:fol_formula_alpha_equivalence/substitution} If \( \varphi \aequiv \psi \), for any substitution \( \Bbbs \) we have \( \varphi[\Bbbs] \aequiv \psi[\Bbbs] \).
+
+    \thmitem{thm:def:fol_formula_alpha_equivalence/conversion} If \( y \) and \( z \) are not free in \( \varphi \), then
+    \begin{equation}\label{eq:thm:def:fol_formula_alpha_equivalence/conversion}
+      \quantifier Q y \varphi[x \mapsto y] \aequiv \quantifier Q z \varphi[x \mapsto z].
+    \end{equation}
+  \end{thmenum}
+\end{proposition}
+\begin{proof}
+  \SubProofOf{thm:def:fol_formula_alpha_equivalence/same_kind} Trivial.
+
+  \SubProofOf{thm:def:fol_formula_alpha_equivalence/free} Analogous to \cref{thm:def:lambda_term_alpha_equivalence/free}.
+
+  \SubProofOf{thm:def:fol_formula_alpha_equivalence/quantifier_body_free} Analogous to \cref{thm:def:lambda_term_alpha_equivalence/abstraction_body_free}.
+
+  \SubProofOf{thm:def:fol_formula_alpha_equivalence/equivalence} Analogous to \cref{thm:def:lambda_term_alpha_equivalence/equivalence}.
+
+  \SubProofOf{thm:def:fol_formula_alpha_equivalence/substitution_composition} Unlike the rest, this one is more subtle and requires a lengthy proof. We handle the interesting cases when dealing with \( \muplambda \)-terms in \cref{thm:nary_lambda_substitution_composition_is_alpha_equivalent}.
+
+  \SubProofOf{thm:def:fol_formula_alpha_equivalence/contraction} Analogous to \cref{thm:lambda_substitution_chain_contraction}.
+
+  \SubProofOf{thm:def:fol_formula_alpha_equivalence/substitution} Analogous to \cref{thm:substitution_on_alpha_equivalent_terms}.
+
+  \SubProofOf{thm:def:fol_formula_alpha_equivalence/conversion} Analogous to \cref{thm:alpha_conversion_modified}.
+\end{proof}
+
+\paragraph{Schemas}
+
+\begin{definition}\label{def:fol_term_schema}\mimprovised
+  We define \hyperref[con:schemas_and_instances]{schemas} for \hyperref[def:fol_term]{first-order terms} as follows:
+  \begin{bnf*}
+    \bnfprod{variable placeholder} {\bnfpn{Small Latin identifier}}, \\
+    \bnfprod{term placeholder}     {\bnfpn{Small Greek identifier}}, \\
+    \bnfprod{term schema}          {\bnfpn{variable placeholder} \bnfor \bnfpn{term placeholder} \bnfor} \\
+    \bnfmore                       {\bnfpn{function application schema}},
+  \end{bnf*}
+  where the rules for \( \bnfpn{function application schema} \) are defined as in \cref{def:fol_term}, where we have a distinct rule for every function symbol in the signature.
+\end{definition}
+
+\begin{definition}\label{def:fol_formula_schema}\mimprovised
+  We define \hyperref[con:schemas_and_instances]{schemas} for \hyperref[def:fol_formula]{first-order formulas} by using \hyperref[def:fol_term_schema]{term schemas} instead of \hyperref[def:fol_term]{terms} and allowing formula placeholders (small Greek identifiers) as in \cref{def:propositional_formula_schema}.
+\end{definition}
+\begin{comments}
+  \item Small Greek identifiers are used for both term and formula placeholders, but in practice they do not cause confusion.
+\end{comments}
+
+\begin{proposition}\label{thm:alpha_equivalent_forulas_are_interderivable}
+\end{proposition}
+
 \begin{remark}\label{def:abstract_sequent_calculus_system_eigenvariables}
   % \hyperref[con:predicate_logic]{predicate logic}, the entries must also account for \hyperref[def:fol_schema/formula]{eigenvariables}
 \end{remark}
