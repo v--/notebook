@@ -233,16 +233,16 @@
 
   \item The term \enquote{eigenvariable} comes from \tcite{#2, where #1}{Gentzen1935LogischeSchließen} introduces natural deduction. In the corresponding English translation, \cite[293]{Gentzen1964LogicalDeduction}, eigenvariables are instead called \enquote{proper variables}. Both terms are currently used in English (e.g. \incite[\S 5.1.10]{Mimram2020ProgramEqualsProof} uses \enquote{eigenvariable}, while \incite[38]{TroelstraSchwichtenberg2000BasicProofTheory} uses \enquote{proper variable}).
 
-  Gentzen presents only two rules featuring eigenvariables, in which the variables must satisfy slightly differing constraints. We restate Gentzen's rules in \cref{def:fol_quantifier_rules/eigenvariables} and adapt them for \hyperref[def:higher_order_logic]{higher-order logic} in \cref{def:hol_quantifier_rules/eigenvariables}.
+  Gentzen presents only two rules featuring eigenvariables, in which the variables must satisfy slightly differing constraints. We restate Gentzen's rules in \cref{def:fol_natural_deduction} and adapt them for \hyperref[def:higher_order_logic]{higher-order logic} in \cref{def:hol_quantifier_rules/eigenvariables}.
 \end{comments}
 
 \begin{definition}\label{def:fol_formula_schema}\mimprovised
   We will define \hyperref[con:schemas_and_instances]{schemas} for \hyperref[def:fol_formula]{first-order formulas} based on \hyperref[def:fol_term_schema]{term schemas} instead of \hyperref[def:fol_term]{terms}. We avoid writing the obvious rules in detail, but there are new important novelties:
   \begin{longbnf*}
-    \bnfprod{eigenvariable}           {\bnfpn{variable placeholder} \bnfsp \bnftsq{\( \ast \)}} \\
+    \bnfprod{eigenvariable schema}    {\bnfpn{variable placeholder} \bnfsp \bnftsq{\( \ast \)}} \\
     \bnfprod{formula placeholder}     {\bnfpn{Small Greek identifier}} \\
     \bnfprod{formula schema}          {\bnfpn{formula placeholder} \bnfor \cdots} \\
-    \bnfprod{substitution subject}    {\bnfpn{term schema} \bnfor \bnfpn{eigenvariable}} \\
+    \bnfprod{substitution subject}    {\bnfpn{term schema} \bnfor \bnfpn{eigenvariable schema}} \\
     \bnfprod{extended formula schema} {\bnfpn{formula schema} \bnfor} \\
     \bnfmore                          {\bnfpn{formula schema} \bnfsp \bnfpn{substitution}}
   \end{longbnf*}
@@ -254,8 +254,8 @@
 \end{definition}
 \begin{comments}
   \item Small Greek identifiers are used for both term and formula placeholders, but in practice they do not cause confusion.
+  \item First-order formula schemas directly extend their \hyperref[def:propositional_formula_schema]{propositional counterparts}.
   \item Formulas schemas are implemented in \identifier{math.logic.formulas} in \cite{notebook:code}.
-  \item The eigenvariable rules only show intention; we will use them to restrict certain constructions when defining proof trees in \cref{def:fol_natural_deduction_proof_tree}.
 \end{comments}
 
 \begin{definition}\label{def:atomic_fol_instantiation}\mimprovised
@@ -264,7 +264,7 @@
 
 \begin{algorithm}[First-order term instantiation]\label{alg:fol_term_schema_instantiation}
   We extend the \hyperref[def:atomic_fol_instantiation]{atomic first-order instantiation} \( \BbbI \) to all \hyperref[def:fol_term_schema]{term schemas} straightforwardly:
-  \begin{equation}\label{eq:alg:simple_type_schema_instantiation}
+  \begin{equation}\label{eq:alg:fol_term_schema_instantiation}
     \Tau[\BbbI] \coloneqq \begin{cases}
       \BbbI(\Tau),                                 &\Tau \T{is a variable placeholder},   \\
       \BbbI(\Tau),                                 &\Tau \T{is a term placeholder},       \\
@@ -279,14 +279,14 @@
 
 \begin{algorithm}[First-order formula instantiation]\label{alg:fol_formula_schema_instantiation}
   We will extend the \hyperref[def:atomic_fol_instantiation]{atomic first-order instantiation} \( \BbbI \) to all \hyperref[def:fol_formula_schema]{formula schemas} with the aid of \fullref{alg:fol_term_schema_instantiation}:
-  \begin{equation}\label{eq:alg:lambda_term_schema_instantiation}
+  \begin{equation}\label{eq:alg:fol_formula_schema_instantiation}
     \Phi[\BbbI] \coloneqq \begin{cases}
       \Phi,                                       &\Phi \T{is a propositional constant},                                   \\
       \BbbI(\Phi),                                &\Phi \T{is a formula placeholder},                                      \\
                                                   &\vdots                                                                  \\
       \quantifier Q {\BbbI(x)} \Psi[\BbbI],       &\Phi = \quantifier Q x \Psi, Q \in \op*{Quant},                         \\
       \Phi[\BbbI][\BbbI(x) \mapsto \BbbI(y)],     &\Phi = \Phi[x \synsubst y^\ast],                                        \\
-      \Phi[\BbbI][\BbbI(x) \mapsto \tau[\BbbI]],  &\Phi = \Phi[x \synsubst \tau] \T{and} \tau \T{is not an eigenvariable}.
+      \Phi[\BbbI][\BbbI(x) \mapsto \tau[\BbbI]],  &\Phi = \Phi[x \synsubst \tau] \T{and} \tau \T{is a term schema.}
     \end{cases}
   \end{equation}
 
@@ -295,14 +295,115 @@
 \begin{comments}
   \item As in \fullref{alg:lambda_term_schema_instantiation}, we do not distinguish between with free and bound variable schemas.
 
+  \item Eigenvariables do not affect the instantiation itself; they will play an important role in restrict certain constructions when defining proof trees in \cref{def:fol_natural_deduction_proof_tree}.
+
   \item This algorithm can be found as \identifier{math.logic.instantiation.instantiate_substitution_spec} in \cite{notebook:code}.
 \end{comments}
 
-\paragraph{Natural deduction}
+\paragraph{Abstract natural deduction}
 
-\begin{proposition}\label{thm:alpha_equivalent_forulas_are_interderivable}
+\begin{definition}\label{def:fol_natural_deduction_system}\mimprovised
+  An \term{abstract first-order natural deduction system} consists of a nonempty collection of \hyperref[def:natural_deduction_rule]{natural deduction rules} for \hyperref[def:fol_formula_schema]{extended first-order formula schemas} over the same \hyperref[def:fol_signature]{signature}. We require the rules to have distinct names, but otherwise impose no restrictions on them.
+\end{definition}
+\begin{comments}
+  \item This definition extends \hyperref[def:propositional_natural_deduction_system]{propositional natural deduction systems}, because the first-order formula schemas are direct generalizations of their propositional counterparts.
+\end{comments}
+
+\begin{definition}\label{def:fol_natural_deduction_proof_tree}
+  We will define \hyperref[con:proof_tree]{proof trees} for a fixed \hyperref[def:fol_natural_deduction_system]{first-order natural deduction system}.
+
+  In fact, we will extend the proof tree for propositional logic defined in \cref{def:propositional_natural_deduction_proof_tree}.
+  \begin{thmenum}[series=def:fol_natural_deduction_proof_tree]
+    \thmitem{def:fol_natural_deduction_proof_tree/variables} Except for the conclusion, rule name, and list of open formulas, we attach to a proof tree a list of variables.
+
+    Because of their role, we will call them \term{free variables} of the proof tree.
+  \end{thmenum}
+
+  Just as with assumption discharging, binding variables is also delicate to handle:
+  \begin{thmenum}[resume=def:fol_natural_deduction_proof_tree]
+    \thmitem{def:fol_natural_deduction_proof_tree/assumption} An assumption tree for a first-order formula \( \varphi \) with marker \( u \) is defined analogously to the propositional case, except that we must also handle free variables.
+
+    We let the free variables of the tree be the free variables (in the sense of \cref{def:fol_variable_freeness}) of \( \varphi \).
+
+    \thmitem{def:fol_natural_deduction_proof_tree/application} A rule application tree operates similarly to its propositional counterpart, but binding free variables has some caveats.
+
+    Consider the rule
+    \begin{equation*}
+      \begin{prooftree}
+        \hypo{ \Phi_1 }
+        \hypo{ \cdots }
+
+        \hypo{ [\Theta_i] }
+        \infer[dashed]1{ \Phi_i }
+
+        \hypo{ \cdots }
+        \hypo{ \Phi_n }
+        \infer5[\logic{R}]{ \Psi }
+      \end{prooftree}
+    \end{equation*}
+
+    Let \( \BbbI \) be an \hyperref[def:atomic_fol_instantiation]{atomic schema instantiation} and a list \( (P_1, \ldots, P_n) \) of proof trees such that, for \( i = 1, \ldots, n \), the conclusion of \( P_i \) is \( \Phi_i[\BbbI] \).
+
+    If the rule contains no eigenvariable schemas, we define an application tree by \hyperref[def:ordered_tree_grafting_product]{grafting} \( P_1, \ldots, P_n \) to a new root, as in the propositional case, and take the union of the free variables of the premises.
+
+    Otherwise, we have the following additional restrictions. These are implemented programmatically in the function \identifier{math.logic.deduction.proof_tree.apply} in \cite{notebook:code}:
+    \begin{thmenum}
+      \thmitem{def:fol_natural_deduction_proof_tree/application/premise} If the premise \( \Phi_i \) is a substitution schema, i.e. if \( \Phi_i = \Omega[x \synsubst y^*] \), we impose the following restrictions:
+      \begin{thmenum}
+        \thmitem{def:fol_natural_deduction_proof_tree/application/premise/variable} Either \( \BbbI(y) \) must coincide with \( \BbbI(y) \) or otherwise \( \BbbI(y) \) must not be free in the \hi{formula} \( \Psi_i[\BbbI] \) (the conclusion of \( P_i \)).
+
+        \thmitem{def:fol_natural_deduction_proof_tree/application/premise/assumptions} The variable \( \BbbI(y) \) must not be free in the \hi{premise subtree} \( P_i \).
+      \end{thmenum}
+
+      \thmitem{def:fol_natural_deduction_proof_tree/application/discharge} If the premise \( \Phi_i \) has a dischargeable schema \( \Theta_i \) attached, and if \( \Theta_i = \Omega[x \synsubst y^*] \), we impose the following restrictions:
+      \begin{thmenum}
+        \thmitem{def:fol_natural_deduction_proof_tree/application/discharge/variable} Either \( \BbbI(y) \) must coincide with \( \BbbI(x) \) or otherwise \( \BbbI(y) \) must not be free in the \hi{formula} \( \Omega[\BbbI] \) (the unsubstituted dischargeable premise).
+
+        \thmitem{def:fol_natural_deduction_proof_tree/application/discharge/assumptions} The variable \( \BbbI(y) \) must not be free in the \hi{premise subtree} \( P_i \), except possibly in \( \Theta_i[\BbbI] \) (the substituted dischargeable premise).
+
+        \thmitem{def:fol_natural_deduction_proof_tree/application/discharge/conclusion} Additionally, \( \BbbI(y) \) must not be free in the \hi{formula} \( \Psi_i[\BbbI] \) (the conclusion of \( P_i \)).
+      \end{thmenum}
+    \end{thmenum}
+
+    In either of these cases, we say that the application \term{binds} the variable \( \BbbI(y) \) and remove it from the free variables. We also refer to \( \BbbI(y) \) as an \term{eigenvariable}.
+  \end{thmenum}
+\end{definition}
+\begin{comments}
+  \item The treatment of eigenvariables are generalized here from the two quantifier rules discussed in detail in \cite[\S 2.1]{TroelstraSchwichtenberg2000BasicProofTheory}. We present these rules in \cref{def:fol_natural_deduction}.
+
+  \item Natural deduction proof trees are implemented in the module \identifier{math.logic.deduction.proof_tree} in \cite{notebook:code}.
+\end{comments}
+
+\begin{definition}\label{def:fol_natural_deduction_consequence}\mimprovised
+  For every \hyperref[def:fol_natural_deduction_system]{first-order natural deduction system}, we define a \hyperref[def:consequence_relation]{consequence relation} as follows: we let \( \Gamma \vdash \varphi \) if there exists a \hyperref[def:fol_natural_deduction_proof_tree]{proof tree} with conclusion \( \varphi \) whose \hyperref[def:propositional_natural_deduction_proof_tree/open]{open assumptions} are all in \( \Gamma \).
+
+  In accordance with \cref{def:general_logic}, we say that \( \varphi \) is \term{derivable} from \( \Gamma \) if this relation holds.
+\end{definition}
+\begin{defproof}
+  We can prove that \( {\vdash} \) is indeed a consequence relation in complete analogy with the propositional case --- see \cref{def:propositional_natural_deduction_consequence}.
+\end{defproof}
+
+\begin{proposition}\label{thm:fol_natural_deduction_derivation_compact}
+  Every \hyperref[def:fol_natural_deduction_consequence]{natural deduction entailment relation} is \hyperref[def:consequence_relation/compactness]{compact}.
 \end{proposition}
+\begin{comments}
+  \item This is one of several compactness theorems presented here --- see \cref{rem:logical_compactness_theorems}.
+\end{comments}
+\begin{proof}
+  A proof tree is can have at most finitely many assumptions.
+\end{proof}
+
+\paragraph{Concrete natural deduction}
+
+\begin{definition}\label{def:fol_natural_deduction}
+\end{definition}
+\begin{comments}
+  \item These precise rules are presented in the module \identifier{logic.classical_logic} in \cite{notebook:code}.
+\end{comments}
 
 \begin{remark}\label{def:abstract_sequent_calculus_system_eigenvariables}
   % \hyperref[con:predicate_logic]{predicate logic}, the entries must also account for \hyperref[def:fol_schema/formula]{eigenvariables}
 \end{remark}
+
+\begin{proposition}\label{thm:alpha_equivalent_forulas_are_interderivable}
+\end{proposition}
