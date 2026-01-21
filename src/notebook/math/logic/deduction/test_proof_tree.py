@@ -123,7 +123,7 @@ def test_dne() -> None:
         CLASSICAL_NATURAL_DEDUCTION_SYSTEM['→₊'],
         prop_premise(
             tree=apply(
-                CLASSICAL_NATURAL_DEDUCTION_SYSTEM['DNE'],
+                CLASSICAL_NATURAL_DEDUCTION_SYSTEM['RAA'],
                 prop_premise(
                     tree=apply(
                         CLASSICAL_NATURAL_DEDUCTION_SYSTEM['¬₋'],
@@ -143,7 +143,7 @@ def test_dne() -> None:
           [¬¬p]ᵘ    [¬p]ᵛ
           _______________ ¬₋
                  ⊥
-        v _______________ DNE
+        v _______________ RAA
                  p
         u _______________ →₊
              (¬¬p → p)
@@ -254,6 +254,7 @@ def test_invalid_application_missing_discharge() -> None:
         )
 
 
+# ex:def:fol_natural_deduction/verum
 def test_forall_introduction() -> None:
     tree = apply(
         CLASSICAL_NATURAL_DEDUCTION_SYSTEM['∀₊'],
@@ -272,6 +273,7 @@ def test_forall_introduction() -> None:
     )
 
 
+# ex:def:fol_natural_deduction/reintroduction
 def test_forall_reintroduction(dummy_signature: FormalLogicSignature) -> None:
     tree = apply(
         CLASSICAL_NATURAL_DEDUCTION_SYSTEM['∀₊'],
@@ -292,6 +294,41 @@ def test_forall_reintroduction(dummy_signature: FormalLogicSignature) -> None:
            p¹(x)
         ___________ ∀₊
          ∀x.p¹(x)
+        '''
+    )
+
+
+# ex:def:fol_natural_deduction/reintroduction
+def test_exists_reintroduction(dummy_signature: FormalLogicSignature) -> None:
+    tree = apply(
+        CLASSICAL_NATURAL_DEDUCTION_SYSTEM['∃₋'],
+        premise(
+            tree=apply(
+                CLASSICAL_NATURAL_DEDUCTION_SYSTEM['∃₋'],
+                assume(parse_formula('∃x.p¹(x)', dummy_signature), parse_marker('u')),
+                conclusion_sub=parse_term_substitution_spec('x ↦ x'),
+            ),
+            main_noop_sub=parse_variable('x')
+        ),
+        premise(
+            tree=apply(
+                CLASSICAL_NATURAL_DEDUCTION_SYSTEM['∃₋'],
+                assume(parse_formula('∃x.p¹(x)', dummy_signature), parse_marker('u')),
+                conclusion_sub=parse_term_substitution_spec('x ↦ x'),
+            ),
+            main_noop_sub=parse_variable('x')
+        ),
+    )
+
+    assert str_free_variables(tree) == set()
+    print()
+    print(str(tree))
+    assert str(tree) == dedent('''\
+        [∀∃.p¹(x)]ᵘ
+        ___________ ∀₋
+           p¹(x)
+        ___________ ∀₊
+         ∃x.p¹(x)
         '''
     )
 
@@ -368,20 +405,21 @@ def test_forall_to_exists_with_constant(dummy_signature: FormalLogicSignature) -
     )
 
 
+# ex:def:fol_natural_deduction/quantifier_duality
 def test_forall_negation(dummy_signature: FormalLogicSignature) -> None:
-    u = parse_formula('¬∃x.p¹(x)', dummy_signature)
-    v = parse_formula('p¹(x)', dummy_signature)
-    w = parse_formula('¬∀x.¬p¹(x)', dummy_signature)
+    u = parse_formula('¬∀x.¬p¹(x)', dummy_signature)
+    v = parse_formula('¬∃x.p¹(x)', dummy_signature)
+    w = parse_formula('p¹(x)', dummy_signature)
 
     tree = apply(
         CLASSICAL_NATURAL_DEDUCTION_SYSTEM['→₊'],
         premise(
             tree=apply(
-                CLASSICAL_NATURAL_DEDUCTION_SYSTEM['DNE'],
+                CLASSICAL_NATURAL_DEDUCTION_SYSTEM['RAA'],
                 premise(
                     tree=apply(
                         CLASSICAL_NATURAL_DEDUCTION_SYSTEM['¬₋'],
-                        assume(w, parse_marker('w')),
+                        assume(u, parse_marker('u')),
                         apply(
                             CLASSICAL_NATURAL_DEDUCTION_SYSTEM['∀₊'],
                             premise(
@@ -390,48 +428,48 @@ def test_forall_negation(dummy_signature: FormalLogicSignature) -> None:
                                     premise(
                                         tree=apply(
                                             CLASSICAL_NATURAL_DEDUCTION_SYSTEM['¬₋'],
-                                            assume(u, parse_marker('u')),
+                                            assume(v, parse_marker('v')),
                                             apply(
                                                 CLASSICAL_NATURAL_DEDUCTION_SYSTEM['∃₊'],
                                                 premise(
-                                                    tree=assume(v, parse_marker('v')),
+                                                    tree=assume(w, parse_marker('w')),
                                                     main_noop_sub=parse_variable('x')
                                                 ),
                                             )
                                         ),
-                                        discharge=v,
-                                        marker=parse_marker('v')
+                                        discharge=w,
+                                        marker=parse_marker('w')
                                     )
                                 ),
                                 main_noop_sub=parse_variable('x')
                             )
                         )
                     ),
-                    discharge=u,
-                    marker=parse_marker('u')
+                    discharge=v,
+                    marker=parse_marker('v')
                 )
             ),
-            discharge=w,
-            marker=parse_marker('w')
+            discharge=u,
+            marker=parse_marker('u')
         )
     )
 
     assert str_free_variables(tree) == set()
     assert str(tree) == dedent('''\
-                                             [p¹(x)]ᵛ
+                                             [p¹(x)]ʷ
                                              ________ ∃₊
-                             [¬∃x.p¹(x)]ᵘ    ∃x.p¹(x)
+                             [¬∃x.p¹(x)]ᵛ    ∃x.p¹(x)
                              ________________________ ¬₋
                                         ⊥
-                           v ________________________ ¬₊
+                           w ________________________ ¬₊
                                       ¬p¹(x)
                            ________________________ ∀₊
-          [¬∀x.¬p¹(x)]ʷ             ∀x.¬p¹(x)
+          [¬∀x.¬p¹(x)]ᵘ             ∀x.¬p¹(x)
           ___________________________________________ ¬₋
                                ⊥
-        u ___________________________________________ DNE
+        v ___________________________________________ RAA
                            ∃x.p¹(x)
-        w ___________________________________________ →₊
+        u ___________________________________________ →₊
                     (¬∀x.¬p¹(x) → ∃x.p¹(x))
         '''
     )

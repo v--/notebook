@@ -255,7 +255,7 @@ For propositional logic, We will also find useful the ability to replace an enti
 \paragraph{Elimination of propositional constants}
 
 \begin{algorithm}[Propositional constant collapse]\label{alg:propositional_constant_collapse}
-  We introduce an operator \( T_{\logic{cc}} \) on \hyperref[def:propositional_formula]{propositional formulas} that attempts to simplify subformulas involving logical constants. The result \( T_{\logic{cc}}(\varphi) \) will be \hyperref[def:first_order_semantics/equivalence]{semantically equivalent} with \( \varphi \).
+  We introduce an operator \( T_{\logic{cc}} \) on \hyperref[def:propositional_formula]{propositional formulas} that attempts to simplify subformulas involving logical constants. The result \( T_{\logic{cc}}(\varphi) \) will be \hyperref[def:propositional_semantics/equivalence]{semantically equivalent} with \( \varphi \).
 
   \begin{thmenum}
     \thmitem{alg:propositional_constant_collapse/atomic} If \( \varphi \) is atomic, i.e. a constant or variable, there is nothing we can do, so let \( T_{\logic{cc}} \coloneqq \varphi \).
@@ -377,7 +377,7 @@ For propositional logic, We will also find useful the ability to replace an enti
       p,                                                      &\varphi = p \in \op*{Prop}, \\
       \theta,                                                 &\varphi = \synneg \psi \T{and} T_{\logic{DNE}}(\psi) = \synneg \theta, \\
       \synneg T_{\logic{DNE}}(\psi),                          &\varphi = \synneg \psi \T{and} T_{\logic{DNE}}(\psi) \T{is not a negation}, \\
-      T_{\logic{DNE}}(\psi) \syncirc T_{\logic{DNE}}(\theta), &\varphi = \psi \syncirc \theta.
+      T_{\logic{DNE}}(\psi) \syncirc T_{\logic{DNE}}(\theta), &\varphi = \psi \syncirc \theta, {\syncirc} \in \op*{Conn}.
     \end{cases}
   \end{equation*}
 
@@ -386,6 +386,39 @@ For propositional logic, We will also find useful the ability to replace an enti
 \begin{comments}
   \item This algorithm can be found as \identifier{math.logic.transformation.collapse_repeated_negation} in \cite{notebook:code}.
 \end{comments}
+
+\begin{proposition}\label{thm:alg:propositional_repeated_negation_collapse}
+  \Fullref{alg:propositional_repeated_negation_collapse} has the following basic properties:
+  \begin{thmenum}
+    \thmitem{thm:alg:propositional_repeated_negation_collapse/no_double_negation} The result of the algorithm contains no double negations.
+
+    \thmitem{thm:alg:propositional_repeated_negation_collapse/double_dual} If \( \varphi \) does not contain double negations, then \( \varphi \) coincides with its double opposite \( T_{\logic{DNE}}(T_{\logic{DNE}}(\varphi)) \).
+   \end{thmenum}
+\end{proposition}
+\begin{proof}
+  \SubProofOf{thm:alg:propositional_repeated_negation_collapse/no_double_negation} We will use \fullref{thm:induction_on_abstract_syntax} on \( \varphi \) to show that \( T_{\logic{DNE}}(\varphi) \) contains no double negations.
+
+  \begin{itemize}
+    \item If \( \varphi \) is atomic, there is nothing to prove.
+    \item If \( \varphi = \synneg \psi \), where the inductive hypothesis holds for \( \psi \), there are two possibilities:
+    \begin{itemize}
+      \item If \( T_{\logic{DNE}}(\psi) = \synneg \theta \), then, by the inductive hypothesis, \( \theta \) is not a negation and does not contain double negations. Then neither does \( T_{\logic{DNE}}(\varphi) = \theta \)
+
+      \item If \( T_{\logic{DNE}}(\psi) \) is not a negation, by the inductive hypothesis it does not contain double negations, and thus neither does
+      \begin{equation*}
+        T_{\logic{DNE}}(\varphi) = \synneg T_{\logic{DNE}}(\psi).
+      \end{equation*}
+    \end{itemize}
+
+    \item If \( \varphi = \psi \syncirc \theta \), where the inductive hypothesis holds for \( \psi \) and \( \theta \), then
+    \begin{equation*}
+      T_{\logic{DNE}}(\varphi) = T_{\logic{DNE}}(\psi) \syncirc T_{\logic{DNE}}(\theta)
+    \end{equation*}
+    because its immediate subformulas do not.
+  \end{itemize}
+
+  \SubProofOf{thm:alg:propositional_repeated_negation_collapse/double_dual} Follows easily by induction.
+\end{proof}
 
 \begin{algorithm}[Propositional formula dualization]\label{alg:propositional_formula_dualization}
   Suppose we are working with \hyperref[def:truth_value_algebra/classical]{classical semantics}.
@@ -411,7 +444,7 @@ For propositional logic, We will also find useful the ability to replace an enti
         \oline{T}(\psi) \synvee \oline{T}(\theta),                                          &{\syncirc} = {\synwedge}, \\
         \oline{T}(\psi) \synwedge \oline{T}(\theta),                                        &{\syncirc} = {\synvee}, \\
         \synneg \parens[\big]{ T_{\logic{DNE}}(\psi) \synimplies T_{\logic{DNE}}(\theta) }, &{\syncirc} = {\synimplies}, \\
-        \synneg \parens[\big]{ T_{\logic{DNE}}(\psi) \syniff T_{\logic{DNE}}(\theta) },     &{\syncirc} = {\syniff}. \\
+        \synneg \parens[\big]{ T_{\logic{DNE}}(\psi) \syniff T_{\logic{DNE}}(\theta) },     &{\syncirc} = {\syniff}.
       \end{cases}
     \end{equation*}
 
@@ -419,7 +452,7 @@ For propositional logic, We will also find useful the ability to replace an enti
   \end{thmenum}
 \end{algorithm}
 \begin{comments}
-  \item This algorithm can be found as \identifier{math.logic.transformation.dualize_formula_propositional} in \cite{notebook:code}.
+  \item This algorithm is a special case of the analogous first-order logic algorithm \fullref{alg:fol_formula_dualization}, which can be found as \identifier{math.logic.transformation.dualize_formula} in \cite{notebook:code}.
 
   \item The other Boolean polynomial operations from \cref{def:opposite_boolean_polynomial} also give rise to transformations of propositional formulas. For example, \incite{Gottschalk1953Quaternality} discusses contradual and dual formulas. \incite[114]{Church1956LogicVol1} and \incite[192]{Andrews2002Logic} call the latter formulas \enquote{principal dual}.
 
@@ -439,7 +472,7 @@ For propositional logic, We will also find useful the ability to replace an enti
    \end{thmenum}
 \end{proposition}
 \begin{proof}
-  \SubProofOf{thm:alg:propositional_formula_dualization/no_double_negation} We will use \fullref{thm:induction_on_abstract_syntax} on \( \varphi \) to show that \( T(\varphi) \) contains no double negations.
+  \SubProofOf{thm:alg:propositional_formula_dualization/no_double_negation} We will use \fullref{thm:induction_on_abstract_syntax} on \( \varphi \) to show that \( \oline{T}(\varphi) \) contains no double negations.
 
   \begin{itemize}
     \item If \( \varphi \) is atomic, there is nothing to prove.
@@ -840,7 +873,7 @@ For propositional logic, We will also find useful the ability to replace an enti
 \end{defproof}
 
 \begin{proposition}\label{thm:full_cnf_and_dnf_uniqueness}
-  Every \hyperref[def:propositional_formula]{propositional formula} is \hyperref[def:semantic_equivalence]{semantically equivalent} to a unique formula in \hyperref[def:full_propositional_cnf_and_dnf]{perfect disjunctive normal form} (resp. perfect conjunctive normal form).
+  Every \hyperref[def:propositional_formula]{propositional formula} is \hyperref[def:propositional_semantics/equivalence]{semantically equivalent} to a unique formula in \hyperref[def:full_propositional_cnf_and_dnf]{perfect disjunctive normal form} (resp. perfect conjunctive normal form).
 \end{proposition}
 \begin{proof}
   Follows from the uniqueness of \fullref{alg:function_to_dnf} applied to the \hyperref[def:parametrized_propositional_denotation]{parametrized denotation} of the formula.

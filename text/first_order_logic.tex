@@ -816,6 +816,12 @@ First-order logic is a particularly convenient form of \hyperref[con:predicate_l
     This is consistent with \cref{def:tautology}, where a tautology must be satisfied in every model (and a contradiction --- in no model).
 
     \thmitem{def:fol_semantics/entailment} We use the terminology and notation from \cref{def:institutional_entailment} regarding entailment: \( \Gamma \vDash \varphi \) if and only if \( \mscrX \) satisfies \( \varphi \) whenever it satisfies \( \Gamma \).
+
+    \thmitem{def:fol_semantics/equivalence} In accordance with \cref{def:semantic_equivalence}, we say that the \hi{closed} formulas \( \varphi \) and \( \psi \) are \term[en=logically equivalent (formulas) (\cite[def. 2.2.1(ii)]{Hinman2005Logic})]{semantically equivalent} when the structure \( \mscrX \) a model of \( \varphi \) if and only if it is a model of \( \psi \).
+
+    We can extend this to more general formulas by requiring that \( \Bracks{\varphi}_\mscrX^v = \Bracks{\psi}_\mscrX^v \) for every variable assignment \( v \).
+
+    We denote this by \( \varphi \gleichstark \psi \).
   \end{thmenum}
 \end{definition}
 
@@ -832,6 +838,65 @@ First-order logic is a particularly convenient form of \hyperref[con:predicate_l
 \begin{proof}
   Since the formulas are closed and do not depend on assignments, we can prove the theorem analogously to \fullref{thm:propositional_semantic_deduction_theorem}.
 \end{proof}
+
+\paragraph{Quantifier duality}
+
+\begin{proposition}\label{thm:fol_quantifier_duality}
+  For any \hyperref[def:fol_formula]{first-order formula} \( \varphi \) and \hyperref[def:predicate_logic_alphabet/quantifiers]{quantifier} \( Q \), we have the \hyperref[def:fol_semantics/equivalence]{semantic equivalence}
+  \begin{equation}\label{eq:thm:fol_quantifier_duality}
+    \quantifier Q x \varphi \gleichstark \synneg \quantifier {Q^{\oppos}} x \synneg \varphi
+  \end{equation}
+
+  Here \( Q^{\oppos} \) is the dual quantifier of \( Q \); that is, the only other quantifier.
+\end{proposition}
+\begin{comments}
+  \item This is a particular form of \fullref{thm:de_morgans_laws}.
+\end{comments}
+\begin{proof}
+  For \( Q = {\synforall} \), we have
+  \begin{align*}
+    \Bracks{\synneg \qexists x \synneg \varphi}_\mscrX^v
+    &\reloset {\eqref{eq:alg:fol_formula_denotation/formulas/neg}} =
+    \oline{\Bracks{\qexists x \synneg \varphi}_\mscrX^v}
+    \reloset {\eqref{eq:alg:fol_formula_denotation/formulas/exists}} = \\ &=
+    \oline{\bigvee\set[\big]{ \Bracks{\synneg \varphi}_\mscrX^{v_{x \mapsto a}} \given* a \in X }}
+    \reloset {\eqref{eq:alg:fol_formula_denotation/formulas/neg}} = \\ &=
+    \oline{\bigvee\set[\big]{ \oline{\Bracks{\varphi}_\mscrX^{v_{x \mapsto a}}} \given* a \in X }}
+    \reloset {\eqref{eq:thm:de_morgans_laws/complement_of_join}} = \\ &=
+    \bigwedge\set[\big]{ \Bracks{\psi}_\mscrX^{v_{x \mapsto a}} \given* a \in X }
+    \reloset {\eqref{eq:alg:fol_formula_denotation/formulas/forall}} = \\ &=
+    \Bracks{\qforall x \psi}_\mscrX^v.
+  \end{align*}
+
+  For \( Q = {\synexists} \), we simply have to use the dual law from \fullref{thm:de_morgans_laws}.
+\end{proof}
+
+\begin{algorithm}[First-order formula dualization]\label{alg:fol_formula_dualization}
+  We can extend \fullref{alg:propositional_formula_dualization} to \hyperref[def:fol_formula]{first-order formulas} by treating atomic formulas as propositional variables and handling quantifiers as follows:
+  \begin{equation}\label{eq:alg:fol_formula_dualization/quantifiers}
+    \oline{T}(\quantifier Q x \psi) \coloneqq \quantifier {Q^{\oppos}} x \oline{T}(\psi).
+  \end{equation}
+\end{algorithm}
+\begin{defproof}
+  We will use \fullref{thm:induction_on_abstract_syntax} on \( \varphi \) to show that \( \Bracks{\oline{T}(\varphi)}_\mscrX^v = \oline{\Bracks{\varphi}_\mscrX^v} \) for every variable assignment \( v \) in every structure \( \mscrX = (X, I) \).
+
+  All cases except \eqref{eq:alg:fol_formula_dualization/quantifiers} have already been handled in the propositional case. If \( \varphi = \qforall x \psi \), where the inductive hypothesis holds for \( \psi \), we have
+  \begin{align*}
+    \Bracks{\oline{T}(\qforall x \psi)}_\mscrX^v
+    &=
+    \Bracks{\qexists x \oline{T}(\psi)}_\mscrX^v
+    \reloset {\eqref{eq:alg:fol_formula_denotation/formulas/exists}} = \\ &=
+    \bigvee\set[\big]{ \Bracks{\oline{T}(\psi)}_\mscrX^{v_{x \mapsto a}} \given* a \in X }
+    \reloset {\T{ind.}} = \\ &=
+    \bigvee\set[\big]{ \oline{\Bracks{\psi}_\mscrX^{v_{x \mapsto a}}} \given* a \in X }
+    \reloset {\eqref{eq:thm:de_morgans_laws/complement_of_join}} = \\ &=
+    \oline{\bigwedge\set[\big]{ \Bracks{\psi}_\mscrX^{v_{x \mapsto a}} \given* a \in X }}
+    \reloset {\eqref{eq:alg:fol_formula_denotation/formulas/forall}} = \\ &=
+    \oline{\Bracks{\qforall x \psi}_\mscrX^v}.
+  \end{align*}
+
+  The case where \( \varphi = \synneg \psi \) is similar.
+\end{defproof}
 
 \paragraph{Implicit and explicit quantification}
 
@@ -933,10 +998,10 @@ First-order logic is a particularly convenient form of \hyperref[con:predicate_l
     \reloset {\eqref{eq:alg:fol_formula_denotation/formulas/forall}} = \\ &=
     \Bracks{ p(x) }_\mscrX^v \rightarrow \bigwedge\set[\big]{ \Bracks{ p(x) }_\mscrX^{v_{x \mapsto a}} \given* a \in X }.
     \reloset {\eqref{eq:alg:fol_formula_denotation/formulas/pred}} = \\ &=
-    p(v(x)) \rightarrow \bigwedge\set{ p(x) \given a \in X }.
+    I(p)(v(x)) \rightarrow \bigwedge\set{ p(x) \given a \in X }.
   \end{balign*}
 
-  This clearly fails if \( p(v(x)) = T \) and \( p(a) = F \) for some \( a \neq v(x) \).
+  This clearly fails if \( I(p)(v(x)) = \semtop \) and \( I(p)(a) = \sembot \) for some \( a \neq v(x) \).
 \end{remark}
 
 \paragraph{Term models}

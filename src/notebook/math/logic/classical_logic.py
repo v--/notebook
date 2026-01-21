@@ -6,7 +6,7 @@ CLASSICAL_NATURAL_DEDUCTION_SYSTEM = NaturalDeductionSystem([
     parse_natural_deduction_rule('⊤₊', '⊩ ⊤'),
 
     parse_natural_deduction_rule('EFQ', '⊥ ⊩ φ'),
-    parse_natural_deduction_rule('DNE', '[¬φ] ⊥ ⊩ φ'),
+    parse_natural_deduction_rule('RAA', '[¬φ] ⊥ ⊩ φ'),
 
     parse_natural_deduction_rule('¬₊', '[φ] ⊥ ⊩ ¬φ'),
     parse_natural_deduction_rule('¬₋', '¬φ, φ ⊩ ⊥'),
