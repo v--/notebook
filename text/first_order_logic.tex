@@ -293,7 +293,7 @@ First-order logic is a particularly convenient form of \hyperref[con:predicate_l
       \end{tabular}
     \end{center}
 
-    The particular choice of abbreviations is justified in \cref{thm:relativized_first_order_quantifiers_are_dual}.
+    The particular choice of abbreviations is justified in \cref{thm:fol_quantifier_duality_relativized}.
 
     \thmitem{rem:fol_formula_conventions/unique_existence} We will use the abbreviation in \cref{rem:exists_unique_abbreviation} to emulate the unique existence quantifier \( \qExists x \varphi \) discussed in \cref{con:description_operator/unique_existence}.
 
@@ -839,49 +839,78 @@ First-order logic is a particularly convenient form of \hyperref[con:predicate_l
   Since the formulas are closed and do not depend on assignments, we can prove the theorem analogously to \fullref{thm:propositional_semantic_deduction_theorem}.
 \end{proof}
 
-\paragraph{Quantifier duality}
+\paragraph{Substitution}
 
-\begin{proposition}\label{thm:fol_quantifier_duality}
-  For any \hyperref[def:fol_formula]{first-order formula} \( \varphi \) and \hyperref[def:predicate_logic_alphabet/quantifiers]{quantifier} \( Q \), we have the \hyperref[def:fol_semantics/equivalence]{semantic equivalence}
-  \begin{equation}\label{eq:thm:fol_quantifier_duality}
-    \quantifier Q x \varphi \gleichstark \synneg \quantifier {Q^{\oppos}} x \synneg \varphi
+\begin{definition}\label{def:atomic_fol_propositional_formula_translation}\mimprovised
+  For translating \hyperref[def:propositional_formula]{propositional formulas} into \hyperref[def:fol_formula]{first-order formulas} over the \hyperref[def:fol_signature]{signature} \( \Sigma \) as a map \( \Bbbt: \op*{Prop} \to \op*{Form}_\Sigma \) for which only finitely many variables are not \hyperref[def:function_fixed_point]{fixed points}. We will call the map \( \Bbbt \) an \term{atomic translation}.
+\end{definition}
+
+\begin{algorithm}[Propositional formula translation]\label{alg:fol_propositional_formula_translation}
+  We extend the \hyperref[def:atomic_fol_propositional_formula_translation]{atomic formula translation} \( \Bbbt \) to an operation \( \varphi \mapsto \varphi[\Bbbt] \) on compound propositional formulas via \hyperref[rem:straightforward_traversal]{straightforward traversal} similarly to how it is done in \fullref{alg:propositional_substitution}. Of course, this extension will only be valid when the propositional variables are in the domain of the atomic translation map.
+\end{algorithm}
+\begin{comments}
+  \item This algorithm can be found as \identifier{math.logic.propositional.apply_prop_formula_translation} in \cite{notebook:code}.
+\end{comments}
+
+\begin{proposition}\label{thm:fol_propositional_formula_translation_semantics}
+  \Fullref{alg:fol_propositional_formula_translation} allows us to reuse much of what we proved for propositional logic.
+
+  Fix a \hyperref[def:fol_structure]{first-order structure} \( \mscrX \) over \( \Sigma \), a \hyperref[def:fol_variable_assignment]{variable assignment} \( v \) into \( \mscrX \) and an \hyperref[def:atomic_fol_propositional_formula_translation]{atomic translation} \( \Bbbt \). For simplicity of exposition, suppose that \( \Bbbt \) is defined for all propositional variables under consideration.
+
+  Define the \hyperref[def:propositional_interpretation]{propositional interpretation}
+  \begin{equation}\label{eq:thm:fol_propositional_formula_translation_semantics/compatibility}
+    I(p) \coloneqq \Bracks{p[\Bbbt]}_\mscrX^v.
   \end{equation}
 
-  Here \( Q^{\oppos} \) is the dual quantifier of \( Q \); that is, the only other quantifier.
+  Then, for any propositional formula \( \varphi \), we have \( \Bracks{\varphi}_I = \Bracks{\varphi[\Bbbt]}_\mscrX^v \). In particular,
+  \begin{equation*}
+    I \vDash \varphi \T{if and only if} \mscrX \vDash \varphi[\Bbbt].
+  \end{equation*}
+\end{proposition}
+\begin{proof}
+  Straightforward induction on \( \varphi \).
+\end{proof}
+
+\begin{proposition}\label{thm:fol_quantifiers_and_semantic_equivalence}
+  Two \hyperref[def:fol_formula]{first-order formulas} \( \varphi \) and \( \psi \) are \hyperref[def:fol_semantics/equivalence]{semantically equivalent} if and only if \( \quantifier Q x \varphi \) and \( \quantifier Q x \psi \).
+
+  The choice of quantifier \( Q \) and variable \( x \) here are arbitrary.
 \end{proposition}
 \begin{comments}
-  \item This is a particular form of \fullref{thm:de_morgans_laws}.
+  \item This proposition allows us to use propositional semantic equivalences inside quantifier bodies.
 \end{comments}
 \begin{proof}
-  For \( Q = {\synforall} \), we have
-  \begin{align*}
-    \Bracks{\synneg \qexists x \synneg \varphi}_\mscrX^v
-    &\reloset {\eqref{eq:alg:fol_formula_denotation/formulas/neg}} =
-    \oline{\Bracks{\qexists x \synneg \varphi}_\mscrX^v}
-    \reloset {\eqref{eq:alg:fol_formula_denotation/formulas/exists}} = \\ &=
-    \oline{\bigvee\set[\big]{ \Bracks{\synneg \varphi}_\mscrX^{v_{x \mapsto a}} \given* a \in X }}
-    \reloset {\eqref{eq:alg:fol_formula_denotation/formulas/neg}} = \\ &=
-    \oline{\bigvee\set[\big]{ \oline{\Bracks{\varphi}_\mscrX^{v_{x \mapsto a}}} \given* a \in X }}
-    \reloset {\eqref{eq:thm:de_morgans_laws/complement_of_join}} = \\ &=
+  \SufficiencySubProof Suppose that \( \varphi \gleichstark \psi \). Fix a variable assignment \( v \) in some structure \( \mscrX \). For \( Q = {\synforall} \), we have
+  \begin{equation}\label{eq:thm:fol_quantifiers_and_semantic_equivalence/proof}
+    \Bracks{\qforall x \varphi}_\mscrX^v
+    \reloset {\eqref{eq:alg:fol_formula_denotation/formulas/forall}} =
+    \bigwedge\set[\big]{ \Bracks{\varphi}_\mscrX^{v_{x \mapsto a}} \given* a \in X }
+    =
     \bigwedge\set[\big]{ \Bracks{\psi}_\mscrX^{v_{x \mapsto a}} \given* a \in X }
-    \reloset {\eqref{eq:alg:fol_formula_denotation/formulas/forall}} = \\ &=
+    \reloset {\eqref{eq:alg:fol_formula_denotation/formulas/forall}} =
     \Bracks{\qforall x \psi}_\mscrX^v.
-  \end{align*}
+  \end{equation}
 
-  For \( Q = {\synexists} \), we simply have to use the dual law from \fullref{thm:de_morgans_laws}.
+  The case \( Q = {\synexists} \) is analogous.
+
+  \NecessitySubProof Conversely, if \( \qforall x \varphi \gleichstark \qforall x \psi \), then \eqref{eq:thm:fol_quantifiers_and_semantic_equivalence/proof} implies that \( \Bracks{\varphi}_\mscrX^{v_{x \mapsto a}} = \Bracks{\psi}_\mscrX^{v_{x \mapsto a}} \) for every \( a \), including \( a = v(x) \).
 \end{proof}
+
+\paragraph{Quantifier duality}
 
 \begin{algorithm}[First-order formula dualization]\label{alg:fol_formula_dualization}
   We can extend \fullref{alg:propositional_formula_dualization} to \hyperref[def:fol_formula]{first-order formulas} by treating atomic formulas as propositional variables and handling quantifiers as follows:
   \begin{equation}\label{eq:alg:fol_formula_dualization/quantifiers}
     \oline{T}(\quantifier Q x \psi) \coloneqq \quantifier {Q^{\oppos}} x \oline{T}(\psi).
   \end{equation}
+
+  Here \( Q^{\oppos} \) is the dual quantifier of \( Q \); that is, the only other quantifier.
 \end{algorithm}
 \begin{defproof}
   We will use \fullref{thm:induction_on_abstract_syntax} on \( \varphi \) to show that \( \Bracks{\oline{T}(\varphi)}_\mscrX^v = \oline{\Bracks{\varphi}_\mscrX^v} \) for every variable assignment \( v \) in every structure \( \mscrX = (X, I) \).
 
   All cases except \eqref{eq:alg:fol_formula_dualization/quantifiers} have already been handled in the propositional case. If \( \varphi = \qforall x \psi \), where the inductive hypothesis holds for \( \psi \), we have
-  \begin{align*}
+  \begin{balign*}
     \Bracks{\oline{T}(\qforall x \psi)}_\mscrX^v
     &=
     \Bracks{\qexists x \oline{T}(\psi)}_\mscrX^v
@@ -893,10 +922,63 @@ First-order logic is a particularly convenient form of \hyperref[con:predicate_l
     \oline{\bigwedge\set[\big]{ \Bracks{\psi}_\mscrX^{v_{x \mapsto a}} \given* a \in X }}
     \reloset {\eqref{eq:alg:fol_formula_denotation/formulas/forall}} = \\ &=
     \oline{\Bracks{\qforall x \psi}_\mscrX^v}.
-  \end{align*}
+  \end{balign*}
 
   The case where \( \varphi = \synneg \psi \) is similar.
 \end{defproof}
+
+\begin{proposition}\label{thm:fol_quantifier_duality}
+  For any \hyperref[def:fol_formula]{first-order formula} \( \varphi \) and \hyperref[def:predicate_logic_alphabet/quantifiers]{quantifier} \( Q \), we have the \hyperref[def:fol_semantics/equivalence]{semantic equivalence}
+  \begin{equation}\label{eq:thm:fol_quantifier_duality}
+    \quantifier Q x \varphi \gleichstark \synneg \quantifier {Q^{\oppos}} x \synneg \varphi
+  \end{equation}
+\end{proposition}
+\begin{comments}
+  \item This is a particular form of \fullref{thm:de_morgans_laws}.
+\end{comments}
+\begin{proof}
+  For \( Q = {\synforall} \), we have
+  \begin{balign*}
+    \Bracks{\synneg \qexists x \synneg \varphi}_\mscrX^v
+    &\reloset {\eqref{eq:alg:fol_formula_denotation/formulas/neg}} =
+    \oline{\Bracks{\qexists x \synneg \varphi}_\mscrX^v}
+    \reloset {\eqref{eq:alg:fol_formula_denotation/formulas/exists}} = \\ &=
+    \oline{\bigvee\set[\big]{ \Bracks{\synneg \varphi}_\mscrX^{v_{x \mapsto a}} \given* a \in X }}
+    \reloset {\eqref{eq:alg:fol_formula_denotation/formulas/neg}} = \\ &=
+    \oline{\bigvee\set[\big]{ \oline{\Bracks{\varphi}_\mscrX^{v_{x \mapsto a}}} \given* a \in X }}
+    \reloset {\eqref{eq:thm:de_morgans_laws/complement_of_join}} = \\ &=
+    \bigwedge\set[\big]{ \Bracks{\varphi}_\mscrX^{v_{x \mapsto a}} \given* a \in X }
+    \reloset {\eqref{eq:alg:fol_formula_denotation/formulas/forall}} = \\ &=
+    \Bracks{\qforall x \varphi}_\mscrX^v.
+  \end{balign*}
+
+  For \( Q = {\synexists} \), we simply have to use the dual law from \fullref{thm:de_morgans_laws}.
+\end{proof}
+
+\begin{corollary}\label{thm:fol_quantifier_duality_relativized}
+  A variant of \cref{thm:fol_quantifier_duality} also holds for \hyperref[rem:fol_formula_conventions/relativization]{relativized quantifier formulas}:
+  \begin{equation}\label{eq:thm:fol_quantifier_duality}
+    \quantifier Q {p(x, \cdots)} \varphi \gleichstark \synneg \quantifier {Q^{\oppos}} {p(x, \cdots)} \synneg \varphi
+  \end{equation}
+\end{corollary}
+\begin{proof}
+  Here we will utilize \cref{thm:fol_quantifiers_and_semantic_equivalence}. For \( Q = {\synforall} \), we have
+  \begin{balign*}
+    \Bracks{\synneg \qexists {p(x, \cdots)} \synneg \varphi}_\mscrX^v
+    &=
+    \Bracks{\synneg \qexists x p(x, \cdots) \synwedge \synneg \varphi}_\mscrX^v
+    \reloset {\eqref{eq:thm:fol_quantifier_duality}} = \\ &=
+    \Bracks{\qforall x \synneg (p(x, \cdots) \synwedge \synneg \varphi)}_\mscrX^v
+    \reloset {\eqref{eq:thm:classical_equivalences/de_morgan/complement_of_meet}} = \\ &=
+    \Bracks{\qforall x (\synneg p(x, \cdots)) \synvee \varphi}_\mscrX^v
+    \reloset {\eqref{eq:thm:classical_equivalences/conditional_as_disjunction}} = \\ &=
+    \Bracks{\qforall x p(x, \cdots) \synimplies \varphi}_\mscrX^v
+    = \\ &=
+    \Bracks{\qforall {p(x, \cdots)} \varphi}_\mscrX^v
+  \end{balign*}
+
+  For \( Q = {\synexists} \), we have to use the dual law from \cref{thm:classical_equivalences/de_morgan}.
+\end{proof}
 
 \paragraph{Implicit and explicit quantification}
 
@@ -1597,38 +1679,6 @@ First-order logic is a particularly convenient form of \hyperref[con:predicate_l
   \SufficiencySubProof* \Cref{thm:def:elementary_equivalence/finite} implies that, if two structures are finite and elementarily equivalent, they are isomorphic.
 
   \NecessitySubProof* \Cref{thm:pure_equality_isomorphism/isomorphism} implies that, if two structures have the same cardinality, they are isomorphic. Then \cref{thm:def:elementary_embedding/isomorphism} implies that they are elementarily equivalent.
-\end{proof}
-
-\paragraph{Substitution}
-
-\begin{definition}\label{def:atomic_fol_propositional_formula_translation}\mimprovised
-  For translating \hyperref[def:propositional_formula]{propositional formulas} into \hyperref[def:fol_formula]{first-order formulas} over the \hyperref[def:fol_signature]{signature} \( \Sigma \) as a map \( \Bbbt: \op*{Prop} \to \op*{Form}_\Sigma \) for which only finitely many variables are not \hyperref[def:function_fixed_point]{fixed points}. We will call the map \( \Bbbt \) an \term{atomic translation}.
-\end{definition}
-
-\begin{algorithm}[Propositional formula translation]\label{alg:fol_propositional_formula_translation}
-  We extend the \hyperref[def:atomic_fol_propositional_formula_translation]{atomic formula translation} \( \Bbbt \) to an operation \( \varphi \mapsto \varphi[\Bbbt] \) on compound propositional formulas via \hyperref[rem:straightforward_traversal]{straightforward traversal} similarly to how it is done in \fullref{alg:propositional_substitution}. Of course, this extension will only be valid when the propositional variables are in the domain of the atomic translation map.
-\end{algorithm}
-\begin{comments}
-  \item This algorithm can be found as \identifier{math.logic.propositional.apply_prop_formula_translation} in \cite{notebook:code}.
-\end{comments}
-
-\begin{proposition}\label{thm:fol_propositional_formula_translation_semantics}
-  \Fullref{alg:fol_propositional_formula_translation} allows us to reuse much of what we proved for propositional logic.
-
-  Fix a \hyperref[def:fol_structure]{first-order structure} \( \mscrX \) over \( \Sigma \), a \hyperref[def:fol_variable_assignment]{variable assignment} \( v \) into \( \mscrX \) and an \hyperref[def:atomic_fol_propositional_formula_translation]{atomic translation} \( \Bbbt \). For simplicity of exposition, suppose that \( \Bbbt \) is defined for all propositional variables under consideration.
-
-  Define the \hyperref[def:propositional_interpretation]{propositional interpretation}
-  \begin{equation}\label{eq:thm:fol_propositional_formula_translation_semantics/compatibility}
-    I(p) \coloneqq \Bracks{p[\Bbbt]}_\mscrX^v.
-  \end{equation}
-
-  Then, for any propositional formula \( \varphi \), we have \( \Bracks{\varphi}_I = \Bracks{\varphi[\Bbbt]}_\mscrX^v \). In particular,
-  \begin{equation*}
-    I \vDash \varphi \T{if and only if} \mscrX \vDash \varphi[\Bbbt].
-  \end{equation*}
-\end{proposition}
-\begin{proof}
-  Straightforward induction on \( \varphi \).
 \end{proof}
 
 \paragraph{Definitional extensions}
