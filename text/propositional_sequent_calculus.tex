@@ -208,9 +208,9 @@
   As a shorthand, when applying a structural rule multiple times, we will denote it by \( \logic{R}^* \) rather than \( \logic{R} \).
 \end{definition}
 \begin{comments}
-  \item We have distinct formalisms for \hyperref[def:propositional_natural_deduction_proof_tree]{propositional natural deduction proof trees} and \hyperref[def:fol_natural_deduction_proof_tree]{their first-order counterparts}, as well as for \hyperref[def:type_derivation_tree]{type derivation trees}.
+  \item We have distinct formalisms for \hyperref[def:propositional_natural_deduction_proof_tree]{propositional natural deduction proof trees} and \hyperref[def:fol_natural_deduction_proof_tree]{their first-order counterparts}, as well as for \hyperref[def:type_derivation_tree]{type derivation trees}. These intricacies are needed because a rule application relies in nontrivial ways on the premise subtrees.
 
-  Sequent calculus instead does not require such adaptations. For example, as described in \cref{def:abstract_sequent_calculus_system_eigenvariables}, the eigenvariable conditions can be captured by the formalism presented in this definition.
+  Sequent calculus instead does not require such adaptations because the contexts contain all information we may need, and we can simply forbid invalid rule application by making our instantiation algorithm to fail. See \cref{rem:sequent_calculus_eigenvariables} for an example of how we can handle \hyperref[def:fol_natural_deduction_proof_tree/eigen]{eigenvariables}.
 \end{comments}
 
 \begin{definition}\label{def:sequent_calculus_consequence}\mimprovised
@@ -446,103 +446,115 @@
   \end{thmenum}
 \end{definition}
 
-\begin{example}\label{ex:proof_tree_non_uniqueness}
-  \incite[\S 4.1.7.2]{Mimram2020ProgramEqualsProof} highlights some inherent subtleties of applying rules when working with \hyperref[def:logical_context]{unordered contexts}. We have designed our proof trees so that they mitigate these issues, but they are easily reproducible in a more informal treatment.
-
-  Consider the natural deduction proof trees
-  \begin{paracol}{2}
-    \begin{leftcolumn}
-      \ParacolAlignmentHack
-      \begin{equation*}
-        \begin{prooftree}
-          \hypo{ [\varphi]^u }
-          \infer[left label=\( u \)]1[\ref{inf:def:propositional_natural_deduction/imp/intro}]{ \varphi \synimplies \varphi }
-
-          \infer1[\ref{inf:def:propositional_natural_deduction/imp/intro}]{ \psi \synimplies (\varphi \synimplies \varphi) }
-        \end{prooftree}
-      \end{equation*}
-    \end{leftcolumn}
-
-    \begin{rightcolumn}
-      \ParacolAlignmentHack
-      \begin{equation*}
-        \begin{prooftree}
-          \hypo{ [\varphi]^u }
-          \infer1[\ref{inf:def:propositional_natural_deduction/imp/intro}]{ \psi \synimplies \varphi }
-
-          \infer[left label=\( u \)]1[\ref{inf:def:propositional_natural_deduction/imp/intro}]{ \varphi \synimplies (\psi \synimplies \varphi) }
-        \end{prooftree}
-      \end{equation*}
-    \end{rightcolumn}
-  \end{paracol}
-
-  If \( \varphi = \psi \), we obtain two distinct proofs of
-  \begin{equation*}
-    \varphi \synimplies (\varphi \synimplies \varphi).
-  \end{equation*}
-
-  We are able to distinguish them because we mark the discharged assumptions during each rule application. Otherwise, the two proof trees would be identical, but obtained by applying \ref{inf:def:propositional_natural_deduction/imp/intro} to distinct premises.
-
-  The corresponding sequent calculus proofs are
-  \begin{paracol}{2}
-    \begin{leftcolumn}
-      \ParacolAlignmentHack
-      \begin{equation*}
-        \begin{prooftree}
-          \infer0[\ref{inf:def:abstract_sequent_calculus_system/ax}]{ \varphi \synvdash \varphi }
-          \infer1[\ref{inf:def:classical_propositional_sequent_calculus/imp/right}]{ \synvdash (\varphi \synimplies \varphi) }
-          \infer1[\ref{inf:def:abstract_sequent_calculus_system/weak/left}]{ \psi \synvdash (\varphi \synimplies \varphi) }
-          \infer1[\ref{inf:def:classical_propositional_sequent_calculus/imp/right}]{ \synvdash \psi \synimplies (\varphi \synimplies \varphi) }
-        \end{prooftree}
-      \end{equation*}
-    \end{leftcolumn}
-
-    \begin{rightcolumn}
-      \ParacolAlignmentHack
-      \begin{equation*}
-        \begin{prooftree}
-          \infer0[\ref{inf:def:abstract_sequent_calculus_system/ax}]{ \varphi \synvdash \varphi }
-          \infer1[\ref{inf:def:abstract_sequent_calculus_system/weak/left}]{ \psi, \varphi \synvdash \varphi }
-          \infer1[\ref{inf:def:classical_propositional_sequent_calculus/imp/right}]{ \varphi \synvdash (\psi \synimplies \varphi) }
-          \infer1[\ref{inf:def:classical_propositional_sequent_calculus/imp/right}]{ \synvdash \varphi \synimplies (\psi \synimplies \varphi) }
-        \end{prooftree}
-      \end{equation*}
-    \end{rightcolumn}
-  \end{paracol}
-
-  Again, if \( \varphi = \psi \), we obtain two distinct proofs of the same formula.
-
-  It is essential here that we use ordered contexts governed by structural rules. If we were to treat contexts as unordered collections, we would have two distinct cases:
-  \begin{itemize}
-    \item If \( \varphi = \psi \), the left proof would still be valid, but using the weakening rule in the second proof would be ineffective, and we would only be able to derive
+\begin{example}\label{ex:def:classical_propositional_sequent_calculus}
+  We list some examples of using \hyperref[def:classical_propositional_sequent_calculus]{classical propositional sequent calculus}:
+  \begin{thmenum}
+    \thmitem{ex:def:classical_propositional_sequent_calculus/lem} A simple proof of \fullref{thm:propositional_semantic_lem} in its tautological form \eqref{eq:thm:classical_tautologies/lem} can be given:
     \begin{equation*}
       \begin{prooftree}
         \infer0[\ref{inf:def:abstract_sequent_calculus_system/ax}]{ \varphi \synvdash \varphi }
-        \infer1[\ref{inf:def:abstract_sequent_calculus_system/weak/left}]{ \varphi \synvdash \varphi }
-        \infer1[\ref{inf:def:classical_propositional_sequent_calculus/imp/right}]{ \synvdash \varphi \synimplies \varphi }
+        \infer1[\ref{inf:def:classical_propositional_sequent_calculus/neg/right}]{ \synvdash \varphi, \synneg \varphi }
+        \infer1[\ref{inf:def:classical_propositional_sequent_calculus/or/right}]{ \synvdash \varphi \synvee \synneg \varphi }
       \end{prooftree}
     \end{equation*}
 
-    As an alternative to treating contexts as lists, Mimram suggests treating them as \hyperref[def:multiset]{multisets}, which would mitigate this concrete issue and derive
+    \thmitem{ex:def:classical_propositional_sequent_calculus/proof_tree_non_uniqueness} \incite[\S 4.1.7.2]{Mimram2020ProgramEqualsProof} highlights some inherent subtleties of applying rules when working with \hyperref[def:logical_context]{unordered contexts}. We have designed our proof trees so that they mitigate these issues, but they are easily reproducible in a more informal treatment.
+
+    Consider the natural deduction proof trees
+    \begin{paracol}{2}
+      \begin{leftcolumn}
+        \ParacolAlignmentHack
+        \begin{equation*}
+          \begin{prooftree}
+            \hypo{ [\varphi]^u }
+            \infer[left label=\( u \)]1[\ref{inf:def:propositional_natural_deduction/imp/intro}]{ \varphi \synimplies \varphi }
+
+            \infer1[\ref{inf:def:propositional_natural_deduction/imp/intro}]{ \psi \synimplies (\varphi \synimplies \varphi) }
+          \end{prooftree}
+        \end{equation*}
+      \end{leftcolumn}
+
+      \begin{rightcolumn}
+        \ParacolAlignmentHack
+        \begin{equation*}
+          \begin{prooftree}
+            \hypo{ [\varphi]^u }
+            \infer1[\ref{inf:def:propositional_natural_deduction/imp/intro}]{ \psi \synimplies \varphi }
+
+            \infer[left label=\( u \)]1[\ref{inf:def:propositional_natural_deduction/imp/intro}]{ \varphi \synimplies (\psi \synimplies \varphi) }
+          \end{prooftree}
+        \end{equation*}
+      \end{rightcolumn}
+    \end{paracol}
+
+    If \( \varphi = \psi \), we obtain two distinct proofs of
     \begin{equation*}
-      \synvdash \varphi \synimplies (\varphi \synimplies \varphi).
+      \varphi \synimplies (\varphi \synimplies \varphi).
     \end{equation*}
 
-    \item If either \( \varphi \neq \psi \) or if we were using multisets, applying \ref{inf:def:classical_propositional_sequent_calculus/imp/right} to the sequent
-    \begin{equation*}
-      \psi, \varphi \synvdash \varphi
-    \end{equation*}
-    could lead to either
-    \begin{equation*}
-      \varphi \synvdash \psi \synimplies \varphi
-    \end{equation*}
-    or
-    \begin{equation*}
-      \psi \synvdash \varphi \synimplies \varphi.
-    \end{equation*}
+    We are able to distinguish them because we mark the discharged assumptions during each rule application. Otherwise, the two proof trees would be identical, but obtained by applying \ref{inf:def:propositional_natural_deduction/imp/intro} to distinct premises.
 
-    Thus, treating contexts as multisets leads to a multiset of proof trees for each application.
-  \end{itemize}
+    The corresponding sequent calculus proofs are
+    \begin{paracol}{2}
+      \begin{leftcolumn}
+        \ParacolAlignmentHack
+        \begin{equation*}
+          \begin{prooftree}
+            \infer0[\ref{inf:def:abstract_sequent_calculus_system/ax}]{ \varphi \synvdash \varphi }
+            \infer1[\ref{inf:def:classical_propositional_sequent_calculus/imp/right}]{ \synvdash (\varphi \synimplies \varphi) }
+            \infer1[\ref{inf:def:abstract_sequent_calculus_system/weak/left}]{ \psi \synvdash (\varphi \synimplies \varphi) }
+            \infer1[\ref{inf:def:classical_propositional_sequent_calculus/imp/right}]{ \synvdash \psi \synimplies (\varphi \synimplies \varphi) }
+          \end{prooftree}
+        \end{equation*}
+      \end{leftcolumn}
+
+      \begin{rightcolumn}
+        \ParacolAlignmentHack
+        \begin{equation*}
+          \begin{prooftree}
+            \infer0[\ref{inf:def:abstract_sequent_calculus_system/ax}]{ \varphi \synvdash \varphi }
+            \infer1[\ref{inf:def:abstract_sequent_calculus_system/weak/left}]{ \psi, \varphi \synvdash \varphi }
+            \infer1[\ref{inf:def:classical_propositional_sequent_calculus/imp/right}]{ \varphi \synvdash (\psi \synimplies \varphi) }
+            \infer1[\ref{inf:def:classical_propositional_sequent_calculus/imp/right}]{ \synvdash \varphi \synimplies (\psi \synimplies \varphi) }
+          \end{prooftree}
+        \end{equation*}
+      \end{rightcolumn}
+    \end{paracol}
+
+    Again, if \( \varphi = \psi \), we obtain two distinct proofs of the same formula.
+
+    It is essential here that we use ordered contexts governed by structural rules. If we were to treat contexts as unordered collections, we would have two distinct cases:
+    \begin{itemize}
+      \item If \( \varphi = \psi \), the left proof would still be valid, but using the weakening rule in the second proof would be ineffective, and we would only be able to derive
+      \begin{equation*}
+        \begin{prooftree}
+          \infer0[\ref{inf:def:abstract_sequent_calculus_system/ax}]{ \varphi \synvdash \varphi }
+          \infer1[\ref{inf:def:abstract_sequent_calculus_system/weak/left}]{ \varphi \synvdash \varphi }
+          \infer1[\ref{inf:def:classical_propositional_sequent_calculus/imp/right}]{ \synvdash \varphi \synimplies \varphi }
+        \end{prooftree}
+      \end{equation*}
+
+      As an alternative to treating contexts as lists, Mimram suggests treating them as \hyperref[def:multiset]{multisets}, which would mitigate this concrete issue and derive
+      \begin{equation*}
+        \synvdash \varphi \synimplies (\varphi \synimplies \varphi).
+      \end{equation*}
+
+      \item If either \( \varphi \neq \psi \) or if we were using multisets, applying \ref{inf:def:classical_propositional_sequent_calculus/imp/right} to the sequent
+      \begin{equation*}
+        \psi, \varphi \synvdash \varphi
+      \end{equation*}
+      could lead to either
+      \begin{equation*}
+        \varphi \synvdash \psi \synimplies \varphi
+      \end{equation*}
+      or
+      \begin{equation*}
+        \psi \synvdash \varphi \synimplies \varphi.
+      \end{equation*}
+
+      Thus, treating contexts as multisets leads to a multiset of proof trees for each application.
+    \end{itemize}
+  \end{thmenum}
 \end{example}
 
 \begin{proposition}\label{thm:propositional_sequent_calculus_characterization}

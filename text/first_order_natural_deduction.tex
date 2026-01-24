@@ -285,6 +285,8 @@
 
   \item Eigenvariables do not affect the instantiation itself; they will play an important role in restrict certain constructions when defining proof trees in \cref{def:fol_natural_deduction_proof_tree}.
 
+  \item A variant of this algorithm, in which certain instantiations are considered invalid, is presented in \cref{rem:sequent_calculus_eigenvariables}.
+
   \item This algorithm can be found as \identifier{math.logic.instantiation.instantiate_substitution} in \cite{notebook:code}.
 \end{comments}
 
@@ -302,9 +304,9 @@
 
   In addition to the conclusion, rule name, open assumptions and implicit premises, we will also need several sets of variables:
   \begin{thmenum}[series=def:fol_natural_deduction_proof_tree]
-    \thmitem{def:fol_natural_deduction_proof_tree/eigenvariables} Most importantly, we will associate with every tree a set of variables called \term[ru=собственная переменная (\cite[145]{Герасимов2014Вычислимость}), en=eigenvariable (\cite[\S 5.1.10]{Mimram2020ProgramEqualsProof})]{eigenvariable}. These are local to the root and are analogues of discharged assumptions.
+    \thmitem{def:fol_natural_deduction_proof_tree/eigen} Most importantly, we will associate with every tree a set of variables called \term[ru=собственная переменная (\cite[145]{Герасимов2014Вычислимость}), en=eigenvariable (\cite[\S 5.1.10]{Mimram2020ProgramEqualsProof})]{eigenvariable}. These are local to the root and are analogues of discharged assumptions.
 
-    These obey some specific restrictions listed below. We show in \cref{ex:dependent_products_and_forall_quantifier_rules} how these restrictions appear naturally when discharging type assertions in \hyperref[def:martin_lof_type_theory]{Martin-L\"of type theory}.
+    These obey some specific restrictions listed below. We try to justify these conditions using similar rules in \cref{rem:dependent_products_and_forall_quantifier_rules} and \cref{rem:sequent_calculus_eigenvariables}.
 
     \thmitem{def:fol_natural_deduction_proof_tree/free} Dually, we will also need a set of \term{free variables} of the proof tree. Similarly to the open assumptions, they will be cumulative for the entire tree and not just local to the root.
 
@@ -504,7 +506,7 @@
   \end{thmenum}
 \end{definition}
 \begin{comments}
-  \item The quantifier rules are justified by rules for dependent types via the \hyperref[con:curry_howard_correspondence]{Curry-Howard correspondence}; see \cref{ex:dependent_products_and_forall_quantifier_rules}.
+  \item The quantifier rules are justified by rules for dependent types via the \hyperref[con:curry_howard_correspondence]{Curry-Howard correspondence}; see \cref{rem:dependent_products_and_forall_quantifier_rules}.
 
   \item These precise rules are used in the module \identifier{logic.classical_logic} in \cite{notebook:code}.
 \end{comments}
@@ -651,7 +653,7 @@
   \item Many of these examples are verified programmatically in the module \identifier{math.logic.deduction.test_proof_tree} in \cite{notebook:code}.
 \end{comments}
 
-\begin{example}\label{ex:dependent_products_and_forall_quantifier_rules}
+\begin{remark}\label{rem:dependent_products_and_forall_quantifier_rules}
   We will show how the universal quantifier introduction rule \ref{inf:def:fol_natural_deduction/forall/intro} corresponds, via the \hyperref[con:curry_howard_correspondence]{Curry-Howard correspondence}, to the introduction rule \ref{inf:def:dependent_product/intro} for \hyperref[def:dependent_product]{dependent products}.
 
   Generally, in \hyperref[def:martin_lof_type_theory]{Martin-L\"of type theory}, we must be careful not to allow \hyperref[def:mltt_well_formed_context/derivation]{ill-formed derivations}. There can be situations where an assumption \( x: \tau \) cannot be discharged because the types of other open assumptions depend on \( x \).
@@ -678,11 +680,84 @@
 
   For the purposes of predicate logic, it will suffice, instead of dealing with explicit type contexts, we instead enforce the constraints given in \cref{def:fol_natural_deduction_proof_tree/application/main}.
 
-  It is important here to note that \( \qforall {x^\tau} \varphi \) and \( \qforall {y^\tau} \varphi[x \mapsto y] \) are considered different formulas. This contrasts with Martin-L\"of type theory, where, due to the rule \ref{rem:type_theory_rule_classification/equality/alpha}, \hyperref[def:lambda_term_alpha_equivalence]{\( \alpha \)-equivalent} \( \muplambda \)-terms are assumed to be \hyperref[con:equality]{judgmentally equal}. Making \( \alpha \)-conversion explicit leads to \ref{inf:def:fol_natural_deduction/forall/intro} .
-\end{example}
+  It is important here to note that \( \qforall x \varphi \) and \( \qforall y \varphi[x \mapsto y] \) are considered different formulas. This contrasts with Martin-L\"of type theory, where, due to the rule \ref{rem:type_theory_rule_classification/equality/alpha}, \hyperref[def:lambda_term_alpha_equivalence]{\( \alpha \)-equivalent} \( \muplambda \)-terms are assumed to be \hyperref[con:equality]{judgmentally equal}. Making \( \alpha \)-conversion explicit leads to \ref{inf:def:fol_natural_deduction/forall/intro} .
+\end{remark}
 
-\begin{remark}\label{def:abstract_sequent_calculus_system_eigenvariables}
-  % \hyperref[con:predicate_logic]{predicate logic}, the entries must also account for \hyperref[def:fol_schema/formula]{eigenvariables}
+\begin{remark}\label{rem:sequent_calculus_eigenvariables}
+  \incite[def. 3.1.1]{TroelstraSchwichtenberg2000BasicProofTheory} give the following \hyperref[def:sequent_calculus_rule]{sequent calculus rule} for \hyperref[def:predicate_logic_alphabet/quantifiers/universal]{universal quantifiers}:
+  \begin{equation*}\taglabel[\ensuremath{ \forall_R }]{inf:rem:sequent_calculus_eigenvariables/forall_right}
+    \begin{prooftree}
+      \hypo{ \syn\Gamma \synvdash \syn\Delta, \syn\varphi[\synx \synsubst \syny^*] }
+      \infer1[\ref{inf:rem:sequent_calculus_eigenvariables/forall_right}]{ \syn\Gamma \synvdash \syn\Delta, \qforall \synx \syn\varphi }
+    \end{prooftree}
+  \end{equation*}
+
+  We have reused the extended first-order formula schemas from \cref{def:fol_formula_schema}. Instantiation could be done via \fullref{alg:fol_formula_schema_instantiation}, however the rule features an eigenvariable schema \( \syny^* \). The authors give a side condition for eigenvariables to not be free in the rule's conclusion.
+
+  Rather than introducing all the machinery for variable binding from \cref{def:fol_natural_deduction_proof_tree}, we could modify \fullref{alg:fol_formula_schema_instantiation}. For this, we package an atomic instantiation \( \BbbI \) and a set \( E \) of eigenvariables into \( \BbbE = (\BbbI, E) \), and restrict the algorithm based on \( E \):
+  \begin{thmenum}
+    \thmitem{rem:sequent_calculus_eigenvariables/atomic} If \( \Phi \) is an atomic schema, we define \( \Phi[\BbbI, E] \) as \( \Phi[\BbbI] \), but let it fail if some of the free variables of \( \Phi[\BbbI] \) are in \( E \).
+
+    This condition ensures that no eigenvariable can occur free.
+
+    \thmitem{rem:sequent_calculus_eigenvariables/quantifier} If \( \Phi = \quantifier Q \xi \Psi \) for a quantifier \( Q \), we define \( \Phi[\BbbI, E] \) as
+    \begin{equation*}
+      \quantifier Q {\BbbI(\xi)} \Psi[\BbbI, E \setminus \set{\BbbI(\xi)}].
+    \end{equation*}
+
+    Thus, we allow bound occurrences of eigenvariables.
+
+    \thmitem{rem:sequent_calculus_eigenvariables/eigen} If \( \Phi = \Psi[\xi \synsubst \eta^\ast] \), we define \( \Phi[\BbbI, E] \) as
+    \begin{equation*}
+      \Psi[\BbbI, E \setminus \set{\BbbI(\eta)}][\BbbI(\xi) \mapsto \BbbI(\eta)],
+    \end{equation*}
+    but let it fail if \( \BbbI(\eta) \) is \hi{not} in \( E \).
+
+    This ensures that all eigenvariables must be in \( E \). The reason we remove \( \BbbI(\eta) \) from \( \Psi \) it to allow the case where \( \BbbI(\xi) \) and \( \BbbI(\eta) \) coincide.
+
+    If \( \Psi \) occurs elsewhere in the rule, its instantiation will fail unless it is within the scope of a quantifier or an eigenvariable substitution.
+
+    \thmitem{rem:sequent_calculus_eigenvariables/other} In all other cases, we recurse into subformulas as in the unmodified algorithm.
+  \end{thmenum}
+
+  We will give an example based on the proof of \fullref{thm:propositional_semantic_lem} in \cref{ex:def:classical_propositional_sequent_calculus/lem}. Suppose the signature contains a unary predicate \( \synp \) and consider the invalid derivation
+  \begin{equation*}
+    \begin{prooftree}
+      \infer0[\ref{inf:def:abstract_sequent_calculus_system/ax}]{ \synp(\syny) \synvdash \synp(\syny) }
+      \infer1[\ref{inf:rem:sequent_calculus_eigenvariables/forall_right}]{ \synp(\syny) \synvdash \qforall \syny \synp(\syny) }
+    \end{prooftree}
+  \end{equation*}
+
+  In an extended atomic instantiation \( \BbbE = (\BbbI, E) \), \( \BbbI \) must send the formula placeholder \( \syn\varphi \) to \( \synp(\synx) \) and both variable placeholders \( \synx \) and \( \syny \) to their eponymous variables. However, we have conflicting restrictions:
+  \begin{itemize}
+    \item In its first occurrence, due to \ref{rem:sequent_calculus_eigenvariables/atomic}, \( \synp(\syny) \) requires \( \syny \) to \hi{not} be in \( E \).
+    \item In its second occurrence, due to \ref{rem:sequent_calculus_eigenvariables/eigen}, \( \synp(\syny) = \synp(\synx)[\synx \mapsto \syny] \) requires \( \syny \) to be in \( E \).
+  \end{itemize}
+
+  Thus, the above application fails. So does the following:
+  \begin{equation*}
+    \begin{prooftree}
+      \infer0[\ref{inf:def:abstract_sequent_calculus_system/ax}]{ \synp(\syny) \synvdash \synp(\syny) }
+      \infer1[\ref{inf:def:classical_propositional_sequent_calculus/neg/right}]{ \synvdash \synp(\syny), \synneg \synp(\syny) }
+      \infer1[\ref{inf:rem:sequent_calculus_eigenvariables/forall_right}]{ \synvdash \synp(\syny), \qforall \synx \synneg \synp(\synx)) }
+    \end{prooftree}
+  \end{equation*}
+
+  The problem in the final condition here is again due to a conflict of the two conditions.
+
+  The following is valid, however:
+  \begin{equation*}
+    \begin{prooftree}
+      \infer0[\ref{inf:def:abstract_sequent_calculus_system/ax}]{ \synp(\syny) \synvdash \synp(\syny) }
+      \infer1[\ref{inf:def:classical_propositional_sequent_calculus/neg/right}]{ \synvdash \synp(\syny), \synneg \synp(\syny) }
+      \infer1[\ref{inf:def:classical_propositional_sequent_calculus/or/right}]{ \synvdash \synp(\syny) \synvee \synneg \synp(\syny) }
+      \infer1[\ref{inf:rem:sequent_calculus_eigenvariables/forall_right}]{ \synvdash \qforall \synx (\synp(\synx) \synvee \synneg \synp(\synx)) }
+    \end{prooftree}
+  \end{equation*}
+
+  In the final application, \( \BbbI \) maps the formula placeholder \( \syn\varphi \) to \( \synp(\synx) \synvee \synneg \synp(\synx) \) and the variable placeholders \( \synx \) and \( \syny \) to the eponymous variables.
+
+  Not only do the above conditions not conflict with each other, but \( \BbbI \) could even map \( \synx \) to \( \syny \) because \ref{rem:sequent_calculus_eigenvariables/quantifier} allows eigenvariables as bound variables.
 \end{remark}
 
 \begin{proposition}\label{thm:alpha_equivalent_forulas_are_interderivable}
