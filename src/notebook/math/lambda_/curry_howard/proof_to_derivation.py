@@ -85,17 +85,15 @@ def formula_to_type(formula: Formula) -> SimpleType:
 
 
 def proof_tree_premise_to_derivation_tree_premise(premise: ptree.RuleApplicationPremise) -> dtree.RuleApplicationPremise:
-    if premise.discharge and premise.marker:
-        return dtree.premise(
-            tree=proof_tree_to_type_derivation(premise.tree),
-            discharge=VariableTypeAssertion(
-                Variable(premise.marker.identifier),
-                formula_to_type(premise.discharge.formula)
-            )
-        )
-
-    return dtree.premise(
-        tree=proof_tree_to_type_derivation(premise.tree)
+    return dtree.premise_config(
+        tree=proof_tree_to_type_derivation(premise.tree),
+        attachments=[
+            VariableTypeAssertion(
+                Variable(att.marker.identifier),
+                formula_to_type(att.formula)
+            ) if att else None
+            for att in premise.attachments
+        ]
     )
 
 
@@ -123,7 +121,7 @@ def natural_deduction_rule_to_typing_rule(rule: NaturalDeductionRule) -> TypingR
             raise UnknownNaturalDeductionRuleError(rule)
 
 
-def translate_instantiation(instantiation: AtomicLogicSchemaInstantiation, **kwargs: str) -> AtomicLambdaSchemaInstantiation:
+def create_instantiation(instantiation: AtomicLogicSchemaInstantiation, **kwargs: str) -> AtomicLambdaSchemaInstantiation:
     return AtomicLambdaSchemaInstantiation(
         type_mapping={
             TypePlaceholder(GreekIdentifier(value)):
@@ -134,48 +132,59 @@ def translate_instantiation(instantiation: AtomicLogicSchemaInstantiation, **kwa
     )
 
 
+def translate_application(
+    derivation: ptree.RuleApplicationTree,
+    rule: TypingRule,
+    **kwargs: str
+) -> dtree.RuleApplicationTree:
+    instantiation = create_instantiation(derivation.instantiation, **kwargs)
+    return dtree.apply(
+        rule,
+        *(
+            proof_tree_premise_to_derivation_tree_premise(premise)
+            for premise in derivation.premises
+        ),
+        instantiation=instantiation,
+    )
+
+
 # This is alg:proof_tree_to_type_derivation in the monograph
 def proof_tree_to_type_derivation(proof: ptree.ProofTree) -> dtree.TypeDerivationTree:
     if isinstance(proof, ptree.AssumptionTree):
         return dtree.assume(
             VariableTypeAssertion(
                 Variable(proof.marker.identifier),
-                formula_to_type(proof.conclusion.formula)
+                formula_to_type(proof.conclusion)
             )
         )
 
     if not isinstance(proof, ptree.RuleApplicationTree):
         raise ProofToDerivationError('Unrecognized proof tree')
 
-    premises = [
-        proof_tree_premise_to_derivation_tree_premise(premise)
-        for premise in proof.premises
-    ]
-
     match proof.rule.name:
         case 'EFQ':
-            return dtree.apply(
+            return translate_application(
+                proof,
                 SIMPLE_ALGEBRAIC_TYPE_SYSTEM['𝟘₋'],
-                *premises,
-                instantiation=translate_instantiation(proof.instantiation, φ='τ')
+                φ='τ'
             )
 
         case '∨₊ₗ':
-            return dtree.apply(
+            return translate_application(
+                proof,
                 SIMPLE_ALGEBRAIC_TYPE_SYSTEM['+₊ₗ'],
-                *premises,
-                instantiation=translate_instantiation(proof.instantiation, ψ='σ')
+                ψ='σ'
             )
 
         case '∨₊ᵣ':
-            return dtree.apply(
+            return translate_application(
+                proof,
                 SIMPLE_ALGEBRAIC_TYPE_SYSTEM['+₊ᵣ'],
-                *premises,
-                instantiation=translate_instantiation(proof.instantiation, φ='τ')
+                φ='τ'
             )
 
         case _:
-            return dtree.apply(
+            return translate_application(
+                proof,
                 natural_deduction_rule_to_typing_rule(proof.rule),
-                *premises,
             )

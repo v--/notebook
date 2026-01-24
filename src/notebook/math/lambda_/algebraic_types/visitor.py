@@ -12,7 +12,7 @@ class SimpleAlgebraicDerivationTreeVisitor[T]:
             return self.visit_assumption(tree)
 
         if tree.rule == SIMPLE_ALGEBRAIC_TYPE_SYSTEM['→₊']:
-            discharge = tree.premises[0].discharge
+            discharge = tree.premises[0].attachments[0]
             assert discharge is not None
             return self.visit_arrow_intro(
                 tree=tree,
@@ -69,10 +69,10 @@ class SimpleAlgebraicDerivationTreeVisitor[T]:
             )
 
         if tree.rule == SIMPLE_ALGEBRAIC_TYPE_SYSTEM['+₋']:
-            left_discharge = tree.premises[1].discharge
+            left_discharge = tree.premises[1].attachments[0]
             assert left_discharge is not None
 
-            right_discharge = tree.premises[2].discharge
+            right_discharge = tree.premises[2].attachments[0]
             assert right_discharge is not None
 
             return self.visit_sum_elim(

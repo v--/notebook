@@ -1,48 +1,36 @@
 import re
-from collections.abc import Collection, Mapping
 from textwrap import dedent
 
 import pytest
 
 from ..classical_logic import CLASSICAL_NATURAL_DEDUCTION_SYSTEM
-from ..instantiation import AtomicLogicSchemaInstantiation
 from ..parsing import (
     parse_formula,
     parse_formula_placeholder,
     parse_formula_with_substitution,
     parse_marker,
-    parse_term_substitution_spec,
-    parse_variable,
 )
 from ..propositional import parse_prop_formula
 from ..signature import FormalLogicSignature
 from .exceptions import RuleApplicationError
-from .proof_tree import AssumptionTree, ProofTree, RuleApplicationPremise, apply, assume, premise
+from .markers import MarkedFormula, MarkedFormulaWithSubstitution
+from .proof_tree import AssumptionTree, apply, assume, premise_config
 
 
 def prop_assume(formula: str, marker: str) -> AssumptionTree:
     return assume(parse_prop_formula(formula), parse_marker(marker))
 
 
-def prop_premise(*, tree: ProofTree, discharge: str, marker: str | None = None) -> RuleApplicationPremise:
-    return premise(
-        tree=tree,
-        discharge=parse_prop_formula(discharge),
-        marker=parse_marker(marker) if marker is not None else None
+def prop_marked_formula(formula: str, marker: str) -> MarkedFormula:
+    return MarkedFormula(
+        parse_prop_formula(formula),
+        parse_marker(marker)
     )
-
-
-def str_assumptions(tree: ProofTree) -> Mapping[str, str]:
-    return {str(marker): str(formula) for marker, formula in tree.get_assumption_map().items()}
-
-
-def str_free_variables(tree: ProofTree) -> Collection[str]:
-    return {str(var) for var in tree.get_free_variables()}
 
 
 def test_assumption_tree() -> None:
     tree = prop_assume('p', 'u')
-    assert str_assumptions(tree) == {'u': 'p'}
+    assert tree.get_cumulative_assumptions() == {prop_marked_formula('p', 'u')}
     assert str(tree) == dedent('''\
         [p]ᵘ
         '''
@@ -52,14 +40,14 @@ def test_assumption_tree() -> None:
 def test_single_implication_intro() -> None:
     tree = apply(
         CLASSICAL_NATURAL_DEDUCTION_SYSTEM['→₊'],
-        prop_premise(
-            tree=prop_assume('q', 'u'),
-            discharge='p',
-            marker='u'
-        )
+        prop_assume('q', 'u'),
+        implicit={
+            parse_formula_placeholder('φ'): parse_prop_formula('p')
+        }
     )
 
-    assert str_assumptions(tree) == {'u': 'q'}
+    assert tree.get_cumulative_assumptions() == {prop_marked_formula('q', 'u')}
+    assert tree.get_local_implicit_premises() == {parse_prop_formula('p')}
     assert str(tree) == dedent('''\
           [q]ᵘ
          _______ →₊
@@ -71,20 +59,22 @@ def test_single_implication_intro() -> None:
 def test_double_implication_intro() -> None:
     tree = apply(
         CLASSICAL_NATURAL_DEDUCTION_SYSTEM['→₊'],
-        prop_premise(
-            marker='u',
-            discharge='p',
+        premise_config(
+            attachments=[prop_marked_formula('p', 'u')],
             tree=apply(
                 CLASSICAL_NATURAL_DEDUCTION_SYSTEM['→₊'],
-                prop_premise(
-                    discharge='q',
-                    tree=prop_assume('p', 'u')
-                )
-            ),
+                prop_assume('p', 'u'),
+                implicit={
+                    parse_formula_placeholder('φ'): parse_prop_formula('q')
+                }
+            )
         )
     )
 
-    assert str_assumptions(tree) == {}
+    assert tree.get_cumulative_assumptions() == set()
+    assert tree.get_local_implicit_premises() == set()
+    assert tree.premises[0].tree.get_local_implicit_premises() == {parse_prop_formula('q')}
+
     assert str(tree) == dedent('''\
               [p]ᵘ
              _______ →₊
@@ -99,16 +89,13 @@ def test_efq() -> None:
     tree = apply(
         CLASSICAL_NATURAL_DEDUCTION_SYSTEM['EFQ'],
         prop_assume('⊥', 'u'),
-        # We are unable to infer the necessary instantiation of the rule "(EFQ) ⊥ ⊩ φ"
-        # based only on the conclusion and premises, so we give a hint
-        instantiation=AtomicLogicSchemaInstantiation(
-            formula_mapping={
-                parse_formula_placeholder('φ'): parse_prop_formula('p')
-            }
-        )
+        implicit={
+            parse_formula_placeholder('φ'): parse_prop_formula('p')
+        }
     )
 
-    assert str_assumptions(tree) == {'u': '⊥'}
+    assert tree.get_cumulative_assumptions() == {prop_marked_formula('⊥', 'u')}
+    assert tree.get_local_implicit_premises() == set()
     assert str(tree) == dedent('''\
         [⊥]ᵘ
         ____ EFQ
@@ -117,25 +104,42 @@ def test_efq() -> None:
     )
 
 
+def test_or_intro() -> None:
+    tree = apply(
+        CLASSICAL_NATURAL_DEDUCTION_SYSTEM['∨₊ₗ'],
+        prop_assume('p', 'u'),
+        implicit={
+            parse_formula_placeholder('ψ'): parse_prop_formula('q')
+        }
+    )
+
+    assert tree.get_cumulative_assumptions() == {prop_marked_formula('p', 'u')}
+    assert tree.get_local_implicit_premises() == {parse_prop_formula('q')}
+    assert str(tree) == dedent('''\
+         [p]ᵘ
+        _______ ∨₊ₗ
+        (p ∨ q)
+        '''
+    )
+
+
 # ex:def:propositional_natural_deduction/efq_vs_dne
 def test_dne() -> None:
     tree = apply(
         CLASSICAL_NATURAL_DEDUCTION_SYSTEM['→₊'],
-        prop_premise(
+        premise_config(
+            attachments=[prop_marked_formula('¬¬p', 'u')],
             tree=apply(
                 CLASSICAL_NATURAL_DEDUCTION_SYSTEM['RAA'],
-                prop_premise(
+                premise_config(
+                    attachments=[prop_marked_formula('¬p', 'v')],
                     tree=apply(
                         CLASSICAL_NATURAL_DEDUCTION_SYSTEM['¬₋'],
                         prop_assume('¬¬p', 'u'),
                         prop_assume('¬p', 'v'),
                     ),
-                    discharge='¬p',
-                    marker='v'
                 )
             ),
-            discharge='¬¬p',
-            marker='u'
         )
     )
 
@@ -155,19 +159,16 @@ def test_dne() -> None:
 def test_implication_distributivity_axiom_tree() -> None:
     tree = apply(
         CLASSICAL_NATURAL_DEDUCTION_SYSTEM['→₊'],
-        prop_premise(
-            discharge='(p → (q → r))',
-            marker='u',
+        premise_config(
+            attachments=[prop_marked_formula('(p → (q → r))', 'u')],
             tree=apply(
                 CLASSICAL_NATURAL_DEDUCTION_SYSTEM['→₊'],
-                prop_premise(
-                    discharge='(p → q)',
-                    marker='w',
+                premise_config(
+                    attachments=[prop_marked_formula('(p → q)', 'w')],
                     tree=apply(
                         CLASSICAL_NATURAL_DEDUCTION_SYSTEM['→₊'],
-                        prop_premise(
-                            discharge='p',
-                            marker='v',
+                        premise_config(
+                            attachments=[prop_marked_formula('p', 'v')],
                             tree=apply(
                                 CLASSICAL_NATURAL_DEDUCTION_SYSTEM['→₋'],
                                 apply(
@@ -180,15 +181,15 @@ def test_implication_distributivity_axiom_tree() -> None:
                                     prop_assume('(p → q)', 'w'),
                                     prop_assume('p', 'v')
                                 )
-                            )
+                            ),
                         )
-                    )
+                    ),
                 )
-            )
+            ),
         )
     )
 
-    assert str_assumptions(tree) == {}
+    assert tree.get_cumulative_assumptions() == set()
     assert str(tree) == dedent('''\
           [(p → (q → r))]ᵘ    [p]ᵛ       [(p → q)]ʷ    [p]ᵛ
           ________________________ →₋    __________________ →₋
@@ -207,19 +208,18 @@ def test_implication_distributivity_axiom_tree() -> None:
 
 # inf:thm:propositional_admissible_rules/self_biconditional
 def test_self_biconditional() -> None:
-    premise = prop_premise(
-        marker='u',
-        discharge='p',
-        tree=prop_assume('p', 'u')
+    premise_ = premise_config(
+        attachments=[prop_marked_formula('p', 'u')],
+        tree=prop_assume('p', 'u'),
     )
 
     tree = apply(
         CLASSICAL_NATURAL_DEDUCTION_SYSTEM['↔₊'],
-        premise,
-        premise
+        premise_,
+        premise_
     )
 
-    assert str_assumptions(tree) == {}
+    assert tree.get_cumulative_assumptions() == set()
     assert str(tree) == dedent('''\
           [p]ᵘ    [p]ᵘ
         u ____________ ↔₊
@@ -246,21 +246,13 @@ def test_invalid_application_duplicate_marker() -> None:
         )
 
 
-def test_invalid_application_missing_discharge() -> None:
-    with pytest.raises(RuleApplicationError, match='The rule →₊ requires a discharge formula for premise number 1'):
-        apply(
-            CLASSICAL_NATURAL_DEDUCTION_SYSTEM['→₊'],
-            prop_assume('p', 'u'),
-        )
-
-
 # ex:def:fol_natural_deduction/verum
 def test_forall_introduction() -> None:
     tree = apply(
         CLASSICAL_NATURAL_DEDUCTION_SYSTEM['∀₊'],
-        premise(
+        premise_config(
             tree=apply(CLASSICAL_NATURAL_DEDUCTION_SYSTEM['⊤₊']),
-            main_noop_sub=parse_variable('x')
+            main=parse_formula_with_substitution('⊤[x ↦ x]')
         ),
     )
 
@@ -277,58 +269,23 @@ def test_forall_introduction() -> None:
 def test_forall_reintroduction(dummy_signature: FormalLogicSignature) -> None:
     tree = apply(
         CLASSICAL_NATURAL_DEDUCTION_SYSTEM['∀₊'],
-        premise(
+        premise_config(
+            main=parse_formula_with_substitution('p¹(x)[x ↦ y]', dummy_signature),
             tree=apply(
                 CLASSICAL_NATURAL_DEDUCTION_SYSTEM['∀₋'],
                 assume(parse_formula('∀x.p¹(x)', dummy_signature), parse_marker('u')),
-                conclusion_sub=parse_term_substitution_spec('x ↦ x'),
+                conclusion_config=parse_formula_with_substitution('p¹(x)[x ↦ y]', dummy_signature),
             ),
-            main_noop_sub=parse_variable('x')
-        ),
+        )
     )
 
-    assert str_free_variables(tree) == set()
+    assert tree.get_free_variables() == set()
     assert str(tree) == dedent('''\
         [∀x.p¹(x)]ᵘ
         ___________ ∀₋
-           p¹(x)
+           p¹(y)
         ___________ ∀₊
          ∀x.p¹(x)
-        '''
-    )
-
-
-# ex:def:fol_natural_deduction/reintroduction
-def test_exists_reintroduction(dummy_signature: FormalLogicSignature) -> None:
-    tree = apply(
-        CLASSICAL_NATURAL_DEDUCTION_SYSTEM['∃₋'],
-        premise(
-            tree=apply(
-                CLASSICAL_NATURAL_DEDUCTION_SYSTEM['∃₋'],
-                assume(parse_formula('∃x.p¹(x)', dummy_signature), parse_marker('u')),
-                conclusion_sub=parse_term_substitution_spec('x ↦ x'),
-            ),
-            main_noop_sub=parse_variable('x')
-        ),
-        premise(
-            tree=apply(
-                CLASSICAL_NATURAL_DEDUCTION_SYSTEM['∃₋'],
-                assume(parse_formula('∃x.p¹(x)', dummy_signature), parse_marker('u')),
-                conclusion_sub=parse_term_substitution_spec('x ↦ x'),
-            ),
-            main_noop_sub=parse_variable('x')
-        ),
-    )
-
-    assert str_free_variables(tree) == set()
-    print()
-    print(str(tree))
-    assert str(tree) == dedent('''\
-        [∀∃.p¹(x)]ᵘ
-        ___________ ∀₋
-           p¹(x)
-        ___________ ∀₊
-         ∃x.p¹(x)
         '''
     )
 
@@ -336,17 +293,17 @@ def test_exists_reintroduction(dummy_signature: FormalLogicSignature) -> None:
 def test_forall_reintroduction_with_renaming(dummy_signature: FormalLogicSignature) -> None:
     tree = apply(
         CLASSICAL_NATURAL_DEDUCTION_SYSTEM['∀₊'],
-        premise(
+        premise_config(
             tree=apply(
                 CLASSICAL_NATURAL_DEDUCTION_SYSTEM['∀₋'],
                 assume(parse_formula('∀x.p¹(x)', dummy_signature), parse_marker('u')),
-                conclusion_sub=parse_term_substitution_spec('x ↦ y'),
+                conclusion_config=parse_formula_with_substitution('p¹(x)[x ↦ y]', dummy_signature),
             ),
             main=parse_formula_with_substitution('p¹(z)[z ↦ y]', dummy_signature),
         ),
     )
 
-    assert str_free_variables(tree) == set()
+    assert tree.get_free_variables() == set()
     assert str(tree) == dedent('''\
         [∀x.p¹(x)]ᵘ
         ___________ ∀₋
@@ -360,45 +317,46 @@ def test_forall_reintroduction_with_renaming(dummy_signature: FormalLogicSignatu
 def test_forall_to_exists(dummy_signature: FormalLogicSignature) -> None:
     tree = apply(
         CLASSICAL_NATURAL_DEDUCTION_SYSTEM['∃₊'],
-        premise(
+        premise_config(
+            main=parse_formula_with_substitution('p¹(x)[x ↦ y]', dummy_signature),
             tree=apply(
                 CLASSICAL_NATURAL_DEDUCTION_SYSTEM['∀₋'],
                 assume(parse_formula('∀x.p¹(x)', dummy_signature), parse_marker('u')),
-                conclusion_sub=parse_term_substitution_spec('x ↦ x'),
+                conclusion_config=parse_formula_with_substitution('p¹(x)[x ↦ y]', dummy_signature),
             ),
-            main_noop_sub=parse_variable('x'),
-        ),
+        )
     )
 
-    assert str_free_variables(tree) == set()
+    assert tree.get_free_variables() == set()
     assert str(tree) == dedent('''\
         [∀x.p¹(x)]ᵘ
         ___________ ∀₋
-           p¹(x)
+           p¹(y)
         ___________ ∃₊
          ∃x.p¹(x)
         '''
     )
 
 
+# ex:def:fol_natural_deduction/forall_to_exists
 def test_forall_to_exists_with_constant(dummy_signature: FormalLogicSignature) -> None:
     tree = apply(
         CLASSICAL_NATURAL_DEDUCTION_SYSTEM['∃₊'],
-        premise(
+        premise_config(
+            main=parse_formula_with_substitution('p¹(x)[x ↦ fᶜ⁰]', dummy_signature),
             tree=apply(
                 CLASSICAL_NATURAL_DEDUCTION_SYSTEM['∀₋'],
                 assume(parse_formula('∀x.p¹(x)', dummy_signature), parse_marker('u')),
-                conclusion_sub=parse_term_substitution_spec('x ↦ f₀'),
-            ),
-            main=parse_formula_with_substitution('p¹(x)[x ↦ f₀]', dummy_signature)
+                conclusion_config=parse_formula_with_substitution('p¹(x)[x ↦ fᶜ⁰]', dummy_signature),
+            )
         ),
     )
 
-    assert str_free_variables(tree) == set()
+    assert tree.get_free_variables() == set()
     assert str(tree) == dedent('''\
         [∀x.p¹(x)]ᵘ
         ___________ ∀₋
-          p¹(f₀)
+          p¹(fᶜ⁰)
         ___________ ∃₊
          ∃x.p¹(x)
         '''
@@ -406,55 +364,52 @@ def test_forall_to_exists_with_constant(dummy_signature: FormalLogicSignature) -
 
 
 # ex:def:fol_natural_deduction/quantifier_duality
-def test_forall_negation(dummy_signature: FormalLogicSignature) -> None:
+def test_quantifier_duality(dummy_signature: FormalLogicSignature) -> None:
     u = parse_formula('¬∀x.¬p¹(x)', dummy_signature)
     v = parse_formula('¬∃x.p¹(x)', dummy_signature)
     w = parse_formula('p¹(x)', dummy_signature)
 
     tree = apply(
         CLASSICAL_NATURAL_DEDUCTION_SYSTEM['→₊'],
-        premise(
+        premise_config(
+            attachments=[MarkedFormula(u, parse_marker('u'))],
             tree=apply(
                 CLASSICAL_NATURAL_DEDUCTION_SYSTEM['RAA'],
-                premise(
+                premise_config(
+                    attachments=[MarkedFormula(v, parse_marker('v'))],
                     tree=apply(
                         CLASSICAL_NATURAL_DEDUCTION_SYSTEM['¬₋'],
                         assume(u, parse_marker('u')),
                         apply(
                             CLASSICAL_NATURAL_DEDUCTION_SYSTEM['∀₊'],
-                            premise(
+                            premise_config(
+                                main=parse_formula_with_substitution('¬p¹(x)[x ↦ x]', dummy_signature),
                                 tree=apply(
                                     CLASSICAL_NATURAL_DEDUCTION_SYSTEM['¬₊'],
-                                    premise(
+                                    premise_config(
+                                        attachments=[MarkedFormula(w, parse_marker('w'))],
                                         tree=apply(
                                             CLASSICAL_NATURAL_DEDUCTION_SYSTEM['¬₋'],
                                             assume(v, parse_marker('v')),
                                             apply(
                                                 CLASSICAL_NATURAL_DEDUCTION_SYSTEM['∃₊'],
-                                                premise(
+                                                premise_config(
                                                     tree=assume(w, parse_marker('w')),
-                                                    main_noop_sub=parse_variable('x')
+                                                    main=parse_formula_with_substitution('p¹(x)[x ↦ x]', dummy_signature)
                                                 ),
                                             )
                                         ),
-                                        discharge=w,
-                                        marker=parse_marker('w')
-                                    )
+                                    ),
                                 ),
-                                main_noop_sub=parse_variable('x')
-                            )
+                            ),
                         )
                     ),
-                    discharge=v,
-                    marker=parse_marker('v')
-                )
+                ),
             ),
-            discharge=u,
-            marker=parse_marker('u')
         )
     )
 
-    assert str_free_variables(tree) == set()
+    assert tree.get_free_variables() == set()
     assert str(tree) == dedent('''\
                                              [p¹(x)]ʷ
                                              ________ ∃₊
@@ -476,10 +431,10 @@ def test_forall_negation(dummy_signature: FormalLogicSignature) -> None:
 
 
 def test_forall_introduction_eigenvariable_failure_free_in_self(dummy_signature: FormalLogicSignature) -> None:
-    with pytest.raises(RuleApplicationError, match=re.escape('The renamed eigenvariable x ↦ y of the premise conclusion p²(x, y) cannot be free in it')):
+    with pytest.raises(RuleApplicationError, match=re.escape('The eigenvariable y of the unsubstituted premise conclusion p²(x, y) cannot be free in it')):
         apply(
             CLASSICAL_NATURAL_DEDUCTION_SYSTEM['∀₊'],
-            premise(
+            premise_config(
                 tree=assume(
                     parse_formula('p²(x, y)', dummy_signature),
                     parse_marker('u')
@@ -489,51 +444,77 @@ def test_forall_introduction_eigenvariable_failure_free_in_self(dummy_signature:
         )
 
 
-def test_forall_introduction_eigenvariable_failure_free_in_derivation(dummy_signature: FormalLogicSignature) -> None:
-    with pytest.raises(RuleApplicationError, match=re.escape('The eigenvariable x cannot be free in the derivation of p¹(x)')):
+# test_forall_introduction_eigenvariable_failure_free_in_implicit_premise
+def test_forall_introduction_eigenvariable_failure_free_in_implicit_premise(dummy_signature: FormalLogicSignature) -> None:
+    with pytest.raises(RuleApplicationError, match=re.escape('The eigenvariable x cannot be free in the derivation of (p¹(x) → q¹(y))')):
         apply(
             CLASSICAL_NATURAL_DEDUCTION_SYSTEM['∀₊'],
-            premise(
-                tree=assume(
-                    parse_formula('p¹(x)', dummy_signature),
-                    parse_marker('u')
+            premise_config(
+                tree=apply(
+                    CLASSICAL_NATURAL_DEDUCTION_SYSTEM['→₊'],
+                    assume(
+                        parse_formula('q¹(y)', dummy_signature),
+                        parse_marker('u')
+                    ),
+                    implicit={
+                        parse_formula_placeholder('φ'): parse_formula('p¹(x)', dummy_signature)
+                    }
                 ),
-                main_noop_sub=parse_variable('x')
+                main=parse_formula_with_substitution('(p¹(x) → q¹(y))[x ↦ x]', dummy_signature)
             ),
         )
 
 
+def test_forall_introduction_eigenvariable_failure_free_in_derivation(dummy_signature: FormalLogicSignature) -> None:
+    with pytest.raises(RuleApplicationError, match=re.escape('The eigenvariable x cannot be free in the derivation of p¹(x)')):
+        apply(
+            CLASSICAL_NATURAL_DEDUCTION_SYSTEM['∀₊'],
+            premise_config(
+                tree=assume(
+                    parse_formula('p¹(x)', dummy_signature),
+                    parse_marker('u')
+                ),
+                main=parse_formula_with_substitution('p¹(x)[x ↦ x]', dummy_signature)
+            ),
+        )
+
+
+# ex:def:fol_natural_deduction/exists_elimination
 def test_exists_elimination(dummy_signature: FormalLogicSignature) -> None:
     u = parse_formula('∃x.p¹(x)', dummy_signature)
-    v = parse_formula('∀y.(p¹(y) → q¹(f₀))', dummy_signature)
+    v = parse_formula('∀y.(p¹(y) → q¹(z))', dummy_signature)
     w = parse_formula('p¹(y)', dummy_signature)
 
     tree = apply(
         CLASSICAL_NATURAL_DEDUCTION_SYSTEM['∃₋'],
         assume(u, parse_marker('u')),
-        premise(
+        premise_config(
+            attachments=[
+                MarkedFormulaWithSubstitution(
+                    parse_formula_with_substitution('p¹(x)[x ↦ y]', dummy_signature),  # So that we can discharge it here
+                    parse_marker('w')
+                )
+            ],
             tree=apply(
                 CLASSICAL_NATURAL_DEDUCTION_SYSTEM['→₋'],
                 apply(
                     CLASSICAL_NATURAL_DEDUCTION_SYSTEM['∀₋'],
                     assume(v, parse_marker('v')),
-                    conclusion_sub=parse_term_substitution_spec('y ↦ y')
+                    conclusion_config=parse_formula_with_substitution('(p¹(y) → q¹(z))[y ↦ y]', dummy_signature)
                 ),
                 assume(w, parse_marker('w')),  # We avoid discharging w here
             ),
-            discharge=parse_formula_with_substitution('p¹(x)[x ↦ y]', dummy_signature),  # So that we can discharge it here
-            marker=parse_marker('w')
         ),
     )
 
     assert str(tree) == dedent('''\
-                         [∀y.(p¹(y) → q¹(f₀))]ᵛ
-                         ______________________ ∀₋
-                            (p¹(y) → q¹(f₀))          [p¹(y)]ʷ
-                         _____________________________________ →₋
-          [∃x.p¹(x)]ᵘ                   q¹(f₀)
-        w ____________________________________________________ ∃₋
-                                 q¹(f₀)
+                         [∀y.(p¹(y) → q¹(z))]ᵛ
+                         _____________________ ∀₋
+                            (p¹(y) → q¹(z))          [p¹(y)]ʷ
+                         ____________________________________ →₋
+          [∃x.p¹(x)]ᵘ                   q¹(z)
+        w ___________________________________________________ ∃₋
+                                 q¹(z)
         '''
     )
 
@@ -548,20 +529,24 @@ def test_simple_invalid_exists_elimination(dummy_signature: FormalLogicSignature
     # v _______________________ ∃₋
     #            p¹(y)
 
-    with pytest.raises(RuleApplicationError, match=re.escape('The discharge formula eigenvariable y cannot be free in the conclusion p¹(y) of premise number 2')):
+    with pytest.raises(RuleApplicationError, match=re.escape('The attached formula eigenvariable y cannot be free in the conclusion p¹(y) of premise number 2 of the rule ∃₋')):
         apply(
             CLASSICAL_NATURAL_DEDUCTION_SYSTEM['∃₋'],
             assume(u, parse_marker('u')),
-            premise(
+            premise_config(
                 tree=assume(v, parse_marker('v')),
-                discharge=parse_formula_with_substitution('p¹(x)[x ↦ y]', dummy_signature),  # So that we can discharge it here
-                marker=parse_marker('v')
+                attachments=[
+                    MarkedFormulaWithSubstitution(
+                        parse_formula_with_substitution('p¹(x)[x ↦ y]', dummy_signature),  # So that we can discharge it here
+                        parse_marker('v')
+                    )
+                ]
             ),
         )
 
 
 def test_invalid_exists_elimination_with_leftover_variable(dummy_signature: FormalLogicSignature) -> None:
-    # A variation of test_exists_elimination with the constant f₀ replaced by the variable y
+    # A variation of test_exists_elimination with the constant f replaced by the variable y
     u = parse_formula('∃x.p¹(x)', dummy_signature)
     v = parse_formula('∀y.(p¹(y) → q¹(y))', dummy_signature)
     w = parse_formula('p¹(y)', dummy_signature)
@@ -576,51 +561,59 @@ def test_invalid_exists_elimination_with_leftover_variable(dummy_signature: Form
     # w ___________________________________________________ ∃₋
     #                          q¹(y)
 
-    with pytest.raises(RuleApplicationError, match=re.escape('The discharge formula eigenvariable y cannot be free in the conclusion q¹(y) of premise number 2')):
+    with pytest.raises(RuleApplicationError, match=re.escape('The attached formula eigenvariable y cannot be free in the conclusion q¹(y) of premise number 2 of the rule ∃₋')):
         apply(
             CLASSICAL_NATURAL_DEDUCTION_SYSTEM['∃₋'],
             assume(u, parse_marker('u')),
-            premise(
+            premise_config(
+                attachments=[
+                    MarkedFormulaWithSubstitution(
+                        parse_formula_with_substitution('p¹(x)[x ↦ y]', dummy_signature),  # So that we can discharge it here
+                        parse_marker('w')
+                    )
+                ],
                 tree=apply(
                     CLASSICAL_NATURAL_DEDUCTION_SYSTEM['→₋'],
                     apply(
                         CLASSICAL_NATURAL_DEDUCTION_SYSTEM['∀₋'],
                         assume(v, parse_marker('v')),
-                        conclusion_sub=parse_term_substitution_spec('y ↦ y')
+                        conclusion_config=parse_formula_with_substitution('(p¹(y) → q¹(y))[y ↦ y]', dummy_signature)
                     ),
                     assume(w, parse_marker('w')),  # We avoid discharging w here
                 ),
-                discharge=parse_formula_with_substitution('p¹(x)[x ↦ y]', dummy_signature),  # So that we can discharge it here
-                marker=parse_marker('w')
             ),
         )
 
 
-def test_invalid_exists_elimination_with_imprecise_quantifierification(dummy_signature: FormalLogicSignature) -> None:
+def test_invalid_exists_elimination_with_imprecise_quantification(dummy_signature: FormalLogicSignature) -> None:
     # A variation of test_exists_elimination without universal quantification
     u = parse_formula('∃x.p¹(x)', dummy_signature)
-    v = parse_formula('(p¹(y) → q¹(f₀))', dummy_signature)
+    v = parse_formula('(p¹(y) → q¹(f))', dummy_signature)
     w = parse_formula('p¹(y)', dummy_signature)
 
     # If not for its invalidity, the tree would look as follows:
     #
-    #                  [(p¹(y) → q¹(f₀))]ᵛ    [p¹(y)]ʷ
+    #                  [(p¹(y) → q¹(f))]ᵛ    [p¹(y)]ʷ
     #                  _______________________________ →₋
-    #   [∃x.p¹(x)]ᵘ                q¹(f₀)
+    #   [∃x.p¹(x)]ᵘ                q¹(f)
     # w ______________________________________________ ∃₋
-    #                       q¹(f₀)
+    #                       q¹(f)
 
-    with pytest.raises(RuleApplicationError, match=re.escape('The eigenvariable y cannot be free in the derivation of q¹(f₀), except possibly in [p¹(x)[x ↦ y]]ʷ')):
+    with pytest.raises(RuleApplicationError, match=re.escape('The eigenvariable y cannot be free in the derivation of q¹(f), except possibly in [p¹(y)]ʷ')):
         apply(
             CLASSICAL_NATURAL_DEDUCTION_SYSTEM['∃₋'],
             assume(u, parse_marker('u')),
-            premise(
+            premise_config(
+                attachments=[
+                    MarkedFormulaWithSubstitution(
+                        parse_formula_with_substitution('p¹(x)[x ↦ y]', dummy_signature),  # So that we can discharge it here
+                        parse_marker('w')
+                    )
+                ],
                 tree=apply(
                     CLASSICAL_NATURAL_DEDUCTION_SYSTEM['→₋'],
                     assume(v, parse_marker('v')),
                     assume(w, parse_marker('w')),  # We avoid discharging w here
                 ),
-                discharge=parse_formula_with_substitution('p¹(x)[x ↦ y]', dummy_signature),  # So that we can discharge it here
-                marker=parse_marker('w')
             ),
         )

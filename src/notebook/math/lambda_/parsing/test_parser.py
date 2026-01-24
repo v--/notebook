@@ -366,18 +366,19 @@ def test_parsing_type_assertion_missing_colon() -> None:
     rule=[
         '⊩ x: τ',
         'M: (τ → σ), N: τ ⊩ (MN): σ',
-        '[x: τ] M: σ ⊩ (λx:τ.M): (τ → σ)'
+        '[x: τ] M: σ ⊩ (λx:τ.M): (τ → σ)',
+        '[x: τ] M: σ ⊩ [y: ρ] (λx:τ.M): (τ → σ)'
     ]
 )
 def test_rebuilding_typing_rules(rule: str) -> None:
     assert parse_typing_rule('name', rule).without_name() == rule
 
 
-def test_parsing_discharge_schema_with_no_name() -> None:
+def test_parsing_attached_schema_with_no_name() -> None:
     with pytest.raises(ParserError) as excinfo:
         parse_typing_rule('name', '[] x: τ ⊩ y: τ')
 
-    assert str(excinfo.value) == 'Empty discharge assumptions are disallowed'
+    assert str(excinfo.value) == 'Empty attached schemas are disallowed'
     assert excinfo.value.__notes__[0] == dedent('''\
         1 │ [] x: τ ⊩ y: τ
           │ ^^
@@ -385,11 +386,11 @@ def test_parsing_discharge_schema_with_no_name() -> None:
     )
 
 
-def test_parsing_discharge_schema_with_no_closing_bracket() -> None:
+def test_parsing_attached_schema_with_no_closing_bracket() -> None:
     with pytest.raises(ParserError) as excinfo:
         parse_typing_rule('name', '[x: τ y: τ ⊩ z: τ')
 
-    assert str(excinfo.value) == 'Unclosed bracket for discharge schema'
+    assert str(excinfo.value) == 'Unclosed bracket for attached schema'
     assert excinfo.value.__notes__[0] == dedent('''\
         1 │ [x: τ y: τ ⊩ z: τ
           │ ^^^^^

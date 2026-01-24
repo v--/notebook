@@ -16,7 +16,7 @@ from ..type_derivation import (
     apply,
     apply_tree_substitution_to_term,
     assume,
-    premise,
+    premise_config,
 )
 from .visitor import SimpleAlgebraicDerivationTreeVisitor
 
@@ -51,7 +51,7 @@ class TreeSubstitutionVisitor(SimpleAlgebraicDerivationTreeVisitor[TypeDerivatio
 
         return apply(
             tree.rule,
-            *(premise(tree=apply_substitution_to_tree(p.tree, self.substitution)) for p in tree.premises),
+            *(premise_config(tree=apply_substitution_to_tree(p.tree, self.substitution)) for p in tree.premises),
             instantiation=instantiation
         )
 
@@ -60,9 +60,9 @@ class TreeSubstitutionVisitor(SimpleAlgebraicDerivationTreeVisitor[TypeDerivatio
         new_var = self.substitution.get_modified_abstractor_variable(abstraction)
         new_assertion = VariableTypeAssertion(new_var, assertion.type)
         new_subst = self.substitution.modify_at(assertion.term, assume(new_assertion))
-        return premise(
+        return premise_config(
             tree=apply_substitution_to_tree(body_tree, new_subst),
-            discharge=new_assertion
+            attachments=[new_assertion]
         )
 
     @override
@@ -90,7 +90,7 @@ class TreeSubstitutionVisitor(SimpleAlgebraicDerivationTreeVisitor[TypeDerivatio
         right_subtree: TypeDerivationTree,
         right_subtree_discharge: VariableTypeAssertion,
     ) -> RuleApplicationTree:
-        new_sum_premise = premise(tree=apply_substitution_to_tree(sum_subtree, self.substitution))
+        new_sum_premise = premise_config(tree=apply_substitution_to_tree(sum_subtree, self.substitution))
         new_left_premise = self._visit_abstractor_premise(left_subtree, left_subtree_discharge)
         new_right_premise = self._visit_abstractor_premise(right_subtree, right_subtree_discharge)
 

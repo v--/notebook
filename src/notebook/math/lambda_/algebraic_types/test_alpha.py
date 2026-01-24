@@ -7,7 +7,6 @@ from ....support.pytest import pytest_parametrize_kwargs
 from ..algebraic_types import SIMPLE_ALGEBRAIC_SIGNATURE, SIMPLE_ALGEBRAIC_TYPE_SYSTEM
 from ..arrow_types import derive_type
 from ..assertions import VariableTypeAssertion
-from ..instantiation import AtomicLambdaSchemaInstantiation
 from ..parsing import (
     parse_type,
     parse_type_placeholder,
@@ -16,7 +15,7 @@ from ..parsing import (
     parse_variable_assertion,
 )
 from ..signature import BaseTypeSymbol
-from ..type_derivation import RuleApplicationTree, TypeDerivationError, apply, assume, premise
+from ..type_derivation import RuleApplicationTree, TypeDerivationError, apply, assume, premise_config
 from ..types import BaseType
 from .alpha import alpha_convert_derivation
 
@@ -78,21 +77,19 @@ def test_alpha_convert_sum_elim() -> None:
             apply(
                 SIMPLE_ALGEBRAIC_TYPE_SYSTEM['+₊ₗ'],
                 assume(parse_variable_assertion('x: 𝟙', SIMPLE_ALGEBRAIC_SIGNATURE)),
-                instantiation=AtomicLambdaSchemaInstantiation(
-                    type_mapping={
-                        parse_type_placeholder('σ'): parse_type('σ')
-                    }
-                )
+                implicit_types={
+                    parse_type_placeholder('σ'): parse_type('σ')
+                }
             ),
 
-            premise(
+            premise_config(
                 tree=assume(VariableTypeAssertion(parse_variable(x), BaseType(BaseTypeSymbol('𝟙')))),
-                discharge=VariableTypeAssertion(parse_variable(x), BaseType(BaseTypeSymbol('𝟙')))
+                attachments=[VariableTypeAssertion(parse_variable(x), BaseType(BaseTypeSymbol('𝟙')))]
             ),
 
-            premise(
+            premise_config(
                 tree=apply(SIMPLE_ALGEBRAIC_TYPE_SYSTEM['𝟙₊']),
-                discharge=VariableTypeAssertion(parse_variable(y), parse_type('σ'))
+                attachments=[VariableTypeAssertion(parse_variable(y), parse_type('σ'))]
             )
         )
 

@@ -1,13 +1,13 @@
-from ..formulas import FormulaSchemaSubstitutionSpec, FormulaWithSubstitution
-from ..terms import EigenvariableSchemaSubstitutionSpec, TermSchemaSubstitutionSpec, TermSubstitutionSpec
+from ....support.schemas import SchemaInferenceError
+from ..formulas import FormulaSchemaWithSubstitution, FormulaWithSubstitution
+from ..terms import TermSchemaSubstitutionSpec, TermSubstitutionSpec
 from .base import AtomicLogicSchemaInstantiation
-from .exceptions import InsufficientInferenceDataError
 from .formula_inference import infer_instantiation_from_formula
 from .term_inference import infer_instantiation_from_term
 
 
 def infer_instantiation_from_term_substitution_spec(
-    schema_spec: EigenvariableSchemaSubstitutionSpec | TermSchemaSubstitutionSpec,
+    schema_spec: TermSchemaSubstitutionSpec,
     spec: TermSubstitutionSpec
 ) -> AtomicLogicSchemaInstantiation:
     return infer_instantiation_from_term(schema_spec.src, spec.src) | \
@@ -15,7 +15,7 @@ def infer_instantiation_from_term_substitution_spec(
 
 
 def infer_instantiation_from_formula_substitution_spec(
-    schema_spec: FormulaSchemaSubstitutionSpec,
+    schema_spec: FormulaSchemaWithSubstitution,
     spec: FormulaWithSubstitution,
 ) -> AtomicLogicSchemaInstantiation:
     instantiation = infer_instantiation_from_formula(schema_spec.formula, spec.formula)
@@ -26,6 +26,6 @@ def infer_instantiation_from_formula_substitution_spec(
         return instantiation | infer_instantiation_from_term_substitution_spec(schema_sub, formula_sub)
 
     if formula_sub and schema_sub is None:
-        raise InsufficientInferenceDataError('Cannot infer a substitution schema instantiation without the schema substitution')
+        raise SchemaInferenceError('Cannot infer a substitution schema instantiation without the schema substitution')
 
     return instantiation

@@ -12,9 +12,7 @@ class TermSchemaSubstitutionSpec:
         return f'{self.src} ↦ {self.dest}'
 
 
-@dataclass(frozen=True)
-class EigenvariableSchemaSubstitutionSpec:
-    src: VariablePlaceholder
+class EigenSchemaSubstitutionSpec(TermSchemaSubstitutionSpec):
     dest: VariablePlaceholder
 
     def __str__(self) -> str:

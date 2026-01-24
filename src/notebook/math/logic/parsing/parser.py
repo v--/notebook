@@ -8,7 +8,7 @@ from ..alphabet import BinaryConnective, PropConstantSymbol, Quantifier, UnaryPr
 from ..contexts import LogicalContext, LogicalContextPlaceholder, LogicalContextSchema
 from ..deduction import (
     Marker,
-    NaturalDeductionPremise,
+    NaturalDeductionEntry,
     NaturalDeductionRule,
 )
 from ..formulas import (
@@ -19,7 +19,8 @@ from ..formulas import (
     Formula,
     FormulaPlaceholder,
     FormulaSchema,
-    FormulaSchemaSubstitutionSpec,
+    FormulaSchemaWithEigenvariable,
+    FormulaSchemaWithSubstitution,
     FormulaWithSubstitution,
     NegationFormula,
     NegationFormulaSchema,
@@ -39,7 +40,7 @@ from ..signature import (
     SignatureSymbolNotation,
 )
 from ..terms import (
-    EigenvariableSchemaSubstitutionSpec,
+    EigenSchemaSubstitutionSpec,
     FunctionApplication,
     FunctionApplicationSchema,
     Term,
@@ -489,10 +490,10 @@ class FormalLogicParser(IdentifierParserMixin[LogicTokenKind, LogicToken], Parse
     @overload
     def parse_term_substitution_spec(self, *, parse_schema: Literal[False]) -> TermSubstitutionSpec: ...
     @overload
-    def parse_term_substitution_spec(self, *, parse_schema: Literal[True]) -> TermSchemaSubstitutionSpec | EigenvariableSchemaSubstitutionSpec: ...
+    def parse_term_substitution_spec(self, *, parse_schema: Literal[True]) -> TermSchemaSubstitutionSpec: ...
     @overload
-    def parse_term_substitution_spec(self, *, parse_schema: bool) -> TermSubstitutionSpec | TermSchemaSubstitutionSpec | EigenvariableSchemaSubstitutionSpec: ...
-    def parse_term_substitution_spec(self, *, parse_schema: bool) -> TermSubstitutionSpec | TermSchemaSubstitutionSpec | EigenvariableSchemaSubstitutionSpec:
+    def parse_term_substitution_spec(self, *, parse_schema: bool) -> TermSubstitutionSpec | TermSchemaSubstitutionSpec: ...
+    def parse_term_substitution_spec(self, *, parse_schema: bool) -> TermSubstitutionSpec | TermSchemaSubstitutionSpec:
         if not self.peek():
             raise self.annotate_unexpected_end_of_input()
 
@@ -517,7 +518,9 @@ class FormalLogicParser(IdentifierParserMixin[LogicTokenKind, LogicToken], Parse
                 raise context.annotate_token_error('Cannot place an eigenvariable marker on a more general term')
 
             self.advance()
-            return EigenvariableSchemaSubstitutionSpec(src, dest)
+            assert isinstance(src, VariablePlaceholder)
+            assert isinstance(dest, TermSchema)
+            return EigenSchemaSubstitutionSpec(src, dest)
 
         if parse_schema:
             assert isinstance(src, VariablePlaceholder)
@@ -531,10 +534,10 @@ class FormalLogicParser(IdentifierParserMixin[LogicTokenKind, LogicToken], Parse
     @overload
     def parse_formula_with_substitution(self, *, parse_schema: Literal[False]) -> FormulaWithSubstitution: ...
     @overload
-    def parse_formula_with_substitution(self, *, parse_schema: Literal[True]) -> FormulaSchemaSubstitutionSpec: ...
+    def parse_formula_with_substitution(self, *, parse_schema: Literal[True]) -> FormulaSchemaWithSubstitution: ...
     @overload
-    def parse_formula_with_substitution(self, *, parse_schema: bool) -> FormulaWithSubstitution | FormulaSchemaSubstitutionSpec: ...
-    def parse_formula_with_substitution(self, *, parse_schema: bool) -> FormulaWithSubstitution | FormulaSchemaSubstitutionSpec:
+    def parse_formula_with_substitution(self, *, parse_schema: bool) -> FormulaWithSubstitution | FormulaSchemaWithSubstitution: ...
+    def parse_formula_with_substitution(self, *, parse_schema: bool) -> FormulaWithSubstitution | FormulaSchemaWithSubstitution:
         if not self.peek():
             raise self.annotate_unexpected_end_of_input()
 
@@ -550,11 +553,16 @@ class FormalLogicParser(IdentifierParserMixin[LogicTokenKind, LogicToken], Parse
 
                 if parse_schema:
                     assert isinstance(formula, FormulaSchema)
-                    assert isinstance(sub, TermSchemaSubstitutionSpec | EigenvariableSchemaSubstitutionSpec)
-                    return FormulaSchemaSubstitutionSpec(formula, sub)
+                    assert isinstance(sub, TermSchemaSubstitutionSpec)
+
+                    if isinstance(sub, EigenSchemaSubstitutionSpec):
+                        return FormulaSchemaWithEigenvariable(formula, sub)
+
+                    return FormulaSchemaWithSubstitution(formula, sub)
 
                 assert isinstance(formula, Formula)
                 assert isinstance(sub, TermSubstitutionSpec)
+
                 return FormulaWithSubstitution(formula, sub)
 
             context.close_at_previous_token()
@@ -562,38 +570,37 @@ class FormalLogicParser(IdentifierParserMixin[LogicTokenKind, LogicToken], Parse
 
         if parse_schema:
             assert isinstance(formula, FormulaSchema)
-            return FormulaSchemaSubstitutionSpec(formula)
+            return FormulaSchemaWithSubstitution(formula)
 
         assert isinstance(formula, Formula)
         return FormulaWithSubstitution(formula)
 
-    def _parse_natural_deduction_premise(self, premise_context: LogicParserContext) -> NaturalDeductionPremise:
-        discharge: FormulaSchemaSubstitutionSpec | None = None
+    def _parse_natural_deduction_entry(self) -> NaturalDeductionEntry:
+        attached = list[FormulaSchemaWithSubstitution]()
+        entry_context = LogicParserContext(self)
 
-        if (head := self.peek()) and head.kind == 'LEFT_BRACKET':
+        while (head := self.peek()) and head.kind == 'LEFT_BRACKET':
             head = self.advance_and_peek()
 
             if head and head.kind == 'RIGHT_BRACKET':
-                raise premise_context.annotate_context_error('Empty discharge assumptions are disallowed')
+                raise entry_context.annotate_context_error('Empty attached schemas are disallowed')
 
-            discharge = self.parse_formula_with_substitution(parse_schema=True)
+            att = self.parse_formula_with_substitution(parse_schema=True)
+            attached.append(att)
             head = self.peek()
 
             if not head or head.kind == 'RIGHT_BRACKET':
                 self.advance()
             else:
-                premise_context.close_at_previous_token()
-                raise premise_context.annotate_context_error('Unclosed brackets for discharge schemas')
+                entry_context.close_at_previous_token()
+                raise entry_context.annotate_context_error('Unclosed brackets for attached schemas')
 
         main = self.parse_formula_with_substitution(parse_schema=True)
-        return NaturalDeductionPremise(main, discharge)
+        return NaturalDeductionEntry(main, attached)
 
-    def _iter_natural_deduction_premises(self, rule_context: LogicParserContext) -> Iterable[NaturalDeductionPremise]:
-        premise_context = LogicParserContext(self)
-
+    def _iter_natural_deduction_premises(self, rule_context: LogicParserContext) -> Iterable[NaturalDeductionEntry]:
         while (head := self.peek()) and head.kind != 'RULE_SEQUENT':
-            premise_context.reset()
-            yield self._parse_natural_deduction_premise(premise_context)
+            yield self._parse_natural_deduction_entry()
             head = self.peek()
 
             if not head or head.kind == 'RULE_SEQUENT':
@@ -614,7 +621,11 @@ class FormalLogicParser(IdentifierParserMixin[LogicTokenKind, LogicToken], Parse
         rule_context = LogicParserContext(self)
         premises = list(self._iter_natural_deduction_premises(rule_context))
         self.advance()
-        return NaturalDeductionRule(name, premises, self.parse_formula_with_substitution(parse_schema=True))
+
+        if self.peek() is None:
+            raise self.annotate_unexpected_end_of_input()
+
+        return NaturalDeductionRule(name, premises, self._parse_natural_deduction_entry())
 
     @overload
     def _parse_context_args(self, *, parse_schema: Literal[False]) -> Iterable[Formula]: ...
@@ -751,7 +762,7 @@ def parse_term_substitution_spec(source: str, signature: FormalLogicSignature = 
         return parser.parse_term_substitution_spec(parse_schema=False)
 
 
-def parse_term_schema_substitution_spec(source: str, signature: FormalLogicSignature = EMPTY_SIGNATURE) -> TermSchemaSubstitutionSpec | EigenvariableSchemaSubstitutionSpec:
+def parse_term_schema_substitution_spec(source: str, signature: FormalLogicSignature = EMPTY_SIGNATURE) -> TermSchemaSubstitutionSpec:
     tokens = tokenize_formal_logic_string(signature, source)
 
     with FormalLogicParser(signature, source, tokens) as parser:
@@ -765,7 +776,7 @@ def parse_formula_with_substitution(source: str, signature: FormalLogicSignature
         return parser.parse_formula_with_substitution(parse_schema=False)
 
 
-def parse_formula_schema_with_substitution(source: str, signature: FormalLogicSignature = EMPTY_SIGNATURE) -> FormulaSchemaSubstitutionSpec:
+def parse_formula_schema_with_substitution(source: str, signature: FormalLogicSignature = EMPTY_SIGNATURE) -> FormulaSchemaWithSubstitution:
     tokens = tokenize_formal_logic_string(signature, source)
 
     with FormalLogicParser(signature, source, tokens) as parser:

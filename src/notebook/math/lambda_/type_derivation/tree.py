@@ -1,22 +1,23 @@
-from collections.abc import Iterable, Mapping, Sequence
+from collections.abc import Collection, Iterable, Mapping, Sequence
 from dataclasses import dataclass
 from typing import override
 
 from ....support.inference import AssumptionRenderer, InferenceTree, RuleApplicationRenderer
+from ....support.schemas import SchemaInstantiationError
 from ..assertions import TypeAssertion, VariableTypeAssertion
 from ..instantiation import (
     AtomicLambdaSchemaInstantiation,
     infer_instantiation_from_assertion,
     instantiate_assertion_schema,
 )
-from ..terms import Variable
+from ..terms import Variable, VariablePlaceholder
 from ..type_system import TypingRule
-from ..types import SimpleType
+from ..types import SimpleType, TypePlaceholder
 from .exceptions import TypeDerivationError
 
 
 @dataclass(frozen=True)
-class AssumptionTree(InferenceTree[VariableTypeAssertion, Mapping[Variable, SimpleType]]):
+class AssumptionTree(InferenceTree[VariableTypeAssertion, VariableTypeAssertion]):
     conclusion: VariableTypeAssertion
 
     def __eq__(self, other: object) -> bool:
@@ -29,8 +30,8 @@ class AssumptionTree(InferenceTree[VariableTypeAssertion, Mapping[Variable, Simp
         return hash(self.conclusion)
 
     @override
-    def get_assumption_map(self) -> Mapping[Variable, SimpleType]:
-        return {self.conclusion.term: self.conclusion.type}
+    def get_cumulative_assumptions(self) -> Collection[VariableTypeAssertion]:
+        return {self.conclusion}
 
     @override
     def build_renderer(self) -> AssumptionRenderer:
@@ -44,39 +45,46 @@ def assume(assertion: VariableTypeAssertion) -> AssumptionTree:
     return AssumptionTree(assertion)
 
 
+# Unlike in logic, we do not need a distinct RuleApplicationPremiseConfig class
 @dataclass(frozen=True)
 class RuleApplicationPremise:
     tree: TypeDerivationTree
-    discharge: VariableTypeAssertion | None = None
+    attachments: Sequence[VariableTypeAssertion | None]
 
 
-def premise(*, tree: TypeDerivationTree, discharge: VariableTypeAssertion | None = None) -> RuleApplicationPremise:
-    return RuleApplicationPremise(tree, discharge)
+def premise_config(
+    *,
+    tree: TypeDerivationTree,
+    attachments: Sequence[VariableTypeAssertion | None] = []
+) -> RuleApplicationPremise:
+    return RuleApplicationPremise(tree, attachments)
 
 
 @dataclass(frozen=True)
-class RuleApplicationTree(InferenceTree[TypeAssertion, Mapping[Variable, SimpleType]]):
+class RuleApplicationTree(InferenceTree[TypeAssertion, VariableTypeAssertion]):
     rule: TypingRule
     instantiation: AtomicLambdaSchemaInstantiation
     premises: Sequence[RuleApplicationPremise]
     conclusion: TypeAssertion
 
-    def _filter_assumptions(self, *, discharged_at_current_step: bool) -> Iterable[tuple[Variable, SimpleType]]:
-        for application_premise in self.premises:
-            for var, type_ in application_premise.tree.get_assumption_map().items():
-                is_discharged_at_current_step = application_premise.discharge is not None and \
-                    application_premise.discharge.term == var and application_premise.discharge.type == type_
+    def _filter_assumptions(self, *, discharged_at_current_step: bool) -> Iterable[VariableTypeAssertion]:
+        for premise in self.premises:
+            for assumption in premise.tree.get_cumulative_assumptions():
+                is_discharged_at_current_step = any(
+                    att and att.term == assumption.term and att.type == assumption.type
+                    for att in premise.attachments
+                )
 
                 if discharged_at_current_step == is_discharged_at_current_step:
-                    yield var, type_
+                    yield assumption
 
     @override
-    def get_assumption_map(self) -> Mapping[Variable, SimpleType]:
-        return dict(self._filter_assumptions(discharged_at_current_step=False))
+    def get_cumulative_assumptions(self) -> Collection[VariableTypeAssertion]:
+        return set(self._filter_assumptions(discharged_at_current_step=False))
 
-    def get_marker_context(self) -> Iterable[Variable]:
+    def get_locally_discharged_markers(self) -> Iterable[Variable]:
         return sorted(
-            {var for var, type_ in self._filter_assumptions(discharged_at_current_step=True)},
+            {assumption.term for assumption in self._filter_assumptions(discharged_at_current_step=True)},
             key=str
         )
 
@@ -84,7 +92,7 @@ class RuleApplicationTree(InferenceTree[TypeAssertion, Mapping[Variable, SimpleT
     def build_renderer(self) -> RuleApplicationRenderer:
         return RuleApplicationRenderer(
             str(self.conclusion),
-            list(map(str, self.get_marker_context())),
+            list(map(str, self.get_locally_discharged_markers())),
             self.rule.name,
             [premise.tree.build_renderer() for premise in self.premises]
         )
@@ -97,30 +105,46 @@ def apply(
     rule: TypingRule,
     *args: TypeDerivationTree | RuleApplicationPremise,
     instantiation: AtomicLambdaSchemaInstantiation | None = None,
+    implicit_variables: Mapping[VariablePlaceholder, Variable] | None = None,
+    implicit_types: Mapping[TypePlaceholder, SimpleType] | None = None,
 ) -> RuleApplicationTree:
     if len(args) != len(rule.premises):
         raise TypeDerivationError(f'The rule {rule.name} has {len(rule.premises)} premises, but the application has {len(args)}')
 
-    instantiation = instantiation or AtomicLambdaSchemaInstantiation()
+    if instantiation is None:
+        instantiation = AtomicLambdaSchemaInstantiation(variable_mapping=implicit_variables, type_mapping=implicit_types)
+    elif implicit_variables or implicit_types:
+        raise TypeDerivationError('Cannot provide both an instantiation and implicit variables or types')
+
     application_premises = [
-        premise(tree=premise_arg) if isinstance(premise_arg, TypeDerivationTree) else premise_arg
+        premise_config(tree=premise_arg) if isinstance(premise_arg, TypeDerivationTree) else premise_arg
         for premise_arg in args
     ]
 
     for i, (rule_premise, application_premise) in enumerate(zip(rule.premises, application_premises, strict=True), start=1):
-        if rule_premise.discharge is not None:
-            if application_premise.discharge is None:
-                raise TypeDerivationError(f'The rule {rule.name} requires a discharge type assertion for premise number {i}')
+        if len(application_premise.attachments) != len(rule_premise.attachments):
+            if len(rule_premise.attachments) == 1:
+                raise TypeDerivationError(f'The rule {rule.name} requires an attachments assertion for premise number {i}')
 
-            instantiation |= infer_instantiation_from_assertion(rule_premise.discharge, application_premise.discharge)
+            raise TypeDerivationError(f'The rule {rule.name} requires {len(rule_premise.attachments)} attachments assertions for premise number {i}')
+
+        for attachment_schema, attached in zip(rule_premise.attachments, application_premise.attachments, strict=True):
+            if attached:
+                instantiation |= infer_instantiation_from_assertion(attachment_schema, attached)
 
         instantiation |= infer_instantiation_from_assertion(rule_premise.main, application_premise.tree.conclusion)
+
+    for attachment_schema in rule.conclusion.attachments:
+        try:
+            instantiate_assertion_schema(attachment_schema, instantiation)
+        except SchemaInstantiationError as err:
+            raise TypeDerivationError(f'Cannot instantiate the implicit premise {attachment_schema} of the rule {rule.name}') from err
 
     return RuleApplicationTree(
         rule,
         instantiation,
         application_premises,
-        instantiate_assertion_schema(rule.conclusion, instantiation)
+        instantiate_assertion_schema(rule.conclusion.main, instantiation)
     )
 
 

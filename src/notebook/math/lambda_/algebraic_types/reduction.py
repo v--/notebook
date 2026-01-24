@@ -15,7 +15,7 @@ from ..type_derivation import (
     TypeDerivationTree,
     apply,
     assume,
-    premise,
+    premise_config,
 )
 from ..variables import get_free_variables
 from .alpha import alpha_convert_derivation
@@ -73,8 +73,8 @@ class ReductionVisitor(SimpleAlgebraicDerivationTreeVisitor[TypeDerivationTree])
 
             return apply(
                 ARROW_ONLY_TYPE_SYSTEM['→₊'],
-                premise(
-                    discharge=assertion,
+                premise_config(
+                    attachments=[assertion],
                     tree=reduce_derivation_unsafe(adjusted_subtree, self.reduct.body)
                 )
             )
@@ -95,9 +95,9 @@ class ReductionVisitor(SimpleAlgebraicDerivationTreeVisitor[TypeDerivationTree])
             if not isinstance(subtree_left, RuleApplicationTree) or subtree_left.rule != ARROW_ONLY_TYPE_SYSTEM['→₊']:
                 raise TypeDerivationError(f'Expected the tree deriving {subtree_left.conclusion} to be an application tree of →₊')
 
-            assert subtree_left.premises[0].discharge
+            assert subtree_left.premises[0].attachments[0]
             subtree_left_body = subtree_left.premises[0].tree
-            subtree_left_var = subtree_left.premises[0].discharge.term
+            subtree_left_var = subtree_left.premises[0].attachments[0].term
             reduct_tree = substitute_in_tree(subtree_left_body, {subtree_left_var: subtree_right})
 
             try:

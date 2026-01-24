@@ -12,5 +12,5 @@ from .tree import (
     TypeDerivationTree,
     apply,
     assume,
-    premise,
+    premise_config,
 )

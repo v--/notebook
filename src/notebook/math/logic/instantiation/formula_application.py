@@ -70,5 +70,6 @@ class InstantiationApplicationVisitor(FormulaSchemaVisitor[Formula]):
         )
 
 
+# This is alg:fol_formula_schema_instantiation in the monograph
 def instantiate_formula_schema(schema: FormulaSchema, instantiation: AtomicLogicSchemaInstantiation) -> Formula:
     return InstantiationApplicationVisitor(instantiation).visit(schema)

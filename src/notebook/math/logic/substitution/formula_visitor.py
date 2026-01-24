@@ -45,15 +45,8 @@ def substitute_in_formula(formula: Formula, variable_mapping: Mapping[Variable, 
     return apply_substitution_to_formula(formula, AtomicLogicSubstitution(variable_mapping=variable_mapping))
 
 
-def evaluate_substitution_spec(spec: FormulaWithSubstitution) -> Formula:
+def evaluate_substitution(spec: FormulaWithSubstitution) -> Formula:
     if spec.sub is None:
         return spec.formula
 
     return apply_substitution_to_formula(spec.formula, infer_substitution(spec))
-
-
-def unwrap_substitution_spec(spec: FormulaWithSubstitution) -> Formula:
-    if spec.sub is None:
-        return spec.formula
-
-    return spec.formula

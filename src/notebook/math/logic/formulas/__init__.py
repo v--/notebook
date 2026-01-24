@@ -10,7 +10,7 @@ from .formulas import (
     PropConstant,
     QuantifierFormula,
 )
-from .schema_sub import FormulaSchemaSubstitutionSpec
+from .schema_sub import FormulaSchemaWithEigenvariable, FormulaSchemaWithSubstitution
 from .schema_visitor import FormulaSchemaVisitor
 from .schemas import (
     AtomicFormulaSchema,

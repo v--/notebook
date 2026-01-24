@@ -25,7 +25,7 @@ from ..terms import (
     Variable,
     VariablePlaceholder,
 )
-from ..type_system import TypingRule, TypingRulePremise
+from ..type_system import TypingRule, TypingRuleEntry
 from ..types import (
     BaseType,
     SimpleConnectiveType,
@@ -379,33 +379,35 @@ class LambdaParser(IdentifierParserMixin[LambdaTokenKind, LambdaToken], Parser[L
         assert isinstance(term, TypedTerm)
         return TypeAssertion(term, type_)
 
-    def _parse_typing_rule_premise(self, premise_context: LambdaParserContext) -> TypingRulePremise:
-        discharge: VariableTypeAssertionSchema | None = None
+    def _parse_typing_rule_entry(self) -> TypingRuleEntry:
+        attached = list[VariableTypeAssertionSchema]()
+        entry_context = LambdaParserContext(self)
 
-        if (head := self.peek()) and head.kind == 'LEFT_BRACKET':
+        while (head := self.peek()) and head.kind == 'LEFT_BRACKET':
             head = self.advance_and_peek()
 
             if head and head.kind == 'RIGHT_BRACKET':
-                raise premise_context.annotate_context_error('Empty discharge assumptions are disallowed')
+                raise entry_context.annotate_context_error('Empty attached schemas are disallowed')
 
-            discharge = self.parse_type_assertion(parse_schema=True, variable_assertion=True)
+            att = self.parse_type_assertion(parse_schema=True, variable_assertion=True)
+            attached.append(att)
             head = self.peek()
 
             if not head or head.kind == 'RIGHT_BRACKET':
                 self.advance()
             else:
-                premise_context.close_at_previous_token()
-                raise premise_context.annotate_context_error('Unclosed bracket for discharge schema')
+                entry_context.close_at_previous_token()
+                raise entry_context.annotate_context_error('Unclosed bracket for attached schema')
 
         main = self.parse_type_assertion(parse_schema=True, variable_assertion=False)
-        return TypingRulePremise(main, discharge)
+        return TypingRuleEntry(main, attached)
 
-    def _iter_typing_rule_premise(self, rule_context: LambdaParserContext) -> Iterable[TypingRulePremise]:
+    def _iter_typing_rule_premise(self, rule_context: LambdaParserContext) -> Iterable[TypingRuleEntry]:
         premise_context = LambdaParserContext(self)
 
         while (head := self.peek()) and head.kind != 'RULE_SEQUENT':
             premise_context.reset()
-            yield self._parse_typing_rule_premise(premise_context)
+            yield self._parse_typing_rule_entry()
             head = self.peek()
 
             if not head or head.kind == 'RULE_SEQUENT':
@@ -424,10 +426,13 @@ class LambdaParser(IdentifierParserMixin[LambdaTokenKind, LambdaToken], Parser[L
             raise self.annotate_unexpected_end_of_input()
 
         rule_context = LambdaParserContext(self)
-        premises_exp = list(self._iter_typing_rule_premise(rule_context))
+        premises = list(self._iter_typing_rule_premise(rule_context))
         self.advance()
-        assertion = self.parse_type_assertion(parse_schema=True, variable_assertion=False)
-        return TypingRule(name, premises_exp, assertion)
+
+        if self.peek() is None:
+            raise self.annotate_unexpected_end_of_input()
+
+        return TypingRule(name, premises, self._parse_typing_rule_entry())
 
 
 def parse_variable(source: str) -> Variable:

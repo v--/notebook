@@ -3,9 +3,15 @@ from typing import override
 from ....parsing import GreekIdentifier
 from ...logic.alphabet import BinaryConnective, PropConstantSymbol
 from ...logic.classical_logic import CLASSICAL_NATURAL_DEDUCTION_SYSTEM
-from ...logic.deduction import Marker, NaturalDeductionRule
+from ...logic.deduction import MarkedFormula, Marker, NaturalDeductionRule
 from ...logic.deduction import proof_tree as ptree
-from ...logic.formulas import ConnectiveFormula, Formula, FormulaPlaceholder, PredicateApplication, PropConstant
+from ...logic.formulas import (
+    ConnectiveFormula,
+    Formula,
+    FormulaPlaceholder,
+    PredicateApplication,
+    PropConstant,
+)
 from ...logic.instantiation import AtomicLogicSchemaInstantiation
 from ...logic.propositional import PropVariableSymbol
 from ..algebraic_types import SIMPLE_ALGEBRAIC_TYPE_SYSTEM
@@ -63,16 +69,16 @@ def type_to_formula(type_: SimpleType) -> Formula:
     return TypeToFormulaVisitor().visit(type_)
 
 
-def type_derivation_premise_to_proof_tree_premise(premise: dtree.RuleApplicationPremise) -> ptree.RuleApplicationPremise:
-    if premise.discharge:
-        return ptree.premise(
-            tree=type_derivation_to_proof_tree(premise.tree),
-            discharge=type_to_formula(premise.discharge.type),
-            marker=Marker(premise.discharge.term.identifier),
-        )
-
-    return ptree.premise(
-        tree=type_derivation_to_proof_tree(premise.tree)
+def type_derivation_premise_to_proof_tree_premise(premise: dtree.RuleApplicationPremise) -> ptree.RuleApplicationPremiseConfig:
+    return ptree.premise_config(
+        tree=type_derivation_to_proof_tree(premise.tree),
+        attachments=[
+            MarkedFormula(
+                type_to_formula(att.type),
+                Marker(att.term.identifier),
+            ) if att else None
+            for att in premise.attachments
+        ],
     )
 
 
@@ -120,6 +126,22 @@ def translate_instantiation(instantiation: AtomicLambdaSchemaInstantiation, **kw
     )
 
 
+def translate_application(
+    derivation: dtree.RuleApplicationTree,
+    rule: NaturalDeductionRule,
+    **kwargs: str
+) -> ptree.RuleApplicationTree:
+    instantiation = translate_instantiation(derivation.instantiation, **kwargs)
+    return ptree.apply(
+        rule,
+        *(
+            type_derivation_premise_to_proof_tree_premise(premise)
+            for premise in derivation.premises
+        ),
+        instantiation=instantiation,
+    )
+
+
 # This is alg:type_derivation_to_proof_tree in the monograph
 def type_derivation_to_proof_tree(derivation: dtree.TypeDerivationTree) -> ptree.ProofTree:
     if isinstance(derivation, dtree.AssumptionTree):
@@ -131,35 +153,30 @@ def type_derivation_to_proof_tree(derivation: dtree.TypeDerivationTree) -> ptree
     if not isinstance(derivation, dtree.RuleApplicationTree):
         raise DerivationToProofError('Unrecognized derivation tree')
 
-    premises = [
-        type_derivation_premise_to_proof_tree_premise(premise)
-        for premise in derivation.premises
-    ]
-
     match derivation.rule.name:
         case '𝟘₋':
-            return ptree.apply(
+            return translate_application(
+                derivation,
                 CLASSICAL_NATURAL_DEDUCTION_SYSTEM['EFQ'],
-                *premises,
-                instantiation=translate_instantiation(derivation.instantiation, τ='φ')
+                τ='φ'
             )
 
         case '+₊ₗ':
-            return ptree.apply(
+            return translate_application(
+                derivation,
                 CLASSICAL_NATURAL_DEDUCTION_SYSTEM['∨₊ₗ'],
-                *premises,
-                instantiation=translate_instantiation(derivation.instantiation, σ='ψ')
+                σ='ψ'
             )
 
         case '+₊ᵣ':
-            return ptree.apply(
+            return translate_application(
+                derivation,
                 CLASSICAL_NATURAL_DEDUCTION_SYSTEM['∨₊ᵣ'],
-                *premises,
-                instantiation=translate_instantiation(derivation.instantiation, τ='φ')
+                τ='φ'
             )
 
         case _:
-            return ptree.apply(
+            return translate_application(
+                derivation,
                 typing_rule_to_natural_deduction_rule(derivation.rule),
-                *premises,
             )

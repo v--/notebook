@@ -1,26 +1,26 @@
 from collections.abc import Sequence
-from dataclasses import dataclass
+from dataclasses import dataclass, field
 
 from .alphabet import ImproperInferenceRuleSymbol
 
 
 @dataclass(frozen=True)
-class InferenceRulePremise[MainT, DischargeT]:
+class InferenceRuleEntry[MainT, AttachmentT]:
     main: MainT
-    discharge: DischargeT | None = None
+    attachments: Sequence[AttachmentT] = field(default_factory=list)
 
     def __str__(self) -> str:
-        if self.discharge is None:
+        if len(self.attachments) == 0:
             return str(self.main)
 
-        return f'[{self.discharge}] {self.main}'
+        return ' '.join(f'[{att}]' for att in self.attachments) + ' ' + str(self.main)
 
 
 @dataclass(frozen=True)
-class InferenceRule[ConclusionT, PremiseT]:
+class InferenceRule[EntryT]:
     name: str
-    premises: Sequence[PremiseT]
-    conclusion: ConclusionT
+    premises: Sequence[EntryT]
+    conclusion: EntryT
 
     def without_name(self) -> str:
         if len(self.premises) > 0:

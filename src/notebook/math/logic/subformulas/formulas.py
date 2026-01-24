@@ -1,7 +1,13 @@
 from dataclasses import dataclass
 from typing import override
 
-from .formulas import ConnectiveFormula, Formula, FormulaVisitor, NegationFormula, QuantifierFormula
+from ..formulas import (
+    ConnectiveFormula,
+    Formula,
+    FormulaVisitor,
+    NegationFormula,
+    QuantifierFormula,
+)
 
 
 @dataclass(frozen=True)
@@ -10,15 +16,15 @@ class IsSuperformulaVisitor(FormulaVisitor[bool]):
 
     @override
     def visit_negation(self, formula: NegationFormula) -> bool:
-        return self.visit(formula.body)
+        return formula == self.subformula or self.visit(formula.body)
 
     @override
     def visit_connective(self, formula: ConnectiveFormula) -> bool:
-        return self.visit(formula.left) or self.visit(formula.right)
+        return formula == self.subformula or self.visit(formula.left) or self.visit(formula.right)
 
     @override
     def visit_quantifier(self, formula: QuantifierFormula) -> bool:
-        return self.visit(formula.body)
+        return formula == self.subformula or self.visit(formula.body)
 
     @override
     def generic_visit(self, formula: Formula) -> bool:

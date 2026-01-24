@@ -7,8 +7,8 @@ from ....parsing import LatinIdentifier, ParserError, TokenizerError
 from ....support.pytest import pytest_parametrize_kwargs, pytest_parametrize_lists
 from ..formulas import EqualityFormula
 from ..propositional import parse_prop_formula
-from ..signature import EMPTY_SIGNATURE, FormalLogicSignature
-from ..terms import EigenvariableSchemaSubstitutionSpec, FunctionApplication, Variable, VariablePlaceholder
+from ..signature import FormalLogicSignature
+from ..terms import EigenSchemaSubstitutionSpec, FunctionApplication, Variable, VariablePlaceholder
 from .parser import (
     parse_formula,
     parse_formula_schema,
@@ -531,7 +531,7 @@ def test_rebuild_schemas(schema: str) -> None:
 
 def test_parsing_formula_placeholder_with_regular_parser() -> None:
     with pytest.raises(ParserError) as excinfo:
-        parse_formula('φ', EMPTY_SIGNATURE)
+        parse_formula('φ')
 
     assert str(excinfo.value) == 'Placeholders are only allowed in schemas'
     assert excinfo.value.__notes__[0] == dedent('''\
@@ -545,18 +545,19 @@ def test_parsing_formula_placeholder_with_regular_parser() -> None:
         '⊩ ψ',
         'φ ⊩ ψ',
         'φ₁, φ₂ ⊩ ψ',
-        '[θ] φ ⊩ ψ'
+        '[θ] φ ⊩ ψ',
+        '[θ] [φ] θ ⊩ [χ] ω'
     ]
 )
 def test_rebuilding_rules(rule: str) -> None:
     assert parse_natural_deduction_rule('name', rule).without_name() == rule
 
 
-def test_parsing_empty_discharge_schema() -> None:
+def test_parsing_empty_attached_schema() -> None:
     with pytest.raises(ParserError) as excinfo:
         parse_natural_deduction_rule('name', '[] φ ⊩ ψ')
 
-    assert str(excinfo.value) == 'Empty discharge assumptions are disallowed'
+    assert str(excinfo.value) == 'Empty attached schemas are disallowed'
     assert excinfo.value.__notes__[0] == dedent('''\
         1 │ [] φ ⊩ ψ
           │ ^^
@@ -564,11 +565,11 @@ def test_parsing_empty_discharge_schema() -> None:
     )
 
 
-def test_parsing_discharge_schema_with_no_closing_bracket() -> None:
+def test_parsing_attached_schema_with_no_closing_bracket() -> None:
     with pytest.raises(ParserError) as excinfo:
         parse_natural_deduction_rule('name', '[θ φ ⊩ ψ')
 
-    assert str(excinfo.value) == 'Unclosed brackets for discharge schemas'
+    assert str(excinfo.value) == 'Unclosed brackets for attached schemas'
     assert excinfo.value.__notes__[0] == dedent('''\
         1 │ [θ φ ⊩ ψ
           │ ^^
@@ -590,7 +591,7 @@ def test_parsing_substitution_schema_with_no_connective() -> None:
 
 def test_parsing_eigenvariable_substitution_schema() -> None:
     parsed = parse_term_schema_substitution_spec('x ↦ y*')
-    assert parsed == EigenvariableSchemaSubstitutionSpec(
+    assert parsed == EigenSchemaSubstitutionSpec(
         src=VariablePlaceholder(LatinIdentifier('x')),
         dest=VariablePlaceholder(LatinIdentifier('y'))
     )

@@ -5,7 +5,6 @@ import pytest
 from ....support.inference import ImproperInferenceRuleSymbol
 from ..arrow_types import derive_type
 from ..common import variables
-from ..instantiation import AtomicLambdaSchemaInstantiation
 from ..parsing import (
     parse_type,
     parse_type_placeholder,
@@ -14,7 +13,7 @@ from ..parsing import (
     parse_variable_assertion,
 )
 from ..signature import BaseTypeSymbol, ConstantTermSymbol, LambdaSignature
-from ..type_derivation import TypeDerivationError, UnknownDerivationRuleError, apply, assume, premise
+from ..type_derivation import TypeDerivationError, UnknownDerivationRuleError, apply, assume, premise_config
 from .substitution import substitute_in_tree
 from .system import SIMPLE_ALGEBRAIC_SIGNATURE, SIMPLE_ALGEBRAIC_TYPE_SYSTEM
 
@@ -182,11 +181,9 @@ def test_substitute_bot_elim() -> None:
         assume(
             parse_variable_assertion('x: 𝟘', SIMPLE_ALGEBRAIC_SIGNATURE),
         ),
-        instantiation=AtomicLambdaSchemaInstantiation(
-            type_mapping={
-                parse_type_placeholder('τ'): parse_type('τ', SIMPLE_ALGEBRAIC_SIGNATURE)
-            }
-        )
+        implicit_types={
+            parse_type_placeholder('τ'): parse_type('τ', SIMPLE_ALGEBRAIC_SIGNATURE)
+        }
     )
 
     src = variables.x
@@ -195,11 +192,9 @@ def test_substitute_bot_elim() -> None:
     expected = apply(
         SIMPLE_ALGEBRAIC_TYPE_SYSTEM['𝟘₋'],
         dest,
-        instantiation=AtomicLambdaSchemaInstantiation(
-            type_mapping={
-                parse_type_placeholder('τ'): parse_type('τ', SIMPLE_ALGEBRAIC_SIGNATURE)
-            }
-        )
+        implicit_types={
+            parse_type_placeholder('τ'): parse_type('τ', SIMPLE_ALGEBRAIC_SIGNATURE)
+        }
     )
 
     assert substitute_in_tree(tree, {src: dest}) == expected
@@ -212,21 +207,19 @@ def test_substitute_sum_elim_without_renaming() -> None:
         apply(
             SIMPLE_ALGEBRAIC_TYPE_SYSTEM['+₊ₗ'],
             assume(parse_variable_assertion('x: 𝟙', SIMPLE_ALGEBRAIC_SIGNATURE)),
-            instantiation=AtomicLambdaSchemaInstantiation(
-                type_mapping={
-                    parse_type_placeholder('σ'): parse_type('σ')
-                }
-            )
+            implicit_types={
+                parse_type_placeholder('σ'): parse_type('σ')
+            }
         ),
 
-        premise(
+        premise_config(
             tree=assume(parse_variable_assertion('a: 𝟙', SIMPLE_ALGEBRAIC_SIGNATURE)),
-            discharge=parse_variable_assertion('y: 𝟙', SIMPLE_ALGEBRAIC_SIGNATURE)
+            attachments=[parse_variable_assertion('y: 𝟙', SIMPLE_ALGEBRAIC_SIGNATURE)]
         ),
 
-        premise(
+        premise_config(
             tree=apply(SIMPLE_ALGEBRAIC_TYPE_SYSTEM['𝟙₊']),
-            discharge=parse_variable_assertion('z: σ', SIMPLE_ALGEBRAIC_SIGNATURE)
+            attachments=[parse_variable_assertion('z: σ', SIMPLE_ALGEBRAIC_SIGNATURE)]
         )
     )
 
@@ -240,21 +233,19 @@ def test_substitute_sum_elim_without_renaming() -> None:
         apply(
             SIMPLE_ALGEBRAIC_TYPE_SYSTEM['+₊ₗ'],
             assume(parse_variable_assertion('x: 𝟙', SIMPLE_ALGEBRAIC_SIGNATURE)),
-            instantiation=AtomicLambdaSchemaInstantiation(
-                type_mapping={
-                    parse_type_placeholder('σ'): parse_type('σ')
-                }
-            )
+            implicit_types={
+                parse_type_placeholder('σ'): parse_type('σ')
+            }
         ),
 
-        premise(
+        premise_config(
             tree=assume(parse_variable_assertion('y: 𝟙', SIMPLE_ALGEBRAIC_SIGNATURE)),
-            discharge=parse_variable_assertion('a: 𝟙', SIMPLE_ALGEBRAIC_SIGNATURE)
+            attachments=[parse_variable_assertion('a: 𝟙', SIMPLE_ALGEBRAIC_SIGNATURE)]
         ),
 
-        premise(
+        premise_config(
             tree=apply(SIMPLE_ALGEBRAIC_TYPE_SYSTEM['𝟙₊']),
-            discharge=parse_variable_assertion('z: σ', SIMPLE_ALGEBRAIC_SIGNATURE)
+            attachments=[parse_variable_assertion('z: σ', SIMPLE_ALGEBRAIC_SIGNATURE)]
         )
     )
 

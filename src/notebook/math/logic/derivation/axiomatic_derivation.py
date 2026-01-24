@@ -8,12 +8,12 @@ from ..deduction import (
     Marker,
     NaturalDeductionSystem,
     ProofTree,
+    RuleApplicationPremise,
     RuleApplicationTree,
     assume,
     new_marker,
-    premise,
 )
-from ..formulas import ConnectiveFormula, Formula, FormulaWithSubstitution
+from ..formulas import ConnectiveFormula, Formula
 from ..instantiation import AtomicLogicSchemaInstantiation, infer_instantiation_from_formula
 from ..parsing import parse_formula_placeholder
 from .exceptions import AxiomaticDerivationError
@@ -123,7 +123,7 @@ def derivation_to_proof_tree(ad_system: AxiomaticDerivationSystem, derivation: A
                 nd_system[rule_name],
                 instantiation,
                 premises=[],
-                conclusion=FormulaWithSubstitution(conclusion)
+                conclusion=conclusion,
             )
 
     mp_config = derivation.get_mp_config()
@@ -131,18 +131,20 @@ def derivation_to_proof_tree(ad_system: AxiomaticDerivationSystem, derivation: A
     if mp_config is None:
         raise AxiomaticDerivationError(f'Invalid derivation of {conclusion}')
 
-    conditional_premise = premise(
+    conditional_premise = RuleApplicationPremise(
         tree=derivation_to_proof_tree(ad_system, derivation.truncate(mp_config.conditional_index), used_markers),
+        attachments=[]
     )
 
-    markers = set(conditional_premise.tree.get_assumption_map().keys())
-    antecedent_premise = premise(
-        tree=derivation_to_proof_tree(ad_system, derivation.truncate(mp_config.antecedent_index), {*used_markers, *markers})
+    markers = conditional_premise.tree.get_locally_discharged_markers()
+    antecedent_premise = RuleApplicationPremise(
+        tree=derivation_to_proof_tree(ad_system, derivation.truncate(mp_config.antecedent_index), {*used_markers, *markers}),
+        attachments=[]
     )
 
     instantiation = AtomicLogicSchemaInstantiation(
         formula_mapping={
-            parse_formula_placeholder('φ'): antecedent_premise.tree.conclusion.formula,
+            parse_formula_placeholder('φ'): antecedent_premise.tree.conclusion,
             parse_formula_placeholder('ψ'): conclusion
         }
     )
@@ -151,7 +153,7 @@ def derivation_to_proof_tree(ad_system: AxiomaticDerivationSystem, derivation: A
         nd_system['MP'],
         instantiation,
         premises=[conditional_premise, antecedent_premise],
-        conclusion=FormulaWithSubstitution(conclusion)
+        conclusion=conclusion,
     )
 
 
@@ -160,7 +162,7 @@ def _proof_tree_to_derivation_payload(tree: ProofTree) -> Iterable[Formula]:
         for premise in tree.premises:
             yield from _proof_tree_to_derivation_payload(premise.tree)
 
-    yield tree.conclusion.formula
+    yield tree.conclusion
 
 
 # This is alg:axiomatic_proof_tree_to_derivation in the monograph

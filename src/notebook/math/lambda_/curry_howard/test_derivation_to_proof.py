@@ -3,11 +3,9 @@ from textwrap import dedent
 from ....support.pytest import pytest_parametrize_kwargs
 from ...logic.classical_logic import CLASSICAL_NATURAL_DEDUCTION_SYSTEM
 from ...logic.deduction import proof_tree as ptree
-from ...logic.instantiation import AtomicLogicSchemaInstantiation
 from ...logic.parsing import parse_formula, parse_formula_placeholder, parse_marker
 from ...logic.signature import FormalLogicSignature
 from ..algebraic_types import SIMPLE_ALGEBRAIC_SIGNATURE, SIMPLE_ALGEBRAIC_TYPE_SYSTEM
-from ..instantiation import AtomicLambdaSchemaInstantiation
 from ..parsing import (
     parse_type,
     parse_type_placeholder,
@@ -76,11 +74,9 @@ class TestTypeDerivationToProofTree:
             dtree.assume(
                 parse_variable_assertion('x: 𝟘', SIMPLE_ALGEBRAIC_SIGNATURE),
             ),
-            instantiation=AtomicLambdaSchemaInstantiation(
-                type_mapping={
-                    parse_type_placeholder('τ'): parse_type('τ')
-                }
-            )
+            implicit_types={
+                parse_type_placeholder('τ'): parse_type('τ')
+            }
         )
 
         assert str(derivation) == dedent('''\
@@ -96,11 +92,9 @@ class TestTypeDerivationToProofTree:
                 parse_formula('⊥', ch_logic_dummy_signature),
                 parse_marker('x')
             ),
-            instantiation=AtomicLogicSchemaInstantiation(
-                formula_mapping={
-                    parse_formula_placeholder('φ'): parse_formula('τ', ch_logic_dummy_signature)
-                }
-            )
+            implicit={
+                parse_formula_placeholder('φ'): parse_formula('τ', ch_logic_dummy_signature)
+            }
         )
 
         assert type_derivation_to_proof_tree(derivation) == proof
@@ -109,8 +103,8 @@ class TestTypeDerivationToProofTree:
     def test_arrow_intro(self, ch_logic_dummy_signature: FormalLogicSignature) -> None:
         derivation = dtree.apply(
             SIMPLE_ALGEBRAIC_TYPE_SYSTEM['→₊'],
-            dtree.premise(
-                discharge=parse_variable_assertion('x: τ'),
+            dtree.premise_config(
+                attachments=[parse_variable_assertion('x: τ')],
                 tree=dtree.assume(
                     parse_variable_assertion('y: σ')
                 )
@@ -126,13 +120,17 @@ class TestTypeDerivationToProofTree:
 
         proof = ptree.apply(
             CLASSICAL_NATURAL_DEDUCTION_SYSTEM['→₊'],
-            ptree.premise(
-                discharge=parse_formula('τ', ch_logic_dummy_signature),
-                marker=parse_marker('x'),
+            ptree.premise_config(
+                attachments=[
+                    ptree.MarkedFormula(
+                        parse_formula('τ', ch_logic_dummy_signature),
+                        parse_marker('x'),
+                    )
+                ],
                 tree=ptree.assume(
                     parse_formula('σ', ch_logic_dummy_signature),
                     parse_marker('y')
-                )
+                ),
             )
         )
 
@@ -220,25 +218,23 @@ class TestTypeDerivationToProofTree:
             dtree.assume(
                 parse_variable_assertion('x: (τ + 𝟘)', SIMPLE_ALGEBRAIC_SIGNATURE)
             ),
-            dtree.premise(
+            dtree.premise_config(
+                attachments=[parse_variable_assertion('a: τ')],
                 tree=dtree.assume(
                     parse_variable_assertion('a: τ')
-                ),
-                discharge=parse_variable_assertion('a: τ')
+                )
             ),
-            dtree.premise(
+            dtree.premise_config(
+                attachments=[parse_variable_assertion('b: 𝟘', SIMPLE_ALGEBRAIC_SIGNATURE)],
                 tree=dtree.apply(
                     SIMPLE_ALGEBRAIC_TYPE_SYSTEM['𝟘₋'],
                     dtree.assume(
                         parse_variable_assertion('b: 𝟘', SIMPLE_ALGEBRAIC_SIGNATURE),
                     ),
-                    instantiation=AtomicLambdaSchemaInstantiation(
-                        type_mapping={
-                            parse_type_placeholder('τ'): parse_type('τ')
-                        }
-                    )
-                ),
-                discharge=parse_variable_assertion('b: 𝟘', SIMPLE_ALGEBRAIC_SIGNATURE)
+                    implicit_types={
+                        parse_type_placeholder('τ'): parse_type('τ')
+                    }
+                )
             )
         )
 
@@ -257,29 +253,35 @@ class TestTypeDerivationToProofTree:
                 parse_formula('(τ ∨ ⊥)', ch_logic_dummy_signature),
                 parse_marker('x')
             ),
-            ptree.premise(
+            ptree.premise_config(
+                attachments=[
+                    ptree.MarkedFormula(
+                        parse_formula('τ', ch_logic_dummy_signature),
+                        parse_marker('a')
+                    )
+                ],
                 tree=ptree.assume(
                     parse_formula('τ', ch_logic_dummy_signature),
                     parse_marker('a')
                 ),
-                discharge=parse_formula('τ', ch_logic_dummy_signature),
-                marker=parse_marker('a')
             ),
-            ptree.premise(
+            ptree.premise_config(
+                attachments=[
+                    ptree.MarkedFormula(
+                        parse_formula('⊥', ch_logic_dummy_signature),
+                        parse_marker('b')
+                    )
+                ],
                 tree=ptree.apply(
                     CLASSICAL_NATURAL_DEDUCTION_SYSTEM['EFQ'],
                     ptree.assume(
                         parse_formula('⊥', ch_logic_dummy_signature),
                         parse_marker('b')
                     ),
-                    instantiation=AtomicLogicSchemaInstantiation(
-                        formula_mapping={
-                            parse_formula_placeholder('φ'): parse_formula('τ', ch_logic_dummy_signature)
-                        }
-                    )
+                    implicit={
+                        parse_formula_placeholder('φ'): parse_formula('τ', ch_logic_dummy_signature)
+                    }
                 ),
-                discharge=parse_formula('⊥', ch_logic_dummy_signature),
-                marker=parse_marker('b')
             )
         )
 
@@ -295,21 +297,19 @@ class TestTypeDerivationToProofTree:
                     parse_variable_assertion('x: (τ × (σ + ρ))'),
                 )
             ),
-            dtree.premise(
+            dtree.premise_config(
                 tree=dtree.apply(
                     SIMPLE_ALGEBRAIC_TYPE_SYSTEM['+₊ᵣ'],
                     dtree.assume(
                         parse_variable_assertion('a: σ'),
                     ),
-                    instantiation=AtomicLambdaSchemaInstantiation(
-                        type_mapping={
-                            parse_type_placeholder('τ'): parse_type('τ')
-                        }
-                    )
+                    implicit_types={
+                        parse_type_placeholder('τ'): parse_type('τ')
+                    }
                 ),
-                discharge=parse_variable_assertion('a: σ')
+                attachments=[parse_variable_assertion('a: σ')],
             ),
-            dtree.premise(
+            dtree.premise_config(
                 tree=dtree.apply(
                     SIMPLE_ALGEBRAIC_TYPE_SYSTEM['+₊ₗ'],
                     dtree.apply(
@@ -318,19 +318,15 @@ class TestTypeDerivationToProofTree:
                             parse_variable_assertion('x: (τ × (σ + ρ))'),
                         )
                     ),
-                    instantiation=AtomicLambdaSchemaInstantiation(
-                        type_mapping={
-                            parse_type_placeholder('σ'): parse_type('σ')
-                        }
-                    )
+                    implicit_types={
+                        parse_type_placeholder('σ'): parse_type('σ')
+                    }
                 ),
-                discharge=parse_variable_assertion('b: ρ')
+                attachments=[parse_variable_assertion('b: ρ')],
             ),
-            instantiation=AtomicLambdaSchemaInstantiation(
-                variable_mapping={
-                    parse_variable_placeholder('y'): parse_variable('b'),
-                }
-            )
+            implicit_variables={
+                parse_variable_placeholder('y'): parse_variable('b'),
+            }
         )
 
         assert str(derivation) == dedent('''\
@@ -353,23 +349,31 @@ class TestTypeDerivationToProofTree:
                     marker=parse_marker('x')
                 )
             ),
-            ptree.premise(
+            ptree.premise_config(
+                attachments=[
+                    ptree.MarkedFormula(
+                        parse_formula('σ', ch_logic_dummy_signature),
+                        parse_marker('a')
+                    )
+                ],
                 tree=ptree.apply(
                     CLASSICAL_NATURAL_DEDUCTION_SYSTEM['∨₊ᵣ'],
                     ptree.assume(
                         parse_formula('σ', ch_logic_dummy_signature),
                         marker=parse_marker('a')
                     ),
-                    instantiation=AtomicLogicSchemaInstantiation(
-                        formula_mapping={
-                            parse_formula_placeholder('φ'): parse_formula('τ', ch_logic_dummy_signature)
-                        }
-                    )
+                    implicit={
+                        parse_formula_placeholder('φ'): parse_formula('τ', ch_logic_dummy_signature)
+                    }
                 ),
-                marker=parse_marker('a'),
-                discharge=parse_formula('σ', ch_logic_dummy_signature)
             ),
-            ptree.premise(
+            ptree.premise_config(
+                attachments=[
+                    ptree.MarkedFormula(
+                        parse_formula('ρ', ch_logic_dummy_signature),
+                        parse_marker('b')
+                    )
+                ],
                 tree=ptree.apply(
                     CLASSICAL_NATURAL_DEDUCTION_SYSTEM['∨₊ₗ'],
                     ptree.apply(
@@ -379,14 +383,10 @@ class TestTypeDerivationToProofTree:
                             marker=parse_marker('x')
                         )
                     ),
-                    instantiation=AtomicLogicSchemaInstantiation(
-                        formula_mapping={
-                            parse_formula_placeholder('ψ'): parse_formula('σ', ch_logic_dummy_signature)
-                        }
-                    )
+                    implicit={
+                        parse_formula_placeholder('ψ'): parse_formula('σ', ch_logic_dummy_signature)
+                    }
                 ),
-                marker=parse_marker('b'),
-                discharge=parse_formula('ρ', ch_logic_dummy_signature)
             )
         )
 

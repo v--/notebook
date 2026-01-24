@@ -13,7 +13,7 @@ from ..terms import (
     TypedTermVisitor,
     Variable,
 )
-from ..type_derivation import TypeDerivationTree, TypeInferenceError, apply, assume, premise
+from ..type_derivation import TypeDerivationTree, TypeInferenceError, apply, assume, premise_config
 from ..types import SimpleConnectiveType, SimpleType
 
 
@@ -45,8 +45,8 @@ class TypeInferenceVisitor(TypedTermVisitor[TypeDerivationTree]):
 
         return apply(
             ARROW_ONLY_TYPE_SYSTEM['→₋'],
-            premise(tree=left_subtree),
-            premise(tree=right_subtree)
+            premise_config(tree=left_subtree),
+            premise_config(tree=right_subtree)
         )
 
     @override
@@ -55,7 +55,7 @@ class TypeInferenceVisitor(TypedTermVisitor[TypeDerivationTree]):
 
         return apply(
             ARROW_ONLY_TYPE_SYSTEM['→₊'],
-            premise(tree=subtree, discharge=VariableTypeAssertion(term.var, term.var_type))
+            premise_config(tree=subtree, attachments=[VariableTypeAssertion(term.var, term.var_type)])
         )
 
 

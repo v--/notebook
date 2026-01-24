@@ -1,14 +1,8 @@
 from textwrap import dedent
 
 from ...classical_logic import CLASSICAL_NATURAL_DEDUCTION_SYSTEM
-from ...deduction.proof_tree import apply, assume, premise
-from ...parsing import (
-    parse_formula,
-    parse_formula_with_substitution,
-    parse_marker,
-    parse_term_substitution_spec,
-    parse_variable,
-)
+from ...deduction.proof_tree import apply, assume, premise_config
+from ...parsing import parse_formula, parse_formula_with_substitution, parse_marker
 from .axioms import ABSORPTION_AXIOMS, COMMUTATIVITY_AXIOMS, EXTREMA_AXIOMS, INEQUALITY_COMPATIBILITY_AXIOMS
 from .signature import BOOLEAN_ALGEBRA_SIGNATURE
 
@@ -20,49 +14,45 @@ def test_bottom_absorption_proof() -> None:
 
     tree = apply(
         CLASSICAL_NATURAL_DEDUCTION_SYSTEM['∀₊'],
-        premise(
+        premise_config(
             tree=apply(
                 CLASSICAL_NATURAL_DEDUCTION_SYSTEM['=₋'],
-                premise(
+                premise_config(
+                    main=parse_formula_with_substitution('((⫫ ⩓ a) = ⫫)[a ↦ (⫫ ⩔ x)]', BOOLEAN_ALGEBRA_SIGNATURE),
                     tree=apply(
                         CLASSICAL_NATURAL_DEDUCTION_SYSTEM['∀₋'],
-                        premise(
-                            tree=apply(
-                                CLASSICAL_NATURAL_DEDUCTION_SYSTEM['∀₋'],
-                                assume(abs_axiom, parse_marker('u')),
-                                conclusion_sub=parse_term_substitution_spec('x ↦ ⫫', BOOLEAN_ALGEBRA_SIGNATURE),
-                            ),
+                        apply(
+                            CLASSICAL_NATURAL_DEDUCTION_SYSTEM['∀₋'],
+                            assume(abs_axiom, parse_marker('u')),
+                            conclusion_config=parse_formula_with_substitution('∀y.((x ⩓ (x ⩔ y)) = x)[x ↦ ⫫]', BOOLEAN_ALGEBRA_SIGNATURE),
                         ),
-                        conclusion_sub=parse_term_substitution_spec('y ↦ x'),
-                    ),
-                    main=parse_formula_with_substitution('((⫫ ⩓ a) = ⫫)[a ↦ (⫫ ⩔ x)]', BOOLEAN_ALGEBRA_SIGNATURE),
+                        conclusion_config=parse_formula_with_substitution('((⫫ ⩓ (⫫ ⩔ y)) = ⫫)[y ↦ x]', BOOLEAN_ALGEBRA_SIGNATURE),
+                    )
                 ),
                 apply(
                     CLASSICAL_NATURAL_DEDUCTION_SYSTEM['=₋'],
-                    premise(
+                    premise_config(
+                        main=parse_formula_with_substitution('(b = x)[b ↦ (x ⩔ ⫫)]', BOOLEAN_ALGEBRA_SIGNATURE),
                         tree=apply(
                             CLASSICAL_NATURAL_DEDUCTION_SYSTEM['∀₋'],
                             assume(top_axiom, parse_marker('v')),
-                            conclusion_sub=parse_term_substitution_spec('x ↦ x'),
+                            conclusion_config=parse_formula_with_substitution('((x ⩔ ⫫) = x)[x ↦ x]', BOOLEAN_ALGEBRA_SIGNATURE),
                         ),
-                        main=parse_formula_with_substitution('(b = x)[b ↦ (x ⩔ ⫫)]', BOOLEAN_ALGEBRA_SIGNATURE),
                     ),
                     apply(
                         CLASSICAL_NATURAL_DEDUCTION_SYSTEM['∀₋'],
-                        premise(
-                            tree=apply(
-                                CLASSICAL_NATURAL_DEDUCTION_SYSTEM['∀₋'],
-                                assume(comm_axiom, parse_marker('w')),
-                                conclusion_sub=parse_term_substitution_spec('x ↦ x'),
-                            ),
+                        apply(
+                            CLASSICAL_NATURAL_DEDUCTION_SYSTEM['∀₋'],
+                            assume(comm_axiom, parse_marker('w')),
+                            conclusion_config=parse_formula_with_substitution('∀y.((x ⩔ y) = (y ⩔ x))[x ↦ x]', BOOLEAN_ALGEBRA_SIGNATURE),
                         ),
-                        conclusion_sub=parse_term_substitution_spec('y ↦ ⫫', BOOLEAN_ALGEBRA_SIGNATURE),
+                        conclusion_config=parse_formula_with_substitution('((x ⩔ y) = (y ⩔ x))[y ↦ ⫫]', BOOLEAN_ALGEBRA_SIGNATURE),
                     ),
-                    conclusion_sub=parse_term_substitution_spec('b ↦ (⫫ ⩔ x)', BOOLEAN_ALGEBRA_SIGNATURE),
+                    conclusion_config=parse_formula_with_substitution('(b = x)[b ↦ (⫫ ⩔ x)]', BOOLEAN_ALGEBRA_SIGNATURE),
                 ),
-                conclusion_sub=parse_term_substitution_spec('a ↦ x'),
+                conclusion_config=parse_formula_with_substitution('((⫫ ⩓ a) = ⫫)[a ↦ x]', BOOLEAN_ALGEBRA_SIGNATURE),
             ),
-            main_noop_sub=parse_variable('x')
+            main=parse_formula_with_substitution('((⫫ ⩓ x) = ⫫)[x ↦ x]', BOOLEAN_ALGEBRA_SIGNATURE)
         )
     )
 
@@ -89,27 +79,25 @@ def test_bottom_minimality_proof() -> None:
 
     tree = apply(
         CLASSICAL_NATURAL_DEDUCTION_SYSTEM['∀₊'],
-        premise(
+        premise_config(
+            main=parse_formula_with_substitution('(⫫ ≤ x)[x ↦ x]', BOOLEAN_ALGEBRA_SIGNATURE),
             tree=apply(
                 CLASSICAL_NATURAL_DEDUCTION_SYSTEM['↔₋ₗ'],
                 apply(
                     CLASSICAL_NATURAL_DEDUCTION_SYSTEM['∀₋'],
-                    premise(
-                        tree=apply(
-                            CLASSICAL_NATURAL_DEDUCTION_SYSTEM['∀₋'],
-                            assume(ineq_axiom, parse_marker('u')),
-                            conclusion_sub=parse_term_substitution_spec('x ↦ ⫫', BOOLEAN_ALGEBRA_SIGNATURE),
-                        ),
+                    apply(
+                        CLASSICAL_NATURAL_DEDUCTION_SYSTEM['∀₋'],
+                        assume(ineq_axiom, parse_marker('u')),
+                        conclusion_config=parse_formula_with_substitution('∀y.((x ≤ y) ↔ ((x ⩓ y) = x))[x ↦ ⫫]', BOOLEAN_ALGEBRA_SIGNATURE),
                     ),
-                    conclusion_sub=parse_term_substitution_spec('y ↦ x'),
+                    conclusion_config=parse_formula_with_substitution('((⫫ ≤ y) ↔ ((⫫ ⩓ y) = ⫫))[y ↦ x]', BOOLEAN_ALGEBRA_SIGNATURE),
                 ),
                 apply(
                     CLASSICAL_NATURAL_DEDUCTION_SYSTEM['∀₋'],
                     assume(assumption, parse_marker('v')),
-                    conclusion_sub=parse_term_substitution_spec('x ↦ x'),
-                ),
+                    conclusion_config=parse_formula_with_substitution('((⫫ ⩓ x) = ⫫)[x ↦ x]', BOOLEAN_ALGEBRA_SIGNATURE),
+                )
             ),
-            main_noop_sub=parse_variable('x')
         ),
     )
 
@@ -125,4 +113,3 @@ def test_bottom_minimality_proof() -> None:
                                  ∀x.(⫫ ≤ x)
         '''
     )
-

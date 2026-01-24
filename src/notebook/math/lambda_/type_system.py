@@ -1,13 +1,13 @@
-from ...support.inference import InferenceRule, InferenceRulePremise
+from ...support.inference import InferenceRule, InferenceRuleEntry
 from ...support.inference.system import InferenceRuleSystem
 from .assertions import TypeAssertionSchema, VariableTypeAssertionSchema
 
 
-class TypingRulePremise(InferenceRulePremise[TypeAssertionSchema, VariableTypeAssertionSchema]):
+class TypingRuleEntry(InferenceRuleEntry[TypeAssertionSchema, VariableTypeAssertionSchema]):
     pass
 
 
-class TypingRule(InferenceRule[TypeAssertionSchema, TypingRulePremise]):
+class TypingRule(InferenceRule[TypingRuleEntry]):
     pass
 
 

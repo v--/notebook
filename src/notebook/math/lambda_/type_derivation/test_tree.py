@@ -3,15 +3,14 @@ from textwrap import dedent
 from ..algebraic_types import SIMPLE_ALGEBRAIC_SIGNATURE, SIMPLE_ALGEBRAIC_TYPE_SYSTEM
 from ..common import combinators, pairs
 from ..erasure import erase_annotations
-from ..instantiation import AtomicLambdaSchemaInstantiation
 from ..parsing import parse_type, parse_type_placeholder, parse_variable_assertion
-from .tree import apply, assume, premise
+from .tree import apply, assume, premise_config
 
 
 def test_assumption_tree() -> None:
     assumption = parse_variable_assertion('x: τ')
     tree = assume(assumption)
-    assert tree.get_assumption_map() == {assumption.term: assumption.type}
+    assert tree.get_cumulative_assumptions() == {assumption}
     assert str(tree) == dedent('''\
         x: τ
         '''
@@ -23,13 +22,13 @@ def test_arrow_intro() -> None:
     assumption = parse_variable_assertion('x: τ')
     tree = apply(
         SIMPLE_ALGEBRAIC_TYPE_SYSTEM['→₊'],
-        premise(
+        premise_config(
+            attachments=[assumption],
             tree=assume(assumption),
-            discharge=assumption
         )
     )
 
-    assert tree.get_assumption_map() == {}
+    assert tree.get_cumulative_assumptions() == set()
     assert str(tree) == dedent('''\
                x: τ
         x _________________ →₊
@@ -44,19 +43,19 @@ def test_nested_arrow_intro() -> None:
     assumption_y = parse_variable_assertion('y: σ')
     tree = apply(
         SIMPLE_ALGEBRAIC_TYPE_SYSTEM['→₊'],
-        premise(
-            discharge=assumption_x,
+        premise_config(
+            attachments=[assumption_x],
             tree=apply(
                 SIMPLE_ALGEBRAIC_TYPE_SYSTEM['→₊'],
-                premise(
-                    discharge=assumption_y,
-                    tree=assume(assumption_x)
+                premise_config(
+                    attachments=[assumption_y],
+                    tree=assume(assumption_x),
                 )
-            )
+            ),
         )
     )
 
-    assert tree.get_assumption_map() == {}
+    assert tree.get_cumulative_assumptions() == set()
     assert erase_annotations(tree.conclusion.term) == combinators.k
     assert str(tree) == dedent('''\
                      x: τ
@@ -75,16 +74,16 @@ def test_cons() -> None:
     assumption_y = parse_variable_assertion('y: σ')
     tree = apply(
         SIMPLE_ALGEBRAIC_TYPE_SYSTEM['→₊'],
-        premise(
-            discharge=assumption_x,
+        premise_config(
+            attachments=[assumption_x],
             tree=apply(
                 SIMPLE_ALGEBRAIC_TYPE_SYSTEM['→₊'],
-                premise(
-                    discharge=assumption_y,
+                premise_config(
+                    attachments=[assumption_y],
                     tree=apply(
                         SIMPLE_ALGEBRAIC_TYPE_SYSTEM['→₊'],
-                        premise(
-                            discharge=assumption_f,
+                        premise_config(
+                            attachments=[assumption_f],
                             tree=apply(
                                 SIMPLE_ALGEBRAIC_TYPE_SYSTEM['→₋'],
                                 apply(
@@ -93,15 +92,15 @@ def test_cons() -> None:
                                     assume(assumption_x)
                                 ),
                                 assume(assumption_y)
-                            )
+                            ),
                         )
-                    )
+                    ),
                 )
-            )
+            ),
         )
     )
 
-    assert tree.get_assumption_map() == {}
+    assert tree.get_cumulative_assumptions() == set()
     assert erase_annotations(tree.conclusion.term) == pairs.cons
 
     assert str(tree) == dedent('''\
@@ -124,21 +123,16 @@ def test_empty_elim() -> None:
     assumption = parse_variable_assertion('x: 𝟘', SIMPLE_ALGEBRAIC_SIGNATURE)
     tree = apply(
         SIMPLE_ALGEBRAIC_TYPE_SYSTEM['𝟘₋'],
-        premise(
-            tree=assume(assumption),
-            discharge=assumption
-        ),
-        instantiation=AtomicLambdaSchemaInstantiation(
-            type_mapping={
-                parse_type_placeholder('τ'): parse_type('σ')
-            }
-        )
+        assume(assumption),
+        implicit_types={
+            parse_type_placeholder('τ'): parse_type('σ')
+        }
     )
 
-    assert tree.get_assumption_map() == {}
+    assert tree.get_cumulative_assumptions() == {assumption}
     assert str(tree) == dedent('''\
-           x: 𝟘
-        x ________ 𝟘₋
-          (E₋x): σ
+         x: 𝟘
+        ________ 𝟘₋
+        (E₋x): σ
         '''
     )

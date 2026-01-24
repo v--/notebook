@@ -1,4 +1,4 @@
-from .schema_sub import EigenvariableSchemaSubstitutionSpec, TermSchemaSubstitutionSpec
+from .schema_sub import EigenSchemaSubstitutionSpec, TermSchemaSubstitutionSpec
 from .schema_visitor import TermSchemaVisitor
 from .schemas import FunctionApplicationSchema, TermPlaceholder, TermSchema, VariablePlaceholder
 from .term_sub import TermSubstitutionSpec

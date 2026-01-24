@@ -14,7 +14,7 @@ from ..type_derivation import (
     TypeDerivationTree,
     apply,
     assume,
-    premise,
+    premise_config,
 )
 from ..variables import get_free_variables
 from .substitution import substitute_in_tree
@@ -42,7 +42,7 @@ class AlphaConversionVisitor(SimpleAlgebraicDerivationTreeVisitor[TypeDerivation
         rule = tree.rule
 
         try:
-            new_instantiation |= infer_instantiation_from_term(rule.conclusion.term, self.other)
+            new_instantiation |= infer_instantiation_from_term(rule.conclusion.main.term, self.other)
         except SchemaInferenceError as err:
             raise NotAlphaEquivalent from err
 
@@ -77,8 +77,8 @@ class AlphaConversionVisitor(SimpleAlgebraicDerivationTreeVisitor[TypeDerivation
                 {abstraction.var: assume(assertion)}
             )
 
-        return premise(
-            discharge=assertion,
+        return premise_config(
+            attachments=[assertion],
             tree=alpha_convert_derivation_unsafe(adjusted_subtree, other.body)
         )
 
@@ -123,7 +123,7 @@ class AlphaConversionVisitor(SimpleAlgebraicDerivationTreeVisitor[TypeDerivation
         # Unlike in the monograph, here we infer the instantiation needed to apply the rule
         return apply(
             tree.rule,
-            premise(tree=alpha_convert_derivation_unsafe(sum_subtree, other_sum_term)),
+            premise_config(tree=alpha_convert_derivation_unsafe(sum_subtree, other_sum_term)),
             new_left_premise,
             new_right_premise,
         )

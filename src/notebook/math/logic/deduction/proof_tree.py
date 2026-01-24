@@ -5,61 +5,66 @@ from typing import override
 from ....support.inference import (
     AssumptionRenderer,
     InferenceTree,
-    InferenceTreeRenderer,
     RuleApplicationRenderer,
 )
-from ....support.unicode import to_superscript
-from ..formulas import Formula, FormulaWithSubstitution
+from ....support.schemas import SchemaInstantiationError
+from ..formulas import (
+    Formula,
+    FormulaPlaceholder,
+    FormulaSchemaWithEigenvariable,
+    FormulaWithSubstitution,
+)
 from ..instantiation import (
     AtomicLogicSchemaInstantiation,
+    infer_instantiation_from_formula,
     infer_instantiation_from_formula_substitution_spec,
-    infer_instantiation_from_term_substitution_spec,
-    instantiate_substitution_spec,
+    instantiate_substitution,
+    instantiate_term_schema,
 )
-from ..substitution import evaluate_substitution_spec
-from ..terms import EigenvariableSchemaSubstitutionSpec, TermSubstitutionSpec, Variable
+from ..substitution import evaluate_substitution
+from ..terms import Variable
 from ..variables import get_formula_free_variables
 from .exceptions import RuleApplicationError
-from .markers import Marker
-from .system import NaturalDeductionPremise, NaturalDeductionRule
+from .markers import MarkedFormula, MarkedFormulaWithSubstitution, Marker
+from .system import NaturalDeductionRule
 
 
 @dataclass(frozen=True)
-class MarkedVariable:
-    var: Variable
-    marker: Marker
-
-    def __str__(self) -> str:
-        return f'{self.var}: {self.marker}'
-
-
-@dataclass(frozen=True)
-class AssumptionTree(InferenceTree[FormulaWithSubstitution, Mapping[Marker, Formula]]):
-    conclusion: FormulaWithSubstitution
+class AssumptionTree(InferenceTree[Formula, MarkedFormula]):
+    conclusion: Formula
     marker: Marker
 
     @override
-    def get_assumption_map(self) -> Mapping[Marker, Formula]:
-        return {self.marker: self.conclusion.formula}
+    def get_cumulative_assumptions(self) -> Collection[MarkedFormula]:
+        return {MarkedFormula(self.conclusion, self.marker)}
+
+    def get_locally_discharged_markers(self) -> Collection[Marker]:
+        return [self.marker]
 
     @override
-    def build_renderer(self, *, conclusion: FormulaWithSubstitution | None = None) -> AssumptionRenderer:
-        if conclusion is None:
-            conclusion = self.conclusion
-
+    def build_renderer(self) -> AssumptionRenderer:
         return AssumptionRenderer(
-            str(conclusion.formula),
+            str(self.conclusion),
             marker=str(self.marker),
-            suffix=f'[{conclusion.sub}]' if conclusion.sub and not conclusion.sub.is_noop() else None
         )
 
-    def get_free_variables(self) -> Collection[Variable]:
-        return get_formula_free_variables(evaluate_substitution_spec(self.conclusion))
+    def get_local_implicit_premises(self) -> Collection[Formula]:
+        return set()
 
-    def get_marked_free_variables(self) -> Collection[MarkedVariable]:
+    def get_local_eigenvariables(self) -> Collection[Variable]:
+        return set()
+
+    def get_free_variables(
+        self,
+        eigen: Collection[Variable] = set(),
+        discharged: Collection[Marker] = set()
+    ) -> Collection[Variable]:
+        if self.marker in discharged:
+            return set()
+
         return {
-            MarkedVariable(var, self.marker)
-            for var in self.get_free_variables()
+            var for var in get_formula_free_variables(self.conclusion)
+            if var not in eigen
         }
 
     def __str__(self) -> str:
@@ -67,263 +72,238 @@ class AssumptionTree(InferenceTree[FormulaWithSubstitution, Mapping[Marker, Form
 
 
 def assume(assumption: Formula, marker: Marker) -> AssumptionTree:
-    return AssumptionTree(
-        FormulaWithSubstitution(assumption),
-        marker
-    )
+    return AssumptionTree(assumption, marker)
 
 
 @dataclass(frozen=True)
 class RuleApplicationPremise:
     tree: ProofTree
+    attachments: Sequence[None | MarkedFormula]
+
+
+# This class is only needed to aid the construction of proof trees; we do not need attached substitutions in the final tree
+@dataclass(frozen=True)
+class RuleApplicationPremiseConfig:
+    tree: ProofTree
     main: FormulaWithSubstitution
-    discharge: FormulaWithSubstitution | None = None
-    marker: Marker | None = None
+    attachments: Sequence[None | MarkedFormulaWithSubstitution]
 
-    def build_renderer(self) -> InferenceTreeRenderer:
-        return self.tree.build_renderer(conclusion=self.main)
+    def eval(self) -> RuleApplicationPremise:
+        return RuleApplicationPremise(
+            self.tree,
+            [att.eval() if att else None for att in self.attachments],
+        )
 
 
-def premise(
+def premise_config(
     *,
     tree: ProofTree,
-    main: Formula | FormulaWithSubstitution | None = None,
-    main_noop_sub: Variable | None = None,
-    discharge: Formula | FormulaWithSubstitution | None = None,
-    discharge_noop_sub: Variable | None = None,
-    marker: Marker | None = None,
-) -> RuleApplicationPremise:
-    main_spec: FormulaWithSubstitution
-    discharge_spec: FormulaWithSubstitution | None = None
-
-    if isinstance(main, FormulaWithSubstitution):
-        if main_noop_sub:
-            raise RuleApplicationError(f'Redundant substitution specified for {main}')
-
-        main_spec = main
-    elif main:
-        main_spec = FormulaWithSubstitution(main)
-    else:
-        main_spec = FormulaWithSubstitution(
-            evaluate_substitution_spec(tree.conclusion),
-            TermSubstitutionSpec(main_noop_sub, main_noop_sub) if main_noop_sub else None
-        )
-
-    if isinstance(discharge, FormulaWithSubstitution):
-        if discharge_noop_sub:
-            raise RuleApplicationError(f'Redundant substitution specified for {discharge}')
-
-        discharge_spec = discharge
-    elif discharge:
-        discharge_spec = FormulaWithSubstitution(
-            discharge,
-            TermSubstitutionSpec(discharge_noop_sub, discharge_noop_sub) if discharge_noop_sub else None
-        )
-
-    return RuleApplicationPremise(
+    main: FormulaWithSubstitution | None = None,
+    attachments: Sequence[None | MarkedFormula | MarkedFormulaWithSubstitution] = [],
+) -> RuleApplicationPremiseConfig:
+    return RuleApplicationPremiseConfig(
         tree,
-        main_spec,
-        discharge_spec,
-        marker,
+        FormulaWithSubstitution.wrap(main or tree.conclusion),
+        [MarkedFormulaWithSubstitution.wrap(att) if att else None for att in attachments],
     )
 
 
 @dataclass(frozen=True)
-class Eigenvariable:
-    var: Variable
-    formula: Formula
-    src: Variable
-
-    def is_renamed(self) -> bool:
-        return self.var != self.src
-
-    def __str__(self) -> str:
-        return str(self.var)
-
-    def with_star(self) -> str:
-        return f'{self.var}*'
-
-    def get_sub(self) -> TermSubstitutionSpec:
-        return TermSubstitutionSpec(self.src, self.var)
-
-
-def get_main_eigenvariable(rule_premise: NaturalDeductionPremise, application_premise: RuleApplicationPremise) -> Eigenvariable | None:
-    if isinstance(rule_premise.main.sub, EigenvariableSchemaSubstitutionSpec):
-        main_sub = application_premise.main.sub
-
-        if main_sub is None:
-            raise RuleApplicationError(f'No substitution specified for {application_premise.main} in eigenvariable rule with conclusion {rule_premise.main}') from None
-
-        if not isinstance(main_sub.dest, Variable):
-            raise RuleApplicationError(f'The eigenvariable substitution {main_sub} should map to a variable')
-
-        return Eigenvariable(main_sub.dest, application_premise.main.formula, main_sub.src)
-
-    return None
-
-
-def get_discharge_eigenvariable(rule_premise: NaturalDeductionPremise, application_premise: RuleApplicationPremise) -> Eigenvariable | None:
-    if rule_premise.discharge is None:
-        return None
-
-    if isinstance(rule_premise.discharge.sub, EigenvariableSchemaSubstitutionSpec):
-        discharge_sub = application_premise.discharge.sub if application_premise.discharge else None
-
-        if discharge_sub is None:
-            raise RuleApplicationError(f'No discharge substitution specified for {application_premise.discharge} in eigenvariable rule with discharge schema {rule_premise.discharge}')
-
-        assert application_premise.discharge is not None
-
-        if not isinstance(discharge_sub.dest, Variable):
-            raise RuleApplicationError(f'The eigenvariable substitution {discharge_sub} should map to a variable')
-
-        return Eigenvariable(discharge_sub.dest, application_premise.discharge.formula, discharge_sub.src)
-
-    return None
-
-
-@dataclass(frozen=True)
-class RuleApplicationTree(InferenceTree[FormulaWithSubstitution, Mapping[Marker, Formula]]):
+class RuleApplicationTree(InferenceTree[Formula, MarkedFormula]):
     rule: NaturalDeductionRule
     instantiation: AtomicLogicSchemaInstantiation
     premises: Sequence[RuleApplicationPremise]
-    conclusion: FormulaWithSubstitution
+    conclusion: Formula
 
-    def _filter_assumptions(self, *, discharged_at_current_step: bool) -> Iterable[tuple[Marker, Formula]]:
-        for application_premise in self.premises:
-            for marker, assumption in application_premise.tree.get_assumption_map().items():
-                is_discharged_at_current_step = application_premise.discharge is not None and \
-                    evaluate_substitution_spec(application_premise.discharge) == assumption and \
-                    application_premise.marker == marker
+    def _filter_assumptions(self, *, discharged_at_current_step: bool) -> Iterable[MarkedFormula]:
+        for premise in self.premises:
+            for assumption in premise.tree.get_cumulative_assumptions():
+                is_discharged_at_current_step = any(att == assumption for att in premise.attachments)
 
                 if discharged_at_current_step == is_discharged_at_current_step:
-                    yield marker, assumption
+                    yield assumption
+
+    def _iter_implicit_premises(self) -> Iterable[Formula]:
+        for schema in self.rule.conclusion.attachments:
+            formula = evaluate_substitution(instantiate_substitution(schema, self.instantiation))
+
+            for assumption in self._filter_assumptions(discharged_at_current_step=True):
+                if assumption.formula == formula:
+                    break
+            else:
+                yield formula
+
+    def get_local_implicit_premises(self) -> Collection[Formula]:
+        return set(self._iter_implicit_premises())
 
     @override
-    def get_assumption_map(self) -> Mapping[Marker, Formula]:
-        return dict(self._filter_assumptions(discharged_at_current_step=False))
+    def get_cumulative_assumptions(self) -> Collection[MarkedFormula]:
+        return set(self._filter_assumptions(discharged_at_current_step=False))
 
-    def get_marker_context(self) -> Iterable[Marker]:
-        return sorted(
-            {marker for marker, formula in self._filter_assumptions(discharged_at_current_step=True)},
-            key=str
-        )
+    def get_locally_discharged_markers(self) -> Collection[Marker]:
+        return {
+            assumption.marker for assumption in self._filter_assumptions(discharged_at_current_step=True)
+        }
 
-    def _iter_dischargeable_eigenvariables(self) -> Iterable[Eigenvariable]:
-        for rule_premise, application_premise in zip(self.rule.premises, self.premises, strict=True):
-            free = application_premise.tree.get_free_variables()
+    def _iter_current_eigenvariables(self) -> Iterable[Variable]:
+        for rule_premise in self.rule.premises:
+            if isinstance(rule_premise.main, FormulaSchemaWithEigenvariable):
+                yield instantiate_term_schema(rule_premise.main.sub.dest, self.instantiation)
 
-            if (eigen := get_main_eigenvariable(rule_premise, application_premise)) and eigen.var in free:
-                yield eigen
+            for attachment_schema in rule_premise.attachments:
+                if isinstance(attachment_schema, FormulaSchemaWithEigenvariable):
+                    yield instantiate_term_schema(attachment_schema.sub.dest, self.instantiation)
 
-            if (eigen := get_discharge_eigenvariable(rule_premise, application_premise)) and eigen.var in free:
-                yield eigen
-
-    def get_eigenvariable_context(self) -> Iterable[Eigenvariable]:
-        return sorted(set(self._iter_dischargeable_eigenvariables()), key=str)
+    def get_local_eigenvariables(self) -> Collection[Variable]:
+        return set(self._iter_current_eigenvariables())
 
     @override
-    def build_renderer(self, *, conclusion: FormulaWithSubstitution | None = None) -> RuleApplicationRenderer:
-        if conclusion is None:
-            conclusion = self.conclusion
-
-        line = str(evaluate_substitution_spec(conclusion))
-
+    def build_renderer(self) -> RuleApplicationRenderer:
         return RuleApplicationRenderer(
-            line,
-            [str(marker) for marker in self.get_marker_context()],
+            str(self.conclusion),
+            [str(marker) for marker in self.get_locally_discharged_markers()],
             self.rule.name,
-            [premise.build_renderer() for premise in self.premises]
+            [premise.tree.build_renderer() for premise in self.premises]
         )
 
-    def get_marked_free_variables(self) -> Iterable[MarkedVariable]:
-        discharged_markers = self.get_marker_context()
-        discharged_eigen = {evar.var for evar in self.get_eigenvariable_context()}
+    def _iter_free_variables(
+        self,
+        eigen: Collection[Variable],
+        discharged: Collection[Marker]
+    ) -> Iterable[Variable]:
+        eigen_ = {*eigen, *self.get_local_eigenvariables()}
+        discharged_ = {*discharged, *self.get_locally_discharged_markers()}
 
-        for application_premise in self.premises:
-            for mvar in application_premise.tree.get_marked_free_variables():
-                if mvar.marker not in discharged_markers and mvar.var not in discharged_eigen:
-                    yield mvar
+        for premise_tree in self.premises:
+             yield from premise_tree.tree.get_free_variables(eigen_, discharged_)
 
-    def get_free_variables(self) -> Collection[Variable]:
-        return {mvar.var for mvar in self.get_marked_free_variables()}
+        for premise in self.get_local_implicit_premises():
+             for var in get_formula_free_variables(premise):
+                if var not in eigen:
+                    yield var
+
+    def get_free_variables(
+        self,
+        eigen: Collection[Variable] = set(),
+        discharged: Collection[Marker] = set()
+    ) -> Collection[Variable]:
+        return set(self._iter_free_variables(eigen, discharged))
 
     def __str__(self) -> str:
         return self.build_renderer().render()
 
 
-def apply(  # noqa: C901
+def apply(  # noqa: C901,PLR0915
     rule: NaturalDeductionRule,
-    *args: ProofTree | RuleApplicationPremise,
+    *args: ProofTree | RuleApplicationPremiseConfig,
     instantiation: AtomicLogicSchemaInstantiation | None = None,
-    conclusion_sub: TermSubstitutionSpec | None = None,
+    implicit: Mapping[FormulaPlaceholder, Formula] | None = None,
+    conclusion_config: FormulaWithSubstitution | None = None,
 ) -> RuleApplicationTree:
     if len(args) != len(rule.premises):
         raise RuleApplicationError(f'The rule {rule.name} has {len(rule.premises)} premises, but the application has {len(args)}')
 
-    instantiation = instantiation or AtomicLogicSchemaInstantiation()
+    if instantiation is None:
+        instantiation = AtomicLogicSchemaInstantiation(formula_mapping=implicit)
+    elif implicit:
+        raise RuleApplicationError('Cannot provide both an instantiation and implicit assumptions')
+
     marker_map = dict[Marker, Formula]()
 
     application_premises = [
-        premise(tree=premise_arg) if isinstance(premise_arg, ProofTree) else premise_arg
-        for premise_arg in args
+        premise_config(tree=premise_arg, attachments=[None] * len(rule_premise.attachments))
+        if isinstance(premise_arg, ProofTree)
+        else premise_arg
+        for rule_premise, premise_arg in zip(rule.premises, args, strict=True)
     ]
 
     for i, (rule_premise, application_premise) in enumerate(zip(rule.premises, application_premises, strict=True), start=1):
-        for marker, assumption in application_premise.tree.get_assumption_map().items():
-            if marker in marker_map and marker_map[marker] != assumption:
+        for assumption in application_premise.tree.get_cumulative_assumptions():
+            if assumption.marker is None:
+                continue
+
+            if assumption.marker in marker_map and marker_map[assumption.marker] != assumption.formula:
                 raise RuleApplicationError('Multiple assumptions cannot have the same marker')
 
-            marker_map[marker] = assumption
+            marker_map[assumption.marker] = assumption.formula
 
         # Check if there is an eigenvariable in the main formula
-        if eigen := get_main_eigenvariable(rule_premise, application_premise):
-            if eigen.is_renamed() and eigen.var in get_formula_free_variables(eigen.formula):
-                raise RuleApplicationError(f'The renamed eigenvariable {eigen.get_sub()} of the premise conclusion {eigen.formula} cannot be free in it')
+        if isinstance(rule_premise.main, FormulaSchemaWithEigenvariable):
+            if application_premise.main.sub is None or not isinstance(application_premise.main.sub.dest, Variable):
+                raise RuleApplicationError(f'The schema {rule_premise.main} in rule {rule.name} requires a matching eigenvariable instance')
 
-            if eigen.var in application_premise.tree.get_free_variables():
+            eigen = application_premise.main.sub.dest
+
+            if not application_premise.main.sub.is_noop() and eigen in get_formula_free_variables(application_premise.main.formula):
+                raise RuleApplicationError(f'The eigenvariable {eigen} of the unsubstituted premise conclusion {application_premise.main.formula} cannot be free in it')
+
+            if eigen in application_premise.tree.get_free_variables():
                 raise RuleApplicationError(f'The eigenvariable {eigen} cannot be free in the derivation of {application_premise.tree.conclusion}')
 
-        if rule_premise.discharge:
-            if application_premise.discharge is None:
-                raise RuleApplicationError(f'The rule {rule.name} requires a discharge formula for premise number {i}')
+        if len(application_premise.attachments) != len(rule_premise.attachments):
+            if len(rule_premise.attachments) == 1:
+                raise RuleApplicationError(f'The rule {rule.name} requires an attached formula for premise number {i}')
 
-            # Check if there is an eigenvariable in the discharge formula
-            if eigen := get_discharge_eigenvariable(rule_premise, application_premise):
-                if eigen.is_renamed() and eigen.var in get_formula_free_variables(eigen.formula):
-                    raise RuleApplicationError(f'The renamed eigenvariable {eigen.get_sub()} of the dischargeable formula {eigen.formula} cannot be free in it')
+            raise RuleApplicationError(f'The rule {rule.name} requires {len(rule_premise.attachments)} attached formulas for premise number {i}')
 
-                if any(mvar.var == eigen.var and mvar.marker != application_premise.marker for mvar in application_premise.tree.get_marked_free_variables()):
-                    if application_premise.marker:
-                        raise RuleApplicationError(f'The eigenvariable {eigen} cannot be free in the derivation of {application_premise.tree.conclusion}, except possibly in [{application_premise.discharge}]{to_superscript(str(application_premise.marker))}')
+        for attachment_schema, attachment in zip(rule_premise.attachments, application_premise.attachments, strict=True):
+            if attachment is None:
+                continue
 
-                    raise RuleApplicationError(f'The eigenvariable {eigen} cannot be free in the derivation of {application_premise.tree.conclusion}')
+            if isinstance(attachment_schema, FormulaSchemaWithEigenvariable):
+                if attachment.payload.sub is None or not isinstance(attachment.payload.sub.dest, Variable):
+                    raise RuleApplicationError(f'The schema {attachment_schema} in rule {rule.name} requires a matching eigenvariable instance')
 
-                if eigen.var in get_formula_free_variables(evaluate_substitution_spec(application_premise.tree.conclusion)):
-                    raise RuleApplicationError(f'The discharge formula eigenvariable {eigen} cannot be free in the conclusion {application_premise.tree.conclusion} of premise number {i}')
+                eigen = attachment.payload.sub.dest
+                app_conclusion = application_premise.tree.conclusion
+
+                if not attachment.payload.sub.is_noop() and eigen in get_formula_free_variables(attachment.payload.formula):
+                    raise RuleApplicationError(f'The renamed eigenvariable {eigen} of the unsubstituted attached formula {attachment.payload.formula} cannot be free in it')
+
+                if eigen in get_formula_free_variables(app_conclusion):
+                    raise RuleApplicationError(f'The attached formula eigenvariable {eigen} cannot be free in the conclusion {app_conclusion} of premise number {i} of the rule {rule.name}')
+
+                if eigen in application_premise.tree.get_free_variables(discharged={attachment.marker}):
+                    raise RuleApplicationError(f'The eigenvariable {eigen} cannot be free in the derivation of {app_conclusion}, except possibly in {attachment.eval()}')
 
             # Update instantiation
             instantiation |= infer_instantiation_from_formula_substitution_spec(
-                rule_premise.discharge,
-                application_premise.discharge
+                attachment_schema,
+                attachment.payload
             )
 
-        instantiation |= infer_instantiation_from_formula_substitution_spec(
-            rule_premise.main,
-            application_premise.main,
-        )
+        if application_premise.main:
+            if rule_premise.main.sub is None:
+                instantiation |= infer_instantiation_from_formula(
+                    rule_premise.main.formula,
+                    evaluate_substitution(application_premise.main),
+                )
+            else:
+                instantiation |= infer_instantiation_from_formula_substitution_spec(
+                    rule_premise.main,
+                    application_premise.main,
+                )
 
-    if rule.conclusion.sub:
-        if not conclusion_sub:
-            raise RuleApplicationError('Expected a substitution of the conclusion')
+    if rule.conclusion.main.sub:
+        if conclusion_config is None:
+            raise RuleApplicationError(f'The rule {rule.name} requires a conclusion with an explicit substitution')
 
-        instantiation |= infer_instantiation_from_term_substitution_spec(rule.conclusion.sub, conclusion_sub)
+        instantiation |= infer_instantiation_from_formula_substitution_spec(rule.conclusion.main, conclusion_config)
+
+    for attachment_schema in rule.conclusion.attachments:
+        try:
+            instantiate_substitution(attachment_schema, instantiation)
+        except SchemaInstantiationError as err:
+            raise RuleApplicationError(f'Cannot instantiate the implicit premise {attachment_schema} of the rule {rule.name}') from err
+
+    if conclusion_config is None:
+        conclusion_config = instantiate_substitution(rule.conclusion.main, instantiation)
 
     return RuleApplicationTree(
         rule,
         instantiation,
-        application_premises,
-        instantiate_substitution_spec(rule.conclusion, instantiation)
+        [premise.eval() for premise in application_premises],
+        evaluate_substitution(conclusion_config),
     )
 
 
