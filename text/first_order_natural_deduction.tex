@@ -302,32 +302,36 @@
 \begin{definition}\label{def:fol_natural_deduction_proof_tree}
   We will extend to \hyperref[def:first_order_logic]{first-order logic} the \hyperref[def:proof_tree]{proof trees} that we defined for propositional logic defined in \cref{def:propositional_natural_deduction_proof_tree}. Fix a \hyperref[def:fol_natural_deduction_system]{first-order natural deduction system}.
 
-  In addition to the conclusion, rule name, open assumptions and implicit premises, we will also need several sets of variables:
+  In addition to the conclusion, rule name, open assumptions and implicit open premises, we will also need several sets of variables:
   \begin{thmenum}[series=def:fol_natural_deduction_proof_tree]
-    \thmitem{def:fol_natural_deduction_proof_tree/eigen} Most importantly, we will associate with every tree a set of variables called \term[ru=собственная переменная (\cite[145]{Герасимов2014Вычислимость}), en=eigenvariable (\cite[\S 5.1.10]{Mimram2020ProgramEqualsProof})]{eigenvariable}. These are local to the root and are analogues of discharged assumptions.
+    \thmitem{def:fol_natural_deduction_proof_tree/eigenvariables} Most importantly, we will associate with every tree a set of variables called \term[ru=собственная переменная (\cite[145]{Герасимов2014Вычислимость}), en=eigenvariable (\cite[\S 5.1.10]{Mimram2020ProgramEqualsProof}); proper variable (\cite[38]{TroelstraSchwichtenberg2000BasicProofTheory})]{eigenvariable}. These are local to the root and are analogues of discharged assumptions.
 
     These obey some specific restrictions listed below. We try to justify these conditions using similar rules in \cref{rem:dependent_products_and_forall_quantifier_rules} and \cref{rem:sequent_calculus_eigenvariables}.
 
-    \thmitem{def:fol_natural_deduction_proof_tree/free} Dually, we will also need a set of \term{free variables} of the proof tree. Similarly to the open assumptions, they will be cumulative for the entire tree and not just local to the root.
+    \thmitem{def:fol_natural_deduction_proof_tree/open_variables} Dually, we will also need a set of \term{open free variables} of the proof tree. Similarly to the open assumptions, they will be cumulative for the entire tree and not just local to the root.
 
-    Actually, we will need a more elaborate construction --- a function \( F(D, E) \) depending on a set \( D \) of discharged markers and a set \( E \) of discharged eigenvariables. We call \( F(\varnothing, \varnothing) \) \enquote{the} set of free variables of the tree.
+    Actually, we will need a more elaborate construction --- a function \( F(D, E) \) depending on a set \( D \) of discharged markers and a set \( E \) of discharged eigenvariables. We call \( F(\varnothing, \varnothing) \) \enquote{the} set of open free variables of the tree.
+
+    \thmitem{def:fol_natural_deduction_proof_tree/implicit_variables} Similarly to implicit open premises, we may also have \term{implicit open variables}. We will call the proof tree \term{strict} if all implicit variables are also explicit open free variables.
   \end{thmenum}
 
   Just as with assumption discharging, binding variables is also delicate to handle:
   \begin{thmenum}[resume=def:fol_natural_deduction_proof_tree]
     \thmitem{def:fol_natural_deduction_proof_tree/assumption} An assumption tree for a first-order formula \( \varphi \) with marker \( u \) is defined analogously to the propositional case.
     \begin{thmenum}
-      \thmitem{def:fol_natural_deduction_proof_tree/assumption/eigen} There are no eigenvariables.
-      \thmitem{def:fol_natural_deduction_proof_tree/assumption/free} The free variables of the tree are those of \( \varphi \) (in the sense of \cref{def:fol_variable_freeness}). More generally,
+      \thmitem{def:fol_natural_deduction_proof_tree/assumption/eigenvariables} There are no eigenvariables.
+      \thmitem{def:fol_natural_deduction_proof_tree/assumption/open_variables} The open variables of the tree are the free variables of \( \varphi \). More generally,
       \begin{equation*}
         F(D, E) \coloneqq \begin{cases}
           \varnothing,                     &u \in D, \\
           \op*{Free}(\varphi) \setminus E, &\T{otherwise.}
         \end{cases}
       \end{equation*}
+
+      \thmitem{def:fol_natural_deduction_proof_tree/assumption/implicit_variables} There are no implicit variables.
     \end{thmenum}
 
-    \thmitem{def:fol_natural_deduction_proof_tree/application} A rule application tree operates similarly to its propositional counterpart, but binding free variables has some important caveats.
+    \thmitem{def:fol_natural_deduction_proof_tree/application} A rule application tree operates similarly to its propositional counterpart, but binding open variables has some important caveats.
 
     Consider the rule
     \begin{equation*}
@@ -354,41 +358,43 @@
 
       We impose the following restrictions:
       \begin{thmenum}
-        \thmitem{def:fol_natural_deduction_proof_tree/application/main/variable} Either \( y \) must coincide with \( x \) or otherwise \( y \) must not be free in the \hi{formula} \( \Lambda[\BbbI] \) (the unsubstituted conclusion of \( P_k \)).
+        \thmitem{def:fol_natural_deduction_proof_tree/application/main/variable} Either \( y \) must coincide with \( x \) or otherwise \( y \) must not be free in \( \Lambda[\BbbI] \) (the unsubstituted conclusion of \( P_k \)).
 
-        \thmitem{def:fol_natural_deduction_proof_tree/application/main/assumptions} The variable \( y \) must not be free in the \hi{premise subtree} \( P_k \).
+        \thmitem{def:fol_natural_deduction_proof_tree/application/main/assumptions} The variable \( y \) must not be open in \( P_k \).
       \end{thmenum}
 
       \thmitem{def:fol_natural_deduction_proof_tree/application/attached} If the premise \( \Phi_k \) has a dischargeable schema \( \Theta_{k,i} \) attached, and if \( \Theta_{k,i} \) has a substitution schema with an eigenvariable, then, as above, \( \Theta_{k,i} = \Lambda[\xi \synsubst \eta^*] \). Again, denote \( \BbbI(\xi) \) and \( \BbbI(\eta) \) by \( x \) and \( y \).
 
       We impose the following restrictions:
       \begin{thmenum}
-        \thmitem{def:fol_natural_deduction_proof_tree/application/attached/variable} Either \( y \) must coincide with \( x \) or otherwise \( y \) must not be free in the \hi{formula} \( \Lambda[\BbbI] \) (the unsubstituted dischargeable premise).
+        \thmitem{def:fol_natural_deduction_proof_tree/application/attached/variable} Either \( y \) must coincide with \( x \) or otherwise \( y \) must not be free in \( \Lambda[\BbbI] \) (the unsubstituted dischargeable premise).
 
-        \thmitem{def:fol_natural_deduction_proof_tree/application/attached/assumptions} The variable \( y \) must not be free in the \hi{premise subtree} \( P_k \), except possibly in \( [\varphi]^u \) if \( \varphi = \Theta_{k,i}[\BbbI] \) (the substituted dischargeable premise).
+        \thmitem{def:fol_natural_deduction_proof_tree/application/attached/assumptions} The variable \( y \) must not be open in \( P_k \), except possibly in \( [\varphi]^u \) if \( \varphi = \Theta_{k,i}[\BbbI] \) (the substituted dischargeable premise).
 
-        To check whether \( y \) is not free in any assumption of \( P_k \) except \( [\varphi]^u \), we must inspect whether it belongs to the corresponding set \( F_k(\set{ u }, \varnothing) \).
+        To check whether \( y \) is not free in any open assumption of \( P_k \) except \( [\varphi]^u \), we must inspect whether it belongs to the corresponding set \( F_k(\set{ u }, \varnothing) \).
 
-        \thmitem{def:fol_natural_deduction_proof_tree/application/attached/conclusion} Additionally, \( y \) must not be free in the \hi{formula} \( \Phi_k[\BbbI] \) (the conclusion of \( P_k \)).
+        \thmitem{def:fol_natural_deduction_proof_tree/application/attached/conclusion} Additionally, \( y \) must not be free in \( \Phi_k[\BbbI] \) (the conclusion of \( P_k \)).
 
         In particular, if \( \Phi_k[\BbbI] \) and \( \Theta_{k,i}[\BbbI] \) coincide, then \( y \) is not allowed to be free in them.
       \end{thmenum}
     \end{thmenum}
 
-    It remains to describe the set of free variables in the application tree \( P_d \):
+    It remains to describe the set of open free variables in the application tree \( P_d \):
     \begin{thmenum}[resume=def:fol_natural_deduction_proof_tree/application]
-      \thmitem{def:fol_natural_deduction_proof_tree/application/eigen} If either \cref{def:fol_natural_deduction_proof_tree/application/main} or \cref{def:fol_natural_deduction_proof_tree/application/attached} are satisfied, we proclaim \( y \) an eigenvariable.
+      \thmitem{def:fol_natural_deduction_proof_tree/application/eigenvariables} If either \cref{def:fol_natural_deduction_proof_tree/application/main} or \cref{def:fol_natural_deduction_proof_tree/application/attached} are satisfied, we proclaim \( y \) an eigenvariable.
 
       We denote the set of all eigenvariables of \( P_d \) by \( E_d \).
 
-      \thmitem{def:fol_natural_deduction_proof_tree/application/free} We will now utilize the set \( I_d \) of implicit premises and the set \( D_d \) of discharged assumption markers.
+      \thmitem{def:fol_natural_deduction_proof_tree/application/open_variables} We will now utilize the set \( I_d \) of implicit open premises and the set \( D_d \) of discharged assumption markers.
 
-      Denote by \( F_k(D, E) \) the free variable function of the premise subtree \( P_k \). For \( P_d \) itself, define the free variables as follows:
+      Denote by \( F_k(D, E) \) the open variable function of the premise subtree \( P_k \). For \( P_d \) itself, we define the corresponding function as follows:
       \begin{equation*}
-        F_d(D, E) \coloneqq \bigcup_{k=1}^n F_k(D \cup D_d, E \cup E_d) \cup \bigcup_{\varphi \in I_d} \op*{Free}(\varphi) \setminus (E \cup E_d).
+        F_d(D, E) \coloneqq \bigcup_{k=1}^n F_k(D \cup D_d, E \cup E_d) \cup \parens{ \bigcup_{\varphi \in I_d} \op*{Free}(\varphi) \setminus (E \cup E_d) }.
       \end{equation*}
 
-      We take the union of all free variables of the subtrees and implicit premises, excluding those discharged at the current application.
+      Thus, have taken the union of all open variables of the subtrees and all free variables of the implicit premises, excluding those discharged at the current application.
+
+      \thmitem{def:fol_natural_deduction_proof_tree/application/implicit_variables} If the conclusion schema features a substitution, i.e. if \( \Psi = \Lambda[\xi \mapsto \Tau] \), let the set of implicit open variables be the set of variables of the term \( \Tau[\BbbI] \). Otherwise, let \( C_d \) be the empty set.
     \end{thmenum}
   \end{thmenum}
 \end{definition}
@@ -399,6 +405,8 @@
 
   \item Even though we do not disallow eigenvariables in the conclusion, they simply serve no purpose there.
 
+  \item Implicit variables and strict proof trees are not established concepts. Nonstrict rule application trees, in which the conclusion may introduce new free variables, have some debatable aspects despite being the norm. See \cref{rem:fol_empty_universe/natural_deduction} for a broader discussion.
+
   \item The term \enquote{eigenvariable} comes from \tcite{#2, where #1}{Gentzen1935LogischeSchließen} introduces natural deduction. In the corresponding English translation, \cite[293]{Gentzen1964LogicalDeduction}, eigenvariables are instead called \enquote{proper variables}. Both terms are currently used in English (e.g. \incite[\S 5.1.10]{Mimram2020ProgramEqualsProof} uses \enquote{eigenvariable}, while \incite[38]{TroelstraSchwichtenberg2000BasicProofTheory} uses \enquote{proper variable}).
 
   Gentzen presents only two rules featuring eigenvariables, in which the variables must satisfy slightly differing constraints. We restate Gentzen's rules in \cref{def:fol_natural_deduction} and adapt them for \hyperref[def:higher_order_logic]{higher-order logic} in \cref{def:hol_quantifier_rules/eigenvariables}.
@@ -407,7 +415,7 @@
 \end{comments}
 
 \begin{definition}\label{def:fol_natural_deduction_consequence}\mimprovised
-  For every \hyperref[def:fol_natural_deduction_system]{first-order natural deduction system}, we define a \hyperref[def:consequence_relation]{consequence relation} as follows: we let \( \Gamma \vdash \varphi \) if there exists a \hyperref[def:fol_natural_deduction_proof_tree]{proof tree} with conclusion \( \varphi \) whose \hyperref[def:propositional_natural_deduction_proof_tree/open]{open assumptions} are all in \( \Gamma \).
+  For every \hyperref[def:fol_natural_deduction_system]{first-order natural deduction system}, we define a \hyperref[def:consequence_relation]{consequence relation} as follows: we let \( \Gamma \vdash \varphi \) if there exists a \hyperref[def:fol_natural_deduction_proof_tree]{proof tree} with conclusion \( \varphi \) whose \hyperref[def:propositional_natural_deduction_proof_tree/open_assumptions]{open assumptions} are all in \( \Gamma \).
 
   In accordance with \cref{def:general_logic}, we say that \( \varphi \) is \term{derivable} from \( \Gamma \) if this relation holds.
 \end{definition}
@@ -572,6 +580,8 @@
 
     Neither rule supports eigenvariables, so the application is straightforward. Here \( \tau \) can be an arbitrary term.
 
+    This derivation is sound only if there is something to quantify over. We discuss this in \cref{rem:fol_empty_universe/natural_deduction}.
+
     \thmitem{ex:def:fol_natural_deduction/implicit_premise} Without implicit premises, the free variables of the following proof trees would differ:
     \begin{paracol}{2}
       \begin{leftcolumn}
@@ -681,6 +691,27 @@
   For the purposes of predicate logic, it will suffice, instead of dealing with explicit type contexts, we instead enforce the constraints given in \cref{def:fol_natural_deduction_proof_tree/application/main}.
 
   It is important here to note that \( \qforall x \varphi \) and \( \qforall y \varphi[x \mapsto y] \) are considered different formulas. This contrasts with Martin-L\"of type theory, where, due to the rule \ref{rem:type_theory_rule_classification/equality/alpha}, \hyperref[def:lambda_term_alpha_equivalence]{\( \alpha \)-equivalent} \( \muplambda \)-terms are assumed to be \hyperref[con:equality]{judgmentally equal}. Making \( \alpha \)-conversion explicit leads to \ref{inf:def:fol_natural_deduction/forall/intro} .
+\end{remark}
+
+\begin{remark}\label{rem:fol_empty_universe/natural_deduction}
+  We discussed in \cref{rem:fol_empty_universe/semantics} how a \hyperref[def:fol_structure]{first-order structure} with an empty universe may cause issues with a lot of semantical concepts.
+
+  As similar issue can be observed in the derivation tree from \cref{ex:def:fol_natural_deduction/forall_to_exists}:
+  \begin{equation*}
+    \begin{prooftree}
+      \hypo{ [\qforall x p(x)]^u }
+      \infer1[\ref{inf:def:fol_natural_deduction/forall/elim}]{ p(\tau) }
+      \infer1[\ref{inf:def:fol_natural_deduction/exists/intro}]{ \qexists x p(x) }
+    \end{prooftree}
+  \end{equation*}
+
+  This derivation is not sound in an empty universe where nothing exists. Nevertheless, the standard treatment of natural deduction ignores this issue --- starting from Gentzen's \cite[186]{Gentzen1935LogischeSchließen}, and including \cite[ch. 2]{TroelstraSchwichtenberg2000BasicProofTheory}, \cite[\S 2.8]{VanDalen2004LogicAndStructure} and \cite[97]{КолмогоровДрагалин2006Логика}.
+
+  \incite*[\S 5.1.10]{Mimram2020ProgramEqualsProof} provides a hint at how to handle this situation. We have adapted his remarks when introducing strict proof trees in \cref{def:fol_natural_deduction_proof_tree/implicit_variables}. Since the only open assumption above has no free variables, the application of \ref{inf:def:fol_natural_deduction/forall/elim} is strict only if \( \tau \) is closed. This is the case when \( \tau \) contains at least one individual constant. But if the signature has an individual constant, its domain cannot be empty.
+
+  If, on the other hand, the domain is empty, the rule is inapplicable. Strict proof trees require us to be more careful with the choice of conclusion of \ref{inf:def:fol_natural_deduction/forall/elim}. However, this makes them compatible with empty universes.
+
+  Due to the increased complexity, we will not further pursue this path.
 \end{remark}
 
 \begin{remark}\label{rem:sequent_calculus_eigenvariables}

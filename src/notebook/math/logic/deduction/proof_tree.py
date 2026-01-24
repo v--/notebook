@@ -23,7 +23,7 @@ from ..instantiation import (
 )
 from ..substitution import evaluate_substitution
 from ..terms import Variable
-from ..variables import get_formula_free_variables
+from ..variables import get_formula_free_variables, get_term_variables
 from .exceptions import RuleApplicationError
 from .markers import MarkedFormula, MarkedFormulaWithSubstitution, Marker
 from .system import NaturalDeductionRule
@@ -48,13 +48,13 @@ class AssumptionTree(InferenceTree[Formula, MarkedFormula]):
             marker=str(self.marker),
         )
 
-    def get_local_implicit_premises(self) -> Collection[Formula]:
+    def get_local_implicit_open_premises(self) -> Collection[Formula]:
         return set()
 
     def get_local_eigenvariables(self) -> Collection[Variable]:
         return set()
 
-    def get_free_variables(
+    def get_open_variables(
         self,
         eigen: Collection[Variable] = set(),
         discharged: Collection[Marker] = set()
@@ -66,6 +66,9 @@ class AssumptionTree(InferenceTree[Formula, MarkedFormula]):
             var for var in get_formula_free_variables(self.conclusion)
             if var not in eigen
         }
+
+    def is_strict(self) -> bool:
+        return True
 
     def __str__(self) -> str:
         return self.build_renderer().render()
@@ -114,6 +117,7 @@ class RuleApplicationTree(InferenceTree[Formula, MarkedFormula]):
     instantiation: AtomicLogicSchemaInstantiation
     premises: Sequence[RuleApplicationPremise]
     conclusion: Formula
+    implicit_variables: Collection[Variable]
 
     def _filter_assumptions(self, *, discharged_at_current_step: bool) -> Iterable[MarkedFormula]:
         for premise in self.premises:
@@ -133,7 +137,7 @@ class RuleApplicationTree(InferenceTree[Formula, MarkedFormula]):
             else:
                 yield formula
 
-    def get_local_implicit_premises(self) -> Collection[Formula]:
+    def get_local_implicit_open_premises(self) -> Collection[Formula]:
         return set(self._iter_implicit_premises())
 
     @override
@@ -166,7 +170,7 @@ class RuleApplicationTree(InferenceTree[Formula, MarkedFormula]):
             [premise.tree.build_renderer() for premise in self.premises]
         )
 
-    def _iter_free_variables(
+    def _iter_open_variables(
         self,
         eigen: Collection[Variable],
         discharged: Collection[Marker]
@@ -175,19 +179,23 @@ class RuleApplicationTree(InferenceTree[Formula, MarkedFormula]):
         discharged_ = {*discharged, *self.get_locally_discharged_markers()}
 
         for premise_tree in self.premises:
-             yield from premise_tree.tree.get_free_variables(eigen_, discharged_)
+             yield from premise_tree.tree.get_open_variables(eigen_, discharged_)
 
-        for premise in self.get_local_implicit_premises():
+        for premise in self.get_local_implicit_open_premises():
              for var in get_formula_free_variables(premise):
                 if var not in eigen:
                     yield var
 
-    def get_free_variables(
+    def get_open_variables(
         self,
         eigen: Collection[Variable] = set(),
         discharged: Collection[Marker] = set()
     ) -> Collection[Variable]:
-        return set(self._iter_free_variables(eigen, discharged))
+        return set(self._iter_open_variables(eigen, discharged))
+
+    def is_strict(self) -> bool:
+        open_vars = self.get_open_variables()
+        return any(var not in open_vars for var in self.implicit_variables)
 
     def __str__(self) -> str:
         return self.build_renderer().render()
@@ -198,7 +206,7 @@ def apply(  # noqa: C901,PLR0915
     *args: ProofTree | RuleApplicationPremiseConfig,
     instantiation: AtomicLogicSchemaInstantiation | None = None,
     implicit: Mapping[FormulaPlaceholder, Formula] | None = None,
-    conclusion_config: FormulaWithSubstitution | None = None,
+    conclusion_config: FormulaWithSubstitution | None = None
 ) -> RuleApplicationTree:
     if len(args) != len(rule.premises):
         raise RuleApplicationError(f'The rule {rule.name} has {len(rule.premises)} premises, but the application has {len(args)}')
@@ -237,7 +245,7 @@ def apply(  # noqa: C901,PLR0915
             if not application_premise.main.sub.is_noop() and eigen in get_formula_free_variables(application_premise.main.formula):
                 raise RuleApplicationError(f'The eigenvariable {eigen} of the unsubstituted premise conclusion {application_premise.main.formula} cannot be free in it')
 
-            if eigen in application_premise.tree.get_free_variables():
+            if eigen in application_premise.tree.get_open_variables():
                 raise RuleApplicationError(f'The eigenvariable {eigen} cannot be free in the derivation of {application_premise.tree.conclusion}')
 
         if len(application_premise.attachments) != len(rule_premise.attachments):
@@ -263,7 +271,7 @@ def apply(  # noqa: C901,PLR0915
                 if eigen in get_formula_free_variables(app_conclusion):
                     raise RuleApplicationError(f'The attached formula eigenvariable {eigen} cannot be free in the conclusion {app_conclusion} of premise number {i} of the rule {rule.name}')
 
-                if eigen in application_premise.tree.get_free_variables(discharged={attachment.marker}):
+                if eigen in application_premise.tree.get_open_variables(discharged={attachment.marker}):
                     raise RuleApplicationError(f'The eigenvariable {eigen} cannot be free in the derivation of {app_conclusion}, except possibly in {attachment.eval()}')
 
             # Update instantiation
@@ -304,6 +312,7 @@ def apply(  # noqa: C901,PLR0915
         instantiation,
         [premise.eval() for premise in application_premises],
         evaluate_substitution(conclusion_config),
+        get_term_variables(conclusion_config.sub.dest) if conclusion_config.sub else set()
     )
 
 

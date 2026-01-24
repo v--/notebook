@@ -17,7 +17,7 @@ from ..type_derivation import (
     assume,
     premise_config,
 )
-from ..variables import get_free_variables
+from ..variables import get_open_variables
 from .alpha import alpha_convert_derivation
 from .substitution import substitute_in_tree
 from .visitor import SimpleAlgebraicDerivationTreeVisitor
@@ -47,7 +47,7 @@ class ReductionVisitor(SimpleAlgebraicDerivationTreeVisitor[TypeDerivationTree])
         var_type = subtree_discharge.type
 
         # η-reduction
-        if isinstance(body, TypedApplication) and body.right == var and var not in get_free_variables(body.left):
+        if isinstance(body, TypedApplication) and body.right == var and var not in get_open_variables(body.left):
             if not isinstance(subtree, RuleApplicationTree) or subtree.rule != ARROW_ONLY_TYPE_SYSTEM['→₋']:
                 raise TypeDerivationError(f'Expected the tree deriving {subtree.conclusion} to be an application tree of →₋')
 
@@ -63,7 +63,7 @@ class ReductionVisitor(SimpleAlgebraicDerivationTreeVisitor[TypeDerivationTree])
             if var == self.reduct.var:
                 adjusted_subtree = subtree
             else:
-                if self.reduct.var in get_free_variables(body):
+                if self.reduct.var in get_open_variables(body):
                     raise NotReducible
 
                 adjusted_subtree = substitute_in_tree(

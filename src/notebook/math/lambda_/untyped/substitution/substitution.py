@@ -3,7 +3,7 @@ from typing import override
 
 from .....support.substitution import AbstractAtomicSubstitution
 from ...terms import UntypedAbstraction, UntypedTerm, Variable
-from ...variables import get_free_variables, new_variable
+from ...variables import get_open_variables, new_variable
 
 
 class UntypedTermSubstitution(AbstractAtomicSubstitution[Variable, UntypedTerm]):
@@ -21,8 +21,8 @@ class UntypedTermSubstitution(AbstractAtomicSubstitution[Variable, UntypedTerm])
         return self.variable_mapping.get(var, var)
 
     def iter_free_in_substituted(self, term: UntypedTerm) -> Iterable[Variable]:
-        for var in get_free_variables(term):
-            yield from get_free_variables(self.substitute_variable(var))
+        for var in get_open_variables(term):
+            yield from get_open_variables(self.substitute_variable(var))
 
     def get_modified_abstractor_variable(self, term: UntypedAbstraction) -> Variable:
         blacklist = set(self.iter_free_in_substituted(term))

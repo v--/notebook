@@ -3,7 +3,7 @@ from typing import override
 
 from .....support.substitution import AbstractAtomicSubstitution, UnspecifiedReplacementError
 from ...terms import TypedAbstraction, TypedTerm, Variable
-from ...variables import get_free_variables, new_variable
+from ...variables import get_open_variables, new_variable
 from ..tree import TypeDerivationTree
 
 
@@ -25,13 +25,13 @@ class AtomicTypeDerivationSubstitution(AbstractAtomicSubstitution[Variable, Type
             raise UnspecifiedReplacementError(f'No substitution nor type given for variable {var.identifier}') from None
 
     def iter_free_in_substituted_for_term(self, term: TypedTerm) -> Iterable[Variable]:
-        for var in get_free_variables(term):
+        for var in get_open_variables(term):
             try:
                 replacement = self.variable_mapping[var]
             except KeyError:
                 yield var
             else:
-                yield from get_free_variables(replacement.conclusion.term)
+                yield from get_open_variables(replacement.conclusion.term)
 
     def iter_free_in_substituted(self, tree: TypeDerivationTree) -> Iterable[Variable]:
         return self.iter_free_in_substituted_for_term(tree.conclusion.term)

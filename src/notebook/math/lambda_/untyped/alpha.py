@@ -1,7 +1,7 @@
 from collections.abc import Collection
 
 from ..terms import Constant, UntypedAbstraction, UntypedApplication, UntypedTerm, Variable
-from ..variables import get_free_variables, new_variable
+from ..variables import get_open_variables, new_variable
 from .substitution import substitute
 
 
@@ -30,7 +30,7 @@ def are_terms_alpha_equivalent(m: UntypedTerm, n: UntypedTerm) -> bool:
             if m.var == n.var:
                 return are_terms_alpha_equivalent(m.body, n.body)
 
-            return m.var not in get_free_variables(n.body) and \
+            return m.var not in get_open_variables(n.body) and \
                 are_terms_alpha_equivalent(m.body, substitute(n.body, {n.var: m.var}))
 
         case _:
@@ -68,4 +68,4 @@ def separate_free_and_bound_variables_impl(term: UntypedTerm, context: Collectio
 
 
 def separate_free_and_bound_variables(term: UntypedTerm) -> UntypedTerm:
-    return separate_free_and_bound_variables_impl(term, get_free_variables(term))
+    return separate_free_and_bound_variables_impl(term, get_open_variables(term))

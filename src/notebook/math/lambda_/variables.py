@@ -37,7 +37,7 @@ class FreeVariableVisitor(TermVisitor[Collection[Variable]]):
         return {var for var in self.visit(term.body) if var != term.var}
 
 
-def get_free_variables(term: UntypedTerm | TypedTerm) -> Collection[Variable]:
+def get_open_variables(term: UntypedTerm | TypedTerm) -> Collection[Variable]:
     return FreeVariableVisitor().visit(term)
 
 
@@ -64,4 +64,4 @@ def get_bound_variables(term: UntypedTerm | TypedTerm) -> Collection[Variable]:
 
 
 def get_term_variables(term: UntypedTerm | TypedTerm) -> Collection[Variable]:
-    return {*get_free_variables(term), *get_bound_variables(term)}
+    return {*get_open_variables(term), *get_bound_variables(term)}

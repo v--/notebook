@@ -1,6 +1,6 @@
 from ....support.pytest import pytest_parametrize_kwargs
 from ..parsing import parse_untyped_term
-from ..variables import get_bound_variables, get_free_variables
+from ..variables import get_bound_variables, get_open_variables
 from .alpha import are_terms_alpha_equivalent, separate_free_and_bound_variables
 
 
@@ -74,7 +74,7 @@ def test_separate_free_and_bound_variables(term: str, expected: str) -> None:
     new_term = separate_free_and_bound_variables(old_term)
     assert are_terms_alpha_equivalent(old_term, new_term)
 
-    free = set(get_free_variables(new_term))
+    free = set(get_open_variables(new_term))
     bound = set(get_bound_variables(new_term))
     assert free.isdisjoint(bound)
     assert str(new_term) == expected

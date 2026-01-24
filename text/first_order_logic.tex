@@ -31,7 +31,7 @@ First-order logic is a particularly convenient form of \hyperref[con:predicate_l
 
       \thmitem{def:predicate_logic_alphabet/aux/dot} The dot \enquote{\( . \)} for separating quantifiers from their bodies.
 
-      \thmitem{def:predicate_logic_alphabet/aux/asterisk} The asterisk \enquote{\( * \)} for labeling \hyperref[def:fol_natural_deduction_proof_tree/eigen]{eigenvariables}.
+      \thmitem{def:predicate_logic_alphabet/aux/asterisk} The asterisk \enquote{\( * \)} for labeling \hyperref[def:fol_natural_deduction_proof_tree/eigenvariables]{eigenvariables}.
     \end{thmenum}
   \end{thmenum}
 \end{definition}
@@ -52,7 +52,9 @@ First-order logic is a particularly convenient form of \hyperref[con:predicate_l
 
     \thmitem{def:fol_signature/arity}\mcite[38]{CitkinMuravitsky2022ConsequenceRelations} A function \( {\#}: \op*{Fun}_\Sigma \cup \op*{Pred}_\Sigma \to \BbbZ_{\geq 0} \) determining the corresponding symbol's \term[ru=арность (\cite[84]{Герасимов2014Вычислимость}); валентность (\cite[73]{ШеньВерещагин2017ЯзыкиИИсчисления})]{arity}.
 
-    Based on this arity, we will use the prefixes from \cref{def:operation_arity_terminology} like \enquote{unary}, \enquote{binary}, etc.
+    Based on this arity, we will use the prefixes from \cref{def:operation_arity_terminology} like \enquote{nullary}, \enquote{unary}, \enquote{binary}, etc.
+
+    \thmitem{def:fol_signature/constants}\mcite[84]{Герасимов2014Вычислимость} We will call nullary functional symbols \term[ru=предметная константа, en=constants (\cite[83]{Hinman2005Logic})]{individual constants}.
 
     \thmitem{def:fol_signature/notation}\mimprovised In accordance with \cref{rem:fol_application_notation}, we allow \hyperref[def:set_partition]{partitioning} the set \( \op*{Fun}_\Sigma \cup \op*{Pred}_\Sigma \) of all signature symbols into three subsets called \( \op*{Prefix}_\Sigma \), \( \op*{Cond}_\Sigma \) (condensed notation) and \( \op*{Infix}_\Sigma \), based on the \hyperref[def:function_application_notation]{application notation} for we want to use.
 
@@ -67,6 +69,8 @@ First-order logic is a particularly convenient form of \hyperref[con:predicate_l
 \end{definition}
 \begin{comments}
   \item We discuss in \cref{rem:language_alphabet_cardinality} some cardinality considerations; we mention here only that both alphabets are by default assumed to be finite. In accordance with \cref{rem:cardinality_auxiliary_terminology}, we use cardinality-related terminology like \enquote{finite} and \enquote{countably infinite} for the signature itself when we mean the larger of the cardinalities of the alphabets.
+
+  \item Constant symbols are often separated from function symbols, for example in \cite[def. 2.1.2]{Hinman2005Logic} and \cite[def. 2.2.1]{VanDalen2004LogicAndStructure}. In these cases nullary predicate symbols are disallowed altogether.
 \end{comments}
 
 \begin{concept}\label{con:syntactic_translation}
@@ -434,13 +438,14 @@ First-order logic is a particularly convenient form of \hyperref[con:predicate_l
 \begin{definition}\label{def:fol_structure}\mcite[def. 2.2.3]{Герасимов2014Вычислимость}
   A \term[en=structure (\cite[def. 2.1.15]{Hinman2005Logic})]{structure} \( \mscrX = (X, I) \) over the \hyperref[def:fol_signature]{first-order signature} \( \Sigma \) consists of the following:
   \begin{thmenum}
-    \thmitem{def:fol_structure/universe} A \hi{nonempty} set \( X \), called a \term[ru=носитель (\cite[def. 2.2.4]{Герасимов2014Вычислимость}), en=universe (\cite[def. 2.1.15]{Hinman2005Logic})]{universe}.
+    \thmitem{def:fol_structure/universe} A set \( X \), called a \term[ru=носитель (\cite[def. 2.2.4]{Герасимов2014Вычислимость}), en=universe (\cite[def. 2.1.15]{Hinman2005Logic})]{universe}.
+
+    Unless explicitly noted otherwise, we require \( X \) to be nonempty. See \cref{rem:fol_empty_universe/semantics} for a broader discussion.
+
     \thmitem{def:fol_structure/interpretation} A map \( I \), called an \term{interpretation}, that sends each \( n \)-ary function symbol to a function \( X^n \to X \) and every \( n \)-ary predicate to a \hyperref[def:boolean_function]{Boolean-valued function} \( X^n \to \set{ \semtop, \sembot } \).
   \end{thmenum}
 \end{definition}
 \begin{comments}
-  \item It is important the universe is nonempty; see \cref{rem:higher_order_logic_empty_universe} for a broader discussion.
-
   \item In accordance with \cref{rem:cardinality_auxiliary_terminology}, we use cardinality-related terminology like \enquote{finite} and \enquote{countably infinite} for the structure itself when we mean the cardinality of the universe.
 
   \item Structures require nontrivial adaptations for \hyperref[con:intuitionistic_logic]{intuitionistic logic}; see \cref{rem:intuitionistic_equality}.
@@ -609,6 +614,14 @@ First-order logic is a particularly convenient form of \hyperref[con:predicate_l
 
   \item First-order denotations are implemented as \identifier{evaluate_term} and \identifier{evaluate_formula} in the module \identifier{math.logic.structure} in \cite{notebook:code}.
 \end{comments}
+
+\begin{remark}\label{rem:fol_empty_universe/semantics}
+  In \cref{def:fol_structure}, we have explicitly disallowed the universe \( X \) of a first-order structure \( \mscrX = (X, I) \) to be empty.
+
+  Without this restriction, \( I \) must interpret predicate and function symbols of positive arity as empty functions. But there is no way to interpret individual constants. Similarly, it is not possible to define \hyperref[def:fol_variable_assignment]{variable assignments}. As shown in \cref{rem:fol_empty_universe/natural_deduction}, proof theory is similarly unprepared for such cases.
+
+  Nevertheless, as long as we restrict ourselves to closed formulas over a signature without individual constants, empty structures are sometimes useful. Such cases includes the theories of \hyperref[def:preordered_set]{preordered sets} and \hyperref[def:semigroup]{semigroup}, as well as higher-order theories like that of \hyperref[def:topological_space]{topological spaces}.
+\end{remark}
 
 \begin{proposition}\label{thm:fol_equality_characterization}
   \Fullref{alg:fol_formula_denotation} is defined so that, for any equality formula \( (\tau \syneq \sigma) \) and any variable assignment \( v \) into \( \mscrX \), we have \( \Bracks{\tau \syneq \sigma}_\mscrX^v = \semtop \) if and only if \( \Bracks{\tau}_\mscrX^v = \Bracks{\sigma}_\mscrX^v \).

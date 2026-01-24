@@ -16,7 +16,7 @@ from ..type_derivation import (
     assume,
     premise_config,
 )
-from ..variables import get_free_variables
+from ..variables import get_open_variables
 from .substitution import substitute_in_tree
 from .visitor import SimpleAlgebraicDerivationTreeVisitor
 
@@ -69,7 +69,7 @@ class AlphaConversionVisitor(SimpleAlgebraicDerivationTreeVisitor[TypeDerivation
         if abstraction.var == other.var:
             adjusted_subtree = body_tree
         else:
-            if other.var in get_free_variables(abstraction.body):
+            if other.var in get_open_variables(abstraction.body):
                 raise NotAlphaEquivalent
 
             adjusted_subtree = substitute_in_tree(

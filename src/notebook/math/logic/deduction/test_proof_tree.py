@@ -47,7 +47,7 @@ def test_single_implication_intro() -> None:
     )
 
     assert tree.get_cumulative_assumptions() == {prop_marked_formula('q', 'u')}
-    assert tree.get_local_implicit_premises() == {parse_prop_formula('p')}
+    assert tree.get_local_implicit_open_premises() == {parse_prop_formula('p')}
     assert str(tree) == dedent('''\
           [q]ᵘ
          _______ →₊
@@ -72,8 +72,8 @@ def test_double_implication_intro() -> None:
     )
 
     assert tree.get_cumulative_assumptions() == set()
-    assert tree.get_local_implicit_premises() == set()
-    assert tree.premises[0].tree.get_local_implicit_premises() == {parse_prop_formula('q')}
+    assert tree.get_local_implicit_open_premises() == set()
+    assert tree.premises[0].tree.get_local_implicit_open_premises() == {parse_prop_formula('q')}
 
     assert str(tree) == dedent('''\
               [p]ᵘ
@@ -95,7 +95,7 @@ def test_efq() -> None:
     )
 
     assert tree.get_cumulative_assumptions() == {prop_marked_formula('⊥', 'u')}
-    assert tree.get_local_implicit_premises() == set()
+    assert tree.get_local_implicit_open_premises() == set()
     assert str(tree) == dedent('''\
         [⊥]ᵘ
         ____ EFQ
@@ -114,7 +114,7 @@ def test_or_intro() -> None:
     )
 
     assert tree.get_cumulative_assumptions() == {prop_marked_formula('p', 'u')}
-    assert tree.get_local_implicit_premises() == {parse_prop_formula('q')}
+    assert tree.get_local_implicit_open_premises() == {parse_prop_formula('q')}
     assert str(tree) == dedent('''\
          [p]ᵘ
         _______ ∨₊ₗ
@@ -279,7 +279,8 @@ def test_forall_reintroduction(dummy_signature: FormalLogicSignature) -> None:
         )
     )
 
-    assert tree.get_free_variables() == set()
+    assert tree.get_open_variables() == set()
+    assert not tree.is_strict()
     assert str(tree) == dedent('''\
         [∀x.p¹(x)]ᵘ
         ___________ ∀₋
@@ -303,7 +304,8 @@ def test_forall_reintroduction_with_renaming(dummy_signature: FormalLogicSignatu
         ),
     )
 
-    assert tree.get_free_variables() == set()
+    assert tree.get_open_variables() == set()
+    assert not tree.is_strict()
     assert str(tree) == dedent('''\
         [∀x.p¹(x)]ᵘ
         ___________ ∀₋
@@ -327,7 +329,8 @@ def test_forall_to_exists(dummy_signature: FormalLogicSignature) -> None:
         )
     )
 
-    assert tree.get_free_variables() == set()
+    assert tree.get_open_variables() == set()
+    assert not tree.is_strict()
     assert str(tree) == dedent('''\
         [∀x.p¹(x)]ᵘ
         ___________ ∀₋
@@ -352,7 +355,8 @@ def test_forall_to_exists_with_constant(dummy_signature: FormalLogicSignature) -
         ),
     )
 
-    assert tree.get_free_variables() == set()
+    assert tree.get_open_variables() == set()
+    assert not tree.is_strict()
     assert str(tree) == dedent('''\
         [∀x.p¹(x)]ᵘ
         ___________ ∀₋
@@ -409,7 +413,7 @@ def test_quantifier_duality(dummy_signature: FormalLogicSignature) -> None:
         )
     )
 
-    assert tree.get_free_variables() == set()
+    assert tree.get_open_variables() == set()
     assert str(tree) == dedent('''\
                                              [p¹(x)]ʷ
                                              ________ ∃₊
