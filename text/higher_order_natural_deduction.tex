@@ -131,76 +131,10 @@
 \begin{comments}
   \item These rules are based on the analogous rules of first-order logic given by \incite[36]{TroelstraSchwichtenberg2000BasicProofTheory}.
 
-  The higher-order variants follow naturally from the rules of \hyperref[def:martin_lof_type_theory]{Martin-L\"of type theory} via \hyperref[con:curry_howard_correspondence]{Curry-Howard correspondence}, as shown in \cref{ex:dependent_types_and_hol_quantifier_rules}.
+  The higher-order variants follow naturally from the rules of \hyperref[def:martin_lof_type_theory]{Martin-L\"of type theory} via \hyperref[con:curry_howard_correspondence]{Curry-Howard correspondence}, as shown in \cref{ex:dependent_products_and_forall_quantifier_rules}.
 
   We fully formalize the corresponding rules for first-order logic in \cref{def:fol_quantifier_rules/eigenvariables}.
 \end{comments}
-
-\begin{example}\label{ex:dependent_types_and_hol_quantifier_rules}
-  The \hyperref[con:eigenvariable]{eigenvariable} rules for \hyperref[def:higher_order_logic]{higher-order logic} from \cref{def:hol_quantifier_rules/eigenvariables} follow naturally, via the \hyperref[con:curry_howard_correspondence]{Curry-Howard correspondence}, from the \hyperref[con:typing_rule]{typing rules} for \hyperref[def:dependent_product]{dependent products} and \hyperref[def:dependent_sum]{dependent sums}.
-
-  Generally, in \hyperref[def:martin_lof_type_theory]{Martin-L\"of type theory}, we must be careful not to allow \hyperref[def:mltt_well_formed_context/derivation]{ill-formed derivations}. There can be situations where an assumption \( x: \tau \) cannot be discharged because the types of other open assumptions depend on \( x \).
-
-  \begin{thmenum}
-    \thmitem{ex:dependent_types_and_hol_quantifier_rules/product} Consider first the dependent product introduction rule \ref{inf:def:dependent_product/intro}, which we will restate here with some types renamed:
-    \begin{equation*}\taglabel[\ensuremath{ \Pi_+' }]{inf:ex:dependent_types_and_hol_quantifier_rules/product/intro}
-      \begin{prooftree}
-        \hypo{ x: \tau }
-        \infer[dashed]1{ M: \varphi }
-        \infer1[\ref{inf:ex:dependent_types_and_hol_quantifier_rules/product/intro}]{ \qabs {x^\tau} M: \qprod {x^\tau} \varphi }
-      \end{prooftree}
-    \end{equation*}
-
-    We are only interested in the existence of the terms \( M \) and \( \qabs {x^\tau} M \), but not in the terms themselves. So we may rewrite the above to resemble a natural deduction rule (with \( \synforall \) used instead of \( \synprod \)):
-    \begin{equation*}\taglabel[\ensuremath{ \forall_+' }]{inf:ex:dependent_types_and_hol_quantifier_rules/forall_intro_raw}
-      \begin{prooftree}
-        \hypo{ x: \tau }
-        \infer[dashed]1{ \varphi }
-        \infer1[\ref{inf:ex:dependent_types_and_hol_quantifier_rules/forall_intro_raw}]{ \qforall {x^\tau} \varphi }
-      \end{prooftree}
-    \end{equation*}
-
-    We showed in \cref{ex:def:mltt_well_formed_context/discharging} how, if some open assumption of a type derivation tree depends on \( x \), applying the rule and discharging \( x: \tau \) will make the derivation ill-formed.
-
-    For the purposes of higher-order logic, it will suffice, instead of dealing with explicit type contexts, we instead enforce the constraints given in \cref{def:hol_quantifier_rules/eigenvariables}.
-
-    It is important here to note that \( \qforall {x^\tau} \varphi \) and \( \qforall {y^\tau} \varphi[x \mapsto y] \) are considered different formulas. This contrasts with Martin-L\"of type theory, where, due to the rule \ref{rem:type_theory_rule_classification/equality/alpha}, \hyperref[def:lambda_term_alpha_equivalence]{\( \alpha \)-equivalent} \( \muplambda \)-terms are assumed to be \hyperref[con:equality]{judgmentally equal}.
-
-    Thus, the rule \ref{inf:def:hol_quantifier_rules/eigenvariables/forall_intro} with its constraints generalizes \ref{inf:ex:dependent_types_and_hol_quantifier_rules/forall_intro_raw} by also handling \( \alpha \)-conversion.
-
-    \thmitem{ex:dependent_types_and_hol_quantifier_rules/sum} The dependent sum rule \ref{inf:def:dependent_sum/elim} is more subtle:
-    \begin{equation*}\taglabel[\ensuremath{ \Sigma_-' }]{inf:ex:dependent_types_and_hol_quantifier_rules/sum/elim}
-      \begin{prooftree}
-        \hypo{ z: \qsum {x^\tau} \varphi }
-        \infer[dashed]1{ \psi: \BbbU }
-
-        \hypo{ x: \tau }
-        \hypo{ y: \varphi }
-        \infer[dashed]2{ M: \psi[z \mapsto \synS_+ x y] }
-
-        \hypo{ A: \qsum {x^\tau} \varphi }
-
-        \infer3[\ref{inf:ex:dependent_types_and_hol_quantifier_rules/sum/elim}]{ \synS_- (\qabs {z^{\qsum {x^\tau} \varphi}} \psi) (\qabs {x^\tau} \qabs {y^\varphi} M) A: \psi[z \mapsto A] }
-      \end{prooftree}
-    \end{equation*}
-
-    We obtain a logical derivation rule resembling \ref{inf:def:hol_quantifier_rules/eigenvariables/exists_elim} (with swapped subtrees) if we suppose that \( \varphi \) does not depend on \( y \), while \( \psi \) --- on \( z \):
-    \begin{equation*}\taglabel[\ensuremath{ \exists_-' }]{inf:ex:dependent_types_and_hol_quantifier_rules/sum/exists_elim_raw}
-      \begin{prooftree}
-        \hypo{ x: \tau }
-        \infer[dashed]1{ \psi }
-
-        \hypo{ \qexists {x^\tau} \varphi }
-
-        \infer2[\ref{inf:ex:dependent_types_and_hol_quantifier_rules/sum/exists_elim_raw}]{ \psi }
-      \end{prooftree}
-    \end{equation*}
-
-    When applying \ref{inf:ex:dependent_types_and_hol_quantifier_rules/sum/exists_elim_raw}, we must discharge \( x: \tau \), so it cannot be free in any assumption of the left subtree. But it is possible for \( x \) to be free in \( \varphi \) if the latter is a dependent type. This gives us the modified constraint \cref{def:hol_quantifier_rules/discharge/assumptions}.
-
-    The additional constraint \cref{def:hol_quantifier_rules/discharge/conclusion} simply states that we want to allow \( \psi \) to depend on \( x \) only indirectly through \( \varphi \).
-  \end{thmenum}
-\end{example}
 
 \begin{definition}\label{def:hol_equality_rules}\mimprovised
   We will state the following \hyperref[def:inference_rule]{inference rules} for \hyperref[def:predicate_logic_alphabet/equality]{equality}:
@@ -483,6 +417,12 @@ def:higher_order_logic]{higher-order logic} as follows: let \( \Gamma \vdash \va
   \item The above is adapted from \tcite{#2, where #1}[def. 2.6.11]{Hinman2005Logic} discusses definitions in first-order logic.
 \end{comments}
 
+\begin{definition}\label{def:fol_definitional_extension}\mcite[def. 2.6.12]{Hinman2005Logic}
+  Let \( \Sigma' \) be an \hyperref[def:hol_signature_extension]{extension} of the \hyperref[def:hol_signature]{signature} \( \Sigma \) of higher-order logic with finitely many new nonlogical symbols \( f_1, \ldots, f_m \).
+
+  If \( \Gamma \) is a \hyperref[def:hol_theory]{theory} over \( \Sigma \) and \( \Gamma' \) is theory over \( \Sigma' \) axiomatized by \( \Gamma \) and the \hyperref[def:hol_definition]{definitions} for \( f_1, \ldots, f_m \), we say that \( \Gamma' \) is a \term{definitional extension} of the theory \( \Gamma \).
+\end{definition}
+
 \begin{example}\label{ex:simplified_hol_predicate_definition}
   There is an important simplified special case of \hyperref[def:hol_definition]{higher-order logic definitions} which hints at how to introduce new predicate symbols in first-order logic, where equality is only available for individuals.
 
@@ -556,13 +496,3 @@ def:higher_order_logic]{higher-order logic} as follows: let \( \Gamma \vdash \va
     \end{prooftree}
   \end{equation*}
 \end{example}
-
-\begin{definition}\label{def:fol_definitional_extension}\mcite[def. 2.6.12]{Hinman2005Logic}
-  Let \( \Sigma' \) be an \hyperref[def:hol_signature_extension]{extension} of the \hyperref[def:hol_signature]{signature} \( \Sigma \) of higher-order logic with finitely many new nonlogical symbols \( f_1, \ldots, f_m \).
-
-  If \( \Gamma \) is a \hyperref[def:hol_theory]{theory} over \( \Sigma \) and \( \Gamma' \) is theory over \( \Sigma' \) axiomatized by \( \Gamma \) and the \hyperref[def:hol_definition]{definitions} for \( f_1, \ldots, f_m \), we say that \( \Gamma' \) is a \term{definitional extension} of the theory \( \Gamma \).
-\end{definition}
-
-\begin{remark}\label{rem:signature_translation_and_definitional_extensions}
-\cite{MossakowskiKrumnackMaibaum2015DerivedSignatureMorphisms}
-\end{remark}

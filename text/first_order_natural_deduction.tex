@@ -304,7 +304,7 @@
   \begin{thmenum}[series=def:fol_natural_deduction_proof_tree]
     \thmitem{def:fol_natural_deduction_proof_tree/eigenvariables} Most importantly, we will associate with every tree a set of variables called \term[ru=собственная переменная (\cite[145]{Герасимов2014Вычислимость}), en=eigenvariable (\cite[\S 5.1.10]{Mimram2020ProgramEqualsProof})]{eigenvariable}. These are local to the root and are analogues of discharged assumptions.
 
-    These obey some specific restrictions listed below. We show in \cref{ex:dependent_types_and_hol_quantifier_rules} how these restrictions appear naturally when discharging type assertions in \hyperref[def:martin_lof_type_theory]{Martin-L\"of type theory}.
+    These obey some specific restrictions listed below. We show in \cref{ex:dependent_products_and_forall_quantifier_rules} how these restrictions appear naturally when discharging type assertions in \hyperref[def:martin_lof_type_theory]{Martin-L\"of type theory}.
 
     \thmitem{def:fol_natural_deduction_proof_tree/free} Dually, we will also need a set of \term{free variables} of the proof tree. Similarly to the open assumptions, they will be cumulative for the entire tree and not just local to the root.
 
@@ -504,7 +504,7 @@
   \end{thmenum}
 \end{definition}
 \begin{comments}
-  \item The quantifier rules are justified by rules for dependent types via the \hyperref[con:curry_howard_correspondence]{Curry-Howard correspondence}; see \cref{ex:dependent_types_and_hol_quantifier_rules}.
+  \item The quantifier rules are justified by rules for dependent types via the \hyperref[con:curry_howard_correspondence]{Curry-Howard correspondence}; see \cref{ex:dependent_products_and_forall_quantifier_rules}.
 
   \item These precise rules are used in the module \identifier{logic.classical_logic} in \cite{notebook:code}.
 \end{comments}
@@ -650,6 +650,36 @@
 \begin{comments}
   \item Many of these examples are verified programmatically in the module \identifier{math.logic.deduction.test_proof_tree} in \cite{notebook:code}.
 \end{comments}
+
+\begin{example}\label{ex:dependent_products_and_forall_quantifier_rules}
+  We will show how the universal quantifier introduction rule \ref{inf:def:fol_natural_deduction/forall/intro} corresponds, via the \hyperref[con:curry_howard_correspondence]{Curry-Howard correspondence}, to the introduction rule \ref{inf:def:dependent_product/intro} for \hyperref[def:dependent_product]{dependent products}.
+
+  Generally, in \hyperref[def:martin_lof_type_theory]{Martin-L\"of type theory}, we must be careful not to allow \hyperref[def:mltt_well_formed_context/derivation]{ill-formed derivations}. There can be situations where an assumption \( x: \tau \) cannot be discharged because the types of other open assumptions depend on \( x \).
+
+  We will restate the rule here with some types renamed:
+  \begin{equation*}
+    \begin{prooftree}
+      \hypo{ x: \tau }
+      \infer[dashed]1{ M: \varphi }
+      \infer1[\ensuremath{ \Pi_+' }]{ \qabs {x^\tau} M: \qprod {x^\tau} \varphi }
+    \end{prooftree}
+  \end{equation*}
+
+  We are only interested in the existence of the terms \( M \) and \( \qabs {x^\tau} M \), but not in the terms themselves. So we may rewrite the above to resemble a natural deduction rule (with \( \synforall \) used instead of \( \synprod \)):
+  \begin{equation*}
+    \begin{prooftree}
+      \hypo{ x: \tau }
+      \infer[dashed]1{ \varphi }
+      \infer1[\ensuremath{ \forall_+' }]{ \qforall {x^\tau} \varphi }
+    \end{prooftree}
+  \end{equation*}
+
+  We showed in \cref{ex:def:mltt_well_formed_context/discharging} how, if some open assumption of a type derivation tree depends on \( x \), applying the rule and discharging \( x: \tau \) will make the derivation ill-formed.
+
+  For the purposes of predicate logic, it will suffice, instead of dealing with explicit type contexts, we instead enforce the constraints given in \cref{def:fol_natural_deduction_proof_tree/application/main}.
+
+  It is important here to note that \( \qforall {x^\tau} \varphi \) and \( \qforall {y^\tau} \varphi[x \mapsto y] \) are considered different formulas. This contrasts with Martin-L\"of type theory, where, due to the rule \ref{rem:type_theory_rule_classification/equality/alpha}, \hyperref[def:lambda_term_alpha_equivalence]{\( \alpha \)-equivalent} \( \muplambda \)-terms are assumed to be \hyperref[con:equality]{judgmentally equal}. Making \( \alpha \)-conversion explicit leads to \ref{inf:def:fol_natural_deduction/forall/intro} .
+\end{example}
 
 \begin{remark}\label{def:abstract_sequent_calculus_system_eigenvariables}
   % \hyperref[con:predicate_logic]{predicate logic}, the entries must also account for \hyperref[def:fol_schema/formula]{eigenvariables}
