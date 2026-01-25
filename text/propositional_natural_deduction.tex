@@ -1192,7 +1192,7 @@
 \paragraph{Soundness of natural deduction}
 
 \begin{theorem}[Propositional natural deduction soundness]\label{thm:propositional_natural_deduction_soundness}
-  Intuitionistic and classical \hyperref[def:propositional_natural_deduction]{propositional natural deduction} are \hyperref[def:general_logic]{sound} with respect to \hyperref[def:truth_value_algebra/intuitionistic]{intuitionistic} and \hyperref[def:truth_value_algebra/classical]{classical} semantics, respectively.
+  Intuitionistic and classical \hyperref[def:propositional_natural_deduction]{propositional natural deduction} are \hyperref[def:general_logic]{sound} with respect to \hyperref[def:truth_value_algebra/intuitionistic]{intuitionistic} and \hyperref[def:truth_value_algebra/classical]{classical} \hyperref[def:propositional_semantics]{semantics}, respectively.
 \end{theorem}
 \begin{comments}
   \item This proof will also demonstrate that the minimal natural deduction system is sound with respect to the minimal semantics that we will sketch in \cref{rem:minimal_propositional_semantics}. Indeed, except for \ref{inf:def:propositional_natural_deduction/bot/efq} and \ref{inf:def:propositional_natural_deduction/bot/raa}, the other rules do not depend on a particular interpretation of \( \synbot \).
@@ -1204,21 +1204,23 @@
 \begin{proof}
   Fix a \hyperref[def:propositional_natural_deduction_proof_tree]{proof tree} \( P \) that derives its conclusion from \( \Gamma \). Let \( I \) be a \hyperref[def:propositional_interpretation]{propositional interpretation} and suppose that \( I \) is a model of \( \Gamma \).
 
-  We will use \fullref{thm:induction_on_rooted_trees} on \( P \) to show that its conclusion is valid in \( \Gamma \).
+  We will use \fullref{thm:induction_on_rooted_trees} on \( P \) to show that its conclusion is valid in \( I \).
 
-  The case where \( P \) is an assumption tree is vacuous, so suppose that the statement holds for all premises of \( P \). We will perform case analysis by the rule used.
+  The case where \( P \) is an assumption tree is vacuous, so suppose that \( P \) is a rule application tree. Let \( P_1, \ldots, P_n \) be the premise subtrees of \( P \) and suppose that the statement holds for them. We will perform case analysis by the rule used.
 
-  \SubProofOf{inf:def:propositional_natural_deduction/top/intro} If \( \varphi = \syntop \), there is nothing to prove since the denotation of \( \syntop \) is defined to be \( \semtop \).
+  \SubProofOf{inf:def:propositional_natural_deduction/top/intro} The conclusion of \( P \) is \( \syntop \). There is nothing to prove since the denotation of \( \syntop \) is defined to be \( \semtop \).
 
   \SubProofOf{inf:def:propositional_natural_deduction/bot/efq} Follows from \fullref{thm:propositional_semantic_efq}.
 
   \SubProofOf{inf:def:propositional_natural_deduction/bot/raa} Follows from \fullref{thm:propositional_semantic_dne}.
 
-  \SubProofOf{inf:def:propositional_natural_deduction/neg/intro} Let \( R \) be the premise tree of \( P \) deriving \( \synbot \) from \( \varphi \).
+  \SubProofOf{inf:def:propositional_natural_deduction/neg/intro} Let \( \synneg \varphi \) be the conclusion of \( P \). Then the premise \( P_1 \) derives \( \synbot \) from \( \varphi \).
 
   By the inductive hypothesis, \( \varphi \vDash \synbot \). \Cref{thm:propositional_semantic_deduction_theorem} implies that \( \vDash \varphi \synimplies \synbot \). Then \cref{thm:intuitionistic_equivalences/negation_bottom} implies that \( \vDash \synneg \varphi \).
 
-  \SubProofOf{inf:def:propositional_natural_deduction/neg/elim} If \( \Bracks{\synneg \varphi}_I = \Bracks{\varphi}_I = \semtop \), then
+  \SubProofOf{inf:def:propositional_natural_deduction/neg/elim} In this case the premises \( P_1 \) and \( P_2 \) have conclusions \( \synneg \varphi \) and \( \varphi \) for some formula \( \varphi \), while the conclusion of \( P \) is \( \synbot \).
+
+  By the inductive hypothesis, we have \( \Bracks{\synneg \varphi}_I = \Bracks{\varphi}_I = \semtop \). Thus,
   \begin{equation*}
     \underbrace{\Bracks{\synneg \varphi}_I}_{\semtop}
     \reloset {\eqref{eq:thm:intuitionistic_equivalences/negation_bottom}} =
@@ -1227,16 +1229,20 @@
     \Bracks{\synbot}_I.
   \end{equation*}
 
-  \SubProofOf{inf:def:propositional_natural_deduction/and/intro} If \( \Bracks{\varphi}_I = \Bracks{\psi}_I = \semtop \), then
+  \SubProofOf{inf:def:propositional_natural_deduction/and/intro} If \( \varphi \) and \( \psi \) are the conclusions of \( P_1 \) and \( P_2 \), then \( \varphi \synwedge \psi \) is the conclusion of \( P \).
+
+  We have \( \Bracks{\varphi}_I = \Bracks{\psi}_I = \semtop \) by the inductive hypothesis, so
   \begin{equation*}
     \Bracks{\varphi \synwedge \psi}_I = \semtop \wedge \semtop = \semtop.
   \end{equation*}
 
-  \SubProofOf{inf:def:propositional_natural_deduction/and/elim_right} If \( \Bracks{\varphi \synwedge \psi}_I = \semtop \), then \( \Bracks{\varphi}_I = \Bracks{\psi}_I = \semtop \).
+  \SubProofOf{inf:def:propositional_natural_deduction/and/elim_right} If \( \varphi \synwedge \psi \) is the conclusion of \( P_1 \), then \( \Bracks{\varphi \synwedge \psi}_I = \semtop \), and hence \( \Bracks{\varphi}_I = \Bracks{\psi}_I = \semtop \).
 
   \SubProofOf{inf:def:propositional_natural_deduction/and/elim_left} Analogous.
 
-  \SubProofOf{inf:def:propositional_natural_deduction/or/intro_left} If \( \Bracks{\varphi}_I = \semtop \), then
+  \SubProofOf{inf:def:propositional_natural_deduction/or/intro_left} If \( \varphi \) is the conclusion of \( P_1 \), the conclusion of \( P \) is \( \varphi \synvee \psi \) for some formula \( \psi \).
+
+  We have \( \Bracks{\varphi}_I = \semtop \) by the inductive hypothesis, so
   \begin{equation*}
     \Bracks{\varphi \synvee \psi}_I = \semtop \vee \Bracks{\psi}_I = \semtop.
   \end{equation*}
@@ -1247,30 +1253,31 @@
   \begin{equation*}
     \begin{prooftree}
       \hypo{}
-      \ellipsis { \( A \) } { \varphi \synvee \psi }
+      \ellipsis { \( P_1 \) } { \varphi \synvee \psi }
 
       \hypo{ \varphi }
-      \ellipsis { \( B \) } { \theta }
+      \ellipsis { \( P_2 \) } { \theta }
 
       \hypo{ \psi }
-      \ellipsis { \( C \) } { \theta }
+      \ellipsis { \( P_3 \) } { \theta }
 
       \infer3[\ref{inf:def:propositional_natural_deduction/or/elim}]{ \theta }
     \end{prooftree}
   \end{equation*}
-  where the inductive hypothesis holds for the subtrees \( A \), \( B \) and \( C \).
 
-  By the inductive hypothesis on \( A \), we have \( \Gamma \vDash \varphi \synvee \psi \). Since \( \Gamma \) is valid in \( I \), so is \( \varphi \synvee \psi \).
+  By the inductive hypothesis on \( P_1 \), we have \( \Gamma \vDash \varphi \synvee \psi \). Since \( \Gamma \) is valid in \( I \), so is \( \varphi \synvee \psi \).
 
-  By the inductive hypothesis on \( B \) and \( C \), we have \( \Gamma, \varphi \vDash \theta \) and \( \Gamma, \psi \vDash \theta \). \Cref{thm:intuitionistic_deduction_consequences/leq} implies that \( \Bracks{\varphi}_I \leq \Bracks{\theta}_I \) and \( \Bracks{\psi}_I \leq \Bracks{\theta}_I \).
+  By the inductive hypothesis on \( P_2 \) and \( P_3 \), we have \( \Gamma, \varphi \vDash \theta \) and \( \Gamma, \psi \vDash \theta \). \Cref{thm:intuitionistic_deduction_consequences/leq} implies that \( \Bracks{\varphi}_I \leq \Bracks{\theta}_I \) and \( \Bracks{\psi}_I \leq \Bracks{\theta}_I \).
 
   Therefore, \( \Bracks{\theta}_I \) is an upper bound of \( \Bracks{\varphi}_I \) and \( \Bracks{\psi}_I \). Since \( \Bracks{\varphi \synvee \psi}_I \) is the least upper bound, we have \( \Bracks{\varphi \synvee \psi}_I \leq \Bracks{\theta}_I \). Via \cref{thm:intuitionistic_deduction_consequences/leq}, this implies that \( \varphi \synvee \psi \vDash \theta \).
 
-  \SubProofOf{inf:def:propositional_natural_deduction/imp/intro} Let \( R \) be the premise subtree of \( P \) deriving \( \psi \) from \( \varphi \). By the inductive hypothesis, \( \varphi \vDash \psi \). \Cref{thm:intuitionistic_deduction_consequences/leq} then implies that \( \Bracks{\varphi}_I \leq \Bracks{\psi}_I \) for every interpretation \( I \).
+  \SubProofOf{inf:def:propositional_natural_deduction/imp/intro} If the conclusion of \( P \) is \( \varphi \synimplies \psi \), then \( P_1 \) derives \( \psi \) from \( \varphi \). By the inductive hypothesis, \( \varphi \vDash \psi \). \Cref{thm:intuitionistic_deduction_consequences/leq} then implies that \( \Bracks{\varphi}_I \leq \Bracks{\psi}_I \) for every interpretation \( I \).
 
   It follows from \cref{thm:def:heyting_algebra/leq} that \( \Bracks{\varphi \synimplies \psi}_I = \semtop \).
 
-  \SubProofOf{inf:def:propositional_natural_deduction/imp/elim} If \( \Bracks{\varphi \synimplies \psi}_I = \semtop \) and \( \Bracks{\varphi}_I = \semtop \), then
+  \SubProofOf{inf:def:propositional_natural_deduction/imp/elim} If \( \varphi \synimplies \psi \) and \( \varphi \) are the conclusions of \( P_1 \) and \( P_2 \), then \( \psi \) is the conclusion of \( P \).
+
+  We have \( \Bracks{\varphi \synimplies \psi}_I = \semtop \) and \( \Bracks{\varphi}_I = \semtop \) by the inductive hypothesis, so
   \begin{equation*}
     \underbrace{\Bracks{\varphi \synimplies \psi}_I}_{\semtop}
     \reloset {\eqref{eq:alg:propositional_denotation/conn}} =
@@ -1283,35 +1290,36 @@
   \begin{equation*}
     \begin{prooftree}
       \hypo{ \varphi }
-      \ellipsis { \( L \) } { \psi }
+      \ellipsis { \( P_1 \) } { \psi }
 
       \hypo{ \psi }
-      \ellipsis { \( R \) } { \varphi }
+      \ellipsis { \( P_2 \) } { \varphi }
 
       \infer2[\ref{inf:def:propositional_natural_deduction/or/elim}]{ \varphi \syniff \psi }
     \end{prooftree}
   \end{equation*}
-  where the inductive hypothesis holds for the subtrees \( L \) and \( R \).
 
-  By the inductive hypothesis on \( L \), we have \( \varphi \vDash \psi \). \Cref{thm:intuitionistic_deduction_consequences/leq} implies that \( \Bracks{\varphi}_I \leq \Bracks{\psi}_I \) for every interpretation \( I \).
+  By the inductive hypothesis on \( P_1 \), we have \( \varphi \vDash \psi \). \Cref{thm:intuitionistic_deduction_consequences/leq} implies that \( \Bracks{\varphi}_I \leq \Bracks{\psi}_I \) for every interpretation \( I \).
 
-  Similarly, using the inductive hypothesis on \( R \), we conclude that \( \Bracks{\varphi}_I \geq \Bracks{\psi}_I \). Therefore, \( \Bracks{\varphi}_I = \Bracks{\psi}_I \) for every interpretation \( I \).
+  Similarly, using the inductive hypothesis on \( P_2 \), we conclude that \( \Bracks{\varphi}_I \geq \Bracks{\psi}_I \). Therefore, \( \Bracks{\varphi}_I = \Bracks{\psi}_I \) for every interpretation \( I \).
 
   \Cref{thm:def:heyting_algebra/eq} implies that \( \Bracks{\varphi \syniff \psi}_I = \semtop \).
 
-  \SubProofOf{inf:def:propositional_natural_deduction/iff/elim_left} If \( \Bracks{\varphi \syniff \psi}_I = \semtop \) and \( \Bracks{\varphi}_I = \semtop \), then
+  \SubProofOf{inf:def:propositional_natural_deduction/iff/elim_left} If \( \varphi \syniff \psi \) and \( \psi \) are the conclusions of \( P_1 \) and \( P_2 \), then the conclusion of \( P \) is \( \varphi \).
+
+  We have \( \Bracks{\varphi \syniff \psi}_I = \semtop \) and \( \Bracks{\psi}_I = \semtop \) by the inductive hypothesis, so
   \begin{multline*}
     \underbrace{\Bracks{\varphi \syniff \psi}_I}_{\semtop}
     \reloset {\eqref{eq:alg:propositional_denotation/conn}} =
     \Bracks{\varphi}_I \leftrightarrow \Bracks{\psi}_I
     \reloset {\eqref{eq:def:heyting_algebra/biconditional}} =
-    (\underbrace{\Bracks{\varphi}_I}_{\semtop} \rightarrow \Bracks{\psi}_I) \wedge (\Bracks{\psi}_I \rightarrow \underbrace{\Bracks{\varphi}_I}_{\semtop})
+    (\Bracks{\varphi}_I \rightarrow \underbrace{\Bracks{\psi}_I}_{\semtop}) \wedge (\underbrace{\Bracks{\psi}_I}_{\semtop} \rightarrow \Bracks{\varphi}_I)
     \reloset {\ref{thm:def:heyting_algebra/top_left}} = \\ =
-    \Bracks{\psi}_I \wedge (\Bracks{\psi}_I \rightarrow \underbrace{\Bracks{\varphi}_I}_{\semtop})
+    (\Bracks{\varphi}_I \rightarrow \underbrace{\Bracks{\psi}_I}_{\semtop}) \wedge \Bracks{\varphi}_I
     \reloset {\eqref{eq:def:heyting_algebra/axioms/modus_ponens}} =
-    \Bracks{\psi}_I \wedge \underbrace{\Bracks{\varphi}_I}_{\semtop}
+    \underbrace{\Bracks{\psi}_I}_{\semtop} \wedge \Bracks{\varphi}_I
     \reloset {\ref{thm:def:bounded_lattice/neutral}} =
-    \Bracks{\psi}_I.
+    \Bracks{\varphi}_I.
   \end{multline*}
 
   \SubProofOf{inf:def:propositional_natural_deduction/iff/elim_right} Analogous.

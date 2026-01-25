@@ -148,6 +148,43 @@
   \end{thmenum}
 \end{example}
 
+\paragraph{Term length}
+
+\begin{definition}\label{def:fol_term_length}\mimprovised
+  For some inductive proofs, we will find useful to recursively define the \term{length} of a \hyperref[def:fol_term]{first-order term} as
+  \begin{equation*}
+    \len(\tau) \coloneqq \begin{cases}
+      1,                                                  &\tau \in \op*{Var}, \\
+      1 + \len(\sigma_1) + \cdots + \len(\sigma_n),       &\tau = f(\sigma_1, \ldots, \sigma_n), \\
+    \end{cases}
+  \end{equation*}
+\end{definition}
+\begin{comments}
+  \item If all function symbols use prefix notation and if the variable names in \( \tau \) contain no numeric indices, then \( \len(\tau) \) is exactly the \hyperref[def:formal_language/string_length]{string length} of \( \tau \).
+  \item We adapt this definition from the \( \muplambda \)-term counterpart presented in \cref{def:lambda_term_length}.
+\end{comments}
+
+\begin{proposition}\label{thm:def:fol_term_length}
+  \hyperref[def:fol_term]{First-order terms} have the following basic properties regarding their \hyperref[def:fol_term_length]{length}:
+  \begin{thmenum}
+    \thmitem{thm:def:fol_term_length/subterm} Every strict subterm of a term is strictly shorter.
+
+    \thmitem{thm:def:fol_term_length/substitution} For any atomic substitution \( \Bbbs \) and term \( \tau \), we have
+    \begin{equation}\label{eq:thm:def:fol_term_length/substitution}
+      \len(\tau[\Bbbs]) = \len(\tau) + \sum_{\mathclap{u \in \op*{Var}(\tau)}} (\len(\Bbbs(u)) - 1).
+    \end{equation}
+
+    In particular, if \( \Bbbs \) is a \hyperref[def:lambda_renaming_substitution]{renaming}, then \( \len(\tau[\Bbbs]) = \len(\tau) \).
+  \end{thmenum}
+\end{proposition}
+\begin{comments}
+  \item See the corresponding statements for \( \muplambda \)-terms in \cref{thm:def:lambda_term_length} and for first-order formulas in \cref{thm:def:fol_formula_length}.
+\end{comments}
+\begin{proof}
+  \SubProofOf{thm:def:fol_term_length/subterm} Trivial.
+  \SubProofOf{thm:def:fol_term_length/substitution} Similar to \cref{thm:def:lambda_term_length/substitution}.
+\end{proof}
+
 \paragraph{Simultaneous substitution}
 
 \begin{definition}\label{def:atomic_fol_substitution}\mimprovised
@@ -188,7 +225,7 @@
   We can extend an \hyperref[def:atomic_lambda_term_substitution]{atomic simultaneous substitution} \( (\Bbbs, \sharp) \) to arbitrary \hyperref[def:fol_term]{first-order terms} as follows:
   \begin{empheq}[left={\tau[\Bbbs]} \coloneqq \empheqlbrace]{align}
     &\Bbbs(x),                                                   &&\tau = x \in \op*{Var},               \label{eq:alg:fol_term_substitution/var} \\
-    &f\parens[\big]{ \sigma_1[\Bbbs], \ldots, \sigma_n[\Bbbs] }, &&\tau = f(\sigma_1, \ldots, \sigma_n). \label{eq:alg:fol_term_substitution/application}
+    &f\parens[\big]{ \sigma_1[\Bbbs], \ldots, \sigma_n[\Bbbs] }, &&\tau = f(\sigma_1, \ldots, \sigma_n). \label{eq:alg:fol_term_substitution/fun}
   \end{empheq}
 \end{algorithm}
 \begin{comments}
@@ -237,76 +274,59 @@
   \item This algorithm can be found as \identifier{math.logic.structure.apply_substitution_to_assignment} in \cite{notebook:code}.
 \end{comments}
 
-\begin{proposition}\label{thm:fol_assignment_substitution_compatibility}
-  \Fullref{alg:fol_term_substitution} and \fullref{alg:fol_assignment_substitution} are compatible:
-  \begin{equation}\label{eq:thm:fol_assignment_substitution_compatibility}
-    \Bracks{\tau}_\mscrX^{v[\Bbbs]} = \Bracks{\tau[\Bbbs]}_\mscrX^v,
-  \end{equation}
-\end{proposition}
-\begin{proof}
-  We will use \fullref{thm:induction_on_abstract_syntax} on \( \tau \) simultaneously on all assignments to show \eqref{eq:thm:fol_assignment_substitution_compatibility}.
+\begin{proposition}\label{thm:fol_term_semantics_of_compatible_substitutions}
+  Fix a \hyperref[def:fol_term]{first-order term} \( \tau \) and \hyperref[def:atomic_fol_substitution]{atomic substitutions} \( \Bbbs \) and \( \Bbbt \). Fix also \hyperref[def:fol_variable_assignment]{variable assignments} \( v \) and \( w \) in some \hyperref[def:fol_structure]{structure} \( \mscrX = (X, I) \).
 
+  If \( \Bracks{\Bbbs(x)}_\mscrX^v = \Bracks{\Bbbt(x)}_\mscrX^w \) for every variable \( x \) in \( \tau \), then \( \Bracks{\tau[\Bbbs]}_\mscrX^v = \Bracks{\tau[\Bbbt]}_\mscrX^w \).
+\end{proposition}
+\begin{comments}
+  \item An analogous statement holds for formulas --- see \cref{thm:fol_formula_semantics_of_compatible_substitutions}.
+\end{comments}
+\begin{proof}
+  We will use \fullref{thm:induction_on_rooted_trees} on \( \tau \), simultaneously on all substitutions and assignments.
   \begin{itemize}
     \item If \( \tau \) is a variable, say \( x \), then
     \begin{equation*}
-      \Bracks{\tau}_\mscrX^{v[\Bbbs]}
-      \reloset {\eqref{eq:alg:fol_term_substitution/var}} =
-      v[\Bbbs](x)
-      \reloset {\eqref{eq:alg:fol_assignment_substitution}} =
+      \Bracks{\tau[\Bbbs]}_\mscrX^v
+      =
       \Bracks{\Bbbs(x)}_\mscrX^v
-      \reloset {\eqref{eq:alg:fol_term_substitution/var}} =
-      \Bracks{\tau[\Bbbs]}_\mscrX^v.
+      =
+      \Bracks{\Bbbt(x)}_\mscrX^w
+      =
+      \Bracks{\tau[\Bbbt]}_\mscrX^w
     \end{equation*}
 
-    \item If \( \tau = f(\sigma_1, \ldots, \sigma_n) \), and if the inductive hypothesis holds for \( \sigma_1, \ldots, \sigma_n \), then
-    \begin{multline*}
-      \Bracks{\tau}_\mscrX^{v[\Bbbs]}
-      \reloset {\eqref{eq:alg:fol_term_substitution/application}} =
-      I(f) \parens[\big]{ \Bracks{\sigma_1}_\mscrX^{v[\Bbbs]}, \ldots, \Bracks{\sigma_n}_\mscrX^{v[\Bbbs]} }
-      \reloset {\T{ind.}} = \\ =
-      I(f) \parens[\big]{ \Bracks{\sigma_1[\Bbbs]}_\mscrX^v, \ldots, \Bracks{\sigma_n[\Bbbs]}_\mscrX^v }
-      \reloset {\eqref{eq:alg:fol_term_denotation/fun}} =
-      \Bracks[\big]{f(\sigma_1[\Bbbs], \ldots, \sigma_n[\Bbbs])}_\mscrX^v
-      \reloset {\eqref{eq:alg:fol_term_substitution/application}} =
-      \Bracks{\tau[\Bbbs]}_\mscrX^v.
-    \end{multline*}
+    \item If \( \tau = f(\sigma_1, \ldots, \sigma_n) \), where the inductive hypothesis holds for \( \sigma_1, \ldots, \sigma_n \), then
+    \begin{align*}
+      \Bracks{\tau[\Bbbs]}_\mscrX^v
+      &\reloset {\eqref{eq:alg:fol_term_substitution/fun}} =
+      \Bracks{f(\sigma_1[\Bbbs], \ldots, \sigma_n[\Bbbs])}_\mscrX^v
+      \reloset {\eqref{eq:alg:fol_term_denotation/fun}} = \\ &=
+      I(f)(\Bracks{\sigma_1[\Bbbs]}_\mscrX^v, \ldots, \Bracks{\sigma_n[\Bbbs]}_\mscrX^v)
+      \reloset {\T{ind.}} = \\ &=
+      I(f)(\Bracks{\sigma_1[\Bbbt]}_\mscrX^w, \ldots, \Bracks{\sigma_n[\Bbbt]}_\mscrX^w)
+      \reloset {\eqref{eq:alg:fol_term_denotation/fun}} = \\ &=
+      \Bracks{f(\sigma_1[\Bbbt], \ldots, \sigma_n[\Bbbt])}_\mscrX^w
+      \reloset {\eqref{eq:alg:fol_term_substitution/fun}} = \\ &=
+      \Bracks{\tau[\Bbbt]}_\mscrX^w.
+    \end{align*}
   \end{itemize}
 \end{proof}
 
-\begin{definition}\label{def:fol_term_length}\mimprovised
-  For some inductive proofs, we will find useful to recursively define the \term{length} of a \hyperref[def:fol_term]{first-order term} as
-  \begin{equation*}
-    \len(\tau) \coloneqq \begin{cases}
-      1,                                                  &\tau \in \op*{Var}, \\
-      1 + \len(\sigma_1) + \cdots + \len(\sigma_n),       &\tau = f(\sigma_1, \ldots, \sigma_n), \\
-    \end{cases}
-  \end{equation*}
-\end{definition}
+\begin{corollary}\label{thm:fol_term_and_assignment_substitution}
+  \Fullref{alg:fol_term_substitution} and \fullref{alg:fol_assignment_substitution} are compatible:
+  \begin{equation}\label{eq:thm:fol_term_and_assignment_substitution}
+    \Bracks{\tau}_\mscrX^{v[\Bbbs]} = \Bracks{\tau[\Bbbs]}_\mscrX^v,
+  \end{equation}
+\end{corollary}
 \begin{comments}
-  \item If all function symbols use prefix notation and if the variable names in \( \tau \) contain no numeric indices, then \( \len(\tau) \) is exactly the \hyperref[def:formal_language/string_length]{string length} of \( \tau \).
-  \item We adapt this definition from the \( \muplambda \)-term counterpart presented in \cref{def:lambda_term_length}.
-\end{comments}
-
-\begin{proposition}\label{thm:def:fol_term_length}
-  \hyperref[def:fol_term]{First-order terms} have the following basic properties regarding their \hyperref[def:fol_term_length]{length}:
-  \begin{thmenum}
-    \thmitem{thm:def:fol_term_length/subterm} Every strict subterm of a term is strictly shorter.
-
-    \thmitem{thm:def:fol_term_length/substitution} For any atomic substitution \( \Bbbs \) and term \( \tau \), we have
-    \begin{equation}\label{eq:thm:def:fol_term_length/substitution}
-      \len(\tau[\Bbbs]) = \len(\tau) + \sum_{\mathclap{u \in \op*{Var}(\tau)}} (\len(\Bbbs(u)) - 1).
-    \end{equation}
-
-    In particular, if \( \Bbbs \) is a \hyperref[def:lambda_renaming_substitution]{renaming}, then \( \len(\tau[\Bbbs]) = \len(\tau) \).
-  \end{thmenum}
-\end{proposition}
-\begin{comments}
-  \item See the corresponding statements for \( \muplambda \)-terms in \cref{thm:def:lambda_term_length}.
+  \item An analogous statement holds for formulas --- see \cref{thm:fol_formula_and_assignment_substitution}.
 \end{comments}
 \begin{proof}
-  \SubProofOf{thm:def:fol_term_length/subterm} Trivial.
-  \SubProofOf{thm:def:fol_term_length/substitution} Similar to \cref{thm:def:lambda_term_length/substitution}.
+  We can use \cref{thm:fol_term_semantics_of_compatible_substitutions} with \( \Bbbt = \id \).
 \end{proof}
+
+\paragraph{Substitution composition}
 
 \begin{definition}\label{def:fol_substitution_composition}\mcite[39]{BaaderNipkow2012TermRewriting}
   We define the \term{composition} \( \Bbbt\Bbbs \) of the \hyperref[def:atomic_fol_substitution]{atomic first-order substitutions} \( \Bbbs \) and \( \Bbbt \) as
@@ -370,7 +390,7 @@
   hence \( \Bbbo \) is an instance of \( \Bbbs \).
 \end{comments}
 
-\begin{definition}\label{def:fol_unifier_equivalence}\mimprovised
+\begin{definition}\label{def:fol_substitution_equivalence}\mimprovised
   We say that the \hyperref[def:atomic_fol_substitution]{atomic first-order substitutions} \( \Bbbs \) and \( \Bbbt \) are \term{equally general} if both are instances of each other in the sense of \cref{def:fol_substitution_instance}.
 \end{definition}
 
@@ -381,14 +401,14 @@
   \item \incite*[39]{BaaderNipkow2012TermRewriting} additionally require the substitution to be injective.
 \end{comments}
 
-\begin{proposition}\label{thm:def:fol_unifier_equivalence}
+\begin{proposition}\label{thm:def:fol_substitution_equivalence}
   \hyperref[def:fol_idempotent_substitution]{Equally general first-order substitutions} have the following basic properties:
   \begin{thmenum}
-    \thmitem{thm:def:fol_unifier_equivalence/renaming} \( \Bbbs \) and \( \Bbbt \) are equally general if and only if there exists a \hyperref[def:fol_renaming_substitution]{renaming} \( \Bbbr \) such that \( \Bbbt = \Bbbr\Bbbs \).
+    \thmitem{thm:def:fol_substitution_equivalence/renaming} \( \Bbbs \) and \( \Bbbt \) are equally general if and only if there exists a \hyperref[def:fol_renaming_substitution]{renaming} \( \Bbbr \) such that \( \Bbbt = \Bbbr\Bbbs \).
   \end{thmenum}
 \end{proposition}
 \begin{proof}
-  \SubProofOf{thm:def:fol_unifier_equivalence/renaming}
+  \SubProofOf{thm:def:fol_substitution_equivalence/renaming}
   \SufficiencySubProof* Suppose that there exist substitutions \( \Bbbr \) and \( \Bbbp \) such that \( \Bbbt = \Bbbr\Bbbs \) and \( \Bbbs = \Bbbp\Bbbt \). Since composition is associative, we have
   \begin{equation*}
     \Bbbs = \Bbbp\Bbbt = \Bbbp(\Bbbr\Bbbs) = (\Bbbp\Bbbr)\Bbbs.
@@ -495,11 +515,11 @@
   For every equation \( \tau \syneq \sigma \), we have
   \begin{equation*}
     \Bracks{\tau}^{v[\Bbbs]}
-    \reloset {\eqref{eq:thm:fol_assignment_substitution_compatibility}} =
+    \reloset {\eqref{eq:thm:fol_term_and_assignment_substitution}} =
     \Bracks{\tau[\Bbbs]}^v
     =
     \Bracks{\sigma[\Bbbs]}^v
-    \reloset {\eqref{eq:thm:fol_assignment_substitution_compatibility}} =
+    \reloset {\eqref{eq:thm:fol_term_and_assignment_substitution}} =
     \Bracks{\sigma}^{v[\Bbbs]}.
   \end{equation*}
 \end{proof}
@@ -531,7 +551,7 @@
 \begin{proposition}\label{thm:def:fol_most_general_unifier}
   \hyperref[def:fol_most_general_unifier]{Most general unifiers} have the following basic properties:
   \begin{thmenum}
-    \thmitem{thm:def:fol_most_general_unifier/equivalent} Any two most general unifiers are \hyperref[def:fol_unifier_equivalence]{equally general}.
+    \thmitem{thm:def:fol_most_general_unifier/equivalent} Any two most general unifiers are \hyperref[def:fol_substitution_equivalence]{equally general}.
   \end{thmenum}
 \end{proposition}
 \begin{proof}

@@ -7,7 +7,7 @@
   \begin{empheq}[left={\varphi[\Bbbs]} \coloneqq \empheqlbrace]{align}
     &\varphi,                                                    &&\varphi \in \op*{PConst},                                                                      \label{eq:alg:fol_formula_substitution/const}         \\
     &\tau[\Bbbs] \syneq \sigma[\Bbbs],                           &&\varphi = (\tau \syneq \sigma),                                                                \label{eq:alg:fol_formula_substitution/eq} \\
-    &p\parens[\big]{ \sigma_1[\Bbbs], \ldots, \sigma_n[\Bbbs] }, &&\varphi = p(\sigma_1, \ldots, \sigma_n),                                                       \label{eq:alg:fol_formula_substitution/application} \\
+    &p\parens[\big]{ \sigma_1[\Bbbs], \ldots, \sigma_n[\Bbbs] }, &&\varphi = p(\sigma_1, \ldots, \sigma_n),                                                       \label{eq:alg:fol_formula_substitution/pred} \\
     &\synneg \psi[\Bbbs],                                        &&\varphi = \synneg \psi,                                                                        \label{eq:alg:fol_formula_substitution/neg} \\
     &\psi[\Bbbs] \syncirc \theta[\Bbbs],                         &&\varphi = (\psi \syncirc \theta), {\syncirc} \in \op*{Conn},                                   \label{eq:alg:fol_formula_substitution/conn} \\
     &\quantifier Q x \psi[\Bbbs_{x \mapsto x}],                  &&\varphi = \quantifier Q x \psi, Q \in \op*{Quant} \T{and} x \not\in \op*{Free}_\Bbbs(\varphi), \label{eq:alg:fol_formula_substitution/quant/direct} \\
@@ -41,9 +41,9 @@
       \op*{Free}( \varphi[x \mapsto \psi] ) \subseteq (\op*{Free}(\varphi) \setminus \set{ x }) \cup \op*{Free}(\psi).
     \end{equation}
 
-    \thmitem{thm:alg:fol_formula_substitution/quant_single_rule} For any quantifier formula \( \varphi = \quantifier Q x \psi \) and any substitution \( \Bbbs \), there exists a variable \( v \not\in \op*{Free}_\Bbbs(\varphi) \) such that
+    \thmitem{thm:alg:fol_formula_substitution/quant_single_rule} For any quantifier formula \( \varphi = \quantifier Q x \psi \) and any substitution \( \Bbbs \), there exists a variable \( n \not\in \op*{Free}_\Bbbs(\varphi) \) such that
     \begin{equation}\label{eq:thm:alg:fol_formula_substitution/quant_single_rule}
-      \varphi[\Bbbs] = \quantifier Q v \psi[\Bbbs_{x \mapsto v}].
+      \varphi[\Bbbs] = \quantifier Q n \psi[\Bbbs_{x \mapsto v}].
     \end{equation}
 
     \thmitem{thm:alg:fol_formula_substitution/substitutions_agree} If the substitutions \( \Bbbs \) and \( \Bbbt \) agree on the free variables of \( \varphi \), then \( M[\Bbbs] = M[\Bbbt] \).
@@ -60,6 +60,109 @@
   \SubProofOf{thm:alg:fol_formula_substitution/noop} Can be proven as in \cref{thm:lambda_substitution_noop}.
   \SubProofOf{thm:alg:fol_formula_substitution/identity} Follows from \cref{thm:alg:fol_formula_substitution/noop}.
   \SubProofOf{thm:alg:fol_formula_substitution/closed} Vacuously follows from \cref{thm:lambda_substitution_identity} since combinators simply have no free variables.
+\end{proof}
+
+\begin{proposition}\label{thm:fol_formula_semantics_of_compatible_substitutions}
+  Fix a \hyperref[def:fol_formula]{first-order formula} \( \varphi \) and \hyperref[def:atomic_fol_substitution]{atomic substitutions} \( \Bbbs \) and \( \Bbbt \). Fix also \hyperref[def:fol_variable_assignment]{variable assignments} \( v \) and \( w \) in some \hyperref[def:fol_structure]{structure} \( \mscrX = (X, I) \).
+
+  If \( \Bracks{\Bbbs(x)}_\mscrX^v = \Bracks{\Bbbt(x)}_\mscrX^w \) for every \hi{free} variable \( x \) in \( \varphi \), then \( \Bracks{\varphi[\Bbbs]}_\mscrX^v = \Bracks{\varphi[\Bbbt]}_\mscrX^w \).
+\end{proposition}
+\begin{comments}
+  \item An analogous statement holds for terms --- see \cref{thm:fol_term_semantics_of_compatible_substitutions}.
+\end{comments}
+\begin{proof}
+  We will use \fullref{thm:induction_on_rooted_trees} on \( \varphi \), simultaneously on all substitutions and assignments.
+
+  \begin{itemize}
+    \item If \( \varphi \) is a propositional constant, there is nothing to show since both substitutions and the denotation is invariant.
+
+    \item If \( \varphi = (\tau \syneq \sigma) \), then
+    \begin{equation*}
+      \Bracks{\varphi[\Bbbs]}_\mscrX^v
+      \reloset {\eqref{eq:alg:fol_formula_substitution/eq}} =
+      \delta\parens[\big]{ \Bracks{\tau[\Bbbs]}_\mscrX^v, \Bracks{\sigma[\Bbbs}_\mscrX^v }
+      \reloset {\eqref{eq:thm:fol_term_and_assignment_substitution}} =
+      \delta\parens[\big]{ \Bracks{\tau[\Bbbt]}_\mscrX^w, \Bracks{\sigma[\Bbbt]}_\mscrX^w }
+      \reloset {\eqref{eq:alg:fol_formula_substitution/eq}} =
+      \Bracks{\varphi[\Bbbt]}_\mscrX^w
+    \end{equation*}
+
+    \item If \( \varphi = p(\tau_1, \ldots, \tau_n) \), we proceed analogously.
+
+    \item If \( \varphi = \synneg \psi \), where the inductive hypothesis holds for \( \psi \), then
+    \begin{equation*}
+      \Bracks{\varphi[\Bbbs]}_\mscrX^v
+      \reloset {\eqref{eq:alg:fol_formula_substitution/neg}} =
+      \oline{\Bracks{\psi[\Bbbs]}_\mscrX^v}
+      \reloset {\T{ind.}} =
+      \oline{\Bracks{\psi[\Bbbt]}_\mscrX^w}
+      \reloset {\eqref{eq:alg:fol_formula_substitution/neg}} =
+      \Bracks{\varphi[\Bbbt]}_\mscrX^w
+    \end{equation*}
+
+    \item If \( \varphi = \psi \syncirc \theta \), where the inductive hypothesis holds for \( \psi \) and \( \theta \), we proceed similarly.
+
+    \item Suppose that \( \varphi = \quantifier Q x \psi \), where the inductive hypothesis holds for \( \psi \).
+
+    We have two possibilities:
+    \begin{itemize}
+      \item If \( x \) is not in \( \op*{Free}_\Bbbs(\varphi) \), we must use the direct substitution rule \eqref{eq:alg:fol_formula_substitution/quant/direct}:
+      \begin{equation*}
+        \varphi[\Bbbs] = \quantifier Q x \psi[\Bbbs_{x \mapsto x}].
+      \end{equation*}
+
+      Since \( \op*{Free}_\Bbbs(\varphi) = \op*{Free}_\Bbbt(\varphi) \), we also have
+      \begin{equation*}
+        \varphi[\Bbbt] = \quantifier Q x \psi[\Bbbt_{x \mapsto y}].
+      \end{equation*}
+
+      It remains to show that \( \Bbbs_{x \mapsto x} \) agrees with \( \Bbbt_{x \mapsto x} \) on the free variables of \( \phi \). This is obvious for the variables that are free in \( \varphi \). The only other possibility is \( x \), on which we modify the substitutions. Thus,
+      \begin{equation*}
+        \Bracks{\varphi[\Bbbs]}_\mscrX^v
+        =
+        \Bracks{\quantifier Q x \psi[\Bbbs_{x \mapsto x}]}_\mscrX^v
+        \reloset {\T{ind.}} =
+        \Bracks{\quantifier Q x \psi[\Bbbt_{x \mapsto x}]}_\mscrX^w
+        =
+        \Bracks{\varphi[\Bbbt]}_\mscrX^w.
+      \end{equation*}
+
+      \item If \( x \) is in \( \op*{Free}_\Bbbs(\varphi) \), we use the renaming rule \eqref{eq:alg:fol_formula_substitution/quant/renaming} instead:
+      \begin{equation*}
+        \varphi[\Bbbs] = \quantifier Q n \psi[\Bbbs_{x \mapsto n}],
+      \end{equation*}
+      where \( n = \sharp(\op*{Free}_\Bbbs(\varphi)) \).
+
+      Clearly
+      \begin{equation*}
+        \varphi[\Bbbt] = \quantifier Q n \psi[\Bbbt_{x \mapsto n}].
+      \end{equation*}
+
+      Also, since we modify both substitutions at \( x \), the modified substitutions agree on the free variables of \( \psi \), thus
+      \begin{equation*}
+        \Bracks{\varphi[\Bbbs]}_\mscrX^v
+        =
+        \Bracks{\quantifier Q n \psi[\Bbbs_{x \mapsto n}]}_\mscrX^v
+        \reloset {\T{ind.}} =
+        \Bracks{\quantifier Q n \psi[\Bbbt_{x \mapsto n}]}_\mscrX^w
+        =
+        \Bracks{\varphi[\Bbbt]}_\mscrX^w.
+      \end{equation*}
+    \end{itemize}
+  \end{itemize}
+\end{proof}
+
+\begin{corollary}\label{thm:fol_formula_and_assignment_substitution}
+  \Fullref{alg:fol_formula_substitution} and \fullref{alg:fol_assignment_substitution} are compatible for \hi{quantifierless} formulas:
+  \begin{equation}\label{eq:thm:fol_formula_and_assignment_substitution}
+    \Bracks{\varphi}_\mscrX^{v[\Bbbs]} = \Bracks{\varphi[\Bbbs]}_\mscrX^v
+  \end{equation}
+\end{corollary}
+\begin{comments}
+  \item An analogous statement holds for terms --- see \cref{thm:fol_term_and_assignment_substitution}.
+\end{comments}
+\begin{proof}
+  We can use \cref{thm:fol_formula_semantics_of_compatible_substitutions} with \( \Bbbt = \id \).
 \end{proof}
 
 \paragraph{\( \alpha \)-equivalence}
@@ -144,6 +247,47 @@
   \item We can prove that the quantifier rules are interchangeable similarly to the case of \( \muplambda \)-terms. In fact, with the properties from \cref{thm:def:fol_formula_alpha_equivalence}, the proof becomes analogous.
 \end{comments}
 
+\begin{definition}\label{def:fol_formula_length}\mimprovised
+  We will extend the \term{length} defined in \cref{def:fol_term_length} for \hyperref[def:fol_term]{first-order terms} to \hyperref[def:fol_formula]{formula} as
+  \begin{equation*}
+    \len(\varphi) \coloneqq \begin{cases}
+      1,                                        &\varphi \in \op*{PConst}, \\
+      3 + \len(\tau) + \len(\sigma),            &\varphi = (\tau \syneq \sigma), \\
+      1 + \len(\tau_1) + \cdots + \len(\tau_n), &\varphi = p(\tau_1, \ldots, \tau_n), \\
+      1 + \len(\psi),                           &\varphi = \synneg \psi, \\
+      3 + \len(\psi) + \len(\theta),            &\varphi = (\psi \syncirc \theta), {\syncirc} \in \op*{Conn}, \\
+      3 + \len(\psi),                           &\varphi = \quantifier Q x \psi, Q \in \op*{Quant}.
+    \end{cases}
+  \end{equation*}
+\end{definition}
+\begin{comments}
+  \item If all predicate symbols use prefix notation and if the variable names in \( \varphi \) contain no numeric indices, then \( \len(\varphi) \) is exactly the \hyperref[def:formal_language/string_length]{string length} of \( \varphi \).
+\end{comments}
+
+\begin{proposition}\label{thm:def:fol_formula_length}
+  \hyperref[def:fol_formula]{First-order formulas} have the following basic properties regarding their \hyperref[def:fol_formula_length]{length}:
+  \begin{thmenum}
+    \thmitem{thm:def:fol_formula_length/subformula} Every strict subformula of a formula is strictly shorter.
+
+    \thmitem{thm:def:fol_formula_length/substitution} For any atomic substitution \( \Bbbs \) and formula \( \varphi \), we have
+    \begin{equation}\label{eq:thm:def:fol_formula_length/substitution}
+      \len(\varphi[\Bbbs]) = \len(\varphi) + \sum_{\mathclap{u \in \op*{Var}(\varphi)}} (\len(\Bbbs(u)) - 1).
+    \end{equation}
+
+    In particular, if \( \Bbbs \) is a \hyperref[def:lambda_renaming_substitution]{renaming}, then \( \len(\varphi[\Bbbs]) = \len(\varphi) \).
+
+    \thmitem{thm:def:fol_formula_length/equivalent} \hyperref[def:fol_formula_alpha_equivalence]{\( \alpha \)-equivalent} formulas have the same length.
+  \end{thmenum}
+\end{proposition}
+\begin{comments}
+  \item See the corresponding statements for \( \muplambda \)-terms in \cref{thm:def:lambda_term_length} and for first-order terms in \cref{thm:def:fol_term_length}.
+\end{comments}
+\begin{proof}
+  \SubProofOf{thm:def:fol_formula_length/subformula} Trivial.
+  \SubProofOf{thm:def:fol_formula_length/substitution} Similar to \cref{thm:def:lambda_formula_length/substitution}.
+  \SubProofOf{thm:def:fol_formula_length/equivalent} Similar to \cref{thm:def:lambda_formula_length/equivalent}.
+\end{proof}
+
 \begin{proposition}\label{thm:def:fol_formula_alpha_equivalence}
   \hyperref[thm:def:fol_formula_alpha_equivalence]{\( \alpha \)-equivalence} of \hyperref[def:fol_formula]{first-order formulas} has the following basic properties:
   \begin{thmenum}
@@ -203,6 +347,54 @@
   \SubProofOf{thm:def:fol_formula_alpha_equivalence/substitution} Analogous to \cref{thm:substitution_on_alpha_equivalent_terms}.
 
   \SubProofOf{thm:def:fol_formula_alpha_equivalence/conversion} Analogous to \cref{thm:alpha_conversion_modified}.
+\end{proof}
+
+\begin{proposition}\label{thm:alpha_equivalent_fol_formulas_are_semantic_equivalent}
+  \hyperref[thm:def:fol_formula_alpha_equivalence]{\( \alpha \)-equivalent} \hyperref[def:fol_formula]{first-order formulas} are also \hyperref[def:fol_semantics/equivalence]{semantically equivalent}.
+\end{proposition}
+\begin{proof}
+  We will use induction on the \hyperref[thm:def:fol_formula_length]{length} of \( \varphi \) to show, simultaneously on all assignments \( v \) in \( \mscrX = (X, I) \), that \( \varphi \aequiv \psi \) implies \( \Bracks{\varphi}_\mscrX^v = \Bracks{\psi}_\mscrX^v \).
+
+  The only formula kinds of fixed length are the propositional constants, for which the proposition is obvious. Suppose that \( \varphi \aequiv \psi \) and that the statement holds for all formulas shorter than \( \varphi \).
+
+  We have the following possibilities:
+  \begin{itemize}
+    \item If \( \varphi \aequiv \psi \) due to \ref{inf:def:fol_formula_alpha_equivalence/atom}, then \( \psi = \varphi \), so there is nothing to show.
+
+    \item If \( \varphi \aequiv \psi \) due to \ref{inf:def:fol_formula_alpha_equivalence/neg}, then \( \varphi = \synneg \varphi' \) and \( \psi = \synneg \psi' \), where \( \varphi' \aequiv \psi' \).
+
+    Then
+    \begin{equation*}
+      \Bracks{\varphi}_\mscrX^v
+      \reloset {\eqref{eq:alg:fol_formula_denotation/neg}} =
+      \oline{\Bracks{\varphi'}_\mscrX^v}
+      \reloset{\T{ind.}} =
+      \oline{\Bracks{\psi'}_\mscrX^v}
+      \reloset {\eqref{eq:alg:fol_formula_denotation/neg}} =
+      \Bracks{\psi}_\mscrX^v.
+    \end{equation*}
+
+    \item If \( \varphi \aequiv \psi \) due to \ref{inf:def:fol_formula_alpha_equivalence/conn}, we proceed similarly.
+
+    \item Finally, if \( \varphi \aequiv \psi \) due to \ref{inf:def:fol_formula_alpha_equivalence/quant}, then \( \varphi = \quantifier Q x \varphi' \) and \( \psi = \quantifier Q y \psi' \), where we have \( \varphi'[x \mapsto n] \aequiv \psi'[y \mapsto n] \) for every variable \( n \) not free in \( \varphi \).
+
+    In particular, \cref{thm:alg:fol_formula_substitution/noop} implies that \( \varphi'[x \mapsto x] = \varphi' \), so \( \varphi' \aequiv \psi'[y \mapsto x] \).
+
+    If \( Q = \synforall \), the inductive hypothesis gives
+    \begin{equation*}
+      \Bracks{\varphi}_\mscrX^v
+      \reloset {\eqref{eq:alg:fol_formula_denotation/forall}} =
+      \bigwedge_{a \in X} \Bracks{\varphi'}_\mscrX^{v_{x \mapsto a}}
+      \reloset{\T{ind.}} =
+      \bigwedge_{a \in X} \Bracks{\psi'[y \mapsto x]}_\mscrX^{v_{x \mapsto a}}.
+      \reloset{\ref{thm:fol_formula_semantics_of_compatible_substitutions}} =
+      \bigwedge_{a \in X} \Bracks{\psi'}_\mscrX^{v_{y \mapsto a}}.
+      \reloset {\eqref{eq:alg:fol_formula_denotation/forall}} =
+      \Bracks{\psi}_\mscrX^v
+    \end{equation*}
+
+    The case \( Q = \synexists \) is analogous.
+  \end{itemize}
 \end{proof}
 
 \paragraph{Schemas}
@@ -415,7 +607,7 @@
 \end{comments}
 
 \begin{definition}\label{def:fol_natural_deduction_consequence}\mimprovised
-  For every \hyperref[def:fol_natural_deduction_system]{first-order natural deduction system}, we define a \hyperref[def:consequence_relation]{consequence relation} as follows: we let \( \Gamma \vdash \varphi \) if there exists a \hyperref[def:fol_natural_deduction_proof_tree]{proof tree} with conclusion \( \varphi \) whose \hyperref[def:propositional_natural_deduction_proof_tree/open_assumptions]{open assumptions} are all in \( \Gamma \).
+  For every \hyperref[def:fol_natural_deduction_system]{first-order natural deduction system}, we define a \hyperref[def:consequence_relation]{consequence relation} as follows: we let \( \Gamma \vdash \varphi \) if there exists a \hyperref[def:fol_natural_deduction_proof_tree]{proof tree} with conclusion \( \varphi \) whose \hyperref[def:propositional_natural_deduction_proof_tree/open_assumptions]{open assumptions} are all in \( \Gamma \). Note that \( \varphi \), as well as all formulas in \( \Gamma \), are implicitly assumed to be closed.
 
   In accordance with \cref{def:general_logic}, we say that \( \varphi \) is \term{derivable} from \( \Gamma \) if this relation holds.
 \end{definition}
@@ -518,19 +710,6 @@
 
   \item These precise rules are used in the module \identifier{logic.classical_logic} in \cite{notebook:code}.
 \end{comments}
-
-\begin{theorem}[First-order syntactic deduction theorem]\label{thm:fol_natural_deduction_deduction_theorem}
-  With respect to \hyperref[def:fol_natural_deduction]{minimal first-order natural deduction}, for arbitrary formulas we have
-  \begin{equation*}
-    \Gamma, \varphi \vdash \psi \T{if and only if} \Gamma \vdash \varphi \synimplies \psi.
-  \end{equation*}
-\end{theorem}
-\begin{comments}
-  \item This is one of several deduction theorems presented here --- see \cref{rem:deduction_theorem_list}.
-\end{comments}
-\begin{proof}
-  Follows by direct reuse of the proof trees from \fullref{thm:propositional_syntactic_deduction_theorem}.
-\end{proof}
 
 \begin{example}\label{ex:def:fol_natural_deduction}
   We list examples of the natural deduction rules from \cref{def:fol_natural_deduction}:
@@ -652,7 +831,7 @@
         \infer2[\ref{inf:def:propositional_natural_deduction/neg/elim}]{ \synbot }
         \infer[left label=\( v \)]1[\ref{inf:def:propositional_natural_deduction/bot/raa}]{ \qexists x p(x) }
 
-        \infer[left label=\( v \)]1[\ref{inf:def:propositional_natural_deduction/imp/intro}]{ \synneg \qforall x \synneg p(x) \synimplies \qexists x p(x) }
+        \infer[left label=\( u \)]1[\ref{inf:def:propositional_natural_deduction/imp/intro}]{ \synneg \qforall x \synneg p(x) \synimplies \qexists x p(x) }
       \end{prooftree}
     \end{equation*}
 
@@ -791,5 +970,23 @@
   Not only do the above conditions not conflict with each other, but \( \BbbI \) could even map \( \synx \) to \( \syny \) because \ref{rem:sequent_calculus_eigenvariables/quantifier} allows eigenvariables as bound variables.
 \end{remark}
 
-\begin{theorem}[First-order natural deduction soundness]\label{thm:fol_natural_deduction_soundness}
+\begin{theorem}[First-order syntactic deduction theorem]\label{thm:fol_natural_deduction_deduction_theorem}
+  With respect to \hyperref[def:fol_natural_deduction]{minimal first-order natural deduction}, for arbitrary formulas we have
+  \begin{equation*}
+    \Gamma, \varphi \vdash \psi \T{if and only if} \Gamma \vdash \varphi \synimplies \psi.
+  \end{equation*}
 \end{theorem}
+\begin{comments}
+  \item This is one of several deduction theorems presented here --- see \cref{rem:deduction_theorem_list}.
+\end{comments}
+\begin{proof}
+  Follows by direct reuse of the proof trees from \fullref{thm:propositional_syntactic_deduction_theorem}.
+\end{proof}
+
+\begin{theorem}[First-order natural deduction soundness]\label{thm:fol_natural_deduction_soundness}
+  \hyperref[def:fol_natural_deduction]{Classical first-order natural deduction} is \hyperref[def:general_logic]{sound} with respect to \hyperref[def:truth_value_algebra/classical]{classical} \hyperref[def:fol_semantics]{semantics}.
+\end{theorem}
+\begin{comments}
+  \item This provides a proof that the first-order general logic in \cref{def:first_order_logic} is well-defined.
+  \item See \cref{rem:soundness_and_completeness_theorem_list} for a list of soundness and completeness theorems.
+\end{comments}
