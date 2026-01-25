@@ -81,7 +81,7 @@
       \Bracks{\varphi[\Bbbs]}_\mscrX^v
       \reloset {\eqref{eq:alg:fol_formula_substitution/eq}} =
       \delta\parens[\big]{ \Bracks{\tau[\Bbbs]}_\mscrX^v, \Bracks{\sigma[\Bbbs}_\mscrX^v }
-      \reloset {\eqref{eq:thm:fol_term_and_assignment_substitution}} =
+      \reloset {\eqref{eq:thm:fol_term_semantics_of_assignment_substitution}} =
       \delta\parens[\big]{ \Bracks{\tau[\Bbbt]}_\mscrX^w, \Bracks{\sigma[\Bbbt]}_\mscrX^w }
       \reloset {\eqref{eq:alg:fol_formula_substitution/eq}} =
       \Bracks{\varphi[\Bbbt]}_\mscrX^w
@@ -152,17 +152,32 @@
   \end{itemize}
 \end{proof}
 
-\begin{corollary}\label{thm:fol_formula_and_assignment_substitution}
+\begin{corollary}\label{thm:fol_formula_semantics_of_assignment_substitution}
   \Fullref{alg:fol_formula_substitution} and \fullref{alg:fol_assignment_substitution} are compatible for \hi{quantifierless} formulas:
-  \begin{equation}\label{eq:thm:fol_formula_and_assignment_substitution}
+  \begin{equation}\label{eq:thm:fol_formula_semantics_of_assignment_substitution}
     \Bracks{\varphi}_\mscrX^{v[\Bbbs]} = \Bracks{\varphi[\Bbbs]}_\mscrX^v
   \end{equation}
 \end{corollary}
 \begin{comments}
-  \item An analogous statement holds for terms --- see \cref{thm:fol_term_and_assignment_substitution}.
+  \item An analogous statement holds for terms --- see \cref{thm:fol_term_semantics_of_assignment_substitution}.
 \end{comments}
 \begin{proof}
-  We can use \cref{thm:fol_formula_semantics_of_compatible_substitutions} with \( \Bbbt = \id \).
+  Follows from \cref{thm:fol_term_semantics_of_compatible_substitutions} with \( \Bbbt = \id \).
+\end{proof}
+
+\begin{corollary}\label{thm:fol_formula_semantics_of_single_substitution}
+  Fix a \hyperref[def:fol_formula]{first-order formula} \( \tau \), an \hyperref[def:atomic_fol_substitution]{atomic substitutions} \( \Bbbs \) and a \hyperref[def:fol_variable_assignment]{variable assignments} \( v \) in some \hyperref[def:fol_structure]{structure} \( \mscrX = (X, I) \).
+
+  If \( v(x) = \Bracks{\Bbbs(x)}_\mscrX^v \) for every \hi{free} variable \( x \) in \( \varphi \), then
+  \begin{equation}\label{eq:thm:fol_formula_semantics_of_single_substitution}
+    \Bracks{\varphi[\Bbbs]}_\mscrX^v = \Bracks{\varphi}_\mscrX^v.
+  \end{equation}
+\end{corollary}
+\begin{comments}
+  \item An analogous statement holds for formulas --- see \cref{thm:fol_formula_semantics_of_single_substitution}.
+\end{comments}
+\begin{proof}
+  Follows from \cref{thm:fol_term_semantics_of_compatible_substitutions} with \( \Bbbt = \id \).
 \end{proof}
 
 \paragraph{\( \alpha \)-equivalence}
@@ -508,22 +523,26 @@
       \begin{thmenum}
         \thmitem{def:fol_natural_deduction_proof_tree/application/main/variable} Either \( y \) must coincide with \( x \) or otherwise \( y \) must not be free in \( \Lambda[\BbbI] \) (the unsubstituted conclusion of \( P_k \)).
 
-        \thmitem{def:fol_natural_deduction_proof_tree/application/main/assumptions} The variable \( y \) must not be open in \( P_k \).
+        \thmitem{def:fol_natural_deduction_proof_tree/application/main/conclusion} The variable \( y \) must not be free in \( \Psi[\BbbI] \) (the conclusion of the entire application).
+
+        This condition will automatically be satisfied for the only rule, \ref{inf:def:fol_natural_deduction/exists/intro}, in which we will have such a situation. We list the condition here only for completeness, since a similar condition is listed in the other case below.
+
+        \thmitem{def:fol_natural_deduction_proof_tree/application/main/assumptions} Additionally, \( y \) must not be open in \( P_k \).
       \end{thmenum}
 
       \thmitem{def:fol_natural_deduction_proof_tree/application/attached} If the premise \( \Phi_k \) has a dischargeable schema \( \Theta_{k,i} \) attached, and if \( \Theta_{k,i} \) has a substitution schema with an eigenvariable, then, as above, \( \Theta_{k,i} = \Lambda[\xi \synsubst \eta^*] \). Again, denote \( \BbbI(\xi) \) and \( \BbbI(\eta) \) by \( x \) and \( y \).
 
-      We impose the following restrictions:
+      It is possible that there is no dischargeable assumption. If \( [\varphi[x \mapsto y]]^u \) is an open assumption in \( P_k \) and \( \varphi[x \mapsto y] = \Theta_{k,i}[\BbbI] \), we impose the following restrictions:
       \begin{thmenum}
-        \thmitem{def:fol_natural_deduction_proof_tree/application/attached/variable} Either \( y \) must coincide with \( x \) or otherwise \( y \) must not be free in \( \Lambda[\BbbI] \) (the unsubstituted dischargeable premise).
+        \thmitem{def:fol_natural_deduction_proof_tree/application/attached/variable} Either \( y \) must coincide with \( x \) or otherwise \( y \) must not be free in \( \varphi = \Lambda[\BbbI] \) (the unsubstituted dischargeable premise).
 
-        \thmitem{def:fol_natural_deduction_proof_tree/application/attached/assumptions} The variable \( y \) must not be open in \( P_k \), except possibly in \( [\varphi]^u \) if \( \varphi = \Theta_{k,i}[\BbbI] \) (the substituted dischargeable premise).
+        \thmitem{def:fol_natural_deduction_proof_tree/application/attached/conclusion} The variable \( y \) must not be free in \( \Phi_k[\BbbI] \) (the conclusion of \( P_k \)).
 
-        To check whether \( y \) is not free in any open assumption of \( P_k \) except \( [\varphi]^u \), we must inspect whether it belongs to the corresponding set \( F_k(\set{ u }, \varnothing) \).
+        \thmitem{def:fol_natural_deduction_proof_tree/application/attached/assumptions} Additionally, \( y \) must not be open in \( P_k \), except possibly in \( \varphi[x \mapsto y] = \Theta_{k,i}[\BbbI] \) (the substituted dischargeable premise).
 
-        \thmitem{def:fol_natural_deduction_proof_tree/application/attached/conclusion} Additionally, \( y \) must not be free in \( \Phi_k[\BbbI] \) (the conclusion of \( P_k \)).
+        More precisely, \( y \) must not belong to \( F_k(\set{ u }, \varnothing) \), where \( F_k(D, E) \) is the parameterized set of open variable of \( P_k \).
 
-        In particular, if \( \Phi_k[\BbbI] \) and \( \Theta_{k,i}[\BbbI] \) coincide, then \( y \) is not allowed to be free in them.
+        Note that the previous condition forbids \( y \) to be free in \( \varphi \) if \( \varphi \) is the conclusion of \( P_k \).
       \end{thmenum}
     \end{thmenum}
 
@@ -551,7 +570,9 @@
 
   Their treatment is generalized from the two quantifier rules discussed in detail in \cite[\S 2.1]{TroelstraSchwichtenberg2000BasicProofTheory}.
 
-  \item Even though we do not disallow eigenvariables in the conclusion, they simply serve no purpose there.
+  In addition to allowing us to prove \fullref{thm:fol_natural_deduction_soundness}, our construction satisfies some coherence properties in \cref{thm:def:fol_natural_deduction_proof_tree}.
+
+  \item Even though we do not disallow eigenvariables in the conclusion, they would be treated the same as regular variables.
 
   \item Implicit variables and strict proof trees are not established concepts. Nonstrict rule application trees, in which the conclusion may introduce new free variables, have some debatable aspects despite being the norm. See \cref{rem:fol_empty_universe/natural_deduction} for a broader discussion.
 
@@ -561,6 +582,44 @@
 
   \item Natural deduction proof trees are implemented in the module \identifier{math.logic.deduction.proof_tree} in \cite{notebook:code}.
 \end{comments}
+
+\begin{proposition}\label{thm:def:fol_natural_deduction_proof_tree}
+  \hyperref[def:fol_natural_deduction_proof_tree]{First-order natural deduction trees} have the following properties:
+  \begin{thmenum}
+    \thmitem{thm:def:fol_natural_deduction_proof_tree/open_var_antitone} The parameterized set \( F(D, E) \) of open variables in a tree \( P \) is antitone both arguments. That is, if \( D' \subseteq D \), then \( F(D, E) \subseteq F(D', E) \), and similarly for its second argument.
+
+    \thmitem{thm:def:fol_natural_deduction_proof_tree/open_var_no_eigen} The set \( F(\varnothing, E) \) contains no variables from \( E \).
+
+    \thmitem{thm:def:fol_natural_deduction_proof_tree/open_var_no_discharge} If among the open assumptions of \( P \), the variable \( v \) occurs in \( [\varphi_1]^{u_1}, \ldots, [\varphi_n]^{u_n} \), then \( v \) is not in \( F(\set{ u_1, \ldots, u_n }, \varnothing) \).
+
+    \thmitem{thm:def:fol_natural_deduction_proof_tree/not_open_var} If the variable \( v \) is \hi{not} in \( F(D, \varnothing) \), it is not free in any open assumption of \( P \) except those with markers in \( D \).
+
+    If \( D = \varnothing \), this amounts to saying that if \( v \) is not open in \( P \), it is not free in any open assumption of \( P \).
+  \end{thmenum}
+\end{proposition}
+\begin{proof}
+  \SubProofOf{thm:def:fol_natural_deduction_proof_tree/open_var_antitone} Trivial.
+  \SubProofOf{thm:def:fol_natural_deduction_proof_tree/open_var_no_eigen} Trivial.
+  \SubProofOf{thm:def:fol_natural_deduction_proof_tree/open_var_no_discharge} Trivial.
+  \SubProofOf{thm:def:fol_natural_deduction_proof_tree/not_open_var} We will use \fullref{thm:induction_on_rooted_trees} on \( P \).
+  \begin{itemize}
+    \item If \( P \) is an assumption tree for \( [\varphi]^u \), the open variables are precisely the free variables of \( \varphi \), and the only assumption of \( P \) is \( [\varphi]^u \).
+
+    Hence, if a variable \( v \) is not in \( F(D, \varnothing) \), there are two cases:
+    \begin{itemize}
+      \item If \( u \) is in \( D \), then \( F(D, \varnothing) = \varnothing \), so \( v \) is unrestricted.
+      \item Otherwise \( F(D, \varnothing) = \op*{Free}(\varphi) \), so \( v \) is not free in the only assumption \( \varphi \) of \( P \).
+    \end{itemize}
+
+    \item Suppose that \( P = P_d \) is a rule application tree and that the inductive hypothesis holds for its premises \( P_1, \ldots, P_n \).
+
+    If a variable \( v \) is not in \( F_d(D, \varnothing) \), it is by definition not in the set \( F_k(D \cup D_d, E_d) \) for \( k = 1, \ldots, n \). Here \( D_d \) are the markers of formulas discharged in \( P_d \), while \( E_d \) are the eigenvariables discharged in \( P_d \).
+
+    \Cref{thm:def:fol_natural_deduction_proof_tree/open_var_antitone} implies that \( F_k(D \cup D_d, E_d) \subseteq F_k(D \cup D_d, \varnothing) \). We can apply the inductive hypothesis to the latter to conclude that, if \( v \) is not in \( F_k(D \cup D_d, E_d) \), it is not free in any open assumption of \( P_k \) except those whose marker is in \( D \cup D_d \).
+
+    Generalizing on \( k \), and accounting for the discharged assumptions in \( P \), we conclude that it is not open in any open assumption of \( P_d \) itself, with the exception of those in \( D \).
+  \end{itemize}
+\end{proof}
 
 \begin{definition}\label{def:fol_natural_deduction_consequence}\mimprovised
   For every \hyperref[def:fol_natural_deduction_system]{first-order natural deduction system}, we define a \hyperref[def:consequence_relation]{consequence relation} as follows: we let \( \Gamma \vdash \varphi \) if there exists a \hyperref[def:fol_natural_deduction_proof_tree]{proof tree} with conclusion \( \varphi \) whose \hyperref[def:propositional_natural_deduction_proof_tree/open_assumptions]{open assumptions} are all in \( \Gamma \). Note that \( \varphi \), as well as all formulas in \( \Gamma \), are implicitly assumed to be closed.
@@ -946,3 +1005,124 @@
   \item This provides a proof that the first-order general logic in \cref{def:first_order_logic} is well-defined.
   \item See \cref{rem:soundness_and_completeness_theorem_list} for a list of soundness and completeness theorems.
 \end{comments}
+\begin{proof}
+  For the induction, will need a generalization of the statement to \hyperref[def:fol_universal_validity]{universally valid} formulas.
+
+  Fix also a proof tree \( P \) whose open assumptions are universally valid in some \hyperref[def:fol_structure]{structure} \( \mscrX = (X, I) \). We will use \fullref{thm:induction_on_rooted_trees} on \( P \) to show that its conclusion is also universally valid in \( \mscrX \).
+
+  For definiteness, fix a variable assignment \( v \) that satisfies all open assumptions of \( P \). We must show that \( v \) satisfies its conclusion.
+
+  The case where \( P \) is an assumption tree is vacuous, so suppose that \( P \) is a rule application tree. Let \( P_1, \ldots, P_n \) be the premise subtrees of \( P \) and suppose that the statement holds for them. We will perform case analysis by the rule used.
+
+  For the propositional rules from \cref{def:propositional_natural_deduction}, this follows from \fullref{thm:propositional_natural_deduction_soundness} via \fullref{alg:fol_propositional_formula_translation}. We will focus on the first-order rules from \cref{def:fol_natural_deduction}.
+
+  \SubProofOf{inf:def:fol_natural_deduction/equality/intro} Let \( \tau \syneq \tau \) be the conclusion of \( P \). Then \cref{thm:fol_equality_characterization} implies that every variable assignment \( v \) satisfies \( \tau \syneq \tau \).
+
+  \SubProofOf{inf:def:fol_natural_deduction/equality/elim} If \( \varphi[x \mapsto \tau] \) and \( \tau \syneq \sigma \) are the conclusions of \( P_1 \) and \( P_2 \), then \( \varphi[x \mapsto \sigma] \) is the conclusion of \( P \).
+
+  Fix a variable assignment \( v \) that satisfies the open assumptions of \( P \). Since \( P \) does not discharge formulas, it also satisfies the assumptions of \( P_1 \) and \( P_1 \). Thus, by the inductive hypothesis, \( v \) satisfies \( \varphi[x \mapsto \tau] \) and \( (\tau \syneq \sigma) \). \Cref{thm:fol_equality_characterization} implies that \( \Bracks{\tau}_\mscrX^v = \Bracks{\sigma}_\mscrX^v \).
+
+  Then \cref{thm:fol_formula_semantics_of_compatible_substitutions} implies that
+  \begin{equation*}
+    \Bracks{\varphi[x \mapsto \sigma]}_\mscrX^v = \underbrace{\Bracks{\varphi[x \mapsto \tau]}_\mscrX^v}_{\semtop}.
+  \end{equation*}
+
+  \SubProofOf{inf:def:fol_natural_deduction/forall/intro} If \( \qforall x \varphi \) is the conclusion of \( P \), then \( \varphi[x \mapsto y] \) is the conclusion of \( P_1 \), where \( y \) is an eigenvariable.
+
+  Fix an assignment \( v \) that satisfies the open assumptions of \( P \). \Fullref{alg:fol_formula_denotation} implies that
+  \begin{equation*}
+    \Bracks{\qforall x \varphi}_\mscrX^v
+    =
+    \bigwedge_{a \in X} \Bracks{\varphi}_\mscrX^{v_{x \mapsto a}}.
+  \end{equation*}
+
+  Our goal is to show that, for every value \( a \) in \( X \), the modified assignment \( v_{x \mapsto a} \) satisfies \( \varphi \).
+
+  The inductive hypothesis implies that the modified assignment \( v_{y \mapsto a} \) satisfies \( \varphi[x \mapsto y] \), and \cref{thm:fol_formula_semantics_of_assignment_substitution} implies that the assignment \( v_{y \mapsto a, x \mapsto a} \) satisfies \( \varphi \).
+
+  Since \( y \) is an eigenvariable, the condition \cref{def:fol_natural_deduction_proof_tree/application/main/variable} holds, i.e. either \( y = x \) or \( y \) is not free in \( \varphi \).
+  \begin{itemize}
+    \item If \( y = x \), clearly \( v_{y \mapsto a, x \mapsto a} = v_{x \mapsto a} \) satisfies \( \varphi \).
+
+    \item Otherwise, \( y \) is not free in \( \varphi \). \Cref{thm:fol_formula_semantics_of_compatible_substitutions} implies that \( v_{x \mapsto a} \) satisfies \( \varphi \).
+  \end{itemize}
+
+  It follows that \( v \) satisfies \( \qforall x \varphi \).
+
+  \SubProofOf{inf:def:fol_natural_deduction/forall/elim} If \( \varphi[x \mapsto \tau] \) is the conclusion of \( P \), then \( \qforall x \varphi \) is the conclusion of \( P_1 \).
+
+  Fix an assignment \( v \) that satisfies the open assumptions of \( P \). \Cref{thm:fol_formula_semantics_of_assignment_substitution} implies that
+  \begin{equation*}
+    \Bracks{\varphi[x \mapsto \tau]}_\mscrX^v
+    =
+    \Bracks{\varphi}_\mscrX^{v_{x \mapsto \Bracks{\tau}_\mscrX^v}}.
+  \end{equation*}
+
+  By the inductive hypothesis, \( v \) satisfies \( \qforall x \varphi \), hence \( v_{x \mapsto a} \) satisfies \( \varphi \) for every \( a \) in \( X \); we can take \( a = \Bracks{\tau}_\mscrX^v \) in particular to show that \( v \) satisfies \( \varphi[x \mapsto \tau] \) due to \cref{thm:fol_formula_semantics_of_compatible_substitutions}.
+
+  \SubProofOf{inf:def:fol_natural_deduction/exists/intro} If \( \qexists x \varphi \) is the conclusion of \( P \), then, for some term \( \tau \), the conclusion of \( P_1 \) is \( \varphi[x \mapsto \tau] \).
+
+  Fix an assignment \( v \) that satisfies the open assumptions of \( P \). \Fullref{alg:fol_formula_denotation} implies that
+  \begin{equation*}
+    \Bracks{\qexists x \varphi}_\mscrX^v
+    =
+    \bigvee_{a \in X} \Bracks{\varphi}_\mscrX^{v_{x \mapsto a}}.
+  \end{equation*}
+
+  To show that \( v \) satisfies \( \qexists x \varphi \), it is sufficient to find a value \( a \) such that \( v_{x \mapsto a} \) satisfies \( \varphi \). We can take \( a \coloneqq \Bracks{\tau}_\mscrX^v \) since, by the inductive hypothesis, \( v \) satisfies \( \varphi[x \mapsto \tau] \).
+
+  \SubProofOf{inf:def:fol_natural_deduction/exists/elim} We have two cases to consider.
+  \SubProof*{Proof if \( P \) discharges no assumption} In this case \( P \) has the form
+  \begin{equation*}
+    \begin{prooftree}
+      \hypo{}
+      \ellipsis { \( P_1 \) } { \qexists x \varphi }
+
+      \hypo{}
+      \ellipsis { \( P_2 \) } { \psi }
+
+      \infer2[\ref{inf:def:fol_natural_deduction/exists/elim}]{ \psi }
+    \end{prooftree}
+  \end{equation*}
+
+  In this case we directly use the inductive hypothesis on \( P_2 \) to conclude that every variable assignment that satisfies the open assumptions of \( P \) also satisfies \( \psi \).
+
+  \SubProof*{Proof if \( P \) discharges an assumption} If \( P \) discharges \( [\varphi[x \mapsto y]]^u \), it has the form
+  \begin{equation*}
+    \begin{prooftree}
+      \hypo{}
+      \ellipsis { \( P_1 \) } { \qexists x \varphi }
+
+      \hypo{ [\varphi[x \mapsto y]]^u }
+      \ellipsis { \( P_2 \) } { \psi }
+
+      \infer[left label=\( u \)]2[\ref{inf:def:fol_natural_deduction/exists/elim}]{ \psi }
+    \end{prooftree}
+  \end{equation*}
+
+  Fix an assignment \( v \) that satisfies the open assumptions of \( P \). We will again utilize the inductive hypothesis on \( P_2 \), but using it is tricky since \( \varphi[x \mapsto y] \) is not automatically satisfied by \( v \).
+
+  First, we use the inductive hypothesis on \( P_1 \) to conclude that \( v \) satisfies \( \qexists x \varphi \). Then there exists a value \( a \) such that \( v_{x \mapsto a} \) satisfies \( \varphi \).
+
+  Now we must justify using the modified assignment \( v_{y \mapsto a} \) instead of \( v \) for \( P_2 \).
+
+  As an eigenvariable, \( y \) satisfies the condition \cref{def:fol_natural_deduction_proof_tree/application/attached/assumptions}, which requires it to not be in \( F_2(\set{ u }, \varnothing) \). In particular, \cref{thm:def:fol_natural_deduction_proof_tree/not_open_var} implies that \( y \) is not free in any open assumption of \( P_2 \), except possibly \( [\varphi[x \mapsto y]]^u \).
+
+  Since \( v \) satisfies the open assumptions of \( P \), it satisfies those of \( P_2 \) (except the one discharged); but \( v_{y \mapsto a} \) also satisfies those same assumptions because we just showed that the value of \( y \) is irrelevant for them.
+
+  As for \( \varphi[x \mapsto y] \) itself, \cref{thm:fol_formula_semantics_of_assignment_substitution} implies that
+  \begin{equation*}
+    \Bracks{\varphi[x \mapsto y]}_\mscrX^{v_{y \mapsto a}} = \Bracks{\varphi}_\mscrX^{v_{y \mapsto a, x \mapsto a}}.
+  \end{equation*}
+
+  Again, since \( y \) is an eigenvariable, it satisfies \cref{def:fol_natural_deduction_proof_tree/application/attached/variable}. Thus, either \( x = y \) or otherwise \( y \) is not free in \( \varphi \). In either case, we can extend the above equality to
+  \begin{equation*}
+    \Bracks{\varphi[x \mapsto y]}_\mscrX^{v_{y \mapsto a}} = \Bracks{\varphi}_\mscrX^{v_{y \mapsto a, x \mapsto a}} = \underbrace{\Bracks{\varphi}_\mscrX^{v_{x \mapsto a}}}_{\semtop}.
+  \end{equation*}
+
+  Therefore, we have just shown that \( v_{y \mapsto a} \) satisfies all open assumptions of \( P_2 \). The inductive hypothesis allows us to conclude that it also satisfies the conclusion \( \phi \).
+
+  Finally, \( y \) also satisfies \cref{def:fol_natural_deduction_proof_tree/application/attached/conclusion}, so it is not free in \( \psi \). Since \( v_{y \mapsto a} \) satisfies \( \psi \), so does \( v \).
+
+  This concludes the proof.
+\end{proof}

@@ -201,7 +201,55 @@ class RuleApplicationTree(InferenceTree[Formula, MarkedFormula]):
         return self.build_renderer().render()
 
 
-def apply(  # noqa: C901,PLR0915
+def _infer_application_instantiation(
+    rule: NaturalDeductionRule,
+    application_premises: Sequence[RuleApplicationPremiseConfig],
+    instantiation: AtomicLogicSchemaInstantiation | None = None,
+    implicit: Mapping[FormulaPlaceholder, Formula] | None = None,
+    conclusion_config: FormulaWithSubstitution | None = None
+) -> AtomicLogicSchemaInstantiation:
+    if instantiation is None:
+        instantiation = AtomicLogicSchemaInstantiation(formula_mapping=implicit)
+    elif implicit:
+        raise RuleApplicationError('Cannot provide both an instantiation and implicit assumptions')
+
+    # Infer instantiation
+    for rule_premise, application_premise in zip(rule.premises, application_premises, strict=True):
+        for attachment_schema, attachment in zip(rule_premise.attachments, application_premise.attachments, strict=True):
+            if attachment:
+                instantiation |= infer_instantiation_from_formula_substitution_spec(
+                    attachment_schema,
+                    attachment.payload
+                )
+
+        if application_premise.main:
+            if rule_premise.main.sub is None:
+                instantiation |= infer_instantiation_from_formula(
+                    rule_premise.main.formula,
+                    evaluate_substitution(application_premise.main),
+                )
+            else:
+                instantiation |= infer_instantiation_from_formula_substitution_spec(
+                    rule_premise.main,
+                    application_premise.main,
+                )
+
+    if rule.conclusion.main.sub:
+        if conclusion_config is None:
+            raise RuleApplicationError(f'The rule {rule.name} requires a conclusion with an explicit substitution')
+
+        instantiation |= infer_instantiation_from_formula_substitution_spec(rule.conclusion.main, conclusion_config)
+
+    for attachment_schema in rule.conclusion.attachments:
+        try:
+            instantiate_substitution(attachment_schema, instantiation)
+        except SchemaInstantiationError as err:
+            raise RuleApplicationError(f'Cannot instantiate the implicit premise {attachment_schema} of the rule {rule.name}') from err
+
+    return instantiation
+
+
+def apply(  # noqa: C901
     rule: NaturalDeductionRule,
     *args: ProofTree | RuleApplicationPremiseConfig,
     instantiation: AtomicLogicSchemaInstantiation | None = None,
@@ -211,19 +259,23 @@ def apply(  # noqa: C901,PLR0915
     if len(args) != len(rule.premises):
         raise RuleApplicationError(f'The rule {rule.name} has {len(rule.premises)} premises, but the application has {len(args)}')
 
-    if instantiation is None:
-        instantiation = AtomicLogicSchemaInstantiation(formula_mapping=implicit)
-    elif implicit:
-        raise RuleApplicationError('Cannot provide both an instantiation and implicit assumptions')
-
-    marker_map = dict[Marker, Formula]()
-
     application_premises = [
         premise_config(tree=premise_arg, attachments=[None] * len(rule_premise.attachments))
         if isinstance(premise_arg, ProofTree)
         else premise_arg
         for rule_premise, premise_arg in zip(rule.premises, args, strict=True)
     ]
+
+    instantiation = _infer_application_instantiation(
+        rule, application_premises, instantiation, implicit, conclusion_config
+    )
+
+    marker_map = dict[Marker, Formula]()
+
+    if conclusion_config is None:
+        conclusion_config = instantiate_substitution(rule.conclusion.main, instantiation)
+
+    conclusion = evaluate_substitution(conclusion_config)
 
     for i, (rule_premise, application_premise) in enumerate(zip(rule.premises, application_premises, strict=True), start=1):
         for assumption in application_premise.tree.get_cumulative_assumptions():
@@ -244,6 +296,9 @@ def apply(  # noqa: C901,PLR0915
 
             if not application_premise.main.sub.is_noop() and eigen in get_formula_free_variables(application_premise.main.formula):
                 raise RuleApplicationError(f'The eigenvariable {eigen} of the unsubstituted premise conclusion {application_premise.main.formula} cannot be free in it')
+
+            if eigen in get_formula_free_variables(conclusion):
+                raise RuleApplicationError(f'The attached formula eigenvariable {eigen} cannot be free in the conclusion {conclusion} of the rule {rule.name}')
 
             if eigen in application_premise.tree.get_open_variables():
                 raise RuleApplicationError(f'The eigenvariable {eigen} cannot be free in the derivation of {application_premise.tree.conclusion}')
@@ -274,44 +329,11 @@ def apply(  # noqa: C901,PLR0915
                 if eigen in application_premise.tree.get_open_variables(discharged={attachment.marker}):
                     raise RuleApplicationError(f'The eigenvariable {eigen} cannot be free in the derivation of {app_conclusion}, except possibly in {attachment.eval()}')
 
-            # Update instantiation
-            instantiation |= infer_instantiation_from_formula_substitution_spec(
-                attachment_schema,
-                attachment.payload
-            )
-
-        if application_premise.main:
-            if rule_premise.main.sub is None:
-                instantiation |= infer_instantiation_from_formula(
-                    rule_premise.main.formula,
-                    evaluate_substitution(application_premise.main),
-                )
-            else:
-                instantiation |= infer_instantiation_from_formula_substitution_spec(
-                    rule_premise.main,
-                    application_premise.main,
-                )
-
-    if rule.conclusion.main.sub:
-        if conclusion_config is None:
-            raise RuleApplicationError(f'The rule {rule.name} requires a conclusion with an explicit substitution')
-
-        instantiation |= infer_instantiation_from_formula_substitution_spec(rule.conclusion.main, conclusion_config)
-
-    for attachment_schema in rule.conclusion.attachments:
-        try:
-            instantiate_substitution(attachment_schema, instantiation)
-        except SchemaInstantiationError as err:
-            raise RuleApplicationError(f'Cannot instantiate the implicit premise {attachment_schema} of the rule {rule.name}') from err
-
-    if conclusion_config is None:
-        conclusion_config = instantiate_substitution(rule.conclusion.main, instantiation)
-
     return RuleApplicationTree(
         rule,
         instantiation,
         [premise.eval() for premise in application_premises],
-        evaluate_substitution(conclusion_config),
+        conclusion,
         get_term_variables(conclusion_config.sub.dest) if conclusion_config.sub else set()
     )
 
