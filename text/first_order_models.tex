@@ -1,71 +1,17 @@
 \section{First-order models}\label{sec:first_order_models}
 
-\paragraph{First-order models}
-
-\begin{proposition}\label{thm:fol_bijective_homomorphism}
-\end{proposition}
-
-\begin{proposition}\label{thm:implicit_universal_quantification}
-  Every first-order formula is semantically equivalent to its \hyperref[def:fol_quantifier_closure]{universal closure}.
-\end{proposition}
-\begin{comments}
-  \item See \cref{ex:def:first_order_natural_deduction_system/eigenvariables/invalid_universal_closure} for how this fails for derivability rather than entailment.
-\end{comments}
-\begin{proof}
-  \SufficiencySubProof Let \( \mscrX = (X, I) \) be a structure that satisfies \( \varphi \). Let \( v \) be a variable assignment in \( \mscrX \). Then for any \( x \in X \), the modified variable assignment \( v_{\xi \mapsto x} \) also satisfies \( \varphi \), i.e.
-  \begin{equation*}
-    \Bracks{\varphi}_v = \Bracks{\varphi}_{v_{\xi \mapsto x}} = T.
-  \end{equation*}
-
-  Thus, \( \mscrX \) is also a model for \( \qforall \xi \varphi \).
-
-  \NecessitySubProof Conversely, suppose that \( \mscrX \) satisfies \( \qforall \xi \varphi \) and \( v \) is any variable assignment. Then
-  \begin{equation*}
-    \Bracks{\varphi}_{v_{\xi \mapsto x}} = T
-  \end{equation*}
-  for any \( x \), including \( x = v(\xi) \). Thus,
-  \begin{equation*}
-    \Bracks{\varphi}_{v_{\xi \mapsto v(\xi)}} = \Bracks{\varphi}_v = T.
-  \end{equation*}
-
-  Therefore, \( \mscrX \) is also a model for \( \varphi \).
-\end{proof}
-
-\begin{definition}\label{def:first_order_model}\mcite[def. 2.2.13(ii)]{Hinman2005Logic}
-  We say that the \hyperref[def:fol_structure]{first-order structure} \( \mscrX = (X, I) \) is a \term{first-order model} of the set of \hyperref[def:first_order_syntax/formula]{first-order formulas} \( \Gamma \) if, for an arbitrary variable assignment \( v \) in \( \mscrX \), \( \Bracks{\varphi}_v = T \) for every formula \( \varphi \in \Gamma \).
-
-  We also say that \( \Gamma \) is \term{valid} in \( \mscrX \), that \( \mscrX \) \term{satisfies} \( \Gamma \) and that the set \( \Gamma \) is \term{satisfiable} if there exists at least one model for it.
-\end{definition}
-\begin{comments}
-  \item Since the formulas are closed, the result does not depend on the assignment. We only assignments as a technical tool because we avoid defining entailment within a structure. The problems of doing the latter are discussed in \cref{rem:implicit_quantification_and_deduction}.
-\end{comments}
-
-\begin{remark}\label{rem:questions_regarding_structures}
-  Within this section, we are interested in the following questions regarding \hyperref[def:fol_structure]{first-order structure} and \hyperref[def:first_order_model]{models}:
-
-  \begin{itemize}
-    \item Which subsets of a structure form a \hyperref[def:first_order_substructure]{substructure}?
-
-    This is answered by \cref{def:first_order_substructure} and by \cref{def:first_order_generated_substructure}. Vacuously, if the language contains no functional symbols, every subset of (the domain of) a structure is a substructure. Such is the case with \hyperref[def:set]{sets} themselves, with \hyperref[def:partially_ordered_set]{partially ordered sets} or with \hyperref[def:metric_space]{metric} and \hyperref[def:topological_space]{topological spaces}.
-
-    \Cref{thm:substructures_form_complete_lattice} shows that the family of all substructures of a structure is worth studying in itself.
-
-    \item Given a model of some set \( \Gamma \) of formulas, which substructures and \hyperref[def:fol_homomorphism]{homomorphic} images of the model are again models of \( \Gamma \)?
-
-    This is answered by \cref{thm:positive_formulas_preserved_under_homomorphism}, \cref{thm:arbitrary_formulas_preserved_under_isomorphisms} and \cref{thm:functions_over_model_form_model}.
-  \end{itemize}
-\end{remark}
-
 \paragraph{First-order substructures}
 
 \begin{definition}\label{def:first_order_substructure}\mcite[def. 2.3.12]{Hinman2005Logic}
-  Let \( \mscrX = (X, I) \) be a structure for the language \( \mscrL \) and let \( Y \subseteq X \). We say that \( \mscrY = (Y, J) \) is a \term{substructure} of \( \mscrX \) if:
+  Fix two \hyperref[def:fol_structure]{structures} \( \mscrX = (X, I) \) and \( \mscrY = (Y, J) \) over the \hyperref[def:fol_signature]{first-order signature} \( \Sigma \).
 
+  We say that \( \mscrY \) is a \term{substructure} of \( \mscrX \) if \( Y \subseteq X \) and either of the following equivalent conditions hold:
   \begin{thmenum}
+    \thmitem{def:first_order_substructure/inclusion} The inclusion \( \iota: Y \subseteq X \) is a \hyperref[def:fol_homomorphism]{homomorphism}.
     \thmitem{def:first_order_substructure/universe} The universe \( Y \) satisfies either of the equivalent conditions:
 
     \begin{thmenum}
-      \thmitem{def:first_order_substructure/universe/deductive} It is closed under function application, that is, for any functional symbol \( f \) in \( \mscrL \) with arity \( n \), we have \( I(f)(Y^n) \subseteq Y \).
+      \thmitem{def:first_order_substructure/universe/deductive} It is closed under function application, that is, for any functional symbol \( f \) in \( \Sigma \) with arity \( n \), we have \( I(f)(Y^n) \subseteq Y \).
 
       \thmitem{def:first_order_substructure/universe/inductive} It is a \hyperref[def:function_fixed_point]{fixed point} of the operator
       \begin{equation*}
@@ -74,12 +20,8 @@
           &T(A) \coloneqq A \cup \set[\big]{ I(f)(x_1, \ldots, x_{\#f}) \given f \in \op*{Fun} \T{and} x_1, \ldots, x_{\#f} \in A},
         \end{aligned}
       \end{equation*}
-      which enlarges \( A \) with the union of all image of \( A \) under functions of the language \( \mscrL \).
+      which enlarges \( A \) with the union of all image of \( A \) under functions of the signature \( \Sigma \).
     \end{thmenum}
-
-    \thmitem{def:first_order_substructure/functional} For every functional symbol \( f \in \op*{Fun}_\mscrL \), the interpretation \( J(f) \) is a restriction of \( I(f) \) to \( Y \).
-
-    \thmitem{def:first_order_substructure/predicate} For every predicate symbol \( p \in \op*{Pred}_\mscrL \), the interpretation \( J(p) \) is a restriction of \( I(p) \) to \( Y \).
   \end{thmenum}
 \end{definition}
 \begin{comments}
@@ -95,6 +37,22 @@
 
   \ImplicationSubProof{def:first_order_substructure/universe/inductive}{def:first_order_substructure/universe/deductive} If, instead \( Y \) is a fixed point of \( T \), for the \( n \)-ary functional symbol \( f \in \op*{Fun} \) and for any tuple \( x_1, \ldots, x_n \), the value \( I(f)(x_1, \ldots, x_n) \) belongs to \( Y \). Therefore, \cref{def:first_order_substructure/universe/deductive} is satisfied.
 \end{defproof}
+
+\begin{remark}\label{rem:questions_regarding_structures}
+  Within this section, we are interested in the following questions regarding \hyperref[def:fol_structure]{first-order structure} and \hyperref[def:fol_semantics/model]{models}:
+
+  \begin{itemize}
+    \item Which subsets of a structure form a \hyperref[def:first_order_substructure]{substructure}?
+
+    This is answered by \cref{def:first_order_substructure} and by \cref{def:first_order_generated_substructure}. Vacuously, if the signature contains no functional symbols, every subset of (the domain of) a structure is a substructure. Such is the case with \hyperref[def:set]{sets} themselves, with \hyperref[def:partially_ordered_set]{partially ordered sets} or with \hyperref[def:metric_space]{metric} and \hyperref[def:topological_space]{topological spaces}.
+
+    \Cref{thm:substructures_form_complete_lattice} shows that the family of all substructures of a structure is worth studying in itself.
+
+    \item Given a model of some set \( \Gamma \) of formulas, which substructures and \hyperref[def:fol_homomorphism]{homomorphic} images of the model are again models of \( \Gamma \)?
+
+    This is answered by \cref{thm:positive_formulas_preserved_under_homomorphism}, \cref{thm:arbitrary_formulas_preserved_under_isomorphisms} and \cref{thm:functions_over_model_form_model}.
+  \end{itemize}
+\end{remark}
 
 \begin{proposition}\label{thm:substructure_relation_is_transitive}
   The \hyperref[def:first_order_substructure]{first-order substructure} relation is \hyperref[def:binary_relation/transitive]{transitive}.
@@ -114,7 +72,7 @@
 \end{example}
 
 \begin{remark}\label{rem:topological_first_order_structures}
-  Let \( \mscrX = (X, I) \) be a structure over some language \( \mscrL \) without predicate symbols.
+  Let \( \mscrX = (X, I) \) be a structure over some signature \( \Sigma \) without predicate symbols.
 
   If, for every functional symbol \( f \), the interpretation \( I(f) \) is a \hyperref[def:global_continuity]{continuous function}, we call \( \mscrX \) a \term{topological structure}.
 
@@ -130,7 +88,7 @@
   \item In case the substructures are disjoint, their intersection is empty, which is technically not the domain of a structure. If we allow empty domains, as per \cref{rem:empty_first_order_structures}, then the condition for the substructures not to be disjoint is unnecessary.
 \end{comments}
 \begin{proof}
-  For any functional symbol \( f \) in \( \mscrL \) with arity \( n \), we have
+  For any functional symbol \( f \) in \( \Sigma \) with arity \( n \), we have
   \begin{equation*}
     I(f)\parens*{\parens*{\bigcap_{\smash{k \in \mscrK}} X_k}^n}
     \reloset {\ref{thm:function_image_properties/intersection}} \subseteq
@@ -150,12 +108,12 @@
 \end{comments}
 
 \begin{theorem}[Induction on generated substructures]\label{thm:induction_on_generated_substructures}
-  Fix a \hyperref[def:fol_structure]{first-order structure} \( \mscrX = (X, I) \) over \( \mscrL \) and a subset \( A \) of \( X \). Let \( \varphi \) be a formula over \( \mscrL \) with a single free variable \( \xi \).
+  Fix a \hyperref[def:fol_structure]{first-order structure} \( \mscrX = (X, I) \) over \( \Sigma \) and a subset \( A \) of \( X \). Let \( \varphi \) be a formula over \( \Sigma \) with a single free variable \( \xi \).
 
   Then, in order for \( \Bracks{\varphi}(x) = T \) to hold for every \( x \) in the substructure \hyperref[def:first_order_generated_substructure]{generated} by \( A \), the following conditions are sufficient:
   \begin{thmenum}
     \thmitem{thm:induction_on_generated_substructures/base} Prove that \( \Bracks{\varphi}(x) = T \) for every \( x \) in \( A \).
-    \thmitem{thm:induction_on_generated_substructures/step} For every functional symbol \( f \) in \( \mscrL \), prove that, given that \( n \) is the arity of \( f \), if there exists a tuple \( x_1, \ldots, x_n \) such that \( \Bracks{\varphi}(x_k) = T \) for every \( k = 1, \ldots, n \), then
+    \thmitem{thm:induction_on_generated_substructures/step} For every functional symbol \( f \) in \( \Sigma \), prove that, given that \( n \) is the arity of \( f \), if there exists a tuple \( x_1, \ldots, x_n \) such that \( \Bracks{\varphi}(x_k) = T \) for every \( k = 1, \ldots, n \), then
     \begin{equation*}
       \Bracks{\varphi}\parens[\big]{ I(f)(x_1, \ldots, x_n) } = T.
     \end{equation*}
@@ -168,7 +126,7 @@
     \item If \( x \in A \), then \cref{thm:induction_on_generated_substructures/base} ensures that \( \Bracks{\varphi}(x) = T \).
     \item Otherwise, there exists a functional symbol \( f \) and a tuple \( x_1, \ldots, x_n \) such that \( x = f(x_1, \ldots, x_n) \).
 
-    Indeed, aiming at a contradiction, suppose not. Then \( \braket{ A } \setminus \set{ x } \) is also closed under application of all functions in \( \mscrL \), and hence is itself the domain of a substructure of \( \mscrX \). This contradicts the minimality of \( \braket{ A } \), however.
+    Indeed, aiming at a contradiction, suppose not. Then \( \braket{ A } \setminus \set{ x } \) is also closed under application of all functions in \( \Sigma \), and hence is itself the domain of a substructure of \( \mscrX \). This contradicts the minimality of \( \braket{ A } \), however.
 
     Now that we have shown the existence of \( f \) and \( x_1, \ldots, x_n \), \cref{thm:induction_on_generated_substructures/step} implies that
     \begin{equation*}
@@ -184,7 +142,7 @@
 \end{example}
 
 \begin{proposition}\label{thm:substructures_form_complete_lattice}
-  Fix a structure \( \mscrX = (X, I) \) for the language \( \mscrL \).
+  Fix a structure \( \mscrX = (X, I) \) for the signature \( \Sigma \).
 
   With respect to set inclusion of domains, the family of all substructures of a \( \mscrX \) forms a complete lattice. Explicitly:
   \begin{thmenum}
@@ -233,7 +191,7 @@
 \end{comments}
 
 \begin{definition}\label{def:first_order_submodel}
-  Given a \hyperref[def:first_order_model]{model} \( \mscrX \) of the set of \hyperref[def:closed_fol_formula]{closed formulas} \( \Gamma \), we say that a \hyperref[def:first_order_substructure]{substructure} \( \mscrY \) of \( \mscrX \) is a \term{submodel} (with respect to \( \Gamma \)) if \( \mscrY \) is also a model of \( \Gamma \).
+  Given a \hyperref[def:fol_semantics/model]{model} \( \mscrX \) of the set of \hyperref[def:closed_fol_formula]{closed formulas} \( \Gamma \), we say that a \hyperref[def:first_order_substructure]{substructure} \( \mscrY \) of \( \mscrX \) is a \term{submodel} (with respect to \( \Gamma \)) if \( \mscrY \) is also a model of \( \Gamma \).
 \end{definition}
 \begin{comments}
   \item In this monograph, \( \Gamma \) is usually unambiguously clear from the context.
@@ -256,7 +214,7 @@
 
   Define the interpretation \( J \) as follows:
   \begin{itemize}
-    \item For each \( n \)-ary functional symbol \( f \) in \( \mscrL \), define the interpretation of the functions \( y_1, \ldots, y_n \) componentwise as
+    \item For each \( n \)-ary functional symbol \( f \) in \( \Sigma \), define the interpretation of the functions \( y_1, \ldots, y_n \) componentwise as
     \begin{equation*}
       \begin{aligned}
         &J(f): Y^n \to Y \\
@@ -264,7 +222,7 @@
       \end{aligned}
     \end{equation*}
 
-    \item For each \( n \)-ary predicate symbol \( p \) in \( \mscrL \), define \( J(p) \subseteq Y^n \) via
+    \item For each \( n \)-ary predicate symbol \( p \) in \( \Sigma \), define \( J(p) \subseteq Y^n \) via
     \begin{equation*}
       \begin{aligned}
         &J(p): Y^n \to \set{ T, F } \\
@@ -436,7 +394,7 @@
 \begin{proposition}\label{thm:positive_formulas_preserved_under_homomorphism}
   A \hyperref[def:fol_homomorphism]{first-order homomorphism} preserves models of closed \hyperref[def:positive_formula]{positive formulas}.
 
-  More concretely, given some language \( \mscrL \), if \( \Gamma \) is a set of closed positive formulas and \( h: \mscrX \to \mscrY \) is a homomorphism between \hyperref[def:first_order_model]{models} of \( \Gamma \), then the image \( h[X] \) is also (the domain of) a model of \( \Gamma \).
+  More concretely, given some signature \( \Sigma \), if \( \Gamma \) is a set of closed positive formulas and \( h: \mscrX \to \mscrY \) is a homomorphism between \hyperref[def:fol_semantics/model]{models} of \( \Gamma \), then the image \( h[X] \) is also (the domain of) a model of \( \Gamma \).
 \end{proposition}
 \begin{comments}
   \item Compare this to \cref{thm:arbitrary_formulas_preserved_under_isomorphisms}, which places restrictions on the homomorphism rather than the formulas.
@@ -550,7 +508,7 @@
 \begin{example}\label{ex:replacing_functional_symbols_via_relations}
   Consider the \hyperref[def:semigroup/theory]{theory of semigroups}. We have a functional symbol \( \cdot \), which we can also represent via the ternary predicate \( p(\xi, \eta, \zeta) \), which holds for \( (x, y, z) \) in some model \( \mscrX \) if and only if \( x \cdot y = z \).
 
-  If we choose to work only with the relation, the language would not have any functional symbols, and every subset of (the domain of) \( \mscrX \) would be a substructure.
+  If we choose to work only with the relation, the signature would not have any functional symbols, and every subset of (the domain of) \( \mscrX \) would be a substructure.
 
   This also introduces a complication, however. We must ensure that the relation represents a function, and this can be done via the axiom
   \begin{equation*}
@@ -566,13 +524,13 @@
 \paragraph{First-order direct products}
 
 \begin{definition}\label{def:first_order_direct_product}\mcite[def. 2.3.54]{Hinman2005Logic}
-  Fix a family of \hyperref[def:fol_structure]{first-order structures} \( \seq{ \mscrX_k }_{k \in \mscrK} \) over a common language \( \mscrL \), where \( \mscrX_k = (X_k, I_k) \).
+  Fix a family of \hyperref[def:fol_structure]{first-order structures} \( \seq{ \mscrX_k }_{k \in \mscrK} \) over a common signature \( \Sigma \), where \( \mscrX_k = (X_k, I_k) \).
 
   We call the \term{direct product} of this family the structure \( (X, I) \) denoted by \( \prod_{k \in \mscrK} \mscrX_k \) (or \( \mscrX^\mscrK \) if all structures are equal to \( \mscrX \)) and defined as follows:
   \begin{thmenum}
     \thmitem{def:first_order_direct_product/domain} The domain \( X \) is the \hyperref[def:cartesian_product]{Cartesian product} \( \prod_{k \in \mscrK} X_k \) of the corresponding domains.
 
-    \thmitem{def:first_order_direct_product/functions} For every \( n \)-ary functional symbol \( f \) in \( \mscrL \), we define its interpretation componentwise:
+    \thmitem{def:first_order_direct_product/functions} For every \( n \)-ary functional symbol \( f \) in \( \Sigma \), we define its interpretation componentwise:
     \begin{equation*}
       \begin{aligned}
         &I(f): \prod_{k \in \mscrK} \mscrX_k \to X, \\
@@ -580,7 +538,7 @@
       \end{aligned}
     \end{equation*}
 
-    \thmitem{def:first_order_direct_product/predicates} For every \( n \)-ary predicate symbol \( p \) in \( \mscrL \), we define its interpretation componentwise:
+    \thmitem{def:first_order_direct_product/predicates} For every \( n \)-ary predicate symbol \( p \) in \( \Sigma \), we define its interpretation componentwise:
     \begin{equation*}
       \begin{aligned}
         &I(p): \prod_{k \in \mscrK} \mscrX_k \to \set{ T, F }, \\
@@ -603,7 +561,7 @@
   \end{equation*}
 \end{proposition}
 \begin{proof}
-  Let \( I \) be the interpretation of the product and \( I_k \) --- of \( \mscrX_k \). For every \( n \)-ary functional symbol \( f \) in \( \mscrL \), we have
+  Let \( I \) be the interpretation of the product and \( I_k \) --- of \( \mscrX_k \). For every \( n \)-ary functional symbol \( f \) in \( \Sigma \), we have
   \begin{align*}
     &\phantom{{}={}}
     \pi_m\parens[\big]{ I(f)\parens[\big]{ \seq{ x_{1,k} }_{k \in \mscrK}, \ldots, \seq{ x_{n,k} }_{k \in \mscrK} } }
@@ -617,7 +575,7 @@
 
   This shows \cref{def:fol_homomorphism/functions}.
 
-  Now fix an \( n \)-ary predicate symbol \( p \) in \( \mscrL \) and suppose that
+  Now fix an \( n \)-ary predicate symbol \( p \) in \( \Sigma \) and suppose that
   \begin{equation*}
     I(p)\parens[\big]{ \seq{ x_{1,k} }_{k \in \mscrK}, \ldots, \seq{ x_{n,k} }_{k \in \mscrK} } = T.
   \end{equation*}
@@ -642,14 +600,14 @@
 \end{proof}
 
 \begin{proposition}\label{thm:first_order_homomorphism_as_substructure}
-  Let \( \mscrX = (X, I) \) and \( \mscrY = (Y, J) \) be structures over \( \mscrL \). The \hyperref[def:function]{set-theoretic function} \( h: X \to Y \) preserves logical functions, i.e. satisfies \cref{def:fol_homomorphism/functions}, if and only if it is the domain of a \hyperref[def:first_order_substructure]{substructure} of the \hyperref[def:first_order_direct_product]{direct product} \( \mscrX \times \mscrY \).
+  Let \( \mscrX = (X, I) \) and \( \mscrY = (Y, J) \) be structures over \( \Sigma \). The \hyperref[def:function]{set-theoretic function} \( h: X \to Y \) preserves logical functions, i.e. satisfies \cref{def:fol_homomorphism/functions}, if and only if it is the domain of a \hyperref[def:first_order_substructure]{substructure} of the \hyperref[def:first_order_direct_product]{direct product} \( \mscrX \times \mscrY \).
 \end{proposition}
 \begin{proof}
   \SufficiencySubProof Suppose that \( h: X \to Y \) is a function that satisfies \cref{def:fol_homomorphism/functions}. We must show that \( h \) is closed under function application in \( \mscrX \times \mscrY \). Denote by \( K \) the interpretation in the structure \( \mscrX \times \mscrY \).
 
   First note that \( (x, y) \in h \) if and only if \( y = h(x) \).
 
-  Let \( f \) be an \( n \)-ary function symbol from \( \mscrL \). Then, for any \( n \)-tuple of pairs \( (x_1, y_1), \ldots, (x_n, y_n) \) from \( h \), we have
+  Let \( f \) be an \( n \)-ary function symbol from \( \Sigma \). Then, for any \( n \)-tuple of pairs \( (x_1, y_1), \ldots, (x_n, y_n) \) from \( h \), we have
   \begin{align*}
     K(f)\parens[\big]{ (x_1, y_1), \ldots, (x_n, y_n) }
     &=
@@ -686,9 +644,9 @@
 \end{proof}
 
 \begin{proposition}\label{thm:direct_product_preserves_positive_formulas}
-  Let \( \Gamma \) be a closed set of \hyperref[def:positive_formula]{positive formulas} \hi{without disjunctions} over \( \mscrL \) and let \( \seq{ \mscrX_k }_{k \in \mscrK} \) be a family of structures over \( \mscrL \), where \( \mscrX_k = (X_k, I_k) \) for every \( k \in \mscrK \).
+  Let \( \Gamma \) be a closed set of \hyperref[def:positive_formula]{positive formulas} \hi{without disjunctions} over \( \Sigma \) and let \( \seq{ \mscrX_k }_{k \in \mscrK} \) be a family of structures over \( \Sigma \), where \( \mscrX_k = (X_k, I_k) \) for every \( k \in \mscrK \).
 
-  If, for every \( k \in \mscrK \), the structure \( \mscrX_k \) is a \hyperref[def:first_order_model]{model} of \( \Gamma \), then so is the \hyperref[def:first_order_direct_product]{direct product} \( \prod_{k \in \mscrK} \mscrX_k \).
+  If, for every \( k \in \mscrK \), the structure \( \mscrX_k \) is a \hyperref[def:fol_semantics/model]{model} of \( \Gamma \), then so is the \hyperref[def:first_order_direct_product]{direct product} \( \prod_{k \in \mscrK} \mscrX_k \).
 \end{proposition}
 \begin{comments}
   \item \Cref{ex:def:first_order_direct_product/algebraic} demonstrates that the requirement for positivity is crucial, while \cref{ex:def:first_order_direct_product/order} demonstrates that the requirement for the formulas to have no disjunction is crucial.
@@ -908,20 +866,20 @@
 \paragraph{First-order embeddings}
 
 \begin{definition}\label{def:first_order_embedding}\mcite[def. 2.3.26(ii)]{Hinman2005Logic}
-  Let \( \mscrX = (X, I) \) and \( \mscrY = (Y, J) \) be structures over \( \mscrL \).
+  Let \( \mscrX = (X, I) \) and \( \mscrY = (Y, J) \) be structures over \( \Sigma \).
 
   We say that an \hyperref[def:function_invertibility/injective]{injective} \hyperref[def:fol_homomorphism]{homomorphism} \( h: \mscrX \to \mscrY \) is an \term{embedding} if any of the following equivalent conditions hold:
 
   \begin{thmenum}
     \thmitem{def:first_order_embedding/inverse} The inverse of \( h \) on its image is also a homomorphism.
-    \thmitem{def:first_order_embedding/predicates} For any predicate symbol \( p \) in \( \mscrL \),
+    \thmitem{def:first_order_embedding/predicates} For any predicate symbol \( p \) in \( \Sigma \),
     \begin{equation}\label{eq:def:first_order_embedding/predicates}
       I(p) (x_1, \ldots, x_n) = J(p) \parens[\big]{ h(x_1), \ldots, h(x_n) }.
     \end{equation}
   \end{thmenum}
 \end{definition}
 \begin{comments}
-  \item In particular, if there are no predicate symbols in the language, an embedding is simply an injective homomorphism.
+  \item In particular, if there are no predicate symbols in the signature, an embedding is simply an injective homomorphism.
 
   \item Peter Hinman in \incite[def. 2.3.26(ii)]{Hinman2005Logic} actually defines embeddings as injective homomorphisms, but he requires homomorphisms to satisfy \eqref{eq:def:first_order_embedding/predicates} in \cite[def. 2.3.26(i)]{Hinman2005Logic} --- a condition that is too restrictive for \hyperref[def:order_function/preserving]{order-preserving} or \hyperref[def:directed_graph/homomorphism]{graph homomorphisms}.
 
@@ -975,7 +933,7 @@
 \begin{proposition}\label{thm:arbitrary_formulas_preserved_under_isomorphisms}
   A \hyperref[def:first_order_embedding]{first-order embeddings} preserves models of arbitrary closed formulas.
 
-  More concretely, given some language \( \mscrL \), if \( \Gamma \) is a set of closed formulas and \( h: \mscrX \to \mscrY \) is an embedding between \hyperref[def:first_order_model]{models} of \( \Gamma \), then the image \( h[X] \) is also (the domain of) a model of \( \Gamma \).
+  More concretely, given some signature \( \Sigma \), if \( \Gamma \) is a set of closed formulas and \( h: \mscrX \to \mscrY \) is an embedding between \hyperref[def:fol_semantics/model]{models} of \( \Gamma \), then the image \( h[X] \) is also (the domain of) a model of \( \Gamma \).
 \end{proposition}
 \begin{comments}
   \item Compare this to \cref{thm:positive_formulas_preserved_under_homomorphism}, which places restrictions on the formulas rather than the homomorphism.
@@ -986,7 +944,7 @@
 \end{proof}
 
 \begin{proposition}\label{thm:isomorphism_preserves_validity}\mcite[prop. 2.3.39]{Hinman2005Logic}
-  Let \( \mscrX = (X, I) \) and \( \mscrY = (Y, J) \) be structures over \( \mscrL \). Let \( h: \mscrX \to \mscrY \) be a \hyperref[def:first_order_isomorphism]{first-order isomorphism}. Fix a formula \( \varphi \) in \( \mscrL \) with (at most) \( n \) free variables. Then
+  Let \( \mscrX = (X, I) \) and \( \mscrY = (Y, J) \) be structures over \( \Sigma \). Let \( h: \mscrX \to \mscrY \) be a \hyperref[def:first_order_isomorphism]{first-order isomorphism}. Fix a formula \( \varphi \) in \( \Sigma \) with (at most) \( n \) free variables. Then
   \begin{equation*}
     \Bracks{\varphi}_\mscrX(x_1, \ldots, x_n) = \Bracks{\varphi}_\mscrY\parens[\big]{ h(x_1), \ldots, h(x_n) },
   \end{equation*}
@@ -997,7 +955,7 @@
   \begin{equation}\label{eq:thm:isomorphism_preserves_validity/hypothesis_formulas}
     \Bracks{\varphi}_v = \Bracks{\varphi}_w,
   \end{equation}
-  where \( \varphi \) is a formula over \( \mscrL \), \( v \) is a variable assignment in \( \mscrX \) and \( w(\xi) \coloneqq h(v(\xi)) \) is an assignment in \( \mscrY \).
+  where \( \varphi \) is a formula over \( \Sigma \), \( v \) is a variable assignment in \( \mscrX \) and \( w(\xi) \coloneqq h(v(\xi)) \) is an assignment in \( \mscrY \).
 
   Then it will follow that, if \( \xi_1, \ldots, \xi_n \) are all the free variables of \( \varphi \), the following restatement of the proposition holds:
   \begin{equation*}
@@ -1006,7 +964,7 @@
     \Bracks{\varphi}_{w_{\xi_1 \mapsto h(x_1), \ldots, \xi_n \mapsto h(x_n)}}.
   \end{equation*}
 
-  First, we will need to prove the following auxiliary result: for any term \( \tau \) over \( \mscrL \), we have
+  First, we will need to prove the following auxiliary result: for any term \( \tau \) over \( \Sigma \), we have
   \begin{equation}\label{eq:thm:isomorphism_preserves_validity/hypothesis_terms}
     \Bracks{\tau}_w = h(\Bracks{\tau}_v).
   \end{equation}
@@ -1097,7 +1055,7 @@
 \paragraph{First-order congruences}
 
 \begin{definition}\label{def:first_order_congruence}\mcite[46]{Мальцев1970АлгебраическиеСистемы}
-  Let \( \mscrX = (X, I) \) be a \hyperref[def:fol_structure]{first-order structure} over some language.
+  Let \( \mscrX = (X, I) \) be a \hyperref[def:fol_structure]{first-order structure} over some signature.
 
   We say that the \hyperref[def:equivalence_relation]{equivalence relation} \( \cong \) on \( X \) is a (first-order) \term[ru=конгруэнция (\cite[46]{Мальцев1970АлгебраическиеСистемы})]{congruence} on \( \mscrX \) if any of the following equivalent conditions hold:
   \begin{thmenum}
@@ -1189,7 +1147,7 @@
 \end{comments}
 
 \begin{proposition}\label{thm:congruences_form_complete_lattice}
-  Fix a structure \( \mscrX = (X, I) \) for the language \( \mscrL \).
+  Fix a structure \( \mscrX = (X, I) \) for the signature \( \Sigma \).
 
   With respect to set inclusion, the family of all \hyperref[def:first_order_congruence]{congruences} on \( \mscrX \) forms a complete lattice. Explicitly:
   \begin{thmenum}
@@ -1228,7 +1186,7 @@
     \end{equation}
   \end{thmenum}
 
-  Then \( \mscrX / {\cong} \coloneqq (X / {\cong}, I_\cong) \) is a structure over the same language and, furthermore, the projection \( \pi \) is a \hyperref[def:fol_homomorphism]{homomorphism}.
+  Then \( \mscrX / {\cong} \coloneqq (X / {\cong}, I_\cong) \) is a structure over the same signature and, furthermore, the projection \( \pi \) is a \hyperref[def:fol_homomorphism]{homomorphism}.
 \end{definition}
 
 \begin{theorem}[Quotient structure universal property]\label{thm:quotient_structure_universal_property}
@@ -1272,9 +1230,9 @@
 \end{proof}
 
 \begin{proposition}\label{thm:quotient_preserves_positive_formulas}
-  Fix a set \( \Gamma \) of closed \hyperref[def:positive_formula]{positive formulas} over a language without predicate symbols.
+  Fix a set \( \Gamma \) of closed \hyperref[def:positive_formula]{positive formulas} over a signature without predicate symbols.
 
-  If \( \mscrX = (X, I) \) is a \hyperref[def:first_order_model]{model} of \( \Gamma \) and \( \cong \) is a \hyperref[def:first_order_congruence]{first-order congruence} on \( \mscrX \), then the \hyperref[def:first_order_quotient]{quotient structure} \( \mscrX / {\cong} \) defined as \( (X / {\cong}, I_\cong) \) is also a model of \( \Gamma \).
+  If \( \mscrX = (X, I) \) is a \hyperref[def:fol_semantics/model]{model} of \( \Gamma \) and \( \cong \) is a \hyperref[def:first_order_congruence]{first-order congruence} on \( \mscrX \), then the \hyperref[def:first_order_quotient]{quotient structure} \( \mscrX / {\cong} \) defined as \( (X / {\cong}, I_\cong) \) is also a model of \( \Gamma \).
 \end{proposition}
 \begin{defproof}
   Fix a positive formula \( \varphi \). Via \fullref{thm:induction_on_abstract_syntax}, we will show that if any variable assignment \( v \) satisfies \( \varphi \) in \( \mscrX \), the following variable assignment satisfies \( \varphi \) in \( \mscrX / {\cong} \):
@@ -1439,7 +1397,7 @@
 \end{defproof}
 
 \begin{theorem}[Lattice theorem for substructures]\label{thm:lattice_theorem_for_substructures}
-  Let \( \mscrX = (X, I) \) be a \hyperref[def:fol_structure]{structure} over \hyperref[def:first_order_language]{first-order language} \( \mscrL \) and let \( {\cong} \) be a \hyperref[def:first_order_congruence]{congruence} on \( \mscrX \).
+  Let \( \mscrX = (X, I) \) be a \hyperref[def:fol_structure]{structure} over \hyperref[def:first_order_language]{first-order signature} \( \Sigma \) and let \( {\cong} \) be a \hyperref[def:first_order_congruence]{congruence} on \( \mscrX \).
 
   We will consider only \hyperref[def:first_order_substructure]{substructures} \( (S, I) \) of \( (X, I) \) satisfying the following compatibility condition:
   \begin{equation}\label{eq:thm:lattice_theorem_for_substructures/compatibility}
@@ -1458,11 +1416,11 @@
   \end{figure}
 
   \begin{thmenum}
-    \thmitem{thm:lattice_theorem_for_substructures/direct} If \( (S, I) \) is a substructure of \( (X, I) \) compatible with \( {\cong} \), then \( (S / {\cong}, I_\cong) \) is a substructure of \( (X / {\cong}, I_\cong) \), that is, a structure for \( \mscrL \) satisfying \( S / {\cong} \subseteq X / {\cong} \).
+    \thmitem{thm:lattice_theorem_for_substructures/direct} If \( (S, I) \) is a substructure of \( (X, I) \) compatible with \( {\cong} \), then \( (S / {\cong}, I_\cong) \) is a substructure of \( (X / {\cong}, I_\cong) \), that is, a structure for \( \Sigma \) satisfying \( S / {\cong} \subseteq X / {\cong} \).
 
     We know that \( (S, I) \) has a quotient structure with respect to \( {\cong} \), but the interpretation is in general different from \( I_\cong \).
 
-    \thmitem{thm:lattice_theorem_for_substructures/reverse} If \( (Q, I_\cong) \) is a substructure of \( (X / {\cong}, I_\cong) \), then \( (\bigcup Q, I) \) is a substructure of \( (X, I) \) compatible with \( {\cong} \), that is, a structure over \( \mscrL \) satisfying \( \bigcup Q \subseteq X \) and \eqref{eq:thm:lattice_theorem_for_substructures/compatibility}.
+    \thmitem{thm:lattice_theorem_for_substructures/reverse} If \( (Q, I_\cong) \) is a substructure of \( (X / {\cong}, I_\cong) \), then \( (\bigcup Q, I) \) is a substructure of \( (X, I) \) compatible with \( {\cong} \), that is, a structure over \( \Sigma \) satisfying \( \bigcup Q \subseteq X \) and \eqref{eq:thm:lattice_theorem_for_substructures/compatibility}.
 
     \thmitem{thm:lattice_theorem_for_substructures/left_invertible} If \( (S, I) \) is a substructure of \( (X, I) \) compatible with \( {\cong} \), then the sets \( S \) and \( \bigcup (S / {\cong}) \) coincide.
 
@@ -1489,7 +1447,7 @@
 \begin{proof}
   \SubProofOf{thm:lattice_theorem_for_substructures/direct} Let \( (S, I) \) be a substructure of \( (X, I) \). In order to show that \( (S / {\cong}, I_\cong) \) is a substructure of \( (X / {\cong}, I_\cong) \), we must show that the set \( S / {\cong} \) is closed under function application.
 
-  Let \( f \) be an \( n \)-ary functional symbol from \( \mscrL \). If \( [x_1], \ldots, [x_n] \) are members of \( S / {\cong} \), then \( x_1, \ldots, x_n \) are members of \( S \). Since \( S \) is closed under function application, it contains
+  Let \( f \) be an \( n \)-ary functional symbol from \( \Sigma \). If \( [x_1], \ldots, [x_n] \) are members of \( S / {\cong} \), then \( x_1, \ldots, x_n \) are members of \( S \). Since \( S \) is closed under function application, it contains
   \begin{equation*}
     I(f)(x_1, \ldots, x_n).
   \end{equation*}
@@ -1505,7 +1463,7 @@
 
   \SubProofOf{thm:lattice_theorem_for_substructures/reverse} Let \( (Q, I_\cong) \) be a substructure of \( (X / {\cong}, I_\cong) \). We must show that the set \( \bigcup Q \) is closed under function application.
 
-  Again, let \( f \) be an \( n \)-ary functional symbol from \( \mscrL \). If \( x_1, \ldots, x_n \) are members of \( \bigcup Q \), then the cosets \( [x_1], \ldots, [x_n] \) belong to \( Q \) and since \( Q \) is closed under application of \( I_\cong(f) \), it contains
+  Again, let \( f \) be an \( n \)-ary functional symbol from \( \Sigma \). If \( x_1, \ldots, x_n \) are members of \( \bigcup Q \), then the cosets \( [x_1], \ldots, [x_n] \) belong to \( Q \) and since \( Q \) is closed under application of \( I_\cong(f) \), it contains
   \begin{equation*}
     I_\cong(f)\parens{ [x_1], \ldots, [x_n] }
     =
@@ -1569,7 +1527,7 @@
 \paragraph{First-order definability}
 
 \begin{definition}\label{def:first_order_definability}\mcite[def. 2.3.37]{Hinman2005Logic}
-  Fix a \hyperref[def:first_order_language]{first-order language} \( \mscrL \) and a \hyperref[def:fol_structure]{structure} \( \mscrX = (X, I) \) for \( \mscrL \).
+  Fix a \hyperref[def:first_order_language]{first-order signature} \( \Sigma \) and a \hyperref[def:fol_structure]{structure} \( \mscrX = (X, I) \) for \( \Sigma \).
 
   To every \hyperref[def:first_order_syntax/formula]{formula} \( \varphi \) whose \hyperref[def:fol_variable_freeness]{free variables} are among \( \xi_1, \ldots, \xi_n, \eta_1, \ldots, \eta_m \), and to every \( m \)-tuple \( u_1, \ldots, u_m \) of members of \( A \), which we call \term{parameters}, there corresponds a set \( A \subseteq X^n \) such that
   \begin{equation*}
@@ -1584,7 +1542,7 @@
 \end{comments}
 
 \begin{proposition}\label{thm:automorphism_of_definable_set}
-  Let \( \mscrX = (X, I) \) be a structure over some language \( \mscrL \).
+  Let \( \mscrX = (X, I) \) be a structure over some signature \( \Sigma \).
 
   \begin{thmenum}
     \thmitem{thm:automorphism_of_definable_set/direct}\mcite[corr. 2.3.40]{Hinman2005Logic} If the set \( A \subseteq X \) is \hyperref[def:first_order_definability]{definable} (without parameters) and if \( h: \mscrX \to \mscrX \) is an automorphism, then \( h(A) = A \).
