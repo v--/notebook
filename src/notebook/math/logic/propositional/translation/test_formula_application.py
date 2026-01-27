@@ -1,10 +1,10 @@
 from collections.abc import Mapping
 
-from ....support.pytest import pytest_parametrize_kwargs
-from ..parsing import parse_formula
-from ..signature import FormalLogicSignature
-from .parsing import parse_prop_formula, parse_prop_variable
-from .translation import translate_prop_formula
+from .....support.pytest import pytest_parametrize_kwargs
+from ...parsing import parse_formula
+from ...signature import FormalLogicSignature
+from ..parsing import parse_prop_formula, parse_prop_variable
+from .formula_application import translate_prop_formula
 
 
 @pytest_parametrize_kwargs(

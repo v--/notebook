@@ -11,7 +11,3 @@ class NonPropositionalFormulaError(PropositionalLogicError):
 
 class MissingInterpretationError(PropositionalLogicError):
     pass
-
-
-class UnspecifiedReplacementError(PropositionalLogicError):
-    pass

@@ -846,25 +846,27 @@ First-order logic is a particularly convenient form of \hyperref[con:predicate_l
   Since the formulas are closed and do not depend on assignments, we can prove the theorem analogously to \fullref{thm:propositional_semantic_deduction_theorem}.
 \end{proof}
 
-\paragraph{Substitution}
+\paragraph{Propositional formula translation}
 
 \begin{definition}\label{def:atomic_fol_propositional_formula_translation}\mimprovised
   For translating \hyperref[def:propositional_formula]{propositional formulas} into \hyperref[def:fol_formula]{first-order formulas} over the \hyperref[def:fol_signature]{signature} \( \Sigma \) as a map \( \Bbbt: \op*{Prop} \to \op*{Form}_\Sigma \) for which only finitely many variables are not \hyperref[def:function_fixed_point]{fixed points}. We will call the map \( \Bbbt \) an \term{atomic translation}.
 \end{definition}
 
 \begin{algorithm}[Propositional formula translation]\label{alg:fol_propositional_formula_translation}
-  We extend the \hyperref[def:atomic_fol_propositional_formula_translation]{atomic formula translation} \( \Bbbt \) to an operation \( \varphi \mapsto \varphi[\Bbbt] \) on compound propositional formulas via \hyperref[rem:straightforward_traversal]{straightforward traversal} similarly to how it is done in \fullref{alg:propositional_substitution}. Of course, this extension will only be valid when the propositional variables are in the domain of the atomic translation map.
+  We extend the \hyperref[def:atomic_fol_propositional_formula_translation]{atomic formula translation} \( \Bbbt \) to an operation \( \varphi \mapsto \varphi[\Bbbt] \) on compound propositional formulas via \hyperref[rem:straightforward_traversal]{straightforward traversal} similarly to how it is done in \fullref{alg:propositional_substitution}.
 \end{algorithm}
 \begin{comments}
+  \item This algorithm allows us to reuse much of what we proved for propositional formulas. \Cref{thm:fol_propositional_formula_translation_entailment} shows that \hyperref[def:propositional_semantics/entailment]{propositional semantic entailment} gives rise to \hyperref[def:fol_semantics/entailment]{first-order semantic entailment}, and \Cref{thm:fol_propositional_formula_translation_derivation} shows the same for \hyperref[def:fol_natural_deduction_consequence]{syntactic derivation} based on natural deduction.
+
+  \item Of course, this extension will only be valid when the propositional variables are in the domain of the atomic translation map.
+
   \item This algorithm can be found as \identifier{math.logic.propositional.apply_prop_formula_translation} in \cite{notebook:code}.
 \end{comments}
 
 \begin{proposition}\label{thm:fol_propositional_formula_translation_semantics}
-  \Fullref{alg:fol_propositional_formula_translation} allows us to reuse much of what we proved for propositional logic.
+  Fix a \hyperref[def:fol_structure]{first-order structure} \( \mscrX \), a \hyperref[def:fol_variable_assignment]{variable assignment} \( v \) into \( \mscrX \) and an \hyperref[def:atomic_fol_propositional_formula_translation]{atomic translation} \( \Bbbt \). For simplicity of exposition, suppose that \( \Bbbt \) is defined for all propositional variables under consideration.
 
-  Fix a \hyperref[def:fol_structure]{first-order structure} \( \mscrX \) over \( \Sigma \), a \hyperref[def:fol_variable_assignment]{variable assignment} \( v \) into \( \mscrX \) and an \hyperref[def:atomic_fol_propositional_formula_translation]{atomic translation} \( \Bbbt \). For simplicity of exposition, suppose that \( \Bbbt \) is defined for all propositional variables under consideration.
-
-  Define the \hyperref[def:propositional_interpretation]{propositional interpretation}
+  Define the classical \hyperref[def:propositional_interpretation]{propositional interpretation}
   \begin{equation}\label{eq:thm:fol_propositional_formula_translation_semantics/compatibility}
     I(p) \coloneqq \Bracks{p[\Bbbt]}_\mscrX^v.
   \end{equation}
@@ -878,29 +880,22 @@ First-order logic is a particularly convenient form of \hyperref[con:predicate_l
   Straightforward induction on \( \varphi \).
 \end{proof}
 
-\begin{proposition}\label{thm:fol_quantifiers_and_semantic_equivalence}
-  Two \hyperref[def:fol_formula]{first-order formulas} \( \varphi \) and \( \psi \) are \hyperref[def:fol_semantics/equivalence]{semantically equivalent} if and only if \( \quantifier Q x \varphi \) and \( \quantifier Q x \psi \).
+\begin{corollary}\label{thm:fol_propositional_formula_translation_entailment}
+  Fix an \hyperref[def:atomic_fol_propositional_formula_translation]{atomic translation} \( \Bbbt \) of \hyperref[def:propositional_formula]{propositional formulas} into \hyperref[def:fol_formula]{first-order formulas}.
 
-  The choice of quantifier \( Q \) and variable \( x \) here are arbitrary.
-\end{proposition}
+  If the set \( \Gamma \) of \hyperref[def:propositional_formula]{propositional formulas} \hyperref[def:propositional_semantics/entailment]{semantically entails} \( \varphi \), then the \hyperref[def:fol_quantifier_closure]{universal closures} \( \cl_\forall \Gamma[\Bbbt] \) of the formulas translated via \fullref{alg:fol_propositional_formula_translation} \hyperref[def:fol_semantics/entailment]{semantically entails} \( \cl_\forall \varphi[\Bbbt] \).
+\end{corollary}
 \begin{comments}
-  \item This proposition allows us to use propositional semantic equivalences inside quantifier bodies.
+  \item This is the semantic counterpart to \cref{thm:fol_propositional_formula_translation_derivation}.
 \end{comments}
 \begin{proof}
-  \SufficiencySubProof Suppose that \( \varphi \gleichstark \psi \). Fix a variable assignment \( v \) in some structure \( \mscrX \). For \( Q = {\synforall} \), we have
-  \begin{equation}\label{eq:thm:fol_quantifiers_and_semantic_equivalence/proof}
-    \Bracks{\qforall x \varphi}_\mscrX^v
-    \reloset {\eqref{eq:alg:fol_formula_denotation/forall}} =
-    \bigwedge\set[\big]{ \Bracks{\varphi}_\mscrX^{v_{x \mapsto a}} \given* a \in X }
-    =
-    \bigwedge\set[\big]{ \Bracks{\psi}_\mscrX^{v_{x \mapsto a}} \given* a \in X }
-    \reloset {\eqref{eq:alg:fol_formula_denotation/forall}} =
-    \Bracks{\qforall x \psi}_\mscrX^v.
-  \end{equation}
+  Suppose that \( \Gamma \vDash \varphi \).
 
-  The case \( Q = {\synexists} \) is analogous.
+  Let \( \mscrX \) be a structure satisfying \( \cl_\forall \Gamma[\Bbbt] \). \Cref{thm:fol_universal_validity_iff_closure_validity} implies that every formula in \( \Gamma[\Bbbt] \) is \hyperref[def:fol_universal_validity]{universally valid} in \( \mscrX \). Fix any variable assignment \( v \) in \( \mscrX \).
 
-  \NecessitySubProof Conversely, if \( \qforall x \varphi \gleichstark \qforall x \psi \), then \eqref{eq:thm:fol_quantifiers_and_semantic_equivalence/proof} implies that \( \Bracks{\varphi}_\mscrX^{v_{x \mapsto a}} = \Bracks{\psi}_\mscrX^{v_{x \mapsto a}} \) for every \( a \), including \( a = v(x) \).
+  \Cref{thm:fol_propositional_formula_translation_semantics} implies that the specific interpretation \( I_v(p) \coloneqq \Bracks{p[\Bbbt]}_\mscrX^v \) also satisfies \( \Gamma \). Then \( I_v \) also satisfies \( \varphi \). Using \cref{thm:fol_propositional_formula_translation_semantics} in the other direction, we conclude that \( v \) satisfies \( \varphi \).
+
+  Generalizing on \( v \), we conclude that \( \varphi \) is universally valid in \( \mscrX \). \Cref{thm:fol_universal_validity_iff_closure_validity} implies that the closure \( \cl_\forall \varphi \) is valid in \( \mscrX \).
 \end{proof}
 
 \paragraph{Quantifier duality}
@@ -962,6 +957,31 @@ First-order logic is a particularly convenient form of \hyperref[con:predicate_l
   For \( Q = {\synexists} \), we simply have to use the dual law from \fullref{thm:de_morgans_laws}.
 \end{proof}
 
+\begin{lemma}\label{thm:fol_quantifiers_and_semantic_equivalence}
+  Two \hyperref[def:fol_formula]{first-order formulas} \( \varphi \) and \( \psi \) are \hyperref[def:fol_semantics/equivalence]{semantically equivalent} if and only if \( \quantifier Q x \varphi \) and \( \quantifier Q x \psi \) are.
+
+  The choice of quantifier \( Q \) and variable \( x \) here are arbitrary.
+\end{lemma}
+\begin{comments}
+  \item This proposition allows us to use propositional semantic equivalences inside quantifier bodies.
+\end{comments}
+\begin{proof}
+  \SufficiencySubProof Suppose that \( \varphi \gleichstark \psi \). Fix a variable assignment \( v \) in some structure \( \mscrX \). For \( Q = {\synforall} \), we have
+  \begin{equation}\label{eq:thm:fol_quantifiers_and_semantic_equivalence/proof}
+    \Bracks{\qforall x \varphi}_\mscrX^v
+    \reloset {\eqref{eq:alg:fol_formula_denotation/forall}} =
+    \bigwedge\set[\big]{ \Bracks{\varphi}_\mscrX^{v_{x \mapsto a}} \given* a \in X }
+    =
+    \bigwedge\set[\big]{ \Bracks{\psi}_\mscrX^{v_{x \mapsto a}} \given* a \in X }
+    \reloset {\eqref{eq:alg:fol_formula_denotation/forall}} =
+    \Bracks{\qforall x \psi}_\mscrX^v.
+  \end{equation}
+
+  The case \( Q = {\synexists} \) is analogous.
+
+  \NecessitySubProof Conversely, if \( \qforall x \varphi \gleichstark \qforall x \psi \), then \eqref{eq:thm:fol_quantifiers_and_semantic_equivalence/proof} implies that \( \Bracks{\varphi}_\mscrX^{v_{x \mapsto a}} = \Bracks{\psi}_\mscrX^{v_{x \mapsto a}} \) for every \( a \), including \( a = v(x) \).
+\end{proof}
+
 \begin{corollary}\label{thm:fol_quantifier_duality_relativized}
   A variant of \cref{thm:fol_quantifier_duality} also holds for \hyperref[rem:fol_formula_conventions/relativization]{relativized quantifier formulas}:
   \begin{equation}\label{eq:thm:fol_quantifier_duality_relativized}
@@ -996,7 +1016,7 @@ First-order logic is a particularly convenient form of \hyperref[con:predicate_l
   \end{equation*}
   where \( x_1, \ldots, x_n \) is an \hyperref[def:set_enumeration]{enumeration} of the free variables of \( \varphi \).
 
-  Using the \hyperref[def:lexicographic_order]{lexicographic order} on the variables, we may pick a canonical closure, which we will simply call \enquote{the} (lexicographic) universal closure of \( \varphi \).
+  Using the \hyperref[def:lexicographic_order]{lexicographic order} on the variables, we may pick a canonical closure, which we will simply call \enquote{the} (lexicographic) universal closure of \( \varphi \) and denote it by \( \cl_\forall \varphi \).
 
   \term[ru=экзистенциальное замыкание (\cite[90]{Герасимов2014Вычислимость})]{Existential closures} are defined analogously.
 \end{definition}
@@ -1679,44 +1699,4 @@ First-order logic is a particularly convenient form of \hyperref[con:predicate_l
   \SufficiencySubProof* \Cref{thm:def:elementary_equivalence/finite} implies that, if two structures are finite and elementarily equivalent, they are isomorphic.
 
   \NecessitySubProof* \Cref{thm:pure_equality_isomorphism/isomorphism} implies that, if two structures have the same cardinality, they are isomorphic. Then \cref{thm:def:elementary_embedding/isomorphism} implies that they are elementarily equivalent.
-\end{proof}
-
-\paragraph{Definitional extensions}
-
-\begin{definition}\label{def:fol_theory}\mimprovised
-  We restate here some definitions related to \hyperref[def:logical_theory]{logical theories}, adapted to \hyperref[def:first_order_logic]{first-order logic}.
-
-  First and foremost, a (syntactic or semantic) \term[ru=теория (\cite[def. 3.1.1]{Герасимов2014Вычислимость}), en=theory (\cite[def. 2.4.1]{Hinman2005Logic})]{theory} is, as in \cref{def:general_logic_theory}, a set of sentences closed under logical consequence. For any set of sentences \( \Gamma \), we denote its consequence closure by \( \op*{Th}(\Gamma) \).
-
-  \begin{thmenum}
-    \thmitem{def:fol_theory/morphism} As in \cref{def:entailment_system_theory/morphism}, we call the \hyperref[def:fol_signature_category/morphisms]{first-order signature morphism} \( t: \Sigma \to \Theta \) a \term{theory morphisms} from \( (\Sigma, \Gamma) \) to \( (\Theta, \Delta) \) if the translation via \fullref{alg:fol_formula_signature_translation} of the formulas in \( \Gamma \) belong to \( \Delta \).
-
-    \thmitem{def:fol_theory/extension} Of special interest is the case where \( t: \Sigma \to \Sigma^+ \) is the inclusion map of a \hyperref[def:fol_signature_extension]{signature extension}. In this case translation is does nothing, and \( t \) is a theory morphism from \( (\Sigma, \Gamma) \) to \( (\Sigma^+, \Gamma^+) \) if and only if \( \Gamma \) is a subset of \( \Gamma^+ \).
-
-    We call \( \Gamma^+ \) an \term{extension} of \( \Gamma \).
-
-    \thmitem{def:fol_theory/category} Based on theories and their morphisms, as per \cref{def:category_of_theories}, we have a (syntactic or semantic) category of theories \( \ucat{Th} \) for every \hyperref[def:grothendieck_universe]{Grothendieck universe} \( \mscrU \).
-
-    \thmitem{def:fol_theory/conservative} As in \cref{def:entailment_system_theory/conservative}, we say that a theory morphism or extension is \term[en=conservative extension (\cite[180]{Hinman2005Logic})]{conservative} when \( \Gamma \nvDash_\Sigma \varphi \) implies \( \Delta \nvDash_\Theta \op*{Sen}(t)(\varphi) \).
-
-    \thmitem{def:fol_theory/model}\mcite[def. 2.4.4]{Hinman2005Logic} As in \cref{def:theory_of_institutional_model}, we define the \term{theory} \( \op*{Th}(\mscrX) \) \hi{of} a structure \( \mscrX \) as the set of all sentences valid in \( \mscrX \).
-  \end{thmenum}
-\end{definition}
-
-\begin{proposition}\label{thm:def:fol_theory}
-  \hyperref[def:fol_theory]{First-order theories} have the following basic properties:
-  \begin{thmenum}
-    \thmitem{thm:def:fol_theory/model_theory_consistency} For every structure \( \mscrX \), the theory \( \op*{Th}(\mscrX) \) is \hyperref[def:consistent_set_of_sentences]{consistent}.
-
-    \thmitem{thm:def:fol_theory/model_theory_completeness} For every structure \( \mscrX \), the theory \( \op*{Th}(\mscrX) \) is \hyperref[def:complete_set_of_sentences]{complete}.
-  \end{thmenum}
-\end{proposition}
-\begin{proof}
-  \SubProofOf{thm:def:fol_theory/model_theory_consistency} Follows from \fullref{thm:propositional_semantic_lnc} (translated via \fullref{alg:fol_propositional_formula_translation}). We use the equivalent condition \cref{thm:propositional_semantic_inconsistency/unsatisfiable} for consistency.
-
-  \SubProofOf{thm:def:fol_theory/model_theory_completeness} Fix a structure \( \mscrX \).
-
-  A formula \( \varphi \) is either valid in \( \mscrX \) or not. In the latter case \fullref{thm:propositional_semantic_lem} implies that \( \synneg \varphi \) is valid.
-
-  \Cref{thm:propositional_complete_set} then implies that \( \op*{Th}(\mscrX) \) is complete.
 \end{proof}

@@ -1,24 +1,11 @@
 from collections.abc import Mapping
-from dataclasses import dataclass, field
+from dataclasses import dataclass
 from typing import override
 
-from ..formulas import ConnectiveFormula, Formula, NegationFormula, PropConstant
-from .exceptions import UnspecifiedReplacementError
-from .formula_visitor import PropFormulaVisitor
-from .formulas import PropConnectiveFormula, PropFormula, PropNegationFormula, PropVariable
-
-
-@dataclass(frozen=True)
-class PropFormulaTranslation:
-    mapping: Mapping[PropVariable, Formula] = field(default_factory=dict)
-
-    def translate_variable(self, var: PropVariable) -> Formula:
-        try:
-            return self.mapping[var]
-        except KeyError:
-            raise UnspecifiedReplacementError(f'No translation specified for propositional variable {var.symbol}') from None
-
-        return self.mapping.get(var, var)
+from ...formulas import ConnectiveFormula, Formula, NegationFormula, PropConstant
+from ..formula_visitor import PropFormulaVisitor
+from ..formulas import PropConnectiveFormula, PropFormula, PropNegationFormula, PropVariable
+from .base import PropFormulaTranslation
 
 
 @dataclass(frozen=True)

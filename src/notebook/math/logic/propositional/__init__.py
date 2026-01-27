@@ -6,7 +6,6 @@ from .exceptions import (
     MissingInterpretationError,
     NonPropositionalFormulaError,
     PropositionalLogicError,
-    UnspecifiedReplacementError,
 )
 from .formula_conversion import convert_to_prop_formula
 from .formula_to_function import prop_formula_to_function
@@ -28,5 +27,10 @@ from .schemas import PropConnectiveFormulaSchema, PropFormulaSchema, PropNegatio
 from .signature import DEFAULT_PROP_SIGNATURE, DEFAULT_PROP_VARIABLE, PropLogicSignature
 from .substitute_subformula import substitute_subformula
 from .symbols import PropVariableSymbol
-from .translation import PropFormulaTranslation, apply_prop_formula_translation, translate_prop_formula
+from .translation import (
+    PropFormulaTranslation,
+    UnspecifiedReplacementError,
+    apply_prop_formula_translation,
+    translate_prop_formula,
+)
 from .variables import get_prop_variables

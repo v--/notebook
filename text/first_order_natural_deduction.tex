@@ -642,6 +642,30 @@
   A proof tree is can have at most finitely many assumptions.
 \end{proof}
 
+\begin{algorithm}[Propositional proof tree translation]\label{alg:fol_propositional_proof_tree_translation}
+  Fix an \hyperref[def:atomic_fol_propositional_formula_translation]{atomic translation} \( \Bbbt \) of \hyperref[def:propositional_formula]{propositional formulas} into \hyperref[def:fol_formula]{first-order formulas}.
+
+  Fix also a \hyperref[def:propositional_natural_deduction_system]{propositional natural deduction system}. \hyperref[def:propositional_formula_schema]{Propositional schemas} are valid \hyperref[def:fol_formula_schema]{first-order schemas}, so we can regard it as a \hyperref[def:fol_natural_deduction_system]{first-order natural deduction system}.
+
+  Let \( P \) be a \hyperref[def:propositional_natural_deduction_proof_tree]{propositional proof tree} in this system. Assuming \( \Bbbt \) is defined for the formulas in \( P \), we can recursively translate \( P \) into a \hyperref[def:fol_natural_deduction_proof_tree]{first-order proof tree} \( P[\Bbbt] \) as follows:
+  \begin{thmenum}
+    \thmitem{alg:fol_propositional_proof_tree_translation/assumption} If \( P \) is an assumption tree for \( \varphi \) with marker \( u \), let \( P[\Bbbt] \) be an assumption tree for \( \varphi[\Bbbt] \) with the same marker.
+
+    \thmitem{alg:fol_propositional_proof_tree_translation/application} Otherwise, \( P \) is an application tree for some rule \( \logic{R} \).
+
+    Let \( \BbbI \) be the \hyperref[def:atomic_propositional_instantiation]{propositional schema instantiation} used in \( P \), and let \( \BbbI[\Bbbt] \) be the \hyperref[def:atomic_fol_instantiation]{first-order schema instantiation} that maps every formula placeholder \( \Phi \) to \( \BbbI(\Phi)[\Bbbt] \). There are no variable nor term placeholders in the propositional schemas.
+
+    Let \( d \) be the \hyperref[def:propositional_natural_deduction_proof_tree/application/dischargeable]{dischargeable assumption choice} used in \( P \), and let \( d[\Bbbt] \) be the choice function for first-order assumptions with the same markers.
+
+    Finally, let \( P_1, \ldots, P_n \) be the premise subtrees of \( P \). We define \( P[\Bbbt] \) as an application of \( \logic{R} \), with \( P_1[\BbbT], \ldots, P_n[\BbbT] \) as premises, with \( \BbbI[\Bbbt] \) as an instantiation and with \( d[\Bbbt] \) as a choice of dischargeable assumptions.
+  \end{thmenum}
+\end{algorithm}
+\begin{comments}
+  \item We will use this algorithm to show compatibility of propositional and first-order derivation relations in \cref{thm:fol_propositional_formula_translation_entailment}.
+
+  \item This algorithm can be found as \identifier{math.logic.propositional.apply_prop_proof_tree_translation} in \cite{notebook:code}.
+\end{comments}
+
 \paragraph{Concrete natural deduction}
 
 \begin{definition}\label{def:fol_natural_deduction}\mimprovised
@@ -986,6 +1010,37 @@
 
   Not only do the above conditions not conflict with each other, but \( \BbbI \) could even map \( \synx \) to \( \syny \) because \ref{rem:sequent_calculus_eigenvariables/quantifier} allows eigenvariables as bound variables.
 \end{remark}
+
+\begin{proposition}\label{thm:fol_propositional_formula_translation_derivation}
+  Fix an \hyperref[def:atomic_fol_propositional_formula_translation]{atomic translation} \( \Bbbt \) of \hyperref[def:propositional_formula]{propositional formulas} into \hyperref[def:fol_formula]{first-order formulas}.
+
+  If the set \( \Gamma \) of \hyperref[def:propositional_natural_deduction]{propositional formulas} derives \( \varphi \) via \hyperref[def:propositional_natural_deduction_consequence]{propositional natural deduction}, then the \hyperref[def:fol_quantifier_closure]{universal closures} \( \cl_\forall \Gamma[\Bbbt] \) of the formulas translated via \fullref{alg:fol_propositional_formula_translation} derive \( \cl_\forall \varphi[\Bbbt] \) via \hyperref[def:fol_natural_deduction]{first-order natural deduction}.
+\end{proposition}
+\begin{comments}
+  \item This is the syntactic counterpart to \cref{thm:fol_propositional_formula_translation_entailment}.
+\end{comments}
+\begin{proof}
+  Fix a propositional proof tree \( P \) with consequence \( \varphi \) whose open assumptions are in \( \Gamma \).
+
+  \Fullref{alg:fol_propositional_proof_tree_translation} gives us a first-order proof tree \( P[\Bbbt] \) deriving \( \varphi[\Bbbt] \) from \( \Gamma[\Bbbt] \). Denote by \( R \) the tree obtained from \( P[\Bbbt] \) in which we replace every assumption
+  \begin{equation*}
+    \begin{prooftree}
+      \hypo{ [\psi[\Bbbt]]^u }
+    \end{prooftree}
+  \end{equation*}
+  with
+  \begin{equation*}
+    \begin{prooftree}
+      \hypo{ [\qforall {x_1} \qforall {x_2} \cdots \qforall {x_n} \psi[\Bbbt]]^u }
+      \infer1[\ref{inf:def:fol_natural_deduction/forall/elim}]{ \qforall {x_2} \cdots \qforall {x_n} \psi[\Bbbt] }
+      \infer1[\ref{inf:def:fol_natural_deduction/forall/elim}]{ }
+      \ellipsis {} {}
+      \infer1[\ref{inf:def:fol_natural_deduction/forall/elim}]{ \psi[\Bbbt] }
+    \end{prooftree}
+  \end{equation*}
+
+  It derives \( \varphi[\Bbbt] \) from \( \cl_\forall \Gamma[\Bbbt] \). It remains to add to \( R \) all free variables of \( \varphi \) via repeated applications of \ref{inf:def:fol_natural_deduction/forall/intro}. The eigenvariable conditions are trivially satisfied since \( R \) has no open variables.
+\end{proof}
 
 \begin{theorem}[First-order syntactic deduction theorem]\label{thm:fol_natural_deduction_deduction_theorem}
   With respect to \hyperref[def:fol_natural_deduction]{minimal first-order natural deduction}, for arbitrary formulas we have
