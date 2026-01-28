@@ -9,6 +9,7 @@ from ..parsing import (
     parse_formula_placeholder,
     parse_formula_with_substitution,
     parse_marker,
+    parse_variable,
 )
 from ..propositional import parse_prop_formula
 from ..signature import FormalLogicSignature
@@ -265,6 +266,24 @@ def test_forall_introduction() -> None:
     )
 
 
+# rem:fol_empty_universe/natural_deduction
+def test_forall_elimination(dummy_signature: FormalLogicSignature) -> None:
+    tree = apply(
+        CLASSICAL_NATURAL_DEDUCTION_SYSTEM['∀₋'],
+        assume(parse_formula('∀x.p¹(x)', dummy_signature), parse_marker('u')),
+        conclusion_config=parse_formula_with_substitution('p¹(x)[x ↦ y]', dummy_signature),
+    )
+
+    assert tree.get_open_variables() == set()
+    assert tree.implicit_variables == {parse_variable('y')}
+    assert str(tree) == dedent('''\
+        [∀x.p¹(x)]ᵘ
+        ___________ ∀₋
+           p¹(y)
+        '''
+    )
+
+
 # ex:def:fol_natural_deduction/reintroduction
 def test_forall_reintroduction(dummy_signature: FormalLogicSignature) -> None:
     tree = apply(
@@ -280,7 +299,7 @@ def test_forall_reintroduction(dummy_signature: FormalLogicSignature) -> None:
     )
 
     assert tree.get_open_variables() == set()
-    assert not tree.is_strict()
+    assert tree.implicit_variables == set()
     assert str(tree) == dedent('''\
         [∀x.p¹(x)]ᵘ
         ___________ ∀₋
@@ -305,7 +324,7 @@ def test_forall_reintroduction_with_renaming(dummy_signature: FormalLogicSignatu
     )
 
     assert tree.get_open_variables() == set()
-    assert not tree.is_strict()
+    assert tree.implicit_variables == set()
     assert str(tree) == dedent('''\
         [∀x.p¹(x)]ᵘ
         ___________ ∀₋
@@ -330,7 +349,7 @@ def test_forall_to_exists(dummy_signature: FormalLogicSignature) -> None:
     )
 
     assert tree.get_open_variables() == set()
-    assert not tree.is_strict()
+    assert tree.implicit_variables == set()
     assert str(tree) == dedent('''\
         [∀x.p¹(x)]ᵘ
         ___________ ∀₋
@@ -356,7 +375,7 @@ def test_forall_to_exists_with_constant(dummy_signature: FormalLogicSignature) -
     )
 
     assert tree.get_open_variables() == set()
-    assert not tree.is_strict()
+    assert tree.implicit_variables == set()
     assert str(tree) == dedent('''\
         [∀x.p¹(x)]ᵘ
         ___________ ∀₋

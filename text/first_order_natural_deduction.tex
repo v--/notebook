@@ -477,7 +477,7 @@
 
     Actually, we will need a more elaborate construction --- a function \( F(D, E) \) depending on a set \( D \) of discharged markers and a set \( E \) of discharged eigenvariables. We call \( F(\varnothing, \varnothing) \) \enquote{the} set of open free variables of the tree.
 
-    \thmitem{def:fol_natural_deduction_proof_tree/implicit_variables} Similarly to implicit open premises, we may also have \term{implicit open variables}. We will call the proof tree \term{strict} if all implicit variables are also explicit open free variables.
+    \thmitem{def:fol_natural_deduction_proof_tree/implicit_variables} Similarly to implicit open premises, we may also have \term{implicit free variables}.
   \end{thmenum}
 
   Just as with assumption discharging, binding variables is also delicate to handle:
@@ -563,7 +563,7 @@
 
       Thus, have taken the union of all open variables of the subtrees and all free variables of the implicit premises, excluding those discharged at the current application.
 
-      \thmitem{def:fol_natural_deduction_proof_tree/application/implicit_variables} If the conclusion schema features a substitution, i.e. if \( \Psi = \Lambda[\xi \mapsto \Tau] \), let the set of implicit open variables be the set of variables of the term \( \Tau[\BbbI] \). Otherwise, let \( C_d \) be the empty set.
+      \thmitem{def:fol_natural_deduction_proof_tree/application/implicit_variables} If the conclusion schema features a substitution, i.e. if \( \Psi = \Lambda[\xi \mapsto \Tau] \), let the set of implicit free variables be the set of variables of the term \( \Tau[\BbbI] \). Otherwise, let \( C_d \) be the empty set.
     \end{thmenum}
   \end{thmenum}
 \end{definition}
@@ -576,7 +576,7 @@
 
   \item Even though we do not disallow eigenvariables in the conclusion, they would be treated the same as regular variables.
 
-  \item Implicit variables and strict proof trees are not established concepts. Nonstrict rule application trees, in which the conclusion may introduce new free variables, have some debatable aspects despite being the norm. See \cref{rem:fol_empty_universe/natural_deduction} for a broader discussion.
+  \item Implicit variables are not an established concept. Placing restrictions on them allows us to mitigate some debatable proof trees --- see \cref{rem:fol_empty_universe/natural_deduction} for a broader discussion.
 
   \item The term \enquote{eigenvariable} comes from \tcite{#2, where #1}{Gentzen1935LogischeSchließen} introduces natural deduction. In the corresponding English translation, \cite[293]{Gentzen1964LogicalDeduction}, eigenvariables are instead called \enquote{proper variables}. Both terms are currently used in English (e.g. \incite[\S 5.1.10]{Mimram2020ProgramEqualsProof} uses \enquote{eigenvariable}, while \incite[38]{TroelstraSchwichtenberg2000BasicProofTheory} uses \enquote{proper variable}).
 
@@ -927,11 +927,41 @@
 
   This derivation is not sound in an empty universe where nothing exists. Nevertheless, the standard treatment of natural deduction ignores this issue --- starting from Gentzen's \cite[186]{Gentzen1935LogischeSchließen}, and including \cite[ch. 2]{TroelstraSchwichtenberg2000BasicProofTheory}, \cite[\S 2.8]{VanDalen2004LogicAndStructure} and \cite[97]{КолмогоровДрагалин2006Логика}.
 
-  \incite*[\S 5.1.10]{Mimram2020ProgramEqualsProof} provides a hint at how to handle this situation. We have adapted his remarks when introducing strict proof trees in \cref{def:fol_natural_deduction_proof_tree/implicit_variables}. Since the only open assumption above has no free variables, the application of \ref{inf:def:fol_natural_deduction/forall/elim} is strict only if \( \tau \) is closed. This is the case when \( \tau \) contains at least one individual constant. But if the signature has an individual constant, its domain cannot be empty.
+  There are some ad-hoc ways to prevent the above rule applications:
+  \begin{thmenum}
+    \thmitem{rem:fol_empty_universe/restricted_implicit} We may require all \hyperref[def:fol_natural_deduction_proof_tree/implicit_variables]{implicit free variables} to belong to the existing \hyperref[def:fol_natural_deduction_proof_tree/open_variables]{open free variables}. This would affect the rule \ref{inf:def:fol_natural_deduction/forall/elim}. It would be possible to derive \( \varphi[x \mapsto \tau] \) from \( \qforall x \varphi \), but only if the free variables of \( \tau \) are open in the proof tree.
 
-  If, on the other hand, the domain is empty, the rule is inapplicable. Strict proof trees require us to be more careful with the choice of conclusion of \ref{inf:def:fol_natural_deduction/forall/elim}. However, this makes them compatible with empty universes.
+    In our example, the proof tree has no variables open, thus \( \tau \) must use constants rather than variables. But if the signature has an individual constant, its domain cannot be empty. If, on the other hand, the domain is empty, the rule becomes inapplicable.
 
-  Due to the increased complexity, we will not further pursue this path.
+    On the other hand, this restriction would prevent the following sound proof:
+    \begin{equation*}
+      \begin{prooftree}
+        \hypo{ [\qforall x p(x)]^u }
+        \infer1[\ref{inf:def:fol_natural_deduction/forall/elim}]{ p(y) }
+        \infer1[\ref{inf:def:fol_natural_deduction/forall/intro}]{ \qforall z p(z) }
+      \end{prooftree}
+    \end{equation*}
+
+    \thmitem{rem:fol_empty_universe/non_eigenvariable} An alternative is suggested by \incite[\S 5.1.10]{Mimram2020ProgramEqualsProof}. He suggests keeping an explicit \hyperref[def:logical_context]{context} of variables that are allowed to be used in term substitutions (i.e. in \( \tau \) in \ref{inf:def:fol_natural_deduction/forall/elim} and \ref{inf:def:fol_natural_deduction/exists/intro}). Discharging an eigenvariable removes it from this context.
+
+    Our example becomes
+    \begin{equation*}
+      \begin{prooftree}
+        \hypo{ x &\given\enspace [\qforall x p(x)]^u }
+        \infer1[\ref{inf:def:fol_natural_deduction/forall/elim}]{ x &\given\enspace p(x) }
+        \infer1[\ref{inf:def:fol_natural_deduction/exists/intro}]{ x &\given\enspace \qexists x p(x) }
+      \end{prooftree}
+    \end{equation*}
+
+    If we disallow derivations ending with a nonempty variable context, this proof becomes invalid. On the other hand, the following is valid:
+    \begin{equation*}
+      \begin{prooftree}
+        \hypo{ y &\given\enspace [\qforall x p(x)]^u }
+        \infer1[\ref{inf:def:fol_natural_deduction/forall/elim}]{ y &\given\enspace p(y) }
+        \infer1[\ref{inf:def:fol_natural_deduction/forall/intro}]{ &\given\enspace \qexists z p(z) }
+      \end{prooftree}
+    \end{equation*}
+  \end{thmenum}
 \end{remark}
 
 \begin{remark}\label{rem:sequent_calculus_eigenvariables}
