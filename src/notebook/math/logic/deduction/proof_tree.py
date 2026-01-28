@@ -67,8 +67,8 @@ class AssumptionTree(InferenceTree[Formula, MarkedFormula]):
             if var not in eigen
         }
 
-    def is_strict(self) -> bool:
-        return True
+    def new_implicit_variables(self) -> Collection[Variable]:
+        return set()
 
     def __str__(self) -> str:
         return self.build_renderer().render()
@@ -193,9 +193,9 @@ class RuleApplicationTree(InferenceTree[Formula, MarkedFormula]):
     ) -> Collection[Variable]:
         return set(self._iter_open_variables(eigen, discharged))
 
-    def is_strict(self) -> bool:
+    def new_implicit_variables(self) -> Collection[Variable]:
         open_vars = self.get_open_variables()
-        return any(var not in open_vars for var in self.implicit_variables)
+        return {var for var in self.implicit_variables if var not in open_vars}
 
     def __str__(self) -> str:
         return self.build_renderer().render()
